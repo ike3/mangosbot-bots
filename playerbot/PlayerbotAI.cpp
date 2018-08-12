@@ -924,7 +924,7 @@ bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target)
     if (bot->isMoving() && spell->GetCastTime())
     {
         delete spell;
-        spell->cancel();
+        //spell->cancel();
         return false;
     }
 
@@ -957,7 +957,7 @@ bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target)
         LootObject loot = *aiObjectContext->GetValue<LootObject>("loot target");
         if (!loot.IsLootPossible(bot))
         {
-            spell->cancel();
+            //spell->cancel();
             delete spell;
             return false;
         }
@@ -986,7 +986,7 @@ bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target)
     if (!bot->IsInFront(faceTo, sPlayerbotAIConfig.sightDistance, CAST_ANGLE_IN_FRONT) && !bot->IsTaxiFlying())
     {
         bot->SetFacingTo(bot->GetAngle(faceTo));
-        spell->cancel();
+        //spell->cancel();
         delete spell;
         SetNextCheckDelay(sPlayerbotAIConfig.globalCoolDown);
         return false;
