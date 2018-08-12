@@ -109,7 +109,10 @@ void TradeStatusAction::BeginTrade()
 bool TradeStatusAction::CheckTrade()
 {
     if (!sRandomPlayerbotMgr.IsRandomBot(bot))
+    {
+        ai->PlaySound(TEXTEMOTE_THANK);
         return true;
+    }
 
     Player* master = GetMaster();
     if (!bot->GetTradeData() || !master->GetTradeData())
@@ -123,6 +126,7 @@ bool TradeStatusAction::CheckTrade()
             ostringstream out;
             out << chat->formatItem(item->GetProto()) << " - This is not for sale";
             ai->TellMaster(out);
+            ai->PlaySound(TEXTEMOTE_NO);
             return false;
         }
 
@@ -136,6 +140,7 @@ bool TradeStatusAction::CheckTrade()
                 ostringstream out;
                 out << chat->formatItem(item->GetProto()) << " - I don't need this";
                 ai->TellMaster(out);
+                ai->PlaySound(TEXTEMOTE_NO);
                 return false;
             }
         }
@@ -174,12 +179,14 @@ bool TradeStatusAction::CheckTrade()
             ai->TellMaster("Off with you");
             break;
         }
+        ai->PlaySound(TEXTEMOTE_THANK);
         return true;
     }
 
     ostringstream out;
     out << "I want " << chat->formatMoney(botMoney - playerMoney) << " for this";
     ai->TellMaster(out);
+    ai->PlaySound(TEXTEMOTE_NO);
     return false;
 }
 
