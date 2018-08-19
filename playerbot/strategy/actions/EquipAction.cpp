@@ -43,9 +43,9 @@ void EquipAction::EquipItem(Item& item)
     }
     else
     {
-        WorldPacket* const packet = new WorldPacket(CMSG_AUTOEQUIP_ITEM, 2);
-            *packet << bagIndex << slot;
-        bot->GetSession()->QueuePacket(packet);
+        WorldPacket packet(CMSG_AUTOEQUIP_ITEM, 2);
+        packet << bagIndex << slot;
+        bot->GetSession()->HandleAutoEquipItemOpcode(packet);
     }
 
     ostringstream out; out << "equipping " << chat->formatItem(item.GetProto());

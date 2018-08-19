@@ -110,39 +110,83 @@ file(GLOB Playerbot_Warrior ${CMAKE_CURRENT_SOURCE_DIR}/playerbot/strategy/warri
     source_group("Player Bot\\Strategies\\Warrior" FILES ${Playerbot_Warrior})
     LIST(APPEND LIBRARY_SRCS ${Playerbot_Warrior})
 
+# Define ENABLE_PLAYERBOTS if need
+if (BUILD_PLAYERBOT)
+  add_definitions(-DENABLE_PLAYERBOTS)
+endif()
+
+# Define ENABLE_IMMERSIVE if need
+if (BUILD_IMMERSIVE)
+  add_definitions(-DENABLE_IMMERSIVE)
+endif()
+
 include_directories(
-  ${CMAKE_CURRENT_SOURCE_DIR}
-  ${CMAKE_CURRENT_SOURCE_DIR}/ahbot
-  ${CMAKE_CURRENT_SOURCE_DIR}/playerbot
-  ${CMAKE_SOURCE_DIR}/src/game
-  ${CMAKE_SOURCE_DIR}/src/game/AuctionHouseBot
-  ${CMAKE_SOURCE_DIR}/src/game/BattleGround
-  ${CMAKE_SOURCE_DIR}/src/game/ChatCommands
-  ${CMAKE_SOURCE_DIR}/src/game/Maps
-  ${CMAKE_SOURCE_DIR}/src/game/MotionGenerators
-  ${CMAKE_SOURCE_DIR}/src/game/movement
-  ${CMAKE_SOURCE_DIR}/src/game/Object
-  ${CMAKE_SOURCE_DIR}/src/game/OutdoorPvP
-  ${CMAKE_SOURCE_DIR}/src/game/References
-  ${CMAKE_SOURCE_DIR}/src/game/Server
-  ${CMAKE_SOURCE_DIR}/src/game/Tools
-  ${CMAKE_SOURCE_DIR}/src/game/vmap
-  ${CMAKE_SOURCE_DIR}/src/game/WorldHandlers
-  ${CMAKE_SOURCE_DIR}/src/shared
-  ${CMAKE_SOURCE_DIR}/src/shared/Config
-  ${CMAKE_SOURCE_DIR}/src/shared/Common
-  ${CMAKE_SOURCE_DIR}/src/shared/Database
-  ${CMAKE_SOURCE_DIR}/src/shared/DataStores
-  ${CMAKE_SOURCE_DIR}/src/shared/Log
-  ${CMAKE_SOURCE_DIR}/src/shared/Threading
-  ${CMAKE_SOURCE_DIR}/src/shared/Utilities
-  ${CMAKE_SOURCE_DIR}/src/framework
-  ${CMAKE_SOURCE_DIR}/src/framework/Platform
-  ${CMAKE_SOURCE_DIR}/dep/g3dlite
-  ${CMAKE_BINARY_DIR}
-  ${CMAKE_BINARY_DIR}/src/shared
-  ${MYSQL_INCLUDE_DIR}
-  ${ACE_INCLUDE_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/ahbot
+    ${CMAKE_CURRENT_SOURCE_DIR}/playerbot
+    ${CMAKE_SOURCE_DIR}/src/game
+    ${CMAKE_SOURCE_DIR}/src/game/AI
+    ${CMAKE_SOURCE_DIR}/src/game/AI/BaseAI
+    ${CMAKE_SOURCE_DIR}/src/game/AI/EventAI
+    ${CMAKE_SOURCE_DIR}/src/game/Accounts
+    ${CMAKE_SOURCE_DIR}/src/game/Addons
+    ${CMAKE_SOURCE_DIR}/src/game/Arena
+    ${CMAKE_SOURCE_DIR}/src/game/AuctionHouse
+    ${CMAKE_SOURCE_DIR}/src/game/BattleGround
+    ${CMAKE_SOURCE_DIR}/src/game/Chat
+    ${CMAKE_SOURCE_DIR}/src/game/ChatCommands
+    ${CMAKE_SOURCE_DIR}/src/game/Combat
+    ${CMAKE_SOURCE_DIR}/src/game/DBScripts
+    ${CMAKE_SOURCE_DIR}/src/game/Entities
+    ${CMAKE_SOURCE_DIR}/src/game/GMTickets
+    ${CMAKE_SOURCE_DIR}/src/game/GameEvents
+    ${CMAKE_SOURCE_DIR}/src/game/Globals
+    ${CMAKE_SOURCE_DIR}/src/game/Grids
+    ${CMAKE_SOURCE_DIR}/src/game/Groups
+    ${CMAKE_SOURCE_DIR}/src/game/Guilds
+    ${CMAKE_SOURCE_DIR}/src/game/LFG
+    ${CMAKE_SOURCE_DIR}/src/game/Loot
+    ${CMAKE_SOURCE_DIR}/src/game/Mails
+    ${CMAKE_SOURCE_DIR}/src/game/Maps
+    ${CMAKE_SOURCE_DIR}/src/game/MotionGenerators
+    ${CMAKE_SOURCE_DIR}/src/game/Movement
+    ${CMAKE_SOURCE_DIR}/src/game/Object
+    ${CMAKE_SOURCE_DIR}/src/game/OutdoorPvP
+    ${CMAKE_SOURCE_DIR}/src/game/Pools
+    ${CMAKE_SOURCE_DIR}/src/game/Quests
+    ${CMAKE_SOURCE_DIR}/src/game/References
+    ${CMAKE_SOURCE_DIR}/src/game/Reputation
+    ${CMAKE_SOURCE_DIR}/src/game/Server
+    ${CMAKE_SOURCE_DIR}/src/game/Server
+    ${CMAKE_SOURCE_DIR}/src/game/Skills
+    ${CMAKE_SOURCE_DIR}/src/game/Social
+    ${CMAKE_SOURCE_DIR}/src/game/Spells
+    ${CMAKE_SOURCE_DIR}/src/game/Tools
+    ${CMAKE_SOURCE_DIR}/src/game/Trade
+    ${CMAKE_SOURCE_DIR}/src/game/VoiceChat
+    ${CMAKE_SOURCE_DIR}/src/game/Warden
+    ${CMAKE_SOURCE_DIR}/src/game/Weather
+    ${CMAKE_SOURCE_DIR}/src/game/World
+    ${CMAKE_SOURCE_DIR}/src/game/WorldHandlers
+    ${CMAKE_SOURCE_DIR}/src/game/movement
+    ${CMAKE_SOURCE_DIR}/src/game/vmap
+    ${CMAKE_SOURCE_DIR}/src/shared
+    ${CMAKE_SOURCE_DIR}/src/shared/Auth
+    ${CMAKE_SOURCE_DIR}/src/shared/Config
+    ${CMAKE_SOURCE_DIR}/src/shared/Common
+    ${CMAKE_SOURCE_DIR}/src/shared/Database
+    ${CMAKE_SOURCE_DIR}/src/shared/DataStores
+    ${CMAKE_SOURCE_DIR}/src/shared/Network
+    ${CMAKE_SOURCE_DIR}/src/shared/Log
+    ${CMAKE_SOURCE_DIR}/src/shared/Threading
+    ${CMAKE_SOURCE_DIR}/src/shared/Utilities
+    ${CMAKE_SOURCE_DIR}/src/framework
+    ${CMAKE_SOURCE_DIR}/src/framework/Platform
+    ${CMAKE_SOURCE_DIR}/dep/g3dlite
+    ${CMAKE_BINARY_DIR}
+    ${CMAKE_BINARY_DIR}/src/shared
+    ${MYSQL_INCLUDE_DIR}
+    ${ACE_INCLUDE_DIR}
 )
 
 if(PCH)
@@ -160,18 +204,28 @@ if(UNIX)
   endif()
 endif()
 
-if(NOT ACE_USE_EXTERNAL)
-  add_dependencies(${LIBRARY_NAME} ace)
-endif()
-
 # Install config files
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/playerbot/aiplayerbot.conf.dist.in ${CMAKE_CURRENT_BINARY_DIR}/aiplayerbot.conf.dist)
+if (NOT CONF_INSTALL_DIR)
+  set(CONF_INSTALL_DIR ${CONF_DIR})
+endif()
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/aiplayerbot.conf.dist DESTINATION ${CONF_INSTALL_DIR})
-
-#configure_file(${CMAKE_CURRENT_SOURCE_DIR}/ahbot/ahbot.conf.dist.in ${CMAKE_CURRENT_BINARY_DIR}/ahbot.conf.dist)
-#install(FILES ${CMAKE_CURRENT_BINARY_DIR}/ahbot.conf.dist DESTINATION ${CONF_INSTALL_DIR})
 
 # Generate PCH
 if(PCH)
+ if (ADD_CXX_PCH)
     ADD_CXX_PCH(Bots ${bots_PCH})
+ elseif (MSVC)
+    set(PCHBaseName "pchdef")
+    set(PrecompiledBinary "${CMAKE_CURRENT_SOURCE_DIR}/botpch.pch")
+    set(PrecompiledHeader "${CMAKE_CURRENT_SOURCE_DIR}/botpch.h")
+    set(PrecompiledSource "${CMAKE_CURRENT_SOURCE_DIR}/botpch.cpp")
+    set_target_properties(${LIBRARY_NAME} PROPERTIES COMPILE_FLAGS " /Yu\"${PrecompiledHeader}\" /FI\"${PrecompiledHeader}\" /Fp\"${PrecompiledBinary}\" /bigobj")
+    set_source_files_properties(${PrecompiledSource} PROPERTIES COMPILE_FLAGS "/Yc\"${PrecompiledHeader}\" /Fp\"${PrecompiledBinary}\"")
+    set_target_properties(${LIBRARY_NAME} PROPERTIES PROJECT_LABEL "Bots")
+  elseif(NOT MINGW)
+    # TODO: Resolve issues with order of includes before enabling Cotire for MinGW builds
+    cotire(${LIBRARY_NAME})
+  endif()
+  include_directories(${CMAKE_CURRENT_BINARY_DIR})
 endif()

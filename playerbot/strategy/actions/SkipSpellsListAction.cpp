@@ -3,6 +3,7 @@
 #include "SkipSpellsListAction.h"
 #include "../values/SkipSpellsListValue.h"
 #include "LootAction.h"
+#include "../../ServerFacade.h"
 
 using namespace ai;
 
@@ -44,7 +45,7 @@ bool SkipSpellsListAction::Execute(Event event)
         bool first = true;
         for (set<uint32>::iterator i = skipSpells.begin(); i != skipSpells.end(); i++)
         {
-            SpellEntry const* spell = sSpellStore.LookupEntry(*i);
+            SpellEntry const* spell = sServerFacade.LookupSpellInfo(*i);
             if (!spell)
                 continue;
 
@@ -66,7 +67,7 @@ bool SkipSpellsListAction::Execute(Event event)
             return false;
         }
 
-        SpellEntry const* spell = sSpellStore.LookupEntry(spellId);
+        SpellEntry const* spell = sServerFacade.LookupSpellInfo(spellId);
         if (!spell)
             return false;
 

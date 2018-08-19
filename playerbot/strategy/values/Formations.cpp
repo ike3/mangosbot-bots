@@ -1,6 +1,8 @@
 #include "botpch.h"
 #include "../../playerbot.h"
 #include "Formations.h"
+
+#include "../../ServerFacade.h"
 #include "Arrow.h"
 
 using namespace ai;
@@ -32,7 +34,7 @@ WorldLocation MoveAheadFormation::GetLocation()
     float y = loc.coord_y;
     float z = loc.coord_z;
 
-    if (master->isMoving()) {
+    if (sServerFacade.isMoving(master)) {
         float ori = master->GetOrientation();
         float x1 = x + sPlayerbotAIConfig.tooCloseDistance * cos(ori);
         float y1 = y + sPlayerbotAIConfig.tooCloseDistance * sin(ori);

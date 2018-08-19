@@ -2,6 +2,7 @@
 #include "../../playerbot.h"
 #include "NearestCorpsesValue.h"
 
+#include "../../ServerFacade.h"
 #include "GridNotifiers.h"
 #include "GridNotifiersImpl.h"
 #include "CellImpl.h"
@@ -16,7 +17,7 @@ public:
     WorldObject const& GetFocusObject() const { return *i_obj; }
     bool operator()(Unit* u)
     {
-        return !u->IsAlive() && i_obj->IsWithinDistInMap(u, i_range);
+        return !sServerFacade.IsAlive(u) && i_obj->IsWithinDistInMap(u, i_range);
     }
 private:
     WorldObject const* i_obj;

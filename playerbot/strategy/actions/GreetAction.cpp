@@ -3,6 +3,7 @@
 #include "GreetAction.h"
 
 #include "../../PlayerbotAIConfig.h"
+#include "../../ServerFacade.h"
 using namespace ai;
 
 GreetAction::GreetAction(PlayerbotAI* ai) : Action(ai, "greet")
@@ -17,7 +18,7 @@ bool GreetAction::Execute(Event event)
     Player* player = dynamic_cast<Player*>(ai->GetUnit(guid));
     if (!player) return false;
 
-    if (!bot->IsInFront(player, sPlayerbotAIConfig.sightDistance, CAST_ANGLE_IN_FRONT) && !bot->IsTaxiFlying())
+    if (!sServerFacade.IsInFront(bot, player, sPlayerbotAIConfig.sightDistance, CAST_ANGLE_IN_FRONT) && !bot->IsTaxiFlying())
     {
         bot->SetFacingToObject(player);
         return true;

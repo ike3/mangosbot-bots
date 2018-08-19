@@ -2,6 +2,7 @@
 #include "../../playerbot.h"
 #include "PartyMemberToResurrect.h"
 
+#include "../../ServerFacade.h"
 using namespace ai;
 
 class IsTargetOfResurrectSpell : public SpellEntryPredicate
@@ -29,7 +30,7 @@ public:
     virtual bool Check(Unit* unit)
     {
         Player* player = dynamic_cast<Player*>(unit);
-        return player && player->GetDeathState() == CORPSE && !value->IsTargetOfSpellCast(player, predicate);
+        return player && sServerFacade.GetDeathState(player) == CORPSE && !value->IsTargetOfSpellCast(player, predicate);
     }
 
 private:

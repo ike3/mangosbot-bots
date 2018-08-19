@@ -2,6 +2,7 @@
 #include "../../playerbot.h"
 #include "StatsValues.h"
 
+#include "../../ServerFacade.h"
 using namespace ai;
 
 uint8 HealthValue::Calculate()
@@ -17,7 +18,7 @@ bool IsDeadValue::Calculate()
     Unit* target = GetTarget();
     if (!target)
         return false;
-    return target->GetDeathState() != ALIVE;
+    return sServerFacade.GetDeathState(target) != ALIVE;
 }
 
 bool PetIsDeadValue::Calculate()
@@ -28,7 +29,7 @@ bool PetIsDeadValue::Calculate()
         return true;
 #endif
 
-    return bot->GetPet() && bot->GetPet()->GetDeathState() != ALIVE;
+    return bot->GetPet() && sServerFacade.GetDeathState(bot->GetPet()) != ALIVE;
 }
 
 bool PetIsHappyValue::Calculate()
@@ -101,7 +102,7 @@ bool IsInCombatValue::Calculate()
     if (!target)
         return false;
 
-    return target->IsInCombat();
+    return sServerFacade.IsInCombat(target);
 }
 
 uint8 BagSpaceValue::Calculate()

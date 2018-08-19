@@ -3,6 +3,7 @@
 #include "GrindTargetValue.h"
 #include "../../PlayerbotAIConfig.h"
 #include "../../RandomPlayerbotMgr.h"
+#include "../../ServerFacade.h"
 
 using namespace ai;
 
@@ -34,7 +35,7 @@ Unit* GrindTargetValue::FindTargetForGrinding(int assistCount)
     for (list<ObjectGuid>::iterator i = attackers.begin(); i != attackers.end(); i++)
     {
         Unit* unit = ai->GetUnit(*i);
-        if (!unit || !unit->IsAlive())
+        if (!unit || !sServerFacade.IsAlive(unit))
             continue;
 
         return unit;
@@ -75,7 +76,7 @@ Unit* GrindTargetValue::FindTargetForGrinding(int assistCount)
             for (Group::member_citerator itr = groupSlot.begin(); itr != groupSlot.end(); itr++)
             {
                 Player *member = sObjectMgr.GetPlayer(itr->guid);
-                if( !member || !member->IsAlive())
+                if( !member || !sServerFacade.IsAlive(member))
                     continue;
 
                 float d = member->GetDistance(unit);
@@ -112,7 +113,7 @@ int GrindTargetValue::GetTargetingPlayerCount( Unit* unit )
     for (Group::member_citerator itr = groupSlot.begin(); itr != groupSlot.end(); itr++)
     {
         Player *member = sObjectMgr.GetPlayer(itr->guid);
-        if( !member || !member->IsAlive() || member == bot)
+        if( !member || !sServerFacade.IsAlive(member) || member == bot)
             continue;
 
         PlayerbotAI* ai = member->GetPlayerbotAI();

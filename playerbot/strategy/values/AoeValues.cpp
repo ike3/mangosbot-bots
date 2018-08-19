@@ -3,6 +3,7 @@
 #include "AoeValues.h"
 
 #include "../../PlayerbotAIConfig.h"
+#include "../../ServerFacade.h"
 using namespace ai;
 
 list<ObjectGuid> FindMaxDensity(Player* bot)
@@ -23,7 +24,7 @@ list<ObjectGuid> FindMaxDensity(Player* bot)
             if (!other)
                 continue;
 
-            float d = unit->GetDistance2d(other);
+            float d = sServerFacade.GetDistance2d(unit, other);
             if (d <= sPlayerbotAIConfig.aoeRadius * 2)
                 groups[*i].push_back(*j);
         }

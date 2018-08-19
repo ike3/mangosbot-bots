@@ -1,6 +1,7 @@
 #include "botpch.h"
 #include "../../playerbot.h"
 #include "TrainerAction.h"
+#include "../../ServerFacade.h"
 
 using namespace ai;
 
@@ -10,7 +11,14 @@ void TrainerAction::Learn(uint32 cost, TrainerSpell const* tSpell, ostringstream
         return;
 
     bot->ModifyMoney(-int32(cost));
-    bot->CastSpell(bot, tSpell->spell, true);
+    bot->CastSpell(bot, tSpell->spell,
+#ifdef MANGOS
+                    true
+#endif
+#ifdef CMANGOS
+                    (uint32)0
+#endif
+    );
 
     msg << " - learned";
 }
@@ -43,7 +51,7 @@ void TrainerAction::List(Creature* creature, TrainerSpellAction action, SpellIds
             continue;
 
         uint32 spellId = tSpell->spell;
-        const SpellEntry *const pSpellInfo =  sSpellStore.LookupEntry(spellId);
+        const SpellEntry *const pSpellInfo =  sServerFacade.LookupSpellInfo(spellId);
         if (!pSpellInfo)
             continue;
 

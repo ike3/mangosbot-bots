@@ -4,6 +4,7 @@
 #include "MovementGenerator.h"
 #include "CreatureAI.h"
 #include "../../LootObjectStack.h"
+#include "../../ServerFacade.h"
 
 using namespace ai;
 
@@ -62,7 +63,7 @@ bool AttackAction::Attack(Unit* target)
         if (verbose) ai->TellMaster(msg.str());
         return false;
     }
-    if (target->IsDead())
+    if (sServerFacade.UnitIsDead(target))
     {
         msg << " is dead";
         if (verbose) ai->TellMaster(msg.str());
@@ -87,7 +88,13 @@ bool AttackAction::Attack(Unit* target)
     Pet* pet = bot->GetPet();
     if (pet)
     {
-        CreatureAI* creatureAI = ((Creature*)pet)->AI();
+#ifdef MANGOS
+        CreatureAI* 
+#endif
+#ifdef CMANGOS
+        UnitAI*
+#endif
+            creatureAI = ((Creature*)pet)->AI();
         if (creatureAI)
             creatureAI->AttackStart(target);
     }

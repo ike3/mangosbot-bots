@@ -1,6 +1,7 @@
 #include "botpch.h"
 #include "../../playerbot.h"
 #include "TellCastFailedAction.h"
+#include "../../ServerFacade.h"
 
 
 using namespace ai;
@@ -17,7 +18,7 @@ bool TellCastFailedAction::Execute(Event event)
     if (result == SPELL_CAST_OK)
         return false;
 
-    const SpellEntry *const pSpellInfo =  sSpellStore.LookupEntry(spellId);
+    const SpellEntry *const pSpellInfo =  sServerFacade.LookupSpellInfo(spellId);
     ostringstream out; out << chat->formatSpell(pSpellInfo) << ": ";
     switch (result)
     {
@@ -57,7 +58,7 @@ bool TellSpellAction::Execute(Event event)
     if (!spellId)
         return false;
 
-    SpellEntry const *spellInfo = sSpellStore.LookupEntry(spellId );
+    SpellEntry const *spellInfo = sServerFacade.LookupSpellInfo(spellId );
     if (!spellInfo)
         return false;
 

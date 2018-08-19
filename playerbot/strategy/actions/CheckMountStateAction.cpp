@@ -2,6 +2,7 @@
 #include "../../playerbot.h"
 #include "CheckMountStateAction.h"
 
+#include "../../ServerFacade.h"
 using namespace ai;
 
 uint64 extractGuid(WorldPacket& packet);
@@ -46,7 +47,7 @@ bool CheckMountStateAction::Mount()
 		if (itr->second.state == PLAYERSPELL_REMOVED || itr->second.disabled || IsPassiveSpell(spellId))
 			continue;
 
-		const SpellEntry* spellInfo = sSpellStore.LookupEntry(spellId);
+		const SpellEntry* spellInfo = sServerFacade.LookupSpellInfo(spellId);
 		if (!spellInfo || spellInfo->EffectApplyAuraName[0] != SPELL_AURA_MOUNTED)
 			continue;
 

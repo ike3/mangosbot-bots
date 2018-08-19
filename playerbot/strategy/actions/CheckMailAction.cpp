@@ -23,7 +23,7 @@ bool CheckMailAction::Execute(Event event)
         if (!mail || mail->state == MAIL_STATE_DELETED)
             continue;
 
-        Player* owner = sObjectMgr.GetPlayer((uint64)mail->sender);
+        Player* owner = sObjectMgr.GetPlayer(ObjectGuid(HIGHGUID_PLAYER, mail->sender));
         if (!owner)
             continue;
 

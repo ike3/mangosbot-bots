@@ -2,6 +2,7 @@
 #include "../../playerbot.h"
 #include "NearestGameObjects.h"
 
+#include "../../ServerFacade.h"
 #include "GridNotifiers.h"
 #include "GridNotifiersImpl.h"
 #include "CellImpl.h"
@@ -16,7 +17,7 @@ public:
     WorldObject const& GetFocusObject() const { return *i_obj; }
     bool operator()(GameObject* u)
     {
-        if (u && i_obj->IsWithinDistInMap(u, i_range) && u->isSpawned() && u->GetGOInfo())
+        if (u && i_obj->IsWithinDistInMap(u, i_range) && sServerFacade.isSpawned(u) && u->GetGOInfo())
             return true;
 
         return false;
@@ -39,7 +40,9 @@ list<ObjectGuid> NearestGameObjects::Calculate()
     for(list<GameObject*>::iterator tIter = targets.begin(); tIter != targets.end(); ++tIter)
     {
 		GameObject* go = *tIter;
+#ifndef CMANGOS
         if(bot->IsWithinLOSInMap(go))
+#endif
 			result.push_back(go->GetObjectGuid());
     }
 

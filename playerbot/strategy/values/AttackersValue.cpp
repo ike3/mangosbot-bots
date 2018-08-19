@@ -2,6 +2,7 @@
 #include "../../playerbot.h"
 #include "AttackersValue.h"
 
+#include "../../ServerFacade.h"
 #include "GridNotifiers.h"
 #include "GridNotifiersImpl.h"
 #include "CellImpl.h"
@@ -37,7 +38,7 @@ void AttackersValue::AddAttackersOf(Group* group, set<Unit*>& targets)
     for (Group::member_citerator itr = groupSlot.begin(); itr != groupSlot.end(); itr++)
     {
         Player *member = sObjectMgr.GetPlayer(itr->guid);
-        if (!member || !member->IsAlive() || member == bot)
+        if (!member || !sServerFacade.IsAlive(member) || member == bot)
             continue;
 
         AddAttackersOf(member, targets);
@@ -77,9 +78,9 @@ bool AttackersValue::hasRealThreat(Unit *attacker)
 {
     return attacker &&
         attacker->IsInWorld() &&
-        attacker->IsAlive() &&
+        sServerFacade.IsAlive(attacker) &&
         !attacker->IsPolymorphed() &&
-        !attacker->IsInRoots() &&
+        !sServerFacade.IsInRoots(attacker) &&
         !attacker->IsFriendlyTo(bot) &&
-        (attacker->GetThreatManager().getCurrentVictim() || attacker->GetObjectGuid().IsPlayer());
+        (sServerFacade.GetThreatManager(attacker).getCurrentVictim() || attacker->GetObjectGuid().IsPlayer());
 }

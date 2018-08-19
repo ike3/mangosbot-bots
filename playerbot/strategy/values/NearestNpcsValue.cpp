@@ -11,7 +11,11 @@ using namespace MaNGOS;
 
 void NearestNpcsValue::FindUnits(list<Unit*> &targets)
 {
-    AnyFriendlyUnitInObjectRangeCheck u_check(bot, range);
+    AnyFriendlyUnitInObjectRangeCheck u_check(bot,
+#ifdef CMANGOS
+        nullptr,
+#endif
+        range);
     UnitListSearcher<AnyFriendlyUnitInObjectRangeCheck> searcher(targets, u_check);
     Cell::VisitAllObjects(bot, searcher, range);
 }

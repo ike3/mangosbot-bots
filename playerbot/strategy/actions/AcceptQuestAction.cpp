@@ -111,7 +111,16 @@ bool AcceptQuestShareAction::Execute(Event event)
         // there and there is no default case also.
 
         if( qInfo->GetSrcSpell() > 0 )
-            bot->CastSpell( bot, qInfo->GetSrcSpell(), true );
+        {
+            bot->CastSpell( bot, qInfo->GetSrcSpell(),
+#ifdef MANGOS
+                    true
+#endif
+#ifdef CMANGOS
+                    (uint32)0
+#endif
+            );
+        }
 
         ai->TellMaster("Quest accepted");
         return true;

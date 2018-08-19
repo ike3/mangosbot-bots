@@ -4,6 +4,7 @@
 #include "PlayerbotAIConfig.h"
 #include "PlayerbotAI.h"
 #include "ChatHelper.h"
+#include "ServerFacade.h"
 
 PlayerbotSecurity::PlayerbotSecurity(Player* const bot) : bot(bot)
 {
@@ -55,7 +56,7 @@ PlayerbotSecurityLevel PlayerbotSecurity::LevelFor(Player* from, DenyReason* rea
             return PLAYERBOT_SECURITY_TALK;
         }
 
-        if (bot->IsDead())
+        if (sServerFacade.UnitIsDead(bot))
         {
             if (reason) *reason = PLAYERBOT_DENY_DEAD;
             return PLAYERBOT_SECURITY_TALK;
@@ -184,7 +185,7 @@ bool PlayerbotSecurity::CheckLevelFor(PlayerbotSecurityLevel level, bool silent,
     if (!lastSaid || (time(0) - lastSaid) >= sPlayerbotAIConfig.repeatDelay / 1000)
     {
         whispers[guid][text] = time(0);
-        bot->Whisper(text, LANG_UNIVERSAL, guid);
+        bot->Whisper(text, LANG_UNIVERSAL, ObjectGuid(guid));
     }
     return false;
 }

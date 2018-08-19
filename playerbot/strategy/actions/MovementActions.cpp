@@ -7,6 +7,7 @@
 #include "../../FleeManager.h"
 #include "../../LootObjectStack.h"
 #include "../../PlayerbotAIConfig.h"
+#include "../../ServerFacade.h"
 #include "MotionGenerators/TargetedMovementGenerator.h"
 
 using namespace ai;
@@ -47,7 +48,10 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z)
     if (!IsMovingAllowed(mapId, x, y, z))
         return false;
 
-    float distance = bot->GetDistance2d(x, y);
+    if (sServerFacade.isMoving(bot))
+        return false;
+
+    float distance = sServerFacade.GetDistance2d(bot, x, y);
     if (distance > sPlayerbotAIConfig.contactDistance)
     {
         WaitForReach(distance);
@@ -85,7 +89,7 @@ bool MovementAction::MoveTo(Unit* target, float distance)
     float ty = target->GetPositionY();
     float tz = target->GetPositionZ();
 
-    float distanceToTarget = bot->GetDistance2d(target);
+    float distanceToTarget = sServerFacade.GetDistance2d(bot, target);
     float angle = bot->GetAngle(target);
     float needToGo = distanceToTarget - distance;
 
@@ -148,12 +152,13 @@ bool MovementAction::IsMovingAllowed(uint32 mapId, float x, float y, float z)
 
 bool MovementAction::IsMovingAllowed()
 {
-    if (bot->IsFrozen() || bot->IsPolymorphed() ||
-			(bot->IsDead() && !bot->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_GHOST)) ||
+    if (sServerFacade.IsFrozen(bot) || bot->IsPolymorphed() ||
+			(sServerFacade.UnitIsDead(bot) && !bot->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_GHOST)) ||
             bot->IsBeingTeleported() ||
-            bot->IsInRoots() ||
-            bot->HasAuraType(SPELL_AURA_MOD_CONFUSE) || bot->IsCharmed() ||
-            bot->HasAuraType(SPELL_AURA_MOD_STUN) || bot->IsFlying())
+            sServerFacade.IsInRoots(bot) ||
+            bot->HasAuraType(SPELL_AURA_MOD_CONFUSE) || sServerFacade.IsCharmed(bot) ||
+            bot->HasAuraType(SPELL_AURA_MOD_STUN) || bot->IsFlying() ||
+            bot->IsNonMeleeSpellCasted(true))
         return false;
 
     MotionMaster &mm = *bot->GetMotionMaster();
@@ -172,7 +177,7 @@ bool MovementAction::Follow(Unit* target, float distance, float angle)
     if (!target)
         return false;
 
-    if (bot->GetDistance2d(target->GetPositionX(), target->GetPositionY()) <= sPlayerbotAIConfig.sightDistance &&
+    if (sServerFacade.GetDistance2d(bot, target->GetPositionX(), target->GetPositionY()) <= sPlayerbotAIConfig.sightDistance &&
             abs(bot->GetPositionZ() - target->GetPositionZ()) >= sPlayerbotAIConfig.spellDistance)
     {
         mm.Clear();
@@ -195,7 +200,7 @@ bool MovementAction::Follow(Unit* target, float distance, float angle)
     if (target->IsFriendlyTo(bot) && bot->IsMounted() && AI_VALUE(list<ObjectGuid>, "possible targets").empty())
         distance += angle;
 
-    if (bot->GetDistance2d(target) <= sPlayerbotAIConfig.followDistance)
+    if (sServerFacade.GetDistance2d(bot, target) <= sPlayerbotAIConfig.followDistance)
         return false;
 
     if (bot->IsSitState())
@@ -207,11 +212,20 @@ bool MovementAction::Follow(Unit* target, float distance, float angle)
         ai->InterruptSpell();
     }
 
+    if (sServerFacade.isMoving(bot))
+        return false;
+
     AI_VALUE(LastMovement&, "last movement").Set(target);
 
     if (bot->GetMotionMaster()->GetCurrentMovementGeneratorType() == FOLLOW_MOTION_TYPE)
     {
-        Unit *currentTarget = static_cast<ChaseMovementGenerator<Player> const*>(bot->GetMotionMaster()->GetCurrent())->GetTarget();
+        Unit *currentTarget = static_cast<ChaseMovementGenerator<Player> const*>(bot->GetMotionMaster()->GetCurrent())->
+#ifdef MANGOS
+            GetTarget();
+#endif
+#ifdef CMANGOS
+            GetCurrentTarget();
+#endif
         if (currentTarget && currentTarget->GetObjectGuid() == target->GetObjectGuid()) return false;
     }
 

@@ -2,6 +2,7 @@
 #include "../../playerbot.h"
 #include "InvalidTargetValue.h"
 #include "../../PlayerbotAIConfig.h"
+#include "../../ServerFacade.h"
 
 using namespace ai;
 
@@ -12,10 +13,10 @@ bool InvalidTargetValue::Calculate()
     {
         return !target ||
                 target->GetMapId() != bot->GetMapId() ||
-                target->IsDead() ||
+                sServerFacade.UnitIsDead(target) ||
                 target->IsPolymorphed() ||
-                target->IsCharmed() ||
-                target->IsFeared() ||
+                sServerFacade.IsCharmed(target) ||
+                sServerFacade.IsFeared(target) ||
                 target->hasUnitState(UNIT_STAT_ISOLATED) ||
                 target->IsFriendlyTo(bot) ||
                 !bot->IsWithinDistInMap(target, sPlayerbotAIConfig.sightDistance) ||

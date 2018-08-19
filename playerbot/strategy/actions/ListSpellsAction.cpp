@@ -2,6 +2,7 @@
 #include "../../playerbot.h"
 #include "ListSpellsAction.h"
 #include "../ItemVisitors.h"
+#include "../../ServerFacade.h"
 
 using namespace ai;
 
@@ -10,8 +11,8 @@ set<uint32> ListSpellsAction::vendorItems;
 
 bool CompareSpells(pair<uint32, string>& s1, pair<uint32, string>& s2)
 {
-    const SpellEntry* const si1 = sSpellStore.LookupEntry(s1.first);
-    const SpellEntry* const si2 = sSpellStore.LookupEntry(s2.first);
+    const SpellEntry* const si1 = sServerFacade.LookupSpellInfo(s1.first);
+    const SpellEntry* const si2 = sServerFacade.LookupSpellInfo(s2.first);
 #ifdef MANGOSBOT_ZERO
     int p1 = si1->School * 20000;
     int p2 = si2->School * 20000;
@@ -137,7 +138,7 @@ bool ListSpellsAction::Execute(Event event)
         if (itr->second.state == PLAYERSPELL_REMOVED || itr->second.disabled || IsPassiveSpell(spellId))
             continue;
 
-        const SpellEntry* const pSpellInfo = sSpellStore.LookupEntry(spellId);
+        const SpellEntry* const pSpellInfo = sServerFacade.LookupSpellInfo(spellId);
         if (!pSpellInfo)
             continue;
 

@@ -162,7 +162,7 @@ uint32 GuildTaskMgr::CreateTask(uint32 owner, uint32 guildId)
 
 bool GuildTaskMgr::CreateItemTask(uint32 owner, uint32 guildId)
 {
-    Player* player = sObjectMgr.GetPlayer((uint64)owner);
+    Player* player = sObjectMgr.GetPlayer(ObjectGuid(HIGHGUID_PLAYER, owner));
     if (!player)
         return false;
 
@@ -187,7 +187,7 @@ bool GuildTaskMgr::CreateItemTask(uint32 owner, uint32 guildId)
 
 bool GuildTaskMgr::CreateKillTask(uint32 owner, uint32 guildId)
 {
-    Player* player = sObjectMgr.GetPlayer((uint64)owner);
+    Player* player = sObjectMgr.GetPlayer(ObjectGuid(HIGHGUID_PLAYER, owner));
     if (!player)
         return false;
 
@@ -769,6 +769,7 @@ bool GuildTaskMgr::HandleConsoleCommand(ChatHandler* handler, char const* args)
 
 bool GuildTaskMgr::CheckItemTask(uint32 itemId, uint32 obtained, Player* ownerPlayer, Player* bot, bool byMail)
 {
+    if (!bot) return false;
     uint32 guildId = bot->GetGuildId();
     if (!guildId)
         return false;
@@ -902,6 +903,7 @@ bool GuildTaskMgr::Reward(uint32 owner, uint32 guildId)
 
 void GuildTaskMgr::CheckKillTask(Player* player, Unit* victim)
 {
+    if (!player) return;
 	Group *group = player->GetGroup();
     if (group)
     {
@@ -944,7 +946,10 @@ void GuildTaskMgr::SendCompletionMessage(Player* player, string verb)
 void GuildTaskMgr::CheckKillTaskInternal(Player* player, Unit* victim)
 {
     uint32 owner = player->GetGUIDLow();
-    Creature* creature = victim->ToCreature();
+    if (victim->GetTypeId() != TYPEID_UNIT)
+        return;
+
+    Creature* creature = reinterpret_cast<Creature*>(victim);
     if (!creature)
         return;
 

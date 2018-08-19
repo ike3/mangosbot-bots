@@ -16,6 +16,7 @@
 #include "GridNotifiersImpl.h"
 #include "CellImpl.h"
 #include "FleeManager.h"
+#include "ServerFacade.h"
 
 using namespace ai;
 using namespace MaNGOS;
@@ -200,7 +201,7 @@ bool RandomPlayerbotMgr::ProcessBot(Player* player)
     player->GetPlayerbotAI()->GetAiObjectContext()->GetValue<bool>("random bot update")->Set(false);
 
     uint32 bot = player->GetGUIDLow();
-    if (player->IsDead())
+    if (sServerFacade.UnitIsDead(player))
     {
         if (!GetEventValue(bot, "dead"))
         {
@@ -575,7 +576,7 @@ uint32 RandomPlayerbotMgr::GetZoneLevel(uint16 mapId, float teleX, float teleY, 
 void RandomPlayerbotMgr::Refresh(Player* bot)
 {
     sLog.outDetail("Refreshing bot %s", bot->GetName());
-    if (bot->IsDead())
+    if (sServerFacade.UnitIsDead(bot))
     {
         bot->ResurrectPlayer(1.0f);
         bot->SpawnCorpseBones();
@@ -584,7 +585,7 @@ void RandomPlayerbotMgr::Refresh(Player* bot)
 
     bot->GetPlayerbotAI()->Reset();
 
-	HostileReference *ref = bot->GetHostileRefManager().getFirst();
+	HostileReference *ref = sServerFacade.GetHostileRefManager(bot).getFirst();
 	while (ref)
 	{
 		ThreatManager *threatManager = ref->getSource();

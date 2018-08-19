@@ -2,6 +2,7 @@
 #include "../../playerbot.h"
 #include "UseMeetingStoneAction.h"
 #include "../../PlayerbotAIConfig.h"
+#include "../../ServerFacade.h"
 
 #include "GridNotifiers.h"
 #include "GridNotifiersImpl.h"
@@ -29,7 +30,7 @@ bool UseMeetingStoneAction::Execute(Event event)
     if (master->IsBeingTeleported())
         return false;
 
-    if (bot->IsInCombat())
+    if (sServerFacade.IsInCombat(bot))
     {
         ai->TellMasterNoFacing("I am in combat");
         return false;
@@ -57,7 +58,7 @@ public:
     WorldObject const& GetFocusObject() const { return *i_obj; }
     bool operator()(GameObject* u)
     {
-        if (u && i_obj->IsWithinDistInMap(u, i_range) && u->isSpawned() && u->GetGOInfo())
+        if (u && i_obj->IsWithinDistInMap(u, i_range) && sServerFacade.isSpawned(u) && u->GetGOInfo())
             return true;
 
         return false;
@@ -106,7 +107,7 @@ bool SummonAction::Summon(Player *summoner, Player *player)
     for(list<GameObject*>::iterator tIter = targets.begin(); tIter != targets.end(); ++tIter)
     {
         GameObject* go = *tIter;
-        if (go && go->isSpawned() && go->GetGoType() == GAMEOBJECT_TYPE_MEETINGSTONE)
+        if (go && sServerFacade.isSpawned(go) && go->GetGoType() == GAMEOBJECT_TYPE_MEETINGSTONE)
             return Teleport(summoner, player);
     }
 

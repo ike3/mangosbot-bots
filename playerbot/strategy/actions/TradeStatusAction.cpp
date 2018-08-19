@@ -7,6 +7,7 @@
 #include "../../../ahbot/AhBot.h"
 #include "../../RandomPlayerbotMgr.h"
 #include "../../GuildTaskMgr.h"
+#include "../../ServerFacade.h"
 #include "../values/ItemUsageValue.h"
 
 using namespace ai;
@@ -74,7 +75,7 @@ bool TradeStatusAction::Execute(Event event)
     }
     else if (status == TRADE_STATUS_BEGIN_TRADE)
     {
-        if (!bot->IsInFront(trader, sPlayerbotAIConfig.sightDistance, CAST_ANGLE_IN_FRONT))
+        if (!sServerFacade.IsInFront(bot, trader, sPlayerbotAIConfig.sightDistance, CAST_ANGLE_IN_FRONT))
             bot->SetFacingToObject(trader);
         BeginTrade();
         return true;
@@ -108,15 +109,21 @@ void TradeStatusAction::BeginTrade()
 
 bool TradeStatusAction::CheckTrade()
 {
-    if (!sRandomPlayerbotMgr.IsRandomBot(bot))
-    {
-        ai->PlaySound(TEXTEMOTE_THANK);
-        return true;
-    }
-
     Player* master = GetMaster();
     if (!bot->GetTradeData() || !master->GetTradeData())
         return false;
+
+    if (!sRandomPlayerbotMgr.IsRandomBot(bot))
+    {
+        int32 botItemsMoney = CalculateCost(bot->GetTradeData(), true);
+        int32 botMoney = bot->GetTradeData()->GetMoney() + botItemsMoney;
+        int32 playerItemsMoney = CalculateCost(master->GetTradeData(), false);
+        int32 playerMoney = master->GetTradeData()->GetMoney() + playerItemsMoney;
+        if (playerMoney || botMoney)
+            ai->PlaySound(playerMoney < botMoney ? TEXTEMOTE_CRY : TEXTEMOTE_THANK);
+        return true;
+    }
+
 
     for (uint32 slot = 0; slot < TRADE_SLOT_TRADED_COUNT; ++slot)
     {

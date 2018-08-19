@@ -2,6 +2,7 @@
 
 #include "../../PlayerbotAIConfig.h"
 #include "../../RandomPlayerbotMgr.h"
+#include "../../ServerFacade.h"
 #include "../Action.h"
 
 namespace ai
@@ -17,7 +18,7 @@ namespace ai
             if (!sRandomPlayerbotMgr.IsRandomBot(bot) || bot->GetGroup() || ai->GetMaster())
                 return false;
 
-            if (bot->IsInCombat())
+            if (sServerFacade.IsInCombat(bot))
                 return true;
 
             ai->SetNextCheckDelay(sPlayerbotAIConfig.passiveDelay + sPlayerbotAIConfig.globalCoolDown);

@@ -3,6 +3,7 @@
 #include "ItemBag.h"
 #include "AhBotConfig.h"
 #include "PricingStrategy.h"
+#include "ServerFacade.h"
 
 using namespace ahbot;
 
@@ -150,7 +151,7 @@ bool TradeSkill::Contains(ItemPrototype const* proto)
 
 bool TradeSkill::IsCraftedBySpell(ItemPrototype const* proto, uint32 spellId)
 {
-    SpellEntry const *entry = sSpellStore.LookupEntry(spellId);
+    SpellEntry const *entry = sServerFacade.LookupSpellInfo(spellId);
     if (!entry)
         return false;
 
@@ -174,14 +175,14 @@ bool TradeSkill::IsCraftedBy(ItemPrototype const* proto, uint32 spellId)
     if (IsCraftedBySpell(proto, spellId))
         return true;
 
-    SpellEntry const *entry = sSpellStore.LookupEntry(spellId);
+    SpellEntry const *entry = sServerFacade.LookupSpellInfo(spellId);
     if (!entry)
         return false;
 
     for (uint32 effect = EFFECT_INDEX_0; effect < MAX_EFFECT_INDEX; ++effect)
     {
         uint32 craftId = entry->EffectTriggerSpell[effect];
-        SpellEntry const *craft = sSpellStore.LookupEntry(craftId);
+        SpellEntry const *craft = sServerFacade.LookupSpellInfo(craftId);
         if (!craft)
             continue;
 

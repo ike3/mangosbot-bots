@@ -2,6 +2,7 @@
 #include "../../playerbot.h"
 #include "AoeHealValues.h"
 #include "../../PlayerbotAIConfig.h"
+#include "../../ServerFacade.h"
 
 using namespace ai;
 
@@ -24,7 +25,7 @@ uint8 AoeHealValue::Calculate()
 	for (Group::member_citerator itr = groupSlot.begin(); itr != groupSlot.end(); itr++)
 	{
 		Player *player = sObjectMgr.GetPlayer(itr->guid);
-		if( !player || !player->IsAlive())
+		if( !player || !sServerFacade.IsAlive(player))
 			continue;
 
 	    float percent = (static_cast<float> (player->GetHealth()) / player->GetMaxHealth()) * 100;

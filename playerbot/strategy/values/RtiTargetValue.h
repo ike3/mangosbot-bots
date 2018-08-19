@@ -1,5 +1,6 @@
 #pragma once
 #include "../../PlayerbotAIConfig.h"
+#include "../../ServerFacade.h"
 #include "../Value.h"
 #include "Group.h"
 #include "TargetValue.h"
@@ -44,7 +45,7 @@ namespace ai
                 return NULL;
 
             Unit* unit = ai->GetUnit(ObjectGuid(guid));
-            if (!unit || unit->IsDead() || bot->GetDistance2d(unit) >= sPlayerbotAIConfig.reactDistance)
+            if (!unit || sServerFacade.UnitIsDead(unit) || sServerFacade.GetDistance2d(bot, unit) >= sPlayerbotAIConfig.reactDistance)
                 return NULL;
 
             return unit;

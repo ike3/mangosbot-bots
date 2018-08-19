@@ -2,12 +2,13 @@
 #include "../../playerbot.h"
 #include "PartyMemberWithoutAuraValue.h"
 
+#include "../../ServerFacade.h"
 using namespace ai;
 
 class PlayerWithoutAuraPredicate : public FindPlayerPredicate, public PlayerbotAIAware
 {
 public:
-    PlayerWithoutAuraPredicate(PlayerbotAI* ai, string aura) : 
+    PlayerWithoutAuraPredicate(PlayerbotAI* ai, string aura) :
         PlayerbotAIAware(ai), FindPlayerPredicate(), aura(aura) {}
 
 public:
@@ -17,7 +18,7 @@ public:
         if (pet && (pet->getPetType() == MINI_PET || pet->getPetType() == SUMMON_PET))
             return false;
 
-        return unit->IsAlive() && !ai->HasAura(aura, unit);
+        return sServerFacade.IsAlive(unit) && !ai->HasAura(aura, unit);
     }
 
 private:

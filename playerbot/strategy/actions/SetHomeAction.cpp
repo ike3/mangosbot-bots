@@ -16,7 +16,7 @@ bool SetHomeAction::Execute(Event event)
     if (selection)
     {
         Unit* unit = master->GetMap()->GetUnit(selection);
-        if (unit && unit->IsInnkeeper())
+        if (unit && unit->HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_INNKEEPER))
         {
             float angle = GetFollowAngle();
             float x = unit->GetPositionX() + sPlayerbotAIConfig.followDistance * cos(angle);

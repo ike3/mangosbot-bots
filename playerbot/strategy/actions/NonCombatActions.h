@@ -3,6 +3,7 @@
 #include "../Action.h"
 #include "UseItemAction.h"
 #include "../../PlayerbotAIConfig.h"
+#include "../../ServerFacade.h"
 
 namespace ai
 {
@@ -13,7 +14,7 @@ namespace ai
 
         virtual bool Execute(Event event)
         {
-            if (bot->IsInCombat())
+            if (sServerFacade.IsInCombat(bot))
                 return false;
 
             return UseItemAction::Execute(event);
@@ -32,7 +33,7 @@ namespace ai
 
         virtual bool Execute(Event event)
         {
-            if (bot->IsInCombat())
+            if (sServerFacade.IsInCombat(bot))
                 return false;
 
             return UseItemAction::Execute(event);

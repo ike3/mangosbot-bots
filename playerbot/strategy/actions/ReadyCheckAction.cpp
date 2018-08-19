@@ -199,10 +199,10 @@ bool ReadyCheckAction::ReadyCheck()
 
     ai->TellMaster(out);
 
-    WorldPacket* const packet = new WorldPacket(MSG_RAID_READY_CHECK);
-    *packet << bot->GetObjectGuid();
-    *packet << uint8(1);
-    bot->GetSession()->QueuePacket(packet);
+    WorldPacket packet(MSG_RAID_READY_CHECK);
+    packet << bot->GetObjectGuid();
+    packet << uint8(1);
+    bot->GetSession()->HandleRaidReadyCheckOpcode(packet);
 
     ai->ChangeStrategy("-ready check", BOT_STATE_NON_COMBAT);
 

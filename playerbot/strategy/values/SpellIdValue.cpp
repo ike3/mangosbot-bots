@@ -2,6 +2,7 @@
 #include "../../playerbot.h"
 #include "SpellIdValue.h"
 #include "../../PlayerbotAIConfig.h"
+#include "../../ServerFacade.h"
 
 using namespace ai;
 
@@ -19,7 +20,7 @@ uint32 SpellIdValue::Calculate()
     uint32 extractedSpellId = handler.extractSpellId(namepart);
     if (extractedSpellId)
     {
-        const SpellEntry* pSpellInfo = sSpellStore.LookupEntry(extractedSpellId);
+        const SpellEntry* pSpellInfo = sServerFacade.LookupSpellInfo(extractedSpellId);
         if (pSpellInfo) namepart = pSpellInfo->SpellName[0];
     }
 
@@ -44,7 +45,7 @@ uint32 SpellIdValue::Calculate()
         if (itr->second.state == PLAYERSPELL_REMOVED || itr->second.disabled || IsPassiveSpell(spellId))
             continue;
 
-        const SpellEntry* pSpellInfo = sSpellStore.LookupEntry(spellId);
+        const SpellEntry* pSpellInfo = sServerFacade.LookupSpellInfo(spellId);
         if (!pSpellInfo)
             continue;
 
@@ -90,7 +91,7 @@ uint32 SpellIdValue::Calculate()
                 continue;
 
             uint32 spellId = itr->first;
-            const SpellEntry* pSpellInfo = sSpellStore.LookupEntry(spellId);
+            const SpellEntry* pSpellInfo = sServerFacade.LookupSpellInfo(spellId);
             if (!pSpellInfo)
                 continue;
 

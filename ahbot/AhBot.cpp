@@ -18,6 +18,10 @@
 #include "Player.h"
 #include "Mail.h"
 
+#ifdef CMANGOS
+#include <boost/thread/thread.hpp>
+#endif
+
 using namespace ahbot;
 
 bool Player::MinimalLoadFromDB( QueryResult *result, uint32 guid )
@@ -99,14 +103,31 @@ ObjectGuid AhBot::GetAHBplayerGUID()
     return ObjectGuid(sAhBotConfig.guid);
 }
 
+#ifdef MANGOS
 class AhbotThread: public ACE_Task <ACE_MT_SYNCH>
 {
-private:
-    AhBot* bot;
 public:
-    AhbotThread(AhBot* bot) : bot(bot) {}
-    int svc(void) { bot->ForceUpdate(); return 0; }
+    int svc(void) { auctionbot.ForceUpdate(); return 0; }
 };
+#endif
+#ifdef CMANGOS
+void AhbotThread()
+{
+    auctionbot.ForceUpdate();
+}
+#endif
+
+void activateAhbotThread()
+{
+#ifdef MANGOS
+    AhbotThread *thread = new AhbotThread(this);
+    thread->activate();
+#endif
+#ifdef CMANGOS
+    boost::thread t(AhbotThread);
+    t.detach();
+#endif
+}
 
 void AhBot::Update()
 {
@@ -119,9 +140,7 @@ void AhBot::Update()
         return;
 
     nextAICheckTime = time(0) + sAhBotConfig.updateInterval;
-
-    AhbotThread *thread = new AhbotThread(this);
-    thread->activate();
+    activateAhbotThread();
 }
 
 void AhBot::ForceUpdate()
@@ -526,7 +545,7 @@ int AhBot::AddAuction(int auction, Category* category, ItemPrototype const* prot
 
 
 	string name;
-    if (!sObjectMgr.GetPlayerNameByGUID((uint64)owner, name))
+    if (!sObjectMgr.GetPlayerNameByGUID(ObjectGuid(HIGHGUID_PLAYER, owner), name))
         return 0;
 
     uint32 price = category->GetPricingStrategy()->GetSellPrice(proto, auctionIds[auction]);
@@ -616,8 +635,7 @@ void AhBot::HandleCommand(string command)
 
     if (command == "update")
     {
-        AhbotThread *thread = new AhbotThread(this);
-        thread->activate();
+        activateAhbotThread();
         return;
     }
 
@@ -921,7 +939,7 @@ uint32 AhBot::GetRandomBidder(uint32 auctionHouse)
     {
         uint32 guid = *i;
 		string name;
-        if (!sObjectMgr.GetPlayerNameByGUID((uint64)guid, name))
+        if (!sObjectMgr.GetPlayerNameByGUID(ObjectGuid(HIGHGUID_PLAYER, guid), name))
             continue;
 
         online.push_back(guid);
@@ -1105,7 +1123,7 @@ void AhBot::CheckSendMail(uint32 bidder, uint32 price, AuctionEntry *entry)
     body << "Regards,\n";
 
     string name;
-    if (!sObjectMgr.GetPlayerNameByGUID((uint64)bidder, name))
+    if (!sObjectMgr.GetPlayerNameByGUID(ObjectGuid(HIGHGUID_PLAYER, bidder), name))
         return;
 
     body << name << "\n";

@@ -1,6 +1,8 @@
 #include "botpch.h"
 #include "../../playerbot.h"
 #include "TellTargetAction.h"
+
+#include "../../ServerFacade.h"
 #include "ThreatManager.h"
 
 
@@ -28,14 +30,14 @@ bool TellAttackersAction::Execute(Event event)
     for (list<ObjectGuid>::iterator i = attackers.begin(); i != attackers.end(); i++)
     {
         Unit* unit = ai->GetUnit(*i);
-        if (!unit || !unit->IsAlive())
+        if (!unit || !sServerFacade.IsAlive(unit))
             continue;
 
         ai->TellMaster(unit->GetName());
     }
 
     ai->TellMaster("--- Threat ---");
-    HostileReference *ref = bot->GetHostileRefManager().getFirst();
+    HostileReference *ref = sServerFacade.GetHostileRefManager(bot).getFirst();
     if (!ref)
         return true;
 

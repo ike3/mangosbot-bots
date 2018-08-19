@@ -109,7 +109,7 @@ void SuggestWhatToDoAction::grindMaterials()
     do
     {
         Field* fields = result->Fetch();
-        categories[fields[0].GetCppString()] = fields[1].GetDouble();
+        categories[fields[0].GetCppString()] = fields[1].GetFloat();
     } while (result->NextRow());
 
     for (map<string, double>::iterator i = categories.begin(); i != categories.end(); ++i)

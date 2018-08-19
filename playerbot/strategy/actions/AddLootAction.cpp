@@ -4,6 +4,7 @@
 
 #include "../../LootObjectStack.h"
 #include "../../PlayerbotAIConfig.h"
+#include "../../ServerFacade.h"
 
 #include "GridNotifiers.h"
 #include "GridNotifiersImpl.h"
@@ -70,7 +71,7 @@ bool AddGatheringLootAction::AddLoot(ObjectGuid guid)
     if (!loot.IsLootPossible(bot))
         return false;
 
-    if (bot->GetDistance2d(wo) > sPlayerbotAIConfig.tooCloseDistance)
+    if (sServerFacade.GetDistance2d(bot, wo) > sPlayerbotAIConfig.tooCloseDistance)
     {
         list<Unit*> targets;
         MaNGOS::AnyUnfriendlyUnitInObjectRangeCheck u_check(bot, sPlayerbotAIConfig.lootDistance);

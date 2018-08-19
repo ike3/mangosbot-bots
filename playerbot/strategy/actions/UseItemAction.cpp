@@ -3,6 +3,7 @@
 #include "UseItemAction.h"
 
 #include "../../PlayerbotAIConfig.h"
+#include "../../ServerFacade.h"
 using namespace ai;
 
 bool UseItemAction::Execute(Event event)
@@ -41,7 +42,7 @@ bool UseItemAction::Execute(Event event)
 bool UseItemAction::UseGameObject(ObjectGuid guid)
 {
     GameObject* go = ai->GetGameObject(guid);
-    if (!go || !go->isSpawned())
+    if (!go || !sServerFacade.isSpawned(go))
         return false;
 
     go->Use(bot);
@@ -107,7 +108,7 @@ bool UseItemAction::UseItem(Item* item, ObjectGuid goGuid, Item* itemTarget)
     if (goGuid)
     {
         GameObject* go = ai->GetGameObject(goGuid);
-        if (!go || !go->isSpawned())
+        if (!go || !sServerFacade.isSpawned(go))
             return false;
 
         targetFlag = TARGET_FLAG_OBJECT;
@@ -148,11 +149,11 @@ bool UseItemAction::UseItem(Item* item, ObjectGuid goGuid, Item* itemTarget)
         Quest const* qInfo = sObjectMgr.GetQuestTemplate(questid);
         if (qInfo)
         {
-            WorldPacket* const packet = new WorldPacket(CMSG_QUESTGIVER_ACCEPT_QUEST, 8+4+4);
-            *packet << item_guid;
-            *packet << questid;
-            *packet << uint32(0);
-            bot->GetSession()->QueuePacket(packet); // queue the packet to get around race condition
+            WorldPacket packet(CMSG_QUESTGIVER_ACCEPT_QUEST, 8+4+4);
+            packet << item_guid;
+            packet << questid;
+            packet << uint32(0);
+            bot->GetSession()->HandleQuestgiverAcceptQuestOpcode(packet);
             ostringstream out; out << "Got quest " << chat->formatQuest(qInfo);
             ai->TellMasterNoFacing(out.str());
             return true;
@@ -164,7 +165,7 @@ bool UseItemAction::UseItem(Item* item, ObjectGuid goGuid, Item* itemTarget)
     bot->clearUnitState( UNIT_STAT_CHASE );
     bot->clearUnitState( UNIT_STAT_FOLLOW );
 
-    if (bot->isMoving())
+    if (sServerFacade.isMoving(bot))
         return false;
 
     for (int i=0; i<MAX_ITEM_PROTO_SPELLS; i++)
@@ -176,7 +177,7 @@ bool UseItemAction::UseItem(Item* item, ObjectGuid goGuid, Item* itemTarget)
         if (!ai->CanCastSpell(spellId, bot, false))
             continue;
 
-		const SpellEntry* const pSpellInfo = sSpellStore.LookupEntry(spellId);
+		const SpellEntry* const pSpellInfo = sServerFacade.LookupSpellInfo(spellId);
 		if (pSpellInfo->Targets & TARGET_FLAG_ITEM)
         {
             Item* itemForSpell = AI_VALUE2(Item*, "item for spell", spellId);
@@ -225,7 +226,7 @@ bool UseItemAction::UseItem(Item* item, ObjectGuid goGuid, Item* itemTarget)
     if (proto->Class == ITEM_CLASS_CONSUMABLE && (proto->SubClass == ITEM_SUBCLASS_FOOD || proto->SubClass == ITEM_SUBCLASS_CONSUMABLE) &&
 		(proto->Spells[0].SpellCategory == 11 || proto->Spells[0].SpellCategory == 59))
     {
-        if (bot->IsInCombat())
+        if (sServerFacade.IsInCombat(bot))
             return false;
 
         bot->addUnitState(UNIT_STAND_STATE_SIT);

@@ -1,6 +1,8 @@
 #include "botpch.h"
 #include "../../playerbot.h"
 #include "ThreatValues.h"
+
+#include "../../ServerFacade.h"
 #include "ThreatManager.h"
 
 using namespace ai;
@@ -14,7 +16,7 @@ uint8 ThreatValue::Calculate()
         for (list<ObjectGuid>::iterator i = attackers.begin(); i != attackers.end(); i++)
         {
             Unit* unit = ai->GetUnit(*i);
-            if (!unit || !unit->IsAlive())
+            if (!unit || !sServerFacade.IsAlive(unit))
                 continue;
 
             uint8 threat = Calculate(unit);
@@ -41,17 +43,17 @@ uint8 ThreatValue::Calculate(Unit* target)
     if (!group)
         return 0;
 
-    float botThreat = target->GetThreatManager().getThreat(bot);
+    float botThreat = sServerFacade.GetThreatManager(target).getThreat(bot);
     float maxThreat = 0;
 
     Group::MemberSlotList const& groupSlot = group->GetMemberSlots();
     for (Group::member_citerator itr = groupSlot.begin(); itr != groupSlot.end(); itr++)
     {
         Player *player = sObjectMgr.GetPlayer(itr->guid);
-        if( !player || !player->IsAlive() || player == bot)
+        if( !player || !sServerFacade.IsAlive(player) || player == bot)
             continue;
 
-        float threat = target->GetThreatManager().getThreat(player);
+        float threat = sServerFacade.GetThreatManager(target).getThreat(player);
         if (maxThreat < threat)
             maxThreat = threat;
     }

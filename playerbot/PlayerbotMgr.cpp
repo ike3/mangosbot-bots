@@ -4,6 +4,7 @@
 #include "PlayerbotDbStore.h"
 #include "PlayerbotFactory.h"
 #include "RandomPlayerbotMgr.h"
+#include "ServerFacade.h"
 
 
 class LoginQueryHolder;
@@ -11,8 +12,8 @@ class CharacterHandler;
 
 PlayerbotHolder::PlayerbotHolder() : PlayerbotAIBase()
 {
-    for (uint32 spellId = 0; spellId < sSpellStore.GetNumRows(); spellId++)
-        sSpellStore.LookupEntry(spellId);
+    for (uint32 spellId = 0; spellId < sServerFacade.GetSpellInfoRows(); spellId++)
+        sServerFacade.LookupSpellInfo(spellId);
 }
 
 PlayerbotHolder::~PlayerbotHolder()

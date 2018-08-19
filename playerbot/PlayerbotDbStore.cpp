@@ -17,7 +17,7 @@ using namespace ai;
 void PlayerbotDbStore::Load(PlayerbotAI *ai)
 {
     uint64 guid = ai->GetBot()->GetObjectGuid().GetRawValue();
-    uint32 account = sObjectMgr.GetPlayerAccountIdByGUID(guid);
+    uint32 account = sObjectMgr.GetPlayerAccountIdByGUID(ObjectGuid(guid));
     if (sPlayerbotAIConfig.IsInRandomAccountList(account))
         return;
 
@@ -46,7 +46,7 @@ void PlayerbotDbStore::Load(PlayerbotAI *ai)
 void PlayerbotDbStore::Save(PlayerbotAI *ai)
 {
     uint64 guid = ai->GetBot()->GetObjectGuid().GetRawValue();
-    uint32 account = sObjectMgr.GetPlayerAccountIdByGUID(guid);
+    uint32 account = sObjectMgr.GetPlayerAccountIdByGUID(ObjectGuid(guid));
     if (sPlayerbotAIConfig.IsInRandomAccountList(account))
         return;
 
@@ -112,7 +112,7 @@ string PlayerbotDbStore::FormatStrategies(string type, list<string> strategies)
 void PlayerbotDbStore::Reset(PlayerbotAI *ai)
 {
     uint64 guid = ai->GetBot()->GetObjectGuid().GetRawValue();
-    uint32 account = sObjectMgr.GetPlayerAccountIdByGUID(guid);
+    uint32 account = sObjectMgr.GetPlayerAccountIdByGUID(ObjectGuid(guid));
     if (sPlayerbotAIConfig.IsInRandomAccountList(account))
         return;
 

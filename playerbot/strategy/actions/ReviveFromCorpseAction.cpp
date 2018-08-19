@@ -34,7 +34,7 @@ bool SpiritHealerAction::Execute(Event event)
     for (list<ObjectGuid>::iterator i = npcs.begin(); i != npcs.end(); i++)
     {
         Unit* unit = ai->GetUnit(*i);
-        if (unit && unit->IsSpiritHealer())
+        if (unit && unit->HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_SPIRITHEALER))
         {
             PlayerbotChatHandler ch(bot);
             bot->ResurrectPlayer(0.5f);

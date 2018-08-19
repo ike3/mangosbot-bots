@@ -10,6 +10,7 @@ INSTANTIATE_SINGLETON_1(PlayerbotCommandServer);
 
 using namespace std;
 
+#ifdef MANGOS
 bool ReadLine(ACE_SOCK_Stream& client_stream, string* buffer, string* line)
 {
     // Do the real reading from fd until buffer has '\n'.
@@ -72,3 +73,11 @@ void PlayerbotCommandServer::Start()
     PlayerbotCommandServerThread *thread = new PlayerbotCommandServerThread();
     thread->activate();
 }
+
+#endif
+
+#ifdef CMANGOS
+void PlayerbotCommandServer::Start()
+{
+}
+#endif

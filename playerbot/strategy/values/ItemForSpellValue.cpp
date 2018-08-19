@@ -1,6 +1,7 @@
 #include "botpch.h"
 #include "../../playerbot.h"
 #include "ItemForSpellValue.h"
+#include "../../ServerFacade.h"
 
 using namespace ai;
 
@@ -18,7 +19,7 @@ Item* ItemForSpellValue::Calculate()
     if (!spellid)
         return NULL;
 
-    SpellEntry const *spellInfo = sSpellStore.LookupEntry(spellid );
+    SpellEntry const *spellInfo = sServerFacade.LookupSpellInfo(spellid );
     if (!spellInfo)
         return NULL;
 

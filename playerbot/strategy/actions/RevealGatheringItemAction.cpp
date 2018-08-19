@@ -2,6 +2,7 @@
 #include "../../playerbot.h"
 #include "RevealGatheringItemAction.h"
 
+#include "../../ServerFacade.h"
 #include "GridNotifiers.h"
 #include "GridNotifiersImpl.h"
 #include "CellImpl.h"
@@ -18,7 +19,7 @@ public:
     WorldObject const& GetFocusObject() const { return *i_obj; }
     bool operator()(GameObject* u)
     {
-        if (u && i_obj->IsWithinDistInMap(u, i_range) && u->isSpawned() && u->GetGOInfo())
+        if (u && i_obj->IsWithinDistInMap(u, i_range) && sServerFacade.isSpawned(u) && u->GetGOInfo())
             return true;
 
         return false;
@@ -43,7 +44,7 @@ bool RevealGatheringItemAction::Execute(Event event)
     for(list<GameObject*>::iterator tIter = targets.begin(); tIter != targets.end(); ++tIter)
     {
         GameObject* go = *tIter;
-        if (!go || !go->isSpawned() || bot->GetDistance2d(go) <= sPlayerbotAIConfig.lootDistance)
+        if (!go || !sServerFacade.isSpawned(go) || sServerFacade.GetDistance2d(bot, go) <= sPlayerbotAIConfig.lootDistance)
             continue;
 
         if (LockEntry const *lockInfo = sLockStore.LookupEntry(go->GetGOInfo()->GetLockId()))
@@ -93,6 +94,13 @@ bool RevealGatheringItemAction::Execute(Event event)
     data << bot->GetObjectGuid();
     data << go->GetPositionX();
     data << go->GetPositionY();
-    bot->GetGroup()->BroadcastPacket(&data, true, -1, bot->GetObjectGuid());
+    bot->GetGroup()->BroadcastPacket(
+#ifdef MANGOS
+            &data,
+#endif
+#ifdef CMANGOS
+            data,
+#endif
+            true, -1, bot->GetObjectGuid());
     bot->Say(msg.str(), LANG_UNIVERSAL);
 }

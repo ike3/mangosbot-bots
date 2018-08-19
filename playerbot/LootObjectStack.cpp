@@ -2,6 +2,7 @@
 #include "LootObjectStack.h"
 #include "playerbot.h"
 #include "PlayerbotAIConfig.h"
+#include "ServerFacade.h"
 
 using namespace ai;
 using namespace std;
@@ -60,7 +61,7 @@ void LootObject::Refresh(Player* bot, ObjectGuid guid)
 
     PlayerbotAI* ai = bot->GetPlayerbotAI();
     Creature *creature = ai->GetCreature(guid);
-    if (creature && creature->GetDeathState() == CORPSE)
+    if (creature && sServerFacade.GetDeathState(creature) == CORPSE)
     {
         if (creature->HasFlag(UNIT_DYNAMIC_FLAGS, UNIT_DYNFLAG_LOOTABLE))
             this->guid = guid;
@@ -78,7 +79,7 @@ void LootObject::Refresh(Player* bot, ObjectGuid guid)
     }
 
     GameObject* go = ai->GetGameObject(guid);
-    if (go && go->isSpawned())
+    if (go && sServerFacade.isSpawned(go))
     {
         uint32 lockId = go->GetGOInfo()->GetLockId();
         LockEntry const *lockInfo = sLockStore.LookupEntry(lockId);
@@ -119,11 +120,11 @@ WorldObject* LootObject::GetWorldObject(Player* bot)
     PlayerbotAI* ai = bot->GetPlayerbotAI();
 
     Creature *creature = ai->GetCreature(guid);
-    if (creature && creature->GetDeathState() == CORPSE)
+    if (creature && sServerFacade.GetDeathState(creature) == CORPSE)
         return creature;
 
     GameObject* go = ai->GetGameObject(guid);
-    if (go && go->isSpawned())
+    if (go && sServerFacade.isSpawned(go))
         return go;
 
     return NULL;

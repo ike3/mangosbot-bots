@@ -2,6 +2,7 @@
 #include "../../playerbot.h"
 #include "AttackerCountValues.h"
 #include "../../PlayerbotAIConfig.h"
+#include "../../ServerFacade.h"
 
 using namespace ai;
 
@@ -16,7 +17,7 @@ bool HasAggroValue::Calculate()
     if (!target)
         return true;
 
-    HostileReference *ref = bot->GetHostileRefManager().getFirst();
+    HostileReference *ref = sServerFacade.GetHostileRefManager(bot).getFirst();
     if (!ref)
         return true; // simulate as target is not atacking anybody yet
 
@@ -41,7 +42,7 @@ uint8 AttackerCountValue::Calculate()
     for (list<ObjectGuid>::iterator i = attackers.begin(); i != attackers.end(); i++)
     {
         Unit* unit = ai->GetUnit(*i);
-        if (!unit || !unit->IsAlive())
+        if (!unit || !sServerFacade.IsAlive(unit))
             continue;
 
         float distance = bot->GetDistance(unit);
@@ -64,7 +65,7 @@ uint8 BalancePercentValue::Calculate()
         for (Group::member_citerator itr = groupSlot.begin(); itr != groupSlot.end(); itr++)
         {
             Player *player = sObjectMgr.GetPlayer(itr->guid);
-            if( !player || !player->IsAlive())
+            if( !player || !sServerFacade.IsAlive(player))
                 continue;
 
             playerLevel += player->getLevel();
@@ -76,7 +77,7 @@ uint8 BalancePercentValue::Calculate()
     for (list<ObjectGuid>::iterator i = v.begin(); i!=v.end(); i++)
     {
         Creature* creature = ai->GetCreature((*i));
-        if (!creature || !creature->IsAlive())
+        if (!creature || !sServerFacade.IsAlive(creature))
             continue;
 
         uint32 level = creature->getLevel();

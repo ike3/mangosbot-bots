@@ -9,6 +9,7 @@
 #include "SharedDefines.h"
 #include "ahbot/AhBot.h"
 #include "RandomPlayerbotFactory.h"
+#include "ServerFacade.h"
 
 using namespace ai;
 using namespace std;
@@ -72,7 +73,7 @@ void PlayerbotFactory::Prepare()
             itemQuality = urand(ITEM_QUALITY_RARE, ITEM_QUALITY_EPIC);
     }
 
-    if (bot->IsDead())
+    if (sServerFacade.UnitIsDead(bot))
         bot->ResurrectPlayer(1.0f, false);
 
     bot->CombatStop(true);
@@ -208,15 +209,26 @@ void PlayerbotFactory::InitPet()
             }
 
             pet->SetOwnerGuid(bot->GetObjectGuid());
-            pet->SetCreatorGuid(bot->GetObjectGuid());
+            pet->SetGuidValue(UNIT_FIELD_CREATEDBY, bot->GetObjectGuid());
             pet->setFaction(bot->getFaction());
             pet->SetLevel(bot->getLevel());
-            pet->InitStatsForLevel(bot->getLevel(), bot);
+            pet->InitStatsForLevel(bot->getLevel());
             pet->SetLoyaltyLevel(BEST_FRIEND);
             pet->SetPower(POWER_HAPPINESS, HAPPINESS_LEVEL_SIZE * 2);
             pet->GetCharmInfo()->SetPetNumber(sObjectMgr.GeneratePetNumber(), true);
             pet->AIM_Initialize();
+#ifdef CMANGOS
+            pet->GetMap()->Add((Creature*)pet);
+            pet->AIM_Initialize();
+#endif
             pet->InitPetCreateSpells();
+#ifdef CMANGOS
+            pet->LearnPetPassives();
+            pet->CastPetAuras(true);
+            pet->CastOwnerTalentAuras();
+            pet->InitTamedPetPassives(bot);
+            pet->UpdateAllStats();
+#endif
             bot->SetPet(pet);
             bot->SetPetGuid(pet->GetObjectGuid());
 
@@ -812,9 +824,9 @@ void PlayerbotFactory::EnchantItem(Item* item)
     int32 itemLevel = proto->ItemLevel;
 
     vector<uint32> ids;
-    for (uint32 id = 0; id < sSpellStore.GetNumRows(); ++id)
+    for (uint32 id = 0; id < sServerFacade.GetSpellInfoRows(); ++id)
     {
-        SpellEntry const *entry = sSpellStore.LookupEntry(id);
+        SpellEntry const *entry = sServerFacade.LookupSpellInfo(id);
         if (!entry)
             continue;
 
@@ -842,7 +854,7 @@ void PlayerbotFactory::EnchantItem(Item* item)
             if (!enchant || enchant->slot != PERM_ENCHANTMENT_SLOT)
                 continue;
 
-			const SpellEntry *enchantSpell = sSpellStore.LookupEntry(enchant->spellid[0]);
+			const SpellEntry *enchantSpell = sServerFacade.LookupSpellInfo(enchant->spellid[0]);
             if (!enchantSpell || (enchantSpell->spellLevel && enchantSpell->spellLevel > level))
                 continue;
 
@@ -1259,9 +1271,9 @@ void PlayerbotFactory::InitMounts()
 {
     map<int32, vector<uint32> > spells;
 
-    for (uint32 spellId = 0; spellId < sSpellStore.GetNumRows(); ++spellId)
+    for (uint32 spellId = 0; spellId < sServerFacade.GetSpellInfoRows(); ++spellId)
     {
-        SpellEntry const *spellInfo = sSpellStore.LookupEntry(spellId);
+        SpellEntry const *spellInfo = sServerFacade.LookupSpellInfo(spellId);
         if (!spellInfo || spellInfo->EffectApplyAuraName[0] != SPELL_AURA_MOUNTED)
             continue;
 
@@ -1316,7 +1328,7 @@ void PlayerbotFactory::InitPotions()
 
         for (int j = 0; j < MAX_ITEM_PROTO_SPELLS; j++)
         {
-            const SpellEntry* const spellInfo = sSpellStore.LookupEntry(proto->Spells[j].SpellId);
+            const SpellEntry* const spellInfo = sServerFacade.LookupSpellInfo(proto->Spells[j].SpellId);
             if (!spellInfo)
                 continue;
 

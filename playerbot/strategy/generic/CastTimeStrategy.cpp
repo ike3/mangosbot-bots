@@ -1,6 +1,8 @@
 #include "botpch.h"
 #include "../../playerbot.h"
 #include "CastTimeStrategy.h"
+
+#include "../../ServerFacade.h"
 #include "../actions/GenericSpellActions.h"
 
 using namespace ai;
@@ -18,7 +20,7 @@ float CastTimeMultiplier::GetValue(Action* action)
     if (targetHealth < sPlayerbotAIConfig.lowHealth && dynamic_cast<CastSpellAction*>(action))
     {
         uint32 spellId = AI_VALUE2(uint32, "spell id", name);
-        const SpellEntry* const pSpellInfo = sSpellStore.LookupEntry(spellId);
+        const SpellEntry* const pSpellInfo = sServerFacade.LookupSpellInfo(spellId);
         if (!pSpellInfo) return 1.0f;
 
         if (spellId && pSpellInfo->Targets & TARGET_FLAG_DEST_LOCATION)

@@ -53,9 +53,9 @@ void UnequipAction::UnequipItem(Item& item)
     uint8 dstBag = NULL_BAG;
 
 
-    WorldPacket* const packet = new WorldPacket(CMSG_AUTOSTORE_BAG_ITEM, 3);
-    *packet << bagIndex << slot << dstBag;
-    bot->GetSession()->QueuePacket(packet);
+    WorldPacket packet(CMSG_AUTOSTORE_BAG_ITEM, 3);
+    packet << bagIndex << slot << dstBag;
+    bot->GetSession()->HandleAutoStoreBagItemOpcode(packet);
 
     ostringstream out; out << chat->formatItem(item.GetProto()) << " unequipped";
     ai->TellMaster(out);

@@ -33,6 +33,12 @@ bool TellLosAction::Execute(Event event)
         ListGameObjects("--- Game objects ---", gos);
     }
 
+    if (param.empty() || param == "players")
+    {
+        list<ObjectGuid> gos = *context->GetValue<list<ObjectGuid> >("nearest friendly players");
+        ListUnits("--- Friendly players ---", gos);
+    }
+
     return true;
 }
 

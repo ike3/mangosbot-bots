@@ -4,6 +4,7 @@
 #include "../../PlayerbotAIConfig.h"
 #include "../actions/GenericSpellActions.h"
 #include "../values/LastSpellCastValue.h"
+#include "../../ServerFacade.h"
 
 using namespace ai;
 
@@ -34,7 +35,7 @@ float ConserveManaMultiplier::GetValue(Action* action)
 
     string spell = spellAction->getName();
     uint32 spellId = AI_VALUE2(uint32, "spell id", spell);
-    const SpellEntry* const spellInfo = sSpellStore.LookupEntry(spellId);
+    const SpellEntry* const spellInfo = sServerFacade.LookupSpellInfo(spellId);
     if (!spellInfo || spellInfo->powerType != POWER_MANA)
         return 1.0f;
 
@@ -68,7 +69,7 @@ float SaveManaMultiplier::GetValue(Action* action)
 
     string spell = spellAction->getName();
     uint32 spellId = AI_VALUE2(uint32, "spell id", spell);
-    const SpellEntry* const spellInfo = sSpellStore.LookupEntry(spellId);
+    const SpellEntry* const spellInfo = sServerFacade.LookupSpellInfo(spellId);
     if (!spellInfo || spellInfo->powerType != POWER_MANA)
         return 1.0f;
 

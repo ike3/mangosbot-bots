@@ -4,6 +4,7 @@
 #include "PlayerbotAIConfig.h"
 #include "Group.h"
 #include "strategy/values/LastMovementValue.h"
+#include "ServerFacade.h"
 
 using namespace ai;
 using namespace std;
@@ -20,7 +21,7 @@ void FleeManager::calculateDistanceToPlayers(FleePoint *point)
 		if(player == bot)
 			continue;
 
-		float d = player->GetDistance2d(point->x, point->y);
+		float d = sServerFacade.GetDistance2d(player, point->x, point->y);
 		point->toAllPlayers.probe(d);
 		switch (player->getClass()) {
 			case CLASS_HUNTER:
@@ -49,7 +50,7 @@ void FleeManager::calculateDistanceToCreatures(FleePoint *point)
 		if (!unit)
 		    continue;
 
-		float d = unit->GetDistance2d(point->x, point->y);
+		float d = sServerFacade.GetDistance2d(unit, point->x, point->y);
 		distance.probe(d);
 	}
 }

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../../ServerFacade.h"
 #include "../Action.h"
 #include "MovementActions.h"
 #include "../values/LastMovementValue.h"
@@ -13,7 +14,7 @@ namespace ai
     public:
         virtual bool Execute(Event event)
         {
-            if (bot->IsAlive() || bot->GetCorpse())
+            if (sServerFacade.IsAlive(bot) || bot->GetCorpse())
                 return false;
 
             ai->ChangeStrategy("-follow,+stay", BOT_STATE_NON_COMBAT);

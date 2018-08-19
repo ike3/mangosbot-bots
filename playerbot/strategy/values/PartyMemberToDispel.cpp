@@ -2,6 +2,7 @@
 #include "../../playerbot.h"
 #include "PartyMemberToDispel.h"
 
+#include "../../ServerFacade.h"
 using namespace ai;
 
 class PartyMemberToDispelPredicate : public FindPlayerPredicate, public PlayerbotAIAware
@@ -17,7 +18,7 @@ public:
         if (pet && (pet->getPetType() == MINI_PET || pet->getPetType() == SUMMON_PET))
             return false;
 
-        return unit->IsAlive() && ai->HasAuraToDispel(unit, dispelType);
+        return sServerFacade.IsAlive(unit) && ai->HasAuraToDispel(unit, dispelType);
     }
 
 private:

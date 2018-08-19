@@ -2,6 +2,7 @@
 #include "../../playerbot.h"
 #include "FollowActions.h"
 #include "../../PlayerbotAIConfig.h"
+#include "../../ServerFacade.h"
 #include "../values/Formations.h"
 
 using namespace ai;
@@ -45,7 +46,7 @@ bool FollowAction::isUseful()
         if (Formation::IsNullLocation(loc) || bot->GetMapId() != loc.mapid)
             return false;
 
-        distance = bot->GetDistance2d(loc.coord_x, loc.coord_y);
+        distance = sServerFacade.GetDistance2d(bot, loc.coord_x, loc.coord_y);
     }
 
     return distance > formation->GetMaxDistance() &&

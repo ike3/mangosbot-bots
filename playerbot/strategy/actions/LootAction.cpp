@@ -8,7 +8,9 @@
 #include "../../RandomPlayerbotMgr.h"
 #include "../values/ItemUsageValue.h"
 #include "../../GuildTaskMgr.h"
+#include "../../ServerFacade.h"
 #include "../values/LootStrategyValue.h"
+#include "../../ServerFacade.h"
 
 using namespace ai;
 
@@ -21,7 +23,11 @@ bool LootAction::Execute(Event event)
     LootObject const& lootObject = AI_VALUE(LootObjectStack*, "available loot")->GetLoot(sPlayerbotAIConfig.lootDistance);
 
     if (!prevLoot.IsEmpty() && prevLoot.guid != lootObject.guid)
-        bot->GetSession()->DoLootRelease(prevLoot.guid);
+    {
+        WorldPacket packet(CMSG_LOOT_RELEASE, 8);
+        packet << prevLoot.guid;
+        bot->GetSession()->HandleLootReleaseOpcode(packet);
+    }
 
     context->GetValue<LootObject>("loot target")->Set(lootObject);
     return true;
@@ -115,7 +121,7 @@ bool OpenLootAction::DoLoot(LootObject& lootObject)
 uint32 OpenLootAction::GetOpeningSpell(LootObject& lootObject)
 {
     GameObject* go = ai->GetGameObject(lootObject.guid);
-    if (go && go->isSpawned())
+    if (go && sServerFacade.isSpawned(go))
         return GetOpeningSpell(lootObject, go);
 
     return 0;
@@ -133,7 +139,7 @@ uint32 OpenLootAction::GetOpeningSpell(LootObject& lootObject, GameObject* go)
 		if (spellId == MINING || spellId == HERB_GATHERING)
 			continue;
 
-		const SpellEntry* pSpellInfo = sSpellStore.LookupEntry(spellId);
+		const SpellEntry* pSpellInfo = sServerFacade.LookupSpellInfo(spellId);
 		if (!pSpellInfo)
 			continue;
 
@@ -141,12 +147,12 @@ uint32 OpenLootAction::GetOpeningSpell(LootObject& lootObject, GameObject* go)
             return spellId;
     }
 
-    for (uint32 spellId = 0; spellId < sSpellStore.GetNumRows(); spellId++)
+    for (uint32 spellId = 0; spellId < sServerFacade.GetSpellInfoRows(); spellId++)
     {
         if (spellId == MINING || spellId == HERB_GATHERING)
             continue;
 
-		const SpellEntry* pSpellInfo = sSpellStore.LookupEntry(spellId);
+		const SpellEntry* pSpellInfo = sServerFacade.LookupSpellInfo(spellId);
 		if (!pSpellInfo)
             continue;
 
@@ -286,7 +292,9 @@ bool StoreLootAction::Execute(Event event)
     AI_VALUE(LootObjectStack*, "available loot")->Remove(guid);
 
     // release loot
-    bot->GetSession()->DoLootRelease(guid);
+    WorldPacket packet(CMSG_LOOT_RELEASE, 8);
+    packet << guid;
+    bot->GetSession()->HandleLootReleaseOpcode(packet);
     return true;
 }
 
@@ -336,11 +344,19 @@ bool ReleaseLootAction::Execute(Event event)
 {
     list<ObjectGuid> gos = context->GetValue<list<ObjectGuid> >("nearest game objects")->Get();
     for (list<ObjectGuid>::iterator i = gos.begin(); i != gos.end(); i++)
-        bot->GetSession()->DoLootRelease(*i);
+    {
+        WorldPacket packet(CMSG_LOOT_RELEASE, 8);
+        packet << *i;
+        bot->GetSession()->HandleLootReleaseOpcode(packet);
+    }
 
     list<ObjectGuid> corpses = context->GetValue<list<ObjectGuid> >("nearest corpses")->Get();
     for (list<ObjectGuid>::iterator i = corpses.begin(); i != corpses.end(); i++)
-        bot->GetSession()->DoLootRelease(*i);
+    {
+        WorldPacket packet(CMSG_LOOT_RELEASE, 8);
+        packet << *i;
+        bot->GetSession()->HandleLootReleaseOpcode(packet);
+    }
 
     return true;
 }

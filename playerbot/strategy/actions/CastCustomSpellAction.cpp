@@ -3,6 +3,7 @@
 #include "CastCustomSpellAction.h"
 
 #include "../../PlayerbotAIConfig.h"
+#include "../../ServerFacade.h"
 using namespace ai;
 
 bool CastCustomSpellAction::Execute(Event event)
@@ -36,7 +37,7 @@ bool CastCustomSpellAction::Execute(Event event)
         return false;
     }
 
-    SpellEntry const *pSpellInfo = sSpellStore.LookupEntry(spell);
+    SpellEntry const *pSpellInfo = sServerFacade.LookupSpellInfo(spell);
     if (!pSpellInfo)
     {
         msg << "Unknown spell " << text;
@@ -44,7 +45,7 @@ bool CastCustomSpellAction::Execute(Event event)
         return false;
     }
 
-    if (target != bot && !bot->IsInFront(target, sPlayerbotAIConfig.sightDistance, CAST_ANGLE_IN_FRONT))
+    if (target != bot && !sServerFacade.IsInFront(bot, target, sPlayerbotAIConfig.sightDistance, CAST_ANGLE_IN_FRONT))
     {
         bot->SetFacingTo(bot->GetAngle(target));
         ai->SetNextCheckDelay(sPlayerbotAIConfig.globalCoolDown);

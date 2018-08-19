@@ -21,7 +21,11 @@ bool TellReputationAction::Execute(Event event)
 
     const FactionTemplateEntry *factionTemplate = unit->getFactionTemplateEntry();
     uint32 faction = factionTemplate->faction;
-    const FactionEntry* entry = sFactionStore.LookupEntry(faction);
+    const FactionEntry* entry = sFactionStore.LookupEntry
+#ifdef CMANGOS
+            <FactionEntry>
+#endif
+            (faction);
     int32 reputation = bot->GetReputationMgr().GetReputation(faction);
 
     ostringstream out;

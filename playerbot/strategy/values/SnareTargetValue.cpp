@@ -28,9 +28,25 @@ Unit* SnareTargetValue::Calculate()
             return unit;
         case CHASE_MOTION_TYPE:
             if (unit->GetTypeId() == TYPEID_PLAYER)
-                { chaseTarget = static_cast<ChaseMovementGenerator<Player> const*>(unit->GetMotionMaster()->GetCurrent())->GetTarget(); }
+            {
+                chaseTarget = static_cast<ChaseMovementGenerator<Player> const*>(unit->GetMotionMaster()->GetCurrent())->
+#ifdef MANGOS
+                        GetTarget();
+#endif
+#ifdef CMANGOS
+                        GetCurrentTarget();
+#endif
+            }
             else
-                { chaseTarget = static_cast<ChaseMovementGenerator<Creature> const*>(unit->GetMotionMaster()->GetCurrent())->GetTarget(); }
+            {
+                chaseTarget = static_cast<ChaseMovementGenerator<Creature> const*>(unit->GetMotionMaster()->GetCurrent())->
+#ifdef MANGOS
+                        GetTarget();
+#endif
+#ifdef CMANGOS
+                        GetCurrentTarget();
+#endif
+            }
 
             if (!chaseTarget) continue;
             Player* chaseTargetPlayer = sObjectMgr.GetPlayer(chaseTarget->GetObjectGuid());

@@ -19,9 +19,9 @@ namespace ai
             ObjectGuid playerGuid;
             p >> playerGuid;
 
-            WorldPacket* const packet = new WorldPacket(CMSG_DUEL_ACCEPTED, 8);
-            *packet << flagGuid;
-            bot->GetSession()->QueuePacket(packet);
+            WorldPacket packet(CMSG_DUEL_ACCEPTED, 8);
+            packet << flagGuid;
+            bot->GetSession()->HandleDuelAcceptedOpcode(packet);
 
             ai->ResetStrategies();
             return true;

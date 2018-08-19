@@ -2,6 +2,7 @@
 #include "../../playerbot.h"
 #include "CcTargetValue.h"
 #include "../../PlayerbotAIConfig.h"
+#include "../../ServerFacade.h"
 #include "../Action.h"
 
 using namespace ai;
@@ -49,7 +50,7 @@ public:
         if (*ai->GetAiObjectContext()->GetValue<uint8>("aoe count") > 2)
         {
             WorldLocation aoe = *ai->GetAiObjectContext()->GetValue<WorldLocation>("aoe position");
-            if (creature->GetDistance2d(aoe.coord_x, aoe.coord_y) <= sPlayerbotAIConfig.aoeRadius)
+            if (sServerFacade.GetDistance2d(creature, aoe.coord_x, aoe.coord_y) <= sPlayerbotAIConfig.aoeRadius)
                 return;
         }
 
@@ -65,7 +66,7 @@ public:
         for (Group::member_citerator itr = groupSlot.begin(); itr != groupSlot.end(); itr++)
         {
             Player *member = sObjectMgr.GetPlayer(itr->guid);
-            if( !member || !member->IsAlive() || member == bot)
+            if( !member || !sServerFacade.IsAlive(member) || member == bot)
                 continue;
 
             if (!ai->IsTank(member))

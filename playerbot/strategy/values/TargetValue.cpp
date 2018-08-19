@@ -1,6 +1,8 @@
 #include "botpch.h"
 #include "../../playerbot.h"
 #include "TargetValue.h"
+
+#include "../../ServerFacade.h"
 #include "Unit.h"
 
 using namespace ai;
@@ -14,7 +16,7 @@ Unit* TargetValue::FindTarget(FindTargetStrategy* strategy)
         if (!unit)
             continue;
 
-        ThreatManager &threatManager = unit->GetThreatManager();
+        ThreatManager &threatManager = sServerFacade.GetThreatManager(unit);
         strategy->CheckAttacker(unit, &threatManager);
     }
 
@@ -38,7 +40,7 @@ void FindTargetStrategy::GetPlayerCount(Unit* creature, int* tankCount, int* dps
     for (set<Unit*>::const_iterator i = attackers.begin(); i != attackers.end(); i++)
     {
         Unit* attacker = *i;
-        if (!attacker || !attacker->IsAlive() || attacker == bot)
+        if (!attacker || !sServerFacade.IsAlive(attacker) || attacker == bot)
             continue;
 
         Player* player = dynamic_cast<Player*>(attacker);
