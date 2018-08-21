@@ -78,7 +78,7 @@ class ServerFacade
 #endif
         }
 
-        bool isMoving(Unit *unit)
+        bool isMoving(Player *unit)
         {
 #ifdef MANGOS
             return unit->isMoving();
@@ -191,7 +191,7 @@ class ServerFacade
         SpellEntry const* LookupSpellInfo(uint32 spellId)
         {
 #ifdef MANGOS
-            return sSpellStore.LookupEntry(spellid);
+            return sSpellStore.LookupEntry(spellId);
 #endif
 #ifdef CMANGOS
             return sSpellTemplate.LookupEntry<SpellEntry>(spellId);
@@ -201,7 +201,7 @@ class ServerFacade
         uint32 GetSpellInfoRows()
         {
 #ifdef MANGOS
-            return sSpellStore.GetSpellInfoRows();
+            return sSpellStore.GetNumRows();
 #endif
 #ifdef CMANGOS
             return sSpellTemplate.GetMaxEntry();

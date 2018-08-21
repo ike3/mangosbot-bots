@@ -120,7 +120,7 @@ void AhbotThread()
 void activateAhbotThread()
 {
 #ifdef MANGOS
-    AhbotThread *thread = new AhbotThread(this);
+    AhbotThread *thread = new AhbotThread();
     thread->activate();
 #endif
 #ifdef CMANGOS
