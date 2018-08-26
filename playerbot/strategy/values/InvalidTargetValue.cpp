@@ -20,7 +20,7 @@ bool InvalidTargetValue::Calculate()
                 target->hasUnitState(UNIT_STAT_ISOLATED) ||
                 target->IsFriendlyTo(bot) ||
                 !bot->IsWithinDistInMap(target, sPlayerbotAIConfig.sightDistance) ||
-                !bot->IsWithinLOSInMap(target);
+                !sServerFacade.IsWithinLOSInMap(bot, target);
     }
 
     return !target;

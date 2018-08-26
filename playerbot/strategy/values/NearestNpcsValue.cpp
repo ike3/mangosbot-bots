@@ -11,16 +11,12 @@ using namespace MaNGOS;
 
 void NearestNpcsValue::FindUnits(list<Unit*> &targets)
 {
-    AnyFriendlyUnitInObjectRangeCheck u_check(bot,
-#ifdef CMANGOS
-        nullptr,
-#endif
-        range);
-    UnitListSearcher<AnyFriendlyUnitInObjectRangeCheck> searcher(targets, u_check);
+    AnyUnitInObjectRangeCheck u_check(bot, range);
+    UnitListSearcher<AnyUnitInObjectRangeCheck> searcher(targets, u_check);
     Cell::VisitAllObjects(bot, searcher, range);
 }
 
 bool NearestNpcsValue::AcceptUnit(Unit* unit)
 {
-    return !dynamic_cast<Player*>(unit);
+    return !unit->IsHostileTo(bot) && !dynamic_cast<Player*>(unit);
 }

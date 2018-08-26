@@ -3,6 +3,7 @@
 
 #include "Common.h"
 #include "PlayerbotAIBase.h"
+#include "PlayerbotAIConfig.h"
 
 using namespace std;
 
@@ -34,7 +35,7 @@ class ServerFacade
             return unit->GetDistance2d(wo);
 #endif
 #ifdef CMANGOS
-            return unit->GetDistance2d(wo->GetPositionX(), wo->GetPositionY(), DIST_CALC_COMBAT_REACH);
+            return sqrt(unit->GetDistance2d(wo->GetPositionX(), wo->GetPositionY(), DIST_CALC_NONE));
 #endif
         }
 
@@ -44,7 +45,7 @@ class ServerFacade
             return unit->GetDistance2d(x, y);
 #endif
 #ifdef CMANGOS
-            return unit->GetDistance2d(x, y, DIST_CALC_COMBAT_REACH);
+            return sqrt(unit->GetDistance2d(x, y, DIST_CALC_NONE));
 #endif
         }
 
@@ -205,6 +206,21 @@ class ServerFacade
 #endif
 #ifdef CMANGOS
             return sSpellTemplate.GetMaxEntry();
+#endif
+        }
+
+        bool IsWithinLOSInMap(Player* bot, WorldObject *wo)
+        {
+#ifdef MANGOS
+            return bot->IsWithinLOSInMap(wo);
+#endif
+#ifdef CMANGOS
+            float x = wo->GetPositionX(), y = wo->GetPositionY(), z = wo->GetPositionZ();
+            return //bot->GetMapId() == wo->GetMapId() &&
+                (
+                    bot->IsWithinLOS(x, y, z + 0.5f, true) ||
+                    GetDistance2d(bot, wo) <= sPlayerbotAIConfig.tooCloseDistance
+                );
 #endif
         }
 };

@@ -9,7 +9,7 @@ namespace ai
 	{
 	public:
         PossibleTargetsValue(PlayerbotAI* ai, float range = sPlayerbotAIConfig.sightDistance) :
-          NearestUnitsValue(ai) {}
+          NearestUnitsValue(ai, "possible targets") {}
 
     protected:
         virtual void FindUnits(list<Unit*> &targets);

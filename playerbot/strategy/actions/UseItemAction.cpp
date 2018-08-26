@@ -76,7 +76,7 @@ bool UseItemAction::UseItem(Item* item, ObjectGuid goGuid, Item* itemTarget)
 
     uint8 bagIndex = item->GetBagSlot();
     uint8 slot = item->GetSlot();
-    uint8 spell_count = 1;
+    uint8 spell_index = 0;
     uint8 cast_count = 1;
     uint64 item_guid = item->GetObjectGuid().GetRawValue();
     uint32 glyphIndex = 0;
@@ -89,7 +89,7 @@ bool UseItemAction::UseItem(Item* item, ObjectGuid goGuid, Item* itemTarget)
 #endif
 
     WorldPacket* const packet = new WorldPacket(CMSG_USE_ITEM);
-    *packet << bagIndex << slot << spell_count;
+    *packet << bagIndex << slot << spell_index;
 #ifdef MANGOSBOT_ONE
     *packet << cast_count << item_guid;
 #endif

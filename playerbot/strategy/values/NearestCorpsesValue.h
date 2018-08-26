@@ -9,7 +9,7 @@ namespace ai
 	{
 	public:
         NearestCorpsesValue(PlayerbotAI* ai, float range = sPlayerbotAIConfig.sightDistance) :
-          NearestUnitsValue(ai) {}
+          NearestUnitsValue(ai, "nearest corpses") {}
 
     protected:
         void FindUnits(list<Unit*> &targets);

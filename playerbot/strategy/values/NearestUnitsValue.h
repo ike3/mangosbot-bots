@@ -1,14 +1,15 @@
 #pragma once
 #include "../Value.h"
 #include "../../PlayerbotAIConfig.h"
+#include "../../ServerFacade.h"
 
 namespace ai
 {
     class NearestUnitsValue : public ObjectGuidListCalculatedValue
 	{
 	public:
-        NearestUnitsValue(PlayerbotAI* ai, float range = sPlayerbotAIConfig.sightDistance) :
-            ObjectGuidListCalculatedValue(ai, "nearest units", 2), range(range) {}
+        NearestUnitsValue(PlayerbotAI* ai, string name, float range = sPlayerbotAIConfig.sightDistance) :
+            ObjectGuidListCalculatedValue(ai, name, 2), range(range) {}
 
 	public:
         list<ObjectGuid> Calculate()
@@ -20,7 +21,7 @@ namespace ai
             for(list<Unit *>::iterator i = targets.begin(); i!= targets.end(); ++i)
             {
                 Unit* unit = *i;
-                if(bot->IsWithinLOSInMap(unit) && AcceptUnit(unit))
+                if(sServerFacade.IsWithinLOSInMap(bot, unit) && AcceptUnit(unit))
                     results.push_back(unit->GetObjectGuid());
             }
             return results;
