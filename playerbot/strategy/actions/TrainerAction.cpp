@@ -8,9 +8,13 @@ using namespace ai;
 void TrainerAction::Learn(uint32 cost, TrainerSpell const* tSpell, ostringstream& msg)
 {
     if (bot->GetMoney() < cost)
+    {
+        msg << " - too expensive";
         return;
+    }
 
     bot->ModifyMoney(-int32(cost));
+#ifdef MANGOSBOT_ZERO
     bot->CastSpell(bot, tSpell->spell,
 #ifdef MANGOS
                     true
@@ -19,6 +23,10 @@ void TrainerAction::Learn(uint32 cost, TrainerSpell const* tSpell, ostringstream
                     (uint32)0
 #endif
     );
+#endif
+#ifdef MANGOSBOT_ONE
+    bot->learnSpell(tSpell->spell, false);
+#endif
 
     msg << " - learned";
 }
@@ -85,6 +93,7 @@ bool TrainerAction::Execute(Event event)
 
     if (!creature->IsTrainerOf(bot, false))
     {
+        ai->TellMaster("This trainer cannot teach me");
         return false;
     }
 
@@ -102,7 +111,7 @@ bool TrainerAction::Execute(Event event)
     if (spell)
         spells.insert(spell);
 
-    if (text == "learn")
+    if (text.find("learn") != string::npos)
         List(creature, &TrainerAction::Learn, spells);
     else
         List(creature, NULL, spells);
@@ -112,7 +121,7 @@ bool TrainerAction::Execute(Event event)
 
 void TrainerAction::TellHeader(Creature* creature)
 {
-    ostringstream out; out << "--- can learn from " << creature->GetName() << " ---";
+    ostringstream out; out << "--- Can learn from " << creature->GetName() << " ---";
     ai->TellMaster(out);
 }
 
