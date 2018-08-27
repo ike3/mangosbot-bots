@@ -12,13 +12,11 @@ bool TaxiAction::Execute(Event event)
     LastMovement& movement = context->GetValue<LastMovement&>("last taxi")->Get();
 
     WorldPacket& p = event.getPacket();
-	if (!p.empty() && p.GetOpcode() == CMSG_MOVE_SPLINE_DONE)
+	if ((!p.empty() && (p.GetOpcode() == CMSG_TAXICLEARALLNODES || p.GetOpcode() == CMSG_TAXICLEARNODE)) || event.getParam() == "clear")
     {
-        WorldPacket p1(p);
-        p1.rpos(0);
-        bot->GetSession()->HandleMoveSplineDoneOpcode(p1);
         movement.taxiNodes.clear();
         movement.Set(NULL);
+        ai->TellMaster("I am ready for the next flight");
         return true;
     }
 
@@ -39,6 +37,8 @@ bool TaxiAction::Execute(Event event)
 
         if (!bot->ActivateTaxiPathTo(movement.taxiNodes, npc))
         {
+            movement.taxiNodes.clear();
+            movement.Set(NULL);
             ai->TellMaster("I can't fly with you");
             return false;
         }

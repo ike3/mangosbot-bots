@@ -92,7 +92,8 @@ PlayerbotAI::PlayerbotAI(Player* bot) :
     masterIncomingPacketHandlers.AddHandler(CMSG_QUESTGIVER_ACCEPT_QUEST, "accept quest");
     masterIncomingPacketHandlers.AddHandler(CMSG_ACTIVATETAXI, "activate taxi");
     masterIncomingPacketHandlers.AddHandler(CMSG_ACTIVATETAXIEXPRESS, "activate taxi");
-    masterIncomingPacketHandlers.AddHandler(CMSG_MOVE_SPLINE_DONE, "taxi done");
+    masterIncomingPacketHandlers.AddHandler(CMSG_TAXICLEARALLNODES, "taxi done");
+    masterIncomingPacketHandlers.AddHandler(CMSG_TAXICLEARNODE, "taxi done");
     masterIncomingPacketHandlers.AddHandler(CMSG_GROUP_UNINVITE_GUID, "uninvite");
     masterIncomingPacketHandlers.AddHandler(CMSG_PUSHQUESTTOPARTY, "quest share");
     masterIncomingPacketHandlers.AddHandler(CMSG_GUILD_INVITE, "guild invite");
