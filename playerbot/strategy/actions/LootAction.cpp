@@ -71,7 +71,11 @@ bool OpenLootAction::DoLoot(LootObject& lootObject)
     if (creature && bot->GetDistance(creature) > INTERACTION_DISTANCE)
         return false;
 
-    if (creature && creature->HasFlag(UNIT_DYNAMIC_FLAGS, UNIT_DYNFLAG_LOOTABLE))
+    if (creature && creature->HasFlag(UNIT_DYNAMIC_FLAGS, UNIT_DYNFLAG_LOOTABLE)
+#ifdef CMANGOS
+            && !creature->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SKINNABLE)
+#endif
+            )
     {
         bot->GetMotionMaster()->Clear();
         WorldPacket packet(CMSG_LOOT, 8);
