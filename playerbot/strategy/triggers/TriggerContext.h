@@ -142,8 +142,8 @@ namespace ai
         static Trigger* not_dps_target_active(PlayerbotAI* ai) { return new NotDpsTargetActiveTrigger(ai); }
         static Trigger* has_nearest_adds(PlayerbotAI* ai) { return new HasNearestAddsTrigger(ai); }
         static Trigger* enemy_player_is_attacking(PlayerbotAI* ai) { return new EnemyPlayerIsAttacking(ai); }
-        static Trigger* Random(PlayerbotAI* ai) { return new RandomTrigger(ai, "random", 15); }
-        static Trigger* seldom(PlayerbotAI* ai) { return new RandomTrigger(ai, "seldom", 100); }
+        static Trigger* Random(PlayerbotAI* ai) { return new RandomTrigger(ai, "random", 20); }
+        static Trigger* seldom(PlayerbotAI* ai) { return new RandomTrigger(ai, "seldom", 300); }
         static Trigger* often(PlayerbotAI* ai) { return new RandomTrigger(ai, "often", 5); }
         static Trigger* EnemyOutOfMelee(PlayerbotAI* ai) { return new EnemyOutOfMeleeTrigger(ai); }
         static Trigger* EnemyOutOfSpell(PlayerbotAI* ai) { return new EnemyOutOfSpellRangeTrigger(ai); }

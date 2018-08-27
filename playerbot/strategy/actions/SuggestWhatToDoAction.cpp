@@ -171,39 +171,16 @@ void SuggestWhatToDoAction::relax()
 
 void SuggestWhatToDoAction::spam(string msg, uint32 channelId)
 {
-    // Current player area id
-    const uint32 playerZoneId = bot->GetZoneId();
-    const uint32 stormwindZoneID = 1519;
-    const uint32 ironforgeZoneID = 1537;
-    const uint32 darnassusZoneID = 1657;
-    const uint32 orgrimmarZoneID = 1637;
-    const uint32 thunderbluffZoneID = 1638;
-    const uint32 undercityZoneID = 1497;
-    // Area id of "Cities"
-    const uint32 citiesZoneID = 3459;
-    // Channel ID of the trade channel since this only applies to it
-    const uint32 tradeChannelID = 2;
-    uint32 cityLookupAreaID = playerZoneId;    // Used to lookup for channels which support cross-city-chat
-
-    // Check if we are inside of a city
-    if (playerZoneId == stormwindZoneID ||
-        playerZoneId == ironforgeZoneID ||
-        playerZoneId == darnassusZoneID ||
-        playerZoneId == orgrimmarZoneID ||
-        playerZoneId == thunderbluffZoneID ||
-        playerZoneId == undercityZoneID)
-    {
-        // Use cities instead of the player id
-        cityLookupAreaID = citiesZoneID;
-    }
-
     for (uint32 i = 0; i < sChatChannelsStore.GetNumRows(); ++i)
     {
         ChatChannelsEntry const* channel = sChatChannelsStore.LookupEntry(i);
-        AreaTableEntry const* area = sAreaStore.LookupEntry(
-            (channel->ChannelID == tradeChannelID) ? cityLookupAreaID : playerZoneId);
-        if (channel && area && channel->ChannelID == channelId)
+        if (!channel || channel->ChannelID != channelId) continue;
+
+        for (uint32 j = 0; j < sAreaStore.GetNumRows(); ++j)
         {
+            AreaTableEntry const* area = sAreaStore.LookupEntry(j);
+            if (!area) continue;
+
             char channelName[255];
             snprintf(channelName, 255, channel->pattern[0], area->area_name[0]);
 
@@ -262,6 +239,9 @@ SuggestTradeAction::SuggestTradeAction(PlayerbotAI* ai) : SuggestWhatToDoAction(
 
 bool SuggestTradeAction::Execute(Event event)
 {
+    if (!sRandomPlayerbotMgr.IsRandomBot(bot) || bot->GetGroup() || bot->GetInstanceId())
+        return false;
+
     uint32 quality = urand(0, 100);
     if (quality > 90)
         quality = ITEM_QUALITY_EPIC;
