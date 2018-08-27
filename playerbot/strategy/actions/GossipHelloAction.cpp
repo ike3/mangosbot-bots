@@ -117,9 +117,12 @@ bool GossipHelloAction::ProcessGossip(int menuToSelect)
     GossipMenuItem const& item = menu.GetItem(menuToSelect);
     WorldPacket p;
     std::string code;
-    p << GetMaster()->GetSelectionGuid() << menuToSelect;
+    p << GetMaster()->GetSelectionGuid();
+#ifdef MANGOSBOT_ZERO
+    p << menuToSelect;
+#endif
 #ifdef MANGOSBOT_ONE
-    p << (uint32)0; // gossipListId
+    p << menu.GetMenuId() << menuToSelect;
 #endif
     p << code;
     bot->GetSession()->HandleGossipSelectOptionOpcode(p);
