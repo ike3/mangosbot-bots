@@ -7,11 +7,11 @@ using namespace ai;
 
 bool ListQuestsAction::Execute(Event event)
 {
-    if (event.getParam() == "completed")
+    if (event.getParam() == "completed" || event.getParam() == "co")
     {
         ListQuests(QUEST_LIST_FILTER_COMPLETED);
     }
-    else if (event.getParam() == "incompleted")
+    else if (event.getParam() == "incompleted" || event.getParam() == "in")
     {
         ListQuests(QUEST_LIST_FILTER_INCOMPLETED);
     }
@@ -32,16 +32,16 @@ void ListQuestsAction::ListQuests(QuestListFilter filter)
     bool showCompleted = filter & QUEST_LIST_FILTER_COMPLETED;
 
     if (showIncompleted)
-        ai->TellMaster("--- Incomplete quests ---");
+        ai->TellMaster("--- Incompleted quests ---");
     int incompleteCount = ListQuests(false, !showIncompleted);
 
     if (showCompleted)
-        ai->TellMaster("--- Complete quests ---");
+        ai->TellMaster("--- Completed quests ---");
     int completeCount = ListQuests(true, !showCompleted);
 
     ai->TellMaster("--- Summary ---");
     std::ostringstream out;
-    out << "Total: " << (completeCount + incompleteCount) << " / 25 (incomplete: " << incompleteCount << ", complete: " << completeCount << ")";
+    out << "Total: " << (completeCount + incompleteCount) << " / 25 (incompleted: " << incompleteCount << ", completed: " << completeCount << ")";
     ai->TellMaster(out);
 }
 
