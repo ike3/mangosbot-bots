@@ -24,9 +24,11 @@ bool IsDeadValue::Calculate()
 bool PetIsDeadValue::Calculate()
 {
 #ifdef MANGOSBOT_ZERO
+#ifndef CMANGOS
     PetDatabaseStatus status = Pet::GetStatusFromDB(bot);
     if (status == PET_DB_DEAD)
         return true;
+#endif
 #endif
 
     return bot->GetPet() && sServerFacade.GetDeathState(bot->GetPet()) != ALIVE;
@@ -35,9 +37,11 @@ bool PetIsDeadValue::Calculate()
 bool PetIsHappyValue::Calculate()
 {
 #ifdef MANGOSBOT_ZERO
+#ifndef CMANGOS
     PetDatabaseStatus status = Pet::GetStatusFromDB(bot);
     if (status == PET_DB_DEAD)
         return true;
+#endif
 #endif
 
     return !bot->GetPet() || bot->GetPet()->GetHappinessState() == HAPPY;
