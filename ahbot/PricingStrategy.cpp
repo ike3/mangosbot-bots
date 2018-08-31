@@ -210,7 +210,7 @@ uint32 PricingStrategy::GetDefaultBuyPrice(ItemPrototype const* proto)
         }
     }
     if (!price) price = sAhBotConfig.defaultMinPrice * level * level / 40;
-    price = max(price, (uint32)100);
+    price = max(price, (uint32)1);
 
     return price;
 }
