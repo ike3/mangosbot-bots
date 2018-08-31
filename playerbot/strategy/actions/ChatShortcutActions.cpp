@@ -20,7 +20,6 @@ bool FollowChatShortcutAction::Execute(Event event)
         return true;
     }
     ai->TellMaster("Following");
-    ai->PlaySound(TEXTEMOTE_NOD);
     return true;
 }
 
@@ -34,7 +33,6 @@ bool StayChatShortcutAction::Execute(Event event)
     ai->ChangeStrategy("+stay,-passive", BOT_STATE_NON_COMBAT);
     ai->ChangeStrategy("-follow,-passive", BOT_STATE_COMBAT);
     ai->TellMaster("Staying");
-    ai->PlaySound(TEXTEMOTE_NOD);
     return true;
 }
 
@@ -53,7 +51,6 @@ bool FleeChatShortcutAction::Execute(Event event)
         return true;
     }
     ai->TellMaster("Fleeing");
-    ai->PlaySound(TEXTEMOTE_NOD);
     return true;
 }
 
@@ -67,7 +64,6 @@ bool GoawayChatShortcutAction::Execute(Event event)
     ai->ChangeStrategy("+runaway", BOT_STATE_NON_COMBAT);
     ai->ChangeStrategy("+runaway", BOT_STATE_COMBAT);
     ai->TellMaster("Running away");
-    ai->PlaySound(TEXTEMOTE_NOD);
     return true;
 }
 
@@ -80,7 +76,6 @@ bool GrindChatShortcutAction::Execute(Event event)
     ai->Reset();
     ai->ChangeStrategy("+grind,-passive", BOT_STATE_NON_COMBAT);
     ai->TellMaster("Grinding");
-    ai->PlaySound(TEXTEMOTE_NOD);
     return true;
 }
 
@@ -97,7 +92,6 @@ bool TankAttackChatShortcutAction::Execute(Event event)
     ai->ChangeStrategy("-passive", BOT_STATE_NON_COMBAT);
     ai->ChangeStrategy("-passive", BOT_STATE_COMBAT);
     ai->TellMaster("Attacking");
-    ai->PlaySound(TEXTEMOTE_NOD);
     return true;
 }
 
@@ -110,6 +104,5 @@ bool MaxDpsChatShortcutAction::Execute(Event event)
     ai->Reset();
     ai->ChangeStrategy("-threat,-conserve mana,-cast time,+dps debuff", BOT_STATE_COMBAT);
     ai->TellMaster("Max DPS");
-    ai->PlaySound(TEXTEMOTE_NOD);
     return true;
 }
