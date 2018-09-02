@@ -257,7 +257,11 @@ bool StoreLootAction::Execute(Event event)
         p.read_skip<uint32>();  // randomPropertyId
         p >> lootslot_type;     // 0 = can get, 1 = look only, 2 = master get
 
-		if (lootslot_type != LOOT_SLOT_NORMAL)
+		if (lootslot_type != LOOT_SLOT_NORMAL
+#ifdef MANGOSBOT_ONE
+		        && lootslot_type != LOOT_SLOT_OWNER
+#endif
+            )
 			continue;
 
         if (loot_type != LOOT_SKINNING && !IsLootAllowed(itemid, ai))
