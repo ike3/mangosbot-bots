@@ -92,8 +92,8 @@ bool SummonAction::Execute(Event event)
     }
 
     ai->TellMasterNoFacing(sPlayerbotAIConfig.summonAtInnkeepersEnabled ?
-            "There are no meeting stones nearby" :
-            "There are no meeting stones and innkeepers nearby");
+            "There are nether meeting stones nor innkeepers nearby" :
+            "There are no meeting stones nearby");
     return false;
 }
 
