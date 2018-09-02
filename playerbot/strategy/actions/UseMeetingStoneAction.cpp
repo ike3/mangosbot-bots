@@ -79,35 +79,55 @@ bool SummonAction::Execute(Event event)
     if (master->GetSession()->GetSecurity() >= SEC_GAMEMASTER)
         return Teleport(master, bot);
 
-    if (Summon(master, bot))
+    if (SummonUsingGos(master, bot) || SummonUsingNpcs(master, bot))
     {
         ai->TellMasterNoFacing("Hello!");
         return true;
     }
 
-    if (Summon(bot, master))
+    if (SummonUsingGos(bot, master) || SummonUsingNpcs(bot, master))
     {
         ai->TellMasterNoFacing("Welcome!");
         return true;
     }
 
-    ai->TellMasterNoFacing("There are no meeting stone nearby");
+    ai->TellMasterNoFacing(sPlayerbotAIConfig.summonAtInnkeepersEnabled ?
+            "There are no meeting stones nearby" :
+            "There are no meeting stones and innkeepers nearby");
     return false;
 }
 
 
-bool SummonAction::Summon(Player *summoner, Player *player)
+bool SummonAction::SummonUsingGos(Player *summoner, Player *player)
 {
     list<GameObject*> targets;
     AnyGameObjectInObjectRangeCheck u_check(summoner, sPlayerbotAIConfig.sightDistance);
     GameObjectListSearcher<AnyGameObjectInObjectRangeCheck> searcher(targets, u_check);
     Cell::VisitAllObjects((const WorldObject*)summoner, searcher, sPlayerbotAIConfig.sightDistance);
 
-    list<ObjectGuid> result;
     for(list<GameObject*>::iterator tIter = targets.begin(); tIter != targets.end(); ++tIter)
     {
         GameObject* go = *tIter;
         if (go && sServerFacade.isSpawned(go) && go->GetGoType() == GAMEOBJECT_TYPE_MEETINGSTONE)
+            return Teleport(summoner, player);
+    }
+
+    return false;
+}
+
+bool SummonAction::SummonUsingNpcs(Player *summoner, Player *player)
+{
+    if (!sPlayerbotAIConfig.summonAtInnkeepersEnabled)
+        return false;
+
+    list<Unit*> targets;
+    AnyUnitInObjectRangeCheck u_check(summoner, sPlayerbotAIConfig.sightDistance);
+    UnitListSearcher<AnyUnitInObjectRangeCheck> searcher(targets, u_check);
+    Cell::VisitAllObjects(summoner, searcher, sPlayerbotAIConfig.sightDistance);
+    for(list<Unit*>::iterator tIter = targets.begin(); tIter != targets.end(); ++tIter)
+    {
+        Unit* unit = *tIter;
+        if (unit && unit->HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_INNKEEPER))
             return Teleport(summoner, player);
     }
 

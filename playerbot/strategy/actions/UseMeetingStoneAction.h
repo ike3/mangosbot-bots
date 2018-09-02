@@ -14,7 +14,8 @@ namespace ai
 
     protected:
         bool Teleport(Player *summoner, Player *player);
-        bool Summon(Player *summoner, Player *player);
+        bool SummonUsingGos(Player *summoner, Player *player);
+        bool SummonUsingNpcs(Player *summoner, Player *player);
     };
 
     class UseMeetingStoneAction : public SummonAction
