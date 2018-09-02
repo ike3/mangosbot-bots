@@ -48,9 +48,6 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z)
     if (!IsMovingAllowed(mapId, x, y, z))
         return false;
 
-    if (sServerFacade.isMoving(bot))
-        return false;
-
     float distance = sServerFacade.GetDistance2d(bot, x, y);
     if (distance > sPlayerbotAIConfig.contactDistance)
     {
@@ -67,6 +64,9 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z)
 
         bool generatePath = !bot->IsFlying() && !bot->IsUnderWater();
         MotionMaster &mm = *bot->GetMotionMaster();
+#ifdef CMANGOS
+        mm.Clear();
+#endif
         mm.MovePoint(mapId, x, y, z, generatePath);
 
         AI_VALUE(LastMovement&, "last movement").Set(x, y, z, bot->GetOrientation());
