@@ -974,7 +974,7 @@ double RandomPlayerbotMgr::GetBuyMultiplier(Player* bot)
     uint32 value = GetEventValue(id, "buymultiplier");
     if (!value)
     {
-        value = urand(1, 120);
+        value = urand(50, 120);
         uint32 validIn = urand(sPlayerbotAIConfig.minRandomBotsPriceChangeInterval, sPlayerbotAIConfig.maxRandomBotsPriceChangeInterval);
         SetEventValue(id, "buymultiplier", value, validIn);
     }
