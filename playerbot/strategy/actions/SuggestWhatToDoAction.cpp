@@ -2,20 +2,23 @@
 #include "../../playerbot.h"
 #include "SuggestWhatToDoAction.h"
 #include "../../../ahbot/AhBot.h"
+#include "../../AiFactory.h"
 #include "ChannelMgr.h"
 #include "../../PlayerbotAIConfig.h"
+#include "../../PlayerbotTextMgr.h"
 
 using namespace ai;
+
+map<string, int> SuggestWhatToDoAction::instances;
+map<string, int> SuggestWhatToDoAction::factions;
 
 SuggestWhatToDoAction::SuggestWhatToDoAction(PlayerbotAI* ai, string name) : InventoryAction(ai, name)
 {
     suggestions.push_back(&SuggestWhatToDoAction::instance);
     suggestions.push_back(&SuggestWhatToDoAction::specificQuest);
-    suggestions.push_back(&SuggestWhatToDoAction::newQuest);
     suggestions.push_back(&SuggestWhatToDoAction::grindMaterials);
     suggestions.push_back(&SuggestWhatToDoAction::grindReputation);
-    suggestions.push_back(&SuggestWhatToDoAction::nothing);
-    suggestions.push_back(&SuggestWhatToDoAction::relax);
+    suggestions.push_back(&SuggestWhatToDoAction::something);
 }
 
 bool SuggestWhatToDoAction::Execute(Event event)
@@ -26,36 +29,77 @@ bool SuggestWhatToDoAction::Execute(Event event)
     int index = rand() % suggestions.size();
     (this->*suggestions[index])();
 
+    string qualifier = "suggest what to do";
+    time_t lastSaid = AI_VALUE2(time_t, "last said", qualifier);
+    ai->GetAiObjectContext()->GetValue<time_t>("last said", qualifier)->Set(time(0) + urand(1, 60));
+
     return true;
 }
 
 void SuggestWhatToDoAction::instance()
 {
-    uint32 level = bot->getLevel();
-    if (level > 15)
+    if (instances.empty())
     {
-        switch (urand(0, 5))
-        {
-        case 0:
-            spam("Need a tank for an instance run");
-            break;
-        case 1:
-            spam("Need a healer for an instance run");
-            break;
-        case 2:
-            spam("I would like to do an instance run. Would you like to join me?");
-            break;
-        case 3:
-            spam("Need better equipment. Why not do an instance run?");
-            break;
-        case 4:
-            spam("Have dungeon quests? Can join your group!");
-            break;
-        case 5:
-            spam("Have group quests? Invite me!");
-            break;
-        }
+        instances["Ragefire Chasm"] = 15;
+        instances["Deadmines"] = 18;
+        instances["Wailing Caverns"] = 18;
+        instances["Shadowfang Keep"] = 25;
+        instances["Blackfathom Deeps"] = 20;
+        instances["Stockade"] = 20;
+        instances["Gnomeregan"] = 35;
+        instances["Razorfen Kraul"] = 35;
+        instances["Maraudon"] = 50;
+        instances["Scarlet Monestery"] = 40;
+        instances["Uldaman"] = 45;
+        instances["Dire Maul"] = 58;
+        instances["Scholomance"] = 59;
+        instances["Razorfen Downs"] = 40;
+        instances["Strathholme"] = 59;
+        instances["Zul'Farrak"] = 45;
+        instances["Blackrock Depths"] = 55;
+        instances["Temple of Atal'Hakkar"] = 55;
+        instances["Lower Blackrock Spire"] = 57;
+
+        instances["Hellfire Citidel"] = 65;
+        instances["Coilfang Reservoir"] = 65;
+        instances["Auchindoun"] = 65;
+        instances["Cavens of Time"] = 68;
+        instances["Tempest Keep"] = 69;
+        instances["Magister's Terrace"] = 70;
+
+        instances["Utgarde Keep"] = 75;
+        instances["The Nexus"] = 75;
+        instances["Ahn'kahet: The Old Kingdom"] = 75;
+        instances["Azjol-Nerub"] = 75;
+        instances["Drak'Tharon Keep"] = 75;
+        instances["Violet Hold"] = 80;
+        instances["Gundrak"] = 77;
+        instances["Halls of Stone"] = 77;
+        instances["Halls of Lightning"] = 77;
+        instances["Oculus"] = 77;
+        instances["Utgarde Pinnacle"] = 77;
+        instances["Trial of the Champion"] = 80;
+        instances["Forge of Souls"] = 80;
+        instances["Pit of Saron"] = 80;
+        instances["Halls of Reflection"] = 80;
     }
+
+    vector<string> allowedInstances;
+    for (map<string, int>::iterator i = instances.begin(); i != instances.end(); ++i)
+    {
+        if (bot->getLevel() >= i->second) allowedInstances.push_back(i->first);
+    }
+
+    if (allowedInstances.empty()) return;
+
+    map<string, string> placeholders;
+    placeholders["%role"] = chat->formatClass(bot, AiFactory::GetPlayerSpecTab(bot));
+
+    ostringstream itemout;
+    itemout << "|c00b000b0" << allowedInstances[urand(0, allowedInstances.size() - 1)] << "|cffffffff";
+    placeholders["%instance"] = itemout.str();
+
+    spam(sPlayerbotTextMgr.Format("suggest_instance", placeholders));
 }
 
 vector<uint32> SuggestWhatToDoAction::GetIncompletedQuests()
@@ -85,15 +129,12 @@ void SuggestWhatToDoAction::specificQuest()
     int index = rand() % quests.size();
 
     Quest const* quest = sObjectMgr.GetQuestTemplate(quests[index]);
-    ostringstream out; out << "We could do some quest, for instance " << chat->formatQuest(quest);
-    spam(out.str());
-}
 
-void SuggestWhatToDoAction::newQuest()
-{
-    vector<uint32> quests = GetIncompletedQuests();
-    if (quests.size() < MAX_QUEST_LOG_SIZE - 5)
-        spam("I would like to pick up and do a new quest. Just invite me!");
+    map<string, string> placeholders;
+    placeholders["%role"] = chat->formatClass(bot, AiFactory::GetPlayerSpecTab(bot));
+    placeholders["%quest"] = chat->formatQuest(quest);
+
+    spam(sPlayerbotTextMgr.Format("suggest_quest", placeholders));
 }
 
 void SuggestWhatToDoAction::grindMaterials()
@@ -111,6 +152,7 @@ void SuggestWhatToDoAction::grindMaterials()
         Field* fields = result->Fetch();
         categories[fields[0].GetCppString()] = fields[1].GetFloat();
     } while (result->NextRow());
+    delete result;
 
     for (map<string, double>::iterator i = categories.begin(); i != categories.end(); ++i)
     {
@@ -125,48 +167,103 @@ void SuggestWhatToDoAction::grindMaterials()
                 {
                     string item = category->GetLabel();
                     transform(item.begin(), item.end(), item.begin(), tolower);
-                    ostringstream itemout, msg;
-                    itemout << "|c0000FF00" << item << "|cffffffff";
+                    ostringstream itemout;
+                    itemout << "|c0000b000" << item << "|cffffffff";
                     item = itemout.str();
-                    msg << "|cffffffff";
-                    switch (urand(0, 4))
-                    {
-                    case 0:
-                        msg << "Need help for tradeskill? I've heard that " << item << " are a good sell on the AH at the moment.";
-                        break;
-                    case 1:
-                        msg << "Can we have some trade material grinding? Especially for " << item << "?";
-                        break;
-                    case 2:
-                        msg << "I have some trade materials for sell. You know, " << item << " are very expensive now, I'd sell it cheaper";
-                        break;
-                    default:
-                        msg << "I am going to grind some trade materials, " << item << " to be exact. Would you like to join me?";
-                    }
-                    spam(msg.str());
-                    break;
+
+                    map<string, string> placeholders;
+                    placeholders["%role"] = chat->formatClass(bot, AiFactory::GetPlayerSpecTab(bot));
+                    placeholders["%category"] = item;
+
+                    spam(sPlayerbotTextMgr.Format("suggest_trade", placeholders));
+                    return;
                 }
             }
         }
     }
-
-    delete result;
 }
 
 void SuggestWhatToDoAction::grindReputation()
 {
-    if (bot->getLevel() > 15)
-        spam("I think we should do something to improve our reputation");
+    if (factions.empty())
+    {
+        factions["Argent Dawn"] = 60;
+        factions["Bloodsail Buccaneers"] = 40;
+        factions["Brood of Nozdormu"] = 60;
+        factions["Cenarion Circle"] = 55;
+        factions["Darkmoon Faire"] = 20;
+        factions["Hydraxian Waterlords"] = 60;
+        factions["Ravenholdt"] = 20;
+        factions["Thorium Brotherhood"] = 40;
+        factions["Timbermaw Hold"] = 50;
+        factions["Wintersaber Trainers"] = 50;
+        factions["Booty Bay"] = 30;
+        factions["Everlook"] = 40;
+        factions["Gadgetzan"] = 50;
+        factions["Ratchet"] = 20;
+
+        factions["Ashtongue Deathsworn"] = 70;
+        factions["Cenarion Expedition"] = 62;
+        factions["The Consortium"] = 65;
+        factions["Honor Hold"] = 66;
+        factions["Keepers of Time"] = 68;
+        factions["Netherwing"] = 65;
+        factions["Ogri'la"] = 65;
+        factions["The Scale of the Sands"] = 65;
+        factions["Sporeggar"] = 65;
+        factions["Tranquillien"] = 10;
+        factions["The Violet Eye"] = 70;
+
+        factions["Argent Crusade"] = 75;
+        factions["Ashen Verdict"] = 75;
+        factions["The Kalu'ak"] = 72;
+        factions["Kirin Tor"] = 75;
+        factions["Knights of the Ebon Blade"] = 77;
+        factions["The Sons of Hodir"] = 78;
+        factions["The Wyrmrest Accord"] = 77;
+    }
+
+    vector<string> levels;
+    levels.push_back("honored");
+    levels.push_back("revered");
+    levels.push_back("exalted");
+
+    vector<string> allowedFactions;
+    for (map<string, int>::iterator i = factions.begin(); i != factions.end(); ++i) {
+        if (bot->getLevel() >= i->second) allowedFactions.push_back(i->first);
+    }
+
+    if (allowedFactions.empty()) return;
+
+    map<string, string> placeholders;
+    placeholders["%role"] = chat->formatClass(bot, AiFactory::GetPlayerSpecTab(bot));
+    placeholders["%level"] = levels[urand(0, 2)];
+
+    ostringstream itemout;
+    itemout << "|c004040b0" << allowedFactions[urand(0, allowedFactions.size() - 1)] << "|cffffffff";
+    placeholders["%faction"] = itemout.str();
+
+    spam(sPlayerbotTextMgr.Format("suggest_faction", placeholders));
 }
 
-void SuggestWhatToDoAction::nothing()
+void SuggestWhatToDoAction::something()
 {
-    spam("I don't want to do anything. Help me find something interesting");
-}
+    map<string, string> placeholders;
+    placeholders["%role"] = chat->formatClass(bot, AiFactory::GetPlayerSpecTab(bot));
 
-void SuggestWhatToDoAction::relax()
-{
-    spam("It is so boring... We could relax a bit");
+    uint32 area = bot->GetAreaId();
+    if (!area)
+        return;
+
+    const AreaTableEntry* entry = sAreaStore.LookupEntry(area);
+    if (!entry)
+        return;
+
+    ostringstream out;
+    out << "|cffb04040" << entry->area_name[0] << "|cffffffff";
+    placeholders["%zone"] = out.str();
+
+    spam(sPlayerbotTextMgr.Format("suggest_something", placeholders));
 }
 
 void SuggestWhatToDoAction::spam(string msg, uint32 channelId)
@@ -290,7 +387,17 @@ bool SuggestTradeAction::Execute(Event event)
     if (!price)
         return false;
 
-    ostringstream out; out << "Selling " << chat->formatItem(proto, count) << " for " << chat->formatMoney(price);
-    spam(out.str(), 2);
+    map<string, string> placeholders;
+    placeholders["%item"] = chat->formatItem(proto, count);
+    placeholders["%gold"] = chat->formatMoney(price);
+
+    spam(sPlayerbotTextMgr.Format("suggest_sell", placeholders));
     return true;
+}
+
+bool SuggestWhatToDoAction::isUseful()
+{
+    string qualifier = "suggest what to do";
+    time_t lastSaid = AI_VALUE2(time_t, "last said", qualifier);
+    return (time(0) - lastSaid) > 30;
 }
