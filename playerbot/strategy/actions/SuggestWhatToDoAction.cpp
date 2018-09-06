@@ -96,7 +96,7 @@ void SuggestWhatToDoAction::instance()
     placeholders["%role"] = chat->formatClass(bot, AiFactory::GetPlayerSpecTab(bot));
 
     ostringstream itemout;
-    itemout << "|c00b000b0" << allowedInstances[urand(0, allowedInstances.size() - 1)] << "|cffffffff";
+    itemout << "|c00b000b0" << allowedInstances[urand(0, allowedInstances.size() - 1)] << "|r";
     placeholders["%instance"] = itemout.str();
 
     spam(sPlayerbotTextMgr.Format("suggest_instance", placeholders));
@@ -168,7 +168,7 @@ void SuggestWhatToDoAction::grindMaterials()
                     string item = category->GetLabel();
                     transform(item.begin(), item.end(), item.begin(), tolower);
                     ostringstream itemout;
-                    itemout << "|c0000b000" << item << "|cffffffff";
+                    itemout << "|c0000b000" << item << "|r";
                     item = itemout.str();
 
                     map<string, string> placeholders;
@@ -240,7 +240,7 @@ void SuggestWhatToDoAction::grindReputation()
     placeholders["%level"] = levels[urand(0, 2)];
 
     ostringstream itemout;
-    itemout << "|c004040b0" << allowedFactions[urand(0, allowedFactions.size() - 1)] << "|cffffffff";
+    itemout << "|c004040b0" << allowedFactions[urand(0, allowedFactions.size() - 1)] << "|r";
     placeholders["%faction"] = itemout.str();
 
     spam(sPlayerbotTextMgr.Format("suggest_faction", placeholders));
@@ -260,7 +260,7 @@ void SuggestWhatToDoAction::something()
         return;
 
     ostringstream out;
-    out << "|cffb04040" << entry->area_name[0] << "|cffffffff";
+    out << "|cffb04040" << entry->area_name[0] << "|r";
     placeholders["%zone"] = out.str();
 
     spam(sPlayerbotTextMgr.Format("suggest_something", placeholders));
