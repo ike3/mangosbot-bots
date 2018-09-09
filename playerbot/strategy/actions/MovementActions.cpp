@@ -34,7 +34,8 @@ bool MovementAction::MoveNear(WorldObject* target, float distance)
     for (float angle = followAngle; angle <= followAngle + 2 * M_PI; angle += M_PI / 4)
     {
 #ifdef CMANGOS
-        target->GetNearPoint(bot, x, y, z, bot->GetObjectBoundingRadius(), distance + target->GetObjectBoundingRadius(), angle);
+        float dist = distance + target->GetObjectBoundingRadius();
+        target->GetNearPoint(bot, x, y, z, bot->GetObjectBoundingRadius(), min(dist, sPlayerbotAIConfig.followDistance), angle);
 #endif
 #ifdef MANGOS
         float x = target->GetPositionX() + cos(angle) * distance,
