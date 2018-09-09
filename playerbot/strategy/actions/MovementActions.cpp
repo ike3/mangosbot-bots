@@ -23,27 +23,42 @@ bool MovementAction::MoveNear(WorldObject* target, float distance)
     if (!target)
         return false;
 
-	distance += target->GetObjectBoundingRadius();
+#ifdef MANGOS
+    distance += target->GetObjectBoundingRadius();
+#endif
 
+    float x = target->GetPositionX();
+    float y = target->GetPositionY();
+    float z = target->GetPositionZ();
     float followAngle = GetFollowAngle();
     for (float angle = followAngle; angle <= followAngle + 2 * M_PI; angle += M_PI / 4)
     {
+#ifdef CMANGOS
+        target->GetNearPoint(bot, x, y, z, bot->GetObjectBoundingRadius(), distance + target->GetObjectBoundingRadius(), angle);
+#endif
+#ifdef MANGOS
         float x = target->GetPositionX() + cos(angle) * distance,
              y = target->GetPositionY()+ sin(angle) * distance,
              z = target->GetPositionZ();
+#endif
         if (!bot->IsWithinLOS(x, y, z))
             continue;
         bool moved = MoveTo(target->GetMapId(), x, y, z);
         if (moved)
             return true;
     }
+
     return false;
 }
 
 bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z)
 {
     if (!bot->IsUnderWater())
+    {
+        float oz = z;
         bot->UpdateGroundPositionZ(x, y, z);
+        if (abs(z - oz) > ATTACK_DISTANCE) return false;
+    }
 
     if (!IsMovingAllowed(mapId, x, y, z))
         return false;
@@ -85,9 +100,17 @@ bool MovementAction::MoveTo(Unit* target, float distance)
     float by = bot->GetPositionY();
     float bz = bot->GetPositionZ();
 
+#ifdef CMANGOS
     float tx = target->GetPositionX();
     float ty = target->GetPositionY();
     float tz = target->GetPositionZ();
+    target->GetNearPoint(bot, tx, ty, tz, bot->GetObjectBoundingRadius(), distance + target->GetObjectBoundingRadius(), GetFollowAngle());
+#endif
+#ifdef MANGOS
+    float tx = target->GetPositionX();
+    float ty = target->GetPositionY();
+    float tz = target->GetPositionZ();
+#endif
 
     float distanceToTarget = sServerFacade.GetDistance2d(bot, target);
     float angle = bot->GetAngle(target);
@@ -370,7 +393,7 @@ bool MoveToLootAction::Execute(Event event)
         return false;
 
     WorldObject *wo = loot.GetWorldObject(bot);
-    return MoveNear(wo);
+    return MoveNear(wo, sPlayerbotAIConfig.contactDistance);
 }
 
 bool MoveOutOfEnemyContactAction::Execute(Event event)
