@@ -16,7 +16,7 @@ bool EmoteAction::Execute(Event event)
     uint32 emote = 0;
 
     time_t lastEmote = AI_VALUE2(time_t, "last emote", qualifier);
-    ai->GetAiObjectContext()->GetValue<time_t>("last emote", qualifier)->Set(time(0));
+    ai->GetAiObjectContext()->GetValue<time_t>("last emote", qualifier)->Set(time(0) + urand(1000, sPlayerbotAIConfig.repeatDelay) / 1000);
 
     string param = event.getParam();
     if (param.empty()) param = qualifier;
