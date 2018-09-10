@@ -91,9 +91,6 @@ bool SummonAction::Execute(Event event)
         return true;
     }
 
-    ai->TellMasterNoFacing(sPlayerbotAIConfig.summonAtInnkeepersEnabled ?
-            "There are nether meeting stones nor innkeepers nearby" :
-            "There are no meeting stones nearby");
     return false;
 }
 
@@ -112,6 +109,7 @@ bool SummonAction::SummonUsingGos(Player *summoner, Player *player)
             return Teleport(summoner, player);
     }
 
+    ai->TellMasterNoFacing(summoner == bot ? "There is no meeting stone nearby" : "There is no meeting stone near you");
     return false;
 }
 
@@ -128,9 +126,31 @@ bool SummonAction::SummonUsingNpcs(Player *summoner, Player *player)
     {
         Unit* unit = *tIter;
         if (unit && unit->HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_INNKEEPER))
+        {
+            if (!player->HasItemCount(6948, 1, false))
+            {
+                ai->TellMasterNoFacing(player == bot ? "I have no hearthstone" : "You have no hearthstone");
+                return false;
+            }
+
+            if (!player->IsSpellReady(8690))
+            {
+                ai->TellMasterNoFacing(player == bot ? "My hearthstone is not ready" : "Your hearthstone is not ready");
+                return false;
+            }
+
+            // Trigger cooldown
+            SpellEntry const* spellInfo = sSpellTemplate.LookupEntry<SpellEntry>(8690);
+            if (!spellInfo)
+                return false;
+            Spell spell(player, spellInfo, TRIGGERED_OLD_TRIGGERED);
+            spell.SendSpellCooldown();
+
             return Teleport(summoner, player);
+        }
     }
 
+    ai->TellMasterNoFacing(summoner == bot ? "There are no innkeepers nearby" : "There are no innkeepers near you");
     return false;
 }
 
