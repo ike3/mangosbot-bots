@@ -570,6 +570,18 @@ namespace ai
             return AI_VALUE(ObjectGuid, "new player nearby");
         }
     };
+
+    class CollisionTrigger : public Trigger
+    {
+    public:
+        CollisionTrigger(PlayerbotAI* ai) : Trigger(ai, "collision") {}
+
+    public:
+        virtual bool IsActive()
+        {
+            return AI_VALUE2(bool, "collision", "self target");
+        }
+    };
 }
 
 #include "RangeTriggers.h"

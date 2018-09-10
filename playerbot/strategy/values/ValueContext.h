@@ -50,6 +50,7 @@
 #include "InvalidTargetValue.h"
 #include "EnemyPlayerValue.h"
 #include "AttackerWithoutAuraTargetValue.h"
+#include "CollisionValue.h"
 #include "LastSpellCastTimeValue.h"
 #include "ManaSaveLevelValue.h"
 #include "LfgValues.h"
@@ -72,6 +73,7 @@ namespace ai
     public:
         ValueContext()
         {
+            creators["collision"] = &ValueContext::collision;
             creators["skip spells list"] = &ValueContext::skip_spells_list_value;
             creators["nearest game objects"] = &ValueContext::nearest_game_objects;
             creators["nearest npcs"] = &ValueContext::nearest_npcs;
@@ -172,6 +174,7 @@ namespace ai
         }
 
     private:
+        static UntypedValue* collision(PlayerbotAI* ai) { return new CollisionValue(ai); }
         static UntypedValue* already_seen_players(PlayerbotAI* ai) { return new AlreadySeenPlayersValue(ai); }
         static UntypedValue* new_player_nearby(PlayerbotAI* ai) { return new NewPlayerNearbyValue(ai); }
         static UntypedValue* item_usage(PlayerbotAI* ai) { return new ItemUsageValue(ai); }

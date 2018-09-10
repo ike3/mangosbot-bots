@@ -429,3 +429,16 @@ bool SetFacingTargetAction::isUseful()
 {
     return !AI_VALUE2(bool, "facing", "current target");
 }
+
+
+bool MoveOutOfCollisionAction::Execute(Event event)
+{
+    float angle = M_PI * 2000 / (float)urand(1, 1000);
+    float distance = sPlayerbotAIConfig.followDistance;
+    return MoveTo(bot->GetMapId(), bot->GetPositionX() + cos(angle) * distance, bot->GetPositionY() + sin(angle) * distance, bot->GetPositionZ());
+}
+
+bool MoveOutOfCollisionAction::isUseful()
+{
+    return AI_VALUE2(bool, "collision", "self target");
+}

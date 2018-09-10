@@ -18,4 +18,13 @@ namespace ai
         virtual void InitTriggers(std::list<TriggerNode*> &triggers);
         virtual string getName() { return "lfg"; }
     };
+
+    class CollisionStrategy : public Strategy
+    {
+    public:
+        CollisionStrategy(PlayerbotAI* ai) : Strategy(ai) {}
+		virtual int GetType() { return STRATEGY_TYPE_NONCOMBAT; }
+        virtual void InitTriggers(std::list<TriggerNode*> &triggers);
+        virtual string getName() { return "collision"; }
+    };
 }

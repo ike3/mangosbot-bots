@@ -59,6 +59,7 @@ namespace ai
             creators["lfg"] = &StrategyContext::lfg;
             creators["custom"] = &StrategyContext::custom;
             creators["reveal"] = &StrategyContext::reveal;
+            creators["collision"] = &StrategyContext::collision;
         }
 
     private:
@@ -85,6 +86,7 @@ namespace ai
         static Strategy* lfg(PlayerbotAI* ai) { return new LfgStrategy(ai); }
         static Strategy* custom(PlayerbotAI* ai) { return new CustomStrategy(ai); }
         static Strategy* reveal(PlayerbotAI* ai) { return new RevealStrategy(ai); }
+        static Strategy* collision(PlayerbotAI* ai) { return new CollisionStrategy(ai); }
     };
 
     class MovementStrategyContext : public NamedObjectContext<Strategy>

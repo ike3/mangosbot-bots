@@ -89,4 +89,12 @@ namespace ai
         virtual bool isUseful();
     };
 
+    class MoveOutOfCollisionAction : public MovementAction
+    {
+    public:
+        MoveOutOfCollisionAction(PlayerbotAI* ai) : MovementAction(ai, "move out of collision") {}
+        virtual bool Execute(Event event);
+        virtual bool isUseful();
+    };
+
 }

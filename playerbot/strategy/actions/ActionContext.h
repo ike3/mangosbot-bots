@@ -17,6 +17,7 @@
 #include "CheckValuesAction.h"
 #include "DelayAction.h"
 #include "GreetAction.h"
+#include "MovementActions.h"
 #include "OutfitAction.h"
 #include "RevealGatheringItemAction.h"
 #include "SayAction.h"
@@ -30,6 +31,7 @@ namespace ai
     public:
         ActionContext()
         {
+            creators["move out of collision"] = &ActionContext::move_out_of_collision;
             creators["attack"] = &ActionContext::melee;
             creators["melee"] = &ActionContext::melee;
             creators["reach spell"] = &ActionContext::ReachSpell;
@@ -83,6 +85,7 @@ namespace ai
         }
 
     private:
+        static Action* move_out_of_collision(PlayerbotAI* ai) { return new MoveOutOfCollisionAction(ai); }
         static Action* check_values(PlayerbotAI* ai) { return new CheckValuesAction(ai); }
         static Action* greet(PlayerbotAI* ai) { return new GreetAction(ai); }
         static Action* check_mail(PlayerbotAI* ai) { return new CheckMailAction(ai); }

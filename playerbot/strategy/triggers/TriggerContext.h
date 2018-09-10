@@ -14,6 +14,8 @@ namespace ai
     public:
         TriggerContext()
         {
+            creators["collision"] = &TriggerContext::collision;
+
             creators["timer"] = &TriggerContext::Timer;
             creators["random"] = &TriggerContext::Random;
             creators["seldom"] = &TriggerContext::seldom;
@@ -99,6 +101,7 @@ namespace ai
         }
 
     private:
+        static Trigger* collision(PlayerbotAI* ai) { return new CollisionTrigger(ai); }
         static Trigger* lfg_proposal_active(PlayerbotAI* ai) { return new LfgProposalActiveTrigger(ai); }
         static Trigger* invalid_target(PlayerbotAI* ai) { return new InvalidTargetTrigger(ai); }
         static Trigger* critical_aoe_heal(PlayerbotAI* ai) { return new AoeHealTrigger(ai, "critical aoe heal", "critical", 2); }

@@ -26,3 +26,10 @@ void LfgStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         "lfg proposal active",
         NextAction::array(0, new NextAction("lfg accept", 1.0f), NULL)));
 }
+
+void CollisionStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+{
+    triggers.push_back(new TriggerNode(
+        "collision",
+        NextAction::array(0, new NextAction("move out of collision", 2.0f), NULL)));
+}
