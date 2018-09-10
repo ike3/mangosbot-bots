@@ -22,13 +22,15 @@ CategoryList CategoryList::instance;
 CategoryList::CategoryList()
 {
     Add(new Equip());
-    Add(new ahbot::Quest());
+
     Add(new Quiver());
+    Add(new Container());
+
     Add(new Projectile());
 
     Add(new Recipe());
-    Add(new Container());
 
+    Add(new DevicesAndParts());
     Add(new TradeSkill(SKILL_TAILORING));
     Add(new TradeSkill(SKILL_LEATHERWORKING));
     Add(new TradeSkill(SKILL_ENGINEERING));
@@ -41,17 +43,18 @@ CategoryList::CategoryList()
     Add(new TradeSkill(SKILL_MINING));
     Add(new TradeSkill(SKILL_HERBALISM));
     Add(new TradeSkill(SKILL_SKINNING));
-    Add(new Reagent());
+#ifdef MANGOSBOT_ONE
+    Add(new TradeSkill(SKILL_JEWELCRAFTING));
+#endif
+
     Add(new Alchemy());
     Add(new Scroll());
     Add(new Food());
     Add(new Bandage());
+    Add(new ItemEnchant());
 
-    Add(new Engineering());
-
-    Add(new OtherConsumable());
-    Add(new OtherTrade());
-    Add(new Other());
+    Add(new Reagent());
+    Add(new ahbot::Quest());
 }
 
 void CategoryList::Add(Category* category)

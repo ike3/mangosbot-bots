@@ -20,7 +20,8 @@ namespace ahbot
                     proto->SubClass == ITEM_SUBCLASS_FLASK);
         }
 
-        virtual string GetName() { return "Alchemy"; }
+        virtual string GetName() { return "consumables.alchemy"; }
+        virtual string GetLabel() { return "elixirs and potions"; }
     };
 
     class Scroll : public Consumable
@@ -36,7 +37,8 @@ namespace ahbot
                     proto->SubClass == ITEM_SUBCLASS_ITEM_ENHANCEMENT);
         }
 
-        virtual string GetName() { return "Scroll"; }
+        virtual string GetName() { return "consumables.scroll"; }
+        virtual string GetLabel() { return "scrolls"; }
     };
 
     class Food : public Consumable
@@ -51,7 +53,8 @@ namespace ahbot
                     proto->SubClass == ITEM_SUBCLASS_FOOD;
         }
 
-        virtual string GetName() { return "Food"; }
+        virtual string GetName() { return "consumables.food"; }
+        virtual string GetLabel() { return "food and drink"; }
     };
 
     class Bandage : public Consumable
@@ -66,22 +69,23 @@ namespace ahbot
                     proto->SubClass == ITEM_SUBCLASS_BANDAGE;
         }
 
-        virtual string GetName() { return "Bandage"; }
+        virtual string GetName() { return "consumables.bandage"; }
+        virtual string GetLabel() { return "bandages"; }
     };
 
-    class OtherConsumable : public Consumable
+    class ItemEnchant : public Consumable
     {
     public:
-        OtherConsumable() : Consumable() {}
+        ItemEnchant() : Consumable() {}
 
     public:
         virtual bool Contains(ItemPrototype const* proto)
         {
             return Consumable::Contains(proto) &&
-                    (proto->SubClass == ITEM_SUBCLASS_CONSUMABLE ||
-                    proto->SubClass == ITEM_SUBCLASS_CONSUMABLE_OTHER) && proto->BuyCount < 5;
+                    proto->SubClass == ITEM_SUBCLASS_CONSUMABLE_OTHER;
         }
 
-        virtual string GetName() { return "OtherConsumable"; }
+        virtual string GetName() { return "consumables.enchant"; }
+        virtual string GetLabel() { return "item enchants"; }
     };
 };

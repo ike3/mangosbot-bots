@@ -5,38 +5,21 @@ using namespace std;
 
 namespace ahbot
 {
-    class Engineering : public Trade
+    class TradeSkill : public Trade
     {
     public:
-        Engineering() : Trade() {}
+        TradeSkill(uint32 skill) : Trade(), skill(skill) {}
 
     public:
-        virtual bool Contains(ItemPrototype const* proto)
-        {
-            return Trade::Contains(proto) &&
-                    (proto->SubClass == ITEM_SUBCLASS_PARTS ||
-                    proto->SubClass == ITEM_SUBCLASS_DEVICES ||
-                    proto->SubClass == ITEM_SUBCLASS_EXPLOSIVES);
-        }
+        virtual bool Contains(ItemPrototype const* proto);
+        virtual string GetName();
+        virtual string GetLabel();
+        virtual uint32 GetSkillId() { return skill; }
 
-        virtual string GetName() { return "Engineering"; }
+    private:
+        bool IsCraftedBySpell(ItemPrototype const* proto, uint32 spellId);
+        bool IsCraftedBy(ItemPrototype const* proto, uint32 craftId);
+        uint32 skill;
     };
 
-    class OtherTrade : public Trade
-    {
-    public:
-        OtherTrade() : Trade() {}
-
-    public:
-        virtual bool Contains(ItemPrototype const* proto)
-        {
-			return Trade::Contains(proto) &&
-					proto->SubClass != ITEM_SUBCLASS_PARTS &&
-					proto->SubClass != ITEM_SUBCLASS_DEVICES &&
-					proto->SubClass != ITEM_SUBCLASS_EXPLOSIVES;
-        }
-
-        virtual string GetName() { return "othertrade"; }
-        virtual string GetLabel() { return "devices and explosives"; }
-    };
 };
