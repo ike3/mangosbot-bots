@@ -23,13 +23,24 @@ bool IsDeadValue::Calculate()
 
 bool PetIsDeadValue::Calculate()
 {
-#ifdef MANGOSBOT_ZERO
-#ifndef CMANGOS
+#ifdef MANGOS
     PetDatabaseStatus status = Pet::GetStatusFromDB(bot);
     if (status == PET_DB_DEAD)
+#endif
+#ifdef CMANGOS
+    if (!bot->GetPet())
+    {
+        uint32 ownerid = bot->GetGUIDLow();
+        QueryResult* result = CharacterDatabase.PQuery("SELECT id FROM character_pet WHERE owner = '%u'", ownerid);
+        if (!result)
+            return false;
+
+        delete result;
         return true;
+    }
+    if (bot->GetPetGuid() && !bot->GetPet())
 #endif
-#endif
+        return true;
 
     return bot->GetPet() && sServerFacade.GetDeathState(bot->GetPet()) != ALIVE;
 }
