@@ -2,10 +2,13 @@
 #include "../../playerbot.h"
 #include "SuggestWhatToDoAction.h"
 #include "../../../ahbot/AhBot.h"
+#include "../../../ahbot/PricingStrategy.h"
 #include "../../AiFactory.h"
 #include "ChannelMgr.h"
 #include "../../PlayerbotAIConfig.h"
 #include "../../PlayerbotTextMgr.h"
+
+using ahbot::PricingStrategy;
 
 using namespace ai;
 
@@ -268,6 +271,7 @@ void SuggestWhatToDoAction::something()
 
 void SuggestWhatToDoAction::spam(string msg, uint32 channelId)
 {
+    set<string> said;
     for (uint32 i = 0; i < sChatChannelsStore.GetNumRows(); ++i)
     {
         ChatChannelsEntry const* channel = sChatChannelsStore.LookupEntry(i);
@@ -280,6 +284,7 @@ void SuggestWhatToDoAction::spam(string msg, uint32 channelId)
 
             char channelName[255];
             snprintf(channelName, 255, channel->pattern[0], area->area_name[0]);
+            if (said.find(channelName) != said.end()) continue;
 
             if (ChannelMgr* cMgr = channelMgr(bot->GetTeam()))
             {
@@ -291,6 +296,8 @@ void SuggestWhatToDoAction::spam(string msg, uint32 channelId)
                 {
                     chn->Join(bot, "");
                     chn->Say(bot, msg.c_str(), LANG_UNIVERSAL);
+                    chn->Leave(bot, false);
+                    said.insert(channelName);
                 }
             }
         }
@@ -383,7 +390,7 @@ bool SuggestTradeAction::Execute(Event event)
     if (!proto)
         return false;
 
-    uint32 price = auctionbot.GetSellPrice(proto) * sRandomPlayerbotMgr.GetSellMultiplier(bot) * count;
+    uint32 price = PricingStrategy::RoundPrice(auctionbot.GetSellPrice(proto) * sRandomPlayerbotMgr.GetSellMultiplier(bot) * count);
     if (!price)
         return false;
 
