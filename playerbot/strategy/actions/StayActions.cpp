@@ -9,7 +9,7 @@ void StayActionBase::Stay()
 {
     AI_VALUE(LastMovement&, "last movement").Set(NULL);
 
-    if (!urand(0, 1000)) ai->PlaySound(TEXTEMOTE_YAWN);
+    if (!urand(0, 5000)) ai->PlaySound(TEXTEMOTE_YAWN);
 
     MotionMaster &mm = *bot->GetMotionMaster();
     if (mm.GetCurrentMovementGeneratorType() == FLIGHT_MOTION_TYPE || bot->IsFlying())
