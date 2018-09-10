@@ -108,7 +108,7 @@ bool OpenLootAction::DoLoot(LootObject& lootObject)
     if (go && bot->GetDistance(go) > INTERACTION_DISTANCE)
         return false;
 
-    if (go && go->IsInUse() || go->GetGoState() != GO_STATE_READY)
+    if (go && (go->IsInUse() || go->GetGoState() != GO_STATE_READY))
         return false;
 
     bot->GetMotionMaster()->Clear();
