@@ -296,7 +296,6 @@ void SuggestWhatToDoAction::spam(string msg, uint32 channelId)
                 {
                     chn->Join(bot, "");
                     chn->Say(bot, msg.c_str(), LANG_UNIVERSAL);
-                    chn->Leave(bot, false);
                     said.insert(channelName);
                 }
             }
