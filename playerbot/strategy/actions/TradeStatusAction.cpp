@@ -120,7 +120,7 @@ bool TradeStatusAction::CheckTrade()
         int32 playerItemsMoney = CalculateCost(master->GetTradeData(), false);
         int32 playerMoney = master->GetTradeData()->GetMoney() + playerItemsMoney;
         if (playerMoney || botMoney)
-            ai->PlaySound(playerMoney < botMoney ? TEXTEMOTE_CRY : TEXTEMOTE_THANK);
+            ai->PlaySound(playerMoney < botMoney ? TEXTEMOTE_SIGH : TEXTEMOTE_THANK);
         return true;
     }
 

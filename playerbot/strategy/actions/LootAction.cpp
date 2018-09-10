@@ -296,6 +296,9 @@ bool StoreLootAction::Execute(Event event)
         packet << itemindex;
         bot->GetSession()->HandleAutostoreLootItemOpcode(packet);
 
+        if (proto->Quality > ITEM_QUALITY_NORMAL && !urand(0, 50)) ai->PlaySound(TEXTEMOTE_CHEER);
+        if (proto->Quality >= ITEM_QUALITY_RARE) ai->PlaySound(TEXTEMOTE_CHEER);
+
         ostringstream out; out << "Looting " << chat->formatItem(proto);
         ai->TellMasterNoFacing(out.str());
     }

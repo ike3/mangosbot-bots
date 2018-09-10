@@ -75,6 +75,7 @@ namespace ai
             bot->SetSelectionGuid(ObjectGuid());
             ai->ChangeEngine(BOT_STATE_NON_COMBAT);
             ai->InterruptSpell();
+            if (!urand(0, 200)) ai->PlaySound(TEXTEMOTE_CHEER);
 			return true;
         }
     };
