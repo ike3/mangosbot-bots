@@ -51,6 +51,7 @@ bool PlayerbotAIConfig::Initialize()
     reactDelay = (uint32) config.GetIntDefault("AiPlayerbot.ReactDelay", 100);
     passiveDelay = (uint32) config.GetIntDefault("AiPlayerbot.PassiveDelay", 3000);
     repeatDelay = (uint32) config.GetIntDefault("AiPlayerbot.RepeatDelay", 7000);
+    rpgDelay = (uint32) config.GetIntDefault("AiPlayerbot.RpgDelay", 12000);
 
     sightDistance = config.GetFloatDefault("AiPlayerbot.SightDistance", 50.0f);
     spellDistance = config.GetFloatDefault("AiPlayerbot.SpellDistance", 25.0f);
@@ -65,6 +66,7 @@ bool PlayerbotAIConfig::Initialize()
     whisperDistance = config.GetFloatDefault("AiPlayerbot.WhisperDistance", 6000.0f);
     contactDistance = config.GetFloatDefault("AiPlayerbot.ContactDistance", 0.5f);
     aoeRadius = config.GetFloatDefault("AiPlayerbot.AoeRadius", 10.0f);
+    rpgDistance = config.GetFloatDefault("AiPlayerbot.RpgDistance", 80.0f);
 
     criticalHealth = config.GetIntDefault("AiPlayerbot.CriticalHealth", 20);
     lowHealth = config.GetIntDefault("AiPlayerbot.LowHealth", 50);
@@ -96,6 +98,8 @@ bool PlayerbotAIConfig::Initialize()
     maxRandomBotInWorldTime = config.GetIntDefault("AiPlayerbot.MaxRandomBotInWorldTime", 14 * 24 * 3600);
     minRandomBotRandomizeTime = config.GetIntDefault("AiPlayerbot.MinRandomBotRandomizeTime", 2 * 3600);
     maxRandomBotRandomizeTime = config.GetIntDefault("AiPlayerbot.MaxRandomRandomizeTime", 14 * 24 * 3600);
+    minRandomBotChangeStrategyTime = config.GetIntDefault("AiPlayerbot.MinRandomBotChangeStrategyTime", 1800);
+    maxRandomBotChangeStrategyTime = config.GetIntDefault("AiPlayerbot.MaxRandomBotChangeStrategyTime", 2 * 3600);
     minRandomBotReviveTime = config.GetIntDefault("AiPlayerbot.MinRandomBotReviveTime", 60);
     maxRandomBotReviveTime = config.GetIntDefault("AiPlayerbot.MaxRandomReviveTime", 300);
     randomBotTeleportDistance = config.GetIntDefault("AiPlayerbot.RandomBotTeleportDistance", 133);
@@ -115,9 +119,11 @@ bool PlayerbotAIConfig::Initialize()
     openGoSpell = config.GetIntDefault("AiPlayerbot.OpenGoSpell", 6477);
 
     randomChangeMultiplier = config.GetFloatDefault("AiPlayerbot.RandomChangeMultiplier", 1.0);
+    enableRandomBotRpg = config.GetBoolDefault("AiPlayerbot.EnableRandomBotRpg", false);
 
     randomBotCombatStrategies = config.GetStringDefault("AiPlayerbot.RandomBotCombatStrategies", "+dps,+dps assist,-threat");
-    randomBotNonCombatStrategies = config.GetStringDefault("AiPlayerbot.RandomBotNonCombatStrategies", "+grind,+move random,+loot");
+    randomBotNonCombatStrategies = config.GetStringDefault("AiPlayerbot.RandomBotNonCombatStrategies", "+grind,+move random,+loot,-rpg");
+    randomBotRpgStrategies = config.GetStringDefault("AiPlayerbot.RandomBotRpgStrategies", "-grind,-move random,+loot,+rpg");
     combatStrategies = config.GetStringDefault("AiPlayerbot.CombatStrategies", "+custom::say");
     nonCombatStrategies = config.GetStringDefault("AiPlayerbot.NonCombatStrategies", "+custom::say");
 

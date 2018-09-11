@@ -36,4 +36,10 @@ namespace ai
     protected:
         Unit* FindTarget(FindTargetStrategy* strategy);
     };
+
+    class RpgTargetValue : public ManualSetValue<Unit*>
+    {
+    public:
+        RpgTargetValue(PlayerbotAI* ai) : ManualSetValue<Unit*>(ai, NULL) {}
+    };
 }

@@ -29,25 +29,9 @@ class ServerFacade
 #endif
         }
 
-        float GetDistance2d(Unit *unit, WorldObject* wo)
-        {
-#ifdef MANGOS
-            return unit->GetDistance2d(wo);
-#endif
-#ifdef CMANGOS
-            return sqrt(unit->GetDistance2d(wo->GetPositionX(), wo->GetPositionY(), DIST_CALC_NONE));
-#endif
-        }
+        float GetDistance2d(Unit *unit, WorldObject* wo);
 
-        float GetDistance2d(Unit *unit, float x, float y)
-        {
-#ifdef MANGOS
-            return unit->GetDistance2d(x, y);
-#endif
-#ifdef CMANGOS
-            return sqrt(unit->GetDistance2d(x, y, DIST_CALC_NONE));
-#endif
-        }
+        float GetDistance2d(Unit *unit, float x, float y);
 
         DeathState GetDeathState(Unit *unit)
         {

@@ -5,6 +5,7 @@
 #include "LootTriggers.h"
 #include "../triggers/GenericTriggers.h"
 #include "LfgTriggers.h"
+#include "RpgTriggers.h"
 
 namespace ai
 {
@@ -98,9 +99,13 @@ namespace ai
             creators["random bot update"] = &TriggerContext::random_bot_update_trigger;
             creators["no non bot players around"] = &TriggerContext::no_non_bot_players_around;
             creators["new player nearby"] = &TriggerContext::new_player_nearby;
+            creators["no rpg target"] = &TriggerContext::no_rpg_target;
+            creators["far from rpg target"] = &TriggerContext::far_from_rpg_target;
         }
 
     private:
+        static Trigger* far_from_rpg_target(PlayerbotAI* ai) { return new FarFromRpgTargetTrigger(ai); }
+        static Trigger* no_rpg_target(PlayerbotAI* ai) { return new NoRpgTargetTrigger(ai); }
         static Trigger* collision(PlayerbotAI* ai) { return new CollisionTrigger(ai); }
         static Trigger* lfg_proposal_active(PlayerbotAI* ai) { return new LfgProposalActiveTrigger(ai); }
         static Trigger* invalid_target(PlayerbotAI* ai) { return new InvalidTargetTrigger(ai); }

@@ -153,6 +153,13 @@ void RandomPlayerbotMgr::ScheduleTeleport(uint32 bot, uint32 time)
     SetEventValue(bot, "teleport", 1, time);
 }
 
+void RandomPlayerbotMgr::ScheduleChangeStrategy(uint32 bot, uint32 time)
+{
+    if (!time)
+        time = urand(sPlayerbotAIConfig.minRandomBotChangeStrategyTime, sPlayerbotAIConfig.maxRandomBotChangeStrategyTime);
+    SetEventValue(bot, "change_strategy", 1, time);
+}
+
 bool RandomPlayerbotMgr::ProcessBot(uint32 bot)
 {
     uint32 isValid = GetEventValue(bot, "add");
@@ -173,7 +180,7 @@ bool RandomPlayerbotMgr::ProcessBot(uint32 bot)
         if (!GetEventValue(bot, "online"))
         {
             SetEventValue(bot, "online", 1, sPlayerbotAIConfig.minRandomBotInWorldTime);
-            ScheduleTeleport(bot, 30);
+            ScheduleChangeStrategy(bot, 30);
         }
         return true;
     }
@@ -258,16 +265,33 @@ bool RandomPlayerbotMgr::ProcessBot(Player* player)
         return true;
     }
 
+    uint32 changeStrategy = GetEventValue(bot, "change_strategy");
+    if (!changeStrategy)
+    {
+        sLog.outDetail("Changing strategy for bot %d", bot);
+        ChangeStrategy(player);
+        ScheduleChangeStrategy(bot);
+        return true;
+    }
+
     return false;
 }
 
 void RandomPlayerbotMgr::Revive(Player* player)
 {
     uint32 bot = player->GetGUIDLow();
+
     sLog.outDetail("Reviving dead bot %d", bot);
     SetEventValue(bot, "dead", 0, 0);
     SetEventValue(bot, "revive", 0, 0);
-    RandomTeleport(player);
+
+    if (sServerFacade.GetDeathState(player) == CORPSE)
+        RandomTeleport(player);
+    else
+    {
+        RandomTeleportForLevel(player);
+        Refresh(player);
+    }
 }
 
 void RandomPlayerbotMgr::RandomTeleport(Player* bot, vector<WorldLocation> &locs)
@@ -301,8 +325,7 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot, vector<WorldLocation> &locs
 		if (!area)
 			continue;
 
-		if (!terrain->IsOutdoors(x, y, z) ||
-			terrain->IsUnderWater(x, y, z) ||
+		if (terrain->IsUnderWater(x, y, z) ||
 			terrain->IsInWater(x, y, z))
 			continue;
 
@@ -760,6 +783,11 @@ bool RandomPlayerbotMgr::HandlePlayerbotConsoleCommand(ChatHandler* handler, cha
             {
                 sRandomPlayerbotMgr.RandomTeleportForLevel(bot);
             }
+            else if (cmd == "rpg")
+            {
+                sRandomPlayerbotMgr.RandomTeleportForRpg(bot);
+                bot->GetPlayerbotAI()->ChangeStrategy(sPlayerbotAIConfig.randomBotRpgStrategies, BOT_STATE_NON_COMBAT);
+            }
             else if (cmd == "revive")
             {
                 sRandomPlayerbotMgr.Revive(bot);
@@ -1034,4 +1062,66 @@ string RandomPlayerbotMgr::HandleRemoteCommand(string request)
         return "invalid guid";
 
     return ai->HandleRemoteCommand(command);
+}
+
+void RandomPlayerbotMgr::ChangeStrategy(Player* player)
+{
+    uint32 bot = player->GetGUIDLow();
+
+    if (!sPlayerbotAIConfig.enableRandomBotRpg || !urand(0, 2))
+    {
+        sLog.outString("Changing strategy for bot %s to grinding", player->GetName());
+        player->GetPlayerbotAI()->ChangeStrategy(sPlayerbotAIConfig.randomBotNonCombatStrategies, BOT_STATE_NON_COMBAT);
+        ScheduleTeleport(bot, 30);
+    }
+    else
+    {
+        sLog.outString("Changing strategy for bot %s to RPG", player->GetName());
+        RandomTeleportForRpg(player);
+        player->GetPlayerbotAI()->ChangeStrategy(sPlayerbotAIConfig.randomBotRpgStrategies, BOT_STATE_NON_COMBAT);
+    }
+
+    ScheduleChangeStrategy(bot);
+}
+
+void RandomPlayerbotMgr::RandomTeleportForRpg(Player* bot)
+{
+    sLog.outDetail("Preparing location to random teleporting bot %s for RPG", bot->GetName());
+
+    if (rpgLocsCache[bot->GetTeam()].empty()) {
+        QueryResult* results = WorldDatabase.PQuery("SELECT map, position_x, position_y, position_z, t.entry, c.guid "
+                "from creature c inner join creature_template t on c.id = t.entry "
+                "where t.NpcFlags & %u <> 0",
+            UNIT_NPC_FLAG_INNKEEPER);
+        if (results)
+        {
+            do
+            {
+                Field* fields = results->Fetch();
+                uint16 mapId = fields[0].GetUInt16();
+                float x = fields[1].GetFloat();
+                float y = fields[2].GetFloat();
+                float z = fields[3].GetFloat();
+                uint32 entry = fields[4].GetUInt32();
+                uint32 lowguid = fields[5].GetUInt32();
+
+                ObjectGuid guid(HIGHGUID_UNIT, entry, lowguid);
+                Map* map = sMapMgr.FindMap(mapId);
+                if (!map)
+                    continue;
+
+                Creature* creature = map->GetCreature(guid);
+                if (!creature)
+                    continue;
+
+                if (bot->IsHostileTo(creature)) continue;
+
+                WorldLocation loc(mapId, x, y, z, 0);
+                rpgLocsCache[bot->GetTeam()].push_back(loc);
+            } while (results->NextRow());
+            delete results;
+        }
+    }
+
+    RandomTeleport(bot, rpgLocsCache[bot->GetTeam()]);
 }

@@ -34,6 +34,7 @@ class RandomPlayerbotMgr : public PlayerbotHolder
         void RandomizeFirst(Player* bot);
         void IncreaseLevel(Player* bot);
         void ScheduleTeleport(uint32 bot, uint32 time = 0);
+        void ScheduleChangeStrategy(uint32 bot, uint32 time = 0);
         void HandleCommand(uint32 type, const string& text, Player& fromPlayer);
         string HandleRemoteCommand(string request);
         void OnPlayerLogout(Player* player);
@@ -47,9 +48,11 @@ class RandomPlayerbotMgr : public PlayerbotHolder
         uint32 GetTradeDiscount(Player* bot);
         void Refresh(Player* bot);
         void RandomTeleportForLevel(Player* bot);
+        void RandomTeleportForRpg(Player* bot);
         int GetMaxAllowedBotCount();
         bool ProcessBot(Player* player);
         void Revive(Player* player);
+        void ChangeStrategy(Player* player);
 
 	protected:
 	    virtual void OnBotLoginInternal(Player * const bot) {}
@@ -70,6 +73,7 @@ class RandomPlayerbotMgr : public PlayerbotHolder
         vector<Player*> players;
         int processTicks;
         map<uint8, vector<WorldLocation> > locsPerLevelCache;
+        map<Team, vector<WorldLocation> > rpgLocsCache;
 };
 
 #define sRandomPlayerbotMgr RandomPlayerbotMgr::instance()

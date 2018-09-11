@@ -15,14 +15,17 @@
 #include "AttackAction.h"
 #include "CheckMailAction.h"
 #include "CheckValuesAction.h"
+#include "ChooseRpgTargetAction.h"
 #include "DelayAction.h"
 #include "GreetAction.h"
 #include "MovementActions.h"
+#include "MoveToRpgTargetAction.h"
 #include "OutfitAction.h"
 #include "RevealGatheringItemAction.h"
 #include "SayAction.h"
 #include "OutfitAction.h"
 #include "RandomBotUpdateAction.h"
+#include "RpgAction.h"
 
 namespace ai
 {
@@ -31,6 +34,9 @@ namespace ai
     public:
         ActionContext()
         {
+            creators["rpg"] = &ActionContext::rpg;
+            creators["choose rpg target"] = &ActionContext::choose_rpg_target;
+            creators["move to rpg target"] = &ActionContext::move_to_rpg_target;
             creators["move out of collision"] = &ActionContext::move_out_of_collision;
             creators["attack"] = &ActionContext::melee;
             creators["melee"] = &ActionContext::melee;
@@ -85,6 +91,9 @@ namespace ai
         }
 
     private:
+        static Action* rpg(PlayerbotAI* ai) { return new RpgAction(ai); }
+        static Action* choose_rpg_target(PlayerbotAI* ai) { return new ChooseRpgTargetAction(ai); }
+        static Action* move_to_rpg_target(PlayerbotAI* ai) { return new MoveToRpgTargetAction(ai); }
         static Action* move_out_of_collision(PlayerbotAI* ai) { return new MoveOutOfCollisionAction(ai); }
         static Action* check_values(PlayerbotAI* ai) { return new CheckValuesAction(ai); }
         static Action* greet(PlayerbotAI* ai) { return new GreetAction(ai); }

@@ -23,10 +23,11 @@ public:
 
     bool enabled;
     bool allowGuildBots;
-    uint32 globalCoolDown, reactDelay, maxWaitForMove, expireActionTime, dispelAuraDuration, passiveDelay, repeatDelay;
+    uint32 globalCoolDown, reactDelay, maxWaitForMove, expireActionTime, dispelAuraDuration, passiveDelay, repeatDelay,
+        rpgDelay;
     float sightDistance, spellDistance, reactDistance, grindDistance, lootDistance, shootDistance,
         fleeDistance, tooCloseDistance, meleeDistance, followDistance, whisperDistance, contactDistance,
-        aoeRadius;
+        aoeRadius, rpgDistance;
     uint32 criticalHealth, lowHealth, mediumHealth, almostFullHealth;
     uint32 lowMana, mediumMana;
 
@@ -45,6 +46,7 @@ public:
     uint32 randomBotUpdateInterval, randomBotCountChangeMinInterval, randomBotCountChangeMaxInterval;
     uint32 minRandomBotInWorldTime, maxRandomBotInWorldTime;
     uint32 minRandomBotRandomizeTime, maxRandomBotRandomizeTime;
+    uint32 minRandomBotChangeStrategyTime, maxRandomBotChangeStrategyTime;
     uint32 minRandomBotReviveTime, maxRandomBotReviveTime;
     uint32 minRandomBotPvpTime, maxRandomBotPvpTime;
     uint32 minRandomBotsPerInterval, maxRandomBotsPerInterval;
@@ -56,7 +58,7 @@ public:
     bool fleeingEnabled;
     bool summonAtInnkeepersEnabled;
     std::string combatStrategies, nonCombatStrategies;
-    std::string randomBotCombatStrategies, randomBotNonCombatStrategies;
+    std::string randomBotCombatStrategies, randomBotNonCombatStrategies, randomBotRpgStrategies;
     uint32 randomBotMinLevel, randomBotMaxLevel;
     float randomChangeMultiplier;
     uint32 specProbability[MAX_CLASSES][3];
@@ -67,6 +69,7 @@ public:
     uint32 randomBotGuildCount;
     bool deleteRandomBotGuilds;
     std::list<uint32> randomBotGuilds;
+    bool enableRandomBotRpg;
 
     bool guildTaskEnabled;
     uint32 minGuildTaskChangeTime, maxGuildTaskChangeTime;
