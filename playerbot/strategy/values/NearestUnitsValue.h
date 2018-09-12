@@ -8,8 +8,8 @@ namespace ai
     class NearestUnitsValue : public ObjectGuidListCalculatedValue
 	{
 	public:
-        NearestUnitsValue(PlayerbotAI* ai, string name, float range = sPlayerbotAIConfig.sightDistance) :
-            ObjectGuidListCalculatedValue(ai, name, 2), range(range) {}
+        NearestUnitsValue(PlayerbotAI* ai, string name, float range = sPlayerbotAIConfig.sightDistance, bool ignoreLos = false) :
+            ObjectGuidListCalculatedValue(ai, name, 2), range(range), ignoreLos(ignoreLos) {}
 
 	public:
         list<ObjectGuid> Calculate()
@@ -21,7 +21,7 @@ namespace ai
             for(list<Unit *>::iterator i = targets.begin(); i!= targets.end(); ++i)
             {
                 Unit* unit = *i;
-                if(sServerFacade.IsWithinLOSInMap(bot, unit) && AcceptUnit(unit))
+                if ((ignoreLos || sServerFacade.IsWithinLOSInMap(bot, unit)) && AcceptUnit(unit))
                     results.push_back(unit->GetObjectGuid());
             }
             return results;
@@ -33,5 +33,6 @@ namespace ai
 
     protected:
         float range;
+        bool ignoreLos;
 	};
 }

@@ -13,7 +13,7 @@ using namespace MaNGOS;
 vector<uint32> PossibleRpgTargetsValue::allowedNpcFlags;
 
 PossibleRpgTargetsValue::PossibleRpgTargetsValue(PlayerbotAI* ai, float range) :
-        NearestUnitsValue(ai, "possible rpg targets", range)
+        NearestUnitsValue(ai, "possible rpg targets", range, true)
 {
     if (allowedNpcFlags.empty())
     {
