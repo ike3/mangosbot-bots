@@ -53,14 +53,7 @@ void PossibleRpgTargetsValue::FindUnits(list<Unit*> &targets)
 
 bool PossibleRpgTargetsValue::AcceptUnit(Unit* unit)
 {
-    if (unit->IsHostileTo(bot)) return false;
-
-    Player* p = dynamic_cast<Player*>(unit);
-    if (p)
-    {
-        uint32 account = sObjectMgr.GetPlayerAccountIdByGUID(p->GetObjectGuid());
-        return sPlayerbotAIConfig.IsInRandomAccountList(account);
-    }
+    if (unit->IsHostileTo(bot) || dynamic_cast<Player*>(unit)) return false;
 
     for (vector<uint32>::iterator i = allowedNpcFlags.begin(); i != allowedNpcFlags.end(); ++i)
     {

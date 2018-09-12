@@ -131,7 +131,11 @@ uint32 RandomPlayerbotMgr::AddRandomBots()
                 ScheduleRandomize(bot, randomTime);
                 bots.insert(bot);
                 sLog.outString( "New random bot %d added", bot);
-                if (bots.size() >= maxAllowedBotCount) break;
+                if (bots.size() >= maxAllowedBotCount)
+                {
+                    delete result;
+                    return guids.size();
+                }
             }
         } while (result->NextRow());
         delete result;
@@ -499,6 +503,7 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot)
 
     RandomTeleport(bot, locs);
     Refresh(bot);
+    bot->GetPlayerbotAI()->ChangeStrategy(sPlayerbotAIConfig.randomBotNonCombatStrategies, BOT_STATE_NON_COMBAT);
 }
 
 void RandomPlayerbotMgr::Randomize(Player* bot)
@@ -564,6 +569,13 @@ void RandomPlayerbotMgr::RandomizeFirst(Player* bot)
 		PlayerbotFactory factory(bot, level);
 		factory.CleanRandomize();
 		RandomTeleportForLevel(bot);
+
+        uint32 randomTime = urand(sPlayerbotAIConfig.minRandomBotRandomizeTime, sPlayerbotAIConfig.maxRandomBotRandomizeTime);
+        CharacterDatabase.PExecute("update ai_playerbot_random_bots set validIn = '%u' where event = 'randomize' and bot = '%u'",
+                randomTime, bot->GetGUIDLow());
+        CharacterDatabase.PExecute("update ai_playerbot_random_bots set validIn = '%u' where event = 'logout' and bot = '%u'",
+                sPlayerbotAIConfig.maxRandomBotInWorldTime, bot->GetGUIDLow());
+
 		break;
 	}
 }
@@ -729,24 +741,39 @@ bool RandomPlayerbotMgr::HandlePlayerbotConsoleCommand(ChatHandler* handler, cha
         sLog.outString("Random bots were reset for all players. Please restart the Server.");
         return true;
     }
-    else if (cmd == "stats")
+
+    if (cmd == "stats")
     {
         sRandomPlayerbotMgr.PrintStats();
         return true;
     }
-    else if (cmd == "update")
+
+    if (cmd == "update")
     {
         sRandomPlayerbotMgr.UpdateAIInternal(0);
         return true;
     }
-    else if (cmd == "init" || cmd == "refresh" || cmd == "teleport" || cmd == "revive")
+
+    map<string, ConsoleCommandHandler> handlers;
+    handlers["init"] = &RandomPlayerbotMgr::RandomizeFirst;
+    handlers["refresh"] = &RandomPlayerbotMgr::Refresh;
+    handlers["teleport"] = &RandomPlayerbotMgr::RandomTeleportForLevel;
+    handlers["rpg"] = &RandomPlayerbotMgr::RandomTeleportForRpg;
+    handlers["revive"] = &RandomPlayerbotMgr::Revive;
+    handlers["grind"] = &RandomPlayerbotMgr::RandomTeleport;
+
+    for (map<string, ConsoleCommandHandler>::iterator j = handlers.begin(); j != handlers.end(); ++j)
     {
-		sLog.outString("Randomizing bots for %d accounts", sPlayerbotAIConfig.randomBotAccounts.size());
+        string prefix = j->first;
+        if (cmd.find(prefix) != 0) continue;
+        string name = cmd.size() > prefix.size() + 1 ? cmd.substr(1 + prefix.size()) : "%";
+
         list<uint32> botIds;
         for (list<uint32>::iterator i = sPlayerbotAIConfig.randomBotAccounts.begin(); i != sPlayerbotAIConfig.randomBotAccounts.end(); ++i)
         {
             uint32 account = *i;
-            if (QueryResult* results = CharacterDatabase.PQuery("SELECT guid FROM characters where account = '%u'", account))
+            if (QueryResult* results = CharacterDatabase.PQuery("SELECT guid FROM characters where account = '%u' and name like '%s'",
+                    account, name))
             {
                 do
                 {
@@ -764,6 +791,12 @@ bool RandomPlayerbotMgr::HandlePlayerbotConsoleCommand(ChatHandler* handler, cha
 			}
         }
 
+        if (botIds.empty())
+        {
+            sLog.outString("Nothing to do");
+            return false;
+        }
+
         int processed = 0;
         for (list<uint32>::iterator i = botIds.begin(); i != botIds.end(); ++i)
         {
@@ -775,47 +808,18 @@ bool RandomPlayerbotMgr::HandlePlayerbotConsoleCommand(ChatHandler* handler, cha
             sLog.outString("[%u/%u] Processing command '%s' for bot '%s'",
                     processed++, botIds.size(), cmd.c_str(), bot->GetName());
 
-            if (cmd == "init")
-            {
-                sRandomPlayerbotMgr.RandomizeFirst(bot);
-            }
-            else if (cmd == "teleport")
-            {
-                sRandomPlayerbotMgr.RandomTeleportForLevel(bot);
-            }
-            else if (cmd == "rpg")
-            {
-                sRandomPlayerbotMgr.RandomTeleportForRpg(bot);
-                bot->GetPlayerbotAI()->ChangeStrategy(sPlayerbotAIConfig.randomBotRpgStrategies, BOT_STATE_NON_COMBAT);
-            }
-            else if (cmd == "revive")
-            {
-                sRandomPlayerbotMgr.Revive(bot);
-            }
-            else
-            {
-                bot->SetLevel(bot->getLevel() - 1);
-                sRandomPlayerbotMgr.IncreaseLevel(bot);
-            }
-            uint32 randomTime = urand(sPlayerbotAIConfig.minRandomBotRandomizeTime, sPlayerbotAIConfig.maxRandomBotRandomizeTime);
-            CharacterDatabase.PExecute("update ai_playerbot_random_bots set validIn = '%u' where event = 'randomize' and bot = '%u'",
-                    randomTime, bot->GetGUIDLow());
-            CharacterDatabase.PExecute("update ai_playerbot_random_bots set validIn = '%u' where event = 'logout' and bot = '%u'",
-                    sPlayerbotAIConfig.maxRandomBotInWorldTime, bot->GetGUIDLow());
-        }
-        return true;
-    }
-    else
-    {
-        list<string> messages = sRandomPlayerbotMgr.HandlePlayerbotCommand(args, NULL);
-        for (list<string>::iterator i = messages.begin(); i != messages.end(); ++i)
-        {
-            sLog.outString(i->c_str());
+            ConsoleCommandHandler handler = j->second;
+            (sRandomPlayerbotMgr.*handler)(bot);
         }
         return true;
     }
 
-    return false;
+    list<string> messages = sRandomPlayerbotMgr.HandlePlayerbotCommand(args, NULL);
+    for (list<string>::iterator i = messages.begin(); i != messages.end(); ++i)
+    {
+        sLog.outString(i->c_str());
+    }
+    return true;
 }
 
 void RandomPlayerbotMgr::HandleCommand(uint32 type, const string& text, Player& fromPlayer)
@@ -1124,4 +1128,5 @@ void RandomPlayerbotMgr::RandomTeleportForRpg(Player* bot)
     }
 
     RandomTeleport(bot, rpgLocsCache[bot->GetTeam()]);
+    bot->GetPlayerbotAI()->ChangeStrategy(sPlayerbotAIConfig.randomBotRpgStrategies, BOT_STATE_NON_COMBAT);
 }
