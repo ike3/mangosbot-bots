@@ -47,7 +47,7 @@ bool QuestAction::ProcessQuests(WorldObject* questGiver)
     }
 
     if (!sServerFacade.IsInFront(bot, questGiver, sPlayerbotAIConfig.sightDistance, CAST_ANGLE_IN_FRONT))
-        bot->SetFacingTo(bot->GetAngle(questGiver));
+        sServerFacade.SetFacingTo(bot, questGiver);
 
     bot->SetSelectionGuid(guid);
     bot->PrepareQuestMenu(guid);

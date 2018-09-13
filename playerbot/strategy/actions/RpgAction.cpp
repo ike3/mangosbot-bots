@@ -28,19 +28,21 @@ bool RpgAction::Execute(Event event)
 
     if (!sServerFacade.IsInFront(bot, target, sPlayerbotAIConfig.sightDistance, CAST_ANGLE_IN_FRONT) && !bot->IsTaxiFlying())
     {
-        bot->SetFacingTo(bot->GetAngle(target));
+        sServerFacade.SetFacingTo(bot, target);
         ai->SetNextCheckDelay(sPlayerbotAIConfig.globalCoolDown);
         return false;
     }
 
-    bot->GetNPCIfCanInteractWith(target->GetObjectGuid(), UNIT_NPC_FLAG_NONE);
+    if (!bot->GetNPCIfCanInteractWith(target->GetObjectGuid(), UNIT_NPC_FLAG_NONE))
+    {
+        return false;
+    }
 
     vector<RpgElement> elements;
     elements.push_back(&RpgAction::cancel);
     elements.push_back(&RpgAction::talk);
     elements.push_back(&RpgAction::stay);
     elements.push_back(&RpgAction::cry);
-    elements.push_back(&RpgAction::beg);
     elements.push_back(&RpgAction::rude);
     elements.push_back(&RpgAction::point);
 
@@ -72,6 +74,7 @@ void RpgAction::emote(Unit* unit, uint32 type)
     bot->GetSession()->HandleGossipHelloOpcode(p1);
 
     bot->HandleEmoteCommand(type);
+    unit->SetFacingTo(unit->GetAngle(bot));
 
     if (oldSelection)
         bot->SetSelectionGuid(oldSelection);

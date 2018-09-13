@@ -207,6 +207,13 @@ class ServerFacade
                 );
 #endif
         }
+
+        bool IsDistanceLessThan(float dist1, float dist2);
+        bool IsDistanceGreaterThan(float dist1, float dist2);
+        bool IsDistanceGreaterOrEqualThan(float dist1, float dist2);
+        bool IsDistanceLessOrEqualThan(float dist1, float dist2);
+
+        void SetFacingTo(Player* bot, WorldObject* wo);
 };
 
 #define sServerFacade ServerFacade::instance()

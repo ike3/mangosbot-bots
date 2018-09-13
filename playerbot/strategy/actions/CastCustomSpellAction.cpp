@@ -47,7 +47,7 @@ bool CastCustomSpellAction::Execute(Event event)
 
     if (target != bot && !sServerFacade.IsInFront(bot, target, sPlayerbotAIConfig.sightDistance, CAST_ANGLE_IN_FRONT))
     {
-        bot->SetFacingTo(bot->GetAngle(target));
+        sServerFacade.SetFacingTo(bot, target);
         ai->SetNextCheckDelay(sPlayerbotAIConfig.globalCoolDown);
         msg << "cast " << text;
         ai->HandleCommand(CHAT_MSG_WHISPER, msg.str(), *master);

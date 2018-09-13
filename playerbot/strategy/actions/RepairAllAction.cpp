@@ -2,6 +2,7 @@
 #include "../../playerbot.h"
 #include "RepairAllAction.h"
 
+#include "../../ServerFacade.h"
 
 using namespace ai;
 
@@ -22,7 +23,7 @@ bool RepairAllAction::Execute(Event event)
 #endif
             bot->RemoveSpellsCausingAura(SPELL_AURA_FEIGN_DEATH);
 
-        bot->SetFacingToObject(unit);
+        sServerFacade.SetFacingTo(bot, unit);
         float discountMod = bot->GetReputationPriceDiscount(unit);
         uint32 totalCost = bot->DurabilityRepairAll(true, discountMod
 #ifdef MANGOSBOT_ONE

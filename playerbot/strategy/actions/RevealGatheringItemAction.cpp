@@ -44,7 +44,8 @@ bool RevealGatheringItemAction::Execute(Event event)
     for(list<GameObject*>::iterator tIter = targets.begin(); tIter != targets.end(); ++tIter)
     {
         GameObject* go = *tIter;
-        if (!go || !sServerFacade.isSpawned(go) || sServerFacade.GetDistance2d(bot, go) <= sPlayerbotAIConfig.lootDistance)
+        if (!go || !sServerFacade.isSpawned(go) ||
+                sServerFacade.IsDistanceLessOrEqualThan(sServerFacade.GetDistance2d(bot, go), sPlayerbotAIConfig.lootDistance))
             continue;
 
         if (LockEntry const *lockInfo = sLockStore.LookupEntry(go->GetGOInfo()->GetLockId()))

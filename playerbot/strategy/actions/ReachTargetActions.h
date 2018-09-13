@@ -3,6 +3,7 @@
 #include "../Action.h"
 #include "MovementActions.h"
 #include "../../PlayerbotAIConfig.h"
+#include "../../ServerFacade.h"
 
 namespace ai
 {
@@ -19,7 +20,7 @@ namespace ai
         }
         virtual bool isUseful()
 		{
-            return AI_VALUE2(float, "distance", "current target") > (distance + sPlayerbotAIConfig.contactDistance);
+            return sServerFacade.IsDistanceGreaterThan(AI_VALUE2(float, "distance", "current target"), (distance + sPlayerbotAIConfig.contactDistance));
         }
         virtual string GetTargetName() { return "current target"; }
 
@@ -36,7 +37,7 @@ namespace ai
         }
 		virtual bool isUseful()
 		{
-			return AI_VALUE2(float, "distance", "current target") > (distance + sPlayerbotAIConfig.contactDistance);
+			return sServerFacade.IsDistanceGreaterThan(AI_VALUE2(float, "distance", "current target"), (distance + sPlayerbotAIConfig.contactDistance));
 		}
 
     protected:

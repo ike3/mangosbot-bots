@@ -35,3 +35,32 @@ float ServerFacade::GetDistance2d(Unit *unit, float x, float y)
 #endif
     return round(dist * 10.0f) / 10.0f;
 }
+
+bool ServerFacade::IsDistanceLessThan(float dist1, float dist2)
+{
+    return dist1 - dist2 < sPlayerbotAIConfig.targetPosRecalcDistance;
+}
+
+bool ServerFacade::IsDistanceGreaterThan(float dist1, float dist2)
+{
+    return dist1 - dist2 > sPlayerbotAIConfig.targetPosRecalcDistance;
+}
+
+bool ServerFacade::IsDistanceGreaterOrEqualThan(float dist1, float dist2)
+{
+    return !IsDistanceLessThan(dist1, dist2);
+}
+
+bool ServerFacade::IsDistanceLessOrEqualThan(float dist1, float dist2)
+{
+    return !IsDistanceGreaterThan(dist1, dist2);
+}
+
+void ServerFacade::SetFacingTo(Player* bot, WorldObject* wo)
+{
+    float angle = bot->GetAngle(wo);
+    MotionMaster &mm = *bot->GetMotionMaster();
+    mm.Clear();
+    bot->SetOrientation(angle);
+    bot->SendHeartBeat();
+}

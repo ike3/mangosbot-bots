@@ -2,6 +2,7 @@
 #include "../../playerbot.h"
 #include "GossipHelloAction.h"
 
+#include "../../ServerFacade.h"
 
 using namespace ai;
 
@@ -43,7 +44,7 @@ bool GossipHelloAction::Execute(Event event)
         WorldPacket p1;
         p1 << guid;
         bot->GetSession()->HandleGossipHelloOpcode(p1);
-        bot->SetFacingToObject(pCreature);
+        sServerFacade.SetFacingTo(bot, pCreature);
 
         ostringstream out; out << "--- " << pCreature->GetName() << " ---";
         ai->TellMasterNoFacing(out.str());

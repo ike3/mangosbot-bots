@@ -715,7 +715,7 @@ bool PlayerbotAI::TellMaster(string text, PlayerbotSecurityLevel securityLevel)
     if (!sServerFacade.isMoving(bot) && !sServerFacade.IsInCombat(bot) && bot->GetMapId() == master->GetMapId() && !bot->IsTaxiFlying())
     {
         if (!sServerFacade.IsInFront(bot, master, sPlayerbotAIConfig.sightDistance, CAST_ANGLE_IN_FRONT))
-            bot->SetFacingTo(bot->GetAngle(master));
+            sServerFacade.SetFacingTo(bot, master);
 
         bot->HandleEmoteCommand(EMOTE_ONESHOT_TALK);
     }
@@ -940,7 +940,7 @@ bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target)
     WorldObject* faceTo = target;
     if (!sServerFacade.IsInFront(bot, faceTo, sPlayerbotAIConfig.sightDistance, CAST_ANGLE_IN_FRONT) && !bot->IsTaxiFlying())
     {
-        bot->SetFacingTo(bot->GetAngle(faceTo));
+        sServerFacade.SetFacingTo(bot, faceTo);
         //spell->cancel();
         SetNextCheckDelay(sPlayerbotAIConfig.globalCoolDown);
         return false;

@@ -65,7 +65,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z)
         return false;
 
     float distance = sServerFacade.GetDistance2d(bot, x, y);
-    if (distance > sPlayerbotAIConfig.contactDistance)
+    if (sServerFacade.IsDistanceGreaterThan(distance, sPlayerbotAIConfig.contactDistance))
     {
         WaitForReach(distance);
 
@@ -201,7 +201,7 @@ bool MovementAction::Follow(Unit* target, float distance, float angle)
     if (!target)
         return false;
 
-    if (sServerFacade.GetDistance2d(bot, target->GetPositionX(), target->GetPositionY()) <= sPlayerbotAIConfig.sightDistance &&
+    if (sServerFacade.IsDistanceLessOrEqualThan(sServerFacade.GetDistance2d(bot, target->GetPositionX(), target->GetPositionY()), sPlayerbotAIConfig.sightDistance) &&
             abs(bot->GetPositionZ() - target->GetPositionZ()) >= sPlayerbotAIConfig.spellDistance)
     {
         mm.Clear();
@@ -224,7 +224,7 @@ bool MovementAction::Follow(Unit* target, float distance, float angle)
     if (target->IsFriendlyTo(bot) && bot->IsMounted() && AI_VALUE(list<ObjectGuid>, "possible targets").empty())
         distance += angle;
 
-    if (sServerFacade.GetDistance2d(bot, target) <= sPlayerbotAIConfig.followDistance)
+    if (sServerFacade.IsDistanceLessOrEqualThan(sServerFacade.GetDistance2d(bot, target), sPlayerbotAIConfig.followDistance))
         return false;
 
     if (bot->IsSitState())
@@ -304,7 +304,7 @@ bool FleeAction::Execute(Event event)
 bool FleeAction::isUseful()
 {
     return AI_VALUE(uint8, "attacker count") > 0 &&
-            AI_VALUE2(float, "distance", "current target") <= sPlayerbotAIConfig.shootDistance;
+            sServerFacade.IsDistanceLessOrEqualThan(AI_VALUE2(float, "distance", "current target"), sPlayerbotAIConfig.shootDistance);
 }
 
 bool RunAwayAction::Execute(Event event)
@@ -408,7 +408,7 @@ bool MoveOutOfEnemyContactAction::Execute(Event event)
 
 bool MoveOutOfEnemyContactAction::isUseful()
 {
-    return AI_VALUE2(float, "distance", "current target") < (sPlayerbotAIConfig.meleeDistance + sPlayerbotAIConfig.contactDistance);
+    return sServerFacade.IsDistanceLessThan(AI_VALUE2(float, "distance", "current target"), (sPlayerbotAIConfig.meleeDistance + sPlayerbotAIConfig.contactDistance));
 }
 
 bool SetFacingTargetAction::Execute(Event event)
@@ -420,7 +420,7 @@ bool SetFacingTargetAction::Execute(Event event)
     if (bot->IsTaxiFlying())
         return true;
 
-    bot->SetFacingTo(bot->GetAngle(target));
+    sServerFacade.SetFacingTo(bot, target);
     ai->SetNextCheckDelay(sPlayerbotAIConfig.globalCoolDown);
     return true;
 }

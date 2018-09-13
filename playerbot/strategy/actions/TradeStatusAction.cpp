@@ -76,7 +76,7 @@ bool TradeStatusAction::Execute(Event event)
     else if (status == TRADE_STATUS_BEGIN_TRADE)
     {
         if (!sServerFacade.IsInFront(bot, trader, sPlayerbotAIConfig.sightDistance, CAST_ANGLE_IN_FRONT))
-            bot->SetFacingToObject(trader);
+            sServerFacade.SetFacingTo(bot, trader);
         BeginTrade();
         return true;
     }

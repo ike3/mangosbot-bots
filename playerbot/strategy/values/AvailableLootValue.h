@@ -1,21 +1,22 @@
 #pragma once
 #include "../Value.h"
 #include "../../LootObjectStack.h"
+#include "../../ServerFacade.h"
 
 namespace ai
 {
-   
+
     class AvailableLootValue : public ManualSetValue<LootObjectStack*>
 	{
 	public:
-        AvailableLootValue(PlayerbotAI* ai) : ManualSetValue<LootObjectStack*>(ai, NULL) 
+        AvailableLootValue(PlayerbotAI* ai) : ManualSetValue<LootObjectStack*>(ai, NULL)
         {
             value = new LootObjectStack(ai->GetBot());
         }
 
         virtual ~AvailableLootValue()
         {
-            if (value) 
+            if (value)
                 delete value;
         }
     };
@@ -34,7 +35,9 @@ namespace ai
         virtual bool Calculate()
         {
             LootObject loot = AI_VALUE(LootObject, "loot target");
-            return !loot.IsEmpty() && loot.GetWorldObject(bot) && AI_VALUE2(float, "distance", "loot target") <= INTERACTION_DISTANCE;
+            return !loot.IsEmpty() &&
+                    loot.GetWorldObject(bot) &&
+                    sServerFacade.IsDistanceLessOrEqualThan(AI_VALUE2(float, "distance", "loot target"), INTERACTION_DISTANCE);
         }
     };
 }

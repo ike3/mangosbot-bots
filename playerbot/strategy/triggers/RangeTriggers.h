@@ -1,6 +1,7 @@
 #pragma once
 #include "../Trigger.h"
 #include "../../PlayerbotAIConfig.h"
+#include "../../ServerFacade.h"
 
 namespace ai
 {
@@ -10,7 +11,8 @@ namespace ai
         virtual bool IsActive()
 		{
 			Unit* target = AI_VALUE(Unit*, "current target");
-            return target && AI_VALUE2(float, "distance", "current target") <= sPlayerbotAIConfig.spellDistance / 2;
+            return target &&
+                    sServerFacade.IsDistanceLessOrEqualThan(AI_VALUE2(float, "distance", "current target"), sPlayerbotAIConfig.spellDistance / 2);
         }
     };
 
@@ -20,7 +22,8 @@ namespace ai
         virtual bool IsActive()
 		{
 			Unit* target = AI_VALUE(Unit*, "current target");
-            return target && AI_VALUE2(float, "distance", "current target") <= sPlayerbotAIConfig.shootDistance;
+            return target &&
+                    sServerFacade.IsDistanceLessOrEqualThan(AI_VALUE2(float, "distance", "current target"), sPlayerbotAIConfig.shootDistance);
         }
     };
 
@@ -30,7 +33,8 @@ namespace ai
         virtual bool IsActive()
 		{
 			Unit* target = AI_VALUE(Unit*, "current target");
-            return target && AI_VALUE2(float, "distance", "current target") <= sPlayerbotAIConfig.contactDistance / 2;
+            return target &&
+                    sServerFacade.IsDistanceLessOrEqualThan(AI_VALUE2(float, "distance", "current target"), sPlayerbotAIConfig.contactDistance / 2);
         }
     };
 
@@ -40,7 +44,8 @@ namespace ai
         virtual bool IsActive()
 		{
 			Unit* target = AI_VALUE(Unit*, "current target");
-            return target && AI_VALUE2(float, "distance", "current target") <= sPlayerbotAIConfig.tooCloseDistance;
+            return target &&
+                    sServerFacade.IsDistanceLessOrEqualThan(AI_VALUE2(float, "distance", "current target"), sPlayerbotAIConfig.tooCloseDistance);
         }
     };
 
@@ -53,7 +58,8 @@ namespace ai
         virtual bool IsActive()
 		{
 			Unit* target = AI_VALUE(Unit*, GetTargetName());
-			return target && AI_VALUE2(float, "distance", GetTargetName()) > distance;
+			return target &&
+			        sServerFacade.IsDistanceGreaterThan(AI_VALUE2(float, "distance", GetTargetName()), distance);
         }
         virtual string GetTargetName() { return "current target"; }
 
@@ -86,7 +92,7 @@ namespace ai
 
         virtual bool IsActive()
         {
-            return AI_VALUE2(float, "distance", "master target") > distance;
+            return sServerFacade.IsDistanceGreaterThan(AI_VALUE2(float, "distance", "master target"), distance);
         }
 
     private:

@@ -25,7 +25,7 @@ list<ObjectGuid> FindMaxDensity(Player* bot)
                 continue;
 
             float d = sServerFacade.GetDistance2d(unit, other);
-            if (d <= sPlayerbotAIConfig.aoeRadius * 2)
+            if (sServerFacade.IsDistanceLessOrEqualThan(d, sPlayerbotAIConfig.aoeRadius * 2))
                 groups[*i].push_back(*j);
         }
 

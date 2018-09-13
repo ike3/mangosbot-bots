@@ -20,7 +20,7 @@ bool GreetAction::Execute(Event event)
 
     if (!sServerFacade.IsInFront(bot, player, sPlayerbotAIConfig.sightDistance, CAST_ANGLE_IN_FRONT) && !bot->IsTaxiFlying())
     {
-        bot->SetFacingToObject(player);
+        sServerFacade.SetFacingTo(bot, player);
         return true;
     }
 

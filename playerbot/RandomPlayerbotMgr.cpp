@@ -184,7 +184,6 @@ bool RandomPlayerbotMgr::ProcessBot(uint32 bot)
         if (!GetEventValue(bot, "online"))
         {
             SetEventValue(bot, "online", 1, sPlayerbotAIConfig.minRandomBotInWorldTime);
-            ScheduleChangeStrategy(bot, 30);
         }
         return true;
     }

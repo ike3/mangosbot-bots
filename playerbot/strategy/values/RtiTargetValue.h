@@ -45,7 +45,8 @@ namespace ai
                 return NULL;
 
             Unit* unit = ai->GetUnit(ObjectGuid(guid));
-            if (!unit || sServerFacade.UnitIsDead(unit) || sServerFacade.GetDistance2d(bot, unit) >= sPlayerbotAIConfig.reactDistance)
+            if (!unit || sServerFacade.UnitIsDead(unit) ||
+                    sServerFacade.IsDistanceGreaterThan(sServerFacade.GetDistance2d(bot, unit), sPlayerbotAIConfig.reactDistance))
                 return NULL;
 
             return unit;

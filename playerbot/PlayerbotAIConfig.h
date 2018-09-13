@@ -27,7 +27,7 @@ public:
         rpgDelay;
     float sightDistance, spellDistance, reactDistance, grindDistance, lootDistance, shootDistance,
         fleeDistance, tooCloseDistance, meleeDistance, followDistance, whisperDistance, contactDistance,
-        aoeRadius, rpgDistance;
+        aoeRadius, rpgDistance, targetPosRecalcDistance;
     uint32 criticalHealth, lowHealth, mediumHealth, almostFullHealth;
     uint32 lowMana, mediumMana;
 
