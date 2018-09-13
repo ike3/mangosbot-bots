@@ -7,7 +7,7 @@ using namespace ai;
 
 bool NoRpgTargetTrigger::IsActive()
 {
-    return !context->GetValue<Unit*>("rpg target")->Get();
+    return !context->GetValue<Unit*>("rpg target")->Get() && !AI_VALUE(list<ObjectGuid>, "possible rpg targets").empty();
 }
 
 bool FarFromRpgTargetTrigger::IsActive()

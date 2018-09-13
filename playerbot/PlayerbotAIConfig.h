@@ -58,7 +58,7 @@ public:
     bool fleeingEnabled;
     bool summonAtInnkeepersEnabled;
     std::string combatStrategies, nonCombatStrategies;
-    std::string randomBotCombatStrategies, randomBotNonCombatStrategies, randomBotRpgStrategies;
+    std::string randomBotCombatStrategies, randomBotNonCombatStrategies;
     uint32 randomBotMinLevel, randomBotMaxLevel;
     float randomChangeMultiplier;
     uint32 specProbability[MAX_CLASSES][3];
@@ -69,7 +69,6 @@ public:
     uint32 randomBotGuildCount;
     bool deleteRandomBotGuilds;
     std::list<uint32> randomBotGuilds;
-    bool enableRandomBotRpg;
 
     bool guildTaskEnabled;
     uint32 minGuildTaskChangeTime, maxGuildTaskChangeTime;

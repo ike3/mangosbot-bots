@@ -119,11 +119,9 @@ bool PlayerbotAIConfig::Initialize()
     openGoSpell = config.GetIntDefault("AiPlayerbot.OpenGoSpell", 6477);
 
     randomChangeMultiplier = config.GetFloatDefault("AiPlayerbot.RandomChangeMultiplier", 1.0);
-    enableRandomBotRpg = config.GetBoolDefault("AiPlayerbot.EnableRandomBotRpg", false);
 
     randomBotCombatStrategies = config.GetStringDefault("AiPlayerbot.RandomBotCombatStrategies", "+dps,+dps assist,-threat");
-    randomBotNonCombatStrategies = config.GetStringDefault("AiPlayerbot.RandomBotNonCombatStrategies", "+grind,+move random,+loot,-rpg");
-    randomBotRpgStrategies = config.GetStringDefault("AiPlayerbot.RandomBotRpgStrategies", "-grind,-move random,+loot,+rpg");
+    randomBotNonCombatStrategies = config.GetStringDefault("AiPlayerbot.RandomBotNonCombatStrategies", "+grind,+loot,+rpg");
     combatStrategies = config.GetStringDefault("AiPlayerbot.CombatStrategies", "+custom::say");
     nonCombatStrategies = config.GetStringDefault("AiPlayerbot.NonCombatStrategies", "+custom::say");
 

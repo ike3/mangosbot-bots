@@ -3,45 +3,46 @@
 #include "RpgAction.h"
 #include "../../PlayerbotAIConfig.h"
 #include "../values/PossibleRpgTargetsValue.h"
+#include "GossipDef.h"
 
 using namespace ai;
 
 bool RpgAction::Execute(Event event)
 {
     Unit* target = AI_VALUE(Unit*, "rpg target");
-    if (!target) return false;
-
-    Creature* creature = bot->GetNPCIfCanInteractWith(target->GetObjectGuid(), UNIT_NPC_FLAG_NONE);
-    if (!creature) return false;
-
-    WorldObject* faceTo = target;
-    if (!sServerFacade.IsInFront(bot, faceTo, sPlayerbotAIConfig.sightDistance, CAST_ANGLE_IN_FRONT) && !bot->IsTaxiFlying())
+    if (!target)
     {
-        bot->SetFacingTo(bot->GetAngle(faceTo));
+        return false;
+    }
+
+    if (sServerFacade.isMoving(bot))
+    {
+        return false;
+    }
+
+    if (bot->GetMapId() != target->GetMapId())
+    {
+        context->GetValue<Unit*>("rpg target")->Set(NULL);
+        return false;
+    }
+
+    if (!sServerFacade.IsInFront(bot, target, sPlayerbotAIConfig.sightDistance, CAST_ANGLE_IN_FRONT) && !bot->IsTaxiFlying())
+    {
+        bot->SetFacingTo(bot->GetAngle(target));
         ai->SetNextCheckDelay(sPlayerbotAIConfig.globalCoolDown);
         return false;
     }
 
+    bot->GetNPCIfCanInteractWith(target->GetObjectGuid(), UNIT_NPC_FLAG_NONE);
+
     vector<RpgElement> elements;
-
-    for (int i = 0; i < 10; i++)
-    {
-        elements.push_back(&RpgAction::stay);
-        elements.push_back(&RpgAction::cancel);
-    }
-
-    for (int i = 0; i < 50; i++)
-    {
-        elements.push_back(&RpgAction::talk);
-    }
-
-    for (int i = 0; i < 2; i++)
-    {
-        elements.push_back(&RpgAction::cry);
-        elements.push_back(&RpgAction::beg);
-        elements.push_back(&RpgAction::rude);
-        elements.push_back(&RpgAction::point);
-    }
+    elements.push_back(&RpgAction::cancel);
+    elements.push_back(&RpgAction::talk);
+    elements.push_back(&RpgAction::stay);
+    elements.push_back(&RpgAction::cry);
+    elements.push_back(&RpgAction::beg);
+    elements.push_back(&RpgAction::rude);
+    elements.push_back(&RpgAction::point);
 
     RpgElement element = elements[urand(0, elements.size() - 1)];
     (this->*element)(target);
@@ -56,7 +57,7 @@ void RpgAction::longemote(Unit* unit, uint32 type)
 
 void RpgAction::stay(Unit* unit)
 {
-    sLog.outDetail("%s is doing RPG action: stay", bot->GetName());
+    if (bot->PlayerTalkClass) bot->PlayerTalkClass->CloseGossip();
     ai->SetNextCheckDelay(sPlayerbotAIConfig.rpgDelay);
 }
 
@@ -75,14 +76,11 @@ void RpgAction::emote(Unit* unit, uint32 type)
     if (oldSelection)
         bot->SetSelectionGuid(oldSelection);
 
-    sLog.outString("%s is doing RPG action: emote %u", bot->GetName(), type);
-
     ai->SetNextCheckDelay(3000);
 }
 
 void RpgAction::cancel(Unit* unit)
 {
-    sLog.outDetail("%s has dropped RPG target %s", bot->GetName(), unit->GetName());
     context->GetValue<Unit*>("rpg target")->Set(NULL);
 }
 

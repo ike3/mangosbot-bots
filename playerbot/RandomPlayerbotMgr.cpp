@@ -503,7 +503,6 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot)
 
     RandomTeleport(bot, locs);
     Refresh(bot);
-    bot->GetPlayerbotAI()->ChangeStrategy(sPlayerbotAIConfig.randomBotNonCombatStrategies, BOT_STATE_NON_COMBAT);
 }
 
 void RandomPlayerbotMgr::Randomize(Player* bot)
@@ -1072,17 +1071,15 @@ void RandomPlayerbotMgr::ChangeStrategy(Player* player)
 {
     uint32 bot = player->GetGUIDLow();
 
-    if (!sPlayerbotAIConfig.enableRandomBotRpg || !urand(0, 2))
+    if (!urand(0, 2))
     {
         sLog.outString("Changing strategy for bot %s to grinding", player->GetName());
-        player->GetPlayerbotAI()->ChangeStrategy(sPlayerbotAIConfig.randomBotNonCombatStrategies, BOT_STATE_NON_COMBAT);
         ScheduleTeleport(bot, 30);
     }
     else
     {
         sLog.outString("Changing strategy for bot %s to RPG", player->GetName());
         RandomTeleportForRpg(player);
-        player->GetPlayerbotAI()->ChangeStrategy(sPlayerbotAIConfig.randomBotRpgStrategies, BOT_STATE_NON_COMBAT);
     }
 
     ScheduleChangeStrategy(bot);
@@ -1093,7 +1090,7 @@ void RandomPlayerbotMgr::RandomTeleportForRpg(Player* bot)
     sLog.outDetail("Preparing location to random teleporting bot %s for RPG", bot->GetName());
 
     if (rpgLocsCache[bot->GetTeam()].empty()) {
-        QueryResult* results = WorldDatabase.PQuery("SELECT map, position_x, position_y, position_z, t.entry, c.guid "
+        QueryResult* results = WorldDatabase.PQuery("SELECT map, position_x, position_y, position_z, t.FactionAlliance, t.Name "
                 "from creature c inner join creature_template t on c.id = t.entry "
                 "where t.NpcFlags & %u <> 0",
             UNIT_NPC_FLAG_INNKEEPER);
@@ -1106,19 +1103,12 @@ void RandomPlayerbotMgr::RandomTeleportForRpg(Player* bot)
                 float x = fields[1].GetFloat();
                 float y = fields[2].GetFloat();
                 float z = fields[3].GetFloat();
-                uint32 entry = fields[4].GetUInt32();
-                uint32 lowguid = fields[5].GetUInt32();
+                uint32 faction = fields[4].GetUInt32();
+                string name = fields[5].GetCppString();
 
-                ObjectGuid guid(HIGHGUID_UNIT, entry, lowguid);
-                Map* map = sMapMgr.FindMap(mapId);
-                if (!map)
-                    continue;
-
-                Creature* creature = map->GetCreature(guid);
-                if (!creature)
-                    continue;
-
-                if (bot->IsHostileTo(creature)) continue;
+                FactionTemplateEntry const* botFaction = bot->getFactionTemplateEntry();
+                FactionTemplateEntry const* coFaction = sFactionTemplateStore.LookupEntry(faction);
+                if (botFaction->IsHostileTo(*coFaction)) continue;
 
                 WorldLocation loc(mapId, x, y, z, 0);
                 rpgLocsCache[bot->GetTeam()].push_back(loc);
@@ -1127,6 +1117,6 @@ void RandomPlayerbotMgr::RandomTeleportForRpg(Player* bot)
         }
     }
 
+    sLog.outDetail("Random teleporting bot %s for RPG (%d locations available)", bot->GetName(), rpgLocsCache[bot->GetTeam()].size());
     RandomTeleport(bot, rpgLocsCache[bot->GetTeam()]);
-    bot->GetPlayerbotAI()->ChangeStrategy(sPlayerbotAIConfig.randomBotRpgStrategies, BOT_STATE_NON_COMBAT);
 }

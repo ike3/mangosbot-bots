@@ -53,7 +53,11 @@ void PossibleRpgTargetsValue::FindUnits(list<Unit*> &targets)
 
 bool PossibleRpgTargetsValue::AcceptUnit(Unit* unit)
 {
-    if (unit->IsHostileTo(bot) || dynamic_cast<Player*>(unit)) return false;
+    if (unit->IsHostileTo(bot) || dynamic_cast<Player*>(unit))
+        return false;
+
+    //if (sServerFacade.GetDistance2d(bot, unit) <= sPlayerbotAIConfig.tooCloseDistance)
+    //    return false;
 
     for (vector<uint32>::iterator i = allowedNpcFlags.begin(); i != allowedNpcFlags.end(); ++i)
     {

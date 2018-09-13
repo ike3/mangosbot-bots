@@ -18,8 +18,6 @@ bool MoveToRpgTargetAction::Execute(Event event)
         return false;
     }
 
-    sLog.outString("%s is moving to RPG target: %s (distance: %f)", bot->GetName(), target->GetName(), distance);
-
     float x = target->GetPositionX();
     float y = target->GetPositionY();
     float z = target->GetPositionZ();
