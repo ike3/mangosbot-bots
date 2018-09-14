@@ -69,6 +69,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z)
     {
         WaitForReach(distance);
 
+        bot->HandleEmoteState(0);
         if (bot->IsSitState())
             bot->SetStandState(UNIT_STAND_STATE_STAND);
 
@@ -227,6 +228,7 @@ bool MovementAction::Follow(Unit* target, float distance, float angle)
     if (sServerFacade.IsDistanceLessOrEqualThan(sServerFacade.GetDistance2d(bot, target), sPlayerbotAIConfig.followDistance))
         return false;
 
+    bot->HandleEmoteState(0);
     if (bot->IsSitState())
         bot->SetStandState(UNIT_STAND_STATE_STAND);
 

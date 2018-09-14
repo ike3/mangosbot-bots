@@ -29,11 +29,12 @@ bool EmoteAction::Execute(Event event)
         return ai->PlaySound(atoi(param.substr(5).c_str()));
     }
 
-    if (!param.empty() && textEmotes.find(param) != emotes.end())
+    if (!param.empty() && textEmotes.find(param) != textEmotes.end())
     {
         return ai->PlaySound(textEmotes[param]);
     }
-    else if (param.empty() || emotes.find(param) == emotes.end())
+
+    if (param.empty() || emotes.find(param) == emotes.end())
     {
         int index = rand() % emotes.size();
 		for (map<string, uint32>::iterator i = emotes.begin(); i != emotes.end() && index; ++i, --index)

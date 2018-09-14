@@ -1,11 +1,13 @@
 #include "botpch.h"
 #include "../../playerbot.h"
 #include "StayActions.h"
+
+#include "../../ServerFacade.h"
 #include "../values/LastMovementValue.h"
 
 using namespace ai;
 
-void StayActionBase::Stay()
+bool StayActionBase::Stay()
 {
     AI_VALUE(LastMovement&, "last movement").Set(NULL);
 
@@ -13,7 +15,10 @@ void StayActionBase::Stay()
 
     MotionMaster &mm = *bot->GetMotionMaster();
     if (mm.GetCurrentMovementGeneratorType() == FLIGHT_MOTION_TYPE || bot->IsFlying())
-        return;
+        return false;
+
+    if (!sServerFacade.isMoving(bot))
+        return false;
 
     mm.Clear();
     bot->InterruptMoving();
@@ -22,13 +27,12 @@ void StayActionBase::Stay()
 
     if (!bot->IsStandState())
         bot->SetStandState(UNIT_STAND_STATE_STAND);
+    return true;
 }
 
 bool StayAction::Execute(Event event)
 {
-    Stay();
-
-    return true;
+    return Stay();
 }
 
 bool StayAction::isUseful()

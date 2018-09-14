@@ -10,7 +10,7 @@ namespace ai
         StayActionBase(PlayerbotAI* ai, string name) : MovementAction(ai, name) {}
 
     protected:
-        void Stay();
+        bool Stay();
     };
 
     class StayAction : public StayActionBase {
