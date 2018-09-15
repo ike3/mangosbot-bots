@@ -2,6 +2,7 @@
 #include "Action.h"
 #include "Event.h"
 #include "../PlayerbotAIAware.h"
+#include "../PerformanceMonitor.h"
 #include "AiObject.h"
 
 namespace ai
@@ -39,9 +40,13 @@ namespace ai
         virtual T Get()
         {
             time_t now = time(0);
-            if (!lastCheckTime || checkInterval < 2 || now - lastCheckTime >= checkInterval) {
+            if (!lastCheckTime || checkInterval < 2 || now - lastCheckTime >= checkInterval / 2)
+            {
                 lastCheckTime = now;
+
+                PerformanceMonitorOperation *pmo = sPerformanceMonitor.start(PERF_MON_VALUE, getName());
                 value = Calculate();
+                if (pmo) pmo->finish();
             }
             return value;
         }

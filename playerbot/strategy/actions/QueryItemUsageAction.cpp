@@ -11,6 +11,9 @@ using namespace ai;
 
 bool QueryItemUsageAction::Execute(Event event)
 {
+    if (!GetMaster())
+        return false;
+
     WorldPacket& data = event.getPacket();
     if (!data.empty())
     {

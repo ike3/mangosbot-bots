@@ -3,6 +3,7 @@
 
 #include "Engine.h"
 #include "../PlayerbotAIConfig.h"
+#include "../PerformanceMonitor.h"
 
 using namespace ai;
 using namespace std;
@@ -169,7 +170,9 @@ bool Engine::DoNextAction(Unit* unit, int depth)
                         }
                     }
 
+                    PerformanceMonitorOperation *pmo = sPerformanceMonitor.start(PERF_MON_ACTION, action->getName());
                     actionExecuted = ListenAndExecute(action, event);
+                    if (pmo) pmo->finish();
 
                     if (actionExecuted)
                     {
@@ -396,7 +399,9 @@ void Engine::ProcessTriggers()
 
         if (testMode || trigger->needCheck())
         {
+            PerformanceMonitorOperation *pmo = sPerformanceMonitor.start(PERF_MON_TRIGGER, trigger->getName());
             Event event = trigger->Check();
+            if (pmo) pmo->finish();
             if (!event)
                 continue;
             fires[trigger] = event;

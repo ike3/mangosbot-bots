@@ -13,6 +13,20 @@ class Item;
 
 using namespace std;
 
+class CachedEvent
+{
+public:
+    CachedEvent() : value(0), lastChangeTime(0), validIn(0) {}
+    CachedEvent(const CachedEvent& other) : value(other.value), lastChangeTime(other.lastChangeTime), validIn(other.validIn) {}
+    CachedEvent(uint32 value, uint32 lastChangeTime, uint32 validIn) : value(value), lastChangeTime(lastChangeTime), validIn(validIn) {}
+
+public:
+    bool IsEmpty() { return !lastChangeTime; }
+
+public:
+    uint32 value, lastChangeTime, validIn;
+};
+
 class RandomPlayerbotMgr : public PlayerbotHolder
 {
     public:
@@ -74,7 +88,8 @@ class RandomPlayerbotMgr : public PlayerbotHolder
         vector<Player*> players;
         int processTicks;
         map<uint8, vector<WorldLocation> > locsPerLevelCache;
-        map<Team, vector<WorldLocation> > rpgLocsCache;
+        map<uint32, vector<WorldLocation> > rpgLocsCache;
+        map<uint32, map<string, CachedEvent> > eventCache;
 };
 
 #define sRandomPlayerbotMgr RandomPlayerbotMgr::instance()

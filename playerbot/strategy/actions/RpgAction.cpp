@@ -58,7 +58,7 @@ void RpgAction::stay(Unit* unit)
 void RpgAction::work(Unit* unit)
 {
     bot->HandleEmoteCommand(EMOTE_STATE_USESTANDING);
-    ai->SetNextCheckDelay(1000);
+    ai->SetNextCheckDelay(sPlayerbotAIConfig.rpgDelay);
 }
 
 void RpgAction::emote(Unit* unit)
@@ -102,7 +102,7 @@ void RpgAction::emote(Unit* unit)
     if (oldSelection)
         bot->SetSelectionGuid(oldSelection);
 
-    ai->SetNextCheckDelay(1000);
+    ai->SetNextCheckDelay(sPlayerbotAIConfig.rpgDelay);
 }
 
 void RpgAction::cancel(Unit* unit)

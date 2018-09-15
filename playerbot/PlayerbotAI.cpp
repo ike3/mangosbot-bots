@@ -409,8 +409,17 @@ void PlayerbotAI::ChangeEngine(BotState type)
 
 void PlayerbotAI::DoNextAction()
 {
-    if (bot->IsBeingTeleported() || (GetMaster() && GetMaster()->IsBeingTeleported()) || bot->IsTaxiFlying())
+    if (bot->IsBeingTeleported() || (GetMaster() && GetMaster()->IsBeingTeleported()))
+    {
+        SetNextCheckDelay(sPlayerbotAIConfig.globalCoolDown);
         return;
+    }
+
+    if (bot->IsTaxiFlying())
+    {
+        SetNextCheckDelay(sPlayerbotAIConfig.passiveDelay);
+        return;
+    }
 
     currentEngine->DoNextAction(NULL);
 

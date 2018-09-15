@@ -55,5 +55,5 @@ void PlayerbotAIBase::YieldThread()
 
 bool PlayerbotAIBase::IsActive()
 {
-    return nextAICheckDelay < sPlayerbotAIConfig.passiveDelay;
+    return (int)nextAICheckDelay < (int)sPlayerbotAIConfig.maxWaitForMove;
 }

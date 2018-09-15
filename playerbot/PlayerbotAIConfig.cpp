@@ -49,9 +49,9 @@ bool PlayerbotAIConfig::Initialize()
     expireActionTime = config.GetIntDefault("AiPlayerbot.ExpireActionTime", 5000);
     dispelAuraDuration = config.GetIntDefault("AiPlayerbot.DispelAuraDuration", 7000);
     reactDelay = (uint32) config.GetIntDefault("AiPlayerbot.ReactDelay", 100);
-    passiveDelay = (uint32) config.GetIntDefault("AiPlayerbot.PassiveDelay", 3000);
+    passiveDelay = (uint32) config.GetIntDefault("AiPlayerbot.PassiveDelay", 10000);
     repeatDelay = (uint32) config.GetIntDefault("AiPlayerbot.RepeatDelay", 7000);
-    rpgDelay = (uint32) config.GetIntDefault("AiPlayerbot.RpgDelay", 12000);
+    rpgDelay = (uint32) config.GetIntDefault("AiPlayerbot.RpgDelay", 3000);
 
     sightDistance = config.GetFloatDefault("AiPlayerbot.SightDistance", 50.0f);
     spellDistance = config.GetFloatDefault("AiPlayerbot.SpellDistance", 25.0f);
@@ -103,8 +103,7 @@ bool PlayerbotAIConfig::Initialize()
     minRandomBotReviveTime = config.GetIntDefault("AiPlayerbot.MinRandomBotReviveTime", 60);
     maxRandomBotReviveTime = config.GetIntDefault("AiPlayerbot.MaxRandomReviveTime", 300);
     randomBotTeleportDistance = config.GetIntDefault("AiPlayerbot.RandomBotTeleportDistance", 133);
-    minRandomBotsPerInterval = config.GetIntDefault("AiPlayerbot.MinRandomBotsPerInterval", 50);
-    maxRandomBotsPerInterval = config.GetIntDefault("AiPlayerbot.MaxRandomBotsPerInterval", 100);
+    randomBotsPerInterval = config.GetIntDefault("AiPlayerbot.RandomBotsPerInterval", 50);
     minRandomBotsPriceChangeInterval = config.GetIntDefault("AiPlayerbot.MinRandomBotsPriceChangeInterval", 2 * 3600);
     maxRandomBotsPriceChangeInterval = config.GetIntDefault("AiPlayerbot.MaxRandomBotsPriceChangeInterval", 48 * 3600);
     randomBotJoinLfg = config.GetBoolDefault("AiPlayerbot.RandomBotJoinLfg", true);
@@ -128,6 +127,7 @@ bool PlayerbotAIConfig::Initialize()
     commandPrefix = config.GetStringDefault("AiPlayerbot.CommandPrefix", "");
 
     commandServerPort = config.GetIntDefault("AiPlayerbot.CommandServerPort", 0);
+    perfMonEnabled = config.GetBoolDefault("AiPlayerbot.PerfMonEnabled", false);
 
     for (uint32 cls = 0; cls < MAX_CLASSES; ++cls)
     {

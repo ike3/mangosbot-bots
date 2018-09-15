@@ -49,7 +49,7 @@ public:
     uint32 minRandomBotChangeStrategyTime, maxRandomBotChangeStrategyTime;
     uint32 minRandomBotReviveTime, maxRandomBotReviveTime;
     uint32 minRandomBotPvpTime, maxRandomBotPvpTime;
-    uint32 minRandomBotsPerInterval, maxRandomBotsPerInterval;
+    uint32 randomBotsPerInterval;
     uint32 minRandomBotsPriceChangeInterval, maxRandomBotsPriceChangeInterval;
     bool randomBotJoinLfg;
     bool randomBotLoginAtStartup;
@@ -79,6 +79,7 @@ public:
     uint32 iterationsPerTick;
 
     int commandServerPort;
+    bool perfMonEnabled;
 
     std::string GetValue(std::string name);
     void SetValue(std::string name, std::string value);
