@@ -28,7 +28,10 @@ bool SpiritHealerAction::Execute(Event event)
 {
     Corpse* corpse = bot->GetCorpse();
     if (!corpse)
+    {
+        ai->TellMaster("I am not a spirit");
         return false;
+    }
 
     list<ObjectGuid> npcs = AI_VALUE(list<ObjectGuid>, "nearest npcs");
     for (list<ObjectGuid>::iterator i = npcs.begin(); i != npcs.end(); i++)
@@ -42,6 +45,7 @@ bool SpiritHealerAction::Execute(Event event)
             bot->SaveToDB();
             context->GetValue<Unit*>("current target")->Set(NULL);
             bot->SetSelectionGuid(ObjectGuid());
+            ai->TellMaster("Hello");
             return true;
         }
     }
