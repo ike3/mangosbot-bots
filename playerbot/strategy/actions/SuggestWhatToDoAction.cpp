@@ -254,11 +254,7 @@ void SuggestWhatToDoAction::something()
     map<string, string> placeholders;
     placeholders["%role"] = chat->formatClass(bot, AiFactory::GetPlayerSpecTab(bot));
 
-    uint32 area = bot->GetAreaId();
-    if (!area)
-        return;
-
-    const AreaTableEntry* entry = sAreaStore.LookupEntry(area);
+    AreaTableEntry const* entry = GetAreaEntryByAreaID(bot->GetAreaId());
     if (!entry)
         return;
 

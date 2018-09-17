@@ -79,19 +79,8 @@ bool SayAction::Execute(Event event)
 
     if (bot->GetMap())
     {
-		const TerrainInfo * terrain = bot->GetMap()->GetTerrain();
-		if (terrain)
-		{
-			uint32 areaId = terrain->GetAreaId(bot->GetPositionX(), bot->GetPositionY(), bot->GetPositionZ());
-			if (areaId)
-			{
-				AreaTableEntry const* area = sAreaStore.LookupEntry(areaId);
-				if (area)
-				{
-					replaceAll(text, "<subzone>", area->area_name[0]);
-				}
-			}
-		}
+        if (AreaTableEntry const* area = GetAreaEntryByAreaID(bot->GetAreaId()))
+            replaceAll(text, "<subzone>", area->area_name[0]);
     }
 
     if (text.find("/y ") == 0)

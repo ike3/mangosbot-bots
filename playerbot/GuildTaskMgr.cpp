@@ -353,7 +353,7 @@ bool GuildTaskMgr::SendKillAdvertisement(uint32 creatureId, uint32 owner, uint32
         Map* map = sMapMgr.FindMap(mapid, 0);
         if (!map) continue;
         uint32 area = map->GetTerrain()->GetAreaId(x, y, z);
-        const AreaTableEntry* entry = sAreaStore.LookupEntry(area);
+        const AreaTableEntry* entry = GetAreaEntryByAreaID(area);
         if (!entry) continue;
         location = entry->area_name[0];
         break;
