@@ -18,7 +18,6 @@ PlayerbotHolder::PlayerbotHolder() : PlayerbotAIBase()
 
 PlayerbotHolder::~PlayerbotHolder()
 {
-    LogoutAllBots();
 }
 
 
