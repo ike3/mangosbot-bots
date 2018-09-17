@@ -87,6 +87,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z)
         mm.MovePoint(mapId, x, y, z, generatePath);
 
         AI_VALUE(LastMovement&, "last movement").Set(x, y, z, bot->GetOrientation());
+        context->GetValue<time_t>("stay time")->Set(0);
         return true;
     }
 
@@ -216,13 +217,14 @@ bool MovementAction::Follow(Unit* target, float distance, float angle)
             bot->Relocate(x, y, z, bot->GetOrientation());
         }
         AI_VALUE(LastMovement&, "last movement").Set(target);
+        context->GetValue<time_t>("stay time")->Set(0);
         return true;
     }
 
     if (!IsMovingAllowed(target))
         return false;
 
-    if (target->IsFriendlyTo(bot) && bot->IsMounted() && AI_VALUE(list<ObjectGuid>, "possible targets").empty())
+    if (target->IsFriendlyTo(bot) && bot->IsMounted() && AI_VALUE(list<ObjectGuid>, "all targets").empty())
         distance += angle;
 
     if (sServerFacade.IsDistanceLessOrEqualThan(sServerFacade.GetDistance2d(bot, target), sPlayerbotAIConfig.followDistance))
@@ -242,6 +244,7 @@ bool MovementAction::Follow(Unit* target, float distance, float angle)
         return false;
 
     AI_VALUE(LastMovement&, "last movement").Set(target);
+    context->GetValue<time_t>("stay time")->Set(0);
 
     if (bot->GetMotionMaster()->GetCurrentMovementGeneratorType() == FOLLOW_MOTION_TYPE)
     {

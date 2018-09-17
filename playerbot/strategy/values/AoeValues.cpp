@@ -8,7 +8,7 @@ using namespace ai;
 
 list<ObjectGuid> FindMaxDensity(Player* bot)
 {
-    list<ObjectGuid> units = *bot->GetPlayerbotAI()->GetAiObjectContext()->GetValue<list<ObjectGuid> >("possible targets");
+    list<ObjectGuid> units = *bot->GetPlayerbotAI()->GetAiObjectContext()->GetValue<list<ObjectGuid> >("all targets");
     map<ObjectGuid, list<ObjectGuid> > groups;
     int maxCount = 0;
     ObjectGuid maxGroup;

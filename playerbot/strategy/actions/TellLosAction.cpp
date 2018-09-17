@@ -11,32 +11,28 @@ bool TellLosAction::Execute(Event event)
 
     if (param.empty() || param == "targets")
     {
-        list<ObjectGuid> targets = *context->GetValue<list<ObjectGuid> >("possible targets");
-        ListUnits("--- Targets ---", targets);
+        ListUnits("--- Targets ---", *context->GetValue<list<ObjectGuid> >("possible targets"));
+        ListUnits("--- Targets (All) ---", *context->GetValue<list<ObjectGuid> >("all targets"));
     }
 
     if (param.empty() || param == "npcs")
     {
-        list<ObjectGuid> npcs = *context->GetValue<list<ObjectGuid> >("nearest npcs");
-        ListUnits("--- NPCs ---", npcs);
+        ListUnits("--- NPCs ---", *context->GetValue<list<ObjectGuid> >("nearest npcs"));
     }
 
     if (param.empty() || param == "corpses")
     {
-        list<ObjectGuid> corpses = *context->GetValue<list<ObjectGuid> >("nearest corpses");
-        ListUnits("--- Corpses ---", corpses);
+        ListUnits("--- Corpses ---", *context->GetValue<list<ObjectGuid> >("nearest corpses"));
     }
 
     if (param.empty() || param == "gos" || param == "game objects")
     {
-        list<ObjectGuid> gos = *context->GetValue<list<ObjectGuid> >("nearest game objects");
-        ListGameObjects("--- Game objects ---", gos);
+        ListGameObjects("--- Game objects ---", *context->GetValue<list<ObjectGuid> >("nearest game objects"));
     }
 
     if (param.empty() || param == "players")
     {
-        list<ObjectGuid> gos = *context->GetValue<list<ObjectGuid> >("nearest friendly players");
-        ListUnits("--- Friendly players ---", gos);
+        ListUnits("--- Friendly players ---", *context->GetValue<list<ObjectGuid> >("nearest friendly players"));
     }
 
     return true;

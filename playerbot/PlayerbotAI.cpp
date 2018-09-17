@@ -934,14 +934,22 @@ bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target)
     }
 
     aiObjectContext->GetValue<LastMovement&>("last movement")->Get().Set(NULL);
+    aiObjectContext->GetValue<time_t>("stay time")->Set(0);
 
     MotionMaster &mm = *bot->GetMotionMaster();
 
-    if (bot->IsFlying())
+    if (bot->IsFlying() || bot->IsTaxiFlying())
         return false;
 
 	bot->clearUnitState(UNIT_STAT_CHASE);
 	bot->clearUnitState(UNIT_STAT_FOLLOW);
+
+	bool failWithDelay = false;
+    if (!bot->IsStandState())
+    {
+        bot->SetStandState(UNIT_STAND_STATE_STAND);
+        failWithDelay = true;
+    }
 
 	ObjectGuid oldSel = bot->GetSelectionGuid();
 	bot->SetSelectionGuid(target->GetObjectGuid());
@@ -950,6 +958,11 @@ bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target)
     if (!sServerFacade.IsInFront(bot, faceTo, sPlayerbotAIConfig.sightDistance, CAST_ANGLE_IN_FRONT) && !bot->IsTaxiFlying())
     {
         sServerFacade.SetFacingTo(bot, faceTo);
+        failWithDelay = true;
+    }
+
+    if (failWithDelay)
+    {
         //spell->cancel();
         SetNextCheckDelay(sPlayerbotAIConfig.globalCoolDown);
         return false;
@@ -961,7 +974,7 @@ bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target)
         mm.Clear();
         bot->StopMoving();
         delete spell;
-        SetNextCheckDelay(sPlayerbotAIConfig.reactDelay);
+        SetNextCheckDelay(sPlayerbotAIConfig.globalCoolDown);
         //spell->cancel();
         return false;
     }

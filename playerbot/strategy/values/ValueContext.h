@@ -80,6 +80,7 @@ namespace ai
             creators["nearest npcs"] = &ValueContext::nearest_npcs;
             creators["nearest friendly players"] = &ValueContext::nearest_friendly_players;
             creators["possible targets"] = &ValueContext::possible_targets;
+            creators["all targets"] = &ValueContext::all_targets;
             creators["possible rpg targets"] = &ValueContext::possible_rpg_targets;
             creators["nearest adds"] = &ValueContext::nearest_adds;
             creators["nearest corpses"] = &ValueContext::nearest_corpses;
@@ -125,6 +126,7 @@ namespace ai
             creators["always loot list"] = &ValueContext::always_loot_list;
             creators["loot strategy"] = &ValueContext::loot_strategy;
             creators["last movement"] = &ValueContext::last_movement;
+            creators["stay time"] = &ValueContext::stay_time;
             creators["last taxi"] = &ValueContext::last_movement;
             creators["last area trigger"] = &ValueContext::last_movement;
             creators["distance"] = &ValueContext::distance;
@@ -206,6 +208,7 @@ namespace ai
         static UntypedValue* swimming(PlayerbotAI* ai) { return new IsSwimmingValue(ai); }
         static UntypedValue* distance(PlayerbotAI* ai) { return new DistanceValue(ai); }
         static UntypedValue* last_movement(PlayerbotAI* ai) { return new LastMovementValue(ai); }
+        static UntypedValue* stay_time(PlayerbotAI* ai) { return new StayTimeValue(ai); }
 
         static UntypedValue* can_loot(PlayerbotAI* ai) { return new CanLootValue(ai); }
         static UntypedValue* available_loot(PlayerbotAI* ai) { return new AvailableLootValue(ai); }
@@ -234,6 +237,7 @@ namespace ai
         static UntypedValue* nearest_corpses(PlayerbotAI* ai) { return new NearestCorpsesValue(ai); }
         static UntypedValue* possible_rpg_targets(PlayerbotAI* ai) { return new PossibleRpgTargetsValue(ai); }
         static UntypedValue* possible_targets(PlayerbotAI* ai) { return new PossibleTargetsValue(ai); }
+        static UntypedValue* all_targets(PlayerbotAI* ai) { return new AllTargetsValue(ai); }
         static UntypedValue* nearest_adds(PlayerbotAI* ai) { return new NearestAdsValue(ai); }
         static UntypedValue* party_member_without_aura(PlayerbotAI* ai) { return new PartyMemberWithoutAuraValue(ai); }
         static UntypedValue* attacker_without_aura(PlayerbotAI* ai) { return new AttackerWithoutAuraTargetValue(ai); }

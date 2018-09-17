@@ -10,7 +10,7 @@ bool LootAvailableTrigger::IsActive()
     return AI_VALUE(bool, "has available loot") && AI_VALUE(uint8, "bag space") < 80 &&
             (
                     sServerFacade.IsDistanceLessOrEqualThan(AI_VALUE2(float, "distance", "loot target"), INTERACTION_DISTANCE) ||
-                    AI_VALUE(list<ObjectGuid>, "possible targets").empty()
+                    AI_VALUE(list<ObjectGuid>, "all targets").empty()
             ) &&
             !AI_VALUE2(bool, "combat", "self target") &&
             !AI_VALUE2(bool, "mounted", "self target");
