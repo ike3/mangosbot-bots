@@ -44,6 +44,7 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed)
     if (!sPlayerbotAIConfig.randomBotAutologin || !sPlayerbotAIConfig.enabled)
         return;
 
+    PerformanceMonitorOperation *pmo = sPerformanceMonitor.start(PERF_MON_TOTAL, "RandomPlayerbotMgr::UpdateAIInternal");
     int maxAllowedBotCount = GetEventValue(0, "bot_count");
     if (!maxAllowedBotCount)
     {
@@ -75,6 +76,7 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed)
         PrintStats();
         SetEventValue(0, "print_stats", 1, sPlayerbotAIConfig.randomBotUpdateInterval);
     }
+    if (pmo) pmo->finish();
 }
 
 uint32 RandomPlayerbotMgr::AddRandomBots()
@@ -902,6 +904,7 @@ void RandomPlayerbotMgr::PrintStats()
 {
     sLog.outString("%d Random Bots online", playerBots.size());
 
+    BarGoLink bar(playerBots.size());
     map<uint32, int> alliance, horde;
     for (uint32 i = 0; i < 10; ++i)
     {
@@ -989,6 +992,7 @@ void RandomPlayerbotMgr::PrintStats()
             dps++;
             break;
         }
+        bar.step();
     }
 
     sLog.outString("Per level:");

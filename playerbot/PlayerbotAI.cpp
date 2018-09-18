@@ -141,6 +141,7 @@ void PlayerbotAI::UpdateAIInternal(uint32 elapsed)
     if (bot->IsBeingTeleported())
         return;
 
+    PerformanceMonitorOperation *pmo = sPerformanceMonitor.start(PERF_MON_TOTAL, "PlayerbotAI::UpdateAIInternal");
     ExternalEventHelper helper(aiObjectContext);
     while (!chatCommands.empty())
     {
@@ -161,6 +162,7 @@ void PlayerbotAI::UpdateAIInternal(uint32 elapsed)
     masterOutgoingPacketHandlers.Handle(helper);
 
 	DoNextAction();
+	if (pmo) pmo->finish();
 }
 
 void PlayerbotAI::HandleTeleportAck()
