@@ -20,4 +20,11 @@ namespace ai
         virtual bool isUseful();
     };
 
+    class SitAction : public StayActionBase {
+    public:
+        SitAction(PlayerbotAI* ai) : StayActionBase(ai, "sit") {}
+        virtual bool Execute(Event event);
+        virtual bool isUseful();
+    };
+
 }

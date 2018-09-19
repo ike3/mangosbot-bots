@@ -11,4 +11,12 @@ namespace ai
         virtual NextAction** getDefaultActions();
     };
 
+    class SitStrategy : public NonCombatStrategy
+    {
+    public:
+        SitStrategy(PlayerbotAI* ai) : NonCombatStrategy(ai) {}
+        virtual string getName() { return "sit"; }
+        virtual void InitTriggers(std::list<TriggerNode*> &triggers);
+    };
+
 }

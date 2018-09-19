@@ -62,6 +62,7 @@ namespace ai
             creators["reveal"] = &StrategyContext::reveal;
             creators["collision"] = &StrategyContext::collision;
             creators["rpg"] = &StrategyContext::rpg;
+            creators["sit"] = &StrategyContext::sit;
         }
 
     private:
@@ -90,6 +91,7 @@ namespace ai
         static Strategy* reveal(PlayerbotAI* ai) { return new RevealStrategy(ai); }
         static Strategy* collision(PlayerbotAI* ai) { return new CollisionStrategy(ai); }
         static Strategy* rpg(PlayerbotAI* ai) { return new RpgStrategy(ai); }
+        static Strategy* sit(PlayerbotAI* ai) { return new SitStrategy(ai); }
     };
 
     class MovementStrategyContext : public NamedObjectContext<Strategy>

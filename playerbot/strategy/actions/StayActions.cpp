@@ -26,9 +26,6 @@ bool StayActionBase::Stay()
         context->GetValue<time_t>("stay time")->Set(stayTime);
     }
 
-    if (bot->IsStandState() && sitDelay && now > stayTime + 2 * sitDelay)
-        bot->SetStandState(UNIT_STAND_STATE_SIT);
-
     if (!sServerFacade.isMoving(bot))
         return false;
 
@@ -46,6 +43,20 @@ bool StayAction::Execute(Event event)
 }
 
 bool StayAction::isUseful()
+{
+    return !AI_VALUE2(bool, "moving", "self target");
+}
+
+bool SitAction::Execute(Event event)
+{
+    if (sServerFacade.isMoving(bot))
+        return false;
+
+    bot->SetStandState(UNIT_STAND_STATE_SIT);
+    return true;
+}
+
+bool SitAction::isUseful()
 {
     return !AI_VALUE2(bool, "moving", "self target");
 }

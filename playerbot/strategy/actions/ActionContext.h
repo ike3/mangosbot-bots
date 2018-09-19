@@ -67,6 +67,7 @@ namespace ai
             creators["follow"] = &ActionContext::follow;
             creators["runaway"] = &ActionContext::runaway;
             creators["stay"] = &ActionContext::stay;
+            creators["sit"] = &ActionContext::sit;
             creators["attack anything"] = &ActionContext::attack_anything;
             creators["attack least hp target"] = &ActionContext::attack_least_hp_target;
             creators["attack enemy player"] = &ActionContext::enemy_player_target;
@@ -123,6 +124,7 @@ namespace ai
         static Action* attack_least_hp_target(PlayerbotAI* ai) { return new AttackLeastHpTargetAction(ai); }
         static Action* enemy_player_target(PlayerbotAI* ai) { return new AttackEnemyPlayerAction(ai); }
         static Action* stay(PlayerbotAI* ai) { return new StayAction(ai); }
+        static Action* sit(PlayerbotAI* ai) { return new SitAction(ai); }
         static Action* runaway(PlayerbotAI* ai) { return new RunAwayAction(ai); }
         static Action* follow(PlayerbotAI* ai) { return new FollowAction(ai); }
         static Action* add_gathering_loot(PlayerbotAI* ai) { return new AddGatheringLootAction(ai); }
