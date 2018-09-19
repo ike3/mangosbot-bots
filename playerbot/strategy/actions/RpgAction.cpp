@@ -3,6 +3,7 @@
 #include "RpgAction.h"
 #include "../../PlayerbotAIConfig.h"
 #include "../values/PossibleRpgTargetsValue.h"
+#include "EmoteAction.h"
 #include "GossipDef.h"
 
 using namespace ai;
@@ -63,30 +64,7 @@ void RpgAction::work(Unit* unit)
 
 void RpgAction::emote(Unit* unit)
 {
-    vector<uint32> types;
-    if (!urand(0, 20))
-    {
-        // expressions
-        types.push_back(EMOTE_ONESHOT_BOW);
-        types.push_back(EMOTE_ONESHOT_RUDE);
-        types.push_back(EMOTE_ONESHOT_CRY);
-        types.push_back(EMOTE_ONESHOT_LAUGH);
-        types.push_back(EMOTE_ONESHOT_POINT);
-        types.push_back(EMOTE_ONESHOT_CHEER);
-        types.push_back(EMOTE_ONESHOT_SHY);
-    }
-    else
-    {
-        // talk
-        types.push_back(EMOTE_ONESHOT_TALK);
-        types.push_back(EMOTE_ONESHOT_EXCLAMATION);
-        types.push_back(EMOTE_ONESHOT_QUESTION);
-        if (unit->HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_TRAINER) || unit->HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_QUESTGIVER))
-        {
-            types.push_back(EMOTE_ONESHOT_SALUTE);
-        }
-    }
-    uint32 type = types[urand(0, types.size() - 1)];
+    uint32 type = TalkAction::GetRandomEmote(unit);
 
     ObjectGuid oldSelection = bot->GetSelectionGuid();
 

@@ -249,5 +249,5 @@ bool StayTimeTrigger::IsActive()
 {
     time_t stayTime = AI_VALUE(time_t, "stay time");
     time_t now = time(0);
-    return delay && now > stayTime + 2 * delay / 1000;
+    return delay && stayTime && now > stayTime + 2 * delay / 1000;
 }

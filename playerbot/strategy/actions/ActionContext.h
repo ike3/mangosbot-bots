@@ -72,6 +72,7 @@ namespace ai
             creators["attack least hp target"] = &ActionContext::attack_least_hp_target;
             creators["attack enemy player"] = &ActionContext::enemy_player_target;
             creators["emote"] = &ActionContext::emote;
+            creators["talk"] = &ActionContext::talk;
             creators["suggest what to do"] = &ActionContext::suggest_what_to_do;
             creators["suggest trade"] = &ActionContext::suggest_trade;
             creators["return"] = &ActionContext::_return;
@@ -118,6 +119,7 @@ namespace ai
         static Action* end_pull(PlayerbotAI* ai) { return new ChangeCombatStrategyAction(ai, "-pull"); }
 
         static Action* emote(PlayerbotAI* ai) { return new EmoteAction(ai); }
+        static Action* talk(PlayerbotAI* ai) { return new TalkAction(ai); }
         static Action* suggest_what_to_do(PlayerbotAI* ai) { return new SuggestWhatToDoAction(ai); }
         static Action* suggest_trade(PlayerbotAI* ai) { return new SuggestTradeAction(ai); }
         static Action* attack_anything(PlayerbotAI* ai) { return new AttackAnythingAction(ai); }

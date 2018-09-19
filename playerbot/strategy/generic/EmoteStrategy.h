@@ -12,5 +12,4 @@ namespace ai
         virtual string getName() { return "emote"; }
     };
 
-
 }

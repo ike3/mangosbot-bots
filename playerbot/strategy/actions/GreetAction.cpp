@@ -18,11 +18,8 @@ bool GreetAction::Execute(Event event)
     Player* player = dynamic_cast<Player*>(ai->GetUnit(guid));
     if (!player) return false;
 
-    if (!sServerFacade.IsInFront(bot, player, sPlayerbotAIConfig.sightDistance, CAST_ANGLE_IN_FRONT) && !bot->IsTaxiFlying())
-    {
+    if (!sServerFacade.IsInFront(bot, player, sPlayerbotAIConfig.sightDistance, CAST_ANGLE_IN_FRONT))
         sServerFacade.SetFacingTo(bot, player);
-        return true;
-    }
 
     ObjectGuid oldSel = bot->GetSelectionGuid();
     bot->SetSelectionGuid(guid);

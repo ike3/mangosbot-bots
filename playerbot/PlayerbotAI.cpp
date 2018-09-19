@@ -732,7 +732,7 @@ bool PlayerbotAI::TellMaster(string text, PlayerbotSecurityLevel securityLevel)
 
     if (!sServerFacade.isMoving(bot) && !sServerFacade.IsInCombat(bot) && bot->GetMapId() == master->GetMapId() && !bot->IsTaxiFlying())
     {
-        if (!sServerFacade.IsInFront(bot, master, sPlayerbotAIConfig.sightDistance, CAST_ANGLE_IN_FRONT))
+        if (!sServerFacade.IsInFront(bot, master, sPlayerbotAIConfig.sightDistance, EMOTE_ANGLE_IN_FRONT))
             sServerFacade.SetFacingTo(bot, master);
 
         bot->HandleEmoteCommand(EMOTE_ONESHOT_TALK);

@@ -3,73 +3,22 @@
 #include "EmoteAction.h"
 
 #include "../../PlayerbotAIConfig.h"
+#include "../../ServerFacade.h"
 using namespace ai;
 
-map<string, uint32> EmoteAction::emotes;
-map<string, uint32> EmoteAction::textEmotes;
+map<string, uint32> EmoteActionBase::emotes;
+map<string, uint32> EmoteActionBase::textEmotes;
 
-bool EmoteAction::Execute(Event event)
+EmoteActionBase::EmoteActionBase(PlayerbotAI* ai, string name) : Action(ai, name)
 {
-    if (emotes.empty())
-        InitEmotes();
-
-    uint32 emote = 0;
-
-    string param = event.getParam();
-    if (param.empty())
-    {
-        time_t lastEmote = AI_VALUE2(time_t, "last emote", qualifier);
-        ai->GetAiObjectContext()->GetValue<time_t>("last emote", qualifier)->Set(time(0) + urand(1000, sPlayerbotAIConfig.repeatDelay) / 1000);
-    }
-
-    if (param.empty()) param = qualifier;
-
-    if (param.find("sound") == 0)
-    {
-        return ai->PlaySound(atoi(param.substr(5).c_str()));
-    }
-
-    if (!param.empty() && textEmotes.find(param) != textEmotes.end())
-    {
-        return ai->PlaySound(textEmotes[param]);
-    }
-
-    if (param.empty() || emotes.find(param) == emotes.end())
-    {
-        int index = rand() % emotes.size();
-		for (map<string, uint32>::iterator i = emotes.begin(); i != emotes.end() && index; ++i, --index)
-			emote = i->second;
-    }
-    else
-    {
-        emote = emotes[param];
-    }
-
-    if (param.find("text") == 0)
-    {
-        emote = atoi(param.substr(4).c_str());
-    }
-
-    Player* master = GetMaster();
-	if (master)
-	{
-        ObjectGuid masterSelection = master->GetSelectionGuid();
-        if (masterSelection)
-        {
-            ObjectGuid oldSelection = bot->GetSelectionGuid();
-            bot->SetSelectionGuid(masterSelection);
-            bot->HandleEmoteCommand(emote);
-            if (oldSelection)
-                bot->SetSelectionGuid(oldSelection);
-            return true;
-        }
-	}
-
-    bot->HandleEmoteCommand(emote);
-    return true;
+    if (emotes.empty()) InitEmotes();
 }
 
-void EmoteAction::InitEmotes()
+EmoteAction::EmoteAction(PlayerbotAI* ai) : EmoteActionBase(ai, "emote"), Qualified()
+{
+}
+
+void EmoteActionBase::InitEmotes()
 {
     emotes["dance"] = EMOTE_ONESHOT_DANCE;
     emotes["drown"] = EMOTE_ONESHOT_DROWN;
@@ -128,9 +77,143 @@ void EmoteAction::InitEmotes()
     textEmotes["helpme"] = 303;
 }
 
+bool EmoteActionBase::Emote(Unit* target, uint32 type)
+{
+    if (sServerFacade.isMoving(bot)) return false;
+
+    if (target && !sServerFacade.IsInFront(bot, target, sPlayerbotAIConfig.sightDistance, EMOTE_ANGLE_IN_FRONT))
+        sServerFacade.SetFacingTo(bot, target);
+
+    ObjectGuid oldSelection = bot->GetSelectionGuid();
+    if (target)
+    {
+        bot->SetSelectionGuid(target->GetObjectGuid());
+        Player* player = dynamic_cast<Player*>(target);
+        if (player && player->GetPlayerbotAI() && !sServerFacade.IsInFront(player, bot, sPlayerbotAIConfig.sightDistance, EMOTE_ANGLE_IN_FRONT))
+            sServerFacade.SetFacingTo(player, bot);
+    }
+
+    bot->HandleEmoteCommand(type);
+
+    if (oldSelection)
+        bot->SetSelectionGuid(oldSelection);
+
+    return true;
+}
+
+Unit* EmoteActionBase::GetTarget()
+{
+    Unit* target = NULL;
+
+    list<ObjectGuid> nfp = *context->GetValue<list<ObjectGuid> >("nearest friendly players");
+    vector<Unit*> targets;
+    for (list<ObjectGuid>::iterator i = nfp.begin(); i != nfp.end(); ++i)
+    {
+        Unit* unit = ai->GetUnit(*i);
+        if (unit && sServerFacade.GetDistance2d(bot, unit) < sPlayerbotAIConfig.tooCloseDistance) targets.push_back(unit);
+    }
+
+    if (!targets.empty())
+        target = targets[urand(0, targets.size() - 1)];
+
+    return target;
+}
+
+
+bool EmoteAction::Execute(Event event)
+{
+    uint32 emote = 0;
+
+    string param = event.getParam();
+    if (param.empty())
+    {
+        time_t lastEmote = AI_VALUE2(time_t, "last emote", qualifier);
+        ai->GetAiObjectContext()->GetValue<time_t>("last emote", qualifier)->Set(time(0) + urand(1000, sPlayerbotAIConfig.repeatDelay) / 1000);
+    }
+
+    if (param.empty()) param = qualifier;
+
+    if (param.find("sound") == 0)
+    {
+        return ai->PlaySound(atoi(param.substr(5).c_str()));
+    }
+
+    if (!param.empty() && textEmotes.find(param) != textEmotes.end())
+    {
+        return ai->PlaySound(textEmotes[param]);
+    }
+
+    if (param.empty() || emotes.find(param) == emotes.end())
+    {
+        int index = rand() % emotes.size();
+        for (map<string, uint32>::iterator i = emotes.begin(); i != emotes.end() && index; ++i, --index)
+            emote = i->second;
+    }
+    else
+    {
+        emote = emotes[param];
+    }
+
+    if (param.find("text") == 0)
+    {
+        emote = atoi(param.substr(4).c_str());
+    }
+
+    return Emote(GetTarget(), emote);
+}
 
 bool EmoteAction::isUseful()
 {
     time_t lastEmote = AI_VALUE2(time_t, "last emote", qualifier);
     return (time(0) - lastEmote) >= sPlayerbotAIConfig.repeatDelay / 1000;
+}
+
+
+bool TalkAction::Execute(Event event)
+{
+    Unit* target = AI_VALUE(Unit*, "talk target");
+    if (!target)
+        target = GetTarget();
+
+    if (!urand(0, 100)) target = NULL;
+    context->GetValue<Unit*>("talk target")->Set(target);
+
+    if (target)
+    {
+        Player* player = dynamic_cast<Player*>(target);
+        if (player && player->GetPlayerbotAI())
+            player->GetPlayerbotAI()->GetAiObjectContext()->GetValue<Unit*>("talk target")->Set(bot);
+
+        return Emote(target, GetRandomEmote(target));
+    }
+
+    return false;
+}
+
+uint32 TalkAction::GetRandomEmote(Unit* unit)
+{
+    vector<uint32> types;
+    if (!urand(0, 20))
+    {
+        // expressions
+        types.push_back(EMOTE_ONESHOT_BOW);
+        types.push_back(EMOTE_ONESHOT_RUDE);
+        types.push_back(EMOTE_ONESHOT_CRY);
+        types.push_back(EMOTE_ONESHOT_LAUGH);
+        types.push_back(EMOTE_ONESHOT_POINT);
+        types.push_back(EMOTE_ONESHOT_CHEER);
+        types.push_back(EMOTE_ONESHOT_SHY);
+    }
+    else
+    {
+        // talk
+        types.push_back(EMOTE_ONESHOT_TALK);
+        types.push_back(EMOTE_ONESHOT_EXCLAMATION);
+        types.push_back(EMOTE_ONESHOT_QUESTION);
+        if (unit && (unit->HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_TRAINER) || unit->HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_QUESTGIVER)))
+        {
+            types.push_back(EMOTE_ONESHOT_SALUTE);
+        }
+    }
+    return types[urand(0, types.size() - 1)];
 }
