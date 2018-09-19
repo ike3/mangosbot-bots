@@ -22,15 +22,19 @@ CategoryList CategoryList::instance;
 CategoryList::CategoryList()
 {
     Add(new Equip());
-
     Add(new Quiver());
     Add(new Container());
-
     Add(new Projectile());
-
     Add(new Recipe());
-
+    Add(new Alchemy());
+    Add(new Scroll());
+    Add(new Food());
+    Add(new Bandage());
+    Add(new ItemEnchant());
+    Add(new Reagent());
+    Add(new ahbot::Quest());
     Add(new DevicesAndParts());
+
     Add(new TradeSkill(SKILL_TAILORING));
     Add(new TradeSkill(SKILL_LEATHERWORKING));
     Add(new TradeSkill(SKILL_ENGINEERING));
@@ -46,15 +50,6 @@ CategoryList::CategoryList()
 #ifdef MANGOSBOT_ONE
     Add(new TradeSkill(SKILL_JEWELCRAFTING));
 #endif
-
-    Add(new Alchemy());
-    Add(new Scroll());
-    Add(new Food());
-    Add(new Bandage());
-    Add(new ItemEnchant());
-
-    Add(new Reagent());
-    Add(new ahbot::Quest());
 }
 
 void CategoryList::Add(Category* category)
@@ -162,12 +157,13 @@ void AvailableItemsBag::Load()
           delete results;
       }
 
+      BarGoLink bar(sItemStorage.GetMaxEntry());
       for (uint32 itemId = 0; itemId < sItemStorage.GetMaxEntry(); ++itemId)
       {
-          if (vendorItems.find(itemId) != vendorItems.end() && sAhBotConfig.ignoreVendorItemIds.find(itemId) == sAhBotConfig.ignoreVendorItemIds.end())
-              continue;
+          if (vendorItems.find(itemId) == vendorItems.end() || sAhBotConfig.ignoreVendorItemIds.find(itemId) != sAhBotConfig.ignoreVendorItemIds.end())
+              Add(sObjectMgr.GetItemPrototype(itemId));
 
-        Add(sObjectMgr.GetItemPrototype(itemId));
+          bar.step();
     }
 
 }

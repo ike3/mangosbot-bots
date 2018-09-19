@@ -17,9 +17,11 @@ namespace ahbot
         virtual uint32 GetSkillId() { return skill; }
 
     private:
+        bool ContainsInternal(ItemPrototype const* proto);
         bool IsCraftedBySpell(ItemPrototype const* proto, uint32 spellId);
         bool IsCraftedBy(ItemPrototype const* proto, uint32 craftId);
         uint32 skill;
+        set<uint32> itemCache;
     };
 
 };
