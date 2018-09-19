@@ -156,7 +156,7 @@ bool PlayerbotAIConfig::Initialize()
     guildTaskAdvertCleanupTime = config.GetIntDefault("AiPlayerbot.GuildTaskAdvertCleanupTime", 3600);
 
     targetPosRecalcDistance = sWorld.getConfig(CONFIG_FLOAT_RATE_TARGET_POS_RECALCULATION_RANGE);
-    BarGoLink::SetOutputState(config.GetBoolDefault("AiPlayerbot.ShowProgressBars", true));
+    BarGoLink::SetOutputState(config.GetBoolDefault("AiPlayerbot.ShowProgressBars", false));
 
     RandomPlayerbotFactory::CreateRandomBots();
     sLog.outString("AI Playerbot configuration loaded");
