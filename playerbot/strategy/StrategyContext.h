@@ -27,7 +27,7 @@
 #include "generic/ThreatStrategy.h"
 #include "generic/TellTargetStrategy.h"
 #include "generic/AttackEnemyPlayersStrategy.h"
-#include "generic/MoveRandomStrategy.h"
+#include "generic/ReturnStrategy.h"
 #include "generic/RpgStrategy.h"
 
 namespace ai
@@ -56,7 +56,7 @@ namespace ai
             creators["threat"] = &StrategyContext::threat;
             creators["tell target"] = &StrategyContext::tell_target;
             creators["pvp"] = &StrategyContext::pvp;
-            creators["move random"] = &StrategyContext::move_random;
+            creators["return"] = &StrategyContext::_return;
             creators["lfg"] = &StrategyContext::lfg;
             creators["custom"] = &StrategyContext::custom;
             creators["reveal"] = &StrategyContext::reveal;
@@ -84,7 +84,7 @@ namespace ai
         static Strategy* world_packet(PlayerbotAI* ai) { return new WorldPacketHandlerStrategy(ai); }
         static Strategy* ready_check(PlayerbotAI* ai) { return new ReadyCheckStrategy(ai); }
         static Strategy* pvp(PlayerbotAI* ai) { return new AttackEnemyPlayersStrategy(ai); }
-        static Strategy* move_random(PlayerbotAI* ai) { return new MoveRandomStrategy(ai); }
+        static Strategy* _return(PlayerbotAI* ai) { return new ReturnStrategy(ai); }
         static Strategy* lfg(PlayerbotAI* ai) { return new LfgStrategy(ai); }
         static Strategy* custom(PlayerbotAI* ai) { return new CustomStrategy(ai); }
         static Strategy* reveal(PlayerbotAI* ai) { return new RevealStrategy(ai); }

@@ -8,6 +8,7 @@
 #include "../../LootObjectStack.h"
 #include "../../PlayerbotAIConfig.h"
 #include "../../ServerFacade.h"
+#include "../values/PositionValue.h"
 #include "MotionGenerators/TargetedMovementGenerator.h"
 
 using namespace ai;
@@ -52,7 +53,7 @@ bool MovementAction::MoveNear(WorldObject* target, float distance)
     return false;
 }
 
-bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z)
+bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle)
 {
     if (!bot->IsUnderWater())
     {
@@ -87,7 +88,8 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z)
         mm.MovePoint(mapId, x, y, z, generatePath);
 
         AI_VALUE(LastMovement&, "last movement").Set(x, y, z, bot->GetOrientation());
-        context->GetValue<time_t>("stay time")->Set(0);
+        if (!idle)
+            ClearIdleState();
         return true;
     }
 
@@ -217,7 +219,7 @@ bool MovementAction::Follow(Unit* target, float distance, float angle)
             bot->Relocate(x, y, z, bot->GetOrientation());
         }
         AI_VALUE(LastMovement&, "last movement").Set(target);
-        context->GetValue<time_t>("stay time")->Set(0);
+        ClearIdleState();
         return true;
     }
 
@@ -244,7 +246,7 @@ bool MovementAction::Follow(Unit* target, float distance, float angle)
         return false;
 
     AI_VALUE(LastMovement&, "last movement").Set(target);
-    context->GetValue<time_t>("stay time")->Set(0);
+    ClearIdleState();
 
     if (bot->GetMotionMaster()->GetCurrentMovementGeneratorType() == FOLLOW_MOTION_TYPE)
     {
@@ -301,6 +303,12 @@ bool MovementAction::Flee(Unit *target)
     return MoveTo(target->GetMapId(), rx, ry, rz);
 }
 
+void MovementAction::ClearIdleState()
+{
+    context->GetValue<time_t>("stay time")->Set(0);
+    context->GetValue<ai::PositionMap&>("position")->Get()["random"].Reset();
+}
+
 bool FleeAction::Execute(Event event)
 {
     return Flee(AI_VALUE(Unit*, "current target"));
@@ -315,81 +323,6 @@ bool FleeAction::isUseful()
 bool RunAwayAction::Execute(Event event)
 {
     return Flee(AI_VALUE(Unit*, "master target"));
-}
-
-bool MoveRandomAction::Execute(Event event)
-{
-    vector<WorldLocation> locs;
-    list<ObjectGuid> npcs = AI_VALUE(list<ObjectGuid>, "nearest npcs");
-    for (list<ObjectGuid>::iterator i = npcs.begin(); i != npcs.end(); i++)
-    {
-        WorldObject* target = ai->GetUnit(*i);
-        if (target && bot->GetDistance(target) > sPlayerbotAIConfig.tooCloseDistance)
-        {
-            WorldLocation loc;
-            target->GetPosition(loc);
-            locs.push_back(loc);
-        }
-    }
-
-    list<ObjectGuid> players = AI_VALUE(list<ObjectGuid>, "nearest friendly players");
-    for (list<ObjectGuid>::iterator i = players.begin(); i != players.end(); i++)
-    {
-        WorldObject* target = ai->GetUnit(*i);
-        if (target && bot->GetDistance(target) > sPlayerbotAIConfig.tooCloseDistance)
-        {
-            WorldLocation loc;
-            target->GetPosition(loc);
-            locs.push_back(loc);
-        }
-    }
-
-    list<ObjectGuid> gos = AI_VALUE(list<ObjectGuid>, "nearest game objects");
-    for (list<ObjectGuid>::iterator i = gos.begin(); i != gos.end(); i++)
-    {
-        WorldObject* target = ai->GetGameObject(*i);
-
-        if (target && bot->GetDistance(target) > sPlayerbotAIConfig.tooCloseDistance)
-        {
-            WorldLocation loc;
-            target->GetPosition(loc);
-            locs.push_back(loc);
-        }
-    }
-
-    float distance = sPlayerbotAIConfig.grindDistance;
-    Map* map = bot->GetMap();
-    for (int i = 0; i < 10; ++i)
-    {
-        float x = bot->GetPositionX();
-        float y = bot->GetPositionY();
-        float z = bot->GetPositionZ();
-        x += urand(0, distance) - distance / 2;
-        y += urand(0, distance) - distance / 2;
-        bot->UpdateGroundPositionZ(x, y, z);
-
-        const TerrainInfo* terrain = map->GetTerrain();
-        if (terrain->IsUnderWater(x, y, z) ||
-            terrain->IsInWater(x, y, z))
-            continue;
-
-        float ground = map->GetHeight(x, y, z + 0.5f);
-        if (ground <= INVALID_HEIGHT)
-            continue;
-
-        z = 0.05f + ground;
-        if (abs(z - bot->GetPositionZ()) > sPlayerbotAIConfig.tooCloseDistance)
-            continue;
-
-        WorldLocation loc(bot->GetMapId(), x, y, z);
-        locs.push_back(loc);
-    }
-
-    if (locs.empty())
-        return false;
-
-    WorldLocation target = locs[urand(0, locs.size() - 1)];
-    return MoveNear(target.mapid, target.coord_x, target.coord_y, target.coord_z);
 }
 
 bool MoveToLootAction::Execute(Event event)
@@ -447,3 +380,4 @@ bool MoveOutOfCollisionAction::isUseful()
 {
     return AI_VALUE2(bool, "collision", "self target");
 }
+

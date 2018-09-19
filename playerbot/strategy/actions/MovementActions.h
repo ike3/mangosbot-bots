@@ -14,7 +14,7 @@ namespace ai
 
     protected:
         bool MoveNear(uint32 mapId, float x, float y, float z, float distance = sPlayerbotAIConfig.contactDistance);
-        bool MoveTo(uint32 mapId, float x, float y, float z);
+        bool MoveTo(uint32 mapId, float x, float y, float z, bool idle = false);
         bool MoveTo(Unit* target, float distance = 0.0f);
         bool MoveNear(WorldObject* target, float distance = sPlayerbotAIConfig.contactDistance);
         float GetFollowAngle();
@@ -25,6 +25,7 @@ namespace ai
         bool IsMovingAllowed(uint32 mapId, float x, float y, float z);
         bool IsMovingAllowed();
         bool Flee(Unit *target);
+        void ClearIdleState();
 
     protected:
         Player* bot;
@@ -51,19 +52,6 @@ namespace ai
     public:
         RunAwayAction(PlayerbotAI* ai) : MovementAction(ai, "runaway") {}
         virtual bool Execute(Event event);
-    };
-
-    class MoveRandomAction : public MovementAction
-    {
-    public:
-        MoveRandomAction(PlayerbotAI* ai) : MovementAction(ai, "move random") {}
-        virtual bool Execute(Event event);
-        virtual bool isPossible()
-        {
-            return MovementAction::isPossible() &&
-                    AI_VALUE2(uint8, "health", "self target") > sPlayerbotAIConfig.mediumHealth &&
-                    (!AI_VALUE2(uint8, "mana", "self target") || AI_VALUE2(uint8, "mana", "self target") > sPlayerbotAIConfig.mediumMana);
-        }
     };
 
     class MoveToLootAction : public MovementAction

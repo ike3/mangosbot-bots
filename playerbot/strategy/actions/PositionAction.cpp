@@ -100,6 +100,49 @@ bool MoveToPositionAction::Execute(Event event)
         return false;
     }
 
-    return MoveTo(bot->GetMapId(), pos.x, pos.y, pos.z);
+    return MoveTo(bot->GetMapId(), pos.x, pos.y, pos.z, idle);
 }
 
+bool MoveToPositionAction::isUseful()
+{
+    ai::Position pos = context->GetValue<ai::PositionMap&>("position")->Get()[qualifier];
+    return pos.isSet() && AI_VALUE2(float, "distance", string("position_") + qualifier) > sPlayerbotAIConfig.followDistance;
+}
+
+
+bool SetReturnPositionAction::Execute(Event event)
+{
+    ai::PositionMap& posMap = context->GetValue<ai::PositionMap&>("position")->Get();
+    ai::Position returnPos = posMap["return"];
+    ai::Position randomPos = posMap["random"];
+    if (returnPos.isSet() && !randomPos.isSet())
+    {
+        float angle = 2 * M_PI * urand(0, 1000) / 100.0f;
+        float dist = sPlayerbotAIConfig.followDistance * urand(0, 1000) / 1000.0f;
+        float x = returnPos.x + cos(angle) * dist,
+             y = returnPos.y + sin(angle) * dist,
+             z = bot->GetPositionZ();
+        bot->UpdateGroundPositionZ(x, y, z);
+
+        if (!bot->IsWithinLOS(x, y, z))
+            return false;
+
+        randomPos.Set(x, y, z);
+        posMap["random"] = randomPos;
+        return true;
+    }
+    return false;
+}
+
+bool SetReturnPositionAction::isUseful()
+{
+    ai::PositionMap& posMap = context->GetValue<ai::PositionMap&>("position")->Get();
+    return posMap["return"].isSet() && !posMap["random"].isSet();
+}
+
+
+bool ReturnAction::isUseful()
+{
+    ai::Position pos = context->GetValue<ai::PositionMap&>("position")->Get()[qualifier];
+    return pos.isSet() && AI_VALUE2(float, "distance", "position_random") > sPlayerbotAIConfig.followDistance;
+}

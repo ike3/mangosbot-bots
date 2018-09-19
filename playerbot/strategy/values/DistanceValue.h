@@ -3,6 +3,7 @@
 #include "TargetValue.h"
 #include "../../LootObjectStack.h"
 #include "../../ServerFacade.h"
+#include "PositionValue.h"
 
 namespace ai
 {
@@ -25,6 +26,14 @@ namespace ai
                     return 0.0f;
 
                 return sServerFacade.GetDistance2d(ai->GetBot(), obj);
+            }
+
+            if (qualifier.find("position_") == 0)
+            {
+                string position = qualifier.substr(9);
+                ai::Position pos = context->GetValue<ai::PositionMap&>("position")->Get()[position];
+                if (!pos.isSet()) return 0.0f;
+                return sServerFacade.GetDistance2d(ai->GetBot(), pos.x, pos.y);
             }
             Unit* target = AI_VALUE(Unit*, qualifier);
             if (!target || !target->IsInWorld())

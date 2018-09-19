@@ -53,6 +53,7 @@ bool PlayerbotAIConfig::Initialize()
     repeatDelay = (uint32) config.GetIntDefault("AiPlayerbot.RepeatDelay", 7000);
     rpgDelay = (uint32) config.GetIntDefault("AiPlayerbot.RpgDelay", 3000);
     sitDelay = (uint32) config.GetIntDefault("AiPlayerbot.SitDelay", 60000);
+    returnDelay = (uint32) config.GetIntDefault("AiPlayerbot.ReturnDelay", 7000);
 
     sightDistance = config.GetFloatDefault("AiPlayerbot.SightDistance", 50.0f);
     spellDistance = config.GetFloatDefault("AiPlayerbot.SpellDistance", 25.0f);

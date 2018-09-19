@@ -582,6 +582,30 @@ namespace ai
             return AI_VALUE2(bool, "collision", "self target");
         }
     };
+
+    class StayTimeTrigger : public Trigger
+    {
+    public:
+        StayTimeTrigger(PlayerbotAI* ai, uint32 delay, string name) : Trigger(ai, name, 5), delay(delay) {}
+
+    public:
+        virtual bool IsActive();
+
+    private:
+        uint32 delay;
+    };
+
+    class SitTrigger : public StayTimeTrigger
+    {
+    public:
+        SitTrigger(PlayerbotAI* ai) : StayTimeTrigger(ai, sPlayerbotAIConfig.sitDelay, "sit") {}
+    };
+
+    class ReturnTrigger : public StayTimeTrigger
+    {
+    public:
+        ReturnTrigger(PlayerbotAI* ai) : StayTimeTrigger(ai, sPlayerbotAIConfig.returnDelay, "return") {}
+    };
 }
 
 #include "RangeTriggers.h"

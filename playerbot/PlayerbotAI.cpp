@@ -21,6 +21,7 @@
 #include "../AhBot/ahbot.h"
 #include "GuildTaskMgr.h"
 #include "PlayerbotDbStore.h"
+#include "strategy/values/PositionValue.h"
 #include "ServerFacade.h"
 
 using namespace ai;
@@ -1048,6 +1049,7 @@ bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target)
 #endif
     WaitForSpellCast(spell);
     aiObjectContext->GetValue<LastSpellCast&>("last spell cast")->Get().Set(spellId, target->GetObjectGuid(), time(0));
+    aiObjectContext->GetValue<ai::PositionMap&>("position")->Get()["random"].Reset();
 
     if (oldSel)
         bot->SetSelectionGuid(oldSel);

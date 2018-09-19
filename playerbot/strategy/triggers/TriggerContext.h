@@ -15,6 +15,8 @@ namespace ai
     public:
         TriggerContext()
         {
+            creators["return"] = &TriggerContext::_return;
+            creators["sit"] = &TriggerContext::sit;
             creators["collision"] = &TriggerContext::collision;
 
             creators["timer"] = &TriggerContext::Timer;
@@ -104,6 +106,8 @@ namespace ai
         }
 
     private:
+        static Trigger* _return(PlayerbotAI* ai) { return new ReturnTrigger(ai); }
+        static Trigger* sit(PlayerbotAI* ai) { return new SitTrigger(ai); }
         static Trigger* far_from_rpg_target(PlayerbotAI* ai) { return new FarFromRpgTargetTrigger(ai); }
         static Trigger* no_rpg_target(PlayerbotAI* ai) { return new NoRpgTargetTrigger(ai); }
         static Trigger* collision(PlayerbotAI* ai) { return new CollisionTrigger(ai); }

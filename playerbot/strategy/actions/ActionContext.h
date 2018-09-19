@@ -34,6 +34,7 @@ namespace ai
     public:
         ActionContext()
         {
+            creators["set return position"] = &ActionContext::set_return_position;
             creators["rpg"] = &ActionContext::rpg;
             creators["choose rpg target"] = &ActionContext::choose_rpg_target;
             creators["move to rpg target"] = &ActionContext::move_to_rpg_target;
@@ -72,7 +73,7 @@ namespace ai
             creators["emote"] = &ActionContext::emote;
             creators["suggest what to do"] = &ActionContext::suggest_what_to_do;
             creators["suggest trade"] = &ActionContext::suggest_trade;
-            creators["move random"] = &ActionContext::move_random;
+            creators["return"] = &ActionContext::_return;
             creators["move to loot"] = &ActionContext::move_to_loot;
             creators["open loot"] = &ActionContext::open_loot;
             creators["guard"] = &ActionContext::guard;
@@ -91,6 +92,7 @@ namespace ai
         }
 
     private:
+        static Action* set_return_position(PlayerbotAI* ai) { return new SetReturnPositionAction(ai); }
         static Action* rpg(PlayerbotAI* ai) { return new RpgAction(ai); }
         static Action* choose_rpg_target(PlayerbotAI* ai) { return new ChooseRpgTargetAction(ai); }
         static Action* move_to_rpg_target(PlayerbotAI* ai) { return new MoveToRpgTargetAction(ai); }
@@ -103,7 +105,7 @@ namespace ai
         static Action* guard(PlayerbotAI* ai) { return new GuardAction(ai); }
         static Action* open_loot(PlayerbotAI* ai) { return new OpenLootAction(ai); }
         static Action* move_to_loot(PlayerbotAI* ai) { return new MoveToLootAction(ai); }
-        static Action* move_random(PlayerbotAI* ai) { return new MoveRandomAction(ai); }
+        static Action* _return(PlayerbotAI* ai) { return new ReturnAction(ai); }
         static Action* shoot(PlayerbotAI* ai) { return new CastShootAction(ai); }
         static Action* melee(PlayerbotAI* ai) { return new MeleeAction(ai); }
         static Action* ReachSpell(PlayerbotAI* ai) { return new ReachSpellAction(ai); }
