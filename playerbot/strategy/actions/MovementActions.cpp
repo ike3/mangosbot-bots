@@ -260,7 +260,14 @@ bool MovementAction::Follow(Unit* target, float distance, float angle)
         if (currentTarget && currentTarget->GetObjectGuid() == target->GetObjectGuid()) return false;
     }
 
-    mm.MoveFollow(target, distance, angle);
+    mm.MoveFollow(target,
+#ifdef MANGOS
+            distance,
+#endif
+#ifdef CMANGOS
+            distance - target->GetObjectBoundingRadius(),
+#endif
+            angle);
     return true;
 }
 
