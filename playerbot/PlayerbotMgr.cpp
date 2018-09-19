@@ -119,15 +119,6 @@ void PlayerbotHolder::OnBotLogin(Player * const bot)
 
     ai->ResetStrategies();
     ai->TellMaster("Hello!");
-
-    uint32 account = sObjectMgr.GetPlayerAccountIdByGUID(bot->GetObjectGuid());
-    if (sPlayerbotAIConfig.IsInRandomAccountList(account))
-    {
-        sLog.outString("%d/%d Bot %s logged in", playerBots.size(), sRandomPlayerbotMgr.GetMaxAllowedBotCount(), bot->GetName());
-        if (sConfig.GetBoolDefault("BeepAtStart", true) && playerBots.size() == sRandomPlayerbotMgr.GetMaxAllowedBotCount())
-            printf("\a");
-    }
-    else sLog.outString("Bot %s logged in", bot->GetName());
 }
 
 string PlayerbotHolder::ProcessBotCommand(string cmd, ObjectGuid guid, bool admin, uint32 masterAccountId, uint32 masterGuildId)
@@ -556,6 +547,7 @@ void PlayerbotMgr::OnBotLoginInternal(Player * const bot)
 {
     bot->GetPlayerbotAI()->SetMaster(master);
     bot->GetPlayerbotAI()->ResetStrategies();
+    sLog.outString("Bot %s logged in", bot->GetName());
 }
 
 void PlayerbotMgr::OnPlayerLogin(Player* player)

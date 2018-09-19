@@ -69,7 +69,7 @@ class RandomPlayerbotMgr : public PlayerbotHolder
         void ChangeStrategy(Player* player);
 
 	protected:
-	    virtual void OnBotLoginInternal(Player * const bot) {}
+	    virtual void OnBotLoginInternal(Player * const bot);
 
     private:
         uint32 GetEventValue(uint32 bot, string event);
@@ -90,6 +90,7 @@ class RandomPlayerbotMgr : public PlayerbotHolder
         map<uint8, vector<WorldLocation> > locsPerLevelCache;
         map<uint32, vector<WorldLocation> > rpgLocsCache;
         map<uint32, map<string, CachedEvent> > eventCache;
+        BarGoLink* loginProgressBar;
 };
 
 #define sRandomPlayerbotMgr RandomPlayerbotMgr::instance()

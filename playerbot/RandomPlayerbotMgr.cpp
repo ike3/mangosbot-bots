@@ -24,7 +24,7 @@ using namespace MaNGOS;
 INSTANTIATE_SINGLETON_1(RandomPlayerbotMgr);
 
 
-RandomPlayerbotMgr::RandomPlayerbotMgr() : PlayerbotHolder(), processTicks(0)
+RandomPlayerbotMgr::RandomPlayerbotMgr() : PlayerbotHolder(), processTicks(0), loginProgressBar(NULL)
 {
     sPlayerbotCommandServer.Start();
     PrepareTeleportCache();
@@ -51,6 +51,12 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed)
         maxAllowedBotCount = urand(sPlayerbotAIConfig.minRandomBots, sPlayerbotAIConfig.maxRandomBots);
         SetEventValue(0, "bot_count", maxAllowedBotCount,
                 urand(sPlayerbotAIConfig.randomBotCountChangeMinInterval, sPlayerbotAIConfig.randomBotCountChangeMaxInterval));
+    }
+
+    if (!loginProgressBar)
+    {
+        sLog.outString("Logging in %d random bots in background", maxAllowedBotCount);
+        loginProgressBar = new BarGoLink(maxAllowedBotCount);
     }
 
     SetNextCheckDelay(1000 * sPlayerbotAIConfig.randomBotUpdateInterval / (maxAllowedBotCount / sPlayerbotAIConfig.randomBotsPerInterval));
@@ -416,7 +422,20 @@ void RandomPlayerbotMgr::PrepareTeleportCache()
         }
     }
 
+    results = WorldDatabase.PQuery("SELECT count(*) "
+            "from creature c inner join creature_template t on c.id = t.entry "
+            "where t.NpcFlags & %u <> 0",
+        UNIT_NPC_FLAG_INNKEEPER);
+    uint32 rpgCacheSize = 0;
+    if (results)
+    {
+        Field* fields = results->Fetch();
+        rpgCacheSize = fields[0].GetUInt32();
+        delete results;
+    }
+
     sLog.outBasic("Preparing RPG teleport caches for %d factions...", sFactionTemplateStore.GetNumRows());
+            BarGoLink bar(rpgCacheSize);
     results = WorldDatabase.PQuery("SELECT map, position_x, position_y, position_z, t.FactionAlliance, t.Name "
             "from creature c inner join creature_template t on c.id = t.entry "
             "where t.NpcFlags & %u <> 0",
@@ -425,11 +444,9 @@ void RandomPlayerbotMgr::PrepareTeleportCache()
     {
         do
         {
-            BarGoLink bar(sFactionTemplateStore.GetNumRows());
             for (uint32 factionId = 0; factionId < sFactionTemplateStore.GetNumRows(); ++factionId)
             {
                 FactionTemplateEntry const* botFaction = sFactionTemplateStore.LookupEntry(factionId);
-                bar.step();
 
                 if (!botFaction)
                     continue;
@@ -448,6 +465,7 @@ void RandomPlayerbotMgr::PrepareTeleportCache()
                 WorldLocation loc(mapId, x, y, z, 0);
                 rpgLocsCache[factionId].push_back(loc);
             }
+            bar.step();
         } while (results->NextRow());
         delete results;
     }
@@ -851,6 +869,12 @@ void RandomPlayerbotMgr::OnPlayerLogout(Player* player)
     vector<Player*>::iterator i = find(players.begin(), players.end(), player);
     if (i != players.end())
         players.erase(i);
+}
+
+void RandomPlayerbotMgr::OnBotLoginInternal(Player * const bot)
+{
+    sLog.outDetail("%d/%d Bot %s logged in", playerBots.size(), sRandomPlayerbotMgr.GetMaxAllowedBotCount(), bot->GetName());
+    if (loginProgressBar) loginProgressBar->step();
 }
 
 void RandomPlayerbotMgr::OnPlayerLogin(Player* player)
