@@ -255,28 +255,19 @@ void RandomPlayerbotFactory::CreateRandomBots()
 void RandomPlayerbotFactory::CreateRandomGuilds()
 {
     vector<uint32> randomBots;
-    QueryResult* results = LoginDatabase.PQuery("SELECT id FROM account where username like '%s%%'", sPlayerbotAIConfig.randomBotAccountPrefix.c_str());
+
+    QueryResult* results = CharacterDatabase.PQuery(
+            "select `bot` from ai_playerbot_random_bots where event = 'add'");
+
     if (results)
     {
         do
         {
             Field* fields = results->Fetch();
-            uint32 accountId = fields[0].GetUInt32();
-
-            QueryResult* results2 = CharacterDatabase.PQuery("SELECT guid FROM characters where account  = '%u'", accountId);
-            if (results2)
-            {
-                do
-                {
-                    Field* fields = results2->Fetch();
-                    uint32 guid = fields[0].GetUInt32();
-                    randomBots.push_back(guid);
-                } while (results2->NextRow());
-				delete results2;
-            }
-
+            uint32 bot = fields[0].GetUInt32();
+            randomBots.push_back(bot);
         } while (results->NextRow());
-		delete results;
+        delete results;
     }
 
     if (sPlayerbotAIConfig.deleteRandomBotGuilds)
@@ -305,7 +296,7 @@ void RandomPlayerbotFactory::CreateRandomGuilds()
         else
         {
             Player* player = sObjectMgr.GetPlayer(leader);
-            if (player)
+            if (player && !player->GetGuildId())
                 availableLeaders.push_back(leader);
         }
     }
