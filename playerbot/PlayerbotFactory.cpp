@@ -33,6 +33,23 @@ uint32 PlayerbotFactory::tradeSkills[] =
 
 list<uint32> PlayerbotFactory::classQuestIds;
 
+void PlayerbotFactory::Init()
+{
+    ObjectMgr::QuestMap const& questTemplates = sObjectMgr.GetQuestTemplates();
+    for (ObjectMgr::QuestMap::const_iterator i = questTemplates.begin(); i != questTemplates.end(); ++i)
+    {
+        uint32 questId = i->first;
+        Quest const *quest = i->second;
+
+        if (!quest->GetRequiredClasses() || quest->IsRepeatable())
+            continue;
+
+        AddPrevQuests(questId, classQuestIds);
+        classQuestIds.remove(questId);
+        classQuestIds.push_back(questId);
+    }
+}
+
 void PlayerbotFactory::Randomize()
 {
     Randomize(true);
@@ -1161,7 +1178,7 @@ ObjectGuid PlayerbotFactory::GetRandomBot()
 }
 
 
-void AddPrevQuests(uint32 questId, list<uint32>& questIds)
+void PlayerbotFactory::AddPrevQuests(uint32 questId, list<uint32>& questIds)
 {
     Quest const *quest = sObjectMgr.GetQuestTemplate(questId);
     for (Quest::PrevQuests::const_iterator iter = quest->prevQuests.begin(); iter != quest->prevQuests.end(); ++iter)
@@ -1175,23 +1192,6 @@ void AddPrevQuests(uint32 questId, list<uint32>& questIds)
 
 void PlayerbotFactory::InitQuests()
 {
-    if (classQuestIds.empty())
-    {
-        ObjectMgr::QuestMap const& questTemplates = sObjectMgr.GetQuestTemplates();
-        for (ObjectMgr::QuestMap::const_iterator i = questTemplates.begin(); i != questTemplates.end(); ++i)
-        {
-            uint32 questId = i->first;
-            Quest const *quest = i->second;
-
-            if (!quest->GetRequiredClasses() || quest->IsRepeatable())
-                continue;
-
-            AddPrevQuests(questId, classQuestIds);
-            classQuestIds.remove(questId);
-            classQuestIds.push_back(questId);
-        }
-    }
-
     int count = 0;
     for (list<uint32>::iterator i = classQuestIds.begin(); i != classQuestIds.end(); ++i)
     {

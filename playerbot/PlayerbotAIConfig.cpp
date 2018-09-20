@@ -4,6 +4,7 @@
 #include "RandomPlayerbotFactory.h"
 #include "AccountMgr.h"
 #include "../../shared/SystemConfig.h"
+#include "PlayerbotFactory.h"
 #include "RandomItemMgr.h"
 
 using namespace std;
@@ -160,6 +161,7 @@ bool PlayerbotAIConfig::Initialize()
     BarGoLink::SetOutputState(config.GetBoolDefault("AiPlayerbot.ShowProgressBars", false));
 
     RandomPlayerbotFactory::CreateRandomBots();
+    PlayerbotFactory::Init();
     sRandomItemMgr.Init();
 
     sLog.outString("---------------------------------------");

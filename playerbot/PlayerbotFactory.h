@@ -16,6 +16,7 @@ public:
         bot(bot), level(level), itemQuality(itemQuality), InventoryAction(bot->GetPlayerbotAI(), "factory") {}
 
     static ObjectGuid GetRandomBot();
+    static void Init();
     void CleanRandomize();
     void Randomize();
     void Refresh();
@@ -58,6 +59,7 @@ private:
     void InitInventorySkill();
     Item* StoreItem(uint32 itemId, uint32 count);
     void InitGuild();
+    static void AddPrevQuests(uint32 questId, list<uint32>& questIds);
 
 private:
     Player* bot;
