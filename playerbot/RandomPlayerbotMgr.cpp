@@ -546,49 +546,21 @@ void RandomPlayerbotMgr::RandomizeFirst(Player* bot)
 		maxLevel = sWorld.getConfig(CONFIG_UINT32_MAX_PLAYER_LEVEL);
 
 	PerformanceMonitorOperation *pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "RandomizeFirst");
-	for (int attempt = 0; attempt < 100; ++attempt)
-	{
-		int index = urand(0, sPlayerbotAIConfig.randomBotMaps.size() - 1);
-		uint32 mapId = sPlayerbotAIConfig.randomBotMaps[index];
+    uint32 level = urand(sPlayerbotAIConfig.randomBotMinLevel, maxLevel);
 
-		vector<GameTele const*> locs;
-		GameTeleMap const & teleMap = sObjectMgr.GetGameTeleMap();
-		for (GameTeleMap::const_iterator itr = teleMap.begin(); itr != teleMap.end(); ++itr)
-		{
-			GameTele const* tele = &itr->second;
-			if (tele->mapId == mapId)
-				locs.push_back(tele);
-		}
+    if (urand(0, 100) < 100 * sPlayerbotAIConfig.randomBotMaxLevelChance)
+        level = maxLevel;
 
-		index = urand(0, locs.size() - 1);
-		if (index >= locs.size())
-			return;
-		GameTele const* tele = locs[index];
-		uint32 level = GetZoneLevel(tele->mapId, tele->position_x, tele->position_y, tele->position_z);
-		if (level > maxLevel + 5)
-			continue;
+    PlayerbotFactory factory(bot, level);
+    factory.CleanRandomize();
+    RandomTeleportForLevel(bot);
 
-		level = min(level, maxLevel);
-		if (!level) level = 1;
+    uint32 randomTime = urand(sPlayerbotAIConfig.minRandomBotRandomizeTime, sPlayerbotAIConfig.maxRandomBotRandomizeTime);
+    CharacterDatabase.PExecute("update ai_playerbot_random_bots set validIn = '%u' where event = 'randomize' and bot = '%u'",
+            randomTime, bot->GetGUIDLow());
+    CharacterDatabase.PExecute("update ai_playerbot_random_bots set validIn = '%u' where event = 'logout' and bot = '%u'",
+            sPlayerbotAIConfig.maxRandomBotInWorldTime, bot->GetGUIDLow());
 
-		if (urand(0, 100) < 100 * sPlayerbotAIConfig.randomBotMaxLevelChance)
-			level = maxLevel;
-
-		if (level < sPlayerbotAIConfig.randomBotMinLevel)
-			continue;
-
-		PlayerbotFactory factory(bot, level);
-		factory.CleanRandomize();
-		RandomTeleportForLevel(bot);
-
-        uint32 randomTime = urand(sPlayerbotAIConfig.minRandomBotRandomizeTime, sPlayerbotAIConfig.maxRandomBotRandomizeTime);
-        CharacterDatabase.PExecute("update ai_playerbot_random_bots set validIn = '%u' where event = 'randomize' and bot = '%u'",
-                randomTime, bot->GetGUIDLow());
-        CharacterDatabase.PExecute("update ai_playerbot_random_bots set validIn = '%u' where event = 'logout' and bot = '%u'",
-                sPlayerbotAIConfig.maxRandomBotInWorldTime, bot->GetGUIDLow());
-
-		break;
-	}
 	if (pmo) pmo->finish();
 }
 
@@ -1054,24 +1026,6 @@ void RandomPlayerbotMgr::PrintStats()
     sLog.outString("Bots to teleport: %d", teleport);
     sLog.outString("Bots to change_strategy: %d", changeStrategy);
     sLog.outString("Bots to revive: %d", dead);
-
-    ostringstream out; out << "WARNING: ";
-    bool needMsg = false;
-    if (randomize > sPlayerbotAIConfig.randomBotsPerInterval)
-    {
-        out << randomize << " bots to randomize, ";
-        needMsg = true;
-    }
-    if (teleport > sPlayerbotAIConfig.randomBotsPerInterval)
-    {
-        out << teleport << " bots to teleport, ";
-        needMsg = true;
-    }
-    if (needMsg)
-    {
-        out << " this could cause lag.";
-        sWorld.SendWorldText(3, out.str().c_str());
-    }
 }
 
 double RandomPlayerbotMgr::GetBuyMultiplier(Player* bot)
