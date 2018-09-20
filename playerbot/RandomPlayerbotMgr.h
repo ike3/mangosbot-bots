@@ -53,6 +53,7 @@ class RandomPlayerbotMgr : public PlayerbotHolder
         string HandleRemoteCommand(string request);
         void OnPlayerLogout(Player* player);
         void OnPlayerLogin(Player* player);
+        void OnPlayerLoginError(uint32 bot);
         Player* GetRandomPlayer();
         void PrintStats();
         double GetBuyMultiplier(Player* bot);

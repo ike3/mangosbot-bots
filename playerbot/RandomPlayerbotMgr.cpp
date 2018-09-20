@@ -887,6 +887,11 @@ void RandomPlayerbotMgr::OnPlayerLogin(Player* player)
     }
 }
 
+void RandomPlayerbotMgr::OnPlayerLoginError(uint32 bot)
+{
+    SetEventValue(bot, "add", 0, 0);
+}
+
 Player* RandomPlayerbotMgr::GetRandomPlayer()
 {
     if (players.empty())
@@ -917,7 +922,7 @@ void RandomPlayerbotMgr::PrintStats()
         perClass[cls] = 0;
     }
 
-    int dps = 0, heal = 0, tank = 0, active = 0, update = 0, randomize = 0, teleport = 0, changeStrategy = 0, dead = 0;
+    int dps = 0, heal = 0, tank = 0, active = 0, update = 0, randomize = 0, teleport = 0, changeStrategy = 0, dead = 0, revive = 0;
     for (PlayerBotMap::iterator i = playerBots.begin(); i != playerBots.end(); ++i)
     {
         Player* bot = i->second;
@@ -945,8 +950,12 @@ void RandomPlayerbotMgr::PrintStats()
         if (!GetEventValue(botId, "change_strategy"))
             changeStrategy++;
 
-        if (sServerFacade.UnitIsDead(bot) && !GetEventValue(botId, "dead"))
+        if (sServerFacade.UnitIsDead(bot))
+        {
             dead++;
+            if (!GetEventValue(botId, "dead"))
+                revive++;
+        }
 
         int spec = AiFactory::GetPlayerSpecTab(bot);
         switch (bot->getClass())
@@ -1019,11 +1028,13 @@ void RandomPlayerbotMgr::PrintStats()
     sLog.outString("    dps: %d", dps);
 
     sLog.outString("Active bots: %d", active);
-    sLog.outString("Bots to update: %d", update);
-    sLog.outString("Bots to randomize: %d", randomize);
-    sLog.outString("Bots to teleport: %d", teleport);
-    sLog.outString("Bots to change_strategy: %d", changeStrategy);
-    sLog.outString("Bots to revive: %d", dead);
+    sLog.outString("Dead bots: %d", dead);
+    sLog.outString("Bots to:");
+    sLog.outString("    update: %d", update);
+    sLog.outString("    randomize: %d", randomize);
+    sLog.outString("    teleport: %d", teleport);
+    sLog.outString("    change_strategy: %d", changeStrategy);
+    sLog.outString("    revive: %d", revive);
 }
 
 double RandomPlayerbotMgr::GetBuyMultiplier(Player* bot)
