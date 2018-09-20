@@ -258,7 +258,7 @@ bool RandomPlayerbotMgr::ProcessBot(Player* player)
     uint32 teleport = GetEventValue(bot, "teleport");
     if (!teleport)
     {
-        sLog.outString("Random teleporting bot %d", bot);
+        sLog.outDetail("Random teleporting bot %d", bot);
         RandomTeleportForLevel(player);
         SetEventValue(bot, "teleport", 1, sPlayerbotAIConfig.maxRandomBotInWorldTime);
         return true;
@@ -267,7 +267,7 @@ bool RandomPlayerbotMgr::ProcessBot(Player* player)
     uint32 changeStrategy = GetEventValue(bot, "change_strategy");
     if (!changeStrategy)
     {
-        sLog.outString("Changing strategy for bot %d", bot);
+        sLog.outDetail("Changing strategy for bot %d", bot);
         ChangeStrategy(player);
         ScheduleChangeStrategy(bot);
         return true;
@@ -900,7 +900,6 @@ void RandomPlayerbotMgr::PrintStats()
 {
     sLog.outString("%d Random Bots online", playerBots.size());
 
-    BarGoLink bar(playerBots.size());
     map<uint32, int> alliance, horde;
     for (uint32 i = 0; i < 10; ++i)
     {
@@ -988,7 +987,6 @@ void RandomPlayerbotMgr::PrintStats()
             dps++;
             break;
         }
-        bar.step();
     }
 
     sLog.outString("Per level:");
@@ -1102,12 +1100,12 @@ void RandomPlayerbotMgr::ChangeStrategy(Player* player)
 
     if (!urand(0, 2))
     {
-        sLog.outString("Changing strategy for bot %s to grinding", player->GetName());
+        sLog.outDetail("Changing strategy for bot %s to grinding", player->GetName());
         ScheduleTeleport(bot, 30);
     }
     else
     {
-        sLog.outString("Changing strategy for bot %s to RPG", player->GetName());
+        sLog.outDetail("Changing strategy for bot %s to RPG", player->GetName());
         RandomTeleportForRpg(player);
     }
 
