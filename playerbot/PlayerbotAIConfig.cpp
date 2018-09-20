@@ -4,6 +4,7 @@
 #include "RandomPlayerbotFactory.h"
 #include "AccountMgr.h"
 #include "../../shared/SystemConfig.h"
+#include "RandomItemMgr.h"
 
 using namespace std;
 
@@ -159,7 +160,12 @@ bool PlayerbotAIConfig::Initialize()
     BarGoLink::SetOutputState(config.GetBoolDefault("AiPlayerbot.ShowProgressBars", false));
 
     RandomPlayerbotFactory::CreateRandomBots();
-    sLog.outString("AI Playerbot configuration loaded");
+    sRandomItemMgr.Init();
+
+    sLog.outString("---------------------------------------");
+    sLog.outString("        AI Playerbot initialized       ");
+    sLog.outString("---------------------------------------");
+    sLog.outString();
 
     return true;
 }

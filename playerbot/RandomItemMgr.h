@@ -23,6 +23,32 @@ public:
 typedef vector<uint32> RandomItemList;
 typedef map<RandomItemType, RandomItemList> RandomItemCache;
 
+class BotEquipKey
+{
+public:
+    uint32 level;
+    uint8 clazz;
+    uint8 slot;
+    uint32 quality;
+    uint64 key;
+
+public:
+    BotEquipKey() : level(0), clazz(0), slot(0), quality(0), key(GetKey()) {}
+    BotEquipKey(uint32 level, uint8 clazz, uint8 slot, uint32 quality) : level(level), clazz(clazz), slot(slot), quality(quality), key(GetKey()) {}
+    BotEquipKey(BotEquipKey const& other)  : level(other.level), clazz(other.clazz), slot(other.slot), quality(other.quality), key(GetKey()) {}
+
+private:
+    uint64 GetKey();
+
+public:
+    bool operator< (const BotEquipKey& other) const
+    {
+        return other.key < this->key;
+    }
+};
+
+typedef map<BotEquipKey, RandomItemList> BotEquipCache;
+
 class RandomItemMgr
 {
     public:
@@ -35,16 +61,26 @@ class RandomItemMgr
         }
 
 	public:
+        void Init();
         static bool HandleConsoleCommand(ChatHandler* handler, char const* args);
         RandomItemList Query(RandomItemType type, RandomItemPredicate* predicate);
+        RandomItemList Query(uint32 level, uint8 clazz, uint8 slot, uint32 quality);
         uint32 GetRandomItem(RandomItemType type, RandomItemPredicate* predicate = NULL);
 
     private:
         RandomItemList Query(RandomItemType type);
+        void BuildEquipCache();
+        bool CanEquipItem(BotEquipKey key, ItemPrototype const* proto);
+        void AddItemStats(uint32 mod, uint8 &sp, uint8 &ap, uint8 &tank);
+        bool CheckItemStats(BotEquipKey key, uint8 sp, uint8 ap, uint8 tank);
+        bool CanEquipArmor(BotEquipKey key, ItemPrototype const* proto);
+        bool CanEquipWeapon(BotEquipKey key, ItemPrototype const* proto);
 
     private:
         RandomItemCache cache;
         map<RandomItemType, RandomItemPredicate*> predicates;
+        BotEquipCache equipCache;
+        map<EquipmentSlots, set<InventoryType> > viableSlots;
 };
 
 #define sRandomItemMgr RandomItemMgr::instance()

@@ -8,6 +8,7 @@
 #include "DBCStore.h"
 #include "SharedDefines.h"
 #include "ahbot/AhBot.h"
+#include "RandomItemMgr.h"
 #include "RandomPlayerbotFactory.h"
 #include "ServerFacade.h"
 
@@ -88,12 +89,15 @@ void PlayerbotFactory::Randomize(bool incremental)
     Prepare();
 
     sLog.outDetail("Resetting player...");
+    PerformanceMonitorOperation* pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Reset");
     bot->resetTalents(true);
     ClearSpells();
     ClearInventory();
     bot->SaveToDB();
+    if (pmo) pmo->finish();
 
     sLog.outDetail("Initializing quests...");
+    pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Quests");
     InitQuests();
     // quest rewards boost bot level, so reduce back
     bot->SetLevel(level);
@@ -101,59 +105,92 @@ void PlayerbotFactory::Randomize(bool incremental)
     bot->SetUInt32Value(PLAYER_XP, 0);
     CancelAuras();
     bot->SaveToDB();
+    if (pmo) pmo->finish();
 
+    pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Spells1");
     sLog.outDetail("Initializing spells (step 1)...");
     InitAvailableSpells();
+    if (pmo) pmo->finish();
 
     sLog.outDetail("Initializing skills (step 1)...");
+    pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Skills1");
     InitSkills();
     InitTradeSkills();
+    if (pmo) pmo->finish();
 
+    pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Talents");
     sLog.outDetail("Initializing talents...");
     InitTalents();
+    if (pmo) pmo->finish();
 
+    pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Spells2");
     sLog.outDetail("Initializing spells (step 2)...");
     InitAvailableSpells();
     InitSpecialSpells();
+    if (pmo) pmo->finish();
 
+    pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Mounts");
     sLog.outDetail("Initializing mounts...");
     InitMounts();
+    if (pmo) pmo->finish();
 
+    pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Skills2");
     sLog.outDetail("Initializing skills (step 2)...");
     UpdateTradeSkills();
     bot->SaveToDB();
+    if (pmo) pmo->finish();
 
+    pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Equip");
     sLog.outDetail("Initializing equipmemt...");
     InitEquipment(incremental);
+    if (pmo) pmo->finish();
 
+    pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Bags");
     sLog.outDetail("Initializing bags...");
     InitBags();
+    if (pmo) pmo->finish();
 
+    pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Ammo");
     sLog.outDetail("Initializing ammo...");
     InitAmmo();
+    if (pmo) pmo->finish();
 
+    pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Food");
     sLog.outDetail("Initializing food...");
     InitFood();
+    if (pmo) pmo->finish();
 
+    pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Potions");
     sLog.outDetail("Initializing potions...");
     InitPotions();
+    if (pmo) pmo->finish();
 
+    pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_EqSets");
     sLog.outDetail("Initializing second equipment set...");
     InitSecondEquipmentSet();
+    if (pmo) pmo->finish();
 
+    pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Inventory");
     sLog.outDetail("Initializing inventory...");
     InitInventory();
+    if (pmo) pmo->finish();
 
+    pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Guilds");
     sLog.outDetail("Initializing guilds...");
     InitGuild();
+    if (pmo) pmo->finish();
 
+    pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Pet");
     sLog.outDetail("Initializing pet...");
     InitPet();
+    if (pmo) pmo->finish();
 
+    pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Save");
     sLog.outDetail("Saving to DB...");
     bot->SetMoney(urand(level * 1000, level * 5 * 1000));
     bot->SaveToDB();
     sLog.outDetail("Done.");
+    if (pmo) pmo->finish();
 }
 
 void PlayerbotFactory::InitPet()
@@ -567,99 +604,57 @@ void PlayerbotFactory::InitEquipment(bool incremental)
     DestroyItemsVisitor visitor(bot);
     IterateItems(&visitor, ITERATE_ALL_ITEMS);
 
-    map<uint8, vector<uint32> > items;
+
     for(uint8 slot = 0; slot < EQUIPMENT_SLOT_END; ++slot)
     {
         if (slot == EQUIPMENT_SLOT_TABARD || slot == EQUIPMENT_SLOT_BODY)
             continue;
 
-        uint32 desiredQuality = itemQuality;
-        if (urand(0, 100) < 100 * sPlayerbotAIConfig.randomGearLoweringChance && desiredQuality > ITEM_QUALITY_NORMAL) {
-            desiredQuality--;
+        bool found = false;
+        uint32 quality = itemQuality;
+        if (urand(0, 100) < 100 * sPlayerbotAIConfig.randomGearLoweringChance && quality > ITEM_QUALITY_NORMAL) {
+            quality--;
         }
-
         do
         {
-            for (uint32 itemId = 0; itemId < sItemStorage.GetMaxEntry(); ++itemId)
+            vector<uint32> ids = sRandomItemMgr.Query(level, bot->getClass(), slot, quality);
+            if (!ids.empty()) ahbot::Shuffle(ids);
+            for (uint32 index = 0; index < ids.size(); ++index)
             {
-                ItemPrototype const* proto = sObjectMgr.GetItemPrototype(itemId);
-                if (!proto)
+                uint32 newItemId = ids[index];
+                Item* oldItem = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, slot);
+
+                if (incremental && !IsDesiredReplacement(oldItem)) {
+                    continue;
+                }
+
+                uint16 dest;
+                if (!CanEquipUnseenItem(slot, dest, newItemId))
                     continue;
 
-                if (proto->Class != ITEM_CLASS_WEAPON &&
-                    proto->Class != ITEM_CLASS_ARMOR &&
-                    proto->Class != ITEM_CLASS_CONTAINER &&
-                    proto->Class != ITEM_CLASS_PROJECTILE)
-                    continue;
+                if (oldItem)
+                {
+                    bot->RemoveItem(INVENTORY_SLOT_BAG_0, slot, true);
+                    oldItem->DestroyForPlayer(bot);
+                }
 
-                if (!CanEquipItem(proto, desiredQuality))
-                    continue;
-
-                if (proto->Class == ITEM_CLASS_ARMOR && (
-                    slot == EQUIPMENT_SLOT_HEAD ||
-                    slot == EQUIPMENT_SLOT_SHOULDERS ||
-                    slot == EQUIPMENT_SLOT_CHEST ||
-                    slot == EQUIPMENT_SLOT_WAIST ||
-                    slot == EQUIPMENT_SLOT_LEGS ||
-                    slot == EQUIPMENT_SLOT_FEET ||
-                    slot == EQUIPMENT_SLOT_WRISTS ||
-                    slot == EQUIPMENT_SLOT_HANDS) && !CanEquipArmor(proto))
-                        continue;
-
-                if (proto->Class == ITEM_CLASS_WEAPON && !CanEquipWeapon(proto))
-                    continue;
-
-                if (slot == EQUIPMENT_SLOT_OFFHAND && bot->getClass() == CLASS_ROGUE && proto->Class != ITEM_CLASS_WEAPON)
-                    continue;
-
-                uint16 dest = 0;
-                if (CanEquipUnseenItem(slot, dest, itemId))
-                    items[slot].push_back(itemId);
+                Item* newItem = bot->EquipNewItem(dest, newItemId, true);
+                if (newItem)
+                {
+                    newItem->AddToWorld();
+                    newItem->AddToUpdateQueueOf(bot);
+                    bot->AutoUnequipOffhandIfNeed();
+                    EnchantItem(newItem);
+                    found = true;
+                    break;
+                }
             }
-        } while (items[slot].empty() && desiredQuality-- > ITEM_QUALITY_NORMAL);
-    }
-
-    for(uint8 slot = 0; slot < EQUIPMENT_SLOT_END; ++slot)
-    {
-        if (slot == EQUIPMENT_SLOT_TABARD || slot == EQUIPMENT_SLOT_BODY)
-            continue;
-
-        vector<uint32>& ids = items[slot];
-        if (ids.empty())
+            quality--;
+        } while (!found && quality != ITEM_QUALITY_POOR);
+        if (!found)
         {
-            sLog.outDebug(  "%s: no items to equip for slot %d", bot->GetName(), slot);
+            sLog.outDetail(  "%s: no items to equip for slot %d", bot->GetName(), slot);
             continue;
-        }
-
-        for (int attempts = 0; attempts < 15; attempts++)
-        {
-            uint32 index = urand(0, ids.size() - 1);
-            uint32 newItemId = ids[index];
-            Item* oldItem = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, slot);
-
-            if (incremental && !IsDesiredReplacement(oldItem)) {
-                continue;
-            }
-
-            uint16 dest;
-            if (!CanEquipUnseenItem(slot, dest, newItemId))
-                continue;
-
-            if (oldItem)
-            {
-                bot->RemoveItem(INVENTORY_SLOT_BAG_0, slot, true);
-                oldItem->DestroyForPlayer(bot);
-            }
-
-            Item* newItem = bot->EquipNewItem(dest, newItemId, true);
-            if (newItem)
-            {
-                newItem->AddToWorld();
-                newItem->AddToUpdateQueueOf(bot);
-                bot->AutoUnequipOffhandIfNeed();
-                EnchantItem(newItem);
-                break;
-            }
         }
     }
 }
