@@ -92,6 +92,7 @@ class RandomPlayerbotMgr : public PlayerbotHolder
         map<uint32, vector<WorldLocation> > rpgLocsCache;
         map<uint32, map<string, CachedEvent> > eventCache;
         BarGoLink* loginProgressBar;
+        list<uint32> currentBots;
 };
 
 #define sRandomPlayerbotMgr RandomPlayerbotMgr::instance()

@@ -23,6 +23,35 @@ using namespace MaNGOS;
 
 INSTANTIATE_SINGLETON_1(RandomPlayerbotMgr);
 
+#ifdef CMANGOS
+#include <boost/thread/thread.hpp>
+#endif
+
+#ifdef MANGOS
+class PrintStatsThread: public ACE_Task <ACE_MT_SYNCH>
+{
+public:
+    int svc(void) { sRandomPlayerbotMgr.PrintStats(); return 0; }
+};
+#endif
+#ifdef CMANGOS
+void PrintStatsThread()
+{
+    sRandomPlayerbotMgr.PrintStats();
+}
+#endif
+
+void activatePrintStatsThread()
+{
+#ifdef MANGOS
+    PrintStatsThread *thread = new PrintStatsThread();
+    thread->activate();
+#endif
+#ifdef CMANGOS
+    boost::thread t(PrintStatsThread);
+    t.detach();
+#endif
+}
 
 RandomPlayerbotMgr::RandomPlayerbotMgr() : PlayerbotHolder(), processTicks(0), loginProgressBar(NULL)
 {
@@ -44,7 +73,6 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed)
     if (!sPlayerbotAIConfig.randomBotAutologin || !sPlayerbotAIConfig.enabled)
         return;
 
-    PerformanceMonitorOperation *pmo = sPerformanceMonitor.start(PERF_MON_TOTAL, "RandomPlayerbotMgr::UpdateAIInternal");
     int maxAllowedBotCount = GetEventValue(0, "bot_count");
     if (!maxAllowedBotCount)
     {
@@ -55,7 +83,7 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed)
 
     if (!loginProgressBar)
     {
-        sLog.outString("Logging in %d random bots in background", maxAllowedBotCount);
+        sLog.outString("Logging in %d random bots in the background", maxAllowedBotCount);
         loginProgressBar = new BarGoLink(maxAllowedBotCount);
     }
 
@@ -63,6 +91,10 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed)
 
     list<uint32> bots = GetBots();
     int botCount = bots.size();
+
+    PerformanceMonitorOperation *pmo = sPerformanceMonitor.start(PERF_MON_TOTAL,
+            playerBots.size() < maxAllowedBotCount ? "RandomPlayerbotMgr::Login" : "RandomPlayerbotMgr::UpdateAIInternal");
+
     if (botCount < maxAllowedBotCount)
         AddRandomBots();
 
@@ -79,7 +111,7 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed)
 
     if (!GetEventValue(0, "print_stats"))
     {
-        PrintStats();
+        activatePrintStatsThread();
         SetEventValue(0, "print_stats", 1, sPlayerbotAIConfig.randomBotUpdateInterval);
     }
     if (pmo) pmo->finish();
@@ -131,6 +163,7 @@ uint32 RandomPlayerbotMgr::AddRandomBots()
                 uint32 randomTime = 30 + urand(sPlayerbotAIConfig.randomBotUpdateInterval, sPlayerbotAIConfig.randomBotUpdateInterval * 3);
                 ScheduleRandomize(bot, randomTime);
                 bots.insert(bot);
+                currentBots.push_back(bot);
                 sLog.outString( "New random bot %d added", bot);
                 if (bots.size() >= maxAllowedBotCount)
                 {
@@ -177,6 +210,7 @@ bool RandomPlayerbotMgr::ProcessBot(uint32 bot)
 		{
 			sLog.outString("Bot %d expired", bot);
 			SetEventValue(bot, "add", 0, 0);
+			currentBots.remove(bot);
 			if (player) LogoutPlayerBot(bot);
 		}
         return true;
@@ -651,7 +685,7 @@ bool RandomPlayerbotMgr::IsRandomBot(uint32 bot)
 
 list<uint32> RandomPlayerbotMgr::GetBots()
 {
-    list<uint32> bots;
+    if (!currentBots.empty()) return currentBots;
 
     QueryResult* results = CharacterDatabase.Query(
             "select bot from ai_playerbot_random_bots where owner = 0 and event = 'add'");
@@ -662,12 +696,12 @@ list<uint32> RandomPlayerbotMgr::GetBots()
         {
             Field* fields = results->Fetch();
             uint32 bot = fields[0].GetUInt32();
-            bots.push_back(bot);
+            currentBots.push_back(bot);
         } while (results->NextRow());
 		delete results;
     }
 
-    return bots;
+    return currentBots;
 }
 
 uint32 RandomPlayerbotMgr::GetEventValue(uint32 bot, string event)
@@ -738,7 +772,7 @@ bool RandomPlayerbotMgr::HandlePlayerbotConsoleCommand(ChatHandler* handler, cha
 
     if (cmd == "stats")
     {
-        sRandomPlayerbotMgr.PrintStats();
+        activatePrintStatsThread();
         return true;
     }
 
@@ -890,6 +924,7 @@ void RandomPlayerbotMgr::OnPlayerLogin(Player* player)
 void RandomPlayerbotMgr::OnPlayerLoginError(uint32 bot)
 {
     SetEventValue(bot, "add", 0, 0);
+    currentBots.remove(bot);
 }
 
 Player* RandomPlayerbotMgr::GetRandomPlayer()
