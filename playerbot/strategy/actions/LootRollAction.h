@@ -6,10 +6,13 @@
 
 namespace ai
 {
-    class LootRollAction : public QueryItemUsageAction, public StoreLootAction {
+    class LootRollAction : public QueryItemUsageAction {
     public:
-        LootRollAction(PlayerbotAI* ai) : QueryItemUsageAction(ai, "loot roll"), StoreLootAction(ai) {}
+        LootRollAction(PlayerbotAI* ai) : QueryItemUsageAction(ai, "loot roll") {}
         virtual bool Execute(Event event);
+
+    private:
+        RollVote CalculateRollVote(ItemPrototype const *proto);
     };
 
 }

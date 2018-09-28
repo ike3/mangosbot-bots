@@ -2,6 +2,7 @@
 #include "../../playerbot.h"
 #include "LootRollAction.h"
 
+#include "../values/ItemUsageValue.h"
 
 using namespace ai;
 
@@ -33,11 +34,8 @@ bool LootRollAction::Execute(Event event)
             if (!proto)
                 continue;
 
-            if (IsLootAllowed(itemId, bot->GetPlayerbotAI()))
-            {
-                vote = ROLL_NEED;
-                break;
-            }
+            vote = CalculateRollVote(proto);
+            if (vote != ROLL_PASS) break;
         }
     }
 
@@ -63,7 +61,7 @@ bool LootRollAction::Execute(Event event)
     if (!proto)
         return false;
 
-    RollVote vote = IsLootAllowed(item->itemId, bot->GetPlayerbotAI()) ? ROLL_NEED : ROLL_PASS;
+    RollVote vote = CalculateRollVote(proto);
 
     GroupLootRoll* lootRoll = loot->GetRollForSlot(slot);
     if (!lootRoll)
@@ -73,4 +71,27 @@ bool LootRollAction::Execute(Event event)
 #endif
 
     return true;
+}
+
+RollVote LootRollAction::CalculateRollVote(ItemPrototype const *proto)
+{
+    ostringstream out; out << proto->ItemId;
+    ItemUsage usage = AI_VALUE2(ItemUsage, "item usage", out.str());
+
+    RollVote needVote = ROLL_GREED;
+    switch (usage)
+    {
+    case ITEM_USAGE_EQUIP:
+    case ITEM_USAGE_REPLACE:
+    case ITEM_USAGE_GUILD_TASK:
+        needVote = ROLL_NEED;
+        break;
+    case ITEM_USAGE_SKILL:
+    case ITEM_USAGE_USE:
+    case ITEM_USAGE_DISENCHANT:
+        needVote = ROLL_GREED;
+        break;
+    }
+
+    return StoreLootAction::IsLootAllowed(proto->ItemId, bot->GetPlayerbotAI()) ? needVote : ROLL_PASS;
 }
