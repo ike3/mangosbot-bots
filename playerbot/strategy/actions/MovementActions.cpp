@@ -55,7 +55,10 @@ bool MovementAction::MoveNear(WorldObject* target, float distance)
 
 bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle)
 {
-    if (!bot->IsUnderWater())
+    UpdateMovementState();
+
+    bool generatePath = !bot->IsFlying() && !bot->HasMovementFlag(MOVEFLAG_SWIMMING) && !bot->IsInWater() && !bot->IsUnderWater();
+    if (generatePath)
     {
         float oz = z;
         bot->UpdateGroundPositionZ(x, y, z);
@@ -80,7 +83,6 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle)
             ai->InterruptSpell();
         }
 
-        bool generatePath = !bot->IsFlying() && !bot->IsUnderWater();
         MotionMaster &mm = *bot->GetMotionMaster();
 #ifdef CMANGOS
         mm.Clear();
@@ -198,9 +200,25 @@ bool MovementAction::Follow(Unit* target, float distance)
     return Follow(target, distance, GetFollowAngle());
 }
 
+void MovementAction::UpdateMovementState()
+{
+    if (bot->IsInWater() || bot->IsUnderWater())
+    {
+        bot->m_movementInfo.AddMovementFlag(MOVEFLAG_SWIMMING);
+        bot->UpdateSpeed(MOVE_SWIM, true);
+    }
+    else
+    {
+        bot->m_movementInfo.RemoveMovementFlag(MOVEFLAG_SWIMMING);
+        bot->UpdateSpeed(MOVE_SWIM, true);
+    }
+}
+
 bool MovementAction::Follow(Unit* target, float distance, float angle)
 {
     MotionMaster &mm = *bot->GetMotionMaster();
+
+    UpdateMovementState();
 
     if (!target)
         return false;

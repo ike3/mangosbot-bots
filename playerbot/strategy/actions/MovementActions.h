@@ -26,6 +26,7 @@ namespace ai
         bool IsMovingAllowed();
         bool Flee(Unit *target);
         void ClearIdleState();
+        void UpdateMovementState();
 
     protected:
         Player* bot;
