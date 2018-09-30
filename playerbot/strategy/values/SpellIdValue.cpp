@@ -35,9 +35,7 @@ uint32 SpellIdValue::Calculate()
 
     int loc = bot->GetSession()->GetSessionDbcLocale();
 
-    uint32 foundSpellId = 0;
-    bool foundMatchUsesNoReagents = false;
-
+    set<uint32> spellIds;
     for (PlayerSpellMap::iterator itr = bot->GetSpellMap().begin(); itr != bot->GetSpellMap().end(); ++itr)
     {
         uint32 spellId = itr->first;
@@ -66,24 +64,11 @@ uint32 SpellIdValue::Calculate()
         if (!useByItem && (tolower(spellName[0]) != firstSymbol || strlen(spellName) != spellLength || !Utf8FitTo(spellName, wnamepart)))
             continue;
 
-        bool usesNoReagents = (pSpellInfo->Reagent[0] <= 0);
-
-        // if we already found a spell
-        bool useThisSpell = true;
-        if (foundSpellId > 0) {
-            if (usesNoReagents && !foundMatchUsesNoReagents) {}
-            else if (spellId > foundSpellId) {}
-            else
-                useThisSpell = false;
-        }
-        if (useThisSpell) {
-            foundSpellId = spellId;
-            foundMatchUsesNoReagents = usesNoReagents;
-        }
+        spellIds.insert(spellId);
     }
 
     Pet* pet = bot->GetPet();
-    if (!foundSpellId && pet)
+    if (spellIds.empty() && pet)
     {
         for (PetSpellMap::const_iterator itr = pet->m_spells.begin(); itr != pet->m_spells.end(); ++itr)
         {
@@ -102,9 +87,23 @@ uint32 SpellIdValue::Calculate()
             if (tolower(spellName[0]) != firstSymbol || strlen(spellName) != spellLength || !Utf8FitTo(spellName, wnamepart))
                 continue;
 
-            foundSpellId = spellId;
+            spellIds.insert(spellId);
         }
     }
 
-    return foundSpellId;
+    if (spellIds.empty()) return 0;
+
+    int saveMana = (int) round(AI_VALUE(double, "mana save level"));
+    int rank = 1;
+    int highest = 0;
+    int lowest = 0;
+    for (set<uint32>::reverse_iterator i = spellIds.rbegin(); i != spellIds.rend(); ++i)
+    {
+        if (!highest) highest = *i;
+        if (saveMana == rank) return *i;
+        lowest = *i;
+        rank++;
+    }
+
+    return saveMana > 1 ? lowest : highest;
 }
