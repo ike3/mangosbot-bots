@@ -38,6 +38,7 @@ namespace ai
     {
         ITERATE_ITEMS_IN_BAGS = 1,
         ITERATE_ITEMS_IN_EQUIP = 2,
+        ITERATE_ITEMS_IN_BANK = 4,
         ITERATE_ALL_ITEMS = 255
     };
 
@@ -216,6 +217,22 @@ namespace ai
 
     private:
         uint32 id;
+    };
+
+    class FindItemByIdsVisitor : public FindItemVisitor {
+    public:
+        FindItemByIdsVisitor(ItemIds ids) : FindItemVisitor()
+        {
+            this->ids = ids;
+        }
+
+        virtual bool Accept(const ItemPrototype* proto)
+        {
+            return ids.find(proto->ItemId) != ids.end();
+        }
+
+    private:
+        ItemIds ids;
     };
 
     class ListItemsVisitor : public IterateItemsVisitor

@@ -63,6 +63,9 @@ void InventoryAction::IterateItems(IterateItemsVisitor* visitor, IterateItemsMas
 
     if (mask & ITERATE_ITEMS_IN_EQUIP)
         IterateItemsInEquip(visitor);
+
+    if (mask == ITERATE_ITEMS_IN_BANK)
+        IterateItemsInBank(visitor);
 }
 
 void InventoryAction::IterateItemsInBags(IterateItemsVisitor* visitor)
@@ -96,6 +99,41 @@ void InventoryAction::IterateItemsInEquip(IterateItemsVisitor* visitor)
         if (!visitor->Visit(pItem))
             return;
     }
+}
+
+void InventoryAction::IterateItemsInBank(IterateItemsVisitor* visitor)
+{
+    for (uint8 slot = BANK_SLOT_ITEM_START; slot < BANK_SLOT_ITEM_END; slot++)
+    {
+        Item* const pItem = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, slot);
+        if(!pItem)
+            continue;
+
+        if (!visitor->Visit(pItem))
+            return;
+    }
+
+    for (int i = BANK_SLOT_BAG_START; i < BANK_SLOT_BAG_END; ++i)
+    {
+        if (Bag* pBag = (Bag*)bot->GetItemByPos(INVENTORY_SLOT_BAG_0, i))
+        {
+            if (pBag)
+            {
+                for (uint32 j = 0; j < pBag->GetBagSize(); ++j)
+                {
+                    if (Item* pItem = pBag->GetItemByPos(j))
+                    {
+                        if(!pItem)
+                            continue;
+
+                        if (!visitor->Visit(pItem))
+                            return;
+                    }
+                }
+            }
+        }
+    }
+
 }
 
 bool compare_items(const ItemPrototype *proto1, const ItemPrototype *proto2)
@@ -192,7 +230,7 @@ void InventoryAction::TellItem(ItemPrototype const * proto, int count, bool soul
     ai->TellMaster(out.str());
 }
 
-list<Item*> InventoryAction::parseItems(string text)
+list<Item*> InventoryAction::parseItems(string text, IterateItemsMask mask)
 {
     set<Item*> found;
     size_t pos = text.find(" ");
@@ -236,7 +274,7 @@ list<Item*> InventoryAction::parseItems(string text)
     if (quality != MAX_ITEM_QUALITY)
     {
         FindItemsToTradeByQualityVisitor visitor(quality, count);
-        IterateItems(&visitor);
+        IterateItems(&visitor, mask);
         found.insert(visitor.GetResult().begin(), visitor.GetResult().end());
     }
 
@@ -244,7 +282,7 @@ list<Item*> InventoryAction::parseItems(string text)
     if (chat->parseItemClass(text, &itemClass, &itemSubClass))
     {
         FindItemsToTradeByClassVisitor visitor(itemClass, itemSubClass, count);
-        IterateItems(&visitor);
+        IterateItems(&visitor, mask);
         found.insert(visitor.GetResult().begin(), visitor.GetResult().end());
     }
 
@@ -256,11 +294,19 @@ list<Item*> InventoryAction::parseItems(string text)
             found.insert(item);
     }
 
+    ItemIds outfit = FindOutfitItems(text);
+    if (!outfit.empty())
+    {
+        FindItemByIdsVisitor visitor(outfit);
+        IterateItems(&visitor, mask);
+        found.insert(visitor.GetResult().begin(), visitor.GetResult().end());
+    }
+
     ItemIds ids = chat->parseItems(text);
     for (ItemIds::iterator i = ids.begin(); i != ids.end(); i++)
     {
         FindItemByIdVisitor visitor(*i);
-        IterateItems(&visitor, ITERATE_ALL_ITEMS);
+        IterateItems(&visitor, mask);
         found.insert(visitor.GetResult().begin(), visitor.GetResult().end());
     }
 
@@ -284,4 +330,46 @@ uint32 InventoryAction::GetItemCount(FindItemVisitor* visitor, IterateItemsMask 
         count += item->GetCount();
     }
     return count;
+}
+
+
+ItemIds InventoryAction::FindOutfitItems(string name)
+{
+    list<string>& outfits = AI_VALUE(list<string>&, "outfit list");
+    for (list<string>::iterator i = outfits.begin(); i != outfits.end(); ++i)
+    {
+        string outfit = *i;
+        if (name == parseOutfitName(outfit))
+            return parseOutfitItems(outfit);
+    }
+    return set<uint32>();
+}
+
+
+string InventoryAction::parseOutfitName(string outfit)
+{
+    int pos = outfit.find("=");
+    if (pos == -1) return "";
+    return outfit.substr(0, pos);
+}
+
+ItemIds InventoryAction::parseOutfitItems(string text)
+{
+    ItemIds itemIds;
+
+    uint8 pos = text.find("=") + 1;
+    while (pos < text.size())
+    {
+        int endPos = text.find(',', pos);
+        if (endPos == -1)
+            endPos = text.size();
+
+        string idC = text.substr(pos, endPos - pos);
+        uint32 id = atol(idC.c_str());
+        pos = endPos + 1;
+        if (id)
+            itemIds.insert(id);
+    }
+
+    return itemIds;
 }

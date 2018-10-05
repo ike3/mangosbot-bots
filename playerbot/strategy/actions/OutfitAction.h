@@ -13,11 +13,8 @@ namespace ai
         virtual bool Execute(Event event);
 
     private:
-        string parseName(string outfit);
-        ItemIds parseItems(string outfit);
 
         void List();
-        ItemIds Find(string name);
         void Save(string name, ItemIds outfit);
         void Update(string name);
     };

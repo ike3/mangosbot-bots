@@ -19,8 +19,8 @@ bool OutfitAction::Execute(Event event)
     }
     else
     {
-        string name = parseName(param);
-        ItemIds items = parseItems(param);
+        string name = parseOutfitName(param);
+        ItemIds items = parseOutfitItems(param);
         if (!name.empty())
         {
             Save(name, items);
@@ -37,7 +37,7 @@ bool OutfitAction::Execute(Event event)
             return false;
 
         name = param.substr(0, space);
-        ItemIds outfit = Find(name);
+        ItemIds outfit = FindOutfitItems(name);
         string command = param.substr(space + 1);
         if (command == "equip")
         {
@@ -99,7 +99,7 @@ void OutfitAction::Save(string name, ItemIds items)
     for (list<string>::iterator i = outfits.begin(); i != outfits.end(); ++i)
     {
         string outfit = *i;
-        if (name == parseName(outfit))
+        if (name == parseOutfitName(outfit))
         {
             outfits.erase(i);
             break;
@@ -119,18 +119,6 @@ void OutfitAction::Save(string name, ItemIds items)
     outfits.push_back(out.str());
 }
 
-ItemIds OutfitAction::Find(string name)
-{
-    list<string>& outfits = AI_VALUE(list<string>&, "outfit list");
-    for (list<string>::iterator i = outfits.begin(); i != outfits.end(); ++i)
-    {
-        string outfit = *i;
-        if (name == parseName(outfit))
-            return parseItems(outfit);
-    }
-    return set<uint32>();
-}
-
 
 void OutfitAction::List()
 {
@@ -138,8 +126,8 @@ void OutfitAction::List()
     for (list<string>::iterator i = outfits.begin(); i != outfits.end(); ++i)
     {
         string outfit = *i;
-        string name = parseName(outfit);
-        ItemIds items = parseItems(outfit);
+        string name = parseOutfitName(outfit);
+        ItemIds items = parseOutfitItems(outfit);
 
         ostringstream out;
         out << name << ": ";
@@ -153,34 +141,6 @@ void OutfitAction::List()
         }
         ai->TellMaster(out);
     }
-}
-
-string OutfitAction::parseName(string outfit)
-{
-    int pos = outfit.find("=");
-    if (pos == -1) return "";
-    return outfit.substr(0, pos);
-}
-
-ItemIds OutfitAction::parseItems(string text)
-{
-    ItemIds itemIds;
-
-    uint8 pos = text.find("=") + 1;
-    while (pos < text.size())
-    {
-        int endPos = text.find(',', pos);
-        if (endPos == -1)
-            endPos = text.size();
-
-        string idC = text.substr(pos, endPos - pos);
-        uint32 id = atol(idC.c_str());
-        pos = endPos + 1;
-        if (id)
-            itemIds.insert(id);
-    }
-
-    return itemIds;
 }
 
 void OutfitAction::Update(string name)

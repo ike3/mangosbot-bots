@@ -36,16 +36,16 @@ bool BankAction::Execute(string text, Unit* bank)
     bool result = false;
     if (text[0] == '-')
     {
-        ItemIds found = chat->parseItems(text);
-        for (ItemIds::iterator i = found.begin(); i != found.end(); i++)
+        list<Item*> found = parseItems(text.substr(1), ITERATE_ITEMS_IN_BANK);
+        for (list<Item*>::iterator i = found.begin(); i != found.end(); i++)
         {
-            uint32 itemId = *i;
-            result &= Withdraw(itemId);
+            Item* item = *i;
+            result &= Withdraw(item->GetProto()->ItemId);
         }
     }
     else
     {
-        list<Item*> found = parseItems(text);
+        list<Item*> found = parseItems(text, ITERATE_ITEMS_IN_BAGS);
         if (found.empty())
             return false;
 
