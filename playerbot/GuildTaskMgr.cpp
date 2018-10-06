@@ -11,6 +11,7 @@
 
 #include "../../modules/Bots/ahbot/AhBotConfig.h"
 #include "RandomItemMgr.h"
+#include "ServerFacade.h"
 
 INSTANTIATE_SINGLETON_1(GuildTaskMgr);
 
@@ -47,7 +48,7 @@ void GuildTaskMgr::Update(Player* player, Player* guildMaster)
     if (!guildId || !guildMaster->GetPlayerbotAI() || !guildMaster->GetGuildId())
         return;
 
-    if (!player->IsFriendlyTo(guildMaster))
+    if (!sServerFacade.IsFriendlyTo(player, guildMaster))
         return;
 
 	Guild *guild = sGuildMgr.GetGuildById(guildMaster->GetGuildId());

@@ -2,6 +2,7 @@
 #include "../../playerbot.h"
 #include "PossibleTargetsValue.h"
 
+#include "../../ServerFacade.h"
 #include "GridNotifiers.h"
 #include "GridNotifiersImpl.h"
 #include "CellImpl.h"
@@ -21,5 +22,5 @@ bool PossibleTargetsValue::AcceptUnit(Unit* unit)
     return !unit->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE) &&
             !unit->HasStealthAura() &&
             !unit->HasInvisibilityAura() &&
-            (unit->IsHostileTo(bot) || (unit->getLevel() > 1 && !unit->IsFriendlyTo(bot)));
+            (sServerFacade.IsHostileTo(unit, bot) || (unit->getLevel() > 1 && !sServerFacade.IsFriendlyTo(unit, bot)));
 }

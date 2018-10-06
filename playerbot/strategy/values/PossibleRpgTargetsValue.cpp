@@ -2,6 +2,7 @@
 #include "../../playerbot.h"
 #include "PossibleRpgTargetsValue.h"
 
+#include "../../ServerFacade.h"
 #include "GridNotifiers.h"
 #include "GridNotifiersImpl.h"
 #include "CellImpl.h"
@@ -53,7 +54,7 @@ void PossibleRpgTargetsValue::FindUnits(list<Unit*> &targets)
 
 bool PossibleRpgTargetsValue::AcceptUnit(Unit* unit)
 {
-    if (unit->IsHostileTo(bot) || dynamic_cast<Player*>(unit))
+    if (sServerFacade.IsHostileTo(unit, bot) || dynamic_cast<Player*>(unit))
         return false;
 
     if (sServerFacade.GetDistance2d(bot, unit) <= sPlayerbotAIConfig.tooCloseDistance)

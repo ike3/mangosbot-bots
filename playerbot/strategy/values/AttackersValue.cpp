@@ -81,6 +81,6 @@ bool AttackersValue::hasRealThreat(Unit *attacker)
         sServerFacade.IsAlive(attacker) &&
         !attacker->IsPolymorphed() &&
         !sServerFacade.IsInRoots(attacker) &&
-        !attacker->IsFriendlyTo(bot) &&
+        !sServerFacade.IsFriendlyTo(attacker, bot) &&
         (sServerFacade.GetThreatManager(attacker).getCurrentVictim() || attacker->GetObjectGuid().IsPlayer());
 }

@@ -18,7 +18,7 @@ bool InvalidTargetValue::Calculate()
                 sServerFacade.IsCharmed(target) ||
                 sServerFacade.IsFeared(target) ||
                 target->hasUnitState(UNIT_STAT_ISOLATED) ||
-                target->IsFriendlyTo(bot) ||
+                sServerFacade.IsFriendlyTo(target, bot) ||
                 !bot->IsWithinDistInMap(target, sPlayerbotAIConfig.sightDistance) ||
                 !sServerFacade.IsWithinLOSInMap(bot, target);
     }

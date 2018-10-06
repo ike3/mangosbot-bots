@@ -746,7 +746,7 @@ bool IsRealAura(Player* bot, Aura const* aura, Unit* unit)
     if (!aura)
         return false;
 
-    if (!unit->IsHostileTo(bot))
+    if (!sServerFacade.IsHostileTo(unit, bot))
         return true;
 
     uint32 stacks = aura->GetStackAmount();
@@ -860,10 +860,10 @@ bool PlayerbotAI::CanCastSpell(uint32 spellid, Unit* target, bool checkHasSpell)
         return false;
 
     bool positiveSpell = IsPositiveSpell(spellInfo);
-    if (positiveSpell && bot->IsHostileTo(target))
+    if (positiveSpell && sServerFacade.IsHostileTo(bot, target))
         return false;
 
-    if (!positiveSpell && bot->IsFriendlyTo(target))
+    if (!positiveSpell && sServerFacade.IsFriendlyTo(bot, target))
         return false;
 
     if (target->IsImmuneToSpell(spellInfo, false))
@@ -1155,10 +1155,10 @@ bool PlayerbotAI::HasAuraToDispel(Unit* target, uint32 dispelType)
 			uint32 spellId = entry->Id;
 
 			bool isPositiveSpell = IsPositiveSpell(spellId);
-			if (isPositiveSpell && bot->IsFriendlyTo(target))
+			if (isPositiveSpell && sServerFacade.IsFriendlyTo(bot, target))
 				continue;
 
-			if (!isPositiveSpell && bot->IsHostileTo(target))
+			if (!isPositiveSpell && sServerFacade.IsHostileTo(bot, target))
 				continue;
 
 			if (sPlayerbotAIConfig.dispelAuraDuration && aura->GetAuraDuration() && aura->GetAuraDuration() < (int32)sPlayerbotAIConfig.dispelAuraDuration)

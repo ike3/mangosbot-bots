@@ -68,3 +68,23 @@ void ServerFacade::SetFacingTo(Player* bot, WorldObject* wo, bool force)
         bot->SendHeartBeat();
     }
 }
+
+bool ServerFacade::IsFriendlyTo(Unit* bot, Unit* to)
+{
+#ifdef MANGOS
+    return bot->IsFriendlyTo(to);
+#endif
+#ifdef CMANGOS
+    return bot->IsFriend(to);
+#endif
+}
+
+bool ServerFacade::IsHostileTo(Unit* bot, Unit* to)
+{
+#ifdef MANGOS
+    return bot->IsHostileTo(to);
+#endif
+#ifdef CMANGOS
+    return bot->IsEnemy(to);
+#endif
+}

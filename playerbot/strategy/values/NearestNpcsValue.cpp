@@ -2,6 +2,7 @@
 #include "../../playerbot.h"
 #include "NearestNpcsValue.h"
 
+#include "../../ServerFacade.h"
 #include "GridNotifiers.h"
 #include "GridNotifiersImpl.h"
 #include "CellImpl.h"
@@ -18,5 +19,5 @@ void NearestNpcsValue::FindUnits(list<Unit*> &targets)
 
 bool NearestNpcsValue::AcceptUnit(Unit* unit)
 {
-    return !unit->IsHostileTo(bot) && !dynamic_cast<Player*>(unit);
+    return !sServerFacade.IsHostileTo(unit, bot) && !dynamic_cast<Player*>(unit);
 }

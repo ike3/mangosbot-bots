@@ -51,7 +51,7 @@ bool AttackAction::Attack(Unit* target)
 
     ostringstream msg;
     msg << target->GetName();
-    if (bot->IsFriendlyTo(target))
+    if (sServerFacade.IsFriendlyTo(bot, target))
     {
         msg << " is friendly to me";
         if (verbose) ai->TellMaster(msg.str());

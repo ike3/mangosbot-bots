@@ -214,6 +214,9 @@ class ServerFacade
         bool IsDistanceLessOrEqualThan(float dist1, float dist2);
 
         void SetFacingTo(Player* bot, WorldObject* wo, bool force = false);
+
+        bool IsFriendlyTo(Unit* bot, Unit* to);
+        bool IsHostileTo(Unit* bot, Unit* to);
 };
 
 #define sServerFacade ServerFacade::instance()
