@@ -31,7 +31,7 @@ void TrainerAction::Learn(uint32 cost, TrainerSpell const* tSpell, ostringstream
     msg << " - learned";
 }
 
-void TrainerAction::List(Creature* creature, TrainerSpellAction action, SpellIds& spells)
+void TrainerAction::Iterate(Creature* creature, TrainerSpellAction action, SpellIds& spells)
 {
     TellHeader(creature);
 
@@ -63,13 +63,16 @@ void TrainerAction::List(Creature* creature, TrainerSpellAction action, SpellIds
         if (!pSpellInfo)
             continue;
 
+        if (!spells.empty() && spells.find(tSpell->spell) == spells.end())
+            continue;
+
         uint32 cost = uint32(floor(tSpell->spellCost *  fDiscountMod));
         totalCost += cost;
 
         ostringstream out;
         out << chat->formatSpell(pSpellInfo) << chat->formatMoney(cost);
 
-        if (action && (spells.empty() || spells.find(tSpell->spell) != spells.end()))
+        if (action)
             (this->*action)(cost, tSpell, out);
 
         ai->TellMaster(out);
@@ -112,9 +115,9 @@ bool TrainerAction::Execute(Event event)
         spells.insert(spell);
 
     if (text.find("learn") != string::npos)
-        List(creature, &TrainerAction::Learn, spells);
+        Iterate(creature, &TrainerAction::Learn, spells);
     else
-        List(creature, NULL, spells);
+        Iterate(creature, NULL, spells);
 
     return true;
 }
