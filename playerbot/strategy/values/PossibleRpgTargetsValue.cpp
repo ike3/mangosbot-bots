@@ -25,6 +25,12 @@ PossibleRpgTargetsValue::PossibleRpgTargetsValue(PlayerbotAI* ai, float range) :
         allowedNpcFlags.push_back(UNIT_NPC_FLAG_BANKER);
 #ifdef MANGOSBOT_ONE
         allowedNpcFlags.push_back(UNIT_NPC_FLAG_GUILD_BANKER);
+        allowedNpcFlags.push_back(UNIT_NPC_FLAG_TRAINER_CLASS);
+        allowedNpcFlags.push_back(UNIT_NPC_FLAG_TRAINER_PROFESSION);
+        allowedNpcFlags.push_back(UNIT_NPC_FLAG_VENDOR_AMMO);
+        allowedNpcFlags.push_back(UNIT_NPC_FLAG_VENDOR_FOOD);
+        allowedNpcFlags.push_back(UNIT_NPC_FLAG_VENDOR_POISON);
+        allowedNpcFlags.push_back(UNIT_NPC_FLAG_VENDOR_REAGENT);
 #endif
         allowedNpcFlags.push_back(UNIT_NPC_FLAG_AUCTIONEER);
         allowedNpcFlags.push_back(UNIT_NPC_FLAG_STABLEMASTER);
@@ -32,15 +38,7 @@ PossibleRpgTargetsValue::PossibleRpgTargetsValue(PlayerbotAI* ai, float range) :
         allowedNpcFlags.push_back(UNIT_NPC_FLAG_TABARDDESIGNER);
 
         allowedNpcFlags.push_back(UNIT_NPC_FLAG_TRAINER);
-        allowedNpcFlags.push_back(UNIT_NPC_FLAG_TRAINER_CLASS);
-        allowedNpcFlags.push_back(UNIT_NPC_FLAG_TRAINER_PROFESSION);
-
         allowedNpcFlags.push_back(UNIT_NPC_FLAG_VENDOR);
-        allowedNpcFlags.push_back(UNIT_NPC_FLAG_VENDOR_AMMO);
-        allowedNpcFlags.push_back(UNIT_NPC_FLAG_VENDOR_FOOD);
-        allowedNpcFlags.push_back(UNIT_NPC_FLAG_VENDOR_POISON);
-        allowedNpcFlags.push_back(UNIT_NPC_FLAG_VENDOR_REAGENT);
-
         allowedNpcFlags.push_back(UNIT_NPC_FLAG_REPAIR);
     }
 }
