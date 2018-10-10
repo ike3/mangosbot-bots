@@ -39,6 +39,9 @@ namespace ai
             if (!target || !target->IsInWorld())
                 return 0.0f;
 
+            if (target == ai->GetBot())
+                return 0.0f;
+
             return sServerFacade.GetDistance2d(ai->GetBot(), target);
         }
     };

@@ -16,7 +16,7 @@ bool CastSpellAction::isPossible()
 
 bool CastSpellAction::isUseful()
 {
-	return GetTarget() && AI_VALUE2(bool, "spell cast useful", spell);
+    return GetTarget() && AI_VALUE2(bool, "spell cast useful", spell) && AI_VALUE2(float, "distance", GetTargetName()) <= range;
 }
 
 bool CastAuraSpellAction::isUseful()
