@@ -141,17 +141,17 @@ public:
     void WaitForSpellCast(Spell *spell);
     bool PlaySound(uint32 emote);
 
-    virtual bool CanCastSpell(string name, Unit* target);
-    virtual bool CastSpell(string name, Unit* target);
+    virtual bool CanCastSpell(string name, Unit* target, Item* itemTarget = NULL);
+    virtual bool CastSpell(string name, Unit* target, Item* itemTarget = NULL);
     virtual bool HasAura(string spellName, Unit* player);
     virtual bool HasAnyAuraOf(Unit* player, ...);
 
     virtual bool IsInterruptableSpellCasting(Unit* player, string spell);
     virtual bool HasAuraToDispel(Unit* player, uint32 dispelType);
-    bool CanCastSpell(uint32 spellid, Unit* target, bool checkHasSpell = true);
+    bool CanCastSpell(uint32 spellid, Unit* target, bool checkHasSpell = true, Item* itemTarget = NULL);
 
     bool HasAura(uint32 spellId, const Unit* player);
-    bool CastSpell(uint32 spellId, Unit* target);
+    bool CastSpell(uint32 spellId, Unit* target, Item* itemTarget = NULL);
     bool canDispel(const SpellEntry* entry, uint32 dispelType);
 
     uint32 GetEquipGearScore(Player* player, bool withBags, bool withBank);

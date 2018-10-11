@@ -32,6 +32,18 @@ Item* ItemForSpellValue::Calculate()
             return itemForSpell;
     }
 
+    Player* master = ai->GetMaster();
+    if (master)
+    {
+        trader = master->GetTrader();
+        if (trader)
+        {
+            itemForSpell = trader->GetTradeData()->GetItem(TRADE_SLOT_NONTRADED);
+            if (itemForSpell && itemForSpell->IsFitToSpellRequirements(spellInfo))
+                return itemForSpell;
+        }
+    }
+
     // Workaround as some spells have no item mask (e.g. shaman weapon enhancements)
     if (!strcmpi(spellInfo->SpellName[0], "rockbiter weapon") ||
             !strcmpi(spellInfo->SpellName[0], "flametongue weapon") ||
@@ -51,6 +63,9 @@ Item* ItemForSpellValue::Calculate()
     }
 
     if (!(spellInfo->Targets & TARGET_FLAG_ITEM))
+        return NULL;
+
+    if (!strcmpi(spellInfo->SpellName[0], "disenchant"))
         return NULL;
 
     for( uint8 slot = EQUIPMENT_SLOT_START; slot < EQUIPMENT_SLOT_END; slot++ ) {

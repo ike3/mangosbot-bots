@@ -830,12 +830,12 @@ bool PlayerbotAI::HasAnyAuraOf(Unit* player, ...)
     return false;
 }
 
-bool PlayerbotAI::CanCastSpell(string name, Unit* target)
+bool PlayerbotAI::CanCastSpell(string name, Unit* target, Item* itemTarget)
 {
-    return CanCastSpell(aiObjectContext->GetValue<uint32>("spell id", name)->Get(), target);
+    return CanCastSpell(aiObjectContext->GetValue<uint32>("spell id", name)->Get(), target, true, itemTarget);
 }
 
-bool PlayerbotAI::CanCastSpell(uint32 spellid, Unit* target, bool checkHasSpell)
+bool PlayerbotAI::CanCastSpell(uint32 spellid, Unit* target, bool checkHasSpell, Item* itemTarget)
 {
     if (!spellid)
         return false;
@@ -859,26 +859,30 @@ bool PlayerbotAI::CanCastSpell(uint32 spellid, Unit* target, bool checkHasSpell)
 	if (!spellInfo)
         return false;
 
-    bool positiveSpell = IsPositiveSpell(spellInfo);
-    if (positiveSpell && sServerFacade.IsHostileTo(bot, target))
-        return false;
+	if (!itemTarget)
+	{
+        bool positiveSpell = IsPositiveSpell(spellInfo);
+        if (positiveSpell && sServerFacade.IsHostileTo(bot, target))
+            return false;
 
-    if (!positiveSpell && sServerFacade.IsFriendlyTo(bot, target))
-        return false;
+        if (!positiveSpell && sServerFacade.IsFriendlyTo(bot, target))
+            return false;
 
-    if (target->IsImmuneToSpell(spellInfo, false))
-        return false;
+        if (target->IsImmuneToSpell(spellInfo, false))
+            return false;
 
-    if (bot != target && bot->GetDistance(target) > sPlayerbotAIConfig.sightDistance)
-        return false;
+        if (bot != target && bot->GetDistance(target) > sPlayerbotAIConfig.sightDistance)
+            return false;
+	}
 
 	ObjectGuid oldSel = bot->GetSelectionGuid();
 	bot->SetSelectionGuid(target->GetObjectGuid());
 	Spell *spell = new Spell(bot, spellInfo, false);
 
     spell->m_targets.setUnitTarget(target);
-    spell->m_CastItem = aiObjectContext->GetValue<Item*>("item for spell", spellid)->Get();
+    spell->m_CastItem = itemTarget ? itemTarget : aiObjectContext->GetValue<Item*>("item for spell", spellid)->Get();
     spell->m_targets.setItemTarget(spell->m_CastItem);
+
     SpellCastResult result = spell->CheckCast(false);
     delete spell;
 	if (oldSel)
@@ -901,9 +905,9 @@ bool PlayerbotAI::CanCastSpell(uint32 spellid, Unit* target, bool checkHasSpell)
 }
 
 
-bool PlayerbotAI::CastSpell(string name, Unit* target)
+bool PlayerbotAI::CastSpell(string name, Unit* target, Item* itemTarget)
 {
-    bool result = CastSpell(aiObjectContext->GetValue<uint32>("spell id", name)->Get(), target);
+    bool result = CastSpell(aiObjectContext->GetValue<uint32>("spell id", name)->Get(), target, itemTarget);
     if (result)
     {
         aiObjectContext->GetValue<time_t>("last spell cast time", name)->Set(time(0));
@@ -912,7 +916,7 @@ bool PlayerbotAI::CastSpell(string name, Unit* target)
     return result;
 }
 
-bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target)
+bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target, Item* itemTarget)
 {
     if (!spellId)
         return false;
@@ -991,8 +995,14 @@ bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target)
     SpellCastTargets targets;
     if (pSpellInfo->Targets & TARGET_FLAG_ITEM)
     {
-        spell->m_CastItem = aiObjectContext->GetValue<Item*>("item for spell", spellId)->Get();
+        spell->m_CastItem = itemTarget ? itemTarget : aiObjectContext->GetValue<Item*>("item for spell", spellId)->Get();
         targets.setItemTarget(spell->m_CastItem);
+
+        if (bot->GetTradeData())
+        {
+            bot->GetTradeData()->SetSpell(spellId);
+            return true;
+        }
     }
     else if (pSpellInfo->Targets & TARGET_FLAG_DEST_LOCATION)
     {

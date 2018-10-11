@@ -1,14 +1,14 @@
 #pragma once
 
 #include "../Action.h"
-#include "QuestAction.h"
+#include "InventoryAction.h"
 
 namespace ai
 {
-    class CastCustomSpellAction : public Action
+    class CastCustomSpellAction : public InventoryAction
     {
     public:
-        CastCustomSpellAction(PlayerbotAI* ai) : Action(ai, "cast custom spell") {}
+        CastCustomSpellAction(PlayerbotAI* ai) : InventoryAction(ai, "cast custom spell") {}
         virtual bool Execute(Event event);
     };
 }

@@ -6,6 +6,19 @@
 #include "../../ServerFacade.h"
 using namespace ai;
 
+int FindLastSeparator(string text, string sep)
+{
+    int pos = text.rfind(sep);
+    if (pos == string::npos) return pos;
+
+    int lastLinkBegin = text.rfind("|H");
+    int lastLinkEnd = text.find("|h|r", lastLinkBegin + 1);
+    if (pos >= lastLinkBegin && pos <= lastLinkEnd)
+        pos = text.find_last_of(sep, lastLinkBegin);
+
+    return pos;
+}
+
 bool CastCustomSpellAction::Execute(Event event)
 {
     Unit* target = NULL;
@@ -18,13 +31,22 @@ bool CastCustomSpellAction::Execute(Event event)
         target = bot;
 
     string text = event.getParam();
-    int pos = text.find_last_of(" ");
+
+    Item* itemTarget = NULL;
+
+    int pos = FindLastSeparator(text, " ");
     int castCount = 1;
     if (pos != string::npos)
     {
-        castCount = atoi(text.substr(pos + 1).c_str());
-        if (castCount > 0)
-            text = text.substr(0, pos);
+        string param = text.substr(pos + 1);
+        list<Item*> items = InventoryAction::parseItems(param, ITERATE_ITEMS_IN_BAGS);
+        if (!items.empty()) itemTarget = *items.begin();
+        else
+        {
+            castCount = atoi(param.c_str());
+            if (castCount > 0)
+                text = text.substr(0, pos);
+        }
     }
 
     uint32 spell = AI_VALUE2(uint32, "spell id", text);
@@ -54,20 +76,24 @@ bool CastCustomSpellAction::Execute(Event event)
         return true;
     }
 
+    ostringstream spellName;
+    spellName << ChatHelper::formatSpell(pSpellInfo) << " on ";
+    if (bot->GetTrader()) spellName << "trade item";
+    else if (itemTarget) spellName << chat->formatItem(itemTarget->GetProto());
+    else if (target == bot) spellName << "self";
+    else spellName << target->GetName();
 
-    if (!ai->CanCastSpell(spell, target))
+    if (!bot->GetTrader() && !ai->CanCastSpell(spell, target, true, itemTarget))
     {
-        msg << "Cannot cast " << ChatHelper::formatSpell(pSpellInfo) << " on " << target->GetName();
+        msg << "Cannot cast " << spellName.str();
         ai->TellMaster(msg.str());
         return false;
     }
 
-    bool result = spell ? ai->CastSpell(spell, target) : ai->CastSpell(text, target);
+    bool result = spell ? ai->CastSpell(spell, target, itemTarget) : ai->CastSpell(text, target, itemTarget);
     if (result)
     {
-        msg << "Casting " << ChatHelper::formatSpell(pSpellInfo);
-        if (target != bot)
-            msg << " on " << target->GetName();
+        msg << "Casting " << spellName.str();
 
         if (castCount > 1)
         {
@@ -80,7 +106,7 @@ bool CastCustomSpellAction::Execute(Event event)
     }
     else
     {
-        msg << "Cast " << ChatHelper::formatSpell(pSpellInfo) << " on " << target->GetName() << " is failed";
+        msg << "Cast " << spellName.str() << " is failed";
         ai->TellMaster(msg.str());
     }
 
