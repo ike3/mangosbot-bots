@@ -8,13 +8,13 @@ using namespace ai;
 
 bool MoveToRpgTargetAction::Execute(Event event)
 {
-    Unit* target = AI_VALUE(Unit*, "rpg target");
+    Unit* target = ai->GetUnit(AI_VALUE(ObjectGuid, "rpg target"));
     if (!target) return false;
 
     float distance = AI_VALUE2(float, "distance", "rpg target");
     if (distance > 180.0f)
     {
-        context->GetValue<Unit*>("rpg target")->Set(NULL);
+        context->GetValue<ObjectGuid>("rpg target")->Set(ObjectGuid());
         return false;
     }
 
@@ -48,5 +48,5 @@ bool MoveToRpgTargetAction::Execute(Event event)
 
 bool MoveToRpgTargetAction::isUseful()
 {
-    return context->GetValue<Unit*>("rpg target")->Get() && AI_VALUE2(float, "distance", "rpg target") > sPlayerbotAIConfig.followDistance;
+    return context->GetValue<ObjectGuid>("rpg target")->Get() && AI_VALUE2(float, "distance", "rpg target") > sPlayerbotAIConfig.followDistance;
 }

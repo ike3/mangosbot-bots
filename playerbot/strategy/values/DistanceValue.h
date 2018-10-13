@@ -35,7 +35,18 @@ namespace ai
                 if (!pos.isSet()) return 0.0f;
                 return sServerFacade.GetDistance2d(ai->GetBot(), pos.x, pos.y);
             }
-            Unit* target = AI_VALUE(Unit*, qualifier);
+
+            Unit* target = NULL;
+            if (qualifier == "rpg target")
+            {
+                ObjectGuid rpgTarget = AI_VALUE(ObjectGuid, qualifier);
+                target = ai->GetUnit(rpgTarget);
+            }
+            else
+            {
+                target = AI_VALUE(Unit*, qualifier);
+            }
+
             if (!target || !target->IsInWorld())
                 return 0.0f;
 

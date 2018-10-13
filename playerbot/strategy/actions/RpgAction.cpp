@@ -10,7 +10,7 @@ using namespace ai;
 
 bool RpgAction::Execute(Event event)
 {
-    Unit* target = AI_VALUE(Unit*, "rpg target");
+    Unit* target = ai->GetUnit(AI_VALUE(ObjectGuid, "rpg target"));
     if (!target)
         return false;
 
@@ -19,7 +19,7 @@ bool RpgAction::Execute(Event event)
 
     if (bot->GetMapId() != target->GetMapId())
     {
-        context->GetValue<Unit*>("rpg target")->Set(NULL);
+        context->GetValue<ObjectGuid>("rpg target")->Set(ObjectGuid());
         return false;
     }
 
@@ -85,7 +85,7 @@ void RpgAction::emote(Unit* unit)
 
 void RpgAction::cancel(Unit* unit)
 {
-    context->GetValue<Unit*>("rpg target")->Set(NULL);
+    context->GetValue<ObjectGuid>("rpg target")->Set(ObjectGuid());
 }
 
 void RpgAction::taxi(Unit* unit)
@@ -106,7 +106,7 @@ void RpgAction::taxi(Unit* unit)
         return;
     }
 
-    context->GetValue<Unit*>("rpg target")->Set(NULL);
+    context->GetValue<ObjectGuid>("rpg target")->Set(ObjectGuid());
 
     uint32 path = nodes[urand(0, nodes.size() - 1)];
     bot->m_taxi.SetTaximaskNode(path);
@@ -135,5 +135,5 @@ void RpgAction::taxi(Unit* unit)
 
 bool RpgAction::isUseful()
 {
-    return context->GetValue<Unit*>("rpg target")->Get();
+    return context->GetValue<ObjectGuid>("rpg target")->Get();
 }

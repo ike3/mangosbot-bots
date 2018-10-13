@@ -26,12 +26,13 @@ bool ChooseRpgTargetAction::Execute(Event event)
     }
 
     Unit* target = units[urand(0, units.size() - 1)];
+    if (!target) return false;
 
-    context->GetValue<Unit*>("rpg target")->Set(target);
+    context->GetValue<ObjectGuid>("rpg target")->Set(target->GetObjectGuid());
     return true;
 }
 
 bool ChooseRpgTargetAction::isUseful()
 {
-    return !context->GetValue<Unit*>("rpg target")->Get();
+    return !context->GetValue<ObjectGuid>("rpg target")->Get();
 }

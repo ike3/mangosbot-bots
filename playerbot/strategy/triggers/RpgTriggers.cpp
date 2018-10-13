@@ -7,12 +7,12 @@ using namespace ai;
 
 bool NoRpgTargetTrigger::IsActive()
 {
-    return !context->GetValue<Unit*>("rpg target")->Get() && !AI_VALUE(list<ObjectGuid>, "possible rpg targets").empty();
+    return !context->GetValue<ObjectGuid>("rpg target")->Get() && !AI_VALUE(list<ObjectGuid>, "possible rpg targets").empty();
 }
 
 bool FarFromRpgTargetTrigger::IsActive()
 {
-    Unit* unit = context->GetValue<Unit*>("rpg target")->Get();
+    ObjectGuid unit = context->GetValue<ObjectGuid>("rpg target")->Get();
     if (!unit) return false;
 
     float distance = AI_VALUE2(float, "distance", "rpg target");

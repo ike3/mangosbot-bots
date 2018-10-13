@@ -37,10 +37,10 @@ namespace ai
         Unit* FindTarget(FindTargetStrategy* strategy);
     };
 
-    class RpgTargetValue : public ManualSetValue<Unit*>
+    class RpgTargetValue : public ManualSetValue<ObjectGuid>
     {
     public:
-        RpgTargetValue(PlayerbotAI* ai) : ManualSetValue<Unit*>(ai, NULL) {}
+        RpgTargetValue(PlayerbotAI* ai) : ManualSetValue<ObjectGuid>(ai, ObjectGuid()) {}
     };
 
     class TalkTargetValue : public ManualSetValue<Unit*>
