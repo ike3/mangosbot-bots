@@ -139,7 +139,7 @@ PlayerbotAI::~PlayerbotAI()
 
 void PlayerbotAI::UpdateAIInternal(uint32 elapsed)
 {
-    if (bot->IsBeingTeleported())
+    if (bot->IsBeingTeleported() || !bot->IsInWorld())
         return;
 
     PerformanceMonitorOperation *pmo = sPerformanceMonitor.start(PERF_MON_TOTAL, "PlayerbotAI::UpdateAIInternal");
