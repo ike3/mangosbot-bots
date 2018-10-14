@@ -109,11 +109,6 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed)
             break;
     }
 
-    if (!GetEventValue(0, "print_stats"))
-    {
-        activatePrintStatsThread();
-        SetEventValue(0, "print_stats", 1, sPlayerbotAIConfig.randomBotUpdateInterval);
-    }
     if (pmo) pmo->finish();
 }
 
