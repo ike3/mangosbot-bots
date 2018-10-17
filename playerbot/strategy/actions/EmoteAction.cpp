@@ -171,19 +171,24 @@ bool EmoteAction::isUseful()
 
 bool TalkAction::Execute(Event event)
 {
-    Unit* target = AI_VALUE(Unit*, "talk target");
+    Unit* target = ai->GetUnit(AI_VALUE(ObjectGuid, "talk target"));
     if (!target)
         target = GetTarget();
 
-    if (!urand(0, 100)) target = NULL;
-    context->GetValue<Unit*>("talk target")->Set(target);
+    if (!urand(0, 100))
+    {
+        target = NULL;
+        context->GetValue<ObjectGuid>("talk target")->Set(ObjectGuid());
+        return true;
+    }
 
     if (target)
     {
         Player* player = dynamic_cast<Player*>(target);
         if (player && player->GetPlayerbotAI())
-            player->GetPlayerbotAI()->GetAiObjectContext()->GetValue<Unit*>("talk target")->Set(bot);
+            player->GetPlayerbotAI()->GetAiObjectContext()->GetValue<ObjectGuid>("talk target")->Set(bot->GetObjectGuid());
 
+        context->GetValue<ObjectGuid>("talk target")->Set(target->GetObjectGuid());
         return Emote(target, GetRandomEmote(target));
     }
 

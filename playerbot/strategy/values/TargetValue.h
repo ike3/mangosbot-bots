@@ -43,9 +43,9 @@ namespace ai
         RpgTargetValue(PlayerbotAI* ai) : ManualSetValue<ObjectGuid>(ai, ObjectGuid()) {}
     };
 
-    class TalkTargetValue : public ManualSetValue<Unit*>
+    class TalkTargetValue : public ManualSetValue<ObjectGuid>
     {
     public:
-        TalkTargetValue(PlayerbotAI* ai) : ManualSetValue<Unit*>(ai, NULL) {}
+        TalkTargetValue(PlayerbotAI* ai) : ManualSetValue<ObjectGuid>(ai, ObjectGuid()) {}
     };
 }
