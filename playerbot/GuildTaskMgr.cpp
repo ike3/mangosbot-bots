@@ -164,10 +164,10 @@ uint32 GuildTaskMgr::CreateTask(uint32 owner, uint32 guildId)
 bool GuildTaskMgr::CreateItemTask(uint32 owner, uint32 guildId)
 {
     Player* player = sObjectMgr.GetPlayer(ObjectGuid(HIGHGUID_PLAYER, owner));
-    if (!player)
+    if (!player || player->getLevel() < 5)
         return false;
 
-    uint32 itemId = sRandomItemMgr.GetRandomItem(RANDOM_ITEM_GUILD_TASK);
+    uint32 itemId = sRandomItemMgr.GetRandomItem(player->getLevel() - 5, RANDOM_ITEM_GUILD_TASK);
     if (!itemId)
     {
         sLog.outError( "%s / %s: no items avaible for item task",
@@ -842,6 +842,10 @@ bool GuildTaskMgr::Reward(uint32 owner, uint32 guildId)
     if (!leader)
         return false;
 
+    Player* player = sObjectMgr.GetPlayer(ObjectGuid(HIGHGUID_PLAYER, owner), false);
+    if (!player)
+        return false;
+
     uint32 itemTask = GetTaskValue(owner, guildId, "itemTask");
     uint32 killTask = GetTaskValue(owner, guildId, "killTask");
     if (!itemTask && !killTask)
@@ -884,7 +888,7 @@ bool GuildTaskMgr::Reward(uint32 owner, uint32 guildId)
 
     MailDraft draft("Thank You", body.str());
 
-    uint32 itemId = sRandomItemMgr.GetRandomItem(rewardType);
+    uint32 itemId = sRandomItemMgr.GetRandomItem(player->getLevel(), rewardType);
     if (itemId)
     {
         Item* item = Item::CreateItem(itemId, 1, leader);
@@ -893,7 +897,7 @@ bool GuildTaskMgr::Reward(uint32 owner, uint32 guildId)
     }
 
     draft.SendMailTo(MailReceiver(ObjectGuid(HIGHGUID_PLAYER, owner)), MailSender(leader));
-    Player* player = sObjectMgr.GetPlayer(ObjectGuid(HIGHGUID_PLAYER, owner));
+    player = sObjectMgr.GetPlayer(ObjectGuid(HIGHGUID_PLAYER, owner));
     if (player)
         SendCompletionMessage(player, "rewarded for");
 

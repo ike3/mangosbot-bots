@@ -63,12 +63,12 @@ class RandomItemMgr
 	public:
         void Init();
         static bool HandleConsoleCommand(ChatHandler* handler, char const* args);
-        RandomItemList Query(RandomItemType type, RandomItemPredicate* predicate);
+        RandomItemList Query(uint32 level, RandomItemType type, RandomItemPredicate* predicate);
         RandomItemList Query(uint32 level, uint8 clazz, uint8 slot, uint32 quality);
-        uint32 GetRandomItem(RandomItemType type, RandomItemPredicate* predicate = NULL);
+        uint32 GetRandomItem(uint32 level, RandomItemType type, RandomItemPredicate* predicate = NULL);
 
     private:
-        RandomItemList Query(RandomItemType type);
+        void BuildRandomItemCache();
         void BuildEquipCache();
         bool CanEquipItem(BotEquipKey key, ItemPrototype const* proto);
         void AddItemStats(uint32 mod, uint8 &sp, uint8 &ap, uint8 &tank);
@@ -77,7 +77,7 @@ class RandomItemMgr
         bool CanEquipWeapon(BotEquipKey key, ItemPrototype const* proto);
 
     private:
-        RandomItemCache cache;
+        map<uint32, RandomItemCache> randomItemCache;
         map<RandomItemType, RandomItemPredicate*> predicates;
         BotEquipCache equipCache;
         map<EquipmentSlots, set<InventoryType> > viableSlots;

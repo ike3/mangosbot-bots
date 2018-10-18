@@ -123,6 +123,7 @@ RandomItemMgr::RandomItemMgr()
 void RandomItemMgr::Init()
 {
     BuildEquipCache();
+    BuildRandomItemCache();
 }
 
 RandomItemMgr::~RandomItemMgr()
@@ -144,11 +145,9 @@ bool RandomItemMgr::HandleConsoleCommand(ChatHandler* handler, char const* args)
     return false;
 }
 
-RandomItemList RandomItemMgr::Query(RandomItemType type, RandomItemPredicate* predicate)
+RandomItemList RandomItemMgr::Query(uint32 level, RandomItemType type, RandomItemPredicate* predicate)
 {
-    RandomItemList &list = cache[type];
-    if (list.empty())
-        list = cache[type] = Query(type);
+    RandomItemList &list = randomItemCache[(level - 1) / 10][type];
 
     RandomItemList result;
     for (RandomItemList::iterator i = list.begin(); i != list.end(); ++i)
@@ -167,46 +166,94 @@ RandomItemList RandomItemMgr::Query(RandomItemType type, RandomItemPredicate* pr
     return result;
 }
 
-RandomItemList RandomItemMgr::Query(RandomItemType type)
+void RandomItemMgr::BuildRandomItemCache()
 {
-    RandomItemList items;
+    QueryResult* results = CharacterDatabase.PQuery("select lvl, type, item from ai_playerbot_rnditem_cache");
+    if (results)
+    {
+        sLog.outString("Loading random item cache");
+        int count = 0;
+        do
+        {
+            Field* fields = results->Fetch();
+            uint32 level = fields[0].GetUInt32();
+            uint32 type = fields[1].GetUInt32();
+            uint32 itemId = fields[2].GetUInt32();
 
-	for (uint32 itemId = 0; itemId < sItemStorage.GetMaxEntry(); ++itemId)
-	{
-		ItemPrototype const* proto = sObjectMgr.GetItemPrototype(itemId);
-        if (!proto)
-            continue;
+            RandomItemType rit = (RandomItemType)type;
+            randomItemCache[level][rit].push_back(itemId);
+            count++;
 
-        if (proto->Duration & 0x80000000)
-            continue;
-
-        if (sAhBotConfig.ignoreItemIds.find(proto->ItemId) != sAhBotConfig.ignoreItemIds.end())
-            continue;
-
-        if (strstri(proto->Name1, "qa") || strstri(proto->Name1, "test") || strstri(proto->Name1, "deprecated"))
-            continue;
-
-        if ((proto->RequiredLevel && proto->RequiredLevel > sAhBotConfig.maxRequiredLevel) || proto->ItemLevel > sAhBotConfig.maxItemLevel)
-            continue;
-
-        if (predicates[type] && !predicates[type]->Apply(proto))
-            continue;
-
-        if (!auctionbot.GetSellPrice(proto))
-            continue;
-
-        items.push_back(itemId);
+        } while (results->NextRow());
+        delete results;
+        sLog.outString("Equipment cache loaded from %d records", count);
     }
+    else
+    {
+        sLog.outString("Building random item cache from %u items", sItemStorage.GetMaxEntry());
+        for (uint32 itemId = 0; itemId < sItemStorage.GetMaxEntry(); ++itemId)
+        {
+            ItemPrototype const* proto = sObjectMgr.GetItemPrototype(itemId);
+            if (!proto)
+                continue;
 
-    if (items.empty())
-        sLog.outError( "no items available for random item query %u", type);
+            if (proto->Duration & 0x80000000)
+                continue;
 
-    return items;
+            if (sAhBotConfig.ignoreItemIds.find(proto->ItemId) != sAhBotConfig.ignoreItemIds.end())
+                continue;
+
+            if (strstri(proto->Name1, "qa") || strstri(proto->Name1, "test") || strstri(proto->Name1, "deprecated"))
+                continue;
+
+            if (!proto->ItemLevel || (proto->RequiredLevel && proto->RequiredLevel > sAhBotConfig.maxRequiredLevel) || proto->ItemLevel > sAhBotConfig.maxItemLevel)
+                continue;
+
+            if (!auctionbot.GetSellPrice(proto))
+                continue;
+
+            uint32 level = proto->ItemLevel;
+            for (uint32 type = RANDOM_ITEM_GUILD_TASK; type <= RANDOM_ITEM_GUILD_TASK_REWARD_TRADE; type++)
+            {
+                RandomItemType rit = (RandomItemType)type;
+                if (predicates[rit] && !predicates[rit]->Apply(proto))
+                    continue;
+
+                randomItemCache[level / 10][rit].push_back(itemId);
+                CharacterDatabase.PExecute("insert into ai_playerbot_rnditem_cache (lvl, type, item) values (%u, %u, %u)",
+                        level / 10, type, itemId);
+            }
+        }
+
+        uint32 maxLevel = sPlayerbotAIConfig.randomBotMaxLevel;
+        if (maxLevel > sWorld.getConfig(CONFIG_UINT32_MAX_PLAYER_LEVEL))
+            maxLevel = sWorld.getConfig(CONFIG_UINT32_MAX_PLAYER_LEVEL);
+        for (int level = 0; level < maxLevel / 10; level++)
+        {
+            for (uint32 type = RANDOM_ITEM_GUILD_TASK; type <= RANDOM_ITEM_GUILD_TASK_REWARD_TRADE; type++)
+            {
+                RandomItemList list = randomItemCache[level][(RandomItemType)type];
+                sLog.outString("    Level %d..%d Type %d - %u random items cached",
+                        level * 10, level * 10 + 9,
+                        type,
+                        list.size());
+                for (RandomItemList::iterator i = list.begin(); i != list.end(); ++i)
+                {
+                    uint32 itemId = *i;
+                    ItemPrototype const* proto = sObjectMgr.GetItemPrototype(itemId);
+                    if (!proto)
+                        continue;
+
+                    sLog.outDetail("        [%d] %s", itemId, proto->Name1);
+                }
+            }
+        }
+    }
 }
 
-uint32 RandomItemMgr::GetRandomItem(RandomItemType type, RandomItemPredicate* predicate)
+uint32 RandomItemMgr::GetRandomItem(uint32 level, RandomItemType type, RandomItemPredicate* predicate)
 {
-    RandomItemList const& list = Query(type, predicate);
+    RandomItemList const& list = Query(level, type, predicate);
     if (list.empty())
         return 0;
 
