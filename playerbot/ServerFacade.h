@@ -63,7 +63,7 @@ class ServerFacade
 #endif
         }
 
-        bool isMoving(Player *unit)
+        bool isMoving(Unit *unit)
         {
 #ifdef MANGOS
             return unit->isMoving();
