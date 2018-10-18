@@ -124,6 +124,10 @@ bool TradeStatusAction::CheckTrade()
         return true;
     }
 
+    int32 botItemsMoney = CalculateCost(bot->GetTradeData(), true);
+    int32 botMoney = bot->GetTradeData()->GetMoney() + botItemsMoney;
+    int32 playerItemsMoney = CalculateCost(master->GetTradeData(), false);
+    int32 playerMoney = master->GetTradeData()->GetMoney() + playerItemsMoney;
 
     for (uint32 slot = 0; slot < TRADE_SLOT_TRADED_COUNT; ++slot)
     {
@@ -142,7 +146,7 @@ bool TradeStatusAction::CheckTrade()
         {
             ostringstream out; out << item->GetProto()->ItemId;
             ItemUsage usage = AI_VALUE2(ItemUsage, "item usage", out.str());
-            if (!auctionbot.GetBuyPrice(item->GetProto()) || usage == ITEM_USAGE_NONE)
+            if (botMoney && !auctionbot.GetBuyPrice(item->GetProto()) || usage == ITEM_USAGE_NONE)
             {
                 ostringstream out;
                 out << chat->formatItem(item->GetProto()) << " - I don't need this";
@@ -152,11 +156,6 @@ bool TradeStatusAction::CheckTrade()
             }
         }
     }
-
-    int32 botItemsMoney = CalculateCost(bot->GetTradeData(), true);
-    int32 botMoney = bot->GetTradeData()->GetMoney() + botItemsMoney;
-    int32 playerItemsMoney = CalculateCost(master->GetTradeData(), false);
-    int32 playerMoney = master->GetTradeData()->GetMoney() + playerItemsMoney;
 
     if (!botMoney && !playerMoney)
         return true;
