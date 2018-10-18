@@ -15,7 +15,7 @@ bool OutfitAction::Execute(Event event)
         List();
         ai->TellMaster("outfit <name> +[item] to add items");
         ai->TellMaster("outfit <name> -[item] to remove items");
-        ai->TellMaster("outfit <name> equip to equip items");
+        ai->TellMaster("outfit <name> equip/replace to equip items");
     }
     else
     {
@@ -47,6 +47,27 @@ bool OutfitAction::Execute(Event event)
             EquipItems(outfit);
             return true;
         }
+        else if (command == "replace")
+        {
+            ostringstream out;
+            out << "Replacing current equip with outfit " << name;
+            ai->TellMaster(out);
+            for (uint8 slot = EQUIPMENT_SLOT_START; slot < EQUIPMENT_SLOT_END; slot++)
+            {
+                Item* const pItem = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, slot);
+                if (!pItem)
+                    continue;
+
+                uint8 bagIndex = pItem->GetBagSlot();
+                uint8 dstBag = NULL_BAG;
+
+                WorldPacket packet(CMSG_AUTOSTORE_BAG_ITEM, 3);
+                packet << bagIndex << slot << dstBag;
+                bot->GetSession()->HandleAutoStoreBagItemOpcode(packet);
+            }
+            EquipItems(outfit);
+            return true;
+        }
         else if (command == "reset")
         {
             ostringstream out;
@@ -58,7 +79,7 @@ bool OutfitAction::Execute(Event event)
         else if (command == "update")
         {
             ostringstream out;
-            out << "Updating to current items outfit " << name;
+            out << "Updating with current items outfit " << name;
             ai->TellMaster(out);
             Update(name);
             return true;
