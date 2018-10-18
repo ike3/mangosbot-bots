@@ -279,6 +279,13 @@ int AhBot::Answer(int auction, Category* category, ItemBag* inAuctionItems)
     for (vector<AuctionEntry*>::iterator itr = entries.begin(); itr != entries.end(); ++itr)
     {
         AuctionEntry *entry = *itr;
+        uint32 owner = entry->owner;
+        if (owner == sAhBotConfig.guid)
+            continue;
+
+        uint32 account = sObjectMgr.GetPlayerAccountIdByGUID(ObjectGuid(HIGHGUID_PLAYER, owner));
+        if (!account || sPlayerbotAIConfig.IsInRandomAccountList(account))
+            continue;
 
         Item *item = sAuctionMgr.GetAItem(entry->itemGuidLow);
         if (!item || !item->GetCount())
