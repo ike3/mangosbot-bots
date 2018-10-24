@@ -128,7 +128,7 @@ INSERT INTO `ai_playerbot_text` VALUES
 (NULL, 'suggest_faction', 'Someone missing %faction rep?'),
 (NULL, 'suggest_faction', 'Could help farming %faction rep.'),
 (NULL, 'suggest_faction', 'The more rep the better. Especially with %faction.'),
-(NULL, 'suggest_faction', '%faction: need %rndK for $level.'),
+(NULL, 'suggest_faction', '%faction: need %rndK for %level.'),
 (NULL, 'suggest_faction', 'Who can share %faction quests?'),
 (NULL, 'suggest_faction', 'Any dungeons for %faction?'),
 (NULL, 'suggest_faction', 'Wanna do %faction rep grind.'),
