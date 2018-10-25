@@ -11,7 +11,6 @@ public:
     ~Queue(void) {}
 public:
 	void Push(ActionBasket *action);
-	void Push(ActionBasket **actions);
 	ActionNode* Pop();
     ActionBasket* Peek();
 	int Size();

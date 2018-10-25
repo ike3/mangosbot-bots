@@ -27,9 +27,6 @@ namespace ai
         bool Flee(Unit *target);
         void ClearIdleState();
         void UpdateMovementState();
-
-    protected:
-        Player* bot;
     };
 
     class FleeAction : public MovementAction

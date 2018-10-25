@@ -229,7 +229,7 @@ uint32 BuyOnlyRarePricingStrategy::GetBuyPrice(ItemPrototype const* proto, uint3
     return PricingStrategy::GetBuyPrice(proto, auctionHouse);
 }
 
-uint32 BuyOnlyRarePricingStrategy::GetSellPrice(ItemPrototype const* proto, uint32 auctionHouse)
+uint32 BuyOnlyRarePricingStrategy::GetSellPrice(ItemPrototype const* proto, uint32 auctionHouse, bool ignoreMarket)
 {
     return PricingStrategy::GetSellPrice(proto, auctionHouse);
 }

@@ -15,7 +15,7 @@ namespace ai
     class LootObject
     {
     public:
-        LootObject() {}
+        LootObject() : skillId(0), reqSkillValue(0), reqItem(0) {}
         LootObject(Player* bot, ObjectGuid guid);
         LootObject(const LootObject& other);
 

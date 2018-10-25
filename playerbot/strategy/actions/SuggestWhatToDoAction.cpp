@@ -245,7 +245,8 @@ void SuggestWhatToDoAction::grindReputation()
     map<string, string> placeholders;
     placeholders["%role"] = chat->formatClass(bot, AiFactory::GetPlayerSpecTab(bot));
     placeholders["%level"] = levels[urand(0, 2)];
-    placeholders["%rnd"] = urand(1, 5);
+    ostringstream rnd; rnd << urand(1, 5) << "K";
+    placeholders["%rndK"] = rnd.str();
 
     ostringstream itemout;
     itemout << "|c004040b0" << allowedFactions[urand(0, allowedFactions.size() - 1)] << "|r";

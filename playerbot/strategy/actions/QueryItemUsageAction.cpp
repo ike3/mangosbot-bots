@@ -132,7 +132,6 @@ string QueryItemUsageAction::QueryItemPrice(ItemPrototype const *item)
             Item* sell = *i;
             sellPrice = sell->GetCount() * auctionbot.GetSellPrice(sell->GetProto()) * sRandomPlayerbotMgr.GetSellMultiplier(bot);
             msg << "Sell: " << chat->formatMoney(sellPrice);
-            break;
         }
     }
 
@@ -163,7 +162,7 @@ string QueryItemUsageAction::QueryQuestItem(uint32 itemId)
 
         uint32 questId = questTemplate->GetQuestId();
         QuestStatus status = bot->GetQuestStatus(questId);
-        if (status == QUEST_STATUS_INCOMPLETE || (status == QUEST_STATE_COMPLETE && !bot->GetQuestRewardStatus(questId)))
+        if (status == QUEST_STATUS_INCOMPLETE || (status == QUEST_STATUS_COMPLETE && !bot->GetQuestRewardStatus(questId)))
         {
             QuestStatusData const& questStatus = i->second;
             string usage = QueryQuestItem(itemId, questTemplate, &questStatus);

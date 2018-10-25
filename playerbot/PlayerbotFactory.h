@@ -13,7 +13,7 @@ class PlayerbotFactory : public InventoryAction
 {
 public:
     PlayerbotFactory(Player* bot, uint32 level, uint32 itemQuality = 0) :
-        bot(bot), level(level), itemQuality(itemQuality), InventoryAction(bot->GetPlayerbotAI(), "factory") {}
+        level(level), itemQuality(itemQuality), InventoryAction(bot->GetPlayerbotAI(), "factory") {}
 
     static ObjectGuid GetRandomBot();
     static void Init();
@@ -63,7 +63,6 @@ private:
     static void AddPrevQuests(uint32 questId, list<uint32>& questIds);
 
 private:
-    Player* bot;
     uint32 level;
     uint32 itemQuality;
     static uint32 tradeSkills[];
