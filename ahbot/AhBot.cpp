@@ -246,7 +246,7 @@ void AhBot::FindMinPrice(const AuctionHouseObject::AuctionEntryMap& auctionEntry
             continue;
 
         Item *otherItem = sAuctionMgr.GetAItem(other->itemGuidLow);
-        if (!otherItem || !otherItem->GetCount() || otherItem->GetProto()->ItemId != item->GetProto()->ItemId)
+        if (!otherItem || !otherItem->GetCount() || !otherItem->GetProto() || otherItem->GetProto()->ItemId != item->GetProto()->ItemId)
             continue;
 
         uint32 startbid = other->startbid / otherItem->GetCount() * item->GetCount();

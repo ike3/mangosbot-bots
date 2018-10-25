@@ -558,11 +558,7 @@ void RandomPlayerbotMgr::IncreaseLevel(Player* bot)
 	PerformanceMonitorOperation *pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "IncreaseLevel");
 	uint32 level = min((uint32)(bot->getLevel() + 1), maxLevel);
     PlayerbotFactory factory(bot, level);
-    if (bot->GetGuildId())
-        factory.Refresh();
-    else
-        factory.Randomize();
-
+    factory.Randomize();
     if (pmo) pmo->finish();
 
     RandomTeleportForLevel(bot);
