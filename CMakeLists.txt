@@ -185,6 +185,7 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/dep/include/g3dlite
     ${CMAKE_BINARY_DIR}
     ${CMAKE_BINARY_DIR}/src/shared
+    ${CMAKE_SOURCE_DIR}/src/modules/Immersive
     ${MYSQL_INCLUDE_DIR}
     ${ACE_INCLUDE_DIR}
     ${Boost_INCLUDE_DIRS}

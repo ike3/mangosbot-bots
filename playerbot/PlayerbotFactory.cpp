@@ -11,6 +11,9 @@
 #include "RandomItemMgr.h"
 #include "RandomPlayerbotFactory.h"
 #include "ServerFacade.h"
+#ifdef ENABLE_IMMERSIVE
+#include "immersive.h"
+#endif
 
 using namespace ai;
 using namespace std;
@@ -111,6 +114,11 @@ void PlayerbotFactory::Randomize(bool incremental)
     ClearSpells();
     ClearInventory();
     bot->SaveToDB();
+    if (pmo) pmo->finish();
+
+    pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Immersive");
+    sLog.outDetail("Initializing immersive...");
+    InitImmersive();
     if (pmo) pmo->finish();
 
     sLog.outDetail("Initializing quests...");
@@ -1576,4 +1584,80 @@ void PlayerbotFactory::InitGuild()
 
     if (guild->GetMemberSize() < 10)
         guild->AddMember(bot->GetObjectGuid(), urand(GR_OFFICER, GR_INITIATE));
+}
+
+void PlayerbotFactory::InitImmersive()
+{
+    uint32 owner = bot->GetObjectGuid().GetCounter();
+    map<Stats, int32> percentMap;
+
+    switch (bot->getClass())
+    {
+    case CLASS_DRUID:
+    case CLASS_SHAMAN:
+        percentMap[STAT_STRENGTH] = 15;
+        percentMap[STAT_INTELLECT] = 10;
+        percentMap[STAT_SPIRIT] = 5;
+        percentMap[STAT_AGILITY] = 35;
+        percentMap[STAT_STAMINA] = 35;
+        break;
+    case CLASS_PALADIN:
+        percentMap[STAT_STRENGTH] = 35;
+        percentMap[STAT_INTELLECT] = 10;
+        percentMap[STAT_SPIRIT] = 5;
+        percentMap[STAT_AGILITY] = 15;
+        percentMap[STAT_STAMINA] = 35;
+        break;
+    case CLASS_WARRIOR:
+        percentMap[STAT_STRENGTH] = 30;
+        percentMap[STAT_SPIRIT] = 10;
+        percentMap[STAT_AGILITY] = 20;
+        percentMap[STAT_STAMINA] = 40;
+        break;
+    case CLASS_ROGUE:
+    case CLASS_HUNTER:
+        percentMap[STAT_STRENGTH] = 15;
+        percentMap[STAT_SPIRIT] = 5;
+        percentMap[STAT_AGILITY] = 40;
+        percentMap[STAT_STAMINA] = 40;
+        break;
+    case CLASS_MAGE:
+        percentMap[STAT_INTELLECT] = 65;
+        percentMap[STAT_SPIRIT] = 5;
+        percentMap[STAT_STAMINA] = 30;
+        break;
+    case CLASS_PRIEST:
+        percentMap[STAT_INTELLECT] = 15;
+        percentMap[STAT_SPIRIT] = 55;
+        percentMap[STAT_STAMINA] = 30;
+        break;
+    case CLASS_WARLOCK:
+        percentMap[STAT_INTELLECT] = 30;
+        percentMap[STAT_SPIRIT] = 15;
+        percentMap[STAT_STAMINA] = 55;
+        break;
+    }
+
+    for (int i = 0; i < 5; i++)
+    {
+        Stats from = (Stats)urand(STAT_STRENGTH, MAX_STATS - 1);
+        Stats to = (Stats)urand(STAT_STRENGTH, MAX_STATS - 1);
+        int32 delta = urand(0, 10);
+        if (from != to && percentMap[to] + delta <= 100 && percentMap[from] - delta >= 0)
+        {
+            percentMap[to] += delta;
+            percentMap[from] -= delta;
+        }
+    }
+
+#ifdef ENABLE_IMMERSIVE
+    uint32 total = sImmersive.GetTotalStats(bot);
+    for (int i = STAT_STRENGTH; i < MAX_STATS; ++i)
+    {
+        Stats type = (Stats)i;
+        sImmersive.SetStatsValue(owner, type, total * percentMap[type] / 100);
+    }
+#endif
+    bot->InitStatsForLevel(true);
+    bot->UpdateAllStats();
 }
