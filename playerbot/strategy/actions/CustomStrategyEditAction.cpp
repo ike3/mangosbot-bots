@@ -66,6 +66,7 @@ bool CustomStrategyEditAction::Print(string name)
 
         delete results;
     }
+    return true;
 }
 
 bool CustomStrategyEditAction::Edit(string name, uint32 idx, string command)
