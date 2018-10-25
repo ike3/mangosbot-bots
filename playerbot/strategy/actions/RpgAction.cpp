@@ -97,7 +97,10 @@ void RpgAction::taxi(Unit* unit)
     {
         TaxiPathEntry const* entry = sTaxiPathStore.LookupEntry(i);
         if (entry && entry->from == curloc)
-            nodes.push_back(i);
+        {
+            uint8  field = uint8((i - 1) / 32);
+            if (field < TaxiMaskSize) nodes.push_back(i);
+        }
     }
 
     if (nodes.empty())

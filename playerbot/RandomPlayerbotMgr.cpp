@@ -236,6 +236,16 @@ bool RandomPlayerbotMgr::ProcessBot(uint32 bot)
         SetEventValue(bot, "update", 1, randomTime);
         return true;
     }
+
+    uint32 logout = GetEventValue(bot, "logout");
+    if (!logout)
+    {
+        sLog.outString("Logging out bot %d", bot);
+        LogoutPlayerBot(bot);
+        SetEventValue(bot, "logout", 1, sPlayerbotAIConfig.maxRandomBotInWorldTime);
+        return true;
+    }
+
     return false;
 }
 
@@ -272,15 +282,6 @@ bool RandomPlayerbotMgr::ProcessBot(Player* player)
         Randomize(player);
         uint32 randomTime = urand(sPlayerbotAIConfig.minRandomBotRandomizeTime, sPlayerbotAIConfig.maxRandomBotRandomizeTime);
         ScheduleRandomize(bot, randomTime);
-        return true;
-    }
-
-    uint32 logout = GetEventValue(bot, "logout");
-    if (!logout)
-    {
-        sLog.outString("Logging out bot %d", bot);
-        LogoutPlayerBot(bot);
-        SetEventValue(bot, "logout", 1, sPlayerbotAIConfig.maxRandomBotInWorldTime);
         return true;
     }
 
