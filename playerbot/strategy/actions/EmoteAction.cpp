@@ -75,6 +75,11 @@ void EmoteActionBase::InitEmotes()
     textEmotes["healme"] = 326;
     textEmotes["openfire"] = 327;
     textEmotes["helpme"] = 303;
+    textEmotes["flee"] = 306;
+    textEmotes["danger"] = 304;
+    textEmotes["charge"] = 305;
+    textEmotes["help"] = 307;
+    textEmotes["train"] = 264;
 }
 
 bool EmoteActionBase::Emote(Unit* target, uint32 type)
