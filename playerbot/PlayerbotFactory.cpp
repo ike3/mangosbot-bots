@@ -1,6 +1,8 @@
 #include "../botpch.h"
 #include "playerbot.h"
 #include "PlayerbotFactory.h"
+
+#include "../ahbot/AhBotConfig.h"
 #include "SQLStorages.h"
 #include "ItemPrototype.h"
 #include "PlayerbotAIConfig.h"
@@ -1318,57 +1320,26 @@ void PlayerbotFactory::InitMounts()
 
 void PlayerbotFactory::InitPotions()
 {
-    map<uint32, vector<uint32> > items;
-    for (uint32 itemId = 0; itemId < sItemStorage.GetMaxEntry(); ++itemId)
-    {
-        ItemPrototype const* proto = sObjectMgr.GetItemPrototype(itemId);
-        if (!proto)
-            continue;
-
-        if (proto->Class != ITEM_CLASS_CONSUMABLE ||
-            proto->SubClass != ITEM_SUBCLASS_POTION ||
-            proto->Spells[0].SpellCategory != 4 ||
-            proto->Bonding != NO_BIND)
-            continue;
-
-        if (proto->RequiredLevel > bot->getLevel() || proto->RequiredLevel < bot->getLevel() - 10)
-            continue;
-
-        if (proto->RequiredSkill && !bot->HasSkill(proto->RequiredSkill))
-            continue;
-
-        if (proto->Area || proto->Map || proto->RequiredCityRank || proto->RequiredHonorRank)
-            continue;
-
-        for (int j = 0; j < MAX_ITEM_PROTO_SPELLS; j++)
-        {
-            const SpellEntry* const spellInfo = sServerFacade.LookupSpellInfo(proto->Spells[j].SpellId);
-            if (!spellInfo)
-                continue;
-
-            for (int i = 0 ; i < 3; i++)
-            {
-                if (spellInfo->Effect[i] == SPELL_EFFECT_HEAL || spellInfo->Effect[i] == SPELL_EFFECT_ENERGIZE)
-                {
-                    items[spellInfo->Effect[i]].push_back(itemId);
-                    break;
-                }
-            }
-        }
-    }
-
     uint32 effects[] = { SPELL_EFFECT_HEAL, SPELL_EFFECT_ENERGIZE };
-    for (int i = 0; i < sizeof(effects) / sizeof(uint32); ++i)
+    for (int i = 0; i < 2; ++i)
     {
         uint32 effect = effects[i];
-        vector<uint32>& ids = items[effect];
-        uint32 index = urand(0, ids.size() - 1);
-        if (index >= ids.size())
-            continue;
+        FindPotionVisitor visitor(bot, effect);
+        IterateItems(&visitor);
+        if (!visitor.GetResult().empty()) continue;
 
-        uint32 itemId = ids[index];
+        uint32 itemId = sRandomItemMgr.GetRandomPotion(level, effect);
+        if (!itemId)
+        {
+            sLog.outError("No potions (type %d) available for bot %s (%d level)", effect, bot->GetName(), bot->getLevel());
+            continue;
+        }
+
         ItemPrototype const* proto = sObjectMgr.GetItemPrototype(itemId);
-        Item* newItem = bot->StoreNewItemInInventorySlot(itemId, urand(1, proto->GetMaxStackSize()));
+        if (!proto) continue;
+
+        uint32 maxCount = proto->GetMaxStackSize();
+        Item* newItem = bot->StoreNewItemInInventorySlot(itemId, urand(maxCount / 2, maxCount));
         if (newItem)
             newItem->AddToUpdateQueueOf(bot);
    }
@@ -1376,43 +1347,26 @@ void PlayerbotFactory::InitPotions()
 
 void PlayerbotFactory::InitFood()
 {
-    map<uint32, vector<uint32> > items;
-    for (uint32 itemId = 0; itemId < sItemStorage.GetMaxEntry(); ++itemId)
-    {
-        ItemPrototype const* proto = sObjectMgr.GetItemPrototype(itemId);
-        if (!proto)
-            continue;
-
-        if (proto->Class != ITEM_CLASS_CONSUMABLE ||
-            proto->SubClass != ITEM_SUBCLASS_FOOD ||
-            (proto->Spells[0].SpellCategory != 11 && proto->Spells[0].SpellCategory != 59) ||
-            proto->Bonding != NO_BIND)
-            continue;
-
-        if (proto->RequiredLevel > bot->getLevel() || proto->RequiredLevel < bot->getLevel() - 10)
-            continue;
-
-        if (proto->RequiredSkill && !bot->HasSkill(proto->RequiredSkill))
-            continue;
-
-        if (proto->Area || proto->Map || proto->RequiredCityRank || proto->RequiredHonorRank)
-            continue;
-
-        items[proto->Spells[0].SpellCategory].push_back(itemId);
-    }
-
     uint32 categories[] = { 11, 59 };
-    for (int i = 0; i < sizeof(categories) / sizeof(uint32); ++i)
+    for (int i = 0; i < 2; ++i)
     {
         uint32 category = categories[i];
-        vector<uint32>& ids = items[category];
-        uint32 index = urand(0, ids.size() - 1);
-        if (index >= ids.size())
-            continue;
 
-        uint32 itemId = ids[index];
+        FindFoodVisitor visitor(bot, category);
+        IterateItems(&visitor);
+        if (!visitor.GetResult().empty()) continue;
+
+        uint32 itemId = sRandomItemMgr.GetRandomFood(level, category);
+        if (!itemId)
+        {
+            sLog.outError("No food (category %d) available for bot %s (%d level)", category, bot->GetName(), bot->getLevel());
+            continue;
+        }
         ItemPrototype const* proto = sObjectMgr.GetItemPrototype(itemId);
-        Item* newItem = bot->StoreNewItemInInventorySlot(itemId, urand(1, proto->GetMaxStackSize()));
+        if (!proto) continue;
+
+        uint32 maxCount = proto->GetMaxStackSize();
+        Item* newItem = bot->StoreNewItemInInventorySlot(itemId, urand(maxCount / 2, maxCount));
         if (newItem)
             newItem->AddToUpdateQueueOf(bot);
    }

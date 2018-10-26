@@ -9,6 +9,7 @@
 #include "PlayerbotAI.h"
 
 #include "../../modules/Bots/ahbot/AhBotConfig.h"
+#include "ServerFacade.h"
 
 char * strstri (const char* str1, const char* str2);
 
@@ -125,6 +126,8 @@ void RandomItemMgr::Init()
     BuildEquipCache();
     BuildRandomItemCache();
     BuildAmmoCache();
+    BuildPotionCache();
+    BuildFoodCache();
 }
 
 RandomItemMgr::~RandomItemMgr()
@@ -603,6 +606,7 @@ void RandomItemMgr::BuildAmmoCache()
     if (maxLevel > sWorld.getConfig(CONFIG_UINT32_MAX_PLAYER_LEVEL))
         maxLevel = sWorld.getConfig(CONFIG_UINT32_MAX_PLAYER_LEVEL);
 
+    sLog.outString("Building ammo cache for %d levels", maxLevel);
     for (uint32 level = 1; level <= maxLevel; level+=10)
     {
         for (uint32 subClass = ITEM_SUBCLASS_ARROW; subClass <= ITEM_SUBCLASS_BULLET; subClass++)
@@ -628,4 +632,148 @@ void RandomItemMgr::BuildAmmoCache()
 uint32 RandomItemMgr::GetAmmo(uint32 level, uint32 subClass)
 {
     return ammoCache[level / 10][subClass];
+}
+
+
+void RandomItemMgr::BuildPotionCache()
+{
+    uint32 maxLevel = sPlayerbotAIConfig.randomBotMaxLevel;
+    if (maxLevel > sWorld.getConfig(CONFIG_UINT32_MAX_PLAYER_LEVEL))
+        maxLevel = sWorld.getConfig(CONFIG_UINT32_MAX_PLAYER_LEVEL);
+
+    sLog.outString("Building potion cache for %d levels", maxLevel);
+    for (uint32 level = 1; level <= maxLevel; level+=10)
+    {
+        uint32 effects[] = { SPELL_EFFECT_HEAL, SPELL_EFFECT_ENERGIZE };
+        for (int i = 0; i < 2; ++i)
+        {
+            uint32 effect = effects[i];
+
+            for (uint32 itemId = 0; itemId < sItemStorage.GetMaxEntry(); ++itemId)
+            {
+                ItemPrototype const* proto = sObjectMgr.GetItemPrototype(itemId);
+                if (!proto)
+                    continue;
+
+                if (proto->Class != ITEM_CLASS_CONSUMABLE ||
+                    (proto->SubClass != ITEM_SUBCLASS_POTION && proto->SubClass != ITEM_SUBCLASS_FLASK) ||
+                    proto->Bonding != NO_BIND)
+                    continue;
+
+                if (proto->RequiredLevel > level || proto->RequiredLevel < level - 10)
+                    continue;
+
+                if (proto->RequiredSkill)
+                    continue;
+
+                if (proto->Area || proto->Map || proto->RequiredCityRank || proto->RequiredHonorRank)
+                    continue;
+
+                if (proto->Duration & 0x80000000)
+                    continue;
+
+                if (sAhBotConfig.ignoreItemIds.find(proto->ItemId) != sAhBotConfig.ignoreItemIds.end())
+                    continue;
+
+                for (int j = 0; j < MAX_ITEM_PROTO_SPELLS; j++)
+                {
+                    const SpellEntry* const spellInfo = sServerFacade.LookupSpellInfo(proto->Spells[j].SpellId);
+                    if (!spellInfo)
+                        continue;
+
+                    for (int i = 0 ; i < 3; i++)
+                    {
+                        if (spellInfo->Effect[i] == effect)
+                        {
+                            potionCache[level / 10][effect].push_back(itemId);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    for (uint32 level = 1; level <= maxLevel; level+=10)
+    {
+        uint32 effects[] = { SPELL_EFFECT_HEAL, SPELL_EFFECT_ENERGIZE };
+        for (int i = 0; i < 2; ++i)
+        {
+            uint32 effect = effects[i];
+            uint32 size = potionCache[level / 10][effect].size();
+            sLog.outDetail("Potion cache for level=%d, effect=%d: %d items", level, effect, size);
+        }
+    }
+}
+
+void RandomItemMgr::BuildFoodCache()
+{
+    uint32 maxLevel = sPlayerbotAIConfig.randomBotMaxLevel;
+    if (maxLevel > sWorld.getConfig(CONFIG_UINT32_MAX_PLAYER_LEVEL))
+        maxLevel = sWorld.getConfig(CONFIG_UINT32_MAX_PLAYER_LEVEL);
+
+    sLog.outString("Building food cache for %d levels", maxLevel);
+    for (uint32 level = 1; level <= maxLevel; level+=10)
+    {
+        uint32 categories[] = { 11, 59 };
+        for (int i = 0; i < 2; ++i)
+        {
+            uint32 category = categories[i];
+
+            for (uint32 itemId = 0; itemId < sItemStorage.GetMaxEntry(); ++itemId)
+            {
+                ItemPrototype const* proto = sObjectMgr.GetItemPrototype(itemId);
+                if (!proto)
+                    continue;
+
+                if (proto->Class != ITEM_CLASS_CONSUMABLE ||
+                    (proto->SubClass != ITEM_SUBCLASS_FOOD && proto->SubClass != ITEM_SUBCLASS_CONSUMABLE) ||
+                    (proto->Spells[0].SpellCategory != category) ||
+                    proto->Bonding != NO_BIND)
+                    continue;
+
+                if (proto->RequiredLevel > level || proto->RequiredLevel < level - 10)
+                    continue;
+
+                if (proto->RequiredSkill)
+                    continue;
+
+                if (proto->Area || proto->Map || proto->RequiredCityRank || proto->RequiredHonorRank)
+                    continue;
+
+                if (proto->Duration & 0x80000000)
+                    continue;
+
+                if (sAhBotConfig.ignoreItemIds.find(proto->ItemId) != sAhBotConfig.ignoreItemIds.end())
+                    continue;
+
+                foodCache[level / 10][category].push_back(itemId);
+            }
+        }
+    }
+
+    for (uint32 level = 1; level <= maxLevel; level+=10)
+    {
+        uint32 categories[] = { 11, 59 };
+        for (int i = 0; i < 2; ++i)
+        {
+            uint32 category = categories[i];
+            uint32 size = foodCache[level / 10][category].size();
+            sLog.outDetail("Food cache for level=%d, category=%d: %d items", level, category, size);
+        }
+    }
+}
+
+uint32 RandomItemMgr::GetRandomPotion(uint32 level, uint32 effect)
+{
+    vector<uint32> potions = potionCache[level / 10][effect];
+    if (potions.empty()) return 0;
+    return potions[urand(0, potions.size() - 1)];
+}
+
+uint32 RandomItemMgr::GetRandomFood(uint32 level, uint32 category)
+{
+    vector<uint32> food = foodCache[level / 10][category];
+    if (food.empty()) return 0;
+    return food[urand(0, food.size() - 1)];
 }

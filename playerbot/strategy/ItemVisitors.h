@@ -1,4 +1,5 @@
 #pragma once
+#include "../ServerFacade.h"
 
 char * strstri (const char* str1, const char* str2);
 
@@ -274,4 +275,54 @@ namespace ai
     public:
         map<uint32, int> count;
     };
+
+
+    class FindPotionVisitor : public FindUsableItemVisitor
+    {
+    public:
+        FindPotionVisitor(Player* bot, uint32 effectId) : FindUsableItemVisitor(bot), effectId(effectId) {}
+
+        virtual bool Accept(const ItemPrototype* proto)
+        {
+            if (proto->Class == ITEM_CLASS_CONSUMABLE && (proto->SubClass == ITEM_SUBCLASS_POTION || proto->SubClass == ITEM_SUBCLASS_FLASK))
+            {
+                for (int j = 0; j < MAX_ITEM_PROTO_SPELLS; j++)
+                {
+                    const SpellEntry* const spellInfo = sServerFacade.LookupSpellInfo(proto->Spells[j].SpellId);
+                    if (!spellInfo)
+                        return false;
+
+                    for (int i = 0 ; i < 3; i++)
+                    {
+                        if (spellInfo->Effect[i] == effectId)
+                            return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+    private:
+        uint32 effectId;
+    };
+
+    class FindFoodVisitor : public FindUsableItemVisitor
+    {
+    public:
+        FindFoodVisitor(Player* bot, uint32 spellCategory) : FindUsableItemVisitor(bot)
+        {
+            this->spellCategory = spellCategory;
+        }
+
+        virtual bool Accept(const ItemPrototype* proto)
+        {
+            return proto->Class == ITEM_CLASS_CONSUMABLE &&
+                (proto->SubClass == ITEM_SUBCLASS_CONSUMABLE || proto->SubClass == ITEM_SUBCLASS_FOOD) &&
+                proto->Spells[0].SpellCategory == spellCategory;
+        }
+
+    private:
+        uint32 spellCategory;
+    };
+
 }
