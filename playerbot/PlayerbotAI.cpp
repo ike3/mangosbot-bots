@@ -418,7 +418,11 @@ void PlayerbotAI::DoNextAction()
         return;
     }
 
-    if (bot->IsTaxiFlying())
+    if (bot->IsTaxiFlying()
+#ifdef MANGOSBOT_ZERO
+            || bot->IsFlying()
+#endif
+            )
     {
         SetNextCheckDelay(sPlayerbotAIConfig.passiveDelay);
         return;

@@ -129,9 +129,8 @@ bool EmoteAction::Execute(Event event)
     {
         time_t lastEmote = AI_VALUE2(time_t, "last emote", qualifier);
         ai->GetAiObjectContext()->GetValue<time_t>("last emote", qualifier)->Set(time(0) + urand(1000, sPlayerbotAIConfig.repeatDelay) / 1000);
+        param = qualifier;
     }
-
-    if (param.empty()) param = qualifier;
 
     if (param.find("sound") == 0)
     {

@@ -104,4 +104,5 @@ bool RevealGatheringItemAction::Execute(Event event)
 #endif
             true, -1, bot->GetObjectGuid());
     bot->Say(msg.str(), LANG_UNIVERSAL);
+    return true;
 }

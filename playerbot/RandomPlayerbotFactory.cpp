@@ -125,12 +125,6 @@ bool RandomPlayerbotFactory::CreateRandomBot(uint8 cls)
         1,
 #endif
         0, LOCALE_enUS);
-	if (!session)
-    {
-        sLog.outError("Couldn't create session for random bot account %d", accountId);
-        delete session;
-        return false;
-    }
 
     Player *player = new Player(session);
 	if (!player->Create(sObjectMgr.GeneratePlayerLowGuid(), name, race, cls, gender,

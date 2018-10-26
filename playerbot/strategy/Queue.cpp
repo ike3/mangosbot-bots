@@ -29,17 +29,6 @@ void Queue::Push(ActionBasket *action)
     }
 }
 
-void Queue::Push(ActionBasket **actions)
-{
-	if (actions)
-	{
-		for (int i=0; i<sizeof(actions)/sizeof(ActionBasket*); i++)
-		{
-			Push(actions[i]);
-		}
-	}
-}
-
 ActionNode* Queue::Pop()
 {
 	float max = -1;

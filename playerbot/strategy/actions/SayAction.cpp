@@ -87,6 +87,8 @@ bool SayAction::Execute(Event event)
         bot->Yell(text.substr(3), LANG_UNIVERSAL);
     else
         bot->Say(text, LANG_UNIVERSAL);
+
+    return true;
 }
 
 
