@@ -8,6 +8,64 @@ ConfVersion=2010102201
 # Enable or disable AI Playerbot
 AiPlayerbot.Enabled = 1
 
+# Enable random bot system
+AiPlayerbot.RandomBotAutologin = 1
+
+# Log on all random bots on start
+AiPlayerbot.RandomBotLoginAtStartup = 1
+
+# Delete all random bot accounts (reset randombots)
+AiPlayerbot.DeleteRandomBotAccounts = 0
+
+# auto-login all player alts as bots on player login
+AiPlayerbot.BotAutologin = 0
+
+# Guild Task system
+AiPlayerbot.EnableGuildTasks = 1
+
+# Create random bot characters automatically
+#AiPlayerbot.RandomBotAutoCreate = 1
+
+# Random bot count
+AiPlayerbot.MinRandomBots = 1000
+AiPlayerbot.MaxRandomBots = 2000
+AiPlayerbot.RandomBotMinLevel = 1
+AiPlayerbot.RandomBotMaxLevel = 70
+
+# Accounts to create for random bots
+AiPlayerbot.RandomBotAccountPrefix = rndbot
+AiPlayerbot.RandomBotAccountCount = 200
+
+# Random bot guild count
+AiPlayerbot.RandomBotGuildCount = 50
+
+# Delete all random bot guilds
+AiPlayerbot.DeleteRandomBotGuilds = 0
+
+# Maps to teleport random bots
+AiPlayerbot.RandomBotMaps = 0,1,530
+
+# Change random bot has lower gear
+AiPlayerbot.RandomGearLoweringChance = 0.15
+
+# Chance random bot has max level on first randomize
+AiPlayerbot.RandomBotMaxLevelChance = 0.15
+
+# Show progress bars for random bots (disabled by default)
+AiPlayerbot.ShowProgressBars = 1
+
+# Enable immersive system for random bots
+AiPlayerbot.RandomBotImmersive = 1
+
+# Set randombots movement speed to walking
+AiPlayerbot.RandombotsWalkingRPG = 0
+
+##################################################################################
+#                                                                                #
+# All other parameters are optional but can be changed by uncommenting them here #
+#                                                                                #
+##################################################################################
+
 # Warrior
 AiPlayerbot.RandomClassSpecProbability.1.0 = 20
 AiPlayerbot.RandomClassSpecProbability.1.1 = 30
@@ -45,12 +103,8 @@ AiPlayerbot.RandomClassSpecProbability.11.0 = 10
 AiPlayerbot.RandomClassSpecProbability.11.1 = 45
 AiPlayerbot.RandomClassSpecProbability.11.2 = 45
 
-#
-# All other parameters are optional but can be changed by uncommenting them here
-#
-
 # Prefix for bot chat commands (e.g. follow, stay)
-AiPlayerbot.CommandPrefix =
+#AiPlayerbot.CommandPrefix =
 
 # Max AI iterations per tick
 #AiPlayerbot.IterationsPerTick = 10
@@ -68,10 +122,14 @@ AiPlayerbot.CommandPrefix =
 #AiPlayerbot.ReactDelay = 100
 
 # Inactivity delay
-#AiPlayerbot.PassiveDelay = 3000
+#AiPlayerbot.PassiveDelay = 10000
 
 # Minimum delay between repeating actions (chat messages, emotes etc)
 #AiPlayerbot.RepeatDelay = 3000
+
+#AiPlayerbot.RpgDelay = 3000
+
+#AiPlayerbot.SitDelay = 60000
 
 # Distances
 #AiPlayerbot.SightDistance = 75.0
@@ -85,6 +143,8 @@ AiPlayerbot.CommandPrefix =
 #AiPlayerbot.FollowDistance = 1.5
 #AiPlayerbot.WhisperDistance = 6000.0
 #AiPlayerbot.ContactDistance = 0.5
+#AiPlayerbot.AoeRadius = 10
+#AiPlayerbot.RpgDistance = 80
 
 # Bot can flee for enemy
 #AiPlayerbot.FleeingEnabled = 1
@@ -97,34 +157,12 @@ AiPlayerbot.CommandPrefix =
 #AiPlayerbot.LowMana = 15
 #AiPlayerbot.MediumMana = 40
 
-# Enable random bot system
-#AiPlayerbot.RandomBotAutologin = 1
-
 # Random bot default strategies (applied after defaults)
-#AiPlayerbot.RandomBotCombatStrategies = +dps,+attack weak
-#AiPlayerbot.RandomBotNonCombatStrategies = +grind,+move random,+loot
+#AiPlayerbot.RandomBotCombatStrategies = +dps,+dps assist,-threat
+#AiPlayerbot.RandomBotNonCombatStrategies = +grind,+loot,+rpg,+custom::say
+#AiPlayerbot.CombatStrategies = +custom::say
+#AiPlayerbot.NonCombatStrategies = +custom::say
 
-# Create random bot characters automatically
-#AiPlayerbot.RandomBotAutoCreate = 1
-
-# Random bot count
-#AiPlayerbot.MinRandomBots = 50
-#AiPlayerbot.MaxRandomBots = 200
-#AiPlayerbot.RandomBotMinLevel = 1
-#AiPlayerbot.RandomBotMaxLevel = 255 (ignored if more than MaxPlayerLevel mangosd.conf value)
-
-# Accounts to create for random bots
-#AiPlayerbot.RandomBotAccountPrefix = rndbot
-#AiPlayerbot.RandomBotAccountCount = 50
-
-# Delete all random bot accounts
-#AiPlayerbot.DeleteRandomBotAccounts = 0
-
-# Random bot guild count
-#AiPlayerbot.RandomBotGuildCount = 50
-
-# Guild Task system
-#AiPlayerbot.EnableGuildTasks = 1
 
 # How often tasks are changed
 #AiPlayerbot.MinGuildTaskChangeTime = 172800
@@ -136,18 +174,6 @@ AiPlayerbot.CommandPrefix =
 #AiPlayerbot.MinGuildTaskRewardTime = 300
 #AiPlayerbot.MaxGuildTaskRewardTime = 3600
 
-# Delete all random bot guilds
-#AiPlayerbot.DeleteRandomBotGuilds = 0
-
-# Maps to teleport random bots
-#AiPlayerbot.RandomBotMaps = 0,1,530,571
-
-# Change random bot has lower gear
-#AiPlayerbot.RandomGearLoweringChance = 0.15
-
-# Chance random bot has max level on first randomize
-#AiPlayerbot.RandomBotMaxLevelChance = 0.4
-
 # Quest items to leave (do not destroy)
 #AiPlayerbot.RandomBotQuestItems = 6948,5175,5176,5177,5178
 
@@ -158,7 +184,9 @@ AiPlayerbot.CommandPrefix =
 #AiPlayerbot.RandomBotJoinLfg = 1
 
 # Level diff between random bots and nearby creatures for random teleports
-AiPlayerbot.RandomBotTeleLevel = 3
+#AiPlayerbot.RandomBotTeleLevel = 3
+
+#AiPlayerbot.OpenGoSpell = 6477
 
 # Intervals
 #AiPlayerbot.RandomBotUpdateInterval = 60
@@ -168,13 +196,9 @@ AiPlayerbot.RandomBotTeleLevel = 3
 #AiPlayerbot.MaxRandomBotInWorldTime = 1209600
 #AiPlayerbot.MinRandomBotRandomizeTime = 7200
 #AiPlayerbot.MaxRandomRandomizeTime = 1209600
-#AiPlayerbot.MinRandomBotsPerInterval = 50
-#AiPlayerbot.MaxRandomBotsPerInterval = 100
+#AiPlayerbot.RandomBotsPerInterval = 50
 #AiPlayerbot.MinRandomBotsPriceChangeInterval = 7200
 #AiPlayerbot.MaxRandomBotsPriceChangeInterval = 172800
-
-# Log on all random bots on start
-#AiPlayerbot.RandomBotLoginAtStartup = 1
 
 # How far random bots are teleported after death
 #AiPlayerbot.RandomBotTeleportDistance = 1000
@@ -188,5 +212,4 @@ AiPlayerbot.RandomBotTeleLevel = 3
 # Command server port, 0 - disabled
 #AiPlayerbot.CommandServerPort = 8888
 
-# auto-login all player alts as bots on player login
-#AiPlayerbot.BotAutologin = 0
+#AiPlayerbot.PerfMonEnabled = 0

@@ -148,6 +148,7 @@ bool PlayerbotAIConfig::Initialize()
     deleteRandomBotAccounts = config.GetBoolDefault("AiPlayerbot.DeleteRandomBotAccounts", false);
     randomBotGuildCount = config.GetIntDefault("AiPlayerbot.RandomBotGuildCount", 50);
     deleteRandomBotGuilds = config.GetBoolDefault("AiPlayerbot.DeleteRandomBotGuilds", false);
+	RandombotsWalkingRPG = config.GetBoolDefault("AiPlayerbot.RandombotsWalkingRPG", false);
 
     guildTaskEnabled = config.GetBoolDefault("AiPlayerbot.EnableGuildTasks", true);
     minGuildTaskChangeTime = config.GetIntDefault("AiPlayerbot.MinGuildTaskChangeTime", 2 * 24 * 3600);

@@ -22,8 +22,12 @@ bool MoveToRpgTargetAction::Execute(Event event)
     float y = target->GetPositionY();
     float z = target->GetPositionZ();
     float mapId = target->GetMapId();
+	
+	if (sPlayerbotAIConfig.RandombotsWalkingRPG)
+	{
+		bot->m_movementInfo.AddMovementFlag(MOVEFLAG_WALK_MODE);
+	}
 
-    bot->m_movementInfo.AddMovementFlag(MOVEFLAG_WALK_MODE);
     if (bot->IsWithinLOS(x, y, z)) return MoveNear(target, sPlayerbotAIConfig.followDistance);
 
     WaitForReach(distance);
