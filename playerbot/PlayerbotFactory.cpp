@@ -1417,39 +1417,13 @@ Item* PlayerbotFactory::StoreItem(uint32 itemId, uint32 count)
 
 void PlayerbotFactory::InitInventoryTrade()
 {
-    vector<uint32> ids;
-    for (uint32 itemId = 0; itemId < sItemStorage.GetMaxEntry(); ++itemId)
-    {
-        ItemPrototype const* proto = sObjectMgr.GetItemPrototype(itemId);
-        if (!proto)
-            continue;
-
-        if (proto->Class != ITEM_CLASS_TRADE_GOODS || proto->Bonding != NO_BIND)
-            continue;
-
-        if (proto->ItemLevel < bot->getLevel())
-            continue;
-
-        if (proto->RequiredLevel > bot->getLevel() || proto->RequiredLevel < bot->getLevel() - 10)
-            continue;
-
-        if (proto->RequiredSkill && !bot->HasSkill(proto->RequiredSkill))
-            continue;
-
-        ids.push_back(itemId);
-    }
-
-    if (ids.empty())
+    uint32 itemId = sRandomItemMgr.GetRandomTrade(level);
+    if (!itemId)
     {
         sLog.outError("No trade items available for bot %s (%d level)", bot->GetName(), bot->getLevel());
         return;
     }
 
-    uint32 index = urand(0, ids.size() - 1);
-    if (index >= ids.size())
-        return;
-
-    uint32 itemId = ids[index];
     ItemPrototype const* proto = sObjectMgr.GetItemPrototype(itemId);
     if (!proto)
         return;
@@ -1459,15 +1433,11 @@ void PlayerbotFactory::InitInventoryTrade()
     {
     case ITEM_QUALITY_NORMAL:
         count = proto->GetMaxStackSize();
-        stacks = urand(1, 7) / auctionbot.GetRarityPriceMultiplier(proto);
+        stacks = urand(1, 3) / auctionbot.GetRarityPriceMultiplier(proto);
         break;
     case ITEM_QUALITY_UNCOMMON:
         stacks = 1;
-        count = urand(1, proto->GetMaxStackSize());
-        break;
-    case ITEM_QUALITY_RARE:
-        stacks = 1;
-        count = urand(1, min(uint32(3), proto->GetMaxStackSize()));
+        count = urand(1, proto->GetMaxStackSize() / 2);
         break;
     }
 

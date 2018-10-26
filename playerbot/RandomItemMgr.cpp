@@ -128,6 +128,7 @@ void RandomItemMgr::Init()
     BuildAmmoCache();
     BuildPotionCache();
     BuildFoodCache();
+    BuildTradeCache();
 }
 
 RandomItemMgr::~RandomItemMgr()
@@ -776,4 +777,49 @@ uint32 RandomItemMgr::GetRandomFood(uint32 level, uint32 category)
     vector<uint32> food = foodCache[level / 10][category];
     if (food.empty()) return 0;
     return food[urand(0, food.size() - 1)];
+}
+
+void RandomItemMgr::BuildTradeCache()
+{
+    uint32 maxLevel = sPlayerbotAIConfig.randomBotMaxLevel;
+    if (maxLevel > sWorld.getConfig(CONFIG_UINT32_MAX_PLAYER_LEVEL))
+        maxLevel = sWorld.getConfig(CONFIG_UINT32_MAX_PLAYER_LEVEL);
+
+    sLog.outString("Building trade cache for %d levels", maxLevel);
+    for (uint32 level = 1; level <= maxLevel; level+=10)
+    {
+        for (uint32 itemId = 0; itemId < sItemStorage.GetMaxEntry(); ++itemId)
+        {
+            ItemPrototype const* proto = sObjectMgr.GetItemPrototype(itemId);
+            if (!proto)
+                continue;
+
+            if (proto->Class != ITEM_CLASS_TRADE_GOODS || proto->Bonding != NO_BIND)
+                continue;
+
+            if (proto->ItemLevel < level)
+                continue;
+
+            if (proto->RequiredLevel && (proto->RequiredLevel > level || proto->RequiredLevel < level - 10))
+                continue;
+
+            if (proto->RequiredSkill)
+                continue;
+
+            tradeCache[level / 10].push_back(itemId);
+        }
+    }
+
+    for (uint32 level = 1; level <= maxLevel; level+=10)
+    {
+        uint32 size = tradeCache[level / 10].size();
+        sLog.outDetail("Trade cache for level=%d: %d items", level, size);
+    }
+}
+
+uint32 RandomItemMgr::GetRandomTrade(uint32 level)
+{
+    vector<uint32> trade = tradeCache[level / 10];
+    if (trade.empty()) return 0;
+    return trade[urand(0, trade.size() - 1)];
 }
