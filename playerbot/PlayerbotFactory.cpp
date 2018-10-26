@@ -18,6 +18,8 @@
 using namespace ai;
 using namespace std;
 
+#define PLAYER_SKILL_INDEX(x)       (PLAYER_SKILL_INFO_1_1 + ((x)*3))
+
 uint32 PlayerbotFactory::tradeSkills[] =
 {
     SKILL_ALCHEMY,
@@ -53,41 +55,14 @@ void PlayerbotFactory::Init()
     }
 }
 
-void PlayerbotFactory::Randomize()
-{
-    Randomize(true);
-}
-
-void PlayerbotFactory::Refresh()
-{
-    Prepare();
-    InitEquipment(true);
-    InitAmmo();
-    InitFood();
-    InitPotions();
-    InitPet();
-
-    uint32 money = urand(level * 1000, level * 5 * 1000);
-    if (bot->GetMoney() < money)
-        bot->SetMoney(money);
-    bot->SaveToDB();
-}
-
-void PlayerbotFactory::CleanRandomize()
-{
-    Randomize(false);
-}
-
 void PlayerbotFactory::Prepare()
 {
     if (!itemQuality)
     {
-        if (level <= 10)
+        if (level <= 20)
             itemQuality = urand(ITEM_QUALITY_NORMAL, ITEM_QUALITY_UNCOMMON);
-        else if (level <= 20)
-            itemQuality = urand(ITEM_QUALITY_UNCOMMON, ITEM_QUALITY_RARE);
         else if (level <= 40)
-            itemQuality = urand(ITEM_QUALITY_UNCOMMON, ITEM_QUALITY_EPIC);
+            itemQuality = urand(ITEM_QUALITY_UNCOMMON, ITEM_QUALITY_RARE);
         else if (level < 60)
             itemQuality = urand(ITEM_QUALITY_UNCOMMON, ITEM_QUALITY_EPIC);
         else
@@ -105,12 +80,13 @@ void PlayerbotFactory::Prepare()
 
 void PlayerbotFactory::Randomize(bool incremental)
 {
-    sLog.outDetail("Preparing to randomize...");
+    sLog.outDetail("Preparing to %s randomize...", (incremental ? "incremental" : "full"));
     Prepare();
 
     sLog.outDetail("Resetting player...");
     PerformanceMonitorOperation* pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Reset");
     bot->resetTalents(true);
+    ClearSkills();
     ClearSpells();
     ClearInventory();
     bot->SaveToDB();
@@ -216,6 +192,15 @@ void PlayerbotFactory::Randomize(bool incremental)
     bot->SaveToDB();
     sLog.outDetail("Done.");
     if (pmo) pmo->finish();
+}
+
+void PlayerbotFactory::Refresh()
+{
+    Prepare();
+    InitAmmo();
+    InitFood();
+    InitPotions();
+    bot->SaveToDB();
 }
 
 void PlayerbotFactory::InitPet()
@@ -329,6 +314,16 @@ void PlayerbotFactory::InitPet()
     }
 }
 
+void PlayerbotFactory::ClearSkills()
+{
+    for (int i = 0; i < sizeof(tradeSkills) / sizeof(uint32); ++i)
+    {
+        bot->SetSkill(tradeSkills[i], 0, 0, 0);
+    }
+    bot->SetUInt32Value(PLAYER_SKILL_INDEX(0), 0);
+    bot->SetUInt32Value(PLAYER_SKILL_INDEX(1), 0);
+}
+
 void PlayerbotFactory::ClearSpells()
 {
     list<uint32> spells;
@@ -355,12 +350,19 @@ void PlayerbotFactory::InitSpells()
 
 void PlayerbotFactory::InitTalents()
 {
-    uint32 point = urand(0, 100);
-    uint8 cls = bot->getClass();
-    uint32 p1 = sPlayerbotAIConfig.specProbability[cls][0];
-    uint32 p2 = p1 + sPlayerbotAIConfig.specProbability[cls][1];
+    uint32 specNo = sRandomPlayerbotMgr.GetValue(bot, "specNo");
+    if (specNo) specNo--;
+    else
+    {
+        uint32 point = urand(0, 100);
+        uint8 cls = bot->getClass();
+        uint32 p1 = sPlayerbotAIConfig.specProbability[cls][0];
+        uint32 p2 = p1 + sPlayerbotAIConfig.specProbability[cls][1];
 
-    uint32 specNo = (point < p1 ? 0 : (point < p2 ? 1 : 2));
+        uint32 specNo = (point < p1 ? 0 : (point < p2 ? 1 : 2));
+        sRandomPlayerbotMgr.SetValue(bot, "specNo", specNo + 1);
+    }
+
     InitTalents(specNo);
 
     if (bot->GetFreeTalentPoints())
@@ -930,60 +932,67 @@ bool PlayerbotFactory::CanEquipUnseenItem(uint8 slot, uint16 &dest, uint32 item)
     return false;
 }
 
-#define PLAYER_SKILL_INDEX(x)       (PLAYER_SKILL_INFO_1_1 + ((x)*3))
 void PlayerbotFactory::InitTradeSkills()
 {
-    for (int i = 0; i < sizeof(tradeSkills) / sizeof(uint32); ++i)
+    uint16 firstSkill = sRandomPlayerbotMgr.GetValue(bot, "firstSkill");
+    uint16 secondSkill = sRandomPlayerbotMgr.GetValue(bot, "secondSkill");
+    if (!firstSkill || !secondSkill)
     {
-        bot->SetSkill(tradeSkills[i], 0, 0, 0);
-    }
+        vector<uint32> firstSkills;
+        vector<uint32> secondSkills;
+        switch (bot->getClass())
+        {
+        case CLASS_WARRIOR:
+        case CLASS_PALADIN:
+            firstSkills.push_back(SKILL_MINING);
+            secondSkills.push_back(SKILL_BLACKSMITHING);
+            secondSkills.push_back(SKILL_ENGINEERING);
+            break;
+        case CLASS_SHAMAN:
+        case CLASS_DRUID:
+        case CLASS_HUNTER:
+        case CLASS_ROGUE:
+            firstSkills.push_back(SKILL_SKINNING);
+            secondSkills.push_back(SKILL_LEATHERWORKING);
+            break;
+        default:
+            firstSkills.push_back(SKILL_TAILORING);
+            secondSkills.push_back(SKILL_ENCHANTING);
+        }
 
-    bot->SetUInt32Value(PLAYER_SKILL_INDEX(0), 0);
-    bot->SetUInt32Value(PLAYER_SKILL_INDEX(1), 0);
-
-    vector<uint32> firstSkills;
-    vector<uint32> secondSkills;
-    switch (bot->getClass())
-    {
-    case CLASS_WARRIOR:
-    case CLASS_PALADIN:
-        firstSkills.push_back(SKILL_MINING);
-        secondSkills.push_back(SKILL_BLACKSMITHING);
-        secondSkills.push_back(SKILL_ENGINEERING);
-        break;
-    case CLASS_SHAMAN:
-    case CLASS_DRUID:
-    case CLASS_HUNTER:
-    case CLASS_ROGUE:
-        firstSkills.push_back(SKILL_SKINNING);
-        secondSkills.push_back(SKILL_LEATHERWORKING);
-        break;
-    default:
-        firstSkills.push_back(SKILL_TAILORING);
-        secondSkills.push_back(SKILL_ENCHANTING);
+        switch (urand(0, 6))
+        {
+        case 0:
+            firstSkill = SKILL_HERBALISM;
+            secondSkill = SKILL_ALCHEMY;
+            break;
+        case 1:
+            firstSkill = SKILL_HERBALISM;
+            secondSkill = SKILL_MINING;
+            break;
+        case 2:
+            firstSkill = SKILL_MINING;
+            secondSkill = SKILL_SKINNING;
+            break;
+        case 3:
+            firstSkill = SKILL_HERBALISM;
+            secondSkill = SKILL_SKINNING;
+            break;
+        default:
+            firstSkill = firstSkills[urand(0, firstSkills.size() - 1)];
+            secondSkill = secondSkills[urand(0, secondSkills.size() - 1)];
+            break;
+        }
+        sRandomPlayerbotMgr.SetValue(bot, "firstSkill", firstSkill);
+        sRandomPlayerbotMgr.SetValue(bot, "secondSkill", secondSkill);
     }
 
     SetRandomSkill(SKILL_FIRST_AID);
     SetRandomSkill(SKILL_FISHING);
     SetRandomSkill(SKILL_COOKING);
 
-    switch (urand(0, 3))
-    {
-    case 0:
-        SetRandomSkill(SKILL_HERBALISM);
-        SetRandomSkill(SKILL_ALCHEMY);
-        break;
-    case 1:
-        SetRandomSkill(SKILL_HERBALISM);
-        break;
-    case 2:
-        SetRandomSkill(SKILL_MINING);
-        break;
-    case 3:
-        SetRandomSkill(firstSkills[urand(0, firstSkills.size() - 1)]);
-        SetRandomSkill(secondSkills[urand(0, secondSkills.size() - 1)]);
-        break;
-    }
+    SetRandomSkill(firstSkill);
+    SetRandomSkill(secondSkill);
 }
 
 void PlayerbotFactory::UpdateTradeSkills()
@@ -1042,8 +1051,10 @@ void PlayerbotFactory::InitSkills()
 void PlayerbotFactory::SetRandomSkill(uint16 id)
 {
     uint32 maxValue = level * 5;
-    uint32 curValue = urand(maxValue - level, maxValue);
-    bot->SetSkill(id, curValue, maxValue);
+    uint32 value = urand(maxValue - level, maxValue);
+    uint32 curValue = bot->GetBaseSkillValue(id);
+    if (!bot->HasSkill(id) || value > curValue)
+        bot->SetSkill(id, value, maxValue);
 
 }
 
@@ -1249,25 +1260,25 @@ void PlayerbotFactory::InitAmmo()
     if (!subClass)
         return;
 
-    QueryResult* results = WorldDatabase.PQuery("select max(entry), max(RequiredLevel) from item_template where class = '%u' and subclass = '%u' and RequiredLevel <= '%u'",
-            ITEM_CLASS_PROJECTILE, subClass, bot->getLevel());
-    if (!results)
-        return;
+    uint32 entry = bot->GetUInt32Value(PLAYER_AMMO_ID);
+    uint32 count = bot->GetItemCount(entry) / 200;
+    uint32 maxCount = 5 + level / 10;
 
-    Field* fields = results->Fetch();
-    if (fields)
+    if (!entry || count <= 2)
     {
-        uint32 entry = fields[0].GetUInt32();
-        for (int i = 0; i < 10; i++)
+        entry = sRandomItemMgr.GetAmmo(level, subClass);
+    }
+
+    if (count < maxCount)
+    {
+        for (int i = 0; i < maxCount - count; i++)
         {
             Item* newItem = bot->StoreNewItemInInventorySlot(entry, 200);
             if (newItem)
                 newItem->AddToUpdateQueueOf(bot);
         }
-        bot->SetAmmo(entry);
     }
-
-    delete results;
+    bot->SetAmmo(entry);
 }
 
 void PlayerbotFactory::InitMounts()
@@ -1591,62 +1602,82 @@ void PlayerbotFactory::InitImmersive()
     uint32 owner = bot->GetObjectGuid().GetCounter();
     map<Stats, int32> percentMap;
 
-    switch (bot->getClass())
+    bool initialized = false;
+    for (int i = STAT_STRENGTH; i < MAX_STATS; ++i)
     {
-    case CLASS_DRUID:
-    case CLASS_SHAMAN:
-        percentMap[STAT_STRENGTH] = 15;
-        percentMap[STAT_INTELLECT] = 10;
-        percentMap[STAT_SPIRIT] = 5;
-        percentMap[STAT_AGILITY] = 35;
-        percentMap[STAT_STAMINA] = 35;
-        break;
-    case CLASS_PALADIN:
-        percentMap[STAT_STRENGTH] = 35;
-        percentMap[STAT_INTELLECT] = 10;
-        percentMap[STAT_SPIRIT] = 5;
-        percentMap[STAT_AGILITY] = 15;
-        percentMap[STAT_STAMINA] = 35;
-        break;
-    case CLASS_WARRIOR:
-        percentMap[STAT_STRENGTH] = 30;
-        percentMap[STAT_SPIRIT] = 10;
-        percentMap[STAT_AGILITY] = 20;
-        percentMap[STAT_STAMINA] = 40;
-        break;
-    case CLASS_ROGUE:
-    case CLASS_HUNTER:
-        percentMap[STAT_STRENGTH] = 15;
-        percentMap[STAT_SPIRIT] = 5;
-        percentMap[STAT_AGILITY] = 40;
-        percentMap[STAT_STAMINA] = 40;
-        break;
-    case CLASS_MAGE:
-        percentMap[STAT_INTELLECT] = 65;
-        percentMap[STAT_SPIRIT] = 5;
-        percentMap[STAT_STAMINA] = 30;
-        break;
-    case CLASS_PRIEST:
-        percentMap[STAT_INTELLECT] = 15;
-        percentMap[STAT_SPIRIT] = 55;
-        percentMap[STAT_STAMINA] = 30;
-        break;
-    case CLASS_WARLOCK:
-        percentMap[STAT_INTELLECT] = 30;
-        percentMap[STAT_SPIRIT] = 15;
-        percentMap[STAT_STAMINA] = 55;
-        break;
+        Stats type = (Stats)i;
+        ostringstream name; name << "immersive_stat_" << i;
+        uint32 value = sRandomPlayerbotMgr.GetValue(owner, name.str());
+        if (value) initialized = true;
+        percentMap[type] = value;
     }
 
-    for (int i = 0; i < 5; i++)
+    if (!initialized)
     {
-        Stats from = (Stats)urand(STAT_STRENGTH, MAX_STATS - 1);
-        Stats to = (Stats)urand(STAT_STRENGTH, MAX_STATS - 1);
-        int32 delta = urand(0, 10);
-        if (from != to && percentMap[to] + delta <= 100 && percentMap[from] - delta >= 0)
+        switch (bot->getClass())
         {
-            percentMap[to] += delta;
-            percentMap[from] -= delta;
+        case CLASS_DRUID:
+        case CLASS_SHAMAN:
+            percentMap[STAT_STRENGTH] = 15;
+            percentMap[STAT_INTELLECT] = 10;
+            percentMap[STAT_SPIRIT] = 5;
+            percentMap[STAT_AGILITY] = 35;
+            percentMap[STAT_STAMINA] = 35;
+            break;
+        case CLASS_PALADIN:
+            percentMap[STAT_STRENGTH] = 35;
+            percentMap[STAT_INTELLECT] = 10;
+            percentMap[STAT_SPIRIT] = 5;
+            percentMap[STAT_AGILITY] = 15;
+            percentMap[STAT_STAMINA] = 35;
+            break;
+        case CLASS_WARRIOR:
+            percentMap[STAT_STRENGTH] = 30;
+            percentMap[STAT_SPIRIT] = 10;
+            percentMap[STAT_AGILITY] = 20;
+            percentMap[STAT_STAMINA] = 40;
+            break;
+        case CLASS_ROGUE:
+        case CLASS_HUNTER:
+            percentMap[STAT_STRENGTH] = 15;
+            percentMap[STAT_SPIRIT] = 5;
+            percentMap[STAT_AGILITY] = 40;
+            percentMap[STAT_STAMINA] = 40;
+            break;
+        case CLASS_MAGE:
+            percentMap[STAT_INTELLECT] = 65;
+            percentMap[STAT_SPIRIT] = 5;
+            percentMap[STAT_STAMINA] = 30;
+            break;
+        case CLASS_PRIEST:
+            percentMap[STAT_INTELLECT] = 15;
+            percentMap[STAT_SPIRIT] = 55;
+            percentMap[STAT_STAMINA] = 30;
+            break;
+        case CLASS_WARLOCK:
+            percentMap[STAT_INTELLECT] = 30;
+            percentMap[STAT_SPIRIT] = 15;
+            percentMap[STAT_STAMINA] = 55;
+            break;
+        }
+
+        for (int i = 0; i < 5; i++)
+        {
+            Stats from = (Stats)urand(STAT_STRENGTH, MAX_STATS - 1);
+            Stats to = (Stats)urand(STAT_STRENGTH, MAX_STATS - 1);
+            int32 delta = urand(0, 5 + bot->getLevel() / 3);
+            if (from != to && percentMap[to] + delta <= 100 && percentMap[from] - delta >= 0)
+            {
+                percentMap[to] += delta;
+                percentMap[from] -= delta;
+            }
+        }
+
+        for (int i = STAT_STRENGTH; i < MAX_STATS; ++i)
+        {
+            Stats type = (Stats)i;
+            ostringstream name; name << "immersive_stat_" << i;
+            sRandomPlayerbotMgr.SetValue(owner, name.str(), percentMap[type]);
         }
     }
 

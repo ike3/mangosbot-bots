@@ -164,6 +164,7 @@ string PlayerbotHolder::ProcessBotCommand(string cmd, ObjectGuid guid, bool admi
     if (admin)
     {
         Player* bot = GetPlayerBot(guid.GetRawValue());
+        if (!bot) bot = sRandomPlayerbotMgr.GetPlayerBot(guid.GetRawValue());
         if (!bot)
             return "bot not found";
 
@@ -173,30 +174,36 @@ string PlayerbotHolder::ProcessBotCommand(string cmd, ObjectGuid guid, bool admi
             if (cmd == "init=white" || cmd == "init=common")
             {
                 PlayerbotFactory factory(bot, master->getLevel(), ITEM_QUALITY_NORMAL);
-                factory.CleanRandomize();
+                factory.Randomize(false);
                 return "ok";
             }
             else if (cmd == "init=green" || cmd == "init=uncommon")
             {
                 PlayerbotFactory factory(bot, master->getLevel(), ITEM_QUALITY_UNCOMMON);
-                factory.CleanRandomize();
+                factory.Randomize(false);
                 return "ok";
             }
             else if (cmd == "init=blue" || cmd == "init=rare")
             {
                 PlayerbotFactory factory(bot, master->getLevel(), ITEM_QUALITY_RARE);
-                factory.CleanRandomize();
+                factory.Randomize(false);
                 return "ok";
             }
             else if (cmd == "init=epic" || cmd == "init=purple")
             {
                 PlayerbotFactory factory(bot, master->getLevel(), ITEM_QUALITY_EPIC);
-                factory.CleanRandomize();
+                factory.Randomize(false);
                 return "ok";
             }
         }
 
-        if (cmd == "update")
+        if (cmd == "levelup" || cmd == "level")
+        {
+            PlayerbotFactory factory(bot, bot->getLevel());
+            factory.Randomize(true);
+            return "ok";
+        }
+        else if (cmd == "refresh")
         {
             PlayerbotFactory factory(bot, bot->getLevel());
             factory.Refresh();

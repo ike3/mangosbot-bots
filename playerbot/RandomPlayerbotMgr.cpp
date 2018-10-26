@@ -557,12 +557,16 @@ void RandomPlayerbotMgr::IncreaseLevel(Player* bot)
 		maxLevel = sWorld.getConfig(CONFIG_UINT32_MAX_PLAYER_LEVEL);
 
 	PerformanceMonitorOperation *pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "IncreaseLevel");
-	uint32 level = min((uint32)(bot->getLevel() + 1), maxLevel);
-    PlayerbotFactory factory(bot, level);
-    factory.Randomize();
-    if (pmo) pmo->finish();
+	uint32 lastLevel = GetValue(bot, "level");
+	uint32 level = bot->getLevel();
+	if (lastLevel != level)
+	{
+        PlayerbotFactory factory(bot, level);
+        factory.Randomize(true);
+	}
 
     RandomTeleportForLevel(bot);
+    if (pmo) pmo->finish();
 }
 
 void RandomPlayerbotMgr::RandomizeFirst(Player* bot)
@@ -577,8 +581,10 @@ void RandomPlayerbotMgr::RandomizeFirst(Player* bot)
     if (urand(0, 100) < 100 * sPlayerbotAIConfig.randomBotMaxLevelChance)
         level = maxLevel;
 
+    SetValue(bot, "level", level);
     PlayerbotFactory factory(bot, level);
-    factory.CleanRandomize();
+    factory.Randomize(false);
+
     RandomTeleportForLevel(bot);
 
     uint32 randomTime = urand(sPlayerbotAIConfig.minRandomBotRandomizeTime, sPlayerbotAIConfig.maxRandomBotRandomizeTime);
@@ -631,22 +637,6 @@ void RandomPlayerbotMgr::Refresh(Player* bot)
 
     bot->GetPlayerbotAI()->Reset();
 
-	HostileReference *ref = sServerFacade.GetHostileRefManager(bot).getFirst();
-	while (ref)
-	{
-		ThreatManager *threatManager = ref->getSource();
-		Unit *unit = threatManager->getOwner();
-		float threat = ref->getThreat();
-
-		unit->RemoveAllAttackers();
-		unit->ClearInCombat();
-
-		ref = ref->next();
-	}
-
-    bot->RemoveAllAttackers();
-    bot->ClearInCombat();
-
     bot->DurabilityRepairAll(false, 1.0f
 #ifdef MANGOSBOT_ONE
         , false
@@ -654,6 +644,9 @@ void RandomPlayerbotMgr::Refresh(Player* bot)
     );
 	bot->SetHealthPercent(100);
 	bot->SetPvP(true);
+
+    PlayerbotFactory factory(bot, bot->getLevel());
+    factory.Refresh();
 
     if (bot->GetMaxPower(POWER_MANA) > 0)
         bot->SetPower(POWER_MANA, bot->GetMaxPower(POWER_MANA));
@@ -738,6 +731,27 @@ uint32 RandomPlayerbotMgr::SetEventValue(uint32 bot, string event, uint32 value,
     return value;
 }
 
+uint32 RandomPlayerbotMgr::GetValue(uint32 bot, string type)
+{
+    return GetEventValue(bot, type);
+}
+
+uint32 RandomPlayerbotMgr::GetValue(Player* bot, string type)
+{
+    return GetValue(bot->GetObjectGuid().GetCounter(), type);
+}
+
+void RandomPlayerbotMgr::SetValue(uint32 bot, string type, uint32 value)
+{
+    SetEventValue(bot, type, value,
+            urand(sPlayerbotAIConfig.randomBotCountChangeMinInterval, sPlayerbotAIConfig.randomBotCountChangeMaxInterval));
+}
+
+void RandomPlayerbotMgr::SetValue(Player* bot, string type, uint32 value)
+{
+    SetValue(bot->GetObjectGuid().GetCounter(), type, value);
+}
+
 bool RandomPlayerbotMgr::HandlePlayerbotConsoleCommand(ChatHandler* handler, char const* args)
 {
     if (!sPlayerbotAIConfig.enabled)
@@ -776,6 +790,7 @@ bool RandomPlayerbotMgr::HandlePlayerbotConsoleCommand(ChatHandler* handler, cha
 
     map<string, ConsoleCommandHandler> handlers;
     handlers["init"] = &RandomPlayerbotMgr::RandomizeFirst;
+    handlers["levelup"] = handlers["level"] = &RandomPlayerbotMgr::IncreaseLevel;
     handlers["refresh"] = &RandomPlayerbotMgr::Refresh;
     handlers["teleport"] = &RandomPlayerbotMgr::RandomTeleportForLevel;
     handlers["rpg"] = &RandomPlayerbotMgr::RandomTeleportForRpg;

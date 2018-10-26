@@ -124,6 +124,7 @@ void RandomItemMgr::Init()
 {
     BuildEquipCache();
     BuildRandomItemCache();
+    BuildAmmoCache();
 }
 
 RandomItemMgr::~RandomItemMgr()
@@ -594,4 +595,37 @@ RandomItemList RandomItemMgr::Query(uint32 level, uint8 clazz, uint8 slot, uint3
 {
     BotEquipKey key(level, clazz, slot, quality);
     return equipCache[key];
+}
+
+void RandomItemMgr::BuildAmmoCache()
+{
+    uint32 maxLevel = sPlayerbotAIConfig.randomBotMaxLevel;
+    if (maxLevel > sWorld.getConfig(CONFIG_UINT32_MAX_PLAYER_LEVEL))
+        maxLevel = sWorld.getConfig(CONFIG_UINT32_MAX_PLAYER_LEVEL);
+
+    for (uint32 level = 1; level <= maxLevel; level+=10)
+    {
+        for (uint32 subClass = ITEM_SUBCLASS_ARROW; subClass <= ITEM_SUBCLASS_BULLET; subClass++)
+        {
+            QueryResult* results = WorldDatabase.PQuery(
+                    "select entry, RequiredLevel from item_template where class = '%u' and subclass = '%u' and RequiredLevel <= '%u' and quality = '%u' order by RequiredLevel desc",
+                    ITEM_CLASS_PROJECTILE, subClass, level, ITEM_QUALITY_NORMAL);
+            if (!results)
+                return;
+
+            Field* fields = results->Fetch();
+            if (fields)
+            {
+                uint32 entry = fields[0].GetUInt32();
+                ammoCache[level / 10][subClass] = entry;
+            }
+
+            delete results;
+        }
+    }
+}
+
+uint32 RandomItemMgr::GetAmmo(uint32 level, uint32 subClass)
+{
+    return ammoCache[level / 10][subClass];
 }
