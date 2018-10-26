@@ -48,7 +48,7 @@ void PlayerbotFactory::Init()
         uint32 questId = i->first;
         Quest const *quest = i->second;
 
-        if (!quest->GetRequiredClasses() || quest->IsRepeatable())
+        if (!quest->GetRequiredClasses() || quest->IsRepeatable() || quest->GetMinLevel() < 10)
             continue;
 
         AddPrevQuests(questId, classQuestIds);
@@ -397,11 +397,6 @@ private:
             return false;
 
         if (sPlayerbotAIConfig.IsInRandomQuestItemList(id))
-            return true;
-
-
-        ItemPrototype const* proto = sItemStorage.LookupEntry<ItemPrototype>(id);
-        if (proto->Class == ITEM_CLASS_MISC && proto->SubClass == ITEM_SUBCLASS_JUNK)
             return true;
 
         return false;
@@ -1226,6 +1221,9 @@ void PlayerbotFactory::InitQuests()
 
         bot->SetQuestStatus(questId, QUEST_STATUS_COMPLETE);
         bot->RewardQuest(quest, 0, bot, false);
+        sLog.outDetail("Bot %s (%d level) rewarded quest %d: %s (MinLevel=%d, QuestLevel=%d)",
+                bot->GetName(), bot->getLevel(), questId, quest->GetTitle().c_str(),
+                quest->GetMinLevel(), quest->GetQuestLevel());
         if (!(count++ % 10))
             ClearInventory();
     }
