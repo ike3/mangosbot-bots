@@ -632,7 +632,7 @@ void RandomItemMgr::BuildAmmoCache()
 
 uint32 RandomItemMgr::GetAmmo(uint32 level, uint32 subClass)
 {
-    return ammoCache[level / 10][subClass];
+    return ammoCache[(level - 1) / 10][subClass];
 }
 
 
@@ -661,7 +661,7 @@ void RandomItemMgr::BuildPotionCache()
                     proto->Bonding != NO_BIND)
                     continue;
 
-                if (proto->RequiredLevel > level || proto->RequiredLevel < level - 10)
+                if (proto->RequiredLevel && (proto->RequiredLevel > level || proto->RequiredLevel < level - 10))
                     continue;
 
                 if (proto->RequiredSkill)
@@ -733,7 +733,7 @@ void RandomItemMgr::BuildFoodCache()
                     proto->Bonding != NO_BIND)
                     continue;
 
-                if (proto->RequiredLevel > level || proto->RequiredLevel < level - 10)
+                if (proto->RequiredLevel && (proto->RequiredLevel > level || proto->RequiredLevel < level - 10))
                     continue;
 
                 if (proto->RequiredSkill)
@@ -767,14 +767,14 @@ void RandomItemMgr::BuildFoodCache()
 
 uint32 RandomItemMgr::GetRandomPotion(uint32 level, uint32 effect)
 {
-    vector<uint32> potions = potionCache[level / 10][effect];
+    vector<uint32> potions = potionCache[(level - 1) / 10][effect];
     if (potions.empty()) return 0;
     return potions[urand(0, potions.size() - 1)];
 }
 
 uint32 RandomItemMgr::GetRandomFood(uint32 level, uint32 category)
 {
-    vector<uint32> food = foodCache[level / 10][category];
+    vector<uint32> food = foodCache[(level - 1) / 10][category];
     if (food.empty()) return 0;
     return food[urand(0, food.size() - 1)];
 }
@@ -819,7 +819,7 @@ void RandomItemMgr::BuildTradeCache()
 
 uint32 RandomItemMgr::GetRandomTrade(uint32 level)
 {
-    vector<uint32> trade = tradeCache[level / 10];
+    vector<uint32> trade = tradeCache[(level - 1) / 10];
     if (trade.empty()) return 0;
     return trade[urand(0, trade.size() - 1)];
 }

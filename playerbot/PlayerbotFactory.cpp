@@ -1329,7 +1329,7 @@ void PlayerbotFactory::InitPotions()
         uint32 itemId = sRandomItemMgr.GetRandomPotion(level, effect);
         if (!itemId)
         {
-            sLog.outError("No potions (type %d) available for bot %s (%d level)", effect, bot->GetName(), bot->getLevel());
+            sLog.outDetail("No potions (type %d) available for bot %s (%d level)", effect, bot->GetName(), bot->getLevel());
             continue;
         }
 
@@ -1357,7 +1357,7 @@ void PlayerbotFactory::InitFood()
         uint32 itemId = sRandomItemMgr.GetRandomFood(level, category);
         if (!itemId)
         {
-            sLog.outError("No food (category %d) available for bot %s (%d level)", category, bot->GetName(), bot->getLevel());
+            sLog.outDetail("No food (category %d) available for bot %s (%d level)", category, bot->GetName(), bot->getLevel());
             continue;
         }
         ItemPrototype const* proto = sObjectMgr.GetItemPrototype(itemId);
