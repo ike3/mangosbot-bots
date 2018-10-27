@@ -66,10 +66,18 @@ class RandomItemMgr
         RandomItemList Query(uint32 level, RandomItemType type, RandomItemPredicate* predicate);
         RandomItemList Query(uint32 level, uint8 clazz, uint8 slot, uint32 quality);
         uint32 GetRandomItem(uint32 level, RandomItemType type, RandomItemPredicate* predicate = NULL);
+        uint32 GetAmmo(uint32 level, uint32 subClass);
+        uint32 GetRandomPotion(uint32 level, uint32 effect);
+        uint32 GetRandomFood(uint32 level, uint32 category);
+        uint32 GetRandomTrade(uint32 level);
 
     private:
         void BuildRandomItemCache();
         void BuildEquipCache();
+        void BuildAmmoCache();
+        void BuildFoodCache();
+        void BuildPotionCache();
+        void BuildTradeCache();
         bool CanEquipItem(BotEquipKey key, ItemPrototype const* proto);
         void AddItemStats(uint32 mod, uint8 &sp, uint8 &ap, uint8 &tank);
         bool CheckItemStats(BotEquipKey key, uint8 sp, uint8 ap, uint8 tank);
@@ -81,6 +89,10 @@ class RandomItemMgr
         map<RandomItemType, RandomItemPredicate*> predicates;
         BotEquipCache equipCache;
         map<EquipmentSlots, set<InventoryType> > viableSlots;
+        map<uint32, map<uint32, uint32> > ammoCache;
+        map<uint32, map<uint32, vector<uint32> > > potionCache;
+        map<uint32, map<uint32, vector<uint32> > > foodCache;
+        map<uint32, vector<uint32> > tradeCache;
 };
 
 #define sRandomItemMgr RandomItemMgr::instance()

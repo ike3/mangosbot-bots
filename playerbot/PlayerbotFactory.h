@@ -17,12 +17,10 @@ public:
 
     static ObjectGuid GetRandomBot();
     static void Init();
-    void CleanRandomize();
-    void Randomize();
     void Refresh();
+    void Randomize(bool incremental);
 
 private:
-    void Randomize(bool incremental);
     void Prepare();
     void InitSecondEquipmentSet();
     void InitEquipment(bool incremental);
@@ -34,6 +32,7 @@ private:
     void SetRandomSkill(uint16 id);
     void InitSpells();
     void ClearSpells();
+    void ClearSkills();
     void InitAvailableSpells();
     void InitSpecialSpells();
     void InitTalents();

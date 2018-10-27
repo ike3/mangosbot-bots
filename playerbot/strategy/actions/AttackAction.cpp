@@ -99,7 +99,14 @@ bool AttackAction::Attack(Unit* target)
             creatureAI->AttackStart(target);
     }
 
-    if (!urand(0, 300)) ai->PlaySound(TEXTEMOTE_OPENFIRE);
+    if (!urand(0, 300))
+    {
+        vector<uint32> sounds;
+        sounds.push_back(TEXTEMOTE_OPENFIRE);
+        sounds.push_back(305);
+        sounds.push_back(307);
+        ai->PlaySound(sounds[urand(0, sounds.size() - 1)]);
+    }
 
     bot->Attack(target, true);
     ai->ChangeEngine(BOT_STATE_COMBAT);

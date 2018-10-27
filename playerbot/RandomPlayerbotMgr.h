@@ -68,6 +68,10 @@ class RandomPlayerbotMgr : public PlayerbotHolder
         bool ProcessBot(Player* player);
         void Revive(Player* player);
         void ChangeStrategy(Player* player);
+        uint32 GetValue(Player* bot, string type);
+        uint32 GetValue(uint32 bot, string type);
+        void SetValue(uint32 bot, string type, uint32 value);
+        void SetValue(Player* bot, string type, uint32 value);
 
 	protected:
 	    virtual void OnBotLoginInternal(Player * const bot);

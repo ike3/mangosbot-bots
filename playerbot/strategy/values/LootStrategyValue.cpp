@@ -15,7 +15,7 @@ namespace ai
         {
             ostringstream out; out << proto->ItemId;
             ItemUsage usage = AI_VALUE2(ItemUsage, "item usage", out.str());
-            return usage != ITEM_USAGE_NONE && proto->Bonding != BIND_WHEN_PICKED_UP;
+            return usage != ITEM_USAGE_NONE;
         }
         virtual string GetName() { return "normal"; }
     };
