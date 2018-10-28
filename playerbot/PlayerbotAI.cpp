@@ -900,8 +900,6 @@ bool PlayerbotAI::CanCastSpell(uint32 spellid, Unit* target, bool checkHasSpell,
     case SPELL_FAILED_UNIT_NOT_INFRONT:
     case SPELL_FAILED_MOVING:
     case SPELL_FAILED_TRY_AGAIN:
-    case SPELL_FAILED_BAD_IMPLICIT_TARGETS:
-    case SPELL_FAILED_BAD_TARGETS:
     case SPELL_CAST_OK:
         return true;
     default:
