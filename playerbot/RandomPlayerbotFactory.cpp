@@ -24,12 +24,16 @@ RandomPlayerbotFactory::RandomPlayerbotFactory(uint32 accountId) : accountId(acc
     availableRaces[CLASS_WARRIOR].push_back(RACE_UNDEAD);
     availableRaces[CLASS_WARRIOR].push_back(RACE_TAUREN);
     availableRaces[CLASS_WARRIOR].push_back(RACE_TROLL);
+#ifdef MANGOSBOT_ONE
     availableRaces[CLASS_WARRIOR].push_back(RACE_DRAENEI);
+#endif
 
     availableRaces[CLASS_PALADIN].push_back(RACE_HUMAN);
     availableRaces[CLASS_PALADIN].push_back(RACE_DWARF);
+#ifdef MANGOSBOT_ONE
     availableRaces[CLASS_PALADIN].push_back(RACE_DRAENEI);
     availableRaces[CLASS_PALADIN].push_back(RACE_BLOODELF);
+#endif
 
     availableRaces[CLASS_ROGUE].push_back(RACE_HUMAN);
     availableRaces[CLASS_ROGUE].push_back(RACE_DWARF);
@@ -37,41 +41,53 @@ RandomPlayerbotFactory::RandomPlayerbotFactory(uint32 accountId) : accountId(acc
     availableRaces[CLASS_ROGUE].push_back(RACE_GNOME);
     availableRaces[CLASS_ROGUE].push_back(RACE_ORC);
     availableRaces[CLASS_ROGUE].push_back(RACE_TROLL);
+#ifdef MANGOSBOT_ONE
     availableRaces[CLASS_ROGUE].push_back(RACE_BLOODELF);
+#endif
 
     availableRaces[CLASS_PRIEST].push_back(RACE_HUMAN);
     availableRaces[CLASS_PRIEST].push_back(RACE_DWARF);
     availableRaces[CLASS_PRIEST].push_back(RACE_NIGHTELF);
     availableRaces[CLASS_PRIEST].push_back(RACE_TROLL);
     availableRaces[CLASS_PRIEST].push_back(RACE_UNDEAD);
+#ifdef MANGOSBOT_ONE
     availableRaces[CLASS_PRIEST].push_back(RACE_DRAENEI);
     availableRaces[CLASS_PRIEST].push_back(RACE_BLOODELF);
+#endif
 
     availableRaces[CLASS_MAGE].push_back(RACE_HUMAN);
     availableRaces[CLASS_MAGE].push_back(RACE_GNOME);
     availableRaces[CLASS_MAGE].push_back(RACE_UNDEAD);
     availableRaces[CLASS_MAGE].push_back(RACE_TROLL);
+#ifdef MANGOSBOT_ONE
     availableRaces[CLASS_MAGE].push_back(RACE_DRAENEI);
     availableRaces[CLASS_MAGE].push_back(RACE_BLOODELF);
+#endif
 
     availableRaces[CLASS_WARLOCK].push_back(RACE_HUMAN);
     availableRaces[CLASS_WARLOCK].push_back(RACE_GNOME);
     availableRaces[CLASS_WARLOCK].push_back(RACE_UNDEAD);
     availableRaces[CLASS_WARLOCK].push_back(RACE_ORC);
+#ifdef MANGOSBOT_ONE
     availableRaces[CLASS_WARLOCK].push_back(RACE_BLOODELF);
+#endif
 
     availableRaces[CLASS_SHAMAN].push_back(RACE_ORC);
     availableRaces[CLASS_SHAMAN].push_back(RACE_TAUREN);
     availableRaces[CLASS_SHAMAN].push_back(RACE_TROLL);
+#ifdef MANGOSBOT_ONE
     availableRaces[CLASS_SHAMAN].push_back(RACE_DRAENEI);
+#endif
 
     availableRaces[CLASS_HUNTER].push_back(RACE_DWARF);
     availableRaces[CLASS_HUNTER].push_back(RACE_NIGHTELF);
     availableRaces[CLASS_HUNTER].push_back(RACE_ORC);
     availableRaces[CLASS_HUNTER].push_back(RACE_TAUREN);
     availableRaces[CLASS_HUNTER].push_back(RACE_TROLL);
+#ifdef MANGOSBOT_ONE
     availableRaces[CLASS_HUNTER].push_back(RACE_DRAENEI);
     availableRaces[CLASS_HUNTER].push_back(RACE_BLOODELF);
+#endif
 
     availableRaces[CLASS_DRUID].push_back(RACE_NIGHTELF);
     availableRaces[CLASS_DRUID].push_back(RACE_TAUREN);
