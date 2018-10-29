@@ -57,8 +57,9 @@ bool PlayerbotAIConfig::Initialize()
     sitDelay = (uint32) config.GetIntDefault("AiPlayerbot.SitDelay", 30000);
     returnDelay = (uint32) config.GetIntDefault("AiPlayerbot.ReturnDelay", 7000);
 
+    farDistance = config.GetFloatDefault("AiPlayerbot.FarDistance", 20.0f);
     sightDistance = config.GetFloatDefault("AiPlayerbot.SightDistance", 50.0f);
-    spellDistance = config.GetFloatDefault("AiPlayerbot.SpellDistance", 25.0f);
+    spellDistance = config.GetFloatDefault("AiPlayerbot.SpellDistance", 22.0f);
     shootDistance = config.GetFloatDefault("AiPlayerbot.ShootDistance", 13.0f);
     reactDistance = config.GetFloatDefault("AiPlayerbot.ReactDistance", 150.0f);
     grindDistance = config.GetFloatDefault("AiPlayerbot.GrindDistance", 100.0f);

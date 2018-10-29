@@ -49,7 +49,7 @@ WorldLocation MoveAheadFormation::GetLocation()
     if (ground <= INVALID_HEIGHT)
         return Formation::NullLocation;
 
-    return WorldLocation(master->GetMapId(), x, y, ground + 0.5f);
+    return WorldLocation(master->GetMapId(), x, y, z + 0.5f);
 }
 
 namespace ai
@@ -87,7 +87,7 @@ namespace ai
             if (ground <= INVALID_HEIGHT)
                 return Formation::NullLocation;
 
-            return WorldLocation(master->GetMapId(), x, y, ground + 0.5f);
+            return WorldLocation(master->GetMapId(), x, y, z + 0.5f);
         }
 
         virtual float GetMaxDistance() { return sPlayerbotAIConfig.followDistance; }
@@ -122,7 +122,7 @@ namespace ai
             if (ground <= INVALID_HEIGHT)
                 return Formation::NullLocation;
 
-            return WorldLocation(master->GetMapId(), x, y, ground + 0.5f);
+            return WorldLocation(master->GetMapId(), x, y, z + 0.5f);
         }
 
         virtual float GetMaxDistance() { return sPlayerbotAIConfig.followDistance + dr; }
@@ -280,6 +280,55 @@ namespace ai
             return Formation::NullLocation;
         }
     };
+
+    class FarFormation : public FollowFormation
+    {
+    public:
+        FarFormation(PlayerbotAI* ai) : FollowFormation(ai, "far") {}
+        virtual WorldLocation GetLocation()
+        {
+            float range = sPlayerbotAIConfig.farDistance;
+            float followRange = sPlayerbotAIConfig.followDistance;
+
+            Player* master = GetMaster();
+            if (!master)
+                return Formation::NullLocation;
+
+            if (sServerFacade.GetDistance2d(bot, master) <= range)
+                return Formation::NullLocation;
+
+            float angle = master->GetAngle(bot);
+            float followAngle = GetFollowAngle();
+
+            float x = master->GetPositionX() + cos(angle) * range + cos(followAngle) * followRange;
+            float y = master->GetPositionY() + sin(angle) * range + sin(followAngle) * followRange;
+            float z = master->GetPositionZ() + 0.5f;
+            float ground = master->GetMap()->GetHeight(x, y, z);
+            if (ground <= INVALID_HEIGHT)
+            {
+                float minDist = 0, minX = 0, minY = 0;
+                for (float angle = 0.0f; angle <= 2 * M_PI; angle += M_PI / 16.0f)
+                {
+                    x = master->GetPositionX() + cos(angle) * range + cos(followAngle) * followRange;
+                    y = master->GetPositionY() + sin(angle) * range + sin(followAngle) * followRange;
+                    float dist = sServerFacade.GetDistance2d(bot, x, y);
+                    float ground = master->GetMap()->GetHeight(x, y, z);
+                    if (ground > INVALID_HEIGHT && (!minDist || minDist > dist))
+                    {
+                        minDist = dist;
+                        minX = x;
+                        minY = y;
+                    }
+                }
+                if (minDist)
+                    return WorldLocation(bot->GetMapId(), minX, minY, z + 0.5f);
+
+                return Formation::NullLocation;
+            }
+
+            return WorldLocation(bot->GetMapId(), x, y, z + 0.5f);
+        }
+    };
 };
 
 float Formation::GetFollowAngle()
@@ -369,11 +418,16 @@ bool SetFormationAction::Execute(Event event)
         if (value->Get()) delete value->Get();
         value->Set(new NearFormation(ai));
     }
+    else if (formation == "far")
+    {
+        if (value->Get()) delete value->Get();
+        value->Set(new FarFormation(ai));
+    }
     else
     {
         ostringstream str; str << "Invalid formation: |cffff0000" << formation;
         ai->TellMaster(str);
-        ai->TellMaster("Please set to any of:|cffffffff melee (default), queue, chaos, circle, line, shield, arrow, near");
+        ai->TellMaster("Please set to any of:|cffffffff melee (default), queue, chaos, circle, line, shield, arrow, near, far");
         return false;
     }
 
