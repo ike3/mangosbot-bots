@@ -1107,22 +1107,31 @@ double RandomPlayerbotMgr::GetSellMultiplier(Player* bot)
     return (double)value / 100.0;
 }
 
-uint32 RandomPlayerbotMgr::GetLootAmount(Player* bot)
+void RandomPlayerbotMgr::AddTradeDiscount(Player* bot, Player* master, int32 value)
 {
-    uint32 id = bot->GetGUIDLow();
-    return GetEventValue(id, "lootamount");
+    if (!master) return;
+    uint32 discount = GetTradeDiscount(bot, master);
+    int32 result = (int32)discount + value;
+    discount = (result < 0 ? 0 : result);
+
+    SetTradeDiscount(bot, master, discount);
 }
 
-void RandomPlayerbotMgr::SetLootAmount(Player* bot, uint32 value)
+void RandomPlayerbotMgr::SetTradeDiscount(Player* bot, Player* master, uint32 value)
 {
-    uint32 id = bot->GetGUIDLow();
-    SetEventValue(id, "lootamount", value, 24 * 3600);
+    if (!master) return;
+    uint32 id =  master->GetGUIDLow();
+    ostringstream name; name << "trade_discount_" << id;
+    SetEventValue(id, name.str(), value,
+            urand(sPlayerbotAIConfig.randomBotCountChangeMinInterval, sPlayerbotAIConfig.randomBotCountChangeMaxInterval));
 }
 
-uint32 RandomPlayerbotMgr::GetTradeDiscount(Player* bot)
+uint32 RandomPlayerbotMgr::GetTradeDiscount(Player* bot, Player* master)
 {
-    Group* group = bot->GetGroup();
-    return GetLootAmount(bot) / (group ? group->GetMembersCount() : 10);
+    if (!master) return 0;
+    uint32 id = master->GetGUIDLow();
+    ostringstream name; name << "trade_discount_" << id;
+    return GetEventValue(id, name.str());
 }
 
 string RandomPlayerbotMgr::HandleRemoteCommand(string request)

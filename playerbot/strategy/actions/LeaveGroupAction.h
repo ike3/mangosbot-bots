@@ -25,7 +25,6 @@ namespace ai
             {
                 bot->GetPlayerbotAI()->SetMaster(NULL);
                 sRandomPlayerbotMgr.ScheduleTeleport(bot->GetObjectGuid());
-                sRandomPlayerbotMgr.SetLootAmount(bot, 0);
             }
 
             ai->ResetStrategies();

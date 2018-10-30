@@ -274,12 +274,12 @@ bool StoreLootAction::Execute(Event event)
         if (!proto)
             continue;
 
-        if (sRandomPlayerbotMgr.IsRandomBot(bot))
+        Player* master = ai->GetMaster();
+        if (sRandomPlayerbotMgr.IsRandomBot(bot) && master)
         {
             uint32 price = itemcount * auctionbot.GetSellPrice(proto) * sRandomPlayerbotMgr.GetSellMultiplier(bot) + gold;
-            uint32 lootAmount = sRandomPlayerbotMgr.GetLootAmount(bot);
             if (price)
-                sRandomPlayerbotMgr.SetLootAmount(bot, bot->GetGroup() ? lootAmount + price : 0);
+                sRandomPlayerbotMgr.AddTradeDiscount(bot, master, price);
 
             Group* group = bot->GetGroup();
             if (group)
