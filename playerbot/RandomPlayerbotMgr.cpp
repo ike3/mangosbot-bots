@@ -743,8 +743,7 @@ uint32 RandomPlayerbotMgr::GetValue(Player* bot, string type)
 
 void RandomPlayerbotMgr::SetValue(uint32 bot, string type, uint32 value)
 {
-    SetEventValue(bot, type, value,
-            urand(sPlayerbotAIConfig.randomBotCountChangeMinInterval, sPlayerbotAIConfig.randomBotCountChangeMaxInterval));
+    SetEventValue(bot, type, value, sPlayerbotAIConfig.maxRandomBotInWorldTime);
 }
 
 void RandomPlayerbotMgr::SetValue(Player* bot, string type, uint32 value)
@@ -1122,8 +1121,7 @@ void RandomPlayerbotMgr::SetTradeDiscount(Player* bot, Player* master, uint32 va
     if (!master) return;
     uint32 id =  master->GetGUIDLow();
     ostringstream name; name << "trade_discount_" << id;
-    SetEventValue(id, name.str(), value,
-            urand(sPlayerbotAIConfig.randomBotCountChangeMinInterval, sPlayerbotAIConfig.randomBotCountChangeMaxInterval));
+    SetEventValue(id, name.str(), value, sPlayerbotAIConfig.maxRandomBotInWorldTime);
 }
 
 uint32 RandomPlayerbotMgr::GetTradeDiscount(Player* bot, Player* master)
