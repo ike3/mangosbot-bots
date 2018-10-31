@@ -50,6 +50,7 @@ bool MovementAction::MoveNear(WorldObject* target, float distance)
             return true;
     }
 
+    ai->TellMasterNoFacing("All paths not in LOS");
     return false;
 }
 
@@ -62,11 +63,13 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle)
     {
         float oz = z;
         bot->UpdateAllowedPositionZ(x, y, z);
-        if (abs(z - oz) > sPlayerbotAIConfig.tooCloseDistance) return false;
     }
 
     if (!IsMovingAllowed(mapId, x, y, z))
+    {
+        ai->TellMasterNoFacing("I am stuck");
         return false;
+    }
 
     float distance = sServerFacade.GetDistance2d(bot, x, y);
     if (sServerFacade.IsDistanceGreaterThan(distance, sPlayerbotAIConfig.contactDistance))
@@ -87,7 +90,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle)
 #ifdef CMANGOS
         mm.Clear();
 #endif
-        mm.MovePoint(mapId, x, y, z, generatePath);
+        mm.MovePoint(mapId, x, y, z + CONTACT_DISTANCE, generatePath);
 
         AI_VALUE(LastMovement&, "last movement").Set(x, y, z, bot->GetOrientation());
         if (!idle)
@@ -95,13 +98,17 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle)
         return true;
     }
 
+    ai->TellMasterNoFacing("No need to move");
     return false;
 }
 
 bool MovementAction::MoveTo(Unit* target, float distance)
 {
     if (!IsMovingAllowed(target))
+    {
+        ai->TellMasterNoFacing("Seems I am stuck");
         return false;
+    }
 
     float bx = bot->GetPositionX();
     float by = bot->GetPositionY();
@@ -241,13 +248,19 @@ bool MovementAction::Follow(Unit* target, float distance, float angle)
     }
 
     if (!IsMovingAllowed(target))
+    {
+        ai->TellMasterNoFacing("I am stuck while following");
         return false;
+    }
 
     if (sServerFacade.IsFriendlyTo(target, bot) && bot->IsMounted() && AI_VALUE(list<ObjectGuid>, "all targets").empty())
         distance += angle;
 
     if (sServerFacade.IsDistanceLessOrEqualThan(sServerFacade.GetDistance2d(bot, target), sPlayerbotAIConfig.followDistance))
+    {
+        ai->TellMasterNoFacing("No need to follow");
         return false;
+    }
 
     bot->HandleEmoteState(0);
     if (bot->IsSitState())
@@ -316,13 +329,19 @@ bool MovementAction::Flee(Unit *target)
         return false;
 
     if (!IsMovingAllowed())
+    {
+        ai->TellMasterNoFacing("I am stuck while fleeing");
         return false;
+    }
 
     FleeManager manager(bot, sPlayerbotAIConfig.fleeDistance, bot->GetAngle(target) + M_PI);
 
     float rx, ry, rz;
     if (!manager.CalculateDestination(&rx, &ry, &rz))
+    {
+        ai->TellMasterNoFacing("Nowhere to flee");
         return false;
+    }
 
     return MoveTo(target->GetMapId(), rx, ry, rz);
 }
@@ -379,7 +398,11 @@ bool SetFacingTargetAction::Execute(Event event)
     if (!target)
         return false;
 
-    if (bot->IsTaxiFlying())
+    if (bot->IsTaxiFlying()
+#ifdef MANGOSBOT_ZERO
+            || bot->IsFlying()
+#endif
+            )
         return true;
 
     sServerFacade.SetFacingTo(bot, target);
