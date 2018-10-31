@@ -49,6 +49,7 @@ WorldLocation MoveAheadFormation::GetLocation()
     if (ground <= INVALID_HEIGHT)
         return Formation::NullLocation;
 
+    bot->UpdateAllowedPositionZ(x, y, z);
     return WorldLocation(master->GetMapId(), x, y, z + 0.5f);
 }
 
@@ -87,6 +88,7 @@ namespace ai
             if (ground <= INVALID_HEIGHT)
                 return Formation::NullLocation;
 
+            bot->UpdateAllowedPositionZ(x, y, z);
             return WorldLocation(master->GetMapId(), x, y, z + 0.5f);
         }
 
@@ -122,6 +124,7 @@ namespace ai
             if (ground <= INVALID_HEIGHT)
                 return Formation::NullLocation;
 
+            bot->UpdateAllowedPositionZ(x, y, z);
             return WorldLocation(master->GetMapId(), x, y, z + 0.5f);
         }
 
@@ -166,15 +169,16 @@ namespace ai
                 break;
             }
 
-            float x = target->GetPositionX();
-            float y = target->GetPositionY();
+            float angle = GetFollowAngle();
+            float x = target->GetPositionX() + cos(angle) * range;
+            float y = target->GetPositionY() + sin(angle) * range;
             float z = target->GetPositionZ();
             float ground = target->GetMap()->GetHeight(x, y, z + 0.5f);
             if (ground <= INVALID_HEIGHT)
                 return Formation::NullLocation;
 
-            float angle = GetFollowAngle();
-            return WorldLocation(bot->GetMapId(), x + cos(angle) * range, y + sin(angle) * range, ground + 0.5f);
+            bot->UpdateAllowedPositionZ(x, y, z);
+            return WorldLocation(bot->GetMapId(), x, y, z + 0.5f);
         }
     };
 
@@ -321,11 +325,15 @@ namespace ai
                     }
                 }
                 if (minDist)
+                {
+                    bot->UpdateAllowedPositionZ(minX, minY, z);
                     return WorldLocation(bot->GetMapId(), minX, minY, z + 0.5f);
+                }
 
                 return Formation::NullLocation;
             }
 
+            bot->UpdateAllowedPositionZ(x, y, z);
             return WorldLocation(bot->GetMapId(), x, y, z + 0.5f);
         }
     };
@@ -489,7 +497,8 @@ WorldLocation MoveFormation::MoveSingleLine(vector<Player*> line, float diff, fl
             if (ground <= INVALID_HEIGHT)
                 return Formation::NullLocation;
 
-            return WorldLocation(bot->GetMapId(), lx, ly, ground + 0.5f);
+            bot->UpdateAllowedPositionZ(lx, ly, lz);
+            return WorldLocation(bot->GetMapId(), lx, ly, lz + 0.5f);
         }
 
         index++;
