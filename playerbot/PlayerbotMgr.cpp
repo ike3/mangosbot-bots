@@ -447,6 +447,24 @@ string PlayerbotHolder::ListBots(Player* master)
 
     names.sort();
 
+    Group* group = master->GetGroup();
+    if (group)
+    {
+        Group::MemberSlotList const& groupSlot = group->GetMemberSlots();
+        for (Group::member_citerator itr = groupSlot.begin(); itr != groupSlot.end(); itr++)
+        {
+            Player *member = sObjectMgr.GetPlayer(itr->guid);
+            if (member && sRandomPlayerbotMgr.IsRandomBot(member))
+            {
+                string name = member->GetName();
+
+                names.push_back(name);
+                online[name] = "+";
+                classes[name] = classNames[member->getClass()];
+            }
+        }
+    }
+
     ostringstream out;
     bool first = true;
     out << "Bot roster: ";
