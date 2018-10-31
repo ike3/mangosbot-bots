@@ -33,6 +33,8 @@ char * strstri (string str1, string str2);
 uint64 extractGuid(WorldPacket& packet);
 std::string &trim(std::string &s);
 
+set<string> PlayerbotAI::unsecuredCommands;
+
 uint32 PlayerbotChatHandler::extractQuestId(string str)
 {
     char* source = (char*)str.c_str();
@@ -62,7 +64,7 @@ void PacketHandlingHelper::AddPacket(const WorldPacket& packet)
 
 
 PlayerbotAI::PlayerbotAI() : PlayerbotAIBase(), bot(NULL), aiObjectContext(NULL),
-    currentEngine(NULL), chatHelper(this), chatFilter(this), accountId(0), security(NULL), master(NULL)
+    currentEngine(NULL), chatHelper(this), chatFilter(this), accountId(0), security(NULL), master(NULL), currentState(BOT_STATE_NON_COMBAT)
 {
     for (int i = 0 ; i < BOT_STATE_MAX; i++)
         engines[i] = NULL;
@@ -220,6 +222,26 @@ void PlayerbotAI::Reset()
 
 map<string,ChatMsg> chatMap;
 
+bool PlayerbotAI::IsAllowedCommand(string text)
+{
+    if (unsecuredCommands.empty())
+    {
+        unsecuredCommands.insert("who");
+        unsecuredCommands.insert("wts");
+        unsecuredCommands.insert("sendmail");
+    }
+
+    for (set<string>::iterator i = unsecuredCommands.begin(); i != unsecuredCommands.end(); ++i)
+    {
+        if (text.find(*i) == 0)
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 void PlayerbotAI::HandleCommand(uint32 type, const string& text, Player& fromPlayer)
 {
     if (!GetSecurity()->CheckLevelFor(PLAYERBOT_SECURITY_INVITE, type != CHAT_MSG_WHISPER, &fromPlayer))
@@ -270,7 +292,7 @@ void PlayerbotAI::HandleCommand(uint32 type, const string& text, Player& fromPla
         return;
     }
 
-    if (filtered.find("who") != 0 && filtered.find("wts") != 0 && !GetSecurity()->CheckLevelFor(PLAYERBOT_SECURITY_ALLOW_ALL, type != CHAT_MSG_WHISPER, &fromPlayer))
+    if (!IsAllowedCommand(filtered) && !GetSecurity()->CheckLevelFor(PLAYERBOT_SECURITY_ALLOW_ALL, type != CHAT_MSG_WHISPER, &fromPlayer))
         return;
 
     if (type == CHAT_MSG_RAID_WARNING && filtered.find(bot->GetName()) != string::npos && filtered.find("award") == string::npos)

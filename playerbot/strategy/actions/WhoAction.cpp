@@ -36,10 +36,12 @@ bool WhoAction::Execute(Event event)
         out << QuerySpec(text);
     }
 
-    if (AreaTableEntry const* areaEntry = GetAreaEntryByAreaID(bot->GetAreaId()))
+    if (!out.str().empty())
     {
-        if (!out.str().empty()) out << ", ";
-        out << "(|cffb04040" << areaEntry->area_name[0] << "|r)";
+        if (AreaTableEntry const* areaEntry = GetAreaEntryByAreaID(bot->GetAreaId()))
+        {
+            out << ", (|cffb04040" << areaEntry->area_name[0] << "|r)";
+        }
     }
 
     if (ai->GetMaster())
