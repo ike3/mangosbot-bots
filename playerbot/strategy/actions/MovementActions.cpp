@@ -61,8 +61,8 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle)
     if (generatePath)
     {
         float oz = z;
-        bot->UpdateGroundPositionZ(x, y, z);
-        if (abs(z - oz) > ATTACK_DISTANCE) return false;
+        bot->UpdateAllowedPositionZ(x, y, z);
+        if (abs(z - oz) > sPlayerbotAIConfig.tooCloseDistance) return false;
     }
 
     if (!IsMovingAllowed(mapId, x, y, z))
@@ -187,8 +187,7 @@ bool MovementAction::IsMovingAllowed()
             bot->IsBeingTeleported() ||
             sServerFacade.IsInRoots(bot) ||
             bot->HasAuraType(SPELL_AURA_MOD_CONFUSE) || sServerFacade.IsCharmed(bot) ||
-            bot->HasAuraType(SPELL_AURA_MOD_STUN) || bot->IsFlying() ||
-            bot->IsNonMeleeSpellCasted(true))
+            bot->HasAuraType(SPELL_AURA_MOD_STUN) || bot->IsFlying())
         return false;
 
     MotionMaster &mm = *bot->GetMotionMaster();

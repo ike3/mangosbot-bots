@@ -67,7 +67,7 @@ WorldLocation AoePositionValue::Calculate()
     float x = (x1 + x2) / 2;
     float y = (y1 + y2) / 2;
     float z = bot->GetPositionZ();
-    bot->UpdateGroundPositionZ(x, y, z);
+    bot->UpdateAllowedPositionZ(x, y, z);
     return WorldLocation(bot->GetMapId(), x, y, z, 0);
 }
 

@@ -76,7 +76,7 @@ bool GoAction::Execute(Event event)
 
         Map* map = bot->GetMap();
         float z = bot->GetPositionZ();
-        bot->UpdateGroundPositionZ(x, y, z);
+        bot->UpdateAllowedPositionZ(x, y, z);
 
         if (sServerFacade.IsDistanceGreaterThan(sServerFacade.GetDistance2d(bot, x, y), sPlayerbotAIConfig.reactDistance))
         {

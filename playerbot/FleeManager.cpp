@@ -68,7 +68,7 @@ void FleeManager::calculatePossibleDestinations(list<FleePoint*> &points)
             float x = botPosX + cos(angle) * distance;
             float y = botPosY + sin(angle) * distance;
             float z = botPosZ;
-            bot->UpdateGroundPositionZ(x, y, z);
+            bot->UpdateAllowedPositionZ(x, y, z);
 
             if (!bot->IsWithinLOS(x, y, z))
                 continue;
