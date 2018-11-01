@@ -355,9 +355,9 @@ void RandomItemMgr::AddItemStats(uint32 mod, uint8 &sp, uint8 &ap, uint8 &tank)
     }
 }
 
-bool RandomItemMgr::CheckItemStats(BotEquipKey key, uint8 sp, uint8 ap, uint8 tank)
+bool RandomItemMgr::CheckItemStats(uint8 clazz, uint8 sp, uint8 ap, uint8 tank)
 {
-    switch (key.clazz)
+    switch (clazz)
     {
     case CLASS_PRIEST:
     case CLASS_MAGE:
@@ -380,27 +380,27 @@ bool RandomItemMgr::CheckItemStats(BotEquipKey key, uint8 sp, uint8 ap, uint8 ta
     return sp || ap || tank;
 }
 
-bool RandomItemMgr::CanEquipArmor(BotEquipKey key, ItemPrototype const* proto)
+bool RandomItemMgr::CanEquipArmor(uint8 clazz, uint32 level, ItemPrototype const* proto)
 {
-    if ((key.clazz == CLASS_WARRIOR || key.clazz == CLASS_PALADIN || key.clazz == CLASS_SHAMAN)
+    if ((clazz == CLASS_WARRIOR || clazz == CLASS_PALADIN || clazz == CLASS_SHAMAN)
             && proto->SubClass == ITEM_SUBCLASS_ARMOR_SHIELD)
         return true;
 
-    if ((key.clazz == CLASS_WARRIOR || key.clazz == CLASS_PALADIN) && key.level >= 40)
+    if ((clazz == CLASS_WARRIOR || clazz == CLASS_PALADIN) && level >= 40)
     {
         if (proto->SubClass != ITEM_SUBCLASS_ARMOR_PLATE)
             return false;
     }
 
-    if (((key.clazz == CLASS_WARRIOR || key.clazz == CLASS_PALADIN) && key.level < 40) ||
-            (key.clazz == CLASS_HUNTER || key.clazz == CLASS_SHAMAN) && key.level >= 40)
+    if (((clazz == CLASS_WARRIOR || clazz == CLASS_PALADIN) && level < 40) ||
+            (clazz == CLASS_HUNTER || clazz == CLASS_SHAMAN) && level >= 40)
     {
         if (proto->SubClass != ITEM_SUBCLASS_ARMOR_MAIL)
             return false;
     }
 
-    if (((key.clazz == CLASS_HUNTER || key.clazz == CLASS_SHAMAN) && key.level < 40) ||
-            (key.clazz == CLASS_DRUID || key.clazz == CLASS_ROGUE))
+    if (((clazz == CLASS_HUNTER || clazz == CLASS_SHAMAN) && level < 40) ||
+            (clazz == CLASS_DRUID || clazz == CLASS_ROGUE))
     {
         if (proto->SubClass != ITEM_SUBCLASS_ARMOR_LEATHER)
             return false;
@@ -419,12 +419,12 @@ bool RandomItemMgr::CanEquipArmor(BotEquipKey key, ItemPrototype const* proto)
         AddItemStats(proto->ItemStat[j].ItemStatType, sp, ap, tank);
     }
 
-    return CheckItemStats(key, sp, ap, tank);
+    return CheckItemStats(clazz, sp, ap, tank);
 }
 
-bool RandomItemMgr::CanEquipWeapon(BotEquipKey key, ItemPrototype const* proto)
+bool RandomItemMgr::CanEquipWeapon(uint8 clazz, ItemPrototype const* proto)
 {
-    switch (key.clazz)
+    switch (clazz)
     {
     case CLASS_PRIEST:
         if (proto->SubClass != ITEM_SUBCLASS_WEAPON_STAFF &&
@@ -568,10 +568,10 @@ void RandomItemMgr::BuildEquipCache()
                                 slot == EQUIPMENT_SLOT_LEGS ||
                                 slot == EQUIPMENT_SLOT_FEET ||
                                 slot == EQUIPMENT_SLOT_WRISTS ||
-                                slot == EQUIPMENT_SLOT_HANDS) && !CanEquipArmor(key, proto))
+                                slot == EQUIPMENT_SLOT_HANDS) && !CanEquipArmor(key.clazz, key.level, proto))
                                     continue;
 
-                            if (proto->Class == ITEM_CLASS_WEAPON && !CanEquipWeapon(key, proto))
+                            if (proto->Class == ITEM_CLASS_WEAPON && !CanEquipWeapon(key.clazz, proto))
                                 continue;
 
                             if (slot == EQUIPMENT_SLOT_OFFHAND && key.clazz == CLASS_ROGUE && proto->Class != ITEM_CLASS_WEAPON)
