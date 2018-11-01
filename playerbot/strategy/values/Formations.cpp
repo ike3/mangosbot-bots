@@ -38,19 +38,20 @@ WorldLocation MoveAheadFormation::GetLocation()
         float ori = master->GetOrientation();
         float x1 = x + sPlayerbotAIConfig.tooCloseDistance * cos(ori);
         float y1 = y + sPlayerbotAIConfig.tooCloseDistance * sin(ori);
-        float ground = master->GetMap()->GetHeight(x1, y1, z + 0.5f);
+        float ground = master->GetMap()->GetHeight(x1, y1, z);
         if (ground > INVALID_HEIGHT)
         {
             x = x1;
             y = y1;
         }
     }
-    float ground = master->GetMap()->GetHeight(x, y, z + 0.5f);
+    float ground = master->GetMap()->GetHeight(x, y, z);
     if (ground <= INVALID_HEIGHT)
         return Formation::NullLocation;
 
+    z += CONTACT_DISTANCE;
     bot->UpdateAllowedPositionZ(x, y, z);
-    return WorldLocation(master->GetMapId(), x, y, z + 0.5f);
+    return WorldLocation(master->GetMapId(), x, y, z);
 }
 
 namespace ai
@@ -84,12 +85,13 @@ namespace ai
             float x = master->GetPositionX() + cos(angle) * range;
             float y = master->GetPositionY() + sin(angle) * range;
             float z = master->GetPositionZ();
-            float ground = master->GetMap()->GetHeight(x, y, z + 0.5f);
+            float ground = master->GetMap()->GetHeight(x, y, z);
             if (ground <= INVALID_HEIGHT)
                 return Formation::NullLocation;
 
+            z += CONTACT_DISTANCE;
             bot->UpdateAllowedPositionZ(x, y, z);
-            return WorldLocation(master->GetMapId(), x, y, z + 0.5f);
+            return WorldLocation(master->GetMapId(), x, y, z);
         }
 
         virtual float GetMaxDistance() { return sPlayerbotAIConfig.followDistance; }
@@ -120,12 +122,13 @@ namespace ai
             float x = master->GetPositionX() + cos(angle) * range + dx;
             float y = master->GetPositionY() + sin(angle) * range + dy;
             float z = master->GetPositionZ();
-            float ground = master->GetMap()->GetHeight(x, y, z + 0.5f);
+            float ground = master->GetMap()->GetHeight(x, y, z);
             if (ground <= INVALID_HEIGHT)
                 return Formation::NullLocation;
 
+            z += CONTACT_DISTANCE;
             bot->UpdateAllowedPositionZ(x, y, z);
-            return WorldLocation(master->GetMapId(), x, y, z + 0.5f);
+            return WorldLocation(master->GetMapId(), x, y, z);
         }
 
         virtual float GetMaxDistance() { return sPlayerbotAIConfig.followDistance + dr; }
@@ -173,12 +176,13 @@ namespace ai
             float x = target->GetPositionX() + cos(angle) * range;
             float y = target->GetPositionY() + sin(angle) * range;
             float z = target->GetPositionZ();
-            float ground = target->GetMap()->GetHeight(x, y, z + 0.5f);
+            float ground = target->GetMap()->GetHeight(x, y, z);
             if (ground <= INVALID_HEIGHT)
                 return Formation::NullLocation;
 
+            z += CONTACT_DISTANCE;
             bot->UpdateAllowedPositionZ(x, y, z);
-            return WorldLocation(bot->GetMapId(), x, y, z + 0.5f);
+            return WorldLocation(bot->GetMapId(), x, y, z);
         }
     };
 
@@ -306,7 +310,7 @@ namespace ai
 
             float x = master->GetPositionX() + cos(angle) * range + cos(followAngle) * followRange;
             float y = master->GetPositionY() + sin(angle) * range + sin(followAngle) * followRange;
-            float z = master->GetPositionZ() + 0.5f;
+            float z = master->GetPositionZ();
             float ground = master->GetMap()->GetHeight(x, y, z);
             if (ground <= INVALID_HEIGHT)
             {
@@ -326,15 +330,17 @@ namespace ai
                 }
                 if (minDist)
                 {
+                    z += CONTACT_DISTANCE;
                     bot->UpdateAllowedPositionZ(minX, minY, z);
-                    return WorldLocation(bot->GetMapId(), minX, minY, z + 0.5f);
+                    return WorldLocation(bot->GetMapId(), minX, minY, z);
                 }
 
                 return Formation::NullLocation;
             }
 
+            z += CONTACT_DISTANCE;
             bot->UpdateAllowedPositionZ(x, y, z);
-            return WorldLocation(bot->GetMapId(), x, y, z + 0.5f);
+            return WorldLocation(bot->GetMapId(), x, y, z);
         }
     };
 };
@@ -493,12 +499,13 @@ WorldLocation MoveFormation::MoveSingleLine(vector<Player*> line, float diff, fl
             float lx = x + cos(angle) * radius;
             float ly = y + sin(angle) * radius;
             float lz = cz;
-            float ground = bot->GetMap()->GetHeight(lx, ly, lz + 0.5f);
+            float ground = bot->GetMap()->GetHeight(lx, ly, lz);
             if (ground <= INVALID_HEIGHT)
                 return Formation::NullLocation;
 
+            lz += CONTACT_DISTANCE;
             bot->UpdateAllowedPositionZ(lx, ly, lz);
-            return WorldLocation(bot->GetMapId(), lx, ly, lz + 0.5f);
+            return WorldLocation(bot->GetMapId(), lx, ly, lz);
         }
 
         index++;

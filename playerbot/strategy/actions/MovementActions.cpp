@@ -61,7 +61,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle)
     bool generatePath = !bot->IsFlying() && !bot->HasMovementFlag(MOVEFLAG_SWIMMING) && !bot->IsInWater() && !bot->IsUnderWater();
     if (generatePath)
     {
-        float oz = z;
+        z += CONTACT_DISTANCE;
         bot->UpdateAllowedPositionZ(x, y, z);
     }
 
@@ -90,7 +90,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle)
 #ifdef CMANGOS
         mm.Clear();
 #endif
-        mm.MovePoint(mapId, x, y, z + CONTACT_DISTANCE, generatePath);
+        mm.MovePoint(mapId, x, y, z, generatePath);
 
         AI_VALUE(LastMovement&, "last movement").Set(x, y, z, bot->GetOrientation());
         if (!idle)
@@ -138,8 +138,9 @@ bool MovementAction::MoveTo(Unit* target, float distance)
 
     float dx = cos(angle) * needToGo + bx;
     float dy = sin(angle) * needToGo + by;
+    float dz = bz + (tz - bz) * needToGo / distanceToTarget;
 
-    return MoveTo(target->GetMapId(), dx, dy, tz);
+    return MoveTo(target->GetMapId(), dx, dy, dz);
 }
 
 float MovementAction::GetFollowAngle()
