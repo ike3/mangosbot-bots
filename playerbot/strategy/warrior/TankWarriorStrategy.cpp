@@ -15,8 +15,8 @@ public:
         creators["rend"] = &rend;
         creators["revenge"] = &revenge;
         creators["devastate"] = &devastate;
-        creators["shockwave"] = &shockwave;
         creators["taunt"] = &taunt;
+        creators["thunder clap"] = &thunder_clap;
     }
 private:
     static ActionNode* melee(PlayerbotAI* ai)
@@ -54,9 +54,9 @@ private:
             /*A*/ NextAction::array(0, new NextAction("sunder armor"), NULL),
             /*C*/ NULL);
     }
-    static ActionNode* shockwave(PlayerbotAI* ai)
+    static ActionNode* thunder_clap(PlayerbotAI* ai)
     {
-        return new ActionNode ("shockwave",
+        return new ActionNode ("thunder clap",
             /*P*/ NULL,
             /*A*/ NextAction::array(0, new NextAction("cleave"), NULL),
             /*C*/ NULL);
@@ -106,7 +106,7 @@ void TankWarriorStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 
 	triggers.push_back(new TriggerNode(
 		"medium aoe",
-		NextAction::array(0, new NextAction("shockwave", ACTION_HIGH + 2), NULL)));
+		NextAction::array(0, new NextAction("thunder clap", ACTION_HIGH + 2), NULL)));
 
 	triggers.push_back(new TriggerNode(
         "light aoe",
@@ -119,8 +119,4 @@ void TankWarriorStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 	triggers.push_back(new TriggerNode(
 		"concussion blow",
 		NextAction::array(0, new NextAction("concussion blow", ACTION_INTERRUPT), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "sword and board",
-        NextAction::array(0, new NextAction("shield slam", ACTION_HIGH + 3), NULL)));
 }

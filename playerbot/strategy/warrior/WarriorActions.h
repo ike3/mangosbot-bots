@@ -12,6 +12,15 @@ namespace ai
         }
     };
 
+    // berserker
+    class CastBerserkerMeleeSpellAction : public CastMeleeSpellAction {
+    public:
+        CastBerserkerMeleeSpellAction(PlayerbotAI* ai, string spell) : CastMeleeSpellAction(ai, spell) {}
+        virtual NextAction** getPrerequisites() {
+            return NextAction::merge(NextAction::array(0, new NextAction("berserker stance"), NULL), CastMeleeSpellAction::getPrerequisites());
+        }
+    };
+
     // defensive
     class CastDefensiveMeleeSpellAction : public CastMeleeSpellAction {
     public:
@@ -33,10 +42,22 @@ namespace ai
         CastCleaveAction(PlayerbotAI* ai) : CastMeleeSpellAction(ai, "cleave") {}
     };
 
-    // battle, berserker
-    class CastMockingBlowAction : public CastMeleeSpellAction {
+    // all
+    class CastRampageAction : public CastMeleeSpellAction {
     public:
-        CastMockingBlowAction(PlayerbotAI* ai) : CastMeleeSpellAction(ai, "mocking blow") {}
+        CastRampageAction(PlayerbotAI* ai) : CastMeleeSpellAction(ai, "rampage") {}
+    };
+
+    // battle
+    class CastMockingBlowAction : public CastBattleMeleeSpellAction {
+    public:
+        CastMockingBlowAction(PlayerbotAI* ai) : CastBattleMeleeSpellAction(ai, "mocking blow") {}
+    };
+
+    // battle, berserker
+    class CastMortalStrikeAction : public CastMeleeSpellAction {
+    public:
+        CastMortalStrikeAction(PlayerbotAI* ai) : CastMeleeSpellAction(ai, "mortal strike") {}
     };
 
     class CastBloodthirstAction : public CastMeleeSpellAction {
@@ -50,16 +71,40 @@ namespace ai
         CastExecuteAction(PlayerbotAI* ai) : CastMeleeSpellAction(ai, "execute") {}
     };
 
+    // berserker
+    class CastWhirlwindAction : public CastBerserkerMeleeSpellAction {
+    public:
+        CastWhirlwindAction(PlayerbotAI* ai) : CastBerserkerMeleeSpellAction(ai, "whirlwind") {}
+    };
+
+    // berserker
+    class CastPummelAction : public CastBerserkerMeleeSpellAction {
+    public:
+        CastPummelAction(PlayerbotAI* ai) : CastBerserkerMeleeSpellAction(ai, "pummel") {}
+    };
+
     // battle
     class CastOverpowerAction : public CastBattleMeleeSpellAction {
     public:
         CastOverpowerAction(PlayerbotAI* ai) : CastBattleMeleeSpellAction(ai, "overpower") {}
     };
 
+    // battle
+    class CastRetaliationAction : public CastBattleMeleeSpellAction {
+    public:
+        CastRetaliationAction(PlayerbotAI* ai) : CastBattleMeleeSpellAction(ai, "retaliation") {}
+    };
+
     // battle, berserker
     class CastHamstringAction : public CastSnareSpellAction {
     public:
         CastHamstringAction(PlayerbotAI* ai) : CastSnareSpellAction(ai, "hamstring") {}
+    };
+
+    // battle, berserker
+    class CastSweepingStrikeAction : public CastSnareSpellAction {
+    public:
+        CastSweepingStrikeAction(PlayerbotAI* ai) : CastSnareSpellAction(ai, "sweeping strike") {}
     };
 
     // defensive
@@ -78,6 +123,12 @@ namespace ai
 		virtual NextAction** getPrerequisites() {
 			return NextAction::merge( NextAction::array(0, new NextAction("defensive stance"), NULL), CastSpellAction::getPrerequisites());
 		}
+    };
+
+    // defensive
+    class CastSpellReflectionAction : public CastDefensiveMeleeSpellAction {
+    public:
+        CastSpellReflectionAction(PlayerbotAI* ai) : CastDefensiveMeleeSpellAction(ai, "spell reflection") {}
     };
 
     // defensive
@@ -166,6 +217,11 @@ namespace ai
 		CastBattleStanceAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "battle stance") {}
 	};
 
+    class CastBerserkerStanceAction : public CastBuffSpellAction {
+    public:
+        CastBerserkerStanceAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "berserker stance") {}
+    };
+
     BEGIN_RANGED_SPELL_ACTION(CastChargeAction, "charge")
     END_SPELL_ACTION()
 
@@ -174,9 +230,9 @@ namespace ai
 		CastDeathWishAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "death wish") {}
 	};
 
-	class CastBerserkerRageAction : public CastBuffSpellAction {
+	class CastBerserkerRageAction : public CastBerserkerMeleeSpellAction {
 	public:
-		CastBerserkerRageAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "berserker rage") {}
+		CastBerserkerRageAction(PlayerbotAI* ai) : CastBerserkerMeleeSpellAction(ai, "berserker rage") {}
 	};
 
 	class CastLastStandAction : public CastBuffSpellAction {
@@ -184,11 +240,17 @@ namespace ai
 		CastLastStandAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "last stand") {}
 	};
 
+    // berserker
+    class CastRecklessnessAction : public CastBerserkerMeleeSpellAction {
+    public:
+        CastRecklessnessAction(PlayerbotAI* ai) : CastBerserkerMeleeSpellAction(ai, "recklessness") {}
+    };
+
 	// defensive
-	class CastShockwaveAction : public CastDefensiveMeleeSpellAction {
-	public:
-		CastShockwaveAction(PlayerbotAI* ai) : CastDefensiveMeleeSpellAction(ai, "shockwave") {}
-	};
+	//class CastShockwaveAction : public CastDefensiveMeleeSpellAction {
+	//public:
+	//	CastShockwaveAction(PlayerbotAI* ai) : CastDefensiveMeleeSpellAction(ai, "shockwave") {}
+	//};
 
 	// defensive
 	class CastConcussionBlowAction : public CastSnareSpellAction {
