@@ -562,7 +562,7 @@ int AhBot::AddAuction(int auction, Category* category, ItemPrototype const* prot
 
     price = category->GetPricingStrategy()->GetSellPrice(proto, auctionIds[auction]);
 
-    uint32 stackCount = category->GetStackCount(proto);
+    uint32 stackCount = urand(1, category->GetStackCount(proto));
     if (!price || !stackCount)
         return 0;
 
@@ -646,6 +646,12 @@ void AhBot::HandleCommand(string command)
         return;
     }
 
+    if (command == "dump")
+    {
+        Dump();
+        return;
+    }
+
     uint32 itemId = atoi(command.c_str());
     if (!itemId)
     {
@@ -681,13 +687,13 @@ void AhBot::HandleCommand(string command)
                     << GetAvailableMoney(auctionIds[auction])
                     << ") ---\n";
 
-                out << "sell: " << ChatHelper::formatMoney(category->GetPricingStrategy()->GetSellPrice(proto, auctionIds[auction], true))
-                    << " ("  << category->GetPricingStrategy()->ExplainSellPrice(proto, auctionIds[auction]) << ")"
-                    << "\n";
+                ostringstream exp1;
+                out << "sell: " << ChatHelper::formatMoney(category->GetPricingStrategy()->GetSellPrice(proto, auctionIds[auction], true, &exp1));
+                out << " ("  << exp1.str().c_str() << ")\n";
 
-                out << "buy: " << ChatHelper::formatMoney(category->GetPricingStrategy()->GetBuyPrice(proto, auctionIds[auction]))
-                    << " ("  << category->GetPricingStrategy()->ExplainBuyPrice(proto, auctionIds[auction]) << ")"
-                    << "\n";
+                ostringstream exp2;
+                out << "buy: " << ChatHelper::formatMoney(category->GetPricingStrategy()->GetBuyPrice(proto, auctionIds[auction], &exp2));
+                out << " ("  << exp2.str().c_str() << ")\n";
 
                 out << "market: " << ChatHelper::formatMoney(category->GetPricingStrategy()->GetMarketPrice(proto->ItemId, auctionIds[auction]))
                     << "\n";
@@ -1141,6 +1147,44 @@ void AhBot::CheckSendMail(uint32 bidder, uint32 price, AuctionEntry *entry)
     draft.SendMailTo(MailReceiver(receiverGuid), MailSender(MAIL_NORMAL, bidder));
 
     SetTime("entry", entry->Id, entry->auctionHouseEntry->houseId, AHBOT_SENDMAIL, entry->expireTime);
+}
+
+void AhBot::Dump()
+{
+    for (uint32 itemId = 0; itemId < sItemStorage.GetMaxEntry(); ++itemId)
+    {
+        ItemPrototype const* proto = sObjectMgr.GetItemPrototype(itemId);
+        if (!proto)
+            continue;
+
+        bool first = true;
+        for (int i=0; i<CategoryList::instance.size(); i++)
+        {
+            Category* category = CategoryList::instance[i];
+            if (category->Contains(proto))
+            {
+                vector<uint32> items = availableItems.Get(category);
+                if (find(items.begin(), items.end(), proto->ItemId) == items.end())
+                    continue;
+
+                ostringstream out;
+                if (first)
+                {
+                    out << proto->ItemId << " (" << proto->Name1 << ") x" << category->GetStackCount(proto) << " - ";
+                    first = false;
+                }
+
+                int auction = 0;
+                const AuctionHouseEntry* ahEntry = sAuctionHouseStore.LookupEntry(auctionIds[auction]);
+                out << "SELL: "
+                    << ChatHelper::formatMoney(category->GetPricingStrategy()->GetSellPrice(proto, auctionIds[auction], true))
+                    << ", BUY: "
+                    << ChatHelper::formatMoney(category->GetPricingStrategy()->GetBuyPrice(proto, auctionIds[auction]))
+                    << " (" << category->GetDisplayName() << ")";
+                sLog.outString(out.str().c_str());
+            }
+        }
+    }
 }
 
 INSTANTIATE_SINGLETON_1( ahbot::AhBot );

@@ -72,6 +72,7 @@ class RandomItemMgr
         uint32 GetRandomTrade(uint32 level);
         bool CanEquipArmor(uint8 clazz, uint32 level, ItemPrototype const* proto);
         bool CanEquipWeapon(uint8 clazz, ItemPrototype const* proto);
+        float GetItemRarity(uint32 itemId);
 
     private:
         void BuildRandomItemCache();
@@ -80,6 +81,7 @@ class RandomItemMgr
         void BuildFoodCache();
         void BuildPotionCache();
         void BuildTradeCache();
+        void BuildRarityCache();
         bool CanEquipItem(BotEquipKey key, ItemPrototype const* proto);
         void AddItemStats(uint32 mod, uint8 &sp, uint8 &ap, uint8 &tank);
         bool CheckItemStats(uint8 clazz, uint8 sp, uint8 ap, uint8 tank);
@@ -93,6 +95,7 @@ class RandomItemMgr
         map<uint32, map<uint32, vector<uint32> > > potionCache;
         map<uint32, map<uint32, vector<uint32> > > foodCache;
         map<uint32, vector<uint32> > tradeCache;
+        map<uint32, float> rarityCache;
 };
 
 #define sRandomItemMgr RandomItemMgr::instance()

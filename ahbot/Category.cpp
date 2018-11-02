@@ -1,5 +1,6 @@
 #include "../botpch.h"
 #include "Category.h"
+#include "../playerbot/RandomItemMgr.h"
 #include "ItemBag.h"
 #include "AhBotConfig.h"
 #include "PricingStrategy.h"
@@ -12,7 +13,8 @@ uint32 Category::GetStackCount(ItemPrototype const* proto)
     if (proto->Quality > ITEM_QUALITY_UNCOMMON)
         return 1;
 
-    return urand(1, proto->GetMaxStackSize());
+    double rarity = GetPricingStrategy()->GetRarityPriceMultiplier(proto->ItemId);
+    return (uint32)max(1.0, proto->GetMaxStackSize() / rarity);
 }
 
 uint32 Category::GetMaxAllowedItemAuctionCount(ItemPrototype const* proto)
