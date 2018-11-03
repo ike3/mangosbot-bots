@@ -54,6 +54,9 @@ void CheckMailAction::ProcessMail(Mail* mail, Player* owner)
     if (!mail->HasItems())
         return;
 
+    if (mail->subject.find("Item(s) you asked for") != string::npos)
+        return;
+
     for (MailItemInfoVec::iterator i = mail->items.begin(); i != mail->items.end(); ++i)
     {
         Item *item = bot->GetMItem(i->item_guid);

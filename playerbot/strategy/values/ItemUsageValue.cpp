@@ -4,6 +4,7 @@
 
 #include "../../../ahbot/AhBot.h"
 #include "../../GuildTaskMgr.h"
+#include "../../RandomItemMgr.h"
 using namespace ai;
 
 ItemUsage ItemUsageValue::Calculate()
@@ -58,6 +59,12 @@ ItemUsage ItemUsageValue::QueryItemUsageForEquip(ItemPrototype const * item)
     delete pItem;
 
     if( result != EQUIP_ERR_OK )
+        return ITEM_USAGE_NONE;
+
+    if (item->Class == ITEM_CLASS_WEAPON && !sRandomItemMgr.CanEquipWeapon(bot->getClass(), item))
+        return ITEM_USAGE_NONE;
+
+    if (item->Class == ITEM_CLASS_ARMOR && !sRandomItemMgr.CanEquipArmor(bot->getClass(), bot->getLevel(), item))
         return ITEM_USAGE_NONE;
 
     Item* existingItem = bot->GetItemByPos(dest);

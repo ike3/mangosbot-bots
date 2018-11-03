@@ -38,18 +38,20 @@ WorldLocation MoveAheadFormation::GetLocation()
         float ori = master->GetOrientation();
         float x1 = x + sPlayerbotAIConfig.tooCloseDistance * cos(ori);
         float y1 = y + sPlayerbotAIConfig.tooCloseDistance * sin(ori);
-        float ground = master->GetMap()->GetHeight(x1, y1, z + 0.5f);
+        float ground = master->GetMap()->GetHeight(x1, y1, z);
         if (ground > INVALID_HEIGHT)
         {
             x = x1;
             y = y1;
         }
     }
-    float ground = master->GetMap()->GetHeight(x, y, z + 0.5f);
+    float ground = master->GetMap()->GetHeight(x, y, z);
     if (ground <= INVALID_HEIGHT)
         return Formation::NullLocation;
 
-    return WorldLocation(master->GetMapId(), x, y, ground + 0.5f);
+    z += CONTACT_DISTANCE;
+    bot->UpdateAllowedPositionZ(x, y, z);
+    return WorldLocation(master->GetMapId(), x, y, z);
 }
 
 namespace ai
@@ -83,11 +85,13 @@ namespace ai
             float x = master->GetPositionX() + cos(angle) * range;
             float y = master->GetPositionY() + sin(angle) * range;
             float z = master->GetPositionZ();
-            float ground = master->GetMap()->GetHeight(x, y, z + 0.5f);
+            float ground = master->GetMap()->GetHeight(x, y, z);
             if (ground <= INVALID_HEIGHT)
                 return Formation::NullLocation;
 
-            return WorldLocation(master->GetMapId(), x, y, ground + 0.5f);
+            z += CONTACT_DISTANCE;
+            bot->UpdateAllowedPositionZ(x, y, z);
+            return WorldLocation(master->GetMapId(), x, y, z);
         }
 
         virtual float GetMaxDistance() { return sPlayerbotAIConfig.followDistance; }
@@ -118,11 +122,13 @@ namespace ai
             float x = master->GetPositionX() + cos(angle) * range + dx;
             float y = master->GetPositionY() + sin(angle) * range + dy;
             float z = master->GetPositionZ();
-            float ground = master->GetMap()->GetHeight(x, y, z + 0.5f);
+            float ground = master->GetMap()->GetHeight(x, y, z);
             if (ground <= INVALID_HEIGHT)
                 return Formation::NullLocation;
 
-            return WorldLocation(master->GetMapId(), x, y, ground + 0.5f);
+            z += CONTACT_DISTANCE;
+            bot->UpdateAllowedPositionZ(x, y, z);
+            return WorldLocation(master->GetMapId(), x, y, z);
         }
 
         virtual float GetMaxDistance() { return sPlayerbotAIConfig.followDistance + dr; }
@@ -166,15 +172,17 @@ namespace ai
                 break;
             }
 
-            float x = target->GetPositionX();
-            float y = target->GetPositionY();
+            float angle = GetFollowAngle();
+            float x = target->GetPositionX() + cos(angle) * range;
+            float y = target->GetPositionY() + sin(angle) * range;
             float z = target->GetPositionZ();
-            float ground = target->GetMap()->GetHeight(x, y, z + 0.5f);
+            float ground = target->GetMap()->GetHeight(x, y, z);
             if (ground <= INVALID_HEIGHT)
                 return Formation::NullLocation;
 
-            float angle = GetFollowAngle();
-            return WorldLocation(bot->GetMapId(), x + cos(angle) * range, y + sin(angle) * range, ground + 0.5f);
+            z += CONTACT_DISTANCE;
+            bot->UpdateAllowedPositionZ(x, y, z);
+            return WorldLocation(bot->GetMapId(), x, y, z);
         }
     };
 
@@ -280,6 +288,61 @@ namespace ai
             return Formation::NullLocation;
         }
     };
+
+    class FarFormation : public FollowFormation
+    {
+    public:
+        FarFormation(PlayerbotAI* ai) : FollowFormation(ai, "far") {}
+        virtual WorldLocation GetLocation()
+        {
+            float range = sPlayerbotAIConfig.farDistance;
+            float followRange = sPlayerbotAIConfig.followDistance;
+
+            Player* master = GetMaster();
+            if (!master)
+                return Formation::NullLocation;
+
+            if (sServerFacade.GetDistance2d(bot, master) <= range)
+                return Formation::NullLocation;
+
+            float angle = master->GetAngle(bot);
+            float followAngle = GetFollowAngle();
+
+            float x = master->GetPositionX() + cos(angle) * range + cos(followAngle) * followRange;
+            float y = master->GetPositionY() + sin(angle) * range + sin(followAngle) * followRange;
+            float z = master->GetPositionZ();
+            float ground = master->GetMap()->GetHeight(x, y, z);
+            if (ground <= INVALID_HEIGHT)
+            {
+                float minDist = 0, minX = 0, minY = 0;
+                for (float angle = 0.0f; angle <= 2 * M_PI; angle += M_PI / 16.0f)
+                {
+                    x = master->GetPositionX() + cos(angle) * range + cos(followAngle) * followRange;
+                    y = master->GetPositionY() + sin(angle) * range + sin(followAngle) * followRange;
+                    float dist = sServerFacade.GetDistance2d(bot, x, y);
+                    float ground = master->GetMap()->GetHeight(x, y, z);
+                    if (ground > INVALID_HEIGHT && (!minDist || minDist > dist))
+                    {
+                        minDist = dist;
+                        minX = x;
+                        minY = y;
+                    }
+                }
+                if (minDist)
+                {
+                    z += CONTACT_DISTANCE;
+                    bot->UpdateAllowedPositionZ(minX, minY, z);
+                    return WorldLocation(bot->GetMapId(), minX, minY, z);
+                }
+
+                return Formation::NullLocation;
+            }
+
+            z += CONTACT_DISTANCE;
+            bot->UpdateAllowedPositionZ(x, y, z);
+            return WorldLocation(bot->GetMapId(), x, y, z);
+        }
+    };
 };
 
 float Formation::GetFollowAngle()
@@ -369,11 +432,16 @@ bool SetFormationAction::Execute(Event event)
         if (value->Get()) delete value->Get();
         value->Set(new NearFormation(ai));
     }
+    else if (formation == "far")
+    {
+        if (value->Get()) delete value->Get();
+        value->Set(new FarFormation(ai));
+    }
     else
     {
         ostringstream str; str << "Invalid formation: |cffff0000" << formation;
         ai->TellMaster(str);
-        ai->TellMaster("Please set to any of:|cffffffff melee (default), queue, chaos, circle, line, shield, arrow, near");
+        ai->TellMaster("Please set to any of:|cffffffff melee (default), queue, chaos, circle, line, shield, arrow, near, far");
         return false;
     }
 
@@ -431,11 +499,13 @@ WorldLocation MoveFormation::MoveSingleLine(vector<Player*> line, float diff, fl
             float lx = x + cos(angle) * radius;
             float ly = y + sin(angle) * radius;
             float lz = cz;
-            float ground = bot->GetMap()->GetHeight(lx, ly, lz + 0.5f);
+            float ground = bot->GetMap()->GetHeight(lx, ly, lz);
             if (ground <= INVALID_HEIGHT)
                 return Formation::NullLocation;
 
-            return WorldLocation(bot->GetMapId(), lx, ly, ground + 0.5f);
+            lz += CONTACT_DISTANCE;
+            bot->UpdateAllowedPositionZ(lx, ly, lz);
+            return WorldLocation(bot->GetMapId(), lx, ly, lz);
         }
 
         index++;

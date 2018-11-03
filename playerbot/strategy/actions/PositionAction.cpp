@@ -122,7 +122,7 @@ bool SetReturnPositionAction::Execute(Event event)
         float x = returnPos.x + cos(angle) * dist,
              y = returnPos.y + sin(angle) * dist,
              z = bot->GetPositionZ();
-        bot->UpdateGroundPositionZ(x, y, z);
+        bot->UpdateAllowedPositionZ(x, y, z);
 
         if (!bot->IsWithinLOS(x, y, z))
             return false;

@@ -129,6 +129,7 @@ void RandomItemMgr::Init()
     BuildPotionCache();
     BuildFoodCache();
     BuildTradeCache();
+    BuildRarityCache();
 }
 
 RandomItemMgr::~RandomItemMgr()
@@ -355,9 +356,9 @@ void RandomItemMgr::AddItemStats(uint32 mod, uint8 &sp, uint8 &ap, uint8 &tank)
     }
 }
 
-bool RandomItemMgr::CheckItemStats(BotEquipKey key, uint8 sp, uint8 ap, uint8 tank)
+bool RandomItemMgr::CheckItemStats(uint8 clazz, uint8 sp, uint8 ap, uint8 tank)
 {
-    switch (key.clazz)
+    switch (clazz)
     {
     case CLASS_PRIEST:
     case CLASS_MAGE:
@@ -380,27 +381,27 @@ bool RandomItemMgr::CheckItemStats(BotEquipKey key, uint8 sp, uint8 ap, uint8 ta
     return sp || ap || tank;
 }
 
-bool RandomItemMgr::CanEquipArmor(BotEquipKey key, ItemPrototype const* proto)
+bool RandomItemMgr::CanEquipArmor(uint8 clazz, uint32 level, ItemPrototype const* proto)
 {
-    if ((key.clazz == CLASS_WARRIOR || key.clazz == CLASS_PALADIN || key.clazz == CLASS_SHAMAN)
+    if ((clazz == CLASS_WARRIOR || clazz == CLASS_PALADIN || clazz == CLASS_SHAMAN)
             && proto->SubClass == ITEM_SUBCLASS_ARMOR_SHIELD)
         return true;
 
-    if ((key.clazz == CLASS_WARRIOR || key.clazz == CLASS_PALADIN) && key.level >= 40)
+    if ((clazz == CLASS_WARRIOR || clazz == CLASS_PALADIN) && level >= 40)
     {
         if (proto->SubClass != ITEM_SUBCLASS_ARMOR_PLATE)
             return false;
     }
 
-    if (((key.clazz == CLASS_WARRIOR || key.clazz == CLASS_PALADIN) && key.level < 40) ||
-            (key.clazz == CLASS_HUNTER || key.clazz == CLASS_SHAMAN) && key.level >= 40)
+    if (((clazz == CLASS_WARRIOR || clazz == CLASS_PALADIN) && level < 40) ||
+            (clazz == CLASS_HUNTER || clazz == CLASS_SHAMAN) && level >= 40)
     {
         if (proto->SubClass != ITEM_SUBCLASS_ARMOR_MAIL)
             return false;
     }
 
-    if (((key.clazz == CLASS_HUNTER || key.clazz == CLASS_SHAMAN) && key.level < 40) ||
-            (key.clazz == CLASS_DRUID || key.clazz == CLASS_ROGUE))
+    if (((clazz == CLASS_HUNTER || clazz == CLASS_SHAMAN) && level < 40) ||
+            (clazz == CLASS_DRUID || clazz == CLASS_ROGUE))
     {
         if (proto->SubClass != ITEM_SUBCLASS_ARMOR_LEATHER)
             return false;
@@ -419,12 +420,12 @@ bool RandomItemMgr::CanEquipArmor(BotEquipKey key, ItemPrototype const* proto)
         AddItemStats(proto->ItemStat[j].ItemStatType, sp, ap, tank);
     }
 
-    return CheckItemStats(key, sp, ap, tank);
+    return CheckItemStats(clazz, sp, ap, tank);
 }
 
-bool RandomItemMgr::CanEquipWeapon(BotEquipKey key, ItemPrototype const* proto)
+bool RandomItemMgr::CanEquipWeapon(uint8 clazz, ItemPrototype const* proto)
 {
-    switch (key.clazz)
+    switch (clazz)
     {
     case CLASS_PRIEST:
         if (proto->SubClass != ITEM_SUBCLASS_WEAPON_STAFF &&
@@ -568,10 +569,10 @@ void RandomItemMgr::BuildEquipCache()
                                 slot == EQUIPMENT_SLOT_LEGS ||
                                 slot == EQUIPMENT_SLOT_FEET ||
                                 slot == EQUIPMENT_SLOT_WRISTS ||
-                                slot == EQUIPMENT_SLOT_HANDS) && !CanEquipArmor(key, proto))
+                                slot == EQUIPMENT_SLOT_HANDS) && !CanEquipArmor(key.clazz, key.level, proto))
                                     continue;
 
-                            if (proto->Class == ITEM_CLASS_WEAPON && !CanEquipWeapon(key, proto))
+                            if (proto->Class == ITEM_CLASS_WEAPON && !CanEquipWeapon(key.clazz, proto))
                                 continue;
 
                             if (slot == EQUIPMENT_SLOT_OFFHAND && key.clazz == CLASS_ROGUE && proto->Class != ITEM_CLASS_WEAPON)
@@ -822,4 +823,153 @@ uint32 RandomItemMgr::GetRandomTrade(uint32 level)
     vector<uint32> trade = tradeCache[(level - 1) / 10];
     if (trade.empty()) return 0;
     return trade[urand(0, trade.size() - 1)];
+}
+
+void RandomItemMgr::BuildRarityCache()
+{
+    QueryResult* results = CharacterDatabase.PQuery("select item, rarity from ai_playerbot_rarity_cache");
+    if (results)
+    {
+        sLog.outString("Loading item rarity cache");
+        int count = 0;
+        do
+        {
+            Field* fields = results->Fetch();
+            uint32 itemId = fields[0].GetUInt32();
+            float rarity = fields[1].GetFloat();
+
+            rarityCache[itemId] = rarity;
+            count++;
+
+        } while (results->NextRow());
+        delete results;
+        sLog.outString("Item rarity cache loaded from %d records", count);
+    }
+    else
+    {
+        sLog.outString("Building item rarity cache from %u items", sItemStorage.GetMaxEntry());
+        BarGoLink bar(sItemStorage.GetMaxEntry());
+        for (uint32 itemId = 0; itemId < sItemStorage.GetMaxEntry(); ++itemId)
+        {
+            bar.step();
+            ItemPrototype const* proto = sObjectMgr.GetItemPrototype(itemId);
+            if (!proto)
+                continue;
+
+            if (proto->Duration & 0x80000000)
+                continue;
+
+            if (proto->Quality == ITEM_QUALITY_POOR)
+                continue;
+
+            if (sAhBotConfig.ignoreItemIds.find(proto->ItemId) != sAhBotConfig.ignoreItemIds.end())
+                continue;
+
+            if (strstri(proto->Name1, "qa") || strstri(proto->Name1, "test") || strstri(proto->Name1, "deprecated"))
+                continue;
+
+            if (!proto->ItemLevel || (proto->RequiredLevel && proto->RequiredLevel > sAhBotConfig.maxRequiredLevel) || proto->ItemLevel > sAhBotConfig.maxItemLevel)
+                continue;
+
+            QueryResult* results = WorldDatabase.PQuery(
+                    "select max(q.chance) from ( "
+                    // "-- Creature "
+                    "select  "
+                    "avg ( "
+                    "   case  "
+                    "    when lt.groupid = 0 then lt.ChanceOrQuestChance  "
+                    "    when lt.ChanceOrQuestChance > 0 then lt.ChanceOrQuestChance "
+                    "    else   "
+                    "    ifnull(100 - (select sum(ChanceOrQuestChance) from creature_loot_template lt1 where lt1.groupid = lt.groupid and lt1.entry = lt.entry and lt1.ChanceOrQuestChance > 0), 100) "
+                    "    / (select count(*) from creature_loot_template lt1 where lt1.groupid = lt.groupid and lt1.entry = lt.entry and lt1.ChanceOrQuestChance = 0) "
+                    "    end "
+                    ") chance, 'creature' type "
+                    "from creature_loot_template lt "
+                    "join creature_template ct on ct.LootId = lt.entry "
+                    "join creature c on c.id = ct.entry "
+                    "where lt.item = '%u' "
+                    "union all "
+                    // "-- Gameobject "
+                    "select  "
+                    "avg ( "
+                    "   case  "
+                    "    when lt.groupid = 0 then lt.ChanceOrQuestChance  "
+                    "    when lt.ChanceOrQuestChance > 0 then lt.ChanceOrQuestChance "
+                    "    else   "
+                    "    ifnull(100 - (select sum(ChanceOrQuestChance) from gameobject_loot_template lt1 where lt1.groupid = lt.groupid and lt1.entry = lt.entry and lt1.ChanceOrQuestChance > 0), 100) "
+                    "    / (select count(*) from gameobject_loot_template lt1 where lt1.groupid = lt.groupid and lt1.entry = lt.entry and lt1.ChanceOrQuestChance = 0) "
+                    "    end "
+                    ") chance, 'gameobject' type "
+                    "from gameobject_loot_template lt "
+                    "join gameobject_template ct on ct.data1 = lt.entry "
+                    "join gameobject c on c.id = ct.entry "
+                    "where lt.item = '%u' "
+                    "union all "
+                    // "-- Disenchant "
+                    "select  "
+                    "avg ( "
+                    "   case  "
+                    "    when lt.groupid = 0 then lt.ChanceOrQuestChance  "
+                    "    when lt.ChanceOrQuestChance > 0 then lt.ChanceOrQuestChance "
+                    "    else   "
+                    "    ifnull(100 - (select sum(ChanceOrQuestChance) from disenchant_loot_template lt1 where lt1.groupid = lt.groupid and lt1.entry = lt.entry and lt1.ChanceOrQuestChance > 0), 100) "
+                    "    / (select count(*) from disenchant_loot_template lt1 where lt1.groupid = lt.groupid and lt1.entry = lt.entry and lt1.ChanceOrQuestChance = 0) "
+                    "    end "
+                    ") chance, 'disenchant' type "
+                    "from disenchant_loot_template lt "
+                    "join item_template ct on ct.DisenchantID = lt.entry "
+                    "where lt.item = '%u' "
+                    "union all "
+                    // "-- Fishing "
+                    "select  "
+                    "avg ( "
+                    "   case  "
+                    "    when lt.groupid = 0 then lt.ChanceOrQuestChance  "
+                    "    when lt.ChanceOrQuestChance > 0 then lt.ChanceOrQuestChance "
+                    "    else   "
+                    "    ifnull(100 - (select sum(ChanceOrQuestChance) from fishing_loot_template lt1 where lt1.groupid = lt.groupid and lt1.entry = lt.entry and lt1.ChanceOrQuestChance > 0), 100) "
+                    "    / (select count(*) from fishing_loot_template lt1 where lt1.groupid = lt.groupid and lt1.entry = lt.entry and lt1.ChanceOrQuestChance = 0) "
+                    "    end "
+                    ") chance, 'fishing' type "
+                    "from fishing_loot_template lt "
+                    "where lt.item = '%u' "
+                    "union all "
+                    // "-- Skinning "
+                    "select  "
+                    "avg ( "
+                    "   case  "
+                    "    when lt.groupid = 0 then lt.ChanceOrQuestChance  "
+                    "    when lt.ChanceOrQuestChance > 0 then lt.ChanceOrQuestChance  "
+                    "    else   "
+                    "    ifnull(100 - (select sum(ChanceOrQuestChance) from skinning_loot_template lt1 where lt1.groupid = lt.groupid and lt1.entry = lt.entry and lt1.ChanceOrQuestChance > 0), 100) "
+                    "    * ifnull((select 1/count(*) from skinning_loot_template lt1 where lt1.groupid = lt.groupid and lt1.entry = lt.entry and lt1.ChanceOrQuestChance = 0), 1) "
+                    "    end "
+                    ") chance, 'skinning' type "
+                    "from skinning_loot_template lt "
+                    "join creature_template ct on ct.SkinningLootId = lt.entry "
+                    "join creature c on c.id = ct.entry "
+                    "where lt.item = '%u' "
+                    ") q; ",
+                             itemId,itemId,itemId,itemId,itemId);
+
+            if (results)
+            {
+                Field* fields = results->Fetch();
+                float rarity = fields[0].GetFloat();
+                if (rarity > 0.01)
+                {
+                    rarityCache[itemId] = rarity;
+
+                    CharacterDatabase.PExecute("insert into ai_playerbot_rarity_cache (item, rarity) values (%u, %f)",
+                            itemId, rarity);
+                }
+            }
+        }
+        sLog.outString("Item rarity cache built from %u items", sItemStorage.GetMaxEntry());
+    }
+}
+
+float RandomItemMgr::GetItemRarity(uint32 itemId)
+{
+    return rarityCache[itemId];
 }

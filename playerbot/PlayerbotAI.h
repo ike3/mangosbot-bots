@@ -156,6 +156,7 @@ public:
 
     uint32 GetEquipGearScore(Player* player, bool withBags, bool withBank);
     bool HasSkill(SkillType skill);
+    bool IsAllowedCommand(string text);
 
 private:
     void _fillGearScoreData(Player *player, Item* item, std::vector<uint32>* gearScore, uint32& twoHandScore);
@@ -187,5 +188,6 @@ protected:
     PlayerbotSecurity security;
     map<string, time_t> whispers;
     pair<ChatMsg, time_t> currentChat;
+    static set<string> unsecuredCommands;
 };
 

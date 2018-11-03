@@ -46,6 +46,7 @@ bool TradeStatusAction::Execute(Event event)
         uint32 status = 0;
         p << status;
 
+        uint32 discount = sRandomPlayerbotMgr.GetTradeDiscount(bot, master);
         if (CheckTrade())
         {
             int32 botMoney = CalculateCost(bot->GetTradeData(), true);
@@ -60,16 +61,14 @@ bool TradeStatusAction::Execute(Event event)
 
             bot->GetSession()->HandleAcceptTradeOpcode(p);
             if (bot->GetTradeData())
+            {
+                sRandomPlayerbotMgr.SetTradeDiscount(bot, master, discount);
                 return false;
+            }
 
             for (map<uint32, uint32>::iterator i = itemIds.begin(); i != itemIds.end(); ++i)
                 sGuildTaskMgr.CheckItemTask(i->first, i->second, master, bot);
 
-            if (sRandomPlayerbotMgr.IsRandomBot(bot))
-            {
-                int32 lootAmount = sRandomPlayerbotMgr.GetLootAmount(bot);
-                sRandomPlayerbotMgr.SetLootAmount(bot, max(0, lootAmount - botMoney * 10));
-            }
             return true;
         }
     }
@@ -98,7 +97,7 @@ void TradeStatusAction::BeginTrade()
 
     if (sRandomPlayerbotMgr.IsRandomBot(bot))
     {
-        uint32 discount = sRandomPlayerbotMgr.GetTradeDiscount(bot);
+        uint32 discount = sRandomPlayerbotMgr.GetTradeDiscount(bot, ai->GetMaster());
         if (discount)
         {
             ostringstream out; out << "Discount up to: " << chat->formatMoney(discount);
@@ -166,11 +165,24 @@ bool TradeStatusAction::CheckTrade()
         return false;
     }
 
-    int32 discount = min(botItemsMoney, (int32)sRandomPlayerbotMgr.GetTradeDiscount(bot));
-    botMoney = max(0, botMoney - discount);
-
-    if (playerMoney >= botMoney)
+    int32 discount = (int32)sRandomPlayerbotMgr.GetTradeDiscount(bot, master);
+    int32 delta = playerMoney - botMoney;
+    bool success = false;
+    if (delta < 0)
     {
+        if (delta + discount >= 0)
+        {
+            success = true;
+        }
+    }
+    else
+    {
+        success = true;
+    }
+
+    if (success)
+    {
+        sRandomPlayerbotMgr.AddTradeDiscount(bot, master, delta);
         switch (urand(0, 4)) {
         case 0:
             ai->TellMaster("A pleasure doing business with you");
@@ -190,7 +202,7 @@ bool TradeStatusAction::CheckTrade()
     }
 
     ostringstream out;
-    out << "I want " << chat->formatMoney(botMoney - playerMoney) << " for this";
+    out << "I want " << chat->formatMoney(discount - delta) << " for this";
     ai->TellMaster(out);
     ai->PlaySound(TEXTEMOTE_NO);
     return false;

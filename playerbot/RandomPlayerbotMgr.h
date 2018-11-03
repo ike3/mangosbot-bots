@@ -58,9 +58,9 @@ class RandomPlayerbotMgr : public PlayerbotHolder
         void PrintStats();
         double GetBuyMultiplier(Player* bot);
         double GetSellMultiplier(Player* bot);
-        uint32 GetLootAmount(Player* bot);
-        void SetLootAmount(Player* bot, uint32 value);
-        uint32 GetTradeDiscount(Player* bot);
+        void AddTradeDiscount(Player* bot, Player* master, int32 value);
+        void SetTradeDiscount(Player* bot, Player* master, uint32 value);
+        uint32 GetTradeDiscount(Player* bot, Player* master);
         void Refresh(Player* bot);
         void RandomTeleportForLevel(Player* bot);
         void RandomTeleportForRpg(Player* bot);
