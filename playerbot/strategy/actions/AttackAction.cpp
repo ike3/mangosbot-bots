@@ -96,7 +96,10 @@ bool AttackAction::Attack(Unit* target)
 #endif
             creatureAI = ((Creature*)pet)->AI();
         if (creatureAI)
+        {
+            creatureAI->SetReactState(REACT_PASSIVE);
             creatureAI->AttackStart(target);
+        }
     }
 
     if (!urand(0, 300))
