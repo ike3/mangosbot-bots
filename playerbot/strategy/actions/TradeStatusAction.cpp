@@ -167,11 +167,18 @@ bool TradeStatusAction::CheckTrade()
 
     int32 discount = (int32)sRandomPlayerbotMgr.GetTradeDiscount(bot, master);
     int32 delta = playerMoney - botMoney;
+    int32 moneyDelta = (int32)master->GetTradeData()->GetMoney() - (int32)bot->GetTradeData()->GetMoney();
     bool success = false;
     if (delta < 0)
     {
         if (delta + discount >= 0)
         {
+            if (moneyDelta < 0)
+            {
+                ai->TellMaster("You can use discount to buy items only");
+                ai->PlaySound(TEXTEMOTE_NO);
+                return false;
+            }
             success = true;
         }
     }
