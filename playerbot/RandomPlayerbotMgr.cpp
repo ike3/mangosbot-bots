@@ -1119,17 +1119,19 @@ void RandomPlayerbotMgr::AddTradeDiscount(Player* bot, Player* master, int32 val
 void RandomPlayerbotMgr::SetTradeDiscount(Player* bot, Player* master, uint32 value)
 {
     if (!master) return;
-    uint32 id =  master->GetGUIDLow();
-    ostringstream name; name << "trade_discount_" << id;
-    SetEventValue(id, name.str(), value, sPlayerbotAIConfig.maxRandomBotInWorldTime);
+    uint32 botId =  bot->GetGUIDLow();
+    uint32 masterId =  master->GetGUIDLow();
+    ostringstream name; name << "trade_discount_" << masterId;
+    SetEventValue(botId, name.str(), value, sPlayerbotAIConfig.maxRandomBotInWorldTime);
 }
 
 uint32 RandomPlayerbotMgr::GetTradeDiscount(Player* bot, Player* master)
 {
     if (!master) return 0;
-    uint32 id = master->GetGUIDLow();
-    ostringstream name; name << "trade_discount_" << id;
-    return GetEventValue(id, name.str());
+    uint32 botId =  bot->GetGUIDLow();
+    uint32 masterId = master->GetGUIDLow();
+    ostringstream name; name << "trade_discount_" << masterId;
+    return GetEventValue(botId, name.str());
 }
 
 string RandomPlayerbotMgr::HandleRemoteCommand(string request)
