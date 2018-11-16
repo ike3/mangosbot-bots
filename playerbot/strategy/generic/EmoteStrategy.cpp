@@ -1,6 +1,7 @@
 #include "botpch.h"
 #include "../../playerbot.h"
 #include "EmoteStrategy.h"
+#include "../../PlayerbotAIConfig.h"
 
 using namespace ai;
 
@@ -19,9 +20,13 @@ void EmoteStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         "seldom",
         NextAction::array(0, new NextAction("suggest trade", 1.0f), NULL)));
 
+if (sPlayerbotAIConfig.enableGreet)
+    {
     triggers.push_back(new TriggerNode(
         "new player nearby",
         NextAction::array(0, new NextAction("greet", 1.0f), NULL)));
+
+    }
 
     triggers.push_back(new TriggerNode(
         "often",

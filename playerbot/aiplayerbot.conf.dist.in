@@ -203,6 +203,9 @@ AiPlayerbot.RandomClassSpecProbability.11.2 = 45
 # How far random bots are teleported after death
 #AiPlayerbot.RandomBotTeleportDistance = 1000
 
+# Custom
+#AiPlayerbot.EnableGreet = 0
+
 # Debug switches
 #AiPlayerbot.SpellDump = 0
 #AiPlayerbot.LogInGroupOnly = 1
