@@ -215,4 +215,11 @@ AiPlayerbot.RandomClassSpecProbability.11.2 = 45
 # Command server port, 0 - disabled
 #AiPlayerbot.CommandServerPort = 8888
 
+# auto-login all player alts as bots on player login
+#AiPlayerbot.BotAutologin = 0
 #AiPlayerbot.PerfMonEnabled = 0
+
+# Cosmetic
+# Show helmet and cloak on randombots (reset required)
+#AiPlayerbot.RandomBotShowHelmet = 1
+#AiPlayerbot.RandomBotShowCloak = 1 
