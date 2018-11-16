@@ -42,11 +42,11 @@ namespace ai
         CastCleaveAction(PlayerbotAI* ai) : CastMeleeSpellAction(ai, "cleave") {}
     };
 
-    // all
+ /*   // all
     class CastRampageAction : public CastMeleeSpellAction {
     public:
         CastRampageAction(PlayerbotAI* ai) : CastMeleeSpellAction(ai, "rampage") {}
-    };
+    };*/
 
     // battle
     class CastMockingBlowAction : public CastBattleMeleeSpellAction {
@@ -165,6 +165,10 @@ namespace ai
         virtual NextAction** getPrerequisites();
     END_SPELL_ACTION()
 
+    // after crit
+    BEGIN_MELEE_SPELL_ACTION(CastRampageAction, "rampage")
+        virtual NextAction** getPrerequisites();
+    END_SPELL_ACTION()
 
     //debuffs
     BEGIN_DEBUFF_ACTION(CastRendAction, "rend")
@@ -223,6 +227,9 @@ namespace ai
     };
 
     BEGIN_RANGED_SPELL_ACTION(CastChargeAction, "charge")
+    END_SPELL_ACTION()
+
+    BEGIN_RANGED_SPELL_ACTION(CastInterceptAction, "intercept")
     END_SPELL_ACTION()
 
 	class CastDeathWishAction : public CastBuffSpellAction {

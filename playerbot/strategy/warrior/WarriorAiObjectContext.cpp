@@ -26,14 +26,16 @@ namespace ai
             {
                 creators["nc"] = &warrior::StrategyFactoryInternal::nc;
                 creators["pull"] = &warrior::StrategyFactoryInternal::pull;
+                creators["tank aoe"] = &warrior::StrategyFactoryInternal::tank_aoe;
                 creators["fury aoe"] = &warrior::StrategyFactoryInternal::fury_aoe;
                 creators["arms aoe"] = &warrior::StrategyFactoryInternal::arms_aoe;
             }
 
         private:
             static Strategy* nc(PlayerbotAI* ai) { return new GenericWarriorNonCombatStrategy(ai); }
+            static Strategy* tank_aoe(PlayerbotAI* ai) { return new TankWarriorAoeStrategy(ai); }
             static Strategy* arms_aoe(PlayerbotAI* ai) { return new ArmsWarriorAoeStrategy(ai); }
-            static Strategy* fury_aoe(PlayerbotAI* ai) { return new FuryWarrirorAoeStrategy(ai); }
+            static Strategy* fury_aoe(PlayerbotAI* ai) { return new FuryWarriorAoeStrategy(ai); }
             static Strategy* pull(PlayerbotAI* ai) { return new PullStrategy(ai, "shoot"); }
         };
 
@@ -76,11 +78,19 @@ namespace ai
                 creators["shield bash"] = &TriggerFactoryInternal::shield_bash;
                 creators["disarm"] = &TriggerFactoryInternal::disarm;
                 creators["concussion blow"] = &TriggerFactoryInternal::concussion_blow;
-                 creators["shield bash on enemy healer"] = &TriggerFactoryInternal::shield_bash_on_enemy_healer;
+                creators["shield bash on enemy healer"] = &TriggerFactoryInternal::shield_bash_on_enemy_healer;
+                creators["rampage"] = &TriggerFactoryInternal::rampage;
+                creators["pummel"] = &TriggerFactoryInternal::pummel;
+                creators["pummel on enemy healer"] = &TriggerFactoryInternal::pummel_on_enemy_healer;
+                creators["intercept"] = &TriggerFactoryInternal::intercept;
 
             }
 
         private:
+            static Trigger* intercept(PlayerbotAI* ai) { return new WarriorCanInterceptTrigger(ai); }
+            static Trigger* pummel_on_enemy_healer(PlayerbotAI* ai) { return new PummelInterruptEnemyHealerSpellTrigger(ai); }
+            static Trigger* pummel(PlayerbotAI* ai) { return new PummelInterruptSpellTrigger(ai); }
+            static Trigger* rampage(PlayerbotAI* ai) { return new RampageAvailableTrigger(ai); }
             static Trigger* hamstring(PlayerbotAI* ai) { return new HamstringTrigger(ai); }
             static Trigger* victory_rush(PlayerbotAI* ai) { return new VictoryRushTrigger(ai); }
             static Trigger* death_wish(PlayerbotAI* ai) { return new DeathWishTrigger(ai); }
@@ -112,6 +122,7 @@ namespace ai
                 creators["heroic strike"] = &AiObjectContextInternal::heroic_strike;
                 creators["overpower"] = &AiObjectContextInternal::overpower;
                 creators["charge"] = &AiObjectContextInternal::charge;
+                creators["intercept"] = &AiObjectContextInternal::intercept;
                 creators["mocking blow"] = &AiObjectContextInternal::mocking_blow;
                 creators["victory rush"] = &AiObjectContextInternal::victory_rush;
                 creators["execute"] = &AiObjectContextInternal::execute;
@@ -173,6 +184,7 @@ namespace ai
             static Action* heroic_strike(PlayerbotAI* ai) { return new CastHeroicStrikeAction(ai); }
             static Action* overpower(PlayerbotAI* ai) { return new CastOverpowerAction(ai); }
             static Action* charge(PlayerbotAI* ai) { return new CastChargeAction(ai); }
+            static Action* intercept(PlayerbotAI* ai) { return new CastInterceptAction(ai); }
             static Action* mocking_blow(PlayerbotAI* ai) { return new CastMockingBlowAction(ai); }
             static Action* victory_rush(PlayerbotAI* ai) { return new CastVictoryRushAction(ai); }
             static Action* execute(PlayerbotAI* ai) { return new CastExecuteAction(ai); }
@@ -208,8 +220,10 @@ namespace ai
 
             static Action* slam(PlayerbotAI* ai) { return new CastSlamAction(ai); }
             static Action* mortal_strike(PlayerbotAI* ai) { return new CastMortalStrikeAction(ai); }
+
             static Action* bloodthirst(PlayerbotAI* ai) { return new CastBloodthirstAction(ai); }
             static Action* rampage(PlayerbotAI* ai) { return new CastRampageAction(ai); }
+
             static Action* devastate(PlayerbotAI* ai) { return new CastDevastateAction(ai); }
             static Action* shield_slam(PlayerbotAI* ai) { return new CastShieldSlamAction(ai); }
             static Action* shield_bash(PlayerbotAI* ai) { return new CastShieldBashAction(ai); }
