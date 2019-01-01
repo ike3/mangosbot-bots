@@ -1176,6 +1176,6 @@ void RandomPlayerbotMgr::ChangeStrategy(Player* player)
 
 void RandomPlayerbotMgr::RandomTeleportForRpg(Player* bot)
 {
-    sLog.outDetail("Random teleporting bot %s for RPG (%d locations available)", bot->GetName(), rpgLocsCache[bot->getFactionTemplateEntry()->ID].size());
-    RandomTeleport(bot, rpgLocsCache[bot->getFactionTemplateEntry()->ID]);
+    sLog.outDetail("Random teleporting bot %s for RPG (%d locations available)", bot->GetName(), rpgLocsCache[bot->GetFactionTemplateEntry()->ID].size());
+    RandomTeleport(bot, rpgLocsCache[bot->GetFactionTemplateEntry()->ID]);
 }
