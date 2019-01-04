@@ -857,12 +857,12 @@ bool PlayerbotAI::HasAnyAuraOf(Unit* player, ...)
     return false;
 }
 
-bool PlayerbotAI::CanCastSpell(string name, Unit* target, Item* itemTarget)
+bool PlayerbotAI::CanCastSpell(string name, Unit* target, uint8 effectMask, Item* itemTarget)
 {
     return CanCastSpell(aiObjectContext->GetValue<uint32>("spell id", name)->Get(), target, true, itemTarget);
 }
 
-bool PlayerbotAI::CanCastSpell(uint32 spellid, Unit* target, bool checkHasSpell, Item* itemTarget)
+bool PlayerbotAI::CanCastSpell(uint32 spellid, Unit* target, uint8 effectMask, bool checkHasSpell, Item* itemTarget)
 {
     if (!spellid)
         return false;
@@ -895,7 +895,7 @@ bool PlayerbotAI::CanCastSpell(uint32 spellid, Unit* target, bool checkHasSpell,
         if (!positiveSpell && sServerFacade.IsFriendlyTo(bot, target))
             return false;
 
-        if (target->IsImmuneToSpell(spellInfo, false))
+        if (target->IsImmuneToSpell(spellInfo, false, effectMask))
             return false;
 
         if (bot != target && bot->GetDistance(target) > sPlayerbotAIConfig.sightDistance)
@@ -1152,7 +1152,7 @@ void PlayerbotAI::RemoveAura(string name)
         bot->RemoveAurasDueToSpell(spellid);
 }
 
-bool PlayerbotAI::IsInterruptableSpellCasting(Unit* target, string spell)
+bool PlayerbotAI::IsInterruptableSpellCasting(Unit* target, string spell, uint8 effectMask)
 {
 	uint32 spellid = aiObjectContext->GetValue<uint32>("spell id", spell)->Get();
 	if (!spellid || !target->IsNonMeleeSpellCasted(true))
@@ -1162,7 +1162,7 @@ bool PlayerbotAI::IsInterruptableSpellCasting(Unit* target, string spell)
 	if (!spellInfo)
 		return false;
 
-	if (target->IsImmuneToSpell(spellInfo, false))
+	if (target->IsImmuneToSpell(spellInfo, false, effectMask))
 		return false;
 
 	for (int32 i = EFFECT_INDEX_0; i <= EFFECT_INDEX_2; i++)
@@ -1521,7 +1521,7 @@ string PlayerbotAI::HandleRemoteCommand(string command)
 
 bool PlayerbotAI::HasSkill(SkillType skill)
 {
-    return bot->HasSkill(skill) && bot->GetBaseSkillValue(skill) > 1;
+    return bot->HasSkill(skill) && bot->GetSkillValueBase(skill) > 1;
 }
 
 bool ChatHandler::HandlePlayerbotCommand(char* args)

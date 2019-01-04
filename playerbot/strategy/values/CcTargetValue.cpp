@@ -27,7 +27,7 @@ public:
         if (health < sPlayerbotAIConfig.mediumHealth)
             return;
 
-        if (!ai->CanCastSpell(spell, creature))
+        if (!ai->CanCastSpell(spell, creature, false))
             return;
 
         if (*ai->GetAiObjectContext()->GetValue<Unit*>("rti target") == creature)

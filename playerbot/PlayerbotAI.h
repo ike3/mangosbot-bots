@@ -141,14 +141,14 @@ public:
     void WaitForSpellCast(Spell *spell);
     bool PlaySound(uint32 emote);
 
-    virtual bool CanCastSpell(string name, Unit* target, Item* itemTarget = NULL);
+    virtual bool CanCastSpell(string name, Unit* target, uint8 effectMask, Item* itemTarget = NULL);
     virtual bool CastSpell(string name, Unit* target, Item* itemTarget = NULL);
     virtual bool HasAura(string spellName, Unit* player);
     virtual bool HasAnyAuraOf(Unit* player, ...);
 
-    virtual bool IsInterruptableSpellCasting(Unit* player, string spell);
+    virtual bool IsInterruptableSpellCasting(Unit* player, string spell, uint8 effectMask);
     virtual bool HasAuraToDispel(Unit* player, uint32 dispelType);
-    bool CanCastSpell(uint32 spellid, Unit* target, bool checkHasSpell = true, Item* itemTarget = NULL);
+    bool CanCastSpell(uint32 spellid, Unit* target, uint8 effectMask, bool checkHasSpell = true, Item* itemTarget = NULL);
 
     bool HasAura(uint32 spellId, const Unit* player);
     bool CastSpell(uint32 spellId, Unit* target, Item* itemTarget = NULL);
@@ -157,7 +157,7 @@ public:
     uint32 GetEquipGearScore(Player* player, bool withBags, bool withBank);
     bool HasSkill(SkillType skill);
     bool IsAllowedCommand(string text);
-
+    
 private:
     void _fillGearScoreData(Player *player, Item* item, std::vector<uint32>* gearScore, uint32& twoHandScore);
 

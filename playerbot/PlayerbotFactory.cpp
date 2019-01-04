@@ -283,7 +283,6 @@ void PlayerbotFactory::InitPet()
             pet->LearnPetPassives();
             pet->CastPetAuras(true);
             pet->CastOwnerTalentAuras();
-            pet->InitTamedPetPassives(bot);
             pet->UpdateAllStats();
 #endif
             bot->SetPet(pet);
@@ -1057,7 +1056,7 @@ void PlayerbotFactory::SetRandomSkill(uint16 id)
 {
     uint32 maxValue = level * 5;
     uint32 value = urand(maxValue - level, maxValue);
-    uint32 curValue = bot->GetBaseSkillValue(id);
+    uint32 curValue = bot->GetSkillValueBase(id);
     if (!bot->HasSkill(id) || value > curValue)
         bot->SetSkill(id, value, maxValue);
 

@@ -104,7 +104,7 @@ bool SpellTrigger::IsActive()
 bool SpellCanBeCastTrigger::IsActive()
 {
 	Unit* target = GetTarget();
-	return target && ai->CanCastSpell(spell, target);
+	return target && ai->CanCastSpell(spell, target, false);
 }
 
 bool RandomTrigger::IsActive()
@@ -143,7 +143,7 @@ bool ItemCountTrigger::IsActive()
 
 bool InterruptSpellTrigger::IsActive()
 {
-	return SpellTrigger::IsActive() && ai->IsInterruptableSpellCasting(GetTarget(), getName());
+	return SpellTrigger::IsActive() && ai->IsInterruptableSpellCasting(GetTarget(), getName(), false);
 }
 
 bool HasAuraTrigger::IsActive()

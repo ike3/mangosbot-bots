@@ -89,7 +89,7 @@ string WhoAction::QuerySkill(string text)
     string skillName = chat->formatSkill(skill);
     uint32 spellId = AI_VALUE2(uint32, "spell id", skillName);
     uint16 value = bot->GetSkillValue(skill);
-    uint16 maxSkill = bot->GetMaxSkillValue(skill);
+    uint16 maxSkill = bot->GetSkillMax(skill);
     ObjectGuid guid = bot->GetObjectGuid();
     string data = "0";
     out << "|cFFFFFF00|Htrade:" << spellId << ":" << value << ":" << maxSkill << ":"
