@@ -58,4 +58,8 @@ void GenericPaladinNonCombatStrategy::InitTriggers(std::list<TriggerNode*> &trig
     triggers.push_back(new TriggerNode(
         "cleanse party member cure magic",
         NextAction::array(0, new NextAction("cleanse magic on party", 40.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+       "often",
+       NextAction::array(0, new NextAction("apply stone", 1.0f), NULL)));
 }

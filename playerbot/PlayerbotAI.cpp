@@ -1543,4 +1543,222 @@ bool ChatHandler::HandleGuildTaskCommand(char* args)
 {
     return GuildTaskMgr::HandleConsoleCommand(this, args);
 }
+//Find Poison ...Natsukawa
+Item* PlayerbotAI::FindPoison() const
+{
+   // list out items in main backpack
+   for (uint8 slot = INVENTORY_SLOT_ITEM_START; slot < INVENTORY_SLOT_ITEM_END; slot++)
+   {
+      Item* const pItem = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, slot);
+      if (pItem)
+      {
+         const ItemPrototype* const pItemProto = pItem->GetProto();
 
+         if (!pItemProto || bot->CanUseItem(pItemProto) != EQUIP_ERR_OK)
+            continue;
+
+         if (pItemProto->Class == ITEM_CLASS_CONSUMABLE && pItemProto->SubClass == 6)
+            return pItem;
+      }
+   }
+   // list out items in other removable backpacks
+   for (uint8 bag = INVENTORY_SLOT_BAG_START; bag < INVENTORY_SLOT_BAG_END; ++bag)
+   {
+      const Bag* const pBag = (Bag *)bot->GetItemByPos(INVENTORY_SLOT_BAG_0, bag);
+      if (pBag)
+         for (uint8 slot = 0; slot < pBag->GetBagSize(); ++slot)
+         {
+            Item* const pItem = bot->GetItemByPos(bag, slot);
+            if (pItem)
+            {
+               const ItemPrototype* const pItemProto = pItem->GetProto();
+
+               if (!pItemProto || bot->CanUseItem(pItemProto) != EQUIP_ERR_OK)
+                  continue;
+
+               if (pItemProto->Class == ITEM_CLASS_CONSUMABLE && pItemProto->SubClass == 6)
+                  return pItem;
+            }
+         }
+   }
+   return NULL;
+}
+
+Item* PlayerbotAI::FindConsumable(uint32 displayId) const
+{
+   // list out items in main backpack
+   for (uint8 slot = INVENTORY_SLOT_ITEM_START; slot < INVENTORY_SLOT_ITEM_END; slot++)
+   {
+      Item* const pItem = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, slot);
+      if (pItem)
+      {
+         const ItemPrototype* const pItemProto = pItem->GetProto();
+
+         if (!pItemProto || bot->CanUseItem(pItemProto) != EQUIP_ERR_OK)
+            continue;
+
+         if (pItemProto->Class == ITEM_CLASS_CONSUMABLE && pItemProto->DisplayInfoID == displayId)
+            return pItem;
+      }
+   }
+   // list out items in other removable backpacks
+   for (uint8 bag = INVENTORY_SLOT_BAG_START; bag < INVENTORY_SLOT_BAG_END; ++bag)
+   {
+      const Bag* const pBag = (Bag *)bot->GetItemByPos(INVENTORY_SLOT_BAG_0, bag);
+      if (pBag)
+         for (uint8 slot = 0; slot < pBag->GetBagSize(); ++slot)
+         {
+            Item* const pItem = bot->GetItemByPos(bag, slot);
+            if (pItem)
+            {
+               const ItemPrototype* const pItemProto = pItem->GetProto();
+
+               if (!pItemProto || bot->CanUseItem(pItemProto) != EQUIP_ERR_OK)
+                  continue;
+
+               if (pItemProto->Class == ITEM_CLASS_CONSUMABLE && pItemProto->DisplayInfoID == displayId)
+                  return pItem;
+            }
+         }
+   }
+   return NULL;
+}
+
+static const uint32 uPriorizedSharpStoneIds[8] =
+{
+    ADAMANTITE_SHARPENING_DISPLAYID, FEL_SHARPENING_DISPLAYID, ELEMENTAL_SHARPENING_DISPLAYID, DENSE_SHARPENING_DISPLAYID,
+    SOLID_SHARPENING_DISPLAYID, HEAVY_SHARPENING_DISPLAYID, COARSE_SHARPENING_DISPLAYID, ROUGH_SHARPENING_DISPLAYID
+};
+
+static const uint32 uPriorizedWeightStoneIds[7] =
+{
+    ADAMANTITE_WEIGHTSTONE_DISPLAYID, FEL_WEIGHTSTONE_DISPLAYID, DENSE_WEIGHTSTONE_DISPLAYID, SOLID_WEIGHTSTONE_DISPLAYID,
+    HEAVY_WEIGHTSTONE_DISPLAYID, COARSE_WEIGHTSTONE_DISPLAYID, ROUGH_WEIGHTSTONE_DISPLAYID
+};
+
+/**
+ * FindStoneFor()
+ * return Item* Returns sharpening/weight stone item eligible to enchant a bot weapon
+ *
+ * params:weapon Item* the weapôn the function should search and return a enchanting item for
+ * return nullptr if no relevant item is found in bot inventory, else return a sharpening or weight
+ * stone based on the weapon subclass
+ *
+ */
+Item* PlayerbotAI::FindStoneFor(Item* weapon) const
+{
+   Item* stone;
+   ItemPrototype const* pProto = weapon->GetProto();
+   if (pProto && (pProto->SubClass == ITEM_SUBCLASS_WEAPON_SWORD || pProto->SubClass == ITEM_SUBCLASS_WEAPON_SWORD2
+      || pProto->SubClass == ITEM_SUBCLASS_WEAPON_AXE || pProto->SubClass == ITEM_SUBCLASS_WEAPON_AXE2
+      || pProto->SubClass == ITEM_SUBCLASS_WEAPON_DAGGER))
+   {
+      for (uint8 i = 0; i < countof(uPriorizedSharpStoneIds); ++i)
+      {
+         stone = FindConsumable(uPriorizedSharpStoneIds[i]);
+         if (stone)
+            return stone;
+      }
+   }
+   else if (pProto && (pProto->SubClass == ITEM_SUBCLASS_WEAPON_MACE || pProto->SubClass == ITEM_SUBCLASS_WEAPON_MACE2))
+   {
+      for (uint8 i = 0; i < countof(uPriorizedWeightStoneIds); ++i)
+      {
+         stone = FindConsumable(uPriorizedWeightStoneIds[i]);
+         if (stone)
+            return stone;
+      }
+   }
+
+   return nullptr;
+}
+
+static const uint32 uPriorizedWizardOilIds[5] =
+{
+    MINOR_WIZARD_OIL, LESSER_WIZARD_OIL, BRILLIANT_WIZARD_OIL, WIZARD_OIL, SUPERIOR_WIZARD_OIL
+};
+
+static const uint32 uPriorizedManaOilIds[4] =
+{
+   MINOR_MANA_OIL, LESSER_MANA_OIL, BRILLIANT_MANA_OIL, SUPERIOR_MANA_OIL,
+};
+
+Item* PlayerbotAI::FindOilFor(Item* weapon) const
+{
+   Item* oil;
+   ItemPrototype const* pProto = weapon->GetProto();
+   if (pProto && (pProto->SubClass == ITEM_SUBCLASS_WEAPON_SWORD || pProto->SubClass == ITEM_SUBCLASS_WEAPON_STAFF || pProto->SubClass == ITEM_SUBCLASS_WEAPON_DAGGER))
+   {
+      for (uint8 i = 0; i < countof(uPriorizedWizardOilIds); ++i)
+      {
+         oil = FindConsumable(uPriorizedWizardOilIds[i]);
+         if (!oil)
+            oil = FindConsumable(uPriorizedManaOilIds[i]);
+         if (oil)
+            return oil;
+      }
+   }
+   else if (pProto && (pProto->SubClass == ITEM_SUBCLASS_WEAPON_MACE || pProto->SubClass == ITEM_SUBCLASS_WEAPON_MACE2))
+   {
+      for (uint8 i = 0; i < countof(uPriorizedManaOilIds); ++i)
+      {
+         oil = FindConsumable(uPriorizedManaOilIds[i]);
+         if (!oil)
+            oil = FindConsumable(uPriorizedWizardOilIds[i]);
+         if (oil)
+            return oil;
+      }
+   }
+
+   return nullptr;
+}
+
+// use item on equipped item
+void PlayerbotAI::ImbueItem(Item* item, uint8 targetInventorySlot)
+{
+   if (targetInventorySlot >= EQUIPMENT_SLOT_END)
+      return;
+
+   Item* const targetItem = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, targetInventorySlot);
+   if (!targetItem)
+      return;
+
+   ImbueItem(item, TARGET_FLAG_ITEM, targetItem->GetObjectGuid());
+}
+
+// generic item use method
+void PlayerbotAI::ImbueItem(Item* item, uint32 targetFlag, ObjectGuid targetGUID)
+{
+   if (!item)
+      return;
+
+   uint8 bagIndex = item->GetBagSlot();
+   uint8 slot = item->GetSlot();
+   uint8 cast_count = 0;
+   ObjectGuid item_guid = item->GetObjectGuid();
+
+   uint32 spellId = 0;
+   uint8 spell_index = 0;
+   for (uint8 i = 0; i < MAX_ITEM_PROTO_SPELLS; ++i)
+   {
+      if (item->GetProto()->Spells[i].SpellId > 0)
+      {
+         spellId = item->GetProto()->Spells[i].SpellId;
+         spell_index = i;
+         break;
+      }
+   }
+
+   std::unique_ptr<WorldPacket> packet(new WorldPacket(CMSG_USE_ITEM, 20));
+   *packet << bagIndex;
+   *packet << slot;
+   *packet << spell_index;
+   *packet << cast_count;
+   *packet << item_guid;
+   *packet << targetFlag;
+
+   if (targetFlag & (TARGET_FLAG_UNIT | TARGET_FLAG_ITEM | TARGET_FLAG_OBJECT))
+      *packet << targetGUID.WriteAsPacked();
+
+   bot->GetSession()->QueuePacket(std::move(packet));
+}

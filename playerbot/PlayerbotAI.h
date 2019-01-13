@@ -64,6 +64,61 @@ enum BotState
 
 #define BOT_STATE_MAX 3
 
+enum RoguePoisonDisplayId
+{
+   DEADLY_POISON_DISPLAYID = 13707,
+   INSTANT_POISON_DISPLAYID = 13710,
+   WOUND_POISON_DISPLAYID = 37278
+};
+
+enum SharpeningStoneDisplayId
+{
+   ROUGH_SHARPENING_DISPLAYID = 24673,
+   COARSE_SHARPENING_DISPLAYID = 24674,
+   HEAVY_SHARPENING_DISPLAYID = 24675,
+   SOLID_SHARPENING_DISPLAYID = 24676,
+   DENSE_SHARPENING_DISPLAYID = 24677,
+   CONSECRATED_SHARPENING_DISPLAYID = 24674,    // will not be used because bot can not know if it will face undead targets
+   ELEMENTAL_SHARPENING_DISPLAYID = 21072,
+   FEL_SHARPENING_DISPLAYID = 39192,
+   ADAMANTITE_SHARPENING_DISPLAYID = 39193,
+};
+
+enum WeightStoneDisplayId
+{
+   ROUGH_WEIGHTSTONE_DISPLAYID = 24683,
+   COARSE_WEIGHTSTONE_DISPLAYID = 24684,
+   HEAVY_WEIGHTSTONE_DISPLAYID = 24685,
+   SOLID_WEIGHTSTONE_DISPLAYID = 24686,
+   DENSE_WEIGHTSTONE_DISPLAYID = 24687,
+   FEL_WEIGHTSTONE_DISPLAYID = 39548,
+   ADAMANTITE_WEIGHTSTONE_DISPLAYID = 39549,
+};
+
+enum WizardOilDisplayId
+{
+   MINOR_WIZARD_OIL     = 9731,
+   LESSER_WIZARD_OIL    = 47903,
+   BRILLIANT_WIZARD_OIL = 47901,
+   WIZARD_OIL           = 47905,
+   SUPERIOR_WIZARD_OIL  = 47904,
+  /// Blessed Wizard Oil = 26865,//scourge inv
+};
+
+enum ManaOilDisplayId
+{
+   MINOR_MANA_OIL       = 34492,
+   LESSER_MANA_OIL      = 47902,
+   BRILLIANT_MANA_OIL   = 41488,
+   SUPERIOR_MANA_OIL    = 36862,
+};
+
+enum ShieldWardDisplayId
+{
+   LESSER_WARD_OFSHIELDING = 38759,
+   GREATER_WARD_OFSHIELDING = 38760,
+};
+
 class PacketHandlingHelper
 {
 public:
@@ -140,6 +195,14 @@ public:
     void RemoveShapeshift();
     void WaitForSpellCast(Spell *spell);
     bool PlaySound(uint32 emote);
+    Item * FindPoison() const;
+    Item * FindConsumable(uint32 displayId) const;
+    Item* FindStoneFor(Item* weapon) const;
+    Item* FindOilFor(Item* weapon) const;
+    void ImbueItem(Item* item, uint32 targetFlag, ObjectGuid targetGUID);
+    void ImbueItem(Item* item, uint8 targetInventorySlot);
+    //void UseItem(Item* item, Unit* target);
+    //void UseItem(Item* item);
 
     virtual bool CanCastSpell(string name, Unit* target, uint8 effectMask, Item* itemTarget = NULL);
     virtual bool CastSpell(string name, Unit* target, Item* itemTarget = NULL);
@@ -189,5 +252,6 @@ protected:
     map<string, time_t> whispers;
     pair<ChatMsg, time_t> currentChat;
     static set<string> unsecuredCommands;
+
 };
 
