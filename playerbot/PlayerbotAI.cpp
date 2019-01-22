@@ -929,6 +929,25 @@ bool PlayerbotAI::CanCastSpell(uint32 spellid, Unit* target, uint8 effectMask, b
     }
 }
 
+uint8 PlayerbotAI::GetHealthPercent(const Unit& target) const
+{
+   return (static_cast<float>(target.GetHealth()) / target.GetMaxHealth()) * 100;
+}
+
+uint8 PlayerbotAI::GetHealthPercent() const
+{
+   return GetHealthPercent(*bot);
+}
+
+uint8 PlayerbotAI::GetManaPercent(const Unit& target) const
+{
+   return (static_cast<float>(target.GetPower(POWER_MANA)) / target.GetMaxPower(POWER_MANA)) * 100;
+}
+
+uint8 PlayerbotAI::GetManaPercent() const
+{
+   return GetManaPercent(*bot);
+}
 
 bool PlayerbotAI::CastSpell(string name, Unit* target, Item* itemTarget)
 {
@@ -1624,6 +1643,46 @@ Item* PlayerbotAI::FindConsumable(uint32 displayId) const
    return NULL;
 }
 
+Item* PlayerbotAI::FindBandage() const
+{
+   // list out items in main backpack
+   for (uint8 slot = INVENTORY_SLOT_ITEM_START; slot < INVENTORY_SLOT_ITEM_END; slot++)
+   {
+      Item* const pItem = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, slot);
+      if (pItem)
+      {
+         const ItemPrototype* const pItemProto = pItem->GetProto();
+
+         if (!pItemProto || bot->CanUseItem(pItemProto) != EQUIP_ERR_OK)
+            continue;
+
+         if (pItemProto->Class == ITEM_CLASS_CONSUMABLE && pItemProto->SubClass == ITEM_SUBCLASS_BANDAGE)
+            return pItem;
+      }
+   }
+   // list out items in other removable backpacks
+   for (uint8 bag = INVENTORY_SLOT_BAG_START; bag < INVENTORY_SLOT_BAG_END; ++bag)
+   {
+      const Bag* const pBag = (Bag *)bot->GetItemByPos(INVENTORY_SLOT_BAG_0, bag);
+      if (pBag)
+         for (uint8 slot = 0; slot < pBag->GetBagSize(); ++slot)
+         {
+            Item* const pItem = bot->GetItemByPos(bag, slot);
+            if (pItem)
+            {
+               const ItemPrototype* const pItemProto = pItem->GetProto();
+
+               if (!pItemProto || bot->CanUseItem(pItemProto) != EQUIP_ERR_OK)
+                  continue;
+
+               if (pItemProto->Class == ITEM_CLASS_CONSUMABLE && pItemProto->SubClass == ITEM_SUBCLASS_BANDAGE)
+                  return pItem;
+            }
+         }
+   }
+   return nullptr;
+}
+
 static const uint32 uPriorizedSharpStoneIds[8] =
 {
     ADAMANTITE_SHARPENING_DISPLAYID, FEL_SHARPENING_DISPLAYID, ELEMENTAL_SHARPENING_DISPLAYID, DENSE_SHARPENING_DISPLAYID,
@@ -1713,7 +1772,22 @@ Item* PlayerbotAI::FindOilFor(Item* weapon) const
    return nullptr;
 }
 
-// use item on equipped item
+//  on self
+void PlayerbotAI::ImbueItem(Item* item)
+{
+   ImbueItem(item, TARGET_FLAG_SELF, ObjectGuid());
+}
+
+//  item on unit
+void PlayerbotAI::ImbueItem(Item* item, Unit* target)
+{
+   if (!target)
+      return;
+
+   ImbueItem(item, TARGET_FLAG_UNIT, target->GetObjectGuid());
+}
+
+//  item on equipped item
 void PlayerbotAI::ImbueItem(Item* item, uint8 targetInventorySlot)
 {
    if (targetInventorySlot >= EQUIPMENT_SLOT_END)
@@ -1761,4 +1835,37 @@ void PlayerbotAI::ImbueItem(Item* item, uint32 targetFlag, ObjectGuid targetGUID
       *packet << targetGUID.WriteAsPacked();
 
    bot->GetSession()->QueuePacket(std::move(packet));
+}
+
+void PlayerbotAI::EnchantItemT(uint32 spellid, uint8 slot)
+{
+   Item* pItem = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, slot);
+   if (!pItem)
+    return;
+
+   SpellEntry const* spellInfo = sSpellTemplate.LookupEntry<SpellEntry>(spellid);
+   if (!spellInfo)
+      return;
+
+   uint32 enchantid = spellInfo->EffectMiscValue[0];
+   if (!enchantid)
+   {
+      sLog.outError("%s: Invalid enchantid " , enchantid , " report to devs", bot->GetName());
+      return;
+   }
+
+   if (!((1 << pItem->GetProto()->SubClass) & spellInfo->EquippedItemSubClassMask) &&
+      !((1 << pItem->GetProto()->InventoryType) & spellInfo->EquippedItemInventoryTypeMask))
+   {
+      
+      sLog.outError("%s: items could not be enchanted, wrong item type equipped", bot->GetName());
+
+      return;
+   }
+
+   bot->ApplyEnchantment(pItem, PERM_ENCHANTMENT_SLOT, false);
+   pItem->SetEnchantment(PERM_ENCHANTMENT_SLOT, enchantid, 0, 0);
+   bot->ApplyEnchantment(pItem, PERM_ENCHANTMENT_SLOT, true);
+
+   sLog.outDetail("%s: items was enchanted successfully!", bot->GetName());
 }

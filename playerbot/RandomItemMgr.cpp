@@ -305,14 +305,14 @@ bool RandomItemMgr::CanEquipItem(BotEquipKey key, ItemPrototype const* proto)
         delta = urand(3, 7);
     else if (level < 70)
         delta = urand(2, 5);
-    else if (level < 80)
-        delta = urand(2, 4);
+   // else if (level < 80)
+   //     delta = urand(2, 4);
 
     if (key.quality > ITEM_QUALITY_NORMAL &&
             (requiredLevel > level || requiredLevel < level - delta))
         return false;
 
-    for (uint32 gap = 60; gap <= 80; gap += 10)
+    for (uint32 gap = 60; gap <= 70; gap += 10)
     {
         if (level > gap && requiredLevel <= gap)
             return false;

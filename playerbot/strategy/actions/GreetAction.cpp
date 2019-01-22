@@ -169,3 +169,36 @@ bool ImbueWithOilAction::Execute(Event event)
       }
    }
 }
+
+TryEmergencyAction::TryEmergencyAction(PlayerbotAI* ai) : Action(ai, "try emegency")
+{
+}
+
+bool TryEmergencyAction::Execute(Event event)
+{
+   // Do not use consumable if bot can heal self
+   if ((ai->IsHeal(bot)) && (ai->GetManaPercent() > 20))
+      return false;
+
+   // If bot does not have aggro: use bandage instead of potion/stone/crystal
+   if ((!AI_VALUE(uint8, "my attacker count") >=1) && !bot->HasAura(11196)) // Recently bandaged
+   {
+      Item* bandage = ai->FindBandage();
+      if (bandage)
+      {
+         ai->SetNextCheckDelay(8);
+         ai->ImbueItem(bandage, bot);
+      }
+   }
+
+   // Else loop over the list of health consumable to pick one
+   Item* healthItem;
+   for (uint8 i = 0; i < countof(uPriorizedHealingItemIds); ++i)
+   {
+      healthItem = ai->FindConsumable(uPriorizedHealingItemIds[i]);
+      if (healthItem)
+      {
+         ai->ImbueItem(healthItem);
+      }
+   }
+}

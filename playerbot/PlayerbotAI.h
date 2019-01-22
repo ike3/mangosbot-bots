@@ -55,6 +55,29 @@ namespace ai
 	};
 };
 
+enum HealingItemDisplayId
+{
+   HEALTHSTONE_DISPLAYID = 8026,
+   MAJOR_HEALING_POTION = 24152,
+   WHIPPER_ROOT_TUBER = 21974,
+   NIGHT_DRAGON_BREATH = 21975,
+   LIMITED_INVULNERABILITY_POTION = 24213,
+   GREATER_DREAMLESS_SLEEP_POTION = 17403,
+   SUPERIOR_HEALING_POTION = 15714,
+   CRYSTAL_RESTORE = 2516,
+   DREAMLESS_SLEEP_POTION = 17403,
+   GREATER_HEALING_POTION = 15713,
+   HEALING_POTION = 15712,
+   LESSER_HEALING_POTION = 15711,
+   DISCOLORED_HEALING_POTION = 15736,
+   MINOR_HEALING_POTION = 15710,
+   VOLATILE_HEALING_POTION = 24212,
+   SUPER_HEALING_POTION = 37807,
+   CRYSTAL_HEALING_POTION = 47132,
+   FEL_REGENERATION_POTION = 37864,
+   MAJOR_DREAMLESS_SLEEP_POTION = 37845,
+};
+
 enum BotState
 {
     BOT_STATE_COMBAT = 0,
@@ -197,17 +220,24 @@ public:
     bool PlaySound(uint32 emote);
     Item * FindPoison() const;
     Item * FindConsumable(uint32 displayId) const;
+    Item * FindBandage() const;
     Item* FindStoneFor(Item* weapon) const;
     Item* FindOilFor(Item* weapon) const;
     void ImbueItem(Item* item, uint32 targetFlag, ObjectGuid targetGUID);
     void ImbueItem(Item* item, uint8 targetInventorySlot);
-    //void UseItem(Item* item, Unit* target);
-    //void UseItem(Item* item);
+    void ImbueItem(Item* item, Unit* target);
+    void ImbueItem(Item* item);
+    void EnchantItemT(uint32 spellid, uint8 slot);
+  
 
     virtual bool CanCastSpell(string name, Unit* target, uint8 effectMask, Item* itemTarget = NULL);
     virtual bool CastSpell(string name, Unit* target, Item* itemTarget = NULL);
     virtual bool HasAura(string spellName, Unit* player);
     virtual bool HasAnyAuraOf(Unit* player, ...);
+    uint8 GetHealthPercent(const Unit& target) const;
+    uint8 GetHealthPercent() const;
+    uint8 GetManaPercent(const Unit& target) const;
+    uint8 GetManaPercent() const;
 
     virtual bool IsInterruptableSpellCasting(Unit* player, string spell, uint8 effectMask);
     virtual bool HasAuraToDispel(Unit* player, uint32 dispelType);
@@ -223,7 +253,7 @@ public:
     
 private:
     void _fillGearScoreData(Player *player, Item* item, std::vector<uint32>* gearScore, uint32& twoHandScore);
-
+    
 public:
 	Player* GetBot() { return bot; }
     Player* GetMaster() { return master; }
