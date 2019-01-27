@@ -91,6 +91,10 @@ namespace ai
             creators["delay"] = &ActionContext::delay;
             creators["greet"] = &ActionContext::greet;
             creators["check values"] = &ActionContext::check_values;
+            creators["apply poison"] = &ActionContext::apply_poison;
+            creators["apply stone"] = &ActionContext::apply_stone;
+            creators["apply oil"] = &ActionContext::apply_oil;
+            creators["try emergency"] = &ActionContext::try_emergency;
         }
 
     private:
@@ -101,6 +105,10 @@ namespace ai
         static Action* move_out_of_collision(PlayerbotAI* ai) { return new MoveOutOfCollisionAction(ai); }
         static Action* check_values(PlayerbotAI* ai) { return new CheckValuesAction(ai); }
         static Action* greet(PlayerbotAI* ai) { return new GreetAction(ai); }
+        static Action* apply_poison(PlayerbotAI* ai) { return new ImbueWithPoisonAction(ai); }
+        static Action* apply_oil(PlayerbotAI* ai) { return new ImbueWithOilAction(ai); }
+        static Action* try_emergency(PlayerbotAI* ai) { return new TryEmergencyAction(ai); }
+        static Action* apply_stone(PlayerbotAI* ai) { return new ImbueWithStoneAction(ai); }
         static Action* check_mail(PlayerbotAI* ai) { return new CheckMailAction(ai); }
         static Action* drop_target(PlayerbotAI* ai) { return new DropTargetAction(ai); }
         static Action* attack_duel_opponent(PlayerbotAI* ai) { return new AttackDuelOpponentAction(ai); }
