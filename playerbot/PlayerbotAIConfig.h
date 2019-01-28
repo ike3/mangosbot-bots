@@ -74,6 +74,7 @@ public:
     bool enableGreet;
     bool randomBotShowHelmet;
     bool randomBotShowCloak;
+	bool disableRandomLevels;
 
     bool guildTaskEnabled;
     uint32 minGuildTaskChangeTime, maxGuildTaskChangeTime;

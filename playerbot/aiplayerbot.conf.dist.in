@@ -27,14 +27,14 @@ AiPlayerbot.EnableGuildTasks = 1
 #AiPlayerbot.RandomBotAutoCreate = 1
 
 # Random bot count
-AiPlayerbot.MinRandomBots = 1000
+AiPlayerbot.MinRandomBots = 1500
 AiPlayerbot.MaxRandomBots = 2000
 AiPlayerbot.RandomBotMinLevel = 1
 AiPlayerbot.RandomBotMaxLevel = 70
 
 # Accounts to create for random bots
 AiPlayerbot.RandomBotAccountPrefix = rndbot
-AiPlayerbot.RandomBotAccountCount = 200
+AiPlayerbot.RandomBotAccountCount = 100
 
 # Random bot guild count
 AiPlayerbot.RandomBotGuildCount = 50
@@ -55,10 +55,21 @@ AiPlayerbot.RandomBotMaxLevelChance = 0.15
 AiPlayerbot.ShowProgressBars = 1
 
 # Enable immersive system for random bots
-AiPlayerbot.RandomBotImmersive = 1
+AiPlayerbot.RandomBotImmersive = 0
 
 # Set randombots movement speed to walking
 AiPlayerbot.RandombotsWalkingRPG = 0
+
+# Bots greet to the players
+AiPlayerbot.EnableGreet = 1
+
+# Show helmet and cloak on randombots (reset required)
+AiPlayerbot.RandomBotShowHelmet = 1
+AiPlayerbot.RandomBotShowCloak = 1 
+
+# Disable random levels for randombots 
+# Every bots started on the same level like other players
+AiPlayerbot.DisableRandomLevels = 1
 
 ##################################################################################
 #                                                                                #
@@ -203,9 +214,6 @@ AiPlayerbot.RandomClassSpecProbability.11.2 = 45
 # How far random bots are teleported after death
 #AiPlayerbot.RandomBotTeleportDistance = 1000
 
-# Custom
-#AiPlayerbot.EnableGreet = 0
-
 # Debug switches
 #AiPlayerbot.SpellDump = 0
 #AiPlayerbot.LogInGroupOnly = 1
@@ -215,11 +223,4 @@ AiPlayerbot.RandomClassSpecProbability.11.2 = 45
 # Command server port, 0 - disabled
 #AiPlayerbot.CommandServerPort = 8888
 
-# auto-login all player alts as bots on player login
-#AiPlayerbot.BotAutologin = 0
 #AiPlayerbot.PerfMonEnabled = 0
-
-# Cosmetic
-# Show helmet and cloak on randombots (reset required)
-#AiPlayerbot.RandomBotShowHelmet = 1
-#AiPlayerbot.RandomBotShowCloak = 1 

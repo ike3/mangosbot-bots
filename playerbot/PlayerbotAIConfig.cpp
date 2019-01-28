@@ -163,6 +163,7 @@ bool PlayerbotAIConfig::Initialize()
     //cosmetic
     randomBotShowCloak = config.GetBoolDefault("AiPlayerbot.RandomBotShowCloak", false);
     randomBotShowHelmet = config.GetBoolDefault("AiPlayerbot.RandomBotShowHelmet", false);
+	disableRandomLevels = config.GetBoolDefault("AiPlayerbot.DisableRandomLevels", false);
 
     targetPosRecalcDistance = sWorld.getConfig(CONFIG_FLOAT_RATE_TARGET_POS_RECALCULATION_RANGE);
     BarGoLink::SetOutputState(config.GetBoolDefault("AiPlayerbot.ShowProgressBars", false));
