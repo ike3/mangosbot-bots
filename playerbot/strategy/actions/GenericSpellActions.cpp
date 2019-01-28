@@ -11,7 +11,7 @@ bool CastSpellAction::Execute(Event event)
 
 bool CastSpellAction::isPossible()
 {
-	return ai->CanCastSpell(spell, GetTarget(), false);
+	return ai->CanCastSpell(spell, GetTarget(), true);
 }
 
 bool CastSpellAction::isUseful()

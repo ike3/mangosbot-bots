@@ -20,7 +20,7 @@ Unit* EnemyHealerTargetValue::Calculate()
         if (bot->GetDistance(unit) > sPlayerbotAIConfig.spellDistance)
             continue;
 
-        if (!ai->IsInterruptableSpellCasting(unit, spell, false))
+        if (!ai->IsInterruptableSpellCasting(unit, spell, true))
             continue;
 
         Spell* spell = unit->GetCurrentSpell(CURRENT_GENERIC_SPELL);
