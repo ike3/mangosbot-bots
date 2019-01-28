@@ -18,7 +18,8 @@ bool FollowChatShortcutAction::Execute(Event event)
     context->GetValue<ai::PositionMap&>("position")->Get()["return"].Reset();
     if (bot->GetMapId() != master->GetMapId() || bot->GetDistance(master) > sPlayerbotAIConfig.sightDistance)
     {
-        ai->TellMaster("I will not follow you - too far away");
+        ai->TellMaster("You are too far away from me! I will there soon.");
+		bot->TeleportTo(master->GetMapId(), master->GetPositionX(), master->GetPositionY(), master->GetPositionZ(), master->GetOrientation());
         return true;
     }
     ai->TellMaster("Following");
