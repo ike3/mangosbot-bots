@@ -75,6 +75,7 @@ public:
     bool randomBotShowHelmet;
     bool randomBotShowCloak;
 	bool disableRandomLevels;
+	uint32 playerbotsXPrate;
 
     bool guildTaskEnabled;
     uint32 minGuildTaskChangeTime, maxGuildTaskChangeTime;

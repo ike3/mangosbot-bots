@@ -69,7 +69,12 @@ AiPlayerbot.RandomBotShowCloak = 1
 
 # Disable random levels for randombots 
 # Every bots started on the same level like other players
+# and level up by killing mobs with higher XP rate
 AiPlayerbot.DisableRandomLevels = 1
+
+# Set kill XP rate for bots (default: 10)
+# Server XP Rate * AiPlayerbot.KillXPRate
+AiPlayerbot.KillXPRate = 10
 
 ##################################################################################
 #                                                                                #
