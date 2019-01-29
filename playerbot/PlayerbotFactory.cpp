@@ -13,8 +13,10 @@
 #include "RandomItemMgr.h"
 #include "RandomPlayerbotFactory.h"
 #include "ServerFacade.h"
-#include "Arena/ArenaTeam.h"
 #include "AiFactory.h"
+#ifdef MANGOSBOT_ONE
+#include "Arena/ArenaTeam.h"
+#endif
 #ifdef ENABLE_IMMERSIVE
 #include "immersive.h"
 #endif
@@ -201,7 +203,9 @@ void PlayerbotFactory::Randomize(bool incremental)
     pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Guilds & 1v1 ArenaTeams");
     sLog.outDetail("Initializing guilds & 1v1 ArenaTeams");
     InitGuild();
+#ifdef MANGOSBOT_ONE
     InitArenaTeam();
+#endif
     if (pmo) pmo->finish();
 
     pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Pet");
@@ -1093,10 +1097,10 @@ void PlayerbotFactory::EnchantItem(Item* item)
 
             if (!CheckItemStats(sp, ap, tank))
                 continue;
-
+#ifdef MANGOSBOT_ONE
             if (enchant->EnchantmentCondition && !bot->EnchantmentFitsRequirements(enchant->EnchantmentCondition, -1))
                continue;
-
+#endif
             if (!item->IsFitToSpellRequirements(entry))
                 continue;
 
@@ -1822,6 +1826,8 @@ void PlayerbotFactory::InitImmersive()
     bot->InitStatsForLevel(true);
     bot->UpdateAllStats();
 }
+
+#ifdef MANGOSBOT_ONE
 void PlayerbotFactory::InitArenaTeam()
 {
    uint8 slot = ArenaTeam::GetSlotByType(ARENA_TYPE_1v1);
@@ -1868,6 +1874,7 @@ void PlayerbotFactory::InitArenaTeam()
 
    return;
 }
+#endif
 
 void PlayerbotFactory::ApplyEnchantTemplate()
 {

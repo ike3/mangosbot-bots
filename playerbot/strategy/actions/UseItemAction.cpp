@@ -121,6 +121,7 @@ bool UseItemAction::UseItem(Item* item, ObjectGuid goGuid, Item* itemTarget)
 
    if (itemTarget)
    {
+#ifdef MANGOSBOT_ONE
       if (item->GetProto()->Class == ITEM_CLASS_GEM)
       {
          bool fit = SocketItem(itemTarget, item) || SocketItem(itemTarget, item, true);
@@ -130,12 +131,15 @@ bool UseItemAction::UseItem(Item* item, ObjectGuid goGuid, Item* itemTarget)
       }
       else
       {
+#endif
       targetFlag = TARGET_FLAG_ITEM;
       packet << targetFlag;
       packet.appendPackGUID(itemTarget->GetObjectGuid());
       out << " on " << chat->formatItem(itemTarget->GetProto());
       targetSelected = true;
+#ifdef MANGOSBOT_ONE
       }
+#endif
    }
 
    Player* master = GetMaster();
@@ -254,6 +258,7 @@ bool UseItemAction::UseItem(Item* item, ObjectGuid goGuid, Item* itemTarget)
    return true;
 }
 
+#ifdef MANGOSBOT_ONE
 bool UseItemAction::SocketItem(Item* item, Item* gem, bool replace)
 {
    WorldPacket* const packet = new WorldPacket(CMSG_SOCKET_GEMS);
@@ -310,8 +315,7 @@ bool UseItemAction::SocketItem(Item* item, Item* gem, bool replace)
    }
    return fits;
 }
-
-
+#endif
 
 bool UseItemAction::isPossible()
 {
