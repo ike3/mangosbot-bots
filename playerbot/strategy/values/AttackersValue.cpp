@@ -55,7 +55,13 @@ void AttackersValue::AddAttackersOf(Player* player, set<Unit*>& targets)
     MaNGOS::UnitListSearcher<MaNGOS::AnyUnfriendlyUnitInObjectRangeCheck> searcher(units, u_check);
     Cell::VisitAllObjects(player, searcher, sPlayerbotAIConfig.sightDistance);
 	for (list<Unit*>::iterator i = units.begin(); i != units.end(); i++)
-		targets.insert(*i);
+    {
+        Unit* unit = *i;
+        if (!unit->getThreatManager().getThreat(player))
+            continue;
+
+        targets.insert(*i);
+    }
 }
 
 void AttackersValue::RemoveNonThreating(set<Unit*>& targets)
