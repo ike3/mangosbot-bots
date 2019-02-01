@@ -42,7 +42,11 @@ bool UseItemAction::Execute(Event event)
 bool UseItemAction::UseGameObject(ObjectGuid guid)
 {
     GameObject* go = ai->GetGameObject(guid);
-    if (!go || !sServerFacade.isSpawned(go) || go->IsInUse() || go->GetGoState() != GO_STATE_READY)
+    if (!go || !sServerFacade.isSpawned(go)
+#ifdef CMANGOS
+        || go->IsInUse() 
+#endif
+        || go->GetGoState() != GO_STATE_READY)
         return false;
 
     go->Use(bot);

@@ -66,7 +66,7 @@ class ServerFacade
         bool isMoving(Unit *unit)
         {
 #ifdef MANGOS
-            return unit->isMoving();
+            return !unit->IsStopped();
 #endif
 #ifdef CMANGOS
             return unit->IsMoving();
@@ -217,6 +217,8 @@ class ServerFacade
 
         bool IsFriendlyTo(Unit* bot, Unit* to);
         bool IsHostileTo(Unit* bot, Unit* to);
+
+        bool IsSpellReady(Player* bot, uint32 spell);
 };
 
 #define sServerFacade ServerFacade::instance()

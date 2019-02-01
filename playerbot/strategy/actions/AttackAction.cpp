@@ -97,7 +97,9 @@ bool AttackAction::Attack(Unit* target)
             creatureAI = ((Creature*)pet)->AI();
         if (creatureAI)
         {
+#ifdef CMANGOS
             creatureAI->SetReactState(REACT_PASSIVE);
+#endif
             creatureAI->AttackStart(target);
         }
     }
