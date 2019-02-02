@@ -99,6 +99,7 @@ void PerformanceMonitorOperation::finish()
 #endif
 }
 
+#ifdef CMANGOS
 bool ChatHandler::HandlePerfMonCommand(char* args)
 {
     if (!strcmp(args, "reset"))
@@ -110,3 +111,4 @@ bool ChatHandler::HandlePerfMonCommand(char* args)
     sPerformanceMonitor.PrintStats();
     return true;
 }
+#endif

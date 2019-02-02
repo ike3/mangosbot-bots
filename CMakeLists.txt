@@ -182,7 +182,7 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/src/shared/Utilities
     ${CMAKE_SOURCE_DIR}/src/framework
     ${CMAKE_SOURCE_DIR}/src/framework/Platform
-    ${CMAKE_SOURCE_DIR}/dep/include/g3dlite
+    ${CMAKE_SOURCE_DIR}/dep/g3dlite
     ${CMAKE_BINARY_DIR}
     ${CMAKE_BINARY_DIR}/src/shared
     ${CMAKE_SOURCE_DIR}/src/modules/Immersive

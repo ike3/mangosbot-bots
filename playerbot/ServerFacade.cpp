@@ -88,3 +88,14 @@ bool ServerFacade::IsHostileTo(Unit* bot, Unit* to)
     return bot->IsEnemy(to);
 #endif
 }
+
+
+bool ServerFacade::IsSpellReady(Player* bot, uint32 spell)
+{
+#ifdef MANGOS
+    return !bot->HasSpellCooldown(spell);
+#endif
+#ifdef CMANGOS
+    return bot->IsSpellReady(spell);
+#endif
+}

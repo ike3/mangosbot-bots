@@ -133,17 +133,24 @@ bool SummonAction::SummonUsingNpcs(Player *summoner, Player *player)
                 return false;
             }
 
-            if (!player->IsSpellReady(8690))
+            if (!sServerFacade.IsSpellReady(player, 8690))
             {
                 ai->TellMasterNoFacing(player == bot ? "My hearthstone is not ready" : "Your hearthstone is not ready");
                 return false;
             }
 
             // Trigger cooldown
-            SpellEntry const* spellInfo = sSpellTemplate.LookupEntry<SpellEntry>(8690);
+            SpellEntry const* spellInfo = sServerFacade.LookupSpellInfo(8690);
             if (!spellInfo)
                 return false;
-            Spell spell(player, spellInfo, TRIGGERED_OLD_TRIGGERED);
+            Spell spell(player, spellInfo,
+#ifdef MANGOS
+                    0
+#endif
+#ifdef CMANGOS
+                    TRIGGERED_OLD_TRIGGERED
+#endif
+                    );
             spell.SendSpellCooldown();
 
             return Teleport(summoner, player);
