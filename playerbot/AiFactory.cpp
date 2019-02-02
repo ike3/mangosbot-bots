@@ -122,7 +122,7 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
                     engine->addStrategy("dps debuff");
             }
             else
-                engine->addStrategy("heal");
+                engine->addStrategies("heal", "holy", NULL);
 
             engine->addStrategies("dps assist", "flee", "cure", NULL);
             break;
@@ -134,6 +134,11 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
             else
                 engine->addStrategies("frost", "frost aoe", "threat", NULL);
 
+			    if (player->getLevel() < 9)
+                {
+                    engine->addStrategies("fire", "fire aoe", "threat", NULL);
+                }
+					
             engine->addStrategies("dps assist", "flee", "cure", NULL);
             break;
         case CLASS_WARRIOR:
@@ -171,6 +176,11 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
                 engine->addStrategies("heal", "cure", "flee", "dps assist", NULL);
             else
                 engine->addStrategies("bear", "tank aoe", "flee", NULL);
+
+				if (player->getLevel() < 9)
+				{
+					engine->addStrategies("caster", "cure", "caster aoe", "threat", "flee", "dps assist", NULL);
+				}
             break;
         case CLASS_HUNTER:
             engine->addStrategies("dps", "bdps", "threat", "dps assist", NULL);
@@ -198,10 +208,15 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
         if (!player->GetGroup())
         {
             engine->ChangeStrategy(sPlayerbotAIConfig.randomBotCombatStrategies);
-            if (player->getClass() == CLASS_DRUID && player->getLevel() < 20)
+            if (player->getClass() == CLASS_DRUID && tab == 2)
             {
-                engine->addStrategies("bear", NULL);
+				engine->addStrategies("caster", "cure", "caster aoe", "threat", "flee", "dps assist", NULL);
             }
+
+			if (player->getClass() == CLASS_PRIEST)
+			{
+				engine->addStrategies("holy", NULL);
+			}
         }
     }
     else
