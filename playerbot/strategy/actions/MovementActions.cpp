@@ -67,7 +67,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle)
 
     if (!IsMovingAllowed(mapId, x, y, z))
     {
-        ai->TellMasterNoFacing("I am stuck");
+        //ai->TellMasterNoFacing("I am stuck");
         return false;
     }
 
