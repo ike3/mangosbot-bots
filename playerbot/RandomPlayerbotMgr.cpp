@@ -466,7 +466,7 @@ void RandomPlayerbotMgr::PrepareTeleportCache()
 
     sLog.outBasic("Preparing RPG teleport caches for %d factions...", sFactionTemplateStore.GetNumRows());
             BarGoLink bar(rpgCacheSize);
-    results = WorldDatabase.PQuery("SELECT map, position_x, position_y, position_z, t.FactionAlliance, t.Name "
+    results = WorldDatabase.PQuery("SELECT map, position_x, position_y, position_z, t.Faction, t.Name "
             "from creature c inner join creature_template t on c.id = t.entry "
             "where t.NpcFlags & %u <> 0",
         UNIT_NPC_FLAG_INNKEEPER);
