@@ -212,11 +212,6 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
             {
 				engine->addStrategies("caster", "cure", "caster aoe", "threat", "flee", "dps assist", NULL);
             }
-
-			if (player->getClass() == CLASS_PRIEST)
-			{
-				engine->addStrategies("holy", NULL);
-			}
         }
     }
     else
