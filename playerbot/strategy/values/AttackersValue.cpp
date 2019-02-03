@@ -61,8 +61,6 @@ void AttackersValue::AddAttackersOf(Player* player, set<Unit*>& targets)
 			Unit* unit = *i;
 			if (!unit->getThreatManager().getThreat(player))
 				continue;
-
-			targets.insert(*i);
 		}
 		targets.insert(*i);
     }
