@@ -98,7 +98,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle)
         return true;
     }
 
-    ai->TellMasterNoFacing("No need to move");
+    //ai->TellMasterNoFacing("No need to move");
     return false;
 }
 
