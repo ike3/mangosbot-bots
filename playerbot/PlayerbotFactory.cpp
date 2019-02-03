@@ -662,6 +662,10 @@ bool PlayerbotFactory::CanEquipWeapon(ItemPrototype const* proto)
          return false;
       break;
    case CLASS_MAGE:
+     if (proto->SubClass != ITEM_SUBCLASS_WEAPON_STAFF &&
+         proto->SubClass != ITEM_SUBCLASS_WEAPON_WAND)
+         return false;
+      break;
    case CLASS_WARLOCK:
       if (proto->SubClass != ITEM_SUBCLASS_WEAPON_STAFF &&
          proto->SubClass != ITEM_SUBCLASS_WEAPON_DAGGER &&
@@ -1830,7 +1834,7 @@ void PlayerbotFactory::InitImmersive()
 #ifdef MANGOSBOT_ONE
 void PlayerbotFactory::InitArenaTeam()
 {
-   uint8 slot = ArenaTeam::GetSlotByType(ARENA_TYPE_1v1);
+   uint8 slot = ArenaTeam::GetSlotByType(ARENA_TYPE_2v2);
    if (slot >= MAX_ARENA_SLOT)
       return;
 
@@ -1860,7 +1864,7 @@ void PlayerbotFactory::InitArenaTeam()
                   // Create arena team
    ArenaTeam* arenaTeam = new ArenaTeam();
 
-   if (!arenaTeam->Create(bot->GetObjectGuid(), ARENA_TYPE_1v1, teamName.str()))
+   if (!arenaTeam->Create(bot->GetObjectGuid(), ARENA_TYPE_2v2, teamName.str()))
    {
       delete arenaTeam;
       return;
