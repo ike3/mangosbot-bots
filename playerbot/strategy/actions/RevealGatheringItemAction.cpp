@@ -57,7 +57,7 @@ bool RevealGatheringItemAction::Execute(Event event)
                     uint32 skillId = SkillByLockType(LockType(lockInfo->Index[i]));
                     uint32 reqSkillValue = max((uint32)2, lockInfo->Skill[i]);
                     if ((skillId == SKILL_MINING || skillId == SKILL_HERBALISM) &&
-                            ai->HasSkill((SkillType)skillId) && uint32(bot->GetSkillValuePure(skillId)) >= reqSkillValue)
+                            ai->HasSkill((SkillType)skillId) && uint32(bot->GetSkillValue(skillId)) >= reqSkillValue)
                     {
                         result.push_back(go);
                         break;

@@ -167,7 +167,7 @@ bool LootObject::IsLootPossible(Player* bot)
     if (!reqSkillValue)
         return true;
 
-    uint32 skillValue = uint32(bot->GetSkillValuePure(skillId));
+    uint32 skillValue = uint32(bot->GetSkillValue(skillId));
     if (reqSkillValue > skillValue)
         return false;
 

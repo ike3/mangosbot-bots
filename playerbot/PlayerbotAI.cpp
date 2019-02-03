@@ -895,7 +895,17 @@ bool PlayerbotAI::CanCastSpell(uint32 spellid, Unit* target, uint8 effectMask, b
         if (!positiveSpell && sServerFacade.IsFriendlyTo(bot, target))
             return false;
 
-        if (target->IsImmuneToSpell(spellInfo, false, effectMask))
+        bool immune = true;
+        for (int32 i = EFFECT_INDEX_0; i <= EFFECT_INDEX_2; i++)
+        {
+            if (!target->IsImmuneToSpellEffect(spellInfo, (SpellEffectIndex)i, true))
+            {
+                immune = false;
+                break;
+            }
+        }
+
+        if (immune)
             return false;
 
         if (bot != target && bot->GetDistance(target) > sPlayerbotAIConfig.sightDistance)
@@ -1179,9 +1189,6 @@ bool PlayerbotAI::IsInterruptableSpellCasting(Unit* target, string spell, uint8 
 
 	SpellEntry const *spellInfo = sServerFacade.LookupSpellInfo(spellid);
 	if (!spellInfo)
-		return false;
-
-	if (target->IsImmuneToSpell(spellInfo, false, effectMask))
 		return false;
 
 	for (int32 i = EFFECT_INDEX_0; i <= EFFECT_INDEX_2; i++)
@@ -1540,7 +1547,7 @@ string PlayerbotAI::HandleRemoteCommand(string command)
 
 bool PlayerbotAI::HasSkill(SkillType skill)
 {
-    return bot->HasSkill(skill) && bot->GetSkillValueBase(skill) > 1;
+    return bot->HasSkill(skill) && bot->GetSkillValue(skill) > 1;
 }
 
 bool ChatHandler::HandlePlayerbotCommand(char* args)

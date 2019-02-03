@@ -238,7 +238,7 @@ bool ListSpellsAction::Execute(Event event)
             int GrayLevel = (int)skillLine->max_value,
                    GreenLevel = (int)(skillLine->max_value + skillLine->min_value) / 2,
                    YellowLevel = (int)skillLine->min_value,
-                   SkillValue = (int)bot->GetSkillValueBase(skillLine->skillId);
+                   SkillValue = (int)bot->GetSkillValue(skillLine->skillId);
 
             out << " - ";
             if (SkillValue >= GrayLevel)
