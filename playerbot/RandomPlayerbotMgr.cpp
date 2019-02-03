@@ -328,6 +328,9 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot, vector<WorldLocation> &locs
     if (bot->IsBeingTeleported())
         return;
 
+	if (bot->getLevel() < 5)
+		return;
+
     if (locs.empty())
     {
         sLog.outError("Cannot teleport bot %s - no locations available", bot->GetName());
