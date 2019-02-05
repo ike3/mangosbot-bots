@@ -1951,7 +1951,7 @@ void PlayerbotFactory::LoadEnchantContainer()
 
    uint32 count = 0;
 
-   QueryResult* result = CharacterDatabase.PQuery("SELECT class, spec, spellid, slotid FROM ai_playerbot_enchants");
+   QueryResult* result = PlayerbotDatabase.PQuery("SELECT class, spec, spellid, slotid FROM ai_playerbot_enchants");
    if (result)
    {
       do

@@ -174,7 +174,7 @@ RandomItemList RandomItemMgr::Query(uint32 level, RandomItemType type, RandomIte
 
 void RandomItemMgr::BuildRandomItemCache()
 {
-    QueryResult* results = CharacterDatabase.PQuery("select lvl, type, item from ai_playerbot_rnditem_cache");
+    QueryResult* results = PlayerbotDatabase.PQuery("select lvl, type, item from ai_playerbot_rnditem_cache");
     if (results)
     {
         sLog.outString("Loading random item cache");
@@ -226,7 +226,7 @@ void RandomItemMgr::BuildRandomItemCache()
                     continue;
 
                 randomItemCache[level / 10][rit].push_back(itemId);
-                CharacterDatabase.PExecute("insert into ai_playerbot_rnditem_cache (lvl, type, item) values (%u, %u, %u)",
+                PlayerbotDatabase.PExecute("insert into ai_playerbot_rnditem_cache (lvl, type, item) values (%u, %u, %u)",
                         level / 10, type, itemId);
             }
         }
@@ -501,7 +501,7 @@ void RandomItemMgr::BuildEquipCache()
     if (maxLevel > sWorld.getConfig(CONFIG_UINT32_MAX_PLAYER_LEVEL))
         maxLevel = sWorld.getConfig(CONFIG_UINT32_MAX_PLAYER_LEVEL);
 
-    QueryResult* results = CharacterDatabase.PQuery("select clazz, lvl, slot, quality, item from ai_playerbot_equip_cache");
+    QueryResult* results = PlayerbotDatabase.PQuery("select clazz, lvl, slot, quality, item from ai_playerbot_equip_cache");
     if (results)
     {
         sLog.outString("Loading equipment cache for %d classes, %d levels, %d slots, %d quality from %d items",
@@ -580,7 +580,7 @@ void RandomItemMgr::BuildEquipCache()
 
                             items.push_back(itemId);
 
-                            CharacterDatabase.PExecute("insert into ai_playerbot_equip_cache (clazz, lvl, slot, quality, item) values (%u, %u, %u, %u, %u)",
+                            PlayerbotDatabase.PExecute("insert into ai_playerbot_equip_cache (clazz, lvl, slot, quality, item) values (%u, %u, %u, %u, %u)",
                                     clazz, level, slot, quality, itemId);
                         }
 
@@ -827,7 +827,7 @@ uint32 RandomItemMgr::GetRandomTrade(uint32 level)
 
 void RandomItemMgr::BuildRarityCache()
 {
-    QueryResult* results = CharacterDatabase.PQuery("select item, rarity from ai_playerbot_rarity_cache");
+    QueryResult* results = PlayerbotDatabase.PQuery("select item, rarity from ai_playerbot_rarity_cache");
     if (results)
     {
         sLog.outString("Loading item rarity cache");
@@ -960,7 +960,7 @@ void RandomItemMgr::BuildRarityCache()
                 {
                     rarityCache[itemId] = rarity;
 
-                    CharacterDatabase.PExecute("insert into ai_playerbot_rarity_cache (item, rarity) values (%u, %f)",
+                    PlayerbotDatabase.PExecute("insert into ai_playerbot_rarity_cache (item, rarity) values (%u, %f)",
                             itemId, rarity);
                 }
             }

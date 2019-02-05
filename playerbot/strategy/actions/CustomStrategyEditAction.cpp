@@ -28,7 +28,7 @@ bool CustomStrategyEditAction::PrintHelp()
     ai->TellMaster("=== Custom strategies ===");
 
     uint32 owner = (uint32)ai->GetBot()->GetGUIDLow();
-    QueryResult* results = CharacterDatabase.PQuery("SELECT distinct name FROM ai_playerbot_custom_strategy WHERE owner = '%u'",
+    QueryResult* results = PlayerbotDatabase.PQuery("SELECT distinct name FROM ai_playerbot_custom_strategy WHERE owner = '%u'",
             owner);
     if (results)
     {
@@ -51,7 +51,7 @@ bool CustomStrategyEditAction::Print(string name)
     ai->TellMaster(out.str());
 
     uint32 owner = (uint32)ai->GetBot()->GetGUIDLow();
-    QueryResult* results = CharacterDatabase.PQuery("SELECT idx, action_line FROM ai_playerbot_custom_strategy WHERE name = '%s' and owner = '%u' order by idx",
+    QueryResult* results = PlayerbotDatabase.PQuery("SELECT idx, action_line FROM ai_playerbot_custom_strategy WHERE name = '%s' and owner = '%u' order by idx",
             name.c_str(), owner);
     if (results)
     {
@@ -72,25 +72,25 @@ bool CustomStrategyEditAction::Print(string name)
 bool CustomStrategyEditAction::Edit(string name, uint32 idx, string command)
 {
     uint32 owner = (uint32)ai->GetBot()->GetGUIDLow();
-    QueryResult* results = CharacterDatabase.PQuery("SELECT action_line FROM ai_playerbot_custom_strategy WHERE name = '%s' and owner = '%u' and idx = '%u'",
+    QueryResult* results = PlayerbotDatabase.PQuery("SELECT action_line FROM ai_playerbot_custom_strategy WHERE name = '%s' and owner = '%u' and idx = '%u'",
             name.c_str(), owner, idx);
     if (results)
     {
         if (command.empty())
         {
-            CharacterDatabase.DirectPExecute("DELETE FROM ai_playerbot_custom_strategy WHERE name = '%s' and owner = '%u' and idx = '%u'",
+            PlayerbotDatabase.DirectPExecute("DELETE FROM ai_playerbot_custom_strategy WHERE name = '%s' and owner = '%u' and idx = '%u'",
                         name.c_str(), owner, idx);
         }
         else
         {
-            CharacterDatabase.DirectPExecute("UPDATE ai_playerbot_custom_strategy SET action_line = '%s' WHERE name = '%s' and owner = '%u' and idx = '%u'",
+            PlayerbotDatabase.DirectPExecute("UPDATE ai_playerbot_custom_strategy SET action_line = '%s' WHERE name = '%s' and owner = '%u' and idx = '%u'",
                         command.c_str(), name.c_str(), owner, idx);
         }
         delete results;
     }
     else
     {
-        CharacterDatabase.DirectPExecute("INSERT INTO ai_playerbot_custom_strategy (name, owner, idx, action_line) VALUES ('%s', '%u', '%u', '%s')",
+        PlayerbotDatabase.DirectPExecute("INSERT INTO ai_playerbot_custom_strategy (name, owner, idx, action_line) VALUES ('%s', '%u', '%u', '%s')",
                     name.c_str(), owner, idx, command.c_str());
     }
 

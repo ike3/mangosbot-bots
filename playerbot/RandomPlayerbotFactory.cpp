@@ -210,7 +210,7 @@ void RandomPlayerbotFactory::CreateRandomBots()
 			delete results;
         }
 
-        CharacterDatabase.Execute("DELETE FROM ai_playerbot_random_bots");
+        PlayerbotDatabase.Execute("DELETE FROM ai_playerbot_random_bots");
         sLog.outString("Random bot accounts deleted");
     }
 
@@ -278,7 +278,7 @@ void RandomPlayerbotFactory::CreateRandomGuilds()
 {
     vector<uint32> randomBots;
 
-    QueryResult* results = CharacterDatabase.PQuery(
+    QueryResult* results = PlayerbotDatabase.PQuery(
             "select `bot` from ai_playerbot_random_bots where event = 'add'");
 
     if (results)

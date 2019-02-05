@@ -145,7 +145,7 @@ void SuggestWhatToDoAction::grindMaterials()
     if (bot->getLevel() <= 5)
         return;
 
-    QueryResult *result = CharacterDatabase.PQuery("SELECT distinct category, multiplier FROM ahbot_category where category not in ('other', 'quest', 'trade', 'reagent') and multiplier > 3 order by multiplier desc limit 10");
+    QueryResult *result = PlayerbotDatabase.PQuery("SELECT distinct category, multiplier FROM ahbot_category where category not in ('other', 'quest', 'trade', 'reagent') and multiplier > 3 order by multiplier desc limit 10");
     if (!result)
         return;
 

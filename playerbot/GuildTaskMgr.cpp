@@ -477,7 +477,7 @@ bool GuildTaskMgr::IsGuildTaskItem(uint32 itemId, uint32 guildId)
 {
     uint32 value = 0;
 
-    QueryResult* results = CharacterDatabase.PQuery(
+    QueryResult* results = PlayerbotDatabase.PQuery(
             "select `value`, `time`, validIn from ai_playerbot_guild_tasks where `value` = '%u' and guildid = '%u' and `type` = 'itemTask'",
             itemId, guildId);
 
@@ -500,7 +500,7 @@ map<uint32,uint32> GuildTaskMgr::GetTaskValues(uint32 owner, string type, uint32
 {
     map<uint32,uint32> result;
 
-    QueryResult* results = CharacterDatabase.PQuery(
+    QueryResult* results = PlayerbotDatabase.PQuery(
             "select `value`, `time`, validIn, guildid from ai_playerbot_guild_tasks where owner = '%u' and `type` = '%s'",
             owner, type.c_str());
 
@@ -529,7 +529,7 @@ uint32 GuildTaskMgr::GetTaskValue(uint32 owner, uint32 guildId, string type, uin
 {
     uint32 value = 0;
 
-    QueryResult* results = CharacterDatabase.PQuery(
+    QueryResult* results = PlayerbotDatabase.PQuery(
             "select `value`, `time`, validIn from ai_playerbot_guild_tasks where owner = '%u' and guildid = '%u' and `type` = '%s'",
             owner, guildId, type.c_str());
 
@@ -551,11 +551,11 @@ uint32 GuildTaskMgr::GetTaskValue(uint32 owner, uint32 guildId, string type, uin
 
 uint32 GuildTaskMgr::SetTaskValue(uint32 owner, uint32 guildId, string type, uint32 value, uint32 validIn)
 {
-    CharacterDatabase.DirectPExecute("delete from ai_playerbot_guild_tasks where owner = '%u' and guildid = '%u' and `type` = '%s'",
+    PlayerbotDatabase.DirectPExecute("delete from ai_playerbot_guild_tasks where owner = '%u' and guildid = '%u' and `type` = '%s'",
             owner, guildId, type.c_str());
     if (value)
     {
-        CharacterDatabase.DirectPExecute(
+        PlayerbotDatabase.DirectPExecute(
                 "insert into ai_playerbot_guild_tasks (owner, guildid, `time`, validIn, `type`, `value`) values ('%u', '%u', '%u', '%u', '%s', '%u')",
                 owner, guildId, (uint32)time(0), validIn, type.c_str(), value);
     }
@@ -581,7 +581,7 @@ bool GuildTaskMgr::HandleConsoleCommand(ChatHandler* handler, char const* args)
 
     if (cmd == "reset")
     {
-        CharacterDatabase.PExecute("delete from ai_playerbot_guild_tasks");
+        PlayerbotDatabase.PExecute("delete from ai_playerbot_guild_tasks");
         sLog.outString("Guild tasks were reset for all players");
         return true;
     }
@@ -604,7 +604,7 @@ bool GuildTaskMgr::HandleConsoleCommand(ChatHandler* handler, char const* args)
 
         uint32 owner = (uint32)guid.GetRawValue();
 
-        QueryResult* result = CharacterDatabase.PQuery(
+        QueryResult* result = PlayerbotDatabase.PQuery(
                 "select `value`, `time`, validIn, guildid from ai_playerbot_guild_tasks where owner = '%u' and type='activeTask' order by guildid",
                 owner);
 
@@ -741,7 +741,7 @@ bool GuildTaskMgr::HandleConsoleCommand(ChatHandler* handler, char const* args)
         }
 
         uint32 owner = (uint32)guid.GetRawValue();
-        QueryResult* result = CharacterDatabase.PQuery(
+        QueryResult* result = PlayerbotDatabase.PQuery(
                 "select distinct guildid from ai_playerbot_guild_tasks where owner = '%u'",
                 owner);
 

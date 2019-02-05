@@ -116,7 +116,7 @@ uint32 RandomPlayerbotMgr::AddRandomBots()
 {
     set<uint32> bots;
 
-    QueryResult* results = CharacterDatabase.PQuery(
+    QueryResult* results = PlayerbotDatabase.PQuery(
             "select `bot` from ai_playerbot_random_bots where event = 'add'");
 
     if (results)
@@ -386,7 +386,7 @@ void RandomPlayerbotMgr::PrepareTeleportCache()
     if (maxLevel > sWorld.getConfig(CONFIG_UINT32_MAX_PLAYER_LEVEL))
         maxLevel = sWorld.getConfig(CONFIG_UINT32_MAX_PLAYER_LEVEL);
 
-    QueryResult* results = CharacterDatabase.PQuery("select map_id, x, y, z, level from ai_playerbot_tele_cache");
+    QueryResult* results = PlayerbotDatabase.PQuery("select map_id, x, y, z, level from ai_playerbot_tele_cache");
     if (results)
     {
         sLog.outBasic("Loading random teleport caches for %d levels...", maxLevel);
@@ -446,7 +446,7 @@ void RandomPlayerbotMgr::PrepareTeleportCache()
                     WorldLocation loc(mapId, x, y, z, 0);
                     locsPerLevelCache[level].push_back(loc);
 
-                    CharacterDatabase.PExecute("insert into ai_playerbot_tele_cache (level, map_id, x, y, z) values (%u, %u, %f, %f, %f)",
+                    PlayerbotDatabase.PExecute("insert into ai_playerbot_tele_cache (level, map_id, x, y, z) values (%u, %u, %f, %f, %f)",
                             level, mapId, x, y, z);
                 } while (results->NextRow());
                 delete results;
@@ -591,9 +591,9 @@ void RandomPlayerbotMgr::RandomizeFirst(Player* bot)
     RandomTeleportForLevel(bot);
 
     uint32 randomTime = urand(sPlayerbotAIConfig.minRandomBotRandomizeTime, sPlayerbotAIConfig.maxRandomBotRandomizeTime);
-    CharacterDatabase.PExecute("update ai_playerbot_random_bots set validIn = '%u' where event = 'randomize' and bot = '%u'",
+    PlayerbotDatabase.PExecute("update ai_playerbot_random_bots set validIn = '%u' where event = 'randomize' and bot = '%u'",
             randomTime, bot->GetGUIDLow());
-    CharacterDatabase.PExecute("update ai_playerbot_random_bots set validIn = '%u' where event = 'logout' and bot = '%u'",
+    PlayerbotDatabase.PExecute("update ai_playerbot_random_bots set validIn = '%u' where event = 'logout' and bot = '%u'",
             sPlayerbotAIConfig.maxRandomBotInWorldTime, bot->GetGUIDLow());
 
 	if (pmo) pmo->finish();
@@ -675,7 +675,7 @@ list<uint32> RandomPlayerbotMgr::GetBots()
 {
     if (!currentBots.empty()) return currentBots;
 
-    QueryResult* results = CharacterDatabase.Query(
+    QueryResult* results = PlayerbotDatabase.Query(
             "select bot from ai_playerbot_random_bots where owner = 0 and event = 'add'");
 
     if (results)
@@ -697,7 +697,7 @@ uint32 RandomPlayerbotMgr::GetEventValue(uint32 bot, string event)
     CachedEvent e = eventCache[bot][event];
     if (e.IsEmpty())
     {
-        QueryResult* results = CharacterDatabase.PQuery(
+        QueryResult* results = PlayerbotDatabase.PQuery(
                 "select `value`, `time`, validIn from ai_playerbot_random_bots where owner = 0 and bot = '%u' and event = '%s'",
                 bot, event.c_str());
 
@@ -720,11 +720,11 @@ uint32 RandomPlayerbotMgr::GetEventValue(uint32 bot, string event)
 
 uint32 RandomPlayerbotMgr::SetEventValue(uint32 bot, string event, uint32 value, uint32 validIn)
 {
-    CharacterDatabase.PExecute("delete from ai_playerbot_random_bots where owner = 0 and bot = '%u' and event = '%s'",
+    PlayerbotDatabase.PExecute("delete from ai_playerbot_random_bots where owner = 0 and bot = '%u' and event = '%s'",
             bot, event.c_str());
     if (value)
     {
-        CharacterDatabase.PExecute(
+        PlayerbotDatabase.PExecute(
                 "insert into ai_playerbot_random_bots (owner, bot, `time`, validIn, event, `value`) values ('%u', '%u', '%u', '%u', '%s', '%u')",
                 0, bot, (uint32)time(0), validIn, event.c_str(), value);
     }
@@ -772,7 +772,7 @@ bool RandomPlayerbotMgr::HandlePlayerbotConsoleCommand(ChatHandler* handler, cha
 
     if (cmd == "reset")
     {
-        CharacterDatabase.PExecute("delete from ai_playerbot_random_bots");
+        PlayerbotDatabase.PExecute("delete from ai_playerbot_random_bots");
         sRandomPlayerbotMgr.eventCache.clear();
         sLog.outString("Random bots were reset for all players. Please restart the Server.");
         return true;

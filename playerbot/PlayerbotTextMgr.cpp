@@ -19,7 +19,7 @@ PlayerbotTextMgr::~PlayerbotTextMgr()
 void PlayerbotTextMgr::LoadTemplates()
 {
     sLog.outBasic("Loading playerbot texts...");
-    QueryResult* results = CharacterDatabase.PQuery("SELECT `key`,`text` FROM `ai_playerbot_text`");
+    QueryResult* results = PlayerbotDatabase.PQuery("SELECT `key`,`text` FROM `ai_playerbot_text`");
     int count = 0;
     if (results)
     {
