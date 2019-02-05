@@ -18,7 +18,14 @@ bool FollowChatShortcutAction::Execute(Event event)
     context->GetValue<ai::PositionMap&>("position")->Get()["return"].Reset();
     if (bot->GetMapId() != master->GetMapId() || bot->GetDistance(master) > sPlayerbotAIConfig.sightDistance)
     {
-        ai->TellMaster("You are too far away from me! I will there soon.");
+		if (sServerFacade.UnitIsDead(bot))
+		{
+			bot->ResurrectPlayer(1.0f, false);
+			ai->TellMasterNoFacing("Back from the grave!");
+		}
+		else
+			ai->TellMaster("You are too far away from me! I will there soon.");
+
 		bot->TeleportTo(master->GetMapId(), master->GetPositionX(), master->GetPositionY(), master->GetPositionZ(), master->GetOrientation());
         return true;
     }

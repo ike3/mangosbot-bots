@@ -250,7 +250,14 @@ bool MovementAction::Follow(Unit* target, float distance, float angle)
 
     if (!IsMovingAllowed(target))
     {
-        ai->TellMasterNoFacing("I will there soon.");
+		if (sServerFacade.UnitIsDead(bot))
+		{
+			bot->ResurrectPlayer(1.0f, false);
+			ai->TellMasterNoFacing("I live, again!");
+		}
+		else
+			ai->TellMasterNoFacing("I will there soon.");
+
 		bot->TeleportTo(target->GetMapId(), target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), target->GetOrientation());
         return false;
     }
