@@ -11,7 +11,6 @@ public:
     DpsWarriorStrategyActionNodeFactory()
     {
         creators["overpower"] = &overpower;
-        creators["melee"] = &melee;
         creators["charge"] = &charge;
         creators["bloodthirst"] = &bloodthirst;
         creators["rend"] = &rend;
@@ -25,13 +24,6 @@ private:
         return new ActionNode ("overpower",
             /*P*/ NULL,
             /*A*/ NextAction::array(0, new NextAction("melee"), NULL),
-            /*C*/ NULL);
-    }
-    static ActionNode* melee(PlayerbotAI* ai)
-    {
-        return new ActionNode ("melee",
-            /*P*/ NextAction::array(0, new NextAction("charge"), NULL),
-            /*A*/ NULL,
             /*C*/ NULL);
     }
     static ActionNode* charge(PlayerbotAI* ai)
