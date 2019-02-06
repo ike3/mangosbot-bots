@@ -1830,7 +1830,13 @@ void PlayerbotAI::ImbueItem(Item* item, uint32 targetFlag, ObjectGuid targetGUID
       }
    }
 
+#ifdef CMANGOS
    std::unique_ptr<WorldPacket> packet(new WorldPacket(CMSG_USE_ITEM, 20));
+#endif
+#ifdef MANGOS
+   WorldPacket* packet = new WorldPacket(CMSG_USE_ITEM, 20);
+#endif
+
    *packet << bagIndex;
    *packet << slot;
    *packet << spell_index;
@@ -1841,7 +1847,12 @@ void PlayerbotAI::ImbueItem(Item* item, uint32 targetFlag, ObjectGuid targetGUID
    if (targetFlag & (TARGET_FLAG_UNIT | TARGET_FLAG_ITEM | TARGET_FLAG_OBJECT))
       *packet << targetGUID.WriteAsPacked();
 
+#ifdef CMANGOS
    bot->GetSession()->QueuePacket(std::move(packet));
+#endif
+#ifdef MANGOS
+   bot->GetSession()->QueuePacket(packet);
+#endif
 }
 
 void PlayerbotAI::EnchantItemT(uint32 spellid, uint8 slot)

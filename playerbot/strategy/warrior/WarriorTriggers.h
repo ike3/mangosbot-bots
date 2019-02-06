@@ -93,7 +93,12 @@ namespace ai
         WarriorCanInterceptTrigger(PlayerbotAI* ai) : Trigger(ai, "intercept") {}
         virtual bool IsActive()
         {
+#ifdef CMANGOS
             if (bot->isInCombat())
+#endif
+#ifdef MANGOS
+            if (bot->IsInCombat())
+#endif
             {
                 Unit* target = AI_VALUE(Unit*, "current target");
                 return target && AI_VALUE2(float, "distance", "current target") >= (sPlayerbotAIConfig.meleeDistance + 8) && target && AI_VALUE2(float, "distance", "current target") <= (sPlayerbotAIConfig.meleeDistance + 24);

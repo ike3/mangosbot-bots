@@ -59,7 +59,12 @@ void AttackersValue::AddAttackersOf(Player* player, set<Unit*>& targets)
 		if (!player->GetGroup())
 		{
 			Unit* unit = *i;
+#ifdef CMANGOS
 			if (!unit->getThreatManager().getThreat(player))
+#endif
+#ifdef MANGOS
+			if (!unit->GetThreatManager().getThreat(player))
+#endif
 				continue;
 		}
 		targets.insert(*i);

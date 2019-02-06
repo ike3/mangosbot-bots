@@ -43,8 +43,13 @@ ImbueWithPoisonAction::ImbueWithPoisonAction(PlayerbotAI* ai) : Action(ai, "appl
 
 bool ImbueWithPoisonAction::Execute(Event event)
    {
+#ifdef CMANGOS
       if (bot->isInCombat())
-         return false;
+#endif
+#ifdef MANGOS
+      if (bot->IsInCombat())
+#endif
+		  return false;
 
       // remove stealth
       if (bot->HasAura(SPELL_AURA_MOD_STEALTH))
@@ -97,7 +102,12 @@ ImbueWithStoneAction::ImbueWithStoneAction(PlayerbotAI* ai) : Action(ai, "apply 
 
 bool ImbueWithStoneAction::Execute(Event event)
 {
+#ifdef CMANGOS
    if (bot->isInCombat())
+#endif
+#ifdef MANGOS
+   if (bot->IsInCombat())
+#endif
       return false;
 
    // remove stealth
@@ -143,7 +153,12 @@ ImbueWithOilAction::ImbueWithOilAction(PlayerbotAI* ai) : Action(ai, "apply oil"
 
 bool ImbueWithOilAction::Execute(Event event)
 {
+#ifdef CMANGOS
    if (bot->isInCombat())
+#endif
+#ifdef MANGOS
+   if (bot->IsInCombat())
+#endif
       return false;
 
    // remove stealth

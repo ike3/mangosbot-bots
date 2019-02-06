@@ -15,7 +15,12 @@
 #include "ServerFacade.h"
 #include "AiFactory.h"
 #ifdef MANGOSBOT_ONE
-#include "Arena/ArenaTeam.h"
+    #ifdef CMANGOS
+        #include "Arena/ArenaTeam.h"
+    #endif
+    #ifdef MANGOS
+        #include "ArenaTeam.h"
+    #endif
 #endif
 #ifdef ENABLE_IMMERSIVE
 #include "immersive.h"
