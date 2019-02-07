@@ -1179,3 +1179,12 @@ void RandomPlayerbotMgr::RandomTeleportForRpg(Player* bot)
     sLog.outDetail("Random teleporting bot %s for RPG (%d locations available)", bot->GetName(), rpgLocsCache[bot->GetFactionTemplateEntry()->ID].size());
     RandomTeleport(bot, rpgLocsCache[bot->GetFactionTemplateEntry()->ID]);
 }
+
+void RandomPlayerbotMgr::Remove(Player* bot)
+{
+    uint64 owner = bot->GetObjectGuid().GetRawValue();
+    CharacterDatabase.PExecute("delete from ai_playerbot_random_bots where owner = 0 and bot = '%u'", owner);
+    eventCache[owner].clear();
+
+    LogoutPlayerBot(owner);
+}

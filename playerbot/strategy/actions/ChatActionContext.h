@@ -57,6 +57,7 @@
 #include "ShareQuestAction.h"
 #include "SkipSpellsListAction.h"
 #include "CustomStrategyEditAction.h"
+#include "HireAction.h"
 #include "WtsAction.h"
 
 namespace ai
@@ -132,9 +133,11 @@ namespace ai
             creators["debug"] = &ChatActionContext::debug;
             creators["cs"] = &ChatActionContext::cs;
             creators["wts"] = &ChatActionContext::wts;
+            creators["hire"] = &ChatActionContext::hire;
         }
 
     private:
+        static Action* hire(PlayerbotAI* ai) { return new HireAction(ai); }
         static Action* wts(PlayerbotAI* ai) { return new WtsAction(ai); }
         static Action* cs(PlayerbotAI* ai) { return new CustomStrategyEditAction(ai); }
         static Action* debug(PlayerbotAI* ai) { return new DebugAction(ai); }
