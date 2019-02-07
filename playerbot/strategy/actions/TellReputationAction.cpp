@@ -23,7 +23,7 @@ bool TellReputationAction::Execute(Event event)
     const FactionTemplateEntry *factionTemplate = unit->GetFactionTemplateEntry();
 #endif
 
-#ifdef MMANGOS
+#ifdef MANGOS
     const FactionTemplateEntry *factionTemplate = unit->getFactionTemplateEntry();
 #endif
     uint32 faction = factionTemplate->faction;

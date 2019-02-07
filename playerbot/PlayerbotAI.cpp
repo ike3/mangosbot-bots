@@ -1860,8 +1860,13 @@ void PlayerbotAI::EnchantItemT(uint32 spellid, uint8 slot)
    Item* pItem = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, slot);
    if (!pItem)
     return;
-
+#ifdef MANGOS
+    #ifdef MANGOSBOT_ZERO
+       SpellEntry const* spellInfo = sSpellStore.LookupEntry(spellid);
+    #endif
+#else
    SpellEntry const* spellInfo = sSpellTemplate.LookupEntry<SpellEntry>(spellid);
+#endif
    if (!spellInfo)
       return;
 
