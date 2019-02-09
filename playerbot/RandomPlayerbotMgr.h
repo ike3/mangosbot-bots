@@ -72,6 +72,7 @@ class RandomPlayerbotMgr : public PlayerbotHolder
         uint32 GetValue(uint32 bot, string type);
         void SetValue(uint32 bot, string type, uint32 value);
         void SetValue(Player* bot, string type, uint32 value);
+        void Remove(Player* bot);
 
 	protected:
 	    virtual void OnBotLoginInternal(Player * const bot);

@@ -12,7 +12,6 @@ public:
     {
         creators["hamstring"] = &hamstring;
         creators["heroic strike"] = &heroic_strike;
-        creators["battle shout"] = &battle_shout;
     }
 private:
     static ActionNode* hamstring(PlayerbotAI* ai)
@@ -25,13 +24,6 @@ private:
     static ActionNode* heroic_strike(PlayerbotAI* ai)
     {
         return new ActionNode ("heroic strike",
-            /*P*/ NULL,
-            /*A*/ NextAction::array(0, new NextAction("melee"), NULL),
-            /*C*/ NULL);
-    }
-    static ActionNode* battle_shout(PlayerbotAI* ai)
-    {
-        return new ActionNode ("battle shout",
             /*P*/ NULL,
             /*A*/ NextAction::array(0, new NextAction("melee"), NULL),
             /*C*/ NULL);

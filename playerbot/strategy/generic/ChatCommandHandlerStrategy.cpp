@@ -187,4 +187,5 @@ ChatCommandHandlerStrategy::ChatCommandHandlerStrategy(PlayerbotAI* ai) : PassTr
     supported.push_back("debug");
     supported.push_back("cs");
     supported.push_back("wts");
+    supported.push_back("hire");
 }
