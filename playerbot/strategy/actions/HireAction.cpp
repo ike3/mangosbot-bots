@@ -13,7 +13,7 @@ bool HireAction::Execute(Event event)
     if (!sRandomPlayerbotMgr.IsRandomBot(bot))
         return false;
 
-    uint32 account = sObjectMgr.GetPlayerAccountIdByGUID(master->GetObjectGuid().GetRawValue());
+    uint32 account = sObjectMgr.GetPlayerAccountIdByGUID(master->GetObjectGuid());
     QueryResult* results = CharacterDatabase.PQuery("SELECT count(*) FROM characters where account = '%u'", account);
 
     uint32 charCount = 10;
