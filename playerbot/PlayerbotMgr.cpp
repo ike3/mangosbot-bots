@@ -59,7 +59,7 @@ void PlayerbotHolder::LogoutPlayerBot(uint64 guid)
     {
         bot->GetPlayerbotAI()->TellMaster("Goodbye!");
         sPlayerbotDbStore.Save(bot->GetPlayerbotAI());
-        sLog.outString("Bot %s logged out", bot->GetName());
+        sLog.outDebug("Bot %s logged out", bot->GetName());
         //bot->SaveToDB();
 
         WorldSession * botWorldSessionPtr = bot->GetSession();
@@ -572,7 +572,7 @@ void PlayerbotMgr::OnBotLoginInternal(Player * const bot)
 {
     bot->GetPlayerbotAI()->SetMaster(master);
     bot->GetPlayerbotAI()->ResetStrategies();
-    sLog.outString("Bot %s logged in", bot->GetName());
+    sLog.outDebug("Bot %s logged in", bot->GetName());
 }
 
 void PlayerbotMgr::OnPlayerLogin(Player* player)

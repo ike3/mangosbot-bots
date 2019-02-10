@@ -240,7 +240,7 @@ bool RandomPlayerbotMgr::ProcessBot(uint32 bot)
     uint32 logout = GetEventValue(bot, "logout");
     if (!logout)
     {
-        sLog.outString("Logging out bot %d", bot);
+        sLog.outDebug("Logging out bot %d", bot);
         LogoutPlayerBot(bot);
         SetEventValue(bot, "logout", 1, sPlayerbotAIConfig.maxRandomBotInWorldTime);
         return true;
