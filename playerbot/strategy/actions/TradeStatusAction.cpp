@@ -8,7 +8,9 @@
 #include "../../RandomPlayerbotMgr.h"
 #include "../../GuildTaskMgr.h"
 #include "../../ServerFacade.h"
+#include "../values/CraftValue.h"
 #include "../values/ItemUsageValue.h"
+#include "SetCraftAction.h"
 
 using namespace ai;
 
@@ -49,7 +51,7 @@ bool TradeStatusAction::Execute(Event event)
         uint32 discount = sRandomPlayerbotMgr.GetTradeDiscount(bot, master);
         if (CheckTrade())
         {
-            int32 botMoney = CalculateCost(bot->GetTradeData(), true);
+            int32 botMoney = CalculateCost(bot, true);
 
             map<uint32, uint32> itemIds;
             for (uint32 slot = 0; slot < TRADE_SLOT_TRADED_COUNT; ++slot)
@@ -67,7 +69,22 @@ bool TradeStatusAction::Execute(Event event)
             }
 
             for (map<uint32, uint32>::iterator i = itemIds.begin(); i != itemIds.end(); ++i)
-                sGuildTaskMgr.CheckItemTask(i->first, i->second, master, bot);
+            {
+                uint32 itemId = i->first;
+                uint32 obtained = i->second;
+
+                CraftData &craftData = AI_VALUE(CraftData&, "craft");
+                if (!craftData.IsEmpty())
+                {
+                    if (craftData.IsRequired(itemId))
+                        craftData.AddObtained(itemId, obtained);
+
+                    if (craftData.itemId == itemId)
+                        craftData.Crafted();
+                }
+
+                sGuildTaskMgr.CheckItemTask(itemId, obtained, master, bot);
+            }
 
             return true;
         }
@@ -114,18 +131,18 @@ bool TradeStatusAction::CheckTrade()
 
     if (!sRandomPlayerbotMgr.IsRandomBot(bot))
     {
-        int32 botItemsMoney = CalculateCost(bot->GetTradeData(), true);
+        int32 botItemsMoney = CalculateCost(bot, true);
         int32 botMoney = bot->GetTradeData()->GetMoney() + botItemsMoney;
-        int32 playerItemsMoney = CalculateCost(master->GetTradeData(), false);
+        int32 playerItemsMoney = CalculateCost(master, false);
         int32 playerMoney = master->GetTradeData()->GetMoney() + playerItemsMoney;
         if (playerMoney || botMoney)
             ai->PlaySound(playerMoney < botMoney ? TEXTEMOTE_SIGH : TEXTEMOTE_THANK);
         return true;
     }
 
-    int32 botItemsMoney = CalculateCost(bot->GetTradeData(), true);
+    int32 botItemsMoney = CalculateCost(bot, true);
     int32 botMoney = bot->GetTradeData()->GetMoney() + botItemsMoney;
-    int32 playerItemsMoney = CalculateCost(master->GetTradeData(), false);
+    int32 playerItemsMoney = CalculateCost(master, false);
     int32 playerMoney = master->GetTradeData()->GetMoney() + playerItemsMoney;
 
     for (uint32 slot = 0; slot < TRADE_SLOT_TRADED_COUNT; ++slot)
@@ -215,8 +232,9 @@ bool TradeStatusAction::CheckTrade()
     return false;
 }
 
-int32 TradeStatusAction::CalculateCost(TradeData* data, bool sell)
+int32 TradeStatusAction::CalculateCost(Player* player, bool sell)
 {
+    TradeData* data = player->GetTradeData();
     if (!data)
         return 0;
 
@@ -233,6 +251,21 @@ int32 TradeStatusAction::CalculateCost(TradeData* data, bool sell)
 
         if (proto->Quality < ITEM_QUALITY_NORMAL)
             return 0;
+
+        CraftData &craftData = AI_VALUE(CraftData&, "craft");
+        if (!craftData.IsEmpty())
+        {
+            if (!sell && craftData.IsRequired(proto->ItemId))
+            {
+                continue;
+            }
+
+            if (sell && craftData.itemId == proto->ItemId && craftData.IsFulfilled())
+            {
+                sum += SetCraftAction::GetCraftFee(craftData);
+                continue;
+            }
+        }
 
         if (sell)
         {

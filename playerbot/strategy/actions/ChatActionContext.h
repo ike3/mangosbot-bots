@@ -58,6 +58,7 @@
 #include "SkipSpellsListAction.h"
 #include "CustomStrategyEditAction.h"
 #include "HireAction.h"
+#include "SetCraftAction.h"
 #include "WtsAction.h"
 
 namespace ai
@@ -134,9 +135,11 @@ namespace ai
             creators["cs"] = &ChatActionContext::cs;
             creators["wts"] = &ChatActionContext::wts;
             creators["hire"] = &ChatActionContext::hire;
+            creators["craft"] = &ChatActionContext::craft;
         }
 
     private:
+        static Action* craft(PlayerbotAI* ai) { return new SetCraftAction(ai); }
         static Action* hire(PlayerbotAI* ai) { return new HireAction(ai); }
         static Action* wts(PlayerbotAI* ai) { return new WtsAction(ai); }
         static Action* cs(PlayerbotAI* ai) { return new CustomStrategyEditAction(ai); }
