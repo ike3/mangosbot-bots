@@ -39,14 +39,14 @@ namespace ai
                 obtained[itemId] += count;
             }
         }
-        void Crafted()
+        void Crafted(uint32 count)
         {
             for (map<uint32, int>::iterator i = required.begin(); i != required.end(); ++i)
             {
                 uint32 item = i->first;
-                if (obtained[item] >= required[item])
+                if (obtained[item] >= required[item] * count)
                 {
-                    obtained[item] -= required[item];
+                    obtained[item] -= required[item] * count;
                 }
             }
         }
