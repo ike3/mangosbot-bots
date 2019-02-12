@@ -15,6 +15,6 @@ namespace ai
     private:
         void BeginTrade();
         bool CheckTrade();
-        int32 CalculateCost(TradeData* data, bool sell);
+        int32 CalculateCost(Player *player, bool sell);
     };
 }
