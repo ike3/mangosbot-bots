@@ -161,11 +161,15 @@ public:
         ostringstream out, body;
         out << "|cffffffff" << mail->subject;
         ai->TellMaster(out.str());
+#ifdef MANGOSBOT_TWO
+
+#else
         if (mail->itemTextId)
         {
             body << "\n" << sObjectMgr.GetItemText(mail->itemTextId);
             ai->TellMaster(body.str());
         }
+#endif
         return true;
     }
     static ReadMailProcessor instance;

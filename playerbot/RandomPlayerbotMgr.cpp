@@ -362,7 +362,11 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot, vector<WorldLocation> &locs
 			terrain->IsInWater(x, y, z))
 			continue;
 
+#ifdef MANGOSBOT_TWO
+        float ground = map->GetHeight(bot->GetPhaseMask(), x, y, z + 0.5f);
+#else
         float ground = map->GetHeight(x, y, z + 0.5f);
+#endif
         if (ground <= INVALID_HEIGHT)
             continue;
 
