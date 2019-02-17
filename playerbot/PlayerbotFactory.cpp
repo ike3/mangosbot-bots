@@ -1095,7 +1095,14 @@ void PlayerbotFactory::InitAvailableSpells()
 			if (state != TRAINER_SPELL_GREEN)
 				continue;
 
-			bot->learnSpell(tSpell->spell, false);
+		    SpellEntry const* proto = sSpellTemplate.LookupEntry<SpellEntry>(tSpell->spell);
+		    if (!proto)
+		        continue;
+
+		    Spell* spell = new Spell(bot, proto, false);
+		    SpellCastTargets targets;
+		    targets.setUnitTarget(bot);
+		    spell->SpellStart(&targets);
 		}
     }
 }
