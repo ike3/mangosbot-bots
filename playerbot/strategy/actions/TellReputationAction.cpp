@@ -30,7 +30,7 @@ bool TellReputationAction::Execute(Event event)
     const FactionEntry* entry = sFactionStore.LookupEntry
 #ifdef CMANGOS
     #ifdef MANGOSBOT_ONE
-            //<FactionEntry>
+            <FactionEntry>
     #endif
 #endif
             (faction);
