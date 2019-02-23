@@ -41,7 +41,11 @@ bool MoveToRpgTargetAction::Execute(Event event)
         ai->InterruptSpell();
     }
 
+#ifdef MANGOSBOT_TWO
+    bool generatePath = !bot->IsFlying() && !bot->IsUnderWater();
+#else
     bool generatePath = !bot->IsFlying() && !bot->IsUnderwater();
+#endif
     MotionMaster &mm = *bot->GetMotionMaster();
 #ifdef CMANGOS
     mm.Clear();

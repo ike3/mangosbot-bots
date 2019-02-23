@@ -58,7 +58,11 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle)
 {
     UpdateMovementState();
 
+#ifdef MANGOSBOT_TWO
+    bool generatePath = !bot->IsFlying() && !bot->HasMovementFlag(MOVEFLAG_SWIMMING) && !bot->IsInWater() && !bot->IsUnderWater();
+#else
     bool generatePath = !bot->IsFlying() && !bot->HasMovementFlag(MOVEFLAG_SWIMMING) && !bot->IsInWater() && !bot->IsUnderwater();
+#endif
     if (generatePath)
     {
         z += CONTACT_DISTANCE;
@@ -209,7 +213,11 @@ bool MovementAction::Follow(Unit* target, float distance)
 
 void MovementAction::UpdateMovementState()
 {
+#ifdef MANGOSBOT_TWO
+    if (bot->IsInWater() || bot->IsUnderWater())
+#else
     if (bot->IsInWater() || bot->IsUnderwater())
+#endif
     {
         bot->m_movementInfo.AddMovementFlag(MOVEFLAG_SWIMMING);
         bot->UpdateSpeed(MOVE_SWIM, true);

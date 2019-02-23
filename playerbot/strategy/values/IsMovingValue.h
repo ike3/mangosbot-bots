@@ -63,7 +63,11 @@ namespace ai
             if (!target)
                 return false;
 
+#ifdef MANGOSBOT_TWO
+            return target->IsUnderWater() || target->IsInWater();
+#else
             return target->IsUnderwater() || target->IsInWater();
+#endif
         }
     };
 }

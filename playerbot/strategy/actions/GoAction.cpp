@@ -91,7 +91,11 @@ bool GoAction::Execute(Event event)
             return false;
         }
 
+#ifdef MANGOSBOT_TWO
+        float ground = map->GetHeight(bot->GetPhaseMask(), x, y, z + 0.5f);
+#else
         float ground = map->GetHeight(x, y, z + 0.5f);
+#endif
         if (ground <= INVALID_HEIGHT)
         {
             ai->TellMaster("I can't go there");

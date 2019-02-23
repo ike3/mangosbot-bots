@@ -363,7 +363,11 @@ void PlayerbotFactory::InitPet()
 			if (!co)
 				continue;
 
+#ifdef MANGOSBOT_TWO
+            if (!co->isTameable(bot->CanTameExoticPets()))
+#else
             if (!co->isTameable())
+#endif
                 continue;
 
             if ((int)co->MinLevel > (int)bot->getLevel())
@@ -386,7 +390,11 @@ void PlayerbotFactory::InitPet()
                 continue;
 
             uint32 guid = map->GenerateLocalLowGuid(HIGHGUID_PET);
+#ifdef MANGOSBOT_TWO
+            CreatureCreatePos pos(map, bot->GetPositionX(), bot->GetPositionY(), bot->GetPositionZ(), bot->GetOrientation(), bot->GetPhaseMask());
+#else
             CreatureCreatePos pos(map, bot->GetPositionX(), bot->GetPositionY(), bot->GetPositionZ(), bot->GetOrientation());
+#endif
             uint32 pet_number = sObjectMgr.GeneratePetNumber();
             pet = new Pet(HUNTER_PET);
             if (!pet->Create(guid, pos, co, pet_number))
@@ -401,7 +409,11 @@ void PlayerbotFactory::InitPet()
             pet->setFaction(bot->getFaction());
             pet->SetLevel(bot->getLevel());
             pet->InitStatsForLevel(bot->getLevel());
+#ifdef MANGOSBOT_TWO
+
+#else
             pet->SetLoyaltyLevel(BEST_FRIEND);
+#endif
             pet->SetPower(POWER_HAPPINESS, HAPPINESS_LEVEL_SIZE * 2);
             pet->GetCharmInfo()->SetPetNumber(sObjectMgr.GeneratePetNumber(), true);
             pet->AIM_Initialize();
@@ -431,7 +443,11 @@ void PlayerbotFactory::InitPet()
     {
         pet->InitStatsForLevel(bot->getLevel());
         pet->SetLevel(bot->getLevel());
+#ifdef MANGOSBOT_TWO
+
+#else
         pet->SetLoyaltyLevel(BEST_FRIEND);
+#endif
         pet->SetPower(POWER_HAPPINESS, HAPPINESS_LEVEL_SIZE * 2);
         pet->SetHealth(pet->GetMaxHealth());
     }

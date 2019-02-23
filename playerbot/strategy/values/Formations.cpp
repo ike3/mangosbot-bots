@@ -38,14 +38,22 @@ WorldLocation MoveAheadFormation::GetLocation()
         float ori = master->GetOrientation();
         float x1 = x + sPlayerbotAIConfig.tooCloseDistance * cos(ori);
         float y1 = y + sPlayerbotAIConfig.tooCloseDistance * sin(ori);
+#ifdef MANGOSBOT_TWO
+        float ground = master->GetMap()->GetHeight(master->GetPhaseMask(), x1, y1, z);
+#else
         float ground = master->GetMap()->GetHeight(x1, y1, z);
+#endif
         if (ground > INVALID_HEIGHT)
         {
             x = x1;
             y = y1;
         }
     }
+#ifdef MANGOSBOT_TWO
+    float ground = master->GetMap()->GetHeight(master->GetPhaseMask(), x, y, z);
+#else
     float ground = master->GetMap()->GetHeight(x, y, z);
+#endif
     if (ground <= INVALID_HEIGHT)
         return Formation::NullLocation;
 
@@ -85,7 +93,11 @@ namespace ai
             float x = master->GetPositionX() + cos(angle) * range;
             float y = master->GetPositionY() + sin(angle) * range;
             float z = master->GetPositionZ();
+#ifdef MANGOSBOT_TWO
+            float ground = master->GetMap()->GetHeight(master->GetPhaseMask(), x, y, z);
+#else
             float ground = master->GetMap()->GetHeight(x, y, z);
+#endif
             if (ground <= INVALID_HEIGHT)
                 return Formation::NullLocation;
 
@@ -122,7 +134,11 @@ namespace ai
             float x = master->GetPositionX() + cos(angle) * range + dx;
             float y = master->GetPositionY() + sin(angle) * range + dy;
             float z = master->GetPositionZ();
+#ifdef MANGOSBOT_TWO
+            float ground = master->GetMap()->GetHeight(master->GetPhaseMask(), x, y, z);
+#else
             float ground = master->GetMap()->GetHeight(x, y, z);
+#endif
             if (ground <= INVALID_HEIGHT)
                 return Formation::NullLocation;
 
@@ -176,7 +192,11 @@ namespace ai
             float x = target->GetPositionX() + cos(angle) * range;
             float y = target->GetPositionY() + sin(angle) * range;
             float z = target->GetPositionZ();
+#ifdef MANGOSBOT_TWO
+            float ground = target->GetMap()->GetHeight(target->GetPhaseMask(), x, y, z);
+#else
             float ground = target->GetMap()->GetHeight(x, y, z);
+#endif
             if (ground <= INVALID_HEIGHT)
                 return Formation::NullLocation;
 
@@ -311,7 +331,11 @@ namespace ai
             float x = master->GetPositionX() + cos(angle) * range + cos(followAngle) * followRange;
             float y = master->GetPositionY() + sin(angle) * range + sin(followAngle) * followRange;
             float z = master->GetPositionZ();
+#ifdef MANGOSBOT_TWO
+            float ground = master->GetMap()->GetHeight(master->GetPhaseMask(), x, y, z);
+#else
             float ground = master->GetMap()->GetHeight(x, y, z);
+#endif
             if (ground <= INVALID_HEIGHT)
             {
                 float minDist = 0, minX = 0, minY = 0;
@@ -320,7 +344,11 @@ namespace ai
                     x = master->GetPositionX() + cos(angle) * range + cos(followAngle) * followRange;
                     y = master->GetPositionY() + sin(angle) * range + sin(followAngle) * followRange;
                     float dist = sServerFacade.GetDistance2d(bot, x, y);
+#ifdef MANGOSBOT_TWO
+                    float ground = master->GetMap()->GetHeight(master->GetPhaseMask(), x, y, z);
+#else
                     float ground = master->GetMap()->GetHeight(x, y, z);
+#endif
                     if (ground > INVALID_HEIGHT && (!minDist || minDist > dist))
                     {
                         minDist = dist;
@@ -499,7 +527,11 @@ WorldLocation MoveFormation::MoveSingleLine(vector<Player*> line, float diff, fl
             float lx = x + cos(angle) * radius;
             float ly = y + sin(angle) * radius;
             float lz = cz;
+#ifdef MANGOSBOT_TWO
+            float ground = bot->GetMap()->GetHeight(bot->GetPhaseMask(), lx, ly, lz);
+#else
             float ground = bot->GetMap()->GetHeight(lx, ly, lz);
+#endif
             if (ground <= INVALID_HEIGHT)
                 return Formation::NullLocation;
 
