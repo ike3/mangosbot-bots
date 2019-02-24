@@ -84,6 +84,14 @@ void PlayerbotFactory::Prepare()
         bot->ResurrectPlayer(1.0f, false);
 
     bot->CombatStop(true);
+    if (sPlayerbotAIConfig.disableRandomLevels)
+    {
+        if (bot->getLevel() < 5)
+        {
+            bot->SetLevel(5);
+        }
+    }
+
     if (!sPlayerbotAIConfig.disableRandomLevels)
     {
         bot->SetLevel(level);
@@ -123,6 +131,13 @@ void PlayerbotFactory::Randomize(bool incremental)
     pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Quests");
     InitQuests();
     // quest rewards boost bot level, so reduce back
+	if (sPlayerbotAIConfig.disableRandomLevels)
+	{
+		if (bot->getLevel() < 5)
+		{
+			bot->SetLevel(5);
+		}
+	}
 	if (!sPlayerbotAIConfig.disableRandomLevels)
 	{
 		bot->SetLevel(level);
