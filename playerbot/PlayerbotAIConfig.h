@@ -70,6 +70,7 @@ public:
     uint32 randomBotGuildCount;
     bool deleteRandomBotGuilds;
 	bool RandombotsWalkingRPG;
+	bool RandombotsWalkingRPGInDoors;
     std::list<uint32> randomBotGuilds;
     bool enableGreet;
     bool randomBotShowHelmet;

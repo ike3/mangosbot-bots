@@ -57,8 +57,11 @@ AiPlayerbot.ShowProgressBars = 1
 # Enable immersive system for random bots
 AiPlayerbot.RandomBotImmersive = 0
 
-# Set randombots movement speed to walking
+# Set randombots movement speed to walking anywhere
 AiPlayerbot.RandombotsWalkingRPG = 0
+
+# Set randombots movement speed to walking only inside buildings
+AiPlayerbot.RandombotsWalkingRPG.InDoors = 1
 
 # Bots greet to the players
 AiPlayerbot.EnableGreet = 1

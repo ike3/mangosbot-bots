@@ -16,5 +16,12 @@ bool FarFromRpgTargetTrigger::IsActive()
     if (!unit) return false;
 
     float distance = AI_VALUE2(float, "distance", "rpg target");
+	if (sPlayerbotAIConfig.RandombotsWalkingRPGInDoors)
+	{
+		if (!bot->GetTerrain()->IsOutdoors(bot->GetPositionX(), bot->GetPositionY(), bot->GetPositionZ()))
+		{
+			bot->m_movementInfo.AddMovementFlag(MOVEFLAG_WALK_MODE);
+		}
+	}
     return distance > sPlayerbotAIConfig.followDistance;
 }
