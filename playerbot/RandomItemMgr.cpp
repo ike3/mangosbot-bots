@@ -394,7 +394,7 @@ bool RandomItemMgr::CanEquipArmor(uint8 clazz, uint32 level, ItemPrototype const
     }
 
     if (((clazz == CLASS_WARRIOR || clazz == CLASS_PALADIN) && level < 40) ||
-            (clazz == CLASS_HUNTER || clazz == CLASS_SHAMAN) && level >= 40)
+            ((clazz == CLASS_HUNTER || clazz == CLASS_SHAMAN) && level >= 40))
     {
         if (proto->SubClass != ITEM_SUBCLASS_ARMOR_MAIL)
             return false;
