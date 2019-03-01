@@ -807,7 +807,7 @@ bool RandomPlayerbotMgr::HandlePlayerbotConsoleCommand(ChatHandler* handler, cha
         {
             uint32 account = *i;
             if (QueryResult* results = CharacterDatabase.PQuery("SELECT guid FROM characters where account = '%u' and name like '%s'",
-                    account, name))
+                    account, name.c_str()))
             {
                 do
                 {
