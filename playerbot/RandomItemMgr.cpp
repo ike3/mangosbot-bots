@@ -239,7 +239,7 @@ void RandomItemMgr::BuildRandomItemCache()
             for (uint32 type = RANDOM_ITEM_GUILD_TASK; type <= RANDOM_ITEM_GUILD_TASK_REWARD_TRADE; type++)
             {
                 RandomItemList list = randomItemCache[level][(RandomItemType)type];
-                sLog.outString("    Level %d..%d Type %d - %u random items cached",
+                sLog.outString("    Level %d..%d Type %d - %zu random items cached",
                         level * 10, level * 10 + 9,
                         type,
                         list.size());
