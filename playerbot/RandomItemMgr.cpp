@@ -527,7 +527,7 @@ void RandomItemMgr::BuildEquipCache()
     else
     {
         uint64 total = MAX_CLASSES * maxLevel * EQUIPMENT_SLOT_END * ITEM_QUALITY_ARTIFACT;
-        sLog.outString("Building equipment cache for %d classes, %d levels, %d slots, %d quality from %d items (%d total)",
+        sLog.outString("Building equipment cache for %d classes, %d levels, %d slots, %d quality from %d items (%zu total)",
                 MAX_CLASSES, maxLevel, EQUIPMENT_SLOT_END, ITEM_QUALITY_ARTIFACT, sItemStorage.GetMaxEntry(), total);
 
         BarGoLink bar(total);
@@ -586,7 +586,7 @@ void RandomItemMgr::BuildEquipCache()
 
                         equipCache[key] = items;
                         bar.step();
-                        sLog.outDetail("Equipment cache for class: %d, level %d, slot %d, quality %d: %d items",
+                        sLog.outDetail("Equipment cache for class: %d, level %d, slot %d, quality %d: %zu items",
                                 clazz, level, slot, quality, items.size());
                     }
                 }
