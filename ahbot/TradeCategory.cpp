@@ -177,6 +177,8 @@ string TradeSkill::GetName()
     case SKILL_JEWELCRAFTING:
         return "trade.jewelcrafting";
 #endif
+    default:
+      break;
     }
 }
 
@@ -210,5 +212,7 @@ string TradeSkill::GetLabel()
     case SKILL_JEWELCRAFTING:
         return "jewelcrafting";
 #endif
+    default:
+       break;
     }
 }
