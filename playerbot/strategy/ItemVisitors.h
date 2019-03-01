@@ -15,7 +15,7 @@ namespace ai
 
     class FindItemVisitor : public IterateItemsVisitor {
     public:
-        FindItemVisitor() : IterateItemsVisitor(), result(NULL) {}
+        FindItemVisitor() : IterateItemsVisitor(), result(0) {}
 
         virtual bool Visit(Item* item)
         {
