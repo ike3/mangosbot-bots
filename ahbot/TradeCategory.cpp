@@ -1,3 +1,4 @@
+#include "Globals/ObjectMgr.h"
 #include "TradeCategory.h"
 #include "Category.h"
 #include "AhBotConfig.h"
