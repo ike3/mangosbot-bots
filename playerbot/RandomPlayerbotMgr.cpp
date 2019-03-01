@@ -364,7 +364,7 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot, vector<WorldLocation> &locs
             continue;
 
         z = 0.05f + ground;
-        sLog.outDetail("Random teleporting bot %s to %s %f,%f,%f (%u/%u locations)",
+        sLog.outDetail("Random teleporting bot %s to %s %f,%f,%f (%u/%zu locations)",
                 bot->GetName(), area->area_name[0], x, y, z, attemtps, locs.size());
 
         bot->GetMotionMaster()->Clear();
