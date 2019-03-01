@@ -1,5 +1,6 @@
 #include "../../botpch.h"
 #include "../playerbot.h"
+#include <stdarg.h>
 #include "AiObjectContext.h"
 #include "Action.h"
 
@@ -48,7 +49,8 @@ NextAction** NextAction::merge(NextAction** left, NextAction** right)
     return res;
 }
 
-NextAction** NextAction::array(uint8 nil, ...)
+//NextAction** NextAction::array(uint8 nil, ...)
+NextAction** NextAction::array(uint32 nil, ...)
 {
     va_list vl;
     va_start(vl, nil);
