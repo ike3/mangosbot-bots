@@ -152,7 +152,7 @@ void AhBot::ForceUpdate()
         return;
 
     string msg = "AhBot is now checking auctions in the background";
-    sLog.outString(msg.c_str());
+    sLog.outString("%s",msg.c_str());
     sWorld.SendWorldText(3, msg.c_str());
     updating = true;
 
@@ -348,7 +348,7 @@ int AhBot::Answer(int auction, Category* category, ItemBag* inAuctionItems)
 
         if (availableMoney < curPrice)
         {
-            sLog.outDetail( "%s (x%d) in auction %d: price %d > %d (available money)",
+            sLog.outDetail( "%s (x%d) in auction %d: price %d > %ld (available money)",
                     proto->Name1, item->GetCount(), auctionIds[auction], curPrice, availableMoney);
             continue;
         }
@@ -375,7 +375,7 @@ int AhBot::Answer(int auction, Category* category, ItemBag* inAuctionItems)
         uint32 buytime = GetBuyTime(entry->Id, proto->ItemId, auctionIds[auction], category, priceLevel);
         if (time(0) < buytime)
         {
-            sLog.outDetail( "%s (x%d) in auction %d: will buy/bid in %d seconds",
+            sLog.outDetail( "%s (x%d) in auction %d: will buy/bid in %ld seconds",
                     proto->Name1, item->GetCount(), auctionIds[auction], buytime - time(0));
             continue;
         }
@@ -523,13 +523,13 @@ int AhBot::AddAuctions(int auction, Category* category, ItemBag* inAuctionItems)
         uint32 sellTime = GetSellTime(proto->ItemId, auctionIds[auction], category);
         if (time(0) < sellTime)
         {
-            sLog.outDetail( "%s in auction %d: will add in %d seconds",
+            sLog.outDetail( "%s in auction %d: will add in %ld seconds",
                     proto->Name1, auctionIds[auction], sellTime - time(0));
             continue;
         }
         else if (time(0) - sellTime > sAhBotConfig.maxSellInterval)
         {
-            sLog.outDetail( "%s in auction %d: too old (%d secs)",
+            sLog.outDetail( "%s in auction %d: too old (%ld secs)",
                     proto->Name1, auctionIds[auction], time(0) - sellTime);
             continue;
         }
@@ -698,7 +698,7 @@ void AhBot::HandleCommand(string command)
                 out << "market: " << ChatHelper::formatMoney(category->GetPricingStrategy()->GetMarketPrice(proto->ItemId, auctionIds[auction]))
                     << "\n";
             }
-            sLog.outString(out.str().c_str());
+            sLog.outString("%s",out.str().c_str());
         }
     }
 }
@@ -745,7 +745,7 @@ void AhBot::PrintStats(int auction)
     AuctionHouseObject* auctionHouse = sAuctionMgr.GetAuctionsMap(ahEntry);
     AuctionHouseObject::AuctionEntryMap const& auctions = auctionHouse->GetAuctions();
 
-    sLog.outString("%d auctions available on auction house %d", auctions.size(), auctionIds[auction]);
+    sLog.outString("%lu auctions available on auction house %d", auctions.size(), auctionIds[auction]);
 }
 
 void AhBot::AddToHistory(AuctionEntry* entry, uint32 won)
@@ -793,7 +793,7 @@ uint32 AhBot::GetAnswerCount(uint32 itemId, uint32 auctionHouse, uint32 withinTi
     uint32 count = 0;
 
     QueryResult* results = CharacterDatabase.PQuery("SELECT COUNT(*) FROM ahbot_history WHERE "
-        "item = '%u' AND won in (2, 3) AND auction_house = '%u' AND buytime > '%u'",
+        "item = '%u' AND won in (2, 3) AND auction_house = '%u' AND buytime > '%lu'",
         itemId, factions[auctionHouse], time(0) - withinTime);
     if (results)
     {
@@ -910,7 +910,7 @@ void AhBot::CheckCategoryMultipliers()
         }
 
         CharacterDatabase.PExecute("INSERT INTO ahbot_category (category, multiplier, max_auction_count, expire_time) "
-                "VALUES ('%s', '%f', '%u', '%u')",
+                "VALUES ('%s', '%f', '%u', '%zu')",
                 name.c_str(), categoryMultipliers[name], categoryMaxAuctionCount[name], categoryMultiplierExpireTimes[name]);
     }
 }
@@ -1001,7 +1001,7 @@ void AhBot::LoadRandomBots()
         }
     }
 
-    sLog.outDetail( "{A=%d,H=%d,N=%d} bidders loaded", bidders[1].size(), bidders[2].size(), bidders[3].size());
+    sLog.outDetail( "{A=%zu,H=%zu,N=%zu} bidders loaded", bidders[1].size(), bidders[2].size(), bidders[3].size());
 }
 
 int32 AhBot::GetSellPrice(ItemPrototype const* proto)
@@ -1181,7 +1181,7 @@ void AhBot::Dump()
                     << ", BUY: "
                     << ChatHelper::formatMoney(category->GetPricingStrategy()->GetBuyPrice(proto, auctionIds[auction]))
                     << " (" << category->GetDisplayName() << ")";
-                sLog.outString(out.str().c_str());
+                sLog.outString("%s",out.str().c_str());
             }
         }
     }
