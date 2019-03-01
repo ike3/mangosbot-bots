@@ -249,7 +249,7 @@ bool PlayerbotMgr::HandlePlayerbotMgrCommand(ChatHandler* handler, char const* a
 
     for (list<string>::iterator i = messages.begin(); i != messages.end(); ++i)
     {
-        handler->PSendSysMessage(i->c_str());
+        handler->PSendSysMessage("%s",i->c_str());
     }
 
     return true;
