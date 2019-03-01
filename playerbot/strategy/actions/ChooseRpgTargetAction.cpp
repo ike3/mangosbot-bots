@@ -21,7 +21,7 @@ bool ChooseRpgTargetAction::Execute(Event event)
 
     if (units.empty())
     {
-        sLog.outDetail("%s can't choose RPG target: all %d are not available", bot->GetName(), possibleTargets.size());
+        sLog.outDetail("%s can't choose RPG target: all %zu are not available", bot->GetName(), possibleTargets.size());
         return false;
     }
 
