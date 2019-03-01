@@ -148,6 +148,7 @@ public:
             return message;
 
         bool found = false;
+        bool isRti = false;
         for (list<string>::iterator i = rtis.begin(); i != rtis.end(); i++)
         {
             string rti = *i;
@@ -167,7 +168,8 @@ public:
             if (target->GetObjectGuid() != rtiTarget)
                 return "";
 
-            if (found |= isRti)
+            found |= isRti;
+            if (found)
                 break;
         }
 
@@ -203,13 +205,15 @@ public:
         Player* bot = ai->GetBot();
 
         bool found = false;
+        bool isClass = false;
         for (map<string, uint8>::iterator i = classNames.begin(); i != classNames.end(); i++)
         {
             bool isClass = message.find(i->first) == 0;
             if (isClass && bot->getClass() != i->second)
                 return "";
 
-            if (found |= isClass)
+            found |= isClass;
+            if (found)
                 break;
         }
 
