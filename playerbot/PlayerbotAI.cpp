@@ -1,6 +1,7 @@
 #include "../botpch.h"
 #include "PlayerbotMgr.h"
 #include "playerbot.h"
+#include <stdarg.h>
 
 #include "AiFactory.h"
 
