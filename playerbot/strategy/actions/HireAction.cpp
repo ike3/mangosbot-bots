@@ -49,7 +49,7 @@ bool HireAction::Execute(Event event)
     ai->TellMaster("I will join you at your next relogin");
 
     sRandomPlayerbotMgr.Remove(bot);
-    CharacterDatabase.PExecute("update characters set account = '%u' where guid = '%u'",
+    CharacterDatabase.PExecute("update characters set account = '%u' where guid = '%lu'",
             account, bot->GetObjectGuid().GetRawValue());
 
     return true;
