@@ -1,5 +1,6 @@
 #include "../../botpch.h"
 #include "../playerbot.h"
+#include <stdarg.h>
 
 #include "Engine.h"
 #include "../PlayerbotAIConfig.h"
