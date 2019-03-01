@@ -2,6 +2,9 @@
 #define _ServerFacade_H
 
 #include "Common.h"
+#include "Unit.h"
+#include "Player.h"
+#include "Entities/GameObject.h"
 #include "PlayerbotAIBase.h"
 #include "PlayerbotAIConfig.h"
 
