@@ -21,7 +21,7 @@ void PlayerbotDbStore::Load(PlayerbotAI *ai)
     if (sPlayerbotAIConfig.IsInRandomAccountList(account))
         return;
 
-    QueryResult* results = CharacterDatabase.PQuery("SELECT `key`,`value` FROM `ai_playerbot_db_store` WHERE `guid` = '%u'", guid);
+    QueryResult* results = CharacterDatabase.PQuery("SELECT `key`,`value` FROM `ai_playerbot_db_store` WHERE `guid` = '%lu'", guid);
     if (results)
     {
         ai->ClearStrategies(BOT_STATE_COMBAT);
@@ -116,10 +116,10 @@ void PlayerbotDbStore::Reset(PlayerbotAI *ai)
     if (sPlayerbotAIConfig.IsInRandomAccountList(account))
         return;
 
-    CharacterDatabase.PExecute("DELETE FROM `ai_playerbot_db_store` WHERE `guid` = '%u'", guid);
+    CharacterDatabase.PExecute("DELETE FROM `ai_playerbot_db_store` WHERE `guid` = '%lu'", guid);
 }
 
 void PlayerbotDbStore::SaveValue(uint64 guid, string key, string value)
 {
-    CharacterDatabase.PExecute("INSERT INTO `ai_playerbot_db_store` (`guid`, `key`, `value`) VALUES ('%u', '%s', '%s')", guid, key.c_str(), value.c_str());
+    CharacterDatabase.PExecute("INSERT INTO `ai_playerbot_db_store` (`guid`, `key`, `value`) VALUES ('%lu', '%s', '%s')", guid, key.c_str(), value.c_str());
 }
