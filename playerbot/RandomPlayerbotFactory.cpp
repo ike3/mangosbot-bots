@@ -242,7 +242,7 @@ void RandomPlayerbotFactory::CreateRandomBots()
         totalRandomBotChars += sAccountMgr.GetCharactersCount(accountId);
     }
 
-    sLog.outString("%d random bot accounts with %d characters available", sPlayerbotAIConfig.randomBotAccounts.size(), totalRandomBotChars);
+    sLog.outString("%zu random bot accounts with %d characters available", sPlayerbotAIConfig.randomBotAccounts.size(), totalRandomBotChars);
 }
 
 
