@@ -274,7 +274,7 @@ bool Engine::MultiplyAndPush(NextAction** actions, float forceRelevance, bool sk
             else
                 break;
         }
-        delete actions;
+        delete[] actions;
     }
     return pushed;
 }
