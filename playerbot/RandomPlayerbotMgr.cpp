@@ -839,7 +839,7 @@ bool RandomPlayerbotMgr::HandlePlayerbotConsoleCommand(ChatHandler* handler, cha
             if (!bot)
                 continue;
 
-            sLog.outString("[%u/%u] Processing command '%s' for bot '%s'",
+            sLog.outString("[%u/%zu] Processing command '%s' for bot '%s'",
                     processed++, botIds.size(), cmd.c_str(), bot->GetName());
 
             ConsoleCommandHandler handler = j->second;
@@ -851,7 +851,7 @@ bool RandomPlayerbotMgr::HandlePlayerbotConsoleCommand(ChatHandler* handler, cha
     list<string> messages = sRandomPlayerbotMgr.HandlePlayerbotCommand(args, NULL);
     for (list<string>::iterator i = messages.begin(); i != messages.end(); ++i)
     {
-        sLog.outString(i->c_str());
+        sLog.outString("%s",i->c_str());
     }
     return true;
 }
@@ -885,7 +885,7 @@ void RandomPlayerbotMgr::OnPlayerLogout(Player* player)
 
 void RandomPlayerbotMgr::OnBotLoginInternal(Player * const bot)
 {
-    sLog.outDetail("%d/%d Bot %s logged in", playerBots.size(), sRandomPlayerbotMgr.GetMaxAllowedBotCount(), bot->GetName());
+    sLog.outDetail("%lu/%d Bot %s logged in", playerBots.size(), sRandomPlayerbotMgr.GetMaxAllowedBotCount(), bot->GetName());
     if (loginProgressBar) loginProgressBar->step();
 }
 
@@ -944,7 +944,7 @@ Player* RandomPlayerbotMgr::GetRandomPlayer()
 
 void RandomPlayerbotMgr::PrintStats()
 {
-    sLog.outString("%d Random Bots online", playerBots.size());
+    sLog.outString("%lu Random Bots online", playerBots.size());
 
     map<uint32, int> alliance, horde;
     for (uint32 i = 0; i < 10; ++i)
@@ -1176,7 +1176,7 @@ void RandomPlayerbotMgr::ChangeStrategy(Player* player)
 
 void RandomPlayerbotMgr::RandomTeleportForRpg(Player* bot)
 {
-    sLog.outDetail("Random teleporting bot %s for RPG (%d locations available)", bot->GetName(), rpgLocsCache[bot->GetFactionTemplateEntry()->ID].size());
+    sLog.outDetail("Random teleporting bot %s for RPG (%zu locations available)", bot->GetName(), rpgLocsCache[bot->GetFactionTemplateEntry()->ID].size());
     RandomTeleport(bot, rpgLocsCache[bot->GetFactionTemplateEntry()->ID]);
 }
 
