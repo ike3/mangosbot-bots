@@ -38,7 +38,7 @@ bool UseMeetingStoneAction::Execute(Event event)
 
     Map* map = master->GetMap();
     if (!map)
-        return NULL;
+        return false;
 
     GameObject *gameObject = map->GetGameObject(guid);
     if (!gameObject)
