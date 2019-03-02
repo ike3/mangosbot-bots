@@ -169,7 +169,7 @@ void SuggestWhatToDoAction::grindMaterials()
                 if (name == category->GetName())
                 {
                     string item = category->GetLabel();
-                    transform(item.begin(), item.end(), item.begin(), tolower);
+                    transform(item.begin(), item.end(), item.begin(), ::tolower);
                     ostringstream itemout;
                     itemout << "|c0000b000" << item << "|r";
                     item = itemout.str();
