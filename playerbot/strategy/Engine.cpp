@@ -1,5 +1,6 @@
 #include "../../botpch.h"
 #include "../playerbot.h"
+#include <stdarg.h>
 
 #include "Engine.h"
 #include "../PlayerbotAIConfig.h"
@@ -273,7 +274,7 @@ bool Engine::MultiplyAndPush(NextAction** actions, float forceRelevance, bool sk
             else
                 break;
         }
-        delete actions;
+        delete[] actions;
     }
     return pushed;
 }
@@ -527,7 +528,7 @@ void Engine::LogAction(const char* format, ...)
     if (testMode)
     {
         FILE* file = fopen("test.log", "a");
-        fprintf(file, buf);
+        fprintf(file, "%s",buf);
         fprintf(file, "\n");
         fclose(file);
     }

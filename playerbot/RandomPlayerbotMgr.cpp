@@ -371,7 +371,7 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot, vector<WorldLocation> &locs
             continue;
 
         z = 0.05f + ground;
-        sLog.outDetail("Random teleporting bot %s to %s %f,%f,%f (%u/%u locations)",
+        sLog.outDetail("Random teleporting bot %s to %s %f,%f,%f (%u/%zu locations)",
                 bot->GetName(), area->area_name[0], x, y, z, attemtps, locs.size());
 
         bot->GetMotionMaster()->Clear();
@@ -821,7 +821,7 @@ bool RandomPlayerbotMgr::HandlePlayerbotConsoleCommand(ChatHandler* handler, cha
         {
             uint32 account = *i;
             if (QueryResult* results = CharacterDatabase.PQuery("SELECT guid FROM characters where account = '%u' and name like '%s'",
-                    account, name))
+                    account, name.c_str()))
             {
                 do
                 {
@@ -853,7 +853,7 @@ bool RandomPlayerbotMgr::HandlePlayerbotConsoleCommand(ChatHandler* handler, cha
             if (!bot)
                 continue;
 
-            sLog.outString("[%u/%u] Processing command '%s' for bot '%s'",
+            sLog.outString("[%u/%zu] Processing command '%s' for bot '%s'",
                     processed++, botIds.size(), cmd.c_str(), bot->GetName());
 
             ConsoleCommandHandler handler = j->second;
@@ -865,7 +865,7 @@ bool RandomPlayerbotMgr::HandlePlayerbotConsoleCommand(ChatHandler* handler, cha
     list<string> messages = sRandomPlayerbotMgr.HandlePlayerbotCommand(args, NULL);
     for (list<string>::iterator i = messages.begin(); i != messages.end(); ++i)
     {
-        sLog.outString(i->c_str());
+        sLog.outString("%s",i->c_str());
     }
     return true;
 }
@@ -899,7 +899,7 @@ void RandomPlayerbotMgr::OnPlayerLogout(Player* player)
 
 void RandomPlayerbotMgr::OnBotLoginInternal(Player * const bot)
 {
-    sLog.outDetail("%d/%d Bot %s logged in", playerBots.size(), sRandomPlayerbotMgr.GetMaxAllowedBotCount(), bot->GetName());
+    sLog.outDetail("%lu/%d Bot %s logged in", playerBots.size(), sRandomPlayerbotMgr.GetMaxAllowedBotCount(), bot->GetName());
     if (loginProgressBar) loginProgressBar->step();
 }
 
@@ -958,7 +958,7 @@ Player* RandomPlayerbotMgr::GetRandomPlayer()
 
 void RandomPlayerbotMgr::PrintStats()
 {
-    sLog.outString("%d Random Bots online", playerBots.size());
+    sLog.outString("%lu Random Bots online", playerBots.size());
 
     map<uint32, int> alliance, horde;
     for (uint32 i = 0; i < 10; ++i)
@@ -1191,11 +1191,11 @@ void RandomPlayerbotMgr::ChangeStrategy(Player* player)
 void RandomPlayerbotMgr::RandomTeleportForRpg(Player* bot)
 {
 #ifdef CMANGOS
-    sLog.outDetail("Random teleporting bot %s for RPG (%d locations available)", bot->GetName(), rpgLocsCache[bot->GetFactionTemplateEntry()->ID].size());
+    sLog.outDetail("Random teleporting bot %s for RPG (%zu locations available)", bot->GetName(), rpgLocsCache[bot->GetFactionTemplateEntry()->ID].size());
     RandomTeleport(bot, rpgLocsCache[bot->GetFactionTemplateEntry()->ID]);
 #endif
 #ifdef MANGOS
-    sLog.outDetail("Random teleporting bot %s for RPG (%d locations available)", bot->GetName(), rpgLocsCache[bot->getFactionTemplateEntry()->ID].size());
+    sLog.outDetail("Random teleporting bot %s for RPG (%zu locations available)", bot->GetName(), rpgLocsCache[bot->getFactionTemplateEntry()->ID].size());
     RandomTeleport(bot, rpgLocsCache[bot->getFactionTemplateEntry()->ID]);
 #endif
 }
@@ -1203,7 +1203,7 @@ void RandomPlayerbotMgr::RandomTeleportForRpg(Player* bot)
 void RandomPlayerbotMgr::Remove(Player* bot)
 {
     uint64 owner = bot->GetObjectGuid().GetRawValue();
-    CharacterDatabase.PExecute("delete from ai_playerbot_random_bots where owner = 0 and bot = '%u'", owner);
+    CharacterDatabase.PExecute("delete from ai_playerbot_random_bots where owner = 0 and bot = '%lu'", owner);
     eventCache[owner].clear();
 
     LogoutPlayerBot(owner);

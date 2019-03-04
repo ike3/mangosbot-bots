@@ -1,6 +1,7 @@
 #include "../botpch.h"
 #include "PlayerbotMgr.h"
 #include "playerbot.h"
+#include <stdarg.h>
 
 #include "AiFactory.h"
 
@@ -18,7 +19,7 @@
 #include "Group.h"
 #include "Pet.h"
 #include "SpellAuras.h"
-#include "../AhBot/ahbot.h"
+#include "../ahbot/AhBot.h"
 #include "GuildTaskMgr.h"
 #include "PlayerbotDbStore.h"
 #include "strategy/values/PositionValue.h"
@@ -302,7 +303,7 @@ void PlayerbotAI::HandleCommand(uint32 type, const string& text, Player& fromPla
         return;
     }
 
-    if (filtered.size() > 2 && filtered.substr(0, 2) == "d " || filtered.size() > 3 && filtered.substr(0, 3) == "do ")
+    if ((filtered.size() > 2 && filtered.substr(0, 2) == "d ") || (filtered.size() > 3 && filtered.substr(0, 3) == "do "))
     {
         std::string action = filtered.substr(filtered.find(" ") + 1);
         DoSpecificAction(action);

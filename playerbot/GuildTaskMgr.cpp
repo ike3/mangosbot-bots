@@ -57,11 +57,11 @@ void GuildTaskMgr::Update(Player* player, Player* guildMaster)
     if (secLevel == PLAYERBOT_SECURITY_DENY_ALL || (secLevel == PLAYERBOT_SECURITY_TALK && reason != PLAYERBOT_DENY_FAR))
     {
         sLog.outDebug("%s / %s: skipping guild task update - not enough security level, reason = %u",
-			guild->GetName(), player->GetName(), reason);
+			guild->GetName().c_str(), player->GetName(), reason);
         return;
     }
 
-    sLog.outDebug("%s: guild task update for player %s", guild->GetName(), player->GetName());
+    sLog.outDebug("%s: guild task update for player %s", guild->GetName().c_str(), player->GetName());
 
     uint32 owner = (uint32)player->GetGUIDLow();
 
@@ -82,7 +82,7 @@ void GuildTaskMgr::Update(Player* player, Player* guildMaster)
         if (task == GUILD_TASK_TYPE_NONE)
         {
             sLog.outError( "%s / %s: error creating guild task",
-				guild->GetName(), player->GetName());
+				guild->GetName().c_str(), player->GetName());
         }
 
         uint32 time = urand(sPlayerbotAIConfig.minGuildTaskChangeTime, sPlayerbotAIConfig.maxGuildTaskChangeTime);
@@ -91,7 +91,7 @@ void GuildTaskMgr::Update(Player* player, Player* guildMaster)
                 urand(sPlayerbotAIConfig.minGuildTaskAdvertisementTime, sPlayerbotAIConfig.maxGuildTaskAdvertisementTime));
 
         sLog.outDebug("%s / %s: guild task %u is set for %u secs",
-				guild->GetName(), player->GetName(),
+				guild->GetName().c_str(), player->GetName(),
                 task, time);
         return;
     }
@@ -100,7 +100,7 @@ void GuildTaskMgr::Update(Player* player, Player* guildMaster)
     if (!advertisement)
     {
         sLog.outDebug("%s / %s: sending advertisement",
-				guild->GetName(), player->GetName());
+				guild->GetName().c_str(), player->GetName());
         if (SendAdvertisement(owner, guildId))
         {
             SetTaskValue(owner, guildId, "advertisement", 1,
@@ -109,7 +109,7 @@ void GuildTaskMgr::Update(Player* player, Player* guildMaster)
         else
         {
             sLog.outError( "%s / %s: error sending advertisement",
-					guild->GetName(), player->GetName());
+					guild->GetName().c_str(), player->GetName());
         }
     }
 
@@ -117,7 +117,7 @@ void GuildTaskMgr::Update(Player* player, Player* guildMaster)
     if (!thanks)
     {
         sLog.outDebug("%s / %s: sending thanks",
-				guild->GetName(), player->GetName());
+				guild->GetName().c_str(), player->GetName());
         if (SendThanks(owner, guildId))
         {
             SetTaskValue(owner, guildId, "thanks", 1, 2 * sPlayerbotAIConfig.maxGuildTaskChangeTime);
@@ -126,7 +126,7 @@ void GuildTaskMgr::Update(Player* player, Player* guildMaster)
         else
         {
             sLog.outError( "%s / %s: error sending thanks",
-					guild->GetName(), player->GetName());
+					guild->GetName().c_str(), player->GetName());
         }
     }
 
@@ -134,7 +134,7 @@ void GuildTaskMgr::Update(Player* player, Player* guildMaster)
     if (!reward)
     {
         sLog.outDebug("%s / %s: sending reward",
-				guild->GetName(), player->GetName());
+				guild->GetName().c_str(), player->GetName());
         if (Reward(owner, guildId))
         {
             SetTaskValue(owner, guildId, "reward", 1, 2 * sPlayerbotAIConfig.maxGuildTaskChangeTime);
@@ -143,7 +143,7 @@ void GuildTaskMgr::Update(Player* player, Player* guildMaster)
         else
         {
             sLog.outError( "%s / %s: error sending reward",
-					guild->GetName(), player->GetName());
+					guild->GetName().c_str(), player->GetName());
         }
     }
 }
@@ -937,18 +937,18 @@ void GuildTaskMgr::SendCompletionMessage(Player* player, string verb)
         {
             Player* member = gr->getSource();
             if (member != player)
-                ChatHandler(member->GetSession()).PSendSysMessage(out.str().c_str());
+                ChatHandler(member->GetSession()).PSendSysMessage("%s",out.str().c_str());
         }
     }
     else
     {
         PlayerbotAI *ai = player->GetPlayerbotAI();
         if (ai && ai->GetMaster())
-            ChatHandler(ai->GetMaster()->GetSession()).PSendSysMessage(out.str().c_str());
+            ChatHandler(ai->GetMaster()->GetSession()).PSendSysMessage("%s",out.str().c_str());
     }
 
     ostringstream self; self << "You have " << verb << " a guild task";
-    ChatHandler(player->GetSession()).PSendSysMessage(self.str().c_str());
+    ChatHandler(player->GetSession()).PSendSysMessage("%s",self.str().c_str());
 }
 
 void GuildTaskMgr::CheckKillTaskInternal(Player* player, Unit* victim)
@@ -1059,5 +1059,5 @@ void GuildTaskMgr::DeleteMail(list<uint32> buffer)
         sql << "'" << *j << "'";
     }
     sql << ")";
-    CharacterDatabase.PExecute(sql.str().c_str());
+    CharacterDatabase.PExecute("%s",sql.str().c_str());
 }

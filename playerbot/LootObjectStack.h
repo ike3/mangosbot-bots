@@ -8,6 +8,7 @@ namespace ai
     {
     public:
         LootStrategy() {}
+        virtual ~LootStrategy() {};
         virtual bool CanLoot(ItemPrototype const *proto, AiObjectContext *context) = 0;
         virtual string GetName() = 0;
     };

@@ -177,6 +177,9 @@ bool PlayerbotSecurity::CheckLevelFor(PlayerbotSecurityLevel level, bool silent,
     case PLAYERBOT_SECURITY_INVITE:
         out << "Invite me to your group first";
         break;
+        default:
+            out << "I can't do that";
+            break;
     }
 
     string text = out.str();

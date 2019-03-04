@@ -7,7 +7,7 @@ map<int, T> filterList(vector<T> src, string filter)
     if (filter.empty() || filter == "*")
     {
         int idx = 0;
-        for (vector<T>::iterator i = src.begin(); i != src.end(); ++i)
+        for (typename vector<T>::iterator i = src.begin(); i != src.end(); ++i)
             result[idx++] = *i;
         return result;
     }

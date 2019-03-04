@@ -189,7 +189,7 @@ string RandomPlayerbotFactory::CreateRandomBotName(uint8 gender)
     }
 
 	fields = result->Fetch();
-	delete result;
+// delete result;
     return fields[0].GetString();
 }
 
@@ -270,7 +270,7 @@ void RandomPlayerbotFactory::CreateRandomBots()
         totalRandomBotChars += sAccountMgr.GetCharactersCount(accountId);
     }
 
-    sLog.outString("%d random bot accounts with %d characters available", sPlayerbotAIConfig.randomBotAccounts.size(), totalRandomBotChars);
+    sLog.outString("%zu random bot accounts with %d characters available", sPlayerbotAIConfig.randomBotAccounts.size(), totalRandomBotChars);
 }
 
 
@@ -382,8 +382,7 @@ string RandomPlayerbotFactory::CreateRandomGuildName()
     }
 
     fields = result->Fetch();
-    std::string tempString = fields[0].GetString();
-    delete result;
-    return tempString;
+//	delete result;
+    return fields[0].GetString();
 }
 

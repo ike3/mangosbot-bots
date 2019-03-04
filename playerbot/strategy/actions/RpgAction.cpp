@@ -123,16 +123,16 @@ void RpgAction::taxi(Unit* unit)
     Creature* flightMaster = bot->GetNPCIfCanInteractWith(unit->GetObjectGuid(), UNIT_NPC_FLAG_FLIGHTMASTER);
     if (!flightMaster)
     {
-        sLog.outDetail("Bot %s cannot talk to flightmaster (%d location available)", bot->GetName(), nodes.size());
+        sLog.outDetail("Bot %s cannot talk to flightmaster (%zu location available)", bot->GetName(), nodes.size());
         return;
     }
 
     if (!bot->ActivateTaxiPathTo({ entry->from, entry->to }, flightMaster, 0))
     {
-        sLog.outDetail("Bot %s cannot fly (%d location available)", bot->GetName(), nodes.size());
+        sLog.outDetail("Bot %s cannot fly (%zu location available)", bot->GetName(), nodes.size());
         return;
     }
-    sLog.outDetail("Bot %s is flying to %u (%d location available)", bot->GetName(), path, nodes.size());
+    sLog.outDetail("Bot %s is flying to %u (%zu location available)", bot->GetName(), path, nodes.size());
     bot->ModifyMoney(money);
 }
 

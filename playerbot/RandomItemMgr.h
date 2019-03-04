@@ -3,6 +3,7 @@
 
 #include "Common.h"
 #include "PlayerbotAIBase.h"
+#include "Entities/Player.h"
 
 using namespace std;
 
