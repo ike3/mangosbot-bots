@@ -9,7 +9,7 @@ namespace ai
     public:
         ChatFilter(PlayerbotAI* ai) : PlayerbotAIAware(ai) {}
         virtual string Filter(string message);
-		virtaul ~ChatFilter() {}
+		virtual ~ChatFilter() {}
     };
 
     class CompositeChatFilter : public ChatFilter
