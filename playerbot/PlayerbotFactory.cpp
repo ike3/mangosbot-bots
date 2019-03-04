@@ -70,14 +70,14 @@ void PlayerbotFactory::Prepare()
 {
     if (!itemQuality)
     {
-        if (level <= 20)
+        if (level < 20)
             itemQuality = urand(ITEM_QUALITY_NORMAL, ITEM_QUALITY_UNCOMMON);
-        else if (level <= 40)
+        else if (level < 40)
             itemQuality = urand(ITEM_QUALITY_UNCOMMON, ITEM_QUALITY_RARE);
         else if (level < 60)
-            itemQuality = urand(ITEM_QUALITY_UNCOMMON, ITEM_QUALITY_EPIC);
-        else
             itemQuality = urand(ITEM_QUALITY_RARE, ITEM_QUALITY_EPIC);
+        else
+            itemQuality = urand(ITEM_QUALITY_EPIC, ITEM_QUALITY_LEGENDARY);
     }
 
     if (sServerFacade.UnitIsDead(bot))
@@ -86,9 +86,9 @@ void PlayerbotFactory::Prepare()
     bot->CombatStop(true);
     if (sPlayerbotAIConfig.disableRandomLevels)
     {
-        if (bot->getLevel() < 5)
+        if (bot->getLevel() < sPlayerbotAIConfig.randombotStartingLevel)
         {
-            bot->SetLevel(5);
+            bot->SetLevel(sPlayerbotAIConfig.randombotStartingLevel);
         }
     }
 
@@ -133,9 +133,9 @@ void PlayerbotFactory::Randomize(bool incremental)
     // quest rewards boost bot level, so reduce back
 	if (sPlayerbotAIConfig.disableRandomLevels)
 	{
-		if (bot->getLevel() < 5)
+		if (bot->getLevel() < sPlayerbotAIConfig.randombotStartingLevel)
 		{
-			bot->SetLevel(5);
+			bot->SetLevel(sPlayerbotAIConfig.randombotStartingLevel);
 		}
 	}
 	if (!sPlayerbotAIConfig.disableRandomLevels)
@@ -211,7 +211,10 @@ void PlayerbotFactory::Randomize(bool incremental)
     pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_EqSets");
     sLog.outDetail("Initializing second equipment set...");
     InitSecondEquipmentSet();
-    ApplyEnchantTemplate();
+	if (bot->getLevel() >= sPlayerbotAIConfig.minEnchantingBotLevel)
+	{
+		ApplyEnchantTemplate();
+	}
     if (pmo) pmo->finish();
 
     pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Inventory");
@@ -220,12 +223,12 @@ void PlayerbotFactory::Randomize(bool incremental)
     AddConsumables();
     if (pmo) pmo->finish();
 
-    pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Guilds & 1v1 ArenaTeams");
-    sLog.outDetail("Initializing guilds & 1v1 ArenaTeams");
+    pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Guilds & ArenaTeams");
+    sLog.outDetail("Initializing guilds & ArenaTeams");
     InitGuild();
-#ifdef MANGOSBOT_ONE
-    InitArenaTeam();
-#endif
+//#ifdef MANGOSBOT_ONE
+//    InitArenaTeam();
+//#endif
     if (pmo) pmo->finish();
 
     pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Pet");
@@ -874,9 +877,11 @@ bool PlayerbotFactory::CanEquipItem(ItemPrototype const* proto, uint32 desiredQu
 
 void PlayerbotFactory::InitEquipment(bool incremental)
 {
-    DestroyItemsVisitor visitor(bot);
-    IterateItems(&visitor, ITERATE_ALL_ITEMS);
-
+	if (bot->getLevel() >= 10)
+	{
+        DestroyItemsVisitor visitor(bot);
+        IterateItems(&visitor, ITERATE_ALL_ITEMS);
+	}
 
     for(uint8 slot = 0; slot < EQUIPMENT_SLOT_END; ++slot)
     {

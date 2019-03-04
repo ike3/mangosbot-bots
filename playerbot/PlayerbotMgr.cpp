@@ -195,6 +195,12 @@ string PlayerbotHolder::ProcessBotCommand(string cmd, ObjectGuid guid, bool admi
                 factory.Randomize(false);
                 return "ok";
             }
+            else if (cmd == "init=legendary" || cmd == "init=yellow")
+            {
+                PlayerbotFactory factory(bot, master->getLevel(), ITEM_QUALITY_LEGENDARY);
+                factory.Randomize(false);
+                return "ok";
+            }
         }
 
         if (cmd == "levelup" || cmd == "level")

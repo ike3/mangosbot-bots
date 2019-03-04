@@ -75,8 +75,10 @@ public:
     bool enableGreet;
     bool randomBotShowHelmet;
     bool randomBotShowCloak;
-	bool disableRandomLevels;
-	uint32 playerbotsXPrate;
+    bool disableRandomLevels;
+    uint32 playerbotsXPrate;
+    uint32 minEnchantingBotLevel;
+    uint32 randombotStartingLevel;
 
     bool guildTaskEnabled;
     uint32 minGuildTaskChangeTime, maxGuildTaskChangeTime;

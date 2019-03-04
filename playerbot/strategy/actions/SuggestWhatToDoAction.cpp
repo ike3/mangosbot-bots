@@ -348,9 +348,11 @@ bool SuggestTradeAction::Execute(Event event)
         return false;
 
     uint32 quality = urand(0, 100);
-    if (quality > 90)
+    if (quality > 95)
+        quality = ITEM_QUALITY_LEGENDARY;
+    else if (quality > 90)
         quality = ITEM_QUALITY_EPIC;
-    else if (quality >75)
+    else if (quality > 75)
         quality = ITEM_QUALITY_RARE;
     else if (quality > 50)
         quality = ITEM_QUALITY_UNCOMMON;

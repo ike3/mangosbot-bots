@@ -41,6 +41,8 @@ ChatHelper::ChatHelper(PlayerbotAI* ai) : PlayerbotAIAware(ai)
     itemQualities["blue"] = ITEM_QUALITY_RARE;
     itemQualities["epic"] = ITEM_QUALITY_EPIC;
     itemQualities["violet"] = ITEM_QUALITY_EPIC;
+    itemQualities["legendary"] = ITEM_QUALITY_LEGENDARY;
+    itemQualities["yellow"] = ITEM_QUALITY_LEGENDARY;
 
     consumableSubClasses["potion"] = ITEM_SUBCLASS_POTION;
     consumableSubClasses["elixir"] = ITEM_SUBCLASS_ELIXIR;

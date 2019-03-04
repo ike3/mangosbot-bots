@@ -648,6 +648,9 @@ bool GuildTaskMgr::HandleConsoleCommand(ChatHandler* handler, char const* args)
                         case ITEM_QUALITY_EPIC:
                             name << "epic";
                             break;
+                        case ITEM_QUALITY_LEGENDARY:
+                            name << "yellow";
+                            break;
                         }
                         name << ")";
                     }

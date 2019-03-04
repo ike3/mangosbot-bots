@@ -67,7 +67,7 @@ CategoryList::CategoryList()
 
 void CategoryList::Add(Category* category)
 {
-    for (uint32 quality = ITEM_QUALITY_NORMAL; quality <= ITEM_QUALITY_EPIC; ++quality)
+    for (uint32 quality = ITEM_QUALITY_NORMAL; quality <= ITEM_QUALITY_LEGENDARY; ++quality)
         categories.push_back(new QualityCategoryWrapper(category, quality));
 }
 

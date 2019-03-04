@@ -120,6 +120,12 @@ string WhoAction::QuerySpec(string text)
     IterateItems(&visitor, ITERATE_ITEMS_IN_EQUIP);
 
     bool needSlash = false;
+    if (visitor.count[ITEM_QUALITY_LEGENDARY])
+    {
+        out << "|h|cffff00ff" << visitor.count[ITEM_QUALITY_LEGENDARY] << "|h|cffffffff";
+        needSlash = true;
+    }
+
     if (visitor.count[ITEM_QUALITY_EPIC])
     {
         out << "|h|cffff00ff" << visitor.count[ITEM_QUALITY_EPIC] << "|h|cffffffff";
