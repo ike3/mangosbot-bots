@@ -13,6 +13,7 @@ namespace ai
             lastMoveToZ = 0;
             lastMoveToOri = 0;
             lastFollow = NULL;
+            lastAreaTrigger = 0;
         }
 
         LastMovement(LastMovement& other)
