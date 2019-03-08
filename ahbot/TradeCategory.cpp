@@ -194,8 +194,6 @@ string TradeSkill::GetName()
     case SKILL_JEWELCRAFTING:
         name = "trade.jewelcrafting"; break;
 #endif
-    default:
-      break;
     }
 
     return reagent ? name : name + ".craft";
@@ -234,8 +232,6 @@ string TradeSkill::GetLabel()
             return "jewelcrafting";
     #endif
         }
-    default:
-       break;
     }
     else
     {
