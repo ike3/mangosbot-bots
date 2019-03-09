@@ -77,7 +77,7 @@ void PlayerbotFactory::Prepare()
         else if (level < 60)
             itemQuality = urand(ITEM_QUALITY_RARE, ITEM_QUALITY_EPIC);
         else
-            itemQuality = urand(ITEM_QUALITY_EPIC, ITEM_QUALITY_LEGENDARY);
+            itemQuality = ITEM_QUALITY_EPIC;
     }
 
     if (sServerFacade.UnitIsDead(bot))
