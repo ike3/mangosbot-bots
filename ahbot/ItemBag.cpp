@@ -35,20 +35,33 @@ CategoryList::CategoryList()
     Add(new ahbot::Quest());
     Add(new DevicesAndParts());
 
-    Add(new TradeSkill(SKILL_TAILORING));
-    Add(new TradeSkill(SKILL_LEATHERWORKING));
-    Add(new TradeSkill(SKILL_ENGINEERING));
-    Add(new TradeSkill(SKILL_BLACKSMITHING));
-    Add(new TradeSkill(SKILL_ALCHEMY));
-    Add(new TradeSkill(SKILL_ENCHANTING));
-    Add(new TradeSkill(SKILL_FISHING));
-    Add(new TradeSkill(SKILL_FIRST_AID));
-    Add(new TradeSkill(SKILL_COOKING));
-    Add(new TradeSkill(SKILL_MINING));
-    Add(new TradeSkill(SKILL_HERBALISM));
-    Add(new TradeSkill(SKILL_SKINNING));
+    Add(new TradeSkill(SKILL_TAILORING, true));
+    Add(new TradeSkill(SKILL_LEATHERWORKING, true));
+    Add(new TradeSkill(SKILL_ENGINEERING, true));
+    Add(new TradeSkill(SKILL_BLACKSMITHING, true));
+    Add(new TradeSkill(SKILL_ALCHEMY, true));
+    Add(new TradeSkill(SKILL_ENCHANTING, true));
+    Add(new TradeSkill(SKILL_FISHING, true));
+    Add(new TradeSkill(SKILL_FIRST_AID, true));
+    Add(new TradeSkill(SKILL_COOKING, true));
+
+    Add(new TradeSkill(SKILL_MINING, true));
+    Add(new TradeSkill(SKILL_HERBALISM, true));
+    Add(new TradeSkill(SKILL_SKINNING, true));
+
+    Add(new TradeSkill(SKILL_TAILORING, false));
+    Add(new TradeSkill(SKILL_LEATHERWORKING, false));
+    Add(new TradeSkill(SKILL_ENGINEERING, false));
+    Add(new TradeSkill(SKILL_BLACKSMITHING, false));
+    Add(new TradeSkill(SKILL_ALCHEMY, false));
+    Add(new TradeSkill(SKILL_ENCHANTING, false));
+    Add(new TradeSkill(SKILL_FISHING, false));
+    Add(new TradeSkill(SKILL_FIRST_AID, false));
+    Add(new TradeSkill(SKILL_COOKING, false));
+
 #ifdef MANGOSBOT_ONE
-    Add(new TradeSkill(SKILL_JEWELCRAFTING));
+    Add(new TradeSkill(SKILL_JEWELCRAFTING, true));
+    Add(new TradeSkill(SKILL_JEWELCRAFTING, false));
 #endif
 }
 

@@ -100,15 +100,38 @@ bool TradeSkill::IsCraftedBySpell(ItemPrototype const* proto, uint32 spellId)
     if (!entry)
         return false;
 
-    for (uint32 x = 0; x < MAX_SPELL_REAGENTS; ++x)
-    {
-        if (entry->Reagent[x] <= 0)
-            { continue; }
+    return IsCraftedBySpell(proto, entry);
+}
 
-        if (proto->ItemId == entry->Reagent[x])
+bool TradeSkill::IsCraftedBySpell(ItemPrototype const* proto, SpellEntry const *entry)
+{
+
+    if (reagent)
+    {
+        for (uint32 x = 0; x < MAX_SPELL_REAGENTS; ++x)
         {
-            sLog.outDetail("%s is crafted by %s", proto->Name1, entry->SpellName[0]);
-            return true;
+            if (entry->Reagent[x] <= 0)
+                { continue; }
+
+            if (proto->ItemId == entry->Reagent[x])
+            {
+                sLog.outDetail("%s is a reagent for %s", proto->Name1, entry->SpellName[0]);
+                return true;
+            }
+        }
+    }
+    else
+    {
+        for (int i = 0; i < 3; ++i)
+        {
+            if (entry->Effect[i] == SPELL_EFFECT_CREATE_ITEM)
+            {
+                if (entry->EffectItemType[i] == proto->ItemId)
+                {
+                    sLog.outDetail("%s is crafted by %s", proto->Name1, entry->SpellName[0]);
+                    return true;
+                }
+            }
         }
     }
 
@@ -131,15 +154,8 @@ bool TradeSkill::IsCraftedBy(ItemPrototype const* proto, uint32 spellId)
         if (!craft)
             continue;
 
-        for (uint32 i = 0; i < MAX_SPELL_REAGENTS; ++i)
-        {
-            uint32 itemId = craft->Reagent[i];
-            if (itemId == proto->ItemId)
-            {
-                sLog.outDetail("%s is crafted by %s", proto->Name1, craft->SpellName[0]);
-                return true;
-            }
-        }
+        if (IsCraftedBySpell(proto, craft))
+            return true;
     }
 
     return false;
@@ -147,72 +163,106 @@ bool TradeSkill::IsCraftedBy(ItemPrototype const* proto, uint32 spellId)
 
 string TradeSkill::GetName()
 {
+    string name;
     switch (skill)
     {
     case SKILL_TAILORING:
-        return "trade.tailoring";
+        name = "trade.tailoring"; break;
     case SKILL_LEATHERWORKING:
-        return "trade.leatherworking";
+        name = "trade.leatherworking"; break;
     case SKILL_ENGINEERING:
-        return "trade.engineering";
+        name = "trade.engineering"; break;
     case SKILL_BLACKSMITHING:
-        return "trade.blacksmithing";
+        name = "trade.blacksmithing"; break;
     case SKILL_ALCHEMY:
-        return "trade.alchemy";
+        name = "trade.alchemy"; break;
     case SKILL_COOKING:
-        return "trade.cooking";
+        name = "trade.cooking"; break;
     case SKILL_FISHING:
-        return "trade.fishing";
+        name = "trade.fishing"; break;
     case SKILL_ENCHANTING:
-        return "trade.enchanting";
+        name = "trade.enchanting"; break;
     case SKILL_MINING:
-        return "trade.mining";
+        name = "trade.mining"; break;
     case SKILL_SKINNING:
-        return "trade.skinning";
+        name = "trade.skinning"; break;
     case SKILL_HERBALISM:
-        return "trade.herbalism";
+        name = "trade.herbalism"; break;
     case SKILL_FIRST_AID:
-        return "trade.firstaid";
+        name = "trade.firstaid"; break;
 #ifdef MANGOSBOT_ONE
     case SKILL_JEWELCRAFTING:
-        return "trade.jewelcrafting";
+        name = "trade.jewelcrafting" break;;
 #endif
-    default:
-      break;
-    }
+     }
+
+    return reagent ? name : name + ".craft";
 }
 
 string TradeSkill::GetLabel()
 {
-    switch (skill)
+    if (reagent)
     {
-    case SKILL_TAILORING:
-        return "tailoring materials";
-    case SKILL_LEATHERWORKING:
-    case SKILL_SKINNING:
-        return "leather and hides";
-    case SKILL_ENGINEERING:
-        return "engineering materials";
-    case SKILL_BLACKSMITHING:
-        return "blacksmithing materials";
-    case SKILL_ALCHEMY:
-    case SKILL_HERBALISM:
-        return "herbs";
-    case SKILL_COOKING:
-        return "fish and meat";
-    case SKILL_FISHING:
-        return "fish";
-    case SKILL_ENCHANTING:
-        return "enchants";
-    case SKILL_MINING:
-        return "ore and stone";
-    case SKILL_FIRST_AID:
-        return "first aid reagents";
-#ifdef MANGOSBOT_ONE
-    case SKILL_JEWELCRAFTING:
-        return "jewelcrafting";
-#endif
-    default:
-       break;
+        switch (skill)
+        {
+        case SKILL_TAILORING:
+            return "tailoring materials";
+        case SKILL_LEATHERWORKING:
+        case SKILL_SKINNING:
+            return "leather and hides";
+        case SKILL_ENGINEERING:
+            return "engineering materials";
+        case SKILL_BLACKSMITHING:
+            return "blacksmithing materials";
+        case SKILL_ALCHEMY:
+        case SKILL_HERBALISM:
+            return "herbs";
+        case SKILL_COOKING:
+            return "fish and meat";
+        case SKILL_FISHING:
+            return "fish";
+        case SKILL_ENCHANTING:
+            return "enchanting materials";
+        case SKILL_MINING:
+            return "ore and stone";
+        case SKILL_FIRST_AID:
+            return "first aid reagents";
+    #ifdef MANGOSBOT_ONE
+        case SKILL_JEWELCRAFTING:
+            return "jewelcrafting";
+    #endif
+        }
+    }
+    else
+    {
+        switch (skill)
+        {
+        case SKILL_TAILORING:
+            return "cloth items";
+        case SKILL_LEATHERWORKING:
+        case SKILL_SKINNING:
+            return "leather items";
+        case SKILL_ENGINEERING:
+            return "parts and devices";
+        case SKILL_BLACKSMITHING:
+            return "metal items";
+        case SKILL_ALCHEMY:
+        case SKILL_HERBALISM:
+            return "herbs";
+        case SKILL_COOKING:
+            return "food and drink";
+        case SKILL_FISHING:
+            return "fish";
+        case SKILL_ENCHANTING:
+            return "enchants";
+        case SKILL_MINING:
+            return "ore and stone";
+        case SKILL_FIRST_AID:
+            return "bandages";
+    #ifdef MANGOSBOT_ONE
+        case SKILL_JEWELCRAFTING:
+            return "jewels";
+    #endif
+        }
     }
 }
