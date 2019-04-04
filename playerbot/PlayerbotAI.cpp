@@ -1037,6 +1037,7 @@ bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target, Item* itemTarget)
         if (bot->GetTradeData())
         {
             bot->GetTradeData()->SetSpell(spellId);
+			delete spell;
             return true;
         }
     }
