@@ -77,7 +77,7 @@ void StatsAction::ListXP( ostringstream &out )
     if (nextLevelXP)
         xpPercent = 100 * curXP / nextLevelXP;
     uint32 restPercent = 0;
-    if (restXP)
+    if (restXP && nextLevelXP)
         restPercent = 2 * (100 * restXP / nextLevelXP);
 
     out << "|cff00ff00" << xpPercent << "|cffffd333/|cff00ff00" << restPercent << "%|cffffffff XP";
