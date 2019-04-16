@@ -313,7 +313,7 @@ void RandomPlayerbotFactory::CreateRandomGuilds()
         Player* player = sObjectMgr.GetPlayer(leader);
         if (!player)
         {
-            sLog.outError("Cannot find player for leader %u", leader);
+            sLog.outError("Cannot find player for leader %s", player->GetName());
             break;
         }
 
