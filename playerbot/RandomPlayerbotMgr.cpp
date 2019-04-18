@@ -147,11 +147,13 @@ uint32 RandomPlayerbotMgr::AddRandomBots()
             Field* fields = result->Fetch();
             uint32 guid = fields[0].GetUInt32();
             uint8 race = fields[1].GetUInt8();
-            bool alliance = guids.size() % 2 == 0;
-            if (bots.find(guid) == bots.end() &&
-                    ((alliance && IsAlliance(race)) || ((!alliance && !IsAlliance(race))
-            )))
-            {
+			// Although this code works it cuts the Maximum Bots setting in half. 
+			// And, also doesn't see to be any reason to do it.
+            //bool alliance = guids.size() % 2 == 0;
+            //if (bots.find(guid) == bots.end() &&
+            //        ((alliance && IsAlliance(race)) || ((!alliance && !IsAlliance(race))
+            //)))
+            //{
                 guids.push_back(guid);
                 uint32 bot = guid;
                 SetEventValue(bot, "add", 1, urand(sPlayerbotAIConfig.minRandomBotInWorldTime, sPlayerbotAIConfig.maxRandomBotInWorldTime));
@@ -165,7 +167,7 @@ uint32 RandomPlayerbotMgr::AddRandomBots()
                     delete result;
                     return guids.size();
                 }
-            }
+         //   }
         } while (result->NextRow());
         delete result;
     }
