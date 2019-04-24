@@ -192,7 +192,7 @@ string TradeSkill::GetName()
         name = "trade.firstaid"; break;
 #ifdef MANGOSBOT_ONE
     case SKILL_JEWELCRAFTING:
-        name = "trade.jewelcrafting" break;;
+        name = "trade.jewelcrafting"; break;;
 #endif
      }
 
