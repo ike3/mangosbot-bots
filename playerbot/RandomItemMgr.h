@@ -18,6 +18,7 @@ enum RandomItemType
 class RandomItemPredicate
 {
 public:
+    virtual ~RandomItemPredicate(){};
     virtual bool Apply(ItemPrototype const* proto) = 0;
 };
 

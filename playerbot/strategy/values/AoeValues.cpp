@@ -48,6 +48,7 @@ WorldLocation AoePositionValue::Calculate()
     if (group.empty())
         return WorldLocation();
 
+    // Note: don't know where these values come from or even used.
     float x1, y1, x2, y2;
     for (list<ObjectGuid>::iterator i = group.begin(); i != group.end(); ++i)
     {

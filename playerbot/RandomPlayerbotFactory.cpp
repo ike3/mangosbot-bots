@@ -189,8 +189,9 @@ string RandomPlayerbotFactory::CreateRandomBotName(uint8 gender)
     }
 
 	fields = result->Fetch();
+    string bname = fields[0].GetString();
     delete result;
-    return fields[0].GetString();
+    return bname;
 }
 
 
@@ -340,7 +341,7 @@ void RandomPlayerbotFactory::CreateRandomGuilds()
         Player* player = sObjectMgr.GetPlayer(leader);
         if (!player)
         {
-            sLog.outError("Cannot find player for leader %u", leader);
+            sLog.outError("Cannot find player for leader %s", player->GetName());
             break;
         }
 
@@ -382,7 +383,8 @@ string RandomPlayerbotFactory::CreateRandomGuildName()
     }
 
     fields = result->Fetch();
+    string gname = fields[0].GetString();
     delete result;
-    return fields[0].GetString();
+    return gname;
 }
 
