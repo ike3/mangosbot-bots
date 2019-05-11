@@ -25,7 +25,7 @@ bool MoveToRpgTargetAction::Execute(Event event)
 	
 	if (sPlayerbotAIConfig.RandombotsWalkingRPG)
 	{
-		bot->m_movementInfo.AddMovementFlag(MOVEFLAG_WALK_MODE);
+		bot->m_movementInfo->AddMovementFlag(MOVEFLAG_WALK_MODE);
 	}
 
     if (bot->IsWithinLOS(x, y, z)) return MoveNear(target, sPlayerbotAIConfig.followDistance);

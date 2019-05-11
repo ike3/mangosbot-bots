@@ -219,12 +219,12 @@ void MovementAction::UpdateMovementState()
     if (bot->IsInWater() || bot->IsUnderwater())
 #endif
     {
-        bot->m_movementInfo.AddMovementFlag(MOVEFLAG_SWIMMING);
+        bot->m_movementInfo->AddMovementFlag(MOVEFLAG_SWIMMING);
         bot->UpdateSpeed(MOVE_SWIM, true);
     }
     else
     {
-        bot->m_movementInfo.RemoveMovementFlag(MOVEFLAG_SWIMMING);
+        bot->m_movementInfo->RemoveMovementFlag(MOVEFLAG_SWIMMING);
         bot->UpdateSpeed(MOVE_SWIM, true);
     }
 }

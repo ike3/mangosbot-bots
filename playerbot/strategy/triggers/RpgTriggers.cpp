@@ -20,7 +20,7 @@ bool FarFromRpgTargetTrigger::IsActive()
 	{
 		if (!bot->GetTerrain()->IsOutdoors(bot->GetPositionX(), bot->GetPositionY(), bot->GetPositionZ()))
 		{
-			bot->m_movementInfo.AddMovementFlag(MOVEFLAG_WALK_MODE);
+			bot->m_movementInfo->AddMovementFlag(MOVEFLAG_WALK_MODE);
 		}
 	}
     return distance > sPlayerbotAIConfig.followDistance;
