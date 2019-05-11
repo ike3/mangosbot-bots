@@ -219,12 +219,21 @@ void MovementAction::UpdateMovementState()
     if (bot->IsInWater() || bot->IsUnderwater())
 #endif
     {
+#ifdef MANGOSBOT_ONE
         bot->m_movementInfo->AddMovementFlag(MOVEFLAG_SWIMMING);
+#else
+		bot->m_movementInfo.AddMovementFlag(MOVEFLAG_SWIMMING);
+#endif
         bot->UpdateSpeed(MOVE_SWIM, true);
     }
     else
     {
+#ifdef MANGOSBOT_ONE
         bot->m_movementInfo->RemoveMovementFlag(MOVEFLAG_SWIMMING);
+#else
+		bot->m_movementInfo.RemoveMovementFlag(MOVEFLAG_SWIMMING);
+
+#endif
         bot->UpdateSpeed(MOVE_SWIM, true);
     }
 }

@@ -20,7 +20,11 @@ bool FarFromRpgTargetTrigger::IsActive()
 	{
 		if (!bot->GetTerrain()->IsOutdoors(bot->GetPositionX(), bot->GetPositionY(), bot->GetPositionZ()))
 		{
+#ifdef MANGOSBOT_ONE
 			bot->m_movementInfo->AddMovementFlag(MOVEFLAG_WALK_MODE);
+#else
+            bot->m_movementInfo.AddMovementFlag(MOVEFLAG_WALK_MODE);
+#endif
 		}
 	}
     return distance > sPlayerbotAIConfig.followDistance;
