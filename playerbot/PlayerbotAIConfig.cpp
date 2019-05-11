@@ -149,11 +149,6 @@ bool PlayerbotAIConfig::Initialize()
     deleteRandomBotAccounts = config.GetBoolDefault("AiPlayerbot.DeleteRandomBotAccounts", false);
     randomBotGuildCount = config.GetIntDefault("AiPlayerbot.RandomBotGuildCount", 50);
     deleteRandomBotGuilds = config.GetBoolDefault("AiPlayerbot.DeleteRandomBotGuilds", false);
-    RandombotsWalkingRPG = config.GetBoolDefault("AiPlayerbot.RandombotsWalkingRPG", false);
-    RandombotsWalkingRPGInDoors = config.GetBoolDefault("AiPlayerbot.RandombotsWalkingRPG.InDoors", false);
-	minEnchantingBotLevel = config.GetIntDefault("AiPlayerbot.minEnchantingBotLevel", 60);
-	randombotStartingLevel = config.GetIntDefault("AiPlayerbot.randombotStartingLevel", 5);
-
 
     guildTaskEnabled = config.GetBoolDefault("AiPlayerbot.EnableGuildTasks", true);
     minGuildTaskChangeTime = config.GetIntDefault("AiPlayerbot.MinGuildTaskChangeTime", 2 * 24 * 3600);
@@ -163,12 +158,20 @@ bool PlayerbotAIConfig::Initialize()
     minGuildTaskRewardTime = config.GetIntDefault("AiPlayerbot.MinGuildTaskRewardTime", 30);
     maxGuildTaskRewardTime = config.GetIntDefault("AiPlayerbot.MaxGuildTaskRewardTime", 120);
     guildTaskAdvertCleanupTime = config.GetIntDefault("AiPlayerbot.GuildTaskAdvertCleanupTime", 3600);
-    enableGreet = config.GetBoolDefault("AiPlayerbot.EnableGreet", false);
-    //cosmetic
+
+    //cosmetics (by lidocain)
     randomBotShowCloak = config.GetBoolDefault("AiPlayerbot.RandomBotShowCloak", false);
     randomBotShowHelmet = config.GetBoolDefault("AiPlayerbot.RandomBotShowHelmet", false);
+
+	//SPP switches
+    enableGreet = config.GetBoolDefault("AiPlayerbot.EnableGreet", false);
 	disableRandomLevels = config.GetBoolDefault("AiPlayerbot.DisableRandomLevels", false);
-	playerbotsXPrate = config.GetIntDefault("AiPlayerbot.KillXPRate", 10);
+    playerbotsXPrate = config.GetIntDefault("AiPlayerbot.KillXPRate", 10);
+    RandombotsWalkingRPG = config.GetBoolDefault("AiPlayerbot.RandombotsWalkingRPG", false);
+    RandombotsWalkingRPGInDoors = config.GetBoolDefault("AiPlayerbot.RandombotsWalkingRPG.InDoors", false);
+    minEnchantingBotLevel = config.GetIntDefault("AiPlayerbot.minEnchantingBotLevel", 60);
+    randombotStartingLevel = config.GetIntDefault("AiPlayerbot.randombotStartingLevel", 5);
+    gearscorecheck = config.GetBoolDefault("AiPlayerbot.GearScoreCheck", false);
 
     targetPosRecalcDistance = sWorld.getConfig(CONFIG_FLOAT_RATE_TARGET_POS_RECALCULATION_RANGE);
     BarGoLink::SetOutputState(config.GetBoolDefault("AiPlayerbot.ShowProgressBars", false));

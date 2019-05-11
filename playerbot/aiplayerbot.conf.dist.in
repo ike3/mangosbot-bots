@@ -27,14 +27,14 @@ AiPlayerbot.EnableGuildTasks = 1
 #AiPlayerbot.RandomBotAutoCreate = 1
 
 # Random bot count
-AiPlayerbot.MinRandomBots = 1500
-AiPlayerbot.MaxRandomBots = 2000
+AiPlayerbot.MinRandomBots = 50
+AiPlayerbot.MaxRandomBots = 200
 AiPlayerbot.RandomBotMinLevel = 1
 AiPlayerbot.RandomBotMaxLevel = 70
 
 # Accounts to create for random bots
 AiPlayerbot.RandomBotAccountPrefix = rndbot
-AiPlayerbot.RandomBotAccountCount = 100
+AiPlayerbot.RandomBotAccountCount = 50
 
 # Random bot guild count
 AiPlayerbot.RandomBotGuildCount = 50
@@ -71,13 +71,24 @@ AiPlayerbot.RandomBotShowHelmet = 1
 AiPlayerbot.RandomBotShowCloak = 1 
 
 # Disable random levels for randombots 
-# Every bots started on the same level like other players
-# and level up by killing mobs with higher XP rate
-AiPlayerbot.DisableRandomLevels = 1
+# Every bots started on the specified level and level up by killing mobs.
+AiPlayerbot.DisableRandomLevels = 0
+
+# Set randombots starting level here if "AiPlayerbot.DisableRandomLevels" enabled
+# Recommended: 5+
+AiPlayerbot.randombotStartingLevel = 5
 
 # Set kill XP rate for bots (default: 10)
 # Server XP Rate * AiPlayerbot.KillXPRate
 AiPlayerbot.KillXPRate = 10
+
+# Set minimum level of randombots where gets enchants on items
+# Default: 60
+AiPlayerbot.minEnchantingBotLevel = 60
+
+# Randombots checking players gear score level and deny the group invite if it's too low
+# Default: 1 (enabled)
+AiPlayerbot.GearScoreCheck = 0
 
 ##################################################################################
 #                                                                                #

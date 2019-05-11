@@ -50,10 +50,13 @@ PlayerbotSecurityLevel PlayerbotSecurity::LevelFor(Player* from, DenyReason* rea
 
         int botGS = (int)bot->GetPlayerbotAI()->GetEquipGearScore(bot, false, false);
         int fromGS = (int)bot->GetPlayerbotAI()->GetEquipGearScore(from, false, false);
-        if (botGS && bot->getLevel() > 15 && botGS > fromGS && (100 * (botGS - fromGS) / botGS) >= 12 * sWorld.getConfig(CONFIG_UINT32_MAX_PLAYER_LEVEL) / from->getLevel())
+        if (sPlayerbotAIConfig.gearscorecheck)
         {
-            if (reason) *reason = PLAYERBOT_DENY_GEARSCORE;
-            return PLAYERBOT_SECURITY_TALK;
+            if (botGS && bot->getLevel() > 15 && botGS > fromGS && (100 * (botGS - fromGS) / botGS) >= 12 * sWorld.getConfig(CONFIG_UINT32_MAX_PLAYER_LEVEL) / from->getLevel())
+            {
+                if (reason) *reason = PLAYERBOT_DENY_GEARSCORE;
+                return PLAYERBOT_SECURITY_TALK;
+            }
         }
 
         if (sServerFacade.UnitIsDead(bot))

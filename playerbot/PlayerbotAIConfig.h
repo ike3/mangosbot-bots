@@ -76,6 +76,7 @@ public:
     bool randomBotShowHelmet;
     bool randomBotShowCloak;
     bool disableRandomLevels;
+    bool gearscorecheck;
     uint32 playerbotsXPrate;
     uint32 minEnchantingBotLevel;
     uint32 randombotStartingLevel;
