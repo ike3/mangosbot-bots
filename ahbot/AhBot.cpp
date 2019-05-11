@@ -17,6 +17,7 @@
 #include "playerbot/playerbot.h"
 #include "Player.h"
 #include "Mail.h"
+#include "Util.h"
 
 #ifdef CMANGOS
 #include <boost/thread/thread.hpp>
@@ -592,27 +593,30 @@ int AhBot::AddAuction(int auction, Category* category, ItemPrototype const* prot
 
     AuctionHouseObject* auctionHouse = sAuctionMgr.GetAuctionsMap(ahEntry);
 
+    uint32 auction_time = uint32(urand(8, 24) * HOUR * sWorld.getConfig(CONFIG_FLOAT_RATE_AUCTION_TIME));
+
     AuctionEntry* auctionEntry = new AuctionEntry;
     auctionEntry->Id = sObjectMgr.GenerateAuctionID();
-    auctionEntry->itemGuidLow = item->GetGUIDLow();
+    auctionEntry->itemGuidLow = item->GetObjectGuid().GetCounter();
     auctionEntry->itemTemplate = item->GetEntry();
+    auctionEntry->itemCount = item->GetCount();
+    auctionEntry->itemRandomPropertyId = item->GetItemRandomPropertyId();
     auctionEntry->owner = owner;
     auctionEntry->startbid = bidPrice;
-    auctionEntry->buyout = buyoutPrice;
     auctionEntry->bidder = 0;
     auctionEntry->bid = 0;
+    auctionEntry->buyout = buyoutPrice;
+    auctionEntry->expireTime = time(nullptr) + auction_time;
+    //auctionEntry->moneyDeliveryTime = 0;
     auctionEntry->deposit = 0;
-    auctionEntry->expireTime = (time_t) (urand(8, 24) * 60 * 60 + time(NULL));
     auctionEntry->auctionHouseEntry = ahEntry;
 
-    item->SaveToDB();
+    auctionHouse->AddAuction(auctionEntry);
+
 
     sAuctionMgr.AddAItem(item);
 
-
-    auctionHouse->AddAuction(auctionEntry);
-
-    auctionHouse->AddAuction(auctionEntry);
+    item->SaveToDB();
     auctionEntry->SaveToDB();
 
     sLog.outDetail( "AhBot %d added %d of %s to auction %d for %d..%d", owner, stackCount, proto->Name1, auctionIds[auction], bidPrice, buyoutPrice);
