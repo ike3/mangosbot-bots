@@ -450,7 +450,7 @@ void PlayerbotFactory::InitPet()
             bot->SetPetGuid(pet->GetObjectGuid());
 
             sLog.outDebug(  "Bot %s: assign pet %d (%d level)", bot->GetName(), co->Entry, bot->getLevel());
-            pet->SavePetToDB(PET_SAVE_AS_CURRENT);
+            pet->SavePetToDB(PET_SAVE_AS_CURRENT, bot);
             bot->PetSpellInitialize();
             break;
         }
