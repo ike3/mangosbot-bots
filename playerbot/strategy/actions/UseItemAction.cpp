@@ -44,7 +44,7 @@ bool UseItemAction::UseGameObject(ObjectGuid guid)
     GameObject* go = ai->GetGameObject(guid);
     if (!go || !sServerFacade.isSpawned(go)
 #ifdef CMANGOS
-        || go->IsInUse() 
+        || go->IsInUse()
 #endif
         || go->GetGoState() != GO_STATE_READY)
         return false;
@@ -115,7 +115,7 @@ bool UseItemAction::UseItem(Item* item, ObjectGuid goGuid, Item* itemTarget)
         if (!go || !sServerFacade.isSpawned(go))
             return false;
 
-        targetFlag = TARGET_FLAG_OBJECT;
+        targetFlag = TARGET_FLAG_GAMEOBJECT;
         packet << targetFlag;
         packet.appendPackGUID(goGuid.GetRawValue());
         out << " on " << chat->formatGameobject(go);

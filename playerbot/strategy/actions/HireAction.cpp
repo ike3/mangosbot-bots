@@ -37,7 +37,8 @@ bool HireAction::Execute(Event event)
     }
 
     uint32 discount = sRandomPlayerbotMgr.GetTradeDiscount(bot, master);
-    uint32 moneyReq = 10000 * bot->getLevel();
+    uint32 m = 1 + (bot->getLevel() / 10);
+    uint32 moneyReq = m * 5000 * bot->getLevel();
     if ((int)discount < (int)moneyReq)
     {
         ostringstream out;
@@ -48,6 +49,7 @@ bool HireAction::Execute(Event event)
 
     ai->TellMaster("I will join you at your next relogin");
 
+    bot->SetMoney(moneyReq);
     sRandomPlayerbotMgr.Remove(bot);
     CharacterDatabase.PExecute("update characters set account = '%u' where guid = '%u'",
             account, bot->GetObjectGuid().GetRawValue());
