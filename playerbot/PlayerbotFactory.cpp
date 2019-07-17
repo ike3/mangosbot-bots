@@ -1114,7 +1114,7 @@ void PlayerbotFactory::EnchantItem(Item* item)
         if (spellLevel && (spellLevel > level || spellLevel < level - 10))
             continue;
 
-        for (int j = 0; j < TOTAL_SPELL_EFFECTS; ++j)
+        for (int j = 0; j < MAX_SPELL_EFFECTS; ++j)
         {
             if (entry->Effect[j] != SPELL_EFFECT_ENCHANT_ITEM)
                 continue;
@@ -1548,7 +1548,7 @@ void PlayerbotFactory::InitMounts()
         if (!spellInfo || spellInfo->EffectApplyAuraName[0] != SPELL_AURA_MOUNTED)
             continue;
 
-        if (GetSpellCastTime(spellInfo) < 500 || GetSpellDuration(spellInfo) != -1)
+        if (GetSpellCastTime(spellInfo, bot) < 500 || GetSpellDuration(spellInfo) != -1)
             continue;
 
         int32 effect = max(spellInfo->EffectBasePoints[1], spellInfo->EffectBasePoints[2]);

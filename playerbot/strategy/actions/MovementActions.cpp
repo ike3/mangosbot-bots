@@ -306,7 +306,7 @@ bool MovementAction::Follow(Unit* target, float distance, float angle)
 
     if (bot->GetMotionMaster()->GetCurrentMovementGeneratorType() == FOLLOW_MOTION_TYPE)
     {
-        Unit *currentTarget = static_cast<ChaseMovementGenerator<Player> const*>(bot->GetMotionMaster()->GetCurrent())->
+        Unit *currentTarget = static_cast<ChaseMovementGenerator const*>(bot->GetMotionMaster()->GetCurrent())->
 #ifdef MANGOS
             GetTarget();
 #endif

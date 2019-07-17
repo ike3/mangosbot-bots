@@ -24,7 +24,7 @@ namespace ai
             case CHASE_MOTION_TYPE:
                 if (target->GetTypeId() == TYPEID_PLAYER)
                 { 
-                    chaseTarget = static_cast<ChaseMovementGenerator<Player> const*>(target->GetMotionMaster()->GetCurrent())->
+                    chaseTarget = static_cast<ChaseMovementGenerator const*>(target->GetMotionMaster()->GetCurrent())->
 #ifdef MANGOS
                         GetTarget(); 
 #endif
@@ -34,7 +34,7 @@ namespace ai
                 }
                 else
                 { 
-                    chaseTarget = static_cast<ChaseMovementGenerator<Creature> const*>(target->GetMotionMaster()->GetCurrent())->
+                    chaseTarget = static_cast<ChaseMovementGenerator const*>(target->GetMotionMaster()->GetCurrent())->
 #ifdef MANGOS
                         GetTarget();
 #endif

@@ -1854,7 +1854,7 @@ void PlayerbotAI::ImbueItem(Item* item, uint32 targetFlag, ObjectGuid targetGUID
    *packet << item_guid;
    *packet << targetFlag;
 
-   if (targetFlag & (TARGET_FLAG_UNIT | TARGET_FLAG_ITEM | TARGET_FLAG_OBJECT))
+   if (targetFlag & (TARGET_FLAG_UNIT | TARGET_FLAG_ITEM | TARGET_FLAG_GAMEOBJECT))
       *packet << targetGUID.WriteAsPacked();
 
 #ifdef CMANGOS
