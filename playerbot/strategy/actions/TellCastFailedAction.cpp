@@ -44,7 +44,7 @@ bool TellCastFailedAction::Execute(Event event)
     default:
         out << "cannot cast";
     }
-    int32 castTime = GetSpellCastTime(pSpellInfo);
+    int32 castTime = GetSpellCastTime(pSpellInfo, bot);
     if (castTime >= 2000)
         ai->TellMasterNoFacing(out.str());
     return true;
