@@ -25,11 +25,7 @@ bool MoveToRpgTargetAction::Execute(Event event)
 	
 	if (sPlayerbotAIConfig.RandombotsWalkingRPG)
 	{
-#ifdef MANGOSBOT_ONE
-		bot->m_movementInfo->AddMovementFlag(MOVEFLAG_WALK_MODE);
-#else
         bot->m_movementInfo.AddMovementFlag(MOVEFLAG_WALK_MODE);
-#endif
 	}
 
     if (bot->IsWithinLOS(x, y, z)) return MoveNear(target, sPlayerbotAIConfig.followDistance);

@@ -118,3 +118,5 @@ ipch
 
 # File generated during compile
 /dep/libmpq/compile
+
+botpch.pch
