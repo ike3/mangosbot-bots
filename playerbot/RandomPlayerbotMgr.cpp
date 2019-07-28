@@ -466,7 +466,14 @@ void RandomPlayerbotMgr::PrepareTeleportCache()
 
     sLog.outBasic("Preparing RPG teleport caches for %d factions...", sFactionTemplateStore.GetNumRows());
             BarGoLink bar(rpgCacheSize);
-    results = WorldDatabase.PQuery("SELECT map, position_x, position_y, position_z, t.Faction, t.Name "
+    results = WorldDatabase.PQuery("SELECT map, position_x, position_y, position_z, "
+#ifdef MANGOS
+            "t.FactionAlliance, "
+#endif
+#ifdef CMANGOS
+            "t.Faction, "
+#endif
+            "t.Name "
             "from creature c inner join creature_template t on c.id = t.entry "
             "where t.NpcFlags & %u <> 0",
         UNIT_NPC_FLAG_INNKEEPER);
@@ -1176,8 +1183,8 @@ void RandomPlayerbotMgr::ChangeStrategy(Player* player)
 
 void RandomPlayerbotMgr::RandomTeleportForRpg(Player* bot)
 {
-    sLog.outDetail("Random teleporting bot %s for RPG (%d locations available)", bot->GetName(), rpgLocsCache[bot->GetFactionTemplateEntry()->ID].size());
-    RandomTeleport(bot, rpgLocsCache[bot->GetFactionTemplateEntry()->ID]);
+    sLog.outDetail("Random teleporting bot %s for RPG (%d locations available)", bot->GetName(), rpgLocsCache[sServerFacade.GetFactionTemplateEntry(bot)->ID].size());
+    RandomTeleport(bot, rpgLocsCache[sServerFacade.GetFactionTemplateEntry(bot)->ID]);
 }
 
 void RandomPlayerbotMgr::Remove(Player* bot)

@@ -2,6 +2,7 @@
 #include "../../playerbot.h"
 #include "MoveToRpgTargetAction.h"
 #include "../../PlayerbotAIConfig.h"
+#include "../../ServerFacade.h"
 #include "../values/PossibleRpgTargetsValue.h"
 
 using namespace ai;
@@ -37,7 +38,7 @@ bool MoveToRpgTargetAction::Execute(Event event)
         ai->InterruptSpell();
     }
 
-    bool generatePath = !bot->IsFlying() && !bot->IsUnderwater();
+    bool generatePath = !bot->IsFlying() && !sServerFacade.IsUnderwater(bot);
     MotionMaster &mm = *bot->GetMotionMaster();
 #ifdef CMANGOS
     mm.Clear();

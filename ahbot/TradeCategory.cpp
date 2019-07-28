@@ -3,6 +3,7 @@
 #include "AhBotConfig.h"
 #include "PricingStrategy.h"
 #include "ServerFacade.h"
+#include "SQLStorages.h"
 
 using namespace ahbot;
 

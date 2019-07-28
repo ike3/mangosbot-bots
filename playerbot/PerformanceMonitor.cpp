@@ -95,8 +95,8 @@ void PerformanceMonitorOperation::finish()
         data->totalTime += elapsed;
     }
     data->count++;
-    delete this;
 #endif
+    delete this;
 }
 
 #ifdef CMANGOS

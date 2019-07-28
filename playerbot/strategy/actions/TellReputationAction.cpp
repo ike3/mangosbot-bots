@@ -1,7 +1,7 @@
 #include "botpch.h"
 #include "../../playerbot.h"
 #include "TellReputationAction.h"
-
+#include "../../ServerFacade.h"
 
 using namespace ai;
 
@@ -19,7 +19,7 @@ bool TellReputationAction::Execute(Event event)
     if (!unit)
         return false;
 
-    const FactionTemplateEntry *factionTemplate = unit->GetFactionTemplateEntry();
+    const FactionTemplateEntry *factionTemplate = sServerFacade.GetFactionTemplateEntry(unit);
     uint32 faction = factionTemplate->faction;
     const FactionEntry* entry = sFactionStore.LookupEntry
 #ifdef CMANGOS

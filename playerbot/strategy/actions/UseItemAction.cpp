@@ -115,7 +115,12 @@ bool UseItemAction::UseItem(Item* item, ObjectGuid goGuid, Item* itemTarget)
         if (!go || !sServerFacade.isSpawned(go))
             return false;
 
+#ifdef MANGOS
+        targetFlag = TARGET_FLAG_OBJECT;
+#endif
+#ifdef CMANGOS
         targetFlag = TARGET_FLAG_GAMEOBJECT;
+#endif
         packet << targetFlag;
         packet.appendPackGUID(goGuid.GetRawValue());
         out << " on " << chat->formatGameobject(go);
