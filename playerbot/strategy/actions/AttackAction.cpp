@@ -113,6 +113,9 @@ bool AttackAction::Attack(Unit* target)
         ai->PlaySound(sounds[urand(0, sounds.size() - 1)]);
     }
 
+    if (!sServerFacade.IsInFront(bot, target, sPlayerbotAIConfig.sightDistance, CAST_ANGLE_IN_FRONT))
+        sServerFacade.SetFacingTo(bot, target);
+
     bot->Attack(target, true);
     ai->ChangeEngine(BOT_STATE_COMBAT);
     return true;
