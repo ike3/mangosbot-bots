@@ -204,4 +204,9 @@ namespace ai
     public:
         CastShieldBashOnEnemyHealerAction(PlayerbotAI* ai) : CastSpellOnEnemyHealerAction(ai, "shield bash") {}
     };
+
+    class CastBattleShoutTauntAction : public CastDefensiveMeleeSpellAction {
+    public:
+	    CastBattleShoutTauntAction(PlayerbotAI* ai) : CastDefensiveMeleeSpellAction(ai, "battle shout") {}
+    };
 }
