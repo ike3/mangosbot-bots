@@ -11,7 +11,7 @@ float ThreatMultiplier::GetValue(Action* action)
     if (action == NULL || action->getThreatType() == ACTION_THREAT_NONE)
         return 1.0f;
 
-    if (!ai->GetBot()->GetGroup())
+    if (!AI_VALUE(bool, "group"))
         return 1.0f;
 
     if (action->getThreatType() == ACTION_THREAT_AOE)
