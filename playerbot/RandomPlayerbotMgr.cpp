@@ -473,8 +473,9 @@ void RandomPlayerbotMgr::PrepareTeleportCache()
 #ifdef CMANGOS
             "t.Faction, "
 #endif
-            "t.Name "
+            "t.Name, r.race "
             "from creature c inner join creature_template t on c.id = t.entry "
+            "left join ai_playerbot_rpg_races r on r.entry = t.entry "
             "where t.NpcFlags & %u <> 0",
         UNIT_NPC_FLAG_INNKEEPER);
     if (results)
@@ -495,12 +496,16 @@ void RandomPlayerbotMgr::PrepareTeleportCache()
                 float z = fields[3].GetFloat();
                 uint32 faction = fields[4].GetUInt32();
                 string name = fields[5].GetCppString();
+                uint32 race = fields[6].GetUInt32();
 
                 FactionTemplateEntry const* coFaction = sFactionTemplateStore.LookupEntry(faction);
                 if (!botFaction->IsFriendlyTo(*coFaction)) continue;
 
                 WorldLocation loc(mapId, x, y, z, 0);
-                rpgLocsCache[factionId].push_back(loc);
+                for (uint32 r = 1; r < MAX_RACES; r++)
+                {
+                    if (race == r || !race) rpgLocsCache[r].push_back(loc);
+                }
             }
             bar.step();
         } while (results->NextRow());
@@ -1183,8 +1188,9 @@ void RandomPlayerbotMgr::ChangeStrategy(Player* player)
 
 void RandomPlayerbotMgr::RandomTeleportForRpg(Player* bot)
 {
-    sLog.outDetail("Random teleporting bot %s for RPG (%d locations available)", bot->GetName(), rpgLocsCache[sServerFacade.GetFactionTemplateEntry(bot)->ID].size());
-    RandomTeleport(bot, rpgLocsCache[sServerFacade.GetFactionTemplateEntry(bot)->ID]);
+    uint32 race = bot->getRace();
+    sLog.outDetail("Random teleporting bot %s for RPG (%d locations available)", bot->GetName(), rpgLocsCache[race].size());
+    RandomTeleport(bot, rpgLocsCache[race]);
 }
 
 void RandomPlayerbotMgr::Remove(Player* bot)
