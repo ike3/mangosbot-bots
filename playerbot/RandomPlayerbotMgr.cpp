@@ -409,7 +409,7 @@ void RandomPlayerbotMgr::PrepareTeleportCache()
             QueryResult* results = WorldDatabase.PQuery("select map, position_x, position_y, position_z "
                 "from (select map, position_x, position_y, position_z, avg(t.maxlevel), avg(t.minlevel), "
                 "%u - (avg(t.maxlevel) + avg(t.minlevel)) / 2 delta "
-                "from creature c inner join creature_template t on c.id = t.entry group by t.entry) q "
+                "from creature c inner join creature_template t on c.id = t.entry where t.NpcFlags = 0 group by t.entry) q "
                 "where delta >= 0 and delta <= %u and map in (%s) and not exists ( "
                 "select map, position_x, position_y, position_z from "
                 "("
@@ -807,6 +807,7 @@ bool RandomPlayerbotMgr::HandlePlayerbotConsoleCommand(ChatHandler* handler, cha
     handlers["rpg"] = &RandomPlayerbotMgr::RandomTeleportForRpg;
     handlers["revive"] = &RandomPlayerbotMgr::Revive;
     handlers["grind"] = &RandomPlayerbotMgr::RandomTeleport;
+    handlers["change_strategy"] = &RandomPlayerbotMgr::ChangeStrategy;
 
     for (map<string, ConsoleCommandHandler>::iterator j = handlers.begin(); j != handlers.end(); ++j)
     {
