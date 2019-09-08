@@ -43,6 +43,7 @@ public:
     uint32 randomBotTeleportDistance;
     float randomGearLoweringChance;
     float randomBotMaxLevelChance;
+    float randomBotRpgChance;
     uint32 minRandomBots, maxRandomBots;
     uint32 randomBotUpdateInterval, randomBotCountChangeMinInterval, randomBotCountChangeMaxInterval;
     uint32 minRandomBotInWorldTime, maxRandomBotInWorldTime;

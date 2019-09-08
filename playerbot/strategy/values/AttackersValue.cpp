@@ -96,7 +96,9 @@ bool AttackersValue::hasRealThreat(Unit *attacker)
         !attacker->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE) &&
         !attacker->HasStealthAura() &&
         !attacker->HasInvisibilityAura() &&
+#ifdef CMANGOS
         !attacker->IsInEvadeMode() &&
+#endif
         !sServerFacade.IsInRoots(attacker) &&
         !sServerFacade.IsFriendlyTo(attacker, bot) &&
         (sServerFacade.GetThreatManager(attacker).getCurrentVictim() || attacker->GetObjectGuid().IsPlayer());

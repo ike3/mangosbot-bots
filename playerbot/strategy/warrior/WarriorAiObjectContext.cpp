@@ -143,6 +143,7 @@ namespace ai
                 creators["demoralizing shout"] = &AiObjectContextInternal::demoralizing_shout;
                 creators["challenging shout"] = &AiObjectContextInternal::challenging_shout;
                 creators["battle shout"] = &AiObjectContextInternal::battle_shout;
+                creators["battle shout taunt"] = &AiObjectContextInternal::battle_shout_taunt;
                     //debuff
                 creators["rend on attacker"] = &AiObjectContextInternal::rend_on_attacker;
                 creators["rend"] = &AiObjectContextInternal::rend;
@@ -205,6 +206,7 @@ namespace ai
             static Action* demoralizing_shout(PlayerbotAI* ai) { return new CastDemoralizingShoutAction(ai); }
             static Action* challenging_shout(PlayerbotAI* ai) { return new CastChallengingShoutAction(ai); }
             static Action* battle_shout(PlayerbotAI* ai) { return new CastBattleShoutAction(ai); }
+            static Action* battle_shout_taunt(PlayerbotAI* ai) { return new CastBattleShoutTauntAction(ai); }
 
             static Action* rend(PlayerbotAI* ai) { return new CastRendAction(ai); }
             static Action* rend_on_attacker(PlayerbotAI* ai) { return new CastRendOnAttackerAction(ai); }

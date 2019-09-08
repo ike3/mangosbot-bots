@@ -179,9 +179,11 @@ namespace ai
             creators["already seen players"] = &ValueContext::already_seen_players;
             creators["rpg target"] = &ValueContext::rpg_target;
             creators["talk target"] = &ValueContext::talk_target;
+            creators["group"] = &ValueContext::group;
         }
 
     private:
+        static UntypedValue* group(PlayerbotAI* ai) { return new IsInGroupValue(ai); }
         static UntypedValue* craft(PlayerbotAI* ai) { return new CraftValue(ai); }
         static UntypedValue* collision(PlayerbotAI* ai) { return new CollisionValue(ai); }
         static UntypedValue* already_seen_players(PlayerbotAI* ai) { return new AlreadySeenPlayersValue(ai); }

@@ -27,9 +27,17 @@ float CastTimeMultiplier::GetValue(Action* action)
             return 1.0f;
         else if (spellId && pSpellInfo->Targets & TARGET_FLAG_SOURCE_LOCATION)
             return 1.0f;
-        else if (spellId && GetSpellCastTime(pSpellInfo, bot) >= 3000)
+        else if (spellId && GetSpellCastTime(pSpellInfo
+#ifdef CMANGOS
+                , bot
+#endif
+                ) >= 3000)
             return 0.0f;
-        else if (spellId && GetSpellCastTime(pSpellInfo, bot) >= 1500)
+        else if (spellId && GetSpellCastTime(pSpellInfo
+#ifdef CMANGOS
+                , bot
+#endif
+                ) >= 1500)
             return 0.5f;
     }
 

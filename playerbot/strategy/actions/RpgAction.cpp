@@ -114,7 +114,7 @@ void RpgAction::taxi(Unit* unit)
     uint32 path = nodes[urand(0, nodes.size() - 1)];
     bot->m_taxi.SetTaximaskNode(path);
     uint32 money = bot->GetMoney();
-    bot->ModifyMoney(money + 10000);
+    bot->SetMoney(money + 10000);
 
     TaxiPathEntry const* entry = sTaxiPathStore.LookupEntry(path);
     if (!entry)
@@ -133,7 +133,7 @@ void RpgAction::taxi(Unit* unit)
         return;
     }
     sLog.outDetail("Bot %s is flying to %u (%zu location available)", bot->GetName(), path, nodes.size());
-    bot->ModifyMoney(money);
+    bot->SetMoney(money);
 }
 
 bool RpgAction::isUseful()

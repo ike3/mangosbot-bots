@@ -58,11 +58,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle)
 {
     UpdateMovementState();
 
-#ifdef MANGOSBOT_TWO
-    bool generatePath = !bot->IsFlying() && !bot->HasMovementFlag(MOVEFLAG_SWIMMING) && !bot->IsInWater() && !bot->IsUnderWater();
-#else
-    bool generatePath = !bot->IsFlying() && !bot->HasMovementFlag(MOVEFLAG_SWIMMING) && !bot->IsInWater() && !bot->IsUnderwater();
-#endif
+    bool generatePath = !bot->IsFlying() && !bot->HasMovementFlag(MOVEFLAG_SWIMMING) && !bot->IsInWater() && !sServerFacade.IsUnderwater(bot);
     if (generatePath)
     {
         z += CONTACT_DISTANCE;
@@ -213,10 +209,7 @@ bool MovementAction::Follow(Unit* target, float distance)
 
 void MovementAction::UpdateMovementState()
 {
-#ifdef MANGOSBOT_TWO
-    if (bot->IsInWater() || bot->IsUnderWater())
-#else
-    if (bot->IsInWater() || bot->IsUnderwater())
+    if (bot->IsInWater() || sServerFacade.IsUnderwater(bot))
 #endif
     {
 		bot->m_movementInfo.AddMovementFlag(MOVEFLAG_SWIMMING);
@@ -297,13 +290,7 @@ bool MovementAction::Follow(Unit* target, float distance, float angle)
 
     if (bot->GetMotionMaster()->GetCurrentMovementGeneratorType() == FOLLOW_MOTION_TYPE)
     {
-        Unit *currentTarget = static_cast<ChaseMovementGenerator const*>(bot->GetMotionMaster()->GetCurrent())->
-#ifdef MANGOS
-            GetTarget();
-#endif
-#ifdef CMANGOS
-            GetCurrentTarget();
-#endif
+        Unit *currentTarget = sServerFacade.GetChaseTarget(bot);
         if (currentTarget && currentTarget->GetObjectGuid() == target->GetObjectGuid()) return false;
     }
 

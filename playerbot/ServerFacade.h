@@ -222,6 +222,10 @@ class ServerFacade
         bool IsHostileTo(Unit* bot, Unit* to);
 
         bool IsSpellReady(Player* bot, uint32 spell);
+
+        bool IsUnderwater(Unit *unit);
+        FactionTemplateEntry const* GetFactionTemplateEntry(Unit *unit);
+        Unit* GetChaseTarget(Unit* target);
 };
 
 #define sServerFacade ServerFacade::instance()

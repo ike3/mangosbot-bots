@@ -2,6 +2,7 @@
 #include "../../playerbot.h"
 #include "SnareTargetValue.h"
 #include "../../PlayerbotAIConfig.h"
+#include "../../ServerFacade.h"
 #include "MotionGenerators/TargetedMovementGenerator.h"
 
 using namespace ai;
@@ -27,27 +28,7 @@ Unit* SnareTargetValue::Calculate()
         case FLEEING_MOTION_TYPE:
             return unit;
         case CHASE_MOTION_TYPE:
-            if (unit->GetTypeId() == TYPEID_PLAYER)
-            {
-                chaseTarget = static_cast<ChaseMovementGenerator const*>(unit->GetMotionMaster()->GetCurrent())->
-#ifdef MANGOS
-                        GetTarget();
-#endif
-#ifdef CMANGOS
-                        GetCurrentTarget();
-#endif
-            }
-            else
-            {
-                chaseTarget = static_cast<ChaseMovementGenerator const*>(unit->GetMotionMaster()->GetCurrent())->
-#ifdef MANGOS
-                        GetTarget();
-#endif
-#ifdef CMANGOS
-                        GetCurrentTarget();
-#endif
-            }
-
+            chaseTarget = sServerFacade.GetChaseTarget(unit);
             if (!chaseTarget) continue;
             Player* chaseTargetPlayer = sObjectMgr.GetPlayer(chaseTarget->GetObjectGuid());
             if (chaseTargetPlayer && !ai->IsTank(chaseTargetPlayer)) {
