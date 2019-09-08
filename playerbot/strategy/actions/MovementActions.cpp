@@ -210,7 +210,6 @@ bool MovementAction::Follow(Unit* target, float distance)
 void MovementAction::UpdateMovementState()
 {
     if (bot->IsInWater() || sServerFacade.IsUnderwater(bot))
-#endif
     {
 		bot->m_movementInfo.AddMovementFlag(MOVEFLAG_SWIMMING);
         bot->UpdateSpeed(MOVE_SWIM, true);
