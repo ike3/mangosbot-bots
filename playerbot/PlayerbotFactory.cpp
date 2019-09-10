@@ -184,8 +184,8 @@ void PlayerbotFactory::Randomize(bool incremental)
     pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Equip");
     sLog.outDetail("Initializing equipmemt...");
     InitEquipment(incremental);
-    sLog.outDetail("Initializing enchant templates...");
-    LoadEnchantContainer();
+    //sLog.outDetail("Initializing enchant templates...");
+    //LoadEnchantContainer();
     if (pmo) pmo->finish();
 
     pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Bags");
@@ -211,10 +211,10 @@ void PlayerbotFactory::Randomize(bool incremental)
     pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_EqSets");
     sLog.outDetail("Initializing second equipment set...");
     InitSecondEquipmentSet();
-	if (bot->getLevel() >= sPlayerbotAIConfig.minEnchantingBotLevel)
+	/*if (bot->getLevel() >= sPlayerbotAIConfig.minEnchantingBotLevel)
 	{
 		ApplyEnchantTemplate();
-	}
+	}*/
     if (pmo) pmo->finish();
 
     pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Inventory");
@@ -926,7 +926,7 @@ void PlayerbotFactory::InitEquipment(bool incremental)
                     newItem->AddToWorld();
                     newItem->AddToUpdateQueueOf(bot);
                     bot->AutoUnequipOffhandIfNeed();
-                    //EnchantItem(newItem);
+                    EnchantItem(newItem);
                     found = true;
                     break;
                 }
@@ -1036,7 +1036,7 @@ void PlayerbotFactory::InitSecondEquipmentSet()
             Item* newItem = bot->StoreNewItemInInventorySlot(newItemId, 1);
             if (newItem)
             {
-                //EnchantItem(newItem);
+                EnchantItem(newItem);
                 newItem->AddToWorld();
                 newItem->AddToUpdateQueueOf(bot);
                 break;
@@ -1146,10 +1146,10 @@ void PlayerbotFactory::EnchantItem(Item* item)
 
             if (!CheckItemStats(sp, ap, tank))
                 continue;
-#ifdef MANGOSBOT_ONE
+/*#ifdef MANGOSBOT_ONE
             if (enchant->EnchantmentCondition && !bot->EnchantmentFitsRequirements(enchant->EnchantmentCondition, -1))
                continue;
-#endif
+#endif*/
             if (!item->IsFitToSpellRequirements(entry))
                 continue;
 
