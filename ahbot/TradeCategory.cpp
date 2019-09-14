@@ -5,6 +5,7 @@
 #include "PricingStrategy.h"
 #include "ServerFacade.h"
 #include "SQLStorages.h"
+#include "SpellEffectDefines.h"
 
 using namespace ahbot;
 
