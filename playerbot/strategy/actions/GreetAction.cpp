@@ -1,7 +1,7 @@
 #include "botpch.h"
 #include "../../playerbot.h"
 #include "GreetAction.h"
-
+#include "../../PlayerbotAI.h"
 #include "../../PlayerbotAIConfig.h"
 #include "../../ServerFacade.h"
 using namespace ai;
