@@ -132,7 +132,7 @@ void RpgAction::taxi(Unit* unit)
         sLog.outDetail("Bot %s cannot fly (%zu location available)", bot->GetName(), nodes.size());
         return;
     }
-    sLog.outDetail("Bot %s is flying to %u (%d location available)", bot->GetName(), path, nodes.size());
+    sLog.outDetail("Bot %s is flying to %u (%zu location available)", bot->GetName(), path, nodes.size());
     bot->SetMoney(money);
 }
 
