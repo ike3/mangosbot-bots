@@ -411,7 +411,7 @@ void RandomPlayerbotMgr::PrepareTeleportCache()
             QueryResult* results = WorldDatabase.PQuery("select map, position_x, position_y, position_z "
                 "from (select map, position_x, position_y, position_z, avg(t.maxlevel), avg(t.minlevel), "
                 "%u - (avg(t.maxlevel) + avg(t.minlevel)) / 2 delta "
-                "from creature c inner join creature_template t on c.id = t.entry group by t.entry) q "
+                "from creature c inner join creature_template t on c.id = t.entry where t.NpcFlags = 0 group by t.entry) q "
                 "where delta >= 0 and delta <= %u and map in (%s) and not exists ( "
                 "select map, position_x, position_y, position_z from "
                 "("
@@ -468,8 +468,16 @@ void RandomPlayerbotMgr::PrepareTeleportCache()
 
     sLog.outBasic("Preparing RPG teleport caches for %d factions...", sFactionTemplateStore.GetNumRows());
             BarGoLink bar(rpgCacheSize);
-    results = WorldDatabase.PQuery("SELECT map, position_x, position_y, position_z, t.Faction, t.Name "
+    results = WorldDatabase.PQuery("SELECT map, position_x, position_y, position_z, "
+#ifdef MANGOS
+            "t.FactionAlliance, "
+#endif
+#ifdef CMANGOS
+            "t.Faction, "
+#endif
+            "t.Name, r.race "
             "from creature c inner join creature_template t on c.id = t.entry "
+            "left join ai_playerbot_rpg_races r on r.entry = t.entry "
             "where t.NpcFlags & %u <> 0",
         UNIT_NPC_FLAG_INNKEEPER);
     if (results)
@@ -496,7 +504,10 @@ void RandomPlayerbotMgr::PrepareTeleportCache()
                 if (!botFaction->IsFriendlyTo(*coFaction)) continue;
 
                 WorldLocation loc(mapId, x, y, z, 0);
-                rpgLocsCache[factionId].push_back(loc);
+                for (uint32 r = 1; r < MAX_RACES; r++)
+                {
+                    if (race == r || !race) rpgLocsCache[r].push_back(loc);
+                }
             }
             bar.step();
         } while (results->NextRow());
@@ -798,6 +809,7 @@ bool RandomPlayerbotMgr::HandlePlayerbotConsoleCommand(ChatHandler* handler, cha
     handlers["rpg"] = &RandomPlayerbotMgr::RandomTeleportForRpg;
     handlers["revive"] = &RandomPlayerbotMgr::Revive;
     handlers["grind"] = &RandomPlayerbotMgr::RandomTeleport;
+    handlers["change_strategy"] = &RandomPlayerbotMgr::ChangeStrategy;
 
     for (map<string, ConsoleCommandHandler>::iterator j = handlers.begin(); j != handlers.end(); ++j)
     {
@@ -1163,7 +1175,7 @@ void RandomPlayerbotMgr::ChangeStrategy(Player* player)
 {
     uint32 bot = player->GetGUIDLow();
 
-    if (!urand(0, 2))
+    if ((float)urand(0, 100) > sPlayerbotAIConfig.randomBotRpgChance)
     {
         sLog.outDetail("Changing strategy for bot %s to grinding", player->GetName());
         ScheduleTeleport(bot, 30);
@@ -1179,8 +1191,9 @@ void RandomPlayerbotMgr::ChangeStrategy(Player* player)
 
 void RandomPlayerbotMgr::RandomTeleportForRpg(Player* bot)
 {
-    sLog.outDetail("Random teleporting bot %s for RPG (%zu locations available)", bot->GetName(), rpgLocsCache[bot->GetFactionTemplateEntry()->ID].size());
     uint32 race = bot->getRace();
+    sLog.outDetail("Random teleporting bot %s for RPG (%d locations available)", bot->GetName(), rpgLocsCache[race].size());
+    RandomTeleport(bot, rpgLocsCache[race]);
 }
 
 void RandomPlayerbotMgr::Remove(Player* bot)
