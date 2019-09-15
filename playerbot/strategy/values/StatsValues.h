@@ -156,4 +156,12 @@ namespace ai
         }
         virtual uint8 Calculate();
     };
+
+    class IsInGroupValue : public BoolCalculatedValue
+    {
+    public:
+        IsInGroupValue(PlayerbotAI* ai) : BoolCalculatedValue(ai) {}
+
+        virtual bool Calculate() { return bot->GetGroup(); }
+    };
 }

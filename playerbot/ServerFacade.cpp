@@ -8,6 +8,7 @@
 #include "PlayerbotAI.h"
 
 #include "../../modules/Bots/ahbot/AhBotConfig.h"
+#include "MotionGenerators/TargetedMovementGenerator.h"
 
 ServerFacade::ServerFacade() {}
 ServerFacade::~ServerFacade() {}
@@ -98,4 +99,47 @@ bool ServerFacade::IsSpellReady(Player* bot, uint32 spell)
 #ifdef CMANGOS
     return bot->IsSpellReady(spell);
 #endif
+}
+
+bool ServerFacade::IsUnderwater(Unit *unit)
+{
+#ifdef MANGOS
+    return unit->IsUnderWater();
+#endif
+#ifdef CMANGOS
+    return unit->IsUnderwater();
+#endif
+}
+
+FactionTemplateEntry const* ServerFacade::GetFactionTemplateEntry(Unit *unit)
+{
+#ifdef MANGOS
+    return unit->getFactionTemplateEntry();
+#endif
+#ifdef CMANGOS
+    return unit->GetFactionTemplateEntry();
+#endif
+}
+
+Unit* ServerFacade::GetChaseTarget(Unit* target)
+{
+    if (target->GetTypeId() == TYPEID_PLAYER)
+    {
+#ifdef MANGOS
+        return static_cast<ChaseMovementGenerator<Player> const*>(target->GetMotionMaster()->GetCurrent())->GetTarget();
+#endif
+#ifdef CMANGOS
+        return static_cast<ChaseMovementGenerator const*>(target->GetMotionMaster()->GetCurrent())->GetCurrentTarget();
+#endif
+    }
+    else
+    {
+#ifdef MANGOS
+        return static_cast<ChaseMovementGenerator<Creature> const*>(target->GetMotionMaster()->GetCurrent())->GetTarget();
+#endif
+#ifdef CMANGOS
+        return static_cast<ChaseMovementGenerator const*>(target->GetMotionMaster()->GetCurrent())->GetCurrentTarget();
+#endif
+        return NULL;
+    }
 }

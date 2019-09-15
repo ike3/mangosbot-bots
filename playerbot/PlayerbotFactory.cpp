@@ -190,7 +190,7 @@ void PlayerbotFactory::Randomize(bool incremental)
 
     pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Save");
     sLog.outDetail("Saving to DB...");
-    bot->SetMoney(urand(level * 1000, level * 5 * 1000));
+    bot->SetMoney(1000 * sqrt(urand(1, level * 5)));
     bot->SaveToDB();
     sLog.outDetail("Done.");
     if (pmo) pmo->finish();
@@ -281,7 +281,11 @@ void PlayerbotFactory::InitPet()
             bot->SetPetGuid(pet->GetObjectGuid());
 
             sLog.outDebug(  "Bot %s: assign pet %d (%d level)", bot->GetName(), co->Entry, bot->getLevel());
-            pet->SavePetToDB(PET_SAVE_AS_CURRENT);
+            pet->SavePetToDB(PET_SAVE_AS_CURRENT
+#ifdef CMANGOS
+                    , bot
+#endif
+            );
             bot->PetSpellInitialize();
             break;
         }
@@ -1095,14 +1099,30 @@ void PlayerbotFactory::InitAvailableSpells()
 			if (state != TRAINER_SPELL_GREEN)
 				continue;
 
-		    SpellEntry const* proto = sSpellTemplate.LookupEntry<SpellEntry>(tSpell->spell);
+		    SpellEntry const* proto = sServerFacade.LookupSpellInfo(tSpell->spell);
 		    if (!proto)
 		        continue;
 
+#ifdef CMANGOS
 		    Spell* spell = new Spell(bot, proto, false);
 		    SpellCastTargets targets;
 		    targets.setUnitTarget(bot);
-		    spell->SpellStart(&targets);
+            spell->SpellStart(&targets);
+#endif
+
+#ifdef MANGOS
+            bool learned = false;
+            for (int j = 0; j < 3; ++j)
+            {
+                if (proto->Effect[j] == SPELL_EFFECT_LEARN_SPELL)
+                {
+                    uint32 learnedSpell = proto->EffectTriggerSpell[j];
+                    bot->learnSpell(learnedSpell, false);
+                    learned = true;
+                }
+            }
+            if (!learned) bot->learnSpell(tSpell->spell, false);
+#endif
 		}
     }
 }
@@ -1297,7 +1317,11 @@ void PlayerbotFactory::InitMounts()
         if (!spellInfo || spellInfo->EffectApplyAuraName[0] != SPELL_AURA_MOUNTED)
             continue;
 
-        if (GetSpellCastTime(spellInfo) < 500 || GetSpellDuration(spellInfo) != -1)
+        if (GetSpellCastTime(spellInfo
+#ifdef CMANGOS
+            , bot
+#endif
+        ) < 500 || GetSpellDuration(spellInfo) != -1)
             continue;
 
         int32 effect = max(spellInfo->EffectBasePoints[1], spellInfo->EffectBasePoints[2]);

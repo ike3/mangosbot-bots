@@ -490,6 +490,7 @@ void RandomPlayerbotMgr::PrepareTeleportCache()
                 float z = fields[3].GetFloat();
                 uint32 faction = fields[4].GetUInt32();
                 string name = fields[5].GetCppString();
+                uint32 race = fields[6].GetUInt32();
 
                 FactionTemplateEntry const* coFaction = sFactionTemplateStore.LookupEntry(faction);
                 if (!botFaction->IsFriendlyTo(*coFaction)) continue;
@@ -1179,7 +1180,7 @@ void RandomPlayerbotMgr::ChangeStrategy(Player* player)
 void RandomPlayerbotMgr::RandomTeleportForRpg(Player* bot)
 {
     sLog.outDetail("Random teleporting bot %s for RPG (%zu locations available)", bot->GetName(), rpgLocsCache[bot->GetFactionTemplateEntry()->ID].size());
-    RandomTeleport(bot, rpgLocsCache[bot->GetFactionTemplateEntry()->ID]);
+    uint32 race = bot->getRace();
 }
 
 void RandomPlayerbotMgr::Remove(Player* bot)

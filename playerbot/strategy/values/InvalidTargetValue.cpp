@@ -17,6 +17,9 @@ bool InvalidTargetValue::Calculate()
                 target->IsPolymorphed() ||
                 sServerFacade.IsCharmed(target) ||
                 sServerFacade.IsFeared(target) ||
+#ifdef CMANGOS
+                target->IsInEvadeMode() ||
+#endif
                 target->hasUnitState(UNIT_STAT_ISOLATED) ||
                 sServerFacade.IsFriendlyTo(target, bot) ||
                 !bot->IsWithinDistInMap(target, sPlayerbotAIConfig.sightDistance) ||

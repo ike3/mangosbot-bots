@@ -14,18 +14,30 @@ void TrainerAction::Learn(uint32 cost, TrainerSpell const* tSpell, ostringstream
     }
 
     bot->ModifyMoney(-int32(cost));
-#ifdef MANGOSBOT_ZERO
-    bot->CastSpell(bot, tSpell->spell,
-#ifdef MANGOS
-                    true
-#endif
+
+    SpellEntry const* proto = sServerFacade.LookupSpellInfo(tSpell->spell);
+    if (!proto)
+        return;
+
 #ifdef CMANGOS
-                    (uint32)0
+    Spell* spell = new Spell(bot, proto, false);
+    SpellCastTargets targets;
+    targets.setUnitTarget(bot);
+    spell->SpellStart(&targets);
 #endif
-    );
-#endif
-#ifdef MANGOSBOT_ONE
-    bot->learnSpell(tSpell->spell, false);
+
+#ifdef MANGOS
+    bool learned = false;
+    for (int j = 0; j < 3; ++j)
+    {
+        if (proto->Effect[j] == SPELL_EFFECT_LEARN_SPELL)
+        {
+            uint32 learnedSpell = proto->EffectTriggerSpell[j];
+            bot->learnSpell(learnedSpell, false);
+            learned = true;
+        }
+    }
+    if (!learned) bot->learnSpell(tSpell->spell, false);
 #endif
 
     msg << " - learned";
