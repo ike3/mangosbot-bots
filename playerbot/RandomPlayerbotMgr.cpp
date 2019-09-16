@@ -1192,7 +1192,7 @@ void RandomPlayerbotMgr::ChangeStrategy(Player* player)
 void RandomPlayerbotMgr::RandomTeleportForRpg(Player* bot)
 {
     uint32 race = bot->getRace();
-    sLog.outDetail("Random teleporting bot %s for RPG (%d locations available)", bot->GetName(), rpgLocsCache[race].size());
+    sLog.outDetail("Random teleporting bot %s for RPG (%zu locations available)", bot->GetName(), rpgLocsCache[race].size());
     RandomTeleport(bot, rpgLocsCache[race]);
 }
 
