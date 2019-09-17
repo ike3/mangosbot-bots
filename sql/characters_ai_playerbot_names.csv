@@ -983,7 +983,7 @@
 983;Benedicus;0
 984;Beneger;0
 985;Beneoit;0
-986;Benoit;0
+986;Benoitb;1
 987;Beneoite;0
 988;Benet;0
 989;Benett;0
@@ -5709,7 +5709,7 @@
 5709;Thomas;0
 5710;Thon;0
 5711;Thonyn;0
-5712;Thon;0
+5712;Thonb;1
 5713;Thorald;0
 5714;Thorax;0
 5715;Thore;0
@@ -6467,7 +6467,7 @@
 6467;Ainhoa;1
 6468;Ainize;1
 6469;Ainoa;1
-6470;Aintza;1
+6470;Aintzab;1
 6471;Aintzane;1
 6472;Aintzile;1
 6473;Aintzine;1
@@ -6489,7 +6489,7 @@
 6489;Alainne;1
 6490;Alais;1
 6491;Alaitz;1
-6492;Alazas;1
+6492;Alazasb;1
 6493;Alazne;1
 6494;Alba;1
 6495;Albelenda;1
@@ -6522,7 +6522,7 @@
 6522;Aldiet;1
 6523;Aldieth;1
 6524;Aldietha;1
-6525;Aldis;1
+6525;Aldisb;1
 6526;Aldith;1
 6527;Alditha;1
 6528;Aldiva;1
@@ -6530,7 +6530,7 @@
 6530;Aldruth;1
 6531;Alduara;1
 6532;Alduenza;1
-6533;Aldus;1
+6533;Aldusb;1
 6534;Aldusa;1
 6535;Alduse;1
 6536;Aldyet;1
@@ -6680,9 +6680,9 @@
 6680;Amie;1
 6681;Amilamia;1
 6682;Amilia;1
-6683;Amiot;1
+6683;Amiotb;1
 6684;Amira;1
-6685;Amis;1
+6685;Amisb;1
 6686;Amiscia;1
 6687;Amisia;1
 6688;Amke;1
@@ -6737,7 +6737,7 @@
 6737;Andone;1
 6738;Andonine;1
 6739;Andre;1
-6740;Andrea;1
+6740;Andreab;1
 6741;Andregoto;1
 6742;Andrekina;1
 6743;Andremisa;1
@@ -6857,7 +6857,7 @@
 6857;Argeia;1
 6858;Argentea;1
 6859;Argentina;1
-6860;Argi;1
+6860;Argib;1
 6861;Argie;1
 6862;Argiloain;1
 6863;Ariadne;1
@@ -6904,7 +6904,7 @@
 6904;Artemisia;1
 6905;Artiga;1
 6906;Artiza;1
-6907;Artizar;1
+6907;Artizarb;1
 6908;Artystone;1
 6909;Artzanegi;1
 6910;Artzeina;1
@@ -7004,7 +7004,7 @@
 7004;Aveza;1
 7005;Avice;1
 7006;Avicia;1
-7007;Avila;1
+7007;Avilab;1
 7008;Avilina;1
 7009;Avin;1
 7010;Avina;1
@@ -7078,7 +7078,7 @@
 7078;Basilia;1
 7079;Basilie;1
 7080;Basilina;1
-7081;Basill;1
+7081;Basillb;1
 7082;Basilla;1
 7083;Basille;1
 7084;Basina;1
@@ -7094,7 +7094,7 @@
 7094;Bavacin;1
 7095;Bavin;1
 7096;Bea;1
-7097;Beat;1
+7097;Beatb;1
 7098;Beatasis;1
 7099;Beaten;1
 7100;Beatrice;1
@@ -7124,7 +7124,7 @@
 7124;Beltzane;1
 7125;Bena;1
 7126;Bencelina;1
-7127;Benet;1
+7127;Benetb;1
 7128;Bengoa;1
 7129;Bengoara;1
 7130;Bengolarrea;1
@@ -7215,7 +7215,7 @@
 7215;Boltiarda;1
 7216;Bonajoia;1
 7217;Bonassias;1
-7218;Bonne;1
+7218;Bonneb;1
 7219;Bonoque;1
 7220;Bore;1
 7221;Boukje;1
@@ -7235,7 +7235,7 @@
 7235;Brigitta;1
 7236;Brise;1
 7237;Briseis;1
-7238;Brune;1
+7238;Bruneb;1
 7239;Brunehaut;1
 7240;Brunisente;1
 7241;Brunissende;1
@@ -7353,7 +7353,7 @@
 7353;Clemencia;1
 7354;Clemency;1
 7355;Clemenicia;1
-7356;Clemens;1
+7356;Clemensb;1
 7357;Clementia;1
 7358;Clementina;1
 7359;Clementine;1
@@ -7461,7 +7461,7 @@
 7461;Demophile;1
 7462;Demuth;1
 7463;Denis;1
-7464;Dennet;1
+7464;Dennetb;1
 7465;Denote;1
 7466;Deonisia;1
 7467;Deonysia;1
@@ -7496,18 +7496,18 @@
 7496;Doda;1
 7497;Dodda;1
 7498;Dodie;1
-7499;Dodo;1
+7499;Dodob;1
 7500;Dolichena;1
 7501;Doll;1
 7502;Dolly;1
 7503;Dolore;1
 7504;Dolores;1
 7505;Doltza;1
-7506;Domeka;1
+7506;Domekab;1
 7507;Domentzia;1
 7508;Dominica;1
 7509;Dominixe;1
-7510;Dominy;1
+7510;Dominyb;1
 7511;Domnica;1
 7512;Domnola;1
 7513;Donada;1
@@ -7515,7 +7515,7 @@
 7515;Donetzine;1
 7516;Doniantsu;1
 7517;Donianzu;1
-7518;Donnet;1
+7518;Donnetb;1
 7519;Dora;1
 7520;Dorate;1
 7521;Dorathea;1
@@ -7550,7 +7550,7 @@
 7550;Drusilla;1
 7551;Drypetis;1
 7552;Duce;1
-7553;Duda;1
+7553;Dudab;1
 7554;Dulanto;1
 7555;Dulcia;1
 7556;Dulcibella;1
@@ -7596,7 +7596,7 @@
 7596;Eddiva;1
 7597;Eddiz;1
 7598;Eddusa;1
-7599;Ede;1
+7599;Edeb;1
 7600;Edeberga;1
 7601;Edeborg;1
 7602;Eded;1
@@ -7606,7 +7606,7 @@
 7606;Edeline;1
 7607;Edelinne;1
 7608;Edelot;1
-7609;Eden;1
+7609;Edenb;1
 7610;Ederne;1
 7611;Ederra;1
 7612;Edeua;1
@@ -7632,7 +7632,7 @@
 7632;Ediz;1
 7633;Edney;1
 7634;Edolina;1
-7635;Edon;1
+7635;Edonb;1
 7636;Edonea;1
 7637;Edony;1
 7638;Edume;1
@@ -7662,7 +7662,7 @@
 7662;Eglentina;1
 7663;Eglentine;1
 7664;Eguene;1
-7665;Eguzki;1
+7665;Eguzkib;1
 7666;Eguzkie;1
 7667;Ehgelhild;1
 7668;Ehgeluuara;1
@@ -7788,14 +7788,14 @@
 7788;Emerita;1
 7789;Emerlee;1
 7790;Emersende;1
-7791;Emery;1
+7791;Emeryb;1
 7792;Emilia;1
 7793;Emlin;1
 7794;Emlyn;1
 7795;Emm;1
 7796;Emma;1
 7797;Emmanaia;1
-7798;Emme;1
+7798;Emmeb;1
 7799;Emmelina;1
 7800;Emmeline;1
 7801;Emmet;1
@@ -7830,7 +7830,7 @@
 7830;Enyo;1
 7831;Eormengard;1
 7832;Eormengild;1
-7833;Eos;1
+7833;Eosb;1
 7834;Epham;1
 7835;Epicaste;1
 7836;Epicelena;1
@@ -8025,7 +8025,7 @@
 8025;Flo;1
 8026;Flora;1
 8027;Flore;1
-8028;Florence;1
+8028;Florenceb;1
 8029;Florencia;1
 8030;Florentia;1
 8031;Florentxi;1
@@ -8112,7 +8112,7 @@
 8112;Garbine;1
 8113;Garden;1
 8114;Gardotza;1
-8115;Garoa;1
+8115;Garoab;1
 8116;Garralda;1
 8117;Garrastazu;1
 8118;Garthrite;1
@@ -8122,7 +8122,7 @@
 8122;Gartzene;1
 8123;Gatty;1
 8124;Gatzarieta;1
-8125;Gaude;1
+8125;Gaudeb;1
 8126;Gaunlaya;1
 8127;Gaunliena;1
 8128;Gauzia;1
@@ -8188,13 +8188,13 @@
 8188;Gilia;1
 8189;Giliana;1
 8190;Giliane;1
-8191;Gill;1
+8191;Gillb;1
 8192;Gille;1
 8193;Gilleis;1
 8194;Gilleite;1
 8195;Gillian;1
 8196;Gillie;1
-8197;Gillot;1
+8197;Gillotb;1
 8198;Gillota;1
 8199;Gilly;1
 8200;Ginnade;1
@@ -8208,7 +8208,7 @@
 8208;Gisila;1
 8209;Gisla;1
 8210;Gismon;1
-8211;Giso;1
+8211;Gisob;1
 8212;Gixane;1
 8213;Gladuse;1
 8214;Glauce;1
@@ -8304,7 +8304,7 @@
 8304;Grisel;1
 8305;Griseldis;1
 8306;Grishild;1
-8307;Grisigion;1
+8307;Grisigionb;1
 8308;Grisogonia;1
 8309;Grissall;1
 8310;Grissecon;1
@@ -8377,7 +8377,7 @@
 8377;Halie;1
 8378;Hana;1
 8379;Hanneli;1
-8380;Hanni;1
+8380;Hannib;1
 8381;Haouys;1
 8382;Haoys;1
 8383;Harbona;1
@@ -8439,7 +8439,7 @@
 8439;Helissent;1
 8440;Helissente;1
 8441;Hellanike;1
-8442;Helle;1
+8442;Helleb;1
 8443;Helmech;1
 8444;Helmet;1
 8445;Helmeth;1
@@ -8538,7 +8538,7 @@
 8538;Hodierne;1
 8539;Hoki;1
 8540;Honnor;1
-8541;Honor;1
+8541;Honorb;1
 8542;Honorata;1
 8543;Honore;1
 8544;Honorte;1
@@ -8594,7 +8594,7 @@
 8594;Igaratza;1
 8595;Igone;1
 8596;Igotz;1
-8597;Ihintza;1
+8597;Ihintzab;1
 8598;Ikerne;1
 8599;Ikomar;1
 8600;Ikuska;1
@@ -8713,10 +8713,10 @@
 8713;Iturrieta;1
 8714;Iturrisantu;1
 8715;Itxaro;1
-8716;Itxaso;1
+8716;Itxasob;1
 8717;Itzal;1
 8718;Itzia;1
-8719;Itziar;1
+8719;Itziarb;1
 8720;Iuetta;1
 8721;Iuette;1
 8722;Iuliana;1
@@ -8729,7 +8729,7 @@
 8729;Izaga;1
 8730;Izar;1
 8731;Izaro;1
-8732;Izaskun;1
+8732;Izaskunb;1
 8733;Izazkun;1
 8734;Izett;1
 8735;Izorne;1
@@ -8737,7 +8737,7 @@
 8737;Jacotte;1
 8738;Jaione;1
 8739;Jantje;1
-8740;Jasone;1
+8740;Jasoneb;1
 8741;Jauregi;1
 8742;Jehanne;1
 8743;Jeike;1
@@ -8780,7 +8780,7 @@
 8780;Josephine;1
 8781;Josiane;1
 8782;Josina;1
-8783;Josse;1
+8783;Josseb;1
 8784;Jossy;1
 8785;Josune;1
 8786;Jourdenete;1
@@ -8809,7 +8809,7 @@
 8809;Juliet;1
 8810;Juliote;1
 8811;Julitta;1
-8812;Julyan;1
+8812;Julyanb;1
 8813;June;1
 8814;Jurdana;1
 8815;Jurre;1
@@ -8896,7 +8896,7 @@
 8896;Kriemhild;1
 8897;Kungund;1
 8898;Kuni;1
-8899;Kupe;1
+8899;Kupeb;1
 8900;Kupie;1
 8901;Kydilla;1
 8902;Kymme;1
@@ -9080,7 +9080,7 @@
 9080;Liodburga;1
 9081;Liodgard;1
 9082;Liodrada;1
-9083;Lion;1
+9083;Lionb;1
 9084;Lioness;1
 9085;Lirain;1
 9086;Lisia;1
@@ -9102,7 +9102,7 @@
 9102;Lootje;1
 9103;Lopene;1
 9104;Lora;1
-9105;Lore;1
+9105;Loreb;1
 9106;Lorella;1
 9107;Lorencete;1
 9108;Loreta;1
@@ -9111,7 +9111,7 @@
 9111;Lorie;1
 9112;Lota;1
 9113;Louisa;1
-9114;Louve;1
+9114;Louveb;1
 9115;Loverun;1
 9116;Loza;1
 9117;Lubias;1
@@ -9440,7 +9440,7 @@
 9440;Mille;1
 9441;Millesant;1
 9442;Millesenta;1
-9443;Milo;1
+9443;Milob;1
 9444;Milto;1
 9445;Mina;1
 9446;Minervina;1
@@ -9539,7 +9539,7 @@
 9539;Neaera;1
 9540;Negu;1
 9541;Nekane;1
-9542;Nell;1
+9542;Nellb;1
 9543;Nellie;1
 9544;Nelly;1
 9545;Nemerte;1
@@ -9655,7 +9655,7 @@
 9655;Orabilia;1
 9656;Orabilis;1
 9657;Orabla;1
-9658;Orable;1
+9658;Orableb;1
 9659;Orbaiz;1
 9660;Ordizia;1
 9661;Oreithuia;1
@@ -9666,7 +9666,7 @@
 9666;Oreute;1
 9667;Organa;1
 9668;Oria;1
-9669;Oriabel;1
+9669;Oriabelb;1
 9670;Oriande;1
 9671;Oriante;1
 9672;Orieldis;1
@@ -9723,7 +9723,7 @@
 9723;Panope;1
 9724;Panora;1
 9725;Panpoxa;1
-9726;Patxi;1
+9726;Patxib;1
 9727;Pare;1
 9728;Parezi;1
 9729;Parise;1
@@ -9817,8 +9817,8 @@
 9817;Phigaleia;1
 9818;Philea;1
 9819;Philinna;1
-9820;Philip;1
-9821;Philippe;1
+9820;Philipb;1
+9821;Philippeb;1
 9822;Philles;1
 9823;Phillice;1
 9824;Phillida;1
@@ -9933,7 +9933,7 @@
 9933;Ramburga;1
 9934;Rametta;1
 9935;Ramona;1
-9936;Rangi;1
+9936;Rangib;1
 9937;Rante;1
 9938;Rata;1
 9939;RayneReine;1
@@ -9967,7 +9967,7 @@
 9967;Rerte;1
 9968;Resli;1
 9969;Reta;1
-9970;Rewa;1
+9970;Rewab;1
 9971;Rewi;1
 9972;Reyna;1
 9973;Reyne;1
@@ -10070,7 +10070,7 @@
 10070;Rykeld;1
 10071;Sabbe;1
 10072;Sabie;1
-10073;Sabin;1
+10073;Sabinb;1
 10074;Sabine;1
 10075;Saby;1
 10076;Sabyn;1
@@ -10096,7 +10096,7 @@
 10096;Sancha;1
 10097;Sanche;1
 10098;Sanctia;1
-10099;Santutxo;1
+10099;Santutxob;1
 10100;Sappho;1
 10101;Sarke;1
 10102;Sayeua;1
@@ -10352,10 +10352,10 @@
 10352;Thrasborg;1
 10353;Thrudberga;1
 10354;Thyia;1
-10355;Tice;1
+10355;Ticeb;1
 10356;Ticekin;1
 10357;Tiece;1
-10358;Tice;1
+10358;Ticeba;0
 10359;Tiecelin;1
 10360;Tiecia;1
 10361;Tiede;1
@@ -10371,7 +10371,7 @@
 10371;Tillote;1
 10372;Tilly;1
 10373;Timandra;1
-10374;Timo;1
+10374;Timob;1
 10375;Tina;1
 10376;Tiwho;1
 10377;Tjabbend;1
@@ -10470,7 +10470,7 @@
 10470;Usue;1
 10471;Usune;1
 10472;Utsune;1
-10473;Uzuri;1
+10473;Uzurib;1
 10474;adamerca;1
 10475;Valdamerca;1
 10476;Vanora;1
@@ -10488,7 +10488,7 @@
 10488;Vitula;1
 10489;Vivian;1
 10490;Viviana;1
-10491;Vivien;1
+10491;Vivienb;1
 10492;Vivienne;1
 10493;Vreneli;1
 10494;Vreni;1
@@ -10544,8 +10544,8 @@
 10544;Willesuindis;1
 10545;Wilmetta;1
 10546;Wilmke;1
-10547;Wilmot;1
-10548;Wimarc;1
+10547;Wilmotb;1
+10548;Wimarcb;1
 10549;Wimarca;1
 10550;Winefred;1
 10551;Winifred;1
@@ -10644,7 +10644,7 @@
 10644;Ximena;1
 10645;Xixili;1
 10646;Xoramen;1
-10647;Zabal;1
+10647;Zabalb;1
 10648;Zabaleta;1
 10649;Zaballa;1
 10650;Zaloa;1
@@ -10667,10 +10667,10 @@
 10667;Zuberoa;1
 10668;Zubia;1
 10669;Zufiaurre;1
-10670;Zuhaitz;1
+10670;Zuhaitzb;1
 10671;Zumadoia;1
 10672;Zumalburu;1
-10673;Zuri;1
+10673;Zurib;1
 10674;Zuria;1
 10675;Zuriaa;1
 10676;Zurie;1
