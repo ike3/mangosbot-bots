@@ -253,6 +253,9 @@ bool RandomPlayerbotMgr::ProcessBot(uint32 bot)
 
 bool RandomPlayerbotMgr::ProcessBot(Player* player)
 {
+	if (urand(0, 100) > 25)
+		return true;
+
     player->GetPlayerbotAI()->GetAiObjectContext()->GetValue<bool>("random bot update")->Set(false);
     uint32 bot = player->GetGUIDLow();
     if (sServerFacade.UnitIsDead(player))
