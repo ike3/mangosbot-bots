@@ -51,8 +51,14 @@ bool CheckMailAction::Execute(Event event)
 
 void CheckMailAction::ProcessMail(Mail* mail, Player* owner)
 {
-    if (!mail->HasItems())
+    if (mail->items.empty())
+    {
+        if (mail->itemTextId)
+        {
+            sGuildTaskMgr.CheckTaskTransfer(sObjectMgr.GetItemText(mail->itemTextId), owner, bot);
+        }
         return;
+    }
 
     if (mail->subject.find("Item(s) you asked for") != string::npos)
         return;

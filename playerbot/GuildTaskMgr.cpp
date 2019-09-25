@@ -1058,3 +1058,66 @@ void GuildTaskMgr::DeleteMail(list<uint32> buffer)
     sql << ")";
     CharacterDatabase.PExecute(sql.str().c_str());
 }
+
+bool GuildTaskMgr::CheckTaskTransfer(string text, Player* ownerPlayer, Player* bot)
+{
+    if (!bot) return false;
+    uint32 guildId = bot->GetGuildId();
+    if (!guildId)
+        return false;
+
+    uint32 owner = (uint32)ownerPlayer->GetGUIDLow();
+    Guild *guild = sGuildMgr.GetGuildById(bot->GetGuildId());
+    if (!guild)
+        return false;
+
+    if (!sRandomPlayerbotMgr.IsRandomBot(bot))
+        return false;
+
+    if (text.empty())
+        return false;
+
+    strToLower(text);
+
+    sLog.outDebug("%s / %s: checking guild task transfer",
+            guild->GetName().c_str(), ownerPlayer->GetName());
+
+    uint32 account = sObjectMgr.GetPlayerAccountIdByGUID(ownerPlayer->GetObjectGuid());
+    QueryResult* results = CharacterDatabase.PQuery("SELECT guid,name FROM characters where account = '%u'",
+            account);
+    if (results != NULL)
+    {
+        do
+        {
+            Field* fields = results->Fetch();
+            uint32 newOwner = fields[0].GetUInt32();
+            string name = fields[1].GetString();
+            if (newOwner == bot->GetObjectGuid().GetRawValue())
+                continue;
+
+            strToLower(name);
+
+            if (text.find(name) != string::npos)
+            {
+                uint32 validIn;
+                uint32 activeTask = GetTaskValue(owner, guildId, "activeTask", &validIn);
+                uint32 itemTask = GetTaskValue(owner, guildId, "itemTask");
+                uint32 killTask = GetTaskValue(owner, guildId, "killTask");
+
+                if (itemTask || killTask)
+                {
+                    SetTaskValue(newOwner, guildId, "activeTask", activeTask, validIn);
+                    SetTaskValue(newOwner, guildId, "advertisement", 1, 15);
+                    if (itemTask) SetTaskValue(newOwner, guildId, "itemTask", itemTask, validIn);
+                    if (killTask) SetTaskValue(newOwner, guildId, "killTask", killTask, validIn);
+
+                    SetTaskValue(owner, guildId, "activeTask", 0, 0);
+                    SetTaskValue(owner, guildId, "payment", 0, 0);
+
+                    SendCompletionMessage(ownerPlayer, "transfered");
+                }
+            }
+        } while (results->NextRow());
+        delete results;
+    }
+}
