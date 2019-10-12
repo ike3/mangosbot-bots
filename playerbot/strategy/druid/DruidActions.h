@@ -7,16 +7,16 @@
 
 namespace ai
 {
-	class CastFaerieFireAction : public CastSpellAction
+	class CastFaerieFireAction : public CastDebuffSpellAction
 	{
 	public:
-		CastFaerieFireAction(PlayerbotAI* ai) : CastSpellAction(ai, "faerie fire") {}
+		CastFaerieFireAction(PlayerbotAI* ai) : CastDebuffSpellAction(ai, "faerie fire") {}
 	};
 
-    class CastFaerieFireFeralAction : public CastSpellAction
+    class CastFaerieFireFeralAction : public CastDebuffSpellAction
     {
     public:
-        CastFaerieFireFeralAction(PlayerbotAI* ai) : CastSpellAction(ai, "faerie fire (feral)") {}
+        CastFaerieFireFeralAction(PlayerbotAI* ai) : CastDebuffSpellAction(ai, "faerie fire (feral)") {}
     };
 
 	class CastRejuvenationAction : public CastHealingSpellAction {
