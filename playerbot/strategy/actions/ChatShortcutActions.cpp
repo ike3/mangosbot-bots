@@ -6,6 +6,22 @@
 
 using namespace ai;
 
+void ReturnPositionResetAction::ResetReturnPosition()
+{
+    ai::PositionMap& posMap = context->GetValue<ai::PositionMap&>("position")->Get();
+    ai::Position pos = posMap["return"];
+    pos.Reset();
+    posMap["return"] = pos;
+}
+
+void ReturnPositionResetAction::SetReturnPosition(float x, float y, float z)
+{
+    ai::PositionMap& posMap = context->GetValue<ai::PositionMap&>("position")->Get();
+    ai::Position pos = posMap["return"];
+    pos.Set(x, y, z);
+    posMap["return"] = pos;
+}
+
 bool FollowChatShortcutAction::Execute(Event event)
 {
     Player* master = GetMaster();
@@ -15,7 +31,7 @@ bool FollowChatShortcutAction::Execute(Event event)
     ai->Reset();
     ai->ChangeStrategy("+follow,-passive", BOT_STATE_NON_COMBAT);
     ai->ChangeStrategy("-follow,-passive", BOT_STATE_COMBAT);
-    context->GetValue<ai::PositionMap&>("position")->Get()["return"].Reset();
+    ResetReturnPosition();
     if (bot->GetMapId() != master->GetMapId() || bot->GetDistance(master) > sPlayerbotAIConfig.sightDistance)
     {
 		if (sServerFacade.UnitIsDead(bot))
@@ -42,7 +58,8 @@ bool StayChatShortcutAction::Execute(Event event)
     ai->Reset();
     ai->ChangeStrategy("+stay,-passive", BOT_STATE_NON_COMBAT);
     ai->ChangeStrategy("-follow,-passive", BOT_STATE_COMBAT);
-    context->GetValue<ai::PositionMap&>("position")->Get()["return"].Set(bot->GetPositionX(), bot->GetPositionY(), bot->GetPositionZ());
+
+    SetReturnPosition(bot->GetPositionX(), bot->GetPositionY(), bot->GetPositionZ());
 
     ai->TellMaster("Staying");
     return true;
@@ -57,7 +74,7 @@ bool FleeChatShortcutAction::Execute(Event event)
     ai->Reset();
     ai->ChangeStrategy("+follow,+passive", BOT_STATE_NON_COMBAT);
     ai->ChangeStrategy("+follow,+passive", BOT_STATE_COMBAT);
-    context->GetValue<ai::PositionMap&>("position")->Get()["return"].Reset();
+    ResetReturnPosition();
     if (bot->GetMapId() != master->GetMapId() || bot->GetDistance(master) > sPlayerbotAIConfig.sightDistance)
     {
         ai->TellMaster("I will not flee with you - too far away");
@@ -76,7 +93,7 @@ bool GoawayChatShortcutAction::Execute(Event event)
     ai->Reset();
     ai->ChangeStrategy("+runaway", BOT_STATE_NON_COMBAT);
     ai->ChangeStrategy("+runaway", BOT_STATE_COMBAT);
-    context->GetValue<ai::PositionMap&>("position")->Get()["return"].Reset();
+    ResetReturnPosition();
     ai->TellMaster("Running away");
     return true;
 }
@@ -89,7 +106,7 @@ bool GrindChatShortcutAction::Execute(Event event)
 
     ai->Reset();
     ai->ChangeStrategy("+grind,-passive", BOT_STATE_NON_COMBAT);
-    context->GetValue<ai::PositionMap&>("position")->Get()["return"].Reset();
+    ResetReturnPosition();
     ai->TellMaster("Grinding");
     return true;
 }
@@ -106,7 +123,7 @@ bool TankAttackChatShortcutAction::Execute(Event event)
     ai->Reset();
     ai->ChangeStrategy("-passive", BOT_STATE_NON_COMBAT);
     ai->ChangeStrategy("-passive", BOT_STATE_COMBAT);
-    context->GetValue<ai::PositionMap&>("position")->Get()["return"].Reset();
+    ResetReturnPosition();
     ai->TellMaster("Attacking");
     return true;
 }

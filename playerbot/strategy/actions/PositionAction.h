@@ -48,7 +48,7 @@ namespace ai
     class ReturnAction : public MoveToPositionAction
     {
     public:
-        ReturnAction(PlayerbotAI* ai) : MoveToPositionAction(ai, "return", "random", true) {}
+        ReturnAction(PlayerbotAI* ai) : MoveToPositionAction(ai, "return", "return", true) {}
 
         virtual bool isUseful();
     };
