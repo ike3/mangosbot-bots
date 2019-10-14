@@ -70,6 +70,11 @@ namespace ai
 	    CastCorruptionOnAttackerAction(PlayerbotAI* ai) : CastDebuffSpellOnAttackerAction(ai, "corruption") {}
 	};
 
+    class CastCurseOfAgonyOnAttackerAction : public CastDebuffSpellOnAttackerAction
+    {
+    public:
+        CastCurseOfAgonyOnAttackerAction(PlayerbotAI* ai) : CastDebuffSpellOnAttackerAction(ai, "curse of agony") {}
+    };
 
 	class CastSummonVoidwalkerAction : public CastBuffSpellAction
 	{
