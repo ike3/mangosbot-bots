@@ -64,8 +64,11 @@ void DpsAoeWarlockStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "corruption on attacker",
-        NextAction::array(0, new NextAction("corruption on attacker", 28.0f), NULL)));
+        NextAction::array(0, new NextAction("corruption on attacker", 27.0f), NULL)));
 
+    triggers.push_back(new TriggerNode(
+        "curse of agony on attacker",
+        NextAction::array(0, new NextAction("curse of agony on attacker", 28.0f), NULL)));
 }
 
 void DpsWarlockDebuffStrategy::InitTriggers(std::list<TriggerNode*> &triggers)

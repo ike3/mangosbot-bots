@@ -71,6 +71,7 @@ namespace ai
                 creators["corruption"] = &TriggerFactoryInternal::corruption;
                 creators["corruption on attacker"] = &TriggerFactoryInternal::corruption_on_attacker;
                 creators["curse of agony"] = &TriggerFactoryInternal::curse_of_agony;
+                creators["curse of agony on attacker"] = &TriggerFactoryInternal::curse_of_agony_on_attacker;
                 creators["banish"] = &TriggerFactoryInternal::banish;
                 creators["spellstone"] = &TriggerFactoryInternal::spellstone;
                 creators["backlash"] = &TriggerFactoryInternal::backlash;
@@ -89,6 +90,7 @@ namespace ai
             static Trigger* corruption(PlayerbotAI* ai) { return new CorruptionTrigger(ai); }
             static Trigger* corruption_on_attacker(PlayerbotAI* ai) { return new CorruptionOnAttackerTrigger(ai); }
             static Trigger* curse_of_agony(PlayerbotAI* ai) { return new CurseOfAgonyTrigger(ai); }
+            static Trigger* curse_of_agony_on_attacker(PlayerbotAI* ai) { return new CastCurseOfAgonyOnAttackerTrigger(ai); }
             static Trigger* banish(PlayerbotAI* ai) { return new BanishTrigger(ai); }
             static Trigger* spellstone(PlayerbotAI* ai) { return new SpellstoneTrigger(ai); }
             static Trigger* backlash(PlayerbotAI* ai) { return new BacklashTrigger(ai); }
@@ -124,6 +126,7 @@ namespace ai
                 creators["corruption"] = &AiObjectContextInternal::corruption;
                 creators["corruption on attacker"] = &AiObjectContextInternal::corruption_on_attacker;
                 creators["curse of agony"] = &AiObjectContextInternal::curse_of_agony;
+                creators["curse of agony on attacker"] = &AiObjectContextInternal::curse_of_agony_on_attacker;
                 creators["shadow bolt"] = &AiObjectContextInternal::shadow_bolt;
                 creators["drain soul"] = &AiObjectContextInternal::drain_soul;
                 creators["drain mana"] = &AiObjectContextInternal::drain_mana;
@@ -158,6 +161,7 @@ namespace ai
             static Action* corruption(PlayerbotAI* ai) { return new CastCorruptionAction(ai); }
             static Action* corruption_on_attacker(PlayerbotAI* ai) { return new CastCorruptionOnAttackerAction(ai); }
             static Action* curse_of_agony(PlayerbotAI* ai) { return new CastCurseOfAgonyAction(ai); }
+            static Action* curse_of_agony_on_attacker(PlayerbotAI* ai) { return new CastCurseOfAgonyOnAttackerAction(ai); }
             static Action* shadow_bolt(PlayerbotAI* ai) { return new CastShadowBoltAction(ai); }
             static Action* drain_soul(PlayerbotAI* ai) { return new CastDrainSoulAction(ai); }
             static Action* drain_mana(PlayerbotAI* ai) { return new CastDrainManaAction(ai); }
