@@ -3,24 +3,6 @@
 
 namespace ai
 {
-    // battle
-    class CastBattleMeleeSpellAction : public CastMeleeSpellAction {
-    public:
-        CastBattleMeleeSpellAction(PlayerbotAI* ai, string spell) : CastMeleeSpellAction(ai, spell) {}
-        virtual NextAction** getPrerequisites() {
-            return NextAction::merge( NextAction::array(0, new NextAction("battle stance"), NULL), CastMeleeSpellAction::getPrerequisites());
-        }
-    };
-
-    // defensive
-    class CastDefensiveMeleeSpellAction : public CastMeleeSpellAction {
-    public:
-        CastDefensiveMeleeSpellAction(PlayerbotAI* ai, string spell) : CastMeleeSpellAction(ai, spell) {}
-        virtual NextAction** getPrerequisites() {
-            return NextAction::merge( NextAction::array(0, new NextAction("defensive stance"), NULL), CastMeleeSpellAction::getPrerequisites());
-        }
-    };
-
     // all
     class CastHeroicStrikeAction : public CastMeleeSpellAction {
     public:
@@ -51,9 +33,9 @@ namespace ai
     };
 
     // battle
-    class CastOverpowerAction : public CastBattleMeleeSpellAction {
+    class CastOverpowerAction : public CastMeleeSpellAction {
     public:
-        CastOverpowerAction(PlayerbotAI* ai) : CastBattleMeleeSpellAction(ai, "overpower") {}
+        CastOverpowerAction(PlayerbotAI* ai) : CastMeleeSpellAction(ai, "overpower") {}
     };
 
     // battle, berserker
@@ -66,24 +48,18 @@ namespace ai
     class CastTauntAction : public CastMeleeSpellAction {
     public:
         CastTauntAction(PlayerbotAI* ai) : CastMeleeSpellAction(ai, "taunt") {}
-        virtual NextAction** getPrerequisites() {
-            return NextAction::merge( NextAction::array(0, new NextAction("defensive stance"), NULL), CastSpellAction::getPrerequisites());
-        }
     };
 
     // defensive
     class CastShieldBlockAction : public CastBuffSpellAction {
     public:
         CastShieldBlockAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "shield block") {}
-		virtual NextAction** getPrerequisites() {
-			return NextAction::merge( NextAction::array(0, new NextAction("defensive stance"), NULL), CastSpellAction::getPrerequisites());
-		}
     };
 
     // defensive
-    class CastShieldWallAction : public CastDefensiveMeleeSpellAction {
+    class CastShieldWallAction : public CastMeleeSpellAction {
     public:
-        CastShieldWallAction(PlayerbotAI* ai) : CastDefensiveMeleeSpellAction(ai, "shield wall") {}
+        CastShieldWallAction(PlayerbotAI* ai) : CastMeleeSpellAction(ai, "shield wall") {}
     };
 
     class CastBloodrageAction : public CastBuffSpellAction {
@@ -92,9 +68,9 @@ namespace ai
     };
 
     // defensive
-    class CastDevastateAction : public CastDefensiveMeleeSpellAction {
+    class CastDevastateAction : public CastMeleeSpellAction {
     public:
-        CastDevastateAction(PlayerbotAI* ai) : CastDefensiveMeleeSpellAction(ai, "devastate") {}
+        CastDevastateAction(PlayerbotAI* ai) : CastMeleeSpellAction(ai, "devastate") {}
     };
 
     // all
@@ -111,7 +87,6 @@ namespace ai
 
     // after dodge
     BEGIN_MELEE_SPELL_ACTION(CastRevengeAction, "revenge")
-        virtual NextAction** getPrerequisites();
     END_SPELL_ACTION()
 
 
@@ -126,7 +101,6 @@ namespace ai
     };
 
     BEGIN_DEBUFF_ACTION(CastDisarmAction, "disarm")
-        virtual NextAction** getPrerequisites();
     END_SPELL_ACTION()
 
     BEGIN_DEBUFF_ACTION(CastSunderArmorAction, "sunder armor") // 5 times
@@ -185,9 +159,9 @@ namespace ai
 	};
 
 	// defensive
-	class CastShockwaveAction : public CastDefensiveMeleeSpellAction {
+	class CastShockwaveAction : public CastMeleeSpellAction {
 	public:
-		CastShockwaveAction(PlayerbotAI* ai) : CastDefensiveMeleeSpellAction(ai, "shockwave") {}
+		CastShockwaveAction(PlayerbotAI* ai) : CastMeleeSpellAction(ai, "shockwave") {}
 	};
 
 	// defensive

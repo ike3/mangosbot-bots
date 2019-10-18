@@ -106,7 +106,8 @@ bool MoveToPositionAction::Execute(Event event)
 bool MoveToPositionAction::isUseful()
 {
     ai::Position pos = context->GetValue<ai::PositionMap&>("position")->Get()[qualifier];
-    return pos.isSet() && AI_VALUE2(float, "distance", string("position_") + qualifier) > sPlayerbotAIConfig.followDistance;
+    float distance = AI_VALUE2(float, "distance", string("position_") + qualifier);
+    return pos.isSet() && distance > sPlayerbotAIConfig.followDistance && distance < sPlayerbotAIConfig.reactDistance;
 }
 
 

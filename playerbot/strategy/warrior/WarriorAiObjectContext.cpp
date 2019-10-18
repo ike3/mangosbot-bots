@@ -73,10 +73,16 @@ namespace ai
                 creators["concussion blow"] = &TriggerFactoryInternal::concussion_blow;
                 creators["sword and board"] = &TriggerFactoryInternal::SwordAndBoard;
                 creators["shield bash on enemy healer"] = &TriggerFactoryInternal::shield_bash_on_enemy_healer;
+                creators["battle stance"] = &TriggerFactoryInternal::battle_stance;
+                creators["defensive stance"] = &TriggerFactoryInternal::defensive_stance;
+                creators["shield block"] = &TriggerFactoryInternal::shield_block;
 
             }
 
         private:
+            static Trigger* shield_block(PlayerbotAI* ai) { return new ShieldBlockTrigger(ai); }
+            static Trigger* defensive_stance(PlayerbotAI* ai) { return new DefensiveStanceTrigger(ai); }
+            static Trigger* battle_stance(PlayerbotAI* ai) { return new BattleStanceTrigger(ai); }
             static Trigger* hamstring(PlayerbotAI* ai) { return new HamstringTrigger(ai); }
             static Trigger* victory_rush(PlayerbotAI* ai) { return new VictoryRushTrigger(ai); }
             static Trigger* death_wish(PlayerbotAI* ai) { return new DeathWishTrigger(ai); }
