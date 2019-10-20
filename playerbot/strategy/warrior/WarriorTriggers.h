@@ -21,12 +21,6 @@ namespace ai
 		RevengeAvailableTrigger(PlayerbotAI* ai) : SpellCanBeCastTrigger(ai, "revenge") {}
 	};
 
-    class RampageAvailableTrigger : public SpellCanBeCastTrigger
-    {
-    public:
-        RampageAvailableTrigger(PlayerbotAI* ai) : SpellCanBeCastTrigger(ai, "rampage") {}
-    };
-
     class BloodrageDebuffTrigger : public DebuffTrigger
     {
     public:
@@ -51,6 +45,11 @@ namespace ai
         VictoryRushTrigger(PlayerbotAI* ai) : HasAuraTrigger(ai, "victory rush") {}
     };
 
+    class SwordAndBoardTrigger : public HasAuraTrigger
+    {
+    public:
+        SwordAndBoardTrigger(PlayerbotAI* ai) : HasAuraTrigger(ai, "sword and board") {}
+    };
 
     class ConcussionBlowTrigger : public SnareTargetTrigger
     {
@@ -74,36 +73,6 @@ namespace ai
     {
     public:
         ShieldBashInterruptEnemyHealerSpellTrigger(PlayerbotAI* ai) : InterruptEnemyHealerTrigger(ai, "shield bash") {}
-    };
-
-    class PummelInterruptSpellTrigger : public InterruptSpellTrigger
-    {
-    public:
-        PummelInterruptSpellTrigger(PlayerbotAI* ai) : InterruptSpellTrigger(ai, "pummel") {}
-    };
-
-    class PummelInterruptEnemyHealerSpellTrigger : public InterruptEnemyHealerTrigger
-    {
-    public:
-        PummelInterruptEnemyHealerSpellTrigger(PlayerbotAI* ai) : InterruptEnemyHealerTrigger(ai, "pummel") {}
-    };
-
-    class WarriorCanInterceptTrigger : public Trigger {
-    public:
-        WarriorCanInterceptTrigger(PlayerbotAI* ai) : Trigger(ai, "intercept") {}
-        virtual bool IsActive()
-        {
-#ifdef CMANGOS
-            if (bot->isInCombat())
-#endif
-#ifdef MANGOS
-            if (bot->IsInCombat())
-#endif
-            {
-                Unit* target = AI_VALUE(Unit*, "current target");
-                return target && AI_VALUE2(float, "distance", "current target") >= (sPlayerbotAIConfig.meleeDistance + 8) && target && AI_VALUE2(float, "distance", "current target") <= (sPlayerbotAIConfig.meleeDistance + 24);
-            }
-        }
     };
 
 }
