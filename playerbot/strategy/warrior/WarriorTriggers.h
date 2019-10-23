@@ -4,6 +4,9 @@
 namespace ai
 {
     BUFF_TRIGGER(BattleShoutTrigger, "battle shout", "battle shout")
+    BUFF_TRIGGER(BattleStanceTrigger, "battle stance", "battle stance")
+    BUFF_TRIGGER(DefensiveStanceTrigger, "defensive stance", "defensive stance")
+    BUFF_TRIGGER(ShieldBlockTrigger, "shield block", "shield block")
 
     DEBUFF_TRIGGER(RendDebuffTrigger, "rend", "rend")
     DEBUFF_TRIGGER(DisarmDebuffTrigger, "disarm", "disarm")
@@ -27,9 +30,8 @@ namespace ai
         BloodrageDebuffTrigger(PlayerbotAI* ai) : DebuffTrigger(ai, "bloodrage") {}
         virtual bool IsActive()
         {
-            return DebuffTrigger::IsActive() &&
-                AI_VALUE2(uint8, "health", "self target") >= 75 &&
-                AI_VALUE2(uint8, "rage", "self target") < 20;
+            return AI_VALUE2(uint8, "health", "self target") >= sPlayerbotAIConfig.mediumHealth &&
+                    AI_VALUE2(uint8, "rage", "self target") < 20;
         }
     };
 

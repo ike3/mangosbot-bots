@@ -9,6 +9,7 @@
 #include "../NamedObjectContext.h"
 #include "DruidTriggers.h"
 #include "HealDruidStrategy.h"
+#include "MeleeDruidStrategy.h"
 
 using namespace ai;
 
@@ -29,6 +30,7 @@ namespace ai
                 creators["caster debuff"] = &druid::StrategyFactoryInternal::caster_debuff;
                 creators["dps debuff"] = &druid::StrategyFactoryInternal::caster_debuff;
                 creators["cure"] = &druid::StrategyFactoryInternal::cure;
+                creators["melee"] = &druid::StrategyFactoryInternal::melee;
             }
 
         private:
@@ -37,6 +39,7 @@ namespace ai
             static Strategy* caster_aoe(PlayerbotAI* ai) { return new CasterDruidAoeStrategy(ai); }
             static Strategy* caster_debuff(PlayerbotAI* ai) { return new CasterDruidDebuffStrategy(ai); }
             static Strategy* cure(PlayerbotAI* ai) { return new DruidCureStrategy(ai); }
+            static Strategy* melee(PlayerbotAI* ai) { return new MeleeDruidStrategy(ai); }
         };
 
         class DruidStrategyFactoryInternal : public NamedObjectContext<Strategy>
