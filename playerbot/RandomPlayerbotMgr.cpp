@@ -87,7 +87,12 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed)
         loginProgressBar = new BarGoLink(maxAllowedBotCount);
     }
 
-    SetNextCheckDelay(1000 * sPlayerbotAIConfig.randomBotUpdateInterval / (maxAllowedBotCount / sPlayerbotAIConfig.randomBotsPerInterval));
+    // Fix possible divide by zero if maxAllowedBotCount is smaller then sPlayerbotAIConfig.randomBotsPerInterval
+    uint32 notDiv = 1;
+    if (maxAllowedBotCount >  sPlayerbotAIConfig.randomBotsPerInterval)
+        notDiv =  maxAllowedBotCount / sPlayerbotAIConfig.randomBotsPerInterval;
+        
+    SetNextCheckDelay( (1000 * sPlayerbotAIConfig.randomBotUpdateInterval) / notDiv);
 
     list<uint32> bots = GetBots();
     int botCount = bots.size();
