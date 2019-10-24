@@ -108,7 +108,9 @@ namespace ai
 
     class CastDemoralizingShoutAction : public CastDebuffSpellAction {
     public:
-        CastDemoralizingShoutAction(PlayerbotAI* ai) : CastDebuffSpellAction(ai, "demoralizing shout") {}
+        CastDemoralizingShoutAction(PlayerbotAI* ai) : CastDebuffSpellAction(ai, "demoralizing shout") {
+            range = ATTACK_DISTANCE;
+        }
     };
 
     BEGIN_MELEE_SPELL_ACTION(CastChallengingShoutAction, "challenging shout")
@@ -127,7 +129,9 @@ namespace ai
     // buffs
 	class CastBattleShoutAction : public CastBuffSpellAction {
 	public:
-		CastBattleShoutAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "battle shout") {}
+		CastBattleShoutAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "battle shout") {
+		    range = ATTACK_DISTANCE;
+		}
 	};
 
 	class CastDefensiveStanceAction : public CastBuffSpellAction {
