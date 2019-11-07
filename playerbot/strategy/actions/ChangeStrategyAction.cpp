@@ -21,7 +21,7 @@ bool ChangeNonCombatStrategyAction::Execute(Event event)
     {
         if (text.find("loot") != string::npos || text.find("gather") != string::npos)
         {
-            ai->TellMaster("You can change any strategy except loot and gather");
+            ai->TellError("You can change any strategy except loot and gather");
             return false;
         }
     }

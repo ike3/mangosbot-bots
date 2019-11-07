@@ -24,7 +24,7 @@ public:
     bool enabled;
     bool allowGuildBots;
     uint32 globalCoolDown, reactDelay, maxWaitForMove, expireActionTime, dispelAuraDuration, passiveDelay, repeatDelay,
-        rpgDelay, sitDelay, returnDelay;
+        errorDelay, rpgDelay, sitDelay, returnDelay;
     float sightDistance, spellDistance, reactDistance, grindDistance, lootDistance, shootDistance,
         fleeDistance, tooCloseDistance, meleeDistance, followDistance, whisperDistance, contactDistance,
         aoeRadius, rpgDistance, targetPosRecalcDistance, farDistance;

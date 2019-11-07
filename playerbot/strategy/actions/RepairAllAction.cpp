@@ -38,6 +38,6 @@ bool RepairAllAction::Execute(Event event)
         return true;
     }
 
-    ai->TellMaster("Cannot find any npc to repair at");
+    ai->TellError("Cannot find any npc to repair at");
     return false;
 }

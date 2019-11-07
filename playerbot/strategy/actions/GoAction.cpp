@@ -39,7 +39,7 @@ bool GoAction::Execute(Event event)
             {
                 if (sServerFacade.IsDistanceGreaterThan(sServerFacade.GetDistance2d(bot, go), sPlayerbotAIConfig.reactDistance))
                 {
-                    ai->TellMaster("It is too far away");
+                    ai->TellError("It is too far away");
                     return false;
                 }
 
@@ -87,14 +87,14 @@ bool GoAction::Execute(Event event)
         const TerrainInfo* terrain = map->GetTerrain();
         if (terrain->IsUnderWater(x, y, z) || terrain->IsInWater(x, y, z))
         {
-            ai->TellMaster("It is under water");
+            ai->TellError("It is under water");
             return false;
         }
 
         float ground = map->GetHeight(x, y, z + 0.5f);
         if (ground <= INVALID_HEIGHT)
         {
-            ai->TellMaster("I can't go there");
+            ai->TellError("I can't go there");
             return false;
         }
 
@@ -110,7 +110,7 @@ bool GoAction::Execute(Event event)
     {
         if (sServerFacade.IsDistanceGreaterThan(sServerFacade.GetDistance2d(bot, pos.x, pos.y), sPlayerbotAIConfig.reactDistance))
         {
-            ai->TellMaster("It is too far away");
+            ai->TellError("It is too far away");
             return false;
         }
 

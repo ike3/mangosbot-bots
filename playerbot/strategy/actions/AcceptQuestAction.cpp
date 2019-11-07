@@ -87,7 +87,7 @@ bool AcceptQuestShareAction::Execute(Event event)
     {
         // can't take quest
         bot->SetDividerGuid( ObjectGuid() );
-        ai->TellMaster("I can't take this quest");
+        ai->TellError("I can't take this quest");
 
         return false;
     }

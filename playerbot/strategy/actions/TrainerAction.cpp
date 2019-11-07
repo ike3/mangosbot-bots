@@ -108,7 +108,7 @@ bool TrainerAction::Execute(Event event)
 
     if (!creature->IsTrainerOf(bot, false))
     {
-        ai->TellMaster("This trainer cannot teach me");
+        ai->TellError("This trainer cannot teach me");
         return false;
     }
 
@@ -117,7 +117,7 @@ bool TrainerAction::Execute(Event event)
     TrainerSpellData const* tSpells = creature->GetTrainerTemplateSpells();
     if (!cSpells && !tSpells)
     {
-        ai->TellMaster("No spells can be learned from this trainer");
+        ai->TellError("No spells can be learned from this trainer");
         return false;
     }
 

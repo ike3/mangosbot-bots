@@ -721,15 +721,7 @@ GameObject* PlayerbotAI::GetGameObject(ObjectGuid guid)
 bool PlayerbotAI::TellMasterNoFacing(string text, PlayerbotSecurityLevel securityLevel)
 {
     Player* master = GetMaster();
-    if (!master || master->IsBeingTeleported())
-        return false;
-
-    if (!GetSecurity()->CheckLevelFor(securityLevel, true, master))
-        return false;
-
-    if (sPlayerbotAIConfig.whisperDistance && !bot->GetGroup() && sRandomPlayerbotMgr.IsRandomBot(bot) &&
-            master->GetSession()->GetSecurity() < SEC_GAMEMASTER &&
-            (bot->GetMapId() != master->GetMapId() || bot->GetDistance(master) > sPlayerbotAIConfig.whisperDistance))
+    if (!IsTellAllowed(securityLevel))
         return false;
 
     time_t lastSaid = whispers[text];
@@ -749,6 +741,32 @@ bool PlayerbotAI::TellMasterNoFacing(string text, PlayerbotSecurityLevel securit
                 CHAT_TAG_NONE, bot->GetObjectGuid(), bot->GetName());
         sServerFacade.SendPacket(master, data);
     }
+    return true;
+}
+
+bool PlayerbotAI::TellError(string text, PlayerbotSecurityLevel securityLevel)
+{
+    Player* master = GetMaster();
+    if (!IsTellAllowed(securityLevel))
+        return false;
+
+    master->GetPlayerbotMgr()->TellError(bot->GetName(), text);
+}
+
+bool PlayerbotAI::IsTellAllowed(PlayerbotSecurityLevel securityLevel)
+{
+    Player* master = GetMaster();
+    if (!master || master->IsBeingTeleported())
+        return false;
+
+    if (!GetSecurity()->CheckLevelFor(securityLevel, true, master))
+        return false;
+
+    if (sPlayerbotAIConfig.whisperDistance && !bot->GetGroup() && sRandomPlayerbotMgr.IsRandomBot(bot) &&
+            master->GetSession()->GetSecurity() < SEC_GAMEMASTER &&
+            (bot->GetMapId() != master->GetMapId() || bot->GetDistance(master) > sPlayerbotAIConfig.whisperDistance))
+        return false;
+
     return true;
 }
 

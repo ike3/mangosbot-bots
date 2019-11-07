@@ -52,7 +52,8 @@ bool PlayerbotAIConfig::Initialize()
     dispelAuraDuration = config.GetIntDefault("AiPlayerbot.DispelAuraDuration", 7000);
     reactDelay = (uint32) config.GetIntDefault("AiPlayerbot.ReactDelay", 100);
     passiveDelay = (uint32) config.GetIntDefault("AiPlayerbot.PassiveDelay", 4000);
-    repeatDelay = (uint32) config.GetIntDefault("AiPlayerbot.RepeatDelay", 7000);
+    repeatDelay = (uint32) config.GetIntDefault("AiPlayerbot.RepeatDelay", 5000);
+    errorDelay = (uint32) config.GetIntDefault("AiPlayerbot.ErrorDelay", 5000);
     rpgDelay = (uint32) config.GetIntDefault("AiPlayerbot.RpgDelay", 3000);
     sitDelay = (uint32) config.GetIntDefault("AiPlayerbot.SitDelay", 30000);
     returnDelay = (uint32) config.GetIntDefault("AiPlayerbot.ReturnDelay", 7000);

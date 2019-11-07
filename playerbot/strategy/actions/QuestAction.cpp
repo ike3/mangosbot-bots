@@ -42,7 +42,7 @@ bool QuestAction::ProcessQuests(WorldObject* questGiver)
 
     if (bot->GetDistance(questGiver) > INTERACTION_DISTANCE)
     {
-        ai->TellMaster("Cannot talk to quest giver");
+        ai->TellError("Cannot talk to quest giver");
         return false;
     }
 

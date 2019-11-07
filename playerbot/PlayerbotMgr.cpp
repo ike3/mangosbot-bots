@@ -479,7 +479,7 @@ string PlayerbotHolder::ListBots(Player* master)
 }
 
 
-PlayerbotMgr::PlayerbotMgr(Player* const master) : PlayerbotHolder(),  master(master)
+PlayerbotMgr::PlayerbotMgr(Player* const master) : PlayerbotHolder(),  master(master), lastErrorTell(0)
 {
 }
 
@@ -490,6 +490,7 @@ PlayerbotMgr::~PlayerbotMgr()
 void PlayerbotMgr::UpdateAIInternal(uint32 elapsed)
 {
     SetNextCheckDelay(sPlayerbotAIConfig.reactDelay);
+    CheckTellErrors(elapsed);
 }
 
 void PlayerbotMgr::HandleCommand(uint32 type, const string& text)
@@ -599,4 +600,42 @@ void PlayerbotMgr::OnPlayerLogin(Player* player)
 
         HandlePlayerbotCommand(out.str().c_str(), player);
     }
+}
+
+void PlayerbotMgr::TellError(string botName, string text)
+{
+    set<string> names = errors[text];
+    if (names.find(botName) == names.end())
+    {
+        names.insert(botName);
+    }
+    errors[text] = names;
+}
+
+void PlayerbotMgr::CheckTellErrors(uint32 elapsed)
+{
+    time_t now = time(0);
+    if ((now - lastErrorTell) < sPlayerbotAIConfig.errorDelay / 1000)
+        return;
+
+    lastErrorTell = now;
+
+    for (PlayerBotErrorMap::iterator i = errors.begin(); i != errors.end(); ++i)
+    {
+        string text = i->first;
+        set<string> names = i->second;
+
+        ostringstream out;
+        bool first = true;
+        for (set<string>::iterator j = names.begin(); j != names.end(); ++j)
+        {
+            if (!first) out << ", "; else first = false;
+            out << *j;
+        }
+        out << "|cfff00000: " << text;
+
+        ChatHandler &chat = ChatHandler(master->GetSession());
+        chat.PSendSysMessage(out.str().c_str());
+    }
+    errors.clear();
 }

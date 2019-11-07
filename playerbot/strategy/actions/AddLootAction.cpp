@@ -81,7 +81,7 @@ bool AddGatheringLootAction::AddLoot(ObjectGuid guid)
         {
             ostringstream out;
             out << "Kill that " << targets.front()->GetName() << " so I can loot freely";
-            ai->TellMaster(out.str());
+            ai->TellError(out.str());
             return false;
         }
     }

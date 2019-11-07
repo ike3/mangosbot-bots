@@ -41,6 +41,6 @@ bool SetHomeAction::Execute(Event event)
         return true;
     }
 
-    ai->TellMaster("Can't find any innkeeper around");
+    ai->TellError("Can't find any innkeeper around");
     return false;
 }

@@ -191,7 +191,7 @@ bool TradeStatusAction::CheckTrade()
 
     if (!botItemsMoney && !playerItemsMoney)
     {
-        ai->TellMaster("There are no items to trade");
+        ai->TellError("There are no items to trade");
         return false;
     }
 
@@ -205,7 +205,7 @@ bool TradeStatusAction::CheckTrade()
         {
             if (moneyDelta < 0)
             {
-                ai->TellMaster("You can use discount to buy items only");
+                ai->TellError("You can use discount to buy items only");
                 ai->PlaySound(TEXTEMOTE_NO);
                 return false;
             }

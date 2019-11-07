@@ -32,7 +32,7 @@ bool RewardAction::Execute(Event event)
             return true;
     }
 
-    ai->TellMaster("Cannot talk to quest giver");
+    ai->TellError("Cannot talk to quest giver");
     return false;
 }
 
