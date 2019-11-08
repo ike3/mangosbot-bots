@@ -5,6 +5,19 @@
 #include <cctype>
 #include <locale>
 
+void split(std::vector<std::string>& dest, const std::string& str, const char* delim)
+{
+    char* pTempStr = strdup( str.c_str() );
+    char* pWord = strtok(pTempStr, delim);
+    while(pWord != NULL)
+    {
+        dest.push_back(pWord);
+        pWord = strtok(NULL, delim);
+    }
+
+    free(pTempStr);
+}
+
 vector<string>& split(const string &s, char delim, vector<string> &elems)
 {
     stringstream ss(s);

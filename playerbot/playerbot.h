@@ -1,6 +1,7 @@
 #pragma once
 
 std::vector<std::string> split(const std::string &s, char delim);
+void split(std::vector<std::string>& dest, const std::string& str, const char* delim);
 #ifndef WIN32
 int strcmpi(std::string s1, std::string s2);
 #endif

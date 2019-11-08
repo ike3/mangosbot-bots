@@ -499,6 +499,17 @@ void PlayerbotMgr::HandleCommand(uint32 type, const string& text)
     if (!master)
         return;
 
+    if (text.find(sPlayerbotAIConfig.commandSeparator) != string::npos)
+    {
+        vector<string> commands;
+        split(commands, text, sPlayerbotAIConfig.commandSeparator.c_str());
+        for (vector<string>::iterator i = commands.begin(); i != commands.end(); ++i)
+        {
+            HandleCommand(type, *i);
+        }
+        return;
+    }
+
     for (PlayerBotMap::const_iterator it = GetPlayerBotsBegin(); it != GetPlayerBotsEnd(); ++it)
     {
         Player* const bot = it->second;

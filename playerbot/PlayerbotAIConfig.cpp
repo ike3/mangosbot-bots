@@ -133,6 +133,7 @@ bool PlayerbotAIConfig::Initialize()
     nonCombatStrategies = config.GetStringDefault("AiPlayerbot.NonCombatStrategies", "+custom::say,+return");
 
     commandPrefix = config.GetStringDefault("AiPlayerbot.CommandPrefix", "");
+    commandSeparator = config.GetStringDefault("AiPlayerbot.CommandSeparator", "\\\\");
 
     commandServerPort = config.GetIntDefault("AiPlayerbot.CommandServerPort", 0);
     perfMonEnabled = config.GetBoolDefault("AiPlayerbot.PerfMonEnabled", false);

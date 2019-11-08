@@ -250,6 +250,17 @@ void PlayerbotAI::HandleCommand(uint32 type, const string& text, Player& fromPla
     if (type == CHAT_MSG_ADDON)
         return;
 
+    if (text.find(sPlayerbotAIConfig.commandSeparator) != string::npos)
+    {
+        vector<string> commands;
+        split(commands, text, sPlayerbotAIConfig.commandSeparator.c_str());
+        for (vector<string>::iterator i = commands.begin(); i != commands.end(); ++i)
+        {
+            HandleCommand(type, *i, fromPlayer);
+        }
+        return;
+    }
+
     string filtered = text;
     if (!sPlayerbotAIConfig.commandPrefix.empty())
     {
