@@ -544,23 +544,23 @@ void PlayerbotAI::DoSpecificAction(string name)
             return;
         case ACTION_RESULT_IMPOSSIBLE:
             out << name << ": impossible";
-            TellMaster(out);
+            TellError(out.str());
             PlaySound(TEXTEMOTE_NO);
             return;
         case ACTION_RESULT_USELESS:
             out << name << ": useless";
-            TellMaster(out);
+            TellError(out.str());
             PlaySound(TEXTEMOTE_NO);
             return;
         case ACTION_RESULT_FAILED:
             out << name << ": failed";
-            TellMaster(out);
+            TellError(out.str());
             return;
         }
     }
     ostringstream out;
     out << name << ": unknown action";
-    TellMaster(out);
+    TellError(out.str());
 }
 
 bool PlayerbotAI::PlaySound(uint32 emote)
