@@ -50,7 +50,7 @@ bool MovementAction::MoveNear(WorldObject* target, float distance)
             return true;
     }
 
-    ai->TellMasterNoFacing("All paths not in LOS");
+    ai->TellError("All paths not in LOS");
     return false;
 }
 
@@ -67,7 +67,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle)
 
     if (!IsMovingAllowed(mapId, x, y, z))
     {
-        //ai->TellMasterNoFacing("I am stuck");
+        ai->TellError("I am stuck");
         return false;
     }
 
@@ -106,7 +106,7 @@ bool MovementAction::MoveTo(Unit* target, float distance)
 {
     if (!IsMovingAllowed(target))
     {
-        ai->TellMasterNoFacing("Seems I am stuck");
+        ai->TellError("Seems I am stuck");
         return false;
     }
 
@@ -250,15 +250,15 @@ bool MovementAction::Follow(Unit* target, float distance, float angle)
 
     if (!IsMovingAllowed(target))
     {
-		if (sServerFacade.UnitIsDead(bot))
-		{
-			bot->ResurrectPlayer(1.0f, false);
-			ai->TellMasterNoFacing("I live, again!");
-		}
-		else
-			ai->TellMasterNoFacing("I will there soon.");
+        if (sServerFacade.UnitIsDead(bot))
+        {
+            bot->ResurrectPlayer(1.0f, false);
+            ai->TellMasterNoFacing("I live, again!");
+        }
+        else
+            ai->TellError("I am stuck while following");
 
-		bot->TeleportTo(target->GetMapId(), target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), target->GetOrientation());
+        bot->TeleportTo(target->GetMapId(), target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), target->GetOrientation());
         return false;
     }
 
@@ -267,7 +267,7 @@ bool MovementAction::Follow(Unit* target, float distance, float angle)
 
     if (sServerFacade.IsDistanceLessOrEqualThan(sServerFacade.GetDistance2d(bot, target), sPlayerbotAIConfig.followDistance))
     {
-        ai->TellMasterNoFacing("No need to follow");
+        ai->TellError("No need to follow");
         return false;
     }
 
@@ -333,7 +333,7 @@ bool MovementAction::Flee(Unit *target)
 
     if (!IsMovingAllowed())
     {
-        ai->TellMasterNoFacing("I am stuck while fleeing");
+        ai->TellError("I am stuck while fleeing");
         return false;
     }
 
@@ -342,7 +342,7 @@ bool MovementAction::Flee(Unit *target)
     float rx, ry, rz;
     if (!manager.CalculateDestination(&rx, &ry, &rz))
     {
-        ai->TellMasterNoFacing("Nowhere to flee");
+        ai->TellError("Nowhere to flee");
         return false;
     }
 

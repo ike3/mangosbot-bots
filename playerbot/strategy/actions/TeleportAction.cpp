@@ -55,6 +55,6 @@ bool TeleportAction::Execute(Event event)
         return true;
     }
 
-    ai->TellMaster("Cannot find any portal to teleport");
+    ai->TellError("Cannot find any portal to teleport");
     return false;
 }

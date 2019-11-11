@@ -34,15 +34,15 @@ bool FollowChatShortcutAction::Execute(Event event)
     ResetReturnPosition();
     if (bot->GetMapId() != master->GetMapId() || bot->GetDistance(master) > sPlayerbotAIConfig.sightDistance)
     {
-		if (sServerFacade.UnitIsDead(bot))
-		{
-			bot->ResurrectPlayer(1.0f, false);
-			ai->TellMasterNoFacing("Back from the grave!");
-		}
-		else
-			ai->TellMaster("You are too far away from me! I will there soon.");
+        if (sServerFacade.UnitIsDead(bot))
+        {
+            bot->ResurrectPlayer(1.0f, false);
+            ai->TellMasterNoFacing("Back from the grave!");
+        }
+        else
+            ai->TellError("I will not follow you - too far away");
 
-		bot->TeleportTo(master->GetMapId(), master->GetPositionX(), master->GetPositionY(), master->GetPositionZ(), master->GetOrientation());
+        bot->TeleportTo(master->GetMapId(), master->GetPositionX(), master->GetPositionY(), master->GetPositionZ(), master->GetOrientation());
         return true;
     }
     ai->TellMaster("Following");
@@ -77,7 +77,7 @@ bool FleeChatShortcutAction::Execute(Event event)
     ResetReturnPosition();
     if (bot->GetMapId() != master->GetMapId() || bot->GetDistance(master) > sPlayerbotAIConfig.sightDistance)
     {
-        ai->TellMaster("I will not flee with you - too far away");
+        ai->TellError("I will not flee with you - too far away");
         return true;
     }
     ai->TellMaster("Fleeing");

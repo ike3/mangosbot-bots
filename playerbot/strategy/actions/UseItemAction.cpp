@@ -36,8 +36,8 @@ bool UseItemAction::Execute(Event event)
          return UseItemOnGameObject(*items.begin(), *gos.begin());
    }
 
-   ai->TellMaster("No items (or game objects) available");
-   return false;
+    ai->TellError("No items (or game objects) available");
+    return false;
 }
 
 bool UseItemAction::UseGameObject(ObjectGuid guid)

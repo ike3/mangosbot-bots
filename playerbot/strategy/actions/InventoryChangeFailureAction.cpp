@@ -91,7 +91,7 @@ bool InventoryChangeFailureAction::Execute(Event event)
     string msg = messages[(InventoryResult)err];
     if (!msg.empty())
     {
-        ai->TellMaster(msg);
+        ai->TellError(msg);
         return true;
     }
 

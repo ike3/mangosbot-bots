@@ -28,7 +28,7 @@ void HelpAction::TellChatCommands()
     out << "Whisper any of: ";
     out << CombineSupported(chatContext->supports());
     out << ", [item], [quest] or [object] link";
-    ai->TellMaster(out);
+    ai->TellError(out.str());
 }
 
 void HelpAction::TellStrategies()
@@ -36,7 +36,7 @@ void HelpAction::TellStrategies()
     ostringstream out;
     out << "Possible strategies (co/nc/dead commands): ";
     out << CombineSupported(ai->GetAiObjectContext()->GetSupportedStrategies());
-    ai->TellMaster(out);
+    ai->TellError(out.str());
 }
 
 string HelpAction::CombineSupported(set<string> commands)

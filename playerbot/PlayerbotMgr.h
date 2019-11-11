@@ -12,6 +12,7 @@ class Object;
 class Item;
 
 typedef map<uint64, Player*> PlayerBotMap;
+typedef map<string, set<string> > PlayerBotErrorMap;
 
 class PlayerbotHolder : public PlayerbotAIBase
 {
@@ -58,6 +59,7 @@ public:
     void OnPlayerLogin(Player* player);
 
     virtual void UpdateAIInternal(uint32 elapsed);
+    void TellError(string botName, string text);
 
     Player* GetMaster() const { return master; };
 
@@ -65,9 +67,12 @@ public:
 
 protected:
     virtual void OnBotLoginInternal(Player * const bot);
+    void CheckTellErrors(uint32 elapsed);
 
 private:
     Player* const master;
+    PlayerBotErrorMap errors;
+    time_t lastErrorTell;
 };
 
 #endif

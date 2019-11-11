@@ -63,7 +63,7 @@ bool SkipSpellsListAction::Execute(Event event)
         uint32 spellId = chat->parseSpell(cmd);
         if (!spellId)
         {
-            ai->TellMaster("Unknown spell");
+            ai->TellError("Unknown spell");
             return false;
         }
 

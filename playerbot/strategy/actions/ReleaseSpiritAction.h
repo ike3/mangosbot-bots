@@ -16,7 +16,7 @@ namespace ai
         {
             if (sServerFacade.IsAlive(bot) || bot->GetCorpse())
             {
-                ai->TellMaster("I am not dead");
+                ai->TellError("I am not dead");
                 return false;
             }
 

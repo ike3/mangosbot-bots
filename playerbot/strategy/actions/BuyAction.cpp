@@ -53,7 +53,7 @@ bool BuyAction::Execute(Event event)
 
     if (!vendored)
     {
-        ai->TellMaster("There are no vendors nearby");
+        ai->TellError("There are no vendors nearby");
         return false;
     }
 

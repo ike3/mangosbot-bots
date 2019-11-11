@@ -63,7 +63,7 @@ public:
         Player* bot = ai->GetBot();
         if (!CheckBagSpace(bot))
         {
-            ai->TellMaster("Not enough bag space");
+            ai->TellError("Not enough bag space");
             return false;
         }
 
@@ -188,7 +188,7 @@ bool MailAction::Execute(Event event)
 
     if (!MailProcessor::FindMailbox(ai))
     {
-        ai->TellMaster("There is no mailbox nearby");
+        ai->TellError("There is no mailbox nearby");
         return false;
     }
 
