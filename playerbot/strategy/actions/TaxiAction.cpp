@@ -39,13 +39,13 @@ bool TaxiAction::Execute(Event event)
         {
             movement.taxiNodes.clear();
             movement.Set(NULL);
-            ai->TellMaster("I can't fly with you");
+            ai->TellError("I can't fly with you");
             return false;
         }
 
         return true;
     }
 
-    ai->TellMaster("Cannot find any flightmaster to talk");
+    ai->TellError("Cannot find any flightmaster to talk");
     return false;
 }

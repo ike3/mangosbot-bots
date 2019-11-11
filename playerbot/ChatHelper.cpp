@@ -482,3 +482,8 @@ string ChatHelper::formatSkill(uint32 skill)
 
     return "";
 }
+
+string ChatHelper::formatBoolean(bool flag)
+{
+    return flag ? "|cff00ff00ON|r" : "|cffffff00OFF|r";
+}

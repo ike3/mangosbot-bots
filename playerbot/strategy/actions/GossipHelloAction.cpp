@@ -53,7 +53,7 @@ bool GossipHelloAction::Execute(Event event)
 	}
 	else if (!bot->PlayerTalkClass)
 	{
-	    ai->TellMaster("I need to talk first");
+	    ai->TellError("I need to talk first");
 	    return false;
 	}
 	else
@@ -112,7 +112,7 @@ bool GossipHelloAction::ProcessGossip(int menuToSelect)
     GossipMenu& menu = bot->PlayerTalkClass->GetGossipMenu();
     if (menuToSelect != -1 && menuToSelect >= menu.MenuItemCount())
     {
-        ai->TellMaster("Unknown gossip option");
+        ai->TellError("Unknown gossip option");
         return false;
     }
     GossipMenuItem const& item = menu.GetItem(menuToSelect);

@@ -72,7 +72,7 @@ bool SendMailAction::Execute(Event event)
 
         if (bot->GetMoney() < money)
         {
-            ai->TellMaster("I don't have enough money");
+            ai->TellError("I don't have enough money");
             return false;
         }
 

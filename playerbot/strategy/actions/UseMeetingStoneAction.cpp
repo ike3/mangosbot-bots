@@ -32,7 +32,7 @@ bool UseMeetingStoneAction::Execute(Event event)
 
     if (sServerFacade.IsInCombat(bot))
     {
-        ai->TellMasterNoFacing("I am in combat");
+        ai->TellError("I am in combat");
         return false;
     }
 
@@ -109,7 +109,7 @@ bool SummonAction::SummonUsingGos(Player *summoner, Player *player)
             return Teleport(summoner, player);
     }
 
-    ai->TellMasterNoFacing(summoner == bot ? "There is no meeting stone nearby" : "There is no meeting stone near you");
+    ai->TellError(summoner == bot ? "There is no meeting stone nearby" : "There is no meeting stone near you");
     return false;
 }
 
@@ -129,13 +129,13 @@ bool SummonAction::SummonUsingNpcs(Player *summoner, Player *player)
         {
             if (!player->HasItemCount(6948, 1, false))
             {
-                ai->TellMasterNoFacing(player == bot ? "I have no hearthstone" : "You have no hearthstone");
+                ai->TellError(player == bot ? "I have no hearthstone" : "You have no hearthstone");
                 return false;
             }
 
             if (!sServerFacade.IsSpellReady(player, 8690))
             {
-                ai->TellMasterNoFacing(player == bot ? "My hearthstone is not ready" : "Your hearthstone is not ready");
+                ai->TellError(player == bot ? "My hearthstone is not ready" : "Your hearthstone is not ready");
                 return false;
             }
 
@@ -157,7 +157,7 @@ bool SummonAction::SummonUsingNpcs(Player *summoner, Player *player)
         }
     }
 
-    ai->TellMasterNoFacing(summoner == bot ? "There are no innkeepers nearby" : "There are no innkeepers near you");
+    ai->TellError(summoner == bot ? "There are no innkeepers nearby" : "There are no innkeepers near you");
     return false;
 }
 
@@ -182,6 +182,6 @@ bool SummonAction::Teleport(Player *summoner, Player *player)
         }
     }
 
-    ai->TellMasterNoFacing("Not enough place to summon");
+    ai->TellError("Not enough place to summon");
     return false;
 }

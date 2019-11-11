@@ -90,19 +90,19 @@ public:
         {
             if (!bot->GetUInt32Value(PLAYER_AMMO_ID))
             {
-                ai->TellMaster("Out of ammo!");
+                ai->TellError("Out of ammo!");
                 return false;
             }
 
             if (!bot->GetPet())
             {
-                ai->TellMaster("No pet!");
+                ai->TellError("No pet!");
                 return false;
             }
 
             if (bot->GetPet()->GetHappinessState() == UNHAPPY)
             {
-                ai->TellMaster("Pet is unhappy!");
+                ai->TellError("Pet is unhappy!");
                 return false;
             }
         }

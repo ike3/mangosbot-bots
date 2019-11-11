@@ -34,7 +34,7 @@ bool FollowChatShortcutAction::Execute(Event event)
     ResetReturnPosition();
     if (bot->GetMapId() != master->GetMapId() || bot->GetDistance(master) > sPlayerbotAIConfig.sightDistance)
     {
-        ai->TellMaster("I will not follow you - too far away");
+        ai->TellError("I will not follow you - too far away");
         return true;
     }
     ai->TellMaster("Following");
@@ -69,7 +69,7 @@ bool FleeChatShortcutAction::Execute(Event event)
     ResetReturnPosition();
     if (bot->GetMapId() != master->GetMapId() || bot->GetDistance(master) > sPlayerbotAIConfig.sightDistance)
     {
-        ai->TellMaster("I will not flee with you - too far away");
+        ai->TellError("I will not flee with you - too far away");
         return true;
     }
     ai->TellMaster("Fleeing");

@@ -50,7 +50,7 @@ bool TellCastFailedAction::Execute(Event event)
 #endif
     );
     if (castTime >= 2000)
-        ai->TellMasterNoFacing(out.str());
+        ai->TellError(out.str());
     return true;
 }
 
@@ -67,6 +67,6 @@ bool TellSpellAction::Execute(Event event)
         return false;
 
     ostringstream out; out << chat->formatSpell(spellInfo);
-    ai->TellMaster(out);
+    ai->TellError(out.str());
     return true;
 }

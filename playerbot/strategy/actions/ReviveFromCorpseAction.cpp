@@ -29,7 +29,7 @@ bool SpiritHealerAction::Execute(Event event)
     Corpse* corpse = bot->GetCorpse();
     if (!corpse)
     {
-        ai->TellMaster("I am not a spirit");
+        ai->TellError("I am not a spirit");
         return false;
     }
 
@@ -50,6 +50,6 @@ bool SpiritHealerAction::Execute(Event event)
         }
     }
 
-    ai->TellMaster("Cannot find any spirit healer nearby");
+    ai->TellError("Cannot find any spirit healer nearby");
     return false;
 }
