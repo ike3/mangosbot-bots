@@ -538,8 +538,6 @@ void PlayerbotAI::DoSpecificAction(string name)
         case ACTION_RESULT_UNKNOWN:
             continue;
         case ACTION_RESULT_OK:
-            out << name << ": done";
-            TellMaster(out);
             PlaySound(TEXTEMOTE_NOD);
             return;
         case ACTION_RESULT_IMPOSSIBLE:

@@ -55,7 +55,7 @@ bool CastCustomSpellAction::Execute(Event event)
     if (!spell)
     {
         msg << "Unknown spell " << text;
-        ai->TellMaster(msg.str());
+        ai->TellError(msg.str());
         return false;
     }
 
@@ -63,7 +63,7 @@ bool CastCustomSpellAction::Execute(Event event)
     if (!pSpellInfo)
     {
         msg << "Unknown spell " << text;
-        ai->TellMaster(msg.str());
+        ai->TellError(msg.str());
         return false;
     }
 
