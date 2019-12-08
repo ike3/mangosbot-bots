@@ -325,4 +325,29 @@ namespace ai
         uint32 spellCategory;
     };
 
+    class FindMountVisitor : public FindUsableItemVisitor
+    {
+    public:
+        FindMountVisitor(Player* bot) : FindUsableItemVisitor(bot) {}
+
+        virtual bool Accept(const ItemPrototype* proto)
+        {
+            for (int j = 0; j < MAX_ITEM_PROTO_SPELLS; j++)
+            {
+                const SpellEntry* const spellInfo = sServerFacade.LookupSpellInfo(proto->Spells[j].SpellId);
+                if (!spellInfo)
+                    return false;
+
+                for (int i = 0 ; i < 3; i++)
+                {
+                    if (spellInfo->EffectApplyAuraName[i] == SPELL_AURA_MOUNTED)
+                        return true;
+                }
+            }
+        }
+
+    private:
+        uint32 effectId;
+    };
+
 }
