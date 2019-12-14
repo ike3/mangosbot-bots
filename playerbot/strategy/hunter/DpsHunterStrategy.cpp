@@ -72,51 +72,47 @@ void DpsHunterStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "black arrow",
-        NextAction::array(0, new NextAction("black arrow", 51.0f), NULL)));
+        NextAction::array(0, new NextAction("black arrow", 15.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
         "low mana",
-        NextAction::array(0, new NextAction("viper sting", ACTION_EMERGENCY + 5), NULL)));
+        NextAction::array(0, new NextAction("viper sting", 23), NULL)));
 
     triggers.push_back(new TriggerNode(
         "no pet",
-        NextAction::array(0, new NextAction("call pet", 60.0f), NULL)));
+        NextAction::array(0, new NextAction("call pet", 22.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
         "hunters pet low health",
-        NextAction::array(0, new NextAction("mend pet", 60.0f), NULL)));
+        NextAction::array(0, new NextAction("mend pet", 21.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
         "hunter's mark",
-        NextAction::array(0, new NextAction("hunter's mark", 52.0f), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "freezing trap",
-        NextAction::array(0, new NextAction("freezing trap", 83.0f), NULL)));
+        NextAction::array(0, new NextAction("hunter's mark", 19.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
         "concussive shot on snare target",
-        NextAction::array(0, new NextAction("concussive shot", 83.0f), NULL)));
+        NextAction::array(0, new NextAction("concussive shot", 20.0f), NULL)));
 }
 
 void DpsAoeHunterStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
-        "medium aoe",
+        "light aoe",
         NextAction::array(0, new NextAction("multi-shot", 20.0f), NULL)));
 
 	triggers.push_back(new TriggerNode(
-		"high aoe",
+		"medium aoe",
 		NextAction::array(0, new NextAction("volley", 20.0f), NULL)));
 
 	triggers.push_back(new TriggerNode(
 		"serpent sting on attacker",
-		NextAction::array(0, new NextAction("serpent sting on attacker", 49.0f), NULL)));
+		NextAction::array(0, new NextAction("serpent sting on attacker", 17.0f), NULL)));
 }
 
 void DpsHunterDebuffStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
         "no stings",
-        NextAction::array(0, new NextAction("serpent sting", 50.0f), NULL)));
+        NextAction::array(0, new NextAction("serpent sting", 18.0f), NULL)));
 }
