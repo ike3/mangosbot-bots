@@ -1038,21 +1038,11 @@ bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target, Item* itemTarget)
 
     if (failWithDelay)
     {
-        //spell->cancel();
         SetNextCheckDelay(sPlayerbotAIConfig.globalCoolDown);
         return false;
     }
 
     Spell *spell = new Spell(bot, pSpellInfo, false);
-    if (sServerFacade.isMoving(bot) && spell->GetCastTime())
-    {
-        mm.Clear();
-        bot->StopMoving();
-        delete spell;
-        SetNextCheckDelay(sPlayerbotAIConfig.globalCoolDown);
-        //spell->cancel();
-        return false;
-    }
 
     SpellCastTargets targets;
     if (pSpellInfo->Targets & TARGET_FLAG_ITEM)
@@ -1080,6 +1070,21 @@ bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target, Item* itemTarget)
         targets.setUnitTarget(target);
     }
 
+#ifdef MANGOS
+    spell->prepare(&targets);
+#endif
+#ifdef CMANGOS
+    spell->SpellStart(&targets);
+#endif
+
+    if (sServerFacade.isMoving(bot) && spell->GetCastTime())
+    {
+        bot->StopMoving(true);
+        SetNextCheckDelay(sPlayerbotAIConfig.globalCoolDown);
+        spell->cancel();
+        //delete spell;
+        return false;
+    }
 
     if (pSpellInfo->Effect[0] == SPELL_EFFECT_OPEN_LOCK ||
         pSpellInfo->Effect[0] == SPELL_EFFECT_SKINNING)
@@ -1087,8 +1092,8 @@ bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target, Item* itemTarget)
         LootObject loot = *aiObjectContext->GetValue<LootObject>("loot target");
         if (!loot.IsLootPossible(bot))
         {
-            //spell->cancel();
-            delete spell;
+            spell->cancel();
+            //delete spell;
             return false;
         }
 
@@ -1112,13 +1117,8 @@ bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target, Item* itemTarget)
         }
     }
 
+    mm.Clear();
 
-#ifdef MANGOS
-	spell->prepare(&targets);
-#endif
-#ifdef CMANGOS
-    spell->SpellStart(&targets);
-#endif
     WaitForSpellCast(spell);
     aiObjectContext->GetValue<LastSpellCast&>("last spell cast")->Get().Set(spellId, target->GetObjectGuid(), time(0));
     aiObjectContext->GetValue<ai::PositionMap&>("position")->Get()["random"].Reset();
