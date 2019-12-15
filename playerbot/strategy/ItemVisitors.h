@@ -350,4 +350,30 @@ namespace ai
         uint32 effectId;
     };
 
+    class FindPetVisitor : public FindUsableItemVisitor
+    {
+    public:
+        FindPetVisitor(Player* bot) : FindUsableItemVisitor(bot) {}
+
+        virtual bool Accept(const ItemPrototype* proto)
+        {
+            if (proto->Class == ITEM_CLASS_MISC)
+            {
+                for (int j = 0; j < MAX_ITEM_PROTO_SPELLS; j++)
+                {
+                    const SpellEntry* const spellInfo = sServerFacade.LookupSpellInfo(proto->Spells[j].SpellId);
+                    if (!spellInfo)
+                        return false;
+
+                    for (int i = 0 ; i < 3; i++)
+                    {
+                        if (spellInfo->Effect[i] == SPELL_EFFECT_SUMMON_CRITTER)
+                            return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+    };
 }
