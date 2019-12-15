@@ -1070,6 +1070,30 @@ bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target, Item* itemTarget)
         targets.setUnitTarget(target);
     }
 
+    if (pSpellInfo->Effect[0] == SPELL_EFFECT_OPEN_LOCK ||
+        pSpellInfo->Effect[0] == SPELL_EFFECT_SKINNING)
+    {
+        LootObject loot = *aiObjectContext->GetValue<LootObject>("loot target");
+        GameObject* go = GetGameObject(loot.guid);
+        if (go && sServerFacade.isSpawned(go))
+        {
+            WorldPacket packetgouse(CMSG_GAMEOBJ_USE, 8);
+            packetgouse << loot.guid;
+            bot->GetSession()->HandleGameObjectUseOpcode(packetgouse);
+            targets.setGOTarget(go);
+            faceTo = go;
+        }
+        else
+        {
+            Unit* creature = GetUnit(loot.guid);
+            if (creature)
+            {
+                targets.setUnitTarget(creature);
+                faceTo = creature;
+            }
+        }
+    }
+
 #ifdef MANGOS
     spell->prepare(&targets);
 #endif
@@ -1095,25 +1119,6 @@ bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target, Item* itemTarget)
             spell->cancel();
             //delete spell;
             return false;
-        }
-
-        GameObject* go = GetGameObject(loot.guid);
-        if (go && sServerFacade.isSpawned(go))
-        {
-            WorldPacket packetgouse(CMSG_GAMEOBJ_USE, 8);
-            packetgouse << loot.guid;
-            bot->GetSession()->HandleGameObjectUseOpcode(packetgouse);
-            targets.setGOTarget(go);
-            faceTo = go;
-        }
-        else
-        {
-            Unit* creature = GetUnit(loot.guid);
-            if (creature)
-            {
-                targets.setUnitTarget(creature);
-                faceTo = creature;
-            }
         }
     }
 
