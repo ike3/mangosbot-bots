@@ -116,7 +116,7 @@ bool AttackAction::Attack(Unit* target)
     if (!sServerFacade.IsInFront(bot, target, sPlayerbotAIConfig.sightDistance, CAST_ANGLE_IN_FRONT))
         sServerFacade.SetFacingTo(bot, target);
 
-    bot->Attack(target, true);
+    if (sServerFacade.GetDistance2d(bot, target) <= sPlayerbotAIConfig.tooCloseDistance) bot->Attack(target, true);
     ai->ChangeEngine(BOT_STATE_COMBAT);
     return true;
 }

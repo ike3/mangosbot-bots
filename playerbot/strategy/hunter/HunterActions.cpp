@@ -33,3 +33,8 @@ bool FeedPetAction::Execute(Event event)
 
     return true;
 }
+
+bool CastAutoShotAction::isUseful()
+{
+    return AI_VALUE(uint32, "active spell") != AI_VALUE2(uint32, "spell id", getName());
+}
