@@ -75,6 +75,7 @@ namespace ai
         public:
             TriggerFactoryInternal()
             {
+                creators["omen of clarity"] = &TriggerFactoryInternal::omen_of_clarity;
                 creators["thorns"] = &TriggerFactoryInternal::Thorns;
                 creators["bash"] = &TriggerFactoryInternal::bash;
                 creators["faerie fire (feral)"] = &TriggerFactoryInternal::faerie_fire_feral;
@@ -118,6 +119,7 @@ namespace ai
             static Trigger* cat_form(PlayerbotAI* ai) { return new CatFormTrigger(ai); }
             static Trigger* tree_form(PlayerbotAI* ai) { return new TreeFormTrigger(ai); }
             static Trigger* bash_on_enemy_healer(PlayerbotAI* ai) { return new BashInterruptEnemyHealerSpellTrigger(ai); }
+            static Trigger* omen_of_clarity(PlayerbotAI* ai) { return new OmenOfClarityTrigger(ai); }
         };
     };
 };
@@ -190,9 +192,11 @@ namespace ai
                 creators["innervate"] = &AiObjectContextInternal::innervate;
                 creators["tranquility"] = &AiObjectContextInternal::tranquility;
                 creators["bash on enemy healer"] = &AiObjectContextInternal::bash_on_enemy_healer;
+                creators["omen of clarity"] = &AiObjectContextInternal::omen_of_clarity;
             }
 
         private:
+            static Action* omen_of_clarity(PlayerbotAI* ai) { return new CastOmenOfClarityAction(ai); }
             static Action* tranquility(PlayerbotAI* ai) { return new CastTranquilityAction(ai); }
             static Action* feral_charge_bear(PlayerbotAI* ai) { return new CastFeralChargeBearAction(ai); }
             static Action* feral_charge_cat(PlayerbotAI* ai) { return new CastFeralChargeCatAction(ai); }

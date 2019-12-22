@@ -11,6 +11,7 @@ public:
     {
         creators["survival instincts"] = &survival_instincts;
         creators["thorns"] = &thorns;
+        creators["omen of clarity"] = &omen_of_clarity;
         creators["cure poison"] = &cure_poison;
         creators["cure poison on party"] = &cure_poison_on_party;
         creators["abolish poison"] = &abolish_poison;
@@ -27,6 +28,13 @@ private:
     static ActionNode* thorns(PlayerbotAI* ai)
     {
         return new ActionNode ("thorns",
+            /*P*/ NextAction::array(0, new NextAction("caster form"), NULL),
+            /*A*/ NULL,
+            /*C*/ NULL);
+    }
+    static ActionNode* omen_of_clarity(PlayerbotAI* ai)
+    {
+        return new ActionNode ("omen of clarity",
             /*P*/ NextAction::array(0, new NextAction("caster form"), NULL),
             /*A*/ NULL,
             /*C*/ NULL);
@@ -86,5 +94,9 @@ void FeralDruidStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
     triggers.push_back(new TriggerNode(
         "critical health",
         NextAction::array(0, new NextAction("survival instincts", ACTION_EMERGENCY + 1), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "omen of clarity",
+        NextAction::array(0, new NextAction("omen of clarity", ACTION_HIGH + 9), NULL)));
 }
 

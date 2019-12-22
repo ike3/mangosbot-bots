@@ -7,8 +7,12 @@ namespace ai
     BEGIN_RANGED_SPELL_ACTION(CastHuntersMarkAction, "hunter's mark")
     END_SPELL_ACTION()
 
-    BEGIN_RANGED_SPELL_ACTION(CastAutoShotAction, "auto shot")
-    END_SPELL_ACTION()
+    class CastAutoShotAction : public CastSpellAction
+    {
+    public:
+        CastAutoShotAction(PlayerbotAI* ai) : CastSpellAction(ai, "auto shot") {}
+        virtual bool isUseful();
+    };
 
     BEGIN_RANGED_SPELL_ACTION(CastArcaneShotAction, "arcane shot")
     END_SPELL_ACTION()

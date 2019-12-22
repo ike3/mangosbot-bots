@@ -102,7 +102,7 @@ void CatDpsDruidStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "cat form",
-        NextAction::array(0, new NextAction("cat form", ACTION_MOVE + 2), NULL)));
+        NextAction::array(0, new NextAction("cat form", ACTION_HIGH + 2), NULL)));
 
     triggers.push_back(new TriggerNode(
         "rake",

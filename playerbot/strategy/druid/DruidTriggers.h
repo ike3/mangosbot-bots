@@ -20,6 +20,12 @@ namespace ai {
         ThornsTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "thorns") {}
     };
 
+    class OmenOfClarityTrigger : public BuffTrigger
+    {
+    public:
+        OmenOfClarityTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "omen of clarity") {}
+    };
+
     class RakeTrigger : public DebuffTrigger
     {
     public:

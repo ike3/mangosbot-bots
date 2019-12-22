@@ -1,5 +1,6 @@
 #pragma once
 
+#include "ActiveSpellValue.h"
 #include "NearestGameObjects.h"
 #include "LogLevelValue.h"
 #include "NearestNpcsValue.h"
@@ -75,6 +76,7 @@ namespace ai
     public:
         ValueContext()
         {
+            creators["active spell"] = &ValueContext::active_spell;
             creators["craft"] = &ValueContext::craft;
             creators["collision"] = &ValueContext::collision;
             creators["skip spells list"] = &ValueContext::skip_spells_list_value;
@@ -183,6 +185,7 @@ namespace ai
         }
 
     private:
+        static UntypedValue* active_spell(PlayerbotAI* ai) { return new ActiveSpellValue(ai); }
         static UntypedValue* group(PlayerbotAI* ai) { return new IsInGroupValue(ai); }
         static UntypedValue* craft(PlayerbotAI* ai) { return new CraftValue(ai); }
         static UntypedValue* collision(PlayerbotAI* ai) { return new CollisionValue(ai); }
