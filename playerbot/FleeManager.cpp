@@ -61,7 +61,7 @@ void FleeManager::calculatePossibleDestinations(list<FleePoint*> &points)
 	float botPosY = bot->GetPositionY();
 	float botPosZ = bot->GetPositionZ();
 
-	for (float distance = sPlayerbotAIConfig.tooCloseDistance; distance <= maxAllowedDistance; distance += 1.0f)
+	for (float distance = forceMaxDistance ? maxAllowedDistance - sPlayerbotAIConfig.tooCloseDistance : sPlayerbotAIConfig.tooCloseDistance; distance <= maxAllowedDistance; distance += 1.0f)
 	{
 	    for (float divider = 4; divider <= 16; divider *= 2.0f)
 	    {
@@ -105,12 +105,15 @@ void FleeManager::cleanup(list<FleePoint*> &points)
 
 bool FleePoint::isReasonable()
 {
-	return toCreatures.min >= 0 && toCreatures.max >= 0 &&
+	return (
+	            (toCreatures.min <= 0 || toCreatures.max <= 0) ||
+	            toCreatures.min >= 0 && toCreatures.max >= 0 && toCreatures.min >= sPlayerbotAIConfig.tooCloseDistance
+	        )
+	        &&
 	        (
                 (toAllPlayers.min <= 0 || toAllPlayers.max <= 0) ||
                 (toAllPlayers.min <= sPlayerbotAIConfig.spellDistance && toAllPlayers.max <= sPlayerbotAIConfig.spellDistance)
-            ) &&
-	        toCreatures.min >= sPlayerbotAIConfig.tooCloseDistance;
+            );
 }
 
 FleePoint* FleeManager::selectOptimalDestination(list<FleePoint*> &points)
