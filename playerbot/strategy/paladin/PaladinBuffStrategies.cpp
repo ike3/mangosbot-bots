@@ -48,10 +48,6 @@ void PaladinBuffDpsStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         "seal",
         NextAction::array(0, new NextAction("seal of vengeance", 89.0f), NULL)));
 
-	triggers.push_back(new TriggerNode(
-		"retribution aura",
-		NextAction::array(0, new NextAction("retribution aura", 90.0f), NULL)));
-
     triggers.push_back(new TriggerNode(
         "blessing on party",
         NextAction::array(0, new NextAction("blessing of might on party", 11.0f), NULL)));
@@ -90,15 +86,18 @@ void PaladinBuffArmorStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 		NextAction::array(0, new NextAction("devotion aura", 90.0f), NULL)));
 }
 
+void PaladinBuffAoeStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+{
+    triggers.push_back(new TriggerNode(
+        "retribution aura",
+        NextAction::array(0, new NextAction("retribution aura", 90.0f), NULL)));
+}
+
 void PaladinBuffThreatStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
         "seal",
         NextAction::array(0, new NextAction("seal of light", 89.0f), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "retribution aura",
-        NextAction::array(0, new NextAction("retribution aura", 90.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
         "blessing on party",

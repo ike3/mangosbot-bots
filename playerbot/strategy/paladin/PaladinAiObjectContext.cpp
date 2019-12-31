@@ -40,12 +40,14 @@ namespace ai
                 creators["rshadow"] = &paladin::ResistanceStrategyFactoryInternal::rshadow;
                 creators["rfrost"] = &paladin::ResistanceStrategyFactoryInternal::rfrost;
                 creators["rfire"] = &paladin::ResistanceStrategyFactoryInternal::rfire;
+                creators["baoe"] = &paladin::ResistanceStrategyFactoryInternal::baoe;
             }
 
         private:
             static Strategy* rshadow(PlayerbotAI* ai) { return new PaladinShadowResistanceStrategy(ai); }
             static Strategy* rfrost(PlayerbotAI* ai) { return new PaladinFrostResistanceStrategy(ai); }
             static Strategy* rfire(PlayerbotAI* ai) { return new PaladinFireResistanceStrategy(ai); }
+            static Strategy* baoe(PlayerbotAI* ai) { return new PaladinBuffAoeStrategy(ai); }
         };
 
         class BuffStrategyFactoryInternal : public NamedObjectContext<Strategy>
