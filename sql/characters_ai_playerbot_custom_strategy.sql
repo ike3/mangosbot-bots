@@ -20,5 +20,6 @@ INSERT INTO `ai_playerbot_custom_strategy` VALUES
 (NULL, 'say', 3, 0, 'low mana>emote::oom!99,say::low mana!98'),
 (NULL, 'say', 4, 0, 'tank aoe>charge!99,say::taunt!98'),
 (NULL, 'say', 5, 0, 'medium aoe>say::aoe!99'),
-(NULL, 'say', 6, 0, 'can loot>say::loot!99')
+(NULL, 'say', 6, 0, 'can loot>say::loot!99'),
+(NULL, 'say', 7, 0, 'dps assist>say::taunt!97')
 ;

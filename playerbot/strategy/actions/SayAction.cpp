@@ -62,7 +62,41 @@ bool SayAction::Execute(Event event)
     if (strings.empty()) return false;
 
     time_t lastSaid = AI_VALUE2(time_t, "last said", qualifier);
-    ai->GetAiObjectContext()->GetValue<time_t>("last said", qualifier)->Set(time(0) + urand(1, 60));
+    uint32 nextTime = time(0) + urand(1, 30);
+    ai->GetAiObjectContext()->GetValue<time_t>("last said", qualifier)->Set(nextTime);
+
+    Group* group = bot->GetGroup();
+    if (group)
+    {
+        vector<Player*> members;
+        for (GroupReference *ref = group->GetFirstMember(); ref; ref = ref->next())
+        {
+            Player *member = ref->getSource();
+            PlayerbotAI* memberAi = member->GetPlayerbotAI();
+            if (memberAi) members.push_back(member);
+        }
+
+        uint32 count = members.size();
+        if (count > 1)
+        {
+            for (uint32 i = 0; i < count * 5; i++)
+            {
+                int i1 = urand(0, count - 1);
+                int i2 = urand(0, count - 1);
+
+                Player* item = members[i1];
+                members[i1] = members[i2];
+                members[i2] = item;
+            }
+        }
+
+        int index = 0;
+        for (vector<Player*>::iterator i = members.begin(); i != members.end(); ++i)
+        {
+            PlayerbotAI* memberAi = (*i)->GetPlayerbotAI();
+            memberAi->GetAiObjectContext()->GetValue<time_t>("last said", qualifier)->Set(nextTime + (20 * ++index) + urand(1, 15));
+        }
+    }
 
     uint32 probability = probabilityTable[qualifier];
     if (!probability) probability = 100;
