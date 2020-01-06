@@ -25,7 +25,13 @@ namespace ai
     };
 
 
-    BUFF_TRIGGER(InnerFireTrigger, "inner fire", "inner fire")
+    class InnerFireTrigger : public BuffTrigger
+    {
+    public:
+        InnerFireTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "inner fire", 2) {}
+        virtual bool IsActive();
+    };
+
     BUFF_TRIGGER(VampiricEmbraceTrigger, "vampiric embrace", "vampiric embrace")
 
     class PowerWordPainOnAttackerTrigger : public DebuffOnAttackerTrigger
