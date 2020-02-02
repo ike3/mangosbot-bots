@@ -118,7 +118,7 @@ void GuildTaskMgr::Update(Player* player, Player* guildMaster)
     {
         sLog.outDebug("%s / %s: sending thanks",
 				guild->GetName(), player->GetName());
-        if (SendThanks(owner, guildId))
+        if (SendThanks(owner, guildId, GetTaskValue(owner, guildId, "payment")))
         {
             SetTaskValue(owner, guildId, "thanks", 1, 2 * sPlayerbotAIConfig.maxGuildTaskChangeTime);
             SetTaskValue(owner, guildId, "payment", 0, 0);
@@ -386,7 +386,7 @@ bool GuildTaskMgr::SendKillAdvertisement(uint32 creatureId, uint32 owner, uint32
     return true;
 }
 
-bool GuildTaskMgr::SendThanks(uint32 owner, uint32 guildId)
+bool GuildTaskMgr::SendThanks(uint32 owner, uint32 guildId, uint32 payment)
 {
     Guild *guild = sGuildMgr.GetGuildById(guildId);
     if (!guild)
@@ -418,7 +418,7 @@ bool GuildTaskMgr::SendThanks(uint32 owner, uint32 guildId)
         body << leader->GetName() << "\n";
 
         MailDraft("Thank You", body.str()).
-                SetMoney(GetTaskValue(owner, guildId, "payment")).
+                SetMoney(payment).
                 SendMailTo(MailReceiver(ObjectGuid(HIGHGUID_PLAYER, owner)), MailSender(leader));
 
         Player* player = sObjectMgr.GetPlayer(ObjectGuid(HIGHGUID_PLAYER, owner));
@@ -855,6 +855,8 @@ bool GuildTaskMgr::Reward(uint32 owner, uint32 guildId)
     body << GetHelloText(owner);
 
     RandomItemType rewardType;
+    uint32 itemId = 0;
+    uint32 itemCount = 1;
     if (itemTask)
     {
         ItemPrototype const* proto = sObjectMgr.GetItemPrototype(itemTask);
@@ -867,6 +869,7 @@ bool GuildTaskMgr::Reward(uint32 owner, uint32 guildId)
         body << guild->GetName() << "\n";
         body << leader->GetName() << "\n";
         rewardType = proto->Quality > ITEM_QUALITY_NORMAL ? RANDOM_ITEM_GUILD_TASK_REWARD_EQUIP_BLUE : RANDOM_ITEM_GUILD_TASK_REWARD_EQUIP_GREEN;
+        itemId = sRandomItemMgr.GetRandomItem(player->getLevel() - 5, rewardType);
     }
     else if (killTask)
     {
@@ -879,19 +882,28 @@ bool GuildTaskMgr::Reward(uint32 owner, uint32 guildId)
         body << "Many thanks,\n";
         body << guild->GetName() << "\n";
         body << leader->GetName() << "\n";
-        rewardType = RANDOM_ITEM_GUILD_TASK_REWARD_TRADE;
+        rewardType = proto->Rank == CREATURE_ELITE_RARE ? RANDOM_ITEM_GUILD_TASK_REWARD_TRADE : RANDOM_ITEM_GUILD_TASK_REWARD_TRADE_RARE;
+        itemId = sRandomItemMgr.GetRandomItem(player->getLevel(), rewardType);
+        if (itemId)
+        {
+            ItemPrototype const* itemProto = sObjectMgr.GetItemPrototype(itemId);
+            if (proto)
+            {
+                if (itemProto->Quality == ITEM_QUALITY_NORMAL) itemCount = itemProto->GetMaxStackSize();
+                if (proto->Rank != CREATURE_ELITE_RARE && itemProto->Quality > ITEM_QUALITY_NORMAL) itemCount = urand(1, itemProto->GetMaxStackSize());
+            }
+        }
     }
 
     uint32 payment = GetTaskValue(owner, guildId, "payment");
     if (payment)
-        SendThanks(owner, guildId);
+        SendThanks(owner, guildId, payment);
 
     MailDraft draft("Thank You", body.str());
 
-    uint32 itemId = sRandomItemMgr.GetRandomItem(player->getLevel(), rewardType);
     if (itemId)
     {
-        Item* item = Item::CreateItem(itemId, 1, leader);
+        Item* item = Item::CreateItem(itemId, itemCount, leader);
         item->SaveToDB();
         draft.AddItem(item);
     }
