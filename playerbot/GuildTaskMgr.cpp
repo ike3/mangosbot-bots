@@ -903,9 +903,12 @@ bool GuildTaskMgr::Reward(uint32 owner, uint32 guildId)
 
     if (itemId)
     {
-        Item* item = Item::CreateItem(itemId, itemCount, leader);
-        item->SaveToDB();
-        draft.AddItem(item);
+        Item* item = Item::CreateItem(itemId, itemCount);
+        if (item)
+        {
+            item->SaveToDB();
+            draft.AddItem(item);
+        }
     }
 
     draft.SendMailTo(MailReceiver(ObjectGuid(HIGHGUID_PLAYER, owner)), MailSender(leader));
