@@ -628,6 +628,8 @@ void AhBot::HandleCommand(string command)
     {
         for (int i = 0; i < MAX_AUCTIONS; i++)
             Expire(i);
+        CharacterDatabase.PExecute("DELETE FROM ahbot_category");
+        CharacterDatabase.PExecute("UPDATE ahbot_history SET buytime = buytime - 3600 * 24;");
 
         return;
     }
@@ -729,7 +731,6 @@ void AhBot::Expire(int auction)
         ++itr;
     }
 
-    CharacterDatabase.PExecute("DELETE FROM ahbot_category");
     sLog.outString("%d auctions marked as expired in auction %d", count, auctionIds[auction]);
 }
 
