@@ -26,6 +26,7 @@
 #include "OutfitAction.h"
 #include "RandomBotUpdateAction.h"
 #include "RpgAction.h"
+#include "RtiAction.h"
 
 namespace ai
 {
@@ -34,6 +35,7 @@ namespace ai
     public:
         ActionContext()
         {
+            creators["mark rti"] = &ActionContext::mark_rti;
             creators["set return position"] = &ActionContext::set_return_position;
             creators["rpg"] = &ActionContext::rpg;
             creators["choose rpg target"] = &ActionContext::choose_rpg_target;
@@ -94,6 +96,7 @@ namespace ai
         }
 
     private:
+        static Action* mark_rti(PlayerbotAI* ai) { return new MarkRtiAction(ai); }
         static Action* set_return_position(PlayerbotAI* ai) { return new SetReturnPositionAction(ai); }
         static Action* rpg(PlayerbotAI* ai) { return new RpgAction(ai); }
         static Action* choose_rpg_target(PlayerbotAI* ai) { return new ChooseRpgTargetAction(ai); }

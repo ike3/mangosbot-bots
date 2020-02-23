@@ -76,6 +76,7 @@ void AttackersValue::RemoveNonThreating(set<Unit*>& targets)
 
 bool AttackersValue::hasRealThreat(Unit *attacker)
 {
+    Creature *c = dynamic_cast<Creature*>(attacker);
     return attacker &&
         attacker->IsInWorld() &&
         sServerFacade.IsAlive(attacker) &&
@@ -83,10 +84,12 @@ bool AttackersValue::hasRealThreat(Unit *attacker)
         !attacker->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE) &&
         !attacker->HasStealthAura() &&
         !attacker->HasInvisibilityAura() &&
-#ifdef CMANGOS
-        !attacker->IsInEvadeMode() &&
-#endif
         !sServerFacade.IsInRoots(attacker) &&
         !sServerFacade.IsFriendlyTo(attacker, bot) &&
-        (sServerFacade.GetThreatManager(attacker).getCurrentVictim() || attacker->GetObjectGuid().IsPlayer());
+        (sServerFacade.GetThreatManager(attacker).getCurrentVictim() || attacker->GetObjectGuid().IsPlayer()) &&
+        (!c || (
+                !c->IsInEvadeMode() &&
+                (!attacker->HasFlag(UNIT_DYNAMIC_FLAGS, UNIT_DYNFLAG_TAPPED) || bot->IsTappedByMeOrMyGroup(c))
+                )
+        );
 }

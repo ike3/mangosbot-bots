@@ -40,13 +40,17 @@ namespace ai
             if (index == -1)
                 return NULL;
 
-            uint64 guid = group->GetTargetIcon(index);
+            ObjectGuid guid = group->GetTargetIcon(index);
             if (!guid)
                 return NULL;
 
+            list<ObjectGuid> attackers = context->GetValue<list<ObjectGuid> >("attackers")->Get();
+            if (find(attackers.begin(), attackers.end(), guid) == attackers.end()) return NULL;
+
             Unit* unit = ai->GetUnit(ObjectGuid(guid));
             if (!unit || sServerFacade.UnitIsDead(unit) ||
-                    sServerFacade.IsDistanceGreaterThan(sServerFacade.GetDistance2d(bot, unit), sPlayerbotAIConfig.reactDistance))
+                    !sServerFacade.IsWithinLOSInMap(bot, unit) ||
+                    sServerFacade.IsDistanceGreaterThan(sServerFacade.GetDistance2d(bot, unit), sPlayerbotAIConfig.sightDistance))
                 return NULL;
 
             return unit;

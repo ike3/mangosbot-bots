@@ -27,6 +27,7 @@
 #include "generic/ThreatStrategy.h"
 #include "generic/TellTargetStrategy.h"
 #include "generic/AttackEnemyPlayersStrategy.h"
+#include "generic/MarkRtiStrategy.h"
 #include "generic/ReturnStrategy.h"
 #include "generic/RpgStrategy.h"
 
@@ -63,9 +64,11 @@ namespace ai
             creators["collision"] = &StrategyContext::collision;
             creators["rpg"] = &StrategyContext::rpg;
             creators["sit"] = &StrategyContext::sit;
+            creators["mark rti"] = &StrategyContext::mark_rti;
         }
 
     private:
+        static Strategy* mark_rti(PlayerbotAI* ai) { return new MarkRtiStrategy(ai); }
         static Strategy* tell_target(PlayerbotAI* ai) { return new TellTargetStrategy(ai); }
         static Strategy* threat(PlayerbotAI* ai) { return new ThreatStrategy(ai); }
         static Strategy* cast_time(PlayerbotAI* ai) { return new CastTimeStrategy(ai); }
