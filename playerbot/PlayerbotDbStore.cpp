@@ -96,6 +96,11 @@ void PlayerbotDbStore::Save(PlayerbotAI *ai)
             SaveValue(guid, "position", out.str());
         }
     }
+
+    string rti = ai->GetAiObjectContext()->GetValue<string>("rti")->Get();
+    ostringstream outRti ; outRti << "rti " << rti;
+    SaveValue(guid, "rti", outRti.str());
+
 }
 
 string PlayerbotDbStore::FormatStrategies(string type, list<string> strategies)
