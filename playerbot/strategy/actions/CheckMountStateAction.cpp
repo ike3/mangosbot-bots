@@ -65,9 +65,15 @@ bool CheckMountStateAction::Mount()
 		if (index >= ids.size())
 			continue;
 
+	    MotionMaster &mm = *bot->GetMotionMaster();
+	    mm.Clear();
+
 		ai->CastSpell(ids[index], bot);
 		return true;
 	}
 
-	return false;
+    list<Item*> items = AI_VALUE2(list<Item*>, "inventory items", "mount");
+    if (!items.empty()) return UseItemAuto(*items.begin());
+
+    return false;
 }
