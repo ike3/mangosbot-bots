@@ -994,7 +994,7 @@ void GuildTaskMgr::CheckKillTaskInternal(Player* player, Unit* victim)
 
 void GuildTaskMgr::CleanupAdverts()
 {
-    uint32 deliverTime = time(0) - sPlayerbotAIConfig.maxGuildTaskChangeTime;
+    uint32 deliverTime = time(0) - sPlayerbotAIConfig.minGuildTaskChangeTime;
     QueryResult *result = CharacterDatabase.PQuery("select id, receiver from mail where subject like 'Guild Task%%' and deliver_time <= '%u'", deliverTime);
     if (!result)
         return;
