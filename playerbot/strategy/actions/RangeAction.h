@@ -12,5 +12,8 @@ namespace ai
 
         virtual bool Execute(Event event);
 
+    private:
+        void PrintRange(string type);
+
     };
 }

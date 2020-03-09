@@ -8,6 +8,13 @@ using namespace ai;
 bool RangeAction::Execute(Event event)
 {
     string param = event.getParam();
+    if (param == "?")
+    {
+        PrintRange("spell");
+        PrintRange("shoot");
+        PrintRange("flee");
+    }
+
     int pos = param.find(" ");
     if (pos == string::npos) return false;
 
@@ -16,12 +23,7 @@ bool RangeAction::Execute(Event event)
 
     if (value == "?")
     {
-        float curVal = AI_VALUE2(float, "range", qualifier);
-        ostringstream out;
-        out << qualifier << " range: ";
-        if (abs(curVal) >= 0.1f) out << curVal;
-        else out << ai->GetRange(qualifier) << " (default)";
-        ai->TellMaster(out.str());
+        PrintRange(qualifier);
         return true;
     }
 
@@ -33,3 +35,14 @@ bool RangeAction::Execute(Event event)
     return true;
 }
 
+void RangeAction::PrintRange(string type)
+{
+    float curVal = AI_VALUE2(float, "range", type);
+
+    ostringstream out;
+    out << type << " range: ";
+    if (abs(curVal) >= 0.1f) out << curVal;
+    else out << ai->GetRange(type) << " (default)";
+
+    ai->TellMaster(out.str());
+}

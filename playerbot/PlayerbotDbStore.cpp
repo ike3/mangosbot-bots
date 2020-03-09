@@ -103,6 +103,7 @@ void PlayerbotDbStore::Save(PlayerbotAI *ai)
 
     SaveRange(ai, guid, "spell");
     SaveRange(ai, guid, "shoot");
+    SaveRange(ai, guid, "flee");
 }
 
 void PlayerbotDbStore::SaveRange(PlayerbotAI *ai, uint64 guid, string type)

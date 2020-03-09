@@ -31,7 +31,7 @@ namespace ai
 
 	class FleePoint {
 	public:
-		FleePoint(float x, float y, float z) {
+		FleePoint(PlayerbotAI* ai, float x, float y, float z) : ai(ai) {
 			this->x = x;
 			this->y = y;
 			this->z = z;
@@ -49,6 +49,9 @@ namespace ai
 		RangePair toAllPlayers;
 		RangePair toMeleePlayers;
 		RangePair toRangedPlayers;
+
+	private:
+		PlayerbotAI* ai;
 	};
 
 	class FleeManager

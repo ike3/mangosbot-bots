@@ -328,7 +328,7 @@ bool MovementAction::Flee(Unit *target)
         return false;
     }
 
-    FleeManager manager(bot, sPlayerbotAIConfig.fleeDistance, bot->GetAngle(target) + M_PI);
+    FleeManager manager(bot, ai->GetRange("flee"), bot->GetAngle(target) + M_PI);
 
     float rx, ry, rz;
     if (!manager.CalculateDestination(&rx, &ry, &rz))
