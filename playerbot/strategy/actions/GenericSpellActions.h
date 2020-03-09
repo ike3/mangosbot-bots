@@ -48,7 +48,7 @@ namespace ai
     {
     public:
         CastSpellAction(PlayerbotAI* ai, string spell) : Action(ai, spell),
-			range(sPlayerbotAIConfig.spellDistance)
+			range(ai->GetRange("spell"))
         {
             this->spell = spell;
         }
@@ -61,7 +61,7 @@ namespace ai
 
 		virtual NextAction** getPrerequisites()
 		{
-			if (range > sPlayerbotAIConfig.spellDistance)
+			if (range > ai->GetRange("spell"))
 				return NULL;
 			else if (range > ATTACK_DISTANCE)
 				return NextAction::merge( NextAction::array(0, new NextAction("reach spell"), NULL), Action::getPrerequisites());
@@ -116,7 +116,7 @@ namespace ai
 	public:
 		CastBuffSpellAction(PlayerbotAI* ai, string spell) : CastAuraSpellAction(ai, spell)
 		{
-			range = sPlayerbotAIConfig.spellDistance;
+			range = ai->GetRange("spell");
 		}
 
         virtual string GetTargetName() { return "self target"; }
@@ -127,7 +127,7 @@ namespace ai
 	public:
 	    CastEnchantItemAction(PlayerbotAI* ai, string spell) : CastSpellAction(ai, spell)
 		{
-			range = sPlayerbotAIConfig.spellDistance;
+			range = ai->GetRange("spell");
 		}
 
         virtual bool isPossible();
@@ -142,7 +142,7 @@ namespace ai
         CastHealingSpellAction(PlayerbotAI* ai, string spell, uint8 estAmount = 15.0f) : CastAuraSpellAction(ai, spell)
 		{
             this->estAmount = estAmount;
-			range = sPlayerbotAIConfig.spellDistance;
+			range = ai->GetRange("spell");
         }
 		virtual string GetTargetName() { return "self target"; }
         virtual bool isUseful();
@@ -165,7 +165,7 @@ namespace ai
 	public:
 		CastCureSpellAction(PlayerbotAI* ai, string spell) : CastSpellAction(ai, spell)
 		{
-			range = sPlayerbotAIConfig.spellDistance;
+			range = ai->GetRange("spell");
 		}
 
 		virtual string GetTargetName() { return "self target"; }

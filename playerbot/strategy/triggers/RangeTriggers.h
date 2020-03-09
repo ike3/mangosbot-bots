@@ -12,7 +12,7 @@ namespace ai
 		{
 			Unit* target = AI_VALUE(Unit*, "current target");
             return target &&
-                    sServerFacade.IsDistanceLessOrEqualThan(AI_VALUE2(float, "distance", "current target"), sPlayerbotAIConfig.spellDistance / 2);
+                    sServerFacade.IsDistanceLessOrEqualThan(AI_VALUE2(float, "distance", "current target"), ai->GetRange("spell") / 2);
         }
     };
 
@@ -23,7 +23,7 @@ namespace ai
 		{
 			Unit* target = AI_VALUE(Unit*, "current target");
             return target &&
-                    sServerFacade.IsDistanceLessOrEqualThan(AI_VALUE2(float, "distance", "current target"), sPlayerbotAIConfig.shootDistance);
+                    sServerFacade.IsDistanceLessOrEqualThan(AI_VALUE2(float, "distance", "current target"), ai->GetRange("shoot"));
         }
     };
 
@@ -76,13 +76,13 @@ namespace ai
     class EnemyOutOfSpellRangeTrigger : public OutOfRangeTrigger
 	{
     public:
-        EnemyOutOfSpellRangeTrigger(PlayerbotAI* ai) : OutOfRangeTrigger(ai, "enemy out of spell range", sPlayerbotAIConfig.spellDistance) {}
+        EnemyOutOfSpellRangeTrigger(PlayerbotAI* ai) : OutOfRangeTrigger(ai, "enemy out of spell range", ai->GetRange("spell")) {}
     };
 
     class PartyMemberToHealOutOfSpellRangeTrigger : public OutOfRangeTrigger
 	{
     public:
-        PartyMemberToHealOutOfSpellRangeTrigger(PlayerbotAI* ai) : OutOfRangeTrigger(ai, "party member to heal out of spell range", sPlayerbotAIConfig.spellDistance) {}
+        PartyMemberToHealOutOfSpellRangeTrigger(PlayerbotAI* ai) : OutOfRangeTrigger(ai, "party member to heal out of spell range", ai->GetRange("spell")) {}
         virtual string GetTargetName() { return "party member to heal"; }
     };
 

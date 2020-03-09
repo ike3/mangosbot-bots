@@ -129,7 +129,7 @@ bool MovementAction::MoveTo(Unit* target, float distance)
     float angle = bot->GetAngle(target);
     float needToGo = distanceToTarget - distance;
 
-    float maxDistance = sPlayerbotAIConfig.spellDistance;
+    float maxDistance = ai->GetRange("spell");
     if (needToGo > 0 && needToGo > maxDistance)
         needToGo = maxDistance;
     else if (needToGo < 0 && needToGo < -maxDistance)

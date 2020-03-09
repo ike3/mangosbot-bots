@@ -1593,3 +1593,13 @@ bool ChatHandler::HandleGuildTaskCommand(char* args)
     return GuildTaskMgr::HandleConsoleCommand(this, args);
 }
 
+float PlayerbotAI::GetRange(string type)
+{
+    float val = 0;
+    if (aiObjectContext) val = aiObjectContext->GetValue<float>("range", type)->Get();
+    if (abs(val) >= 0.1f) return val;
+
+    if (type == "spell") return sPlayerbotAIConfig.spellDistance;
+    if (type == "shoot") return sPlayerbotAIConfig.shootDistance;
+    return 0;
+}
