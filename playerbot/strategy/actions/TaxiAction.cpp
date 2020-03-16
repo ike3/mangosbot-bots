@@ -1,6 +1,8 @@
 #include "botpch.h"
 #include "../../playerbot.h"
 #include "TaxiAction.h"
+
+#include "../../../../../game/Server/DBCStructure.h"
 #include "../values/LastMovementValue.h"
 
 using namespace ai;
@@ -12,7 +14,8 @@ bool TaxiAction::Execute(Event event)
     LastMovement& movement = context->GetValue<LastMovement&>("last taxi")->Get();
 
     WorldPacket& p = event.getPacket();
-	if ((!p.empty() && (p.GetOpcode() == CMSG_TAXICLEARALLNODES || p.GetOpcode() == CMSG_TAXICLEARNODE)) || event.getParam() == "clear")
+    string param = event.getParam();
+	if ((!p.empty() && (p.GetOpcode() == CMSG_TAXICLEARALLNODES || p.GetOpcode() == CMSG_TAXICLEARNODE)) || param == "clear")
     {
         movement.taxiNodes.clear();
         movement.Set(NULL);
@@ -27,15 +30,49 @@ bool TaxiAction::Execute(Event event)
         if (!npc)
             continue;
 
-        if (movement.taxiNodes.empty())
+        uint32 curloc = sObjectMgr.GetNearestTaxiNode(npc->GetPositionX(), npc->GetPositionY(), npc->GetPositionZ(), npc->GetMapId(), bot->GetTeam());
+
+        vector<uint32> nodes;
+        for (uint32 i = 0; i < sTaxiPathStore.GetNumRows(); ++i)
         {
-            ostringstream out;
-            out << "I will order the taxi from " << npc->GetName() << ". Please start flying, then instruct me again";
-            ai->TellMaster(out);
+            TaxiPathEntry const* entry = sTaxiPathStore.LookupEntry(i);
+            if (entry && entry->from == curloc)
+            {
+                uint8  field = uint8((i - 1) / 32);
+                if (field < TaxiMaskSize) nodes.push_back(i);
+            }
+        }
+
+        if (param == "?")
+        {
+            ai->TellMasterNoFacing("=== Taxi ===");
+            int index = 1;
+            for (vector<uint32>::iterator i = nodes.begin(); i != nodes.end(); ++i)
+            {
+                TaxiPathEntry const* entry = sTaxiPathStore.LookupEntry(*i);
+                if (!entry) continue;
+
+                TaxiNodesEntry const* dest = sTaxiNodesStore.LookupEntry(entry->to);
+                if (!dest) continue;
+
+                ostringstream out;
+                out << index++ << ": " << dest->name[0];
+                ai->TellMasterNoFacing(out.str());
+            }
             return true;
         }
 
-        if (!bot->ActivateTaxiPathTo(movement.taxiNodes, npc))
+        int selected = atoi(param.c_str());
+        if (selected)
+        {
+            uint32 path = nodes[selected - 1];
+            TaxiPathEntry const* entry = sTaxiPathStore.LookupEntry(path);
+            if (!entry) return false;
+
+            return bot->ActivateTaxiPathTo({ entry->from, entry->to }, npc, 0);
+        }
+
+        if (!movement.taxiNodes.empty() && !bot->ActivateTaxiPathTo(movement.taxiNodes, npc))
         {
             movement.taxiNodes.clear();
             movement.Set(NULL);
