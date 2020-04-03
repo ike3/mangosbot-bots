@@ -58,6 +58,7 @@ bool OpenLootAction::Execute(Event event)
     {
         AI_VALUE(LootObjectStack*, "available loot")->Remove(lootObject.guid);
         context->GetValue<LootObject>("loot target")->Set(LootObject());
+        ai->SetNextCheckDelay(sPlayerbotAIConfig.lootDelay);
     }
     return result;
 }
@@ -110,7 +111,7 @@ bool OpenLootAction::DoLoot(LootObject& lootObject)
 
     if (go && (
 #ifdef CMANGOS
-        go->IsInUse() || 
+        go->IsInUse() ||
 #endif
         go->GetGoState() != GO_STATE_READY
         ))

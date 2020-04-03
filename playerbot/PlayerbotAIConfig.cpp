@@ -57,6 +57,7 @@ bool PlayerbotAIConfig::Initialize()
     rpgDelay = (uint32) config.GetIntDefault("AiPlayerbot.RpgDelay", 3000);
     sitDelay = (uint32) config.GetIntDefault("AiPlayerbot.SitDelay", 30000);
     returnDelay = (uint32) config.GetIntDefault("AiPlayerbot.ReturnDelay", 7000);
+    lootDelay = (uint32) config.GetIntDefault("AiPlayerbot.LootDelayDelay", 750);
 
     farDistance = config.GetFloatDefault("AiPlayerbot.FarDistance", 20.0f);
     sightDistance = config.GetFloatDefault("AiPlayerbot.SightDistance", 40.0f);
@@ -71,7 +72,7 @@ bool PlayerbotAIConfig::Initialize()
     followDistance = config.GetFloatDefault("AiPlayerbot.FollowDistance", 1.5f);
     whisperDistance = config.GetFloatDefault("AiPlayerbot.WhisperDistance", 6000.0f);
     contactDistance = config.GetFloatDefault("AiPlayerbot.ContactDistance", 0.5f);
-    aoeRadius = config.GetFloatDefault("AiPlayerbot.AoeRadius", 10.0f);
+    aoeRadius = config.GetFloatDefault("AiPlayerbot.AoeRadius", 5.0f);
     rpgDistance = config.GetFloatDefault("AiPlayerbot.RpgDistance", 80.0f);
 
     criticalHealth = config.GetIntDefault("AiPlayerbot.CriticalHealth", 20);
