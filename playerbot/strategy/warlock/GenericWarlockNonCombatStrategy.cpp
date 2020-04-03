@@ -43,10 +43,6 @@ void GenericWarlockNonCombatStrategy::InitTriggers(std::list<TriggerNode*> &trig
         "demon armor",
         NextAction::array(0, new NextAction("fel armor", 21.0f), NULL)));
 
-	triggers.push_back(new TriggerNode(
-		"no healthstone",
-		NextAction::array(0, new NextAction("create healthstone", 15.0f), NULL)));
-
     triggers.push_back(new TriggerNode(
         "no pet",
         NextAction::array(0, new NextAction("summon imp", 10.0f), NULL)));
