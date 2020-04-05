@@ -71,6 +71,8 @@ namespace ai
         {
             valueContexts.Add(sharedValues);
         }
+        list<string> Save();
+        void Load(list<string> data);
 
     protected:
         NamedObjectContextList<Strategy> strategyContexts;

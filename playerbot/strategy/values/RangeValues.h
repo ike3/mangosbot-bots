@@ -7,5 +7,8 @@ namespace ai
 	{
 	public:
         RangeValue(PlayerbotAI* ai);
+
+        virtual string Save();
+        virtual bool Load(string value);
     };
 }

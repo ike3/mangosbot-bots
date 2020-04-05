@@ -11,6 +11,7 @@ namespace ai
 
     public:
         virtual void Qualify(string qualifier) { this->qualifier = qualifier; }
+        string GetQualifier() { return qualifier; }
 
     protected:
         string qualifier;

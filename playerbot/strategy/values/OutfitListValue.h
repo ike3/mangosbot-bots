@@ -9,6 +9,9 @@ namespace ai
 	public:
         OutfitListValue(PlayerbotAI* ai) : ManualSetValue<Outfit&>(ai, list) {}
 
+        virtual string Save();
+        virtual bool Load(string value);
+
     private:
         Outfit list;
     };
