@@ -30,6 +30,7 @@ public:
     float underPriceProbability;
     std::set<uint32> ignoreItemIds;
     std::set<uint32> ignoreVendorItemIds;
+    std::set<uint32> questItemIds;
     bool sendmail;
 
     float GetSellPriceMultiplier(string category)

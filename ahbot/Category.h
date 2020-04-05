@@ -1,4 +1,5 @@
 #pragma once
+#include "AhBotConfig.h"
 #include "Config.h"
 #include "PricingStrategy.h"
 #include "ItemPrototype.h"
@@ -60,7 +61,8 @@ namespace ahbot
     public:
         virtual bool Contains(ItemPrototype const* proto)
         {
-            return proto->Class == ITEM_CLASS_QUEST;
+            return proto->Class == ITEM_CLASS_QUEST ||
+                    sAhBotConfig.questItemIds.find(proto->ItemId) != sAhBotConfig.questItemIds.end();
         }
         virtual string GetName() { return "quest"; }
         virtual string GetLabel() { return "quest items"; }

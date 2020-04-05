@@ -55,7 +55,8 @@ bool AhBotConfig::Initialize()
     priceQualityMultiplier = config.GetFloatDefault("AhBot.PriceQualityMultiplier", 1.0f);
     underPriceProbability = config.GetFloatDefault("AhBot.UnderPriceProbability", 0.05f);
     LoadSet<set<uint32> >(config.GetStringDefault("AhBot.IgnoreItemIds", "49283,52200,8494,6345,6891,2460,37164,34835"), ignoreItemIds);
-    LoadSet<set<uint32> >(config.GetStringDefault("AhBot.IgnoreVendorItemIds", "755,858,4592,4593,1710,3827,2455,3385"), ignoreVendorItemIds);
+    LoadSet<set<uint32> >(config.GetStringDefault("AhBot.IgnoreVendorItemIds", "755,858,4592,4593,1710,3827,2455,3385,4361,4371,5762,10559,4382,4363,4364,4384"), ignoreVendorItemIds);
+    LoadSet<set<uint32> >(config.GetStringDefault("AhBot.QuestItemIds", "18945,22528"), questItemIds);
     sendmail = config.GetBoolDefault("AhBot.SendMail", true);
 
 
