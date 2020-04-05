@@ -35,13 +35,6 @@ void PaladinBuffHealthStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("blessing of kings", ACTION_HIGH + 8), NULL)));
 }
 
-void PaladinBuffSpeedStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
-{
-    triggers.push_back(new TriggerNode(
-        "crusader aura",
-        NextAction::array(0, new NextAction("crusader aura", 40.0f), NULL)));
-}
-
 void PaladinBuffDpsStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
@@ -99,11 +92,15 @@ void PaladinBuffThreatStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         "seal",
         NextAction::array(0, new NextAction("seal of light", 89.0f), NULL)));
 
+}
+
+void PaladinBuffStatsStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+{
     triggers.push_back(new TriggerNode(
         "blessing on party",
         NextAction::array(0, new NextAction("blessing of kings on party", 11.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
         "blessing",
-        NextAction::array(0, new NextAction("blessing of sanctuary", ACTION_HIGH + 8), NULL)));
+        NextAction::array(0, new NextAction("blessing of kings", ACTION_HIGH + 8), NULL)));
 }

@@ -64,14 +64,14 @@ namespace ai
 		virtual string getName() { return "bthreat"; }
 	};
 
-	class PaladinBuffSpeedStrategy : public Strategy
+	class PaladinBuffStatsStrategy : public Strategy
 	{
 	public:
-		PaladinBuffSpeedStrategy(PlayerbotAI* ai) : Strategy(ai) {}
+	    PaladinBuffStatsStrategy(PlayerbotAI* ai) : Strategy(ai) {}
 
 	public:
 		virtual void InitTriggers(std::list<TriggerNode*> &triggers);
-		virtual string getName() { return "bspeed"; }
+		virtual string getName() { return "bstats"; }
 	};
 
 	class PaladinShadowResistanceStrategy : public Strategy
