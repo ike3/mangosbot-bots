@@ -32,6 +32,9 @@ void LoadList(string value, T &list)
 bool PlayerbotAIConfig::Initialize()
 {
     sLog.outString("Initializing AI Playerbot by ike3, based on the original Playerbot by blueboy");
+#ifdef ENABLE_IMMERSIVE
+    sLog.outString("Enabling Immersive support");
+#endif
 
     if (!config.SetSource(SYSCONFDIR"aiplayerbot.conf"))
     {

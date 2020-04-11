@@ -121,7 +121,7 @@ public:
     list<string> GetStrategies(BotState type);
     bool ContainsStrategy(StrategyType type);
     bool HasStrategy(string name, BotState type);
-    void ResetStrategies();
+    void ResetStrategies(bool load = true);
     void ReInitCurrentEngine();
     void Reset();
     bool IsTank(Player* player);

@@ -7,7 +7,7 @@ using namespace ai;
 
 NextAction** HealPriestStrategy::getDefaultActions()
 {
-    return NextAction::array(0, new NextAction("shoot", 10.0f), NULL);
+    return NextAction::array(0, new NextAction("shoot", 5.0f), NULL);
 }
 
 void HealPriestStrategy::InitTriggers(std::list<TriggerNode*> &triggers)

@@ -17,9 +17,6 @@ using namespace ai;
 void PlayerbotDbStore::Load(PlayerbotAI *ai)
 {
     uint64 guid = ai->GetBot()->GetObjectGuid().GetRawValue();
-    uint32 account = sObjectMgr.GetPlayerAccountIdByGUID(ObjectGuid(guid));
-    if (sPlayerbotAIConfig.IsInRandomAccountList(account))
-        return;
 
     QueryResult* results = CharacterDatabase.PQuery("SELECT `key`,`value` FROM `ai_playerbot_db_store` WHERE `guid` = '%u'", guid);
     if (results)
@@ -35,16 +32,10 @@ void PlayerbotDbStore::Load(PlayerbotAI *ai)
             Field* fields = results->Fetch();
             string key = fields[0].GetString();
             string value = fields[1].GetString();
-            if (key == "value")
-            {
-                values.push_back(value);
-            }
-            else
-            {
-                ExternalEventHelper helper(ai->GetAiObjectContext());
-                helper.ParseChatCommand(value, ai->GetMaster());
-                ai->DoNextAction();
-            }
+            if (key == "value") values.push_back(value);
+            else if (key == "co") ai->ChangeStrategy(value, BOT_STATE_COMBAT);
+            else if (key == "nc") ai->ChangeStrategy(value, BOT_STATE_NON_COMBAT);
+            else if (key == "dead") ai->ChangeStrategy(value, BOT_STATE_DEAD);
         } while (results->NextRow());
 
         ai->GetAiObjectContext()->Load(values);
@@ -55,9 +46,6 @@ void PlayerbotDbStore::Load(PlayerbotAI *ai)
 void PlayerbotDbStore::Save(PlayerbotAI *ai)
 {
     uint64 guid = ai->GetBot()->GetObjectGuid().GetRawValue();
-    uint32 account = sObjectMgr.GetPlayerAccountIdByGUID(ObjectGuid(guid));
-    if (sPlayerbotAIConfig.IsInRandomAccountList(account))
-        return;
 
     Reset(ai);
 
@@ -75,7 +63,6 @@ void PlayerbotDbStore::Save(PlayerbotAI *ai)
 string PlayerbotDbStore::FormatStrategies(string type, list<string> strategies)
 {
     ostringstream out;
-    out << type << " ";
     for(list<string>::iterator i = strategies.begin(); i != strategies.end(); ++i)
         out << "+" << (*i).c_str() << ",";
 
@@ -87,9 +74,6 @@ void PlayerbotDbStore::Reset(PlayerbotAI *ai)
 {
     uint64 guid = ai->GetBot()->GetObjectGuid().GetRawValue();
     uint32 account = sObjectMgr.GetPlayerAccountIdByGUID(ObjectGuid(guid));
-    if (sPlayerbotAIConfig.IsInRandomAccountList(account))
-        return;
-
     CharacterDatabase.PExecute("DELETE FROM `ai_playerbot_db_store` WHERE `guid` = '%u'", guid);
 }
 
