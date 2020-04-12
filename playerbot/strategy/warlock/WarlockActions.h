@@ -178,4 +178,9 @@ namespace ai
         virtual bool isUseful() { return AI_VALUE2(uint8, "health", "self target") > sPlayerbotAIConfig.lowHealth; }
     };
 
+    class CastAmplifyCurseAction : public CastBuffSpellAction
+    {
+    public:
+        CastAmplifyCurseAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "amplify curse") {}
+    };
 }

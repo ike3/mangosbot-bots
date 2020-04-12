@@ -84,4 +84,9 @@ namespace ai
         FearTrigger(PlayerbotAI* ai) : HasCcTargetTrigger(ai, "fear") {}
     };
 
+    class AmplifyCurseTrigger : public BuffTrigger
+    {
+    public:
+        AmplifyCurseTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "amplify curse") {}
+    };
 }

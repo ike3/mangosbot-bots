@@ -368,4 +368,10 @@ namespace ai
     public:
         CastHammerOfJusticeSnareAction(PlayerbotAI* ai) : CastSnareSpellAction(ai, "hammer of justice") {}
     };
+
+    class CastDivineFavorAction : public CastBuffSpellAction
+    {
+    public:
+        CastDivineFavorAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "divine favor") {}
+    };
 }

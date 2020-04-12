@@ -32,6 +32,7 @@ namespace ai
                 creators["cure"] = &druid::StrategyFactoryInternal::cure;
                 creators["melee"] = &druid::StrategyFactoryInternal::melee;
                 creators["buff"] = &druid::StrategyFactoryInternal::buff;
+                creators["boost"] = &druid::StrategyFactoryInternal::boost;
             }
 
         private:
@@ -42,6 +43,7 @@ namespace ai
             static Strategy* cure(PlayerbotAI* ai) { return new DruidCureStrategy(ai); }
             static Strategy* melee(PlayerbotAI* ai) { return new MeleeDruidStrategy(ai); }
             static Strategy* buff(PlayerbotAI* ai) { return new GenericDruidBuffStrategy(ai); }
+            static Strategy* boost(PlayerbotAI* ai) { return new DruidBoostStrategy(ai); }
         };
 
         class DruidStrategyFactoryInternal : public NamedObjectContext<Strategy>
@@ -98,9 +100,11 @@ namespace ai
                 creators["eclipse (solar)"] = &TriggerFactoryInternal::eclipse_solar;
                 creators["eclipse (lunar)"] = &TriggerFactoryInternal::eclipse_lunar;
                 creators["bash on enemy healer"] = &TriggerFactoryInternal::bash_on_enemy_healer;
+                creators["nature's swiftness"] = &TriggerFactoryInternal::natures_swiftness;
             }
 
         private:
+            static Trigger* natures_swiftness(PlayerbotAI* ai) { return new NaturesSwiftnessTrigger(ai); }
             static Trigger* eclipse_solar(PlayerbotAI* ai) { return new EclipseSolarTrigger(ai); }
             static Trigger* eclipse_lunar(PlayerbotAI* ai) { return new EclipseLunarTrigger(ai); }
             static Trigger* Thorns(PlayerbotAI* ai) { return new ThornsTrigger(ai); }
@@ -195,9 +199,11 @@ namespace ai
                 creators["tranquility"] = &AiObjectContextInternal::tranquility;
                 creators["bash on enemy healer"] = &AiObjectContextInternal::bash_on_enemy_healer;
                 creators["omen of clarity"] = &AiObjectContextInternal::omen_of_clarity;
+                creators["nature's swiftness"] = &AiObjectContextInternal::natures_swiftness;
             }
 
         private:
+            static Action* natures_swiftness(PlayerbotAI* ai) { return new CastNaturesSwiftnessAction(ai); }
             static Action* omen_of_clarity(PlayerbotAI* ai) { return new CastOmenOfClarityAction(ai); }
             static Action* tranquility(PlayerbotAI* ai) { return new CastTranquilityAction(ai); }
             static Action* feral_charge_bear(PlayerbotAI* ai) { return new CastFeralChargeBearAction(ai); }

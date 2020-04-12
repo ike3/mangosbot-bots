@@ -120,4 +120,10 @@ namespace ai
     public:
         HammerOfJusticeEnemyHealerTrigger(PlayerbotAI* ai) : InterruptEnemyHealerTrigger(ai, "hammer of justice") {}
     };
+
+    class DivineFavorTrigger : public BuffTrigger
+    {
+    public:
+        DivineFavorTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "divine favor") {}
+    };
 }

@@ -16,6 +16,12 @@ namespace ai
         SliceAndDiceTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "slice and dice") {}
     };
 
+    class AdrenalineRushTrigger : public BuffTrigger
+    {
+    public:
+        AdrenalineRushTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "adrenaline rush") {}
+    };
+
     class RuptureTrigger : public DebuffTrigger
     {
     public:

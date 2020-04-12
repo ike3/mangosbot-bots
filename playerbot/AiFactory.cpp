@@ -176,7 +176,7 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
                 engine->addStrategy("dps debuff");
             break;
         case CLASS_ROGUE:
-            engine->addStrategies("dps", "threat", "dps assist", NULL);
+            engine->addStrategies("dps", "threat", "dps assist", "aoe", NULL);
             break;
         case CLASS_WARLOCK:
             if (tab == 1)

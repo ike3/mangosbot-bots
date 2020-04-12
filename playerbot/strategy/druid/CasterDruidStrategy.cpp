@@ -20,7 +20,6 @@ public:
         creators["insect swarm"] = &insect_swarm;
         creators["moonfire"] = &moonfire;
         creators["starfire"] = &starfire;
-        creators["nature's grasp"] = &natures_grasp;
     }
 private:
     static ActionNode* faerie_fire(PlayerbotAI* ai)
@@ -86,13 +85,6 @@ private:
             /*A*/ NULL,
             /*C*/ NULL);
     }
-    static ActionNode* natures_grasp(PlayerbotAI* ai)
-    {
-        return new ActionNode ("nature's grasp",
-            /*P*/ NextAction::array(0, new NextAction("moonkin form"), NULL),
-            /*A*/ NULL,
-            /*C*/ NULL);
-    }
 };
 
 CasterDruidStrategy::CasterDruidStrategy(PlayerbotAI* ai) : GenericDruidStrategy(ai)
@@ -154,7 +146,7 @@ void CasterDruidStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 
 
 	triggers.push_back(new TriggerNode(
-		"nature's grasp",
+		"critical health",
 		NextAction::array(0, new NextAction("nature's grasp", ACTION_EMERGENCY), NULL)));
 
     triggers.push_back(new TriggerNode(

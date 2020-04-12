@@ -25,9 +25,13 @@ namespace ai
                 creators["dps"] = &rogue::StrategyFactoryInternal::dps;
                 creators["nc"] = &rogue::StrategyFactoryInternal::nc;
                 creators["pull"] = &rogue::StrategyFactoryInternal::pull;
+                creators["aoe"] = &rogue::StrategyFactoryInternal::aoe;
+                creators["boost"] = &rogue::StrategyFactoryInternal::boost;
             }
 
         private:
+            static Strategy* boost(PlayerbotAI* ai) { return new RogueBoostStrategy(ai); }
+            static Strategy* aoe(PlayerbotAI* ai) { return new RogueAoeStrategy(ai); }
             static Strategy* dps(PlayerbotAI* ai) { return new DpsRogueStrategy(ai); }
             static Strategy* nc(PlayerbotAI* ai) { return new GenericRogueNonCombatStrategy(ai); }
             static Strategy* pull(PlayerbotAI* ai) { return new PullStrategy(ai, "shoot"); }
@@ -51,10 +55,12 @@ namespace ai
                 creators["slice and dice"] = &TriggerFactoryInternal::slice_and_dice;
                 creators["expose armor"] = &TriggerFactoryInternal::expose_armor;
                 creators["kick on enemy healer"] = &TriggerFactoryInternal::kick_on_enemy_healer;
+                creators["adrenaline rush"] = &TriggerFactoryInternal::adrenaline_rush;
 
             }
 
         private:
+            static Trigger* adrenaline_rush(PlayerbotAI* ai) { return new AdrenalineRushTrigger(ai); }
             static Trigger* kick(PlayerbotAI* ai) { return new KickInterruptSpellTrigger(ai); }
             static Trigger* rupture(PlayerbotAI* ai) { return new RuptureTrigger(ai); }
             static Trigger* slice_and_dice(PlayerbotAI* ai) { return new SliceAndDiceTrigger(ai); }
@@ -90,9 +96,13 @@ namespace ai
                 creators["backstab"] = &AiObjectContextInternal::backstab;
                 creators["expose armor"] = &AiObjectContextInternal::expose_armor;
                 creators["kick on enemy healer"] = &AiObjectContextInternal::kick_on_enemy_healer;
+                creators["blade flurry"] = &AiObjectContextInternal::blade_flurry;
+                creators["adrenaline rush"] = &AiObjectContextInternal::adrenaline_rush;
             }
 
         private:
+            static Action* adrenaline_rush(PlayerbotAI* ai) { return new CastAdrenalineRushAction(ai); }
+            static Action* blade_flurry(PlayerbotAI* ai) { return new CastBladeFlurryAction(ai); }
             static Action* riposte(PlayerbotAI* ai) { return new CastRiposteAction(ai); }
             static Action* mutilate(PlayerbotAI* ai) { return new CastMutilateAction(ai); }
             static Action* sinister_strike(PlayerbotAI* ai) { return new CastSinisterStrikeAction(ai); }

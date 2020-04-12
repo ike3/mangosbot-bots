@@ -96,4 +96,16 @@ namespace ai
     public:
         CounterspellEnemyHealerTrigger(PlayerbotAI* ai) : InterruptEnemyHealerTrigger(ai, "counterspell") {}
     };
+
+    class ArcanePowerTrigger : public BuffTrigger
+    {
+    public:
+        ArcanePowerTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "arcane power") {}
+    };
+
+    class PresenceOfMindTrigger : public BuffTrigger
+    {
+    public:
+        PresenceOfMindTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "presence of mind") {}
+    };
 }

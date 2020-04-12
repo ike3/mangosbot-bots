@@ -80,3 +80,10 @@ void GenericWarlockStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         "immolate",
         NextAction::array(0, new NextAction("immolate", 19.0f), new NextAction("conflagrate", 19.0f), NULL)));
 }
+
+void WarlockBoostStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+{
+    triggers.push_back(new TriggerNode(
+        "amplify curse",
+        NextAction::array(0, new NextAction("amplify curse", 41.0f), NULL)));
+}

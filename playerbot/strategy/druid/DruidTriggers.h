@@ -130,4 +130,10 @@ namespace ai {
     public:
         BashInterruptEnemyHealerSpellTrigger(PlayerbotAI* ai) : InterruptEnemyHealerTrigger(ai, "bash") {}
     };
+
+    class NaturesSwiftnessTrigger : public BuffTrigger
+    {
+    public:
+        NaturesSwiftnessTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "nature's swiftness") {}
+    };
 }

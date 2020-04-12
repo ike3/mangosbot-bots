@@ -218,4 +218,17 @@ namespace ai
     public:
 	    CastCounterspellOnEnemyHealerAction(PlayerbotAI* ai) : CastSpellOnEnemyHealerAction(ai, "counterspell") {}
     };
+
+    class CastArcanePowerAction : public CastBuffSpellAction
+    {
+    public:
+        CastArcanePowerAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "arcane power") {}
+    };
+
+    class CastPresenceOfMindAction : public CastBuffSpellAction
+    {
+    public:
+        CastPresenceOfMindAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "presence of mind") {}
+    };
+
 }

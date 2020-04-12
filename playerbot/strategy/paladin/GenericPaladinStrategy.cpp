@@ -74,3 +74,10 @@ void PaladinCureStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         "cleanse party member cure magic",
         NextAction::array(0, new NextAction("cleanse magic on party", ACTION_DISPEL + 1), NULL)));
 }
+
+void PaladinBoostStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+{
+    triggers.push_back(new TriggerNode(
+        "divine favor",
+        NextAction::array(0, new NextAction("divine favor", ACTION_HIGH + 1), NULL)));
+}
