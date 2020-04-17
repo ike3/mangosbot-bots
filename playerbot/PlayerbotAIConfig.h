@@ -20,6 +20,7 @@ public:
     bool Initialize();
     bool IsInRandomAccountList(uint32 id);
     bool IsInRandomQuestItemList(uint32 id);
+    bool IsInPvpProhibitedZone(uint32 id);
 
     bool enabled;
     bool allowGuildBots;
@@ -71,6 +72,7 @@ public:
     uint32 randomBotGuildCount;
     bool deleteRandomBotGuilds;
     std::list<uint32> randomBotGuilds;
+    std::list<uint32> pvpProhibitedZoneIds;
 
     bool guildTaskEnabled;
     uint32 minGuildTaskChangeTime, maxGuildTaskChangeTime;

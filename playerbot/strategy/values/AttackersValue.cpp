@@ -86,6 +86,7 @@ bool AttackersValue::hasRealThreat(Unit *attacker)
         !attacker->HasInvisibilityAura() &&
         !sServerFacade.IsInRoots(attacker) &&
         !sServerFacade.IsFriendlyTo(attacker, bot) &&
+        !sPlayerbotAIConfig.IsInPvpProhibitedZone(attacker->GetAreaId()) &&
         (sServerFacade.GetThreatManager(attacker).getCurrentVictim() || attacker->GetObjectGuid().IsPlayer()) &&
         (!c || (
                 !c->IsInEvadeMode() &&
