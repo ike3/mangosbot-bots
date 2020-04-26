@@ -39,14 +39,14 @@ Unit* PartyMemberToHeal::Calculate()
             continue;
 
         uint8 health = player->GetHealthPercent();
-        if (isRaid || health < sPlayerbotAIConfig.mediumHealth || !IsTargetOfSpellCast(player, predicate))
+        if (isRaid || health < sPlayerbotAIConfig.almostFullHealth || !IsTargetOfSpellCast(player, predicate))
             calc.probe(health, player);
 
         Pet* pet = player->GetPet();
         if (pet && CanHealPet(pet))
         {
             health = pet->GetHealthPercent();
-            if (isRaid || health < sPlayerbotAIConfig.mediumHealth || !IsTargetOfSpellCast(player, predicate))
+            if (isRaid || health < sPlayerbotAIConfig.almostFullHealth || !IsTargetOfSpellCast(player, predicate))
                 calc.probe(health, player);
         }
     }
@@ -56,4 +56,10 @@ Unit* PartyMemberToHeal::Calculate()
 bool PartyMemberToHeal::CanHealPet(Pet* pet)
 {
     return MINI_PET != pet->getPetType();
+}
+
+bool PartyMemberToHeal::Check(Unit* player)
+{
+    return player && player != bot && player->GetMapId() == bot->GetMapId() &&
+        bot->GetDistance(player) < sPlayerbotAIConfig.spellDistance;
 }
