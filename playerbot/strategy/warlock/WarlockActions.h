@@ -168,6 +168,8 @@ namespace ai
         CastFearOnCcAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "fear on cc") {}
         virtual Value<Unit*>* GetTargetValue() { return context->GetValue<Unit*>("cc target", "fear"); }
         virtual bool Execute(Event event) { return ai->CastSpell("fear", GetTarget()); }
+        virtual bool isPossible() { return ai->CanCastSpell("fear", GetTarget()); }
+        virtual bool isUseful() { return true; }
     };
 
     class CastLifeTapAction: public CastSpellAction

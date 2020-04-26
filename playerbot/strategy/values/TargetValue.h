@@ -28,6 +28,16 @@ namespace ai
         map<Unit*, int> dpsCountCache;
     };
 
+    class FindNonCcTargetStrategy : public FindTargetStrategy
+    {
+    public:
+        FindNonCcTargetStrategy(PlayerbotAI* ai) : FindTargetStrategy(ai) {}
+
+    protected:
+        virtual bool IsCcTarget(Unit* attacker);
+
+    };
+
     class TargetValue : public UnitCalculatedValue
 	{
 	public:

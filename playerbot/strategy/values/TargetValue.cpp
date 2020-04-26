@@ -23,6 +23,35 @@ Unit* TargetValue::FindTarget(FindTargetStrategy* strategy)
     return strategy->GetResult();
 }
 
+
+bool FindNonCcTargetStrategy::IsCcTarget(Unit* attacker)
+{
+    Group* group = ai->GetBot()->GetGroup();
+    if (group)
+    {
+        Group::MemberSlotList const& groupSlot = group->GetMemberSlots();
+        for (Group::member_citerator itr = groupSlot.begin(); itr != groupSlot.end(); itr++)
+        {
+            Player *member = sObjectMgr.GetPlayer(itr->guid);
+            if( !member || !sServerFacade.IsAlive(member))
+                continue;
+
+            PlayerbotAI *ai = member->GetPlayerbotAI();
+            if (ai)
+            {
+                if (ai->GetAiObjectContext()->GetValue<Unit*>("rti cc target")->Get() == attacker)
+                    return true;
+            }
+        }
+
+        uint64 guid = group->GetTargetIcon(4);
+        if (guid && attacker->GetObjectGuid() == ObjectGuid(guid))
+            return true;
+    }
+
+    return false;
+}
+
 void FindTargetStrategy::GetPlayerCount(Unit* creature, int* tankCount, int* dpsCount)
 {
     Player* bot = ai->GetBot();
