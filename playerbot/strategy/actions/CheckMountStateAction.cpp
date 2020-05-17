@@ -10,7 +10,7 @@ uint64 extractGuid(WorldPacket& packet);
 bool CheckMountStateAction::Execute(Event event)
 {
 	Player* master = GetMaster();
-	if (!bot->GetGroup() || !master)
+	if (!bot->GetGroup() || !master || bot->GetGroup()->GetLeaderGuid() != master->GetObjectGuid())
 		return false;
 
 	if (bot->IsTaxiFlying())
