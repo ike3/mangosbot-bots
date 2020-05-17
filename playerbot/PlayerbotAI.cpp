@@ -1603,5 +1603,6 @@ float PlayerbotAI::GetRange(string type)
     if (type == "spell") return sPlayerbotAIConfig.spellDistance;
     if (type == "shoot") return sPlayerbotAIConfig.shootDistance;
     if (type == "flee") return sPlayerbotAIConfig.fleeDistance;
+    if (type == "heal") return sPlayerbotAIConfig.healDistance;
     return 0;
 }
