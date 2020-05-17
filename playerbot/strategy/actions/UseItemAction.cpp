@@ -232,15 +232,19 @@ bool UseItemAction::UseItem(Item* item, ObjectGuid goGuid, Item* itemTarget)
     }
 
     ItemPrototype const* proto = item->GetProto();
+    bool isDrink = proto->Spells[0].SpellCategory == 11;
+    bool isFood = proto->Spells[0].SpellCategory == 59;
     if (proto->Class == ITEM_CLASS_CONSUMABLE && (proto->SubClass == ITEM_SUBCLASS_FOOD || proto->SubClass == ITEM_SUBCLASS_CONSUMABLE) &&
-		(proto->Spells[0].SpellCategory == 11 || proto->Spells[0].SpellCategory == 59))
+		(isFood || isDrink))
     {
         if (sServerFacade.IsInCombat(bot))
             return false;
 
         bot->addUnitState(UNIT_STAND_STATE_SIT);
         ai->InterruptSpell();
-        ai->SetNextCheckDelay(30000);
+
+        float percent = (isFood ? bot->GetHealthPercent() : bot->GetPower(POWER_MANA) * 100.0f / bot->GetMaxPower(POWER_MANA));
+        ai->SetNextCheckDelay(30000.0f * percent / 100.0f);
     }
 	else
     {
