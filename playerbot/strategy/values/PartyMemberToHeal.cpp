@@ -47,7 +47,7 @@ Unit* PartyMemberToHeal::Calculate()
         {
             health = pet->GetHealthPercent();
             if (isRaid || health < sPlayerbotAIConfig.almostFullHealth || !IsTargetOfSpellCast(player, predicate))
-                calc.probe(health, player);
+                calc.probe(health, pet);
         }
     }
     return (Unit*)calc.param;
