@@ -65,26 +65,21 @@ void PerformanceMonitor::Reset()
         map<string, PerformanceData*> pdMap = i->second;
         for (map<string, PerformanceData*>::iterator j = pdMap.begin(); j != pdMap.end(); ++j)
         {
-#ifdef CMANGOS
             PerformanceData* pd = j->second;
             std::lock_guard<std::mutex> guard(pd->lock);
             pd->minTime = pd->maxTime = pd->totalTime = pd->count = 0;
-#endif
         }
     }
 }
 
 PerformanceMonitorOperation::PerformanceMonitorOperation(PerformanceData* data) : data(data)
 {
-#ifdef CMANGOS
-    started = (std::chrono::time_point_cast<std::chrono::milliseconds>(Clock::now())).time_since_epoch();
-#endif
+    started = (std::chrono::time_point_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now())).time_since_epoch();
 }
 
 void PerformanceMonitorOperation::finish()
 {
-#ifdef CMANGOS
-    std::chrono::milliseconds finished = (std::chrono::time_point_cast<std::chrono::milliseconds>(Clock::now())).time_since_epoch();
+    std::chrono::milliseconds finished = (std::chrono::time_point_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now())).time_since_epoch();
     uint32 elapsed = (finished - started).count();
 
     std::lock_guard<std::mutex> guard(data->lock);
@@ -95,11 +90,9 @@ void PerformanceMonitorOperation::finish()
         data->totalTime += elapsed;
     }
     data->count++;
-#endif
     delete this;
 }
 
-#ifdef CMANGOS
 bool ChatHandler::HandlePerfMonCommand(char* args)
 {
     if (!strcmp(args, "reset"))
@@ -111,4 +104,3 @@ bool ChatHandler::HandlePerfMonCommand(char* args)
     sPerformanceMonitor.PrintStats();
     return true;
 }
-#endif

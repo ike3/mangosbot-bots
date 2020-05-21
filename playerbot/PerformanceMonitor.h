@@ -5,14 +5,16 @@
 #include "PlayerbotAIBase.h"
 #include "PlayerbotAIConfig.h"
 
+#include <mutex>
+#include <chrono>
+#include <ctime>
+
 using namespace std;
 
 struct PerformanceData
 {
     uint32 minTime, maxTime, totalTime, count;
-#ifdef CMANGOS
     std::mutex lock;
-#endif
 };
 
 enum PerformanceMetric
@@ -32,9 +34,7 @@ public:
 
 private:
     PerformanceData* data;
-#ifdef CMANGOS
     std::chrono::milliseconds started;
-#endif
 };
 
 class PerformanceMonitor

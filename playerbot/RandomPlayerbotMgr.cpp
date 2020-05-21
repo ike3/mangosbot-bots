@@ -369,6 +369,7 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot, vector<WorldLocation> &locs
 
         bot->GetMotionMaster()->Clear();
         bot->TeleportTo(loc.mapid, x, y, z, 0);
+        bot->SendHeartBeat();
         if (pmo) pmo->finish();
         return;
     }
@@ -524,14 +525,6 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot)
     PerformanceMonitorOperation *pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "RandomTeleport");
     vector<WorldLocation> locs;
 
-    FleeManager manager(bot, sPlayerbotAIConfig.randomBotTeleportDistance, 0, true);
-    float rx, ry, rz;
-    if (manager.CalculateDestination(&rx, &ry, &rz))
-    {
-        WorldLocation loc(bot->GetMapId(), rx, ry, rz);
-        locs.push_back(loc);
-    }
-
     list<Unit*> targets;
     float range = sPlayerbotAIConfig.randomBotTeleportDistance;
     MaNGOS::AnyUnitInObjectRangeCheck u_check(bot, range);
@@ -543,7 +536,7 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot)
         Unit* unit = *i;
 
         bot->SetPosition(unit->GetPositionX(), unit->GetPositionY(), unit->GetPositionZ(), 0);
-        FleeManager manager(bot, sPlayerbotAIConfig.randomBotTeleportDistance, 0, true);
+        FleeManager manager(bot, sPlayerbotAIConfig.sightDistance, 0, true);
         float rx, ry, rz;
         if (manager.CalculateDestination(&rx, &ry, &rz))
         {
