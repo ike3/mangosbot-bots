@@ -338,7 +338,7 @@ void PlayerbotAI::HandleBotOutgoingPacket(const WorldPacket& packet)
 		WorldPacket p(packet);
 		p.rpos(0);
 		ObjectGuid casterGuid;
-		p >> casterGuid.ReadAsPacked();
+		p >> casterGuid;
 		if (casterGuid != bot->GetObjectGuid())
 			return;
 
@@ -352,7 +352,7 @@ void PlayerbotAI::HandleBotOutgoingPacket(const WorldPacket& packet)
 		WorldPacket p(packet);
 		p.rpos(0);
 		ObjectGuid casterGuid;
-		p >> casterGuid.ReadAsPacked();
+		p >> casterGuid;
 
 		if (casterGuid != bot->GetObjectGuid())
 			return;
@@ -374,14 +374,12 @@ void PlayerbotAI::SpellInterrupted(uint32 spellid)
     if (!spellid || lastSpell.id != spellid)
         return;
 
-    lastSpell.Reset();
 
     time_t now = time(0);
     if (now <= lastSpell.time)
         return;
 
     uint32 castTimeSpent = 1000 * (now - lastSpell.time);
-
     int32 globalCooldown = CalculateGlobalCooldown(lastSpell.id);
     if (castTimeSpent < globalCooldown)
         SetNextCheckDelay(globalCooldown - castTimeSpent);
