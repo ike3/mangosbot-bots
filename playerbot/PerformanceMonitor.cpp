@@ -16,6 +16,9 @@ PerformanceMonitor::~PerformanceMonitor()
 
 PerformanceMonitorOperation* PerformanceMonitor::start(PerformanceMetric metric, string name)
 {
+    if (!sPlayerbotAIConfig.perfMonEnabled) return NULL;
+
+    std::lock_guard<std::mutex> guard(lock);
     PerformanceData *pd = data[metric][name];
     if (!pd)
     {
@@ -24,7 +27,7 @@ PerformanceMonitorOperation* PerformanceMonitor::start(PerformanceMetric metric,
         data[metric][name] = pd;
     }
 
-    return sPlayerbotAIConfig.perfMonEnabled ? new PerformanceMonitorOperation(pd) : NULL;
+    return new PerformanceMonitorOperation(pd);
 }
 
 void PerformanceMonitor::PrintStats()
