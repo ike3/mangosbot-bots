@@ -49,7 +49,6 @@ bool FollowAction::isUseful()
         distance = sServerFacade.GetDistance2d(bot, loc.coord_x, loc.coord_y);
     }
 
-    return sServerFacade.IsDistanceGreaterThan(distance, formation->GetMaxDistance()) &&
-            !AI_VALUE(bool, "can loot");
+    return sServerFacade.IsDistanceGreaterThan(distance, formation->GetMaxDistance());
 }
 
