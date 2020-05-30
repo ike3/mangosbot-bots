@@ -5,12 +5,12 @@ namespace ai
 {
     class ArcaneIntellectOnPartyTrigger : public BuffOnPartyTrigger {
     public:
-        ArcaneIntellectOnPartyTrigger(PlayerbotAI* ai) : BuffOnPartyTrigger(ai, "arcane intellect", 7) {}
+        ArcaneIntellectOnPartyTrigger(PlayerbotAI* ai) : BuffOnPartyTrigger(ai, "arcane intellect", 2) {}
     };
 
     class ArcaneIntellectTrigger : public BuffTrigger {
     public:
-        ArcaneIntellectTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "arcane intellect", 5) {}
+        ArcaneIntellectTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "arcane intellect", 2) {}
     };
 
     class MageArmorTrigger : public BuffTrigger {

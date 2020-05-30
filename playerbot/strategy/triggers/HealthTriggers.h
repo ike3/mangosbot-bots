@@ -112,7 +112,7 @@ namespace ai
 
 	class PartyMemberDeadTrigger : public Trigger {
 	public:
-		PartyMemberDeadTrigger(PlayerbotAI* ai) : Trigger(ai, "resurrect", 10) {}
+		PartyMemberDeadTrigger(PlayerbotAI* ai) : Trigger(ai, "resurrect", 3) {}
         virtual string GetTargetName() { return "party member to resurrect"; }
 		virtual bool IsActive();
 	};
