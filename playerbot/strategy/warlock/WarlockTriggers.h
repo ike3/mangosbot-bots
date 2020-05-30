@@ -19,6 +19,7 @@ namespace ai
 
     DEBUFF_TRIGGER(CurseOfAgonyTrigger, "curse of agony", "curse of agony");
     DEBUFF_TRIGGER(CorruptionTrigger, "corruption", "corruption");
+    DEBUFF_TRIGGER(SiphonLifeTrigger, "siphon life", "siphon life");
 
     class CorruptionOnAttackerTrigger : public DebuffOnAttackerTrigger
     {
@@ -30,6 +31,12 @@ namespace ai
     {
     public:
         CastCurseOfAgonyOnAttackerTrigger(PlayerbotAI* ai) : DebuffOnAttackerTrigger(ai, "curse of agony") {}
+    };
+
+    class SiphonLifeOnAttackerTrigger : public DebuffOnAttackerTrigger
+    {
+    public:
+        SiphonLifeOnAttackerTrigger(PlayerbotAI* ai) : DebuffOnAttackerTrigger(ai, "siphon life") {}
     };
 
     DEBUFF_TRIGGER(ImmolateTrigger, "immolate", "immolate");

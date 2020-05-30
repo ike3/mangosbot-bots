@@ -23,10 +23,8 @@ float ConserveManaMultiplier::GetValue(Action* action)
     if (health < sPlayerbotAIConfig.lowHealth)
         return 1.0f;
 
-    if (mediumMana && dynamic_cast<BuffOnPartyAction*>(action))
-        return 0.0f;
-
-    if (action->GetTarget() != AI_VALUE(Unit*, "current target"))
+    Unit* target = AI_VALUE(Unit*, "current target");
+    if (action->GetTarget() != target)
         return 1.0f;
 
     CastSpellAction* spellAction = dynamic_cast<CastSpellAction*>(action);
@@ -42,11 +40,8 @@ float ConserveManaMultiplier::GetValue(Action* action)
     if (mediumMana && dynamic_cast<CastBuffSpellAction*>(action))
         return 0.0f;
 
-    if (AI_VALUE(uint8, "balance") <= 50)
+    if (((int)target->getLevel() - (int)bot->getLevel()) >= 0)
         return 1.0f;
-
-    if ((mediumMana || targetHealth < sPlayerbotAIConfig.lowHealth) && dynamic_cast<CastDebuffSpellAction*>(action))
-        return 0.0f;
 
     return 1.0f;
 }

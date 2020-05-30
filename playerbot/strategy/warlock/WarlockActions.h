@@ -185,4 +185,16 @@ namespace ai
     public:
         CastAmplifyCurseAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "amplify curse") {}
     };
+
+    class CastSiphonLifeAction : public CastDebuffSpellAction
+    {
+    public:
+        CastSiphonLifeAction(PlayerbotAI* ai) : CastDebuffSpellAction(ai, "siphon life") {}
+    };
+
+    class CastSiphonLifeOnAttackerAction : public CastDebuffSpellOnAttackerAction
+    {
+    public:
+        CastSiphonLifeOnAttackerAction(PlayerbotAI* ai) : CastDebuffSpellOnAttackerAction(ai, "siphon life") {}
+    };
 }

@@ -53,15 +53,11 @@ void GenericWarlockStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("shadow bolt", 20.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "curse of agony",
-        NextAction::array(0, new NextAction("curse of agony", 11.0f), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "medium health",
+        "low health",
         NextAction::array(0, new NextAction("drain life", 40.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "low mana",
+        "medium mana",
         NextAction::array(0, new NextAction("life tap", ACTION_EMERGENCY + 5), NULL)));
 
 	triggers.push_back(new TriggerNode(
@@ -74,11 +70,11 @@ void GenericWarlockStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "fear",
-        NextAction::array(0, new NextAction("fear on cc", 20.0f), NULL)));
+        NextAction::array(0, new NextAction("fear on cc", 39.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
         "immolate",
-        NextAction::array(0, new NextAction("immolate", 19.0f), new NextAction("conflagrate", 19.0f), NULL)));
+        NextAction::array(0, new NextAction("immolate", 13.0f), new NextAction("conflagrate", 13.0f), NULL)));
 }
 
 void WarlockBoostStrategy::InitTriggers(std::list<TriggerNode*> &triggers)

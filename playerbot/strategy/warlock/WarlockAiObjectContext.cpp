@@ -80,6 +80,8 @@ namespace ai
                 creators["fear"] = &TriggerFactoryInternal::fear;
                 creators["immolate"] = &TriggerFactoryInternal::immolate;
                 creators["amplify curse"] = &TriggerFactoryInternal::amplify_curse;
+                creators["siphon life"] = &TriggerFactoryInternal::siphon_life;
+                creators["siphon life on attacker"] = &TriggerFactoryInternal::siphon_life_on_attacker;
 
 
             }
@@ -93,6 +95,8 @@ namespace ai
             static Trigger* HasSpellstone(PlayerbotAI* ai) { return new HasSpellstoneTrigger(ai); }
             static Trigger* corruption(PlayerbotAI* ai) { return new CorruptionTrigger(ai); }
             static Trigger* corruption_on_attacker(PlayerbotAI* ai) { return new CorruptionOnAttackerTrigger(ai); }
+            static Trigger* siphon_life(PlayerbotAI* ai) { return new SiphonLifeTrigger(ai); }
+            static Trigger* siphon_life_on_attacker(PlayerbotAI* ai) { return new SiphonLifeOnAttackerTrigger(ai); }
             static Trigger* curse_of_agony(PlayerbotAI* ai) { return new CurseOfAgonyTrigger(ai); }
             static Trigger* curse_of_agony_on_attacker(PlayerbotAI* ai) { return new CastCurseOfAgonyOnAttackerTrigger(ai); }
             static Trigger* banish(PlayerbotAI* ai) { return new BanishTrigger(ai); }
@@ -129,6 +133,8 @@ namespace ai
                 creators["immolate"] = &AiObjectContextInternal::immolate;
                 creators["corruption"] = &AiObjectContextInternal::corruption;
                 creators["corruption on attacker"] = &AiObjectContextInternal::corruption_on_attacker;
+                creators["siphon life"] = &AiObjectContextInternal::siphon_life;
+                creators["siphon life on attacker"] = &AiObjectContextInternal::siphon_life_on_attacker;
                 creators["curse of agony"] = &AiObjectContextInternal::curse_of_agony;
                 creators["curse of agony on attacker"] = &AiObjectContextInternal::curse_of_agony_on_attacker;
                 creators["shadow bolt"] = &AiObjectContextInternal::shadow_bolt;
@@ -166,6 +172,8 @@ namespace ai
             static Action* summon_felguard(PlayerbotAI* ai) { return new CastSummonFelguardAction(ai); }
             static Action* corruption(PlayerbotAI* ai) { return new CastCorruptionAction(ai); }
             static Action* corruption_on_attacker(PlayerbotAI* ai) { return new CastCorruptionOnAttackerAction(ai); }
+            static Action* siphon_life(PlayerbotAI* ai) { return new CastSiphonLifeAction(ai); }
+            static Action* siphon_life_on_attacker(PlayerbotAI* ai) { return new CastSiphonLifeOnAttackerAction(ai); }
             static Action* curse_of_agony(PlayerbotAI* ai) { return new CastCurseOfAgonyAction(ai); }
             static Action* curse_of_agony_on_attacker(PlayerbotAI* ai) { return new CastCurseOfAgonyOnAttackerAction(ai); }
             static Action* shadow_bolt(PlayerbotAI* ai) { return new CastShadowBoltAction(ai); }
