@@ -8,5 +8,5 @@ void CombatStrategy::InitTriggers(list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
         "invalid target",
-        NextAction::array(0, new NextAction("drop target", 59), NULL)));
+        NextAction::array(0, new NextAction("drop target", 55), NULL)));
 }

@@ -20,9 +20,9 @@ private:
     string action;
 };
 
-float MagePullMultiplier::GetValue(Action* action) 
+float MagePullMultiplier::GetValue(Action* action)
 {
-    if (!action) 
+    if (!action)
         return 1.0f;
 
     string name = action->getName();
@@ -50,3 +50,11 @@ void PullStrategy::InitMultipliers(std::list<Multiplier*> &multipliers)
     RangedCombatStrategy::InitMultipliers(multipliers);
 }
 
+void PossibleAdsStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+{
+    Strategy::InitTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "possible ads",
+        NextAction::array(0, new NextAction("flee", 60), NULL)));
+}

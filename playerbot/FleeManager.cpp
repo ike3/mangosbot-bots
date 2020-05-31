@@ -3,47 +3,15 @@
 #include "FleeManager.h"
 #include "PlayerbotAIConfig.h"
 #include "Group.h"
-#include "strategy/values/LastMovementValue.h"
 #include "ServerFacade.h"
 
 using namespace ai;
 using namespace std;
 
-void FleeManager::calculateDistanceToPlayers(FleePoint *point)
-{
-	Group* group = bot->GetGroup();
-	if (!group)
-		return;
-
-	for (GroupReference *gref = group->GetFirstMember(); gref; gref = gref->next())
-    {
-		Player* player = gref->getSource();
-		if(player == bot)
-			continue;
-
-		float d = sServerFacade.GetDistance2d(player, point->x, point->y);
-		point->toAllPlayers.probe(d);
-		switch (player->getClass()) {
-			case CLASS_HUNTER:
-			case CLASS_MAGE:
-			case CLASS_PRIEST:
-			case CLASS_WARLOCK:
-				point->toRangedPlayers.probe(d);
-				break;
-			case CLASS_PALADIN:
-			case CLASS_ROGUE:
-			case CLASS_WARRIOR:
-				point->toMeleePlayers.probe(d);
-				break;
-		}
-	}
-}
-
 void FleeManager::calculateDistanceToCreatures(FleePoint *point)
 {
-	RangePair &distance = point->toCreatures;
-
-	list<ObjectGuid> units = *bot->GetPlayerbotAI()->GetAiObjectContext()->GetValue<list<ObjectGuid> >("all targets");
+	float distance = 0.0f;
+	list<ObjectGuid> units = *bot->GetPlayerbotAI()->GetAiObjectContext()->GetValue<list<ObjectGuid> >("possible targets");
 	for (list<ObjectGuid>::iterator i = units.begin(); i != units.end(); ++i)
     {
 		Unit* unit = bot->GetPlayerbotAI()->GetUnit(*i);
@@ -51,8 +19,9 @@ void FleeManager::calculateDistanceToCreatures(FleePoint *point)
 		    continue;
 
 		float d = sServerFacade.GetDistance2d(unit, point->x, point->y);
-		distance.probe(d);
+		distance += d;
 	}
+	point->distanceToCreatures = distance;
 }
 
 bool intersectsOri(float angle, list<float>& angles)
@@ -72,27 +41,7 @@ void FleeManager::calculatePossibleDestinations(list<FleePoint*> &points)
 	float botPosY = bot->GetPositionY();
 	float botPosZ = bot->GetPositionZ();
 
-    list<float> meleeOri, enemyOri;
-    Group* group = bot->GetGroup();
-    if (group)
-    {
-        for (GroupReference *gref = group->GetFirstMember(); gref; gref = gref->next())
-        {
-            Player* player = gref->getSource();
-            if(player == bot)
-                continue;
-
-            float ori = bot->GetAngle(player);
-            switch (player->getClass()) {
-                case CLASS_PALADIN:
-                case CLASS_ROGUE:
-                case CLASS_WARRIOR:
-                    meleeOri.push_back(ori);
-                    break;
-            }
-        }
-    }
-
+    list<float> enemyOri;
     list<ObjectGuid> units = *bot->GetPlayerbotAI()->GetAiObjectContext()->GetValue<list<ObjectGuid> >("all targets");
     for (list<ObjectGuid>::iterator i = units.begin(); i != units.end(); ++i)
     {
@@ -112,7 +61,6 @@ void FleeManager::calculatePossibleDestinations(list<FleePoint*> &points)
             for (float angle = add; angle < add + 2 * M_PI; angle += M_PI / 3)
             {
                 if (intersectsOri(angle, enemyOri)) continue;
-                if (intersectsOri(angle, meleeOri)) continue;
 
                 float x = botPosX + cos(angle) * maxAllowedDistance, y = botPosY + sin(angle) * maxAllowedDistance, z = botPosZ;
 
@@ -130,7 +78,6 @@ void FleeManager::calculatePossibleDestinations(list<FleePoint*> &points)
                     continue;
 
                 FleePoint *point = new FleePoint(bot->GetPlayerbotAI(), x, y, z);
-                calculateDistanceToPlayers(point);
                 calculateDistanceToCreatures(point);
                 points.push_back(point);
             }
@@ -148,17 +95,9 @@ void FleeManager::cleanup(list<FleePoint*> &points)
 	points.clear();
 }
 
-bool FleePoint::isReasonable()
+bool FleeManager::isBetterThan(FleePoint* point, FleePoint* other)
 {
-	return (
-	            (toCreatures.min <= 0 || toCreatures.max <= 0) ||
-	            toCreatures.min >= 0 && toCreatures.max >= 0 && toCreatures.min >= ai->GetRange("flee")
-	        )
-	        &&
-	        (
-                (toAllPlayers.min <= 0 || toAllPlayers.max <= 0) ||
-                (toAllPlayers.min <= ai->GetRange("spell") && toAllPlayers.max <= ai->GetRange("spell"))
-            );
+    return point->distanceToCreatures - other->distanceToCreatures > 0;
 }
 
 FleePoint* FleeManager::selectOptimalDestination(list<FleePoint*> &points)
@@ -167,23 +106,8 @@ FleePoint* FleeManager::selectOptimalDestination(list<FleePoint*> &points)
 	for (list<FleePoint*>::iterator i = points.begin(); i != points.end(); i++)
     {
 		FleePoint* point = *i;
-		if (!best || (point->toCreatures.min - best->toCreatures.min) >= 0.5f)
-		{
+		if (!best || isBetterThan(point, best))
             best = point;
-		}
-        else if ((point->toCreatures.min - best->toCreatures.min) >= 0)
-        {
-            if (point->toRangedPlayers.max >= 0 && best->toRangedPlayers.max >= 0 &&
-                    (point->toRangedPlayers.max - best->toRangedPlayers.max) <= 0.5f)
-            {
-                best = point;
-            }
-            else if (point->toMeleePlayers.max >= 0 && best->toMeleePlayers.max >= 0 &&
-                    (point->toMeleePlayers.min - best->toMeleePlayers.min) >= 0.5f)
-            {
-                best = point;
-            }
-        }
 	}
 
 	return best;
@@ -207,4 +131,19 @@ bool FleeManager::CalculateDestination(float* rx, float* ry, float* rz)
 
     cleanup(points);
 	return true;
+}
+
+bool FleeManager::isUseful()
+{
+    list<ObjectGuid> units = *bot->GetPlayerbotAI()->GetAiObjectContext()->GetValue<list<ObjectGuid> >("possible targets");
+    for (list<ObjectGuid>::iterator i = units.begin(); i != units.end(); ++i)
+    {
+        Unit* unit = bot->GetPlayerbotAI()->GetUnit(*i);
+        if (!unit)
+            continue;
+
+        float d = sServerFacade.GetDistance2d(unit, bot);
+        if (sServerFacade.IsDistanceLessThan(d, sPlayerbotAIConfig.aggroDistance)) return true;
+    }
+    return false;
 }

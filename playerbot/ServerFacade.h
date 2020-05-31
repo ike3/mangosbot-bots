@@ -106,7 +106,7 @@ class ServerFacade
         bool IsCharmed(Unit *unit)
         {
 #ifdef MANGOS
-            return unit->IsCharmed();
+            return unit->GetCharmerGuid() && unit->GetCharmerGuid().IsPlayer();
 #endif
 #ifdef CMANGOS
             return unit->HasCharmer();

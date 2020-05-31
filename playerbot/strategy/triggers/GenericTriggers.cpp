@@ -194,6 +194,11 @@ bool NoPossibleTargetsTrigger::IsActive()
     return !targets.size();
 }
 
+bool PossibleAdsTrigger::IsActive()
+{
+    return AI_VALUE(bool, "possible ads");
+}
+
 bool NotDpsTargetActiveTrigger::IsActive()
 {
     Unit* dps = AI_VALUE(Unit*, "dps target");

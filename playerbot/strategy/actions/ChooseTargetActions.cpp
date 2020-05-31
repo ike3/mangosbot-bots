@@ -2,11 +2,14 @@
 
 #include "../Action.h"
 #include "ChooseTargetActions.h"
+
+#include "../../ServerFacade.h"
 #include "MovementGenerator.h"
 #include "CreatureAI.h"
 
 bool DropTargetAction::Execute(Event event)
 {
+    Unit* target = context->GetValue<Unit*>("current target")->Get();
     context->GetValue<Unit*>("current target")->Set(NULL);
     bot->SetSelectionGuid(ObjectGuid());
     ai->ChangeEngine(BOT_STATE_NON_COMBAT);
@@ -29,16 +32,25 @@ bool DropTargetAction::Execute(Event event)
 #endif
 #ifdef MANGOS
             pet->GetCharmInfo()->SetReactState(REACT_PASSIVE);
+            pet->GetCharmInfo()->SetCommandState(COMMAND_FOLLOW);
 #endif
             pet->AttackStop();
         }
     }
-    if (!urand(0, 200))
+    if (!urand(0, 25))
     {
         vector<uint32> sounds;
-        sounds.push_back(TEXTEMOTE_CHEER);
-        sounds.push_back(TEXTEMOTE_CONGRATULATE);
-        ai->PlaySound(sounds[urand(0, sounds.size() - 1)]);
+        if (target && sServerFacade.UnitIsDead(target))
+        {
+            sounds.push_back(TEXTEMOTE_CHEER);
+            sounds.push_back(TEXTEMOTE_CONGRATULATE);
+        }
+        else
+        {
+            sounds.push_back(304); // guard
+            sounds.push_back(325); // stay
+        }
+        if (!sounds.empty()) ai->PlaySound(sounds[urand(0, sounds.size() - 1)]);
     }
     return true;
 }

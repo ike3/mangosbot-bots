@@ -329,6 +329,16 @@ bool MovementAction::Flee(Unit *target)
     }
 
     FleeManager manager(bot, ai->GetRange("flee"), bot->GetAngle(target) + M_PI);
+    if (!manager.isUseful())
+        return false;
+
+    if (!urand(0, 25))
+    {
+        vector<uint32> sounds;
+        sounds.push_back(304); // guard
+        sounds.push_back(306); // flee
+        ai->PlaySound(sounds[urand(0, sounds.size() - 1)]);
+    }
 
     float rx, ry, rz;
     if (!manager.CalculateDestination(&rx, &ry, &rz))
@@ -349,12 +359,6 @@ void MovementAction::ClearIdleState()
 bool FleeAction::Execute(Event event)
 {
     return Flee(AI_VALUE(Unit*, "current target"));
-}
-
-bool FleeAction::isUseful()
-{
-    return AI_VALUE(uint8, "attacker count") > 0 &&
-            sServerFacade.IsDistanceLessOrEqualThan(AI_VALUE2(float, "distance", "current target"), sPlayerbotAIConfig.shootDistance);
 }
 
 bool RunAwayAction::Execute(Event event)
