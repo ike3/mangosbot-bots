@@ -85,4 +85,16 @@ namespace ai
     public:
         InnerFocusTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "inner focus") {}
     };
+
+    class ShadowProtectionOnPartyTrigger : public BuffOnPartyTrigger
+    {
+    public:
+        ShadowProtectionOnPartyTrigger(PlayerbotAI* ai) : BuffOnPartyTrigger(ai, "shadow protection", 2) {}
+    };
+
+    class ShadowProtectionTrigger : public BuffTrigger
+    {
+    public:
+        ShadowProtectionTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "shadow protection", 2) {}
+    };
 }

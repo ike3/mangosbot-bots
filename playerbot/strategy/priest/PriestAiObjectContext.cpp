@@ -32,9 +32,11 @@ namespace ai
                 creators["cure"] = &priest::StrategyFactoryInternal::cure;
                 creators["buff"] = &priest::StrategyFactoryInternal::buff;
                 creators["boost"] = &priest::StrategyFactoryInternal::boost;
+                creators["rshadow"] = &priest::StrategyFactoryInternal::rshadow;
             }
 
         private:
+            static Strategy* rshadow(PlayerbotAI* ai) { return new PriestShadowResistanceStrategy(ai); }
             static Strategy* boost(PlayerbotAI* ai) { return new PriestBoostStrategy(ai); }
             static Strategy* buff(PlayerbotAI* ai) { return new PriestBuffStrategy(ai); }
             static Strategy* nc(PlayerbotAI* ai) { return new PriestNonCombatStrategy(ai); }
@@ -91,6 +93,8 @@ namespace ai
                 creators["vampiric embrace"] = &TriggerFactoryInternal::vampiric_embrace;
                 creators["power infusion"] = &TriggerFactoryInternal::power_infusion;
                 creators["inner focus"] = &TriggerFactoryInternal::inner_focus;
+                creators["shadow protection"] = &TriggerFactoryInternal::shadow_protection;
+                creators["shadow protection on party"] = &TriggerFactoryInternal::shadow_protection_on_party;
 
             }
 
@@ -112,6 +116,8 @@ namespace ai
             static Trigger* inner_fire(PlayerbotAI* ai) { return new InnerFireTrigger(ai); }
             static Trigger* power_infusion(PlayerbotAI* ai) { return new PowerInfusionTrigger(ai); }
             static Trigger* inner_focus(PlayerbotAI* ai) { return new InnerFocusTrigger(ai); }
+            static Trigger* shadow_protection_on_party(PlayerbotAI* ai) { return new ShadowProtectionOnPartyTrigger(ai); }
+            static Trigger* shadow_protection(PlayerbotAI* ai) { return new ShadowProtectionTrigger(ai); }
         };
     };
 };
@@ -172,9 +178,13 @@ namespace ai
                 creators["vampiric touch"] = &AiObjectContextInternal::vampiric_touch;
                 creators["vampiric embrace"] = &AiObjectContextInternal::vampiric_embrace;
                 creators["dispersion"] = &AiObjectContextInternal::dispersion;
+                creators["shadow protection"] = &AiObjectContextInternal::shadow_protection;
+                creators["shadow protection on party"] = &AiObjectContextInternal::shadow_protection_on_party;
             }
 
         private:
+            static Action* shadow_protection_on_party(PlayerbotAI* ai) { return new CastShadowProtectionOnPartyAction(ai); }
+            static Action* shadow_protection(PlayerbotAI* ai) { return new CastShadowProtectionAction(ai); }
             static Action* power_infusion(PlayerbotAI* ai) { return new CastPowerInfusionAction(ai); }
             static Action* inner_focus(PlayerbotAI* ai) { return new CastInnerFocusAction(ai); }
             static Action* dispersion(PlayerbotAI* ai) { return new CastDispersionAction(ai); }
