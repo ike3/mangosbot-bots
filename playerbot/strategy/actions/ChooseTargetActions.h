@@ -25,10 +25,7 @@ namespace ai
     public:
         AttackAnythingAction(PlayerbotAI* ai) : AttackAction(ai, "attack anything") {}
         virtual string GetTargetName() { return "grind target"; }
-        virtual bool Execute(Event event)
-        {
-            return AttackAction::Execute(event);
-        }
+        virtual bool Execute(Event event);
         virtual bool isUseful() {
             return GetTarget() &&
                 (!AI_VALUE(list<ObjectGuid>, "nearest non bot players").empty() &&

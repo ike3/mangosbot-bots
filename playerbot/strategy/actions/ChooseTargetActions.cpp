@@ -10,6 +10,12 @@
 bool DropTargetAction::Execute(Event event)
 {
     Unit* target = context->GetValue<Unit*>("current target")->Get();
+    ObjectGuid pullTarget = context->GetValue<ObjectGuid>("pull target")->Get();
+    list<ObjectGuid> possible = ai->GetAiObjectContext()->GetValue<list<ObjectGuid> >("possible targets")->Get();
+    if (pullTarget && find(possible.begin(), possible.end(), pullTarget) == possible.end())
+    {
+        context->GetValue<ObjectGuid>("pull target")->Set(ObjectGuid());
+    }
     context->GetValue<Unit*>("current target")->Set(NULL);
     bot->SetSelectionGuid(ObjectGuid());
     ai->ChangeEngine(BOT_STATE_NON_COMBAT);
@@ -53,4 +59,12 @@ bool DropTargetAction::Execute(Event event)
         if (!sounds.empty()) ai->PlaySound(sounds[urand(0, sounds.size() - 1)]);
     }
     return true;
+}
+
+
+bool AttackAnythingAction::Execute(Event event)
+{
+    bool result = AttackAction::Execute(event);
+    if (result && GetTarget()) context->GetValue<ObjectGuid>("pull target")->Set(GetTarget()->GetObjectGuid());
+    return result;
 }

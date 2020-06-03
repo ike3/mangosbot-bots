@@ -198,6 +198,7 @@ void PlayerbotAI::Reset()
 
     aiObjectContext->GetValue<Unit*>("old target")->Set(NULL);
     aiObjectContext->GetValue<Unit*>("current target")->Set(NULL);
+    aiObjectContext->GetValue<ObjectGuid>("pull target")->Set(ObjectGuid());
     aiObjectContext->GetValue<LootObject>("loot target")->Set(LootObject());
     aiObjectContext->GetValue<uint32>("lfg proposal")->Set(0);
 

@@ -185,6 +185,7 @@ namespace ai
             creators["already seen players"] = &ValueContext::already_seen_players;
             creators["rpg target"] = &ValueContext::rpg_target;
             creators["talk target"] = &ValueContext::talk_target;
+            creators["pull target"] = &ValueContext::pull_target;
             creators["group"] = &ValueContext::group;
             creators["range"] = &ValueContext::range;
         }
@@ -295,5 +296,6 @@ namespace ai
         static UntypedValue* skip_spells_list_value(PlayerbotAI* ai) { return new SkipSpellsListValue(ai); }
         static UntypedValue* rpg_target(PlayerbotAI* ai) { return new RpgTargetValue(ai); }
         static UntypedValue* talk_target(PlayerbotAI* ai) { return new TalkTargetValue(ai); }
+        static UntypedValue* pull_target(PlayerbotAI* ai) { return new PullTargetValue(ai); }
     };
 };

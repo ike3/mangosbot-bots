@@ -196,7 +196,7 @@ bool NoPossibleTargetsTrigger::IsActive()
 
 bool PossibleAdsTrigger::IsActive()
 {
-    return AI_VALUE(bool, "possible ads");
+    return AI_VALUE(bool, "possible ads") && !AI_VALUE(ObjectGuid, "pull target");
 }
 
 bool NotDpsTargetActiveTrigger::IsActive()

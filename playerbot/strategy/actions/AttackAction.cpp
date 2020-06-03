@@ -31,7 +31,9 @@ bool AttackMyTargetAction::Execute(Event event)
         return false;
     }
 
-    return Attack(ai->GetUnit(guid));
+    bool result = Attack(ai->GetUnit(guid));
+    if (result) context->GetValue<ObjectGuid>("pull target")->Set(guid);
+    return result;
 }
 
 bool AttackAction::Attack(Unit* target)
