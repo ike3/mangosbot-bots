@@ -380,6 +380,15 @@ int AhBot::Answer(int auction, Category* category, ItemBag* inAuctionItems)
             continue;
         }
 
+        int chance = (int)round(100.0f / GetRarityPriceMultiplier(proto) / GetQualityPriceMultiplier(proto));
+        int roll = (int)urand(0, 100);
+        if (roll > chance)
+        {
+            sLog.outDetail( "%s (x%d) in auction %d: chance missed %d/%d",
+                    proto->Name1, item->GetCount(), auctionIds[auction], roll, chance);
+            continue;
+        }
+
         entry->bidder = bidder;
         entry->bid = curPrice + urand(1, 1 + bidPrice / 10);
         availableMoney -= curPrice;
@@ -1077,6 +1086,24 @@ double AhBot::GetRarityPriceMultiplier(const ItemPrototype* proto)
             continue;
 
         return category->GetPricingStrategy()->GetRarityPriceMultiplier(proto->ItemId);
+    }
+
+    return 1.0;
+
+}
+
+double AhBot::GetQualityPriceMultiplier(const ItemPrototype* proto)
+{
+    if (!sAhBotConfig.enabled)
+        return 1.0;
+
+    for (int i=0; i<CategoryList::instance.size(); i++)
+    {
+        Category* category = CategoryList::instance[i];
+        if (!category->Contains(proto))
+            continue;
+
+        return category->GetPricingStrategy()->GetQualityMultiplier(proto);
     }
 
     return 1.0;

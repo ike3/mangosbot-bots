@@ -50,6 +50,7 @@ namespace ahbot
         int32 GetSellPrice(const ItemPrototype* proto);
         int32 GetBuyPrice(const ItemPrototype* proto);
         double GetRarityPriceMultiplier(const ItemPrototype* proto);
+        double GetQualityPriceMultiplier(const ItemPrototype* proto);
         bool IsUsedBySkill(const ItemPrototype* proto, uint32 skillId);
 
     private:
