@@ -10,7 +10,7 @@ namespace ai
 
 	class FleePoint {
 	public:
-		FleePoint(PlayerbotAI* ai, float x, float y, float z) : ai(ai), distanceToCreatures(0.0f) {
+		FleePoint(PlayerbotAI* ai, float x, float y, float z) : ai(ai), sumDistance(0.0f), minDistance(0.0f) {
 			this->x = x;
 			this->y = y;
 			this->z = z;
@@ -21,7 +21,8 @@ namespace ai
 		float y;
 		float z;
 
-		float distanceToCreatures;
+		float sumDistance;
+		float minDistance;
 
 	private:
 		PlayerbotAI* ai;

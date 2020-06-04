@@ -188,9 +188,11 @@ namespace ai
             creators["pull target"] = &ValueContext::pull_target;
             creators["group"] = &ValueContext::group;
             creators["range"] = &ValueContext::range;
+            creators["inside target"] = &ValueContext::inside_target;
         }
 
     private:
+        static UntypedValue* inside_target(PlayerbotAI* ai) { return new InsideTargetValue(ai); }
         static UntypedValue* range(PlayerbotAI* ai) { return new RangeValue(ai); }
         static UntypedValue* active_spell(PlayerbotAI* ai) { return new ActiveSpellValue(ai); }
         static UntypedValue* group(PlayerbotAI* ai) { return new IsInGroupValue(ai); }
