@@ -6,11 +6,15 @@ namespace ai
     class ArcaneIntellectOnPartyTrigger : public BuffOnPartyTrigger {
     public:
         ArcaneIntellectOnPartyTrigger(PlayerbotAI* ai) : BuffOnPartyTrigger(ai, "arcane intellect", 2) {}
+
+        virtual bool IsActive() { return BuffOnPartyTrigger::IsActive() && !ai->HasAura("arcane brilliance", GetTarget()); }
     };
 
     class ArcaneIntellectTrigger : public BuffTrigger {
     public:
         ArcaneIntellectTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "arcane intellect", 2) {}
+
+        virtual bool IsActive() { return BuffTrigger::IsActive() && !ai->HasAura("arcane brilliance", GetTarget()); }
     };
 
     class MageArmorTrigger : public BuffTrigger {

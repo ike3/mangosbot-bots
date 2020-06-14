@@ -7,21 +7,29 @@ namespace ai
     class PowerWordFortitudeOnPartyTrigger : public BuffOnPartyTrigger {
     public:
         PowerWordFortitudeOnPartyTrigger(PlayerbotAI* ai) : BuffOnPartyTrigger(ai, "power word: fortitude", 2) {}
+
+        virtual bool IsActive() { return BuffOnPartyTrigger::IsActive() && !ai->HasAura("prayer of fortitude", GetTarget()); }
     };
 
     class PowerWordFortitudeTrigger : public BuffTrigger {
     public:
         PowerWordFortitudeTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "power word: fortitude", 2) {}
+
+        virtual bool IsActive() { return BuffTrigger::IsActive() && !ai->HasAura("prayer of fortitude", GetTarget()); }
     };
 
     class DivineSpiritOnPartyTrigger : public BuffOnPartyTrigger {
     public:
         DivineSpiritOnPartyTrigger(PlayerbotAI* ai) : BuffOnPartyTrigger(ai, "divine spirit", 2) {}
+
+        virtual bool IsActive() { return BuffOnPartyTrigger::IsActive() && !ai->HasAura("prayer of spirit", GetTarget()); }
     };
 
     class DivineSpiritTrigger : public BuffTrigger {
     public:
         DivineSpiritTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "divine spirit", 2) {}
+
+        virtual bool IsActive() { return BuffTrigger::IsActive() && !ai->HasAura("prayer of spirit", GetTarget()); }
     };
 
 
