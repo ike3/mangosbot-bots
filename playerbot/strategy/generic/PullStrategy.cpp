@@ -41,13 +41,13 @@ NextAction** PullStrategy::getDefaultActions()
 
 void PullStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 {
-    RangedCombatStrategy::InitTriggers(triggers);
+    CombatStrategy::InitTriggers(triggers);
 }
 
 void PullStrategy::InitMultipliers(std::list<Multiplier*> &multipliers)
 {
     multipliers.push_back(new MagePullMultiplier(ai, action));
-    RangedCombatStrategy::InitMultipliers(multipliers);
+    CombatStrategy::InitMultipliers(multipliers);
 }
 
 void PossibleAdsStrategy::InitTriggers(std::list<TriggerNode*> &triggers)

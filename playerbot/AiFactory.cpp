@@ -124,7 +124,7 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
             else
                 engine->addStrategy("heal");
 
-            engine->addStrategies("dps assist", "flee", "cure", NULL);
+            engine->addStrategies("dps assist", "flee", "cure", "ranged", NULL);
             break;
         case CLASS_MAGE:
             if (tab == 0)
@@ -134,49 +134,49 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
             else
                 engine->addStrategies("frost", "frost aoe", "threat", NULL);
 
-            engine->addStrategies("dps assist", "flee", "cure", NULL);
+            engine->addStrategies("dps assist", "flee", "cure", "ranged", NULL);
             break;
         case CLASS_WARRIOR:
             if (tab == 2)
-                engine->addStrategies("tank", "tank aoe", NULL);
+                engine->addStrategies("tank", "tank aoe", "close", NULL);
             else
-                engine->addStrategies("dps", "dps assist", "threat", NULL);
+                engine->addStrategies("dps", "dps assist", "threat", "close", NULL);
             break;
         case CLASS_SHAMAN:
             if (tab == 0)
-                engine->addStrategies("caster", "caster aoe", "bmana", "threat", "flee", NULL);
+                engine->addStrategies("caster", "caster aoe", "bmana", "threat", "flee", "ranged", NULL);
             else if (tab == 2)
-                engine->addStrategies("heal", "bmana", "flee", NULL);
+                engine->addStrategies("heal", "bmana", "flee", "ranged", NULL);
             else
-                engine->addStrategies("dps", "melee aoe", "bdps", "threat", NULL);
+                engine->addStrategies("dps", "melee aoe", "bdps", "threat", "close", NULL);
 
             engine->addStrategies("dps assist", "cure", NULL);
             break;
         case CLASS_PALADIN:
             if (tab == 1)
-                engine->addStrategies("tank", "tank aoe", "bthreat", "cure", "baoe", NULL);
+                engine->addStrategies("tank", "tank aoe", "bthreat", "cure", "baoe", "close", NULL);
             else
-                engine->addStrategies("dps", "bdps", "dps assist", "cure", NULL);
+                engine->addStrategies("dps", "bdps", "dps assist", "cure", "close", NULL);
             break;
         case CLASS_DRUID:
             if (tab == 0)
             {
-                engine->addStrategies("caster", "cure", "caster aoe", "threat", "flee", "dps assist", NULL);
+                engine->addStrategies("caster", "cure", "caster aoe", "threat", "flee", "dps assist", "ranged", NULL);
                 if (player->getLevel() > 19)
                     engine->addStrategy("caster debuff");
             }
             else if (tab == 2)
-                engine->addStrategies("heal", "cure", "flee", "dps assist", NULL);
+                engine->addStrategies("heal", "cure", "flee", "dps assist", "close", NULL);
             else
-                engine->addStrategies("bear", "tank aoe", "flee", NULL);
+                engine->addStrategies("bear", "tank aoe", "flee", "ranged", NULL);
             break;
         case CLASS_HUNTER:
-            engine->addStrategies("dps", "bdps", "threat", "dps assist", NULL);
+            engine->addStrategies("dps", "bdps", "threat", "dps assist", "ranged", NULL);
             if (player->getLevel() > 19)
                 engine->addStrategy("dps debuff");
             break;
         case CLASS_ROGUE:
-            engine->addStrategies("dps", "threat", "dps assist", "aoe", NULL);
+            engine->addStrategies("dps", "threat", "dps assist", "aoe", "close", NULL);
             break;
         case CLASS_WARLOCK:
             if (tab == 1)
@@ -187,7 +187,7 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
             if (player->getLevel() > 19)
                 engine->addStrategy("dps debuff");
 
-            engine->addStrategies("dps assist", "flee", NULL);
+            engine->addStrategies("dps assist", "flee", "ranged", NULL);
             break;
     }
 

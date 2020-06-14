@@ -34,27 +34,23 @@ private:
     {
         return new ActionNode ("feign death",
             /*P*/ NULL,
-            /*A*/ NextAction::array(0, new NextAction("flee"), NULL),
+            /*A*/ NULL,
             /*C*/ NULL);
     }
 };
 
-GenericHunterStrategy::GenericHunterStrategy(PlayerbotAI* ai) : RangedCombatStrategy(ai)
+GenericHunterStrategy::GenericHunterStrategy(PlayerbotAI* ai) : CombatStrategy(ai)
 {
     actionNodeFactories.Add(new GenericHunterStrategyActionNodeFactory());
 }
 
 void GenericHunterStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 {
-    RangedCombatStrategy::InitTriggers(triggers);
-
-    triggers.push_back(new TriggerNode(
-        "enemy too close for shoot",
-        NextAction::array(0, new NextAction("flee", 32.0f), NULL)));
+    CombatStrategy::InitTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
         "enemy is close",
-        NextAction::array(0, new NextAction("wing clip", 33.0f), NULL)));
+        NextAction::array(0, new NextAction("wing clip", 50.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
         "medium threat",

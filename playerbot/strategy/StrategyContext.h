@@ -28,7 +28,9 @@
 #include "generic/TellTargetStrategy.h"
 #include "generic/AttackEnemyPlayersStrategy.h"
 #include "generic/MarkRtiStrategy.h"
+#include "generic/MeleeCombatStrategy.h"
 #include "generic/PullStrategy.h"
+#include "generic/RangedCombatStrategy.h"
 #include "generic/ReturnStrategy.h"
 #include "generic/RpgStrategy.h"
 
@@ -67,9 +69,13 @@ namespace ai
             creators["sit"] = &StrategyContext::sit;
             creators["mark rti"] = &StrategyContext::mark_rti;
             creators["ads"] = &StrategyContext::possible_ads;
+            creators["close"] = &StrategyContext::close;
+            creators["ranged"] = &StrategyContext::ranged;
         }
 
     private:
+        static Strategy* ranged(PlayerbotAI* ai) { return new RangedCombatStrategy(ai); }
+        static Strategy* close(PlayerbotAI* ai) { return new MeleeCombatStrategy(ai); }
         static Strategy* mark_rti(PlayerbotAI* ai) { return new MarkRtiStrategy(ai); }
         static Strategy* tell_target(PlayerbotAI* ai) { return new TellTargetStrategy(ai); }
         static Strategy* threat(PlayerbotAI* ai) { return new ThreatStrategy(ai); }

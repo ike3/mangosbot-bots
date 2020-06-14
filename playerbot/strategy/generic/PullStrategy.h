@@ -1,13 +1,13 @@
 #pragma once
 
-#include "RangedCombatStrategy.h"
+#include "CombatStrategy.h"
 
 namespace ai
 {
-    class PullStrategy : public RangedCombatStrategy
+    class PullStrategy : public CombatStrategy
     {
     public:
-        PullStrategy(PlayerbotAI* ai, string action) : RangedCombatStrategy(ai)
+        PullStrategy(PlayerbotAI* ai, string action) : CombatStrategy(ai)
         {
             this->action = action;
         }

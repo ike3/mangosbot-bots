@@ -30,7 +30,7 @@ private:
     }
 };
 
-GenericWarlockStrategy::GenericWarlockStrategy(PlayerbotAI* ai) : RangedCombatStrategy(ai)
+GenericWarlockStrategy::GenericWarlockStrategy(PlayerbotAI* ai) : CombatStrategy(ai)
 {
     actionNodeFactories.Add(new GenericWarlockStrategyActionNodeFactory());
 }
@@ -42,11 +42,7 @@ NextAction** GenericWarlockStrategy::getDefaultActions()
 
 void GenericWarlockStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 {
-    RangedCombatStrategy::InitTriggers(triggers);
-
-    triggers.push_back(new TriggerNode(
-        "enemy too close for spell",
-        NextAction::array(0, new NextAction("flee", 49.0f), NULL)));
+    CombatStrategy::InitTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
         "shadow trance",

@@ -6,14 +6,14 @@
 using namespace ai;
 
 
-GenericPaladinStrategy::GenericPaladinStrategy(PlayerbotAI* ai) : MeleeCombatStrategy(ai)
+GenericPaladinStrategy::GenericPaladinStrategy(PlayerbotAI* ai) : CombatStrategy(ai)
 {
     actionNodeFactories.Add(new GenericPaladinStrategyActionNodeFactory());
 }
 
 void GenericPaladinStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 {
-    MeleeCombatStrategy::InitTriggers(triggers);
+    CombatStrategy::InitTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
        "medium health",
