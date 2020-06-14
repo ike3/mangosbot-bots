@@ -87,9 +87,6 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle)
         }
 
         MotionMaster &mm = *bot->GetMotionMaster();
-#ifdef CMANGOS
-        mm.Clear();
-#endif
         mm.MovePoint(mapId, x, y, z, generatePath);
 
         AI_VALUE(LastMovement&, "last movement").Set(x, y, z, bot->GetOrientation());
@@ -232,7 +229,7 @@ bool MovementAction::Follow(Unit* target, float distance, float angle)
     if (sServerFacade.IsDistanceLessOrEqualThan(sServerFacade.GetDistance2d(bot, target->GetPositionX(), target->GetPositionY()), sPlayerbotAIConfig.sightDistance) &&
             abs(bot->GetPositionZ() - target->GetPositionZ()) >= sPlayerbotAIConfig.spellDistance)
     {
-        mm.Clear();
+        bot->StopMoving();
         float x = bot->GetPositionX(), y = bot->GetPositionY(), z = target->GetPositionZ();
         if (target->GetMapId() && bot->GetMapId() != target->GetMapId())
         {
@@ -332,14 +329,6 @@ bool MovementAction::Flee(Unit *target)
     if (!manager.isUseful())
         return false;
 
-    if (!urand(0, 25))
-    {
-        vector<uint32> sounds;
-        sounds.push_back(304); // guard
-        sounds.push_back(306); // flee
-        ai->PlaySound(sounds[urand(0, sounds.size() - 1)]);
-    }
-
     float rx, ry, rz;
     if (!manager.CalculateDestination(&rx, &ry, &rz))
     {
@@ -347,7 +336,15 @@ bool MovementAction::Flee(Unit *target)
         return false;
     }
 
-    return MoveTo(target->GetMapId(), rx, ry, rz);
+    bool result = MoveTo(target->GetMapId(), rx, ry, rz);
+    if (result && !urand(0, 25))
+    {
+        vector<uint32> sounds;
+        sounds.push_back(304); // guard
+        sounds.push_back(306); // flee
+        ai->PlaySound(sounds[urand(0, sounds.size() - 1)]);
+    }
+    return result;
 }
 
 void MovementAction::ClearIdleState()

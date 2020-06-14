@@ -169,13 +169,15 @@ bool UseItemAction::UseItem(Item* item, ObjectGuid goGuid, Item* itemTarget)
         }
     }
 
-    MotionMaster &mm = *bot->GetMotionMaster();
-    mm.Clear();
     bot->clearUnitState( UNIT_STAT_CHASE );
     bot->clearUnitState( UNIT_STAT_FOLLOW );
 
     if (sServerFacade.isMoving(bot))
+    {
+        bot->StopMoving();
+        ai->SetNextCheckDelay(sPlayerbotAIConfig.globalCoolDown);
         return false;
+    }
 
     for (int i=0; i<MAX_ITEM_PROTO_SPELLS; i++)
     {

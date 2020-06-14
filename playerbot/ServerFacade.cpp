@@ -61,7 +61,6 @@ void ServerFacade::SetFacingTo(Player* bot, WorldObject* wo, bool force)
 {
     float angle = bot->GetAngle(wo);
     MotionMaster &mm = *bot->GetMotionMaster();
-    if (force) mm.Clear();
     if (!force && isMoving(bot)) bot->SetFacingTo(bot->GetAngle(wo));
     else
     {
@@ -142,4 +141,14 @@ Unit* ServerFacade::GetChaseTarget(Unit* target)
 #endif
         return NULL;
     }
+}
+
+bool ServerFacade::isMoving(Unit *unit)
+{
+#ifdef MANGOS
+    return unit->m_movementInfo.HasMovementFlag(movementFlagsMask);
+#endif
+#ifdef CMANGOS
+    return unit->IsMoving();
+#endif
 }

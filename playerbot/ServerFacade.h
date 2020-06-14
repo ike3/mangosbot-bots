@@ -63,15 +63,7 @@ class ServerFacade
 #endif
         }
 
-        bool isMoving(Unit *unit)
-        {
-#ifdef MANGOS
-            return !unit->IsStopped();
-#endif
-#ifdef CMANGOS
-            return unit->IsMoving();
-#endif
-        }
+        bool isMoving(Unit *unit);
 
         bool IsInCombat(Unit *unit)
         {
