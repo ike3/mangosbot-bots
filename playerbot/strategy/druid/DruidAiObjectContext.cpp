@@ -33,6 +33,7 @@ namespace ai
                 creators["melee"] = &druid::StrategyFactoryInternal::melee;
                 creators["buff"] = &druid::StrategyFactoryInternal::buff;
                 creators["boost"] = &druid::StrategyFactoryInternal::boost;
+                creators["cc"] = &druid::StrategyFactoryInternal::cc;
             }
 
         private:
@@ -44,6 +45,7 @@ namespace ai
             static Strategy* melee(PlayerbotAI* ai) { return new MeleeDruidStrategy(ai); }
             static Strategy* buff(PlayerbotAI* ai) { return new GenericDruidBuffStrategy(ai); }
             static Strategy* boost(PlayerbotAI* ai) { return new DruidBoostStrategy(ai); }
+            static Strategy* cc(PlayerbotAI* ai) { return new DruidCcStrategy(ai); }
         };
 
         class DruidStrategyFactoryInternal : public NamedObjectContext<Strategy>

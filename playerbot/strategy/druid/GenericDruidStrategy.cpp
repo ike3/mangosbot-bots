@@ -140,3 +140,10 @@ void DruidBoostStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         "nature's swiftness",
         NextAction::array(0, new NextAction("nature's swiftness", ACTION_HIGH + 9), NULL)));
 }
+
+void DruidCcStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+{
+    triggers.push_back(new TriggerNode(
+        "entangling roots",
+        NextAction::array(0, new NextAction("entangling roots on cc", ACTION_HIGH + 2), NULL)));
+}

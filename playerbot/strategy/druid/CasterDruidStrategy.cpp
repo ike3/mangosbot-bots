@@ -148,10 +148,6 @@ void CasterDruidStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 	triggers.push_back(new TriggerNode(
 		"critical health",
 		NextAction::array(0, new NextAction("nature's grasp", ACTION_EMERGENCY), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "entangling roots",
-        NextAction::array(0, new NextAction("entangling roots on cc", ACTION_HIGH + 2), NULL)));
 }
 
 void CasterDruidAoeStrategy::InitTriggers(std::list<TriggerNode*> &triggers)

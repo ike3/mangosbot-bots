@@ -266,4 +266,11 @@ namespace ai
     public:
         CastShadowProtectionOnPartyAction(PlayerbotAI* ai) : BuffOnPartyAction(ai, "shadow protection") {}
     };
+
+    class CastShackleUndeadAction : public CastBuffSpellAction
+    {
+    public:
+        CastShackleUndeadAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "shackle undead") {}
+        virtual Value<Unit*>* GetTargetValue() { return context->GetValue<Unit*>("cc target", getName()); }
+    };
 }

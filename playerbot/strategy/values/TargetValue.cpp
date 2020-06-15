@@ -3,6 +3,7 @@
 #include "TargetValue.h"
 
 #include "../../ServerFacade.h"
+#include "RtiTargetValue.h"
 #include "Unit.h"
 
 using namespace ai;
@@ -41,6 +42,15 @@ bool FindNonCcTargetStrategy::IsCcTarget(Unit* attacker)
             {
                 if (ai->GetAiObjectContext()->GetValue<Unit*>("rti cc target")->Get() == attacker)
                     return true;
+
+                string rti = ai->GetAiObjectContext()->GetValue<string>("rti cc")->Get();
+                int index = RtiTargetValue::GetRtiIndex(rti);
+                if (index != -1)
+                {
+                    uint64 guid = group->GetTargetIcon(index);
+                    if (guid && attacker->GetObjectGuid() == ObjectGuid(guid))
+                        return true;
+                }
             }
         }
 

@@ -34,4 +34,14 @@ namespace ai
         virtual void InitTriggers(std::list<TriggerNode*> &triggers);
         virtual string getName() { return "boost"; }
     };
+
+    class MageCcStrategy : public Strategy
+    {
+    public:
+        MageCcStrategy(PlayerbotAI* ai) : Strategy(ai) {}
+
+    public:
+        virtual void InitTriggers(std::list<TriggerNode*> &triggers);
+        virtual string getName() { return "cc"; }
+    };
 }

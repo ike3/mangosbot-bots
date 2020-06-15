@@ -25,4 +25,14 @@ namespace ai
     public:
         virtual void InitTriggers(std::list<TriggerNode*> &triggers);
     };
+
+    class WarlockCcStrategy : public Strategy
+    {
+    public:
+        WarlockCcStrategy(PlayerbotAI* ai) : Strategy(ai) {};
+        virtual string getName() { return "cc"; }
+
+    public:
+        virtual void InitTriggers(std::list<TriggerNode*> &triggers);
+    };
 }

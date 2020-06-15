@@ -126,4 +126,10 @@ namespace ai
     public:
         DivineFavorTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "divine favor") {}
     };
+
+    class TurnUndeadTrigger : public HasCcTargetTrigger
+    {
+    public:
+        TurnUndeadTrigger(PlayerbotAI* ai) : HasCcTargetTrigger(ai, "turn undead") {}
+    };
 }

@@ -381,4 +381,11 @@ namespace ai
     public:
         CastDivineFavorAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "divine favor") {}
     };
+
+    class CastTurnUndeadAction : public CastBuffSpellAction
+    {
+    public:
+        CastTurnUndeadAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "turn undead") {}
+        virtual Value<Unit*>* GetTargetValue() { return context->GetValue<Unit*>("cc target", getName()); }
+    };
 }

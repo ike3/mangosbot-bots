@@ -33,9 +33,11 @@ namespace ai
                 creators["buff"] = &priest::StrategyFactoryInternal::buff;
                 creators["boost"] = &priest::StrategyFactoryInternal::boost;
                 creators["rshadow"] = &priest::StrategyFactoryInternal::rshadow;
+                creators["cc"] = &priest::StrategyFactoryInternal::cc;
             }
 
         private:
+            static Strategy* cc(PlayerbotAI* ai) { return new PriestCcStrategy(ai); }
             static Strategy* rshadow(PlayerbotAI* ai) { return new PriestShadowResistanceStrategy(ai); }
             static Strategy* boost(PlayerbotAI* ai) { return new PriestBoostStrategy(ai); }
             static Strategy* buff(PlayerbotAI* ai) { return new PriestBuffStrategy(ai); }
@@ -95,6 +97,7 @@ namespace ai
                 creators["inner focus"] = &TriggerFactoryInternal::inner_focus;
                 creators["shadow protection"] = &TriggerFactoryInternal::shadow_protection;
                 creators["shadow protection on party"] = &TriggerFactoryInternal::shadow_protection_on_party;
+                creators["shackle undead"] = &TriggerFactoryInternal::shackle_undead;
 
             }
 
@@ -118,6 +121,7 @@ namespace ai
             static Trigger* inner_focus(PlayerbotAI* ai) { return new InnerFocusTrigger(ai); }
             static Trigger* shadow_protection_on_party(PlayerbotAI* ai) { return new ShadowProtectionOnPartyTrigger(ai); }
             static Trigger* shadow_protection(PlayerbotAI* ai) { return new ShadowProtectionTrigger(ai); }
+            static Trigger* shackle_undead(PlayerbotAI* ai) { return new ShackleUndeadTrigger(ai); }
         };
     };
 };
@@ -180,6 +184,7 @@ namespace ai
                 creators["dispersion"] = &AiObjectContextInternal::dispersion;
                 creators["shadow protection"] = &AiObjectContextInternal::shadow_protection;
                 creators["shadow protection on party"] = &AiObjectContextInternal::shadow_protection_on_party;
+                creators["shackle undead"] = &AiObjectContextInternal::shackle_undead;
             }
 
         private:
@@ -228,6 +233,7 @@ namespace ai
             static Action* abolish_disease_on_party(PlayerbotAI* ai) { return new CastAbolishDiseaseOnPartyAction(ai); }
             static Action* fade(PlayerbotAI* ai) { return new CastFadeAction(ai); }
             static Action* inner_fire(PlayerbotAI* ai) { return new CastInnerFireAction(ai); }
+            static Action* shackle_undead(PlayerbotAI* ai) { return new CastShackleUndeadAction(ai); }
         };
     };
 };
