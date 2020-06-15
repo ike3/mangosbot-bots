@@ -100,7 +100,7 @@ bool UseItemAction::UseItem(Item* item, ObjectGuid goGuid, Item* itemTarget)
 
     bool targetSelected = false;
     ostringstream out; out << "Using " << chat->formatItem(item->GetProto());
-    if (item->GetProto()->Stackable)
+    if ((int)item->GetProto()->Stackable > 1)
     {
         uint32 count = item->GetCount();
         if (count > 1)
@@ -234,8 +234,8 @@ bool UseItemAction::UseItem(Item* item, ObjectGuid goGuid, Item* itemTarget)
     }
 
     ItemPrototype const* proto = item->GetProto();
-    bool isDrink = proto->Spells[0].SpellCategory == 11;
-    bool isFood = proto->Spells[0].SpellCategory == 59;
+    bool isDrink = proto->Spells[0].SpellCategory == 59;
+    bool isFood = proto->Spells[0].SpellCategory == 11;
     if (proto->Class == ITEM_CLASS_CONSUMABLE && (proto->SubClass == ITEM_SUBCLASS_FOOD || proto->SubClass == ITEM_SUBCLASS_CONSUMABLE) &&
 		(isFood || isDrink))
     {
@@ -245,17 +245,42 @@ bool UseItemAction::UseItem(Item* item, ObjectGuid goGuid, Item* itemTarget)
         bot->addUnitState(UNIT_STAND_STATE_SIT);
         ai->InterruptSpell();
 
-        float percent = (isFood ? bot->GetHealthPercent() : bot->GetPower(POWER_MANA) * 100.0f / bot->GetMaxPower(POWER_MANA));
-        ai->SetNextCheckDelay(30000.0f * percent / 100.0f);
-    }
-	else
-    {
-        ai->SetNextCheckDelay(sPlayerbotAIConfig.globalCoolDown);
+        float hp = bot->GetHealthPercent();
+        float mp = bot->GetPower(POWER_MANA) * 100.0f / bot->GetMaxPower(POWER_MANA);
+        float p;
+        if (isDrink && isFood)
+        {
+            p = min(hp, mp);
+            TellConsumableUse(item, "Feasting", p);
+        }
+        else if (isDrink)
+        {
+            p = mp;
+            TellConsumableUse(item, "Drinking", p);
+        }
+        else if (isFood)
+        {
+            p = hp;
+            TellConsumableUse(item, "Eating", p);
+        }
+        ai->SetNextCheckDelay(27000.0f * (100 - p) / 100.0f);
+        bot->GetSession()->HandleUseItemOpcode(packet);
+        return true;
     }
 
+    ai->SetNextCheckDelay(sPlayerbotAIConfig.globalCoolDown);
     ai->TellMasterNoFacing(out.str());
     bot->GetSession()->HandleUseItemOpcode(packet);
     return true;
+}
+
+void UseItemAction::TellConsumableUse(Item* item, string action, float percent)
+{
+    ostringstream out;
+    out << action << " " << chat->formatItem(item->GetProto());
+    if ((int)item->GetProto()->Stackable > 1) out << "/x" << item->GetCount();
+    out  << " (" << round(percent) << "%)";
+    ai->TellMasterNoFacing(out.str());
 }
 
 bool UseItemAction::isPossible()

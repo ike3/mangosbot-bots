@@ -77,7 +77,6 @@ bool OpenLootAction::DoLoot(LootObject& lootObject)
 #endif
             )
     {
-        bot->GetMotionMaster()->Clear();
         WorldPacket packet(CMSG_LOOT, 8);
         packet << lootObject.guid;
         bot->GetSession()->HandleLootOpcode(packet);
@@ -91,7 +90,6 @@ bool OpenLootAction::DoLoot(LootObject& lootObject)
         if (!CanOpenLock(skill, lootObject.reqSkillValue))
             return false;
 
-        bot->GetMotionMaster()->Clear();
         switch (skill)
         {
         case SKILL_ENGINEERING:
@@ -117,7 +115,6 @@ bool OpenLootAction::DoLoot(LootObject& lootObject)
         ))
         return false;
 
-    bot->GetMotionMaster()->Clear();
     if (lootObject.skillId == SKILL_MINING)
         return ai->HasSkill(SKILL_MINING) ? ai->CastSpell(MINING, bot) : false;
 
@@ -128,9 +125,7 @@ bool OpenLootAction::DoLoot(LootObject& lootObject)
     if (!spellId)
         return false;
 
-    bool result = ai->CastSpell(spellId, bot);
-    if (result) ai->SetNextCheckDelay(sPlayerbotAIConfig.lootDelay);
-    return result;
+    return ai->CastSpell(spellId, bot);
 }
 
 uint32 OpenLootAction::GetOpeningSpell(LootObject& lootObject)

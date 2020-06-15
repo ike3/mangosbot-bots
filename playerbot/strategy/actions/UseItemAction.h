@@ -18,6 +18,7 @@ namespace ai
         bool UseItemOnItem(Item* item, Item* itemTarget);
         bool UseItem(Item* item, ObjectGuid go, Item* itemTarget);
         bool UseGameObject(ObjectGuid guid);
+        void TellConsumableUse(Item* item, string action, float percent);
 
     private:
         bool selfOnly;
