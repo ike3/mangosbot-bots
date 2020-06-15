@@ -43,6 +43,13 @@ namespace ai
 		float distance;
     };
 
+    class FleeWithPetAction : public MovementAction
+    {
+    public:
+        FleeWithPetAction(PlayerbotAI* ai) : MovementAction(ai, "flee with pet") {}
+
+        virtual bool Execute(Event event);
+    };
 
     class RunAwayAction : public MovementAction
     {

@@ -358,6 +358,33 @@ bool FleeAction::Execute(Event event)
     return Flee(AI_VALUE(Unit*, "current target"));
 }
 
+bool FleeWithPetAction::Execute(Event event)
+{
+    Pet* pet = bot->GetPet();
+    if (pet)
+    {
+#ifdef MANGOS
+        CreatureAI*
+#endif
+#ifdef CMANGOS
+        UnitAI*
+#endif
+        creatureAI = ((Creature*)pet)->AI();
+        if (creatureAI)
+        {
+#ifdef CMANGOS
+            creatureAI->SetReactState(REACT_PASSIVE);
+#endif
+#ifdef MANGOS
+            pet->GetCharmInfo()->SetReactState(REACT_PASSIVE);
+            pet->GetCharmInfo()->SetCommandState(COMMAND_FOLLOW);
+#endif
+            pet->AttackStop();
+        }
+    }
+    return Flee(AI_VALUE(Unit*, "current target"));
+}
+
 bool RunAwayAction::Execute(Event event)
 {
     return Flee(AI_VALUE(Unit*, "master target"));
