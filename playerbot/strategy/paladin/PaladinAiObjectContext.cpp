@@ -27,6 +27,7 @@ namespace ai
                 creators["cure"] = &paladin::StrategyFactoryInternal::cure;
                 creators["boost"] = &paladin::StrategyFactoryInternal::boost;
                 creators["cc"] = &paladin::StrategyFactoryInternal::cc;
+                creators["bthreat"] = &paladin::StrategyFactoryInternal::bthreat;
             }
 
         private:
@@ -34,6 +35,7 @@ namespace ai
             static Strategy* cure(PlayerbotAI* ai) { return new PaladinCureStrategy(ai); }
             static Strategy* boost(PlayerbotAI* ai) { return new PaladinBoostStrategy(ai); }
             static Strategy* cc(PlayerbotAI* ai) { return new PaladinCcStrategy(ai); }
+            static Strategy* bthreat(PlayerbotAI* ai) { return new PaladinBuffThreatStrategy(ai); }
         };
 
         class ResistanceStrategyFactoryInternal : public NamedObjectContext<Strategy>
@@ -65,7 +67,6 @@ namespace ai
                 creators["bmana"] = &paladin::BuffStrategyFactoryInternal::bmana;
                 creators["bdps"] = &paladin::BuffStrategyFactoryInternal::bdps;
                 creators["bstats"] = &paladin::BuffStrategyFactoryInternal::bstats;
-                creators["bthreat"] = &paladin::BuffStrategyFactoryInternal::bthreat;
             }
 
         private:
@@ -73,7 +74,6 @@ namespace ai
             static Strategy* bmana(PlayerbotAI* ai) { return new PaladinBuffManaStrategy(ai); }
             static Strategy* bdps(PlayerbotAI* ai) { return new PaladinBuffDpsStrategy(ai); }
             static Strategy* bstats(PlayerbotAI* ai) { return new PaladinBuffStatsStrategy(ai); }
-            static Strategy* bthreat(PlayerbotAI* ai) { return new PaladinBuffThreatStrategy(ai); }
         };
 
         class CombatStrategyFactoryInternal : public NamedObjectContext<Strategy>
