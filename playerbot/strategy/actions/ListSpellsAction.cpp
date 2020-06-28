@@ -263,9 +263,16 @@ bool ListSpellsAction::Execute(Event event)
     ai->TellMaster("=== Spells ===");
     spells.sort(CompareSpells);
 
+    int count = 0;
     for (list<pair<uint32, string> >::iterator i = spells.begin(); i != spells.end(); ++i)
     {
-        ai->TellMaster(i->second);
+        ai->TellMasterNoFacing(i->second);
+        if (++count >= 50)
+        {
+            ostringstream msg; msg << (spells.size() - 50) << " more...";
+            ai->TellMasterNoFacing(msg.str());
+            break;
+        }
     }
 
     return true;
