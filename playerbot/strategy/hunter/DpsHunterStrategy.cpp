@@ -79,14 +79,6 @@ void DpsHunterStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("viper sting", 23), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "no pet",
-        NextAction::array(0, new NextAction("call pet", 22.0f), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "hunters pet low health",
-        NextAction::array(0, new NextAction("mend pet", 21.0f), NULL)));
-
-    triggers.push_back(new TriggerNode(
         "hunter's mark",
         NextAction::array(0, new NextAction("hunter's mark", 19.0f), NULL)));
 

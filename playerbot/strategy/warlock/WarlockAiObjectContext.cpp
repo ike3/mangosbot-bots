@@ -29,9 +29,11 @@ namespace ai
                 creators["dps debuff"] = &warlock::StrategyFactoryInternal::dps_debuff;
                 creators["boost"] = &warlock::StrategyFactoryInternal::boost;
                 creators["cc"] = &warlock::StrategyFactoryInternal::cc;
+                creators["pet"] = &warlock::StrategyFactoryInternal::pet;
             }
 
         private:
+            static Strategy* pet(PlayerbotAI* ai) { return new WarlockPetStrategy(ai); }
             static Strategy* nc(PlayerbotAI* ai) { return new GenericWarlockNonCombatStrategy(ai); }
             static Strategy* aoe(PlayerbotAI* ai) { return new DpsAoeWarlockStrategy(ai); }
             static Strategy* dps_debuff(PlayerbotAI* ai) { return new DpsWarlockDebuffStrategy(ai); }

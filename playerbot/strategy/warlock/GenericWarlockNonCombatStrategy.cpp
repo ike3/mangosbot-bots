@@ -42,8 +42,11 @@ void GenericWarlockNonCombatStrategy::InitTriggers(std::list<TriggerNode*> &trig
     triggers.push_back(new TriggerNode(
         "demon armor",
         NextAction::array(0, new NextAction("fel armor", 21.0f), NULL)));
+}
 
+void WarlockPetStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+{
     triggers.push_back(new TriggerNode(
         "no pet",
-        NextAction::array(0, new NextAction("summon imp", 10.0f), NULL)));
+        NextAction::array(0, new NextAction("summon voidwalker", 30.0f), NULL)));
 }
