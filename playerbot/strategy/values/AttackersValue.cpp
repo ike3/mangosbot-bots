@@ -97,7 +97,8 @@ bool AttackersValue::hasRealThreat(Unit *attacker)
         !attacker->HasStealthAura() &&
         !attacker->HasInvisibilityAura() &&
 #ifdef CMANGOS
-        !attacker->IsInEvadeMode() &&
+		//TODO Find evade mode in cmangos    
+		//target->IsInEvadeMode() ||
 #endif
         !sServerFacade.IsInRoots(attacker) &&
         !sServerFacade.IsFriendlyTo(attacker, bot) &&
