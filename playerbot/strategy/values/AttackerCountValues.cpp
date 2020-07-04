@@ -25,7 +25,7 @@ bool HasAggroValue::Calculate()
     {
         ThreatManager *threatManager = ref->getSource();
         Unit *attacker = threatManager->getOwner();
-        Unit *victim = attacker->getVictim();
+        Unit *victim = attacker->GetVictim();
         if (victim == bot && target == attacker)
             return true;
         ref = ref->next();

@@ -28,7 +28,7 @@ class ServerFacade
             return unit->IsDead();
 #endif
 #ifdef CMANGOS
-            return unit->isDead();
+            return unit->IsDead();
 #endif
         }
 
@@ -42,7 +42,7 @@ class ServerFacade
             return unit->GetDeathState();
 #endif
 #ifdef CMANGOS
-            return unit->getDeathState();
+            return unit->GetDeathState();
 #endif
         }
 
@@ -62,7 +62,7 @@ class ServerFacade
             return unit->IsAlive();
 #endif
 #ifdef CMANGOS
-            return unit->isAlive();
+            return unit->IsAlive();
 #endif
         }
 
@@ -82,7 +82,7 @@ class ServerFacade
             return unit->IsInCombat();
 #endif
 #ifdef CMANGOS
-            return unit->isInCombat();
+            return unit->IsInCombat();
 #endif
         }
 

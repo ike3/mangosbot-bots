@@ -164,7 +164,7 @@ bool TankAoeTrigger::IsActive()
     if (!tankTarget || currentTarget == tankTarget)
         return false;
 
-    return currentTarget->getVictim() == AI_VALUE(Unit*, "self target");
+    return currentTarget->GetVictim() == AI_VALUE(Unit*, "self target");
 }
 
 bool IsBehindTargetTrigger::IsActive()

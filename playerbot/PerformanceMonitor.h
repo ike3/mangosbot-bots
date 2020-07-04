@@ -55,6 +55,7 @@ class PerformanceMonitor
 
 	private:
         map<PerformanceMetric, map<string, PerformanceData*> > data;
+		std::mutex lock;
 };
 
 
