@@ -47,7 +47,7 @@ bool Player::MinimalLoadFromDB( QueryResult *result, uint32 guid )
 
     Relocate(fields[1].GetFloat(),fields[2].GetFloat(),fields[3].GetFloat());
     SetLocationMapId(fields[4].GetUInt32());
-
+	
     m_Played_time[PLAYED_TIME_TOTAL] = fields[5].GetUInt32();
     m_Played_time[PLAYED_TIME_LEVEL] = fields[6].GetUInt32();
 
@@ -146,48 +146,60 @@ void AhBot::Update()
 
 void AhBot::ForceUpdate()
 {
-    if (!sAhBotConfig.enabled)
-        return;
+	if (!sAhBotConfig.enabled)
+		return;
 
-    if (updating)
-        return;
+	if (updating)
+		return;
 
-    string msg = "AhBot is now checking auctions in the background";
-    sLog.outString("%s",msg.c_str());
-    sWorld.SendWorldText(3, msg.c_str());
-    updating = true;
+	string msg = "AhBot is now checking auctions in the background";
+	sLog.outString("%s", msg.c_str());
+	// no need to send it in world
+	//sWorld.SendWorldText(3, msg.c_str());
+	updating = true;
 
-    if (!allBidders.size())
-        LoadRandomBots();
+	if (!allBidders.size())
+		LoadRandomBots();
 
-    if (!allBidders.size())
-    {
-        sLog.outError( "Ahbot is enabled but there are no bidders available");
-        return;
-    }
+	if (!allBidders.size())
+	{
+		sLog.outError("Ahbot is enabled but there are no bidders available");
+		return;
+	}
 
-    CheckCategoryMultipliers();
+	CheckCategoryMultipliers();
 
-    int answered = 0, added = 0;
-    for (int i = 0; i < MAX_AUCTIONS; i++)
-    {
-        InAuctionItemsBag inAuctionItems(auctionIds[i]);
-        inAuctionItems.Init(true);
+	int answered = 0, added = 0;
+	for (int i = 0; i < MAX_AUCTIONS; i++)
+	{
+		InAuctionItemsBag inAuctionItems(auctionIds[i]);
+		inAuctionItems.Init(true);
 
-        for (int j = 0; j < CategoryList::instance.size(); j++)
-        {
-            Category* category = CategoryList::instance[j];
-            answered += Answer(i, category, &inAuctionItems);
-            added += AddAuctions(i, category, &inAuctionItems);
-        }
-    }
+		for (int j = 0; j < CategoryList::instance.size(); j++)
+		{
+			Category* category = CategoryList::instance[j];
+			answered += Answer(i, category, &inAuctionItems);
+			added += AddAuctions(i, category, &inAuctionItems);
+		}
+	}
 
-    CleanupHistory();
+	CleanupHistory();
 
-    sLog.outString("AhBot auction check finished. %d auctions answered, %d new auctions added. Next check in %d seconds",
-            answered, added, sAhBotConfig.updateInterval);
-    ostringstream out; out << "AhBot auction check finished. Next check in " << sAhBotConfig.updateInterval << " seconds";
-    sWorld.SendWorldText(3, out.str().c_str());
+	sLog.outString("AhBot auction check finished. %d auctions answered, %d new auctions added. Next check in %d seconds",
+		answered, added, sAhBotConfig.updateInterval);
+	//ostringstream out; out << "AhBot auction check finished. Next check in " << sAhBotConfig.updateInterval << " seconds";
+	if (added > 0)
+	{
+		ostringstream out; out << "There " << (added == 1 ? "is " : "are ") << added << (added == 1 ? " new item" : " new items") << " in the auction.";
+		sWorld.SendWorldText(3, out.str().c_str());
+	}
+	if (answered > 0)
+	{
+		ostringstream out; out << answered << " auctions " << (answered == 1 ? "has been" : "have been") << " answered.";
+		//sWorld.SendWorldText(3, out.str().c_str());
+		sWorld.SendWorldText(3, out.str().c_str());
+	}
+	
     updating = false;
 }
 
