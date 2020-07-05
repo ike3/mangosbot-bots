@@ -18,8 +18,7 @@ bool InvalidTargetValue::Calculate()
                 sServerFacade.IsCharmed(target) ||
                 sServerFacade.IsFeared(target) ||
 #ifdef CMANGOS
-            //TODO Find evade mode in cmangos    
-			//target->IsInEvadeMode() ||
+			target->GetCombatManager().IsInEvadeMode() ||
 #endif
                 target->hasUnitState(UNIT_STAT_ISOLATED) ||
                 sServerFacade.IsFriendlyTo(target, bot) ||
