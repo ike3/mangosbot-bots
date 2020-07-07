@@ -154,8 +154,8 @@ void AhBot::ForceUpdate()
 
 	string msg = "AhBot is now checking auctions in the background";
 	sLog.outString("%s", msg.c_str());
-	ostringstream out; out << "|c070cc700 " << msg << " |r";
-	sWorld.SendWorldText(3, out.str().c_str());
+	ostringstream out1; out1 << "|c070cc700 " << msg << " |r";
+	sWorld.SendWorldText(3, out1.str().c_str());
 	updating = true;
 
 	if (!allBidders.size())

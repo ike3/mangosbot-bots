@@ -142,13 +142,13 @@ bool RandomPlayerbotFactory::CreateRandomBot(uint8 cls)
 	//TODO vector crash on cmangos TWO when creating one of the first bot characters, need a fix
 
 	WorldSession* session = new WorldSession(accountId, NULL, SEC_PLAYER,
-#ifdef MANGOSBOT_ZERO
-        0,
-#endif
+#ifndef MANGOSBOT_ZERO
 #ifdef MANGOSBOT_ONE
 		1,
 #else
 		2,
+#endif
+#else
 #endif
         0, LOCALE_enUS);
 

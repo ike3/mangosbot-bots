@@ -89,15 +89,15 @@ void AttackersValue::RemoveNonThreating(set<Unit*>& targets)
 
 bool AttackersValue::hasRealThreat(Unit *attacker)
 {
-    return attacker &&
-        attacker->IsInWorld() &&
-        sServerFacade.IsAlive(attacker) &&
-        !attacker->IsPolymorphed() &&
-        !attacker->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE) &&
-        !attacker->HasStealthAura() &&
-        !attacker->HasInvisibilityAura() &&
+	return attacker &&
+		attacker->IsInWorld() &&
+		sServerFacade.IsAlive(attacker) &&
+		!attacker->IsPolymorphed() &&
+		!attacker->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE) &&
+		!attacker->HasStealthAura() &&
+		!attacker->HasInvisibilityAura() &&
 #ifdef CMANGOS    
-		target->GetCombatManager().IsInEvadeMode() ||
+		!attacker->GetCombatManager().IsInEvadeMode();
 #endif
         !sServerFacade.IsInRoots(attacker) &&
         !sServerFacade.IsFriendlyTo(attacker, bot) &&

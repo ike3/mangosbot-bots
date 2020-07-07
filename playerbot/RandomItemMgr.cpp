@@ -825,9 +825,9 @@ void RandomItemMgr::BuildTradeCache()
     {
         uint32 size = tradeCache[level / 10].size();
         sLog.outDetail("Trade cache for level=%d: %d items", level, size);
-		counter++;
+		counter4++;
     }
-	sLog.outString("Cached %d trade items", counter3); // TEST
+	sLog.outString("Cached %d trade items", counter4); // TEST
 }
 
 uint32 RandomItemMgr::GetRandomTrade(uint32 level)
