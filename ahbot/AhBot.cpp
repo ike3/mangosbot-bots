@@ -47,7 +47,7 @@ bool Player::MinimalLoadFromDB( QueryResult *result, uint32 guid )
 
     Relocate(fields[1].GetFloat(),fields[2].GetFloat(),fields[3].GetFloat());
     SetLocationMapId(fields[4].GetUInt32());
-	
+
     m_Played_time[PLAYED_TIME_TOTAL] = fields[5].GetUInt32();
     m_Played_time[PLAYED_TIME_LEVEL] = fields[6].GetUInt32();
 
@@ -154,8 +154,8 @@ void AhBot::ForceUpdate()
 
 	string msg = "AhBot is now checking auctions in the background";
 	sLog.outString("%s", msg.c_str());
-	// no need to send it in world
-	//sWorld.SendWorldText(3, msg.c_str());
+	ostringstream out; out << "|c070cc700 " << msg << " |r";
+	sWorld.SendWorldText(3, out.str().c_str());
 	updating = true;
 
 	if (!allBidders.size())
@@ -187,19 +187,18 @@ void AhBot::ForceUpdate()
 
 	sLog.outString("AhBot auction check finished. %d auctions answered, %d new auctions added. Next check in %d seconds",
 		answered, added, sAhBotConfig.updateInterval);
-	//ostringstream out; out << "AhBot auction check finished. Next check in " << sAhBotConfig.updateInterval << " seconds";
+	ostringstream out; out << "|c070cc700 AhBot auction check finished. Next check in " << sAhBotConfig.updateInterval << " seconds |r";
+	sWorld.SendWorldText(3, out.str().c_str());
 	if (added > 0)
 	{
-		ostringstream out; out << "There " << (added == 1 ? "is " : "are ") << added << (added == 1 ? " new item" : " new items") << " in the auction.";
+		ostringstream out; out << "|c070cc700 There " << (added == 1 ? "is " : "are ") << added << (added == 1 ? " new item" : " new items") << " in the auction. |r";
 		sWorld.SendWorldText(3, out.str().c_str());
 	}
 	if (answered > 0)
 	{
-		ostringstream out; out << answered << " auctions " << (answered == 1 ? "has been" : "have been") << " answered.";
-		//sWorld.SendWorldText(3, out.str().c_str());
+		ostringstream out; out << "|c070cc700 "  << answered << (answered == 1 ? " auction has been" : " auctions have been") << " answered.|r";
 		sWorld.SendWorldText(3, out.str().c_str());
 	}
-	
     updating = false;
 }
 
