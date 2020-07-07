@@ -206,17 +206,17 @@ void RandomItemMgr::BuildRandomItemCache()
             if (proto->Duration & 0x80000000)
                 continue;
 
-            if (sAhBotConfig.ignoreItemIds.find(proto->ItemId) != sAhBotConfig.ignoreItemIds.end())
-                continue;
+            //if (sAhBotConfig.ignoreItemIds.find(proto->ItemId) != sAhBotConfig.ignoreItemIds.end())
+            //    continue;
 
             if (strstri(proto->Name1, "qa") || strstri(proto->Name1, "test") || strstri(proto->Name1, "deprecated"))
                 continue;
 
-            if (!proto->ItemLevel || (proto->RequiredLevel && proto->RequiredLevel > sAhBotConfig.maxRequiredLevel) || proto->ItemLevel > sAhBotConfig.maxItemLevel)
+            if (!proto->ItemLevel/* || (proto->RequiredLevel && proto->RequiredLevel > sAhBotConfig.maxRequiredLevel) || proto->ItemLevel > sAhBotConfig.maxItemLevel*/)
                 continue;
 
-            if (!auctionbot.GetSellPrice(proto))
-                continue;
+            //if (!auctionbot.GetSellPrice(proto))
+             //   continue;
 
             uint32 level = proto->ItemLevel;
             for (uint32 type = RANDOM_ITEM_GUILD_TASK; type <= RANDOM_ITEM_GUILD_TASK_REWARD_TRADE; type++)
@@ -305,14 +305,14 @@ bool RandomItemMgr::CanEquipItem(BotEquipKey key, ItemPrototype const* proto)
         delta = urand(3, 7);
     else if (level < 70)
         delta = urand(2, 5);
-   // else if (level < 80)
-   //     delta = urand(2, 4);
+    else if (level < 80)
+        delta = urand(2, 4);
 
     if (key.quality > ITEM_QUALITY_NORMAL &&
             (requiredLevel > level || requiredLevel < level - delta))
         return false;
 
-    for (uint32 gap = 60; gap <= 70; gap += 10)
+    for (uint32 gap = 60; gap <= 80; gap += 10)
     {
         if (level > gap && requiredLevel <= gap)
             return false;
@@ -609,7 +609,8 @@ void RandomItemMgr::BuildAmmoCache()
         maxLevel = sWorld.getConfig(CONFIG_UINT32_MAX_PLAYER_LEVEL);
 
     sLog.outString("Building ammo cache for %d levels", maxLevel);
-    for (uint32 level = 1; level <= maxLevel; level+=10)
+	uint32 counter1 = 0;
+    for (uint32 level = 1; level <= maxLevel+1; level+=10)
     {
         for (uint32 subClass = ITEM_SUBCLASS_ARROW; subClass <= ITEM_SUBCLASS_BULLET; subClass++)
         {
@@ -624,11 +625,13 @@ void RandomItemMgr::BuildAmmoCache()
             {
                 uint32 entry = fields[0].GetUInt32();
                 ammoCache[level / 10][subClass] = entry;
+				counter1++;
             }
 
             delete results;
         }
     }
+	sLog.outString("Cached %d types of ammo", counter1); // TEST
 }
 
 uint32 RandomItemMgr::GetAmmo(uint32 level, uint32 subClass)
@@ -644,7 +647,8 @@ void RandomItemMgr::BuildPotionCache()
         maxLevel = sWorld.getConfig(CONFIG_UINT32_MAX_PLAYER_LEVEL);
 
     sLog.outString("Building potion cache for %d levels", maxLevel);
-    for (uint32 level = 1; level <= maxLevel; level+=10)
+	uint32 counter2 = 0;
+    for (uint32 level = 1; level <= maxLevel+1; level+=10)
     {
         uint32 effects[] = { SPELL_EFFECT_HEAL, SPELL_EFFECT_ENERGIZE };
         for (int i = 0; i < 2; ++i)
@@ -696,16 +700,18 @@ void RandomItemMgr::BuildPotionCache()
         }
     }
 
-    for (uint32 level = 1; level <= maxLevel; level+=10)
+    for (uint32 level = 1; level <= maxLevel+1; level+=10)
     {
         uint32 effects[] = { SPELL_EFFECT_HEAL, SPELL_EFFECT_ENERGIZE };
         for (int i = 0; i < 2; ++i)
         {
             uint32 effect = effects[i];
             uint32 size = potionCache[level / 10][effect].size();
+			counter2++;
             sLog.outDetail("Potion cache for level=%d, effect=%d: %d items", level, effect, size);
         }
     }
+	sLog.outString("Cached %d types of potions", counter2); // TEST
 }
 
 void RandomItemMgr::BuildFoodCache()
@@ -715,7 +721,8 @@ void RandomItemMgr::BuildFoodCache()
         maxLevel = sWorld.getConfig(CONFIG_UINT32_MAX_PLAYER_LEVEL);
 
     sLog.outString("Building food cache for %d levels", maxLevel);
-    for (uint32 level = 1; level <= maxLevel; level+=10)
+	uint32 counter3 = 0;
+    for (uint32 level = 1; level <= maxLevel+1; level+=10)
     {
         uint32 categories[] = { 11, 59 };
         for (int i = 0; i < 2; ++i)
@@ -754,16 +761,18 @@ void RandomItemMgr::BuildFoodCache()
         }
     }
 
-    for (uint32 level = 1; level <= maxLevel; level+=10)
+    for (uint32 level = 1; level <= maxLevel+1; level+=10)
     {
         uint32 categories[] = { 11, 59 };
         for (int i = 0; i < 2; ++i)
         {
             uint32 category = categories[i];
             uint32 size = foodCache[level / 10][category].size();
+			counter3++;
             sLog.outDetail("Food cache for level=%d, category=%d: %d items", level, category, size);
         }
     }
+	sLog.outString("Cached %d types of food", counter3);
 }
 
 uint32 RandomItemMgr::GetRandomPotion(uint32 level, uint32 effect)
@@ -787,7 +796,8 @@ void RandomItemMgr::BuildTradeCache()
         maxLevel = sWorld.getConfig(CONFIG_UINT32_MAX_PLAYER_LEVEL);
 
     sLog.outString("Building trade cache for %d levels", maxLevel);
-    for (uint32 level = 1; level <= maxLevel; level+=10)
+	uint32 counter4 = 0;
+    for (uint32 level = 1; level <= maxLevel+1; level+=10)
     {
         for (uint32 itemId = 0; itemId < sItemStorage.GetMaxEntry(); ++itemId)
         {
@@ -811,11 +821,13 @@ void RandomItemMgr::BuildTradeCache()
         }
     }
 
-    for (uint32 level = 1; level <= maxLevel; level+=10)
+    for (uint32 level = 1; level <= maxLevel+1; level+=10)
     {
         uint32 size = tradeCache[level / 10].size();
         sLog.outDetail("Trade cache for level=%d: %d items", level, size);
+		counter++;
     }
+	sLog.outString("Cached %d trade items", counter3); // TEST
 }
 
 uint32 RandomItemMgr::GetRandomTrade(uint32 level)
@@ -868,9 +880,8 @@ void RandomItemMgr::BuildRarityCache()
             if (strstri(proto->Name1, "qa") || strstri(proto->Name1, "test") || strstri(proto->Name1, "deprecated"))
                 continue;
 
-            if (!proto->ItemLevel || (proto->RequiredLevel && proto->RequiredLevel > sAhBotConfig.maxRequiredLevel) || proto->ItemLevel > sAhBotConfig.maxItemLevel)
+            if (!proto->ItemLevel/* || proto->RequiredLevel > sAhBotConfig.maxRequiredLevel || proto->ItemLevel > sAhBotConfig.maxItemLevel*/)
                 continue;
-
             QueryResult* results = WorldDatabase.PQuery(
                     "select max(q.chance) from ( "
                     // "-- Creature "

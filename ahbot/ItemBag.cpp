@@ -59,7 +59,7 @@ CategoryList::CategoryList()
     Add(new TradeSkill(SKILL_FIRST_AID, false));
     Add(new TradeSkill(SKILL_COOKING, false));
 
-#ifdef MANGOSBOT_ONE
+#ifndef MANGOSBOT_ZERO
     Add(new TradeSkill(SKILL_JEWELCRAFTING, true));
     Add(new TradeSkill(SKILL_JEWELCRAFTING, false));
 #endif

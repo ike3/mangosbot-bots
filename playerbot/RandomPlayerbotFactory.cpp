@@ -24,13 +24,13 @@ RandomPlayerbotFactory::RandomPlayerbotFactory(uint32 accountId) : accountId(acc
     availableRaces[CLASS_WARRIOR].push_back(RACE_UNDEAD);
     availableRaces[CLASS_WARRIOR].push_back(RACE_TAUREN);
     availableRaces[CLASS_WARRIOR].push_back(RACE_TROLL);
-#ifdef MANGOSBOT_ONE
+#ifndef MANGOSBOT_ZERO
     availableRaces[CLASS_WARRIOR].push_back(RACE_DRAENEI);
 #endif
 
     availableRaces[CLASS_PALADIN].push_back(RACE_HUMAN);
     availableRaces[CLASS_PALADIN].push_back(RACE_DWARF);
-#ifdef MANGOSBOT_ONE
+#ifndef MANGOSBOT_ZERO
     availableRaces[CLASS_PALADIN].push_back(RACE_DRAENEI);
     availableRaces[CLASS_PALADIN].push_back(RACE_BLOODELF);
 #endif
@@ -41,7 +41,7 @@ RandomPlayerbotFactory::RandomPlayerbotFactory(uint32 accountId) : accountId(acc
     availableRaces[CLASS_ROGUE].push_back(RACE_GNOME);
     availableRaces[CLASS_ROGUE].push_back(RACE_ORC);
     availableRaces[CLASS_ROGUE].push_back(RACE_TROLL);
-#ifdef MANGOSBOT_ONE
+#ifndef MANGOSBOT_ZERO
     availableRaces[CLASS_ROGUE].push_back(RACE_BLOODELF);
 #endif
 
@@ -50,7 +50,7 @@ RandomPlayerbotFactory::RandomPlayerbotFactory(uint32 accountId) : accountId(acc
     availableRaces[CLASS_PRIEST].push_back(RACE_NIGHTELF);
     availableRaces[CLASS_PRIEST].push_back(RACE_TROLL);
     availableRaces[CLASS_PRIEST].push_back(RACE_UNDEAD);
-#ifdef MANGOSBOT_ONE
+#ifndef MANGOSBOT_ZERO
     availableRaces[CLASS_PRIEST].push_back(RACE_DRAENEI);
     availableRaces[CLASS_PRIEST].push_back(RACE_BLOODELF);
 #endif
@@ -59,7 +59,7 @@ RandomPlayerbotFactory::RandomPlayerbotFactory(uint32 accountId) : accountId(acc
     availableRaces[CLASS_MAGE].push_back(RACE_GNOME);
     availableRaces[CLASS_MAGE].push_back(RACE_UNDEAD);
     availableRaces[CLASS_MAGE].push_back(RACE_TROLL);
-#ifdef MANGOSBOT_ONE
+#ifndef MANGOSBOT_ZERO
     availableRaces[CLASS_MAGE].push_back(RACE_DRAENEI);
     availableRaces[CLASS_MAGE].push_back(RACE_BLOODELF);
 #endif
@@ -68,14 +68,14 @@ RandomPlayerbotFactory::RandomPlayerbotFactory(uint32 accountId) : accountId(acc
     availableRaces[CLASS_WARLOCK].push_back(RACE_GNOME);
     availableRaces[CLASS_WARLOCK].push_back(RACE_UNDEAD);
     availableRaces[CLASS_WARLOCK].push_back(RACE_ORC);
-#ifdef MANGOSBOT_ONE
+#ifndef MANGOSBOT_ZERO
     availableRaces[CLASS_WARLOCK].push_back(RACE_BLOODELF);
 #endif
 
     availableRaces[CLASS_SHAMAN].push_back(RACE_ORC);
     availableRaces[CLASS_SHAMAN].push_back(RACE_TAUREN);
     availableRaces[CLASS_SHAMAN].push_back(RACE_TROLL);
-#ifdef MANGOSBOT_ONE
+#ifndef MANGOSBOT_ZERO
     availableRaces[CLASS_SHAMAN].push_back(RACE_DRAENEI);
 #endif
 
@@ -84,7 +84,7 @@ RandomPlayerbotFactory::RandomPlayerbotFactory(uint32 accountId) : accountId(acc
     availableRaces[CLASS_HUNTER].push_back(RACE_ORC);
     availableRaces[CLASS_HUNTER].push_back(RACE_TAUREN);
     availableRaces[CLASS_HUNTER].push_back(RACE_TROLL);
-#ifdef MANGOSBOT_ONE
+#ifndef MANGOSBOT_ZERO
     availableRaces[CLASS_HUNTER].push_back(RACE_DRAENEI);
     availableRaces[CLASS_HUNTER].push_back(RACE_BLOODELF);
 #endif
@@ -134,11 +134,21 @@ bool RandomPlayerbotFactory::CreateRandomBot(uint8 cls)
     pair<uint8,uint8> hair = hairs[urand(0, hairs.size() - 1)];
 
 	bool excludeCheck = (race == RACE_TAUREN) || (gender == GENDER_FEMALE && race != RACE_NIGHTELF && race != RACE_UNDEAD);
+#ifdef MANGOSBOT_ZERO
 	uint8 facialHair = excludeCheck ? 0 : facialHairTypes[urand(0, facialHairTypes.size() - 1)];
+#else
+	uint8 facialHair = 0;
+#endif
+	//TODO vector crash on cmangos TWO when creating one of the first bot characters, need a fix
 
 	WorldSession* session = new WorldSession(accountId, NULL, SEC_PLAYER,
+#ifdef MANGOSBOT_ZERO
+        0,
+#endif
 #ifdef MANGOSBOT_ONE
-        1,
+		1,
+#else
+		2,
 #endif
         0, LOCALE_enUS);
 

@@ -20,7 +20,7 @@ bool SpellCastUsefulValue::Calculate()
 		spellInfo->Attributes & SPELL_ATTR_ON_NEXT_SWING_2)
 	{
 		Spell* spell = bot->GetCurrentSpell(CURRENT_MELEE_SPELL);
-		if (spell && spell->m_spellInfo->Id == spellid && (spell->m_spellInfo->HasAttribute(SPELL_ATTR_ON_NEXT_SWING_1) || spell->m_spellInfo->HasAttribute(SPELL_ATTR_ON_NEXT_SWING_2)) && bot->hasUnitState(UNIT_STAT_MELEE_ATTACKING))
+		if (spell && spell->m_spellInfo->Id == spellid && IsNextMeleeSwingSpell(spell->m_spellInfo) && bot->hasUnitState(UNIT_STAT_MELEE_ATTACKING))
 			return false;
 	}
 	else

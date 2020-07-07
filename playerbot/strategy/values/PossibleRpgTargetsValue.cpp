@@ -19,11 +19,11 @@ PossibleRpgTargetsValue::PossibleRpgTargetsValue(PlayerbotAI* ai, float range) :
     if (allowedNpcFlags.empty())
     {
         allowedNpcFlags.push_back(UNIT_NPC_FLAG_INNKEEPER);
-        allowedNpcFlags.push_back(UNIT_NPC_FLAG_GOSSIP);
+        //allowedNpcFlags.push_back(UNIT_NPC_FLAG_GOSSIP); Bots come to Spirit Healers
         allowedNpcFlags.push_back(UNIT_NPC_FLAG_QUESTGIVER);
         allowedNpcFlags.push_back(UNIT_NPC_FLAG_FLIGHTMASTER);
         allowedNpcFlags.push_back(UNIT_NPC_FLAG_BANKER);
-#ifdef MANGOSBOT_ONE
+#ifndef MANGOSBOT_ZERO
         allowedNpcFlags.push_back(UNIT_NPC_FLAG_GUILD_BANKER);
         allowedNpcFlags.push_back(UNIT_NPC_FLAG_TRAINER_CLASS);
         allowedNpcFlags.push_back(UNIT_NPC_FLAG_TRAINER_PROFESSION);

@@ -65,7 +65,7 @@ private:
     void ClearSkills();
     void InitAvailableSpells();
     void InitSpecialSpells();
-    void InitTalents();
+    void InitTalentsTree(bool incremental);
     void InitTalents(uint32 specNo);
     void InitQuests();
     void InitPet();

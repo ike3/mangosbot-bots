@@ -82,7 +82,7 @@ namespace ahbot
             return proto->Class == ITEM_CLASS_TRADE_GOODS ||
                     proto->Class == ITEM_CLASS_MISC ||
                     proto->Class == ITEM_CLASS_REAGENT
-#ifdef MANGOSBOT_ONE
+#ifndef MANGOSBOT_ZERO
                 ||
                     proto->Class == ITEM_CLASS_GEM
 #endif

@@ -205,7 +205,7 @@ void SuggestWhatToDoAction::grindReputation()
         factions["Gadgetzan"] = 50;
         factions["Ratchet"] = 20;
 
-#ifdef MANGOSBOT_ONE
+#ifndef MANGOSBOT_ZERO
         factions["Ashtongue Deathsworn"] = 70;
         factions["Cenarion Expedition"] = 62;
         factions["The Consortium"] = 65;
@@ -291,7 +291,7 @@ void SuggestWhatToDoAction::spam(string msg, uint32 channelId)
             if (ChannelMgr* cMgr = channelMgr(bot->GetTeam()))
             {
                 if (Channel* chn = cMgr->GetJoinChannel(channelName
-#ifdef MANGOSBOT_ONE
+#ifndef MANGOSBOT_ZERO
                     , channel->ChannelID
 #endif
                 ))

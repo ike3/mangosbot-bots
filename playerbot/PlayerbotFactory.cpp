@@ -14,7 +14,7 @@
 #include "RandomPlayerbotFactory.h"
 #include "ServerFacade.h"
 #include "AiFactory.h"
-#ifdef MANGOSBOT_ONE
+#ifndef MANGOSBOT_ZERO
     #ifdef CMANGOS
         #include "Arena/ArenaTeam.h"
     #endif
@@ -161,7 +161,7 @@ void PlayerbotFactory::Randomize(bool incremental)
 
     pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Talents");
     sLog.outDetail("Initializing talents...");
-    InitTalents();
+    InitTalentsTree(incremental);
     if (pmo) pmo->finish();
 
     pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Spells2");
@@ -184,8 +184,8 @@ void PlayerbotFactory::Randomize(bool incremental)
     pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Equip");
     sLog.outDetail("Initializing equipmemt...");
     InitEquipment(incremental);
-    //sLog.outDetail("Initializing enchant templates...");
-    //LoadEnchantContainer();
+    sLog.outDetail("Initializing enchant templates...");
+    LoadEnchantContainer();
     if (pmo) pmo->finish();
 
     pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Bags");
@@ -211,10 +211,10 @@ void PlayerbotFactory::Randomize(bool incremental)
     pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_EqSets");
     sLog.outDetail("Initializing second equipment set...");
     InitSecondEquipmentSet();
-	/*if (bot->getLevel() >= sPlayerbotAIConfig.minEnchantingBotLevel)
+	if (bot->getLevel() >= sPlayerbotAIConfig.minEnchantingBotLevel)
 	{
 		ApplyEnchantTemplate();
-	}*/
+	}
     if (pmo) pmo->finish();
 
     pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Inventory");
@@ -526,10 +526,13 @@ void PlayerbotFactory::InitSpells()
         InitAvailableSpells();
 }
 
-void PlayerbotFactory::InitTalents()
+void PlayerbotFactory::InitTalentsTree(bool incremental)
 {
-    uint32 specNo = sRandomPlayerbotMgr.GetValue(bot, "specNo");
-    if (specNo) specNo--;
+	if (incremental == true)
+	{
+		uint32 specNo = sRandomPlayerbotMgr.GetValue(bot, "specNo") -1;
+		InitTalents(specNo);
+	}
     else
     {
         uint32 point = urand(0, 100);
@@ -537,14 +540,18 @@ void PlayerbotFactory::InitTalents()
         uint32 p1 = sPlayerbotAIConfig.specProbability[cls][0];
         uint32 p2 = p1 + sPlayerbotAIConfig.specProbability[cls][1];
 
+		//uint32 validIn = urand(sPlayerbotAIConfig.minRandomBotsPriceChangeInterval, sPlayerbotAIConfig.maxRandomBotsPriceChangeInterval);
+		//SetEventValue(id, "buymultiplier", value, validIn);
+
         uint32 specNo = (point < p1 ? 0 : (point < p2 ? 1 : 2));
         sRandomPlayerbotMgr.SetValue(bot, "specNo", specNo + 1);
+		InitTalents(specNo);
     }
 
-    InitTalents(specNo);
+    //InitTalents(specNo);
 
-    if (bot->GetFreeTalentPoints())
-        InitTalents(2 - specNo);
+    //if (bot->GetFreeTalentPoints())
+    //    InitTalents(2 - specNo);
 }
 
 
@@ -1903,7 +1910,7 @@ void PlayerbotFactory::InitImmersive()
     bot->UpdateAllStats();
 }
 
-#ifdef MANGOSBOT_ONE
+#ifndef MANGOSBOT_ZERO
 void PlayerbotFactory::InitArenaTeam()
 {
    uint8 slot = ArenaTeam::GetSlotByType(ARENA_TYPE_2v2);
