@@ -37,11 +37,7 @@ bool AttackMyTargetAction::Execute(Event event)
 bool AttackAction::Attack(Unit* target)
 {
     MotionMaster &mm = *bot->GetMotionMaster();
-#ifdef MANGOSBOT_ONE
-	if (mm.GetCurrentMovementGeneratorType() == FLIGHT_MOTION_TYPE || bot->IsFlying())
-#else
-	if (bot->IsFlying())
-#endif
+	if (mm.GetCurrentMovementGeneratorType() == TAXI_MOTION_TYPE || bot->IsFlying())
     {
         if (verbose) ai->TellError("I cannot attack in flight");
         return false;

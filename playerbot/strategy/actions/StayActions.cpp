@@ -14,12 +14,12 @@ bool StayActionBase::Stay()
     if (!urand(0, 5000)) ai->PlaySound(TEXTEMOTE_YAWN);
 
     MotionMaster &mm = *bot->GetMotionMaster();
-#ifdef MANGOSBOT_ONE
-    if (mm.GetCurrentMovementGeneratorType() == FLIGHT_MOTION_TYPE || bot->IsFlying())
-#else
-	if (bot->IsFlying())
-#endif
-        return false;
+
+	if (mm.GetCurrentMovementGeneratorType() == TAXI_MOTION_TYPE || bot->IsFlying())
+	{
+		if (verbose) ai->TellError("I can not stay, I'm flying!");
+		return false;
+	} 
 
     uint32 sitDelay = sPlayerbotAIConfig.sitDelay / 1000;
     time_t stayTime = AI_VALUE(time_t, "stay time");

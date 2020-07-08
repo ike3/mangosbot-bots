@@ -367,7 +367,11 @@ namespace ai
 
                     for (int i = 0 ; i < 3; i++)
                     {
+#ifdef MANGOSBOT_ZERO
                         if (spellInfo->Effect[i] == SPELL_EFFECT_SUMMON_CRITTER)
+#else
+						if (spellInfo->Effect[i] == SPELL_EFFECT_97)
+#endif
                             return true;
                     }
                 }
