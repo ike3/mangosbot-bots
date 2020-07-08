@@ -130,7 +130,7 @@ bool UseItemAction::UseItem(Item* item, ObjectGuid goGuid, Item* itemTarget)
 
    if (itemTarget)
    {
-#ifdef MANGOSBOT_ONE
+#ifndef MANGOSBOT_ZERO
       if (item->GetProto()->Class == ITEM_CLASS_GEM)
       {
          bool fit = SocketItem(itemTarget, item) || SocketItem(itemTarget, item, true);
