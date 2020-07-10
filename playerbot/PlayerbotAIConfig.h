@@ -33,7 +33,6 @@ public:
 
     uint32 openGoSpell;
     bool randomBotAutologin;
-    bool randomBotImmersive;
     bool botAutologin;
     std::string randomBotMapsAsString;
     std::vector<uint32> randomBotMaps;
