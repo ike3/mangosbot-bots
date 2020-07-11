@@ -219,9 +219,11 @@ void PlayerbotFactory::Randomize(bool incremental)
     InitPotions();
     if (pmo) pmo->finish();
 
-    pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_EqSets");
+#ifdef MANGOSBOT_TWO
+	pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_EqSets");
     sLog.outDetail("Initializing second equipment set...");
     InitSecondEquipmentSet();
+#endif
 	if (bot->getLevel() >= sPlayerbotAIConfig.minEnchantingBotLevel)
 	{
 		ApplyEnchantTemplate();
