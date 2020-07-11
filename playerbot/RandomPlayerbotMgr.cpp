@@ -667,7 +667,7 @@ void RandomPlayerbotMgr::Refresh(Player* bot)
     bot->GetPlayerbotAI()->Reset();
 
     bot->DurabilityRepairAll(false, 1.0f
-#ifdef MANGOSBOT_ONE
+#ifndef MANGOSBOT_ZERO
         , false
 #endif
     );

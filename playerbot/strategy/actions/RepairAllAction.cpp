@@ -26,7 +26,7 @@ bool RepairAllAction::Execute(Event event)
         sServerFacade.SetFacingTo(bot, unit);
         float discountMod = bot->GetReputationPriceDiscount(unit);
         uint32 totalCost = bot->DurabilityRepairAll(true, discountMod
-#ifdef MANGOSBOT_ONE
+#ifndef MANGOSBOT_ZERO
             , false
 #endif
         );

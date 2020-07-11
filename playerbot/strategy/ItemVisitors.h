@@ -370,7 +370,11 @@ namespace ai
 #ifdef MANGOSBOT_ZERO
                         if (spellInfo->Effect[i] == SPELL_EFFECT_SUMMON_CRITTER)
 #else
+#ifdef MANGOSBOT_ONE
 						if (spellInfo->Effect[i] == SPELL_EFFECT_97)
+#else
+						if (spellInfo->Effect[i] == SPELL_EFFECT_SUMMON_PET)
+#endif
 #endif
                             return true;
                     }

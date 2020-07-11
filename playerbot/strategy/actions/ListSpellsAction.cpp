@@ -16,8 +16,7 @@ bool CompareSpells(pair<uint32, string>& s1, pair<uint32, string>& s2)
 #ifdef MANGOSBOT_ZERO
     int p1 = si1->School * 20000;
     int p2 = si2->School * 20000;
-#endif
-#ifdef MANGOSBOT_ONE
+#else
     int p1 = si1->SchoolMask * 20000;
     int p2 = si2->SchoolMask * 20000;
 #endif
