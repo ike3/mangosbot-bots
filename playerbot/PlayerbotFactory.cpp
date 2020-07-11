@@ -22,9 +22,6 @@
         #include "ArenaTeam.h"
     #endif
 #endif
-#ifdef ENABLE_IMMERSIVE
-#include "immersive.h"
-#endif
 
 using namespace ai;
 using namespace std;
@@ -51,19 +48,21 @@ list<uint32> PlayerbotFactory::classQuestIds;
 
 void PlayerbotFactory::Init()
 {
-    ObjectMgr::QuestMap const& questTemplates = sObjectMgr.GetQuestTemplates();
-    for (ObjectMgr::QuestMap::const_iterator i = questTemplates.begin(); i != questTemplates.end(); ++i)
-    {
-        uint32 questId = i->first;
-        Quest const *quest = i->second;
+	if (sPlayerbotAIConfig.randomBotPreQuests) {
+		ObjectMgr::QuestMap const& questTemplates = sObjectMgr.GetQuestTemplates();
+		for (ObjectMgr::QuestMap::const_iterator i = questTemplates.begin(); i != questTemplates.end(); ++i)
+		{
+			uint32 questId = i->first;
+			Quest const *quest = i->second;
 
-        if (!quest->GetRequiredClasses() || quest->IsRepeatable() || quest->GetMinLevel() < 10)
-            continue;
+			if (!quest->GetRequiredClasses() || quest->IsRepeatable() || quest->GetMinLevel() < 10)
+				continue;
 
-        AddPrevQuests(questId, classQuestIds);
-        classQuestIds.remove(questId);
-        classQuestIds.push_back(questId);
-    }
+			AddPrevQuests(questId, classQuestIds);
+			classQuestIds.remove(questId);
+			classQuestIds.push_back(questId);
+		}
+	}
 }
 
 void PlayerbotFactory::Prepare()
@@ -75,7 +74,17 @@ void PlayerbotFactory::Prepare()
         else if (level < 40)
             itemQuality = urand(ITEM_QUALITY_UNCOMMON, ITEM_QUALITY_RARE);
         else if (level < 60)
+#ifdef MANGOSBOT_ZERO
             itemQuality = urand(ITEM_QUALITY_RARE, ITEM_QUALITY_EPIC);
+		else if (level < 70)
+			itemQuality = ITEM_QUALITY_EPIC;
+#else
+			itemQuality = urand(ITEM_QUALITY_UNCOMMON, ITEM_QUALITY_EPIC);
+		else if (level < 70)
+			itemQuality = urand(ITEM_QUALITY_RARE, ITEM_QUALITY_EPIC);
+#endif
+		else if (level < 80)
+			itemQuality = urand(ITEM_QUALITY_RARE, ITEM_QUALITY_EPIC);
         else
             itemQuality = ITEM_QUALITY_EPIC;
     }
@@ -122,15 +131,17 @@ void PlayerbotFactory::Randomize(bool incremental)
     bot->SaveToDB();
     if (pmo) pmo->finish();
 
-    pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Immersive");
-    sLog.outDetail("Initializing immersive...");
-    InitImmersive();
-    if (pmo) pmo->finish();
+    //pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Immersive");
+    //sLog.outDetail("Initializing immersive...");
+    //InitImmersive();
+    //if (pmo) pmo->finish();
 
-    sLog.outDetail("Initializing quests...");
-    pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Quests");
-    InitQuests();
-    // quest rewards boost bot level, so reduce back
+	if (sPlayerbotAIConfig.randomBotPreQuests) {
+		sLog.outDetail("Initializing quests...");
+		pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Quests");
+		InitQuests();
+		// quest rewards boost bot level, so reduce back
+	}
 	if (sPlayerbotAIConfig.disableRandomLevels)
 	{
 		if (bot->getLevel() < sPlayerbotAIConfig.randombotStartingLevel)
@@ -226,9 +237,9 @@ void PlayerbotFactory::Randomize(bool incremental)
     pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Guilds & ArenaTeams");
     sLog.outDetail("Initializing guilds & ArenaTeams");
     InitGuild();
-//#ifdef MANGOSBOT_ONE
-//    InitArenaTeam();
-//#endif
+#ifndef MANGOSBOT_ZERO
+    InitArenaTeam();
+#endif
     if (pmo) pmo->finish();
 
     pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Pet");
@@ -238,7 +249,7 @@ void PlayerbotFactory::Randomize(bool incremental)
 
     pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Save");
     sLog.outDetail("Saving to DB...");
-    bot->SetMoney(1000 * sqrt(urand(1, level * 5)));
+    bot->SetMoney(10000 * sqrt(urand(1, level * 5)));
     bot->SaveToDB();
     sLog.outDetail("Done.");
     if (pmo) pmo->finish();
@@ -528,10 +539,10 @@ void PlayerbotFactory::InitSpells()
 
 void PlayerbotFactory::InitTalentsTree(bool incremental)
 {
+	uint32 specNo;
 	if (incremental == true)
 	{
-		uint32 specNo = sRandomPlayerbotMgr.GetValue(bot, "specNo") -1;
-		InitTalents(specNo);
+		specNo = sRandomPlayerbotMgr.GetValue(bot, "specNo") -1;
 	}
     else
     {
@@ -540,18 +551,15 @@ void PlayerbotFactory::InitTalentsTree(bool incremental)
         uint32 p1 = sPlayerbotAIConfig.specProbability[cls][0];
         uint32 p2 = p1 + sPlayerbotAIConfig.specProbability[cls][1];
 
-		//uint32 validIn = urand(sPlayerbotAIConfig.minRandomBotsPriceChangeInterval, sPlayerbotAIConfig.maxRandomBotsPriceChangeInterval);
-		//SetEventValue(id, "buymultiplier", value, validIn);
-
-        uint32 specNo = (point < p1 ? 0 : (point < p2 ? 1 : 2));
+        specNo = (point < p1 ? 0 : (point < p2 ? 1 : 2));
         sRandomPlayerbotMgr.SetValue(bot, "specNo", specNo + 1);
-		InitTalents(specNo);
     }
 
-    //InitTalents(specNo);
+    InitTalents(specNo);
 
-    //if (bot->GetFreeTalentPoints())
-    //    InitTalents(2 - specNo);
+	if (bot->GetFreeTalentPoints()) {
+		InitTalents(2 - specNo);
+	} 
 }
 
 
@@ -870,8 +878,8 @@ bool PlayerbotFactory::CanEquipItem(ItemPrototype const* proto, uint32 desiredQu
         delta = urand(3, 7);
     else if (level < 70)
         delta = urand(2, 5);
-   // else if (level < 80)
-     //   delta = urand(2, 4);
+    else if (level < 80)
+        delta = urand(2, 4);
 
     if (desiredQuality > ITEM_QUALITY_NORMAL &&
             (requiredLevel > level || requiredLevel < level - delta))
@@ -1289,13 +1297,19 @@ void PlayerbotFactory::InitSkills()
     SetRandomSkill(SKILL_POLEARMS);
     SetRandomSkill(SKILL_FIST_WEAPONS);
 
-    if (bot->getLevel() >= 70)
+#ifdef MANGOSBOT_ZERO
+	uint32 penalty = 20;
+#else
+	uint32 penalty = 0;
+#endif
+
+	if (bot->getLevel() >= 70)
         bot->SetSkill(SKILL_RIDING, 300, 300);
     else if (bot->getLevel() >= 60)
         bot->SetSkill(SKILL_RIDING, 225, 225);
-    else if (bot->getLevel() >= 40)
+    else if (bot->getLevel() >= 40 + penalty)
         bot->SetSkill(SKILL_RIDING, 150, 150);
-    else if (bot->getLevel() >= 20)
+    else if (bot->getLevel() >= 20 + penalty)
         bot->SetSkill(SKILL_RIDING, 75, 75);
     else
         bot->SetSkill(SKILL_RIDING, 0, 0);
