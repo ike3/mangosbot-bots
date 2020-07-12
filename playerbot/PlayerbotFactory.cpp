@@ -42,6 +42,10 @@ uint32 PlayerbotFactory::tradeSkills[] =
     SKILL_COOKING,
     SKILL_FIRST_AID,
     SKILL_FISHING
+#ifndef MANGOSBOT_ZERO
+	,
+	SKILL_JEWELCRAFTING
+#endif
 };
 
 list<uint32> PlayerbotFactory::classQuestIds;
@@ -1163,10 +1167,10 @@ void PlayerbotFactory::EnchantItem(Item* item)
 
             if (!CheckItemStats(sp, ap, tank))
                 continue;
-/*#ifdef MANGOSBOT_ONE
+#ifdef MANGOSBOT_ONE
             if (enchant->EnchantmentCondition && !bot->EnchantmentFitsRequirements(enchant->EnchantmentCondition, -1))
                continue;
-#endif*/
+#endif
             if (!item->IsFitToSpellRequirements(entry))
                 continue;
 
@@ -1250,8 +1254,13 @@ void PlayerbotFactory::InitTradeSkills()
             secondSkill = SKILL_SKINNING;
             break;
         case 3:
+#ifdef MANGOSBOT_ZERO
             firstSkill = SKILL_HERBALISM;
             secondSkill = SKILL_SKINNING;
+#else
+			firstSkill = SKILL_JEWELCRAFTING;
+			secondSkill = SKILL_MINING;
+#endif
             break;
         default:
             firstSkill = firstSkills[urand(0, firstSkills.size() - 1)];
@@ -1331,7 +1340,13 @@ void PlayerbotFactory::InitSkills()
 
 void PlayerbotFactory::SetRandomSkill(uint16 id)
 {
-    uint32 maxValue = level * 5;
+	uint32 maxValue = level * 5;
+	if (level > 60) {
+		maxValue = (level + 5) * 5;
+	}
+	if (level > 70) {
+		maxValue = (level + 10) * 5;
+	}
     uint32 value = urand(maxValue - level, maxValue);
     uint32 curValue = bot->GetSkillValue(id);
     if (!bot->HasSkill(id) || value > curValue)

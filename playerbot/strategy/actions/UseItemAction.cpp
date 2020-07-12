@@ -88,14 +88,13 @@ bool UseItemAction::UseItem(Item* item, ObjectGuid goGuid, Item* itemTarget)
    uint8 unk_flags = 0;
 #ifdef MANGOSBOT_ZERO
    uint16 targetFlag = TARGET_FLAG_SELF;
-#endif
-#ifdef MANGOSBOT_ONE
+#else
    uint32 targetFlag = TARGET_FLAG_SELF;
 #endif
 
    WorldPacket packet(CMSG_USE_ITEM);
    packet << bagIndex << slot << spell_index;
-#ifdef MANGOSBOT_ONE
+#ifndef MANGOSBOT_ZERO
    packet << cast_count << item_guid;
 #endif
 
@@ -146,7 +145,7 @@ bool UseItemAction::UseItem(Item* item, ObjectGuid goGuid, Item* itemTarget)
       packet.appendPackGUID(itemTarget->GetObjectGuid());
       out << " on " << chat->formatItem(itemTarget->GetProto());
       targetSelected = true;
-#ifdef MANGOSBOT_ONE
+#ifndef MANGOSBOT_ZERO
       }
 #endif
    }
@@ -267,7 +266,7 @@ bool UseItemAction::UseItem(Item* item, ObjectGuid goGuid, Item* itemTarget)
    return true;
 }
 
-#ifdef MANGOSBOT_ONE
+#ifndef MANGOSBOT_ZERO
 bool UseItemAction::SocketItem(Item* item, Item* gem, bool replace)
 {
    WorldPacket* const packet = new WorldPacket(CMSG_SOCKET_GEMS);

@@ -13,6 +13,18 @@ DELETE FROM `ai_playerbot_rpg_races`;
 -- say
 
 INSERT INTO `ai_playerbot_rpg_races` VALUES
+-- Draenai Azumeryst Isle
+(NULL, 16553, 11),
+-- Draenai Bloodmyst Isle
+(NULL, 17553, 11),
+-- Draenai Exodar
+(NULL, 16739, 11),
+-- Blood Elves Eversong Woods
+(NULL, 15397, 10),
+-- Blood Elves Ghostlands
+(NULL, 16542, 10),
+-- Blood Elves Silvermoon
+(NULL, 16618, 10),
 -- Milli Featherwhistle, Gnome
 (NULL, 7955, 3),
 (NULL, 7955, 7),
@@ -24,6 +36,8 @@ INSERT INTO `ai_playerbot_rpg_races` VALUES
 (NULL, 5814, 2),
 (NULL, 5814, 6),
 (NULL, 5814, 8),
+(NULL, 5814, 5),
+(NULL, 5814, 10),
 -- Innkeeper Firebrew, Ironforge
 (NULL, 5111, 3),
 (NULL, 5111, 7),
@@ -37,6 +51,7 @@ INSERT INTO `ai_playerbot_rpg_races` VALUES
 (NULL, 9356, 5),
 (NULL, 9356, 6),
 (NULL, 9356, 8),
+(NULL, 9356, 10),
 -- Innkeeper Grosk, Durotar
 (NULL, 6928, 2),
 (NULL, 6928, 8),
@@ -58,6 +73,7 @@ INSERT INTO `ai_playerbot_rpg_races` VALUES
 (NULL, 3934, 2),
 (NULL, 3934, 6),
 (NULL, 3934, 8),
+(NULL, 3934, 10),
 -- Innkeeper Wiley, Ratchet
 (NULL, 6791, 2),
 (NULL, 6791, 8),
@@ -67,6 +83,7 @@ INSERT INTO `ai_playerbot_rpg_races` VALUES
 (NULL, 2352, 1),
 (NULL, 2352, 3),
 (NULL, 2352, 7),
+(NULL, 2352, 11),
 -- Innkeeper Bates, Silverpine
 (NULL, 6739, 5),
 -- Innkeeper Abeqwa, Thousand Needles
@@ -83,6 +100,7 @@ INSERT INTO `ai_playerbot_rpg_races` VALUES
 (NULL, 9087, 6),
 -- Innkeeper Lyshaerya, Desolase
 (NULL, 11103, 4),
+(NULL, 11103, 11),
 -- Innkeeper Sikewa, Desolace
 (NULL, 11106, 2),
 (NULL, 11106, 6),
@@ -99,18 +117,22 @@ INSERT INTO `ai_playerbot_rpg_races` VALUES
 (NULL, 6272, 1),	
 (NULL, 6272, 3),	
 (NULL, 6272, 7),	
+(NULL, 6272, 11),
 -- Innkeeper Karakul, Swamp of Sorrows
 (NULL, 6930, 2),	
 (NULL, 6930, 8),	
 -- Innkeeper Kimlya, Astranaar
 (NULL, 6738, 4),
+(NULL, 6738, 11),
 -- Innkeeper Kaylisk, Splitertree
 (NULL, 12196, 2),
 (NULL, 12196, 8),
 -- Innkeeper Shaussiy, Darkshore
 (NULL, 6737, 4),
+(NULL, 6737, 11),
 -- Innkeeper Norman, Undercity
 (NULL, 6741, 5),
+(NULL, 6741, 10),
 -- Innkeeper Vizzie, Everlook, 11118	
 -- Calandrath, Silithus, 15174
 -- Alchemist Arbington, West Plaguelands, Human
@@ -118,6 +140,7 @@ INSERT INTO `ai_playerbot_rpg_races` VALUES
 (NULL, 11056, 3),
 (NULL, 11056, 4),
 (NULL, 11056, 7),
+(NULL, 11056, 11),
 -- Innkeeper Saelienne, Darnassus
 (NULL, 6735, 4),
 -- Innkeeper Keldamyr, Dolanaar
@@ -132,7 +155,8 @@ INSERT INTO `ai_playerbot_rpg_races` VALUES
 -- Gregan Brewspewer, Feralas, Dwarf
 (NULL, 7775, 3),	
 -- Augustus the Touched, East Plaguelands, Undead
-(NULL, 12384, 5),	
+(NULL, 12384, 5),
+(NULL, 12384, 10),	
 -- Jessica Chambers, East Plaguelands, 16256
 -- Innkeeper Heather, Westfall
 (NULL, 8931, 1),	
