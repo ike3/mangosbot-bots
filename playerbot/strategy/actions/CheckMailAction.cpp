@@ -53,10 +53,13 @@ void CheckMailAction::ProcessMail(Mail* mail, Player* owner)
 {
     if (mail->items.empty())
     {
+#ifndef MANGOSBOT_TWO
         if (mail->itemTextId)
         {
             sGuildTaskMgr.CheckTaskTransfer(sObjectMgr.GetItemText(mail->itemTextId), owner, bot);
         }
+#endif
+		//TODO Doesn't compile it wotlk
         return;
     }
 

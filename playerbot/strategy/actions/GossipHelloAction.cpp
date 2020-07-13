@@ -121,8 +121,7 @@ bool GossipHelloAction::ProcessGossip(int menuToSelect)
     p << GetMaster()->GetSelectionGuid();
 #ifdef MANGOSBOT_ZERO
     p << menuToSelect;
-#endif
-#ifdef MANGOSBOT_ONE
+#else
     p << menu.GetMenuId() << menuToSelect;
 #endif
     p << code;

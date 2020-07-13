@@ -266,7 +266,7 @@ bool StoreLootAction::Execute(Event event)
         p >> lootslot_type;     // 0 = can get, 1 = look only, 2 = master get
 
 		if (lootslot_type != LOOT_SLOT_NORMAL
-#ifdef MANGOSBOT_ONE
+#ifndef MANGOSBOT_ZERO
 		        && lootslot_type != LOOT_SLOT_OWNER
 #endif
             )

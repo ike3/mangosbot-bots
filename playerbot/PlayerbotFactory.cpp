@@ -199,9 +199,13 @@ void PlayerbotFactory::Randomize(bool incremental)
     pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Equip");
     sLog.outDetail("Initializing equipmemt...");
     InitEquipment(incremental);
-    sLog.outDetail("Initializing enchant templates...");
-    LoadEnchantContainer();
-    if (pmo) pmo->finish();
+	
+	if (bot->getLevel() >= sPlayerbotAIConfig.minEnchantingBotLevel)
+	{
+		sLog.outDetail("Initializing enchant templates...");
+		LoadEnchantContainer();
+		if (pmo) pmo->finish();
+	}
 
     pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Bags");
     sLog.outDetail("Initializing bags...");
@@ -1167,7 +1171,7 @@ void PlayerbotFactory::EnchantItem(Item* item)
 
             if (!CheckItemStats(sp, ap, tank))
                 continue;
-#ifdef MANGOSBOT_ONE
+#ifndef MANGOSBOT_ZERO
             if (enchant->EnchantmentCondition && !bot->EnchantmentFitsRequirements(enchant->EnchantmentCondition, -1))
                continue;
 #endif

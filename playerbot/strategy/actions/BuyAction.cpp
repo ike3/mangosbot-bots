@@ -39,7 +39,7 @@ bool BuyAction::Execute(Event event)
 
             VendorItemData const* tItems = pCreature->GetVendorItems();
             result |= BuyItem(pCreature->GetVendorItems(), vendorguid, proto);
-#ifdef MANGOSBOT_ONE
+#ifndef MANGOSBOT_ZERO
             result |= BuyItem(pCreature->GetVendorTemplateItems(), vendorguid, proto);
 #endif
 

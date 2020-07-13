@@ -95,7 +95,7 @@ public:
                 WorldPacket packet;
                 packet << mailbox;
                 packet << mail->messageID;
-#ifdef MANGOSBOT_ONE
+#ifndef MANGOSBOT_ZERO
                 packet << *i;
 #endif
                 Item* item = bot->GetMItem(*i);
@@ -247,7 +247,7 @@ void MailProcessor::RemoveMail(Player* bot, uint32 id, ObjectGuid mailbox)
     WorldPacket packet;
     packet << mailbox;
     packet << id;
-#ifdef MANGOSBOT_ONE
+#ifndef MANGOSBOT_ZERO
     packet << (uint32)0; //mailTemplateId
 #endif
     bot->GetSession()->HandleMailDelete(packet);
