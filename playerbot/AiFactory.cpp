@@ -135,6 +135,13 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
                 engine->addStrategies("frost", "frost aoe", "threat", NULL);
 
             engine->addStrategies("dps assist", "flee", "cure", NULL);
+			if (player->getLevel() < 10)
+				engine->addStrategies("fire", "fire aoe", NULL); // low lvl mages have only fire spells
+			if (player->getLevel() >= 10 && tab != 1) { // remove fire from 10+lvl non-fire mages
+				engine->removeStrategy("fire");
+				engine->removeStrategy("fire aoe");
+				engine->addStrategy((tab == 0 ? "arcane" : "frost", "frost aoe"));
+			}
             break;
         case CLASS_WARRIOR:
             if (tab == 2)
@@ -155,6 +162,8 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
         case CLASS_PALADIN:
             if (tab == 1)
                 engine->addStrategies("tank", "tank aoe", "bthreat", "cure", NULL);
+			else if(tab == 0)
+				engine->addStrategies("heal", "bmana", "cure", "flee", NULL);
             else
                 engine->addStrategies("dps", "bdps", "threat", "dps assist", "cure", NULL);
             break;
@@ -191,15 +200,28 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
             break;
     }
 
-    if (sRandomPlayerbotMgr.IsRandomBot(player))
-    {
-        if (!player->GetGroup())
-        {
-            engine->ChangeStrategy(sPlayerbotAIConfig.randomBotCombatStrategies);
-            if (player->getClass() == CLASS_DRUID && player->getLevel() < 20)
+	if (sRandomPlayerbotMgr.IsRandomBot(player))
+	{
+		if (!player->GetGroup())
+		{
+			engine->ChangeStrategy(sPlayerbotAIConfig.randomBotCombatStrategies);
+			if (player->getClass() == CLASS_DRUID && player->getLevel() < 10 || tab == 1 || tab == 2)
             {
-                engine->addStrategies("bear", NULL);
+                engine->addStrategies("bear", "caster", "caster aoe", NULL);
             }
+			if (player->getClass() == CLASS_PRIEST && player->getLevel() < 10 || tab == 0 || tab == 1)
+			{
+				engine->addStrategies("holy", NULL);
+			}
+			if (player->getClass() == CLASS_PRIEST && player->getLevel() >= 10 || tab == 0 || tab == 1)
+			{
+				engine->addStrategies((urand(0, 1) == 1 ? "holy" : "shadow"), NULL);
+			}
+			if (player->getClass() == CLASS_SHAMAN && tab == 2)
+			{
+				//engine->addStrategies((urand(0, 1) == 1 ? "caster", "caster aoe", "threat", "flee" : "dps", "melee aoe", "bdps", "threat"), NULL);
+				engine->addStrategies("caster", "caster aoe", NULL);
+			}
         }
     }
     else

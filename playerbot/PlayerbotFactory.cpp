@@ -135,27 +135,27 @@ void PlayerbotFactory::Randomize(bool incremental)
     bot->SaveToDB();
     if (pmo) pmo->finish();
 
-    //pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Immersive");
-    //sLog.outDetail("Initializing immersive...");
-    //InitImmersive();
-    //if (pmo) pmo->finish();
+    pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Immersive");
+    sLog.outDetail("Initializing immersive...");
+    InitImmersive();
+    if (pmo) pmo->finish();
 
 	if (sPlayerbotAIConfig.randomBotPreQuests) {
 		sLog.outDetail("Initializing quests...");
 		pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Quests");
 		InitQuests();
 		// quest rewards boost bot level, so reduce back
-	}
-	if (sPlayerbotAIConfig.disableRandomLevels)
-	{
-		if (bot->getLevel() < sPlayerbotAIConfig.randombotStartingLevel)
+		if (sPlayerbotAIConfig.disableRandomLevels)
 		{
-			bot->SetLevel(sPlayerbotAIConfig.randombotStartingLevel);
+			if (bot->getLevel() < sPlayerbotAIConfig.randombotStartingLevel)
+			{
+				bot->SetLevel(sPlayerbotAIConfig.randombotStartingLevel);
+			}
 		}
-	}
-	if (!sPlayerbotAIConfig.disableRandomLevels)
-	{
-		bot->SetLevel(level);
+		if (!sPlayerbotAIConfig.disableRandomLevels)
+		{
+			bot->SetLevel(level);
+		}
 	}
     ClearInventory();
     bot->SetUInt32Value(PLAYER_XP, 0);
@@ -200,7 +200,7 @@ void PlayerbotFactory::Randomize(bool incremental)
     sLog.outDetail("Initializing equipmemt...");
     InitEquipment(incremental);
 	
-	if (bot->getLevel() >= sPlayerbotAIConfig.minEnchantingBotLevel)
+	if (level >= sPlayerbotAIConfig.minEnchantingBotLevel)
 	{
 		sLog.outDetail("Initializing enchant templates...");
 		LoadEnchantContainer();
@@ -227,12 +227,10 @@ void PlayerbotFactory::Randomize(bool incremental)
     InitPotions();
     if (pmo) pmo->finish();
 
-#ifdef MANGOSBOT_TWO
 	pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_EqSets");
     sLog.outDetail("Initializing second equipment set...");
     InitSecondEquipmentSet();
-#endif
-	if (bot->getLevel() >= sPlayerbotAIConfig.minEnchantingBotLevel)
+	if (level >= sPlayerbotAIConfig.minEnchantingBotLevel)
 	{
 		ApplyEnchantTemplate();
 	}
@@ -1845,7 +1843,7 @@ void PlayerbotFactory::InitGuild()
         return;
     }
 
-    if (guild->GetMemberSize() < 10)
+    if (guild->GetMemberSize() < 20)
         guild->AddMember(bot->GetObjectGuid(), urand(GR_OFFICER, GR_INITIATE));
 }
 
@@ -1932,15 +1930,6 @@ void PlayerbotFactory::InitImmersive()
             sRandomPlayerbotMgr.SetValue(owner, name.str(), percentMap[type]);
         }
     }
-
-#ifdef ENABLE_IMMERSIVE
-    uint32 total = sImmersive.GetTotalStats(bot);
-    for (int i = STAT_STRENGTH; i < MAX_STATS; ++i)
-    {
-        Stats type = (Stats)i;
-        sImmersive.SetStatsValue(owner, type, total * percentMap[type] / 100);
-    }
-#endif
     bot->InitStatsForLevel(true);
     bot->UpdateAllStats();
 }

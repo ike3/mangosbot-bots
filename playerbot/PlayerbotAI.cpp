@@ -166,7 +166,7 @@ void PlayerbotAI::UpdateAIInternal(uint32 elapsed)
     masterOutgoingPacketHandlers.Handle(helper);
 
 	DoNextAction();
-	if (pmo) { pmo->finish(); }
+	if (pmo) pmo->finish();
 }
 
 void PlayerbotAI::HandleTeleportAck()

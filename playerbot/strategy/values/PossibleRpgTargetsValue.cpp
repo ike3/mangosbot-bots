@@ -19,7 +19,7 @@ PossibleRpgTargetsValue::PossibleRpgTargetsValue(PlayerbotAI* ai, float range) :
     if (allowedNpcFlags.empty())
     {
         allowedNpcFlags.push_back(UNIT_NPC_FLAG_INNKEEPER);
-        //allowedNpcFlags.push_back(UNIT_NPC_FLAG_GOSSIP); Bots come to Spirit Healers
+        allowedNpcFlags.push_back(UNIT_NPC_FLAG_GOSSIP);
         allowedNpcFlags.push_back(UNIT_NPC_FLAG_QUESTGIVER);
         allowedNpcFlags.push_back(UNIT_NPC_FLAG_FLIGHTMASTER);
         allowedNpcFlags.push_back(UNIT_NPC_FLAG_BANKER);
@@ -58,9 +58,12 @@ bool PossibleRpgTargetsValue::AcceptUnit(Unit* unit)
     if (sServerFacade.GetDistance2d(bot, unit) <= sPlayerbotAIConfig.tooCloseDistance)
         return false;
 
+	if (unit->HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_SPIRITHEALER))
+		return false;
+
     for (vector<uint32>::iterator i = allowedNpcFlags.begin(); i != allowedNpcFlags.end(); ++i)
     {
-        if (unit->HasFlag(UNIT_NPC_FLAGS, *i)) return true;
+		if (unit->HasFlag(UNIT_NPC_FLAGS, *i)) return true;
     }
 
     return false;

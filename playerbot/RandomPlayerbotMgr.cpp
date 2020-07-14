@@ -154,11 +154,11 @@ uint32 RandomPlayerbotMgr::AddRandomBots()
             uint8 race = fields[1].GetUInt8();
 			// Although this code works it cuts the Maximum Bots setting in half. 
 			// And, also doesn't see to be any reason to do it.
-            //bool alliance = guids.size() % 2 == 0;
-            //if (bots.find(guid) == bots.end() &&
-            //        ((alliance && IsAlliance(race)) || ((!alliance && !IsAlliance(race))
-            //)))
-            //{
+            bool alliance = guids.size() % 2 == 0;
+            if (bots.find(guid) == bots.end() &&
+                    ((alliance && IsAlliance(race)) || ((!alliance && !IsAlliance(race))
+            )))
+            {
                 guids.push_back(guid);
                 uint32 bot = guid;
                 SetEventValue(bot, "add", 1, urand(sPlayerbotAIConfig.minRandomBotInWorldTime, sPlayerbotAIConfig.maxRandomBotInWorldTime));
@@ -166,17 +166,18 @@ uint32 RandomPlayerbotMgr::AddRandomBots()
                 ScheduleRandomize(bot, randomTime);
                 bots.insert(bot);
                 currentBots.push_back(bot);
-                sLog.outString( "New random bot %d added", bot);
+                sLog.outBasic( "New random bot %d added", bot);
                 if (bots.size() >= maxAllowedBotCount)
                 {
                     delete result;
                     return guids.size();
                 }
-         //   }
+            }
         } while (result->NextRow());
         delete result;
     }
 
+	sLog.outString("%d random bots added", guids.size());
     return guids.size();
 }
 
@@ -258,10 +259,9 @@ bool RandomPlayerbotMgr::ProcessBot(uint32 bot)
 
 bool RandomPlayerbotMgr::ProcessBot(Player* player)
 {
-	if (urand(0, 100) > 25)
-		return true;
+	//if (urand(0, 100) > 50) // move optimisation to the next step
+	//	return true;
 
-    player->GetPlayerbotAI()->GetAiObjectContext()->GetValue<bool>("random bot update")->Set(false);
     uint32 bot = player->GetGUIDLow();
     if (sServerFacade.UnitIsDead(player))
     {
@@ -275,6 +275,11 @@ bool RandomPlayerbotMgr::ProcessBot(Player* player)
         SetEventValue(bot, "dead", 1, randomTime);
         return false;
     }
+
+	if (urand(0, 100) > 20) // move optimisation to the next step
+		return true;
+
+	player->GetPlayerbotAI()->GetAiObjectContext()->GetValue<bool>("random bot update")->Set(false);
 
     if (player->GetGuildId())
     {
@@ -403,7 +408,7 @@ void RandomPlayerbotMgr::PrepareTeleportCache()
     QueryResult* results = PlayerbotDatabase.PQuery("select map_id, x, y, z, level from ai_playerbot_tele_cache");
     if (results)
     {
-        sLog.outBasic("Loading random teleport caches for %d levels...", maxLevel);
+        sLog.outString("Loading random teleport caches for %d levels...", maxLevel);
         do
         {
             Field* fields = results->Fetch();
@@ -419,7 +424,7 @@ void RandomPlayerbotMgr::PrepareTeleportCache()
     }
     else
     {
-        sLog.outBasic("Preparing random teleport caches for %d levels...", maxLevel);
+        sLog.outString("Preparing random teleport caches for %d levels...", maxLevel);
         BarGoLink bar(maxLevel);
         for (uint8 level = 1; level <= maxLevel; level++)
         {
@@ -481,7 +486,7 @@ void RandomPlayerbotMgr::PrepareTeleportCache()
         delete results;
     }
 
-    sLog.outBasic("Preparing RPG teleport caches for %d factions...", sFactionTemplateStore.GetNumRows());
+    sLog.outString("Preparing RPG teleport caches for %d factions...", sFactionTemplateStore.GetNumRows());
             BarGoLink bar(rpgCacheSize);
     results = WorldDatabase.PQuery("SELECT map, position_x, position_y, position_z, "
 #ifdef MANGOS
