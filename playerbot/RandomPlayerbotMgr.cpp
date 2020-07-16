@@ -81,13 +81,11 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed)
                 urand(sPlayerbotAIConfig.randomBotCountChangeMinInterval, sPlayerbotAIConfig.randomBotCountChangeMaxInterval));
     }
 
-    /*if (!loginProgressBar)
-    {
-        sLog.outString("Logging in %d random bots in the background", maxAllowedBotCount);
-        loginProgressBar = new BarGoLink(maxAllowedBotCount);
-    }*/
-
-	sLog.outString("Logging in %d random bots in the background", maxAllowedBotCount);
+    //if (!loginProgressBar)
+    //{
+    //    sLog.outString("Logging in %d random bots in the background", maxAllowedBotCount);
+    //    loginProgressBar = new BarGoLink(maxAllowedBotCount);
+    //}
 
     // Fix possible divide by zero if maxAllowedBotCount is smaller then sPlayerbotAIConfig.randomBotsPerInterval
     uint32 notDiv = 1;
@@ -179,8 +177,6 @@ uint32 RandomPlayerbotMgr::AddRandomBots()
         } while (result->NextRow());
         delete result;
     }
-
-	sLog.outString("%d random bots added", guids.size());
     return guids.size();
 }
 
