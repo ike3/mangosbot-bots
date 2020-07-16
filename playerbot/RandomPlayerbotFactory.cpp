@@ -222,7 +222,9 @@ void RandomPlayerbotFactory::CreateRandomBots()
         PlayerbotDatabase.Execute("DELETE FROM ai_playerbot_random_bots");
         sLog.outString("Random bot accounts deleted");
     }
-
+	int totalAccCount = sPlayerbotAIConfig.randomBotAccountCount;
+	sLog.outString("Creating random bot accounts...");
+	//BarGoLink bar(totalAccCount);
     for (int accountNumber = 0; accountNumber < sPlayerbotAIConfig.randomBotAccountCount; ++accountNumber)
     {
         ostringstream out; out << sPlayerbotAIConfig.randomBotAccountPrefix << accountNumber;
@@ -242,11 +244,20 @@ void RandomPlayerbotFactory::CreateRandomBots()
         sAccountMgr.CreateAccount(accountName, password);
 
         sLog.outDebug( "Account %s created for random bots", accountName.c_str());
+		//bar.step();
     }
 
     LoginDatabase.PExecute("UPDATE account SET expansion = '%u' where username like '%s%%'", 2, sPlayerbotAIConfig.randomBotAccountPrefix.c_str());
 
     int totalRandomBotChars = 0;
+	int totalCharCount = sPlayerbotAIConfig.randomBotAccountCount
+#ifdef MANGOSBOT_TWO
+		* 10;
+#else
+		* 9;
+#endif
+	sLog.outString("Creating random bot characters...");
+	BarGoLink bar1(totalCharCount);
     for (int accountNumber = 0; accountNumber < sPlayerbotAIConfig.randomBotAccountCount; ++accountNumber)
     {
         ostringstream out; out << sPlayerbotAIConfig.randomBotAccountPrefix << accountNumber;
@@ -263,7 +274,11 @@ void RandomPlayerbotFactory::CreateRandomBots()
         sPlayerbotAIConfig.randomBotAccounts.push_back(accountId);
 
         int count = sAccountMgr.GetCharactersCount(accountId);
+#ifdef MANGOSBOT_TWO
         if (count >= 10)
+#else
+		if (count >= 9)
+#endif
         {
             totalRandomBotChars += count;
             continue;
@@ -272,8 +287,11 @@ void RandomPlayerbotFactory::CreateRandomBots()
         RandomPlayerbotFactory factory(accountId);
         for (uint8 cls = CLASS_WARRIOR; cls < MAX_CLASSES; ++cls)
         {
-            if (cls != 10 && cls != 6)
-                factory.CreateRandomBot(cls);
+			if (cls != 10 && cls != 6)
+			{
+				factory.CreateRandomBot(cls);
+				bar1.step();
+			}
         }
 
         totalRandomBotChars += sAccountMgr.GetCharactersCount(accountId);
@@ -336,12 +354,12 @@ void RandomPlayerbotFactory::CreateRandomGuilds()
     {
         string guildName = CreateRandomGuildName();
         if (guildName.empty())
-            break;
+            continue;
 
         if (availableLeaders.empty())
         {
             sLog.outError("No leaders for random guilds available");
-            break;
+			continue;
         }
 
         int index = urand(0, availableLeaders.size() - 1);
@@ -350,14 +368,14 @@ void RandomPlayerbotFactory::CreateRandomGuilds()
         if (!player)
         {
             sLog.outError("Cannot find player for leader %s", player->GetName());
-            break;
+			continue;
         }
 
         Guild* guild = new Guild();
         if (!guild->Create(player, guildName))
         {
             sLog.outError("Error creating guild %s", guildName.c_str());
-            break;
+			continue;
         }
 
         sGuildMgr.AddGuild(guild);

@@ -200,7 +200,7 @@ void PlayerbotFactory::Randomize(bool incremental)
     sLog.outDetail("Initializing equipmemt...");
     InitEquipment(incremental);
 	
-	if (level >= sPlayerbotAIConfig.minEnchantingBotLevel)
+	if (bot->getLevel() >= sPlayerbotAIConfig.minEnchantingBotLevel)
 	{
 		sLog.outDetail("Initializing enchant templates...");
 		LoadEnchantContainer();
@@ -230,7 +230,7 @@ void PlayerbotFactory::Randomize(bool incremental)
 	pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_EqSets");
     sLog.outDetail("Initializing second equipment set...");
     InitSecondEquipmentSet();
-	if (level >= sPlayerbotAIConfig.minEnchantingBotLevel)
+	if (bot->getLevel() >= sPlayerbotAIConfig.minEnchantingBotLevel)
 	{
 		ApplyEnchantTemplate();
 	}
@@ -246,14 +246,16 @@ void PlayerbotFactory::Randomize(bool incremental)
     sLog.outDetail("Initializing guilds & ArenaTeams");
     InitGuild();
 #ifndef MANGOSBOT_ZERO
-    InitArenaTeam();
+	InitArenaTeam();
 #endif
     if (pmo) pmo->finish();
 
-    pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Pet");
-    sLog.outDetail("Initializing pet...");
-    InitPet();
-    if (pmo) pmo->finish();
+	if (bot->getLevel() >= 10) {
+		pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Pet");
+		sLog.outDetail("Initializing pet...");
+		InitPet();
+		if (pmo) pmo->finish();
+	}
 
     pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Save");
     sLog.outDetail("Saving to DB...");
@@ -1169,10 +1171,10 @@ void PlayerbotFactory::EnchantItem(Item* item)
 
             if (!CheckItemStats(sp, ap, tank))
                 continue;
-#ifndef MANGOSBOT_ZERO
+/*#ifndef MANGOSBOT_ZERO
             if (enchant->EnchantmentCondition && !bot->EnchantmentFitsRequirements(enchant->EnchantmentCondition, -1))
                continue;
-#endif
+#endif*/
             if (!item->IsFitToSpellRequirements(entry))
                 continue;
 
@@ -1843,7 +1845,7 @@ void PlayerbotFactory::InitGuild()
         return;
     }
 
-    if (guild->GetMemberSize() < 20)
+    if (guild->GetMemberSize() < urand(10, 20))
         guild->AddMember(bot->GetObjectGuid(), urand(GR_OFFICER, GR_INITIATE));
 }
 
