@@ -22,6 +22,7 @@ public:
             if (enemy &&
                     ai->IsOpposing(enemy) &&
                     enemy->IsPvP() &&
+					!sPlayerbotAIConfig.IsInPvpProhibitedZone(enemy->GetAreaId()) &&
                     !enemy->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE) &&
                     !enemy->HasStealthAura() &&
                     !enemy->HasInvisibilityAura())

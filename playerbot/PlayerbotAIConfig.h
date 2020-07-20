@@ -20,6 +20,7 @@ public:
     bool Initialize();
     bool IsInRandomAccountList(uint32 id);
     bool IsInRandomQuestItemList(uint32 id);
+	bool IsInPvpProhibitedZone(uint32 id);
 
     bool enabled;
     bool allowGuildBots;
@@ -72,6 +73,7 @@ public:
 	bool RandombotsWalkingRPG;
 	bool RandombotsWalkingRPGInDoors;
     std::list<uint32> randomBotGuilds;
+	std::list<uint32> pvpProhibitedZoneIds;
     bool enableGreet;
     bool randomBotShowHelmet;
     bool randomBotShowCloak;

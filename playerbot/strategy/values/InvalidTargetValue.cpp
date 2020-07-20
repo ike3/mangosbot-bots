@@ -18,12 +18,14 @@ bool InvalidTargetValue::Calculate()
                 sServerFacade.IsCharmed(target) ||
                 sServerFacade.IsFeared(target) ||
 #ifdef CMANGOS
-				//!target->GetCombatManager().IsInEvadeMode() ||
+				target->GetCombatManager().IsInEvadeMode() ||
 #endif
                 target->hasUnitState(UNIT_STAT_ISOLATED) ||
                 sServerFacade.IsFriendlyTo(target, bot) ||
                 !bot->IsWithinDistInMap(target, sPlayerbotAIConfig.sightDistance) ||
-                !sServerFacade.IsWithinLOSInMap(bot, target);
+				!sServerFacade.IsWithinLOSInMap(bot, target) ||
+				target->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE) ||
+				sPlayerbotAIConfig.IsInPvpProhibitedZone(target->GetAreaId()) || sPlayerbotAIConfig.IsInPvpProhibitedZone(bot->GetAreaId());
     }
 
     return !target;
