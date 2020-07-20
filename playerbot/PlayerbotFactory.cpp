@@ -568,8 +568,11 @@ void PlayerbotFactory::InitTalentsTree(bool incremental)
     InitTalents(specNo);
 
 	if (bot->GetFreeTalentPoints()) {
-		InitTalents(2 - specNo);
-	} 
+		InitTalents(urand(0, 2));
+	}
+	if (bot->GetFreeTalentPoints()) {
+		InitTalents(urand(0, 2));
+	}
 }
 
 
@@ -1845,7 +1848,7 @@ void PlayerbotFactory::InitGuild()
         return;
     }
 
-    if (guild->GetMemberSize() < urand(10, 20))
+    if (guild->GetMemberSize() < urand(10, 15))
         guild->AddMember(bot->GetObjectGuid(), urand(GR_OFFICER, GR_INITIATE));
 }
 

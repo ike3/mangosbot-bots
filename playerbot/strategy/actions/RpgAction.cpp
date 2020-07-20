@@ -98,14 +98,15 @@ void RpgAction::taxi(Unit* unit)
         TaxiPathEntry const* entry = sTaxiPathStore.LookupEntry(i);
         if (entry && entry->from == curloc)
         {
-            uint8  field = uint8((i - 1) / 32);
-            if (field < TaxiMaskSize) nodes.push_back(i);
+            //uint8  field = uint8((i - 1) / 32);
+            //if (field < TaxiMaskSize) nodes.push_back(i);
+			nodes.push_back(i);
         }
     }
 
     if (nodes.empty())
     {
-        sLog.outDetail("Bot %s - No flight paths available", bot->GetName());
+        sLog.outError("Bot %s - No flight paths available", bot->GetName());
         return;
     }
 
@@ -123,16 +124,16 @@ void RpgAction::taxi(Unit* unit)
     Creature* flightMaster = bot->GetNPCIfCanInteractWith(unit->GetObjectGuid(), UNIT_NPC_FLAG_FLIGHTMASTER);
     if (!flightMaster)
     {
-        sLog.outDetail("Bot %s cannot talk to flightmaster (%zu location available)", bot->GetName(), nodes.size());
+        sLog.outError("Bot %s cannot talk to flightmaster (%zu location available)", bot->GetName(), nodes.size());
         return;
     }
-
+	ai->SetNextCheckDelay(2000);
     if (!bot->ActivateTaxiPathTo({ entry->from, entry->to }, flightMaster, 0))
     {
-        sLog.outDetail("Bot %s cannot fly (%zu location available)", bot->GetName(), nodes.size());
+        sLog.outError("Bot %s cannot fly %u (%zu location available)", bot->GetName(), path, nodes.size());
         return;
     }
-    sLog.outDetail("Bot %s is flying to %u (%zu location available)", bot->GetName(), path, nodes.size());
+    sLog.outString("Bot %s is flying to %u (%zu location available)", bot->GetName(), path, nodes.size());
     bot->SetMoney(money);
 }
 

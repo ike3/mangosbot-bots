@@ -95,6 +95,7 @@ class RandomPlayerbotMgr : public PlayerbotHolder
         int processTicks;
         map<uint8, vector<WorldLocation> > locsPerLevelCache;
         map<uint32, vector<WorldLocation> > rpgLocsCache;
+		map<uint32, map<uint32, vector<WorldLocation> > > rpgLocsCacheLevel;
         map<uint32, map<string, CachedEvent> > eventCache;
         BarGoLink* loginProgressBar;
         list<uint32> currentBots;
