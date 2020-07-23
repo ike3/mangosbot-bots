@@ -1898,9 +1898,7 @@ void PlayerbotAI::EnchantItemT(uint32 spellid, uint8 slot)
    if (!pItem)
     return;
 #ifdef MANGOS
-    #ifdef MANGOSBOT_ZERO
-       SpellEntry const* spellInfo = sSpellStore.LookupEntry(spellid);
-    #endif
+   SpellEntry const* spellInfo = sSpellStore.LookupEntry(spellid);
 #else
    SpellEntry const* spellInfo = sSpellTemplate.LookupEntry<SpellEntry>(spellid);
 #endif

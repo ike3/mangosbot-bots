@@ -261,10 +261,10 @@ bool RandomPlayerbotMgr::ProcessBot(uint32 bot)
 
 bool RandomPlayerbotMgr::ProcessBot(Player* player)
 {
-	if (urand(0, 100) > 75) // move optimisation to the next step
-	{
-		return true;
-	}
+	//if (urand(0, 100) > 75) // move optimisation to the next step
+	//{
+	//	return true;
+	//}
 	// TODO Improve bot revive rates for 1000+ bots
 
     uint32 bot = player->GetGUIDLow();
@@ -272,7 +272,35 @@ bool RandomPlayerbotMgr::ProcessBot(Player* player)
     {
         if (!GetEventValue(bot, "dead"))
         {
-            Revive(player);
+            uint32 deathcount = GetEventValue(bot, "deathcount");
+            if (!deathcount)
+            {
+                SetEventValue(bot, "deathcount", 1, sPlayerbotAIConfig.maxRandomBotInWorldTime);
+                Revive(player);
+                sLog.outString("Bot %d revived", bot);
+            }
+            else
+            {
+                if (deathcount > 4)
+                {
+                    SetEventValue(bot, "deathcount", 0, 0);
+                    Revive(player);
+                    RandomTeleportForRpg(player);
+                    uint32 randomChange = urand(240, 600)  + urand(sPlayerbotAIConfig.randomBotUpdateInterval, sPlayerbotAIConfig.randomBotUpdateInterval * 3);
+                    ScheduleChangeStrategy(bot, randomChange);
+                    SetEventValue(bot, "teleport", 1, sPlayerbotAIConfig.maxRandomBotInWorldTime);
+                    uint32 restTime = int(randomChange / 60);
+                    sLog.outString("Bot %d died %d times and is sent to camp for rest for %d minutes", bot, deathcount, restTime);
+                }
+                else
+                {
+                    SetEventValue(bot, "deathcount", deathcount + 1, sPlayerbotAIConfig.maxRandomBotInWorldTime);
+                    Revive(player);
+                    sLog.outString("Bot %d revived after %d deaths", bot, deathcount + 1);
+                }
+            }
+
+            //Revive(player);
            // return true; Hot-fix to increase bot revive chance.
 			return false;
         }
@@ -339,7 +367,7 @@ void RandomPlayerbotMgr::Revive(Player* player)
 {
     uint32 bot = player->GetGUIDLow();
 
-    sLog.outString("Bot %d revived", bot);
+    //sLog.outString("Bot %d revived", bot);
     SetEventValue(bot, "dead", 0, 0);
     SetEventValue(bot, "revive", 0, 0);
 
