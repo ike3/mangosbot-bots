@@ -134,7 +134,7 @@ bool RandomPlayerbotFactory::CreateRandomBot(uint8 cls)
     pair<uint8,uint8> hair = hairs[urand(0, hairs.size() - 1)];
 
 	bool excludeCheck = (race == RACE_TAUREN) || (gender == GENDER_FEMALE && race != RACE_NIGHTELF && race != RACE_UNDEAD);
-#ifdef MANGOSBOT_ZERO
+#ifndef MANGOSBOT_TWO
 	uint8 facialHair = excludeCheck ? 0 : facialHairTypes[urand(0, facialHairTypes.size() - 1)];
 #else
 	uint8 facialHair = 0;
@@ -142,10 +142,8 @@ bool RandomPlayerbotFactory::CreateRandomBot(uint8 cls)
 	//TODO vector crash on cmangos TWO when creating one of the first bot characters, need a fix
 
 	WorldSession* session = new WorldSession(accountId, NULL, SEC_PLAYER,
-#ifdef MANGOSBOT_ONE
-		1,
-#endif
-#ifdef MANGOSBOT_TWO
+
+#ifndef MANGOSBOT_ZERO
 		2,
 #endif
         0, LOCALE_enUS);

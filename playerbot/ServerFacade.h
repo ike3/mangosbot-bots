@@ -4,7 +4,12 @@
 #include "Common.h"
 #include "Unit.h"
 #include "Player.h"
+#ifdef CMANGOS
 #include "Entities/GameObject.h"
+#endif
+#ifdef MANGOS
+#include "Object/GameObject.h"
+#endif
 #include "PlayerbotAIBase.h"
 #include "PlayerbotAIConfig.h"
 

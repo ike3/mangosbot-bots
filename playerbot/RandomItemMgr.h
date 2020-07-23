@@ -3,7 +3,12 @@
 
 #include "Common.h"
 #include "PlayerbotAIBase.h"
+#ifdef CMANGOS
 #include "Entities/Player.h"
+#endif
+#ifdef MANGOS
+#include "Object/Player.h"
+#endif
 
 using namespace std;
 

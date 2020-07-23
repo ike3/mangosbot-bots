@@ -14,8 +14,12 @@ bool StayActionBase::Stay()
     if (!urand(0, 5000)) ai->PlaySound(TEXTEMOTE_YAWN);
 
     MotionMaster &mm = *bot->GetMotionMaster();
-
+#ifdef CMANGOS
 	if (mm.GetCurrentMovementGeneratorType() == TAXI_MOTION_TYPE || bot->IsFlying())
+#endif
+#ifdef MANGOS
+	if (mm.GetCurrentMovementGeneratorType() == FLIGHT_MOTION_TYPE || bot->IsFlying())
+#endif
 	{
 		if (verbose) ai->TellError("I can not stay, I'm flying!");
 		return false;

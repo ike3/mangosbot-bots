@@ -259,7 +259,7 @@ void PlayerbotFactory::Randomize(bool incremental)
 
     pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Save");
     sLog.outDetail("Saving to DB...");
-    bot->SetMoney(10000 * sqrt(urand(1, level * 5)));
+    bot->SetMoney(10000 * sqrt(urand(1, level * 10)));
     bot->SaveToDB();
     sLog.outDetail("Done.");
     if (pmo) pmo->finish();
@@ -460,8 +460,18 @@ void PlayerbotFactory::InitPet()
             pet->GetMap()->Add((Creature*)pet);
             pet->AIM_Initialize();
 #endif
+#ifdef MANGOS
+            pet->GetMap()->Add((Creature*)pet);
+            pet->AIM_Initialize();
+#endif
             pet->InitPetCreateSpells();
 #ifdef CMANGOS
+            pet->LearnPetPassives();
+            pet->CastPetAuras(true);
+            pet->CastOwnerTalentAuras();
+            pet->UpdateAllStats();
+#endif
+#ifdef MANGOS
             pet->LearnPetPassives();
             pet->CastPetAuras(true);
             pet->CastOwnerTalentAuras();
@@ -1145,8 +1155,12 @@ void PlayerbotFactory::EnchantItem(Item* item)
         uint32 spellLevel = entry->spellLevel;
         if (spellLevel && (spellLevel > level || spellLevel < level - 10))
             continue;
-
+#ifdef CMANGOS
         for (int j = 0; j < MAX_SPELL_EFFECTS; ++j)
+#endif
+#ifdef MANGOS
+        for (int j = 0; j < TOTAL_SPELL_EFFECTS; ++j)
+#endif
         {
             if (entry->Effect[j] != SPELL_EFFECT_ENCHANT_ITEM)
                 continue;

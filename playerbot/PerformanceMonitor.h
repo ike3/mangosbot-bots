@@ -55,7 +55,9 @@ class PerformanceMonitor
 
 	private:
         map<PerformanceMetric, map<string, PerformanceData*> > data;
+#ifdef CMANGOS
 		std::mutex lock;
+#endif
 };
 
 

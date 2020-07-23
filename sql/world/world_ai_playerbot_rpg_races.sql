@@ -140,8 +140,8 @@ INSERT INTO `ai_playerbot_rpg_races` VALUES
 (NULL, 7744, 7, 40, 50), -- gnomes
 --
 -- Loh'atu, Azshara alliance camp Q-giver 11548
-(NULL, 7744, 4, 45, 55), -- elves
-(NULL, 7744, 1, 45, 55), -- human
+(NULL, 11548, 4, 45, 55), -- elves
+(NULL, 11548, 1, 45, 55), -- human
 --
 -- Thadius Grimshade, Nethergarde Keep, Blasted Lands
 (NULL, 8022, 1, 45, 55), -- human

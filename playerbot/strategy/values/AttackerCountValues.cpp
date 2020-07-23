@@ -25,7 +25,12 @@ bool HasAggroValue::Calculate()
     {
         ThreatManager *threatManager = ref->getSource();
         Unit *attacker = threatManager->getOwner();
+#ifdef CMANGOS
         Unit *victim = attacker->GetVictim();
+#endif
+#ifdef MANGOS
+        Unit *victim = attacker->getVictim();
+#endif
         if (victim == bot && target == attacker)
             return true;
         ref = ref->next();

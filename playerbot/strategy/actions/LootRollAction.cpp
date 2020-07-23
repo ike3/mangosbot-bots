@@ -1,8 +1,8 @@
 #include "botpch.h"
 #include "../../playerbot.h"
 #include "LootRollAction.h"
-
 #include "../values/ItemUsageValue.h"
+
 
 using namespace ai;
 
@@ -25,20 +25,22 @@ bool LootRollAction::Execute(Event event)
 
 #ifdef MANGOS
     RollVote vote = ROLL_PASS;
-    vector<Roll*>& rolls = group->GetRolls();
-    for (vector<Roll*>::iterator i = rolls.begin(); i != rolls.end(); ++i)
-    {
-        if ((*i)->isValid() && (*i)->lootedTargetGUID == guid && (*i)->itemSlot == slot)
-        {
-            uint32 itemId = (*i)->itemid;
-            ItemPrototype const *proto = sItemStorage.LookupEntry<ItemPrototype>(itemId);
-            if (!proto)
-                continue;
-
-            vote = CalculateRollVote(proto);
-            if (vote != ROLL_PASS) break;
-        }
-    }
+	ItemPrototype const *proto = sItemStorage.LookupEntry<ItemPrototype>(guid.GetEntry());
+	if (proto)
+	{
+		switch (proto->Class)
+		{
+		case ITEM_CLASS_WEAPON:
+		case ITEM_CLASS_ARMOR:
+			if (QueryItemUsage(proto))
+				vote = ROLL_NEED;
+			break;
+		default:
+			if (StoreLootAction::IsLootAllowed(guid.GetEntry(), ai))
+				vote = ROLL_NEED;
+			break;
+		}
+	}
 
     switch (group->GetLootMethod())
     {
@@ -93,6 +95,5 @@ RollVote LootRollAction::CalculateRollVote(ItemPrototype const *proto)
         needVote = ROLL_GREED;
         break;
     }
-
     return StoreLootAction::IsLootAllowed(proto->ItemId, bot->GetPlayerbotAI()) ? needVote : ROLL_PASS;
 }

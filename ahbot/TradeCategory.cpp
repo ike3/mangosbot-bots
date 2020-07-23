@@ -1,11 +1,18 @@
-#include "Globals/ObjectMgr.h"
 #include "TradeCategory.h"
 #include "Category.h"
 #include "AhBotConfig.h"
 #include "PricingStrategy.h"
 #include "ServerFacade.h"
 #include "SQLStorages.h"
+#ifdef CMANGOS
+#include "Globals/ObjectMgr.h"
 #include "SpellEffectDefines.h"
+#endif
+#ifdef MANGOS
+#include "Object/ObjectMgr.h"
+#include "SharedDefines.h"
+#endif
+
 
 using namespace ahbot;
 

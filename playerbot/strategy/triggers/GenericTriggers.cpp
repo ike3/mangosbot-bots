@@ -163,8 +163,12 @@ bool TankAoeTrigger::IsActive()
     Unit* tankTarget = AI_VALUE(Unit*, "tank target");
     if (!tankTarget || currentTarget == tankTarget)
         return false;
-
+#ifdef CMANGOS
     return currentTarget->GetVictim() == AI_VALUE(Unit*, "self target");
+#endif
+#ifdef MANGOS
+    return currentTarget->getVictim() == AI_VALUE(Unit*, "self target");
+#endif
 }
 
 bool IsBehindTargetTrigger::IsActive()

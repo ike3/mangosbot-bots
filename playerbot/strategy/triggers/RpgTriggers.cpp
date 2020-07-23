@@ -18,7 +18,13 @@ bool FarFromRpgTargetTrigger::IsActive()
     float distance = AI_VALUE2(float, "distance", "rpg target");
 	if (sPlayerbotAIConfig.RandombotsWalkingRPGInDoors)
 	{
+#ifdef CMANGOS
 		if (!bot->GetTerrain()->IsOutdoors(bot->GetPositionX(), bot->GetPositionY(), bot->GetPositionZ()))
+#endif
+#ifdef MANGOS
+		if (!bot->GetMap()->GetTerrain()->IsOutdoors(bot->GetPositionX(), bot->GetPositionY(), bot->GetPositionZ()))
+#endif
+
 		{
             bot->m_movementInfo.AddMovementFlag(MOVEFLAG_WALK_MODE);
 		}

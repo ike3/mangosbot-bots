@@ -156,15 +156,15 @@ uint32 RandomPlayerbotMgr::AddRandomBots()
             uint8 race = fields[1].GetUInt8();
 			// Although this code works it cuts the Maximum Bots setting in half. 
 			// And, also doesn't see to be any reason to do it.
-            bool alliance = guids.size() % 2 == 0;
-            if (bots.find(guid) == bots.end() &&
-                    ((alliance && IsAlliance(race)) || ((!alliance && !IsAlliance(race))
-            )))
-            {
+            //bool alliance = guids.size() % 2 == 0;
+            //if (bots.find(guid) == bots.end() &&
+            //        ((alliance && IsAlliance(race)) || ((!alliance && !IsAlliance(race))
+            //)))
+            //{
                 guids.push_back(guid);
                 uint32 bot = guid;
                 SetEventValue(bot, "add", 1, urand(sPlayerbotAIConfig.minRandomBotInWorldTime, sPlayerbotAIConfig.maxRandomBotInWorldTime));
-                uint32 randomTime = 30 + urand(sPlayerbotAIConfig.randomBotUpdateInterval, sPlayerbotAIConfig.randomBotUpdateInterval * 3);
+                uint32 randomTime = 120 + urand(sPlayerbotAIConfig.randomBotUpdateInterval, sPlayerbotAIConfig.randomBotUpdateInterval * 3);
                 ScheduleRandomize(bot, randomTime);
 				SetEventValue(bot, "teleport", 1, sPlayerbotAIConfig.maxRandomBotInWorldTime);
 				SetEventValue(bot, "change_strategy", 1, sPlayerbotAIConfig.maxRandomBotInWorldTime);
@@ -176,7 +176,7 @@ uint32 RandomPlayerbotMgr::AddRandomBots()
                     delete result;
                     return guids.size();
                 }
-            }
+            //}
         } while (result->NextRow());
         delete result;
     }
@@ -261,10 +261,10 @@ bool RandomPlayerbotMgr::ProcessBot(uint32 bot)
 
 bool RandomPlayerbotMgr::ProcessBot(Player* player)
 {
-	//if (urand(0, 100) > 50) // move optimisation to the next step
-	//{
-	//	return true;
-	//}
+	if (urand(0, 100) > 75) // move optimisation to the next step
+	{
+		return true;
+	}
 	// TODO Improve bot revive rates for 1000+ bots
 
     uint32 bot = player->GetGUIDLow();
@@ -283,7 +283,7 @@ bool RandomPlayerbotMgr::ProcessBot(Player* player)
 			// TODO Timer doesn't work (code is not executed after "return true;"). Rewrite required
     }
 
-	if (urand(0, 100) > 20) // move optimisation to the next step
+	if (urand(0, 100) > 25) // move optimisation to the next step
 	{
 		return true;
 	}

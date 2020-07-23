@@ -18,6 +18,7 @@ PerformanceMonitorOperation* PerformanceMonitor::start(PerformanceMetric metric,
 {
 	if (!sPlayerbotAIConfig.perfMonEnabled) return NULL;
 
+#ifdef CMANGOS
 	std::lock_guard<std::mutex> guard(lock);
     PerformanceData *pd = data[metric][name];
     if (!pd)
@@ -28,6 +29,7 @@ PerformanceMonitorOperation* PerformanceMonitor::start(PerformanceMetric metric,
     }
 
 	return new PerformanceMonitorOperation(pd);
+#endif
 }
 
 void PerformanceMonitor::PrintStats()

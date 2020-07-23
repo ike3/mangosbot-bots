@@ -199,7 +199,12 @@ bool MovementAction::IsMovingAllowed()
         return false;
 
     MotionMaster &mm = *bot->GetMotionMaster();
+#ifdef CMANGOS
     return mm.GetCurrentMovementGeneratorType() != TAXI_MOTION_TYPE;
+#endif
+#ifdef MANGOS
+    return mm.GetCurrentMovementGeneratorType() != FLIGHT_MOTION_TYPE;
+#endif
 }
 
 bool MovementAction::Follow(Unit* target, float distance)

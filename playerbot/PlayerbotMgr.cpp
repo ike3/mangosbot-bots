@@ -64,7 +64,12 @@ void PlayerbotHolder::LogoutPlayerBot(uint64 guid)
 
         WorldSession * botWorldSessionPtr = bot->GetSession();
         playerBots.erase(guid);    // deletes bot player ptr inside this WorldSession PlayerBotMap
+#ifdef CMANGOS
         botWorldSessionPtr->LogoutPlayer(); // this will delete the bot Player object and PlayerbotAI object
+#endif
+#ifdef MANGOS
+        botWorldSessionPtr->LogoutPlayer(true); // this will delete the bot Player object and PlayerbotAI object
+#endif
         delete botWorldSessionPtr;  // finally delete the bot's WorldSession
     }
 }

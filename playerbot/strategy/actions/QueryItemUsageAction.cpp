@@ -77,10 +77,20 @@ uint32 QueryItemUsageAction::GetCount(ItemPrototype const *item)
 string QueryItemUsageAction::QueryItem(ItemPrototype const *item, uint32 count, uint32 total)
 {
     ostringstream out;
+#ifdef CMANGOS
     string usage = QueryItemUsage(item);
+#endif
+#ifdef MANGOS
+    bool usage = QueryItemUsage(item);
+#endif
     string quest = QueryQuestItem(item->ItemId);
     string price = QueryItemPrice(item);
+#ifdef CMANGOS
     if (usage.empty())
+#endif
+#ifdef MANGOS
+    if (!usage)
+#endif
         usage = (quest.empty() ? "Useless" : "Quest");
 
     out << chat->formatItem(item, count, total) << ": " << usage;
@@ -90,8 +100,12 @@ string QueryItemUsageAction::QueryItem(ItemPrototype const *item, uint32 count, 
         out << ", " << price;
     return out.str();
 }
-
+#ifdef CMANGOS
 string QueryItemUsageAction::QueryItemUsage(ItemPrototype const *item)
+#endif
+#ifdef MANGOS
+bool QueryItemUsageAction::QueryItemUsage(ItemPrototype const *item)
+#endif
 {
     ostringstream out; out << item->ItemId;
     ItemUsage usage = AI_VALUE2(ItemUsage, "item usage", out.str());
