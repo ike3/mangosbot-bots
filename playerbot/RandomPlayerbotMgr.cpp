@@ -261,10 +261,10 @@ bool RandomPlayerbotMgr::ProcessBot(uint32 bot)
 
 bool RandomPlayerbotMgr::ProcessBot(Player* player)
 {
-	//if (urand(0, 100) > 75) // move optimisation to the next step
-	//{
-	//	return true;
-	//}
+	if (urand(0, 100) > 50) // move optimisation to the next step
+	{
+		return true;
+	}
 	// TODO Improve bot revive rates for 1000+ bots
 
     uint32 bot = player->GetGUIDLow();
@@ -277,7 +277,7 @@ bool RandomPlayerbotMgr::ProcessBot(Player* player)
             {
                 SetEventValue(bot, "deathcount", 1, sPlayerbotAIConfig.maxRandomBotInWorldTime);
                 Revive(player);
-                sLog.outString("Bot %d revived", bot);
+                sLog.outBasic("Bot %d revived", bot);
             }
             else
             {
@@ -289,20 +289,18 @@ bool RandomPlayerbotMgr::ProcessBot(Player* player)
                     uint32 randomChange = urand(240, 600)  + urand(sPlayerbotAIConfig.randomBotUpdateInterval, sPlayerbotAIConfig.randomBotUpdateInterval * 3);
                     ScheduleChangeStrategy(bot, randomChange);
                     SetEventValue(bot, "teleport", 1, sPlayerbotAIConfig.maxRandomBotInWorldTime);
-                    uint32 restTime = int(randomChange / 60);
-                    sLog.outString("Bot %d died %d times and is sent to camp for rest for %d minutes", bot, deathcount, restTime);
+                    sLog.outString("Bot %d died %d times and is sent to city for %d minutes", bot, deathcount, int(randomChange / 60));
                 }
                 else
                 {
                     SetEventValue(bot, "deathcount", deathcount + 1, sPlayerbotAIConfig.maxRandomBotInWorldTime);
                     Revive(player);
-                    sLog.outString("Bot %d revived after %d deaths", bot, deathcount + 1);
+                    sLog.outBasic("Bot %d revived %d/5", bot, deathcount + 1);
                 }
             }
 
             //Revive(player);
-           // return true; Hot-fix to increase bot revive chance.
-			return false;
+           return false;
         }
 
 			//uint32 randomTime = urand(sPlayerbotAIConfig.minRandomBotReviveTime, sPlayerbotAIConfig.maxRandomBotReviveTime);
@@ -311,7 +309,7 @@ bool RandomPlayerbotMgr::ProcessBot(Player* player)
 			// TODO Timer doesn't work (code is not executed after "return true;"). Rewrite required
     }
 
-	if (urand(0, 100) > 25) // move optimisation to the next step
+	if (urand(0, 100) > 20) // move optimisation to the next step
 	{
 		return true;
 	}
@@ -335,7 +333,7 @@ bool RandomPlayerbotMgr::ProcessBot(Player* player)
 		SetEventValue(bot, "teleport", 1, sPlayerbotAIConfig.maxRandomBotInWorldTime);
 		uint32 randomChange = 120 + urand(sPlayerbotAIConfig.randomBotUpdateInterval, sPlayerbotAIConfig.randomBotUpdateInterval * 3);
 		ScheduleChangeStrategy(bot, randomChange);
-		sLog.outString("Bot %d randomized and sent to camp", bot);
+		sLog.outString("Bot %d is randomized and sent to city for %d minutes", bot, int(randomChange / 60));
 
         uint32 randomTime = urand(sPlayerbotAIConfig.minRandomBotRandomizeTime, sPlayerbotAIConfig.maxRandomBotRandomizeTime);
         ScheduleRandomize(bot, randomTime);
@@ -345,7 +343,7 @@ bool RandomPlayerbotMgr::ProcessBot(Player* player)
 	uint32 teleport = GetEventValue(bot, "teleport");
 	if (!teleport)
 	{
-		sLog.outString("Bot %d arrived at grind location", bot);
+		sLog.outString("Bot %d is grinding", bot);
 		RandomTeleportForLevel(player);
 		Refresh(player);
 		SetEventValue(bot, "teleport", 1, sPlayerbotAIConfig.maxRandomBotInWorldTime);
