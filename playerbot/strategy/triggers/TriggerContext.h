@@ -6,6 +6,7 @@
 #include "../triggers/GenericTriggers.h"
 #include "LfgTriggers.h"
 #include "RpgTriggers.h"
+#include "RtiTriggers.h"
 
 namespace ai
 {
@@ -103,9 +104,11 @@ namespace ai
             creators["new player nearby"] = &TriggerContext::new_player_nearby;
             creators["no rpg target"] = &TriggerContext::no_rpg_target;
             creators["far from rpg target"] = &TriggerContext::far_from_rpg_target;
+            creators["no rti target"] = &TriggerContext::no_rti;
         }
 
     private:
+        static Trigger* no_rti(PlayerbotAI* ai) { return new NoRtiTrigger(ai); }
         static Trigger* _return(PlayerbotAI* ai) { return new ReturnTrigger(ai); }
         static Trigger* sit(PlayerbotAI* ai) { return new SitTrigger(ai); }
         static Trigger* far_from_rpg_target(PlayerbotAI* ai) { return new FarFromRpgTargetTrigger(ai); }

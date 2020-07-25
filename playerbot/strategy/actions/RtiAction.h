@@ -41,4 +41,13 @@ namespace ai
 
     };
 
+    class MarkRtiAction : public Action
+    {
+    public:
+        MarkRtiAction(PlayerbotAI* ai) : Action(ai, "mark rti")
+        {}
+
+        virtual bool Execute(Event event);
+    };
+
 }
