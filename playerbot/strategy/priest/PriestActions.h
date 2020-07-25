@@ -243,4 +243,16 @@ namespace ai
 	    virtual string GetTargetName() { return "self target"; }
 	};
 
+    class CastInnerFocusAction : public CastBuffSpellAction
+    {
+    public:
+        CastInnerFocusAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "inner focus") {}
+    };
+
+    class CastPowerInfusionAction : public CastBuffSpellAction
+    {
+    public:
+        CastPowerInfusionAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "power infusion") {}
+    };
+
 }

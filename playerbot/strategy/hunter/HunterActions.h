@@ -169,4 +169,10 @@ namespace ai
         FeedPetAction(PlayerbotAI* ai) : Action(ai, "feed pet") {}
         virtual bool Execute(Event event);
     };
+
+    class CastBestialWrathAction : public CastBuffSpellAction
+    {
+    public:
+        CastBestialWrathAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "bestial wrath") {}
+    };
 }

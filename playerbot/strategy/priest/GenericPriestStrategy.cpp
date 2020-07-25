@@ -66,3 +66,15 @@ void PriestCureStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         "party member cure disease",
         NextAction::array(0, new NextAction("abolish disease on party", 30.0f), NULL)));
 }
+
+void PriestBoostStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+{
+    triggers.push_back(new TriggerNode(
+        "inner focus",
+        NextAction::array(0, new NextAction("inner focus", 42.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "power infusion",
+        NextAction::array(0, new NextAction("power infusion", 41.0f), NULL)));
+}
+

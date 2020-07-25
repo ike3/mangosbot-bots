@@ -64,6 +64,16 @@ void GenericHunterStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         "hunters pet low health",
         NextAction::array(0, new NextAction("mend pet", 20.0f), NULL)));
 
+}
+
+NextAction** HunterBoostStrategy::getDefaultActions()
+{
+    return NextAction::array(0, new NextAction("bestial wrath", 15.0f), NULL);
+}
+
+void HunterBoostStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+{
+
     triggers.push_back(new TriggerNode(
         "rapid fire",
         NextAction::array(0, new NextAction("rapid fire", 16.0f), NULL)));

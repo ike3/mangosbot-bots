@@ -108,3 +108,18 @@ void DpsRogueStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         "behind target",
         NextAction::array(0, new NextAction("backstab", ACTION_NORMAL), NULL)));
 }
+
+void RogueAoeStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+{
+    triggers.push_back(new TriggerNode(
+        "light aoe",
+        NextAction::array(0, new NextAction("blade flurry", ACTION_HIGH), NULL)));
+}
+
+void RogueBoostStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+{
+    triggers.push_back(new TriggerNode(
+        "adrenaline rush",
+        NextAction::array(0, new NextAction("adrenaline rush", ACTION_HIGH + 2), NULL)));
+}
+

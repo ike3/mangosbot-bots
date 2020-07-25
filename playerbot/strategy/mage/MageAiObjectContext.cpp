@@ -31,6 +31,7 @@ namespace ai
                 creators["frost aoe"] = &mage::StrategyFactoryInternal::frost_aoe;
                 creators["cure"] = &mage::StrategyFactoryInternal::cure;
                 creators["buff"] = &mage::StrategyFactoryInternal::buff;
+                creators["boost"] = &mage::StrategyFactoryInternal::boost;
             }
 
         private:
@@ -40,6 +41,7 @@ namespace ai
             static Strategy* frost_aoe(PlayerbotAI* ai) { return new FrostMageAoeStrategy(ai); }
             static Strategy* cure(PlayerbotAI* ai) { return new MageCureStrategy(ai); }
             static Strategy* buff(PlayerbotAI* ai) { return new MageBuffStrategy(ai); }
+            static Strategy* boost(PlayerbotAI* ai) { return new MageBoostStrategy(ai); }
         };
 
         class MageStrategyFactoryInternal : public NamedObjectContext<Strategy>
@@ -103,10 +105,14 @@ namespace ai
                 creators["missile barrage"] = &TriggerFactoryInternal::missile_barrage;
                 creators["arcane blast"] = &TriggerFactoryInternal::arcane_blast;
                 creators["counterspell on enemy healer"] = &TriggerFactoryInternal::counterspell_enemy_healer;
+                creators["arcane power"] = &TriggerFactoryInternal::arcane_power;
+                creators["presence of mind"] = &TriggerFactoryInternal::presence_of_mind;
 
             }
 
         private:
+            static Trigger* presence_of_mind(PlayerbotAI* ai) { return new PresenceOfMindTrigger(ai); }
+            static Trigger* arcane_power(PlayerbotAI* ai) { return new ArcanePowerTrigger(ai); }
             static Trigger* hot_streak(PlayerbotAI* ai) { return new HotStreakTrigger(ai); }
             static Trigger* fireball(PlayerbotAI* ai) { return new FireballTrigger(ai); }
             static Trigger* pyroblast(PlayerbotAI* ai) { return new PyroblastTrigger(ai); }
@@ -140,6 +146,8 @@ namespace ai
         public:
             AiObjectContextInternal()
             {
+                creators["arcane power"] = &AiObjectContextInternal::arcane_power;
+                creators["presence of mind"] = &AiObjectContextInternal::presence_of_mind;
                 creators["frostbolt"] = &AiObjectContextInternal::frostbolt;
                 creators["blizzard"] = &AiObjectContextInternal::blizzard;
                 creators["frost nova"] = &AiObjectContextInternal::frost_nova;
@@ -178,6 +186,8 @@ namespace ai
             }
 
         private:
+            static Action* presence_of_mind(PlayerbotAI* ai) { return new CastPresenceOfMindAction(ai); }
+            static Action* arcane_power(PlayerbotAI* ai) { return new CastArcanePowerAction(ai); }
             static Action* arcane_missiles(PlayerbotAI* ai) { return new CastArcaneMissilesAction(ai); }
             static Action* arcane_barrage(PlayerbotAI* ai) { return new CastArcaneBarrageAction(ai); }
             static Action* arcane_blast(PlayerbotAI* ai) { return new CastArcaneBlastAction(ai); }

@@ -155,3 +155,15 @@ void MageCureStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("remove curse on party", 40.0f), NULL)));
 
 }
+
+void MageBoostStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+{
+    triggers.push_back(new TriggerNode(
+        "arcane power",
+        NextAction::array(0, new NextAction("arcane power", 41.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "presence of mind",
+        NextAction::array(0, new NextAction("presence of mind", 42.0f), NULL)));
+
+}

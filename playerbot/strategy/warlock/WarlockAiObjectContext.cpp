@@ -27,6 +27,7 @@ namespace ai
                 creators["pull"] = &warlock::StrategyFactoryInternal::pull;
                 creators["aoe"] = &warlock::StrategyFactoryInternal::aoe;
                 creators["dps debuff"] = &warlock::StrategyFactoryInternal::dps_debuff;
+                creators["boost"] = &warlock::StrategyFactoryInternal::boost;
             }
 
         private:
@@ -34,6 +35,7 @@ namespace ai
             static Strategy* aoe(PlayerbotAI* ai) { return new DpsAoeWarlockStrategy(ai); }
             static Strategy* dps_debuff(PlayerbotAI* ai) { return new DpsWarlockDebuffStrategy(ai); }
             static Strategy* pull(PlayerbotAI* ai) { return new PullStrategy(ai, "shoot"); }
+            static Strategy* boost(PlayerbotAI* ai) { return new WarlockBoostStrategy(ai); }
         };
 
         class CombatStrategyFactoryInternal : public NamedObjectContext<Strategy>
@@ -77,11 +79,13 @@ namespace ai
                 creators["backlash"] = &TriggerFactoryInternal::backlash;
                 creators["fear"] = &TriggerFactoryInternal::fear;
                 creators["immolate"] = &TriggerFactoryInternal::immolate;
+                creators["amplify curse"] = &TriggerFactoryInternal::amplify_curse;
 
 
             }
 
         private:
+            static Trigger* amplify_curse(PlayerbotAI* ai) { return new AmplifyCurseTrigger(ai); }
             static Trigger* shadow_trance(PlayerbotAI* ai) { return new ShadowTranceTrigger(ai); }
             static Trigger* demon_armor(PlayerbotAI* ai) { return new DemonArmorTrigger(ai); }
             static Trigger* HasHealthstone(PlayerbotAI* ai) { return new HasHealthstoneTrigger(ai); }
@@ -140,9 +144,11 @@ namespace ai
                 creators["fear on cc"] = &AiObjectContextInternal::fear_on_cc;
                 creators["incinirate"] = &AiObjectContextInternal::incinirate;
                 creators["conflagrate"] = &AiObjectContextInternal::conflagrate;
+                creators["amplify curse"] = &AiObjectContextInternal::amplify_curse;
             }
 
         private:
+            static Action* amplify_curse(PlayerbotAI* ai) { return new CastAmplifyCurseAction(ai); }
             static Action* conflagrate(PlayerbotAI* ai) { return new CastConflagrateAction(ai); }
             static Action* incinirate(PlayerbotAI* ai) { return new CastIncinirateAction(ai); }
             static Action* fear_on_cc(PlayerbotAI* ai) { return new CastFearOnCcAction(ai); }

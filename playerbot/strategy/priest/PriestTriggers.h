@@ -72,4 +72,16 @@ namespace ai
         ShadowformTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "shadowform") {}
         virtual bool IsActive() { return !ai->HasAura("shadowform", bot); }
     };
+
+    class PowerInfusionTrigger : public BuffTrigger
+    {
+    public:
+        PowerInfusionTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "power infusion") {}
+    };
+
+    class InnerFocusTrigger : public BuffTrigger
+    {
+    public:
+        InnerFocusTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "inner focus") {}
+    };
 }

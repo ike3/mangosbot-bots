@@ -31,9 +31,11 @@ namespace ai
                 creators["shadow debuff"] = &priest::StrategyFactoryInternal::shadow_debuff;
                 creators["cure"] = &priest::StrategyFactoryInternal::cure;
                 creators["buff"] = &priest::StrategyFactoryInternal::buff;
+                creators["boost"] = &priest::StrategyFactoryInternal::boost;
             }
 
         private:
+            static Strategy* boost(PlayerbotAI* ai) { return new PriestBoostStrategy(ai); }
             static Strategy* buff(PlayerbotAI* ai) { return new PriestBuffStrategy(ai); }
             static Strategy* nc(PlayerbotAI* ai) { return new PriestNonCombatStrategy(ai); }
             static Strategy* shadow_aoe(PlayerbotAI* ai) { return new ShadowPriestAoeStrategy(ai); }
@@ -87,6 +89,8 @@ namespace ai
                 creators["vampiric touch"] = &TriggerFactoryInternal::vampiric_touch;
                 creators["shadowform"] = &TriggerFactoryInternal::shadowform;
                 creators["vampiric embrace"] = &TriggerFactoryInternal::vampiric_embrace;
+                creators["power infusion"] = &TriggerFactoryInternal::power_infusion;
+                creators["inner focus"] = &TriggerFactoryInternal::inner_focus;
 
             }
 
@@ -106,6 +110,8 @@ namespace ai
             static Trigger* divine_spirit(PlayerbotAI* ai) { return new DivineSpiritTrigger(ai); }
             static Trigger* divine_spirit_on_party(PlayerbotAI* ai) { return new DivineSpiritOnPartyTrigger(ai); }
             static Trigger* inner_fire(PlayerbotAI* ai) { return new InnerFireTrigger(ai); }
+            static Trigger* power_infusion(PlayerbotAI* ai) { return new PowerInfusionTrigger(ai); }
+            static Trigger* inner_focus(PlayerbotAI* ai) { return new InnerFocusTrigger(ai); }
         };
     };
 };
@@ -123,6 +129,8 @@ namespace ai
         public:
             AiObjectContextInternal()
             {
+                creators["power infusion"] = &AiObjectContextInternal::power_infusion;
+                creators["inner focus"] = &AiObjectContextInternal::inner_focus;
                 creators["shadow word: pain"] = &AiObjectContextInternal::shadow_word_pain;
                 creators["shadow word: pain on attacker"] = &AiObjectContextInternal::shadow_word_pain_on_attacker;
                 creators["devouring plague"] = &AiObjectContextInternal::devouring_plague;
@@ -167,6 +175,8 @@ namespace ai
             }
 
         private:
+            static Action* power_infusion(PlayerbotAI* ai) { return new CastPowerInfusionAction(ai); }
+            static Action* inner_focus(PlayerbotAI* ai) { return new CastInnerFocusAction(ai); }
             static Action* dispersion(PlayerbotAI* ai) { return new CastDispersionAction(ai); }
             static Action* vampiric_embrace(PlayerbotAI* ai) { return new CastVampiricEmbraceAction(ai); }
             static Action* vampiric_touch(PlayerbotAI* ai) { return new CastVampiricTouchAction(ai); }

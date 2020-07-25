@@ -66,10 +66,10 @@ namespace ai
         FreezingTrapTrigger(PlayerbotAI* ai) : HasCcTargetTrigger(ai, "freezing trap") {}
     };
 
-    class RapidFireTrigger : public BoostTrigger
+    class RapidFireTrigger : public BuffTrigger
     {
     public:
-        RapidFireTrigger(PlayerbotAI* ai) : BoostTrigger(ai, "rapid fire") {}
+        RapidFireTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "rapid fire") {}
     };
 
     class TrueshotAuraTrigger : public BuffTrigger

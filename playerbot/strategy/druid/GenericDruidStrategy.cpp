@@ -133,3 +133,10 @@ void DruidCureStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         "party member cure poison",
         NextAction::array(0, new NextAction("abolish poison on party", ACTION_DISPEL + 1), NULL)));
 }
+
+void DruidBoostStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+{
+    triggers.push_back(new TriggerNode(
+        "nature's swiftness",
+        NextAction::array(0, new NextAction("nature's swiftness", ACTION_HIGH + 9), NULL)));
+}

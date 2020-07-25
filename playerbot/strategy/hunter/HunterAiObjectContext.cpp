@@ -26,6 +26,7 @@ namespace ai
                 creators["nc"] = &hunter::StrategyFactoryInternal::nc;
                 creators["aoe"] = &hunter::StrategyFactoryInternal::aoe;
                 creators["dps debuff"] = &hunter::StrategyFactoryInternal::dps_debuff;
+                creators["boost"] = &hunter::StrategyFactoryInternal::boost;
             }
 
         private:
@@ -33,6 +34,7 @@ namespace ai
             static Strategy* dps(PlayerbotAI* ai) { return new DpsHunterStrategy(ai); }
             static Strategy* nc(PlayerbotAI* ai) { return new GenericHunterNonCombatStrategy(ai); }
             static Strategy* dps_debuff(PlayerbotAI* ai) { return new DpsHunterDebuffStrategy(ai); }
+            static Strategy* boost(PlayerbotAI* ai) { return new HunterBoostStrategy(ai); }
         };
 
         class BuffStrategyFactoryInternal : public NamedObjectContext<Strategy>
@@ -150,9 +152,11 @@ namespace ai
                 creators["feign death"] = &AiObjectContextInternal::feign_death;
                 creators["wing clip"] = &AiObjectContextInternal::wing_clip;
                 creators["feed pet"] = &AiObjectContextInternal::feed_pet;
+                creators["bestial wrath"] = &AiObjectContextInternal::bestial_wrath;
             }
 
         private:
+            static Action* bestial_wrath(PlayerbotAI* ai) { return new CastBestialWrathAction(ai); }
             static Action* feed_pet(PlayerbotAI* ai) { return new FeedPetAction(ai); }
             static Action* feign_death(PlayerbotAI* ai) { return new CastFeignDeathAction(ai); }
             static Action* trueshot_aura(PlayerbotAI* ai) { return new CastTrueshotAuraAction(ai); }

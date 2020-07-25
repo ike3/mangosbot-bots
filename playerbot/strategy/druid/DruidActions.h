@@ -207,4 +207,10 @@ namespace ai
     public:
         CastTranquilityAction(PlayerbotAI* ai) : CastAoeHealSpellAction(ai, "tranquility") {}
     };
+
+    class CastNaturesSwiftnessAction : public CastBuffSpellAction
+    {
+    public:
+        CastNaturesSwiftnessAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "nature's swiftness") {}
+    };
 }
