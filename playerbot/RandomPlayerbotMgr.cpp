@@ -739,7 +739,7 @@ void RandomPlayerbotMgr::Refresh(Player* bot)
     {
         bot->ResurrectPlayer(1.0f);
         bot->SpawnCorpseBones();
-        bot->GetPlayerbotAI()->ResetStrategies();
+        bot->GetPlayerbotAI()->ResetStrategies(false);
     }
 
     bot->GetPlayerbotAI()->Reset();

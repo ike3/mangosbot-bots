@@ -21,13 +21,14 @@ namespace ai
             p << uint32(PARTY_OP_LEAVE) << member << uint32(0);
             bot->GetSession()->HandleGroupDisbandOpcode(p);
 
-            if (sRandomPlayerbotMgr.IsRandomBot(bot))
+            bool randomBot = sRandomPlayerbotMgr.IsRandomBot(bot);
+            if (randomBot)
             {
                 bot->GetPlayerbotAI()->SetMaster(NULL);
                 sRandomPlayerbotMgr.ScheduleTeleport(bot->GetObjectGuid());
             }
 
-            ai->ResetStrategies();
+            ai->ResetStrategies(!randomBot);
             return true;
         }
     };

@@ -588,7 +588,7 @@ bool PlayerbotAI::HasStrategy(string name, BotState type)
     return engines[type]->HasStrategy(name);
 }
 
-void PlayerbotAI::ResetStrategies()
+void PlayerbotAI::ResetStrategies(bool load)
 {
     for (int i = 0 ; i < BOT_STATE_MAX; i++)
         engines[i]->removeAllStrategies();
@@ -596,7 +596,7 @@ void PlayerbotAI::ResetStrategies()
     AiFactory::AddDefaultCombatStrategies(bot, this, engines[BOT_STATE_COMBAT]);
     AiFactory::AddDefaultNonCombatStrategies(bot, this, engines[BOT_STATE_NON_COMBAT]);
     AiFactory::AddDefaultDeadStrategies(bot, this, engines[BOT_STATE_DEAD]);
-    sPlayerbotDbStore.Load(this);
+    if (load) sPlayerbotDbStore.Load(this);
 }
 
 bool PlayerbotAI::IsRanged(Player* player)
