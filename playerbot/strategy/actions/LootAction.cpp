@@ -58,7 +58,6 @@ bool OpenLootAction::Execute(Event event)
     {
         AI_VALUE(LootObjectStack*, "available loot")->Remove(lootObject.guid);
         context->GetValue<LootObject>("loot target")->Set(LootObject());
-        ai->SetNextCheckDelay(sPlayerbotAIConfig.lootDelay);
     }
     return result;
 }
@@ -82,6 +81,7 @@ bool OpenLootAction::DoLoot(LootObject& lootObject)
         WorldPacket packet(CMSG_LOOT, 8);
         packet << lootObject.guid;
         bot->GetSession()->HandleLootOpcode(packet);
+        ai->SetNextCheckDelay(sPlayerbotAIConfig.lootDelay);
         return true;
     }
 
@@ -128,7 +128,9 @@ bool OpenLootAction::DoLoot(LootObject& lootObject)
     if (!spellId)
         return false;
 
-    return ai->CastSpell(spellId, bot);
+    bool result = ai->CastSpell(spellId, bot);
+    if (result) ai->SetNextCheckDelay(sPlayerbotAIConfig.lootDelay);
+    return result;
 }
 
 uint32 OpenLootAction::GetOpeningSpell(LootObject& lootObject)
