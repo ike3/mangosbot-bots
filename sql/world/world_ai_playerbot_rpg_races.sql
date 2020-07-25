@@ -22,30 +22,19 @@ INSERT INTO `ai_playerbot_rpg_races` VALUES
 (NULL, 16553, 11, 1, 10),
 -- Draenei Bloodmyst Isle
 (NULL, 17553, 11, 10, 20),
--- Draenei Exodar
-(NULL, 16739, 11, 1, 80),
---
---       BLOOD ELVES
---
--- Blood Elves Eversong Woods
-(NULL, 15397, 10, 1, 10),
--- Blood Elves Ghostlands
-(NULL, 16542, 10, 10, 20),
--- Blood Elves Silvermoon
-(NULL, 16618, 10, 1, 80),
 --
 --       HUMANS
 --
 -- Innkeeper Farley, Goldshire
-(NULL, 295, 1, 1, 15),
+(NULL, 295, 1, 1, 10),
 -- Innkeeper Heather, Westfall
 (NULL, 8931, 1, 10, 20),
 --
 --       DWARVES & GNOMES
 --
 -- Innkeeper Belm, Kharanos
-(NULL, 1247, 3, 1, 15),
-(NULL, 1247, 7, 1, 15),
+(NULL, 1247, 3, 1, 10),
+(NULL, 1247, 7, 1, 10),
 -- Innkeeper Hearthstove, Loch Modan
 (NULL, 6734, 3, 10, 20),
 (NULL, 6734, 7, 10, 20),
@@ -53,7 +42,7 @@ INSERT INTO `ai_playerbot_rpg_races` VALUES
 --       NIGHT ELVES
 --
 -- Innkeeper Keldamyr, Dolanaar
-(NULL, 6736, 4, 1, 15),
+(NULL, 6736, 4, 1, 10),
 -- Innkeeper Shaussiy, Auberdine
 (NULL, 6737, 4, 10, 20),
 --
@@ -67,18 +56,28 @@ INSERT INTO `ai_playerbot_rpg_races` VALUES
 (NULL, 5111, 7, 10, 80), -- gnomes
 (NULL, 5111, 4, 10, 80), -- elves
 (NULL, 5111, 1, 10, 80), -- human
+(NULL, 5111, 11, 20, 80), -- draenei
 --
 -- Innkeeper Allison, Stormwind
 (NULL, 6740, 1, 10, 80), -- human
-(NULL, 6740, 3, 10, 80), -- dwarves	
-(NULL, 6740, 4, 10, 80), -- elves	
+(NULL, 6740, 3, 10, 80), -- dwarves
+(NULL, 6740, 4, 10, 80), -- elves
 (NULL, 6740, 7, 10, 80), -- gnomes
+(NULL, 6740, 11, 20, 80), -- draenei
+--
+-- Caregiver Breel Exodar
+(NULL, 16739, 11, 10, 80), -- draenei
+(NULL, 16739, 1, 60, 80), -- human
+(NULL, 16739, 3, 60, 80), -- dwarves
+(NULL, 16739, 4, 60, 80), -- elves
+(NULL, 16739, 7, 60, 80), -- gnomes
 --
 --       ALLIANCE CONTESTED LOCATIONS
 --
 -- Innkeeper Kimlya, Astranaar
 --
 (NULL, 6738, 4, 15, 30), -- elves
+(NULL, 6738, 11, 20, 30), -- draenei
 --
 -- Innkeeper Faralia, Stonetalon Peak
 --
@@ -104,6 +103,7 @@ INSERT INTO `ai_playerbot_rpg_races` VALUES
 (NULL, 6790, 1, 18, 30), -- human
 (NULL, 6790, 3, 18, 30), -- dwarves
 (NULL, 6790, 7, 18, 30), -- gnomes
+(NULL, 6790, 11, 20, 30), -- draenei
 --
 -- Innkeeper Brianna, Redridge Mountains
 --
@@ -113,22 +113,27 @@ INSERT INTO `ai_playerbot_rpg_races` VALUES
 (NULL, 2352, 1, 20, 30), -- human
 (NULL, 2352, 3, 20, 30), -- dwarves
 (NULL, 2352, 7, 20, 30), -- gnomes
+(NULL, 2352, 11, 20, 30), -- draenei
 --
 -- Captain Nials, Refuge Pointe, Arathi
 (NULL, 2700, 1, 30, 40), -- human
 (NULL, 2700, 3, 30, 40), -- dwarves
 (NULL, 2700, 7, 30, 40), -- gnomes
+(NULL, 2700, 4, 30, 40), -- elves
+(NULL, 2700, 11, 30, 40), -- draenei
 --
 -- Lt. Doren, Stranglethorn Vale
 (NULL, 469, 1, 30, 45), -- human
 (NULL, 469, 3, 30, 45), -- dwarves
 (NULL, 469, 4, 30, 45), -- elves
 (NULL, 469, 7, 30, 45), -- gnomes
+(NULL, 469, 11, 30, 45), -- draenei
 --
 -- Innkeeper Janene, Theramore
 (NULL, 6272, 1, 35, 45), -- human
 (NULL, 6272, 3, 35, 45), -- dwarves
 (NULL, 6272, 7, 35, 45), -- gnomes
+(NULL, 6272, 11, 35, 45), -- draenei
 --
 -- Innkeeper Prospector Ryedol, Badlands Q-giver
 (NULL, 2910, 3, 35, 45), -- dwarves
@@ -142,42 +147,121 @@ INSERT INTO `ai_playerbot_rpg_races` VALUES
 -- Loh'atu, Azshara alliance camp Q-giver 11548
 (NULL, 11548, 4, 45, 55), -- elves
 (NULL, 11548, 1, 45, 55), -- human
+(NULL, 11548, 11, 45, 55), -- draenei
 --
 -- Thadius Grimshade, Nethergarde Keep, Blasted Lands
 (NULL, 8022, 1, 45, 55), -- human
 (NULL, 8022, 3, 45, 55), -- dwarves
 (NULL, 8022, 4, 45, 55), -- elves
 (NULL, 8022, 7, 45, 55), -- gnomes
+(NULL, 8022, 11, 45, 55), -- draenei
 --
 -- Gothine the Hooded, Felwood Alliance camp
 (NULL, 9465, 4, 48, 55), -- elves
 (NULL, 9465, 1, 48, 55), -- human
 (NULL, 9465, 3, 48, 55), -- dwarves
 (NULL, 9465, 7, 48, 55), -- gnomes
+(NULL, 9465, 11, 48, 55), -- draenei
 --
 -- Muigin, Alliance Q-giver, Un'Goro
 (NULL, 9119, 1, 48, 55), -- human
 (NULL, 9119, 3, 48, 55), -- dwarves
 (NULL, 9119, 4, 48, 55), -- elves
 (NULL, 9119, 7, 48, 55), -- gnomes
+(NULL, 9119, 11, 48, 55), -- draenei
 --
 -- Alchemist Arbington, West Plaguelands, Human
 (NULL, 11056, 1, 51, 58), -- human
 (NULL, 11056, 3, 51, 58), -- dwarves
 (NULL, 11056, 4, 51, 58), -- elves
 (NULL, 11056, 7, 51, 58), -- gnomes
+(NULL, 11056, 11, 51, 58), -- draenei
 --
 -- Borgus Stourarm, Alliance Taxi, Burning Steppes
 (NULL, 2299, 1, 50, 60), -- human
 (NULL, 2299, 3, 50, 60), -- dwarves
 (NULL, 2299, 4, 50, 60), -- elves
 (NULL, 2299, 7, 50, 60), -- gnomes
+(NULL, 2299, 11, 50, 60), -- draenei
 --
 -- Marshal Bluewall, Alliance camp, Silithus
 (NULL, 17080, 1, 55, 60), -- human
 (NULL, 17080, 3, 55, 60), -- dwarves
 (NULL, 17080, 4, 55, 60), -- elves
 (NULL, 17080, 7, 55, 60), -- gnomes
+(NULL, 17080, 11, 55, 60), -- draenei
+--
+--           OUTLAND
+--
+-- Commander Duron, Dark Portal
+(NULL, 19229, 1, 58, 59), -- human
+(NULL, 19229, 3, 58, 59), -- dwarves
+(NULL, 19229, 4, 58, 59), -- elves
+(NULL, 19229, 7, 58, 59), -- gnomes
+(NULL, 19229, 11, 58, 59), -- draenei
+--
+-- Sid Limbardi, Honor Hold, Hellfire
+(NULL, 16826, 1, 58, 63), -- human
+(NULL, 16826, 3, 58, 63), -- dwarves
+(NULL, 16826, 4, 58, 63), -- elves
+(NULL, 16826, 7, 58, 63), -- gnomes
+(NULL, 16826, 11, 58, 63), -- draenei
+--
+-- Caregiver Ophera Windfury, Draenei, Hellfire
+(NULL, 18906, 1, 60, 63), -- human
+(NULL, 18906, 3, 60, 63), -- dwarves
+(NULL, 18906, 4, 60, 63), -- elves
+(NULL, 18906, 7, 60, 63), -- gnomes
+(NULL, 18906, 11, 60, 63), -- draenei
+--
+-- Caregiver Abidaar, Telredor, Zangarmarsh
+(NULL, 18251, 1, 60, 63), -- human
+(NULL, 18251, 3, 60, 63), -- dwarves
+(NULL, 18251, 4, 60, 63), -- elves
+(NULL, 18251, 7, 60, 63), -- gnomes
+(NULL, 18251, 11, 60, 63), -- draenei
+--
+-- Caregiver Kerp, Orebor, Zangarmarsh
+(NULL, 18908, 1, 61, 64), -- human
+(NULL, 18908, 3, 61, 64), -- dwarves
+(NULL, 18908, 4, 61, 64), -- elves
+(NULL, 18908, 7, 61, 64), -- gnomes
+(NULL, 18908, 11, 61, 64), -- draenei
+--
+-- Innkeeper Biribi, Terrokar
+(NULL, 19296, 1, 62, 65), -- human
+(NULL, 19296, 3, 62, 65), -- dwarves
+(NULL, 19296, 4, 62, 65), -- elves
+(NULL, 19296, 7, 62, 65), -- gnomes
+(NULL, 19296, 11, 62, 65), -- draenei
+--
+-- Caregiver Isel, Telaar, Nagrand
+(NULL, 18914, 1, 64, 67), -- human
+(NULL, 18914, 3, 64, 67), -- dwarves
+(NULL, 18914, 4, 64, 67), -- elves
+(NULL, 18914, 7, 64, 67), -- gnomes
+(NULL, 18914, 11, 64, 67), -- draenei
+--
+-- Innkeeper Shaunessy, Sylvanaar, Blade's Edge
+(NULL, 19495, 1, 65, 68), -- human
+(NULL, 19495, 3, 65, 68), -- dwarves
+(NULL, 19495, 4, 65, 68), -- elves
+(NULL, 19495, 7, 65, 68), -- gnomes
+(NULL, 19495, 11, 65, 68), -- draenei
+--
+-- Innkeeper Fizir Doc Clocktock, Blade's Edge
+(NULL, 21110, 1, 65, 68), -- human
+(NULL, 21110, 3, 65, 68), -- dwarves
+(NULL, 21110, 4, 65, 68), -- elves
+(NULL, 21110, 7, 65, 68), -- gnomes
+(NULL, 21110, 11, 65, 68), -- draenei
+--
+-- Innkeeper Dreg Cloudsweeper, Shadowmoon
+(NULL, 19352, 1, 67, 70), -- human
+(NULL, 19352, 3, 67, 70), -- dwarves
+(NULL, 19352, 4, 67, 70), -- elves
+(NULL, 19352, 7, 67, 70), -- gnomes
+(NULL, 19352, 11, 67, 70), -- draenei
 --
 --
 --       ALLIANCE MOUNT VENDORS
@@ -208,9 +292,16 @@ INSERT INTO `ai_playerbot_rpg_races` VALUES
 --       UNDEAD
 --
 -- Innkeeper Renee, Brill, Tirisfal Glades
-(NULL, 5688, 5, 1, 15),
+(NULL, 5688, 5, 1, 10),
 -- Innkeeper Bates, The Sepulcher, Silverpine Forest
 (NULL, 6739, 5, 10, 20),
+--
+--       BLOOD ELVES
+--
+-- Blood Elves Eversong Woods
+(NULL, 15397, 10, 1, 10),
+-- Blood Elves Ghostlands
+(NULL, 16542, 10, 10, 20),
 --
 --       HORDE CITIES
 --
@@ -218,13 +309,25 @@ INSERT INTO `ai_playerbot_rpg_races` VALUES
 (NULL, 6929, 2, 10, 80), -- orcs
 (NULL, 6929, 8, 10, 80), -- trolls
 (NULL, 6929, 6, 10, 80), -- tauren
-(NULL, 6929, 5, 10, 80), -- undead
+(NULL, 6929, 5, 20, 80), -- undead
+(NULL, 6929, 10, 20, 80), -- blood elves
 --
 -- Innkeeper Pala, Thunder Bluff, Mulgore
 (NULL, 6746, 6, 10, 80), -- tauren
 --
 -- Innkeeper Norman, Undercity
 (NULL, 6741, 5, 10, 80), -- undead
+(NULL, 6741, 10, 20, 80), -- blood elves
+--
+-- Innkeeper Velandra Silvermoon
+(NULL, 16618, 10, 10, 80), -- blood elves
+-- Innkeeper Jovia Silvermoon
+(NULL, 17630, 2, 60, 80), -- orcs
+(NULL, 17630, 5, 60, 80), -- undead
+(NULL, 17630, 6, 60, 80), -- tauren
+(NULL, 17630, 8, 60, 80), -- trolls
+-- Innkeeper Delaniel Silvermoon Entrance
+(NULL, 15433, 10, 5, 7), -- blood elves
 --
 --       HORDE CONTESTED LOCATIONS
 --
@@ -232,6 +335,8 @@ INSERT INTO `ai_playerbot_rpg_races` VALUES
 (NULL, 3934, 2, 10, 25), -- orcs
 (NULL, 3934, 6, 10, 25), -- tauren
 (NULL, 3934, 8, 10, 25), -- trolls
+(NULL, 3934, 10, 20, 25), -- blood elves
+-- (NULL, 3934, 5, 15, 25), -- undead
 --
 -- Innkeeper Byula, Camp Taurajo, Barrens
 (NULL, 7714, 2, 10, 25), -- orcs
@@ -242,14 +347,17 @@ INSERT INTO `ai_playerbot_rpg_races` VALUES
 (NULL, 7731, 2, 15, 27), -- orcs
 (NULL, 7731, 6, 15, 27), -- tauren
 (NULL, 7731, 8, 15, 27), -- trolls
+(NULL, 7731, 10, 20, 27), -- blood elves
 --
 -- Innkeeper Abeqwa, Thousand Needles
 (NULL, 11116, 2, 25, 35), -- orcs
 (NULL, 11116, 6, 25, 35), -- tauren
 (NULL, 11116, 8, 25, 35), -- trolls
+(NULL, 11116, 10, 25, 35), -- blood elves
 --
 -- Innkeeper Shay, Tarren Mill, Hillsbrad
 (NULL, 2388, 5, 20, 30), -- undead
+(NULL, 2388, 10, 20, 30), -- blood elves
 --
 -- Innkeeper Greul, Feralas, Horde
 (NULL, 7737, 6, 40, 50), -- tauren
@@ -257,6 +365,7 @@ INSERT INTO `ai_playerbot_rpg_races` VALUES
 -- Innkeeper Kaylisk, Splitertree, Ashenvale
 (NULL, 12196, 2, 18, 30), -- orcs
 (NULL, 12196, 8, 18, 30), -- trolls
+(NULL, 12196, 10, 20, 30), -- blood elves
 --
 -- Marukai, Zoram'gar, Ashenvale
 (NULL, 12719, 2, 18, 30), -- orcs
@@ -272,30 +381,35 @@ INSERT INTO `ai_playerbot_rpg_races` VALUES
 (NULL, 9501, 5, 30, 40), -- undead
 (NULL, 9501, 6, 30, 40), -- tauren
 (NULL, 9501, 8, 30, 40), -- trolls
+(NULL, 9501, 10, 30, 40), -- blood elves
 --
 -- Innkeeper Lard, Revantusk Village , Hinterlands
 (NULL, 14731, 2, 40, 50), -- orcs
 (NULL, 14731, 5, 40, 50), -- undead
 (NULL, 14731, 6, 40, 50), -- tauren
 (NULL, 14731, 8, 40, 50), -- trolls
+(NULL, 14731, 10, 40, 50), -- blood elves
 --
 -- Innkeeper Shul'kar, Kargath Outpost, Badlands
 (NULL, 9356, 2, 35, 45), -- orcs
 (NULL, 9356, 5, 35, 45), -- undead
 (NULL, 9356, 6, 35, 45), -- tauren
 (NULL, 9356, 8, 35, 45), -- trolls
+(NULL, 9356, 10, 35, 45), -- blood elves
 --
 -- Innkeeper Karakul, Swamp of Sorrows
 (NULL, 6930, 2, 35, 45), -- orcs
 (NULL, 6930, 5, 35, 45), -- undead
 (NULL, 6930, 6, 35, 45), -- tauren
 (NULL, 6930, 8, 35, 45), -- trolls
+(NULL, 6930, 10, 35, 45), -- blood elves
 --
 -- Innkeeper Thulbek, Grom Gol, Stranglethorn Vale
 (NULL, 5814, 2, 30, 45), -- orcs
 (NULL, 5814, 5, 30, 45), -- undead
 (NULL, 5814, 6, 30, 45), -- tauren
 (NULL, 5814, 8, 30, 45), -- trolls
+(NULL, 5814, 10, 30, 45), -- blood elves
 --
 -- Overlord Mok'Morokk, Dustwallow Marsh
 (NULL, 4500, 2, 35, 45), -- orcs
@@ -306,30 +420,100 @@ INSERT INTO `ai_playerbot_rpg_races` VALUES
 (NULL, 8587, 2, 45, 55), -- orcs
 (NULL, 8587, 8, 45, 55), -- trolls
 (NULL, 8587, 6, 45, 55), -- tauren
+(NULL, 8587, 10, 45, 55), -- blood elves
 --
 -- Winna Hazzard, Felwood horde camp
 (NULL, 9996, 2, 48, 55), -- orcs
 (NULL, 9996, 6, 48, 55), -- tauren
 (NULL, 9996, 8, 48, 55), -- trolls
 (NULL, 9996, 5, 48, 55), -- undead
+(NULL, 9996, 10, 48, 55), -- blood elves
 --
 -- Larion, Horde Q-giver, Un'Goro
 (NULL, 9118, 2, 48, 55), -- orcs
 (NULL, 9118, 6, 48, 55), -- tauren
 (NULL, 9118, 8, 48, 55), -- trolls
 (NULL, 9118, 5, 48, 55), -- undead
+(NULL, 9118, 10, 48, 55), -- blood elves
 --
 -- Vahgruk, Horde Taxi, Burning Steppes
 (NULL, 13177, 2, 50, 60), -- orcs
 (NULL, 13177, 5, 50, 60), -- undead
 (NULL, 13177, 6, 50, 60), -- tauren
 (NULL, 13177, 8, 50, 60), -- trolls
+(NULL, 13177, 10, 50, 60), -- blood elves
 --
 -- General Kirika, Horde camp, Silithus
 (NULL, 17079, 2, 55, 60), -- orcs
 (NULL, 17079, 5, 55, 60), -- undead
 (NULL, 17079, 6, 55, 60), -- tauren
 (NULL, 17079, 8, 55, 60), -- trolls
+(NULL, 17079, 10, 55, 60), -- blood elves
+--
+--        OUTLAND
+--
+-- Lieutenant General Orion, Dark Portal
+(NULL, 19253, 2, 58, 59), -- orcs
+(NULL, 19253, 5, 58, 59), -- undead
+(NULL, 19253, 6, 58, 59), -- tauren
+(NULL, 19253, 8, 58, 59), -- trolls
+(NULL, 19253, 10, 58, 59), -- blood elves
+--
+-- Floyd Pinkus, Thrallmar, Hellfire
+(NULL, 16602, 2, 58, 63), -- orcs
+(NULL, 16602, 5, 58, 63), -- undead
+(NULL, 16602, 6, 58, 63), -- tauren
+(NULL, 16602, 8, 58, 63), -- trolls
+(NULL, 16602, 10, 58, 63), -- blood elves
+--
+-- Innkeeper Bazil, Falcon Watch, Hellfire
+(NULL, 18905, 2, 60, 63), -- orcs
+(NULL, 18905, 5, 60, 63), -- undead
+(NULL, 18905, 6, 60, 63), -- tauren
+(NULL, 18905, 8, 60, 63), -- trolls
+(NULL, 18905, 10, 60, 63), -- blood elves
+--
+-- Innkeeper Merajit, Zabra'jin, Zangarmarsh
+(NULL, 18245, 2, 60, 64), -- orcs
+(NULL, 18245, 5, 60, 64), -- undead
+(NULL, 18245, 6, 60, 64), -- tauren
+(NULL, 18245, 8, 60, 64), -- trolls
+(NULL, 18245, 10, 60, 64), -- blood elves
+--
+-- Innkeeper Grilka, Terrokar
+(NULL, 18957, 2, 62, 65), -- orcs
+(NULL, 18957, 5, 62, 65), -- undead
+(NULL, 18957, 6, 62, 65), -- tauren
+(NULL, 18957, 8, 62, 65), -- trolls
+(NULL, 18957, 10, 62, 65), -- blood elves
+--
+-- Matron Tikkit, Garadar, Nagrand
+(NULL, 18913, 2, 62, 65), -- orcs
+(NULL, 18913, 5, 62, 65), -- undead
+(NULL, 18913, 6, 62, 65), -- tauren
+(NULL, 18913, 8, 62, 65), -- trolls
+(NULL, 18913, 10, 62, 65), -- blood elves
+--
+-- Innkeeper Matron Varah, Mok'Nathal, Blade's Edge
+(NULL, 21088, 2, 65, 68), -- orcs
+(NULL, 21088, 5, 65, 68), -- undead
+(NULL, 21088, 6, 65, 68), -- tauren
+(NULL, 21088, 8, 65, 68), -- trolls
+(NULL, 21088, 10, 65, 68), -- blood elves
+--
+-- Innkeeper Gholah, Thunderlord, Blade's Edge
+(NULL, 19470, 2, 65, 68), -- orcs
+(NULL, 19470, 5, 65, 68), -- undead
+(NULL, 19470, 6, 65, 68), -- tauren
+(NULL, 19470, 8, 65, 68), -- trolls
+(NULL, 19470, 10, 65, 68), -- blood elves
+--
+-- Innkeeper Darg Bloodclaw, Shadowmoon Village
+(NULL, 19319, 2, 67, 70), -- orcs
+(NULL, 19319, 5, 67, 70), -- undead
+(NULL, 19319, 6, 67, 70), -- tauren
+(NULL, 19319, 8, 67, 70), -- trolls
+(NULL, 19319, 10, 67, 70), -- blood elves
 --
 --        NEUTRAL AREAS
 --
@@ -349,7 +533,20 @@ INSERT INTO `ai_playerbot_rpg_races` VALUES
 (NULL, 15174, 0, 55, 60),
 -- Jessica Chambers, East Plaguelands 16256 (Neutral)
 (NULL, 16256, 0, 53, 60),
---
+-- Innkeeper Coryth Stoktron, Cenarion Refuge (Neutral)
+(NULL, 18907, 0, 60, 64),
+-- Minalei, Aldors, Shattrath
+(NULL, 19046, 0, 60, 70),
+-- Innkeeper Haelthol, Scryers, Shattrath
+(NULL, 19232, 0, 60, 70),
+-- Shaarubo, World End Tavern
+(NULL, 19182, 0, 60, 70),
+-- Innkeeper Aelerya, Blade's Edge (Neutral)
+(NULL, 22922, 0, 65, 68),
+-- Innkeeper Eyonix, Stormspire, Netherstorm
+(NULL, 19531, 0, 67, 70),
+-- Innkeeper Remi Dodoso, Area 52, Netherstorm
+(NULL, 19571, 0, 67, 70),
 --
 --
 --       UNUSED
