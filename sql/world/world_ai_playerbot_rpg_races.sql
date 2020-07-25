@@ -536,11 +536,11 @@ INSERT INTO `ai_playerbot_rpg_races` VALUES
 -- Innkeeper Coryth Stoktron, Cenarion Refuge (Neutral)
 (NULL, 18907, 0, 60, 64),
 -- Minalei, Aldors, Shattrath
-(NULL, 19046, 0, 60, 70),
+(NULL, 19046, 0, 65, 70),
 -- Innkeeper Haelthol, Scryers, Shattrath
-(NULL, 19232, 0, 60, 70),
+(NULL, 19232, 0, 65, 70),
 -- Shaarubo, World End Tavern
-(NULL, 19182, 0, 60, 70),
+(NULL, 19182, 0, 65, 70),
 -- Innkeeper Aelerya, Blade's Edge (Neutral)
 (NULL, 22922, 0, 65, 68),
 -- Innkeeper Eyonix, Stormspire, Netherstorm

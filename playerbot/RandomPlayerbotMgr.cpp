@@ -261,12 +261,6 @@ bool RandomPlayerbotMgr::ProcessBot(uint32 bot)
 
 bool RandomPlayerbotMgr::ProcessBot(Player* player)
 {
-	if (urand(0, 100) > 50) // move optimisation to the next step
-	{
-		return true;
-	}
-	// TODO Improve bot revive rates for 1000+ bots
-
     uint32 bot = player->GetGUIDLow();
     if (sServerFacade.UnitIsDead(player))
     {
@@ -286,7 +280,7 @@ bool RandomPlayerbotMgr::ProcessBot(Player* player)
                     SetEventValue(bot, "deathcount", 0, 0);
                     Revive(player);
                     RandomTeleportForRpg(player);
-                    uint32 randomChange = urand(240, 600)  + urand(sPlayerbotAIConfig.randomBotUpdateInterval, sPlayerbotAIConfig.randomBotUpdateInterval * 3);
+                    uint32 randomChange = urand(240 + sPlayerbotAIConfig.randomBotUpdateInterval, 600 + sPlayerbotAIConfig.randomBotUpdateInterval * 3);
                     ScheduleChangeStrategy(bot, randomChange);
                     SetEventValue(bot, "teleport", 1, sPlayerbotAIConfig.maxRandomBotInWorldTime);
                     sLog.outString("Bot %d died %d times and is sent to city for %d minutes", bot, deathcount, int(randomChange / 60));
@@ -298,15 +292,8 @@ bool RandomPlayerbotMgr::ProcessBot(Player* player)
                     sLog.outBasic("Bot %d revived %d/5", bot, deathcount + 1);
                 }
             }
-
-            //Revive(player);
-           return false;
+           return false; // increase revive rate
         }
-
-			//uint32 randomTime = urand(sPlayerbotAIConfig.minRandomBotReviveTime, sPlayerbotAIConfig.maxRandomBotReviveTime);
-			//SetEventValue(bot, "dead", 1, randomTime);
-			//return false;
-			// TODO Timer doesn't work (code is not executed after "return true;"). Rewrite required
     }
 
 	if (urand(0, 100) > 20) // move optimisation to the next step
@@ -331,7 +318,7 @@ bool RandomPlayerbotMgr::ProcessBot(Player* player)
         Randomize(player);
 		//RandomTeleportForRpg(player);
 		SetEventValue(bot, "teleport", 1, sPlayerbotAIConfig.maxRandomBotInWorldTime);
-		uint32 randomChange = 120 + urand(sPlayerbotAIConfig.randomBotUpdateInterval, sPlayerbotAIConfig.randomBotUpdateInterval * 3);
+		uint32 randomChange = urand(240 + sPlayerbotAIConfig.randomBotUpdateInterval, 600 + sPlayerbotAIConfig.randomBotUpdateInterval * 3);
 		ScheduleChangeStrategy(bot, randomChange);
 		sLog.outString("Bot %d is randomized and sent to city for %d minutes", bot, int(randomChange / 60));
 
