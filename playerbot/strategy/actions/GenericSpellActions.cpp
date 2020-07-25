@@ -21,7 +21,7 @@ bool CastSpellAction::isUseful()
 
 bool CastAuraSpellAction::isUseful()
 {
-	return CastSpellAction::isUseful() && !ai->HasAura(spell, GetTarget());
+    return CastSpellAction::isUseful() && !ai->HasAura(spell, GetTarget(), true);
 }
 
 bool CastEnchantItemAction::isPossible()

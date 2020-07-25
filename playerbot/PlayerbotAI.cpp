@@ -814,7 +814,7 @@ bool IsRealAura(Player* bot, Aura const* aura, Unit* unit)
     return false;
 }
 
-bool PlayerbotAI::HasAura(string name, Unit* unit)
+bool PlayerbotAI::HasAura(string name, Unit* unit, bool maxStack)
 {
     if (!unit)
         return false;
@@ -839,7 +839,10 @@ bool PlayerbotAI::HasAura(string name, Unit* unit)
 				continue;
 
 			if (IsRealAura(bot, aura, unit))
-				return true;
+            {
+                uint32 maxStackAmount = aura->GetSpellProto()->StackAmount;
+                return maxStack && maxStackAmount ? aura->GetStackAmount() >= maxStackAmount : true;
+            }
 		}
     }
 
@@ -1141,6 +1144,15 @@ bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target, Item* itemTarget)
             //delete spell;
             return false;
         }
+    }
+
+    if (!urand(0, 50) && sServerFacade.IsInCombat(bot))
+    {
+        vector<uint32> sounds;
+        sounds.push_back(TEXTEMOTE_OPENFIRE);
+        sounds.push_back(305);
+        sounds.push_back(307);
+        PlaySound(sounds[urand(0, sounds.size() - 1)]);
     }
 
     WaitForSpellCast(spell);
