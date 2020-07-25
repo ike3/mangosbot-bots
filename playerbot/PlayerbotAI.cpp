@@ -1055,7 +1055,7 @@ bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target, Item* itemTarget)
     WorldObject* faceTo = target;
     if (!sServerFacade.IsInFront(bot, faceTo, sPlayerbotAIConfig.sightDistance, CAST_ANGLE_IN_FRONT) && !bot->IsTaxiFlying())
     {
-        sServerFacade.SetFacingTo(bot, faceTo);
+        if (!sServerFacade.isMoving(bot)) sServerFacade.SetFacingTo(bot, faceTo);
         failWithDelay = true;
     }
 
