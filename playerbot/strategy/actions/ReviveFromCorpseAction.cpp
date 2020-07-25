@@ -13,7 +13,7 @@ bool ReviveFromCorpseAction::Execute(Event event)
         return false;
 
     time_t reclaimTime = corpse->GetGhostTime() + bot->GetCorpseReclaimDelay( corpse->GetType()==CORPSE_RESURRECTABLE_PVP );
-    if (reclaimTime > time(0) || corpse->GetDistance(bot) > sPlayerbotAIConfig.spellDistance)
+    if (reclaimTime > time(0) || corpse->GetDistance(bot) > ai->GetRange("spell"))
         return false;
 
     bot->ResurrectPlayer(0.5f);

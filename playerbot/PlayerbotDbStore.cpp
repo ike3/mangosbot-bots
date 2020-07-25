@@ -100,6 +100,16 @@ void PlayerbotDbStore::Save(PlayerbotAI *ai)
     string rti = ai->GetAiObjectContext()->GetValue<string>("rti")->Get();
     ostringstream outRti; outRti << "rti " << rti;
     SaveValue(guid, "rti", outRti.str());
+
+    SaveRange(ai, guid, "spell");
+    SaveRange(ai, guid, "shoot");
+}
+
+void PlayerbotDbStore::SaveRange(PlayerbotAI *ai, uint64 guid, string type)
+{
+    float range = ai->GetAiObjectContext()->GetValue<float>("range", type)->Get();
+    ostringstream outRange; outRange << "range " << type << " " << range;
+    SaveValue(guid, "range", outRange.str());
 }
 
 string PlayerbotDbStore::FormatStrategies(string type, list<string> strategies)

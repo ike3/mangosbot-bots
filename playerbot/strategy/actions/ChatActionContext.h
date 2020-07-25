@@ -59,6 +59,7 @@
 #include "CustomStrategyEditAction.h"
 #include "FlagAction.h"
 #include "HireAction.h"
+#include "RangeAction.h"
 #include "SetCraftAction.h"
 #include "WtsAction.h"
 
@@ -69,6 +70,7 @@ namespace ai
     public:
         ChatActionContext()
         {
+            creators["range"] = &ChatActionContext::range;
             creators["stats"] = &ChatActionContext::stats;
             creators["quests"] = &ChatActionContext::quests;
             creators["leave"] = &ChatActionContext::leave;
@@ -141,6 +143,7 @@ namespace ai
         }
 
     private:
+        static Action* range(PlayerbotAI* ai) { return new RangeAction(ai); }
         static Action* flag(PlayerbotAI* ai) { return new FlagAction(ai); }
         static Action* craft(PlayerbotAI* ai) { return new SetCraftAction(ai); }
         static Action* hire(PlayerbotAI* ai) { return new HireAction(ai); }

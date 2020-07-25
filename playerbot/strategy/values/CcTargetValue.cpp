@@ -36,7 +36,7 @@ public:
             return;
         }
 
-        float minDistance = sPlayerbotAIConfig.spellDistance;
+        float minDistance = ai->GetRange("spell");
         Group* group = bot->GetGroup();
         if (!group)
             return;

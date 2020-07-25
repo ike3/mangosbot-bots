@@ -251,6 +251,7 @@ public:
     uint32 GetEquipGearScore(Player* player, bool withBags, bool withBank);
     bool HasSkill(SkillType skill);
     bool IsAllowedCommand(string text);
+    float GetRange(string type);
     
 private:
     void _fillGearScoreData(Player *player, Item* item, std::vector<uint32>* gearScore, uint32& twoHandScore);

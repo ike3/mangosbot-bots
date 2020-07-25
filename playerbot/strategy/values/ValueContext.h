@@ -66,6 +66,7 @@
 #include "OutfitListValue.h"
 #include "PossibleRpgTargetsValue.h"
 #include "RandomBotUpdateValue.h"
+#include "RangeValues.h"
 #include "SkipSpellsListValue.h"
 #include "SnareTargetValue.h"
 
@@ -182,9 +183,11 @@ namespace ai
             creators["rpg target"] = &ValueContext::rpg_target;
             creators["talk target"] = &ValueContext::talk_target;
             creators["group"] = &ValueContext::group;
+            creators["range"] = &ValueContext::range;
         }
 
     private:
+        static UntypedValue* range(PlayerbotAI* ai) { return new RangeValue(ai); }
         static UntypedValue* active_spell(PlayerbotAI* ai) { return new ActiveSpellValue(ai); }
         static UntypedValue* group(PlayerbotAI* ai) { return new IsInGroupValue(ai); }
         static UntypedValue* craft(PlayerbotAI* ai) { return new CraftValue(ai); }

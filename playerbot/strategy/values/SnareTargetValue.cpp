@@ -19,7 +19,7 @@ Unit* SnareTargetValue::Calculate()
         if (!unit || unit == target)
             continue;
 
-        if (bot->GetDistance(unit) > sPlayerbotAIConfig.spellDistance)
+        if (bot->GetDistance(unit) > ai->GetRange("spell"))
             continue;
 
         Unit* chaseTarget;
