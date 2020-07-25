@@ -408,11 +408,70 @@ FormationValue::FormationValue(PlayerbotAI* ai) : ManualSetValue<Formation*>(ai,
 {
 }
 
+string FormationValue::Save()
+{
+    return value ? value->getName() : "?";
+}
+
+bool FormationValue::Load(string formation)
+{
+
+    if (formation == "melee")
+    {
+        if (value) delete value;
+        value = new MeleeFormation(ai);
+    }
+    else if (formation == "queue")
+    {
+        if (value) delete value;
+        value = new QueueFormation(ai);
+    }
+    else if (formation == "chaos")
+    {
+        if (value) delete value;
+        value = new ChaosFormation(ai);
+    }
+    else if (formation == "circle")
+    {
+        if (value) delete value;
+        value = new CircleFormation(ai);
+    }
+    else if (formation == "line")
+    {
+        if (value) delete value;
+        value = new LineFormation(ai);
+    }
+    else if (formation == "shield")
+    {
+        if (value) delete value;
+        value = new ShieldFormation(ai);
+    }
+    else if (formation == "arrow")
+    {
+        if (value) delete value;
+        value = new ArrowFormation(ai);
+    }
+    else if (formation == "near" || formation == "default")
+    {
+        if (value) delete value;
+        value = new NearFormation(ai);
+    }
+    else if (formation == "far")
+    {
+        if (value) delete value;
+        value = new FarFormation(ai);
+    }
+    else return false;
+
+    return true;
+}
+
+
 bool SetFormationAction::Execute(Event event)
 {
     string formation = event.getParam();
 
-	Value<Formation*>* value = context->GetValue<Formation*>("formation");
+    FormationValue* value = (FormationValue*)context->GetValue<Formation*>("formation");
     if (formation == "?" || formation.empty())
     {
         ostringstream str; str << "Formation: |cff00ff00" << value->Get()->getName();
@@ -420,52 +479,7 @@ bool SetFormationAction::Execute(Event event)
         return true;
     }
 
-    if (formation == "melee")
-    {
-        if (value->Get()) delete value->Get();
-        value->Set(new MeleeFormation(ai));
-    }
-    else if (formation == "queue")
-    {
-        if (value->Get()) delete value->Get();
-        value->Set(new QueueFormation(ai));
-    }
-    else if (formation == "chaos")
-    {
-        if (value->Get()) delete value->Get();
-        value->Set(new ChaosFormation(ai));
-    }
-    else if (formation == "circle")
-    {
-        if (value->Get()) delete value->Get();
-        value->Set(new CircleFormation(ai));
-    }
-    else if (formation == "line")
-    {
-        if (value->Get()) delete value->Get();
-        value->Set(new LineFormation(ai));
-    }
-    else if (formation == "shield")
-    {
-        if (value->Get()) delete value->Get();
-        value->Set(new ShieldFormation(ai));
-    }
-    else if (formation == "arrow")
-    {
-        if (value->Get()) delete value->Get();
-        value->Set(new ArrowFormation(ai));
-    }
-    else if (formation == "near" || formation == "default")
-    {
-        if (value->Get()) delete value->Get();
-        value->Set(new NearFormation(ai));
-    }
-    else if (formation == "far")
-    {
-        if (value->Get()) delete value->Get();
-        value->Set(new FarFormation(ai));
-    }
-    else
+    if (!value->Load(formation))
     {
         ostringstream str; str << "Invalid formation: |cffff0000" << formation;
         ai->TellMaster(str);

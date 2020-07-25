@@ -14,6 +14,8 @@ namespace ai
         virtual void Update() {}
         virtual void Reset() {}
         virtual string Format() { return "?"; }
+        virtual string Save() { return "?"; }
+        virtual bool Load(string value) { return false; }
     };
 
     template<class T>

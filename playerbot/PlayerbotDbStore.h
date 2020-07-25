@@ -25,7 +25,6 @@ public:
 private:
     void SaveValue(uint64 guid, string key, string value);
     string FormatStrategies(string type, list<string> strategies);
-    void SaveRange(PlayerbotAI *a, uint64 guid, string type);
 };
 
 #define sPlayerbotDbStore PlayerbotDbStore::instance()

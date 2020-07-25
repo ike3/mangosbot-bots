@@ -71,3 +71,14 @@ LootStrategy* LootStrategyValue::instance(string strategy)
 
     return normal;
 }
+
+string LootStrategyValue::Save()
+{
+    return value ? value->GetName() : "?";
+}
+
+bool LootStrategyValue::Load(string text)
+{
+    value = LootStrategyValue::instance(text);
+    return true;
+}

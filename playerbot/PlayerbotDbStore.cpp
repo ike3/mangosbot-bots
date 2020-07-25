@@ -29,15 +29,25 @@ void PlayerbotDbStore::Load(PlayerbotAI *ai)
         ai->ChangeStrategy("+chat", BOT_STATE_COMBAT);
         ai->ChangeStrategy("+chat", BOT_STATE_NON_COMBAT);
 
+        list<string> values;
         do
         {
             Field* fields = results->Fetch();
             string key = fields[0].GetString();
             string value = fields[1].GetString();
-            ExternalEventHelper helper(ai->GetAiObjectContext());
-            helper.ParseChatCommand(value, ai->GetMaster());
-            ai->DoNextAction();
+            if (key == "value")
+            {
+                values.push_back(value);
+            }
+            else
+            {
+                ExternalEventHelper helper(ai->GetAiObjectContext());
+                helper.ParseChatCommand(value, ai->GetMaster());
+                ai->DoNextAction();
+            }
         } while (results->NextRow());
+
+        ai->GetAiObjectContext()->Load(values);
 
         delete results;
     }
@@ -52,65 +62,15 @@ void PlayerbotDbStore::Save(PlayerbotAI *ai)
 
     Reset(ai);
 
+    list<string> data = ai->GetAiObjectContext()->Save();
+    for (list<string>::iterator i = data.begin(); i != data.end(); ++i)
+    {
+        SaveValue(guid, "value", *i);
+    }
+
     SaveValue(guid, "co", FormatStrategies("co", ai->GetStrategies(BOT_STATE_COMBAT)));
     SaveValue(guid, "nc", FormatStrategies("nc", ai->GetStrategies(BOT_STATE_NON_COMBAT)));
     SaveValue(guid, "dead", FormatStrategies("dead", ai->GetStrategies(BOT_STATE_DEAD)));
-
-    Value<Formation*>* formation = ai->GetAiObjectContext()->GetValue<Formation*>("formation");
-    ostringstream outFormation; outFormation << "formation " << formation->Get()->getName();
-    SaveValue(guid, "formation", outFormation.str());
-
-    Value<LootStrategy*>* lootStrategy = ai->GetAiObjectContext()->GetValue<LootStrategy*>("loot strategy");
-    ostringstream outLoot; outLoot << "ll " << lootStrategy->Get()->GetName();
-    SaveValue(guid, "ll", outLoot.str());
-
-    list<string>& outfits = ai->GetAiObjectContext()->GetValue<list<string>&>("outfit list")->Get();
-    for (list<string>::iterator i = outfits.begin(); i != outfits.end(); ++i)
-    {
-        ostringstream outOutfit; outOutfit << "outfit " << *i;
-        SaveValue(guid, "outfit", outOutfit.str());
-    }
-
-    set<uint32>& ss = ai->GetAiObjectContext()->GetValue<set<uint32>&>("skip spells list")->Get();
-    ostringstream outSs;
-    outSs << "ss ";
-    bool first = true;
-    for (set<uint32>::iterator i = ss.begin(); i != ss.end(); ++i)
-    {
-        if (first) first = false; else outSs << ",";
-        outSs << *i;
-    }
-    SaveValue(guid, "ss", outSs.str());
-
-    uint32 saveMana = (uint32)round(ai->GetAiObjectContext()->GetValue<double>("mana save level")->Get());
-    ostringstream outSaveMana; outSaveMana << "save mana " << saveMana;
-    SaveValue(guid, "save mana", outSaveMana.str());
-
-    ai::PositionMap& posMap = ai->GetAiObjectContext()->GetValue<ai::PositionMap&>("position")->Get();
-    for (ai::PositionMap::iterator i = posMap.begin(); i != posMap.end(); ++i)
-    {
-        ai::Position pos = i->second;
-        if (pos.isSet())
-        {
-            ostringstream out; out << "position " << i->first << " " << pos.x << "," << pos.y << "," << pos.z;
-            SaveValue(guid, "position", out.str());
-        }
-    }
-
-    string rti = ai->GetAiObjectContext()->GetValue<string>("rti")->Get();
-    ostringstream outRti; outRti << "rti " << rti;
-    SaveValue(guid, "rti", outRti.str());
-
-    SaveRange(ai, guid, "spell");
-    SaveRange(ai, guid, "shoot");
-    SaveRange(ai, guid, "flee");
-}
-
-void PlayerbotDbStore::SaveRange(PlayerbotAI *ai, uint64 guid, string type)
-{
-    float range = ai->GetAiObjectContext()->GetValue<float>("range", type)->Get();
-    ostringstream outRange; outRange << "range " << type << " " << range;
-    SaveValue(guid, "range", outRange.str());
 }
 
 string PlayerbotDbStore::FormatStrategies(string type, list<string> strategies)

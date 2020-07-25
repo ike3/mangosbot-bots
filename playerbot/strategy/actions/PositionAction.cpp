@@ -59,7 +59,7 @@ bool PositionAction::Execute(Event event)
     vector<string> coords = split(action, ',');
     if (coords.size() == 3)
     {
-        pos.Set(atoi(coords[0].c_str()), atoi(coords[1].c_str()), atoi(coords[2].c_str()));
+        pos.Set(atoi(coords[0].c_str()), atoi(coords[1].c_str()), atoi(coords[2].c_str()), ai->GetBot()->GetMapId());
         posMap[name] = pos;
 
         ostringstream out; out << "Position " << name << " is set";
@@ -69,7 +69,7 @@ bool PositionAction::Execute(Event event)
 
 	if (action == "set")
 	{
-	    pos.Set( bot->GetPositionX(), bot->GetPositionY(), bot->GetPositionZ());
+        pos.Set(bot->GetPositionX(), bot->GetPositionY(), bot->GetPositionZ(), ai->GetBot()->GetMapId());
 	    posMap[name] = pos;
 
 	    ostringstream out; out << "Position " << name << " is set";
@@ -128,7 +128,7 @@ bool SetReturnPositionAction::Execute(Event event)
         if (!bot->IsWithinLOS(x, y, z))
             return false;
 
-        randomPos.Set(x, y, z);
+        randomPos.Set(x, y, z, bot->GetMapId());
         posMap["random"] = randomPos;
         return true;
     }

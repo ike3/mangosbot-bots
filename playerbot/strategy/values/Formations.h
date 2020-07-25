@@ -49,6 +49,8 @@ namespace ai
 	public:
         FormationValue(PlayerbotAI* ai);
         ~FormationValue() { if (value) { delete value; value = NULL; } }
+        virtual string Save();
+        virtual bool Load(string value);
     };
 
     class SetFormationAction : public Action
