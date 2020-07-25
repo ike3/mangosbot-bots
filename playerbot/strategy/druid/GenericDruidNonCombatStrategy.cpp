@@ -52,10 +52,6 @@ void GenericDruidNonCombatStrategy::InitTriggers(std::list<TriggerNode*> &trigge
         NextAction::array(0, new NextAction("mark of the wild", 12.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "mark of the wild on party",
-        NextAction::array(0, new NextAction("mark of the wild on party", 11.0f), NULL)));
-
-    triggers.push_back(new TriggerNode(
         "cure poison",
         NextAction::array(0, new NextAction("abolish poison", 21.0f), NULL)));
 
@@ -74,4 +70,13 @@ void GenericDruidNonCombatStrategy::InitTriggers(std::list<TriggerNode*> &trigge
     triggers.push_back(new TriggerNode(
        "often",
        NextAction::array(0, new NextAction("apply oil", 1.0f), NULL)));
+}
+
+void GenericDruidBuffStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+{
+    NonCombatStrategy::InitTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "mark of the wild on party",
+        NextAction::array(0, new NextAction("mark of the wild on party", 11.0f), NULL)));
 }

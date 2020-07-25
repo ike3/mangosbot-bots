@@ -30,9 +30,11 @@ namespace ai
                 creators["dps debuff"] = &priest::StrategyFactoryInternal::shadow_debuff;
                 creators["shadow debuff"] = &priest::StrategyFactoryInternal::shadow_debuff;
                 creators["cure"] = &priest::StrategyFactoryInternal::cure;
+                creators["buff"] = &priest::StrategyFactoryInternal::buff;
             }
 
         private:
+            static Strategy* buff(PlayerbotAI* ai) { return new PriestBuffStrategy(ai); }
             static Strategy* nc(PlayerbotAI* ai) { return new PriestNonCombatStrategy(ai); }
             static Strategy* shadow_aoe(PlayerbotAI* ai) { return new ShadowPriestAoeStrategy(ai); }
             static Strategy* pull(PlayerbotAI* ai) { return new PullStrategy(ai, "shoot"); }

@@ -30,6 +30,7 @@ namespace ai
                 creators["fire aoe"] = &mage::StrategyFactoryInternal::fire_aoe;
                 creators["frost aoe"] = &mage::StrategyFactoryInternal::frost_aoe;
                 creators["cure"] = &mage::StrategyFactoryInternal::cure;
+                creators["buff"] = &mage::StrategyFactoryInternal::buff;
             }
 
         private:
@@ -38,6 +39,7 @@ namespace ai
             static Strategy* fire_aoe(PlayerbotAI* ai) { return new FireMageAoeStrategy(ai); }
             static Strategy* frost_aoe(PlayerbotAI* ai) { return new FrostMageAoeStrategy(ai); }
             static Strategy* cure(PlayerbotAI* ai) { return new MageCureStrategy(ai); }
+            static Strategy* buff(PlayerbotAI* ai) { return new MageBuffStrategy(ai); }
         };
 
         class MageStrategyFactoryInternal : public NamedObjectContext<Strategy>
