@@ -10,8 +10,6 @@ public:
     FindTargetForTankStrategy(PlayerbotAI* ai) : FindTargetStrategy(ai)
     {
         minThreat = 0;
-        minTankCount = 0;
-        maxDpsCount = 0;
     }
 
 public:
@@ -27,24 +25,15 @@ public:
         }
 
         float threat = threatManager->getThreat(bot);
-        int tankCount, dpsCount;
-        GetPlayerCount(creature, &tankCount, &dpsCount);
-
-        if (!result ||
-            (minThreat >= threat &&
-            (minTankCount >= tankCount || maxDpsCount <= dpsCount)))
+        if (!result || (minThreat - threat) > 0.1f)
         {
             minThreat = threat;
-            minTankCount = tankCount;
-            maxDpsCount = dpsCount;
             result = creature;
         }
     }
 
 protected:
     float minThreat;
-    int minTankCount;
-    int maxDpsCount;
 };
 
 
