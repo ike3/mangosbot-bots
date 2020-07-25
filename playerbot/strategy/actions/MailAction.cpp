@@ -15,6 +15,7 @@ public:
     virtual bool Before(PlayerbotAI* ai)
     {
         ai->TellMaster("=== Mailbox ===");
+        tells.clear();
         return true;
     }
     virtual bool Process(int index, Mail* mail, PlayerbotAI* ai)
@@ -48,11 +49,22 @@ public:
             }
         }
         out  << ", |cff00ff00" << days << " day(s)";
-        ai->TellMaster(out.str());
+        tells.push_front(out.str());
+        return true;
+    }
+
+    virtual bool After(PlayerbotAI* ai)
+    {
+        for (list<string>::iterator i = tells.begin(); i != tells.end(); ++i)
+            ai->TellMaster(*i);
+
         return true;
     }
 
     static TellMailProcessor instance;
+
+private:
+    list<string> tells;
 };
 
 class TakeMailProcessor : public MailProcessor
