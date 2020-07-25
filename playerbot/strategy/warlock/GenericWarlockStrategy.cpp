@@ -45,6 +45,14 @@ void GenericWarlockStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
     RangedCombatStrategy::InitTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
+        "enemy too close for spell",
+        NextAction::array(0, new NextAction("flee", 49.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "shadow trance",
+        NextAction::array(0, new NextAction("shadow bolt", 20.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
         "curse of agony",
         NextAction::array(0, new NextAction("curse of agony", 11.0f), NULL)));
 

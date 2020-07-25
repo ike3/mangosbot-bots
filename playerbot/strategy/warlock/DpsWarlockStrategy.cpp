@@ -40,10 +40,6 @@ void DpsWarlockStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
     GenericWarlockStrategy::InitTriggers(triggers);
 
 	triggers.push_back(new TriggerNode(
-		"shadow trance",
-		NextAction::array(0, new NextAction("shadow bolt", 20.0f), NULL)));
-
-	triggers.push_back(new TriggerNode(
 		"backlash",
 		NextAction::array(0, new NextAction("shadow bolt", 20.0f), NULL)));
 }
@@ -51,12 +47,9 @@ void DpsWarlockStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 void DpsAoeWarlockStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
-        "high aoe",
-        NextAction::array(0, new NextAction("rain of fire", 30.0f), NULL)));
-
-    triggers.push_back(new TriggerNode(
         "medium aoe",
         NextAction::array(0, new NextAction("seed of corruption", 31.0f), NULL)));
+        NextAction::array(0, new NextAction("rain of fire", 30.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
         "light aoe",

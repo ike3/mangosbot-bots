@@ -47,18 +47,18 @@ void GenericWarlockNonCombatStrategy::InitTriggers(std::list<TriggerNode*> &trig
 		"no healthstone",
 		NextAction::array(0, new NextAction("create healthstone", 15.0f), NULL)));
 
-	triggers.push_back(new TriggerNode(
+	/*triggers.push_back(new TriggerNode(
 		"no firestone",
 		NextAction::array(0, new NextAction("create firestone", 14.0f), NULL)));
 
-    /*triggers.push_back(new TriggerNode(
+    triggers.push_back(new TriggerNode(
         "no spellstone",
         NextAction::array(0, new NextAction("create spellstone", 13.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
         "spellstone",
         NextAction::array(0, new NextAction("spellstone", 13.0f), NULL)));*/
-    // TODO Fix Spellstone
+    // TODO Fix Spellstone / Firestone
 
     triggers.push_back(new TriggerNode(
         "no pet",
