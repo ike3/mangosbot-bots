@@ -61,35 +61,37 @@ void FleeManager::calculatePossibleDestinations(list<FleePoint*> &points)
 	float botPosY = bot->GetPositionY();
 	float botPosZ = bot->GetPositionZ();
 
-	for (float distance = sPlayerbotAIConfig.tooCloseDistance; distance <= maxAllowedDistance; distance += 1.0f)
+    for (float cx = -maxAllowedDistance; cx <= maxAllowedDistance; cx += sPlayerbotAIConfig.tooCloseDistance)
 	{
-	    for (float divider = 4; divider <= 16; divider *= 2.0f)
+        for (float cy = -maxAllowedDistance; cy <= maxAllowedDistance; cy += sPlayerbotAIConfig.tooCloseDistance)
 	    {
-            for (float angle = followAngle; angle < followAngle + 2 * M_PI; angle += M_PI / divider)
-            {
-                float x = botPosX + cos(angle) * distance;
-                float y = botPosY + sin(angle) * distance;
-                float z = botPosZ;
-                bot->UpdateAllowedPositionZ(x, y, z);
+            float x = botPosX + cx, y = botPosY + cy, z = botPosZ;
+            float dist = sServerFacade.GetDistance2d(bot, x, y);
+            if (sServerFacade.IsDistanceGreaterOrEqualThan(dist, maxAllowedDistance))
+                continue;
 
-                Map* map = bot->GetMap();
-                const TerrainInfo* terrain = map->GetTerrain();
-                if (terrain && terrain->IsInWater(x, y, z))
-                    continue;
+            if (forceMaxDistance && sServerFacade.IsDistanceLessThan(dist, maxAllowedDistance - sPlayerbotAIConfig.tooCloseDistance))
+                continue;
 
-                if (!bot->IsWithinLOS(x, y, z))
-                    continue;
+            bot->UpdateAllowedPositionZ(x, y, z);
 
-                FleePoint *point = new FleePoint(x, y, z);
-                calculateDistanceToPlayers(point);
-                calculateDistanceToCreatures(point);
+            Map* map = bot->GetMap();
+            const TerrainInfo* terrain = map->GetTerrain();
+            if (terrain && terrain->IsInWater(x, y, z))
+                continue;
 
-                if (point->isReasonable())
-                    points.push_back(point);
-                else
-                    delete point;
-            }
-	    }
+            if (!bot->IsWithinLOS(x, y, z))
+                continue;
+
+            FleePoint *point = new FleePoint(bot->GetPlayerbotAI(), x, y, z);
+            calculateDistanceToPlayers(point);
+            calculateDistanceToCreatures(point);
+
+            if (point->isReasonable())
+                points.push_back(point);
+            else
+                delete point;
+        }
 	}
 }
 
@@ -105,12 +107,15 @@ void FleeManager::cleanup(list<FleePoint*> &points)
 
 bool FleePoint::isReasonable()
 {
-	return toCreatures.min >= 0 && toCreatures.max >= 0 &&
-	        (
+    return (
+                (toCreatures.min <= 0 || toCreatures.max <= 0) ||
+                toCreatures.min >= 0 && toCreatures.max >= 0 && toCreatures.min >= ai->GetRange("flee")
+           )
+            &&
+           (
                 (toAllPlayers.min <= 0 || toAllPlayers.max <= 0) ||
-                (toAllPlayers.min <= sPlayerbotAIConfig.spellDistance && toAllPlayers.max <= sPlayerbotAIConfig.spellDistance)
-            ) &&
-	        toCreatures.min >= sPlayerbotAIConfig.tooCloseDistance;
+                (toAllPlayers.min <= ai->GetRange("spell") && toAllPlayers.max <= ai->GetRange("spell"))
+           );
 }
 
 FleePoint* FleeManager::selectOptimalDestination(list<FleePoint*> &points)

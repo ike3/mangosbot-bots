@@ -176,15 +176,15 @@ namespace ai
             case CLASS_MAGE:
             case CLASS_PRIEST:
             case CLASS_WARLOCK:
-                range = sPlayerbotAIConfig.fleeDistance;
+                range = ai->GetRange("flee");
                 break;
             case CLASS_DRUID:
                 if (!ai->IsTank(bot))
-                    range = sPlayerbotAIConfig.fleeDistance;
+                    range = ai->GetRange("flee");
                 break;
             case CLASS_SHAMAN:
                 if (ai->IsHeal(bot))
-                    range = sPlayerbotAIConfig.fleeDistance;
+                    range = ai->GetRange("flee");
                 break;
             }
 
