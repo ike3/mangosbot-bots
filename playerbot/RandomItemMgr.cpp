@@ -59,7 +59,7 @@ public:
         if (equip)
         {
             uint32 desiredQuality = rare ? ITEM_QUALITY_RARE : ITEM_QUALITY_UNCOMMON;
-            if (proto->Quality < desiredQuality)
+            if (proto->Quality < desiredQuality || proto->Quality >= ITEM_QUALITY_EPIC)
                 return false;
 
             if (proto->Class == ITEM_CLASS_ARMOR || proto->Class == ITEM_CLASS_WEAPON)
@@ -67,7 +67,8 @@ public:
         }
         else
         {
-            if (proto->Quality < ITEM_QUALITY_UNCOMMON)
+            uint32 desiredQuality = rare ? ITEM_QUALITY_UNCOMMON : ITEM_QUALITY_NORMAL;
+            if (proto->Quality < desiredQuality || proto->Quality >= ITEM_QUALITY_RARE)
                 return false;
 
             if (proto->Class == ITEM_CLASS_TRADE_GOODS || proto->Class == ITEM_CLASS_CONSUMABLE)
@@ -88,6 +89,7 @@ RandomItemMgr::RandomItemMgr()
     predicates[RANDOM_ITEM_GUILD_TASK_REWARD_EQUIP_GREEN] = new RandomItemGuildTaskRewardPredicate(true, false);
     predicates[RANDOM_ITEM_GUILD_TASK_REWARD_EQUIP_BLUE] = new RandomItemGuildTaskRewardPredicate(true, true);
     predicates[RANDOM_ITEM_GUILD_TASK_REWARD_TRADE] = new RandomItemGuildTaskRewardPredicate(false, false);
+    predicates[RANDOM_ITEM_GUILD_TASK_REWARD_TRADE_RARE] = new RandomItemGuildTaskRewardPredicate(false, true);
 
     viableSlots[EQUIPMENT_SLOT_HEAD].insert(INVTYPE_HEAD);
     viableSlots[EQUIPMENT_SLOT_NECK].insert(INVTYPE_NECK);
@@ -219,7 +221,7 @@ void RandomItemMgr::BuildRandomItemCache()
              //   continue;
 
             uint32 level = proto->ItemLevel;
-            for (uint32 type = RANDOM_ITEM_GUILD_TASK; type <= RANDOM_ITEM_GUILD_TASK_REWARD_TRADE; type++)
+            for (uint32 type = RANDOM_ITEM_GUILD_TASK; type <= RANDOM_ITEM_GUILD_TASK_REWARD_TRADE_RARE; type++)
             {
                 RandomItemType rit = (RandomItemType)type;
                 if (predicates[rit] && !predicates[rit]->Apply(proto))
@@ -236,7 +238,7 @@ void RandomItemMgr::BuildRandomItemCache()
             maxLevel = sWorld.getConfig(CONFIG_UINT32_MAX_PLAYER_LEVEL);
         for (int level = 0; level < maxLevel / 10; level++)
         {
-            for (uint32 type = RANDOM_ITEM_GUILD_TASK; type <= RANDOM_ITEM_GUILD_TASK_REWARD_TRADE; type++)
+            for (uint32 type = RANDOM_ITEM_GUILD_TASK; type <= RANDOM_ITEM_GUILD_TASK_REWARD_TRADE_RARE; type++)
             {
                 RandomItemList list = randomItemCache[level][(RandomItemType)type];
                 sLog.outString("    Level %d..%d Type %d - %zu random items cached",
