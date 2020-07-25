@@ -13,25 +13,28 @@ bool DropQuestAction::Execute(Event event)
 
     PlayerbotChatHandler handler(GetMaster());
     uint32 entry = handler.extractQuestId(link);
-    if (!entry)
-        return false;
-
-    Quest const* quest = sObjectMgr.GetQuestTemplate(entry);
-    if (!quest)
-        return false;
 
     // remove all quest entries for 'entry' from quest log
     for (uint8 slot = 0; slot < MAX_QUEST_LOG_SIZE; ++slot)
     {
         uint32 logQuest = bot->GetQuestSlotQuestId(slot);
-        if (logQuest == entry)
+        Quest const* quest = sObjectMgr.GetQuestTemplate(logQuest);
+        if (!quest)
+            continue;
+
+        if (logQuest == entry || link.find(quest->GetTitle()) != string::npos)
         {
             bot->SetQuestSlot(slot, 0);
 
             // we ignore unequippable quest items in this case, its' still be equipped
             bot->TakeQuestSourceItem(logQuest, false);
+            entry = logQuest;
+            break;
         }
     }
+
+    if (!entry)
+        return false;
 
     bot->SetQuestStatus(entry, QUEST_STATUS_NONE);
     bot->getQuestStatusMap()[entry].m_rewarded = false;

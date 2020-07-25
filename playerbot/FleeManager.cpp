@@ -55,20 +55,64 @@ void FleeManager::calculateDistanceToCreatures(FleePoint *point)
 	}
 }
 
+bool intersectsOri(float angle, list<float>& angles)
+{
+    for (list<float>::iterator i = angles.begin(); i != angles.end(); ++i)
+    {
+        float ori = *i;
+        if (abs(angle - ori) < M_PI / 12) return true;
+    }
+
+    return false;
+}
+
 void FleeManager::calculatePossibleDestinations(list<FleePoint*> &points)
 {
 	float botPosX = bot->GetPositionX();
 	float botPosY = bot->GetPositionY();
 	float botPosZ = bot->GetPositionZ();
 
-    for (float cx = -maxAllowedDistance; cx <= maxAllowedDistance; cx += sPlayerbotAIConfig.tooCloseDistance)
-	{
-        for (float cy = -maxAllowedDistance; cy <= maxAllowedDistance; cy += sPlayerbotAIConfig.tooCloseDistance)
-	    {
-            float x = botPosX + cx, y = botPosY + cy, z = botPosZ;
-            float dist = sServerFacade.GetDistance2d(bot, x, y);
-            if (sServerFacade.IsDistanceGreaterOrEqualThan(dist, maxAllowedDistance))
+    list<float> meleeOri, enemyOri;
+    Group* group = bot->GetGroup();
+    if (group)
+    {
+        for (GroupReference *gref = group->GetFirstMember(); gref; gref = gref->next())
+        {
+            Player* player = gref->getSource();
+            if (player == bot)
                 continue;
+
+            float ori = bot->GetAngle(player);
+            switch (player->getClass()) {
+            case CLASS_PALADIN:
+            case CLASS_ROGUE:
+            case CLASS_WARRIOR:
+                meleeOri.push_back(ori);
+                break;
+            }
+        }
+    }
+
+    list<ObjectGuid> units = *bot->GetPlayerbotAI()->GetAiObjectContext()->GetValue<list<ObjectGuid> >("all targets");
+    for (list<ObjectGuid>::iterator i = units.begin(); i != units.end(); ++i)
+    {
+        Unit* unit = bot->GetPlayerbotAI()->GetUnit(*i);
+        if (!unit)
+            continue;
+
+        float ori = bot->GetAngle(unit);
+        enemyOri.push_back(ori);
+    }
+
+    for (float dist = maxAllowedDistance; dist > sPlayerbotAIConfig.tooCloseDistance; dist -= sPlayerbotAIConfig.followDistance)
+    {
+        for (float angle = 0.0f; angle <= 2 * M_PI; angle += M_PI / 12)
+        {
+            if (intersectsOri(angle, enemyOri)) continue;
+            if (intersectsOri(angle, meleeOri)) continue;
+
+            float x = botPosX + cos(angle) * maxAllowedDistance, y = botPosY + sin(angle) * maxAllowedDistance, z = botPosZ;
+            float dist = sServerFacade.GetDistance2d(bot, x, y);
 
             if (forceMaxDistance && sServerFacade.IsDistanceLessThan(dist, maxAllowedDistance - sPlayerbotAIConfig.tooCloseDistance))
                 continue;
@@ -87,10 +131,7 @@ void FleeManager::calculatePossibleDestinations(list<FleePoint*> &points)
             calculateDistanceToPlayers(point);
             calculateDistanceToCreatures(point);
 
-            if (point->isReasonable())
-                points.push_back(point);
-            else
-                delete point;
+            points.push_back(point);
         }
 	}
 }
