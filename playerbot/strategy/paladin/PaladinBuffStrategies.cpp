@@ -8,10 +8,6 @@ using namespace ai;
 void PaladinBuffManaStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
-        "seal",
-        NextAction::array(0, new NextAction("seal of wisdom", 90.0f), NULL)));
-
-    triggers.push_back(new TriggerNode(
         "blessing on party",
         NextAction::array(0, new NextAction("blessing of wisdom on party", 11.0f), NULL)));
 
@@ -22,10 +18,6 @@ void PaladinBuffManaStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 
 void PaladinBuffHealthStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 {
-    triggers.push_back(new TriggerNode(
-        "seal",
-        NextAction::array(0, new NextAction("seal of light", 90.0f), NULL)));
-
     triggers.push_back(new TriggerNode(
         "blessing on party",
         NextAction::array(0, new NextAction("blessing of kings on party", 11.0f), NULL)));
@@ -44,10 +36,6 @@ void PaladinBuffSpeedStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 
 void PaladinBuffDpsStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 {
-    triggers.push_back(new TriggerNode(
-        "seal",
-        NextAction::array(0, new NextAction("seal of vengeance", 89.0f), NULL)));
-
     triggers.push_back(new TriggerNode(
         "blessing on party",
         NextAction::array(0, new NextAction("blessing of might on party", 11.0f), NULL)));

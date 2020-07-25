@@ -81,41 +81,48 @@ namespace ai
 		CastCrusaderAuraAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "crusader aura") {}
 	};
 
-	class CastSealOfRighteousnessAction : public CastBuffSpellAction
+    class CastSealSpellAction : public CastBuffSpellAction
+    {
+    public:
+        CastSealSpellAction(PlayerbotAI* ai, string name) : CastBuffSpellAction(ai, name) {}
+        virtual bool isUseful() { return AI_VALUE2(bool, "combat", "self target"); }
+    };
+
+    class CastSealOfRighteousnessAction : public CastSealSpellAction
 	{
 	public:
-		CastSealOfRighteousnessAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "seal of righteousness") {}
+        CastSealOfRighteousnessAction(PlayerbotAI* ai) : CastSealSpellAction(ai, "seal of righteousness") {}
 	};
 
-	class CastSealOfJusticeAction : public CastBuffSpellAction
+	class CastSealOfJusticeAction : public CastSealSpellAction
 	{
 	public:
-		CastSealOfJusticeAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "seal of justice") {}
+		CastSealOfJusticeAction(PlayerbotAI* ai) : CastSealSpellAction(ai, "seal of justice") {}
 	};
 
 
-	class CastSealOfLightAction : public CastBuffSpellAction
+	class CastSealOfLightAction : public CastSealSpellAction
 	{
 	public:
-		CastSealOfLightAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "seal of light") {}
+		CastSealOfLightAction(PlayerbotAI* ai) : CastSealSpellAction(ai, "seal of light") {}
 	};
 
-	class CastSealOfWisdomAction : public CastBuffSpellAction
+	class CastSealOfWisdomAction : public CastSealSpellAction
 	{
 	public:
-		CastSealOfWisdomAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "seal of wisdom") {}
+		CastSealOfWisdomAction(PlayerbotAI* ai) : CastSealSpellAction(ai, "seal of wisdom") {}
 	};
 
-	class CastSealOfCommandAction : public CastBuffSpellAction
+	class CastSealOfCommandAction : public CastSealSpellAction
 	{
 	public:
-		CastSealOfCommandAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "seal of command") {}
+		CastSealOfCommandAction(PlayerbotAI* ai) : CastSealSpellAction(ai, "seal of command") {}
 	};
 
-	class CastSealOfVengeanceAction : public CastBuffSpellAction
+	class CastSealOfVengeanceAction : public CastSealSpellAction
 	{
 	public:
-	    CastSealOfVengeanceAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "seal of vengeance") {}
+	    CastSealOfVengeanceAction(PlayerbotAI* ai) : CastSealSpellAction(ai, "seal of vengeance") {}
 	};
 
 

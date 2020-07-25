@@ -5,7 +5,7 @@
 
 using namespace ai;
 
-bool SealTrigger::IsActive() 
+bool SealTrigger::IsActive()
 {
 	Unit* target = GetTarget();
 	return !ai->HasAura("seal of justice", target) &&
@@ -13,10 +13,11 @@ bool SealTrigger::IsActive()
         !ai->HasAura("seal of vengeance", target) &&
 		!ai->HasAura("seal of righteousness", target) &&
 		!ai->HasAura("seal of light", target) &&
-		!ai->HasAura("seal of wisdom", target);
+        !ai->HasAura("seal of wisdom", target) &&
+        AI_VALUE2(bool, "combat", "self target");
 }
 
-bool CrusaderAuraTrigger::IsActive() 
+bool CrusaderAuraTrigger::IsActive()
 {
 	Unit* target = GetTarget();
 	return AI_VALUE2(bool, "mounted", "self target") && !ai->HasAura("crusader aura", target);
