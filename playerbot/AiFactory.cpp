@@ -161,11 +161,11 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
             break;
         case CLASS_PALADIN:
             if (tab == 1)
-                engine->addStrategies("tank", "tank aoe", "bthreat", "cure", NULL);
+                engine->addStrategies("tank", "tank aoe", "bthreat", "cure", "baoe", NULL);
 			else if(tab == 0)
 				engine->addStrategies("heal", "bmana", "cure", "flee", NULL);
             else
-                engine->addStrategies("dps", "bdps", "threat", "dps assist", "cure", NULL);
+                engine->addStrategies("dps", "bdps", "dps assist", "cure", NULL);
             break;
         case CLASS_DRUID:
             if (tab == 0)
