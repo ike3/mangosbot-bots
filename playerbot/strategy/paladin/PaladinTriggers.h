@@ -28,13 +28,13 @@ namespace ai
     class BlessingOnPartyTrigger : public BuffOnPartyTrigger
     {
     public:
-        BlessingOnPartyTrigger(PlayerbotAI* ai) : BuffOnPartyTrigger(ai, "blessing of kings", 7) {}
+        BlessingOnPartyTrigger(PlayerbotAI* ai) : BuffOnPartyTrigger(ai, "blessing of kings", 2) {}
     };
 
     class BlessingTrigger : public BuffTrigger
     {
     public:
-        BlessingTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "blessing of sanctuary", 5) {}
+        BlessingTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "blessing of sanctuary", 2) {}
     };
 
     class HammerOfJusticeInterruptSpellTrigger : public InterruptSpellTrigger
