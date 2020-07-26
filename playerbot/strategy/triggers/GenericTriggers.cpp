@@ -53,7 +53,7 @@ bool BuffTrigger::IsActive()
     Unit* target = GetTarget();
 	return SpellTrigger::IsActive() &&
         !ai->HasAura(spell, target, true) &&
-		(!AI_VALUE2(bool, "has mana", "self target") || AI_VALUE2(uint8, "mana", "self target") > sPlayerbotAIConfig.lowMana);
+        (!AI_VALUE2(bool, "has mana", "self target") || AI_VALUE2(uint8, "mana", "self target") > sPlayerbotAIConfig.mediumMana);
 }
 
 Value<Unit*>* BuffOnPartyTrigger::GetTargetValue()
@@ -93,7 +93,7 @@ bool AoeTrigger::IsActive()
 
 bool DebuffTrigger::IsActive()
 {
-	return BuffTrigger::IsActive() && AI_VALUE2(uint8, "health", "current target") > 25;
+    return BuffTrigger::IsActive() && AI_VALUE2(uint8, "health", GetTargetName()) > 15;
 }
 
 bool SpellTrigger::IsActive()

@@ -48,11 +48,7 @@ void DpsAoeWarlockStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
         "medium aoe",
-        NextAction::array(0, new NextAction("rain of fire", 30.0f), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "light aoe",
-        NextAction::array(0, new NextAction("shadowfury", 29.0f), NULL)));
+        NextAction::array(0, new NextAction("rain of fire", 25.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
         "corruption on attacker",
@@ -61,11 +57,23 @@ void DpsAoeWarlockStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
     triggers.push_back(new TriggerNode(
         "curse of agony on attacker",
         NextAction::array(0, new NextAction("curse of agony on attacker", 28.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "siphon life on attacker",
+        NextAction::array(0, new NextAction("siphon life on attacker", 29.0f), NULL)));
 }
 
 void DpsWarlockDebuffStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
         "corruption",
-        NextAction::array(0, new NextAction("corruption", 12.0f), NULL)));
+        NextAction::array(0, new NextAction("corruption", 22.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "curse of agony",
+        NextAction::array(0, new NextAction("curse of agony", 21.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "siphon life",
+        NextAction::array(0, new NextAction("siphon life", 23.0f), NULL)));
 }
