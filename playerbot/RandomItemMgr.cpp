@@ -610,8 +610,8 @@ void RandomItemMgr::BuildAmmoCache()
     if (maxLevel > sWorld.getConfig(CONFIG_UINT32_MAX_PLAYER_LEVEL))
         maxLevel = sWorld.getConfig(CONFIG_UINT32_MAX_PLAYER_LEVEL);
 
-    sLog.outString("Building ammo cache for %d levels", maxLevel);
-	uint32 counter1 = 0;
+    sLog.outBasic("Building ammo cache for %d levels", maxLevel);
+	int counter1 = 0;
     for (uint32 level = 1; level <= maxLevel+1; level+=10)
     {
         for (uint32 subClass = ITEM_SUBCLASS_ARROW; subClass <= ITEM_SUBCLASS_BULLET; subClass++)
@@ -648,8 +648,8 @@ void RandomItemMgr::BuildPotionCache()
     if (maxLevel > sWorld.getConfig(CONFIG_UINT32_MAX_PLAYER_LEVEL))
         maxLevel = sWorld.getConfig(CONFIG_UINT32_MAX_PLAYER_LEVEL);
 
-    sLog.outString("Building potion cache for %d levels", maxLevel);
-	uint32 counter2 = 0;
+    sLog.outBasic("Building potion cache for %d levels", maxLevel);
+	int counter2 = 0;
     for (uint32 level = 1; level <= maxLevel+1; level+=10)
     {
         uint32 effects[] = { SPELL_EFFECT_HEAL, SPELL_EFFECT_ENERGIZE };
@@ -722,8 +722,8 @@ void RandomItemMgr::BuildFoodCache()
     if (maxLevel > sWorld.getConfig(CONFIG_UINT32_MAX_PLAYER_LEVEL))
         maxLevel = sWorld.getConfig(CONFIG_UINT32_MAX_PLAYER_LEVEL);
 
-    sLog.outString("Building food cache for %d levels", maxLevel);
-	uint32 counter3 = 0;
+    sLog.outBasic("Building food cache for %d levels", maxLevel);
+	int counter3 = 0;
     for (uint32 level = 1; level <= maxLevel+1; level+=10)
     {
         uint32 categories[] = { 11, 59 };
@@ -797,8 +797,8 @@ void RandomItemMgr::BuildTradeCache()
     if (maxLevel > sWorld.getConfig(CONFIG_UINT32_MAX_PLAYER_LEVEL))
         maxLevel = sWorld.getConfig(CONFIG_UINT32_MAX_PLAYER_LEVEL);
 
-    sLog.outString("Building trade cache for %d levels", maxLevel);
-	uint32 counter4 = 0;
+    sLog.outBasic("Building trade cache for %d levels", maxLevel);
+	int counter4 = 0;
     for (uint32 level = 1; level <= maxLevel+1; level+=10)
     {
         for (uint32 itemId = 0; itemId < sItemStorage.GetMaxEntry(); ++itemId)
@@ -829,7 +829,7 @@ void RandomItemMgr::BuildTradeCache()
         sLog.outDetail("Trade cache for level=%d: %d items", level, size);
 		counter4++;
     }
-	sLog.outString("Cached %d trade items", counter4); // TEST
+	sLog.outString("Cached %d trade categories", counter4); // TEST
 }
 
 uint32 RandomItemMgr::GetRandomTrade(uint32 level)
@@ -844,7 +844,7 @@ void RandomItemMgr::BuildRarityCache()
     QueryResult* results = PlayerbotDatabase.PQuery("select item, rarity from ai_playerbot_rarity_cache");
     if (results)
     {
-        sLog.outString("Loading item rarity cache");
+        sLog.outBasic("Loading item rarity cache");
         int count = 0;
         do
         {
@@ -861,7 +861,7 @@ void RandomItemMgr::BuildRarityCache()
     }
     else
     {
-        sLog.outString("Building item rarity cache from %u items", sItemStorage.GetMaxEntry());
+        sLog.outBasic("Building item rarity cache from %u items", sItemStorage.GetMaxEntry());
         BarGoLink bar(sItemStorage.GetMaxEntry());
         for (uint32 itemId = 0; itemId < sItemStorage.GetMaxEntry(); ++itemId)
         {

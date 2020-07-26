@@ -73,7 +73,21 @@ namespace ai
     public:
         DropTargetAction(PlayerbotAI* ai) : Action(ai, "drop target") {}
 
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event event)
+        {
+            context->GetValue<Unit*>("current target")->Set(NULL);
+            bot->SetSelectionGuid(ObjectGuid());
+            ai->ChangeEngine(BOT_STATE_NON_COMBAT);
+            ai->InterruptSpell();
+            if (!urand(0, 200))
+            {
+                vector<uint32> sounds;
+                sounds.push_back(TEXTEMOTE_CHEER);
+                sounds.push_back(TEXTEMOTE_CONGRATULATE);
+                ai->PlaySound(sounds[urand(0, sounds.size() - 1)]);
+            }
+            return true;
+        }
     };
 
 }

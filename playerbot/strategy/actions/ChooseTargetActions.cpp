@@ -1,4 +1,4 @@
-#pragma once
+/*#pragma once
 
 #include "../Action.h"
 #include "ChooseTargetActions.h"
@@ -42,3 +42,4 @@ bool DropTargetAction::Execute(Event event)
     }
     return true;
 }
+*/
