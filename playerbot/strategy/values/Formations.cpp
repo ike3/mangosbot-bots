@@ -377,8 +377,8 @@ float Formation::GetFollowAngle()
 {
     Player* master = GetMaster();
     Group* group = bot->GetGroup();
-    int index = 0, total = 1;
-    float start = (master ? master->GetOrientation() : 0.0f);
+    PlayerbotAI* ai = bot->GetPlayerbotAI();
+    int index = 1, total = 1;
     if (!group && master)
     {
         for (PlayerBotMap::const_iterator i = master->GetPlayerbotMgr()->GetPlayerBotsBegin(); i != master->GetPlayerbotMgr()->GetPlayerBotsEnd(); ++i)
@@ -389,18 +389,42 @@ float Formation::GetFollowAngle()
     }
     else
     {
+        vector<Player*> roster;
         for (GroupReference *ref = group->GetFirstMember(); ref; ref = ref->next())
         {
-            if( ref->getSource() == master)
-                continue;
-
-            if( ref->getSource() == bot)
-                index = total;
-
-            total++;
+            Player* member = ref->getSource();
+            if (member != master && !ai->IsTank(member) && !ai->IsHeal(member))
+            {
+                roster.insert(roster.begin() + roster.size() / 2, member);
+            }
         }
-    }
+        for (GroupReference *ref = group->GetFirstMember(); ref; ref = ref->next())
+        {
+            Player* member = ref->getSource();
+            if (member != master && ai->IsHeal(member))
+            {
+                roster.insert(roster.begin() + roster.size() / 2, member);
+            }
+        }
+        bool left = true;
+        for (GroupReference *ref = group->GetFirstMember(); ref; ref = ref->next())
+        {
+            Player* member = ref->getSource();
+            if (member != master && ai->IsTank(member))
+            {
+                if (left) roster.push_back(member); else roster.insert(roster.begin(), member);
+                left = !left;
+            }
+        }
 
+        for (vector<Player*>::iterator i = roster.begin(); i != roster.end(); ++i)
+        {
+            if (*i == bot) break;
+            index++;
+        }
+        total = roster.size() + 1;
+    }
+    float start = (master ? master->GetOrientation() : 0.0f);
     return start + (0.125f + 1.75f * index / total + (total == 2 ? 0.125f : 0.0f)) * M_PI;
 }
 
