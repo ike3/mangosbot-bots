@@ -11,6 +11,7 @@ bool RangeAction::Execute(Event event)
     if (param == "?")
     {
         PrintRange("spell");
+        PrintRange("heal");
         PrintRange("shoot");
         PrintRange("flee");
     }
