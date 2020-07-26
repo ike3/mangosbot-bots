@@ -66,7 +66,6 @@ bool CheckMountStateAction::Mount()
 			continue;
 
         MotionMaster &mm = *bot->GetMotionMaster();
-        mm.Clear();
 
 		ai->CastSpell(ids[index], bot);
 		return true;

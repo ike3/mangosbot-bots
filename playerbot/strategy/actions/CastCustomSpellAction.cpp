@@ -91,7 +91,6 @@ bool CastCustomSpellAction::Execute(Event event)
     }
 
     MotionMaster &mm = *bot->GetMotionMaster();
-    mm.Clear();
 
     bool result = spell ? ai->CastSpell(spell, target, itemTarget) : ai->CastSpell(text, target, itemTarget);
     if (result)

@@ -37,8 +37,7 @@ bool StayActionBase::Stay()
     if (!sServerFacade.isMoving(bot))
         return false;
 
-    mm.Clear();
-    bot->InterruptMoving();
+    bot->StopMoving();
 	bot->clearUnitState(UNIT_STAT_CHASE);
 	bot->clearUnitState(UNIT_STAT_FOLLOW);
 

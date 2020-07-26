@@ -1124,7 +1124,7 @@ bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target, Item* itemTarget)
 
     if (sServerFacade.isMoving(bot) && spell->GetCastTime())
     {
-        bot->StopMoving(true);
+        bot->StopMoving();
         SetNextCheckDelay(sPlayerbotAIConfig.globalCoolDown);
         spell->cancel();
         //delete spell;
