@@ -626,14 +626,18 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot)
     for(list<Unit *>::iterator i = targets.begin(); i!= targets.end(); ++i)
     {
         Unit* unit = *i;
-        bot->SetPosition(unit->GetPositionX(), unit->GetPositionY(), unit->GetPositionZ(), 0);
+        WorldLocation loc;
+        unit->GetPosition(loc);
+        locs.push_back(loc);
+        /*bot->SetPosition(unit->GetPositionX(), unit->GetPositionY(), unit->GetPositionZ(), 0);
         FleeManager manager(bot, sPlayerbotAIConfig.randomBotTeleportDistance, 0, true);
         float rx, ry, rz;
         if (manager.CalculateDestination(&rx, &ry, &rz))
         {
             WorldLocation loc(bot->GetMapId(), rx, ry, rz);
             locs.push_back(loc);
-        }
+        }*/
+        // ^^^ TODO lags when reviving bot
     }
 
     RandomTeleport(bot, locs);

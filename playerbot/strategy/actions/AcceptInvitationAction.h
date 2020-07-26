@@ -36,8 +36,9 @@ namespace ai
 
             if (sRandomPlayerbotMgr.IsRandomBot(bot))
                 bot->GetPlayerbotAI()->SetMaster(inviter);
-
-            ai->ResetStrategies();
+            
+            //sPlayerbotDbStore.Reset(ai);
+            ai->ResetStrategies(true);
             ai->TellMaster("Hello");
             return true;
         }
