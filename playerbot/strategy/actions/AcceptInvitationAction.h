@@ -38,7 +38,7 @@ namespace ai
                 bot->GetPlayerbotAI()->SetMaster(inviter);
             
             //sPlayerbotDbStore.Reset(ai);
-            ai->ResetStrategies(true);
+            ai->ResetStrategies(false);
             ai->TellMaster("Hello");
             return true;
         }

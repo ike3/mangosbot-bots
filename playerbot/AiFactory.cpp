@@ -211,7 +211,9 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
             }
 			if (player->getClass() == CLASS_PRIEST && player->getLevel() < 10 || tab == 0 || tab == 1)
 			{
-				engine->addStrategies("holy", NULL);
+                engine->removeStrategy("heal");
+                engine->removeStrategy("shadow aoe");
+                engine->addStrategies("holy", NULL);
 			}
 			if (player->getClass() == CLASS_PRIEST && player->getLevel() >= 10 || tab == 0 || tab == 1)
 			{
@@ -247,6 +249,8 @@ void AiFactory::AddDefaultNonCombatStrategies(Player* player, PlayerbotAI* const
         case CLASS_PALADIN:
             if (tab == 1)
                 nonCombatEngine->addStrategies("bthreat", "tank aoe", NULL);
+            else if (tab == 0)
+                nonCombatEngine->addStrategies("bmana", "dps assist", NULL);
             else
                 nonCombatEngine->addStrategies("bdps", "dps assist", NULL);
 
