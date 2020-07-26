@@ -10,7 +10,7 @@ namespace ai
     class RtiTargetValue : public TargetValue
     {
     public:
-        RtiTargetValue(PlayerbotAI* ai) : TargetValue(ai)
+        RtiTargetValue(PlayerbotAI* ai, string type = "rti") : type(type), TargetValue(ai)
         {}
 
     public:
@@ -34,7 +34,7 @@ namespace ai
             if(!group)
                 return NULL;
 
-            string rti = AI_VALUE(string, "rti");
+            string rti = AI_VALUE(string, type);
             int index = GetRtiIndex(rti);
 
             if (index == -1)
@@ -55,5 +55,14 @@ namespace ai
 
             return unit;
         }
+
+    private:
+        string type;
+    };
+
+    class RtiCcTargetValue : public RtiTargetValue
+    {
+    public:
+        RtiCcTargetValue(PlayerbotAI* ai) : RtiTargetValue(ai, "rti cc") {}
     };
 }

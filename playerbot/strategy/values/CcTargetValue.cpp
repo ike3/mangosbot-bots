@@ -20,6 +20,16 @@ public:
     virtual void CheckAttacker(Unit* creature, ThreatManager* threatManager)
     {
         Player* bot = ai->GetBot();
+
+        if (!ai->CanCastSpell(spell, creature, true))
+            return;
+
+        if (*ai->GetAiObjectContext()->GetValue<Unit*>("rti cc target") == creature)
+        {
+            result = creature;
+            return;
+        }
+
         if (*ai->GetAiObjectContext()->GetValue<Unit*>("current target") == creature)
             return;
 
@@ -27,25 +37,10 @@ public:
         if (health < sPlayerbotAIConfig.mediumHealth)
             return;
 
-        if (!ai->CanCastSpell(spell, creature, true))
-            return;
-
-        if (*ai->GetAiObjectContext()->GetValue<Unit*>("rti target") == creature)
-        {
-            result = creature;
-            return;
-        }
-
         float minDistance = ai->GetRange("spell");
         Group* group = bot->GetGroup();
         if (!group)
             return;
-
-        if (group->GetTargetIcon(4) == creature->GetObjectGuid())
-        {
-            result = creature;
-            return;
-        }
 
         if (*ai->GetAiObjectContext()->GetValue<uint8>("aoe count") > 2)
         {

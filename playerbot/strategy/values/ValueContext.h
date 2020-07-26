@@ -108,6 +108,7 @@ namespace ai
             creators["old target"] = &ValueContext::old_target;
             creators["grind target"] = &ValueContext::grind_target;
             creators["rti target"] = &ValueContext::rti_target;
+            creators["rti cc target"] = &ValueContext::rti_cc_target;
             creators["duel target"] = &ValueContext::duel_target;
             creators["party member to dispel"] = &ValueContext::party_member_to_dispel;
             creators["health"] = &ValueContext::health;
@@ -153,6 +154,7 @@ namespace ai
 
             creators["aoe heal"] = &ValueContext::aoe_heal;
 
+            creators["rti cc"] = &ValueContext::rti_cc;
             creators["rti"] = &ValueContext::rti;
             creators["position"] = &ValueContext::position;
             creators["threat"] = &ValueContext::threat;
@@ -203,6 +205,7 @@ namespace ai
 
         static UntypedValue* position(PlayerbotAI* ai) { return new PositionValue(ai); }
         static UntypedValue* rti(PlayerbotAI* ai) { return new RtiValue(ai); }
+        static UntypedValue* rti_cc(PlayerbotAI* ai) { return new RtiCcValue(ai); }
 
         static UntypedValue* aoe_heal(PlayerbotAI* ai) { return new AoeHealValue(ai); }
 
@@ -270,6 +273,7 @@ namespace ai
         static UntypedValue* pet_target(PlayerbotAI* ai) { return new PetTargetValue(ai); }
         static UntypedValue* grind_target(PlayerbotAI* ai) { return new GrindTargetValue(ai); }
         static UntypedValue* rti_target(PlayerbotAI* ai) { return new RtiTargetValue(ai); }
+        static UntypedValue* rti_cc_target(PlayerbotAI* ai) { return new RtiCcTargetValue(ai); }
         static UntypedValue* duel_target(PlayerbotAI* ai) { return new DuelTargetValue(ai); }
         static UntypedValue* has_totem(PlayerbotAI* ai) { return new HasTotemValue(ai); }
         static UntypedValue* threat(PlayerbotAI* ai) { return new ThreatValue(ai); }

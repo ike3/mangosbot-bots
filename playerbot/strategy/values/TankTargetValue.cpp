@@ -4,10 +4,10 @@
 
 using namespace ai;
 
-class FindTargetForTankStrategy : public FindTargetStrategy
+class FindTargetForTankStrategy : public FindNonCcTargetStrategy
 {
 public:
-    FindTargetForTankStrategy(PlayerbotAI* ai) : FindTargetStrategy(ai)
+    FindTargetForTankStrategy(PlayerbotAI* ai) : FindNonCcTargetStrategy(ai)
     {
         minThreat = 0;
     }
@@ -16,13 +16,7 @@ public:
     virtual void CheckAttacker(Unit* creature, ThreatManager* threatManager)
     {
         Player* bot = ai->GetBot();
-        Group* group = bot->GetGroup();
-        if (group)
-        {
-            uint64 guid = group->GetTargetIcon(4);
-            if (guid && creature->GetObjectGuid() == ObjectGuid(guid))
-                return;
-        }
+        if (IsCcTarget(creature)) return;
 
         float threat = threatManager->getThreat(bot);
         if (!result || (minThreat - threat) > 0.1f)

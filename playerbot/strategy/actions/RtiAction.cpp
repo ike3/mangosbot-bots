@@ -6,6 +6,45 @@
 
 using namespace ai;
 
+bool RtiAction::Execute(Event event)
+{
+    string text = event.getParam();
+    string type = "rti";
+    if (text.find("cc ") == 0)
+    {
+        type = "rti cc";
+        text = text.substr(3);
+    }
+    if (text.empty() || text == "?")
+    {
+        ostringstream outRti; outRti << "rti" << ": ";
+        AppendRti(outRti, "rti");
+        ai->TellMaster(outRti);
+
+        ostringstream outRtiCc; outRtiCc << "rti cc" << ": ";
+        AppendRti(outRtiCc, "rti cc");
+        ai->TellMaster(outRtiCc);
+        return true;
+    }
+
+    context->GetValue<string>(type)->Set(text);
+    ostringstream out; out << type << " set to: ";
+    AppendRti(out, type);
+    ai->TellMaster(out);
+    return true;
+}
+
+void RtiAction::AppendRti(ostringstream & out, string type)
+{
+    out << AI_VALUE(string, type);
+
+    ostringstream n; n << type << " target";
+    Unit* target = AI_VALUE(Unit*, n.str());
+    if (target)
+        out << " (" << target->GetName() << ")";
+
+}
+
 bool MarkRtiAction::Execute(Event event)
 {
     Group *group = bot->GetGroup();
