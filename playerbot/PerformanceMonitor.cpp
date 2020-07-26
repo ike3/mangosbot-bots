@@ -82,14 +82,14 @@ void PerformanceMonitor::Reset()
 PerformanceMonitorOperation::PerformanceMonitorOperation(PerformanceData* data) : data(data)
 {
 #ifdef CMANGOS
-    started = (std::chrono::time_point_cast<std::chrono::milliseconds>(Clock::now())).time_since_epoch();
+    started = (std::chrono::time_point_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now())).time_since_epoch();
 #endif
 }
 
 void PerformanceMonitorOperation::finish()
 {
 #ifdef CMANGOS
-    std::chrono::milliseconds finished = (std::chrono::time_point_cast<std::chrono::milliseconds>(Clock::now())).time_since_epoch();
+    std::chrono::milliseconds finished = (std::chrono::time_point_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now())).time_since_epoch();
     uint32 elapsed = (finished - started).count();
 
     std::lock_guard<std::mutex> guard(data->lock);

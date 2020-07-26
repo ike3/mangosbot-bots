@@ -5,6 +5,10 @@
 #include "PlayerbotAIBase.h"
 #include "PlayerbotAIConfig.h"
 
+#include <mutex>
+#include <chrono>
+#include <ctime>
+
 using namespace std;
 
 struct PerformanceData

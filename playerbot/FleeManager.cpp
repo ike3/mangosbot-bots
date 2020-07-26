@@ -104,34 +104,36 @@ void FleeManager::calculatePossibleDestinations(list<FleePoint*> &points)
         enemyOri.push_back(ori);
     }
 
-    for (float dist = maxAllowedDistance; dist > sPlayerbotAIConfig.tooCloseDistance; dist -= sPlayerbotAIConfig.followDistance)
+    float distIncrement = max(sPlayerbotAIConfig.followDistance, (maxAllowedDistance - sPlayerbotAIConfig.tooCloseDistance) / 10.0f);
+    for (float dist = maxAllowedDistance; dist > sPlayerbotAIConfig.tooCloseDistance; dist -= distIncrement)
     {
-        for (float angle = 0.0f; angle <= 2 * M_PI; angle += M_PI / 12)
+        for (float add = 0.0f; add < M_PI / 3; add += M_PI / 12)
         {
-            if (intersectsOri(angle, enemyOri)) continue;
-            if (intersectsOri(angle, meleeOri)) continue;
+            for (float angle = add; angle < add + 2 * M_PI; angle += M_PI / 3)
+            {
+                if (intersectsOri(angle, enemyOri)) continue;
+                if (intersectsOri(angle, meleeOri)) continue;
 
-            float x = botPosX + cos(angle) * maxAllowedDistance, y = botPosY + sin(angle) * maxAllowedDistance, z = botPosZ;
-            float dist = sServerFacade.GetDistance2d(bot, x, y);
+                float x = botPosX + cos(angle) * maxAllowedDistance, y = botPosY + sin(angle) * maxAllowedDistance, z = botPosZ;
 
-            if (forceMaxDistance && sServerFacade.IsDistanceLessThan(dist, maxAllowedDistance - sPlayerbotAIConfig.tooCloseDistance))
-                continue;
+                if (forceMaxDistance && sServerFacade.IsDistanceLessThan(sServerFacade.GetDistance2d(bot, x, y), maxAllowedDistance - sPlayerbotAIConfig.tooCloseDistance))
+                    continue;
 
-            bot->UpdateAllowedPositionZ(x, y, z);
+                bot->UpdateAllowedPositionZ(x, y, z);
 
-            Map* map = bot->GetMap();
-            const TerrainInfo* terrain = map->GetTerrain();
-            if (terrain && terrain->IsInWater(x, y, z))
-                continue;
+                Map* map = bot->GetMap();
+                const TerrainInfo* terrain = map->GetTerrain();
+                if (terrain && terrain->IsInWater(x, y, z))
+                    continue;
 
-            if (!bot->IsWithinLOS(x, y, z))
-                continue;
+                if (!bot->IsWithinLOS(x, y, z))
+                    continue;
 
-            FleePoint *point = new FleePoint(bot->GetPlayerbotAI(), x, y, z);
-            calculateDistanceToPlayers(point);
-            calculateDistanceToCreatures(point);
-
-            points.push_back(point);
+                FleePoint *point = new FleePoint(bot->GetPlayerbotAI(), x, y, z);
+                calculateDistanceToPlayers(point);
+                calculateDistanceToCreatures(point);
+                points.push_back(point);
+            }
         }
 	}
 }
