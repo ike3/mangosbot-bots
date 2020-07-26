@@ -88,3 +88,15 @@ void PriestBuffStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("divine spirit on party", 13.0f), NULL)));
 }
 
+void PriestShadowResistanceStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+{
+    NonCombatStrategy::InitTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "shadow protection",
+        NextAction::array(0, new NextAction("shadow protection", 12.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "shadow protection on party",
+        NextAction::array(0, new NextAction("shadow protection on party", 11.0f), NULL)));
+}

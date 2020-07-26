@@ -255,4 +255,16 @@ namespace ai
         CastPowerInfusionAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "power infusion") {}
     };
 
+    class CastShadowProtectionAction : public CastBuffSpellAction
+    {
+    public:
+        CastShadowProtectionAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "shadow protection") {}
+    };
+
+    class CastShadowProtectionOnPartyAction : public BuffOnPartyAction
+    {
+    public:
+        CastShadowProtectionOnPartyAction(PlayerbotAI* ai) : BuffOnPartyAction(ai, "shadow protection") {}
+    };
+
 }
