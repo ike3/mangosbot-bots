@@ -48,7 +48,6 @@ void DpsAoeWarlockStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
         "medium aoe",
-        NextAction::array(0, new NextAction("seed of corruption", 31.0f), NULL)));
         NextAction::array(0, new NextAction("rain of fire", 30.0f), NULL)));
 
     triggers.push_back(new TriggerNode(

@@ -904,7 +904,6 @@ bool GuildTaskMgr::Reward(uint32 owner, uint32 guildId)
 
     MailDraft draft("Thank You", body.str());
 
-    uint32 itemId = sRandomItemMgr.GetRandomItem(player->getLevel(), rewardType);
     if (itemId)
     {
         Item* item = Item::CreateItem(itemId, itemCount);
