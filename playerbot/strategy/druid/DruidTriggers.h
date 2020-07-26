@@ -6,12 +6,16 @@ namespace ai {
     {
     public:
         MarkOfTheWildOnPartyTrigger(PlayerbotAI* ai) : BuffOnPartyTrigger(ai, "mark of the wild", 2) {}
+
+        virtual bool IsActive() { return BuffOnPartyTrigger::IsActive() && !ai->HasAura("gift of the wild", GetTarget()); }
     };
 
     class MarkOfTheWildTrigger : public BuffTrigger
     {
     public:
         MarkOfTheWildTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "mark of the wild", 2) {}
+
+        virtual bool IsActive() { return BuffTrigger::IsActive() && !ai->HasAura("gift of the wild", GetTarget()); }
     };
 
     class ThornsTrigger : public BuffTrigger
