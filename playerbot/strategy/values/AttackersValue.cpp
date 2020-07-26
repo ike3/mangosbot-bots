@@ -92,8 +92,10 @@ bool AttackersValue::hasRealThreat(Unit *attacker)
     Creature *c = dynamic_cast<Creature*>(attacker);
 	return attacker &&
 		attacker->IsInWorld() &&
-		sServerFacade.IsAlive(attacker) &&
+        !sServerFacade.UnitIsDead(attacker) &&
 		!attacker->IsPolymorphed() &&
+        !sServerFacade.IsCharmed(attacker) &&
+        !sServerFacade.IsFeared(attacker) &&
 		!attacker->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE) &&
 		!attacker->HasStealthAura() &&
 		!attacker->HasInvisibilityAura() &&

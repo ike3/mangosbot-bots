@@ -105,6 +105,9 @@ bool AttackAction::Attack(Unit* target)
 #ifdef CMANGOS
             creatureAI->SetReactState(REACT_PASSIVE);
 #endif
+#ifdef MANGOS
+            pet->GetCharmInfo()->SetReactState(REACT_PASSIVE);
+#endif
             creatureAI->AttackStart(target);
         }
     }
