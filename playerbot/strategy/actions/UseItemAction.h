@@ -20,6 +20,7 @@ namespace ai
       bool UseItem(Item* item, ObjectGuid go, Item* itemTarget);
       bool UseGameObject(ObjectGuid guid);
       bool SocketItem(Item * item, Item * gem, bool replace = false);
+      void TellConsumableUse(Item* item, string action, float percent);
 
    private:
       bool selfOnly;
