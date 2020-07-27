@@ -164,7 +164,7 @@ uint32 RandomPlayerbotMgr::AddRandomBots()
                 guids.push_back(guid);
                 uint32 bot = guid;
                 SetEventValue(bot, "add", 1, urand(sPlayerbotAIConfig.minRandomBotInWorldTime, sPlayerbotAIConfig.maxRandomBotInWorldTime));
-                uint32 randomTime = 120 + urand(sPlayerbotAIConfig.randomBotUpdateInterval, sPlayerbotAIConfig.randomBotUpdateInterval * 3);
+                uint32 randomTime = 60 + urand(sPlayerbotAIConfig.randomBotUpdateInterval, sPlayerbotAIConfig.randomBotUpdateInterval * 3);
                 ScheduleRandomize(bot, randomTime);
 				SetEventValue(bot, "teleport", 1, sPlayerbotAIConfig.maxRandomBotInWorldTime);
 				SetEventValue(bot, "change_strategy", 1, sPlayerbotAIConfig.maxRandomBotInWorldTime);
@@ -318,7 +318,7 @@ bool RandomPlayerbotMgr::ProcessBot(Player* player)
         Randomize(player);
 		//RandomTeleportForRpg(player);
 		SetEventValue(bot, "teleport", 1, sPlayerbotAIConfig.maxRandomBotInWorldTime);
-		uint32 randomChange = urand(240 + sPlayerbotAIConfig.randomBotUpdateInterval, 600 + sPlayerbotAIConfig.randomBotUpdateInterval * 3);
+		uint32 randomChange = urand(300 + sPlayerbotAIConfig.randomBotUpdateInterval, 600 + sPlayerbotAIConfig.randomBotUpdateInterval * 3);
 		ScheduleChangeStrategy(bot, randomChange);
 		sLog.outString("Bot %d is randomized and sent to city for %d minutes", bot, int(randomChange / 60));
 
@@ -627,9 +627,9 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot)
     for(list<Unit *>::iterator i = targets.begin(); i!= targets.end(); ++i)
     {
         Unit* unit = *i;
-        WorldLocation loc;
-        unit->GetPosition(loc);
-        locs.push_back(loc);
+        //WorldLocation loc;
+        //unit->GetPosition(loc);
+        //locs.push_back(loc);
         bot->SetPosition(unit->GetPositionX(), unit->GetPositionY(), unit->GetPositionZ(), 0);
         FleeManager manager(bot, sPlayerbotAIConfig.sightDistance, 0, true);
         float rx, ry, rz;

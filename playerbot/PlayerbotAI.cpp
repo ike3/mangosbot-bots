@@ -339,7 +339,7 @@ void PlayerbotAI::HandleBotOutgoingPacket(const WorldPacket& packet)
 		WorldPacket p(packet);
 		p.rpos(0);
 		ObjectGuid casterGuid;
-        p >> casterGuid;
+        p >> casterGuid.ReadAsPacked();
 		if (casterGuid != bot->GetObjectGuid())
 			return;
 
@@ -353,7 +353,7 @@ void PlayerbotAI::HandleBotOutgoingPacket(const WorldPacket& packet)
 		WorldPacket p(packet);
 		p.rpos(0);
 		ObjectGuid casterGuid;
-        p >> casterGuid;
+        p >> casterGuid.ReadAsPacked();
 
 		if (casterGuid != bot->GetObjectGuid())
 			return;
