@@ -55,8 +55,11 @@ void activatePrintStatsThread()
 
 RandomPlayerbotMgr::RandomPlayerbotMgr() : PlayerbotHolder(), processTicks(0), loginProgressBar(NULL)
 {
-    sPlayerbotCommandServer.Start();
-    PrepareTeleportCache();
+    if (sPlayerbotAIConfig.enabled || sPlayerbotAIConfig.randomBotAutologin)
+    {
+        sPlayerbotCommandServer.Start();
+        PrepareTeleportCache();
+    }
 }
 
 RandomPlayerbotMgr::~RandomPlayerbotMgr()
@@ -227,6 +230,11 @@ bool RandomPlayerbotMgr::ProcessBot(uint32 bot)
 
     if (!player)
     {
+        if (urand(0, 100) > 50) // less lag during bots login
+        {
+            return true;
+        }
+
         AddPlayerBot(bot, 0);
         SetEventValue(bot, "login", 1, sPlayerbotAIConfig.randomBotUpdateInterval);
         uint32 randomTime = urand(sPlayerbotAIConfig.minRandomBotReviveTime, sPlayerbotAIConfig.maxRandomBotReviveTime);
@@ -278,8 +286,10 @@ bool RandomPlayerbotMgr::ProcessBot(Player* player)
                 if (deathcount > 4)
                 {
                     SetEventValue(bot, "deathcount", 0, 0);
-                    Revive(player);
+                    SetEventValue(bot, "dead", 0, 0);
+                    SetEventValue(bot, "revive", 0, 0);
                     RandomTeleportForRpg(player);
+                    Refresh(player);
                     uint32 randomChange = urand(240 + sPlayerbotAIConfig.randomBotUpdateInterval, 600 + sPlayerbotAIConfig.randomBotUpdateInterval * 3);
                     ScheduleChangeStrategy(bot, randomChange);
                     SetEventValue(bot, "teleport", 1, sPlayerbotAIConfig.maxRandomBotInWorldTime);
@@ -357,7 +367,9 @@ void RandomPlayerbotMgr::Revive(Player* player)
     SetEventValue(bot, "revive", 0, 0);
 
     if (sServerFacade.GetDeathState(player) == CORPSE)
+    {
         RandomTeleport(player);
+    }
     else
     {
         RandomTeleportForLevel(player);
@@ -624,24 +636,30 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot)
     MaNGOS::UnitListSearcher<MaNGOS::AnyUnitInObjectRangeCheck> searcher(targets, u_check);
     Cell::VisitAllObjects(bot, searcher, range);
 
-    for(list<Unit *>::iterator i = targets.begin(); i!= targets.end(); ++i)
+    if (!targets.empty())
     {
-        Unit* unit = *i;
-        //WorldLocation loc;
-        //unit->GetPosition(loc);
-        //locs.push_back(loc);
-        bot->SetPosition(unit->GetPositionX(), unit->GetPositionY(), unit->GetPositionZ(), 0);
-        FleeManager manager(bot, sPlayerbotAIConfig.sightDistance, 0, true);
-        float rx, ry, rz;
-        if (manager.CalculateDestination(&rx, &ry, &rz))
+        for (list<Unit *>::iterator i = targets.begin(); i != targets.end(); ++i)
         {
-            WorldLocation loc(bot->GetMapId(), rx, ry, rz);
-            locs.push_back(loc);
+            Unit* unit = *i;
+            //WorldLocation loc;
+            //unit->GetPosition(loc);
+            //locs.push_back(loc);
+            bot->SetPosition(unit->GetPositionX(), unit->GetPositionY(), unit->GetPositionZ(), 0);
+            FleeManager manager(bot, sPlayerbotAIConfig.sightDistance, 0, true);
+            float rx, ry, rz;
+            if (manager.CalculateDestination(&rx, &ry, &rz))
+            {
+                WorldLocation loc(bot->GetMapId(), rx, ry, rz);
+                locs.push_back(loc);
+            }
+            // ^^^ TODO lags when reviving bot
         }
-        // ^^^ TODO lags when reviving bot
+    }
+    else
+    {
+        RandomTeleportForLevel(bot);
     }
 
-    RandomTeleport(bot, locs);
     if (pmo) pmo->finish();
 
     Refresh(bot);
@@ -1011,7 +1029,7 @@ void RandomPlayerbotMgr::OnPlayerLogin(Player* player)
     for (PlayerBotMap::const_iterator it = GetPlayerBotsBegin(); it != GetPlayerBotsEnd(); ++it)
     {
         Player* const bot = it->second;
-        if (player == bot || player->GetPlayerbotAI())
+        if (player == bot/* || player->GetPlayerbotAI()*/) // TEST
             continue;
 
         Group* group = bot->GetGroup();

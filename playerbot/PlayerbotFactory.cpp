@@ -132,13 +132,14 @@ void PlayerbotFactory::Randomize(bool incremental)
     ClearSkills();
     ClearSpells();
     ClearInventory();
+    CancelAuras();
     bot->SaveToDB();
     if (pmo) pmo->finish();
 
-    pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Immersive");
+    /*pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Immersive");
     sLog.outDetail("Initializing immersive...");
     InitImmersive();
-    if (pmo) pmo->finish();
+    if (pmo) pmo->finish();*/
 
 	if (sPlayerbotAIConfig.randomBotPreQuests) {
 		sLog.outDetail("Initializing quests...");
@@ -156,12 +157,12 @@ void PlayerbotFactory::Randomize(bool incremental)
 		{
 			bot->SetLevel(level);
 		}
-	}
-    ClearInventory();
-    bot->SetUInt32Value(PLAYER_XP, 0);
-    CancelAuras();
-    bot->SaveToDB();
-    if (pmo) pmo->finish();
+        ClearInventory();
+        bot->SetUInt32Value(PLAYER_XP, 0);
+        CancelAuras();
+        bot->SaveToDB();
+        if (pmo) pmo->finish();
+    }
 
     pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Spells1");
     sLog.outDetail("Initializing spells (step 1)...");
@@ -244,9 +245,10 @@ void PlayerbotFactory::Randomize(bool incremental)
 
     pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Guilds & ArenaTeams");
     sLog.outDetail("Initializing guilds & ArenaTeams");
+    bot->SaveToDB(); //thesawolf - save save save (hopefully avoids dupes)
     InitGuild();
 #ifndef MANGOSBOT_ZERO
-	InitArenaTeam();
+	//InitArenaTeam();
 #endif
     if (pmo) pmo->finish();
 
@@ -259,7 +261,7 @@ void PlayerbotFactory::Randomize(bool incremental)
 
     pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Save");
     sLog.outDetail("Saving to DB...");
-    bot->SetMoney(10000 * sqrt(urand(1, level * 10)));
+    bot->SetMoney(10000 * sqrt(urand(1, level * 5)));
     bot->SaveToDB();
     sLog.outDetail("Done.");
     if (pmo) pmo->finish();
@@ -272,7 +274,7 @@ void PlayerbotFactory::Refresh()
     InitFood();
     InitPotions();
     bot->SaveToDB();
-    bot->SaveToDB();
+    //bot->SaveToDB();
 }
 
 void PlayerbotFactory::AddConsumables()
@@ -1837,6 +1839,7 @@ void PlayerbotFactory::InitInventoryEquip()
 
 void PlayerbotFactory::InitGuild()
 {
+    bot->SaveToDB();
     if (bot->GetGuildId())
         return;
 
@@ -1864,6 +1867,7 @@ void PlayerbotFactory::InitGuild()
 
     if (guild->GetMemberSize() < urand(10, 15))
         guild->AddMember(bot->GetObjectGuid(), urand(GR_OFFICER, GR_INITIATE));
+    bot->SaveToDB();
 }
 
 void PlayerbotFactory::InitImmersive()
