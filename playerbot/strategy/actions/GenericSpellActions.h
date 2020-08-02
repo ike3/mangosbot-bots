@@ -258,6 +258,12 @@ namespace ai
         CastArcaneTorrentAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "arcane torrent") {}
     };
 
+    class CastManaTapAction : public CastBuffSpellAction
+    {
+    public:
+        CastManaTapAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "mana tap") {}
+    };
+
     class CastSpellOnEnemyHealerAction : public CastSpellAction
     {
     public:

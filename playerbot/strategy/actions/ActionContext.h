@@ -129,6 +129,7 @@ namespace ai
         static Action* gift_of_the_naaru(PlayerbotAI* ai) { return new CastGiftOfTheNaaruAction(ai); }
         static Action* lifeblood(PlayerbotAI* ai) { return new CastLifeBloodAction(ai); }
         static Action* arcane_torrent(PlayerbotAI* ai) { return new CastArcaneTorrentAction(ai); }
+        static Action* mana_tap(PlayerbotAI* ai) { return new CastManaTapAction(ai); }
         static Action* end_pull(PlayerbotAI* ai) { return new ChangeCombatStrategyAction(ai, "-pull"); }
 
         static Action* emote(PlayerbotAI* ai) { return new EmoteAction(ai); }
