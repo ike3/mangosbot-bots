@@ -219,6 +219,8 @@ public:
     void RemoveShapeshift();
     void WaitForSpellCast(Spell *spell);
     bool PlaySound(uint32 emote);
+    //thesawolf - emote reactions
+    void ReceiveEmote(Player* player, uint32 emote);
     Item * FindPoison() const;
     Item * FindConsumable(uint32 displayId) const;
     Item * FindBandage() const;
