@@ -230,7 +230,7 @@ bool RandomPlayerbotMgr::ProcessBot(uint32 bot)
 
     if (!player)
     {
-        if (urand(0, 100) > 50) // less lag during bots login
+        if (urand(0, 100) > 20) // less lag during bots login
         {
             return true;
         }
@@ -288,8 +288,8 @@ bool RandomPlayerbotMgr::ProcessBot(Player* player)
                     SetEventValue(bot, "deathcount", 0, 0);
                     SetEventValue(bot, "dead", 0, 0);
                     SetEventValue(bot, "revive", 0, 0);
-                    RandomTeleportForRpg(player);
                     Refresh(player);
+                    RandomTeleportForRpg(player);
                     uint32 randomChange = urand(240 + sPlayerbotAIConfig.randomBotUpdateInterval, 600 + sPlayerbotAIConfig.randomBotUpdateInterval * 3);
                     ScheduleChangeStrategy(bot, randomChange);
                     SetEventValue(bot, "teleport", 1, sPlayerbotAIConfig.maxRandomBotInWorldTime);

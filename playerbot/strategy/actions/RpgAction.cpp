@@ -113,9 +113,9 @@ void RpgAction::taxi(Unit* unit)
     context->GetValue<ObjectGuid>("rpg target")->Set(ObjectGuid());
 
     uint32 path = nodes[urand(0, nodes.size() - 1)];
-    bot->m_taxi.SetTaximaskNode(path);
+    //bot->m_taxi.SetTaximaskNode(path); // Causes crash/freeze
     uint32 money = bot->GetMoney();
-    bot->SetMoney(money + 10000);
+    bot->SetMoney(money + 100000);
 
     TaxiPathEntry const* entry = sTaxiPathStore.LookupEntry(path);
     if (!entry)
@@ -127,7 +127,7 @@ void RpgAction::taxi(Unit* unit)
         sLog.outError("Bot %s cannot talk to flightmaster (%zu location available)", bot->GetName(), nodes.size());
         return;
     }
-	ai->SetNextCheckDelay(2000);
+    ai->SetNextCheckDelay(urand(2000, 10000));
     if (!bot->ActivateTaxiPathTo({ entry->from, entry->to }, flightMaster, 0))
     {
         sLog.outError("Bot %s cannot fly %u (%zu location available)", bot->GetName(), path, nodes.size());
