@@ -127,7 +127,6 @@ void RpgAction::taxi(Unit* unit)
         sLog.outError("Bot %s cannot talk to flightmaster (%zu location available)", bot->GetName(), nodes.size());
         return;
     }
-    ai->SetNextCheckDelay(urand(2000, 10000));
     if (!bot->ActivateTaxiPathTo({ entry->from, entry->to }, flightMaster, 0))
     {
         sLog.outError("Bot %s cannot fly %u (%zu location available)", bot->GetName(), path, nodes.size());
