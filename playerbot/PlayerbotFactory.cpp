@@ -39,6 +39,7 @@ uint32 PlayerbotFactory::tradeSkills[] =
 };
 
 list<uint32> PlayerbotFactory::classQuestIds;
+list<uint32> PlayerbotFactory::specialQuestIds;
 
 void PlayerbotFactory::Init()
 {
@@ -54,6 +55,14 @@ void PlayerbotFactory::Init()
         AddPrevQuests(questId, classQuestIds);
         classQuestIds.remove(questId);
         classQuestIds.push_back(questId);
+    }
+
+    for (list<uint32>::iterator i = sPlayerbotAIConfig.randomBotQuestIds.begin(); i != sPlayerbotAIConfig.randomBotQuestIds.end(); ++i)
+    {
+        uint32 questId = *i;
+        AddPrevQuests(questId, specialQuestIds);
+        specialQuestIds.remove(questId);
+        specialQuestIds.push_back(questId);
     }
 }
 
@@ -102,7 +111,8 @@ void PlayerbotFactory::Randomize(bool incremental)
 
     sLog.outDetail("Initializing quests...");
     pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Quests");
-    InitQuests();
+    InitQuests(classQuestIds);
+    InitQuests(specialQuestIds);
     // quest rewards boost bot level, so reduce back
     bot->SetLevel(level);
     ClearInventory();
@@ -1234,10 +1244,10 @@ void PlayerbotFactory::AddPrevQuests(uint32 questId, list<uint32>& questIds)
     }
 }
 
-void PlayerbotFactory::InitQuests()
+void PlayerbotFactory::InitQuests(list<uint32>& questMap)
 {
     int count = 0;
-    for (list<uint32>::iterator i = classQuestIds.begin(); i != classQuestIds.end(); ++i)
+    for (list<uint32>::iterator i = questMap.begin(); i != questMap.end(); ++i)
     {
         uint32 questId = *i;
         Quest const *quest = sObjectMgr.GetQuestTemplate(questId);

@@ -37,7 +37,7 @@ private:
     void InitSpecialSpells();
     void InitTalents();
     void InitTalents(uint32 specNo);
-    void InitQuests();
+    void InitQuests(list<uint32>& questMap);
     void InitPet();
     void ClearInventory();
     void InitAmmo();
@@ -67,4 +67,5 @@ private:
     uint32 itemQuality;
     static uint32 tradeSkills[];
     static list<uint32> classQuestIds;
+    static list<uint32> specialQuestIds;
 };
