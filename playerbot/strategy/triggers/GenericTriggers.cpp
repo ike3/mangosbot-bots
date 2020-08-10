@@ -210,7 +210,7 @@ bool EnemyPlayerIsAttacking::IsActive()
 {
     Unit* enemyPlayer = AI_VALUE(Unit*, "enemy player target");
     Unit* target = AI_VALUE(Unit*, "current target");
-    return enemyPlayer && target != enemyPlayer;
+    return enemyPlayer && !target;
 }
 
 bool IsSwimmingTrigger::IsActive()

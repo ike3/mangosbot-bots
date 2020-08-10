@@ -146,9 +146,18 @@ void PlayerbotAI::UpdateAIInternal(uint32 elapsed)
 
     PerformanceMonitorOperation *pmo = sPerformanceMonitor.start(PERF_MON_TOTAL, "PlayerbotAI::UpdateAIInternal");
     ExternalEventHelper helper(aiObjectContext);
+    list<ChatCommandHolder> delayed;
     while (!chatCommands.empty())
     {
         ChatCommandHolder holder = chatCommands.front();
+        time_t checkTime = holder.GetTime();
+        if (checkTime && time(0) < checkTime)
+        {
+            delayed.push_back(holder);
+            chatCommands.pop();
+            continue;
+        }
+
         string command = holder.GetCommand();
         Player* owner = holder.GetOwner();
         if (!helper.ParseChatCommand(command, owner) && holder.GetType() == CHAT_MSG_WHISPER)
@@ -158,6 +167,11 @@ void PlayerbotAI::UpdateAIInternal(uint32 elapsed)
             helper.ParseChatCommand("help");
         }
         chatCommands.pop();
+    }
+
+    for (list<ChatCommandHolder>::iterator i = delayed.begin(); i != delayed.end(); ++i)
+    {
+        chatCommands.push(*i);
     }
 
     botOutgoingPacketHandlers.Handle(helper);
@@ -318,6 +332,27 @@ void PlayerbotAI::HandleCommand(uint32 type, const string& text, Player& fromPla
     {
         std::string action = filtered.substr(filtered.find(" ") + 1);
         DoSpecificAction(action);
+    }
+    else if (type != CHAT_MSG_WHISPER && filtered.size() > 6 && filtered.substr(0, 6) == "queue ")
+    {
+        std::string remaining = filtered.substr(filtered.find(" ") + 1);
+        int index = 1;
+        Group* group = bot->GetGroup();
+        if (group)
+        {
+            for (GroupReference *ref = group->GetFirstMember(); ref; ref = ref->next())
+            {
+                if( ref->getSource() == master)
+                    continue;
+
+                if( ref->getSource() == bot)
+                    break;
+
+                index++;
+            }
+        }
+        ChatCommandHolder cmd(remaining, &fromPlayer, type, time(0) + index);
+        chatCommands.push(cmd);
     }
     else if (filtered == "reset")
     {
@@ -758,7 +793,8 @@ bool PlayerbotAI::TellError(string text, PlayerbotSecurityLevel securityLevel)
     if (!IsTellAllowed(securityLevel))
         return false;
 
-    master->GetPlayerbotMgr()->TellError(bot->GetName(), text);
+    PlayerbotMgr* mgr = master->GetPlayerbotMgr();
+    if (mgr) mgr->TellError(bot->GetName(), text);
 }
 
 bool PlayerbotAI::IsTellAllowed(PlayerbotSecurityLevel securityLevel)
