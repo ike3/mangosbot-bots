@@ -36,3 +36,4 @@ int strcmpi(std::string s1, std::string s2);
 #else
     #define MANGOSBOT_ZERO
 #endif
+#define VERSION 2

@@ -171,6 +171,7 @@ uint32 RandomPlayerbotMgr::AddRandomBots()
                 ScheduleRandomize(bot, randomTime);
 				SetEventValue(bot, "teleport", 1, sPlayerbotAIConfig.maxRandomBotInWorldTime);
 				SetEventValue(bot, "change_strategy", 1, sPlayerbotAIConfig.maxRandomBotInWorldTime);
+                SetEventValue(bot, "version", VERSION, sPlayerbotAIConfig.maxRandomBotInWorldTime);
                 bots.insert(bot);
                 currentBots.push_back(bot);
                 sLog.outBasic( "New random bot %d added", bot);
@@ -230,7 +231,7 @@ bool RandomPlayerbotMgr::ProcessBot(uint32 bot)
 
     if (!player)
     {
-        if (urand(0, 100) > 20) // less lag during bots login
+        if (urand(0, 100) > 40) // less lag during bots login
         {
             return true;
         }
@@ -239,7 +240,22 @@ bool RandomPlayerbotMgr::ProcessBot(uint32 bot)
         SetEventValue(bot, "login", 1, sPlayerbotAIConfig.randomBotUpdateInterval);
         uint32 randomTime = urand(sPlayerbotAIConfig.minRandomBotReviveTime, sPlayerbotAIConfig.maxRandomBotReviveTime);
         SetEventValue(bot, "update", 1, randomTime);
+
         return true;
+    }
+
+    // Hotfix System
+    if (player && !sServerFacade.UnitIsDead(player))
+    {
+        uint32 version = GetEventValue(bot, "version");
+        if (!version)
+        {
+            version = 0;
+        }
+        if (version < VERSION)
+        {
+            Hotfix(player, version);
+        }
     }
 
     SetEventValue(bot, "login", 0, 0);
@@ -270,6 +286,21 @@ bool RandomPlayerbotMgr::ProcessBot(uint32 bot)
 bool RandomPlayerbotMgr::ProcessBot(Player* player)
 {
     uint32 bot = player->GetGUIDLow();
+
+    // Hotfix System
+    if (!sServerFacade.UnitIsDead(player))
+    {
+        uint32 version = GetEventValue(bot, "version");
+        if (!version)
+        {
+            version = 0;
+        }
+        if (version < VERSION)
+        {
+            Hotfix(player, version);
+        }
+    }
+
     if (sServerFacade.UnitIsDead(player))
     {
         if (!GetEventValue(bot, "dead"))
@@ -328,7 +359,7 @@ bool RandomPlayerbotMgr::ProcessBot(Player* player)
         Randomize(player);
 		//RandomTeleportForRpg(player);
 		SetEventValue(bot, "teleport", 1, sPlayerbotAIConfig.maxRandomBotInWorldTime);
-		uint32 randomChange = urand(300 + sPlayerbotAIConfig.randomBotUpdateInterval, 600 + sPlayerbotAIConfig.randomBotUpdateInterval * 3);
+		uint32 randomChange = urand(sPlayerbotAIConfig.randomBotUpdateInterval * 5, sPlayerbotAIConfig.randomBotUpdateInterval * 15);
 		ScheduleChangeStrategy(bot, randomChange);
 		sLog.outString("Bot %d is randomized and sent to city for %d minutes", bot, int(randomChange / 60));
 
@@ -671,6 +702,8 @@ void RandomPlayerbotMgr::Randomize(Player* bot)
         RandomizeFirst(bot);
     else
         IncreaseLevel(bot);
+
+    SetValue(bot, "version", VERSION);
 }
 
 void RandomPlayerbotMgr::IncreaseLevel(Player* bot)
@@ -1304,7 +1337,7 @@ void RandomPlayerbotMgr::ChangeStrategy(Player* player)
     else
     {
         sLog.outDetail("Changing strategy for bot %s to RPG", player->GetName());
-		sLog.outString("Bot %d sent to camp", bot);
+		sLog.outString("Bot %d sent to city", bot);
         RandomTeleportForRpg(player);
 		SetEventValue(bot, "teleport", 1, sPlayerbotAIConfig.maxRandomBotInWorldTime);
     }
@@ -1328,4 +1361,69 @@ void RandomPlayerbotMgr::Remove(Player* bot)
     eventCache[owner].clear();
 
     LogoutPlayerBot(owner);
+}
+
+void RandomPlayerbotMgr::Hotfix(Player* bot, uint32 version)
+{
+    PlayerbotFactory factory(bot, bot->getLevel());
+    uint32 exp = bot->GetUInt32Value(PLAYER_XP);
+    uint32 level = bot->getLevel();
+    uint32 id = bot->GetGUIDLow();
+
+    for (int fix = version; fix <= VERSION; fix++)
+    {
+        int count = 0;
+        switch (fix)
+        {
+            case 1: // Apply class quests to previously made random bots
+
+                if (level < 10)
+                {
+                    break;
+                }
+
+                for (list<uint32>::iterator i = factory.classQuestIds.begin(); i != factory.classQuestIds.end(); ++i)
+                {
+                    uint32 questId = *i;
+                    Quest const *quest = sObjectMgr.GetQuestTemplate(questId);
+
+                    if (!bot->SatisfyQuestClass(quest, false) ||
+                        quest->GetMinLevel() > bot->getLevel() ||
+                        !bot->SatisfyQuestRace(quest, false) || bot->GetQuestStatus(questId) == QUEST_STATUS_COMPLETE)
+                        continue;
+
+                    bot->SetQuestStatus(questId, QUEST_STATUS_COMPLETE);
+                    bot->RewardQuest(quest, 0, bot, false);
+                    bot->SetLevel(level);
+                    bot->SetUInt32Value(PLAYER_XP, exp);
+                    sLog.outDetail("Bot %d rewarded quest %d",
+                        bot->GetGUIDLow(), questId);
+                    count++;
+                }
+
+                if (count > 0)
+                {
+                    sLog.outDetail("Bot %d hotfix (Class Quests), %d quests rewarded",
+                        bot->GetGUIDLow(), count);
+                    count = 0;
+                }
+                break;
+            case 2: // Init Riding skill fix
+
+                if (level < 20)
+                {
+                    break;
+                }
+                factory.InitSkills();
+                sLog.outDetail("Bot %d hotfix (Riding Skill) applied",
+                    bot->GetGUIDLow());
+                break;
+
+            default:
+                break;
+        }
+    }
+    SetValue(bot, "version", VERSION);
+    sLog.outBasic("Bot %d hotfix v%d applied",
+        bot->GetGUIDLow(), VERSION);
 }

@@ -49,6 +49,8 @@ public:
     static void Init();
     void Refresh();
     void Randomize(bool incremental);
+    static list<uint32> classQuestIds;
+    void InitSkills();
 
 private:
     void Prepare();
@@ -56,7 +58,6 @@ private:
     void InitEquipment(bool incremental);
     bool CanEquipItem(ItemPrototype const* proto, uint32 desiredQuality);
     bool CanEquipUnseenItem(uint8 slot, uint16 &dest, uint32 item);
-    void InitSkills();
     void InitTradeSkills();
     void UpdateTradeSkills();
     void SetRandomSkill(uint16 id);
@@ -102,7 +103,6 @@ private:
     uint32 level;
     uint32 itemQuality;
     static uint32 tradeSkills[];
-    static list<uint32> classQuestIds;
 
 protected:
    EnchantContainer m_EnchantContainer;
