@@ -178,6 +178,8 @@ void PlayerbotFactory::Randomize(bool incremental)
     pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Talents");
     sLog.outDetail("Initializing talents...");
     InitTalentsTree(incremental);
+    sPlayerbotDbStore.Reset(ai);
+    ai->ResetStrategies(false); // fix wrong stored strategy
     if (pmo) pmo->finish();
 
     pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Spells2");
@@ -1331,20 +1333,33 @@ void PlayerbotFactory::InitSkills()
     SetRandomSkill(SKILL_POLEARMS);
     SetRandomSkill(SKILL_FIST_WEAPONS);
 
+// Riding skills requirements are different
 #ifdef MANGOSBOT_ZERO
-	uint32 penalty = 20;
-#else
-	uint32 penalty = 0;
+    if (bot->getLevel() >= 60)
+        bot->SetSkill(SKILL_RIDING, 150, 150);
+    else if (bot->getLevel() >= 40)
+        bot->SetSkill(SKILL_RIDING, 75, 75);
 #endif
-
-	if (bot->getLevel() >= 70)
+#ifdef MANGOSBOT_ONE
+    if (bot->getLevel() >= 70)
+        bot->SetSkill(SKILL_RIDING, 300, 300);
+    else if (bot->getLevel() >= 68)
+        bot->SetSkill(SKILL_RIDING, 225, 225);
+    else if (bot->getLevel() >= 60)
+        bot->SetSkill(SKILL_RIDING, 150, 150);
+    else if (bot->getLevel() >= 30)
+        bot->SetSkill(SKILL_RIDING, 75, 75);
+#endif
+#ifdef MANGOSBOT_TWO
+    if (bot->getLevel() >= 70)
         bot->SetSkill(SKILL_RIDING, 300, 300);
     else if (bot->getLevel() >= 60)
         bot->SetSkill(SKILL_RIDING, 225, 225);
-    else if (bot->getLevel() >= 40 + penalty)
+    else if (bot->getLevel() >= 40)
         bot->SetSkill(SKILL_RIDING, 150, 150);
-    else if (bot->getLevel() >= 20 + penalty)
+    else if (bot->getLevel() >= 20)
         bot->SetSkill(SKILL_RIDING, 75, 75);
+#endif
     else
         bot->SetSkill(SKILL_RIDING, 0, 0);
 
@@ -1363,13 +1378,20 @@ void PlayerbotFactory::InitSkills()
 
 void PlayerbotFactory::SetRandomSkill(uint16 id)
 {
-	uint32 maxValue = level * 5;
-	if (level > 60) {
-		maxValue = (level + 5) * 5;
+    uint32 maxValue = level * 5; // vanilla 60*5 = 300
+
+// do not let skill go beyond limit even if maxlevel > blizzlike
+#ifndef MANGOSBOT_ZERO
+	if (level > 60)
+    {
+#ifdef MANGOSBOT_ONE
+        maxValue = (level + 5) * 5;   // tbc (70 + 5)*5 = 375
+#else
+        maxValue = (level + 10) * 5;  // wotlk (80 + 10)*5 = 450
+#endif
 	}
-	if (level > 70) {
-		maxValue = (level + 10) * 5;
-	}
+#endif
+
     uint32 value = urand(maxValue - level, maxValue);
     uint32 curValue = bot->GetSkillValue(id);
     if (!bot->HasSkill(id) || value > curValue)
