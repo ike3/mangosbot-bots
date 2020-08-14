@@ -123,8 +123,11 @@ void PlayerbotHolder::OnBotLogin(Player * const bot)
     }
 
     ai->ResetStrategies();
-    ai->ChangeStrategy("-rpg", BOT_STATE_NON_COMBAT);
-    ai->ChangeStrategy("-grind", BOT_STATE_NON_COMBAT);
+    if (group)
+    {
+        ai->ChangeStrategy("-rpg", BOT_STATE_NON_COMBAT);
+        ai->ChangeStrategy("-grind", BOT_STATE_NON_COMBAT);
+    }
     ai->TellMaster("Hello!");
 }
 
