@@ -177,7 +177,7 @@ bool PlayerbotAIConfig::Initialize()
     minEnchantingBotLevel = config.GetIntDefault("AiPlayerbot.minEnchantingBotLevel", 60);
     randombotStartingLevel = config.GetIntDefault("AiPlayerbot.randombotStartingLevel", 5);
     gearscorecheck = config.GetBoolDefault("AiPlayerbot.GearScoreCheck", false);
-	randomBotPreQuests = config.GetBoolDefault("AiPlayerbot.PreQuests", false);
+	randomBotPreQuests = config.GetBoolDefault("AiPlayerbot.PreQuests", true);
 
     targetPosRecalcDistance = config.GetFloatDefault("AiPlayerbot.TargetPosRecalcDistance", 0.1f), 
     BarGoLink::SetOutputState(config.GetBoolDefault("AiPlayerbot.ShowProgressBars", false));

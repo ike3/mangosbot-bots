@@ -245,7 +245,7 @@ bool RandomPlayerbotMgr::ProcessBot(uint32 bot)
     }
 
     // Hotfix System
-    if (player && !sServerFacade.UnitIsDead(player))
+    /*if (player && !sServerFacade.UnitIsDead(player))
     {
         uint32 version = GetEventValue(bot, "version");
         if (!version)
@@ -256,7 +256,7 @@ bool RandomPlayerbotMgr::ProcessBot(uint32 bot)
         {
             Hotfix(player, version);
         }
-    }
+    }*/
 
     SetEventValue(bot, "login", 0, 0);
     if (player->GetGroup() || player->IsTaxiFlying())
