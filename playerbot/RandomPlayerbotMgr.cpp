@@ -297,7 +297,7 @@ bool RandomPlayerbotMgr::ProcessBot(Player* player)
         }
         if (version < VERSION)
         {
-            Hotfix(player, version);
+            //Hotfix(player, version); Temporary disable hotfix
         }
     }
 
