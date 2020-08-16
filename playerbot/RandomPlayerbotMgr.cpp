@@ -84,12 +84,11 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed)
                 urand(sPlayerbotAIConfig.randomBotCountChangeMinInterval, sPlayerbotAIConfig.randomBotCountChangeMaxInterval));
     }
 
-    //if (!loginProgressBar)
-    //{
-    //    sLog.outString("Logging in %d random bots in the background", maxAllowedBotCount);
-    //    loginProgressBar = new BarGoLink(maxAllowedBotCount);
-    //}
-	// TODO Progress bar goes beyond 100%
+   /*if (!loginProgressBar && playerBots.size() + 10 < maxAllowedBotCount)
+    {
+        sLog.outString("Logging in %d random bots in the background", maxAllowedBotCount);
+        loginProgressBar = new BarGoLink(maxAllowedBotCount);
+    }*/ // bar goes > 100%
 
     // Fix possible divide by zero if maxAllowedBotCount is smaller then sPlayerbotAIConfig.randomBotsPerInterval
     uint32 notDiv = 1;
@@ -171,7 +170,7 @@ uint32 RandomPlayerbotMgr::AddRandomBots()
                 ScheduleRandomize(bot, randomTime);
 				SetEventValue(bot, "teleport", 1, sPlayerbotAIConfig.maxRandomBotInWorldTime);
 				SetEventValue(bot, "change_strategy", 1, sPlayerbotAIConfig.maxRandomBotInWorldTime);
-                SetEventValue(bot, "version", VERSION, sPlayerbotAIConfig.maxRandomBotInWorldTime);
+                SetEventValue(bot, "version", MANGOSBOT_VERSION, sPlayerbotAIConfig.maxRandomBotInWorldTime);
                 bots.insert(bot);
                 currentBots.push_back(bot);
                 sLog.outBasic( "New random bot %d added", bot);
@@ -295,7 +294,7 @@ bool RandomPlayerbotMgr::ProcessBot(Player* player)
         {
             version = 0;
         }
-        if (version < VERSION)
+        if (version < MANGOSBOT_VERSION)
         {
             //Hotfix(player, version); Temporary disable hotfix
         }
@@ -545,32 +544,7 @@ void RandomPlayerbotMgr::PrepareTeleportCache()
         }
     }
 
-    /*results = WorldDatabase.PQuery("SELECT count(*) "
-            "from creature c inner join creature_template t on c.id = t.entry "
-            "where t.NpcFlags & %u <> 0",
-        UNIT_NPC_FLAG_INNKEEPER);
-    uint32 rpgCacheSize = 0;
-    if (results)
-    {
-        Field* fields = results->Fetch();
-        rpgCacheSize = fields[0].GetUInt32();
-        delete results;
-    }*/
-
     sLog.outString("Preparing RPG teleport caches for %d factions...", sFactionTemplateStore.GetNumRows());
-            //BarGoLink bar(rpgCacheSize);
-/*    results = WorldDatabase.PQuery("SELECT map, position_x, position_y, position_z, "
-#ifdef MANGOS
-            "t.FactionAlliance, "
-#endif
-#ifdef CMANGOS
-            "t.Faction, "
-#endif
-            "t.Name, r.race "
-            "from creature c inner join creature_template t on c.id = t.entry "
-            "left join ai_playerbot_rpg_races r on r.entry = t.entry "
-            "where t.NpcFlags & %u <> 0",
-        UNIT_NPC_FLAG_INNKEEPER);*/
 
 		    results = WorldDatabase.PQuery("SELECT map, position_x, position_y, position_z, "
 				"r.race, r.minl, r.maxl "
@@ -606,40 +580,6 @@ void RandomPlayerbotMgr::PrepareTeleportCache()
 		} while (results->NextRow());
 		delete results;
 	}
-
-    /*if (results)
-    {
-        do
-        {
-            for (uint32 factionId = 0; factionId < sFactionTemplateStore.GetNumRows(); ++factionId)
-            {
-                FactionTemplateEntry const* botFaction = sFactionTemplateStore.LookupEntry(factionId);
-
-                if (!botFaction)
-                    continue;
-
-                Field* fields = results->Fetch();
-                uint16 mapId = fields[0].GetUInt16();
-                float x = fields[1].GetFloat();
-                float y = fields[2].GetFloat();
-                float z = fields[3].GetFloat();
-                uint32 faction = fields[4].GetUInt32();
-                string name = fields[5].GetCppString();
-                uint32 race = fields[6].GetUInt32();
-
-                FactionTemplateEntry const* coFaction = sFactionTemplateStore.LookupEntry(faction);
-                if (!botFaction->IsFriendlyTo(*coFaction)) continue;
-
-                WorldLocation loc(mapId, x, y, z, 0);
-                for (uint32 r = 1; r < MAX_RACES; r++)
-                {
-                    if (race == r || !race) rpgLocsCache[r].push_back(loc);
-                }
-            }
-            //bar.step();
-        } while (results->NextRow());
-        delete results;
-    }*/
 }
 
 void RandomPlayerbotMgr::RandomTeleportForLevel(Player* bot)
@@ -653,14 +593,6 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot)
     PerformanceMonitorOperation *pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "RandomTeleport");
     vector<WorldLocation> locs;
 
-    /*FleeManager manager(bot, sPlayerbotAIConfig.randomBotTeleportDistance, 0, true);
-    float rx, ry, rz;
-    if (manager.CalculateDestination(&rx, &ry, &rz))
-    {
-        WorldLocation loc(bot->GetMapId(), rx, ry, rz);
-        locs.push_back(loc);
-    }*/
-
     list<Unit*> targets;
     float range = sPlayerbotAIConfig.randomBotTeleportDistance;
     MaNGOS::AnyUnitInObjectRangeCheck u_check(bot, range);
@@ -672,9 +604,6 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot)
         for (list<Unit *>::iterator i = targets.begin(); i != targets.end(); ++i)
         {
             Unit* unit = *i;
-            //WorldLocation loc;
-            //unit->GetPosition(loc);
-            //locs.push_back(loc);
             bot->SetPosition(unit->GetPositionX(), unit->GetPositionY(), unit->GetPositionZ(), 0);
             FleeManager manager(bot, sPlayerbotAIConfig.sightDistance, 0, true);
             float rx, ry, rz;
@@ -683,7 +612,6 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot)
                 WorldLocation loc(bot->GetMapId(), rx, ry, rz);
                 locs.push_back(loc);
             }
-            // ^^^ TODO lags when reviving bot
         }
     }
     else
@@ -703,7 +631,7 @@ void RandomPlayerbotMgr::Randomize(Player* bot)
     else
         IncreaseLevel(bot);
 
-    SetValue(bot, "version", VERSION);
+    SetValue(bot, "version", MANGOSBOT_VERSION);
 }
 
 void RandomPlayerbotMgr::IncreaseLevel(Player* bot)
@@ -721,7 +649,6 @@ void RandomPlayerbotMgr::IncreaseLevel(Player* bot)
         factory.Randomize(true);
 	}
 
-    //RandomTeleportForLevel(bot);
 	if (level > 4) {
 		RandomTeleportForRpg(bot);
 	}
@@ -744,7 +671,6 @@ void RandomPlayerbotMgr::RandomizeFirst(Player* bot)
     PlayerbotFactory factory(bot, level);
     factory.Randomize(false);
 
-    //RandomTeleportForLevel(bot);
 	if (level > 4) {
 		RandomTeleportForRpg(bot);
 	}
@@ -1051,12 +977,13 @@ void RandomPlayerbotMgr::OnPlayerLogout(Player* player)
 
 void RandomPlayerbotMgr::OnBotLoginInternal(Player * const bot)
 {
-    //sLog.outString("%lu/%d Bot %s logged in", playerBots.size(), sRandomPlayerbotMgr.GetMaxAllowedBotCount(), bot->GetName());
+    sLog.outDetail("%lu/%d Bot %s logged in", playerBots.size(), sRandomPlayerbotMgr.GetMaxAllowedBotCount(), bot->GetName());
 	//if (loginProgressBar && playerBots.size() < sRandomPlayerbotMgr.GetMaxAllowedBotCount()) { loginProgressBar->step(); }
-	//if (loginProgressBar && playerBots.size() == sRandomPlayerbotMgr.GetMaxAllowedBotCount()) {
+	//if (loginProgressBar && playerBots.size() >= sRandomPlayerbotMgr.GetMaxAllowedBotCount() - 1) {
+    //if (loginProgressBar && playerBots.size() + 1 >= sRandomPlayerbotMgr.GetMaxAllowedBotCount()) {
 	//	sLog.outString("All bots logged in");
+    //    delete loginProgressBar;
 	//}
-	// TODO Progress Bar goes beyond 100%
 }
 
 void RandomPlayerbotMgr::OnPlayerLogin(Player* player)
@@ -1374,7 +1301,7 @@ void RandomPlayerbotMgr::Hotfix(Player* bot, uint32 version)
     uint32 level = bot->getLevel();
     uint32 id = bot->GetGUIDLow();
 
-    for (int fix = version; fix <= VERSION; fix++)
+    for (int fix = version; fix <= MANGOSBOT_VERSION; fix++)
     {
         int count = 0;
         switch (fix)
@@ -1427,7 +1354,7 @@ void RandomPlayerbotMgr::Hotfix(Player* bot, uint32 version)
                 break;
         }
     }
-    SetValue(bot, "version", VERSION);
+    SetValue(bot, "version", MANGOSBOT_VERSION);
     sLog.outBasic("Bot %d hotfix v%d applied",
-        bot->GetGUIDLow(), VERSION);
+        bot->GetGUIDLow(), MANGOSBOT_VERSION);
 }

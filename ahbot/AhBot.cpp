@@ -154,8 +154,8 @@ void AhBot::ForceUpdate()
 
 	string msg = "AhBot is now checking auctions in the background";
 	sLog.outString("%s", msg.c_str());
-	ostringstream out1; out1 << "|c070cc700 " << msg << " |r";
-	sWorld.SendWorldText(3, out1.str().c_str());
+	//ostringstream out1; out1 << "|c070cc700 " << msg << " |r";
+	//sWorld.SendWorldText(3, out1.str().c_str());
 	updating = true;
 
 	if (!allBidders.size())
@@ -187,7 +187,7 @@ void AhBot::ForceUpdate()
 
 	sLog.outString("AhBot auction check finished. %d auctions answered, %d new auctions added. Next check in %d seconds",
 		answered, added, sAhBotConfig.updateInterval);
-	ostringstream out; out << "|c070cc700 AhBot auction check finished. Next check in " << sAhBotConfig.updateInterval << " seconds |r";
+	/*ostringstream out; out << "|c070cc700 AhBot auction check finished. Next check in " << sAhBotConfig.updateInterval << " seconds |r";
 	sWorld.SendWorldText(3, out.str().c_str());
 	if (added > 0)
 	{
@@ -198,7 +198,7 @@ void AhBot::ForceUpdate()
 	{
 		ostringstream out; out << "|c070cc700 "  << answered << (answered == 1 ? " auction has been" : " auctions have been") << " answered.|r";
 		sWorld.SendWorldText(3, out.str().c_str());
-	}
+	}*/ // disable in game ahbot spam
     updating = false;
 }
 
