@@ -30,6 +30,18 @@ bool HasAggroValue::Calculate()
             return true;
         ref = ref->next();
     }
+
+    ref = target->GetThreatManager().getCurrentVictim();
+    if (ref)
+    {
+        Unit* victim = ref->getTarget();
+        if (victim)
+        {
+            Player* pl = dynamic_cast<Player*>(victim);
+            if (pl && ai->IsTank(pl)) return true;
+        }
+    }
+
     return false;
 }
 
