@@ -96,6 +96,7 @@ namespace ai
                 creators["cure poison"] = &TriggerFactoryInternal::cure_poison;
                 creators["party member cure poison"] = &TriggerFactoryInternal::party_member_cure_poison;
                 creators["entangling roots"] = &TriggerFactoryInternal::entangling_roots;
+                creators["hibernate"] = &TriggerFactoryInternal::hibernate;
                 creators["bear form"] = &TriggerFactoryInternal::bear_form;
                 creators["cat form"] = &TriggerFactoryInternal::cat_form;
                 creators["tree form"] = &TriggerFactoryInternal::tree_form;
@@ -123,6 +124,7 @@ namespace ai
             static Trigger* cure_poison(PlayerbotAI* ai) { return new CurePoisonTrigger(ai); }
             static Trigger* party_member_cure_poison(PlayerbotAI* ai) { return new PartyMemberCurePoisonTrigger(ai); }
             static Trigger* entangling_roots(PlayerbotAI* ai) { return new EntanglingRootsTrigger(ai); }
+            static Trigger* hibernate(PlayerbotAI* ai) { return new HibernateTrigger(ai); }
             static Trigger* bear_form(PlayerbotAI* ai) { return new BearFormTrigger(ai); }
             static Trigger* cat_form(PlayerbotAI* ai) { return new CatFormTrigger(ai); }
             static Trigger* tree_form(PlayerbotAI* ai) { return new TreeFormTrigger(ai); }
@@ -163,6 +165,8 @@ namespace ai
                 creators["hibernate"] = &AiObjectContextInternal::hibernate;
                 creators["entangling roots"] = &AiObjectContextInternal::entangling_roots;
                 creators["entangling roots on cc"] = &AiObjectContextInternal::entangling_roots_on_cc;
+                creators["hibernate"] = &AiObjectContextInternal::hibernate;
+                creators["hibernate on cc"] = &AiObjectContextInternal::hibernate_on_cc;
                 creators["wrath"] = &AiObjectContextInternal::wrath;
                 creators["starfall"] = &AiObjectContextInternal::starfall;
                 creators["insect swarm"] = &AiObjectContextInternal::insect_swarm;
@@ -227,6 +231,7 @@ namespace ai
             static Action* moonkin_form(PlayerbotAI* ai) { return new CastMoonkinFormAction(ai); }
             static Action* hibernate(PlayerbotAI* ai) { return new CastHibernateAction(ai); }
             static Action* entangling_roots(PlayerbotAI* ai) { return new CastEntanglingRootsAction(ai); }
+            static Action* hibernate_on_cc(PlayerbotAI* ai) { return new CastHibernateCcAction(ai); }
             static Action* entangling_roots_on_cc(PlayerbotAI* ai) { return new CastEntanglingRootsCcAction(ai); }
             static Action* wrath(PlayerbotAI* ai) { return new CastWrathAction(ai); }
             static Action* starfall(PlayerbotAI* ai) { return new CastStarfallAction(ai); }

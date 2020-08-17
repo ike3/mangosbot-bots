@@ -28,6 +28,7 @@ namespace ai
                 creators["dps debuff"] = &hunter::StrategyFactoryInternal::dps_debuff;
                 creators["boost"] = &hunter::StrategyFactoryInternal::boost;
                 creators["pet"] = &hunter::StrategyFactoryInternal::pet;
+                creators["cc"] = &hunter::StrategyFactoryInternal::cc;
             }
 
         private:
@@ -37,6 +38,7 @@ namespace ai
             static Strategy* dps_debuff(PlayerbotAI* ai) { return new DpsHunterDebuffStrategy(ai); }
             static Strategy* boost(PlayerbotAI* ai) { return new HunterBoostStrategy(ai); }
             static Strategy* pet(PlayerbotAI* ai) { return new HunterPetStrategy(ai); }
+            static Strategy* cc(PlayerbotAI* ai) { return new HunterCcStrategy(ai); }
         };
 
         class BuffStrategyFactoryInternal : public NamedObjectContext<Strategy>
@@ -87,9 +89,11 @@ namespace ai
                 creators["serpent sting on attacker"] = &TriggerFactoryInternal::serpent_sting_on_attacker;
                 creators["pet not happy"] = &TriggerFactoryInternal::pet_not_happy;
                 creators["concussive shot on snare target"] = &TriggerFactoryInternal::concussive_shot_on_snare_target;
+                creators["scare beast"] = &TriggerFactoryInternal::scare_beast;
             }
 
         private:
+            static Trigger* scare_beast(PlayerbotAI* ai) { return new ScareBeastTrigger(ai); }
             static Trigger* concussive_shot_on_snare_target(PlayerbotAI* ai) { return new ConsussiveShotSnareTrigger(ai); }
             static Trigger* pet_not_happy(PlayerbotAI* ai) { return new HunterPetNotHappy(ai); }
             static Trigger* serpent_sting_on_attacker(PlayerbotAI* ai) { return new SerpentStingOnAttackerTrigger(ai); }
@@ -155,9 +159,13 @@ namespace ai
                 creators["wing clip"] = &AiObjectContextInternal::wing_clip;
                 creators["feed pet"] = &AiObjectContextInternal::feed_pet;
                 creators["bestial wrath"] = &AiObjectContextInternal::bestial_wrath;
+                creators["scare beast"] = &AiObjectContextInternal::scare_beast;
+                creators["scare beast on cc"] = &AiObjectContextInternal::scare_beast_on_cc;
             }
 
         private:
+            static Action* scare_beast(PlayerbotAI* ai) { return new CastScareBeastAction(ai); }
+            static Action* scare_beast_on_cc(PlayerbotAI* ai) { return new CastScareBeastCcAction(ai); }
             static Action* bestial_wrath(PlayerbotAI* ai) { return new CastBestialWrathAction(ai); }
             static Action* feed_pet(PlayerbotAI* ai) { return new FeedPetAction(ai); }
             static Action* feign_death(PlayerbotAI* ai) { return new CastFeignDeathAction(ai); }

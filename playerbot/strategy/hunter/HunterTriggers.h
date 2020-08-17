@@ -92,4 +92,10 @@ namespace ai
     public:
         ConsussiveShotSnareTrigger(PlayerbotAI* ai) : SnareTargetTrigger(ai, "concussive shot") {}
     };
+
+    class ScareBeastTrigger : public HasCcTargetTrigger
+    {
+    public:
+        ScareBeastTrigger(PlayerbotAI* ai) : HasCcTargetTrigger(ai, "scare beast") {}
+    };
 }

@@ -175,4 +175,19 @@ namespace ai
     public:
         CastBestialWrathAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "bestial wrath") {}
     };
+
+    class CastScareBeastAction : public CastSpellAction
+    {
+    public:
+        CastScareBeastAction(PlayerbotAI* ai) : CastSpellAction(ai, "scare beast") {}
+    };
+
+    class CastScareBeastCcAction : public CastSpellAction
+    {
+    public:
+        CastScareBeastCcAction(PlayerbotAI* ai) : CastSpellAction(ai, "scare beast on cc") {}
+        virtual Value<Unit*>* GetTargetValue();
+        virtual bool Execute(Event event);
+    };
+
 }

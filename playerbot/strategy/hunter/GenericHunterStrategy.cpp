@@ -72,3 +72,10 @@ void HunterBoostStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         "rapid fire",
         NextAction::array(0, new NextAction("rapid fire", 16.0f), NULL)));
 }
+
+void HunterCcStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+{
+    triggers.push_back(new TriggerNode(
+        "scare beast",
+        NextAction::array(0, new NextAction("scare beast on cc", ACTION_HIGH + 3), NULL)));
+}

@@ -149,16 +149,24 @@ namespace ai
         virtual bool Execute(Event event);
     };
 
-	class CastNaturesGraspAction : public CastBuffSpellAction
-	{
-	public:
-		CastNaturesGraspAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "nature's grasp") {}
-	};
-
 	class CastHibernateAction : public CastSpellAction
 	{
 	public:
 		CastHibernateAction(PlayerbotAI* ai) : CastSpellAction(ai, "hibernate") {}
+	};
+
+    class CastHibernateCcAction : public CastSpellAction
+    {
+    public:
+        CastHibernateCcAction(PlayerbotAI* ai) : CastSpellAction(ai, "hibernate on cc") {}
+        virtual Value<Unit*>* GetTargetValue();
+        virtual bool Execute(Event event);
+    };
+
+	class CastNaturesGraspAction : public CastBuffSpellAction
+	{
+	public:
+		CastNaturesGraspAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "nature's grasp") {}
 	};
 
 	class CastCurePoisonAction : public CastCureSpellAction
