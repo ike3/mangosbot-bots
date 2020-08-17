@@ -13,6 +13,6 @@ namespace ai
 
     protected:
         void FindUnits(list<Unit*> &targets);
-        bool AcceptUnit(Unit* unit);
+        virtual bool AcceptUnit(Unit* unit);
 	};
 }

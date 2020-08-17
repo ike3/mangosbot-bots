@@ -17,6 +17,7 @@
 #include "CheckValuesAction.h"
 #include "ChooseRpgTargetAction.h"
 #include "DelayAction.h"
+#include "GiveItemAction.h"
 #include "GreetAction.h"
 #include "MovementActions.h"
 #include "MoveToRpgTargetAction.h"
@@ -97,9 +98,13 @@ namespace ai
             creators["greet"] = &ActionContext::greet;
             creators["check values"] = &ActionContext::check_values;
             creators["ra"] = &ActionContext::ra;
+            creators["give food"] = &ActionContext::give_food;
+            creators["give water"] = &ActionContext::give_water;
         }
 
     private:
+        static Action* give_water(PlayerbotAI* ai) { return new GiveWaterAction(ai); }
+        static Action* give_food(PlayerbotAI* ai) { return new GiveFoodAction(ai); }
         static Action* ra(PlayerbotAI* ai) { return new RemoveAuraAction(ai); }
         static Action* mark_rti(PlayerbotAI* ai) { return new MarkRtiAction(ai); }
         static Action* set_return_position(PlayerbotAI* ai) { return new SetReturnPositionAction(ai); }

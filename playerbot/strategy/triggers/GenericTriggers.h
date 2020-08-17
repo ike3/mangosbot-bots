@@ -197,13 +197,13 @@ namespace ai
     class NoFoodTrigger : public Trigger {
     public:
         NoFoodTrigger(PlayerbotAI* ai) : Trigger(ai, "no food trigger") {}
-        virtual bool IsActive() { return AI_VALUE2(list<Item*>, "inventory items", "food").empty(); }
+        virtual bool IsActive() { return AI_VALUE2(list<Item*>, "inventory items", "conjured food").empty(); }
     };
 
     class NoDrinkTrigger : public Trigger {
     public:
         NoDrinkTrigger(PlayerbotAI* ai) : Trigger(ai, "no drink trigger") {}
-        virtual bool IsActive() { return AI_VALUE2(list<Item*>, "inventory items", "drink").empty(); }
+        virtual bool IsActive() { return AI_VALUE2(list<Item*>, "inventory items", "conjured water").empty(); }
     };
 
     class LightAoeTrigger : public AoeTrigger
@@ -626,6 +626,44 @@ namespace ai
     {
     public:
         ReturnTrigger(PlayerbotAI* ai) : StayTimeTrigger(ai, sPlayerbotAIConfig.returnDelay, "return") {}
+    };
+
+    class GiveItemTrigger : public Trigger
+    {
+    public:
+        GiveItemTrigger(PlayerbotAI* ai, string name, string item) : Trigger(ai, name, 2), item(item) {}
+
+    public:
+        virtual bool IsActive()
+        {
+            return AI_VALUE2(Unit*, "party member without item", item) && AI_VALUE2(uint8, "item count", item);
+        }
+
+    protected:
+        string item;
+    };
+
+    class GiveFoodTrigger : public GiveItemTrigger
+    {
+    public:
+        GiveFoodTrigger(PlayerbotAI* ai) : GiveItemTrigger(ai, "give food", "conjured food") {}
+
+    public:
+        virtual bool IsActive()
+        {
+            return AI_VALUE(Unit*, "party member without food") && AI_VALUE2(uint8, "item count", item);
+        }
+    };
+
+    class GiveWaterTrigger : public GiveItemTrigger
+    {
+    public:
+        GiveWaterTrigger(PlayerbotAI* ai) : GiveItemTrigger(ai, "give water", "conjured water") {}
+    public:
+        virtual bool IsActive()
+        {
+            return AI_VALUE(Unit*, "party member without water") && AI_VALUE2(uint8, "item count", item);
+        }
     };
 }
 

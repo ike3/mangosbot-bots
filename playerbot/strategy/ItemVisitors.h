@@ -309,20 +309,23 @@ namespace ai
     class FindFoodVisitor : public FindUsableItemVisitor
     {
     public:
-        FindFoodVisitor(Player* bot, uint32 spellCategory) : FindUsableItemVisitor(bot)
+        FindFoodVisitor(Player* bot, uint32 spellCategory, bool conjured = false) : FindUsableItemVisitor(bot)
         {
             this->spellCategory = spellCategory;
+            this->conjured = conjured;
         }
 
         virtual bool Accept(const ItemPrototype* proto)
         {
             return proto->Class == ITEM_CLASS_CONSUMABLE &&
                 (proto->SubClass == ITEM_SUBCLASS_CONSUMABLE || proto->SubClass == ITEM_SUBCLASS_FOOD) &&
-                proto->Spells[0].SpellCategory == spellCategory;
+                proto->Spells[0].SpellCategory == spellCategory &&
+                (!conjured || proto->IsConjuredConsumable());
         }
 
     private:
         uint32 spellCategory;
+        bool conjured;
     };
 
     class FindMountVisitor : public FindUsableItemVisitor
