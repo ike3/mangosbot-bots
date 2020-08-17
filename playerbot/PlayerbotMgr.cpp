@@ -131,15 +131,19 @@ string PlayerbotHolder::ProcessBotCommand(string cmd, ObjectGuid guid, bool admi
     bool isRandomAccount = sPlayerbotAIConfig.IsInRandomAccountList(botAccount);
     bool isMasterAccount = (masterAccountId == botAccount);
 
-    if (isRandomAccount && !isRandomBot && !admin)
-    {
-        Player* bot = sObjectMgr.GetPlayer(guid);
-        if (bot->GetGuildId() != masterGuildId)
-            return "not in your guild";
-    }
-
     if (!isRandomAccount && !isMasterAccount && !admin)
-        return "not in your account";
+    {
+        uint32 guildId = 0;
+        QueryResult* results = CharacterDatabase.PQuery("SELECT guildid FROM guild_member where guid = '%u'", guid);
+        if (results)
+        {
+            Field* fields = results->Fetch();
+            guildId = fields[0].GetUInt32();
+            delete results;
+        }
+        if (!sPlayerbotAIConfig.allowGuildBots || guildId != masterGuildId)
+            return "not in your guild or account";
+    }
 
     if (cmd == "add" || cmd == "login")
     {
