@@ -1165,7 +1165,7 @@ bool PlayerbotAI::TellMasterNoFacing(string text, PlayerbotSecurityLevel securit
 bool PlayerbotAI::TellError(string text, PlayerbotSecurityLevel securityLevel)
 {
     Player* master = GetMaster();
-    if (!IsTellAllowed(securityLevel))
+    if (!IsTellAllowed(securityLevel) || master->GetPlayerbotAI())
         return false;
 
     master->GetPlayerbotMgr()->TellError(bot->GetName(), text);
