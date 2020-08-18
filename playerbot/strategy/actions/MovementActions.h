@@ -81,6 +81,14 @@ namespace ai
         virtual bool isUseful();
     };
 
+    class SetBehindTargetAction : public MovementAction
+    {
+    public:
+        SetBehindTargetAction(PlayerbotAI* ai) : MovementAction(ai, "set behind") {}
+        virtual bool Execute(Event event);
+        virtual bool isUseful();
+    };
+
     class MoveOutOfCollisionAction : public MovementAction
     {
     public:

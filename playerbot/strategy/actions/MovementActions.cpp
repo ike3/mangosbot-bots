@@ -437,6 +437,28 @@ bool SetFacingTargetAction::isUseful()
     return !AI_VALUE2(bool, "facing", "current target");
 }
 
+bool SetBehindTargetAction::Execute(Event event)
+{
+    Unit* target = AI_VALUE(Unit*, "current target");
+    if (!target)
+        return false;
+
+    float angle = GetFollowAngle() / 3 + target->GetOrientation() + M_PI;
+
+    float distance = sPlayerbotAIConfig.contactDistance;
+    float x = target->GetPositionX() + cos(angle) * distance,
+            y = target->GetPositionY() + sin(angle) * distance,
+            z = target->GetPositionZ();
+    bot->UpdateGroundPositionZ(x, y, z);
+
+    return MoveTo(bot->GetMapId(), x, y, z);
+}
+
+bool SetBehindTargetAction::isUseful()
+{
+    return !AI_VALUE2(bool, "behind", "current target");
+}
+
 
 bool MoveOutOfCollisionAction::Execute(Event event)
 {

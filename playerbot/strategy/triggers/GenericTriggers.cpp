@@ -173,6 +173,12 @@ bool IsBehindTargetTrigger::IsActive()
     return target && AI_VALUE2(bool, "behind", "current target");
 }
 
+bool IsNotBehindTargetTrigger::IsActive()
+{
+    Unit* target = AI_VALUE(Unit*, "current target");
+    return target && !AI_VALUE2(bool, "behind", "current target");
+}
+
 bool IsNotFacingTargetTrigger::IsActive()
 {
     return !AI_VALUE2(bool, "facing", "current target");

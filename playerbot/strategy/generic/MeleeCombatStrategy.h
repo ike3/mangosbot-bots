@@ -13,5 +13,13 @@ namespace ai
         virtual string getName() { return "close"; }
     };
 
+    class SetBehindCombatStrategy : public CombatStrategy
+    {
+    public:
+        SetBehindCombatStrategy(PlayerbotAI* ai) : CombatStrategy(ai) {}
+        virtual void InitTriggers(std::list<TriggerNode*> &triggers);
+        virtual string getName() { return "behind"; }
+    };
+
 
 }
