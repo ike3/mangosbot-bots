@@ -223,7 +223,37 @@ private:
     map<string, uint8> classNames;
 };
 
+class SubGroupChatFilter : public ChatFilter
+{
+public:
+    SubGroupChatFilter(PlayerbotAI* ai) : ChatFilter(ai) {}
 
+    virtual string Filter(string message)
+    {
+        Player* bot = ai->GetBot();
+
+        if (message.find("@group") == 0)
+        {
+            string pnum = message.substr(6, message.find(" "));
+            int from = atoi(pnum.c_str());
+            int to = from;
+            if (pnum.find("-") != string::npos)
+            {
+                from = atoi(pnum.substr(pnum.find("@") + 1, pnum.find("-")).c_str());
+                to = atoi(pnum.substr(pnum.find("-") + 1, pnum.find(" ")).c_str());
+            }
+
+            if (!bot->GetGroup())
+                return message;
+
+            int sg = (int)bot->GetSubGroup() + 1;
+            if (sg >= from && sg <= to)
+                return ChatFilter::Filter(message);
+        }
+
+        return message;
+    }
+};
 
 CompositeChatFilter::CompositeChatFilter(PlayerbotAI* ai) : ChatFilter(ai)
 {
@@ -232,6 +262,7 @@ CompositeChatFilter::CompositeChatFilter(PlayerbotAI* ai) : ChatFilter(ai)
     filters.push_back(new RtiChatFilter(ai));
     filters.push_back(new CombatTypeChatFilter(ai));
     filters.push_back(new LevelChatFilter(ai));
+    filters.push_back(new SubGroupChatFilter(ai));
 }
 
 CompositeChatFilter::~CompositeChatFilter()
