@@ -359,13 +359,13 @@ float Formation::GetFollowAngle()
             total++;
         }
     }
-    else
+    else if (group)
     {
         vector<Player*> roster;
         for (GroupReference *ref = group->GetFirstMember(); ref; ref = ref->next())
         {
             Player* member = ref->getSource();
-            if (member != master && !ai->IsTank(member) && !ai->IsHeal(member))
+            if (member && member != master && !ai->IsTank(member) && !ai->IsHeal(member))
             {
                 roster.insert(roster.begin() + roster.size() / 2, member);
             }
@@ -373,7 +373,7 @@ float Formation::GetFollowAngle()
         for (GroupReference *ref = group->GetFirstMember(); ref; ref = ref->next())
         {
             Player* member = ref->getSource();
-            if (member != master && ai->IsHeal(member))
+            if (member && member != master && ai->IsHeal(member))
             {
                 roster.insert(roster.begin() + roster.size() / 2, member);
             }
@@ -382,7 +382,7 @@ float Formation::GetFollowAngle()
         for (GroupReference *ref = group->GetFirstMember(); ref; ref = ref->next())
         {
             Player* member = ref->getSource();
-            if (member != master && ai->IsTank(member))
+            if (member && member != master && ai->IsTank(member))
             {
                 if (left) roster.push_back(member); else roster.insert(roster.begin(), member);
                 left = !left;
@@ -476,11 +476,18 @@ bool SetFormationAction::Execute(Event event)
         return true;
     }
 
+    if (formation == "show")
+    {
+        WorldLocation loc = value->Get()->GetLocation();
+        if (!Formation::IsNullLocation(loc))
+            ai->Ping(loc.coord_x, loc.coord_y);
+    }
+
     if (!value->Load(formation))
     {
         ostringstream str; str << "Invalid formation: |cffff0000" << formation;
         ai->TellMaster(str);
-        ai->TellMaster("Please set to any of:|cffffffff melee (default), queue, chaos, circle, line, shield, arrow, near, far");
+        ai->TellMaster("Please set to any of:|cffffffff near (default), queue, chaos, circle, line, shield, arrow, melee, far");
         return false;
     }
 

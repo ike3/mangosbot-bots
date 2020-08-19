@@ -144,6 +144,7 @@ public:
     void RemoveShapeshift();
     void WaitForSpellCast(Spell *spell);
     bool PlaySound(uint32 emote);
+    void Ping(float x, float y);
 
     virtual bool CanCastSpell(string name, Unit* target, Item* itemTarget = NULL);
     virtual bool CastSpell(string name, Unit* target, Item* itemTarget = NULL);
