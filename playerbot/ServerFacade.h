@@ -44,7 +44,11 @@ class ServerFacade
         DeathState GetDeathState(Unit *unit)
         {
 #ifdef MANGOS
+#ifndef MANGOSBOT_TWO
             return unit->GetDeathState();
+#else
+            return unit->getDeathState();
+#endif
 #endif
 #ifdef CMANGOS
             return unit->GetDeathState();
@@ -116,7 +120,11 @@ class ServerFacade
         bool IsFeared(Unit *unit)
         {
 #ifdef MANGOS
+#ifndef MANGOSBOT_TWO
             return unit->IsFeared();
+#else
+            return unit->isFeared();
+#endif
 #endif
 #ifdef CMANGOS
             return unit->isFeared();

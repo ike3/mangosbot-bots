@@ -105,7 +105,11 @@ bool AttackersValue::hasRealThreat(Unit *attacker)
         (sServerFacade.GetThreatManager(attacker).getCurrentVictim() || attacker->GetObjectGuid().IsPlayer()) &&
         (!c || (
             !c->IsInEvadeMode() &&
-            (!attacker->HasFlag(UNIT_DYNAMIC_FLAGS, UNIT_DYNFLAG_TAPPED) || bot->IsTappedByMeOrMyGroup(c))
+            (!attacker->HasFlag(UNIT_DYNAMIC_FLAGS, UNIT_DYNFLAG_TAPPED)
+#ifndef MANGOSBOT_TWO
+                || bot->IsTappedByMeOrMyGroup(c)
+#endif
+                )
             )
             );
 }

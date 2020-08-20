@@ -93,9 +93,14 @@ bool UseItemAction::UseItem(Item* item, ObjectGuid goGuid, Item* itemTarget)
 #endif
 
    WorldPacket packet(CMSG_USE_ITEM);
+#ifdef MANGOSBOT_ZERO
    packet << bagIndex << slot << spell_index;
-#ifndef MANGOSBOT_ZERO
-   packet << cast_count << item_guid;
+#endif
+#ifdef MANGOSBOT_ONE
+   packet << bagIndex << slot << spell_index << cast_count << item_guid;
+#endif
+#ifdef MANGOSBOT_TWO
+   packet << bagIndex << slot << cast_count << spell_index << item_guid << glyphIndex << unk_flags;
 #endif
 
    bool targetSelected = false;
