@@ -2002,7 +2002,7 @@ string PlayerbotAI::HandleRemoteCommand(string command)
 
 bool PlayerbotAI::HasSkill(SkillType skill)
 {
-    return bot->HasSkill(skill) && bot->GetSkillValue(skill) > 1;
+    return bot->HasSkill(skill) && bot->GetSkillValue(skill) > 0;
 }
 
 bool ChatHandler::HandlePlayerbotCommand(char* args)

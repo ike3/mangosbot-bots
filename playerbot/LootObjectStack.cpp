@@ -70,7 +70,7 @@ void LootObject::Refresh(Player* bot, ObjectGuid guid)
         {
             skillId = creature->GetCreatureInfo()->GetRequiredLootSkill();
             uint32 targetLevel = creature->getLevel();
-            reqSkillValue = targetLevel < 10 ? 2 : targetLevel < 20 ? (targetLevel - 10) * 10 : targetLevel * 5;
+            reqSkillValue = targetLevel < 10 ? 1 : targetLevel < 20 ? (targetLevel - 10) * 10 : targetLevel * 5;
             if (ai->HasSkill((SkillType)skillId) && bot->GetSkillValue(skillId) >= reqSkillValue)
                 this->guid = guid;
         }
@@ -105,7 +105,7 @@ void LootObject::Refresh(Player* bot, ObjectGuid guid)
                 if (SkillByLockType(LockType(lockInfo->Index[i])) > 0)
                 {
                     skillId = SkillByLockType(LockType(lockInfo->Index[i]));
-                    reqSkillValue = max((uint32)2, lockInfo->Skill[i]);
+                    reqSkillValue = max((uint32)1, lockInfo->Skill[i]);
                     this->guid = guid;
                 }
                 break;
