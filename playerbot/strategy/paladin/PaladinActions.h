@@ -130,26 +130,37 @@ namespace ai
 	{
 	public:
 		CastBlessingOfMightAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "blessing of might") {}
+		virtual bool Execute(Event event);
 	};
 
-	class CastBlessingOfMightOnPartyAction : public BuffOnPartyAction
+    class CastBlessingOnPartyAction : public BuffOnPartyAction
+    {
+    public:
+	    CastBlessingOnPartyAction(PlayerbotAI* ai, string name) : BuffOnPartyAction(ai, name) {}
+        virtual Value<Unit*>* GetTargetValue();
+    };
+
+	class CastBlessingOfMightOnPartyAction : public CastBlessingOnPartyAction
 	{
 	public:
-		CastBlessingOfMightOnPartyAction(PlayerbotAI* ai) : BuffOnPartyAction(ai, "blessing of might") {}
+		CastBlessingOfMightOnPartyAction(PlayerbotAI* ai) : CastBlessingOnPartyAction(ai, "blessing of might") {}
         virtual string getName() { return "blessing of might on party";}
+        virtual bool Execute(Event event);
 	};
 
 	class CastBlessingOfWisdomAction : public CastBuffSpellAction
 	{
 	public:
 		CastBlessingOfWisdomAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "blessing of wisdom") {}
+		virtual bool Execute(Event event);
 	};
 
-	class CastBlessingOfWisdomOnPartyAction : public BuffOnPartyAction
+	class CastBlessingOfWisdomOnPartyAction : public CastBlessingOnPartyAction
 	{
 	public:
-		CastBlessingOfWisdomOnPartyAction(PlayerbotAI* ai) : BuffOnPartyAction(ai, "blessing of wisdom") {}
+		CastBlessingOfWisdomOnPartyAction(PlayerbotAI* ai) : CastBlessingOnPartyAction(ai, "blessing of wisdom") {}
         virtual string getName() { return "blessing of wisdom on party";}
+        virtual bool Execute(Event event);
 	};
 
 	class CastBlessingOfKingsAction : public CastBuffSpellAction
@@ -158,10 +169,10 @@ namespace ai
 		CastBlessingOfKingsAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "blessing of kings") {}
 	};
 
-	class CastBlessingOfKingsOnPartyAction : public BuffOnPartyAction
+	class CastBlessingOfKingsOnPartyAction : public CastBlessingOnPartyAction
 	{
 	public:
-		CastBlessingOfKingsOnPartyAction(PlayerbotAI* ai) : BuffOnPartyAction(ai, "blessing of kings") {}
+		CastBlessingOfKingsOnPartyAction(PlayerbotAI* ai) : CastBlessingOnPartyAction(ai, "blessing of kings") {}
         virtual string getName() { return "blessing of kings on party";}
 	};
 
@@ -171,10 +182,10 @@ namespace ai
 		CastBlessingOfSanctuaryAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "blessing of sanctuary") {}
 	};
 
-	class CastBlessingOfSanctuaryOnPartyAction : public BuffOnPartyAction
+	class CastBlessingOfSanctuaryOnPartyAction : public CastBlessingOnPartyAction
 	{
 	public:
-		CastBlessingOfSanctuaryOnPartyAction(PlayerbotAI* ai) : BuffOnPartyAction(ai, "blessing of sanctuary") {}
+		CastBlessingOfSanctuaryOnPartyAction(PlayerbotAI* ai) : CastBlessingOnPartyAction(ai, "blessing of sanctuary") {}
         virtual string getName() { return "blessing of sanctuary on party";}
 	};
 
