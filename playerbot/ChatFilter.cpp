@@ -35,7 +35,15 @@ public:
         if (heal && !ai->IsHeal(bot))
             return "";
 
-        if (tank || dps || heal)
+        bool ranged = message.find("@ranged") == 0;
+        if (ranged && !ai->IsRanged(bot))
+            return "";
+
+        bool melee = message.find("@melee") == 0;
+        if (melee && ai->IsRanged(bot))
+            return "";
+
+        if (tank || dps || heal || ranged || melee)
             return ChatFilter::Filter(message);
 
         return message;
