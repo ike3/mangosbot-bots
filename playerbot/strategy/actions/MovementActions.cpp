@@ -73,7 +73,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle)
     }
 
     float distance = sServerFacade.GetDistance2d(bot, x, y);
-    if (sServerFacade.IsDistanceGreaterThan(distance, sPlayerbotAIConfig.contactDistance))
+    if (sServerFacade.IsDistanceGreaterThan(distance, sPlayerbotAIConfig.targetPosRecalcDistance))
     {
         WaitForReach(distance);
 
@@ -126,20 +126,25 @@ bool MovementAction::MoveTo(Unit* target, float distance)
     }
 
     float distanceToTarget = sServerFacade.GetDistance2d(bot, tx, ty);
-    float angle = bot->GetAngle(tx, ty);
-    float needToGo = distanceToTarget - distance;
+    if (sServerFacade.IsDistanceGreaterThan(distanceToTarget, sPlayerbotAIConfig.targetPosRecalcDistance))
+    {
+        float angle = bot->GetAngle(tx, ty);
+        float needToGo = distanceToTarget - distance;
 
-    float maxDistance = ai->GetRange("spell");
-    if (needToGo > 0 && needToGo > maxDistance)
-        needToGo = maxDistance;
-    else if (needToGo < 0 && needToGo < -maxDistance)
-        needToGo = -maxDistance;
+        float maxDistance = ai->GetRange("spell");
+        if (needToGo > 0 && needToGo > maxDistance)
+            needToGo = maxDistance;
+        else if (needToGo < 0 && needToGo < -maxDistance)
+            needToGo = -maxDistance;
 
-    float dx = cos(angle) * needToGo + bx;
-    float dy = sin(angle) * needToGo + by;
-    float dz = bz + (tz - bz) * needToGo;
+        float dx = cos(angle) * needToGo + bx;
+        float dy = sin(angle) * needToGo + by;
+        float dz = bz + (tz - bz) * needToGo / distanceToTarget;
 
-    return MoveTo(target->GetMapId(), dx, dy, dz);
+        return MoveTo(target->GetMapId(), dx, dy, dz);
+    }
+
+    return true;
 }
 
 float MovementAction::GetFollowAngle()
@@ -340,9 +345,14 @@ bool MovementAction::Flee(Unit *target)
                 if (!player || player == bot) continue;
                 if (ai->IsTank(player))
                 {
-                    bool moved = MoveTo(player, sPlayerbotAIConfig.followDistance);
-                    if (moved)
-                        return true;
+                    float distanceToTank = sServerFacade.GetDistance2d(bot, player);
+                    float distanceToTarget = sServerFacade.GetDistance2d(bot, target);
+                    if (sServerFacade.IsDistanceGreaterThan(distanceToTank, distanceToTarget))
+                    {
+                        bool moved = MoveTo(player, sPlayerbotAIConfig.followDistance);
+                        if (moved)
+                            return true;
+                    }
                 }
             }
         }
