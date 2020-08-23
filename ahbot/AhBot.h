@@ -78,6 +78,8 @@ namespace ahbot
         uint32 GetSellTime(uint32 itemId, uint32 auctionHouse, Category*& category);
         void CheckSendMail(uint32 bidder, uint32 price, AuctionEntry *entry);
         void Dump();
+        void CleanupPropositions();
+        void DeleteMail(list<uint32> buffer);
 
     public:
         static uint32 auctionIds[MAX_AUCTIONS];

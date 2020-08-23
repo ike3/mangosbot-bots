@@ -141,6 +141,7 @@ void AhBot::Update()
 
     nextAICheckTime = time(0) + sAhBotConfig.updateInterval;
     activateAhbotThread();
+    CleanupPropositions();
 }
 
 void AhBot::ForceUpdate()
@@ -1213,6 +1214,46 @@ void AhBot::Dump()
             }
         }
     }
+}
+
+void AhBot::CleanupPropositions()
+{
+    uint32 deliverTime = time(0) - 3600 * 24 * 2;
+    QueryResult *result = CharacterDatabase.PQuery("select id, receiver from mail where subject like 'AH Proposition%%' and deliver_time <= '%u'", deliverTime);
+    if (!result)
+        return;
+
+    int count = 0;
+    do
+    {
+        Field* fields = result->Fetch();
+        uint32 id = fields[0].GetUInt32();
+        uint32 receiver = fields[1].GetUInt32();
+        Player *player = sObjectMgr.GetPlayer(ObjectGuid(HIGHGUID_PLAYER, receiver));
+        if (player) player->RemoveMail(id);
+        count++;
+    } while (result->NextRow());
+    delete result;
+
+    if (count > 0)
+    {
+        CharacterDatabase.PExecute("delete from mail where subject like 'AH Proposition%%' and deliver_time <= '%u'", deliverTime);
+        sLog.outBasic("%d old AH propositions removed", count);
+    }
+}
+
+void AhBot::DeleteMail(list<uint32> buffer)
+{
+    ostringstream sql;
+    sql << "delete from mail where id in ( ";
+    bool first = true;
+    for (list<uint32>::iterator j = buffer.begin(); j != buffer.end(); ++j)
+    {
+        if (first) first = false; else sql << ",";
+        sql << "'" << *j << "'";
+    }
+    sql << ")";
+    CharacterDatabase.PExecute(sql.str().c_str());
 }
 
 INSTANTIATE_SINGLETON_1( ahbot::AhBot );
