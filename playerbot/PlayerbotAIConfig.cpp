@@ -129,7 +129,7 @@ bool PlayerbotAIConfig::Initialize()
 
     randomChangeMultiplier = config.GetFloatDefault("AiPlayerbot.RandomChangeMultiplier", 1.0);
 
-    randomBotCombatStrategies = config.GetStringDefault("AiPlayerbot.RandomBotCombatStrategies", "+dps,+dps assist,-threat");
+    randomBotCombatStrategies = config.GetStringDefault("AiPlayerbot.RandomBotCombatStrategies", "+dps assist,-threat,+custom::say");
     randomBotNonCombatStrategies = config.GetStringDefault("AiPlayerbot.RandomBotNonCombatStrategies", "+grind,+loot,+rpg,+custom::say");
     combatStrategies = config.GetStringDefault("AiPlayerbot.CombatStrategies", "+custom::say");
     nonCombatStrategies = config.GetStringDefault("AiPlayerbot.NonCombatStrategies", "+custom::say,+return");
