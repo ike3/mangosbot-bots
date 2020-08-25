@@ -1,11 +1,11 @@
 #pragma once
 
-#include "../generic/MeleeCombatStrategy.h"
+#include "../generic/CombatStrategy.h"
 #include "GenericDruidStrategy.h"
 
 namespace ai
 {
-    class MeleeDruidStrategy : public MeleeCombatStrategy
+    class MeleeDruidStrategy : public CombatStrategy
     {
     public:
         MeleeDruidStrategy(PlayerbotAI* ai);

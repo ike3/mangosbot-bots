@@ -34,14 +34,14 @@ private:
         return new ActionNode ("hibernate",
             /*P*/ NextAction::array(0, new NextAction("moonkin form"), NULL),
             /*A*/ NextAction::array(0, new NextAction("entangling roots"), NULL),
-            /*C*/ NextAction::array(0, new NextAction("flee", 49.0f), NULL));
+            /*C*/ NULL);
     }
     static ActionNode* entangling_roots(PlayerbotAI* ai)
     {
         return new ActionNode ("entangling roots",
             /*P*/ NextAction::array(0, new NextAction("moonkin form"), NULL),
             /*A*/ NULL,
-            /*C*/ NextAction::array(0, new NextAction("flee", 49.0f), NULL));
+            /*C*/ NULL);
     }
     static ActionNode* entangling_roots_on_cc(PlayerbotAI* ai)
     {

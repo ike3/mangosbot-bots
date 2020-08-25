@@ -31,8 +31,8 @@ void HealPriestStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("renew on party", 10.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "enemy too close for spell",
-        NextAction::array(0, new NextAction("fade", 50.0f), new NextAction("flee", 49.0f), NULL)));
+        "enemy is close",
+        NextAction::array(0, new NextAction("fade", 50.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
         "party member to heal out of spell range",

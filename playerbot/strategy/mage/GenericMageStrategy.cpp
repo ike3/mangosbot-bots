@@ -102,22 +102,18 @@ private:
     }
 };
 
-GenericMageStrategy::GenericMageStrategy(PlayerbotAI* ai) : RangedCombatStrategy(ai)
+GenericMageStrategy::GenericMageStrategy(PlayerbotAI* ai) : CombatStrategy(ai)
 {
     actionNodeFactories.Add(new GenericMageStrategyActionNodeFactory());
 }
 
 void GenericMageStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 {
-    RangedCombatStrategy::InitTriggers(triggers);
-
-    triggers.push_back(new TriggerNode(
-        "enemy too close for spell",
-        NextAction::array(0, new NextAction("flee", 49.0f), NULL)));
+    CombatStrategy::InitTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
         "enemy is close",
-        NextAction::array(0, new NextAction("frost nova", 50.0f), new NextAction("flee", 49.0f), NULL)));
+        NextAction::array(0, new NextAction("frost nova", 50.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
         "counterspell on enemy healer",

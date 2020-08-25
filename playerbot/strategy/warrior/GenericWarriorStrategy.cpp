@@ -5,13 +5,13 @@
 
 using namespace ai;
 
-GenericWarriorStrategy::GenericWarriorStrategy(PlayerbotAI* ai) : MeleeCombatStrategy(ai)
+GenericWarriorStrategy::GenericWarriorStrategy(PlayerbotAI* ai) : CombatStrategy(ai)
 {
 }
 
 void GenericWarriorStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 {
-    MeleeCombatStrategy::InitTriggers(triggers);
+    CombatStrategy::InitTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
         "battle shout",

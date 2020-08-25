@@ -166,7 +166,7 @@ namespace ai
         {
             return new ActionNode ("fade",
                 /*P*/ NULL,
-                /*A*/ NextAction::array(0, new NextAction("flee"), NULL),
+                /*A*/ NULL,
                 /*C*/ NULL);
         }
     };

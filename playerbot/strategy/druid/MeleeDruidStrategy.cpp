@@ -5,7 +5,7 @@
 
 using namespace ai;
 
-MeleeDruidStrategy::MeleeDruidStrategy(PlayerbotAI* ai) : MeleeCombatStrategy(ai)
+MeleeDruidStrategy::MeleeDruidStrategy(PlayerbotAI* ai) : CombatStrategy(ai)
 {
 }
 
@@ -23,5 +23,5 @@ void MeleeDruidStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         "omen of clarity",
         NextAction::array(0, new NextAction("omen of clarity", ACTION_HIGH + 9), NULL)));
 
-    MeleeCombatStrategy::InitTriggers(triggers);
+    CombatStrategy::InitTriggers(triggers);
 }
