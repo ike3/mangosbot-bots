@@ -236,10 +236,6 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
         if (!player->GetGroup())
         {
             engine->ChangeStrategy(sPlayerbotAIConfig.randomBotCombatStrategies);
-            if (player->getClass() == CLASS_DRUID && tab == 2)
-            {
-                engine->addStrategies("caster", "caster aoe", NULL);
-            }
 
             if (player->getClass() == CLASS_DRUID && tab == 2)
             {

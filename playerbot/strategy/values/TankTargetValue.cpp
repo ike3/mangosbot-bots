@@ -1,6 +1,7 @@
 #include "botpch.h"
 #include "../../playerbot.h"
 #include "TankTargetValue.h"
+#include "AttackersValue.h"
 
 using namespace ai;
 

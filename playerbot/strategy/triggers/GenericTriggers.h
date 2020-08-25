@@ -242,14 +242,26 @@ namespace ai
 		virtual string getName() { return spell + " on party"; }
     };
 
-    BEGIN_TRIGGER(NoAttackersTrigger, Trigger)
-    END_TRIGGER()
+    class NoAttackersTrigger : public Trigger
+    {
+    public:
+        NoAttackersTrigger(PlayerbotAI* ai) : Trigger(ai, "no attackers") {}
+        virtual bool IsActive();
+    };
 
-    BEGIN_TRIGGER(NoTargetTrigger, Trigger)
-    END_TRIGGER()
+    class NoTargetTrigger : public Trigger
+    {
+    public:
+        NoTargetTrigger(PlayerbotAI* ai) : Trigger(ai, "no target") {}
+        virtual bool IsActive();
+    };
 
-    BEGIN_TRIGGER(InvalidTargetTrigger, Trigger)
-    END_TRIGGER()
+    class InvalidTargetTrigger : public Trigger
+    {
+    public:
+        InvalidTargetTrigger(PlayerbotAI* ai) : Trigger(ai, "invalid target") {}
+        virtual bool IsActive();
+    };
 
     class TargetInSightTrigger : public Trigger {
     public:
@@ -476,6 +488,15 @@ namespace ai
     {
     public:
         NotDpsTargetActiveTrigger(PlayerbotAI* ai) : Trigger(ai, "not dps target active") {}
+
+    public:
+        virtual bool IsActive();
+    };
+
+    class PossibleAdsTrigger : public Trigger
+    {
+    public:
+        PossibleAdsTrigger(PlayerbotAI* ai) : Trigger(ai, "possible ads") {}
 
     public:
         virtual bool IsActive();

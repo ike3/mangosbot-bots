@@ -2,6 +2,7 @@
 
 #include "../Action.h"
 #include "AttackAction.h"
+#include "../../ServerFacade.h"
 
 namespace ai
 {
@@ -75,16 +76,48 @@ namespace ai
 
         virtual bool Execute(Event event)
         {
+            Unit* target = context->GetValue<Unit*>("current target")->Get();
             context->GetValue<Unit*>("current target")->Set(NULL);
             bot->SetSelectionGuid(ObjectGuid());
             ai->ChangeEngine(BOT_STATE_NON_COMBAT);
             ai->InterruptSpell();
-            if (!urand(0, 200))
+            bot->AttackStop();
+            Pet* pet = bot->GetPet();
+            if (pet)
+            {
+#ifdef MANGOS
+                CreatureAI*
+#endif
+#ifdef CMANGOS
+                    UnitAI*
+#endif
+                    creatureAI = ((Creature*)pet)->AI();
+                if (creatureAI)
+                {
+#ifdef CMANGOS
+                    creatureAI->SetReactState(REACT_PASSIVE);
+#endif
+#ifdef MANGOS
+                    pet->GetCharmInfo()->SetReactState(REACT_PASSIVE);
+                    pet->GetCharmInfo()->SetCommandState(COMMAND_FOLLOW);
+#endif
+                    pet->AttackStop();
+                }
+            }
+            if (!urand(0, 25))
             {
                 vector<uint32> sounds;
-                sounds.push_back(TEXTEMOTE_CHEER);
-                sounds.push_back(TEXTEMOTE_CONGRATULATE);
-                ai->PlaySound(sounds[urand(0, sounds.size() - 1)]);
+                if (target && sServerFacade.UnitIsDead(target))
+                {
+                    sounds.push_back(TEXTEMOTE_CHEER);
+                    sounds.push_back(TEXTEMOTE_CONGRATULATE);
+                }
+                else
+                {
+                    sounds.push_back(304); // guard
+                    sounds.push_back(325); // stay
+                }
+                if (!sounds.empty()) ai->PlaySound(sounds[urand(0, sounds.size() - 1)]);
             }
             return true;
         }

@@ -8,47 +8,20 @@ namespace ai
 {
     class Engine;
 
-	class RangePair {
-	public:
-		RangePair() {
-			min = -1.0f;
-			max = -1.0f;
-		}
-
-	public:
-		float min;
-		float max;
-
-	public:
-		void probe(float d) {
-			if (min < 0 || min > d)
-				min = d;
-
-			if (max < 0 || max < d)
-				max = d;
-		}
-	};
-
 	class FleePoint {
 	public:
-        FleePoint(PlayerbotAI* ai, float x, float y, float z) : ai(ai) {
+        FleePoint(PlayerbotAI* ai, float x, float y, float z) : ai(ai), distanceToCreatures(0.0f) {
 			this->x = x;
 			this->y = y;
 			this->z = z;
 		}
-
-    public:
-        bool isReasonable();
 
 	public:
 		float x;
 		float y;
 		float z;
 
-		RangePair toCreatures;
-		RangePair toAllPlayers;
-		RangePair toMeleePlayers;
-		RangePair toRangedPlayers;
+        float distanceToCreatures;
 
     private:
         PlayerbotAI* ai;
@@ -66,10 +39,10 @@ namespace ai
 
 	public:
 		bool CalculateDestination(float* rx, float* ry, float* rz);
+        bool isUseful();
 
 	private:
 		void calculatePossibleDestinations(list<FleePoint*> &points);
-		void calculateDistanceToPlayers(FleePoint *point);
 		void calculateDistanceToCreatures(FleePoint *point);
 		void cleanup(list<FleePoint*> &points);
 		FleePoint* selectOptimalDestination(list<FleePoint*> &points);

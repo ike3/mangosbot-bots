@@ -28,6 +28,7 @@
 #include "generic/TellTargetStrategy.h"
 #include "generic/AttackEnemyPlayersStrategy.h"
 #include "generic/MarkRtiStrategy.h"
+#include "generic/PullStrategy.h"
 #include "generic/ReturnStrategy.h"
 #include "generic/RpgStrategy.h"
 
@@ -65,6 +66,7 @@ namespace ai
             creators["rpg"] = &StrategyContext::rpg;
             creators["sit"] = &StrategyContext::sit;
             creators["mark rti"] = &StrategyContext::mark_rti;
+            creators["ads"] = &StrategyContext::possible_ads;
         }
 
     private:
@@ -95,6 +97,7 @@ namespace ai
         static Strategy* collision(PlayerbotAI* ai) { return new CollisionStrategy(ai); }
         static Strategy* rpg(PlayerbotAI* ai) { return new RpgStrategy(ai); }
         static Strategy* sit(PlayerbotAI* ai) { return new SitStrategy(ai); }
+        static Strategy* possible_ads(PlayerbotAI* ai) { return new PossibleAdsStrategy(ai); }
     };
 
     class MovementStrategyContext : public NamedObjectContext<Strategy>
