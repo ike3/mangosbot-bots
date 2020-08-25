@@ -25,6 +25,7 @@
 #include "SayAction.h"
 #include "OutfitAction.h"
 #include "RandomBotUpdateAction.h"
+#include "RemoveAuraAction.h"
 #include "RpgAction.h"
 #include "RtiAction.h"
 
@@ -95,6 +96,7 @@ namespace ai
             creators["delay"] = &ActionContext::delay;
             creators["greet"] = &ActionContext::greet;
             creators["check values"] = &ActionContext::check_values;
+            creators["ra"] = &ActionContext::ra;
             creators["apply poison"] = &ActionContext::apply_poison;
             creators["apply stone"] = &ActionContext::apply_stone;
             creators["apply oil"] = &ActionContext::apply_oil;
@@ -102,6 +104,7 @@ namespace ai
         }
 
     private:
+        static Action* ra(PlayerbotAI* ai) { return new RemoveAuraAction(ai); }
         static Action* mark_rti(PlayerbotAI* ai) { return new MarkRtiAction(ai); }
         static Action* set_return_position(PlayerbotAI* ai) { return new SetReturnPositionAction(ai); }
         static Action* rpg(PlayerbotAI* ai) { return new RpgAction(ai); }
