@@ -32,6 +32,7 @@ namespace ai
                 creators["cure"] = &mage::StrategyFactoryInternal::cure;
                 creators["buff"] = &mage::StrategyFactoryInternal::buff;
                 creators["boost"] = &mage::StrategyFactoryInternal::boost;
+                creators["cc"] = &mage::StrategyFactoryInternal::cc;
             }
 
         private:
@@ -42,6 +43,7 @@ namespace ai
             static Strategy* cure(PlayerbotAI* ai) { return new MageCureStrategy(ai); }
             static Strategy* buff(PlayerbotAI* ai) { return new MageBuffStrategy(ai); }
             static Strategy* boost(PlayerbotAI* ai) { return new MageBoostStrategy(ai); }
+            static Strategy* cc(PlayerbotAI* ai) { return new MageCcStrategy(ai); }
         };
 
         class MageStrategyFactoryInternal : public NamedObjectContext<Strategy>

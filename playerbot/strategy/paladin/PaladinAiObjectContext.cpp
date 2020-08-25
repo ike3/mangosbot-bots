@@ -27,6 +27,7 @@ namespace ai
                 creators["cure"] = &paladin::StrategyFactoryInternal::cure;
                 creators["boost"] = &paladin::StrategyFactoryInternal::boost;
                 creators["bthreat"] = &paladin::StrategyFactoryInternal::bthreat;
+                creators["cc"] = &paladin::StrategyFactoryInternal::cc;
             }
 
         private:
@@ -34,6 +35,7 @@ namespace ai
             static Strategy* cure(PlayerbotAI* ai) { return new PaladinCureStrategy(ai); }
             static Strategy* boost(PlayerbotAI* ai) { return new PaladinBoostStrategy(ai); }
             static Strategy* bthreat(PlayerbotAI* ai) { return new PaladinBuffThreatStrategy(ai); }
+            static Strategy* cc(PlayerbotAI* ai) { return new PaladinCcStrategy(ai); }
         };
 
         class ResistanceStrategyFactoryInternal : public NamedObjectContext<Strategy>
@@ -130,9 +132,11 @@ namespace ai
                 creators["hammer of justice on enemy healer"] = &TriggerFactoryInternal::hammer_of_justice_on_enemy_target;
                 creators["hammer of justice on snare target"] = &TriggerFactoryInternal::hammer_of_justice_on_snare_target;
                 creators["divine favor"] = &TriggerFactoryInternal::divine_favor;
+                creators["turn undead"] = &TriggerFactoryInternal::turn_undead;
             }
 
         private:
+            static Trigger* turn_undead(PlayerbotAI* ai) { return new TurnUndeadTrigger(ai); }
             static Trigger* divine_favor(PlayerbotAI* ai) { return new DivineFavorTrigger(ai); }
             static Trigger* holy_shield(PlayerbotAI* ai) { return new HolyShieldTrigger(ai); }
             static Trigger* righteous_fury(PlayerbotAI* ai) { return new RighteousFuryTrigger(ai); }
@@ -230,9 +234,11 @@ namespace ai
                 creators["hammer of justice on enemy healer"] = &AiObjectContextInternal::hammer_of_justice_on_enemy_healer;
                 creators["hammer of justice on snare target"] = &AiObjectContextInternal::hammer_of_justice_on_snare_target;
                 creators["divine favor"] = &AiObjectContextInternal::divine_favor;
+                creators["turn undead"] = &AiObjectContextInternal::turn_undead;
             }
 
         private:
+            static Action* turn_undead(PlayerbotAI* ai) { return new CastTurnUndeadAction(ai); }
             static Action* divine_favor(PlayerbotAI* ai) { return new CastDivineFavorAction(ai); }
             static Action* righteous_fury(PlayerbotAI* ai) { return new CastRighteousFuryAction(ai); }
             static Action* seal_of_command(PlayerbotAI* ai) { return new CastSealOfCommandAction(ai); }

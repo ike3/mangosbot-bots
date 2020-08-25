@@ -123,11 +123,6 @@ void CatDpsDruidStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 	triggers.push_back(new TriggerNode(
 		"tiger's fury",
 		NextAction::array(0, new NextAction("tiger's fury", ACTION_EMERGENCY + 1), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "entangling roots",
-        NextAction::array(0, new NextAction("entangling roots on cc", ACTION_HIGH + 1), NULL)));
-
 }
 
 void CatAoeDruidStrategy::InitTriggers(std::list<TriggerNode*> &triggers)

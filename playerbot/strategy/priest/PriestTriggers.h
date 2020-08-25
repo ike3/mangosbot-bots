@@ -104,4 +104,10 @@ namespace ai
     public:
         ShadowProtectionTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "shadow protection", 2) {}
     };
+
+    class ShackleUndeadTrigger : public HasCcTargetTrigger
+    {
+    public:
+        ShackleUndeadTrigger(PlayerbotAI* ai) : HasCcTargetTrigger(ai, "shackle undead") {}
+    };
 }

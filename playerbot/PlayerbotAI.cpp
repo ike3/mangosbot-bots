@@ -1335,18 +1335,28 @@ bool PlayerbotAI::CanCastSpell(uint32 spellid, Unit* target, uint8 effectMask, b
         if (!positiveSpell && sServerFacade.IsFriendlyTo(bot, target))
             return false;
 
-        bool immune = true;
+        bool damage = false;
         for (int32 i = EFFECT_INDEX_0; i <= EFFECT_INDEX_2; i++)
         {
-            if (!target->IsImmuneToSpellEffect(spellInfo, (SpellEffectIndex)i, true))
+            if (spellInfo->Effect[(SpellEffectIndex)i] == SPELL_EFFECT_SCHOOL_DAMAGE)
             {
-                immune = false;
+                damage = true;
                 break;
             }
         }
 
-        if (immune)
+        if (target->IsImmuneToSpell(spellInfo, false))
             return false;
+
+        if (!damage)
+        {
+            for (int32 i = EFFECT_INDEX_0; i <= EFFECT_INDEX_2; i++)
+            {
+                bool immune = target->IsImmuneToSpellEffect(spellInfo, (SpellEffectIndex)i, false);
+                if (immune)
+                    return false;
+            }
+        }
 
         if (bot != target && bot->GetDistance(target) > sPlayerbotAIConfig.sightDistance)
             return false;
@@ -1360,7 +1370,7 @@ bool PlayerbotAI::CanCastSpell(uint32 spellid, Unit* target, uint8 effectMask, b
     spell->m_CastItem = itemTarget ? itemTarget : aiObjectContext->GetValue<Item*>("item for spell", spellid)->Get();
     spell->m_targets.setItemTarget(spell->m_CastItem);
 
-    SpellCastResult result = spell->CheckCast(false);
+    SpellCastResult result = spell->CheckCast(true);
     delete spell;
 	if (oldSel)
 		bot->SetSelectionGuid(oldSel);

@@ -105,14 +105,20 @@ void AttackersValue::RemoveNonThreating(set<Unit*>& targets)
 bool AttackersValue::IsPossibleTarget(Unit *attacker, Player *bot)
 {
     Creature *c = dynamic_cast<Creature*>(attacker);
-	return attacker &&
-		attacker->IsInWorld() &&
+    return attacker &&
+        attacker->IsInWorld() &&
         attacker->GetMapId() == bot->GetMapId() &&
         !sServerFacade.UnitIsDead(attacker) &&
-		!attacker->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE) &&
-		!attacker->HasStealthAura() &&
-		!attacker->HasInvisibilityAura() &&
+        !attacker->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE) &&
+        !attacker->HasStealthAura() &&
+        !attacker->HasInvisibilityAura() &&
         !attacker->IsPolymorphed() &&
+#ifdef CMANGOS
+        !attacker->IsStunned() &&
+#endif
+#ifdef MANGOS
+        !attacker->hasUnitState(UNIT_STAT_STUNNED) &&
+#endif
         !sServerFacade.IsCharmed(attacker) &&
         !sServerFacade.IsFeared(attacker) &&
         !sServerFacade.IsInRoots(attacker) &&

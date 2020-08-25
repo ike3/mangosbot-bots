@@ -61,14 +61,6 @@ void GenericWarlockStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 		NextAction::array(0, new NextAction("drain soul", 30.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "banish",
-        NextAction::array(0, new NextAction("banish", 21.0f), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "fear",
-        NextAction::array(0, new NextAction("fear on cc", 33.0f), NULL)));
-
-    triggers.push_back(new TriggerNode(
         "immolate",
         NextAction::array(0, new NextAction("immolate", 13.0f), new NextAction("conflagrate", 13.0f), NULL)));
 }
@@ -80,3 +72,13 @@ void WarlockBoostStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("amplify curse", 41.0f), NULL)));
 }
 
+void WarlockCcStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+{
+    triggers.push_back(new TriggerNode(
+        "banish",
+        NextAction::array(0, new NextAction("banish", 21.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "fear",
+        NextAction::array(0, new NextAction("fear on cc", 33.0f), NULL)));
+}

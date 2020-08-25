@@ -81,3 +81,10 @@ void PaladinBoostStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         "divine favor",
         NextAction::array(0, new NextAction("divine favor", ACTION_HIGH + 1), NULL)));
 }
+
+void PaladinCcStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+{
+    triggers.push_back(new TriggerNode(
+        "turn undead",
+        NextAction::array(0, new NextAction("turn undead", ACTION_HIGH + 1), NULL)));
+}

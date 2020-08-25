@@ -123,10 +123,6 @@ void GenericMageStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 		"critical health",
 		NextAction::array(0, new NextAction("ice block", 80.0f), NULL)));
 
-    triggers.push_back(new TriggerNode(
-        "polymorph",
-        NextAction::array(0, new NextAction("polymorph", 30.0f), NULL)));
-
 	triggers.push_back(new TriggerNode(
 		"spellsteal",
 		NextAction::array(0, new NextAction("spellsteal", 40.0f), NULL)));
@@ -162,4 +158,11 @@ void MageBoostStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         "presence of mind",
         NextAction::array(0, new NextAction("presence of mind", 42.0f), NULL)));
 
+}
+
+void MageCcStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+{
+    triggers.push_back(new TriggerNode(
+        "polymorph",
+        NextAction::array(0, new NextAction("polymorph", 30.0f), NULL)));
 }

@@ -78,3 +78,10 @@ void PriestBoostStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("power infusion", 41.0f), NULL)));
 }
 
+void PriestCcStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+{
+    triggers.push_back(new TriggerNode(
+        "shackle undead",
+        NextAction::array(0, new NextAction("shackle undead", 31.0f), NULL)));
+}
+

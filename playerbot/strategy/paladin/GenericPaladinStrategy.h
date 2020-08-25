@@ -35,4 +35,14 @@ namespace ai
         virtual void InitTriggers(std::list<TriggerNode*> &triggers);
         virtual string getName() { return "boost"; }
     };
+
+    class PaladinCcStrategy : public Strategy
+    {
+    public:
+        PaladinCcStrategy(PlayerbotAI* ai) : Strategy(ai) {}
+
+    public:
+        virtual void InitTriggers(std::list<TriggerNode*> &triggers);
+        virtual string getName() { return "cc"; }
+    };
 }

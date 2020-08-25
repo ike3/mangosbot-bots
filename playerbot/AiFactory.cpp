@@ -153,7 +153,7 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
             else
                 engine->addStrategy("heal");
 
-            engine->addStrategies("dps assist", "flee", "cure", "ranged", NULL);
+            engine->addStrategies("dps assist", "flee", "cure", "ranged", "cc", NULL);
             break;
         case CLASS_MAGE:
             if (tab == 0)
@@ -163,7 +163,7 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
             else
                 engine->addStrategies("frost", "frost aoe", "threat", NULL);
 
-            engine->addStrategies("dps assist", "flee", "cure", "ranged", NULL);
+            engine->addStrategies("dps assist", "flee", "cure", "ranged", "cc", NULL);
             break;
         case CLASS_WARRIOR:
             if (tab == 2)
@@ -183,11 +183,11 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
             break;
         case CLASS_PALADIN:
             if (tab == 1)
-                engine->addStrategies("tank", "tank aoe", "bthreat", "cure", "barmor", "bstats", "close", NULL);
+                engine->addStrategies("tank", "tank aoe", "bthreat", "cure", "barmor", "bstats", "close", "cc", NULL);
 			else if(tab == 0)
 				engine->addStrategies("heal", "bmana", "cure", "flee", "barmor", "ranged", NULL);
             else
-                engine->addStrategies("dps", "bdps", "dps assist", "cure", "baoe", "close", NULL);
+                engine->addStrategies("dps", "bdps", "dps assist", "cure", "baoe", "close", "cc", NULL);
 
             if (player->getLevel() < 14)
             {
@@ -201,12 +201,12 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
         case CLASS_DRUID:
             if (tab == 0)
             {
-                engine->addStrategies("caster", "cure", "caster aoe", "threat", "flee", "dps assist", "ranged", NULL);
+                engine->addStrategies("caster", "cure", "caster aoe", "threat", "flee", "dps assist", "ranged", "cc", NULL);
                 if (player->getLevel() > 19)
                     engine->addStrategy("caster debuff");
             }
             else if (tab == 2)
-                engine->addStrategies("heal", "cure", "flee", "dps assist", "ranged", NULL);
+                engine->addStrategies("heal", "cure", "flee", "dps assist", "ranged", "cc", NULL);
             else
                 engine->addStrategies("bear", "tank aoe", "flee", "ranged", NULL);
             break;
@@ -227,7 +227,7 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
             if (player->getLevel() > 19)
                 engine->addStrategy("dps debuff");
 
-            engine->addStrategies("dps assist", "flee", "ranged", NULL);
+            engine->addStrategies("dps assist", "flee", "ranged", "cc", NULL);
             break;
     }
 
@@ -331,7 +331,7 @@ void AiFactory::AddDefaultNonCombatStrategies(Player* player, PlayerbotAI* const
             break;
     }
     nonCombatEngine->addStrategies("nc", "food", "stay", "sit", "chat", "follow",
-            "default", "quest", "loot", "gather", "duel", "emote", "conserve mana", "collision", "buff", NULL);
+            "default", "quest", "loot", "gather", "duel", "emote", "conserve mana",/* "collision",*/ "buff", NULL);
 
     if (sRandomPlayerbotMgr.IsRandomBot(player))
     {
