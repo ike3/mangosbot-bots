@@ -56,5 +56,5 @@ void PossibleAdsStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "possible ads",
-        NextAction::array(0, new NextAction("flee", 60), NULL)));
+        NextAction::array(0, new NextAction("flee with pet", 60), NULL)));
 }
