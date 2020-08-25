@@ -45,22 +45,25 @@ void GenericHunterNonCombatStrategy::InitTriggers(std::list<TriggerNode*> &trigg
         NextAction::array(0, new NextAction("trueshot aura", 2.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
+        "often",
+        NextAction::array(0, new NextAction("apply oil", 1.0f), NULL)));
+}
+
+void HunterPetStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+{
+    triggers.push_back(new TriggerNode(
         "no pet",
         NextAction::array(0, new NextAction("call pet", 60.0f), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "hunters pet dead",
-        NextAction::array(0, new NextAction("revive pet", 60.0f), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "hunters pet low health",
-        NextAction::array(0, new NextAction("mend pet", 60.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
         "pet not happy",
         NextAction::array(0, new NextAction("feed pet", 60.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
-       "often",
-       NextAction::array(0, new NextAction("apply oil", 1.0f), NULL)));
+        "hunters pet low health",
+        NextAction::array(0, new NextAction("mend pet", 60.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "hunters pet dead",
+        NextAction::array(0, new NextAction("revive pet", 60.0f), NULL)));
 }
