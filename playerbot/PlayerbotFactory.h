@@ -50,6 +50,7 @@ public:
     void Refresh();
     void Randomize(bool incremental);
     static list<uint32> classQuestIds;
+    static list<uint32> specialQuestIds;
     void InitSkills();
 
 private:
@@ -68,7 +69,7 @@ private:
     void InitSpecialSpells();
     void InitTalentsTree(bool incremental);
     void InitTalents(uint32 specNo);
-    void InitQuests();
+    void InitQuests(list<uint32>& questMap);
     void InitPet();
     void ClearInventory();
     void InitAmmo();
