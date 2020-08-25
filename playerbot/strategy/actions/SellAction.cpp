@@ -53,12 +53,10 @@ bool SellAction::Execute(Event event)
         return true;
     }
 
-    ItemIds ids = chat->parseItems(text);
-
-    for (ItemIds::iterator i =ids.begin(); i != ids.end(); i++)
+    list<Item*> items = parseItems(text, ITERATE_ITEMS_IN_BAGS);
+    for (list<Item*>::iterator i = items.begin(); i != items.end(); ++i)
     {
-        FindItemByIdVisitor visitor(*i);
-        Sell(&visitor);
+        Sell(*i);
     }
 
     return true;
