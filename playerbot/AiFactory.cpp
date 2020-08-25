@@ -235,8 +235,34 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
 	{
         if (!player->GetGroup())
         {
-            engine->ChangeStrategy(sPlayerbotAIConfig.randomBotCombatStrategies);            if (player->getClass() == CLASS_DRUID && tab == 2)            {                engine->addStrategies("caster", "caster aoe", NULL);            }            if (player->getClass() == CLASS_PRIEST && tab == 1)            {                engine->removeStrategy("heal");                engine->addStrategy("shadow aoe");                engine->addStrategies("holy", NULL);            }            if (player->getClass() == CLASS_SHAMAN && tab == 2)            {                engine->addStrategies("caster", "caster aoe", NULL);            }
-            if (player->getClass() == CLASS_PALADIN && tab == 0)            {                engine->addStrategies("dps", NULL);            }
+            engine->ChangeStrategy(sPlayerbotAIConfig.randomBotCombatStrategies);
+
+            if (player->getClass() == CLASS_DRUID && tab == 2)
+            {
+                engine->addStrategies("caster", "caster aoe", NULL);
+            }
+
+            if (player->getClass() == CLASS_DRUID && tab == 2)
+            {
+                engine->addStrategies("caster", "caster aoe", NULL);
+            }
+
+            if (player->getClass() == CLASS_PRIEST && tab == 1)
+            {
+                engine->removeStrategy("heal");
+                engine->addStrategy("shadow aoe");
+                engine->addStrategies("holy", NULL);
+            }
+
+            if (player->getClass() == CLASS_SHAMAN && tab == 2)
+            {
+                engine->addStrategies("caster", "caster aoe", NULL);
+            }
+
+            if (player->getClass() == CLASS_PALADIN && tab == 0)
+            {
+                engine->addStrategies("dps", NULL);
+            }
         }
     }
     else
