@@ -26,10 +26,6 @@ namespace ai
     public:
         AttackAnythingAction(PlayerbotAI* ai) : AttackAction(ai, "attack anything") {}
         virtual string GetTargetName() { return "grind target"; }
-        virtual bool Execute(Event event)
-        {
-            return AttackAction::Execute(event);
-        }
         virtual bool isUseful() {
             return GetTarget() &&
             /*    (!AI_VALUE(list<ObjectGuid>, "nearest non bot players").empty() &&
@@ -45,6 +41,13 @@ namespace ai
         virtual bool isPossible()
         {
             return AttackAction::isPossible() && GetTarget();
+        }
+
+        virtual bool Execute(Event event)
+        {
+            bool result = AttackAction::Execute(event);
+            if (result && GetTarget()) context->GetValue<ObjectGuid>("pull target")->Set(GetTarget()->GetObjectGuid());
+            return result;
         }
     };
 
@@ -77,6 +80,12 @@ namespace ai
         virtual bool Execute(Event event)
         {
             Unit* target = context->GetValue<Unit*>("current target")->Get();
+            ObjectGuid pullTarget = context->GetValue<ObjectGuid>("pull target")->Get();
+            list<ObjectGuid> possible = ai->GetAiObjectContext()->GetValue<list<ObjectGuid> >("possible targets")->Get();
+            if (pullTarget && find(possible.begin(), possible.end(), pullTarget) == possible.end())
+            {
+                context->GetValue<ObjectGuid>("pull target")->Set(ObjectGuid());
+            }
             context->GetValue<Unit*>("current target")->Set(NULL);
             bot->SetSelectionGuid(ObjectGuid());
             ai->ChangeEngine(BOT_STATE_NON_COMBAT);

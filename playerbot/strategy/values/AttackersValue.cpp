@@ -134,7 +134,8 @@ bool AttackersValue::IsPossibleTarget(Unit *attacker, Player *bot)
 bool AttackersValue::IsValidTarget(Unit *attacker, Player *bot)
 {
     return IsPossibleTarget(attacker, bot) &&
-        (sServerFacade.GetThreatManager(attacker).getCurrentVictim() || attacker->GetTargetGuid() || attacker->GetObjectGuid().IsPlayer());
+        (sServerFacade.GetThreatManager(attacker).getCurrentVictim() || attacker->GetTargetGuid() || attacker->GetObjectGuid().IsPlayer() ||
+            attacker->GetObjectGuid() == bot->GetPlayerbotAI()->GetAiObjectContext()->GetValue<ObjectGuid>("pull target")->Get());
 }
 
 bool PossibleAdsValue::Calculate()

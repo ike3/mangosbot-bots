@@ -78,16 +78,8 @@ void FleeManager::calculatePossibleDestinations(list<FleePoint*> &points)
                     continue;
 
                 FleePoint *point = new FleePoint(bot->GetPlayerbotAI(), x, y, z);
-                calculateDistanceToCreatures(point);
-                // MEMORY LEAK FIX TEST
-                if (point->isReasonable())
-                {
-                    points.push_back(point);
-                }
-                else
-                {
-                    delete point;
-                }
+                calculateDistanceToCreatures(point); 
+                points.push_back(point);
             }
         }
 	}

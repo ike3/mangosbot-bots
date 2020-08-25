@@ -58,4 +58,10 @@ namespace ai
     public:
         TalkTargetValue(PlayerbotAI* ai) : ManualSetValue<ObjectGuid>(ai, ObjectGuid()) {}
     };
+
+    class PullTargetValue : public ManualSetValue<ObjectGuid>
+    {
+    public:
+        PullTargetValue(PlayerbotAI* ai) : ManualSetValue<ObjectGuid>(ai, ObjectGuid()) {}
+    };
 }
