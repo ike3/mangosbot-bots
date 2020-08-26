@@ -141,15 +141,12 @@ string PlayerbotHolder::ProcessBotCommand(string cmd, ObjectGuid guid, bool admi
     bool isRandomAccount = sPlayerbotAIConfig.IsInRandomAccountList(botAccount);
     bool isMasterAccount = (masterAccountId == botAccount);
 
-    if (isRandomAccount && !isRandomBot && !admin)
+    if (!isRandomAccount && !isMasterAccount && !admin)
     {
         Player* bot = sObjectMgr.GetPlayer(guid);
-        if (bot->GetGuildId() != masterGuildId)
-            return "not in your guild";
+        if (!sPlayerbotAIConfig.allowGuildBots || bot->GetGuildId() != masterGuildId)
+            return "not in your guild or account";
     }
-
-    if (!isRandomAccount && !isMasterAccount && !admin)
-        return "not in your account";
 
     if (cmd == "add" || cmd == "login")
     {
