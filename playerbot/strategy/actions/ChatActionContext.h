@@ -49,6 +49,7 @@
 #include "WhoAction.h"
 #include "SaveManaAction.h"
 #include "../values/Formations.h"
+#include "../values/Stances.h"
 #include "CustomStrategyEditAction.h"
 #include "DebugAction.h"
 #include "GoAction.h"
@@ -131,6 +132,7 @@ namespace ai
             creators["max dps chat shortcut"] = &ChatActionContext::max_dps_chat_shortcut;
             creators["tell attackers"] = &ChatActionContext::tell_attackers;
             creators["formation"] = &ChatActionContext::formation;
+            creators["stance"] = &ChatActionContext::stance;
             creators["sendmail"] = &ChatActionContext::sendmail;
             creators["mail"] = &ChatActionContext::mail;
             creators["go"] = &ChatActionContext::go;
@@ -154,6 +156,7 @@ namespace ai
         static Action* go(PlayerbotAI* ai) { return new GoAction(ai); }
         static Action* sendmail(PlayerbotAI* ai) { return new SendMailAction(ai); }
         static Action* formation(PlayerbotAI* ai) { return new SetFormationAction(ai); }
+        static Action* stance(PlayerbotAI* ai) { return new SetStanceAction(ai); }
         static Action* tell_attackers(PlayerbotAI* ai) { return new TellAttackersAction(ai); }
         static Action* max_dps_chat_shortcut(PlayerbotAI* ai) { return new MaxDpsChatShortcutAction(ai); }
         static Action* save_mana(PlayerbotAI* ai) { return new SaveManaAction(ai); }

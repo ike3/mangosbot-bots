@@ -2049,6 +2049,22 @@ float PlayerbotAI::GetRange(string type)
     return 0;
 }
 
+void PlayerbotAI::Ping(float x, float y)
+{
+    WorldPacket data(MSG_MINIMAP_PING, (8 + 4 + 4));
+    data << bot->GetObjectGuid();
+    data << x;
+    data << y;
+    bot->GetGroup()->BroadcastPacket(
+#ifdef MANGOS
+        &data,
+#endif
+#ifdef CMANGOS
+        data,
+#endif
+        true, -1, bot->GetObjectGuid());
+}
+
 //Find Poison ...Natsukawa
 Item* PlayerbotAI::FindPoison() const
 {

@@ -43,9 +43,21 @@ namespace ai
                 ObjectGuid rpgTarget = AI_VALUE(ObjectGuid, qualifier);
                 target = ai->GetUnit(rpgTarget);
             }
+            else if (qualifier == "current target")
+            {
+                Stance* stance = AI_VALUE(Stance*, "stance");
+                WorldLocation loc = stance->GetLocation();
+                return sServerFacade.GetDistance2d(ai->GetBot(), loc.coord_x, loc.coord_y);
+            }
             else
             {
                 target = AI_VALUE(Unit*, qualifier);
+                if (target && target == GetMaster())
+                {
+                    Formation* formation = AI_VALUE(Formation*, "formation");
+                    WorldLocation loc = formation->GetLocation();
+                    return sServerFacade.GetDistance2d(ai->GetBot(), loc.coord_x, loc.coord_y);
+                }
             }
 
             if (!target || !target->IsInWorld())

@@ -9,6 +9,7 @@
 #include "../../PlayerbotAIConfig.h"
 #include "../../ServerFacade.h"
 #include "../values/PositionValue.h"
+#include "../values/Stances.h"
 #include "MotionGenerators/TargetedMovementGenerator.h"
 
 using namespace ai;
@@ -111,20 +112,17 @@ bool MovementAction::MoveTo(Unit* target, float distance)
     float by = bot->GetPositionY();
     float bz = bot->GetPositionZ();
 
-#ifdef CMANGOS
-    float tx = target->GetPositionX();
-    float ty = target->GetPositionY();
-    float tz = target->GetPositionZ();
-    target->GetNearPoint(bot, tx, ty, tz, bot->GetObjectBoundingRadius(), distance + target->GetObjectBoundingRadius(), GetFollowAngle());
-#endif
-#ifdef MANGOS
-    float tx = target->GetPositionX();
-    float ty = target->GetPositionY();
-    float tz = target->GetPositionZ();
-#endif
+    Stance* stance = AI_VALUE(Stance*, "stance");
+    WorldLocation loc = stance->GetLocation();
+    if (Formation::IsNullLocation(loc) || loc.mapid == -1)
+    {
+        ai->TellError("Nowhere to move");
+        return false;
+}
 
-    float distanceToTarget = sServerFacade.GetDistance2d(bot, target);
-    float angle = bot->GetAngle(target);
+    float tx = loc.coord_x, ty = loc.coord_y, tz = loc.coord_z;
+    float distanceToTarget = sServerFacade.GetDistance2d(bot, tx, ty);
+    float angle = bot->GetAngle(tx, ty);
     float needToGo = distanceToTarget - distance;
 
     float maxDistance = ai->GetRange("spell");
@@ -135,7 +133,7 @@ bool MovementAction::MoveTo(Unit* target, float distance)
 
     float dx = cos(angle) * needToGo + bx;
     float dy = sin(angle) * needToGo + by;
-    float dz = bz + (tz - bz) * needToGo / distanceToTarget;
+    float dz = bz + (tz - bz) * needToGo;
 
     return MoveTo(target->GetMapId(), dx, dy, dz);
 }
@@ -339,6 +337,26 @@ bool MovementAction::Flee(Unit *target)
         return false;
     }
 
+    HostileReference *ref = target->GetThreatManager().getCurrentVictim();
+    if (ref && ref->getTarget() == bot)
+    {
+        Group *group = bot->GetGroup();
+        if (group)
+        {
+            for (GroupReference *gref = group->GetFirstMember(); gref; gref = gref->next())
+            {
+                Player* player = gref->getSource();
+                if (!player || player == bot) continue;
+                if (ai->IsTank(player))
+                {
+                    bool moved = MoveTo(player, sPlayerbotAIConfig.followDistance);
+                    if (moved)
+                        return true;
+                }
+            }
+        }
+    }
+
     FleeManager manager(bot, ai->GetRange("flee"), bot->GetAngle(target) + M_PI);
 
     if (!manager.isUseful())
@@ -429,12 +447,12 @@ bool MoveOutOfEnemyContactAction::Execute(Event event)
     if (!target)
         return false;
 
-    return MoveNear(target, sPlayerbotAIConfig.meleeDistance);
+    return MoveTo(target, sPlayerbotAIConfig.contactDistance);
 }
 
 bool MoveOutOfEnemyContactAction::isUseful()
 {
-    return sServerFacade.IsDistanceLessThan(AI_VALUE2(float, "distance", "current target"), (sPlayerbotAIConfig.meleeDistance + sPlayerbotAIConfig.contactDistance));
+    return AI_VALUE2(bool, "inside target", "current target");
 }
 
 bool SetFacingTargetAction::Execute(Event event)

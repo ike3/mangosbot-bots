@@ -91,18 +91,7 @@ bool RevealGatheringItemAction::Execute(Event event)
     }
 
     // everything is fine, do it
-    WorldPacket data(MSG_MINIMAP_PING, (8 + 4 + 4));
-    data << bot->GetObjectGuid();
-    data << go->GetPositionX();
-    data << go->GetPositionY();
-    bot->GetGroup()->BroadcastPacket(
-#ifdef MANGOS
-            &data,
-#endif
-#ifdef CMANGOS
-            data,
-#endif
-            true, -1, bot->GetObjectGuid());
+    ai->Ping(go->GetPositionX(), go->GetPositionY());
     bot->Say(msg.str(), LANG_UNIVERSAL);
     return true;
 }
