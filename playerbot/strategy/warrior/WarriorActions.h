@@ -103,8 +103,14 @@ namespace ai
     BEGIN_DEBUFF_ACTION(CastDisarmAction, "disarm")
     END_SPELL_ACTION()
 
-    BEGIN_DEBUFF_ACTION(CastSunderArmorAction, "sunder armor") // 5 times
-    END_SPELL_ACTION()
+    class CastSunderArmorAction : public CastDebuffSpellAction
+    {
+    public:
+        CastSunderArmorAction(PlayerbotAI* ai) : CastDebuffSpellAction(ai, "sunder armor") {
+            range = ATTACK_DISTANCE;
+        }
+        virtual bool isUseful() { return CastSpellAction::isUseful(); }
+    };
 
     class CastDemoralizingShoutAction : public CastDebuffSpellAction {
     public:
@@ -132,6 +138,7 @@ namespace ai
 		CastBattleShoutAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "battle shout") {
 		    range = ATTACK_DISTANCE;
 		}
+        virtual bool isUseful() { return CastSpellAction::isUseful(); }
 	};
 
 	class CastDefensiveStanceAction : public CastBuffSpellAction {
@@ -183,8 +190,10 @@ namespace ai
         CastShieldBashOnEnemyHealerAction(PlayerbotAI* ai) : CastSpellOnEnemyHealerAction(ai, "shield bash") {}
     };
 
-    class CastBattleShoutTauntAction : public CastMeleeSpellAction {
+    class CastBattleShoutTauntAction : public CastMeleeSpellAction
+    {
     public:
 	    CastBattleShoutTauntAction(PlayerbotAI* ai) : CastMeleeSpellAction(ai, "battle shout") {}
+        virtual bool isUseful() { return CastSpellAction::isUseful(); }
     };
 }
