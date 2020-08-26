@@ -84,6 +84,12 @@ namespace ai {
         EntanglingRootsTrigger(PlayerbotAI* ai) : HasCcTargetTrigger(ai, "entangling roots") {}
     };
 
+    class HibernateTrigger : public HasCcTargetTrigger
+    {
+    public:
+        HibernateTrigger(PlayerbotAI* ai) : HasCcTargetTrigger(ai, "hibernate") {}
+    };
+
     class CurePoisonTrigger : public NeedCureTrigger
     {
     public:

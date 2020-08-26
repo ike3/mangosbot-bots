@@ -38,3 +38,13 @@ bool CastAutoShotAction::isUseful()
 {
     return AI_VALUE(uint32, "active spell") != AI_VALUE2(uint32, "spell id", getName());
 }
+
+Value<Unit*>* CastScareBeastCcAction::GetTargetValue()
+{
+    return context->GetValue<Unit*>("cc target", "scare beast");
+}
+
+bool CastScareBeastCcAction::Execute(Event event)
+{
+    return ai->CastSpell("scare beast", GetTarget());
+}
