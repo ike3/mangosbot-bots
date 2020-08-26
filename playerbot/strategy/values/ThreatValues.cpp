@@ -44,7 +44,7 @@ uint8 ThreatValue::Calculate(Unit* target)
         return 0;
 
     float botThreat = sServerFacade.GetThreatManager(target).getThreat(bot);
-    float maxThreat = 0;
+    float maxThreat = -1.0f;
 
     Group::MemberSlotList const& groupSlot = group->GetMemberSlots();
     for (Group::member_citerator itr = groupSlot.begin(); itr != groupSlot.end(); itr++)
@@ -53,9 +53,12 @@ uint8 ThreatValue::Calculate(Unit* target)
         if( !player || !sServerFacade.IsAlive(player) || player == bot)
             continue;
 
-        float threat = sServerFacade.GetThreatManager(target).getThreat(player);
-        if (maxThreat < threat)
-            maxThreat = threat;
+        if (ai->IsTank(player))
+        {
+            float threat = sServerFacade.GetThreatManager(target).getThreat(player);
+            if (maxThreat < threat)
+                maxThreat = threat;
+        }
     }
 
     if (maxThreat <= 0)
