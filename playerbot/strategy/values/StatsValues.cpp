@@ -128,7 +128,7 @@ bool IsInCombatValue::Calculate()
             for (Group::member_citerator itr = groupSlot.begin(); itr != groupSlot.end(); itr++)
             {
                 Player *member = sObjectMgr.GetPlayer(itr->guid);
-                if (member == bot) continue;
+                if (!member || member == bot) continue;
 
                 if (sServerFacade.IsInCombat(member) &&
                     sServerFacade.IsDistanceLessOrEqualThan(sServerFacade.GetDistance2d(member, bot), sPlayerbotAIConfig.reactDistance)) return true;
