@@ -217,6 +217,13 @@ bool NotDpsTargetActiveTrigger::IsActive()
     return dps && target != dps;
 }
 
+bool NotDpsAoeTargetActiveTrigger::IsActive()
+{
+    Unit* dps = AI_VALUE(Unit*, "dps aoe target");
+    Unit* target = AI_VALUE(Unit*, "current target");
+    return dps && target != dps;
+}
+
 bool EnemyPlayerIsAttacking::IsActive()
 {
     Unit* enemyPlayer = AI_VALUE(Unit*, "enemy player target");

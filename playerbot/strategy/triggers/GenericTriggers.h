@@ -502,6 +502,15 @@ namespace ai
         virtual bool IsActive();
     };
 
+    class NotDpsAoeTargetActiveTrigger : public Trigger
+    {
+    public:
+        NotDpsAoeTargetActiveTrigger(PlayerbotAI* ai) : Trigger(ai, "not dps aoe target active") {}
+
+    public:
+        virtual bool IsActive();
+    };
+
     class PossibleAdsTrigger : public Trigger
     {
     public:

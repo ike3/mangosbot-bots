@@ -62,6 +62,7 @@ namespace ai
             creators["drink"] = &ActionContext::drink;
             creators["tank assist"] = &ActionContext::tank_assist;
             creators["dps assist"] = &ActionContext::dps_assist;
+            creators["dps aoe"] = &ActionContext::dps_aoe;
             creators["attack rti target"] = &ActionContext::attack_rti_target;
             creators["loot"] = &ActionContext::loot;
             creators["add loot"] = &ActionContext::add_loot;
@@ -160,6 +161,7 @@ namespace ai
         static Action* loot(PlayerbotAI* ai) { return new LootAction(ai); }
         static Action* release_loot(PlayerbotAI* ai) { return new ReleaseLootAction(ai); }
         static Action* dps_assist(PlayerbotAI* ai) { return new DpsAssistAction(ai); }
+        static Action* dps_aoe(PlayerbotAI* ai) { return new DpsAoeAction(ai); }
         static Action* attack_rti_target(PlayerbotAI* ai) { return new AttackRtiTargetAction(ai); }
         static Action* tank_assist(PlayerbotAI* ai) { return new TankAssistAction(ai); }
         static Action* drink(PlayerbotAI* ai) { return new DrinkAction(ai); }

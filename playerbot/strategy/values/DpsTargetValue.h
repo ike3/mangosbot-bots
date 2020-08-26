@@ -13,4 +13,13 @@ namespace ai
     public:
         Unit* Calculate();
     };
+
+    class DpsAoeTargetValue : public RtiTargetValue
+    {
+    public:
+        DpsAoeTargetValue(PlayerbotAI* ai) : RtiTargetValue(ai) {}
+
+    public:
+        Unit* Calculate();
+    };
 }

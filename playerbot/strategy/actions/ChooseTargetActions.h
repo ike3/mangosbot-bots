@@ -6,6 +6,14 @@
 
 namespace ai
 {
+    class DpsAoeAction : public AttackAction
+    {
+    public:
+        DpsAoeAction(PlayerbotAI* ai) : AttackAction(ai, "dps aoe") {}
+
+        virtual string GetTargetName() { return "dps aoe target"; }
+    };
+
     class DpsAssistAction : public AttackAction
     {
     public:
