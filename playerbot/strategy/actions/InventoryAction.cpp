@@ -190,16 +190,16 @@ list<Item*> InventoryAction::parseItems(string text, IterateItemsMask mask)
     if (count < 1) count = 1;
     else if (count > TRADE_SLOT_TRADED_COUNT) count = TRADE_SLOT_TRADED_COUNT;
 
-    if (text == "food")
+    if (text == "food" || text == "conjured food")
     {
-        FindFoodVisitor visitor(bot, 11);
+        FindFoodVisitor visitor(bot, 11, text == "conjured food");
         IterateItems(&visitor, ITERATE_ITEMS_IN_BAGS);
         found.insert(visitor.GetResult().begin(), visitor.GetResult().end());
     }
 
-    if (text == "drink" || text == "water")
+    if (text == "drink" || text == "water" || text == "conjured drink" || text == "conjured water")
     {
-        FindFoodVisitor visitor(bot, 59);
+        FindFoodVisitor visitor(bot, 59, text == "conjured drink" || text == "conjured water");
         IterateItems(&visitor, ITERATE_ITEMS_IN_BAGS);
         found.insert(visitor.GetResult().begin(), visitor.GetResult().end());
     }

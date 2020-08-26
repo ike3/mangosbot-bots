@@ -107,9 +107,14 @@ namespace ai
             creators["no rpg target"] = &TriggerContext::no_rpg_target;
             creators["far from rpg target"] = &TriggerContext::far_from_rpg_target;
             creators["no rti target"] = &TriggerContext::no_rti;
+
+            creators["give food"] = &TriggerContext::give_food;
+            creators["give water"] = &TriggerContext::give_water;
         }
 
     private:
+        static Trigger* give_food(PlayerbotAI* ai) { return new GiveFoodTrigger(ai); }
+        static Trigger* give_water(PlayerbotAI* ai) { return new GiveWaterTrigger(ai); }
         static Trigger* no_rti(PlayerbotAI* ai) { return new NoRtiTrigger(ai); }
         static Trigger* _return(PlayerbotAI* ai) { return new ReturnTrigger(ai); }
         static Trigger* sit(PlayerbotAI* ai) { return new SitTrigger(ai); }
