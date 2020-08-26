@@ -16,16 +16,19 @@ bool CheckMountStateAction::Execute(Event event)
 	if (bot->IsTaxiFlying())
 		return false;
 
-	if (master->IsMounted() && !bot->IsMounted())
+    bool farFromMaster = sServerFacade.IsDistanceGreaterThan(AI_VALUE2(float, "distance", "master target"), sPlayerbotAIConfig.sightDistance);
+    if (master->IsMounted() && !bot->IsMounted() && !farFromMaster)
 	{
 		return Mount();
 	}
-	else if (!master->IsMounted() && bot->IsMounted())
+	
+    if((farFromMaster || !master->IsMounted()) && bot->IsMounted())
 	{
 		WorldPacket emptyPacket;
 		bot->GetSession()->HandleCancelMountAuraOpcode(emptyPacket);
 		return true;
 	}
+
 	return false;
 }
 
