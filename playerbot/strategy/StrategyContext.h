@@ -71,9 +71,11 @@ namespace ai
             creators["ads"] = &StrategyContext::possible_ads;
             creators["close"] = &StrategyContext::close;
             creators["ranged"] = &StrategyContext::ranged;
+            creators["behind"] = &StrategyContext::behind;
         }
 
     private:
+        static Strategy* behind(PlayerbotAI* ai) { return new SetBehindCombatStrategy(ai); }
         static Strategy* ranged(PlayerbotAI* ai) { return new RangedCombatStrategy(ai); }
         static Strategy* close(PlayerbotAI* ai) { return new MeleeCombatStrategy(ai); }
         static Strategy* mark_rti(PlayerbotAI* ai) { return new MarkRtiStrategy(ai); }
