@@ -65,7 +65,12 @@ Unit* PartyMemberToHeal::Calculate()
         Player* player = gref->getSource();
         if (!player) continue;
         if (player == bot) break;
-        if (ai->IsHeal(player)) healerIndex++;
+        if (ai->IsHeal(player))
+        {
+            float percent = (float)player->GetPower(POWER_MANA) / (float)player->GetMaxPower(POWER_MANA) * 100.0;
+            if (percent > sPlayerbotAIConfig.lowMana)
+                healerIndex++;
+        }
     }
     healerIndex = healerIndex % needHeals.size();
     return needHeals[healerIndex];
