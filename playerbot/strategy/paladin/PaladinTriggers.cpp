@@ -22,3 +22,10 @@ bool CrusaderAuraTrigger::IsActive()
 	Unit* target = GetTarget();
 	return AI_VALUE2(bool, "mounted", "self target") && !ai->HasAura("crusader aura", target);
 }
+
+bool BlessingTrigger::IsActive()
+{
+    Unit* target = GetTarget();
+    return SpellTrigger::IsActive() && !ai->HasAnyAuraOf(target,
+        "blessing of might", "blessing of wisdom", "blessing of kings", "blessing of sanctuary", NULL);
+}
