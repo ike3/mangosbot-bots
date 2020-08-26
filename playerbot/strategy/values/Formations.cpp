@@ -508,6 +508,8 @@ bool SetFormationAction::Execute(Event event)
         WorldLocation loc = value->Get()->GetLocation();
         if (!Formation::IsNullLocation(loc))
             ai->Ping(loc.coord_x, loc.coord_y);
+
+        return true;
     }
 
     if (!value->Load(formation))

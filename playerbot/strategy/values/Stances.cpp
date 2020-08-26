@@ -9,7 +9,13 @@ using namespace ai;
 
 Unit* Stance::GetTarget()
 {
-    return AI_VALUE(Unit*, GetTargetName());
+    Unit *target = AI_VALUE(Unit*, GetTargetName());
+    if (target) return target;
+
+    ObjectGuid pullTarget = context->GetValue<ObjectGuid>("pull target")->Get();
+    if (pullTarget) ai->GetUnit(pullTarget);
+
+    return NULL;
 }
 
 WorldLocation Stance::GetLocation()
@@ -38,7 +44,7 @@ WorldLocation Stance::GetNearLocation(float angle, float distance)
 WorldLocation MoveStance::GetLocationInternal()
 {
     Unit* target = GetTarget();
-    float distance = sPlayerbotAIConfig.meleeDistance;
+    float distance = max(sPlayerbotAIConfig.meleeDistance, target->GetObjectBoundingRadius());
 
     float angle = GetAngle();
     return GetNearLocation(angle, distance);
@@ -55,7 +61,13 @@ namespace ai
 
         virtual float GetAngle()
         {
-            return GetFollowAngle();
+            Unit* target = GetTarget();
+
+            float angle = GetFollowAngle() + target->GetOrientation();
+            Player* master = GetMaster();
+            if (master) angle -= master->GetOrientation();
+
+            return angle;
         }
     };
 
@@ -67,7 +79,36 @@ namespace ai
         virtual float GetAngle()
         {
             Unit* target = GetTarget();
-            return bot->GetAngle(target);
+            return target->GetOrientation();
+        }
+    };
+
+    class TurnBackStance : public MoveStance
+    {
+    public:
+        TurnBackStance(PlayerbotAI* ai) : MoveStance(ai, "turnback") {}
+
+        virtual float GetAngle()
+        {
+            Unit* target = GetTarget();
+            Group* group = bot->GetGroup();
+            int count = 0;
+            float angle = 0.0f;
+            if (group)
+            {
+                for (GroupReference *ref = group->GetFirstMember(); ref; ref = ref->next())
+                {
+                    Player* member = ref->getSource();
+                    if (member && member != bot && ai->IsRanged(member))
+                    {
+                        angle += target->GetAngle(member);
+                        count++;
+                    }
+                }
+            }
+
+            if (!count) return target->GetOrientation();
+            return round((angle / count) * 10.0f) / 10.0f + M_PI;
         }
     };
 
@@ -79,7 +120,23 @@ namespace ai
         virtual float GetAngle()
         {
             Unit* target = GetTarget();
-            return GetFollowAngle() / 3 + target->GetOrientation() + M_PI;
+            Group* group = bot->GetGroup();
+            int index = 0, count = 0;
+            if (group)
+            {
+                for (GroupReference *ref = group->GetFirstMember(); ref; ref = ref->next())
+                {
+                    Player* member = ref->getSource();
+                    if (member == bot) index = count;
+                    if (member && !ai->IsRanged(member) && !ai->IsTank(member)) count++;
+                }
+            }
+
+            float angle = target->GetOrientation() + M_PI;
+            if (!count) return angle;
+
+            float increment = M_PI / 4 / count;
+            return round((angle + index * increment - M_PI / 4) * 10.0f) / 10.0f;
         }
     };
 };
@@ -110,6 +167,11 @@ bool StanceValue::Load(string name)
         if (value) delete value;
         value = new TankStance(ai);
     }
+    else if (name == "turnback" || name == "turn")
+    {
+        if (value) delete value;
+        value = new TurnBackStance(ai);
+    }
     else return false;
 
     return true;
@@ -133,13 +195,15 @@ bool SetStanceAction::Execute(Event event)
         WorldLocation loc = value->Get()->GetLocation();
         if (!Formation::IsNullLocation(loc))
             ai->Ping(loc.coord_x, loc.coord_y);
+
+        return true;
     }
 
     if (!value->Load(stance))
     {
         ostringstream str; str << "Invalid stance: |cffff0000" << stance;
         ai->TellMaster(str);
-        ai->TellMaster("Please set to any of:|cffffffff near (default), tank, behind");
+        ai->TellMaster("Please set to any of:|cffffffff near (default), tank, turnback, behind");
         return false;
     }
 

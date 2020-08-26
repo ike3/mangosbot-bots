@@ -108,19 +108,24 @@ bool MovementAction::MoveTo(Unit* target, float distance)
         return false;
     }
 
-    float bx = bot->GetPositionX();
-    float by = bot->GetPositionY();
-    float bz = bot->GetPositionZ();
+    float bx = bot->GetPositionX(), by = bot->GetPositionY(), bz = bot->GetPositionZ();
+    float tx = target->GetPositionX(), ty = target->GetPositionY(), tz = target->GetPositionZ();
 
-    Stance* stance = AI_VALUE(Stance*, "stance");
-    WorldLocation loc = stance->GetLocation();
-    if (Formation::IsNullLocation(loc) || loc.mapid == -1)
+    if (sServerFacade.IsHostileTo(bot, target))
     {
-        ai->TellError("Nowhere to move");
-        return false;
+        Stance* stance = AI_VALUE(Stance*, "stance");
+        WorldLocation loc = stance->GetLocation();
+        if (Formation::IsNullLocation(loc) || loc.mapid == -1)
+        {
+            ai->TellError("Nowhere to move");
+            return false;
+        }
+
+        tx = loc.coord_x;
+        ty = loc.coord_y;
+        tz = loc.coord_z;
 }
 
-    float tx = loc.coord_x, ty = loc.coord_y, tz = loc.coord_z;
     float distanceToTarget = sServerFacade.GetDistance2d(bot, tx, ty);
     float angle = bot->GetAngle(tx, ty);
     float needToGo = distanceToTarget - distance;
