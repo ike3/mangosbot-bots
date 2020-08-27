@@ -69,4 +69,22 @@ namespace ai
             return sServerFacade.GetDistance2d(ai->GetBot(), target);
         }
     };
+
+    class InsideTargetValue : public BoolCalculatedValue, public Qualified
+    {
+    public:
+        InsideTargetValue(PlayerbotAI* ai) : BoolCalculatedValue(ai) {}
+
+    public:
+        bool Calculate()
+        {
+            Unit* target = AI_VALUE(Unit*, qualifier);
+
+            if (!target || !target->IsInWorld() || target == ai->GetBot())
+                return false;
+
+            float dist = sServerFacade.GetDistance2d(ai->GetBot(), target->GetPositionX(), target->GetPositionY());
+            return sServerFacade.IsDistanceLessThan(dist, target->GetObjectBoundingRadius());
+        }
+    };
 }

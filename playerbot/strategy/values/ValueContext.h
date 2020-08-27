@@ -192,6 +192,7 @@ namespace ai
             creators["pull target"] = &ValueContext::pull_target;
             creators["group"] = &ValueContext::group;
             creators["range"] = &ValueContext::range;
+            creators["inside target"] = &ValueContext::inside_target;
             creators["party member without item"] = &ValueContext::party_member_without_item;
             creators["party member without food"] = &ValueContext::party_member_without_food;
             creators["party member without water"] = &ValueContext::party_member_without_water;
@@ -201,6 +202,7 @@ namespace ai
         static UntypedValue* party_member_without_water(PlayerbotAI* ai) { return new PartyMemberWithoutWaterValue(ai); }
         static UntypedValue* party_member_without_food(PlayerbotAI* ai) { return new PartyMemberWithoutFoodValue(ai); }
         static UntypedValue* party_member_without_item(PlayerbotAI* ai) { return new PartyMemberWithoutItemValue(ai); }
+        static UntypedValue* inside_target(PlayerbotAI* ai) { return new InsideTargetValue(ai); }
         static UntypedValue* range(PlayerbotAI* ai) { return new RangeValue(ai); }
         static UntypedValue* active_spell(PlayerbotAI* ai) { return new ActiveSpellValue(ai); }
         static UntypedValue* group(PlayerbotAI* ai) { return new IsInGroupValue(ai); }

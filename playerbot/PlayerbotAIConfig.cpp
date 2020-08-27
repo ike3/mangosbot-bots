@@ -181,7 +181,7 @@ bool PlayerbotAIConfig::Initialize()
     gearscorecheck = config.GetBoolDefault("AiPlayerbot.GearScoreCheck", false);
 	randomBotPreQuests = config.GetBoolDefault("AiPlayerbot.PreQuests", true);
 
-    targetPosRecalcDistance = config.GetFloatDefault("AiPlayerbot.TargetPosRecalcDistance", 0.1f), 
+    targetPosRecalcDistance = config.GetFloatDefault("AiPlayerbot.TargetPosRecalcDistance", 0.1f),
     BarGoLink::SetOutputState(config.GetBoolDefault("AiPlayerbot.ShowProgressBars", false));
 
     RandomPlayerbotFactory::CreateRandomBots();

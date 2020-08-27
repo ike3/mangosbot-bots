@@ -7,7 +7,7 @@ namespace ai
 {
     class EnemyTooCloseForSpellTrigger : public Trigger {
     public:
-        EnemyTooCloseForSpellTrigger(PlayerbotAI* ai) : Trigger(ai, "enemy too close for spell", 2) {}
+        EnemyTooCloseForSpellTrigger(PlayerbotAI* ai) : Trigger(ai, "enemy too close for spell") {}
         virtual bool IsActive()
 		{
 			Unit* target = AI_VALUE(Unit*, "current target");
@@ -18,7 +18,7 @@ namespace ai
 
     class EnemyTooCloseForShootTrigger : public Trigger {
     public:
-        EnemyTooCloseForShootTrigger(PlayerbotAI* ai) : Trigger(ai, "enemy too close for shoot", 2) {}
+        EnemyTooCloseForShootTrigger(PlayerbotAI* ai) : Trigger(ai, "enemy too close for shoot") {}
         virtual bool IsActive()
 		{
 			Unit* target = AI_VALUE(Unit*, "current target");
@@ -29,12 +29,11 @@ namespace ai
 
     class EnemyTooCloseForMeleeTrigger : public Trigger {
     public:
-        EnemyTooCloseForMeleeTrigger(PlayerbotAI* ai) : Trigger(ai, "enemy too close for melee", 2) {}
+        EnemyTooCloseForMeleeTrigger(PlayerbotAI* ai) : Trigger(ai, "enemy too close for melee") {}
         virtual bool IsActive()
 		{
 			Unit* target = AI_VALUE(Unit*, "current target");
-            return target &&
-                    sServerFacade.IsDistanceLessOrEqualThan(AI_VALUE2(float, "distance", "current target"), sPlayerbotAIConfig.contactDistance / 2);
+            return target && AI_VALUE2(bool, "inside target", "current target");
         }
     };
 
