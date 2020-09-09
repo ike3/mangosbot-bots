@@ -19,6 +19,7 @@
 #include "DelayAction.h"
 #include "GiveItemAction.h"
 #include "GreetAction.h"
+#include "ImbueAction.h"
 #include "MovementActions.h"
 #include "MoveToRpgTargetAction.h"
 #include "OutfitAction.h"
