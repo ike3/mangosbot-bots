@@ -179,7 +179,7 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
             else
                 engine->addStrategies("dps", "melee aoe", "bdps", "threat", "close", NULL);
 
-            engine->addStrategies("dps assist", "cure", NULL);
+            engine->addStrategies("dps assist", "cure", "totems", NULL);
             break;
         case CLASS_PALADIN:
             if (tab == 1)
