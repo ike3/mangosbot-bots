@@ -58,7 +58,11 @@ void PlayerbotHolder::LogoutPlayerBot(uint64 guid)
     if (bot)
     {
         bot->GetPlayerbotAI()->TellMaster("Goodbye!");
-        sPlayerbotDbStore.Save(bot->GetPlayerbotAI());
+        Group *group = bot->GetGroup();
+        if (group)
+        {
+            sPlayerbotDbStore.Save(bot->GetPlayerbotAI());
+        }
         sLog.outDebug("Bot %s logged out", bot->GetName());
         //bot->SaveToDB();
 
@@ -122,12 +126,17 @@ void PlayerbotHolder::OnBotLogin(Player * const bot)
         }
     }
 
-    ai->ResetStrategies();
     if (group)
     {
+        ai->ResetStrategies();
         ai->ChangeStrategy("-rpg", BOT_STATE_NON_COMBAT);
         ai->ChangeStrategy("-grind", BOT_STATE_NON_COMBAT);
     }
+    else
+    {
+        ai->ResetStrategies(false);
+    }
+
     ai->TellMaster("Hello!");
 }
 
