@@ -51,7 +51,7 @@ bool MovementAction::MoveNear(WorldObject* target, float distance)
             return true;
     }
 
-    ai->TellError("All paths not in LOS");
+    //ai->TellError("All paths not in LOS");
     return false;
 }
 
