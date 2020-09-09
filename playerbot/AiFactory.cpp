@@ -208,7 +208,10 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
             else if (tab == 2)
                 engine->addStrategies("heal", "cure", "flee", "dps assist", "ranged", "cc", NULL);
             else
-                engine->addStrategies("bear", "tank aoe", "flee", "ranged", NULL);
+            {
+                engine->removeStrategy("ranged");
+                engine->addStrategies("bear", "tank aoe", "flee", "close", NULL);
+            }
             break;
         case CLASS_HUNTER:
             engine->addStrategies("dps", "bdps", "threat", "dps assist", "ranged", "pet", "cc", NULL);
@@ -237,9 +240,22 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
         {
             engine->ChangeStrategy(sPlayerbotAIConfig.randomBotCombatStrategies);
 
+            engine->addStrategy("flee");
+
+            if (player->getClass() == CLASS_MAGE)
+            {
+                engine->removeStrategy("ranged");
+            }
+
+            if (player->getClass() == CLASS_WARLOCK)
+            {
+                engine->removeStrategy("ranged");
+            }
+            
             if (player->getClass() == CLASS_DRUID && tab == 2)
             {
                 engine->addStrategies("caster", "caster aoe", NULL);
+                engine->removeStrategy("ranged");
             }
 
             if (player->getClass() == CLASS_PRIEST && tab == 1)
@@ -247,15 +263,18 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
                 engine->removeStrategy("heal");
                 engine->addStrategy("shadow aoe");
                 engine->addStrategies("holy", NULL);
+                engine->removeStrategy("ranged");
             }
 
             if (player->getClass() == CLASS_SHAMAN && tab == 2)
             {
                 engine->addStrategies("caster", "caster aoe", NULL);
+                engine->removeStrategy("ranged");
             }
 
             if (player->getClass() == CLASS_PALADIN && tab == 0)
             {
+                engine->removeStrategy("ranged");
                 engine->addStrategies("dps", "close", NULL);
             }
         }
@@ -331,7 +350,7 @@ void AiFactory::AddDefaultNonCombatStrategies(Player* player, PlayerbotAI* const
             break;
     }
     nonCombatEngine->addStrategies("nc", "food", "stay", "sit", "chat", "follow",
-            "default", "quest", "loot", "gather", "duel", "emote", "conserve mana",/* "collision",*/ "buff", NULL);
+            "default", "quest", "loot", "gather", "duel", "emote", "conserve mana", "collision", "buff", "reveal", NULL);
 
     if (sRandomPlayerbotMgr.IsRandomBot(player))
     {
