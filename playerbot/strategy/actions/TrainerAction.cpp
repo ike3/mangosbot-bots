@@ -103,7 +103,7 @@ bool TrainerAction::Execute(Event event)
         return false;
 
     Creature *creature = ai->GetCreature(master->GetSelectionGuid());
-    if (!creature)
+    if (!creature || !creature->IsTrainer())
         return false;
 
     if (!creature->IsTrainerOf(bot, false))
