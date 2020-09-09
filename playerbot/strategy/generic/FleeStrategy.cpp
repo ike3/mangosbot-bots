@@ -12,7 +12,7 @@ void FleeStrategy::InitTriggers(list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
        "critical health",
-       NextAction::array(0, new NextAction("flee", ACTION_MOVE + 9), NULL)));
+       NextAction::array(0, new NextAction("flee", ACTION_MEDIUM_HEAL), NULL)));
 }
 
 void FleeFromAddsStrategy::InitTriggers(list<TriggerNode*> &triggers)
