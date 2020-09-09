@@ -315,6 +315,12 @@ void PlayerbotFactory::AddConsumables()
              StoreItem(CONSUM_ID_MINOR_MANA_OIL, 5);
              StoreItem(CONSUM_ID_WIZARD_OIL, 5);
          }
+#ifdef MANGOSBOT_ZERO
+         if (level >= 45) {
+             StoreItem(CONSUM_ID_BRILLIANT_MANA_OIL, 5);
+             StoreItem(CONSUM_ID_BRILLIANT_WIZARD_OIL, 5);
+         }
+#else
          if (level >= 45 && level < 52) {
             StoreItem(CONSUM_ID_BRILLIANT_MANA_OIL, 5);
             StoreItem(CONSUM_ID_BRILLIANT_WIZARD_OIL, 5);
@@ -327,6 +333,7 @@ void PlayerbotFactory::AddConsumables()
            StoreItem(CONSUM_ID_SUPERIOR_MANA_OIL, 5);
            StoreItem(CONSUM_ID_SUPERIOR_WIZARD_OIL, 5);
       }
+#endif
    }
       break;
       case CLASS_PALADIN:
@@ -349,6 +356,12 @@ void PlayerbotFactory::AddConsumables()
             StoreItem(CONSUM_ID_SOL_SHARPENING_STONE, 5);
             StoreItem(CONSUM_ID_SOLID_WEIGHTSTONE, 5);
          }
+#ifdef MANGOSBOT_ZERO
+         if (level >= 35) {
+             StoreItem(CONSUM_ID_DENSE_WEIGHTSTONE, 5);
+             StoreItem(CONSUM_ID_DENSE_SHARPENING_STONE, 5);
+         }
+#else
          if (level >= 35 && level < 50) {
             StoreItem(CONSUM_ID_DENSE_WEIGHTSTONE, 5);
             StoreItem(CONSUM_ID_DENSE_SHARPENING_STONE, 5);
@@ -361,6 +374,7 @@ void PlayerbotFactory::AddConsumables()
             StoreItem(CONSUM_ID_ADAMANTITE_WEIGHTSTONE, 5);
             StoreItem(CONSUM_ID_ADAMANTITE_SHARPENING_STONE, 5);
          }
+#endif
    }
        break;
        case CLASS_ROGUE:
