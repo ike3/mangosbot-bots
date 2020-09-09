@@ -76,10 +76,7 @@ int AiFactory::GetPlayerSpecTab(Player* bot)
         switch (bot->getClass())
         {
         case CLASS_MAGE:
-            if (bot->getLevel() < 5)
-                tab = 1;
-            else
-                tab = 2;
+            tab = 1;
             break;
         case CLASS_PALADIN:
             tab = 2;
