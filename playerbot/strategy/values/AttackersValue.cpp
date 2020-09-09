@@ -114,18 +114,18 @@ bool AttackersValue::IsPossibleTarget(Unit *attacker, Player *bot)
         !attacker->HasInvisibilityAura() &&
         !attacker->IsPolymorphed() &&
 #ifdef CMANGOS
-        !attacker->IsStunned() &&
+        //!attacker->IsStunned() &&
 #endif
 #ifdef MANGOS
-        !attacker->hasUnitState(UNIT_STAT_STUNNED) &&
+        //!attacker->hasUnitState(UNIT_STAT_STUNNED) &&
 #endif
         !sServerFacade.IsCharmed(attacker) &&
         !sServerFacade.IsFeared(attacker) &&
-        !sServerFacade.IsInRoots(attacker) &&
+        //!sServerFacade.IsInRoots(attacker) &&
         !sServerFacade.IsFriendlyTo(attacker, bot) &&
         bot->IsWithinDistInMap(attacker, sPlayerbotAIConfig.sightDistance) &&
         !(attacker->GetCreatureType() == CREATURE_TYPE_CRITTER) &&
-		!sPlayerbotAIConfig.IsInPvpProhibitedZone(attacker->GetAreaId()) &&
+        !(sPlayerbotAIConfig.IsInPvpProhibitedZone(attacker->GetAreaId()) && (attacker->GetObjectGuid().IsPlayer() || attacker->GetObjectGuid().IsPet())) &&
         (!c || (
             !c->IsInEvadeMode() &&
             (!attacker->HasFlag(UNIT_DYNAMIC_FLAGS, UNIT_DYNFLAG_TAPPED)
