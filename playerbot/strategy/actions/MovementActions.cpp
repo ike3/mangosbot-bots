@@ -68,7 +68,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle)
 
     if (!IsMovingAllowed(mapId, x, y, z))
     {
-        ai->TellError("I am stuck");
+        //ai->TellError("I am stuck");
         return false;
     }
 
@@ -104,7 +104,7 @@ bool MovementAction::MoveTo(Unit* target, float distance)
 {
     if (!IsMovingAllowed(target))
     {
-        ai->TellError("Seems I am stuck");
+        //ai->TellError("Seems I am stuck");
         return false;
     }
 
@@ -117,7 +117,7 @@ bool MovementAction::MoveTo(Unit* target, float distance)
         WorldLocation loc = stance->GetLocation();
         if (Formation::IsNullLocation(loc) || loc.mapid == -1)
         {
-            ai->TellError("Nowhere to move");
+            //ai->TellError("Nowhere to move");
             return false;
         }
 
@@ -266,7 +266,7 @@ bool MovementAction::Follow(Unit* target, float distance, float angle)
             ai->TellMasterNoFacing("I live, again!");
         }
         else
-            ai->TellError("I am stuck while following");
+            //ai->TellError("I am stuck while following");
 
         bot->TeleportTo(target->GetMapId(), target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), target->GetOrientation());
         return false;
@@ -277,7 +277,7 @@ bool MovementAction::Follow(Unit* target, float distance, float angle)
 
     if (sServerFacade.IsDistanceLessOrEqualThan(sServerFacade.GetDistance2d(bot, target), sPlayerbotAIConfig.followDistance))
     {
-        ai->TellError("No need to follow");
+        //ai->TellError("No need to follow");
         return false;
     }
 
