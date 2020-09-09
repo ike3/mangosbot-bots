@@ -272,7 +272,15 @@ void PlayerbotFactory::Randomize(bool incremental)
 
     pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Save");
     sLog.outDetail("Saving to DB...");
-    bot->SetMoney(10000 * sqrt(urand(1, level * 5)));
+    if (incremental)
+    {
+        uint32 money = bot->GetMoney();
+        bot->SetMoney(money + 1000 * sqrt(urand(1, level * 5)));
+    }
+    else
+    {
+        bot->SetMoney(10000 * sqrt(urand(1, level * 5)));
+    }
     bot->SaveToDB();
     sLog.outDetail("Done.");
     if (pmo) pmo->finish();
