@@ -343,6 +343,7 @@ bool RandomPlayerbotMgr::ProcessBot(Player* player)
 
 	player->GetPlayerbotAI()->GetAiObjectContext()->GetValue<bool>("random bot update")->Set(false);
 
+    bool randomiser = true;
     if (player->GetGuildId())
     {
 		Guild* guild = sGuildMgr.GetGuildById(player->GetGuildId());
@@ -350,17 +351,37 @@ bool RandomPlayerbotMgr::ProcessBot(Player* player)
 			for (vector<Player*>::iterator i = players.begin(); i != players.end(); ++i)
 				sGuildTaskMgr.Update(*i, player);
 		}
+
+        if (!IsRandomBot(guild->GetLeaderGuid())) {
+            int32 rank = guild->GetRank(player->GetObjectGuid());
+            randomiser = rank < 4 ? false : true;
+        }
     }
 
     uint32 randomize = GetEventValue(bot, "randomize");
     if (!randomize)
     {
-        Randomize(player);
-		//RandomTeleportForRpg(player);
+        if (randomiser)
+        {
+            Randomize(player);
+        }
+        else
+        {
+            RandomTeleportForRpg(player);
+        }
+
 		SetEventValue(bot, "teleport", 1, sPlayerbotAIConfig.maxRandomBotInWorldTime);
 		uint32 randomChange = urand(sPlayerbotAIConfig.randomBotUpdateInterval * 5, sPlayerbotAIConfig.randomBotUpdateInterval * 15);
 		ScheduleChangeStrategy(bot, randomChange);
-		sLog.outString("Bot %d is randomized and sent to city for %d minutes", bot, int(randomChange / 60));
+
+        if (randomiser)
+        {
+            sLog.outString("Bot %d is randomized and sent to city for %d minutes", bot, int(randomChange / 60));
+        }
+        else
+        {
+            sLog.outString("Bot %d from <%s> is refreshed and sent to city for %d minutes", bot, sGuildMgr.GetGuildById(player->GetGuildId())->GetName(), int(randomChange / 60));
+        }
 
         uint32 randomTime = urand(sPlayerbotAIConfig.minRandomBotRandomizeTime, sPlayerbotAIConfig.maxRandomBotRandomizeTime);
         ScheduleRandomize(bot, randomTime);
