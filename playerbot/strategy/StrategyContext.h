@@ -72,9 +72,15 @@ namespace ai
             creators["close"] = &StrategyContext::close;
             creators["ranged"] = &StrategyContext::ranged;
             creators["behind"] = &StrategyContext::behind;
+            creators["bg"] = &StrategyContext::bg;
+            creators["warsong"] = &StrategyContext::warsong;
+            creators["mount"] = &StrategyContext::mount;
         }
 
     private:
+        static Strategy* mount(PlayerbotAI* ai) { return new MountStrategy(ai); }
+        static Strategy* bg(PlayerbotAI* ai) { return new BGStrategy(ai); }
+        static Strategy* warsong(PlayerbotAI* ai) { return new WarsongStrategy(ai); }
         static Strategy* behind(PlayerbotAI* ai) { return new SetBehindCombatStrategy(ai); }
         static Strategy* ranged(PlayerbotAI* ai) { return new RangedCombatStrategy(ai); }
         static Strategy* close(PlayerbotAI* ai) { return new MeleeCombatStrategy(ai); }

@@ -18,6 +18,9 @@
 #include "FleeManager.h"
 #include "ServerFacade.h"
 
+#include "BattleGround.h"
+#include "BattleGroundMgr.h"
+
 using namespace ai;
 using namespace MaNGOS;
 
@@ -104,7 +107,10 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed)
             playerBots.size() < maxAllowedBotCount ? "RandomPlayerbotMgr::Login" : "RandomPlayerbotMgr::UpdateAIInternal");
 
     if (botCount < maxAllowedBotCount)
+    {
         AddRandomBots();
+    }
+        
 
     int botProcessed = 0;
     for (list<uint32>::iterator i = bots.begin(); i != bots.end(); ++i)
@@ -186,6 +192,56 @@ uint32 RandomPlayerbotMgr::AddRandomBots()
     return guids.size();
 }
 
+void RandomPlayerbotMgr::AddBgBot(Player* player, uint32 bracket)
+{
+    uint32 bot = player->GetGUIDLow();
+    PlayerbotAI* ai = player->GetPlayerbotAI();
+    //uint32 bracket = ai->GetBracketByLevel(player->getLevel());
+    uint32 bracketsize = sPlayerbotAIConfig.randomBotBracketCount * 20;
+    if (!player->GetGroup() && !ai->GetMaster())
+    {
+        sLog.outDetail("Changing strategy for bot %s to PVP", player->GetName());
+        sLog.outDetail("Bot %d (%d %s) bracket %d sent to BattmeMaster", bot, player->getLevel(), player->GetTeamId() == 0 ? "A" : "H", bracket);
+
+        // BG Tactics preference
+        SetEventValue(bot, "preference", urand(0, 9), sPlayerbotAIConfig.maxRandomBotInWorldTime);
+        //SetEventValue(bot, "bg", bracket, sPlayerbotAIConfig.maxRandomBotInWorldTime);
+
+        // Find BattleMaster by Entry
+        uint32 BmEntry = player->GetPlayerbotAI()->GetBattleMasterEntryByRace(player->getRace());
+        // if found entry
+        if (BmEntry != 0 && ObjectMgr::GetCreatureTemplate(BmEntry))
+        {
+            CreatureData const* data = player->GetPlayerbotAI()->GetCreatureDataByEntry(BmEntry);
+            // if BattleMaster found, Teleport
+            if (data)
+            {
+                if (player->IsTaxiFlying())
+                {
+                    player->GetMotionMaster()->MovementExpired();
+                    player->m_taxi.ClearTaxiDestinations();
+                }
+                player->TeleportTo(data->mapid, data->posX, data->posY, data->posZ, player->GetOrientation());
+            }
+        }
+        player->GetPlayerbotAI()->ChangeStrategy("+bg,-grind,-custom::say", BOT_STATE_NON_COMBAT);
+        if (urand(0, 100) > 50)
+        {
+            player->GetPlayerbotAI()->ChangeStrategy("-rpg", BOT_STATE_NON_COMBAT);
+            if (urand(0, 100) > 50)
+                player->GetPlayerbotAI()->ChangeStrategy("+stay", BOT_STATE_NON_COMBAT);
+        }
+        if (urand(0, 100) < 20)
+            player->GetPlayerbotAI()->ChangeStrategy("-collision", BOT_STATE_NON_COMBAT);
+        if (urand(0, 100) < 50)
+            player->GetPlayerbotAI()->ChangeStrategy("-mount", BOT_STATE_NON_COMBAT);
+
+        //player->GetTeamId() == 0 ? BracketBots[bracket][0]++ : BracketBots[bracket][1]++;
+        return;
+    }
+    return;
+}
+
 void RandomPlayerbotMgr::ScheduleRandomize(uint32 bot, uint32 time)
 {
     SetEventValue(bot, "randomize", 1, time);
@@ -230,7 +286,7 @@ bool RandomPlayerbotMgr::ProcessBot(uint32 bot)
 
     if (!player)
     {
-        if (urand(0, 100) > 50) // less lag during bots login
+        if (urand(0, 100) > 30) // less lag during bots login
         {
             return true;
         }
@@ -286,6 +342,12 @@ bool RandomPlayerbotMgr::ProcessBot(Player* player)
 {
     uint32 bot = player->GetGUIDLow();
 
+    if (player->InBattleGround())
+        return false;
+
+    if (player->InBattleGroundQueue())
+        return false;
+
     // Hotfix System
     if (!sServerFacade.UnitIsDead(player))
     {
@@ -300,7 +362,7 @@ bool RandomPlayerbotMgr::ProcessBot(Player* player)
         }
     }
 
-    if (sServerFacade.UnitIsDead(player))
+    if (sServerFacade.UnitIsDead(player) && !player->InBattleGround())
     {
         if (!GetEventValue(bot, "dead"))
         {
@@ -343,6 +405,49 @@ bool RandomPlayerbotMgr::ProcessBot(Player* player)
 
 	player->GetPlayerbotAI()->GetAiObjectContext()->GetValue<bool>("random bot update")->Set(false);
 
+    
+
+    //uint32 bracket = GetEventValue(bot, "bg");
+    //uint32 bracket = GetEventValue(bot, "bg");
+    uint32 bracket = player->GetPlayerbotAI()->GetBracketByLevel(player->getLevel());
+    if (sPlayerbotAIConfig.randomBotJoinBG && bracket != 0 && player->getLevel() > 14 && !player->GetGroup() && !player->GetPlayerbotAI()->GetMaster() && urand(0, 100) < 50)
+    {
+        bool noattackers = (player->IsInCombat() || player->getAttackers().size() > 0) ? false : true;
+        if (noattackers && player->getLevel() > 14 && !player->GetGroup())
+        {
+            //list<uint32> Bgbots = GetBgBots(bracket);
+            //int BgbotCount = Bgbots.size();
+            
+            uint32 TeamId = player->GetTeamId();
+            uint32 bracketsize = sPlayerbotAIConfig.randomBotBracketCount * 20;
+
+            uint32 ACount = BracketBots[bracket][0];
+            uint32 HCount = BracketBots[bracket][1];
+            uint32 BgbotCount = ACount + HCount;
+            if (ACount > HCount && TeamId == 0)
+            {
+                //if ((ABracket - HBracket) > 3 && TeamId == 0)
+                    return false;
+            }
+
+            if (HCount > ACount && TeamId == 1)
+            {
+                //if ((HBracket - ABracket) > 3 && TeamId == 1)
+                    return false;
+            }
+
+            TeamId == 0 ? ACount++ : HCount++;
+
+            if (BgbotCount < bracketsize && (HCount < (sPlayerbotAIConfig.randomBotBracketCount * 20) / 2 || ACount < (sPlayerbotAIConfig.randomBotBracketCount * 20) / 2))
+            {
+                sLog.outString("Bot %d (%d %s) joins BG bracket %d (%d/%d) (A:%d H:%d)", bot, player->getLevel(), TeamId == 0 ? "A" : "H", bracket, BgbotCount + 1, bracketsize, ACount, HCount);
+                AddBgBot(player, bracket);
+            }
+            return true;
+        }
+        
+    }
+
     bool randomiser = true;
     if (player->GetGuildId())
     {
@@ -376,11 +481,11 @@ bool RandomPlayerbotMgr::ProcessBot(Player* player)
 
         if (randomiser)
         {
-            sLog.outString("Bot %d is randomized and sent to city for %d minutes", bot, int(randomChange / 60));
+            sLog.outString("Bot %d is randomized and sent to city", bot);
         }
         else
         {
-            sLog.outString("Bot %d from <%s> is refreshed and sent to city for %d minutes", bot, sGuildMgr.GetGuildById(player->GetGuildId())->GetName(), int(randomChange / 60));
+            sLog.outString("Bot %d from <%s> is refreshed and sent to city", bot, sGuildMgr.GetGuildById(player->GetGuildId())->GetName());
         }
 
         uint32 randomTime = urand(sPlayerbotAIConfig.minRandomBotRandomizeTime, sPlayerbotAIConfig.maxRandomBotRandomizeTime);
@@ -433,6 +538,9 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot, vector<WorldLocation> &locs
     if (bot->IsBeingTeleported())
         return;
 
+    if (bot->InBattleGround())
+        return;
+
 	if (bot->getLevel() < 5)
 		return;
 
@@ -479,9 +587,16 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot, vector<WorldLocation> &locs
         sLog.outDetail("Random teleporting bot %s to %s %f,%f,%f (%u/%zu locations)",
                 bot->GetName(), area->area_name[0], x, y, z, attemtps, locs.size());
 
+        if (bot->IsTaxiFlying())
+        {
+            bot->GetMotionMaster()->MovementExpired();
+            bot->m_taxi.ClearTaxiDestinations();
+        }
+
         bot->GetMotionMaster()->Clear();
         bot->TeleportTo(loc.mapid, x, y, z, 0);
         bot->SendHeartBeat();
+        bot->GetPlayerbotAI()->ResetStrategies();
         if (pmo) pmo->finish();
         return;
     }
@@ -605,12 +720,18 @@ void RandomPlayerbotMgr::PrepareTeleportCache()
 
 void RandomPlayerbotMgr::RandomTeleportForLevel(Player* bot)
 {
+    if (bot->InBattleGround())
+        return;
+
     sLog.outDetail("Preparing location to random teleporting bot %s for level %u", bot->GetName(), bot->getLevel());
     RandomTeleport(bot, locsPerLevelCache[bot->getLevel()]);
 }
 
 void RandomPlayerbotMgr::RandomTeleport(Player* bot)
 {
+    if (bot->InBattleGround())
+        return;
+
     PerformanceMonitorOperation *pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "RandomTeleport");
     vector<WorldLocation> locs;
 
@@ -647,6 +768,9 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot)
 
 void RandomPlayerbotMgr::Randomize(Player* bot)
 {
+    if (bot->InBattleGround())
+        return;
+
     if (bot->getLevel() == 1)
         RandomizeFirst(bot);
     else
@@ -736,6 +860,9 @@ uint32 RandomPlayerbotMgr::GetZoneLevel(uint16 mapId, float teleX, float teleY, 
 
 void RandomPlayerbotMgr::Refresh(Player* bot)
 {
+    if (bot->InBattleGround())
+        return;
+
     sLog.outDetail("Refreshing bot %s", bot->GetName());
     PerformanceMonitorOperation *pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "Refresh");
     if (sServerFacade.UnitIsDead(bot))
@@ -800,6 +927,35 @@ list<uint32> RandomPlayerbotMgr::GetBots()
     }
 
     return currentBots;
+}
+
+list<uint32> RandomPlayerbotMgr::GetBgBots(uint32 bracket)
+{
+    //if (!currentBgBots.empty()) return currentBgBots;
+
+    QueryResult* results = PlayerbotDatabase.PQuery(
+        "select bot from ai_playerbot_random_bots where event = 'bg' AND value = '%d'", bracket);
+    list<uint32> BgBots;
+    if (results)
+    {
+        do
+        {
+            Field* fields = results->Fetch();
+            uint32 bot = fields[0].GetUInt32();
+            BgBots.push_back(bot);
+        } while (results->NextRow());
+        delete results;
+    }
+
+    return BgBots;
+}
+
+void CheckBgBracket(uint32 bracket)
+{
+    //QueuedPlayersMap
+    //BattleGroundQueue
+    //QueuedPlayersMap::const_iterator qItr = m_QueuedPlayers.find(guid);
+    //BattleGround* bg = sBattleGroundMgr.GetBattleGround(m_BgInstanceGUID, m_BgTypeId);
 }
 
 uint32 RandomPlayerbotMgr::GetEventValue(uint32 bot, string event)
@@ -988,9 +1144,12 @@ void RandomPlayerbotMgr::OnPlayerLogout(Player* player)
         if (player == ai->GetMaster())
         {
             ai->SetMaster(NULL);
-            ai->ResetStrategies();
-            ai->ChangeStrategy("-rpg", BOT_STATE_NON_COMBAT);
-            ai->ChangeStrategy("-grind", BOT_STATE_NON_COMBAT);
+            if (!bot->InBattleGround())
+            {
+                ai->ResetStrategies();
+                ai->ChangeStrategy("-rpg", BOT_STATE_NON_COMBAT);
+                ai->ChangeStrategy("-grind", BOT_STATE_NON_COMBAT);
+            }
         }
     }
 
@@ -1028,11 +1187,14 @@ void RandomPlayerbotMgr::OnPlayerLogin(Player* player)
             PlayerbotAI* ai = bot->GetPlayerbotAI();
             if (member == player && (!ai->GetMaster() || ai->GetMaster()->GetPlayerbotAI()))
             {
-                ai->SetMaster(player);
-                ai->ResetStrategies();
-                ai->TellMaster("Hello");
-                ai->ChangeStrategy("-rpg", BOT_STATE_NON_COMBAT);
-                ai->ChangeStrategy("-grind", BOT_STATE_NON_COMBAT);
+                if (!bot->InBattleGround())
+                {
+                    ai->SetMaster(player);
+                    ai->ResetStrategies();
+                    ai->TellMaster("Hello");
+                    ai->ChangeStrategy("-rpg", BOT_STATE_NON_COMBAT);
+                    ai->ChangeStrategy("-grind", BOT_STATE_NON_COMBAT);
+                }
                 break;
             }
         }
@@ -1283,10 +1445,10 @@ void RandomPlayerbotMgr::ChangeStrategy(Player* player)
 {
     uint32 bot = player->GetGUIDLow();
 
-    if (urand(0, 100) > 100 * sPlayerbotAIConfig.randomBotRpgChance)
+    if (urand(0, 100) > 100 * sPlayerbotAIConfig.randomBotRpgChance) // select grind / pvp
     {
         sLog.outDetail("Changing strategy for bot %s to grinding", player->GetName());
-		sLog.outString("Bot %d sent to grind", bot);
+        sLog.outString("Bot %d sent to grind", bot);
         ScheduleTeleport(bot, 30);
     }
     else

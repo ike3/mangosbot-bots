@@ -142,6 +142,30 @@ enum ShieldWardDisplayId
    GREATER_WARD_OFSHIELDING = 38760,
 };
 
+/*enum BattleMaster_WSG : uint32
+{
+    BM_RACE_HUMAN = 14982,
+    BM_RACE_ORC = 3890,
+    BM_RACE_DWARF = 14982,
+    BM_RACE_NIGHTELF = 2302,
+    BM_RACE_UNDEAD = 2804,
+    BM_RACE_TAUREN = 10360,
+    BM_RACE_GNOME = 14982,
+    BM_RACE_TROLL = 3890,
+};*/
+
+/*enum BattleMaster_WSG_GUID : uint32
+{
+    RACE_HUMAN = 79,
+    RACE_ORC = 4765,
+    RACE_DWARF = 79,
+    RACE_NIGHTELF = 49936,
+    RACE_UNDEAD = 32071,
+    RACE_TAUREN = 24794,
+    RACE_GNOME = 79,
+    RACE_TROLL = 4765,
+};*/
+
 class PacketHandlingHelper
 {
 public:
@@ -235,6 +259,11 @@ public:
     void ImbueItem(Item* item, Unit* target);
     void ImbueItem(Item* item);
     void EnchantItemT(uint32 spellid, uint8 slot);
+    int GetBattleMasterEntryByRace(uint8 race);
+    uint32 GetBattleMasterGuidByRace(uint8 race);
+    uint32 GetBracketByLevel(uint32 level);
+    const CreatureData * GetCreatureDataByEntry(uint32 entry);
+    uint32 GetCreatureGuidByEntry(uint32 entry);
   
 
     virtual bool CanCastSpell(string name, Unit* target, uint8 effectMask, Item* itemTarget = NULL);

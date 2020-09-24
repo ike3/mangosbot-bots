@@ -64,7 +64,7 @@ bool AttackAction::Attack(Unit* target)
         if (verbose) ai->TellError(msg.str());
         return false;
     }
-    if (!sServerFacade.IsWithinLOSInMap(bot, target))
+    if (/*!bot->InBattleGround() && */!sServerFacade.IsWithinLOSInMap(bot, target))
     {
         msg << " is not on my sight";
         if (verbose) ai->TellError(msg.str());
@@ -77,7 +77,7 @@ bool AttackAction::Attack(Unit* target)
         return false;
     }
 
-    if (bot->IsMounted())
+    if (bot->IsMounted() && bot->IsWithinLOSInMap(target))
     {
         WorldPacket emptyPacket;
         bot->GetSession()->HandleCancelMountAuraOpcode(emptyPacket);

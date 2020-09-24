@@ -30,6 +30,8 @@
 #include "RemoveAuraAction.h"
 #include "RpgAction.h"
 #include "RtiAction.h"
+#include "BattlegroundJoinAction.h"
+#include "CheckMountStateAction.h"
 
 namespace ai
 {
@@ -107,9 +109,12 @@ namespace ai
             creators["try emergency"] = &ActionContext::try_emergency;
             creators["give food"] = &ActionContext::give_food;
             creators["give water"] = &ActionContext::give_water;
+            //creators["wsg join"] = &ActionContext::wsg_join;
+            creators["mount"] = &ActionContext::mount;
         }
 
     private:
+        //static Action* wsg_join(PlayerbotAI* ai) { return new WsGJoinAction(ai); }
         static Action* give_water(PlayerbotAI* ai) { return new GiveWaterAction(ai); }
         static Action* give_food(PlayerbotAI* ai) { return new GiveFoodAction(ai); }
         static Action* ra(PlayerbotAI* ai) { return new RemoveAuraAction(ai); }
@@ -178,6 +183,7 @@ namespace ai
         static Action* outfit(PlayerbotAI* ai) { return new OutfitAction(ai); }
         static Action* random_bot_update(PlayerbotAI* ai) { return new RandomBotUpdateAction(ai); }
         static Action* delay(PlayerbotAI* ai) { return new DelayAction(ai); }
+        static Action* mount(PlayerbotAI *ai) { return new CastSpellAction(ai, "mount"); }
     };
 
 };

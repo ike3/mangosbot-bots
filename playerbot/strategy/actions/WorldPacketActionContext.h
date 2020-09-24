@@ -23,6 +23,8 @@
 #include "LfgActions.h"
 #include "SecurityCheckAction.h"
 #include "GuildAcceptAction.h"
+#include "AcceptBattleGroundInvitationAction.h"
+#include "BattleGroundTacticsWS.h"
 
 namespace ai
 {
@@ -30,7 +32,12 @@ namespace ai
     {
     public:
         WorldPacketActionContext()
-        {
+        {   
+            creators["bg status"] = &WorldPacketActionContext::bg_status;
+            creators["bg join"] = &WorldPacketActionContext::bg_join;
+            //creators["wsg join"] = &WorldPacketActionContext::wsg_join;
+            creators["bg tactics ws"] = &WorldPacketActionContext::bg_tactics_ws;
+            //creators["accept bg invitation"] = &WorldPacketActionContext::accept_bg_invitation;
             creators["accept invitation"] = &WorldPacketActionContext::accept_invitation;
             creators["leader"] = &WorldPacketActionContext::pass_leadership_to_master;
             creators["tell not enough money"] = &WorldPacketActionContext::tell_not_enough_money;
@@ -64,6 +71,11 @@ namespace ai
         }
 
     private:
+        static Action* bg_join(PlayerbotAI* ai) { return new BGJoinAction(ai); }
+        static Action* bg_status(PlayerbotAI* ai) { return new BGStatusAction(ai); }
+        //static Action* wsg_join(PlayerbotAI* ai) { return new WsGJoinAction(ai); }
+        static Action* bg_tactics_ws(PlayerbotAI* ai) { return new BGTacticsWS(ai); }
+        //static Action* accept_bg_invitation(PlayerbotAI* ai) { return new AcceptBgInvitationAction(ai); }
         static Action* inventory_change_failure(PlayerbotAI* ai) { return new InventoryChangeFailureAction(ai); }
         static Action* guild_accept(PlayerbotAI* ai) { return new GuildAcceptAction(ai); }
         static Action* security_check(PlayerbotAI* ai) { return new SecurityCheckAction(ai); }

@@ -1675,7 +1675,7 @@ void PlayerbotFactory::InitAmmo()
 
 void PlayerbotFactory::InitMounts()
 {
-    map<int32, vector<uint32> > spells;
+    /*map<int32, vector<uint32> > spells;
 
     for (uint32 spellId = 0; spellId < sServerFacade.GetSpellInfoRows(); ++spellId)
     {
@@ -1709,6 +1709,49 @@ void PlayerbotFactory::InitMounts()
 
             bot->learnSpell(ids[index], false);
         }
+    }*/
+
+    uint32 firstmount =
+#ifdef MANGOSBOT_ZERO
+        40
+#else
+#ifdef MANGOSBOT_ONE
+        30
+#else
+        20
+#endif
+#endif
+        ;
+
+    uint32 secondmount =
+#ifdef MANGOSBOT_ZERO
+        60
+#else
+#ifdef MANGOSBOT_ONE
+        60
+#else
+        40
+#endif
+#endif
+        ;
+
+    if (bot->getLevel() >= firstmount && bot->GetTeamId() == TEAM_INDEX_ALLIANCE)
+    {
+        bot->learnSpell(6899, false);
+    }
+    if (bot->getLevel() >= firstmount && bot->GetTeamId() == TEAM_INDEX_HORDE)
+    {
+        bot->learnSpell(8395, false);
+
+    }
+    if (bot->getLevel() >= secondmount && bot->GetTeamId() == TEAM_INDEX_ALLIANCE)
+    {
+        bot->learnSpell(23240, false);
+
+    }
+    if (bot->getLevel() >= secondmount && bot->GetTeamId() == TEAM_INDEX_HORDE)
+    {
+        bot->learnSpell(23242, false);
     }
 }
 

@@ -130,7 +130,7 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
 {
     int tab = GetPlayerSpecTab(player);
 
-    engine->addStrategies("racials", "chat", "default", "aoe", "potions", "cast time", "conserve mana", "duel", "pvp", "stay", NULL);
+    //engine->addStrategies("racials", "chat", "default", "aoe", "potions", "cast time", "conserve mana", "duel", "pvp", "stay", NULL);
 
     switch (player->getClass())
     {
@@ -230,7 +230,11 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
             engine->addStrategies("dps assist", "flee", "ranged", "cc", "pet", NULL);
             break;
     }
-
+    if (!player->InBattleGround())
+    {
+        engine->addStrategies("racials", "chat", "default", "aoe", "potions", "cast time", "conserve mana", "duel", "pvp", NULL);
+    }
+    
 	if (sRandomPlayerbotMgr.IsRandomBot(player))
 	{
         if (!player->GetGroup())
@@ -279,6 +283,20 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
     else
     {
         engine->ChangeStrategy(sPlayerbotAIConfig.combatStrategies);
+    }
+
+    // Battleground switch
+    if (player->InBattleGround() && player->GetBattleGroundTypeId() == BattleGroundTypeId::BATTLEGROUND_WS)
+    {
+        engine->addStrategies("racials", "chat", "default", "aoe", "potions",/* "pvp",*/ "warsong", NULL);
+        engine->removeStrategy("custom::say");
+        engine->removeStrategy("flee");
+        engine->removeStrategy("treat");
+        engine->addStrategy("dps");
+        //engine->addStrategy("dps assist");
+        engine->addStrategy("boost");
+        if (player->getClass() != CLASS_HUNTER)
+            engine->removeStrategy("ranged");
     }
 }
 
@@ -346,20 +364,49 @@ void AiFactory::AddDefaultNonCombatStrategies(Player* player, PlayerbotAI* const
             nonCombatEngine->addStrategy("dps assist");
             break;
     }
-    nonCombatEngine->addStrategies("nc", "food", "stay", "sit", "chat", "follow",
-            "default", "quest", "loot", "gather", "duel", "emote", "conserve mana", "buff", "reveal", NULL);
+    //nonCombatEngine->addStrategies("nc", "food", "stay", "sit", "chat", "follow",
+    //        "default", "quest", "loot", "gather", "duel", "emote", "conserve mana", "buff", "reveal", NULL);
 
+    if (!player->InBattleGround())
+    {
+        nonCombatEngine->addStrategies("nc", "food", "stay", "sit", "chat", "follow",
+            "default", "quest", "loot", "gather", "duel", "emote", "conserve mana", "buff", "reveal", "mount", NULL);
+    }
+    
     if (sRandomPlayerbotMgr.IsRandomBot(player))
     {
         if (!player->GetGroup())
         {
             nonCombatEngine->addStrategy("collision");
+            //nonCombatEngine->addStrategy("mount");
+            /*if (player->getLevel() == 60)
+            {
+                nonCombatEngine->addStrategies("bg", NULL);
+            }*/
+
+
             nonCombatEngine->ChangeStrategy(sPlayerbotAIConfig.randomBotNonCombatStrategies);
         }
     }
     else
     {
         nonCombatEngine->ChangeStrategy(sPlayerbotAIConfig.nonCombatStrategies);
+    }
+
+    // Battleground switch
+    if (player->InBattleGround() && player->GetBattleGroundTypeId() == BattleGroundTypeId::BATTLEGROUND_WS)
+    {
+        nonCombatEngine->addStrategies(/*"grind",*/ "nc", "chat",
+            "default", "emote", "buff", "food", "dps assist", "collision", "mount", NULL);
+        
+        /*Player* master = player->GetPlayerbotAI()->GetMaster();
+        if (master && !master->GetPlayerbotAI() && master->InBattleGround() && master->IsInSameRaidWith(player))
+            nonCombatEngine->addStrategies("follow", NULL);
+        else*/
+            nonCombatEngine->addStrategies("warsong", NULL);
+
+        nonCombatEngine->removeStrategy("custom::say");
+        //nonCombatEngine->removeStrategy("mount");
     }
 }
 
@@ -376,6 +423,12 @@ void AiFactory::AddDefaultDeadStrategies(Player* player, PlayerbotAI* const faca
     if (sRandomPlayerbotMgr.IsRandomBot(player) && !player->GetGroup())
     {
         deadEngine->removeStrategy("follow");
+    }
+
+    if (player->InBattleGround() && player->GetBattleGroundTypeId() == BattleGroundTypeId::BATTLEGROUND_WS)
+    {
+        deadEngine->addStrategies("warsong", NULL);
+        //deadEngine->removeStrategy("dead");
     }
 }
 
