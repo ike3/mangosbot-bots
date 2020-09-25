@@ -1675,42 +1675,6 @@ void PlayerbotFactory::InitAmmo()
 
 void PlayerbotFactory::InitMounts()
 {
-    /*map<int32, vector<uint32> > spells;
-
-    for (uint32 spellId = 0; spellId < sServerFacade.GetSpellInfoRows(); ++spellId)
-    {
-        SpellEntry const *spellInfo = sServerFacade.LookupSpellInfo(spellId);
-        if (!spellInfo || spellInfo->EffectApplyAuraName[0] != SPELL_AURA_MOUNTED)
-            continue;
-
-        if (GetSpellCastTime(spellInfo
-#ifdef CMANGOS
-            , bot
-#endif
-        ) < 500 || GetSpellDuration(spellInfo) != -1)
-            continue;
-
-        int32 effect = max(spellInfo->EffectBasePoints[1], spellInfo->EffectBasePoints[2]);
-        if (effect < 50)
-            continue;
-
-        spells[effect].push_back(spellId);
-    }
-
-    for (uint32 type = 0; type < 2; ++type)
-    {
-        for (map<int32, vector<uint32> >::iterator i = spells.begin(); i != spells.end(); ++i)
-        {
-            int32 effect = i->first;
-            vector<uint32>& ids = i->second;
-            uint32 index = urand(0, ids.size() - 1);
-            if (index >= ids.size())
-                continue;
-
-            bot->learnSpell(ids[index], false);
-        }
-    }*/
-
     uint32 firstmount =
 #ifdef MANGOSBOT_ZERO
         40
@@ -1735,23 +1699,115 @@ void PlayerbotFactory::InitMounts()
 #endif
         ;
 
-    if (bot->getLevel() >= firstmount && bot->GetTeamId() == TEAM_INDEX_ALLIANCE)
+    uint32 thirdmount =
+#ifdef MANGOSBOT_ZERO
+        90
+#else
+#ifdef MANGOSBOT_ONE
+        68
+#else
+        60
+#endif
+#endif
+        ;
+
+    uint32 fourthmount =
+#ifdef MANGOSBOT_ZERO
+        90
+#else
+#ifdef MANGOSBOT_ONE
+        70
+#else
+        70
+#endif
+#endif
+        ;
+
+    if (bot->getLevel() < firstmount)
+        return;
+
+    map<uint8, map<int32, vector<uint32> > > mounts;
+    initializer_list<uint32> slow, fast, fslow, ffast;
+    switch (bot->getRace())
     {
-        bot->learnSpell(6899, false);
-    }
-    if (bot->getLevel() >= firstmount && bot->GetTeamId() == TEAM_INDEX_HORDE)
-    {
-        bot->learnSpell(8395, false);
+    case RACE_HUMAN:
+        slow = { 470, 6648, 458, 472 };
+        fast = { 23228, 23227, 23229 };
+        break;
+    case RACE_ORC:
+        slow = { 6654, 6653, 580 };
+        fast = { 23250, 23252, 23251 };
+        break;
+    case RACE_DWARF:
+        slow = { 6899, 6777, 6898 };
+        fast = { 23238, 23239, 23240 };
+        break;
+    case RACE_NIGHTELF:
+        slow = { 10789, 8394, 10793 };
+        fast = { 18766, 18767, 18902 };
+        break;
+    case RACE_UNDEAD:
+        slow = { 17463, 17464, 17462 };
+        fast = { 17465, 23246 };
+        break;
+    case RACE_TAUREN:
+        slow = { 18990, 18989 };
+        fast = { 23249, 23248, 23247 };
+        break;
+    case RACE_GNOME:
+        slow = { 10969, 17453, 10873, 17454 };
+        fast = { 23225, 23223, 23222 };
+        break;
+    case RACE_TROLL:
+        slow = { 8588, 10796, 8592, 472 };
+        fast = { 23241, 23242, 23243 };
+        break;
+#ifndef MANGOSBOT_ZERO
+    case RACE_DRAENEI:
+        slow = { 34406, 35711, 35710 };
+        fast = { 35713, 35712, 35714 };
+        break;
+    case RACE_BLOODELF:
+        slow = { 33660, 35020, 35022, 35018 };
+        fast = { 35025, 35025, 35027 };
+        break;
 
     }
-    if (bot->getLevel() >= secondmount && bot->GetTeamId() == TEAM_INDEX_ALLIANCE)
+    switch (bot->GetTeamId())
     {
-        bot->learnSpell(23240, false);
-
+    case TEAM_INDEX_ALLIANCE:
+        fslow = { 32235, 32239, 32240 };
+        ffast = { 32242, 32289, 32290, 32292 };
+        break;
+    case TEAM_INDEX_HORDE:
+        fslow = { 32244, 32245, 32243 };
+        ffast = { 32295, 32297, 32246, 32296 };
+        break;
+#endif
     }
-    if (bot->getLevel() >= secondmount && bot->GetTeamId() == TEAM_INDEX_HORDE)
+    mounts[bot->getRace()][0].insert(mounts[bot->getRace()][0].end(), slow);
+    mounts[bot->getRace()][1].insert(mounts[bot->getRace()][1].end(), fast);
+    mounts[bot->getRace()][2].insert(mounts[bot->getRace()][0].end(), fslow);
+    mounts[bot->getRace()][3].insert(mounts[bot->getRace()][1].end(), ffast);
+
+    for (uint32 type = 0; type < 4; type++)
     {
-        bot->learnSpell(23242, false);
+        if (bot->getLevel() < secondmount && type == 1)
+            continue;
+
+        if (bot->getLevel() < thirdmount && type == 2)
+            continue;
+
+        if (bot->getLevel() < fourthmount && type == 3)
+            continue;
+
+        uint32 index = urand(0, mounts[bot->getRace()][type].size() - 1);
+        uint32 spell = mounts[bot->getRace()][type][index];
+        if (spell && spell != 0)
+        {
+            bot->learnSpell(spell, false);
+            sLog.outBasic("Bot %d (%d) learned %s mount %d", bot->GetGUIDLow(), bot->getLevel(), type == 0 ? "slow" : (type == 1 ? "fast" : "flying"), spell);
+        }
     }
 }
 
