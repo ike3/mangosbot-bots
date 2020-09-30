@@ -114,8 +114,4 @@ void ReadyCheckStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
     triggers.push_back(new TriggerNode(
         "timer",
         NextAction::array(0, new NextAction("ready check", relevance), NULL)));
-
-    /*triggers.push_back(new TriggerNode(
-        "timer",
-        NextAction::array(0, new NextAction("bg status", relevance), NULL)));*/
 }

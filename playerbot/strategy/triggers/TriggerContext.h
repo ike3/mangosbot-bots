@@ -113,13 +113,17 @@ namespace ai
             creators["give food"] = &TriggerContext::give_food;
             creators["give water"] = &TriggerContext::give_water;
 
-            creators["has no flag"] = &TriggerContext::player_has_no_flag;
+            creators["player has no flag"] = &TriggerContext::player_has_no_flag;
+            creators["player has flag"] = &TriggerContext::player_has_flag;
+            creators["team has flag"] = &TriggerContext::team_has_flag;
             creators["in battleground"] = &TriggerContext::player_is_in_battleground;
             creators["in battleground without flag"] = &TriggerContext::player_is_in_battleground_no_flag;
         }
 
     private:
         static Trigger* player_has_no_flag(PlayerbotAI* ai) { return new PlayerHasNoFlag(ai); }
+        static Trigger* player_has_flag(PlayerbotAI* ai) { return new PlayerHasFlag(ai); }
+        static Trigger* team_has_flag(PlayerbotAI* ai) { return new TeamHasFlag(ai); }
         static Trigger* player_is_in_battleground(PlayerbotAI *ai) { return new PlayerIsInBattleground(ai); }
         static Trigger* player_is_in_battleground_no_flag(PlayerbotAI *ai) { return new PlayerIsInBattlegroundWithoutFlag(ai); }
         static Trigger* give_food(PlayerbotAI* ai) { return new GiveFoodTrigger(ai); }

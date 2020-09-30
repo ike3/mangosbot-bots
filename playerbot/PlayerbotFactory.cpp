@@ -956,7 +956,9 @@ void PlayerbotFactory::InitEquipment(bool incremental)
 
     for(uint8 slot = 0; slot < EQUIPMENT_SLOT_END; ++slot)
     {
-        if (slot == EQUIPMENT_SLOT_TABARD || slot == EQUIPMENT_SLOT_BODY)
+        //if (slot == EQUIPMENT_SLOT_TABARD || slot == EQUIPMENT_SLOT_BODY)
+        //    continue;
+        if (slot == EQUIPMENT_SLOT_TABARD && !bot->GetGuildId())
             continue;
 
         bool found = false;
@@ -1744,7 +1746,7 @@ void PlayerbotFactory::InitMounts()
         break;
     case RACE_NIGHTELF:
         slow = { 10789, 8394, 10793 };
-        fast = { 18766, 18767, 18902 };
+        fast = { 23221, 23219, 23338 };
         break;
     case RACE_UNDEAD:
         slow = { 17463, 17464, 17462 };
@@ -1759,7 +1761,7 @@ void PlayerbotFactory::InitMounts()
         fast = { 23225, 23223, 23222 };
         break;
     case RACE_TROLL:
-        slow = { 8588, 10796, 8592, 472 };
+        slow = { 8395, 10796, 10799 };
         fast = { 23241, 23242, 23243 };
         break;
 #ifndef MANGOSBOT_ZERO
@@ -1787,8 +1789,8 @@ void PlayerbotFactory::InitMounts()
     }
     mounts[bot->getRace()][0].insert(mounts[bot->getRace()][0].end(), slow);
     mounts[bot->getRace()][1].insert(mounts[bot->getRace()][1].end(), fast);
-    mounts[bot->getRace()][2].insert(mounts[bot->getRace()][0].end(), fslow);
-    mounts[bot->getRace()][3].insert(mounts[bot->getRace()][1].end(), ffast);
+    mounts[bot->getRace()][2].insert(mounts[bot->getRace()][2].end(), fslow);
+    mounts[bot->getRace()][3].insert(mounts[bot->getRace()][3].end(), ffast);
 
     for (uint32 type = 0; type < 4; type++)
     {
@@ -1806,7 +1808,7 @@ void PlayerbotFactory::InitMounts()
         if (spell && spell != 0)
         {
             bot->learnSpell(spell, false);
-            sLog.outBasic("Bot %d (%d) learned %s mount %d", bot->GetGUIDLow(), bot->getLevel(), type == 0 ? "slow" : (type == 1 ? "fast" : "flying"), spell);
+            sLog.outDetail("Bot %d (%d) learned %s mount %d", bot->GetGUIDLow(), bot->getLevel(), type == 0 ? "slow" : (type == 1 ? "fast" : "flying"), spell);
         }
     }
 }
@@ -1835,7 +1837,7 @@ void PlayerbotFactory::InitPotions()
         Item* newItem = bot->StoreNewItemInInventorySlot(itemId, urand(maxCount / 2, maxCount));
         if (newItem)
             newItem->AddToUpdateQueueOf(bot);
-   }
+    }
 }
 
 void PlayerbotFactory::InitFood()

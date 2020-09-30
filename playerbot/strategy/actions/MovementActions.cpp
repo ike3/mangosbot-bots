@@ -14,24 +14,6 @@
 
 using namespace ai;
 
-/*bool MovementAction::ChaseTo(WorldObject* obj)
-{
-    if (bot->IsSitState())
-        bot->SetStandState(UNIT_STAND_STATE_STAND);
-
-    if (bot->IsNonMeleeSpellCasted(true))
-    {
-        bot->CastStop();
-        ai->InterruptSpell();
-    }
-
-    MotionMaster &mm = *bot->GetMotionMaster();
-    mm.Clear();
-
-    mm.MoveChase(obj);
-    return true;
-}*/
-
 bool MovementAction::MoveNear(uint32 mapId, float x, float y, float z, float distance)
 {
     float angle = GetFollowAngle();
@@ -90,8 +72,6 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle)
         return false;
     }
 
-    //bot->UpdateGroundPositionZ(x, y, z);
-
     float distance = sServerFacade.GetDistance2d(bot, x, y);
     if (sServerFacade.IsDistanceGreaterThan(distance, sPlayerbotAIConfig.targetPosRecalcDistance))
     {
@@ -108,13 +88,6 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle)
         }
 
         MotionMaster &mm = *bot->GetMotionMaster();
-        float botZ = bot->GetPositionZ();
-        /*if (!bot->InBattleGround() && z - botZ > 0.5f && bot->GetDistance2d(x, y) <= 5.0f)
-        {
-            float speed = bot->GetSpeed(MOVE_RUN);
-            mm.MoveJump(x, y, botZ + 0.5f, speed, speed, 1);
-        }
-        else*/
         mm.MovePoint(mapId, x, y, z, generatePath);
 
         AI_VALUE(LastMovement&, "last movement").Set(x, y, z, bot->GetOrientation());
@@ -205,7 +178,7 @@ bool MovementAction::IsMovingAllowed(Unit* target)
         return false;
 
     float distance = bot->GetDistance(target);
-    if (!bot->InBattleGround() && !bot->InBattleGround() && distance > sPlayerbotAIConfig.reactDistance)
+    if (!bot->InBattleGround() && distance > sPlayerbotAIConfig.reactDistance)
         return false;
 
     return IsMovingAllowed();
@@ -297,12 +270,6 @@ bool MovementAction::Follow(Unit* target, float distance, float angle)
 
         bot->TeleportTo(target->GetMapId(), target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), target->GetOrientation());
         return false;
-    }
-
-    if (target->GetTypeId() == TYPEID_PLAYER)
-    {
-        if (((Unit *)target)->IsFriendlyTo(bot) && bot->IsMounted() && AI_VALUE(list<ObjectGuid>, "possible targets").empty())
-            distance += angle;
     }
 
     if (sServerFacade.IsFriendlyTo(target, bot) && bot->IsMounted() && AI_VALUE(list<ObjectGuid>, "all targets").empty())

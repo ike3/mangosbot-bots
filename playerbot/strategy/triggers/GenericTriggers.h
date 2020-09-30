@@ -594,7 +594,10 @@ namespace ai
     public:
         virtual bool IsActive()
         {
-            return AI_VALUE(list<ObjectGuid>, "nearest non bot players").empty();
+            if (!bot->InBattleGround())
+                return AI_VALUE(list<ObjectGuid>, "nearest non bot players").empty();
+            else
+                return false;
         }
     };
 

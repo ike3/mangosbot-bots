@@ -64,7 +64,7 @@ bool AttackAction::Attack(Unit* target)
         if (verbose) ai->TellError(msg.str());
         return false;
     }
-    if (/*!bot->InBattleGround() && */!sServerFacade.IsWithinLOSInMap(bot, target))
+    if (!sServerFacade.IsWithinLOSInMap(bot, target))
     {
         msg << " is not on my sight";
         if (verbose) ai->TellError(msg.str());

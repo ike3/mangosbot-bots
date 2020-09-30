@@ -15,6 +15,9 @@ namespace ai
 
         virtual bool Execute(Event event)
         {
+            if (bot->InBattleGround())
+                return false;
+
             if (!sRandomPlayerbotMgr.IsRandomBot(bot) || bot->GetGroup() || ai->GetMaster())
                 return false;
 

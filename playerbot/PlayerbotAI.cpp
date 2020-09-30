@@ -2442,6 +2442,10 @@ int PlayerbotAI::GetBattleMasterEntryByRace(uint8 race)
     case RACE_TAUREN:      return 10360;
     case RACE_GNOME:       return 14982;
     case RACE_TROLL:       return 3890;
+#ifndef MANGOSBOT_ZERO
+    case RACE_DRAENEI:     return 20118;
+    case RACE_BLOODELF:    return 16696;
+#endif
     default:    return 0;
     }
 }

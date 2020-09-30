@@ -24,6 +24,9 @@ bool CheckMountStateAction::Execute(Event event)
     if (!bot->GetPlayerbotAI()->HasStrategy("mount", BOT_STATE_NON_COMBAT))
         return false;
 
+    if (bot->isMoving())
+        return false;
+
     bool firstmount = bot->getLevel() >=
 #ifdef MANGOSBOT_ZERO
         40
@@ -94,7 +97,7 @@ bool CheckMountStateAction::Execute(Event event)
 
     if (target && target->IsHostileTo(bot))
     {
-        attackdistance = sServerFacade.GetDistance2d(bot, target) <= sPlayerbotAIConfig.grindDistance / 2;
+        attackdistance = sServerFacade.GetDistance2d(bot, target) <= sPlayerbotAIConfig.spellDistance;
         chasedistance = sServerFacade.GetDistance2d(bot, target) >= sPlayerbotAIConfig.fleeDistance;
     }
 
@@ -186,6 +189,8 @@ bool CheckMountStateAction::Mount()
         //bot->StopMoving(true);
         //bot->SetRoot(true);
         //ai->SetNextCheckDelay(3100);
+        //bot->StopMoving();
+        //ai->SetNextCheckDelay(3000);
 		ai->CastSpell(ids[index], bot);
         
         

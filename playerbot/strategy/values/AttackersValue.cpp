@@ -110,6 +110,8 @@ bool AttackersValue::IsPossibleTarget(Unit *attacker, Player *bot)
         attacker->GetMapId() == bot->GetMapId() &&
         !sServerFacade.UnitIsDead(attacker) &&
         !attacker->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE) &&
+        !attacker->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE) &&
+        !attacker->IsInvisibleForAlive() &&
         !attacker->HasStealthAura() &&
         !attacker->HasInvisibilityAura() &&
         !attacker->IsPolymorphed() &&

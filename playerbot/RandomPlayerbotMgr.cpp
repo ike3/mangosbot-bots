@@ -192,23 +192,154 @@ uint32 RandomPlayerbotMgr::AddRandomBots()
     return guids.size();
 }
 
-void RandomPlayerbotMgr::AddBgBot(Player* player, uint32 bracket)
+void RandomPlayerbotMgr::CheckBgBracket(BattleGroundTypeId bgTypeId, BattleGroundBracketId bracketId)
 {
+    if(!BgCheckTimer)
+        BgCheckTimer = time(NULL);
+
+    if (time(NULL) < (BgCheckTimer + 15))
+    {
+        return;
+    }
+    else
+    {
+        BgCheckTimer = time(NULL);
+    }
+
+    sLog.outBasic("Checking BG Queue for real players...");
+
+    for (int i = BG_BRACKET_ID_FIRST; i < MAX_BATTLEGROUND_BRACKETS; ++i)
+    {
+        for (int j = BATTLEGROUND_AV; j < BATTLEGROUND_AB; ++j)
+        {
+            BracketPlayers[j][i][0] = 0;
+            BracketPlayers[j][i][1] = 0;
+        }
+    }
+
+    QueryResult* result = CharacterDatabase.Query("SELECT guid, instance_id, team FROM character_battleground_data");
+    if (result)
+    {
+        do
+        {
+            Field* fields = result->Fetch();
+            uint32 guidlow = fields[0].GetUInt32();
+            uint32 instanceId = fields[1].GetUInt32();
+            uint32 TeamId = fields[1].GetUInt32();
+            BattleGround* bg = NULL;
+            if (instanceId)
+            {
+                bg = sBattleGroundMgr.GetBattleGroundThroughClientInstance(instanceId, bgTypeId);
+            }
+            if (!bg)
+                continue;
+
+            if (bg->GetStatus() == STATUS_WAIT_LEAVE)
+                continue;
+
+            //if (bg->GetTypeID() != bgTypeId)
+                //continue;
+
+            //if (bg->GetBracketId() != bracketId)
+                //continue;
+
+            if (IsRandomBot(guidlow))
+                continue;
+
+            TeamId = TeamId == ALLIANCE ? 0 : 1;
+
+            //BracketPlayers[bgTypeId][bracketId][TeamId]++;
+            BracketPlayers[bg->GetTypeID()][bg->GetBracketId()][TeamId]++;
+
+        } while (result->NextRow());
+        delete result;
+    }
+
+    for (vector<Player*>::iterator i = players.begin(); i != players.end(); ++i)
+    {
+        Player* player = *i;
+        if (player->GetPlayerbotAI())
+            continue;
+
+        if (!player->InBattleGroundQueue())
+            continue;
+
+        uint32 TeamId = player->GetTeamId();
+        BattleGroundBracketId bracket = player->GetBattleGroundBracketIdFromLevel(bgTypeId);
+        BattleGroundQueueTypeId queue = player->GetBattleGroundQueueTypeId(0);
+
+        /*if (bracket == bracketId && queue == bgTypeId)
+        {
+            BracketPlayers[bgTypeId][bracketId][TeamId]++;
+        }*/
+        BracketPlayers[queue][bracket][TeamId]++;
+    }
+
+    if (BracketPlayers[bgTypeId][bracketId][0] > 0 || BracketPlayers[bgTypeId][bracketId][1] > 0)
+        return;
+
+    return;
+}
+
+void RandomPlayerbotMgr::AddBgBot(Player* player, BattleGroundTypeId bgTypeId, BattleGroundBracketId bracketId)
+{
+    BattleGround* bg = sBattleGroundMgr.GetBattleGroundTemplate(bgTypeId);
+    if (!bg)
+        return;
+
+    if (player->getLevel() < bg->GetMinLevel())
+        return;
+
+    uint32 BracketSize = bg->GetMaxPlayers();
+    uint32 TeamSize = bg->GetMaxPlayersPerTeam();
     uint32 bot = player->GetGUIDLow();
     PlayerbotAI* ai = player->GetPlayerbotAI();
-    //uint32 bracket = ai->GetBracketByLevel(player->getLevel());
-    uint32 bracketsize = sPlayerbotAIConfig.randomBotBracketCount * 20;
+    uint32 TeamId = player->GetTeamId();
+
+    uint32 ACount = BracketBots[bgTypeId][bracketId][0] + BracketPlayers[bgTypeId][bracketId][0];
+    uint32 HCount = BracketBots[bgTypeId][bracketId][1] + BracketPlayers[bgTypeId][bracketId][1];
+
+    if (ACount > HCount && TeamId == 0)
+    {
+        return;
+    }
+
+    if (HCount > ACount && TeamId == 1)
+    {
+        return;
+    }
+
+    /*if ((ACount > HCount) && (ACount - HCount > 3) && TeamId == 0)
+    {
+        return;
+    }
+
+    if ((HCount > ACount) && (HCount - ACount > 3) && TeamId == 1)
+    {
+        return;
+    }*/
+
+    uint32 BgCount = ACount + HCount;
+
+    if (!(BgCount < BracketSize && BracketBots[bgTypeId][bracketId][player->GetTeamId()] < TeamSize))
+    {
+        return;
+    }
+
+    TeamId == 0 ? ACount++ : HCount++;
+    
     if (!player->GetGroup() && !ai->GetMaster())
     {
         sLog.outDetail("Changing strategy for bot %s to PVP", player->GetName());
-        sLog.outDetail("Bot %d (%d %s) bracket %d sent to BattmeMaster", bot, player->getLevel(), player->GetTeamId() == 0 ? "A" : "H", bracket);
+        sLog.outDetail("Bot %d (%d %s) bracket %d sent to BattmeMaster", bot, player->getLevel(), player->GetTeamId() == 0 ? "A" : "H", bracketId);
+        sLog.outBasic("Bot %d (%d %s) joins BG bracket %d (%d/%d) (A:%d H:%d)", bot, player->getLevel(), TeamId == 0 ? "A" : "H", bracketId, BgCount + 1, BracketSize, ACount, HCount);
 
         // BG Tactics preference
         SetEventValue(bot, "preference", urand(0, 9), sPlayerbotAIConfig.maxRandomBotInWorldTime);
-        //SetEventValue(bot, "bg", bracket, sPlayerbotAIConfig.maxRandomBotInWorldTime);
 
         // Find BattleMaster by Entry
         uint32 BmEntry = player->GetPlayerbotAI()->GetBattleMasterEntryByRace(player->getRace());
+
         // if found entry
         if (BmEntry != 0 && ObjectMgr::GetCreatureTemplate(BmEntry))
         {
@@ -224,19 +355,21 @@ void RandomPlayerbotMgr::AddBgBot(Player* player, uint32 bracket)
                 player->TeleportTo(data->mapid, data->posX, data->posY, data->posZ, player->GetOrientation());
             }
         }
-        player->GetPlayerbotAI()->ChangeStrategy("+bg,-grind,-custom::say", BOT_STATE_NON_COMBAT);
-        if (urand(0, 100) > 50)
+        if (!BmEntry || BmEntry == 0)
         {
-            player->GetPlayerbotAI()->ChangeStrategy("-rpg", BOT_STATE_NON_COMBAT);
-            if (urand(0, 100) > 50)
-                player->GetPlayerbotAI()->ChangeStrategy("+stay", BOT_STATE_NON_COMBAT);
+            sLog.outError("Bot %d could not find Battlemaster", player->GetGUIDLow());
+            return;
         }
-        if (urand(0, 100) < 20)
-            player->GetPlayerbotAI()->ChangeStrategy("-collision", BOT_STATE_NON_COMBAT);
-        if (urand(0, 100) < 50)
-            player->GetPlayerbotAI()->ChangeStrategy("-mount", BOT_STATE_NON_COMBAT);
+        player->GetPlayerbotAI()->ChangeStrategy("+bg,-grind,-rpg,-custom::say", BOT_STATE_NON_COMBAT);
+        //player->GetPlayerbotAI()->ChangeStrategy("-rpg", BOT_STATE_NON_COMBAT);
+        if (urand(0, 5) < 3)
+            player->GetPlayerbotAI()->ChangeStrategy("+stay", BOT_STATE_NON_COMBAT);
+        //if (urand(0, 5) < 2)
+        //    player->GetPlayerbotAI()->ChangeStrategy("-collision", BOT_STATE_NON_COMBAT);
+        player->GetPlayerbotAI()->ChangeStrategy("-mount", BOT_STATE_NON_COMBAT);
+        
+        Refresh(player);
 
-        //player->GetTeamId() == 0 ? BracketBots[bracket][0]++ : BracketBots[bracket][1]++;
         return;
     }
     return;
@@ -245,7 +378,7 @@ void RandomPlayerbotMgr::AddBgBot(Player* player, uint32 bracket)
 void RandomPlayerbotMgr::ScheduleRandomize(uint32 bot, uint32 time)
 {
     SetEventValue(bot, "randomize", 1, time);
-    SetEventValue(bot, "logout", 1, time + 30 + urand(sPlayerbotAIConfig.randomBotUpdateInterval, sPlayerbotAIConfig.randomBotUpdateInterval * 3));
+    //SetEventValue(bot, "logout", 1, time + 30 + urand(sPlayerbotAIConfig.randomBotUpdateInterval, sPlayerbotAIConfig.randomBotUpdateInterval * 3));
 }
 
 void RandomPlayerbotMgr::ScheduleTeleport(uint32 bot, uint32 time)
@@ -405,47 +538,37 @@ bool RandomPlayerbotMgr::ProcessBot(Player* player)
 
 	player->GetPlayerbotAI()->GetAiObjectContext()->GetValue<bool>("random bot update")->Set(false);
 
+    bool BgPlayers = false;
+    bool BgLevel = true;
+
+    // get BG bracketId
+    uint32 bgType = BATTLEGROUND_WS;
+    BattleGroundTypeId bgTypeId = BattleGroundTypeId(bgType);
+    BattleGroundBracketId bracketId = player->GetBattleGroundBracketIdFromLevel(bgTypeId);
     
+    // check bg queue for real players
+    CheckBgBracket(bgTypeId, bracketId);
 
-    //uint32 bracket = GetEventValue(bot, "bg");
-    //uint32 bracket = GetEventValue(bot, "bg");
-    uint32 bracket = player->GetPlayerbotAI()->GetBracketByLevel(player->getLevel());
-    if (sPlayerbotAIConfig.randomBotJoinBG && bracket != 0 && player->getLevel() > 14 && !player->GetGroup() && !player->GetPlayerbotAI()->GetMaster() && urand(0, 100) < 50)
+    // checking if players found
+    if (BracketPlayers[bgTypeId][bracketId][0] > 0 || BracketPlayers[bgTypeId][bracketId][1] > 0)
+        BgPlayers = true;
+
+    // add only x3 - x9 level
+    if (bracketId < 5 && (player->getLevel() < ((bracketId * 10) + 14)))
+        BgLevel = false;
+
+    // if yes, then bot can queue to BG
+    if ((BgPlayers || BracketBots[bgTypeId][bracketId][player->GetTeamId()] < 3) && sPlayerbotAIConfig.randomBotJoinBG && BgLevel && player->getLevel() > 9 && !player->GetGroup() && !player->GetPlayerbotAI()->GetMaster())
     {
+        // check if bot is not attacked
         bool noattackers = (player->IsInCombat() || player->getAttackers().size() > 0) ? false : true;
-        if (noattackers && player->getLevel() > 14 && !player->GetGroup())
+
+        // check bracketId && MinLevel
+        if (noattackers && player->GetBGAccessByLevel(bgTypeId))
         {
-            //list<uint32> Bgbots = GetBgBots(bracket);
-            //int BgbotCount = Bgbots.size();
-            
-            uint32 TeamId = player->GetTeamId();
-            uint32 bracketsize = sPlayerbotAIConfig.randomBotBracketCount * 20;
-
-            uint32 ACount = BracketBots[bracket][0];
-            uint32 HCount = BracketBots[bracket][1];
-            uint32 BgbotCount = ACount + HCount;
-            if (ACount > HCount && TeamId == 0)
-            {
-                //if ((ABracket - HBracket) > 3 && TeamId == 0)
-                    return false;
-            }
-
-            if (HCount > ACount && TeamId == 1)
-            {
-                //if ((HBracket - ABracket) > 3 && TeamId == 1)
-                    return false;
-            }
-
-            TeamId == 0 ? ACount++ : HCount++;
-
-            if (BgbotCount < bracketsize && (HCount < (sPlayerbotAIConfig.randomBotBracketCount * 20) / 2 || ACount < (sPlayerbotAIConfig.randomBotBracketCount * 20) / 2))
-            {
-                sLog.outString("Bot %d (%d %s) joins BG bracket %d (%d/%d) (A:%d H:%d)", bot, player->getLevel(), TeamId == 0 ? "A" : "H", bracket, BgbotCount + 1, bracketsize, ACount, HCount);
-                AddBgBot(player, bracket);
-            }
+            AddBgBot(player, bgTypeId, bracketId);
             return true;
         }
-        
     }
 
     bool randomiser = true;
@@ -948,14 +1071,6 @@ list<uint32> RandomPlayerbotMgr::GetBgBots(uint32 bracket)
     }
 
     return BgBots;
-}
-
-void CheckBgBracket(uint32 bracket)
-{
-    //QueuedPlayersMap
-    //BattleGroundQueue
-    //QueuedPlayersMap::const_iterator qItr = m_QueuedPlayers.find(guid);
-    //BattleGround* bg = sBattleGroundMgr.GetBattleGround(m_BgInstanceGUID, m_BgTypeId);
 }
 
 uint32 RandomPlayerbotMgr::GetEventValue(uint32 bot, string event)

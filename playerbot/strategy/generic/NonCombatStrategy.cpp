@@ -78,11 +78,11 @@ void WarsongStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "player has flag",
-        NextAction::array(0, new NextAction("bg tactics ws", ACTION_EMERGENCY + 10), NULL)));
+        NextAction::array(0, new NextAction("bg tactics ws", ACTION_EMERGENCY), NULL)));
 
     triggers.push_back(new TriggerNode(
         "team has flag",
-        NextAction::array(0, new NextAction("bg tactics ws", 5.0f), NULL)));
+        NextAction::array(0, new NextAction("bg tactics ws", 10.0f), NULL)));
 }
 
 void MountStrategy::InitTriggers(std::list<TriggerNode*> &triggers)

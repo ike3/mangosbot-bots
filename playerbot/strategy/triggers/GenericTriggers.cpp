@@ -288,9 +288,11 @@ bool PlayerHasNoFlag::IsActive()
             {
                 return false;
             }
+            return true;
         }
+        return false;
     }
-    return true;
+    return false;
 }
 
 bool PlayerIsInBattleground::IsActive()
@@ -314,7 +316,7 @@ bool PlayerIsInBattlegroundWithoutFlag::IsActive()
         }
         return true;
     }
-    return true;
+    return false;
 }
 
 bool PlayerHasFlag::IsActive()
