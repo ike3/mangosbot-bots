@@ -294,8 +294,13 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
         engine->removeStrategy("treat");
         engine->addStrategy("dps");
         engine->addStrategy("boost");
+
         if (player->getClass() != CLASS_HUNTER)
             engine->removeStrategy("ranged");
+
+        if (player->getClass() == CLASS_ROGUE)
+            engine->addStrategy("behind");
+        
     }
 }
 

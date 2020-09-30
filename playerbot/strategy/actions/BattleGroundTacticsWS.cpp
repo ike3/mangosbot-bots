@@ -735,6 +735,9 @@ bool BGTacticsWS::Execute(Event event)
             if (ai->HasStrategy("collision", BOT_STATE_NON_COMBAT))
                 ai->ChangeStrategy("-collision", BOT_STATE_NON_COMBAT);
 
+            if (ai->HasStrategy("buff", BOT_STATE_NON_COMBAT))
+                ai->ChangeStrategy("-buff", BOT_STATE_NON_COMBAT);
+
             //If flag is close, always click it.
             bool alreadyHasFlag = bg->GetFlagState(bg->GetOtherTeam(bot->GetTeam())) == BG_WS_FLAG_STATE_ON_PLAYER;
             bool enemyHasFlag = bg->GetFlagState(bot->GetTeam()) == BG_WS_FLAG_STATE_ON_PLAYER;
