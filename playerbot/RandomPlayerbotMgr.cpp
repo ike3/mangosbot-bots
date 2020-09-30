@@ -234,7 +234,7 @@ void RandomPlayerbotMgr::CheckBgBracket(BattleGroundTypeId bgTypeId, BattleGroun
             if (!bg)
                 continue;
 
-            if (bg->GetStatus() == STATUS_WAIT_LEAVE)
+            if (bg->GetStatus() != STATUS_IN_PROGRESS)
                 continue;
 
             //if (bg->GetTypeID() != bgTypeId)
