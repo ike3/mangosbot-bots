@@ -715,6 +715,9 @@ bool BGTacticsWS::Execute(Event event)
                 bot->GetMotionMaster()->MovementExpired();
         }
         wasInCombat = bot->IsInCombat();
+
+        ai->ResetStrategies();
+
         //In Warsong, the bots run to the other flag and take it, try to get back and protect each other.
         //If our flag was taken, pures will try to get it back
         BattleGroundWS* bg = (BattleGroundWS *)bot->GetBattleGround();

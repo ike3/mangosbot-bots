@@ -186,7 +186,7 @@ bool BGStatusAction::Execute(Event event)
         packet << uint16(0);
         bot->GetSession()->HandleLeaveBattlefieldOpcode(packet);
         ai->ResetStrategies(!IsRandomBot);
-        sRandomPlayerbotMgr.BracketBots[bgTypeId][bracketId][bot->GetTeamId()]--;
+        sRandomPlayerbotMgr.BracketBots[bgTypeId][bracketId][bot->GetTeamId()] = 0;
         if (urand(0, 100) > 50)
         {
             if (IsRandomBot)
