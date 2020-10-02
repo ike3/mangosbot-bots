@@ -239,6 +239,11 @@ void PlayerbotFactory::Randomize(bool incremental)
     InitPotions();
     if (pmo) pmo->finish();
 
+    pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Reagents");
+    sLog.outDetail("Initializing reagents...");
+    InitReagents();
+    if (pmo) pmo->finish();
+
 	pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_EqSets");
     sLog.outDetail("Initializing second equipment set...");
     InitSecondEquipmentSet();
@@ -292,6 +297,7 @@ void PlayerbotFactory::Refresh()
     InitAmmo();
     InitFood();
     InitPotions();
+    InitReagents();
     bot->SaveToDB();
     //bot->SaveToDB();
 }
@@ -1146,13 +1152,16 @@ void PlayerbotFactory::InitBags()
             uint16 dest;
             if (!CanEquipUnseenItem(slot, dest, newItemId))
                 continue;
-
-            Item* newItem = bot->EquipNewItem(dest, newItemId, true);
-            if (newItem)
+            Item* saveItem = bot->StoreNewItemInInventorySlot(newItemId, 1);
+            if (saveItem)
             {
-                newItem->AddToWorld();
-                newItem->AddToUpdateQueueOf(bot);
-                break;
+                Item* newItem = bot->EquipNewItem(dest, newItemId, true);
+                if (newItem)
+                {
+                    newItem->AddToWorld();
+                    newItem->AddToUpdateQueueOf(bot);
+                    break;
+                }
             }
         }
     }
@@ -1851,7 +1860,7 @@ void PlayerbotFactory::InitFood()
         IterateItems(&visitor);
         if (!visitor.GetResult().empty()) continue;
 
-        uint32 itemId = sRandomItemMgr.GetRandomFood(level, category);
+        uint32 itemId = sRandomItemMgr.GetFood(level, category);
         if (!itemId)
         {
             sLog.outDetail("No food (category %d) available for bot %s (%d level)", category, bot->GetName(), bot->getLevel());
@@ -1865,6 +1874,94 @@ void PlayerbotFactory::InitFood()
         if (newItem)
             newItem->AddToUpdateQueueOf(bot);
    }
+}
+
+void PlayerbotFactory::InitReagents()
+{
+    list<uint32> items;
+    uint32 regCount = 1;
+    switch (bot->getClass())
+    {
+    case CLASS_MAGE:
+        regCount = 2;
+        if (bot->getLevel() > 11)
+            items = { 17056 };
+        if (bot->getLevel() > 19)
+            items = { 17056, 17031 };
+        if (bot->getLevel() > 35)
+            items = { 17056, 17031, 17032 };
+        if (bot->getLevel() > 55)
+            items = { 17056, 17031, 17032, 17020 };
+        break;
+    case CLASS_DRUID:
+        regCount = 2;
+        if (bot->getLevel() > 19)
+            items = { 17034 };
+        if (bot->getLevel() > 29)
+            items = { 17035 };
+        if (bot->getLevel() > 39)
+            items = { 17036 };
+        if (bot->getLevel() > 49)
+            items = { 17037, 17021 };
+        if (bot->getLevel() > 59)
+            items = { 17038, 17026 };
+        if (bot->getLevel() > 69)
+            items = { 22147, 22148 };
+        break;
+    case CLASS_PALADIN:
+        regCount = 3;
+        if (bot->getLevel() > 50)
+            items = { 21177 };
+        break;
+    case CLASS_SHAMAN:
+        regCount = 1;
+        if (bot->getLevel() > 29)
+            items = { 17030 };
+        break;
+    case CLASS_WARLOCK:
+        regCount = 10;
+        if (bot->getLevel() > 9)
+            items = { 6265 };
+        break;
+    case CLASS_PRIEST:
+        regCount = 3;
+        if (bot->getLevel() > 48)
+            items = { 17028 };
+        if (bot->getLevel() > 55)
+            items = { 17028, 17029 };
+        break;
+    case CLASS_ROGUE:
+        regCount = 1;
+        if (bot->getLevel() > 21)
+            items = { 5140 };
+        if (bot->getLevel() > 33)
+            items = { 5140, 5530 };
+        break;
+    }
+
+    for (list<uint32>::iterator i = items.begin(); i != items.end(); ++i)
+    {
+        ItemPrototype const* proto = sObjectMgr.GetItemPrototype(*i);
+        if (!proto)
+        {
+            sLog.outError("No reagent (ItemId %d) found for bot %d (Class:%d)", i, bot->GetGUIDLow(), bot->getClass());
+            continue;
+        }
+
+        uint32 maxCount = proto->GetMaxStackSize();
+
+        QueryItemCountVisitor visitor(*i);
+        IterateItems(&visitor);
+        if (visitor.GetCount() > maxCount) continue;
+
+        uint32 randCount = urand(maxCount / 2, maxCount * regCount);
+
+        Item* newItem = bot->StoreNewItemInInventorySlot(*i, randCount);
+        if (newItem)
+            newItem->AddToUpdateQueueOf(bot);
+
+        sLog.outDetail("Bot %d got reagent %s x%d", bot->GetGUIDLow(), proto->Name1, randCount);
+    }
 }
 
 

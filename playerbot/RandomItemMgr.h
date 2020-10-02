@@ -77,6 +77,7 @@ class RandomItemMgr
         uint32 GetAmmo(uint32 level, uint32 subClass);
         uint32 GetRandomPotion(uint32 level, uint32 effect);
         uint32 GetRandomFood(uint32 level, uint32 category);
+        uint32 GetFood(uint32 level, uint32 category);
         uint32 GetRandomTrade(uint32 level);
         bool CanEquipArmor(uint8 clazz, uint32 level, ItemPrototype const* proto);
         bool CanEquipWeapon(uint8 clazz, ItemPrototype const* proto);

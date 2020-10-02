@@ -76,6 +76,7 @@ private:
     void InitMounts();
     void InitPotions();
     void InitFood();
+    void InitReagents();
     bool CanEquipArmor(ItemPrototype const* proto);
     bool CanEquipWeapon(ItemPrototype const* proto);
     void EnchantItem(Item* item);
