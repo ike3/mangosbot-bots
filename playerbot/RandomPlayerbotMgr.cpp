@@ -281,7 +281,7 @@ void RandomPlayerbotMgr::CheckBgBracket(BattleGroundTypeId bgTypeId, BattleGroun
     return;
 }
 
-void RandomPlayerbotMgr::AddBgBot(Player* player, BattleGroundTypeId bgTypeId, BattleGroundBracketId bracketId)
+void RandomPlayerbotMgr::AddBgBot(Player* player, BattleGroundTypeId bgTypeId, BattleGroundBracketId bracketId, bool visual)
 {
     BattleGround* bg = sBattleGroundMgr.GetBattleGroundTemplate(bgTypeId);
     if (!bg)
@@ -327,15 +327,21 @@ void RandomPlayerbotMgr::AddBgBot(Player* player, BattleGroundTypeId bgTypeId, B
     }
 
     TeamId == 0 ? ACount++ : HCount++;
-    
+
     if (!player->GetGroup() && !ai->GetMaster())
     {
-        sLog.outDetail("Changing strategy for bot %s to PVP", player->GetName());
-        sLog.outDetail("Bot %d (%d %s) bracket %d sent to BattmeMaster", bot, player->getLevel(), player->GetTeamId() == 0 ? "A" : "H", bracketId);
-        sLog.outBasic("Bot %d (%d %s) joins BG bracket %d (%d/%d) (A:%d H:%d)", bot, player->getLevel(), TeamId == 0 ? "A" : "H", bracketId, BgCount + 1, BracketSize, ACount, HCount);
-
-        // BG Tactics preference
-        SetEventValue(bot, "preference", urand(0, 9), sPlayerbotAIConfig.maxRandomBotInWorldTime);
+        if (!visual)
+        {
+            sLog.outDetail("Changing strategy for bot %s to PVP", player->GetName());
+            sLog.outDetail("Bot %d (%d %s) bracket %d sent to BattmeMaster", bot, player->getLevel(), player->GetTeamId() == 0 ? "A" : "H", bracketId);
+            sLog.outBasic("Bot %d (%d %s) joins BG bracket %d (%d/%d) (A:%d H:%d)", bot, player->getLevel(), TeamId == 0 ? "A" : "H", bracketId, BgCount + 1, BracketSize, ACount, HCount);
+            // BG Tactics preference
+            SetEventValue(bot, "preference", urand(0, 9), sPlayerbotAIConfig.maxRandomBotInWorldTime);
+        }
+        else
+        {
+            sLog.outBasic("Bot %d (%d %s) simulates waiting near BattleMaster", bot, player->getLevel(), player->GetTeamId() == 0 ? "A" : "H");
+        }
 
         // Find BattleMaster by Entry
         uint32 BmEntry = player->GetPlayerbotAI()->GetBattleMasterEntryByRace(player->getRace());
@@ -360,15 +366,27 @@ void RandomPlayerbotMgr::AddBgBot(Player* player, BattleGroundTypeId bgTypeId, B
             sLog.outError("Bot %d could not find Battlemaster", player->GetGUIDLow());
             return;
         }
-        player->GetPlayerbotAI()->ChangeStrategy("+bg,-grind,-rpg,-custom::say", BOT_STATE_NON_COMBAT);
+
+        player->GetPlayerbotAI()->ChangeStrategy("-grind,-rpg,-custom::say", BOT_STATE_NON_COMBAT);
         //player->GetPlayerbotAI()->ChangeStrategy("-rpg", BOT_STATE_NON_COMBAT);
         if (urand(0, 5) < 3)
             player->GetPlayerbotAI()->ChangeStrategy("+stay", BOT_STATE_NON_COMBAT);
         //if (urand(0, 5) < 2)
         //    player->GetPlayerbotAI()->ChangeStrategy("-collision", BOT_STATE_NON_COMBAT);
         player->GetPlayerbotAI()->ChangeStrategy("-mount", BOT_STATE_NON_COMBAT);
-        
+
         Refresh(player);
+
+        if (visual)
+        {
+            VisualBots[bgTypeId][bracketId][player->GetTeamId()]++;
+            if (urand(0, 5) < 3)
+                player->GetPlayerbotAI()->ChangeStrategy("+rpg,-stay", BOT_STATE_NON_COMBAT);
+            return;
+
+        }
+
+        player->GetPlayerbotAI()->ChangeStrategy("+bg", BOT_STATE_NON_COMBAT);
 
         return;
     }
@@ -557,8 +575,11 @@ bool RandomPlayerbotMgr::ProcessBot(Player* player)
     if (bracketId < 5 && (player->getLevel() < ((bracketId * 10) + 14)))
         BgLevel = false;
 
+    if (!BgPlayers && VisualBots[bgTypeId][bracketId][player->GetTeamId()] < 2)
+        BgVisual = true;
+
     // if yes, then bot can queue to BG
-    if ((BgPlayers || BracketBots[bgTypeId][bracketId][player->GetTeamId()] < 3) && sPlayerbotAIConfig.randomBotJoinBG && BgLevel && player->getLevel() > 9 && !player->GetGroup() && !player->GetPlayerbotAI()->GetMaster())
+    if ((BgPlayers || BgVisual) && sPlayerbotAIConfig.randomBotJoinBG && BgLevel && player->getLevel() > 9 && !player->GetGroup() && !player->GetPlayerbotAI()->GetMaster())
     {
         // check if bot is not attacked
         bool noattackers = (player->IsInCombat() || player->getAttackers().size() > 0) ? false : true;

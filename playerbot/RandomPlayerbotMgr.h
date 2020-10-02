@@ -75,6 +75,7 @@ class RandomPlayerbotMgr : public PlayerbotHolder
         void Remove(Player* bot);
         void Hotfix(Player* player, uint32 version);
         map<uint32, map<uint32, map<uint32, uint32> > > BracketBots;
+        map<uint32, map<uint32, map<uint32, uint32> > > VisualBots;
         map<uint32, map<uint32, map<uint32, uint32> > > BracketPlayers;
 
 	protected:
@@ -85,7 +86,7 @@ class RandomPlayerbotMgr : public PlayerbotHolder
         uint32 SetEventValue(uint32 bot, string event, uint32 value, uint32 validIn);
         list<uint32> GetBots();
         list<uint32> GetBgBots(uint32 bracket);
-        void AddBgBot(Player* player, BattleGroundTypeId bgTypeId, BattleGroundBracketId bracketId);
+        void AddBgBot(Player* player, BattleGroundTypeId bgTypeId, BattleGroundBracketId bracketId, bool visual = 0);
         void CheckBgBracket(BattleGroundTypeId bgTypeId, BattleGroundBracketId bracketId);
         time_t BgCheckTimer;
         uint32 AddRandomBots();
