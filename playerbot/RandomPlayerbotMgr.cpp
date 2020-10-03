@@ -234,7 +234,7 @@ void RandomPlayerbotMgr::CheckBgBracket(BattleGroundTypeId bgTypeId, BattleGroun
             if (!bg)
                 continue;
 
-            if (bg->GetStatus() != STATUS_IN_PROGRESS)
+            if (!(bg->GetStatus() == STATUS_IN_PROGRESS || bg->GetStatus() == STATUS_WAIT_JOIN))
                 continue;
 
             //if (bg->GetTypeID() != bgTypeId)
@@ -340,7 +340,7 @@ void RandomPlayerbotMgr::AddBgBot(Player* player, BattleGroundTypeId bgTypeId, B
         }
         else
         {
-            sLog.outBasic("Bot %d (%d %s) simulates waiting near BattleMaster", bot, player->getLevel(), player->GetTeamId() == 0 ? "A" : "H");
+            sLog.outDetail("Bot %d (%d %s) simulates waiting near BattleMaster", bot, player->getLevel(), player->GetTeamId() == 0 ? "A" : "H");
         }
 
         // Find BattleMaster by Entry
@@ -558,25 +558,29 @@ bool RandomPlayerbotMgr::ProcessBot(Player* player)
 
     bool BgPlayers = false;
     bool BgLevel = true;
+    bool BgVisual = false;
 
     // get BG bracketId
     uint32 bgType = BATTLEGROUND_WS;
     BattleGroundTypeId bgTypeId = BattleGroundTypeId(bgType);
     BattleGroundBracketId bracketId = player->GetBattleGroundBracketIdFromLevel(bgTypeId);
-    
-    // check bg queue for real players
-    CheckBgBracket(bgTypeId, bracketId);
 
-    // checking if players found
-    if (BracketPlayers[bgTypeId][bracketId][0] > 0 || BracketPlayers[bgTypeId][bracketId][1] > 0)
-        BgPlayers = true;
+    if (sPlayerbotAIConfig.randomBotJoinBG)
+    {
+        // check bg queue for real players
+        CheckBgBracket(bgTypeId, bracketId);
 
-    // add only x3 - x9 level
-    if (bracketId < 5 && (player->getLevel() < ((bracketId * 10) + 14)))
-        BgLevel = false;
+        // checking if players found
+        if (BracketPlayers[bgTypeId][bracketId][0] > 0 || BracketPlayers[bgTypeId][bracketId][1] > 0)
+            BgPlayers = true;
 
-    if (!BgPlayers && VisualBots[bgTypeId][bracketId][player->GetTeamId()] < 2)
-        BgVisual = true;
+        // add only x3 - x9 level
+        if (bracketId < BG_BRACKET_ID_LAST && (player->getLevel() < ((bracketId * 10) + 14)))
+            BgLevel = false;
+
+        if (!BgPlayers && VisualBots[bgTypeId][bracketId][player->GetTeamId()] < 2)
+            BgVisual = true;
+    }
 
     // if yes, then bot can queue to BG
     if ((BgPlayers || BgVisual) && sPlayerbotAIConfig.randomBotJoinBG && BgLevel && player->getLevel() > 9 && !player->GetGroup() && !player->GetPlayerbotAI()->GetMaster())
@@ -587,7 +591,7 @@ bool RandomPlayerbotMgr::ProcessBot(Player* player)
         // check bracketId && MinLevel
         if (noattackers && player->GetBGAccessByLevel(bgTypeId))
         {
-            AddBgBot(player, bgTypeId, bracketId);
+            AddBgBot(player, bgTypeId, bracketId, BgVisual);
             return true;
         }
     }
