@@ -2450,24 +2450,6 @@ int PlayerbotAI::GetBattleMasterEntryByRace(uint8 race)
     }
 }
 
-uint32 PlayerbotAI::GetBracketByLevel(uint32 level)
-{
-    if (level > 14 && level < 20)
-        return 1;
-    else if (level < 30)
-        return 2;
-    else if (level < 40)
-        return 3;
-    else if (level < 50)
-        return 4;
-    else if (level < 60)
-        return 5;
-    else if (level < 70)
-        return 6;
-    
-    return 0;
-}
-
 uint32 PlayerbotAI::GetBattleMasterGuidByRace(uint8 race)
 {
     uint32 guid = 0;

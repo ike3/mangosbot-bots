@@ -261,7 +261,6 @@ public:
     void EnchantItemT(uint32 spellid, uint8 slot);
     int GetBattleMasterEntryByRace(uint8 race);
     uint32 GetBattleMasterGuidByRace(uint8 race);
-    uint32 GetBracketByLevel(uint32 level);
     const CreatureData * GetCreatureDataByEntry(uint32 entry);
     uint32 GetCreatureGuidByEntry(uint32 entry);
   
