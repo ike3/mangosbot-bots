@@ -19,6 +19,8 @@ public:
         creators["rake"] = &rake;
         creators["ferocious bite"] = &ferocious_bite;
         creators["rip"] = &rip;
+        creators["pounce"] = &pounce;
+        creators["ravage"] = &ravage;
     }
 private:
     static ActionNode* faerie_fire_feral(PlayerbotAI* ai)
@@ -84,6 +86,20 @@ private:
             /*A*/ NULL,
             /*C*/ NULL);
     }
+    static ActionNode* pounce(PlayerbotAI* ai)
+    {
+        return new ActionNode("pounce",
+            /*P*/ NULL,
+            /*A*/ NextAction::array(0, new NextAction("ravage"), NULL),
+            /*C*/ NULL);
+    }
+    static ActionNode* ravage(PlayerbotAI* ai)
+    {
+        return new ActionNode("ravage",
+            /*P*/ NULL,
+            /*A*/ NextAction::array(0, new NextAction("shred"), NULL),
+            /*C*/ NULL);
+    }
 };
 
 CatDpsDruidStrategy::CatDpsDruidStrategy(PlayerbotAI* ai) : FeralDruidStrategy(ai)
@@ -123,6 +139,26 @@ void CatDpsDruidStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 	triggers.push_back(new TriggerNode(
 		"tiger's fury",
 		NextAction::array(0, new NextAction("tiger's fury", ACTION_EMERGENCY + 1), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "behind target",
+        NextAction::array(0, new NextAction("pounce", ACTION_HIGH), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "player has no flag",
+        NextAction::array(0, new NextAction("prowl", ACTION_HIGH), NULL)));
+
+    /*triggers.push_back(new TriggerNode(
+        "enemy out of melee",
+        NextAction::array(0, new NextAction("prowl", ACTION_EMERGENCY), NULL)));*/
+
+    triggers.push_back(new TriggerNode(
+        "player has flag",
+        NextAction::array(0, new NextAction("dash", ACTION_EMERGENCY + 1), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "enemy flagcarrier near",
+        NextAction::array(0, new NextAction("dash", ACTION_EMERGENCY + 1), NULL)));
 }
 
 void CatAoeDruidStrategy::InitTriggers(std::list<TriggerNode*> &triggers)

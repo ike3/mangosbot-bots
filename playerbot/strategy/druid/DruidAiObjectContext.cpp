@@ -206,9 +206,19 @@ namespace ai
                 creators["bash on enemy healer"] = &AiObjectContextInternal::bash_on_enemy_healer;
                 creators["omen of clarity"] = &AiObjectContextInternal::omen_of_clarity;
                 creators["nature's swiftness"] = &AiObjectContextInternal::natures_swiftness;
+                creators["prowl"] = &AiObjectContextInternal::prowl;
+                creators["dash"] = &AiObjectContextInternal::dash;
+                creators["shred"] = &AiObjectContextInternal::shred;
+                creators["ravage"] = &AiObjectContextInternal::ravage;
+                creators["pounce"] = &AiObjectContextInternal::pounce;
             }
 
         private:
+            static Action* ravage(PlayerbotAI* ai) { return new CastRavageAction(ai); }
+            static Action* pounce(PlayerbotAI* ai) { return new CastPounceAction(ai); }
+            static Action* prowl(PlayerbotAI* ai) { return new CastProwlAction(ai); }
+            static Action* dash(PlayerbotAI* ai) { return new CastDashAction(ai); }
+            static Action* shred(PlayerbotAI* ai) { return new CastShredAction(ai); }
             static Action* natures_swiftness(PlayerbotAI* ai) { return new CastNaturesSwiftnessAction(ai); }
             static Action* omen_of_clarity(PlayerbotAI* ai) { return new CastOmenOfClarityAction(ai); }
             static Action* tranquility(PlayerbotAI* ai) { return new CastTranquilityAction(ai); }

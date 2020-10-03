@@ -98,5 +98,17 @@ void FeralDruidStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
     triggers.push_back(new TriggerNode(
         "omen of clarity",
         NextAction::array(0, new NextAction("omen of clarity", ACTION_HIGH + 9), NULL)));
+
+    /*triggers.push_back(new TriggerNode(
+        "player has no flag",
+        NextAction::array(0, new NextAction("prowl", ACTION_HIGH), NULL)));*/
+
+    triggers.push_back(new TriggerNode(
+        "player has flag",
+        NextAction::array(0, new NextAction("dash", ACTION_EMERGENCY + 1), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "enemy flagcarrier near",
+        NextAction::array(0, new NextAction("dash", ACTION_EMERGENCY + 1), NULL)));
 }
 
