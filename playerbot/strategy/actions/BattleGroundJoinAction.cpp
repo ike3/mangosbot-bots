@@ -127,12 +127,10 @@ bool BGStatusAction::Execute(Event event)
 {
     uint32 QueueSlot;
     uint64 arenatype;
-    uint8 arenaByte;
+    uint64 arenaByte;
     uint8 arenaTeam;
     uint32 instanceId;
     uint32 battleId;
-    uint16 x1f90;
-    uint64 OxOD;
     uint8 minlevel;
     uint8 maxlevel;
     uint32 mapId;
@@ -146,21 +144,14 @@ bool BGStatusAction::Execute(Event event)
 
     WorldPacket p(event.getPacket());
     statusid = 0;
-
-    //on status 0, the packet has a uint64 as payload only. Took me two suicide tries and a gnomen porn video to find out
 #ifndef MANGOSBOT_ZERO
-    //p >> QueueSlot >> arenatype >> arenaByte >> battleId >> x1f90;
-    //if (x1f90 != 0)
-    //    p >> minlevel >> maxlevel >> instanceId >> isRated >> statusid;
-
-    p >> QueueSlot; // queue id (0...2) - player can be in 3 queues in time
-    //p >> arenatype;
-    //p >> arenaByte;
-    p >> battleId;
-    if (battleId == 0)
+    p >> QueueSlot; //sLog.outBasic("QueueSlot %d!", QueueSlot); // queue id (0...2) - player can be in 3 queues in time
+    p >> arenatype; //sLog.outBasic("arenatype %d!", arenatype);
+    if (arenatype == 0)
         return false;
-
-    p >> x1f90 >> instanceId >> isRated >> statusid;
+    p >> instanceId; //sLog.outBasic("instanceId %d!", instanceId);
+    p >> isRated; //sLog.outBasic("isRated %d!", isRated);
+    p >> statusid; //sLog.outBasic("statusid %d!", statusid);
 
     // check status
     switch (statusid)
@@ -170,25 +161,20 @@ bool BGStatusAction::Execute(Event event)
         p >> Time2;                        // time in queue, updated every minute!, milliseconds
         break;
     case STATUS_WAIT_JOIN:                   // status_invite
-        p >> Time1;                         // time to remove from queue, milliseconds
-        p >> mapId;                        // map id
+        p >> mapId;    //sLog.outBasic("mapId %d!", mapId);                    // map id
+        p >> Time1;   //sLog.outBasic("Time1 %d!", Time1);                      // time to remove from queue, milliseconds
         break;
-    case STATUS_IN_PROGRESS:                 // status_in_progress
-        p >> mapId;                        // map id
+    case STATUS_IN_PROGRESS:                  // status_in_progress
+        p >> mapId;                          // map id
         p >> Time1;                         // time to bg auto leave, 0 at bg start, 120000 after bg end, milliseconds
         p >> Time2;                        // time from bg start, milliseconds
         p >> arenaTeam;
         break;
     default:
         sLog.outError("Unknown BG status!");
-        //return false;
         break;
     }
 #else
-    //p >> QueueSlot >> battleId;
-    //if (battleId != 0)
-    //    p >> arenatype >> instanceId >> statusid;
-    //p >> QueueSlot >> mapId >> minlevel >> instanceId >> statusid;
     p >> QueueSlot; // queue id (0...2) - player can be in 3 queues in time
     p >> mapId;     // MapID
     if (mapId == 0)
@@ -213,17 +199,15 @@ bool BGStatusAction::Execute(Event event)
         break;
     default:
         sLog.outError("Unknown BG status!");
-        //return false;
         break;
     }
-                    //if (instanceId != 0)
-        //p >> minlevel >> battleId >> statusid;
 #endif
+
     bool IsRandomBot = sRandomPlayerbotMgr.IsRandomBot(bot->GetGUIDLow());
-    //BattleGroundTypeId bgTypeId = BattleGroundTypeId(instanceId);
 #ifdef MANGOSBOT_ZERO
     BattleGroundTypeId bgTypeId = GetBattleGroundTypeIdByMapId(mapId);
 #else
+    battleId = mapId == 489 ? BATTLEGROUND_WS : (mapId == 529 ? BATTLEGROUND_AB : BATTLEGROUND_AV);
     BattleGroundTypeId bgTypeId = BattleGroundTypeId(battleId);
 #endif
     BattleGroundBracketId bracketId = bot->GetBattleGroundBracketIdFromLevel(BATTLEGROUND_WS);
@@ -235,7 +219,7 @@ bool BGStatusAction::Execute(Event event)
 
     if (Time1 == TIME_TO_AUTOREMOVE) //battleground is over, bot needs to leave
     {
-        // remove warsong strategy to prevent crash during leave
+        // remove warsong strategy
         ai->ChangeStrategy("-warsong", BOT_STATE_COMBAT);
         ai->ChangeStrategy("-warsong", BOT_STATE_NON_COMBAT);
 
@@ -244,7 +228,12 @@ bool BGStatusAction::Execute(Event event)
         WorldPacket packet(CMSG_LEAVE_BATTLEFIELD);
         packet << uint8(0);
         packet << uint8(0);                           // BattleGroundTypeId-1 ?
+#ifdef MANGOSBOT_ZERO
         packet << uint16(0);
+#else
+        packet << uint32(0);
+        packet << uint16(0);
+#endif
         bot->GetSession()->HandleLeaveBattlefieldOpcode(packet);
         ai->ResetStrategies(!IsRandomBot);
         sRandomPlayerbotMgr.BracketBots[bgTypeId][bracketId][bot->GetTeamId()] = 0;
@@ -275,7 +264,7 @@ bool BGStatusAction::Execute(Event event)
         uint8 unk2;                                             // unk, can be 0x0 (may be if was invited?) and 0x1
         uint32 bgTypeId_ = bgTypeId;                                       // type id from dbc
         uint16 unk = 0x1F90;                                              // 0x1F90 constant?*/
-        uint8 action = 1;
+        uint8 action = 0x1;
 
         sLog.outBasic("Bot %u (%u %s) joined BG (%s)", bot->GetGUIDLow(), bot->getLevel(), bot->GetTeamId() == 0 ? "A" : "H", bgname);
         bot->Unmount();
