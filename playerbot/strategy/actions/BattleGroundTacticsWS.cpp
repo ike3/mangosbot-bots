@@ -239,19 +239,19 @@ bool BGTacticsWS::homerun(BattleGroundWS *bg)
             WorldPacket data(CMSG_AREATRIGGER);
             data << uint32(AT_WARSONG_FLAG);
             bot->GetSession()->HandleAreaTriggerOpcode(data);
-            ai->ResetStrategies();
+            //ai->ResetStrategies();
             return true;
         }
         if (bot->IsWithinDistInMap(obj, sPlayerbotAIConfig.farDistance) && obj->GetTypeId() == TYPEID_PLAYER)
         {
-            ai->GetAiObjectContext()->GetValue<Unit*>("rti target")->Set((Player*)obj);
+            //ai->GetAiObjectContext()->GetValue<Unit*>("rti target")->Set((Player*)obj);
             //ai->ChangeStrategy("-warsong", BOT_STATE_NON_COMBAT);
             //ai->ChangeStrategy("-warsong", BOT_STATE_COMBAT);
             return false;
         }
         //ai->ChangeStrategy("-grind,-dps assist", BOT_STATE_NON_COMBAT);
         //ai->ChangeStrategy("-dps assist", BOT_STATE_COMBAT);
-        ai->ResetStrategies();
+        //ai->ResetStrategies();
         return runPathTo(obj, bg);
     }
     if (bot->GetObjectGuid() == bg->GetHordeFlagCarrierGuid())//flag-Carrier, bring it home (allianceguy)
@@ -267,19 +267,19 @@ bool BGTacticsWS::homerun(BattleGroundWS *bg)
             WorldPacket data(CMSG_AREATRIGGER);
             data << uint32(AT_SILVERWING_FLAG);
             bot->GetSession()->HandleAreaTriggerOpcode(data);
-            ai->ResetStrategies();
+            //ai->ResetStrategies();
             return false;
         }
         if (bot->IsWithinDistInMap(obj, sPlayerbotAIConfig.farDistance) && obj->GetTypeId() == TYPEID_PLAYER)
         {
-            ai->GetAiObjectContext()->GetValue<Unit*>("rti target")->Set((Player*)obj);
+            //ai->GetAiObjectContext()->GetValue<Unit*>("rti target")->Set((Player*)obj);
             //ai->ChangeStrategy("-warsong", BOT_STATE_NON_COMBAT);
             //ai->ChangeStrategy("-warsong", BOT_STATE_COMBAT);
             return false;
         }
         //ai->ChangeStrategy("-grind,-dps assist", BOT_STATE_NON_COMBAT);
         //ai->ChangeStrategy("-dps assist", BOT_STATE_COMBAT);
-        ai->ResetStrategies();
+        //ai->ResetStrategies();
         return runPathTo(obj, bg);
     }
     else
@@ -662,8 +662,6 @@ bool BGTacticsWS::Execute(Event event)
     if (!bot->InBattleGround())
         return false;
 
-    //ai->ResetStrategies();
-
     if (bot->IsDead() && bot->InBattleGround())
     {
         bot->GetMotionMaster()->MovementExpired();
@@ -705,6 +703,10 @@ bool BGTacticsWS::Execute(Event event)
             //if(ai->HasStrategy("follow", BOT_STATE_NON_COMBAT))
 
         }*/
+        //bool IsRandomBot = sRandomPlayerbotMgr.IsRandomBot(bot->GetGUIDLow());
+        //if(IsRandomBot)
+        //    ai->ResetStrategies();
+
         ai->SetMaster(NULL);
         if (bot->HasAuraType(SPELL_AURA_SPIRIT_OF_REDEMPTION))
             bot->RemoveAurasDueToSpell(SPELL_AURA_SPIRIT_OF_REDEMPTION);
@@ -728,8 +730,8 @@ bool BGTacticsWS::Execute(Event event)
         if (bg->GetStatus() == STATUS_WAIT_LEAVE)
             return false;
 
-        if (bg->GetEndTime() < TIME_TO_AUTOREMOVE)
-            return false;
+        //if (bg->GetEndTime() < TIME_TO_AUTOREMOVE)
+            //return false;
 
         if (bg != nullptr && !bot->IsDead())
         {
@@ -748,8 +750,8 @@ bool BGTacticsWS::Execute(Event event)
             if (ai->HasStrategy("collision", BOT_STATE_NON_COMBAT))
                 ai->ChangeStrategy("-collision", BOT_STATE_NON_COMBAT);
 
-            if (ai->HasStrategy("buff", BOT_STATE_NON_COMBAT))
-                ai->ChangeStrategy("-buff", BOT_STATE_NON_COMBAT);
+            //if (ai->HasStrategy("buff", BOT_STATE_NON_COMBAT))
+                //ai->ChangeStrategy("-buff", BOT_STATE_NON_COMBAT);
 
             //If flag is close, always click it.
             bool alreadyHasFlag = bg->GetFlagState(bg->GetOtherTeam(bot->GetTeam())) == BG_WS_FLAG_STATE_ON_PLAYER;
