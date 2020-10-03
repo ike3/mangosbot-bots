@@ -17,6 +17,10 @@ public:
         creators["kidney shot"] = &kidney_shot;
         creators["rupture"] = &rupture;
         creators["backstab"] = &backstab;
+        creators["ambush"] = &ambush;
+        creators["cheap shot"] = &cheap_shot;
+        creators["garrote"] = &garrote;
+        creators["sap"] = &sap;
     }
 private:
     static ActionNode* riposte(PlayerbotAI* ai)
@@ -61,11 +65,41 @@ private:
             /*A*/ NextAction::array(0, new NextAction("eviscerate"), NULL),
             /*C*/ NULL);
     }
+    static ActionNode* ambush(PlayerbotAI* ai)
+    {
+        return new ActionNode("ambush",
+            /*P*/ NULL,
+            /*A*/ NextAction::array(0, new NextAction("cheap shot"), NULL),
+            /*C*/ NULL);
+    }
     static ActionNode* backstab(PlayerbotAI* ai)
     {
         return new ActionNode ("backstab",
             /*P*/ NULL,
-            /*A*/ NextAction::array(0, new NextAction("mutilate"), NULL),
+            /*A*/ NULL,
+            /*C*/ NULL);
+    }
+    static ActionNode* cheap_shot(PlayerbotAI* ai)
+    {
+        return new ActionNode("cheap shot",
+            /*P*/ NULL,
+            /*A*/ NextAction::array(0, new NextAction("garrote"), NULL),
+            /*C*/ NULL);
+    }
+    static ActionNode* garrote(PlayerbotAI* ai)
+    {
+        return new ActionNode("garrote",
+            /*P*/ NULL,
+            //*A*/ NextAction::array(0, new NextAction("mutilate"), NULL),
+            /*A*/ NextAction::array(0, new NextAction("backstab"), NULL),
+            /*C*/ NULL);
+    }
+    static ActionNode* sap(PlayerbotAI* ai)
+    {
+        return new ActionNode("sap",
+            /*P*/ NULL,
+            //*A*/ NextAction::array(0, new NextAction("mutilate"), NULL),
+            /*A*/ NextAction::array(0, new NextAction("ambush"), NULL),
             /*C*/ NULL);
     }
 };
@@ -96,6 +130,10 @@ void DpsRogueStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 		"low health",
 		NextAction::array(0, new NextAction("evasion", ACTION_EMERGENCY), new NextAction("feint", ACTION_EMERGENCY), NULL)));
 
+    triggers.push_back(new TriggerNode(
+        "critical health",
+        NextAction::array(0, new NextAction("blind", ACTION_EMERGENCY), new NextAction("vanish", ACTION_EMERGENCY), NULL)));
+
 	triggers.push_back(new TriggerNode(
 		"kick",
 		NextAction::array(0, new NextAction("kick", ACTION_INTERRUPT + 2), NULL)));
@@ -106,7 +144,23 @@ void DpsRogueStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "behind target",
-        NextAction::array(0, new NextAction("backstab", ACTION_NORMAL), NULL)));
+        NextAction::array(0, new NextAction("ambush", ACTION_HIGH), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "player has no flag",
+        NextAction::array(0, new NextAction("stealth", ACTION_EMERGENCY), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "player has flag",
+        NextAction::array(0, new NextAction("sprint", ACTION_EMERGENCY + 1), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "enemy flagcarrier near",
+        NextAction::array(0, new NextAction("sprint", ACTION_EMERGENCY + 1), NULL)));
+
+    /*triggers.push_back(new TriggerNode(
+        "enemy out of melee",
+        NextAction::array(0, new NextAction("stealth", ACTION_HIGH), NULL)));*/
 }
 
 void RogueAoeStrategy::InitTriggers(std::list<TriggerNode*> &triggers)

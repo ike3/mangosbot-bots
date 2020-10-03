@@ -13,11 +13,17 @@ namespace ai
 		CastEvasionAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "evasion") {}
 	};
 
-	class CastSprintAction : public CastBuffSpellAction
+	class CastSprintAction : public CastSpellAction
 	{
 	public:
-		CastSprintAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "sprint") {}
+		CastSprintAction(PlayerbotAI* ai) : CastSpellAction(ai, "sprint") {}
 	};
+
+    class CastStealthAction : public CastBuffSpellAction
+    {
+    public:
+        CastStealthAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "stealth") {}
+    };
 
 	class CastKickAction : public CastSpellAction
 	{
@@ -79,4 +85,5 @@ namespace ai
     public:
         CastKickOnEnemyHealerAction(PlayerbotAI* ai) : CastSpellOnEnemyHealerAction(ai, "kick") {}
     };
+
 }

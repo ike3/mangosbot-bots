@@ -98,9 +98,21 @@ namespace ai
                 creators["kick on enemy healer"] = &AiObjectContextInternal::kick_on_enemy_healer;
                 creators["blade flurry"] = &AiObjectContextInternal::blade_flurry;
                 creators["adrenaline rush"] = &AiObjectContextInternal::adrenaline_rush;
+                creators["ambush"] = &AiObjectContextInternal::ambush;
+                creators["stealth"] = &AiObjectContextInternal::stealth;
+                creators["sprint"] = &AiObjectContextInternal::sprint;
+                creators["garrote"] = &AiObjectContextInternal::garrote;
+                creators["cheap shot"] = &AiObjectContextInternal::cheap_shot;
+                creators["blind"] = &AiObjectContextInternal::blind;
             }
 
         private:
+            static Action* blind(PlayerbotAI* ai) { return new CastBlindAction(ai); }
+            static Action* ambush(PlayerbotAI* ai) { return new CastAmbushAction(ai); }
+            static Action* stealth(PlayerbotAI* ai) { return new CastStealthAction(ai); }
+            static Action* sprint(PlayerbotAI* ai) { return new CastSprintAction(ai); }
+            static Action* garrote(PlayerbotAI* ai) { return new CastGarroteAction(ai); }
+            static Action* cheap_shot(PlayerbotAI* ai) { return new CastCheapShotAction(ai); }
             static Action* adrenaline_rush(PlayerbotAI* ai) { return new CastAdrenalineRushAction(ai); }
             static Action* blade_flurry(PlayerbotAI* ai) { return new CastBladeFlurryAction(ai); }
             static Action* riposte(PlayerbotAI* ai) { return new CastRiposteAction(ai); }

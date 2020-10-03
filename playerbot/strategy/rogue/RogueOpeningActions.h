@@ -14,11 +14,15 @@ namespace ai
 		CastGarroteAction(PlayerbotAI* ai) : CastMeleeSpellAction(ai, "garrote") {} 
 	};
 
-
 	class CastCheapShotAction : public CastMeleeSpellAction 
 	{ 
 	public: 
 		CastCheapShotAction(PlayerbotAI* ai) : CastMeleeSpellAction(ai, "cheap shot") {} 
 	};
-	
+
+    class CastAmbushAction : public CastMeleeSpellAction
+    {
+    public:
+        CastAmbushAction(PlayerbotAI* ai) : CastMeleeSpellAction(ai, "ambush") {}
+    };
 }

@@ -16,8 +16,16 @@ void GenericRogueNonCombatStrategy::InitTriggers(std::list<TriggerNode*> &trigge
        "often",
        NextAction::array(0, new NextAction("apply poison", 1.0f), NULL)));*/
 
-    triggers.push_back(new TriggerNode(
+       /*triggers.push_back(new TriggerNode(
         "player has no flag",
-        NextAction::array(0, new NextAction("stealth", ACTION_HIGH), NULL)));
+        NextAction::array(0, new NextAction("stealth", ACTION_HIGH), NULL)));*/
+
+       triggers.push_back(new TriggerNode(
+        "player has flag",
+        NextAction::array(0, new NextAction("sprint", ACTION_EMERGENCY + 1), NULL)));
+
+       triggers.push_back(new TriggerNode(
+           "enemy flagcarrier near",
+           NextAction::array(0, new NextAction("sprint", ACTION_EMERGENCY + 1), NULL)));
 
 }
