@@ -206,6 +206,8 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
             {
                 engine->removeStrategy("ranged");
                 engine->addStrategies("bear", "tank aoe", "flee", "close", NULL);
+                if(urand(0, 100) > 50)
+                    engine->addStrategy("dps");
             }
             break;
         case CLASS_HUNTER:
@@ -259,6 +261,11 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
                 engine->removeStrategy("ranged");
             }
 
+            if (player->getClass() == CLASS_DRUID && tab == 1 && urand(0, 100) > 50)
+            {
+                engine->addStrategy("dps");
+            }
+
             if (player->getClass() == CLASS_PRIEST && tab == 1)
             {
                 engine->removeStrategy("heal");
@@ -292,13 +299,23 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
         engine->removeStrategy("custom::say");
         engine->removeStrategy("flee");
         engine->removeStrategy("treat");
-        engine->addStrategy("dps");
         engine->addStrategy("boost");
+
+        if (player->getClass() == CLASS_DRUID && tab == 1)
+        {
+            engine->addStrategy("dps");
+        }
+
+        if ((player->getClass() == CLASS_DRUID && tab == 2) || (player->getClass() == CLASS_SHAMAN && tab == 2))
+            engine->addStrategies("caster", "caster aoe", NULL);
+
+        if(player->getClass() == CLASS_WARRIOR || player->getClass() == CLASS_PALADIN)
+            engine->addStrategy("dps");
 
         if (player->getClass() != CLASS_HUNTER)
             engine->removeStrategy("ranged");
 
-        if (player->getClass() == CLASS_ROGUE)
+        if (player->getClass() == CLASS_ROGUE || (player->getClass() == CLASS_DRUID && tab == 1 && engine->HasStrategy("dps")))
             engine->addStrategy("behind");
         
     }
@@ -363,6 +380,9 @@ void AiFactory::AddDefaultNonCombatStrategies(Player* player, PlayerbotAI* const
                 nonCombatEngine->addStrategy("tank aoe");
             else
                 nonCombatEngine->addStrategy("dps assist");
+            break;
+        case CLASS_WARLOCK:
+            nonCombatEngine->addStrategy("pet");
             break;
         default:
             nonCombatEngine->addStrategy("dps assist");
