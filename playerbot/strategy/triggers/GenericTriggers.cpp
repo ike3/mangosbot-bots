@@ -358,3 +358,30 @@ bool TeamHasFlag::IsActive()
     }
     return false;
 }
+
+bool EnemyFlagCarrierNear::IsActive()
+{
+    if (ai->GetBot()->InBattleGround())
+    {
+        if (ai->GetBot()->GetBattleGroundTypeId() == BattleGroundTypeId::BATTLEGROUND_WS)
+        {
+            BattleGroundWS *bg = (BattleGroundWS*)ai->GetBot()->GetBattleGround();
+
+            Player* carrier = NULL;
+            if (bot->GetTeam() == HORDE)
+                carrier = sObjectAccessor.FindPlayer(bg->GetHordeFlagCarrierGuid());
+            else
+                carrier = sObjectAccessor.FindPlayer(bg->GetAllianceFlagCarrierGuid());
+            if (carrier != nullptr)
+            {
+
+                if (bot->IsWithinDistInMap(carrier, 35.0f))
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    return false;
+}

@@ -705,6 +705,15 @@ namespace ai
         virtual bool IsActive();
     };
 
+    class EnemyFlagCarrierNear : public Trigger
+    {
+    public:
+        EnemyFlagCarrierNear(PlayerbotAI* ai) : Trigger(ai, "enemy flagcarrier near") {}
+
+    public:
+        virtual bool IsActive();
+    };
+
     class TeamHasFlag : public Trigger
     {
     public:
