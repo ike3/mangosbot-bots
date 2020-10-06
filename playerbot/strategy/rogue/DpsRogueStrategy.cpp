@@ -144,15 +144,19 @@ void DpsRogueStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "behind target",
-        NextAction::array(0, new NextAction("ambush", ACTION_HIGH), NULL)));
+        NextAction::array(0, new NextAction("ambush", ACTION_HIGH + 1), NULL)));
 
     triggers.push_back(new TriggerNode(
         "player has no flag",
-        NextAction::array(0, new NextAction("stealth", ACTION_EMERGENCY), NULL)));
+        NextAction::array(0, new NextAction("stealth", ACTION_HIGH + 1), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "enemy out of melee",
+        NextAction::array(0, new NextAction("stealth", ACTION_INTERRUPT + 1), NULL)));
 
     triggers.push_back(new TriggerNode(
         "player has flag",
-        NextAction::array(0, new NextAction("sprint", ACTION_EMERGENCY + 1), NULL)));
+        NextAction::array(0, new NextAction("sprint", ACTION_EMERGENCY + 2), NULL)));
 
     triggers.push_back(new TriggerNode(
         "enemy flagcarrier near",

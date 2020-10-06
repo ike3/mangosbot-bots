@@ -13,10 +13,10 @@ namespace ai
 		CastEvasionAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "evasion") {}
 	};
 
-	class CastSprintAction : public CastSpellAction
+	class CastSprintAction : public CastBuffSpellAction
 	{
 	public:
-		CastSprintAction(PlayerbotAI* ai) : CastSpellAction(ai, "sprint") {}
+		CastSprintAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "sprint") {}
 	};
 
     class CastStealthAction : public CastBuffSpellAction
