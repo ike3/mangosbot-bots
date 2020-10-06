@@ -151,6 +151,16 @@ namespace ai
 		CastDivineSpiritOnPartyAction(PlayerbotAI* ai) : BuffOnPartyAction(ai, "divine spirit") {}
 	};
 
+    class CastPrayerOfFortitudeOnPartyAction : public BuffOnPartyAction {
+    public:
+        CastPrayerOfFortitudeOnPartyAction(PlayerbotAI* ai) : BuffOnPartyAction(ai, "prayer of fortitude") {}
+    };
+
+    class CastPrayerOfSpiritOnPartyAction : public BuffOnPartyAction {
+    public:
+        CastPrayerOfSpiritOnPartyAction(PlayerbotAI* ai) : BuffOnPartyAction(ai, "prayer of spirit") {}
+    };
+
 	class CastPowerWordPainAction : public CastDebuffSpellAction
 	{
     public:

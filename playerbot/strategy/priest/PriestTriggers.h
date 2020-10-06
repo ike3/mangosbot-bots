@@ -8,28 +8,42 @@ namespace ai
     public:
         PowerWordFortitudeOnPartyTrigger(PlayerbotAI* ai) : BuffOnPartyTrigger(ai, "power word: fortitude", 2) {}
 
-        virtual bool IsActive() { return BuffOnPartyTrigger::IsActive() && !ai->HasAura("prayer of fortitude", GetTarget()); }
+        virtual bool IsActive() { return BuffOnPartyTrigger::IsActive() && !ai->HasAura("power word: fortitude", GetTarget()) && !ai->HasAura("prayer of fortitude", GetTarget()); }
     };
 
     class PowerWordFortitudeTrigger : public BuffTrigger {
     public:
         PowerWordFortitudeTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "power word: fortitude", 2) {}
 
-        virtual bool IsActive() { return BuffTrigger::IsActive() && !ai->HasAura("prayer of fortitude", GetTarget()); }
+        virtual bool IsActive() { return BuffTrigger::IsActive() && !ai->HasAura("power word: fortitude", GetTarget()) && !ai->HasAura("prayer of fortitude", GetTarget()); }
     };
 
     class DivineSpiritOnPartyTrigger : public BuffOnPartyTrigger {
     public:
         DivineSpiritOnPartyTrigger(PlayerbotAI* ai) : BuffOnPartyTrigger(ai, "divine spirit", 2) {}
 
-        virtual bool IsActive() { return BuffOnPartyTrigger::IsActive() && !ai->HasAura("prayer of spirit", GetTarget()); }
+        virtual bool IsActive() { return BuffOnPartyTrigger::IsActive() && !ai->HasAura("divine spirit", GetTarget()) && !ai->HasAura("prayer of spirit", GetTarget()); }
     };
 
     class DivineSpiritTrigger : public BuffTrigger {
     public:
         DivineSpiritTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "divine spirit", 2) {}
 
-        virtual bool IsActive() { return BuffTrigger::IsActive() && !ai->HasAura("prayer of spirit", GetTarget()); }
+        virtual bool IsActive() { return BuffTrigger::IsActive() && !ai->HasAura("divine spirit", GetTarget()) && !ai->HasAura("prayer of spirit", GetTarget()); }
+    };
+
+    class PrayerOfFortitudeTrigger : public BuffOnPartyTrigger {
+    public:
+        PrayerOfFortitudeTrigger(PlayerbotAI* ai) : BuffOnPartyTrigger(ai, "prayer of fortitude", 2) {}
+
+        virtual bool IsActive() { return BuffOnPartyTrigger::IsActive() && ai->CanCastSpell("prayer of fortitude", GetTarget(), true) && !ai->HasAura("prayer of fortitude", GetTarget()) && !ai->HasAura("power word: fortitude", GetTarget()); }
+    };
+
+    class PrayerOfSpiritTrigger : public BuffOnPartyTrigger {
+    public:
+        PrayerOfSpiritTrigger(PlayerbotAI* ai) : BuffOnPartyTrigger(ai, "prayer of spirit", 2) {}
+
+        virtual bool IsActive() { return BuffOnPartyTrigger::IsActive() && ai->CanCastSpell("prayer of spirit", GetTarget(), true) && !ai->HasAura("prayer of spirit", GetTarget()) && !ai->HasAura("divine spirit", GetTarget()); }
     };
 
 

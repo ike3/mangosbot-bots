@@ -97,6 +97,8 @@ namespace ai
                 creators["inner focus"] = &TriggerFactoryInternal::inner_focus;
                 creators["shadow protection"] = &TriggerFactoryInternal::shadow_protection;
                 creators["shadow protection on party"] = &TriggerFactoryInternal::shadow_protection_on_party;
+                creators["prayer of fortitude on party"] = &TriggerFactoryInternal::prayer_of_fortitude_on_party;
+                creators["prayer of spirit on party"] = &TriggerFactoryInternal::prayer_of_spirit_on_party;
                 creators["shackle undead"] = &TriggerFactoryInternal::shackle_undead;
 
             }
@@ -122,6 +124,8 @@ namespace ai
             static Trigger* shadow_protection_on_party(PlayerbotAI* ai) { return new ShadowProtectionOnPartyTrigger(ai); }
             static Trigger* shadow_protection(PlayerbotAI* ai) { return new ShadowProtectionTrigger(ai); }
             static Trigger* shackle_undead(PlayerbotAI* ai) { return new ShackleUndeadTrigger(ai); }
+            static Trigger* prayer_of_fortitude_on_party(PlayerbotAI* ai) { return new PrayerOfFortitudeTrigger(ai); }
+            static Trigger* prayer_of_spirit_on_party(PlayerbotAI* ai) { return new PrayerOfSpiritTrigger(ai); }
         };
     };
 };
@@ -185,9 +189,13 @@ namespace ai
                 creators["shadow protection"] = &AiObjectContextInternal::shadow_protection;
                 creators["shadow protection on party"] = &AiObjectContextInternal::shadow_protection_on_party;
                 creators["shackle undead"] = &AiObjectContextInternal::shackle_undead;
+                creators["prayer of fortitude on party"] = &AiObjectContextInternal::prayer_of_fortitude_on_party;
+                creators["prayer of spirit on party"] = &AiObjectContextInternal::prayer_of_spirit_on_party;
             }
 
         private:
+            static Action* prayer_of_spirit_on_party(PlayerbotAI* ai) { return new CastPrayerOfSpiritOnPartyAction(ai); }
+            static Action* prayer_of_fortitude_on_party(PlayerbotAI* ai) { return new CastPrayerOfFortitudeOnPartyAction(ai); }
             static Action* shackle_undead(PlayerbotAI* ai) { return new CastShackleUndeadAction(ai); }
             static Action* shadow_protection_on_party(PlayerbotAI* ai) { return new CastShadowProtectionOnPartyAction(ai); }
             static Action* shadow_protection(PlayerbotAI* ai) { return new CastShadowProtectionAction(ai); }
