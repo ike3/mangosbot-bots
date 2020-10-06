@@ -295,10 +295,10 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
     // Battleground switch
     if (player->InBattleGround() && player->GetBattleGroundTypeId() == BattleGroundTypeId::BATTLEGROUND_WS)
     {
-        engine->addStrategies("racials", "chat", "default", "aoe", "potions", "pvp", "warsong", NULL);
+        engine->addStrategies("racials", "chat", "default",/* "aoe",*/ "potions", "warsong", "conserve mana", "cast time", /*"pvp",*/ NULL);
         engine->removeStrategy("custom::say");
         engine->removeStrategy("flee");
-        engine->removeStrategy("treat");
+        engine->removeStrategy("threat");
         engine->addStrategy("boost");
 
         if (player->getClass() == CLASS_DRUID && tab == 1)
@@ -412,7 +412,7 @@ void AiFactory::AddDefaultNonCombatStrategies(Player* player, PlayerbotAI* const
     if (player->InBattleGround() && player->GetBattleGroundTypeId() == BattleGroundTypeId::BATTLEGROUND_WS)
     {
         nonCombatEngine->addStrategies("grind", "nc", "chat",
-            "default", "emote", "buff", "food", "collision", "mount", "warsong", NULL);
+            "default", "emote", "buff", "food", "conserve mana", "collision", "mount", "warsong", NULL);
         nonCombatEngine->removeStrategy("custom::say");
     }
 }

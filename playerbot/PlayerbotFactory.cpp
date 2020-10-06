@@ -222,6 +222,7 @@ void PlayerbotFactory::Randomize(bool incremental)
     pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Bags");
     sLog.outDetail("Initializing bags...");
     InitBags();
+    bot->SaveToDB();
     if (pmo) pmo->finish();
 
     pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Ammo");
@@ -1152,16 +1153,12 @@ void PlayerbotFactory::InitBags()
             uint16 dest;
             if (!CanEquipUnseenItem(slot, dest, newItemId))
                 continue;
-            Item* saveItem = bot->StoreNewItemInInventorySlot(newItemId, 1);
-            if (saveItem)
+            Item* newItem = bot->EquipNewItem(dest, newItemId, true);
+            if (newItem)
             {
-                Item* newItem = bot->EquipNewItem(dest, newItemId, true);
-                if (newItem)
-                {
-                    newItem->AddToWorld();
-                    newItem->AddToUpdateQueueOf(bot);
-                    break;
-                }
+                newItem->AddToWorld();
+                newItem->AddToUpdateQueueOf(bot);
+                break;
             }
         }
     }
