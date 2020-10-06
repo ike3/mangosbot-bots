@@ -26,6 +26,7 @@ public:
 private:
    bool moveTowardsEnemyFlag(BattleGroundWS *bg);
    bool consumeHealthy(BattleGround *bg);
+   bool useBuff(BattleGround *bg);
    bool homerun(BattleGroundWS *bg);
    bool runPathTo(WorldObject *unit, BattleGround *bg);
    bool runPathTo(uint32 mapId, float x, float y, float z);
