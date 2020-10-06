@@ -33,8 +33,13 @@ bool RpgAction::Execute(Event event)
     if (!bot->GetNPCIfCanInteractWith(target->GetObjectGuid(), UNIT_NPC_FLAG_NONE))
         return false;
 
+    if (bot->GetShapeshiftForm() > 0)
+        bot->SetShapeshiftForm(FORM_NONE);
+
     if (target->HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_FLIGHTMASTER))
     {
+        WorldPacket emptyPacket;
+        bot->GetSession()->HandleCancelMountAuraOpcode(emptyPacket);
         taxi(target);
         return true;
     }
