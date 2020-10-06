@@ -192,7 +192,7 @@ uint32 RandomPlayerbotMgr::AddRandomBots()
     return guids.size();
 }
 
-void RandomPlayerbotMgr::CheckBgBracket(BattleGroundTypeId bgTypeId, BattleGroundBracketId bracketId)
+void RandomPlayerbotMgr::CheckBgQueue(BattleGroundTypeId bgTypeId, BattleGroundBracketId bracketId)
 {
     if(!BgCheckTimer)
         BgCheckTimer = time(NULL);
@@ -234,7 +234,7 @@ void RandomPlayerbotMgr::CheckBgBracket(BattleGroundTypeId bgTypeId, BattleGroun
             if (!bg)
                 continue;
 
-            if (!(bg->GetStatus() == STATUS_IN_PROGRESS || bg->GetStatus() == STATUS_WAIT_JOIN))
+            if (bg->GetStatus() != STATUS_IN_PROGRESS)
                 continue;
 
             //if (bg->GetTypeID() != bgTypeId)
@@ -299,7 +299,7 @@ void RandomPlayerbotMgr::AddBgBot(Player* player, BattleGroundTypeId bgTypeId, B
     uint32 ACount = BracketBots[bgTypeId][bracketId][0] + BracketPlayers[bgTypeId][bracketId][0];
     uint32 HCount = BracketBots[bgTypeId][bracketId][1] + BracketPlayers[bgTypeId][bracketId][1];
 
-    if (ACount > HCount && TeamId == 0)
+    /*if (ACount > HCount && TeamId == 0)
     {
         return;
     }
@@ -307,7 +307,7 @@ void RandomPlayerbotMgr::AddBgBot(Player* player, BattleGroundTypeId bgTypeId, B
     if (HCount > ACount && TeamId == 1)
     {
         return;
-    }
+    }*/
 
     /*if ((ACount > HCount) && (ACount - HCount > 3) && TeamId == 0)
     {
@@ -318,6 +318,9 @@ void RandomPlayerbotMgr::AddBgBot(Player* player, BattleGroundTypeId bgTypeId, B
     {
         return;
     }*/
+
+    if (BracketBots[bgTypeId][bracketId][player->GetTeamId()] >= TeamSize)
+        return;
 
     uint32 BgCount = ACount + HCount;
 
@@ -437,7 +440,7 @@ bool RandomPlayerbotMgr::ProcessBot(uint32 bot)
 
     if (!player)
     {
-        if (urand(0, 100) > 30) // less lag during bots login
+        if (urand(0, 100) > 50) // less lag during bots login
         {
             return true;
         }
@@ -568,7 +571,7 @@ bool RandomPlayerbotMgr::ProcessBot(Player* player)
     if (sPlayerbotAIConfig.randomBotJoinBG)
     {
         // check bg queue for real players
-        CheckBgBracket(bgTypeId, bracketId);
+        CheckBgQueue(bgTypeId, bracketId);
 
         // checking if players found
         if (BracketPlayers[bgTypeId][bracketId][0] > 0 || BracketPlayers[bgTypeId][bracketId][1] > 0)
@@ -583,7 +586,7 @@ bool RandomPlayerbotMgr::ProcessBot(Player* player)
     }
 
     // if yes, then bot can queue to BG
-    if ((BgPlayers || BgVisual) && sPlayerbotAIConfig.randomBotJoinBG && BgLevel && player->getLevel() > 9 && !player->GetGroup() && !player->GetPlayerbotAI()->GetMaster())
+    if ((BgPlayers || BgVisual) && sPlayerbotAIConfig.randomBotJoinBG && BgLevel && player->getLevel() > 9 && !player->GetGroup() && !player->GetPlayerbotAI()->GetMaster() && urand(0, 100) > 30)
     {
         // check if bot is not attacked
         bool noattackers = (player->IsInCombat() || player->getAttackers().size() > 0) ? false : true;
@@ -745,6 +748,7 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot, vector<WorldLocation> &locs
         bot->TeleportTo(loc.mapid, x, y, z, 0);
         bot->SendHeartBeat();
         bot->GetPlayerbotAI()->ResetStrategies();
+        bot->GetPlayerbotAI()->Reset();
         if (pmo) pmo->finish();
         return;
     }
