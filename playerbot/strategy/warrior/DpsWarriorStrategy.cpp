@@ -54,7 +54,7 @@ void DpsWarriorStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "enemy out of melee",
-        NextAction::array(0, new NextAction("battle stance", ACTION_EMERGENCY + 1), new NextAction("charge", ACTION_EMERGENCY), NULL)));
+        NextAction::array(0, new NextAction("battle stance", ACTION_HIGH), new NextAction("charge", ACTION_HIGH), NULL)));
 
     triggers.push_back(new TriggerNode(
         "battle stance",
