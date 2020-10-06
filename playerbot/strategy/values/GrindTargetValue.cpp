@@ -57,16 +57,16 @@ Unit* GrindTargetValue::FindTargetForGrinding(int assistCount)
         if (abs(bot->GetPositionZ() - unit->GetPositionZ()) > sPlayerbotAIConfig.spellDistance)
             continue;
 
-        if (GetTargetingPlayerCount(unit) > assistCount)
+        if (!bot->InBattleGround() && GetTargetingPlayerCount(unit) > assistCount)
             continue;
 
 		if (master && master->GetDistance(unit) >= sPlayerbotAIConfig.grindDistance && !sRandomPlayerbotMgr.IsRandomBot(bot))
             continue;
 
-		if ((int)unit->getLevel() - (int)bot->getLevel() > 4 && !unit->GetObjectGuid().IsPlayer())
+		if (!bot->InBattleGround() && (int)unit->getLevel() - (int)bot->getLevel() > 4 && !unit->GetObjectGuid().IsPlayer())
 		    continue;
 
-        //if (bot->InBattleGround() && bot->GetDistance(unit) > sPlayerbotAIConfig.spellDistance)
+        //if (bot->InBattleGround() && bot->GetDistance(unit) > 45.0f)
             //continue;
 
 		Creature* creature = dynamic_cast<Creature*>(unit);

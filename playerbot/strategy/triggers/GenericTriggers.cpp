@@ -374,8 +374,7 @@ bool EnemyFlagCarrierNear::IsActive()
                 carrier = sObjectAccessor.FindPlayer(bg->GetAllianceFlagCarrierGuid());
             if (carrier != nullptr)
             {
-
-                if (bot->IsWithinDistInMap(carrier, 35.0f))
+                if (bot->IsWithinDistInMap(carrier, 45.0f))
                 {
                     return true;
                 }
