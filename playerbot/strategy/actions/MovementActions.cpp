@@ -314,6 +314,24 @@ bool MovementAction::Follow(Unit* target, float distance, float angle)
     return true;
 }
 
+bool MovementAction::ChaseTo(WorldObject* obj)
+{
+    if (bot->IsSitState())
+        bot->SetStandState(UNIT_STAND_STATE_STAND);
+
+    if (bot->IsNonMeleeSpellCasted(true))
+    {
+        bot->CastStop();
+        ai->InterruptSpell();
+    }
+
+    MotionMaster &mm = *bot->GetMotionMaster();
+    mm.Clear();
+
+    mm.MoveChase((Unit*)obj);
+    return true;
+}
+
 void MovementAction::WaitForReach(float distance)
 {
     float delay = 1000.0f * distance / bot->GetSpeed(MOVE_RUN) + sPlayerbotAIConfig.reactDelay;
