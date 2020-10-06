@@ -75,8 +75,23 @@ bool CheckMountStateAction::Execute(Event event)
             {
                 return false;
             }
-            else
-                return Mount();
+            //check near A Flag
+            uint32 lowguid = 90000;
+            uint32 id = 179830;
+            GameObject* AllianceflagStand = bg->GetBgMap()->GetGameObject(ObjectGuid(HIGHGUID_GAMEOBJECT, id, lowguid));
+
+            if (bot->IsWithinDistInMap(AllianceflagStand, 10))
+                return false;
+
+            //check near H Flag
+            lowguid = 90001;
+            id = 179831;
+            GameObject* HordeflagStand = bg->GetBgMap()->GetGameObject(ObjectGuid(HIGHGUID_GAMEOBJECT, id, lowguid));
+
+            if (bot->IsWithinDistInMap(HordeflagStand, 10))
+                return false;
+
+            return Mount();
         }
     }
 
@@ -88,7 +103,7 @@ bool CheckMountStateAction::Execute(Event event)
             return Mount();
     }
 
-    if (((!AI_VALUE(list<ObjectGuid>, "possible rpg targets").empty()) || urand(0, 100) > 50) && noattackers)
+    if (((!AI_VALUE(list<ObjectGuid>, "possible rpg targets").empty()) || noattackers) && urand(0, 100) > 50)
         return Mount();
 
     bool attackdistance = false;
