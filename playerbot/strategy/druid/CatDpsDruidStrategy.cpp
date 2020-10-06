@@ -134,7 +134,7 @@ void CatDpsDruidStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "faerie fire (feral)",
-        NextAction::array(0, new NextAction("faerie fire (feral)", ACTION_HIGH + 1), NULL)));
+        NextAction::array(0, new NextAction("faerie fire (feral)", ACTION_HIGH), NULL)));
 
 	triggers.push_back(new TriggerNode(
 		"tiger's fury",
@@ -142,23 +142,23 @@ void CatDpsDruidStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "behind target",
-        NextAction::array(0, new NextAction("pounce", ACTION_HIGH), NULL)));
+        NextAction::array(0, new NextAction("pounce", ACTION_HIGH + 1), NULL)));
 
     triggers.push_back(new TriggerNode(
         "player has no flag",
-        NextAction::array(0, new NextAction("prowl", ACTION_HIGH), NULL)));
+        NextAction::array(0, new NextAction("prowl", ACTION_HIGH + 1), NULL)));
 
-    /*triggers.push_back(new TriggerNode(
+    triggers.push_back(new TriggerNode(
         "enemy out of melee",
-        NextAction::array(0, new NextAction("prowl", ACTION_EMERGENCY), NULL)));*/
+        NextAction::array(0, new NextAction("prowl", ACTION_INTERRUPT + 1), NULL)));
 
     triggers.push_back(new TriggerNode(
         "player has flag",
-        NextAction::array(0, new NextAction("dash", ACTION_EMERGENCY + 1), NULL)));
+        NextAction::array(0, new NextAction("dash", ACTION_EMERGENCY + 2), NULL)));
 
     triggers.push_back(new TriggerNode(
         "enemy flagcarrier near",
-        NextAction::array(0, new NextAction("dash", ACTION_EMERGENCY + 1), NULL)));
+        NextAction::array(0, new NextAction("dash", ACTION_EMERGENCY + 2), NULL)));
 }
 
 void CatAoeDruidStrategy::InitTriggers(std::list<TriggerNode*> &triggers)

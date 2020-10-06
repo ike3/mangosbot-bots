@@ -16,6 +16,7 @@ public:
         creators["cure poison on party"] = &cure_poison_on_party;
         creators["abolish poison"] = &abolish_poison;
         creators["abolish poison on party"] = &abolish_poison_on_party;
+        creators["prowl"] = &prowl;
     }
 private:
     static ActionNode* survival_instincts(PlayerbotAI* ai)
@@ -67,6 +68,13 @@ private:
             /*A*/ NULL,
             /*C*/ NULL);
     }
+    static ActionNode* prowl(PlayerbotAI* ai)
+    {
+        return new ActionNode("prowl",
+            /*P*/ NextAction::array(0, new NextAction("cat form"), NULL),
+            /*A*/ NULL,
+            /*C*/ NULL);
+    }
 };
 
 FeralDruidStrategy::FeralDruidStrategy(PlayerbotAI* ai) : GenericDruidStrategy(ai)
@@ -99,16 +107,24 @@ void FeralDruidStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         "omen of clarity",
         NextAction::array(0, new NextAction("omen of clarity", ACTION_HIGH + 9), NULL)));
 
-    /*triggers.push_back(new TriggerNode(
+    triggers.push_back(new TriggerNode(
         "player has no flag",
-        NextAction::array(0, new NextAction("prowl", ACTION_HIGH), NULL)));*/
+        NextAction::array(0, new NextAction("prowl", ACTION_HIGH + 1), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "enemy out of melee",
+        NextAction::array(0, new NextAction("prowl", ACTION_INTERRUPT + 1), NULL)));
 
     triggers.push_back(new TriggerNode(
         "player has flag",
-        NextAction::array(0, new NextAction("dash", ACTION_EMERGENCY + 1), NULL)));
+        NextAction::array(0, new NextAction("dash", ACTION_EMERGENCY + 2), NULL)));
 
     triggers.push_back(new TriggerNode(
         "enemy flagcarrier near",
-        NextAction::array(0, new NextAction("dash", ACTION_EMERGENCY + 1), NULL)));
+        NextAction::array(0, new NextAction("dash", ACTION_EMERGENCY + 2), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "cat form",
+        NextAction::array(0, new NextAction("prowl", ACTION_HIGH + 1), NULL)));
 }
 
