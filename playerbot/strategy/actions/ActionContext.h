@@ -111,6 +111,7 @@ namespace ai
             creators["give water"] = &ActionContext::give_water;
             //creators["wsg join"] = &ActionContext::wsg_join;
             creators["mount"] = &ActionContext::mount;
+            creators["war stomp"] = &ActionContext::war_stomp;
         }
 
     private:
@@ -148,6 +149,7 @@ namespace ai
         static Action* lifeblood(PlayerbotAI* ai) { return new CastLifeBloodAction(ai); }
         static Action* arcane_torrent(PlayerbotAI* ai) { return new CastArcaneTorrentAction(ai); }
         static Action* mana_tap(PlayerbotAI* ai) { return new CastManaTapAction(ai); }
+        static Action* war_stomp(PlayerbotAI* ai) { return new CastWarStompAction(ai); }
         static Action* end_pull(PlayerbotAI* ai) { return new ChangeCombatStrategyAction(ai, "-pull"); }
 
         static Action* emote(PlayerbotAI* ai) { return new EmoteAction(ai); }

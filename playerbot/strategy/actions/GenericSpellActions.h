@@ -266,6 +266,12 @@ namespace ai
         CastManaTapAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "mana tap") {}
     };
 
+    class CastWarStompAction : public CastSpellAction
+    {
+    public:
+        CastWarStompAction(PlayerbotAI* ai) : CastSpellAction(ai, "war stomp") {}
+    };
+
     class CastSpellOnEnemyHealerAction : public CastSpellAction
     {
     public:
