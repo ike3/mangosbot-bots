@@ -1048,7 +1048,7 @@ void PlayerbotAI::ResetStrategies(bool load)
 bool PlayerbotAI::IsRanged(Player* player)
 {
     PlayerbotAI* botAi = player->GetPlayerbotAI();
-    if (botAi)
+    if (botAi && !player->InBattleGround())
         return botAi->ContainsStrategy(STRATEGY_TYPE_RANGED);
 
     switch (player->getClass())
@@ -2157,7 +2157,7 @@ Item* PlayerbotAI::FindConsumable(uint32 displayId) const
          if (!pItemProto || bot->CanUseItem(pItemProto) != EQUIP_ERR_OK)
             continue;
 
-         if (pItemProto->Class == ITEM_CLASS_CONSUMABLE && pItemProto->DisplayInfoID == displayId)
+         if ((pItemProto->Class == ITEM_CLASS_CONSUMABLE || pItemProto->Class == ITEM_CLASS_TRADE_GOODS) && pItemProto->DisplayInfoID == displayId)
             return pItem;
       }
    }
@@ -2176,7 +2176,7 @@ Item* PlayerbotAI::FindConsumable(uint32 displayId) const
                if (!pItemProto || bot->CanUseItem(pItemProto) != EQUIP_ERR_OK)
                   continue;
 
-               if (pItemProto->Class == ITEM_CLASS_CONSUMABLE && pItemProto->DisplayInfoID == displayId)
+               if ((pItemProto->Class == ITEM_CLASS_CONSUMABLE || pItemProto->Class == ITEM_CLASS_TRADE_GOODS) && pItemProto->DisplayInfoID == displayId)
                   return pItem;
             }
          }
@@ -2196,8 +2196,11 @@ Item* PlayerbotAI::FindBandage() const
 
          if (!pItemProto || bot->CanUseItem(pItemProto) != EQUIP_ERR_OK)
             continue;
-
+#ifdef MANGOSBOT_ZERO
+         if (pItemProto->Class == ITEM_CLASS_CONSUMABLE && pItemProto->SubClass == ITEM_SUBCLASS_FOOD)
+#else
          if (pItemProto->Class == ITEM_CLASS_CONSUMABLE && pItemProto->SubClass == ITEM_SUBCLASS_BANDAGE)
+#endif
             return pItem;
       }
    }
@@ -2216,7 +2219,11 @@ Item* PlayerbotAI::FindBandage() const
                if (!pItemProto || bot->CanUseItem(pItemProto) != EQUIP_ERR_OK)
                   continue;
 
+#ifdef MANGOSBOT_ZERO
+               if (pItemProto->Class == ITEM_CLASS_CONSUMABLE && pItemProto->SubClass == ITEM_SUBCLASS_FOOD)
+#else
                if (pItemProto->Class == ITEM_CLASS_CONSUMABLE && pItemProto->SubClass == ITEM_SUBCLASS_BANDAGE)
+#endif
                   return pItem;
             }
          }
@@ -2342,7 +2349,11 @@ void PlayerbotAI::ImbueItem(Item* item, uint8 targetInventorySlot)
 }
 
 // generic item use method
+#ifdef MANGOSBOT_ZERO
+void PlayerbotAI::ImbueItem(Item* item, uint16 targetFlag, ObjectGuid targetGUID)
+#else
 void PlayerbotAI::ImbueItem(Item* item, uint32 targetFlag, ObjectGuid targetGUID)
+#endif
 {
    if (!item)
       return;
@@ -2368,15 +2379,18 @@ void PlayerbotAI::ImbueItem(Item* item, uint32 targetFlag, ObjectGuid targetGUID
    std::unique_ptr<WorldPacket> packet(new WorldPacket(CMSG_USE_ITEM, 20));
 #endif
 #ifdef MANGOS
-   WorldPacket* packet = new WorldPacket(CMSG_USE_ITEM, 20);
+   WorldPacket* packet = new WorldPacket(CMSG_USE_ITEM);
 #endif
 
    *packet << bagIndex;
    *packet << slot;
    *packet << spell_index;
+   *packet << targetFlag;
+#ifdef MANGOSBOT_ONE
    *packet << cast_count;
    *packet << item_guid;
    *packet << targetFlag;
+#endif
 
 #ifdef CMANGOS
    if (targetFlag & (TARGET_FLAG_UNIT | TARGET_FLAG_ITEM | TARGET_FLAG_GAMEOBJECT))

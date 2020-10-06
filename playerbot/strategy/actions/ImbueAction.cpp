@@ -129,6 +129,7 @@ bool ImbueWithOilAction::Execute(Event event)
    if (bot->IsInCombat())
 #endif
       return false;
+
    // remove stealth
    if (bot->HasAura(SPELL_AURA_MOD_STEALTH))
       bot->RemoveSpellsCausingAura(SPELL_AURA_MOD_STEALTH);
@@ -153,7 +154,7 @@ bool ImbueWithOilAction::Execute(Event event)
    }
 }
 
-TryEmergencyAction::TryEmergencyAction(PlayerbotAI* ai) : Action(ai, "try emegency")
+TryEmergencyAction::TryEmergencyAction(PlayerbotAI* ai) : Action(ai, "try emergency")
 {
 }
 
@@ -169,8 +170,8 @@ bool TryEmergencyAction::Execute(Event event)
       Item* bandage = ai->FindBandage();
       if (bandage)
       {
-         ai->SetNextCheckDelay(8);
          ai->ImbueItem(bandage, bot);
+         ai->SetNextCheckDelay(8);
       }
    }
 
