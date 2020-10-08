@@ -25,7 +25,8 @@ public:
 					!sPlayerbotAIConfig.IsInPvpProhibitedZone(enemy->GetAreaId()) &&
                     !enemy->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE) &&
                     !enemy->HasStealthAura() &&
-                    !enemy->HasInvisibilityAura())
+                    !enemy->HasInvisibilityAura() &&
+                    !(enemy->InBattleGround() && ai->GetBot()->GetDistance(enemy) > 45.0f))
                 result = attacker;
         }
     }
