@@ -64,7 +64,7 @@ void PlayerbotHolder::LogoutPlayerBot(uint64 guid)
             sPlayerbotDbStore.Save(bot->GetPlayerbotAI());
         }
         sLog.outDebug("Bot %s logged out", bot->GetName());
-        //bot->SaveToDB();
+        bot->SaveToDB();
 
         WorldSession * botWorldSessionPtr = bot->GetSession();
         playerBots.erase(guid);    // deletes bot player ptr inside this WorldSession PlayerBotMap
