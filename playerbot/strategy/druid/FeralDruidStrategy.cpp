@@ -124,7 +124,7 @@ void FeralDruidStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("dash", ACTION_EMERGENCY + 2), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "cat form",
-        NextAction::array(0, new NextAction("prowl", ACTION_HIGH + 1), NULL)));
+        "enemy out of melee",
+        NextAction::array(0, new NextAction("cat form", ACTION_INTERRUPT + 1), NULL)));
 }
 
