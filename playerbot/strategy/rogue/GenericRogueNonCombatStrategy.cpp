@@ -20,9 +20,9 @@ void GenericRogueNonCombatStrategy::InitTriggers(std::list<TriggerNode*> &trigge
         "player has no flag",
         NextAction::array(0, new NextAction("stealth", ACTION_HIGH), NULL)));*/
 
-    triggers.push_back(new TriggerNode(
+    /*triggers.push_back(new TriggerNode(
         "enemy out of melee",
-        NextAction::array(0, new NextAction("stealth", ACTION_HIGH + 1), NULL)));
+        NextAction::array(0, new NextAction("stealth", ACTION_HIGH + 1), NULL)));*/
 
     triggers.push_back(new TriggerNode(
         "player has flag",
