@@ -411,7 +411,7 @@ void AiFactory::AddDefaultNonCombatStrategies(Player* player, PlayerbotAI* const
     // Battleground switch
     if (player->InBattleGround() && player->GetBattleGroundTypeId() == BattleGroundTypeId::BATTLEGROUND_WS)
     {
-        nonCombatEngine->addStrategies("grind", "nc", "chat",
+        nonCombatEngine->addStrategies("nc", "chat",
             "default", "emote", "buff", "food", "conserve mana", "collision", "mount", "warsong", NULL);
         nonCombatEngine->removeStrategy("custom::say");
     }
