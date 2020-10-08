@@ -199,6 +199,7 @@ bool MovementAction::IsMovingAllowed()
 			(sServerFacade.UnitIsDead(bot) && !bot->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_GHOST)) ||
             bot->IsBeingTeleported() ||
             sServerFacade.IsInRoots(bot) ||
+            bot->HasAuraType(SPELL_AURA_SPIRIT_OF_REDEMPTION) ||
             bot->HasAuraType(SPELL_AURA_MOD_CONFUSE) || sServerFacade.IsCharmed(bot) ||
             bot->HasAuraType(SPELL_AURA_MOD_STUN) || bot->IsFlying())
         return false;
@@ -247,6 +248,12 @@ bool MovementAction::Follow(Unit* target, float distance, float angle)
         float x = bot->GetPositionX(), y = bot->GetPositionY(), z = target->GetPositionZ();
         if (target->GetMapId() && bot->GetMapId() != target->GetMapId())
         {
+#ifdef MANGOSBOT_ZERO
+            if (target->GetMap()->IsBattleGround() || bot->GetMap()->IsBattleGround())
+#else
+            if (target->GetMap()->IsBattleGroundOrArena() || bot->GetMap()->IsBattleGroundOrArena())
+#endif
+                return false;
             bot->TeleportTo(target->GetMapId(), x, y, z, bot->GetOrientation());
         }
         else
@@ -265,8 +272,14 @@ bool MovementAction::Follow(Unit* target, float distance, float angle)
             bot->ResurrectPlayer(1.0f, false);
             ai->TellMasterNoFacing("I live, again!");
         }
-        else
+        //else
             //ai->TellError("I am stuck while following");
+#ifdef MANGOSBOT_ZERO
+        if (target->GetMap()->IsBattleGround() || bot->GetMap()->IsBattleGround())
+#else
+        if (target->GetMap()->IsBattleGroundOrArena() || bot->GetMap()->IsBattleGroundOrArena())
+#endif
+            return false;
 
         bot->TeleportTo(target->GetMapId(), target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), target->GetOrientation());
         return false;
