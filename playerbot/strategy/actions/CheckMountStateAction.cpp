@@ -75,12 +75,13 @@ bool CheckMountStateAction::Execute(Event event)
             {
                 return false;
             }
+#ifdef MANGOSBOT_ZERO
             //check near A Flag
             uint32 lowguid = 90000;
             uint32 id = 179830;
             GameObject* AllianceflagStand = bg->GetBgMap()->GetGameObject(ObjectGuid(HIGHGUID_GAMEOBJECT, id, lowguid));
 
-            if (bot->IsWithinDistInMap(AllianceflagStand, 10))
+            if (bot->IsWithinDistInMap(AllianceflagStand, 3.0f))
                 return false;
 
             //check near H Flag
@@ -88,9 +89,9 @@ bool CheckMountStateAction::Execute(Event event)
             id = 179831;
             GameObject* HordeflagStand = bg->GetBgMap()->GetGameObject(ObjectGuid(HIGHGUID_GAMEOBJECT, id, lowguid));
 
-            if (bot->IsWithinDistInMap(HordeflagStand, 10))
+            if (bot->IsWithinDistInMap(HordeflagStand, 3.0f))
                 return false;
-
+#endif
             return Mount();
         }
     }
@@ -139,7 +140,7 @@ bool CheckMountStateAction::Mount()
     int32 masterSpeed = 150;
     const SpellEntry *masterSpell = NULL;
 
-    if (master != NULL && master->GetAurasByType(SPELL_AURA_MOUNTED).size() > 0)
+    if (master != NULL && master->GetAurasByType(SPELL_AURA_MOUNTED).size() > 0 && !bot->InBattleGround())
     {
         Unit::AuraList const& auras = master->GetAurasByType(SPELL_AURA_MOUNTED);
         if (auras.empty()) return false;
