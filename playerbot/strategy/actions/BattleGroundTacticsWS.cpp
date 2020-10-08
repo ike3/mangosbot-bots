@@ -265,7 +265,7 @@ bool BGTacticsWS::homerun(BattleGroundWS *bg)
     if (bot->GetObjectGuid() == bg->GetAllianceFlagCarrierGuid()) //flag-Carrier, bring it home (hordeguy)
     {
         WorldObject* obj = bg->GetBgMap()->GetWorldObject(bg->GetHordeFlagCarrierGuid());
-        if (!obj || Preference < 6)
+        if (!obj || Preference < 7)
         {
             obj = bg->GetBgMap()->GetWorldObject(HordeWsgFlagStand(bg));  //warsong
         }
@@ -284,8 +284,9 @@ bool BGTacticsWS::homerun(BattleGroundWS *bg)
             //bot->GetPlayerbotAI()->GetAiObjectContext()->GetValue<Unit*>("old target")->Set(oldTarget);
             bot->GetPlayerbotAI()->GetAiObjectContext()->GetValue<Unit*>("rti target")->Set((Unit*)obj);
             //bot->GetPlayerbotAI()->GetAiObjectContext()->GetValue<Unit*>("current target")->Set((Unit*)obj);
-            bot->GetPlayerbotAI()->GetAiObjectContext()->GetValue<ObjectGuid>("pull target")->Set(obj->GetObjectGuid());
-            return bot->Attack((Unit*)obj, !ai->IsRanged(bot) || sServerFacade.GetDistance2d(bot, obj) <= sPlayerbotAIConfig.tooCloseDistance);
+            //bot->GetPlayerbotAI()->GetAiObjectContext()->GetValue<ObjectGuid>("pull target")->Set(obj->GetObjectGuid());
+            bot->Attack((Unit*)obj, !ai->IsRanged(bot) || sServerFacade.GetDistance2d(bot, obj) <= sPlayerbotAIConfig.tooCloseDistance);
+            return ChaseTo(obj);
             
             //return Follow((Unit*)obj);
             //return false;
@@ -314,8 +315,9 @@ bool BGTacticsWS::homerun(BattleGroundWS *bg)
            // bot->GetPlayerbotAI()->GetAiObjectContext()->GetValue<Unit*>("old target")->Set(oldTarget);
             bot->GetPlayerbotAI()->GetAiObjectContext()->GetValue<Unit*>("rti target")->Set((Unit*)obj);
             //bot->GetPlayerbotAI()->GetAiObjectContext()->GetValue<Unit*>("current target")->Set((Unit*)obj);
-            bot->GetPlayerbotAI()->GetAiObjectContext()->GetValue<ObjectGuid>("pull target")->Set(obj->GetObjectGuid());
-            return bot->Attack((Unit*)obj, !ai->IsRanged(bot) || sServerFacade.GetDistance2d(bot, obj) <= sPlayerbotAIConfig.tooCloseDistance);
+            //bot->GetPlayerbotAI()->GetAiObjectContext()->GetValue<ObjectGuid>("pull target")->Set(obj->GetObjectGuid());
+            bot->Attack((Unit*)obj, !ai->IsRanged(bot) || sServerFacade.GetDistance2d(bot, obj) <= sPlayerbotAIConfig.tooCloseDistance);
+            return ChaseTo(obj);
             
             //return Follow((Unit*)obj);
             //return true;
@@ -330,7 +332,7 @@ bool BGTacticsWS::homerun(BattleGroundWS *bg)
         //random choice if defense or offense
         bool supporter = Preference < 4;
 
-        if (supporter || (bg->GetFlagState(bot->GetTeam()) != BG_WS_FLAG_STATE_ON_PLAYER))
+        if (supporter || (supporter && (bg->GetFlagState(bot->GetTeam()) != BG_WS_FLAG_STATE_ON_PLAYER)))
         {
             if (bot->GetTeam() == ALLIANCE)
             {
@@ -375,8 +377,9 @@ bool BGTacticsWS::homerun(BattleGroundWS *bg)
                 {
                     if (bot->IsWithinDist(theirGuyA, 40.0f))
                     {
+                        bot->GetPlayerbotAI()->GetAiObjectContext()->GetValue<Unit*>("rti target")->Set((Unit*)theirGuyA);
                         //bot->GetGroup()->SetTargetIcon(7, theirGuyH->GetObjectGuid());
-                        if (!bot->IsWithinDistInMap(theirGuyA, 30.0f))
+                        if (!bot->IsWithinDistInMap(theirGuyA, 20.0f))
                             return ChaseTo(theirGuyA);
                         else
                         {
@@ -385,8 +388,9 @@ bool BGTacticsWS::homerun(BattleGroundWS *bg)
                             bot->GetPlayerbotAI()->GetAiObjectContext()->GetValue<Unit*>("rti target")->Set((Unit*)theirGuyA);
                             //bot->GetPlayerbotAI()->GetAiObjectContext()->GetValue<Unit*>("current target")->Set(theirGuyA);
                             bot->GetPlayerbotAI()->GetAiObjectContext()->GetValue<ObjectGuid>("pull target")->Set(bg->GetHordeFlagCarrierGuid());
-                            return bot->Attack((Unit*)theirGuyA, !ai->IsRanged(bot) || sServerFacade.GetDistance2d(bot, theirGuyA) <= sPlayerbotAIConfig.tooCloseDistance);
-                            //return false;
+                            bot->Attack((Unit*)theirGuyA, !ai->IsRanged(bot) || sServerFacade.GetDistance2d(bot, theirGuyA) <= sPlayerbotAIConfig.tooCloseDistance);
+                            return ChaseTo(theirGuyA);
+                            //return true;
                         }
                     }
                     return runPathTo(theirGuyA, bg);
@@ -401,18 +405,19 @@ bool BGTacticsWS::homerun(BattleGroundWS *bg)
                     
                     if (bot->IsWithinDistInMap(theirGuyH, 40.0f))
                     {
+                        bot->GetPlayerbotAI()->GetAiObjectContext()->GetValue<Unit*>("rti target")->Set((Unit*)theirGuyH);
                         //bot->GetGroup()->SetTargetIcon(7, theirGuyH->GetObjectGuid());
-                        if (!bot->IsWithinDistInMap(theirGuyH, 30.0f))
+                        if (!bot->IsWithinDistInMap(theirGuyH, 20.0f))
                             return ChaseTo(theirGuyH);
                         else
                         {
-                            Unit* oldTarget = bot->GetPlayerbotAI()->GetAiObjectContext()->GetValue<Unit*>("current target")->Get();
-                            bot->GetPlayerbotAI()->GetAiObjectContext()->GetValue<Unit*>("old target")->Set(oldTarget);
+                            //Unit* oldTarget = bot->GetPlayerbotAI()->GetAiObjectContext()->GetValue<Unit*>("current target")->Get();
+                            //bot->GetPlayerbotAI()->GetAiObjectContext()->GetValue<Unit*>("old target")->Set(oldTarget);
                             bot->GetPlayerbotAI()->GetAiObjectContext()->GetValue<Unit*>("rti target")->Set((Unit*)theirGuyH);
-                            bot->GetPlayerbotAI()->GetAiObjectContext()->GetValue<Unit*>("current target")->Set(theirGuyH);
+                            //bot->GetPlayerbotAI()->GetAiObjectContext()->GetValue<Unit*>("current target")->Set(theirGuyH);
                             bot->GetPlayerbotAI()->GetAiObjectContext()->GetValue<ObjectGuid>("pull target")->Set(bg->GetAllianceFlagCarrierGuid());
-                            return bot->Attack((Unit*)theirGuyH, !ai->IsRanged(bot) || sServerFacade.GetDistance2d(bot, theirGuyH) <= sPlayerbotAIConfig.tooCloseDistance);
-                            //return false;
+                            bot->Attack((Unit*)theirGuyH, !ai->IsRanged(bot) || sServerFacade.GetDistance2d(bot, theirGuyH) <= sPlayerbotAIConfig.tooCloseDistance);
+                            return ChaseTo(theirGuyH);
                         }
                     }
                     return runPathTo(theirGuyH, bg);
@@ -455,16 +460,16 @@ bool BGTacticsWS::runPathTo(WorldObject *target, BattleGround *bg)
         return MoveNear(target);
     if (target->IsWithinDist(bot, 40) && target->IsHostileTo(bot) && target->GetTypeId() == TYPEID_PLAYER)
     {
-        bot->GetPlayerbotAI()->GetAiObjectContext()->GetValue<Unit*>("current target")->Set((Unit*)target);
+        //bot->GetPlayerbotAI()->GetAiObjectContext()->GetValue<Unit*>("current target")->Set((Unit*)target);
         bot->GetPlayerbotAI()->GetAiObjectContext()->GetValue<ObjectGuid>("pull target")->Set(target->GetObjectGuid());
-        ChaseTo((Unit*)target);
-        return bot->Attack((Unit*)target, !ai->IsRanged(bot) || sServerFacade.GetDistance2d(bot, target) <= sPlayerbotAIConfig.tooCloseDistance);
+        bot->Attack((Unit*)target, !ai->IsRanged(bot) || sServerFacade.GetDistance2d(bot, target) <= sPlayerbotAIConfig.tooCloseDistance);
+        return ChaseTo((Unit*)target);
         //return ChaseTo((Unit*)target);
         //return true;
     }
     if (target->GetPositionX() > bot->GetPositionX()) //He's somewhere at the alliance side
     {
-        if (Preference < 4) //preference < 4 = move through tunnel
+        if (Preference < 6) //preference < 4 = move through tunnel (< 6 becuse GY disabled)
         {
             if (bot->GetPositionX() < 1006.f) //to the fasty
             {
@@ -480,7 +485,7 @@ bool BGTacticsWS::runPathTo(WorldObject *target, BattleGround *bg)
                 return  true;
             }
         }
-        else if (Preference < 7) { // preference < 7 = move through graveyard
+        else if (Preference > 9) { // preference < 7 = move through graveyard (BUGGED)
             if (bot->GetPositionX() < 985.f) //to the gate at the upper tunnel
             {
                 MoveTo(bg->GetMapId(), 985.940125f, 1423.260254f, 345.418121f);
@@ -815,6 +820,7 @@ bool BGTacticsWS::Execute(Event event)
                 ai->ChangeStrategy("-buff", BOT_STATE_NON_COMBAT);
 
             //If flag is close, always click it.
+            bool hasflag = (bot->GetObjectGuid() == bg->GetAllianceFlagCarrierGuid() || bot->GetObjectGuid() == bg->GetHordeFlagCarrierGuid());
             bool flagonbase = bg->GetFlagState(bot->GetTeam()) == BG_WS_FLAG_STATE_ON_BASE;
             bool flagdropped = bg->GetFlagState(bot->GetTeam()) == BG_WS_FLAG_STATE_ON_GROUND;
             bool alreadyHasFlag = bg->GetFlagState(bg->GetOtherTeam(bot->GetTeam())) == BG_WS_FLAG_STATE_ON_PLAYER;
@@ -889,10 +895,10 @@ bool BGTacticsWS::Execute(Event event)
             int Preference = sRandomPlayerbotMgr.GetValue(bot->GetGUIDLow(), "preference");
             //if (!moving)
             //    moving = moveTowardsEnemyFlag(bg);
-            if (!moving)
+            if (!moving && hasflag)
                 moving = homerun(bg);
-            if (!moving)
-                moving = moveTowardsEnemyFlag(bg);
+            //if (!moving)
+                //moving = moveTowardsEnemyFlag(bg);
             //moving = consumeHealthy(bg);
             //if (!moving)
             
