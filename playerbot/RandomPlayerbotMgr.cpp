@@ -214,6 +214,8 @@ void RandomPlayerbotMgr::CheckBgQueue(BattleGroundTypeId bgTypeId, BattleGroundB
         {
             BracketPlayers[j][i][0] = 0;
             BracketPlayers[j][i][1] = 0;
+            BracketBots[j][i][0] = 0;
+            BracketBots[j][i][1] = 0;
         }
     }
 
@@ -234,7 +236,7 @@ void RandomPlayerbotMgr::CheckBgQueue(BattleGroundTypeId bgTypeId, BattleGroundB
             if (!bg)
                 continue;
 
-            if (bg->GetStatus() != STATUS_IN_PROGRESS)
+            if (bg->GetStatus() == STATUS_WAIT_LEAVE)
                 continue;
 
             //if (bg->GetTypeID() != bgTypeId)
@@ -243,13 +245,13 @@ void RandomPlayerbotMgr::CheckBgQueue(BattleGroundTypeId bgTypeId, BattleGroundB
             //if (bg->GetBracketId() != bracketId)
                 //continue;
 
-            if (IsRandomBot(guidlow))
-                continue;
-
             TeamId = TeamId == ALLIANCE ? 0 : 1;
 
             //BracketPlayers[bgTypeId][bracketId][TeamId]++;
-            BracketPlayers[bg->GetTypeID()][bg->GetBracketId()][TeamId]++;
+            if (IsRandomBot(guidlow))
+                BracketBots[bg->GetTypeID()][bg->GetBracketId()][TeamId]++;
+            else
+                BracketPlayers[bg->GetTypeID()][bg->GetBracketId()][TeamId]++;
 
         } while (result->NextRow());
         delete result;
@@ -258,25 +260,63 @@ void RandomPlayerbotMgr::CheckBgQueue(BattleGroundTypeId bgTypeId, BattleGroundB
     for (vector<Player*>::iterator i = players.begin(); i != players.end(); ++i)
     {
         Player* player = *i;
-        if (player->GetPlayerbotAI())
-            continue;
 
         if (!player->InBattleGroundQueue())
             continue;
 
         uint32 TeamId = player->GetTeamId();
+        //uint32 qindex = player->GetBattleGroundQueueIndex(BattleGroundQueueTypeId(bgTypeId));
         BattleGroundBracketId bracket = player->GetBattleGroundBracketIdFromLevel(bgTypeId);
         BattleGroundQueueTypeId queue = player->GetBattleGroundQueueTypeId(0);
-
+        if (queue == BATTLEGROUND_QUEUE_NONE)
+            continue;
         /*if (bracket == bracketId && queue == bgTypeId)
         {
             BracketPlayers[bgTypeId][bracketId][TeamId]++;
         }*/
-        BracketPlayers[queue][bracket][TeamId]++;
+        if(player->GetPlayerbotAI())
+            BracketBots[queue][bracket][TeamId]++;
+        else
+            BracketPlayers[queue][bracket][TeamId]++;
     }
 
-    if (BracketPlayers[bgTypeId][bracketId][0] > 0 || BracketPlayers[bgTypeId][bracketId][1] > 0)
-        return;
+    for (PlayerBotMap::iterator i = playerBots.begin(); i != playerBots.end(); ++i)
+    {
+        Player* bot = i->second;
+
+        if (!bot->InBattleGroundQueue())
+            continue;
+
+        uint32 TeamId = bot->GetTeamId();
+        //uint32 qindex = bot->GetBattleGroundQueueIndex(BattleGroundQueueTypeId(bgTypeId));
+        BattleGroundBracketId bracket = bot->GetBattleGroundBracketIdFromLevel(bgTypeId);
+        BattleGroundQueueTypeId queue = bot->GetBattleGroundQueueTypeId(0);
+        if (queue == BATTLEGROUND_QUEUE_NONE)
+            continue;
+
+        BracketBots[queue][bracket][TeamId]++;
+    }
+    sLog.outBasic("BG Queue check finished");
+    for (int i = BG_BRACKET_ID_FIRST; i < MAX_BATTLEGROUND_BRACKETS; ++i)
+    {
+        for (int j = BATTLEGROUND_AV; j < BATTLEGROUND_AB; ++j)
+        {
+            // don't show other BG than WSG just yet
+            if (j != BATTLEGROUND_WS)
+                continue;
+
+            sLog.outBasic("WSG %d: Players: A:%d H:%d, Bots: A:%d H:%d",
+                i,
+                BracketPlayers[j][i][0],
+                BracketPlayers[j][i][1],
+                BracketBots[j][i][0],
+                BracketBots[j][i][1]
+                );
+        }
+    }
+
+    //if (BracketPlayers[bgTypeId][bracketId][0] > 0 || BracketPlayers[bgTypeId][bracketId][1] > 0)
+        //return;
 
     return;
 }
