@@ -111,7 +111,7 @@ bool BGJoinAction::JoinProposal(uint32 type)
 #endif
    
    BattleGroundBracketId bracketId = bot->GetBattleGroundBracketIdFromLevel(BATTLEGROUND_WS);
-   sRandomPlayerbotMgr.BracketBots[bgTypeId][bracketId][bot->GetTeamId()]++;
+   //sRandomPlayerbotMgr.BracketBots[bgTypeId][bracketId][bot->GetTeamId()]++;
 
    WorldPacket packet(CMSG_BATTLEMASTER_JOIN, 20);
 #ifdef MANGOSBOT_ZERO
@@ -237,6 +237,7 @@ bool BGStatusAction::Execute(Event event)
         bot->GetSession()->HandleLeaveBattlefieldOpcode(packet);
         ai->ResetStrategies(!IsRandomBot);
         sRandomPlayerbotMgr.BracketBots[bgTypeId][bracketId][bot->GetTeamId()]--;
+        sRandomPlayerbotMgr.BracketPlayers[bgTypeId][bracketId][bot->GetTeamId()] = 0;
         if (urand(0, 100) > 50)
         {
             if (IsRandomBot)
@@ -277,7 +278,8 @@ bool BGStatusAction::Execute(Event event)
 #endif
         bot->GetSession()->HandleBattleFieldPortOpcode(packet);
         
-        ai->ResetStrategies(!IsRandomBot);
+        //ai->ResetStrategies(!IsRandomBot);
+        ai->ResetStrategies(false);
         ai->ChangeStrategy("-bg", BOT_STATE_NON_COMBAT);
         ai->ChangeStrategy("-bg", BOT_STATE_COMBAT);
         
