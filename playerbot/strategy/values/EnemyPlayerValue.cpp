@@ -26,7 +26,8 @@ public:
                     !enemy->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE) &&
                     !enemy->HasStealthAura() &&
                     !enemy->HasInvisibilityAura() &&
-                    !(enemy->InBattleGround() && ai->GetBot()->GetDistance(enemy) > 45.0f))
+                    //!(enemy->InBattleGround() && ai->GetBot()->GetDistance(enemy) > 40.0f) &&
+                    !(enemy->HasAuraType(SPELL_AURA_SPIRIT_OF_REDEMPTION)))
                 result = attacker;
         }
     }
