@@ -77,6 +77,7 @@ class RandomPlayerbotMgr : public PlayerbotHolder
         map<uint32, map<uint32, map<uint32, uint32> > > BracketBots;
         map<uint32, map<uint32, map<uint32, uint32> > > VisualBots;
         map<uint32, map<uint32, map<uint32, uint32> > > BracketPlayers;
+        map<uint32, map<uint32, map<uint32, uint32> > > Supporters;
 
 	protected:
 	    virtual void OnBotLoginInternal(Player * const bot);
