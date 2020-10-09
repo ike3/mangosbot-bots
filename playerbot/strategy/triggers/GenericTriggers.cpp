@@ -359,6 +359,30 @@ bool TeamHasFlag::IsActive()
     return false;
 }
 
+bool EnemyTeamHasFlag::IsActive()
+{
+    if (ai->GetBot()->InBattleGround())
+    {
+        if (ai->GetBot()->GetBattleGroundTypeId() == BattleGroundTypeId::BATTLEGROUND_WS)
+        {
+            BattleGroundWS *bg = (BattleGroundWS*)ai->GetBot()->GetBattleGround();
+
+            if (bot->GetObjectGuid() == bg->GetAllianceFlagCarrierGuid() || bot->GetObjectGuid() == bg->GetHordeFlagCarrierGuid())
+            {
+                return false;
+            }
+
+            if (bg->GetFlagState(bot->GetTeam()) == BG_WS_FLAG_STATE_ON_PLAYER)
+                return true;
+
+            if (bg->GetFlagState(bot->GetTeam()) == BG_WS_FLAG_STATE_ON_GROUND)
+                return true;
+        }
+        return false;
+    }
+    return false;
+}
+
 bool EnemyFlagCarrierNear::IsActive()
 {
     if (ai->GetBot()->InBattleGround())

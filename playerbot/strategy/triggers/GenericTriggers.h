@@ -723,6 +723,15 @@ namespace ai
         virtual bool IsActive();
     };
 
+    class EnemyTeamHasFlag : public Trigger
+    {
+    public:
+        EnemyTeamHasFlag(PlayerbotAI* ai) : Trigger(ai, "enemy team has flag") {}
+
+    public:
+        virtual bool IsActive();
+    };
+
     class PlayerIsInBattleground : public Trigger
     {
     public:

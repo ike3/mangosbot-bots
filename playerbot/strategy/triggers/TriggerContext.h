@@ -116,6 +116,7 @@ namespace ai
             creators["player has no flag"] = &TriggerContext::player_has_no_flag;
             creators["player has flag"] = &TriggerContext::player_has_flag;
             creators["team has flag"] = &TriggerContext::team_has_flag;
+            creators["enemy team has flag"] = &TriggerContext::enemy_team_has_flag;
             creators["enemy flagcarrier near"] = &TriggerContext::enemy_flagcarrier_near;
             creators["in battleground"] = &TriggerContext::player_is_in_battleground;
             creators["in battleground without flag"] = &TriggerContext::player_is_in_battleground_no_flag;
@@ -126,6 +127,7 @@ namespace ai
         static Trigger* player_has_no_flag(PlayerbotAI* ai) { return new PlayerHasNoFlag(ai); }
         static Trigger* player_has_flag(PlayerbotAI* ai) { return new PlayerHasFlag(ai); }
         static Trigger* team_has_flag(PlayerbotAI* ai) { return new TeamHasFlag(ai); }
+        static Trigger* enemy_team_has_flag(PlayerbotAI* ai) { return new EnemyTeamHasFlag(ai); }
         static Trigger* player_is_in_battleground(PlayerbotAI *ai) { return new PlayerIsInBattleground(ai); }
         static Trigger* player_is_in_battleground_no_flag(PlayerbotAI *ai) { return new PlayerIsInBattlegroundWithoutFlag(ai); }
         static Trigger* give_food(PlayerbotAI* ai) { return new GiveFoodTrigger(ai); }
