@@ -290,7 +290,7 @@ bool BGTacticsWS::homerun(BattleGroundWS *bg)
     if (bot->GetObjectGuid() == bg->GetHordeFlagCarrierGuid())//flag-Carrier, bring it home (allianceguy)
     {
         WorldObject* obj = bg->GetBgMap()->GetWorldObject(bg->GetAllianceFlagCarrierGuid());
-        if (!obj || Preference < 9)
+        if (!obj || Preference < 8)
         {
             obj = bg->GetBgMap()->GetWorldObject(AllianceWsgFlagStand(bg));  //silverwing
         }
@@ -313,7 +313,7 @@ bool BGTacticsWS::homerun(BattleGroundWS *bg)
         //allianceguy  GetHordeFlagCarrierGuid
         //int Preference = urand(0, 9);
         //random choice if defense or offense
-        bool supporter = Preference < 4;
+        bool supporter = Preference < 3;
         if (supporter || (bg->GetFlagState(bot->GetTeam()) != BG_WS_FLAG_STATE_ON_PLAYER))
         {
             if (bot->GetTeam() == ALLIANCE)
@@ -350,7 +350,7 @@ bool BGTacticsWS::homerun(BattleGroundWS *bg)
                     if (bot->IsWithinDist(theirGuyA, 40.0f))
                     {
                         bot->GetPlayerbotAI()->GetAiObjectContext()->GetValue<Unit*>("current target")->Set(theirGuyA);
-                        bot->Attack((Unit*)theirGuyA, !ai->IsRanged(bot) || sServerFacade.GetDistance2d(bot, theirGuyA) <= sPlayerbotAIConfig.tooCloseDistance);
+                        //bot->Attack((Unit*)theirGuyA, !ai->IsRanged(bot) || sServerFacade.GetDistance2d(bot, theirGuyA) <= sPlayerbotAIConfig.tooCloseDistance);
                         bot->GetPlayerbotAI()->GetAiObjectContext()->GetValue<ObjectGuid>("pull target")->Set(bg->GetHordeFlagCarrierGuid());
                         return true;
                     }
