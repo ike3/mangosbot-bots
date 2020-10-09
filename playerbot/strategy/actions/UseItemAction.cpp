@@ -308,7 +308,13 @@ bool UseItemAction::UseItem(Item* item, ObjectGuid goGuid, Item* itemTarget)
           p = hp;
           TellConsumableUse(item, "Eating", p);
       }
-      ai->SetNextCheckDelay(27000.0f * (100 - p) / 100.0f);
+      if(!bot->IsInCombat() && !bot->InBattleGround())
+          ai->SetNextCheckDelay(27000.0f * (100 - p) / 100.0f);
+
+      if (!bot->IsInCombat() && bot->InBattleGround())
+          ai->SetNextCheckDelay(20000.0f * (100 - p) / 100.0f);
+
+      //ai->SetNextCheckDelay(27000.0f * (100 - p) / 100.0f);
       bot->GetSession()->HandleUseItemOpcode(packet);
       return true;
    }
