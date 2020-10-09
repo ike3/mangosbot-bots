@@ -81,11 +81,11 @@ void PriestBuffStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "prayer of fortitude on party",
-        NextAction::array(0, new NextAction("prayer of fortitude on party", 13.0f), NULL)));
+        NextAction::array(0, new NextAction("prayer of fortitude on party", 10.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
         "prayer of spirit on party",
-        NextAction::array(0, new NextAction("prayer of spirit on party", 15.0f), NULL)));
+        NextAction::array(0, new NextAction("prayer of spirit on party", 10.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
         "power word: fortitude on party",
