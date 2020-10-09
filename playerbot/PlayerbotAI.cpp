@@ -2510,3 +2510,21 @@ uint32 PlayerbotAI::GetCreatureGuidByEntry(uint32 entry)
     }
     return guid;
 }
+
+uint32 PlayerbotAI::GetBuffedCount(Player* player, string spellname)
+{
+    Group* group = player->GetGroup();
+    if (group)
+    {
+        uint32 bcount = 0;
+        for (GroupReference *gref = group->GetFirstMember(); gref; gref = gref->next())
+        {
+            Player* member = gref->getSource();
+            PlayerbotAI* ai = bot->GetPlayerbotAI();
+            if (ai->HasAura(spellname, member, true))
+                bcount++;
+        }
+        return bcount;
+    }
+    return 0;
+}

@@ -292,6 +292,7 @@ public:
     uint32 GetBattleMasterGuidByRace(uint8 race);
     const CreatureData * GetCreatureDataByEntry(uint32 entry);
     uint32 GetCreatureGuidByEntry(uint32 entry);
+    uint32 GetBuffedCount(Player* player, string spellname);
   
 
     virtual bool CanCastSpell(string name, Unit* target, uint8 effectMask, Item* itemTarget = NULL);
