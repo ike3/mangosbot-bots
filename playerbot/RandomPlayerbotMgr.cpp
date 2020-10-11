@@ -290,6 +290,9 @@ void RandomPlayerbotMgr::CheckBgQueue(BattleGroundTypeId bgTypeId, BattleGroundB
         if (!bot->InBattleGroundQueue())
             continue;
 
+        if (bot->GetBattleGround() && bot->GetBattleGround()->GetStatus() == STATUS_WAIT_LEAVE)
+            continue;
+
         uint32 TeamId = bot->GetTeamId();
         //uint32 qindex = bot->GetBattleGroundQueueIndex(BattleGroundQueueTypeId(bgTypeId));
         BattleGroundBracketId bracket = bot->GetBattleGroundBracketIdFromLevel(bgTypeId);
