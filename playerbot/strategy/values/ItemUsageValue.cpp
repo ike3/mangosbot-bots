@@ -43,6 +43,9 @@ ItemUsage ItemUsageValue::Calculate()
 
 ItemUsage ItemUsageValue::QueryItemUsageForEquip(ItemPrototype const * item)
 {
+    bool shouldEquip = true;
+    bool existingShouldEquip = true;
+
     if (bot->CanUseItem(item) != EQUIP_ERR_OK)
         return ITEM_USAGE_NONE;
 
@@ -56,34 +59,52 @@ ItemUsage ItemUsageValue::QueryItemUsageForEquip(ItemPrototype const * item)
     uint16 dest;
     InventoryResult result = bot->CanEquipItem(NULL_SLOT, dest, pItem, true, false);
     pItem->RemoveFromUpdateQueueOf(bot);
-    delete pItem;
+    delete pItem;   
 
     if( result != EQUIP_ERR_OK )
         return ITEM_USAGE_NONE;
 
     if (item->Class == ITEM_CLASS_WEAPON && !sRandomItemMgr.CanEquipWeapon(bot->getClass(), item))
-        return ITEM_USAGE_NONE;
+        shouldEquip = false;
 
     if (item->Class == ITEM_CLASS_ARMOR && !sRandomItemMgr.CanEquipArmor(bot->getClass(), bot->getLevel(), item))
-        return ITEM_USAGE_NONE;
+        shouldEquip = false;
 
     Item* existingItem = bot->GetItemByPos(dest);
     if (!existingItem)
-        return ITEM_USAGE_EQUIP;
+        if (shouldEquip)
+            return ITEM_USAGE_EQUIP;
+        else
+            return ITEM_USAGE_BAD_EQUIP;
 
     const ItemPrototype* oldItem = existingItem->GetProto();
-    if (oldItem->ItemId != item->ItemId &&
-            (oldItem->ItemLevel < item->ItemLevel || oldItem->Quality < item->Quality))
+
+    if (oldItem->Class == ITEM_CLASS_WEAPON && !sRandomItemMgr.CanEquipWeapon(bot->getClass(), oldItem))
+        existingShouldEquip = false;
+
+    if (oldItem->Class == ITEM_CLASS_ARMOR && !sRandomItemMgr.CanEquipArmor(bot->getClass(), bot->getLevel(), oldItem))
+        existingShouldEquip = false;
+
+    if (oldItem->ItemId != item->ItemId && //Item is not identical
+        (shouldEquip || !existingShouldEquip) && //New item is optimal or old item was already sub-optimal
+            (oldItem->ItemLevel < item->ItemLevel || // Item is upgrade in itemlevel or quality.
+                oldItem->Quality < item->Quality))
     {
         switch (item->Class)
         {
         case ITEM_CLASS_ARMOR:
             if (oldItem->SubClass <= item->SubClass) {
-                return ITEM_USAGE_REPLACE;
+                if(shouldEquip)
+                   return ITEM_USAGE_REPLACE;
+                else
+                    return ITEM_USAGE_BAD_EQUIP;
             }
             break;
         default:
-            return ITEM_USAGE_EQUIP;
+            if (shouldEquip)
+                return ITEM_USAGE_EQUIP;
+            else
+                return ITEM_USAGE_BAD_EQUIP;
         }
     }
 

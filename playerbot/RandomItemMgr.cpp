@@ -391,21 +391,21 @@ bool RandomItemMgr::CanEquipArmor(uint8 clazz, uint32 level, ItemPrototype const
 
     if ((clazz == CLASS_WARRIOR || clazz == CLASS_PALADIN) && level >= 40)
     {
-        if (proto->SubClass != ITEM_SUBCLASS_ARMOR_PLATE)
+        if (proto->SubClass != ITEM_SUBCLASS_ARMOR_PLATE && proto->InventoryType != INVTYPE_CLOAK)
             return false;
     }
 
     if (((clazz == CLASS_WARRIOR || clazz == CLASS_PALADIN) && level < 40) ||
             ((clazz == CLASS_HUNTER || clazz == CLASS_SHAMAN) && level >= 40))
     {
-        if (proto->SubClass != ITEM_SUBCLASS_ARMOR_MAIL)
+        if (proto->SubClass != ITEM_SUBCLASS_ARMOR_MAIL && proto->InventoryType != INVTYPE_CLOAK)
             return false;
     }
 
     if (((clazz == CLASS_HUNTER || clazz == CLASS_SHAMAN) && level < 40) ||
             (clazz == CLASS_DRUID || clazz == CLASS_ROGUE))
     {
-        if (proto->SubClass != ITEM_SUBCLASS_ARMOR_LEATHER)
+        if (proto->SubClass != ITEM_SUBCLASS_ARMOR_LEATHER && proto->InventoryType != INVTYPE_CLOAK)
             return false;
     }
 
@@ -782,67 +782,6 @@ uint32 RandomItemMgr::GetRandomPotion(uint32 level, uint32 effect)
     vector<uint32> potions = potionCache[(level - 1) / 10][effect];
     if (potions.empty()) return 0;
     return potions[urand(0, potions.size() - 1)];
-}
-
-uint32 RandomItemMgr::GetFood(uint32 level, uint32 category)
-{
-    initializer_list<uint32> items;
-    vector<uint32> food;
-    if(category == 11)
-    {
-        if (level < 5)
-            items = { 787, 117, 4540, 2680 };
-        else if (level < 15)
-            items = { 2287, 4592, 4541, 21072 };
-        else if (level < 25)
-            items = { 3770, 16170, 4542, 20074 };
-        else if (level < 35)
-            items = { 4594, 3771, 1707, 4457 };
-        else if (level < 45)
-            items = { 4599, 4601, 21552, 17222 /*21030, 16168 */ };
-#ifdef MANGOSBOT_ZERO
-        else
-#else
-        else if (level < 55)
-#endif
-            items = { 8950, 8952, 8957, 21023 /*21033, 21031 */ };
-#ifdef MANGOSBOT_ONE
-        else if (level < 65)
-            items = { 29292, 27859, 30458, 27662 };
-        else
-            items = { 29450, 29451, 29452 };
-#endif
-    }
-
-    if (category == 59)
-    {
-        if (level < 5)
-            items = { 159, 117 };
-        else if (level < 15)
-            items = { 1179, 21072 };
-        else if (level < 25)
-            items = { 1205 };
-        else if (level < 35)
-            items = { 1708 };
-        else if (level < 45)
-            items = { 1645 };
-#ifdef MANGOSBOT_ZERO
-        else
-#else
-        else if (level < 55)
-#endif
-            items = { 8766 };
-#ifdef MANGOSBOT_ONE
-        else if (level < 65)
-            items = { 28399 };
-        else
-            items = { 27860 };
-#endif
-    }
-
-    food.insert(food.end(), items);
-    if (food.empty()) return 0;
-    return food[urand(0, food.size() - 1)];
 }
 
 uint32 RandomItemMgr::GetRandomFood(uint32 level, uint32 category)

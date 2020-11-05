@@ -9,8 +9,6 @@ namespace ai
     public:
         EquipAction(PlayerbotAI* ai, string name = "equip") : InventoryAction(ai, name) {}
         virtual bool Execute(Event event);
-
-    protected:
         void EquipItems(ItemIds ids);
 
     private:

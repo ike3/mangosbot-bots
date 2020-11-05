@@ -23,6 +23,89 @@ bool QuestAction::Execute(Event event)
     return ProcessQuests(guid);
 }
 
+bool QuestAction::CompleteQuest(uint32 entry)
+{
+    Quest const* pQuest = sObjectMgr.GetQuestTemplate(entry);
+
+    // If player doesn't have the quest
+    if (!pQuest || bot->GetQuestStatus(entry) == QUEST_STATUS_NONE)
+    {
+        return false;
+    }
+
+    // Add quest items for quests that require items
+    for (uint8 x = 0; x < QUEST_ITEM_OBJECTIVES_COUNT; ++x)
+    {
+        uint32 id = pQuest->ReqItemId[x];
+        uint32 count = pQuest->ReqItemCount[x];
+        if (!id || !count)
+        {
+            continue;
+        }
+
+        uint32 curItemCount = bot->GetItemCount(id, true);
+
+        ItemPosCountVec dest;
+        uint8 msg = bot->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, id, count - curItemCount);
+        if (msg == EQUIP_ERR_OK)
+        {
+            Item* item = bot->StoreNewItem(dest, id, true);
+            bot->SendNewItem(item, count - curItemCount, true, false);
+        }
+    }
+
+    // All creature/GO slain/casted (not required, but otherwise it will display "Creature slain 0/10")
+    for (uint8 i = 0; i < QUEST_OBJECTIVES_COUNT; ++i)
+    {
+        int32 creature = pQuest->ReqCreatureOrGOId[i];
+        uint32 creaturecount = pQuest->ReqCreatureOrGOCount[i];
+
+        if (uint32 spell_id = pQuest->ReqSpell[i])
+        {
+            for (uint16 z = 0; z < creaturecount; ++z)
+            {
+                bot->CastedCreatureOrGO(creature, ObjectGuid(), spell_id);
+            }
+        }
+        else if (creature > 0)
+        {
+            if (CreatureInfo const* cInfo = ObjectMgr::GetCreatureTemplate(creature))
+                for (uint16 z = 0; z < creaturecount; ++z)
+                {
+                    bot->KilledMonster(cInfo, ObjectGuid());
+                }
+        }
+        else if (creature < 0)
+        {
+            for (uint16 z = 0; z < creaturecount; ++z)
+            {
+                bot->CastedCreatureOrGO(-creature, ObjectGuid(), 0);
+            }
+        }
+    }
+
+    // If the quest requires reputation to complete
+    if (uint32 repFaction = pQuest->GetRepObjectiveFaction())
+    {
+        uint32 repValue = pQuest->GetRepObjectiveValue();
+        uint32 curRep = bot->GetReputationMgr().GetReputation(repFaction);
+        if (curRep < repValue)
+            if (FactionEntry const* factionEntry = sFactionStore.LookupEntry(repFaction))
+            {
+                bot->GetReputationMgr().SetReputation(factionEntry, repValue);
+            }
+    }
+
+    // If the quest requires money
+    int32 ReqOrRewMoney = pQuest->GetRewOrReqMoney();
+    if (ReqOrRewMoney < 0)
+    {
+        bot->ModifyMoney(-ReqOrRewMoney);
+    }
+
+    bot->CompleteQuest(entry, QUEST_STATUS_FORCE_COMPLETE);
+}
+
 bool QuestAction::ProcessQuests(ObjectGuid questGiver)
 {
     GameObject *gameObject = ai->GetGameObject(questGiver);
@@ -40,7 +123,7 @@ bool QuestAction::ProcessQuests(WorldObject* questGiver)
 {
     ObjectGuid guid = questGiver->GetObjectGuid();
 
-    if (bot->GetDistance(questGiver) > INTERACTION_DISTANCE)
+    if (bot->GetDistance(questGiver) > INTERACTION_DISTANCE && sPlayerbotAIConfig.SyncQuestWithPlayer == "no")
     {
         ai->TellError("Cannot talk to quest giver");
         return false;
@@ -52,6 +135,7 @@ bool QuestAction::ProcessQuests(WorldObject* questGiver)
     bot->SetSelectionGuid(guid);
     bot->PrepareQuestMenu(guid);
     QuestMenu& questMenu = bot->PlayerTalkClass->GetQuestMenu();
+
     for (uint32 i = 0; i < questMenu.MenuItemCount(); ++i)
     {
         QuestMenuItem const& menuItem = questMenu.GetItem(i);
@@ -93,6 +177,15 @@ bool QuestAction::AcceptQuest(Quest const* quest, uint64 questGiver)
         p << questGiver << questId << unk1;
         p.rpos(0);
         bot->GetSession()->HandleQuestgiverAcceptQuestOpcode(p);
+
+        if (bot->GetQuestStatus(questId) == QUEST_STATUS_NONE && sPlayerbotAIConfig.SyncQuestWithPlayer != "no")
+        {
+            Object* pObject = bot->GetObjectByTypeMask(questGiver, TYPEMASK_CREATURE_GAMEOBJECT_PLAYER_OR_ITEM);
+            bot->AddQuest(quest, pObject);
+
+            if(sPlayerbotAIConfig.SyncQuestWithPlayer == "fast")
+                CompleteQuest(questId);
+        }
 
         if (bot->GetQuestStatus(questId) != QUEST_STATUS_NONE && bot->GetQuestStatus(questId) != QUEST_STATUS_AVAILABLE)
         {
