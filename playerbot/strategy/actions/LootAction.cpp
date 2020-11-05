@@ -333,12 +333,12 @@ bool StoreLootAction::Execute(Event event)
         }
 
         ostringstream out; out << "Looting " << chat->formatItem(proto);
+
         ai->TellMasterNoFacing(out.str());
     }
 
     if (sPlayerbotAIConfig.AutoEquipUpgradeLoot && !EquipIds.empty())
     {
-        ostringstream out;
         for (ItemIds::iterator i = EquipIds.begin(); i != EquipIds.end(); i++)
         {
             EquipItem(*i);
@@ -360,8 +360,8 @@ bool StoreLootAction::IsLootAllowed(uint32 itemid, PlayerbotAI *ai)
     LootStrategy* lootStrategy = AI_VALUE(LootStrategy*, "loot strategy");
 
     set<uint32>& lootItems = AI_VALUE(set<uint32>&, "always loot list");
-    if (lootItems.find(itemid) != lootItems.end())
-        return true;
+    if (lootItems.find(itemid) != lootItems.end()) 
+        return true;    
 
     ItemPrototype const *proto = sObjectMgr.GetItemPrototype(itemid);
     if (!proto)
@@ -372,22 +372,32 @@ bool StoreLootAction::IsLootAllowed(uint32 itemid, PlayerbotAI *ai)
         return false;
 
     if (proto->StartQuest)
-        return true;
-
-    if (proto->Bonding == BIND_QUEST_ITEM ||
-        proto->Bonding == BIND_QUEST_ITEM1 ||
-        proto->Class == ITEM_CLASS_QUEST)
     {
-        for (uint8 slot = 0; slot < MAX_QUEST_LOG_SIZE; ++slot)
-        {
-            uint32 entry = ai->GetBot()->GetQuestSlotQuestId(slot);
-            Quest const* quest = sObjectMgr.GetQuestTemplate(entry);
-            if (!quest)
-                continue;
+        if (sPlayerbotAIConfig.SyncQuestWithPlayer != "no")
+            return false; //Quest is autocomplete for the bot so no item needed.
+        else
+            return true;
+    }
 
-            for (int i = 0; i < 4; i++)
+    //if (proto->Bonding == BIND_QUEST_ITEM ||
+    //    proto->Bonding == BIND_QUEST_ITEM1 ||
+    //    proto->Class == ITEM_CLASS_QUEST)
+    //{
+    
+    for (uint8 slot = 0; slot < MAX_QUEST_LOG_SIZE; ++slot)
+    {
+        uint32 entry = ai->GetBot()->GetQuestSlotQuestId(slot);
+        Quest const* quest = sObjectMgr.GetQuestTemplate(entry);
+        if (!quest)
+            continue;
+
+        for (int i = 0; i < 4; i++)
+        {
+            if (quest->ReqItemId[i] == itemid)
             {
-                if (quest->ReqItemId[i] == itemid && AI_VALUE2(uint8, "item count", proto->Name1) < quest->ReqItemCount[i])
+                if (sPlayerbotAIConfig.SyncQuestWithPlayer != "no")
+                    return false; //Quest is autocomplete for the bot so no item needed.
+                if (AI_VALUE2(uint8, "item count", proto->Name1) < quest->ReqItemCount[i])
                     return true;
             }
         }
