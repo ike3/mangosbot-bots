@@ -36,19 +36,19 @@ bool LootAction::Execute(Event event)
 
 enum ProfessionSpells
 {
-    ALCHEMY = 2259,
-    BLACKSMITHING = 2018,
-    COOKING = 2550,
-    ENCHANTING = 7411,
-    ENGINEERING = 49383,
-    FIRST_AID = 3273,
-    FISHING = 7620,
-    HERB_GATHERING = 2366,
-    INSCRIPTION = 45357,
-    JEWELCRAFTING = 25229,
-    MINING = 2575,
-    SKINNING = 8613,
-    TAILORING = 3908
+    ALCHEMY                      = 2259,
+    BLACKSMITHING                = 2018,
+    COOKING                      = 2550,
+    ENCHANTING                   = 7411,
+    ENGINEERING                  = 49383,
+    FIRST_AID                    = 3273,
+    FISHING                      = 7620,
+    HERB_GATHERING               = 2366,
+    INSCRIPTION                  = 45357,
+    JEWELCRAFTING                = 25229,
+    MINING                       = 2575,
+    SKINNING                     = 8613,
+    TAILORING                    = 3908
 };
 
 bool OpenLootAction::Execute(Event event)
@@ -74,9 +74,9 @@ bool OpenLootAction::DoLoot(LootObject& lootObject)
 
     if (creature && creature->HasFlag(UNIT_DYNAMIC_FLAGS, UNIT_DYNFLAG_LOOTABLE)
 #ifdef CMANGOS
-        && !creature->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SKINNABLE)
+            && !creature->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SKINNABLE)
 #endif
-        )
+            )
     {
         WorldPacket packet(CMSG_LOOT, 8);
         packet << lootObject.guid;
@@ -110,7 +110,7 @@ bool OpenLootAction::DoLoot(LootObject& lootObject)
 
     if (go && (
 #ifdef CMANGOS
-        go->IsInUse() ||
+        go->IsInUse() || 
 #endif
         go->GetGoState() != GO_STATE_READY
         ))
@@ -144,15 +144,15 @@ uint32 OpenLootAction::GetOpeningSpell(LootObject& lootObject, GameObject* go)
     {
         uint32 spellId = itr->first;
 
-        if (itr->second.state == PLAYERSPELL_REMOVED || itr->second.disabled || IsPassiveSpell(spellId))
-            continue;
+		if (itr->second.state == PLAYERSPELL_REMOVED || itr->second.disabled || IsPassiveSpell(spellId))
+			continue;
 
-        if (spellId == MINING || spellId == HERB_GATHERING)
-            continue;
+		if (spellId == MINING || spellId == HERB_GATHERING)
+			continue;
 
-        const SpellEntry* pSpellInfo = sServerFacade.LookupSpellInfo(spellId);
-        if (!pSpellInfo)
-            continue;
+		const SpellEntry* pSpellInfo = sServerFacade.LookupSpellInfo(spellId);
+		if (!pSpellInfo)
+			continue;
 
         if (CanOpenLock(lootObject, pSpellInfo, go))
             return spellId;
@@ -163,8 +163,8 @@ uint32 OpenLootAction::GetOpeningSpell(LootObject& lootObject, GameObject* go)
         if (spellId == MINING || spellId == HERB_GATHERING)
             continue;
 
-        const SpellEntry* pSpellInfo = sServerFacade.LookupSpellInfo(spellId);
-        if (!pSpellInfo)
+		const SpellEntry* pSpellInfo = sServerFacade.LookupSpellInfo(spellId);
+		if (!pSpellInfo)
             continue;
 
         if (CanOpenLock(lootObject, pSpellInfo, go))
@@ -185,32 +185,32 @@ bool OpenLootAction::CanOpenLock(LootObject& lootObject, const SpellEntry* pSpel
         if (!lockId)
             return false;
 
-        LockEntry const* lockInfo = sLockStore.LookupEntry(lockId);
+        LockEntry const *lockInfo = sLockStore.LookupEntry(lockId);
         if (!lockInfo)
             return false;
 
         bool reqKey = false;                                    // some locks not have reqs
 
-        for (int j = 0; j < 8; ++j)
+        for(int j = 0; j < 8; ++j)
         {
-            switch (lockInfo->Type[j])
+            switch(lockInfo->Type[j])
             {
-                /*
-                case LOCK_KEY_ITEM:
-                    return true;
-                */
+            /*
+            case LOCK_KEY_ITEM:
+                return true;
+            */
             case LOCK_KEY_SKILL:
-            {
-                if (uint32(pSpellInfo->EffectMiscValue[effIndex]) != lockInfo->Index[j])
-                    continue;
+                {
+                    if(uint32(pSpellInfo->EffectMiscValue[effIndex]) != lockInfo->Index[j])
+                        continue;
 
-                uint32 skillId = SkillByLockType(LockType(lockInfo->Index[j]));
-                if (skillId == SKILL_NONE)
-                    return true;
+                    uint32 skillId = SkillByLockType(LockType(lockInfo->Index[j]));
+                    if (skillId == SKILL_NONE)
+                        return true;
 
-                if (CanOpenLock(skillId, lockInfo->Skill[j]))
-                    return true;
-            }
+                    if (CanOpenLock(skillId, lockInfo->Skill[j]))
+                        return true;
+                }
             }
         }
     }
@@ -278,6 +278,7 @@ bool StoreLootAction::Execute(Event event)
         uint32 itemcount;
         uint8 lootslot_type;
         uint8 itemindex;
+        bool grab = false;
 
         p >> itemindex;
         p >> itemid;
@@ -287,17 +288,17 @@ bool StoreLootAction::Execute(Event event)
         p.read_skip<uint32>();  // randomPropertyId
         p >> lootslot_type;     // 0 = can get, 1 = look only, 2 = master get
 
-        if (lootslot_type != LOOT_SLOT_NORMAL
+		if (lootslot_type != LOOT_SLOT_NORMAL
 #ifndef MANGOSBOT_ZERO
-            && lootslot_type != LOOT_SLOT_OWNER
+		        && lootslot_type != LOOT_SLOT_OWNER
 #endif
             )
-            continue;
+			continue;
 
         if (loot_type != LOOT_SKINNING && !IsLootAllowed(itemid, ai))
             continue;
 
-        ItemPrototype const* proto = sItemStorage.LookupEntry<ItemPrototype>(itemid);
+        ItemPrototype const *proto = sItemStorage.LookupEntry<ItemPrototype>(itemid);
         if (!proto)
             continue;
 
@@ -311,9 +312,9 @@ bool StoreLootAction::Execute(Event event)
             Group* group = bot->GetGroup();
             if (group)
             {
-                for (GroupReference* ref = group->GetFirstMember(); ref; ref = ref->next())
+                for (GroupReference *ref = group->GetFirstMember(); ref; ref = ref->next())
                 {
-                    if (ref->getSource() != bot)
+                    if( ref->getSource() != bot)
                         sGuildTaskMgr.CheckItemTask(itemid, itemcount, ref->getSource(), bot);
                 }
             }
@@ -353,16 +354,16 @@ bool StoreLootAction::Execute(Event event)
     return true;
 }
 
-bool StoreLootAction::IsLootAllowed(uint32 itemid, PlayerbotAI* ai)
+bool StoreLootAction::IsLootAllowed(uint32 itemid, PlayerbotAI *ai)
 {
-    AiObjectContext* context = ai->GetAiObjectContext();
+    AiObjectContext *context = ai->GetAiObjectContext();
     LootStrategy* lootStrategy = AI_VALUE(LootStrategy*, "loot strategy");
 
     set<uint32>& lootItems = AI_VALUE(set<uint32>&, "always loot list");
     if (lootItems.find(itemid) != lootItems.end())
         return true;
 
-    ItemPrototype const* proto = sObjectMgr.GetItemPrototype(itemid);
+    ItemPrototype const *proto = sObjectMgr.GetItemPrototype(itemid);
     if (!proto)
         return false;
 

@@ -784,6 +784,67 @@ uint32 RandomItemMgr::GetRandomPotion(uint32 level, uint32 effect)
     return potions[urand(0, potions.size() - 1)];
 }
 
+uint32 RandomItemMgr::GetFood(uint32 level, uint32 category)
+{
+    initializer_list<uint32> items;
+    vector<uint32> food;
+    if(category == 11)
+    {
+        if (level < 5)
+            items = { 787, 117, 4540, 2680 };
+        else if (level < 15)
+            items = { 2287, 4592, 4541, 21072 };
+        else if (level < 25)
+            items = { 3770, 16170, 4542, 20074 };
+        else if (level < 35)
+            items = { 4594, 3771, 1707, 4457 };
+        else if (level < 45)
+            items = { 4599, 4601, 21552, 17222 /*21030, 16168 */ };
+#ifdef MANGOSBOT_ZERO
+        else
+#else
+        else if (level < 55)
+#endif
+            items = { 8950, 8952, 8957, 21023 /*21033, 21031 */ };
+#ifdef MANGOSBOT_ONE
+        else if (level < 65)
+            items = { 29292, 27859, 30458, 27662 };
+        else
+            items = { 29450, 29451, 29452 };
+#endif
+    }
+
+    if (category == 59)
+    {
+        if (level < 5)
+            items = { 159, 117 };
+        else if (level < 15)
+            items = { 1179, 21072 };
+        else if (level < 25)
+            items = { 1205 };
+        else if (level < 35)
+            items = { 1708 };
+        else if (level < 45)
+            items = { 1645 };
+#ifdef MANGOSBOT_ZERO
+        else
+#else
+        else if (level < 55)
+#endif
+            items = { 8766 };
+#ifdef MANGOSBOT_ONE
+        else if (level < 65)
+            items = { 28399 };
+        else
+            items = { 27860 };
+#endif
+    }
+
+    food.insert(food.end(), items);
+    if (food.empty()) return 0;
+    return food[urand(0, food.size() - 1)];
+}
+
 uint32 RandomItemMgr::GetRandomFood(uint32 level, uint32 category)
 {
     vector<uint32> food = foodCache[(level - 1) / 10][category];
