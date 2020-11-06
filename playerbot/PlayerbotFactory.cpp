@@ -1552,6 +1552,7 @@ void PlayerbotFactory::InitTalents(uint32 specNo)
                 uint32 spellId = talentInfo->RankID[rank];
                 if (!spellId)
                     continue;
+
                 bot->learnSpell(spellId, false);
                 bot->UpdateFreeTalentPoints(false);
             }

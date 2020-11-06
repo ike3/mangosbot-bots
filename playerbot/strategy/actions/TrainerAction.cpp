@@ -7,13 +7,16 @@ using namespace ai;
 
 void TrainerAction::Learn(uint32 cost, TrainerSpell const* tSpell, ostringstream& msg)
 {
-    if (bot->GetMoney() < cost)
+    if (sPlayerbotAIConfig.AutoTrainSpells != "free")
     {
-        msg << " - too expensive";
-        return;
-    }
+        if (bot->GetMoney() < cost)
+        {
+            msg << " - too expensive";
+            return;
+        }
 
-    bot->ModifyMoney(-int32(cost));
+        bot->ModifyMoney(-int32(cost));
+    }
 
     SpellEntry const* proto = sServerFacade.LookupSpellInfo(tSpell->spell);
     if (!proto)
@@ -126,7 +129,7 @@ bool TrainerAction::Execute(Event event)
     if (spell)
         spells.insert(spell);
 
-    if (text.find("learn") != string::npos)
+    if (text.find("learn") != string::npos || sPlayerbotAIConfig.AutoTrainSpells != "no")
         Iterate(creature, &TrainerAction::Learn, spells);
     else
         Iterate(creature, NULL, spells);

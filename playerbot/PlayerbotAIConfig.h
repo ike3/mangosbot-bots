@@ -98,6 +98,7 @@ public:
     std::string AutoPickReward;
     uint32 AutoEquipUpgradeLoot;
     std::string SyncQuestWithPlayer;
+    std::string AutoTrainSpells;
 
     int commandServerPort;
     bool perfMonEnabled;

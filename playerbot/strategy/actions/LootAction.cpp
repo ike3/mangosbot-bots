@@ -379,8 +379,8 @@ bool StoreLootAction::IsLootAllowed(uint32 itemid, PlayerbotAI *ai)
             return true;
     }
 
-    //if (proto->Bonding == BIND_QUEST_ITEM ||
-    //    proto->Bonding == BIND_QUEST_ITEM1 ||
+    //if (proto->Bonding == BIND_QUEST_ITEM ||  //Still testing if it works ok without these lines.
+    //    proto->Bonding == BIND_QUEST_ITEM1 || //Eventually this has to be removed.
     //    proto->Class == ITEM_CLASS_QUEST)
     //{
     

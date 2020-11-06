@@ -186,7 +186,8 @@ bool PlayerbotAIConfig::Initialize()
     //SPP automation
     AutoPickReward = config.GetStringDefault("AiPlayerbot.AutoPickReward", "no");
     AutoEquipUpgradeLoot = config.GetBoolDefault("AiPlayerbot.AutoEquipUpgradeLoot", false);
-    SyncQuestWithPlayer = config.GetStringDefault("AiPlayerbot.SyncQuestWithPlayer", "yes");
+    SyncQuestWithPlayer = config.GetStringDefault("AiPlayerbot.SyncQuestWithPlayer", "no");
+    AutoTrainSpells = config.GetStringDefault("AiPlayerbot.AutoTrainSpells", "no");
 
     targetPosRecalcDistance = config.GetFloatDefault("AiPlayerbot.TargetPosRecalcDistance", 0.1f),
     BarGoLink::SetOutputState(config.GetBoolDefault("AiPlayerbot.ShowProgressBars", false));
