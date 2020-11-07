@@ -12,7 +12,7 @@ bool ChangeTalentsAction::Execute(Event event)
 
     uint32 classMask = bot->getClassMask();
     uint32 lastTab = -1;
-    int talents[4][8][3] = { 80 };
+    int talents[4][8][3] = {};
 
     map<uint32, vector<TalentEntry const*> > spells;
     for (uint32 i = 0; i < sTalentStore.GetNumRows(); ++i)
@@ -28,26 +28,29 @@ bool ChangeTalentsAction::Execute(Event event)
         if ((classMask & talentTabInfo->ClassMask) == 0)
             continue;
 
-        talents[talentInfo->Col][talentInfo->Row][talentTabInfo->tabpage] = 80;
-
         for (int rank = 0; rank < MAX_TALENT_RANK; ++rank)
         {
             uint32 spellId = talentInfo->RankID[rank];
             if (!spellId)
                 continue;
 
-            if(spellId>0)
-                talents[talentInfo->Col][talentInfo->Row][talentTabInfo->tabpage] = 0;
-
+            if(spellId>0 && talents[talentInfo->Col][talentInfo->Row][talentTabInfo->tabpage] == 0)
+                talents[talentInfo->Col][talentInfo->Row][talentTabInfo->tabpage] = 1;
 
             if (bot->HasSpell(spellId))
-                talents[talentInfo->Col][talentInfo->Row][talentTabInfo->tabpage] = rank + 1;
+            {
+                talents[talentInfo->Col][talentInfo->Row][talentTabInfo->tabpage] = rank + 2;               
+            }
         }
     }
 
     string sub;
     string line;
     string ret;
+    int level = 9;
+    int pointsTab = 0;
+    int mostPoints = 0;
+    int bestTab = 0;
 
     for (int tab = 0; tab < 3; tab++)
     {
@@ -56,12 +59,16 @@ bool ChangeTalentsAction::Execute(Event event)
         {
             for (int col = 0; col < 4; col++)
             {
-                if (talents[col][row][tab] == 80)
+                if (talents[col][row][tab] == 0)
                     continue;
 
-                sub = sub + to_string(talents[col][row][tab]);
+                pointsTab = pointsTab + talents[col][row][tab] - 1;
 
-                if (talents[col][row][tab] > 0)
+                level = level + talents[col][row][tab] - 1;
+
+                sub = sub + to_string(talents[col][row][tab]-1);
+
+                if (talents[col][row][tab] > 1)
                 {
                     line = line + sub;
                     sub = "";
@@ -75,11 +82,20 @@ bool ChangeTalentsAction::Execute(Event event)
             ret = ret + "-";
         ret = ret + line;
         line = "";
-    }
+        if (pointsTab > mostPoints)
+        {
+            bestTab = tab;
+            mostPoints = pointsTab;
+        }
+        pointsTab = 0;
+    }    
+
+    out << "Talents for level: " << level << " main tree: " << bestTab << " spec: ";
 
     out << ret;
 
     ai->TellMaster(out);
+
 
 	return false;
 }
