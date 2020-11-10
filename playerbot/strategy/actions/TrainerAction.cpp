@@ -109,6 +109,7 @@ bool TrainerAction::Execute(Event event)
     if (!creature || !creature->IsTrainer())
         return false;
 
+            
     if (!creature->IsTrainerOf(bot, false))
     {
         ai->TellError("This trainer cannot teach me");
@@ -129,7 +130,7 @@ bool TrainerAction::Execute(Event event)
     if (spell)
         spells.insert(spell);
 
-    if (text.find("learn") != string::npos || sPlayerbotAIConfig.AutoTrainSpells != "no")
+    if (text.find("learn") != string::npos || (sPlayerbotAIConfig.AutoTrainSpells != "no" && creature->GetCreatureInfo()->TrainerType != TRAINER_TYPE_TRADESKILLS))
         Iterate(creature, &TrainerAction::Learn, spells);
     else
         Iterate(creature, NULL, spells);
