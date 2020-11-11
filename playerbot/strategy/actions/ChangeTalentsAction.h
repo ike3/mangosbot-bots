@@ -5,37 +5,51 @@
 
 namespace ai
 {
-	class ChangeTalentsAction : public Action {
-	public:
-		ChangeTalentsAction(PlayerbotAI* ai) : Action(ai, "talents") {}
+    class ChangeTalentsAction : public Action {
+    public:
+        ChangeTalentsAction(PlayerbotAI* ai) : Action(ai, "talents") {}
 
+    public:
+        virtual bool Execute(Event event);
+    private:
+        bool ChangeTalentsAction::CheckTalentLink(string link, ostringstream* out);
+    };
+
+    class TalentSpec {
     public:
         struct TalentListEntry
         {
-            int rank;
             int entry;
+            int rank;
+            int maxRank;
             TalentEntry const* talentInfo;
             TalentTabEntry const* talentTabInfo;
         };
 
-        virtual bool Execute(Event event);
+        std::vector<TalentListEntry> talents;
 
-        virtual bool CheckTalentLink(string link, ostringstream* out);
-        virtual bool CheckTalents(Player* bot, std::vector<TalentListEntry> talentList, ostringstream* out);        
-        void ApplyTalents(Player* bot, std::vector<TalentListEntry> talentList);
+        TalentSpec(uint32 classMask) { GetTalents(classMask); }
+        TalentSpec(Player* bot) {  GetTalents(bot->getClassMask()); ReadTalents(bot);  }
+        TalentSpec(Player* bot, string link) { GetTalents(bot->getClassMask()); ReadTalents(link); }
 
+
+        virtual bool CheckTalents(int maxPoints, ostringstream* out);
+        void CropTalents(int maxPoints);
+        void ShiftTalents(TalentSpec *oldTalents, int maxPoints);
+        void ApplyTalents(Player* bot, ostringstream* out);
+
+        int GetTalentPoints(std::vector<TalentListEntry> &talents, int tabpage = -1);
+        int GetTalentPoints(int tabpage = -1) { return GetTalentPoints(talents, tabpage); };
+        string GetTalentLink();
     protected:
-        std::vector<TalentListEntry> TalentList(uint32 classMask, bool maxRank = false);
-        std::vector<TalentListEntry> GetTalentList(std::vector<TalentListEntry> talentList, Player* bot);
-        std::vector<TalentListEntry> GetTalentList(std::vector<TalentListEntry> talentList, string link);
-        std::vector<TalentListEntry> GetTalentList(Player* bot);
-        std::vector<TalentListEntry> GetTalentList(Player* bot, string link, bool relative = false);
-        std::vector<TalentListEntry> GetTalentTree(std::vector<TalentListEntry> talentList, int tree);
+        void GetTalents(uint32 classMask);
+        void SortTalents(std::vector<TalentListEntry> &talents, int sortBy);
+        void SortTalents(int sortBy) { SortTalents( talents,  sortBy); }
 
-        std::vector<TalentListEntry> SubTalentList(std::vector<TalentListEntry> baseList, std::vector<TalentListEntry> deltaList);
+        void ReadTalents(Player* bot);
+        void ReadTalents(string link);
 
-        int GetTalentPoints(std::vector<TalentListEntry> talentList);
-        string GetTalentLink(std::vector<TalentListEntry> talentList);
+        std::vector<TalentListEntry> GetTalentTree(int tabpage);
+        std::vector<TalentListEntry> SubTalentList(std::vector<TalentListEntry> &baseList, std::vector<TalentListEntry> &deltaList, int reverse);
     };
-
 }
