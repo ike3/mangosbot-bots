@@ -5,9 +5,6 @@
 using namespace ai;
 using namespace std::placeholders;
 
-#define SORT_BY_DEFAULT 0
-#define SORT_BY_POINTS_TREE 1
-
 bool ChangeTalentsAction::Execute(Event event)
 {
 	string param = event.getParam();
@@ -16,39 +13,46 @@ bool ChangeTalentsAction::Execute(Event event)
 
     if (!param.empty())
     {
-        bool crop = false;
-        bool shift = false;
-        if (param.find("do ") != string::npos)
+        if (param.find("auto") != string::npos)
         {
-            crop = true;
-            param = param.substr(3);
+            AutoSelectTalents(&out);
         }
-        else if (param.find("shift ") != string::npos)
+        else
         {
-            shift = true;
-            param = param.substr(6);
-        }
-
-        out << "Apply talents [" << param << "] ";
-        if (CheckTalentLink(param, &out))
-        {
-            TalentSpec newSpec(bot, param);
-
-            if (crop)
+            bool crop = false;
+            bool shift = false;
+            if (param.find("do ") != string::npos)
             {
-                newSpec.CropTalents(bot->getLevel() - 9);
-                out << "becomes: " << newSpec.GetTalentLink();
+                crop = true;
+                param = param.substr(3);
             }
-            if (shift)
+            else if (param.find("shift ") != string::npos)
             {
-                TalentSpec botSpec(bot);
-                newSpec.ShiftTalents(&botSpec, bot->getLevel() - 9);
-                out << "becomes: " << newSpec.GetTalentLink();
+                shift = true;
+                param = param.substr(6);
             }
 
-            if (newSpec.CheckTalents(bot->getLevel() - 9, &out))
+            out << "Apply talents [" << param << "] ";
+            if (CheckTalentLink(param, &out))
             {
-                newSpec.ApplyTalents(bot, &out);
+                TalentSpec newSpec(bot, param);
+
+                if (crop)
+                {
+                    newSpec.CropTalents(bot->getLevel() - 9);
+                    out << "becomes: " << newSpec.GetTalentLink();
+                }
+                if (shift)
+                {
+                    TalentSpec botSpec(bot);
+                    newSpec.ShiftTalents(&botSpec, bot->getLevel() - 9);
+                    out << "becomes: " << newSpec.GetTalentLink();
+                }
+
+                if (newSpec.CheckTalents(bot->getLevel() - 9, &out))
+                {
+                    newSpec.ApplyTalents(bot, &out);
+                }
             }
         }
     }
@@ -65,6 +69,172 @@ bool ChangeTalentsAction::Execute(Event event)
     ai->TellMaster(out);
 
 	return false;
+}
+
+bool ChangeTalentsAction::AutoSelectTalents(ostringstream* out)
+{
+    //Does the bot have talentpoints?
+    if (bot->getLevel() < 10)
+        return false;
+
+    TalentSpec botSpec(bot);
+
+    int totSpecs = 0;
+    bool pickSpec[10] = { false };
+
+    //Does the bot already has a spec to compare to?
+    if (botSpec.GetTalentPoints() > 0)
+    {
+        string bestLink = "";
+        int bestPoints = 0;
+        TalentSpec bestSpec = botSpec;
+
+        //Look at the specs that look the most like the current spec.
+        for (int i = 0; i < 10; i++)
+        {
+            TalentSpec newSpec = GetBestPremadeSpec(bot, i, true); 
+            newSpec.CropTalents(bot->getLevel() - 9);
+            int newPoints = newSpec.GetTalentPoints();          
+
+            if (newPoints == 0)
+                continue;
+            
+            if (newPoints > bestPoints)
+            {
+                std::fill(pickSpec, pickSpec + 10, false);
+                bestSpec = newSpec;
+                bestPoints = newPoints;
+                totSpecs = 1;
+                pickSpec[i] = true;
+                continue;
+            }
+            if (newPoints == bestPoints)
+            {
+                totSpecs++;
+                pickSpec[i] = true;
+                continue;
+            }
+        }
+
+
+        //If one is found. Apply that one.
+        if (totSpecs == 1)
+        {
+            bestSpec.ShiftTalents(&botSpec, bot->getLevel() - 9);
+            bestSpec.ApplyTalents(bot, out);
+            *out << "Auto apply talents: " << bestSpec.GetTalentLink();
+            return true;
+        }
+    }
+
+    //We have multiple options. Only continue if on full automation.
+    if (sPlayerbotAIConfig.autoPickTalents != "full")
+        return false;
+
+    //If we have no options all options are valid.
+    if (totSpecs == 0)
+    {
+        for (int i = 0; i < 10; i++)
+        {
+            TalentSpec newSpec = GetBestPremadeSpec(bot, i, false);
+            if (newSpec.GetTalentPoints() == 0)
+                continue;
+            
+            totSpecs++;
+            pickSpec[i] = true;
+        }
+    }
+    
+    //Determine sum of probabilties.
+    uint32 totProbability = 0;    
+    for (int i = 0; i < 10; i++)
+    {
+        if (!pickSpec[i])
+            continue;
+        totProbability += sPlayerbotAIConfig.specProbability[bot->getClass()][i];
+    }
+
+    //Pick a spec based on probabilities.
+    uint32 curProbability = 0;
+    uint32 point = urand(0, totProbability);
+    for (int i = 0; i < 10; i++)
+    {
+        if (!pickSpec[i])
+            continue;
+
+        if (sPlayerbotAIConfig.specProbability[bot->getClass()][i] + curProbability > point)
+        {
+            TalentSpec newSpec = GetBestPremadeSpec(bot, i, false);
+            newSpec.ShiftTalents(&botSpec, bot->getLevel() - 9);
+            newSpec.ApplyTalents(bot, out);
+            *out << "Auto apply talents: " << newSpec.GetTalentLink();
+            return true;
+        }
+
+        curProbability += sPlayerbotAIConfig.specProbability[bot->getClass()][i];
+    }
+
+    *out << "No predefined talents found for this class.";
+
+    return false;
+}
+
+//Returns a pre-made talentspec that best suits the bots current talents. 
+TalentSpec ChangeTalentsAction::GetBestPremadeSpec(Player* bot, int spec, bool oldSpec)
+{
+    TalentSpec bestSpec(bot->getClassMask());
+    TalentSpec botSpec(bot);
+
+
+    ostringstream out;
+    for (int level = 10; level <= 100; level++)
+    {
+        string link = sPlayerbotAIConfig.premadeLevelSpec[bot->getClass()][spec][level - 10];
+        if (link.empty())
+            continue;
+
+        //Ignore bad specs.
+        if (!CheckTalentLink(link, &out))
+        {       
+            sLog.outErrorDb("Error with link %s :", link.c_str(),  out.str());
+            out.str("");
+            out.clear();
+            continue;
+        }
+
+        TalentSpec newSpec(bot, sPlayerbotAIConfig.premadeLevelSpec[bot->getClass()][spec][level - 10]);
+
+        if (!newSpec.CheckTalents(100, &out))
+        {
+            sLog.outErrorDb("Error with link %s :", link.c_str(), out.str());
+            out.str("");
+            out.clear();
+            continue;
+        }
+
+        //Spec has to look like old spec.
+        if (oldSpec)
+        {      
+            if (botSpec.GetTalentPoints() <= newSpec.GetTalentPoints())
+            {
+                TalentSpec proSpec = newSpec;
+                proSpec.CropTalents(bot->getLevel() - 9);
+                if (!botSpec.isEarlierVersionOf(proSpec))
+                    continue;
+            }
+            if (botSpec.GetTalentPoints() >= newSpec.GetTalentPoints() && !newSpec.isEarlierVersionOf(botSpec))
+                continue;
+        }
+        
+        bestSpec = newSpec;
+        
+        if (level >= bot->getLevel())
+        {            
+            return bestSpec;
+        }
+    }
+    
+    return bestSpec;
 }
 
 //Checks a talent link on basic validity.
@@ -169,12 +339,10 @@ void TalentSpec::ApplyTalents(Player* bot, ostringstream* out)
             if (bot->HasSpell(spellId) && entry.rank - 1 != rank)
             {
                 bot->removeSpell(spellId, false, false);
-                *out << " remove spell: " + to_string(spellId);
             }
             else if (!bot->HasSpell(spellId) && entry.rank - 1 == rank)
             {
                 bot->learnSpell(spellId, false);
-                *out << " add spell: " + to_string(spellId);
             }
         }
 }
@@ -246,7 +414,7 @@ void TalentSpec::SortTalents(std::vector<TalentListEntry> &talents, int sortBy)
     }
     case SORT_BY_POINTS_TREE:
     {
-        int tabSort[] = { GetTalentPoints(talents, 0) * -100 - urand(0, 99),GetTalentPoints(talents, 1) * -100 - urand(0, 99),GetTalentPoints(talents, 2) * -100 - urand(0, 99) };
+        int tabSort[] = { GetTalentPoints(talents, 0) * -100 - irand(0, 99),GetTalentPoints(talents, 1) * -100 - irand(0, 99),GetTalentPoints(talents, 2) * -100 - irand(0, 99) };
         std::sort(talents.begin(), talents.end(), std::bind(sortTalentMap, _1, _2, tabSort));
         break;
     }
@@ -385,15 +553,30 @@ void TalentSpec::CropTalents(int maxPoints)
     SortTalents(talents, SORT_BY_DEFAULT);
 }
 
-//Substracts ranks 
-std::vector<TalentSpec::TalentListEntry> TalentSpec::SubTalentList(std::vector<TalentListEntry>& oldList, std::vector<TalentListEntry>& newList, int reverse = 1) {
-    std::vector<TalentSpec::TalentListEntry> deltaList = oldList;
-    for (auto& entry : deltaList)
-        for (auto& subentry : newList)
-            if (entry.entry == subentry.entry)
-                entry.rank = (entry.rank - subentry.rank) * reverse;
+//Substracts ranks. Follows the sorting of the newList.
+std::vector<TalentSpec::TalentListEntry> TalentSpec::SubTalentList(std::vector<TalentListEntry>& oldList, std::vector<TalentListEntry>& newList, int reverse = SUBSTRACT_OLD_NEW) {
+    std::vector<TalentSpec::TalentListEntry> deltaList = newList;
+    for (auto& newentry : deltaList)
+        for (auto& oldentry : oldList)
+            if (oldentry.entry == newentry.entry)
+                if(reverse == ABSOLUTE_DIST)
+                    newentry.rank = abs(newentry.rank - oldentry.rank);
+                else if(reverse == ADDED_POINTS || reverse == REMOVED_POINTS)
+                    newentry.rank = max(0,(newentry.rank - oldentry.rank) * (reverse/2));
+                else
+                    newentry.rank = (newentry.rank - oldentry.rank) * reverse;
 
     return deltaList;
+}
+
+bool TalentSpec::isEarlierVersionOf(TalentSpec& newSpec)
+{
+    for (auto& newentry : newSpec.talents)
+        for (auto& oldentry : talents)
+            if (oldentry.entry == newentry.entry)
+                if (oldentry.rank > newentry.rank)
+                    return false;
+    return true;
 }
 
 
@@ -410,7 +593,7 @@ void TalentSpec::ShiftTalents(TalentSpec *currentSpec, int maxPoints)
 
     SortTalents(SORT_BY_POINTS_TREE); //Apply points first to the largest new tree.
     
-    std::vector<TalentSpec::TalentListEntry> deltaList = SubTalentList(talents, currentSpec->talents);
+    std::vector<TalentSpec::TalentListEntry> deltaList = SubTalentList(currentSpec->talents, talents);
 
     for (auto& entry : deltaList)
     {

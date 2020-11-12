@@ -7,7 +7,7 @@ using namespace ai;
 
 void TrainerAction::Learn(uint32 cost, TrainerSpell const* tSpell, ostringstream& msg)
 {
-    if (sPlayerbotAIConfig.AutoTrainSpells != "free")
+    if (sPlayerbotAIConfig.autoTrainSpells != "free")
     {
         if (bot->GetMoney() < cost)
         {
@@ -130,7 +130,7 @@ bool TrainerAction::Execute(Event event)
     if (spell)
         spells.insert(spell);
 
-    if (text.find("learn") != string::npos || (sPlayerbotAIConfig.AutoTrainSpells != "no" && creature->GetCreatureInfo()->TrainerType != TRAINER_TYPE_TRADESKILLS))
+    if (text.find("learn") != string::npos || (sPlayerbotAIConfig.autoTrainSpells != "no" && creature->GetCreatureInfo()->TrainerType != TRAINER_TYPE_TRADESKILLS))
         Iterate(creature, &TrainerAction::Learn, spells);
     else
         Iterate(creature, NULL, spells);

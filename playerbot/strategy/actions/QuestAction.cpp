@@ -123,7 +123,7 @@ bool QuestAction::ProcessQuests(WorldObject* questGiver)
 {
     ObjectGuid guid = questGiver->GetObjectGuid();
 
-    if (bot->GetDistance(questGiver) > INTERACTION_DISTANCE && sPlayerbotAIConfig.SyncQuestWithPlayer == "no")
+    if (bot->GetDistance(questGiver) > INTERACTION_DISTANCE && sPlayerbotAIConfig.syncQuestWithPlayer == "no")
     {
         ai->TellError("Cannot talk to quest giver");
         return false;
@@ -178,12 +178,12 @@ bool QuestAction::AcceptQuest(Quest const* quest, uint64 questGiver)
         p.rpos(0);
         bot->GetSession()->HandleQuestgiverAcceptQuestOpcode(p);
 
-        if (bot->GetQuestStatus(questId) == QUEST_STATUS_NONE && sPlayerbotAIConfig.SyncQuestWithPlayer != "no")
+        if (bot->GetQuestStatus(questId) == QUEST_STATUS_NONE && sPlayerbotAIConfig.syncQuestWithPlayer != "no")
         {
             Object* pObject = bot->GetObjectByTypeMask(questGiver, TYPEMASK_CREATURE_GAMEOBJECT_PLAYER_OR_ITEM);
             bot->AddQuest(quest, pObject);
 
-            if(sPlayerbotAIConfig.SyncQuestWithPlayer == "fast")
+            if(sPlayerbotAIConfig.syncQuestWithPlayer == "fast")
                 CompleteQuest(questId);
         }
 

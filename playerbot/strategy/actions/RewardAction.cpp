@@ -95,7 +95,7 @@ bool RewardAction::Reward(uint32 itemId, Object* questGiver)
                     ostringstream out; out << chat->formatItem(pRewardItem) << " rewarded";
                     ai->TellMaster(out);
 
-                    if (sPlayerbotAIConfig.AutoEquipUpgradeLoot)
+                    if (sPlayerbotAIConfig.autoEquipUpgradeLoot)
                     {
                         EquipItem(pRewardItem->ItemId);
                     }

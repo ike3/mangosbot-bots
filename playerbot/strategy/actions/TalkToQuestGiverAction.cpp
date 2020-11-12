@@ -13,7 +13,7 @@ void TalkToQuestGiverAction::ProcessQuest(Quest const* quest, WorldObject* quest
 
     QuestStatus status = bot->GetQuestStatus(quest->GetQuestId());
 
-    if (sPlayerbotAIConfig.SyncQuestWithPlayer == "slow")
+    if (sPlayerbotAIConfig.syncQuestWithPlayer == "slow")
     {
         Player* master = GetMaster();
         if (master->GetQuestStatus(quest->GetQuestId()) == QUEST_STATUS_COMPLETE && (status == QUEST_STATUS_INCOMPLETE || status == QUEST_STATUS_FAILED))
@@ -147,11 +147,11 @@ void TalkToQuestGiverAction::RewardMultipleItem(Quest const* quest, WorldObject*
     Item* newItem;
 
     ostringstream outid;
-    if (sPlayerbotAIConfig.AutoPickReward == "no")
+    if (sPlayerbotAIConfig.autoPickReward == "no")
     {   //Old functionality, list rewards.
         AskToSelectReward(quest, out, false);       
     }
-    else if(sPlayerbotAIConfig.AutoPickReward == "yes")
+    else if(sPlayerbotAIConfig.autoPickReward == "yes")
     {
         //Pick the first item of the best rewards.
         bestIds = BestRewards(quest);
@@ -160,7 +160,7 @@ void TalkToQuestGiverAction::RewardMultipleItem(Quest const* quest, WorldObject*
 
         out << "Rewarded " << chat->formatItem(item);
 
-        if (sPlayerbotAIConfig.AutoEquipUpgradeLoot)
+        if (sPlayerbotAIConfig.autoEquipUpgradeLoot)
             EquipItem(quest->RewChoiceItemId[*bestIds.begin()], out);
     }
     else 
@@ -176,7 +176,7 @@ void TalkToQuestGiverAction::RewardMultipleItem(Quest const* quest, WorldObject*
             ItemPrototype const* item = sObjectMgr.GetItemPrototype(quest->RewChoiceItemId[*bestIds.begin()]);
             bot->RewardQuest(quest, *bestIds.begin(), questGiver, true);
             out << "Rewarded " << chat->formatItem(item);     
-            if (sPlayerbotAIConfig.AutoEquipUpgradeLoot)
+            if (sPlayerbotAIConfig.autoEquipUpgradeLoot)
                 EquipItem(quest->RewChoiceItemId[*bestIds.begin()], out);
         }
     }

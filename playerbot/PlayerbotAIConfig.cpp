@@ -145,11 +145,20 @@ bool PlayerbotAIConfig::Initialize()
     perfMonEnabled = config.GetBoolDefault("AiPlayerbot.PerfMonEnabled", false);
 
     for (uint32 cls = 0; cls < MAX_CLASSES; ++cls)
-    {
-        for (uint32 spec = 0; spec < 3; ++spec)
+    {        
+        for (uint32 spec = 0; spec < 10; ++spec)
         {
             ostringstream os; os << "AiPlayerbot.RandomClassSpecProbability." << cls << "." << spec;
-            specProbability[cls][spec] = config.GetIntDefault(os.str().c_str(), 33);
+            if (spec < 3)
+                specProbability[cls][spec] = config.GetIntDefault(os.str().c_str(), 33);
+            else
+                specProbability[cls][spec] = config.GetIntDefault(os.str().c_str(), 0);
+
+            for (int level = 10; level <= 100; level++)
+            {                
+                ostringstream os; os << "AiPlayerbot.PremadeLevelSpec." << cls << "." << spec << "." << level;
+                premadeLevelSpec[cls][spec][level-10] = config.GetStringDefault(os.str().c_str(), "");      
+            }
         }
     }
 
@@ -184,10 +193,11 @@ bool PlayerbotAIConfig::Initialize()
 	randomBotPreQuests = config.GetBoolDefault("AiPlayerbot.PreQuests", true);
 
     //SPP automation
-    AutoPickReward = config.GetStringDefault("AiPlayerbot.AutoPickReward", "no");
-    AutoEquipUpgradeLoot = config.GetBoolDefault("AiPlayerbot.AutoEquipUpgradeLoot", false);
-    SyncQuestWithPlayer = config.GetStringDefault("AiPlayerbot.SyncQuestWithPlayer", "no");
-    AutoTrainSpells = config.GetStringDefault("AiPlayerbot.AutoTrainSpells", "no");
+    autoPickReward = config.GetStringDefault("AiPlayerbot.AutoPickReward", "no");
+    autoEquipUpgradeLoot = config.GetBoolDefault("AiPlayerbot.AutoEquipUpgradeLoot", false);
+    syncQuestWithPlayer = config.GetStringDefault("AiPlayerbot.SyncQuestWithPlayer", "no");
+    autoTrainSpells = config.GetStringDefault("AiPlayerbot.AutoTrainSpells", "no");
+    autoPickTalents = config.GetStringDefault("AiPlayerbot.AutoPickTalents", "no");
 
     targetPosRecalcDistance = config.GetFloatDefault("AiPlayerbot.TargetPosRecalcDistance", 0.1f),
     BarGoLink::SetOutputState(config.GetBoolDefault("AiPlayerbot.ShowProgressBars", false));

@@ -327,7 +327,7 @@ bool StoreLootAction::Execute(Event event)
         if (proto->Quality > ITEM_QUALITY_NORMAL && !urand(0, 50)) ai->PlaySound(TEXTEMOTE_CHEER);
         if (proto->Quality >= ITEM_QUALITY_RARE) ai->PlaySound(TEXTEMOTE_CHEER);
 
-        if (sPlayerbotAIConfig.AutoEquipUpgradeLoot)
+        if (sPlayerbotAIConfig.autoEquipUpgradeLoot)
         {
            EquipIds.insert(itemid);
         }
@@ -337,7 +337,7 @@ bool StoreLootAction::Execute(Event event)
         ai->TellMasterNoFacing(out.str());
     }
 
-    if (sPlayerbotAIConfig.AutoEquipUpgradeLoot && !EquipIds.empty())
+    if (sPlayerbotAIConfig.autoEquipUpgradeLoot && !EquipIds.empty())
     {
         for (ItemIds::iterator i = EquipIds.begin(); i != EquipIds.end(); i++)
         {
@@ -373,7 +373,7 @@ bool StoreLootAction::IsLootAllowed(uint32 itemid, PlayerbotAI *ai)
 
     if (proto->StartQuest)
     {
-        if (sPlayerbotAIConfig.SyncQuestWithPlayer != "no")
+        if (sPlayerbotAIConfig.syncQuestWithPlayer != "no")
             return false; //Quest is autocomplete for the bot so no item needed.
         else
             return true;
@@ -395,7 +395,7 @@ bool StoreLootAction::IsLootAllowed(uint32 itemid, PlayerbotAI *ai)
         {
             if (quest->ReqItemId[i] == itemid)
             {
-                if (sPlayerbotAIConfig.SyncQuestWithPlayer != "no")
+                if (sPlayerbotAIConfig.syncQuestWithPlayer != "no")
                     return false; //Quest is autocomplete for the bot so no item needed.
                 if (AI_VALUE2(uint8, "item count", proto->Name1) < quest->ReqItemCount[i])
                     return true;

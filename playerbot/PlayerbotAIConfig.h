@@ -66,7 +66,8 @@ public:
     std::string randomBotCombatStrategies, randomBotNonCombatStrategies;
     uint32 randomBotMinLevel, randomBotMaxLevel;
     float randomChangeMultiplier;
-    uint32 specProbability[MAX_CLASSES][3];
+    uint32 specProbability[MAX_CLASSES][10];
+    string premadeLevelSpec[MAX_CLASSES][10][91]; //lvl 10 - 100
     std::string commandPrefix, commandSeparator;
     std::string randomBotAccountPrefix;
     uint32 randomBotAccountCount;
@@ -95,10 +96,11 @@ public:
 
     uint32 iterationsPerTick;
 
-    std::string AutoPickReward;
-    uint32 AutoEquipUpgradeLoot;
-    std::string SyncQuestWithPlayer;
-    std::string AutoTrainSpells;
+    std::string autoPickReward;
+    uint32 autoEquipUpgradeLoot;
+    std::string syncQuestWithPlayer;
+    std::string autoTrainSpells;
+    std::string autoPickTalents;
 
     int commandServerPort;
     bool perfMonEnabled;
