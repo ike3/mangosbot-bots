@@ -68,7 +68,7 @@ bool ChangeTalentsAction::Execute(Event event)
 
     ai->TellMaster(out);
 
-	return false;
+	return true;
 }
 
 bool ChangeTalentsAction::AutoSelectTalents(ostringstream* out)
@@ -195,8 +195,8 @@ TalentSpec ChangeTalentsAction::GetBestPremadeSpec(Player* bot, int spec, bool o
 
         //Ignore bad specs.
         if (!CheckTalentLink(link, &out))
-        {       
-            sLog.outErrorDb("Error with link %s :", link.c_str(),  out.str());
+        {   
+            sLog.outErrorDb("Error with link: %s", link.c_str());
             out.str("");
             out.clear();
             continue;
@@ -206,7 +206,7 @@ TalentSpec ChangeTalentsAction::GetBestPremadeSpec(Player* bot, int spec, bool o
 
         if (!newSpec.CheckTalents(100, &out))
         {
-            sLog.outErrorDb("Error with link %s :", link.c_str(), out.str());
+            sLog.outErrorDb("Error with spec: %s", link.c_str());
             out.str("");
             out.clear();
             continue;
@@ -233,7 +233,6 @@ TalentSpec ChangeTalentsAction::GetBestPremadeSpec(Player* bot, int spec, bool o
             return bestSpec;
         }
     }
-    
     return bestSpec;
 }
 
@@ -261,6 +260,24 @@ bool ChangeTalentsAction::CheckTalentLink(string link, ostringstream* out) {
 
     return true;
 }
+
+bool AutoSetTalentsAction::Execute(Event event)
+{
+    ostringstream out;
+
+    if (sPlayerbotAIConfig.autoPickTalents == "no")
+        return false;
+
+    if(bot->GetFreeTalentPoints() <= 0)
+        return false;
+
+    AutoSelectTalents(&out);
+
+    ai->TellMaster(out);
+
+    return true;
+}
+
 
 //Check the talentspec for errors.
 bool TalentSpec::CheckTalents(int maxPoints, ostringstream* out)
@@ -463,9 +480,19 @@ void TalentSpec::ReadTalents(string link) {
         if (entry.talentTabInfo->tabpage == tab)
         {
             chr = link.substr(pos, 1);
+
+            if (chr == " " || chr == "#")
+                break;
+
             entry.rank = stoi(chr);
 
             pos++;
+            if (pos <= link.size())
+                if (link.substr(pos, 1) == "-")
+                {
+                    pos++;
+                    tab++;
+                }
             if (pos <= link.size())
                 if (link.substr(pos, 1) == "-")
                 {

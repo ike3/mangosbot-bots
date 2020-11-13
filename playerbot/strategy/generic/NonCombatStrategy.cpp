@@ -4,7 +4,7 @@
 
 using namespace ai;
 
-void NonCombatStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void NonCombatStrategy::InitTriggers(std::list<TriggerNode*>& triggers)
 {
     triggers.push_back(new TriggerNode(
         "timer",
@@ -13,6 +13,10 @@ void NonCombatStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
     /*triggers.push_back(new TriggerNode(
         "bg status",
         NextAction::array(0, new NextAction("bg status", ACTION_EMERGENCY), NULL)));*/
+
+    triggers.push_back(new TriggerNode(
+        "levelup",
+        NextAction::array(0, new NextAction("auto talents", 4.0f), NULL)));
 }
 
 

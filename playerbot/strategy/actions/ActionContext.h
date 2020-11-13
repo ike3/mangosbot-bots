@@ -32,6 +32,7 @@
 #include "RtiAction.h"
 #include "BattlegroundJoinAction.h"
 #include "CheckMountStateAction.h"
+#include "ChangeTalentsAction.h"
 
 namespace ai
 {
@@ -112,6 +113,7 @@ namespace ai
             //creators["wsg join"] = &ActionContext::wsg_join;
             creators["mount"] = &ActionContext::mount;
             creators["war stomp"] = &ActionContext::war_stomp;
+            creators["auto talents"] = &ActionContext::auto_talents;
         }
 
     private:
@@ -186,6 +188,7 @@ namespace ai
         static Action* random_bot_update(PlayerbotAI* ai) { return new RandomBotUpdateAction(ai); }
         static Action* delay(PlayerbotAI* ai) { return new DelayAction(ai); }
         static Action* mount(PlayerbotAI *ai) { return new CastSpellAction(ai, "mount"); }
+        static Action* auto_talents(PlayerbotAI* ai) { return new AutoSetTalentsAction(ai); }
     };
 
 };

@@ -54,7 +54,7 @@ namespace ai
 
     class ChangeTalentsAction : public Action {
     public:
-        ChangeTalentsAction(PlayerbotAI* ai) : Action(ai, "talents") {}
+        ChangeTalentsAction(PlayerbotAI* ai, string name = "talents") : Action(ai, name) {}
 
     public:
         virtual bool Execute(Event event);
@@ -62,5 +62,10 @@ namespace ai
     private:
         bool CheckTalentLink(string link, ostringstream* out);
         TalentSpec GetBestPremadeSpec(Player* bot, int spec, bool oldSpec);
+    };
+    class AutoSetTalentsAction : public ChangeTalentsAction {
+    public:
+        AutoSetTalentsAction(PlayerbotAI* ai) : ChangeTalentsAction(ai, "auto talents") {}
+        virtual bool Execute(Event event);
     };
 }
