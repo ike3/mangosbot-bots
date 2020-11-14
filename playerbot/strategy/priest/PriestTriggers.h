@@ -57,7 +57,7 @@ namespace ai
             !ai->HasAura("prayer of spirit", GetTarget()) &&
             //!ai->HasAura("divine spirit", GetTarget()) &&
 #ifdef MANGOS
-            (ai->GetBot()->IsInGroup((Player*)GetTarget()) || ai->GetBot()->IsInGroup((Player*)GetTarget())) &&
+            (ai->GetBot()->IsInSameGroupWith((Player*)GetTarget()) || ai->GetBot()->IsInSameRaidWith((Player*)GetTarget())) &&
 #endif
 #ifdef CMANGOS
             (ai->GetBot()->IsInGroup((Player*)GetTarget(), true) || ai->GetBot()->IsInGroup((Player*)GetTarget())) &&
