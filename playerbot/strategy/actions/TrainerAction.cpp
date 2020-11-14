@@ -106,7 +106,12 @@ bool TrainerAction::Execute(Event event)
         return false;
 
     Creature *creature = ai->GetCreature(master->GetSelectionGuid());
+#ifdef MANGOS
     if (!creature || !creature->IsTrainer())
+#endif
+#ifdef CMANGOS
+    if (!creature || !creature->isTrainer())
+#endif
         return false;
 
             

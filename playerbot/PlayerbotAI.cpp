@@ -1385,7 +1385,12 @@ bool PlayerbotAI::CanCastSpell(uint32 spellid, Unit* target, uint8 effectMask, b
             }
         }
 
+#ifdef MANGOS
         if (target->IsImmuneToSpell(spellInfo, false))
+#endif
+#ifdef CMANGOS
+        if (target->IsImmuneToSpell(spellInfo, false, GetSpellSchoolMask(spellInfo)))
+#endif
             return false;
 
         if (!damage)

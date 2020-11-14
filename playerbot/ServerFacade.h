@@ -224,7 +224,9 @@ class ServerFacade
         void SetFacingTo(Player* bot, WorldObject* wo, bool force = false);
 
         bool IsFriendlyTo(Unit* bot, Unit* to);
+        bool IsFriendlyTo(WorldObject* bot, Unit* to);
         bool IsHostileTo(Unit* bot, Unit* to);
+        bool IsHostileTo(WorldObject* bot, Unit* to);
 
         bool IsSpellReady(Player* bot, uint32 spell);
 

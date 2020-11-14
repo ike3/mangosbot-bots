@@ -186,7 +186,7 @@ void PlayerbotFactory::Randomize(bool incremental)
 
     pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Talents");
     sLog.outDetail("Initializing talents...");
-    InitTalentsTree(incremental);
+    //InitTalentsTree(incremental);
     sPlayerbotDbStore.Reset(ai);
     ai->ResetStrategies(false); // fix wrong stored strategy
     if (pmo) pmo->finish();

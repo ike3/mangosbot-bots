@@ -367,7 +367,12 @@ bool EnemyTeamHasFlag::IsActive()
         {
             BattleGroundWS *bg = (BattleGroundWS*)ai->GetBot()->GetBattleGround();
 
+#ifdef MANGOS
             if (bot->GetObjectGuid() == bg->GetAllianceFlagCarrierGuid() || bot->GetObjectGuid() == bg->GetHordeFlagCarrierGuid())
+#endif
+#ifdef CMANGOS
+            if (bot->GetObjectGuid() == bg->GetFlagCarrierGuid(TEAM_INDEX_ALLIANCE) || bot->GetObjectGuid() == bg->GetFlagCarrierGuid(TEAM_INDEX_HORDE))
+#endif
             {
                 return false;
             }

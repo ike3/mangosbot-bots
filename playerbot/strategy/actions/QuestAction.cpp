@@ -103,7 +103,12 @@ bool QuestAction::CompleteQuest(uint32 entry)
         bot->ModifyMoney(-ReqOrRewMoney);
     }
 
+#ifdef MANGOS
     bot->CompleteQuest(entry, QUEST_STATUS_FORCE_COMPLETE);
+#endif
+#ifdef CMANGOS
+    bot->CompleteQuest(entry);
+#endif
 }
 
 bool QuestAction::ProcessQuests(ObjectGuid questGiver)
@@ -180,7 +185,7 @@ bool QuestAction::AcceptQuest(Quest const* quest, uint64 questGiver)
 
         if (bot->GetQuestStatus(questId) == QUEST_STATUS_NONE && sPlayerbotAIConfig.syncQuestWithPlayer != "no")
         {
-            Object* pObject = bot->GetObjectByTypeMask(questGiver, TYPEMASK_CREATURE_GAMEOBJECT_PLAYER_OR_ITEM);
+            Object* pObject = bot->GetObjectByTypeMask((ObjectGuid)questGiver, TYPEMASK_CREATURE_GAMEOBJECT_PLAYER_OR_ITEM);
             bot->AddQuest(quest, pObject);
 
             if(sPlayerbotAIConfig.syncQuestWithPlayer == "fast")

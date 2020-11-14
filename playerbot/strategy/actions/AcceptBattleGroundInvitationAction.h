@@ -20,7 +20,7 @@ namespace ai
          WorldPacket packet(CMSG_BATTLEFIELD_PORT, 20);
          //packet << type << unk2 << bgTypeId_ << unk << action;
          packet << bgTypeId_ << action;
-         bot->GetSession()->HandleBattleFieldPortOpcode(packet);
+         //bot->GetSession()->HandleBattleFieldPortOpcode(packet);
 
          ai->ResetStrategies();
          return true;

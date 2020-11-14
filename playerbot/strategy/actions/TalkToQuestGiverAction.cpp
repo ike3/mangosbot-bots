@@ -26,7 +26,9 @@ void TalkToQuestGiverAction::ProcessQuest(Quest const* quest, WorldObject* quest
     switch (status)
     {
     case QUEST_STATUS_COMPLETE:
+#ifdef MANGOS
     case QUEST_STATUS_FORCE_COMPLETE:
+#endif
         TurnInQuest(quest, questGiver, out);
         break;
     case QUEST_STATUS_INCOMPLETE:

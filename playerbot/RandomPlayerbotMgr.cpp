@@ -414,7 +414,9 @@ void RandomPlayerbotMgr::AddBgBot(Player* player, BattleGroundTypeId bgTypeId, B
                 if (player->IsTaxiFlying())
                 {
                     player->GetMotionMaster()->MovementExpired();
+#ifdef MANGOS
                     player->m_taxi.ClearTaxiDestinations();
+#endif
                 }
                 player->TeleportTo(data->mapid, data->posX, data->posY, data->posZ, player->GetOrientation());
             }
@@ -795,7 +797,9 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot, vector<WorldLocation> &locs
         if (bot->IsTaxiFlying())
         {
             bot->GetMotionMaster()->MovementExpired();
+#ifdef MANGOS
             bot->m_taxi.ClearTaxiDestinations();
+#endif
         }
 
         bot->GetMotionMaster()->Clear();

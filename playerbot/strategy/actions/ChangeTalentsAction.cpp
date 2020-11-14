@@ -1,6 +1,7 @@
 #include "botpch.h"
 #include "../../playerbot.h"
 #include "ChangeTalentsAction.h"
+#include "../../ServerFacade.h"
 
 using namespace ai;
 using namespace std::placeholders;
@@ -286,7 +287,7 @@ bool TalentSpec::CheckTalents(int maxPoints, ostringstream* out)
     {
         if (entry.rank > entry.maxRank)
         {
-            SpellEntry const* spellInfo = sSpellStore.LookupEntry(entry.talentInfo->RankID[0]);
+            SpellEntry const* spellInfo = sServerFacade.LookupSpellInfo(entry.talentInfo->RankID[0]);
             *out << "spec is not for this class. " << spellInfo->SpellName[0] << " has " << (entry.rank - entry.maxRank) << " points above max rank.";
             return false;
         }
@@ -300,13 +301,13 @@ bool TalentSpec::CheckTalents(int maxPoints, ostringstream* out)
             for (auto& dep : talents)
                 if (dep.talentInfo->TalentID == entry.talentInfo->DependsOn)
                 {
-                    spellInfodep = sSpellStore.LookupEntry(dep.talentInfo->RankID[0]);
+                    spellInfodep = sServerFacade.LookupSpellInfo(dep.talentInfo->RankID[0]);
                     if (dep.rank >= entry.talentInfo->DependsOnRank)
                         found = true;
                 }
             if (!found)
             {
-                SpellEntry const* spellInfo = sSpellStore.LookupEntry(entry.talentInfo->RankID[0]);
+                SpellEntry const* spellInfo = sServerFacade.LookupSpellInfo(entry.talentInfo->RankID[0]);
                 *out << "spec is is invalid. Talent:" << spellInfo->SpellName[0] << " needs: " << spellInfodep->SpellName[0] << " at rank: " << entry.talentInfo->DependsOnRank;
                 return false;
             }
@@ -322,7 +323,7 @@ bool TalentSpec::CheckTalents(int maxPoints, ostringstream* out)
         {
             if (entry.rank > 0 && entry.talentInfo->Row * 5 > points)
             {
-                SpellEntry const* spellInfo = sSpellStore.LookupEntry(entry.talentInfo->RankID[0]);
+                SpellEntry const* spellInfo = sServerFacade.LookupSpellInfo(entry.talentInfo->RankID[0]);
                 *out << "spec is is invalid. Talent " << spellInfo->SpellName[0] << " is selected with only " << points << " in row below it.";
                 return false;
             }

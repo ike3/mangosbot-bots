@@ -89,6 +89,26 @@ bool ServerFacade::IsHostileTo(Unit* bot, Unit* to)
 #endif
 }
 
+bool ServerFacade::IsFriendlyTo(WorldObject* bot, Unit* to)
+{
+#ifdef MANGOS
+    return bot->IsFriendlyTo(to);
+#endif
+#ifdef CMANGOS
+    return bot->IsFriend(to);
+#endif
+}
+
+bool ServerFacade::IsHostileTo(WorldObject* bot, Unit* to)
+{
+#ifdef MANGOS
+    return bot->IsHostileTo(to);
+#endif
+#ifdef CMANGOS
+    return bot->IsEnemy(to);
+#endif
+}
+
 
 bool ServerFacade::IsSpellReady(Player* bot, uint32 spell)
 {

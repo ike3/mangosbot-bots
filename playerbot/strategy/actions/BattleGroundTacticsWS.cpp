@@ -31,12 +31,13 @@
 
 using namespace ai;
 
-
+#ifdef MANGOS
 enum GameObjectsWS
 {
     GO_WS_SILVERWING_FLAG = 179830,
     GO_WS_WARSONG_FLAG = 179831
 };
+#endif
 
 enum AreaTriggersWS
 {
@@ -405,9 +406,9 @@ bool BGTacticsWS::runPathTo(WorldObject *target, BattleGround *bg)
     //int Preference = urand(0, 9);
     if (target == nullptr)
         return false;
-    if (target->IsWithinDist(bot, 40) && target->IsFriendlyTo(bot))
+    if (target->IsWithinDist(bot, 40) && sServerFacade.IsFriendlyTo(target, bot))
         return MoveNear(target);
-    if (target->IsWithinDist(bot, 40) && target->IsHostileTo(bot) && target->GetTypeId() == TYPEID_PLAYER)
+    if (target->IsWithinDist(bot, 40) && sServerFacade.IsHostileTo(target, bot) && target->GetTypeId() == TYPEID_PLAYER)
         return bot->Attack((Unit*)target, !ai->IsRanged(bot) || sServerFacade.GetDistance2d(bot, target) <= sPlayerbotAIConfig.tooCloseDistance);
     if (target->GetPositionX() > bot->GetPositionX()) //He's somewhere at the alliance side
     {
@@ -694,7 +695,12 @@ bool BGTacticsWS::Execute(Event event)
             return false;
 
         BattleGround *bg = bot->GetBattleGround();
+#ifdef MANGOS
         const WorldSafeLocsEntry *pos = bg->GetClosestGraveYard(bot);
+#endif
+#ifdef CMANGOS
+        const WorldSafeLocsEntry *pos = sObjectMgr.GetClosestGraveYard(bot->GetPositionX(), bot->GetPositionY(), bot->GetPositionZ(), bot->GetMapId(), bot->GetTeam());
+#endif
 
         if (!bot->IsWithinDist3d(pos->x, pos->y, pos->z, 3.0))
         {
@@ -710,7 +716,12 @@ bool BGTacticsWS::Execute(Event event)
         return true;
     }
     //Check for Warsong.
+#ifdef MANGOS
     if (bot->GetBattleGround()->GetTypeID() == BattleGroundTypeId::BATTLEGROUND_WS)
+#endif
+#ifdef CMANGOS
+    if (bot->GetBattleGround()->GetTypeId() == BattleGroundTypeId::BATTLEGROUND_WS)
+#endif
     {
         /*if (ai->GetMaster() && !ai->GetMaster()->GetPlayerbotAI() && !ai->GetMaster()->IsInSameRaidWith(bot))
         {
@@ -802,7 +813,12 @@ bool BGTacticsWS::Execute(Event event)
                     if (bot->HasStealthAura())
                         bot->GetPlayerbotAI()->RemoveAura("Stealth");
 
+#ifdef MANGOS
                     if(target_obj->isSpawned())
+#endif
+#ifdef CMANGOS
+                    if (target_obj->IsSpawned())
+#endif
                         bot->GetSession()->HandleGameObjectUseOpcode(data);
                     //bot->GetSession()->HandleGameObjectUseOpcode(data);
                     ai->Reset();
@@ -822,7 +838,12 @@ bool BGTacticsWS::Execute(Event event)
             if (!IsMovingAllowed()/* || bot->isMoving()*/)
                 return false;
             bool moving = false;
+#ifdef MANGOS
             if (!bot->isMoving())
+#endif
+#ifdef CMANGOS
+            if (!bot->IsMoving())
+#endif
                 ai->Reset();
             //Only go for directive, if not in combat
             if (!bot->IsInCombat())
@@ -847,7 +868,12 @@ bool BGTacticsWS::Execute(Event event)
             
             if (!moving)
             {
+#ifdef MANGOS
                 if (!flagdropped && !alreadyHasFlag && !bg->GetBgMap()->GetGameObject(HordeWsgFlagStand(bg))->isSpawned() && !bg->GetBgMap()->GetGameObject(AllianceWsgFlagStand(bg))->isSpawned())
+#endif
+#ifdef CMANGOS
+                if (!flagdropped && !alreadyHasFlag && !bg->GetBgMap()->GetGameObject(HordeWsgFlagStand(bg))->IsSpawned() && !bg->GetBgMap()->GetGameObject(AllianceWsgFlagStand(bg))->IsSpawned())
+#endif
                 {
                     float distance = sPlayerbotAIConfig.tooCloseDistance + sPlayerbotAIConfig.grindDistance * urand(3, 10) / 10.0f;
 

@@ -36,7 +36,7 @@ bool HasAggroValue::Calculate()
         ref = ref->next();
     }
 
-    ref = target->GetThreatManager().getCurrentVictim();
+    ref = sServerFacade.GetThreatManager(target).getCurrentVictim();
     if (ref)
     {
         Unit* victim = ref->getTarget();

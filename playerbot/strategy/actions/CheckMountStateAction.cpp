@@ -21,10 +21,7 @@ bool CheckMountStateAction::Execute(Event event)
     if (bot->IsTaxiFlying())
         return false;
 
-    if (!bot->GetPlayerbotAI()->HasStrategy("mount", BOT_STATE_NON_COMBAT))
-        return false;
-
-    if (bot->isMoving())
+    if (!bot->GetPlayerbotAI()->HasStrategy("mount", BOT_STATE_NON_COMBAT) && !bot->IsMounted())
         return false;
 
     bool firstmount = bot->getLevel() >=
@@ -109,9 +106,8 @@ bool CheckMountStateAction::Execute(Event event)
 
     bool attackdistance = false;
     bool chasedistance = false;
-    Unit* target = bot->GetMap()->GetUnit(bot->GetTargetGuid());
-
-    if (target && target->IsHostileTo(bot))
+    Unit* target = bot->GetMap()->GetUnit(bot->GetGuidValue(UNIT_FIELD_TARGET));
+    if (target && sServerFacade.IsHostileTo(target, bot))
     {
         attackdistance = sServerFacade.GetDistance2d(bot, target) <= sPlayerbotAIConfig.spellDistance;
         chasedistance = sServerFacade.GetDistance2d(bot, target) >= sPlayerbotAIConfig.fleeDistance;

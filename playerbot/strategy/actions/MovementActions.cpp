@@ -378,7 +378,8 @@ bool MovementAction::Flee(Unit *target)
         return false;
     }
 
-    HostileReference *ref = target->GetThreatManager().getCurrentVictim();
+    //HostileReference *ref = target->GetThreatManager().getCurrentVictim();
+    HostileReference *ref = sServerFacade.GetThreatManager(target).getCurrentVictim();
     if (ref && ref->getTarget() == bot)
     {
         Group *group = bot->GetGroup();

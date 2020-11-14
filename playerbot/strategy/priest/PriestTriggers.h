@@ -38,9 +38,12 @@ namespace ai
 
         virtual bool IsActive() { return BuffOnPartyTrigger::IsActive() &&
             !ai->HasAura("prayer of fortitude", GetTarget()) &&
-            //!ai->HasAura("power word: fortitude", GetTarget()) &&
+#ifdef MANGOS
             (ai->GetBot()->IsInSameGroupWith((Player*)GetTarget()) || ai->GetBot()->IsInSameRaidWith((Player*)GetTarget())) &&
-            //ai->GetManaPercent() > 50 &&
+#endif
+#ifdef CMANGOS
+            (ai->GetBot()->IsInGroup((Player*)GetTarget(), true) || ai->GetBot()->IsInGroup((Player*)GetTarget())) &&
+#endif
             ai->GetBuffedCount((Player*)GetTarget(), "prayer of fortitude") < 5 &&
             ai->GetBuffedCount((Player*)GetTarget(), "power word: fortitude") < 5
             ; }
@@ -53,7 +56,12 @@ namespace ai
         virtual bool IsActive() { return BuffOnPartyTrigger::IsActive() &&
             !ai->HasAura("prayer of spirit", GetTarget()) &&
             //!ai->HasAura("divine spirit", GetTarget()) &&
-            (ai->GetBot()->IsInSameGroupWith((Player*)GetTarget()) || ai->GetBot()->IsInSameRaidWith((Player*)GetTarget())) &&
+#ifdef MANGOS
+            (ai->GetBot()->IsInGroup((Player*)GetTarget()) || ai->GetBot()->IsInGroup((Player*)GetTarget())) &&
+#endif
+#ifdef CMANGOS
+            (ai->GetBot()->IsInGroup((Player*)GetTarget(), true) || ai->GetBot()->IsInGroup((Player*)GetTarget())) &&
+#endif
             //ai->GetManaPercent() > 50 &&
             ai->GetBuffedCount((Player*)GetTarget(), "prayer of spirit") < 5 &&
             ai->GetBuffedCount((Player*)GetTarget(), "divine spirit") < 5

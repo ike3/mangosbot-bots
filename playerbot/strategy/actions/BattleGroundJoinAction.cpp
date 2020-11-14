@@ -276,7 +276,12 @@ bool BGStatusAction::Execute(Event event)
 #else
         packet << type << unk2 << bgTypeId_ << unk << action;
 #endif
+#ifdef MANGOS
         bot->GetSession()->HandleBattleFieldPortOpcode(packet);
+#endif
+#ifdef CMANGOS
+        bot->GetSession()->HandleBattlefieldPortOpcode(packet);
+#endif
         
         //ai->ResetStrategies(!IsRandomBot);
         ai->ResetStrategies(false);
