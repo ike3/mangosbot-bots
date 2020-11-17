@@ -6,6 +6,7 @@
 #include "SystemConfig.h"
 #include "PlayerbotFactory.h"
 #include "RandomItemMgr.h"
+//#include "Talentspec.h"
 
 using namespace std;
 
@@ -144,23 +145,65 @@ bool PlayerbotAIConfig::Initialize()
     commandServerPort = config.GetIntDefault("AiPlayerbot.CommandServerPort", 0);
     perfMonEnabled = config.GetBoolDefault("AiPlayerbot.PerfMonEnabled", false);
 
+    sLog.outString("---------------------------------------");
+    sLog.outString("          Loading TalentSpecs          ");
+    sLog.outString("---------------------------------------");
+    sLog.outString();
+    
     for (uint32 cls = 0; cls < MAX_CLASSES; ++cls)
-    {        
-        for (uint32 spec = 0; spec < 10; ++spec)
+    {
+        classSpecs[cls] = ClassSpecs(1 << (cls - 1));
+        for (uint32 spec = 0; spec < 100; ++spec)
         {
-            ostringstream os; os << "AiPlayerbot.RandomClassSpecProbability." << cls << "." << spec;
-            if (spec < 3)
-                specProbability[cls][spec] = config.GetIntDefault(os.str().c_str(), 33);
-            else
-                specProbability[cls][spec] = config.GetIntDefault(os.str().c_str(), 0);
+            ostringstream os; os << "AiPlayerbot.PremadeSpecName." << cls << "." << spec;
+            string specName = config.GetStringDefault(os.str().c_str(), "");
+            if (!specName.empty())
+            {
+                ostringstream os; os << "AiPlayerbot.PremadeSpecProb." << cls << "." << spec;
+                int probability = config.GetIntDefault(os.str().c_str(), 100);
 
-            for (int level = 10; level <= 100; level++)
-            {                
-                ostringstream os; os << "AiPlayerbot.PremadeLevelSpec." << cls << "." << spec << "." << level;
-                premadeLevelSpec[cls][spec][level-10] = config.GetStringDefault(os.str().c_str(), "");      
+                TalentPath talentPath(spec, specName, probability);
+
+                for (int level = 10; level <= 100; level++)
+                {
+                    ostringstream os; os << "AiPlayerbot.PremadeSpecLink." << cls << "." << spec << "." << level;
+                    string specLink = config.GetStringDefault(os.str().c_str(), "");
+                    specLink = specLink.substr(0, specLink.find("#", 0));;
+                    specLink = specLink.substr(0, specLink.find(" ", 0));;
+
+                    if (!specLink.empty())
+                    {
+                        ostringstream out;
+
+                        //Ignore bad specs.
+                        if (!classSpecs[cls].baseSpec.CheckTalentLink(specLink, &out))
+                        {
+                            sLog.outErrorDb("Error with premade spec link: %s", specLink.c_str());
+                            sLog.outErrorDb("%s", out.str().c_str());
+                            continue;
+                        }
+
+                        TalentSpec linkSpec(&classSpecs[cls].baseSpec, specLink);
+
+                        if (!linkSpec.CheckTalents(level, &out))
+                        {
+                            sLog.outErrorDb("Error with premade spec: %s", specLink.c_str());
+                            sLog.outErrorDb("%s", out.str().c_str());
+                            continue;
+                        }
+
+
+                        talentPath.talentSpec.push_back(linkSpec);
+                    }
+                }
+
+                //Only add paths that have atleast 1 spec.
+                if(talentPath.talentSpec.size() > 0)
+                    classSpecs[cls].TalentPath.push_back(talentPath);
             }
         }
     }
+    
 
     randomBotAccountPrefix = config.GetStringDefault("AiPlayerbot.RandomBotAccountPrefix", "rndbot");
     randomBotAccountCount = config.GetIntDefault("AiPlayerbot.RandomBotAccountCount", 50);

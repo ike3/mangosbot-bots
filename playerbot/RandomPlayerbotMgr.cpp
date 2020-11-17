@@ -1180,7 +1180,7 @@ uint32 RandomPlayerbotMgr::GetEventValue(uint32 bot, string event)
         }
     }
 
-    if ((time(0) - e.lastChangeTime) >= e.validIn)
+    if ((time(0) - e.lastChangeTime) >= e.validIn && (event == "add" || IsRandomBot(bot)))
         e.value = 0;
 
     return e.value;

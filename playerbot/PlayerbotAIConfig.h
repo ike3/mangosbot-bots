@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Config.h"
+#include "Talentspec.h"
 
 class Player;
 class PlayerbotMgr;
@@ -68,6 +69,7 @@ public:
     float randomChangeMultiplier;
     uint32 specProbability[MAX_CLASSES][10];
     string premadeLevelSpec[MAX_CLASSES][10][91]; //lvl 10 - 100
+    ClassSpecs classSpecs[MAX_CLASSES];
     std::string commandPrefix, commandSeparator;
     std::string randomBotAccountPrefix;
     uint32 randomBotAccountCount;
