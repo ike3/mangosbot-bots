@@ -238,7 +238,7 @@ bool PlayerbotAIConfig::Initialize()
     //SPP automation
     autoPickReward = config.GetStringDefault("AiPlayerbot.AutoPickReward", "no");
     autoEquipUpgradeLoot = config.GetBoolDefault("AiPlayerbot.AutoEquipUpgradeLoot", false);
-    syncQuestWithPlayer = config.GetStringDefault("AiPlayerbot.SyncQuestWithPlayer", "no");
+    syncQuestWithPlayer = config.GetBoolDefault("AiPlayerbot.SyncQuestWithPlayer", false);
     autoTrainSpells = config.GetStringDefault("AiPlayerbot.AutoTrainSpells", "no");
     autoPickTalents = config.GetStringDefault("AiPlayerbot.AutoPickTalents", "no");
 

@@ -2,7 +2,9 @@
 #include "../../playerbot.h"
 #include "LootAction.h"
 
-#include "EquipAction.h"
+#include "AhBotConfig.h"
+//#include "PricingStrategy.cpp"
+
 #include "../../LootObjectStack.h"
 #include "../../PlayerbotAIConfig.h"
 #include "../../../ahbot/AhBot.h"
@@ -12,6 +14,7 @@
 #include "../../ServerFacade.h"
 #include "../values/LootStrategyValue.h"
 #include "../../ServerFacade.h"
+
 
 using namespace ai;
 
@@ -224,28 +227,106 @@ bool OpenLootAction::CanOpenLock(uint32 skillId, uint32 reqSkillValue)
     return skillValue >= reqSkillValue || !reqSkillValue;
 }
 
-void StoreLootAction::EquipItem(int32 itemId)
+/*
+uint32 StoreLootAction::RoundPrice(double price)
 {
-    Item* newItem = bot->GetItemByEntry(itemId);
-    if (!newItem)
-        return;
+    if (price < 100) {
+        return (uint32)price;
+    }
 
-    ItemUsage usage = AI_VALUE2(ItemUsage, "item usage", itemId);
+    if (price < 10000) {
+        return (uint32)(price / 100.0) * 100;
+    }
 
-    if (usage != ITEM_USAGE_EQUIP && usage != ITEM_USAGE_REPLACE && usage != ITEM_USAGE_BAD_EQUIP)
-        return;
+    if (price < 100000) {
+        return (uint32)(price / 1000.0) * 1000;
+    }
 
-    uint8 bagIndex = newItem->GetBagSlot();
-    uint8 slot = newItem->GetSlot();
-
-    WorldPacket packet(CMSG_AUTOEQUIP_ITEM, 2);
-    packet << bagIndex << slot;
-    bot->GetSession()->HandleAutoEquipItemOpcode(packet);
-
-    ostringstream out;
-    out << "equipping " << chat->formatItem(newItem->GetProto());
-    ai->TellMasterNoFacing(out.str());
+    return (uint32)(price / 10000.0) * 10000;
 }
+
+bool StoreLootAction::AuctionItem(int32 itemId)
+{
+    ItemPrototype const* proto = sItemStorage.LookupEntry<ItemPrototype>(itemId);
+    if (!proto)
+        return false;
+
+    if (!proto ||
+        proto->Bonding == BIND_WHEN_PICKED_UP ||
+        proto->Bonding == BIND_QUEST_ITEM)
+        return false;
+
+    Item* oldItem = bot->GetItemByEntry(itemId);
+    if (!oldItem)
+        return false;
+
+#ifdef TRINITY
+    AuctionHouseEntry const* ahEntry = AuctionHouseMgr::GetAuctionHouseEntry(unit->GetFaction());
+#elif AZEROTHCORE
+    AuctionHouseEntry const* ahEntry = AuctionHouseMgr::GetAuctionHouseEntry(unit->getFaction());
+#else
+    AuctionHouseEntry const* ahEntry = AuctionHouseMgr::GetAuctionHouseEntry(bot);
+#endif    
+
+    if (!ahEntry)
+        return false;
+
+    AuctionHouseObject* auctionHouse = sAuctionMgr.GetAuctionsMap(ahEntry);  
+
+    uint32 price = oldItem->GetCount() * proto->BuyPrice * sRandomPlayerbotMgr.GetBuyMultiplier(bot);
+
+    uint32 stackCount = urand(1, proto->GetMaxStackSize());
+    if (!price || !stackCount)
+        return false;
+
+    if (!stackCount)
+        stackCount = 1;
+
+    if (urand(0, 100) <= sAhBotConfig.underPriceProbability * 100)
+        price = price * 100 / urand(100, 200);
+
+    uint32 bidPrice = RoundPrice(stackCount * price);
+    uint32 buyoutPrice = RoundPrice(stackCount * urand(price, 4 * price / 3));
+
+    Item* item = Item::CreateItem(proto->ItemId, stackCount);
+    if (!item)
+        return false;
+
+    uint32 auction_time = uint32(urand(8, 24) * HOUR * sWorld.getConfig(CONFIG_FLOAT_RATE_AUCTION_TIME));
+    
+    AuctionEntry* auctionEntry = new AuctionEntry;
+    auctionEntry->Id = sObjectMgr.GenerateAuctionID();
+    auctionEntry->itemGuidLow = item->GetObjectGuid().GetCounter();
+    auctionEntry->itemTemplate = item->GetEntry();
+    auctionEntry->itemCount = item->GetCount();
+    auctionEntry->itemRandomPropertyId = item->GetItemRandomPropertyId();
+    auctionEntry->owner = bot->GetGUIDLow();
+    auctionEntry->startbid = bidPrice;
+    auctionEntry->bidder = 0;
+    auctionEntry->bid = 0;
+    auctionEntry->buyout = buyoutPrice;
+    auctionEntry->expireTime = time(nullptr) + auction_time;
+    //auctionEntry->moneyDeliveryTime = 0;
+    auctionEntry->deposit = 0;
+    auctionEntry->auctionHouseEntry = ahEntry;
+
+    auctionHouse->AddAuction(auctionEntry);
+
+    sAuctionMgr.AddAItem(item);
+
+    item->SaveToDB();
+    auctionEntry->SaveToDB();
+
+    sLog.outErrorDb("AhBot %s added %d of %s to auction %d for %d..%d", bot->GetName(), stackCount, proto->Name1,1, bidPrice, buyoutPrice);
+
+    if (oldItem->GetCount() > stackCount)
+        oldItem->SetCount(oldItem->GetCount() - stackCount);
+    else
+        bot->RemoveItem(item->GetBagSlot(), item->GetSlot(), true);
+
+    return true;
+}
+*/
 
 bool StoreLootAction::Execute(Event event)
 {
@@ -254,7 +335,6 @@ bool StoreLootAction::Execute(Event event)
     uint8 loot_type;
     uint32 gold = 0;
     uint8 items = 0;
-    ItemIds EquipIds;
 
     p.rpos(0);
     p >> guid;      // 8 corpse guid
@@ -327,22 +407,12 @@ bool StoreLootAction::Execute(Event event)
         if (proto->Quality > ITEM_QUALITY_NORMAL && !urand(0, 50)) ai->PlaySound(TEXTEMOTE_CHEER);
         if (proto->Quality >= ITEM_QUALITY_RARE) ai->PlaySound(TEXTEMOTE_CHEER);
 
-        if (sPlayerbotAIConfig.autoEquipUpgradeLoot)
-        {
-           EquipIds.insert(itemid);
-        }
-
         ostringstream out; out << "Looting " << chat->formatItem(proto);
 
         ai->TellMasterNoFacing(out.str());
-    }
 
-    if (sPlayerbotAIConfig.autoEquipUpgradeLoot && !EquipIds.empty())
-    {
-        for (ItemIds::iterator i = EquipIds.begin(); i != EquipIds.end(); i++)
-        {
-            EquipItem(*i);
-        }
+        //ItemUsage usage = AI_VALUE2(ItemUsage, "item usage", proto->ItemId);
+        //sLog.outErrorDb("Bot %s is looting %d %s for usage %d.", bot->GetName(), itemcount, proto->Name1, usage);
     }
 
     AI_VALUE(LootObjectStack*, "available loot")->Remove(guid);
@@ -373,7 +443,7 @@ bool StoreLootAction::IsLootAllowed(uint32 itemid, PlayerbotAI *ai)
 
     if (proto->StartQuest)
     {
-        if (sPlayerbotAIConfig.syncQuestWithPlayer != "no")
+        if (sPlayerbotAIConfig.syncQuestWithPlayer)
             return false; //Quest is autocomplete for the bot so no item needed.
         else
             return true;
@@ -395,7 +465,7 @@ bool StoreLootAction::IsLootAllowed(uint32 itemid, PlayerbotAI *ai)
         {
             if (quest->ReqItemId[i] == itemid)
             {
-                if (sPlayerbotAIConfig.syncQuestWithPlayer != "no")
+                if (sPlayerbotAIConfig.syncQuestWithPlayer)
                     return false; //Quest is autocomplete for the bot so no item needed.
                 if (AI_VALUE2(uint8, "item count", proto->Name1) < quest->ReqItemCount[i])
                     return true;

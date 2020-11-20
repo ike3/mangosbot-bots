@@ -38,6 +38,13 @@ ItemUsage ItemUsageValue::Calculate()
             ai->HasSkill(SKILL_ENCHANTING) && proto->Quality >= ITEM_QUALITY_UNCOMMON)
         return ITEM_USAGE_DISENCHANT;
 
+    //Need to add something like free bagspace or item value.
+    if (!ai->GetMaster())
+        if (proto->Quality > ITEM_QUALITY_NORMAL)
+            return ITEM_USAGE_AH;
+        else
+            return ITEM_USAGE_VENDOR;
+
     return ITEM_USAGE_NONE;
 }
 

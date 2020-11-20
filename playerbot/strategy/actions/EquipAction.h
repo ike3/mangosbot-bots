@@ -16,4 +16,11 @@ namespace ai
         void EquipItem(Item& item);
     };
 
+    class EquipUpgradesAction : public EquipAction {
+    public:
+        EquipUpgradesAction(PlayerbotAI* ai, string name = "equip upgrades") : EquipAction(ai, name) {}
+
+        virtual bool Execute(Event event);
+    };
+
 }

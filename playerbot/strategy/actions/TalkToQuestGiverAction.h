@@ -17,7 +17,6 @@ namespace ai
         void RewardNoItem(Quest const* quest, WorldObject* questGiver, ostringstream& out);
         void RewardSingleItem(Quest const* quest, WorldObject* questGiver, ostringstream& out);
         set<uint32> BestRewards(Quest const* quest);
-        void EquipItem(int32 itemId, ostringstream& out);
         void RewardMultipleItem(Quest const* quest, WorldObject* questGiver, ostringstream& out);
         void AskToSelectReward(Quest const* quest, ostringstream& out, bool forEquip);
     };

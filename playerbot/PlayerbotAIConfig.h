@@ -100,7 +100,7 @@ public:
 
     std::string autoPickReward;
     uint32 autoEquipUpgradeLoot;
-    std::string syncQuestWithPlayer;
+    uint32 syncQuestWithPlayer;
     std::string autoTrainSpells;
     std::string autoPickTalents;
 

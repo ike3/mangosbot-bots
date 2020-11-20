@@ -4,7 +4,6 @@
 #include "TalkToQuestGiverAction.h"
 #include "../values/ItemUsageValue.h"
 
-
 using namespace ai;
 
 void TalkToQuestGiverAction::ProcessQuest(Quest const* quest, WorldObject* questGiver)
@@ -13,7 +12,7 @@ void TalkToQuestGiverAction::ProcessQuest(Quest const* quest, WorldObject* quest
 
     QuestStatus status = bot->GetQuestStatus(quest->GetQuestId());
 
-    if (sPlayerbotAIConfig.syncQuestWithPlayer == "slow")
+    if (sPlayerbotAIConfig.syncQuestWithPlayer)
     {
         Player* master = GetMaster();
         if (master->GetQuestStatus(quest->GetQuestId()) == QUEST_STATUS_COMPLETE && (status == QUEST_STATUS_INCOMPLETE || status == QUEST_STATUS_FAILED))
@@ -122,27 +121,6 @@ ItemIds TalkToQuestGiverAction::BestRewards(Quest const* quest)
     }
 }
 
-void TalkToQuestGiverAction::EquipItem(int32 itemId, ostringstream& out)
-{
-    Item* newItem = bot->GetItemByEntry(itemId);
-    if (!newItem)
-        return;
-
-    ItemUsage usage = AI_VALUE2(ItemUsage, "item usage", itemId);
-
-    if (usage != ITEM_USAGE_EQUIP && usage != ITEM_USAGE_REPLACE && usage != ITEM_USAGE_BAD_EQUIP)
-        return;
-
-    uint8 bagIndex = newItem->GetBagSlot();
-    uint8 slot = newItem->GetSlot();
-
-    WorldPacket packet(CMSG_AUTOEQUIP_ITEM, 2);
-    packet << bagIndex << slot;
-    bot->GetSession()->HandleAutoEquipItemOpcode(packet);
-
-    out << " (equipping)";
-}
-
 void TalkToQuestGiverAction::RewardMultipleItem(Quest const* quest, WorldObject* questGiver, ostringstream& out)
 {
     set<uint32> bestIds;
@@ -161,9 +139,6 @@ void TalkToQuestGiverAction::RewardMultipleItem(Quest const* quest, WorldObject*
         bot->RewardQuest(quest, *bestIds.begin(), questGiver, true);        
 
         out << "Rewarded " << chat->formatItem(item);
-
-        if (sPlayerbotAIConfig.autoEquipUpgradeLoot)
-            EquipItem(quest->RewChoiceItemId[*bestIds.begin()], out);
     }
     else 
     {   //Try to pick the usable item. If multiple list usable rewards.
@@ -178,8 +153,6 @@ void TalkToQuestGiverAction::RewardMultipleItem(Quest const* quest, WorldObject*
             ItemPrototype const* item = sObjectMgr.GetItemPrototype(quest->RewChoiceItemId[*bestIds.begin()]);
             bot->RewardQuest(quest, *bestIds.begin(), questGiver, true);
             out << "Rewarded " << chat->formatItem(item);     
-            if (sPlayerbotAIConfig.autoEquipUpgradeLoot)
-                EquipItem(quest->RewChoiceItemId[*bestIds.begin()], out);
         }
     }
 }

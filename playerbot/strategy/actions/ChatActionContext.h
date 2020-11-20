@@ -92,6 +92,7 @@ namespace ai
             creators["use"] = &ChatActionContext::use;
             creators["item count"] = &ChatActionContext::item_count;
             creators["equip"] = &ChatActionContext::equip;
+            creators["equip upgrades"] = &ChatActionContext::equip_upgrades;
             creators["unequip"] = &ChatActionContext::unequip;
             creators["sell"] = &ChatActionContext::sell;
             creators["buy"] = &ChatActionContext::buy;
@@ -191,6 +192,7 @@ namespace ai
         static Action* talents(PlayerbotAI* ai) { return new ChangeTalentsAction(ai); }
 
         static Action* equip(PlayerbotAI* ai) { return new EquipAction(ai); }
+        static Action* equip_upgrades(PlayerbotAI* ai) { return new EquipUpgradesAction(ai); }
         static Action* unequip(PlayerbotAI* ai) { return new UnequipAction(ai); }
         static Action* sell(PlayerbotAI* ai) { return new SellAction(ai); }
         static Action* buy(PlayerbotAI* ai) { return new BuyAction(ai); }

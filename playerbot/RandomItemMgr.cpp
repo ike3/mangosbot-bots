@@ -450,6 +450,8 @@ bool RandomItemMgr::CanEquipWeapon(uint8 clazz, ItemPrototype const* proto)
                 proto->SubClass != ITEM_SUBCLASS_WEAPON_GUN &&
                 proto->SubClass != ITEM_SUBCLASS_WEAPON_CROSSBOW &&
                 proto->SubClass != ITEM_SUBCLASS_WEAPON_BOW &&
+                proto->SubClass != ITEM_SUBCLASS_WEAPON_AXE &&
+                proto->SubClass != ITEM_SUBCLASS_WEAPON_AXE2 &&
                 proto->SubClass != ITEM_SUBCLASS_WEAPON_THROWN)
             return false;
         break;

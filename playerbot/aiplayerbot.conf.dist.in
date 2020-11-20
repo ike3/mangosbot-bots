@@ -444,7 +444,7 @@ AiPlayerbot.RandomBotTeleportDistance = 100
 AiPlayerbot.AutoPickReward = no
 # Bots equip upgrades (Bots will equip any item obtained from looting or a quest if they are upgrades)
 AiPlayerbot.AutoEquipUpgradeLoot = 0
-# Sync quests with player (fast = quest complete on pickup, slow = quest complete on player turnin, no = normal behavior. fast & slow also removes distance limitation for picking up and turning in quests)
+# Sync quests with player (Bots will complete quests the moment you hand them in. Bots will ignore looting quest items.)
 AiPlayerbot.SyncQuestWithPlayer = no
 # Bot automatically trains spells when talking to trainer (yes = train all available spells as long as the bot has the money, free = auto trains with no money cost, no = only list spells)
 AiPlayerbot.AutoTrainSpells = no

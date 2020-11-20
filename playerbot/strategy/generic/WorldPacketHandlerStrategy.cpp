@@ -49,7 +49,7 @@ void WorldPacketHandlerStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "trade status",
-        NextAction::array(0, new NextAction("accept trade", relevance), NULL)));
+        NextAction::array(0, new NextAction("accept trade", relevance), new NextAction("equip upgrades", relevance), NULL)));
 
     triggers.push_back(new TriggerNode(
         "area trigger",
@@ -65,7 +65,7 @@ void WorldPacketHandlerStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "item push result",
-        NextAction::array(0, new NextAction("query item usage", relevance), NULL)));
+        NextAction::array(0, new NextAction("query item usage", relevance), new NextAction("equip upgrades", relevance), NULL)));
 
     triggers.push_back(new TriggerNode(
         "ready check finished",

@@ -93,6 +93,8 @@ RollVote LootRollAction::CalculateRollVote(ItemPrototype const *proto)
     case ITEM_USAGE_SKILL:
     case ITEM_USAGE_USE:
     case ITEM_USAGE_DISENCHANT:
+    case ITEM_USAGE_AH:
+    case ITEM_USAGE_VENDOR:
         needVote = ROLL_GREED;
         break;
     }

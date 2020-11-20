@@ -11,7 +11,6 @@ namespace ai
         virtual bool Execute(Event event);
 
     private:
-        void EquipItem(int32 itemId);
         bool Reward(uint32 itemId, Object* pNpc);
     };
 

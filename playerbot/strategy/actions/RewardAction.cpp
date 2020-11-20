@@ -3,7 +3,6 @@
 #include "RewardAction.h"
 #include "../ItemVisitors.h"
 #include "../values/ItemCountValue.h"
-#include "../values/ItemUsageValue.h"
 
 using namespace ai;
 
@@ -42,29 +41,6 @@ bool RewardAction::Execute(Event event)
     return false;
 }
 
-void RewardAction::EquipItem(int32 itemId)
-{
-    Item* newItem = bot->GetItemByEntry(itemId);
-    if (!newItem)
-        return;
-
-    ItemUsage usage = AI_VALUE2(ItemUsage, "item usage", itemId);
-
-    if (usage != ITEM_USAGE_EQUIP && usage != ITEM_USAGE_REPLACE && usage != ITEM_USAGE_BAD_EQUIP)
-        return;
-
-    uint8 bagIndex = newItem->GetBagSlot();
-    uint8 slot = newItem->GetSlot();
-
-    WorldPacket packet(CMSG_AUTOEQUIP_ITEM, 2);
-    packet << bagIndex << slot;
-    bot->GetSession()->HandleAutoEquipItemOpcode(packet);
-
-    ostringstream out;
-    out << "equipping " << chat->formatItem(newItem->GetProto());
-    ai->TellMasterNoFacing(out.str());
-}
-
 bool RewardAction::Reward(uint32 itemId, Object* questGiver)
 {
     QuestMenu& questMenu = bot->PlayerTalkClass->GetQuestMenu();
@@ -94,11 +70,6 @@ bool RewardAction::Reward(uint32 itemId, Object* questGiver)
 
                     ostringstream out; out << chat->formatItem(pRewardItem) << " rewarded";
                     ai->TellMaster(out);
-
-                    if (sPlayerbotAIConfig.autoEquipUpgradeLoot)
-                    {
-                        EquipItem(pRewardItem->ItemId);
-                    }
 
                     return true;
                 }
