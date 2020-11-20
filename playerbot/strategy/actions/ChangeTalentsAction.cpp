@@ -247,7 +247,7 @@ bool ChangeTalentsAction::AutoSelectTalents(ostringstream* out)
             *out << "No predefined talents found for this class.";
             specId = -1;
         }
-        else if (paths.size() > 1 && sPlayerbotAIConfig.autoPickTalents != "full")
+        else if (paths.size() > 1 && sPlayerbotAIConfig.autoPickTalents != "full" && !sRandomPlayerbotMgr.IsRandomBot(bot))
         {
 
             *out << "Found multiple specs: ";
