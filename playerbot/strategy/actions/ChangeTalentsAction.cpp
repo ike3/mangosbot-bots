@@ -15,19 +15,8 @@ bool ChangeTalentsAction::Execute(Event event)
 
     if (!param.empty())
     {
-        if (param.find("get") != string::npos)
-        {
-            int specNo = sRandomPlayerbotMgr.GetValue(bot->GetGUIDLow(), "specNo");
-            out << "value is: " << specNo;
-            if (specNo > 0 && specNo <= sPlayerbotAIConfig.classSpecs[bot->getClass()].TalentPath.size())
-                out << "|h|cffffffff" << getPremadePath(specNo - 1)->name;
-        }
-        else if (param.find("set") != string::npos)
-        {
-            sRandomPlayerbotMgr.SetValue(bot->GetGUIDLow(), "specNo", stoi(param.substr(4)));
-            out << "value set to : " << sRandomPlayerbotMgr.GetValue(bot->GetGUIDLow(), "specNo");
-        }
-        else if (param.find("auto") != string::npos)
+
+        if (param.find("auto") != string::npos)
         {
             AutoSelectTalents(&out);
         }
