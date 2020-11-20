@@ -94,8 +94,8 @@ ItemUsage ItemUsageValue::QueryItemUsageForEquip(ItemPrototype const * item)
 
     if (oldItem->ItemId != item->ItemId && //Item is not identical
         (shouldEquip || !existingShouldEquip) && //New item is optimal or old item was already sub-optimal
-            (oldItem->ItemLevel < item->ItemLevel || // Item is upgrade in itemlevel or quality.
-                oldItem->Quality < item->Quality))
+            (oldItem->ItemLevel + oldItem->Quality * 5 < item->ItemLevel + item->Quality  * 5 // Item is upgrade
+                  ))
     {
         switch (item->Class)
         {
