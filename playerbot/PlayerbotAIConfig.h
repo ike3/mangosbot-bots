@@ -99,8 +99,8 @@ public:
     uint32 iterationsPerTick;
 
     std::string autoPickReward;
-    uint32 autoEquipUpgradeLoot;
-    uint32 syncQuestWithPlayer;
+    bool autoEquipUpgradeLoot;
+    bool syncQuestWithPlayer;
     std::string autoTrainSpells;
     std::string autoPickTalents;
 
