@@ -99,8 +99,20 @@ bool ChangeTalentsAction::Execute(Event event)
     }
     else
     {
+        uint32 specId = sRandomPlayerbotMgr.GetValue(bot->GetGUIDLow(), "specNo") - 1;
+        string specName = "";
+        TalentPath* specPath;
+        if (specId)
+        {
+            specPath = getPremadePath(specId);
+            if (specPath->id == specId)
+                specName = specPath->name;
+        }
         out << "My current talent spec is: " << "|h|cffffffff";
-        out << chat->formatClass(bot, botSpec.highestTree());
+        if (specName != "")
+            out << specName << " (" << botSpec.formatSpec(bot) << ")";
+        else
+            out << chat->formatClass(bot, botSpec.highestTree());
         out << " Link: ";
         out << botSpec.GetTalentLink();
     }
@@ -214,7 +226,7 @@ bool ChangeTalentsAction::AutoSelectTalents(ostringstream* out)
         newSpec.ApplyTalents(bot, out);
         if (newSpec.GetTalentPoints() > 0)
         {
-            *out << "Upgrading spec " << "|h|cffffffff" << getPremadePath(specId)->name << "" << newSpec.formatSpec(bot);
+            *out << "Upgrading spec " << "|h|cffffffff" << getPremadePath(specId)->name << " (" << newSpec.formatSpec(bot) << ")";
         }
     }
 
