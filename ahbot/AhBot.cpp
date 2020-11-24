@@ -491,7 +491,7 @@ uint32 AhBot::GetSellTime(uint32 itemId, uint32 auctionHouse, Category*& categor
 
     uint32 result = itemTime;
 
-    string categoryName = category->GetName();
+    string categoryName = category->GetDisplayName();
     uint32 categorySellTime = GetTime(categoryName, 0, auctionHouse, AHBOT_SELL_DELAY);
     uint32 categoryBuyTime = GetTime(categoryName, 0, auctionHouse, AHBOT_WON_DELAY);
     uint32 categoryTime = max(categorySellTime, categoryBuyTime);
@@ -519,6 +519,7 @@ int AhBot::AddAuctions(int auction, Category* category, ItemBag* inAuctionItems)
         return 0;
 
     int added = 0;
+    int ladded = 0;
     vector<uint32> available = availableItems.Get(category);
     for (int32 i = 0; i <= maxAllowedAuctionCount && available.size() > 0 && inAuctionItems->GetCount(category) < maxAllowedAuctionCount; ++i)
     {
@@ -535,11 +536,12 @@ int AhBot::AddAuctions(int auction, Category* category, ItemBag* inAuctionItems)
             sLog.outDetail("%s in auction %d: has reached max %d/%d",
                 proto->Name1, auctionIds[auction], inAuctionItems->GetCount(category, proto->ItemId), maxAllowedItems);
             continue;
-        }
+        }        
 
         uint32 sellTime = GetSellTime(proto->ItemId, auctionIds[auction], category);
         if (time(0) - sellTime < 0)
         {          
+            ladded += 1;
             sLog.outDetail( "%s in auction %d: will add in %ld seconds",
                     proto->Name1, auctionIds[auction], sellTime - time(0));
             continue;
@@ -553,6 +555,10 @@ int AhBot::AddAuctions(int auction, Category* category, ItemBag* inAuctionItems)
         inAuctionItems->Add(proto);
         added += AddAuction(auction, category, proto);
     }
+
+    sLog.outDetail("%s has %d upcomming and %d new auctions.",
+        category->GetDisplayName().c_str(), ladded , added);
+    
 
     return added;
 }

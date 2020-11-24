@@ -44,7 +44,7 @@ namespace ahbot
 
         double GetCategoryMultiplier(string category)
         {
-            return categoryMultipliers[category];
+            return categoryMultipliers[category] ? categoryMultipliers[category] : 1;
         }
 
         int32 GetSellPrice(const ItemPrototype* proto);

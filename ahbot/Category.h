@@ -54,6 +54,7 @@ namespace ahbot
         }
 
         virtual string GetName() { return typeName; }
+        virtual string GetDisplayName() { return GetName(); }
         virtual string GetLabel() { return "consumables"; }
 
         virtual uint32 GetMaxAllowedAuctionCount()
@@ -80,6 +81,7 @@ namespace ahbot
             return proto->Class == ITEM_CLASS_QUEST;
         }
         virtual string GetName() { return typeName; }
+        virtual string GetDisplayName() { return GetName(); }
         virtual string GetLabel() { return "quest items"; }
 
         virtual uint32 GetMaxAllowedAuctionCount()
@@ -114,6 +116,7 @@ namespace ahbot
         }
 
         virtual string GetName() { return typeName; }
+        virtual string GetDisplayName() { return GetName(); }
 
         virtual uint32 GetMaxAllowedAuctionCount()
         {
@@ -140,6 +143,7 @@ namespace ahbot
             return proto->Class == ITEM_CLASS_REAGENT;
         }
         virtual string GetName() { return typeName; }
+        virtual string GetDisplayName() { return GetName(); }
         virtual string GetLabel() { return "reagents"; }
 
         virtual uint32 GetMaxAllowedAuctionCount()
@@ -167,6 +171,7 @@ namespace ahbot
             return proto->Class == ITEM_CLASS_RECIPE;
         }
         virtual string GetName() { return typeName; }
+        virtual string GetDisplayName() { return GetName(); }
         virtual string GetLabel() { return "recipes and patterns"; }
 
         virtual uint32 GetMaxAllowedAuctionCount()
@@ -200,6 +205,7 @@ namespace ahbot
                 proto->Class == ITEM_CLASS_ARMOR) && proto->ItemLevel > 1;
         }
         virtual string GetName() { return typeName; }
+        virtual string GetDisplayName() { return GetName(); }
         virtual string GetLabel() { return "armor and weapons"; }
 
         virtual uint32 GetMaxAllowedAuctionCount()
@@ -233,6 +239,7 @@ namespace ahbot
         }
 
         virtual string GetName() { return typeName; }
+        virtual string GetDisplayName() { return GetName(); }
         virtual string GetLabel() { return "quivers and ammo poaches"; }
 
         virtual uint32 GetMaxAllowedAuctionCount()
@@ -267,6 +274,7 @@ namespace ahbot
         }
 
         virtual string GetName() { return typeName; }
+        virtual string GetDisplayName() { return GetName(); }
         virtual string GetLabel() { return "projectiles"; }
 
         virtual uint32 GetMaxAllowedAuctionCount()
@@ -301,6 +309,7 @@ namespace ahbot
         }
 
         virtual string GetName() { return typeName; }
+        virtual string GetDisplayName() { return GetName(); }
         virtual string GetLabel() { return "containers"; }
 
         virtual uint32 GetMaxAllowedAuctionCount()
@@ -338,6 +347,7 @@ namespace ahbot
         }
 
         virtual string GetName() { return typeName; }
+        virtual string GetDisplayName() { return GetName(); }
         virtual string GetLabel() { return "devices and explosives"; }
 
         virtual uint32 GetMaxAllowedAuctionCount()
