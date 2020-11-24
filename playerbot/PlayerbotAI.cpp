@@ -2392,7 +2392,9 @@ void PlayerbotAI::ImbueItem(Item* item, uint32 targetFlag, ObjectGuid targetGUID
    *packet << bagIndex;
    *packet << slot;
    *packet << spell_index;
+#ifdef MANGOSBOT_ZERO
    *packet << targetFlag;
+#endif
 #ifdef MANGOSBOT_ONE
    *packet << cast_count;
    *packet << item_guid;
