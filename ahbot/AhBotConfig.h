@@ -47,10 +47,15 @@ public:
         return GetCategoryParameter(itemPriceMultipliers, "PriceMultiplier.Item", name, 1.0f);
     }
 
-    int32 GetMaxAllowedAuctionCount(string category)
+    int32 GetMaxAllowedAuctionCount(string category, int32 default_value)
     {
-        return (int32)GetCategoryParameter(maxAuctionCount, "MaxAuctionCount", category, 5);
+        return (int32)GetCategoryParameter(maxAuctionCount, "MaxAuctionCount", category, default_value);
     }
+
+    int32 GetMaxAllowedItemAuctionCount(string category, int32 default_value)
+    {
+        return (int32)GetCategoryParameter(maxItemAuctionCount, "MaxItemTypeCount", category, default_value);
+    }    
 
     std::string GetStringDefault(const char* name, const char* def)
     {
@@ -90,6 +95,7 @@ private:
     map<string, float> buyPriceMultipliers;
     map<string, float> itemPriceMultipliers;
     map<string, float> maxAuctionCount;
+    map<string, float> maxItemAuctionCount;
 };
 
 #define sAhBotConfig MaNGOS::Singleton<AhBotConfig>::Instance()
