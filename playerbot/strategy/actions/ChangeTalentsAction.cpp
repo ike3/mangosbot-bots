@@ -275,11 +275,15 @@ bool ChangeTalentsAction::AutoSelectTalents(ostringstream* out)
 //Returns a pre-made talentspec that best suits the bots current talents. 
 TalentSpec* ChangeTalentsAction::GetBestPremadeSpec(int specId)
 {
-    for (auto& spec : getPremadePath(specId)->talentSpec)
+    TalentPath* path = getPremadePath(specId);
+    for (auto& spec : path->talentSpec)
     {
         if (spec.points >= bot->CalculateTalentsPoints())
             return &spec;
     }
+    if (path->talentSpec.size())
+        return &path->talentSpec.back();
+
     return &sPlayerbotAIConfig.classSpecs[bot->getClassMask()].baseSpec;
 }
 

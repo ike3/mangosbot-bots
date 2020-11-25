@@ -103,6 +103,8 @@ public:
     bool syncQuestWithPlayer;
     std::string autoTrainSpells;
     std::string autoPickTalents;
+    bool autoLearnTrainerSpells;
+    bool autoLearnQuestSpells;
 
     int commandServerPort;
     bool perfMonEnabled;

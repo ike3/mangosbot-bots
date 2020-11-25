@@ -13,8 +13,22 @@ namespace ahbot
     public:
         virtual bool Contains(ItemPrototype const* proto);
         virtual string GetName();
+        virtual string GetMainName();
         virtual string GetLabel();
         virtual uint32 GetSkillId() { return skill; }
+
+        virtual uint32 GetMaxAllowedAuctionCount()
+        {
+            return sAhBotConfig.GetMaxAllowedAuctionCount(GetName(), sAhBotConfig.GetMaxAllowedAuctionCount(GetMainName(), sAhBotConfig.GetMaxAllowedAuctionCount(typeName, 5)));
+        }
+
+        virtual uint32 GetMaxAllowedItemAuctionCount(ItemPrototype const* proto)
+        {
+            return sAhBotConfig.GetMaxAllowedItemAuctionCount(GetName(), sAhBotConfig.GetMaxAllowedItemAuctionCount(GetMainName(), sAhBotConfig.GetMaxAllowedItemAuctionCount(typeName, defaultMaxType)));
+        }
+    protected:
+        string typeName = "trade";
+        int32 defaultMaxType = 5;
 
     private:
         bool ContainsInternal(ItemPrototype const* proto);

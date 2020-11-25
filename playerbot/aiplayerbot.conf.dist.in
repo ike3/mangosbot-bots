@@ -93,6 +93,33 @@ AiPlayerbot.minEnchantingBotLevel = 71
 # Default: 1 (enabled)
 AiPlayerbot.GearScoreCheck = 0
 
+# Automation
+
+# Bots pick their quest reward (yes = picks first useful item, no = list all rewards, ask = pick useful item and lists if multiple)
+AiPlayerbot.AutoPickReward = yes
+
+# Bots equip upgrades (Bots will equip any item obtained from looting or a quest if they are upgrades)
+# Default: 0 (disabled)
+AiPlayerbot.AutoEquipUpgradeLoot = 1
+
+# Sync quests with player (Bots will complete quests the moment you hand them in. Bots will ignore looting quest items.)
+# Default: 0 (disabled)
+AiPlayerbot.SyncQuestWithPlayer = 1
+
+# Bot automatically trains spells when talking to trainer (yes = train all available spells as long as the bot has the money, free = auto trains with no money cost, no = only list spells)
+AiPlayerbot.AutoTrainSpells = yes
+
+# Bot automatically picks talent points based on current spec (full = pick spec based on probability if multiple are like current spec, semi = only apply points if 1 spec looks like current spec, no = no auto talent points)
+AiPlayerbot.AutoPickTalents = full
+
+# Bots automatically learn trainable spells on levelup
+# Default: 0 (disabled)
+AiPlayerbot.AutoLearnTrainerSpells = 0
+
+# Bots automatically learn classquest reward spells on levelup
+# Default: 0 (disabled)
+AiPlayerbot.AutoLearnQuestSpells = 0
+
 ##################################################################################
 #                                                                                #
 # All other parameters are optional but can be changed by uncommenting them here #
@@ -113,8 +140,8 @@ AiPlayerbot.GearScoreCheck = 0
 # Rogue example
 # Assassination example
 
-AiPlayerbot.PremadeSpecName.4.0 = pve dps assasination               
-AiPlayerbot.PremadeSpecProb.4.0 = 100                                
+AiPlayerbot.PremadeSpecName.4.0 = pve dps assasination
+AiPlayerbot.PremadeSpecProb.4.0 = 100
 AiPlayerbot.PremadeSpecLink.4.0.30 = 005302105041                    # Work towards Cold Blood
 AiPlayerbot.PremadeSpecLink.4.0.52 = 00532310505105-3203-05          # Unlock Seal Fate, Imp backstab and then take opportunity
 AiPlayerbot.PremadeSpecLink.4.0.60 = 00532310505105-320305002001-05  # Final spec
@@ -122,25 +149,31 @@ AiPlayerbot.PremadeSpecLink.4.0.60 = 00532310505105-320305002001-05  # Final spe
 # Combat example
 
 AiPlayerbot.PremadeSpecName.4.1 = pve dps combat
-AiPlayerbot.PremadeSpecProb.4.1 = 100                                 
+AiPlayerbot.PremadeSpecProb.4.1 = 100
 AiPlayerbot.PremadeSpecLink.4.1.20 = -02305001                       # Improved SS first, then unlock riposte. This is to avoid points in precicison before riposte. 
 AiPlayerbot.PremadeSpecLink.4.1.30 = -02305501000401                 # Unlock bladeflury first
 AiPlayerbot.PremadeSpecLink.4.1.56 = 005302105-0230550100040140231   # Unlock Adrenaline rush and then relentles strikes after that it goes to lethality
 AiPlayerbot.PremadeSpecLink.4.1.60 = 00530310503-0230550100050130231 # Final spec. From 56 it will pick up the last point in imp snd and finish with imp poisons.
 
 # Preset talents supplied by Lidocain. Do you have more/improved specs? Let us know!
-# Warrior 
+# Warrior
 AiPlayerbot.PremadeSpecName.1.0 = pve dps fury
+AiPlayerbot.PremadeSpecProb.1.0 = 50
 AiPlayerbot.PremadeSpecLink.1.0.60 = 30305001302-05050005525010051
 AiPlayerbot.PremadeSpecName.1.1 = pve dps fury (2hander)
+AiPlayerbot.PremadeSpecProb.1.1 = 50
 AiPlayerbot.PremadeSpecLink.1.1.60 = 20305011332-05053101005410051
 AiPlayerbot.PremadeSpecName.1.2 = pve tank prot (sword & board)
+AiPlayerbot.PremadeSpecProb.1.2 = 50
 AiPlayerbot.PremadeSpecLink.1.2.60 = 05005001-05-55250110530101051
 AiPlayerbot.PremadeSpecName.1.3 = pve tank prot (fury tank)
+AiPlayerbot.PremadeSpecProb.1.3 = 50
 AiPlayerbot.PremadeSpecLink.1.3.60 = -05050005505010051-502501105
 AiPlayerbot.PremadeSpecName.1.4 = pve dps fury (fury prot)
+AiPlayerbot.PremadeSpecProb.1.4 = 50
 AiPlayerbot.PremadeSpecLink.1.4.60 = 05-05050105305010051-052301004
 AiPlayerbot.PremadeSpecName.1.5 = pve dps arms (2hsword)
+AiPlayerbot.PremadeSpecProb.1.5 = 50
 AiPlayerbot.PremadeSpecLink.1.5.60 = 303050213520105001-05050005005
 
 AiPlayerbot.PremadeSpecName.1.6 = pvp dps arms
@@ -161,26 +194,36 @@ AiPlayerbot.PremadeSpecName.2.3 = pve heal holy (prot! holy shock taunt)
 AiPlayerbot.PremadeSpecLink.2.3.60 = 55153122501001-053200334
 
 AiPlayerbot.PremadeSpecName.2.4 = pvp heal holy
+AiPlayerbot.PremadeSpecProb.2.4 = 80
 AiPlayerbot.PremadeSpecLink.2.4.60 = 05503120521351-05025033
 AiPlayerbot.PremadeSpecName.2.5 = pvp heal Holy
+AiPlayerbot.PremadeSpecProb.2.5 = 80
 AiPlayerbot.PremadeSpecLink.2.5.60 = 05503112521051-05324100032
 AiPlayerbot.PremadeSpecName.2.6 = pvp tank prot
+AiPlayerbot.PremadeSpecProb.2.6 = 80
 AiPlayerbot.PremadeSpecLink.2.6.60 = 500501-053050335001051-05004
 AiPlayerbot.PremadeSpecName.2.7 = pvp dps ret
+AiPlayerbot.PremadeSpecProb.2.7 = 80
 AiPlayerbot.PremadeSpecLink.2.7.60 = 505001-0531-502310512203151
 AiPlayerbot.PremadeSpecName.2.8 = pvp dps ret (Loaded Reck Bomb)
+AiPlayerbot.PremadeSpecProb.2.8 = 80
 AiPlayerbot.PremadeSpecLink.2.8.60 = -0532010153005-50203151220311
 
 # Hunter
 AiPlayerbot.PremadeSpecName.3.0 = pve dps mm (mm/sv)
+AiPlayerbot.PremadeSpecProb.3.0 = 60
 AiPlayerbot.PremadeSpecLink.3.0.60 = 2-05251030513051-33202004103
 AiPlayerbot.PremadeSpecName.3.1 = pve dps mm (mm/bm)
+AiPlayerbot.PremadeSpecProb.3.1 = 60
 AiPlayerbot.PremadeSpecLink.3.1.60 = 55000000505-05251030513051
 AiPlayerbot.PremadeSpecName.3.2 = pve dps mm (mm/sv)
+AiPlayerbot.PremadeSpecProb.3.2 = 60
 AiPlayerbot.PremadeSpecLink.3.2.60 = 5-05351030503051-33050022
 AiPlayerbot.PremadeSpecName.3.3 = pve dps bm (farmer)
+AiPlayerbot.PremadeSpecProb.3.3 = 60
 AiPlayerbot.PremadeSpecLink.3.3.60 = 5000322050521231-054510005
 AiPlayerbot.PremadeSpecName.3.4 = pve dps mm
+AiPlayerbot.PremadeSpecProb.3.4 = 60
 AiPlayerbot.PremadeSpecLink.3.4.60 = 53000200505-05351030503051
 
 AiPlayerbot.PremadeSpecName.3.5 = pvp dps surv
@@ -212,16 +255,22 @@ AiPlayerbot.PremadeSpecLink.4.9.60 = 305023005-3200550100050150231
 
 # Priest
 AiPlayerbot.PremadeSpecName.5.0 = pve heal disc
+AiPlayerbot.PremadeSpecProb.5.0 = 66
 AiPlayerbot.PremadeSpecLink.5.0.60 = 505230130505101-0250510313
 AiPlayerbot.PremadeSpecName.5.1 = pve heal disc
+AiPlayerbot.PremadeSpecProb.5.1 = 66
 AiPlayerbot.PremadeSpecLink.5.1.60 = 5042001305051-23005113230005
 AiPlayerbot.PremadeSpecName.5.2 = pve dps shadow
+AiPlayerbot.PremadeSpecProb.5.2 = 66
 AiPlayerbot.PremadeSpecLink.5.2.60 = 5012301303--5002505103501051
 AiPlayerbot.PremadeSpecName.5.3 = pve dps shadow
+AiPlayerbot.PremadeSpecProb.5.3 = 66
 AiPlayerbot.PremadeSpecLink.5.3.60 = 50520013--5032504103501051
 AiPlayerbot.PremadeSpecName.5.4 = pve heal holy
+AiPlayerbot.PremadeSpecProb.5.4 = 66
 AiPlayerbot.PremadeSpecLink.5.4.60 = 5012301305001-025051031300055
 AiPlayerbot.PremadeSpecName.5.5 = pve heal holy (dps/off-heals spirit build)
+AiPlayerbot.PremadeSpecProb.5.5 = 66
 AiPlayerbot.PremadeSpecLink.5.5.60 = 5102321330001-00545130002005-5
 
 AiPlayerbot.PremadeSpecName.5.6 = pvp dps shadow (imp mana burn)
@@ -258,25 +307,34 @@ AiPlayerbot.PremadeSpecLink.7.9.60 = -5-550350512553151
 
 # Mage
 AiPlayerbot.PremadeSpecName.8.0 = pve dps arcane
+AiPlayerbot.PremadeSpecProb.8.0 = 33
 AiPlayerbot.PremadeSpecLink.8.0.60 = 2300450310031531--053500030013
 AiPlayerbot.PremadeSpecName.8.1 = pve dps fire
+AiPlayerbot.PremadeSpecProb.8.1 = 33
 AiPlayerbot.PremadeSpecLink.8.1.60 = 23005500002-5052020023033051-003
 AiPlayerbot.PremadeSpecName.8.2 = pve dps frost (winter’s chill spec)
+AiPlayerbot.PremadeSpecProb.8.2 = 33
 AiPlayerbot.PremadeSpecLink.8.2.60 = 230045030003--05350003101301351
 AiPlayerbot.PremadeSpecName.8.3 = pve dps frost (frost build for farming)
+AiPlayerbot.PremadeSpecProb.8.3 = 33
 AiPlayerbot.PremadeSpecLink.8.3.60 = -055002302003-24250230102051301
 AiPlayerbot.PremadeSpecName.8.4 = pve dps frost (frost-arcane)
+AiPlayerbot.PremadeSpecProb.8.4 = 33
 AiPlayerbot.PremadeSpecLink.8.4.60 = 250005030011--05050203132351301
 AiPlayerbot.PremadeSpecName.8.5 = pve dps frost (fun)
+AiPlayerbot.PremadeSpecProb.8.5 = 33
 AiPlayerbot.PremadeSpecLink.8.5.60 = 230005--05353203101351351
 AiPlayerbot.PremadeSpecName.8.6 = pve dps frost (aoe farm)
+AiPlayerbot.PremadeSpecProb.8.6 = 33
 AiPlayerbot.PremadeSpecLink.8.6.60 = 230055001003--25300233132301301
 AiPlayerbot.PremadeSpecName.8.7 = pve dps arcane (glass cannon)
+AiPlayerbot.PremadeSpecProb.8.7 = 33
 AiPlayerbot.PremadeSpecLink.8.7.60 = 2300550310031531--053500030003
 AiPlayerbot.PremadeSpecName.8.8 = pve dps frost
+AiPlayerbot.PremadeSpecProb.8.8 = 33
 AiPlayerbot.PremadeSpecLink.8.8.60 = 230045200003--05050033132301051
 
-AiPlayerbot.PremadeSpecName.8.9 = pvp dps frost 
+AiPlayerbot.PremadeSpecName.8.9 = pvp dps frost
 AiPlayerbot.PremadeSpecLink.8.9.60 = 20500322102--05053203102351301
 AiPlayerbot.PremadeSpecName.8.10 = pvp dps frost (frosted fun)
 AiPlayerbot.PremadeSpecLink.8.10.60 = 230005001--05350233132351301
@@ -285,7 +343,7 @@ AiPlayerbot.PremadeSpecLink.8.11.60 = 2300512312201531-05523201-002
 
 # Warlock
 AiPlayerbot.PremadeSpecName.9.0 = pve dps demo (ds/ruin)
-AiPlayerbot.PremadeSpecLink.9.0.60 = 25002-205030015221-5250051020001
+AiPlayerbot.PremadeSpecLink.9.0.60 = 25002-205030015221-52500051020001
 AiPlayerbot.PremadeSpecName.9.1 = pve dps demo (succubus sacrifice)
 AiPlayerbot.PremadeSpecLink.9.1.60 = 25002-2050300142301-52500051020001
 AiPlayerbot.PremadeSpecName.9.2 = pve dps dest (imp lord)
@@ -296,18 +354,25 @@ AiPlayerbot.PremadeSpecName.9.4 = pve dps affli
 AiPlayerbot.PremadeSpecLink.9.4.60 = 55002530122010051-2351050102
 
 AiPlayerbot.PremadeSpecName.9.5 = pvp dps demo (sl)
-AiPlayerbot.PremadeSpecLink.9.5.60 = 2050002-20503011525010512-05500001
+AiPlayerbot.PremadeSpecProb.9.5 = 71
+AiPlayerbot.PremadeSpecLink.9.5.60 = 05002-20503011525010512-05500001
 AiPlayerbot.PremadeSpecName.9.6 = pvp dps demo (soul link/ shadowburn)
+AiPlayerbot.PremadeSpecProb.9.6 = 71
 AiPlayerbot.PremadeSpecLink.9.6.60 = 35-2050310152501051-50500011
-AiPlayerbot.PremadeSpecName.9.7 = pvp dps demo (soul link/ nightfall )
+AiPlayerbot.PremadeSpecName.9.7 = pvp dps demo (soul link/ nightfall)
+AiPlayerbot.PremadeSpecProb.9.7 = 71
 AiPlayerbot.PremadeSpecLink.9.7.60 = 35000232122-2050310152501051
 AiPlayerbot.PremadeSpecName.9.8 = pvp dps affli (sm/ruin)
+AiPlayerbot.PremadeSpecProb.9.8 = 71
 AiPlayerbot.PremadeSpecLink.9.8.60 = 2500213212201135--50500051022001
 AiPlayerbot.PremadeSpecName.9.9 = pvp dps affli (drakedog)
+AiPlayerbot.PremadeSpecProb.9.9 = 71
 AiPlayerbot.PremadeSpecLink.9.9.60 = 05002-205-0555005102205151
 AiPlayerbot.PremadeSpecName.9.10 = pvp dps affli (sm/ruin)
+AiPlayerbot.PremadeSpecProb.9.10 = 71
 AiPlayerbot.PremadeSpecLink.9.10.60 = 3500023212201135--50520051020001
 AiPlayerbot.PremadeSpecName.9.11 = pvp dps destro (conflagrate)
+AiPlayerbot.PremadeSpecProb.9.11 = 71
 AiPlayerbot.PremadeSpecLink.9.11.60 = 35000231122-001-5052005102005141
 
 # Druid
@@ -439,17 +504,6 @@ AiPlayerbot.RandomBotsPerInterval = 60
 
 # How far random bots are teleported after death
 AiPlayerbot.RandomBotTeleportDistance = 100
-# Automation
-# Bots pick their quest reward (yes = picks first usefull item, no = list all rewards, ask = pick usefull item and lists if multiple)
-AiPlayerbot.AutoPickReward = no
-# Bots equip upgrades (Bots will equip any item obtained from looting or a quest if they are upgrades)
-AiPlayerbot.AutoEquipUpgradeLoot = 0
-# Sync quests with player (Bots will complete quests the moment you hand them in. Bots will ignore looting quest items.)
-AiPlayerbot.SyncQuestWithPlayer = no
-# Bot automatically trains spells when talking to trainer (yes = train all available spells as long as the bot has the money, free = auto trains with no money cost, no = only list spells)
-AiPlayerbot.AutoTrainSpells = no
-# Bot automatically picks talent points based on current spec (full = pick spec based on probability if multiple are like current spec, semi = only apply points if 1 spec looks like current spec, no = no auto talent points)
-AiPlayerbot.AutoPickTalents = no
 
 # Debug switches
 #AiPlayerbot.SpellDump = 0
