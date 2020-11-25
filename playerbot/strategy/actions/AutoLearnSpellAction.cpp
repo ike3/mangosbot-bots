@@ -84,8 +84,8 @@ void AutoLearnSpellAction::LearnTrainerSpells(ostringstream* out)
                 SpellEntry const* spell = sServerFacade.LookupSpellInfo(tSpell->spell);
                 if (spell)
                 {
-                    string SpellName = spell->SpellName[0];
-                    if (spell->Effect[EFFECT_INDEX_1] == SPELL_EFFECT_SKILL_STEP && SpellName.find("Apprentice") != string::npos)
+                    string SpellName = spell->SpellName[0];                    
+                    if (spell->Effect[EFFECT_INDEX_1] == SPELL_EFFECT_SKILL_STEP)
                     {
                         uint32 skill = spell->EffectMiscValue[EFFECT_INDEX_1];
 
@@ -94,10 +94,8 @@ void AutoLearnSpellAction::LearnTrainerSpells(ostringstream* out)
                             SkillLineEntry const* pSkill = sSkillLineStore.LookupEntry(skill);
                             if (pSkill)
                             {
-                                if (pSkill->categoryId == SKILL_CATEGORY_PROFESSION || pSkill->categoryId == SKILL_CATEGORY_SECONDARY)
-                                {
-                                    continue;
-                                }
+                                if (SpellName.find("Apprentice") != string::npos && pSkill->categoryId == SKILL_CATEGORY_PROFESSION || pSkill->categoryId == SKILL_CATEGORY_SECONDARY)
+                                    continue;                                
                             }
                         }
                     }
@@ -138,6 +136,18 @@ void AutoLearnSpellAction::LearnQuestSpells(ostringstream* out)
     }
 }
 
+string formatSpell(SpellEntry const* sInfo)
+{
+    ostringstream out;
+    string rank = sInfo->Rank[0];
+    
+    if(rank.empty())
+        out << "|cffffffff|Hspell:" << sInfo->Id << "|h[" << sInfo->SpellName[LOCALE_enUS] << "]|h|r";
+    else
+        out << "|cffffffff|Hspell:" << sInfo->Id << "|h[" << sInfo->SpellName[LOCALE_enUS] << " " << rank << "]|h|r";
+    return out.str();
+}
+
 void AutoLearnSpellAction::LearnSpell(uint32 spellId, ostringstream* out)
 {
     SpellEntry const* proto = sServerFacade.LookupSpellInfo(spellId);
@@ -149,7 +159,8 @@ void AutoLearnSpellAction::LearnSpell(uint32 spellId, ostringstream* out)
     Spell* spell = new Spell(bot, proto, false);
     SpellCastTargets targets;
     targets.setUnitTarget(bot);
-    spell->SpellStart(&targets);    
+    spell->SpellStart(&targets);
+    *out << formatSpell(spell) << ", ";
 #endif
 
 #ifdef MANGOS
@@ -164,7 +175,7 @@ void AutoLearnSpellAction::LearnSpell(uint32 spellId, ostringstream* out)
             {
                 bot->learnSpell(learnedSpell, false);
                 SpellEntry const* spellInfo = sServerFacade.LookupSpellInfo(learnedSpell);
-                *out << spellInfo->SpellName[0] << ", ";
+                *out << formatSpell(spellInfo) << ", ";
             }
             learned = true;
         }
@@ -173,7 +184,7 @@ void AutoLearnSpellAction::LearnSpell(uint32 spellId, ostringstream* out)
         if (!bot->HasSpell(spellId))
         {
             bot->learnSpell(spellId, false);
-            *out << proto->SpellName[0] << ", ";
+            *out << formatSpell(proto) << ", ";
         }
     }
 #endif
