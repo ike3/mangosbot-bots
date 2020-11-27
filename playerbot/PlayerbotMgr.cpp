@@ -137,6 +137,14 @@ void PlayerbotHolder::OnBotLogin(Player * const bot)
         ai->ResetStrategies(false);
     }
 
+    if (master && !master->IsTaxiFlying())
+    {
+        bot->GetMotionMaster()->MovementExpired();
+#ifdef MANGOS
+        bot->m_taxi.ClearTaxiDestinations();
+#endif
+    }
+
     ai->TellMaster("Hello!");
 }
 
