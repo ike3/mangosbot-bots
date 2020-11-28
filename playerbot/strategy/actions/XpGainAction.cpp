@@ -9,6 +9,9 @@ using namespace ai;
 
 bool XpGainAction::Execute(Event event)
 {
+    if (!sRandomPlayerbotMgr.IsRandomBot(bot))
+        return true;
+
     WorldPacket p(event.getPacket()); // (8+4+1+4+8)
     ObjectGuid guid;
     uint32 xpgain;
