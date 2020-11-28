@@ -227,7 +227,8 @@ bool PlayerbotAIConfig::Initialize()
 	//SPP switches
     enableGreet = config.GetBoolDefault("AiPlayerbot.EnableGreet", false);
 	disableRandomLevels = config.GetBoolDefault("AiPlayerbot.DisableRandomLevels", false);
-    playerbotsXPrate = config.GetIntDefault("AiPlayerbot.KillXPRate", 10);
+    playerbotsXPrate = config.GetIntDefault("AiPlayerbot.KillXPRate", 1);
+    randomBotGrindAlone = config.GetBoolDefault("AiPlayerbot.RandomBotGrindAlone", false); //hidden config
     RandombotsWalkingRPG = config.GetBoolDefault("AiPlayerbot.RandombotsWalkingRPG", false);
     RandombotsWalkingRPGInDoors = config.GetBoolDefault("AiPlayerbot.RandombotsWalkingRPG.InDoors", false);
     minEnchantingBotLevel = config.GetIntDefault("AiPlayerbot.minEnchantingBotLevel", 60);

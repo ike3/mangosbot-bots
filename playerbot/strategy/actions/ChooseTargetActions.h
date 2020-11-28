@@ -41,7 +41,7 @@ namespace ai
                     (!AI_VALUE2(uint8, "mana", "self target") || AI_VALUE2(uint8, "mana", "self target") > sPlayerbotAIConfig.mediumMana)
                 ) || AI_VALUE2(bool, "combat", "self target")
 */
-                  ((!(AI_VALUE(list<ObjectGuid>, "nearest non bot players").empty() && !bot->InBattleGround()) &&
+                  ((!(AI_VALUE(list<ObjectGuid>, "nearest non bot players").empty() && !bot->InBattleGround() && !sPlayerbotAIConfig.randomBotGrindAlone) &&
                     (AI_VALUE2(uint8, "health", "self target") > sPlayerbotAIConfig.mediumHealth &&
                     (!AI_VALUE2(uint8, "mana", "self target") || AI_VALUE2(uint8, "mana", "self target") > sPlayerbotAIConfig.mediumMana))) || AI_VALUE2(bool, "combat", "self target"))
                 ;

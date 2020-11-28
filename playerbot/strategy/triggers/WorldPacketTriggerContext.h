@@ -49,6 +49,7 @@ namespace ai
             creators["bg join"] = &WorldPacketTriggerContext::bg_update;
             creators["bg status"] = &WorldPacketTriggerContext::bg_status;
             creators["levelup"] = &WorldPacketTriggerContext::levelup;
+            creators["xpgain"] = &WorldPacketTriggerContext::xpgain;
         }
 
     private:
@@ -92,5 +93,6 @@ namespace ai
         static Trigger* loot_roll(PlayerbotAI* ai) { return new WorldPacketTrigger(ai, "loot roll"); }
         static Trigger* taxi(PlayerbotAI* ai) { return new WorldPacketTrigger(ai, "activate taxi"); }
         static Trigger* levelup(PlayerbotAI* ai) { return new WorldPacketTrigger(ai, "levelup"); }
+        static Trigger* xpgain(PlayerbotAI* ai) { return new WorldPacketTrigger(ai, "xpgain"); }
     };
 };

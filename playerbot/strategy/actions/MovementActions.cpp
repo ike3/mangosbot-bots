@@ -559,3 +559,14 @@ bool MoveOutOfCollisionAction::isUseful()
     return AI_VALUE2(bool, "collision", "self target");
 }
 
+bool MoveRandomAction::Execute(Event event)
+{
+    float angle = M_PI * 2000 / (float)urand(1, 1000);
+    float distance = 200;
+    return MoveTo(bot->GetMapId(), bot->GetPositionX() + cos(angle) * distance, bot->GetPositionY() + sin(angle) * distance, bot->GetPositionZ());
+}
+
+//bool MoveOutOfCollisionAction::isUseful()
+//{
+    //return AI_VALUE2(bool, "collision", "self target");
+//}

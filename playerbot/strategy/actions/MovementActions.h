@@ -98,4 +98,11 @@ namespace ai
         virtual bool isUseful();
     };
 
+    class MoveRandomAction : public MovementAction
+    {
+    public:
+        MoveRandomAction(PlayerbotAI* ai) : MovementAction(ai, "move random") {}
+        virtual bool Execute(Event event);
+    };
+
 }
