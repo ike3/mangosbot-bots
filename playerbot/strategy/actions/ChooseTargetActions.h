@@ -3,6 +3,7 @@
 #include "../Action.h"
 #include "AttackAction.h"
 #include "../../ServerFacade.h"
+#include "../../playerbot.h"
 
 namespace ai
 {
@@ -31,19 +32,41 @@ namespace ai
 
     class AttackAnythingAction : public AttackAction
     {
+    private:
+        bool GrindAlone(Player* bot)
+        {
+            if (!sRandomPlayerbotMgr.IsRandomBot(bot))
+                return true;
+
+            if (sPlayerbotAIConfig.randomBotGrindAlone <= 0)
+                return false;
+
+            uint32 randnum = bot->GetGUIDLow(); //Semi-random but fixed number for each bot.
+            randnum = randnum + (floor(WorldTimer::getMSTime() / (60 * 60 * 1000))); //Cycle the number by 1 each hour.
+            randnum = (randnum % 100) + 1; //Turn the number into a value between 1 and 100
+            return randnum < sPlayerbotAIConfig.randomBotGrindAlone;
+        }
     public:
         AttackAnythingAction(PlayerbotAI* ai) : AttackAction(ai, "attack anything") {}
         virtual string GetTargetName() { return "grind target"; }
         virtual bool isUseful() {
             return GetTarget() &&
-            /*    (!AI_VALUE(list<ObjectGuid>, "nearest non bot players").empty() &&
-                    AI_VALUE2(uint8, "health", "self target") > sPlayerbotAIConfig.mediumHealth &&
-                    (!AI_VALUE2(uint8, "mana", "self target") || AI_VALUE2(uint8, "mana", "self target") > sPlayerbotAIConfig.mediumMana)
-                ) || AI_VALUE2(bool, "combat", "self target")
-*/
-                  ((!(AI_VALUE(list<ObjectGuid>, "nearest non bot players").empty() && !bot->InBattleGround() && !sPlayerbotAIConfig.randomBotGrindAlone) &&
-                    (AI_VALUE2(uint8, "health", "self target") > sPlayerbotAIConfig.mediumHealth &&
-                    (!AI_VALUE2(uint8, "mana", "self target") || AI_VALUE2(uint8, "mana", "self target") > sPlayerbotAIConfig.mediumMana))) || AI_VALUE2(bool, "combat", "self target"))
+                /*    (!AI_VALUE(list<ObjectGuid>, "nearest non bot players").empty() &&
+                        AI_VALUE2(uint8, "health", "self target") > sPlayerbotAIConfig.mediumHealth &&
+                        (!AI_VALUE2(uint8, "mana", "self target") || AI_VALUE2(uint8, "mana", "self target") > sPlayerbotAIConfig.mediumMana)
+                    ) || AI_VALUE2(bool, "combat", "self target")
+    */
+                (
+                    (
+                        (!AI_VALUE(list<ObjectGuid>, "nearest non bot players").empty() || bot->InBattleGround() || GrindAlone(bot))          //Bot is not alone or in battleground or allowed to grind alone.
+                        &&
+                        AI_VALUE2(uint8, "health", "self target") > sPlayerbotAIConfig.mediumHealth                                           //Bot has enough health.
+                        &&
+                        (!AI_VALUE2(uint8, "mana", "self target") || AI_VALUE2(uint8, "mana", "self target") > sPlayerbotAIConfig.mediumMana) //Bot has no mana or enough mana.
+                    )
+                    ||
+                    AI_VALUE2(bool, "combat", "self target")                                                                                  //Bot is already in combat
+                )
                 ;
         }
         virtual bool isPossible()

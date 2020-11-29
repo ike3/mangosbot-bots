@@ -9,7 +9,7 @@ using namespace ai;
 
 bool XpGainAction::Execute(Event event)
 {
-    if (!sRandomPlayerbotMgr.IsRandomBot(bot))
+    if (!sRandomPlayerbotMgr.IsRandomBot(bot) || sPlayerbotAIConfig.playerbotsXPrate == 1)
         return true;
 
     WorldPacket p(event.getPacket()); // (8+4+1+4+8)
@@ -30,14 +30,12 @@ bool XpGainAction::Execute(Event event)
         p >> groupBonus;   // 8 group bonus
     }
 
-    if (sPlayerbotAIConfig.playerbotsXPrate != 1)
-    {
-        Unit* victim;
-        if (guid)
-            victim = ai->GetUnit(guid);
-        xpgain = xpgain * (sPlayerbotAIConfig.playerbotsXPrate - 1);
-        GiveXP(xpgain, victim);
-    }
+    Unit* victim;
+    if (guid)
+        victim = ai->GetUnit(guid);
+    xpgain = xpgain * (sPlayerbotAIConfig.playerbotsXPrate - 1);
+    GiveXP(xpgain, victim);
+
 
     return true;
 }

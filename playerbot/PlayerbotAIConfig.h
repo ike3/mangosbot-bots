@@ -87,7 +87,7 @@ public:
     bool gearscorecheck;
 	bool randomBotPreQuests;
     uint32 playerbotsXPrate;
-    bool randomBotGrindAlone;
+    uint32 randomBotGrindAlone;
     uint32 minEnchantingBotLevel;
     uint32 randombotStartingLevel;
 
