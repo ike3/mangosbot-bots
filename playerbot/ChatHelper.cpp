@@ -442,7 +442,7 @@ bool ChatHelper::parseable(string text)
 
 string ChatHelper::formatClass(Player* player, int spec)
 {
-    uint8 cls = player->getClass();
+    uint8 cls = ((BPlayer*)player)->getClass();
 
     ostringstream out;
     out << specs[cls][spec] << " (";

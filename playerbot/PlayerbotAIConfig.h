@@ -106,6 +106,7 @@ public:
     std::string autoPickTalents;
     bool autoLearnTrainerSpells;
     bool autoLearnQuestSpells;
+    uint32 tweakValue; //Debugging config
 
     int commandServerPort;
     bool perfMonEnabled;

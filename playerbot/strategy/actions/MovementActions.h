@@ -103,6 +103,7 @@ namespace ai
     public:
         MoveRandomAction(PlayerbotAI* ai) : MovementAction(ai, "move random") {}
         virtual bool Execute(Event event);
+        virtual bool isUseful();
     };
 
 }

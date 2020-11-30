@@ -33,7 +33,7 @@ namespace ai
     class AttackAnythingAction : public AttackAction
     {
     private:
-        bool GrindAlone(Player* bot)
+        bool GrindAlone(Player* bot) //Todo: add specific conditions when bots should always be active (ie. in a guild with a player, some day grouped with a player, ect.)
         {
             if (!sRandomPlayerbotMgr.IsRandomBot(bot))
                 return true;
@@ -41,10 +41,15 @@ namespace ai
             if (sPlayerbotAIConfig.randomBotGrindAlone <= 0)
                 return false;
 
-            uint32 randnum = bot->GetGUIDLow(); //Semi-random but fixed number for each bot.
-            randnum = randnum + (floor(WorldTimer::getMSTime() / (60 * 60 * 1000))); //Cycle the number by 1 each hour.
-            randnum = (randnum % 100) + 1; //Turn the number into a value between 1 and 100
-            return randnum < sPlayerbotAIConfig.randomBotGrindAlone;
+            uint32 randnum = bot->GetGUIDLow();                            //Semi-random but fixed number for each bot.
+            uint32 cycle = floor(WorldTimer::getMSTime() / (1000));        //Semi-random number adds 1 each second.
+
+            cycle = cycle * sPlayerbotAIConfig.randomBotGrindAlone / 6000; //Cycles 0.01 per minute for each 1% of the config. (At 100% this is 1 per minute)
+            randnum = randnum + cycle;                                     //Random number that increases 0.01 each minute for each % that the bots should be active.
+            randnum = (randnum % 100);                                     //Loops the randomnumber at 100. Bassically removes all the numbers above 99. 
+            randnum = randnum + 1;                                         //Now we have a number unique for each bot between 1 and 100 that increases by 0.01 (per % active each minute).
+
+            return randnum < sPlayerbotAIConfig.randomBotGrindAlone;       //The given percentage of bots should be active and rotate 1% of those active bots each minute.
         }
     public:
         AttackAnythingAction(PlayerbotAI* ai) : AttackAction(ai, "attack anything") {}

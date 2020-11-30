@@ -66,5 +66,8 @@ bool PossibleRpgTargetsValue::AcceptUnit(Unit* unit)
 		if (unit->HasFlag(UNIT_NPC_FLAGS, *i)) return true;
     }
 
+    if (urand(1, 100) < sPlayerbotAIConfig.tweakValue && sServerFacade.IsFriendlyTo(unit, bot))
+        return true;
+
     return false;
 }
