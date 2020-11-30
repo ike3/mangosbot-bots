@@ -352,14 +352,3 @@ protected:
 
 };
 
-//Compatiblity layer for player for VMANGOS
-class BPlayer : public Player
-{    
-public:
-#ifdef VMANGOS   
-    uint32 getLevel() const { return  GetLevel(); }
-    uint8 getClass() const { return GetClass(); }
-    uint32 getClassMask() const { return GetClassMask(); }
-#endif
-};
-
