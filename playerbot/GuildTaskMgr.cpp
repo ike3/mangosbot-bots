@@ -194,22 +194,33 @@ bool GuildTaskMgr::CreateKillTask(uint32 owner, uint32 guildId)
 
     uint32 rank = !urand(0, 2) ? CREATURE_ELITE_RAREELITE : CREATURE_ELITE_RARE;
     vector<uint32> ids;
-	for (uint32 id = 0; id < sCreatureStorage.GetMaxEntry(); ++id)
-	{
-		CreatureInfo const* co = sCreatureStorage.LookupEntry<CreatureInfo>(id);
-		if (!co)
-			continue;
 
-        if (co->Rank != rank)
-            continue;
+    uint32 level = (uint32)player->getLevel();
+    QueryResult* results = WorldDatabase.PQuery("SELECT ct.Entry, c.map, c.position_x, c.position_y, ct.Name FROM creature_template ct "
+        "join creature c on ct.Entry = c.id "
+        "where ct.MaxLevel < %u and ct.MinLevel > %u and ct.Rank = %u ",
+        level + 4, level - 3, rank);
+    if (results)
+    {
+        do
+        {
+            Field* fields = results->Fetch();
+            uint32 id = fields[0].GetUInt32();
+            uint32 map = fields[1].GetUInt32();
+            float x = fields[2].GetFloat();
+            float y = fields[3].GetFloat();
+            string name = fields[4].GetCppString();
 
-        if (co->MaxLevel > player->getLevel() + 4 || co->MinLevel < player->getLevel() - 3)
-            continue;
+            if (strstr(name.c_str(), "UNUSED"))
+                continue;
 
-        if (strstr(co->Name, "UNUSED"))
-            continue;
+            float dist = sServerFacade.GetDistance2d(player, x, y);
+            if (dist > sPlayerbotAIConfig.guildTaskKillTaskDistance || player->GetMapId() != map)
+                continue;
 
-        ids.push_back(id);
+            if (find(ids.begin(), ids.end(), id) == ids.end()) ids.push_back(id);
+        } while (results->NextRow());
+        delete results;
     }
 
     if (ids.empty())

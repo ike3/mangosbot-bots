@@ -80,6 +80,7 @@ public:
     uint32 minGuildTaskAdvertisementTime, maxGuildTaskAdvertisementTime;
     uint32 minGuildTaskRewardTime, maxGuildTaskRewardTime;
     uint32 guildTaskAdvertCleanupTime;
+    uint32 guildTaskKillTaskDistance;
 
     uint32 iterationsPerTick;
 
