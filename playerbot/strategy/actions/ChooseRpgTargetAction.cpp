@@ -12,18 +12,20 @@ bool ChooseRpgTargetAction::Execute(Event event)
     if (possibleTargets.empty())
         return false;
 
-    string ignore = context->GetValue<string>("ignore rpg target")->Get();
+    set<ObjectGuid>& ignore = context->GetValue<set<ObjectGuid>&>("ignore rpg target")->Get();
 
     vector<Unit*> units;
     for (list<ObjectGuid>::iterator i = possibleTargets.begin(); i != possibleTargets.end(); ++i)
     {
         Unit* unit = ai->GetUnit(*i);
-        if (unit && (ignore.empty() || ignore.find(to_string(unit->GetObjectGuid())) == string::npos)) units.push_back(unit);
+        if (unit && (ignore.size() == 0 || ignore.find(unit->GetObjectGuid()) == ignore.end())) units.push_back(unit);
     }
 
     if (units.empty())
     {
         sLog.outDetail("%s can't choose RPG target: all %zu are not available", bot->GetName(), possibleTargets.size());
+        ignore.clear(); //Clear ignore list.
+        context->GetValue<set<ObjectGuid>&>("ignore rpg target")->Set(ignore);
         return false;
     }
 
@@ -32,12 +34,12 @@ bool ChooseRpgTargetAction::Execute(Event event)
 
     context->GetValue<ObjectGuid>("rpg target")->Set(target->GetObjectGuid());
 
-    if (ignore.size() > 1000)
-        ignore = ignore.replace(0, ignore.find(",") + 1, "");
+    if (ignore.size() > 50)
+        ignore.erase(ignore.begin());
 
-    ignore = ignore + to_string(target->GetObjectGuid()) + ",";
+    ignore.insert(target->GetObjectGuid());
 
-    context->GetValue<string>("ignore rpg target")->Set(ignore);
+    context->GetValue<set<ObjectGuid>&>("ignore rpg target")->Set(ignore);
 
     return true;
 }
