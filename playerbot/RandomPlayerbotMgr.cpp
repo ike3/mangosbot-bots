@@ -757,11 +757,28 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot, vector<WorldLocation> &locs
         return;
     }
 
+    vector<WorldLocation> nlocs;
+
+    for (auto& loc : locs)
+    {
+        if (loc.mapid != bot->GetMapId() && urand(1, 100) > 5+0.1*bot->getLevel()) //5% + 0.1% per level chance node on different map in selection.
+            continue;
+            
+        float dist = bot->GetDistance2d(loc.coord_x, loc.coord_y);
+
+        //Continent is about 20.000 large
+
+        if (dist > urand(0, 5000) + bot->getLevel() * 15 * urand(5, 10)) //Bot will travel 0-5000 units + 75-150 units per level.
+            continue;
+
+        nlocs.push_back(loc);
+    }
+
     PerformanceMonitorOperation *pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "RandomTeleportByLocations");
     for (int attemtps = 0; attemtps < 10; ++attemtps)
     {
-        int index = urand(0, locs.size() - 1);
-        WorldLocation loc = locs[index];
+        int index = urand(0, nlocs.size() - 1);
+        WorldLocation loc = nlocs[index];
         float x = loc.coord_x + (attemtps > 0 ? urand(0, sPlayerbotAIConfig.grindDistance) - sPlayerbotAIConfig.grindDistance / 2 : 0);
         float y = loc.coord_y + (attemtps > 0 ? urand(0, sPlayerbotAIConfig.grindDistance) - sPlayerbotAIConfig.grindDistance / 2 : 0);
         float z = loc.coord_z;
@@ -792,7 +809,7 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot, vector<WorldLocation> &locs
 
         z = 0.05f + ground;
         sLog.outDetail("Random teleporting bot %s to %s %f,%f,%f (%u/%zu locations)",
-                bot->GetName(), area->area_name[0], x, y, z, attemtps, locs.size());
+                bot->GetName(), area->area_name[0], x, y, z, attemtps, nlocs.size());
 
         if (bot->IsTaxiFlying())
         {

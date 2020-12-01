@@ -48,7 +48,7 @@ namespace ai
             uint32 cycle = floor(WorldTimer::getMSTime() / (1000));        //Semi-random number adds 1 each second.
 
             cycle = cycle * sPlayerbotAIConfig.randomBotGrindAlone / 6000; //Cycles 0.01 per minute for each 1% of the config. (At 100% this is 1 per minute)
-            randnum = randnum + cycle;                                     //Random number that increases 0.01 each minute for each % that the bots should be active.
+            randnum  += cycle;                                     //Random number that increases 0.01 each minute for each % that the bots should be active.
             randnum = (randnum % 100);                                     //Loops the randomnumber at 100. Bassically removes all the numbers above 99. 
             randnum = randnum + 1;                                         //Now we have a number unique for each bot between 1 and 100 that increases by 0.01 (per % active each minute).
 
