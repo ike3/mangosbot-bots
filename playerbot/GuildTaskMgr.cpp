@@ -161,13 +161,34 @@ uint32 GuildTaskMgr::CreateTask(uint32 owner, uint32 guildId)
     }
 }
 
+class RandomItemBySkillGuildTaskPredicate : public RandomItemPredicate
+{
+public:
+    RandomItemBySkillGuildTaskPredicate(Player* player) : RandomItemPredicate(), player(player) {}
+
+    virtual bool Apply(ItemPrototype const* proto)
+    {
+        for (uint32 skill = SKILL_NONE; skill < MAX_SKILL_TYPE; ++skill)
+        {
+            if (player->HasSkill(skill) && auctionbot.IsUsedBySkill(proto, skill))
+                return true;
+        }
+
+        return false;
+    }
+
+private:
+    Player* player;
+};
+
 bool GuildTaskMgr::CreateItemTask(uint32 owner, uint32 guildId)
 {
     Player* player = sObjectMgr.GetPlayer(ObjectGuid(HIGHGUID_PLAYER, owner));
     if (!player || player->getLevel() < 5)
         return false;
 
-    uint32 itemId = sRandomItemMgr.GetRandomItem(player->getLevel() - 5, RANDOM_ITEM_GUILD_TASK);
+    RandomItemBySkillGuildTaskPredicate predicate(player);
+    uint32 itemId = sRandomItemMgr.GetRandomItem(player->getLevel() - 5, RANDOM_ITEM_GUILD_TASK, &predicate);
     if (!itemId)
     {
         sLog.outError( "%s / %s: no items avaible for item task",
