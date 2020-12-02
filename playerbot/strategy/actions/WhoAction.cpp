@@ -112,7 +112,7 @@ string WhoAction::QuerySpec(string text)
     ostringstream out;
 
     int spec = AiFactory::GetPlayerSpecTab(bot);
-    out << "|h|cffffffff" << chat->formatClass(bot, spec);
+    out << "|h|cffffffff" << chat->formatRace(bot->getRace()) << " [" << (bot->getGender() == GENDER_MALE ? "M" : "F") << "] " << chat->formatClass(bot, spec);
     out << " (|h|cff00ff00" << (uint32)bot->getLevel() << "|h|cffffffff lvl), ";
     out << "|h|cff00ff00" << ai->GetEquipGearScore(bot, false, false) << "|h|cffffffff GS (";
 

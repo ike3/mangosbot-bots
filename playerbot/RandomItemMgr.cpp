@@ -126,12 +126,16 @@ RandomItemMgr::RandomItemMgr()
 void RandomItemMgr::Init()
 {
     BuildEquipCache();
-    BuildRandomItemCache();
     BuildAmmoCache();
     BuildPotionCache();
     BuildFoodCache();
     BuildTradeCache();
     BuildRarityCache();
+}
+
+void RandomItemMgr::InitAfterAhBot()
+{
+    BuildRandomItemCache();
 }
 
 RandomItemMgr::~RandomItemMgr()

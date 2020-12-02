@@ -803,7 +803,7 @@ bool GuildTaskMgr::CheckItemTask(uint32 itemId, uint32 obtained, Player* ownerPl
         sLog.outDebug("%s / %s: item %u is not guild task item (%u)",
 				guild->GetName().c_str(), ownerPlayer->GetName(),
                 itemId, itemTask);
-        SendCompletionMessage(ownerPlayer, "made a mistake with");
+        if (byMail) SendCompletionMessage(ownerPlayer, "made a mistake with");
         return false;
     }
 

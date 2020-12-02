@@ -426,7 +426,7 @@ bool RunAwayAction::Execute(Event event)
 bool MoveToLootAction::Execute(Event event)
 {
     LootObject loot = AI_VALUE(LootObject, "loot target");
-    if (!loot.IsLootPossible(bot))
+    if (!loot.IsLootPossible(bot) || AI_VALUE(bool, "possible ads"))
         return false;
 
     WorldObject *wo = loot.GetWorldObject(bot);

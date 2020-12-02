@@ -374,22 +374,31 @@ void PlayerbotAI::HandleBotOutgoingPacket(const WorldPacket& packet)
 		WorldPacket p(packet);
 		p.rpos(0);
 		ObjectGuid casterGuid;
-		p >> casterGuid;
-		if (casterGuid != bot->GetObjectGuid())
-			return;
+#ifdef MANGOSBOT_ZERO
+        p >> casterGuid;
+#endif
+#ifdef MANGOSBOT_ONE
+        p >> casterGuid.ReadAsPacked();
+#endif
+        if (casterGuid != bot->GetObjectGuid())
+            return;
 
-		uint32 spellId;
-		p >> spellId;
-		SpellInterrupted(spellId);
-		return;
-	}
-	case SMSG_SPELL_DELAYED:
-	{
-		WorldPacket p(packet);
-		p.rpos(0);
-		ObjectGuid casterGuid;
-		p >> casterGuid;
-
+        uint32 spellId;
+        p >> spellId;
+        SpellInterrupted(spellId);
+        return;
+    }
+    case SMSG_SPELL_DELAYED:
+    {
+        WorldPacket p(packet);
+        p.rpos(0);
+        ObjectGuid casterGuid;
+#ifdef MANGOSBOT_ZERO
+        p >> casterGuid;
+#endif
+#ifdef MANGOSBOT_ONE
+        p >> casterGuid.ReadAsPacked();
+#endif
 		if (casterGuid != bot->GetObjectGuid())
 			return;
 
@@ -1322,6 +1331,7 @@ bool PlayerbotAI::canDispel(const SpellEntry* entry, uint32 dispelType)
         strcmpi((const char*)entry->SpellName[0], "frost armor") &&
         strcmpi((const char*)entry->SpellName[0], "wavering will") &&
         strcmpi((const char*)entry->SpellName[0], "chilled") &&
+        strcmpi((const char*)entry->SpellName[0], "mana tap") &&
         strcmpi((const char*)entry->SpellName[0], "ice armor"));
 }
 
