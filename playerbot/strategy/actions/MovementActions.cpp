@@ -566,17 +566,15 @@ bool MoveRandomAction::Execute(Event event)
 
     //randnum = ((randnum + cycle) % 1000) + 1;
 
-    uint32 randnum = urand(1, 1000);
+    uint32 randnum = urand(1, 2000);
 
-    float angle = M_PI  * (float)randnum / 2000; //urand(1, 1000);
+    float angle = M_PI  * (float)randnum / 1000; //urand(1, 1000);
     float distance = urand(20,200);
-
-    //ai->DoSpecificAction("choose rpg target");
 
     return MoveTo(bot->GetMapId(), bot->GetPositionX() + cos(angle) * distance, bot->GetPositionY() + sin(angle) * distance, bot->GetPositionZ());
 }
 
 bool MoveRandomAction::isUseful()
 {
-    return urand(1,100) < sPlayerbotAIConfig.tweakValue;
+    return ai->GetAiObjectContext()->GetValue<list<ObjectGuid> >("nearest friendly players")->Get().size() > 50;
 }
