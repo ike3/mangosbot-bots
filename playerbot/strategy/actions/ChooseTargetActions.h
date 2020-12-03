@@ -38,11 +38,11 @@ namespace ai
             if (!sRandomPlayerbotMgr.IsRandomBot(bot))
                 return true;
 
+            if (ai->GetAiObjectContext()->GetValue<list<ObjectGuid> >("nearest friendly players")->Get().size() < urand(10,30))
+                return true;
+
             if (sPlayerbotAIConfig.randomBotGrindAlone <= 0)
                 return false;
-
-            if (ai->GetAiObjectContext()->GetValue<list<ObjectGuid> >("nearest friendly players")->Get().size() < 10)
-                return true;
 
             uint32 randnum = bot->GetGUIDLow();                            //Semi-random but fixed number for each bot.
             uint32 cycle = floor(WorldTimer::getMSTime() / (1000));        //Semi-random number adds 1 each second.

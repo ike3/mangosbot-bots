@@ -138,6 +138,8 @@ bool PlayerbotFactory::InitLevelOne()
         return false;
     }
 
+    ClearAllItems();
+
     bot->TeleportTo(info->mapId, info->positionX, info->positionY, info->positionZ, info->orientation);
 
     bot->SetMap(sMapMgr.CreateMap(info->mapId, bot));
@@ -1807,6 +1809,12 @@ void PlayerbotFactory::ClearInventory()
 {
     DestroyItemsVisitor visitor(bot);
     IterateItems(&visitor);
+}
+
+void PlayerbotFactory::ClearAllItems()
+{
+    DestroyItemsVisitor visitor(bot);
+    IterateItems(&visitor, ITERATE_ALL_ITEMS);
 }
 
 void PlayerbotFactory::InitAmmo()

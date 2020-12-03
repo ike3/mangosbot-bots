@@ -73,6 +73,7 @@ private:
     void InitQuests(list<uint32>& questMap);
     void InitPet();
     void ClearInventory();
+    void ClearAllItems();
     void InitAmmo();
     void InitMounts();
     void InitPotions();
