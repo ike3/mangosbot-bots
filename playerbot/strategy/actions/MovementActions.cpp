@@ -571,10 +571,12 @@ bool MoveRandomAction::Execute(Event event)
     float angle = M_PI  * (float)randnum / 1000; //urand(1, 1000);
     float distance = urand(20,200);
 
+    context->GetValue<ObjectGuid>("rpg target")->Set(ObjectGuid());
+
     return MoveTo(bot->GetMapId(), bot->GetPositionX() + cos(angle) * distance, bot->GetPositionY() + sin(angle) * distance, bot->GetPositionZ());
 }
 
 bool MoveRandomAction::isUseful()
 {
-    return ai->GetAiObjectContext()->GetValue<list<ObjectGuid> >("nearest friendly players")->Get().size() > 50;
+    return ai->GetAiObjectContext()->GetValue<list<ObjectGuid> >("nearest friendly players")->Get().size() > urand(10,50);
 }

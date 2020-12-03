@@ -129,6 +129,165 @@ void PlayerbotFactory::Prepare()
     }
 }
 
+bool PlayerbotFactory::InitLevelOne()
+{
+    PlayerInfo const* info = sObjectMgr.GetPlayerInfo(bot->getRace(), bot->getClass());
+    if (!info)
+    {
+        sLog.outError("Player have incorrect race/class pair. Can't be loaded.");
+        return false;
+    }
+
+    bot->TeleportTo(info->mapId, info->positionX, info->positionY, info->positionZ, info->orientation);
+
+    bot->SetMap(sMapMgr.CreateMap(info->mapId, bot));
+
+    // set starting level
+    if (bot->GetSession()->GetSecurity() >= SEC_MODERATOR)
+    {
+        bot->SetUInt32Value(UNIT_FIELD_LEVEL, sWorld.getConfig(CONFIG_UINT32_START_GM_LEVEL));
+    }
+    else
+    {
+        bot->SetUInt32Value(UNIT_FIELD_LEVEL, sWorld.getConfig(CONFIG_UINT32_START_PLAYER_LEVEL));
+    }
+
+    bot->SetUInt32Value(PLAYER_FIELD_COINAGE, sWorld.getConfig(CONFIG_UINT32_START_PLAYER_MONEY));
+
+    // Played time
+    bot->m_Last_tick = time(NULL);
+    bot->m_Played_time[PLAYED_TIME_TOTAL] = 0;
+    bot->m_Played_time[PLAYED_TIME_LEVEL] = 0;
+
+    bot->InitStatsForLevel();
+    bot->InitTaxiNodes();
+    bot->InitTalentForLevel();
+    bot->InitPrimaryProfessions();                               // to max set before any spell added
+
+    // apply original stats mods before spell loading or item equipment that call before equip _RemoveStatsMods()
+    bot->UpdateMaxHealth();                                      // Update max Health (for add bonus from stamina)
+    bot->SetHealth(bot->GetMaxHealth());
+
+    if (bot->GetPowerType() == POWER_MANA)
+    {
+        bot->UpdateMaxPower(POWER_MANA);                         // Update max Mana (for add bonus from intellect)
+        bot->SetPower(POWER_MANA, bot->GetMaxPower(POWER_MANA));
+    }
+
+    // original spells
+    bot->learnDefaultSpells();
+
+    // original action bar
+    for (PlayerCreateInfoActions::const_iterator action_itr = info->action.begin(); action_itr != info->action.end(); ++action_itr)
+    {
+        bot->addActionButton(action_itr->button, action_itr->action, action_itr->type);
+    }
+
+    // original items
+    uint32 raceClassGender = bot->GetUInt32Value(UNIT_FIELD_BYTES_0) & 0x00FFFFFF;
+
+    CharStartOutfitEntry const* oEntry = NULL;
+    for (uint32 i = 1; i < sCharStartOutfitStore.GetNumRows(); ++i)
+    {
+        if (CharStartOutfitEntry const* entry = sCharStartOutfitStore.LookupEntry(i))
+        {
+            if (entry->RaceClassGender == raceClassGender)
+            {
+                oEntry = entry;
+                break;
+            }
+        }
+    }
+
+    if (oEntry)
+    {
+        for (int j = 0; j < MAX_OUTFIT_ITEMS; ++j)
+        {
+            if (oEntry->ItemId[j] <= 0)
+            {
+                continue;
+            }
+
+            uint32 item_id = oEntry->ItemId[j];
+
+            // just skip, reported in ObjectMgr::LoadItemPrototypes
+            ItemPrototype const* iProto = ObjectMgr::GetItemPrototype(item_id);
+            if (!iProto)
+            {
+                continue;
+            }
+
+            // BuyCount by default
+            int32 count = iProto->BuyCount;
+
+            // special amount for foor/drink
+            if (iProto->Class == ITEM_CLASS_CONSUMABLE && iProto->SubClass == ITEM_SUBCLASS_FOOD)
+            {
+                switch (iProto->Spells[0].SpellCategory)
+                {
+                case 11:                                // food
+                    if (iProto->Stackable > 4)
+                    {
+                        count = 4;
+                    }
+                    break;
+                case 59:                                // drink
+                    if (iProto->Stackable > 2)
+                    {
+                        count = 2;
+                    }
+                    break;
+                }
+            }
+
+            bot->StoreNewItemInBestSlots(item_id, count);
+        }
+    }
+
+    for (PlayerCreateInfoItems::const_iterator item_id_itr = info->item.begin(); item_id_itr != info->item.end(); ++item_id_itr)
+    {
+        bot->StoreNewItemInBestSlots(item_id_itr->item_id, item_id_itr->item_amount);
+    }
+
+    // bags and main-hand weapon must equipped at this moment
+    // now second pass for not equipped (offhand weapon/shield if it attempt equipped before main-hand weapon)
+    // or ammo not equipped in special bag
+    for (int i = INVENTORY_SLOT_ITEM_START; i < INVENTORY_SLOT_ITEM_END; ++i)
+    {
+        if (Item* pItem = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, i))
+        {
+            uint16 eDest;
+            // equip offhand weapon/shield if it attempt equipped before main-hand weapon
+            InventoryResult msg = bot->CanEquipItem(NULL_SLOT, eDest, pItem, false);
+            if (msg == EQUIP_ERR_OK)
+            {
+                bot->RemoveItem(INVENTORY_SLOT_BAG_0, i, true);
+                bot->EquipItem(eDest, pItem, true);
+            }
+            // move other items to more appropriate slots (ammo not equipped in special bag)
+            else
+            {
+                ItemPosCountVec sDest;
+                msg = bot->CanStoreItem(NULL_BAG, NULL_SLOT, sDest, pItem, false);
+                if (msg == EQUIP_ERR_OK)
+                {
+                    bot->RemoveItem(INVENTORY_SLOT_BAG_0, i, true);
+                    pItem = bot->StoreItem(sDest, pItem, true);
+                }
+
+                // if  this is ammo then use it
+                msg = bot->CanUseAmmo(pItem->GetEntry());
+                if (msg == EQUIP_ERR_OK)
+                {
+                    bot->SetAmmo(pItem->GetEntry());
+                }
+            }
+        }
+    }
+
+    return true;
+}
+
 void PlayerbotFactory::Randomize(bool incremental)
 {
     sLog.outDetail("Preparing to %s randomize...", (incremental ? "incremental" : "full"));
@@ -143,6 +302,16 @@ void PlayerbotFactory::Randomize(bool incremental)
     CancelAuras();
     bot->SaveToDB();
     if (pmo) pmo->finish();
+
+    if (sPlayerbotAIConfig.disableRandomLevels && sPlayerbotAIConfig.randombotStartingLevel == sWorld.getConfig(CONFIG_UINT32_START_PLAYER_LEVEL))
+    {
+        if (InitLevelOne())
+        {
+            bot->SaveToDB();
+            sLog.outDetail("Done.");
+            return;
+        }
+    }
 
     /*pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Immersive");
     sLog.outDetail("Initializing immersive...");

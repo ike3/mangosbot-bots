@@ -10,7 +10,9 @@ bool ChooseRpgTargetAction::Execute(Event event)
 {
     list<ObjectGuid> possibleTargets = AI_VALUE(list<ObjectGuid>, "possible rpg targets");
     if (possibleTargets.empty())
+    {
         return false;
+    }
 
     set<ObjectGuid>& ignore = context->GetValue<set<ObjectGuid>&>("ignore rpg target")->Get();
 
@@ -18,7 +20,7 @@ bool ChooseRpgTargetAction::Execute(Event event)
     for (list<ObjectGuid>::iterator i = possibleTargets.begin(); i != possibleTargets.end(); ++i)
     {
         Unit* unit = ai->GetUnit(*i);
-        if (unit && (ignore.size() == 0 || ignore.find(unit->GetObjectGuid()) == ignore.end())) units.push_back(unit);
+        if (unit && (ignore.empty() || ignore.find(unit->GetObjectGuid()) == ignore.end())) units.push_back(unit);
     }
 
     if (units.empty())
@@ -29,8 +31,12 @@ bool ChooseRpgTargetAction::Execute(Event event)
         return false;
     }
 
+
+
     Unit* target = units[urand(0, units.size() - 1)];
-    if (!target) return false;
+    if (!target) {
+        return false;
+    }
 
     context->GetValue<ObjectGuid>("rpg target")->Set(target->GetObjectGuid());
 
@@ -39,6 +45,7 @@ bool ChooseRpgTargetAction::Execute(Event event)
 
     ignore.insert(target->GetObjectGuid());
 
+    
     context->GetValue<set<ObjectGuid>&>("ignore rpg target")->Set(ignore);
 
     return true;
