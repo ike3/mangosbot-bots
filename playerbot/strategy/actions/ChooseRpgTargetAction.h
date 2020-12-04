@@ -12,6 +12,7 @@ namespace ai
 
         virtual bool Execute(Event event);
         virtual bool isUseful();
+        virtual bool CanTrain(ObjectGuid guid);
     };
 
 }

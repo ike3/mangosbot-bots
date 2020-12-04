@@ -1181,6 +1181,13 @@ GameObject* PlayerbotAI::GetGameObject(ObjectGuid guid)
 bool PlayerbotAI::TellMasterNoFacing(string text, PlayerbotSecurityLevel securityLevel)
 {
     Player* master = GetMaster();
+
+    if (!master && sPlayerbotAIConfig.tweakValue > 0)
+    {
+        bot->Say(text, 0);
+        return true;
+    }
+
     if (!IsTellAllowed(securityLevel))
         return false;
 
@@ -1236,7 +1243,7 @@ bool PlayerbotAI::TellMaster(string text, PlayerbotSecurityLevel securityLevel)
     if (!TellMasterNoFacing(text, securityLevel))
         return false;
 
-    if (!sServerFacade.isMoving(bot) && !sServerFacade.IsInCombat(bot) && bot->GetMapId() == master->GetMapId() && !bot->IsTaxiFlying())
+    if (master && !sServerFacade.isMoving(bot) && !sServerFacade.IsInCombat(bot) && bot->GetMapId() == master->GetMapId() && !bot->IsTaxiFlying())
     {
         if (!sServerFacade.IsInFront(bot, master, sPlayerbotAIConfig.sightDistance, EMOTE_ANGLE_IN_FRONT))
             sServerFacade.SetFacingTo(bot, master);

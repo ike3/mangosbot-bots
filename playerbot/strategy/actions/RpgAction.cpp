@@ -6,10 +6,12 @@
 #include "EmoteAction.h"
 #include "GossipDef.h"
 
+
 using namespace ai;
 
 bool RpgAction::Execute(Event event)
-{
+{    
+    Creature* creature = ai->GetCreature(AI_VALUE(ObjectGuid, "rpg target"));
     Unit* target = ai->GetUnit(AI_VALUE(ObjectGuid, "rpg target"));
     if (!target)
         return false;
@@ -44,15 +46,64 @@ bool RpgAction::Execute(Event event)
         return true;
     }
 
+    if (target->IsQuestGiver())
+    {
+        WorldPacket emptyPacket;
+        bot->GetSession()->HandleCancelMountAuraOpcode(emptyPacket);
+        quest(target);
+        return true;
+    }
+
+    if (!creature->IsTrainerOf(bot, false))
+    {
+        WorldPacket emptyPacket;
+        bot->GetSession()->HandleCancelMountAuraOpcode(emptyPacket);
+        train(target);
+        return true;
+    }
+
+    if (target->IsArmorer() && needRepair())
+    {
+        WorldPacket emptyPacket;
+        bot->GetSession()->HandleCancelMountAuraOpcode(emptyPacket);
+        repair(target);
+        return true;
+    }
+     
     vector<RpgElement> elements;
     elements.push_back(&RpgAction::cancel);
     elements.push_back(&RpgAction::emote);
     elements.push_back(&RpgAction::stay);
     elements.push_back(&RpgAction::work);
+    if (target->IsVendor())
+        elements.push_back(&RpgAction::trade);
 
     RpgElement element = elements[urand(0, elements.size() - 1)];
     (this->*element)(target);
     return true;
+}
+
+bool RpgAction::needRepair()
+{
+    for (int i = EQUIPMENT_SLOT_START; i < INVENTORY_SLOT_ITEM_END; ++i)
+    {
+        uint16 pos = ((INVENTORY_SLOT_BAG_0 << 8) | i);
+        Item* item = bot->GetItemByPos(pos);
+
+        uint32 TotalCost = 0;
+        if (!item)
+            continue;
+
+        uint32 maxDurability = item->GetUInt32Value(ITEM_FIELD_MAXDURABILITY);
+        if (!maxDurability)
+            continue;
+
+        uint32 curDurability = item->GetUInt32Value(ITEM_FIELD_DURABILITY);
+
+        if (maxDurability > curDurability)
+            return true;
+    }
+    return false;
 }
 
 void RpgAction::stay(Unit* unit)
@@ -140,6 +191,79 @@ void RpgAction::taxi(Unit* unit)
     sLog.outString("Bot %s is flying to %u (%zu location available)", bot->GetName(), path, nodes.size());
     bot->SetMoney(money);
 }
+
+void RpgAction::quest(Unit* unit)
+{
+    uint32 type = TalkAction::GetRandomEmote(unit);
+
+    ObjectGuid oldSelection = bot->GetSelectionGuid();
+
+    bot->SetSelectionGuid(unit->GetObjectGuid());        
+    
+    if (bot->GetSession()->getDialogStatus(bot, unit, DIALOG_STATUS_NONE) == DIALOG_STATUS_REWARD2)
+        ai->DoSpecificAction("talk to quest giver");
+    else if (bot->GetSession()->getDialogStatus(bot, unit, DIALOG_STATUS_NONE) == DIALOG_STATUS_AVAILABLE)
+        ai->DoSpecificAction("accept all quests");
+    else
+        bot->HandleEmoteCommand(type);
+
+    bot->HandleEmoteCommand(type);
+    unit->SetFacingTo(unit->GetAngle(bot));
+
+    if (oldSelection)
+        bot->SetSelectionGuid(oldSelection);
+
+    ai->SetNextCheckDelay(sPlayerbotAIConfig.rpgDelay);
+}
+
+void RpgAction::trade(Unit* unit)
+{
+    ObjectGuid oldSelection = bot->GetSelectionGuid();
+
+    bot->SetSelectionGuid(unit->GetObjectGuid());
+
+    ai->DoSpecificAction("sell gray");
+
+    unit->SetFacingTo(unit->GetAngle(bot));
+
+    if (oldSelection)
+        bot->SetSelectionGuid(oldSelection);
+
+    ai->SetNextCheckDelay(sPlayerbotAIConfig.rpgDelay);
+}
+
+void RpgAction::repair(Unit* unit)
+{
+    ObjectGuid oldSelection = bot->GetSelectionGuid();
+
+    bot->SetSelectionGuid(unit->GetObjectGuid());
+
+    ai->DoSpecificAction("repair");
+
+    unit->SetFacingTo(unit->GetAngle(bot));
+
+    if (oldSelection)
+        bot->SetSelectionGuid(oldSelection);
+
+    ai->SetNextCheckDelay(sPlayerbotAIConfig.rpgDelay);
+}
+
+void RpgAction::train(Unit* unit)
+{
+    ObjectGuid oldSelection = bot->GetSelectionGuid();
+
+    bot->SetSelectionGuid(unit->GetObjectGuid());
+
+    ai->DoSpecificAction("trainer");
+
+    unit->SetFacingTo(unit->GetAngle(bot));
+
+    if (oldSelection)
+        bot->SetSelectionGuid(oldSelection);
+
+    ai->SetNextCheckDelay(sPlayerbotAIConfig.rpgDelay);
+}
+
 
 bool RpgAction::isUseful()
 {

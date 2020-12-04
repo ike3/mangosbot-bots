@@ -465,7 +465,7 @@ bool StoreLootAction::IsLootAllowed(uint32 itemid, PlayerbotAI *ai)
         {
             if (quest->ReqItemId[i] == itemid)
             {
-                if (sPlayerbotAIConfig.syncQuestWithPlayer)
+                if (ai->GetMaster() && sPlayerbotAIConfig.syncQuestWithPlayer)
                     return false; //Quest is autocomplete for the bot so no item needed.
                 if (AI_VALUE2(uint8, "item count", proto->Name1) < quest->ReqItemCount[i])
                     return true;

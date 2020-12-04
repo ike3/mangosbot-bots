@@ -96,16 +96,18 @@ void TrainerAction::Iterate(Creature* creature, TrainerSpellAction action, Spell
     TellFooter(totalCost);
 }
 
-
 bool TrainerAction::Execute(Event event)
 {
     string text = event.getParam();
 
     Player* master = GetMaster();
-    if (!master)
+    if (!master && sPlayerbotAIConfig.tweakValue == 0)
         return false;
 
-    Creature *creature = ai->GetCreature(master->GetSelectionGuid());
+    Creature* creature = ai->GetCreature(bot->GetSelectionGuid());
+    if(master)
+       creature = ai->GetCreature(master->GetSelectionGuid());
+
 #ifdef MANGOS
     if (!creature || !creature->IsTrainer())
 #endif
@@ -135,7 +137,7 @@ bool TrainerAction::Execute(Event event)
     if (spell)
         spells.insert(spell);
 
-    if (text.find("learn") != string::npos || (sPlayerbotAIConfig.autoTrainSpells != "no" && creature->GetCreatureInfo()->TrainerType != TRAINER_TYPE_TRADESKILLS))
+    if (text.find("learn") != string::npos || sRandomPlayerbotMgr.IsRandomBot(bot) || (sPlayerbotAIConfig.autoTrainSpells != "no" && creature->GetCreatureInfo()->TrainerType != TRAINER_TYPE_TRADESKILLS))
         Iterate(creature, &TrainerAction::Learn, spells);
     else
         Iterate(creature, NULL, spells);

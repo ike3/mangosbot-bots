@@ -95,6 +95,7 @@ namespace ai
             creators["equip upgrades"] = &ChatActionContext::equip_upgrades;
             creators["unequip"] = &ChatActionContext::unequip;
             creators["sell"] = &ChatActionContext::sell;
+            creators["sell gray"] = &ChatActionContext::sell_gray;
             creators["buy"] = &ChatActionContext::buy;
             creators["reward"] = &ChatActionContext::reward;
             creators["trade"] = &ChatActionContext::trade;
@@ -195,6 +196,7 @@ namespace ai
         static Action* equip_upgrades(PlayerbotAI* ai) { return new EquipUpgradesAction(ai); }
         static Action* unequip(PlayerbotAI* ai) { return new UnequipAction(ai); }
         static Action* sell(PlayerbotAI* ai) { return new SellAction(ai); }
+        static Action* sell_gray(PlayerbotAI* ai) { return new SellGrayAction(ai); }
         static Action* buy(PlayerbotAI* ai) { return new BuyAction(ai); }
         static Action* reward(PlayerbotAI* ai) { return new RewardAction(ai); }
         static Action* trade(PlayerbotAI* ai) { return new TradeAction(ai); }

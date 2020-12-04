@@ -577,6 +577,6 @@ bool MoveRandomAction::Execute(Event event)
 }
 
 bool MoveRandomAction::isUseful()
-{
+{    
     return ai->GetAiObjectContext()->GetValue<list<ObjectGuid> >("nearest friendly players")->Get().size() > urand(5,100);
 }
