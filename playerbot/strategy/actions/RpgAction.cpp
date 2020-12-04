@@ -11,8 +11,9 @@ using namespace ai;
 
 bool RpgAction::Execute(Event event)
 {    
-    Creature* creature = ai->GetCreature(AI_VALUE(ObjectGuid, "rpg target"));
-    Unit* target = ai->GetUnit(AI_VALUE(ObjectGuid, "rpg target"));
+    ObjectGuid guid = AI_VALUE(ObjectGuid, "rpg target");
+    Creature* creature = ai->GetCreature(guid);
+    Unit* target = ai->GetUnit(guid);
     if (!target)
         return false;
 
@@ -46,7 +47,7 @@ bool RpgAction::Execute(Event event)
         return true;
     }
 
-    if (target->IsQuestGiver())
+    if (bot->GetSession()->getDialogStatus(bot, target, DIALOG_STATUS_NONE) == DIALOG_STATUS_REWARD2 || bot->GetSession()->getDialogStatus(bot, target, DIALOG_STATUS_NONE) == DIALOG_STATUS_AVAILABLE)
     {
         WorldPacket emptyPacket;
         bot->GetSession()->HandleCancelMountAuraOpcode(emptyPacket);
@@ -54,11 +55,11 @@ bool RpgAction::Execute(Event event)
         return true;
     }
 
-    if (creature && creature->IsTrainerOf(bot, false))
+    if (creature && CanTrain(guid))
     {
         WorldPacket emptyPacket;
         bot->GetSession()->HandleCancelMountAuraOpcode(emptyPacket);
-        train(target);
+        train(creature);
         return true;
     }
 
@@ -81,6 +82,59 @@ bool RpgAction::Execute(Event event)
     RpgElement element = elements[urand(0, elements.size() - 1)];
     (this->*element)(target);
     return true;
+}
+
+bool RpgAction::CanTrain(ObjectGuid guid)
+{
+    Creature* creature = ai->GetCreature(guid);
+
+    if (!creature)
+        return false;
+
+    if (!creature->IsTrainerOf(bot, false))
+        return false;
+
+    // check present spell in trainer spell list
+    TrainerSpellData const* cSpells = creature->GetTrainerSpells();
+    TrainerSpellData const* tSpells = creature->GetTrainerTemplateSpells();
+    if (!cSpells && !tSpells)
+    {
+        return false;
+    }
+
+    float fDiscountMod = bot->GetReputationPriceDiscount(creature);
+
+    TrainerSpellData const* trainer_spells = cSpells;
+    if (!trainer_spells)
+        trainer_spells = tSpells;
+
+    for (TrainerSpellMap::const_iterator itr = trainer_spells->spellList.begin(); itr != trainer_spells->spellList.end(); ++itr)
+    {
+        TrainerSpell const* tSpell = &itr->second;
+
+        if (!tSpell)
+            continue;
+
+        uint32 reqLevel = 0;
+
+        reqLevel = tSpell->isProvidedReqLevel ? tSpell->reqLevel : std::max(reqLevel, tSpell->reqLevel);
+        TrainerSpellState state = bot->GetTrainerSpellState(tSpell, reqLevel);
+        if (state != TRAINER_SPELL_GREEN)
+            continue;
+
+        uint32 spellId = tSpell->spell;
+        const SpellEntry* const pSpellInfo = sServerFacade.LookupSpellInfo(spellId);
+        if (!pSpellInfo)
+            continue;
+
+        uint32 cost = uint32(floor(tSpell->spellCost * fDiscountMod));
+        if (cost > bot->GetMoney())
+            continue;
+
+        return true;
+    }
+
+    return false;
 }
 
 bool RpgAction::needRepair()
@@ -248,11 +302,13 @@ void RpgAction::repair(Unit* unit)
     ai->SetNextCheckDelay(sPlayerbotAIConfig.rpgDelay);
 }
 
-void RpgAction::train(Unit* unit)
+void RpgAction::train(Creature* unit)
 {
     ObjectGuid oldSelection = bot->GetSelectionGuid();
 
     bot->SetSelectionGuid(unit->GetObjectGuid());
+
+    bot->Say("Want to train.",0);
 
     ai->DoSpecificAction("trainer");
 

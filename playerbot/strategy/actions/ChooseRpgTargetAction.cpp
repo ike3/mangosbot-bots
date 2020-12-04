@@ -55,6 +55,7 @@ bool ChooseRpgTargetAction::CanTrain(ObjectGuid guid)
 
         return true;
     }
+    return false;
 }
 
 bool ChooseRpgTargetAction::Execute(Event event)
@@ -74,7 +75,7 @@ bool ChooseRpgTargetAction::Execute(Event event)
 
         uint32 dialogStatus = bot->GetSession()->getDialogStatus(bot, unit, DIALOG_STATUS_NONE);
         
-        if (unit && (ignore.empty() || ignore.find(unit->GetObjectGuid()) == ignore.end()) && (CanTrain(*i) || dialogStatus == DIALOG_STATUS_REWARD2 || dialogStatus == DIALOG_STATUS_AVAILABLE)) units.push_back(unit);
+        if (unit && (CanTrain(*i) || dialogStatus == DIALOG_STATUS_REWARD2 || dialogStatus == DIALOG_STATUS_AVAILABLE)) units.push_back(unit);
     }
 
     if (units.empty())
