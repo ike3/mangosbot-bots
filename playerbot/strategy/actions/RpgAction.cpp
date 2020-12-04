@@ -54,7 +54,7 @@ bool RpgAction::Execute(Event event)
         return true;
     }
 
-    if (!creature->IsTrainerOf(bot, false))
+    if (creature && creature->IsTrainerOf(bot, false))
     {
         WorldPacket emptyPacket;
         bot->GetSession()->HandleCancelMountAuraOpcode(emptyPacket);
