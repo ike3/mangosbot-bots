@@ -47,14 +47,6 @@ bool RpgAction::Execute(Event event)
         return true;
     }
 
-    if (bot->GetSession()->getDialogStatus(bot, target, DIALOG_STATUS_NONE) == DIALOG_STATUS_REWARD2 || bot->GetSession()->getDialogStatus(bot, target, DIALOG_STATUS_NONE) == DIALOG_STATUS_AVAILABLE)
-    {
-        WorldPacket emptyPacket;
-        bot->GetSession()->HandleCancelMountAuraOpcode(emptyPacket);
-        quest(target);
-        return true;
-    }
-
     if (creature && CanTrain(guid))
     {
         WorldPacket emptyPacket;
@@ -62,22 +54,25 @@ bool RpgAction::Execute(Event event)
         train(creature);
         return true;
     }
-
-    if (target->IsArmorer() && needRepair())
-    {
-        WorldPacket emptyPacket;
-        bot->GetSession()->HandleCancelMountAuraOpcode(emptyPacket);
-        repair(target);
-        return true;
-    }
-     
+    
     vector<RpgElement> elements;
-    elements.push_back(&RpgAction::cancel);
-    elements.push_back(&RpgAction::emote);
-    elements.push_back(&RpgAction::stay);
-    elements.push_back(&RpgAction::work);
     if (target->IsVendor())
         elements.push_back(&RpgAction::trade);
+    if (bot->GetSession()->getDialogStatus(bot, target, DIALOG_STATUS_NONE) == DIALOG_STATUS_REWARD2 || bot->GetSession()->getDialogStatus(bot, target, DIALOG_STATUS_NONE) == DIALOG_STATUS_AVAILABLE)
+        elements.push_back(&RpgAction::quest);
+    if (target->IsArmorer() && needRepair())
+        elements.push_back(&RpgAction::repair);
+    if (creature && CanTrain(guid))
+        elements.push_back(&RpgAction::train);
+
+    if (elements.empty())
+    {
+        elements.push_back(&RpgAction::emote);
+        elements.push_back(&RpgAction::stay);
+        elements.push_back(&RpgAction::work);
+    }
+
+    elements.push_back(&RpgAction::cancel);
 
     RpgElement element = elements[urand(0, elements.size() - 1)];
     (this->*element)(target);
@@ -302,17 +297,18 @@ void RpgAction::repair(Unit* unit)
     ai->SetNextCheckDelay(sPlayerbotAIConfig.rpgDelay);
 }
 
-void RpgAction::train(Creature* unit)
+void RpgAction::train(Unit* target)
 {
     ObjectGuid oldSelection = bot->GetSelectionGuid();
+    ObjectGuid newSelection = target->GetObjectGuid();
 
-    bot->SetSelectionGuid(unit->GetObjectGuid());
+    bot->SetSelectionGuid(newSelection);
 
     bot->Say("Want to train.",0);
 
     ai->DoSpecificAction("trainer");
 
-    unit->SetFacingTo(unit->GetAngle(bot));
+    target->SetFacingTo(target->GetAngle(bot));
 
     if (oldSelection)
         bot->SetSelectionGuid(oldSelection);

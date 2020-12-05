@@ -79,6 +79,7 @@ namespace ai
             creators["log"] = &ChatActionContext::log;
             creators["los"] = &ChatActionContext::los;
             creators["drop"] = &ChatActionContext::drop;
+            creators["clean quest log"] = &ChatActionContext::clean_quest_log;
             creators["share"] = &ChatActionContext::share;
             creators["query quest"] = &ChatActionContext::query_quest;
             creators["query item usage"] = &ChatActionContext::query_item_usage;
@@ -210,6 +211,7 @@ namespace ai
         static Action* query_item_usage(PlayerbotAI* ai) { return new QueryItemUsageAction(ai); }
         static Action* query_quest(PlayerbotAI* ai) { return new QueryQuestAction(ai); }
         static Action* drop(PlayerbotAI* ai) { return new DropQuestAction(ai); }
+        static Action* clean_quest_log(PlayerbotAI* ai) { return new CleanQuestLogAction(ai); }
         static Action* share(PlayerbotAI* ai) { return new ShareQuestAction(ai); }
         static Action* stats(PlayerbotAI* ai) { return new StatsAction(ai); }
         static Action* quests(PlayerbotAI* ai) { return new ListQuestsAction(ai); }

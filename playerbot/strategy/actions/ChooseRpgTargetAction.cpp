@@ -78,12 +78,12 @@ bool ChooseRpgTargetAction::Execute(Event event)
 
         uint32 dialogStatus = bot->GetSession()->getDialogStatus(bot, unit, DIALOG_STATUS_NONE);
         
-        if (CanTrain(*i) || dialogStatus == DIALOG_STATUS_REWARD2 || dialogStatus == DIALOG_STATUS_AVAILABLE) units.push_back(unit);
+        if (CanTrain(*i) || dialogStatus == DIALOG_STATUS_REWARD2) units.push_back(unit);
+        else if ((ignore.empty() || ignore.find(unit->GetObjectGuid()) == ignore.end()) && dialogStatus == DIALOG_STATUS_AVAILABLE) units.push_back(unit);
     }
 
     if (units.empty())
     {        
-
         for (list<ObjectGuid>::iterator i = possibleTargets.begin(); i != possibleTargets.end(); ++i)
         {
             Unit* unit = ai->GetUnit(*i);

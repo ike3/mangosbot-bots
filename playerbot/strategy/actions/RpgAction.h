@@ -24,7 +24,7 @@ namespace ai
         void quest(Unit* unit);
         void trade(Unit* unit);
         void repair(Unit* unit);
-        void train(Creature* unit);
+        void train(Unit* unit);
 
         bool CanTrain(ObjectGuid guid);
         bool needRepair();
