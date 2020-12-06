@@ -10,28 +10,7 @@ namespace ai
         {
             return context->GetValue<Unit*>("cc target", getName());
         }
-        /*virtual bool isPossible()
-        {
-            return ai->CanCastSpell("sap", GetTarget(), true);
-        }*/
         virtual bool isUseful() { return true; }
-        /*virtual NextAction** getPrerequisites() {
-            return NextAction::merge(NextAction::array(0, new NextAction("stealth"), NULL), CastSpellAction::getPrerequisites());
-        }*/
-        /*virtual bool Execute(Event event) {
-            Unit* sapTarget = context->GetValue<Unit*>("cc target", getName())->Get();
-            if (sapTarget && !ai->HasAura("sap", sapTarget))
-            {
-                ObjectGuid guid = sapTarget->GetObjectGuid();
-                bot->SetSelectionGuid(sapTarget->GetObjectGuid());
-                Unit* oldTarget = context->GetValue<Unit*>("current target")->Get();
-                context->GetValue<Unit*>("old target")->Set(oldTarget);
-                context->GetValue<Unit*>("current target")->Set(sapTarget);
-                ai->CastSpell("sap", sapTarget);
-                //ai->ChangeEngine(BOT_STATE_COMBAT);
-            }
-            return true;
-        }*/
 	};
 
 	class CastGarroteAction : public CastMeleeSpellAction 

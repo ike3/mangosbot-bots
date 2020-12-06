@@ -34,7 +34,6 @@ namespace ai
             if (ai->CastSpell("stealth", bot))
             {
                 ai->ChangeStrategy("-dps,+stealthed", BOT_STATE_COMBAT);
-                //return true;
             }
             return true;
         }
@@ -43,12 +42,9 @@ namespace ai
     class UnstealthAction : public Action {
     public:
         UnstealthAction(PlayerbotAI* ai) : Action(ai, "unstealth") {}
-        //virtual bool isUseful() { return ai->HasAura("stealth", bot); }
-        //virtual bool isPossible() { return true; }
         virtual bool Execute(Event event) {
             ai->RemoveAura("stealth");
             ai->ChangeStrategy("+dps,-stealthed", BOT_STATE_COMBAT);
-            //ai->Reset();
             return true;
         }
     };
@@ -66,7 +62,6 @@ namespace ai
             {
                 ai->ChangeStrategy("+dps,-stealthed", BOT_STATE_COMBAT);
             }
-            //ai->Reset();
             return true;
         }
     };

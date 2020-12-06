@@ -44,25 +44,16 @@ namespace ai
         KickInterruptEnemyHealerSpellTrigger(PlayerbotAI* ai) : InterruptEnemyHealerTrigger(ai, "kick") {}
     };
 
-    /*class StealthTrigger : public BuffTrigger
+    class InStealthTrigger : public HasAuraTrigger
     {
     public:
-        StealthTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "stealth") {}
-        virtual bool IsActive() { return !ai->HasAura("stealth", bot) && ai->HasStrategy("stealth", BOT_STATE_COMBAT); }
-    };*/
-
-    class StealthTrigger : public HasAuraTrigger
-    {
-    public:
-        StealthTrigger(PlayerbotAI* ai) : HasAuraTrigger(ai, "stealth") {}
-        //virtual bool IsActive() { return ai->HasAura("stealth", bot); }
+        InStealthTrigger(PlayerbotAI* ai) : HasAuraTrigger(ai, "stealth") {}
     };
 
     class NoStealthTrigger : public HasNoAuraTrigger
     {
     public:
         NoStealthTrigger(PlayerbotAI* ai) : HasNoAuraTrigger(ai, "stealth") {}
-        //virtual bool IsActive() { return !ai->HasAura("stealth", bot); }
     };
 
     class UnstealthTrigger : public BuffTrigger
@@ -71,14 +62,11 @@ namespace ai
         UnstealthTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "stealth", 2) {}
         virtual bool IsActive()
         {
-            //Unit* dps = AI_VALUE(Unit*, "dps target");
             if (!ai->HasAura("stealth", bot))
                 return false;
 
             return ai->HasAura("stealth", bot) &&
-                //!AI_VALUE2(Unit*, "cc target", "sap") &&
                 !AI_VALUE(uint8, "attacker count") &&
-                //I_VALUE(bool, "possible ads") &&
                 (AI_VALUE2(bool, "moving", "self target") &&
                 (ai->GetMaster() &&
                 sServerFacade.IsDistanceGreaterThan(AI_VALUE2(float, "distance", "master target"), 10.0f) &&
@@ -106,11 +94,8 @@ namespace ai
 
             return (target &&
                 sServerFacade.IsHostileTo(bot, target) &&
-                //!(sServerFacade.IsInCombat(target) && !target->GetObjectGuid().IsPlayer() && sServerFacade.IsDistanceLessOrEqualThan(AI_VALUE2(float, "distance", "current target"), 10.0f)) &&
                 !bot->HasSpellCooldown(1784) &&
                 sServerFacade.IsDistanceLessOrEqualThan(AI_VALUE2(float, "distance", "current target"), distance));
-                //||
-                //(AI_VALUE(bool, "possible ads") && !AI_VALUE(ObjectGuid, "pull target"));
         }
     };
 

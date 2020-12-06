@@ -64,7 +64,7 @@ namespace ai
                 creators["adrenaline rush"] = &TriggerFactoryInternal::adrenaline_rush;
                 creators["unstealth"] = &TriggerFactoryInternal::unstealth;
                 creators["sap"] = &TriggerFactoryInternal::sap;
-                creators["in stealth"] = &TriggerFactoryInternal::stealth;
+                creators["in stealth"] = &TriggerFactoryInternal::in_stealth;
                 creators["no stealth"] = &TriggerFactoryInternal::no_stealth;
                 creators["stealth"] = &TriggerFactoryInternal::stealth_range;
                 creators["sprint"] = &TriggerFactoryInternal::sprint;
@@ -80,7 +80,7 @@ namespace ai
             static Trigger* kick_on_enemy_healer(PlayerbotAI* ai) { return new KickInterruptEnemyHealerSpellTrigger(ai); }
             static Trigger* unstealth(PlayerbotAI* ai) { return new UnstealthTrigger(ai); }
             static Trigger* sap(PlayerbotAI* ai) { return new SapTrigger(ai); }
-            static Trigger* stealth(PlayerbotAI* ai) { return new StealthTrigger(ai); }
+            static Trigger* in_stealth(PlayerbotAI* ai) { return new InStealthTrigger(ai); }
             static Trigger* no_stealth(PlayerbotAI* ai) { return new NoStealthTrigger(ai); }
             static Trigger* stealth_range(PlayerbotAI* ai) { return new StealthRangeTrigger(ai); }
             static Trigger* sprint(PlayerbotAI* ai) { return new SprintTrigger(ai); }
