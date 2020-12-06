@@ -153,6 +153,11 @@ bool HasAuraTrigger::IsActive()
 	return ai->HasAura(getName(), GetTarget());
 }
 
+bool HasNoAuraTrigger::IsActive()
+{
+    return !ai->HasAura(getName(), GetTarget());
+}
+
 bool TankAoeTrigger::IsActive()
 {
     if (!AI_VALUE(uint8, "attacker count"))
@@ -412,4 +417,9 @@ bool EnemyFlagCarrierNear::IsActive()
         return false;
     }
     return false;
+}
+
+bool IsMountedTrigger::IsActive()
+{
+    return bot->IsMounted();
 }

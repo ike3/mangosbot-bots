@@ -405,6 +405,15 @@ namespace ai
 
 	};
 
+    class HasNoAuraTrigger : public Trigger {
+    public:
+        HasNoAuraTrigger(PlayerbotAI* ai, string spell) : Trigger(ai, spell) {}
+
+        virtual string GetTargetName() { return "self target"; }
+        virtual bool IsActive();
+
+    };
+
     class TimerTrigger : public Trigger
     {
     public:
@@ -745,6 +754,15 @@ namespace ai
     {
     public:
         PlayerIsInBattlegroundWithoutFlag(PlayerbotAI* ai) : Trigger(ai, "in battleground without flag") {}
+
+    public:
+        virtual bool IsActive();
+    };
+
+    class IsMountedTrigger : public Trigger
+    {
+    public:
+        IsMountedTrigger(PlayerbotAI* ai) : Trigger(ai, "mounted", 3) {}
 
     public:
         virtual bool IsActive();
