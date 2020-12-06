@@ -87,6 +87,7 @@ public:
     bool gearscorecheck;
 	bool randomBotPreQuests;
     uint32 playerbotsXPrate;
+    uint32 randomBotGrindAlone;
     uint32 minEnchantingBotLevel;
     uint32 randombotStartingLevel;
 
@@ -105,6 +106,7 @@ public:
     std::string autoPickTalents;
     bool autoLearnTrainerSpells;
     bool autoLearnQuestSpells;
+    uint32 tweakValue; //Debugging config
 
     int commandServerPort;
     bool perfMonEnabled;

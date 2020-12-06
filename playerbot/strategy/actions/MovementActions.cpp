@@ -565,3 +565,24 @@ bool MoveOutOfCollisionAction::isUseful()
     return AI_VALUE2(bool, "collision", "self target");
 }
 
+bool MoveRandomAction::Execute(Event event)
+{
+    //uint32 randnum = bot->GetGUIDLow();                            //Semi-random but fixed number for each bot.
+    //uint32 cycle = floor(WorldTimer::getMSTime() / (1000*60));     //Semi-random number adds 1 each minute.
+
+    //randnum = ((randnum + cycle) % 1000) + 1;
+
+    uint32 randnum = urand(1, 2000);
+
+    float angle = M_PI  * (float)randnum / 1000; //urand(1, 1000);
+    float distance = urand(20,200);
+
+    context->GetValue<ObjectGuid>("rpg target")->Set(ObjectGuid());
+
+    return MoveTo(bot->GetMapId(), bot->GetPositionX() + cos(angle) * distance, bot->GetPositionY() + sin(angle) * distance, bot->GetPositionZ());
+}
+
+bool MoveRandomAction::isUseful()
+{    
+    return ai->GetAiObjectContext()->GetValue<list<ObjectGuid> >("nearest friendly players")->Get().size() > urand(5,100);
+}

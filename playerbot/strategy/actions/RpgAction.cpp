@@ -6,11 +6,14 @@
 #include "EmoteAction.h"
 #include "GossipDef.h"
 
+
 using namespace ai;
 
 bool RpgAction::Execute(Event event)
-{
-    Unit* target = ai->GetUnit(AI_VALUE(ObjectGuid, "rpg target"));
+{    
+    ObjectGuid guid = AI_VALUE(ObjectGuid, "rpg target");
+    Creature* creature = ai->GetCreature(guid);
+    Unit* target = ai->GetUnit(guid);
     if (!target)
         return false;
 
@@ -44,15 +47,112 @@ bool RpgAction::Execute(Event event)
         return true;
     }
 
+    if (creature && CanTrain(guid))
+    {
+        WorldPacket emptyPacket;
+        bot->GetSession()->HandleCancelMountAuraOpcode(emptyPacket);
+        train(creature);
+        return true;
+    }
+    
     vector<RpgElement> elements;
+    if (target->IsVendor())
+        elements.push_back(&RpgAction::trade);
+    if (bot->GetSession()->getDialogStatus(bot, target, DIALOG_STATUS_NONE) == DIALOG_STATUS_REWARD2 || bot->GetSession()->getDialogStatus(bot, target, DIALOG_STATUS_NONE) == DIALOG_STATUS_AVAILABLE)
+        elements.push_back(&RpgAction::quest);
+    if (target->IsArmorer() && needRepair())
+        elements.push_back(&RpgAction::repair);
+    if (creature && CanTrain(guid))
+        elements.push_back(&RpgAction::train);
+
+    if (elements.empty())
+    {
+        elements.push_back(&RpgAction::emote);
+        elements.push_back(&RpgAction::stay);
+        elements.push_back(&RpgAction::work);
+    }
+
     elements.push_back(&RpgAction::cancel);
-    elements.push_back(&RpgAction::emote);
-    elements.push_back(&RpgAction::stay);
-    elements.push_back(&RpgAction::work);
 
     RpgElement element = elements[urand(0, elements.size() - 1)];
     (this->*element)(target);
     return true;
+}
+
+bool RpgAction::CanTrain(ObjectGuid guid)
+{
+    Creature* creature = ai->GetCreature(guid);
+
+    if (!creature)
+        return false;
+
+    if (!creature->IsTrainerOf(bot, false))
+        return false;
+
+    // check present spell in trainer spell list
+    TrainerSpellData const* cSpells = creature->GetTrainerSpells();
+    TrainerSpellData const* tSpells = creature->GetTrainerTemplateSpells();
+    if (!cSpells && !tSpells)
+    {
+        return false;
+    }
+
+    float fDiscountMod = bot->GetReputationPriceDiscount(creature);
+
+    TrainerSpellData const* trainer_spells = cSpells;
+    if (!trainer_spells)
+        trainer_spells = tSpells;
+
+    for (TrainerSpellMap::const_iterator itr = trainer_spells->spellList.begin(); itr != trainer_spells->spellList.end(); ++itr)
+    {
+        TrainerSpell const* tSpell = &itr->second;
+
+        if (!tSpell)
+            continue;
+
+        uint32 reqLevel = 0;
+
+        reqLevel = tSpell->isProvidedReqLevel ? tSpell->reqLevel : std::max(reqLevel, tSpell->reqLevel);
+        TrainerSpellState state = bot->GetTrainerSpellState(tSpell, reqLevel);
+        if (state != TRAINER_SPELL_GREEN)
+            continue;
+
+        uint32 spellId = tSpell->spell;
+        const SpellEntry* const pSpellInfo = sServerFacade.LookupSpellInfo(spellId);
+        if (!pSpellInfo)
+            continue;
+
+        uint32 cost = uint32(floor(tSpell->spellCost * fDiscountMod));
+        if (cost > bot->GetMoney())
+            continue;
+
+        return true;
+    }
+
+    return false;
+}
+
+bool RpgAction::needRepair()
+{
+    for (int i = EQUIPMENT_SLOT_START; i < INVENTORY_SLOT_ITEM_END; ++i)
+    {
+        uint16 pos = ((INVENTORY_SLOT_BAG_0 << 8) | i);
+        Item* item = bot->GetItemByPos(pos);
+
+        uint32 TotalCost = 0;
+        if (!item)
+            continue;
+
+        uint32 maxDurability = item->GetUInt32Value(ITEM_FIELD_MAXDURABILITY);
+        if (!maxDurability)
+            continue;
+
+        uint32 curDurability = item->GetUInt32Value(ITEM_FIELD_DURABILITY);
+
+        if (maxDurability > curDurability)
+            return true;
+    }
+    return false;
 }
 
 void RpgAction::stay(Unit* unit)
@@ -140,6 +240,82 @@ void RpgAction::taxi(Unit* unit)
     sLog.outString("Bot %s is flying to %u (%zu location available)", bot->GetName(), path, nodes.size());
     bot->SetMoney(money);
 }
+
+void RpgAction::quest(Unit* unit)
+{
+    uint32 type = TalkAction::GetRandomEmote(unit);
+
+    ObjectGuid oldSelection = bot->GetSelectionGuid();
+
+    bot->SetSelectionGuid(unit->GetObjectGuid());        
+    
+    if (bot->GetSession()->getDialogStatus(bot, unit, DIALOG_STATUS_NONE) == DIALOG_STATUS_REWARD2)
+        ai->DoSpecificAction("talk to quest giver");
+    else if (bot->GetSession()->getDialogStatus(bot, unit, DIALOG_STATUS_NONE) == DIALOG_STATUS_AVAILABLE)
+        ai->DoSpecificAction("accept all quests");
+    else
+        bot->HandleEmoteCommand(type);
+
+    bot->HandleEmoteCommand(type);
+    unit->SetFacingTo(unit->GetAngle(bot));
+
+    if (oldSelection)
+        bot->SetSelectionGuid(oldSelection);
+
+    ai->SetNextCheckDelay(sPlayerbotAIConfig.rpgDelay);
+}
+
+void RpgAction::trade(Unit* unit)
+{
+    ObjectGuid oldSelection = bot->GetSelectionGuid();
+
+    bot->SetSelectionGuid(unit->GetObjectGuid());
+
+    ai->DoSpecificAction("sell gray");
+
+    unit->SetFacingTo(unit->GetAngle(bot));
+
+    if (oldSelection)
+        bot->SetSelectionGuid(oldSelection);
+
+    ai->SetNextCheckDelay(sPlayerbotAIConfig.rpgDelay);
+}
+
+void RpgAction::repair(Unit* unit)
+{
+    ObjectGuid oldSelection = bot->GetSelectionGuid();
+
+    bot->SetSelectionGuid(unit->GetObjectGuid());
+
+    ai->DoSpecificAction("repair");
+
+    unit->SetFacingTo(unit->GetAngle(bot));
+
+    if (oldSelection)
+        bot->SetSelectionGuid(oldSelection);
+
+    ai->SetNextCheckDelay(sPlayerbotAIConfig.rpgDelay);
+}
+
+void RpgAction::train(Unit* target)
+{
+    ObjectGuid oldSelection = bot->GetSelectionGuid();
+    ObjectGuid newSelection = target->GetObjectGuid();
+
+    bot->SetSelectionGuid(newSelection);
+
+    bot->Say("Want to train.",0);
+
+    ai->DoSpecificAction("trainer");
+
+    target->SetFacingTo(target->GetAngle(bot));
+
+    if (oldSelection)
+        bot->SetSelectionGuid(oldSelection);
+
+    ai->SetNextCheckDelay(sPlayerbotAIConfig.rpgDelay);
+}
+
 
 bool RpgAction::isUseful()
 {

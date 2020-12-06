@@ -17,6 +17,18 @@ void NonCombatStrategy::InitTriggers(std::list<TriggerNode*>& triggers)
     triggers.push_back(new TriggerNode(
         "levelup",
         NextAction::array(0, new NextAction("auto talents", 4.0f), new NextAction("auto learn spell", 4.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "no non bot players around",
+        NextAction::array(0, new NextAction("move random", 6.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "random",
+        NextAction::array(0, new NextAction("clean quest log", 6.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "xpgain",
+        NextAction::array(0, new NextAction("xp gain", 4.0f), NULL)));
 }
 
 

@@ -757,11 +757,26 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot, vector<WorldLocation> &locs
         return;
     }
 
+    vector<WorldLocation> tlocs = locs;
+
+    //5% + 0.1% per level chance node on different map in selection.
+    tlocs.erase(std::remove_if(tlocs.begin(), tlocs.end(), [bot](WorldLocation const& l) {return l.mapid != bot->GetMapId() && urand(1, 100) > 5 + 0.1 * bot->getLevel(); }), tlocs.end());
+
+    //Continent is about 20.000 large
+    //Bot will travel 0-5000 units + 75-150 units per level.
+    tlocs.erase(std::remove_if(tlocs.begin(), tlocs.end(), [bot](WorldLocation const& l) {return  bot->GetDistance2d(l.coord_x, l.coord_y) > urand(0, 5000) + bot->getLevel() * 15 * urand(5, 10); }), tlocs.end());
+
+    if (tlocs.empty())
+    {
+        sLog.outError("Cannot teleport bot %s - no locations available", bot->GetName());
+        return;
+    }
+
     PerformanceMonitorOperation *pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "RandomTeleportByLocations");
     for (int attemtps = 0; attemtps < 10; ++attemtps)
     {
-        int index = urand(0, locs.size() - 1);
-        WorldLocation loc = locs[index];
+        int index = urand(0, tlocs.size() - 1);
+        WorldLocation loc = tlocs[index];
         float x = loc.coord_x + (attemtps > 0 ? urand(0, sPlayerbotAIConfig.grindDistance) - sPlayerbotAIConfig.grindDistance / 2 : 0);
         float y = loc.coord_y + (attemtps > 0 ? urand(0, sPlayerbotAIConfig.grindDistance) - sPlayerbotAIConfig.grindDistance / 2 : 0);
         float z = loc.coord_z;
@@ -792,7 +807,7 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot, vector<WorldLocation> &locs
 
         z = 0.05f + ground;
         sLog.outDetail("Random teleporting bot %s to %s %f,%f,%f (%u/%zu locations)",
-                bot->GetName(), area->area_name[0], x, y, z, attemtps, locs.size());
+                bot->GetName(), area->area_name[0], x, y, z, attemtps, tlocs.size());
 
         if (bot->IsTaxiFlying())
         {
@@ -847,16 +862,16 @@ void RandomPlayerbotMgr::PrepareTeleportCache()
             QueryResult* results = WorldDatabase.PQuery("select map, position_x, position_y, position_z "
                 "from (select map, position_x, position_y, position_z, avg(t.maxlevel), avg(t.minlevel), "
                 "%u - (avg(t.maxlevel) + avg(t.minlevel)) / 2 delta "
-                "from creature c inner join creature_template t on c.id = t.entry where t.NpcFlags = 0 group by t.entry) q "
+                "from creature c inner join creature_template t on c.id = t.entry where t.NpcFlags = 0 and t.lootid != 0 and t.unitFlags != 768 group by t.entry having count(*) > 1) q "
                 "where delta >= 0 and delta <= %u and map in (%s) and not exists ( "
                 "select map, position_x, position_y, position_z from "
                 "("
                 "select map, c.position_x, c.position_y, c.position_z, avg(t.maxlevel), avg(t.minlevel), "
                 "%u - (avg(t.maxlevel) + avg(t.minlevel)) / 2 delta "
                 "from creature c "
-                "inner join creature_template t on c.id = t.entry group by t.entry "
+                "inner join creature_template t on c.id = t.entry where t.NpcFlags = 0 and t.lootid != 0 group by t.entry "
                 ") q1 "
-                "where delta > %u and q1.map = q.map "
+                "where abs(delta) > %u and q1.map = q.map "
                 "and sqrt("
                 "(q1.position_x - q.position_x)*(q1.position_x - q.position_x) +"
                 "(q1.position_y - q.position_y)*(q1.position_y - q.position_y) +"

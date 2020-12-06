@@ -10,4 +10,12 @@ namespace ai
         virtual bool Execute(Event event);
     };
 
+    class CleanQuestLogAction : public Action {
+    public:
+        CleanQuestLogAction(PlayerbotAI* ai) : Action(ai, "clean quest log") {}
+        virtual bool Execute(Event event);
+
+        void DropQuestType(uint8& numQuest, uint8 wantNum = 100, bool isGreen = false, bool hasProgress = false, bool isComplete = false);
+        bool HasProgress(uint32 questId);
+    };
 }

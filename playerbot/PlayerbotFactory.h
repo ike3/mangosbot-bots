@@ -65,6 +65,7 @@ private:
     void InitSpells();
     void ClearSpells();
     void ClearSkills();
+    bool InitLevelOne();
     void InitAvailableSpells();
     void InitSpecialSpells();
     void InitTalentsTree(bool incremental);
@@ -72,6 +73,7 @@ private:
     void InitQuests(list<uint32>& questMap);
     void InitPet();
     void ClearInventory();
+    void ClearAllItems();
     void InitAmmo();
     void InitMounts();
     void InitPotions();

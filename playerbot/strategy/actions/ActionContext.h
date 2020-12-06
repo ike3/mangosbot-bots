@@ -34,6 +34,7 @@
 #include "CheckMountStateAction.h"
 #include "ChangeTalentsAction.h"
 #include "AutoLearnSpellAction.h"
+#include "XpGainAction.h"
 
 namespace ai
 {
@@ -48,6 +49,7 @@ namespace ai
             creators["choose rpg target"] = &ActionContext::choose_rpg_target;
             creators["move to rpg target"] = &ActionContext::move_to_rpg_target;
             creators["move out of collision"] = &ActionContext::move_out_of_collision;
+            creators["move random"] = &ActionContext::move_random;
             creators["attack"] = &ActionContext::melee;
             creators["melee"] = &ActionContext::melee;
             creators["reach spell"] = &ActionContext::ReachSpell;
@@ -116,6 +118,7 @@ namespace ai
             creators["war stomp"] = &ActionContext::war_stomp;
             creators["auto talents"] = &ActionContext::auto_talents;
 			creators["auto learn spell"] = &ActionContext::auto_learn_spell;
+            creators["xp gain"] = &ActionContext::xp_gain;
         }
 
     private:
@@ -129,6 +132,7 @@ namespace ai
         static Action* choose_rpg_target(PlayerbotAI* ai) { return new ChooseRpgTargetAction(ai); }
         static Action* move_to_rpg_target(PlayerbotAI* ai) { return new MoveToRpgTargetAction(ai); }
         static Action* move_out_of_collision(PlayerbotAI* ai) { return new MoveOutOfCollisionAction(ai); }
+        static Action* move_random(PlayerbotAI* ai) { return new MoveRandomAction(ai); }
         static Action* check_values(PlayerbotAI* ai) { return new CheckValuesAction(ai); }
         static Action* greet(PlayerbotAI* ai) { return new GreetAction(ai); }
         static Action* apply_poison(PlayerbotAI* ai) { return new ImbueWithPoisonAction(ai); }
@@ -192,6 +196,7 @@ namespace ai
         static Action* mount(PlayerbotAI *ai) { return new CastSpellAction(ai, "mount"); }
         static Action* auto_talents(PlayerbotAI* ai) { return new AutoSetTalentsAction(ai); }
 		static Action* auto_learn_spell(PlayerbotAI* ai) { return new AutoLearnSpellAction(ai); }
+        static Action* xp_gain(PlayerbotAI* ai) { return new XpGainAction(ai); }
     };
 
 };

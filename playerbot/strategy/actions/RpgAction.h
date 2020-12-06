@@ -21,6 +21,13 @@ namespace ai
         void emote(Unit* unit);
         void work(Unit* unit);
         void taxi(Unit* unit);
+        void quest(Unit* unit);
+        void trade(Unit* unit);
+        void repair(Unit* unit);
+        void train(Unit* unit);
+
+        bool CanTrain(ObjectGuid guid);
+        bool needRepair();
     };
 
 }

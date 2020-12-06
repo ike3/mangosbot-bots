@@ -12,10 +12,15 @@ bool QuestAction::Execute(Event event)
 
     Player* master = GetMaster();
     if (!master)
-        return false;
+    {
+        if (!guid)
+            guid = bot->GetSelectionGuid();
+    }
+    else {
 
-    if (!guid)
-        guid = master->GetSelectionGuid();
+        if (!guid)
+            guid = master->GetSelectionGuid();
+    }
 
     if (!guid)
         return false;

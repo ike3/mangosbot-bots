@@ -3,6 +3,7 @@
 #include "../Action.h"
 #include "AttackAction.h"
 #include "../../ServerFacade.h"
+#include "../../playerbot.h"
 
 namespace ai
 {
@@ -31,19 +32,49 @@ namespace ai
 
     class AttackAnythingAction : public AttackAction
     {
+    private:
+        bool GrindAlone(Player* bot) //Todo: add specific conditions when bots should always be active (ie. in a guild with a player, some day grouped with a player, ect.)
+        {
+            if (!sRandomPlayerbotMgr.IsRandomBot(bot))
+                return true;
+
+            if (ai->GetAiObjectContext()->GetValue<list<ObjectGuid> >("nearest friendly players")->Get().size() < urand(10,30))
+                return true;
+
+            if (sPlayerbotAIConfig.randomBotGrindAlone <= 0)
+                return false;
+
+            uint32 randnum = bot->GetGUIDLow();                            //Semi-random but fixed number for each bot.
+            uint32 cycle = floor(WorldTimer::getMSTime() / (1000));        //Semi-random number adds 1 each second.
+
+            cycle = cycle * sPlayerbotAIConfig.randomBotGrindAlone / 6000; //Cycles 0.01 per minute for each 1% of the config. (At 100% this is 1 per minute)
+            randnum  += cycle;                                     //Random number that increases 0.01 each minute for each % that the bots should be active.
+            randnum = (randnum % 100);                                     //Loops the randomnumber at 100. Bassically removes all the numbers above 99. 
+            randnum = randnum + 1;                                         //Now we have a number unique for each bot between 1 and 100 that increases by 0.01 (per % active each minute).
+
+            return randnum < sPlayerbotAIConfig.randomBotGrindAlone;       //The given percentage of bots should be active and rotate 1% of those active bots each minute.
+        }
     public:
         AttackAnythingAction(PlayerbotAI* ai) : AttackAction(ai, "attack anything") {}
         virtual string GetTargetName() { return "grind target"; }
         virtual bool isUseful() {
             return GetTarget() &&
-            /*    (!AI_VALUE(list<ObjectGuid>, "nearest non bot players").empty() &&
-                    AI_VALUE2(uint8, "health", "self target") > sPlayerbotAIConfig.mediumHealth &&
-                    (!AI_VALUE2(uint8, "mana", "self target") || AI_VALUE2(uint8, "mana", "self target") > sPlayerbotAIConfig.mediumMana)
-                ) || AI_VALUE2(bool, "combat", "self target")
-*/
-                  ((!(AI_VALUE(list<ObjectGuid>, "nearest non bot players").empty() && !bot->InBattleGround()) &&
-                    (AI_VALUE2(uint8, "health", "self target") > sPlayerbotAIConfig.mediumHealth &&
-                    (!AI_VALUE2(uint8, "mana", "self target") || AI_VALUE2(uint8, "mana", "self target") > sPlayerbotAIConfig.mediumMana))) || AI_VALUE2(bool, "combat", "self target"))
+                /*    (!AI_VALUE(list<ObjectGuid>, "nearest non bot players").empty() &&
+                        AI_VALUE2(uint8, "health", "self target") > sPlayerbotAIConfig.mediumHealth &&
+                        (!AI_VALUE2(uint8, "mana", "self target") || AI_VALUE2(uint8, "mana", "self target") > sPlayerbotAIConfig.mediumMana)
+                    ) || AI_VALUE2(bool, "combat", "self target")
+    */
+                (
+                    (
+                        (!AI_VALUE(list<ObjectGuid>, "nearest non bot players").empty() || bot->InBattleGround() || GrindAlone(bot))          //Bot is not alone or in battleground or allowed to grind alone.
+                        &&
+                        AI_VALUE2(uint8, "health", "self target") > sPlayerbotAIConfig.mediumHealth                                           //Bot has enough health.
+                        &&
+                        (!AI_VALUE2(uint8, "mana", "self target") || AI_VALUE2(uint8, "mana", "self target") > sPlayerbotAIConfig.mediumMana) //Bot has no mana or enough mana.
+                    )
+                    ||
+                    AI_VALUE2(bool, "combat", "self target")                                                                                  //Bot is already in combat
+                )
                 ;
         }
         virtual bool isPossible()

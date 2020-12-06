@@ -137,6 +137,14 @@ void PlayerbotHolder::OnBotLogin(Player * const bot)
         ai->ResetStrategies(false);
     }
 
+    if (master && !master->IsTaxiFlying())
+    {
+        bot->GetMotionMaster()->MovementExpired();
+#ifdef MANGOS
+        bot->m_taxi.ClearTaxiDestinations();
+#endif
+    }
+
     ai->TellMaster("Hello!");
 }
 
@@ -283,7 +291,7 @@ list<string> PlayerbotHolder::HandlePlayerbotCommand(char const* args, Player* m
 
     if (!*args)
     {
-        messages.push_back("usage: list or add/init/remove PLAYERNAME");
+        messages.push_back("usage: list/reload or add/init/remove PLAYERNAME");
         return messages;
     }
 
@@ -291,7 +299,7 @@ list<string> PlayerbotHolder::HandlePlayerbotCommand(char const* args, Player* m
     char *charname = strtok (NULL, " ");
     if (!cmd)
     {
-        messages.push_back("usage: list or add/init/remove PLAYERNAME");
+        messages.push_back("usage: list/reload or add/init/remove PLAYERNAME");
         return messages;
     }
 
@@ -300,6 +308,13 @@ list<string> PlayerbotHolder::HandlePlayerbotCommand(char const* args, Player* m
         messages.push_back(ListBots(master));
         return messages;
     }
+
+    if (!strcmp(cmd, "reload"))
+    {
+        messages.push_back("Reloading config");
+        sPlayerbotAIConfig.Initialize();
+        return messages;
+    }   
 
     if (!charname)
     {

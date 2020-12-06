@@ -11,7 +11,7 @@ using namespace ai;
 
 bool QueryItemUsageAction::Execute(Event event)
 {
-    if (!GetMaster())
+    if (!GetMaster() && sPlayerbotAIConfig.tweakValue == 0)
         return false;
 
     WorldPacket& data = event.getPacket();
@@ -45,6 +45,7 @@ bool QueryItemUsageAction::Execute(Event event)
             return false;
 
         ai->TellMaster(QueryItem(item, count, GetCount(item)));
+        bot->Say(QueryItem(item, count, GetCount(item)),0);
         return true;
     }
 
