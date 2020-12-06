@@ -494,7 +494,7 @@ bool MoveOutOfEnemyContactAction::Execute(Event event)
     if (!target)
         return false;
 
-    return MoveTo(target, sPlayerbotAIConfig.contactDistance);
+    return MoveTo(target, max(sPlayerbotAIConfig.contactDistance, target->GetObjectBoundingRadius()));
 }
 
 bool MoveOutOfEnemyContactAction::isUseful()
@@ -545,6 +545,12 @@ bool SetBehindTargetAction::Execute(Event event)
 bool SetBehindTargetAction::isUseful()
 {
     return !AI_VALUE2(bool, "behind", "current target");
+}
+
+bool SetBehindTargetAction::isPossible()
+{
+    Unit* target = AI_VALUE(Unit*, "current target");
+    return target && !(target->getVictim() && target->getVictim()->GetObjectGuid() == bot->GetObjectGuid());
 }
 
 bool MoveOutOfCollisionAction::Execute(Event event)

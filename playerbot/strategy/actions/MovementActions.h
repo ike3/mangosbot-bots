@@ -88,6 +88,7 @@ namespace ai
         SetBehindTargetAction(PlayerbotAI* ai) : MovementAction(ai, "set behind") {}
         virtual bool Execute(Event event);
         virtual bool isUseful();
+        virtual bool isPossible();
     };
 
     class MoveOutOfCollisionAction : public MovementAction
