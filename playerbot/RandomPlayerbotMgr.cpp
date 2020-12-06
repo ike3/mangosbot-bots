@@ -590,7 +590,7 @@ bool RandomPlayerbotMgr::ProcessBot(Player* player)
                     SetEventValue(bot, "deathcount", 0, 0);
                     SetEventValue(bot, "dead", 0, 0);
                     SetEventValue(bot, "revive", 0, 0);
-                    Refresh(player);
+                    //Refresh(player);
                     RandomTeleportForRpg(player);
                     uint32 randomChange = urand(240 + sPlayerbotAIConfig.randomBotUpdateInterval, 600 + sPlayerbotAIConfig.randomBotUpdateInterval * 3);
                     ScheduleChangeStrategy(bot, randomChange);
@@ -624,7 +624,7 @@ bool RandomPlayerbotMgr::ProcessBot(Player* player)
     BattleGroundTypeId bgTypeId = BattleGroundTypeId(bgType);
     BattleGroundBracketId bracketId = player->GetBattleGroundBracketIdFromLevel(bgTypeId);
 
-    if (sPlayerbotAIConfig.randomBotJoinBG)
+    if (sPlayerbotAIConfig.randomBotJoinBG && player->getLevel() > 9)
     {
         // check bg queue for real players
         CheckBgQueue(bgTypeId, bracketId);
@@ -637,7 +637,7 @@ bool RandomPlayerbotMgr::ProcessBot(Player* player)
         if (bracketId < BG_BRACKET_ID_LAST && (player->getLevel() < ((bracketId * 10) + 14)))
             BgLevel = false;
 
-        if (!BgPlayers && VisualBots[bgTypeId][bracketId][player->GetTeamId()] < 2)
+        if (!BgPlayers && VisualBots[bgTypeId][bracketId][player->GetTeamId()] < 3)
             BgVisual = true;
     }
 
