@@ -41,7 +41,7 @@ namespace ai
     {
     public:
         WarsongStrategy(PlayerbotAI* ai) : Strategy(ai) {};
-        virtual int GetType() { return STRATEGY_TYPE_NONCOMBAT; }
+        virtual int GetType() { return STRATEGY_TYPE_GENERIC; }
         virtual void InitTriggers(std::list<TriggerNode*> &triggers);
         virtual string getName() { return "warsong"; }
     };
