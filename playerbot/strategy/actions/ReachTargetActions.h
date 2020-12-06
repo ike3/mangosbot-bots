@@ -48,6 +48,11 @@ namespace ai
 	{
     public:
         ReachMeleeAction(PlayerbotAI* ai) : ReachTargetAction(ai, "reach melee", sPlayerbotAIConfig.meleeDistance) {}
+        virtual bool Execute(Event event)
+        {
+            Unit* target = AI_VALUE(Unit*, GetTargetName());
+            return MoveTo(AI_VALUE(Unit*, GetTargetName()), max(sPlayerbotAIConfig.meleeDistance, target->GetObjectBoundingRadius()));
+        }
     };
 
     class ReachSpellAction : public ReachTargetAction
