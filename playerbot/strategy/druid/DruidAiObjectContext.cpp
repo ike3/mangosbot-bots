@@ -82,7 +82,8 @@ namespace ai
             TriggerFactoryInternal()
             {
                 creators["omen of clarity"] = &TriggerFactoryInternal::omen_of_clarity;
-                creators["thorns"] = &TriggerFactoryInternal::Thorns;
+                creators["thorns"] = &TriggerFactoryInternal::thorns;
+                creators["thorns on party"] = &TriggerFactoryInternal::thorns_on_party;
                 creators["bash"] = &TriggerFactoryInternal::bash;
                 creators["faerie fire (feral)"] = &TriggerFactoryInternal::faerie_fire_feral;
                 creators["faerie fire"] = &TriggerFactoryInternal::faerie_fire;
@@ -110,7 +111,8 @@ namespace ai
             static Trigger* natures_swiftness(PlayerbotAI* ai) { return new NaturesSwiftnessTrigger(ai); }
             static Trigger* eclipse_solar(PlayerbotAI* ai) { return new EclipseSolarTrigger(ai); }
             static Trigger* eclipse_lunar(PlayerbotAI* ai) { return new EclipseLunarTrigger(ai); }
-            static Trigger* Thorns(PlayerbotAI* ai) { return new ThornsTrigger(ai); }
+            static Trigger* thorns(PlayerbotAI* ai) { return new ThornsTrigger(ai); }
+            static Trigger* thorns_on_party(PlayerbotAI* ai) { return new ThornsOnPartyTrigger(ai); }
             static Trigger* bash(PlayerbotAI* ai) { return new BashInterruptSpellTrigger(ai); }
             static Trigger* faerie_fire_feral(PlayerbotAI* ai) { return new FaerieFireFeralTrigger(ai); }
             static Trigger* insect_swarm(PlayerbotAI* ai) { return new InsectSwarmTrigger(ai); }
@@ -182,6 +184,7 @@ namespace ai
                 creators["cower"] = &AiObjectContextInternal::cower;
                 creators["survival instincts"] = &AiObjectContextInternal::survival_instincts;
                 creators["thorns"] = &AiObjectContextInternal::thorns;
+                creators["thorns on party"] = &AiObjectContextInternal::thorns_on_party;
                 creators["cure poison"] = &AiObjectContextInternal::cure_poison;
                 creators["cure poison on party"] = &AiObjectContextInternal::cure_poison_on_party;
                 creators["abolish poison"] = &AiObjectContextInternal::abolish_poison;
@@ -258,6 +261,7 @@ namespace ai
             static Action* cower(PlayerbotAI* ai) { return new CastCowerAction(ai); }
             static Action* survival_instincts(PlayerbotAI* ai) { return new CastSurvivalInstinctsAction(ai); }
             static Action* thorns(PlayerbotAI* ai) { return new CastThornsAction(ai); }
+            static Action* thorns_on_party(PlayerbotAI* ai) { return new CastThornsOnPartyAction(ai); }
             static Action* cure_poison(PlayerbotAI* ai) { return new CastCurePoisonAction(ai); }
             static Action* cure_poison_on_party(PlayerbotAI* ai) { return new CastCurePoisonOnPartyAction(ai); }
             static Action* abolish_poison(PlayerbotAI* ai) { return new CastAbolishPoisonAction(ai); }

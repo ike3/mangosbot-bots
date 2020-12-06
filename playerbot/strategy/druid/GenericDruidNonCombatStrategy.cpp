@@ -10,11 +10,27 @@ class GenericDruidNonCombatStrategyActionNodeFactory : public NamedObjectFactory
 public:
     GenericDruidNonCombatStrategyActionNodeFactory()
     {
+        creators["thorns"] = &thorns;
+        creators["thorns on party"] = &thorns_on_party;
         creators["mark of the wild"] = &mark_of_the_wild;
         creators["mark of the wild on party"] = &mark_of_the_wild_on_party;
         creators["innervate"] = &innervate;
     }
 private:
+    static ActionNode* thorns(PlayerbotAI* ai)
+    {
+        return new ActionNode("thorns",
+            /*P*/ NextAction::array(0, new NextAction("caster form"), NULL),
+            /*A*/ NULL,
+            /*C*/ NULL);
+    }
+    static ActionNode* thorns_on_party(PlayerbotAI* ai)
+    {
+        return new ActionNode("thorns on party",
+            /*P*/ NextAction::array(0, new NextAction("caster form"), NULL),
+            /*A*/ NULL,
+            /*C*/ NULL);
+    }
     static ActionNode* mark_of_the_wild(PlayerbotAI* ai)
     {
         return new ActionNode ("mark of the wild",
@@ -49,7 +65,11 @@ void GenericDruidNonCombatStrategy::InitTriggers(std::list<TriggerNode*> &trigge
 
     triggers.push_back(new TriggerNode(
         "mark of the wild",
-        NextAction::array(0, new NextAction("mark of the wild", 12.0f), NULL)));
+        NextAction::array(0, new NextAction("mark of the wild", 14.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "thorns",
+        NextAction::array(0, new NextAction("thorns", 12.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
         "cure poison",
@@ -78,5 +98,9 @@ void GenericDruidBuffStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "mark of the wild on party",
-        NextAction::array(0, new NextAction("mark of the wild on party", 11.0f), NULL)));
+        NextAction::array(0, new NextAction("mark of the wild on party", 13.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "thorns on party",
+        NextAction::array(0, new NextAction("thorns on party", 11.0f), NULL)));
 }

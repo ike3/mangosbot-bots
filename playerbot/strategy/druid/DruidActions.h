@@ -94,6 +94,11 @@ namespace ai
 		CastThornsAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "thorns") {}
 	};
 
+    class CastThornsOnPartyAction : public BuffOnPartyAction {
+    public:
+        CastThornsOnPartyAction(PlayerbotAI* ai) : BuffOnPartyAction(ai, "thorns") {}
+    };
+
 	class CastOmenOfClarityAction : public CastBuffSpellAction {
 	public:
 	    CastOmenOfClarityAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "omen of clarity") {}
