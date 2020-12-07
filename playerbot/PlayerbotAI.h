@@ -245,7 +245,7 @@ public:
 	void HandleTeleportAck();
     void ChangeEngine(BotState type);
     void DoNextAction();
-    void DoSpecificAction(string name);
+    virtual bool DoSpecificAction(string name, Event event = Event());
     void ChangeStrategy(string name, BotState type);
     void ClearStrategies(BotState type);
     list<string> GetStrategies(BotState type);

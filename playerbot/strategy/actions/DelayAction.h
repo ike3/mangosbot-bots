@@ -26,7 +26,7 @@ namespace ai
 
             uint32 delay = (sPlayerbotAIConfig.passiveDelay * urand(1,100)/100) + sPlayerbotAIConfig.globalCoolDown;
 
-            delay = delay + ai->GetAiObjectContext()->GetValue<list<ObjectGuid> >("nearest friendly players")->Get().size() * urand(0,15);
+            //delay = delay + ai->GetAiObjectContext()->GetValue<list<ObjectGuid> >("nearest friendly players")->Get().size() * urand(0,15);
 
             ai->SetNextCheckDelay(delay);
             return true;

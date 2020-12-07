@@ -562,7 +562,7 @@ bool MoveOutOfCollisionAction::Execute(Event event)
 
 bool MoveOutOfCollisionAction::isUseful()
 {
-    return AI_VALUE2(bool, "collision", "self target");
+    return AI_VALUE2(bool, "collision", "self target") && ai->GetAiObjectContext()->GetValue<list<ObjectGuid> >("nearest friendly players")->Get().size() < urand(25, 100);
 }
 
 bool MoveRandomAction::Execute(Event event)
@@ -577,12 +577,10 @@ bool MoveRandomAction::Execute(Event event)
     float angle = M_PI  * (float)randnum / 1000; //urand(1, 1000);
     float distance = urand(20,200);
 
-    context->GetValue<ObjectGuid>("rpg target")->Set(ObjectGuid());
-
     return MoveTo(bot->GetMapId(), bot->GetPositionX() + cos(angle) * distance, bot->GetPositionY() + sin(angle) * distance, bot->GetPositionZ());
 }
 
 bool MoveRandomAction::isUseful()
 {    
-    return ai->GetAiObjectContext()->GetValue<list<ObjectGuid> >("nearest friendly players")->Get().size() > urand(5,100);
+    return ai->GetAiObjectContext()->GetValue<list<ObjectGuid> >("nearest friendly players")->Get().size() > urand(25, 100);
 }

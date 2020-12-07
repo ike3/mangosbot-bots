@@ -46,15 +46,7 @@ bool RpgAction::Execute(Event event)
         taxi(target);
         return true;
     }
-
-    if (creature && CanTrain(guid))
-    {
-        WorldPacket emptyPacket;
-        bot->GetSession()->HandleCancelMountAuraOpcode(emptyPacket);
-        train(creature);
-        return true;
-    }
-    
+   
     vector<RpgElement> elements;
     if (target->IsVendor())
         elements.push_back(&RpgAction::trade);
@@ -65,14 +57,26 @@ bool RpgAction::Execute(Event event)
     if (creature && CanTrain(guid))
         elements.push_back(&RpgAction::train);
 
-    if (elements.empty())
-    {
-        elements.push_back(&RpgAction::emote);
-        elements.push_back(&RpgAction::stay);
-        elements.push_back(&RpgAction::work);
-    }
+    set<ObjectGuid>& ignoreList = context->GetValue<set<ObjectGuid>&>("ignore rpg target")->Get();
 
-    elements.push_back(&RpgAction::cancel);
+    if (ignoreList.empty() || ignoreList.find(target->GetObjectGuid()) == ignoreList.end())
+    {
+        ignoreList.insert(target->GetObjectGuid());
+
+        if (ignoreList.size() > 50)
+            ignoreList.erase(ignoreList.begin());
+
+        context->GetValue<set<ObjectGuid>&>("ignore rpg target")->Set(ignoreList);
+
+        if (elements.empty())
+        {
+            elements.push_back(&RpgAction::emote);
+            elements.push_back(&RpgAction::stay);
+            elements.push_back(&RpgAction::work);
+        }
+    }
+    else     
+        elements.push_back(&RpgAction::cancel);
 
     RpgElement element = elements[urand(0, elements.size() - 1)];
     (this->*element)(target);
@@ -303,8 +307,6 @@ void RpgAction::train(Unit* target)
     ObjectGuid newSelection = target->GetObjectGuid();
 
     bot->SetSelectionGuid(newSelection);
-
-    bot->Say("Want to train.",0);
 
     ai->DoSpecificAction("trainer");
 

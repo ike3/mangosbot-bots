@@ -101,12 +101,13 @@ bool TrainerAction::Execute(Event event)
     string text = event.getParam();
 
     Player* master = GetMaster();
-    if (!master && sPlayerbotAIConfig.tweakValue == 0)
-        return false;
 
     Creature* creature = ai->GetCreature(bot->GetSelectionGuid());
-    if(master)
-       creature = ai->GetCreature(master->GetSelectionGuid());
+    if (AI_VALUE(ObjectGuid, "rpg target") != bot->GetSelectionGuid())
+        if (master)
+            creature = ai->GetCreature(master->GetSelectionGuid());
+        else
+            return false;
 
 #ifdef MANGOS
     if (!creature || !creature->IsTrainer())

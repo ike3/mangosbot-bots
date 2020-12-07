@@ -8,11 +8,22 @@ namespace ai
 {
     class ChooseRpgTargetAction : public MovementAction {
     public:
-        ChooseRpgTargetAction(PlayerbotAI* ai) : MovementAction(ai, "choose rpg target") {}
+        ChooseRpgTargetAction(PlayerbotAI* ai, string name = "choose rpg target") : MovementAction(ai, name) {}
 
         virtual bool Execute(Event event);
         virtual bool isUseful();
+
+    private:
         virtual bool CanTrain(ObjectGuid guid);
+        virtual uint32 HasSameTarget(ObjectGuid guid);
+    };
+
+    class ClearRpgTargetAction : public ChooseRpgTargetAction {
+    public:
+        ClearRpgTargetAction(PlayerbotAI* ai) : ChooseRpgTargetAction(ai, "clear rpg target") {}
+
+        virtual bool Execute(Event event);
+        virtual bool isUseful();
     };
 
 }

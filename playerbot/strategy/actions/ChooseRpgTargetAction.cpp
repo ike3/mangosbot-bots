@@ -58,10 +58,36 @@ bool ChooseRpgTargetAction::CanTrain(ObjectGuid guid)
     return false;
 }
 
+uint32 ChooseRpgTargetAction::HasSameTarget(ObjectGuid guid)
+{
+    uint32 num = 0;
+
+    list<ObjectGuid> nearGuids = ai->GetAiObjectContext()->GetValue<list<ObjectGuid> >("nearest friendly players")->Get();
+    for (auto& i : nearGuids)
+    {
+        Player* player = sObjectMgr.GetPlayer(i);
+
+        if (!player)
+            continue;
+
+        PlayerbotAI* ai = player->GetPlayerbotAI();
+
+        if (!ai)
+            continue;
+
+        if (ai->GetAiObjectContext()->GetValue<ObjectGuid>("rpg target")->Get() != guid)
+            continue;
+
+        num++;
+    }
+
+    return num;
+}
+
 bool ChooseRpgTargetAction::Execute(Event event)
 {
     list<ObjectGuid> possibleTargets = AI_VALUE(list<ObjectGuid>, "possible rpg targets");
-    set<ObjectGuid>& ignore = context->GetValue<set<ObjectGuid>&>("ignore rpg target")->Get();
+    set<ObjectGuid>& ignoreList = context->GetValue<set<ObjectGuid>&>("ignore rpg target")->Get();
     if (possibleTargets.empty())
     {
         return false;
@@ -69,6 +95,9 @@ bool ChooseRpgTargetAction::Execute(Event event)
 
     vector<Unit*> units;
 
+    int maxPriority = 1;
+
+    //First handing in quests
     for (list<ObjectGuid>::iterator i = possibleTargets.begin(); i != possibleTargets.end(); ++i)
     {
         Unit* unit = ai->GetUnit(*i);
@@ -76,43 +105,50 @@ bool ChooseRpgTargetAction::Execute(Event event)
         if (!unit)
             continue;
 
-        uint32 dialogStatus = bot->GetSession()->getDialogStatus(bot, unit, DIALOG_STATUS_NONE);
-        
-        if (CanTrain(*i) || dialogStatus == DIALOG_STATUS_REWARD2) units.push_back(unit);
-        else if ((ignore.empty() || ignore.find(unit->GetObjectGuid()) == ignore.end()) && dialogStatus == DIALOG_STATUS_AVAILABLE) units.push_back(unit);
-    }
+        if (!ignoreList.empty() && ignoreList.find(unit->GetObjectGuid()) != ignoreList.end() && urand(0,100) < 10) //10% chance to retry ignored.
+            continue;
 
-    if (units.empty())
-    {        
-        for (list<ObjectGuid>::iterator i = possibleTargets.begin(); i != possibleTargets.end(); ++i)
-        {
-            Unit* unit = ai->GetUnit(*i);
-            if (unit && (ignore.empty() || ignore.find(unit->GetObjectGuid()) == ignore.end())) units.push_back(unit);
-        }
+        int priority = 1;
+
+        uint32 dialogStatus = bot->GetSession()->getDialogStatus(bot, unit, DIALOG_STATUS_NONE);        
+        if (dialogStatus == DIALOG_STATUS_REWARD2)
+            priority = 100;
+        else if (CanTrain(*i) || dialogStatus == DIALOG_STATUS_AVAILABLE)
+            priority = 90;
+
+        if (priority < maxPriority)
+            continue;
+
+        if (HasSameTarget(unit->GetObjectGuid()) > urand(5, 15))
+            continue;
+
+        if (priority > maxPriority)
+            units.clear();
+
+        units.push_back(unit);
     }
 
     if (units.empty())
     {
         sLog.outDetail("%s can't choose RPG target: all %zu are not available", bot->GetName(), possibleTargets.size());
-        ignore.clear(); //Clear ignore list.
-        context->GetValue<set<ObjectGuid>&>("ignore rpg target")->Set(ignore);
+        ignoreList.clear(); //Clear ignore list.
+        context->GetValue<set<ObjectGuid>&>("ignore rpg target")->Set(ignoreList);
+        context->GetValue<ObjectGuid>("rpg target")->Set(ObjectGuid());
         return false;
     }
 
     Unit* target = units[urand(0, units.size() - 1)];
     if (!target) {
+        context->GetValue<ObjectGuid>("rpg target")->Set(ObjectGuid());
         return false;
     }
 
+    //ostringstream out;
+
     context->GetValue<ObjectGuid>("rpg target")->Set(target->GetObjectGuid());
 
-    if (ignore.size() > 50)
-        ignore.erase(ignore.begin());
-
-    ignore.insert(target->GetObjectGuid());
-
-    
-    context->GetValue<set<ObjectGuid>&>("ignore rpg target")->Set(ignore);
+    //out << "Picked " << target->GetName() << " targets near: " << ai->GetAiObjectContext()->GetValue<list<ObjectGuid> >("friendly players near rpg target")->Get().size();
+    //bot->Say(out.str(), 0);
 
     return true;
 }

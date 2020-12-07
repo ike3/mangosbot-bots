@@ -20,7 +20,7 @@ void NonCombatStrategy::InitTriggers(std::list<TriggerNode*>& triggers)
 
     triggers.push_back(new TriggerNode(
         "no non bot players around",
-        NextAction::array(0, new NextAction("move random", 6.0f), NULL)));
+        NextAction::array(0, new NextAction("move random", 0.5f), NULL)));
 
     triggers.push_back(new TriggerNode(
         "random",

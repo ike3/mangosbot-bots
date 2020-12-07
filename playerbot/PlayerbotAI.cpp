@@ -569,7 +569,7 @@ list<string> PlayerbotAI::GetStrategies(BotState type)
     return e->GetStrategies();
 }
 
-void PlayerbotAI::DoSpecificAction(string name)
+bool PlayerbotAI::DoSpecificAction(string name, Event event)
 {
     for (int i = 0 ; i < BOT_STATE_MAX; i++)
     {
@@ -581,26 +581,28 @@ void PlayerbotAI::DoSpecificAction(string name)
             continue;
         case ACTION_RESULT_OK:
             PlaySound(TEXTEMOTE_NOD);
-            return;
+            return true;
         case ACTION_RESULT_IMPOSSIBLE:
             out << name << ": impossible";
             TellError(out.str());
             PlaySound(TEXTEMOTE_NO);
-            return;
+            return false;
         case ACTION_RESULT_USELESS:
             out << name << ": useless";
             TellError(out.str());
             PlaySound(TEXTEMOTE_NO);
-            return;
+            return false;
         case ACTION_RESULT_FAILED:
             out << name << ": failed";
             TellError(out.str());
-            return;
+            return false;
         }
     }
     ostringstream out;
     out << name << ": unknown action";
     TellError(out.str());
+
+    return false;
 }
 
 bool PlayerbotAI::PlaySound(uint32 emote)
