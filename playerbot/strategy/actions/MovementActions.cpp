@@ -494,7 +494,7 @@ bool MoveOutOfEnemyContactAction::Execute(Event event)
     if (!target)
         return false;
 
-    return MoveTo(target, max(sPlayerbotAIConfig.contactDistance, target->GetObjectBoundingRadius()));
+    return MoveTo(target, sPlayerbotAIConfig.contactDistance);
 }
 
 bool MoveOutOfEnemyContactAction::isUseful()
