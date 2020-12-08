@@ -41,8 +41,8 @@ public:
 bool SellAction::Execute(Event event)
 {
     Player* master = GetMaster();
-    if (!master && sPlayerbotAIConfig.tweakValue == 0)
-        return false;
+    //if (!master && sPlayerbotAIConfig.tweakValue == 0)
+    //    return false;
 
     string text = event.getParam();
 

@@ -574,7 +574,7 @@ bool PlayerbotAI::DoSpecificAction(string name, Event event)
     for (int i = 0 ; i < BOT_STATE_MAX; i++)
     {
         ostringstream out;
-        ActionResult res = engines[i]->ExecuteAction(name);
+        ActionResult res = engines[i]->ExecuteAction(name, event);
         switch (res)
         {
         case ACTION_RESULT_UNKNOWN:

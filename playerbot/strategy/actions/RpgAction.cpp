@@ -252,11 +252,16 @@ void RpgAction::quest(Unit* unit)
     ObjectGuid oldSelection = bot->GetSelectionGuid();
 
     bot->SetSelectionGuid(unit->GetObjectGuid());        
+
+    WorldPacket p(CMSG_QUESTGIVER_ACCEPT_QUEST);
+    uint32 unk1 = 0;
+    p << unit->GetObjectGuid();
+    p.rpos(0);
     
     if (bot->GetSession()->getDialogStatus(bot, unit, DIALOG_STATUS_NONE) == DIALOG_STATUS_REWARD2)
-        ai->DoSpecificAction("talk to quest giver");
+        ai->DoSpecificAction("talk to quest giver", Event("rpg action", p));
     else if (bot->GetSession()->getDialogStatus(bot, unit, DIALOG_STATUS_NONE) == DIALOG_STATUS_AVAILABLE)
-        ai->DoSpecificAction("accept all quests");
+        ai->DoSpecificAction("accept all quests", Event("rpg action", p));
     else
         bot->HandleEmoteCommand(type);
 
@@ -275,7 +280,7 @@ void RpgAction::trade(Unit* unit)
 
     bot->SetSelectionGuid(unit->GetObjectGuid());
 
-    ai->DoSpecificAction("sell gray");
+    ai->DoSpecificAction("sell", Event("rpg action", "gray"));
 
     unit->SetFacingTo(unit->GetAngle(bot));
 
