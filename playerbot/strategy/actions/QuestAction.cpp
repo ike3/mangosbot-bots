@@ -17,7 +17,6 @@ bool QuestAction::Execute(Event event)
             guid = bot->GetSelectionGuid();
     }
     else {
-
         if (!guid)
             guid = master->GetSelectionGuid();
     }
