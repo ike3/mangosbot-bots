@@ -105,6 +105,10 @@ void AttackersValue::RemoveNonThreating(set<Unit*>& targets)
 bool AttackersValue::IsPossibleTarget(Unit *attacker, Player *bot)
 {
     Creature *c = dynamic_cast<Creature*>(attacker);
+    bool rti = false;
+    if (attacker && bot->GetGroup())
+        rti = bot->GetGroup()->GetTargetIcon(7) == attacker->GetObjectGuid();
+
     return attacker &&
         attacker->IsInWorld() &&
         attacker->GetMapId() == bot->GetMapId() &&
@@ -119,15 +123,16 @@ bool AttackersValue::IsPossibleTarget(Unit *attacker, Player *bot)
 #endif
         !attacker->HasStealthAura() &&
         !attacker->HasInvisibilityAura() &&
-        !attacker->IsPolymorphed() &&
 #ifdef CMANGOS
         //!attacker->IsStunned() &&
 #endif
 #ifdef MANGOS
         //!attacker->hasUnitState(UNIT_STAT_STUNNED) &&
 #endif
-        !sServerFacade.IsCharmed(attacker) &&
-        !sServerFacade.IsFeared(attacker) &&
+        !((attacker->IsPolymorphed() ||
+        bot->GetPlayerbotAI()->HasAura("sap", attacker) ||
+        sServerFacade.IsCharmed(attacker) ||
+        sServerFacade.IsFeared(attacker)) && !rti) &&
         //!sServerFacade.IsInRoots(attacker) &&
         !sServerFacade.IsFriendlyTo(attacker, bot) &&
         bot->IsWithinDistInMap(attacker, sPlayerbotAIConfig.sightDistance) &&
