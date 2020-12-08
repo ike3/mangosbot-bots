@@ -64,8 +64,10 @@ namespace ai
             Unit* target = GetTarget();
 
             float angle = GetFollowAngle() + target->GetOrientation();
+
             Player* master = GetMaster();
-            if (master) angle -= master->GetOrientation();
+            if (master && !(target->getVictim() && target->getVictim()->GetObjectGuid() == bot->GetObjectGuid()))
+                angle -= master->GetOrientation();
 
             return angle;
         }
