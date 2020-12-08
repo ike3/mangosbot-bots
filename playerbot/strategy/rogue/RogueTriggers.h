@@ -78,23 +78,22 @@ namespace ai
         }
     };
 
-    class StealthRangeTrigger : public Trigger {
+    class StealthTrigger : public Trigger {
     public:
-        StealthRangeTrigger(PlayerbotAI* ai) : Trigger(ai, "stealth") {}
+        StealthTrigger(PlayerbotAI* ai) : Trigger(ai, "stealth") {}
         virtual bool IsActive()
         {
-            if (ai->HasAura("stealth", bot) || sServerFacade.IsInCombat(bot))
+            if (ai->HasAura("stealth", bot) || sServerFacade.IsInCombat(bot) || bot->HasSpellCooldown(1784))
                 return false;
 
-            float distance = 25.0f;
+            float distance = 30.0f;
 
             Unit* target = AI_VALUE(Unit*, "current target");
-            if (target && sServerFacade.IsInCombat(target))
+            if (target && target->getVictim())
                 distance -= 10;
 
             return (target &&
                 sServerFacade.IsHostileTo(bot, target) &&
-                !bot->HasSpellCooldown(1784) &&
                 sServerFacade.IsDistanceLessOrEqualThan(AI_VALUE2(float, "distance", "current target"), distance));
         }
     };
@@ -145,7 +144,6 @@ namespace ai
                     (AI_VALUE2(bool, "moving", "dps target") ||
                     AI_VALUE2(bool, "moving", "enemy player target")) &&
                     targeted &&
-                    !bot->HasSpellCooldown(2983) &&
                     (sServerFacade.IsDistanceGreaterThan(AI_VALUE2(float, "distance", "dps target"), distance) ||
                      sServerFacade.IsDistanceGreaterThan(AI_VALUE2(float, "distance", "enemy player target"), distance));
         }

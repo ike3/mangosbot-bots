@@ -142,7 +142,6 @@ public:
         creators["cheap shot"] = &cheap_shot;
         creators["garrote"] = &garrote;
         creators["sap"] = &sap;
-        creators["food"] = &food;
         creators["sinister strike"] = &sinister_strike;
     }
 private:
@@ -172,14 +171,6 @@ private:
         return new ActionNode("sap",
             /*P*/ NULL,
             /*A*/ NULL,
-            /*C*/ NULL);
-    }
-    static ActionNode* food(PlayerbotAI* ai)
-    {
-        return new ActionNode("food",
-            /*P*/ NULL,
-            //*A*/ NextAction::array(0, new NextAction("mutilate"), NULL),
-            /*A*/ NextAction::array(0, new NextAction("healing potion"), NULL),
             /*C*/ NULL);
     }
     static ActionNode* sinister_strike(PlayerbotAI* ai)
