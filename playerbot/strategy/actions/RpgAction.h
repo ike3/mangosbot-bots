@@ -16,6 +16,10 @@ namespace ai
     private:
         typedef void (RpgAction::*RpgElement) (Unit*);
 
+        virtual bool AddIgnore(ObjectGuid guid);
+        virtual bool RemIgnore(ObjectGuid guid);
+        virtual bool HasIgnore(ObjectGuid guid);
+
         void stay(Unit* unit);
         void cancel(Unit* unit);
         void emote(Unit* unit);

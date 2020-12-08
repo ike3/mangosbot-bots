@@ -60,6 +60,9 @@ bool ChooseRpgTargetAction::CanTrain(ObjectGuid guid)
 
 uint32 ChooseRpgTargetAction::HasSameTarget(ObjectGuid guid)
 {
+    if (ai->GetMaster())
+        return 0;
+
     uint32 num = 0;
 
     list<ObjectGuid> nearGuids = ai->GetAiObjectContext()->GetValue<list<ObjectGuid> >("nearest friendly players")->Get();
@@ -107,7 +110,7 @@ bool ChooseRpgTargetAction::Execute(Event event)
 
         if (!ignoreList.empty() && ignoreList.find(unit->GetObjectGuid()) != ignoreList.end() && urand(0,100) < 10) //10% chance to retry ignored.
             continue;
-
+        
         int priority = 1;
 
         uint32 dialogStatus = bot->GetSession()->getDialogStatus(bot, unit, DIALOG_STATUS_NONE);        
@@ -124,6 +127,8 @@ bool ChooseRpgTargetAction::Execute(Event event)
 
         if (priority > maxPriority)
             units.clear();
+
+        maxPriority = priority;
 
         units.push_back(unit);
     }
@@ -143,12 +148,7 @@ bool ChooseRpgTargetAction::Execute(Event event)
         return false;
     }
 
-    //ostringstream out;
-
     context->GetValue<ObjectGuid>("rpg target")->Set(target->GetObjectGuid());
-
-    //out << "Picked " << target->GetName() << " targets near: " << ai->GetAiObjectContext()->GetValue<list<ObjectGuid> >("friendly players near rpg target")->Get().size();
-    //bot->Say(out.str(), 0);
 
     return true;
 }

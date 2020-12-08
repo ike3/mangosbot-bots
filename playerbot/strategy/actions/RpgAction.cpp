@@ -57,17 +57,8 @@ bool RpgAction::Execute(Event event)
     if (creature && CanTrain(guid))
         elements.push_back(&RpgAction::train);
 
-    set<ObjectGuid>& ignoreList = context->GetValue<set<ObjectGuid>&>("ignore rpg target")->Get();
-
-    if (ignoreList.empty() || ignoreList.find(target->GetObjectGuid()) == ignoreList.end())
+    if (AddIgnore(target->GetObjectGuid()))
     {
-        ignoreList.insert(target->GetObjectGuid());
-
-        if (ignoreList.size() > 50)
-            ignoreList.erase(ignoreList.begin());
-
-        context->GetValue<set<ObjectGuid>&>("ignore rpg target")->Set(ignoreList);
-
         if (elements.empty())
         {
             elements.push_back(&RpgAction::emote);
@@ -83,80 +74,47 @@ bool RpgAction::Execute(Event event)
     return true;
 }
 
-bool RpgAction::CanTrain(ObjectGuid guid)
+bool RpgAction::AddIgnore(ObjectGuid guid)
 {
-    Creature* creature = ai->GetCreature(guid);
-
-    if (!creature)
+    if (HasIgnore(guid))
         return false;
 
-    if (!creature->IsTrainerOf(bot, false))
-        return false;
+    set<ObjectGuid>& ignoreList = context->GetValue<set<ObjectGuid>&>("ignore rpg target")->Get();
 
-    // check present spell in trainer spell list
-    TrainerSpellData const* cSpells = creature->GetTrainerSpells();
-    TrainerSpellData const* tSpells = creature->GetTrainerTemplateSpells();
-    if (!cSpells && !tSpells)
-    {
-        return false;
-    }
+    ignoreList.insert(guid);
 
-    float fDiscountMod = bot->GetReputationPriceDiscount(creature);
+    if (ignoreList.size() > 50)
+        ignoreList.erase(ignoreList.begin());
 
-    TrainerSpellData const* trainer_spells = cSpells;
-    if (!trainer_spells)
-        trainer_spells = tSpells;
+    context->GetValue<set<ObjectGuid>&>("ignore rpg target")->Set(ignoreList);
 
-    for (TrainerSpellMap::const_iterator itr = trainer_spells->spellList.begin(); itr != trainer_spells->spellList.end(); ++itr)
-    {
-        TrainerSpell const* tSpell = &itr->second;
-
-        if (!tSpell)
-            continue;
-
-        uint32 reqLevel = 0;
-
-        reqLevel = tSpell->isProvidedReqLevel ? tSpell->reqLevel : std::max(reqLevel, tSpell->reqLevel);
-        TrainerSpellState state = bot->GetTrainerSpellState(tSpell, reqLevel);
-        if (state != TRAINER_SPELL_GREEN)
-            continue;
-
-        uint32 spellId = tSpell->spell;
-        const SpellEntry* const pSpellInfo = sServerFacade.LookupSpellInfo(spellId);
-        if (!pSpellInfo)
-            continue;
-
-        uint32 cost = uint32(floor(tSpell->spellCost * fDiscountMod));
-        if (cost > bot->GetMoney())
-            continue;
-
-        return true;
-    }
-
-    return false;
+    return true;
 }
 
-bool RpgAction::needRepair()
+bool RpgAction::RemIgnore(ObjectGuid guid)
 {
-    for (int i = EQUIPMENT_SLOT_START; i < INVENTORY_SLOT_ITEM_END; ++i)
-    {
-        uint16 pos = ((INVENTORY_SLOT_BAG_0 << 8) | i);
-        Item* item = bot->GetItemByPos(pos);
+    if (!HasIgnore(guid))
+        return false;
 
-        uint32 TotalCost = 0;
-        if (!item)
-            continue;
+    set<ObjectGuid>& ignoreList = context->GetValue<set<ObjectGuid>&>("ignore rpg target")->Get();
 
-        uint32 maxDurability = item->GetUInt32Value(ITEM_FIELD_MAXDURABILITY);
-        if (!maxDurability)
-            continue;
+    ignoreList.erase(ignoreList.find(guid));
 
-        uint32 curDurability = item->GetUInt32Value(ITEM_FIELD_DURABILITY);
+    context->GetValue<set<ObjectGuid>&>("ignore rpg target")->Set(ignoreList);
 
-        if (maxDurability > curDurability)
-            return true;
-    }
-    return false;
+    return true;
+}
+
+bool RpgAction::HasIgnore(ObjectGuid guid)
+{
+    set<ObjectGuid>& ignoreList = context->GetValue<set<ObjectGuid>&>("ignore rpg target")->Get();
+    if (ignoreList.empty())
+        return false;
+
+    if (ignoreList.find(guid) == ignoreList.end())
+        return false;
+
+    return true;
 }
 
 void RpgAction::stay(Unit* unit)
@@ -253,17 +211,23 @@ void RpgAction::quest(Unit* unit)
 
     bot->SetSelectionGuid(unit->GetObjectGuid());        
 
+    //Parse rpg target to quest action.
     WorldPacket p(CMSG_QUESTGIVER_ACCEPT_QUEST);
-    uint32 unk1 = 0;
     p << unit->GetObjectGuid();
     p.rpos(0);
-    
-    if (bot->GetSession()->getDialogStatus(bot, unit, DIALOG_STATUS_NONE) == DIALOG_STATUS_REWARD2)
-        ai->DoSpecificAction("talk to quest giver", Event("rpg action", p));
+
+    bool retVal = false;
+
+  
+    if (bot->GetSession()->getDialogStatus(bot, unit, DIALOG_STATUS_NONE) == DIALOG_STATUS_REWARD2) 
+        retVal = ai->DoSpecificAction("talk to quest giver", Event("rpg action", p)); 
     else if (bot->GetSession()->getDialogStatus(bot, unit, DIALOG_STATUS_NONE) == DIALOG_STATUS_AVAILABLE)
-        ai->DoSpecificAction("accept all quests", Event("rpg action", p));
+        retVal = ai->DoSpecificAction("accept all quests", Event("rpg action", p));
     else
         bot->HandleEmoteCommand(type);
+
+    if (retVal)
+        RemIgnore(unit->GetObjectGuid());
 
     bot->HandleEmoteCommand(type);
     unit->SetFacingTo(unit->GetAngle(bot));
@@ -272,6 +236,8 @@ void RpgAction::quest(Unit* unit)
         bot->SetSelectionGuid(oldSelection);
 
     ai->SetNextCheckDelay(sPlayerbotAIConfig.rpgDelay);
+
+    cancel(unit);
 }
 
 void RpgAction::trade(Unit* unit)
@@ -327,4 +293,81 @@ void RpgAction::train(Unit* target)
 bool RpgAction::isUseful()
 {
     return context->GetValue<ObjectGuid>("rpg target")->Get();
+}
+
+
+bool RpgAction::CanTrain(ObjectGuid guid)
+{
+    Creature* creature = ai->GetCreature(guid);
+
+    if (!creature)
+        return false;
+
+    if (!creature->IsTrainerOf(bot, false))
+        return false;
+
+    // check present spell in trainer spell list
+    TrainerSpellData const* cSpells = creature->GetTrainerSpells();
+    TrainerSpellData const* tSpells = creature->GetTrainerTemplateSpells();
+    if (!cSpells && !tSpells)
+    {
+        return false;
+    }
+
+    float fDiscountMod = bot->GetReputationPriceDiscount(creature);
+
+    TrainerSpellData const* trainer_spells = cSpells;
+    if (!trainer_spells)
+        trainer_spells = tSpells;
+
+    for (TrainerSpellMap::const_iterator itr = trainer_spells->spellList.begin(); itr != trainer_spells->spellList.end(); ++itr)
+    {
+        TrainerSpell const* tSpell = &itr->second;
+
+        if (!tSpell)
+            continue;
+
+        uint32 reqLevel = 0;
+
+        reqLevel = tSpell->isProvidedReqLevel ? tSpell->reqLevel : std::max(reqLevel, tSpell->reqLevel);
+        TrainerSpellState state = bot->GetTrainerSpellState(tSpell, reqLevel);
+        if (state != TRAINER_SPELL_GREEN)
+            continue;
+
+        uint32 spellId = tSpell->spell;
+        const SpellEntry* const pSpellInfo = sServerFacade.LookupSpellInfo(spellId);
+        if (!pSpellInfo)
+            continue;
+
+        uint32 cost = uint32(floor(tSpell->spellCost * fDiscountMod));
+        if (cost > bot->GetMoney())
+            continue;
+
+        return true;
+    }
+
+    return false;
+}
+
+bool RpgAction::needRepair()
+{
+    for (int i = EQUIPMENT_SLOT_START; i < INVENTORY_SLOT_ITEM_END; ++i)
+    {
+        uint16 pos = ((INVENTORY_SLOT_BAG_0 << 8) | i);
+        Item* item = bot->GetItemByPos(pos);
+
+        uint32 TotalCost = 0;
+        if (!item)
+            continue;
+
+        uint32 maxDurability = item->GetUInt32Value(ITEM_FIELD_MAXDURABILITY);
+        if (!maxDurability)
+            continue;
+
+        uint32 curDurability = item->GetUInt32Value(ITEM_FIELD_DURABILITY);
+
+        if (maxDurability > curDurability)
+            return true;
+    }
+    return false;
 }
