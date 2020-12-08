@@ -51,7 +51,7 @@ namespace ai
         virtual bool Execute(Event event)
         {
             Unit* target = AI_VALUE(Unit*, GetTargetName());
-            return MoveTo(AI_VALUE(Unit*, GetTargetName()), max(sPlayerbotAIConfig.meleeDistance, target->GetObjectBoundingRadius()));
+            return MoveTo(AI_VALUE(Unit*, GetTargetName()), max(sPlayerbotAIConfig.meleeDistance, target->GetObjectBoundingRadius()) - sPlayerbotAIConfig.contactDistance);
         }
     };
 

@@ -221,7 +221,7 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
                 engine->addStrategy("dps debuff");
             break;
         case CLASS_ROGUE:
-            engine->addStrategies("dps", "threat", "dps assist", "aoe", "close", NULL);
+            engine->addStrategies("dps", "threat", "dps assist", "aoe", "close", "cc", "behind", NULL);
             break;
         case CLASS_WARLOCK:
             if (tab == 1)
@@ -284,6 +284,9 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
                 engine->removeStrategy("ranged");
                 engine->addStrategies("dps", "close", NULL);
             }
+
+            if (player->getClass() == CLASS_ROGUE)
+                engine->addStrategies("stealth", NULL);
         }
     }
     else
@@ -314,9 +317,11 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
         if (player->getClass() != CLASS_HUNTER)
             engine->removeStrategy("ranged");
 
-        if (player->getClass() == CLASS_ROGUE || (player->getClass() == CLASS_DRUID && tab == 1 && engine->HasStrategy("dps")))
+        if (player->getClass() == CLASS_DRUID && tab == 1 && engine->HasStrategy("dps"))
             engine->addStrategy("behind");
         
+        if (player->getClass() == CLASS_ROGUE)
+            engine->addStrategy("stealth");
     }
 }
 
@@ -394,14 +399,6 @@ void AiFactory::AddDefaultNonCombatStrategies(Player* player, PlayerbotAI* const
             "default", "quest", "loot", "gather", "duel", "emote", "conserve mana", "buff", "reveal", "mount", NULL);
     }
 
-    // Battleground switch
-    if (player->InBattleGround() && player->GetBattleGroundTypeId() == BattleGroundTypeId::BATTLEGROUND_WS)
-    {
-        nonCombatEngine->addStrategies("nc", "chat",
-            "default", "emote", "buff", "food", "conserve mana", "collision", "mount", "warsong", NULL);
-        nonCombatEngine->removeStrategy("custom::say");
-    }
-
     if (sRandomPlayerbotMgr.IsRandomBot(player))
     {
         if (!player->GetGroup())
@@ -413,6 +410,14 @@ void AiFactory::AddDefaultNonCombatStrategies(Player* player, PlayerbotAI* const
     else
     {
         nonCombatEngine->ChangeStrategy(sPlayerbotAIConfig.nonCombatStrategies);
+    }
+
+    // Battleground switch
+    if (player->InBattleGround() && player->GetBattleGroundTypeId() == BattleGroundTypeId::BATTLEGROUND_WS)
+    {
+        nonCombatEngine->addStrategies("nc", "chat",
+            "default", "emote", "buff", "food", "conserve mana", "collision", "mount", "warsong", NULL);
+        nonCombatEngine->removeStrategy("custom::say");
     }
 }
 
