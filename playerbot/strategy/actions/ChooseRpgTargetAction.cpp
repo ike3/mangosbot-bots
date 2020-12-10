@@ -88,7 +88,7 @@ uint32 ChooseRpgTargetAction::HasSameTarget(ObjectGuid guid)
 }
 
 bool ChooseRpgTargetAction::Execute(Event event)
-{
+{    
     list<ObjectGuid> possibleTargets = AI_VALUE(list<ObjectGuid>, "possible rpg targets");
     set<ObjectGuid>& ignoreList = context->GetValue<set<ObjectGuid>&>("ignore rpg target")->Get();
     if (possibleTargets.empty())
@@ -113,11 +113,13 @@ bool ChooseRpgTargetAction::Execute(Event event)
         
         int priority = 1;
 
+        if (AI_VALUE(uint8, "bag space") > 80 && unit->IsVendor())
+            priority = 100;
         uint32 dialogStatus = bot->GetSession()->getDialogStatus(bot, unit, DIALOG_STATUS_NONE);        
         if (dialogStatus == DIALOG_STATUS_REWARD2)
-            priority = 100;
-        else if (CanTrain(*i) || dialogStatus == DIALOG_STATUS_AVAILABLE)
             priority = 90;
+        else if (CanTrain(*i) || dialogStatus == DIALOG_STATUS_AVAILABLE)
+            priority = 80;
 
         if (priority < maxPriority)
             continue;

@@ -6,7 +6,6 @@
 #include "SystemConfig.h"
 #include "PlayerbotFactory.h"
 #include "RandomItemMgr.h"
-//#include "Talentspec.h"
 
 using namespace std;
 

@@ -113,6 +113,8 @@ bool QuestAction::CompleteQuest(uint32 entry)
 #ifdef CMANGOS
     bot->CompleteQuest(entry);
 #endif
+
+    return true;
 }
 
 bool QuestAction::ProcessQuests(ObjectGuid questGiver)

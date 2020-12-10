@@ -52,6 +52,12 @@ namespace ai
     public:
         RpgTargetValue(PlayerbotAI* ai) : ManualSetValue<ObjectGuid>(ai, ObjectGuid()) {}
     };
+	
+    class TravelTargetValue : public ManualSetValue<ObjectGuid>
+    {
+    public:
+        TravelTargetValue(PlayerbotAI* ai) : ManualSetValue<ObjectGuid>(ai, ObjectGuid()) {}
+    };	
 
     class IgnoreRpgTargetValue : public ManualSetValue<set<ObjectGuid>& >
     {

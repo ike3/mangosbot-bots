@@ -10,7 +10,7 @@ RpgStrategy::RpgStrategy(PlayerbotAI* ai) : Strategy(ai)
 
 NextAction** RpgStrategy::getDefaultActions()
 {
-    return NextAction::array(0, new NextAction("rpg", 1.0f), NULL);
+    return NextAction::array(0, new NextAction("rpg", 1.1f), NULL);
 }
 
 void RpgStrategy::InitTriggers(std::list<TriggerNode*> &triggers)

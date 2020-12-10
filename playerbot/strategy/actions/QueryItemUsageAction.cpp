@@ -45,7 +45,7 @@ bool QueryItemUsageAction::Execute(Event event)
             return false;
 
         ai->TellMaster(QueryItem(item, count, GetCount(item)));
-        bot->Say(QueryItem(item, count, GetCount(item)),0);
+
         return true;
     }
 

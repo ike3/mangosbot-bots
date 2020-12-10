@@ -2,6 +2,7 @@
 #include "../../playerbot.h"
 #include "SellAction.h"
 #include "../ItemVisitors.h"
+#include "../values/ItemUsageValue.h"
 
 using namespace ai;
 
@@ -37,6 +38,23 @@ public:
     }
 };
 
+class SellVendorItemsVisitor : public SellItemsVisitor
+{
+public:
+    SellVendorItemsVisitor(SellAction* action, AiObjectContext* con) : SellItemsVisitor(action) { context = con; }
+
+    AiObjectContext* context;
+
+    virtual bool Visit(Item* item)
+    {
+        ItemUsage usage = AI_VALUE2(ItemUsage, "item usage", item->GetEntry());
+        if (usage != ITEM_USAGE_VENDOR && usage != ITEM_USAGE_AH)
+            return true;
+
+        return SellItemsVisitor::Visit(item);
+    }
+};
+
 
 bool SellAction::Execute(Event event)
 {
@@ -49,6 +67,13 @@ bool SellAction::Execute(Event event)
     if (text == "gray" || text == "*")
     {
         SellGrayItemsVisitor visitor(this);
+        IterateItems(&visitor);
+        return true;
+    }
+
+    if (text == "vendor")
+    {
+        SellVendorItemsVisitor visitor(this, context);
         IterateItems(&visitor);
         return true;
     }

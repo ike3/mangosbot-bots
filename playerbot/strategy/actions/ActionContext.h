@@ -16,12 +16,14 @@
 #include "CheckMailAction.h"
 #include "CheckValuesAction.h"
 #include "ChooseRpgTargetAction.h"
+#include "ChooseTravelTargetAction.h"
 #include "DelayAction.h"
 #include "GiveItemAction.h"
 #include "GreetAction.h"
 #include "ImbueAction.h"
 #include "MovementActions.h"
 #include "MoveToRpgTargetAction.h"
+#include "MoveToTravelTargetAction.h"
 #include "OutfitAction.h"
 #include "RevealGatheringItemAction.h"
 #include "SayAction.h"
@@ -29,6 +31,7 @@
 #include "RandomBotUpdateAction.h"
 #include "RemoveAuraAction.h"
 #include "RpgAction.h"
+#include "TravelAction.h"
 #include "RtiAction.h"
 #include "BattlegroundJoinAction.h"
 #include "CheckMountStateAction.h"
@@ -48,6 +51,9 @@ namespace ai
             creators["rpg"] = &ActionContext::rpg;
             creators["choose rpg target"] = &ActionContext::choose_rpg_target;
             creators["move to rpg target"] = &ActionContext::move_to_rpg_target;
+			creators["travel"] = &ActionContext::travel;
+			creators["choose travel target"] = &ActionContext::choose_travel_target;
+			creators["move to travel target"] = &ActionContext::move_to_travel_target;
             creators["move out of collision"] = &ActionContext::move_out_of_collision;
             creators["move random"] = &ActionContext::move_random;
             creators["attack"] = &ActionContext::melee;
@@ -131,6 +137,9 @@ namespace ai
         static Action* rpg(PlayerbotAI* ai) { return new RpgAction(ai); }
         static Action* choose_rpg_target(PlayerbotAI* ai) { return new ChooseRpgTargetAction(ai); }
         static Action* move_to_rpg_target(PlayerbotAI* ai) { return new MoveToRpgTargetAction(ai); }
+        static Action* travel(PlayerbotAI* ai) { return new TravelAction(ai); }
+        static Action* choose_travel_target(PlayerbotAI* ai) { return new ChooseTravelTargetAction(ai); }
+        static Action* move_to_travel_target(PlayerbotAI* ai) { return new MoveToTravelTargetAction(ai); }
         static Action* move_out_of_collision(PlayerbotAI* ai) { return new MoveOutOfCollisionAction(ai); }
         static Action* move_random(PlayerbotAI* ai) { return new MoveRandomAction(ai); }
         static Action* check_values(PlayerbotAI* ai) { return new CheckValuesAction(ai); }
