@@ -35,9 +35,9 @@ bool TravelAction::Execute(Event event)
         return false;
     }
 
-    ostringstream os; os << "Arrived at: " << target->GetName();
+    //ostringstream os; os << "Arrived at: " << target->GetName();
 
-    ai->TellMaster(os);
+    //ai->TellMaster(os);
 
     if(target->IsFriendlyTo(bot))
         context->GetValue<ObjectGuid>("rpg target")->Set(target->GetObjectGuid());

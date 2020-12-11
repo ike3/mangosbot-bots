@@ -87,7 +87,17 @@ namespace ai
         virtual bool Execute(Event event)
         {
             bool result = AttackAction::Execute(event);
-            if (result && GetTarget()) context->GetValue<ObjectGuid>("pull target")->Set(GetTarget()->GetObjectGuid());
+
+            if (result)
+            {
+                Unit* grindTarget = GetTarget();
+                if (grindTarget)
+                {
+                    const char* grindName = grindTarget->GetName();
+                    if (grindName)
+                        context->GetValue<ObjectGuid>("pull target")->Set(grindTarget->GetObjectGuid());
+                }
+            }
             return result;
         }
     };

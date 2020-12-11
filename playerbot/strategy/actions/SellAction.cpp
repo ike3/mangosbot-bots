@@ -59,8 +59,6 @@ public:
 bool SellAction::Execute(Event event)
 {
     Player* master = GetMaster();
-    //if (!master && sPlayerbotAIConfig.tweakValue == 0)
-    //    return false;
 
     string text = event.getParam();
 
@@ -118,17 +116,4 @@ void SellAction::Sell(Item* item)
         ostringstream out; out << "Selling " << chat->formatItem(item->GetProto());
         ai->TellMaster(out);
     }
-}
-
-bool SellGrayAction::Execute(Event event)
-{
-    Player* master = GetMaster();
-    if (!master && sPlayerbotAIConfig.tweakValue == 0)
-        return false;
-
-    string text = event.getParam();
-
-    SellGrayItemsVisitor visitor(this);
-    IterateItems(&visitor);
-    return true;
 }

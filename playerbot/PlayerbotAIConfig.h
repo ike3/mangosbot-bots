@@ -90,6 +90,7 @@ public:
     uint32 randomBotGrindAlone;
     uint32 minEnchantingBotLevel;
     uint32 randombotStartingLevel;
+    bool randomBotSayWithoutMaster;
 
     bool guildTaskEnabled;
     uint32 minGuildTaskChangeTime, maxGuildTaskChangeTime;

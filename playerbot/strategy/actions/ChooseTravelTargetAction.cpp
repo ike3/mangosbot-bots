@@ -25,14 +25,17 @@ bool ChooseTravelTargetAction::Execute(Event event)
 
 
     Unit* selTarget;
+    float selDistance;
     Unit* newTarget;
+    float newDistance;
     bool foundTarget = false;
-
 
     list<Unit*> targets;
     AnyUnitInObjectRangeCheck u_check(bot, 9000);
     UnitListSearcher<AnyUnitInObjectRangeCheck> searcher(targets, u_check);
     Cell::VisitAllObjects(bot, searcher, 9000);
+
+    list<ObjectGuid> nearGuids = ai->GetAiObjectContext()->GetValue<list<ObjectGuid> >("nearest friendly players")->Get();
 
     for (auto& i : targets)
     {
@@ -50,17 +53,46 @@ bool ChooseTravelTargetAction::Execute(Event event)
         if (bot->GetObjectGuid() == newTarget->GetObjectGuid())
             continue;
 
-        if (!needForQuest(newTarget))
+        bool needForQ = needForQuest(newTarget);
+
+        if (!needForQ)// && (foundTarget || !newTarget->IsFriendlyTo(bot)))
             continue;
 
         if (newTarget->IsInCombat())
             continue;
 
-        if (foundTarget && newTarget->GetDistance(bot) > selTarget->GetDistance(bot))
+        newDistance = newTarget->GetDistance(bot);
+
+        if (foundTarget && (newDistance > selDistance || urand(0,abs(selDistance- newDistance)) < 60) && newDistance > sPlayerbotAIConfig.lootDistance)
+            continue;
+
+        int num = 0;
+
+        for (auto& i : nearGuids)
+        {
+            Player* player = sObjectMgr.GetPlayer(i);
+
+            if (!player)
+                continue;
+
+            PlayerbotAI* ai = player->GetPlayerbotAI();
+
+            if (!ai)
+                continue;
+
+            if (ai->GetAiObjectContext()->GetValue<ObjectGuid>("travel target")->Get() != newTarget->GetObjectGuid())
+                continue;
+
+            num++;
+        }
+
+        if (num > urand(1, 15))
             continue;
 
         selTarget = newTarget;
-        foundTarget = true;
+        selDistance = newDistance;
+        //if(!needForQ)
+            foundTarget = true;
     }
 
     /*if (!foundTarget && ai->GetMaster())
@@ -70,14 +102,20 @@ bool ChooseTravelTargetAction::Execute(Event event)
     }
     */
 
-    if (!foundTarget || selTarget->GetDistance(bot) < sPlayerbotAIConfig.lootDistance) {
+    if (foundTarget && selTarget->GetDistance(bot) < sPlayerbotAIConfig.lootDistance) {
         context->GetValue<ObjectGuid>("travel target")->Set(ObjectGuid());
         return false;
     }
 
-    ostringstream os; os << "Choosing: " << selTarget->GetName() << " at distance " << selTarget->GetDistance(bot);
+    if (!foundTarget)
+    {
+        context->GetValue<ObjectGuid>("travel target")->Set(ObjectGuid());
+        return false;
+    }
 
-    ai->TellMaster(os);
+    //ostringstream os; os << "Choosing: " << selTarget->GetName() << " at distance " << selTarget->GetDistance(bot);
+
+    //ai->TellMaster(os);
 
     context->GetValue<ObjectGuid>("travel target")->Set(selTarget->GetObjectGuid());
 

@@ -18,7 +18,7 @@ bool MoveToTravelTargetAction::Execute(Event event)
 
     float distance = AI_VALUE2(float, "distance", "travel target");
 
-    ostringstream os; os << "Travel to: " << target->GetName() << " at distance " << distance;
+    //ostringstream os; os << "Travel to: " << target->GetName() << " at distance " << distance;
 
     //ai->TellMaster(os);
 
@@ -28,7 +28,7 @@ bool MoveToTravelTargetAction::Execute(Event event)
     float mapId = target->GetMapId();
 
     if (distance < 80.0f)
-        if (bot->IsWithinLOS(x, y, z)) return MoveNear(target, sPlayerbotAIConfig.followDistance);
+        if (bot->IsWithinLOS(x, y, z)) return MoveNear(target, sPlayerbotAIConfig.tooCloseDistance);
 
     WaitForReach(distance);
 

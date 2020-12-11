@@ -93,6 +93,9 @@ AiPlayerbot.minEnchantingBotLevel = 71
 # Default: 1 (enabled)
 AiPlayerbot.GearScoreCheck = 0
 
+# Bots without a master will say their lines
+# AiPlayerbot.RandomBotSayWithoutMaster = 0
+
 # Automation
 
 # Bots pick their quest reward (yes = picks first useful item, no = list all rewards, ask = pick useful item and lists if multiple)

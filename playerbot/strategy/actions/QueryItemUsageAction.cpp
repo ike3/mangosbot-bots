@@ -11,7 +11,7 @@ using namespace ai;
 
 bool QueryItemUsageAction::Execute(Event event)
 {
-    if (!GetMaster() && sPlayerbotAIConfig.tweakValue == 0)
+    if (!GetMaster() && !sPlayerbotAIConfig.randomBotSayWithoutMaster)
         return false;
 
     WorldPacket& data = event.getPacket();

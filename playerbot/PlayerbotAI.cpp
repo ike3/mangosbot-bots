@@ -1196,7 +1196,7 @@ bool PlayerbotAI::TellMasterNoFacing(string text, PlayerbotSecurityLevel securit
 {
     Player* master = GetMaster();
 
-    if (!master && sPlayerbotAIConfig.tweakValue > 0)
+    if (!master && sPlayerbotAIConfig.randomBotSayWithoutMaster)
     {
         bot->Say(text, 0);
         return true;

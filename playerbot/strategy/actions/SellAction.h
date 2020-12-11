@@ -14,11 +14,4 @@ namespace ai
         void Sell(Item* item);
 
     };
-
-    class SellGrayAction : public SellAction {
-    public:
-        SellGrayAction(PlayerbotAI* ai) : SellAction(ai, "sell gray") {}
-        virtual bool Execute(Event event);
-    };
-
 }
