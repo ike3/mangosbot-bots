@@ -971,8 +971,6 @@ void PlayerbotFactory::InitEquipment(bool incremental)
 
     for(uint8 slot = 0; slot < EQUIPMENT_SLOT_END; ++slot)
     {
-        //if (slot == EQUIPMENT_SLOT_TABARD || slot == EQUIPMENT_SLOT_BODY)
-        //    continue;
         if (slot == EQUIPMENT_SLOT_TABARD && !bot->GetGuildId())
             continue;
 
@@ -984,6 +982,7 @@ void PlayerbotFactory::InitEquipment(bool incremental)
         do
         {
             vector<uint32> ids = sRandomItemMgr.Query(level, bot->getClass(), slot, quality);
+
             if (!ids.empty()) ahbot::Shuffle(ids);
             for (uint32 index = 0; index < ids.size(); ++index)
             {
@@ -2124,6 +2123,13 @@ void PlayerbotFactory::InitGuild()
 
     if (guild->GetMemberSize() < urand(10, 15))
         guild->AddMember(bot->GetObjectGuid(), urand(GR_OFFICER, GR_INITIATE));
+
+    // add guild tabard
+    if (bot->GetGuildId() && bot->getLevel() > 9 && urand(0, 100) > 30)
+    {
+        StoreItem(5976, 1);
+    }
+
     bot->SaveToDB();
 }
 
