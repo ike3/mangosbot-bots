@@ -38,6 +38,34 @@ bool CheckMountStateAction::Execute(Event event)
     if (!firstmount)
         return false;
 
+    bool noattackers = AI_VALUE(uint8, "attacker count") > 0 ? false : true;
+    bool enemy = AI_VALUE(Unit*, "enemy player target");
+    bool dps = (AI_VALUE(Unit*, "dps target") || AI_VALUE(Unit*, "grind target"));
+    bool fartarget = (enemy && sServerFacade.IsDistanceGreaterThan(AI_VALUE2(float, "distance", "enemy player target"), 40.0f)) ||
+        (dps && sServerFacade.IsDistanceGreaterThan(AI_VALUE2(float, "distance", "dps target"), 50.0f));
+    bool attackdistance = false;
+    bool chasedistance = false;
+    float attack_distance = 35.0f;
+
+    switch (bot->getClass())
+    {
+    case CLASS_WARRIOR:
+    case CLASS_PALADIN:
+        attack_distance = 10.0f;
+        break;
+    case CLASS_ROGUE:
+        attack_distance = 40.0f;
+        break;
+    }
+    if (enemy)
+        attack_distance /= 2;
+
+    if (dps || enemy)
+    {
+        attackdistance = sServerFacade.IsDistanceLessThan(AI_VALUE2(float, "distance", "current target"), attack_distance);
+        chasedistance = enemy && sServerFacade.IsDistanceGreaterThan(AI_VALUE2(float, "distance", "enemy player target"), 45.0f) && AI_VALUE2(bool, "moving", "enemy player target");
+    }
+
     Player* master = GetMaster();
     if (master != nullptr && !bot->InBattleGround())
     {
@@ -45,11 +73,15 @@ bool CheckMountStateAction::Execute(Event event)
             return false;
 
         bool farFromMaster = sServerFacade.GetDistance2d(bot, master) > sPlayerbotAIConfig.sightDistance;
-        if (master->IsMounted() && !bot->IsMounted())
+        if (master->IsMounted() && !bot->IsMounted() && noattackers)
         {
             return Mount();
         }
-        if ((farFromMaster || !master->IsMounted()) && bot->IsMounted())
+
+        if (!bot->IsMounted() && chasedistance && !bot->IsInCombat() && !dps)
+            return Mount();
+
+        if ((farFromMaster || !master->IsMounted() || attackdistance) && bot->IsMounted())
         {
             WorldPacket emptyPacket;
             bot->GetSession()->HandleCancelMountAuraOpcode(emptyPacket);
@@ -58,10 +90,7 @@ bool CheckMountStateAction::Execute(Event event)
         return false;
     }
 
-    list<ObjectGuid> targets = AI_VALUE(list<ObjectGuid>, "possible targets");
-    bool noattackers = (targets.size() > 0 || bot->getAttackers().size() > 0) ? false : true;
-
-    if (bot->InBattleGround() && noattackers && !bot->IsInCombat() && !bot->IsMounted())
+    if (bot->InBattleGround() && (noattackers || fartarget) && !bot->IsInCombat() && !bot->IsMounted())
     {
         if (bot->GetBattleGroundTypeId() == BattleGroundTypeId::BATTLEGROUND_WS)
         {
@@ -91,45 +120,37 @@ bool CheckMountStateAction::Execute(Event event)
 #endif
             return Mount();
         }
+        return Mount();
     }
 
     ObjectGuid unit = AI_VALUE(ObjectGuid, "rpg target");
     if (unit)
     {
-        float distance = AI_VALUE2(float, "distance", "rpg target");
-        if (distance > sPlayerbotAIConfig.farDistance && noattackers)
+        if (sServerFacade.IsDistanceGreaterThan(AI_VALUE2(float, "distance", "rpg target"), sPlayerbotAIConfig.farDistance) && noattackers && !dps && !enemy)
             return Mount();
     }
 
-    if (((!AI_VALUE(list<ObjectGuid>, "possible rpg targets").empty()) || noattackers) && urand(0, 100) > 50)
+    if (((!AI_VALUE(list<ObjectGuid>, "possible rpg targets").empty()) && noattackers && !dps && !enemy) && urand(0, 100) > 50)
         return Mount();
 
-    bool attackdistance = false;
-    bool chasedistance = false;
-    Unit* target = bot->GetMap()->GetUnit(bot->GetGuidValue(UNIT_FIELD_TARGET));
-    if (target && sServerFacade.IsHostileTo(target, bot))
-    {
-        attackdistance = sServerFacade.GetDistance2d(bot, target) <= sPlayerbotAIConfig.spellDistance;
-        chasedistance = sServerFacade.GetDistance2d(bot, target) >= sPlayerbotAIConfig.fleeDistance;
-    }
+    if (!bot->IsMounted() && (fartarget || chasedistance))
+        return Mount();
 
-    if ((attackdistance || bot->IsInCombat()) && bot->IsMounted()/* && !bot->GetPlayerbotAI()->HasStrategy("mount", BOT_STATE_NON_COMBAT)*/)
+    if ((attackdistance || !noattackers) && bot->IsMounted())
     {
         WorldPacket emptyPacket;
         bot->GetSession()->HandleCancelMountAuraOpcode(emptyPacket);
         return true;
     }
 
-    /*if (chasedistance && !bot->IsMounted() && !target->IsMounted() && !bot->IsInCombat() && !target->IsInCombat() && target->IsHostileTo(bot))
-    {
-        return Mount();
-    }*/
-
     return false;
 }
 
 bool CheckMountStateAction::Mount()
 {
+    if (sServerFacade.isMoving(bot))
+        ai->SetNextCheckDelay(sPlayerbotAIConfig.globalCoolDown);
+
     Player* master = GetMaster();
     ai->RemoveShapeshift();
 
@@ -163,6 +184,9 @@ bool CheckMountStateAction::Mount()
 
     //map<int32, vector<uint32> > spells;
     map<uint32, map<int32, vector<uint32> > > allSpells;
+    if (bot->GetPureSkillValue(SKILL_RIDING) <= 75 && bot->getLevel() < 60)
+        masterSpeed = 59;
+
     for (PlayerSpellMap::iterator itr = bot->GetSpellMap().begin(); itr != bot->GetSpellMap().end(); ++itr)
     {
         uint32 spellId = itr->first;
