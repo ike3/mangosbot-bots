@@ -6,6 +6,7 @@
 #include "../triggers/GenericTriggers.h"
 #include "LfgTriggers.h"
 #include "RpgTriggers.h"
+#include "TravelTriggers.h"
 #include "RtiTriggers.h"
 
 namespace ai
@@ -108,6 +109,8 @@ namespace ai
             creators["new player nearby"] = &TriggerContext::new_player_nearby;
             creators["no rpg target"] = &TriggerContext::no_rpg_target;
             creators["far from rpg target"] = &TriggerContext::far_from_rpg_target;
+            creators["no travel target"] = &TriggerContext::no_travel_target;
+            creators["far from travel target"] = &TriggerContext::far_from_travel_target;			
             creators["no rti target"] = &TriggerContext::no_rti;
 
             creators["give food"] = &TriggerContext::give_food;
@@ -140,6 +143,8 @@ namespace ai
         static Trigger* sit(PlayerbotAI* ai) { return new SitTrigger(ai); }
         static Trigger* far_from_rpg_target(PlayerbotAI* ai) { return new FarFromRpgTargetTrigger(ai); }
         static Trigger* no_rpg_target(PlayerbotAI* ai) { return new NoRpgTargetTrigger(ai); }
+        static Trigger* far_from_travel_target(PlayerbotAI* ai) { return new FarFromTravelTargetTrigger(ai); }
+        static Trigger* no_travel_target(PlayerbotAI* ai) { return new NoTravelTargetTrigger(ai); }		
         static Trigger* collision(PlayerbotAI* ai) { return new CollisionTrigger(ai); }
         static Trigger* lfg_proposal_active(PlayerbotAI* ai) { return new LfgProposalActiveTrigger(ai); }
         static Trigger* invalid_target(PlayerbotAI* ai) { return new InvalidTargetTrigger(ai); }

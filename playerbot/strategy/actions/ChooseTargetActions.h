@@ -71,6 +71,8 @@ namespace ai
                         AI_VALUE2(uint8, "health", "self target") > sPlayerbotAIConfig.mediumHealth                                           //Bot has enough health.
                         &&
                         (!AI_VALUE2(uint8, "mana", "self target") || AI_VALUE2(uint8, "mana", "self target") > sPlayerbotAIConfig.mediumMana) //Bot has no mana or enough mana.
+                        &&
+                        !context->GetValue<ObjectGuid>("travel target")->Get()                                                                //Bot is not traveling.
                     )
                     ||
                     AI_VALUE2(bool, "combat", "self target")                                                                                  //Bot is already in combat
@@ -85,7 +87,17 @@ namespace ai
         virtual bool Execute(Event event)
         {
             bool result = AttackAction::Execute(event);
-            if (result && GetTarget()) context->GetValue<ObjectGuid>("pull target")->Set(GetTarget()->GetObjectGuid());
+
+            if (result)
+            {
+                Unit* grindTarget = GetTarget();
+                if (grindTarget)
+                {
+                    const char* grindName = grindTarget->GetName();
+                    if (grindName)
+                        context->GetValue<ObjectGuid>("pull target")->Set(grindTarget->GetObjectGuid());
+                }
+            }
             return result;
         }
     };

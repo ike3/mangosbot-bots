@@ -52,5 +52,5 @@ bool MoveToRpgTargetAction::Execute(Event event)
 
 bool MoveToRpgTargetAction::isUseful()
 {
-    return context->GetValue<ObjectGuid>("rpg target")->Get() && AI_VALUE2(float, "distance", "rpg target") > sPlayerbotAIConfig.followDistance;
+    return context->GetValue<ObjectGuid>("rpg target")->Get() && !context->GetValue<ObjectGuid>("travel target")->Get()  && AI_VALUE2(float, "distance", "rpg target") > sPlayerbotAIConfig.followDistance;
 }

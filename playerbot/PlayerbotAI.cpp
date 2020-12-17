@@ -569,7 +569,7 @@ list<string> PlayerbotAI::GetStrategies(BotState type)
     return e->GetStrategies();
 }
 
-bool PlayerbotAI::DoSpecificAction(string name, Event event)
+bool PlayerbotAI::DoSpecificAction(string name, Event event, bool silent)
 {
     for (int i = 0 ; i < BOT_STATE_MAX; i++)
     {
@@ -584,23 +584,35 @@ bool PlayerbotAI::DoSpecificAction(string name, Event event)
             return true;
         case ACTION_RESULT_IMPOSSIBLE:
             out << name << ": impossible";
-            TellError(out.str());
-            PlaySound(TEXTEMOTE_NO);
+            if (!silent)
+            {
+                TellError(out.str());
+                PlaySound(TEXTEMOTE_NO);
+            }
             return false;
         case ACTION_RESULT_USELESS:
             out << name << ": useless";
-            TellError(out.str());
-            PlaySound(TEXTEMOTE_NO);
+            if (!silent)
+            {
+                TellError(out.str());
+                PlaySound(TEXTEMOTE_NO);
+            }
             return false;
         case ACTION_RESULT_FAILED:
-            out << name << ": failed";
-            TellError(out.str());
+            if (!silent)
+            {
+                out << name << ": failed";
+                TellError(out.str());
+            }
             return false;
         }
     }
-    ostringstream out;
-    out << name << ": unknown action";
-    TellError(out.str());
+    if (!silent)
+    {
+        ostringstream out;
+        out << name << ": unknown action";
+        TellError(out.str());
+    }
 
     return false;
 }
@@ -1184,7 +1196,7 @@ bool PlayerbotAI::TellMasterNoFacing(string text, PlayerbotSecurityLevel securit
 {
     Player* master = GetMaster();
 
-    if (!master && sPlayerbotAIConfig.tweakValue > 0)
+    if (!master && sPlayerbotAIConfig.randomBotSayWithoutMaster)
     {
         bot->Say(text, 0);
         return true;

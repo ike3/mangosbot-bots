@@ -66,6 +66,9 @@ Unit* GrindTargetValue::FindTargetForGrinding(int assistCount)
 		if (!bot->InBattleGround() && (int)unit->getLevel() - (int)bot->getLevel() > 4 && !unit->GetObjectGuid().IsPlayer())
 		    continue;
 
+        if (!needForQuest(unit) && urand(0,100) < 75)
+            continue;
+
         //if (bot->InBattleGround() && bot->GetDistance(unit) > 40.0f)
             //continue;
 
@@ -92,10 +95,10 @@ Unit* GrindTargetValue::FindTargetForGrinding(int assistCount)
         }
         else
         {
-            float d = bot->GetDistance(unit);
-            if (!result || d < distance)
+            float newdistance = bot->GetDistance(unit);
+            if (!result || (newdistance < distance && urand(0, abs(distance - newdistance)) > sPlayerbotAIConfig.sightDistance*0.1))
             {
-                distance = d;
+                distance = newdistance;
                 result = unit;
             }
         }
@@ -104,6 +107,86 @@ Unit* GrindTargetValue::FindTargetForGrinding(int assistCount)
     return result;
 }
 
+bool GrindTargetValue::needForQuest(Unit* target)
+{
+    bool justCheck = (bot->GetObjectGuid() == target->GetObjectGuid());
+
+    QuestStatusMap& questMap = bot->getQuestStatusMap();
+    for (auto& quest : questMap)
+    {
+        const Quest* questTemplate = sObjectMgr.GetQuestTemplate(quest.first);
+        if (!questTemplate)
+            continue;
+
+        uint32 questId = questTemplate->GetQuestId();
+
+        if (!questId)
+            continue;
+
+        QuestStatus status = bot->GetQuestStatus(questId);
+
+        if ((status == QUEST_STATUS_COMPLETE && !bot->GetQuestRewardStatus(questId)))
+        {
+            if (!justCheck && !target->HasInvolvedQuest(questId))
+                continue;
+
+            return true;
+        }
+        else if (status == QUEST_STATUS_INCOMPLETE)
+        {
+            QuestStatusData questStatus = quest.second;
+
+            if (questTemplate->GetQuestLevel() > bot->getLevel())
+                continue;
+
+            for (int j = 0; j < QUEST_OBJECTIVES_COUNT; j++)
+            {
+                int32 entry = questTemplate->ReqCreatureOrGOId[j];
+
+                if (entry && entry > 0)
+                {
+                    int required = questTemplate->ReqCreatureOrGOCount[j];
+                    int available = questStatus.m_creatureOrGOcount[j];
+
+                    if (required && available < required && (target->GetEntry() == entry || justCheck))
+                        return true;
+                }
+
+                if (justCheck)
+                {
+                    int32 itemId = questTemplate->ReqItemId[j];
+
+                    if (itemId && itemId > 0)
+                    {
+                        int required = questTemplate->ReqItemCount[j];
+                        int available = questStatus.m_itemcount[j];
+
+                        if (required && available < required)
+                            return true;
+                    }
+                }
+            }
+
+            if (!justCheck)
+            {
+                CreatureInfo const* data = sObjectMgr.GetCreatureTemplate(target->GetEntry());
+
+                if (data)
+                {
+                    uint32 lootId = data->LootId;
+
+                    if (lootId)
+                    {
+                        if (LootTemplates_Creature.HaveQuestLootForPlayer(lootId, bot))
+                            return true;
+                    }
+                }
+            }
+        }
+
+    }
+    return false;
+}
 
 int GrindTargetValue::GetTargetingPlayerCount( Unit* unit )
 {

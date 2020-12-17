@@ -2,6 +2,7 @@
 #include "../../playerbot.h"
 #include "SellAction.h"
 #include "../ItemVisitors.h"
+#include "../values/ItemUsageValue.h"
 
 using namespace ai;
 
@@ -37,18 +38,40 @@ public:
     }
 };
 
+class SellVendorItemsVisitor : public SellItemsVisitor
+{
+public:
+    SellVendorItemsVisitor(SellAction* action, AiObjectContext* con) : SellItemsVisitor(action) { context = con; }
+
+    AiObjectContext* context;
+
+    virtual bool Visit(Item* item)
+    {
+        ItemUsage usage = AI_VALUE2(ItemUsage, "item usage", item->GetEntry());
+        if (usage != ITEM_USAGE_VENDOR && usage != ITEM_USAGE_AH)
+            return true;
+
+        return SellItemsVisitor::Visit(item);
+    }
+};
+
 
 bool SellAction::Execute(Event event)
 {
     Player* master = GetMaster();
-    //if (!master && sPlayerbotAIConfig.tweakValue == 0)
-    //    return false;
 
     string text = event.getParam();
 
     if (text == "gray" || text == "*")
     {
         SellGrayItemsVisitor visitor(this);
+        IterateItems(&visitor);
+        return true;
+    }
+
+    if (text == "vendor")
+    {
+        SellVendorItemsVisitor visitor(this, context);
         IterateItems(&visitor);
         return true;
     }
@@ -93,17 +116,4 @@ void SellAction::Sell(Item* item)
         ostringstream out; out << "Selling " << chat->formatItem(item->GetProto());
         ai->TellMaster(out);
     }
-}
-
-bool SellGrayAction::Execute(Event event)
-{
-    Player* master = GetMaster();
-    if (!master && sPlayerbotAIConfig.tweakValue == 0)
-        return false;
-
-    string text = event.getParam();
-
-    SellGrayItemsVisitor visitor(this);
-    IterateItems(&visitor);
-    return true;
 }

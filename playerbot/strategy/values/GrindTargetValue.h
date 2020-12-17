@@ -16,5 +16,7 @@ namespace ai
     private:
         int GetTargetingPlayerCount(Unit* unit);
         Unit* FindTargetForGrinding(int assistCount);
+
+        bool needForQuest(Unit* target);
     };
 }

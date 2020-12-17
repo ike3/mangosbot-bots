@@ -246,7 +246,7 @@ void RpgAction::trade(Unit* unit)
 
     bot->SetSelectionGuid(unit->GetObjectGuid());
 
-    ai->DoSpecificAction("sell", Event("rpg action", "gray"));
+    ai->DoSpecificAction("sell", Event("rpg action", "vendor"));
 
     unit->SetFacingTo(unit->GetAngle(bot));
 

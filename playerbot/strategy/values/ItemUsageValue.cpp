@@ -39,7 +39,7 @@ ItemUsage ItemUsageValue::Calculate()
         return ITEM_USAGE_DISENCHANT;
 
     //Need to add something like free bagspace or item value.
-    if (!ai->GetMaster())
+    if (proto->SellPrice > 0)
         if (proto->Quality > ITEM_QUALITY_NORMAL)
             return ITEM_USAGE_AH;
         else
