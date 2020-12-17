@@ -16,5 +16,5 @@ void CombatStrategy::InitTriggers(list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "mounted",
-        NextAction::array(0, new NextAction("check mount state", 55), NULL)));
+        NextAction::array(0, new NextAction("check mount state", 54), NULL)));
 }
