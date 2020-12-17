@@ -390,9 +390,9 @@ void RandomPlayerbotMgr::AddBgBot(Player* player, BattleGroundTypeId bgTypeId, B
     {
         if (!visual)
         {
-            sLog.outDetail("Changing strategy for bot %s to PVP", player->GetName());
-            sLog.outDetail("Bot %d (%d %s) bracket %d sent to BattmeMaster", bot, player->getLevel(), player->GetTeamId() == 0 ? "A" : "H", bracketId);
-            sLog.outBasic("Bot %d (%d %s) joins BG bracket %d (%d/%d) (A:%d H:%d)", bot, player->getLevel(), TeamId == 0 ? "A" : "H", bracketId, BgCount + 1, BracketSize, ACount, HCount);
+            sLog.outDetail("Changing strategy for bot #%d <%s> to PVP", bot, player->GetName());
+            sLog.outDetail("Bot #%d (%d %s) bracket %d sent to BattmeMaster", bot, player->getLevel(), player->GetTeamId() == 0 ? "A" : "H", bracketId);
+            sLog.outBasic("Bot #%d <%s> (%d %s): BG queue, bracket %d (%d/%d) (A:%d H:%d)", bot, player->GetName(), player->getLevel(), TeamId == 0 ? "A" : "H", bracketId, BgCount + 1, BracketSize, ACount, HCount);
             // BG Tactics preference
             SetEventValue(bot, "preference", urand(0, 9), sPlayerbotAIConfig.maxRandomBotInWorldTime);
         }
@@ -581,7 +581,7 @@ bool RandomPlayerbotMgr::ProcessBot(Player* player)
             {
                 SetEventValue(bot, "deathcount", 1, sPlayerbotAIConfig.maxRandomBotInWorldTime);
                 Revive(player);
-                sLog.outBasic("Bot %d revived", bot);
+                sLog.outDetail("Bot #%d <%s>: revived", bot, player->GetName());
             }
             else
             {
@@ -595,13 +595,13 @@ bool RandomPlayerbotMgr::ProcessBot(Player* player)
                     uint32 randomChange = urand(240 + sPlayerbotAIConfig.randomBotUpdateInterval, 600 + sPlayerbotAIConfig.randomBotUpdateInterval * 3);
                     ScheduleChangeStrategy(bot, randomChange);
                     SetEventValue(bot, "teleport", 1, sPlayerbotAIConfig.maxRandomBotInWorldTime);
-                    sLog.outString("Bot %d died %d times and is sent to city for %d minutes", bot, deathcount, int(randomChange / 60));
+                    sLog.outDetail("Bot #%d <%s>: died %d times, rest %d min", bot, player->GetName(), deathcount, int(randomChange / 60));
                 }
                 else
                 {
                     SetEventValue(bot, "deathcount", deathcount + 1, sPlayerbotAIConfig.maxRandomBotInWorldTime);
                     Revive(player);
-                    sLog.outBasic("Bot %d revived %d/5", bot, deathcount + 1);
+                    sLog.outDetail("Bot #%d <%s>: revived %d/5", bot, player->GetName(), deathcount + 1);
                 }
             }
            return false; // increase revive rate
@@ -688,11 +688,11 @@ bool RandomPlayerbotMgr::ProcessBot(Player* player)
 
         if (randomiser)
         {
-            sLog.outString("Bot %d is randomized and sent to city", bot);
+            sLog.outBasic("Bot #%d <%s>: randomized", bot, player->GetName());
         }
         else
         {
-            sLog.outString("Bot %d from <%s> is refreshed and sent to city", bot, sGuildMgr.GetGuildById(player->GetGuildId())->GetName());
+            sLog.outBasic("Bot #%d %s <%s>: consumables refreshed", bot, player->GetName(), sGuildMgr.GetGuildById(player->GetGuildId())->GetName());
         }
 
         uint32 randomTime = urand(sPlayerbotAIConfig.minRandomBotRandomizeTime, sPlayerbotAIConfig.maxRandomBotRandomizeTime);
@@ -703,7 +703,7 @@ bool RandomPlayerbotMgr::ProcessBot(Player* player)
 	uint32 teleport = GetEventValue(bot, "teleport");
 	if (!teleport)
 	{
-		sLog.outString("Bot %d is grinding", bot);
+		sLog.outBasic("Bot #%d <%s>: sent to grind", bot, player->GetName());
 		RandomTeleportForLevel(player);
 		Refresh(player);
 		SetEventValue(bot, "teleport", 1, sPlayerbotAIConfig.maxRandomBotInWorldTime);
@@ -713,7 +713,7 @@ bool RandomPlayerbotMgr::ProcessBot(Player* player)
 	uint32 changeStrategy = GetEventValue(bot, "change_strategy");
 	if (!changeStrategy)
 	{
-		sLog.outDetail("Changing strategy for bot %d", bot);
+		sLog.outDetail("Changing strategy for bot #%d <%s>", bot, player->GetName());
 		ChangeStrategy(player);
 		return true;
 	}
@@ -1088,7 +1088,7 @@ void RandomPlayerbotMgr::Refresh(Player* bot)
     if (bot->InBattleGround())
         return;
 
-    sLog.outDetail("Refreshing bot %s", bot->GetName());
+    sLog.outDetail("Refreshing bot #%d <%s>", bot->GetGUIDLow(), bot->GetName());
     PerformanceMonitorOperation *pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "Refresh");
     if (sServerFacade.UnitIsDead(bot))
     {
@@ -1664,14 +1664,13 @@ void RandomPlayerbotMgr::ChangeStrategy(Player* player)
 
     if (urand(0, 100) > 100 * sPlayerbotAIConfig.randomBotRpgChance) // select grind / pvp
     {
-        sLog.outDetail("Changing strategy for bot %s to grinding", player->GetName());
-        sLog.outString("Bot %d sent to grind", bot);
+        sLog.outDetail("Changing strategy for bot #%d <%s> to grinding", bot, player->GetName());
         ScheduleTeleport(bot, 30);
     }
     else
     {
-        sLog.outDetail("Changing strategy for bot %s to RPG", player->GetName());
-		sLog.outString("Bot %d sent to city", bot);
+        sLog.outDetail("Changing strategy for bot #%d <%s> to RPG", bot, player->GetName());
+		sLog.outBasic("Bot #%d <%s>: sent to inn", bot, player->GetName());
         RandomTeleportForRpg(player);
 		SetEventValue(bot, "teleport", 1, sPlayerbotAIConfig.maxRandomBotInWorldTime);
     }
