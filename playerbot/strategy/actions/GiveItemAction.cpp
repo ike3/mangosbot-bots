@@ -29,6 +29,9 @@ bool GiveItemAction::Execute(Event event)
     {
         Item* item = *j;
 
+        if (receiver->CanUseItem(item->GetProto()) != EQUIP_ERR_OK)
+            continue;
+
         ItemPosCountVec dest;
         InventoryResult msg = receiver->CanStoreItem(NULL_BAG, NULL_SLOT, dest, item, false);
         if (msg == EQUIP_ERR_OK)

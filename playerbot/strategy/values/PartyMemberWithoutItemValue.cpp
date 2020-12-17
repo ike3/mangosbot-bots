@@ -25,6 +25,9 @@ public:
         if (!member)
             return false;
 
+        if (!(member->IsInSameGroupWith(ai->GetBot()) || member->IsInSameRaidWith(ai->GetBot())))
+            return false;
+
         PlayerbotAI *botAi = member->GetPlayerbotAI();
         if (!botAi)
             return false;
