@@ -762,7 +762,7 @@ namespace ai
     class IsMountedTrigger : public Trigger
     {
     public:
-        IsMountedTrigger(PlayerbotAI* ai) : Trigger(ai, "mounted", 3) {}
+        IsMountedTrigger(PlayerbotAI* ai) : Trigger(ai, "mounted") {}
 
     public:
         virtual bool IsActive();
