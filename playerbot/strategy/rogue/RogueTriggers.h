@@ -68,13 +68,11 @@ namespace ai
             return ai->HasAura("stealth", bot) &&
                 !AI_VALUE(uint8, "attacker count") &&
                 (AI_VALUE2(bool, "moving", "self target") &&
-                (ai->GetMaster() &&
-                sServerFacade.IsDistanceGreaterThan(AI_VALUE2(float, "distance", "master target"), 10.0f) &&
-                AI_VALUE2(bool, "moving", "master target")) ||
-                (!ai->GetMaster() &&
-                !AI_VALUE(Unit*, "dps target") ||
-                    AI_VALUE2(bool, "moving", "dps target") && sServerFacade.IsInCombat(AI_VALUE(Unit*, "dps target")) &&
-                    sServerFacade.IsDistanceGreaterThan(AI_VALUE2(float, "distance", "dps target"), 25.0f)));
+                ((ai->GetMaster() &&
+                    sServerFacade.IsDistanceGreaterThan(AI_VALUE2(float, "distance", "master target"), 10.0f) &&
+                    AI_VALUE2(bool, "moving", "master target")) ||
+                    (!ai->GetMaster() &&
+                        !AI_VALUE(uint8, "attacker count"))));
         }
     };
 
@@ -88,13 +86,25 @@ namespace ai
 
             float distance = 30.0f;
 
-            Unit* target = AI_VALUE(Unit*, "current target");
+            Unit* target = AI_VALUE(Unit*, "enemy player target");
+            if (!target)
+                target = AI_VALUE(Unit*, "grind target");
+            if (!target)
+                target = AI_VALUE(Unit*, "dps target");
+            if (!target)
+                return false;
+
             if (target && target->getVictim())
                 distance -= 10;
 
+            if (sServerFacade.isMoving(target) && target->getVictim())
+                distance -= 10;
+
+            if (bot->InBattleGround())
+                distance += 15;
+
             return (target &&
-                sServerFacade.IsHostileTo(bot, target) &&
-                sServerFacade.IsDistanceLessOrEqualThan(AI_VALUE2(float, "distance", "current target"), distance));
+                sServerFacade.GetDistance2d(bot, target) < distance);
         }
     };
 
@@ -137,7 +147,7 @@ namespace ai
             if (!targeted)
                 return false;
 
-            if ((dps && sServerFacade.IsInCombat(dps)) || (enemyPlayer && sServerFacade.IsInCombat(enemyPlayer)))
+            if ((dps && sServerFacade.IsInCombat(dps)) || (enemyPlayer))
                 distance -= 10;
 
             return  AI_VALUE2(bool, "moving", "self target") &&
