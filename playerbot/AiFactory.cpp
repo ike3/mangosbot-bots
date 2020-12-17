@@ -287,7 +287,13 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
 
             if (player->getClass() == CLASS_ROGUE)
                 engine->addStrategies("stealth", NULL);
+
+            if (player->getClass() != CLASS_HUNTER)
+                engine->removeStrategy("ranged");
         }
+
+        if (player->getClass() == CLASS_ROGUE)
+            engine->addStrategy("stealth");
     }
     else
     {
@@ -297,7 +303,7 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
     // Battleground switch
     if (player->InBattleGround() && player->GetBattleGroundTypeId() == BattleGroundTypeId::BATTLEGROUND_WS)
     {
-        engine->addStrategies("racials", "chat", "default",/* "aoe",*/ "potions", "warsong", "conserve mana", "cast time", /*"pvp",*/ NULL);
+        engine->addStrategies("racials", "chat", "default", "aoe", "potions", "warsong", "conserve mana", "cast time", /*"pvp",*/ NULL);
         engine->removeStrategy("custom::say");
         engine->removeStrategy("flee");
         engine->removeStrategy("threat");
