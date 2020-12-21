@@ -130,10 +130,11 @@ string QueryItemUsageAction::QueryItemPrice(ItemPrototype const *item)
         for (list<Item*>::iterator i = items.begin(); i != items.end(); ++i)
         {
             Item* sell = *i;
-            sellPrice = sell->GetCount() * auctionbot.GetSellPrice(sell->GetProto()) * sRandomPlayerbotMgr.GetSellMultiplier(bot);
-            msg << "Sell: " << chat->formatMoney(sellPrice);
+            int32 price = sell->GetCount() * auctionbot.GetSellPrice(sell->GetProto()) * sRandomPlayerbotMgr.GetSellMultiplier(bot);
+            if (!sellPrice || sellPrice > price) sellPrice = price;
         }
     }
+    if (sellPrice) msg << "Sell: " << chat->formatMoney(sellPrice);
 
     ostringstream out; out << item->ItemId;
     ItemUsage usage = AI_VALUE2(ItemUsage, "item usage", out.str());
