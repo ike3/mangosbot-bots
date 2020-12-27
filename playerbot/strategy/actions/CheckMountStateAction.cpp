@@ -13,7 +13,7 @@ bool CheckMountStateAction::Execute(Event event)
 	if (!bot->GetGroup() || !master || bot->GetGroup()->GetLeaderGuid() != master->GetObjectGuid())
 		return false;
 
-	if (bot->IsTaxiFlying())
+	if (bot->IsTaxiFlying() || bot->IsFlying())
 		return false;
 
 	bool farFromMaster = sServerFacade.IsDistanceGreaterThan(AI_VALUE2(float, "distance", "master target"), sPlayerbotAIConfig.sightDistance);
