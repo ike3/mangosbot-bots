@@ -1238,9 +1238,12 @@ void PlayerbotFactory::AddPrevQuests(uint32 questId, list<uint32>& questIds)
     for (Quest::PrevQuests::const_iterator iter = quest->prevQuests.begin(); iter != quest->prevQuests.end(); ++iter)
     {
         uint32 prevId = abs(*iter);
-        AddPrevQuests(prevId, questIds);
-        questIds.remove(prevId);
-        questIds.push_back(prevId);
+        if (find(questIds.begin(), questIds.end(), prevId) == questIds.end())
+        {
+            AddPrevQuests(prevId, questIds);
+            questIds.remove(prevId);
+            questIds.push_back(prevId);
+        }
     }
 }
 

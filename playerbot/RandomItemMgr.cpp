@@ -198,7 +198,7 @@ void RandomItemMgr::BuildRandomItemCache()
 
         } while (results->NextRow());
         delete results;
-        sLog.outString("Equipment cache loaded from %d records", count);
+        sLog.outString("Random item cache loaded from %d records", count);
     }
     else
     {

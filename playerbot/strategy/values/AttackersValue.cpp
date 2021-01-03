@@ -100,7 +100,7 @@ bool AttackersValue::IsPossibleTarget(Unit *attacker, Player *bot)
         !attacker->HasStealthAura() &&
         !attacker->HasInvisibilityAura() &&
         !attacker->IsPolymorphed() &&
-        !attacker->IsStunned() &&
+        !attacker->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_STUNNED) &&
         !sServerFacade.IsCharmed(attacker) &&
         !sServerFacade.IsFeared(attacker) &&
         !sServerFacade.IsInRoots(attacker) &&

@@ -881,7 +881,7 @@ void RandomPlayerbotMgr::OnPlayerLogout(Player* player)
     {
         Player* const bot = it->second;
         PlayerbotAI* ai = bot->GetPlayerbotAI();
-        if (player == ai->GetMaster())
+        if (ai && player == ai->GetMaster())
         {
             ai->SetMaster(NULL);
             ai->ResetStrategies();

@@ -57,10 +57,13 @@ void PlayerbotHolder::LogoutPlayerBot(uint64 guid)
     Player* bot = GetPlayerBot(guid);
     if (bot)
     {
-        bot->GetPlayerbotAI()->TellMaster("Goodbye!");
-        sPlayerbotDbStore.Save(bot->GetPlayerbotAI());
-        sLog.outString("Bot %s logged out", bot->GetName());
-        //bot->SaveToDB();
+        if (bot->GetPlayerbotAI())
+        {
+            bot->GetPlayerbotAI()->TellMaster("Goodbye!");
+            sPlayerbotDbStore.Save(bot->GetPlayerbotAI());
+            sLog.outString("Bot %s logged out", bot->GetName());
+            //bot->SaveToDB();
+        }
 
         WorldSession * botWorldSessionPtr = bot->GetSession();
         playerBots.erase(guid);    // deletes bot player ptr inside this WorldSession PlayerBotMap
