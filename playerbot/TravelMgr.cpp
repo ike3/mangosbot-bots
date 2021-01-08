@@ -101,17 +101,24 @@ bool QuestObjectiveTravelDestination::isActive(Player* bot) {
 
 
 void TravelTarget::setTarget(TravelDestination* tDestination1, WorldPosition* wPosition1) {
+
+    wPosition = wPosition1;
+    tDestination = tDestination1;
+
+    setStatus(TRAVEL_STATUS_TRAVEL);
+}
+
+void TravelTarget::copyTarget(TravelTarget* target) { 
     if (tDestination)
         tDestination->remVisitor();
     if (wPosition)
         wPosition->remVisitor();
 
-    wPosition = wPosition1; tDestination = tDestination1; 
+    setTarget(target->tDestination, target->wPosition);
+    groupCopy = target->isGroupCopy();
 
     wPosition->addVisitor();
     tDestination->addVisitor();
-
-    setStatus(TRAVEL_STATUS_TRAVEL);
 }
 
 void TravelTarget::setStatus(TravelStatus status) {

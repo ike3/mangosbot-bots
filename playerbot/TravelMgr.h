@@ -38,7 +38,7 @@ namespace ai
     class TravelDestination
     {
     public:
-        TravelDestination() {}
+        TravelDestination() {}        
         TravelDestination(float radiusMin1, float radiusMax1) { radiusMin = radiusMin1; radiusMax = radiusMax1; }
         TravelDestination(vector<WorldPosition*> points1, float radiusMin1, float radiusMax1) { points = points1;  radiusMin = radiusMin1; radiusMax = radiusMax1; }
 
@@ -189,13 +189,12 @@ namespace ai
     public:
         TravelTarget(PlayerbotAI* ai) : AiObject(ai) {};
         TravelTarget(PlayerbotAI* ai, TravelDestination* tDestination1, WorldPosition* wPosition1, bool groupCopy1 = false) : AiObject(ai) { setTarget(tDestination1, wPosition1); groupCopy = groupCopy1; }
-
         
         void setTarget(TravelDestination* tDestination1, WorldPosition* wPosition1);
         void setStatus(TravelStatus status);
         void setExpireIn(uint32 expireMs) { statusTime = getExpiredTime() + expireMs; }
 
-        void copyTarget(TravelTarget* target) { setTarget(target->tDestination, target->wPosition); groupCopy = target->isGroupCopy();};
+        void copyTarget(TravelTarget* target);
 
         float distance(Player* bot) { WorldPosition pos(bot);  return wPosition->distance(&pos); };
         WorldLocation getLocation() { return wPosition->getLocation(); };

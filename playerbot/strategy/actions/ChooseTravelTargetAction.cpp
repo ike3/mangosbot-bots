@@ -215,7 +215,7 @@ TravelTarget ChooseTravelTargetAction::GetCurrentTarget(TravelTarget* oldTarget)
     if (availablePoints.empty())
         return travelTarget;
 
-    travelTarget.copyTarget(oldTarget);
+    travelTarget = TravelTarget(ai, oldTarget->getDestination(), oldTarget->getPosition(), oldTarget->isGroupCopy());
     travelTarget.setStatus(TRAVEL_STATUS_TRAVEL);
 
     return travelTarget;
