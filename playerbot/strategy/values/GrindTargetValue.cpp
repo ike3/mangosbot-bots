@@ -43,12 +43,12 @@ Unit* GrindTargetValue::FindTargetForGrinding(int assistCount)
 
     list<ObjectGuid> targets = *context->GetValue<list<ObjectGuid> >("possible targets");
 
-    if(targets.empty())
+    if (targets.empty())
         return NULL;
 
     float distance = 0;
     Unit* result = NULL;
-    for(list<ObjectGuid>::iterator tIter = targets.begin(); tIter != targets.end(); tIter++)
+    for (list<ObjectGuid>::iterator tIter = targets.begin(); tIter != targets.end(); tIter++)
     {
         Unit* unit = ai->GetUnit(*tIter);
         if (!unit)
@@ -60,29 +60,29 @@ Unit* GrindTargetValue::FindTargetForGrinding(int assistCount)
         if (!bot->InBattleGround() && GetTargetingPlayerCount(unit) > assistCount)
             continue;
 
-		if (master && master->GetDistance(unit) >= sPlayerbotAIConfig.grindDistance && !sRandomPlayerbotMgr.IsRandomBot(bot))
+        //if (master && master->GetDistance(unit) >= sPlayerbotAIConfig.grindDistance && !sRandomPlayerbotMgr.IsRandomBot(bot))
+        //    continue;
+
+        if (!bot->InBattleGround() && (int)unit->getLevel() - (int)bot->getLevel() > 4 && !unit->GetObjectGuid().IsPlayer())
             continue;
 
-		if (!bot->InBattleGround() && (int)unit->getLevel() - (int)bot->getLevel() > 4 && !unit->GetObjectGuid().IsPlayer())
-		    continue;
-
-        if (!needForQuest(unit) && urand(0,100) < 75)
+        if (!needForQuest(unit) && (urand(0, 100) < 75 || context->GetValue<TravelTarget*>("travel target")->Get()->isWorking()))
             continue;
 
         //if (bot->InBattleGround() && bot->GetDistance(unit) > 40.0f)
             //continue;
 
-		Creature* creature = dynamic_cast<Creature*>(unit);
-		if (creature && creature->GetCreatureInfo() && creature->GetCreatureInfo()->Rank > CREATURE_ELITE_NORMAL)
-		    continue;
+        Creature* creature = dynamic_cast<Creature*>(unit);
+        if (creature && creature->GetCreatureInfo() && creature->GetCreatureInfo()->Rank > CREATURE_ELITE_NORMAL)
+            continue;
 
         if (group)
         {
             Group::MemberSlotList const& groupSlot = group->GetMemberSlots();
             for (Group::member_citerator itr = groupSlot.begin(); itr != groupSlot.end(); itr++)
             {
-                Player *member = sObjectMgr.GetPlayer(itr->guid);
-                if( !member || !sServerFacade.IsAlive(member))
+                Player* member = sObjectMgr.GetPlayer(itr->guid);
+                if (!member || !sServerFacade.IsAlive(member))
                     continue;
 
                 float d = member->GetDistance(unit);
@@ -96,7 +96,7 @@ Unit* GrindTargetValue::FindTargetForGrinding(int assistCount)
         else
         {
             float newdistance = bot->GetDistance(unit);
-            if (!result || (newdistance < distance && urand(0, abs(distance - newdistance)) > sPlayerbotAIConfig.sightDistance*0.1))
+            if (!result || (newdistance < distance && urand(0, abs(distance - newdistance)) > sPlayerbotAIConfig.sightDistance * 0.1))
             {
                 distance = newdistance;
                 result = unit;
@@ -134,7 +134,7 @@ bool GrindTargetValue::needForQuest(Unit* target)
         }
         else if (status == QUEST_STATUS_INCOMPLETE)
         {
-            QuestStatusData questStatus = quest.second;
+            QuestStatusData* questStatus = sTravelMgr.getQuestStatus(bot, questId);
 
             if (questTemplate->GetQuestLevel() > bot->getLevel())
                 continue;
@@ -146,7 +146,7 @@ bool GrindTargetValue::needForQuest(Unit* target)
                 if (entry && entry > 0)
                 {
                     int required = questTemplate->ReqCreatureOrGOCount[j];
-                    int available = questStatus.m_creatureOrGOcount[j];
+                    int available = questStatus->m_creatureOrGOcount[j];
 
                     if (required && available < required && (target->GetEntry() == entry || justCheck))
                         return true;
@@ -159,7 +159,7 @@ bool GrindTargetValue::needForQuest(Unit* target)
                     if (itemId && itemId > 0)
                     {
                         int required = questTemplate->ReqItemCount[j];
-                        int available = questStatus.m_itemcount[j];
+                        int available = questStatus->m_itemcount[j];
 
                         if (required && available < required)
                             return true;

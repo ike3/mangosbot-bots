@@ -3,6 +3,7 @@
 #include "ChooseRpgTargetAction.h"
 #include "../../PlayerbotAIConfig.h"
 #include "../values/PossibleRpgTargetsValue.h"
+#include "../../Travelmgr.h"
 
 using namespace ai;
 
@@ -124,7 +125,7 @@ bool ChooseRpgTargetAction::Execute(Event event)
         if (priority < maxPriority)
             continue;
 
-        if (HasSameTarget(unit->GetObjectGuid()) > urand(5, 15))
+        if (!ai->GetMaster() && HasSameTarget(unit->GetObjectGuid()) > urand(5, 15))
             continue;
 
         if (priority > maxPriority)
@@ -157,5 +158,5 @@ bool ChooseRpgTargetAction::Execute(Event event)
 
 bool ChooseRpgTargetAction::isUseful()
 {
-    return !context->GetValue<ObjectGuid>("rpg target")->Get();
+    return !context->GetValue<ObjectGuid>("rpg target")->Get() && !context->GetValue<TravelTarget*>("travel target")->Get()->isTraveling();
 }

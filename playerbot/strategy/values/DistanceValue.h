@@ -45,8 +45,8 @@ namespace ai
             }
             else if (qualifier == "travel target")
             {
-                ObjectGuid travelTarget = AI_VALUE(ObjectGuid, qualifier);
-                target = ai->GetUnit(travelTarget);
+                TravelTarget * travelTarget = AI_VALUE(TravelTarget *, qualifier);
+                return travelTarget->distance(ai->GetBot());
             }
             else if (qualifier == "current target")
             {

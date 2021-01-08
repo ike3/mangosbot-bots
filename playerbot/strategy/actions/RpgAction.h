@@ -29,6 +29,7 @@ namespace ai
         void trade(Unit* unit);
         void repair(Unit* unit);
         void train(Unit* unit);
+        void heal(Unit* unit);
 
         bool CanTrain(ObjectGuid guid);
         bool needRepair();

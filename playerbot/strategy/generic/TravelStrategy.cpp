@@ -10,7 +10,7 @@ TravelStrategy::TravelStrategy(PlayerbotAI* ai) : Strategy(ai)
 
 NextAction** TravelStrategy::getDefaultActions()
 {
-    return NextAction::array(0, new NextAction("travel", ACTION_MOVE + 10), NULL);
+    return NextAction::array(0, new NextAction("travel", 1.0f), NULL);
 }
 
 void TravelStrategy::InitTriggers(std::list<TriggerNode*> &triggers)

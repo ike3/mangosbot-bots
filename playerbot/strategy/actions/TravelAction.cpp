@@ -3,52 +3,58 @@
 #include "TravelAction.h"
 #include "../../PlayerbotAIConfig.h"
 #include <playerbot\ServerFacade.h>
+#include <WorldHandlers\GridNotifiers.h>
 
 
 using namespace ai;
+using namespace MaNGOS;
 
 bool TravelAction::Execute(Event event)
 {    
-
-    ObjectGuid guid = AI_VALUE(ObjectGuid, "travel target");
-    Creature* creature = ai->GetCreature(guid);
-    Unit* target = ai->GetUnit(guid);
-    if (!target || !target->IsAlive())
-    {
-        context->GetValue<ObjectGuid>("travel target")->Set(ObjectGuid());
-        return false;
-    }
-
+    TravelTarget * target = AI_VALUE(TravelTarget *, "travel target");
+    
     if (sServerFacade.isMoving(bot))
         return false;
 
-    if (bot->GetMapId() != target->GetMapId())
+    target->setStatus(TRAVEL_STATUS_WORK);
+
+     Unit* newTarget;
+    list<Unit*> targets;
+    AnyUnitInObjectRangeCheck u_check(bot, sPlayerbotAIConfig.sightDistance * 2);
+    UnitListSearcher<AnyUnitInObjectRangeCheck> searcher(targets, u_check);
+    Cell::VisitAllObjects(bot, searcher, sPlayerbotAIConfig.sightDistance * 2);
+
+    for (auto& i : targets)
     {
-        context->GetValue<ObjectGuid>("travel target")->Set(ObjectGuid());
-        return false;
+        newTarget = i;
+
+        if (!newTarget)
+            continue;
+
+        if (newTarget->GetMapId() != bot->GetMapId())
+            continue;
+
+        if (!newTarget->IsAlive())
+            continue;
+
+        if (!newTarget->GetEntry() != target->getDestination()->getEntry())
+            continue;
+
+        if (newTarget->IsInCombat())
+            continue;
+
+        if (newTarget->IsHostileTo(bot))
+            context->GetValue<ObjectGuid>("pull target")->Set(newTarget->GetObjectGuid());
+        else
+            context->GetValue<ObjectGuid>("rpg target")->Set(newTarget->GetObjectGuid());
+
+        break;
     }
 
-    if (!sServerFacade.IsInFront(bot, target, sPlayerbotAIConfig.tooCloseDistance, CAST_ANGLE_IN_FRONT) && !bot->IsTaxiFlying())
-    {
-        sServerFacade.SetFacingTo(bot, target, true);
-        ai->SetNextCheckDelay(sPlayerbotAIConfig.globalCoolDown);
-        return false;
-    }
-
-    //ostringstream os; os << "Arrived at: " << target->GetName();
-
-    //ai->TellMaster(os);
-
-    if(target->IsFriendlyTo(bot))
-        context->GetValue<ObjectGuid>("rpg target")->Set(target->GetObjectGuid());
-    else
-        context->GetValue<ObjectGuid>("pull target")->Set(target->GetObjectGuid());
-
-    context->GetValue<ObjectGuid>("travel target")->Set(ObjectGuid());
     return true;
 }
 
 bool TravelAction::isUseful()
 {
-    return context->GetValue<ObjectGuid>("travel target")->Get();
+    return false && context->GetValue<TravelTarget *>("travel target")->Get()->isActive() && (!context->GetValue<ObjectGuid>("rpg target")->Get() || !context->GetValue<ObjectGuid>("pull target")->Get());
 }

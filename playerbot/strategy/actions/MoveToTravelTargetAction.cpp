@@ -9,26 +9,31 @@ using namespace ai;
 
 bool MoveToTravelTargetAction::Execute(Event event)
 {
-    Unit* target = ai->GetUnit(AI_VALUE(ObjectGuid, "travel target"));
-    if (!target || target->IsInCombat())
-    {
-        context->GetValue<ObjectGuid>("travel target")->Set(ObjectGuid());
-        return false;
-    }        
+    TravelTarget* target = AI_VALUE(TravelTarget*, "travel target");
+
+    WorldPosition botLocation(bot);
 
     float distance = AI_VALUE2(float, "distance", "travel target");
+    float angle = 2 * M_PI * urand(0, 100) / 100.0;
 
-    //ostringstream os; os << "Travel to: " << target->GetName() << " at distance " << distance;
+    WorldLocation location = target->getLocation();
 
-    //ai->TellMaster(os);
+    if (target->getMaxTravelTime() > target->getTimeLeft()) //The bot is late. Speed it up.
+    {
+        location = botLocation.getLocation();
+        distance = sPlayerbotAIConfig.tooCloseDistance;
+        angle = bot->GetAngle(location.coord_x, location.coord_y);
+    }
 
-    float x = target->GetPositionX();
-    float y = target->GetPositionY();
-    float z = target->GetPositionZ();
-    float mapId = target->GetMapId();
+    float x = location.coord_x;
+    float y = location.coord_y;
+    float z = location.coord_z;
+    float mapId = location.mapid;
+
+    float mod = urand(1, 100)/50.0;
 
     if (distance < 80.0f)
-        if (bot->IsWithinLOS(x, y, z)) return MoveNear(target, sPlayerbotAIConfig.tooCloseDistance);
+        if (bot->IsWithinLOS(x, y, z)) return MoveNear(mapId, x + cos(angle) * sPlayerbotAIConfig.tooCloseDistance * mod, y + sin(angle) * sPlayerbotAIConfig.tooCloseDistance * mod, z, 0);
 
     WaitForReach(distance);
 
@@ -51,6 +56,6 @@ bool MoveToTravelTargetAction::Execute(Event event)
 
 bool MoveToTravelTargetAction::isUseful()
 {
-    return context->GetValue<ObjectGuid>("travel target")->Get() && context->GetValue<LootObject>("loot target")->Get().IsEmpty() && /*!context->GetValue<ObjectGuid>("pull target")->Get() &&*/ AI_VALUE2(float, "distance", "travel target") > sPlayerbotAIConfig.tooCloseDistance;
+    return context->GetValue<TravelTarget*>("travel target")->Get()->isTraveling();
 }
 

@@ -56,6 +56,8 @@ bool RpgAction::Execute(Event event)
         elements.push_back(&RpgAction::repair);
     if (creature && CanTrain(guid))
         elements.push_back(&RpgAction::train);
+    if (target->HealthBelowPct(100) && ai->HasStrategy("heal", BOT_STATE_COMBAT))
+        elements.push_back(&RpgAction::heal);
 
     if (AddIgnore(target->GetObjectGuid()))
     {
@@ -282,6 +284,22 @@ void RpgAction::train(Unit* target)
     ai->DoSpecificAction("trainer");
 
     target->SetFacingTo(target->GetAngle(bot));
+
+    if (oldSelection)
+        bot->SetSelectionGuid(oldSelection);
+
+    ai->SetNextCheckDelay(sPlayerbotAIConfig.rpgDelay);
+}
+
+void RpgAction::heal(Unit* unit)
+{
+    ObjectGuid oldSelection = bot->GetSelectionGuid();
+
+    bot->SetSelectionGuid(unit->GetObjectGuid());
+
+    ai->DoSpecificAction("heal", Event("rpg action", "heal"));
+
+    unit->SetFacingTo(unit->GetAngle(bot));
 
     if (oldSelection)
         bot->SetSelectionGuid(oldSelection);

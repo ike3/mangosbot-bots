@@ -3,6 +3,7 @@
 #include "../Action.h"
 #include "MovementActions.h"
 #include "../values/LastMovementValue.h"
+#include "../../TravelMgr.h"
 
 namespace ai
 {

@@ -4,6 +4,7 @@
 #include "AttackAction.h"
 #include "../../ServerFacade.h"
 #include "../../playerbot.h"
+#include "../../Travelmgr.h"
 
 namespace ai
 {
@@ -66,16 +67,16 @@ namespace ai
     */
                 (
                     (
-                        (!AI_VALUE(list<ObjectGuid>, "nearest non bot players").empty() || bot->InBattleGround() || GrindAlone(bot))          //Bot is not alone or in battleground or allowed to grind alone.
+                        (!AI_VALUE(list<ObjectGuid>, "nearest non bot players").empty() || bot->InBattleGround() || GrindAlone(bot) || ai->GetMaster())  //Bot is not alone or in battleground or allowed to grind alone.
                         &&
-                        AI_VALUE2(uint8, "health", "self target") > sPlayerbotAIConfig.mediumHealth                                           //Bot has enough health.
+                        AI_VALUE2(uint8, "health", "self target") > sPlayerbotAIConfig.mediumHealth                                                      //Bot has enough health.
                         &&
-                        (!AI_VALUE2(uint8, "mana", "self target") || AI_VALUE2(uint8, "mana", "self target") > sPlayerbotAIConfig.mediumMana) //Bot has no mana or enough mana.
+                        (!AI_VALUE2(uint8, "mana", "self target") || AI_VALUE2(uint8, "mana", "self target") > sPlayerbotAIConfig.mediumMana)            //Bot has no mana or enough mana.
                         &&
-                        !context->GetValue<ObjectGuid>("travel target")->Get()                                                                //Bot is not traveling.
+                        !context->GetValue<TravelTarget *>("travel target")->Get()->isTraveling()                                                        //Bot is not traveling.
                     )
                     ||
-                    AI_VALUE2(bool, "combat", "self target")                                                                                  //Bot is already in combat
+                    AI_VALUE2(bool, "combat", "self target")                                                                                             //Bot is already in combat
                 )
                 ;
         }

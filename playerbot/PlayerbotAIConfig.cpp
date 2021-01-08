@@ -7,6 +7,8 @@
 #include "PlayerbotFactory.h"
 #include "RandomItemMgr.h"
 
+#include "TravelMgr.h"
+
 using namespace std;
 
 INSTANTIATE_SINGLETON_1(PlayerbotAIConfig);
@@ -252,6 +254,9 @@ bool PlayerbotAIConfig::Initialize()
     RandomPlayerbotFactory::CreateRandomBots();
     PlayerbotFactory::Init();
     sRandomItemMgr.Init();
+
+    sLog.outString("Loading Quest Detail Data...");
+    sTravelMgr.LoadQuestTravelTable();
 
     sLog.outString("---------------------------------------");
     sLog.outString("        AI Playerbot initialized       ");
