@@ -241,7 +241,9 @@ namespace ai
         NullTravelDestination* nullTravelDestination = new NullTravelDestination();
         WorldPosition* nullWorldPosition = new WorldPosition();
     protected:
-        vector<pair<uint32, QuestTravelDestination *>> questTravelDestinations;
+        void logQuestError(uint32 errorNr, Quest * quest, uint32 objective = 0, uint32 unitId = 0, uint32 itemId = 0);
+
+        //vector<pair<uint32, QuestTravelDestination *>> questTravelDestinations;
         vector<QuestTravelDestination*> questGivers;
 
         UNORDERED_MAP<uint32, QuestContainer *> quests;

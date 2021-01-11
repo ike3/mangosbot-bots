@@ -80,9 +80,10 @@ bool QuestRelationTravelDestination::isActive(Player* bot) {
     }
     else
     {
-        if (!bot->HasQuest(questId))
+        if (!bot->IsActiveQuest(questId))
             return false;
-        if (!bot->CanCompleteQuest(questId))
+
+        if (!bot->CanRewardQuest(questTemplate, false))
             return false;
 
         if (sTravelMgr.getDialogStatus(bot, entry, questTemplate) != DIALOG_STATUS_REWARD2)
@@ -95,6 +96,15 @@ bool QuestRelationTravelDestination::isActive(Player* bot) {
 bool QuestObjectiveTravelDestination::isActive(Player* bot) {
     if (questTemplate->GetQuestLevel() > bot->getLevel())
         return false;
+
+    //Check mob level
+    if (getEntry() > 0)
+    {
+        CreatureInfo const* cInfo = ObjectMgr::GetCreatureTemplate(getEntry());
+
+        if (cInfo && (int)cInfo->MaxLevel - (int)bot->getLevel() > 4)
+            return false;
+    }
 
     return sTravelMgr.getObjectiveStatus(bot, questTemplate, objective);
 }
@@ -227,22 +237,401 @@ bool TravelTarget::isPreparing() {
 
 void TravelMgr::Clear()
 {
-    for (auto& quest : questTravelDestinations)
+    for (auto& quest : quests)
     {
-        delete quest.second;
+        for (auto& dest : quest.second->questGivers)
+        {
+            delete dest;
+        }
+
+        for (auto& dest : quest.second->questTakers)
+        {
+            delete dest;
+        }
+
+        for (auto& dest : quest.second->questObjectives)
+        {
+            delete dest;
+        }       
     }
 
-    questTravelDestinations.clear();
+    quests.clear();
     pointsMap.clear();
+}
+
+void TravelMgr::logQuestError(uint32 errorNr, Quest* quest, uint32 objective, uint32 unitId, uint32 itemId)
+{
+    bool logQuestErrors = true; //For debugging.
+
+    if (!logQuestErrors)
+        return;
+
+    if (errorNr == 1)
+    {
+        string unitName = "<unknown>";
+        CreatureInfo const* cInfo = NULL;
+        GameObjectInfo const* gInfo = NULL;
+
+        if (unitId > 0)
+            cInfo = ObjectMgr::GetCreatureTemplate(unitId);
+        else
+            gInfo = ObjectMgr::GetGameObjectInfo(unitId * -1);
+
+        if (cInfo)
+            unitName = cInfo->Name;
+        else if (gInfo)
+            unitName = gInfo->name;
+
+        sLog.outString("Quest %s [%d] has %s %s [%d] but none is found in the world.", quest->GetTitle().c_str(), quest->GetQuestId(), objective == 0 ? "quest giver" : "quest taker", unitName.c_str(), unitId);
+    }
+    else if (errorNr == 2)
+    {
+        string unitName = "<unknown>";
+        CreatureInfo const* cInfo = NULL;
+        GameObjectInfo const* gInfo = NULL;
+
+        if (unitId > 0)
+            cInfo = ObjectMgr::GetCreatureTemplate(unitId);
+        else
+            gInfo = ObjectMgr::GetGameObjectInfo(unitId * -1);
+
+        if (cInfo)
+            unitName = cInfo->Name;
+        else if (gInfo)
+            unitName = gInfo->name;
+
+        sLog.outErrorDb("Quest %s [%d] needs %s [%d] for objective %d but none is found in the world.", quest->GetTitle().c_str(), quest->GetQuestId(), unitName.c_str(), unitId, objective);
+    }
+    else if (errorNr == 3)
+    {
+        sLog.outErrorDb("Quest %s [%d] needs itemId %d but no such item exists.", quest->GetTitle().c_str(), quest->GetQuestId(), itemId);
+    }
+    else if (errorNr == 4)
+    {
+        ItemPrototype const* proto = sObjectMgr.GetItemPrototype(itemId);
+
+        string unitName = "<unknown>";
+        CreatureInfo const* cInfo = NULL;
+        GameObjectInfo const* gInfo = NULL;
+
+        if (unitId > 0)
+            cInfo = ObjectMgr::GetCreatureTemplate(unitId);
+        else
+            gInfo = ObjectMgr::GetGameObjectInfo(unitId * -1);
+
+        if (cInfo)
+            unitName = cInfo->Name;
+        else if (gInfo)
+            unitName = gInfo->name;
+
+        sLog.outString("Quest %s [%d] needs %s [%d] for loot of item %s [%d] for objective %d but none is found in the world.", quest->GetTitle().c_str(), quest->GetQuestId(), unitName.c_str(), unitId, proto->Name1, itemId, objective);
+    } 
+    else if (errorNr == 5)
+    {
+        ItemPrototype const* proto = sObjectMgr.GetItemPrototype(itemId);
+
+        sLog.outString("Quest %s [%d] needs item %s [%d] for objective %d but none is found in the world.", quest->GetTitle().c_str(), quest->GetQuestId(), proto->Name1, itemId, objective);
+    }
+    else if (errorNr == 6)
+    {
+        sLog.outErrorDb("Quest %s [%d] has no quest giver.", quest->GetTitle().c_str(), quest->GetQuestId());
+    }
+    else if (errorNr == 7)
+    {
+        sLog.outErrorDb("Quest %s [%d] has no quest taker.", quest->GetTitle().c_str(), quest->GetQuestId());
+    }
+    else if (errorNr == 8)
+    {
+        sLog.outErrorDb("Quest %s [%d] has no quest viable quest objective.", quest->GetTitle().c_str(), quest->GetQuestId());
+    }
 }
 
 void TravelMgr::LoadQuestTravelTable()
 {
-    uint32 count = 0;
-
     // Clearing store (for reloading case)
     Clear();
 
+    struct unit { uint32 guid; uint32 type; uint32 entry; uint32 map; float  x; float  y; float  z;  float  o; } t_unit;
+    vector<unit> units;
+
+    struct relation { uint32 type; uint32 role;  uint32 entry; uint32 questId; } t_rel;
+    vector<relation> relations;
+
+    struct loot { uint32 type; uint32 entry;  uint32 item; } t_loot;
+    vector<loot> loots;
+
+    ObjectMgr::QuestMap const& questMap = sObjectMgr.GetQuestTemplates();
+    vector<uint32> questIds;
+
+    for (auto& quest : questMap)
+        questIds.push_back(quest.first);
+
+    sort(questIds.begin(), questIds.end());
+
+    string query = "SELECT 0,guid,id,map,position_x,position_y,position_z,orientation FROM creature c UNION ALL SELECT 1,guid,id,map,position_x,position_y,position_z,orientation FROM gameobject g";
+
+    QueryResult* result = WorldDatabase.PQuery(query.c_str());
+
+    if (result)
+    {
+        BarGoLink bar(result->GetRowCount());
+
+        do
+        {
+            Field* fields = result->Fetch();
+            bar.step();
+
+            t_unit.type = fields[0].GetUInt32();
+            t_unit.guid = fields[1].GetUInt32();
+            t_unit.entry = fields[2].GetUInt32();
+            t_unit.map = fields[3].GetUInt32();
+            t_unit.x = fields[4].GetFloat();
+            t_unit.y = fields[5].GetFloat();
+            t_unit.z = fields[6].GetFloat();
+            t_unit.o = fields[7].GetFloat();
+
+            units.push_back(t_unit);
+
+        } while (result->NextRow());
+
+        delete result;
+
+        sLog.outString(">> Loaded " SIZEFMTD " units locations.", units.size());
+        sLog.outString();
+    }
+    else
+    {
+        sLog.outString();
+        sLog.outErrorDb(">> Error loading units locations.");
+    }
+
+    query = "SELECT actor, role, entry, quest FROM quest_relations qr";
+
+    result = WorldDatabase.PQuery(query.c_str());
+
+    if (result)
+    {
+        BarGoLink bar(result->GetRowCount());
+
+        do
+        {
+            Field* fields = result->Fetch();
+            bar.step();
+
+            t_rel.type = fields[0].GetUInt32();
+            t_rel.role = fields[1].GetUInt32();
+            t_rel.entry = fields[2].GetUInt32();
+            t_rel.questId = fields[3].GetUInt32();
+
+            relations.push_back(t_rel);
+
+        } while (result->NextRow());
+
+        delete result;
+
+        sLog.outString(">> Loaded " SIZEFMTD " relations.", units.size());
+        sLog.outString();
+    }
+    else
+    {
+        sLog.outString();
+        sLog.outErrorDb(">> Error loading relations.");
+    }
+
+    query = "SELECT 0, ct.entry, item FROM creature_template ct JOIN creature_loot_template clt ON (ct.lootid = clt.entry) UNION ALL SELECT 0, entry, item FROM npc_vendor UNION ALL SELECT 1, gt.entry, item FROM gameobject_template gt JOIN gameobject_loot_template glt ON (gt.TYPE = 3 AND gt.DATA1 = glt.entry)";
+
+    result = WorldDatabase.PQuery(query.c_str());
+
+    if (result)
+    {
+        BarGoLink bar(result->GetRowCount());
+
+        do
+        {
+            Field* fields = result->Fetch();
+            bar.step();
+
+            t_loot.type = fields[0].GetUInt32();
+            t_loot.entry = fields[1].GetUInt32();
+            t_loot.item = fields[2].GetUInt32();
+
+            loots.push_back(t_loot);
+
+        } while (result->NextRow());
+
+        delete result;
+
+        sLog.outString(">> Loaded " SIZEFMTD " loot lists.", units.size());
+        sLog.outString();
+    }
+    else
+    {
+        sLog.outString();
+        sLog.outErrorDb(">> Error loading loot lists.");
+    }
+
+    BarGoLink bar(questIds.size());
+
+    for (auto& questId : questIds)
+    {
+
+        bar.step();
+
+        Quest* quest = questMap.find(questId)->second;
+
+        QuestContainer* container = new QuestContainer;
+        QuestTravelDestination* loc;
+        WorldPosition point;
+
+        bool hasError = false;
+
+        //Relations
+        for (auto& r : relations)
+        {
+            if (questId != r.questId)
+                continue;
+
+            loc = new QuestRelationTravelDestination(r.questId, r.entry, r.role, sPlayerbotAIConfig.tooCloseDistance, sPlayerbotAIConfig.sightDistance);
+            loc->setExpireDelay(5 * 60 * 1000);
+            loc->setMaxVisitors(15, 0);
+
+            for (auto& u : units)
+            {
+                if (r.type != u.type || r.entry != u.entry)
+                    continue;
+
+                point = WorldPosition(u.map, u.x, u.y, u.z, u.o);
+                pointsMap.insert(make_pair(u.guid, point));
+
+                loc->addPoint(&pointsMap.find(u.guid)->second);
+            }
+
+            if (loc->getPoints(0).empty())
+            {
+                logQuestError(1, quest, r.role, r.entry);
+                delete loc;
+                continue;
+            }
+
+
+            if (r.role == 0)
+            {
+                container->questGivers.push_back(loc);
+            }
+            else
+                container->questTakers.push_back(loc);
+
+        }
+
+        //Mobs
+        for (int i = 0; i < 4; i++)
+        {
+            if (quest->ReqCreatureOrGOCount[i] == 0)
+                continue;
+
+            uint32 reqEntry = quest->ReqCreatureOrGOId[i];
+
+            loc = new QuestObjectiveTravelDestination(questId, reqEntry, i, sPlayerbotAIConfig.tooCloseDistance, sPlayerbotAIConfig.sightDistance);
+            loc->setExpireDelay(1 * 60 * 1000);
+            loc->setMaxVisitors(100, 1);
+
+            for (auto& u : units)
+            {
+                uint32 entry = u.type > 0 ? u.entry : u.entry * 1;
+
+                if (entry != reqEntry)
+                    continue;
+
+                point = WorldPosition(u.map, u.x, u.y, u.z, u.o);
+                pointsMap.insert(make_pair(u.guid, point));
+
+                loc->addPoint(&pointsMap.find(u.guid)->second);
+            }
+
+            if (loc->getPoints(0).empty())
+            {
+                logQuestError(2, quest, i, reqEntry);
+
+                delete loc;
+                hasError = true;
+                continue;
+            }
+            
+            container->questObjectives.push_back(loc);
+        }
+
+        //Loot
+        for (int i = 0; i < 4; i++)
+        {
+            if (quest->ReqItemCount[i] == 0)
+                continue;
+
+            ItemPrototype const* proto = sObjectMgr.GetItemPrototype(quest->ReqItemId[i]);
+
+            if (!proto)
+            {
+                logQuestError(3, quest, i, 0, quest->ReqItemId[i]);
+                hasError = true;
+                continue;
+            }
+
+            uint32 foundLoot = 0;
+
+            for (auto& l : loots)
+            {
+                if (l.item != quest->ReqItemId[i])
+                    continue;
+
+                uint32 entry = l.type > 0 ? l.entry : l.entry * 1;
+
+                loc = new QuestObjectiveTravelDestination(questId, entry, i, sPlayerbotAIConfig.tooCloseDistance, sPlayerbotAIConfig.sightDistance);
+                loc->setExpireDelay(1 * 60 * 1000);
+                loc->setMaxVisitors(100, 1);
+
+                for (auto& u : units)
+                {
+                    if (l.type != u.type || l.entry != u.entry)
+                        continue;
+
+                    point = WorldPosition(u.map, u.x, u.y, u.z, u.o);
+                    pointsMap.insert(make_pair(u.guid, point));
+
+                    loc->addPoint(&pointsMap.find(u.guid)->second);
+                }
+
+                if (loc->getPoints(0).empty())
+                {
+                    logQuestError(4, quest, i, l.entry, quest->ReqItemId[i]);
+                    delete loc;
+                    continue;
+                }
+
+                container->questObjectives.push_back(loc);
+                foundLoot++;
+            }
+
+            if (foundLoot == 0)
+            {
+                hasError = true;
+                logQuestError(5, quest, i, 0, quest->ReqItemId[i]);
+            }
+        }
+
+        if (container->questTakers.empty())
+            logQuestError(7, quest);
+
+        if(!container->questGivers.empty() || !container->questTakers.empty() || hasError)
+        {
+            quests.insert_or_assign(questId, container);
+
+            for (auto loc : container->questGivers)
+                questGivers.push_back(loc);
+        }
+    }
+
+    sLog.outString(">> Loaded " SIZEFMTD " quest details.", questIds.size());
+
+    /*
     string query = "SELECT 0, qr.quest, 0, c.id, role objective, c.guid, c.map, c.position_x, c.position_y, c.position_z, c.orientation FROM quest_relations qr JOIN creature c  ON(c.id = qr.entry) WHERE actor = 0";
     query = query + " UNION ALL ";
     query = query + "SELECT 1, qr.quest, 0, c.id, role objective, c.guid,c.map, c.position_x, c.position_y, c.position_z, c.orientation FROM quest_relations qr JOIN gameobject c  ON(c.id = qr.entry) WHERE actor = 1";
@@ -305,7 +694,7 @@ void TravelMgr::LoadQuestTravelTable()
                     loc->setMaxVisitors(100, 1);
                 }
 
-                questTravelDestinations.push_back(make_pair(questId, loc));
+                //questTravelDestinations.push_back(make_pair(questId, loc));
 
                 pQuestId = questId;
                 pEntry = entry;
@@ -330,15 +719,15 @@ void TravelMgr::LoadQuestTravelTable()
                 else
                     container->questObjectives.push_back(loc);
 
-                quests.insert_or_assign(questId, container);            
+                quests.insert_or_assign(questId, container);
             }
 
             WorldPosition point = WorldPosition(map, position_x, position_y, position_z, orientation);
 
             pointsMap.insert(make_pair(guid, point));
 
-            questTravelDestinations.back().second->addPoint(&pointsMap.find(guid)->second);               
-                        
+            questTravelDestinations.back().second->addPoint(&pointsMap.find(guid)->second);
+
             ++count;
         } while (result->NextRow());
 
@@ -352,8 +741,8 @@ void TravelMgr::LoadQuestTravelTable()
         sLog.outString();
         sLog.outErrorDb(">> Error loading quest details.");
     }
+    */
 }
-
 
 uint32 TravelMgr::getDialogStatus(Player* pPlayer, uint32 questgiver, Quest const* pQuest)
 {
