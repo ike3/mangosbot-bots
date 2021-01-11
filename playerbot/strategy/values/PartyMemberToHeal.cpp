@@ -31,27 +31,38 @@ Unit* PartyMemberToHeal::Calculate()
 
     IsTargetOfHealingSpell predicate;
 
+    vector<Unit*> needHeals;
+
+    if (bot->GetSelectionGuid())
+    {
+        Unit* target = ai->GetUnit(bot->GetSelectionGuid());
+        if (target && target->IsFriendlyTo(bot) && target->HealthBelowPct(100))
+            needHeals.push_back(target);
+    }
+
     Group* group = bot->GetGroup();
-    if (!group)
+    if (!group && needHeals.empty())
         return NULL;
 
-    vector<Unit*> needHeals;
-    for (GroupReference *gref = group->GetFirstMember(); gref; gref = gref->next())
+    if (group)
     {
-        Player* player = gref->getSource();
-        if (!Check(player) || !sServerFacade.IsAlive(player))
-            continue;
-
-        uint8 health = player->GetHealthPercent();
-        if (health < sPlayerbotAIConfig.almostFullHealth || !IsTargetOfSpellCast(player, predicate))
-            needHeals.push_back(player);
-
-        Pet* pet = player->GetPet();
-        if (pet && CanHealPet(pet))
+        for (GroupReference* gref = group->GetFirstMember(); gref; gref = gref->next())
         {
-            health = pet->GetHealthPercent();
+            Player* player = gref->getSource();
+            if (!Check(player) || !sServerFacade.IsAlive(player))
+                continue;
+
+            uint8 health = player->GetHealthPercent();
             if (health < sPlayerbotAIConfig.almostFullHealth || !IsTargetOfSpellCast(player, predicate))
-                needHeals.push_back(pet);
+                needHeals.push_back(player);
+
+            Pet* pet = player->GetPet();
+            if (pet && CanHealPet(pet))
+            {
+                health = pet->GetHealthPercent();
+                if (health < sPlayerbotAIConfig.almostFullHealth || !IsTargetOfSpellCast(player, predicate))
+                    needHeals.push_back(pet);
+            }
         }
     }
     if (needHeals.empty())
@@ -60,18 +71,24 @@ Unit* PartyMemberToHeal::Calculate()
     sort(needHeals.begin(), needHeals.end(), compareByHealth);
 
     int healerIndex = 0;
-    for (GroupReference *gref = group->GetFirstMember(); gref; gref = gref->next())
+    if (group)
     {
-        Player* player = gref->getSource();
-        if (!player) continue;
-        if (player == bot) break;
-        if (ai->IsHeal(player))
+        for (GroupReference* gref = group->GetFirstMember(); gref; gref = gref->next())
         {
-            float percent = (float)player->GetPower(POWER_MANA) / (float)player->GetMaxPower(POWER_MANA) * 100.0;
-            if (percent > sPlayerbotAIConfig.lowMana)
-                healerIndex++;
+            Player* player = gref->getSource();
+            if (!player) continue;
+            if (player == bot) break;
+            if (ai->IsHeal(player))
+            {
+                float percent = (float)player->GetPower(POWER_MANA) / (float)player->GetMaxPower(POWER_MANA) * 100.0;
+                if (percent > sPlayerbotAIConfig.lowMana)
+                    healerIndex++;
+            }
         }
     }
+    else
+        healerIndex = 1;
+
     healerIndex = healerIndex % needHeals.size();
     return needHeals[healerIndex];
 }

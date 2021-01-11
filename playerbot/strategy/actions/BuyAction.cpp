@@ -3,21 +3,27 @@
 #include "BuyAction.h"
 #include "../ItemVisitors.h"
 #include "../values/ItemCountValue.h"
+#include "../values/ItemUsageValue.h"
 
 using namespace ai;
 
 bool BuyAction::Execute(Event event)
 {
+    bool buyUsefull = false;
+    ItemIds itemIds;
     string link = event.getParam();
 
-    ItemIds itemIds = chat->parseItems(link);
-    if (itemIds.empty())
-        return false;
+    if (link == "vendor")
+        buyUsefull = true;
+    else
+    {
+        itemIds = chat->parseItems(link);
 
-    Player* master = GetMaster();
+        Player* master = GetMaster();
 
-    if (!master)
-        return false;
+        if (!master)
+            return false;
+    }
 
     list<ObjectGuid> vendors = ai->GetAiObjectContext()->GetValue<list<ObjectGuid> >("nearest npcs")->Get();
     bool vendored = false, result = false;
@@ -27,6 +33,50 @@ bool BuyAction::Execute(Event event)
         Creature *pCreature = bot->GetNPCIfCanInteractWith(vendorguid, UNIT_NPC_FLAG_VENDOR);
         if (!pCreature)
             continue;
+
+        if (buyUsefull)
+        {
+            VendorItemData const* tItems = pCreature->GetVendorItems();
+
+            if (!tItems)
+                continue;
+
+            for (auto& tItem : tItems->m_items)
+            {
+                ItemUsage usage = AI_VALUE2(ItemUsage, "item usage", tItem->item);
+                if (usage == ITEM_USAGE_REPLACE || usage == ITEM_USAGE_EQUIP)
+                    itemIds.insert(tItem->item);
+                else
+                {
+                    ItemPrototype const* proto = sObjectMgr.GetItemPrototype(tItem->item);
+                    if (!proto)
+                        continue;
+
+                    //temp needs to move to itemusage value
+                    for (uint8 slot = 0; slot < MAX_QUEST_LOG_SIZE; ++slot)
+                    {
+                        uint32 entry = ai->GetBot()->GetQuestSlotQuestId(slot);
+                        Quest const* quest = sObjectMgr.GetQuestTemplate(entry);
+                        if (!quest)
+                            continue;
+
+                        for (int i = 0; i < 4; i++)
+                        {
+                            if (quest->ReqItemId[i] == tItem->item)
+                            {
+                                if (!ai->GetMaster() || !sPlayerbotAIConfig.syncQuestWithPlayer)
+                                    if (AI_VALUE2(uint8, "item count", proto->Name1) < quest->ReqItemCount[i])
+                                        itemIds.insert(tItem->item);
+                            }
+                        }
+                    }
+                }
+
+            }
+        }
+
+        if (itemIds.empty())
+            return false;
 
         vendored = true;
 

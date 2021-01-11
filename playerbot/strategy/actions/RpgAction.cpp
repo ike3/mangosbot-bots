@@ -249,6 +249,7 @@ void RpgAction::trade(Unit* unit)
     bot->SetSelectionGuid(unit->GetObjectGuid());
 
     ai->DoSpecificAction("sell", Event("rpg action", "vendor"));
+    ai->DoSpecificAction("buy", Event("rpg action", "vendor"));
 
     unit->SetFacingTo(unit->GetAngle(bot));
 
@@ -297,12 +298,12 @@ void RpgAction::heal(Unit* unit)
 
     bot->SetSelectionGuid(unit->GetObjectGuid());
 
-    ai->DoSpecificAction("heal", Event("rpg action", "heal"));
+    //ai->DoSpecificAction("heal", Event("rpg action", "heal"));
 
     unit->SetFacingTo(unit->GetAngle(bot));
 
-    if (oldSelection)
-        bot->SetSelectionGuid(oldSelection);
+    //if (oldSelection)
+    //    bot->SetSelectionGuid(oldSelection);
 
     ai->SetNextCheckDelay(sPlayerbotAIConfig.rpgDelay);
 }

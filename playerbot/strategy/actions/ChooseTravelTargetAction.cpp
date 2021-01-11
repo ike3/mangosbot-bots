@@ -166,7 +166,7 @@ TravelTarget ChooseTravelTargetAction::GetGroupTarget()
     }
 
     //Find targets of the group.
-    for (auto member : groupPlayers)
+    for (auto& member : groupPlayers)
     {
         Player* player = sObjectMgr.GetPlayer(member);
 
@@ -231,7 +231,7 @@ TravelTarget ChooseTravelTargetAction::GetQuestTarget()
     WorldPosition botLocation(bot);
 
     //Find destinations related to the active quests.
-    for (auto quest : questMap)
+    for (auto& quest : questMap)
     {
         uint32 questId = quest.first;
         QuestStatusData* questStatus = &quest.second;
@@ -242,7 +242,7 @@ TravelTarget ChooseTravelTargetAction::GetQuestTarget()
     }
 
     //Pick one good point per destination.
-    for (auto activeTarget : activeDestinations)
+    for (auto& activeTarget : activeDestinations)
     {
         vector<WorldPosition*> points = activeTarget->nextPoint(&botLocation);
         if (!points.empty())
@@ -265,7 +265,7 @@ TravelTarget ChooseTravelTargetAction::GetNewQuestTarget()
     activeDestinations.insert(activeDestinations.end(), TravelDestinations.begin(), TravelDestinations.end());
 
     //Pick one good point per destination.
-    for (auto activeTarget : activeDestinations)
+    for (auto& activeTarget : activeDestinations)
     {
         vector<WorldPosition*> points = activeTarget->nextPoint(&botLocation);
         if (!points.empty())
@@ -291,7 +291,7 @@ bool ChooseTravelTargetAction::needForQuest(Unit* target)
     bool justCheck = (bot->GetObjectGuid() == target->GetObjectGuid());
 
     QuestStatusMap& questMap = bot->getQuestStatusMap();
-    for (auto & quest : questMap)
+    for (auto& quest : questMap)
     {
         const Quest* questTemplate = sObjectMgr.GetQuestTemplate(quest.first);
         if (!questTemplate)
