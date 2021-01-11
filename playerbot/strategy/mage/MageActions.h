@@ -60,7 +60,7 @@ namespace ai
         CastFrostNovaAction(PlayerbotAI* ai) : CastSpellAction(ai, "frost nova") {}
         virtual bool isUseful()
         {
-            return sServerFacade.IsDistanceLessOrEqualThan(AI_VALUE2(float, "distance", GetTargetName()), sPlayerbotAIConfig.tooCloseDistance);
+            return sServerFacade.IsDistanceLessOrEqualThan(AI_VALUE2(float, "distance", GetTargetName()), 10.0f);
         }
     };
 

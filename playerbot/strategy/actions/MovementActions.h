@@ -13,6 +13,7 @@ namespace ai
         }
 
     protected:
+        bool ChaseTo(WorldObject *obj);
         bool MoveNear(uint32 mapId, float x, float y, float z, float distance = sPlayerbotAIConfig.contactDistance);
         bool MoveTo(uint32 mapId, float x, float y, float z, bool idle = false);
         bool MoveTo(Unit* target, float distance = 0.0f);
@@ -87,12 +88,21 @@ namespace ai
         SetBehindTargetAction(PlayerbotAI* ai) : MovementAction(ai, "set behind") {}
         virtual bool Execute(Event event);
         virtual bool isUseful();
+        virtual bool isPossible();
     };
 
     class MoveOutOfCollisionAction : public MovementAction
     {
     public:
         MoveOutOfCollisionAction(PlayerbotAI* ai) : MovementAction(ai, "move out of collision") {}
+        virtual bool Execute(Event event);
+        virtual bool isUseful();
+    };
+
+    class MoveRandomAction : public MovementAction
+    {
+    public:
+        MoveRandomAction(PlayerbotAI* ai) : MovementAction(ai, "move random") {}
         virtual bool Execute(Event event);
         virtual bool isUseful();
     };

@@ -61,6 +61,8 @@ namespace ai
 
 		virtual NextAction** getPrerequisites()
 		{
+            if (spell == "mount")
+                return NULL;
             if (range > ai->GetRange("spell"))
 				return NULL;
 			else if (range > ATTACK_DISTANCE)
@@ -262,6 +264,12 @@ namespace ai
     {
     public:
         CastManaTapAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "mana tap") {}
+    };
+
+    class CastWarStompAction : public CastSpellAction
+    {
+    public:
+        CastWarStompAction(PlayerbotAI* ai) : CastSpellAction(ai, "war stomp") {}
     };
 
     class CastSpellOnEnemyHealerAction : public CastSpellAction

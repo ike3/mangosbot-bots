@@ -94,6 +94,12 @@ namespace ai
 		CastSummonImpAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "summon imp") {}
 	};
 
+    class CastSummonSuccubusAction : public CastBuffSpellAction
+    {
+    public:
+        CastSummonSuccubusAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "summon succubus") {}
+    };
+
 	class CastCreateHealthstoneAction : public CastBuffSpellAction
 	{
 	public:

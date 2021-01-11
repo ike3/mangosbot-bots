@@ -45,9 +45,18 @@ namespace ai
             creators["guild invite"] = &WorldPacketTriggerContext::guild_invite;
             creators["lfg teleport"] = &WorldPacketTriggerContext::lfg_teleport;
             creators["inventory change failure"] = &WorldPacketTriggerContext::inventory_change_failure;
+            //creators["bg invite"] = &WorldPacketTriggerContext::bg_invite;
+            creators["bg join"] = &WorldPacketTriggerContext::bg_update;
+            creators["bg status"] = &WorldPacketTriggerContext::bg_status;
+            creators["levelup"] = &WorldPacketTriggerContext::levelup;
+            creators["xpgain"] = &WorldPacketTriggerContext::xpgain;
         }
 
     private:
+        static Trigger* bg_update(PlayerbotAI* ai) { return new WorldPacketTrigger(ai, "bg join"); }
+        static Trigger* bg_leave(PlayerbotAI* ai) { return new WorldPacketTrigger(ai, "bg leave"); }
+        static Trigger* bg_status(PlayerbotAI* ai) { return new WorldPacketTrigger(ai, "bg status"); }
+        //static Trigger* bg_invite(PlayerbotAI* ai) { return new WorldPacketTrigger(ai, "bg invite"); }
         static Trigger* inventory_change_failure(PlayerbotAI* ai) { return new WorldPacketTrigger(ai, "inventory change failure"); }
         static Trigger* guild_invite(PlayerbotAI* ai) { return new WorldPacketTrigger(ai, "guild invite"); }
         static Trigger* lfg_teleport(PlayerbotAI* ai) { return new WorldPacketTrigger(ai, "lfg teleport"); }
@@ -83,5 +92,7 @@ namespace ai
         static Trigger* quest_share(PlayerbotAI* ai) { return new WorldPacketTrigger(ai, "quest share"); }
         static Trigger* loot_roll(PlayerbotAI* ai) { return new WorldPacketTrigger(ai, "loot roll"); }
         static Trigger* taxi(PlayerbotAI* ai) { return new WorldPacketTrigger(ai, "activate taxi"); }
+        static Trigger* levelup(PlayerbotAI* ai) { return new WorldPacketTrigger(ai, "levelup"); }
+        static Trigger* xpgain(PlayerbotAI* ai) { return new WorldPacketTrigger(ai, "xpgain"); }
     };
 };

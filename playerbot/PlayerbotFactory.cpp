@@ -134,6 +134,11 @@ void PlayerbotFactory::Randomize(bool incremental)
     sLog.outDetail("Preparing to %s randomize...", (incremental ? "incremental" : "full"));
     Prepare();
 
+    if (sPlayerbotAIConfig.disableRandomLevels)
+    {
+        return;
+    }
+
     sLog.outDetail("Resetting player...");
     PerformanceMonitorOperation* pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Reset");
     bot->resetTalents(true);
@@ -186,7 +191,10 @@ void PlayerbotFactory::Randomize(bool incremental)
 
     pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Talents");
     sLog.outDetail("Initializing talents...");
-    InitTalentsTree(incremental);
+    //InitTalentsTree(incremental);    
+    sRandomPlayerbotMgr.SetValue(bot->GetGUIDLow(), "specNo", 0);
+    ai->DoSpecificAction("auto talents");
+
     sPlayerbotDbStore.Reset(ai);
     ai->ResetStrategies(false); // fix wrong stored strategy
     if (pmo) pmo->finish();
@@ -222,6 +230,7 @@ void PlayerbotFactory::Randomize(bool incremental)
     pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Bags");
     sLog.outDetail("Initializing bags...");
     InitBags();
+    bot->SaveToDB();
     if (pmo) pmo->finish();
 
     pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Ammo");
@@ -237,6 +246,11 @@ void PlayerbotFactory::Randomize(bool incremental)
     pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Potions");
     sLog.outDetail("Initializing potions...");
     InitPotions();
+    if (pmo) pmo->finish();
+
+    pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Reagents");
+    sLog.outDetail("Initializing reagents...");
+    InitReagents();
     if (pmo) pmo->finish();
 
 	pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_EqSets");
@@ -292,6 +306,7 @@ void PlayerbotFactory::Refresh()
     InitAmmo();
     InitFood();
     InitPotions();
+    InitReagents();
     bot->SaveToDB();
     //bot->SaveToDB();
 }
@@ -956,7 +971,7 @@ void PlayerbotFactory::InitEquipment(bool incremental)
 
     for(uint8 slot = 0; slot < EQUIPMENT_SLOT_END; ++slot)
     {
-        if (slot == EQUIPMENT_SLOT_TABARD || slot == EQUIPMENT_SLOT_BODY)
+        if (slot == EQUIPMENT_SLOT_TABARD && !bot->GetGuildId())
             continue;
 
         bool found = false;
@@ -967,6 +982,7 @@ void PlayerbotFactory::InitEquipment(bool incremental)
         do
         {
             vector<uint32> ids = sRandomItemMgr.Query(level, bot->getClass(), slot, quality);
+
             if (!ids.empty()) ahbot::Shuffle(ids);
             for (uint32 index = 0; index < ids.size(); ++index)
             {
@@ -1144,7 +1160,6 @@ void PlayerbotFactory::InitBags()
             uint16 dest;
             if (!CanEquipUnseenItem(slot, dest, newItemId))
                 continue;
-
             Item* newItem = bot->EquipNewItem(dest, newItemId, true);
             if (newItem)
             {
@@ -1544,6 +1559,7 @@ void PlayerbotFactory::InitTalents(uint32 specNo)
                 uint32 spellId = talentInfo->RankID[rank];
                 if (!spellId)
                     continue;
+
                 bot->learnSpell(spellId, false);
                 bot->UpdateFreeTalentPoints(false);
             }
@@ -1628,6 +1644,12 @@ void PlayerbotFactory::ClearInventory()
     IterateItems(&visitor);
 }
 
+void PlayerbotFactory::ClearAllItems()
+{
+    DestroyItemsVisitor visitor(bot);
+    IterateItems(&visitor, ITERATE_ALL_ITEMS);
+}
+
 void PlayerbotFactory::InitAmmo()
 {
     if (bot->getClass() != CLASS_HUNTER && bot->getClass() != CLASS_ROGUE && bot->getClass() != CLASS_WARRIOR)
@@ -1675,39 +1697,138 @@ void PlayerbotFactory::InitAmmo()
 
 void PlayerbotFactory::InitMounts()
 {
-    map<int32, vector<uint32> > spells;
-
-    for (uint32 spellId = 0; spellId < sServerFacade.GetSpellInfoRows(); ++spellId)
-    {
-        SpellEntry const *spellInfo = sServerFacade.LookupSpellInfo(spellId);
-        if (!spellInfo || spellInfo->EffectApplyAuraName[0] != SPELL_AURA_MOUNTED)
-            continue;
-
-        if (GetSpellCastTime(spellInfo
-#ifdef CMANGOS
-            , bot
+    uint32 firstmount =
+#ifdef MANGOSBOT_ZERO
+        40
+#else
+#ifdef MANGOSBOT_ONE
+        30
+#else
+        20
 #endif
-        ) < 500 || GetSpellDuration(spellInfo) != -1)
-            continue;
+#endif
+        ;
 
-        int32 effect = max(spellInfo->EffectBasePoints[1], spellInfo->EffectBasePoints[2]);
-        if (effect < 50)
-            continue;
+    uint32 secondmount =
+#ifdef MANGOSBOT_ZERO
+        60
+#else
+#ifdef MANGOSBOT_ONE
+        60
+#else
+        40
+#endif
+#endif
+        ;
 
-        spells[effect].push_back(spellId);
-    }
+    uint32 thirdmount =
+#ifdef MANGOSBOT_ZERO
+        90
+#else
+#ifdef MANGOSBOT_ONE
+        68
+#else
+        60
+#endif
+#endif
+        ;
 
-    for (uint32 type = 0; type < 2; ++type)
+    uint32 fourthmount =
+#ifdef MANGOSBOT_ZERO
+        90
+#else
+#ifdef MANGOSBOT_ONE
+        70
+#else
+        70
+#endif
+#endif
+        ;
+
+    if (bot->getLevel() < firstmount)
+        return;
+
+    map<uint8, map<int32, vector<uint32> > > mounts;
+    initializer_list<uint32> slow, fast, fslow, ffast;
+    switch (bot->getRace())
     {
-        for (map<int32, vector<uint32> >::iterator i = spells.begin(); i != spells.end(); ++i)
-        {
-            int32 effect = i->first;
-            vector<uint32>& ids = i->second;
-            uint32 index = urand(0, ids.size() - 1);
-            if (index >= ids.size())
-                continue;
+    case RACE_HUMAN:
+        slow = { 470, 6648, 458, 472 };
+        fast = { 23228, 23227, 23229 };
+        break;
+    case RACE_ORC:
+        slow = { 6654, 6653, 580 };
+        fast = { 23250, 23252, 23251 };
+        break;
+    case RACE_DWARF:
+        slow = { 6899, 6777, 6898 };
+        fast = { 23238, 23239, 23240 };
+        break;
+    case RACE_NIGHTELF:
+        slow = { 10789, 8394, 10793 };
+        fast = { 23221, 23219, 23338 };
+        break;
+    case RACE_UNDEAD:
+        slow = { 17463, 17464, 17462 };
+        fast = { 17465, 23246 };
+        break;
+    case RACE_TAUREN:
+        slow = { 18990, 18989 };
+        fast = { 23249, 23248, 23247 };
+        break;
+    case RACE_GNOME:
+        slow = { 10969, 17453, 10873, 17454 };
+        fast = { 23225, 23223, 23222 };
+        break;
+    case RACE_TROLL:
+        slow = { 8395, 10796, 10799 };
+        fast = { 23241, 23242, 23243 };
+        break;
+#ifndef MANGOSBOT_ZERO
+    case RACE_DRAENEI:
+        slow = { 34406, 35711, 35710 };
+        fast = { 35713, 35712, 35714 };
+        break;
+    case RACE_BLOODELF:
+        slow = { 33660, 35020, 35022, 35018 };
+        fast = { 35025, 35025, 35027 };
+        break;
 
-            bot->learnSpell(ids[index], false);
+    }
+    switch (bot->GetTeamId())
+    {
+    case TEAM_INDEX_ALLIANCE:
+        fslow = { 32235, 32239, 32240 };
+        ffast = { 32242, 32289, 32290, 32292 };
+        break;
+    case TEAM_INDEX_HORDE:
+        fslow = { 32244, 32245, 32243 };
+        ffast = { 32295, 32297, 32246, 32296 };
+        break;
+#endif
+    }
+    mounts[bot->getRace()][0].insert(mounts[bot->getRace()][0].end(), slow);
+    mounts[bot->getRace()][1].insert(mounts[bot->getRace()][1].end(), fast);
+    mounts[bot->getRace()][2].insert(mounts[bot->getRace()][2].end(), fslow);
+    mounts[bot->getRace()][3].insert(mounts[bot->getRace()][3].end(), ffast);
+
+    for (uint32 type = 0; type < 4; type++)
+    {
+        if (bot->getLevel() < secondmount && type == 1)
+            continue;
+
+        if (bot->getLevel() < thirdmount && type == 2)
+            continue;
+
+        if (bot->getLevel() < fourthmount && type == 3)
+            continue;
+
+        uint32 index = urand(0, mounts[bot->getRace()][type].size() - 1);
+        uint32 spell = mounts[bot->getRace()][type][index];
+        if (spell && spell != 0)
+        {
+            bot->learnSpell(spell, false);
+            sLog.outDetail("Bot %d (%d) learned %s mount %d", bot->GetGUIDLow(), bot->getLevel(), type == 0 ? "slow" : (type == 1 ? "fast" : "flying"), spell);
         }
     }
 }
@@ -1736,7 +1857,7 @@ void PlayerbotFactory::InitPotions()
         Item* newItem = bot->StoreNewItemInInventorySlot(itemId, urand(maxCount / 2, maxCount));
         if (newItem)
             newItem->AddToUpdateQueueOf(bot);
-   }
+    }
 }
 
 void PlayerbotFactory::InitFood()
@@ -1750,7 +1871,7 @@ void PlayerbotFactory::InitFood()
         IterateItems(&visitor);
         if (!visitor.GetResult().empty()) continue;
 
-        uint32 itemId = sRandomItemMgr.GetRandomFood(level, category);
+        uint32 itemId = sRandomItemMgr.GetFood(level, category);
         if (!itemId)
         {
             sLog.outDetail("No food (category %d) available for bot %s (%d level)", category, bot->GetName(), bot->getLevel());
@@ -1764,6 +1885,94 @@ void PlayerbotFactory::InitFood()
         if (newItem)
             newItem->AddToUpdateQueueOf(bot);
    }
+}
+
+void PlayerbotFactory::InitReagents()
+{
+    list<uint32> items;
+    uint32 regCount = 1;
+    switch (bot->getClass())
+    {
+    case CLASS_MAGE:
+        regCount = 2;
+        if (bot->getLevel() > 11)
+            items = { 17056 };
+        if (bot->getLevel() > 19)
+            items = { 17056, 17031 };
+        if (bot->getLevel() > 35)
+            items = { 17056, 17031, 17032 };
+        if (bot->getLevel() > 55)
+            items = { 17056, 17031, 17032, 17020 };
+        break;
+    case CLASS_DRUID:
+        regCount = 2;
+        if (bot->getLevel() > 19)
+            items = { 17034 };
+        if (bot->getLevel() > 29)
+            items = { 17035 };
+        if (bot->getLevel() > 39)
+            items = { 17036 };
+        if (bot->getLevel() > 49)
+            items = { 17037, 17021 };
+        if (bot->getLevel() > 59)
+            items = { 17038, 17026 };
+        if (bot->getLevel() > 69)
+            items = { 22147, 22148 };
+        break;
+    case CLASS_PALADIN:
+        regCount = 3;
+        if (bot->getLevel() > 50)
+            items = { 21177 };
+        break;
+    case CLASS_SHAMAN:
+        regCount = 1;
+        if (bot->getLevel() > 29)
+            items = { 17030 };
+        break;
+    case CLASS_WARLOCK:
+        regCount = 10;
+        if (bot->getLevel() > 9)
+            items = { 6265 };
+        break;
+    case CLASS_PRIEST:
+        regCount = 3;
+        if (bot->getLevel() > 48)
+            items = { 17028 };
+        if (bot->getLevel() > 55)
+            items = { 17028, 17029 };
+        break;
+    case CLASS_ROGUE:
+        regCount = 1;
+        if (bot->getLevel() > 21)
+            items = { 5140 };
+        if (bot->getLevel() > 33)
+            items = { 5140, 5530 };
+        break;
+    }
+
+    for (list<uint32>::iterator i = items.begin(); i != items.end(); ++i)
+    {
+        ItemPrototype const* proto = sObjectMgr.GetItemPrototype(*i);
+        if (!proto)
+        {
+            sLog.outError("No reagent (ItemId %d) found for bot %d (Class:%d)", i, bot->GetGUIDLow(), bot->getClass());
+            continue;
+        }
+
+        uint32 maxCount = proto->GetMaxStackSize();
+
+        QueryItemCountVisitor visitor(*i);
+        IterateItems(&visitor);
+        if (visitor.GetCount() > maxCount) continue;
+
+        uint32 randCount = urand(maxCount / 2, maxCount * regCount);
+
+        Item* newItem = bot->StoreNewItemInInventorySlot(*i, randCount);
+        if (newItem)
+            newItem->AddToUpdateQueueOf(bot);
+
+        sLog.outDetail("Bot %d got reagent %s x%d", bot->GetGUIDLow(), proto->Name1, randCount);
+    }
 }
 
 
@@ -1914,6 +2123,13 @@ void PlayerbotFactory::InitGuild()
 
     if (guild->GetMemberSize() < urand(10, 15))
         guild->AddMember(bot->GetObjectGuid(), urand(GR_OFFICER, GR_INITIATE));
+
+    // add guild tabard
+    if (bot->GetGuildId() && bot->getLevel() > 9 && urand(0, 100) > 30)
+    {
+        StoreItem(5976, 1);
+    }
+
     bot->SaveToDB();
 }
 

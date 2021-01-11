@@ -51,7 +51,7 @@ uint32 PricingStrategy::GetSellPrice(ItemPrototype const* proto, uint32 auctionH
             "item name",
             (double)sAhBotConfig.GetItemPriceMultiplier(proto->Name1),
             "category name",
-            (double)auctionbot.GetCategoryMultiplier(category->GetName()),
+            (double)auctionbot.GetCategoryMultiplier(category->GetDisplayName()),
             "rarity",
             (double)GetRarityPriceMultiplier(proto->ItemId),
             "level",
@@ -61,12 +61,13 @@ uint32 PricingStrategy::GetSellPrice(ItemPrototype const* proto, uint32 auctionH
             "item",
             (double)GetItemPriceMultiplier(proto, now, auctionHouse),
             "category sell",
-            (double)sAhBotConfig.GetSellPriceMultiplier(category->GetName()),
+            (double)sAhBotConfig.GetSellPriceMultiplier(category->GetDisplayName()),
             "quality",
             (double)GetQualityMultiplier(proto),
             "static",
             (double)sAhBotConfig.priceMultiplier,
             NULL);
+
     return RoundPrice(price);
 }
 

@@ -3,6 +3,7 @@
 #include "EquipAction.h"
 
 #include "../values/ItemCountValue.h"
+#include "../values/ItemUsageValue.h"
 
 using namespace ai;
 
@@ -50,4 +51,28 @@ void EquipAction::EquipItem(Item& item)
 
     ostringstream out; out << "equipping " << chat->formatItem(item.GetProto());
     ai->TellMaster(out);
+}
+
+
+bool EquipUpgradesAction::Execute(Event event)
+{
+    if (!sPlayerbotAIConfig.autoEquipUpgradeLoot && !sRandomPlayerbotMgr.IsRandomBot(bot))
+        return false;
+
+    ListItemsVisitor visitor;
+    IterateItems(&visitor, ITERATE_ITEMS_IN_BAGS);
+
+    ItemIds items;
+    for (map<uint32, int>::iterator i = visitor.items.begin(); i != visitor.items.end(); ++i)
+    {
+        ItemUsage usage = AI_VALUE2(ItemUsage, "item usage", i->first);
+        if (usage == ITEM_USAGE_EQUIP || usage == ITEM_USAGE_REPLACE || usage == ITEM_USAGE_BAD_EQUIP)
+        {
+            sLog.outDetail("Bot #%d <%s> auto equips item %d (%s)", bot->GetGUIDLow(), bot->GetName(), i->first, usage == 1 ? "no item in slot" : usage == 2 ? "replace" : usage == 3 ? "wrong item but empty slot" : "");
+            items.insert(i->first);
+        }
+    }
+    
+    EquipItems(items);
+    return true;
 }

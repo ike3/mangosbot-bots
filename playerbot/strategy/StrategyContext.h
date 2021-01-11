@@ -33,6 +33,7 @@
 #include "generic/RangedCombatStrategy.h"
 #include "generic/ReturnStrategy.h"
 #include "generic/RpgStrategy.h"
+#include "generic/TravelStrategy.h"
 
 namespace ai
 {
@@ -66,15 +67,22 @@ namespace ai
             creators["reveal"] = &StrategyContext::reveal;
             creators["collision"] = &StrategyContext::collision;
             creators["rpg"] = &StrategyContext::rpg;
+			creators["travel"] = &StrategyContext::travel;
             creators["sit"] = &StrategyContext::sit;
             creators["mark rti"] = &StrategyContext::mark_rti;
             creators["ads"] = &StrategyContext::possible_ads;
             creators["close"] = &StrategyContext::close;
             creators["ranged"] = &StrategyContext::ranged;
             creators["behind"] = &StrategyContext::behind;
+            creators["bg"] = &StrategyContext::bg;
+            creators["warsong"] = &StrategyContext::warsong;
+            creators["mount"] = &StrategyContext::mount;
         }
 
     private:
+        static Strategy* mount(PlayerbotAI* ai) { return new MountStrategy(ai); }
+        static Strategy* bg(PlayerbotAI* ai) { return new BGStrategy(ai); }
+        static Strategy* warsong(PlayerbotAI* ai) { return new WarsongStrategy(ai); }
         static Strategy* behind(PlayerbotAI* ai) { return new SetBehindCombatStrategy(ai); }
         static Strategy* ranged(PlayerbotAI* ai) { return new RangedCombatStrategy(ai); }
         static Strategy* close(PlayerbotAI* ai) { return new MeleeCombatStrategy(ai); }
@@ -104,6 +112,7 @@ namespace ai
         static Strategy* reveal(PlayerbotAI* ai) { return new RevealStrategy(ai); }
         static Strategy* collision(PlayerbotAI* ai) { return new CollisionStrategy(ai); }
         static Strategy* rpg(PlayerbotAI* ai) { return new RpgStrategy(ai); }
+		static Strategy* travel(PlayerbotAI* ai) { return new TravelStrategy(ai); }
         static Strategy* sit(PlayerbotAI* ai) { return new SitStrategy(ai); }
         static Strategy* possible_ads(PlayerbotAI* ai) { return new PossibleAdsStrategy(ai); }
     };

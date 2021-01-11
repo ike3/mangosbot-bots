@@ -101,7 +101,9 @@ PlayerbotAI::PlayerbotAI(Player* bot) :
     masterIncomingPacketHandlers.AddHandler(CMSG_GROUP_UNINVITE_GUID, "uninvite");
     masterIncomingPacketHandlers.AddHandler(CMSG_PUSHQUESTTOPARTY, "quest share");
     masterIncomingPacketHandlers.AddHandler(CMSG_GUILD_INVITE, "guild invite");
+    masterIncomingPacketHandlers.AddHandler(CMSG_BATTLEFIELD_PORT, "bg invite");    
 
+    botOutgoingPacketHandlers.AddHandler(SMSG_BATTLEFIELD_STATUS, "bg status");
     botOutgoingPacketHandlers.AddHandler(SMSG_GROUP_INVITE, "group invite");
     botOutgoingPacketHandlers.AddHandler(BUY_ERR_NOT_ENOUGHT_MONEY, "not enough money");
     botOutgoingPacketHandlers.AddHandler(BUY_ERR_REPUTATION_REQUIRE, "not enough reputation");
@@ -114,6 +116,10 @@ PlayerbotAI::PlayerbotAI(Player* bot) :
     botOutgoingPacketHandlers.AddHandler(SMSG_QUESTUPDATE_ADD_KILL, "quest objective completed");
     botOutgoingPacketHandlers.AddHandler(SMSG_ITEM_PUSH_RESULT, "item push result");
     botOutgoingPacketHandlers.AddHandler(SMSG_PARTY_COMMAND_RESULT, "party command");
+    botOutgoingPacketHandlers.AddHandler(SMSG_LEVELUP_INFO, "levelup");
+    botOutgoingPacketHandlers.AddHandler(SMSG_LOG_XPGAIN, "xpgain");
+    
+    
 #ifdef MANGOS
     botOutgoingPacketHandlers.AddHandler(SMSG_CAST_FAILED, "cast failed");
 #endif
@@ -507,7 +513,8 @@ void PlayerbotAI::DoNextAction()
         ChangeEngine(BOT_STATE_NON_COMBAT);
 
     Group *group = bot->GetGroup();
-    if (!master && group)
+    //if (!master && group)
+    if (!master && group && !bot->InBattleGround())
     {
         for (GroupReference *gref = group->GetFirstMember(); gref; gref = gref->next())
         {
@@ -566,38 +573,52 @@ list<string> PlayerbotAI::GetStrategies(BotState type)
     return e->GetStrategies();
 }
 
-void PlayerbotAI::DoSpecificAction(string name)
+bool PlayerbotAI::DoSpecificAction(string name, Event event, bool silent)
 {
     for (int i = 0 ; i < BOT_STATE_MAX; i++)
     {
         ostringstream out;
-        ActionResult res = engines[i]->ExecuteAction(name);
+        ActionResult res = engines[i]->ExecuteAction(name, event);
         switch (res)
         {
         case ACTION_RESULT_UNKNOWN:
             continue;
         case ACTION_RESULT_OK:
             PlaySound(TEXTEMOTE_NOD);
-            return;
+            return true;
         case ACTION_RESULT_IMPOSSIBLE:
             out << name << ": impossible";
-            TellError(out.str());
-            PlaySound(TEXTEMOTE_NO);
-            return;
+            if (!silent)
+            {
+                TellError(out.str());
+                PlaySound(TEXTEMOTE_NO);
+            }
+            return false;
         case ACTION_RESULT_USELESS:
             out << name << ": useless";
-            TellError(out.str());
-            PlaySound(TEXTEMOTE_NO);
-            return;
+            if (!silent)
+            {
+                TellError(out.str());
+                PlaySound(TEXTEMOTE_NO);
+            }
+            return false;
         case ACTION_RESULT_FAILED:
-            out << name << ": failed";
-            TellError(out.str());
-            return;
+            if (!silent)
+            {
+                out << name << ": failed";
+                TellError(out.str());
+            }
+            return false;
         }
     }
-    ostringstream out;
-    out << name << ": unknown action";
-    TellError(out.str());
+    if (!silent)
+    {
+        ostringstream out;
+        out << name << ": unknown action";
+        TellError(out.str());
+    }
+
+    return false;
 }
 
 bool PlayerbotAI::PlaySound(uint32 emote)
@@ -1049,7 +1070,7 @@ void PlayerbotAI::ResetStrategies(bool load)
 bool PlayerbotAI::IsRanged(Player* player)
 {
     PlayerbotAI* botAi = player->GetPlayerbotAI();
-    if (botAi)
+    if (botAi && !player->InBattleGround())
         return botAi->ContainsStrategy(STRATEGY_TYPE_RANGED);
 
     switch (player->getClass())
@@ -1178,6 +1199,13 @@ GameObject* PlayerbotAI::GetGameObject(ObjectGuid guid)
 bool PlayerbotAI::TellMasterNoFacing(string text, PlayerbotSecurityLevel securityLevel)
 {
     Player* master = GetMaster();
+
+    if (!master && sPlayerbotAIConfig.randomBotSayWithoutMaster)
+    {
+        bot->Say(text, 0);
+        return true;
+    }
+
     if (!IsTellAllowed(securityLevel))
         return false;
 
@@ -1233,7 +1261,7 @@ bool PlayerbotAI::TellMaster(string text, PlayerbotSecurityLevel securityLevel)
     if (!TellMasterNoFacing(text, securityLevel))
         return false;
 
-    if (!sServerFacade.isMoving(bot) && !sServerFacade.IsInCombat(bot) && bot->GetMapId() == master->GetMapId() && !bot->IsTaxiFlying())
+    if (master && !sServerFacade.isMoving(bot) && !sServerFacade.IsInCombat(bot) && bot->GetMapId() == master->GetMapId() && !bot->IsTaxiFlying())
     {
         if (!sServerFacade.IsInFront(bot, master, sPlayerbotAIConfig.sightDistance, EMOTE_ANGLE_IN_FRONT))
             sServerFacade.SetFacingTo(bot, master);
@@ -1384,7 +1412,12 @@ bool PlayerbotAI::CanCastSpell(uint32 spellid, Unit* target, uint8 effectMask, b
             }
         }
 
+#ifdef MANGOS
         if (target->IsImmuneToSpell(spellInfo, false))
+#endif
+#ifdef CMANGOS
+        if (target->IsImmuneToSpell(spellInfo, false, GetSpellSchoolMask(spellInfo)))
+#endif
             return false;
 
         if (!damage)
@@ -2158,7 +2191,7 @@ Item* PlayerbotAI::FindConsumable(uint32 displayId) const
          if (!pItemProto || bot->CanUseItem(pItemProto) != EQUIP_ERR_OK)
             continue;
 
-         if (pItemProto->Class == ITEM_CLASS_CONSUMABLE && pItemProto->DisplayInfoID == displayId)
+         if ((pItemProto->Class == ITEM_CLASS_CONSUMABLE || pItemProto->Class == ITEM_CLASS_TRADE_GOODS) && pItemProto->DisplayInfoID == displayId)
             return pItem;
       }
    }
@@ -2177,7 +2210,7 @@ Item* PlayerbotAI::FindConsumable(uint32 displayId) const
                if (!pItemProto || bot->CanUseItem(pItemProto) != EQUIP_ERR_OK)
                   continue;
 
-               if (pItemProto->Class == ITEM_CLASS_CONSUMABLE && pItemProto->DisplayInfoID == displayId)
+               if ((pItemProto->Class == ITEM_CLASS_CONSUMABLE || pItemProto->Class == ITEM_CLASS_TRADE_GOODS) && pItemProto->DisplayInfoID == displayId)
                   return pItem;
             }
          }
@@ -2197,8 +2230,11 @@ Item* PlayerbotAI::FindBandage() const
 
          if (!pItemProto || bot->CanUseItem(pItemProto) != EQUIP_ERR_OK)
             continue;
-
+#ifdef MANGOSBOT_ZERO
+         if (pItemProto->Class == ITEM_CLASS_CONSUMABLE && pItemProto->SubClass == ITEM_SUBCLASS_FOOD)
+#else
          if (pItemProto->Class == ITEM_CLASS_CONSUMABLE && pItemProto->SubClass == ITEM_SUBCLASS_BANDAGE)
+#endif
             return pItem;
       }
    }
@@ -2217,7 +2253,11 @@ Item* PlayerbotAI::FindBandage() const
                if (!pItemProto || bot->CanUseItem(pItemProto) != EQUIP_ERR_OK)
                   continue;
 
+#ifdef MANGOSBOT_ZERO
+               if (pItemProto->Class == ITEM_CLASS_CONSUMABLE && pItemProto->SubClass == ITEM_SUBCLASS_FOOD)
+#else
                if (pItemProto->Class == ITEM_CLASS_CONSUMABLE && pItemProto->SubClass == ITEM_SUBCLASS_BANDAGE)
+#endif
                   return pItem;
             }
          }
@@ -2343,7 +2383,11 @@ void PlayerbotAI::ImbueItem(Item* item, uint8 targetInventorySlot)
 }
 
 // generic item use method
+#ifdef MANGOSBOT_ZERO
+void PlayerbotAI::ImbueItem(Item* item, uint16 targetFlag, ObjectGuid targetGUID)
+#else
 void PlayerbotAI::ImbueItem(Item* item, uint32 targetFlag, ObjectGuid targetGUID)
+#endif
 {
    if (!item)
       return;
@@ -2369,15 +2413,20 @@ void PlayerbotAI::ImbueItem(Item* item, uint32 targetFlag, ObjectGuid targetGUID
    std::unique_ptr<WorldPacket> packet(new WorldPacket(CMSG_USE_ITEM, 20));
 #endif
 #ifdef MANGOS
-   WorldPacket* packet = new WorldPacket(CMSG_USE_ITEM, 20);
+   WorldPacket* packet = new WorldPacket(CMSG_USE_ITEM);
 #endif
 
    *packet << bagIndex;
    *packet << slot;
    *packet << spell_index;
+#ifdef MANGOSBOT_ZERO
+   *packet << targetFlag;
+#endif
+#ifdef MANGOSBOT_ONE
    *packet << cast_count;
    *packet << item_guid;
    *packet << targetFlag;
+#endif
 
 #ifdef CMANGOS
    if (targetFlag & (TARGET_FLAG_UNIT | TARGET_FLAG_ITEM | TARGET_FLAG_GAMEOBJECT))
@@ -2429,4 +2478,89 @@ void PlayerbotAI::EnchantItemT(uint32 spellid, uint8 slot)
    bot->ApplyEnchantment(pItem, PERM_ENCHANTMENT_SLOT, true);
 
    sLog.outDetail("%s: items was enchanted successfully!", bot->GetName());
+}
+
+int PlayerbotAI::GetBattleMasterEntryByRace(uint8 race)
+{
+    switch (race)
+    {
+    case RACE_HUMAN:       return 14981;
+    case RACE_ORC:         return 3890;
+    case RACE_DWARF:       return 14982;
+    case RACE_NIGHTELF:    return 2302;
+    case RACE_UNDEAD:      return 2804;
+    case RACE_TAUREN:      return 10360;
+    case RACE_GNOME:       return 14982;
+    case RACE_TROLL:       return 3890;
+#ifndef MANGOSBOT_ZERO
+    case RACE_DRAENEI:     return 20118;
+    case RACE_BLOODELF:    return 16696;
+#endif
+    default:    return 0;
+    }
+}
+
+uint32 PlayerbotAI::GetBattleMasterGuidByRace(uint8 race)
+{
+    uint32 guid = 0;
+    int entry = GetBattleMasterEntryByRace(race);
+    if (entry)
+        guid = GetCreatureGuidByEntry(entry);
+    return guid;
+}
+
+const CreatureData* PlayerbotAI::GetCreatureDataByEntry(uint32 entry)
+{
+    CreatureData const* data = NULL;
+    if (entry != 0 && ObjectMgr::GetCreatureTemplate(entry))
+    {
+        FindCreatureData worker(entry, NULL);
+        sObjectMgr.DoCreatureData(worker);
+        CreatureDataPair const* dataPair = worker.GetResult();
+        if (dataPair)
+        {
+            data = &dataPair->second;
+        }
+    }
+    return data;
+}
+
+uint32 PlayerbotAI::GetCreatureGuidByEntry(uint32 entry)
+{
+    uint32 guid = 0;
+
+    QueryResult* result;
+    result = WorldDatabase.PQuery("SELECT `guid` FROM `creature` WHERE `id` = '%u' LIMIT %u",
+        entry, 1);
+
+    if (result)
+    {
+        do
+        {
+            Field* fields = result->Fetch();
+            guid = fields[0].GetUInt32();
+
+        } while (result->NextRow());
+
+        delete result;
+    }
+    return guid;
+}
+
+uint32 PlayerbotAI::GetBuffedCount(Player* player, string spellname)
+{
+    Group* group = player->GetGroup();
+    if (group)
+    {
+        uint32 bcount = 0;
+        for (GroupReference *gref = group->GetFirstMember(); gref; gref = gref->next())
+        {
+            Player* member = gref->getSource();
+            PlayerbotAI* ai = bot->GetPlayerbotAI();
+            if (ai->HasAura(spellname, member, true))
+                bcount++;
+        }
+        return bcount;
+    }
+    return 0;
 }

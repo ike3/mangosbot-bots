@@ -6,16 +6,130 @@ using namespace ai;
 
 bool CastSpellAction::Execute(Event event)
 {
+    if (spell == "mount")
+    {
+        if (!bot->IsInCombat())
+        {
+            if (!bot->IsMounted())
+            {
+                if (bot->IsDead())
+                    return false;
+                bool isOutdoor;
+                uint16 areaFlag = bot->GetMap()->GetTerrain()->GetAreaFlag(bot->GetPositionX(), bot->GetPositionY(), bot->GetPositionZ(), &isOutdoor);
+                if (!isOutdoor)
+                    return false;
+
+                uint32 firstmount =
+#ifdef MANGOSBOT_ZERO
+                    40
+#else
+#ifdef MANGOSBOT_ONE
+                    30
+#else
+                    20
+#endif
+#endif
+                    ;
+
+                uint32 secondmount =
+#ifdef MANGOSBOT_ZERO
+                    60
+#else
+#ifdef MANGOSBOT_ONE
+                    60
+#else
+                    40
+#endif
+#endif
+                    ;
+
+                //Mounts
+                if (bot->getLevel() >= secondmount && bot->GetTeamId() == TEAM_INDEX_ALLIANCE)
+                {
+                    return ai->CastSpell(23240, bot);
+                }
+                if (bot->getLevel() >= secondmount && bot->GetTeamId() == TEAM_INDEX_HORDE)
+                {
+                    return ai->CastSpell(23242, bot);
+                }
+                if (bot->getLevel() >= firstmount && bot->GetTeamId() == TEAM_INDEX_ALLIANCE)
+                {
+                    return ai->CastSpell(6899, bot);
+                }
+                if (bot->getLevel() >= firstmount && bot->GetTeamId() == TEAM_INDEX_HORDE)
+                {
+                    return ai->CastSpell(8395, bot);
+                }
+            }
+        }
+        return false;
+    }
+
+    if (spell == "conjure food" || spell == "conjure water")
+    {
+        //uint32 id = AI_VALUE2(uint32, "spell id", spell);
+        //if (!id)
+        //    return false;
+
+        uint32 castId = 0;
+
+        for (PlayerSpellMap::iterator itr = bot->GetSpellMap().begin(); itr != bot->GetSpellMap().end(); ++itr)
+        {
+            uint32 spellId = itr->first;
+
+            const SpellEntry* pSpellInfo = sServerFacade.LookupSpellInfo(spellId);
+            if (!pSpellInfo)
+                continue;
+
+            string namepart = pSpellInfo->SpellName[0];
+            strToLower(namepart);
+
+            if (namepart.find(spell) == string::npos)
+                continue;
+
+            if (pSpellInfo->Effect[0] != SPELL_EFFECT_CREATE_ITEM)
+                continue;
+
+            uint32 itemId = pSpellInfo->EffectItemType[0];
+            ItemPrototype const *proto = sObjectMgr.GetItemPrototype(itemId);
+            if (!proto)
+                continue;
+
+            if (bot->CanUseItem(proto) != EQUIP_ERR_OK)
+                continue;
+
+            if (pSpellInfo->Id > castId)
+                castId = pSpellInfo->Id;
+        }
+        return ai->CastSpell(castId, bot);
+    }
+
 	return ai->CastSpell(spell, GetTarget());
 }
 
 bool CastSpellAction::isPossible()
 {
+    if (spell == "mount" && !bot->IsMounted() && !bot->IsInCombat())
+        return true;
+    if (spell == "mount" && bot->IsInCombat())
+    {
+        bot->Unmount();
+        return false;
+    }
+
 	return ai->CanCastSpell(spell, GetTarget(), true);
 }
 
 bool CastSpellAction::isUseful()
 {
+    if (spell == "mount" && !bot->IsMounted() && !bot->IsInCombat())
+        return true;
+    if (spell == "mount" && bot->IsInCombat())
+    {
+        bot->Unmount();
+        return false;
+    }
+
     return GetTarget() && AI_VALUE2(bool, "spell cast useful", spell) && AI_VALUE2(float, "distance", GetTargetName()) <= range;
 }
 

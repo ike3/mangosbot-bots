@@ -8,7 +8,7 @@ namespace ai
     class PartyMemberWithoutItemValue : public PartyMemberValue, public Qualified
     {
     public:
-        PartyMemberWithoutItemValue(PlayerbotAI* ai, float range = sPlayerbotAIConfig.sightDistance) :
+        PartyMemberWithoutItemValue(PlayerbotAI* ai, float range = sPlayerbotAIConfig.farDistance) :
           PartyMemberValue(ai) {}
 
     protected:

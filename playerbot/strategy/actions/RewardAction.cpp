@@ -32,6 +32,11 @@ bool RewardAction::Execute(Event event)
             return true;
     }
 
+    Unit* mtar = AI_VALUE(Unit*, "master target");
+    if (mtar && Reward(itemId, mtar))
+       return true;    
+
+
     ai->TellError("Cannot talk to quest giver");
     return false;
 }
@@ -65,6 +70,7 @@ bool RewardAction::Reward(uint32 itemId, Object* questGiver)
 
                     ostringstream out; out << chat->formatItem(pRewardItem) << " rewarded";
                     ai->TellMaster(out);
+
                     return true;
                 }
             }

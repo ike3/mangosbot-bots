@@ -1,7 +1,8 @@
+#include "Config/Config.h"
 #include "botpch.h"
 #include "../../playerbot.h"
 #include "TalkToQuestGiverAction.h"
-
+#include "../values/ItemUsageValue.h"
 
 using namespace ai;
 
@@ -10,9 +11,23 @@ void TalkToQuestGiverAction::ProcessQuest(Quest const* quest, WorldObject* quest
     std::ostringstream out; out << "Quest ";
 
     QuestStatus status = bot->GetQuestStatus(quest->GetQuestId());
+
+    if (sPlayerbotAIConfig.syncQuestWithPlayer)
+    {
+        Player* master = GetMaster();
+        if (master && master->GetQuestStatus(quest->GetQuestId()) == QUEST_STATUS_COMPLETE && (status == QUEST_STATUS_INCOMPLETE || status == QUEST_STATUS_FAILED))
+        {
+            CompleteQuest(quest->GetQuestId());
+            status = bot->GetQuestStatus(quest->GetQuestId());
+        }
+    }    
+
     switch (status)
     {
     case QUEST_STATUS_COMPLETE:
+#ifdef MANGOS
+    case QUEST_STATUS_FORCE_COMPLETE:
+#endif
         TurnInQuest(quest, questGiver, out);
         break;
     case QUEST_STATUS_INCOMPLETE:
@@ -43,7 +58,7 @@ void TalkToQuestGiverAction::TurnInQuest(Quest const* quest, WorldObject* questG
     else if (quest->GetRewChoiceItemsCount() == 1)
         RewardSingleItem(quest, questGiver, out);
     else {
-        AskToSelectReward(quest, out);
+        RewardMultipleItem(quest, questGiver, out);
     }
 }
 
@@ -76,14 +91,85 @@ void TalkToQuestGiverAction::RewardSingleItem(Quest const* quest, WorldObject* q
     }
 }
 
-void TalkToQuestGiverAction::AskToSelectReward(Quest const* quest, ostringstream& out) 
+ItemIds TalkToQuestGiverAction::BestRewards(Quest const* quest)
+{
+    ItemIds returnIds;
+    ItemUsage bestUsage = ITEM_USAGE_NONE;
+    if (quest->GetRewChoiceItemsCount() == 0)
+        return returnIds;
+    else if (quest->GetRewChoiceItemsCount() == 1)    
+        return { 0 };
+    else
+    {
+        for (uint8 i = 0; i < quest->GetRewChoiceItemsCount(); ++i)
+        {
+            ItemUsage usage = AI_VALUE2(ItemUsage, "item usage", quest->RewChoiceItemId[i]);
+            if (usage == ITEM_USAGE_EQUIP || usage == ITEM_USAGE_REPLACE)
+                bestUsage = ITEM_USAGE_EQUIP;
+            else if (usage == ITEM_USAGE_BAD_EQUIP && bestUsage != ITEM_USAGE_EQUIP)
+                bestUsage = usage;
+            else if (usage != ITEM_USAGE_NONE && bestUsage == ITEM_USAGE_NONE)
+                bestUsage = usage;
+        }
+        for (uint8 i = 0; i < quest->GetRewChoiceItemsCount(); ++i)
+        {
+            ItemUsage usage = AI_VALUE2(ItemUsage, "item usage", quest->RewChoiceItemId[i]);
+            if (usage == bestUsage || usage == ITEM_USAGE_REPLACE)
+                returnIds.insert(i);
+        }
+        return returnIds;
+    }
+}
+
+void TalkToQuestGiverAction::RewardMultipleItem(Quest const* quest, WorldObject* questGiver, ostringstream& out)
+{
+    set<uint32> bestIds;
+    Item* newItem;
+
+    ostringstream outid;
+    if (sPlayerbotAIConfig.autoPickReward == "no")
+    {   //Old functionality, list rewards.
+        AskToSelectReward(quest, out, false);       
+    }
+    else if(sPlayerbotAIConfig.autoPickReward == "yes")
+    {
+        //Pick the first item of the best rewards.
+        bestIds = BestRewards(quest);
+        ItemPrototype const* item = sObjectMgr.GetItemPrototype(quest->RewChoiceItemId[*bestIds.begin()]);
+        bot->RewardQuest(quest, *bestIds.begin(), questGiver, true);        
+
+        out << "Rewarded " << chat->formatItem(item);
+    }
+    else 
+    {   //Try to pick the usable item. If multiple list usable rewards.
+        bestIds = BestRewards(quest);
+        if (bestIds.size() > 0)
+        {
+            AskToSelectReward(quest, out, true);
+        }
+        else
+        {
+            //Pick the first item
+            ItemPrototype const* item = sObjectMgr.GetItemPrototype(quest->RewChoiceItemId[*bestIds.begin()]);
+            bot->RewardQuest(quest, *bestIds.begin(), questGiver, true);
+            out << "Rewarded " << chat->formatItem(item);     
+        }
+    }
+}
+
+void TalkToQuestGiverAction::AskToSelectReward(Quest const* quest, ostringstream& out, bool forEquip) 
 {
     ostringstream msg;
     msg << "Choose reward: ";
     for (uint8 i=0; i < quest->GetRewChoiceItemsCount(); ++i)
     {
         ItemPrototype const* item = sObjectMgr.GetItemPrototype(quest->RewChoiceItemId[i]);
-        msg << chat->formatItem(item);
+        ItemUsage usage = AI_VALUE2(ItemUsage, "item usage", quest->RewChoiceItemId[i]);
+
+        if (!forEquip || BestRewards(quest).count(i) > 0)
+        {
+            msg << chat->formatItem(item);
+        }
     }
     ai->TellMaster(msg);
 

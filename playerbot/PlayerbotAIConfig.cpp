@@ -7,6 +7,8 @@
 #include "PlayerbotFactory.h"
 #include "RandomItemMgr.h"
 
+#include "TravelMgr.h"
+
 using namespace std;
 
 INSTANTIATE_SINGLETON_1(PlayerbotAIConfig);
@@ -119,6 +121,8 @@ bool PlayerbotAIConfig::Initialize()
     minRandomBotsPriceChangeInterval = config.GetIntDefault("AiPlayerbot.MinRandomBotsPriceChangeInterval", 2 * 3600);
     maxRandomBotsPriceChangeInterval = config.GetIntDefault("AiPlayerbot.MaxRandomBotsPriceChangeInterval", 48 * 3600);
     randomBotJoinLfg = config.GetBoolDefault("AiPlayerbot.RandomBotJoinLfg", true);
+    randomBotJoinBG = config.GetBoolDefault("AiPlayerbot.RandomBotJoinBG", true);
+    randomBotBracketCount = config.GetIntDefault("AiPlayerbot.RandomBotBracketCount", 3);
     logInGroupOnly = config.GetBoolDefault("AiPlayerbot.LogInGroupOnly", true);
     logValuesPerTick = config.GetBoolDefault("AiPlayerbot.LogValuesPerTick", false);
     fleeingEnabled = config.GetBoolDefault("AiPlayerbot.FleeingEnabled", true);
@@ -142,14 +146,65 @@ bool PlayerbotAIConfig::Initialize()
     commandServerPort = config.GetIntDefault("AiPlayerbot.CommandServerPort", 0);
     perfMonEnabled = config.GetBoolDefault("AiPlayerbot.PerfMonEnabled", false);
 
+    sLog.outString("---------------------------------------");
+    sLog.outString("          Loading TalentSpecs          ");
+    sLog.outString("---------------------------------------");
+    sLog.outString();
+    
     for (uint32 cls = 0; cls < MAX_CLASSES; ++cls)
     {
-        for (uint32 spec = 0; spec < 3; ++spec)
+        classSpecs[cls] = ClassSpecs(1 << (cls - 1));
+        for (uint32 spec = 0; spec < 100; ++spec)
         {
-            ostringstream os; os << "AiPlayerbot.RandomClassSpecProbability." << cls << "." << spec;
-            specProbability[cls][spec] = config.GetIntDefault(os.str().c_str(), 33);
+            ostringstream os; os << "AiPlayerbot.PremadeSpecName." << cls << "." << spec;
+            string specName = config.GetStringDefault(os.str().c_str(), "");
+            if (!specName.empty())
+            {
+                ostringstream os; os << "AiPlayerbot.PremadeSpecProb." << cls << "." << spec;
+                int probability = config.GetIntDefault(os.str().c_str(), 100);
+
+                TalentPath talentPath(spec, specName, probability);
+
+                for (int level = 10; level <= 100; level++)
+                {
+                    ostringstream os; os << "AiPlayerbot.PremadeSpecLink." << cls << "." << spec << "." << level;
+                    string specLink = config.GetStringDefault(os.str().c_str(), "");
+                    specLink = specLink.substr(0, specLink.find("#", 0));;
+                    specLink = specLink.substr(0, specLink.find(" ", 0));;
+
+                    if (!specLink.empty())
+                    {
+                        ostringstream out;
+
+                        //Ignore bad specs.
+                        if (!classSpecs[cls].baseSpec.CheckTalentLink(specLink, &out))
+                        {
+                            sLog.outErrorDb("Error with premade spec link: %s", specLink.c_str());
+                            sLog.outErrorDb("%s", out.str().c_str());
+                            continue;
+                        }
+
+                        TalentSpec linkSpec(&classSpecs[cls].baseSpec, specLink);
+
+                        if (!linkSpec.CheckTalents(level, &out))
+                        {
+                            sLog.outErrorDb("Error with premade spec: %s", specLink.c_str());
+                            sLog.outErrorDb("%s", out.str().c_str());
+                            continue;
+                        }
+
+
+                        talentPath.talentSpec.push_back(linkSpec);
+                    }
+                }
+
+                //Only add paths that have atleast 1 spec.
+                if(talentPath.talentSpec.size() > 0)
+                    classSpecs[cls].TalentPath.push_back(talentPath);
+            }
         }
     }
+    
 
     randomBotAccountPrefix = config.GetStringDefault("AiPlayerbot.RandomBotAccountPrefix", "rndbot");
     randomBotAccountCount = config.GetIntDefault("AiPlayerbot.RandomBotAccountCount", 50);
@@ -173,13 +228,25 @@ bool PlayerbotAIConfig::Initialize()
 	//SPP switches
     enableGreet = config.GetBoolDefault("AiPlayerbot.EnableGreet", false);
 	disableRandomLevels = config.GetBoolDefault("AiPlayerbot.DisableRandomLevels", false);
-    playerbotsXPrate = config.GetIntDefault("AiPlayerbot.KillXPRate", 10);
+    playerbotsXPrate = config.GetIntDefault("AiPlayerbot.KillXPRate", 1);
+    randomBotGrindAlone = config.GetIntDefault("AiPlayerbot.RandomBotGrindAlone", 0); //hidden config
     RandombotsWalkingRPG = config.GetBoolDefault("AiPlayerbot.RandombotsWalkingRPG", false);
     RandombotsWalkingRPGInDoors = config.GetBoolDefault("AiPlayerbot.RandombotsWalkingRPG.InDoors", false);
     minEnchantingBotLevel = config.GetIntDefault("AiPlayerbot.minEnchantingBotLevel", 60);
     randombotStartingLevel = config.GetIntDefault("AiPlayerbot.randombotStartingLevel", 5);
     gearscorecheck = config.GetBoolDefault("AiPlayerbot.GearScoreCheck", false);
 	randomBotPreQuests = config.GetBoolDefault("AiPlayerbot.PreQuests", true);
+    randomBotSayWithoutMaster = config.GetBoolDefault("AiPlayerbot.RandomBotSayWithoutMaster", false);
+
+    //SPP automation
+    autoPickReward = config.GetStringDefault("AiPlayerbot.AutoPickReward", "no");
+    autoEquipUpgradeLoot = config.GetBoolDefault("AiPlayerbot.AutoEquipUpgradeLoot", false);
+    syncQuestWithPlayer = config.GetBoolDefault("AiPlayerbot.SyncQuestWithPlayer", false);
+    autoTrainSpells = config.GetStringDefault("AiPlayerbot.AutoTrainSpells", "no");
+    autoPickTalents = config.GetStringDefault("AiPlayerbot.AutoPickTalents", "no");
+    autoLearnTrainerSpells = config.GetBoolDefault("AiPlayerbot.AutoLearnTrainerSpells", false);
+    autoLearnQuestSpells = config.GetBoolDefault("AiPlayerbot.AutoLearnQuestSpells", false);
+    tweakValue = config.GetIntDefault("AiPlayerbot.TweakValue", 0);
 
     targetPosRecalcDistance = config.GetFloatDefault("AiPlayerbot.TargetPosRecalcDistance", 0.1f),
     BarGoLink::SetOutputState(config.GetBoolDefault("AiPlayerbot.ShowProgressBars", false));
@@ -187,6 +254,9 @@ bool PlayerbotAIConfig::Initialize()
     RandomPlayerbotFactory::CreateRandomBots();
     PlayerbotFactory::Init();
     sRandomItemMgr.Init();
+
+    sLog.outString("Loading Quest Detail Data...");
+    sTravelMgr.LoadQuestTravelTable();
 
     sLog.outString("---------------------------------------");
     sLog.outString("        AI Playerbot initialized       ");

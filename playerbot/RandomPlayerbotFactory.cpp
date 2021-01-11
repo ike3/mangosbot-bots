@@ -377,6 +377,16 @@ void RandomPlayerbotFactory::CreateRandomGuilds()
         }
 
         sGuildMgr.AddGuild(guild);
+
+        // create random emblem
+        uint32 st, cl, br, bc, bg;
+        bg = urand(0, 51);
+        bc = urand(0, 17);
+        cl = urand(0, 17);
+        br = urand(0, 7);
+        st = urand(0, 180);
+        guild->SetEmblem(st, cl, br, bc, bg);
+
         sPlayerbotAIConfig.randomBotGuilds.push_back(guild->GetId());
     }
 

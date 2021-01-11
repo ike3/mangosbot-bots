@@ -12,11 +12,13 @@ namespace ai
     protected:
         virtual void ProcessQuest(Quest const* quest, WorldObject* questGiver);
 
-    private:
+    private:        
         void TurnInQuest(Quest const* quest, WorldObject* questGiver, ostringstream& out);
         void RewardNoItem(Quest const* quest, WorldObject* questGiver, ostringstream& out);
         void RewardSingleItem(Quest const* quest, WorldObject* questGiver, ostringstream& out);
-        void AskToSelectReward(Quest const* quest, ostringstream& out);
+        set<uint32> BestRewards(Quest const* quest);
+        void RewardMultipleItem(Quest const* quest, WorldObject* questGiver, ostringstream& out);
+        void AskToSelectReward(Quest const* quest, ostringstream& out, bool forEquip);
     };
 
 }

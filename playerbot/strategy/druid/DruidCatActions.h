@@ -59,6 +59,30 @@ namespace ai {
 		CastRipAction(PlayerbotAI* ai) : CastMeleeSpellAction(ai, "rip") {}
 	};
 
+    class CastShredAction : public CastMeleeSpellAction {
+    public:
+        CastShredAction(PlayerbotAI* ai) : CastMeleeSpellAction(ai, "shred") {}
+    };
 
+    class CastProwlAction : public CastBuffSpellAction
+    {
+    public:
+        CastProwlAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "prowl") {}
+    };
 
+    class CastDashAction : public CastBuffSpellAction
+    {
+    public:
+        CastDashAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "dash") {}
+    };
+
+    class CastRavageAction : public CastMeleeSpellAction {
+    public:
+        CastRavageAction(PlayerbotAI* ai) : CastMeleeSpellAction(ai, "ravage") {}
+    };
+
+    class CastPounceAction : public CastMeleeSpellAction {
+    public:
+        CastPounceAction(PlayerbotAI* ai) : CastMeleeSpellAction(ai, "pounce") {}
+    };
 }

@@ -1,5 +1,6 @@
 #pragma once
 #include "../Value.h"
+#include "../../Travelmgr.h"
 
 namespace ai
 {
@@ -51,6 +52,22 @@ namespace ai
     {
     public:
         RpgTargetValue(PlayerbotAI* ai) : ManualSetValue<ObjectGuid>(ai, ObjectGuid()) {}
+    };
+	
+    class TravelTargetValue : public ManualSetValue<TravelTarget *>
+    {
+    public:
+        TravelTargetValue(PlayerbotAI* ai) : ManualSetValue<TravelTarget*>(ai, new TravelTarget(ai)) {}
+        virtual ~TravelTargetValue() { delete defaultValue; }
+    };	
+
+    class IgnoreRpgTargetValue : public ManualSetValue<set<ObjectGuid>& >
+    {
+    public:
+        IgnoreRpgTargetValue(PlayerbotAI* ai) : ManualSetValue<set<ObjectGuid>& >(ai, data, "ignore rpg targets") {}
+
+    private:
+        set<ObjectGuid> data;
     };
 
     class TalkTargetValue : public ManualSetValue<ObjectGuid>

@@ -89,6 +89,8 @@ void FleeManager::calculatePossibleDestinations(list<FleePoint*> &points)
 
                 if (sServerFacade.IsDistanceGreaterOrEqualThan(point->minDistance - start.minDistance, sPlayerbotAIConfig.followDistance))
                     points.push_back(point);
+                else
+                    delete point;
             }
         }
 	}

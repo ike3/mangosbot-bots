@@ -188,6 +188,8 @@ namespace ai
             creators["new player nearby"] = &ValueContext::new_player_nearby;
             creators["already seen players"] = &ValueContext::already_seen_players;
             creators["rpg target"] = &ValueContext::rpg_target;
+            creators["ignore rpg target"] = &ValueContext::ignore_rpg_target;
+			creators["travel target"] = &ValueContext::travel_target;			
             creators["talk target"] = &ValueContext::talk_target;
             creators["pull target"] = &ValueContext::pull_target;
             creators["group"] = &ValueContext::group;
@@ -309,6 +311,8 @@ namespace ai
         static UntypedValue* nearest_non_bot_players(PlayerbotAI* ai) { return new NearestNonBotPlayersValue(ai); }
         static UntypedValue* skip_spells_list_value(PlayerbotAI* ai) { return new SkipSpellsListValue(ai); }
         static UntypedValue* rpg_target(PlayerbotAI* ai) { return new RpgTargetValue(ai); }
+		static UntypedValue* travel_target(PlayerbotAI* ai) { return new TravelTargetValue(ai); }
+        static UntypedValue* ignore_rpg_target(PlayerbotAI* ai) { return new IgnoreRpgTargetValue(ai); }
         static UntypedValue* talk_target(PlayerbotAI* ai) { return new TalkTargetValue(ai); }
         static UntypedValue* pull_target(PlayerbotAI* ai) { return new PullTargetValue(ai); }
 };

@@ -14,7 +14,7 @@ namespace ai
         virtual bool Execute(Event event);
         virtual bool isPossible() { return true; }
 
-    private:
+    //private:
         bool Mount();
     };
 

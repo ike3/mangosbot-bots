@@ -18,10 +18,20 @@ namespace ai {
         virtual bool IsActive() { return BuffTrigger::IsActive() && !ai->HasAura("gift of the wild", GetTarget()); }
     };
 
+    class ThornsOnPartyTrigger : public BuffOnPartyTrigger
+    {
+    public:
+        ThornsOnPartyTrigger(PlayerbotAI* ai) : BuffOnPartyTrigger(ai, "thorns", 2) {}
+
+        virtual bool IsActive() { return BuffOnPartyTrigger::IsActive() && !ai->HasAura("thorns", GetTarget()); }
+    };
+
     class ThornsTrigger : public BuffTrigger
     {
     public:
-        ThornsTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "thorns") {}
+        ThornsTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "thorns", 2) {}
+
+        virtual bool IsActive() { return BuffTrigger::IsActive() && !ai->HasAura("thorns", GetTarget()); }
     };
 
     class OmenOfClarityTrigger : public BuffTrigger

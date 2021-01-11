@@ -6,6 +6,7 @@
 #include "../triggers/GenericTriggers.h"
 #include "LfgTriggers.h"
 #include "RpgTriggers.h"
+#include "TravelTriggers.h"
 #include "RtiTriggers.h"
 
 namespace ai
@@ -108,13 +109,33 @@ namespace ai
             creators["new player nearby"] = &TriggerContext::new_player_nearby;
             creators["no rpg target"] = &TriggerContext::no_rpg_target;
             creators["far from rpg target"] = &TriggerContext::far_from_rpg_target;
+            creators["no travel target"] = &TriggerContext::no_travel_target;
+            creators["far from travel target"] = &TriggerContext::far_from_travel_target;			
             creators["no rti target"] = &TriggerContext::no_rti;
 
             creators["give food"] = &TriggerContext::give_food;
             creators["give water"] = &TriggerContext::give_water;
+
+            creators["player has no flag"] = &TriggerContext::player_has_no_flag;
+            creators["player has flag"] = &TriggerContext::player_has_flag;
+            creators["team has flag"] = &TriggerContext::team_has_flag;
+            creators["enemy team has flag"] = &TriggerContext::enemy_team_has_flag;
+            creators["enemy flagcarrier near"] = &TriggerContext::enemy_flagcarrier_near;
+            creators["in battleground"] = &TriggerContext::player_is_in_battleground;
+            creators["in battleground without flag"] = &TriggerContext::player_is_in_battleground_no_flag;
+
+            creators["mounted"] = &TriggerContext::mounted;
         }
 
     private:
+        static Trigger* mounted(PlayerbotAI* ai) { return new IsMountedTrigger(ai); }
+        static Trigger* enemy_flagcarrier_near(PlayerbotAI* ai) { return new EnemyFlagCarrierNear(ai); }
+        static Trigger* player_has_no_flag(PlayerbotAI* ai) { return new PlayerHasNoFlag(ai); }
+        static Trigger* player_has_flag(PlayerbotAI* ai) { return new PlayerHasFlag(ai); }
+        static Trigger* team_has_flag(PlayerbotAI* ai) { return new TeamHasFlag(ai); }
+        static Trigger* enemy_team_has_flag(PlayerbotAI* ai) { return new EnemyTeamHasFlag(ai); }
+        static Trigger* player_is_in_battleground(PlayerbotAI *ai) { return new PlayerIsInBattleground(ai); }
+        static Trigger* player_is_in_battleground_no_flag(PlayerbotAI *ai) { return new PlayerIsInBattlegroundWithoutFlag(ai); }
         static Trigger* give_food(PlayerbotAI* ai) { return new GiveFoodTrigger(ai); }
         static Trigger* give_water(PlayerbotAI* ai) { return new GiveWaterTrigger(ai); }
         static Trigger* no_rti(PlayerbotAI* ai) { return new NoRtiTrigger(ai); }
@@ -122,6 +143,8 @@ namespace ai
         static Trigger* sit(PlayerbotAI* ai) { return new SitTrigger(ai); }
         static Trigger* far_from_rpg_target(PlayerbotAI* ai) { return new FarFromRpgTargetTrigger(ai); }
         static Trigger* no_rpg_target(PlayerbotAI* ai) { return new NoRpgTargetTrigger(ai); }
+        static Trigger* far_from_travel_target(PlayerbotAI* ai) { return new FarFromTravelTargetTrigger(ai); }
+        static Trigger* no_travel_target(PlayerbotAI* ai) { return new NoTravelTargetTrigger(ai); }		
         static Trigger* collision(PlayerbotAI* ai) { return new CollisionTrigger(ai); }
         static Trigger* lfg_proposal_active(PlayerbotAI* ai) { return new LfgProposalActiveTrigger(ai); }
         static Trigger* invalid_target(PlayerbotAI* ai) { return new InvalidTargetTrigger(ai); }

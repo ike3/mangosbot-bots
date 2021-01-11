@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Config.h"
+#include "Talentspec.h"
 
 class Player;
 class PlayerbotMgr;
@@ -55,6 +56,8 @@ public:
     uint32 randomBotsPerInterval;
     uint32 minRandomBotsPriceChangeInterval, maxRandomBotsPriceChangeInterval;
     bool randomBotJoinLfg;
+    bool randomBotJoinBG;
+    uint32 randomBotBracketCount;
     bool randomBotLoginAtStartup;
     uint32 randomBotTeleLevel;
     bool logInGroupOnly, logValuesPerTick;
@@ -64,7 +67,9 @@ public:
     std::string randomBotCombatStrategies, randomBotNonCombatStrategies;
     uint32 randomBotMinLevel, randomBotMaxLevel;
     float randomChangeMultiplier;
-    uint32 specProbability[MAX_CLASSES][3];
+    uint32 specProbability[MAX_CLASSES][10];
+    string premadeLevelSpec[MAX_CLASSES][10][91]; //lvl 10 - 100
+    ClassSpecs classSpecs[MAX_CLASSES];
     std::string commandPrefix, commandSeparator;
     std::string randomBotAccountPrefix;
     uint32 randomBotAccountCount;
@@ -82,8 +87,10 @@ public:
     bool gearscorecheck;
 	bool randomBotPreQuests;
     uint32 playerbotsXPrate;
+    uint32 randomBotGrindAlone;
     uint32 minEnchantingBotLevel;
     uint32 randombotStartingLevel;
+    bool randomBotSayWithoutMaster;
 
     bool guildTaskEnabled;
     uint32 minGuildTaskChangeTime, maxGuildTaskChangeTime;
@@ -92,6 +99,15 @@ public:
     uint32 guildTaskAdvertCleanupTime;
 
     uint32 iterationsPerTick;
+
+    std::string autoPickReward;
+    bool autoEquipUpgradeLoot;
+    bool syncQuestWithPlayer;
+    std::string autoTrainSpells;
+    std::string autoPickTalents;
+    bool autoLearnTrainerSpells;
+    bool autoLearnQuestSpells;
+    uint32 tweakValue; //Debugging config
 
     int commandServerPort;
     bool perfMonEnabled;

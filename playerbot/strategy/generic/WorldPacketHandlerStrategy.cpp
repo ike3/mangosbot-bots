@@ -49,7 +49,7 @@ void WorldPacketHandlerStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "trade status",
-        NextAction::array(0, new NextAction("accept trade", relevance), NULL)));
+        NextAction::array(0, new NextAction("accept trade", relevance), new NextAction("equip upgrades", relevance), NULL)));
 
     triggers.push_back(new TriggerNode(
         "area trigger",
@@ -65,7 +65,7 @@ void WorldPacketHandlerStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "item push result",
-        NextAction::array(0, new NextAction("query item usage", relevance), NULL)));
+        NextAction::array(0, new NextAction("query item usage", relevance), new NextAction("equip upgrades", relevance), NULL)));
 
     triggers.push_back(new TriggerNode(
         "ready check finished",
@@ -87,6 +87,10 @@ void WorldPacketHandlerStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         "no non bot players around",
         NextAction::array(0, new NextAction("delay", relevance), NULL)));
 
+    triggers.push_back(new TriggerNode(
+        "bg status",
+        NextAction::array(0, new NextAction("bg status", relevance), NULL)));
+
 }
 
 WorldPacketHandlerStrategy::WorldPacketHandlerStrategy(PlayerbotAI* ai) : PassTroughStrategy(ai)
@@ -101,6 +105,7 @@ WorldPacketHandlerStrategy::WorldPacketHandlerStrategy(PlayerbotAI* ai) : PassTr
     supported.push_back("lfg teleport");
     supported.push_back("random bot update");
     supported.push_back("inventory change failure");
+    supported.push_back("bg status");
 }
 
 

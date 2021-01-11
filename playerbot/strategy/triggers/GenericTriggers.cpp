@@ -3,6 +3,7 @@
 #include "GenericTriggers.h"
 #include "../../LootObjectStack.h"
 #include "../../PlayerbotAIConfig.h"
+#include "BattleGroundWS.h"
 
 using namespace ai;
 
@@ -152,6 +153,11 @@ bool HasAuraTrigger::IsActive()
 	return ai->HasAura(getName(), GetTarget());
 }
 
+bool HasNoAuraTrigger::IsActive()
+{
+    return !ai->HasAura(getName(), GetTarget());
+}
+
 bool TankAoeTrigger::IsActive()
 {
     if (!AI_VALUE(uint8, "attacker count"))
@@ -272,4 +278,148 @@ bool StayTimeTrigger::IsActive()
     time_t stayTime = AI_VALUE(time_t, "stay time");
     time_t now = time(0);
     return delay && stayTime && now > stayTime + 2 * delay / 1000;
+}
+
+bool PlayerHasNoFlag::IsActive()
+{
+    if (ai->GetBot()->InBattleGround())
+    {
+        if (ai->GetBot()->GetBattleGroundTypeId() == BattleGroundTypeId::BATTLEGROUND_WS)
+        {
+            BattleGroundWS *bg = (BattleGroundWS*)ai->GetBot()->GetBattleGround();
+            if (!(bg->GetFlagState(bg->GetOtherTeam(bot->GetTeam())) == BG_WS_FLAG_STATE_ON_PLAYER))
+                return true;
+            if (bot->GetObjectGuid() == bg->GetAllianceFlagCarrierGuid() || bot->GetObjectGuid() == bg->GetHordeFlagCarrierGuid())
+            {
+                return false;
+            }
+            return true;
+        }
+        return false;
+    }
+    return false;
+}
+
+bool PlayerIsInBattleground::IsActive()
+{
+    return ai->GetBot()->InBattleGround();
+}
+
+bool PlayerIsInBattlegroundWithoutFlag::IsActive()
+{
+    if (ai->GetBot()->InBattleGround())
+    {
+        if (ai->GetBot()->GetBattleGroundTypeId() == BattleGroundTypeId::BATTLEGROUND_WS)
+        {
+            BattleGroundWS *bg = (BattleGroundWS*)ai->GetBot()->GetBattleGround();
+            if (!(bg->GetFlagState(bg->GetOtherTeam(bot->GetTeam())) == BG_WS_FLAG_STATE_ON_PLAYER))
+                return true;
+            if (bot->GetGUIDLow() == bg->GetAllianceFlagCarrierGuid() || bot->GetGUIDLow() == bg->GetHordeFlagCarrierGuid())
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+    return false;
+}
+
+bool PlayerHasFlag::IsActive()
+{
+    if (ai->GetBot()->InBattleGround())
+    {
+        if (ai->GetBot()->GetBattleGroundTypeId() == BattleGroundTypeId::BATTLEGROUND_WS)
+        {
+            BattleGroundWS *bg = (BattleGroundWS*)ai->GetBot()->GetBattleGround();
+            if (!(bg->GetFlagState(bg->GetOtherTeam(bot->GetTeam())) == BG_WS_FLAG_STATE_ON_PLAYER))
+                return false;
+            if (bot->GetObjectGuid() == bg->GetAllianceFlagCarrierGuid() || bot->GetObjectGuid() == bg->GetHordeFlagCarrierGuid())
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+    return false;
+}
+
+bool TeamHasFlag::IsActive()
+{
+    if (ai->GetBot()->InBattleGround())
+    {
+        if (ai->GetBot()->GetBattleGroundTypeId() == BattleGroundTypeId::BATTLEGROUND_WS)
+        {
+            BattleGroundWS *bg = (BattleGroundWS*)ai->GetBot()->GetBattleGround();
+            
+            if (bot->GetObjectGuid() == bg->GetAllianceFlagCarrierGuid() || bot->GetObjectGuid() == bg->GetHordeFlagCarrierGuid())
+            {
+                return false;
+            }
+
+            if (bg->GetFlagState(bg->GetOtherTeam(bot->GetTeam())) == BG_WS_FLAG_STATE_ON_PLAYER)
+                return true;
+        }
+        return false;
+    }
+    return false;
+}
+
+bool EnemyTeamHasFlag::IsActive()
+{
+    if (ai->GetBot()->InBattleGround())
+    {
+        if (ai->GetBot()->GetBattleGroundTypeId() == BattleGroundTypeId::BATTLEGROUND_WS)
+        {
+            BattleGroundWS *bg = (BattleGroundWS*)ai->GetBot()->GetBattleGround();
+
+#ifdef MANGOS
+            if (bot->GetObjectGuid() == bg->GetAllianceFlagCarrierGuid() || bot->GetObjectGuid() == bg->GetHordeFlagCarrierGuid())
+#endif
+#ifdef CMANGOS
+            if (bot->GetObjectGuid() == bg->GetFlagCarrierGuid(TEAM_INDEX_ALLIANCE) || bot->GetObjectGuid() == bg->GetFlagCarrierGuid(TEAM_INDEX_HORDE))
+#endif
+            {
+                return false;
+            }
+
+            if (bg->GetFlagState(bot->GetTeam()) == BG_WS_FLAG_STATE_ON_PLAYER)
+                return true;
+
+            if (bg->GetFlagState(bot->GetTeam()) == BG_WS_FLAG_STATE_ON_GROUND)
+                return true;
+        }
+        return false;
+    }
+    return false;
+}
+
+bool EnemyFlagCarrierNear::IsActive()
+{
+    if (ai->GetBot()->InBattleGround())
+    {
+        if (ai->GetBot()->GetBattleGroundTypeId() == BattleGroundTypeId::BATTLEGROUND_WS)
+        {
+            BattleGroundWS *bg = (BattleGroundWS*)ai->GetBot()->GetBattleGround();
+
+            Player* carrier = NULL;
+            if (bot->GetTeam() == HORDE)
+                carrier = sObjectAccessor.FindPlayer(bg->GetHordeFlagCarrierGuid());
+            else
+                carrier = sObjectAccessor.FindPlayer(bg->GetAllianceFlagCarrierGuid());
+            if (carrier != nullptr)
+            {
+                if (bot->IsWithinDistInMap(carrier, 45.0f))
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    return false;
+}
+
+bool IsMountedTrigger::IsActive()
+{
+    return bot->IsMounted();
 }

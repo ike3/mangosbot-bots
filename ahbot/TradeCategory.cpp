@@ -208,6 +208,44 @@ string TradeSkill::GetName()
     return reagent ? name : name + ".craft";
 }
 
+string TradeSkill::GetMainName()
+{
+    string name;
+    switch (skill)
+    {
+    case SKILL_TAILORING:
+        name = "trade.tailoring"; break;
+    case SKILL_LEATHERWORKING:
+        name = "trade.leatherworking"; break;
+    case SKILL_ENGINEERING:
+        name = "trade.engineering"; break;
+    case SKILL_BLACKSMITHING:
+        name = "trade.blacksmithing"; break;
+    case SKILL_ALCHEMY:
+        name = "trade.alchemy"; break;
+    case SKILL_COOKING:
+        name = "trade.cooking"; break;
+    case SKILL_FISHING:
+        name = "trade.fishing"; break;
+    case SKILL_ENCHANTING:
+        name = "trade.enchanting"; break;
+    case SKILL_MINING:
+        name = "trade.mining"; break;
+    case SKILL_SKINNING:
+        name = "trade.skinning"; break;
+    case SKILL_HERBALISM:
+        name = "trade.herbalism"; break;
+    case SKILL_FIRST_AID:
+        name = "trade.firstaid"; break;
+#ifndef MANGOSBOT_ZERO
+    case SKILL_JEWELCRAFTING:
+        name = "trade.jewelcrafting"; break;
+#endif
+    }
+
+    return name;
+}
+
 string TradeSkill::GetLabel()
 {
     if (reagent)

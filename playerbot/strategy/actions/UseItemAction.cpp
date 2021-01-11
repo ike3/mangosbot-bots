@@ -83,18 +83,29 @@ bool UseItemAction::UseItem(Item* item, ObjectGuid goGuid, Item* itemTarget)
    uint8 slot = item->GetSlot();
    uint8 spell_index = 0;
    uint8 cast_count = 1;
-#ifdef MANGOSBOT_TWO
+   uint32 spellId = 0;
    ObjectGuid item_guid = item->GetObjectGuid();
-#else
-   uint64 item_guid = item->GetObjectGuid().GetRawValue();
-#endif
    uint32 glyphIndex = 0;
    uint8 unk_flags = 0;
+
 #ifdef MANGOSBOT_ZERO
    uint16 targetFlag = TARGET_FLAG_SELF;
 #else
    uint32 targetFlag = TARGET_FLAG_SELF;
 #endif
+
+   if (itemTarget)
+   {
+       for (uint8 i = 0; i < MAX_ITEM_PROTO_SPELLS; ++i)
+       {
+           if (item->GetProto()->Spells[i].SpellId > 0)
+           {
+               spellId = item->GetProto()->Spells[i].SpellId;
+               spell_index = i;
+               break;
+           }
+       }
+   }
 
    WorldPacket packet(CMSG_USE_ITEM);
 #ifdef MANGOSBOT_ZERO
@@ -297,7 +308,13 @@ bool UseItemAction::UseItem(Item* item, ObjectGuid goGuid, Item* itemTarget)
           p = hp;
           TellConsumableUse(item, "Eating", p);
       }
-      ai->SetNextCheckDelay(27000.0f * (100 - p) / 100.0f);
+      if(!bot->IsInCombat() && !bot->InBattleGround())
+          ai->SetNextCheckDelay(27000.0f * (100 - p) / 100.0f);
+
+      if (!bot->IsInCombat() && bot->InBattleGround())
+          ai->SetNextCheckDelay(20000.0f * (100 - p) / 100.0f);
+
+      //ai->SetNextCheckDelay(27000.0f * (100 - p) / 100.0f);
       bot->GetSession()->HandleUseItemOpcode(packet);
       return true;
    }

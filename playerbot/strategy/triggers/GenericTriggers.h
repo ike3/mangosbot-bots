@@ -405,6 +405,15 @@ namespace ai
 
 	};
 
+    class HasNoAuraTrigger : public Trigger {
+    public:
+        HasNoAuraTrigger(PlayerbotAI* ai, string spell) : Trigger(ai, spell) {}
+
+        virtual string GetTargetName() { return "self target"; }
+        virtual bool IsActive();
+
+    };
+
     class TimerTrigger : public Trigger
     {
     public:
@@ -594,7 +603,10 @@ namespace ai
     public:
         virtual bool IsActive()
         {
-            return AI_VALUE(list<ObjectGuid>, "nearest non bot players").empty();
+            if (!bot->InBattleGround())
+                return AI_VALUE(list<ObjectGuid>, "nearest non bot players").empty();
+            else
+                return false;
         }
     };
 
@@ -682,6 +694,78 @@ namespace ai
         {
             return AI_VALUE(Unit*, "party member without water") && AI_VALUE2(uint8, "item count", item);
         }
+    };
+
+    class PlayerHasNoFlag : public Trigger
+    {
+    public:
+        PlayerHasNoFlag(PlayerbotAI* ai) : Trigger(ai, "player has no flag") {}
+
+    public:
+        virtual bool IsActive();
+    };
+
+    class PlayerHasFlag : public Trigger
+    {
+    public:
+        PlayerHasFlag(PlayerbotAI* ai) : Trigger(ai, "player has flag") {}
+
+    public:
+        virtual bool IsActive();
+    };
+
+    class EnemyFlagCarrierNear : public Trigger
+    {
+    public:
+        EnemyFlagCarrierNear(PlayerbotAI* ai) : Trigger(ai, "enemy flagcarrier near") {}
+
+    public:
+        virtual bool IsActive();
+    };
+
+    class TeamHasFlag : public Trigger
+    {
+    public:
+        TeamHasFlag(PlayerbotAI* ai) : Trigger(ai, "team has flag") {}
+
+    public:
+        virtual bool IsActive();
+    };
+
+    class EnemyTeamHasFlag : public Trigger
+    {
+    public:
+        EnemyTeamHasFlag(PlayerbotAI* ai) : Trigger(ai, "enemy team has flag") {}
+
+    public:
+        virtual bool IsActive();
+    };
+
+    class PlayerIsInBattleground : public Trigger
+    {
+    public:
+        PlayerIsInBattleground(PlayerbotAI* ai) : Trigger(ai, "in battleground") {}
+
+    public:
+        virtual bool IsActive();
+    };
+
+    class PlayerIsInBattlegroundWithoutFlag : public Trigger
+    {
+    public:
+        PlayerIsInBattlegroundWithoutFlag(PlayerbotAI* ai) : Trigger(ai, "in battleground without flag") {}
+
+    public:
+        virtual bool IsActive();
+    };
+
+    class IsMountedTrigger : public Trigger
+    {
+    public:
+        IsMountedTrigger(PlayerbotAI* ai) : Trigger(ai, "mounted") {}
+
+    public:
+        virtual bool IsActive();
     };
 }
 

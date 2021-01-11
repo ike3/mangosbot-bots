@@ -117,6 +117,9 @@ endif()
 if (PLAYERBOTS)
   add_definitions(-DENABLE_PLAYERBOTS)
 endif()
+if (BUILD_IKE3_BOTS)
+  add_definitions(-DENABLE_PLAYERBOTS)
+endif()
 
 # Define ENABLE_IMMERSIVE if need
 if (BUILD_IMMERSIVE)

@@ -74,6 +74,10 @@ class RandomPlayerbotMgr : public PlayerbotHolder
         void SetValue(Player* bot, string type, uint32 value);
         void Remove(Player* bot);
         void Hotfix(Player* player, uint32 version);
+        map<uint32, map<uint32, map<uint32, uint32> > > BracketBots;
+        map<uint32, map<uint32, map<uint32, uint32> > > VisualBots;
+        map<uint32, map<uint32, map<uint32, uint32> > > BracketPlayers;
+        map<uint32, map<uint32, map<uint32, uint32> > > Supporters;
 
 	protected:
 	    virtual void OnBotLoginInternal(Player * const bot);
@@ -82,6 +86,10 @@ class RandomPlayerbotMgr : public PlayerbotHolder
         uint32 GetEventValue(uint32 bot, string event);
         uint32 SetEventValue(uint32 bot, string event, uint32 value, uint32 validIn);
         list<uint32> GetBots();
+        list<uint32> GetBgBots(uint32 bracket);
+        void AddBgBot(Player* player, BattleGroundTypeId bgTypeId, BattleGroundBracketId bracketId, bool visual = 0);
+        void CheckBgQueue(BattleGroundTypeId bgTypeId, BattleGroundBracketId bracketId);
+        time_t BgCheckTimer;
         uint32 AddRandomBots();
         bool ProcessBot(uint32 bot);
         void ScheduleRandomize(uint32 bot, uint32 time);
@@ -100,6 +108,8 @@ class RandomPlayerbotMgr : public PlayerbotHolder
         map<uint32, map<string, CachedEvent> > eventCache;
         BarGoLink* loginProgressBar;
         list<uint32> currentBots;
+        //uint32 ABgBots;
+        //uint32 HBgBots;
 };
 
 #define sRandomPlayerbotMgr RandomPlayerbotMgr::instance()

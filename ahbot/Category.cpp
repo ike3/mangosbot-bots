@@ -17,16 +17,6 @@ uint32 Category::GetStackCount(ItemPrototype const* proto)
     return (uint32)max(1.0, proto->GetMaxStackSize() / rarity);
 }
 
-uint32 Category::GetMaxAllowedItemAuctionCount(ItemPrototype const* proto)
-{
-    return 0;
-}
-
-uint32 Category::GetMaxAllowedAuctionCount()
-{
-    return sAhBotConfig.GetMaxAllowedAuctionCount(GetName());
-}
-
 PricingStrategy* Category::GetPricingStrategy()
 {
     if (pricingStrategy)
@@ -67,14 +57,4 @@ bool QualityCategoryWrapper::Contains(ItemPrototype const* proto)
     return proto->Quality == quality && category->Contains(proto);
 }
 
-uint32 QualityCategoryWrapper::GetMaxAllowedAuctionCount()
-{
-    uint32 count = sAhBotConfig.GetMaxAllowedAuctionCount(combinedName);
-    return count > 0 ? count : category->GetMaxAllowedAuctionCount();
-}
-
-uint32 QualityCategoryWrapper::GetMaxAllowedItemAuctionCount(ItemPrototype const* proto)
-{
-    return category->GetMaxAllowedItemAuctionCount(proto);
-}
 

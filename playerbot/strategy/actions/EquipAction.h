@@ -9,13 +9,18 @@ namespace ai
     public:
         EquipAction(PlayerbotAI* ai, string name = "equip") : InventoryAction(ai, name) {}
         virtual bool Execute(Event event);
-
-    protected:
         void EquipItems(ItemIds ids);
 
     private:
         void EquipItem(FindItemVisitor* visitor);
         void EquipItem(Item& item);
+    };
+
+    class EquipUpgradesAction : public EquipAction {
+    public:
+        EquipUpgradesAction(PlayerbotAI* ai, string name = "equip upgrades") : EquipAction(ai, name) {}
+
+        virtual bool Execute(Event event);
     };
 
 }

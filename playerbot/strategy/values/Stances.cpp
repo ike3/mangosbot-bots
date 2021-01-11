@@ -63,9 +63,36 @@ namespace ai
         {
             Unit* target = GetTarget();
 
+            if (target->getVictim() && target->getVictim()->GetObjectGuid() == bot->GetObjectGuid())
+                return target->GetOrientation();
+
+            if (ai->HasStrategy("behind", BOT_STATE_COMBAT))
+            {
+                Unit* target = GetTarget();
+                Group* group = bot->GetGroup();
+                int index = 0, count = 0;
+                if (group)
+                {
+                    for (GroupReference *ref = group->GetFirstMember(); ref; ref = ref->next())
+                    {
+                        Player* member = ref->getSource();
+                        if (member == bot) index = count;
+                        if (member && !ai->IsRanged(member) && !ai->IsTank(member)) count++;
+                    }
+                }
+
+                float angle = target->GetOrientation() + M_PI;
+                if (!count) return angle;
+
+                float increment = M_PI / 4 / count;
+                return round((angle + index * increment - M_PI / 4) * 10.0f) / 10.0f;
+            }
+
             float angle = GetFollowAngle() + target->GetOrientation();
+
             Player* master = GetMaster();
-            if (master) angle -= master->GetOrientation();
+            if (master)
+                angle -= master->GetOrientation();
 
             return angle;
         }

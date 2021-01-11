@@ -91,7 +91,11 @@ enum RoguePoisonDisplayId
 {
    DEADLY_POISON_DISPLAYID = 13707,
    INSTANT_POISON_DISPLAYID = 13710,
+#ifdef MANGOSBOT_ZERO
+   WOUND_POISON_DISPLAYID = 13708
+#else
    WOUND_POISON_DISPLAYID = 37278
+#endif
 };
 
 enum SharpeningStoneDisplayId
@@ -118,6 +122,26 @@ enum WeightStoneDisplayId
    ADAMANTITE_WEIGHTSTONE_DISPLAYID = 39549,
 };
 
+#ifdef MANGOSBOT_ZERO
+// m_zero
+enum WizardOilDisplayId
+{
+    MINOR_WIZARD_OIL = 33194,
+    LESSER_WIZARD_OIL = 33450,
+    BRILLIANT_WIZARD_OIL = 33452,
+    WIZARD_OIL = 33451,
+    SUPERIOR_WIZARD_OIL = 47904,
+    /// Blessed Wizard Oil = 26865,//scourge inv
+};
+// m_zero
+enum ManaOilDisplayId
+{
+    MINOR_MANA_OIL = 33453,
+    LESSER_MANA_OIL = 33454,
+    BRILLIANT_MANA_OIL = 33455,
+    SUPERIOR_MANA_OIL = 36862,
+};
+#else
 enum WizardOilDisplayId
 {
    MINOR_WIZARD_OIL     = 9731,
@@ -135,12 +159,37 @@ enum ManaOilDisplayId
    BRILLIANT_MANA_OIL   = 41488,
    SUPERIOR_MANA_OIL    = 36862,
 };
+#endif
 
 enum ShieldWardDisplayId
 {
    LESSER_WARD_OFSHIELDING = 38759,
    GREATER_WARD_OFSHIELDING = 38760,
 };
+
+/*enum BattleMaster_WSG : uint32
+{
+    BM_RACE_HUMAN = 14982,
+    BM_RACE_ORC = 3890,
+    BM_RACE_DWARF = 14982,
+    BM_RACE_NIGHTELF = 2302,
+    BM_RACE_UNDEAD = 2804,
+    BM_RACE_TAUREN = 10360,
+    BM_RACE_GNOME = 14982,
+    BM_RACE_TROLL = 3890,
+};*/
+
+/*enum BattleMaster_WSG_GUID : uint32
+{
+    RACE_HUMAN = 79,
+    RACE_ORC = 4765,
+    RACE_DWARF = 79,
+    RACE_NIGHTELF = 49936,
+    RACE_UNDEAD = 32071,
+    RACE_TAUREN = 24794,
+    RACE_GNOME = 79,
+    RACE_TROLL = 4765,
+};*/
 
 class PacketHandlingHelper
 {
@@ -196,7 +245,7 @@ public:
 	void HandleTeleportAck();
     void ChangeEngine(BotState type);
     void DoNextAction();
-    void DoSpecificAction(string name);
+    virtual bool DoSpecificAction(string name, Event event = Event(), bool silent = false);
     void ChangeStrategy(string name, BotState type);
     void ClearStrategies(BotState type);
     list<string> GetStrategies(BotState type);
@@ -230,11 +279,20 @@ public:
     Item * FindBandage() const;
     Item* FindStoneFor(Item* weapon) const;
     Item* FindOilFor(Item* weapon) const;
+#ifdef MANGOSBOT_ZERO
+    void ImbueItem(Item* item, uint16 targetFlag, ObjectGuid targetGUID);
+#else
     void ImbueItem(Item* item, uint32 targetFlag, ObjectGuid targetGUID);
+#endif
     void ImbueItem(Item* item, uint8 targetInventorySlot);
     void ImbueItem(Item* item, Unit* target);
     void ImbueItem(Item* item);
     void EnchantItemT(uint32 spellid, uint8 slot);
+    int GetBattleMasterEntryByRace(uint8 race);
+    uint32 GetBattleMasterGuidByRace(uint8 race);
+    const CreatureData * GetCreatureDataByEntry(uint32 entry);
+    uint32 GetCreatureGuidByEntry(uint32 entry);
+    uint32 GetBuffedCount(Player* player, string spellname);
   
 
     virtual bool CanCastSpell(string name, Unit* target, uint8 effectMask, Item* itemTarget = NULL);

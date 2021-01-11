@@ -4,6 +4,7 @@
 #include "../../PlayerbotAIConfig.h"
 #include "../../ServerFacade.h"
 #include "../values/PossibleRpgTargetsValue.h"
+#include "../../Travelmgr.h"
 
 using namespace ai;
 
@@ -29,7 +30,9 @@ bool MoveToRpgTargetAction::Execute(Event event)
         bot->m_movementInfo.AddMovementFlag(MOVEFLAG_WALK_MODE);
 	}
 
-    if (bot->IsWithinLOS(x, y, z)) return MoveNear(target, sPlayerbotAIConfig.followDistance);
+    float angle = 2 * M_PI * urand(0,100) / 100.0;
+
+    if (bot->IsWithinLOS(x, y, z)) return MoveNear(mapId, x + cos(angle) * sPlayerbotAIConfig.followDistance, y + sin(angle) * sPlayerbotAIConfig.followDistance, z, 0);
 
     WaitForReach(distance);
 
@@ -52,5 +55,5 @@ bool MoveToRpgTargetAction::Execute(Event event)
 
 bool MoveToRpgTargetAction::isUseful()
 {
-    return context->GetValue<ObjectGuid>("rpg target")->Get() && AI_VALUE2(float, "distance", "rpg target") > sPlayerbotAIConfig.followDistance;
+    return context->GetValue<ObjectGuid>("rpg target")->Get() && !context->GetValue<TravelTarget *>("travel target")->Get()->isTraveling()  && AI_VALUE2(float, "distance", "rpg target") > sPlayerbotAIConfig.followDistance;
 }

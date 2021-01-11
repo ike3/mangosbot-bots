@@ -288,7 +288,7 @@ bool Engine::MultiplyAndPush(NextAction** actions, float forceRelevance, bool sk
     return pushed;
 }
 
-ActionResult Engine::ExecuteAction(string name)
+ActionResult Engine::ExecuteAction(string name, Event event)
 {
 	bool result = false;
 
@@ -316,9 +316,8 @@ ActionResult Engine::ExecuteAction(string name)
     }
 
     action->MakeVerbose();
-    Event emptyEvent;
-    result = ListenAndExecute(action, emptyEvent);
-    MultiplyAndPush(action->getContinuers(), 0.0f, false, emptyEvent, "default");
+    result = ListenAndExecute(action, event);
+    MultiplyAndPush(action->getContinuers(), 0.0f, false, event, "default");
     delete actionNode;
 	return result ? ACTION_RESULT_OK : ACTION_RESULT_FAILED;
 }

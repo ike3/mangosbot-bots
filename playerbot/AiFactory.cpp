@@ -130,7 +130,10 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
 {
     int tab = GetPlayerSpecTab(player);
 
-    engine->addStrategies("racials", "chat", "default", "aoe", "potions", "cast time", "conserve mana", "duel", "pvp", "stay", NULL);
+    if (!player->InBattleGround())
+    {
+        engine->addStrategies("racials", "chat", "default", "aoe", "potions", "cast time", "conserve mana", "duel", "pvp", NULL);
+    }
 
     switch (player->getClass())
     {
@@ -160,7 +163,7 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
             else
                 engine->addStrategies("frost", "frost aoe", "threat", NULL);
 
-            engine->addStrategies("dps assist", "flee", "cure", "ranged", "cc", NULL);
+            engine->addStrategies("dps", "dps assist", "flee", "cure", "ranged", "cc", NULL);
             break;
         case CLASS_WARRIOR:
             if (tab == 2)
@@ -182,7 +185,7 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
             if (tab == 1)
                 engine->addStrategies("tank", "tank aoe", "bthreat", "cure", "barmor", "bstats", "close", "cc", NULL);
 			else if(tab == 0)
-				engine->addStrategies("heal", "bmana", "cure", "flee", "barmor", "ranged", NULL);
+                engine->addStrategies("heal", "bmana", "cure", "flee", "barmor", "ranged", NULL);
             else
                 engine->addStrategies("dps", "bdps", "dps assist", "cure", "baoe", "close", "cc", NULL);
 
@@ -208,6 +211,8 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
             {
                 engine->removeStrategy("ranged");
                 engine->addStrategies("bear", "tank aoe", "flee", "close", NULL);
+                if(urand(0, 100) > 50)
+                    engine->addStrategy("dps");
             }
             break;
         case CLASS_HUNTER:
@@ -216,7 +221,7 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
                 engine->addStrategy("dps debuff");
             break;
         case CLASS_ROGUE:
-            engine->addStrategies("dps", "threat", "dps assist", "aoe", "close", NULL);
+            engine->addStrategies("dps", "threat", "dps assist", "aoe", "close", "cc", "behind", NULL);
             break;
         case CLASS_WARLOCK:
             if (tab == 1)
@@ -238,6 +243,7 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
             engine->ChangeStrategy(sPlayerbotAIConfig.randomBotCombatStrategies);
 
             engine->addStrategy("flee");
+            engine->addStrategy("boost");
 
             if (player->getClass() == CLASS_MAGE)
             {
@@ -255,11 +261,15 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
                 engine->removeStrategy("ranged");
             }
 
+            if (player->getClass() == CLASS_DRUID && tab == 1 && urand(0, 100) > 50)
+            {
+                engine->addStrategy("dps");
+            }
+
             if (player->getClass() == CLASS_PRIEST && tab == 1)
             {
                 engine->removeStrategy("heal");
-                engine->addStrategy("shadow aoe");
-                engine->addStrategies("holy", NULL);
+                engine->addStrategies("shadow aoe", "holy", NULL);
                 engine->removeStrategy("ranged");
             }
 
@@ -274,11 +284,50 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
                 engine->removeStrategy("ranged");
                 engine->addStrategies("dps", "close", NULL);
             }
+
+            if (player->getClass() == CLASS_ROGUE)
+                engine->addStrategies("stealth", NULL);
+
+            if (player->getClass() != CLASS_HUNTER)
+                engine->removeStrategy("ranged");
         }
+
+        if (player->getClass() == CLASS_ROGUE)
+            engine->addStrategy("stealth");
     }
     else
     {
         engine->ChangeStrategy(sPlayerbotAIConfig.combatStrategies);
+    }
+
+    // Battleground switch
+    if (player->InBattleGround() && player->GetBattleGroundTypeId() == BattleGroundTypeId::BATTLEGROUND_WS)
+    {
+        engine->addStrategies("racials", "chat", "default", "aoe", "potions", "warsong", "conserve mana", "cast time", /*"pvp",*/ NULL);
+        engine->removeStrategy("custom::say");
+        engine->removeStrategy("flee");
+        engine->removeStrategy("threat");
+        engine->addStrategy("boost");
+
+        if (player->getClass() == CLASS_DRUID && tab == 1)
+        {
+            engine->addStrategy("dps");
+        }
+
+        if ((player->getClass() == CLASS_DRUID && tab == 2) || (player->getClass() == CLASS_SHAMAN && tab == 2))
+            engine->addStrategies("caster", "caster aoe", NULL);
+
+        if(player->getClass() == CLASS_WARRIOR || player->getClass() == CLASS_PALADIN)
+            engine->addStrategy("dps");
+
+        if (player->getClass() != CLASS_HUNTER)
+            engine->removeStrategy("ranged");
+
+        if (player->getClass() == CLASS_DRUID && tab == 1 && engine->HasStrategy("dps"))
+            engine->addStrategy("behind");
+        
+        if (player->getClass() == CLASS_ROGUE)
+            engine->addStrategy("stealth");
     }
 }
 
@@ -342,12 +391,19 @@ void AiFactory::AddDefaultNonCombatStrategies(Player* player, PlayerbotAI* const
             else
                 nonCombatEngine->addStrategy("dps assist");
             break;
+        case CLASS_WARLOCK:
+            nonCombatEngine->addStrategies("pet", "dps assist", NULL);
+            break;
         default:
             nonCombatEngine->addStrategy("dps assist");
             break;
     }
-    nonCombatEngine->addStrategies("nc", "food", "stay", "sit", "chat", "follow",
-            "default", "quest", "loot", "gather", "duel", "emote", "conserve mana", "buff", "reveal", NULL);
+
+    if (!player->InBattleGround())
+    {
+        nonCombatEngine->addStrategies("nc", "food", "stay", "sit", "chat", "follow",
+            "default", "quest", "loot", "gather", "duel", "emote", "conserve mana", "buff", "reveal", "mount", NULL);
+    }
 
     if (sRandomPlayerbotMgr.IsRandomBot(player))
     {
@@ -360,6 +416,14 @@ void AiFactory::AddDefaultNonCombatStrategies(Player* player, PlayerbotAI* const
     else
     {
         nonCombatEngine->ChangeStrategy(sPlayerbotAIConfig.nonCombatStrategies);
+    }
+
+    // Battleground switch
+    if (player->InBattleGround() && player->GetBattleGroundTypeId() == BattleGroundTypeId::BATTLEGROUND_WS)
+    {
+        nonCombatEngine->addStrategies("nc", "chat",
+            "default", "emote", "buff", "food", "conserve mana", "collision", "mount", "warsong", NULL);
+        nonCombatEngine->removeStrategy("custom::say");
     }
 }
 
@@ -376,6 +440,11 @@ void AiFactory::AddDefaultDeadStrategies(Player* player, PlayerbotAI* const faca
     if (sRandomPlayerbotMgr.IsRandomBot(player) && !player->GetGroup())
     {
         deadEngine->removeStrategy("follow");
+    }
+
+    if (player->InBattleGround() && player->GetBattleGroundTypeId() == BattleGroundTypeId::BATTLEGROUND_WS)
+    {
+        deadEngine->addStrategies("warsong", NULL);
     }
 }
 

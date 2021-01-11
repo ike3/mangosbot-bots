@@ -125,7 +125,6 @@ namespace ai
         public:
             AiObjectContextInternal()
             {
-                creators["summon imp"] = &AiObjectContextInternal::summon_imp;
                 creators["fel armor"] = &AiObjectContextInternal::fel_armor;
                 creators["demon armor"] = &AiObjectContextInternal::demon_armor;
                 creators["demon skin"] = &AiObjectContextInternal::demon_skin;
@@ -134,6 +133,8 @@ namespace ai
                 creators["create spellstone"] = &AiObjectContextInternal::create_spellstone;
                 creators["spellstone"] = &AiObjectContextInternal::spellstone;
                 creators["summon voidwalker"] = &AiObjectContextInternal::summon_voidwalker;
+                creators["summon succubus"] = &AiObjectContextInternal::summon_succubus;
+                creators["summon imp"] = &AiObjectContextInternal::summon_imp;
                 creators["summon felguard"] = &AiObjectContextInternal::summon_felguard;
                 creators["immolate"] = &AiObjectContextInternal::immolate;
                 creators["corruption"] = &AiObjectContextInternal::corruption;
@@ -167,6 +168,7 @@ namespace ai
             static Action* fear(PlayerbotAI* ai) { return new CastFearAction(ai); }
             static Action* immolate(PlayerbotAI* ai) { return new CastImmolateAction(ai); }
             static Action* summon_imp(PlayerbotAI* ai) { return new CastSummonImpAction(ai); }
+            static Action* summon_succubus(PlayerbotAI* ai) { return new CastSummonSuccubusAction(ai); }
             static Action* fel_armor(PlayerbotAI* ai) { return new CastFelArmorAction(ai); }
             static Action* demon_armor(PlayerbotAI* ai) { return new CastDemonArmorAction(ai); }
             static Action* demon_skin(PlayerbotAI* ai) { return new CastDemonSkinAction(ai); }

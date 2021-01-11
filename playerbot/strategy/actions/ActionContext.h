@@ -16,12 +16,14 @@
 #include "CheckMailAction.h"
 #include "CheckValuesAction.h"
 #include "ChooseRpgTargetAction.h"
+#include "ChooseTravelTargetAction.h"
 #include "DelayAction.h"
 #include "GiveItemAction.h"
 #include "GreetAction.h"
 #include "ImbueAction.h"
 #include "MovementActions.h"
 #include "MoveToRpgTargetAction.h"
+#include "MoveToTravelTargetAction.h"
 #include "OutfitAction.h"
 #include "RevealGatheringItemAction.h"
 #include "SayAction.h"
@@ -29,7 +31,13 @@
 #include "RandomBotUpdateAction.h"
 #include "RemoveAuraAction.h"
 #include "RpgAction.h"
+#include "TravelAction.h"
 #include "RtiAction.h"
+#include "BattlegroundJoinAction.h"
+#include "CheckMountStateAction.h"
+#include "ChangeTalentsAction.h"
+#include "AutoLearnSpellAction.h"
+#include "XpGainAction.h"
 
 namespace ai
 {
@@ -43,7 +51,11 @@ namespace ai
             creators["rpg"] = &ActionContext::rpg;
             creators["choose rpg target"] = &ActionContext::choose_rpg_target;
             creators["move to rpg target"] = &ActionContext::move_to_rpg_target;
+			creators["travel"] = &ActionContext::travel;
+			creators["choose travel target"] = &ActionContext::choose_travel_target;
+			creators["move to travel target"] = &ActionContext::move_to_travel_target;
             creators["move out of collision"] = &ActionContext::move_out_of_collision;
+            creators["move random"] = &ActionContext::move_random;
             creators["attack"] = &ActionContext::melee;
             creators["melee"] = &ActionContext::melee;
             creators["reach spell"] = &ActionContext::ReachSpell;
@@ -107,9 +119,16 @@ namespace ai
             creators["try emergency"] = &ActionContext::try_emergency;
             creators["give food"] = &ActionContext::give_food;
             creators["give water"] = &ActionContext::give_water;
+            //creators["wsg join"] = &ActionContext::wsg_join;
+            creators["mount"] = &ActionContext::mount;
+            creators["war stomp"] = &ActionContext::war_stomp;
+            creators["auto talents"] = &ActionContext::auto_talents;
+			creators["auto learn spell"] = &ActionContext::auto_learn_spell;
+            creators["xp gain"] = &ActionContext::xp_gain;
         }
 
     private:
+        //static Action* wsg_join(PlayerbotAI* ai) { return new WsGJoinAction(ai); }
         static Action* give_water(PlayerbotAI* ai) { return new GiveWaterAction(ai); }
         static Action* give_food(PlayerbotAI* ai) { return new GiveFoodAction(ai); }
         static Action* ra(PlayerbotAI* ai) { return new RemoveAuraAction(ai); }
@@ -118,7 +137,11 @@ namespace ai
         static Action* rpg(PlayerbotAI* ai) { return new RpgAction(ai); }
         static Action* choose_rpg_target(PlayerbotAI* ai) { return new ChooseRpgTargetAction(ai); }
         static Action* move_to_rpg_target(PlayerbotAI* ai) { return new MoveToRpgTargetAction(ai); }
+        static Action* travel(PlayerbotAI* ai) { return new TravelAction(ai); }
+        static Action* choose_travel_target(PlayerbotAI* ai) { return new ChooseTravelTargetAction(ai); }
+        static Action* move_to_travel_target(PlayerbotAI* ai) { return new MoveToTravelTargetAction(ai); }
         static Action* move_out_of_collision(PlayerbotAI* ai) { return new MoveOutOfCollisionAction(ai); }
+        static Action* move_random(PlayerbotAI* ai) { return new MoveRandomAction(ai); }
         static Action* check_values(PlayerbotAI* ai) { return new CheckValuesAction(ai); }
         static Action* greet(PlayerbotAI* ai) { return new GreetAction(ai); }
         static Action* apply_poison(PlayerbotAI* ai) { return new ImbueWithPoisonAction(ai); }
@@ -143,6 +166,7 @@ namespace ai
         static Action* lifeblood(PlayerbotAI* ai) { return new CastLifeBloodAction(ai); }
         static Action* arcane_torrent(PlayerbotAI* ai) { return new CastArcaneTorrentAction(ai); }
         static Action* mana_tap(PlayerbotAI* ai) { return new CastManaTapAction(ai); }
+        static Action* war_stomp(PlayerbotAI* ai) { return new CastWarStompAction(ai); }
         static Action* end_pull(PlayerbotAI* ai) { return new ChangeCombatStrategyAction(ai, "-pull"); }
 
         static Action* emote(PlayerbotAI* ai) { return new EmoteAction(ai); }
@@ -178,6 +202,10 @@ namespace ai
         static Action* outfit(PlayerbotAI* ai) { return new OutfitAction(ai); }
         static Action* random_bot_update(PlayerbotAI* ai) { return new RandomBotUpdateAction(ai); }
         static Action* delay(PlayerbotAI* ai) { return new DelayAction(ai); }
+        static Action* mount(PlayerbotAI *ai) { return new CastSpellAction(ai, "mount"); }
+        static Action* auto_talents(PlayerbotAI* ai) { return new AutoSetTalentsAction(ai); }
+		static Action* auto_learn_spell(PlayerbotAI* ai) { return new AutoLearnSpellAction(ai); }
+        static Action* xp_gain(PlayerbotAI* ai) { return new XpGainAction(ai); }
     };
 
 };

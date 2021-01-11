@@ -70,6 +70,12 @@ namespace ai
 	{
     public:
         EnemyOutOfMeleeTrigger(PlayerbotAI* ai) : OutOfRangeTrigger(ai, "enemy out of melee range", sPlayerbotAIConfig.meleeDistance) {}
+        virtual bool IsActive()
+        {
+            Unit* target = AI_VALUE(Unit*, GetTargetName());
+            return target &&
+                sServerFacade.IsDistanceGreaterThan(AI_VALUE2(float, "distance", GetTargetName()), max(target->GetObjectBoundingRadius(), sPlayerbotAIConfig.meleeDistance));
+        }
     };
 
     class EnemyOutOfSpellRangeTrigger : public OutOfRangeTrigger

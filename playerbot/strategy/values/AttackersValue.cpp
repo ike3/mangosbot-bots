@@ -105,32 +105,54 @@ void AttackersValue::RemoveNonThreating(set<Unit*>& targets)
 bool AttackersValue::IsPossibleTarget(Unit *attacker, Player *bot)
 {
     Creature *c = dynamic_cast<Creature*>(attacker);
+    bool rti = false;
+    if (attacker && bot->GetGroup())
+        rti = bot->GetGroup()->GetTargetIcon(7) == attacker->GetObjectGuid();
+
     return attacker &&
         attacker->IsInWorld() &&
         attacker->GetMapId() == bot->GetMapId() &&
         !sServerFacade.UnitIsDead(attacker) &&
         !attacker->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE) &&
+        !attacker->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE) &&
+#ifdef MANGOS
+        !attacker->IsInvisibleForAlive() &&
+#endif
+#ifdef CMANGOS
+        !attacker->isInvisibleForAlive() &&
+#endif
         !attacker->HasStealthAura() &&
         !attacker->HasInvisibilityAura() &&
-        !attacker->IsPolymorphed() &&
 #ifdef CMANGOS
         //!attacker->IsStunned() &&
 #endif
 #ifdef MANGOS
         //!attacker->hasUnitState(UNIT_STAT_STUNNED) &&
 #endif
-        !sServerFacade.IsCharmed(attacker) &&
-        !sServerFacade.IsFeared(attacker) &&
+        !((attacker->IsPolymorphed() ||
+        bot->GetPlayerbotAI()->HasAura("sap", attacker) ||
+        sServerFacade.IsCharmed(attacker) ||
+        sServerFacade.IsFeared(attacker)) && !rti) &&
         //!sServerFacade.IsInRoots(attacker) &&
         !sServerFacade.IsFriendlyTo(attacker, bot) &&
         bot->IsWithinDistInMap(attacker, sPlayerbotAIConfig.sightDistance) &&
         !(attacker->GetCreatureType() == CREATURE_TYPE_CRITTER) &&
         !(sPlayerbotAIConfig.IsInPvpProhibitedZone(attacker->GetAreaId()) && (attacker->GetObjectGuid().IsPlayer() || attacker->GetObjectGuid().IsPet())) &&
         (!c || (
+#ifdef MANGOS
             !c->IsInEvadeMode() &&
+#endif
+#ifdef CMANGOS
+            !c->GetCombatManager().IsInEvadeMode() &&
+#endif
             (!attacker->HasFlag(UNIT_DYNAMIC_FLAGS, UNIT_DYNFLAG_TAPPED)
 #ifndef MANGOSBOT_TWO
+#ifdef MANGOS
                 || bot->IsTappedByMeOrMyGroup(c)
+#endif
+#ifdef CMANGOS
+                || c->IsTappedBy(bot)
+#endif
 #endif
                 )
             )
@@ -140,7 +162,7 @@ bool AttackersValue::IsPossibleTarget(Unit *attacker, Player *bot)
 bool AttackersValue::IsValidTarget(Unit *attacker, Player *bot)
 {
     return IsPossibleTarget(attacker, bot) &&
-        (sServerFacade.GetThreatManager(attacker).getCurrentVictim() || attacker->GetTargetGuid() || attacker->GetObjectGuid().IsPlayer() ||
+        (sServerFacade.GetThreatManager(attacker).getCurrentVictim() || attacker->GetGuidValue(UNIT_FIELD_TARGET) || attacker->GetObjectGuid().IsPlayer() ||
             attacker->GetObjectGuid() == bot->GetPlayerbotAI()->GetAiObjectContext()->GetValue<ObjectGuid>("pull target")->Get());
 }
 
@@ -156,7 +178,7 @@ bool PossibleAdsValue::Calculate()
         if (find(attackers.begin(), attackers.end(), guid) != attackers.end()) continue;
 
         Unit* add = ai->GetUnit(guid);
-        if (add && !add->GetTargetGuid() && !sServerFacade.GetThreatManager(add).getCurrentVictim() && sServerFacade.IsHostileTo(add, bot))
+        if (add && !add->GetGuidValue(UNIT_FIELD_TARGET) && !sServerFacade.GetThreatManager(add).getCurrentVictim() && sServerFacade.IsHostileTo(add, bot))
         {
             for (list<ObjectGuid>::iterator j = attackers.begin(); j != attackers.end(); ++j)
             {

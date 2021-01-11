@@ -491,7 +491,7 @@ uint32 AhBot::GetSellTime(uint32 itemId, uint32 auctionHouse, Category*& categor
 
     uint32 result = itemTime;
 
-    string categoryName = category->GetName();
+    string categoryName = category->GetDisplayName();
     uint32 categorySellTime = GetTime(categoryName, 0, auctionHouse, AHBOT_SELL_DELAY);
     uint32 categoryBuyTime = GetTime(categoryName, 0, auctionHouse, AHBOT_WON_DELAY);
     uint32 categoryTime = max(categorySellTime, categoryBuyTime);
@@ -514,11 +514,12 @@ int AhBot::AddAuctions(int auction, Category* category, ItemBag* inAuctionItems)
 {
     vector<uint32>& inAuction = inAuctionItems->Get(category);
 
-    int32 maxAllowedAuctionCount = categoryMaxAuctionCount[category->GetName()];
+    int32 maxAllowedAuctionCount = categoryMaxAuctionCount[category->GetDisplayName()];
     if (inAuctionItems->GetCount(category) >= maxAllowedAuctionCount)
         return 0;
 
     int added = 0;
+    int ladded = 0;
     vector<uint32> available = availableItems.Get(category);
     for (int32 i = 0; i <= maxAllowedAuctionCount && available.size() > 0 && inAuctionItems->GetCount(category) < maxAllowedAuctionCount; ++i)
     {
@@ -531,11 +532,16 @@ int AhBot::AddAuctions(int auction, Category* category, ItemBag* inAuctionItems)
 
         int32 maxAllowedItems = category->GetMaxAllowedItemAuctionCount(proto);
         if (maxAllowedItems && inAuctionItems->GetCount(category, proto->ItemId) >= maxAllowedItems)
+        {
+            sLog.outDetail("%s in auction %d: has reached max %d/%d",
+                proto->Name1, auctionIds[auction], inAuctionItems->GetCount(category, proto->ItemId), maxAllowedItems);
             continue;
+        }        
 
         uint32 sellTime = GetSellTime(proto->ItemId, auctionIds[auction], category);
-        if (time(0) < sellTime)
-        {
+        if (time(0) - sellTime < 0)
+        {          
+            ladded += 1;
             sLog.outDetail( "%s in auction %d: will add in %ld seconds",
                     proto->Name1, auctionIds[auction], sellTime - time(0));
             continue;
@@ -545,11 +551,14 @@ int AhBot::AddAuctions(int auction, Category* category, ItemBag* inAuctionItems)
             sLog.outDetail( "%s in auction %d: too old (%ld secs)",
                     proto->Name1, auctionIds[auction], time(0) - sellTime);
             continue;
-        }
-
+        }        
         inAuctionItems->Add(proto);
         added += AddAuction(auction, category, proto);
     }
+
+    sLog.outDetail("%s has %d upcomming and %d new auctions.",
+        category->GetDisplayName().c_str(), ladded , added);
+    
 
     return added;
 }
@@ -559,14 +568,14 @@ int AhBot::AddAuction(int auction, Category* category, ItemPrototype const* prot
     uint32 owner = GetRandomBidder(auctionIds[auction]);
     if (!owner)
     {
-        sLog.outError( "No bidders for auction %d", auctionIds[auction]);
+        sLog.outError("No bidders for auction %d", auctionIds[auction]);
         return 0;
     }
-
 
 	string name;
     if (!sObjectMgr.GetPlayerNameByGUID(ObjectGuid(HIGHGUID_PLAYER, owner), name))
         return 0;
+
 
     uint32 price = category->GetPricingStrategy()->GetSellPrice(proto, auctionIds[auction]);
 
@@ -600,7 +609,7 @@ int AhBot::AddAuction(int auction, Category* category, ItemPrototype const* prot
         item->SetItemRandomProperties(randomPropertyId);
 
     AuctionHouseEntry const* ahEntry = sAuctionHouseStore.LookupEntry(auctionIds[auction]);
-    if(!ahEntry)
+    if (!ahEntry)
         return 0;
 
     AuctionHouseObject* auctionHouse = sAuctionMgr.GetAuctionsMap(ahEntry);
@@ -644,8 +653,8 @@ void AhBot::HandleCommand(string command)
     {
         for (int i = 0; i < MAX_AUCTIONS; i++)
             Expire(i);
-        CharacterDatabase.PExecute("DELETE FROM ahbot_category");
-        CharacterDatabase.PExecute("UPDATE ahbot_history SET buytime = buytime - 3600 * 24;");
+        PlayerbotDatabase.PExecute("DELETE FROM ahbot_category");
+        PlayerbotDatabase.PExecute("UPDATE ahbot_history SET buytime = buytime - 3600 * 24;");
 
         return;
     }
@@ -906,7 +915,8 @@ void AhBot::CheckCategoryMultipliers()
     set<string> tmp;
     for (int i = 0; i < CategoryList::instance.size(); i++)
     {
-        string name = CategoryList::instance[i]->GetName();
+        string name = CategoryList::instance[i]->GetDisplayName();
+
         if (tmp.find(name) != tmp.end())
             continue;
 
@@ -920,11 +930,11 @@ void AhBot::CheckCategoryMultipliers()
             else if (k < 80) m = 1 + r; // 2..3
             else if (k < 90) m = 2 + r; // 3..4
             else m = 3 + r; // 4..5
-            categoryMultipliers[name] = m;
-            uint32 maxAllowedAuctionCount = CategoryList::instance[i]->GetMaxAllowedAuctionCount();
-            categoryMaxAuctionCount[name] = urand(maxAllowedAuctionCount / 2, maxAllowedAuctionCount);
+            categoryMultipliers[name] = m;            
             categoryMultiplierExpireTimes[name] = time(0) + urand(4, 7) * 3600 * 24;
         }
+
+        categoryMaxAuctionCount[name] = CategoryList::instance[i]->GetMaxAllowedAuctionCount();
 
         PlayerbotDatabase.PExecute("INSERT INTO ahbot_category (category, multiplier, max_auction_count, expire_time) "
                 "VALUES ('%s', '%f', '%u', '%zu')",

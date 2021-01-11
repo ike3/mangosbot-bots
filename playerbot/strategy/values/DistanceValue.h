@@ -43,6 +43,11 @@ namespace ai
                 ObjectGuid rpgTarget = AI_VALUE(ObjectGuid, qualifier);
                 target = ai->GetUnit(rpgTarget);
             }
+            else if (qualifier == "travel target")
+            {
+                TravelTarget * travelTarget = AI_VALUE(TravelTarget *, qualifier);
+                return travelTarget->distance(ai->GetBot());
+            }
             else if (qualifier == "current target")
             {
                 Stance* stance = AI_VALUE(Stance*, "stance");
