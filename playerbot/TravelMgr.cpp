@@ -261,7 +261,7 @@ void TravelMgr::Clear()
 
 void TravelMgr::logQuestError(uint32 errorNr, Quest* quest, uint32 objective, uint32 unitId, uint32 itemId)
 {
-    bool logQuestErrors = true; //For debugging.
+    bool logQuestErrors = false; //For debugging.
 
     if (!logQuestErrors)
         return;
