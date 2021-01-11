@@ -9,12 +9,13 @@ namespace ai
         ITEM_USAGE_EQUIP = 1,
         ITEM_USAGE_REPLACE = 2,
         ITEM_USAGE_BAD_EQUIP = 3,
-        ITEM_USAGE_SKILL = 4,
-        ITEM_USAGE_USE = 5,
-        ITEM_USAGE_GUILD_TASK = 6,
-        ITEM_USAGE_DISENCHANT = 7,
-        ITEM_USAGE_AH = 8,
-        ITEM_USAGE_VENDOR = 9
+        ITEM_USAGE_QUEST = 4,
+        ITEM_USAGE_SKILL = 5,
+        ITEM_USAGE_USE = 6,
+        ITEM_USAGE_GUILD_TASK = 7,
+        ITEM_USAGE_DISENCHANT = 8,
+        ITEM_USAGE_AH = 9,
+        ITEM_USAGE_VENDOR = 10
     };
 
     class ItemUsageValue : public CalculatedValue<ItemUsage>, public Qualified

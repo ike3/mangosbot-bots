@@ -233,10 +233,36 @@ TravelTarget ChooseTravelTargetAction::GetQuestTarget()
     //Find destinations related to the active quests.
     for (auto& quest : questMap)
     {
+        if (quest.second.m_rewarded)
+            continue;
+
+
         uint32 questId = quest.first;
         QuestStatusData* questStatus = &quest.second;
 
         vector<QuestTravelDestination*> TravelDestinations = sTravelMgr.getQuestTravelDestinations(bot, questId, ai->GetMaster());
+
+        //ai->TellMaster("Checking : " + to_string(questId) + " - " + to_string(quest.second.m_status));
+        for (auto& dest : TravelDestinations)
+        {
+           // ai->TellMaster("Found : " + dest->getName() + " " + dest->GetQuestTemplate()->GetTitle() + " points: " + to_string(dest->getPoints().size()));
+        }
+
+        /*
+        //Pick one good point per destination.
+        for (auto& activeTarget : activeDestinations)
+        {
+            vector<WorldPosition*> points = activeTarget->nextPoint(&botLocation);
+            if (!points.empty())
+                activePoints.push_back(points.front());
+        }
+
+        //Find the best destination for this quest.
+        TravelTarget questTarget = getBestTarget(activeDestinations, activePoints);
+
+        //Add the best destination to the list.
+        activeDestinations.push_back(questTarget.getDestination());
+        */
 
         activeDestinations.insert(activeDestinations.end(), TravelDestinations.begin(), TravelDestinations.end());
     }

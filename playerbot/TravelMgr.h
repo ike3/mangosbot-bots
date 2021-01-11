@@ -127,7 +127,7 @@ namespace ai
         virtual uint32 getRelation() { return relation; }
     private:
         uint32 relation;
-        uint32 entry;
+        int32 entry;
     };
 
     //A quest destination container for quick lookup of all destinations related to a quest.
@@ -163,7 +163,7 @@ namespace ai
         virtual uint32 getEntry() { return entry; }
     private:
         int objective;
-        uint32 entry;
+        int32 entry;
     };
 
     enum TravelStatus
@@ -248,7 +248,7 @@ namespace ai
 
         UNORDERED_MAP<uint32, QuestContainer *> quests;
 
-        UNORDERED_MAP<uint32, WorldPosition> pointsMap;
+        UNORDERED_MAP<int32, WorldPosition> pointsMap;
     };
 }
 

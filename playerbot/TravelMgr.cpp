@@ -491,7 +491,9 @@ void TravelMgr::LoadQuestTravelTable()
             if (questId != r.questId)
                 continue;
 
-            loc = new QuestRelationTravelDestination(r.questId, r.entry, r.role, sPlayerbotAIConfig.tooCloseDistance, sPlayerbotAIConfig.sightDistance);
+            int32 entry = r.type == 0 ? r.entry : r.entry * -1;
+
+            loc = new QuestRelationTravelDestination(r.questId, entry, r.role, sPlayerbotAIConfig.tooCloseDistance, sPlayerbotAIConfig.sightDistance);
             loc->setExpireDelay(5 * 60 * 1000);
             loc->setMaxVisitors(15, 0);
 
@@ -500,15 +502,17 @@ void TravelMgr::LoadQuestTravelTable()
                 if (r.type != u.type || r.entry != u.entry)
                     continue;
 
-                point = WorldPosition(u.map, u.x, u.y, u.z, u.o);
-                pointsMap.insert(make_pair(u.guid, point));
+                int32 guid = u.type == 0 ? u.guid : u.guid * -1;
 
-                loc->addPoint(&pointsMap.find(u.guid)->second);
+                point = WorldPosition(u.map, u.x, u.y, u.z, u.o);
+                pointsMap.insert(make_pair(guid, point));
+
+                loc->addPoint(&pointsMap.find(guid)->second);
             }
 
             if (loc->getPoints(0).empty())
             {
-                logQuestError(1, quest, r.role, r.entry);
+                logQuestError(1, quest, r.role, entry);
                 delete loc;
                 continue;
             }
@@ -537,15 +541,17 @@ void TravelMgr::LoadQuestTravelTable()
 
             for (auto& u : units)
             {
-                uint32 entry = u.type > 0 ? u.entry : u.entry * 1;
+                int32 entry = u.type > 0 ? u.entry : u.entry * 1;
 
                 if (entry != reqEntry)
                     continue;
 
-                point = WorldPosition(u.map, u.x, u.y, u.z, u.o);
-                pointsMap.insert(make_pair(u.guid, point));
+                int32 guid = u.type == 0 ? u.guid : u.guid * -1;
 
-                loc->addPoint(&pointsMap.find(u.guid)->second);
+                point = WorldPosition(u.map, u.x, u.y, u.z, u.o);
+                pointsMap.insert(make_pair(guid, point));
+
+                loc->addPoint(&pointsMap.find(guid)->second);
             }
 
             if (loc->getPoints(0).empty())
@@ -582,7 +588,7 @@ void TravelMgr::LoadQuestTravelTable()
                 if (l.item != quest->ReqItemId[i])
                     continue;
 
-                uint32 entry = l.type > 0 ? l.entry : l.entry * 1;
+                int32 entry = l.type == 0 ? l.entry : l.entry * -1;
 
                 loc = new QuestObjectiveTravelDestination(questId, entry, i, sPlayerbotAIConfig.tooCloseDistance, sPlayerbotAIConfig.sightDistance);
                 loc->setExpireDelay(1 * 60 * 1000);
@@ -593,20 +599,23 @@ void TravelMgr::LoadQuestTravelTable()
                     if (l.type != u.type || l.entry != u.entry)
                         continue;
 
-                    point = WorldPosition(u.map, u.x, u.y, u.z, u.o);
-                    pointsMap.insert(make_pair(u.guid, point));
+                    int32 guid = u.type == 0 ? u.guid : u.guid * -1;
 
-                    loc->addPoint(&pointsMap.find(u.guid)->second);
+                    point = WorldPosition(u.map, u.x, u.y, u.z, u.o);
+                    pointsMap.insert(make_pair(guid, point));
+
+                    loc->addPoint(&pointsMap.find(guid)->second);
                 }
 
                 if (loc->getPoints(0).empty())
                 {
-                    logQuestError(4, quest, i, l.entry, quest->ReqItemId[i]);
+                    logQuestError(4, quest, i, entry, quest->ReqItemId[i]);
                     delete loc;
                     continue;
                 }
 
                 container->questObjectives.push_back(loc);
+
                 foundLoot++;
             }
 
@@ -630,118 +639,6 @@ void TravelMgr::LoadQuestTravelTable()
     }
 
     sLog.outString(">> Loaded " SIZEFMTD " quest details.", questIds.size());
-
-    /*
-    string query = "SELECT 0, qr.quest, 0, c.id, role objective, c.guid, c.map, c.position_x, c.position_y, c.position_z, c.orientation FROM quest_relations qr JOIN creature c  ON(c.id = qr.entry) WHERE actor = 0";
-    query = query + " UNION ALL ";
-    query = query + "SELECT 1, qr.quest, 0, c.id, role objective, c.guid,c.map, c.position_x, c.position_y, c.position_z, c.orientation FROM quest_relations qr JOIN gameobject c  ON(c.id = qr.entry) WHERE actor = 1";
-    query = query + " UNION ALL ";
-
-    for (int i = 1; i <= 4; i++)
-    {
-        query = query + "SELECT 2, qt.entry, 0, c.id, " + to_string(i) + " objective, c.guid, c.map, c.position_x,c.position_y, c.position_z, c.orientation FROM quest_template qt JOIN creature c  ON (c.id = qt.ReqCreatureOrGOId" + to_string(i) + ")";
-        query = query + " UNION ALL ";
-        query = query + "SELECT 2,qt.entry, clt.item, clt.entry, " + to_string(i) + " objective, c.guid, c.map, c.position_x,c.position_y, c.position_z, c.orientation FROM quest_template qt JOIN creature_loot_template clt  ON (clt.item = qt.ReqItemId" + to_string(i) + ") JOIN creature c ON (c.id = clt.entry)";
-        query = query + " UNION ALL ";
-        query = query + "SELECT 3,qt.entry, 0, c.id, " + to_string(i) + " objective,c.guid, c.map, c.position_x,c.position_y, c.position_z, c.orientation FROM quest_template qt JOIN gameobject c  ON (c.id = qt.ReqCreatureOrGOId" + to_string(i) + " * -1)";
-        query = query + " UNION ALL ";
-        query = query + "SELECT 3,qt.entry, clt.item, clt.entry, " + to_string(i) + " objective, c.guid, c.map, c.position_x,c.position_y, c.position_z, c.orientation FROM quest_template qt JOIN gameobject_loot_template clt  ON (clt.item = qt.ReqItemId" + to_string(i) + ") JOIN gameobject c ON (c.id = clt.entry)";
-        query = query + (i<4?" UNION ALL ":" ORDER BY 2,4,1");
-    }
-
-    QueryResult* result = WorldDatabase.PQuery(query.c_str());
-
-    if (result)
-    {
-        BarGoLink bar(result->GetRowCount());
-
-        uint32 pQuestId = 0;
-        uint32 pEntry = 0;
-        uint32 pType = 0;
-
-        QuestTravelDestination* loc;
-        QuestContainer * container;
-
-        do
-        {
-            Field* fields = result->Fetch();
-            bar.step();
-
-            uint32 type = fields[0].GetUInt32();
-            uint32 questId = fields[1].GetUInt32();
-            uint32 item = fields[2].GetUInt32();
-            uint32 entry = fields[3].GetUInt32();
-            uint32 objective = fields[4].GetUInt32();
-            uint32 guid = fields[5].GetUInt32();
-            uint32 map = fields[6].GetUInt32();
-            float  position_x = fields[7].GetFloat();
-            float  position_y = fields[8].GetFloat();
-            float  position_z = fields[9].GetFloat();
-            float  orientation = fields[10].GetFloat();
-
-            if (pQuestId != questId || pEntry != entry || pType != type)
-            {
-                if (type == 0 || type == 1) //Quest giver/taker
-                {
-                    loc = new QuestRelationTravelDestination(questId, entry, objective, sPlayerbotAIConfig.tooCloseDistance, sPlayerbotAIConfig.sightDistance);
-                    loc->setExpireDelay(5 * 60 * 1000);
-                    loc->setMaxVisitors(15, 0);
-                }
-                else if (type == 2 || type == 3) //Quest mobs
-                {
-                    loc = new QuestObjectiveTravelDestination(questId, entry, objective - 1, sPlayerbotAIConfig.tooCloseDistance, sPlayerbotAIConfig.sightDistance);
-                    loc->setExpireDelay(1 * 60 * 1000);
-                    loc->setMaxVisitors(100, 1);
-                }
-
-                //questTravelDestinations.push_back(make_pair(questId, loc));
-
-                pQuestId = questId;
-                pEntry = entry;
-                pType = type;
-
-                auto i = quests.find(questId);
-                if (i != quests.end())
-                    container = i->second;
-                else
-                    container = new QuestContainer;
-
-                if (type < 2)
-                {
-                    if (objective == 0)
-                    {
-                        questGivers.push_back(loc);
-                        container->questGivers.push_back(loc);
-                    }
-                    else if (objective == 1)
-                        container->questTakers.push_back(loc);
-                }
-                else
-                    container->questObjectives.push_back(loc);
-
-                quests.insert_or_assign(questId, container);
-            }
-
-            WorldPosition point = WorldPosition(map, position_x, position_y, position_z, orientation);
-
-            pointsMap.insert(make_pair(guid, point));
-
-            questTravelDestinations.back().second->addPoint(&pointsMap.find(guid)->second);
-
-            ++count;
-        } while (result->NextRow());
-
-        delete result;
-
-        sLog.outString(">> Loaded " SIZEFMTD " quest details definitions.", questTravelDestinations.size());
-        sLog.outString();
-    }
-    else
-    {
-        sLog.outString();
-        sLog.outErrorDb(">> Error loading quest details.");
-    }
-    */
 }
 
 uint32 TravelMgr::getDialogStatus(Player* pPlayer, uint32 questgiver, Quest const* pQuest)
@@ -750,6 +647,8 @@ uint32 TravelMgr::getDialogStatus(Player* pPlayer, uint32 questgiver, Quest cons
 
     QuestRelationsMapBounds rbounds;                        // QuestRelations (quest-giver)
     QuestRelationsMapBounds irbounds;                       // InvolvedRelations (quest-finisher)
+
+    uint32 questId = pQuest->GetQuestId();
 
     if (questgiver > 0)
     {
@@ -765,11 +664,10 @@ uint32 TravelMgr::getDialogStatus(Player* pPlayer, uint32 questgiver, Quest cons
     // Check markings for quest-finisher
     for (QuestRelationsMap::const_iterator itr = irbounds.first; itr != irbounds.second; ++itr)
     {
-        if (itr->second != pQuest->GetQuestId())
+        if (itr->second != questId)
             continue;
 
         uint32 dialogStatusNew = DIALOG_STATUS_NONE;
-        uint32 questId = itr->second;
 
         if (!pQuest || !pQuest->IsActive())
         {
@@ -804,18 +702,17 @@ uint32 TravelMgr::getDialogStatus(Player* pPlayer, uint32 questgiver, Quest cons
     // check markings for quest-giver
     for (QuestRelationsMap::const_iterator itr = rbounds.first; itr != rbounds.second; ++itr)
     {
-        if (itr->second != pQuest->GetQuestId())
+        if (itr->second != questId)
             continue;
 
         uint32 dialogStatusNew = DIALOG_STATUS_NONE;
-        uint32 quest_id = itr->second;
 
         if (!pQuest || !pQuest->IsActive())
         {
             continue;
         }
 
-        QuestStatus status = pPlayer->GetQuestStatus(quest_id);
+        QuestStatus status = pPlayer->GetQuestStatus(questId);
 
         if (status == QUEST_STATUS_NONE)                    // For all other cases the mark is handled either at some place else, or with involved-relations already
         {
@@ -824,7 +721,7 @@ uint32 TravelMgr::getDialogStatus(Player* pPlayer, uint32 questgiver, Quest cons
                 if (pPlayer->SatisfyQuestLevel(pQuest, false))
                 {
                     int32 lowLevelDiff = sWorld.getConfig(CONFIG_INT32_QUEST_LOW_LEVEL_HIDE_DIFF);
-                    if (pQuest->IsAutoComplete() || (pQuest->IsRepeatable() && pPlayer->getQuestStatusMap()[quest_id].m_rewarded))
+                    if (pQuest->IsAutoComplete() || (pQuest->IsRepeatable() && pPlayer->getQuestStatusMap()[questId].m_rewarded))
                     {
                         dialogStatusNew = DIALOG_STATUS_REWARD_REP;
                     }
@@ -936,8 +833,18 @@ vector<QuestTravelDestination*> TravelMgr::getQuestTravelDestinations(Player* bo
                     retTravelLocations.push_back(dest);
 
             for (auto& dest : i->second->questObjectives)
+            {
+                //bool act = dest->isActive(bot);
+               // bool full = dest->isFull(ignoreFull);
+                //float dist = dest->distanceTo(&botLocation);
+
+               // bot->Say(dest->GetQuestTemplate()->GetTitle() + " is " + (act ? "active" : "inactive") + " and " + (act ? "active" : "inactive") + " at " + to_string(dist) , 0);
+
+               // QuestTravelDestination* des = dest;
+
                 if (dest->isActive(bot) && !dest->isFull(ignoreFull) && dest->distanceTo(&botLocation) < 2000)
                     retTravelLocations.push_back(dest);
+            }
         }
     }
 

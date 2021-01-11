@@ -38,6 +38,23 @@ ItemUsage ItemUsageValue::Calculate()
             ai->HasSkill(SKILL_ENCHANTING) && proto->Quality >= ITEM_QUALITY_UNCOMMON)
         return ITEM_USAGE_DISENCHANT;
 
+    for (uint8 slot = 0; slot < MAX_QUEST_LOG_SIZE; ++slot)
+    {
+        uint32 entry = ai->GetBot()->GetQuestSlotQuestId(slot);
+        Quest const* quest = sObjectMgr.GetQuestTemplate(entry);
+        if (!quest)
+            continue;
+
+        for (int i = 0; i < 4; i++)
+        {
+            if (quest->ReqItemId[i] == itemId)
+            {
+                if (!ai->GetMaster() || !sPlayerbotAIConfig.syncQuestWithPlayer)
+                    return ITEM_USAGE_QUEST;
+            }
+        }
+    }
+
     //Need to add something like free bagspace or item value.
     if (proto->SellPrice > 0)
         if (proto->Quality > ITEM_QUALITY_NORMAL)
