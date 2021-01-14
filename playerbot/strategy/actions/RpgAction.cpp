@@ -56,7 +56,7 @@ bool RpgAction::Execute(Event event)
         elements.push_back(&RpgAction::repair);
     if (creature && CanTrain(guid))
         elements.push_back(&RpgAction::train);
-    if (target->HealthBelowPct(100) && ai->HasStrategy("heal", BOT_STATE_COMBAT))
+    if (target->HealthBelowPct(100) && (bot->getClass() == CLASS_PRIEST || bot->getClass() == CLASS_DRUID || bot->getClass() == CLASS_PALADIN || bot->getClass() == CLASS_SHAMAN))
         elements.push_back(&RpgAction::heal);
 
     if (AddIgnore(target->GetObjectGuid()))
@@ -298,12 +298,32 @@ void RpgAction::heal(Unit* unit)
 
     bot->SetSelectionGuid(unit->GetObjectGuid());
 
-    //ai->DoSpecificAction("heal", Event("rpg action", "heal"));
+    switch (bot->getClass())
+    {
+    case CLASS_PRIEST:
+        ai->DoSpecificAction("lesser heal on party");
+        /* Example to cast a specific spel on a specif unit. Maybe usefull later.
+        if(!ai->HasAura("power word: fortitude", unit))
+            ai->DoSpecificAction("cast custom spell", Event("rpg action", chat->formatWorldobject(unit) + " power word: fortitude"), true);
+        else
+            ai->DoSpecificAction("cast custom spell", Event("rpg action", chat->formatWorldobject(unit) + " 2052"), true); 
+        */
+        break;
+    case CLASS_DRUID:
+        ai->DoSpecificAction("healing touch on party");
+        break;
+    case CLASS_PALADIN:
+        ai->DoSpecificAction("holy light on party");
+        break;
+    case CLASS_SHAMAN:
+        ai->DoSpecificAction("healing wave on party");
+        break;
+    }
 
     unit->SetFacingTo(unit->GetAngle(bot));
 
-    //if (oldSelection)
-    //    bot->SetSelectionGuid(oldSelection);
+    if (oldSelection)
+        bot->SetSelectionGuid(oldSelection);
 
     ai->SetNextCheckDelay(sPlayerbotAIConfig.rpgDelay);
 }

@@ -110,25 +110,55 @@ bool QuestObjectiveTravelDestination::isActive(Player* bot) {
 }
 
 
-void TravelTarget::setTarget(TravelDestination* tDestination1, WorldPosition* wPosition1) {
+TravelTarget::~TravelTarget() {
+    if (!tDestination)
+        return;
 
+    releaseVisitors();     
+    //sTravelMgr.botTargets.erase(std::remove(sTravelMgr.botTargets.begin(), sTravelMgr.botTargets.end(), this), sTravelMgr.botTargets.end());
+}
+
+void TravelTarget::setTarget(TravelDestination* tDestination1, WorldPosition* wPosition1, bool groupCopy1) {
+    releaseVisitors();
+    
     wPosition = wPosition1;
     tDestination = tDestination1;
+    groupCopy = groupCopy1;
+
+    addVisitors();
 
     setStatus(TRAVEL_STATUS_TRAVEL);
 }
 
 void TravelTarget::copyTarget(TravelTarget* target) { 
-    if (tDestination)
-        tDestination->remVisitor();
-    if (wPosition)
-        wPosition->remVisitor();
+    releaseVisitors();
 
     setTarget(target->tDestination, target->wPosition);
     groupCopy = target->isGroupCopy();
 
-    wPosition->addVisitor();
-    tDestination->addVisitor();
+    addVisitors();
+}
+
+void TravelTarget::addVisitors() {
+    if (!isVisitor)
+    {
+        wPosition->addVisitor();
+        tDestination->addVisitor();
+    }
+
+    isVisitor = true;
+}
+
+void TravelTarget::releaseVisitors() {
+    if (isVisitor)
+    {
+        if (tDestination)
+            tDestination->remVisitor();
+        if (wPosition)
+            wPosition->remVisitor();
+    }
+
+    isVisitor = false;
 }
 
 void TravelTarget::setStatus(TravelStatus status) {
@@ -237,6 +267,8 @@ bool TravelTarget::isPreparing() {
 
 void TravelMgr::Clear()
 {
+    sObjectAccessor.DoForAllPlayers([this](Player* plr) { TravelMgr::setNullTravelTarget(plr); });
+
     for (auto& quest : quests)
     {
         for (auto& dest : quest.second->questGivers)
@@ -254,7 +286,8 @@ void TravelMgr::Clear()
             delete dest;
         }       
     }
-
+    
+    questGivers.clear();
     quests.clear();
     pointsMap.clear();
 }
@@ -397,7 +430,6 @@ void TravelMgr::LoadQuestTravelTable()
         delete result;
 
         sLog.outString(">> Loaded " SIZEFMTD " units locations.", units.size());
-        sLog.outString();
     }
     else
     {
@@ -430,7 +462,6 @@ void TravelMgr::LoadQuestTravelTable()
         delete result;
 
         sLog.outString(">> Loaded " SIZEFMTD " relations.", units.size());
-        sLog.outString();
     }
     else
     {
@@ -462,7 +493,6 @@ void TravelMgr::LoadQuestTravelTable()
         delete result;
 
         sLog.outString(">> Loaded " SIZEFMTD " loot lists.", units.size());
-        sLog.outString();
     }
     else
     {
@@ -810,11 +840,11 @@ bool TravelMgr::getObjectiveStatus(Player* bot,  Quest const* pQuest, int object
     return false;
 }
 
-vector<QuestTravelDestination*> TravelMgr::getQuestTravelDestinations(Player* bot, uint32 questId, bool ignoreFull)
+vector<TravelDestination*> TravelMgr::getQuestTravelDestinations(Player* bot, uint32 questId, bool ignoreFull)
 {
     WorldPosition botLocation(bot);
 
-    vector<QuestTravelDestination*> retTravelLocations;
+    vector<TravelDestination*> retTravelLocations;
 
     if (questId == -1)
     {
@@ -849,4 +879,18 @@ vector<QuestTravelDestination*> TravelMgr::getQuestTravelDestinations(Player* bo
     }
 
     return retTravelLocations;
+}
+
+void TravelMgr::setNullTravelTarget(Player* player)
+{
+    if (!player)
+        return;
+
+    if (!player->GetPlayerbotAI())
+        return;
+
+    TravelTarget* target = player->GetPlayerbotAI()->GetAiObjectContext()->GetValue<TravelTarget*>("travel target")->Get();
+
+    if(target)
+        target->setTarget(sTravelMgr.nullTravelDestination, sTravelMgr.nullWorldPosition, true);
 }

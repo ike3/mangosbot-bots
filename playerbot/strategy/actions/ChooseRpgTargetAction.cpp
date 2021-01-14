@@ -90,6 +90,7 @@ uint32 ChooseRpgTargetAction::HasSameTarget(ObjectGuid guid)
 
 bool ChooseRpgTargetAction::Execute(Event event)
 {    
+    TravelTarget* travelTarget = context->GetValue<TravelTarget*>("travel target")->Get();
     list<ObjectGuid> possibleTargets = AI_VALUE(list<ObjectGuid>, "possible rpg targets");
     set<ObjectGuid>& ignoreList = context->GetValue<set<ObjectGuid>&>("ignore rpg target")->Get();
     if (possibleTargets.empty())
@@ -98,6 +99,15 @@ bool ChooseRpgTargetAction::Execute(Event event)
     }
 
     vector<Unit*> units;
+    Player* master = ai->GetMaster();
+    bool nearMaster = false;
+    if (master)
+    {
+        if (ai->HasStrategy("follow", BOT_STATE_NON_COMBAT))
+        {
+            nearMaster = bot->GetDistance(master) < sPlayerbotAIConfig.rpgDistance * 2;
+        }
+    }
 
     int maxPriority = 1;
 
@@ -109,7 +119,10 @@ bool ChooseRpgTargetAction::Execute(Event event)
         if (!unit)
             continue;
 
-        if (!ignoreList.empty() && ignoreList.find(unit->GetObjectGuid()) != ignoreList.end() && urand(0,100) < 10) //10% chance to retry ignored.
+        if (!ignoreList.empty() && ignoreList.find(unit->GetObjectGuid()) != ignoreList.end() && urand(0, 100) < 10) //10% chance to retry ignored.
+            continue;
+
+        if (nearMaster && unit->GetDistance(master) > sPlayerbotAIConfig.sightDistance)
             continue;
         
         int priority = 1;
@@ -121,6 +134,8 @@ bool ChooseRpgTargetAction::Execute(Event event)
             priority = 90;
         else if (CanTrain(*i) || dialogStatus == DIALOG_STATUS_AVAILABLE)
             priority = 80;
+        else if (travelTarget->getDestination() && travelTarget->getDestination()->getEntry() == unit->GetEntry())
+            priority = 70;
 
         if (priority < maxPriority)
             continue;

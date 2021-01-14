@@ -1409,8 +1409,11 @@ void RandomPlayerbotMgr::OnPlayerLogin(Player* player)
                     ai->SetMaster(player);
                     ai->ResetStrategies();
                     ai->TellMaster("Hello");
-                    ai->ChangeStrategy("-rpg", BOT_STATE_NON_COMBAT);
-                    ai->ChangeStrategy("-grind", BOT_STATE_NON_COMBAT);
+                    if (!player->GetPlayerbotAI())
+                    {
+                        ai->ChangeStrategy("-rpg", BOT_STATE_NON_COMBAT);
+                        ai->ChangeStrategy("-grind", BOT_STATE_NON_COMBAT);
+                    }
                 }
                 break;
             }

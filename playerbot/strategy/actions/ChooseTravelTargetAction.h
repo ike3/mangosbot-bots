@@ -16,15 +16,15 @@ namespace ai
         private:
 
 
-        TravelTarget ChooseTarget(TravelTarget* oldTarget);
+        bool SetTarget(TravelTarget* target, TravelTarget* oldTarget);
 
-        TravelTarget getBestTarget(vector<TravelDestination*> activeDestinations, vector<WorldPosition*> activePoints, bool groupCopy = false);
+        bool getBestDestination(vector<TravelDestination*> activeDestinations, vector<WorldPosition*> activePoints);
 
-        TravelTarget GetGroupTarget();
-        TravelTarget GetCurrentTarget(TravelTarget* oldTarget);
-        TravelTarget GetQuestTarget();
-        TravelTarget GetNewQuestTarget();
-        TravelTarget GetNullTarget();
+        bool SetGroupTarget(TravelTarget* target);
+        bool SetCurrentTarget(TravelTarget* target, TravelTarget* oldTarget);
+        bool SetQuestTarget(TravelTarget* target);
+        bool SetNewQuestTarget(TravelTarget* target);
+        bool SetNullTarget(TravelTarget* target);
 
         void ReportTravelTarget(TravelTarget* newTarget, TravelTarget* oldTarget);
 

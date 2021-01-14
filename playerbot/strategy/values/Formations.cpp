@@ -379,7 +379,7 @@ float Formation::GetFollowAngle()
     Group* group = bot->GetGroup();
     PlayerbotAI* ai = bot->GetPlayerbotAI();
     int index = 1, total = 1;
-    if (!group && master)
+    if (!group && master && !master->GetPlayerbotAI())
     {
         for (PlayerBotMap::const_iterator i = master->GetPlayerbotMgr()->GetPlayerBotsBegin(); i != master->GetPlayerbotMgr()->GetPlayerBotsEnd(); ++i)
         {

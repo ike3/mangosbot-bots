@@ -58,7 +58,7 @@ namespace ai
     {
     public:
         TravelTargetValue(PlayerbotAI* ai) : ManualSetValue<TravelTarget*>(ai, new TravelTarget(ai)) {}
-        virtual ~TravelTargetValue() { delete defaultValue; }
+        virtual ~TravelTargetValue() { delete value; }
     };	
 
     class IgnoreRpgTargetValue : public ManualSetValue<set<ObjectGuid>& >

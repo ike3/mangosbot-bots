@@ -73,6 +73,9 @@ bool BuyAction::Execute(Event event)
                 }
 
             }
+
+            if (itemIds.empty())
+                return true;
         }
 
         if (itemIds.empty())
@@ -120,13 +123,17 @@ bool BuyAction::BuyItem(VendorItemData const* tItems, ObjectGuid vendorguid, con
     {
         if (tItems->GetItem(slot)->item == itemId)
         {
+            bool couldBuy = false;
 #ifdef MANGOSBOT_TWO
-            bot->BuyItemFromVendorSlot(vendorguid, slot, itemId, 1, NULL_BAG, NULL_SLOT);
+            couldBuy = bot->BuyItemFromVendorSlot(vendorguid, slot, itemId, 1, NULL_BAG, NULL_SLOT);
 #else
-            bot->BuyItemFromVendor(vendorguid, itemId, 1, NULL_BAG, NULL_SLOT);
+            couldBuy = bot->BuyItemFromVendor(vendorguid, itemId, 1, NULL_BAG, NULL_SLOT);
 #endif
-            ostringstream out; out << "Buying " << ChatHelper::formatItem(proto);
-            ai->TellMaster(out.str());
+            if (couldBuy)
+            {
+                ostringstream out; out << "Buying " << ChatHelper::formatItem(proto);
+                ai->TellMaster(out.str());
+            }
             return true;
         }
     }

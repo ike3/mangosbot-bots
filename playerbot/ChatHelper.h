@@ -21,6 +21,7 @@ namespace ai
         static string formatItem(ItemPrototype const * proto, int count = 0, int total = 0);
         static string formatSpell(SpellEntry const *sInfo);
         static string formatGameobject(GameObject* go);
+        static string formatWorldobject(WorldObject* wo);
         static string formatQuestObjective(string name, int available, int required);
         static list<ObjectGuid> parseGameobjects(string& text);
 

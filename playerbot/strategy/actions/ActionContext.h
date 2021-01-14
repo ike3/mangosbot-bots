@@ -38,6 +38,8 @@
 #include "ChangeTalentsAction.h"
 #include "AutoLearnSpellAction.h"
 #include "XpGainAction.h"
+#include "InviteToGroupAction.h"
+#include "LeaveGroupAction.h"
 
 namespace ai
 {
@@ -125,6 +127,8 @@ namespace ai
             creators["auto talents"] = &ActionContext::auto_talents;
 			creators["auto learn spell"] = &ActionContext::auto_learn_spell;
             creators["xp gain"] = &ActionContext::xp_gain;
+            creators["invite nearby"] = &ActionContext::invite_nearby;
+            creators["leave far away"] = &ActionContext::leave_far_away;
         }
 
     private:
@@ -206,6 +210,8 @@ namespace ai
         static Action* auto_talents(PlayerbotAI* ai) { return new AutoSetTalentsAction(ai); }
 		static Action* auto_learn_spell(PlayerbotAI* ai) { return new AutoLearnSpellAction(ai); }
         static Action* xp_gain(PlayerbotAI* ai) { return new XpGainAction(ai); }
+        static Action* invite_nearby(PlayerbotAI* ai) { return new InviteNearbyToGroupAction(ai); }
+        static Action* leave_far_away(PlayerbotAI* ai) { return new LeaveFarAwayAction(ai); }
     };
 
 };

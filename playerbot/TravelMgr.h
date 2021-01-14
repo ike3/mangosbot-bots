@@ -188,13 +188,16 @@ namespace ai
     {
     public:
         TravelTarget(PlayerbotAI* ai) : AiObject(ai) {};
-        TravelTarget(PlayerbotAI* ai, TravelDestination* tDestination1, WorldPosition* wPosition1, bool groupCopy1 = false) : AiObject(ai) { setTarget(tDestination1, wPosition1); groupCopy = groupCopy1; }
+        TravelTarget(PlayerbotAI* ai, TravelDestination* tDestination1, WorldPosition* wPosition1) : AiObject(ai) { setTarget(tDestination1, wPosition1);}
+        ~TravelTarget();
         
-        void setTarget(TravelDestination* tDestination1, WorldPosition* wPosition1);
+        void setTarget(TravelDestination* tDestination1, WorldPosition* wPosition1, bool groupCopy1 = false);
         void setStatus(TravelStatus status);
         void setExpireIn(uint32 expireMs) { statusTime = getExpiredTime() + expireMs; }
 
         void copyTarget(TravelTarget* target);
+        void addVisitors();
+        void releaseVisitors();
 
         float distance(Player* bot) { WorldPosition pos(bot);  return wPosition->distance(&pos); };
         WorldLocation getLocation() { return wPosition->getLocation(); };
@@ -219,6 +222,7 @@ namespace ai
         uint32 statusTime = 0;
 
         bool groupCopy = false;
+        bool isVisitor = true;
 
         TravelDestination* tDestination = NULL;
         WorldPosition* wPosition = NULL;
@@ -236,14 +240,14 @@ namespace ai
         QuestStatusData* getQuestStatus(Player* bot, uint32 questId);
         bool getObjectiveStatus(Player* bot, Quest const* pQuest, int objective);
         uint32 getDialogStatus(Player* pPlayer, uint32 questgiver, Quest const* pQuest);
-        vector<QuestTravelDestination *> getQuestTravelDestinations(Player* bot, uint32 questId = -1, bool ignoreFull = false);
+        vector<TravelDestination *> getQuestTravelDestinations(Player* bot, uint32 questId = -1, bool ignoreFull = false);
 
+        void setNullTravelTarget(Player* player);
         NullTravelDestination* nullTravelDestination = new NullTravelDestination();
         WorldPosition* nullWorldPosition = new WorldPosition();
     protected:
         void logQuestError(uint32 errorNr, Quest * quest, uint32 objective = 0, uint32 unitId = 0, uint32 itemId = 0);
 
-        //vector<pair<uint32, QuestTravelDestination *>> questTravelDestinations;
         vector<QuestTravelDestination*> questGivers;
 
         UNORDERED_MAP<uint32, QuestContainer *> quests;

@@ -52,8 +52,8 @@ namespace ai
         {
             string current_target = GetTargetName();
             Unit* target = AI_VALUE(Unit*, GetTargetName());
-            if (target)
-                return MoveTo(AI_VALUE(Unit*, GetTargetName()), max(sPlayerbotAIConfig.meleeDistance, target->GetObjectBoundingRadius()) - sPlayerbotAIConfig.contactDistance);
+            // if (target) //maybe nullpointer.
+            return MoveTo(AI_VALUE(Unit*, GetTargetName()), max(sPlayerbotAIConfig.meleeDistance, target->GetObjectBoundingRadius()) - sPlayerbotAIConfig.contactDistance);
         }
     };
 

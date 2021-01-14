@@ -5,6 +5,7 @@
 #include "PlayerbotFactory.h"
 #include "RandomPlayerbotMgr.h"
 #include "ServerFacade.h"
+#include "TravelMgr.h"
 
 
 class LoginQueryHolder;
@@ -65,6 +66,13 @@ void PlayerbotHolder::LogoutPlayerBot(uint64 guid)
         }
         sLog.outDebug("Bot %s logged out", bot->GetName());
         bot->SaveToDB();
+
+        if (bot->GetPlayerbotAI()->GetAiObjectContext()) //Maybe some day re-write to delate all pointer values.
+        {
+            TravelTarget* target = bot->GetPlayerbotAI()->GetAiObjectContext()->GetValue<TravelTarget*>("travel target")->Get();
+            if (target)
+                delete target;
+        }
 
         WorldSession * botWorldSessionPtr = bot->GetSession();
         playerBots.erase(guid);    // deletes bot player ptr inside this WorldSession PlayerBotMap
@@ -129,8 +137,11 @@ void PlayerbotHolder::OnBotLogin(Player * const bot)
     if (group)
     {
         ai->ResetStrategies();
-        ai->ChangeStrategy("-rpg", BOT_STATE_NON_COMBAT);
-        ai->ChangeStrategy("-grind", BOT_STATE_NON_COMBAT);
+        if (master && !master->GetPlayerbotAI())
+        {
+            ai->ChangeStrategy("-rpg", BOT_STATE_NON_COMBAT);
+            ai->ChangeStrategy("-grind", BOT_STATE_NON_COMBAT);
+        }
     }
     else
     {

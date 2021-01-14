@@ -7,22 +7,24 @@ namespace ai
     class InviteToGroupAction : public Action
     {
     public:
-        InviteToGroupAction(PlayerbotAI* ai) : Action(ai, "invite") {}
+        InviteToGroupAction(PlayerbotAI* ai, string name = "invite") : Action(ai, name) {}
 
         virtual bool Execute(Event event)
         {
             Player* master = event.getOwner();
-            if (!master)
-                return false;
-
-            WorldPacket p;
-            uint32 roles_mask = 0;
-            p << master->GetName();
-            p << roles_mask;
-            bot->GetSession()->HandleGroupInviteOpcode(p);
-
-            return true;
+            return Invite(master);
         }
+
+        virtual bool Invite(Player* player);
     };
 
+
+    class InviteNearbyToGroupAction : public InviteToGroupAction
+    {
+    public:
+        InviteNearbyToGroupAction(PlayerbotAI* ai, string name = "invite nearby") : InviteToGroupAction(ai, name) {}
+
+        virtual bool Execute(Event event);
+        virtual bool isUseful();
+    };
 }

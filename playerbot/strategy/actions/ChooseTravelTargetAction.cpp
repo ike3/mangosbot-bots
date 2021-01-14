@@ -17,7 +17,9 @@ bool ChooseTravelTargetAction::Execute(Event event)
         return false;
     }
 
-    TravelTarget newTarget = ChooseTarget(target);
+    TravelTarget newTarget = TravelTarget(ai);
+    
+    SetTarget(&newTarget, target);
 
     if (!newTarget.isActive())
        return false;
@@ -64,6 +66,7 @@ void ChooseTravelTargetAction::ReportTravelTarget(TravelTarget* newTarget, Trave
             out << "Continuing ";
         else
             out << "Traveling ";
+
         out << round(newTarget->getDestination()->distanceTo(&botLocation));
 
         if (destination->getEntry() < 0 && gInfo)
@@ -97,35 +100,37 @@ void ChooseTravelTargetAction::ReportTravelTarget(TravelTarget* newTarget, Trave
     }
 }
 
-TravelTarget ChooseTravelTargetAction::ChooseTarget(TravelTarget* oldTarget)
+bool ChooseTravelTargetAction::SetTarget(TravelTarget* target, TravelTarget* oldTarget)
 {
-    TravelTarget target = GetGroupTarget();       //Join groups members
+    bool foundTarget = false;
 
-    if (!target.isActive() && urand(1,100) > 10)  //90% chance 
-        target = GetCurrentTarget(oldTarget);     //Extend current target.
+    foundTarget = SetGroupTarget(target);                  //Join groups members
 
-    if (!target.isActive() && urand(1, 100) > 5)  //95% chance
-        target = GetQuestTarget();                //Do a target of an active quest.
+    if (!foundTarget && urand(1, 100) > 10)                //90% chance 
+        foundTarget = SetCurrentTarget(target, oldTarget); //Extend current target.
 
-    if (!target.isActive())
-        target = GetNewQuestTarget();             //Find a new quest to do.
+    if (!foundTarget && urand(1, 100) > 5)                 //95% chance
+        foundTarget = SetQuestTarget(target);              //Do a target of an active quest.
 
-    if (!target.isActive())
-        target = GetNullTarget();                 //Idle a bit.
+    if (!foundTarget)
+        foundTarget = SetNewQuestTarget(target);           //Find a new quest to do.
+
+    if (!foundTarget)
+        SetNullTarget(target);                             //Idle a bit.
 
     return target;
 }
 
-TravelTarget ChooseTravelTargetAction::getBestTarget(vector<TravelDestination*> activeDestinations, vector<WorldPosition*> activePoints, bool groupCopy)
+bool ChooseTravelTargetAction::getBestDestination(vector<TravelDestination*> activeDestinations, vector<WorldPosition*> activePoints)
 {
     if (activeDestinations.empty() || activePoints.empty()) //No targets or no points.
-        return TravelTarget(ai);    
+        return false;
 
     WorldPosition botLocation(bot);
     vector<WorldPosition*> availablePoints = sTravelMgr.getNextPoint(&botLocation, activePoints); //Pick a good point.
 
     if (availablePoints.empty()) //No points available.
-        return TravelTarget(ai);
+        return false;
 
     TravelDestination* targetDestination;
 
@@ -133,13 +138,19 @@ TravelTarget ChooseTravelTargetAction::getBestTarget(vector<TravelDestination*> 
         if (activeTarget->distanceTo(availablePoints.front()) == 0)
             targetDestination = activeTarget;
 
-    TravelTarget travelTarget(ai, targetDestination, availablePoints.front(), groupCopy);
+    if (!targetDestination)
+        return false;
 
-    return travelTarget;
+    activeDestinations.clear();
+    activePoints.clear();
 
+    activeDestinations.push_back(targetDestination);
+    activePoints.push_back(availablePoints.front());
+
+    return true;
 }
 
-TravelTarget ChooseTravelTargetAction::GetGroupTarget()
+bool ChooseTravelTargetAction::SetGroupTarget(TravelTarget* target)
 {
     vector<TravelDestination*> activeDestinations;
     vector<WorldPosition*> activePoints;
@@ -179,49 +190,52 @@ TravelTarget ChooseTravelTargetAction::GetGroupTarget()
         if (!player->GetPlayerbotAI()->GetAiObjectContext())
             continue;
 
-        TravelTarget* target = player->GetPlayerbotAI()->GetAiObjectContext()->GetValue<TravelTarget*>("travel target")->Get();
+        TravelTarget* groupTarget = player->GetPlayerbotAI()->GetAiObjectContext()->GetValue<TravelTarget*>("travel target")->Get();
 
-        if (target->isGroupCopy())
+        if (groupTarget->isGroupCopy())
             continue;
 
-        if (!target->isActive())
+        if (!groupTarget->isActive())
             continue;
 
-        if (!target->getDestination()->isActive(bot))
+        if (!groupTarget->getDestination()->isActive(bot))
             continue;
 
-        activeDestinations.push_back(target->getDestination());
-        activePoints.push_back(target->getPosition());
+        activeDestinations.push_back(groupTarget->getDestination());
+        activePoints.push_back(groupTarget->getPosition());
     }
 
-    return getBestTarget(activeDestinations, activePoints, true);
+    if (!getBestDestination(activeDestinations, activePoints))
+        return false;
+
+    target->setTarget(activeDestinations.front(), activePoints.front(), true);
+
+    return target->isActive();
 }
 
-TravelTarget ChooseTravelTargetAction::GetCurrentTarget(TravelTarget* oldTarget)
+bool ChooseTravelTargetAction::SetCurrentTarget(TravelTarget* target, TravelTarget* oldTarget)
 {
-    TravelTarget travelTarget(ai);
-
     TravelDestination* oldDestination = oldTarget->getDestination();
 
     if (!oldDestination) //Does this target have a destination?
-        return travelTarget;
+        return false;
 
     if (!oldDestination->isActive(bot)) //Is the destination still valid?
-        return travelTarget;
+        return false;
 
     WorldPosition botLocation(bot);
     vector<WorldPosition*> availablePoints = oldDestination->nextPoint(&botLocation);
 
     if (availablePoints.empty())
-        return travelTarget;
+        return false;
 
-    travelTarget = TravelTarget(ai, oldTarget->getDestination(), oldTarget->getPosition(), oldTarget->isGroupCopy());
-    travelTarget.setStatus(TRAVEL_STATUS_TRAVEL);
+    target->setTarget(oldTarget->getDestination(), availablePoints.front());
+    target->setStatus(TRAVEL_STATUS_TRAVEL);
 
-    return travelTarget;
+    return target->isActive();
 }
 
-TravelTarget ChooseTravelTargetAction::GetQuestTarget()
+bool ChooseTravelTargetAction::SetQuestTarget(TravelTarget* target)
 {
     vector<TravelDestination*> activeDestinations;
     vector<WorldPosition*> activePoints;
@@ -236,49 +250,36 @@ TravelTarget ChooseTravelTargetAction::GetQuestTarget()
         if (quest.second.m_rewarded)
             continue;
 
-
         uint32 questId = quest.first;
         QuestStatusData* questStatus = &quest.second;
 
-        vector<QuestTravelDestination*> TravelDestinations = sTravelMgr.getQuestTravelDestinations(bot, questId, ai->GetMaster());
-
-        //ai->TellMaster("Checking : " + to_string(questId) + " - " + to_string(quest.second.m_status));
-        for (auto& dest : TravelDestinations)
+        vector<TravelDestination*> questDestinations = sTravelMgr.getQuestTravelDestinations(bot, questId, ai->GetMaster());
+        vector< WorldPosition*> questPoints;
+        
+        for (auto& questDestination : questDestinations)
         {
-           // ai->TellMaster("Found : " + dest->getName() + " " + dest->GetQuestTemplate()->GetTitle() + " points: " + to_string(dest->getPoints().size()));
+            vector< WorldPosition*> destinationPoints = questDestination->getPoints();
+            if (!destinationPoints.empty())
+                questPoints.insert(questPoints.end(), destinationPoints.begin(), destinationPoints.end());
         }
 
-        /*
-        //Pick one good point per destination.
-        for (auto& activeTarget : activeDestinations)
+        if (getBestDestination(questDestinations, questPoints))
         {
-            vector<WorldPosition*> points = activeTarget->nextPoint(&botLocation);
-            if (!points.empty())
-                activePoints.push_back(points.front());
-        }
-
-        //Find the best destination for this quest.
-        TravelTarget questTarget = getBestTarget(activeDestinations, activePoints);
-
-        //Add the best destination to the list.
-        activeDestinations.push_back(questTarget.getDestination());
-        */
-
-        activeDestinations.insert(activeDestinations.end(), TravelDestinations.begin(), TravelDestinations.end());
+            activeDestinations.push_back(questDestinations.front());
+            activePoints.push_back(questPoints.front());
+        }       
+        
     }
 
-    //Pick one good point per destination.
-    for (auto& activeTarget : activeDestinations)
-    {
-        vector<WorldPosition*> points = activeTarget->nextPoint(&botLocation);
-        if (!points.empty())
-            activePoints.push_back(points.front());
-    }
+    if (!getBestDestination(activeDestinations, activePoints))
+        return false;
 
-    return getBestTarget(activeDestinations, activePoints);
+    target->setTarget(activeDestinations.front(), activePoints.front());
+
+    return target->isActive();
 }
 
-TravelTarget ChooseTravelTargetAction::GetNewQuestTarget()
+bool ChooseTravelTargetAction::SetNewQuestTarget(TravelTarget* target)
 {
     vector<TravelDestination*> activeDestinations;
     vector<WorldPosition*> activePoints;
@@ -286,7 +287,7 @@ TravelTarget ChooseTravelTargetAction::GetNewQuestTarget()
     WorldPosition botLocation(bot);
 
     //Find quest givers.
-    vector<QuestTravelDestination*> TravelDestinations = sTravelMgr.getQuestTravelDestinations(bot, -1, ai->GetMaster());
+    vector<TravelDestination*> TravelDestinations = sTravelMgr.getQuestTravelDestinations(bot, -1, ai->GetMaster());
 
     activeDestinations.insert(activeDestinations.end(), TravelDestinations.begin(), TravelDestinations.end());
 
@@ -298,12 +299,19 @@ TravelTarget ChooseTravelTargetAction::GetNewQuestTarget()
             activePoints.push_back(points.front());
     }
 
-    return getBestTarget(activeDestinations, activePoints);
+    if (!getBestDestination(activeDestinations, activePoints))
+        return false;
+
+    target->setTarget(activeDestinations.front(), activePoints.front());
+
+    return target->isActive();
 }
 
-TravelTarget ChooseTravelTargetAction::GetNullTarget()
+bool ChooseTravelTargetAction::SetNullTarget(TravelTarget* target)
 {
-    return TravelTarget(ai, sTravelMgr.nullTravelDestination, sTravelMgr.nullWorldPosition, true);
+    target->setTarget(sTravelMgr.nullTravelDestination, sTravelMgr.nullWorldPosition, true);
+    
+    return true;
 }
 
 bool ChooseTravelTargetAction::isUseful()

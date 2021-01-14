@@ -1437,6 +1437,7 @@ void PlayerbotFactory::SetRandomSkill(uint16 id)
     if (!bot->HasSkill(id) || value > curValue)
         bot->SetSkill(id, value, maxValue);
 
+
 }
 
 void PlayerbotFactory::InitAvailableSpells()
@@ -1466,28 +1467,52 @@ void PlayerbotFactory::InitAvailableSpells()
         if (!trainer_spells)
             continue;
 
-		for (TrainerSpellMap::const_iterator itr = trainer_spells->spellList.begin(); itr != trainer_spells->spellList.end(); ++itr)
-		{
-			TrainerSpell const* tSpell = &itr->second;
+        for (TrainerSpellMap::const_iterator itr = trainer_spells->spellList.begin(); itr != trainer_spells->spellList.end(); ++itr)
+        {
+            TrainerSpell const* tSpell = &itr->second;
 
-			if (!tSpell)
-				continue;
+            if (!tSpell)
+                continue;
 
-			uint32 reqLevel = 0;
+            uint32 reqLevel = 0;
 
-			reqLevel = tSpell->isProvidedReqLevel ? tSpell->reqLevel : std::max(reqLevel, tSpell->reqLevel);
-			TrainerSpellState state = bot->GetTrainerSpellState(tSpell, reqLevel);
-			if (state != TRAINER_SPELL_GREEN)
-				continue;
+            reqLevel = tSpell->isProvidedReqLevel ? tSpell->reqLevel : std::max(reqLevel, tSpell->reqLevel);
+            TrainerSpellState state = bot->GetTrainerSpellState(tSpell, reqLevel);
+            if (state != TRAINER_SPELL_GREEN)
+                continue;
 
-		    SpellEntry const* proto = sServerFacade.LookupSpellInfo(tSpell->spell);
-		    if (!proto)
-		        continue;
+            SpellEntry const* proto = sServerFacade.LookupSpellInfo(tSpell->spell);
+            if (!proto)
+                continue;
+
+            if (co->TrainerType == TRAINER_TYPE_TRADESKILLS)
+            {
+                SpellEntry const* spell = sServerFacade.LookupSpellInfo(tSpell->spell);
+                if (spell)
+                {
+                    string SpellName = spell->SpellName[0];
+                    if (spell->Effect[EFFECT_INDEX_1] == SPELL_EFFECT_SKILL_STEP)
+                    {
+                        uint32 skill = spell->EffectMiscValue[EFFECT_INDEX_1];
+
+                        if (skill && !bot->HasSkill(skill))
+                        {
+                            SkillLineEntry const* pSkill = sSkillLineStore.LookupEntry(skill);
+                            if (pSkill)
+                            {
+                                if (SpellName.find("Apprentice") != string::npos && pSkill->categoryId == SKILL_CATEGORY_PROFESSION || pSkill->categoryId == SKILL_CATEGORY_SECONDARY)
+                                    continue;
+                            }
+                        }
+                    }
+                }
+            }
+
 
 #ifdef CMANGOS
-		    Spell* spell = new Spell(bot, proto, false);
-		    SpellCastTargets targets;
-		    targets.setUnitTarget(bot);
+            Spell* spell = new Spell(bot, proto, false);
+            SpellCastTargets targets;
+            targets.setUnitTarget(bot);
             spell->SpellStart(&targets);
 #endif
 
@@ -1504,7 +1529,7 @@ void PlayerbotFactory::InitAvailableSpells()
             }
             if (!learned) bot->learnSpell(tSpell->spell, false);
 #endif
-		}
+        }
     }
 }
 

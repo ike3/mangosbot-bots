@@ -10,27 +10,11 @@ namespace ai
         LeaveGroupAction(PlayerbotAI* ai, string name = "leave") : Action(ai, name) {}
 
         virtual bool Execute(Event event)
-        {
-            if (!bot->GetGroup())
-                return false;
-
-            ai->TellMaster("Goodbye!", PLAYERBOT_SECURITY_TALK);
-
-            WorldPacket p;
-            string member = bot->GetName();
-            p << uint32(PARTY_OP_LEAVE) << member << uint32(0);
-            bot->GetSession()->HandleGroupDisbandOpcode(p);
-
-            bool randomBot = sRandomPlayerbotMgr.IsRandomBot(bot);
-            if (randomBot)
-            {
-                bot->GetPlayerbotAI()->SetMaster(NULL);
-                sRandomPlayerbotMgr.ScheduleTeleport(bot->GetObjectGuid());
-            }
-
-            ai->ResetStrategies(!randomBot);
-            return true;
+        {            
+            return Leave();
         }
+
+        virtual bool Leave();
     };
 
     class PartyCommandAction : public LeaveGroupAction {
@@ -51,7 +35,7 @@ namespace ai
 
             Player* master = GetMaster();
             if (master && member == master->GetName())
-                return LeaveGroupAction::Execute(event);
+                return Leave();
 
             return false;
         }
@@ -70,10 +54,17 @@ namespace ai
             p >> guid;
 
             if (bot->GetObjectGuid() == guid)
-                return LeaveGroupAction::Execute(event);
+                return Leave();
 
             return false;
         }
     };
 
+
+    class LeaveFarAwayAction : public LeaveGroupAction {
+    public:
+        LeaveFarAwayAction(PlayerbotAI* ai) : LeaveGroupAction(ai, "leave far away") {}
+
+        virtual bool isUseful();
+    };
 }

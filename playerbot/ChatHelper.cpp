@@ -277,6 +277,13 @@ string ChatHelper::formatGameobject(GameObject* go)
     return out.str();
 }
 
+string ChatHelper::formatWorldobject(WorldObject* wo)
+{
+    ostringstream out;
+    out << "|cFFFFFF00|Hfound:" << wo->GetObjectGuid().GetRawValue() << ":" << wo->GetEntry() << ":" << "|h[" << wo->GetName() << "]|h|r";
+    return out.str();
+}
+
 string ChatHelper::formatSpell(SpellEntry const *sInfo)
 {
     ostringstream out;

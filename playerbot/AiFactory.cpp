@@ -406,11 +406,26 @@ void AiFactory::AddDefaultNonCombatStrategies(Player* player, PlayerbotAI* const
     }
 
     if (sRandomPlayerbotMgr.IsRandomBot(player))
-    {
-        if (!player->GetGroup())
+    {   
+        if (!player->GetGroup() || player->GetGroup()->GetLeaderGuid() == player->GetObjectGuid())
         {
             nonCombatEngine->addStrategy("collision");
             nonCombatEngine->ChangeStrategy(sPlayerbotAIConfig.randomBotNonCombatStrategies);
+        }
+        else {
+            PlayerbotAI* botAi = player->GetPlayerbotAI();
+            if (botAi)
+            {
+                Player* master = botAi->GetMaster();
+                if (master)
+                {
+                    if (master->GetPlayerbotAI())
+                    {
+                        nonCombatEngine->addStrategy("collision");
+                        nonCombatEngine->ChangeStrategy(sPlayerbotAIConfig.randomBotNonCombatStrategies);
+                    }
+                }
+            }
         }
     }
     else
