@@ -69,25 +69,9 @@ void ChooseTravelTargetAction::ReportTravelTarget(TravelTarget* newTarget, Trave
 
         out << round(newTarget->getDestination()->distanceTo(&botLocation));
 
-        if (destination->getEntry() < 0 && gInfo)
-            out << " to " << gInfo->name;
-        if (destination->getEntry() > 0 && cInfo)
-            out << " to " << cInfo->Name;
+        out << " for " << chat->formatQuest(quest);
 
-        out << " for";
-
-        if (destination->getName() == "QuestObjectiveTravelDestination")
-            out << " doing ";
-        else {
-            QuestRelationTravelDestination* rel = (QuestRelationTravelDestination*)newTarget->getDestination();
-
-            if (rel->getRelation() == 0)
-                out << " picking up ";
-            else
-                out << " handing in ";
-        }
-
-        out << "[" << quest->GetTitle() << "]";
+        out << " to " << QuestDestination->getTitle();
 
         ai->TellMaster(out);
     }

@@ -22,6 +22,7 @@ namespace ai
         static string formatSpell(SpellEntry const *sInfo);
         static string formatGameobject(GameObject* go);
         static string formatWorldobject(WorldObject* wo);
+        static string formatWorldEntry(int32 entry);
         static string formatQuestObjective(string name, int available, int required);
         static list<ObjectGuid> parseGameobjects(string& text);
 
@@ -40,6 +41,8 @@ namespace ai
         uint32 parseSkill(string& text);
 
         static bool parseable(string text);
+
+        void eraseAllSubStr(std::string& mainStr, const std::string& toErase);
 
     private:
         static map<string, uint32> consumableSubClasses;

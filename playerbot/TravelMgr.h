@@ -2,7 +2,9 @@
 
 #include "Common.h"
 #include "../botpch.h"
+#include "playerbot.h"
 #include "strategy/AiObject.h"
+
 
 using namespace std::placeholders;
 
@@ -31,7 +33,7 @@ namespace ai
         int getVistitor() { return visitors; }
     private:
         WorldLocation wLoc;
-        int visitors = 0;
+        int visitors = 0;        
     };
 
     //A destination for a bot to travel to and do something.
@@ -47,7 +49,7 @@ namespace ai
         void setCooldownDelay(uint32 delay) { cooldownDelay = delay; }
         void setMaxVisitors(int maxVisitors1 = 0, int maxVisitorsPerPoint1 = 0) { maxVisitors = maxVisitors1; maxVisitorsPerPoint = maxVisitorsPerPoint1; }
 
-        vector<WorldPosition*> getPoints(int max = -1);
+        vector<WorldPosition*> getPoints(bool ignoreFull = false);
         uint32 getExpireDelay() { return expireDelay; }
         uint32 getCooldownDelay() { return cooldownDelay; }
         void addVisitor() { visitors++; }
@@ -58,6 +60,7 @@ namespace ai
 
         virtual string getName() { return "TravelDestination"; }
         virtual uint32 getEntry() { return NULL; }
+        virtual string getTitle() { return "generic travel destination"; }
 
         WorldPosition* nearestPoint(WorldPosition* pos);
         float distanceTo(WorldPosition* pos) { return nearestPoint(pos)->distance(pos); }
@@ -88,6 +91,7 @@ namespace ai
         virtual bool isActive(Player* bot) { return false; }
 
         virtual string getName() { return "NullTravelDestination"; }
+        virtual string getTitle() { return "no destination"; }
 
         virtual bool isIn(WorldPosition* pos) { return true; }
         virtual bool isOut(WorldPosition* pos) { return false; }
@@ -109,6 +113,7 @@ namespace ai
 
         virtual string getName() { return "QuestTravelDestination"; }
         virtual uint32 getEntry() { return NULL; }
+        virtual string getTitle();
     protected:
         uint32 questId;
         Quest const* questTemplate;
@@ -124,26 +129,19 @@ namespace ai
 
         virtual string getName() { return "QuestRelationTravelDestination"; }
         virtual uint32 getEntry() { return entry; }
+        virtual string getTitle();
         virtual uint32 getRelation() { return relation; }
     private:
         uint32 relation;
         int32 entry;
     };
 
-    //A quest destination container for quick lookup of all destinations related to a quest.
-    struct QuestContainer
-    {
-        vector<QuestTravelDestination *> questGivers;
-        vector<QuestTravelDestination *> questTakers;
-        vector<QuestTravelDestination *> questObjectives;
-    };
-
     //A quest objective (creature/gameobject to grind/loot)
     class QuestObjectiveTravelDestination : public QuestTravelDestination
     {
     public:
-        QuestObjectiveTravelDestination(uint32 quest_id1, uint32 entry1, int objective1, float radiusMin1, float radiusMax1) : QuestTravelDestination(quest_id1, radiusMin1, radiusMax1) {
-            objective = objective1; entry = entry1;
+        QuestObjectiveTravelDestination(uint32 quest_id1, uint32 entry1, int objective1, float radiusMin1, float radiusMax1, uint32 itemId1 = 0) : QuestTravelDestination(quest_id1, radiusMin1, radiusMax1) {
+            objective = objective1; entry = entry1; itemId = itemId1;
         }
 
         bool isCreature() { return GetQuestTemplate()->ReqCreatureOrGOId[objective] > 0; }
@@ -161,10 +159,22 @@ namespace ai
         virtual string getName() { return "QuestObjectiveTravelDestination"; }
 
         virtual uint32 getEntry() { return entry; }
+
+        virtual string getTitle();
     private:
         int objective;
         int32 entry;
+        uint32 itemId = 0;
     };
+
+    //A quest destination container for quick lookup of all destinations related to a quest.
+    struct QuestContainer
+    {
+        vector<QuestTravelDestination*> questGivers;
+        vector<QuestTravelDestination*> questTakers;
+        vector<QuestTravelDestination*> questObjectives;
+    };
+
 
     enum TravelStatus
     {
@@ -239,8 +249,8 @@ namespace ai
         vector <WorldPosition*> getNextPoint(WorldPosition* center, vector<WorldPosition*> points);
         QuestStatusData* getQuestStatus(Player* bot, uint32 questId);
         bool getObjectiveStatus(Player* bot, Quest const* pQuest, int objective);
-        uint32 getDialogStatus(Player* pPlayer, uint32 questgiver, Quest const* pQuest);
-        vector<TravelDestination *> getQuestTravelDestinations(Player* bot, uint32 questId = -1, bool ignoreFull = false);
+        uint32 getDialogStatus(Player* pPlayer, int32 questgiver, Quest const* pQuest);
+        vector<TravelDestination *> getQuestTravelDestinations(Player* bot, uint32 questId = -1, bool ignoreFull = false, bool ignoreInactive = false, float maxDistance = 2000);
 
         void setNullTravelTarget(Player* player);
         NullTravelDestination* nullTravelDestination = new NullTravelDestination();

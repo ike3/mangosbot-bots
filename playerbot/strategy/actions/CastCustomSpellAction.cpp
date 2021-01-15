@@ -21,17 +21,6 @@ int FindLastSeparator(string text, string sep)
     return pos;
 }
 
-void eraseAllSubStr(std::string& mainStr, const std::string& toErase)
-{
-    size_t pos = std::string::npos;
-    // Search for the substring in string in a loop untill nothing is found
-    while ((pos = mainStr.find(toErase)) != std::string::npos)
-    {
-        // If found then erase it from string
-        mainStr.erase(pos, toErase.length());
-    }
-}
-
 static inline void ltrim(std::string& s) {
     s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](unsigned char ch) {
         return !std::isspace(ch);
@@ -53,7 +42,7 @@ bool CastCustomSpellAction::Execute(Event event)
             if (!target)
                 target = ai->GetUnit(go);
 
-            eraseAllSubStr(text, chat->formatWorldobject(ai->GetUnit(go)));
+            chat->eraseAllSubStr(text, chat->formatWorldobject(ai->GetUnit(go)));
         }
 
         ltrim(text);

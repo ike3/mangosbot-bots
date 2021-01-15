@@ -284,6 +284,30 @@ string ChatHelper::formatWorldobject(WorldObject* wo)
     return out.str();
 }
 
+string ChatHelper::formatWorldEntry(int32 entry)
+{
+    CreatureInfo const* cInfo = NULL;
+    GameObjectInfo const* gInfo = NULL;
+
+    if (entry > 0)
+        cInfo = ObjectMgr::GetCreatureTemplate(entry);
+    else
+        gInfo = ObjectMgr::GetGameObjectInfo(entry * -1);
+
+    ostringstream out;
+    out << "|cFFFFFF00|Hentry:" << abs(entry) << ":" << "|h[";
+    
+    if (entry < 0 && gInfo)
+        out << gInfo->name;
+    else if (entry > 0 && cInfo)
+        out << cInfo->Name;
+    else
+        out << "unknown";
+    
+    out << "]|h|r";
+    return out.str();
+}
+
 string ChatHelper::formatSpell(SpellEntry const *sInfo)
 {
     ostringstream out;
@@ -499,4 +523,15 @@ string ChatHelper::formatSkill(uint32 skill)
 string ChatHelper::formatBoolean(bool flag)
 {
     return flag ? "|cff00ff00ON|r" : "|cffffff00OFF|r";
+}
+
+void ChatHelper::eraseAllSubStr(std::string& mainStr, const std::string& toErase)
+{
+    size_t pos = std::string::npos;
+    // Search for the substring in string in a loop untill nothing is found
+    while ((pos = mainStr.find(toErase)) != std::string::npos)
+    {
+        // If found then erase it from string
+        mainStr.erase(pos, toErase.length());
+    }
 }

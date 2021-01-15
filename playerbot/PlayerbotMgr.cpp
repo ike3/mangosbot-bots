@@ -59,8 +59,9 @@ void PlayerbotHolder::LogoutPlayerBot(uint64 guid)
     if (bot)
     {
         bot->GetPlayerbotAI()->TellMaster("Goodbye!");
+        Player* master = bot->GetPlayerbotAI()->GetMaster();
         Group *group = bot->GetGroup();
-        if (group && !bot->InBattleGround() && !bot->InBattleGroundQueue())
+        if (group && !bot->InBattleGround() && !bot->InBattleGroundQueue() && !master->GetPlayerbotAI())
         {
             sPlayerbotDbStore.Save(bot->GetPlayerbotAI());
         }

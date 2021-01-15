@@ -7,9 +7,11 @@ using namespace ai;
 using namespace MaNGOS;
 
 
-vector<WorldPosition*> TravelDestination::getPoints(int max) {
-    if (max == -1)
-        max = maxVisitorsPerPoint;
+vector<WorldPosition*> TravelDestination::getPoints(bool ignoreFull) {
+    if (ignoreFull)
+        return points;
+
+    uint32 max = maxVisitorsPerPoint;
 
     if (max == 0)
         return points;
@@ -60,10 +62,14 @@ bool TravelDestination::isFull(bool ignoreFull) {
         return true;
 
     if (maxVisitorsPerPoint > 0)
-        if (getPoints().empty())
+        if (getPoints(ignoreFull).empty())
                 return true;
 
     return false;
+}
+
+string QuestTravelDestination::getTitle() {
+    return ChatHelper::formatQuest(questTemplate); 
 }
 
 bool QuestRelationTravelDestination::isActive(Player* bot) {
@@ -93,6 +99,18 @@ bool QuestRelationTravelDestination::isActive(Player* bot) {
     return true;
 }
 
+string QuestRelationTravelDestination::getTitle() {
+    ostringstream out;
+
+    if (relation == 0)
+        out << "questgiver";
+    else 
+        out << "questtaker";
+
+    out << " " << ChatHelper::formatWorldEntry(entry);
+    return out.str();
+}
+
 bool QuestObjectiveTravelDestination::isActive(Player* bot) {
     if (questTemplate->GetQuestLevel() > bot->getLevel())
         return false;
@@ -108,6 +126,21 @@ bool QuestObjectiveTravelDestination::isActive(Player* bot) {
 
     return sTravelMgr.getObjectiveStatus(bot, questTemplate, objective);
 }
+
+string QuestObjectiveTravelDestination::getTitle() {
+    ostringstream out;
+
+    out << "objective " << objective;
+
+    if (itemId)
+        out << " loot " << ChatHelper::formatItem(sObjectMgr.GetItemPrototype(itemId), 0, 0) << " from";
+    else
+        out << " to kill";
+
+    out << " " << ChatHelper::formatWorldEntry(entry);        
+    return out.str();
+}
+
 
 
 TravelTarget::~TravelTarget() {
@@ -131,12 +164,8 @@ void TravelTarget::setTarget(TravelDestination* tDestination1, WorldPosition* wP
 }
 
 void TravelTarget::copyTarget(TravelTarget* target) { 
-    releaseVisitors();
-
     setTarget(target->tDestination, target->wPosition);
     groupCopy = target->isGroupCopy();
-
-    addVisitors();
 }
 
 void TravelTarget::addVisitors() {
@@ -571,7 +600,7 @@ void TravelMgr::LoadQuestTravelTable()
 
             for (auto& u : units)
             {
-                int32 entry = u.type > 0 ? u.entry : u.entry * 1;
+                int32 entry = u.type > 0 ? u.entry : u.entry * -1;
 
                 if (entry != reqEntry)
                     continue;
@@ -579,9 +608,9 @@ void TravelMgr::LoadQuestTravelTable()
                 int32 guid = u.type == 0 ? u.guid : u.guid * -1;
 
                 point = WorldPosition(u.map, u.x, u.y, u.z, u.o);
-                pointsMap.insert(make_pair(guid, point));
+                pointsMap.insert(make_pair(u.guid, point));
 
-                loc->addPoint(&pointsMap.find(guid)->second);
+                loc->addPoint(&pointsMap.find(u.guid)->second);
             }
 
             if (loc->getPoints(0).empty())
@@ -620,7 +649,7 @@ void TravelMgr::LoadQuestTravelTable()
 
                 int32 entry = l.type == 0 ? l.entry : l.entry * -1;
 
-                loc = new QuestObjectiveTravelDestination(questId, entry, i, sPlayerbotAIConfig.tooCloseDistance, sPlayerbotAIConfig.sightDistance);
+                loc = new QuestObjectiveTravelDestination(questId, entry, i, sPlayerbotAIConfig.tooCloseDistance, sPlayerbotAIConfig.sightDistance, l.item);
                 loc->setExpireDelay(1 * 60 * 1000);
                 loc->setMaxVisitors(100, 1);
 
@@ -671,7 +700,7 @@ void TravelMgr::LoadQuestTravelTable()
     sLog.outString(">> Loaded " SIZEFMTD " quest details.", questIds.size());
 }
 
-uint32 TravelMgr::getDialogStatus(Player* pPlayer, uint32 questgiver, Quest const* pQuest)
+uint32 TravelMgr::getDialogStatus(Player* pPlayer, int32 questgiver, Quest const* pQuest)
 {
     uint32 dialogStatus = DIALOG_STATUS_NONE;
 
@@ -840,7 +869,7 @@ bool TravelMgr::getObjectiveStatus(Player* bot,  Quest const* pQuest, int object
     return false;
 }
 
-vector<TravelDestination*> TravelMgr::getQuestTravelDestinations(Player* bot, uint32 questId, bool ignoreFull)
+vector<TravelDestination*> TravelMgr::getQuestTravelDestinations(Player* bot, uint32 questId, bool ignoreFull, bool ignoreInactive, float maxDistance)
 {
     WorldPosition botLocation(bot);
 
@@ -849,8 +878,18 @@ vector<TravelDestination*> TravelMgr::getQuestTravelDestinations(Player* bot, ui
     if (questId == -1)
     {
         for (auto& dest : questGivers)
-            if (dest->isActive(bot) && !dest->isFull(ignoreFull) && dest->distanceTo(&botLocation) < 2000)
-                retTravelLocations.push_back(dest);
+        {
+            if (!ignoreInactive && !dest->isActive(bot))
+                continue;
+
+            if (dest->isFull(ignoreFull))
+                continue;
+
+            if (maxDistance > 0 && dest->distanceTo(&botLocation) > maxDistance)
+                continue;
+
+            retTravelLocations.push_back(dest);
+        }
     }
     else
     {
@@ -859,21 +898,31 @@ vector<TravelDestination*> TravelMgr::getQuestTravelDestinations(Player* bot, ui
         if (i != quests.end())
         {
             for (auto& dest : i->second->questTakers)
-                if (dest->isActive(bot) && !dest->isFull(ignoreFull) && dest->distanceTo(&botLocation) < 2000)
-                    retTravelLocations.push_back(dest);
+            {
+                if (!ignoreInactive && !dest->isActive(bot))
+                    continue;
+
+                if (dest->isFull(ignoreFull))
+                    continue;
+
+                if (maxDistance > 0 && dest->distanceTo(&botLocation) > maxDistance)
+                    continue;
+
+                retTravelLocations.push_back(dest);
+            }
 
             for (auto& dest : i->second->questObjectives)
             {
-                //bool act = dest->isActive(bot);
-               // bool full = dest->isFull(ignoreFull);
-                //float dist = dest->distanceTo(&botLocation);
+                if (!ignoreInactive && !dest->isActive(bot))
+                    continue;
 
-               // bot->Say(dest->GetQuestTemplate()->GetTitle() + " is " + (act ? "active" : "inactive") + " and " + (act ? "active" : "inactive") + " at " + to_string(dist) , 0);
+                if (dest->isFull(ignoreFull))
+                    continue;
 
-               // QuestTravelDestination* des = dest;
+                if (maxDistance > 0 && dest->distanceTo(&botLocation) > maxDistance)
+                    continue;
 
-                if (dest->isActive(bot) && !dest->isFull(ignoreFull) && dest->distanceTo(&botLocation) < 2000)
-                    retTravelLocations.push_back(dest);
+                retTravelLocations.push_back(dest);
             }
         }
     }
