@@ -21,6 +21,8 @@
 #include "BattleGround.h"
 #include "BattleGroundMgr.h"
 
+#include "TravelMgr.h"
+
 using namespace ai;
 using namespace MaNGOS;
 
@@ -1469,6 +1471,8 @@ void RandomPlayerbotMgr::PrintStats()
     }
 
     int dps = 0, heal = 0, tank = 0, active = 0, update = 0, randomize = 0, teleport = 0, changeStrategy = 0, dead = 0, revive = 0;
+    int stateCount[MAX_TRAVEL_STATE + 1] = { 0 };
+    vector<pair<Quest const*, int32>> questCount;
     for (PlayerBotMap::iterator i = playerBots.begin(); i != playerBots.end(); ++i)
     {
         Player* bot = i->second;
@@ -1542,6 +1546,36 @@ void RandomPlayerbotMgr::PrintStats()
             dps++;
             break;
         }
+
+        TravelTarget* target = bot->GetPlayerbotAI()->GetAiObjectContext()->GetValue<TravelTarget*>("travel target")->Get();
+        if (target)
+        {
+            TravelState state = target->getTravelState();
+            stateCount[state]++;
+
+            Quest const* quest;
+
+            if (target->getDestination())
+                quest = target->getDestination()->GetQuestTemplate();
+
+
+            if (quest)
+            {
+                bool found = false;
+
+                for (auto& q : questCount)
+                {
+                    if (q.first != quest)
+                        continue;
+
+                    q.second++;
+                    found = true;
+                }
+
+                if (!found)
+                    questCount.push_back(make_pair(quest, 1));
+            }
+        }
     }
 
     sLog.outString("Per level:");
@@ -1581,6 +1615,29 @@ void RandomPlayerbotMgr::PrintStats()
     sLog.outString("    teleport: %d", teleport);
     sLog.outString("    change_strategy: %d", changeStrategy);
     sLog.outString("    revive: %d", revive);
+
+    sLog.outString("Bots travel:");
+    sLog.outString("    travel to pick up quest: %d", stateCount[TRAVEL_STATE_TRAVEL_PICK_UP_QUEST]);
+    sLog.outString("    try to pick up quest: %d", stateCount[TRAVEL_STATE_WORK_PICK_UP_QUEST]);
+    sLog.outString("    travel to do quest: %d", stateCount[TRAVEL_STATE_TRAVEL_DO_QUEST]);
+    sLog.outString("    try to do quest: %d", stateCount[TRAVEL_STATE_WORK_DO_QUEST]);
+    sLog.outString("    travel to hand in quest: %d", stateCount[TRAVEL_STATE_TRAVEL_HAND_IN_QUEST]);
+    sLog.outString("    try to hand in quest: %d", stateCount[TRAVEL_STATE_WORK_HAND_IN_QUEST]);
+    sLog.outString("    idling: %d", stateCount[TRAVEL_STATE_IDLE]);
+
+
+    sort(questCount.begin(), questCount.end(), [](pair<Quest const*, int32> i, pair<Quest const*, int32> j) {return i.second > j.second; });
+
+    sLog.outString("Bots top quests:");
+
+    int cnt = 0;
+    for (auto& quest : questCount)
+    {
+        sLog.outString("    [%d]: %s (%d)", quest.second, quest.first->GetTitle().c_str(), quest.first->GetQuestLevel());
+        cnt++;
+        if (cnt > 25)
+            break;
+    }
 }
 
 double RandomPlayerbotMgr::GetBuyMultiplier(Player* bot)

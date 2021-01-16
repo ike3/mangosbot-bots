@@ -26,7 +26,7 @@ bool RpgAction::Execute(Event event)
         return false;
     }
 
-    if (!sServerFacade.IsInFront(bot, target, sPlayerbotAIConfig.sightDistance, CAST_ANGLE_IN_FRONT) && !bot->IsTaxiFlying())
+    if (!sServerFacade.IsInFront(bot, target, sPlayerbotAIConfig.sightDistance, CAST_ANGLE_IN_FRONT) && !bot->IsTaxiFlying() && !bot->IsFlying())
     {
         sServerFacade.SetFacingTo(bot, target, true);
         ai->SetNextCheckDelay(sPlayerbotAIConfig.globalCoolDown);

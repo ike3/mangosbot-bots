@@ -55,6 +55,8 @@ namespace ai
         void addVisitor() { visitors++; }
         void remVisitor() { visitors--; }
 
+        virtual Quest const* GetQuestTemplate() { return NULL; }
+
         virtual bool isActive(Player* bot) { return false; }
         bool isFull(bool ignoreFull = false);
 
@@ -88,6 +90,8 @@ namespace ai
     public:
         NullTravelDestination(int coodownDelay1 = 5 * 60 * 1000) : TravelDestination() { cooldownDelay = coodownDelay1;};
 
+        virtual Quest const* GetQuestTemplate() { return NULL; }
+
         virtual bool isActive(Player* bot) { return false; }
 
         virtual string getName() { return "NullTravelDestination"; }
@@ -107,7 +111,7 @@ namespace ai
         QuestTravelDestination(uint32 questId1, float radiusMin1, float radiusMax1) : TravelDestination(radiusMin1, radiusMax1) { questId = questId1; questTemplate = sObjectMgr.GetQuestTemplate(questId);
         }
 
-        Quest const* GetQuestTemplate() { return questTemplate;  }
+        virtual Quest const* GetQuestTemplate() { return questTemplate;  }
 
         virtual bool isActive(Player* bot) { return bot->IsActiveQuest(questId); }
 
@@ -175,6 +179,17 @@ namespace ai
         vector<QuestTravelDestination*> questObjectives;
     };
 
+    enum TravelState
+    {
+        TRAVEL_STATE_IDLE = 0,
+        TRAVEL_STATE_TRAVEL_PICK_UP_QUEST = 1,
+        TRAVEL_STATE_WORK_PICK_UP_QUEST = 2,
+        TRAVEL_STATE_TRAVEL_DO_QUEST = 3,
+        TRAVEL_STATE_WORK_DO_QUEST = 4,
+        TRAVEL_STATE_TRAVEL_HAND_IN_QUEST = 5,
+        TRAVEL_STATE_WORK_HAND_IN_QUEST = 6,
+        MAX_TRAVEL_STATE
+    };
 
     enum TravelStatus
     {
@@ -223,6 +238,9 @@ namespace ai
         bool isActive();   
         bool isWorking();
         bool isPreparing();
+
+        TravelState getTravelState();
+
 
         bool isGroupCopy() { return groupCopy; };
     protected:

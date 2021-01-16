@@ -18,7 +18,7 @@ bool CheckMountStateAction::Execute(Event event)
     if (!isOutdoor)
         return false;
 
-    if (bot->IsTaxiFlying())
+    if (bot->IsTaxiFlying() || bot->IsFlying())
         return false;
 
     if (!bot->GetPlayerbotAI()->HasStrategy("mount", BOT_STATE_NON_COMBAT) && !bot->IsMounted())

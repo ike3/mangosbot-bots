@@ -124,6 +124,9 @@ bool QuestObjectiveTravelDestination::isActive(Player* bot) {
             return false;
     }
 
+    if (questTemplate->GetType() == QUEST_TYPE_ELITE && !bot->GetGroup())
+        return false;
+
     return sTravelMgr.getObjectiveStatus(bot, questTemplate, objective);
 }
 
@@ -292,6 +295,38 @@ bool TravelTarget::isPreparing() {
         return false;
 
     return true;
+}
+
+TravelState TravelTarget::getTravelState() {
+    if (!tDestination || tDestination->getName() == "NullTravelDestination")
+        return TRAVEL_STATE_IDLE;
+
+    if (tDestination->getName() == "QuestRelationTravelDestination")
+    {
+        if (((QuestRelationTravelDestination*)tDestination)->getRelation() == 0)
+        {
+            if (isTraveling() || isPreparing())
+                return TRAVEL_STATE_TRAVEL_PICK_UP_QUEST;
+            if (isWorking())
+                return TRAVEL_STATE_WORK_PICK_UP_QUEST;
+        }
+        else
+        {
+            if (isTraveling() || isPreparing())
+                return TRAVEL_STATE_TRAVEL_HAND_IN_QUEST;
+            if (isWorking())
+                return TRAVEL_STATE_WORK_HAND_IN_QUEST;
+        }
+    }
+    else if (tDestination->getName() == "QuestObjectiveTravelDestination")
+    {
+        if (isTraveling() || isPreparing())
+            return TRAVEL_STATE_TRAVEL_DO_QUEST;
+        if (isWorking())
+            return TRAVEL_STATE_WORK_DO_QUEST;
+    }
+
+    return TRAVEL_STATE_IDLE;
 }
 
 void TravelMgr::Clear()

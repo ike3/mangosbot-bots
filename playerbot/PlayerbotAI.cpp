@@ -213,7 +213,7 @@ void PlayerbotAI::HandleTeleportAck()
 
 void PlayerbotAI::Reset()
 {
-    if (bot->IsTaxiFlying())
+    if (bot->IsTaxiFlying() || bot->IsFlying())
         return;
 
     currentEngine = engines[BOT_STATE_NON_COMBAT];
@@ -494,11 +494,7 @@ void PlayerbotAI::DoNextAction()
         return;
     }
 
-    if (bot->IsTaxiFlying()
-#ifdef MANGOSBOT_ZERO
-            || bot->IsFlying()
-#endif
-            )
+    if (bot->IsTaxiFlying() || bot->IsFlying())
     {
         SetNextCheckDelay(sPlayerbotAIConfig.passiveDelay);
         return;
@@ -1261,7 +1257,7 @@ bool PlayerbotAI::TellMaster(string text, PlayerbotSecurityLevel securityLevel)
     if (!TellMasterNoFacing(text, securityLevel))
         return false;
 
-    if (master && !sServerFacade.isMoving(bot) && !sServerFacade.IsInCombat(bot) && bot->GetMapId() == master->GetMapId() && !bot->IsTaxiFlying())
+    if (master && !sServerFacade.isMoving(bot) && !sServerFacade.IsInCombat(bot) && bot->GetMapId() == master->GetMapId() && !bot->IsTaxiFlying() && !bot->IsFlying())
     {
         if (!sServerFacade.IsInFront(bot, master, sPlayerbotAIConfig.sightDistance, EMOTE_ANGLE_IN_FRONT))
             sServerFacade.SetFacingTo(bot, master);
@@ -1544,7 +1540,7 @@ bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target, Item* itemTarget)
 	bot->SetSelectionGuid(target->GetObjectGuid());
 
     WorldObject* faceTo = target;
-    if (!sServerFacade.IsInFront(bot, faceTo, sPlayerbotAIConfig.sightDistance, CAST_ANGLE_IN_FRONT) && !bot->IsTaxiFlying())
+    if (!sServerFacade.IsInFront(bot, faceTo, sPlayerbotAIConfig.sightDistance, CAST_ANGLE_IN_FRONT))
     {
         if (!sServerFacade.isMoving(bot)) sServerFacade.SetFacingTo(bot, faceTo);
         failWithDelay = true;
