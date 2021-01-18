@@ -21,6 +21,11 @@ bool CheckMountStateAction::Execute(Event event)
     if (bot->IsTaxiFlying() || bot->IsFlying())
         return false;
 
+#ifndef MANGOSBOT_ZERO
+    if (bot->InArena())
+        return false;
+#endif
+
     if (!bot->GetPlayerbotAI()->HasStrategy("mount", BOT_STATE_NON_COMBAT) && !bot->IsMounted())
         return false;
 
@@ -136,7 +141,7 @@ bool CheckMountStateAction::Execute(Event event)
     if (!bot->IsMounted() && (fartarget || chasedistance))
         return Mount();
 
-    if ((attackdistance || !noattackers) && bot->IsMounted())
+    if (attackdistance && bot->IsMounted())
     {
         WorldPacket emptyPacket;
         bot->GetSession()->HandleCancelMountAuraOpcode(emptyPacket);
@@ -186,6 +191,9 @@ bool CheckMountStateAction::Mount()
     map<uint32, map<int32, vector<uint32> > > allSpells;
     if (bot->GetPureSkillValue(SKILL_RIDING) <= 75 && bot->getLevel() < 60)
         masterSpeed = 59;
+
+    if (bot->InBattleGround() && masterSpeed > 99)
+        masterSpeed = 99;
 
     for (PlayerSpellMap::iterator itr = bot->GetSpellMap().begin(); itr != bot->GetSpellMap().end(); ++itr)
     {
