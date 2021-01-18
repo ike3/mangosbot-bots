@@ -22,10 +22,12 @@ class RandomPlayerbotFactory
         bool CreateRandomBot(uint8 cls);
         static void CreateRandomBots();
         static void CreateRandomGuilds();
+        static void CreateRandomArenaTeams();
 
 	private:
         string CreateRandomBotName(uint8 gender);
         static string CreateRandomGuildName();
+        static string CreateRandomArenaTeamName();
 
     private:
         uint32 accountId;

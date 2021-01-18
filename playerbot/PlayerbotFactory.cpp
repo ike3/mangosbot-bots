@@ -273,7 +273,7 @@ void PlayerbotFactory::Randomize(bool incremental)
     bot->SaveToDB(); //thesawolf - save save save (hopefully avoids dupes)
     InitGuild();
 #ifndef MANGOSBOT_ZERO
-	//InitArenaTeam();
+	InitArenaTeam();
 #endif
     if (pmo) pmo->finish();
 
@@ -2248,49 +2248,43 @@ void PlayerbotFactory::InitImmersive()
 #ifndef MANGOSBOT_ZERO
 void PlayerbotFactory::InitArenaTeam()
 {
-   uint8 slot = ArenaTeam::GetSlotByType(ARENA_TYPE_2v2);
-   if (slot >= MAX_ARENA_SLOT)
-      return;
+    if (sPlayerbotAIConfig.randomBotArenaTeams.empty())
+        RandomPlayerbotFactory::CreateRandomArenaTeams();
 
-   // Check if player is already in an arena team
-   if (bot->GetArenaTeamId(slot))
-      sLog.outError("Bot %s: already in an arena team of that size (1v1)", bot->GetName());
-      return;
+    vector<uint32> arenateams;
+    for (list<uint32>::iterator i = sPlayerbotAIConfig.randomBotArenaTeams.begin(); i != sPlayerbotAIConfig.randomBotArenaTeams.end(); ++i)
+        arenateams.push_back(*i);
 
+    if (arenateams.empty())
+    {
+        sLog.outError("No random arena team available");
+        return;
+    }
 
+    int index = urand(0, arenateams.size() - 1);
+    uint32 arenateamID = arenateams[index];
+    ArenaTeam* arenateam = sObjectMgr.GetArenaTeamById(arenateamID);
+    if (!arenateam)
+    {
+        sLog.outError("Invalid arena team %u", arenateamID);
+        return;
+    }
 
-   // Teamname = playername
-   // if teamname exist, we have to choose another name (playername number)
-   int i = 1;
-   std::stringstream teamName;
-   teamName << bot->GetName();
-   do
-   {
-      if (sObjectMgr.GetArenaTeamByName(teamName.str()) != NULL) // teamname exist, so choose another name
-      {
-         teamName.str(std::string());
-         teamName << bot->GetName() << i;
-      }
-      else
-         break;
-   } while (i < 100); // should never happen
+    if (arenateam->GetMembersSize() < ((uint32)arenateam->GetType() * 2) && bot->getLevel() >= 70)
+    {
+        ObjectGuid capt = arenateam->GetCaptainGuid();
+        Player* botcaptain = sObjectMgr.GetPlayer(capt);
 
-                  // Create arena team
-   ArenaTeam* arenaTeam = new ArenaTeam();
+        if (botcaptain->GetTeam() == bot->GetTeam()) //need?
+        {
+            arenateam->AddMember(bot->GetObjectGuid());
 
-   if (!arenaTeam->Create(bot->GetObjectGuid(), ARENA_TYPE_2v2, teamName.str()))
-   {
-      delete arenaTeam;
-      return;
-   }
+            uint32 backgroundColor = urand(0xFF000000, 0xFFFFFFFF), emblemStyle = urand(0, 5), emblemColor = urand(0xFF000000, 0xFFFFFFFF), borderStyle = urand(0, 5), borderColor = urand(0xFF000000, 0xFFFFFFFF);
 
-   // Register arena team
-   sObjectMgr.AddArenaTeam(arenaTeam);
-   arenaTeam->AddMember(bot->GetObjectGuid());
-
-   ChatHandler(bot->GetSession()).SendSysMessage("1v1 Arenateam successful created!");
-
-   return;
+            arenateam->SetEmblem(backgroundColor, emblemStyle, emblemColor, borderStyle, borderColor);
+        }
+    }
+    bot->SaveToDB();
 }
 #endif
 

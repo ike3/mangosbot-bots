@@ -76,6 +76,9 @@ public:
     bool deleteRandomBotAccounts;
     uint32 randomBotGuildCount;
     bool deleteRandomBotGuilds;
+    uint32 randomBotArenaTeamCount;
+    bool deleteRandomBotArenaTeams;
+    std::list<uint32> randomBotArenaTeams;
 	bool RandombotsWalkingRPG;
 	bool RandombotsWalkingRPGInDoors;
     std::list<uint32> randomBotGuilds;

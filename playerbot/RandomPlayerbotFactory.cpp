@@ -11,6 +11,15 @@
 #include "RandomPlayerbotFactory.h"
 #include "SystemConfig.h"
 
+#ifndef MANGOSBOT_ZERO
+#ifdef CMANGOS
+#include "Arena/ArenaTeam.h"
+#endif
+#ifdef MANGOS
+#include "ArenaTeam.h"
+#endif
+#endif
+
 
 map<uint8, vector<uint8> > RandomPlayerbotFactory::availableRaces;
 
@@ -421,4 +430,153 @@ string RandomPlayerbotFactory::CreateRandomGuildName()
     delete result;
     return gname;
 }
+
+#ifndef MANGOSBOT_ZERO
+void RandomPlayerbotFactory::CreateRandomArenaTeams()
+{
+    vector<uint32> randomBots;
+
+    QueryResult* results = PlayerbotDatabase.PQuery(
+        "select `bot` from ai_playerbot_random_bots where event = 'add'");
+
+    if (results)
+    {
+        do
+        {
+            Field* fields = results->Fetch();
+            uint32 bot = fields[0].GetUInt32();
+            randomBots.push_back(bot);
+        } while (results->NextRow());
+        delete results;
+    }
+
+    if (sPlayerbotAIConfig.deleteRandomBotArenaTeams)
+    {
+        sLog.outString("Deleting random bot arena teams...");
+        for (vector<uint32>::iterator i = randomBots.begin(); i != randomBots.end(); ++i)
+        {
+            ObjectGuid captain(HIGHGUID_PLAYER, *i);
+            ArenaTeam* arenateam = sObjectMgr.GetArenaTeamByCaptain(captain);
+            if (arenateam)
+                //sObjectMgr.RemoveArenaTeam(arenateam->GetId());
+                arenateam->Disband(NULL);
+        }
+        sLog.outString("Random bot arena teams deleted");
+    }
+
+    int arenaTeamNumber = 0;
+    vector<ObjectGuid> availableCaptains;
+    for (vector<uint32>::iterator i = randomBots.begin(); i != randomBots.end(); ++i)
+    {
+        ObjectGuid captain(HIGHGUID_PLAYER, *i);
+        ArenaTeam* arenateam = sObjectMgr.GetArenaTeamByCaptain(captain);
+        if (arenateam)
+        {
+            ++arenaTeamNumber;
+            sPlayerbotAIConfig.randomBotArenaTeams.push_back(arenateam->GetId());
+        }
+        else
+        {
+            Player* player = sObjectMgr.GetPlayer(captain);
+
+            if (!arenateam && player && player->getLevel() >= 70)
+                availableCaptains.push_back(captain);
+        }
+    }
+
+    for (; arenaTeamNumber < sPlayerbotAIConfig.randomBotArenaTeamCount; ++arenaTeamNumber)
+    {
+        string arenaTeamName = CreateRandomArenaTeamName();
+        if (arenaTeamName.empty())
+            continue;
+
+        if (availableCaptains.empty())
+        {
+            sLog.outError("No captains for random arena teams available");
+            continue;
+        }
+
+        int index = urand(0, availableCaptains.size() - 1);
+        ObjectGuid captain = availableCaptains[index];
+        Player* player = sObjectMgr.GetPlayer(captain);
+        if (!player)
+        {
+            sLog.outError("Cannot find player for captain %d", captain);
+            continue;
+        }
+
+        if (player->getLevel() < 70)
+        {
+            sLog.outError("Bot %d must be level 70 to create an arena team", captain);
+            continue;
+        }
+
+        QueryResult* results = CharacterDatabase.PQuery("SELECT `type` FROM ai_playerbot_arena_team_names WHERE name = '%s'", arenaTeamName.c_str());
+        if (!results)
+        {
+            sLog.outError("No valid types for arena teams");
+            return;
+        }
+
+        Field *fields = results->Fetch();
+        uint8 slot = fields[0].GetUInt32();
+        delete results;
+
+        ArenaType type;
+        switch (slot)
+        {
+        case 2:
+            type = ARENA_TYPE_2v2;
+            break;
+        case 3:
+            type = ARENA_TYPE_3v3;
+            break;
+        case 5:
+            type = ARENA_TYPE_5v5;
+            break;
+        }
+
+        ArenaTeam* arenateam = new ArenaTeam();
+        if (!arenateam->Create(player->GetObjectGuid(), type, arenaTeamName))
+        {
+            sLog.outError("Error creating arena team %s", arenaTeamName.c_str());
+            continue;
+        }
+        arenateam->SetCaptain(player->GetObjectGuid());
+        sObjectMgr.AddArenaTeam(arenateam);
+        sPlayerbotAIConfig.randomBotArenaTeams.push_back(arenateam->GetId());
+    }
+
+    sLog.outString("%d random bot arena teams available", arenaTeamNumber);
+}
+
+string RandomPlayerbotFactory::CreateRandomArenaTeamName()
+{
+    QueryResult* result = CharacterDatabase.Query("SELECT MAX(name_id) FROM ai_playerbot_arena_team_names");
+    if (!result)
+    {
+        sLog.outError("No more names left for random arena teams");
+        return "";
+    }
+
+    Field *fields = result->Fetch();
+    uint32 maxId = fields[0].GetUInt32();
+    delete result;
+
+    uint32 id = urand(0, maxId);
+    result = CharacterDatabase.PQuery("SELECT n.name FROM ai_playerbot_arena_team_names n "
+        "LEFT OUTER JOIN arena_team e ON e.name = n.name "
+        "WHERE e.arenateamid IS NULL AND n.name_id >= '%u' LIMIT 1", id);
+    if (!result)
+    {
+        sLog.outError("No more names left for random arena teams");
+        return "";
+    }
+
+    fields = result->Fetch();
+    string aname = fields[0].GetString();
+    delete result;
+    return aname;
+}
+#endif
 
