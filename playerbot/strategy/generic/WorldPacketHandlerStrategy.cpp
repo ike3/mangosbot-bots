@@ -13,6 +13,10 @@ void WorldPacketHandlerStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("accept invitation", relevance), NULL)));
 
     triggers.push_back(new TriggerNode(
+        "uninvite",
+        NextAction::array(0, new NextAction("uninvite", relevance), NULL)));
+
+    triggers.push_back(new TriggerNode(
         "group set leader",
         NextAction::array(0, new NextAction("leader", relevance), NULL)));
 
@@ -78,6 +82,10 @@ void WorldPacketHandlerStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
     triggers.push_back(new TriggerNode(
         "guild invite",
         NextAction::array(0, new NextAction("guild accept", relevance), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "petition offer",
+        NextAction::array(0, new NextAction("petition sign", relevance), NULL)));
 
     triggers.push_back(new TriggerNode(
         "seldom",

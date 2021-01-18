@@ -49,11 +49,16 @@ namespace ai
         {
             WorldPacket& p = event.getPacket();
             p.rpos(0);
-            ObjectGuid guid;
+            std::string membername;
+            p >> membername;
 
-            p >> guid;
+            // player not found
+            if (!normalizePlayerName(membername))
+            {
+                return false;
+            }
 
-            if (bot->GetObjectGuid() == guid)
+            if (bot->GetName() == membername)
                 return Leave();
 
             return false;

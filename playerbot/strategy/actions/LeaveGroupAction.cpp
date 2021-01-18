@@ -10,8 +10,8 @@ using namespace ai;
 namespace ai
 {
 	bool LeaveGroupAction::Leave() {
-        if (!bot->GetGroup())
-            return false;
+        //if (!bot->GetGroup())
+        //    return false;
 
         ai->TellMaster("Goodbye!", PLAYERBOT_SECURITY_TALK);
 
