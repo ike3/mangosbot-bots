@@ -19,7 +19,7 @@ bool PetitionSignAction::Execute(Event event)
     p.rpos(0);
     ObjectGuid petitionGuid;
     ObjectGuid inviter;
-    uint8 unk;
+    uint8 unk = 0;
     bool isArena = false;
     p >> petitionGuid >> inviter;
 
