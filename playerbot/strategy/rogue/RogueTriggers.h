@@ -103,6 +103,11 @@ namespace ai
             if (bot->InBattleGround())
                 distance += 15;
 
+#ifndef MANGOSBOT_ZERO
+            if (bot->InArena())
+                distance += 15;
+#endif
+
             return (target &&
                 sServerFacade.GetDistance2d(bot, target) < distance);
         }
