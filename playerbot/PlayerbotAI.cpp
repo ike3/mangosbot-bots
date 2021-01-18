@@ -1198,7 +1198,7 @@ bool PlayerbotAI::TellMasterNoFacing(string text, PlayerbotSecurityLevel securit
 
     if ((!master || master->GetPlayerbotAI()) && sPlayerbotAIConfig.randomBotSayWithoutMaster)
     {
-        bot->Say(text, 0);
+        bot->Say(text, (bot->GetTeam() == ALLIANCE ? LANG_COMMON : LANG_ORCISH));
         return true;
     }
 

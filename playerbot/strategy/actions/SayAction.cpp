@@ -84,9 +84,9 @@ bool SayAction::Execute(Event event)
     }
 
     if (text.find("/y ") == 0)
-        bot->Yell(text.substr(3), LANG_UNIVERSAL);
+        bot->Yell(text.substr(3), (bot->GetTeam() == ALLIANCE ? LANG_COMMON : LANG_ORCISH));
     else
-        bot->Say(text, LANG_UNIVERSAL);
+        bot->Say(text, (bot->GetTeam() == ALLIANCE ? LANG_COMMON : LANG_ORCISH));
 
     return true;
 }
