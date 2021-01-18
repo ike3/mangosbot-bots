@@ -55,7 +55,7 @@ bool MovementAction::MoveNear(WorldObject* target, float distance)
     return false;
 }
 
-bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle)
+bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, bool react)
 {
     UpdateMovementState();
 
@@ -75,7 +75,8 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle)
     float distance = sServerFacade.GetDistance2d(bot, x, y);
     if (sServerFacade.IsDistanceGreaterThan(distance, sPlayerbotAIConfig.targetPosRecalcDistance))
     {
-        WaitForReach(distance);
+        if (!react)
+            WaitForReach(distance);
 
         bot->HandleEmoteState(0);
         if (bot->IsSitState())
