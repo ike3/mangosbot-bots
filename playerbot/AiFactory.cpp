@@ -15,6 +15,7 @@
 #include "Player.h"
 #include "PlayerbotAIConfig.h"
 #include "RandomPlayerbotMgr.h"
+#include "BattleGroundMgr.h"
 
 
 AiObjectContext* AiFactory::createAiObjectContext(Player* player, PlayerbotAI* ai)
@@ -211,8 +212,6 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
             {
                 engine->removeStrategy("ranged");
                 engine->addStrategies("bear", "tank aoe", "flee", "close", NULL);
-                if(urand(0, 100) > 50)
-                    engine->addStrategy("dps");
             }
             break;
         case CLASS_HUNTER:
@@ -245,11 +244,6 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
             engine->addStrategy("flee");
             engine->addStrategy("boost");
 
-            if (player->getClass() == CLASS_MAGE)
-            {
-                engine->removeStrategy("ranged");
-            }
-
             if (player->getClass() == CLASS_WARLOCK)
             {
                 engine->removeStrategy("ranged");
@@ -258,7 +252,6 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
             if (player->getClass() == CLASS_DRUID && tab == 2)
             {
                 engine->addStrategies("caster", "caster aoe", NULL);
-                engine->removeStrategy("ranged");
             }
 
             if (player->getClass() == CLASS_DRUID && tab == 1 && urand(0, 100) > 50)
@@ -270,18 +263,15 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
             {
                 engine->removeStrategy("heal");
                 engine->addStrategies("shadow aoe", "holy", NULL);
-                engine->removeStrategy("ranged");
             }
 
             if (player->getClass() == CLASS_SHAMAN && tab == 2)
             {
                 engine->addStrategies("caster", "caster aoe", NULL);
-                engine->removeStrategy("ranged");
             }
 
             if (player->getClass() == CLASS_PALADIN && tab == 0)
             {
-                engine->removeStrategy("ranged");
                 engine->addStrategies("dps", "close", NULL);
             }
 
@@ -301,24 +291,26 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
     }
 
     // Battleground switch
-    if (player->InBattleGround() && player->GetBattleGroundTypeId() == BattleGroundTypeId::BATTLEGROUND_WS)
+    if (player->InBattleGround())
     {
-        engine->addStrategies("racials", "chat", "default", "aoe", "potions", "warsong", "conserve mana", "cast time", /*"pvp",*/ NULL);
+        if (player->GetBattleGroundTypeId() == BATTLEGROUND_WS)
+            engine->addStrategy("warsong");
+
+#ifndef MANGOSBOT_ZERO
+        if (player->InArena())
+        {
+            engine->addStrategy("arena");
+            engine->removeStrategy("ranged");
+        }
+#endif
+        engine->addStrategies("racials", "chat", "default", "aoe", "potions", "conserve mana", "cast time", "pvp", NULL);
         engine->removeStrategy("custom::say");
         engine->removeStrategy("flee");
         engine->removeStrategy("threat");
         engine->addStrategy("boost");
 
-        if (player->getClass() == CLASS_DRUID && tab == 1)
-        {
-            engine->addStrategy("dps");
-        }
-
         if ((player->getClass() == CLASS_DRUID && tab == 2) || (player->getClass() == CLASS_SHAMAN && tab == 2))
             engine->addStrategies("caster", "caster aoe", NULL);
-
-        if(player->getClass() == CLASS_WARRIOR || player->getClass() == CLASS_PALADIN)
-            engine->addStrategy("dps");
 
         if (player->getClass() != CLASS_HUNTER)
             engine->removeStrategy("ranged");
@@ -434,10 +426,17 @@ void AiFactory::AddDefaultNonCombatStrategies(Player* player, PlayerbotAI* const
     }
 
     // Battleground switch
-    if (player->InBattleGround() && player->GetBattleGroundTypeId() == BattleGroundTypeId::BATTLEGROUND_WS)
+    if (player->InBattleGround())
     {
+        if (player->GetBattleGroundTypeId() == BATTLEGROUND_WS)
+            nonCombatEngine->addStrategy("warsong");
+
+#ifndef MANGOSBOT_ZERO
+        if (player->InArena())
+            nonCombatEngine->addStrategy("arena");
+#endif
         nonCombatEngine->addStrategies("nc", "chat",
-            "default", "emote", "buff", "food", "conserve mana", "collision", "mount", "warsong", NULL);
+            "default", "emote", "buff", "food", "conserve mana", "collision", "mount", NULL);
         nonCombatEngine->removeStrategy("custom::say");
     }
 }

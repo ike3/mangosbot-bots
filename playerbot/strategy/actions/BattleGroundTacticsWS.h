@@ -35,7 +35,15 @@ private:
    ObjectGuid AllianceWsgFlagStand(BattleGround *bg);
    ObjectGuid HordeWsgFlagStand(BattleGround *bg);
    ObjectGuid FindWsHealthy(BattleGround *bg);
-   //ObjectGuid FindWsGHordeFlag(BattleGround *bg);
-   ObjectGuid FindWsGAllianceFlag(BattleGround *bg);
-   ObjectGuid FindWsGHordeFlag(BattleGround *bg);
 };
+
+#ifndef MANGOSBOT_ZERO
+class ArenaTactics : public MovementAction
+{
+public:
+    ArenaTactics(PlayerbotAI* ai, string name = "arena tactics") : MovementAction(ai, name) {}
+    virtual bool Execute(Event event);
+private:
+    bool moveToCenter(BattleGround *bg);
+};
+#endif

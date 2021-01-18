@@ -263,6 +263,9 @@ bool PlayerbotAIConfig::Initialize()
     sLog.outString("Loading Quest Detail Data...");
     sTravelMgr.LoadQuestTravelTable();
 
+    if (sPlayerbotAIConfig.randomBotJoinBG)
+        sRandomPlayerbotMgr.LoadBattleMastersCache();
+
     sLog.outString("---------------------------------------");
     sLog.outString("        AI Playerbot initialized       ");
     sLog.outString("---------------------------------------");

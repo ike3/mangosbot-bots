@@ -46,6 +46,15 @@ namespace ai
         virtual string getName() { return "warsong"; }
     };
 
+    class ArenaStrategy : public Strategy
+    {
+    public:
+        ArenaStrategy(PlayerbotAI* ai) : Strategy(ai) {};
+        virtual int GetType() { return STRATEGY_TYPE_GENERIC; }
+        virtual void InitTriggers(std::list<TriggerNode*> &triggers);
+        virtual string getName() { return "arena"; }
+    };
+
     class MountStrategy : public Strategy
     {
     public:

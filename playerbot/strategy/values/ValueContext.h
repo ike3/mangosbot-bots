@@ -198,9 +198,18 @@ namespace ai
             creators["party member without item"] = &ValueContext::party_member_without_item;
             creators["party member without food"] = &ValueContext::party_member_without_food;
             creators["party member without water"] = &ValueContext::party_member_without_water;
+
+            creators["bg type"] = &ValueContext::bg_type;
+            creators["arena type"] = &ValueContext::arena_type;
+            creators["bg role"] = &ValueContext::bg_role;
+            creators["bg master"] = &ValueContext::bg_master;
         }
 
     private:
+        static UntypedValue* bg_master(PlayerbotAI* ai) { return new BgMasterValue(ai); }
+        static UntypedValue* bg_role(PlayerbotAI* ai) { return new BgRoleValue(ai); }
+        static UntypedValue* arena_type(PlayerbotAI* ai) { return new ArenaTypeValue(ai); }
+        static UntypedValue* bg_type(PlayerbotAI* ai) { return new BgTypeValue(ai); }
         static UntypedValue* party_member_without_water(PlayerbotAI* ai) { return new PartyMemberWithoutWaterValue(ai); }
         static UntypedValue* party_member_without_food(PlayerbotAI* ai) { return new PartyMemberWithoutFoodValue(ai); }
         static UntypedValue* party_member_without_item(PlayerbotAI* ai) { return new PartyMemberWithoutItemValue(ai); }

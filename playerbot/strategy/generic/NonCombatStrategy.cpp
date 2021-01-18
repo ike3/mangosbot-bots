@@ -10,10 +10,6 @@ void NonCombatStrategy::InitTriggers(std::list<TriggerNode*>& triggers)
         "timer",
         NextAction::array(0, new NextAction("check mount state", 1.0f), new NextAction("check values", 1.0f), NULL)));
 
-    /*triggers.push_back(new TriggerNode(
-        "bg status",
-        NextAction::array(0, new NextAction("bg status", ACTION_EMERGENCY), NULL)));*/
-
     triggers.push_back(new TriggerNode(
         "levelup",
         NextAction::array(0, new NextAction("auto talents", 4.0f), new NextAction("auto learn spell", 4.0f), NULL)));
@@ -64,30 +60,13 @@ void CollisionStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 
 void BGStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 {
-    /*triggers.push_back(new TriggerNode(
-        "bg invite",
-        NextAction::array(0, new NextAction("accept bg invitation", 1.0f), NULL)));*/
-
-    /*triggers.push_back(new TriggerNode(
-        "often",
-        NextAction::array(0, new NextAction("wsg join", 1.0f), NULL)));*/
-
     triggers.push_back(new TriggerNode(
         "no possible targets",
         NextAction::array(0, new NextAction("bg join", ACTION_HIGH), NULL)));
 
-    /*triggers.push_back(new TriggerNode(
+    triggers.push_back(new TriggerNode(
         "often",
-        NextAction::array(0, new NextAction("bg join", 10.0f), NULL)));*/
-
-    /*triggers.push_back(new TriggerNode(
-        "often",
-        NextAction::array(0, new NextAction("bg status", 1.0f), NULL)));*/
-
-    /*triggers.push_back(new TriggerNode(
-        "bg status",
-        NextAction::array(0, new NextAction("bg status", ACTION_EMERGENCY), NULL)));*/
-
+        NextAction::array(0, new NextAction("bg status check", ACTION_HIGH), NULL)));
 }
 
 void WarsongStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
@@ -104,14 +83,6 @@ void WarsongStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         "player has flag",
         NextAction::array(0, new NextAction("bg tactics ws", ACTION_EMERGENCY + 2), NULL)));
 
-    /*triggers.push_back(new TriggerNode(
-        "team has flag",
-        NextAction::array(0, new NextAction("bg tactics ws", ACTION_HIGH + 20), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "enemy team has flag",
-        NextAction::array(0, new NextAction("bg tactics ws", ACTION_HIGH + 20), NULL)));*/
-
     triggers.push_back(new TriggerNode(
         "enemy flagcarrier near",
         NextAction::array(0, new NextAction("bg tactics ws", ACTION_EMERGENCY + 2), NULL)));
@@ -119,6 +90,13 @@ void WarsongStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
     triggers.push_back(new TriggerNode(
         "medium mana",
         NextAction::array(0, new NextAction("drink", 1.0f), NULL)));
+}
+
+void ArenaStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+{
+    triggers.push_back(new TriggerNode(
+        "no possible targets",
+        NextAction::array(0, new NextAction("arena tactics", 1.0f), NULL)));
 }
 
 void MountStrategy::InitTriggers(std::list<TriggerNode*> &triggers)

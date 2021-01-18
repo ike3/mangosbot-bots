@@ -76,11 +76,13 @@ namespace ai
             creators["behind"] = &StrategyContext::behind;
             creators["bg"] = &StrategyContext::bg;
             creators["warsong"] = &StrategyContext::warsong;
+            creators["arena"] = &StrategyContext::arena;
             creators["mount"] = &StrategyContext::mount;
         }
 
     private:
         static Strategy* mount(PlayerbotAI* ai) { return new MountStrategy(ai); }
+        static Strategy* arena(PlayerbotAI* ai) { return new ArenaStrategy(ai); }
         static Strategy* bg(PlayerbotAI* ai) { return new BGStrategy(ai); }
         static Strategy* warsong(PlayerbotAI* ai) { return new WarsongStrategy(ai); }
         static Strategy* behind(PlayerbotAI* ai) { return new SetBehindCombatStrategy(ai); }

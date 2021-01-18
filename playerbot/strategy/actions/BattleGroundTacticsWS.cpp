@@ -82,57 +82,6 @@ ObjectGuid BGTacticsWS::FindWsHealthy(BattleGround * bg)
 
 }
 
-ObjectGuid BGTacticsWS::FindWsGAllianceFlag(BattleGround * bg)
-{
-    list<ObjectGuid> bg_gos = *ai->GetAiObjectContext()->GetValue<list<ObjectGuid> >("bg game objects");
-    ObjectGuid wsgflagA;
-
-    for (list<ObjectGuid>::iterator i = bg_gos.begin(); i != bg_gos.end(); ++i)
-    {
-        GameObject* go = ai->GetGameObject(*i);
-
-        GameObjectInfo const *goInfo = go->GetGOInfo();
-
-        if (go && go->GetGoType() == GAMEOBJECT_TYPE_FLAGDROP)
-        {
-            GameObjectInfo const *goInfo = go->GetGOInfo();
-            if (go && goInfo->id == 179785)
-            {
-                // Silverwing Flag
-                wsgflagA = go->GetObjectGuid();
-                break;
-            }
-        }
-
-    }
-    return wsgflagA;
-}
-ObjectGuid BGTacticsWS::FindWsGHordeFlag(BattleGround * bg)
-{
-    list<ObjectGuid> bg_gos = *ai->GetAiObjectContext()->GetValue<list<ObjectGuid> >("bg game objects");
-    ObjectGuid wsgflagH;
-
-    for (list<ObjectGuid>::iterator i = bg_gos.begin(); i != bg_gos.end(); ++i)
-    {
-        GameObject* go = ai->GetGameObject(*i);
-
-        GameObjectInfo const *goInfo = go->GetGOInfo();
-
-        if (go && go->GetGoType() == GAMEOBJECT_TYPE_TRAP)
-        {
-            GameObjectInfo const *goInfo = go->GetGOInfo();
-            if (go && (goInfo->id == 179904))
-            {
-                // Silverwing Flag
-                wsgflagH = go->GetObjectGuid();
-                break;
-            }
-        }
-
-    }
-    return wsgflagH;
-}
-
 //consume healthy, if low on health
 bool BGTacticsWS::consumeHealthy(BattleGround *bg)
 {
@@ -203,11 +152,6 @@ bool BGTacticsWS::useBuff(BattleGround *bg)
 //run to enemy flag if not taken yet
 bool BGTacticsWS::moveTowardsEnemyFlag(BattleGroundWS *bg)
 {
-    //If no flag is spawned, do something else
-    //if (!(bg->GetFlagState(bg->GetOtherTeam(bot->GetTeam())) == BG_WS_FLAG_STATE_ON_BASE))
-        //return false;
-    //if (bg->GetFlagState(bg->GetOtherTeam(bot->GetTeam())) == BG_WS_FLAG_STATE_ON_GROUND)
-        //return false;
     if (bg->GetFlagState(bg->GetOtherTeam(bot->GetTeam())) == BG_WS_FLAG_STATE_ON_PLAYER)
         return false;
     if (bg->GetFlagState(bot->GetTeam()) == BG_WS_FLAG_STATE_WAIT_RESPAWN)
@@ -230,13 +174,9 @@ bool BGTacticsWS::moveTowardsEnemyFlag(BattleGroundWS *bg)
     //Direct Movement, if we are close
     if (bot->IsWithinDist(target_obj, 40))
     {
-        //MoveNear(target_obj);
         ChaseTo(target_obj);
         return true;
     }
-
-    //WorldObject* obj = bg->GetBgMap()->GetGameObject(bg->GetFlagCarrierAllianceGuid(bot->GetTeam() == ALLIANCE ? HORDE : ALLIANCE));
-    //WorldObject* obj = bg->GetBgMap()->GetGameObject(bg->GetFlagPickerGUID(bot->GetTeam() == ALLIANCE ? HORDE : ALLIANCE));
 
     WorldObject* obj = nullptr;
 
@@ -264,7 +204,7 @@ bool BGTacticsWS::moveTowardsEnemyFlag(BattleGroundWS *bg)
 //if we have the flag, run home
 bool BGTacticsWS::homerun(BattleGroundWS *bg)
 {
-    int Preference = sRandomPlayerbotMgr.GetValue(bot->GetGUIDLow(), "preference");
+    uint32 Preference = context->GetValue<uint32>("bg role")->Get();
     if (!(bg->GetFlagState(bg->GetOtherTeam(bot->GetTeam())) == BG_WS_FLAG_STATE_ON_PLAYER))
         return false;
 
@@ -351,7 +291,6 @@ bool BGTacticsWS::homerun(BattleGroundWS *bg)
                     if (bot->IsWithinDist(theirGuyA, 40.0f))
                     {
                         bot->GetPlayerbotAI()->GetAiObjectContext()->GetValue<Unit*>("current target")->Set(theirGuyA);
-                        //bot->Attack((Unit*)theirGuyA, !ai->IsRanged(bot) || sServerFacade.GetDistance2d(bot, theirGuyA) <= sPlayerbotAIConfig.tooCloseDistance);
                         bot->GetPlayerbotAI()->GetAiObjectContext()->GetValue<ObjectGuid>("pull target")->Set(bg->GetHordeFlagCarrierGuid());
                         return true;
                     }
@@ -402,8 +341,7 @@ bool BGTacticsWS::homerun(BattleGroundWS *bg)
 //cross the BattleGround to get to flags or flag carriers
 bool BGTacticsWS::runPathTo(WorldObject *target, BattleGround *bg)
 {
-    int Preference = sRandomPlayerbotMgr.GetValue(bot->GetGUIDLow(), "preference");
-    //int Preference = urand(0, 9);
+    uint32 Preference = context->GetValue<uint32>("bg role")->Get();
     if (target == nullptr)
         return false;
     if (target->IsWithinDist(bot, 40) && sServerFacade.IsFriendlyTo(target, bot))
@@ -530,8 +468,7 @@ bool BGTacticsWS::runPathTo(WorldObject *target, BattleGround *bg)
             }
             else { //move to the flag position
                 MoveTo(bg->GetMapId(), 1538.387207f, 1480.903198f, 352.576385f);
-                sRandomPlayerbotMgr.SetValue(bot->GetGUIDLow(), "preference", urand(0, 9));
-                //Preference = urand(0, 9); //reset preference
+                context->GetValue<uint32>("bg role")->Set(urand(0, 9));
                 return  true;
             }
         }
@@ -669,8 +606,7 @@ bool BGTacticsWS::runPathTo(WorldObject *target, BattleGround *bg)
             }
             else { //move to the flag position
                 MoveTo(bg->GetMapId(), 919.161316f, 1433.871338f, 345.902771f);
-                sRandomPlayerbotMgr.SetValue(bot->GetGUIDLow(), "preference", urand(0, 9));
-                //Preference = urand(0, 9); //reset preference
+                context->GetValue<uint32>("bg role")->Set(urand(0, 9));
                 return  true;
             }
         }
@@ -820,7 +756,6 @@ bool BGTacticsWS::Execute(Event event)
                     if (target_obj->IsSpawned())
 #endif
                         bot->GetSession()->HandleGameObjectUseOpcode(data);
-                    //bot->GetSession()->HandleGameObjectUseOpcode(data);
                     ai->Reset();
                     return true;
                 }
@@ -833,7 +768,6 @@ bool BGTacticsWS::Execute(Event event)
                     }
                 }
             }
-            //ai->Reset();
             //check if we are moving or in combat
             if (!IsMovingAllowed()/* || bot->isMoving()*/)
                 return false;
@@ -909,3 +843,81 @@ bool BGTacticsWS::Execute(Event event)
     }
     return true;
 }
+
+#ifndef MANGOSBOT_ZERO
+bool ArenaTactics::Execute(Event event)
+{
+    if (!bot->InBattleGround())
+    {
+        bool IsRandomBot = sRandomPlayerbotMgr.IsRandomBot(bot->GetGUIDLow());
+        ai->ChangeStrategy("-arena", BOT_STATE_COMBAT);
+        ai->ChangeStrategy("-arena", BOT_STATE_NON_COMBAT);
+        ai->ResetStrategies(!IsRandomBot);
+        return false;
+    }
+
+    if (bot->GetBattleGround()->GetStatus() == STATUS_WAIT_LEAVE)
+        return false;
+
+    if (bot->IsDead())
+    {
+        return false;
+    }
+
+    BattleGround *bg = bot->GetBattleGround();
+    if (!bg)
+        return false;
+
+    // startup phase
+    if (bg->GetStartDelayTime() > 0)
+        return false;
+
+    if (ai->HasStrategy("collision", BOT_STATE_NON_COMBAT))
+        ai->ChangeStrategy("-collision", BOT_STATE_NON_COMBAT);
+
+    if (ai->HasStrategy("buff", BOT_STATE_NON_COMBAT))
+        ai->ChangeStrategy("-buff", BOT_STATE_NON_COMBAT);
+
+    if (sBattleGroundMgr.IsArenaType(bg->GetTypeID()))
+    {
+        ai->ResetStrategies(false);
+        ai->SetMaster(NULL);
+    }
+
+    if (!bot->IsInCombat())
+        return moveToCenter(bg);
+    else
+    {
+        AttackAnythingAction* action = new AttackAnythingAction(ai);
+        return action->Execute(event);
+    }
+}
+
+bool ArenaTactics::moveToCenter(BattleGround *bg)
+{
+    uint32 Preference = context->GetValue<uint32>("bg role")->Get();
+    switch (bg->GetTypeID())
+    {
+    case BATTLEGROUND_BE:
+        if (Preference > 10)
+            MoveTo(bg->GetMapId(), 6185.0f + frand(-2, +2), 236.0f + frand(-2, +2), 6.0f, false, true);
+        else
+            MoveTo(bg->GetMapId(), 6240.0f + frand(-2, +2), 262.0f + frand(-2, +2), 2.0f, false, true);
+        break;
+    case BATTLEGROUND_RL:
+        if (Preference < 5)
+            MoveTo(bg->GetMapId(), 1320.0f + frand(-2, +2), 1672.0f + frand(-2, +2), 38.0f, false, true);
+        else
+            MoveTo(bg->GetMapId(), 1273.0f + frand(-2, +2), 1666.0f + frand(-2, +2), 36.0f, false, true);
+        break;
+    case BATTLEGROUND_NA:
+        MoveTo(bg->GetMapId(), 4055.0f + frand(-5, +5), 2921.0f + frand(-5, +5), 15.1f, false, true);
+        break;
+    default:
+        break;
+    }
+    if (urand(0, 100) > 70)
+        context->GetValue<uint32>("bg role")->Set(urand(0, 9));
+    return true;
+}
+#endif

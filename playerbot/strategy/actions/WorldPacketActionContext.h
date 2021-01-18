@@ -34,8 +34,10 @@ namespace ai
     public:
         WorldPacketActionContext()
         {   
+            creators["bg status check"] = &WorldPacketActionContext::bg_status_check;
             creators["bg status"] = &WorldPacketActionContext::bg_status;
             creators["bg join"] = &WorldPacketActionContext::bg_join;
+            creators["bg leave"] = &WorldPacketActionContext::bg_leave;
             creators["bg tactics ws"] = &WorldPacketActionContext::bg_tactics_ws;
             creators["accept invitation"] = &WorldPacketActionContext::accept_invitation;
             creators["leader"] = &WorldPacketActionContext::pass_leadership_to_master;
@@ -72,7 +74,9 @@ namespace ai
 
     private:
         static Action* petition_sign(PlayerbotAI* ai) { return new PetitionSignAction(ai); }
+        static Action* bg_leave(PlayerbotAI* ai) { return new BGLeaveAction(ai); }
         static Action* bg_join(PlayerbotAI* ai) { return new BGJoinAction(ai); }
+        static Action* bg_status_check(PlayerbotAI* ai) { return new BGStatusCheckAction(ai); }
         static Action* bg_status(PlayerbotAI* ai) { return new BGStatusAction(ai); }
         static Action* bg_tactics_ws(PlayerbotAI* ai) { return new BGTacticsWS(ai); }
         static Action* inventory_change_failure(PlayerbotAI* ai) { return new InventoryChangeFailureAction(ai); }
