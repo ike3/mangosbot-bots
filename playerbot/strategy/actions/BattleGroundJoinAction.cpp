@@ -213,6 +213,7 @@ bool BGLeaveAction::Execute(Event event)
 
     WorldPacket packet(CMSG_BATTLEFIELD_PORT, 20);
 #ifdef MANGOSBOT_ZERO
+    uint32 mapId = GetBattleGrounMapIdByTypeId(_bgTypeId);
     packet << mapId << uint8(0);
 #else
     packet << type << unk2 << (uint32)_bgTypeId << unk << uint8(0);

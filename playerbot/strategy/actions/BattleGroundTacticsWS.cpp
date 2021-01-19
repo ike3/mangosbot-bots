@@ -844,9 +844,9 @@ bool BGTacticsWS::Execute(Event event)
     return true;
 }
 
-#ifndef MANGOSBOT_ZERO
 bool ArenaTactics::Execute(Event event)
 {
+#ifndef MANGOSBOT_ZERO
     if (!bot->InBattleGround())
     {
         bool IsRandomBot = sRandomPlayerbotMgr.IsRandomBot(bot->GetGUIDLow());
@@ -891,10 +891,13 @@ bool ArenaTactics::Execute(Event event)
         AttackAnythingAction* action = new AttackAnythingAction(ai);
         return action->Execute(event);
     }
+#endif
+    return true;
 }
 
 bool ArenaTactics::moveToCenter(BattleGround *bg)
 {
+#ifndef MANGOSBOT_ZERO
     uint32 Preference = context->GetValue<uint32>("bg role")->Get();
     switch (bg->GetTypeID())
     {
@@ -918,6 +921,6 @@ bool ArenaTactics::moveToCenter(BattleGround *bg)
     }
     if (urand(0, 100) > 70)
         context->GetValue<uint32>("bg role")->Set(urand(0, 9));
+#endif
     return true;
 }
-#endif

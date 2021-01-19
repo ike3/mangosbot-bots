@@ -37,7 +37,6 @@ private:
    ObjectGuid FindWsHealthy(BattleGround *bg);
 };
 
-#ifndef MANGOSBOT_ZERO
 class ArenaTactics : public MovementAction
 {
 public:
@@ -46,4 +45,3 @@ public:
 private:
     bool moveToCenter(BattleGround *bg);
 };
-#endif
