@@ -1169,7 +1169,10 @@ bool RandomPlayerbotMgr::ProcessBot(Player* player)
 				sGuildTaskMgr.Update(*i, player);
 		}
 
-        if (!IsRandomBot(guild->GetLeaderGuid())) {
+        uint32 accountId = sObjectMgr.GetPlayerAccountIdByGUID(guild->GetLeaderGuid());
+
+        if (!sPlayerbotAIConfig.IsInRandomAccountList(accountId))
+        {
             int32 rank = guild->GetRank(player->GetObjectGuid());
             randomiser = rank < 4 ? false : true;
         }
