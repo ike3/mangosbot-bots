@@ -2248,6 +2248,9 @@ void PlayerbotFactory::InitImmersive()
 #ifndef MANGOSBOT_ZERO
 void PlayerbotFactory::InitArenaTeam()
 {
+    if (sPlayerbotAIConfig.IsInRandomAccountList(bot->GetSession()->GetAccountId()))
+        return;
+
     if (sPlayerbotAIConfig.randomBotArenaTeams.empty())
         RandomPlayerbotFactory::CreateRandomArenaTeams();
 
