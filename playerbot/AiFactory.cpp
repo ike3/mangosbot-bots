@@ -402,6 +402,7 @@ void AiFactory::AddDefaultNonCombatStrategies(Player* player, PlayerbotAI* const
         if (!player->GetGroup() || player->GetGroup()->GetLeaderGuid() == player->GetObjectGuid())
         {
             nonCombatEngine->addStrategy("collision");
+            nonCombatEngine->addStrategy("travel");
             nonCombatEngine->ChangeStrategy(sPlayerbotAIConfig.randomBotNonCombatStrategies);
         }
         else {
@@ -414,6 +415,7 @@ void AiFactory::AddDefaultNonCombatStrategies(Player* player, PlayerbotAI* const
                     if (master->GetPlayerbotAI())
                     {
                         nonCombatEngine->addStrategy("collision");
+                        nonCombatEngine->addStrategy("travel");
                         nonCombatEngine->ChangeStrategy(sPlayerbotAIConfig.randomBotNonCombatStrategies);
                     }
                 }
@@ -428,16 +430,21 @@ void AiFactory::AddDefaultNonCombatStrategies(Player* player, PlayerbotAI* const
     // Battleground switch
     if (player->InBattleGround())
     {
+        nonCombatEngine->addStrategies("nc", "chat",
+            "default", "emote", "buff", "food", "conserve mana", "collision", "mount", NULL);
+        nonCombatEngine->removeStrategy("custom::say");
+        nonCombatEngine->removeStrategy("travel");
+
         if (player->GetBattleGroundTypeId() == BATTLEGROUND_WS)
             nonCombatEngine->addStrategy("warsong");
 
 #ifndef MANGOSBOT_ZERO
         if (player->InArena())
+        {
             nonCombatEngine->addStrategy("arena");
+            nonCombatEngine->removeStrategy("mount");
+        }
 #endif
-        nonCombatEngine->addStrategies("nc", "chat",
-            "default", "emote", "buff", "food", "conserve mana", "collision", "mount", NULL);
-        nonCombatEngine->removeStrategy("custom::say");
     }
 }
 

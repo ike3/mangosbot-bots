@@ -959,7 +959,7 @@ void RandomPlayerbotMgr::AddBgBot(BattleGroundQueueTypeId queueTypeId, BattleGro
         return;
     }
 
-    player->GetPlayerbotAI()->ChangeStrategy("-grind,-rpg,-custom::say", BOT_STATE_NON_COMBAT);
+    player->GetPlayerbotAI()->ChangeStrategy("-travel,-grind,-rpg,-custom::say", BOT_STATE_NON_COMBAT);
     if (urand(0, 100) < 65)
         player->GetPlayerbotAI()->ChangeStrategy("+stay", BOT_STATE_NON_COMBAT);
     player->GetPlayerbotAI()->ChangeStrategy("-mount", BOT_STATE_NON_COMBAT);
@@ -993,7 +993,7 @@ void RandomPlayerbotMgr::AddBgBot(BattleGroundQueueTypeId queueTypeId, BattleGro
     if (isArena)
         player->GetPlayerbotAI()->GetAiObjectContext()->GetValue<uint32>("arena type")->Set(isRated);
     player->GetPlayerbotAI()->ChangeStrategy("+bg", BOT_STATE_NON_COMBAT);
-    player->GetPlayerbotAI()->DoSpecificAction("bg join");
+    //player->GetPlayerbotAI()->DoSpecificAction("bg join");
     return;
 }
 
