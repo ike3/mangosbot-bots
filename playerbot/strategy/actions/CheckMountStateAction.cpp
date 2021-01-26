@@ -100,9 +100,8 @@ bool CheckMountStateAction::Execute(Event event)
         if (bot->GetBattleGroundTypeId() == BattleGroundTypeId::BATTLEGROUND_WS)
         {
             BattleGroundWS *bg = (BattleGroundWS*)ai->GetBot()->GetBattleGround();
-            //if (!(bg->GetFlagState(bg->GetOtherTeam(bot->GetTeam())) == BG_WS_FLAG_STATE_ON_PLAYER))
-            //    return Mount();
-            if (bot->GetObjectGuid() == bg->GetAllianceFlagCarrierGuid() || bot->GetObjectGuid() == bg->GetHordeFlagCarrierGuid())
+
+            if (bot->HasAura(23333) || bot->HasAura(23335))
             {
                 return false;
             }
@@ -189,7 +188,12 @@ bool CheckMountStateAction::Mount()
 
     //map<int32, vector<uint32> > spells;
     map<uint32, map<int32, vector<uint32> > > allSpells;
+#ifdef MANGOS
     if (bot->GetPureSkillValue(SKILL_RIDING) <= 75 && bot->getLevel() < 60)
+#endif
+#ifdef CMANGOS
+    if (bot->GetSkillValuePure(SKILL_RIDING) <= 75 && bot->getLevel() < 60)
+#endif
         masterSpeed = 59;
 
     if (bot->InBattleGround() && masterSpeed > 99)

@@ -48,6 +48,7 @@ bool RpgAction::Execute(Event event)
     }
    
     vector<RpgElement> elements;
+#ifdef MANGOS
     if (target->IsVendor())
         elements.push_back(&RpgAction::trade);
     if (bot->GetSession()->getDialogStatus(bot, target, DIALOG_STATUS_NONE) == DIALOG_STATUS_REWARD2 || bot->GetSession()->getDialogStatus(bot, target, DIALOG_STATUS_NONE) == DIALOG_STATUS_AVAILABLE)
@@ -58,6 +59,19 @@ bool RpgAction::Execute(Event event)
         elements.push_back(&RpgAction::train);
     if (target->HealthBelowPct(100) && (bot->getClass() == CLASS_PRIEST || bot->getClass() == CLASS_DRUID || bot->getClass() == CLASS_PALADIN || bot->getClass() == CLASS_SHAMAN))
         elements.push_back(&RpgAction::heal);
+#endif
+#ifdef CMANGOS
+    if (target->isVendor())
+        elements.push_back(&RpgAction::trade);
+    if (bot->GetSession()->getDialogStatus(bot, target, DIALOG_STATUS_NONE) == DIALOG_STATUS_REWARD2 || bot->GetSession()->getDialogStatus(bot, target, DIALOG_STATUS_NONE) == DIALOG_STATUS_AVAILABLE)
+        elements.push_back(&RpgAction::quest);
+    if (target->isArmorer() && needRepair())
+        elements.push_back(&RpgAction::repair);
+    if (creature && CanTrain(guid))
+        elements.push_back(&RpgAction::train);
+    if (target->GetHealthPercent() < 100 && (bot->getClass() == CLASS_PRIEST || bot->getClass() == CLASS_DRUID || bot->getClass() == CLASS_PALADIN || bot->getClass() == CLASS_SHAMAN))
+        elements.push_back(&RpgAction::heal);
+#endif
 
     if (AddIgnore(target->GetObjectGuid()))
     {

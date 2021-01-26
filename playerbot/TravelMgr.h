@@ -278,9 +278,16 @@ namespace ai
 
         vector<QuestTravelDestination*> questGivers;
 
+#ifdef MANGOS
         UNORDERED_MAP<uint32, QuestContainer *> quests;
 
         UNORDERED_MAP<int32, WorldPosition> pointsMap;
+#endif
+#ifdef CMANGOS
+        std::unordered_map<uint32, QuestContainer *> quests;
+
+        std::unordered_map<int32, WorldPosition> pointsMap;
+#endif
     };
 }
 

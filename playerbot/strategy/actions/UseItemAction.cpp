@@ -23,7 +23,10 @@ bool UseItemAction::Execute(Event event)
          list<Item*>::iterator i = items.begin();
          Item* itemTarget = *i++;
          Item* item = *i;
-         return UseItemOnItem(item, itemTarget);
+         if(item->IsPotion() || item->GetProto()->Class == ITEM_CLASS_CONSUMABLE)
+             return UseItemAuto(item);
+         else
+             return UseItemOnItem(item, itemTarget);
       }
       else if (!items.empty())
          return UseItemAuto(*items.begin());
@@ -58,12 +61,12 @@ bool UseItemAction::UseGameObject(ObjectGuid guid)
 
 bool UseItemAction::UseItemAuto(Item* item)
 {
-   return UseItem(item, ObjectGuid(), NULL);
+   return UseItem(item, ObjectGuid(), nullptr);
 }
 
 bool UseItemAction::UseItemOnGameObject(Item* item, ObjectGuid go)
 {
-   return UseItem(item, go, NULL);
+   return UseItem(item, go, nullptr);
 }
 
 bool UseItemAction::UseItemOnItem(Item* item, Item* itemTarget)
@@ -84,7 +87,11 @@ bool UseItemAction::UseItem(Item* item, ObjectGuid goGuid, Item* itemTarget)
    uint8 spell_index = 0;
    uint8 cast_count = 1;
    uint32 spellId = 0;
+#ifndef MANGOSBOT_TWO
    ObjectGuid item_guid = item->GetObjectGuid();
+#else
+   ObjectGuid item_guid = item->GetObjectGuid();
+#endif
    uint32 glyphIndex = 0;
    uint8 unk_flags = 0;
 
@@ -107,15 +114,15 @@ bool UseItemAction::UseItem(Item* item, ObjectGuid goGuid, Item* itemTarget)
        }
    }
 
-   WorldPacket packet(CMSG_USE_ITEM);
 #ifdef MANGOSBOT_ZERO
+   WorldPacket packet(CMSG_USE_ITEM);
    packet << bagIndex << slot << spell_index;
 #endif
 #ifdef MANGOSBOT_ONE
+   WorldPacket packet(CMSG_USE_ITEM);
    packet << bagIndex << slot << spell_index << cast_count << item_guid;
 #endif
 #ifdef MANGOSBOT_TWO
-   uint32 spellId = 0;
    for (uint8 i = 0; i < MAX_ITEM_PROTO_SPELLS; ++i)
    {
        if (item->GetProto()->Spells[i].SpellId > 0)
@@ -125,8 +132,8 @@ bool UseItemAction::UseItem(Item* item, ObjectGuid goGuid, Item* itemTarget)
        }
    }
 
+   WorldPacket packet(CMSG_USE_ITEM, 1 + 1 + 1 + 4 + 8 + 4 + 1 + 8 + 1);
    packet << bagIndex << slot << cast_count << spellId << item_guid << glyphIndex << unk_flags;
-   //packet << bagIndex << slot << cast_count << spell_index << item_guid << glyphIndex << unk_flags;
 #endif
 
    bool targetSelected = false;

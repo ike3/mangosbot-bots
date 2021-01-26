@@ -25,7 +25,12 @@ public:
         if (!member)
             return false;
 
+#ifdef MANGOS
         if (!(member->IsInSameGroupWith(ai->GetBot()) || member->IsInSameRaidWith(ai->GetBot())))
+#endif
+#ifdef CMANGOS
+        if (!member->IsInGroup(ai->GetBot()))
+#endif
             return false;
 
         PlayerbotAI *botAi = member->GetPlayerbotAI();

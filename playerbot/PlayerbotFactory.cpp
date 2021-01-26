@@ -585,6 +585,7 @@ void PlayerbotFactory::ClearSkills()
 
 void PlayerbotFactory::ClearSpells()
 {
+#ifdef MANGOS
     list<uint32> spells;
     for(PlayerSpellMap::iterator itr = bot->GetSpellMap().begin(); itr != bot->GetSpellMap().end(); ++itr)
     {
@@ -599,6 +600,10 @@ void PlayerbotFactory::ClearSpells()
     {
         bot->removeSpell(*i, false, false);
     }
+#endif
+#ifdef CMANGOS
+    bot->resetSpells();
+#endif
 }
 
 void PlayerbotFactory::InitSpells()
@@ -1009,7 +1014,9 @@ void PlayerbotFactory::InitEquipment(bool incremental)
                     newItem->AddToWorld();
                     newItem->AddToUpdateQueueOf(bot);
                     bot->AutoUnequipOffhandIfNeed();
-                    EnchantItem(newItem);
+#ifndef MANGOSBOT_TWO
+                    EnchantItem(newItem); // need fix for 3.3.5
+#endif
                     found = true;
                     break;
                 }
@@ -1119,9 +1126,11 @@ void PlayerbotFactory::InitSecondEquipmentSet()
             Item* newItem = bot->StoreNewItemInInventorySlot(newItemId, 1);
             if (newItem)
             {
-                EnchantItem(newItem);
                 newItem->AddToWorld();
                 newItem->AddToUpdateQueueOf(bot);
+#ifndef MANGOSBOT_TWO
+                EnchantItem(newItem); // needs fix for 3.3.5
+#endif
                 break;
             }
         }
@@ -1257,7 +1266,11 @@ void PlayerbotFactory::EnchantItem(Item* item)
         return;
 
     bot->ApplyEnchantment(item, PERM_ENCHANTMENT_SLOT, false);
+#ifndef MANGOSBOT_TWO
     item->SetEnchantment(PERM_ENCHANTMENT_SLOT, id, 0, 0);
+#else
+    item->SetEnchantment(PERM_ENCHANTMENT_SLOT, id, 0, 0, bot->GetObjectGuid());
+#endif
     bot->ApplyEnchantment(item, PERM_ENCHANTMENT_SLOT, true);
 }
 
@@ -1820,13 +1833,13 @@ void PlayerbotFactory::InitMounts()
         break;
 
     }
-    switch (bot->GetTeamId())
+    switch (bot->GetTeam())
     {
-    case TEAM_INDEX_ALLIANCE:
+    case ALLIANCE:
         fslow = { 32235, 32239, 32240 };
         ffast = { 32242, 32289, 32290, 32292 };
         break;
-    case TEAM_INDEX_HORDE:
+    case HORDE:
         fslow = { 32244, 32245, 32243 };
         ffast = { 32295, 32297, 32246, 32296 };
         break;

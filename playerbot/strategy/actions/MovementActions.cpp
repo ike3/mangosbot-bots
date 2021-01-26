@@ -89,7 +89,12 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
         }
 
         MotionMaster &mm = *bot->GetMotionMaster();
+#ifdef MANGOS
         mm.MovePoint(mapId, x, y, z, generatePath);
+#endif
+#ifdef CMANGOS
+        mm.MovePoint(mapId, x, y, z, FORCED_MOVEMENT_RUN, generatePath);
+#endif
 
         AI_VALUE(LastMovement&, "last movement").Set(x, y, z, bot->GetOrientation());
         if (!idle)
@@ -547,7 +552,12 @@ bool SetBehindTargetAction::isUseful()
 bool SetBehindTargetAction::isPossible()
 {
     Unit* target = AI_VALUE(Unit*, "current target");
+#ifdef MANGOS
     return target && !(target->getVictim() && target->getVictim()->GetObjectGuid() == bot->GetObjectGuid());
+#endif
+#ifdef CMANGOS
+    return target && !(target->GetVictim() && target->GetVictim()->GetObjectGuid() == bot->GetObjectGuid());
+#endif
 }
 
 bool MoveOutOfCollisionAction::Execute(Event event)

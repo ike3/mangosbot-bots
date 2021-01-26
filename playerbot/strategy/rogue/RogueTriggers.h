@@ -81,7 +81,7 @@ namespace ai
         StealthTrigger(PlayerbotAI* ai) : Trigger(ai, "stealth") {}
         virtual bool IsActive()
         {
-            if (ai->HasAura("stealth", bot) || sServerFacade.IsInCombat(bot) || bot->HasSpellCooldown(1784))
+            if (ai->HasAura("stealth", bot) || sServerFacade.IsInCombat(bot) || !sServerFacade.IsSpellReady(bot, 1784))
                 return false;
 
             float distance = 30.0f;
@@ -94,11 +94,20 @@ namespace ai
             if (!target)
                 return false;
 
+#ifdef MANGOS
             if (target && target->getVictim())
                 distance -= 10;
 
             if (sServerFacade.isMoving(target) && target->getVictim())
                 distance -= 10;
+#endif
+#ifdef CMANGOS
+            if (target && target->GetVictim())
+                distance -= 10;
+
+            if (sServerFacade.isMoving(target) && target->GetVictim())
+                distance -= 10;
+#endif
 
             if (bot->InBattleGround())
                 distance += 15;
@@ -133,7 +142,7 @@ namespace ai
         }
         virtual bool IsActive()
         {
-            if (bot->HasSpellCooldown(2983))
+            if (!sServerFacade.IsSpellReady(bot, 2983))
                 return false;
 
             float distance = ai->GetMaster() ? 45.0f : 35.0f;

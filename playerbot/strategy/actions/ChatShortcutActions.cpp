@@ -9,7 +9,7 @@ using namespace ai;
 void ReturnPositionResetAction::ResetReturnPosition()
 {
     ai::PositionMap& posMap = context->GetValue<ai::PositionMap&>("position")->Get();
-    ai::Position pos = posMap["return"];
+    ai::PositionEntry pos = posMap["return"];
     pos.Reset();
     posMap["return"] = pos;
 }
@@ -17,7 +17,7 @@ void ReturnPositionResetAction::ResetReturnPosition()
 void ReturnPositionResetAction::SetReturnPosition(float x, float y, float z)
 {
     ai::PositionMap& posMap = context->GetValue<ai::PositionMap&>("position")->Get();
-    ai::Position pos = posMap["return"];
+    ai::PositionEntry pos = posMap["return"];
     pos.Set(x, y, z, ai->GetBot()->GetMapId());
     posMap["return"] = pos;
 }

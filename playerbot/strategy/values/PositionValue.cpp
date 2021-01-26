@@ -16,7 +16,7 @@ string PositionValue::Save()
     for (ai::PositionMap::iterator i = value.begin(); i != value.end(); ++i)
     {
         string name = i->first;
-        ai::Position pos = i->second;
+        ai::PositionEntry pos = i->second;
         if (pos.isSet())
         {
             if (!first) out << "^";

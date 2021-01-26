@@ -146,6 +146,9 @@ bool AttackersValue::IsPossibleTarget(Unit *attacker, Player *bot)
             !c->GetCombatManager().IsInEvadeMode() &&
 #endif
             (!attacker->HasFlag(UNIT_DYNAMIC_FLAGS, UNIT_DYNFLAG_TAPPED)
+#ifdef CMANGOS
+                || c->IsTappedBy(bot)
+#endif
 #ifndef MANGOSBOT_TWO
 #ifdef MANGOS
                 || bot->IsTappedByMeOrMyGroup(c)

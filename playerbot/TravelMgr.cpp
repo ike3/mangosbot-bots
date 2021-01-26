@@ -331,7 +331,12 @@ TravelState TravelTarget::getTravelState() {
 
 void TravelMgr::Clear()
 {
+#ifdef MANGOS
     sObjectAccessor.DoForAllPlayers([this](Player* plr) { TravelMgr::setNullTravelTarget(plr); });
+#endif
+#ifdef CMANGOS
+    sObjectAccessor.ExecuteOnAllPlayers([this](Player* plr) { TravelMgr::setNullTravelTarget(plr); });
+#endif
 
     for (auto& quest : quests)
     {
@@ -825,7 +830,12 @@ uint32 TravelMgr::getDialogStatus(Player* pPlayer, int32 questgiver, Quest const
                     }
                     else
                     {
+#ifdef MANGOS
                         dialogStatusNew = DIALOG_STATUS_CHAT;
+#endif
+#ifdef CMANGOS
+                        dialogStatusNew = DIALOG_STATUS_LOW_LEVEL_AVAILABLE;
+#endif
                     }
                 }
                 else

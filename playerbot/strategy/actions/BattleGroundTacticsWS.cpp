@@ -75,12 +75,12 @@ ObjectGuid BGTacticsWS::HordeWsgFlagStand(BattleGround * bg)
     }
 }
 
-ObjectGuid BGTacticsWS::FindWsHealthy(BattleGround * bg)
+/*ObjectGuid BGTacticsWS::FindWsHealthy(BattleGround * bg)
 {
     list<ObjectGuid> bg_gos = *ai->GetAiObjectContext()->GetValue<list<ObjectGuid> >("bg game objects");
     ObjectGuid WsHealthy;
-
-}
+    return WsHealthy;
+}*/
 
 //consume healthy, if low on health
 bool BGTacticsWS::consumeHealthy(BattleGround *bg)
@@ -126,10 +126,12 @@ bool BGTacticsWS::useBuff(BattleGround *bg)
     if (bot->HasAura(23333) || bot->HasAura(23335))
         return false;
 
+#ifdef MANGOS
     BattleGroundWS* Bg = (BattleGroundWS *)bot->GetBattleGround();
     bool enemyHasFlag = Bg->GetFlagState(bot->GetTeam()) == BG_WS_FLAG_STATE_ON_PLAYER;
     if (enemyHasFlag)
         return false;
+#endif
 
     //Buff Guids
     ObjectGuid Aguid = ObjectGuid(HIGHGUID_GAMEOBJECT, uint32(179905), uint32(90006));
@@ -152,6 +154,7 @@ bool BGTacticsWS::useBuff(BattleGround *bg)
 //run to enemy flag if not taken yet
 bool BGTacticsWS::moveTowardsEnemyFlag(BattleGroundWS *bg)
 {
+#ifdef MANGOS
     if (bg->GetFlagState(bg->GetOtherTeam(bot->GetTeam())) == BG_WS_FLAG_STATE_ON_PLAYER)
         return false;
     if (bg->GetFlagState(bot->GetTeam()) == BG_WS_FLAG_STATE_WAIT_RESPAWN)
@@ -198,12 +201,14 @@ bool BGTacticsWS::moveTowardsEnemyFlag(BattleGroundWS *bg)
         return runPathTo(obj, bg);
     }
     else
+#endif
         return false;
 }
 
 //if we have the flag, run home
 bool BGTacticsWS::homerun(BattleGroundWS *bg)
 {
+#ifdef MANGOS
     uint32 Preference = context->GetValue<uint32>("bg role")->Get();
     if (!(bg->GetFlagState(bg->GetOtherTeam(bot->GetTeam())) == BG_WS_FLAG_STATE_ON_PLAYER))
         return false;
@@ -315,6 +320,7 @@ bool BGTacticsWS::homerun(BattleGroundWS *bg)
         }
     }
 
+#endif
     return false;
 }
 
@@ -617,6 +623,7 @@ bool BGTacticsWS::runPathTo(WorldObject *target, BattleGround *bg)
 //is being called, when flag "+warsong" is set
 bool BGTacticsWS::Execute(Event event)
 {
+#ifdef MANGOS
     if (!bot->InBattleGround())
         return false;
 
@@ -841,6 +848,7 @@ bool BGTacticsWS::Execute(Event event)
             }
         }
     }
+#endif
     return true;
 }
 
@@ -877,8 +885,12 @@ bool ArenaTactics::Execute(Event event)
 
     if (ai->HasStrategy("buff", BOT_STATE_NON_COMBAT))
         ai->ChangeStrategy("-buff", BOT_STATE_NON_COMBAT);
-
+#ifdef MANGOS
     if (sBattleGroundMgr.IsArenaType(bg->GetTypeID()))
+#endif
+#ifdef CMANGOS
+    if (sBattleGroundMgr.IsArenaType(bg->GetTypeId()))
+#endif
     {
         ai->ResetStrategies(false);
         ai->SetMaster(NULL);
@@ -899,7 +911,13 @@ bool ArenaTactics::moveToCenter(BattleGround *bg)
 {
 #ifndef MANGOSBOT_ZERO
     uint32 Preference = context->GetValue<uint32>("bg role")->Get();
+#ifdef MANGOS
     switch (bg->GetTypeID())
+#endif
+#ifdef CMANGOS
+
+#endif
+    switch (bg->GetTypeId())
     {
     case BATTLEGROUND_BE:
         if (Preference > 10)

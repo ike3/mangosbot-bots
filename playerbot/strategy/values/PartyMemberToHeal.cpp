@@ -36,7 +36,13 @@ Unit* PartyMemberToHeal::Calculate()
     if (bot->GetSelectionGuid())
     {
         Unit* target = ai->GetUnit(bot->GetSelectionGuid());
-        if (target && target->IsFriendlyTo(bot) && target->HealthBelowPct(100))
+        if (target && sServerFacade.IsFriendlyTo(bot, target) && 
+#ifdef MANGOS
+            target->HealthBelowPct(100))
+#endif
+#ifdef CMANGOS
+            target->GetHealthPercent() < 100)
+#endif
             needHeals.push_back(target);
     }
 

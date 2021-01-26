@@ -47,7 +47,12 @@ bool MoveToRpgTargetAction::Execute(Event event)
 
     bool generatePath = !bot->IsFlying() && !sServerFacade.IsUnderwater(bot);
     MotionMaster &mm = *bot->GetMotionMaster();
+#ifdef MANGOS
     mm.MovePoint(mapId, x, y, z, generatePath);
+#endif
+#ifdef CMANGOS
+    mm.MovePoint(mapId, x, y, z, FORCED_MOVEMENT_RUN, generatePath);
+#endif
 
     AI_VALUE(LastMovement&, "last movement").Set(x, y, z, bot->GetOrientation());
     return true;

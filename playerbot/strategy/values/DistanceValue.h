@@ -31,7 +31,7 @@ namespace ai
             if (qualifier.find("position_") == 0)
             {
                 string position = qualifier.substr(9);
-                ai::Position pos = context->GetValue<ai::PositionMap&>("position")->Get()[position];
+                ai::PositionEntry pos = context->GetValue<ai::PositionMap&>("position")->Get()[position];
                 if (!pos.isSet()) return 0.0f;
                 if (ai->GetBot()->GetMapId() != pos.mapId) return 0.0f;
                 return sServerFacade.GetDistance2d(ai->GetBot(), pos.x, pos.y);

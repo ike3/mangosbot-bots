@@ -2,8 +2,10 @@
 #include "../../playerbot.h"
 #include "TravelAction.h"
 #include "../../PlayerbotAIConfig.h"
-#include <playerbot\ServerFacade.h>
-#include <WorldHandlers\GridNotifiers.h>
+#include "../../ServerFacade.h"
+#include "GridNotifiers.h"
+#include "GridNotifiersImpl.h"
+#include "CellImpl.h"
 
 
 using namespace ai;
@@ -43,7 +45,7 @@ bool TravelAction::Execute(Event event)
         if (newTarget->IsInCombat())
             continue;
 
-        if (newTarget->IsHostileTo(bot))
+        if (sServerFacade.IsHostileTo(bot, newTarget))
             context->GetValue<ObjectGuid>("pull target")->Set(newTarget->GetObjectGuid());
         else
             context->GetValue<ObjectGuid>("rpg target")->Set(newTarget->GetObjectGuid());

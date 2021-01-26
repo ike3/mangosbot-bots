@@ -8,7 +8,7 @@
 //#include "../ItemVisitors.h"
 #include "../../RandomPlayerbotMgr.h"
 //#include "../../../../game/LFGMgr.h"
-#include "strategy/values/PositionValue.h"
+//#include "strategy/values/PositionValue.h"
 //#include "ServerFacade.h"
 #include "GridNotifiers.h"
 #include "GridNotifiersImpl.h"
@@ -21,7 +21,7 @@
 #include "MovementActions.h"
 #include "MotionMaster.h"
 #include "MovementGenerator.h"
-#include "../values/PositionValue.h"
+//#include "../values/PositionValue.h"
 #include "MotionGenerators/TargetedMovementGenerator.h"
 #include "BattleGround.h"
 #include "BattleGroundMgr.h"
@@ -64,7 +64,7 @@ bool BGJoinAction::JoinQueue(uint32 type)
 
     // get BG TypeId
     BattleGroundQueueTypeId queueTypeId = BattleGroundQueueTypeId(type);
-    BattleGroundTypeId bgTypeId = sBattleGroundMgr.BGTemplateId(queueTypeId);
+    BattleGroundTypeId bgTypeId = sServerFacade.BgTemplateId(queueTypeId);
 
     BattleGround* bg = sBattleGroundMgr.GetBattleGroundTemplate(bgTypeId);
     if (!bg)
@@ -130,7 +130,7 @@ bool BGJoinAction::JoinQueue(uint32 type)
 }
 
 #ifndef MANGOSBOT_ZERO
-   ArenaType arenaType = sBattleGroundMgr.BGArenaType(queueTypeId);
+   ArenaType arenaType = sServerFacade.BgArenaType(queueTypeId);
    if (arenaType != ARENA_TYPE_NONE)
    {
        isArena = true;
@@ -194,7 +194,7 @@ bool BGLeaveAction::Execute(Event event)
     ai->ChangeStrategy("-bg", BOT_STATE_NON_COMBAT);
 
     BattleGroundQueueTypeId queueTypeId = bot->GetBattleGroundQueueTypeId(0);
-    BattleGroundTypeId _bgTypeId = sBattleGroundMgr.BGTemplateId(queueTypeId);
+    BattleGroundTypeId _bgTypeId = sServerFacade.BgTemplateId(queueTypeId);
     uint8 type = false;
     uint16 unk = 0x1F90;
     uint8 unk2 = 0x0;
@@ -202,14 +202,14 @@ bool BGLeaveAction::Execute(Event event)
     bool IsRandomBot = sRandomPlayerbotMgr.IsRandomBot(bot->GetGUIDLow());
 
 #ifndef MANGOSBOT_ZERO
-    ArenaType arenaType = sBattleGroundMgr.BGArenaType(queueTypeId);
+    ArenaType arenaType = sServerFacade.BgArenaType(queueTypeId);
     if (arenaType != ARENA_TYPE_NONE)
     {
         isArena = true;
         type = arenaType;
     }
 #endif
-    sLog.outDetail("Bot %u (%u %s) leaves queue (%s).", bot->GetGUIDLow(), bot->getLevel(), bot->GetTeamId() == 0 ? "A" : "H", isArena ? "Arena" : "BG");
+    sLog.outDetail("Bot %u (%u %s) leaves queue (%s).", bot->GetGUIDLow(), bot->getLevel(), bot->GetTeam() == ALLIANCE ? "A" : "H", isArena ? "Arena" : "BG");
 
     WorldPacket packet(CMSG_BATTLEFIELD_PORT, 20);
 #ifdef MANGOSBOT_ZERO
@@ -317,7 +317,7 @@ bool BGStatusAction::Execute(Event event)
 
     bool IsRandomBot = sRandomPlayerbotMgr.IsRandomBot(bot->GetGUIDLow());
     BattleGroundQueueTypeId queueTypeId = bot->GetBattleGroundQueueTypeId(QueueSlot);
-    BattleGroundTypeId _bgTypeId = sBattleGroundMgr.BGTemplateId(queueTypeId);
+    BattleGroundTypeId _bgTypeId = sServerFacade.BgTemplateId(queueTypeId);
     bool isArena = false;
 
     BattleGround* bg;
@@ -328,7 +328,7 @@ bool BGStatusAction::Execute(Event event)
     uint8 action = 0x1;
 
 #ifndef MANGOSBOT_ZERO
-    ArenaType arenaType = sBattleGroundMgr.BGArenaType(queueTypeId);
+    ArenaType arenaType = sServerFacade.BgArenaType(queueTypeId);
     if (arenaType != ARENA_TYPE_NONE)
     {
         isArena = true;
@@ -394,17 +394,17 @@ bool BGStatusAction::Execute(Event event)
         ai->ChangeStrategy("-arena", BOT_STATE_NON_COMBAT);
         sLog.outBasic("Bot #%d <%s> leaves %s (%s).", bot->GetGUIDLow(), bot->GetName(), isArena ? "Arena" : "BG", _bgType);
 
-        WorldPacket* packet = new WorldPacket(CMSG_LEAVE_BATTLEFIELD);
-        *packet << uint8(0);
-        *packet << uint8(0);                           // BattleGroundTypeId-1 ?
+        WorldPacket packet(CMSG_LEAVE_BATTLEFIELD);
+        packet << uint8(0);
+        packet << uint8(0);                           // BattleGroundTypeId-1 ?
 #ifdef MANGOSBOT_ZERO
-        *packet << uint16(0);
+        packet << uint16(0);
 #else
-        *packet << uint32(0);
-        *packet << uint16(0);
+        packet << uint32(0);
+        packet << uint16(0);
 #endif
-        //bot->GetSession()->HandleLeaveBattlefieldOpcode(packet);
-        bot->GetSession()->QueuePacket(packet);
+        bot->GetSession()->HandleLeaveBattlefieldOpcode(packet);
+        //bot->GetSession()->QueuePacket(packet);
         ai->ResetStrategies(!IsRandomBot);
         ai->GetAiObjectContext()->GetValue<uint32>("bg type")->Set(NULL);
         ai->GetAiObjectContext()->GetValue<uint32>("bg role")->Set(NULL);
@@ -426,7 +426,7 @@ bool BGStatusAction::Execute(Event event)
         if (leaveQ && !(bot->GetGroup() || ai->GetMaster()))
         {
             //ai->ChangeStrategy("-bg", BOT_STATE_NON_COMBAT);
-            sLog.outBasic("Bot #%u <%s> (%u %s) waited too long and leaves queue (%s %s).", bot->GetGUIDLow(), bot->GetName(), bot->getLevel(), bot->GetTeamId() == 0 ? "A" : "H", isArena ? "Arena" : "BG", _bgType);
+            sLog.outBasic("Bot #%u <%s> (%u %s) waited too long and leaves queue (%s %s).", bot->GetGUIDLow(), bot->GetName(), bot->getLevel(), bot->GetTeam() == ALLIANCE ? "A" : "H", isArena ? "Arena" : "BG", _bgType);
             WorldPacket packet(CMSG_BATTLEFIELD_PORT, 20);
             action = 0;
 #ifdef MANGOSBOT_ZERO
@@ -453,12 +453,13 @@ bool BGStatusAction::Execute(Event event)
         if (isArena)
         {
             isArena = true;
-            BattleGroundQueue& bgQueue = sBattleGroundMgr.m_BattleGroundQueues[queueTypeId];
+            BattleGroundQueue& bgQueue = sServerFacade.bgQueue(queueTypeId);
             GroupQueueInfo ginfo;
             if (!bgQueue.GetPlayerGroupInfoData(bot->GetObjectGuid(), &ginfo))
             {
                 return false;
             }
+#ifdef MANGOS
             if (ginfo.IsInvitedToBGInstanceGUID)
             {
                 bg = sBattleGroundMgr.GetBattleGround(ginfo.IsInvitedToBGInstanceGUID, BATTLEGROUND_TYPE_NONE);
@@ -469,13 +470,26 @@ bool BGStatusAction::Execute(Event event)
 
                 _bgTypeId = bg->GetTypeID();
             }
+#endif
+#ifdef CMANGOS
+            if (ginfo.isInvitedToBgInstanceGuid)
+            {
+                bg = sBattleGroundMgr.GetBattleGround(ginfo.isInvitedToBgInstanceGuid, BATTLEGROUND_TYPE_NONE);
+                if (!bg)
+                {
+                    return false;
+                }
+
+                _bgTypeId = bg->GetTypeId();
+            }
         }
+#endif
 #endif
 
 #ifdef MANGOSBOT_ZERO
-        sLog.outBasic("Bot #%d <%s> (%u %s) joined BG (%s)", bot->GetGUIDLow(), bot->GetName(), bot->getLevel(), bot->GetTeamId() == 0 ? "A" : "H", _bgType);
+        sLog.outBasic("Bot #%d <%s> (%u %s) joined BG (%s)", bot->GetGUIDLow(), bot->GetName(), bot->getLevel(), bot->GetTeam() == ALLIANCE ? "A" : "H", _bgType);
 #else
-        sLog.outBasic("Bot #%d <%s> (%u %s) joined %s (%s)", bot->GetGUIDLow(), bot->GetName(), bot->getLevel(), bot->GetTeamId() == 0 ? "A" : "H", isArena ? "Arena" : "BG", _bgType);
+        sLog.outBasic("Bot #%d <%s> (%u %s) joined %s (%s)", bot->GetGUIDLow(), bot->GetName(), bot->getLevel(), bot->GetTeam() == ALLIANCE ? "A" : "H", isArena ? "Arena" : "BG", _bgType);
 #endif
         bot->Unmount();
 

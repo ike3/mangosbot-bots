@@ -10,6 +10,7 @@
 #ifdef MANGOS
 #include "Object/GameObject.h"
 #endif
+#include "BattleGroundMgr.h"
 #include "PlayerbotAIBase.h"
 #include "PlayerbotAIConfig.h"
 
@@ -233,6 +234,34 @@ class ServerFacade
         bool IsUnderwater(Unit *unit);
         FactionTemplateEntry const* GetFactionTemplateEntry(Unit *unit);
         Unit* GetChaseTarget(Unit* target);
+
+        BattleGroundTypeId BgTemplateId(BattleGroundQueueTypeId queueTypeId)
+        {
+#ifdef MANGOS
+            return sBattleGroundMgr.BGTemplateId(queueTypeId);
+#endif
+#ifdef CMANGOS
+            return sBattleGroundMgr.BgTemplateId(queueTypeId);
+#endif
+        }
+        ArenaType BgArenaType(BattleGroundQueueTypeId queueTypeId)
+        {
+#ifdef MANGOS
+            return sBattleGroundMgr.BGArenaType(queueTypeId);
+#endif
+#ifdef CMANGOS
+            return sBattleGroundMgr.BgArenaType(queueTypeId);
+#endif
+        }
+        BattleGroundQueue& bgQueue(BattleGroundQueueTypeId queueTypeId)
+        {
+#ifdef MANGOS
+            return sBattleGroundMgr.m_BattleGroundQueues[queueTypeId];
+#endif
+#ifdef CMANGOS
+            return sBattleGroundMgr.m_battleGroundQueues[queueTypeId];
+#endif
+        }
 };
 
 #define sServerFacade ServerFacade::instance()
