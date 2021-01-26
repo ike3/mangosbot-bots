@@ -425,7 +425,7 @@ void PlayerbotAI::SpellInterrupted(uint32 spellid)
         return;
 
     uint32 castTimeSpent = 1000 * (now - lastSpell.time);
-    int32 globalCooldown = CalculateGlobalCooldown(lastSpell.id);
+    uint32 globalCooldown = CalculateGlobalCooldown(lastSpell.id);
     if (castTimeSpent < globalCooldown)
         SetNextCheckDelay(globalCooldown - castTimeSpent);
     else
