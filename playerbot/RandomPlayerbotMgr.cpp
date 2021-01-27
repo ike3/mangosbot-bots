@@ -344,8 +344,8 @@ bool RandomPlayerbotMgr::CheckBgQueue()
             uint32 ACount = BgBots[queueTypeId][bracketId][0] + BgPlayers[queueTypeId][bracketId][0];
             uint32 HCount = BgBots[queueTypeId][bracketId][1] + BgPlayers[queueTypeId][bracketId][1];
 
-            uint32 SCount, RCount;
 #ifndef MANGOSBOT_ZERO
+            uint32 SCount, RCount;
             if (ArenaType type = sServerFacade.BgArenaType(queueTypeId))
             {
                 SCount = BgBots[queueTypeId][bracketId][0] + BgPlayers[queueTypeId][bracketId][0];
@@ -414,10 +414,14 @@ bool RandomPlayerbotMgr::CheckBgQueue()
         BattleGroundBracketId bracketId = player->GetBattleGroundBracketIdFromLevel(bgTypeId);
 #endif
 #ifdef CMANGOS
+#ifndef MANGOSBOT_ZERO
         BattleGround* bg = sBattleGroundMgr.GetBattleGroundTemplate(bgTypeId);
         uint32 mapId = bg->GetMapId();
         PvPDifficultyEntry const* pvpDiff = GetBattlegroundBracketByLevel(mapId, player->getLevel());
         BattleGroundBracketId bracketId = BattleGroundBracketId(pvpDiff->bracketId);
+#else
+        BattleGroundBracketId bracketId = player->GetBattleGroundBracketIdFromLevel(bgTypeId);
+#endif
 #endif
 #ifndef MANGOSBOT_ZERO
         ArenaType arenaType = sServerFacade.BgArenaType(queueTypeId);
@@ -517,10 +521,14 @@ bool RandomPlayerbotMgr::CheckBgQueue()
         BattleGroundBracketId bracketId = bot->GetBattleGroundBracketIdFromLevel(bgTypeId);
 #endif
 #ifdef CMANGOS
+#ifndef MANGOSBOT_ZERO
         BattleGround* bg = sBattleGroundMgr.GetBattleGroundTemplate(bgTypeId);
         uint32 mapId = bg->GetMapId();
-        PvPDifficultyEntry const* pvpDiff = GetBattlegroundBracketByLevel(mapId, bot->getLevel());
+        PvPDifficultyEntry const* pvpDiff = GetBattlegroundBracketByLevel(mapId, player->getLevel());
         BattleGroundBracketId bracketId = BattleGroundBracketId(pvpDiff->bracketId);
+#else
+        BattleGroundBracketId bracketId = bot->GetBattleGroundBracketIdFromLevel(bgTypeId);
+#endif
 #endif
 
 #ifndef MANGOSBOT_ZERO
@@ -697,11 +705,13 @@ void RandomPlayerbotMgr::AddBgBot(BattleGroundQueueTypeId queueTypeId, BattleGro
         sLog.outDetail("Can't add BG Bots to %s %d (%s), it is full", bgType, bgTypeId, _bgType);
     }
 
+#ifndef MANGOSBOT_ZERO
     if (!visual && isArena && ((!isRated && SCount >= BracketSize) || (!isRated && RCount >= BracketSize)))
     {
         sLog.outDetail("Can't add bots to %s %s, Arena queue is full", bgType, _bgType);
         return;
     }
+#endif
 
     if (!visual)
         sLog.outDetail("Searching bots for %s %s", bgType, _bgType);
@@ -741,6 +751,7 @@ void RandomPlayerbotMgr::AddBgBot(BattleGroundQueueTypeId queueTypeId, BattleGro
                 continue;
 #endif
 #ifdef CMANGOS
+#ifndef MANGOSBOT_ZERO
             BattleGround* bg = sBattleGroundMgr.GetBattleGroundTemplate(bgTypeId);
             uint32 mapId = bg->GetMapId();
             PvPDifficultyEntry const* pvpDiff = GetBattlegroundBracketByLevel(mapId, bot->getLevel());
@@ -750,6 +761,10 @@ void RandomPlayerbotMgr::AddBgBot(BattleGroundQueueTypeId queueTypeId, BattleGro
             BattleGroundBracketId bracket_temp = BattleGroundBracketId(pvpDiff->bracketId);
             if (bracket_temp != bracketId)
                 continue;
+#else
+            if (bot->GetBattleGroundBracketIdFromLevel(bgTypeId) != bracketId)
+                continue;
+#endif
 #endif
 
             if (bot->GetPlayerbotAI()->GetMaster())

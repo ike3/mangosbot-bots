@@ -244,6 +244,7 @@ class ServerFacade
             return sBattleGroundMgr.BgTemplateId(queueTypeId);
 #endif
         }
+#ifndef MANGOSBOT_ZERO
         ArenaType BgArenaType(BattleGroundQueueTypeId queueTypeId)
         {
 #ifdef MANGOS
@@ -253,6 +254,7 @@ class ServerFacade
             return sBattleGroundMgr.BgArenaType(queueTypeId);
 #endif
         }
+#endif
         BattleGroundQueue& bgQueue(BattleGroundQueueTypeId queueTypeId)
         {
 #ifdef MANGOS

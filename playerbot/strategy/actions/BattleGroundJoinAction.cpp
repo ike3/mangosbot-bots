@@ -482,9 +482,9 @@ bool BGStatusAction::Execute(Event event)
 
                 _bgTypeId = bg->GetTypeId();
             }
-#endif
-#endif
         }
+#endif
+#endif
 
 #ifdef MANGOSBOT_ZERO
         sLog.outBasic("Bot #%d <%s> (%u %s) joined BG (%s)", bot->GetGUIDLow(), bot->GetName(), bot->getLevel(), bot->GetTeam() == ALLIANCE ? "A" : "H", _bgType);
