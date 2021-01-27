@@ -915,9 +915,8 @@ bool ArenaTactics::moveToCenter(BattleGround *bg)
     switch (bg->GetTypeID())
 #endif
 #ifdef CMANGOS
-
-#endif
     switch (bg->GetTypeId())
+#endif
     {
     case BATTLEGROUND_BE:
         if (Preference > 10)
