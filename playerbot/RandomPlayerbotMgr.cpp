@@ -424,7 +424,7 @@ bool RandomPlayerbotMgr::CheckBgQueue()
         if (arenaType != ARENA_TYPE_NONE)
         {
 #ifdef MANGOS
-            BattleGroundQueue& bgQueue = sServerFacade.bgQueue[queueTypeId];
+            BattleGroundQueue& bgQueue = sServerFacade.bgQueue(queueTypeId);
             GroupQueueInfo ginfo;
             uint32 tempT = TeamId;
 
