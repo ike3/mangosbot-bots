@@ -105,7 +105,7 @@ bool BGJoinAction::JoinQueue(uint32 type)
    bool isPremade = false;
    bool isArena = false;
    bool isRated = false;
-   uint8 arenaslot;
+   uint8 arenaslot = 0;
    uint8 asGroup = false;
    string _bgType;
 
@@ -235,24 +235,26 @@ bool BGLeaveAction::Execute(Event event)
 bool BGStatusAction::Execute(Event event)
 {
     uint32 QueueSlot;
-    uint64 arenatype;
-    uint64 arenaByte;
-    uint64 bgTypeId;
-    uint8 arenaTeam;
     uint32 instanceId;
-    uint32 battleId;
-    uint8 minlevel;
-    uint8 maxlevel;
     uint32 mapId;
-    uint8 isRated;
     uint32 statusid;
-    uint8 unk1;
-    uint64 unk0;
-    uint64 x1f90;
     uint32 Time1;
     uint32 Time2;
-    uint32 bg_switch;
+    uint8 unk1;
     string _bgType;
+
+#ifndef MANGOSBOT_ZERO
+    uint64 arenatype;
+    uint64 arenaByte;
+    uint8 arenaTeam;
+    uint8 isRated;
+    uint64 unk0;
+    uint64 x1f90;
+    uint8 minlevel;
+    uint8 maxlevel;
+    uint64 bgTypeId;
+    uint32 battleId;
+#endif
 
     WorldPacket p(event.getPacket());
     statusid = 0;
@@ -320,7 +322,6 @@ bool BGStatusAction::Execute(Event event)
     BattleGroundTypeId _bgTypeId = sServerFacade.BgTemplateId(queueTypeId);
     bool isArena = false;
 
-    BattleGround* bg;
     uint8 type = false;                                             // arenatype if arena
     //uint32 bgTypeId_ = _bgTypeId;                                       // type id from dbc
     uint16 unk = 0x1F90;
@@ -413,6 +414,7 @@ bool BGStatusAction::Execute(Event event)
     }
     if (statusid == STATUS_WAIT_QUEUE) //bot is in queue
     {
+        BattleGround* bg = bot->GetBattleGround();
         bool leaveQ = false;
         uint32 timer;
         if (_bgTypeId > 4 && _bgTypeId != 7)

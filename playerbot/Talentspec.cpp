@@ -55,7 +55,6 @@ bool TalentSpec::CheckTalents(int level, ostringstream* out)
         if (entry.rank > 0 && entry.talentInfo->DependsOn)
         {
             bool found = false;
-            uint32 spellId;
             SpellEntry const* spellInfodep;
 
             for (auto& dep : talents)
