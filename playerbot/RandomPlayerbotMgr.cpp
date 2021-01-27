@@ -524,7 +524,7 @@ bool RandomPlayerbotMgr::CheckBgQueue()
 #ifndef MANGOSBOT_ZERO
         BattleGround* bg = sBattleGroundMgr.GetBattleGroundTemplate(bgTypeId);
         uint32 mapId = bg->GetMapId();
-        PvPDifficultyEntry const* pvpDiff = GetBattlegroundBracketByLevel(mapId, player->getLevel());
+        PvPDifficultyEntry const* pvpDiff = GetBattlegroundBracketByLevel(mapId, bot->getLevel());
         BattleGroundBracketId bracketId = BattleGroundBracketId(pvpDiff->bracketId);
 #else
         BattleGroundBracketId bracketId = bot->GetBattleGroundBracketIdFromLevel(bgTypeId);
