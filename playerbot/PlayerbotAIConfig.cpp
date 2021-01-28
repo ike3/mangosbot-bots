@@ -200,7 +200,7 @@ bool PlayerbotAIConfig::Initialize()
 
                 //Only add paths that have atleast 1 spec.
                 if(talentPath.talentSpec.size() > 0)
-                    classSpecs[cls].TalentPath.push_back(talentPath);
+                    classSpecs[cls].talentPath.push_back(talentPath);
             }
         }
     }
