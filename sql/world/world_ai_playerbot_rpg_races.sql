@@ -263,6 +263,91 @@ INSERT INTO `ai_playerbot_rpg_races` VALUES
 (NULL, 19352, 7, 67, 70), -- gnomes
 (NULL, 19352, 11, 67, 70), -- draenei
 --
+--           NORTHREND
+--
+-- Isirami Fairwind, Dalaran
+(NULL, 32413, 1, 72, 80), -- human
+(NULL, 32413, 3, 72, 80), -- dwarves
+(NULL, 32413, 4, 72, 80), -- elves
+(NULL, 32413, 7, 72, 80), -- gnomes
+(NULL, 32413, 11, 72, 80), -- draenei
+--
+-- James Deacon, Valiance Keep, Borean Tundra
+(NULL, 25245, 1, 68, 72), -- human
+(NULL, 25245, 3, 68, 72), -- dwarves
+(NULL, 25245, 4, 68, 72), -- elves
+(NULL, 25245, 7, 68, 72), -- gnomes
+(NULL, 25245, 11, 68, 72), -- draenei
+--
+-- "Charlie" Northtop, Fizzcrank Airstrip, Borean Tundra
+(NULL, 26596, 1, 69, 72), -- human
+(NULL, 26596, 3, 69, 72), -- dwarves
+(NULL, 26596, 4, 69, 72), -- elves
+(NULL, 26596, 7, 69, 72), -- gnomes
+(NULL, 26596, 11, 69, 72), -- draenei
+--
+-- Innkeeper Hazel Lagras, Valgarde, Howling Fjord
+(NULL, 23731, 1, 68, 72), -- human
+(NULL, 23731, 3, 68, 72), -- dwarves
+(NULL, 23731, 4, 68, 72), -- elves
+(NULL, 23731, 7, 68, 72), -- gnomes
+(NULL, 23731, 11, 68, 72), -- draenei
+--
+-- Innkeeper Celeste Goodhutch, Westguard Keep, Howling Fjord
+(NULL, 23937, 1, 69, 72), -- human
+(NULL, 23937, 3, 69, 72), -- dwarves
+(NULL, 23937, 4, 69, 72), -- elves
+(NULL, 23937, 7, 69, 72), -- gnomes
+(NULL, 23937, 11, 69, 72), -- draenei
+--
+-- Christina Daniels, Fort Wildervar, Howling Fjord
+(NULL, 24057, 1, 70, 72), -- human
+(NULL, 24057, 3, 70, 72), -- dwarves
+(NULL, 24057, 4, 70, 72), -- elves
+(NULL, 24057, 7, 70, 72), -- gnomes
+(NULL, 24057, 11, 70, 72), -- draenei
+--
+-- Jennifer Bell, Amberpine Lodge, Grizzly Hills
+(NULL, 27066, 1, 70, 74), -- human
+(NULL, 27066, 3, 70, 74), -- dwarves
+(NULL, 27066, 4, 70, 74), -- elves
+(NULL, 27066, 7, 70, 74), -- gnomes
+(NULL, 27066, 11, 70, 74), -- draenei
+--
+-- Quartermaster McCarty, Westfall Brigade Encampment, Grizzly Hills
+(NULL, 26375, 1, 70, 74), -- human
+(NULL, 26375, 3, 70, 74), -- dwarves
+(NULL, 26375, 4, 70, 74), -- elves
+(NULL, 26375, 7, 70, 74), -- gnomes
+(NULL, 26375, 11, 70, 74), -- draenei
+--
+-- Illusia Lune, Wintergarde Keep, Dragonblight
+(NULL, 27042, 1, 71, 75), -- human
+(NULL, 27042, 3, 71, 75), -- dwarves
+(NULL, 27042, 4, 71, 75), -- elves
+(NULL, 27042, 7, 71, 75), -- gnomes
+(NULL, 27042, 11, 71, 75), -- draenei
+--
+-- Naohain, Stars' Rest, Dragonblight
+(NULL, 27052, 1, 71, 75), -- human
+(NULL, 27052, 3, 71, 75), -- dwarves
+(NULL, 27052, 4, 71, 75), -- elves
+(NULL, 27052, 7, 71, 75), -- gnomes
+(NULL, 27052, 11, 71, 75), -- draenei
+--
+-- Gunda Boldhammer, Frosthold, Storm Peaks
+(NULL, 29926, 1, 77, 80), -- human
+(NULL, 29926, 3, 77, 80), -- dwarves
+(NULL, 29926, 4, 77, 80), -- elves
+(NULL, 29926, 7, 77, 80), -- gnomes
+(NULL, 29926, 11, 77, 80), -- draenei
+--
+-- Caris Sunlance, Argent Tournament, Icecrown
+(NULL, 33970, 1, 80, 80), -- human
+(NULL, 33970, 3, 80, 80), -- dwarves
+(NULL, 33970, 4, 80, 80), -- elves
+(NULL, 33970, 7, 80, 80), -- gnomes
+(NULL, 33970, 11, 80, 80), -- draenei
 --
 --       ALLIANCE MOUNT VENDORS
 --
@@ -515,6 +600,99 @@ INSERT INTO `ai_playerbot_rpg_races` VALUES
 (NULL, 19319, 8, 67, 70), -- trolls
 (NULL, 19319, 10, 67, 70), -- blood elves
 --
+--        NORTHREND
+--
+-- Uda the Beast, Dalaran
+(NULL, 31557, 2, 72, 80), -- orcs
+(NULL, 31557, 5, 72, 80), -- undead
+(NULL, 31557, 6, 72, 80), -- tauren
+(NULL, 31557, 8, 72, 80), -- trolls
+(NULL, 31557, 10, 72, 80), -- blood elves
+--
+-- Williamson, Warsong Hold, Borean Tundra
+(NULL, 25278, 2, 68, 72), -- orcs
+(NULL, 25278, 5, 68, 72), -- undead
+(NULL, 25278, 6, 68, 72), -- tauren
+(NULL, 25278, 8, 68, 72), -- trolls
+(NULL, 25278, 10, 68, 72), -- blood elves
+--
+-- Pahu Frosthoof, Taunka'le Village, Borean Tundra
+(NULL, 26709, 2, 69, 72), -- orcs
+(NULL, 26709, 5, 69, 72), -- undead
+(NULL, 26709, 6, 69, 72), -- tauren
+(NULL, 26709, 8, 69, 72), -- trolls
+(NULL, 26709, 10, 69, 72), -- blood elves
+--
+-- Matron Magah, Bor'Gorok Outpost, Borean Tundra
+(NULL, 26709, 2, 70, 72), -- orcs
+(NULL, 26709, 5, 70, 72), -- undead
+(NULL, 26709, 6, 70, 72), -- tauren
+(NULL, 26709, 8, 70, 72), -- trolls
+(NULL, 26709, 10, 70, 72), -- blood elves
+--
+-- Basil Osgood, New Agamand, Howling Fjord
+(NULL, 24149, 2, 68, 72), -- orcs
+(NULL, 24149, 5, 68, 72), -- undead
+(NULL, 24149, 6, 68, 72), -- tauren
+(NULL, 24149, 8, 68, 72), -- trolls
+(NULL, 24149, 10, 68, 72), -- blood elves
+--
+-- Timothy Holland, Vengeance Landing, Howling Fjord
+(NULL, 24342, 2, 69, 72), -- orcs
+(NULL, 24342, 5, 69, 72), -- undead
+(NULL, 24342, 6, 69, 72), -- tauren
+(NULL, 24342, 8, 69, 72), -- trolls
+(NULL, 24342, 10, 69, 72), -- blood elves
+--
+-- Bori Wintertotem, Camp Winterhoof, Howling Fjord
+(NULL, 24033, 2, 70, 72), -- orcs
+(NULL, 24033, 5, 70, 72), -- undead
+(NULL, 24033, 6, 70, 72), -- tauren
+(NULL, 24033, 8, 70, 72), -- trolls
+(NULL, 24033, 10, 70, 72), -- blood elves
+--
+-- Barracks Master Rhekku, Conquest Hold, Grizzly Hills
+(NULL, 27125, 2, 70, 74), -- orcs
+(NULL, 27125, 5, 70, 74), -- undead
+(NULL, 27125, 6, 70, 74), -- tauren
+(NULL, 27125, 8, 70, 74), -- trolls
+(NULL, 27125, 10, 70, 74), -- blood elves
+--
+-- Aiyan Coldwind, Capm Onequah, Grizzly Hills
+(NULL, 26680, 2, 70, 74), -- orcs
+(NULL, 26680, 5, 70, 74), -- undead
+(NULL, 26680, 6, 70, 74), -- tauren
+(NULL, 26680, 8, 70, 74), -- trolls
+(NULL, 26680, 10, 70, 74), -- blood elves
+--
+-- Mrs. Winterby, Venomspite, Dragonblight
+(NULL, 27027, 2, 71, 75), -- orcs
+(NULL, 27027, 5, 71, 75), -- undead
+(NULL, 27027, 6, 71, 75), -- tauren
+(NULL, 27027, 8, 71, 75), -- trolls
+(NULL, 27027, 10, 71, 75), -- blood elves
+--
+-- Barracks Master Harga, Agmar's Hammer, Dragonblight
+(NULL, 26985, 2, 71, 75), -- orcs
+(NULL, 26985, 5, 71, 75), -- undead
+(NULL, 26985, 6, 71, 75), -- tauren
+(NULL, 26985, 8, 71, 75), -- trolls
+(NULL, 26985, 10, 71, 75), -- blood elves
+--
+-- Wabada Whiteflower, Camp Tunka'lo, Storm Peaks
+(NULL, 29971, 2, 77, 80), -- orcs
+(NULL, 29971, 5, 77, 80), -- undead
+(NULL, 29971, 6, 77, 80), -- tauren
+(NULL, 29971, 8, 77, 80), -- trolls
+(NULL, 29971, 10, 77, 80), -- blood elves
+--
+-- Jarin Dawnglow, Argent Tournament, Icecrown
+(NULL, 33971, 2, 80, 80), -- orcs
+(NULL, 33971, 5, 80, 80), -- undead
+(NULL, 33971, 6, 80, 80), -- tauren
+(NULL, 33971, 8, 80, 80), -- trolls
+(NULL, 33971, 10, 80, 80), -- blood elves
+--
 --        NEUTRAL AREAS
 --
 -- Innkeeper Skindle, Booty Bay 6807 (Neutral)
@@ -533,6 +711,9 @@ INSERT INTO `ai_playerbot_rpg_races` VALUES
 (NULL, 15174, 0, 55, 60),
 -- Jessica Chambers, East Plaguelands 16256 (Neutral)
 (NULL, 16256, 0, 53, 60),
+--
+--           OUTLAND
+--
 -- Innkeeper Coryth Stoktron, Cenarion Refuge (Neutral)
 (NULL, 18907, 0, 60, 64),
 -- Minalei, Aldors, Shattrath
@@ -547,6 +728,33 @@ INSERT INTO `ai_playerbot_rpg_races` VALUES
 (NULL, 19531, 0, 67, 70),
 -- Innkeeper Remi Dodoso, Area 52, Netherstorm
 (NULL, 19571, 0, 67, 70),
+-- Caregiver Inaara, Isle if Quel'Danas
+(NULL, 25036, 0, 69, 70),
+--
+--           NORTHREND
+--
+-- Amisi Azuregaze, Dalaran Inn
+(NULL, 28687, 0, 72, 80),
+-- Afsaneh Asrar, Dalaran Underbelly
+(NULL, 32411, 0, 77, 80),
+-- Caregiver Poallu, Kaluak Camp, Borean Tundra
+(NULL, 27187, 0, 68, 72),
+-- Caregiver Iqniq, Kamagua, Howling Fjord
+(NULL, 27187, 0, 68, 72),
+-- Caregiver Mumik, Mo'Aki Harbor, Dragonblight
+(NULL, 27174, 0, 71, 73),
+-- Marissa Everwatch, The Argent Stand, Zul'Drak
+(NULL, 28791, 0, 73, 75),
+-- Pan'ya, Zim'Torga, Zul'Drak
+(NULL, 29583, 0, 75, 77),
+-- Purser Boulian, Nesingwary Base Camp, Sholazar Basin
+(NULL, 29583, 0, 75, 79),
+-- Smilin' Slirk Brassknob, K3, The Storm Peaks
+(NULL, 29904, 0, 77, 80),
+-- Magorn, Snow Drift Plains, The Storm Peaks
+(NULL, 29963, 0, 77, 80),
+-- Initiate Brenners, The Argent Stand, Zul'Drak
+-- (NULL, 30308, 0, 77, 80),
 --
 --
 --       UNUSED
