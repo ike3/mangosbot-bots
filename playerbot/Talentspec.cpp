@@ -186,13 +186,13 @@ void TalentSpec::SortTalents(std::vector<TalentListEntry>& talents, int sortBy)
     case SORT_BY_DEFAULT:
     {
         int tabSort[] = { 0,1,2 };
-        std::sort(talents.begin(), talents.end(), std::bind(sortTalentMap, _1, _2, tabSort));
+        sort(talents.begin(), talents.end(), [&tabSort](TalentSpec::TalentListEntry i, TalentSpec::TalentListEntry j) {return sortTalentMap(i, j, tabSort); });
         break;
     }
     case SORT_BY_POINTS_TREE:
     {
         int tabSort[] = { GetTalentPoints(talents, 0) * -100 - irand(0, 99),GetTalentPoints(talents, 1) * -100 - irand(0, 99),GetTalentPoints(talents, 2) * -100 - irand(0, 99) };
-        std::sort(talents.begin(), talents.end(), std::bind(sortTalentMap, _1, _2, tabSort));
+        sort(talents.begin(), talents.end(), [&tabSort](TalentSpec::TalentListEntry i, TalentSpec::TalentListEntry j) {return sortTalentMap(i, j, tabSort); });
         break;
     }
     }

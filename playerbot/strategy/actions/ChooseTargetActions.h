@@ -4,7 +4,7 @@
 #include "AttackAction.h"
 #include "../../ServerFacade.h"
 #include "../../playerbot.h"
-#include "../../Travelmgr.h"
+#include "../../TravelMgr.h"
 
 namespace ai
 {

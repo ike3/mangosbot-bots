@@ -737,7 +737,7 @@ void TravelMgr::LoadQuestTravelTable()
 
         if(!container->questGivers.empty() || !container->questTakers.empty() || hasError)
         {
-            quests.insert_or_assign(questId, container);
+            quests.insert(make_pair(questId, container));
 
             for (auto loc : container->questGivers)
                 questGivers.push_back(loc);

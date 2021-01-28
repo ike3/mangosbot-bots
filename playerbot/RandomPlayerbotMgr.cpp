@@ -1374,7 +1374,7 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot, vector<WorldLocation> &locs
 
     //Continent is about 20.000 large
     //Bot will travel 0-5000 units + 75-150 units per level.
-    tlocs.erase(std::remove_if(tlocs.begin(), tlocs.end(), [bot](WorldLocation const& l) {return  bot->GetDistance2d(l.coord_x, l.coord_y) > urand(0, 5000) + bot->getLevel() * 15 * urand(5, 10); }), tlocs.end());
+    tlocs.erase(std::remove_if(tlocs.begin(), tlocs.end(), [bot](WorldLocation const& l) {return  sServerFacade.GetDistance2d(bot, l.coord_x, l.coord_y) > urand(0, 5000) + bot->getLevel() * 15 * urand(5, 10); }), tlocs.end());
 
     if (tlocs.empty())
     {
@@ -2463,7 +2463,7 @@ uint32 RandomPlayerbotMgr::GetBattleMasterEntry(Player* bot, BattleGroundTypeId 
             if (Bm->GetDeathState() == DEAD)
                 continue;
 
-            float dist2 = bot->GetDistance2d(data->posX, data->posY);
+            float dist2 = bot->GetDistance2d(data->posX, data->posY, DIST_CALC_NONE);
             if (dist2 < dist1)
             {
                 dist1 = dist2;
