@@ -241,7 +241,7 @@ bool PlayerbotAIConfig::Initialize()
     gearscorecheck = config.GetBoolDefault("AiPlayerbot.GearScoreCheck", false);
 	randomBotPreQuests = config.GetBoolDefault("AiPlayerbot.PreQuests", true);
     randomBotSayWithoutMaster = config.GetBoolDefault("AiPlayerbot.RandomBotSayWithoutMaster", false);
-    randomBotGroupNearby = config.GetBoolDefault("AiPlayerbot.RandomBotGroupNearby", true);
+    randomBotGroupNearby = config.GetBoolDefault("AiPlayerbot.RandomBotGroupNearby", false);
 
     //SPP automation
     autoPickReward = config.GetStringDefault("AiPlayerbot.AutoPickReward", "no");
