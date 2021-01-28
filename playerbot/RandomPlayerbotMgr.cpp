@@ -290,7 +290,11 @@ void RandomPlayerbotMgr::LoadBattleMastersCache()
         FactionEntry const* bmParentFaction = sFactionStore.LookupEntry(bmFactionId);
 #endif
 #ifdef CMANGOS
+#ifdef MANGOSBOT_ONE
         FactionEntry const* bmParentFaction = sFactionStore.LookupEntry<FactionEntry>(bmFactionId);
+#else
+        FactionEntry const* bmParentFaction = sFactionStore.LookupEntry(bmFactionId);
+#endif
 #endif
         uint32 bmParentTeam = bmParentFaction->team;
         Team bmTeam = TEAM_BOTH_ALLOWED;

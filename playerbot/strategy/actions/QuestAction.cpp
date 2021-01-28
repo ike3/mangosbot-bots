@@ -98,7 +98,11 @@ bool QuestAction::CompleteQuest(uint32 entry)
             if (FactionEntry const* factionEntry = sFactionStore.LookupEntry(repFaction))
 #endif
 #ifdef CMANGOS
+#ifdef MANGOSBOT_ONE
             if (FactionEntry const* factionEntry = sFactionStore.LookupEntry<FactionEntry>(repFaction))
+#else
+            if (FactionEntry const* factionEntry = sFactionStore.LookupEntry(repFaction))
+#endif
 #endif
             {
                 bot->GetReputationMgr().SetReputation(factionEntry, repValue);
