@@ -837,15 +837,10 @@ uint32 TravelMgr::getDialogStatus(Player* pPlayer, int32 questgiver, Quest const
                     }
                     else
                     {
-#ifdef MANGOS
+#ifndef MANGOSBOT_TWO
                         dialogStatusNew = DIALOG_STATUS_CHAT;
-#endif
-#ifdef CMANGOS
-#ifndef MANGOSBOT_ZERO
-                        dialogStatusNew = DIALOG_STATUS_LOW_LEVEL_AVAILABLE;
 #else
-                        dialogStatusNew = DIALOG_STATUS_CHAT;
-#endif
+                        dialogStatusNew = DIALOG_STATUS_LOW_LEVEL_AVAILABLE;
 #endif
                     }
                 }

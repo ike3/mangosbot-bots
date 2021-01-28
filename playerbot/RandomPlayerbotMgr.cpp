@@ -286,7 +286,12 @@ void RandomPlayerbotMgr::LoadBattleMastersCache()
         FactionTemplateEntry const* bmFaction = sFactionTemplateStore.LookupEntry(bmaster->Faction);
 #endif
         uint32 bmFactionId = bmFaction->faction;
+#ifdef MANGOS
         FactionEntry const* bmParentFaction = sFactionStore.LookupEntry(bmFactionId);
+#endif
+#ifdef CMANGOS
+        FactionEntry const* bmParentFaction = sFactionStore.LookupEntry<FactionEntry>(bmFactionId);
+#endif
         uint32 bmParentTeam = bmParentFaction->team;
         Team bmTeam = TEAM_BOTH_ALLOWED;
         if (bmParentTeam == 891)
@@ -414,7 +419,7 @@ bool RandomPlayerbotMgr::CheckBgQueue()
         BattleGroundBracketId bracketId = player->GetBattleGroundBracketIdFromLevel(bgTypeId);
 #endif
 #ifdef CMANGOS
-#ifndef MANGOSBOT_ZERO
+#ifdef MANGOSBOT_TWO
         BattleGround* bg = sBattleGroundMgr.GetBattleGroundTemplate(bgTypeId);
         uint32 mapId = bg->GetMapId();
         PvPDifficultyEntry const* pvpDiff = GetBattlegroundBracketByLevel(mapId, player->getLevel());
@@ -521,7 +526,7 @@ bool RandomPlayerbotMgr::CheckBgQueue()
         BattleGroundBracketId bracketId = bot->GetBattleGroundBracketIdFromLevel(bgTypeId);
 #endif
 #ifdef CMANGOS
-#ifndef MANGOSBOT_ZERO
+#ifdef MANGOSBOT_TWO
         BattleGround* bg = sBattleGroundMgr.GetBattleGroundTemplate(bgTypeId);
         uint32 mapId = bg->GetMapId();
         PvPDifficultyEntry const* pvpDiff = GetBattlegroundBracketByLevel(mapId, bot->getLevel());
@@ -751,7 +756,7 @@ void RandomPlayerbotMgr::AddBgBot(BattleGroundQueueTypeId queueTypeId, BattleGro
                 continue;
 #endif
 #ifdef CMANGOS
-#ifndef MANGOSBOT_ZERO
+#ifdef MANGOSBOT_TWO
             BattleGround* bg = sBattleGroundMgr.GetBattleGroundTemplate(bgTypeId);
             uint32 mapId = bg->GetMapId();
             PvPDifficultyEntry const* pvpDiff = GetBattlegroundBracketByLevel(mapId, bot->getLevel());

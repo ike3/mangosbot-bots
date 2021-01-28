@@ -464,7 +464,7 @@ bool BGStatusAction::Execute(Event event)
 #ifdef MANGOS
             if (ginfo.IsInvitedToBGInstanceGUID)
             {
-                bg = sBattleGroundMgr.GetBattleGround(ginfo.IsInvitedToBGInstanceGUID, BATTLEGROUND_TYPE_NONE);
+                BattleGround* bg = sBattleGroundMgr.GetBattleGround(ginfo.IsInvitedToBGInstanceGUID, BATTLEGROUND_TYPE_NONE);
                 if (!bg)
                 {
                     return false;
@@ -476,7 +476,7 @@ bool BGStatusAction::Execute(Event event)
 #ifdef CMANGOS
             if (ginfo.isInvitedToBgInstanceGuid)
             {
-                bg = sBattleGroundMgr.GetBattleGround(ginfo.isInvitedToBgInstanceGuid, BATTLEGROUND_TYPE_NONE);
+                BattleGround* bg = sBattleGroundMgr.GetBattleGround(ginfo.isInvitedToBgInstanceGuid, BATTLEGROUND_TYPE_NONE);
                 if (!bg)
                 {
                     return false;
