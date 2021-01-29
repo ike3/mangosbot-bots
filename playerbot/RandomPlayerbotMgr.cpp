@@ -1367,6 +1367,9 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot, vector<WorldLocation> &locs
     if (bot->InBattleGround())
         return;
 
+    if (bot->InBattleGroundQueue())
+        return;
+
 	if (bot->getLevel() < 5)
 		return;
 
@@ -1379,11 +1382,11 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot, vector<WorldLocation> &locs
     vector<WorldLocation> tlocs = locs;
 
     //5% + 0.1% per level chance node on different map in selection.
-    tlocs.erase(std::remove_if(tlocs.begin(), tlocs.end(), [bot](WorldLocation const& l) {return l.mapid != bot->GetMapId() && urand(1, 100) > 5 + 0.1 * bot->getLevel(); }), tlocs.end());
+    tlocs.erase(std::remove_if(tlocs.begin(), tlocs.end(), [bot](WorldLocation const& l) {return l.mapid != bot->GetMapId() && urand(1, 100) > 0.5 * bot->getLevel(); }), tlocs.end());
 
     //Continent is about 20.000 large
     //Bot will travel 0-5000 units + 75-150 units per level.
-    tlocs.erase(std::remove_if(tlocs.begin(), tlocs.end(), [bot](WorldLocation const& l) {return  sServerFacade.GetDistance2d(bot, l.coord_x, l.coord_y) > urand(0, 5000) + bot->getLevel() * 15 * urand(5, 10); }), tlocs.end());
+    tlocs.erase(std::remove_if(tlocs.begin(), tlocs.end(), [bot](WorldLocation const& l) {return l.mapid == bot->GetMapId() && sServerFacade.GetDistance2d(bot, l.coord_x, l.coord_y) > urand(0, 5000) + bot->getLevel() * 15 * urand(5, 10); }), tlocs.end());
 
     if (tlocs.empty())
     {
