@@ -2451,8 +2451,15 @@ void PlayerbotAI::ImbueItem(Item* item, uint32 targetFlag, ObjectGuid targetGUID
 void PlayerbotAI::EnchantItemT(uint32 spellid, uint8 slot)
 {
    Item* pItem = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, slot);
+
    if (!pItem)
     return;
+
+#ifdef CMANGOS
+   if (pItem->GetOwner() == nullptr)
+       return;
+#endif
+
 #ifdef MANGOS
    SpellEntry const* spellInfo = sSpellStore.LookupEntry(spellid);
 #else

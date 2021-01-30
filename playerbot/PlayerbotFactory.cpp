@@ -1014,9 +1014,7 @@ void PlayerbotFactory::InitEquipment(bool incremental)
                     newItem->AddToWorld();
                     newItem->AddToUpdateQueueOf(bot);
                     bot->AutoUnequipOffhandIfNeed();
-#ifndef MANGOSBOT_TWO
-                    EnchantItem(newItem); // need fix for 3.3.5
-#endif
+                    EnchantItem(newItem);
                     found = true;
                     break;
                 }
@@ -1128,9 +1126,7 @@ void PlayerbotFactory::InitSecondEquipmentSet()
             {
                 newItem->AddToWorld();
                 newItem->AddToUpdateQueueOf(bot);
-#ifndef MANGOSBOT_TWO
-                EnchantItem(newItem); // needs fix for 3.3.5
-#endif
+                EnchantItem(newItem);
                 break;
             }
         }
@@ -1182,6 +1178,10 @@ void PlayerbotFactory::InitBags()
 
 void PlayerbotFactory::EnchantItem(Item* item)
 {
+#ifdef CMANGOS
+    if (item->GetOwner() == nullptr)
+        return;
+#endif
     if (urand(0, 100) < 100 * sPlayerbotAIConfig.randomGearLoweringChance)
         return;
 
