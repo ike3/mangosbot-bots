@@ -132,6 +132,12 @@ void activateAhbotThread()
 
 void AhBot::Update()
 {
+    if (sWorld.IsShutdowning())
+        return;
+
+    if (sWorld.IsStopped())
+        return;
+
     time_t now = time(0);
 
     if (now < nextAICheckTime)
