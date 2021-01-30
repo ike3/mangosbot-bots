@@ -20,7 +20,7 @@ float ServerFacade::GetDistance2d(Unit *unit, WorldObject* wo)
     unit->GetDistance2d(wo);
 #endif
 #ifdef CMANGOS
-    unit->GetDistance2d(wo->GetPositionX(), wo->GetPositionY(), DIST_CALC_NONE);
+    unit->GetDistance2d(wo->GetPositionX(), wo->GetPositionY());
 #endif
     return round(dist * 10.0f) / 10.0f;
 }
