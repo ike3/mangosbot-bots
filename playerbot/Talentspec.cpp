@@ -54,6 +54,10 @@ bool TalentSpec::CheckTalents(int level, ostringstream* out)
 
         if (entry.rank > 0 && entry.talentInfo->DependsOn)
         {
+            TalentEntry const* talentInfo = sTalentStore.LookupEntry(entry.talentInfo->DependsOn);
+            if (!talentInfo)
+                continue;
+
             bool found = false;
             SpellEntry const* spellInfodep;
 
