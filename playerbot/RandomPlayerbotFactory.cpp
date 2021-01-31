@@ -248,7 +248,7 @@ void RandomPlayerbotFactory::CreateRandomBots()
         {
             password += (char)urand('!', 'z');
         }
-        sAccountMgr.CreateAccount(accountName, password);
+        sAccountMgr.CreateAccount(accountName, password, MAX_EXPANSION);
 
         sLog.outDebug( "Account %s created for random bots", accountName.c_str());
 		//bar.step();
