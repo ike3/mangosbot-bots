@@ -248,7 +248,11 @@ void RandomPlayerbotFactory::CreateRandomBots()
         {
             password += (char)urand('!', 'z');
         }
-        sAccountMgr.CreateAccount(accountName, password, MAX_EXPANSION);
+        sAccountMgr.CreateAccount(accountName, password
+#ifndef MANGOSBOT_ZERO
+            , MAX_EXPANSION
+#endif
+        );
 
         sLog.outDebug( "Account %s created for random bots", accountName.c_str());
 		//bar.step();
