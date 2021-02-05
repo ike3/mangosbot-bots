@@ -3,6 +3,7 @@
 #include "botpch.h"
 #include "../../playerbot.h"
 #include "InviteToGroupAction.h"
+#include "../../ServerFacade.h"
 
 
 using namespace ai;
@@ -47,7 +48,7 @@ namespace ai
             if (player->getLevel() < bot->getLevel() - 2)
                 continue;
 
-            if (player->GetDistance2d(bot) > sPlayerbotAIConfig.sightDistance)
+            if (sServerFacade.GetDistance2d(bot, player) > sPlayerbotAIConfig.sightDistance)
                 continue;
 
             return Invite(player);

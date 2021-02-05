@@ -114,7 +114,6 @@ bool TradeSkill::IsCraftedBySpell(ItemPrototype const* proto, uint32 spellId)
 
 bool TradeSkill::IsCraftedBySpell(ItemPrototype const* proto, SpellEntry const *entry)
 {
-
     if (reagent)
     {
         for (uint32 x = 0; x < MAX_SPELL_REAGENTS; ++x)
@@ -159,12 +158,11 @@ bool TradeSkill::IsCraftedBy(ItemPrototype const* proto, uint32 spellId)
     for (uint32 effect = EFFECT_INDEX_0; effect < MAX_EFFECT_INDEX; ++effect)
     {
         uint32 craftId = entry->EffectTriggerSpell[effect];
-        SpellEntry const *craft = sServerFacade.LookupSpellInfo(craftId);
-        if (!craft)
-            continue;
 
-        if (IsCraftedBySpell(proto, craft))
+        if (IsCraftedBySpell(proto, craftId))
             return true;
+
+        continue;
     }
 
     return false;
@@ -312,4 +310,5 @@ string TradeSkill::GetLabel()
     #endif
         }
     }
+    return "unknown";
 }

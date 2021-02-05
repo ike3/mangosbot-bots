@@ -425,7 +425,7 @@ void PlayerbotAI::SpellInterrupted(uint32 spellid)
         return;
 
     uint32 castTimeSpent = 1000 * (now - lastSpell.time);
-    int32 globalCooldown = CalculateGlobalCooldown(lastSpell.id);
+    uint32 globalCooldown = CalculateGlobalCooldown(lastSpell.id);
     if (castTimeSpent < globalCooldown)
         SetNextCheckDelay(globalCooldown - castTimeSpent);
     else
@@ -1300,6 +1300,10 @@ bool PlayerbotAI::HasAura(string name, Unit* unit, bool maxStack)
 	for (uint32 auraType = SPELL_AURA_BIND_SIGHT; auraType < TOTAL_AURAS; auraType++)
 	{
 		Unit::AuraList const& auras = unit->GetAurasByType((AuraType)auraType);
+
+        if (auras.empty())
+            continue;
+
 		for (Unit::AuraList::const_iterator i = auras.begin(); i != auras.end(); i++)
 		{
 			Aura* aura = *i;
@@ -2423,6 +2427,10 @@ void PlayerbotAI::ImbueItem(Item* item, uint32 targetFlag, ObjectGuid targetGUID
    *packet << item_guid;
    *packet << targetFlag;
 #endif
+#ifdef MANGOSBOT_TWO
+   *packet << spellId << item_guid << uint32(0) << uint8(0);
+   *packet << targetFlag;
+#endif
 
 #ifdef CMANGOS
    if (targetFlag & (TARGET_FLAG_UNIT | TARGET_FLAG_ITEM | TARGET_FLAG_GAMEOBJECT))
@@ -2443,8 +2451,15 @@ void PlayerbotAI::ImbueItem(Item* item, uint32 targetFlag, ObjectGuid targetGUID
 void PlayerbotAI::EnchantItemT(uint32 spellid, uint8 slot)
 {
    Item* pItem = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, slot);
+
    if (!pItem)
     return;
+
+#ifdef CMANGOS
+   if (pItem->GetOwner() == nullptr)
+       return;
+#endif
+
 #ifdef MANGOS
    SpellEntry const* spellInfo = sSpellStore.LookupEntry(spellid);
 #else
@@ -2478,7 +2493,8 @@ void PlayerbotAI::EnchantItemT(uint32 spellid, uint8 slot)
 
 uint32 PlayerbotAI::GetBuffedCount(Player* player, string spellname)
 {
-    Group* group = player->GetGroup();
+    Group* group = bot->GetGroup();
+
     if (group)
     {
         uint32 bcount = 0;

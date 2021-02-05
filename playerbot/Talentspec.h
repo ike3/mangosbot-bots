@@ -74,5 +74,5 @@ class TalentSpec {
         uint32 classMask = 0;
         TalentSpec baseSpec;
 
-        std::vector<TalentPath> TalentPath;
+        std::vector<TalentPath> talentPath;
     };

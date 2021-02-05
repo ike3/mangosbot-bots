@@ -282,6 +282,7 @@ bool StayTimeTrigger::IsActive()
 
 bool PlayerHasNoFlag::IsActive()
 {
+#ifdef MANGOS
     if (ai->GetBot()->InBattleGround())
     {
         if (ai->GetBot()->GetBattleGroundTypeId() == BattleGroundTypeId::BATTLEGROUND_WS)
@@ -297,6 +298,7 @@ bool PlayerHasNoFlag::IsActive()
         }
         return false;
     }
+#endif
     return false;
 }
 
@@ -307,6 +309,7 @@ bool PlayerIsInBattleground::IsActive()
 
 bool PlayerIsInBattlegroundWithoutFlag::IsActive()
 {
+#ifdef MANGOS
     if (ai->GetBot()->InBattleGround())
     {
         if (ai->GetBot()->GetBattleGroundTypeId() == BattleGroundTypeId::BATTLEGROUND_WS)
@@ -321,11 +324,13 @@ bool PlayerIsInBattlegroundWithoutFlag::IsActive()
         }
         return true;
     }
+#endif
     return false;
 }
 
 bool PlayerHasFlag::IsActive()
 {
+#ifdef MANGOS
     if (ai->GetBot()->InBattleGround())
     {
         if (ai->GetBot()->GetBattleGroundTypeId() == BattleGroundTypeId::BATTLEGROUND_WS)
@@ -340,11 +345,13 @@ bool PlayerHasFlag::IsActive()
         }
         return false;
     }
+#endif
     return false;
 }
 
 bool TeamHasFlag::IsActive()
 {
+#ifdef MANGOS
     if (ai->GetBot()->InBattleGround())
     {
         if (ai->GetBot()->GetBattleGroundTypeId() == BattleGroundTypeId::BATTLEGROUND_WS)
@@ -361,11 +368,13 @@ bool TeamHasFlag::IsActive()
         }
         return false;
     }
+#endif
     return false;
 }
 
 bool EnemyTeamHasFlag::IsActive()
 {
+#ifdef MANGOS
     if (ai->GetBot()->InBattleGround())
     {
         if (ai->GetBot()->GetBattleGroundTypeId() == BattleGroundTypeId::BATTLEGROUND_WS)
@@ -390,11 +399,13 @@ bool EnemyTeamHasFlag::IsActive()
         }
         return false;
     }
+#endif
     return false;
 }
 
 bool EnemyFlagCarrierNear::IsActive()
 {
+#ifdef MANGOS
     if (ai->GetBot()->InBattleGround())
     {
         if (ai->GetBot()->GetBattleGroundTypeId() == BattleGroundTypeId::BATTLEGROUND_WS)
@@ -416,6 +427,7 @@ bool EnemyFlagCarrierNear::IsActive()
         }
         return false;
     }
+#endif
     return false;
 }
 

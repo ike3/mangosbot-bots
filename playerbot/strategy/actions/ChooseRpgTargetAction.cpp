@@ -127,7 +127,12 @@ bool ChooseRpgTargetAction::Execute(Event event)
         
         int priority = 1;
 
+#ifdef MANGOS
         if (AI_VALUE(uint8, "bag space") > 80 && unit->IsVendor())
+#endif
+#ifdef CMANGOS
+        if (AI_VALUE(uint8, "bag space") > 80 && unit->isVendor())
+#endif
             priority = 100;
         uint32 dialogStatus = bot->GetSession()->getDialogStatus(bot, unit, DIALOG_STATUS_NONE);        
         if (dialogStatus == DIALOG_STATUS_REWARD2)

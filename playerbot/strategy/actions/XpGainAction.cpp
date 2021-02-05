@@ -1,7 +1,9 @@
 #include "botpch.h"
 #include "../../playerbot.h"
 #include "XpGainAction.h"
+#ifdef MANGOS
 #include "luaEngine.h"
+#endif
 
 
 

@@ -23,6 +23,12 @@ AiPlayerbot.BotAutologin = 0
 # Guild Task system
 AiPlayerbot.EnableGuildTasks = 0
 
+# Enable LFG for random bots (NYI)
+AiPlayerbot.RandomBotJoinLfg = 1
+
+# Enable BG/Arena for random Bots
+AiPlayerbot.RandomBotJoinBG = 1
+
 # Mark many quests <= Bot level as complete (slows down bot creation)
 AiPlayerbot.PreQuests = 0
 
@@ -40,10 +46,16 @@ AiPlayerbot.RandomBotAccountPrefix = rndbot
 AiPlayerbot.RandomBotAccountCount = 200
 
 # Random bot guild count
-AiPlayerbot.RandomBotGuildCount = 50
+AiPlayerbot.RandomBotGuildCount = 20
 
 # Delete all random bot guilds
 AiPlayerbot.DeleteRandomBotGuilds = 0
+
+# Random bot arena team count
+AiPlayerbot.RandomBotArenaTeamCount = 20
+
+# Delete all random bot arena teams
+AiPlayerbot.DeleteRandomBotArenaTeams = 0
 
 # Maps to teleport random bots
 AiPlayerbot.RandomBotMaps = 0,1,530,571
@@ -55,7 +67,7 @@ AiPlayerbot.RandomGearLoweringChance = 0.15
 AiPlayerbot.RandomBotMaxLevelChance = 0.15
 
 # Chance bot chooses RPG (Teleport to random camp for their level) instead of grinding
-AiPlayerbot.RandomBotRpgChance = 0.35
+AiPlayerbot.RandomBotRpgChance = 0.20
 
 # Show progress bars for random bots (disabled by default)
 AiPlayerbot.ShowProgressBars = 1
@@ -71,9 +83,9 @@ AiPlayerbot.EnableGreet = 1
 
 # Show helmet and cloak on randombots (reset required)
 AiPlayerbot.RandomBotShowHelmet = 1
-AiPlayerbot.RandomBotShowCloak = 1 
+AiPlayerbot.RandomBotShowCloak = 1
 
-# Disable random levels for randombots 
+# Disable random levels for randombots
 # Every bots started on the specified level and level up by killing mobs.
 AiPlayerbot.DisableRandomLevels = 0
 
@@ -87,11 +99,17 @@ AiPlayerbot.DisableRandomLevels = 0
 
 # Set minimum level of randombots where gets enchants on items (Maxlevel + 1 to disable)
 # Default: 60
-AiPlayerbot.minEnchantingBotLevel = 71
+AiPlayerbot.minEnchantingBotLevel = 81
 
 # Randombots checking players gear score level and deny the group invite if it's too low
 # Default: 1 (enabled)
 AiPlayerbot.GearScoreCheck = 0
+
+# Quest that will be completed and rewarded to all random bots
+AiPlayerbot.RandomBotQuestIds = 7848,3802,5505,6502,7761
+
+# Randombots will group with nearby bots to do shared quests
+AiPlayerbot.RandomBotGroupNearby = 1
 
 # Bots without a master will say their lines
 # AiPlayerbot.RandomBotSayWithoutMaster = 0
@@ -107,7 +125,7 @@ AiPlayerbot.AutoEquipUpgradeLoot = 1
 
 # Sync quests with player (Bots will complete quests the moment you hand them in. Bots will ignore looting quest items.)
 # Default: 0 (disabled)
-AiPlayerbot.SyncQuestWithPlayer = 1
+AiPlayerbot.SyncQuestWithPlayer = 0
 
 # Bot automatically trains spells when talking to trainer (yes = train all available spells as long as the bot has the money, free = auto trains with no money cost, no = only list spells)
 AiPlayerbot.AutoTrainSpells = yes
@@ -153,7 +171,7 @@ AiPlayerbot.PremadeSpecLink.4.0.60 = 00532310505105-320305002001-05  # Final spe
 
 AiPlayerbot.PremadeSpecName.4.1 = pve dps combat
 AiPlayerbot.PremadeSpecProb.4.1 = 100
-AiPlayerbot.PremadeSpecLink.4.1.20 = -02305001                       # Improved SS first, then unlock riposte. This is to avoid points in precicison before riposte. 
+AiPlayerbot.PremadeSpecLink.4.1.20 = -02305001                       # Improved SS first, then unlock riposte. This is to avoid points in precicison before riposte.
 AiPlayerbot.PremadeSpecLink.4.1.30 = -02305501000401                 # Unlock bladeflury first
 AiPlayerbot.PremadeSpecLink.4.1.56 = 005302105-0230550100040140231   # Unlock Adrenaline rush and then relentles strikes after that it goes to lethality
 AiPlayerbot.PremadeSpecLink.4.1.60 = 00530310503-0230550100050130231 # Final spec. From 56 it will pick up the last point in imp snd and finish with imp poisons.
@@ -477,19 +495,16 @@ AiPlayerbot.FleeingEnabled = 1
 #AiPlayerbot.MaxGuildTaskRewardTime = 3600
 
 # Quest items to leave (do not destroy)
-#AiPlayerbot.RandomBotQuestItems = 6948,5175,5176,5177,5178
+#AiPlayerbot.RandomBotQuestItems = 6948,5175,5176,5177,5178,16309,12382,13704,11000
 
 # PvP Restricted Zones (bots don't pvp)
-AiPlayerbot.PvpProhibitedZoneIds = 2255,656,2361,2362,2363,976,35,2268,3425,392,541,1446,3828,3712,3738,3565
+#AiPlayerbot.PvpProhibitedZoneIds = 2255,656,2361,2362,2363,976,35,2268,3425,392,541,1446,3828,3712,3738,3565,3539,3623,4152,3988,4658,4284,4418,4436,4275,4323
 
 # Spells every random bot will learn on randomize (54197 - cold weather flying)
-AiPlayerbot.RandomBotSpellIds = 1
-
-# Enable LFG for random bots (NYI)
-#AiPlayerbot.RandomBotJoinLfg = 0
+#AiPlayerbot.RandomBotSpellIds = 1
 
 # Level diff between random bots and nearby creatures for random teleports
-AiPlayerbot.RandomBotTeleLevel = 3
+#AiPlayerbot.RandomBotTeleLevel = 3
 
 #AiPlayerbot.OpenGoSpell = 6477
 

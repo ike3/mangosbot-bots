@@ -125,7 +125,7 @@ bool ChangeTalentsAction::Execute(Event event)
 std::vector<TalentPath*> ChangeTalentsAction::getPremadePaths(string findName)
 {
     std::vector<TalentPath*> ret;
-    for (auto& path : sPlayerbotAIConfig.classSpecs[bot->getClass()].TalentPath)
+    for (auto& path : sPlayerbotAIConfig.classSpecs[bot->getClass()].talentPath)
     {
         if (findName.empty() || path.name.find(findName) != string::npos)
         {
@@ -140,7 +140,7 @@ std::vector<TalentPath*> ChangeTalentsAction::getPremadePaths(TalentSpec *oldSpe
 {
     std::vector<TalentPath*> ret;
     
-    for (auto& path : sPlayerbotAIConfig.classSpecs[bot->getClass()].TalentPath)
+    for (auto& path : sPlayerbotAIConfig.classSpecs[bot->getClass()].talentPath)
     {
         TalentSpec newSpec = *GetBestPremadeSpec(path.id);
         newSpec.CropTalents(bot->getLevel());        
@@ -155,14 +155,14 @@ std::vector<TalentPath*> ChangeTalentsAction::getPremadePaths(TalentSpec *oldSpe
 
 TalentPath* ChangeTalentsAction::getPremadePath(int id)
 {
-    for (auto& path : sPlayerbotAIConfig.classSpecs[bot->getClass()].TalentPath)
+    for (auto& path : sPlayerbotAIConfig.classSpecs[bot->getClass()].talentPath)
     {
         if (id == path.id)
         {
             return &path;
         }
     }
-    return &sPlayerbotAIConfig.classSpecs[bot->getClass()].TalentPath[0];
+    return &sPlayerbotAIConfig.classSpecs[bot->getClass()].talentPath[0];
 }
 
 void ChangeTalentsAction::listPremadePaths(std::vector<TalentPath*> paths, ostringstream* out)

@@ -131,7 +131,7 @@ void RandomItemMgr::Init()
     BuildPotionCache();
     BuildFoodCache();
     BuildTradeCache();
-    BuildRarityCache();
+    //BuildRarityCache();
 }
 
 RandomItemMgr::~RandomItemMgr()

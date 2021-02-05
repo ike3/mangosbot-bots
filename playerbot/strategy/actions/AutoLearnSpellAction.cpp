@@ -160,7 +160,7 @@ void AutoLearnSpellAction::LearnSpell(uint32 spellId, ostringstream* out)
     SpellCastTargets targets;
     targets.setUnitTarget(bot);
     spell->SpellStart(&targets);
-    *out << formatSpell(spell) << ", ";
+    *out << formatSpell(proto) << ", ";
 #endif
 
 #ifdef MANGOS

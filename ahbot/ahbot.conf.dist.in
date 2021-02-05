@@ -17,8 +17,8 @@ AuctionHouseBot.Buyer.Enabled = 0
 # Replace with the new AhBot
 AhBot.Enabled = 1
 
-AhBot.MaxItemLevel = 200
-AhBot.MaxRequiredLevel = 60
+AhBot.MaxItemLevel = 500
+AhBot.MaxRequiredLevel = 80
 
 AhBot.PriceMultiplier = 0.35
 AhBot.DefaultMinPrice = 20

@@ -94,7 +94,16 @@ bool QuestAction::CompleteQuest(uint32 entry)
         uint32 repValue = pQuest->GetRepObjectiveValue();
         uint32 curRep = bot->GetReputationMgr().GetReputation(repFaction);
         if (curRep < repValue)
+#ifdef MANGOS
             if (FactionEntry const* factionEntry = sFactionStore.LookupEntry(repFaction))
+#endif
+#ifdef CMANGOS
+#ifdef MANGOSBOT_ONE
+            if (FactionEntry const* factionEntry = sFactionStore.LookupEntry<FactionEntry>(repFaction))
+#else
+            if (FactionEntry const* factionEntry = sFactionStore.LookupEntry(repFaction))
+#endif
+#endif
             {
                 bot->GetReputationMgr().SetReputation(factionEntry, repValue);
             }

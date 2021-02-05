@@ -34,7 +34,7 @@ private:
 
    ObjectGuid AllianceWsgFlagStand(BattleGround *bg);
    ObjectGuid HordeWsgFlagStand(BattleGround *bg);
-   ObjectGuid FindWsHealthy(BattleGround *bg);
+   //ObjectGuid FindWsHealthy(BattleGround *bg);
 };
 
 class ArenaTactics : public MovementAction

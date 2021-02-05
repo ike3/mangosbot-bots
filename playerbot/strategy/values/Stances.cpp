@@ -63,8 +63,14 @@ namespace ai
         {
             Unit* target = GetTarget();
 
+#ifdef MANGOS
             if (target->getVictim() && target->getVictim()->GetObjectGuid() == bot->GetObjectGuid())
                 return target->GetOrientation();
+#endif
+#ifdef CMANGOS
+            if (target->GetVictim() && target->GetVictim()->GetObjectGuid() == bot->GetObjectGuid())
+                return target->GetOrientation();
+#endif
 
             if (ai->HasStrategy("behind", BOT_STATE_COMBAT))
             {

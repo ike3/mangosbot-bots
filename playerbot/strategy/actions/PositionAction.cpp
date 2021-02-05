@@ -5,7 +5,7 @@
 
 using namespace ai;
 
-void TellPosition(PlayerbotAI* ai, string name, ai::Position pos)
+void TellPosition(PlayerbotAI* ai, string name, ai::PositionEntry pos)
 {
     ostringstream out; out << "Position " << name;
     if (pos.isSet())
@@ -49,7 +49,7 @@ bool PositionAction::Execute(Event event)
 
     string name = params[0];
     string action = params[1];
-	ai::Position pos = posMap[name];
+	ai::PositionEntry pos = posMap[name];
 	if (action == "?")
 	{
 	    TellPosition(ai, name, pos);
@@ -92,7 +92,7 @@ bool PositionAction::Execute(Event event)
 
 bool MoveToPositionAction::Execute(Event event)
 {
-	ai::Position pos = context->GetValue<ai::PositionMap&>("position")->Get()[qualifier];
+	ai::PositionEntry pos = context->GetValue<ai::PositionMap&>("position")->Get()[qualifier];
     if (!pos.isSet())
     {
         ostringstream out; out << "Position " << qualifier << " is not set";
@@ -105,7 +105,7 @@ bool MoveToPositionAction::Execute(Event event)
 
 bool MoveToPositionAction::isUseful()
 {
-    ai::Position pos = context->GetValue<ai::PositionMap&>("position")->Get()[qualifier];
+    ai::PositionEntry pos = context->GetValue<ai::PositionMap&>("position")->Get()[qualifier];
     float distance = AI_VALUE2(float, "distance", string("position_") + qualifier);
     return pos.isSet() && distance > sPlayerbotAIConfig.followDistance && distance < sPlayerbotAIConfig.reactDistance;
 }
@@ -114,8 +114,8 @@ bool MoveToPositionAction::isUseful()
 bool SetReturnPositionAction::Execute(Event event)
 {
     ai::PositionMap& posMap = context->GetValue<ai::PositionMap&>("position")->Get();
-    ai::Position returnPos = posMap["return"];
-    ai::Position randomPos = posMap["random"];
+    ai::PositionEntry returnPos = posMap["return"];
+    ai::PositionEntry randomPos = posMap["random"];
     if (returnPos.isSet() && !randomPos.isSet())
     {
         float angle = 2 * M_PI * urand(0, 1000) / 100.0f;
@@ -144,6 +144,6 @@ bool SetReturnPositionAction::isUseful()
 
 bool ReturnAction::isUseful()
 {
-    ai::Position pos = context->GetValue<ai::PositionMap&>("position")->Get()[qualifier];
+    ai::PositionEntry pos = context->GetValue<ai::PositionMap&>("position")->Get()[qualifier];
     return pos.isSet() && AI_VALUE2(float, "distance", "position_random") > sPlayerbotAIConfig.followDistance;
 }

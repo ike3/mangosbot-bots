@@ -331,7 +331,19 @@ TravelState TravelTarget::getTravelState() {
 
 void TravelMgr::Clear()
 {
+#ifdef MANGOS
     sObjectAccessor.DoForAllPlayers([this](Player* plr) { TravelMgr::setNullTravelTarget(plr); });
+#endif
+#ifdef CMANGOS
+#ifndef MANGOSBOT_ZERO
+    sObjectAccessor.ExecuteOnAllPlayers([this](Player* plr) { TravelMgr::setNullTravelTarget(plr); });
+#else
+    HashMapHolder<Player>::ReadGuard g(HashMapHolder<Player>::GetLock());
+    HashMapHolder<Player>::MapType& m = sObjectAccessor.GetPlayers();
+    for (HashMapHolder<Player>::MapType::iterator itr = m.begin(); itr != m.end(); ++itr)
+        TravelMgr::setNullTravelTarget(itr->second);
+#endif
+#endif
 
     for (auto& quest : quests)
     {
@@ -725,7 +737,7 @@ void TravelMgr::LoadQuestTravelTable()
 
         if(!container->questGivers.empty() || !container->questTakers.empty() || hasError)
         {
-            quests.insert_or_assign(questId, container);
+            quests.insert(make_pair(questId, container));
 
             for (auto loc : container->questGivers)
                 questGivers.push_back(loc);
@@ -825,7 +837,11 @@ uint32 TravelMgr::getDialogStatus(Player* pPlayer, int32 questgiver, Quest const
                     }
                     else
                     {
+#ifndef MANGOSBOT_TWO
                         dialogStatusNew = DIALOG_STATUS_CHAT;
+#else
+                        dialogStatusNew = DIALOG_STATUS_LOW_LEVEL_AVAILABLE;
+#endif
                     }
                 }
                 else
