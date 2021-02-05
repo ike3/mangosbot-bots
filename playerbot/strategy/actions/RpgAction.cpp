@@ -39,7 +39,7 @@ bool RpgAction::Execute(Event event)
     if (bot->GetShapeshiftForm() > 0)
         bot->SetShapeshiftForm(FORM_NONE);
 
-    if (target->HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_FLIGHTMASTER))
+    if (target->HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_FLIGHTMASTER) && !bot->GetGroup())
     {
         WorldPacket emptyPacket;
         bot->GetSession()->HandleCancelMountAuraOpcode(emptyPacket);

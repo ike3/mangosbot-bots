@@ -56,6 +56,6 @@ bool MoveToTravelTargetAction::Execute(Event event)
 
 bool MoveToTravelTargetAction::isUseful()
 {
-    return context->GetValue<TravelTarget*>("travel target")->Get()->isTraveling();
+    return context->GetValue<TravelTarget*>("travel target")->Get()->isTraveling() && !bot->IsTaxiFlying() && !bot->IsFlying();
 }
 
