@@ -513,7 +513,12 @@ void TravelMgr::LoadQuestTravelTable()
         sLog.outErrorDb(">> Error loading units locations.");
     }
 
+    #ifdef MANGOS
     query = "SELECT actor, role, entry, quest FROM quest_relations qr";
+    #endif
+    #ifdef CMANGOS
+    query = "SELECT 0, 0, id, quest FROM creature_questrelation UNION ALL SELECT 0, 1, id, quest FROM creature_involvedrelation UNION ALL SELECT 1, 0, id, quest FROM gameobject_questrelation UNION ALL SELECT 1, 1, id, quest FROM gameobject_involvedrelation";
+    #endif
 
     result = WorldDatabase.PQuery(query.c_str());
 
