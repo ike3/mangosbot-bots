@@ -100,6 +100,9 @@ PlayerbotAI::PlayerbotAI(Player* bot) :
     masterIncomingPacketHandlers.AddHandler(CMSG_TAXICLEARNODE, "taxi done");
     masterIncomingPacketHandlers.AddHandler(CMSG_GROUP_UNINVITE, "uninvite");
     masterIncomingPacketHandlers.AddHandler(CMSG_PUSHQUESTTOPARTY, "quest share");
+#ifdef MANGOSBOT_TWO
+    masterIncomingPacketHandlers.AddHandler(CMSG_LFG_TELEPORT, "lfg teleport");
+#endif
 
     botOutgoingPacketHandlers.AddHandler(SMSG_PETITION_SHOW_SIGNATURES, "petition offer");
     botOutgoingPacketHandlers.AddHandler(SMSG_BATTLEFIELD_STATUS, "bg status");
@@ -118,6 +121,10 @@ PlayerbotAI::PlayerbotAI(Player* bot) :
     botOutgoingPacketHandlers.AddHandler(SMSG_PARTY_COMMAND_RESULT, "party command");
     botOutgoingPacketHandlers.AddHandler(SMSG_LEVELUP_INFO, "levelup");
     botOutgoingPacketHandlers.AddHandler(SMSG_LOG_XPGAIN, "xpgain");
+#ifdef MANGOSBOT_TWO
+    botOutgoingPacketHandlers.AddHandler(SMSG_LFG_ROLE_CHECK_UPDATE, "lfg role check");
+    botOutgoingPacketHandlers.AddHandler(SMSG_LFG_PROPOSAL_UPDATE, "lfg proposal");
+#endif
     
     
 #ifdef MANGOS

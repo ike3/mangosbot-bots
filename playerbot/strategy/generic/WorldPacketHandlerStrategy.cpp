@@ -88,8 +88,12 @@ void WorldPacketHandlerStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("petition sign", relevance), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "seldom",
-        NextAction::array(0, new NextAction("lfg leave", relevance), NULL)));
+        "lfg proposal",
+        NextAction::array(0, new NextAction("lfg accept", relevance), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "lfg proposal active",
+        NextAction::array(0, new NextAction("lfg accept", relevance), NULL)));
 
     triggers.push_back(new TriggerNode(
         "no non bot players around",

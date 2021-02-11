@@ -43,12 +43,8 @@ void LfgStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("lfg join", 1.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "lfg proposal",
-        NextAction::array(0, new NextAction("lfg accept", 1.0f), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "lfg proposal active",
-        NextAction::array(0, new NextAction("lfg accept", 1.0f), NULL)));
+        "seldom",
+        NextAction::array(0, new NextAction("lfg leave", 1.0f), NULL)));
 }
 
 void CollisionStrategy::InitTriggers(std::list<TriggerNode*> &triggers)

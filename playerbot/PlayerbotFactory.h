@@ -32,12 +32,12 @@ enum spec : uint8 {
 };
 */
 
-enum roles : uint8 {
+/*enum roles : uint8 {
    ROLE_TANK = 0,
    ROLE_HEALER = 1,
    ROLE_MDPS = 2,
    ROLE_CDPS = 3,
-};
+};*/
 
 class PlayerbotFactory : public InventoryAction
 {

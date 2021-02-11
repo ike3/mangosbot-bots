@@ -35,6 +35,11 @@ namespace ai
     public:
         WorldPacketActionContext()
         {   
+            creators["lfg join"] = &WorldPacketActionContext::lfg_join;
+            creators["lfg accept"] = &WorldPacketActionContext::lfg_accept;
+            creators["lfg role check"] = &WorldPacketActionContext::lfg_role_check;
+            creators["lfg leave"] = &WorldPacketActionContext::lfg_leave;
+            creators["lfg teleport"] = &WorldPacketActionContext::lfg_teleport;
             creators["bg status check"] = &WorldPacketActionContext::bg_status_check;
             creators["bg status"] = &WorldPacketActionContext::bg_status;
             creators["bg join"] = &WorldPacketActionContext::bg_join;
@@ -76,6 +81,11 @@ namespace ai
 
     private:
         static Action* petition_sign(PlayerbotAI* ai) { return new PetitionSignAction(ai); }
+        static Action* lfg_teleport(PlayerbotAI* ai) { return new LfgTeleportAction(ai); }
+        static Action* lfg_leave(PlayerbotAI* ai) { return new LfgLeaveAction(ai); }
+        static Action* lfg_accept(PlayerbotAI* ai) { return new LfgAcceptAction(ai); }
+        static Action* lfg_role_check(PlayerbotAI* ai) { return new LfgRoleCheckAction(ai); }
+        static Action* lfg_join(PlayerbotAI* ai) { return new LfgJoinAction(ai); }
         static Action* bg_leave(PlayerbotAI* ai) { return new BGLeaveAction(ai); }
         static Action* bg_join(PlayerbotAI* ai) { return new BGJoinAction(ai); }
         static Action* bg_status_check(PlayerbotAI* ai) { return new BGStatusCheckAction(ai); }

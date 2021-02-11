@@ -966,7 +966,7 @@ void RandomPlayerbotMgr::AddBgBot(BattleGroundQueueTypeId queueTypeId, BattleGro
             if (cap != NULL && found_cap)
             {
                 sLog.outDetail("Bot #%d <%s>: captian of <%s> %s", cap->GetGUIDLow(), cap->GetName(), arenateam->GetName(), _bgType);
-                Group* group = new Group;
+                Group* group = new Group(GROUPTYPE_NORMAL);
                 group->Create(capGuid, cap->GetName());
                 count = 0;
                 for (auto i = begin(members); i != end(members); ++i)
@@ -1321,6 +1321,9 @@ bool RandomPlayerbotMgr::ProcessBot(Player* player)
         if (randomiser)
         {
             Randomize(player);
+
+            // activate lfg
+            player->GetPlayerbotAI()->ChangeStrategy("+lfg", BOT_STATE_NON_COMBAT);
         }
         else
         {
@@ -2376,6 +2379,9 @@ void RandomPlayerbotMgr::ChangeStrategy(Player* player)
     {
         sLog.outDetail("Changing strategy for bot #%d <%s> to grinding", bot, player->GetName());
         ScheduleTeleport(bot, 30);
+
+        // deactivate lfg
+        player->GetPlayerbotAI()->ChangeStrategy("-lfg", BOT_STATE_NON_COMBAT);
     }
     else
     {
@@ -2383,6 +2389,9 @@ void RandomPlayerbotMgr::ChangeStrategy(Player* player)
 		sLog.outBasic("Bot #%d <%s>: sent to inn", bot, player->GetName());
         RandomTeleportForRpg(player);
 		SetEventValue(bot, "teleport", 1, sPlayerbotAIConfig.maxRandomBotInWorldTime);
+
+        // activate lfg
+        player->GetPlayerbotAI()->ChangeStrategy("+lfg", BOT_STATE_NON_COMBAT);
     }
 
     ScheduleChangeStrategy(bot);
