@@ -2291,7 +2291,7 @@ void PlayerbotFactory::InitArenaTeam()
         ObjectGuid capt = arenateam->GetCaptainGuid();
         Player* botcaptain = sObjectMgr.GetPlayer(capt);
 
-        if (botcaptain->GetTeam() == bot->GetTeam()) //need?
+        if (botcaptain && botcaptain->GetTeam() == bot->GetTeam()) //need?
         {
             arenateam->AddMember(bot->GetObjectGuid());
 
