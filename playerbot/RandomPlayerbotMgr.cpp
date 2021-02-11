@@ -1219,7 +1219,7 @@ bool RandomPlayerbotMgr::ProcessBot(uint32 bot)
     }
 
     uint32 logout = GetEventValue(bot, "logout");
-    if (!logout)
+    if (!logout && !isValid)
     {
         sLog.outDetail("Bot %d logged out", bot);
         LogoutPlayerBot(bot);
