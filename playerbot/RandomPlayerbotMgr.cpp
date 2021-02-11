@@ -67,6 +67,32 @@ void activatePrintStatsThread()
 #endif
 }
 
+#ifdef MANGOS
+class CheckQueueThread : public ACE_Task <ACE_MT_SYNCH>
+{
+public:
+    int svc(void) { sRandomPlayerbotMgr.CheckQueue(); return 0; }
+};
+#endif
+#ifdef CMANGOS
+void CheckQueueThread()
+{
+    sRandomPlayerbotMgr.CheckBgQueue();
+}
+#endif
+
+void activateCheckQueueThread()
+{
+#ifdef MANGOS
+    CheckQueueThread *thread = new CheckQueueThread();
+    thread->activate();
+#endif
+#ifdef CMANGOS
+    boost::thread t(CheckQueueThread);
+    t.detach();
+#endif
+}
+
 RandomPlayerbotMgr::RandomPlayerbotMgr() : PlayerbotHolder(), processTicks(0), loginProgressBar(NULL)
 {
     if (sPlayerbotAIConfig.enabled || sPlayerbotAIConfig.randomBotAutologin)
@@ -125,9 +151,9 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed)
     if (sPlayerbotAIConfig.randomBotJoinBG)
     {
         // check bg queue for real players
-        bool QueueCheck = CheckBgQueue();
+        activateCheckQueueThread();
 
-        if (QueueCheck && bgBotsCount < 30)
+        if (BgBotsActive && bgBotsCount < 30)
         {
             for (int i = BG_BRACKET_ID_FIRST; i < MAX_BATTLEGROUND_BRACKETS; ++i)
             {
@@ -318,7 +344,7 @@ void RandomPlayerbotMgr::LoadBattleMastersCache()
     sLog.outString();
 }
 
-bool RandomPlayerbotMgr::CheckBgQueue()
+void RandomPlayerbotMgr::CheckBgQueue()
 {
     if (!BgCheckTimer)
         BgCheckTimer = time(NULL);
@@ -378,7 +404,8 @@ bool RandomPlayerbotMgr::CheckBgQueue()
 
     if (time(NULL) < (BgCheckTimer + check_time))
     {
-        return (count > 0 || visual_count < (MAX_BATTLEGROUND_BRACKETS * 5));
+        BgBotsActive = (count > 0 || visual_count < (MAX_BATTLEGROUND_BRACKETS * 5));
+        return;
     }
     else
     {
@@ -579,7 +606,7 @@ bool RandomPlayerbotMgr::CheckBgQueue()
         BgBots[queueTypeId][bracketId][TeamId]++;
     }
 
-    bool bg_players = false;
+    BgBotsActive = false;
     for (int i = BG_BRACKET_ID_FIRST; i < MAX_BATTLEGROUND_BRACKETS; ++i)
     {
         for (int j = BATTLEGROUND_QUEUE_AV; j < MAX_BATTLEGROUND_QUEUE_TYPES; ++j)
@@ -604,7 +631,7 @@ bool RandomPlayerbotMgr::CheckBgQueue()
                     BgPlayers[j][i][1] + BgBots[j][i][1]
                 );
 
-                bg_players = true;
+                BgBotsActive = true;
                 continue;
             }
 #endif
@@ -620,13 +647,12 @@ bool RandomPlayerbotMgr::CheckBgQueue()
                 BgPlayers[j][i][1] + BgBots[j][i][1]
             );
 
-            bg_players = true;
+            BgBotsActive = true;
         }
     }
 
     sLog.outBasic("BG Queue check finished");
-
-    return bg_players;
+    return;
 }
 
 void RandomPlayerbotMgr::AddBgBot(BattleGroundQueueTypeId queueTypeId, BattleGroundBracketId bracketId, bool isRated, bool visual)

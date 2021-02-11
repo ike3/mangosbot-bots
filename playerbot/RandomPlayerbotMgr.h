@@ -80,6 +80,8 @@ class RandomPlayerbotMgr : public PlayerbotHolder
         const CreatureDataPair* GetCreatureDataByEntry(uint32 entry);
         uint32 GetCreatureGuidByEntry(uint32 entry);
         void LoadBattleMastersCache();
+        void CheckBgQueue();
+        bool BgBotsActive;
         map<uint32, map<uint32, map<uint32, uint32> > > BgBots;
         map<uint32, map<uint32, map<uint32, uint32> > > VisualBots;
         map<uint32, map<uint32, map<uint32, uint32> > > BgPlayers;
@@ -96,7 +98,6 @@ class RandomPlayerbotMgr : public PlayerbotHolder
         list<uint32> GetBots();
         list<uint32> GetBgBots(uint32 bracket);
         void AddBgBot(BattleGroundQueueTypeId queueTypeId, BattleGroundBracketId bracketId, bool isRated = false, bool visual = false);
-        bool CheckBgQueue();
         time_t BgCheckTimer;
         uint32 AddRandomBots();
         bool ProcessBot(uint32 bot);
