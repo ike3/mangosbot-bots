@@ -569,7 +569,7 @@ bool MoveOutOfCollisionAction::Execute(Event event)
 
 bool MoveOutOfCollisionAction::isUseful()
 {
-    return AI_VALUE2(bool, "collision", "self target") && ai->GetAiObjectContext()->GetValue<list<ObjectGuid> >("nearest friendly players")->Get().size() < urand(25, 100);
+    return AI_VALUE2(bool, "collision", "self target") && ai->GetAiObjectContext()->GetValue<list<ObjectGuid> >("nearest friendly players")->Get().size() < 15;
 }
 
 bool MoveRandomAction::Execute(Event event)
