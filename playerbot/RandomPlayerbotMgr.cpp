@@ -1443,6 +1443,7 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot, vector<WorldLocation> &locs
         }
 
         bot->GetMotionMaster()->Clear();
+        bot->SetHomebindToLocation(loc, area->ID);
         bot->TeleportTo(loc.mapid, x, y, z, 0);
         bot->SendHeartBeat();
         bot->GetPlayerbotAI()->ResetStrategies();
