@@ -2367,7 +2367,7 @@ void RandomPlayerbotMgr::RandomTeleportForRpg(Player* bot)
     uint32 race = bot->getRace();
 	uint32 level = bot->getLevel();
     sLog.outDetail("Random teleporting bot %s for RPG (%zu locations available)", bot->GetName(), rpgLocsCacheLevel[race][level].size());
-    RandomTeleport(bot, rpgLocsCacheLevel[race][level]);
+    RandomTeleport(bot, rpgLocsCacheLevel[race][level], true);
 	Refresh(bot);
 }
 
