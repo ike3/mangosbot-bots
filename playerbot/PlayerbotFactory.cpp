@@ -1489,6 +1489,11 @@ void PlayerbotFactory::InitAvailableSpells()
 
             uint32 reqLevel = 0;
 
+#ifdef MANGOSBOT_TWO
+            if (!tSpell->learnedSpell && !bot->IsSpellFitByClassAndRace(tSpell->learnedSpell, &reqLevel))
+                continue;
+#endif
+
             reqLevel = tSpell->isProvidedReqLevel ? tSpell->reqLevel : std::max(reqLevel, tSpell->reqLevel);
             TrainerSpellState state = bot->GetTrainerSpellState(tSpell, reqLevel);
             if (state != TRAINER_SPELL_GREEN)
@@ -1521,12 +1526,18 @@ void PlayerbotFactory::InitAvailableSpells()
                 }
             }
 
-
 #ifdef CMANGOS
+#ifndef MANGOSBOT_TWO
             Spell* spell = new Spell(bot, proto, false);
             SpellCastTargets targets;
             targets.setUnitTarget(bot);
             spell->SpellStart(&targets);
+#else
+            if (tSpell->learnedSpell)
+                bot->learnSpell(tSpell->learnedSpell, false);
+            else
+                ai->CastSpell(tSpell->spell, bot);
+#endif
 #endif
 
 #ifdef MANGOS
