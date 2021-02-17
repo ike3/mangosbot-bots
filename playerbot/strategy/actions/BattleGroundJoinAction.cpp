@@ -35,6 +35,9 @@ bool BGJoinAction::Execute(Event event)
    if (!sPlayerbotAIConfig.randomBotJoinBG)
       return false;
 
+   if (!bot->CanJoinToBattleground())
+       return false;
+
    if (bot->IsDead())
       return false;
 
@@ -263,6 +266,10 @@ bool BGStatusAction::Execute(Event event)
     p >> arenaByte;
     if (arenaByte == 0)
         return false;
+#ifdef MANGOSBOT_TWO
+    p >> minlevel;
+    p >> maxlevel;
+#endif
     p >> instanceId;
     p >> isRated;
     p >> statusid;
@@ -276,10 +283,16 @@ bool BGStatusAction::Execute(Event event)
         break;
     case STATUS_WAIT_JOIN:                   // status_invite
         p >> mapId;    //sLog.outBasic("mapId %d!", mapId);                    // map id
+#ifdef MANGOSBOT_TWO
+        p >> unk0;
+#endif
         p >> Time1;   //sLog.outBasic("Time1 %d!", Time1);                      // time to remove from queue, milliseconds
         break;
     case STATUS_IN_PROGRESS:                  // status_in_progress
         p >> mapId;                          // map id
+#ifdef MANGOSBOT_TWO
+        p >> unk0;
+#endif
         p >> Time1;                         // time to bg auto leave, 0 at bg start, 120000 after bg end, milliseconds
         p >> Time2;                        // time from bg start, milliseconds
         p >> arenaTeam;
@@ -414,7 +427,7 @@ bool BGStatusAction::Execute(Event event)
     }
     if (statusid == STATUS_WAIT_QUEUE) //bot is in queue
     {
-        BattleGround* bg = bot->GetBattleGround();
+        BattleGround* bg = sBattleGroundMgr.GetBattleGroundTemplate(_bgTypeId);
         bool leaveQ = false;
         uint32 timer;
         if (_bgTypeId > 4 && _bgTypeId != 7)
