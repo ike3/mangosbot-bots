@@ -111,6 +111,7 @@ public:
     std::string autoPickTalents;
     bool autoLearnTrainerSpells;
     bool autoLearnQuestSpells;
+    bool autoDoQuests;
     uint32 tweakValue; //Debugging config
 
     int commandServerPort;

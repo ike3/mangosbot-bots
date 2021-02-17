@@ -426,7 +426,8 @@ void AiFactory::AddDefaultNonCombatStrategies(Player* player, PlayerbotAI* const
         if (!player->GetGroup() || player->GetGroup()->GetLeaderGuid() == player->GetObjectGuid())
         {
             nonCombatEngine->addStrategy("collision");
-            //nonCombatEngine->addStrategy("travel");
+            if (sPlayerbotAIConfig.autoDoQuests)
+                nonCombatEngine->addStrategy("travel");
             nonCombatEngine->ChangeStrategy(sPlayerbotAIConfig.randomBotNonCombatStrategies);
         }
         else {
@@ -439,7 +440,8 @@ void AiFactory::AddDefaultNonCombatStrategies(Player* player, PlayerbotAI* const
                     if (master->GetPlayerbotAI())
                     {
                         nonCombatEngine->addStrategy("collision");
-                        //nonCombatEngine->addStrategy("travel");
+                        if (sPlayerbotAIConfig.autoDoQuests)
+                            nonCombatEngine->addStrategy("travel");
                         nonCombatEngine->ChangeStrategy(sPlayerbotAIConfig.randomBotNonCombatStrategies);
                     }
                 }

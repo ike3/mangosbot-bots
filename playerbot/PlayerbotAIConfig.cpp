@@ -251,6 +251,7 @@ bool PlayerbotAIConfig::Initialize()
     autoPickTalents = config.GetStringDefault("AiPlayerbot.AutoPickTalents", "no");
     autoLearnTrainerSpells = config.GetBoolDefault("AiPlayerbot.AutoLearnTrainerSpells", false);
     autoLearnQuestSpells = config.GetBoolDefault("AiPlayerbot.AutoLearnQuestSpells", false);
+    autoDoQuests = config.GetBoolDefault("AiPlayerbot.AutoDoQuests", false);
     tweakValue = config.GetIntDefault("AiPlayerbot.TweakValue", 0);
 
     targetPosRecalcDistance = config.GetFloatDefault("AiPlayerbot.TargetPosRecalcDistance", 0.1f),
@@ -260,7 +261,7 @@ bool PlayerbotAIConfig::Initialize()
     PlayerbotFactory::Init();
     sRandomItemMgr.Init();
 
-    if (sPlayerbotAIConfig.tweakValue == 0)
+    if (sPlayerbotAIConfig.autoDoQuests)
     {
         sLog.outString("Loading Quest Detail Data...");
         sTravelMgr.LoadQuestTravelTable();
