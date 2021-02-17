@@ -7,8 +7,10 @@
 #include "PlayerbotAIConfig.h"
 #include "../ItemVisitors.h"
 #include "RandomPlayerbotMgr.h"
+#ifdef MANGOSBOT_TWO
 #include "LFG/LFGMgr.h"
 #include "LFG/LFG.h"
+#endif
 #include "Battleground.h"
 #include "BattlegroundMgr.h"
 #include "BattlegroundWS.h"
@@ -27,7 +29,9 @@ namespace ai
     protected:
         bool JoinLFG();
         bool SetRoles();
+#ifdef MANGOSBOT_TWO
         LFGRoleMask GetRoles();
+#endif
     };
 
     class LfgAcceptAction : public LfgJoinAction

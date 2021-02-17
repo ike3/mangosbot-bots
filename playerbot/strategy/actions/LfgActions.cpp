@@ -33,6 +33,8 @@ bool LfgJoinAction::Execute(Event event)
     if (!sRandomPlayerbotMgr.IsRandomBot(bot))
         return false;
 
+#ifdef MANGOSBOT_TWO
+
     if (sLFGMgr.GetQueueInfo(bot->GetObjectGuid()))
         return false;
 
@@ -48,8 +50,13 @@ bool LfgJoinAction::Execute(Event event)
         return false;
 
     return JoinLFG();
+
+#else
+    return false; // TODO Vanilla + TBC LFG
+#endif
 }
 
+#ifdef MANGOSBOT_TWO
 LFGRoleMask LfgJoinAction::GetRoles()
 {
     if (!sRandomPlayerbotMgr.IsRandomBot(bot))
@@ -114,19 +121,24 @@ LFGRoleMask LfgJoinAction::GetRoles()
 
     return LFG_ROLE_MASK_DAMAGE;
 }
+#endif
 
 bool LfgJoinAction::SetRoles()
 {
+#ifdef MANGOSBOT_TWO
     LFGPlayerState* pState = sLFGMgr.GetLFGPlayerState(bot->GetObjectGuid());
     if (!pState)
         return false;
 
     pState->SetRoles(GetRoles());
+#endif
+
     return true;
 }
 
 bool LfgJoinAction::JoinLFG()
 {
+#ifdef MANGOSBOT_TWO
     LFGPlayerState* pState = sLFGMgr.GetLFGPlayerState(bot->GetObjectGuid());
 
     // check if already in lfg
@@ -250,11 +262,14 @@ bool LfgJoinAction::JoinLFG()
 
     pState->SetDungeons(list);
     sLFGMgr.Join(bot);
+
+#endif
     return true;
 }
 
 bool LfgRoleCheckAction::Execute(Event event)
 {
+#ifdef MANGOSBOT_TWO
     Group* group = bot->GetGroup();
     if (group)
     {
@@ -271,12 +286,14 @@ bool LfgRoleCheckAction::Execute(Event event)
 
         return true;
     }
+#endif
 
     return false;
 }
 
 bool LfgAcceptAction::Execute(Event event)
 {
+#ifdef MANGOSBOT_TWO
     LFGPlayerState* pState = sLFGMgr.GetLFGPlayerState(bot->GetObjectGuid());
     if (!pState || pState->GetState() != LFG_STATE_PROPOSAL)
         return false;
@@ -319,11 +336,13 @@ bool LfgAcceptAction::Execute(Event event)
     p >> dungeon >> state >> id;
 
     ai->GetAiObjectContext()->GetValue<uint32>("lfg proposal")->Set(id);
+#endif
     return true;
 }
 
 bool LfgLeaveAction::Execute(Event event)
 {
+#ifdef MANGOSBOT_TWO
     // Don't leave if lfg strategy enabled
     if (ai->HasStrategy("lfg", BOT_STATE_NON_COMBAT))
         return false;
@@ -333,11 +352,13 @@ bool LfgLeaveAction::Execute(Event event)
         return false;
 
     sLFGMgr.Leave(bot);
+#endif
     return true;
 }
 
 bool LfgTeleportAction::Execute(Event event)
 {
+#ifdef MANGOSBOT_TWO
     bool out = false;
 
     WorldPacket p(event.getPacket());
@@ -349,5 +370,6 @@ bool LfgTeleportAction::Execute(Event event)
 
     bot->clearUnitState(UNIT_STAT_ALL_STATE);
     sLFGMgr.Teleport(bot, out);
+#endif
     return true;
 }
