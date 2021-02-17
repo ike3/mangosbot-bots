@@ -974,7 +974,11 @@ void RandomPlayerbotMgr::AddBgBot(BattleGroundQueueTypeId queueTypeId, BattleGro
             if (cap != NULL && found_cap)
             {
                 sLog.outDetail("Bot #%d <%s>: captian of <%s> %s", cap->GetGUIDLow(), cap->GetName(), arenateam->GetName(), _bgType);
+#ifndef MANGOSBOT_TWO
+                Group* group = new Group();
+#else
                 Group* group = new Group(GROUPTYPE_NORMAL);
+#endif
                 group->Create(capGuid, cap->GetName());
                 count = 0;
                 for (auto i = begin(members); i != end(members); ++i)
