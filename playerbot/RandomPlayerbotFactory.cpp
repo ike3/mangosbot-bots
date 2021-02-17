@@ -100,6 +100,19 @@ RandomPlayerbotFactory::RandomPlayerbotFactory(uint32 accountId) : accountId(acc
 
     availableRaces[CLASS_DRUID].push_back(RACE_NIGHTELF);
     availableRaces[CLASS_DRUID].push_back(RACE_TAUREN);
+
+#ifdef MANGOSBOT_TWO
+    availableRaces[CLASS_DEATH_KNIGHT].push_back(RACE_NIGHTELF);
+    availableRaces[CLASS_DEATH_KNIGHT].push_back(RACE_TAUREN);
+    availableRaces[CLASS_DEATH_KNIGHT].push_back(RACE_HUMAN);
+    availableRaces[CLASS_DEATH_KNIGHT].push_back(RACE_ORC);
+    availableRaces[CLASS_DEATH_KNIGHT].push_back(RACE_UNDEAD);
+    availableRaces[CLASS_DEATH_KNIGHT].push_back(RACE_TROLL);
+    availableRaces[CLASS_DEATH_KNIGHT].push_back(RACE_BLOODELF);
+    availableRaces[CLASS_DEATH_KNIGHT].push_back(RACE_DRAENEI);
+    availableRaces[CLASS_DEATH_KNIGHT].push_back(RACE_GNOME);
+    availableRaces[CLASS_DEATH_KNIGHT].push_back(RACE_DWARF);
+#endif
 }
 
 bool RandomPlayerbotFactory::CreateRandomBot(uint8 cls)
@@ -298,7 +311,11 @@ void RandomPlayerbotFactory::CreateRandomBots()
         RandomPlayerbotFactory factory(accountId);
         for (uint8 cls = CLASS_WARRIOR; cls < MAX_CLASSES; ++cls)
         {
-			if (cls != 10 && cls != 6)
+#ifdef MANGOSBOT_TWO
+            if (cls != 10)
+#else
+            if (cls != 10 && cls != 6)
+#endif
 			{
 				factory.CreateRandomBot(cls);
 				bar1.step();

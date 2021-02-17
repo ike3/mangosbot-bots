@@ -1667,6 +1667,10 @@ void RandomPlayerbotMgr::Randomize(Player* bot)
 
     if (bot->getLevel() == 1)
         RandomizeFirst(bot);
+#ifdef MANGOSBOT_TWO
+    else if (bot->getLevel() == 55 && bot->getClass() == CLASS_DEATH_KNIGHT)
+        RandomizeFirst(bot);
+#endif
     else
         IncreaseLevel(bot);
 
@@ -1702,6 +1706,11 @@ void RandomPlayerbotMgr::RandomizeFirst(Player* bot)
 
 	PerformanceMonitorOperation *pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "RandomizeFirst");
     uint32 level = urand(sPlayerbotAIConfig.randomBotMinLevel, maxLevel);
+
+#ifdef MANGOSBOT_TWO
+    if (bot->getClass() == CLASS_DEATH_KNIGHT)
+        level = urand(sWorld.getConfig(CONFIG_UINT32_START_HEROIC_PLAYER_LEVEL), maxLevel);
+#endif
 
     if (urand(0, 100) < 100 * sPlayerbotAIConfig.randomBotMaxLevelChance)
         level = maxLevel;
@@ -2209,6 +2218,14 @@ void RandomPlayerbotMgr::PrintStats()
             else
                 dps++;
             break;
+#ifdef MANGOSBOT_TWO
+        case CLASS_DEATH_KNIGHT:
+            if (spec == 0)
+                tank++;
+            else
+                dps++;
+            break;
+#endif
         default:
             dps++;
             break;

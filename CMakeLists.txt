@@ -110,6 +110,11 @@ file(GLOB Playerbot_Warrior ${CMAKE_CURRENT_SOURCE_DIR}/playerbot/strategy/warri
     source_group("Player Bot\\Strategies\\Warrior" FILES ${Playerbot_Warrior})
     LIST(APPEND LIBRARY_SRCS ${Playerbot_Warrior})
 
+#Deathknight AI
+file(GLOB Playerbot_DeathKnight ${CMAKE_CURRENT_SOURCE_DIR}/playerbot/strategy/deathknight/*.cpp ${CMAKE_CURRENT_SOURCE_DIR}/playerbot/strategy/deathknight/*.h)
+    source_group("Player Bot\\Strategies\\DeathKnight" FILES ${Playerbot_DeathKnight})
+    LIST(APPEND LIBRARY_SRCS ${Playerbot_DeathKnight})
+
 # Define ENABLE_PLAYERBOTS if need
 if (BUILD_PLAYERBOT)
   add_definitions(-DENABLE_PLAYERBOTS)

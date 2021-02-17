@@ -1081,6 +1081,9 @@ bool PlayerbotAI::IsRanged(Player* player)
     case CLASS_PALADIN:
     case CLASS_WARRIOR:
     case CLASS_ROGUE:
+#ifdef MANGOSBOT_TWO
+    case CLASS_DEATH_KNIGHT:
+#endif
         return false;
     case CLASS_DRUID:
         return !HasAnyAuraOf(player, "cat form", "bear form", "dire bear form", NULL);
@@ -1098,6 +1101,9 @@ bool PlayerbotAI::IsTank(Player* player)
     {
     case CLASS_PALADIN:
     case CLASS_WARRIOR:
+#ifdef MANGOSBOT_TWO
+    case CLASS_DEATH_KNIGHT:
+#endif
         return true;
     case CLASS_DRUID:
         return HasAnyAuraOf(player, "bear form", "dire bear form", NULL);

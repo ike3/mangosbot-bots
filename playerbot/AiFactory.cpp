@@ -12,6 +12,7 @@
 #include "strategy/druid/DruidAiObjectContext.h"
 #include "strategy/hunter/HunterAiObjectContext.h"
 #include "strategy/rogue/RogueAiObjectContext.h"
+#include "strategy/deathknight/DKAiObjectContext.h"
 #include "Player.h"
 #include "PlayerbotAIConfig.h"
 #include "RandomPlayerbotMgr.h"
@@ -49,6 +50,11 @@ AiObjectContext* AiFactory::createAiObjectContext(Player* player, PlayerbotAI* a
     case CLASS_ROGUE:
         return new RogueAiObjectContext(ai);
         break;
+#ifdef MANGOSBOT_TWO
+    case CLASS_DEATH_KNIGHT:
+        return new DKAiObjectContext(ai);
+        break;
+#endif
     }
     return new AiObjectContext(ai);
 }
@@ -233,6 +239,16 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
 
             engine->addStrategies("dps assist", "flee", "ranged", "cc", "pet", NULL);
             break;
+#ifdef MANGOSBOT_TWO
+        case CLASS_DEATH_KNIGHT:
+            if (tab == 0)
+                engine->addStrategies("blood", NULL);
+            else if (tab == 1)
+                engine->addStrategies("frost", "frost aoe", "dps assist", "threat", NULL);
+            else
+                engine->addStrategies("unholy", "unholy aoe", "dps assist", "threat", NULL);
+            break;
+#endif
     }
 
 	if (sRandomPlayerbotMgr.IsRandomBot(player))
@@ -386,6 +402,14 @@ void AiFactory::AddDefaultNonCombatStrategies(Player* player, PlayerbotAI* const
         case CLASS_WARLOCK:
             nonCombatEngine->addStrategies("pet", "dps assist", NULL);
             break;
+#ifdef MANGOSBOT_TWO
+        case CLASS_DEATH_KNIGHT:
+            if (tab == 0)
+                nonCombatEngine->addStrategy("tank aoe");
+            else
+                nonCombatEngine->addStrategy("dps assist");
+            break;
+#endif
         default:
             nonCombatEngine->addStrategy("dps assist");
             break;

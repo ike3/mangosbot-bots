@@ -99,6 +99,14 @@ LFGRoleMask LfgJoinAction::GetRoles()
         else
             return LFG_ROLE_MASK_DAMAGE;
         break;
+#ifdef MANGOSBOT_TWO
+    case CLASS_DEATH_KNIGHT:
+        if (spec == 0)
+            return LFG_ROLE_MASK_TANK;
+        else
+            return LFG_ROLE_MASK_DAMAGE;
+        break;
+#endif
     default:
         return LFG_ROLE_MASK_DAMAGE;
         break;
