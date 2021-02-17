@@ -154,7 +154,7 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed)
         if (time(NULL) > (BgCheckTimer + 30))
             activateCheckQueueThread();
 
-        if (BgBotsActive && bgBotsCount < 30)
+        if (BgBotsActive && bgBotsCount < 50)
         {
             for (int i = BG_BRACKET_ID_FIRST; i < MAX_BATTLEGROUND_BRACKETS; ++i)
             {
@@ -455,7 +455,10 @@ void RandomPlayerbotMgr::CheckBgQueue()
         BattleGround* bg = sBattleGroundMgr.GetBattleGroundTemplate(bgTypeId);
         uint32 mapId = bg->GetMapId();
         PvPDifficultyEntry const* pvpDiff = GetBattlegroundBracketByLevel(mapId, player->getLevel());
-        BattleGroundBracketId bracketId = BattleGroundBracketId(pvpDiff->bracketId);
+        if (!pvpDiff)
+            continue;
+
+        BattleGroundBracketId bracketId = (BattleGroundBracketId)pvpDiff->bracketId;
 #else
         BattleGroundBracketId bracketId = player->GetBattleGroundBracketIdFromLevel(bgTypeId);
 #endif
@@ -562,6 +565,9 @@ void RandomPlayerbotMgr::CheckBgQueue()
         BattleGround* bg = sBattleGroundMgr.GetBattleGroundTemplate(bgTypeId);
         uint32 mapId = bg->GetMapId();
         PvPDifficultyEntry const* pvpDiff = GetBattlegroundBracketByLevel(mapId, bot->getLevel());
+        if (!pvpDiff)
+            continue;
+
         BattleGroundBracketId bracketId = BattleGroundBracketId(pvpDiff->bracketId);
 #else
         BattleGroundBracketId bracketId = bot->GetBattleGroundBracketIdFromLevel(bgTypeId);
@@ -623,7 +629,7 @@ void RandomPlayerbotMgr::CheckBgQueue()
                 ArenaType type = sServerFacade.BgArenaType(queueTypeId);
                 sLog.outBasic("ARENA:%s %s: P (Skirmish:%d, Rated:%d) B (Skirmish:%d, Rated:%d) Total (Skirmish:%d Rated:%d)",
                     type == ARENA_TYPE_2v2 ? "2v2" : type == ARENA_TYPE_3v3 ? "3v3" : "5v5",
-                    i == 0 ? "10-19" : i == 1 ? "20-29" : i == 2 ? "30-39" : i == 3 ? "40-49" : i == 4 ? "50-59" : (i == 5 && MAX_BATTLEGROUND_BRACKETS == 6) ? "60" : (i == 5 && MAX_BATTLEGROUND_BRACKETS == 7) ? "60-69" : i == 6 ? "70" : "",
+                    i == 0 ? "10-19" : i == 1 ? "20-29" : i == 2 ? "30-39" : i == 3 ? "40-49" : i == 4 ? "50-59" : (i == 5 && MAX_BATTLEGROUND_BRACKETS == 6) ? "60" : (i == 5 && MAX_BATTLEGROUND_BRACKETS == 7) ? "60-69" : i == 6 ? (i == 6 && MAX_BATTLEGROUND_BRACKETS == 16) ? "70-79" : "70" : "80",
                     BgPlayers[j][i][0],
                     BgPlayers[j][i][1],
                     BgBots[j][i][0],
@@ -639,7 +645,7 @@ void RandomPlayerbotMgr::CheckBgQueue()
             BattleGroundTypeId bgTypeId = sServerFacade.BgTemplateId(queueTypeId);
             sLog.outBasic("BG:%s %s: P (%d:%d) B (%d:%d) Total (A:%d H:%d)",
                 bgTypeId == BATTLEGROUND_AV ? "AV" : bgTypeId == BATTLEGROUND_WS ? "WSG" : bgTypeId == BATTLEGROUND_AB ? "AB" : "EoTS",
-                i == 0 ? "10-19" : i == 1 ? "20-29" : i == 2 ? "30-39" : i == 3 ? "40-49" : i == 4 ? "50-59" : (i == 5 && MAX_BATTLEGROUND_BRACKETS == 6) ? "60" : (i == 5 && MAX_BATTLEGROUND_BRACKETS == 7) ? "60-69" : i == 6 ? "70" : "",
+                i == 0 ? "10-19" : i == 1 ? "20-29" : i == 2 ? "30-39" : i == 3 ? "40-49" : i == 4 ? "50-59" : (i == 5 && MAX_BATTLEGROUND_BRACKETS == 6) ? "60" : (i == 5 && MAX_BATTLEGROUND_BRACKETS == 7) ? "60-69" : i == 6 ? (i == 6 && MAX_BATTLEGROUND_BRACKETS == 16) ? "70-79" : "70" : "80",
                 BgPlayers[j][i][0],
                 BgPlayers[j][i][1],
                 BgBots[j][i][0],
@@ -770,10 +776,10 @@ void RandomPlayerbotMgr::AddBgBot(BattleGroundQueueTypeId queueTypeId, BattleGro
                 continue;
 
             uint32 bgType = bot->GetPlayerbotAI()->GetAiObjectContext()->GetValue<uint32>("bg type")->Get();
-            if (bgType && bgType != 10)
+            if (bgType && bgType != 20)
                 continue;
 
-            if (visual && bgType == 10)
+            if (visual && bgType == 20)
                 continue;
 
             if ((time(0) - bot->GetInGameTime()) < 30)
@@ -794,7 +800,8 @@ void RandomPlayerbotMgr::AddBgBot(BattleGroundQueueTypeId queueTypeId, BattleGro
             if (!pvpDiff)
                 continue;
 
-            BattleGroundBracketId bracket_temp = BattleGroundBracketId(pvpDiff->bracketId);
+            BattleGroundBracketId bracket_temp = (BattleGroundBracketId)pvpDiff->bracketId;
+
             if (bracket_temp != bracketId)
                 continue;
 #else
@@ -957,10 +964,10 @@ void RandomPlayerbotMgr::AddBgBot(BattleGroundQueueTypeId queueTypeId, BattleGro
                     found_cap = false;
 
                 uint32 bgType = cap->GetPlayerbotAI()->GetAiObjectContext()->GetValue<uint32>("bg type")->Get();
-                if (bgType && bgType != 10)
+                if (bgType && bgType != 20)
                     found_cap = false;
 
-                if (visual && bgType == 10)
+                if (visual && bgType == 20)
                     found_cap = false;
             }
 
@@ -1084,7 +1091,12 @@ void RandomPlayerbotMgr::AddBgBot(BattleGroundQueueTypeId queueTypeId, BattleGro
                 player->m_taxi.ClearTaxiDestinations();
 #endif
             }
+#ifdef MANGOSBOT_TWO
+            if (sServerFacade.BgArenaType(queueTypeId))
+                player->TeleportTo(data->mapid, data->posX, data->posY, data->posZ, player->GetOrientation());
+#else
             player->TeleportTo(data->mapid, data->posX, data->posY, data->posZ, player->GetOrientation());
+#endif
             ObjectGuid BmGuid = ObjectGuid(HIGHGUID_UNIT, BmEntry, dataPair->first);
             player->GetPlayerbotAI()->GetAiObjectContext()->GetValue<ObjectGuid>("bg master")->Set(BmGuid);
         }
@@ -1107,7 +1119,7 @@ void RandomPlayerbotMgr::AddBgBot(BattleGroundQueueTypeId queueTypeId, BattleGro
         VisualBots[queueTypeId][bracketId][TeamId]++;
         if (urand(0, 5) < 3)
             player->GetPlayerbotAI()->ChangeStrategy("+rpg,-stay", BOT_STATE_NON_COMBAT);
-        player->GetPlayerbotAI()->GetAiObjectContext()->GetValue<uint32>("bg type")->Set(10);
+        player->GetPlayerbotAI()->GetAiObjectContext()->GetValue<uint32>("bg type")->Set(20);
         return;
     }
     Refresh(player);
@@ -2488,12 +2500,12 @@ uint32 RandomPlayerbotMgr::GetBattleMasterEntry(Player* bot, BattleGroundTypeId 
         return entry;
 
     float dist1 = 10000.0f;
-    for (auto j = 0; j < 2; ++j)
+    for (auto j = 0; j < 3; ++j)
     {
         for (auto i = begin(Bms); i != end(Bms); ++i)
         {
-            if (entry)
-                continue;
+            if (entry && j == 2)
+                break;
 
             CreatureDataPair const* dataPair = sRandomPlayerbotMgr.GetCreatureDataByEntry(*i);
             if (!dataPair)
@@ -2516,7 +2528,7 @@ uint32 RandomPlayerbotMgr::GetBattleMasterEntry(Player* bot, BattleGroundTypeId 
             if (Bm->GetDeathState() == DEAD)
                 continue;
 
-            float dist2 = bot->GetDistance2d(data->posX, data->posY, DIST_CALC_NONE);
+            float dist2 = sServerFacade.GetDistance2d(bot, data->posX, data->posY);
             if (dist2 < dist1)
             {
                 dist1 = dist2;
