@@ -151,7 +151,8 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed)
     if (sPlayerbotAIConfig.randomBotJoinBG)
     {
         // check bg queue for real players
-        activateCheckQueueThread();
+        if (time(NULL) > (BgCheckTimer + 30))
+            activateCheckQueueThread();
 
         if (BgBotsActive && bgBotsCount < 30)
         {
