@@ -15,6 +15,9 @@ bool LfgJoinAction::Execute(Event event)
     //if (bot->GetRestType() == REST_TYPE_NO)
     //    return false;
 
+    if (ai->GetMaster())
+        return false;
+
     if (bot->InBattleGround())
         return false;
 
