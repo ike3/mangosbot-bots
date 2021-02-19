@@ -38,6 +38,7 @@ namespace ai
                 bot->GetPlayerbotAI()->SetMaster(inviter);
             
             ai->ResetStrategies();
+            ai->Reset();
             if (!inviter->GetPlayerbotAI())
             {
                 ai->ChangeStrategy("-rpg", BOT_STATE_NON_COMBAT);

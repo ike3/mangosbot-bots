@@ -28,6 +28,7 @@ namespace ai
         }
 
         ai->ResetStrategies(!randomBot);
+        ai->Reset();
 
         return true;
 	}
