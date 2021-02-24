@@ -1594,7 +1594,7 @@ void PlayerbotFactory::InitAvailableSpells()
 
             uint32 reqLevel = 0;
 
-#ifdef MANGOSBOT_TWO
+#ifdef CMANGOS
             if (!tSpell->learnedSpell && !bot->IsSpellFitByClassAndRace(tSpell->learnedSpell, &reqLevel))
                 continue;
 #endif
@@ -1632,17 +1632,17 @@ void PlayerbotFactory::InitAvailableSpells()
             }
 
 #ifdef CMANGOS
-#ifndef MANGOSBOT_TWO
+/*#ifdef MANGOSBOT_ZERO
             Spell* spell = new Spell(bot, proto, false);
             SpellCastTargets targets;
             targets.setUnitTarget(bot);
             spell->SpellStart(&targets);
-#else
+#else*/
             if (tSpell->learnedSpell)
                 bot->learnSpell(tSpell->learnedSpell, false);
             else
                 ai->CastSpell(tSpell->spell, bot);
-#endif
+/*#endif*/
 #endif
 
 #ifdef MANGOS
