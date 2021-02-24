@@ -21,6 +21,8 @@
 #include "BattleGround.h"
 #include "BattleGroundMgr.h"
 
+#include "World/WorldState.h"
+
 #ifndef MANGOSBOT_ZERO
 #ifdef CMANGOS
 #include "Arena/ArenaTeam.h"
@@ -1448,6 +1450,20 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot, vector<WorldLocation> &locs
     {
         int index = urand(0, tlocs.size() - 1);
         WorldLocation loc = tlocs[index];
+
+#ifndef MANGOSBOT_ZERO
+        if (sWorldState.GetExpansion() == EXPANSION_NONE && loc.mapid == 530)
+            continue;
+
+        if (sWorldState.GetExpansion() == EXPANSION_NONE && bot->getLevel() > 54 && urand(0, 100) > 20)
+        {
+            if (urand(0, 1))
+                loc = WorldLocation(uint32(0), -11772.43f, -3272.84f, -17.9f, 3.32447f);
+            else
+                loc = WorldLocation(uint32(0), -11741.70f, -3130.3f, -11.7936f, 3.32447f);
+        }
+#endif
+
         float x = loc.coord_x + (attemtps > 0 ? urand(0, sPlayerbotAIConfig.grindDistance) - sPlayerbotAIConfig.grindDistance / 2 : 0);
         float y = loc.coord_y + (attemtps > 0 ? urand(0, sPlayerbotAIConfig.grindDistance) - sPlayerbotAIConfig.grindDistance / 2 : 0);
         float z = loc.coord_z;
@@ -1718,6 +1734,11 @@ void RandomPlayerbotMgr::RandomizeFirst(Player* bot)
 
     if (urand(0, 100) < 100 * sPlayerbotAIConfig.randomBotMaxLevelChance)
         level = maxLevel;
+
+#ifndef MANGOSBOT_ZERO
+    if (sWorldState.GetExpansion() == EXPANSION_NONE && level > 60)
+        level = 60;
+#endif
 
     SetValue(bot, "level", level);
     PlayerbotFactory factory(bot, level);
