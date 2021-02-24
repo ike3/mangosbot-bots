@@ -101,7 +101,7 @@ void ItemBag::Init(bool silent)
     {
         Category* category = CategoryList::instance[i];
         Shuffle(content[category]);
-        sLog.outBasic("loaded %zu %s items", content[category].size(), category->GetDisplayName().c_str());
+        sLog.outDetail("loaded %zu %s items", content[category].size(), category->GetDisplayName().c_str());
 		ahcounter += content[category].size();
     }
 	sLog.outString("Loaded %u items", ahcounter);
