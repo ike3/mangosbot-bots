@@ -17,7 +17,7 @@ vector<uint32> PossibleRpgTargetsValue::allowedNpcFlags;
 PossibleRpgTargetsValue::PossibleRpgTargetsValue(PlayerbotAI* ai, float range) :
         NearestUnitsValue(ai, "possible rpg targets", range, true)
 {
-    if (allowedNpcFlags.empty())
+    if (!allowedNpcFlags.size())
     {
         allowedNpcFlags.push_back(UNIT_NPC_FLAG_INNKEEPER);
         allowedNpcFlags.push_back(UNIT_NPC_FLAG_GOSSIP);

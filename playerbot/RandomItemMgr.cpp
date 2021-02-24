@@ -126,12 +126,16 @@ RandomItemMgr::RandomItemMgr()
 void RandomItemMgr::Init()
 {
     BuildEquipCache();
-    BuildRandomItemCache();
     BuildAmmoCache();
     BuildPotionCache();
     BuildFoodCache();
     BuildTradeCache();
-    //BuildRarityCache();
+}
+
+void RandomItemMgr::InitAfterAhBot()
+{
+    BuildRandomItemCache();
+    BuildRarityCache();
 }
 
 RandomItemMgr::~RandomItemMgr()
@@ -208,8 +212,8 @@ void RandomItemMgr::BuildRandomItemCache()
             if (proto->Duration & 0x80000000)
                 continue;
 
-            //if (sAhBotConfig.ignoreItemIds.find(proto->ItemId) != sAhBotConfig.ignoreItemIds.end())
-            //    continue;
+            if (sAhBotConfig.ignoreItemIds.find(proto->ItemId) != sAhBotConfig.ignoreItemIds.end())
+                continue;
 
             if (strstri(proto->Name1, "qa") || strstri(proto->Name1, "test") || strstri(proto->Name1, "deprecated"))
                 continue;
@@ -217,8 +221,8 @@ void RandomItemMgr::BuildRandomItemCache()
             if (!proto->ItemLevel/* || (proto->RequiredLevel && proto->RequiredLevel > sAhBotConfig.maxRequiredLevel) || proto->ItemLevel > sAhBotConfig.maxItemLevel*/)
                 continue;
 
-            //if (!auctionbot.GetSellPrice(proto))
-             //   continue;
+            if (!auctionbot.GetSellPrice(proto))
+                continue;
 
             uint32 level = proto->ItemLevel;
             for (uint32 type = RANDOM_ITEM_GUILD_TASK; type <= RANDOM_ITEM_GUILD_TASK_REWARD_TRADE_RARE; type++)
@@ -241,7 +245,7 @@ void RandomItemMgr::BuildRandomItemCache()
             for (uint32 type = RANDOM_ITEM_GUILD_TASK; type <= RANDOM_ITEM_GUILD_TASK_REWARD_TRADE_RARE; type++)
             {
                 RandomItemList list = randomItemCache[level][(RandomItemType)type];
-                sLog.outString("    Level %d..%d Type %d - %zu random items cached",
+                sLog.outDetail("    Level %d..%d Type %d - %zu random items cached",
                         level * 10, level * 10 + 9,
                         type,
                         list.size());
