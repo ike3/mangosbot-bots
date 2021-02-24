@@ -27,6 +27,7 @@
 #include "BattleGroundTacticsWS.h"
 #include "PetitionSignAction.h"
 #include "BattlegroundJoinAction.h"
+#include "SeeSpellAction.h"
 
 namespace ai
 {
@@ -77,6 +78,7 @@ namespace ai
             creators["guild accept"] = &WorldPacketActionContext::guild_accept;
             creators["inventory change failure"] = &WorldPacketActionContext::inventory_change_failure;
             creators["petition sign"] = &WorldPacketActionContext::petition_sign;
+            creators["see spell"] = &WorldPacketActionContext::see_spell;
         }
 
     private:
@@ -122,6 +124,7 @@ namespace ai
         static Action* accept_all_quests(PlayerbotAI* ai) { return new AcceptAllQuestsAction(ai); }
         static Action* accept_quest_share(PlayerbotAI* ai) { return new AcceptQuestShareAction(ai); }
         static Action* loot_roll(PlayerbotAI* ai) { return (QueryItemUsageAction*)new LootRollAction(ai); }
+        static Action* see_spell(PlayerbotAI* ai) { return new SeeSpellAction(ai); }
     };
 
 
