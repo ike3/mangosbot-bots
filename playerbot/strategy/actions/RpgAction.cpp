@@ -39,7 +39,12 @@ bool RpgAction::Execute(Event event)
     if (bot->GetShapeshiftForm() > 0)
         bot->SetShapeshiftForm(FORM_NONE);
 
-    if (target->HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_FLIGHTMASTER) && !bot->GetGroup())
+    bool withPlayer = false;
+    Player* master = bot->GetPlayerbotAI()->GetMaster();
+    if (master && !master->GetPlayerbotAI())
+        withPlayer = true;
+
+    if (target->HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_FLIGHTMASTER) && !withPlayer)
     {
         WorldPacket emptyPacket;
         bot->GetSession()->HandleCancelMountAuraOpcode(emptyPacket);
@@ -204,6 +209,9 @@ void RpgAction::taxi(Unit* unit)
     if (!entry)
         return;
 
+    TaxiNodesEntry const* nodeFrom = sTaxiNodesStore.LookupEntry(entry->from);
+    TaxiNodesEntry const* nodeTo = sTaxiNodesStore.LookupEntry(entry->to);
+
     Creature* flightMaster = bot->GetNPCIfCanInteractWith(unit->GetObjectGuid(), UNIT_NPC_FLAG_FLIGHTMASTER);
     if (!flightMaster)
     {
@@ -215,7 +223,7 @@ void RpgAction::taxi(Unit* unit)
         sLog.outError("Bot %s cannot fly %u (%zu location available)", bot->GetName(), path, nodes.size());
         return;
     }
-    sLog.outString("Bot %s is flying to %u (%zu location available)", bot->GetName(), path, nodes.size());
+    sLog.outString("Bot #%d <%s> is flying from %s to %s (%zu location available)", bot->GetGUIDLow(), bot->GetName(), nodeFrom->name[0], nodeTo->name[0], nodes.size());
     bot->SetMoney(money);
 }
 

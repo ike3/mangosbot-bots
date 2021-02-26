@@ -128,6 +128,9 @@ namespace ai
             creators["xp gain"] = &ActionContext::xp_gain;
             creators["invite nearby"] = &ActionContext::invite_nearby;
             creators["leave far away"] = &ActionContext::leave_far_away;
+            creators["move to dark portal"] = &ActionContext::move_to_dark_portal;
+            creators["move from dark portal"] = &ActionContext::move_from_dark_portal;
+            creators["use dark portal azeroth"] = &ActionContext::use_dark_portal_azeroth;
         }
 
     private:
@@ -210,6 +213,9 @@ namespace ai
         static Action* xp_gain(PlayerbotAI* ai) { return new XpGainAction(ai); }
         static Action* invite_nearby(PlayerbotAI* ai) { return new InviteNearbyToGroupAction(ai); }
         static Action* leave_far_away(PlayerbotAI* ai) { return new LeaveFarAwayAction(ai); }
+        static Action* move_to_dark_portal(PlayerbotAI* ai) { return new MoveToDarkPortalAction(ai); }
+        static Action* use_dark_portal_azeroth(PlayerbotAI* ai) { return new DarkPortalAzerothAction(ai); }
+        static Action* move_from_dark_portal(PlayerbotAI* ai) { return new MoveFromDarkPortalAction(ai); }
     };
 
 };

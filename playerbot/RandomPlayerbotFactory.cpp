@@ -115,13 +115,14 @@ RandomPlayerbotFactory::RandomPlayerbotFactory(uint32 accountId) : accountId(acc
 #endif
 }
 
-bool RandomPlayerbotFactory::CreateRandomBot(uint8 cls)
+bool RandomPlayerbotFactory::CreateRandomBot(uint8 cls, uint8 rc)
 {
     sLog.outDebug( "Creating new random bot for class %d", cls);
 
     uint8 gender = rand() % 2 ? GENDER_MALE : GENDER_FEMALE;
 
-    uint8 race = availableRaces[cls][urand(0, availableRaces[cls].size() - 1)];
+    //uint8 race = availableRaces[cls][urand(0, availableRaces[cls].size() - 1)];
+    uint8 race = rc;
     string name = CreateRandomBotName(gender);
     if (name.empty())
         return false;
@@ -225,6 +226,28 @@ string RandomPlayerbotFactory::CreateRandomBotName(uint8 gender)
 
 void RandomPlayerbotFactory::CreateRandomBots()
 {
+    uint32 maxCharCount = 0;
+    for (uint8 rc = RACE_HUMAN; rc < MAX_RACES; ++rc)
+    {
+        for (uint8 cls = CLASS_WARRIOR; cls < MAX_CLASSES; ++cls)
+        {
+            PlayerInfo const* info = sObjectMgr.GetPlayerInfo(rc, cls);
+            if (!info)
+                continue;
+
+            maxCharCount++;
+        }
+    }
+
+    /*QueryResult* result = CharacterDatabase.PQuery("SELECT COUNT(*) FROM ai_playerbot_names");
+    uint32 totalCharCount = 0;
+    if (result)
+    {
+        Field* fields = result->Fetch();
+        totalCharCount = fields[0].GetUInt32();
+        delete result;
+    }*/
+
     if (sPlayerbotAIConfig.deleteRandomBotAccounts)
     {
         sLog.outString("Deleting random bot accounts...");
@@ -241,11 +264,16 @@ void RandomPlayerbotFactory::CreateRandomBots()
 
         PlayerbotDatabase.Execute("DELETE FROM ai_playerbot_random_bots");
         sLog.outString("Random bot accounts deleted");
+
+        sLog.outString("Set DeleteRandomBotAccounts = 0 and restart server to create new bots...");
+        return;
     }
-	int totalAccCount = sPlayerbotAIConfig.randomBotAccountCount;
+
+    int totalAccCount = 100;
+    uint32 totalCharCount = totalAccCount * maxCharCount;
 	sLog.outString("Creating random bot accounts...");
 	//BarGoLink bar(totalAccCount);
-    for (int accountNumber = 0; accountNumber < sPlayerbotAIConfig.randomBotAccountCount; ++accountNumber)
+    for (int accountNumber = 0; accountNumber < totalAccCount; ++accountNumber)
     {
         ostringstream out; out << sPlayerbotAIConfig.randomBotAccountPrefix << accountNumber;
         string accountName = out.str();
@@ -274,15 +302,9 @@ void RandomPlayerbotFactory::CreateRandomBots()
     LoginDatabase.PExecute("UPDATE account SET expansion = '%u' where username like '%s%%'", 2, sPlayerbotAIConfig.randomBotAccountPrefix.c_str());
 
     int totalRandomBotChars = 0;
-	int totalCharCount = sPlayerbotAIConfig.randomBotAccountCount
-#ifdef MANGOSBOT_TWO
-		* 10;
-#else
-		* 9;
-#endif
 	sLog.outString("Creating random bot characters...");
 	BarGoLink bar1(totalCharCount);
-    for (int accountNumber = 0; accountNumber < sPlayerbotAIConfig.randomBotAccountCount; ++accountNumber)
+    for (int accountNumber = 0; accountNumber < totalAccCount; ++accountNumber)
     {
         ostringstream out; out << sPlayerbotAIConfig.randomBotAccountPrefix << accountNumber;
         string accountName = out.str();
@@ -293,33 +315,57 @@ void RandomPlayerbotFactory::CreateRandomBots()
 
         Field* fields = results->Fetch();
         uint32 accountId = fields[0].GetUInt32();
-		delete results;
+        delete results;
 
         sPlayerbotAIConfig.randomBotAccounts.push_back(accountId);
 
         int count = sAccountMgr.GetCharactersCount(accountId);
-#ifdef MANGOSBOT_TWO
-        if (count >= 10)
-#else
-		if (count >= 9)
-#endif
+
+        if ((count >= maxCharCount))
         {
             totalRandomBotChars += count;
             continue;
         }
-
         RandomPlayerbotFactory factory(accountId);
-        for (uint8 cls = CLASS_WARRIOR; cls < MAX_CLASSES; ++cls)
+        uint32 counter = 0;
+        bool isOld = (count && count <= 9) ? true : false;
+        bool isVanilla = count == 40 ? true : false;
+        bool isTbc = count == 52 ? true : false;
+        for (uint8 rc = RACE_HUMAN; rc < MAX_RACES; ++rc)
         {
-#ifdef MANGOSBOT_TWO
-            if (cls != 10)
-#else
-            if (cls != 10 && cls != 6)
+            for (uint8 cls = CLASS_WARRIOR; cls < MAX_CLASSES; ++cls)
+            {
+                if ((counter + count) >= maxCharCount)
+                    continue;
+
+                if (((counter + count) * totalAccCount) >= totalCharCount)
+                    continue;
+
+                uint8 raceId = rc;
+                uint8 classId = cls;
+
+#ifndef MANGOSBOT_ZERO
+                if (isOld && urand(0, 100) < 20 && raceId != RACE_DRAENEI && raceId != RACE_BLOODELF)
+                    raceId = urand(0, 1) ? RACE_DRAENEI : RACE_BLOODELF;
 #endif
-			{
-				factory.CreateRandomBot(cls);
-				bar1.step();
-			}
+#ifndef MANGOSBOT_ZERO
+                if (isVanilla && urand(0, 1) && raceId != RACE_DRAENEI && raceId != RACE_BLOODELF)
+                    raceId = urand(0, 1) ? RACE_DRAENEI : RACE_BLOODELF;
+
+#ifdef MANGOSBOT_TWO
+                if (isTbc && urand(0, 100) > 20 && cls != CLASS_DEATH_KNIGHT)
+                    classId = CLASS_DEATH_KNIGHT;
+#endif
+#endif
+
+                PlayerInfo const* info = sObjectMgr.GetPlayerInfo(raceId, cls);
+                if (!info)
+                    continue;
+
+                factory.CreateRandomBot(cls, raceId);
+                bar1.step();
+                counter++;
+            }
         }
 
         totalRandomBotChars += sAccountMgr.GetCharactersCount(accountId);

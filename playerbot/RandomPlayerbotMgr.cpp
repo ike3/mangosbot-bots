@@ -21,6 +21,8 @@
 #include "BattleGround.h"
 #include "BattleGroundMgr.h"
 
+#include "World/WorldState.h"
+
 #ifndef MANGOSBOT_ZERO
 #ifdef CMANGOS
 #include "Arena/ArenaTeam.h"
@@ -335,7 +337,7 @@ void RandomPlayerbotMgr::LoadBattleMastersCache()
             bmTeam = HORDE;
 
         BattleMastersCache[bmTeam][BattleGroundTypeId(bgTypeId)].insert(BattleMastersCache[bmTeam][BattleGroundTypeId(bgTypeId)].end(), entry);
-        sLog.outBasic("Cached Battmemaster #%d for BG Type %d (%s)", entry, bgTypeId, bmTeam == ALLIANCE ? "Alliance" : bmTeam == HORDE ? "Horde" : "Neutral");
+        sLog.outDetail("Cached Battmemaster #%d for BG Type %d (%s)", entry, bgTypeId, bmTeam == ALLIANCE ? "Alliance" : bmTeam == HORDE ? "Horde" : "Neutral");
 
     } while (result->NextRow());
 
@@ -1448,6 +1450,18 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot, vector<WorldLocation> &locs
     {
         int index = urand(0, tlocs.size() - 1);
         WorldLocation loc = tlocs[index];
+
+#ifndef MANGOSBOT_ZERO
+        // Teleport to Dark Portal area if event is in progress
+        if (sWorldState.GetExpansion() == EXPANSION_NONE && bot->getLevel() > 54 && urand(0, 100) > 20)
+        {
+            if (urand(0, 1))
+                loc = WorldLocation(uint32(0), -11772.43f, -3272.84f, -17.9f, 3.32447f);
+            else
+                loc = WorldLocation(uint32(0), -11741.70f, -3130.3f, -11.7936f, 3.32447f);
+        }
+#endif
+
         float x = loc.coord_x + (attemtps > 0 ? urand(0, sPlayerbotAIConfig.grindDistance) - sPlayerbotAIConfig.grindDistance / 2 : 0);
         float y = loc.coord_y + (attemtps > 0 ? urand(0, sPlayerbotAIConfig.grindDistance) - sPlayerbotAIConfig.grindDistance / 2 : 0);
         float z = loc.coord_z;
@@ -1463,6 +1477,18 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot, vector<WorldLocation> &locs
 		AreaTableEntry const* area = GetAreaEntryByAreaID(terrain->GetAreaId(x, y, z));
 		if (!area)
 			continue;
+
+#ifndef MANGOSBOT_ZERO
+        // Do not teleport to outland before portal opening (allow new races zones)
+        if (sWorldState.GetExpansion() == EXPANSION_NONE && loc.mapid == 530 && area->team != 2 && area->team != 4)
+            continue;
+#endif
+
+        // Do not teleport to enemy zones if level is low
+        if (area->team == 4 && bot->GetTeam() == ALLIANCE && bot->getLevel() < 40)
+            continue;
+        if (area->team == 2 && bot->GetTeam() == HORDE && bot->getLevel() < 40)
+            continue;
 
 		if (terrain->IsUnderWater(x, y, z) ||
 			terrain->IsInWater(x, y, z))
@@ -1718,6 +1744,11 @@ void RandomPlayerbotMgr::RandomizeFirst(Player* bot)
 
     if (urand(0, 100) < 100 * sPlayerbotAIConfig.randomBotMaxLevelChance)
         level = maxLevel;
+
+#ifndef MANGOSBOT_ZERO
+    if (sWorldState.GetExpansion() == EXPANSION_NONE && level > 60)
+        level = 60;
+#endif
 
     SetValue(bot, "level", level);
     PlayerbotFactory factory(bot, level);

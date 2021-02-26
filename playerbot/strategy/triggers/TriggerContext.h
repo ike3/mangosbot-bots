@@ -125,9 +125,17 @@ namespace ai
             creators["in battleground without flag"] = &TriggerContext::player_is_in_battleground_no_flag;
 
             creators["mounted"] = &TriggerContext::mounted;
+
+            // move to/enter dark portal if near
+            creators["near dark portal"] = &TriggerContext::near_dark_portal;
+            creators["at dark portal azeroth"] = &TriggerContext::at_dark_portal_azeroth;
+            creators["at dark portal outland"] = &TriggerContext::at_dark_portal_outland;
         }
 
     private:
+        static Trigger* at_dark_portal_outland(PlayerbotAI* ai) { return new AtDarkPortalOutlandTrigger(ai); }
+        static Trigger* at_dark_portal_azeroth(PlayerbotAI* ai) { return new AtDarkPortalAzerothTrigger(ai); }
+        static Trigger* near_dark_portal(PlayerbotAI* ai) { return new NearDarkPortalTrigger(ai); }
         static Trigger* mounted(PlayerbotAI* ai) { return new IsMountedTrigger(ai); }
         static Trigger* enemy_flagcarrier_near(PlayerbotAI* ai) { return new EnemyFlagCarrierNear(ai); }
         static Trigger* player_has_no_flag(PlayerbotAI* ai) { return new PlayerHasNoFlag(ai); }
