@@ -328,7 +328,7 @@ void RandomPlayerbotFactory::CreateRandomBots()
         }
         RandomPlayerbotFactory factory(accountId);
         uint32 counter = 0;
-        bool isOld = (count && count <= 10) ? true : false;
+        bool isOld = (count && count <= 9) ? true : false;
         bool isVanilla = count == 40 ? true : false;
         bool isTbc = count == 52 ? true : false;
         for (uint8 rc = RACE_HUMAN; rc < MAX_RACES; ++rc)
