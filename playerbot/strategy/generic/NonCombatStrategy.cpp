@@ -37,6 +37,18 @@ void NonCombatStrategy::InitTriggers(std::list<TriggerNode*>& triggers)
     triggers.push_back(new TriggerNode(
         "cast spell",
         NextAction::array(0, new NextAction("see spell", 4.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "near dark portal",
+        NextAction::array(0, new NextAction("move to dark portal", 1.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "at dark portal azeroth",
+        NextAction::array(0, new NextAction("use dark portal azeroth", 1.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "at dark portal outland",
+        NextAction::array(0, new NextAction("move from dark portal", 1.0f), NULL)));
 }
 
 
