@@ -353,8 +353,8 @@ void RandomPlayerbotFactory::CreateRandomBots()
                     raceId = urand(0, 1) ? RACE_DRAENEI : RACE_BLOODELF;
 
 #ifdef MANGOSBOT_TWO
-                if (isTbc && urand(0, 100) > 20 && cls != CLASS_DEATHKNIGHT)
-                    classId = CLASS_DEATHKNIGHT;
+                if (isTbc && urand(0, 100) > 20 && cls != CLASS_DEATH_KNIGHT)
+                    classId = CLASS_DEATH_KNIGHT;
 #endif
 #endif
 
