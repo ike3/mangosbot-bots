@@ -34,6 +34,7 @@
 #include "generic/ReturnStrategy.h"
 #include "generic/RpgStrategy.h"
 #include "generic/TravelStrategy.h"
+#include "generic/RTSCStrategy.h"
 
 namespace ai
 {
@@ -78,6 +79,7 @@ namespace ai
             creators["warsong"] = &StrategyContext::warsong;
             creators["arena"] = &StrategyContext::arena;
             creators["mount"] = &StrategyContext::mount;
+            creators["rtsc"] = &StrategyContext::rtsc;
         }
 
     private:
@@ -117,6 +119,7 @@ namespace ai
 		static Strategy* travel(PlayerbotAI* ai) { return new TravelStrategy(ai); }
         static Strategy* sit(PlayerbotAI* ai) { return new SitStrategy(ai); }
         static Strategy* possible_ads(PlayerbotAI* ai) { return new PossibleAdsStrategy(ai); }
+        static Strategy* rtsc(PlayerbotAI* ai) { return new RTSCStrategy(ai); }
     };
 
     class MovementStrategyContext : public NamedObjectContext<Strategy>

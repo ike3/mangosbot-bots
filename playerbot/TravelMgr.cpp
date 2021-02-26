@@ -476,7 +476,7 @@ void TravelMgr::LoadQuestTravelTable()
         questIds.push_back(quest.first);
 
     sort(questIds.begin(), questIds.end());
-
+    //                     0    1  2   3          4          5          6           7
     string query = "SELECT 0,guid,id,map,position_x,position_y,position_z,orientation FROM creature c UNION ALL SELECT 1,guid,id,map,position_x,position_y,position_z,orientation FROM gameobject g";
 
     QueryResult* result = WorldDatabase.PQuery(query.c_str());
@@ -484,7 +484,6 @@ void TravelMgr::LoadQuestTravelTable()
     if (result)
     {
         BarGoLink bar(result->GetRowCount());
-
         do
         {
             Field* fields = result->Fetch();
@@ -542,7 +541,7 @@ void TravelMgr::LoadQuestTravelTable()
 
         delete result;
 
-        sLog.outString(">> Loaded " SIZEFMTD " relations.", units.size());
+        sLog.outString(">> Loaded " SIZEFMTD " relations.", relations.size());
     }
     else
     {
@@ -573,7 +572,7 @@ void TravelMgr::LoadQuestTravelTable()
 
         delete result;
 
-        sLog.outString(">> Loaded " SIZEFMTD " loot lists.", units.size());
+        sLog.outString(">> Loaded " SIZEFMTD " loot lists.", loots.size());
     }
     else
     {
@@ -652,7 +651,7 @@ void TravelMgr::LoadQuestTravelTable()
 
             for (auto& u : units)
             {
-                int32 entry = u.type > 0 ? u.entry : u.entry * -1;
+                int32 entry = u.type == 0 ? u.entry : u.entry * -1;
 
                 if (entry != reqEntry)
                     continue;

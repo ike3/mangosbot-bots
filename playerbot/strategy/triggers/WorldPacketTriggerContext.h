@@ -49,7 +49,7 @@ namespace ai
             creators["bg status"] = &WorldPacketTriggerContext::bg_status;
             creators["levelup"] = &WorldPacketTriggerContext::levelup;
             creators["xpgain"] = &WorldPacketTriggerContext::xpgain;
-            creators["cast spell"] = &WorldPacketTriggerContext::castspell;
+            creators["see spell"] = &WorldPacketTriggerContext::seespell;
         }
 
     private:
@@ -92,6 +92,6 @@ namespace ai
         static Trigger* taxi(PlayerbotAI* ai) { return new WorldPacketTrigger(ai, "activate taxi"); }
         static Trigger* levelup(PlayerbotAI* ai) { return new WorldPacketTrigger(ai, "levelup"); }
         static Trigger* xpgain(PlayerbotAI* ai) { return new WorldPacketTrigger(ai, "xpgain"); }
-        static Trigger* castspell(PlayerbotAI* ai) { return new WorldPacketTrigger(ai, "cast spell"); }
+        static Trigger* seespell(PlayerbotAI* ai) { return new WorldPacketTrigger(ai, "see spell"); }
     };
 };

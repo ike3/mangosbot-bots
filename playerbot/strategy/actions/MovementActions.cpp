@@ -93,6 +93,8 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
         mm.MovePoint(mapId, x, y, z, generatePath);
 #endif
 #ifdef CMANGOS
+        bot->StopMoving();
+        mm.Clear();
         mm.MovePoint(mapId, x, y, z, FORCED_MOVEMENT_RUN, generatePath);
 #endif
 

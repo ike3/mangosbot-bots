@@ -100,7 +100,7 @@ PlayerbotAI::PlayerbotAI(Player* bot) :
     masterIncomingPacketHandlers.AddHandler(CMSG_TAXICLEARNODE, "taxi done");
     masterIncomingPacketHandlers.AddHandler(CMSG_GROUP_UNINVITE, "uninvite");
     masterIncomingPacketHandlers.AddHandler(CMSG_PUSHQUESTTOPARTY, "quest share");
-    masterIncomingPacketHandlers.AddHandler(CMSG_CAST_SPELL, "cast spell");
+    masterIncomingPacketHandlers.AddHandler(CMSG_CAST_SPELL, "see spell");
     
 
 #ifdef MANGOSBOT_TWO

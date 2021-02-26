@@ -11,10 +11,6 @@ void NonCombatStrategy::InitTriggers(std::list<TriggerNode*>& triggers)
         NextAction::array(0, new NextAction("check mount state", 1.0f), new NextAction("check values", 1.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "levelup",
-        NextAction::array(0, new NextAction("auto talents", 4.0f), new NextAction("auto learn spell", 4.0f), NULL)));
-
-    triggers.push_back(new TriggerNode(
         "no non bot players around",
         NextAction::array(0, new NextAction("move random", 0.5f), NULL)));
 
@@ -23,20 +19,12 @@ void NonCombatStrategy::InitTriggers(std::list<TriggerNode*>& triggers)
         NextAction::array(0, new NextAction("clean quest log", 6.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "xpgain",
-        NextAction::array(0, new NextAction("xp gain", 4.0f), NULL)));
-
-    triggers.push_back(new TriggerNode(
         "often",
         NextAction::array(0, new NextAction("invite nearby", 4.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
         "often",
         NextAction::array(0, new NextAction("leave far away", 4.0f), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "cast spell",
-        NextAction::array(0, new NextAction("see spell", 4.0f), NULL)));
 }
 
 

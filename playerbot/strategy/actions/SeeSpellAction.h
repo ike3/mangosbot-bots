@@ -2,6 +2,7 @@
 
 #include "../Action.h"
 #include "MovementActions.h"
+#include "../values/LastMovementValue.h"
 
 namespace ai
 {

@@ -42,6 +42,10 @@ namespace ai
             if (!ai) //Only invite bots. Maybe change later.
                 continue;
 
+            if (ai->GetMaster()) 
+                if (!ai->GetMaster()->GetPlayerbotAI()) //Do not invite bots with a player master.
+                    continue;
+
             if (player->getLevel() > bot->getLevel() + 2)
                 continue;
 
@@ -70,6 +74,10 @@ namespace ai
             if (bot->GetGroup()->GetLeaderGuid() != bot->GetObjectGuid())
                 return false;
         }
+
+        if (ai->GetMaster())
+            if (!ai->GetMaster()->GetPlayerbotAI()) //Alts do not invite.
+                return false;
 
         return true;
     }

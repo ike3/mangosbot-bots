@@ -58,6 +58,8 @@ bool MoveToRpgTargetAction::Execute(Event event)
     mm.MovePoint(mapId, x + cos(angle) * sPlayerbotAIConfig.followDistance, y + sin(angle) * sPlayerbotAIConfig.followDistance, z, generatePath);
 #endif
 #ifdef CMANGOS
+    bot->StopMoving();
+    mm.Clear();
     mm.MovePoint(mapId, x + cos(angle) * sPlayerbotAIConfig.followDistance, y + sin(angle) * sPlayerbotAIConfig.followDistance, z, FORCED_MOVEMENT_RUN, generatePath);
 #endif
 
@@ -69,6 +71,5 @@ bool MoveToRpgTargetAction::isUseful()
 {
     return context->GetValue<ObjectGuid>("rpg target")->Get() 
         && !context->GetValue<TravelTarget *>("travel target")->Get()->isTraveling()  
-        && AI_VALUE2(float, "distance", "rpg target") > sPlayerbotAIConfig.followDistance
-        && !bot->IsMoving();
+        && AI_VALUE2(float, "distance", "rpg target") > sPlayerbotAIConfig.followDistance;
 }

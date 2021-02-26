@@ -103,6 +103,18 @@ void WorldPacketHandlerStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         "bg status",
         NextAction::array(0, new NextAction("bg status", relevance), NULL)));
 
+    triggers.push_back(new TriggerNode(
+        "xpgain",
+        NextAction::array(0, new NextAction("xp gain", relevance), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "levelup",
+        NextAction::array(0, new NextAction("auto talents", relevance), new NextAction("auto learn spell", relevance), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "see spell",
+        NextAction::array(0, new NextAction("see spell", relevance), NULL)));
+
 }
 
 WorldPacketHandlerStrategy::WorldPacketHandlerStrategy(PlayerbotAI* ai) : PassTroughStrategy(ai)

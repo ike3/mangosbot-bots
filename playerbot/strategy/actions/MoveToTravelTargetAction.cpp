@@ -52,6 +52,8 @@ bool MoveToTravelTargetAction::Execute(Event event)
     mm.MovePoint(mapId, x, y, z, generatePath);
 #endif
 #ifdef CMANGOS
+    bot->StopMoving();
+    mm.Clear();
     mm.MovePoint(mapId, x, y, z, FORCED_MOVEMENT_RUN, generatePath);
 #endif
 

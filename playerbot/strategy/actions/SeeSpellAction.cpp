@@ -1,9 +1,14 @@
 #include "botpch.h"
 #include "../../playerbot.h"
 #include "SeeSpellAction.h"
+#include "../values/Formations.h"
+#include "../../ServerFacade.h"
+#include "MovementGenerator.h"
 #ifdef MANGOS
 #include "luaEngine.h"
 #endif
+
+#include "MotionGenerators/PathFinder.h"
 
 
 
@@ -15,8 +20,8 @@ bool SeeSpellAction::Execute(Event event)
     uint32 spellId;
 
     p.rpos(0);
-    p >> spellId;   
-    
+    p >> spellId;
+
     //ai->TellMaster(to_string(spellId));
 
     if (spellId != 30758)
@@ -30,9 +35,87 @@ bool SeeSpellAction::Execute(Event event)
     p >> targets.ReadForCaster(ai->GetMaster());
 #endif
 
-    Position dest = targets.m_destPos;
+    Position spellPosition = targets.m_destPos;
 
-    if (bot->IsWithinLOS(dest.GetPositionX(), dest.GetPositionY(), dest.GetPositionZ())) return MoveNear(bot->GetMapId(), dest.GetPositionX(), dest.GetPositionY(), dest.GetPositionZ(), 0);
+    if (bot->GetDistance(spellPosition.GetPositionX(), spellPosition.GetPositionY(), spellPosition.GetPositionZ()) <= 10)
+    {
+        ai->TellMaster("In range!");
+    }
+    else
+    {
+        ai->TellMaster("Out of range!");
+    }
 
+    Player* master = ai->GetMaster();
+
+    float x = spellPosition.GetPositionX();
+    float y = spellPosition.GetPositionY();
+    float z = spellPosition.GetPositionZ();
+
+    Formation* formation = AI_VALUE(Formation*, "formation");
+    WorldLocation formationLocation = formation->GetLocation();
+    if (formationLocation.coord_x != 0 || formationLocation.coord_y == 0)
+    {
+        x = x + formationLocation.coord_x - master->GetPositionX();
+        y = y + formationLocation.coord_y - master->GetPositionY();
+        z = z + formationLocation.coord_z - master->GetPositionZ();
+    }
+
+    MotionMaster& mm = *bot->GetMotionMaster();
+    bot->StopMoving();
+    mm.Clear();
+
+    //if (bot->IsWithinLOS(x, y, z)) return MoveNear(bot->GetMapId(), x, y, z);
+
+    if (bot->IsSitState())
+        bot->SetStandState(UNIT_STAND_STATE_STAND);
+
+    if (bot->IsNonMeleeSpellCasted(true))
+    {
+        bot->CastStop();
+        ai->InterruptSpell();
+    }
+
+    bool generatePath = !bot->IsFlying() && !sServerFacade.IsUnderwater(bot);
+
+#ifdef MANGOS
+    mm.MovePoint(bot->GetMapId(), x, y, z, generatePath);
+#endif
+#ifdef CMANGOS
+    bot->StopMoving();
+    mm.Clear();
+    mm.MovePoint(bot->GetMapId(), x,y, z, FORCED_MOVEMENT_RUN, generatePath);
+
+    MovementGenerator const* currentPath = mm.GetCurrent();
+
+    PathFinder path(bot);
+
+    path.calculate(x, y, z, false);
+
+    Vector3 end = path.getEndPosition();
+    Vector3 aend = path.getActualEndPosition();
+
+    PointsArray& points = path.getPath();
+    PathType type = path.getPathType();
+
+    ostringstream out;
+
+    out << "current path is: ";
+
+    out << type;
+
+    out << " of length ";
+
+    out << points.size();
+
+    out << " with offset ";
+
+    out << (end - aend).length();
+
+    ai->TellMaster(out);
+
+#endif
+
+    AI_VALUE(LastMovement&, "last movement").Set(x, y, z, bot->GetOrientation());
     return true;
 }
