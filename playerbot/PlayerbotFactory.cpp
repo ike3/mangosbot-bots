@@ -273,7 +273,8 @@ void PlayerbotFactory::Randomize(bool incremental)
     bot->SaveToDB(); //thesawolf - save save save (hopefully avoids dupes)
     InitGuild();
 #ifndef MANGOSBOT_ZERO
-	InitArenaTeam();
+    if (bot->getLevel() >= 70)
+        InitArenaTeam();
 #endif
     if (pmo) pmo->finish();
 
