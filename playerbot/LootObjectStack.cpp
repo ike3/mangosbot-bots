@@ -155,6 +155,15 @@ bool LootObject::IsLootPossible(Player* bot)
     if (abs(GetWorldObject(bot)->GetPositionZ() - bot->GetPositionZ()) > INTERACTION_DISTANCE)
         return false;
 
+    Creature* creature = ai->GetCreature(guid);
+    if (creature && sServerFacade.GetDeathState(creature) == CORPSE)
+    {
+        if (creature->m_loot)
+            if (!creature->m_loot->CanLoot(bot))
+                return false;
+    }
+
+
     if (skillId == SKILL_NONE)
         return true;
 

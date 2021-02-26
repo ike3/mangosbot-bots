@@ -77,8 +77,8 @@ bool QuestRelationTravelDestination::isActive(Player* bot) {
     {
         if (questTemplate->GetQuestLevel() >= bot->getLevel() + 5)
             return false;
-        if (questTemplate->XPValue(bot) == 0)
-            return false;
+        //if (questTemplate->XPValue(bot) == 0)
+        //    return false;
         if (!bot->CanTakeQuest(questTemplate, false))
             return false;
         if (sTravelMgr.getDialogStatus(bot, entry, questTemplate) != DIALOG_STATUS_AVAILABLE)
