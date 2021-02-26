@@ -1452,10 +1452,6 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot, vector<WorldLocation> &locs
         WorldLocation loc = tlocs[index];
 
 #ifndef MANGOSBOT_ZERO
-        // Do not teleport to outland before portal opening
-        if (sWorldState.GetExpansion() == EXPANSION_NONE && loc.mapid == 530)
-            continue;
-
         // Teleport to Dark Portal area if event is in progress
         if (sWorldState.GetExpansion() == EXPANSION_NONE && bot->getLevel() > 54 && urand(0, 100) > 20)
         {
@@ -1481,6 +1477,12 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot, vector<WorldLocation> &locs
 		AreaTableEntry const* area = GetAreaEntryByAreaID(terrain->GetAreaId(x, y, z));
 		if (!area)
 			continue;
+
+#ifndef MANGOSBOT_ZERO
+        // Do not teleport to outland before portal opening (allow new races zones)
+        if (sWorldState.GetExpansion() == EXPANSION_NONE && loc.mapid == 530 && area->team != 2 && area->team != 4)
+            continue;
+#endif
 
         // Do not teleport to enemy zones if level is low
         if (area->team == 4 && bot->GetTeam() == ALLIANCE && bot->getLevel() < 40)
