@@ -10,6 +10,7 @@
 #include "Player.h"
 #include "RandomPlayerbotFactory.h"
 #include "SystemConfig.h"
+#include "Social/SocialMgr.h"
 
 #ifndef MANGOSBOT_ZERO
 #ifdef CMANGOS
@@ -225,22 +226,116 @@ string RandomPlayerbotFactory::CreateRandomBotName(uint8 gender)
 
 void RandomPlayerbotFactory::CreateRandomBots()
 {
-    if (sPlayerbotAIConfig.deleteRandomBotAccounts)
+    // check if scheduled for delete
+    bool delAccs = false;
+    bool delFriends = false;
+    QueryResult* results = PlayerbotDatabase.Query(
+        "select value from ai_playerbot_random_bots where event = 'bot_delete'");
+
+    if (results)
     {
-        sLog.outString("Deleting random bot accounts...");
+        delAccs = true;
+
+        Field* fields = results->Fetch();
+        uint32 deleteType = fields[0].GetUInt32();
+
+        if (deleteType > 1)
+            delFriends = true;
+
+        PlayerbotDatabase.PExecute("DELETE FROM ai_playerbot_random_bots where event = 'bot_delete'");
+        delete results;
+    }
+
+    if (sPlayerbotAIConfig.deleteRandomBotAccounts || delAccs)
+    {
+        std::list<uint32> botAccounts;
+        std::list<uint32> botFriends;
+
+        for (int accountNumber = 0; accountNumber < sPlayerbotAIConfig.randomBotAccountCount; ++accountNumber)
+        {
+            ostringstream out; out << sPlayerbotAIConfig.randomBotAccountPrefix << accountNumber;
+            string accountName = out.str();
+
+            QueryResult* results = LoginDatabase.PQuery("SELECT id FROM account where username = '%s'", accountName.c_str());
+            if (!results)
+                continue;
+
+            Field* fields = results->Fetch();
+            uint32 accountId = fields[0].GetUInt32();
+            delete results;
+
+            botAccounts.push_back(accountId);
+        }
+
+        if (!delFriends)
+            sLog.outString("Deleting random bot characters without friends/guild...");
+        else
+            sLog.outString("Deleting all random bot characters...");
+
+        // load list of friends
+        if (!delFriends)
+        {
+            QueryResult* result = CharacterDatabase.PQuery("SELECT friend FROM character_social WHERE flags='%u'", SOCIAL_FLAG_FRIEND);
+            if (result)
+            {
+                do
+                {
+                    Field* fields = result->Fetch();
+                    uint32 guidlo = fields[0].GetUInt32();
+                    botFriends.push_back(guidlo);
+
+                } while (result->NextRow());
+
+                delete result;
+            }
+        }
+
         QueryResult* results = LoginDatabase.PQuery("SELECT id FROM account where username like '%s%%'", sPlayerbotAIConfig.randomBotAccountPrefix.c_str());
         if (results)
         {
             do
             {
                 Field* fields = results->Fetch();
-                sAccountMgr.DeleteAccount(fields[0].GetUInt32());
+                uint32 accId = fields[0].GetUInt32();
+
+                // existing characters list
+                QueryResult* result = CharacterDatabase.PQuery("SELECT guid FROM characters WHERE account='%u'", accId);
+                if (result)
+                {
+                    do
+                    {
+                        Field* fields = result->Fetch();
+                        uint32 guidlo = fields[0].GetUInt32();
+                        ObjectGuid guid = ObjectGuid(HIGHGUID_PLAYER, guidlo);
+
+                        // if bot is someone's friend - don't delete it
+                        if ((find(botFriends.begin(), botFriends.end(), guidlo) != botFriends.end()) && !delFriends)
+                            continue;
+
+                        // if bot is in someone's guild - don't delete it
+                        uint32 guildId = Player::GetGuildIdFromDB(guid);
+                        if (guildId && !delFriends)
+                        {
+                            Guild* guild = sGuildMgr.GetGuildById(guildId);
+                            uint32 accountId = sObjectMgr.GetPlayerAccountIdByGUID(guild->GetLeaderGuid());
+
+                            if (find(botAccounts.begin(), botAccounts.end(), accountId) == botAccounts.end())
+                                continue;
+                        }
+
+                        Player::DeleteFromDB(guid, accId, false, true);       // no need to update realm characters
+
+                    } while (result->NextRow());
+
+                    delete result;
+                }
+
             } while (results->NextRow());
 			delete results;
         }
 
         PlayerbotDatabase.Execute("DELETE FROM ai_playerbot_random_bots");
-        sLog.outString("Random bot accounts deleted");
+        sLog.outString("Random bot characters deleted");
     }
 	int totalAccCount = sPlayerbotAIConfig.randomBotAccountCount;
 	sLog.outString("Creating random bot accounts...");
