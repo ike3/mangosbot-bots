@@ -38,22 +38,10 @@ ItemUsage ItemUsageValue::Calculate()
             ai->HasSkill(SKILL_ENCHANTING) && proto->Quality >= ITEM_QUALITY_UNCOMMON)
         return ITEM_USAGE_DISENCHANT;
 
-    for (uint8 slot = 0; slot < MAX_QUEST_LOG_SIZE; ++slot)
-    {
-        uint32 entry = ai->GetBot()->GetQuestSlotQuestId(slot);
-        Quest const* quest = sObjectMgr.GetQuestTemplate(entry);
-        if (!quest)
-            continue;
-
-        for (int i = 0; i < 4; i++)
-        {
-            if (quest->ReqItemId[i] == itemId)
-            {
-                if (!ai->GetMaster() || !sPlayerbotAIConfig.syncQuestWithPlayer)
-                    return ITEM_USAGE_QUEST;
-            }
-        }
-    }
+    //While sync is on, do not loot quest items that are also usefull for master. Master 
+    if (!ai->GetMaster() || !sPlayerbotAIConfig.syncQuestWithPlayer || !IsItemUsefulForQuest(ai->GetMaster(), itemId))
+        if (IsItemUsefulForQuest(bot, itemId))
+            return ITEM_USAGE_QUEST;
 
     //Need to add something like free bagspace or item value.
     if (proto->SellPrice > 0)
@@ -133,6 +121,25 @@ ItemUsage ItemUsageValue::QueryItemUsageForEquip(ItemPrototype const * item)
     }
 
     return ITEM_USAGE_NONE;
+}
+
+bool ItemUsageValue::IsItemUsefulForQuest(Player const* player, uint32 itemId)
+{
+    for (uint8 slot = 0; slot < MAX_QUEST_LOG_SIZE; ++slot)
+    {
+        uint32 entry = player->GetQuestSlotQuestId(slot);
+        Quest const* quest = sObjectMgr.GetQuestTemplate(entry);
+        if (!quest)
+            continue;
+
+        for (int i = 0; i < 4; i++)
+        {
+            if (quest->ReqItemId[i] == itemId)
+            {
+                return ITEM_USAGE_QUEST;
+            }
+        }
+    }
 }
 
 bool ItemUsageValue::IsItemUsefulForSkill(ItemPrototype const * proto)

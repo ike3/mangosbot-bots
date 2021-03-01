@@ -12,7 +12,7 @@ namespace ai
 
         virtual bool Execute(Event event);
         virtual bool isUseful();
-
+        static bool isFollowValid(Player* bot, Unit* target);
     private:
         virtual bool CanTrain(ObjectGuid guid);
         virtual uint32 HasSameTarget(ObjectGuid guid);

@@ -1,6 +1,7 @@
 #include "botpch.h"
 #include "../../playerbot.h"
 #include "MoveToRpgTargetAction.h"
+#include "ChooseRpgTargetAction.h"
 #include "../../PlayerbotAIConfig.h"
 #include "../../ServerFacade.h"
 #include "../values/PossibleRpgTargetsValue.h"
@@ -14,11 +15,13 @@ bool MoveToRpgTargetAction::Execute(Event event)
     if (!target) return false;
 
     float distance = AI_VALUE2(float, "distance", "rpg target");
-    if (distance > 180.0f || (target->IsMoving() && urand(1,100) < 5))
+    if (distance > 180.0f || (target->IsMoving() && urand(1,100) < 5) || !ChooseRpgTargetAction::isFollowValid(bot, target))
     {
         context->GetValue<ObjectGuid>("rpg target")->Set(ObjectGuid());
         return false;
     }
+
+
 
     float x = target->GetPositionX();
     float y = target->GetPositionY();
@@ -73,3 +76,5 @@ bool MoveToRpgTargetAction::isUseful()
         && !context->GetValue<TravelTarget *>("travel target")->Get()->isTraveling()  
         && AI_VALUE2(float, "distance", "rpg target") > sPlayerbotAIConfig.followDistance;
 }
+
+

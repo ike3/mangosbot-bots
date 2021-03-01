@@ -1757,6 +1757,8 @@ bool PlayerbotAI::IsInterruptableSpellCasting(Unit* target, string spell, uint8 
 
 bool PlayerbotAI::HasAuraToDispel(Unit* target, uint32 dispelType)
 {
+    bool isFriend = sServerFacade.IsFriendlyTo(bot, target);
+    bool isHostile = sServerFacade.IsHostileTo(bot, target);
 	for (uint32 type = SPELL_AURA_NONE; type < TOTAL_AURAS; ++type)
 	{
 		Unit::AuraList const& auras = target->GetAurasByType((AuraType)type);
@@ -1767,10 +1769,10 @@ bool PlayerbotAI::HasAuraToDispel(Unit* target, uint32 dispelType)
 			uint32 spellId = entry->Id;
 
 			bool isPositiveSpell = IsPositiveSpell(spellId);
-			if (isPositiveSpell && sServerFacade.IsFriendlyTo(bot, target))
+			if (isPositiveSpell && isFriend)
 				continue;
 
-			if (!isPositiveSpell && sServerFacade.IsHostileTo(bot, target))
+			if (!isPositiveSpell && isHostile)
 				continue;
 
 			if (sPlayerbotAIConfig.dispelAuraDuration && aura->GetAuraDuration() && aura->GetAuraDuration() < (int32)sPlayerbotAIConfig.dispelAuraDuration)

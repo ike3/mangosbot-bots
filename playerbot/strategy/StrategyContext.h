@@ -79,6 +79,7 @@ namespace ai
             creators["warsong"] = &StrategyContext::warsong;
             creators["arena"] = &StrategyContext::arena;
             creators["mount"] = &StrategyContext::mount;
+            creators["attack tagged"] = &StrategyContext::attack_tagged;
             creators["rtsc"] = &StrategyContext::rtsc;
         }
 
@@ -119,6 +120,7 @@ namespace ai
 		static Strategy* travel(PlayerbotAI* ai) { return new TravelStrategy(ai); }
         static Strategy* sit(PlayerbotAI* ai) { return new SitStrategy(ai); }
         static Strategy* possible_ads(PlayerbotAI* ai) { return new PossibleAdsStrategy(ai); }
+        static Strategy* attack_tagged(PlayerbotAI* ai) { return new AttackTaggedStrategy(ai); }
         static Strategy* rtsc(PlayerbotAI* ai) { return new RTSCStrategy(ai); }
     };
 

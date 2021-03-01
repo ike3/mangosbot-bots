@@ -28,6 +28,7 @@ namespace ai
 
     private:
         ItemUsage QueryItemUsageForEquip(ItemPrototype const * proto);
+        bool IsItemUsefulForQuest(Player const* player, uint32 itemId);
         bool IsItemUsefulForSkill(ItemPrototype const * proto);
 	};
 }

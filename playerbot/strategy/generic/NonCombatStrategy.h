@@ -63,4 +63,12 @@ namespace ai
         virtual void InitTriggers(std::list<TriggerNode*> &triggers);
         virtual string getName() { return "mount"; }
     };
+
+    class AttackTaggedStrategy : public Strategy
+    {
+    public:
+        AttackTaggedStrategy(PlayerbotAI* ai) : Strategy(ai) {}
+        virtual int GetType() { return STRATEGY_TYPE_NONCOMBAT; }
+        virtual string getName() { return "attack tagged"; }
+    };
 }

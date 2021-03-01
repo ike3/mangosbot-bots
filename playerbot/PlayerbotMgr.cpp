@@ -328,6 +328,21 @@ list<string> PlayerbotHolder::HandlePlayerbotCommand(char const* args, Player* m
         return messages;
     }   
 
+    if (!strcmp(cmd, "self"))
+    {
+        if (master->GetPlayerbotAI())
+        {
+            messages.push_back("Disable player ai");
+            delete master->GetPlayerbotAI();
+        }
+        else
+        {
+            messages.push_back("Enable player ai");
+            OnBotLogin(master);
+        }
+       return messages;
+     }
+
     if (!charname)
     {
         messages.push_back("usage: list or add/init/remove PLAYERNAME");

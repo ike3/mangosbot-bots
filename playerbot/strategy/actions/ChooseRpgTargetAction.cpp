@@ -99,15 +99,6 @@ bool ChooseRpgTargetAction::Execute(Event event)
     }
 
     vector<Unit*> units;
-    Player* master = ai->GetMaster();
-    bool nearMaster = false;
-    if (master)
-    {
-        if (ai->HasStrategy("follow", BOT_STATE_NON_COMBAT))
-        {
-            nearMaster = bot->GetDistance(master) < sPlayerbotAIConfig.rpgDistance * 2;
-        }
-    }
 
     int maxPriority = 1;
 
@@ -119,10 +110,12 @@ bool ChooseRpgTargetAction::Execute(Event event)
         if (!unit)
             continue;
 
-        if (!ignoreList.empty() && ignoreList.find(unit->GetObjectGuid()) != ignoreList.end() && urand(0, 100) < 10) //10% chance to retry ignored.
+        if (!ignoreList.empty() 
+          && ignoreList.find(unit->GetObjectGuid()) != ignoreList.end() 
+          && urand(0, 100) < 10) //10% chance to retry ignored.            
             continue;
 
-        if (nearMaster && unit->GetDistance(master) > sPlayerbotAIConfig.sightDistance)
+        if (!isFollowValid(bot, unit))
             continue;
         
         int priority = 1;
@@ -178,5 +171,32 @@ bool ChooseRpgTargetAction::Execute(Event event)
 
 bool ChooseRpgTargetAction::isUseful()
 {
-    return !context->GetValue<ObjectGuid>("rpg target")->Get() && !context->GetValue<TravelTarget*>("travel target")->Get()->isTraveling();
+    return !context->GetValue<ObjectGuid>("rpg target")->Get() 
+        && !context->GetValue<TravelTarget*>("travel target")->Get()->isTraveling()
+        && !context->GetValue <list<ObjectGuid>>("possible rpg targets")->Get().empty();
+}
+
+bool ChooseRpgTargetAction::isFollowValid(Player* bot, Unit* target)
+{
+    PlayerbotAI* ai = bot->GetPlayerbotAI();
+    Player* master = ai->GetMaster();
+
+    if (!master)
+        return true;
+    
+    if (!ai->HasStrategy("follow", BOT_STATE_NON_COMBAT))
+        return true;
+
+    if (bot->GetDistance(master) > sPlayerbotAIConfig.rpgDistance * 2)
+        return true;
+
+    float distance = target->GetDistance(master);
+
+    if (!master->IsMoving() && distance < sPlayerbotAIConfig.sightDistance)
+        return true;
+
+    if (distance < sPlayerbotAIConfig.lootDistance)
+        return true;
+
+    return false;
 }

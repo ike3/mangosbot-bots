@@ -51,43 +51,16 @@ bool SeeSpellAction::Execute(Event event)
     float x = spellPosition.GetPositionX();
     float y = spellPosition.GetPositionY();
     float z = spellPosition.GetPositionZ();
-
+    
     Formation* formation = AI_VALUE(Formation*, "formation");
     WorldLocation formationLocation = formation->GetLocation();
-    if (formationLocation.coord_x != 0 || formationLocation.coord_y == 0)
+    if (formationLocation.coord_x != 0 || formationLocation.coord_y != 0)
     {
-        x = x + formationLocation.coord_x - master->GetPositionX();
-        y = y + formationLocation.coord_y - master->GetPositionY();
-        z = z + formationLocation.coord_z - master->GetPositionZ();
+        x = x - master->GetPositionX() + formationLocation.coord_x ;
+        y = y - master->GetPositionY() + formationLocation.coord_y;
+        z = z - master->GetPositionZ() + formationLocation.coord_z;
     }
-
-    MotionMaster& mm = *bot->GetMotionMaster();
-    bot->StopMoving();
-    mm.Clear();
-
-    //if (bot->IsWithinLOS(x, y, z)) return MoveNear(bot->GetMapId(), x, y, z);
-
-    if (bot->IsSitState())
-        bot->SetStandState(UNIT_STAND_STATE_STAND);
-
-    if (bot->IsNonMeleeSpellCasted(true))
-    {
-        bot->CastStop();
-        ai->InterruptSpell();
-    }
-
-    bool generatePath = !bot->IsFlying() && !sServerFacade.IsUnderwater(bot);
-
-#ifdef MANGOS
-    mm.MovePoint(bot->GetMapId(), x, y, z, generatePath);
-#endif
-#ifdef CMANGOS
-    bot->StopMoving();
-    mm.Clear();
-    mm.MovePoint(bot->GetMapId(), x,y, z, FORCED_MOVEMENT_RUN, generatePath);
-
-    MovementGenerator const* currentPath = mm.GetCurrent();
-
+       
     PathFinder path(bot);
 
     path.calculate(x, y, z, false);
@@ -112,8 +85,33 @@ bool SeeSpellAction::Execute(Event event)
 
     out << (end - aend).length();
 
-    ai->TellMaster(out);
+    ai->TellMaster(out);    
 
+    if (type == PATHFIND_NOPATH)
+        return false;
+
+    MotionMaster& mm = *bot->GetMotionMaster();
+    bot->StopMoving();
+    mm.Clear();
+
+    //if (bot->IsWithinLOS(x, y, z)) return MoveNear(bot->GetMapId(), x, y, z);
+
+    if (bot->IsSitState())
+        bot->SetStandState(UNIT_STAND_STATE_STAND);
+
+    if (bot->IsNonMeleeSpellCasted(true))
+    {
+        bot->CastStop();
+        ai->InterruptSpell();
+    }
+
+    bool generatePath = !bot->IsFlying() && !sServerFacade.IsUnderwater(bot);
+
+#ifdef MANGOS
+    mm.MovePoint(bot->GetMapId(), x, y, z, generatePath);
+#endif
+#ifdef CMANGOS
+    mm.MovePoint(bot->GetMapId(), x,y, z, FORCED_MOVEMENT_RUN, generatePath);
 #endif
 
     AI_VALUE(LastMovement&, "last movement").Set(x, y, z, bot->GetOrientation());

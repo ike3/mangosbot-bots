@@ -1,6 +1,7 @@
 #include "botpch.h"
 #include "../../playerbot.h"
 #include "RpgAction.h"
+#include "ChooseRpgTargetAction.h"
 #include "../../PlayerbotAIConfig.h"
 #include "../values/PossibleRpgTargetsValue.h"
 #include "EmoteAction.h"
@@ -80,14 +81,15 @@ bool RpgAction::Execute(Event event)
 
     if (AddIgnore(target->GetObjectGuid()))
     {
-        if (elements.empty())
+        if (elements.empty() && !ChooseRpgTargetAction::isFollowValid(bot, target))
         {
             elements.push_back(&RpgAction::emote);
             elements.push_back(&RpgAction::stay);
             elements.push_back(&RpgAction::work);
         }
     }
-    else     
+    
+    if (elements.empty())
         elements.push_back(&RpgAction::cancel);
 
     RpgElement element = elements[urand(0, elements.size() - 1)];

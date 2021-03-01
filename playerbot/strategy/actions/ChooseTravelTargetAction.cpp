@@ -26,6 +26,21 @@ bool ChooseTravelTargetAction::Execute(Event event)
 
     ReportTravelTarget(&newTarget, target);
 
+    if (target && target == &newTarget && newTarget.getEntry())
+    {
+        set<ObjectGuid>& ignoreList = context->GetValue<set<ObjectGuid>&>("ignore rpg target")->Get();
+        
+        for (auto& i : ignoreList)
+        {
+            if (i.GetEntry() == newTarget.getEntry())
+            {
+                ignoreList.erase(i);
+            }
+        }
+
+        context->GetValue<set<ObjectGuid>&>("ignore rpg target")->Set(ignoreList);
+    }
+
     target->copyTarget(&newTarget);
 
     if (ai->GetMaster() && target->isActive() && target->getDestination()->getName() == "NullTravelDestination")

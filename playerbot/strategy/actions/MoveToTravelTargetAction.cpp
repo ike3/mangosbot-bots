@@ -4,6 +4,7 @@
 #include "../../PlayerbotAIConfig.h"
 #include "../../ServerFacade.h"
 #include "../../LootObjectStack.h"
+#include "MotionGenerators/PathFinder.h"
 
 using namespace ai;
 
@@ -35,7 +36,16 @@ bool MoveToTravelTargetAction::Execute(Event event)
     if (distance < 80.0f)
         if (bot->IsWithinLOS(x, y, z)) return MoveNear(mapId, x + cos(angle) * sPlayerbotAIConfig.tooCloseDistance * mod, y + sin(angle) * sPlayerbotAIConfig.tooCloseDistance * mod, z, 0);
 
-    WaitForReach(distance);
+    PathFinder path(bot);
+
+    path.calculate(x, y, z, false);
+
+    PathType type = path.getPathType();
+
+    if (type == PATHFIND_NOPATH)
+        return false;
+
+    //WaitForReach(distance);
 
     if (bot->IsSitState())
         bot->SetStandState(UNIT_STAND_STATE_STAND);
@@ -63,6 +73,6 @@ bool MoveToTravelTargetAction::Execute(Event event)
 
 bool MoveToTravelTargetAction::isUseful()
 {
-    return context->GetValue<TravelTarget*>("travel target")->Get()->isTraveling() && !bot->IsTaxiFlying() && !bot->IsFlying();
+    return context->GetValue<TravelTarget*>("travel target")->Get()->isTraveling() && !bot->IsTaxiFlying() && !bot->IsFlying() && !bot->IsMoving();
 }
 

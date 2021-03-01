@@ -105,10 +105,15 @@ void AttackersValue::RemoveNonThreating(set<Unit*>& targets)
 bool AttackersValue::IsPossibleTarget(Unit *attacker, Player *bot)
 {
     Creature *c = dynamic_cast<Creature*>(attacker);
+
     bool rti = false;
     if (attacker && bot->GetGroup())
         rti = bot->GetGroup()->GetTargetIcon(7) == attacker->GetObjectGuid();
 
+    string name = bot->GetName();
+    PlayerbotAI* ai = bot->GetPlayerbotAI();
+    
+  
     return attacker &&
         attacker->IsInWorld() &&
         attacker->GetMapId() == bot->GetMapId() &&
@@ -145,16 +150,13 @@ bool AttackersValue::IsPossibleTarget(Unit *attacker, Player *bot)
 #ifdef CMANGOS
             !c->GetCombatManager().IsInEvadeMode() &&
 #endif
-            (!attacker->HasFlag(UNIT_DYNAMIC_FLAGS, UNIT_DYNFLAG_TAPPED)
+            (
 #ifdef CMANGOS
-                || c->IsTappedBy(bot)
+                ai->HasStrategy("attack tagged", BOT_STATE_NON_COMBAT) || !c->HasLootRecipient() || c->IsTappedBy(bot)
 #endif
 #ifndef MANGOSBOT_TWO
 #ifdef MANGOS
-                || bot->IsTappedByMeOrMyGroup(c)
-#endif
-#ifdef CMANGOS
-                || c->IsTappedBy(bot)
+                !attacker->HasFlag(UNIT_DYNAMIC_FLAGS, UNIT_DYNFLAG_TAPPED) || bot->IsTappedByMeOrMyGroup(c)
 #endif
 #endif
                 )

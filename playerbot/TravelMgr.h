@@ -228,6 +228,7 @@ namespace ai
         WorldLocation getLocation() { return wPosition->getLocation(); };
         WorldPosition* getPosition() { return wPosition; };
         TravelDestination* getDestination() { return tDestination; };
+        uint32 getEntry() { if (!tDestination) return 0; return tDestination->getEntry(); }
         PlayerbotAI* getAi() { return ai; }
 
         uint32 getExpiredTime() { return WorldTimer::getMSTime() - startTime; }
