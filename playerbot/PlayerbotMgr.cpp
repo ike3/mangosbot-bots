@@ -333,7 +333,7 @@ list<string> PlayerbotHolder::HandlePlayerbotCommand(char const* args, Player* m
         if (master->GetPlayerbotAI())
         {
             messages.push_back("Disable player ai");
-            delete master->GetPlayerbotAI();
+            LogoutPlayerBot(master->GetGUID());
         }
         else
         {

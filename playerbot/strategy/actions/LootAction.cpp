@@ -80,7 +80,7 @@ bool OpenLootAction::DoLoot(LootObject& lootObject)
             && !creature->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SKINNABLE)
 #endif
             )
-    {
+    {        
         WorldPacket packet(CMSG_LOOT, 8);
         packet << lootObject.guid;
         bot->GetSession()->HandleLootOpcode(packet);
@@ -345,6 +345,8 @@ bool StoreLootAction::Execute(Event event)
         p >> gold;      // 4 money on corpse
         p >> items;     // 1 number of items on corpse
     }
+
+    bot->SetLootGuid(guid);
 
     if (gold > 0)
     {

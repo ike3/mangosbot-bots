@@ -511,6 +511,18 @@ bool Engine::ListenAndExecute(Action* action, Event event)
         actionExecuted = actionExecutionListeners.AllowExecution(action, event) ? action->Execute(event) : true;
     }
 
+    if (ai->HasStrategy("debug", BOT_STATE_NON_COMBAT))
+    {
+        ostringstream out;
+        out << "do: ";
+        out << action->getName();
+        if (actionExecuted)
+            out << " 1";
+        else
+            out << " 0";
+        ai->TellMaster(out);
+    }
+
     actionExecuted = actionExecutionListeners.OverrideResult(action, actionExecuted, event);
     actionExecutionListeners.After(action, actionExecuted, event);
     return actionExecuted;

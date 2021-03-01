@@ -80,6 +80,7 @@ namespace ai
             creators["arena"] = &StrategyContext::arena;
             creators["mount"] = &StrategyContext::mount;
             creators["attack tagged"] = &StrategyContext::attack_tagged;
+            creators["debug"] = &StrategyContext::debug;
             creators["rtsc"] = &StrategyContext::rtsc;
         }
 
@@ -121,6 +122,7 @@ namespace ai
         static Strategy* sit(PlayerbotAI* ai) { return new SitStrategy(ai); }
         static Strategy* possible_ads(PlayerbotAI* ai) { return new PossibleAdsStrategy(ai); }
         static Strategy* attack_tagged(PlayerbotAI* ai) { return new AttackTaggedStrategy(ai); }
+        static Strategy* debug(PlayerbotAI* ai) { return new DebugStrategy(ai); }
         static Strategy* rtsc(PlayerbotAI* ai) { return new RTSCStrategy(ai); }
     };
 
