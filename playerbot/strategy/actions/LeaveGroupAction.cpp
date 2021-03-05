@@ -10,8 +10,7 @@ using namespace ai;
 namespace ai
 {
 	bool LeaveGroupAction::Leave() {
-        //if (!bot->GetGroup())
-        //    return false;
+        bool aiMaster = ai->GetMaster()->GetPlayerbotAI();
 
         ai->TellMaster("Goodbye!", PLAYERBOT_SECURITY_TALK);
 
@@ -27,7 +26,8 @@ namespace ai
             sRandomPlayerbotMgr.ScheduleTeleport(bot->GetObjectGuid());
         }
 
-        ai->ResetStrategies(!randomBot);
+        if(!aiMaster)
+            ai->ResetStrategies(!randomBot);
         ai->Reset();
 
         return true;
@@ -43,7 +43,7 @@ namespace ai
         
         Player* master = ai->GetMaster();
 
-        if (!master)
+        if (!master || bot == master)
             return false;
 
         if(!master->GetPlayerbotAI())
