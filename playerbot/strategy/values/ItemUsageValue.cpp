@@ -136,10 +136,12 @@ bool ItemUsageValue::IsItemUsefulForQuest(Player const* player, uint32 itemId)
         {
             if (quest->ReqItemId[i] == itemId)
             {
-                return ITEM_USAGE_QUEST;
+                return true;
             }
         }
     }
+
+    return false;
 }
 
 bool ItemUsageValue::IsItemUsefulForSkill(ItemPrototype const * proto)
