@@ -14,6 +14,23 @@
 
 using namespace ai;
 
+void CreateWp(Player* wpOwner,float x, float y, float z, float o, uint32 entry)
+{
+    float dist = wpOwner->GetDistance(x, y, z);
+    float delay = 1000.0f * dist / wpOwner->GetSpeed(MOVE_RUN) + sPlayerbotAIConfig.reactDelay;
+    Creature* wpCreature = wpOwner->SummonCreature(entry, x, y, z, o, TEMPSPAWN_TIMED_DESPAWN, delay*1.2);
+}
+
+float GetAngle(const float x1, const float y1, const float x2, const float y2)
+{
+    float dx = x1 - x2;
+    float dy = y1 - y2;
+
+    float ang = atan2(dy, dx);                              // returns value between -Pi..Pi
+    ang = (ang >= 0) ? ang : 2 * M_PI_F + ang;
+    return ang;
+}
+
 bool SeeSpellAction::Execute(Event event)
 {
     WorldPacket p(event.getPacket()); // 
@@ -51,16 +68,16 @@ bool SeeSpellAction::Execute(Event event)
     float x = spellPosition.GetPositionX();
     float y = spellPosition.GetPositionY();
     float z = spellPosition.GetPositionZ();
-    
+
     Formation* formation = AI_VALUE(Formation*, "formation");
     WorldLocation formationLocation = formation->GetLocation();
     if (formationLocation.coord_x != 0 || formationLocation.coord_y != 0)
     {
-        x = x - master->GetPositionX() + formationLocation.coord_x ;
+        x = x - master->GetPositionX() + formationLocation.coord_x;
         y = y - master->GetPositionY() + formationLocation.coord_y;
         z = z - master->GetPositionZ() + formationLocation.coord_z;
     }
-       
+
     PathFinder path(bot);
 
     path.calculate(x, y, z, false);
@@ -85,35 +102,28 @@ bool SeeSpellAction::Execute(Event event)
 
     out << (end - aend).length();
 
-    ai->TellMaster(out);    
+    //std::reverse(points.begin(), points.end());
 
-    if (type == PATHFIND_NOPATH)
-        return false;
-
-    MotionMaster& mm = *bot->GetMotionMaster();
-    bot->StopMoving();
-    mm.Clear();
-
-    //if (bot->IsWithinLOS(x, y, z)) return MoveNear(bot->GetMapId(), x, y, z);
-
-    if (bot->IsSitState())
-        bot->SetStandState(UNIT_STAND_STATE_STAND);
-
-    if (bot->IsNonMeleeSpellCasted(true))
+    /*
+    for (auto i : points)
     {
-        bot->CastStop();
-        ai->InterruptSpell();
+        if (bot->IsWithinLOS(i.x, i.y, i.z))
+        {
+            CreateWp(bot, i.x, i.y, i.z, GetAngle(x, y, i.x, i.y), 1);
+        }
+        else
+            CreateWp(bot, i.x, i.y, i.z, GetAngle(x, y, i.x, i.y), 11144);
+
+        x = i.x;
+        y = i.y;
+        z = i.z;
     }
+    */
+  
+    ai->TellMaster(out);
 
-    bool generatePath = !bot->IsFlying() && !sServerFacade.IsUnderwater(bot);
-
-#ifdef MANGOS
-    mm.MovePoint(bot->GetMapId(), x, y, z, generatePath);
-#endif
-#ifdef CMANGOS
-    mm.MovePoint(bot->GetMapId(), x,y, z, FORCED_MOVEMENT_RUN, generatePath);
-#endif
-
-    AI_VALUE(LastMovement&, "last movement").Set(x, y, z, bot->GetOrientation());
-    return true;
+    if (bot->IsWithinLOS(x, y, z))
+        return MoveNear(bot->GetMapId(), x, y, z, 0);
+    else
+        return MoveTo(bot->GetMapId(), x, y, z, false, false);
 }

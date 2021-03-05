@@ -28,6 +28,9 @@ namespace ai
         bool Flee(Unit *target);
         void ClearIdleState();
         void UpdateMovementState();
+        
+        void CreateWp(Player* wpOwner, float x, float y, float z, float o, uint32 entry);
+        float GetAngle(const float x1, const float y1, const float x2, const float y2);
     };
 
     class FleeAction : public MovementAction

@@ -31,22 +31,55 @@ bool MoveToTravelTargetAction::Execute(Event event)
     float z = location.coord_z;
     float mapId = location.mapid;
 
-    float mod = urand(1, 100)/50.0;
+    float mod = urand(50, 100)/50.0;
 
-    if (distance < 80.0f)
-        if (bot->IsWithinLOS(x, y, z)) return MoveNear(mapId, x + cos(angle) * sPlayerbotAIConfig.tooCloseDistance * mod, y + sin(angle) * sPlayerbotAIConfig.tooCloseDistance * mod, z, 0);
-
+    /*
     PathFinder path(bot);
-
     path.calculate(x, y, z, false);
-
     PathType type = path.getPathType();
+    PointsArray& points = path.getPath();
+    
+    if (ai->HasStrategy("debug", BOT_STATE_NON_COMBAT))
+    for (auto i : points)
+    {
+        CreateWp(bot, i.x, i.y, i.z, GetAngle(x, y, i.x, i.y), 15631);
+
+        x = i.x;
+        y = i.y;
+        z = i.z;
+    }
+    */
+
+    x += cos(angle) * sPlayerbotAIConfig.tooCloseDistance * mod;
+    y += sin(angle) * sPlayerbotAIConfig.tooCloseDistance * mod;
+
+    if (bot->IsWithinLOS(x, y, z))
+        return MoveNear(mapId, x, y, z, 0);
+    else
+        return MoveTo(mapId, x, y, z, false, false);
+
+    /*
+    if (distance < 80.0f)
+    {
+        if (bot->IsWithinLOS(x, y, z))  
+        {
+            if (ai->HasStrategy("debug", BOT_STATE_NON_COMBAT))
+                ai->TellMaster("Los Traveling " + to_string(distance));
+
+           return MoveNear(mapId, x , y , z, 0);
+        }
+    }
 
     if (type == PATHFIND_NOPATH)
+    {
+        sTravelMgr.setNullTravelTarget(bot);
         return false;
+    }
+
+    MotionMaster& mm = *bot->GetMotionMaster();
 
     //WaitForReach(distance);
-
+    
     if (bot->IsSitState())
         bot->SetStandState(UNIT_STAND_STATE_STAND);
 
@@ -57,15 +90,25 @@ bool MoveToTravelTargetAction::Execute(Event event)
     }
 
     bool generatePath = !bot->IsFlying() && !sServerFacade.IsUnderwater(bot);
-    MotionMaster &mm = *bot->GetMotionMaster();
+
 #ifdef MANGOS
     mm.MovePoint(mapId, x, y, z, generatePath);
 #endif
 #ifdef CMANGOS
+    if (ai->HasStrategy("debug", BOT_STATE_NON_COMBAT))
+    {
+        ai->TellMaster("Point Traveling " + to_string(distance));
+
+        ostringstream out;
+        out << "From: " << bot->GetPositionX() << " | " << bot->GetPositionY() << " | " << bot->GetPositionZ();
+        out << " to: " << x << " | " << y << " | " << z;
+        ai->TellMaster(out);
+    }
     bot->StopMoving();
     mm.Clear();
     mm.MovePoint(mapId, x, y, z, FORCED_MOVEMENT_RUN, generatePath);
 #endif
+    */
 
     AI_VALUE(LastMovement&, "last movement").Set(x, y, z, bot->GetOrientation());
     return true;
@@ -73,6 +116,10 @@ bool MoveToTravelTargetAction::Execute(Event event)
 
 bool MoveToTravelTargetAction::isUseful()
 {
-    return context->GetValue<TravelTarget*>("travel target")->Get()->isTraveling() && !bot->IsTaxiFlying() && !bot->IsFlying() && !bot->IsMoving();
+    return context->GetValue<TravelTarget*>("travel target")->Get()->isTraveling() 
+        && !bot->IsTaxiFlying()
+        && !bot->IsFlying() 
+        && !bot->IsMoving() 
+        && !bot->IsInCombat();
 }
 

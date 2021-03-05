@@ -14,6 +14,25 @@
 
 using namespace ai;
 
+void MovementAction::CreateWp(Player* wpOwner, float x, float y, float z, float o, uint32 entry)
+{
+    float dist = wpOwner->GetDistance(x, y, z);
+    float delay = 1000.0f * dist / wpOwner->GetSpeed(MOVE_RUN) + sPlayerbotAIConfig.reactDelay;
+    if (delay > 2000.0f)
+        delay -= 2000.0f;
+    Creature* wpCreature = wpOwner->SummonCreature(entry, x, y, z, o, TEMPSPAWN_TIMED_DESPAWN, delay);
+}
+
+float MovementAction::GetAngle(const float x1, const float y1, const float x2, const float y2)
+{
+    float dx = x1 - x2;
+    float dy = y1 - y2;
+
+    float ang = atan2(dy, dx);                              // returns value between -Pi..Pi
+    ang = (ang >= 0) ? ang : 2 * M_PI_F + ang;
+    return ang;
+}
+
 bool MovementAction::MoveNear(uint32 mapId, float x, float y, float z, float distance)
 {
     float angle = GetFollowAngle();
@@ -68,13 +87,51 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
 
     if (!IsMovingAllowed(mapId, x, y, z))
     {
-        //ai->TellError("I am stuck");
-        return false;
+        //ai->TellError("Long movement");
+        //return false; //Move up to the limit instead of not at all.
     }
 
     float distance = sServerFacade.GetDistance2d(bot, x, y);
     if (sServerFacade.IsDistanceGreaterThan(distance, sPlayerbotAIConfig.targetPosRecalcDistance))
     {
+
+        //BEGIN Path checker 
+        PathFinder path(bot);
+        path.calculate(x, y, z, false);
+        PathType type = path.getPathType();
+        PointsArray& points = path.getPath();
+
+        if (ai->HasStrategy("debug", BOT_STATE_NON_COMBAT))
+        {
+            ostringstream out;
+            out << "From: " << bot->GetPositionX() << " ; " << bot->GetPositionY() << " ; " << bot->GetPositionZ();
+            out << " to: " << x << " ; " << y << " ; " << z;
+            ai->TellMaster(out);
+
+            float cx = x;
+            float cy = y;
+            float cz = z;
+            for (auto i : points)
+            {
+                CreateWp(bot, i.x, i.y, i.z, GetAngle(cx, cy, i.x, i.y), 15631);
+
+                cx = i.x;
+                cy = i.y;
+                cz = i.z;
+            }
+        }
+        //END Path checker 
+        for (auto i : points)
+        {
+            float distance = bot->GetDistance(i.x, i.y, i.z);
+            if (distance < sPlayerbotAIConfig.reactDistance)
+            {
+                x = i.x;
+                y = i.y;
+                z = i.z;
+            }
+        }
+
         if (!react)
             WaitForReach(distance);
 
@@ -95,6 +152,8 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
 #ifdef CMANGOS
         bot->StopMoving();
         mm.Clear();
+
+        //mm.MovePath(points, FORCED_MOVEMENT_RUN, false);
         mm.MovePoint(mapId, x, y, z, FORCED_MOVEMENT_RUN, generatePath);
 #endif
 
