@@ -12,6 +12,11 @@ CheckValuesAction::CheckValuesAction(PlayerbotAI* ai) : Action(ai, "check values
 
 bool CheckValuesAction::Execute(Event event)
 {
+    if (ai->HasStrategy("debug", BOT_STATE_NON_COMBAT))
+    {
+        ai->Ping(bot->GetPositionX(), bot->GetPositionY());
+    }
+
     list<ObjectGuid> possible_targets = *context->GetValue<list<ObjectGuid> >("possible targets");
     list<ObjectGuid> all_targets = *context->GetValue<list<ObjectGuid> >("all targets");
     list<ObjectGuid> npcs = *context->GetValue<list<ObjectGuid> >("nearest npcs");
