@@ -252,7 +252,7 @@ bool ChooseTravelTargetAction::SetQuestTarget(TravelTarget* target)
         uint32 questId = quest.first;
         QuestStatusData* questStatus = &quest.second;
 
-        vector<TravelDestination*> questDestinations = sTravelMgr.getQuestTravelDestinations(bot, questId, ai->GetMaster());
+        vector<TravelDestination*> questDestinations = sTravelMgr.getQuestTravelDestinations(bot, questId, ai->GetMaster(), false, 2000,  AI_VALUE(uint8, "bag space") > 80);
         vector< WorldPosition*> questPoints;
         
         for (auto& questDestination : questDestinations)
@@ -315,7 +315,9 @@ bool ChooseTravelTargetAction::SetNullTarget(TravelTarget* target)
 
 bool ChooseTravelTargetAction::isUseful()
 {
-    return !context->GetValue<TravelTarget *>("travel target")->Get()->isActive() && !context->GetValue<LootObject>("loot target")->Get().IsLootPossible(bot);
+    return !context->GetValue<TravelTarget *>("travel target")->Get()->isActive() 
+        && !context->GetValue<LootObject>("loot target")->Get().IsLootPossible(bot)
+        && ai->AllowActive(TRAVEL_ACTIVITY);
 }
 
 

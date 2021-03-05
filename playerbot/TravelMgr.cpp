@@ -457,6 +457,8 @@ void TravelMgr::logQuestError(uint32 errorNr, Quest* quest, uint32 objective, ui
 
 void TravelMgr::LoadQuestTravelTable()
 {
+    if (!sTravelMgr.quests.empty())
+        return;
     // Clearing store (for reloading case)
     Clear();
 
@@ -924,7 +926,7 @@ bool TravelMgr::getObjectiveStatus(Player* bot,  Quest const* pQuest, int object
     return false;
 }
 
-vector<TravelDestination*> TravelMgr::getQuestTravelDestinations(Player* bot, uint32 questId, bool ignoreFull, bool ignoreInactive, float maxDistance)
+vector<TravelDestination*> TravelMgr::getQuestTravelDestinations(Player* bot, uint32 questId, bool ignoreFull, bool ignoreInactive, float maxDistance, bool ignoreObjectives)
 {
     WorldPosition botLocation(bot);
 
@@ -966,19 +968,20 @@ vector<TravelDestination*> TravelMgr::getQuestTravelDestinations(Player* bot, ui
                 retTravelLocations.push_back(dest);
             }
 
-            for (auto& dest : i->second->questObjectives)
-            {
-                if (!ignoreInactive && !dest->isActive(bot))
-                    continue;
+            if (!ignoreObjectives)
+                for (auto& dest : i->second->questObjectives)
+                {
+                    if (!ignoreInactive && !dest->isActive(bot))
+                        continue;
 
-                if (dest->isFull(ignoreFull))
-                    continue;
+                    if (dest->isFull(ignoreFull))
+                        continue;
 
-                if (maxDistance > 0 && dest->distanceTo(&botLocation) > maxDistance)
-                    continue;
+                    if (maxDistance > 0 && dest->distanceTo(&botLocation) > maxDistance)
+                        continue;
 
-                retTravelLocations.push_back(dest);
-            }
+                    retTravelLocations.push_back(dest);
+                }
         }
     }
 
