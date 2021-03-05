@@ -35,7 +35,10 @@ bool RpgAction::Execute(Event event)
     }
 
     if (!bot->GetNPCIfCanInteractWith(target->GetObjectGuid(), UNIT_NPC_FLAG_NONE))
+    {
+        context->GetValue<ObjectGuid>("rpg target")->Set(ObjectGuid());
         return false;
+    }
 
     if (bot->GetShapeshiftForm() > 0)
         bot->SetShapeshiftForm(FORM_NONE);
@@ -87,8 +90,10 @@ bool RpgAction::Execute(Event event)
             elements.push_back(&RpgAction::stay);
             elements.push_back(&RpgAction::work);
         }
-    }
-    
+    }    
+    else
+        elements.push_back(&RpgAction::cancel);
+
     if (elements.empty())
         elements.push_back(&RpgAction::cancel);
 
