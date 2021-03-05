@@ -37,13 +37,16 @@ namespace ai
             if (sRandomPlayerbotMgr.IsRandomBot(bot))
                 bot->GetPlayerbotAI()->SetMaster(inviter);
             
-            ai->ResetStrategies();
-            ai->Reset();
             if (!inviter->GetPlayerbotAI())
             {
+                ai->ResetStrategies();
                 ai->ChangeStrategy("-rpg", BOT_STATE_NON_COMBAT);
                 ai->ChangeStrategy("-grind", BOT_STATE_NON_COMBAT);
+                ai->ChangeStrategy("-travel", BOT_STATE_NON_COMBAT);
             }
+
+            ai->Reset();
+
             ai->TellMaster("Hello");
             return true;
         }
