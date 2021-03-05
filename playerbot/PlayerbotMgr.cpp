@@ -43,12 +43,23 @@ void PlayerbotHolder::UpdateSessions(uint32 elapsed)
 }
 
 void PlayerbotHolder::LogoutAllBots()
-{
+{    
+    /*
     while (true)
     {
         PlayerBotMap::const_iterator itr = GetPlayerBotsBegin();
         if (itr == GetPlayerBotsEnd()) break;
         Player* bot= itr->second;
+        if (!bot->GetPlayerbotAI()->isRealPlayer())
+            LogoutPlayerBot(bot->GetObjectGuid().GetRawValue());
+    }
+    */
+    for (auto& itr : playerBots)
+    {
+        Player* bot = itr.second;
+        if (bot->GetPlayerbotAI()->isRealPlayer())
+            continue;
+
         LogoutPlayerBot(bot->GetObjectGuid().GetRawValue());
     }
 }
@@ -84,6 +95,40 @@ void PlayerbotHolder::LogoutPlayerBot(uint64 guid)
         botWorldSessionPtr->LogoutPlayer(true); // this will delete the bot Player object and PlayerbotAI object
 #endif
         delete botWorldSessionPtr;  // finally delete the bot's WorldSession
+    }
+}
+
+void PlayerbotHolder::DisablePlayerBot(uint64 guid)
+{
+    Player* bot = GetPlayerBot(guid);
+    if (bot)
+    {
+        bot->GetPlayerbotAI()->TellMaster("Goodbye!");
+        Player* master = bot->GetPlayerbotAI()->GetMaster();
+        Group* group = bot->GetGroup();
+        if (group && !bot->InBattleGround() && !bot->InBattleGroundQueue() && (master && !master->GetPlayerbotAI()))
+        {
+            sPlayerbotDbStore.Save(bot->GetPlayerbotAI());
+        }
+        sLog.outDebug("Bot %s logged out", bot->GetName());
+        bot->SaveToDB();
+
+        if (bot->GetPlayerbotAI()->GetAiObjectContext()) //Maybe some day re-write to delate all pointer values.
+        {
+            TravelTarget* target = bot->GetPlayerbotAI()->GetAiObjectContext()->GetValue<TravelTarget*>("travel target")->Get();
+            if (target)
+                delete target;
+        }
+
+        WorldSession* botWorldSessionPtr = bot->GetSession();
+        playerBots.erase(guid);    // deletes bot player ptr inside this WorldSession PlayerBotMap
+
+        if (bot->GetPlayerbotAI()) {
+            {
+                delete bot->GetPlayerbotAI();
+            }
+            bot->SetPlayerbotAI(0);
+        }
     }
 }
 
@@ -333,7 +378,7 @@ list<string> PlayerbotHolder::HandlePlayerbotCommand(char const* args, Player* m
         if (master->GetPlayerbotAI())
         {
             messages.push_back("Disable player ai");
-            LogoutPlayerBot(master->GetGUID());
+            DisablePlayerBot(master->GetGUID());
         }
         else
         {

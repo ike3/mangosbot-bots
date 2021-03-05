@@ -88,9 +88,9 @@ bool PlayerbotAIConfig::Initialize()
     lowMana = config.GetIntDefault("AiPlayerbot.LowMana", 15);
     mediumMana = config.GetIntDefault("AiPlayerbot.MediumMana", 40);
 
-    randomGearLoweringChance = config.GetFloatDefault("AiPlayerbot.RandomGearLoweringChance", 0.15);
-    randomBotMaxLevelChance = config.GetFloatDefault("AiPlayerbot.RandomBotMaxLevelChance", 0.15);
-    randomBotRpgChance = config.GetFloatDefault("AiPlayerbot.RandomBotRpgChance", 0.35);
+    randomGearLoweringChance = config.GetFloatDefault("AiPlayerbot.RandomGearLoweringChance", 0.15f);
+    randomBotMaxLevelChance = config.GetFloatDefault("AiPlayerbot.RandomBotMaxLevelChance", 0.15f);
+    randomBotRpgChance = config.GetFloatDefault("AiPlayerbot.RandomBotRpgChance", 0.35f);
 
     iterationsPerTick = config.GetIntDefault("AiPlayerbot.IterationsPerTick", 100);
 
@@ -242,7 +242,7 @@ bool PlayerbotAIConfig::Initialize()
     enableGreet = config.GetBoolDefault("AiPlayerbot.EnableGreet", false);
 	disableRandomLevels = config.GetBoolDefault("AiPlayerbot.DisableRandomLevels", false);
     playerbotsXPrate = config.GetIntDefault("AiPlayerbot.KillXPRate", 1);
-    randomBotGrindAlone = config.GetIntDefault("AiPlayerbot.RandomBotGrindAlone", 0); //hidden config
+    botActiveAlone = config.GetIntDefault("AiPlayerbot.botActiveAlone", 10); //hidden config
     RandombotsWalkingRPG = config.GetBoolDefault("AiPlayerbot.RandombotsWalkingRPG", false);
     RandombotsWalkingRPGInDoors = config.GetBoolDefault("AiPlayerbot.RandombotsWalkingRPG.InDoors", false);
     minEnchantingBotLevel = config.GetIntDefault("AiPlayerbot.minEnchantingBotLevel", 60);
@@ -288,7 +288,6 @@ bool PlayerbotAIConfig::Initialize()
 
     return true;
 }
-
 
 bool PlayerbotAIConfig::IsInRandomAccountList(uint32 id)
 {

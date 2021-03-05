@@ -24,6 +24,7 @@ public:
 	void HandlePlayerBotLoginCallback(QueryResult * dummy, SqlQueryHolder * holder);
 
     void LogoutPlayerBot(uint64 guid);
+    void DisablePlayerBot(uint64 guid);
     Player* GetPlayerBot (uint64 guid) const;
     PlayerBotMap::const_iterator GetPlayerBotsBegin() const { return playerBots.begin(); }
     PlayerBotMap::const_iterator GetPlayerBotsEnd()   const { return playerBots.end();   }

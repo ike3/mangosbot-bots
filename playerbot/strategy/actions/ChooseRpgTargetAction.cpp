@@ -79,6 +79,9 @@ uint32 ChooseRpgTargetAction::HasSameTarget(ObjectGuid guid)
         if (!ai)
             continue;
 
+        if (!ai->AllowActive(GRIND_ACTIVITY))
+            continue;
+
         if (ai->GetAiObjectContext()->GetValue<ObjectGuid>("rpg target")->Get() != guid)
             continue;
 
@@ -135,6 +138,15 @@ bool ChooseRpgTargetAction::Execute(Event event)
         else if (travelTarget->getDestination() && travelTarget->getDestination()->getEntry() == unit->GetEntry())
             priority = 70;
 
+        if (ai->HasStrategy("debug", BOT_STATE_NON_COMBAT))
+        {
+            ostringstream out;
+            out << "found: ";
+            out << unit->GetName();
+            out << " with priority: " << priority;
+            ai->TellMaster(out);
+        }
+
         if (priority < maxPriority)
             continue;
 
@@ -171,9 +183,10 @@ bool ChooseRpgTargetAction::Execute(Event event)
 
 bool ChooseRpgTargetAction::isUseful()
 {
-    return !context->GetValue<ObjectGuid>("rpg target")->Get() 
+    return !context->GetValue<ObjectGuid>("rpg target")->Get()
         && !context->GetValue<TravelTarget*>("travel target")->Get()->isTraveling()
-        && !context->GetValue <list<ObjectGuid>>("possible rpg targets")->Get().empty();
+        && !context->GetValue <list<ObjectGuid>>("possible rpg targets")->Get().empty()
+        && ai->AllowActive(RPG_ACTIVITY);
 }
 
 bool ChooseRpgTargetAction::isFollowValid(Player* bot, Unit* target)

@@ -55,6 +55,7 @@ class RandomPlayerbotMgr : public PlayerbotHolder
         void OnPlayerLogin(Player* player);
         void OnPlayerLoginError(uint32 bot);
         Player* GetRandomPlayer();
+        vector<Player*> GetPlayers() { return players; };
         void PrintStats();
         double GetBuyMultiplier(Player* bot);
         double GetSellMultiplier(Player* bot);

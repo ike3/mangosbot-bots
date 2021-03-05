@@ -1178,6 +1178,9 @@ bool RandomPlayerbotMgr::ProcessBot(uint32 bot)
     Player* player = GetPlayerBot(bot);
     PlayerbotAI* ai = player ? player->GetPlayerbotAI() : NULL;
 
+    if (ai && !ai->AllowActive(ALL_ACTIVITY))
+        return false;
+
     uint32 isValid = GetEventValue(bot, "add");
     if (!isValid)
     {
@@ -2067,6 +2070,8 @@ void RandomPlayerbotMgr::HandleCommand(uint32 type, const string& text, Player& 
 
 void RandomPlayerbotMgr::OnPlayerLogout(Player* player)
 {
+     DisablePlayerBot(player->GetGUID());
+
     for (PlayerBotMap::const_iterator it = GetPlayerBotsBegin(); it != GetPlayerBotsEnd(); ++it)
     {
         Player* const bot = it->second;

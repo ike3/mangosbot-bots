@@ -510,6 +510,12 @@ void PlayerbotAI::DoNextAction()
         return;
     }
 
+    if (!AllowActive(ALL_ACTIVITY))
+    {
+        SetNextCheckDelay(sPlayerbotAIConfig.passiveDelay);
+        return;
+    }
+
     currentEngine->DoNextAction(NULL);
 
     if (currentEngine != engines[BOT_STATE_DEAD] && !sServerFacade.IsAlive(bot))
@@ -1212,7 +1218,7 @@ bool PlayerbotAI::TellMasterNoFacing(string text, PlayerbotSecurityLevel securit
 {
     Player* master = GetMaster();
 
-    if ((!master || master->GetPlayerbotAI()) && sPlayerbotAIConfig.randomBotSayWithoutMaster)
+    if ((!master || (master->GetPlayerbotAI() && !master->GetPlayerbotAI()->isRealPlayer())) && (sPlayerbotAIConfig.randomBotSayWithoutMaster || HasStrategy("debug", BOT_STATE_NON_COMBAT)))
     {
         bot->Say(text, (bot->GetTeam() == ALLIANCE ? LANG_COMMON : LANG_ORCISH));
         return true;
@@ -1249,6 +1255,8 @@ bool PlayerbotAI::TellError(string text, PlayerbotSecurityLevel securityLevel)
 
     PlayerbotMgr* mgr = master->GetPlayerbotMgr();
     if (mgr) mgr->TellError(bot->GetName(), text);
+
+    return false;
 }
 
 bool PlayerbotAI::IsTellAllowed(PlayerbotSecurityLevel securityLevel)
@@ -1818,6 +1826,98 @@ bool IsAlliance(uint8 race)
             race == RACE_GNOME;
 }
 
+bool PlayerbotAI::HasPlayerNearby(float range)
+{
+    float sqRange = range * range;
+    for (auto& player : sRandomPlayerbotMgr.GetPlayers())
+    {
+        if ((!player->GetPlayerbotAI() || player->GetPlayerbotAI()->isRealPlayer()) && (!player->IsGameMaster() || player->isGMVisible()))
+            if (player->GetDistance(bot, false, DIST_CALC_NONE) < sqRange)
+                return true;
+    }
+
+    return false;
+}
+
+bool PlayerbotAI::HasManyPlayersNearby(uint32 trigerrValue, float range)
+{
+    float sqRange = range * range;
+    uint32 found = 0;
+
+    for (auto& player : sRandomPlayerbotMgr.GetPlayers())
+    {
+        if ((!player->IsGameMaster() || player->isGMVisible()) && player->GetDistance(bot, false, DIST_CALC_NONE) < sqRange)
+        {
+            found++;
+
+            if (found >= trigerrValue)
+                return true;
+        }
+    }
+    return false;
+}
+
+/*
+enum ActivityType
+{
+    GRIND_ACTIVITY = 1,
+    RPG_ACTIVITY = 2,
+    TRAVEL_ACTIVITY = 3,
+    OUT_OF_PARTY_ACTIVITY = 4,
+    PACKET_ACTIVITY = 5,
+    ALL_ACTIVITY = 6
+};
+
+   General function to check if a bot is allowed to be active or not.
+   This function should be checked first before doing heavy-workload.
+
+
+*/
+
+bool PlayerbotAI::AllowActive(ActivityType activityType)
+{
+    //General exceptions
+    if (activityType == PACKET_ACTIVITY)
+        return true;
+    
+    if (GetMaster()) //Has player master. Always active.
+        if (!GetMaster()->GetPlayerbotAI() || GetMaster()->GetPlayerbotAI()->isRealPlayer())
+            return true;
+
+    if (bot->InBattleGround()) //In battle ground. Always active.
+        return true;
+
+    if (activityType == GRIND_ACTIVITY || activityType == ALL_ACTIVITY) //Is in combat. Defend yourself.
+        if (sServerFacade.IsInCombat(bot))
+            return true;
+
+    if (HasPlayerNearby()) //Player is near. Always active.
+        return true;
+
+    if (activityType == OUT_OF_PARTY_ACTIVITY || activityType == GRIND_ACTIVITY) //Many bots nearby. Do not do heavy area checks.
+        if (HasManyPlayersNearby())
+            return false;
+
+    //All exceptions are now done. 
+    //Below is code to have a specified % of bots active at all times.
+    //The default is 10%. With 0.1% of all bots going active or inactive each minute.
+    if (sPlayerbotAIConfig.botActiveAlone <= 0)
+        return false;
+
+    if (sPlayerbotAIConfig.botActiveAlone >= 100)
+        return true;
+
+    uint32 randnum = bot->GetGUIDLow();                            //Semi-random but fixed number for each bot.
+    uint32 cycle = floor(WorldTimer::getMSTime() / (1000));        //Semi-random number adds 1 each second.
+
+    cycle = cycle * sPlayerbotAIConfig.botActiveAlone / 6000;      //Cycles 0.01 per minute for each 1% of the config. (At 100% this is 1 per minute)
+    randnum += cycle;                                              //Random number that increases 0.01 each minute for each % that the bots should be active.
+    randnum = (randnum % 100);                                     //Loops the randomnumber at 100. Bassically removes all the numbers above 99. 
+    randnum = randnum + 1;                                         //Now we have a number unique for each bot between 1 and 100 that increases by 0.01 (per % active each minute).
+
+    return randnum <= sPlayerbotAIConfig.botActiveAlone;           //The given percentage of bots should be active and rotate 1% of those active bots each minute.
+}
+
 bool PlayerbotAI::IsOpposing(Player* player)
 {
     return IsOpposing(player->getRace(), bot->getRace());
@@ -2145,14 +2245,29 @@ void PlayerbotAI::Ping(float x, float y)
     data << bot->GetObjectGuid();
     data << x;
     data << y;
-    bot->GetGroup()->BroadcastPacket(
+
+    if (bot->GetGroup())
+    {
+        bot->GetGroup()->BroadcastPacket(
 #ifdef MANGOS
-        &data,
+            & data,
 #endif
 #ifdef CMANGOS
-        data,
+            data,
 #endif
-        true, -1, bot->GetObjectGuid());
+            true, -1, bot->GetObjectGuid());
+    }
+    else
+    {
+        bot->GetSession()->SendPacket(
+#ifdef MANGOS
+            & data
+#endif
+#ifdef CMANGOS
+            data
+#endif
+            );
+    }
 }
 
 //Find Poison ...Natsukawa

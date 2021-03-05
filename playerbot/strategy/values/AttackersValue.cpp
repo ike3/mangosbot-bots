@@ -14,6 +14,11 @@ list<ObjectGuid> AttackersValue::Calculate()
 {
     set<Unit*> targets;
 
+    list<ObjectGuid> result;
+
+    if (!ai->AllowActive(ALL_ACTIVITY))
+        return result;
+
     AddAttackersOf(bot, targets);
 
     Group* group = bot->GetGroup();
@@ -21,8 +26,7 @@ list<ObjectGuid> AttackersValue::Calculate()
         AddAttackersOf(group, targets);
 
     RemoveNonThreating(targets);
-
-    list<ObjectGuid> result;
+    
 	for (set<Unit*>::iterator i = targets.begin(); i != targets.end(); i++)
 		result.push_back((*i)->GetObjectGuid());
 
@@ -110,10 +114,17 @@ bool AttackersValue::IsPossibleTarget(Unit *attacker, Player *bot)
     if (attacker && bot->GetGroup())
         rti = bot->GetGroup()->GetTargetIcon(7) == attacker->GetObjectGuid();
 
-    string name = bot->GetName();
     PlayerbotAI* ai = bot->GetPlayerbotAI();
     
-  
+    bool leaderHasThreat = false;
+    if (bot->GetGroup() && ai->GetMaster())
+        leaderHasThreat = attacker->getThreatManager().getThreat(ai->GetMaster());
+
+    bool isMemberBotGroup = false;
+    if (bot->GetGroup() && ai->GetMaster() && ai->GetMaster()->GetPlayerbotAI() && !ai->GetMaster()->GetPlayerbotAI()->isRealPlayer())
+        isMemberBotGroup = true;
+
+
     return attacker &&
         attacker->IsInWorld() &&
         attacker->GetMapId() == bot->GetMapId() &&
@@ -152,7 +163,7 @@ bool AttackersValue::IsPossibleTarget(Unit *attacker, Player *bot)
 #endif
             (
 #ifdef CMANGOS
-                ai->HasStrategy("attack tagged", BOT_STATE_NON_COMBAT) || !c->HasLootRecipient() || c->IsTappedBy(bot)
+                (!isMemberBotGroup && ai->HasStrategy("attack tagged", BOT_STATE_NON_COMBAT)) || leaderHasThreat || !c->HasLootRecipient() || c->IsTappedBy(bot)
 #endif
 #ifndef MANGOSBOT_TWO
 #ifdef MANGOS
@@ -166,9 +177,8 @@ bool AttackersValue::IsPossibleTarget(Unit *attacker, Player *bot)
 
 bool AttackersValue::IsValidTarget(Unit *attacker, Player *bot)
 {
-    return IsPossibleTarget(attacker, bot) &&
-        (sServerFacade.GetThreatManager(attacker).getCurrentVictim() || attacker->GetGuidValue(UNIT_FIELD_TARGET) || attacker->GetObjectGuid().IsPlayer() ||
-            attacker->GetObjectGuid() == bot->GetPlayerbotAI()->GetAiObjectContext()->GetValue<ObjectGuid>("pull target")->Get());
+    return (sServerFacade.GetThreatManager(attacker).getCurrentVictim() || attacker->GetGuidValue(UNIT_FIELD_TARGET) || attacker->GetObjectGuid().IsPlayer() ||
+            attacker->GetObjectGuid() == bot->GetPlayerbotAI()->GetAiObjectContext()->GetValue<ObjectGuid>("pull target")->Get()) && IsPossibleTarget(attacker, bot);
 }
 
 bool PossibleAdsValue::Calculate()

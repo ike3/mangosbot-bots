@@ -167,6 +167,16 @@ enum ShieldWardDisplayId
    GREATER_WARD_OFSHIELDING = 38760,
 };
 
+enum ActivityType
+{
+    GRIND_ACTIVITY = 1,
+    RPG_ACTIVITY = 2,
+    TRAVEL_ACTIVITY = 3,
+    OUT_OF_PARTY_ACTIVITY = 4,
+    PACKET_ACTIVITY = 5,
+    ALL_ACTIVITY = 6
+};
+
 /*enum BattleMaster_WSG : uint32
 {
     BM_RACE_HUMAN = 14982,
@@ -320,6 +330,10 @@ private:
 public:
 	Player* GetBot() { return bot; }
     Player* GetMaster() { return master; }
+    bool isRealPlayer() { return master ? (master == bot) : false; }
+    bool HasPlayerNearby(float range = sPlayerbotAIConfig.reactDistance);
+    bool HasManyPlayersNearby(uint32 trigerrValue = 20, float range = sPlayerbotAIConfig.sightDistance);
+    bool AllowActive(ActivityType activityType);
     void SetMaster(Player* master) { this->master = master; }
     AiObjectContext* GetAiObjectContext() { return aiObjectContext; }
     ChatHelper* GetChatHelper() { return &chatHelper; }
