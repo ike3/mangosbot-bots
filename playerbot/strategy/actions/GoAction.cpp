@@ -67,6 +67,59 @@ bool GoAction::Execute(Event event)
         }
     }
 
+    if (param.find(";") != string::npos)
+    {
+        vector<string> coords = split(param, ';');
+        float x = atof(coords[0].c_str());
+        float y = atof(coords[1].c_str());
+        float z;
+        if (coords.size() > 2)
+            z = atof(coords[2].c_str());
+        else
+            z = bot->GetPositionZ();
+
+        if (bot->IsWithinLOS(x, y, z))
+            return MoveNear(bot->GetMapId(), x, y, z, 0);
+        else
+            return MoveTo(bot->GetMapId(), x, y, z, false, false);
+
+        /*
+        if (bot->IsSitState())
+            bot->SetStandState(UNIT_STAND_STATE_STAND);
+
+        if (bot->IsNonMeleeSpellCasted(true))
+        {
+            bot->CastStop();
+            ai->InterruptSpell();
+        }
+
+        MotionMaster& mm = *bot->GetMotionMaster();
+
+        bool generatePath = !bot->IsFlying() && !sServerFacade.IsUnderwater(bot);
+
+#ifdef MANGOS
+        mm.MovePoint(mapId, x, y, z, generatePath);
+#endif
+#ifdef CMANGOS
+        if (ai->HasStrategy("debug", BOT_STATE_NON_COMBAT))
+        {
+            ai->TellMaster("Point Traveling");
+
+            ostringstream out;
+            out << "From: " << bot->GetPositionX() << " | " << bot->GetPositionY() << " | " << bot->GetPositionZ();
+            out << " to: " << x << " | " << y << " | " << z;
+            ai->TellMaster(out);
+        }
+        bot->StopMoving();
+        mm.Clear();
+        mm.MovePoint(bot->GetMapId(), x, y, z, FORCED_MOVEMENT_RUN, generatePath);
+#endif
+*/
+
+        return true;
+    }
+
+
     if (param.find(",") != string::npos)
     {
         vector<string> coords = split(param, ',');
