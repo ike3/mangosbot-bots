@@ -139,7 +139,7 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
 
     if (!player->InBattleGround())
     {
-        engine->addStrategies("racials", "chat", "default", "aoe", "potions", "cast time", "conserve mana", "duel", "pvp", NULL);
+        engine->addStrategies("racials", "chat", "default", "aoe", "potions", "cast time", "conserve mana", "duel", NULL);
     }
 
     switch (player->getClass())
@@ -166,9 +166,9 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
             if (tab == 0)
                 engine->addStrategies("arcane", "threat", NULL);
             else if (tab == 1)
-                engine->addStrategies("fire", "fire aoe", "threat", NULL);
+                engine->addStrategies("fire", "fire aoe", "threat", "dps aoe", NULL);
             else
-                engine->addStrategies("frost", "frost aoe", "threat", NULL);
+                engine->addStrategies("frost", "frost aoe", "threat", "dps aoe", NULL);
 
             engine->addStrategies("dps", "dps assist", "flee", "cure", "ranged", "cc", NULL);
             break;
@@ -208,7 +208,7 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
         case CLASS_DRUID:
             if (tab == 0)
             {
-                engine->addStrategies("caster", "cure", "caster aoe", "threat", "flee", "dps assist", "ranged", "cc", NULL);
+                engine->addStrategies("caster", "cure", "caster aoe", "threat", "flee", "dps assist", "ranged", "cc", "dps aoe", NULL);
                 if (player->getLevel() > 19)
                     engine->addStrategy("caster debuff");
             }
@@ -221,7 +221,7 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
             }
             break;
         case CLASS_HUNTER:
-            engine->addStrategies("dps", "bdps", "threat", "dps assist", "ranged", "pet", "cc", NULL);
+            engine->addStrategies("dps", "bdps", "threat", "dps assist", "ranged", "pet", "cc", "dps aoe", NULL);
             if (player->getLevel() > 19)
                 engine->addStrategy("dps debuff");
             break;
@@ -237,7 +237,7 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
             if (player->getLevel() > 19)
                 engine->addStrategy("dps debuff");
 
-            engine->addStrategies("dps assist", "flee", "ranged", "cc", "pet", NULL);
+            engine->addStrategies("dps assist", "flee", "ranged", "cc", "pet", "dps aoe", NULL);
             break;
 #ifdef MANGOSBOT_TWO
         case CLASS_DEATH_KNIGHT:
@@ -319,7 +319,7 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
             engine->removeStrategy("ranged");
         }
 #endif
-        engine->addStrategies("racials", "chat", "default", "aoe", "potions", "conserve mana", "cast time", "pvp", NULL);
+        engine->addStrategies("racials", "chat", "default", "aoe", "potions", "conserve mana", "cast time", NULL);
         engine->removeStrategy("custom::say");
         engine->removeStrategy("flee");
         engine->removeStrategy("threat");
@@ -439,6 +439,7 @@ void AiFactory::AddDefaultNonCombatStrategies(Player* player, PlayerbotAI* const
                 {
                     if (master->GetPlayerbotAI())
                     {
+                        nonCombatEngine->addStrategy("pvp");
                         nonCombatEngine->addStrategy("collision");
                         if (sPlayerbotAIConfig.autoDoQuests)
                             nonCombatEngine->addStrategy("travel");
