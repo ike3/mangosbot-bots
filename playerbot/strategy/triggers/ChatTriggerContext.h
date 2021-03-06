@@ -30,7 +30,11 @@ namespace ai
             creators["u"] = &ChatTriggerContext::use;
             creators["use"] = &ChatTriggerContext::use;
             creators["c"] = &ChatTriggerContext::item_count;
+            creators["items"] = &ChatTriggerContext::item_count;
+            creators["inventory"] = &ChatTriggerContext::item_count;
+            creators["inv"] = &ChatTriggerContext::item_count;
             creators["e"] = &ChatTriggerContext::equip;
+            creators["equip"] = &ChatTriggerContext::equip;
             creators["ue"] = &ChatTriggerContext::uneqip;
             creators["s"] = &ChatTriggerContext::sell;
             creators["b"] = &ChatTriggerContext::buy;
