@@ -525,20 +525,21 @@ void PlayerbotAI::DoNextAction()
         ChangeEngine(BOT_STATE_NON_COMBAT);
 
     Group *group = bot->GetGroup();
-    //if (!master && group)
-    if (!master && group && !bot->InBattleGround())
+    // test BG master set
+    if (!master && group)
     {
         for (GroupReference *gref = group->GetFirstMember(); gref; gref = gref->next())
         {
             Player* member = gref->getSource();
             PlayerbotAI* ai = bot->GetPlayerbotAI();
-            if (member && member->IsInWorld() && !member->GetPlayerbotAI() && (!master || master->GetPlayerbotAI()))
+            if (member && member->IsInWorld() && !member->GetPlayerbotAI() && (!master || master->GetPlayerbotAI() || (bot->InBattleGround() && !urand(0, 4))))
             {
                 ai->SetMaster(member);
                 ai->ResetStrategies();
                 ai->ChangeStrategy("-rpg", BOT_STATE_NON_COMBAT);
                 ai->ChangeStrategy("-grind", BOT_STATE_NON_COMBAT);
-                ai->TellMaster("Hello");
+                ai->ChangeStrategy("-travel", BOT_STATE_NON_COMBAT);
+                ai->TellMaster("Hello, I will go with you!");
                 break;
             }
         }
