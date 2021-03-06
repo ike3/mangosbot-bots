@@ -181,7 +181,7 @@ bool AttackersValue::IsValidTarget(Unit *attacker, Player *bot)
             attacker->GetObjectGuid() == bot->GetPlayerbotAI()->GetAiObjectContext()->GetValue<ObjectGuid>("pull target")->Get()) && IsPossibleTarget(attacker, bot);
 }
 
-bool PossibleAdsValue::Calculate()
+bool PossibleAddsValue::Calculate()
 {
     PlayerbotAI *ai = bot->GetPlayerbotAI();
     list<ObjectGuid> possible = ai->GetAiObjectContext()->GetValue<list<ObjectGuid> >("possible targets")->Get();

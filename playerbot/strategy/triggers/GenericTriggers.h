@@ -520,10 +520,10 @@ namespace ai
         virtual bool IsActive();
     };
 
-    class PossibleAdsTrigger : public Trigger
+    class PossibleAddsTrigger : public Trigger
     {
     public:
-        PossibleAdsTrigger(PlayerbotAI* ai) : Trigger(ai, "possible ads") {}
+        PossibleAddsTrigger(PlayerbotAI* ai) : Trigger(ai, "possible adds") {}
 
     public:
         virtual bool IsActive();
