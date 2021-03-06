@@ -168,9 +168,11 @@ void TalentSpec::GetTalents(uint32 classMask) {
 
 //Sorts a talent list by page, row, column.
 bool sortTalentMap(TalentSpec::TalentListEntry i, TalentSpec::TalentListEntry j, int* tabSort) {
-    if (tabSort[i.talentTabInfo->tabpage] < tabSort[j.talentTabInfo->tabpage])
+    uint32 itab = i.talentTabInfo->TalentTabID == 41 ? 1 : i.talentTabInfo->tabpage;
+    uint32 jtab = j.talentTabInfo->TalentTabID == 41 ? 1 : j.talentTabInfo->tabpage;
+    if (tabSort[itab] < tabSort[jtab])
         return true;
-    if (tabSort[i.talentTabInfo->tabpage] > tabSort[j.talentTabInfo->tabpage])
+    if (tabSort[itab] > tabSort[jtab])
         return false;
     if (i.talentInfo->Row < j.talentInfo->Row)
         return true;
