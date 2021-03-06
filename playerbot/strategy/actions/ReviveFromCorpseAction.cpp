@@ -14,8 +14,30 @@ bool ReviveFromCorpseAction::Execute(Event event)
 
     time_t reclaimTime = corpse->GetGhostTime() + bot->GetCorpseReclaimDelay( corpse->GetType()==CORPSE_RESURRECTABLE_PVP );
     if (reclaimTime > time(0) || corpse->GetDistance(bot) > ai->GetRange("spell"))
-        return false;
+    {
+        float x = corpse->GetPositionX();
+        float y = corpse->GetPositionY();
+        float z = corpse->GetPositionZ();;
 
+        if (!ai->HasPlayerNearby())
+        {
+            float delay = 1000.0f * bot->GetDistance(corpse) / bot->GetSpeed(MOVE_RUN) + sPlayerbotAIConfig.reactDelay;
+            if ((6 * MINUTE * IN_MILLISECONDS - bot->GetDeathTimer()) > delay)
+            {
+                bot->GetMotionMaster()->Clear();
+                bot->TeleportTo(corpse->GetMapId(), x, y, z, 0);
+            }
+        }
+        else
+        {
+            if (bot->IsWithinLOS(x, y, z))
+                return MoveNear(bot->GetMapId(), x, y, z, 0);
+            else
+                return MoveTo(bot->GetMapId(), x, y, z, false, false);
+        }
+        return false;
+    }
+    
     bot->ResurrectPlayer(0.5f);
     bot->SpawnCorpseBones();
     bot->SaveToDB();

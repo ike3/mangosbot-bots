@@ -1,10 +1,11 @@
 #pragma once
+#include "MovementActions.h"
 
 namespace ai
 {
-	class ReviveFromCorpseAction : public Action {
+	class ReviveFromCorpseAction : public MovementAction {
 	public:
-		ReviveFromCorpseAction(PlayerbotAI* ai) : Action(ai, "revive") {}
+		ReviveFromCorpseAction(PlayerbotAI* ai) : MovementAction(ai, "revive") {}
 
     public:
         virtual bool Execute(Event event);
