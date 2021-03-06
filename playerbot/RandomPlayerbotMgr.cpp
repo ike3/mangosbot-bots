@@ -2070,7 +2070,7 @@ void RandomPlayerbotMgr::HandleCommand(uint32 type, const string& text, Player& 
 
 void RandomPlayerbotMgr::OnPlayerLogout(Player* player)
 {
-     DisablePlayerBot(player->GetGUID());
+     DisablePlayerBot(player->GetObjectGuid().GetRawValue());
 
     for (PlayerBotMap::const_iterator it = GetPlayerBotsBegin(); it != GetPlayerBotsEnd(); ++it)
     {
