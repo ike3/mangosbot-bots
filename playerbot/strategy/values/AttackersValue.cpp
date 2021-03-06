@@ -117,7 +117,7 @@ bool AttackersValue::IsPossibleTarget(Unit *attacker, Player *bot)
     PlayerbotAI* ai = bot->GetPlayerbotAI();
     
     bool leaderHasThreat = false;
-    if (bot->GetGroup() && ai->GetMaster())
+    if (attacker && bot->GetGroup() && ai->GetMaster())
         leaderHasThreat = attacker->getThreatManager().getThreat(ai->GetMaster());
 
     bool isMemberBotGroup = false;
@@ -177,8 +177,10 @@ bool AttackersValue::IsPossibleTarget(Unit *attacker, Player *bot)
 
 bool AttackersValue::IsValidTarget(Unit *attacker, Player *bot)
 {
-    return (sServerFacade.GetThreatManager(attacker).getCurrentVictim() || attacker->GetGuidValue(UNIT_FIELD_TARGET) || attacker->GetObjectGuid().IsPlayer() ||
-            attacker->GetObjectGuid() == bot->GetPlayerbotAI()->GetAiObjectContext()->GetValue<ObjectGuid>("pull target")->Get()) && IsPossibleTarget(attacker, bot);
+    return  IsPossibleTarget(attacker, bot) &&
+        (sServerFacade.GetThreatManager(attacker).getCurrentVictim() ||
+            attacker->GetGuidValue(UNIT_FIELD_TARGET) || attacker->GetObjectGuid().IsPlayer() ||
+            attacker->GetObjectGuid() == bot->GetPlayerbotAI()->GetAiObjectContext()->GetValue<ObjectGuid>("pull target")->Get());
 }
 
 bool PossibleAddsValue::Calculate()

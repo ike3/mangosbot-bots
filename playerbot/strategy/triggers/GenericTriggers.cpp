@@ -433,5 +433,5 @@ bool EnemyFlagCarrierNear::IsActive()
 
 bool IsMountedTrigger::IsActive()
 {
-    return bot->IsMounted();
+    return AI_VALUE2(bool, "mounted", "self target");
 }
