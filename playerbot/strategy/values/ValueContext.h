@@ -87,6 +87,7 @@ namespace ai
             creators["nearest npcs"] = &ValueContext::nearest_npcs;
             creators["nearest friendly players"] = &ValueContext::nearest_friendly_players;
             creators["possible targets"] = &ValueContext::possible_targets;
+            creators["possible targets no los"] = &ValueContext::possible_targets_no_los;
             creators["possible adds"] = &ValueContext::possible_adds;
             creators["all targets"] = &ValueContext::all_targets;
             creators["possible rpg targets"] = &ValueContext::possible_rpg_targets;
@@ -278,7 +279,7 @@ namespace ai
         static UntypedValue* nearest_corpses(PlayerbotAI* ai) { return new NearestCorpsesValue(ai); }
         static UntypedValue* possible_rpg_targets(PlayerbotAI* ai) { return new PossibleRpgTargetsValue(ai); }
         static UntypedValue* possible_targets(PlayerbotAI* ai) { return new PossibleTargetsValue(ai); }
-        static UntypedValue* possible_ads(PlayerbotAI* ai) { return new PossibleAdsValue(ai); }
+        static UntypedValue* possible_targets_no_los(PlayerbotAI* ai) { return new PossibleTargetsValue(ai, "possible targets", 50.0f, true); }
         static UntypedValue* possible_adds(PlayerbotAI* ai) { return new PossibleAddsValue(ai); }
         static UntypedValue* all_targets(PlayerbotAI* ai) { return new AllTargetsValue(ai); }
         static UntypedValue* nearest_adds(PlayerbotAI* ai) { return new NearestAddsValue(ai); }
