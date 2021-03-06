@@ -428,7 +428,7 @@ float Formation::GetFollowAngle()
     return start + (0.125f + 1.75f * index / total + (total == 2 ? 0.125f : 0.0f)) * M_PI;
 }
 
-FormationValue::FormationValue(PlayerbotAI* ai) : ManualSetValue<Formation*>(ai, new MeleeFormation(ai), "formation")
+FormationValue::FormationValue(PlayerbotAI* ai) : ManualSetValue<Formation*>(ai, new NearFormation(ai), "formation")
 {
 }
 
@@ -440,7 +440,7 @@ string FormationValue::Save()
 bool FormationValue::Load(string formation)
 {
 
-    if (formation == "melee" || formation == "default")
+    if (formation == "melee")
     {
         if (value) delete value;
         value = new MeleeFormation(ai);
@@ -475,7 +475,7 @@ bool FormationValue::Load(string formation)
         if (value) delete value;
         value = new ArrowFormation(ai);
     }
-    else if (formation == "near")
+    else if (formation == "near" || formation == "default")
     {
         if (value) delete value;
         value = new NearFormation(ai);
