@@ -425,6 +425,11 @@ void AiFactory::AddDefaultNonCombatStrategies(Player* player, PlayerbotAI* const
     {   
         if (!player->GetGroup() || player->GetGroup()->GetLeaderGuid() == player->GetObjectGuid())
         {
+            // let 50% of random not grouped (or grp leader) bots help other players
+            if (!urand(0, 4))
+                nonCombatEngine->addStrategy("attack tagged");
+
+            nonCombatEngine->addStrategy("pvp");
             nonCombatEngine->addStrategy("collision");
             if (sPlayerbotAIConfig.autoDoQuests)
                 nonCombatEngine->addStrategy("travel");
