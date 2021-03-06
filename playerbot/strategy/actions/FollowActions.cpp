@@ -39,6 +39,11 @@ bool FollowAction::isUseful()
     if (!target.empty())
     {
         distance = AI_VALUE2(float, "distance", target);
+
+        Unit* fTarget = AI_VALUE(Unit*, target);
+        if (fTarget)
+            if (fTarget->IsTaxiFlying())
+                return false;
     }
     else
     {
