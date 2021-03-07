@@ -12,7 +12,7 @@ namespace ai
 		{
 			Unit* target = AI_VALUE(Unit*, "current target");
             return target &&
-                sServerFacade.IsDistanceLessOrEqualThan(AI_VALUE2(float, "distance", "current target"), ai->GetRange("spell") / 2);
+                sServerFacade.IsDistanceLessOrEqualThan(AI_VALUE2(float, "distance", "current target"), (ai->GetRange("spell") / 2));
         }
     };
 
@@ -23,7 +23,7 @@ namespace ai
 		{
 			Unit* target = AI_VALUE(Unit*, "current target");
             return target &&
-                sServerFacade.IsDistanceLessOrEqualThan(AI_VALUE2(float, "distance", "current target"), ai->GetRange("shoot") / 2);
+                sServerFacade.IsDistanceLessOrEqualThan(AI_VALUE2(float, "distance", "current target"), (ai->GetRange("shoot") / 2));
         }
     };
 

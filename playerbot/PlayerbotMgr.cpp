@@ -378,7 +378,7 @@ list<string> PlayerbotHolder::HandlePlayerbotCommand(char const* args, Player* m
         if (master->GetPlayerbotAI())
         {
             messages.push_back("Disable player ai");
-            DisablePlayerBot(master->GetGUID());
+            DisablePlayerBot(master->GetObjectGuid().GetRawValue());
         }
         else
         {

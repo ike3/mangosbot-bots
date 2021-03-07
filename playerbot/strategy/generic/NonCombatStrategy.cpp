@@ -43,7 +43,7 @@ void NonCombatStrategy::InitTriggers(std::list<TriggerNode*>& triggers)
 void LfgStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
-        "no possible targets",
+        "often",
         NextAction::array(0, new NextAction("lfg join", 1.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
@@ -61,8 +61,8 @@ void CollisionStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 void BGStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
-        "no possible targets",
-        NextAction::array(0, new NextAction("bg join", ACTION_HIGH), NULL)));
+        "often",
+        NextAction::array(0, new NextAction("bg join", 1.0), NULL)));
 
     triggers.push_back(new TriggerNode(
         "often",

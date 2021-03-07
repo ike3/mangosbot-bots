@@ -87,7 +87,8 @@ namespace ai
             creators["nearest npcs"] = &ValueContext::nearest_npcs;
             creators["nearest friendly players"] = &ValueContext::nearest_friendly_players;
             creators["possible targets"] = &ValueContext::possible_targets;
-            creators["possible ads"] = &ValueContext::possible_ads;
+            creators["possible targets no los"] = &ValueContext::possible_targets_no_los;
+            creators["possible adds"] = &ValueContext::possible_adds;
             creators["all targets"] = &ValueContext::all_targets;
             creators["possible rpg targets"] = &ValueContext::possible_rpg_targets;
             creators["nearest adds"] = &ValueContext::nearest_adds;
@@ -278,9 +279,10 @@ namespace ai
         static UntypedValue* nearest_corpses(PlayerbotAI* ai) { return new NearestCorpsesValue(ai); }
         static UntypedValue* possible_rpg_targets(PlayerbotAI* ai) { return new PossibleRpgTargetsValue(ai); }
         static UntypedValue* possible_targets(PlayerbotAI* ai) { return new PossibleTargetsValue(ai); }
-        static UntypedValue* possible_ads(PlayerbotAI* ai) { return new PossibleAdsValue(ai); }
+        static UntypedValue* possible_targets_no_los(PlayerbotAI* ai) { return new PossibleTargetsValue(ai, "possible targets", 50.0f, true); }
+        static UntypedValue* possible_adds(PlayerbotAI* ai) { return new PossibleAddsValue(ai); }
         static UntypedValue* all_targets(PlayerbotAI* ai) { return new AllTargetsValue(ai); }
-        static UntypedValue* nearest_adds(PlayerbotAI* ai) { return new NearestAdsValue(ai); }
+        static UntypedValue* nearest_adds(PlayerbotAI* ai) { return new NearestAddsValue(ai); }
         static UntypedValue* party_member_without_aura(PlayerbotAI* ai) { return new PartyMemberWithoutAuraValue(ai); }
         static UntypedValue* attacker_without_aura(PlayerbotAI* ai) { return new AttackerWithoutAuraTargetValue(ai); }
         static UntypedValue* party_member_to_heal(PlayerbotAI* ai) { return new PartyMemberToHeal(ai); }

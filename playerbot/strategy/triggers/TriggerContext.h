@@ -83,7 +83,7 @@ namespace ai
             creators["no pet"] = &TriggerContext::no_pet;
             creators["has attackers"] = &TriggerContext::has_attackers;
             creators["no possible targets"] = &TriggerContext::no_possible_targets;
-            creators["possible ads"] = &TriggerContext::possible_ads;
+            creators["possible adds"] = &TriggerContext::possible_adds;
 
             creators["no drink"] = &TriggerContext::no_drink;
             creators["no food"] = &TriggerContext::no_food;
@@ -162,7 +162,7 @@ namespace ai
         static Trigger* target_changed(PlayerbotAI* ai) { return new TargetChangedTrigger(ai); }
         static Trigger* swimming(PlayerbotAI* ai) { return new IsSwimmingTrigger(ai); }
         static Trigger* no_possible_targets(PlayerbotAI* ai) { return new NoPossibleTargetsTrigger(ai); }
-        static Trigger* possible_ads(PlayerbotAI* ai) { return new PossibleAdsTrigger(ai); }
+        static Trigger* possible_adds(PlayerbotAI* ai) { return new PossibleAddsTrigger(ai); }
         static Trigger* can_loot(PlayerbotAI* ai) { return new CanLootTrigger(ai); }
         static Trigger* far_from_loot_target(PlayerbotAI* ai) { return new FarFromCurrentLootTrigger(ai); }
         static Trigger* far_from_master(PlayerbotAI* ai) { return new FarFromMasterTrigger(ai); }

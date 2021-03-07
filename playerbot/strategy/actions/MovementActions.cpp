@@ -444,11 +444,14 @@ bool MovementAction::Flee(Unit *target)
         ai->TellError("I am stuck while fleeing");
         return false;
     }
-
+    bool foundFlee = false;
+    bool isTarget = false;
+    time_t lastFlee = AI_VALUE(LastMovement&, "last movement").lastFlee;
     //HostileReference *ref = target->GetThreatManager().getCurrentVictim();
     HostileReference *ref = sServerFacade.GetThreatManager(target).getCurrentVictim();
     if (ref && ref->getTarget() == bot)
     {
+        isTarget = true;
         Group *group = bot->GetGroup();
         if (group)
         {
@@ -462,12 +465,46 @@ bool MovementAction::Flee(Unit *target)
                     float distanceToTarget = sServerFacade.GetDistance2d(bot, target);
                     if (sServerFacade.IsDistanceGreaterThan(distanceToTank, distanceToTarget))
                     {
-                        bool moved = MoveTo(player, sPlayerbotAIConfig.followDistance);
-                        if (moved)
-                            return true;
+                        foundFlee = MoveTo(player, sPlayerbotAIConfig.followDistance);
                     }
                 }
+
+                if (!foundFlee && master)
+                {
+                    foundFlee = MoveTo(master, sPlayerbotAIConfig.followDistance);
+                }
+
+                if (foundFlee)
+                {
+                    if (!urand(0, 25))
+                    {
+                        vector<uint32> sounds;
+                        sounds.push_back(304); // guard
+                        sounds.push_back(306); // flee
+                        ai->PlaySound(sounds[urand(0, sounds.size() - 1)]);
+                    }
+                    return true;
+                }
             }
+        }
+    }
+
+    if ((foundFlee || lastFlee) && bot->GetGroup())
+    {
+        uint32 fleeDelay = sPlayerbotAIConfig.returnDelay / 1000;
+        time_t now = time(0);
+        if (!lastFlee)
+        {
+            AI_VALUE(LastMovement&, "last movement").lastFlee = now;
+        }
+        else
+        {
+            if ((now - lastFlee) > urand(5, fleeDelay * 2))
+            {
+                AI_VALUE(LastMovement&, "last movement").lastFlee = 0;
+            }
+            else
+                return false;
         }
     }
 
@@ -499,6 +536,8 @@ bool MovementAction::Flee(Unit *target)
         sounds.push_back(306); // flee
         ai->PlaySound(sounds[urand(0, sounds.size() - 1)]);
     }
+    if (result)
+        AI_VALUE(LastMovement&, "last movement").lastFlee = time(0);
     return result;
 }
 

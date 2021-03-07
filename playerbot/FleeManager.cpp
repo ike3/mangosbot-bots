@@ -48,7 +48,7 @@ void FleeManager::calculatePossibleDestinations(list<FleePoint*> &points)
     calculateDistanceToCreatures(&start);
 
     list<float> enemyOri;
-    list<ObjectGuid> units = *bot->GetPlayerbotAI()->GetAiObjectContext()->GetValue<list<ObjectGuid> >("possible targets");
+    list<ObjectGuid> units = *bot->GetPlayerbotAI()->GetAiObjectContext()->GetValue<list<ObjectGuid> >("possible targets no los");
     for (list<ObjectGuid>::iterator i = units.begin(); i != units.end(); ++i)
     {
         Unit* unit = bot->GetPlayerbotAI()->GetUnit(*i);
@@ -146,7 +146,7 @@ bool FleeManager::CalculateDestination(float* rx, float* ry, float* rz)
 
 bool FleeManager::isUseful()
 {
-    list<ObjectGuid> units = *bot->GetPlayerbotAI()->GetAiObjectContext()->GetValue<list<ObjectGuid> >("possible targets");
+    list<ObjectGuid> units = *bot->GetPlayerbotAI()->GetAiObjectContext()->GetValue<list<ObjectGuid> >("possible targets no los");
     for (list<ObjectGuid>::iterator i = units.begin(); i != units.end(); ++i)
     {
         Unit* unit = bot->GetPlayerbotAI()->GetUnit(*i);

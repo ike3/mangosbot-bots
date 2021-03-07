@@ -2,6 +2,7 @@
 
 #include "../Action.h"
 #include "InventoryAction.h"
+#include "MovementActions.h"
 
 namespace ai
 {
@@ -13,10 +14,10 @@ namespace ai
         void SetReturnPosition(float x, float y, float z);
     };
 
-    class FollowChatShortcutAction : public ReturnPositionResetAction
+    class FollowChatShortcutAction : public MovementAction
     {
     public:
-        FollowChatShortcutAction(PlayerbotAI* ai) : ReturnPositionResetAction(ai, "follow chat shortcut") {}
+        FollowChatShortcutAction(PlayerbotAI* ai) : MovementAction(ai, "follow chat shortcut") {}
         virtual bool Execute(Event event);
     };
 

@@ -211,9 +211,9 @@ bool NoPossibleTargetsTrigger::IsActive()
     return !targets.size();
 }
 
-bool PossibleAdsTrigger::IsActive()
+bool PossibleAddsTrigger::IsActive()
 {
-    return AI_VALUE(bool, "possible ads") && !AI_VALUE(ObjectGuid, "pull target");
+    return AI_VALUE(bool, "possible adds") && !AI_VALUE(ObjectGuid, "pull target");
 }
 
 bool NotDpsTargetActiveTrigger::IsActive()
@@ -433,5 +433,5 @@ bool EnemyFlagCarrierNear::IsActive()
 
 bool IsMountedTrigger::IsActive()
 {
-    return bot->IsMounted();
+    return AI_VALUE2(bool, "mounted", "self target");
 }

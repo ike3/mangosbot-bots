@@ -6,11 +6,11 @@
 
 namespace ai
 {
-    class NearestAdsValue : public PossibleTargetsValue
+    class NearestAddsValue : public PossibleTargetsValue
 	{
 	public:
-        NearestAdsValue(PlayerbotAI* ai, float range = sPlayerbotAIConfig.tooCloseDistance) :
-            PossibleTargetsValue(ai, "nearest ads", range) {}
+        NearestAddsValue(PlayerbotAI* ai, float range = sPlayerbotAIConfig.fleeDistance) :
+            PossibleTargetsValue(ai, "nearest adds", range) {}
 
     protected:
         bool AcceptUnit(Unit* unit);

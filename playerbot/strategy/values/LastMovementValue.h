@@ -14,6 +14,7 @@ namespace ai
             lastMoveToOri = 0;
             lastFollow = NULL;
             lastAreaTrigger = 0;
+            lastFlee = 0;
         }
 
         LastMovement(LastMovement& other)
@@ -48,6 +49,7 @@ namespace ai
         ObjectGuid taxiMaster;
         Unit* lastFollow;
         uint32 lastAreaTrigger;
+        time_t lastFlee;
         float lastMoveToX, lastMoveToY, lastMoveToZ, lastMoveToOri;
     };
 

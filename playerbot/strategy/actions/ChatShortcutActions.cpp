@@ -3,6 +3,7 @@
 #include "ChatShortcutActions.h"
 #include "../../PlayerbotAIConfig.h"
 #include "../values/PositionValue.h"
+#include "../values/Formations.h"
 
 using namespace ai;
 
@@ -31,7 +32,35 @@ bool FollowChatShortcutAction::Execute(Event event)
     ai->Reset();
     ai->ChangeStrategy("+follow,-passive", BOT_STATE_NON_COMBAT);
     ai->ChangeStrategy("-follow,-passive", BOT_STATE_COMBAT);
-    ResetReturnPosition();
+
+    ai::PositionMap& posMap = context->GetValue<ai::PositionMap&>("position")->Get();
+    ai::PositionEntry pos = posMap["return"];
+    pos.Reset();
+    posMap["return"] = pos;
+
+    if (sServerFacade.IsInCombat(bot))
+    {
+        Formation* formation = AI_VALUE(Formation*, "formation");
+        string target = formation->GetTargetName();
+        bool moved = false;
+        if (!target.empty())
+        {
+            moved = Follow(AI_VALUE(Unit*, target));
+        }
+        else
+        {
+            WorldLocation loc = formation->GetLocation();
+            if (Formation::IsNullLocation(loc) || loc.mapid == -1)
+                return false;
+
+            moved = MoveTo(loc.mapid, loc.coord_x, loc.coord_y, loc.coord_z);
+        }
+        if (moved)
+        {
+            ai->TellMaster("Following");
+            return true;
+        }
+    }
     if (bot->GetMapId() != master->GetMapId() || bot->GetDistance(master) > sPlayerbotAIConfig.sightDistance)
     {
         if (sServerFacade.UnitIsDead(bot))

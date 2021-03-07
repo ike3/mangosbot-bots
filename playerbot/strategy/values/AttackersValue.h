@@ -21,10 +21,10 @@ namespace ai
         static bool IsValidTarget(Unit* attacker, Player *bot);
     };
 
-    class PossibleAdsValue : public BoolCalculatedValue
+    class PossibleAddsValue : public BoolCalculatedValue
     {
     public:
-        PossibleAdsValue(PlayerbotAI* const ai) : BoolCalculatedValue(ai) {}
+        PossibleAddsValue(PlayerbotAI* const ai) : BoolCalculatedValue(ai) {}
         virtual bool Calculate();
     };
 }
