@@ -1877,9 +1877,8 @@ enum ActivityType
 bool PlayerbotAI::AllowActive(ActivityType activityType)
 {
     //General exceptions
-    if (activityType == PACKET_ACTIVITY)
-        return true;
-    
+    //if (activityType == PACKET_ACTIVITY)
+    //    return true;
     if (GetMaster()) //Has player master. Always active.
         if (!GetMaster()->GetPlayerbotAI() || GetMaster()->GetPlayerbotAI()->isRealPlayer())
             return true;
