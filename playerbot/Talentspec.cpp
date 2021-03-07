@@ -168,8 +168,8 @@ void TalentSpec::GetTalents(uint32 classMask) {
 
 //Sorts a talent list by page, row, column.
 bool sortTalentMap(TalentSpec::TalentListEntry i, TalentSpec::TalentListEntry j, int* tabSort) {
-    uint32 itab = i.talentTabInfo->TalentTabID == 41 ? 1 : i.talentTabInfo->tabpage;
-    uint32 jtab = j.talentTabInfo->TalentTabID == 41 ? 1 : j.talentTabInfo->tabpage;
+    uint32 itab = i.tabPage();
+    uint32 jtab = j.tabPage();
     if (tabSort[itab] < tabSort[jtab])
         return true;
     if (tabSort[itab] > tabSort[jtab])
@@ -244,7 +244,7 @@ void TalentSpec::ReadTalents(string link) {
 
     for (auto& entry : talents)
     {
-        if (entry.talentTabInfo->tabpage == tab)
+        if (entry.tabPage() == tab)
         {
             chr = link.substr(pos, 1);
 
@@ -279,7 +279,7 @@ std::vector<TalentSpec::TalentListEntry> TalentSpec::GetTalentTree(int tabpage)
     std::vector<TalentListEntry> retList;
 
     for (auto& entry : talents)
-        if (entry.talentTabInfo->tabpage == tabpage)
+        if (entry.tabPage() == tabpage)
             retList.push_back(entry);
 
     return retList;
@@ -294,7 +294,7 @@ int TalentSpec::GetTalentPoints(std::vector<TalentListEntry>& talents, int tabpa
     int tPoints = 0;
 
     for (auto& entry : talents)
-        if (entry.talentTabInfo->tabpage == tabpage)
+        if (entry.tabPage() == tabpage)
             tPoints = tPoints + entry.rank;
 
     return tPoints;
