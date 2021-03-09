@@ -9,7 +9,7 @@ namespace ai
 {
 	class ReleaseSpiritAction : public Action {
 	public:
-		ReleaseSpiritAction(PlayerbotAI* ai) : Action(ai, "release") {}
+		ReleaseSpiritAction(PlayerbotAI* ai, string name = "release") : Action(ai, name) {}
 
     public:
         virtual bool Execute(Event event)
@@ -31,4 +31,19 @@ namespace ai
         }
     };
 
+    class AutoReleaseSpiritAction : public ReleaseSpiritAction {
+    public:
+        AutoReleaseSpiritAction(PlayerbotAI* ai, string name = "auto release") : ReleaseSpiritAction(ai, name) {}
+
+        virtual bool Execute(Event event)
+        {
+            bot->SetBotDeathTimer();
+            bot->BuildPlayerRepop();
+
+            bot->RepopAtGraveyard();
+            return true;
+        }
+
+        virtual bool isUseful() { return !bot->GetGroup() && !sServerFacade.IsAlive(bot) && !bot->GetCorpse(); }
+    };
 }
