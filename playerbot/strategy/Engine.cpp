@@ -520,7 +520,7 @@ bool Engine::ListenAndExecute(Action* action, Event event)
             out << " 1";
         else
             out << " 0";
-        ai->TellMaster(out);
+        ai->TellMasterNoFacing(out);
     }
 
     actionExecuted = actionExecutionListeners.OverrideResult(action, actionExecuted, event);

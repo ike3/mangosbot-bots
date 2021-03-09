@@ -42,7 +42,7 @@ bool FollowAction::isUseful()
 
         Unit* fTarget = AI_VALUE(Unit*, target);
         if (fTarget)
-            if (fTarget->IsTaxiFlying())
+            if (fTarget->IsTaxiFlying() || fTarget->GetGUIDLow() == bot->GetGUIDLow())
                 return false;
     }
     else

@@ -101,12 +101,15 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
         PathType type = path.getPathType();
         PointsArray& points = path.getPath();
 
+        if (type == PATHFIND_NOPATH)
+            return false;
+
         if (ai->HasStrategy("debug", BOT_STATE_NON_COMBAT))
         {
             ostringstream out;
             out << "From: " << bot->GetPositionX() << " ; " << bot->GetPositionY() << " ; " << bot->GetPositionZ();
             out << " to: " << x << " ; " << y << " ; " << z;
-            ai->TellMaster(out);
+            ai->TellMasterNoFacing(out);
 
             float cx = x;
             float cy = y;
@@ -308,10 +311,14 @@ bool MovementAction::Follow(Unit* target, float distance, float angle)
     if (!target)
         return false;
 
-    if (!bot->InBattleGround() && sServerFacade.IsDistanceLessOrEqualThan(sServerFacade.GetDistance2d(bot, target->GetPositionX(), target->GetPositionY()), sPlayerbotAIConfig.sightDistance) &&
-            abs(bot->GetPositionZ() - target->GetPositionZ()) >= sPlayerbotAIConfig.spellDistance)
+    if (!bot->InBattleGround() 
+     && sServerFacade.IsDistanceLessOrEqualThan(sServerFacade.GetDistance2d(bot, target->GetPositionX(), target->GetPositionY()), sPlayerbotAIConfig.sightDistance)
+     && abs(bot->GetPositionZ() - target->GetPositionZ()) >= sPlayerbotAIConfig.spellDistance
+     && ai->GetMaster()
+     && !ai->GetMaster()->GetPlayerbotAI())
     {
         bot->StopMoving();
+        mm.Clear();
         float x = bot->GetPositionX(), y = bot->GetPositionY(), z = target->GetPositionZ();
         if (target->GetMapId() && bot->GetMapId() != target->GetMapId())
         {
@@ -332,7 +339,9 @@ bool MovementAction::Follow(Unit* target, float distance, float angle)
         return true;
     }
 
-    if (!IsMovingAllowed(target))
+    if (!IsMovingAllowed(target)
+        && ai->GetMaster()
+        && !ai->GetMaster()->GetPlayerbotAI())
     {
         if (sServerFacade.UnitIsDead(bot))
         {
@@ -382,6 +391,9 @@ bool MovementAction::Follow(Unit* target, float distance, float angle)
         Unit *currentTarget = sServerFacade.GetChaseTarget(bot);
         if (currentTarget && currentTarget->GetObjectGuid() == target->GetObjectGuid()) return false;
     }
+
+    if(!mm.GetCurrent()->GetMovementGeneratorType() == FOLLOW_MOTION_TYPE)
+        mm.Clear();
 
     mm.MoveFollow(target,
 #ifdef MANGOS
