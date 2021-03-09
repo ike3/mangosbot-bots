@@ -1215,6 +1215,18 @@ GameObject* PlayerbotAI::GetGameObject(ObjectGuid guid)
     return map->GetGameObject(guid);
 }
 
+WorldObject* PlayerbotAI::GetWorldObject(ObjectGuid guid)
+{
+    if (!guid)
+        return NULL;
+
+    Map* map = bot->GetMap();
+    if (!map)
+        return NULL;
+
+    return map->GetWorldObject(guid);
+}
+
 bool PlayerbotAI::TellMasterNoFacing(string text, PlayerbotSecurityLevel securityLevel)
 {
     Player* master = GetMaster();

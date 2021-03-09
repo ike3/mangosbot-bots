@@ -95,73 +95,98 @@ bool ChooseRpgTargetAction::Execute(Event event)
 {    
     TravelTarget* travelTarget = context->GetValue<TravelTarget*>("travel target")->Get();
     list<ObjectGuid> possibleTargets = AI_VALUE(list<ObjectGuid>, "possible rpg targets");
+    list<ObjectGuid> possibleObjects = AI_VALUE(list<ObjectGuid>, "nearest game objects no los");
     set<ObjectGuid>& ignoreList = context->GetValue<set<ObjectGuid>&>("ignore rpg target")->Get();
+
+    if (!possibleObjects.empty())
+    {
+        possibleTargets.insert(possibleTargets.end(), possibleObjects.begin(), possibleObjects.end());
+    }
+
     if (possibleTargets.empty())
     {
         return false;
     }
 
-    vector<Unit*> units;
+    vector<ObjectGuid*> targets;
 
     int maxPriority = 1;
 
     //First handing in quests
-    for (list<ObjectGuid>::iterator i = possibleTargets.begin(); i != possibleTargets.end(); ++i)
+    for (auto & guid  : possibleTargets)
     {
-        Unit* unit = ai->GetUnit(*i);
+        GameObject* go = ai->GetGameObject(guid);
+        Unit* unit = ai->GetUnit(guid);
 
-        if (!unit)
+        if (!go && !unit)
             continue;
 
         if (!ignoreList.empty() 
-          && ignoreList.find(unit->GetObjectGuid()) != ignoreList.end() 
+          && ignoreList.find(guid) != ignoreList.end()
           && urand(0, 100) < 10) //10% chance to retry ignored.            
             continue;
 
-        if (!isFollowValid(bot, unit))
-            continue;
-        
         int priority = 1;
 
+        if (unit)
+        {
+            if (!isFollowValid(bot, unit))
+                continue;
+
 #ifdef MANGOS
-        if (AI_VALUE(uint8, "bag space") > 80 && unit->IsVendor())
+            if (AI_VALUE(uint8, "bag space") > 80 && unit->IsVendor())
 #endif
 #ifdef CMANGOS
-        if (AI_VALUE(uint8, "bag space") > 80 && unit->isVendor())
+                if (AI_VALUE(uint8, "bag space") > 80 && unit->isVendor())
 #endif
-            priority = 100;
-        uint32 dialogStatus = bot->GetSession()->getDialogStatus(bot, unit, DIALOG_STATUS_NONE);        
-        if (dialogStatus == DIALOG_STATUS_REWARD2)
-            priority = 90;
-        else if (CanTrain(*i) || dialogStatus == DIALOG_STATUS_AVAILABLE)
-            priority = 80;
-        else if (travelTarget->getDestination() && travelTarget->getDestination()->getEntry() == unit->GetEntry())
-            priority = 70;
+                    priority = 100;
 
-        if (ai->HasStrategy("debug", BOT_STATE_NON_COMBAT))
+            uint32 dialogStatus = bot->GetSession()->getDialogStatus(bot, unit, DIALOG_STATUS_NONE);
+            if (dialogStatus == DIALOG_STATUS_REWARD2)
+                priority = 90;
+            else if (CanTrain(guid) || dialogStatus == DIALOG_STATUS_AVAILABLE)
+                priority = 80;
+            else if (travelTarget->getDestination() && travelTarget->getDestination()->getEntry() == unit->GetEntry())
+                priority = 70;
+        }
+        else
         {
-            ostringstream out;
-            out << "found: ";
-            out << unit->GetName();
-            out << " with priority: " << priority;
-            ai->TellMaster(out);
+            if (!sServerFacade.isSpawned(go)
+#ifdef CMANGOS
+                || go->IsInUse()
+#endif
+                || go->GetGoState() != GO_STATE_READY)
+                continue;
+
+            if (!isFollowValid(bot, go))
+                continue;
+
+            uint32 dialogStatus = bot->GetSession()->getDialogStatus(bot, go, DIALOG_STATUS_NONE);
+            if (dialogStatus == DIALOG_STATUS_REWARD2 || dialogStatus == DIALOG_STATUS_REWARD_REP)
+                priority = 90;
+            else if (dialogStatus == DIALOG_STATUS_AVAILABLE)
+                priority = 80;
+            else if (travelTarget->getDestination() && travelTarget->getDestination()->getEntry() * -1 == go->GetEntry())
+                priority = 70;
+            else if (urand(1, 100) > 10)
+                continue;            
         }
 
         if (priority < maxPriority)
             continue;
 
-        if (!ai->GetMaster() && HasSameTarget(unit->GetObjectGuid()) > urand(5, 15))
+        if (!ai->GetMaster() && HasSameTarget(guid) > urand(5, 15))
             continue;
 
         if (priority > maxPriority)
-            units.clear();
+            targets.clear();
 
         maxPriority = priority;
 
-        units.push_back(unit);
+        targets.push_back(&guid);
     }
 
-    if (units.empty())
+    if (targets.empty())
     {
         sLog.outDetail("%s can't choose RPG target: all %zu are not available", bot->GetName(), possibleTargets.size());
         ignoreList.clear(); //Clear ignore list.
@@ -170,13 +195,30 @@ bool ChooseRpgTargetAction::Execute(Event event)
         return false;
     }
 
-    Unit* target = units[urand(0, units.size() - 1)];
-    if (!target) {
+    ObjectGuid* guid = targets[urand(0, targets.size() - 1)];
+    if (!guid) 
+    {
         context->GetValue<ObjectGuid>("rpg target")->Set(ObjectGuid());
         return false;
     }
 
-    context->GetValue<ObjectGuid>("rpg target")->Set(target->GetObjectGuid());
+
+    GameObject* go = ai->GetGameObject(*guid);
+    Unit* unit = ai->GetUnit(*guid);
+
+    if (ai->HasStrategy("debug", BOT_STATE_NON_COMBAT))
+    {
+        ostringstream out;
+        out << "found: ";
+        if (unit)
+            out << chat->formatWorldobject(unit);
+        if (go)
+            out << chat->formatGameobject(go);
+
+        ai->TellMasterNoFacing(out);
+    }
+
+    context->GetValue<ObjectGuid>("rpg target")->Set(*guid);
 
     return true;
 }
@@ -189,7 +231,7 @@ bool ChooseRpgTargetAction::isUseful()
         && ai->AllowActive(RPG_ACTIVITY);
 }
 
-bool ChooseRpgTargetAction::isFollowValid(Player* bot, Unit* target)
+bool ChooseRpgTargetAction::isFollowValid(Player* bot, WorldObject* target)
 {
     PlayerbotAI* ai = bot->GetPlayerbotAI();
     Player* master = ai->GetMaster();

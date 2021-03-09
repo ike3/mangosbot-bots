@@ -11,20 +11,37 @@ using namespace ai;
 
 bool MoveToRpgTargetAction::Execute(Event event)
 {
-    Unit* target = ai->GetUnit(AI_VALUE(ObjectGuid, "rpg target"));
-    if (!target) return false;
+    Unit* unit = ai->GetUnit(AI_VALUE(ObjectGuid, "rpg target"));
+    GameObject* go = ai->GetGameObject(AI_VALUE(ObjectGuid, "rpg target"));
+    WorldObject* wo;
+    if (unit)
+        wo = unit;
+    else if(go)
+        wo = go;
+    else
+        return false;
+
+    if (ai->HasStrategy("debug", BOT_STATE_NON_COMBAT))
+    {
+        ostringstream out;
+        out << "Heading to: ";
+        out << chat->formatWorldobject(wo);
+        ai->TellMasterNoFacing(out);
+    }
 
     float distance = AI_VALUE2(float, "distance", "rpg target");
-    if (distance > 180.0f || (target->IsMoving() && urand(1,100) < 5) || !ChooseRpgTargetAction::isFollowValid(bot, target))
+    if (distance > 180.0f 
+     || (unit && unit->IsMoving() && urand(1,100) < 5) 
+     || !ChooseRpgTargetAction::isFollowValid(bot, wo))
     {
         context->GetValue<ObjectGuid>("rpg target")->Set(ObjectGuid());
         return false;
     }
 
-    float x = target->GetPositionX();
-    float y = target->GetPositionY();
-    float z = target->GetPositionZ();
-    float mapId = target->GetMapId();
+    float x = wo->GetPositionX();
+    float y = wo->GetPositionY();
+    float z = wo->GetPositionZ();
+    float mapId = wo->GetMapId();
 	
 	if (sPlayerbotAIConfig.RandombotsWalkingRPG)
 	{
@@ -35,10 +52,10 @@ bool MoveToRpgTargetAction::Execute(Event event)
     
     if (bot->IsWithinLOS(x, y, z))
     {
-        if (!target->IsMoving())
-            angle = target->GetAngle(bot) + (M_PI * irand(-25, 25) / 100.0); //Closest 45 degrees towards the target
+        if (!unit || !unit->IsMoving())
+            angle = wo->GetAngle(bot) + (M_PI * irand(-25, 25) / 100.0); //Closest 45 degrees towards the target
         else
-            angle = target->GetOrientation() + (M_PI * irand(-25, 25) / 100.0); //45 degrees infront of target (leading it's movement)
+            angle = wo->GetOrientation() + (M_PI * irand(-25, 25) / 100.0); //45 degrees infront of target (leading it's movement)
     }
     else
         angle = 2 * M_PI * urand(0, 100) / 100.0; //A circle around the target.
@@ -52,33 +69,6 @@ bool MoveToRpgTargetAction::Execute(Event event)
         return MoveNear(mapId, x , y, z, 0);
     else
         return MoveTo(mapId, x, y, z, false, false);
-
-    /*
-    if (bot->IsSitState())
-        bot->SetStandState(UNIT_STAND_STATE_STAND);
-
-    if (bot->IsNonMeleeSpellCasted(true))
-    {
-        bot->CastStop();
-        ai->InterruptSpell();
-    }
-
-
-    angle = 2 * M_PI * urand(0, 100) / 100.0; //A circle around the target.
-    bool generatePath = !bot->IsFlying() && !sServerFacade.IsUnderwater(bot);
-    MotionMaster &mm = *bot->GetMotionMaster();
-#ifdef MANGOS
-    mm.MovePoint(mapId, x + cos(angle) * sPlayerbotAIConfig.followDistance, y + sin(angle) * sPlayerbotAIConfig.followDistance, z, generatePath);
-#endif
-#ifdef CMANGOS
-    bot->StopMoving();
-    mm.Clear();
-    mm.MovePoint(mapId, x + cos(angle) * sPlayerbotAIConfig.followDistance, y + sin(angle) * sPlayerbotAIConfig.followDistance, z, FORCED_MOVEMENT_RUN, generatePath);
-#endif
-
-    AI_VALUE(LastMovement&, "last movement").Set(x + cos(angle) * sPlayerbotAIConfig.followDistance, y + sin(angle) * sPlayerbotAIConfig.followDistance, z, bot->GetOrientation());
-    return true;
-    */
 }
 
 bool MoveToRpgTargetAction::isUseful()

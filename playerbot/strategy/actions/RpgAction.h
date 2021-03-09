@@ -14,22 +14,23 @@ namespace ai
         virtual bool isUseful();
 
     private:
-        typedef void (RpgAction::*RpgElement) (Unit*);
+        typedef void (RpgAction::*RpgElement) (ObjectGuid guid);
 
         virtual bool AddIgnore(ObjectGuid guid);
         virtual bool RemIgnore(ObjectGuid guid);
         virtual bool HasIgnore(ObjectGuid guid);
 
-        void stay(Unit* unit);
-        void cancel(Unit* unit);
-        void emote(Unit* unit);
-        void work(Unit* unit);
-        void taxi(Unit* unit);
-        void quest(Unit* unit);
-        void trade(Unit* unit);
-        void repair(Unit* unit);
-        void train(Unit* unit);
-        void heal(Unit* unit);
+        void stay(ObjectGuid guid);
+        void cancel(ObjectGuid guid);
+        void emote(ObjectGuid guid);
+        void work(ObjectGuid guid);
+        void taxi(ObjectGuid guid);
+        void quest(ObjectGuid guid);
+        void trade(ObjectGuid guid);
+        void repair(ObjectGuid guid);
+        void train(ObjectGuid guid);
+        void heal(ObjectGuid guid);
+        void use(ObjectGuid guid);
 
         bool CanTrain(ObjectGuid guid);
         bool needRepair();

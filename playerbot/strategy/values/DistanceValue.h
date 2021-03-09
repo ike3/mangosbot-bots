@@ -42,6 +42,13 @@ namespace ai
             {
                 ObjectGuid rpgTarget = AI_VALUE(ObjectGuid, qualifier);
                 target = ai->GetUnit(rpgTarget);
+
+                if (!target)
+                {
+                    GameObject* go = ai->GetGameObject(rpgTarget);
+                    if (go && !sServerFacade.isSpawned(go))
+                        return sServerFacade.GetDistance2d(ai->GetBot(), go);
+                }
             }
             else if (qualifier == "travel target")
             {

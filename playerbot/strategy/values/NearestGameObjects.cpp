@@ -40,7 +40,7 @@ list<ObjectGuid> NearestGameObjects::Calculate()
     for(list<GameObject*>::iterator tIter = targets.begin(); tIter != targets.end(); ++tIter)
     {
 		GameObject* go = *tIter;
-        if(sServerFacade.IsWithinLOSInMap(bot, go))
+        if(ignoreLos || sServerFacade.IsWithinLOSInMap(bot, go))
 			result.push_back(go->GetObjectGuid());
     }
 
