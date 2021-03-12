@@ -46,7 +46,7 @@ namespace ai
                 if (!target)
                 {
                     GameObject* go = ai->GetGameObject(rpgTarget);
-                    if (go && !sServerFacade.isSpawned(go))
+                    if (go)
                         return sServerFacade.GetDistance2d(ai->GetBot(), go);
                 }
             }
