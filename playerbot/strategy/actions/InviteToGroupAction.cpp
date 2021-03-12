@@ -42,15 +42,15 @@ namespace ai
             if (!botAi) //Only invite bots. Maybe change later.
                 continue;
 
+            if (botAi->GetGrouperType() == SOLO)
+                return false;
+
             if (botAi->GetMaster())
                 if (!botAi->GetMaster()->GetPlayerbotAI() || botAi->GetMaster()->GetPlayerbotAI()->isRealPlayer()) //Do not invite bots with a player master.
                     if (!botAi->isRealPlayer()) //Unless the bot is really a player
                         continue;
 
-            if (player->getLevel() > bot->getLevel() + 2)
-                continue;
-
-            if (player->getLevel() < bot->getLevel() - 2)
+            if (abs(int32(player->getLevel() - bot->getLevel())) > 2)
                 continue;
 
             if (sServerFacade.GetDistance2d(bot, player) > sPlayerbotAIConfig.sightDistance)
@@ -67,12 +67,30 @@ namespace ai
         if (!sPlayerbotAIConfig.randomBotGroupNearby)
             return false;
 
-        if (bot->GetGroup())
+        GrouperType grouperType = ai->GetGrouperType();
+
+        if (grouperType == SOLO || grouperType == MEMBER)
+            return false;
+
+        Group* group = bot->GetGroup();
+
+        if (group)
         {
-            if (bot->GetGroup()->IsFull())
+            if (group->IsFull())
                 return false;
 
-            if (bot->GetGroup()->GetLeaderGuid() != bot->GetObjectGuid())
+            if (ai->GetGroupMaster() != bot)
+                return false;
+
+            uint32 memberCount = group->GetMembersCount();
+
+            if (memberCount > 1 && grouperType == LEADER_2)
+                return false;
+
+            if (memberCount > 2 && grouperType == LEADER_3)
+                return false;
+
+            if (memberCount > 3 && grouperType == LEADER_4)
                 return false;
         }
 

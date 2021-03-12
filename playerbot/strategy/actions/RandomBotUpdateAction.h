@@ -16,7 +16,10 @@ namespace ai
             if (!sRandomPlayerbotMgr.IsRandomBot(bot))
                 return false;
 
-            if (bot->GetGroup())
+            if (bot->GetGroup() && (!ai->GetGroupMaster()->GetPlayerbotAI() || ai->GetGroupMaster()->GetPlayerbotAI()->isRealPlayer()))
+                return true;
+
+            if (ai->HasPlayerNearby())
                 return true;
 
             return sRandomPlayerbotMgr.ProcessBot(bot);

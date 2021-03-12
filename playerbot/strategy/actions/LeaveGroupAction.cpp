@@ -24,7 +24,7 @@ namespace ai
         {
             bot->GetPlayerbotAI()->SetMaster(NULL);
             sRandomPlayerbotMgr.ScheduleTeleport(bot->GetObjectGuid());
-        }
+        }        
 
         if(!aiMaster)
             ai->ResetStrategies(!randomBot);
@@ -41,18 +41,18 @@ namespace ai
         if (!bot->GetGroup())
             return false;
         
-        Player* master = ai->GetMaster();
+        Player* master = ai->GetGroupMaster();
 
-        if (!master || bot == master)
+        if (!master || (bot == master && !ai->isRealPlayer()))
             return false;
 
         if(!master->GetPlayerbotAI())
            return false;
 
-        if (master->getLevel() > bot->getLevel() + 4)
+        if (ai->GetGrouperType() == SOLO)
             return true;
 
-        if (master->getLevel() < bot->getLevel() - 4)
+        if (abs(int32(master->getLevel() - bot->getLevel())) > 4)
             return true;
 
         if (master->GetDistance(bot) > sPlayerbotAIConfig.reactDistance * 4)
