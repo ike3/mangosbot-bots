@@ -27,12 +27,12 @@ bool QuestAction::Execute(Event event)
     return ProcessQuests(guid);
 }
 
-bool QuestAction::CompleteQuest(uint32 entry)
+bool QuestAction::CompleteQuest(Player* player, uint32 entry)
 {
     Quest const* pQuest = sObjectMgr.GetQuestTemplate(entry);
 
     // If player doesn't have the quest
-    if (!pQuest || bot->GetQuestStatus(entry) == QUEST_STATUS_NONE)
+    if (!pQuest || player->GetQuestStatus(entry) == QUEST_STATUS_NONE)
     {
         return false;
     }
@@ -47,14 +47,14 @@ bool QuestAction::CompleteQuest(uint32 entry)
             continue;
         }
 
-        uint32 curItemCount = bot->GetItemCount(id, true);
+        uint32 curItemCount = player->GetItemCount(id, true);
 
         ItemPosCountVec dest;
-        uint8 msg = bot->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, id, count - curItemCount);
+        uint8 msg = player->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, id, count - curItemCount);
         if (msg == EQUIP_ERR_OK)
         {
-            Item* item = bot->StoreNewItem(dest, id, true);
-            bot->SendNewItem(item, count - curItemCount, true, false);
+            Item* item = player->StoreNewItem(dest, id, true);
+            player->SendNewItem(item, count - curItemCount, true, false);
         }
     }
 
@@ -68,7 +68,7 @@ bool QuestAction::CompleteQuest(uint32 entry)
         {
             for (uint16 z = 0; z < creaturecount; ++z)
             {
-                bot->CastedCreatureOrGO(creature, ObjectGuid(), spell_id);
+                player->CastedCreatureOrGO(creature, ObjectGuid(), spell_id);
             }
         }
         else if (creature > 0)
@@ -76,14 +76,14 @@ bool QuestAction::CompleteQuest(uint32 entry)
             if (CreatureInfo const* cInfo = ObjectMgr::GetCreatureTemplate(creature))
                 for (uint16 z = 0; z < creaturecount; ++z)
                 {
-                    bot->KilledMonster(cInfo, ObjectGuid());
+                    player->KilledMonster(cInfo, ObjectGuid());
                 }
         }
         else if (creature < 0)
         {
             for (uint16 z = 0; z < creaturecount; ++z)
             {
-                bot->CastedCreatureOrGO(-creature, ObjectGuid(), 0);
+                player->CastedCreatureOrGO(-creature, ObjectGuid(), 0);
             }
         }
     }
@@ -92,7 +92,7 @@ bool QuestAction::CompleteQuest(uint32 entry)
     if (uint32 repFaction = pQuest->GetRepObjectiveFaction())
     {
         uint32 repValue = pQuest->GetRepObjectiveValue();
-        uint32 curRep = bot->GetReputationMgr().GetReputation(repFaction);
+        uint32 curRep = player->GetReputationMgr().GetReputation(repFaction);
         if (curRep < repValue)
 #ifdef MANGOS
             if (FactionEntry const* factionEntry = sFactionStore.LookupEntry(repFaction))
@@ -105,7 +105,7 @@ bool QuestAction::CompleteQuest(uint32 entry)
 #endif
 #endif
             {
-                bot->GetReputationMgr().SetReputation(factionEntry, repValue);
+                player->GetReputationMgr().SetReputation(factionEntry, repValue);
             }
     }
 
@@ -113,14 +113,14 @@ bool QuestAction::CompleteQuest(uint32 entry)
     int32 ReqOrRewMoney = pQuest->GetRewOrReqMoney();
     if (ReqOrRewMoney < 0)
     {
-        bot->ModifyMoney(-ReqOrRewMoney);
+        player->ModifyMoney(-ReqOrRewMoney);
     }
 
 #ifdef MANGOS
-    bot->CompleteQuest(entry, QUEST_STATUS_FORCE_COMPLETE);
+    player->CompleteQuest(entry, QUEST_STATUS_FORCE_COMPLETE);
 #endif
 #ifdef CMANGOS
-    bot->CompleteQuest(entry);
+    player->CompleteQuest(entry);
 #endif
 
     return true;

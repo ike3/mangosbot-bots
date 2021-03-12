@@ -17,7 +17,7 @@ namespace ai
         virtual void ProcessQuest(Quest const* quest, WorldObject* questGiver) = 0;        
 
     protected:
-        bool CompleteQuest(uint32 entry);
+        bool CompleteQuest(Player* player, uint32 entry);
         bool AcceptQuest(Quest const* quest, uint64 questGiver);
         bool ProcessQuests(ObjectGuid questGiver);
         bool ProcessQuests(WorldObject* questGiver);

@@ -12,12 +12,23 @@ void TalkToQuestGiverAction::ProcessQuest(Quest const* quest, WorldObject* quest
 
     QuestStatus status = bot->GetQuestStatus(quest->GetQuestId());
 
-    if (sPlayerbotAIConfig.syncQuestWithPlayer)
+    Player* master = GetMaster();
+
+    if (sPlayerbotAIConfig.syncQuestForPlayer)
     {
-        Player* master = GetMaster();
+        if (master && (!master->GetPlayerbotAI() || master->GetPlayerbotAI()->isRealPlayer()))
+        {
+            QuestStatus masterStatus = master->GetQuestStatus(quest->GetQuestId());
+            if (masterStatus == QUEST_STATUS_INCOMPLETE || masterStatus == QUEST_STATUS_FAILED)
+                CompleteQuest(master, quest->GetQuestId());
+        }
+    }
+
+    if (sPlayerbotAIConfig.syncQuestWithPlayer)
+    {        
         if (master && master->GetQuestStatus(quest->GetQuestId()) == QUEST_STATUS_COMPLETE && (status == QUEST_STATUS_INCOMPLETE || status == QUEST_STATUS_FAILED))
         {
-            CompleteQuest(quest->GetQuestId());
+            CompleteQuest(bot, quest->GetQuestId());
             status = bot->GetQuestStatus(quest->GetQuestId());
         }
     }    

@@ -107,6 +107,7 @@ public:
     std::string autoPickReward;
     bool autoEquipUpgradeLoot;
     bool syncQuestWithPlayer;
+    bool syncQuestForPlayer;
     std::string autoTrainSpells;
     std::string autoPickTalents;
     bool autoLearnTrainerSpells;
