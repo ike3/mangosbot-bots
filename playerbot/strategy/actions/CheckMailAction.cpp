@@ -10,10 +10,7 @@ using namespace ai;
 bool CheckMailAction::Execute(Event event)
 {
     WorldPacket p;
-    bot->GetSession()->HandleQueryNextMailTime(p);
-
-    if (ai->GetMaster() || !bot->GetMailSize() || bot->InBattleGround())
-        return false;
+    bot->GetSession()->HandleQueryNextMailTime(p);   
 
     list<uint32> ids;
     for (PlayerMails::iterator i = bot->GetMailBegin(); i != bot->GetMailEnd(); ++i)
@@ -44,6 +41,14 @@ bool CheckMailAction::Execute(Event event)
         CharacterDatabase.PExecute("DELETE FROM mail_items WHERE mail_id = '%u'", id);
         bot->RemoveMail(id);
     }
+
+    return true;
+}
+
+bool CheckMailAction::isUseful()
+{
+    if (ai->GetMaster() || !bot->GetMailSize() || bot->InBattleGround())
+        return false;
 
     return true;
 }

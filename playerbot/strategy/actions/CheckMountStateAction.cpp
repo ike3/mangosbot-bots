@@ -10,39 +10,6 @@ uint64 extractGuid(WorldPacket& packet);
 
 bool CheckMountStateAction::Execute(Event event)
 {
-    if (bot->IsDead())
-        return false;
-
-    bool isOutdoor;
-    uint16 areaFlag = bot->GetMap()->GetTerrain()->GetAreaFlag(bot->GetPositionX(), bot->GetPositionY(), bot->GetPositionZ(), &isOutdoor);
-    if (!isOutdoor)
-        return false;
-
-    if (bot->IsTaxiFlying() || bot->IsFlying())
-        return false;
-
-#ifndef MANGOSBOT_ZERO
-    if (bot->InArena())
-        return false;
-#endif
-
-    if (!bot->GetPlayerbotAI()->HasStrategy("mount", BOT_STATE_NON_COMBAT) && !bot->IsMounted())
-        return false;
-
-    bool firstmount = bot->getLevel() >=
-#ifdef MANGOSBOT_ZERO
-        40
-#else
-#ifdef MANGOSBOT_ONE
-        30
-#else
-        20
-#endif
-#endif
-        ;
-    if (!firstmount)
-        return false;
-
     bool noattackers = AI_VALUE(uint8, "attacker count") > 0 ? false : true;
     bool enemy = AI_VALUE(Unit*, "enemy player target");
     bool dps = (AI_VALUE(Unit*, "dps target") || AI_VALUE(Unit*, "grind target"));
@@ -148,6 +115,44 @@ bool CheckMountStateAction::Execute(Event event)
     }
 
     return false;
+}
+
+bool CheckMountStateAction::isUseful()
+{
+    if (bot->IsDead())
+        return false;
+
+    bool isOutdoor;
+    uint16 areaFlag = bot->GetMap()->GetTerrain()->GetAreaFlag(bot->GetPositionX(), bot->GetPositionY(), bot->GetPositionZ(), &isOutdoor);
+    if (!isOutdoor)
+        return false;
+
+    if (bot->IsTaxiFlying() || bot->IsFlying())
+        return false;
+
+#ifndef MANGOSBOT_ZERO
+    if (bot->InArena())
+        return false;
+#endif
+
+    if (!bot->GetPlayerbotAI()->HasStrategy("mount", BOT_STATE_NON_COMBAT) && !bot->IsMounted())
+        return false;
+
+    bool firstmount = bot->getLevel() >=
+#ifdef MANGOSBOT_ZERO
+        40
+#else
+#ifdef MANGOSBOT_ONE
+        30
+#else
+        20
+#endif
+#endif
+        ;
+    if (!firstmount)
+        return false;
+
+    return true;
 }
 
 bool CheckMountStateAction::Mount()
