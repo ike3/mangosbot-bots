@@ -5,6 +5,7 @@
 #include "../../ServerFacade.h"
 #include "../../LootObjectStack.h"
 #include "MotionGenerators/PathFinder.h"
+#include "ChooseRpgTargetAction.h"
 
 using namespace ai;
 
@@ -47,10 +48,28 @@ bool MoveToTravelTargetAction::Execute(Event event)
 
 bool MoveToTravelTargetAction::isUseful()
 {
-    return context->GetValue<TravelTarget*>("travel target")->Get()->isTraveling() 
-        && !bot->IsTaxiFlying()
-        && !bot->IsFlying() 
-        && !bot->IsMoving() 
-        && !bot->IsInCombat();
+    if (!context->GetValue<TravelTarget*>("travel target")->Get()->isTraveling())
+        return false;
+
+    if (bot->IsTaxiFlying())
+        return false;
+
+    if (bot->IsFlying())
+        return false;
+
+    if (bot->IsMoving())
+        return false;
+
+    if (bot->IsInCombat())
+        return false;
+
+    LootObject loot = AI_VALUE(LootObject, "loot target");
+    if (loot.IsLootPossible(bot))
+        return false;
+
+    if (!ChooseRpgTargetAction::isFollowValid(bot, context->GetValue<TravelTarget*>("travel target")->Get()->getLocation()))
+        return false;
+
+    return true;
 }
 

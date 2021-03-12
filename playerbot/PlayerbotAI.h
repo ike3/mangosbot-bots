@@ -167,6 +167,22 @@ enum ShieldWardDisplayId
    GREATER_WARD_OFSHIELDING = 38760,
 };
 
+enum BotTypeNumber
+{
+    GROUPER_TYPE_NUMBER = 1,
+    ACTIVITY_TYPE_NUMBER = 2
+};
+
+enum GrouperType
+{
+    SOLO = 0,
+    MEMBER = 1,
+    LEADER_2 = 2,
+    LEADER_3 = 3,
+    LEADER_4 = 4,
+    LEADER_5 = 5
+};
+
 enum ActivityType
 {
     GRIND_ACTIVITY = 1,
@@ -333,6 +349,9 @@ public:
 	Player* GetBot() { return bot; }
     Player* GetMaster() { return master; }
     bool isRealPlayer() { return master ? (master == bot) : false; }
+    Player* GetGroupMaster() { return bot->GetGroup() ? (sObjectMgr.GetPlayer(bot->GetGroup()->GetLeaderGuid()) ? sObjectMgr.GetPlayer(bot->GetGroup()->GetLeaderGuid()) : master) : master; }
+    uint32 GetFixedBotNumer(BotTypeNumber typeNumber, uint32 maxNum = 100, uint32 cyclePerMin = 1);
+    GrouperType PlayerbotAI::GetGrouperType();
     bool HasPlayerNearby(float range = sPlayerbotAIConfig.reactDistance);
     bool HasManyPlayersNearby(uint32 trigerrValue = 20, float range = sPlayerbotAIConfig.sightDistance);
     bool AllowActive(ActivityType activityType);

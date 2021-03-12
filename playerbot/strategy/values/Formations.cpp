@@ -22,8 +22,8 @@ bool Formation::IsNullLocation(WorldLocation const& loc)
 
 WorldLocation MoveAheadFormation::GetLocation()
 {
-    Player* master = GetMaster();
-    if (!master)
+    Player* master = ai->GetGroupMaster();
+    if (!master || master == bot)
         return WorldLocation();
 
     WorldLocation loc = GetLocationInternal();
@@ -84,7 +84,7 @@ namespace ai
         NearFormation(PlayerbotAI* ai) : MoveAheadFormation(ai, "near") {}
         virtual WorldLocation GetLocationInternal()
         {
-            Player* master = GetMaster();
+            Player* master = ai->GetGroupMaster();
             if (!master)
                 return WorldLocation();
 
@@ -116,7 +116,7 @@ namespace ai
         ChaosFormation(PlayerbotAI* ai) : MoveAheadFormation(ai, "chaos"), lastChangeTime(0) {}
         virtual WorldLocation GetLocationInternal()
         {
-            Player* master = GetMaster();
+            Player* master = ai->GetGroupMaster();
             if (!master)
                 return WorldLocation();
 
@@ -163,8 +163,8 @@ namespace ai
             float range = 2.0f;
 
             Unit* target = AI_VALUE(Unit*, "current target");
-            Player* master = GetMaster();
-            if (!target)
+            Player* master = ai->GetGroupMaster();
+            if (!target && target != bot)
                 target = master;
 
             if (!target)
@@ -218,7 +218,7 @@ namespace ai
 
             float range = 2.0f;
 
-            Player* master = GetMaster();
+            Player* master = ai->GetGroupMaster();
             if (!master)
                 return Formation::NullLocation;
 
@@ -256,7 +256,7 @@ namespace ai
 
             float range = sPlayerbotAIConfig.followDistance;
 
-            Player* master = GetMaster();
+            Player* master = ai->GetGroupMaster();
             if (!master)
                 return Formation::NullLocation;
 
@@ -318,8 +318,8 @@ namespace ai
             float range = sPlayerbotAIConfig.farDistance;
             float followRange = sPlayerbotAIConfig.followDistance;
 
-            Player* master = GetMaster();
-            if (!master)
+            Player* master = ai->GetGroupMaster();
+            if (!master || master == bot)
                 return Formation::NullLocation;
 
             if (sServerFacade.GetDistance2d(bot, master) <= range)
@@ -375,7 +375,7 @@ namespace ai
 
 float Formation::GetFollowAngle()
 {
-    Player* master = GetMaster();
+    Player* master = ai->GetGroupMaster();
     Group* group = bot->GetGroup();
     PlayerbotAI* ai = bot->GetPlayerbotAI();
     int index = 1, total = 1;

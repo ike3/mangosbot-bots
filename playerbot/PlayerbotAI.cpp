@@ -24,6 +24,7 @@
 #include "PlayerbotDbStore.h"
 #include "strategy/values/PositionValue.h"
 #include "ServerFacade.h"
+#include "TravelMgr.h"
 
 using namespace ai;
 using namespace std;
@@ -242,6 +243,8 @@ void PlayerbotAI::Reset()
     aiObjectContext->GetValue<LastMovement& >("last movement")->Get().Set(NULL);
     aiObjectContext->GetValue<LastMovement& >("last area trigger")->Get().Set(NULL);
     aiObjectContext->GetValue<LastMovement& >("last taxi")->Get().Set(NULL);
+
+    aiObjectContext->GetValue<TravelTarget* >("travel target")->Get()->setTarget(sTravelMgr.nullTravelDestination, sTravelMgr.nullWorldPosition, true);
 
     bot->GetMotionMaster()->Clear();
 #ifdef MANGOS
@@ -510,7 +513,7 @@ void PlayerbotAI::DoNextAction()
         return;
     }
 
-    if (!AllowActive(ALL_ACTIVITY))
+    if (!AllowActive(ALL_ACTIVITY) && urand(0,100) < 5)
     {
         SetNextCheckDelay(sPlayerbotAIConfig.passiveDelay);
         return;
@@ -1839,6 +1842,60 @@ bool IsAlliance(uint8 race)
             race == RACE_GNOME;
 }
 
+/*
+enum BotTypeNumber
+{
+    GROUPER_TYPE_NUMBER = 1,
+    ACTIVITY_TYPE_NUMBER = 2
+};
+*/
+
+uint32 PlayerbotAI::GetFixedBotNumer(BotTypeNumber typeNumber, uint32 maxNum, uint32 cyclePerMin)
+{
+    srand(typeNumber);
+    uint32 randseed = rand();                                      //Seed random number
+    uint32 randnum = bot->GetGUIDLow() + randseed;                 //Semi-random but fixed number for each bot.
+
+    if (cyclePerMin > 0)
+    {
+        uint32 cycle = floor(WorldTimer::getMSTime() / (1000));    //Semi-random number adds 1 each second.
+        cycle = cycle * cyclePerMin / 60;                          //Cycles cyclePerMin per minute.
+        randnum += cycle;                                          //Make the random number cylce.
+    }
+    randnum = (randnum % (maxNum+1));                              //Loops the randomnumber at maxNum. Bassically removes all the numbers above 99. 
+    return randnum;                                                //Now we have a number unique for each bot between 0 and maxNum that increases by cyclePerMin.
+}
+
+/*
+enum GrouperType
+{
+    SOLO = 0,
+    MEMBER = 1,
+    LEADER_2 = 2,
+    LEADER_3 = 3,
+    LEADER_4 = 4,
+    LEADER_5 = 5
+};
+*/
+
+GrouperType PlayerbotAI::GetGrouperType()
+{
+    uint32 grouperNumber = GetFixedBotNumer(GROUPER_TYPE_NUMBER, 100, 0);
+
+    if (grouperNumber < 20)
+        return SOLO;
+    if (grouperNumber < 80)
+        return MEMBER;
+    if (grouperNumber < 85)
+        return LEADER_2;
+    if (grouperNumber < 90)
+        return LEADER_3;
+    if (grouperNumber < 95)
+        return LEADER_4;
+    
+   return LEADER_5;
+}
+
 bool PlayerbotAI::HasPlayerNearby(float range)
 {
     float sqRange = range * range;
@@ -1890,8 +1947,9 @@ enum ActivityType
 bool PlayerbotAI::AllowActive(ActivityType activityType)
 {
     //General exceptions
-    //if (activityType == PACKET_ACTIVITY)
-    //    return true;
+    if (activityType == PACKET_ACTIVITY)
+        return true;
+
     if (GetMaster()) //Has player master. Always active.
         if (!GetMaster()->GetPlayerbotAI() || GetMaster()->GetPlayerbotAI()->isRealPlayer())
             return true;
@@ -1919,15 +1977,9 @@ bool PlayerbotAI::AllowActive(ActivityType activityType)
     if (sPlayerbotAIConfig.botActiveAlone >= 100)
         return true;
 
-    uint32 randnum = bot->GetGUIDLow();                            //Semi-random but fixed number for each bot.
-    uint32 cycle = floor(WorldTimer::getMSTime() / (1000));        //Semi-random number adds 1 each second.
+    uint32 ActivityNumber = GetFixedBotNumer(ACTIVITY_TYPE_NUMBER, 100, sPlayerbotAIConfig.botActiveAlone * 0.01);
 
-    cycle = cycle * sPlayerbotAIConfig.botActiveAlone / 6000;      //Cycles 0.01 per minute for each 1% of the config. (At 100% this is 1 per minute)
-    randnum += cycle;                                              //Random number that increases 0.01 each minute for each % that the bots should be active.
-    randnum = (randnum % 100);                                     //Loops the randomnumber at 100. Bassically removes all the numbers above 99. 
-    randnum = randnum + 1;                                         //Now we have a number unique for each bot between 1 and 100 that increases by 0.01 (per % active each minute).
-
-    return randnum <= sPlayerbotAIConfig.botActiveAlone;           //The given percentage of bots should be active and rotate 1% of those active bots each minute.
+    return ActivityNumber <= sPlayerbotAIConfig.botActiveAlone;           //The given percentage of bots should be active and rotate 1% of those active bots each minute.
 }
 
 bool PlayerbotAI::IsOpposing(Player* player)

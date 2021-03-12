@@ -233,19 +233,26 @@ bool ChooseRpgTargetAction::isUseful()
 
 bool ChooseRpgTargetAction::isFollowValid(Player* bot, WorldObject* target)
 {
-    PlayerbotAI* ai = bot->GetPlayerbotAI();
-    Player* master = ai->GetMaster();
+    WorldLocation location;
+    target->GetPosition(location);
+    return isFollowValid(bot, location);
+}
 
-    if (!master)
+bool ChooseRpgTargetAction::isFollowValid(Player* bot, WorldLocation location)
+{
+    PlayerbotAI* ai = bot->GetPlayerbotAI();
+    Player* master = ai->GetGroupMaster();
+
+    if (!master || bot == master)
         return true;
-    
+
     if (!ai->HasStrategy("follow", BOT_STATE_NON_COMBAT))
         return true;
 
     if (bot->GetDistance(master) > sPlayerbotAIConfig.rpgDistance * 2)
         return true;
 
-    float distance = target->GetDistance(master);
+    float distance = master->GetDistance(location.coord_x, location.coord_y, location.coord_z);
 
     if (!master->IsMoving() && distance < sPlayerbotAIConfig.sightDistance)
         return true;

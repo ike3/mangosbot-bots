@@ -41,7 +41,7 @@ bool FollowAction::isUseful()
         distance = AI_VALUE2(float, "distance", target);
 
         Unit* fTarget = AI_VALUE(Unit*, target);
-        if (fTarget)
+        if (fTarget && fTarget != bot)
             if (fTarget->IsTaxiFlying() || fTarget->GetGUIDLow() == bot->GetGUIDLow())
                 return false;
     }

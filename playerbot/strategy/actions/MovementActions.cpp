@@ -18,9 +18,11 @@ void MovementAction::CreateWp(Player* wpOwner, float x, float y, float z, float 
 {
     float dist = wpOwner->GetDistance(x, y, z);
     float delay = 1000.0f * dist / wpOwner->GetSpeed(MOVE_RUN) + sPlayerbotAIConfig.reactDelay;
-    if (delay > 2000.0f)
-        delay -= 2000.0f;
-    Creature* wpCreature = wpOwner->SummonCreature(entry, x, y, z, o, TEMPSPAWN_TIMED_DESPAWN, delay);
+    //if (delay > 2000.0f)
+    //    delay -= 2000.0f;
+    delay *= 0.25;
+    Creature* wpCreature = wpOwner->SummonCreature(entry, x, y, z - 1, o, TEMPSPAWN_TIMED_DESPAWN, delay);
+    wpCreature->SetObjectScale(0.2f);
 }
 
 float MovementAction::GetAngle(const float x1, const float y1, const float x2, const float y2)
@@ -52,7 +54,7 @@ bool MovementAction::MoveNear(WorldObject* target, float distance)
     float y = target->GetPositionY();
     float z = target->GetPositionZ();
     float followAngle = GetFollowAngle();
-    for (float angle = followAngle; angle <= followAngle + 2 * M_PI; angle += M_PI / 4)
+    for (float angle = followAngle; angle <= followAngle + 2 * M_PI; angle += M_PI / 4.0f)
     {
 #ifdef CMANGOS
         float dist = distance + target->GetObjectBoundingRadius();
@@ -106,10 +108,10 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
 
         if (ai->HasStrategy("debug", BOT_STATE_NON_COMBAT))
         {
-            ostringstream out;
-            out << "From: " << bot->GetPositionX() << " ; " << bot->GetPositionY() << " ; " << bot->GetPositionZ();
-            out << " to: " << x << " ; " << y << " ; " << z;
-            ai->TellMasterNoFacing(out);
+            //ostringstream out;
+            //out << "From: " << bot->GetPositionX() << " ; " << bot->GetPositionY() << " ; " << bot->GetPositionZ();
+            //out << " to: " << x << " ; " << y << " ; " << z;
+            //ai->TellMasterNoFacing(out);
 
             float cx = x;
             float cy = y;
@@ -392,7 +394,7 @@ bool MovementAction::Follow(Unit* target, float distance, float angle)
         if (currentTarget && currentTarget->GetObjectGuid() == target->GetObjectGuid()) return false;
     }
 
-    if(!mm.GetCurrent()->GetMovementGeneratorType() == FOLLOW_MOTION_TYPE)
+    if(mm.GetCurrent()->GetMovementGeneratorType() != FOLLOW_MOTION_TYPE)
         mm.Clear();
 
     mm.MoveFollow(target,
