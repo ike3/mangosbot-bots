@@ -95,9 +95,9 @@ void WorldPacketHandlerStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         "lfg proposal active",
         NextAction::array(0, new NextAction("lfg accept", relevance), NULL)));
 
-    triggers.push_back(new TriggerNode(
+    /*triggers.push_back(new TriggerNode(
         "no non bot players around",
-        NextAction::array(0, new NextAction("delay", relevance), NULL)));
+        NextAction::array(0, new NextAction("delay", relevance), NULL)));*/
 
     triggers.push_back(new TriggerNode(
         "bg status",
