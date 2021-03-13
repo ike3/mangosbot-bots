@@ -8,6 +8,7 @@ using namespace ai;
 
 map<string, uint32> EmoteActionBase::emotes;
 map<string, uint32> EmoteActionBase::textEmotes;
+char *strstri(const char *haystack, const char *needle);
 
 EmoteActionBase::EmoteActionBase(PlayerbotAI* ai, string name) : Action(ai, name)
 {
@@ -129,7 +130,6 @@ bool EmoteActionBase::ReceiveEmote(Player* source, uint32 emote)
     uint32 emoteId = 0;
     string emoteText;
     string emoteYell;
-    bool facing = true;
     switch (emote)
     {
     case TEXTEMOTE_BONK:
@@ -199,7 +199,6 @@ bool EmoteActionBase::ReceiveEmote(Player* source, uint32 emote)
     case TEXTEMOTE_STINK:
         emoteText = "Wasn't me! Just sayin'..";
         emoteId = EMOTE_ONESHOT_POINT;
-        facing = false;
         break;
     case TEXTEMOTE_JOKE:
         emoteId = EMOTE_ONESHOT_LAUGH;
@@ -539,6 +538,10 @@ bool EmoteActionBase::ReceiveEmote(Player* source, uint32 emote)
         //bot->Say("Mmmmmkaaaaaay...", LANG_UNIVERSAL);
         break;
     }
+
+    if (source && !sServerFacade.IsInFront(bot, source, sPlayerbotAIConfig.sightDistance, EMOTE_ANGLE_IN_FRONT))
+        sServerFacade.SetFacingTo(bot, source);
+
     if (emoteText.size())
         bot->Say(emoteText, (bot->GetTeam() == ALLIANCE ? LANG_COMMON : LANG_ORCISH));
 
@@ -570,7 +573,7 @@ bool EmoteAction::Execute(Event event)
         if (namlen > 1)
             p.read(nam, namlen);
 
-        if (nam == bot->GetNameStr())
+        if (strstri(bot->GetName(), nam.c_str()))
         {
             pSource = sObjectMgr.GetPlayer(source);
 
@@ -607,11 +610,11 @@ bool EmoteAction::Execute(Event event)
                     if (em->textid == EMOTE_ONESHOT_TALK)
                         continue;
 
-                    if (em->textid == EMOTE_ONESHOT_QUESTION)
-                        continue;
+                    //if (em->textid == EMOTE_ONESHOT_QUESTION)
+                    //    continue;
 
-                    if(em->textid == EMOTE_ONESHOT_EXCLAMATION)
-                        continue;
+                    //if(em->textid == EMOTE_ONESHOT_EXCLAMATION)
+                    //    continue;
 
                     if (em->textid == emoteId)
                     {
