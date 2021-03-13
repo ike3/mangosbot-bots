@@ -1563,7 +1563,7 @@ bool PlayerbotAI::AllowActive(ActivityType activityType)
         return true;
 
     if (GetMaster()) //Has player master. Always active.
-        if (!GetMaster()->GetPlayerbotAI() || GetMaster()->GetPlayerbotAI()->isRealPlayer() || GetMaster()->GetPlayerbotAI()->AllowActive(ALL_ACTIVITY))
+        if (!GetMaster()->GetPlayerbotAI() || GetMaster()->GetPlayerbotAI()->isRealPlayer())
             return true;
 
     if (bot->InBattleGround()) //In battle ground. Always active.
