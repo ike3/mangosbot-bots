@@ -87,7 +87,7 @@ namespace ai
             creators["release loot"] = &ActionContext::release_loot;
             creators["shoot"] = &ActionContext::shoot;
             creators["follow"] = &ActionContext::follow;
-            creators["follow"] = &ActionContext::follow;
+            creators["flee to master"] = &ActionContext::flee_to_master;
             creators["runaway"] = &ActionContext::runaway;
             creators["stay"] = &ActionContext::stay;
             creators["sit"] = &ActionContext::sit;
@@ -187,6 +187,7 @@ namespace ai
         static Action* sit(PlayerbotAI* ai) { return new SitAction(ai); }
         static Action* runaway(PlayerbotAI* ai) { return new RunAwayAction(ai); }
         static Action* follow(PlayerbotAI* ai) { return new FollowAction(ai); }
+        static Action* flee_to_master(PlayerbotAI* ai) { return new FleeToMasterAction(ai); }
         static Action* add_gathering_loot(PlayerbotAI* ai) { return new AddGatheringLootAction(ai); }
         static Action* add_loot(PlayerbotAI* ai) { return new AddLootAction(ai); }
         static Action* add_all_loot(PlayerbotAI* ai) { return new AddAllLootAction(ai); }
