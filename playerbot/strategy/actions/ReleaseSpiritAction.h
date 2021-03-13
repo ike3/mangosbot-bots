@@ -44,6 +44,6 @@ namespace ai
             return true;
         }
 
-        virtual bool isUseful() { return !bot->GetGroup() && !sServerFacade.IsAlive(bot) && !bot->GetCorpse(); }
+        virtual bool isUseful() { return (!bot->GetGroup() || !sServerFacade.IsAlive(ai->GetGroupMaster())) && !sServerFacade.IsAlive(bot) && !bot->GetCorpse(); }
     };
 }
