@@ -94,6 +94,24 @@ PlayerbotSecurityLevel PlayerbotSecurity::LevelFor(Player* from, DenyReason* rea
             }
         }
 
+        if (bot->GetPlayerbotAI()->HasStrategy("bg", BOT_STATE_NON_COMBAT))
+        {
+            if (!bot->GetGuildId() || bot->GetGuildId() != from->GetGuildId())
+            {
+                if (reason) *reason = PLAYERBOT_DENY_BG;
+                return PLAYERBOT_SECURITY_TALK;
+            }
+        }
+
+        if (bot->GetPlayerbotAI()->HasStrategy("lfg", BOT_STATE_NON_COMBAT))
+        {
+            if (!bot->GetGuildId() || bot->GetGuildId() != from->GetGuildId())
+            {
+                if (reason) *reason = PLAYERBOT_DENY_LFG;
+                return PLAYERBOT_SECURITY_TALK;
+            }
+        }
+
         if (reason) *reason = PLAYERBOT_DENY_INVITE;
         return PLAYERBOT_SECURITY_INVITE;
     }
@@ -108,7 +126,7 @@ bool PlayerbotSecurity::CheckLevelFor(PlayerbotSecurityLevel level, bool silent,
     if (realLevel >= level)
         return true;
 
-    if (silent || from->GetPlayerbotAI())
+    if (silent || (from->GetPlayerbotAI() && !from->GetPlayerbotAI()->isRealPlayer()))
         return false;
 
     Player* master = bot->GetPlayerbotAI()->GetMaster();
@@ -171,6 +189,12 @@ bool PlayerbotSecurity::CheckLevelFor(PlayerbotSecurityLevel level, bool silent,
             break;
         case PLAYERBOT_DENY_FULL_GROUP:
             out << "I am in a full group. Will do it later";
+            break;
+        case PLAYERBOT_DENY_BG:
+            out << "I am in a queue for BG. Will do it later";
+            break;
+        case PLAYERBOT_DENY_LFG:
+            out << "I am in a queue for dungeon. Will do it later";
             break;
         default:
             out << "I can't do that";
