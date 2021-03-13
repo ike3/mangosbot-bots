@@ -10,7 +10,7 @@ using namespace ai;
 bool InvalidTargetValue::Calculate()
 {
     Unit* target = AI_VALUE(Unit*, qualifier);
-    if (qualifier == "current target" && target) //Nullpointer?
+    if (qualifier == "current target")
     {
         return !AttackersValue::IsValidTarget(target, bot);
     }
