@@ -115,6 +115,14 @@ void WorldPacketHandlerStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         "see spell",
         NextAction::array(0, new NextAction("see spell", relevance), NULL)));
 
+    triggers.push_back(new TriggerNode(
+        "release spirit",
+        NextAction::array(0, new NextAction("release", relevance), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "revive from corpse",
+        NextAction::array(0, new NextAction("revive from corpse", relevance), NULL)));
+
 }
 
 WorldPacketHandlerStrategy::WorldPacketHandlerStrategy(PlayerbotAI* ai) : PassTroughStrategy(ai)

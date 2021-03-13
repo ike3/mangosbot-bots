@@ -11,6 +11,7 @@ namespace ai
 
     protected:
         bool Emote(Unit* target, uint32 type);
+        bool ReceiveEmote(Player* source, uint32 emote);
         Unit* GetTarget();
         void InitEmotes();
         static map<string, uint32> emotes;

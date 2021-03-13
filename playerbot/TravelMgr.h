@@ -30,10 +30,10 @@ namespace ai
 
         void addVisitor() { visitors++; }
         void remVisitor() { visitors--; }
-        int getVistitor() { return visitors; }
+        uint32 getVistitor() { return visitors; }
     private:
         WorldLocation wLoc;
-        int visitors = 0;        
+        uint32 visitors = 0;
     };
 
     //A destination for a bot to travel to and do something.
@@ -47,7 +47,7 @@ namespace ai
         void addPoint(WorldPosition* pos) { points.push_back(pos); }
         void setExpireDelay(uint32 delay) { expireDelay = delay; }
         void setCooldownDelay(uint32 delay) { cooldownDelay = delay; }
-        void setMaxVisitors(int maxVisitors1 = 0, int maxVisitorsPerPoint1 = 0) { maxVisitors = maxVisitors1; maxVisitorsPerPoint = maxVisitorsPerPoint1; }
+        void setMaxVisitors(uint32 maxVisitors1 = 0, uint32 maxVisitorsPerPoint1 = 0) { maxVisitors = maxVisitors1; maxVisitorsPerPoint = maxVisitorsPerPoint1; }
 
         vector<WorldPosition*> getPoints(bool ignoreFull = false);
         uint32 getExpireDelay() { return expireDelay; }
@@ -77,9 +77,9 @@ namespace ai
         float radiusMin = 0;
         float radiusMax = 0;
 
-        int visitors = 0;
-        int maxVisitors = 0;
-        int maxVisitorsPerPoint = 0;
+        uint32 visitors = 0;
+        uint32 maxVisitors = 0;
+        uint32 maxVisitorsPerPoint = 0;
         uint32 expireDelay = 5 * 1000;
         uint32 cooldownDelay = 60 * 1000;
     };
@@ -88,7 +88,7 @@ namespace ai
     class NullTravelDestination : public TravelDestination
     {
     public:
-        NullTravelDestination(int coodownDelay1 = 5 * 60 * 1000) : TravelDestination() { cooldownDelay = coodownDelay1;};
+        NullTravelDestination(uint32 coodownDelay1 = 5 * 60 * 1000) : TravelDestination() { cooldownDelay = coodownDelay1;};
 
         virtual Quest const* GetQuestTemplate() { return NULL; }
 
@@ -144,7 +144,7 @@ namespace ai
     class QuestObjectiveTravelDestination : public QuestTravelDestination
     {
     public:
-        QuestObjectiveTravelDestination(uint32 quest_id1, uint32 entry1, int objective1, float radiusMin1, float radiusMax1, uint32 itemId1 = 0) : QuestTravelDestination(quest_id1, radiusMin1, radiusMax1) {
+        QuestObjectiveTravelDestination(uint32 quest_id1, uint32 entry1, uint32 objective1, float radiusMin1, float radiusMax1, uint32 itemId1 = 0) : QuestTravelDestination(quest_id1, radiusMin1, radiusMax1) {
             objective = objective1; entry = entry1; itemId = itemId1;
         }
 
@@ -166,9 +166,27 @@ namespace ai
 
         virtual string getTitle();
     private:
-        int objective;
+        uint32 objective;
         int32 entry;
         uint32 itemId = 0;
+    };
+
+    //A location with rpg target(s) based on race and level
+    class RpgTravelDestination : public TravelDestination
+    {
+    public:
+        RpgTravelDestination(uint32 level1, uint32 race1, float radiusMin1, float radiusMax1) : TravelDestination(radiusMin1, radiusMax1) {
+            level = level1; race = race1;
+        }
+
+        virtual bool isActive(Player* bot) { return race == bot->getRace() && level == bot->getLevel(); }
+
+        virtual string getName() { return "RpgTravelDestination"; }
+        virtual uint32 getEntry() { return NULL; }
+        virtual string getTitle();
+    protected:
+        uint32 level;
+        uint32 race;
     };
 
     //A quest destination container for quick lookup of all destinations related to a quest.
@@ -267,7 +285,7 @@ namespace ai
 
         vector <WorldPosition*> getNextPoint(WorldPosition* center, vector<WorldPosition*> points);
         QuestStatusData* getQuestStatus(Player* bot, uint32 questId);
-        bool getObjectiveStatus(Player* bot, Quest const* pQuest, int objective);
+        bool getObjectiveStatus(Player* bot, Quest const* pQuest, uint32 objective);
         uint32 getDialogStatus(Player* pPlayer, int32 questgiver, Quest const* pQuest);
         vector<TravelDestination *> getQuestTravelDestinations(Player* bot, uint32 questId = -1, bool ignoreFull = false, bool ignoreInactive = false, float maxDistance = 2000, bool ignoreObjectives = false);
 

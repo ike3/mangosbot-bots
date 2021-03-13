@@ -15,8 +15,11 @@ bool LfgJoinAction::Execute(Event event)
     //if (bot->GetRestType() == REST_TYPE_NO)
     //    return false;
 
-    if (ai->GetMaster())
+    if (ai->GetMaster() != bot)
+    {
+        ai->ChangeStrategy("-lfg", BOT_STATE_NON_COMBAT);
         return false;
+    }
 
     if (bot->InBattleGround())
         return false;
@@ -151,7 +154,7 @@ bool LfgJoinAction::JoinLFG()
 
     ItemCountByQuality visitor;
     IterateItems(&visitor, ITERATE_ITEMS_IN_EQUIP);
-    bool random = urand(0, 100) < 25;
+    bool random = urand(0, 100) < 50;
     bool heroic = urand(0, 100) < 50 && (visitor.count[ITEM_QUALITY_EPIC] >= 3 || visitor.count[ITEM_QUALITY_RARE] >= 10) && bot->getLevel() >= 70;
     bool raid = !heroic && (urand(0, 100) < 50 && visitor.count[ITEM_QUALITY_EPIC] >= 5 && (bot->getLevel() == 60 || bot->getLevel() == 70 || bot->getLevel() == 80));
 
@@ -280,7 +283,7 @@ bool LfgRoleCheckAction::Execute(Event event)
         
         pState->SetRoles(newRoles);
 
-        sLFGMgr.UpdateRoleCheck(group);
+        //sLFGMgr.UpdateRoleCheck(group);
 
         sLog.outBasic("Bot #%d %s:%d <%s>: LFG roles checked", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName());
 

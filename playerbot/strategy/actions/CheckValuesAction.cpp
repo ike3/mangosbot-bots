@@ -14,7 +14,7 @@ bool CheckValuesAction::Execute(Event event)
 {
     if (ai->HasStrategy("debug", BOT_STATE_NON_COMBAT))
     {
-        ai->Ping(bot->GetPositionX(), bot->GetPositionY());
+        ai->Ping(bot->GetPositionX()-7.5, bot->GetPositionY()+7.5);
     }
 
     list<ObjectGuid> possible_targets = *context->GetValue<list<ObjectGuid> >("possible targets");

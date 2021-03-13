@@ -48,6 +48,9 @@ namespace ai
                 ai->ChangeStrategy("+follow", BOT_STATE_NON_COMBAT);
             //}
 
+            ai->ChangeStrategy("-lfg", BOT_STATE_NON_COMBAT);
+            ai->ChangeStrategy("-bg", BOT_STATE_NON_COMBAT);
+
             ai->Reset();
 
             ai->TellMaster("Hello");

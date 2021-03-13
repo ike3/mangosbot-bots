@@ -12,12 +12,53 @@ bool ReviveFromCorpseAction::Execute(Event event)
     if (!corpse)
         return false;
 
-    time_t reclaimTime = corpse->GetGhostTime() + bot->GetCorpseReclaimDelay( corpse->GetType()==CORPSE_RESURRECTABLE_PVP );
-    if (reclaimTime > time(0) || corpse->GetDistance(bot) > ai->GetRange("spell"))
+    if (corpse->GetGhostTime() + bot->GetCorpseReclaimDelay(corpse->GetType() == CORPSE_RESURRECTABLE_PVP) > time(nullptr))
+        return false;
+
+    Player* master = GetMaster();
+    if (master)
+    {
+        if (!master->GetPlayerbotAI() && !sServerFacade.IsAlive(master) && master->GetCorpse()
+            && sServerFacade.IsDistanceLessThan(AI_VALUE2(float, "distance", "master target"), sPlayerbotAIConfig.farDistance))
+            return false;
+    }
+    
+    WorldPacket packet(CMSG_RECLAIM_CORPSE);
+    packet << bot->GetObjectGuid();
+    bot->GetSession()->HandleReclaimCorpseOpcode(packet);
+
+    sLog.outBasic("Bot #%d %s:%d <%s> revives", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName());
+
+    context->GetValue<Unit*>("current target")->Set(NULL);
+    bot->SetSelectionGuid(ObjectGuid());
+    ai->ChangeEngine(BOT_STATE_NON_COMBAT);
+    return true;
+}
+
+bool FindCorpseAction::Execute(Event event)
+{
+    if (bot->InBattleGround())
+        return false;
+
+    Corpse* corpse = bot->GetCorpse();
+    if (!corpse)
+        return false;
+
+    Player* master = GetMaster();
+    if (master)
+    {
+        if (!master->GetPlayerbotAI()
+            || sServerFacade.IsDistanceLessThan(AI_VALUE2(float, "distance", "master target"), sPlayerbotAIConfig.sightDistance))
+            return false;
+    }
+
+    if (!corpse->IsWithinDistInMap(bot, CORPSE_RECLAIM_RADIUS - 5, true))
     {
         float x = corpse->GetPositionX();
         float y = corpse->GetPositionY();
         float z = corpse->GetPositionZ();;
+
+        sLog.outBasic("Bot #%d %s:%d <%s> looks for corpse", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName());
 
         if (!ai->HasPlayerNearby())
         {
@@ -37,12 +78,6 @@ bool ReviveFromCorpseAction::Execute(Event event)
         }
         return false;
     }
-    
-    bot->ResurrectPlayer(0.5f);
-    bot->SpawnCorpseBones();
-    bot->SaveToDB();
-    context->GetValue<Unit*>("current target")->Set(NULL);
-    bot->SetSelectionGuid(ObjectGuid());
     return true;
 }
 

@@ -92,7 +92,7 @@ bool QuestRelationTravelDestination::isActive(Player* bot) {
         if (!bot->CanRewardQuest(questTemplate, false))
             return false;
 
-        if (sTravelMgr.getDialogStatus(bot, entry, questTemplate) != DIALOG_STATUS_REWARD2)
+        if (sTravelMgr.getDialogStatus(bot, entry, questTemplate) != DIALOG_STATUS_REWARD2 && sTravelMgr.getDialogStatus(bot, entry, questTemplate) != DIALOG_STATUS_REWARD_REP)
             return false;
     }
 
@@ -112,7 +112,7 @@ string QuestRelationTravelDestination::getTitle() {
 }
 
 bool QuestObjectiveTravelDestination::isActive(Player* bot) {
-    if (questTemplate->GetQuestLevel() > bot->getLevel())
+    if (questTemplate->GetQuestLevel() > bot->getLevel() + 1)
         return false;
 
     //Check mob level
@@ -144,6 +144,14 @@ string QuestObjectiveTravelDestination::getTitle() {
     return out.str();
 }
 
+
+string RpgTravelDestination::getTitle() {
+    ostringstream out;
+
+    out << "rpg location ";
+
+    return out.str();
+}
 
 
 TravelTarget::~TravelTarget() {
@@ -640,7 +648,7 @@ void TravelMgr::LoadQuestTravelTable()
         }
 
         //Mobs
-        for (int i = 0; i < 4; i++)
+        for (uint32 i = 0; i < 4; i++)
         {
             if (quest->ReqCreatureOrGOCount[i] == 0)
                 continue;
@@ -679,7 +687,7 @@ void TravelMgr::LoadQuestTravelTable()
         }
 
         //Loot
-        for (int i = 0; i < 4; i++)
+        for (uint32 i = 0; i < 4; i++)
         {
             if (quest->ReqItemCount[i] == 0)
                 continue;
@@ -870,15 +878,15 @@ uint32 TravelMgr::getDialogStatus(Player* pPlayer, int32 questgiver, Quest const
 vector<WorldPosition*> TravelMgr::getNextPoint(WorldPosition* center, vector<WorldPosition*> points) {
     vector<WorldPosition*> retVec;
     //List of weights based on distance (Gausian curve that starts at 100 and lower to 0 at 800)
-    vector<int> weights;
+    vector<uint32> weights;
 
     std::transform(points.begin(), points.end(), std::back_inserter(weights), [center](WorldPosition* point) { return 100 * exp(-1 * pow(point->distance(center) / 400.0, 2)); });
 
     //Total sum of all those weights.
-    int sum = std::accumulate(weights.begin(), weights.end(), 0);
+    uint32 sum = std::accumulate(weights.begin(), weights.end(), 0);
 
     //Pick a random number in that range.
-    int rnd = urand(0, sum);
+    uint32 rnd = urand(0, sum);
 
     //Pick a random point based on weights.
     for (unsigned i = 0; i < points.size(); ++i)
@@ -900,7 +908,7 @@ QuestStatusData* TravelMgr::getQuestStatus(Player* bot, uint32 questId)
     return &bot->getQuestStatusMap()[questId];
 }
 
-bool TravelMgr::getObjectiveStatus(Player* bot,  Quest const* pQuest, int objective)
+bool TravelMgr::getObjectiveStatus(Player* bot,  Quest const* pQuest, uint32 objective)
 {
     uint32 questId = pQuest->GetQuestId();
     if (!bot->IsActiveQuest(questId))

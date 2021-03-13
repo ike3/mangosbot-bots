@@ -598,22 +598,23 @@ namespace ai
     class NoNonBotPlayersAroundTrigger : public Trigger
     {
     public:
-        NoNonBotPlayersAroundTrigger(PlayerbotAI* ai) : Trigger(ai, "no non bot players around", 5) {}
+        NoNonBotPlayersAroundTrigger(PlayerbotAI* ai) : Trigger(ai, "no non bot players around", 10) {}
 
     public:
         virtual bool IsActive()
         {
-            if (!bot->InBattleGround())
+            return !ai->HasPlayerNearby();
+            /*if (!bot->InBattleGround())
                 return AI_VALUE(list<ObjectGuid>, "nearest non bot players").empty();
             else
-                return false;
+                return false;*/
         }
     };
 
     class NewPlayerNearbyTrigger : public Trigger
     {
     public:
-        NewPlayerNearbyTrigger(PlayerbotAI* ai) : Trigger(ai, "new player nearby", 2) {}
+        NewPlayerNearbyTrigger(PlayerbotAI* ai) : Trigger(ai, "new player nearby", 10) {}
 
     public:
         virtual bool IsActive()
@@ -625,7 +626,7 @@ namespace ai
     class CollisionTrigger : public Trigger
     {
     public:
-        CollisionTrigger(PlayerbotAI* ai) : Trigger(ai, "collision") {}
+        CollisionTrigger(PlayerbotAI* ai) : Trigger(ai, "collision", 5) {}
 
     public:
         virtual bool IsActive()
@@ -763,6 +764,15 @@ namespace ai
     {
     public:
         IsMountedTrigger(PlayerbotAI* ai) : Trigger(ai, "mounted") {}
+
+    public:
+        virtual bool IsActive();
+    };
+
+    class CorpseNearTrigger : public Trigger
+    {
+    public:
+        CorpseNearTrigger(PlayerbotAI* ai) : Trigger(ai, "corpse near", 5) {}
 
     public:
         virtual bool IsActive();

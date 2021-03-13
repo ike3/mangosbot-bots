@@ -87,7 +87,7 @@ namespace ai
             creators["release loot"] = &ActionContext::release_loot;
             creators["shoot"] = &ActionContext::shoot;
             creators["follow"] = &ActionContext::follow;
-            creators["follow"] = &ActionContext::follow;
+            creators["flee to master"] = &ActionContext::flee_to_master;
             creators["runaway"] = &ActionContext::runaway;
             creators["stay"] = &ActionContext::stay;
             creators["sit"] = &ActionContext::sit;
@@ -132,7 +132,6 @@ namespace ai
             creators["move to dark portal"] = &ActionContext::move_to_dark_portal;
             creators["move from dark portal"] = &ActionContext::move_from_dark_portal;
             creators["use dark portal azeroth"] = &ActionContext::use_dark_portal_azeroth;
-            creators["auto release"] = &ActionContext::auto_release;
         }
 
     private:
@@ -187,6 +186,7 @@ namespace ai
         static Action* sit(PlayerbotAI* ai) { return new SitAction(ai); }
         static Action* runaway(PlayerbotAI* ai) { return new RunAwayAction(ai); }
         static Action* follow(PlayerbotAI* ai) { return new FollowAction(ai); }
+        static Action* flee_to_master(PlayerbotAI* ai) { return new FleeToMasterAction(ai); }
         static Action* add_gathering_loot(PlayerbotAI* ai) { return new AddGatheringLootAction(ai); }
         static Action* add_loot(PlayerbotAI* ai) { return new AddLootAction(ai); }
         static Action* add_all_loot(PlayerbotAI* ai) { return new AddAllLootAction(ai); }
@@ -218,7 +218,6 @@ namespace ai
         static Action* move_to_dark_portal(PlayerbotAI* ai) { return new MoveToDarkPortalAction(ai); }
         static Action* use_dark_portal_azeroth(PlayerbotAI* ai) { return new DarkPortalAzerothAction(ai); }
         static Action* move_from_dark_portal(PlayerbotAI* ai) { return new MoveFromDarkPortalAction(ai); }
-        static Action* auto_release(PlayerbotAI* ai) { return new AutoReleaseSpiritAction(ai); }
     };
 
 };
