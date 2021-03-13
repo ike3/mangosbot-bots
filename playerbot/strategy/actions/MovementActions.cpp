@@ -313,11 +313,18 @@ bool MovementAction::Follow(Unit* target, float distance, float angle)
     if (!target)
         return false;
 
+    if (!bot->InBattleGround() && sServerFacade.IsDistanceLessOrEqualThan(sServerFacade.GetDistance2d(bot, target), sPlayerbotAIConfig.followDistance))
+    {
+        //ai->TellError("No need to follow");
+        return false;
+    }
+
     if (!bot->InBattleGround() 
      && sServerFacade.IsDistanceLessOrEqualThan(sServerFacade.GetDistance2d(bot, target->GetPositionX(), target->GetPositionY()), sPlayerbotAIConfig.sightDistance)
      && abs(bot->GetPositionZ() - target->GetPositionZ()) >= sPlayerbotAIConfig.spellDistance
      && ai->GetMaster()
-     && !ai->GetMaster()->GetPlayerbotAI())
+     && !ai->GetMaster()->GetPlayerbotAI()
+     && (target->GetMapId() && bot->GetMapId() != target->GetMapId()))
     {
         bot->StopMoving();
         mm.Clear();
@@ -330,6 +337,7 @@ bool MovementAction::Follow(Unit* target, float distance, float angle)
             if (target->GetMap()->IsBattleGroundOrArena() || bot->GetMap()->IsBattleGroundOrArena())
 #endif
                 return false;
+
             bot->TeleportTo(target->GetMapId(), x, y, z, bot->GetOrientation());
         }
         else
@@ -345,13 +353,6 @@ bool MovementAction::Follow(Unit* target, float distance, float angle)
         && ai->GetMaster()
         && !ai->GetMaster()->GetPlayerbotAI())
     {
-        if (sServerFacade.UnitIsDead(bot))
-        {
-            bot->ResurrectPlayer(1.0f, false);
-            ai->TellMasterNoFacing("I live, again!");
-        }
-        //else
-            //ai->TellError("I am stuck while following");
 #ifdef MANGOSBOT_ZERO
         if (target->GetMap()->IsBattleGround() || bot->GetMap()->IsBattleGround())
 #else
@@ -359,18 +360,21 @@ bool MovementAction::Follow(Unit* target, float distance, float angle)
 #endif
             return false;
 
+        if (!sServerFacade.IsAlive(bot) && sServerFacade.IsAlive(ai->GetMaster()))
+        {
+            bot->ResurrectPlayer(1.0f, false);
+            ai->TellMasterNoFacing("I live, again!");
+        }
+        //else
+            //ai->TellError("I am stuck while following");
+
+        bot->CombatStop(true);
         bot->TeleportTo(target->GetMapId(), target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), target->GetOrientation());
         return false;
     }
 
     if (sServerFacade.IsFriendlyTo(target, bot) && bot->IsMounted() && AI_VALUE(list<ObjectGuid>, "all targets").empty())
         distance += angle;
-
-    if (!bot->InBattleGround() && sServerFacade.IsDistanceLessOrEqualThan(sServerFacade.GetDistance2d(bot, target), sPlayerbotAIConfig.followDistance))
-    {
-        //ai->TellError("No need to follow");
-        return false;
-    }
 
     bot->HandleEmoteState(0);
     if (bot->IsSitState())
