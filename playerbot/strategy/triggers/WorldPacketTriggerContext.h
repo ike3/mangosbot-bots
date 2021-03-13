@@ -52,6 +52,8 @@ namespace ai
             creators["see spell"] = &WorldPacketTriggerContext::seespell;
             creators["release spirit"] = &WorldPacketTriggerContext::release_spirit;
             creators["revive from corpse"] = &WorldPacketTriggerContext::revive_from_corpse;
+            creators["receive emote"] = &WorldPacketTriggerContext::receive_emote;
+            creators["receive text emote"] = &WorldPacketTriggerContext::receive_text_emote;
         }
 
     private:
@@ -97,5 +99,7 @@ namespace ai
         static Trigger* seespell(PlayerbotAI* ai) { return new WorldPacketTrigger(ai, "see spell"); }
         static Trigger* release_spirit(PlayerbotAI* ai) { return new WorldPacketTrigger(ai, "release spirit"); }
         static Trigger* revive_from_corpse(PlayerbotAI* ai) { return new WorldPacketTrigger(ai, "revive from corpse"); }
+        static Trigger* receive_emote(PlayerbotAI* ai) { return new WorldPacketTrigger(ai, "receive emote"); }
+        static Trigger* receive_text_emote(PlayerbotAI* ai) { return new WorldPacketTrigger(ai, "receive text emote"); }
     };
 };

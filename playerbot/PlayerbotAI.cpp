@@ -127,6 +127,8 @@ PlayerbotAI::PlayerbotAI(Player* bot) :
     botOutgoingPacketHandlers.AddHandler(SMSG_PARTY_COMMAND_RESULT, "party command");
     botOutgoingPacketHandlers.AddHandler(SMSG_LEVELUP_INFO, "levelup");
     botOutgoingPacketHandlers.AddHandler(SMSG_LOG_XPGAIN, "xpgain");
+    botOutgoingPacketHandlers.AddHandler(SMSG_TEXT_EMOTE, "receive text emote");
+    botOutgoingPacketHandlers.AddHandler(SMSG_EMOTE, "receive emote");
 #ifdef MANGOSBOT_TWO
     botOutgoingPacketHandlers.AddHandler(SMSG_LFG_ROLE_CHECK_UPDATE, "lfg role check");
     botOutgoingPacketHandlers.AddHandler(SMSG_LFG_PROPOSAL_UPDATE, "lfg proposal");
@@ -660,415 +662,6 @@ bool PlayerbotAI::PlaySound(uint32 emote)
     }
 
     return false;
-}
-
-//thesawolf - emotion responses
-void PlayerbotAI::ReceiveEmote(Player* player, uint32 emote)
-{
-    // thesawolf - lets clear any running emotes first
-    bot->HandleEmoteCommand(EMOTE_ONESHOT_NONE);
-    switch (emote)
-    {
-    case TEXTEMOTE_BONK:
-        bot->HandleEmoteCommand(EMOTE_ONESHOT_CRY);
-        break;
-    case TEXTEMOTE_SALUTE:
-        bot->HandleEmoteCommand(EMOTE_ONESHOT_SALUTE);
-        break;
-    //case TEXTEMOTE_WAIT:
-    //    //SetBotCommandState(COMMAND_STAY);
-    //    bot->Say("Fine.. I'll stay right here..", LANG_UNIVERSAL);
-    //    break;
-    case TEXTEMOTE_BECKON:
-    //case TEXTEMOTE_FOLLOW:
-        //SetBotCommandState(COMMAND_FOLLOW, true);
-        bot->Say("Wherever you go, I'll follow..", LANG_UNIVERSAL);
-        break;
-    case TEXTEMOTE_WAVE:
-    case TEXTEMOTE_GREET:
-    case TEXTEMOTE_HAIL:
-    case TEXTEMOTE_HELLO:
-    case TEXTEMOTE_WELCOME:
-    case TEXTEMOTE_INTRODUCE:
-        bot->HandleEmoteCommand(EMOTE_ONESHOT_WAVE);
-        bot->Say("Hey there!", LANG_UNIVERSAL);
-        break;
-    case TEXTEMOTE_DANCE:
-        bot->HandleEmoteCommand(EMOTE_ONESHOT_DANCE);
-        bot->Say("Shake what your mama gave you!", LANG_UNIVERSAL);
-        break;
-    case TEXTEMOTE_FLIRT:
-    case TEXTEMOTE_KISS:
-    case TEXTEMOTE_HUG:
-    case TEXTEMOTE_BLUSH:
-    case TEXTEMOTE_SMILE:
-    case TEXTEMOTE_LOVE:
-    //case TEXTEMOTE_HOLDHAND:
-        bot->HandleEmoteCommand(EMOTE_ONESHOT_SHY);
-        bot->Say("Awwwww...", LANG_UNIVERSAL);
-        break;
-    case TEXTEMOTE_FLEX:
-        bot->HandleEmoteCommand(EMOTE_ONESHOT_APPLAUD);
-        bot->Say("Hercules! Hercules!", LANG_UNIVERSAL);
-        break;
-    case TEXTEMOTE_ANGRY:
-    //case TEXTEMOTE_FACEPALM:
-    case TEXTEMOTE_GLARE:
-    case TEXTEMOTE_BLAME:
-    //case TEXTEMOTE_FAIL:
-    //case TEXTEMOTE_REGRET:
-    //case TEXTEMOTE_SCOLD:
-    //case TEXTEMOTE_CROSSARMS:
-        bot->HandleEmoteCommand(EMOTE_ONESHOT_QUESTION);
-        bot->Say("Did I do thaaaaat?", LANG_UNIVERSAL);
-        break;
-    case TEXTEMOTE_FART:
-    case TEXTEMOTE_BURP:
-    case TEXTEMOTE_GASP:
-    case TEXTEMOTE_NOSEPICK:
-    case TEXTEMOTE_SNIFF:
-    case TEXTEMOTE_STINK:
-        bot->HandleEmoteCommand(EMOTE_ONESHOT_POINT);
-        bot->Say("Wasn't me! Just sayin'..", LANG_UNIVERSAL);
-        break;
-    case TEXTEMOTE_JOKE:
-        bot->HandleEmoteCommand(EMOTE_ONESHOT_LAUGH);
-        bot->Say("Oh.. was I not supposed to laugh so soon?", LANG_UNIVERSAL);
-        break;
-    case TEXTEMOTE_CHICKEN:
-        bot->HandleEmoteCommand(EMOTE_ONESHOT_RUDE);
-        bot->Say("We'll see who's chicken soon enough!", LANG_UNIVERSAL);
-        break;
-    case TEXTEMOTE_APOLOGIZE:
-        bot->HandleEmoteCommand(EMOTE_ONESHOT_POINT);
-        bot->Say("You damn right you're sorry!", LANG_UNIVERSAL);
-        break;
-    case TEXTEMOTE_APPLAUD:
-    case TEXTEMOTE_CLAP:
-    case TEXTEMOTE_CONGRATULATE:
-    case TEXTEMOTE_HAPPY:
-    //case TEXTEMOTE_GOLFCLAP:
-        bot->HandleEmoteCommand(EMOTE_ONESHOT_BOW);
-        bot->Say("Thank you.. Thank you.. I'm here all week.", LANG_UNIVERSAL);
-        break;
-    case TEXTEMOTE_BEG:
-    case TEXTEMOTE_GROVEL:
-    case TEXTEMOTE_PLEAD:
-        bot->HandleEmoteCommand(EMOTE_ONESHOT_NO);
-        bot->Say("Beg all you want.. I have nothing for you.", LANG_UNIVERSAL);
-        break;
-    case TEXTEMOTE_BITE:
-    case TEXTEMOTE_POKE:
-    case TEXTEMOTE_SCRATCH:
-    //case TEXTEMOTE_PINCH:
-    //case TEXTEMOTE_PUNCH:
-        bot->HandleEmoteCommand(EMOTE_ONESHOT_ROAR);
-        bot->Yell("OUCH! Dammit, that hurt!", LANG_UNIVERSAL);
-        break;
-    case TEXTEMOTE_BORED:
-        bot->HandleEmoteCommand(EMOTE_ONESHOT_NO);
-        bot->Say("My job description doesn't include entertaining you..", LANG_UNIVERSAL);
-        break;
-    case TEXTEMOTE_BOW:
-    case TEXTEMOTE_CURTSEY:
-        bot->HandleEmoteCommand(EMOTE_ONESHOT_BOW);
-        break;
-    case TEXTEMOTE_BRB:
-    case TEXTEMOTE_SIT:
-        bot->HandleEmoteCommand(EMOTE_ONESHOT_EAT);
-        bot->Say("Looks like time for an AFK break..", LANG_UNIVERSAL);
-        break;
-    case TEXTEMOTE_AGREE:
-    case TEXTEMOTE_NOD:
-        bot->HandleEmoteCommand(EMOTE_ONESHOT_EXCLAMATION);
-        bot->Say("At least SOMEONE agrees with me!", LANG_UNIVERSAL);
-        break;
-    case TEXTEMOTE_AMAZE:
-    case TEXTEMOTE_COWER:
-    case TEXTEMOTE_CRINGE:
-    case TEXTEMOTE_EYE:
-    case TEXTEMOTE_KNEEL:
-    case TEXTEMOTE_PEER:
-    case TEXTEMOTE_SURRENDER:
-    case TEXTEMOTE_PRAISE:
-    case TEXTEMOTE_SCARED:
-    case TEXTEMOTE_COMMEND:
-    //case TEXTEMOTE_AWE:
-    //case TEXTEMOTE_JEALOUS:
-    //case TEXTEMOTE_PROUD:
-        bot->HandleEmoteCommand(EMOTE_ONESHOT_FLEX);
-        bot->Say("Yes, Yes. I know I'm amazing..", LANG_UNIVERSAL);
-        break;
-    case TEXTEMOTE_BLEED:
-    case TEXTEMOTE_MOURN:
-    case TEXTEMOTE_FLOP:
-    //case TEXTEMOTE_FAINT:
-    //case TEXTEMOTE_PULSE:
-        bot->HandleEmoteCommand(EMOTE_ONESHOT_KNEEL);
-        bot->Yell("MEDIC! Stat!", LANG_UNIVERSAL);
-        break;
-    case TEXTEMOTE_BLINK:
-        bot->HandleEmoteCommand(EMOTE_ONESHOT_KICK);
-        bot->Say("What? You got something in your eye?", LANG_UNIVERSAL);
-        break;
-    case TEXTEMOTE_BOUNCE:
-    case TEXTEMOTE_BARK:
-        bot->HandleEmoteCommand(EMOTE_ONESHOT_POINT);
-        bot->Say("Who's a good doggy? You're a good doggy!", LANG_UNIVERSAL);
-        break;
-    case TEXTEMOTE_BYE:
-        bot->HandleEmoteCommand(EMOTE_ONESHOT_WAVE);
-        bot->Say("Umm.... wait! Where are you going?!", LANG_UNIVERSAL);
-        break;
-    case TEXTEMOTE_CACKLE:
-    case TEXTEMOTE_LAUGH:
-    case TEXTEMOTE_CHUCKLE:
-    case TEXTEMOTE_GIGGLE:
-    case TEXTEMOTE_GUFFAW:
-    case TEXTEMOTE_ROFL:
-    case TEXTEMOTE_SNICKER:
-    //case TEXTEMOTE_SNORT:
-        bot->HandleEmoteCommand(EMOTE_ONESHOT_LAUGH);
-        bot->Say("Wait... what are we laughing at again?", LANG_UNIVERSAL);
-        break;
-    case TEXTEMOTE_CONFUSED:
-    case TEXTEMOTE_CURIOUS:
-    case TEXTEMOTE_FIDGET:
-    case TEXTEMOTE_FROWN:
-    case TEXTEMOTE_SHRUG:
-    case TEXTEMOTE_SIGH:
-    case TEXTEMOTE_STARE:
-    case TEXTEMOTE_TAP:
-    case TEXTEMOTE_SURPRISED:
-    case TEXTEMOTE_WHINE:
-    case TEXTEMOTE_BOGGLE:
-    case TEXTEMOTE_LOST:
-    case TEXTEMOTE_PONDER:
-    case TEXTEMOTE_SNUB:
-    case TEXTEMOTE_SERIOUS:
-    case TEXTEMOTE_EYEBROW:
-        bot->HandleEmoteCommand(EMOTE_ONESHOT_QUESTION);
-        bot->Say("Don't look at  me.. I just work here", LANG_UNIVERSAL);
-        break;
-    case TEXTEMOTE_COUGH:
-    case TEXTEMOTE_DROOL:
-    case TEXTEMOTE_SPIT:
-    case TEXTEMOTE_LICK:
-    case TEXTEMOTE_BREATH:
-    //case TEXTEMOTE_SNEEZE:
-    //case TEXTEMOTE_SWEAT:
-        bot->HandleEmoteCommand(EMOTE_ONESHOT_POINT);
-        bot->Say("Ewww! Keep your nasty germs over there!", LANG_UNIVERSAL);
-        break;
-    case TEXTEMOTE_CRY:
-        bot->HandleEmoteCommand(EMOTE_ONESHOT_CRY);
-        bot->Say("Don't you start crying or it'll make me start crying!", LANG_UNIVERSAL);
-        break;
-    case TEXTEMOTE_CRACK:
-        bot->HandleEmoteCommand(EMOTE_ONESHOT_ROAR);
-        bot->Say("It's clobbering time!", LANG_UNIVERSAL);
-        break;
-    case TEXTEMOTE_EAT:
-    case TEXTEMOTE_DRINK:
-        bot->HandleEmoteCommand(EMOTE_ONESHOT_EAT);
-        bot->Say("I hope you brought enough for the whole class...", LANG_UNIVERSAL);
-        break;
-    case TEXTEMOTE_GLOAT:
-    case TEXTEMOTE_MOCK:
-    case TEXTEMOTE_TEASE:
-    case TEXTEMOTE_EMBARRASS:
-        bot->HandleEmoteCommand(EMOTE_ONESHOT_CRY);
-        bot->Say("Doesn't mean you need to be an ass about it..", LANG_UNIVERSAL);
-        break;
-    case TEXTEMOTE_HUNGRY:
-        bot->HandleEmoteCommand(EMOTE_ONESHOT_EAT);
-        bot->Say("What? You want some of this?", LANG_UNIVERSAL);
-        break;
-    case TEXTEMOTE_LAYDOWN:
-    case TEXTEMOTE_TIRED:
-    case TEXTEMOTE_YAWN:
-        bot->HandleEmoteCommand(EMOTE_ONESHOT_KNEEL);
-        bot->Say("Is it break time already?", LANG_UNIVERSAL);
-        break;
-    case TEXTEMOTE_MOAN:
-    case TEXTEMOTE_MOON:
-    case TEXTEMOTE_SEXY:
-    case TEXTEMOTE_SHAKE:
-    case TEXTEMOTE_WHISTLE:
-    case TEXTEMOTE_CUDDLE:
-    case TEXTEMOTE_PURR:
-    case TEXTEMOTE_SHIMMY:
-    case TEXTEMOTE_SMIRK:
-    case TEXTEMOTE_WINK:
-    //case TEXTEMOTE_CHARM:
-        bot->HandleEmoteCommand(EMOTE_ONESHOT_NO);
-        bot->Say("Keep it in your pants, boss..", LANG_UNIVERSAL);
-        break;
-    case TEXTEMOTE_NO:
-    case TEXTEMOTE_VETO:
-    case TEXTEMOTE_DISAGREE:
-    case TEXTEMOTE_DOUBT:
-        bot->HandleEmoteCommand(EMOTE_ONESHOT_QUESTION);
-        bot->Say("Aww.... why not?!", LANG_UNIVERSAL);
-        break;
-    case TEXTEMOTE_PANIC:
-        bot->HandleEmoteCommand(EMOTE_ONESHOT_EXCLAMATION);
-        bot->Say("Now is NOT the time to panic!", LANG_UNIVERSAL);
-        break;
-    case TEXTEMOTE_POINT:
-        bot->HandleEmoteCommand(EMOTE_ONESHOT_POINT);
-        bot->Say("What?! I can do that TOO!", LANG_UNIVERSAL);
-        break;
-    case TEXTEMOTE_RUDE:
-    case TEXTEMOTE_RASP:
-        bot->HandleEmoteCommand(EMOTE_ONESHOT_RUDE);
-        bot->Say("Right back at you, bub!", LANG_UNIVERSAL);
-        break;
-    case TEXTEMOTE_ROAR:
-    case TEXTEMOTE_THREATEN:
-    case TEXTEMOTE_CALM:
-    case TEXTEMOTE_DUCK:
-    case TEXTEMOTE_TAUNT:
-    case TEXTEMOTE_PITY:
-    case TEXTEMOTE_GROWL:
-    //case TEXTEMOTE_TRAIN:
-    //case TEXTEMOTE_INCOMING:
-    //case TEXTEMOTE_CHARGE:
-    //case TEXTEMOTE_FLEE:
-    //case TEXTEMOTE_ATTACKMYTARGET:
-    case TEXTEMOTE_OPENFIRE:
-    case TEXTEMOTE_ENCOURAGE:
-    case TEXTEMOTE_ENEMY:
-    //case TEXTEMOTE_CHALLENGE:
-    //case TEXTEMOTE_REVENGE:
-    //case TEXTEMOTE_SHAKEFIST:
-        bot->HandleEmoteCommand(EMOTE_ONESHOT_ROAR);
-        bot->Yell("RAWR!", LANG_UNIVERSAL);
-        break;
-    case TEXTEMOTE_TALK:
-    case TEXTEMOTE_TALKEX:
-    case TEXTEMOTE_TALKQ:
-    case TEXTEMOTE_LISTEN:
-        bot->HandleEmoteCommand(EMOTE_ONESHOT_TALK);
-        bot->Say("Blah Blah Blah Yakety Smackety..", LANG_UNIVERSAL);
-        break;
-    case TEXTEMOTE_THANK:
-        bot->HandleEmoteCommand(EMOTE_ONESHOT_BOW);
-        bot->Say("You are quite welcome!", LANG_UNIVERSAL);
-        break;
-    case TEXTEMOTE_VICTORY:
-    case TEXTEMOTE_CHEER:
-    case TEXTEMOTE_TOAST:
-    //case TEXTEMOTE_HIGHFIVE:
-    //case TEXTEMOTE_DING:
-        bot->HandleEmoteCommand(EMOTE_ONESHOT_CHEER);
-        bot->Say("Yay!", LANG_UNIVERSAL);
-        break;
-    case TEXTEMOTE_COLD:
-    case TEXTEMOTE_SHIVER:
-    case TEXTEMOTE_THIRSTY:
-    //case TEXTEMOTE_OOM:
-    //case TEXTEMOTE_HEALME:
-    //case TEXTEMOTE_POUT:
-        bot->HandleEmoteCommand(EMOTE_ONESHOT_QUESTION);
-        bot->Say("And what exactly am I supposed to do about that?", LANG_UNIVERSAL);
-        break;
-    case TEXTEMOTE_COMFORT:
-    case TEXTEMOTE_SOOTHE:
-    case TEXTEMOTE_PAT:
-        bot->HandleEmoteCommand(EMOTE_ONESHOT_CRY);
-        bot->Say("Thanks...", LANG_UNIVERSAL);
-        break;
-    case TEXTEMOTE_INSULT:
-        bot->HandleEmoteCommand(EMOTE_ONESHOT_CRY);
-        bot->Say("You hurt my feelings..", LANG_UNIVERSAL);
-        break;
-    case TEXTEMOTE_JK:
-        bot->HandleEmoteCommand(EMOTE_ONESHOT_POINT);
-        bot->Say("You.....", LANG_UNIVERSAL);
-        break;
-    case TEXTEMOTE_RAISE:
-        bot->HandleEmoteCommand(EMOTE_ONESHOT_POINT);
-        bot->Say("Yes.. you.. at the back of the class..", LANG_UNIVERSAL);
-        break;
-    case TEXTEMOTE_READY:
-        bot->HandleEmoteCommand(EMOTE_ONESHOT_SALUTE);
-        bot->Say("Ready here, too!", LANG_UNIVERSAL);
-        break;
-    case TEXTEMOTE_SHOO:
-        bot->HandleEmoteCommand(EMOTE_ONESHOT_KICK);
-        bot->Say("Shoo yourself!", LANG_UNIVERSAL);
-        break;
-    case TEXTEMOTE_SLAP:
-    //case TEXTEMOTE_SMACK:
-        bot->HandleEmoteCommand(EMOTE_ONESHOT_CRY);
-        bot->Say("What did I do to deserve that?", LANG_UNIVERSAL);
-        break;
-    case TEXTEMOTE_STAND:
-        bot->HandleEmoteCommand(EMOTE_ONESHOT_NONE);
-        bot->Say("What? Break time's over? Fine..", LANG_UNIVERSAL);
-        break;
-    case TEXTEMOTE_TICKLE:
-        bot->HandleEmoteCommand(EMOTE_ONESHOT_LAUGH);
-        bot->Say("Hey! Stop that!", LANG_UNIVERSAL);
-        break;
-    case TEXTEMOTE_VIOLIN:
-        bot->HandleEmoteCommand(EMOTE_ONESHOT_TALK);
-        bot->Say("Har Har.. very funny..", LANG_UNIVERSAL);
-        break;
-    //case TEXTEMOTE_HELPME:
-    //    bot->HandleEmoteCommand(EMOTE_ONESHOT_POINT);
-    //    bot->Yell("Quick! Someone HELP!", LANG_UNIVERSAL);
-    //    break;
-    case TEXTEMOTE_GOODLUCK:
-    //case TEXTEMOTE_LUCK:
-        bot->HandleEmoteCommand(EMOTE_ONESHOT_TALK);
-        bot->Say("Thanks... I'll need it..", LANG_UNIVERSAL);
-        break;
-    case TEXTEMOTE_BRANDISH:
-    //case TEXTEMOTE_MERCY:
-        bot->HandleEmoteCommand(EMOTE_ONESHOT_BEG);
-        bot->Say("Please don't kill me!", LANG_UNIVERSAL);
-        break;
-    /*case TEXTEMOTE_BADFEELING:
-        bot->HandleEmoteCommand(EMOTE_ONESHOT_QUESTION);
-        bot->Say("I'm just waiting for the ominous music now...", LANG_UNIVERSAL);
-        break;
-    case TEXTEMOTE_MAP:
-        bot->HandleEmoteCommand(EMOTE_ONESHOT_NO);
-        bot->Say("Noooooooo.. you just couldn't ask for directions, huh?", LANG_UNIVERSAL);
-        break;
-    case TEXTEMOTE_IDEA:
-    case TEXTEMOTE_THINK:
-        bot->HandleEmoteCommand(EMOTE_ONESHOT_NO);
-        bot->Say("Oh boy.. another genius idea...", LANG_UNIVERSAL);
-        break;
-    case TEXTEMOTE_OFFER:
-        bot->HandleEmoteCommand(EMOTE_ONESHOT_NO);
-        bot->Say("No thanks.. I had some back at the last village", LANG_UNIVERSAL);
-        break;
-    case TEXTEMOTE_PET:
-        bot->HandleEmoteCommand(EMOTE_ONESHOT_ROAR);
-        bot->Say("Do I look like a dog to you?!", LANG_UNIVERSAL);
-        break;
-    case TEXTEMOTE_ROLLEYES:
-        bot->HandleEmoteCommand(EMOTE_ONESHOT_POINT);
-        bot->Say("Keep doing that and I'll roll those eyes right out of your head..", LANG_UNIVERSAL);
-        break;
-    case TEXTEMOTE_SING:
-        bot->HandleEmoteCommand(EMOTE_ONESHOT_APPLAUD);
-        bot->Say("Lovely... just lovely..", LANG_UNIVERSAL);
-        break;
-    case TEXTEMOTE_COVEREARS:
-        bot->HandleEmoteCommand(EMOTE_ONESHOT_EXCLAMATION);
-        bot->Yell("You think that's going to help you?!", LANG_UNIVERSAL);
-        break;*/
-    default:
-        bot->HandleEmoteCommand(EMOTE_ONESHOT_QUESTION);
-        bot->Say("Mmmmmkaaaaaay...", LANG_UNIVERSAL);
-        break;
-    }
-    return;
 }
 
 bool PlayerbotAI::ContainsStrategy(StrategyType type)
@@ -1916,8 +1509,13 @@ bool PlayerbotAI::HasPlayerNearby(float range)
     for (auto& player : sRandomPlayerbotMgr.GetPlayers())
     {
         if ((!player->GetPlayerbotAI() || player->GetPlayerbotAI()->isRealPlayer()) && (!player->IsGameMaster() || player->isGMVisible()))
+        {
+            if (player->GetMap() != bot->GetMap())
+                continue;
+
             if (player->GetDistance(bot, false, DIST_CALC_NONE) < sqRange)
                 return true;
+        }
     }
 
     return false;
@@ -1965,7 +1563,7 @@ bool PlayerbotAI::AllowActive(ActivityType activityType)
         return true;
 
     if (GetMaster()) //Has player master. Always active.
-        if (!GetMaster()->GetPlayerbotAI() || GetMaster()->GetPlayerbotAI()->isRealPlayer())
+        if (!GetMaster()->GetPlayerbotAI() || GetMaster()->GetPlayerbotAI()->isRealPlayer() || GetMaster()->GetPlayerbotAI()->AllowActive(ALL_ACTIVITY))
             return true;
 
     if (bot->InBattleGround()) //In battle ground. Always active.
@@ -2492,7 +2090,7 @@ static const uint32 uPriorizedWeightStoneIds[7] =
  * FindStoneFor()
  * return Item* Returns sharpening/weight stone item eligible to enchant a bot weapon
  *
- * params:weapon Item* the weapôn the function should search and return a enchanting item for
+ * params:weapon Item* the weapï¿½n the function should search and return a enchanting item for
  * return nullptr if no relevant item is found in bot inventory, else return a sharpening or weight
  * stone based on the weapon subclass
  *
