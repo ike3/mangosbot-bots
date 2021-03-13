@@ -1294,7 +1294,7 @@ bool RandomPlayerbotMgr::ProcessBot(Player* player)
         }
     }
 
-    if (sServerFacade.UnitIsDead(player) && !player->InBattleGround())
+    /*if (sServerFacade.UnitIsDead(player) && !player->InBattleGround())
     {
         if (!GetEventValue(bot, "dead"))
         {
@@ -1328,7 +1328,7 @@ bool RandomPlayerbotMgr::ProcessBot(Player* player)
             }
            return false; // increase revive rate
         }
-    }
+    }*/
 
 	if (urand(0, 100) > 20) // move optimisation to the next step
 	{
