@@ -59,7 +59,7 @@ namespace ai
     class UnstealthTrigger : public BuffTrigger
     {
     public:
-        UnstealthTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "stealth", 2) {}
+        UnstealthTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "stealth", 3) {}
         virtual bool IsActive()
         {
             if (!ai->HasAura("stealth", bot))
@@ -71,8 +71,7 @@ namespace ai
                 ((ai->GetMaster() &&
                     sServerFacade.IsDistanceGreaterThan(AI_VALUE2(float, "distance", "master target"), 10.0f) &&
                     AI_VALUE2(bool, "moving", "master target")) ||
-                    (!ai->GetMaster() &&
-                        !AI_VALUE(uint8, "attacker count"))));
+                    !AI_VALUE(uint8, "attacker count")));
         }
     };
 
@@ -135,7 +134,7 @@ namespace ai
     class SprintTrigger : public BuffTrigger
     {
     public:
-        SprintTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "sprint", 2) {}
+        SprintTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "sprint", 3) {}
         virtual bool IsPossible()
         {
             return bot->HasSpell(2983);
