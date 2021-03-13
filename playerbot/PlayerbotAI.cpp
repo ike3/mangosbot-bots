@@ -1852,8 +1852,8 @@ enum BotTypeNumber
 
 uint32 PlayerbotAI::GetFixedBotNumer(BotTypeNumber typeNumber, uint32 maxNum, uint32 cyclePerMin)
 {
-    srand(typeNumber);
-    uint32 randseed = rand();                                      //Seed random number
+    std::mt19937 rng(typeNumber);
+    uint32 randseed = rng();                                       //Seed random number
     uint32 randnum = bot->GetGUIDLow() + randseed;                 //Semi-random but fixed number for each bot.
 
     if (cyclePerMin > 0)
