@@ -30,7 +30,7 @@ public:
     virtual bool Check(Unit* unit)
     {
         Player* player = dynamic_cast<Player*>(unit);
-        return player && sServerFacade.GetDeathState(player) == CORPSE && !value->IsTargetOfSpellCast(player, predicate);
+        return player && !player->isRessurectRequested() && sServerFacade.GetDeathState(player) == CORPSE && !value->IsTargetOfSpellCast(player, predicate);
     }
 
 private:
