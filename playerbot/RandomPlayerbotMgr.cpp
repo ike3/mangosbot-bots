@@ -1196,8 +1196,8 @@ bool RandomPlayerbotMgr::ProcessBot(uint32 bot)
     Player* player = GetPlayerBot(bot);
     PlayerbotAI* ai = player ? player->GetPlayerbotAI() : NULL;
 
-    if (ai && !ai->AllowActive(ALL_ACTIVITY))
-        return false;
+    //if (ai && !ai->AllowActive(ALL_ACTIVITY))
+    //    return false;
 
     uint32 isValid = GetEventValue(bot, "add");
     if (!isValid)
