@@ -2255,6 +2255,11 @@ void PlayerbotFactory::InitInventoryEquip()
 void PlayerbotFactory::InitGuild()
 {
     bot->SaveToDB();
+
+    // add guild tabard
+    if (bot->GetGuildId() && !bot->HasItemCount(5976, 1))
+        StoreItem(5976, 1);
+
     if (bot->GetGuildId())
         return;
 
@@ -2284,10 +2289,8 @@ void PlayerbotFactory::InitGuild()
         guild->AddMember(bot->GetObjectGuid(), urand(GR_OFFICER, GR_INITIATE));
 
     // add guild tabard
-    if (bot->GetGuildId() && bot->getLevel() > 9 && urand(0, 100) > 30)
-    {
+    if (bot->GetGuildId() && bot->getLevel() > 9 && urand(0, 4) && !bot->HasItemCount(5976, 1))
         StoreItem(5976, 1);
-    }
 
     bot->SaveToDB();
 }
