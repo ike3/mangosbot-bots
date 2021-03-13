@@ -27,7 +27,7 @@ bool ReviveFromCorpseAction::Execute(Event event)
     packet << bot->GetObjectGuid();
     bot->GetSession()->HandleReclaimCorpseOpcode(packet);
 
-    sLog.outBasic("Bot #%d %s:%d <%s> revives", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName());
+    sLog.outBasic("Bot #%d %s:%d <%s> revived", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName());
 
     context->GetValue<Unit*>("current target")->Set(NULL);
     bot->SetSelectionGuid(ObjectGuid());
@@ -58,7 +58,7 @@ bool FindCorpseAction::Execute(Event event)
         float y = corpse->GetPositionY();
         float z = corpse->GetPositionZ();;
 
-        sLog.outBasic("Bot #%d %s:%d <%s> looks for corpse", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName());
+        sLog.outBasic("Bot #%d %s:%d <%s> moves to body", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName());
 
         if (!ai->HasPlayerNearby())
         {

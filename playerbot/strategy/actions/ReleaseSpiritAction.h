@@ -14,19 +14,29 @@ namespace ai
     public:
         virtual bool Execute(Event event)
         {
-            if (sServerFacade.IsAlive(bot) || bot->GetCorpse())
+            if (sServerFacade.IsAlive(bot))
             {
-                ai->TellError("I am not dead");
+                ai->TellError("I am not dead, will wait here");
+                ai->ChangeStrategy("-follow,+stay", BOT_STATE_NON_COMBAT);
                 return false;
             }
 
-            ai->ChangeStrategy("-follow,+stay", BOT_STATE_NON_COMBAT);
+            if (bot->GetCorpse())
+            {
+                ai->TellError("I am already a spirit");
+                return false;
+            }
 
-            bot->SetBotDeathTimer();
-            bot->BuildPlayerRepop();
+            WorldPacket& p = event.getPacket();
+            if (!p.empty() && p.GetOpcode() == CMSG_REPOP_REQUEST)
+                ai->TellMaster("Releasing...");
+            else
+                ai->TellMaster("Meet me at the graveyard");
 
-            bot->RepopAtGraveyard();
-            ai->TellMaster("Meet me at the graveyard");
+            WorldPacket packet(CMSG_REPOP_REQUEST);
+            packet << uint8(0);
+            bot->GetSession()->HandleRepopRequestOpcode(packet);
+            sLog.outBasic("Bot #%d %s:%d <%s> released", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName());
             return true;
         }
     };
@@ -37,13 +47,18 @@ namespace ai
 
         virtual bool Execute(Event event)
         {
-            bot->SetBotDeathTimer();
-            bot->BuildPlayerRepop();
-
-            bot->RepopAtGraveyard();
+            WorldPacket packet(CMSG_REPOP_REQUEST);
+            packet << uint8(0);
+            bot->GetSession()->HandleRepopRequestOpcode(packet);
+            sLog.outBasic("Bot #%d %s:%d <%s> released", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName());
             return true;
         }
 
-        virtual bool isUseful() { return (!bot->GetGroup() || !sServerFacade.IsAlive(ai->GetGroupMaster())) && !sServerFacade.IsAlive(bot) && !bot->GetCorpse(); }
+        virtual bool isUseful()
+        {
+            return (!bot->GetGroup() || !sServerFacade.IsAlive(ai->GetGroupMaster()))
+                && !sServerFacade.IsAlive(bot)
+                && !bot->GetCorpse();
+        }
     };
 }
