@@ -118,12 +118,12 @@ void PlayerbotFactory::Prepare()
         bot->SetLevel(level);
     }
 
-    if (!sPlayerbotAIConfig.randomBotShowHelmet)
+    if (!sPlayerbotAIConfig.randomBotShowHelmet || !urand(0, 4))
     {
        bot->SetFlag(PLAYER_FLAGS, PLAYER_FLAGS_HIDE_HELM);
     }
 
-    if (!sPlayerbotAIConfig.randomBotShowCloak)
+    if (!sPlayerbotAIConfig.randomBotShowCloak || !urand(0, 4))
     {
        bot->SetFlag(PLAYER_FLAGS, PLAYER_FLAGS_HIDE_CLOAK);
     }
