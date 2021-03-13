@@ -1362,6 +1362,10 @@ bool RandomPlayerbotMgr::ProcessBot(Player* player)
         {
             Randomize(player);
 
+            // leave group in teleport
+            if (player->GetGroup())
+                player->GetPlayerbotAI()->DoSpecificAction("leave far away");
+
             // activate lfg
             player->GetPlayerbotAI()->ChangeStrategy("+lfg", BOT_STATE_NON_COMBAT);
         }
@@ -2478,6 +2482,10 @@ void RandomPlayerbotMgr::ChangeStrategy(Player* player)
 		sLog.outBasic("Bot #%d <%s>: sent to inn", bot, player->GetName());
         RandomTeleportForRpg(player);
 		SetEventValue(bot, "teleport", 1, sPlayerbotAIConfig.maxRandomBotInWorldTime);
+
+        // leave group in teleport
+        if (player->GetGroup())
+            player->GetPlayerbotAI()->DoSpecificAction("leave far away");
 
         // activate lfg
         player->GetPlayerbotAI()->ChangeStrategy("+lfg", BOT_STATE_NON_COMBAT);
