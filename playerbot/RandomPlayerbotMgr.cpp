@@ -460,7 +460,7 @@ void RandomPlayerbotMgr::CheckBgQueue()
         if (!pvpDiff)
             continue;
 
-        BattleGroundBracketId bracketId = (BattleGroundBracketId)pvpDiff->bracketId;
+        BattleGroundBracketId bracketId = pvpDiff->GetBracketId();
 #else
         BattleGroundBracketId bracketId = player->GetBattleGroundBracketIdFromLevel(bgTypeId);
 #endif
@@ -570,7 +570,7 @@ void RandomPlayerbotMgr::CheckBgQueue()
         if (!pvpDiff)
             continue;
 
-        BattleGroundBracketId bracketId = BattleGroundBracketId(pvpDiff->bracketId);
+        BattleGroundBracketId bracketId = pvpDiff->GetBracketId();
 #else
         BattleGroundBracketId bracketId = bot->GetBattleGroundBracketIdFromLevel(bgTypeId);
 #endif
@@ -802,7 +802,7 @@ void RandomPlayerbotMgr::AddBgBot(BattleGroundQueueTypeId queueTypeId, BattleGro
             if (!pvpDiff)
                 continue;
 
-            BattleGroundBracketId bracket_temp = (BattleGroundBracketId)pvpDiff->bracketId;
+            BattleGroundBracketId bracket_temp = pvpDiff->GetBracketId();
 
             if (bracket_temp != bracketId)
                 continue;
@@ -812,11 +812,11 @@ void RandomPlayerbotMgr::AddBgBot(BattleGroundQueueTypeId queueTypeId, BattleGro
 #endif
 #endif
 
-            if (bot->GetPlayerbotAI()->GetMaster())
+            if (bot->GetPlayerbotAI()->GetMaster() && !bot->GetPlayerbotAI()->GetMaster()->GetPlayerbotAI())
                 continue;
 
-            if (bot->GetGroup())
-                continue;
+            //if (bot->GetGroup())
+            //    continue;
 
             if (bot->IsInCombat())
                 continue;
@@ -1107,6 +1107,7 @@ void RandomPlayerbotMgr::AddBgBot(BattleGroundQueueTypeId queueTypeId, BattleGro
             player->GetPlayerbotAI()->GetAiObjectContext()->GetValue<ObjectGuid>("bg master")->Set(BmGuid);
         }
     }
+#ifndef MANGOSBOT_TWO
     if (!BmEntry)
     {
         if(!visual)
@@ -1114,6 +1115,19 @@ void RandomPlayerbotMgr::AddBgBot(BattleGroundQueueTypeId queueTypeId, BattleGro
 
         return;
     }
+#else
+    if (!BmEntry && isArena)
+    {
+        if (!visual)
+            sLog.outError("Bot #%d <%s> could not find Battlemaster for %s %d (%s) bracket %d", player->GetGUIDLow(), player->GetName(), bgType, bgTypeId, _bgType, bracketId);
+
+        return;
+    }
+    else
+    {
+        player->GetPlayerbotAI()->GetAiObjectContext()->GetValue<ObjectGuid>("bg master")->Set(player->GetObjectGuid());
+    }
+#endif
 
     player->GetPlayerbotAI()->ChangeStrategy("-travel,-grind,-rpg,-custom::say", BOT_STATE_NON_COMBAT);
     if (urand(0, 100) < 65)
@@ -1148,6 +1162,10 @@ void RandomPlayerbotMgr::AddBgBot(BattleGroundQueueTypeId queueTypeId, BattleGro
     player->GetPlayerbotAI()->GetAiObjectContext()->GetValue<uint32>("bg type")->Set(queueTypeId);
     if (isArena)
         player->GetPlayerbotAI()->GetAiObjectContext()->GetValue<uint32>("arena type")->Set(isRated);
+
+    if (player->GetPlayerbotAI()->GetMaster() && player->GetPlayerbotAI()->GetMaster()->GetPlayerbotAI())
+        player->GetPlayerbotAI()->DoSpecificAction("leave far away");
+
     player->GetPlayerbotAI()->ChangeStrategy("+bg", BOT_STATE_NON_COMBAT);
     //player->GetPlayerbotAI()->DoSpecificAction("bg join");
     return;
