@@ -58,6 +58,8 @@ namespace ai
             creators["accept quest share"] = &WorldPacketActionContext::accept_quest_share;
             creators["loot roll"] = &WorldPacketActionContext::loot_roll;
             creators["revive from corpse"] = &WorldPacketActionContext::revive_from_corpse;
+            creators["find corpse"] = &WorldPacketActionContext::find_corpse;
+            creators["auto release"] = &WorldPacketActionContext::auto_release;
             creators["accept resurrect"] = &WorldPacketActionContext::accept_resurrect;
             creators["use meeting stone"] = &WorldPacketActionContext::use_meeting_stone;
             creators["area trigger"] = &WorldPacketActionContext::area_trigger;
@@ -66,7 +68,6 @@ namespace ai
             creators["remember taxi"] = &WorldPacketActionContext::remember_taxi;
             creators["accept trade"] = &WorldPacketActionContext::accept_trade;
             creators["store loot"] = &WorldPacketActionContext::store_loot;
-            creators["tell out of react range"] = &WorldPacketActionContext::tell_out_of_react_range;
             creators["quest objective completed"] = &WorldPacketActionContext::quest_objective_completed;
             creators["party command"] = &WorldPacketActionContext::party_command;
             creators["tell cast failed"] = &WorldPacketActionContext::tell_cast_failed;
@@ -105,7 +106,6 @@ namespace ai
         static Action* party_command(PlayerbotAI* ai) { return new PartyCommandAction(ai); }
         static Action* quest_objective_completed(PlayerbotAI* ai) { return new QuestObjectiveCompletedAction(ai); }
         static Action* store_loot(PlayerbotAI* ai) { return new StoreLootAction(ai); }
-        static Action* tell_out_of_react_range(PlayerbotAI* ai) { return new OutOfReactRangeAction(ai); }
         static Action* accept_trade(PlayerbotAI* ai) { return new TradeStatusAction(ai); }
         static Action* remember_taxi(PlayerbotAI* ai) { return new RememberTaxiAction(ai); }
         static Action* check_mount_state(PlayerbotAI* ai) { return new CheckMountStateAction(ai); }
@@ -114,6 +114,8 @@ namespace ai
         static Action* use_meeting_stone(PlayerbotAI* ai) { return new UseMeetingStoneAction(ai); }
         static Action* accept_resurrect(PlayerbotAI* ai) { return new AcceptResurrectAction(ai); }
         static Action* revive_from_corpse(PlayerbotAI* ai) { return new ReviveFromCorpseAction(ai); }
+        static Action* find_corpse(PlayerbotAI* ai) { return new FindCorpseAction(ai); }
+        static Action* auto_release(PlayerbotAI* ai) { return new AutoReleaseSpiritAction(ai); }
         static Action* accept_invitation(PlayerbotAI* ai) { return new AcceptInvitationAction(ai); }
         static Action* pass_leadership_to_master(PlayerbotAI* ai) { return new PassLeadershipToMasterAction(ai); }
         static Action* tell_not_enough_money(PlayerbotAI* ai) { return new TellMasterAction(ai, "Not enough money"); }

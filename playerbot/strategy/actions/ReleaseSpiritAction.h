@@ -14,19 +14,23 @@ namespace ai
     public:
         virtual bool Execute(Event event)
         {
-            if (sServerFacade.IsAlive(bot) || bot->GetCorpse())
+            if (sServerFacade.IsAlive(bot))
             {
-                ai->TellError("I am not dead");
+                ai->TellError("I am not dead, will wait here");
+                ai->ChangeStrategy("-follow,+stay", BOT_STATE_NON_COMBAT);
                 return false;
             }
 
-            ai->ChangeStrategy("-follow,+stay", BOT_STATE_NON_COMBAT);
+            WorldPacket& p = event.getPacket();
+            if (!p.empty() && p.GetOpcode() == CMSG_REPOP_REQUEST)
+                ai->TellMaster("Releasing...");
+            else
+                ai->TellMaster("Meet me at the graveyard");
 
-            bot->SetBotDeathTimer();
-            bot->BuildPlayerRepop();
-
-            bot->RepopAtGraveyard();
-            ai->TellMaster("Meet me at the graveyard");
+            WorldPacket packet(CMSG_REPOP_REQUEST);
+            packet << uint8(0);
+            bot->GetSession()->HandleRepopRequestOpcode(packet);
+            sLog.outBasic("Bot #%d %s:%d <%s> releases spirit", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName());
             return true;
         }
     };
@@ -37,13 +41,19 @@ namespace ai
 
         virtual bool Execute(Event event)
         {
-            bot->SetBotDeathTimer();
-            bot->BuildPlayerRepop();
-
-            bot->RepopAtGraveyard();
+            WorldPacket packet(CMSG_REPOP_REQUEST);
+            packet << uint8(0);
+            bot->GetSession()->HandleRepopRequestOpcode(packet);
+            sLog.outBasic("Bot #%d %s:%d <%s> releases spirit", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName());
             return true;
         }
 
-        virtual bool isUseful() { return !bot->GetGroup() && !sServerFacade.IsAlive(bot) && !bot->GetCorpse(); }
+        virtual bool isUseful()
+        {
+            return (!bot->GetGroup()
+                || (bot->GetGroup() && bot->GetGroup()->GetLeaderGuid() == bot->GetObjectGuid()))
+                && !sServerFacade.IsAlive(bot)
+                && !bot->GetCorpse();
+        }
     };
 }

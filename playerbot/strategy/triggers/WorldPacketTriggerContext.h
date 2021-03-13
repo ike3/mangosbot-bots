@@ -50,6 +50,8 @@ namespace ai
             creators["levelup"] = &WorldPacketTriggerContext::levelup;
             creators["xpgain"] = &WorldPacketTriggerContext::xpgain;
             creators["see spell"] = &WorldPacketTriggerContext::seespell;
+            creators["release spirit"] = &WorldPacketTriggerContext::release_spirit;
+            creators["revive from corpse"] = &WorldPacketTriggerContext::revive_from_corpse;
         }
 
     private:
@@ -93,5 +95,7 @@ namespace ai
         static Trigger* levelup(PlayerbotAI* ai) { return new WorldPacketTrigger(ai, "levelup"); }
         static Trigger* xpgain(PlayerbotAI* ai) { return new WorldPacketTrigger(ai, "xpgain"); }
         static Trigger* seespell(PlayerbotAI* ai) { return new WorldPacketTrigger(ai, "see spell"); }
+        static Trigger* release_spirit(PlayerbotAI* ai) { return new WorldPacketTrigger(ai, "release spirit"); }
+        static Trigger* revive_from_corpse(PlayerbotAI* ai) { return new WorldPacketTrigger(ai, "revive from corpse"); }
     };
 };

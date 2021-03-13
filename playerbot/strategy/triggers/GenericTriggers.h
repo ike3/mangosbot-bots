@@ -768,6 +768,15 @@ namespace ai
     public:
         virtual bool IsActive();
     };
+
+    class CorpseNearTrigger : public Trigger
+    {
+    public:
+        CorpseNearTrigger(PlayerbotAI* ai) : Trigger(ai, "corpse near", 5) {}
+
+    public:
+        virtual bool IsActive();
+    };
 }
 
 #include "RangeTriggers.h"

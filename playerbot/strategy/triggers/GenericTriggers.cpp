@@ -435,3 +435,8 @@ bool IsMountedTrigger::IsActive()
 {
     return AI_VALUE2(bool, "mounted", "self target");
 }
+
+bool CorpseNearTrigger::IsActive()
+{
+    return bot->GetCorpse() && bot->GetCorpse()->IsWithinDistInMap(bot, CORPSE_RECLAIM_RADIUS, true);
+}

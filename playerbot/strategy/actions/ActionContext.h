@@ -132,7 +132,6 @@ namespace ai
             creators["move to dark portal"] = &ActionContext::move_to_dark_portal;
             creators["move from dark portal"] = &ActionContext::move_from_dark_portal;
             creators["use dark portal azeroth"] = &ActionContext::use_dark_portal_azeroth;
-            creators["auto release"] = &ActionContext::auto_release;
         }
 
     private:
@@ -219,7 +218,6 @@ namespace ai
         static Action* move_to_dark_portal(PlayerbotAI* ai) { return new MoveToDarkPortalAction(ai); }
         static Action* use_dark_portal_azeroth(PlayerbotAI* ai) { return new DarkPortalAzerothAction(ai); }
         static Action* move_from_dark_portal(PlayerbotAI* ai) { return new MoveFromDarkPortalAction(ai); }
-        static Action* auto_release(PlayerbotAI* ai) { return new AutoReleaseSpiritAction(ai); }
     };
 
 };
