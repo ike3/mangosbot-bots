@@ -159,7 +159,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
         mm.Clear();
 
         //mm.MovePath(points, FORCED_MOVEMENT_RUN, false);
-        mm.MovePoint(mapId, x, y, z, FORCED_MOVEMENT_RUN, generatePath);
+        mm.MovePoint(mapId, x, y, z, bot->IsWalking() ? FORCED_MOVEMENT_WALK : FORCED_MOVEMENT_RUN, generatePath);
 #endif
 
         AI_VALUE(LastMovement&, "last movement").Set(x, y, z, bot->GetOrientation());
