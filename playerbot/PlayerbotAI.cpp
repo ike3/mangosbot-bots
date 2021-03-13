@@ -555,8 +555,17 @@ void PlayerbotAI::DoNextAction()
 	{
 		if (master->m_movementInfo.HasMovementFlag(MOVEFLAG_WALK_MODE)) bot->m_movementInfo.AddMovementFlag(MOVEFLAG_WALK_MODE);
 		else bot->m_movementInfo.RemoveMovementFlag(MOVEFLAG_WALK_MODE);
+
+        if (master->IsSitState())
+        {
+            if (!sServerFacade.isMoving(bot) && sServerFacade.GetDistance2d(bot, master) < 10.0f)
+                bot->SetStandState(UNIT_STAND_STATE_SIT);
+        }
+        else
+            bot->SetStandState(UNIT_STAND_STATE_STAND);
 	}
 	else if (bot->m_movementInfo.HasMovementFlag(MOVEFLAG_WALK_MODE)) bot->m_movementInfo.RemoveMovementFlag(MOVEFLAG_WALK_MODE);
+    else if (bot->IsSitState()) bot->SetStandState(UNIT_STAND_STATE_STAND);
 }
 
 void PlayerbotAI::ReInitCurrentEngine()
