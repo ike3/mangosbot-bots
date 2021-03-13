@@ -517,7 +517,7 @@ void PlayerbotAI::DoNextAction()
         return;
     }
 
-    if (!AllowActive(ALL_ACTIVITY) && urand(0,100) < 5)
+    if (!AllowActive(ALL_ACTIVITY) && (urand(0, 100) < 5))
     {
         SetNextCheckDelay(sPlayerbotAIConfig.passiveDelay);
         return;

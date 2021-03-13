@@ -1164,7 +1164,7 @@ void RandomPlayerbotMgr::AddBgBot(BattleGroundQueueTypeId queueTypeId, BattleGro
         player->GetPlayerbotAI()->GetAiObjectContext()->GetValue<uint32>("arena type")->Set(isRated);
 
     if (player->GetPlayerbotAI()->GetMaster() && player->GetPlayerbotAI()->GetMaster()->GetPlayerbotAI())
-        player->GetPlayerbotAI()->DoSpecificAction("leave far away");
+        player->GetPlayerbotAI()->DoSpecificAction("leave");
 
     player->GetPlayerbotAI()->ChangeStrategy("+bg", BOT_STATE_NON_COMBAT);
     //player->GetPlayerbotAI()->DoSpecificAction("bg join");
@@ -1195,9 +1195,6 @@ bool RandomPlayerbotMgr::ProcessBot(uint32 bot)
 {
     Player* player = GetPlayerBot(bot);
     PlayerbotAI* ai = player ? player->GetPlayerbotAI() : NULL;
-
-    //if (ai && !ai->AllowActive(ALL_ACTIVITY))
-    //    return false;
 
     uint32 isValid = GetEventValue(bot, "add");
     if (!isValid)
@@ -1281,7 +1278,7 @@ bool RandomPlayerbotMgr::ProcessBot(Player* player)
         return false;
 
     // Hotfix System
-    if (!sServerFacade.UnitIsDead(player))
+    /*if (!sServerFacade.UnitIsDead(player))
     {
         uint32 version = GetEventValue(bot, "version");
         if (!version)
@@ -1292,7 +1289,10 @@ bool RandomPlayerbotMgr::ProcessBot(Player* player)
         {
             //Hotfix(player, version); Temporary disable hotfix
         }
-    }
+    }*/
+
+    if (sServerFacade.UnitIsDead(player))
+        return false;
 
     /*if (sServerFacade.UnitIsDead(player) && !player->InBattleGround())
     {
@@ -1363,8 +1363,8 @@ bool RandomPlayerbotMgr::ProcessBot(Player* player)
             Randomize(player);
 
             // leave group in teleport
-            if (player->GetGroup())
-                player->GetPlayerbotAI()->DoSpecificAction("leave far away");
+            //if (player->GetGroup())
+            //    player->GetPlayerbotAI()->DoSpecificAction("leave");
 
             // activate lfg
             player->GetPlayerbotAI()->ChangeStrategy("+lfg", BOT_STATE_NON_COMBAT);
@@ -1729,7 +1729,7 @@ void RandomPlayerbotMgr::Randomize(Player* bot)
     else
         IncreaseLevel(bot);
 
-    SetValue(bot, "version", MANGOSBOT_VERSION);
+    //SetValue(bot, "version", MANGOSBOT_VERSION);
 }
 
 void RandomPlayerbotMgr::IncreaseLevel(Player* bot)
@@ -2484,8 +2484,8 @@ void RandomPlayerbotMgr::ChangeStrategy(Player* player)
 		SetEventValue(bot, "teleport", 1, sPlayerbotAIConfig.maxRandomBotInWorldTime);
 
         // leave group in teleport
-        if (player->GetGroup())
-            player->GetPlayerbotAI()->DoSpecificAction("leave far away");
+        //if (player->GetGroup())
+        //    player->GetPlayerbotAI()->DoSpecificAction("leave");
 
         // activate lfg
         player->GetPlayerbotAI()->ChangeStrategy("+lfg", BOT_STATE_NON_COMBAT);

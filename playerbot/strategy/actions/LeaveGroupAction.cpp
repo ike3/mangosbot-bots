@@ -10,7 +10,8 @@ using namespace ai;
 namespace ai
 {
 	bool LeaveGroupAction::Leave() {
-        bool aiMaster = ai->GetMaster()->GetPlayerbotAI();
+
+        bool aiMaster = (ai->GetMaster() && ai->GetMaster()->GetPlayerbotAI());
 
         ai->TellMaster("Goodbye!", PLAYERBOT_SECURITY_TALK);
 
