@@ -298,37 +298,42 @@ void RandomPlayerbotFactory::CreateRandomBots()
                 Field* fields = results->Fetch();
                 uint32 accId = fields[0].GetUInt32();
 
-                // existing characters list
-                QueryResult* result = CharacterDatabase.PQuery("SELECT guid FROM characters WHERE account='%u'", accId);
-                if (result)
+                if (!delFriends)
                 {
-                    do
+                    // existing characters list
+                    QueryResult* result = CharacterDatabase.PQuery("SELECT guid FROM characters WHERE account='%u'", accId);
+                    if (result)
                     {
-                        Field* fields = result->Fetch();
-                        uint32 guidlo = fields[0].GetUInt32();
-                        ObjectGuid guid = ObjectGuid(HIGHGUID_PLAYER, guidlo);
-
-                        // if bot is someone's friend - don't delete it
-                        if ((find(botFriends.begin(), botFriends.end(), guidlo) != botFriends.end()) && !delFriends)
-                            continue;
-
-                        // if bot is in someone's guild - don't delete it
-                        uint32 guildId = Player::GetGuildIdFromDB(guid);
-                        if (guildId && !delFriends)
+                        do
                         {
-                            Guild* guild = sGuildMgr.GetGuildById(guildId);
-                            uint32 accountId = sObjectMgr.GetPlayerAccountIdByGUID(guild->GetLeaderGuid());
+                            Field* fields = result->Fetch();
+                            uint32 guidlo = fields[0].GetUInt32();
+                            ObjectGuid guid = ObjectGuid(HIGHGUID_PLAYER, guidlo);
 
-                            if (find(botAccounts.begin(), botAccounts.end(), accountId) == botAccounts.end())
+                            // if bot is someone's friend - don't delete it
+                            if ((find(botFriends.begin(), botFriends.end(), guidlo) != botFriends.end()) && !delFriends)
                                 continue;
-                        }
 
-                        Player::DeleteFromDB(guid, accId, false, true);       // no need to update realm characters
+                            // if bot is in someone's guild - don't delete it
+                            uint32 guildId = Player::GetGuildIdFromDB(guid);
+                            if (guildId && !delFriends)
+                            {
+                                Guild* guild = sGuildMgr.GetGuildById(guildId);
+                                uint32 accountId = sObjectMgr.GetPlayerAccountIdByGUID(guild->GetLeaderGuid());
 
-                    } while (result->NextRow());
+                                if (find(botAccounts.begin(), botAccounts.end(), accountId) == botAccounts.end())
+                                    continue;
+                            }
 
-                    delete result;
+                            Player::DeleteFromDB(guid, accId, false, true);       // no need to update realm characters
+
+                        } while (result->NextRow());
+
+                        delete result;
+                    }
                 }
+                else
+                    sAccountMgr.DeleteAccount(accId);
 
             } while (results->NextRow());
 			delete results;
