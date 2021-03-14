@@ -533,13 +533,13 @@ bool EmoteActionBase::ReceiveEmote(Player* source, uint32 emote)
             bot->Yell("You think that's going to help you?!", LANG_UNIVERSAL);
             break;*/
     default:
-        return false;
+        //return false;
         //bot->HandleEmoteCommand(EMOTE_ONESHOT_QUESTION);
         //bot->Say("Mmmmmkaaaaaay...", LANG_UNIVERSAL);
         break;
     }
 
-    if (source && !sServerFacade.IsInFront(bot, source, sPlayerbotAIConfig.sightDistance, EMOTE_ANGLE_IN_FRONT))
+    if (source && !sServerFacade.isMoving(bot) && !sServerFacade.IsInFront(bot, source, sPlayerbotAIConfig.sightDistance, EMOTE_ANGLE_IN_FRONT))
         sServerFacade.SetFacingTo(bot, source);
 
     if (emoteText.size())
@@ -610,11 +610,11 @@ bool EmoteAction::Execute(Event event)
                     if (em->textid == EMOTE_ONESHOT_TALK)
                         continue;
 
-                    //if (em->textid == EMOTE_ONESHOT_QUESTION)
-                    //    continue;
+                    if (em->textid == EMOTE_ONESHOT_QUESTION)
+                        continue;
 
-                    //if(em->textid == EMOTE_ONESHOT_EXCLAMATION)
-                    //    continue;
+                    if(em->textid == EMOTE_ONESHOT_EXCLAMATION)
+                        continue;
 
                     if (em->textid == emoteId)
                     {
@@ -672,6 +672,9 @@ bool EmoteAction::Execute(Event event)
 
 bool EmoteAction::isUseful()
 {
+    if (sServerFacade.isMoving(bot))
+        return false;
+
     time_t lastEmote = AI_VALUE2(time_t, "last emote", qualifier);
     return (time(0) - lastEmote) >= sPlayerbotAIConfig.repeatDelay / 1000;
 }
