@@ -763,7 +763,7 @@ namespace ai
     class IsMountedTrigger : public Trigger
     {
     public:
-        IsMountedTrigger(PlayerbotAI* ai) : Trigger(ai, "mounted") {}
+        IsMountedTrigger(PlayerbotAI* ai) : Trigger(ai, "mounted", 2) {}
 
     public:
         virtual bool IsActive();
@@ -772,7 +772,7 @@ namespace ai
     class CorpseNearTrigger : public Trigger
     {
     public:
-        CorpseNearTrigger(PlayerbotAI* ai) : Trigger(ai, "corpse near", 5) {}
+        CorpseNearTrigger(PlayerbotAI* ai) : Trigger(ai, "corpse near", 10) {}
 
     public:
         virtual bool IsActive();

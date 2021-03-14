@@ -10,9 +10,9 @@ void NonCombatStrategy::InitTriggers(std::list<TriggerNode*>& triggers)
         "timer",
         NextAction::array(0, new NextAction("check mount state", 1.0f), new NextAction("check values", 1.0f), NULL)));
 
-    triggers.push_back(new TriggerNode(
+    /*triggers.push_back(new TriggerNode(
         "no non bot players around",
-        NextAction::array(0, new NextAction("move random", 0.5f), NULL)));
+        NextAction::array(0, new NextAction("move random", 0.5f), NULL)));*/
 
     triggers.push_back(new TriggerNode(
         "random",

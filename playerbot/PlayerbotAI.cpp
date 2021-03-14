@@ -517,9 +517,9 @@ void PlayerbotAI::DoNextAction()
         return;
     }
 
-    if (!AllowActive(ALL_ACTIVITY) && (urand(0, 100) < 5))
+    if (!AllowActive(ALL_ACTIVITY) && urand(0, 20))
     {
-        SetNextCheckDelay(sPlayerbotAIConfig.passiveDelay);
+        SetNextCheckDelay(int(sPlayerbotAIConfig.passiveDelay / 2));
         return;
     }
 
@@ -1510,7 +1510,7 @@ bool PlayerbotAI::HasPlayerNearby(float range)
     {
         if ((!player->GetPlayerbotAI() || player->GetPlayerbotAI()->isRealPlayer()) && (!player->IsGameMaster() || player->isGMVisible()))
         {
-            if (player->GetMap() != bot->GetMap())
+            if (player->GetMapId() != bot->GetMapId())
                 continue;
 
             if (player->GetDistance(bot, false, DIST_CALC_NONE) < sqRange)
