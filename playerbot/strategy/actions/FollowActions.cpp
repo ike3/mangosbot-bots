@@ -36,16 +36,22 @@ bool FollowAction::isUseful()
     float distance = 0;
     string target = formation->GetTargetName();
 
+    Unit* fTarget = NULL;
+    if(!target.empty())
+        fTarget = AI_VALUE(Unit*, target);
+    else
+        fTarget = AI_VALUE(Unit*, "master target");
+
+    if (fTarget)
+        if (fTarget->IsTaxiFlying()
+            || fTarget->GetGUIDLow() == bot->GetGUIDLow()
+            || fTarget->IsDead() != bot->IsDead())
+            return false;
+
+
     if (!target.empty())
     {
         distance = AI_VALUE2(float, "distance", target);
-
-        Unit* fTarget = AI_VALUE(Unit*, target);
-        if (fTarget)
-            if (fTarget->IsTaxiFlying() 
-             || fTarget->GetGUIDLow() == bot->GetGUIDLow()
-             || fTarget->IsDead() != bot->IsDead())
-                return false;
     }
     else
     {
@@ -57,5 +63,24 @@ bool FollowAction::isUseful()
     }
 
     return sServerFacade.IsDistanceGreaterThan(distance, formation->GetMaxDistance());
+}
+
+bool FleeToMasterAction::Execute(Event event)
+{
+    bool canFollow = Follow(AI_VALUE(Unit*, "master target"));
+    if (!canFollow)
+    {
+        //ai->SetNextCheckDelay(5000);
+        return false;
+    }
+    ai->TellMaster("Wait for me!");
+    ai->SetNextCheckDelay(5000);
+    return true;
+}
+
+bool FleeToMasterAction::isUseful()
+{
+    Unit* target = AI_VALUE(Unit*, "current target");
+    return ai->GetGroupMaster() && (!target || (target && !ai->GetGroupMaster()->HasTarget(target->GetObjectGuid()))) && ai->HasStrategy("follow", BOT_STATE_NON_COMBAT);
 }
 

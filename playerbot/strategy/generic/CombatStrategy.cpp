@@ -20,5 +20,5 @@ void CombatStrategy::InitTriggers(list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "out of react range",
-        NextAction::array(0, new NextAction("drop target", 55), new NextAction("flee to master", 54), NULL)));
+        NextAction::array(0, new NextAction("flee to master", 55), NULL)));
 }

@@ -16,17 +16,7 @@ namespace ai
     public:
         FleeToMasterAction(PlayerbotAI* ai) : MovementAction(ai, "flee to master") {}
 
-        virtual bool Execute(Event event)
-        {
-            bool canFollow = Follow(AI_VALUE(Unit*, "master target"));
-            if (!canFollow)
-            {
-                //ai->SetNextCheckDelay(5000);
-                return false;
-            }
-
-            ai->TellMaster("Wait for me!");
-            return true;
-        }
+        virtual bool Execute(Event event);
+        virtual bool isUseful();
     };
 }
