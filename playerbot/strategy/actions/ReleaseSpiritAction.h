@@ -36,7 +36,7 @@ namespace ai
             WorldPacket packet(CMSG_REPOP_REQUEST);
             packet << uint8(0);
             bot->GetSession()->HandleRepopRequestOpcode(packet);
-            sLog.outBasic("Bot #%d %s:%d <%s> released", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName());
+            sLog.outDetail("Bot #%d %s:%d <%s> released", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName());
             return true;
         }
     };
@@ -50,7 +50,7 @@ namespace ai
             WorldPacket packet(CMSG_REPOP_REQUEST);
             packet << uint8(0);
             bot->GetSession()->HandleRepopRequestOpcode(packet);
-            sLog.outBasic("Bot #%d %s:%d <%s> released", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName());
+            sLog.outDetail("Bot #%d %s:%d <%s> released", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName());
             return true;
         }
 

@@ -18,7 +18,7 @@ bool ReviveFromCorpseAction::Execute(Event event)
     Player* master = GetMaster();
     if (master)
     {
-        if (!master->GetPlayerbotAI() && !sServerFacade.IsAlive(master) && master->GetCorpse()
+        if (!master->GetPlayerbotAI() && sServerFacade.UnitIsDead(master) && master->GetCorpse()
             && sServerFacade.IsDistanceLessThan(AI_VALUE2(float, "distance", "master target"), sPlayerbotAIConfig.farDistance))
             return false;
     }
@@ -27,7 +27,7 @@ bool ReviveFromCorpseAction::Execute(Event event)
     packet << bot->GetObjectGuid();
     bot->GetSession()->HandleReclaimCorpseOpcode(packet);
 
-    sLog.outBasic("Bot #%d %s:%d <%s> revived", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName());
+    sLog.outDetail("Bot #%d %s:%d <%s> revived", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName());
 
     context->GetValue<Unit*>("current target")->Set(NULL);
     bot->SetSelectionGuid(ObjectGuid());
@@ -48,7 +48,7 @@ bool FindCorpseAction::Execute(Event event)
     if (master)
     {
         if (!master->GetPlayerbotAI()
-            || sServerFacade.IsDistanceLessThan(AI_VALUE2(float, "distance", "master target"), sPlayerbotAIConfig.sightDistance))
+            && sServerFacade.IsDistanceLessThan(AI_VALUE2(float, "distance", "master target"), sPlayerbotAIConfig.farDistance))
             return false;
     }
 
@@ -58,9 +58,9 @@ bool FindCorpseAction::Execute(Event event)
         float y = corpse->GetPositionY();
         float z = corpse->GetPositionZ();;
 
-        sLog.outBasic("Bot #%d %s:%d <%s> moves to body", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName());
+        sLog.outDetail("Bot #%d %s:%d <%s> moves to body", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName());
 
-        if (!ai->HasPlayerNearby())
+        if (!ai->AllowActive(ALL_ACTIVITY))
         {
             float delay = 1000.0f * bot->GetDistance(corpse) / bot->GetSpeed(MOVE_RUN) + sPlayerbotAIConfig.reactDelay;
             if ((6 * MINUTE * IN_MILLISECONDS - bot->GetDeathTimer()) > delay)
