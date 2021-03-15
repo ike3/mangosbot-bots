@@ -18,12 +18,13 @@ namespace ai
 
         bool SetTarget(TravelTarget* target, TravelTarget* oldTarget);
 
-        bool getBestDestination(vector<TravelDestination*> activeDestinations, vector<WorldPosition*> activePoints);
+        bool getBestDestination(vector<TravelDestination*>* activeDestinations, vector<WorldPosition*>* activePoints);
 
         bool SetGroupTarget(TravelTarget* target);
         bool SetCurrentTarget(TravelTarget* target, TravelTarget* oldTarget);
         bool SetQuestTarget(TravelTarget* target);
         bool SetNewQuestTarget(TravelTarget* target);
+        bool SetRpgTarget(TravelTarget* target);
         bool SetNullTarget(TravelTarget* target);
 
         void ReportTravelTarget(TravelTarget* newTarget, TravelTarget* oldTarget);

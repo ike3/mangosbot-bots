@@ -175,18 +175,18 @@ namespace ai
     class RpgTravelDestination : public TravelDestination
     {
     public:
-        RpgTravelDestination(uint32 level1, uint32 race1, float radiusMin1, float radiusMax1) : TravelDestination(radiusMin1, radiusMax1) {
-            level = level1; race = race1;
+        RpgTravelDestination(uint32 entry1, float radiusMin1, float radiusMax1) : TravelDestination(radiusMin1, radiusMax1) {
+            entry = entry1;
         }
 
-        virtual bool isActive(Player* bot) { return race == bot->getRace() && level == bot->getLevel(); }
+        virtual bool isActive(Player* bot);
 
+        virtual CreatureInfo const* getCreatureInfo() { return ObjectMgr::GetCreatureTemplate(entry); }
         virtual string getName() { return "RpgTravelDestination"; }
         virtual uint32 getEntry() { return NULL; }
         virtual string getTitle();
     protected:
-        uint32 level;
-        uint32 race;
+        uint32 entry;
     };
 
     //A quest destination container for quick lookup of all destinations related to a quest.
@@ -288,6 +288,7 @@ namespace ai
         bool getObjectiveStatus(Player* bot, Quest const* pQuest, uint32 objective);
         uint32 getDialogStatus(Player* pPlayer, int32 questgiver, Quest const* pQuest);
         vector<TravelDestination *> getQuestTravelDestinations(Player* bot, uint32 questId = -1, bool ignoreFull = false, bool ignoreInactive = false, float maxDistance = 2000, bool ignoreObjectives = false);
+        vector<TravelDestination*> getRpgTravelDestinations(Player* bot, bool ignoreFull = false, bool ignoreInactive = false, float maxDistance = 2000);
 
         void setNullTravelTarget(Player* player);
         NullTravelDestination* nullTravelDestination = new NullTravelDestination();
@@ -296,6 +297,7 @@ namespace ai
         void logQuestError(uint32 errorNr, Quest * quest, uint32 objective = 0, uint32 unitId = 0, uint32 itemId = 0);
 
         vector<QuestTravelDestination*> questGivers;
+        vector<RpgTravelDestination*> rpgNpcs;
 
 #ifdef MANGOS
         UNORDERED_MAP<uint32, QuestContainer *> quests;
