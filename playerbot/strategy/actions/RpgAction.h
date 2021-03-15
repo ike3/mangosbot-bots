@@ -33,7 +33,6 @@ namespace ai
         void use(ObjectGuid guid);
 
         bool CanTrain(ObjectGuid guid);
-        bool needRepair();
     };
 
 }

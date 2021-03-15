@@ -77,7 +77,7 @@ bool RpgAction::Execute(Event event)
     {
         if (unit->isVendor())
             elements.push_back(&RpgAction::trade);
-        if (unit->isArmorer() && needRepair())
+        if (unit->isArmorer() && (AI_VALUE(uint8, "durability") < 100 && AI_VALUE(uint32, "repair cost") < bot->GetMoney()))
             elements.push_back(&RpgAction::repair);
         if (CanTrain(guid))
             elements.push_back(&RpgAction::train);
@@ -457,25 +457,3 @@ bool RpgAction::CanTrain(ObjectGuid guid)
     return false;
 }
 
-bool RpgAction::needRepair()
-{
-    for (int i = EQUIPMENT_SLOT_START; i < INVENTORY_SLOT_ITEM_END; ++i)
-    {
-        uint16 pos = ((INVENTORY_SLOT_BAG_0 << 8) | i);
-        Item* item = bot->GetItemByPos(pos);
-
-        uint32 TotalCost = 0;
-        if (!item)
-            continue;
-
-        uint32 maxDurability = item->GetUInt32Value(ITEM_FIELD_MAXDURABILITY);
-        if (!maxDurability)
-            continue;
-
-        uint32 curDurability = item->GetUInt32Value(ITEM_FIELD_DURABILITY);
-
-        if (maxDurability > curDurability)
-            return true;
-    }
-    return false;
-}

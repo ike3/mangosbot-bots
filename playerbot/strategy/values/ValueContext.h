@@ -172,6 +172,8 @@ namespace ai
             creators["combat"] = &ValueContext::combat;
             creators["lfg proposal"] = &ValueContext::lfg_proposal;
             creators["bag space"] = &ValueContext::bag_space;
+            creators["durability"] = &ValueContext::durability;
+            creators["repair cost"] = &ValueContext::repair_cost;
             creators["enemy healer target"] = &ValueContext::enemy_healer_target;
             creators["snare target"] = &ValueContext::snare_target;
             creators["formation"] = &ValueContext::formation;
@@ -312,6 +314,8 @@ namespace ai
         static UntypedValue* combat(PlayerbotAI* ai) { return new IsInCombatValue(ai); }
         static UntypedValue* lfg_proposal(PlayerbotAI* ai) { return new LfgProposalValue(ai); }
         static UntypedValue* bag_space(PlayerbotAI* ai) { return new BagSpaceValue(ai); }
+        static UntypedValue* durability(PlayerbotAI* ai) { return new DurabilityValue(ai); }
+        static UntypedValue* repair_cost(PlayerbotAI* ai) { return new RepairCostValue(ai); }
         static UntypedValue* enemy_healer_target(PlayerbotAI* ai) { return new EnemyHealerTargetValue(ai); }
         static UntypedValue* snare_target(PlayerbotAI* ai) { return new SnareTargetValue(ai); }
         static UntypedValue* speed(PlayerbotAI* ai) { return new SpeedValue(ai); }
