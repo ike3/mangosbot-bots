@@ -15,16 +15,16 @@ bool MoveToTravelTargetAction::Execute(Event event)
 
     WorldPosition botLocation(bot);
 
-    float distance = AI_VALUE2(float, "distance", "travel target");
+    float distance = sPlayerbotAIConfig.tooCloseDistance;
     float angle = 2 * M_PI * urand(0, 100) / 100.0;
 
     WorldLocation location = target->getLocation();
 
     if (target->getMaxTravelTime() > target->getTimeLeft()) //The bot is late. Speed it up.
     {
-        location = botLocation.getLocation();
-        distance = sPlayerbotAIConfig.tooCloseDistance;
+        distance = sPlayerbotAIConfig.fleeDistance;
         angle = bot->GetAngle(location.coord_x, location.coord_y);
+        location = botLocation.getLocation();
     }
 
     float x = location.coord_x;
@@ -34,8 +34,8 @@ bool MoveToTravelTargetAction::Execute(Event event)
 
     float mod = urand(50, 100)/50.0;   
 
-    x += cos(angle) * sPlayerbotAIConfig.tooCloseDistance * mod;
-    y += sin(angle) * sPlayerbotAIConfig.tooCloseDistance * mod;
+    x += cos(angle) * distance * mod;
+    y += sin(angle) * distance * mod;
 
     if (bot->IsWithinLOS(x, y, z))
         return MoveNear(mapId, x, y, z, 0);

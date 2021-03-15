@@ -134,12 +134,13 @@ bool ChooseRpgTargetAction::Execute(Event event)
                 continue;
 
 #ifdef MANGOS
-            if (AI_VALUE(uint8, "bag space") > 80 && unit->IsVendor())
+            if (unit->IsVendor())
 #endif
 #ifdef CMANGOS
-                if (AI_VALUE(uint8, "bag space") > 80 && unit->isVendor())
+            if (unit->isVendor())
 #endif
-                    priority = 100;
+               if (AI_VALUE(uint8, "bag space") > 80 || (AI_VALUE(uint8, "durability") < 80 && AI_VALUE(uint32, "repair cost") < bot->GetMoney()))
+                  priority = 100;
 
             uint32 dialogStatus = bot->GetSession()->getDialogStatus(bot, unit, DIALOG_STATUS_NONE);
             if (dialogStatus == DIALOG_STATUS_REWARD2)
@@ -168,12 +169,26 @@ bool ChooseRpgTargetAction::Execute(Event event)
                 priority = 80;
             else if (travelTarget->getDestination() && travelTarget->getDestination()->getEntry() * -1 == go->GetEntry())
                 priority = 70;
-            else if (urand(1, 100) > 10)
-                continue;            
+            //else if (urand(1, 100) > 10)
+            //    continue;            
         }
 
         if (priority < maxPriority)
             continue;
+
+        if (ai->HasStrategy("debug rpg", BOT_STATE_NON_COMBAT))
+        {
+            ostringstream out;
+            out << "rpg option: ";
+            if (unit)
+                out << chat->formatWorldobject(unit);
+            if (go)
+                out << chat->formatGameobject(go);
+
+            out << " " << priority;
+
+            ai->TellMasterNoFacing(out);
+        }
 
         if (!ai->GetMaster() && HasSameTarget(guid) > urand(5, 15))
             continue;
@@ -225,10 +240,11 @@ bool ChooseRpgTargetAction::Execute(Event event)
 
 bool ChooseRpgTargetAction::isUseful()
 {
-    return !context->GetValue<ObjectGuid>("rpg target")->Get()
+    return ai->AllowActive(RPG_ACTIVITY)
+        && !bot->IsInCombat()
+        && !context->GetValue<ObjectGuid>("rpg target")->Get()
         && !context->GetValue<TravelTarget*>("travel target")->Get()->isTraveling()
-        && !context->GetValue <list<ObjectGuid>>("possible rpg targets")->Get().empty()
-        && ai->AllowActive(RPG_ACTIVITY);
+        && !context->GetValue <list<ObjectGuid>>("possible rpg targets")->Get().empty();
 }
 
 bool ChooseRpgTargetAction::isFollowValid(Player* bot, WorldObject* target)
