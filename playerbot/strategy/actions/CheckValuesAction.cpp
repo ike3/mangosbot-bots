@@ -12,7 +12,7 @@ CheckValuesAction::CheckValuesAction(PlayerbotAI* ai) : Action(ai, "check values
 
 bool CheckValuesAction::Execute(Event event)
 {
-    if (ai->HasStrategy("debug", BOT_STATE_NON_COMBAT))
+    if (ai->HasStrategy("debug move", BOT_STATE_NON_COMBAT))
     {
         ai->Ping(bot->GetPositionX()-7.5, bot->GetPositionY()+7.5);
     }

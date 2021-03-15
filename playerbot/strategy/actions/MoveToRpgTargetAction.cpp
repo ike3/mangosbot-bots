@@ -21,7 +21,7 @@ bool MoveToRpgTargetAction::Execute(Event event)
     else
         return false;
 
-    if (ai->HasStrategy("debug", BOT_STATE_NON_COMBAT))
+    if (ai->HasStrategy("debug rpg", BOT_STATE_NON_COMBAT))
     {
         ostringstream out;
         out << "Heading to: ";
