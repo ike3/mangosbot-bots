@@ -303,6 +303,10 @@ void MovementAction::UpdateMovementState()
 		bot->m_movementInfo.RemoveMovementFlag(MOVEFLAG_SWIMMING);
         bot->UpdateSpeed(MOVE_SWIM, true);
     }
+
+    // Temporary speed increase in group
+    if (ai->GetMaster() && !ai->GetMaster()->GetPlayerbotAI())
+        bot->UpdateSpeed(MOVE_RUN, true, 1.1f);
 }
 
 bool MovementAction::Follow(Unit* target, float distance, float angle)
