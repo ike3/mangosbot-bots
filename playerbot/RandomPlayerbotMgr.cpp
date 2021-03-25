@@ -1426,6 +1426,8 @@ bool RandomPlayerbotMgr::ProcessBot(Player* player)
             sLog.outBasic("Bot #%d %s <%s>: consumables refreshed", bot, player->GetName(), sGuildMgr.GetGuildById(player->GetGuildId())->GetName());
         }
 
+        ChangeStrategy(player);
+
         uint32 randomTime = urand(sPlayerbotAIConfig.minRandomBotRandomizeTime, sPlayerbotAIConfig.maxRandomBotRandomizeTime);
         ScheduleRandomize(bot, randomTime);
         return true;
@@ -1768,6 +1770,8 @@ void RandomPlayerbotMgr::Randomize(Player* bot)
     else
         IncreaseLevel(bot);
 
+    RandomTeleportForRpg(bot);
+
     //SetValue(bot, "version", MANGOSBOT_VERSION);
 }
 
@@ -1786,9 +1790,6 @@ void RandomPlayerbotMgr::IncreaseLevel(Player* bot)
         factory.Randomize(true);
 	}
 
-	if (level > 4) {
-		RandomTeleportForRpg(bot);
-	}
     if (pmo) pmo->finish();
 }
 
@@ -1817,10 +1818,6 @@ void RandomPlayerbotMgr::RandomizeFirst(Player* bot)
     SetValue(bot, "level", level);
     PlayerbotFactory factory(bot, level);
     factory.Randomize(false);
-
-	if (level > 4) {
-		RandomTeleportForRpg(bot);
-	}
 	
     uint32 randomTime = urand(sPlayerbotAIConfig.minRandomBotRandomizeTime, sPlayerbotAIConfig.maxRandomBotRandomizeTime);
 	uint32 inworldTime = urand(sPlayerbotAIConfig.minRandomBotInWorldTime, sPlayerbotAIConfig.maxRandomBotInWorldTime);
@@ -2511,9 +2508,6 @@ void RandomPlayerbotMgr::ChangeStrategy(Player* player)
     {
         sLog.outDetail("Changing strategy for bot #%d <%s> to grinding", bot, player->GetName());
         ScheduleTeleport(bot, 30);
-
-        // deactivate lfg
-        player->GetPlayerbotAI()->ChangeStrategy("-lfg", BOT_STATE_NON_COMBAT);
     }
     else
     {
@@ -2521,13 +2515,6 @@ void RandomPlayerbotMgr::ChangeStrategy(Player* player)
 		sLog.outBasic("Bot #%d <%s>: sent to inn", bot, player->GetName());
         RandomTeleportForRpg(player);
 		SetEventValue(bot, "teleport", 1, sPlayerbotAIConfig.maxRandomBotInWorldTime);
-
-        // leave group in teleport
-        //if (player->GetGroup())
-        //    player->GetPlayerbotAI()->DoSpecificAction("leave");
-
-        // activate lfg
-        player->GetPlayerbotAI()->ChangeStrategy("+lfg", BOT_STATE_NON_COMBAT);
     }
 
     ScheduleChangeStrategy(bot);
