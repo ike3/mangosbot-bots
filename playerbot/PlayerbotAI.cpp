@@ -517,19 +517,30 @@ void PlayerbotAI::DoNextAction()
         return;
     }
 
-    if (!AllowActive(ALL_ACTIVITY) && urand(0, 20))
+    bool minimal = !AllowActive(ALL_ACTIVITY);
+
+    if (IsActive() && !bot->GetGroup() && minimal && urand(0, 4))
     {
-        SetNextCheckDelay(int(sPlayerbotAIConfig.passiveDelay / 2));
+        SetNextCheckDelay(sPlayerbotAIConfig.passiveDelay / 2);
         return;
     }
 
-    currentEngine->DoNextAction(NULL);
+    currentEngine->DoNextAction(NULL, 0, minimal);
 
     if (currentEngine != engines[BOT_STATE_DEAD] && !sServerFacade.IsAlive(bot))
         ChangeEngine(BOT_STATE_DEAD);
 
     if (currentEngine == engines[BOT_STATE_DEAD] && sServerFacade.IsAlive(bot))
         ChangeEngine(BOT_STATE_NON_COMBAT);
+
+    if ((nextAICheckDelay > 2000) && sServerFacade.IsInCombat(bot))
+        SetNextCheckDelay(sPlayerbotAIConfig.reactDelay);
+
+    if (minimal)
+    {
+        SetNextCheckDelay(sPlayerbotAIConfig.passiveDelay);
+        //return;
+    }
 
     Group *group = bot->GetGroup();
     // test BG master set

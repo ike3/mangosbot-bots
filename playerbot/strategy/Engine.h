@@ -77,7 +77,7 @@ namespace ai
 		string GetLastAction() { return lastAction; }
 
     public:
-	    virtual bool DoNextAction(Unit*, int depth = 0);
+	    virtual bool DoNextAction(Unit*, int depth = 0, bool minimal = false);
 	    ActionResult ExecuteAction(string name, Event event = Event());
 
     public:

@@ -117,7 +117,7 @@ void Engine::Init()
 }
 
 
-bool Engine::DoNextAction(Unit* unit, int depth)
+bool Engine::DoNextAction(Unit* unit, int depth, bool minimal)
 {
     LogAction("--- AI Tick ---");
     if (sPlayerbotAIConfig.logValuesPerTick)
@@ -131,13 +131,15 @@ bool Engine::DoNextAction(Unit* unit, int depth)
     ProcessTriggers();
 
     int iterations = 0;
-    int iterationsPerTick = queue.Size() * sPlayerbotAIConfig.iterationsPerTick;
+    int iterationsPerTick = queue.Size() * (minimal ? 1 : sPlayerbotAIConfig.iterationsPerTick);
     do {
         basket = queue.Peek();
         if (basket) {
             float relevance = basket->getRelevance(); // just for reference
             bool skipPrerequisites = basket->isSkipPrerequisites();
             Event event = basket->getEvent();
+            if (minimal && (relevance < 100))
+                continue;
             // NOTE: queue.Pop() deletes basket
             ActionNode* actionNode = queue.Pop();
             Action* action = InitializeAction(actionNode);
@@ -210,7 +212,7 @@ bool Engine::DoNextAction(Unit* unit, int depth)
         lastRelevance = 0.0f;
         PushDefaultActions();
         if (queue.Peek() && depth < 2)
-            return DoNextAction(unit, depth + 1);
+            return DoNextAction(unit, depth + 1, minimal);
     }
 
     // MEMORY FIX TEST
