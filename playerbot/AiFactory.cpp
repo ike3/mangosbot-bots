@@ -133,6 +133,53 @@ map<uint32, int32> AiFactory::GetPlayerSpecTabs(Player* bot)
     return tabs;
 }
 
+BotRoles AiFactory::GetPlayerRoles(Player* player)
+{
+    BotRoles role = BOT_ROLE_NONE;
+    int tab = GetPlayerSpecTab(player);
+    switch (player->getClass())
+    {
+        case CLASS_PRIEST:
+            if (tab == 2)
+                role = BOT_ROLE_DPS;
+            else
+                role = BOT_ROLE_HEALER;
+            break;
+        case CLASS_SHAMAN:
+            if (tab == 2)
+                role = BOT_ROLE_HEALER;
+            else
+                role = BOT_ROLE_DPS;
+            break;
+        case CLASS_WARRIOR:
+            if (tab == 2)
+                role = BOT_ROLE_TANK;
+            else
+                role = BOT_ROLE_DPS;
+            break;
+        case CLASS_PALADIN:
+            if (tab == 0)
+                role = BOT_ROLE_HEALER;
+            else if (tab == 1)
+                role = BOT_ROLE_TANK;
+            else if (tab == 2)
+                role = BOT_ROLE_DPS;
+            break;
+        case CLASS_DRUID:
+            if (tab == 0)
+                role = BOT_ROLE_DPS;
+            else if (tab == 1)
+                role = (BotRoles)(BOT_ROLE_TANK | BOT_ROLE_DPS);
+            else if (tab == 2)
+                role = BOT_ROLE_HEALER;
+            break;
+        default:
+            role = BOT_ROLE_DPS;
+            break;
+    }
+    return role;
+}
+
 void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const facade, Engine* engine)
 {
     int tab = GetPlayerSpecTab(player);
@@ -270,7 +317,7 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
                 engine->addStrategies("caster", "caster aoe", NULL);
             }
 
-            if (player->getClass() == CLASS_DRUID && tab == 1 && urand(0, 100) > 50)
+            if (player->getClass() == CLASS_DRUID && tab == 1 && urand(0, 100) > 50 && player->getLevel() > 19)
             {
                 engine->addStrategy("dps");
             }
@@ -433,6 +480,8 @@ void AiFactory::AddDefaultNonCombatStrategies(Player* player, PlayerbotAI* const
             nonCombatEngine->addStrategy("collision");
             if (sPlayerbotAIConfig.autoDoQuests)
                 nonCombatEngine->addStrategy("travel");
+            if (sPlayerbotAIConfig.randomBotJoinLfg)
+                nonCombatEngine->addStrategy("lfg");
             nonCombatEngine->ChangeStrategy(sPlayerbotAIConfig.randomBotNonCombatStrategies);
         }
         else {
