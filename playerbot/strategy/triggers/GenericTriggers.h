@@ -383,7 +383,7 @@ namespace ai
 
 	class ItemCountTrigger : public Trigger {
 	public:
-		ItemCountTrigger(PlayerbotAI* ai, string item, int count) : Trigger(ai, item, 30) {
+		ItemCountTrigger(PlayerbotAI* ai, string item, int count, int interval = 30) : Trigger(ai, item, interval) {
 			this->item = item;
 			this->count = count;
 		}
@@ -395,6 +395,12 @@ namespace ai
 		string item;
 		int count;
 	};
+
+    class AmmoCountTrigger : public ItemCountTrigger
+    {
+    public:
+        AmmoCountTrigger(PlayerbotAI* ai, string item, uint32 count = 1, int interval = 30) : ItemCountTrigger(ai, item, count, interval) {}
+    };
 
 	class HasAuraTrigger : public Trigger {
 	public:

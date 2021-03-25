@@ -9,6 +9,7 @@ using namespace std;
 map<string, uint32> ChatHelper::consumableSubClasses;
 map<string, uint32> ChatHelper::tradeSubClasses;
 map<string, uint32> ChatHelper::itemQualities;
+map<string, uint32> ChatHelper::projectileSubClasses;
 map<string, uint32> ChatHelper::slots;
 map<string, uint32> ChatHelper::skills;
 map<string, ChatMsg> ChatHelper::chats;
@@ -51,6 +52,9 @@ ChatHelper::ChatHelper(PlayerbotAI* ai) : PlayerbotAIAware(ai)
     consumableSubClasses["food"] = ITEM_SUBCLASS_FOOD;
     consumableSubClasses["bandage"] = ITEM_SUBCLASS_BANDAGE;
     consumableSubClasses["enchant"] = ITEM_SUBCLASS_CONSUMABLE_OTHER;
+
+    projectileSubClasses["arrows"] = ITEM_SUBCLASS_ARROW;
+    projectileSubClasses["bullets"] = ITEM_SUBCLASS_BULLET;
 
     //tradeSubClasses["cloth"] = ITEM_SUBCLASS_CLOTH;
     //tradeSubClasses["leather"] = ITEM_SUBCLASS_LEATHER;
@@ -454,6 +458,13 @@ bool ChatHelper::parseItemClass(string text, uint32 *itemClass, uint32 *itemSubC
         return true;
     }
 
+    if (projectileSubClasses.find(text) != projectileSubClasses.end())
+    {
+        *itemClass = ITEM_CLASS_PROJECTILE;
+        *itemSubClass = projectileSubClasses[text];
+        return true;
+    }
+
     return false;
 }
 
@@ -469,6 +480,7 @@ bool ChatHelper::parseable(string text)
 {
     return text.find("|H") != string::npos ||
             text == "questitem" ||
+            text == "ammo" ||
             substrContainsInMap<uint32>(text, consumableSubClasses) ||
             substrContainsInMap<uint32>(text, tradeSubClasses) ||
             substrContainsInMap<uint32>(text, itemQualities) ||

@@ -43,6 +43,29 @@ ItemUsage ItemUsageValue::Calculate()
         if (IsItemUsefulForQuest(bot, itemId))
             return ITEM_USAGE_QUEST;
 
+    if (proto->Class == ITEM_CLASS_PROJECTILE)
+        if (bot->getClass() == CLASS_HUNTER || bot->getClass() == CLASS_ROGUE || bot->getClass() == CLASS_WARRIOR)
+        {
+            Item* const pItem = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_RANGED);
+            if (pItem)
+            {
+                uint32 subClass = 0;
+                switch (pItem->GetProto()->SubClass)
+                {
+                case ITEM_SUBCLASS_WEAPON_GUN:
+                    subClass = ITEM_SUBCLASS_BULLET;
+                    break;
+                case ITEM_SUBCLASS_WEAPON_BOW:
+                case ITEM_SUBCLASS_WEAPON_CROSSBOW:
+                    subClass = ITEM_SUBCLASS_ARROW;
+                    break;
+                }
+                if (proto->SubClass == subClass)
+                    return ITEM_USAGE_AMMO;
+            }
+            return ITEM_USAGE_NONE;
+        }
+
     //Need to add something like free bagspace or item value.
     if (proto->SellPrice > 0)
         if (proto->Quality > ITEM_QUALITY_NORMAL)

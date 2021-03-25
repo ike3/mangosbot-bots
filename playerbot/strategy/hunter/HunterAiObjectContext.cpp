@@ -90,6 +90,11 @@ namespace ai
                 creators["pet not happy"] = &TriggerFactoryInternal::pet_not_happy;
                 creators["concussive shot on snare target"] = &TriggerFactoryInternal::concussive_shot_on_snare_target;
                 creators["scare beast"] = &TriggerFactoryInternal::scare_beast;
+                creators["low ammo"] = &TriggerFactoryInternal::low_ammo;
+                creators["no ammo"] = &TriggerFactoryInternal::no_ammo;
+                creators["has ammo"] = &TriggerFactoryInternal::has_ammo;
+                creators["switch to melee"] = &TriggerFactoryInternal::switch_to_melee;
+                creators["switch to ranged"] = &TriggerFactoryInternal::switch_to_ranged;
             }
 
         private:
@@ -109,6 +114,11 @@ namespace ai
             static Trigger* rapid_fire(PlayerbotAI* ai) { return new RapidFireTrigger(ai); }
             static Trigger* aspect_of_the_hawk(PlayerbotAI* ai) { return new HunterAspectOfTheHawkTrigger(ai); }
             static Trigger* aspect_of_the_wild(PlayerbotAI* ai) { return new HunterAspectOfTheWildTrigger(ai); }
+            static Trigger* low_ammo(PlayerbotAI* ai) { return new HunterLowAmmoTrigger(ai); }
+            static Trigger* no_ammo(PlayerbotAI* ai) { return new HunterNoAmmoTrigger(ai); }
+            static Trigger* has_ammo(PlayerbotAI* ai) { return new HunterHasAmmoTrigger(ai); }
+            static Trigger* switch_to_melee(PlayerbotAI* ai) { return new SwitchToMeleeTrigger(ai); }
+            static Trigger* switch_to_ranged(PlayerbotAI* ai) { return new SwitchToRangedTrigger(ai); }
         };
     };
 };
@@ -157,6 +167,7 @@ namespace ai
                 creators["trueshot aura"] = &AiObjectContextInternal::trueshot_aura;
                 creators["feign death"] = &AiObjectContextInternal::feign_death;
                 creators["wing clip"] = &AiObjectContextInternal::wing_clip;
+                creators["raptor strike"] = &AiObjectContextInternal::raptor_strike;
                 creators["feed pet"] = &AiObjectContextInternal::feed_pet;
                 creators["bestial wrath"] = &AiObjectContextInternal::bestial_wrath;
                 creators["scare beast"] = &AiObjectContextInternal::scare_beast;
@@ -198,6 +209,7 @@ namespace ai
             static Action* aspect_of_the_pack(PlayerbotAI* ai) { return new CastAspectOfThePackAction(ai); }
             static Action* aspect_of_the_cheetah(PlayerbotAI* ai) { return new CastAspectOfTheCheetahAction(ai); }
             static Action* wing_clip(PlayerbotAI* ai) { return new CastWingClipAction(ai); }
+            static Action* raptor_strike(PlayerbotAI* ai) { return new CastRaptorStrikeAction(ai); }
         };
     };
 };

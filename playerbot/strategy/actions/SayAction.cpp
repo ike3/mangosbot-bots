@@ -77,6 +77,24 @@ bool SayAction::Execute(Event event)
 
     replaceAll(text, "<randomfaction>", IsAlliance(bot->getRace()) ? "Alliance" : "Horde");
 
+    if (qualifier == "low ammo" || qualifier == "no ammo")
+    {
+        Item* const pItem = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_RANGED);
+        if (pItem)
+        {
+            switch (pItem->GetProto()->SubClass)
+            {
+            case ITEM_SUBCLASS_WEAPON_GUN:
+                replaceAll(text, "<ammo>", "bullets");
+                break;
+            case ITEM_SUBCLASS_WEAPON_BOW:
+            case ITEM_SUBCLASS_WEAPON_CROSSBOW:
+                replaceAll(text, "<ammo>", "arrows");
+                break;
+            }
+        }
+    }
+
     if (bot->GetMap())
     {
         if (AreaTableEntry const* area = GetAreaEntryByAreaID(bot->GetAreaId()))

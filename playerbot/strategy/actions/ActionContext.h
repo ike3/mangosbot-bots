@@ -41,6 +41,7 @@
 #include "InviteToGroupAction.h"
 #include "LeaveGroupAction.h"
 #include "ReleaseSpiritAction.h"
+#include "CombatActions.h"
 
 namespace ai
 {
@@ -61,6 +62,8 @@ namespace ai
             creators["move random"] = &ActionContext::move_random;
             creators["attack"] = &ActionContext::melee;
             creators["melee"] = &ActionContext::melee;
+            creators["switch to melee"] = &ActionContext::switch_to_melee;
+            creators["switch to ranged"] = &ActionContext::switch_to_ranged;
             creators["reach spell"] = &ActionContext::ReachSpell;
             creators["reach melee"] = &ActionContext::ReachMelee;
             creators["reach party member to heal"] = &ActionContext::reach_party_member_to_heal;
@@ -163,6 +166,8 @@ namespace ai
         static Action* _return(PlayerbotAI* ai) { return new ReturnAction(ai); }
         static Action* shoot(PlayerbotAI* ai) { return new CastShootAction(ai); }
         static Action* melee(PlayerbotAI* ai) { return new MeleeAction(ai); }
+        static Action* switch_to_melee(PlayerbotAI* ai) { return new SwitchToMeleeAction(ai); }
+        static Action* switch_to_ranged(PlayerbotAI* ai) { return new SwitchToRangedAction(ai); }
         static Action* ReachSpell(PlayerbotAI* ai) { return new ReachSpellAction(ai); }
         static Action* ReachMelee(PlayerbotAI* ai) { return new ReachMeleeAction(ai); }
         static Action* reach_party_member_to_heal(PlayerbotAI* ai) { return new ReachPartyMemberToHealAction(ai); }

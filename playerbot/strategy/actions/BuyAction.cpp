@@ -44,7 +44,7 @@ bool BuyAction::Execute(Event event)
             for (auto& tItem : tItems->m_items)
             {
                 ItemUsage usage = AI_VALUE2(ItemUsage, "item usage", tItem->item);
-                if (usage == ITEM_USAGE_REPLACE || usage == ITEM_USAGE_EQUIP)
+                if (usage == ITEM_USAGE_REPLACE || usage == ITEM_USAGE_EQUIP || usage == ITEM_USAGE_AMMO)
                     itemIds.insert(tItem->item);
                 else
                 {

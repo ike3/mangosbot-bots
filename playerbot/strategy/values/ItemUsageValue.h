@@ -15,7 +15,8 @@ namespace ai
         ITEM_USAGE_GUILD_TASK = 7,
         ITEM_USAGE_DISENCHANT = 8,
         ITEM_USAGE_AH = 9,
-        ITEM_USAGE_VENDOR = 10
+        ITEM_USAGE_VENDOR = 10,
+        ITEM_USAGE_AMMO = 11
     };
 
     class ItemUsageValue : public CalculatedValue<ItemUsage>, public Qualified

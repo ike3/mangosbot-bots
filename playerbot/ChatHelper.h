@@ -48,6 +48,7 @@ namespace ai
         static map<string, uint32> consumableSubClasses;
         static map<string, uint32> tradeSubClasses;
         static map<string, uint32> itemQualities;
+        static map<string, uint32> projectileSubClasses;
         static map<string, uint32> slots;
         static map<string, uint32> skills;
         static map<string, ChatMsg> chats;

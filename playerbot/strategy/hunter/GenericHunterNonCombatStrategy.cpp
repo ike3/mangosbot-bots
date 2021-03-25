@@ -47,6 +47,18 @@ void GenericHunterNonCombatStrategy::InitTriggers(std::list<TriggerNode*> &trigg
     triggers.push_back(new TriggerNode(
         "often",
         NextAction::array(0, new NextAction("apply oil", 1.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "low ammo",
+        NextAction::array(0, new NextAction("say::low ammo", ACTION_NORMAL), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "no ammo",
+        NextAction::array(0, new NextAction("switch to melee", ACTION_NORMAL + 1), new NextAction("say::no ammo", ACTION_NORMAL), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "has ammo",
+        NextAction::array(0, new NextAction("switch to ranged", ACTION_NORMAL), NULL)));
 }
 
 void HunterPetStrategy::InitTriggers(std::list<TriggerNode*> &triggers)

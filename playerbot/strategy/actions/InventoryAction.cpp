@@ -232,6 +232,17 @@ list<Item*> InventoryAction::parseItems(string text, IterateItemsMask mask)
         found.insert(visitor.GetResult().begin(), visitor.GetResult().end());
     }
 
+    if (text == "ammo")
+    {
+        Item* const pItem = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_RANGED);
+        if (pItem)
+        {
+            FindAmmoVisitor visitor(bot, pItem->GetProto()->SubClass);
+            IterateItems(&visitor, ITERATE_ITEMS_IN_BAGS);
+            found.insert(visitor.GetResult().begin(), visitor.GetResult().end());
+        }
+    }
+
     FindNamedItemVisitor visitor(bot, text);
     IterateItems(&visitor, ITERATE_ITEMS_IN_BAGS);
     found.insert(visitor.GetResult().begin(), visitor.GetResult().end());
