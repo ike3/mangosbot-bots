@@ -672,6 +672,9 @@ bool EmoteAction::Execute(Event event)
 
 bool EmoteAction::isUseful()
 {
+    if (!ai->HasPlayerNearby())
+        return false;
+
     if (sServerFacade.isMoving(bot))
         return false;
 
