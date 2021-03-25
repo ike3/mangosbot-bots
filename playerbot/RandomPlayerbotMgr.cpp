@@ -119,7 +119,7 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed)
         return;
 
     int maxAllowedBotCount = GetEventValue(0, "bot_count");
-    if (!maxAllowedBotCount)
+    if (!maxAllowedBotCount || (maxAllowedBotCount < sPlayerbotAIConfig.minRandomBots || maxAllowedBotCount > sPlayerbotAIConfig.maxRandomBots))
     {
         maxAllowedBotCount = urand(sPlayerbotAIConfig.minRandomBots, sPlayerbotAIConfig.maxRandomBots);
         SetEventValue(0, "bot_count", maxAllowedBotCount,
@@ -136,8 +136,11 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed)
     uint32 notDiv = 1;
     if (maxAllowedBotCount >  sPlayerbotAIConfig.randomBotsPerInterval)
         notDiv =  maxAllowedBotCount / sPlayerbotAIConfig.randomBotsPerInterval;
-        
-    SetNextCheckDelay( (1000 * sPlayerbotAIConfig.randomBotUpdateInterval) / notDiv);
+
+    if (playerBots.size() < sPlayerbotAIConfig.minRandomBots)
+        SetNextCheckDelay((uint32)max(1000, int(1000 * notDiv * sPlayerbotAIConfig.randomBotUpdateInterval) / 1000));
+    else
+        SetNextCheckDelay((uint32)max(1000, int(2000 * notDiv * sPlayerbotAIConfig.randomBotUpdateInterval) / 1000));
 
     list<uint32> bots = GetBots();
     int botCount = bots.size();
@@ -150,7 +153,7 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed)
         AddRandomBots();
     }
 
-    if (sPlayerbotAIConfig.randomBotJoinBG)
+    if (sPlayerbotAIConfig.randomBotJoinBG && players.size())
     {
         // check bg queue for real players
         if (time(NULL) > (BgCheckTimer + 30))
@@ -203,7 +206,13 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed)
 			botProcessed++;
 		}
 
-        if (botProcessed >= sPlayerbotAIConfig.randomBotsPerInterval)
+        if (playerBots.size() < int(sPlayerbotAIConfig.minRandomBots / 4) && botProcessed >= sPlayerbotAIConfig.randomBotsPerInterval)
+            break;
+        else if (playerBots.size() < int(sPlayerbotAIConfig.minRandomBots / 2) && botProcessed >= int(sPlayerbotAIConfig.randomBotsPerInterval / 2))
+            break;
+        else if (playerBots.size() < sPlayerbotAIConfig.minRandomBots && botProcessed >= int(sPlayerbotAIConfig.randomBotsPerInterval / 5))
+            break;
+        else if (playerBots.size() >= sPlayerbotAIConfig.minRandomBots && botProcessed >= int(sPlayerbotAIConfig.randomBotsPerInterval / 30))
             break;
     }
 
@@ -214,22 +223,34 @@ uint32 RandomPlayerbotMgr::AddRandomBots()
 {
     set<uint32> bots;
 
-    QueryResult* results = PlayerbotDatabase.PQuery(
+    if (!currentBots.size())
+    {
+        QueryResult* results = PlayerbotDatabase.PQuery(
             "select `bot` from ai_playerbot_random_bots where event = 'add'");
 
-    if (results)
-    {
-        do
+        if (results)
         {
-            Field* fields = results->Fetch();
-            uint32 bot = fields[0].GetUInt32();
+            do
+            {
+                Field* fields = results->Fetch();
+                uint32 bot = fields[0].GetUInt32();
+                bots.insert(bot);
+            } while (results->NextRow());
+            delete results;
+        }
+    }
+    else
+    {
+        for (list<uint32>::iterator i = currentBots.begin(); i != currentBots.end(); i++)
+        {
+            uint32 bot = *i;
             bots.insert(bot);
-        } while (results->NextRow());
-        delete results;
+        }
     }
 
     vector<uint32> guids;
     int maxAllowedBotCount = GetEventValue(0, "bot_count");
+    int maxAllowedNewBotCount = maxAllowedBotCount - currentBots.size();
     for (list<uint32>::iterator i = sPlayerbotAIConfig.randomBotAccounts.begin(); i != sPlayerbotAIConfig.randomBotAccounts.end(); i++)
     {
         uint32 accountId = *i;
@@ -245,6 +266,8 @@ uint32 RandomPlayerbotMgr::AddRandomBots()
             Field* fields = result->Fetch();
             uint32 guid = fields[0].GetUInt32();
             uint8 race = fields[1].GetUInt8();
+            if (bots.find(guid) != bots.end())
+                continue;
 			// Although this code works it cuts the Maximum Bots setting in half. 
 			// And, also doesn't see to be any reason to do it.
             //bool alliance = guids.size() % 2 == 0;
@@ -263,7 +286,7 @@ uint32 RandomPlayerbotMgr::AddRandomBots()
                 bots.insert(bot);
                 currentBots.push_back(bot);
                 sLog.outBasic( "New random bot %d added", bot);
-                if (bots.size() >= maxAllowedBotCount)
+                if (bots.size() >= maxAllowedNewBotCount)
                 {
                     delete result;
                     return guids.size();
@@ -1215,7 +1238,7 @@ bool RandomPlayerbotMgr::ProcessBot(uint32 bot)
 
     if (!player)
     {
-        if (urand(0, 100) > 50) // less lag during bots login
+        if ((urand(0, 100) > 50) && currentBots.size() > sPlayerbotAIConfig.minRandomBots) // less lag during bots login
         {
             return true;
         }
@@ -1250,7 +1273,7 @@ bool RandomPlayerbotMgr::ProcessBot(uint32 bot)
     if (!update)
     {
         if (ai) ai->GetAiObjectContext()->GetValue<bool>("random bot update")->Set(true);
-        uint32 randomTime = urand(sPlayerbotAIConfig.minRandomBotReviveTime, sPlayerbotAIConfig.maxRandomBotReviveTime);
+        uint32 randomTime = urand(sPlayerbotAIConfig.minRandomBotReviveTime, sPlayerbotAIConfig.maxRandomBotReviveTime * 5);
         SetEventValue(bot, "update", 1, randomTime);
         return true;
     }
