@@ -82,6 +82,6 @@ bool FleeToMasterAction::Execute(Event event)
 bool FleeToMasterAction::isUseful()
 {
     Unit* target = AI_VALUE(Unit*, "current target");
-    return ai->GetGroupMaster() && (!target || (target && !ai->GetGroupMaster()->HasTarget(target->GetObjectGuid()))) && ai->HasStrategy("follow", BOT_STATE_NON_COMBAT);
+    return ai->GetGroupMaster() && ai->GetGroupMaster() != bot && (!target || (target && !ai->GetGroupMaster()->HasTarget(target->GetObjectGuid()))) && ai->HasStrategy("follow", BOT_STATE_NON_COMBAT);
 }
 

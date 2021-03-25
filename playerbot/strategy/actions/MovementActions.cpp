@@ -100,14 +100,14 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
 
         //BEGIN Path checker 
         PathFinder path(bot);
-        path.calculate(x, y, z, false);
+        path.calculate(x, y, z, true);
         PathType type = path.getPathType();
         PointsArray& points = path.getPath();
 
         if (type == PATHFIND_NOPATH)
             return false;
 
-        if (ai->HasStrategy("debug", BOT_STATE_NON_COMBAT))
+        if (ai->HasStrategy("debug move", BOT_STATE_NON_COMBAT))
         {
             //ostringstream out;
             //out << "From: " << bot->GetPositionX() << " ; " << bot->GetPositionY() << " ; " << bot->GetPositionZ();
@@ -397,8 +397,8 @@ bool MovementAction::Follow(Unit* target, float distance, float angle)
         ai->InterruptSpell();
     }
 
-    if (sServerFacade.isMoving(bot))
-        return false;
+    //if (sServerFacade.isMoving(bot))
+    //    return false;
 
     AI_VALUE(LastMovement&, "last movement").Set(target);
     ClearIdleState();
@@ -409,7 +409,7 @@ bool MovementAction::Follow(Unit* target, float distance, float angle)
         if (currentTarget && currentTarget->GetObjectGuid() == target->GetObjectGuid()) return false;
     }
 
-    if(mm.GetCurrent()->GetMovementGeneratorType() != FOLLOW_MOTION_TYPE)
+    //if(mm.GetCurrent()->GetMovementGeneratorType() != FOLLOW_MOTION_TYPE)
         mm.Clear();
 
     mm.MoveFollow(target,

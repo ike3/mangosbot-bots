@@ -81,6 +81,8 @@ namespace ai
             creators["mount"] = &StrategyContext::mount;
             creators["attack tagged"] = &StrategyContext::attack_tagged;
             creators["debug"] = &StrategyContext::debug;
+            creators["debug move"] = &StrategyContext::debug_move;
+            creators["debug rpg"] = &StrategyContext::debug_rpg;
             creators["rtsc"] = &StrategyContext::rtsc;
         }
 
@@ -123,6 +125,8 @@ namespace ai
         static Strategy* possible_ads(PlayerbotAI* ai) { return new PossibleAdsStrategy(ai); }
         static Strategy* attack_tagged(PlayerbotAI* ai) { return new AttackTaggedStrategy(ai); }
         static Strategy* debug(PlayerbotAI* ai) { return new DebugStrategy(ai); }
+        static Strategy* debug_move(PlayerbotAI* ai) { return new DebugMoveStrategy(ai); }
+        static Strategy* debug_rpg(PlayerbotAI* ai) { return new DebugRpgStrategy(ai); }
         static Strategy* rtsc(PlayerbotAI* ai) { return new RTSCStrategy(ai); }
     };
 

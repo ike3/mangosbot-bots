@@ -1,7 +1,8 @@
+#pragma once
+
 #include "TravelMgr.h"
 #include "ObjectMgr.h"
 #include <numeric>
-
 
 using namespace ai;
 using namespace MaNGOS;
@@ -144,11 +145,67 @@ string QuestObjectiveTravelDestination::getTitle() {
     return out.str();
 }
 
+//Coppy from reputation GetFactionReaction
+static inline ReputationRank GetFReaction(FactionTemplateEntry const* thisTemplate, FactionTemplateEntry const* otherTemplate)
+{
+     MANGOS_ASSERT(thisTemplate)
+     MANGOS_ASSERT(otherTemplate)
+
+        // Original logic begins
+
+        if (otherTemplate->factionGroupMask & thisTemplate->enemyGroupMask)
+            return REP_HOSTILE;
+
+    if (thisTemplate->enemyFaction[0] && otherTemplate->faction)
+    {
+        for (unsigned int i : thisTemplate->enemyFaction)
+        {
+            if (i == otherTemplate->faction)
+                return REP_HOSTILE;
+        }
+    }
+
+    if (otherTemplate->factionGroupMask & thisTemplate->friendGroupMask)
+        return REP_FRIENDLY;
+
+    if (thisTemplate->friendFaction[0] && otherTemplate->faction)
+    {
+        for (unsigned int i : thisTemplate->friendFaction)
+        {
+            if (i == otherTemplate->faction)
+                return REP_FRIENDLY;
+        }
+    }
+
+    if (thisTemplate->factionGroupMask & otherTemplate->friendGroupMask)
+        return REP_FRIENDLY;
+
+    if (otherTemplate->friendFaction[0] && thisTemplate->faction)
+    {
+        for (unsigned int i : otherTemplate->friendFaction)
+        {
+            if (i == thisTemplate->faction)
+                return REP_FRIENDLY;
+        }
+    }
+    return REP_NEUTRAL;
+}
+
+bool RpgTravelDestination::isActive(Player* bot)
+{
+    CreatureInfo const* cInfo = this->getCreatureInfo();
+    FactionTemplateEntry const* factionEntry = sFactionTemplateStore.LookupEntry(cInfo->Faction);
+    ReputationRank reaction = GetFReaction(bot->GetFactionTemplateEntry(), factionEntry);
+
+    return reaction > REP_NEUTRAL;
+}
 
 string RpgTravelDestination::getTitle() {
     ostringstream out;
 
-    out << "rpg location ";
+    out << "rpg npc ";
+
+    out << " " << ChatHelper::formatWorldEntry(entry);
 
     return out.str();
 }
@@ -759,6 +816,53 @@ void TravelMgr::LoadQuestTravelTable()
     }
 
     sLog.outString(">> Loaded " SIZEFMTD " quest details.", questIds.size());
+
+
+    RpgTravelDestination* loc;
+    WorldPosition point;
+
+    for (auto& u : units)
+    {
+        if (u.type != 0)
+            continue;
+
+        CreatureInfo const* cInfo = ObjectMgr::GetCreatureTemplate(u.entry);
+
+        if (!cInfo)
+            continue;
+
+        vector<uint32> allowedNpcFlags;
+
+        allowedNpcFlags.push_back(UNIT_NPC_FLAG_INNKEEPER);
+        allowedNpcFlags.push_back(UNIT_NPC_FLAG_GOSSIP);
+        allowedNpcFlags.push_back(UNIT_NPC_FLAG_QUESTGIVER);
+        allowedNpcFlags.push_back(UNIT_NPC_FLAG_FLIGHTMASTER);
+        allowedNpcFlags.push_back(UNIT_NPC_FLAG_BANKER);
+        allowedNpcFlags.push_back(UNIT_NPC_FLAG_AUCTIONEER);
+        allowedNpcFlags.push_back(UNIT_NPC_FLAG_STABLEMASTER);
+        allowedNpcFlags.push_back(UNIT_NPC_FLAG_PETITIONER);
+        allowedNpcFlags.push_back(UNIT_NPC_FLAG_TABARDDESIGNER);
+
+        allowedNpcFlags.push_back(UNIT_NPC_FLAG_TRAINER);
+        allowedNpcFlags.push_back(UNIT_NPC_FLAG_VENDOR);
+        allowedNpcFlags.push_back(UNIT_NPC_FLAG_REPAIR);
+
+        for (vector<uint32>::iterator i = allowedNpcFlags.begin(); i != allowedNpcFlags.end(); ++i)
+        {
+            if (cInfo->NpcFlags == *i)
+            {
+                loc = new RpgTravelDestination(u.entry, sPlayerbotAIConfig.tooCloseDistance, sPlayerbotAIConfig.sightDistance);
+                loc->setExpireDelay(5 * 60 * 1000);
+                loc->setMaxVisitors(15, 0);
+
+                point = WorldPosition(u.map, u.x, u.y, u.z, u.o);
+                pointsMap.insert(make_pair(u.guid, point));
+                loc->addPoint(&pointsMap.find(u.guid)->second);
+                rpgNpcs.push_back(loc);
+                break;
+            }
+        }
+    }
 }
 
 uint32 TravelMgr::getDialogStatus(Player* pPlayer, int32 questgiver, Quest const* pQuest)
@@ -877,6 +981,13 @@ uint32 TravelMgr::getDialogStatus(Player* pPlayer, int32 questgiver, Quest const
 
 vector<WorldPosition*> TravelMgr::getNextPoint(WorldPosition* center, vector<WorldPosition*> points) {
     vector<WorldPosition*> retVec;
+
+    if (points.size() == 1)
+    {
+        retVec.push_back(points[0]);
+        return retVec;
+    }
+
     //List of weights based on distance (Gausian curve that starts at 100 and lower to 0 at 800)
     vector<uint32> weights;
 
@@ -991,6 +1102,29 @@ vector<TravelDestination*> TravelMgr::getQuestTravelDestinations(Player* bot, ui
                     retTravelLocations.push_back(dest);
                 }
         }
+    }
+
+    return retTravelLocations;
+}
+
+vector<TravelDestination*> TravelMgr::getRpgTravelDestinations(Player* bot, bool ignoreFull, bool ignoreInactive, float maxDistance)
+{
+    WorldPosition botLocation(bot);
+
+    vector<TravelDestination*> retTravelLocations;
+
+    for (auto& dest : rpgNpcs)
+    {
+        if (!ignoreInactive && !dest->isActive(bot))
+            continue;
+
+        if (dest->isFull(ignoreFull))
+            continue;
+
+        if (maxDistance > 0 && dest->distanceTo(&botLocation) > maxDistance)
+            continue;
+
+        retTravelLocations.push_back(dest);
     }
 
     return retTravelLocations;
