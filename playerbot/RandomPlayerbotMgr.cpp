@@ -456,9 +456,40 @@ void RandomPlayerbotMgr::CheckBgQueue()
         }
     }
 
+    // Clear LFG list
+    LfgDungeons[HORDE].clear();
+    LfgDungeons[ALLIANCE].clear();
+
     for (vector<Player*>::iterator i = players.begin(); i != players.end(); ++i)
     {
         Player* player = *i;
+
+        bool isLFG = false;
+
+#ifdef MANGOSBOT_ZERO
+        Group* group = player->GetGroup();
+        if (group)
+        {
+            if (sLFGMgr.IsGroupInQueue(group->GetId()))
+            {
+                isLFG = true;
+                LFGGroupQueueInfo lfgInfo;
+                sLFGMgr.GetGroupQueueInfo(&lfgInfo, group->GetId());
+                LfgDungeons[player->GetTeam()].push_back(lfgInfo.areaId);
+            }
+        }
+        else
+        {
+            if (sLFGMgr.IsPlayerInQueue(player->GetObjectGuid()))
+            {
+                isLFG = true;
+                LFGPlayerQueueInfo lfgInfo;
+                sLFGMgr.GetPlayerQueueInfo(&lfgInfo, player->GetObjectGuid());
+
+                LfgDungeons[player->GetTeam()].push_back(lfgInfo.areaId);
+            }
+        }
+#endif
 
         if (!player->InBattleGroundQueue())
             continue;
@@ -468,7 +499,7 @@ void RandomPlayerbotMgr::CheckBgQueue()
 
         uint32 TeamId = player->GetTeam() == ALLIANCE ? 0 : 1;
         BattleGroundQueueTypeId queueTypeId = player->GetBattleGroundQueueTypeId(0);
-        if (queueTypeId == BATTLEGROUND_QUEUE_NONE)
+        if (queueTypeId == BATTLEGROUND_QUEUE_NONE && !isLFG)
             continue;
 
         BattleGroundTypeId bgTypeId = sServerFacade.BgTemplateId(queueTypeId);
@@ -787,6 +818,9 @@ void RandomPlayerbotMgr::AddBgBot(BattleGroundQueueTypeId queueTypeId, BattleGro
     {
         for (PlayerBotMap::iterator i = playerBots.begin(); i != playerBots.end(); ++i)
         {
+            if (urand(0, 100) > 10)
+                continue;
+
             Player* bot = i->second;
 
             if (bot->IsBeingTeleported())
@@ -856,9 +890,6 @@ void RandomPlayerbotMgr::AddBgBot(BattleGroundQueueTypeId queueTypeId, BattleGro
             // add only x2 - x9 level
             //if (!visual && bracketId < BG_BRACKET_ID_LAST && (bot->getLevel() < ((bracketId * 10) + 12)))
             //	continue;
-
-            if (urand(0, 100) > 10)
-                continue;
 
             if (player == NULL)
             {
@@ -1384,22 +1415,7 @@ bool RandomPlayerbotMgr::ProcessBot(Player* player)
         if (randomiser)
         {
             Randomize(player);
-
-            // leave group in teleport
-            //if (player->GetGroup())
-            //    player->GetPlayerbotAI()->DoSpecificAction("leave");
-
-            // activate lfg
-            player->GetPlayerbotAI()->ChangeStrategy("+lfg", BOT_STATE_NON_COMBAT);
         }
-        else
-        {
-            RandomTeleportForRpg(player);
-        }
-
-		SetEventValue(bot, "teleport", 1, sPlayerbotAIConfig.maxRandomBotInWorldTime);
-		uint32 randomChange = urand(sPlayerbotAIConfig.randomBotUpdateInterval * 5, sPlayerbotAIConfig.randomBotUpdateInterval * 15);
-		ScheduleChangeStrategy(bot, randomChange);
 
         if (randomiser)
         {

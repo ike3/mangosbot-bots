@@ -89,6 +89,9 @@ class RandomPlayerbotMgr : public PlayerbotHolder
         map<uint32, map<uint32, map<uint32, map<uint32, uint32> > > > ArenaBots;
         map<uint32, map<uint32, map<uint32, uint32> > > Rating;
         map<uint32, map<uint32, map<uint32, uint32> > > Supporters;
+#ifdef MANGOSBOT_ZERO
+        map<Team, vector<uint32>> LfgDungeons;
+#endif
 
 	protected:
 	    virtual void OnBotLoginInternal(Player * const bot);
