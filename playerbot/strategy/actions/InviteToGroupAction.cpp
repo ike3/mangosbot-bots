@@ -67,6 +67,12 @@ namespace ai
         if (!sPlayerbotAIConfig.randomBotGroupNearby)
             return false;
 
+        if (bot->InBattleGround())
+            return false;
+        
+        if (bot->InBattleGroundQueue())
+            return false;
+
         GrouperType grouperType = ai->GetGrouperType();
 
         if (grouperType == SOLO || grouperType == MEMBER)

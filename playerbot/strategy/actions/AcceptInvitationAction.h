@@ -36,21 +36,15 @@ namespace ai
 
             if (sRandomPlayerbotMgr.IsRandomBot(bot))
                 ai->SetMaster(inviter);
-            else
-                sPlayerbotDbStore.Save(ai);
+            //else
+            //    sPlayerbotDbStore.Save(ai);
             
-            //if (!inviter->GetPlayerbotAI() && !bot->GetPlayerbotAI()->isRealPlayer())
-            //{
-                ai->ResetStrategies();
-                //ai->ChangeStrategy("-rpg", BOT_STATE_NON_COMBAT);
-                //ai->ChangeStrategy("-grind", BOT_STATE_NON_COMBAT);
-                //ai->ChangeStrategy("-travel", BOT_STATE_NON_COMBAT);
-                ai->ChangeStrategy("+follow", BOT_STATE_NON_COMBAT);
-            //}
-
-            ai->ChangeStrategy("-lfg", BOT_STATE_NON_COMBAT);
-            ai->ChangeStrategy("-bg", BOT_STATE_NON_COMBAT);
-
+            ai->ResetStrategies();
+            ai->ChangeStrategy("+follow,-lfg,-bg", BOT_STATE_NON_COMBAT);
+            if (!inviter->GetPlayerbotAI() && !bot->GetPlayerbotAI()->isRealPlayer())
+            {
+                ai->ChangeStrategy("-rpg,-travel,-grind", BOT_STATE_NON_COMBAT);
+            }
             ai->Reset();
 
             ai->TellMaster("Hello");
