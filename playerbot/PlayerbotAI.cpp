@@ -100,6 +100,7 @@ PlayerbotAI::PlayerbotAI(Player* bot) :
     masterIncomingPacketHandlers.AddHandler(CMSG_TAXICLEARALLNODES, "taxi done");
     masterIncomingPacketHandlers.AddHandler(CMSG_TAXICLEARNODE, "taxi done");
     masterIncomingPacketHandlers.AddHandler(CMSG_GROUP_UNINVITE, "uninvite");
+    masterIncomingPacketHandlers.AddHandler(CMSG_GROUP_UNINVITE_GUID, "uninvite guid");
     masterIncomingPacketHandlers.AddHandler(CMSG_PUSHQUESTTOPARTY, "quest share");
     masterIncomingPacketHandlers.AddHandler(CMSG_CAST_SPELL, "see spell");
     masterIncomingPacketHandlers.AddHandler(CMSG_REPOP_REQUEST, "release spirit");

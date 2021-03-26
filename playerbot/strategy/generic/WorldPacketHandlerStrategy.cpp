@@ -17,6 +17,10 @@ void WorldPacketHandlerStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("uninvite", relevance), NULL)));
 
     triggers.push_back(new TriggerNode(
+        "uninvite guid",
+        NextAction::array(0, new NextAction("uninvite", relevance), NULL)));
+
+    triggers.push_back(new TriggerNode(
         "group set leader",
         NextAction::array(0, new NextAction("leader", relevance), NULL)));
 
