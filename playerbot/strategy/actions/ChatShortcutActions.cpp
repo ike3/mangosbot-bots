@@ -61,7 +61,7 @@ bool FollowChatShortcutAction::Execute(Event event)
             return true;
         }
     }
-    if (bot->GetMapId() != master->GetMapId() || bot->GetDistance(master) > sPlayerbotAIConfig.sightDistance)
+    if (bot->GetMapId() != master->GetMapId() || (master && bot->GetDistance(master) > sPlayerbotAIConfig.sightDistance))
     {
         if (sServerFacade.UnitIsDead(bot))
         {

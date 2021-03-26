@@ -173,10 +173,7 @@ void AutoLearnSpellAction::LearnSpell(uint32 spellId, ostringstream* out)
         }
     }
     if (!learned) {
-        Spell* spell = new Spell(bot, proto, false);
-        SpellCastTargets targets;
-        targets.setUnitTarget(bot);
-        spell->SpellStart(&targets);
+        ai->CastSpell(spellId, bot);
         *out << formatSpell(proto) << ", ";
     }
 #endif
