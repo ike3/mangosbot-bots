@@ -295,7 +295,7 @@ bool LfgRoleCheckAction::Execute(Event event)
         
         pState->SetRoles(newRoles);
 
-        //sLFGMgr.UpdateRoleCheck(group);
+        sLFGMgr.UpdateRoleCheck(group);
 
         sLog.outBasic("Bot #%d %s:%d <%s>: LFG roles checked", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName());
 
@@ -433,7 +433,7 @@ bool LfgJoinAction::isUseful()
         return false;
     }
 
-    if (bot->getLevel() < 10)
+    if (bot->getLevel() < 15)
         return false;
 
     if ((ai->GetMaster() && !ai->GetMaster()->GetPlayerbotAI()) || bot->GetGroup() && bot->GetGroup()->GetLeaderGuid() != bot->GetObjectGuid())
