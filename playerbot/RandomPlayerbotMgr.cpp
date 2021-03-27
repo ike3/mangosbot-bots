@@ -70,27 +70,79 @@ void activatePrintStatsThread()
 }
 
 #ifdef MANGOS
-class CheckQueueThread : public ACE_Task <ACE_MT_SYNCH>
+class CheckBgQueueThread : public ACE_Task <ACE_MT_SYNCH>
 {
 public:
-    int svc(void) { sRandomPlayerbotMgr.CheckQueue(); return 0; }
+    int svc(void) { sRandomPlayerbotMgr.CheckBgQueue(); return 0; }
 };
 #endif
 #ifdef CMANGOS
-void CheckQueueThread()
+void CheckBgQueueThread()
 {
     sRandomPlayerbotMgr.CheckBgQueue();
 }
 #endif
 
-void activateCheckQueueThread()
+void activateCheckBgQueueThread()
 {
 #ifdef MANGOS
-    CheckQueueThread *thread = new CheckQueueThread();
+    CheckBgQueueThread *thread = new CheckBgQueueThread();
     thread->activate();
 #endif
 #ifdef CMANGOS
-    boost::thread t(CheckQueueThread);
+    boost::thread t(CheckBgQueueThread);
+    t.detach();
+#endif
+}
+
+#ifdef MANGOS
+class CheckLfgQueueThread : public ACE_Task <ACE_MT_SYNCH>
+{
+public:
+    int svc(void) { sRandomPlayerbotMgr.CheckLfgQueue(); return 0; }
+};
+#endif
+#ifdef CMANGOS
+void CheckLfgQueueThread()
+{
+    sRandomPlayerbotMgr.CheckLfgQueue();
+}
+#endif
+
+void activateCheckLfgQueueThread()
+{
+#ifdef MANGOS
+    CheckLfgQueueThread *thread = new CheckLfgQueueThread();
+    thread->activate();
+#endif
+#ifdef CMANGOS
+    boost::thread t(CheckLfgQueueThread);
+    t.detach();
+#endif
+}
+
+#ifdef MANGOS
+class CheckPlayersThread : public ACE_Task <ACE_MT_SYNCH>
+{
+public:
+    int svc(void) { sRandomPlayerbotMgr.CheckPlayers(); return 0; }
+};
+#endif
+#ifdef CMANGOS
+void CheckPlayersThread()
+{
+    sRandomPlayerbotMgr.CheckPlayers();
+}
+#endif
+
+void activateCheckPlayersThread()
+{
+#ifdef MANGOS
+    CheckPlayersThread *thread = new CheckPlayersThread();
+    thread->activate();
+#endif
+#ifdef CMANGOS
+    boost::thread t(CheckPlayersThread);
     t.detach();
 #endif
 }
@@ -137,10 +189,12 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed)
     if (maxAllowedBotCount >  sPlayerbotAIConfig.randomBotsPerInterval)
         notDiv =  maxAllowedBotCount / sPlayerbotAIConfig.randomBotsPerInterval;
 
-    if (playerBots.size() < sPlayerbotAIConfig.minRandomBots)
-        SetNextCheckDelay((uint32)max(1000, int(1000 * notDiv * sPlayerbotAIConfig.randomBotUpdateInterval) / 1000));
-    else
-        SetNextCheckDelay((uint32)max(1000, int(2000 * notDiv * sPlayerbotAIConfig.randomBotUpdateInterval) / 1000));
+    SetNextCheckDelay((uint32)max(1000, int(2000 * notDiv * sPlayerbotAIConfig.randomBotUpdateInterval) / 1000));
+
+    //if (playerBots.size() < sPlayerbotAIConfig.minRandomBots)
+    //    SetNextCheckDelay((uint32)max(1000, int(1000 * notDiv * sPlayerbotAIConfig.randomBotUpdateInterval) / 1000));
+    //else
+    //    SetNextCheckDelay((uint32)max(1000, int(2000 * notDiv * sPlayerbotAIConfig.randomBotUpdateInterval) / 1000));
 
     list<uint32> bots = GetBots();
     int botCount = bots.size();
@@ -153,11 +207,22 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed)
         AddRandomBots();
     }
 
+    if (sPlayerbotAIConfig.syncLevelWithPlayers && players.size())
+    {
+        if (time(NULL) > (PlayersCheckTimer + 60))
+            activateCheckPlayersThread();
+    }
+
+    if (sPlayerbotAIConfig.randomBotJoinLfg && players.size())
+    {
+        if (time(NULL) > (LfgCheckTimer + 30))
+            activateCheckLfgQueueThread();
+    }
+
     if (sPlayerbotAIConfig.randomBotJoinBG && players.size())
     {
-        // check bg queue for real players
         if (time(NULL) > (BgCheckTimer + 30))
-            activateCheckQueueThread();
+            activateCheckBgQueueThread();
 
         if (BgBotsActive && bgBotsCount < 50)
         {
@@ -286,7 +351,7 @@ uint32 RandomPlayerbotMgr::AddRandomBots()
                 bots.insert(bot);
                 currentBots.push_back(bot);
                 sLog.outBasic( "New random bot %d added", bot);
-                if (bots.size() >= maxAllowedNewBotCount)
+                if (guids.size() >= min((int)(sPlayerbotAIConfig.randomBotsPerInterval / 10), maxAllowedNewBotCount))
                 {
                     delete result;
                     return guids.size();
@@ -456,40 +521,9 @@ void RandomPlayerbotMgr::CheckBgQueue()
         }
     }
 
-    // Clear LFG list
-    LfgDungeons[HORDE].clear();
-    LfgDungeons[ALLIANCE].clear();
-
     for (vector<Player*>::iterator i = players.begin(); i != players.end(); ++i)
     {
         Player* player = *i;
-
-        bool isLFG = false;
-
-#ifdef MANGOSBOT_ZERO
-        Group* group = player->GetGroup();
-        if (group)
-        {
-            if (sLFGMgr.IsGroupInQueue(group->GetId()))
-            {
-                isLFG = true;
-                LFGGroupQueueInfo lfgInfo;
-                sLFGMgr.GetGroupQueueInfo(&lfgInfo, group->GetId());
-                LfgDungeons[player->GetTeam()].push_back(lfgInfo.areaId);
-            }
-        }
-        else
-        {
-            if (sLFGMgr.IsPlayerInQueue(player->GetObjectGuid()))
-            {
-                isLFG = true;
-                LFGPlayerQueueInfo lfgInfo;
-                sLFGMgr.GetPlayerQueueInfo(&lfgInfo, player->GetObjectGuid());
-
-                LfgDungeons[player->GetTeam()].push_back(lfgInfo.areaId);
-            }
-        }
-#endif
 
         if (!player->InBattleGroundQueue())
             continue;
@@ -499,7 +533,7 @@ void RandomPlayerbotMgr::CheckBgQueue()
 
         uint32 TeamId = player->GetTeam() == ALLIANCE ? 0 : 1;
         BattleGroundQueueTypeId queueTypeId = player->GetBattleGroundQueueTypeId(0);
-        if (queueTypeId == BATTLEGROUND_QUEUE_NONE && !isLFG)
+        if (queueTypeId == BATTLEGROUND_QUEUE_NONE)
             continue;
 
         BattleGroundTypeId bgTypeId = sServerFacade.BgTemplateId(queueTypeId);
@@ -715,6 +749,80 @@ void RandomPlayerbotMgr::CheckBgQueue()
     }
 
     sLog.outBasic("BG Queue check finished");
+    return;
+}
+
+void RandomPlayerbotMgr::CheckLfgQueue()
+{
+    if (!LfgCheckTimer || time(NULL) > (LfgCheckTimer + 30))
+        LfgCheckTimer = time(NULL);
+
+    sLog.outBasic("Checking LFG Queue...");
+
+    // Clear LFG list
+    LfgDungeons[HORDE].clear();
+    LfgDungeons[ALLIANCE].clear();
+
+    for (vector<Player*>::iterator i = players.begin(); i != players.end(); ++i)
+    {
+        Player* player = *i;
+
+        bool isLFG = false;
+
+#ifdef MANGOSBOT_ZERO
+        Group* group = player->GetGroup();
+        if (group)
+        {
+            if (sLFGMgr.IsGroupInQueue(group->GetId()))
+            {
+                isLFG = true;
+                LFGGroupQueueInfo lfgInfo;
+                sLFGMgr.GetGroupQueueInfo(&lfgInfo, group->GetId());
+                LfgDungeons[player->GetTeam()].push_back(lfgInfo.areaId);
+            }
+        }
+        else
+        {
+            if (sLFGMgr.IsPlayerInQueue(player->GetObjectGuid()))
+            {
+                isLFG = true;
+                LFGPlayerQueueInfo lfgInfo;
+                sLFGMgr.GetPlayerQueueInfo(&lfgInfo, player->GetObjectGuid());
+
+                LfgDungeons[player->GetTeam()].push_back(lfgInfo.areaId);
+            }
+        }
+#endif
+    }
+    sLog.outBasic("LFG Queue check finished");
+    return;
+}
+
+void RandomPlayerbotMgr::CheckPlayers()
+{
+    if (!PlayersCheckTimer || time(NULL) > (PlayersCheckTimer + 60))
+        PlayersCheckTimer = time(NULL);
+
+    sLog.outBasic("Checking Players...");
+
+    if (!playersLevel)
+        playersLevel = sPlayerbotAIConfig.randombotStartingLevel;
+
+
+    for (vector<Player*>::iterator i = players.begin(); i != players.end(); ++i)
+    {
+        Player* player = *i;
+
+        if (player->IsGameMaster())
+            continue;
+
+        //if (player->GetSession()->GetSecurity() > SEC_PLAYER)
+        //    continue;
+
+        if (player->getLevel() > playersLevel)
+            playersLevel = player->getLevel() + 3;
+    }
+    sLog.outBasic("Players check finished, max player level is %d, max bot level set to %d", playersLevel - 3, playersLevel);
     return;
 }
 
@@ -1799,12 +1907,16 @@ void RandomPlayerbotMgr::RandomizeFirst(Player* bot)
 	if (maxLevel > sWorld.getConfig(CONFIG_UINT32_MAX_PLAYER_LEVEL))
 		maxLevel = sWorld.getConfig(CONFIG_UINT32_MAX_PLAYER_LEVEL);
 
+    // if lvl sync is enabled, max level is limited by online players lvl
+    if (sPlayerbotAIConfig.syncLevelWithPlayers)
+        maxLevel = max(sPlayerbotAIConfig.randomBotMinLevel, min(playersLevel, sWorld.getConfig(CONFIG_UINT32_MAX_PLAYER_LEVEL)));
+
 	PerformanceMonitorOperation *pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "RandomizeFirst");
     uint32 level = urand(sPlayerbotAIConfig.randomBotMinLevel, maxLevel);
 
 #ifdef MANGOSBOT_TWO
     if (bot->getClass() == CLASS_DEATH_KNIGHT)
-        level = urand(sWorld.getConfig(CONFIG_UINT32_START_HEROIC_PLAYER_LEVEL), maxLevel);
+        level = urand(sWorld.getConfig(CONFIG_UINT32_START_HEROIC_PLAYER_LEVEL), max(sWorld.getConfig(CONFIG_UINT32_START_HEROIC_PLAYER_LEVEL), maxLevel));
 #endif
 
     if (urand(0, 100) < 100 * sPlayerbotAIConfig.randomBotMaxLevelChance)

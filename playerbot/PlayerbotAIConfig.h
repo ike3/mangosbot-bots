@@ -113,6 +113,7 @@ public:
     bool autoLearnTrainerSpells;
     bool autoLearnQuestSpells;
     bool autoDoQuests;
+    bool syncLevelWithPlayers;
     uint32 tweakValue; //Debugging config
 
     int commandServerPort;
