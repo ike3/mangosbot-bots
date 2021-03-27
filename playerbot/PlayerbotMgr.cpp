@@ -207,7 +207,7 @@ void PlayerbotHolder::OnBotLogin(Player * const bot)
     ai->TellMaster("Hello!");
 }
 
-string PlayerbotHolder::ProcessBotCommand(string cmd, ObjectGuid guid, bool admin, uint32 masterAccountId, uint32 masterGuildId)
+string PlayerbotHolder::ProcessBotCommand(string cmd, ObjectGuid guid, ObjectGuid masterguid, bool admin, uint32 masterAccountId, uint32 masterGuildId)
 {
     if (!sPlayerbotAIConfig.enabled || guid.IsEmpty())
         return "bot system is disabled";
@@ -217,10 +217,10 @@ string PlayerbotHolder::ProcessBotCommand(string cmd, ObjectGuid guid, bool admi
     bool isRandomAccount = sPlayerbotAIConfig.IsInRandomAccountList(botAccount);
     bool isMasterAccount = (masterAccountId == botAccount);
 
-    if (!isRandomAccount && !isMasterAccount && !admin)
+    if (!isRandomAccount && !isMasterAccount && !admin && masterguid)
     {
-        Player* bot = sObjectMgr.GetPlayer(guid);
-        if (!sPlayerbotAIConfig.allowGuildBots || bot->GetGuildId() != masterGuildId)
+        Player* master = sObjectMgr.GetPlayer(masterguid);
+        if (master && (!sPlayerbotAIConfig.allowGuildBots || !masterGuildId || (masterGuildId && master->GetGuildIdFromDB(guid) != masterGuildId)))
             return "not in your guild or account";
     }
 
@@ -475,13 +475,14 @@ list<string> PlayerbotHolder::HandlePlayerbotCommand(char const* args, Player* m
         else if (master && member.GetRawValue() != master->GetObjectGuid().GetRawValue())
         {
             out << ProcessBotCommand(cmdStr, member,
+                    master->GetObjectGuid(),
                     master->GetSession()->GetSecurity() >= SEC_GAMEMASTER,
                     master->GetSession()->GetAccountId(),
                     master->GetGuildId());
         }
         else if (!master)
         {
-            out << ProcessBotCommand(cmdStr, member, true, -1, -1);
+            out << ProcessBotCommand(cmdStr, member, ObjectGuid(), true, -1, -1);
         }
 
         messages.push_back(out.str());
