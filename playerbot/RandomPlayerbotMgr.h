@@ -4,6 +4,7 @@
 #include "Common.h"
 #include "PlayerbotAIBase.h"
 #include "PlayerbotMgr.h"
+#include "PlayerbotAIConfig.h"
 
 class WorldPacket;
 class Player;
@@ -125,7 +126,7 @@ class RandomPlayerbotMgr : public PlayerbotHolder
         BarGoLink* loginProgressBar;
         list<uint32> currentBots;
         uint32 bgBotsCount;
-        uint32 playersLevel;
+        uint32 playersLevel = sPlayerbotAIConfig.randombotStartingLevel;
 };
 
 #define sRandomPlayerbotMgr RandomPlayerbotMgr::instance()
