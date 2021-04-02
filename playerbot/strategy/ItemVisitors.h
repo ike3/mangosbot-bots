@@ -387,4 +387,40 @@ namespace ai
         }
 
     };
+
+    class FindAmmoVisitor : public FindUsableItemVisitor
+    {
+    public:
+        FindAmmoVisitor(Player* bot, uint32 weaponType) : FindUsableItemVisitor(bot)
+        {
+            this->weaponType = weaponType;
+        }
+
+        virtual bool Accept(const ItemPrototype* proto)
+        {
+            if (proto->Class == ITEM_CLASS_PROJECTILE)
+            {
+                uint32 subClass = 0;
+                switch (weaponType)
+                {
+                case ITEM_SUBCLASS_WEAPON_GUN:
+                    subClass = ITEM_SUBCLASS_BULLET;
+                    break;
+                case ITEM_SUBCLASS_WEAPON_BOW:
+                case ITEM_SUBCLASS_WEAPON_CROSSBOW:
+                    subClass = ITEM_SUBCLASS_ARROW;
+                    break;
+                }
+
+                if (!subClass)
+                    return false;
+
+                if (proto->SubClass == subClass)
+                    return true;
+            }
+            return false;
+        }
+    private:
+        uint32 weaponType;
+    };
 }

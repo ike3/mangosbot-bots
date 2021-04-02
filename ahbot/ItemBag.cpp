@@ -131,6 +131,12 @@ bool ItemBag::Add(ItemPrototype const* proto)
     if (proto->RequiredLevel > sAhBotConfig.maxRequiredLevel || proto->ItemLevel > sAhBotConfig.maxItemLevel)
         return false;
 
+    if (proto->Duration > 0)
+        return false;
+
+    if (proto->Area)
+        return false;
+
     if (proto->Duration & 0x80000000)
         return false;
 

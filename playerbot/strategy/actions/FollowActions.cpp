@@ -44,8 +44,9 @@ bool FollowAction::isUseful()
 
     if (fTarget)
         if (fTarget->IsTaxiFlying()
+            && (sServerFacade.IsAlive(bot) || bot->GetCorpse())
             || fTarget->GetGUIDLow() == bot->GetGUIDLow()
-            || fTarget->IsDead() != bot->IsDead())
+            || fTarget->GetDeathState() != bot->GetDeathState())
             return false;
 
 
@@ -74,7 +75,7 @@ bool FleeToMasterAction::Execute(Event event)
         return false;
     }
     ai->TellMaster("Wait for me!");
-    ai->SetNextCheckDelay(5000);
+    ai->SetNextCheckDelay(3000);
     return true;
 }
 

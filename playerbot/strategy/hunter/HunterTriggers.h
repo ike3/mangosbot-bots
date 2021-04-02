@@ -98,4 +98,46 @@ namespace ai
     public:
         ScareBeastTrigger(PlayerbotAI* ai) : HasCcTargetTrigger(ai, "scare beast") {}
     };
+
+    class HunterLowAmmoTrigger : public AmmoCountTrigger
+    {
+    public:
+        HunterLowAmmoTrigger(PlayerbotAI* ai) : AmmoCountTrigger(ai, "ammo", 100, 30) {}
+        virtual bool IsActive() { return (AI_VALUE2(uint8, "item count", "ammo") < 100) && (AI_VALUE2(uint8, "item count", "ammo") > 0); }
+    };
+
+    class HunterNoAmmoTrigger : public AmmoCountTrigger
+    {
+    public:
+        HunterNoAmmoTrigger(PlayerbotAI* ai) : AmmoCountTrigger(ai, "ammo", 1, 10) {}
+    };
+
+    class HunterHasAmmoTrigger : public AmmoCountTrigger
+    {
+    public:
+        HunterHasAmmoTrigger(PlayerbotAI* ai) : AmmoCountTrigger(ai, "ammo", 1, 10) {}
+        virtual bool IsActive() { return !AmmoCountTrigger::IsActive(); }
+    };
+
+    class SwitchToRangedTrigger : public Trigger {
+    public:
+        SwitchToRangedTrigger(PlayerbotAI* ai) : Trigger(ai, "switch to ranged", 1) {}
+        virtual bool IsActive()
+        {
+            Unit* target = AI_VALUE(Unit*, "current target");
+            return ai->HasStrategy("close", BOT_STATE_COMBAT) && sServerFacade.IsInCombat(bot) && target && (target->GetVictim() != bot ||
+                sServerFacade.IsDistanceGreaterThan(AI_VALUE2(float, "distance", "current target"), 8.0f));
+        }
+    };
+
+    class SwitchToMeleeTrigger : public Trigger {
+    public:
+        SwitchToMeleeTrigger(PlayerbotAI* ai) : Trigger(ai, "switch to melee", 1) {}
+        virtual bool IsActive()
+        {
+            Unit* target = AI_VALUE(Unit*, "current target");
+            return ai->HasStrategy("ranged", BOT_STATE_COMBAT) && sServerFacade.IsInCombat(bot) && target && (target->GetVictim() == bot ||
+                sServerFacade.IsDistanceLessOrEqualThan(AI_VALUE2(float, "distance", "current target"), 8.0f));
+        }
+    };
 }

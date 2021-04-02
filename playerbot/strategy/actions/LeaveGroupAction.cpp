@@ -39,16 +39,26 @@ namespace ai
         if (!sPlayerbotAIConfig.randomBotGroupNearby)
             return false;
 
+        if (bot->InBattleGround())
+            return false;
+
+        if (bot->InBattleGroundQueue())
+            return false;
+
         if (!bot->GetGroup())
             return false;
         
         Player* master = ai->GetGroupMaster();
+        Player* trueMaster = ai->GetMaster();
 
-        if (!master || (bot == master && !ai->isRealPlayer()))
+        if (!master || !trueMaster || (bot == master && !ai->isRealPlayer()))
             return false;
 
-        if(!master->GetPlayerbotAI())
+        if (master && !master->GetPlayerbotAI())
            return false;
+
+        if (trueMaster && !trueMaster->GetPlayerbotAI())
+            return false;
 
         if (ai->GetGrouperType() == SOLO)
             return true;

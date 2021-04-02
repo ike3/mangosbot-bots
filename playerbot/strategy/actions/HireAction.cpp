@@ -51,8 +51,8 @@ bool HireAction::Execute(Event event)
 
     bot->SetMoney(moneyReq);
     sRandomPlayerbotMgr.Remove(bot);
-    CharacterDatabase.PExecute("update characters set account = '%u' where guid = '%lu'",
-            account, bot->GetObjectGuid().GetRawValue());
+    CharacterDatabase.PExecute("update characters set account = '%u' where guid = '%u'",
+            account, bot->GetGUIDLow());
 
     return true;
 }

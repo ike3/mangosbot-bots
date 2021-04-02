@@ -8,14 +8,30 @@ using namespace ai;
 
 bool ReviveFromCorpseAction::Execute(Event event)
 {
+    Player* master = GetMaster();
     Corpse* corpse = bot->GetCorpse();
+
+    // follow master when master revives
+    WorldPacket& p = event.getPacket();
+    if (!p.empty() && p.GetOpcode() == CMSG_RECLAIM_CORPSE && master && !corpse && sServerFacade.IsAlive(bot))
+    {
+        if (sServerFacade.IsDistanceLessThan(AI_VALUE2(float, "distance", "master target"), sPlayerbotAIConfig.farDistance))
+        {
+            if (!ai->HasStrategy("follow", BOT_STATE_NON_COMBAT))
+            {
+                ai->TellMasterNoFacing("Welcome back!");
+                ai->ChangeStrategy("+follow,-stay", BOT_STATE_NON_COMBAT);
+                return true;
+            }
+        }
+    }
+
     if (!corpse)
         return false;
 
     if (corpse->GetGhostTime() + bot->GetCorpseReclaimDelay(corpse->GetType() == CORPSE_RESURRECTABLE_PVP) > time(nullptr))
         return false;
 
-    Player* master = GetMaster();
     if (master)
     {
         if (!master->GetPlayerbotAI() && sServerFacade.UnitIsDead(master) && master->GetCorpse()
@@ -44,11 +60,14 @@ bool FindCorpseAction::Execute(Event event)
     if (!corpse)
         return false;
 
+    if (corpse->GetMapId() != bot->GetMapId())
+        return false;
+
     Player* master = GetMaster();
     if (master)
     {
-        if (!master->GetPlayerbotAI()
-            && sServerFacade.IsDistanceLessThan(AI_VALUE2(float, "distance", "master target"), sPlayerbotAIConfig.farDistance))
+        if (!master->GetPlayerbotAI() &&
+            sServerFacade.IsDistanceLessThan(AI_VALUE2(float, "distance", "master target"), sPlayerbotAIConfig.farDistance))
             return false;
     }
 
@@ -58,7 +77,7 @@ bool FindCorpseAction::Execute(Event event)
         float y = corpse->GetPositionY();
         float z = corpse->GetPositionZ();;
 
-        sLog.outDetail("Bot #%d %s:%d <%s> moves to body", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName());
+        sLog.outDetail("Bot #%d %s:%d <%s> looks for body", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName());
 
         if (!ai->AllowActive(ALL_ACTIVITY))
         {
@@ -71,14 +90,29 @@ bool FindCorpseAction::Execute(Event event)
         }
         else
         {
+            bool moved = false;
             if (bot->IsWithinLOS(x, y, z))
-                return MoveNear(bot->GetMapId(), x, y, z, 0);
+                moved = MoveNear(bot->GetMapId(), x, y, z, 0);
             else
-                return MoveTo(bot->GetMapId(), x, y, z, false, false);
+                moved = MoveTo(bot->GetMapId(), x, y, z, false, false);
+
+            if (!moved)
+            {
+                moved = ai->DoSpecificAction("spirit healer");
+                if (moved)
+                    sLog.outDetail("Bot #%d %s:%d <%s> revived at graveyard", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName());
+            }
+
+            return moved;
         }
         return false;
     }
-    return true;
+    return false;
+}
+
+bool FindCorpseAction::isUseful()
+{
+    return bot->GetCorpse() && !bot->GetCorpse()->IsWithinDistInMap(bot, CORPSE_RECLAIM_RADIUS - 5, true);
 }
 
 bool SpiritHealerAction::Execute(Event event)

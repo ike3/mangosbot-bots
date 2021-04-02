@@ -7,6 +7,9 @@
 #include "PlayerbotAIConfig.h"
 #include "../ItemVisitors.h"
 #include "RandomPlayerbotMgr.h"
+#ifdef MANGOSBOT_ZERO
+#include "LFG/LFGMgr.h"
+#endif
 #ifdef MANGOSBOT_TWO
 #include "LFG/LFGMgr.h"
 #include "LFG/LFG.h"
@@ -25,6 +28,7 @@ namespace ai
     public:
         LfgJoinAction(PlayerbotAI* ai, string name = "lfg join") : InventoryAction(ai, name) {}
         virtual bool Execute(Event event);
+        virtual bool isUseful();
 
     protected:
         bool JoinLFG();
@@ -53,6 +57,7 @@ namespace ai
     public:
         LfgLeaveAction(PlayerbotAI* ai) : Action(ai, "lfg leave") {}
         virtual bool Execute(Event event);
+        virtual bool isUseful();
     };
 
     class LfgTeleportAction : public Action

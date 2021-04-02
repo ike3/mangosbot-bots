@@ -61,7 +61,7 @@ bool FollowChatShortcutAction::Execute(Event event)
             return true;
         }
     }
-    if (bot->GetMapId() != master->GetMapId() || bot->GetDistance(master) > sPlayerbotAIConfig.sightDistance)
+    if (bot->GetMapId() != master->GetMapId() || (master && bot->GetDistance(master) > sPlayerbotAIConfig.sightDistance))
     {
         if (sServerFacade.UnitIsDead(bot))
         {
@@ -163,8 +163,11 @@ bool MaxDpsChatShortcutAction::Execute(Event event)
     if (!master)
         return false;
 
+    if (!ai->ContainsStrategy(STRATEGY_TYPE_DPS))
+        return false;
+
     ai->Reset();
-    ai->ChangeStrategy("-threat,-conserve mana,-cast time,+dps debuff", BOT_STATE_COMBAT);
-    ai->TellMaster("Max DPS");
+    ai->ChangeStrategy("-threat,-conserve mana,-cast time,+dps debuff,+boost", BOT_STATE_COMBAT);
+    ai->TellMaster("Max DPS!");
     return true;
 }

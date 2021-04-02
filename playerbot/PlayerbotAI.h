@@ -193,29 +193,13 @@ enum ActivityType
     ALL_ACTIVITY = 6
 };
 
-/*enum BattleMaster_WSG : uint32
+enum BotRoles
 {
-    BM_RACE_HUMAN = 14982,
-    BM_RACE_ORC = 3890,
-    BM_RACE_DWARF = 14982,
-    BM_RACE_NIGHTELF = 2302,
-    BM_RACE_UNDEAD = 2804,
-    BM_RACE_TAUREN = 10360,
-    BM_RACE_GNOME = 14982,
-    BM_RACE_TROLL = 3890,
-};*/
-
-/*enum BattleMaster_WSG_GUID : uint32
-{
-    RACE_HUMAN = 79,
-    RACE_ORC = 4765,
-    RACE_DWARF = 79,
-    RACE_NIGHTELF = 49936,
-    RACE_UNDEAD = 32071,
-    RACE_TAUREN = 24794,
-    RACE_GNOME = 79,
-    RACE_TROLL = 4765,
-};*/
+    BOT_ROLE_NONE = 0x00,
+    BOT_ROLE_TANK = 0x01,
+    BOT_ROLE_HEALER = 0x02,
+    BOT_ROLE_DPS = 0x04
+};
 
 class PacketHandlingHelper
 {
@@ -300,8 +284,6 @@ public:
     void WaitForSpellCast(Spell *spell);
     bool PlaySound(uint32 emote);
     void Ping(float x, float y);
-    //thesawolf - emote reactions
-    void ReceiveEmote(Player* player, uint32 emote);
     Item * FindPoison() const;
     Item * FindConsumable(uint32 displayId) const;
     Item * FindBandage() const;

@@ -124,6 +124,8 @@ bool QueryItemUsageAction::QueryItemUsage(ItemPrototype const *item)
 		return "Guild task";
 	case ITEM_USAGE_DISENCHANT:
 		return "Disenchant";
+    case ITEM_USAGE_AMMO:
+        return "Ammunition";
 	}
 
     return "";

@@ -23,10 +23,10 @@ void TrainerAction::Learn(uint32 cost, TrainerSpell const* tSpell, ostringstream
         return;
 
 #ifdef CMANGOS
-    Spell* spell = new Spell(bot, proto, false);
-    SpellCastTargets targets;
-    targets.setUnitTarget(bot);
-    spell->SpellStart(&targets);
+    if (tSpell->learnedSpell)
+        bot->learnSpell(tSpell->learnedSpell, false);
+    else
+        ai->CastSpell(tSpell->spell, bot);
 #endif
 
 #ifdef MANGOS

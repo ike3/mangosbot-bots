@@ -4,6 +4,7 @@
 #include "Common.h"
 #include "PlayerbotAIBase.h"
 #include "PlayerbotMgr.h"
+#include "PlayerbotAIConfig.h"
 
 class WorldPacket;
 class Player;
@@ -82,7 +83,6 @@ class RandomPlayerbotMgr : public PlayerbotHolder
         const CreatureDataPair* GetCreatureDataByEntry(uint32 entry);
         uint32 GetCreatureGuidByEntry(uint32 entry);
         void LoadBattleMastersCache();
-        void CheckBgQueue();
         bool BgBotsActive;
         map<uint32, map<uint32, map<uint32, uint32> > > BgBots;
         map<uint32, map<uint32, map<uint32, uint32> > > VisualBots;
@@ -90,6 +90,10 @@ class RandomPlayerbotMgr : public PlayerbotHolder
         map<uint32, map<uint32, map<uint32, map<uint32, uint32> > > > ArenaBots;
         map<uint32, map<uint32, map<uint32, uint32> > > Rating;
         map<uint32, map<uint32, map<uint32, uint32> > > Supporters;
+        map<Team, vector<uint32>> LfgDungeons;
+        void CheckBgQueue();
+        void CheckLfgQueue();
+        void CheckPlayers();
 
 	protected:
 	    virtual void OnBotLoginInternal(Player * const bot);
@@ -101,6 +105,8 @@ class RandomPlayerbotMgr : public PlayerbotHolder
         list<uint32> GetBgBots(uint32 bracket);
         void AddBgBot(BattleGroundQueueTypeId queueTypeId, BattleGroundBracketId bracketId, bool isRated = false, bool visual = false);
         time_t BgCheckTimer;
+        time_t LfgCheckTimer;
+        time_t PlayersCheckTimer;
         uint32 AddRandomBots();
         bool ProcessBot(uint32 bot);
         void ScheduleRandomize(uint32 bot, uint32 time);
@@ -121,6 +127,7 @@ class RandomPlayerbotMgr : public PlayerbotHolder
         BarGoLink* loginProgressBar;
         list<uint32> currentBots;
         uint32 bgBotsCount;
+        uint32 playersLevel = sPlayerbotAIConfig.randombotStartingLevel;
 };
 
 #define sRandomPlayerbotMgr RandomPlayerbotMgr::instance()

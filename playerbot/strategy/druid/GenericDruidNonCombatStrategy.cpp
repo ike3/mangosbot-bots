@@ -92,6 +92,11 @@ void GenericDruidNonCombatStrategy::InitTriggers(std::list<TriggerNode*> &trigge
        NextAction::array(0, new NextAction("apply oil", 1.0f), NULL)));
 }
 
+GenericDruidBuffStrategy::GenericDruidBuffStrategy(PlayerbotAI* ai) : NonCombatStrategy(ai)
+{
+    actionNodeFactories.Add(new GenericDruidNonCombatStrategyActionNodeFactory());
+}
+
 void GenericDruidBuffStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 {
     NonCombatStrategy::InitTriggers(triggers);

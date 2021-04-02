@@ -92,8 +92,9 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
         bot->UpdateAllowedPositionZ(x, y, z);
     }
 
-    if (!IsMovingAllowed(mapId, x, y, z))
+    if (!IsMovingAllowed(mapId, x, y, z) && sServerFacade.UnitIsDead(bot))
     {
+        return false;
         //ai->TellError("Long movement");
         //return false; //Move up to the limit instead of not at all.
     }
@@ -308,6 +309,10 @@ void MovementAction::UpdateMovementState()
 		bot->m_movementInfo.RemoveMovementFlag(MOVEFLAG_SWIMMING);
         bot->UpdateSpeed(MOVE_SWIM, true);
     }
+
+    // Temporary speed increase in group
+    if (ai->GetMaster() && !ai->GetMaster()->GetPlayerbotAI())
+        bot->UpdateSpeed(MOVE_RUN, true, 1.1f);
 }
 
 bool MovementAction::Follow(Unit* target, float distance, float angle)
@@ -338,9 +343,9 @@ bool MovementAction::Follow(Unit* target, float distance, float angle)
         if (target->GetMapId() && bot->GetMapId() != target->GetMapId())
         {
 #ifdef MANGOSBOT_ZERO
-            if (target->GetMap()->IsBattleGround() || bot->GetMap()->IsBattleGround())
+            if ((target->GetMap() && target->GetMap()->IsBattleGround()) || (bot->GetMap() && bot->GetMap()->IsBattleGround()))
 #else
-            if (target->GetMap()->IsBattleGroundOrArena() || bot->GetMap()->IsBattleGroundOrArena())
+            if ((target->GetMap() && target->GetMap()->IsBattleGroundOrArena()) || (bot->GetMap() && bot->GetMap()->IsBattleGroundOrArena()))
 #endif
                 return false;
 
@@ -360,22 +365,28 @@ bool MovementAction::Follow(Unit* target, float distance, float angle)
         && !ai->GetMaster()->GetPlayerbotAI())
     {
 #ifdef MANGOSBOT_ZERO
-        if (target->GetMap()->IsBattleGround() || bot->GetMap()->IsBattleGround())
+        if ((target->GetMap() && target->GetMap()->IsBattleGround()) || (bot->GetMap() && bot->GetMap()->IsBattleGround()))
 #else
-        if (target->GetMap()->IsBattleGroundOrArena() || bot->GetMap()->IsBattleGroundOrArena())
+        if((target->GetMap() && target->GetMap()->IsBattleGroundOrArena()) || (bot->GetMap() && bot->GetMap()->IsBattleGroundOrArena()))
 #endif
             return false;
 
-        if (!sServerFacade.IsAlive(bot) && sServerFacade.IsAlive(ai->GetMaster()))
+        if (sServerFacade.UnitIsDead(bot) && sServerFacade.IsAlive(ai->GetMaster()))
         {
             bot->ResurrectPlayer(1.0f, false);
             ai->TellMasterNoFacing("I live, again!");
         }
-        //else
-            //ai->TellError("I am stuck while following");
+        else
+            ai->TellError("I am stuck while following");
 
         bot->CombatStop(true);
         bot->TeleportTo(target->GetMapId(), target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), target->GetOrientation());
+        return false;
+    }
+
+    if (sServerFacade.IsDistanceLessOrEqualThan(sServerFacade.GetDistance2d(bot, target), sPlayerbotAIConfig.followDistance))
+    {
+        //ai->TellError("No need to follow");
         return false;
     }
 

@@ -100,6 +100,7 @@ PlayerbotAI::PlayerbotAI(Player* bot) :
     masterIncomingPacketHandlers.AddHandler(CMSG_TAXICLEARALLNODES, "taxi done");
     masterIncomingPacketHandlers.AddHandler(CMSG_TAXICLEARNODE, "taxi done");
     masterIncomingPacketHandlers.AddHandler(CMSG_GROUP_UNINVITE, "uninvite");
+    masterIncomingPacketHandlers.AddHandler(CMSG_GROUP_UNINVITE_GUID, "uninvite guid");
     masterIncomingPacketHandlers.AddHandler(CMSG_PUSHQUESTTOPARTY, "quest share");
     masterIncomingPacketHandlers.AddHandler(CMSG_CAST_SPELL, "see spell");
     masterIncomingPacketHandlers.AddHandler(CMSG_REPOP_REQUEST, "release spirit");
@@ -517,13 +518,15 @@ void PlayerbotAI::DoNextAction()
         return;
     }
 
-    if (!AllowActive(ALL_ACTIVITY) && urand(0, 20))
+    bool minimal = !AllowActive(ALL_ACTIVITY);
+
+    if (IsActive() && !bot->GetGroup() && minimal && urand(0, 4))
     {
-        SetNextCheckDelay(int(sPlayerbotAIConfig.passiveDelay / 2));
+        SetNextCheckDelay(sPlayerbotAIConfig.passiveDelay / 2);
         return;
     }
 
-    currentEngine->DoNextAction(NULL);
+    currentEngine->DoNextAction(NULL, 0, minimal);
 
     if (currentEngine != engines[BOT_STATE_DEAD] && !sServerFacade.IsAlive(bot))
         ChangeEngine(BOT_STATE_DEAD);
@@ -531,25 +534,32 @@ void PlayerbotAI::DoNextAction()
     if (currentEngine == engines[BOT_STATE_DEAD] && sServerFacade.IsAlive(bot))
         ChangeEngine(BOT_STATE_NON_COMBAT);
 
+    if ((nextAICheckDelay > 2000) && sServerFacade.IsInCombat(bot))
+        SetNextCheckDelay(sPlayerbotAIConfig.reactDelay);
+
+    if (minimal)
+    {
+        SetNextCheckDelay(sPlayerbotAIConfig.passiveDelay);
+        //return;
+    }
+
     Group *group = bot->GetGroup();
     // test BG master set
-    if (!master && group)
+    if ((!master || master->GetPlayerbotAI()) && group)
     {
         for (GroupReference *gref = group->GetFirstMember(); gref; gref = gref->next())
         {
             Player* member = gref->getSource();
             PlayerbotAI* ai = bot->GetPlayerbotAI();
-            if (member && member->IsInWorld() && !member->GetPlayerbotAI() && (!master || master->GetPlayerbotAI() || (bot->InBattleGround() && !urand(0, 4))))
+            if (member && member->IsInWorld() && (!master || !member->GetPlayerbotAI()) && (!master || master->GetPlayerbotAI() || (bot->InBattleGround() && !urand(0, 4))))
             {
                 ai->SetMaster(member);
                 ai->ResetStrategies();
-                ai->ChangeStrategy("-rpg", BOT_STATE_NON_COMBAT);
-                ai->ChangeStrategy("-grind", BOT_STATE_NON_COMBAT);
-                ai->ChangeStrategy("-travel", BOT_STATE_NON_COMBAT);
+                ai->ChangeStrategy("-rpg,-grind,-travel", BOT_STATE_NON_COMBAT);
                 if (sServerFacade.GetDistance2d(bot, member) < 50.0f)
                     ai->ChangeStrategy("+follow", BOT_STATE_NON_COMBAT);
 
-                ai->TellMaster("Hello, I will go with you!");
+                ai->TellMaster("Hello, I follow you!");
                 break;
             }
         }
@@ -560,16 +570,16 @@ void PlayerbotAI::DoNextAction()
 		if (master->m_movementInfo.HasMovementFlag(MOVEFLAG_WALK_MODE)) bot->m_movementInfo.AddMovementFlag(MOVEFLAG_WALK_MODE);
 		else bot->m_movementInfo.RemoveMovementFlag(MOVEFLAG_WALK_MODE);
 
-        if (master->IsSitState())
+        if (master->IsSitState() && nextAICheckDelay < 1000)
         {
             if (!sServerFacade.isMoving(bot) && sServerFacade.GetDistance2d(bot, master) < 10.0f)
                 bot->SetStandState(UNIT_STAND_STATE_SIT);
         }
-        else
+        else if (nextAICheckDelay < 1000)
             bot->SetStandState(UNIT_STAND_STATE_STAND);
 	}
 	else if (bot->m_movementInfo.HasMovementFlag(MOVEFLAG_WALK_MODE)) bot->m_movementInfo.RemoveMovementFlag(MOVEFLAG_WALK_MODE);
-    else if (bot->IsSitState()) bot->SetStandState(UNIT_STAND_STATE_STAND);
+    else if ((nextAICheckDelay < 1000) && bot->IsSitState()) bot->SetStandState(UNIT_STAND_STATE_STAND);
 }
 
 void PlayerbotAI::ReInitCurrentEngine()

@@ -16,22 +16,22 @@ namespace ai
         {
             if (sServerFacade.IsAlive(bot))
             {
-                ai->TellError("I am not dead, will wait here");
+                ai->TellMasterNoFacing("I am not dead, will wait here");
                 ai->ChangeStrategy("-follow,+stay", BOT_STATE_NON_COMBAT);
                 return false;
             }
 
             if (bot->GetCorpse())
             {
-                ai->TellError("I am already a spirit");
+                ai->TellMasterNoFacing("I am already a spirit");
                 return false;
             }
 
             WorldPacket& p = event.getPacket();
             if (!p.empty() && p.GetOpcode() == CMSG_REPOP_REQUEST)
-                ai->TellMaster("Releasing...");
+                ai->TellMasterNoFacing("Releasing...");
             else
-                ai->TellMaster("Meet me at the graveyard");
+                ai->TellMasterNoFacing("Meet me at the graveyard");
 
             WorldPacket packet(CMSG_REPOP_REQUEST);
             packet << uint8(0);
@@ -50,15 +50,16 @@ namespace ai
             WorldPacket packet(CMSG_REPOP_REQUEST);
             packet << uint8(0);
             bot->GetSession()->HandleRepopRequestOpcode(packet);
-            sLog.outDetail("Bot #%d %s:%d <%s> released", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName());
+            sLog.outDetail("Bot #%d %s:%d <%s> auto released", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName());
             return true;
         }
 
         virtual bool isUseful()
         {
-            return (!bot->GetGroup() || !sServerFacade.IsAlive(ai->GetGroupMaster()))
-                && !sServerFacade.IsAlive(bot)
-                && !bot->GetCorpse();
+            return ((!bot->GetGroup()) || (bot->GetGroup() && ai->GetGroupMaster() == bot) || (ai->GetGroupMaster() && ai->GetGroupMaster() != bot &&
+                sServerFacade.UnitIsDead(ai->GetGroupMaster()) &&
+                bot->GetDeathState() != ai->GetGroupMaster()->GetDeathState()))
+                && sServerFacade.UnitIsDead(bot) && !bot->GetCorpse();
         }
     };
 }

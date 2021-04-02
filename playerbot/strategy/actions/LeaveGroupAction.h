@@ -43,23 +43,37 @@ namespace ai
 
     class UninviteAction : public LeaveGroupAction {
     public:
-        UninviteAction(PlayerbotAI* ai) : LeaveGroupAction(ai, "party command") {}
+        UninviteAction(PlayerbotAI* ai) : LeaveGroupAction(ai, "uninvite") {}
 
         virtual bool Execute(Event event)
         {
             WorldPacket& p = event.getPacket();
-            p.rpos(0);
-            std::string membername;
-            p >> membername;
 
-            // player not found
-            if (!normalizePlayerName(membername))
+            if (p.GetOpcode() == CMSG_GROUP_UNINVITE)
             {
-                return false;
+                p.rpos(0);
+                std::string membername;
+                p >> membername;
+
+                // player not found
+                if (!normalizePlayerName(membername))
+                {
+                    return false;
+                }
+
+                if (bot->GetName() == membername)
+                    return Leave();
             }
 
-            if (bot->GetName() == membername)
-                return Leave();
+            if (p.GetOpcode() == CMSG_GROUP_UNINVITE_GUID)
+            {
+                p.rpos(0);
+                ObjectGuid guid;
+                p >> guid;
+
+                if (bot->GetObjectGuid() == guid)
+                    return Leave();
+            }
 
             return false;
         }

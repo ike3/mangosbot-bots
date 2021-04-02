@@ -107,8 +107,13 @@ PlayerbotSecurityLevel PlayerbotSecurity::LevelFor(Player* from, DenyReason* rea
         {
             if (!bot->GetGuildId() || bot->GetGuildId() != from->GetGuildId())
             {
-                if (reason) *reason = PLAYERBOT_DENY_LFG;
-                return PLAYERBOT_SECURITY_TALK;
+#ifdef MANGOSBOT_ZERO
+                if (sLFGMgr.IsPlayerInQueue(bot->GetObjectGuid()))
+                {
+                    if (reason) *reason = PLAYERBOT_DENY_LFG;
+                    return PLAYERBOT_SECURITY_TALK;
+                }
+#endif
             }
         }
 

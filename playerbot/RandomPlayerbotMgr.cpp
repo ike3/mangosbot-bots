@@ -70,27 +70,79 @@ void activatePrintStatsThread()
 }
 
 #ifdef MANGOS
-class CheckQueueThread : public ACE_Task <ACE_MT_SYNCH>
+class CheckBgQueueThread : public ACE_Task <ACE_MT_SYNCH>
 {
 public:
-    int svc(void) { sRandomPlayerbotMgr.CheckQueue(); return 0; }
+    int svc(void) { sRandomPlayerbotMgr.CheckBgQueue(); return 0; }
 };
 #endif
 #ifdef CMANGOS
-void CheckQueueThread()
+void CheckBgQueueThread()
 {
     sRandomPlayerbotMgr.CheckBgQueue();
 }
 #endif
 
-void activateCheckQueueThread()
+void activateCheckBgQueueThread()
 {
 #ifdef MANGOS
-    CheckQueueThread *thread = new CheckQueueThread();
+    CheckBgQueueThread *thread = new CheckBgQueueThread();
     thread->activate();
 #endif
 #ifdef CMANGOS
-    boost::thread t(CheckQueueThread);
+    boost::thread t(CheckBgQueueThread);
+    t.detach();
+#endif
+}
+
+#ifdef MANGOS
+class CheckLfgQueueThread : public ACE_Task <ACE_MT_SYNCH>
+{
+public:
+    int svc(void) { sRandomPlayerbotMgr.CheckLfgQueue(); return 0; }
+};
+#endif
+#ifdef CMANGOS
+void CheckLfgQueueThread()
+{
+    sRandomPlayerbotMgr.CheckLfgQueue();
+}
+#endif
+
+void activateCheckLfgQueueThread()
+{
+#ifdef MANGOS
+    CheckLfgQueueThread *thread = new CheckLfgQueueThread();
+    thread->activate();
+#endif
+#ifdef CMANGOS
+    boost::thread t(CheckLfgQueueThread);
+    t.detach();
+#endif
+}
+
+#ifdef MANGOS
+class CheckPlayersThread : public ACE_Task <ACE_MT_SYNCH>
+{
+public:
+    int svc(void) { sRandomPlayerbotMgr.CheckPlayers(); return 0; }
+};
+#endif
+#ifdef CMANGOS
+void CheckPlayersThread()
+{
+    sRandomPlayerbotMgr.CheckPlayers();
+}
+#endif
+
+void activateCheckPlayersThread()
+{
+#ifdef MANGOS
+    CheckPlayersThread *thread = new CheckPlayersThread();
+    thread->activate();
+#endif
+#ifdef CMANGOS
+    boost::thread t(CheckPlayersThread);
     t.detach();
 #endif
 }
@@ -119,7 +171,7 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed)
         return;
 
     int maxAllowedBotCount = GetEventValue(0, "bot_count");
-    if (!maxAllowedBotCount)
+    if (!maxAllowedBotCount || (maxAllowedBotCount < sPlayerbotAIConfig.minRandomBots || maxAllowedBotCount > sPlayerbotAIConfig.maxRandomBots))
     {
         maxAllowedBotCount = urand(sPlayerbotAIConfig.minRandomBots, sPlayerbotAIConfig.maxRandomBots);
         SetEventValue(0, "bot_count", maxAllowedBotCount,
@@ -136,8 +188,13 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed)
     uint32 notDiv = 1;
     if (maxAllowedBotCount >  sPlayerbotAIConfig.randomBotsPerInterval)
         notDiv =  maxAllowedBotCount / sPlayerbotAIConfig.randomBotsPerInterval;
-        
-    SetNextCheckDelay( (1000 * sPlayerbotAIConfig.randomBotUpdateInterval) / notDiv);
+
+    //SetNextCheckDelay((uint32)max(1000, int(2000 * notDiv * sPlayerbotAIConfig.randomBotUpdateInterval) / 1000));
+
+    if (playerBots.size() < int(sPlayerbotAIConfig.minRandomBots / 2))
+        SetNextCheckDelay((uint32)max(1000, int(1000 * notDiv * sPlayerbotAIConfig.randomBotUpdateInterval) / 1000));
+    else
+        SetNextCheckDelay((uint32)max(1000, int(2000 * notDiv * sPlayerbotAIConfig.randomBotUpdateInterval) / 1000));
 
     list<uint32> bots = GetBots();
     int botCount = bots.size();
@@ -150,11 +207,22 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed)
         AddRandomBots();
     }
 
-    if (sPlayerbotAIConfig.randomBotJoinBG)
+    if (sPlayerbotAIConfig.syncLevelWithPlayers && players.size())
     {
-        // check bg queue for real players
+        if (time(NULL) > (PlayersCheckTimer + 60))
+            activateCheckPlayersThread();
+    }
+
+    if (sPlayerbotAIConfig.randomBotJoinLfg && players.size())
+    {
+        if (time(NULL) > (LfgCheckTimer + 30))
+            activateCheckLfgQueueThread();
+    }
+
+    if (sPlayerbotAIConfig.randomBotJoinBG && players.size())
+    {
         if (time(NULL) > (BgCheckTimer + 30))
-            activateCheckQueueThread();
+            activateCheckBgQueueThread();
 
         if (BgBotsActive && bgBotsCount < 50)
         {
@@ -203,7 +271,13 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed)
 			botProcessed++;
 		}
 
-        if (botProcessed >= sPlayerbotAIConfig.randomBotsPerInterval)
+        if (playerBots.size() < int(sPlayerbotAIConfig.minRandomBots / 4) && botProcessed >= sPlayerbotAIConfig.randomBotsPerInterval)
+            break;
+        else if (playerBots.size() < int(sPlayerbotAIConfig.minRandomBots / 2) && botProcessed >= int(sPlayerbotAIConfig.randomBotsPerInterval / 2))
+            break;
+        else if (playerBots.size() < sPlayerbotAIConfig.minRandomBots && botProcessed >= int(sPlayerbotAIConfig.randomBotsPerInterval / 5))
+            break;
+        else if (playerBots.size() >= sPlayerbotAIConfig.minRandomBots && botProcessed >= int(sPlayerbotAIConfig.randomBotsPerInterval / 30))
             break;
     }
 
@@ -214,29 +288,44 @@ uint32 RandomPlayerbotMgr::AddRandomBots()
 {
     set<uint32> bots;
 
-    QueryResult* results = PlayerbotDatabase.PQuery(
+    if (!currentBots.size())
+    {
+        QueryResult* results = PlayerbotDatabase.PQuery(
             "select `bot` from ai_playerbot_random_bots where event = 'add'");
 
-    if (results)
-    {
-        do
+        if (results)
         {
-            Field* fields = results->Fetch();
-            uint32 bot = fields[0].GetUInt32();
+            do
+            {
+                Field* fields = results->Fetch();
+                uint32 bot = fields[0].GetUInt32();
+                bots.insert(bot);
+            } while (results->NextRow());
+            delete results;
+        }
+    }
+    else
+    {
+        for (list<uint32>::iterator i = currentBots.begin(); i != currentBots.end(); i++)
+        {
+            uint32 bot = *i;
             bots.insert(bot);
-        } while (results->NextRow());
-        delete results;
+        }
     }
 
     vector<uint32> guids;
     int maxAllowedBotCount = GetEventValue(0, "bot_count");
+    int maxAllowedNewBotCount = maxAllowedBotCount - currentBots.size();
     for (list<uint32>::iterator i = sPlayerbotAIConfig.randomBotAccounts.begin(); i != sPlayerbotAIConfig.randomBotAccounts.end(); i++)
     {
         uint32 accountId = *i;
         if (!sAccountMgr.GetCharactersCount(accountId))
             continue;
 
-        QueryResult* result = CharacterDatabase.PQuery("SELECT guid, race FROM characters WHERE account = '%u'", accountId);
+        if (urand(0, 100) > 10)  // more random selection
+            continue;
+
+        QueryResult* result = CharacterDatabase.PQuery("SELECT guid, race, name, level FROM characters WHERE account = '%u'", accountId);
         if (!result)
             continue;
 
@@ -245,6 +334,11 @@ uint32 RandomPlayerbotMgr::AddRandomBots()
             Field* fields = result->Fetch();
             uint32 guid = fields[0].GetUInt32();
             uint8 race = fields[1].GetUInt8();
+            std::string name = fields[2].GetString();
+            uint32 level = fields[3].GetUInt32();
+
+            if (bots.find(guid) != bots.end())
+                continue;
 			// Although this code works it cuts the Maximum Bots setting in half. 
 			// And, also doesn't see to be any reason to do it.
             //bool alliance = guids.size() % 2 == 0;
@@ -262,8 +356,8 @@ uint32 RandomPlayerbotMgr::AddRandomBots()
                 SetEventValue(bot, "version", MANGOSBOT_VERSION, sPlayerbotAIConfig.maxRandomBotInWorldTime);
                 bots.insert(bot);
                 currentBots.push_back(bot);
-                sLog.outBasic( "New random bot %d added", bot);
-                if (bots.size() >= maxAllowedBotCount)
+                sLog.outBasic("Bot #%d %s:%d <%s>: log in", guid, IsAlliance(race) == ALLIANCE ? "A" : "H", level, name);
+                if (guids.size() >= min((int)(sPlayerbotAIConfig.randomBotsPerInterval / 4), maxAllowedNewBotCount))
                 {
                     delete result;
                     return guids.size();
@@ -664,6 +758,80 @@ void RandomPlayerbotMgr::CheckBgQueue()
     return;
 }
 
+void RandomPlayerbotMgr::CheckLfgQueue()
+{
+    if (!LfgCheckTimer || time(NULL) > (LfgCheckTimer + 30))
+        LfgCheckTimer = time(NULL);
+
+    sLog.outBasic("Checking LFG Queue...");
+
+    // Clear LFG list
+    LfgDungeons[HORDE].clear();
+    LfgDungeons[ALLIANCE].clear();
+
+    for (vector<Player*>::iterator i = players.begin(); i != players.end(); ++i)
+    {
+        Player* player = *i;
+
+        bool isLFG = false;
+
+#ifdef MANGOSBOT_ZERO
+        Group* group = player->GetGroup();
+        if (group)
+        {
+            if (sLFGMgr.IsGroupInQueue(group->GetId()))
+            {
+                isLFG = true;
+                LFGGroupQueueInfo lfgInfo;
+                sLFGMgr.GetGroupQueueInfo(&lfgInfo, group->GetId());
+                LfgDungeons[player->GetTeam()].push_back(lfgInfo.areaId);
+            }
+        }
+        else
+        {
+            if (sLFGMgr.IsPlayerInQueue(player->GetObjectGuid()))
+            {
+                isLFG = true;
+                LFGPlayerQueueInfo lfgInfo;
+                sLFGMgr.GetPlayerQueueInfo(&lfgInfo, player->GetObjectGuid());
+
+                LfgDungeons[player->GetTeam()].push_back(lfgInfo.areaId);
+            }
+        }
+#endif
+    }
+    sLog.outBasic("LFG Queue check finished");
+    return;
+}
+
+void RandomPlayerbotMgr::CheckPlayers()
+{
+    if (!PlayersCheckTimer || time(NULL) > (PlayersCheckTimer + 60))
+        PlayersCheckTimer = time(NULL);
+
+    sLog.outBasic("Checking Players...");
+
+    if (!playersLevel)
+        playersLevel = sPlayerbotAIConfig.randombotStartingLevel;
+
+
+    for (vector<Player*>::iterator i = players.begin(); i != players.end(); ++i)
+    {
+        Player* player = *i;
+
+        if (player->IsGameMaster())
+            continue;
+
+        //if (player->GetSession()->GetSecurity() > SEC_PLAYER)
+        //    continue;
+
+        if (player->getLevel() > playersLevel)
+            playersLevel = player->getLevel() + 3;
+    }
+    sLog.outBasic("Max player level is %d, max bot level set to %d", playersLevel - 3, playersLevel);
+    return;
+}
+
 void RandomPlayerbotMgr::AddBgBot(BattleGroundQueueTypeId queueTypeId, BattleGroundBracketId bracketId, bool isRated, bool visual)
 {
     BattleGroundTypeId bgTypeId = sServerFacade.BgTemplateId(queueTypeId);
@@ -764,6 +932,9 @@ void RandomPlayerbotMgr::AddBgBot(BattleGroundQueueTypeId queueTypeId, BattleGro
     {
         for (PlayerBotMap::iterator i = playerBots.begin(); i != playerBots.end(); ++i)
         {
+            if (urand(0, 100) > 10)
+                continue;
+
             Player* bot = i->second;
 
             if (bot->IsBeingTeleported())
@@ -833,9 +1004,6 @@ void RandomPlayerbotMgr::AddBgBot(BattleGroundQueueTypeId queueTypeId, BattleGro
             // add only x2 - x9 level
             //if (!visual && bracketId < BG_BRACKET_ID_LAST && (bot->getLevel() < ((bracketId * 10) + 12)))
             //	continue;
-
-            if (urand(0, 100) > 10)
-                continue;
 
             if (player == NULL)
             {
@@ -1201,7 +1369,11 @@ bool RandomPlayerbotMgr::ProcessBot(uint32 bot)
     {
 		if (!player || !player->GetGroup())
 		{
-			sLog.outString("Bot %d expired", bot);
+            if (player)
+                sLog.outBasic("Bot #%d %s:%d <%s>: log out", bot, IsAlliance(player->getRace()) == ALLIANCE ? "A" : "H", player->getLevel(), player->GetName());
+            else
+                sLog.outBasic("Bot #%d: log out", bot);
+
 			SetEventValue(bot, "add", 0, 0);
 			currentBots.remove(bot);
 			if (player) LogoutPlayerBot(bot);
@@ -1215,7 +1387,7 @@ bool RandomPlayerbotMgr::ProcessBot(uint32 bot)
 
     if (!player)
     {
-        if (urand(0, 100) > 50) // less lag during bots login
+        if ((urand(0, 100) > 50) && currentBots.size() >= (sPlayerbotAIConfig.minRandomBots / 2)) // less lag during bots login
         {
             return true;
         }
@@ -1250,15 +1422,15 @@ bool RandomPlayerbotMgr::ProcessBot(uint32 bot)
     if (!update)
     {
         if (ai) ai->GetAiObjectContext()->GetValue<bool>("random bot update")->Set(true);
-        uint32 randomTime = urand(sPlayerbotAIConfig.minRandomBotReviveTime, sPlayerbotAIConfig.maxRandomBotReviveTime);
+        uint32 randomTime = urand(sPlayerbotAIConfig.minRandomBotReviveTime, sPlayerbotAIConfig.maxRandomBotReviveTime * 5);
         SetEventValue(bot, "update", 1, randomTime);
         return true;
     }
 
     uint32 logout = GetEventValue(bot, "logout");
-    if (!logout && !isValid)
+    if (player && !logout && !isValid)
     {
-        sLog.outDetail("Bot %d logged out", bot);
+        sLog.outBasic("Bot #%d %s:%d <%s>: log out", bot, IsAlliance(player->getRace()) == ALLIANCE ? "A" : "H", player->getLevel(), player->GetName());
         LogoutPlayerBot(bot);
         SetEventValue(bot, "logout", 1, sPlayerbotAIConfig.maxRandomBotInWorldTime);
         return true;
@@ -1361,22 +1533,7 @@ bool RandomPlayerbotMgr::ProcessBot(Player* player)
         if (randomiser)
         {
             Randomize(player);
-
-            // leave group in teleport
-            //if (player->GetGroup())
-            //    player->GetPlayerbotAI()->DoSpecificAction("leave");
-
-            // activate lfg
-            player->GetPlayerbotAI()->ChangeStrategy("+lfg", BOT_STATE_NON_COMBAT);
         }
-        else
-        {
-            RandomTeleportForRpg(player);
-        }
-
-		SetEventValue(bot, "teleport", 1, sPlayerbotAIConfig.maxRandomBotInWorldTime);
-		uint32 randomChange = urand(sPlayerbotAIConfig.randomBotUpdateInterval * 5, sPlayerbotAIConfig.randomBotUpdateInterval * 15);
-		ScheduleChangeStrategy(bot, randomChange);
 
         if (randomiser)
         {
@@ -1386,6 +1543,8 @@ bool RandomPlayerbotMgr::ProcessBot(Player* player)
         {
             sLog.outBasic("Bot #%d %s <%s>: consumables refreshed", bot, player->GetName(), sGuildMgr.GetGuildById(player->GetGuildId())->GetName());
         }
+
+        ChangeStrategy(player);
 
         uint32 randomTime = urand(sPlayerbotAIConfig.minRandomBotRandomizeTime, sPlayerbotAIConfig.maxRandomBotRandomizeTime);
         ScheduleRandomize(bot, randomTime);
@@ -1729,6 +1888,8 @@ void RandomPlayerbotMgr::Randomize(Player* bot)
     else
         IncreaseLevel(bot);
 
+    RandomTeleportForRpg(bot);
+
     //SetValue(bot, "version", MANGOSBOT_VERSION);
 }
 
@@ -1747,9 +1908,6 @@ void RandomPlayerbotMgr::IncreaseLevel(Player* bot)
         factory.Randomize(true);
 	}
 
-	if (level > 4) {
-		RandomTeleportForRpg(bot);
-	}
     if (pmo) pmo->finish();
 }
 
@@ -1759,12 +1917,16 @@ void RandomPlayerbotMgr::RandomizeFirst(Player* bot)
 	if (maxLevel > sWorld.getConfig(CONFIG_UINT32_MAX_PLAYER_LEVEL))
 		maxLevel = sWorld.getConfig(CONFIG_UINT32_MAX_PLAYER_LEVEL);
 
+    // if lvl sync is enabled, max level is limited by online players lvl
+    if (sPlayerbotAIConfig.syncLevelWithPlayers)
+        maxLevel = max(sPlayerbotAIConfig.randomBotMinLevel, min(playersLevel, sWorld.getConfig(CONFIG_UINT32_MAX_PLAYER_LEVEL)));
+
 	PerformanceMonitorOperation *pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "RandomizeFirst");
     uint32 level = urand(sPlayerbotAIConfig.randomBotMinLevel, maxLevel);
 
 #ifdef MANGOSBOT_TWO
     if (bot->getClass() == CLASS_DEATH_KNIGHT)
-        level = urand(sWorld.getConfig(CONFIG_UINT32_START_HEROIC_PLAYER_LEVEL), maxLevel);
+        level = urand(sWorld.getConfig(CONFIG_UINT32_START_HEROIC_PLAYER_LEVEL), max(sWorld.getConfig(CONFIG_UINT32_START_HEROIC_PLAYER_LEVEL), maxLevel));
 #endif
 
     if (urand(0, 100) < 100 * sPlayerbotAIConfig.randomBotMaxLevelChance)
@@ -1778,10 +1940,6 @@ void RandomPlayerbotMgr::RandomizeFirst(Player* bot)
     SetValue(bot, "level", level);
     PlayerbotFactory factory(bot, level);
     factory.Randomize(false);
-
-	if (level > 4) {
-		RandomTeleportForRpg(bot);
-	}
 	
     uint32 randomTime = urand(sPlayerbotAIConfig.minRandomBotRandomizeTime, sPlayerbotAIConfig.maxRandomBotRandomizeTime);
 	uint32 inworldTime = urand(sPlayerbotAIConfig.minRandomBotInWorldTime, sPlayerbotAIConfig.maxRandomBotInWorldTime);
@@ -2472,9 +2630,6 @@ void RandomPlayerbotMgr::ChangeStrategy(Player* player)
     {
         sLog.outDetail("Changing strategy for bot #%d <%s> to grinding", bot, player->GetName());
         ScheduleTeleport(bot, 30);
-
-        // deactivate lfg
-        player->GetPlayerbotAI()->ChangeStrategy("-lfg", BOT_STATE_NON_COMBAT);
     }
     else
     {
@@ -2482,13 +2637,6 @@ void RandomPlayerbotMgr::ChangeStrategy(Player* player)
 		sLog.outBasic("Bot #%d <%s>: sent to inn", bot, player->GetName());
         RandomTeleportForRpg(player);
 		SetEventValue(bot, "teleport", 1, sPlayerbotAIConfig.maxRandomBotInWorldTime);
-
-        // leave group in teleport
-        //if (player->GetGroup())
-        //    player->GetPlayerbotAI()->DoSpecificAction("leave");
-
-        // activate lfg
-        player->GetPlayerbotAI()->ChangeStrategy("+lfg", BOT_STATE_NON_COMBAT);
     }
 
     ScheduleChangeStrategy(bot);
@@ -2506,7 +2654,7 @@ void RandomPlayerbotMgr::RandomTeleportForRpg(Player* bot)
 void RandomPlayerbotMgr::Remove(Player* bot)
 {
     uint64 owner = bot->GetObjectGuid().GetRawValue();
-    CharacterDatabase.PExecute("delete from ai_playerbot_random_bots where owner = 0 and bot = '%lu'", owner);
+    PlayerbotDatabase.PExecute("delete from ai_playerbot_random_bots where owner = 0 and bot = '%lu'", owner);
     eventCache[owner].clear();
 
     LogoutPlayerBot(owner);

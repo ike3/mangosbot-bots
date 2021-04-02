@@ -63,7 +63,7 @@ DpsHunterStrategy::DpsHunterStrategy(PlayerbotAI* ai) : GenericHunterStrategy(ai
 
 NextAction** DpsHunterStrategy::getDefaultActions()
 {
-    return NextAction::array(0, new NextAction("explosive shot", 11.0f), new NextAction("auto shot", 10.0f), NULL);
+    return NextAction::array(0, new NextAction("explosive shot", 11.0f), new NextAction("auto shot", 10.0f), new NextAction("auto attack", 9.0f), NULL);
 }
 
 void DpsHunterStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
@@ -85,6 +85,10 @@ void DpsHunterStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
     triggers.push_back(new TriggerNode(
         "concussive shot on snare target",
         NextAction::array(0, new NextAction("concussive shot", 20.0f), NULL)));
+
+    /*triggers.push_back(new TriggerNode(
+        "has aggro",
+        NextAction::array(0, new NextAction("concussive shot", 20.0f), NULL)));*/
 }
 
 void DpsAoeHunterStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
