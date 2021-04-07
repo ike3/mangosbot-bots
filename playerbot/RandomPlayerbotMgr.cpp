@@ -799,6 +799,51 @@ void RandomPlayerbotMgr::CheckLfgQueue()
             }
         }
 #endif
+#ifdef MANGOSBOT_TWO
+        Group* group = player->GetGroup();
+        if (group)
+        {
+            if (sLFGMgr.GetQueueInfo(group->GetObjectGuid()))
+            {
+                isLFG = true;
+                LFGGroupState* gState = sLFGMgr.GetLFGGroupState(group->GetObjectGuid());
+                if (gState->GetState() != LFG_STATE_NONE && gState->GetState() < LFG_STATE_DUNGEON)
+                {
+                    LFGDungeonSet const* dList = gState->GetDungeons();
+                    for (LFGDungeonSet::const_iterator itr = dList->begin(); itr != dList->end(); ++itr)
+                    {
+                        LFGDungeonEntry const* dungeon = *itr;
+
+                        if (!dungeon)
+                            continue;
+
+                        LfgDungeons[player->GetTeam()].push_back(dungeon->ID);
+                    }
+                }
+            }
+        }
+        else
+        {
+            if (sLFGMgr.GetQueueInfo(player->GetObjectGuid()))
+            {
+                isLFG = true;
+                LFGPlayerState* pState = sLFGMgr.GetLFGPlayerState(player->GetObjectGuid());
+                if (pState->GetState() != LFG_STATE_NONE && pState->GetState() < LFG_STATE_DUNGEON)
+                {
+                    LFGDungeonSet const* dList = pState->GetDungeons();
+                    for (LFGDungeonSet::const_iterator itr = dList->begin(); itr != dList->end(); ++itr)
+                    {
+                        LFGDungeonEntry const* dungeon = *itr;
+
+                        if (!dungeon)
+                            continue;
+
+                        LfgDungeons[player->GetTeam()].push_back(dungeon->ID);
+                    }
+                }
+            }
+        }
+#endif
     }
     sLog.outBasic("LFG Queue check finished");
     return;
