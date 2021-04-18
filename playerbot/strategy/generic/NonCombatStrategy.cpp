@@ -54,6 +54,7 @@ void LfgStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         "seldom",
         NextAction::array(0, new NextAction("lfg leave", relevance), NULL)));
 }
+
 LfgStrategy::LfgStrategy(PlayerbotAI* ai) : PassTroughStrategy(ai)
 {
 }
@@ -69,11 +70,15 @@ void BGStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
         "often",
-        NextAction::array(0, new NextAction("bg join", 1.0), NULL)));
+        NextAction::array(0, new NextAction("bg join", relevance), NULL)));
 
     triggers.push_back(new TriggerNode(
         "often",
-        NextAction::array(0, new NextAction("bg status check", ACTION_HIGH), NULL)));
+        NextAction::array(0, new NextAction("bg status check", relevance), NULL)));
+}
+
+BGStrategy::BGStrategy(PlayerbotAI* ai) : PassTroughStrategy(ai)
+{
 }
 
 void WarsongStrategy::InitTriggers(std::list<TriggerNode*> &triggers)

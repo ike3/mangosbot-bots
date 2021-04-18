@@ -29,10 +29,10 @@ namespace ai
         virtual string getName() { return "collision"; }
     };
 
-    class BGStrategy : public Strategy
+    class BGStrategy : public PassTroughStrategy
     {
     public:
-        BGStrategy(PlayerbotAI* ai) : Strategy(ai) {};
+        BGStrategy(PlayerbotAI* ai);
         virtual int GetType() { return STRATEGY_TYPE_NONCOMBAT; }
         virtual void InitTriggers(std::list<TriggerNode*> &triggers);
         virtual string getName() { return "bg"; }
