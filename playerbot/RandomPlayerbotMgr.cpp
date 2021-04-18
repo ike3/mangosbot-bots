@@ -224,7 +224,7 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed)
         if (time(NULL) > (BgCheckTimer + 30))
             activateCheckBgQueueThread();
 
-        if (BgBotsActive && bgBotsCount < 50)
+        if (BgBotsActive && bgBotsCount < 40)
         {
             for (int i = BG_BRACKET_ID_FIRST; i < MAX_BATTLEGROUND_BRACKETS; ++i)
             {
@@ -951,16 +951,14 @@ void RandomPlayerbotMgr::AddBgBot(BattleGroundQueueTypeId queueTypeId, BattleGro
     }
 #endif
 
-    if (BgCount >= BracketSize && !visual && ACount >= TeamSize && HCount >= TeamSize)
-        return;
-
-    Player* player = NULL;
     string bgType = isArena ? "Arena" : "BG";
-
-    if (BgCount >= BracketSize && !visual)
+    if (BgCount >= BracketSize && !visual && (ACount >= TeamSize) && (HCount >= TeamSize))
     {
         sLog.outDetail("Can't add BG Bots to %s %d (%s), it is full", bgType, bgTypeId, _bgType);
+        return;
     }
+
+    Player* player = NULL;
 
 #ifndef MANGOSBOT_ZERO
     if (!visual && isArena && ((!isRated && SCount >= BracketSize) || (!isRated && RCount >= BracketSize)))
@@ -1313,6 +1311,8 @@ void RandomPlayerbotMgr::AddBgBot(BattleGroundQueueTypeId queueTypeId, BattleGro
 #ifdef MANGOSBOT_TWO
             if (sServerFacade.BgArenaType(queueTypeId))
                 player->TeleportTo(data->mapid, data->posX, data->posY, data->posZ, player->GetOrientation());
+            else
+                RandomTeleportForRpg(player);
 #else
             player->TeleportTo(data->mapid, data->posX, data->posY, data->posZ, player->GetOrientation());
 #endif
