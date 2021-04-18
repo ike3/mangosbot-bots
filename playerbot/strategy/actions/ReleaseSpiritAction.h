@@ -56,6 +56,9 @@ namespace ai
 
         virtual bool isUseful()
         {
+            if (bot->InBattleGround())
+                return sServerFacade.UnitIsDead(bot) && !bot->GetCorpse();
+
             return ((!bot->GetGroup()) || (bot->GetGroup() && ai->GetGroupMaster() == bot) || (ai->GetGroupMaster() && ai->GetGroupMaster() != bot &&
                 sServerFacade.UnitIsDead(ai->GetGroupMaster()) &&
                 bot->GetDeathState() != ai->GetGroupMaster()->GetDeathState()))
