@@ -1415,9 +1415,9 @@ bool RandomPlayerbotMgr::ProcessBot(uint32 bot)
 		if (!player || !player->GetGroup())
 		{
             if (player)
-                sLog.outBasic("Bot #%d %s:%d <%s>: log out", bot, IsAlliance(player->getRace()) == ALLIANCE ? "A" : "H", player->getLevel(), player->GetName());
+                sLog.outDetail("Bot #%d %s:%d <%s>: log out", bot, IsAlliance(player->getRace()) == ALLIANCE ? "A" : "H", player->getLevel(), player->GetName());
             else
-                sLog.outBasic("Bot #%d: log out", bot);
+                sLog.outDetail("Bot #%d: log out", bot);
 
 			SetEventValue(bot, "add", 0, 0);
 			currentBots.remove(bot);
