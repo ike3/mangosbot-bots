@@ -55,6 +55,7 @@ namespace ai
             creators["revive from corpse"] = &WorldPacketTriggerContext::revive_from_corpse;
             creators["receive emote"] = &WorldPacketTriggerContext::receive_emote;
             creators["receive text emote"] = &WorldPacketTriggerContext::receive_text_emote;
+            creators["arena team invite"] = &WorldPacketTriggerContext::arena_team_invite;
         }
 
     private:
@@ -103,5 +104,6 @@ namespace ai
         static Trigger* revive_from_corpse(PlayerbotAI* ai) { return new WorldPacketTrigger(ai, "revive from corpse"); }
         static Trigger* receive_emote(PlayerbotAI* ai) { return new WorldPacketTrigger(ai, "receive emote"); }
         static Trigger* receive_text_emote(PlayerbotAI* ai) { return new WorldPacketTrigger(ai, "receive text emote"); }
+        static Trigger* arena_team_invite(PlayerbotAI* ai) { return new WorldPacketTrigger(ai, "arena team invite"); }
     };
 };
