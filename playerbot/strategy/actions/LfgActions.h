@@ -43,6 +43,7 @@ namespace ai
     public:
         LfgAcceptAction(PlayerbotAI* ai) : LfgJoinAction(ai, "lfg accept") {}
         virtual bool Execute(Event event);
+        virtual bool isUseful() { return true; }
     };
 
     class LfgRoleCheckAction : public LfgJoinAction
@@ -50,6 +51,7 @@ namespace ai
     public:
         LfgRoleCheckAction(PlayerbotAI* ai) : LfgJoinAction(ai, "lfg role check") {}
         virtual bool Execute(Event event);
+        virtual bool isUseful() { return true; }
     };
 
     class LfgLeaveAction : public Action
