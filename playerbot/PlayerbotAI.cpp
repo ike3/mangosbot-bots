@@ -1513,7 +1513,7 @@ GrouperType PlayerbotAI::GetGrouperType()
    return LEADER_5;
 }
 
-bool PlayerbotAI::HasPlayerNearby(float range)
+bool PlayerbotAI::HasPlayerNearby(WorldPosition* pos, float range)
 {
     float sqRange = range * range;
     for (auto& player : sRandomPlayerbotMgr.GetPlayers())
@@ -1523,7 +1523,7 @@ bool PlayerbotAI::HasPlayerNearby(float range)
             if (player->GetMapId() != bot->GetMapId())
                 continue;
 
-            if (player->GetDistance(bot, false, DIST_CALC_NONE) < sqRange)
+            if (pos->sqDistance(&WorldPosition(player)) < sqRange)
                 return true;
         }
     }
@@ -1557,7 +1557,8 @@ enum ActivityType
     TRAVEL_ACTIVITY = 3,
     OUT_OF_PARTY_ACTIVITY = 4,
     PACKET_ACTIVITY = 5,
-    ALL_ACTIVITY = 6
+    DETAILED_MOVE_ACTIVITY = 6,
+    ALL_ACTIVITY = 7
 };
 
    General function to check if a bot is allowed to be active or not.
@@ -1589,6 +1590,10 @@ bool PlayerbotAI::AllowActive(ActivityType activityType)
     if (activityType == OUT_OF_PARTY_ACTIVITY || activityType == GRIND_ACTIVITY) //Many bots nearby. Do not do heavy area checks.
         if (HasManyPlayersNearby())
             return false;
+
+    //Bots don't need to move using pathfinder.
+    if (activityType == DETAILED_MOVE_ACTIVITY)
+        return false;
 
     //All exceptions are now done. 
     //Below is code to have a specified % of bots active at all times.
@@ -1845,7 +1850,7 @@ string PlayerbotAI::HandleRemoteCommand(string command)
     else if (command == "movement")
     {
         LastMovement& data = *GetAiObjectContext()->GetValue<LastMovement&>("last movement");
-        ostringstream out; out << data.lastMoveToX << " " << data.lastMoveToY << " " << data.lastMoveToZ << " " << bot->GetMapId() << " " << data.lastMoveToOri;
+        ostringstream out; out << data.lastMoveShort.getX() << " " << data.lastMoveShort.getY() << " " << data.lastMoveShort.getZ() << " " << data.lastMoveShort.getMapId() << " " << data.lastMoveShort.getO();
         return out.str();
     }
     else if (command == "target")
