@@ -18,6 +18,7 @@
 #include "strategy/values/LastMovementValue.h"
 #include "strategy/actions/LogLevelAction.h"
 #include "strategy/values/LastSpellCastValue.h"
+#include "../values/PositionValue.h"
 #include "MovementActions.h"
 #include "MotionMaster.h"
 #include "MovementGenerator.h"
