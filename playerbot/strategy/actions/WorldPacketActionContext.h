@@ -28,6 +28,7 @@
 #include "PetitionSignAction.h"
 #include "BattlegroundJoinAction.h"
 #include "SeeSpellAction.h"
+#include "ArenaTeamActions.h"
 
 namespace ai
 {
@@ -80,6 +81,7 @@ namespace ai
             creators["inventory change failure"] = &WorldPacketActionContext::inventory_change_failure;
             creators["petition sign"] = &WorldPacketActionContext::petition_sign;
             creators["see spell"] = &WorldPacketActionContext::see_spell;
+            creators["arena team accept"] = &WorldPacketActionContext::arena_team_accept;
         }
 
     private:
@@ -127,6 +129,7 @@ namespace ai
         static Action* accept_quest_share(PlayerbotAI* ai) { return new AcceptQuestShareAction(ai); }
         static Action* loot_roll(PlayerbotAI* ai) { return (QueryItemUsageAction*)new LootRollAction(ai); }
         static Action* see_spell(PlayerbotAI* ai) { return new SeeSpellAction(ai); }
+        static Action* arena_team_accept(PlayerbotAI* ai) { return new ArenaTeamAcceptAction(ai); }
     };
 
 

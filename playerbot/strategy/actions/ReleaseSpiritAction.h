@@ -51,11 +51,19 @@ namespace ai
             packet << uint8(0);
             bot->GetSession()->HandleRepopRequestOpcode(packet);
             sLog.outDetail("Bot #%d %s:%d <%s> auto released", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName());
+            
+            // add waiting for ress aura
+            if (bot->InBattleGround())
+                bot->CastSpell(bot, 2584, TRIGGERED_OLD_TRIGGERED);
+
             return true;
         }
 
         virtual bool isUseful()
         {
+            if (bot->InBattleGround())
+                return sServerFacade.UnitIsDead(bot) && !bot->GetCorpse();
+
             return ((!bot->GetGroup()) || (bot->GetGroup() && ai->GetGroupMaster() == bot) || (ai->GetGroupMaster() && ai->GetGroupMaster() != bot &&
                 sServerFacade.UnitIsDead(ai->GetGroupMaster()) &&
                 bot->GetDeathState() != ai->GetGroupMaster()->GetDeathState()))

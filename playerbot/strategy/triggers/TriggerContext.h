@@ -117,6 +117,8 @@ namespace ai
             creators["give food"] = &TriggerContext::give_food;
             creators["give water"] = &TriggerContext::give_water;
 
+            creators["bg waiting"] = &TriggerContext::bg_waiting;
+            creators["bg active"] = &TriggerContext::bg_active;
             creators["player has no flag"] = &TriggerContext::player_has_no_flag;
             creators["player has flag"] = &TriggerContext::player_has_flag;
             creators["team has flag"] = &TriggerContext::team_has_flag;
@@ -140,6 +142,8 @@ namespace ai
         static Trigger* mounted(PlayerbotAI* ai) { return new IsMountedTrigger(ai); }
         static Trigger* enemy_flagcarrier_near(PlayerbotAI* ai) { return new EnemyFlagCarrierNear(ai); }
         static Trigger* player_has_no_flag(PlayerbotAI* ai) { return new PlayerHasNoFlag(ai); }
+        static Trigger* bg_waiting(PlayerbotAI* ai) { return new BgWaitingTrigger(ai); }
+        static Trigger* bg_active(PlayerbotAI* ai) { return new BgActiveTrigger(ai); }
         static Trigger* player_has_flag(PlayerbotAI* ai) { return new PlayerHasFlag(ai); }
         static Trigger* team_has_flag(PlayerbotAI* ai) { return new TeamHasFlag(ai); }
         static Trigger* enemy_team_has_flag(PlayerbotAI* ai) { return new EnemyTeamHasFlag(ai); }

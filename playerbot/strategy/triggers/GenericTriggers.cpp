@@ -307,6 +307,26 @@ bool PlayerIsInBattleground::IsActive()
     return ai->GetBot()->InBattleGround();
 }
 
+bool BgWaitingTrigger::IsActive()
+{
+    if (bot->InBattleGround())
+    {
+        if (bot->GetBattleGround() && bot->GetBattleGround()->GetStatus() == STATUS_WAIT_JOIN)
+            return true;
+    }
+    return false;
+}
+
+bool BgActiveTrigger::IsActive()
+{
+    if (bot->InBattleGround())
+    {
+        if (bot->GetBattleGround() && bot->GetBattleGround()->GetStatus() == STATUS_IN_PROGRESS)
+            return true;
+    }
+    return false;
+}
+
 bool PlayerIsInBattlegroundWithoutFlag::IsActive()
 {
 #ifdef MANGOS

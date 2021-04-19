@@ -8,8 +8,8 @@ namespace ai
     class NearestFriendlyPlayersValue : public NearestUnitsValue
 	{
 	public:
-        NearestFriendlyPlayersValue(PlayerbotAI* ai) :
-            NearestUnitsValue(ai, "nearest friendly players", sPlayerbotAIConfig.sightDistance) {}
+        NearestFriendlyPlayersValue(PlayerbotAI* ai, float range = sPlayerbotAIConfig.sightDistance) :
+            NearestUnitsValue(ai, "nearest friendly players", range) {}
 
     protected:
         void FindUnits(list<Unit*> &targets);

@@ -757,6 +757,24 @@ namespace ai
         virtual bool IsActive();
     };
 
+    class BgWaitingTrigger : public Trigger
+    {
+    public:
+        BgWaitingTrigger(PlayerbotAI* ai) : Trigger(ai, "bg waiting", 10) {}
+
+    public:
+        virtual bool IsActive();
+    };
+
+    class BgActiveTrigger : public Trigger
+    {
+    public:
+        BgActiveTrigger(PlayerbotAI* ai) : Trigger(ai, "bg active", 1) {}
+
+    public:
+        virtual bool IsActive();
+    };
+
     class PlayerIsInBattlegroundWithoutFlag : public Trigger
     {
     public:

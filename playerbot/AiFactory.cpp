@@ -213,7 +213,7 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
             if (tab == 0)
                 engine->addStrategies("arcane", "threat", NULL);
             else if (tab == 1)
-                engine->addStrategies("fire", "fire aoe", "threat", "dps aoe", NULL);
+                engine->addStrategies("fire", "fire aoe", "threat", NULL);
             else
                 engine->addStrategies("frost", "frost aoe", "threat", "dps aoe", NULL);
 
@@ -255,7 +255,7 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
         case CLASS_DRUID:
             if (tab == 0)
             {
-                engine->addStrategies("caster", "cure", "caster aoe", "threat", "flee", "dps assist", "ranged", "cc", "dps aoe", NULL);
+                engine->addStrategies("caster", "cure", "caster aoe", "threat", "flee", "dps assist", "ranged", "cc", NULL);
                 if (player->getLevel() > 19)
                     engine->addStrategy("caster debuff");
             }
@@ -268,7 +268,7 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
             }
             break;
         case CLASS_HUNTER:
-            engine->addStrategies("dps", "bdps", "threat", "dps assist", "ranged", "pet", "cc", "dps aoe", NULL);
+            engine->addStrategies("dps", "bdps", "threat", "dps assist", "ranged", "pet", "cc", NULL);
             if (player->getLevel() > 19)
                 engine->addStrategy("dps debuff");
             break;
@@ -284,7 +284,7 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
             if (player->getLevel() > 19)
                 engine->addStrategy("dps debuff");
 
-            engine->addStrategies("dps assist", "flee", "ranged", "cc", "pet", "dps aoe", NULL);
+            engine->addStrategies("dps assist", "flee", "ranged", "cc", "pet", NULL);
             break;
 #ifdef MANGOSBOT_TWO
         case CLASS_DEATH_KNIGHT:
@@ -511,10 +511,12 @@ void AiFactory::AddDefaultNonCombatStrategies(Player* player, PlayerbotAI* const
     // Battleground switch
     if (player->InBattleGround())
     {
-        nonCombatEngine->addStrategies("nc", "chat",
+        nonCombatEngine->addStrategies("nc", "chat", "dps assist",
             "default", "emote", "buff", "food", "conserve mana", "collision", "mount", NULL);
         nonCombatEngine->removeStrategy("custom::say");
         nonCombatEngine->removeStrategy("travel");
+        nonCombatEngine->removeStrategy("rpg");
+        nonCombatEngine->removeStrategy("grind");
 
         if (player->GetBattleGroundTypeId() == BATTLEGROUND_WS)
             nonCombatEngine->addStrategy("warsong");

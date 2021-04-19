@@ -224,7 +224,7 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed)
         if (time(NULL) > (BgCheckTimer + 30))
             activateCheckBgQueueThread();
 
-        if (BgBotsActive && bgBotsCount < 50)
+        if (BgBotsActive && bgBotsCount < 40)
         {
             for (int i = BG_BRACKET_ID_FIRST; i < MAX_BATTLEGROUND_BRACKETS; ++i)
             {
@@ -799,6 +799,51 @@ void RandomPlayerbotMgr::CheckLfgQueue()
             }
         }
 #endif
+#ifdef MANGOSBOT_TWO
+        Group* group = player->GetGroup();
+        if (group)
+        {
+            if (sLFGMgr.GetQueueInfo(group->GetObjectGuid()))
+            {
+                isLFG = true;
+                LFGGroupState* gState = sLFGMgr.GetLFGGroupState(group->GetObjectGuid());
+                if (gState->GetState() != LFG_STATE_NONE && gState->GetState() < LFG_STATE_DUNGEON)
+                {
+                    LFGDungeonSet const* dList = gState->GetDungeons();
+                    for (LFGDungeonSet::const_iterator itr = dList->begin(); itr != dList->end(); ++itr)
+                    {
+                        LFGDungeonEntry const* dungeon = *itr;
+
+                        if (!dungeon)
+                            continue;
+
+                        LfgDungeons[player->GetTeam()].push_back(dungeon->ID);
+                    }
+                }
+            }
+        }
+        else
+        {
+            if (sLFGMgr.GetQueueInfo(player->GetObjectGuid()))
+            {
+                isLFG = true;
+                LFGPlayerState* pState = sLFGMgr.GetLFGPlayerState(player->GetObjectGuid());
+                if (pState->GetState() != LFG_STATE_NONE && pState->GetState() < LFG_STATE_DUNGEON)
+                {
+                    LFGDungeonSet const* dList = pState->GetDungeons();
+                    for (LFGDungeonSet::const_iterator itr = dList->begin(); itr != dList->end(); ++itr)
+                    {
+                        LFGDungeonEntry const* dungeon = *itr;
+
+                        if (!dungeon)
+                            continue;
+
+                        LfgDungeons[player->GetTeam()].push_back(dungeon->ID);
+                    }
+                }
+            }
+        }
+#endif
     }
     sLog.outBasic("LFG Queue check finished");
     return;
@@ -906,16 +951,14 @@ void RandomPlayerbotMgr::AddBgBot(BattleGroundQueueTypeId queueTypeId, BattleGro
     }
 #endif
 
-    if (BgCount >= BracketSize && !visual && ACount >= TeamSize && HCount >= TeamSize)
-        return;
-
-    Player* player = NULL;
     string bgType = isArena ? "Arena" : "BG";
-
-    if (BgCount >= BracketSize && !visual)
+    if (BgCount >= BracketSize && !visual && (ACount >= TeamSize) && (HCount >= TeamSize))
     {
         sLog.outDetail("Can't add BG Bots to %s %d (%s), it is full", bgType, bgTypeId, _bgType);
+        return;
     }
+
+    Player* player = NULL;
 
 #ifndef MANGOSBOT_ZERO
     if (!visual && isArena && ((!isRated && SCount >= BracketSize) || (!isRated && RCount >= BracketSize)))
@@ -1268,6 +1311,8 @@ void RandomPlayerbotMgr::AddBgBot(BattleGroundQueueTypeId queueTypeId, BattleGro
 #ifdef MANGOSBOT_TWO
             if (sServerFacade.BgArenaType(queueTypeId))
                 player->TeleportTo(data->mapid, data->posX, data->posY, data->posZ, player->GetOrientation());
+            else
+                RandomTeleportForRpg(player);
 #else
             player->TeleportTo(data->mapid, data->posX, data->posY, data->posZ, player->GetOrientation());
 #endif
@@ -1370,9 +1415,9 @@ bool RandomPlayerbotMgr::ProcessBot(uint32 bot)
 		if (!player || !player->GetGroup())
 		{
             if (player)
-                sLog.outBasic("Bot #%d %s:%d <%s>: log out", bot, IsAlliance(player->getRace()) == ALLIANCE ? "A" : "H", player->getLevel(), player->GetName());
+                sLog.outDetail("Bot #%d %s:%d <%s>: log out", bot, IsAlliance(player->getRace()) == ALLIANCE ? "A" : "H", player->getLevel(), player->GetName());
             else
-                sLog.outBasic("Bot #%d: log out", bot);
+                sLog.outDetail("Bot #%d: log out", bot);
 
 			SetEventValue(bot, "add", 0, 0);
 			currentBots.remove(bot);

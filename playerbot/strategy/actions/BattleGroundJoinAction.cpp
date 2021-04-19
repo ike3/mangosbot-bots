@@ -18,6 +18,7 @@
 #include "strategy/values/LastMovementValue.h"
 #include "strategy/actions/LogLevelAction.h"
 #include "strategy/values/LastSpellCastValue.h"
+#include "../values/PositionValue.h"
 #include "MovementActions.h"
 #include "MotionMaster.h"
 #include "MovementGenerator.h"
@@ -55,7 +56,6 @@ bool BGJoinAction::Execute(Event event)
       return false;
 
    uint32 queueType = AI_VALUE(uint32, "bg type");
-
    return JoinQueue(queueType);
 }
 
@@ -227,6 +227,9 @@ bool BGLeaveAction::Execute(Event event)
 #ifdef CMANGOS
     bot->GetSession()->HandleBattlefieldPortOpcode(packet);
 #endif
+    if (IsRandomBot)
+        ai->SetMaster(NULL);
+
     ai->ResetStrategies(!IsRandomBot);
     ai->GetAiObjectContext()->GetValue<uint32>("bg type")->Set(NULL);
     ai->GetAiObjectContext()->GetValue<uint32>("bg role")->Set(NULL);
@@ -390,18 +393,24 @@ bool BGStatusAction::Execute(Event event)
     if (Time1 == TIME_TO_AUTOREMOVE) //battleground is over, bot needs to leave
     {
         BattleGround* bg = bot->GetBattleGround();
-        BattleGroundBracketId bracketId = bot->GetBattleGround()->GetBracketId();
-        uint32 TeamId = bot->GetTeam() == ALLIANCE ? 0 : 1;
-#ifndef MANGOSBOT_ZERO
-        if (isArena)
+        if (bg)
         {
-            sRandomPlayerbotMgr.ArenaBots[queueTypeId][bracketId][isRated][TeamId]--;
-            TeamId = isRated ? 1 : 0;
-        }
+            BattleGroundBracketId bracketId = bot->GetBattleGround()->GetBracketId();
+            uint32 TeamId = bot->GetTeam() == ALLIANCE ? 0 : 1;
+#ifndef MANGOSBOT_ZERO
+            if (isArena)
+            {
+                sRandomPlayerbotMgr.ArenaBots[queueTypeId][bracketId][isRated][TeamId]--;
+                TeamId = isRated ? 1 : 0;
+            }
 #endif
-        sRandomPlayerbotMgr.BgBots[queueTypeId][bracketId][TeamId]--;
-        sRandomPlayerbotMgr.BgPlayers[queueTypeId][bracketId][TeamId] = 0;
+            sRandomPlayerbotMgr.BgBots[queueTypeId][bracketId][TeamId]--;
+            sRandomPlayerbotMgr.BgPlayers[queueTypeId][bracketId][TeamId] = 0;
+        }
+
         // remove warsong strategy
+        if (IsRandomBot)
+            ai->SetMaster(NULL);
         ai->ChangeStrategy("-warsong", BOT_STATE_COMBAT);
         ai->ChangeStrategy("-warsong", BOT_STATE_NON_COMBAT);
         ai->ChangeStrategy("-arena", BOT_STATE_COMBAT);
@@ -424,23 +433,50 @@ bool BGStatusAction::Execute(Event event)
         ai->GetAiObjectContext()->GetValue<uint32>("bg role")->Set(NULL);
         ai->GetAiObjectContext()->GetValue<uint32>("arena type")->Set(NULL);
         ai->GetAiObjectContext()->GetValue<ObjectGuid>("bg master")->Set(ObjectGuid());
+        ai::PositionMap& posMap = context->GetValue<ai::PositionMap&>("position")->Get();
+        ai::PositionEntry pos = context->GetValue<ai::PositionMap&>("position")->Get()["bg objective"];
+        ai::PositionEntry posWp = context->GetValue<ai::PositionMap&>("position")->Get()["bg waypoint"];
+        pos.Reset();
+        posWp.Reset();
+        posMap["bg objective"] = pos;
+        posMap["bg waypoint"] = posWp;
     }
     if (statusid == STATUS_WAIT_QUEUE) //bot is in queue
     {
         BattleGround* bg = sBattleGroundMgr.GetBattleGroundTemplate(_bgTypeId);
+        if (!bg)
+            return false;
+
         bool leaveQ = false;
         uint32 timer;
         if (_bgTypeId > 4 && _bgTypeId != 7)
-            timer = TIME_TO_AUTOREMOVE + 60 * 1000;
+            timer = TIME_TO_AUTOREMOVE + 90 * 1000;
         else
-            timer = TIME_TO_AUTOREMOVE + 1000 * (bg->GetMaxPlayers() * 2);
+            timer = TIME_TO_AUTOREMOVE + 1000 * (bg->GetMaxPlayers() * 4);
 
         if (Time2 > timer)
             leaveQ = true;
 
         if (leaveQ && !(bot->GetGroup() || ai->GetMaster()))
         {
-            //ai->ChangeStrategy("-bg", BOT_STATE_NON_COMBAT);
+            uint32 TeamId = bot->GetTeam() == ALLIANCE ? 0 : 1;
+            BattleGroundBracketId bracketId = BG_BRACKET_ID_TEMPLATE;
+#ifdef CMANGOS
+#ifdef MANGOSBOT_TWO
+            BattleGround* bg = sBattleGroundMgr.GetBattleGroundTemplate(_bgTypeId);
+            uint32 mapId = bg->GetMapId();
+            PvPDifficultyEntry const* pvpDiff = GetBattlegroundBracketByLevel(mapId, bot->getLevel());
+            if (pvpDiff)
+                bracketId = pvpDiff->GetBracketId();
+
+#else
+            bracketId = bot->GetBattleGroundBracketIdFromLevel(_bgTypeId);
+#endif
+#endif
+            bool realPlayers = sRandomPlayerbotMgr.BgPlayers[queueTypeId][bracketId][TeamId];
+            if (realPlayers)
+                return false;
+            ai->ChangeStrategy("-bg", BOT_STATE_NON_COMBAT);
             sLog.outBasic("Bot #%u <%s> (%u %s) waited too long and leaves queue (%s %s).", bot->GetGUIDLow(), bot->GetName(), bot->getLevel(), bot->GetTeam() == ALLIANCE ? "A" : "H", isArena ? "Arena" : "BG", _bgType);
             WorldPacket packet(CMSG_BATTLEFIELD_PORT, 20);
             action = 0;
@@ -460,6 +496,8 @@ bool BGStatusAction::Execute(Event event)
             ai->GetAiObjectContext()->GetValue<uint32>("bg role")->Set(NULL);
             ai->GetAiObjectContext()->GetValue<uint32>("arena type")->Set(NULL);
             ai->GetAiObjectContext()->GetValue<ObjectGuid>("bg master")->Set(ObjectGuid());
+            sRandomPlayerbotMgr.BgBots[queueTypeId][bracketId][TeamId]--;
+            return true;
         }
     }
     if (statusid == STATUS_WAIT_JOIN) //bot may join
@@ -523,7 +561,14 @@ bool BGStatusAction::Execute(Event event)
 
         //ai->ResetStrategies(!IsRandomBot);
         ai->ResetStrategies(false);
-        ai->ChangeStrategy("-bg", BOT_STATE_NON_COMBAT);
+        ai->ChangeStrategy("-bg,-rpg,-travel,-grind", BOT_STATE_NON_COMBAT);
+        ai::PositionMap& posMap = context->GetValue<ai::PositionMap&>("position")->Get();
+        ai::PositionEntry pos = context->GetValue<ai::PositionMap&>("position")->Get()["bg objective"];
+        ai::PositionEntry posWp = context->GetValue<ai::PositionMap&>("position")->Get()["bg waypoint"];
+        pos.Reset();
+        posWp.Reset();
+        posMap["bg objective"] = pos;
+        posMap["bg waypoint"] = posWp;
         //ai->ChangeStrategy("-bg", BOT_STATE_COMBAT);
 
         return true;
