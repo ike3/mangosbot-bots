@@ -38,6 +38,18 @@ bool ReviveFromCorpseAction::Execute(Event event)
             && sServerFacade.IsDistanceLessThan(AI_VALUE2(float, "distance", "master target"), sPlayerbotAIConfig.farDistance))
             return false;
     }
+
+    if (!master || (master && master->GetPlayerbotAI()))
+    {
+        uint32 dCount = AI_VALUE(uint32, "death count");
+        if (dCount >= 5)
+        {
+            sLog.outBasic("Bot #%d <%s>: died too many times and was sent to an inn", bot->GetGUIDLow(), bot->GetName());
+            context->GetValue<uint32>("death count")->Set(0);
+            sRandomPlayerbotMgr.RandomTeleportForRpg(bot);
+            return true;
+        }
+    }
     
     WorldPacket packet(CMSG_RECLAIM_CORPSE);
     packet << bot->GetObjectGuid();
@@ -69,6 +81,18 @@ bool FindCorpseAction::Execute(Event event)
         if (!master->GetPlayerbotAI() &&
             sServerFacade.IsDistanceLessThan(AI_VALUE2(float, "distance", "master target"), sPlayerbotAIConfig.farDistance))
             return false;
+    }
+
+    if (!master || (master && master->GetPlayerbotAI()))
+    {
+        uint32 dCount = AI_VALUE(uint32, "death count");
+        if (dCount >= 5)
+        {
+            sLog.outBasic("Bot #%d <%s>: died too many times and was sent to an inn", bot->GetGUIDLow(), bot->GetName());
+            context->GetValue<uint32>("death count")->Set(0);
+            sRandomPlayerbotMgr.RandomTeleportForRpg(bot);
+            return true;
+        }
     }
 
     if (!corpse->IsWithinDistInMap(bot, CORPSE_RECLAIM_RADIUS - 5, true))

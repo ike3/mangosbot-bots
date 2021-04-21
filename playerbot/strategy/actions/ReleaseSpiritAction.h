@@ -33,6 +33,14 @@ namespace ai
             else
                 ai->TellMasterNoFacing("Meet me at the graveyard");
 
+            //Death Count to prevent skeleton piles
+            Player* master = GetMaster();
+            if (!master || (master && master->GetPlayerbotAI()))
+            {
+                uint32 dCount = AI_VALUE(uint32, "death count");
+                context->GetValue<uint32>("death count")->Set(dCount + 1);
+            }    
+
             WorldPacket packet(CMSG_REPOP_REQUEST);
             packet << uint8(0);
             bot->GetSession()->HandleRepopRequestOpcode(packet);
@@ -47,6 +55,14 @@ namespace ai
 
         virtual bool Execute(Event event)
         {
+            //Death Count to prevent skeleton piles
+            Player* master = GetMaster();
+            if (!master || (master && master->GetPlayerbotAI()))
+            {
+                uint32 dCount = AI_VALUE(uint32, "death count");
+                context->GetValue<uint32>("death count")->Set(dCount + 1);
+            }
+
             WorldPacket packet(CMSG_REPOP_REQUEST);
             packet << uint8(0);
             bot->GetSession()->HandleRepopRequestOpcode(packet);

@@ -205,6 +205,7 @@ namespace ai
             creators["party member without item"] = &ValueContext::party_member_without_item;
             creators["party member without food"] = &ValueContext::party_member_without_food;
             creators["party member without water"] = &ValueContext::party_member_without_water;
+            creators["death count"] = &ValueContext::death_count;
 
             creators["bg type"] = &ValueContext::bg_type;
             creators["arena type"] = &ValueContext::arena_type;
@@ -338,5 +339,6 @@ namespace ai
         static UntypedValue* ignore_rpg_target(PlayerbotAI* ai) { return new IgnoreRpgTargetValue(ai); }
         static UntypedValue* talk_target(PlayerbotAI* ai) { return new TalkTargetValue(ai); }
         static UntypedValue* pull_target(PlayerbotAI* ai) { return new PullTargetValue(ai); }
+        static UntypedValue* death_count(PlayerbotAI* ai) { return new DeathCountValue(ai); }
 };
 };
