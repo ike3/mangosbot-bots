@@ -8,6 +8,7 @@
 #include "strategy/ExternalEventHelper.h"
 #include "ChatFilter.h"
 #include "PlayerbotSecurity.h"
+#include "TravelMgr.h"
 #include <stack>
 
 class Player;
@@ -190,7 +191,8 @@ enum ActivityType
     TRAVEL_ACTIVITY = 3,
     OUT_OF_PARTY_ACTIVITY = 4,
     PACKET_ACTIVITY = 5,
-    ALL_ACTIVITY = 6
+    DETAILED_MOVE_ACTIVITY = 6,
+    ALL_ACTIVITY = 7
 };
 
 enum BotRoles
@@ -330,11 +332,19 @@ private:
 public:
 	Player* GetBot() { return bot; }
     Player* GetMaster() { return master; }
-    bool isRealPlayer() { return master ? (master == bot) : false; }
+
+    //Checks if the bot is really a player. Players always have themselves as master.
+    bool isRealPlayer() { return master ? (master == bot) : false; } 
+    //Bot has a master that is a player.
+    bool hasRealPlayerMaster() { return master && (!master->GetPlayerbotAI() || master->GetPlayerbotAI()->isRealPlayer()); } 
+    //Get the group leader or the master of the bot.
     Player* GetGroupMaster() { return bot->GetGroup() ? (sObjectMgr.GetPlayer(bot->GetGroup()->GetLeaderGuid()) ? sObjectMgr.GetPlayer(bot->GetGroup()->GetLeaderGuid()) : master) : master; }
-    uint32 GetFixedBotNumer(BotTypeNumber typeNumber, uint32 maxNum = 100, uint32 cyclePerMin = 1);
+    //Returns a semi-random (cycling) number that is fixed for each bot.
+    uint32 GetFixedBotNumer(BotTypeNumber typeNumber, uint32 maxNum = 100, uint32 cyclePerMin = 1); 
+
     GrouperType PlayerbotAI::GetGrouperType();
-    bool HasPlayerNearby(float range = sPlayerbotAIConfig.reactDistance);
+    bool HasPlayerNearby(WorldPosition* pos, float range = sPlayerbotAIConfig.reactDistance);
+    bool HasPlayerNearby(float range = sPlayerbotAIConfig.reactDistance) {return HasPlayerNearby(&WorldPosition(bot), range);};
     bool HasManyPlayersNearby(uint32 trigerrValue = 20, float range = sPlayerbotAIConfig.sightDistance);
     bool AllowActive(ActivityType activityType);
     void SetMaster(Player* master) { this->master = master; }
