@@ -36,9 +36,9 @@ uint32 TravelNode::doPathStep(WorldPosition startPos, WorldPosition endPos, Unit
         PathFinder path(bot);
 
 #ifdef IKE_PATHFINDER
-        path.setAreaCost(8, 10.0f);
-        path.setAreaCost(11, 5.0f);
-        path.setAreaCost(12, 20.0f);
+        path.setAreaCost(8, 10.0f);  //Water
+        path.setAreaCost(11, 5.0f);  //Mob proximity
+        path.setAreaCost(12, 20.0f); //Mob agro
 #endif
         path.calculate(startVector, endVector, false);
 
@@ -275,7 +275,8 @@ bool TravelNode::canPathNode(TravelNode* endNode, Unit* bot, vector<WorldPositio
     //    return false;
 
     bool canPath = canPathNode(endNode->getPosition(), bot, ppath);
-    pathNode(endNode, ppath);
+    if(canPath)
+        pathNode(endNode, ppath);
     return canPath; 
 }
 
