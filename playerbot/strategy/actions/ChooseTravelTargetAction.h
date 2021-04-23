@@ -25,6 +25,7 @@ namespace ai
         bool SetQuestTarget(TravelTarget* target);
         bool SetNewQuestTarget(TravelTarget* target);
         bool SetRpgTarget(TravelTarget* target);
+        bool SetExploreTarget(TravelTarget* target);
         bool SetNullTarget(TravelTarget* target);
 
         void ReportTravelTarget(TravelTarget* newTarget, TravelTarget* oldTarget);

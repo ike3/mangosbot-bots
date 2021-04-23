@@ -8,17 +8,26 @@
 #include "luaEngine.h"
 #endif
 
-#include "MotionGenerators/PathFinder.h"
+#include <MotionGenerators/PathFinder.h>
 
+#include "../../TravelMgr.h"
 
 
 using namespace ai;
 
-void CreateWp(Player* wpOwner,float x, float y, float z, float o, uint32 entry)
+Creature* SeeSpellAction::CreateWps(Player* wpOwner, float x, float y, float z, float o, uint32 entry, Creature* lastWp, bool important)
 {
     float dist = wpOwner->GetDistance(x, y, z);
     float delay = 1000.0f * dist / wpOwner->GetSpeed(MOVE_RUN) + sPlayerbotAIConfig.reactDelay;
-    Creature* wpCreature = wpOwner->SummonCreature(entry, x, y, z, o, TEMPSPAWN_TIMED_DESPAWN, delay*1.2);
+
+    if (!important)
+        delay *= 0.25;
+    Creature* wpCreature = wpOwner->SummonCreature(entry, x, y, z - 1, o, TEMPSPAWN_TIMED_DESPAWN, delay);
+
+    if (!important)
+        wpCreature->SetObjectScale(0.2f);
+
+    return wpCreature;
 }
 
 float GetAngle(const float x1, const float y1, const float x2, const float y2)
@@ -78,50 +87,111 @@ bool SeeSpellAction::Execute(Event event)
         z = z - master->GetPositionZ() + formationLocation.coord_z;
     }
 
-    PathFinder path(bot);
+    if (ai->HasStrategy("debug move", BOT_STATE_NON_COMBAT))
+    {                
+        
+        PathFinder path(bot);
 
-    path.calculate(x, y, z, false);
+        path.calculate(x, y, z, false);
 
-    Vector3 end = path.getEndPosition();
-    Vector3 aend = path.getActualEndPosition();
+        Vector3 end = path.getEndPosition();
+        Vector3 aend = path.getActualEndPosition();
 
-    PointsArray& points = path.getPath();
-    PathType type = path.getPathType();
+        PointsArray& points = path.getPath();
+        PathType type = path.getPathType();
 
-    ostringstream out;
+        ostringstream out;
 
-    out << "current path is: ";
+        out << x << ";" << y << ";" << z << " =";
 
-    out << type;
+        out << "path is: ";
 
-    out << " of length ";
+        out << type;
 
-    out << points.size();
+        out << " of length ";
 
-    out << " with offset ";
+        out << points.size();
 
-    out << (end - aend).length();
+        out << " with offset ";
 
-    //std::reverse(points.begin(), points.end());
+        out << (end - aend).length();
 
-    /*
-    for (auto i : points)
-    {
-        if (bot->IsWithinLOS(i.x, i.y, i.z))
+        Creature* lastWp;
+
+        for (auto i : points)
         {
-            CreateWp(bot, i.x, i.y, i.z, GetAngle(x, y, i.x, i.y), 1);
+            lastWp = CreateWps(bot, i.x, i.y, i.z, GetAngle(x, y, i.x, i.y), 11144, lastWp);
+        }
+
+
+        ai->TellMaster(out);
+
+        /*
+        PathFinder path(bot);
+
+        ostringstream out;
+
+        out << " area = ";
+
+        out << path.getArea(bot->GetMapId(), x, y, z);
+
+        unsigned short flags = path.getFlags(bot->GetMapId(), x, y, z);
+
+        if (flags & NAV_GROUND)
+            out << ", ground";
+        if (flags & NAV_MAGMA)
+            out << ", magma";
+        if (flags & NAV_SLIME)
+            out << ", slime";
+        if (flags & NAV_WATER)
+            out << ", water";
+        if (flags & NAV_UNUSED1)
+            out << ", unused1";
+        if (flags & NAV_UNUSED2)
+            out << ", unsued2";
+        if (flags & NAV_UNUSED3)
+            out << ", unsued3";
+        if (flags & NAV_UNUSED4)
+            out << ", unused4";
+
+        ai->TellMaster(out);
+        */
+
+        /*
+        WorldPosition pos = WorldPosition(bot->GetMapId(), x, y, z, 0);
+
+        sTravelNodeMap.m_nMapMtx.lock();
+        TravelNode* node = sTravelNodeMap.getNode(&pos,NULL, 20);
+
+        if (!node)
+        {
+            node = sTravelNodeMap.addNode(&pos,"User Node", false, true, false);
+
+            if (node)
+            {
+                ai->TellMaster("node added");
+            }
         }
         else
-            CreateWp(bot, i.x, i.y, i.z, GetAngle(x, y, i.x, i.y), 11144);
+        {
+            if (!node->isImportant())
+            {
+                sTravelNodeMap.removeNode(node);
+                ai->TellMaster("node removed");
+            }
+            else
+            {
+                ostringstream out;
+                out << "node found" << node->getName();
+                ai->TellMaster(out);
+            }
+        }
 
-        x = i.x;
-        y = i.y;
-        z = i.z;
+        sTravelNodeMap.m_nMapMtx.unlock();
+        */
     }
-    */
-  
-    ai->TellMaster(out);
 
+ 
     if (bot->IsWithinLOS(x, y, z))
         return MoveNear(bot->GetMapId(), x, y, z, 0);
     else

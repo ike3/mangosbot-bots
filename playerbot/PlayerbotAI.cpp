@@ -25,6 +25,7 @@
 #include "strategy/values/PositionValue.h"
 #include "ServerFacade.h"
 #include "TravelMgr.h"
+#include "ChatHelper.h"
 
 using namespace ai;
 using namespace std;
@@ -1313,6 +1314,13 @@ bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target, Item* itemTarget)
     if (oldSel)
         bot->SetSelectionGuid(oldSel);
 
+    if (HasStrategy("debug spell", BOT_STATE_NON_COMBAT))
+    {
+        ostringstream out;
+        out << "Casting " <<ChatHelper::formatSpell(pSpellInfo);
+        TellMasterNoFacing(out);
+    }
+
     return true;
 }
 
@@ -1890,6 +1898,47 @@ string PlayerbotAI::HandleRemoteCommand(string command)
     else if (command == "values")
     {
         return GetAiObjectContext()->FormatValues();
+    }
+    else if (command == "travel")
+    {
+        ostringstream out;
+
+        TravelTarget* target = GetAiObjectContext()->GetValue<TravelTarget*>("travel target")->Get();
+        if (target->getDestination()) {
+            out << "Destination = " << target->getDestination()->getName();
+
+            out << ": " << target->getDestination()->getTitle();
+
+            out << " vis: " << target->getDestination()->getVisitors();
+
+            out << " Location = " << target->getPosition()->print();
+
+            if (!(*target->getPosition() == WorldPosition()))
+            {
+                out << "(" << target->getPosition()->getAreaName() << ")";
+                out << " at: " << target->getPosition()->distance(bot) << "y";
+                out << " vis: " << target->getPosition()->getVisitors();
+            }
+        }
+        out << " Status = ";
+        if (target->getStatus() == TRAVEL_STATUS_NONE)
+            out << " none";
+        else if (target->getStatus() == TRAVEL_STATUS_PREPARE)
+            out << " prepare";
+        else if (target->getStatus() == TRAVEL_STATUS_TRAVEL)
+            out << " travel";
+        else if (target->getStatus() == TRAVEL_STATUS_WORK)
+            out << " work";
+        else if (target->getStatus() == TRAVEL_STATUS_COOLDOWN)
+            out << " cooldown";
+        else if (target->getStatus() == TRAVEL_STATUS_EXPIRED)
+            out << " expired";
+
+        out << " Expire in " << (target->getTimeLeft()/1000) << "s";
+
+        out << " Retry " << target->getRetryCount(true) << "/" << target->getRetryCount(false);
+
+        return out.str();
     }
     ostringstream out; out << "invalid command: " << command;
     return out.str();

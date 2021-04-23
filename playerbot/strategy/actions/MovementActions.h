@@ -29,7 +29,7 @@ namespace ai
         void ClearIdleState();
         void UpdateMovementState();
         
-        void CreateWp(Player* wpOwner, float x, float y, float z, float o, uint32 entry);
+        void CreateWp(Player* wpOwner, float x, float y, float z, float o, uint32 entry, bool important = false);
         float GetAngle(const float x1, const float y1, const float x2, const float y2);
     };
 

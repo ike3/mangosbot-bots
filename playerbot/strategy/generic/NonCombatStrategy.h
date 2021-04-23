@@ -95,4 +95,12 @@ namespace ai
         virtual string getName() { return "debug rpg"; }
     };
 
+    class DebugSpellStrategy : public Strategy
+    {
+    public:
+        DebugSpellStrategy(PlayerbotAI* ai) : Strategy(ai) {}
+        virtual int GetType() { return STRATEGY_TYPE_NONCOMBAT; }
+        virtual string getName() { return "debug spell"; }
+    };
+
 }

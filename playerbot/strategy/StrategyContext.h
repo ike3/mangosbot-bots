@@ -69,6 +69,9 @@ namespace ai
             creators["collision"] = &StrategyContext::collision;
             creators["rpg"] = &StrategyContext::rpg;
 			creators["travel"] = &StrategyContext::travel;
+            creators["explore"] = &StrategyContext::explore;
+            creators["map"] = &StrategyContext::map;
+            creators["map full"] = &StrategyContext::map_full;
             creators["sit"] = &StrategyContext::sit;
             creators["mark rti"] = &StrategyContext::mark_rti;
             creators["ads"] = &StrategyContext::possible_ads;
@@ -83,6 +86,7 @@ namespace ai
             creators["debug"] = &StrategyContext::debug;
             creators["debug move"] = &StrategyContext::debug_move;
             creators["debug rpg"] = &StrategyContext::debug_rpg;
+            creators["debug spell"] = &StrategyContext::debug_spell;
             creators["rtsc"] = &StrategyContext::rtsc;
         }
 
@@ -121,12 +125,16 @@ namespace ai
         static Strategy* collision(PlayerbotAI* ai) { return new CollisionStrategy(ai); }
         static Strategy* rpg(PlayerbotAI* ai) { return new RpgStrategy(ai); }
 		static Strategy* travel(PlayerbotAI* ai) { return new TravelStrategy(ai); }
+        static Strategy* explore(PlayerbotAI* ai) { return new ExploreStrategy(ai); }
+        static Strategy* map(PlayerbotAI* ai) { return new MapStrategy(ai); }
+        static Strategy* map_full(PlayerbotAI* ai) { return new MapFullStrategy(ai); }
         static Strategy* sit(PlayerbotAI* ai) { return new SitStrategy(ai); }
         static Strategy* possible_ads(PlayerbotAI* ai) { return new PossibleAdsStrategy(ai); }
         static Strategy* attack_tagged(PlayerbotAI* ai) { return new AttackTaggedStrategy(ai); }
         static Strategy* debug(PlayerbotAI* ai) { return new DebugStrategy(ai); }
         static Strategy* debug_move(PlayerbotAI* ai) { return new DebugMoveStrategy(ai); }
         static Strategy* debug_rpg(PlayerbotAI* ai) { return new DebugRpgStrategy(ai); }
+        static Strategy* debug_spell(PlayerbotAI* ai) { return new DebugSpellStrategy(ai); }
         static Strategy* rtsc(PlayerbotAI* ai) { return new RTSCStrategy(ai); }
     };
 

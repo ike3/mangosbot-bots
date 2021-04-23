@@ -12,5 +12,6 @@ namespace ai
         SeeSpellAction(PlayerbotAI* ai) : MovementAction(ai, "see spell") {}
         virtual bool Execute(Event event);
     private:
+        Creature* CreateWps(Player* wpOwner, float x, float y, float z, float o, uint32 entry, Creature* lastWp, bool important = false);
     };
 }

@@ -6,6 +6,8 @@
 #include "../values/Formations.h"
 #include "../values/PositionValue.h"
 
+#include "MotionGenerators/PathFinder.h"
+
 using namespace ai;
 
 vector<string> split(const string &s, char delim);
@@ -77,6 +79,44 @@ bool GoAction::Execute(Event event)
             z = atof(coords[2].c_str());
         else
             z = bot->GetPositionZ();
+
+        if (ai->HasStrategy("debug move", BOT_STATE_NON_COMBAT))
+        {
+            
+            PathFinder path(bot);
+
+            path.calculate(x, y, z, false);
+
+            Vector3 end = path.getEndPosition();
+            Vector3 aend = path.getActualEndPosition();
+
+            PointsArray& points = path.getPath();
+            PathType type = path.getPathType();
+
+            ostringstream out;
+
+            out << x << ";" << y << ";" << z << " =";
+
+            out << "path is: ";
+
+            out << type;
+
+            out << " of length ";
+
+            out << points.size();
+
+            out << " with offset ";
+
+            out << (end - aend).length();
+
+
+            for (auto i : points)
+            {
+                CreateWp(bot, i.x, i.y, i.z, GetAngle(x, y, i.x, i.y), 11144);
+            }
+
+            ai->TellMaster(out);            
+        }
 
         if (bot->IsWithinLOS(x, y, z))
             return MoveNear(bot->GetMapId(), x, y, z, 0);
