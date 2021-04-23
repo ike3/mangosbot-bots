@@ -210,6 +210,9 @@ void PlayerbotAI::UpdateAIInternal(uint32 elapsed)
 
 void PlayerbotAI::HandleTeleportAck()
 {
+    if (isRealPlayer())
+        return;
+
 	bot->GetMotionMaster()->Clear(true);
 	bot->InterruptMoving(1);
 	if (bot->IsBeingTeleportedNear())
