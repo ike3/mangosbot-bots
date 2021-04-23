@@ -116,12 +116,21 @@ public:
     bool syncLevelWithPlayers;
     uint32 tweakValue; //Debugging config
 
+    std::mutex m_logMtx;
+    string logFileName[10];
+    bool logFileOpen[10] = { false };
+    FILE* logFile[10];
+
     int commandServerPort;
     bool perfMonEnabled;
 
     std::string GetValue(std::string name);
     void SetValue(std::string name, std::string value);
 
+    std::string GetTimestampStr();
+    bool hasLog(uint32);
+    void openLog(uint32, char const* mode);
+    void log(uint32 logId, const char* str, ...);
 private:
     Config config;
 };

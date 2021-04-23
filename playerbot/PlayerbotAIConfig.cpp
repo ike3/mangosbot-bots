@@ -11,6 +11,8 @@
 
 #include "TravelMgr.h"
 
+#include <iostream>
+
 using namespace std;
 
 INSTANTIATE_SINGLETON_1(PlayerbotAIConfig);
@@ -213,6 +215,12 @@ bool PlayerbotAIConfig::Initialize()
             }
         }
     }
+
+    for (uint32 log = 0; log < 10; ++log)
+    {
+        ostringstream os; os << "AiPlayerbot.LogFile." << log;
+        logFileName[log] = config.GetStringDefault(os.str().c_str(), "");
+    }
     
 
     randomBotAccountPrefix = config.GetStringDefault("AiPlayerbot.RandomBotAccountPrefix", "rndbot");
@@ -380,4 +388,77 @@ void PlayerbotAIConfig::SetValue(string name, string value)
 
     else if (name == "IterationsPerTick")
         out >> iterationsPerTick;
+}
+
+std::string PlayerbotAIConfig::GetTimestampStr()
+{
+    time_t t = time(nullptr);
+    tm* aTm = localtime(&t);
+    //       YYYY   year
+    //       MM     month (2 digits 01-12)
+    //       DD     day (2 digits 01-31)
+    //       HH     hour (2 digits 00-23)
+    //       MM     minutes (2 digits 00-59)
+    //       SS     seconds (2 digits 00-59)
+    char buf[20];
+    snprintf(buf, 20, "%04d-%02d-%02d %02d-%02d-%02d", aTm->tm_year + 1900, aTm->tm_mon + 1, aTm->tm_mday, aTm->tm_hour, aTm->tm_min, aTm->tm_sec);
+    return std::string(buf);
+}
+
+bool PlayerbotAIConfig::hasLog(uint32 logId)
+{
+    if (logId > 9)
+        return false;
+
+    std::string logfn = logFileName[logId];
+    if (logfn.empty())
+        return false;
+
+    return true;
+}
+
+void PlayerbotAIConfig::openLog(uint32 logId, char const* mode)
+{
+    if (!hasLog(logId))
+        return;   
+
+    std::string logfn = logFileName[logId];
+
+    if (logFileOpen[logId])
+        fclose(logFile[logId]);
+
+    string m_logsDir = sConfig.GetStringDefault("LogsDir");
+    if (!m_logsDir.empty())
+    {
+        if ((m_logsDir.at(m_logsDir.length() - 1) != '/') && (m_logsDir.at(m_logsDir.length() - 1) != '\\'))
+            m_logsDir.append("/");
+    }
+
+
+    logFile[logId] = fopen((m_logsDir + logfn).c_str(), mode);
+    logFileOpen[logId] = true;
+}
+
+void PlayerbotAIConfig::log(uint32 logId, const char* str, ...)
+{
+    if (!str)
+        return;
+
+    std::lock_guard<std::mutex> guard(m_logMtx);
+
+    if (!logFileOpen[logId] && !logFileName[logId].empty())
+        openLog(logId, "a");
+       
+
+    if (logFileOpen[logId])
+    {
+        va_list ap;
+        va_start(ap, str);
+        vfprintf(logFile[logId], str, ap);
+        fprintf(logFile[logId], "\n");
+        va_end(ap);
+        fflush(logFile[logId]);
+    }
+
+    fflush(stdout);
 }
