@@ -139,6 +139,7 @@ namespace ai
             creators["mail"] = &ChatActionContext::mail;
             creators["go"] = &ChatActionContext::go;
             creators["debug"] = &ChatActionContext::debug;
+            creators["cdebug"] = &ChatActionContext::debug;
             creators["cs"] = &ChatActionContext::cs;
             creators["wts"] = &ChatActionContext::wts;
             creators["hire"] = &ChatActionContext::hire;
