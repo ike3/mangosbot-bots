@@ -426,17 +426,17 @@ void TravelTarget::copyTarget(TravelTarget* target) {
 }
 
 void TravelTarget::addVisitors() {
-    if (!isVisitor)
+    if (!visitor)
     {
         wPosition->addVisitor();
         tDestination->addVisitor();
     }
 
-    isVisitor = true;
+    visitor = true;
 }
 
 void TravelTarget::releaseVisitors() {
-    if (isVisitor)
+    if (visitor)
     {
         if (tDestination)
             tDestination->remVisitor();
@@ -444,7 +444,7 @@ void TravelTarget::releaseVisitors() {
             wPosition->remVisitor();
     }
 
-    isVisitor = false;
+    visitor = false;
 }
 
 void TravelTarget::setStatus(TravelStatus status) {
@@ -471,6 +471,9 @@ void TravelTarget::setStatus(TravelStatus status) {
 bool TravelTarget::isActive() {
     if (m_status == TRAVEL_STATUS_NONE || m_status == TRAVEL_STATUS_EXPIRED || m_status == TRAVEL_STATUS_PREPARE)
         return false;
+
+    if (isTraveling() && forced)
+        return true;
 
     if ((statusTime > 0 && startTime + statusTime < WorldTimer::getMSTime()))
     {
@@ -500,7 +503,7 @@ bool TravelTarget::isTraveling() {
     if (m_status != TRAVEL_STATUS_TRAVEL)
         return false;
 
-    if (!tDestination->isActive(bot)) //Target has become invalid. Stop.
+    if (!tDestination->isActive(bot) && !forced) //Target has become invalid. Stop.
     {
         setStatus(TRAVEL_STATUS_COOLDOWN);
         return false;

@@ -341,6 +341,7 @@ namespace ai
         void setExpireIn(uint32 expireMs) { statusTime = getExpiredTime() + expireMs; }
         void incRetry(bool isMove) { if (isMove) moveRetryCount++; else extendRetryCount++; }
         void setRetry(bool isMove, uint32 newCount = 0) { if (isMove) moveRetryCount = newCount; else extendRetryCount = newCount; }
+        void setForced(bool forced1) { forced = forced1; }
 
         void copyTarget(TravelTarget* target);
         void addVisitors();
@@ -368,15 +369,17 @@ namespace ai
         TravelState getTravelState();
 
 
-        bool isGroupCopy() { return groupCopy; };
+        bool isGroupCopy() { return groupCopy; }
+        bool isForced() { return forced; }
     protected:
         TravelStatus m_status = TRAVEL_STATUS_NONE;
 
         uint32 startTime = WorldTimer::getMSTime();
         uint32 statusTime = 0;
 
+        bool forced = false;
         bool groupCopy = false;
-        bool isVisitor = true;
+        bool visitor = true;
 
         uint32 extendRetryCount = 0;
         uint32 moveRetryCount = 0;

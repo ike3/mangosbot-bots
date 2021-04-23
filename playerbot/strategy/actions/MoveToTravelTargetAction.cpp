@@ -47,7 +47,7 @@ bool MoveToTravelTargetAction::Execute(Event event)
     else
         canMove = MoveTo(mapId, x, y, z, false, false);
 
-    if (!canMove)
+    if (!canMove && !target->isForced())
     {
         target->incRetry(true);
 
