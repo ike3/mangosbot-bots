@@ -60,6 +60,24 @@ WorldPosition WorldPosition::lastInRange(vector<WorldPosition> list, float minDi
     return rPoint;
 };
 
+WorldPosition WorldPosition::firstOutRange(vector<WorldPosition> list, float minDist = -1, float maxDist = -1)
+{
+    WorldPosition rPoint;
+
+    for (auto& p : list)
+    {
+        if (minDist > 0 && distance(p) < minDist)
+            return p;
+
+        if (maxDist > 0 && distance(p) > maxDist)
+            return p;
+
+        rPoint = p;
+    }
+
+    return rPoint;
+}
+
 //Returns true if (on the x-y plane) the position is inside the three points.
 bool WorldPosition::isInside(WorldPosition* p1, WorldPosition* p2, WorldPosition* p3)
 {
@@ -1529,11 +1547,11 @@ void TravelMgr::LoadQuestTravelTable()
     }
 
     bool preloadNodePaths = false;             //Calculate paths using pathfinder.
-    bool preloadUnlinkedPaths = true;         //Try to connect points currently unlinked.
-    bool preloadReLinkFullyLinked = false;    //Retry nodes that are fully linked.
+    bool preloadUnlinkedPaths = false;         //Try to connect points currently unlinked.
+    bool preloadReLinkFullyLinked = true;     //Retry nodes that are fully linked.
     bool preloadWorldPaths = true;            //Try to load paths in overworld.
-    bool preloadInstancePaths = true;         //Try to load paths in instances.
-    bool preloadSubPrint = true;              //Print output every 2%.
+    bool preloadInstancePaths = false;         //Try to load paths in instances.
+    bool preloadSubPrint = false;              //Print output every 2%.
 
     if (preloadNodePaths)
     {

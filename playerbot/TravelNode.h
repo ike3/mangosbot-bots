@@ -99,6 +99,7 @@
 
         void pathNode(TravelNode* node, vector<WorldPosition> path) { if (this != node) { paths.insert_or_assign(node, path); } }
         bool hasPathTo(TravelNode* node) { return paths.find(node) != paths.end(); }
+        bool hasCompletePathto(TravelNode* node) { return hasPathTo(node) && !getPathTo(node).empty() ? getPathTo(node).back() == *node->getPosition() : false; }
         float getPathLength(vector<WorldPosition>& ppath);
         vector<WorldPosition> getPathTo(TravelNode* node) { for (auto& path : paths) { if (path.first == node) return path.second; }; vector<WorldPosition> retVec;  return retVec; }
         float getPathLength(TravelNode* node) { return getPathLength(getPathTo(node)); };

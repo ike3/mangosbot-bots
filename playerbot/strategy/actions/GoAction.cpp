@@ -31,7 +31,7 @@ bool GoAction::Execute(Event event)
         return true;
     }
 
-    if (param.find("travel") != string::npos)
+    if (param.find("travel") != string::npos && param.size()> 7)
     {
         WorldPosition* botPos = &WorldPosition(bot);
 

@@ -49,7 +49,7 @@ uint32 TravelNode::doPathStep(WorldPosition startPos, WorldPosition endPos, Unit
     else
 #ifdef IKE_PATHFINDER
     {
-        PathFinder path(startPos.getMapId(), startPos.getMapEntry()->Instanceable() ? startPos.getInstanceId() : 0);
+        PathFinder path(startPos.getMapId(), 0); // startPos.getMapEntry()->Instanceable() ? startPos.getInstanceId() : 0);
 
         path.setAreaCost(8, 10.0f);
         path.setAreaCost(11, 5.0f);
@@ -260,23 +260,22 @@ bool TravelNode::canPathNode(WorldPosition* startPos, WorldPosition* endPos, Uni
 
 bool TravelNode::canPathNode(TravelNode* endNode, Unit* bot, vector<WorldPosition>& ppath) 
 { 
+    WorldPosition * startPos = getPosition();
     if (hasPathTo(endNode))
     {
         ppath = getPathTo(endNode);
-        return true;
-    }
 
-    //if (!bot || bot->GetMapId() != getMapId() || bot->GetMapId() != endNode->getMapId())
-    //    return false;
+        if (hasCompletePathto(endNode))
+            return true;
+ 
+        startPos = &ppath.back();
+        ppath.pop_back();
+    }
 
     WorldPosition* endPos = endNode->getPosition();
 
-    //if (!point.getMap()->IsLoaded(point.getX(), point.getY()) || !endPos->getMap()->IsLoaded(endPos->getX(), endPos->getY()))
-    //    return false;
-
-    bool canPath = canPathNode(endNode->getPosition(), bot, ppath);
-    if(canPath)
-        pathNode(endNode, ppath);
+    bool canPath = canPathNode(startPos, endNode->getPosition(), bot, ppath);
+    pathNode(endNode, ppath);
     return canPath; 
 }
 
@@ -497,13 +496,15 @@ TravelNode* TravelNodeRoute::getNextNode(Unit* bot, WorldPosition* startPosition
         isTeleport = true;
         nextNode = nodes[1];
     }
-
     if (paths.empty())
     {
         if (isTeleport)
             longPath.push_back(*nodes[0]->getPosition());
         else
-            longPath.push_back(*nextNode->getPosition());
+        {
+            //longPath.push_back(*nextNode->getPosition());
+            nextNode = nodes[1];
+        }
     }
 
     //We now check if the bot is perhaps already on or near the route somewhere.

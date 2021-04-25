@@ -60,6 +60,7 @@ namespace ai
         WorldPosition closestSq(vector<WorldPosition> list) { return *std::min_element(list.begin(), list.end(), [this](WorldPosition i, WorldPosition j) {return this->sqDistance(i) < this->sqDistance(j); }); }
 
         WorldPosition lastInRange(vector<WorldPosition> list, float minDist = -1, float maxDist = -1);
+        WorldPosition firstOutRange(vector<WorldPosition> list, float minDist = -1, float maxDist = -1);
 
         float mSign(WorldPosition* p1, WorldPosition* p2) {return(getX() - p2->getX()) * (p1->getY() - p2->getY()) - (p1->getX() - p2->getX()) * (getY() - p2->getY());}
         bool isInside(WorldPosition* p1, WorldPosition* p2, WorldPosition* p3);
