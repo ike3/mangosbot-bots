@@ -55,7 +55,13 @@ bool GoAction::Execute(Event event)
         {
             TravelDestination* dest = *std::min_element(dests.begin(), dests.end(), [botPos](TravelDestination* i, TravelDestination* j) {return i->distanceTo(botPos) < j->distanceTo(botPos); });
 
-            target->setTarget(dest, dest->nextPoint(botPos, true).front());
+            vector <WorldPosition*> points = dest->nextPoint(botPos, true);
+
+
+            if (points.empty())
+                return false;
+
+            target->setTarget(dest, points.front());
             target->setForced(true);
 
             ostringstream out; out << "Traveling to " << dest->getTitle();

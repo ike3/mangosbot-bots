@@ -2,7 +2,6 @@
 #include "../../playerbot.h"
 #include "NonCombatStrategy.h"
 #include "../value.h"
-#include <playerbot/strategy/values/LastMovementValue.h>
 
 using namespace ai;
 

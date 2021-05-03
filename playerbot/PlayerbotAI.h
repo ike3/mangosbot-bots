@@ -326,6 +326,7 @@ public:
     float GetRange(string type);
 
     static ReputationRank GetFactionReaction(FactionTemplateEntry const* thisTemplate, FactionTemplateEntry const* otherTemplate);
+    static bool AddAura(Unit* unit, uint32 spellId);
     ReputationRank getReaction(FactionTemplateEntry const* factionTemplate) { return GetFactionReaction(bot->GetFactionTemplateEntry(), factionTemplate);}
     
 private:
@@ -345,7 +346,7 @@ public:
     //Returns a semi-random (cycling) number that is fixed for each bot.
     uint32 GetFixedBotNumer(BotTypeNumber typeNumber, uint32 maxNum = 100, uint32 cyclePerMin = 1); 
 
-    GrouperType PlayerbotAI::GetGrouperType();
+    GrouperType GetGrouperType();
     bool HasPlayerNearby(WorldPosition* pos, float range = sPlayerbotAIConfig.reactDistance);
     bool HasPlayerNearby(float range = sPlayerbotAIConfig.reactDistance) {return HasPlayerNearby(&WorldPosition(bot), range);};
     bool HasManyPlayersNearby(uint32 trigerrValue = 20, float range = sPlayerbotAIConfig.sightDistance);

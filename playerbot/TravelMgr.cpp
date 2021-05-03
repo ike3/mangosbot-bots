@@ -1934,7 +1934,7 @@ vector<WorldPosition*> TravelMgr::getNextPoint(WorldPosition* center, vector<Wor
     //List of weights based on distance (Gausian curve that starts at 100 and lower to 1 at 1000 distance)
     vector<uint32> weights;
 
-    std::transform(points.begin(), points.end(), std::back_inserter(weights), [center](WorldPosition* point) { return 1000 * exp(-1 * pow(point->distance(center) / 400.0, 2)); });
+    std::transform(points.begin(), points.end(), std::back_inserter(weights), [center](WorldPosition* point) { return 1 + 1000 * exp(-1 * pow(point->distance(center) / 400.0, 2)); });
 
     //Total sum of all those weights.
     uint32 sum = std::accumulate(weights.begin(), weights.end(), 0);
