@@ -118,6 +118,8 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
 
     if (totalDistance < minDist)
     {
+        if(lastMove.lastMoveShort.distance(endPosition) < maxDistChange)
+            AI_VALUE(LastMovement&, "last movement").setLong(WorldPosition());
         bot->StopMoving();
         return false;
     }
@@ -196,9 +198,12 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
                     //'Wait and get on' transport code should go here.
                     if (isTeleport && (longPath.size() == 0 || longPath.back().distance(&startPosition) < 5.0f))
                     {
-                        if (ai->HasStrategy("debug move", BOT_STATE_NON_COMBAT))
-                            ai->TellMasterNoFacing("Teleporting to" + nextNode->getName());
-                        return bot->TeleportTo(nextNode->getMapId(), nextNode->getX(), nextNode->getY(), nextNode->getZ(), nextNode->getO());
+                        if (!ai->isRealPlayer() || startNode->doTransport(nextNode))
+                        {
+                            if (ai->HasStrategy("debug move", BOT_STATE_NON_COMBAT))
+                                ai->TellMasterNoFacing("Teleporting to" + nextNode->getName());
+                            return bot->TeleportTo(nextNode->getMapId(), nextNode->getX(), nextNode->getY(), nextNode->getZ(), nextNode->getO());
+                        }
                     }
 
                     //We can skip ahead on the path.
@@ -295,6 +300,11 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
         movePosition = startPosition.lastInRange(movePath, -1.0, maxDist);
 
         AI_VALUE(LastMovement&, "last movement").setLong(endPosition);
+        AI_VALUE(LastMovement&, "last movement").setPath(movePath);
+    }
+    else
+    {
+        AI_VALUE(LastMovement&, "last movement").setLong(movePosition);
         AI_VALUE(LastMovement&, "last movement").setPath(movePath);
     }
 
