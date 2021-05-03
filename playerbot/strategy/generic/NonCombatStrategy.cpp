@@ -1,6 +1,8 @@
 #include "botpch.h"
 #include "../../playerbot.h"
 #include "NonCombatStrategy.h"
+#include "../value.h"
+#include <playerbot/strategy/values/LastMovementValue.h>
 
 using namespace ai;
 
@@ -41,8 +43,12 @@ void NonCombatStrategy::InitTriggers(std::list<TriggerNode*>& triggers)
     triggers.push_back(new TriggerNode(
         "at dark portal outland",
         NextAction::array(0, new NextAction("move from dark portal", 1.0f), NULL)));
-}
 
+    triggers.push_back(new TriggerNode(
+        "need world buff",
+        NextAction::array(0, new NextAction("world buff", 1.0f), NULL)));
+
+}
 
 void LfgStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 {

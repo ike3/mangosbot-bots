@@ -8,6 +8,7 @@
 #include "RpgTriggers.h"
 #include "TravelTriggers.h"
 #include "RtiTriggers.h"
+#include "CureTriggers.h"
 
 namespace ai
 {
@@ -133,6 +134,8 @@ namespace ai
             creators["near dark portal"] = &TriggerContext::near_dark_portal;
             creators["at dark portal azeroth"] = &TriggerContext::at_dark_portal_azeroth;
             creators["at dark portal outland"] = &TriggerContext::at_dark_portal_outland;
+
+            creators["need world buff"] = &TriggerContext::need_world_buff;
         }
 
     private:
@@ -229,6 +232,7 @@ namespace ai
         static Trigger* random_bot_update_trigger(PlayerbotAI* ai) { return new RandomBotUpdateTrigger(ai); }
         static Trigger* no_non_bot_players_around(PlayerbotAI* ai) { return new NoNonBotPlayersAroundTrigger(ai); }
         static Trigger* new_player_nearby(PlayerbotAI* ai) { return new NewPlayerNearbyTrigger(ai); }
-
+        static Trigger* need_world_buff(PlayerbotAI* ai) { return new NeedWorldBuffTrigger(ai); }
+        
     };
 };

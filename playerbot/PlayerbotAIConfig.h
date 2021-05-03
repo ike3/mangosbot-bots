@@ -121,11 +121,23 @@ public:
     bool logFileOpen[10] = { false };
     FILE* logFile[10];
 
+    struct worldBuff{
+        uint32 spellId;
+        uint32 factionId = 0;
+        uint32 classId = 0;
+        uint32 minLevel = 0;
+        uint32 maxLevel = 0;
+    };
+
+    vector<worldBuff> worldBuffs;
+
     int commandServerPort;
     bool perfMonEnabled;
 
     std::string GetValue(std::string name);
     void SetValue(std::string name, std::string value);
+
+    void loadWorldBuf(Config* config, uint32 factionId, uint32 classId, uint32 minLevel, uint32 maxLevel);
 
     std::string GetTimestampStr();
     bool hasLog(uint32);
