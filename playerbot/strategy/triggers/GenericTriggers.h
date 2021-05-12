@@ -535,10 +535,10 @@ namespace ai
         virtual bool IsActive();
     };
 
-    class EnemyPlayerIsAttacking : public Trigger
+    class EnemyPlayerNear : public Trigger
     {
     public:
-        EnemyPlayerIsAttacking(PlayerbotAI* ai) : Trigger(ai, "enemy player is attacking") {}
+        EnemyPlayerNear(PlayerbotAI* ai) : Trigger(ai, "enemy player near") {}
 
     public:
         virtual bool IsActive();

@@ -230,11 +230,12 @@ bool NotDpsAoeTargetActiveTrigger::IsActive()
     return dps && target != dps;
 }
 
-bool EnemyPlayerIsAttacking::IsActive()
+bool EnemyPlayerNear::IsActive()
 {
     Unit* enemyPlayer = AI_VALUE(Unit*, "enemy player target");
     Unit* target = AI_VALUE(Unit*, "current target");
-    return enemyPlayer && !target;
+    Unit* self = AI_VALUE(Unit*, "self target");
+    return (enemyPlayer && (!target || target == self || !target->IsPlayer()));
 }
 
 bool IsSwimmingTrigger::IsActive()

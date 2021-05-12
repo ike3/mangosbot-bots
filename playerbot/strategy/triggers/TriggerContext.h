@@ -56,7 +56,7 @@ namespace ai
             creators["not dps target active"] = &TriggerContext::not_dps_target_active;
             creators["not dps aoe target active"] = &TriggerContext::not_dps_aoe_target_active;
             creators["has nearest adds"] = &TriggerContext::has_nearest_adds;
-            creators["enemy player is attacking"] = &TriggerContext::enemy_player_is_attacking;
+            creators["enemy player near"] = &TriggerContext::enemy_player_near;
 
             creators["tank aoe"] = &TriggerContext::TankAoe;
             creators["lose aggro"] = &TriggerContext::LoseAggro;
@@ -204,7 +204,7 @@ namespace ai
         static Trigger* not_dps_target_active(PlayerbotAI* ai) { return new NotDpsTargetActiveTrigger(ai); }
         static Trigger* not_dps_aoe_target_active(PlayerbotAI* ai) { return new NotDpsAoeTargetActiveTrigger(ai); }
         static Trigger* has_nearest_adds(PlayerbotAI* ai) { return new HasNearestAddsTrigger(ai); }
-        static Trigger* enemy_player_is_attacking(PlayerbotAI* ai) { return new EnemyPlayerIsAttacking(ai); }
+        static Trigger* enemy_player_near(PlayerbotAI* ai) { return new EnemyPlayerNear(ai); }
         static Trigger* Random(PlayerbotAI* ai) { return new RandomTrigger(ai, "random", 20); }
         static Trigger* seldom(PlayerbotAI* ai) { return new RandomTrigger(ai, "seldom", 300); }
         static Trigger* often(PlayerbotAI* ai) { return new RandomTrigger(ai, "often", 5); }
