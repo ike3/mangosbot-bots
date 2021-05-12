@@ -552,13 +552,13 @@ void PlayerbotAI::DoNextAction()
 
     Group *group = bot->GetGroup();
     // test BG master set
-    if ((!master || master->GetPlayerbotAI()) && group)
+    if ((!master || master->GetPlayerbotAI()) && group && !bot->InBattleGround())
     {
         for (GroupReference *gref = group->GetFirstMember(); gref; gref = gref->next())
         {
             Player* member = gref->getSource();
             PlayerbotAI* ai = bot->GetPlayerbotAI();
-            if (member && member->IsInWorld() && (member->IsInGroup(bot, true) && !group->IsLeader(bot->GetObjectGuid())) && (!master || !member->GetPlayerbotAI()) && (!master || master->GetPlayerbotAI() || (bot->InBattleGround() && !urand(0, 4))))
+            if (member && member->IsInWorld() && (member->IsInGroup(bot, true)) && (!master || !member->GetPlayerbotAI()))
             {
                 ai->SetMaster(member);
                 ai->ResetStrategies();
