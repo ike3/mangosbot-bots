@@ -230,7 +230,6 @@ void PlayerbotAI::HandleTeleportAck()
 	else if (bot->IsBeingTeleportedFar())
 	{
         bot->GetSession()->HandleMoveWorldportAckOpcode();
-		SetNextCheckDelay(sPlayerbotAIConfig.globalCoolDown);
 	}
 
     SetNextCheckDelay(sPlayerbotAIConfig.globalCoolDown);
@@ -474,7 +473,10 @@ int32 PlayerbotAI::CalculateGlobalCooldown(uint32 spellid)
 #endif
 
 #ifdef CMANGOS
-    return sPlayerbotAIConfig.globalCoolDown;
+    if (!bot->IsSpellReady(spellid))
+        return sPlayerbotAIConfig.globalCoolDown;
+
+    return sPlayerbotAIConfig.reactDelay;
 #endif
 }
 
@@ -1052,6 +1054,10 @@ bool PlayerbotAI::CanCastSpell(uint32 spellid, Unit* target, uint8 effectMask, b
 
 #ifdef MANGOS
     if (bot->HasSpellCooldown(spellid))
+        return false;
+#endif
+#ifdef CMANGOS
+    if (!bot->IsSpellReady(spellid))
         return false;
 #endif
 
