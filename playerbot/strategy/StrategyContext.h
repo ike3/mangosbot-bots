@@ -35,6 +35,9 @@
 #include "generic/RpgStrategy.h"
 #include "generic/TravelStrategy.h"
 #include "generic/RTSCStrategy.h"
+#include "generic/DebugStrategy.h"
+#include "generic/BattlegroundStrategy.h"
+#include "generic/LfgStrategy.h"
 
 namespace ai
 {
