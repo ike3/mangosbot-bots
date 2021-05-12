@@ -529,24 +529,29 @@ void PlayerbotAI::DoNextAction()
         return;
     }
 
+    // change engine if in combat
+    if (currentEngine != engines[BOT_STATE_COMBAT] && sServerFacade.IsInCombat(bot) && sServerFacade.IsAlive(bot))
+    {
+        ChangeEngine(BOT_STATE_COMBAT);
+        return;
+    }
+
+    // change engine if just ressed
+    if (currentEngine == engines[BOT_STATE_DEAD] && sServerFacade.IsAlive(bot))
+    {
+        ChangeEngine(BOT_STATE_NON_COMBAT);
+        return;
+    }
+
     bool minimal = !AllowActive(ALL_ACTIVITY);
 
-    if (IsActive() && !bot->GetGroup() && minimal && urand(0, 4))
+    if (IsActive() && minimal && urand(0, 4))
     {
         SetNextCheckDelay(sPlayerbotAIConfig.passiveDelay / 2);
         return;
     }
 
     currentEngine->DoNextAction(NULL, 0, minimal);
-
-    if (currentEngine != engines[BOT_STATE_DEAD] && !sServerFacade.IsAlive(bot))
-        ChangeEngine(BOT_STATE_DEAD);
-
-    if (currentEngine == engines[BOT_STATE_DEAD] && sServerFacade.IsAlive(bot))
-        ChangeEngine(BOT_STATE_NON_COMBAT);
-
-    if ((nextAICheckDelay > 2000) && sServerFacade.IsInCombat(bot))
-        SetNextCheckDelay(sPlayerbotAIConfig.reactDelay);
 
     if (minimal)
     {
