@@ -232,6 +232,8 @@ void PlayerbotAI::HandleTeleportAck()
         bot->GetSession()->HandleMoveWorldportAckOpcode();
 		SetNextCheckDelay(sPlayerbotAIConfig.globalCoolDown);
 	}
+
+    SetNextCheckDelay(sPlayerbotAIConfig.globalCoolDown);
 }
 
 void PlayerbotAI::Reset()
