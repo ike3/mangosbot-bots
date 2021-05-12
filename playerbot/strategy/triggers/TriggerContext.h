@@ -5,6 +5,7 @@
 #include "LootTriggers.h"
 #include "../triggers/GenericTriggers.h"
 #include "LfgTriggers.h"
+#include "PvpTriggers.h"
 #include "RpgTriggers.h"
 #include "TravelTriggers.h"
 #include "RtiTriggers.h"
