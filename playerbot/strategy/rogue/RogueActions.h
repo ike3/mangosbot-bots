@@ -25,9 +25,10 @@ namespace ai
     public:
         CastStealthAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "stealth") {}
         virtual string GetTargetName() { return "self target"; }
-        virtual bool isPossible()
+        virtual bool isUseful()
         {
-            return !ai->HasAura(23505, bot) && !ai->HasAura(24378, bot);
+            // do not use with WSG flag
+            return !ai->HasAura(23333, bot) && !ai->HasAura(23335, bot);
         }
         virtual bool Execute(Event event)
         {
@@ -94,6 +95,11 @@ namespace ai
 	{
 	public:
 		CastVanishAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "vanish") {}
+        virtual bool isUseful()
+        {
+            // do not use with WSG flag
+            return !ai->HasAura(23333, bot) && !ai->HasAura(23335, bot);
+        }
 	};
 
 	class CastBlindAction : public CastDebuffSpellAction
