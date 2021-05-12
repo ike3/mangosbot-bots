@@ -1591,6 +1591,17 @@ bool PlayerbotAI::AllowActive(ActivityType activityType)
         if (!GetMaster()->GetPlayerbotAI() || GetMaster()->GetPlayerbotAI()->isRealPlayer())
             return true;
 
+    Group* group = bot->GetGroup();
+    if (group)
+    {
+        for (GroupReference *gref = group->GetFirstMember(); gref; gref = gref->next())
+        {
+            Player* member = gref->getSource();
+            if (member && (!member->GetPlayerbotAI() || (member->GetPlayerbotAI() && member->GetPlayerbotAI()->hasRealPlayerMaster())))
+                return true;
+        }
+    }
+
     if (bot->InBattleGround()) //In battle ground. Always active.
         return true;
 
