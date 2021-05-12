@@ -77,7 +77,7 @@ bool AttackAction::Attack(Unit* target)
         return false;
     }
 
-    if (bot->IsMounted() && bot->IsWithinLOSInMap(target) && (sServerFacade.GetDistance2d(bot, target) < 20.0f))
+    if (bot->IsMounted() && bot->IsWithinLOSInMap(target) && (sServerFacade.GetDistance2d(bot, target) < 40.0f))
     {
         WorldPacket emptyPacket;
         bot->GetSession()->HandleCancelMountAuraOpcode(emptyPacket);
