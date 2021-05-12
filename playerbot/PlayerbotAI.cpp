@@ -1594,6 +1594,9 @@ bool PlayerbotAI::AllowActive(ActivityType activityType)
     if (bot->InBattleGround()) //In battle ground. Always active.
         return true;
 
+    if (bot->InBattleGroundQueue()) //In bg queue. Speed up bg queue/join.
+        return true;
+
     if (activityType == GRIND_ACTIVITY || activityType == ALL_ACTIVITY) //Is in combat. Defend yourself.
         if (sServerFacade.IsInCombat(bot))
             return true;
