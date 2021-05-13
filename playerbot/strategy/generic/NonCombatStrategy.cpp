@@ -49,21 +49,6 @@ void NonCombatStrategy::InitTriggers(std::list<TriggerNode*>& triggers)
 
 }
 
-void LfgStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
-{
-    triggers.push_back(new TriggerNode(
-        "often",
-        NextAction::array(0, new NextAction("lfg join", relevance), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "seldom",
-        NextAction::array(0, new NextAction("lfg leave", relevance), NULL)));
-}
-
-LfgStrategy::LfgStrategy(PlayerbotAI* ai) : PassTroughStrategy(ai)
-{
-}
-
 void CollisionStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
