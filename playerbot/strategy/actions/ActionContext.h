@@ -33,7 +33,7 @@
 #include "RpgAction.h"
 #include "TravelAction.h"
 #include "RtiAction.h"
-#include "BattlegroundJoinAction.h"
+#include "BattlegroundTactics.h"
 #include "CheckMountStateAction.h"
 #include "ChangeTalentsAction.h"
 #include "AutoLearnSpellAction.h"
@@ -96,7 +96,7 @@ namespace ai
             creators["sit"] = &ActionContext::sit;
             creators["attack anything"] = &ActionContext::attack_anything;
             creators["attack least hp target"] = &ActionContext::attack_least_hp_target;
-            creators["attack enemy player"] = &ActionContext::enemy_player_target;
+            creators["attack enemy player"] = &ActionContext::attack_enemy_player;
             creators["emote"] = &ActionContext::emote;
             creators["talk"] = &ActionContext::talk;
             creators["suggest what to do"] = &ActionContext::suggest_what_to_do;
@@ -135,6 +135,18 @@ namespace ai
             creators["move to dark portal"] = &ActionContext::move_to_dark_portal;
             creators["move from dark portal"] = &ActionContext::move_from_dark_portal;
             creators["use dark portal azeroth"] = &ActionContext::use_dark_portal_azeroth;
+
+            // BG Tactics
+            creators["bg tactics"] = &ActionContext::bg_tactics;
+            creators["bg move to start"] = &ActionContext::bg_move_to_start;
+            creators["bg move to objective"] = &ActionContext::bg_move_to_objective;
+            creators["bg select objective"] = &ActionContext::bg_select_objective;
+            creators["bg check objective"] = &ActionContext::bg_check_objective;
+            creators["bg attack fc"] = &ActionContext::bg_attack_fc;
+            creators["bg protect fc"] = &ActionContext::bg_protect_fc;
+            creators["bg use buff"] = &ActionContext::bg_use_buff;
+            creators["attack enemy flag carrier"] = &ActionContext::attack_enemy_fc;
+            creators["bg check flag"] = &ActionContext::bg_check_flag;
         }
 
     private:
@@ -186,7 +198,7 @@ namespace ai
         static Action* suggest_trade(PlayerbotAI* ai) { return new SuggestTradeAction(ai); }
         static Action* attack_anything(PlayerbotAI* ai) { return new AttackAnythingAction(ai); }
         static Action* attack_least_hp_target(PlayerbotAI* ai) { return new AttackLeastHpTargetAction(ai); }
-        static Action* enemy_player_target(PlayerbotAI* ai) { return new AttackEnemyPlayerAction(ai); }
+        static Action* attack_enemy_player(PlayerbotAI* ai) { return new AttackEnemyPlayerAction(ai); }
         static Action* stay(PlayerbotAI* ai) { return new StayAction(ai); }
         static Action* sit(PlayerbotAI* ai) { return new SitAction(ai); }
         static Action* runaway(PlayerbotAI* ai) { return new RunAwayAction(ai); }
@@ -223,6 +235,18 @@ namespace ai
         static Action* move_to_dark_portal(PlayerbotAI* ai) { return new MoveToDarkPortalAction(ai); }
         static Action* use_dark_portal_azeroth(PlayerbotAI* ai) { return new DarkPortalAzerothAction(ai); }
         static Action* move_from_dark_portal(PlayerbotAI* ai) { return new MoveFromDarkPortalAction(ai); }
+
+        // BG Tactics
+        static Action* bg_tactics(PlayerbotAI* ai) { return new BGTactics(ai); }
+        static Action* bg_move_to_start(PlayerbotAI* ai) { return new BGTactics(ai, "move to start"); }
+        static Action* bg_move_to_objective(PlayerbotAI* ai) { return new BGTactics(ai, "move to objective"); }
+        static Action* bg_select_objective(PlayerbotAI* ai) { return new BGTactics(ai, "select objective"); }
+        static Action* bg_check_objective(PlayerbotAI* ai) { return new BGTactics(ai, "check objective"); }
+        static Action* bg_attack_fc(PlayerbotAI* ai) { return new BGTactics(ai, "attack fc"); }
+        static Action* bg_protect_fc(PlayerbotAI* ai) { return new BGTactics(ai, "protect fc"); }
+        static Action* attack_enemy_fc(PlayerbotAI* ai) { return new AttackEnemyFlagCarrierAction(ai); }
+        static Action* bg_use_buff(PlayerbotAI* ai) { return new BGTactics(ai, "use buff"); }
+        static Action* bg_check_flag(PlayerbotAI* ai) { return new BGTactics(ai, "check flag"); }
     };
 
 };

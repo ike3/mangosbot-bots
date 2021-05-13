@@ -24,7 +24,6 @@
 #include "SecurityCheckAction.h"
 #include "GuildAcceptAction.h"
 #include "AcceptBattleGroundInvitationAction.h"
-#include "BattleGroundTacticsWS.h"
 #include "PetitionSignAction.h"
 #include "BattlegroundJoinAction.h"
 #include "SeeSpellAction.h"

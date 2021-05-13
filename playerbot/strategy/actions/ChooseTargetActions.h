@@ -103,6 +103,17 @@ namespace ai
         virtual string GetTargetName() { return "rti target"; }
     };
 
+    class AttackEnemyFlagCarrierAction : public AttackAction
+    {
+    public:
+        AttackEnemyFlagCarrierAction(PlayerbotAI* ai) : AttackAction(ai, "attack enemy flag carrier") {}
+        virtual string GetTargetName() { return "enemy flag carrier"; }
+        virtual bool isUseful() {
+            Unit* target = context->GetValue<Unit*>("enemy flag carrier")->Get();
+            return target && sServerFacade.IsDistanceLessOrEqualThan(sServerFacade.GetDistance2d(bot, target), VISIBILITY_DISTANCE_SMALL) && (bot->HasAura(23333) || bot->HasAura(23335));
+        }
+    };
+
     class DropTargetAction : public Action
     {
     public:
