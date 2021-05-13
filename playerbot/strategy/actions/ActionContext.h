@@ -42,6 +42,7 @@
 #include "LeaveGroupAction.h"
 #include "ReleaseSpiritAction.h"
 #include "CombatActions.h"
+#include "WorldBuffAction.h"
 
 namespace ai
 {
@@ -135,6 +136,7 @@ namespace ai
             creators["move to dark portal"] = &ActionContext::move_to_dark_portal;
             creators["move from dark portal"] = &ActionContext::move_from_dark_portal;
             creators["use dark portal azeroth"] = &ActionContext::use_dark_portal_azeroth;
+            creators["world buff"] = &ActionContext::world_buff;
 
             // BG Tactics
             creators["bg tactics"] = &ActionContext::bg_tactics;
@@ -235,6 +237,7 @@ namespace ai
         static Action* move_to_dark_portal(PlayerbotAI* ai) { return new MoveToDarkPortalAction(ai); }
         static Action* use_dark_portal_azeroth(PlayerbotAI* ai) { return new DarkPortalAzerothAction(ai); }
         static Action* move_from_dark_portal(PlayerbotAI* ai) { return new MoveFromDarkPortalAction(ai); }
+        static Action* world_buff(PlayerbotAI* ai) { return new WorldBuffAction(ai); }
 
         // BG Tactics
         static Action* bg_tactics(PlayerbotAI* ai) { return new BGTactics(ai); }
@@ -248,5 +251,4 @@ namespace ai
         static Action* bg_use_buff(PlayerbotAI* ai) { return new BGTactics(ai, "use buff"); }
         static Action* bg_check_flag(PlayerbotAI* ai) { return new BGTactics(ai, "check flag"); }
     };
-
 };

@@ -173,19 +173,36 @@ void TravelNode::cropUselessLinks()
             if (std::find(toRemove.begin(), toRemove.end(), firstNode) != toRemove.end())
                 continue;
 
+            if (std::find(toRemove.begin(), toRemove.end(), secondNode) != toRemove.end())
+                continue;
+
             if (firstNode->hasLinkTo(secondNode))
             {
                 //Is it quicker to go past first node to reach second node instead of going directly?
                 if (firstLength + firstNode->linkLengthTo(secondNode) < secondLength * 1.1)
                 {
+                    if (secondNode->hasLinkTo(this) && !firstNode->hasLinkTo(this))
+                        continue;
+
                     toRemove.push_back(secondNode);
                 }
             }
-            else if(firstNode->hasCompleteRouteTo(secondNode))
+            else
             {
+                TravelNodeRoute route = sTravelNodeMap.getRoute(firstNode, secondNode, false);
+
+                if (route.isEmpty())
+                    continue;
+
+                if (route.hasNode(this))
+                    continue;
+
                 //Is it quicker to go past first (and multiple) nodes to reach the second node instead of going directly?
-                if (firstLength + firstNode->getRouteTo(secondNode).getLength() < secondLength * 1.1)
+                if (firstLength + route.getLength() < secondLength * 1.1)
                 {
+                    if (secondNode->hasLinkTo(this) && !firstNode->hasLinkTo(this))
+                        continue;
+
                     toRemove.push_back(secondNode);
                 }
             }
@@ -260,7 +277,7 @@ bool TravelNode::canPathNode(WorldPosition* startPos, WorldPosition* endPos, Uni
 
 bool TravelNode::canPathNode(TravelNode* endNode, Unit* bot, vector<WorldPosition>& ppath) 
 { 
-    WorldPosition * startPos = getPosition();
+    WorldPosition startPos = *getPosition();
     if (hasPathTo(endNode))
     {
         ppath = getPathTo(endNode);
@@ -268,13 +285,16 @@ bool TravelNode::canPathNode(TravelNode* endNode, Unit* bot, vector<WorldPositio
         if (hasCompletePathto(endNode))
             return true;
  
-        startPos = &ppath.back();
-        ppath.pop_back();
+        if (ppath.size() > 1)
+        {
+            startPos = ppath.back();
+            ppath.pop_back();
+        }
     }
 
     WorldPosition* endPos = endNode->getPosition();
 
-    bool canPath = canPathNode(startPos, endNode->getPosition(), bot, ppath);
+    bool canPath = canPathNode(&startPos, endNode->getPosition(), bot, ppath);
     pathNode(endNode, ppath);
     return canPath; 
 }
@@ -491,7 +511,7 @@ TravelNode* TravelNodeRoute::getNextNode(Unit* bot, WorldPosition* startPosition
     if (!paths.empty() && (nodes.size() > 1 || (!nodes[0]->doTransport(nodes[1]) && !nodes[0]->doPortal(nodes[1]))))
         finalPath = paths[0];
 
-    if (nodes.size() > 1 && (nodes[0]->doTransport(nodes[1]) || nodes[0]->doPortal(nodes[1])))
+    if (nodes.size() > 1 && (nodes[0]->doTransport(nodes[1]) || (nodes[0]->doPortal(nodes[1]))))
     {
         isTeleport = true;
         nextNode = nodes[1];
@@ -699,7 +719,7 @@ TravelNode* TravelNodeMap::getNode(WorldPosition* pos, vector<WorldPosition>& pp
     return NULL;
 }
 
-TravelNodeRoute TravelNodeMap::getRoute(TravelNode* start, TravelNode* goal)
+TravelNodeRoute TravelNodeMap::getRoute(TravelNode* start, TravelNode* goal, bool saveRoute)
 {
     //sLog.outError("Path from %s to %s", start->getName().c_str(), goal->getName().c_str());
 
@@ -777,9 +797,10 @@ TravelNodeRoute TravelNodeMap::getRoute(TravelNode* start, TravelNode* goal)
 
             reverse(path.begin(), path.end());
 
-            start->routeNode(goal, path);
+            if(saveRoute)
+                start->routeNode(goal, path);
 
-            return start->getRouteTo(goal);
+            return TravelNodeRoute(path);
         }
 
         for (const auto& children : currentNode->children)// for each successor n' of n
@@ -807,7 +828,8 @@ TravelNodeRoute TravelNodeMap::getRoute(TravelNode* start, TravelNode* goal)
         }
     }
 
-    start->routeNode(goal, TravelNodeRoute());
+    if(saveRoute)
+        start->routeNode(goal, TravelNodeRoute());
 
     return TravelNodeRoute();
 }

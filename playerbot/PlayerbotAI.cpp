@@ -2012,6 +2012,89 @@ float PlayerbotAI::GetRange(string type)
     return 0;
 }
 
+//Copy from reputation GetFactionReaction
+ReputationRank PlayerbotAI::GetFactionReaction(FactionTemplateEntry const* thisTemplate, FactionTemplateEntry const* otherTemplate)
+{
+    MANGOS_ASSERT(thisTemplate)
+        MANGOS_ASSERT(otherTemplate)
+
+        // Original logic begins
+
+        if (otherTemplate->factionGroupMask & thisTemplate->enemyGroupMask)
+            return REP_HOSTILE;
+
+    if (thisTemplate->enemyFaction[0] && otherTemplate->faction)
+    {
+        for (unsigned int i : thisTemplate->enemyFaction)
+        {
+            if (i == otherTemplate->faction)
+                return REP_HOSTILE;
+        }
+    }
+
+    if (otherTemplate->factionGroupMask & thisTemplate->friendGroupMask)
+        return REP_FRIENDLY;
+
+    if (thisTemplate->friendFaction[0] && otherTemplate->faction)
+    {
+        for (unsigned int i : thisTemplate->friendFaction)
+        {
+            if (i == otherTemplate->faction)
+                return REP_FRIENDLY;
+        }
+    }
+
+    if (thisTemplate->factionGroupMask & otherTemplate->friendGroupMask)
+        return REP_FRIENDLY;
+
+    if (otherTemplate->friendFaction[0] && thisTemplate->faction)
+    {
+        for (unsigned int i : otherTemplate->friendFaction)
+        {
+            if (i == thisTemplate->faction)
+                return REP_FRIENDLY;
+        }
+    }
+    return REP_NEUTRAL;
+}
+
+bool PlayerbotAI::AddAura(Unit* unit, uint32 spellId)
+{
+    // number or [name] Shift-click form |color|Hspell:spell_id|h[name]|h|r or Htalent form    
+
+    SpellEntry const* spellInfo = sSpellTemplate.LookupEntry<SpellEntry>(spellId);
+    if (!spellInfo)
+        return false;
+
+    if (!IsSpellAppliesAura(spellInfo, (1 << EFFECT_INDEX_0) | (1 << EFFECT_INDEX_1) | (1 << EFFECT_INDEX_2)) &&
+        !IsSpellHaveEffect(spellInfo, SPELL_EFFECT_PERSISTENT_AREA_AURA))
+    {
+        return false;
+    }
+
+    SpellAuraHolder* holder = CreateSpellAuraHolder(spellInfo, unit, unit);
+
+    for (uint32 i = 0; i < MAX_EFFECT_INDEX; ++i)
+    {
+        uint8 eff = spellInfo->Effect[i];
+        if (eff >= MAX_SPELL_EFFECTS)
+            continue;
+        if (IsAreaAuraEffect(eff) ||
+            eff == SPELL_EFFECT_APPLY_AURA ||
+            eff == SPELL_EFFECT_PERSISTENT_AREA_AURA)
+        {
+            int32 basePoints = spellInfo->CalculateSimpleValue(SpellEffectIndex(i));
+            int32 damage = 0; // no damage cos caster doesnt exist
+            Aura* aur = CreateAura(spellInfo, SpellEffectIndex(i), &damage, &basePoints, holder, unit);
+            holder->AddAura(aur, SpellEffectIndex(i));
+        }
+    }
+    if (!unit->AddSpellAuraHolder(holder))
+        delete holder;
+
+    return true;
+}
+
 void PlayerbotAI::Ping(float x, float y)
 {
     WorldPacket data(MSG_MINIMAP_PING, (8 + 4 + 4));

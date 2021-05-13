@@ -196,7 +196,7 @@
         TravelNode* getRandomNode(WorldPosition* pos) {vector<TravelNode*> rNodes = getNodes(pos); if (rNodes.empty()) return NULL; return  rNodes[urand(0, rNodes.size() - 1)]; }
 
         //Finds the best nodePath between two nodes
-        TravelNodeRoute getRoute(TravelNode* start, TravelNode* goal);
+        TravelNodeRoute getRoute(TravelNode* start, TravelNode* goal, bool saveRoute = true);
 
         //Find the best node between two positions
         TravelNodeRoute getRoute(WorldPosition* startPos, WorldPosition* endPos, vector<WorldPosition>& startPath, Unit* bot = NULL);

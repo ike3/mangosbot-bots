@@ -9,6 +9,10 @@ using namespace ai;
 bool ReachAreaTriggerAction::Execute(Event event)
 {
     uint32 triggerId;
+
+    if (bot->GetMaster() == bot) //Do not trigger own area trigger.
+        return false;
+
     WorldPacket p(event.getPacket());
     p.rpos(0);
     p >> triggerId;

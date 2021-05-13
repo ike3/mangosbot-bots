@@ -32,4 +32,12 @@ namespace ai
 
 		virtual Value<Unit*>* GetTargetValue();
     };
+
+    class NeedWorldBuffTrigger : public Trigger {
+    public:
+        NeedWorldBuffTrigger(PlayerbotAI* ai) :
+            Trigger(ai) {}
+
+        bool IsActive();
+    };
 }

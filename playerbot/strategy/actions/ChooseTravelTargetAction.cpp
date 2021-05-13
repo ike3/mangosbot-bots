@@ -181,8 +181,8 @@ bool ChooseTravelTargetAction::SetTarget(TravelTarget* target, TravelTarget* old
     if (!foundTarget && ai->HasStrategy("explore", BOT_STATE_NON_COMBAT)) //Explore a unexplored sub-zone.
         foundTarget = SetExploreTarget(target);
 
-    if (!foundTarget)
-        foundTarget = SetRpgTarget(target);
+   // if (!foundTarget)
+   //foundTarget = SetRpgTarget(target);
 
     if (!foundTarget)
         SetNullTarget(target);                                    //Idle a bit.
