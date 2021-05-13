@@ -158,7 +158,11 @@ bool CheckMountStateAction::isUseful()
 bool CheckMountStateAction::Mount()
 {
     if (sServerFacade.isMoving(bot))
-        ai->SetNextCheckDelay(sPlayerbotAIConfig.globalCoolDown);
+    {
+        bot->GetMotionMaster()->Clear(true);
+        bot->InterruptMoving(1);
+        bot->GetMotionMaster()->MovementExpired();
+    }
 
     Player* master = GetMaster();
     ai->RemoveShapeshift();
