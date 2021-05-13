@@ -340,9 +340,6 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
 
             if (player->getClass() == CLASS_ROGUE)
                 engine->addStrategies("stealth", NULL);
-
-            if (player->getClass() != CLASS_HUNTER)
-                engine->removeStrategy("ranged");
         }
 
         if (player->getClass() == CLASS_ROGUE)
@@ -374,9 +371,6 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
 
         if ((player->getClass() == CLASS_DRUID && tab == 2) || (player->getClass() == CLASS_SHAMAN && tab == 2))
             engine->addStrategies("caster", "caster aoe", NULL);
-
-        if (player->getClass() != CLASS_HUNTER)
-            engine->removeStrategy("ranged");
 
         if (player->getClass() == CLASS_DRUID && tab == 1 && engine->HasStrategy("dps"))
             engine->addStrategy("behind");
