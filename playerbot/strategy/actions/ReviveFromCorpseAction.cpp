@@ -112,6 +112,9 @@ bool FindCorpseAction::Execute(Event event)
 
 bool FindCorpseAction::isUseful()
 {
+    if (bot->InBattleGround())
+        return false;
+
     return bot->GetCorpse() && !bot->GetCorpse()->IsWithinDistInMap(bot, CORPSE_RECLAIM_RADIUS - 5, true);
 }
 
