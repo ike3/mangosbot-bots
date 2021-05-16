@@ -10,7 +10,7 @@ bool ReachAreaTriggerAction::Execute(Event event)
 {
     uint32 triggerId;
 
-    if (bot->GetMaster() == bot) //Do not trigger own area trigger.
+    if (ai->isRealPlayer()) //Do not trigger own area trigger.
         return false;
 
     WorldPacket p(event.getPacket());
