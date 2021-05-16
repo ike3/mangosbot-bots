@@ -8,118 +8,266 @@
 
 #include "MoveMapSharedDefines.h"
 #include "MotionGenerators/PathFinder.h"
+#include "Entities/Transports.h"
 
 using namespace ai;
 using namespace MaNGOS;
 
-uint32 TravelNode::doPathStep(WorldPosition startPos, WorldPosition endPos, Unit* bot, vector<WorldPosition>& ppath)
+TravelNodePath::TravelNodePath(float distance1, float extraCost1, bool portal1, uint32 portalId1, bool transport1, bool calculated1, uint32 maxLevelMob1, uint32 maxLevelAlliance1, uint32 maxLevelHorde1, float swimDistance1)
 {
-    Vector3 startVector = Vector3(startPos.getX(), startPos.getY(), startPos.getZ());
-    Vector3 endVector = Vector3(endPos.getX(), endPos.getY(), endPos.getZ());
+    distance = distance1; 
+    extraCost = extraCost1;
+    portal = portal1; 
+    portalId = portalId1; 
+    transport = transport1;  
+    calculated = calculated1;
+    maxLevelMob = maxLevelMob1;
+    maxLevelAlliance = maxLevelAlliance1; 
+    maxLevelHorde = maxLevelHorde1;
+    swimDistance = swimDistance1;
 
-    if (bot)
-    {
-        //if (!startPos.getMap()->IsLoaded(startPos.getX(), startPos.getY()))
-            if (startPos.getTerrain())
-                startPos.getTerrain()->GetTerrainType(startPos.getX(), startPos.getY());
-
-        //if (!endPos.getMap()->IsLoaded(endPos.getX(), endPos.getY()))
-            if (endPos.getTerrain())
-                endPos.getTerrain()->GetTerrainType(endPos.getX(), endPos.getY());
-    }
-
-    PointsArray points;
-    PathType type;
-    
-    if (bot)
-    {
-        PathFinder path(bot);
-
-#ifdef IKE_PATHFINDER
-        path.setAreaCost(8, 10.0f);  //Water
-        path.setAreaCost(11, 5.0f);  //Mob proximity
-        path.setAreaCost(12, 20.0f); //Mob agro
-#endif
-        path.calculate(startVector, endVector, false);
-
-        points = path.getPath();
-        type = path.getPathType();
-
-    }
-    else
-#ifdef IKE_PATHFINDER
-    {
-        PathFinder path(startPos.getMapId(), 0); // startPos.getMapEntry()->Instanceable() ? startPos.getInstanceId() : 0);
-
-        path.setAreaCost(8, 10.0f);
-        path.setAreaCost(11, 5.0f);
-        path.setAreaCost(12, 20.0f);
-
-        path.calculate(startVector, endVector, false);
-
-        points = path.getPath();
-        type = path.getPathType();
-    }
-#else
-        return PATHFIND_NOPATH;
-#endif
-
-    if (type == PATHFIND_INCOMPLETE || type == PATHFIND_NORMAL)
-    {
-        for (auto& p : points)
-        {
-            WorldPosition subPos = WorldPosition(startPos.getMapId(), p.x, p.y, p.z, 0);
-
-            ppath.push_back(subPos);
-        }
-    }
-    else
-    {
-        ppath.push_back(startPos);
-    }
-
-    return type;
+    if (portal || transport)
+        complete = true;
 }
 
+TravelNodePath::TravelNodePath(vector<WorldPosition> path1, float extraCost1, bool portal1, uint32 portalId1, bool transport1, uint32 moveSpeed)
+{
+    complete = true;
+    path = path1;
+    extraCost = extraCost1;        
+    portal = portal1;
+    portalId = portalId1;
+    transport = transport1;   
+
+    calculateCost();
+
+    if (moveSpeed)
+        extraCost += distance / moveSpeed;
+}
+
+string TravelNodePath::print()
+{
+    ostringstream out; 
+    out << std::fixed << std::setprecision(1);
+    out << distance << "f,";
+    out << extraCost << "f,";
+    out << (portal ? "true" : "false") << ",";
+    out << portalId << ",";
+    out << (transport ? "true" : "false") << ",";
+    out << (calculated ? "true" : "false") << ",";
+    out << maxLevelMob << ",";
+    out << maxLevelAlliance << ",";
+    out << maxLevelHorde << ",";
+    out << swimDistance << "f";
+
+    return out.str().c_str();
+}
+
+//Gets the extra information needed to properly calculate the cost.
+void TravelNodePath::calculateCost(bool distanceOnly)
+{
+    std::unordered_map<FactionTemplateEntry const*, bool> aReact, hReact;
+
+    bool aFriend, hFriend;
+
+    if (calculated)
+        return;
+
+    distance = 0.1f;
+    maxLevelMob = 0;
+    maxLevelAlliance = 0;
+    maxLevelHorde = 0;
+    swimDistance = 0;
+
+    WorldPosition lastPoint = WorldPosition();
+    for (auto& point : path)
+    {
+        if(!distanceOnly)
+        for (auto& creaturePair : point.getCreaturesNear(50)) //Agro radius + 5
+        {
+            CreatureData const cData = creaturePair->second;
+            CreatureInfo const* cInfo = ObjectMgr::GetCreatureTemplate(cData.id);
+
+            if (cInfo)
+            {
+                FactionTemplateEntry const* factionEntry = sFactionTemplateStore.LookupEntry(cInfo->Faction); 
+
+                if (aReact.find(factionEntry) == aReact.end())
+                    aReact.insert(make_pair(factionEntry, PlayerbotAI::friendToAlliance(factionEntry)));
+                aFriend = aReact.find(factionEntry)->second;
+
+                if (hReact.find(factionEntry) == hReact.end())
+                    hReact.insert(make_pair(factionEntry, PlayerbotAI::friendToHorde(factionEntry)));
+                hFriend = hReact.find(factionEntry)->second;
+
+                if (maxLevelMob < cInfo->MaxLevel && !aFriend && !hFriend)
+                    maxLevelMob = cInfo->MaxLevel;
+                if (maxLevelAlliance < cInfo->MaxLevel && aFriend && !hFriend)
+                    maxLevelAlliance = cInfo->MaxLevel;
+                if (maxLevelHorde < cInfo->MaxLevel && !aFriend && hFriend)
+                    maxLevelHorde = cInfo->MaxLevel;
+            }
+        }
+
+        if (lastPoint && point.getMapId() == lastPoint.getMapId())
+        {
+            if (!distanceOnly && (point.isInWater() || lastPoint.isInWater()))
+                swimDistance += point.distance(lastPoint);
+
+            distance += point.distance(lastPoint);
+        }
+
+        lastPoint = point;
+    }
+
+    if(!distanceOnly)
+        calculated = true;
+}
+
+//The cost to travel this path. 
+float TravelNodePath::getCost(Unit* bot)
+{
+    float modifier = 1.0f; //Global modifier
+    float timeCost = 0.1f;
+    float runDistance = distance - swimDistance; 
+    float speed = 8.0f; //default run speed
+    float swimSpeed = 4.0f; //default swim speed.
+
+    if(bot)
+    {
+        //Check if we can use this area trigger.
+        if (portal && portalId)
+        {
+            AreaTrigger const* at = sObjectMgr.GetAreaTrigger(portalId);
+            if (at && at->conditionId && !sObjectMgr.IsConditionSatisfied(at->conditionId, bot, bot->GetMap(), nullptr, CONDITION_FROM_AREATRIGGER_TELEPORT))
+                return -1;
+        }
+
+        speed = bot->GetSpeed(MOVE_RUN);
+        swimSpeed = bot->GetSpeed(MOVE_SWIM);
+
+        if (bot->HasSpell(1066))
+            swimSpeed *= 1.5;
+
+        uint32 level = bot->getLevel();
+        bool isAlliance = PlayerbotAI::friendToAlliance(bot->GetFactionTemplateEntry());
+                                  
+        int factionAnnoyance = 0;
+        int mobAnnoyance = (maxLevelMob - level) - 10; //Mobs 10 levels below do not bother us.
+
+        if(isAlliance)
+           factionAnnoyance = (maxLevelHorde - level) - 30;              //Opposite faction below 30 do not bother us.
+        else if (!isAlliance)
+           factionAnnoyance = (maxLevelAlliance - level) - 30;
+
+        if (mobAnnoyance > 0)
+            modifier += 10 * mobAnnoyance;          //For each level the whole path takes 10% longer.
+        if (factionAnnoyance > 0)
+            modifier += 1 + 0.1 * factionAnnoyance; //For each level the whole path takes 10% longer.
+    }
+
+    if (portal || transport)
+        timeCost = extraCost * modifier;
+    else
+        timeCost = (runDistance / speed + swimDistance / swimSpeed) * modifier;
+
+    return timeCost;
+}
+
+//Creates or appends the path from one node to another. Returns if the path.
+TravelNodePath* TravelNode::buildPath(TravelNode* endNode, Unit* bot, bool postProcess)
+{
+    if (getMapId() != endNode->getMapId())
+        return nullptr;
+
+    TravelNodePath* returnNodePath;
+
+    if (!hasPathTo(endNode))                                //Create path if it doesn't exists
+        returnNodePath = setPathTo(endNode, TravelNodePath(), false);
+    else
+        returnNodePath = getPathTo(endNode);                //Get the exsisting path.
+
+    if (returnNodePath->getComplete())                      //Path is already complete. Return it.
+        return returnNodePath;
+
+    vector<WorldPosition> path = returnNodePath->getPath();
+
+    if (path.empty())
+        path = { *getPosition() };                      //Start the path from the current Node.
+
+    WorldPosition* endPos = endNode->getPosition();     //Build the path to the end Node.
+
+    path = endPos->getPathFromPath(path, bot);          //Pathfind from the existing path to the end Node.
+
+    bool canPath = endPos->isPathTo(path);              //Check if we reached our destination.
+
+    //Transports are (probably?) not solid at this moment. We need to walk over them so we need extra code for this.
+    //Some portals are 'too' solid so we can't properly walk in them. Again we need to bypass this.
+    if (!isTransport() && !isPortal() && (endNode->isPortal() || endNode->isTransport()))
+    {
+        if (endNode->isTransport() && path.back().isInWater()) //Do not swim to boats.
+            canPath = false;
+        else if (!canPath && endPos->isPathTo(path, 20.0f)) //Cheat a little for transports and portals.
+        {
+            path.push_back(*endPos);
+            canPath = true;
+
+            if (!endNode->hasPathTo(this) || !endNode->getPathTo(this)->getComplete())
+            {
+                vector<WorldPosition> reversePath = path;
+                reverse(reversePath.begin(), reversePath.end());
+
+                TravelNodePath* backNodePath = endNode->setPathTo(this);
+
+                backNodePath->setPath(reversePath);
+
+                backNodePath->calculateCost(!postProcess);
+            }
+        }
+    }
+
+    if (isTransport() && path.size() > 1)
+    {
+        WorldPosition secondPos = *std::next(path.begin()); //This is to prevent bots from jumping in the water from a transport. Need to remove this when transports are properly handled.
+        if (secondPos.getMap() && secondPos.getTerrain() && secondPos.isInWater())
+            canPath = false;
+    }
+
+
+    returnNodePath->setComplete(canPath);
+
+    if(canPath && !hasLinkTo(endNode))
+        setLinkTo(endNode, true);
+
+    returnNodePath->setPath(path);
+
+    if (!returnNodePath->getCalculated())
+    {
+        returnNodePath->calculateCost(!postProcess);
+    }
+    
+    return returnNodePath;
+}
+
+
 //Generic routine to remove references to nodes. 
-void TravelNode::unlinkNode(TravelNode* node, bool unlinkPaths) {
+void TravelNode::removeLinkTo(TravelNode* node, bool removePaths) {
 
     if (node) //Unlink this specific node
     {
-        //Link to this node
-        links.erase(node);
-        if (unlinkPaths)
-        {
-            //Remove path to this node
+        if (removePaths)
             paths.erase(node);
-        }
 
-            //Remove route to this node
-            routes.erase(node);
-
-            //Remove route that passes this node
-            for (auto it = begin(routes); it != end(routes);)
-            {
-                if (it->second.hasNode(node))
-                {
-                    it = routes.erase(it);
-                }
-                else
-                    ++it;
-            }
-            
-        
+        links.erase(node);
     }
     else { //Remove all references to this node.        
         for (auto& node : sTravelNodeMap.getNodes())
         {
-            if (node->hasLinkTo(this) || node->hasPathTo(this) || node->hasRouteTo(this))
-                node->unlinkNode(this);
+            if (node->hasPathTo(this))
+                node->removeLinkTo(this, removePaths);
         }
-
         links.clear();
         paths.clear();
-        routes.clear();
     }
 }
 
@@ -141,9 +289,9 @@ vector<TravelNode*> TravelNode::getNodeMap(bool importantOnly, vector<TravelNode
         if (!importantOnly || currentNode->isImportant())
             closeList.push_back(currentNode);
 
-        for (auto nextLink : currentNode->getLinks())
+        for (auto & nextPath : *currentNode->getLinks())
         {
-            TravelNode* nextNode = nextLink.first;
+            TravelNode* nextNode = nextPath.first;
             if (std::find(openList.begin(), openList.end(), nextNode) == openList.end())
             {
                 if (ignoreNodes.empty() || std::find(ignoreNodes.begin(), ignoreNodes.end(), nextNode) == ignoreNodes.end())
@@ -155,25 +303,86 @@ vector<TravelNode*> TravelNode::getNodeMap(bool importantOnly, vector<TravelNode
     return closeList;
 }
 
+bool TravelNode::isUselessLink(TravelNode* farNode)
+{
+    float farLength;
+    if (hasLinkTo(farNode))
+        farLength = getPathTo(farNode)->getDistance();
+    else
+        farLength = getDistance(farNode);
+
+    for (auto& link : *getLinks())
+    {
+        TravelNode* nearNode = link.first;
+        float nearLength = link.second->getDistance();
+
+        if (farNode == nearNode)
+            continue;
+
+        if (farNode->hasLinkTo(this) && !nearNode->hasLinkTo(this))
+            continue;
+
+        if (nearNode->hasLinkTo(farNode))
+        {
+            //Is it quicker to go past second node to reach first node instead of going directly?
+            if (nearLength + nearNode->linkDistanceTo(farNode) < farLength * 1.1)
+                return true;
+            
+        }
+        else
+        {
+            TravelNodeRoute route = sTravelNodeMap.getRoute(nearNode, farNode, false);
+
+            if (route.isEmpty())
+                continue;
+
+            if (route.hasNode(this))
+                continue;
+
+            //Is it quicker to go past second (and multiple) nodes to reach the first node instead of going directly?
+            if (nearLength + route.getTotalDistance() < farLength * 1.1)
+                return true;
+        }
+    }
+
+    return false;
+}
+
+void TravelNode::cropUselessLink(TravelNode* farNode)
+{
+    if (isUselessLink(farNode))
+        removeLinkTo(farNode);
+}
+
 void TravelNode::cropUselessLinks()
 {
-    vector<TravelNode*> toRemove;
+    for (auto& firstLink : *getPaths())
+    {
+        TravelNode* farNode = firstLink.first;
+        if (this->hasLinkTo(farNode) && this->isUselessLink(farNode))
+            this->removeLinkTo(farNode);
+        if (farNode->hasLinkTo(this) && farNode->isUselessLink(this))
+            farNode->removeLinkTo(this);        
+    }
+
+    /*
+
+    //vector<pair<TravelNode*, TravelNode*>> toRemove;
     for (auto& firstLink : getLinks())
     {
+
+
         TravelNode* firstNode = firstLink.first;
-        float firstLength = firstLink.second;
+        float firstLength = firstLink.second.getDistance();
         for (auto& secondLink : getLinks())
         {
             TravelNode* secondNode = secondLink.first;
-            float secondLength = secondLink.second;
+            float secondLength = secondLink.second.getDistance();
 
             if (firstNode == secondNode)
                 continue;
 
-            if (std::find(toRemove.begin(), toRemove.end(), firstNode) != toRemove.end())
-                continue;
-
-            if (std::find(toRemove.begin(), toRemove.end(), secondNode) != toRemove.end())
+            if (std::find(toRemove.begin(), toRemove.end(), [firstNode, secondNode](pair<TravelNode*, TravelNode*> pair) {return pair.first == firstNode || pair.first == secondNode;}) != toRemove.end())
                 continue;
 
             if (firstNode->hasLinkTo(secondNode))
@@ -184,7 +393,7 @@ void TravelNode::cropUselessLinks()
                     if (secondNode->hasLinkTo(this) && !firstNode->hasLinkTo(this))
                         continue;
 
-                    toRemove.push_back(secondNode);
+                    toRemove.push_back(make_pair(this, secondNode));
                 }
             }
             else
@@ -203,17 +412,67 @@ void TravelNode::cropUselessLinks()
                     if (secondNode->hasLinkTo(this) && !firstNode->hasLinkTo(this))
                         continue;
 
-                    toRemove.push_back(secondNode);
+                    toRemove.push_back(make_pair(this, secondNode));
                 }
             }
         }
 
-        
+        //Reverse cleanup. This is needed when we add a node in an existing map.
+        if (firstNode->hasLinkTo(this))
+        {
+            firstLength = firstNode->getPathTo(this)->getDistance();
+
+            for (auto& secondLink : firstNode->getLinks())
+            {
+                TravelNode* secondNode = secondLink.first;
+                float secondLength = secondLink.second.getDistance();
+
+                if (this == secondNode)
+                    continue;
+
+                if (std::find(toRemove.begin(), toRemove.end(), [firstNode, secondNode](pair<TravelNode*, TravelNode*> pair) {return pair.first == firstNode || pair.first == secondNode; }) != toRemove.end())
+                    continue;
+
+                if (firstNode->hasLinkTo(secondNode))
+                {
+                    //Is it quicker to go past first node to reach second node instead of going directly?
+                    if (firstLength + firstNode->linkLengthTo(secondNode) < secondLength * 1.1)
+                    {
+                        if (secondNode->hasLinkTo(this) && !firstNode->hasLinkTo(this))
+                            continue;
+
+                        toRemove.push_back(make_pair(this, secondNode));
+                    }
+                }
+                else
+                {
+                    TravelNodeRoute route = sTravelNodeMap.getRoute(firstNode, secondNode, false);
+
+                    if (route.isEmpty())
+                        continue;
+
+                    if (route.hasNode(this))
+                        continue;
+
+                    //Is it quicker to go past first (and multiple) nodes to reach the second node instead of going directly?
+                    if (firstLength + route.getLength() < secondLength * 1.1)
+                    {
+                        if (secondNode->hasLinkTo(this) && !firstNode->hasLinkTo(this))
+                            continue;
+
+                        toRemove.push_back(make_pair(this, secondNode));
+                    }
+                }
+            }
+        }
+
     }    
 
-    for (auto& node : toRemove)
-        unlinkNode(node, false);
+    for (auto& nodePair : toRemove)
+        nodePair.first->unlinkNode(nodePair.second, false);
+        */
 }
+
 
 bool TravelNode::isEqual(TravelNode* compareNode)
 {
@@ -238,138 +497,6 @@ bool TravelNode::isEqual(TravelNode* compareNode)
     return true;
 }
 
-bool TravelNode::canPathNode(WorldPosition* startPos, WorldPosition* endPos, Unit* bot, vector<WorldPosition>& vpath)
-{
-    if (startPos->getMapId() != endPos->getMapId())
-        return false;
-
-    WorldPosition currentPos = *startPos;
-    vector<WorldPosition> ppath;
-
-    for (uint32 i = 0; i < 40; i++)
-    {
-        uint32 type = doPathStep(currentPos, *endPos, bot, ppath);
-
-        if (type == PATHFIND_INCOMPLETE || type == PATHFIND_NORMAL)
-        {
-            for (auto& p : ppath)
-            {
-                vpath.push_back(p);
-            }
-        }
-
-        if (type == PATHFIND_NORMAL)
-        {
-            return true;
-        }
-        else if (currentPos.distance(&ppath.back()) < sPlayerbotAIConfig.targetPosRecalcDistance)
-        {
-            return false;
-        }
-
-        currentPos = ppath.back();
-
-        ppath.clear();      
-    }
-
-    return false;
-}
-
-bool TravelNode::canPathNode(TravelNode* endNode, Unit* bot, vector<WorldPosition>& ppath) 
-{ 
-    WorldPosition startPos = *getPosition();
-    if (hasPathTo(endNode))
-    {
-        ppath = getPathTo(endNode);
-
-        if (hasCompletePathto(endNode))
-            return true;
- 
-        if (ppath.size() > 1)
-        {
-            startPos = ppath.back();
-            ppath.pop_back();
-        }
-    }
-
-    WorldPosition* endPos = endNode->getPosition();
-
-    bool canPath = canPathNode(&startPos, endNode->getPosition(), bot, ppath);
-    pathNode(endNode, ppath);
-    return canPath; 
-}
-
-float TravelNode::getPathLength(vector<WorldPosition>& ppath)
-{
-    bool first = true;
-    float length = 0;
-    WorldPosition* prevPos;
-    for (auto& p : ppath)
-    {
-        if (!first)
-            length += p.distance(prevPos);
-
-        prevPos = &p;  
-        first = false;
-    }
-
-    return length;
-}
-
-void TravelNode::routeNode(TravelNode* node, TravelNodeRoute route)
-{
-    if(this != node)
-        routes.insert_or_assign(node, route);
-}
-
-void TravelNode::routeNode(TravelNode* node, vector<TravelNode*> route)
-{
-    if (this != node)
-        routeNode(node, TravelNodeRoute(route));
-}
-
-bool TravelNode::hasRouteTo(TravelNode* node)
-{
-    auto routeIt = routes.find(node);
-    if (routeIt == routes.end())
-        return false;
-        
-    return true;
-};
-
-bool TravelNode::hasCompleteRouteTo(TravelNode* node)
-{
-    auto routeIt = routes.find(node);
-    if (routeIt == routes.end())
-        return false;
-
-    if (!&routeIt->second)
-        return false;
-
-    if (!routeIt->second.hasNode(node))
-        return false;
-        
-    return true;
-};
-
-TravelNodeRoute TravelNode::getRouteTo(TravelNode* node)
-{
-    return routes.find(node)->second;    
-}
-
-void TravelNode::clearEmptyRoutes()
-{ 
-    for (auto it = begin(routes); it != end(routes);)
-    {
-        if (!&it->second)
-        {
-            it = routes.erase(it); // previously this was something like m_map.erase(it++);
-        }
-        else
-            ++it;
-    }
-};
-
 void TravelNode::print(bool printFailed)
 {
     WorldPosition* startPosition = getPosition();
@@ -381,49 +508,50 @@ void TravelNode::print(bool printFailed)
     string name = getName();
     name.erase(remove(name.begin(), name.end(), '\"'), name.end());
     out << std::fixed << std::setprecision(2) << "+00, "<< name.c_str() << "," << (isImportant()?1:0) << "," << mapSize << "," << point.getDisplayX() << "," << point.getDisplayY() << "," << getZ();
-    sPlayerbotAIConfig.log(1,out.str().c_str());
+    sPlayerbotAIConfig.log("travelNodes.csv",out.str().c_str());
 
-    vector<WorldPosition> ppath1;
-    vector<WorldPosition> ppath2;
+    vector<WorldPosition> ppath;
 
     for (auto& endNode : sTravelNodeMap.getNodes())
     {
         if (endNode == this)
             continue;
 
-        if (!printFailed && !hasLinkTo(endNode))
+        if (!hasPathTo(endNode))
             continue;
 
-        bool canPath1 = hasLinkTo(endNode);
+        TravelNodePath* path = getPathTo(endNode);
 
-        ppath1 = getPathTo(endNode);
-
-        if (!canPath1 && urand(0,20))
+        if (!hasLinkTo(endNode) && urand(0,20) && !printFailed)
             continue;
 
-        if (ppath1.size() < 2 && canPath1 && getMapId() == endNode->getMapId())
+        ppath = path->getPath();
+
+        if (ppath.size() < 2 && hasLinkTo(endNode))
         {
-            ppath1.push_back(point);
-            ppath1.push_back(*endNode->getPosition());
+            ppath.push_back(point);
+            ppath.push_back(*endNode->getPosition());
         }
 
-        if (ppath1.size() > 1)
+        if (ppath.size() > 1)
         {
             ostringstream out;
 
             uint32 pathType = 1;
-            if (!canPath1)
+            if (!hasLinkTo(endNode))
                 pathType = 0;
-            else if (doTransport(endNode))
+            else if (path->getTransport())
                 pathType = 2;
-            else if (doPortal(endNode))
+            else if (path->getPortal() && getMapId() == endNode->getMapId())
                 pathType = 3;
+            else if (path->getPortal())
+                pathType = 4;
 
             out << sPlayerbotAIConfig.GetTimestampStr();
             out << std::fixed << std::setprecision(2) << "+00," << pathType << ", " << (isImportant() ? 1 : 0) << "," << mapSize << ",\"LINESTRING(";
 
             float x, y = 0;
-            for (auto i : ppath1)
+            for (auto i : ppath)
             {
                 if (i.getY() != y || i.getX() != x)
                     out << i.getDisplayX() << " " << i.getDisplayY() + frand(-2, 2) << ",";
@@ -433,157 +561,336 @@ void TravelNode::print(bool printFailed)
 
             out << ")\"";
 
-            sPlayerbotAIConfig.log(2, out.str().c_str());
+            sPlayerbotAIConfig.log("travelPaths.csv", out.str().c_str());
         }
     }
 }
 
-float TravelNodeRoute::getLength()
+//Attempts to move ahead of the path.
+bool TravelPath::makeShortCut(WorldPosition startPos, float maxDist)
+{
+    if (getPath().empty())
+        return false;
+
+    float minDist = -1;
+    vector<PathNodePoint> newPath;
+    WorldPosition firstNode;
+    for (auto p : fullPath) //cycle over the full path
+    {
+        if (p.point.getMapId() != startPos.getMapId())
+            continue;
+
+        float curDist = p.point.sqDistance(startPos);
+
+        if (curDist < sPlayerbotAIConfig.tooCloseDistance * sPlayerbotAIConfig.tooCloseDistance) //We are on the path. No shortcut.
+            return false;
+
+        if (p.type != NODE_PREPATH) //Only look at the part after the first node and in the same map.
+        {
+            if (!firstNode)
+                firstNode = p.point;
+
+            if (minDist == -1 || curDist < minDist) //Start building from the last closest point.
+            {
+                minDist = curDist;
+                newPath.clear();
+            }
+        }
+        newPath.push_back(p);
+    }
+
+    if (minDist > maxDist) // todo use config
+    {
+        clear();
+        return false;
+    }
+
+    WorldPosition beginPos = newPath.begin()->point;
+
+    //The old path seems to be the best.
+    if (beginPos.distance(firstNode) < sPlayerbotAIConfig.tooCloseDistance)
+       return false;
+
+    //We are (nearly) on the new path. Just follow the rest.
+    if (beginPos.distance(startPos) < sPlayerbotAIConfig.tooCloseDistance)
+    {
+        fullPath = newPath;
+        return true;
+    }
+
+    vector<WorldPosition> toPath = startPos.getPathTo(beginPos, NULL);
+    
+    //We can not reach the new begin position. Follow the complete path.
+    if (!beginPos.isPathTo(toPath))
+        return false;
+
+    //Move to the new path and continue.
+    fullPath.clear();
+    addPath(toPath);
+    addPath(newPath);  
+
+    return true;
+}
+
+//Next position to move to
+WorldPosition TravelPath::getNextPoint(WorldPosition startPos, float maxDist, bool& isTeleport, bool& isTransport, uint32& entry)
+{
+    if (getPath().empty())
+        return WorldPosition();
+
+    auto beg = fullPath.begin();
+    auto ed = fullPath.end();
+
+    float minDist = 0.0f;
+    auto startP = beg;
+
+    for (auto p = startP; p!=ed;p++)
+    {
+        if (p->point.getMapId() != startPos.getMapId())
+            continue;
+
+        float curDist = p->point.distance(startPos);
+
+        if (curDist <= minDist || p == startP)
+        {
+            minDist = curDist;
+            startP = p;
+        }
+    }
+
+    float moveDist = startP->point.distance(startPos);
+
+
+    for (auto p = startP + 1; p != ed; p++)
+    {
+        auto prevP = std::prev(p);
+        auto nextP = std::next(p);
+
+        if (nextP == ed)
+        {
+            startP = p;
+            break;
+        }
+
+        //Teleport with next point to a new map.
+        if (p->type == NODE_PORTAL && nextP->point.getMapId() != startPos.getMapId())
+        {
+            if (nextP->type != NODE_PORTAL)
+                continue;
+
+            startP = p; //Move to teleport and activate area trigger.
+            break;
+        }
+
+        //Transport with entry. 
+        if (p->type == NODE_TRANSPORT && p->entry)
+        {
+            if (nextP->type != NODE_TRANSPORT)
+                continue;
+
+            if (startPos.distance(prevP->point) > 5.0f)
+            {
+                startP = prevP;
+                break;
+            }
+        }
+
+        float nextMove = p->point.distance(nextP->point);
+
+        if (p->point.getMapId() != startPos.getMapId() || moveDist + nextMove > maxDist)
+        {
+            startP = p;
+            break;
+        }
+
+        moveDist += nextMove;
+    }
+
+    isTeleport = false;
+    isTransport = false;
+
+    //We are moving towards a teleport. Move to portal an activate area trigger
+    if (startP->type == NODE_PORTAL)
+    {
+        isTeleport = true;
+        entry = startP->entry;
+        return startP->point;
+    }
+  
+    //We are moving towards transport. Teleport to next normal point instead.
+    if (startP->type == NODE_TRANSPORT)
+    {
+        for (auto p = startP + 1; p != ed; p++)
+        {
+            if (p->type != NODE_TRANSPORT)
+            {
+                isTeleport = true;
+                entry = 0;
+                return p->point;
+            }
+        }
+    }
+
+    //We have to move far for next point. Try to make a cropped path.
+    if (moveDist < sPlayerbotAIConfig.targetPosRecalcDistance && std::next(startP) != ed)
+    {
+        //vector<WorldPosition> path = startPos.getPathTo(std::next(startP)->point, nullptr);
+        //startP->point = startPos.lastInRange(path, -1, maxDist);
+        return WorldPosition();
+    }
+
+    return startP->point;
+}
+
+ostringstream TravelPath::print()
+{
+    ostringstream out;
+
+    out << sPlayerbotAIConfig.GetTimestampStr();
+    out << "+00, " << "1," << "\"LINESTRING(";
+
+    for (auto& p : fullPath)
+    {
+        out << std::fixed << p.point.getDisplayX() << " " << p.point.getDisplayY() << ",";
+    }
+
+    out << ")\"";
+
+    return out;
+}
+
+float TravelNodeRoute::getTotalDistance()
 {
     float totalLength = 0;
     for (uint32 i = 0; i<nodes.size()-2 ;i++)
     {
-        totalLength += nodes[i]->linkLengthTo(nodes[i + 1]);
+        totalLength += nodes[i]->linkDistanceTo(nodes[i + 1]);
     }
 
     return totalLength;
 }
 
-vector<vector<WorldPosition>> TravelNodeRoute::getPaths(Unit* bot, uint32 nodeLimit)
+TravelPath TravelNodeRoute::buildPath(vector<WorldPosition> pathToStart, vector<WorldPosition> pathToEnd, Unit* bot)
 {
-    uint32 limit = nodes.size();
-    if (nodeLimit > 0 && nodeLimit < limit)
-        limit = nodeLimit;
+    TravelPath travelPath;
 
-    vector<WorldPosition> path;
-    vector<vector<WorldPosition>> paths;
+    if (!pathToStart.empty()) //From start position to start of path.
+        travelPath.addPath(pathToStart, NODE_PREPATH);
 
-    for (uint32 i = 0; i < limit - 1; i++)
+    TravelNode* prevNode = nullptr;
+    for (auto& node : nodes)
     {
-        //If closest point is start of transport/portal go to that node.
-        if (nodes[i]->doTransport(nodes[i + 1]) || nodes[i]->doPortal(nodes[i + 1]))
+        if(prevNode)
         {
-            WorldPosition* pos = nodes[i]->getPosition();
-            path.push_back(*pos);
-            paths.push_back(path);
-            path.clear();
-            continue;
-        }
+            TravelNodePath* nodePath = nullptr;
+            if(prevNode->hasPathTo(node))  //Get the path to the next node if it exists.
+                nodePath = prevNode->getPathTo(node);
 
-        if (nodes[i]->canPathNode(nodes[i + 1], bot, path))
-        {
-            paths.push_back(path);
-            path.clear();
-        }
-        else
-            break;
-    }
-
-    return paths;
-}
-
-/// Determines the best destination from a route for a bot to head to.
-/// 
-///  @param[in]		bot   	            The unit to be used for pathfinding details
-///  @param[in]		startPosition		The current location of the bot to start searching from
-///  @param[in]		endPosition		    The end goal. After the last node we want to move here
-/// 
-///  @param[out]	isTeleport	        Flag to indiciate destination is a teleport
-///  @param[in/out]	longPath		    This already contains the path from the start position to the start node 
-///                                     and will have the route past the closest point to the route to the next node after that.
-///  @param[in]		shortPath		    This is a shorter path going from the nearest point on the route to the node after that.
-/// 
-///  @returns The node at the end of the path that has a location nearest to the bot. This will be the teleport destination in case of a teleport/transport.
-TravelNode* TravelNodeRoute::getNextNode(Unit* bot, WorldPosition* startPosition, WorldPosition* endPosition, bool& isTeleport, vector<WorldPosition>& longPath, vector<WorldPosition>& shortPath)
-{
-    float closestDistance = nodes[0]->getDistance(startPosition);
-    WorldPosition nextPosition = *nodes[0]->getPosition();
-    TravelNode* nextNode = nodes[0];
-
-    vector<WorldPosition> path, currentPath, finalPath, endPath;
-    vector<vector<WorldPosition>> paths;
-
-    //Get the paths for the next nodes
-    paths = getPaths(bot, 10);
-
-    //The initial situation is that we are heading to or at the start node. 
-    //In this case the bot should head past the node to the next. (If start node is not a portal/teleport)
-    if (!paths.empty() && (nodes.size() > 1 || (!nodes[0]->doTransport(nodes[1]) && !nodes[0]->doPortal(nodes[1]))))
-        finalPath = paths[0];
-
-    if (nodes.size() > 1 && (nodes[0]->doTransport(nodes[1]) || (nodes[0]->doPortal(nodes[1]))))
-    {
-        isTeleport = true;
-        nextNode = nodes[1];
-    }
-    if (paths.empty())
-    {
-        if (isTeleport)
-            longPath.push_back(*nodes[0]->getPosition());
-        else
-        {
-            //longPath.push_back(*nextNode->getPosition());
-            nextNode = nodes[1];
-        }
-    }
-
-    //We now check if the bot is perhaps already on or near the route somewhere.
-    for (uint32 i = 0; i < paths.size(); i++)
-    {
-        path = paths[i];
-
-        //Continue the path
-        currentPath.insert(currentPath.end(), path.begin(), path.end());
-
-        for (auto& p : path)
-        {
-            float dist = startPosition->distance(&p);
-
-            //We found a spot on the path that is closer to the bot than the start node.
-            if (!nextNode || dist < closestDistance)
+            if (!nodePath || !nodePath->getComplete()) //Build the path to the next node if it doesn't exist.
             {
-                closestDistance = dist;
-
-                //This spot is a portal or transport node.
-                isTeleport = (nodes[i]->doTransport(nodes[i + 1]) || nodes[i]->doPortal(nodes[i + 1]));
-
-                //The spot is along a path between nodes so we want to try to move to the next node.
-                nextNode = nodes[i + 1];
-
-                //The long path will be the entire route up to this point up to the next node.
-                finalPath = currentPath;
-
-                //We start the short path here.
-                shortPath.clear();
+                if(!prevNode->isTransport())
+                    nodePath = prevNode->buildPath(node, NULL);
+                else
+                {
+                    node->buildPath(prevNode, NULL); //Reverse build to get proper path.
+                    nodePath = prevNode->getPathTo(node);
+                }
             }
 
-            //The short path will get points up to the next node.
-            shortPath.push_back(p);
+            if (!nodePath || !nodePath->getComplete()) //If we can not build a path just try to move to the node.
+            {
+                travelPath.addPoint(*prevNode->getPosition(), NODE_NODE);
+                prevNode = node;
+                continue;
+            }
+
+            vector<WorldPosition> path = nodePath->getPath();
+
+            if (node != nodes.back()) //Remove the last point since that will also be the start of the next path.
+                path.pop_back();
+
+            if (prevNode->isPortal() && !nodePath->getPortal()) //Do not move to the area trigger if we don't plan to take the portal.
+                path.erase(path.begin());
+
+            if (prevNode->isTransport() && !nodePath->getTransport()) //Do not move to the transport if we aren't going to take it.
+                path.erase(path.begin());
+
+            if (nodePath->getPortal()) //Teleport to next node.
+            {
+                travelPath.addPoint(*prevNode->getPosition(), NODE_PORTAL, nodePath->gePortalId()); //Entry point
+                travelPath.addPoint(*node->getPosition(), NODE_PORTAL, nodePath->gePortalId());     //Exit point
+            }
+            else if (nodePath->getTransport()) //Move onto transport
+            {
+                travelPath.addPoint(*prevNode->getPosition(), NODE_TRANSPORT, node->getTransportId()); //Departure point
+                travelPath.addPoint(*node->getPosition(), NODE_TRANSPORT, node->getTransportId());     //Arrival point        
+            }
+            else
+            {
+                travelPath.addPath(path, NODE_PATH);
+            }
+        }
+        prevNode = node;
+    }
+
+    if (!pathToEnd.empty())
+        travelPath.addPath(pathToEnd, NODE_PATH);    
+
+    return travelPath;
+}
+
+ostringstream TravelNodeRoute::print()
+{
+    ostringstream out;
+
+    out << sPlayerbotAIConfig.GetTimestampStr();
+    out << "+00" << ",0," << "\"LINESTRING(";
+
+    for (auto& node : nodes)
+    {
+        out << std::fixed << node->getPosition()->getDisplayX() << " " << node->getPosition()->getDisplayY() << ",";
+    }
+
+    out << ")\"";
+
+    return out;
+}
+
+TravelNodeMap::TravelNodeMap(TravelNodeMap* baseMap)
+{
+    TravelNode* newNode;
+
+    baseMap->m_nMapMtx.lock_shared();
+
+    for (auto & node : baseMap->getNodes())
+    {
+        newNode = new TravelNode(node);
+
+        m_nodes.push_back(newNode);
+    }
+
+    for (auto & node : baseMap->getNodes())
+    {
+        newNode = getNode(node);
+
+        for (auto& path : *node->getPaths())
+        {
+            TravelNode* endNode = getNode(path.first);
+
+            newNode->setPathTo(endNode, path.second);
         }
     }
 
-    //Append the path to the start node with the complete path until the next node.
-    longPath.insert(longPath.end(), finalPath.begin(), finalPath.end());
-
-    //The path goes all the way to the final node. Extend it to the end position.
-    if (nodes.size()-1 == paths.size())
-    {
-        nodes.back()->canPathNode(endPosition, bot, endPath);
-
-        longPath.insert(longPath.end(), endPath.begin(), endPath.end());
-        shortPath.insert(shortPath.end(), endPath.begin(), endPath.end());
-    }
-
-    return nextNode;
+    baseMap->m_nMapMtx.unlock_shared();
 }
 
-TravelNode* TravelNodeMap::addNode(WorldPosition* pos, string preferedName, bool isImportant, bool checkDuplicate, bool transport, bool portal,uint32 transportId)
+TravelNode* TravelNodeMap::addNode(WorldPosition* pos, string preferedName, bool isImportant, bool checkDuplicate, bool transport,uint32 transportId)
 {
     TravelNode* newNode;
 
     if (checkDuplicate)
     {
-        newNode = getNode(pos, NULL, 5.0f);
+        newNode = getNode(pos, nullptr , 5.0f);
         if (newNode)
             return newNode;
     }
@@ -605,7 +912,7 @@ TravelNode* TravelNodeMap::addNode(WorldPosition* pos, string preferedName, bool
         finalName += to_string(nameCount);
     }
 
-    if(!transport && !portal)
+    if(!transport)
         newNode = new TravelNode(pos, finalName, isImportant);
     else
         newNode = new TravelNode(pos, finalName, isImportant, transport, transportId);
@@ -617,7 +924,7 @@ TravelNode* TravelNodeMap::addNode(WorldPosition* pos, string preferedName, bool
 
 void TravelNodeMap::removeNode(TravelNode* node)
 {
-    node->unlinkNode(NULL);
+    node->removeLinkTo(NULL, true);
 
     for (auto& tnode : m_nodes)
     {
@@ -633,9 +940,6 @@ void TravelNodeMap::removeNode(TravelNode* node)
 
 void TravelNodeMap::fullLinkNode(TravelNode* startNode, Unit* bot)
 {
-    if (bot->GetMapId() != startNode->getMapId())
-        return;
-
     WorldPosition* startPosition = startNode->getPosition();
     vector<TravelNode*> linkNodes = getNodes(startPosition);
 
@@ -647,32 +951,8 @@ void TravelNodeMap::fullLinkNode(TravelNode* startNode, Unit* bot)
         if (startNode->hasLinkTo(endNode))
             continue;
 
-        WorldPosition* endPosition = endNode->getPosition();
-
-        vector<WorldPosition> ppath1;
-        vector<WorldPosition> ppath2;
-
-        bool canPath1 = startNode->canPathNode(endPosition, bot, ppath1);
-        bool canPath2 = endNode->canPathNode(startPosition, bot, ppath2);
-
-        startNode->pathNode(endNode, ppath1);
-
-        if (canPath1)
-        {
-            startNode->linkNode(endNode, startNode->getPathLength(ppath1));
-        }
-
-        if (canPath2)
-        {
-            endNode->linkNode(startNode, startNode->getPathLength(ppath2));
-        }
-    }
-
-    startNode->cropUselessLinks();
-
-    for (auto& Link : startNode->getLinks())
-    {
-        Link.first->cropUselessLinks();
+        startNode->buildPath(endNode, bot);
+        endNode->buildPath(startNode, bot);        
     }
 
     startNode->setLinked(true);
@@ -707,7 +987,7 @@ TravelNode* TravelNodeMap::getNode(WorldPosition* pos, vector<WorldPosition>& pp
     vector<TravelNode*> nodes = sTravelNodeMap.getNodes(pos, range);
     for (auto& node : nodes)
     {
-        if (!bot || node->canPathFrom(pos, bot, ppath))
+        if (!bot || pos->canPathTo(*node->getPosition(), bot))
             return node;
 
         c++;
@@ -719,20 +999,10 @@ TravelNode* TravelNodeMap::getNode(WorldPosition* pos, vector<WorldPosition>& pp
     return NULL;
 }
 
-TravelNodeRoute TravelNodeMap::getRoute(TravelNode* start, TravelNode* goal, bool saveRoute)
+TravelNodeRoute TravelNodeMap::getRoute(TravelNode* start, TravelNode* goal, Unit* bot)
 {
-    //sLog.outError("Path from %s to %s", start->getName().c_str(), goal->getName().c_str());
-
     if(start == goal)
         return TravelNodeRoute();
-
-    if (start->hasRouteTo(goal))
-    {
-        if (!start->hasCompleteRouteTo(goal))
-            return TravelNodeRoute();
-
-        return start->getRouteTo(goal);
-    }
 
     //Basic A* algoritm
     std::unordered_map<TravelNode*, TravelNodeStub> m_stubs;
@@ -745,12 +1015,16 @@ TravelNodeRoute TravelNodeMap::getRoute(TravelNode* start, TravelNode* goal, boo
     for (auto& i : m_stubs)
     {
         TravelNodeStub* stub = &i.second;
-        for (auto& j : i.first->getLinks())
+        for (auto& j : *i.first->getLinks())
         {
             TravelNode* node = j.first;
-            TravelNodeStub* cStub = &m_stubs.find(node)->second;
-            if (cStub)
-                stub->addChild(cStub, j.second);
+            float cost = j.second->getCost(bot);
+            if (cost > 0)
+            {
+                TravelNodeStub* cStub = &m_stubs.find(node)->second;
+                if (cStub)
+                    stub->addChild(cStub, cost);
+            }
         }
     }
 
@@ -797,9 +1071,6 @@ TravelNodeRoute TravelNodeMap::getRoute(TravelNode* start, TravelNode* goal, boo
 
             reverse(path.begin(), path.end());
 
-            if(saveRoute)
-                start->routeNode(goal, path);
-
             return TravelNodeRoute(path);
         }
 
@@ -807,10 +1078,10 @@ TravelNodeRoute TravelNodeMap::getRoute(TravelNode* start, TravelNode* goal, boo
         {
             childNode = static_cast<TravelNodeStub*>(children.first);
             g = currentNode->m_g + children.second; // stance from start + distance between the two nodes
-            if ((childNode->open || childNode->close) && childNode->m_g < g) // n' is already in opend or closed with a lower cost g(n')
+            if ((childNode->open || childNode->close) && childNode->m_g <= g) // n' is already in opend or closed with a lower cost g(n')
                 continue; // consider next successor
 
-            h = childNode->dataNode->linkLengthTo(goalStub->dataNode);
+            h = childNode->dataNode->getDistance(goalStub->dataNode);
             f = g + h; // compute f(n')
             childNode->m_f = f;
             childNode->m_g = g;
@@ -828,16 +1099,13 @@ TravelNodeRoute TravelNodeMap::getRoute(TravelNode* start, TravelNode* goal, boo
         }
     }
 
-    if(saveRoute)
-        start->routeNode(goal, TravelNodeRoute());
-
     return TravelNodeRoute();
 }
 
 TravelNodeRoute TravelNodeMap::getRoute(WorldPosition* startPos, WorldPosition* endPos, vector<WorldPosition>& startPath, Unit* bot)
-{    
-    if(m_nodes.empty())
-       return TravelNodeRoute();
+{
+    if (m_nodes.empty())
+        return TravelNodeRoute();
 
     vector<TravelNode*> startNodes = m_nodes, endNodes = m_nodes;
     //Partial sort to get the closest 5 nodes at the begin of the array.        
@@ -851,19 +1119,16 @@ TravelNodeRoute TravelNodeMap::getRoute(WorldPosition* startPos, WorldPosition* 
         TravelNode* startNode = startNodes[startI];
         TravelNode* endNode = endNodes[endI];
 
-        //Check if there is a route between begin and end. This is relativly cheap since results are stored.
-        TravelNodeRoute route = getRoute(startNode, endNode);
+        TravelNodeRoute route = getRoute(startNode, endNode, bot);
 
         if (!route.isEmpty())
         {
             //Check if the bot can actually walk to this start position.
-            //We probably should check (if possible) if the bot can reach the endPos too but the result is not really usefull until the end.
-            if (!bot || startNode->canPathFrom(startPos, bot, startPath))
+            startPath = startPos->getPathTo(*startNode->getPosition(), NULL);
+            if (startNode->getPosition()->isPathTo(startPath))
                 return route;
-            else
-                startI++;
+            startI++;
         }
-
 
         //Prefer a differnt end-node. 
         endI++;
@@ -877,139 +1142,6 @@ TravelNodeRoute TravelNodeMap::getRoute(WorldPosition* startPos, WorldPosition* 
     }
 
     return TravelNodeRoute();
-}
-
-bool TravelNodeMap::pathNodeLink(TravelNode* startNode, Unit* bot, bool pathLinked, bool pathUnlinked, uint32 numPaths)
-{
-    uint32 numRoutes = numPaths * 10;
-
-    if (bot->GetMapId() != startNode->getMapId())
-        return false;
-
-    uint32 pathsDone = 0;
-
-    WorldPosition* startPosition = startNode->getPosition();
-    vector<TravelNode*> linkNodes = getNodes(startPosition);
-
-    for (auto& endNode : linkNodes)
-    {
-        if (endNode == startNode)
-            continue;
-
-        if (startNode->hasPathTo(endNode))
-            continue;
-
-        if (startNode->linkLengthTo(endNode) == 0.1f)
-            continue;
-
-        bool hasLink = startNode->hasLinkTo(endNode);
-
-        if (hasLink && !pathLinked)
-            continue;
-
-        if (!hasLink && !pathUnlinked)
-            continue;
-
-        vector<WorldPosition> ppath;
-
-        bool canPath = startNode->canPathNode(endNode, bot, ppath);
-
-        if (canPath)
-            startNode->linkNode(endNode, startNode->getPathLength(ppath));
-        else if (hasLink)
-            startNode->unlinkNode(endNode, false);
-
-        pathsDone++;
-
-        if (pathsDone > numPaths)
-            return true;
-    }
-
-    for (auto& endNode : linkNodes)
-    {
-        if (endNode == startNode)
-            continue;
-
-        if (endNode->hasPathTo(startNode))
-            continue;
-
-        bool hasLink = endNode->hasLinkTo(startNode);
-
-        if (hasLink && !pathLinked)
-            continue;
-
-        if (!hasLink && !pathUnlinked)
-            continue;
-
-        vector<WorldPosition> ppath;
-
-        bool canPath = endNode->canPathNode(startNode, bot, ppath);
-
-        if (canPath)
-            endNode->linkNode(startNode, endNode->getPathLength(ppath));
-        else if (hasLink)
-            endNode->unlinkNode(startNode, false);
-
-        pathsDone++;
-
-        if (pathsDone > numPaths)
-            return true;
-    }
-
-    for (auto& endNode : linkNodes)
-    {
-        if (endNode == startNode)
-            continue;
-
-        if (startNode->hasLinkTo(endNode))
-            continue;        
-
-        if (startNode->hasRouteTo(endNode))
-            continue;
-
-        TravelNodeRoute route = getRoute(startNode, endNode);
-        
-        pathsDone++;
-
-        if (pathsDone > numRoutes)
-            return true;
-    }
-
-    for (auto& endNode : linkNodes)
-    {
-        if (endNode == startNode)
-            continue;
-
-        if (endNode->hasLinkTo(startNode))
-            continue;
-
-        if (endNode->hasRouteTo(startNode))
-            continue;
-
-        TravelNodeRoute route = getRoute(endNode, startNode);
-
-        pathsDone++;
-
-        if (pathsDone > numRoutes)
-            return true;
-    }
-
-    startNode->cropUselessLinks();
-
-    for (auto& link : startNode->getLinks())
-    {
-        link.first->cropUselessLinks();
-    }
-
-    //The node structure has changed. Attempt to find routes where none could be found before.
-    for (auto& node : startNode->getNodeMap())
-    {
-        node->clearEmptyRoutes();
-    }
-
-    startNode->setLinked(true);
-
-    return pathsDone > 0;
 }
 
 bool TravelNodeMap::cropUselessNode(TravelNode* startNode)
@@ -1035,12 +1167,14 @@ bool TravelNodeMap::cropUselessNode(TravelNode* startNode)
 
 TravelNode* TravelNodeMap::addZoneLinkNode(TravelNode* startNode)
 {
-    for (auto& path : startNode->getPaths())
+    for (auto& path : *startNode->getPaths())
     {
+
+        
         TravelNode* endNode = path.first;
 
         string zoneName = startNode->getPosition()->getAreaName(true, true);
-        for (auto pos : path.second)
+        for (auto & pos : path.second.getPath())
         {
             string newZoneName = pos.getAreaName(true, true);
             if (zoneName != newZoneName)
@@ -1061,7 +1195,7 @@ TravelNode* TravelNodeMap::addZoneLinkNode(TravelNode* startNode)
 
 TravelNode* TravelNodeMap::addRandomExtNode(TravelNode* startNode)
 {
-    std::unordered_map<TravelNode*, vector<WorldPosition>> paths = startNode->getPaths();
+    std::unordered_map<TravelNode*, TravelNodePath> paths = *startNode->getPaths();
 
     if (paths.empty())
         return NULL;
@@ -1071,7 +1205,7 @@ TravelNode* TravelNodeMap::addRandomExtNode(TravelNode* startNode)
         auto random_it = std::next(std::begin(paths), urand(0, paths.size() - 1));
 
         TravelNode* endNode = random_it->first;
-        vector<WorldPosition> path = random_it->second;
+        vector<WorldPosition> path = random_it->second.getPath();
 
         if (path.empty())
             continue;
@@ -1112,7 +1246,7 @@ void TravelNodeMap::manageNodes(Unit* bot, bool mapFull)
         }
 
         //Pick random Node
-        for (uint32 i = 0; i < (mapFull ? 20 : 1); i++)
+        for (uint32 i = 0; i < (mapFull ? (uint32)20 : (uint32)1); i++)
         {
             vector<TravelNode*> rnodes = getNodes(&WorldPosition(bot));
 
@@ -1123,10 +1257,7 @@ void TravelNodeMap::manageNodes(Unit* bot, bool mapFull)
                 startNode = rnodes[j];
                 newNode = NULL;
 
-                bool nodeDone = !pathNodeLink(startNode, bot, mapFull, true, mapFull ? 20 : 1);
-
-                if (!nodeDone)
-                    pathNodeLink(startNode, bot, true, false, mapFull ? 20 : 1);
+                bool nodeDone = false;
 
                 if (!nodeDone)
                     nodeDone = cropUselessNode(startNode);
@@ -1158,49 +1289,51 @@ void TravelNodeMap::manageNodes(Unit* bot, bool mapFull)
 
 void TravelNodeMap::printMap()
 {
-
-    if (!sPlayerbotAIConfig.hasLog(1) && !sPlayerbotAIConfig.hasLog(2) && !sPlayerbotAIConfig.hasLog(3))
+    if (!sPlayerbotAIConfig.hasLog("travelNodes.csv") && !sPlayerbotAIConfig.hasLog("travelPaths.csv"))
         return;
 
-    sLog.outError("Qgis output.");
+    printf("\r [Qgis] \r\x3D");
+    fflush(stdout);
 
-    sPlayerbotAIConfig.openLog(1, "w");
-    sPlayerbotAIConfig.openLog(2, "w");
+    sPlayerbotAIConfig.openLog("travelNodes.csv", "w");
+    sPlayerbotAIConfig.openLog("travelPaths.csv", "w");
 
     vector<TravelNode*> anodes = getNodes();
-
-    vector<pair<WorldPosition, WorldPosition>> curPos;
 
     uint32 nr = 0;
 
     for (auto& node : anodes)
     {
-        node->print(true);
-        nr++;
-
-        for (auto& snode : anodes)
-        {
-            if (snode != node)
-                curPos.push_back(make_pair(*snode->getPosition(), *node->getPosition()));
-        }
+        node->print(false);
     }
+}
 
-    sLog.outError("NodeStore output.");
+void TravelNodeMap::printNodeStore()
+{
+    string nodeStore = "TravelNodeStore.h";
 
-    sPlayerbotAIConfig.openLog(3, "w");
+    if (!sPlayerbotAIConfig.hasLog(nodeStore))
+        return;
+
+    printf("\r [Map] \r\x3D");
+    fflush(stdout);
+
+    sPlayerbotAIConfig.openLog(nodeStore, "w");
 
     std::unordered_map<TravelNode*, uint32> saveNodes;
 
-    sPlayerbotAIConfig.log(3, "#pragma once");
-    sPlayerbotAIConfig.log(3, "#include \"TravelMgr.h\"");
-    sPlayerbotAIConfig.log(3, "namespace ai");
-    sPlayerbotAIConfig.log(3, "    {");
-    sPlayerbotAIConfig.log(3, "    class TravelNodeStore");
-    sPlayerbotAIConfig.log(3, "    {");
-    sPlayerbotAIConfig.log(3, "    public:");
-    sPlayerbotAIConfig.log(3, "    static void loadNodes()");
-    sPlayerbotAIConfig.log(3, "    {");
-    sPlayerbotAIConfig.log(3, "        TravelNode* nodes[%d];", anodes.size());
+    vector<TravelNode*> anodes = getNodes();
+
+    sPlayerbotAIConfig.log(nodeStore, "#pragma once");
+    sPlayerbotAIConfig.log(nodeStore, "#include \"TravelMgr.h\"");
+    sPlayerbotAIConfig.log(nodeStore, "namespace ai");
+    sPlayerbotAIConfig.log(nodeStore, "    {");
+    sPlayerbotAIConfig.log(nodeStore, "    class TravelNodeStore");
+    sPlayerbotAIConfig.log(nodeStore, "    {");
+    sPlayerbotAIConfig.log(nodeStore, "    public:");
+    sPlayerbotAIConfig.log(nodeStore, "    static void loadNodes()");
+    sPlayerbotAIConfig.log(nodeStore, "    {");
+    sPlayerbotAIConfig.log(nodeStore, "        TravelNode* nodes[%d];", anodes.size());
 
     for (uint32 i = 0; i < anodes.size(); i++)
     {
@@ -1211,13 +1344,13 @@ void TravelNodeMap::printMap()
         string name = node->getName();
         name.erase(remove(name.begin(), name.end(), '\"'), name.end());
 
-        out << std::fixed << std::setprecision(2) << "        nodes[" << i << "] = sTravelNodeMap.addNode(&WorldPosition(" << node->getMapId() << "," << node->getX() << "f," << node->getY() << "f," << node->getZ() << "f,0.0), \""
+        out << std::fixed << std::setprecision(2) << "        nodes[" << i << "] = sTravelNodeMap.addNode(&WorldPosition(" << node->getMapId() << "," << node->getX() << "f," << node->getY() << "f," << node->getZ() << "f,"<< node->getO() <<"f), \""
             << name << "\", " << (node->isImportant() ? "true" : "false") << ", true";
-        if (node->isTransport() || node->isPortal())
-            out << "," << (node->isTransport() ? "true" : "false") << "," << (node->isPortal() ? "true" : "false") << "," << node->getTransportId();
+        if (node->isTransport())
+            out << "," << (node->isTransport() ? "true" : "false") << "," << node->getTransportId();
 
         out << ");";
-        sPlayerbotAIConfig.log(3, out.str().c_str());
+        sPlayerbotAIConfig.log(nodeStore, out.str().c_str());
 
         saveNodes.insert(make_pair(node, i));
     }
@@ -1226,19 +1359,21 @@ void TravelNodeMap::printMap()
     {
         TravelNode* node = anodes[i];
 
-        for (auto& Link : node->getLinks())
+        for (auto& Link : *node->getLinks())
         {
             ostringstream out;
-            out << std::fixed << std::setprecision(1) << "        nodes[" << i << "]->linkNode(nodes[" << saveNodes.find(Link.first)->second << "], " << Link.second << "f);";
-            sPlayerbotAIConfig.log(3, out.str().c_str());
+            out << std::fixed << std::setprecision(1) << "        nodes[" << i << "]->setPathTo(nodes[" << saveNodes.find(Link.first)->second << "],TravelNodePath(";
+            out << Link.second->print() << "), true);";
+            sPlayerbotAIConfig.log(nodeStore, out.str().c_str());
         }
     }
 
-    sPlayerbotAIConfig.log(3, "	}");
-    sPlayerbotAIConfig.log(3, "};");
-    sPlayerbotAIConfig.log(3, "}");
+    sPlayerbotAIConfig.log(nodeStore, "	}");
+    sPlayerbotAIConfig.log(nodeStore, "};");
+    sPlayerbotAIConfig.log(nodeStore, "}");
 
-    sLog.outError("saving done.");
+    printf("\r [Done] \r\x3D");
+    fflush(stdout);
 }
 
 

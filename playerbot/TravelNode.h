@@ -42,88 +42,133 @@
 // After calculating possible links the node is removed if it does not create local coverage.
 //
 
-    class TravelNodeRoute;
+    //A connection between two nodes. 
+    class TravelNodePath
+    {
+    public:
+        //Constructor for travelnodestore
+        TravelNodePath(float distance1 = 0.1f, float extraCost1 = 0, bool portal1 = false, uint32 portalId1 = 0, bool transport1 = false, bool calculated = false, uint32 maxLevelMob1 = 0, uint32 maxLevelAlliance1 = 0, uint32 maxLevelHorde1 = 0, float swimDistance1 = 0);
+        //Constructor for portals/transports
+        TravelNodePath(vector<WorldPosition> path1, float extraCost1, bool portal1 = false, uint32 portalId1 = 0, bool transport1 = false, uint32 moveSpeed = 0);
+        //Getters
+        bool getComplete() { return complete; }
+        vector<WorldPosition> getPath() { return path; }
+        float getDistance() { return distance; }
+        bool getPortal() { return portal; }
+        uint32 gePortalId() { return portalId; }
+        bool getTransport() { return transport; }        
+        bool getCalculated() { return calculated; }
+
+        string print();
+
+        //Setters
+        void setComplete(bool complete1) { complete = complete1; }
+        void setPath(vector<WorldPosition> path1) { path = path1; }
+        void setPortal(bool portal1, uint32 portalId1 = 0) { portal = portal1; portalId = portalId1; }
+        void setTransport(bool transport1) { transport = transport1; }
+
+        void calculateCost(bool distanceOnly = false);
+
+        float getCost(Unit* bot = nullptr);
+    private:
+        //Does the path have all the points to get to the destination?
+        bool complete = false;
+
+        //List of WorldPositions to get to the destination.
+        vector<WorldPosition> path = {};
+
+        //The extra (loading/transport) time it takes to take this path.
+        float extraCost = 0;
+
+        bool calculated = false;
+
+        //Derived distance in yards
+        float distance = 0.1f;
+
+        //Calculated mobs level along the way.
+        uint32 maxLevelMob = 0;      //Hostile mobs
+        uint32 maxLevelAlliance = 0; //Hostile to horde
+        uint32 maxLevelHorde = 0;    //Hostile to alliance
+
+        //Calculated swiming distances along the way.
+        float swimDistance = 0;
+
+        //Is the path a portal/teleport to the destination?
+        bool portal = false;
+        //Area trigger Id
+        uint32 portalId = 0;
+
+        //Is the path transport based?
+        bool transport = false;
+    };
 
     //A waypoint to travel from or to.
     //Each node knows which other nodes can be reached without help.
     class TravelNode
     {
     public:
+        //Constructors
         TravelNode(WorldPosition* point1, string nodeName1 = "Travel Node", bool important1 = false) { nodeName = nodeName1; point = *point1; important = important1; }
-        TravelNode(WorldPosition* point1, string nodeName1, bool important1, bool transport1, uint32 transportId1) { nodeName = nodeName1; point = *point1; important = important1; transport = transport1; portal = !transport1; transportId = transportId1; }
+        TravelNode(WorldPosition* point1, string nodeName1, bool important1, bool transport1, uint32 transportId1) { nodeName = nodeName1; point = *point1; important = important1; transport = transport1; transportId = transportId1; }
+        TravelNode(TravelNode* baseNode) { nodeName = baseNode->nodeName; point = baseNode->point; important = baseNode->important; transport = baseNode->transport; transportId = baseNode->transportId; }
 
+        //Setters
         void setLinked(bool linked1) { linked = linked1; }
 
+        //Getters
         string getName() { return nodeName; };
         WorldPosition* getPosition() { return &point; };
-        std::unordered_map<TravelNode*, float> getLinks() { return links; }
-        std::unordered_map<TravelNode*, vector<WorldPosition>> getPaths() { return paths; }
+        std::unordered_map<TravelNode*, TravelNodePath>* getPaths() { return &paths; }
+        std::unordered_map<TravelNode*, TravelNodePath*>* getLinks() { return &links; }
         bool isImportant() { return important; };
         bool isLinked() { return linked; }
-
         bool isTransport() { return transport; }
-        bool isPortal() { return portal; }
         uint32 getTransportId() { return transportId; }
-       
-        bool doTransport(TravelNode* nextNode) { return (isTransport() && nextNode->isTransport() && getTransportId() == nextNode->getTransportId()); }
-        bool doPortal(TravelNode* nextNode) { return (isPortal() && nextNode->isPortal() && getTransportId() == nextNode->getTransportId()); }
-
+        bool isPortal() { for (auto link : *getLinks()) if (link.second->getPortal()) return true; return false; }
+               
+        //WorldLocation shortcuts
         WorldLocation* getLocation() { return &point.getLocation(); };
         uint32 getMapId() { return point.getMapId(); }
         float getX() { return point.getX(); }
         float getY() { return point.getY(); }
         float getZ() { return point.getZ(); }
         float getO() { return point.getO(); }
-
         float getDistance(WorldPosition* pos) { return point.distance(pos); }
         float getDistance(TravelNode* node) { return point.distance(node->getPosition()); }
 
-        uint32 doPathStep(WorldPosition startPos, WorldPosition endPos, Unit* bot, vector<WorldPosition>& ppath);
-        bool canPathNode(WorldPosition* startPos, WorldPosition* endPos, Unit* bot, vector<WorldPosition>& ppath);
-        bool canPathNode(WorldPosition* endPos, Unit* bot, vector<WorldPosition>& ppath) {return canPathNode(&point, endPos, bot, ppath);};
-        bool canPathNode(WorldPosition* endPos, Unit* bot) { vector<WorldPosition> ppath; return canPathNode(endPos, bot, ppath); }
-        bool canPathNode(TravelNode* endNode, Unit* bot, vector<WorldPosition>& ppath);
-        bool canPathFrom(WorldPosition* startPos, Unit* bot, vector<WorldPosition>& ppath) { return canPathNode(startPos, &point, bot, ppath); };
+        TravelNodePath* setPathTo(TravelNode* node, TravelNodePath path = TravelNodePath(), bool isLink = true) { if (this != node) { paths.insert_or_assign(node, path); TravelNodePath* tPath = &paths.find(node)->second;  if (isLink) links.insert_or_assign(node, tPath); return tPath; } else return nullptr; }
+        bool hasPathTo(TravelNode* node) { return paths.find(node) != paths.end(); }
+        TravelNodePath* getPathTo(TravelNode* node) { return &paths.find(node)->second; }
+        bool hasCompletePathTo(TravelNode* node) { return hasPathTo(node) && getPathTo(node)->getComplete(); }
+        TravelNodePath* buildPath(TravelNode* endNode, Unit* bot, bool postProcess = false);
 
-        void linkNode(TravelNode* node, float pathLength = -1) { if (this != node) { links.insert_or_assign(node, (pathLength == -1 ? point.distance(node->getPosition()) : (pathLength == 0 ? 0.1 : pathLength))); }; }        
-        bool hasLinkTo(TravelNode* node) { return links.find(node) != links.end(); }
-        float linkLengthTo(TravelNode* node) { for (auto& link : links) { if (link.first == node) return link.second; } return NULL; }
-        void unlinkNode(TravelNode* node, bool unlinkPaths = true);
+        void setLinkTo(TravelNode* node, float distance = 0.1f) { if (this != node) { if (!hasPathTo(node)) setPathTo(node, TravelNodePath(distance)); else links.insert_or_assign(node, &paths.find(node)->second);} }
+        bool hasLinkTo(TravelNode* node) { return links.find(node) != links.end();}
+        float linkCostTo(TravelNode* node) { return paths.find(node)->second.getDistance(); }
+        float linkDistanceTo(TravelNode* node) { return paths.find(node)->second.getDistance(); }
+        void removeLinkTo(TravelNode* node, bool removePaths = false);
 
-        //Checks if this node has exactly the same links.
-        bool isEqual(TravelNode* node);
+        bool isEqual(TravelNode* compareNode);
+
         //Removes links to other nodes that can also be reached by passing another node.
-        void cropUselessLinks();
+        bool isUselessLink(TravelNode* farNode);
+        void cropUselessLink(TravelNode* farNode);
+        void cropUselessLinks();        
+
         //Returns all nodes that can be reached from this node.
         vector<TravelNode*> getNodeMap(bool importantOnly = false, vector<TravelNode*> ignoreNodes = {});
-
-        void pathNode(TravelNode* node, vector<WorldPosition> path) { if (this != node) { paths.insert_or_assign(node, path); } }
-        bool hasPathTo(TravelNode* node) { return paths.find(node) != paths.end(); }
-        bool hasCompletePathto(TravelNode* node) { return hasPathTo(node) && !getPathTo(node).empty() ? getPathTo(node).back() == *node->getPosition() : false; }
-        float getPathLength(vector<WorldPosition>& ppath);
-        vector<WorldPosition> getPathTo(TravelNode* node) { for (auto& path : paths) { if (path.first == node) return path.second; }; vector<WorldPosition> retVec;  return retVec; }
-        float getPathLength(TravelNode* node) { return getPathLength(getPathTo(node)); };
-
-        void routeNode(TravelNode* node, TravelNodeRoute route);
-        void routeNode(TravelNode* node, vector<TravelNode*> route);
-
-        //void routeNode(TravelNode* node) { routes.insert_or_assign(node, NULL); };
-        bool hasRouteTo(TravelNode* node);
-        bool hasCompleteRouteTo(TravelNode* node);
-        TravelNodeRoute getRouteTo(TravelNode* node);
-        void clearEmptyRoutes();
         
         void print(bool printFailed = true);
     private:
+        //Logical name of the node
         string nodeName;
+        //WorldPosition of the node.
         WorldPosition point;
 
-        //The nodes bots can travel to directly from this node.
-        std::unordered_map<TravelNode*, float> links;
-        //The way a unit will travel when asked to travel to a node. Includes incomplete paths.
-        std::unordered_map<TravelNode*, vector<WorldPosition>> paths;
-        //The nodes a bot has to visit to get to a (distant) node. 
-        std::unordered_map<TravelNode*, TravelNodeRoute> routes;
+        //List of paths to other nodes.
+        std::unordered_map<TravelNode*, TravelNodePath> paths;
+        //List of links to other nodes.
+        std::unordered_map<TravelNode*, TravelNodePath*> links;
 
         //This node should not be removed
         bool important = false;
@@ -131,10 +176,53 @@
         //This node has been checked for nearby links
         bool linked = false;
 
-        //This node is a (moving) transport stop.
+        //This node is a (moving) transport.
         bool transport = false;
-        bool portal = false;
+        //Entry of transport.
         uint32 transportId = 0;
+    };
+
+    //Route step type
+    enum PathNodeType
+    {
+        NODE_PREPATH = 0,
+        NODE_PATH = 1,
+        NODE_NODE = 2,
+        NODE_PORTAL = 3,
+        NODE_TRANSPORT = 4
+    };
+
+    struct PathNodePoint
+    {
+        WorldPosition point;
+        PathNodeType type = NODE_PATH;
+        uint32 entry = 0;
+    };
+
+    //A complete list of points the bots has to walk to or teleport to.
+    class TravelPath
+    {
+    public:
+        TravelPath() {};
+        TravelPath(vector<PathNodePoint> fullPath1) { fullPath = fullPath1; }
+
+        void addPoint(PathNodePoint point) { fullPath.push_back(point); }
+        void addPoint(WorldPosition point, PathNodeType type = NODE_PATH, uint32 entry = 0) { fullPath.push_back(PathNodePoint{ point, type, entry }); }
+        void addPath(vector<WorldPosition> path, PathNodeType type = NODE_PATH, uint32 entry = 0) { for (auto& p : path) { fullPath.push_back(PathNodePoint{ p, type, entry }); }; }
+        void addPath(vector<PathNodePoint> newPath) { fullPath.insert(fullPath.end(), newPath.begin(), newPath.end()); }
+        void clear() { fullPath.clear(); }
+
+        bool empty() { return fullPath.empty(); }
+        vector<PathNodePoint> getPath() { return fullPath; }
+        WorldPosition getFront() {return fullPath.front().point; }
+        WorldPosition getBack() { return fullPath.back().point; }
+
+        bool makeShortCut(WorldPosition startPos, float maxDist);
+        WorldPosition getNextPoint(WorldPosition startPos, float maxDist, bool &isTeleport, bool &isTransport, uint32& entry);
+
+        ostringstream print();
+    private:
+        vector<PathNodePoint> fullPath;
     };
 
     //An stored A* search that gives a complete route from one node to another.
@@ -147,18 +235,18 @@
         bool isEmpty() { return nodes.empty(); }
 
         bool hasNode(TravelNode* node) { return findNode(node) != nodes.end(); }
-        float getLength();
+        float getTotalDistance();
 
         vector<TravelNode*> getNodes() { return nodes; }
         
-        vector<vector<WorldPosition>> TravelNodeRoute::getPaths(Unit* bot, uint32 nodeLimit = -1);
+        TravelPath buildPath(vector<WorldPosition> pathToStart = {}, vector<WorldPosition> pathToEnd = {}, Unit* bot = nullptr);
 
-        TravelNode* getNextNode(Unit* bot, WorldPosition* startPosition, WorldPosition* endPosition, bool& isTeleport, vector<WorldPosition>& longPath, vector<WorldPosition>& shortPath);
+        ostringstream print();
     private:
         vector<TravelNode*>::iterator findNode(TravelNode* node) { return std::find(nodes.begin(), nodes.end(), node); }
         vector<TravelNode*> nodes;
     };
-
+   
     //A node container to aid A* calculations with nodes.
     class TravelNodeStub
     {
@@ -170,7 +258,7 @@
         TravelNode* dataNode;
         float m_f = 0.0, m_g = 0.0, m_h = 0.0;
         bool open = false, close = false;
-        TravelNodeStub* parent = NULL;
+        TravelNodeStub* parent = nullptr;
         vector<pair<TravelNodeStub*, float>> children;
     };
 
@@ -179,8 +267,9 @@
     {
     public:
         TravelNodeMap() {};
+        TravelNodeMap(TravelNodeMap* baseMap);
 
-        TravelNode* addNode(WorldPosition* pos, string preferedName = "Travel Node", bool isImportant = false, bool checkDuplicate = true, bool transport = false, bool portal = false, uint32 transportId = 0);
+        TravelNode* addNode(WorldPosition* pos, string preferedName = "Travel Node", bool isImportant = false, bool checkDuplicate = true, bool transport = false, uint32 transportId = 0);
         void removeNode(TravelNode* node);
         void fullLinkNode(TravelNode* startNode, Unit* bot);
 
@@ -189,31 +278,33 @@
         vector<TravelNode*> getNodes(WorldPosition* pos, float range = -1);
 
         //Find nearest node.
-        TravelNode* getNode(WorldPosition* pos, vector<WorldPosition>& ppath, Unit* bot = NULL, float range = -1);
-        TravelNode* getNode(WorldPosition* pos, Unit* bot = NULL, float range = -1) {vector<WorldPosition> ppath; return getNode(pos, ppath, bot, range);}
+        TravelNode* getNode(TravelNode* sameNode) { for (auto& node : m_nodes) { if (node->getName() == sameNode->getName() && node->getPosition() == sameNode->getPosition()) return node; } return nullptr; }
+        TravelNode* getNode(WorldPosition* pos, vector<WorldPosition>& ppath, Unit* bot = nullptr, float range = -1);
+        TravelNode* getNode(WorldPosition* pos, Unit* bot = nullptr, float range = -1) {vector<WorldPosition> ppath; return getNode(pos, ppath, bot, range);}
 
         //Get Random Node
-        TravelNode* getRandomNode(WorldPosition* pos) {vector<TravelNode*> rNodes = getNodes(pos); if (rNodes.empty()) return NULL; return  rNodes[urand(0, rNodes.size() - 1)]; }
+        TravelNode* getRandomNode(WorldPosition* pos) {vector<TravelNode*> rNodes = getNodes(pos); if (rNodes.empty()) return nullptr; return  rNodes[urand(0, rNodes.size() - 1)]; }
 
         //Finds the best nodePath between two nodes
-        TravelNodeRoute getRoute(TravelNode* start, TravelNode* goal, bool saveRoute = true);
+        TravelNodeRoute getRoute(TravelNode* start, TravelNode* goal, Unit* bot = nullptr);
 
         //Find the best node between two positions
-        TravelNodeRoute getRoute(WorldPosition* startPos, WorldPosition* endPos, vector<WorldPosition>& startPath, Unit* bot = NULL);
+        TravelNodeRoute getRoute(WorldPosition* startPos, WorldPosition* endPos, vector<WorldPosition>& startPath, Unit* bot = nullptr);
 
         //Manage/update nodes
         void manageNodes(Unit* bot, bool mapFull = false);
 
         //Print map
         void printMap();
+        //Print nodStore;
+        void printNodeStore();
 
-        bool pathNodeLink(TravelNode* startNode, Unit* bot, bool pathLinked = true, bool pathUnlinked = false, uint32 numPaths = 1);
         bool cropUselessNode(TravelNode* startNode);
         TravelNode* addZoneLinkNode(TravelNode* startNode);
         TravelNode* addRandomExtNode(TravelNode* startNode);
 
         void calcMapOffset();
-        WorldPosition getMapOffset(uint32 mapId);
+        WorldPosition getMapOffset(uint32 mapId);        
 
         std::shared_mutex m_nMapMtx;
     private:

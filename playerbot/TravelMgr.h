@@ -9,25 +9,38 @@ namespace G3D
     class Vector4;
 }
 
-enum WorldPositionConst
-{
-    WP_RANDOM = 0,
-    WP_CENTROID = 1,
-    WP_MEAN_CENTROID = 2 ,
-    WP_CLOSEST = 3
-};
-
 namespace ai
 {
+    //Constructor types for WorldPosition
+    enum WorldPositionConst
+    {
+        WP_RANDOM = 0,
+        WP_CENTROID = 1,
+        WP_MEAN_CENTROID = 2,
+        WP_CLOSEST = 3
+    };
+
     //Extension of WorldLocation with distance functions.
     class WorldPosition
     {
     public:
+        //Constructors
         WorldPosition() { wLoc = WorldLocation(); }
-        WorldPosition(uint32 mapid, float x, float y, float z, float orientation) { wLoc = WorldLocation(mapid, x, y, z, orientation); }
+        WorldPosition(uint32 mapid, float x, float y, float z = 0, float orientation = 0) { wLoc = WorldLocation(mapid, x, y, z, orientation); }
         WorldPosition(WorldObject* wo) { wLoc = WorldLocation(wo->GetMapId(), wo->GetPositionX(), wo->GetPositionY(), wo->GetPositionZ(), wo->GetOrientation()); }
         WorldPosition(vector<WorldPosition*> list, WorldPositionConst conType);
+        WorldPosition(uint32 mapid, std::pair<int, int> grid) { wLoc = WorldLocation(mapid, (32 - grid.first) * SIZE_OF_GRIDS, (32 - grid.second) * SIZE_OF_GRIDS, 0, 0); }
 
+        //Setters
+        void setX(float x) { wLoc.coord_x = x; }
+        void setY(float y) { wLoc.coord_y = y; }
+        void setZ(float z) { wLoc.coord_z = z; }
+
+        void addVisitor() { visitors++; }
+        void remVisitor() { visitors--; }
+
+        //Getters
+        operator bool() const { return  wLoc.mapid != 0 || wLoc.coord_x != 0 || wLoc.coord_y != 0 || wLoc.coord_z != 0;}
         bool operator==(const WorldPosition& p1) { return wLoc.mapid == wLoc.mapid && wLoc.coord_x == p1.wLoc.coord_x && wLoc.coord_y == p1.wLoc.coord_y && wLoc.coord_z == p1.wLoc.coord_z && wLoc.orientation == p1.wLoc.orientation; }
 
         WorldLocation getLocation() { return wLoc; }
@@ -38,6 +51,15 @@ namespace ai
         float getO() { return wLoc.orientation; }
         G3D::Vector3 getVector3();
         string print();
+
+        void printWKT(vector<WorldPosition> points, ostringstream& out, uint32 dim = 0, bool loop = false);
+        void printWKT(ostringstream& out) { printWKT({ *this }, out); }
+
+        uint32 getVisitors() { return visitors; }
+
+        bool isOverworld() { return wLoc.mapid == 0 || wLoc.mapid == 1 || wLoc.mapid == 530 || wLoc.mapid == 571; }
+        bool isInWater() { return getTerrain() ? getTerrain()->IsInWater(wLoc.coord_x, wLoc.coord_y, wLoc.coord_z) : false; };
+        bool isUnderWater() { return getTerrain() ? getTerrain()->IsUnderWater(wLoc.coord_x, wLoc.coord_y, wLoc.coord_z) : false; };
 
         WorldPosition relPoint(WorldPosition* center) { return WorldPosition(wLoc.mapid, wLoc.coord_x - center->wLoc.coord_x, wLoc.coord_y - center->wLoc.coord_y, wLoc.coord_z - center->wLoc.coord_z, wLoc.orientation); }
         WorldPosition offset(WorldPosition* center) { return WorldPosition(wLoc.mapid, wLoc.coord_x + center->wLoc.coord_x, wLoc.coord_y + center->wLoc.coord_y, wLoc.coord_z + center->wLoc.coord_z, wLoc.orientation); }
@@ -50,6 +72,9 @@ namespace ai
         //Returns the closest point from the list.
         WorldPosition* closest(vector<WorldPosition*> list) { return *std::min_element(list.begin(), list.end(), [this](WorldPosition* i, WorldPosition* j) {return this->distance(i) < this->distance(j); }); }
         WorldPosition closest(vector<WorldPosition> list) { return *std::min_element(list.begin(), list.end(), [this](WorldPosition i, WorldPosition j) {return this->distance(i) < this->distance(j); }); }
+
+        //Quick square distance in 2d plane.
+        float sqDistance2d(WorldPosition center) { return (getX() - center.getX()) * (getX() - center.getX()) + (getY() - center.getY()) * (getY() - center.getY()); };
 
         //Quick square distance calculation without map check. Used for getting the minimum distant points.
         float sqDistance(WorldPosition center) { return (getX() - center.getX()) * (getX() - center.getX()) + (getY() - center.getY()) * (getY() - center.getY()) + (getZ() - center.getZ()) * (getZ() - center.getZ()); };
@@ -71,26 +96,39 @@ namespace ai
         Map*  getMap() { return sMapMgr.FindMap(wLoc.mapid, getMapEntry()->Instanceable() ? wLoc.mapid : 0); }
         const TerrainInfo* getTerrain() { return getMap() ? getMap()->GetTerrain() : NULL; }
 
+        std::set<Transport*> getTransports(uint32 entry = 0);
+
+        std::pair<int,int> getGrid();
+        std::vector<pair<int, int>> getGrids(WorldPosition secondPos);
+        vector<WorldPosition> fromGrid(int x, int y);
+
+        void loadMapAndVMap(uint32 mapId, int x, int y);
+        void loadMapAndVMap() {loadMapAndVMap(getMapId(), getGrid().first, getGrid().second); }
+        void loadMapAndVMaps(WorldPosition secondPos);
+
+        //Display functions
         WorldPosition getDisplayLocation();
         float getDisplayX() { return getDisplayLocation().getY() * -1.0; }
         float getDisplayY() { return getDisplayLocation().getX(); }
-
-        void setX(float x) { wLoc.coord_x = x; }
-        void setY(float y) { wLoc.coord_y = y; }
-        void setZ(float z) { wLoc.coord_z = z; }
-
-        void addVisitor() { visitors++; }
-        void remVisitor() { visitors--; }
-        uint32 getVisitors() { return visitors; }
-
-        bool isOverworld() { return wLoc.mapid == 0 || wLoc.mapid == 1 || wLoc.mapid == 530 || wLoc.mapid == 571; }
-        bool isUnderWater() { return getTerrain() ? getTerrain()->IsUnderWater(wLoc.coord_x, wLoc.coord_y, wLoc.coord_z) : false; };
 
         uint16 getAreaFlag() { return sTerrainMgr.GetAreaFlag(getMapId(), getX(), getY(), getZ()); };
         AreaTableEntry const* getArea();
         string getAreaName(bool fullName = true, bool zoneName = false);
 
-        vector<WorldPosition> getPath(std::vector<G3D::Vector3> path);
+        vector<WorldPosition> fromPointsArray(std::vector<G3D::Vector3> path);
+
+        //Pathfinding
+        vector<WorldPosition> getPathStepFrom(WorldPosition startPos, Unit* bot);
+        vector<WorldPosition> getPathFromPath(vector<WorldPosition> startPath, Unit* bot);
+        vector<WorldPosition> getPathFrom(WorldPosition startPos, Unit* bot) { return getPathFromPath({ startPos }, bot); };
+        vector<WorldPosition> getPathTo(WorldPosition endPos, Unit* bot) { return endPos.getPathFrom(*this, bot); }
+        bool isPathTo(vector<WorldPosition> path, float maxDistance = sPlayerbotAIConfig.targetPosRecalcDistance) { return !path.empty() && distance(path.back()) < maxDistance; };
+        bool canPathTo(WorldPosition endPos, Unit* bot) { return endPos.isPathTo(getPathTo(endPos, bot)); }
+
+        //Creatures
+        vector<CreatureDataPair const*> getCreaturesNear(float radius = 0, uint32 entry = 0);
+        //GameObjects
+        vector<GameObjectDataPair const*> getGameObjectsNear(float radius = 0, uint32 entry = 0);
     private:
         WorldLocation wLoc;
         uint32 visitors = 0;        
@@ -99,20 +137,21 @@ namespace ai
     class mapTransfer
     {
     public:
-        mapTransfer(uint32 mapFrom1, uint32 mapTo1, WorldPosition pointFrom1, WorldPosition pointTo1, bool isPortal1 = false, float portalLength1 = 0.1f)
-            : mapFrom(mapFrom1), mapTo(mapTo1), pointFrom(pointFrom1), pointTo(pointTo1), isPortal(isPortal1), portalLength(portalLength1) {}
+        mapTransfer(WorldPosition pointFrom1, WorldPosition pointTo1, float portalLength1 = 0.1f)
+            : pointFrom(pointFrom1), pointTo(pointTo1), portalLength(portalLength1) {}
 
-        bool isFrom(WorldPosition point) { return point.getMapId() == mapFrom; }
-        bool isTo(WorldPosition point) { return point.getMapId() == mapTo; }
+        bool isFrom(WorldPosition point) { return point.getMapId() == pointFrom.getMapId(); }
+        bool isTo(WorldPosition point) { return point.getMapId() == pointTo.getMapId(); }
+
+        WorldPosition* getPointFrom() { return &pointFrom; }
+        WorldPosition* getPointTo() { return &pointTo; }
 
         bool isUsefull(WorldPosition point) { return isFrom(point) || isTo(point); }
-        bool distance(WorldPosition point) { return isUsefull(point) ? (isFrom(point) ? point.distance(pointFrom) : point.distance(pointTo)) : 200000; }
+        float distance(WorldPosition point) { return isUsefull(point) ? (isFrom(point) ? point.distance(pointFrom) : point.distance(pointTo)) : 200000; }
 
         bool isUsefull(WorldPosition start, WorldPosition end) { return isFrom(start) && isTo(end); }
-        bool distance(WorldPosition start, WorldPosition end) { return isUsefull(start, end) ? (start.distance(pointFrom) + end.distance(pointTo) + portalLength) : 200000; }
+        float distance(WorldPosition start, WorldPosition end) { return (isUsefull(start, end) ? (start.distance(pointFrom) + portalLength + pointTo.distance(end)) : 200000); }
     private:
-        bool isPortal;
-        uint32 mapFrom, mapTo;
         WorldPosition pointFrom, pointTo;
         float portalLength = 0.1f;
     };
@@ -165,6 +204,38 @@ namespace ai
         uint32 maxVisitorsPerPoint = 0;
         uint32 expireDelay = 5 * 1000;
         uint32 cooldownDelay = 60 * 1000;
+    };
+
+    //Generic creature finder
+    class FindPointCreatureData
+    {
+    public:
+        FindPointCreatureData(WorldPosition point1 = WorldPosition(), float radius1 = 0, uint32 entry1 = 0) { point = point1; radius = radius1; entry = entry1; }
+
+        bool operator()(CreatureDataPair const&  dataPair);
+        vector<CreatureDataPair const*> GetResult() const { return data; };
+    private:
+        WorldPosition point;
+        float radius;
+        uint32 entry;
+
+        vector<CreatureDataPair const*> data;
+    };
+
+    //Generic gameObject finder
+    class FindPointGameObjectData
+    {
+    public:
+        FindPointGameObjectData(WorldPosition point1 = WorldPosition(), float radius1 = 0, uint32 entry1 = 0) { point = point1; radius = radius1; entry = entry1; }
+
+        bool operator()(GameObjectDataPair const& dataPair);
+        vector<GameObjectDataPair const*> GetResult() const { return data; };
+    private:
+        WorldPosition point;
+        float radius;
+        uint32 entry;
+
+        vector<GameObjectDataPair const*> data;
     };
 
     //A travel target that is always inactive and jumps to cooldown.
@@ -408,10 +479,17 @@ namespace ai
 
         void setNullTravelTarget(Player* player);
 
+        void addMapTransfer(WorldPosition start, WorldPosition end, float portalDistance = 0.1f);
+        void loadMapTransfers();
         float mapTransDistance(WorldPosition start, WorldPosition end);
 
         NullTravelDestination* nullTravelDestination = new NullTravelDestination();
         WorldPosition* nullWorldPosition = new WorldPosition();
+
+        void addBadVmap(uint32 mapId, int x, int y) { badVmap.push_back(make_tuple(mapId, x, y)); }
+        void addBadMmap(uint32 mapId, int x, int y) { badMmap.push_back(make_tuple(mapId, x, y)); }
+        bool isBadVmap(uint32 mapId, int x, int y) { return std::find(badVmap.begin(), badVmap.end(), make_tuple(mapId, x, y)) != badVmap.end();}
+        bool isBadMmap(uint32 mapId, int x, int y) { return std::find(badMmap.begin(), badMmap.end(), make_tuple(mapId, x, y)) != badMmap.end(); }
     protected:
         void logQuestError(uint32 errorNr, Quest * quest, uint32 objective = 0, uint32 unitId = 0, uint32 itemId = 0);
 
@@ -419,17 +497,10 @@ namespace ai
         vector<RpgTravelDestination*> rpgNpcs;
         
         std::unordered_map<uint32, ExploreTravelDestination*> exploreLocs;
-
-#ifdef MANGOS
-        UNORDERED_MAP<uint32, QuestContainer *> quests;
-
-        UNORDERED_MAP<int32, WorldPosition> pointsMap;
-#endif
-#ifdef CMANGOS
         std::unordered_map<uint32, QuestContainer *> quests;
-
         std::unordered_map<int32, WorldPosition> pointsMap;
-#endif
+
+        vector<tuple<uint32,int,int>> badVmap, badMmap;
 
         vector<mapTransfer> mapTransfers;
     };

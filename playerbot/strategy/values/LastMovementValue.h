@@ -1,5 +1,6 @@
 #pragma once
 #include "../Value.h"
+#include "TravelNode.h"
 
 namespace ai
 {
@@ -8,19 +9,7 @@ namespace ai
     public:
         LastMovement()
         {
-            lastMoveShort = WorldPosition();
-            lastMoveLong = WorldPosition();
-            lastPath.clear();
-            /*
-            lastMoveToMapId = 0;            
-            lastMoveToX = 0;
-            lastMoveToY = 0;
-            lastMoveToZ = 0;
-            lastMoveToOri = 0;
-            */
-            lastFollow = NULL;
-            lastAreaTrigger = 0;
-            lastFlee = 0;
+            clear();
         }
 
         LastMovement(LastMovement& other)
@@ -30,8 +19,8 @@ namespace ai
             lastFollow = other.lastFollow;
             lastAreaTrigger = other.lastAreaTrigger;
             lastMoveShort = other.lastMoveShort;
-            lastMoveLong = other.lastMoveLong;
             lastPath = other.lastPath;
+            nextTeleport = other.nextTeleport;
             /*
             lastMoveToMapId = other.lastMoveToMapId;
             lastMoveToX = other.lastMoveToX;
@@ -39,6 +28,23 @@ namespace ai
             lastMoveToZ = other.lastMoveToZ;
             lastMoveToOri = other.lastMoveToOri;
             */
+        }
+
+        void clear()
+        {
+            lastMoveShort = WorldPosition();
+            lastPath.clear();
+            /*
+            lastMoveToMapId = 0;
+            lastMoveToX = 0;
+            lastMoveToY = 0;
+            lastMoveToZ = 0;
+            lastMoveToOri = 0;
+            */
+            lastFollow = NULL;
+            lastAreaTrigger = 0;
+            lastFlee = 0;
+            nextTeleport = 0;
         }
 
         void Set(Unit* lastFollow)
@@ -61,9 +67,9 @@ namespace ai
         }
         */
 
-        void setShort(WorldPosition point) { lastMoveShort = point; }
-        void setLong(WorldPosition point) { lastMoveLong = point; };
-        void setPath(vector<WorldPosition> path) { lastPath = path; }
+        void setShort(WorldPosition point) {lastMoveShort = point; lastFollow = NULL;
+        }
+        void setPath(TravelPath path) { lastPath = path; }
     public:
         vector<uint32> taxiNodes;
         ObjectGuid taxiMaster;
@@ -73,8 +79,8 @@ namespace ai
         //uint32 lastMoveToMapId;
         //float lastMoveToX, lastMoveToY, lastMoveToZ, lastMoveToOri;
         WorldPosition lastMoveShort;
-        WorldPosition lastMoveLong;
-        vector<WorldPosition> lastPath;
+        TravelPath lastPath;
+        time_t nextTeleport;
     };
 
     class LastMovementValue : public ManualSetValue<LastMovement&>
