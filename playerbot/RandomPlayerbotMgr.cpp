@@ -33,6 +33,7 @@
 #endif
 
 #include "TravelMgr.h"
+#include <iomanip>
 
 using namespace ai;
 using namespace MaNGOS;
@@ -279,6 +280,24 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed)
             break;
         else if (playerBots.size() >= sPlayerbotAIConfig.minRandomBots && botProcessed >= int(sPlayerbotAIConfig.randomBotsPerInterval / 30))
             break;
+    }   
+
+    if (sPlayerbotAIConfig.hasLog("bot_location.csv"))
+    {
+        sPlayerbotAIConfig.openLog("bot_location.csv", "w");
+        for (auto i : GetAllBots())
+        {
+            Player* bot = i.second;
+            if(!bot)
+                continue;
+            ostringstream out;
+            out << sPlayerbotAIConfig.GetTimestampStr() << "+00, ";
+            out << bot->GetName() << "," << to_string(bot->getClass()) << "," << bot->getLevel() << ",";
+            out << std::fixed << std::setprecision(2);
+            WorldPosition(bot).printWKT(out);
+            out << "," << bot->GetOrientation();
+            sPlayerbotAIConfig.log("bot_location.csv", out.str().c_str());
+        }
     }
 
     if (pmo) pmo->finish();
