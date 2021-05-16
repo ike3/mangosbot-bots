@@ -35,6 +35,21 @@ void LoadList(string value, T &list)
     }
 }
 
+template <class T>
+void LoadListString(string value, T& list)
+{
+    vector<string> strings = split(value, ',');
+    for (vector<string>::iterator i = strings.begin(); i != strings.end(); i++)
+    {
+        string string = *i;
+        if (string.empty())
+            continue;
+
+        list.push_back(string);
+    }
+}
+
+
 bool PlayerbotAIConfig::Initialize()
 {
     sLog.outString("Initializing AI Playerbot by ike3, based on the original Playerbot by blueboy");
@@ -216,11 +231,7 @@ bool PlayerbotAIConfig::Initialize()
         }
     }
 
-    for (uint32 log = 0; log < 10; ++log)
-    {
-        ostringstream os; os << "AiPlayerbot.LogFile." << log;
-        logFileName[log] = config.GetStringDefault(os.str().c_str(), "");
-    }
+    LoadListString<list<string>>(config.GetStringDefault("AiPlayerbot.AllowedLogFiles", ""), allowedLogFiles);
 
     worldBuffs.clear();
     
@@ -489,27 +500,23 @@ std::string PlayerbotAIConfig::GetTimestampStr()
     return std::string(buf);
 }
 
-bool PlayerbotAIConfig::hasLog(uint32 logId)
+bool PlayerbotAIConfig::openLog(string fileName, char const* mode)
 {
-    if (logId > 9)
+    if (!hasLog(fileName))
         return false;
+     
+    auto logFileIt = logFiles.find(fileName);
+    if (logFileIt == logFiles.end())
+    {
+        logFiles.insert(make_pair(fileName, make_pair(nullptr, false)));
+        logFileIt = logFiles.find(fileName);
+    }
 
-    std::string logfn = logFileName[logId];
-    if (logfn.empty())
-        return false;
+    FILE* file = logFileIt->second.first;
+    bool fileOpen = logFileIt->second.second;
 
-    return true;
-}
-
-void PlayerbotAIConfig::openLog(uint32 logId, char const* mode)
-{
-    if (!hasLog(logId))
-        return;   
-
-    std::string logfn = logFileName[logId];
-
-    if (logFileOpen[logId])
-        fclose(logFile[logId]);
+    if (fileOpen) //close log file
+        fclose(file);
 
     string m_logsDir = sConfig.GetStringDefault("LogsDir");
     if (!m_logsDir.empty())
@@ -519,30 +526,34 @@ void PlayerbotAIConfig::openLog(uint32 logId, char const* mode)
     }
 
 
-    logFile[logId] = fopen((m_logsDir + logfn).c_str(), mode);
-    logFileOpen[logId] = true;
+    file = fopen((m_logsDir + fileName).c_str(), mode);
+    fileOpen = true;
+
+    logFileIt->second.first = file;
+    logFileIt->second.second = fileOpen;
+    
+    return true;
 }
 
-void PlayerbotAIConfig::log(uint32 logId, const char* str, ...)
+void PlayerbotAIConfig::log(string fileName, const char* str, ...)
 {
     if (!str)
         return;
 
     std::lock_guard<std::mutex> guard(m_logMtx);
 
-    if (!logFileOpen[logId] && !logFileName[logId].empty())
-        openLog(logId, "a");
-       
+    if (!isLogOpen(fileName))
+        if (!openLog(fileName, "a"))
+            return;
 
-    if (logFileOpen[logId])
-    {
-        va_list ap;
-        va_start(ap, str);
-        vfprintf(logFile[logId], str, ap);
-        fprintf(logFile[logId], "\n");
-        va_end(ap);
-        fflush(logFile[logId]);
-    }
+    FILE* file = logFiles.find(fileName)->second.first;
+
+    va_list ap;
+    va_start(ap, str);
+    vfprintf(file, str, ap);
+    fprintf(file, "\n");
+    va_end(ap);
+    fflush(file);
 
     fflush(stdout);
 }
