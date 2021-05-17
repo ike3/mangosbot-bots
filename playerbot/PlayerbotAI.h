@@ -350,7 +350,7 @@ public:
 
     GrouperType GetGrouperType();
     bool HasPlayerNearby(WorldPosition* pos, float range = sPlayerbotAIConfig.reactDistance);
-    bool HasPlayerNearby(float range = sPlayerbotAIConfig.reactDistance) {return HasPlayerNearby(&WorldPosition(bot), range);};
+    bool HasPlayerNearby(float range = sPlayerbotAIConfig.reactDistance) { WorldPosition botPos(bot);  return HasPlayerNearby(&botPos, range); };
     bool HasManyPlayersNearby(uint32 trigerrValue = 20, float range = sPlayerbotAIConfig.sightDistance);
     bool AllowActive(ActivityType activityType);
     void SetMaster(Player* master) { this->master = master; }

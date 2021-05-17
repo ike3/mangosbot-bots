@@ -282,21 +282,49 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed)
             break;
     }   
 
-    if (sPlayerbotAIConfig.hasLog("bot_location.csv"))
+    if (sPlayerbotAIConfig.hasLog("player_location.csv"))
     {
-        sPlayerbotAIConfig.openLog("bot_location.csv", "w");
+        sPlayerbotAIConfig.openLog("player_location.csv", "w");
         for (auto i : GetAllBots())
         {
             Player* bot = i.second;
-            if(!bot)
+            if (!bot)
                 continue;
             ostringstream out;
-            out << sPlayerbotAIConfig.GetTimestampStr() << "+00, ";
-            out << bot->GetName() << "," << to_string(bot->getClass()) << "," << bot->getLevel() << ",";
+            out << sPlayerbotAIConfig.GetTimestampStr() << "+00,";
+            out << "RND" << ",";
+            out << bot->GetName() << ",";
             out << std::fixed << std::setprecision(2);
             WorldPosition(bot).printWKT(out);
-            out << "," << bot->GetOrientation();
-            sPlayerbotAIConfig.log("bot_location.csv", out.str().c_str());
+            out << bot->GetOrientation() << ",";
+            out << to_string(bot->getRace()) << ",";
+            out << to_string(bot->getClass()) << ",";
+            out << bot->getLevel() << ",";
+            out << bot->GetHealth() << ",";
+            out << bot->GetPowerPercent() << ",";
+            out << bot->GetMoney() << ",";         
+            sPlayerbotAIConfig.log("player_location.csv", out.str().c_str());
+        }
+        for (auto i : GetPlayers())
+        {
+            Player* bot = i;
+            if (!bot)
+                continue;
+            ostringstream out;
+            out << sPlayerbotAIConfig.GetTimestampStr() << "+00,";
+            out << "PLR" << ",";
+            out << bot->GetName() << ",";
+            out << std::fixed << std::setprecision(2);
+            WorldPosition(bot).printWKT(out);
+            out << bot->GetOrientation() << ",";
+            out << to_string(bot->getRace()) << ",";
+            out << to_string(bot->getClass()) << ",";
+            out << bot->getLevel() << ",";
+            out << bot->GetHealth() << ",";
+            out << bot->GetPowerPercent() << ",";
+            out << bot->GetMoney() << ",";
+            out << std::fixed << std::setprecision(2);
+            sPlayerbotAIConfig.log("player_location.csv", out.str().c_str());
         }
     }
 

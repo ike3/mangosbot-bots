@@ -503,11 +503,17 @@ void TravelNode::print(bool printFailed)
 
     uint32 mapSize = getNodeMap(true).size();
 
-    ostringstream out;
-    out << sPlayerbotAIConfig.GetTimestampStr();
+    ostringstream out;    
     string name = getName();
     name.erase(remove(name.begin(), name.end(), '\"'), name.end());
-    out << std::fixed << std::setprecision(2) << "+00, "<< name.c_str() << "," << (isImportant()?1:0) << "," << mapSize << "," << point.getDisplayX() << "," << point.getDisplayY() << "," << getZ();
+    out << name.c_str() << ",";
+    out << std::fixed << std::setprecision(2);
+    point.printWKT(out);
+    out << getZ() << ",";
+    out << getO() << ",";
+    out << (isImportant() ? 1 : 0) << ",";
+    out << mapSize;
+
     sPlayerbotAIConfig.log("travelNodes.csv",out.str().c_str());
 
     vector<WorldPosition> ppath;
@@ -547,19 +553,12 @@ void TravelNode::print(bool printFailed)
             else if (path->getPortal())
                 pathType = 4;
 
-            out << sPlayerbotAIConfig.GetTimestampStr();
-            out << std::fixed << std::setprecision(2) << "+00," << pathType << ", " << (isImportant() ? 1 : 0) << "," << mapSize << ",\"LINESTRING(";
-
-            float x, y = 0;
-            for (auto i : ppath)
-            {
-                if (i.getY() != y || i.getX() != x)
-                    out << i.getDisplayX() << " " << i.getDisplayY() + frand(-2, 2) << ",";
-                x = i.getX();
-                y = i.getY();
-            }
-
-            out << ")\"";
+            out << pathType << ",";
+            out << std::fixed << std::setprecision(2);
+            point.printWKT(ppath, out, 1);
+            out << path->getPortalId() << ",";
+            out << path->getDistance() << ",";
+            out << path->getCost();
 
             sPlayerbotAIConfig.log("travelPaths.csv", out.str().c_str());
         }
@@ -599,7 +598,7 @@ bool TravelPath::makeShortCut(WorldPosition startPos, float maxDist)
         newPath.push_back(p);
     }
 
-    if (minDist > maxDist) // todo use config
+    if (newPath.empty() || minDist > maxDist)
     {
         clear();
         return false;
@@ -673,11 +672,8 @@ WorldPosition TravelPath::getNextPoint(WorldPosition startPos, float maxDist, bo
         }
 
         //Teleport with next point to a new map.
-        if (p->type == NODE_PORTAL && nextP->point.getMapId() != startPos.getMapId())
+        if (p->type == NODE_PORTAL && nextP->type == NODE_PORTAL && p->entry == nextP->entry)
         {
-            if (nextP->type != NODE_PORTAL)
-                continue;
-
             startP = p; //Move to teleport and activate area trigger.
             break;
         }
@@ -747,14 +743,15 @@ ostringstream TravelPath::print()
     ostringstream out;
 
     out << sPlayerbotAIConfig.GetTimestampStr();
-    out << "+00, " << "1," << "\"LINESTRING(";
+    out << "+00," << "1,";
+    out << std::fixed;
+
+    WorldPosition().printWKT(getPointPath(), out, 1);
 
     for (auto& p : fullPath)
     {
         out << std::fixed << p.point.getDisplayX() << " " << p.point.getDisplayY() << ",";
     }
-
-    out << ")\"";
 
     return out;
 }
@@ -817,8 +814,8 @@ TravelPath TravelNodeRoute::buildPath(vector<WorldPosition> pathToStart, vector<
 
             if (nodePath->getPortal()) //Teleport to next node.
             {
-                travelPath.addPoint(*prevNode->getPosition(), NODE_PORTAL, nodePath->gePortalId()); //Entry point
-                travelPath.addPoint(*node->getPosition(), NODE_PORTAL, nodePath->gePortalId());     //Exit point
+                travelPath.addPoint(*prevNode->getPosition(), NODE_PORTAL, nodePath->getPortalId()); //Entry point
+                travelPath.addPoint(*node->getPosition(), NODE_PORTAL, nodePath->getPortalId());     //Exit point
             }
             else if (nodePath->getTransport()) //Move onto transport
             {

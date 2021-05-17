@@ -38,6 +38,25 @@ WorldPosition::WorldPosition(vector<WorldPosition*> list, WorldPositionConst con
     }
 }
 
+WorldPosition::WorldPosition(vector<WorldPosition> list, WorldPositionConst conType)
+{    
+    uint32 size = list.size();
+    if (size == 0)
+        return;
+    else if (size == 1)
+        wLoc = list.front().wLoc;
+    else if (conType == WP_RANDOM)
+        wLoc = list[urand(0, size - 1)].wLoc;
+    else if (conType == WP_CENTROID)
+        wLoc = std::accumulate(list.begin(), list.end(), WorldLocation(list[0].getMapId(), 0, 0, 0, 0), [size](WorldLocation i, WorldPosition j) {i.coord_x += j.getX() / size; i.coord_y += j.getY() / size; i.coord_z += j.getZ() / size; i.orientation += j.getO() / size; return i; });
+    else if (conType == WP_MEAN_CENTROID)
+    {
+        WorldPosition pos = WorldPosition(list, WP_CENTROID);
+        wLoc = pos.closestSq(list).wLoc;
+    }    
+}
+
+
 float WorldPosition::distance(WorldPosition* center)
 {
     if(wLoc.mapid == center->getMapId())
@@ -160,14 +179,13 @@ void WorldPosition::printWKT(vector<WorldPosition> points, ostringstream& out, u
         out << "\"POLYGON ((";
     }
 
-
     for (auto& p : points)
-        out << p.getDisplayX() << " " << p.getDisplayY() << (!loop && p == points.back() ? "" : ",");
+        out << p.getDisplayX() << " " << p.getDisplayY() << (!loop && &p == &points.back() ? "" : ",");
 
     if (loop)
         out << points.front().getDisplayX() << " " << points.front().getDisplayY();
 
-    out << (dim == 2 ? "))\"" : ")\"");
+    out << (dim == 2 ? "))\"," : ")\",");
 }
 
 WorldPosition WorldPosition::getDisplayLocation() 
@@ -330,7 +348,7 @@ void WorldPosition::loadMapAndVMap(uint32 mapId, int x, int y)
         {
             ostringstream out;
             out << sPlayerbotAIConfig.GetTimestampStr();
-            out << "+00, \"vmap\", " << x << "," << y << ", " << (sTravelMgr.isBadVmap(mapId, x, y) ? "0": "1") << ",";
+            out << "+00,\"vmap\", " << x << "," << y << ", " << (sTravelMgr.isBadVmap(mapId, x, y) ? "0": "1") << ",";
             printWKT(fromGrid(x, y), out, 1, true);
             sPlayerbotAIConfig.log(fileName, out.str().c_str());
         }
@@ -346,7 +364,7 @@ void WorldPosition::loadMapAndVMap(uint32 mapId, int x, int y)
         {
             ostringstream out;
             out << sPlayerbotAIConfig.GetTimestampStr();
-            out << "+00, \"mmap\", " << x << "," << y << "," << (sTravelMgr.isBadMmap(mapId, x, y) ? "0" : "1") << ",";
+            out << "+00,\"mmap\", " << x << "," << y << "," << (sTravelMgr.isBadMmap(mapId, x, y) ? "0" : "1") << ",";
             printWKT(fromGrid(x, y), out, 1, true);
             sPlayerbotAIConfig.log(fileName, out.str().c_str());
         }
@@ -424,7 +442,7 @@ vector<WorldPosition> WorldPosition::getPathStepFrom(WorldPosition startPos, Uni
     if (sPlayerbotAIConfig.hasLog("pathfind_attempt.csv") && (type == PATHFIND_INCOMPLETE || type == PATHFIND_NORMAL))
     {
         ostringstream out;
-        out << sPlayerbotAIConfig.GetTimestampStr() << "+00, ";
+        out << sPlayerbotAIConfig.GetTimestampStr() << "+00,";
         out << std::fixed << std::setprecision(1) << type << ",";
         printWKT(fromPointsArray(points), out, 1);
         sPlayerbotAIConfig.log("pathfind_attempt.csv", out.str().c_str());
@@ -1394,7 +1412,7 @@ void TravelMgr::LoadQuestTravelTable()
         if (!area->exploreFlag)
             continue;
 
-        if (u.type == 1) //Test to see if only picking units will improve coverage.
+        if (u.type == 1) 
             continue;
 
         auto iloc = exploreLocs.find(area->ID);
@@ -1419,6 +1437,8 @@ void TravelMgr::LoadQuestTravelTable()
         loc->addPoint(&pointsMap.find(guid)->second);
     }
      
+
+
 
 
 #ifdef IKE_PATHFINDER
@@ -1860,6 +1880,9 @@ void TravelMgr::LoadQuestTravelTable()
     loadMapTransfers();
 
     //Clear these logs files
+    sPlayerbotAIConfig.openLog("zones.csv", "w");
+    sPlayerbotAIConfig.openLog("creatures.csv", "w");
+    sPlayerbotAIConfig.openLog("gos.csv", "w");
     sPlayerbotAIConfig.openLog("bot_movement.csv", "w");
     sPlayerbotAIConfig.openLog("bot_pathfinding.csv", "w");    
     sPlayerbotAIConfig.openLog("pathfind_attempt.csv", "w");
@@ -2031,6 +2054,111 @@ void TravelMgr::LoadQuestTravelTable()
     sTravelNodeMap.printMap();
     sTravelNodeMap.printNodeStore();
 
+    //Creature/gos/zone export.
+    if (sPlayerbotAIConfig.hasLog("creatures.csv"))
+    {
+        for (auto& creaturePair : WorldPosition().getCreaturesNear())
+        {
+            CreatureData const cData = creaturePair->second;
+            CreatureInfo const* cInfo = ObjectMgr::GetCreatureTemplate(cData.id);
+
+            if (!cInfo)
+                continue;
+
+            WorldPosition point = WorldPosition(cData.mapid, cData.posX, cData.posY, cData.posZ, cData.orientation);
+
+            string name = cInfo->Name;
+            name.erase(remove(name.begin(), name.end(), ','), name.end());
+            name.erase(remove(name.begin(), name.end(), '\"'), name.end());
+
+            ostringstream out;
+            out << name << ",";
+            point.printWKT(out);
+            out << cInfo->MaxLevel << ",";
+            out << cInfo->Rank << ",";
+            out << cInfo->Faction << ",";
+            out << cInfo->NpcFlags << ",";
+            out << point.getAreaName() << ",";
+            out << std::fixed;
+
+            sPlayerbotAIConfig.log("creatures.csv", out.str().c_str());
+        }
+    }
+
+    if (sPlayerbotAIConfig.hasLog("gos.csv"))
+    {
+        for (auto& gameObjectPair : WorldPosition().getGameObjectsNear())
+        {
+            GameObjectData const gData = gameObjectPair->second;
+            auto data = sGOStorage.LookupEntry<GameObjectInfo>(gData.id);
+
+            if (!data)
+                continue;
+
+            WorldPosition point = WorldPosition(gData.mapid, gData.posX, gData.posY, gData.posZ, gData.orientation);
+
+            string name = data->name;
+            name.erase(remove(name.begin(), name.end(), ','), name.end());
+            name.erase(remove(name.begin(), name.end(), '\"'), name.end());
+
+            ostringstream out;
+            out << name << ",";
+            point.printWKT(out);
+            out << data->type << ",";
+            out << point.getAreaName() << ",";
+            out << std::fixed;
+
+            sPlayerbotAIConfig.log("gos.csv", out.str().c_str());
+        }
+    }
+
+    if (sPlayerbotAIConfig.hasLog("zones.csv"))
+    {
+        std::unordered_map<string, vector<WorldPosition>> zoneLocs;
+
+        vector<WorldPosition> Locs = {};
+        
+        for (auto& u : units)
+        {
+            WorldPosition point = WorldPosition(u.map, u.x, u.y, u.z, u.o);
+            string name = to_string(u.map) + point.getAreaName();
+
+            if (zoneLocs.find(name) == zoneLocs.end())
+                zoneLocs.insert_or_assign(name, Locs);
+
+            zoneLocs.find(name)->second.push_back(point);            
+        }        
+
+        for (auto& loc : zoneLocs)
+        {
+            if (loc.second.empty())
+                continue;
+
+            vector<WorldPosition> points = loc.second;;
+           
+            ostringstream out; 
+
+            WorldPosition pos = WorldPosition(points, WP_MEAN_CENTROID);
+
+            out << "\"center\"" << ",";
+            out << points.begin()->getMapId() << ",";
+            out << points.begin()->getAreaName() << ",";
+            out << points.begin()->getAreaName(true, true) << ",";
+
+            pos.printWKT(out);
+
+            out << "\n";
+            
+            out << "\"area\"" << ",";
+            out << points.begin()->getMapId() << ",";
+            out << points.begin()->getAreaName() << ",";
+            out << points.begin()->getAreaName(true, true) << ",";
+
+            point.printWKT(points, out, 0);
+
+            sPlayerbotAIConfig.log("zones.csv", out.str().c_str());
+        }
+    }
     /*
 
     sPlayerbotAIConfig.openLog(7, "w");

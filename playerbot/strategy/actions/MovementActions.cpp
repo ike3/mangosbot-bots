@@ -32,16 +32,6 @@ void MovementAction::CreateWp(Player* wpOwner, float x, float y, float z, float 
 
 }
 
-float MovementAction::GetAngle(const float x1, const float y1, const float x2, const float y2)
-{
-    float dx = x1 - x2;
-    float dy = y1 - y2;
-
-    float ang = atan2(dy, dx);                              // returns value between -Pi..Pi
-    ang = (ang >= 0) ? ang : 2 * M_PI_F + ang;
-    return ang;
-}
-
 bool MovementAction::MoveNear(uint32 mapId, float x, float y, float z, float distance)
 {
     float angle = GetFollowAngle();
@@ -237,21 +227,24 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
                 {
                     AreaTrigger const* at = sObjectMgr.GetAreaTrigger(entry);
                     if (at)
-                        WorldPosition telePos = WorldPosition(at->target_mapId, at->target_X, at->target_Y, at->target_Z, at->target_Orientation);
+                        telePos = WorldPosition(at->target_mapId, at->target_X, at->target_Y, at->target_Z, at->target_Orientation);
                 }
                 else
                     telePos = movePosition;
 
                 ostringstream out;
-                out << sPlayerbotAIConfig.GetTimestampStr() << "+00, ";
-                out << bot->GetName() << "," << to_string(bot->getClass()) << "," << bot->getLevel() << "," << "\"LINESTRING(";
+                out << sPlayerbotAIConfig.GetTimestampStr() << "+00,";
+                out << bot->GetName() << ",";
+                if (telePos && telePos != movePosition)
+                    startPosition.printWKT({ startPosition, movePosition, telePos }, out,1);
+                else
+                    startPosition.printWKT({ startPosition, movePosition}, out,1);
 
-                out << std::fixed << startPosition.getDisplayX() << " " << startPosition.getDisplayY() << ",";
-                out << std::fixed << movePosition.getDisplayX() << " " << movePosition.getDisplayY() << ",";
-                if(telePos != movePosition)
-                    out << std::fixed << telePos.getDisplayX() << " " << telePos.getDisplayY() << ",";
+                out << to_string(bot->getRace()) << ",";
+                out << to_string(bot->getClass()) << ",";
+                out << bot->getLevel() << ",";
+                out << (entry ? -1 : entry);
 
-                out << ")\"";
                 sPlayerbotAIConfig.log("bot_movement.csv", out.str().c_str());
             }
 
@@ -298,7 +291,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
             float cz = z;
             for (auto i : movePath.getPath())
             {
-                CreateWp(bot, i.point.getX(), i.point.getY(), i.point.getZ(), GetAngle(cx, cy, i.point.getX(), i.point.getY()), 15631);
+                CreateWp(bot, i.point.getX(), i.point.getY(), i.point.getZ(), 0.0, 15631);
 
                 cx = i.point.getX();
                 cy = i.point.getY();
@@ -310,16 +303,17 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
     }
 
     //Log bot movement
-    if (sPlayerbotAIConfig.hasLog("bot_movement.csv"))
+    if (sPlayerbotAIConfig.hasLog("bot_movement.csv") && lastMove.lastMoveShort != movePosition)
     {
         ostringstream out;
-        out << sPlayerbotAIConfig.GetTimestampStr() << "+00, ";
-        out << bot->GetName() << "," << to_string(bot->getClass()) << "," << bot->getLevel() << "," << "\"LINESTRING(";
+        out << sPlayerbotAIConfig.GetTimestampStr() << "+00,";
+        out << bot->GetName() << ",";
+        startPosition.printWKT({ startPosition, movePosition }, out,1);
+        out << to_string(bot->getRace()) << ",";
+        out << to_string(bot->getClass()) << ",";
+        out << bot->getLevel();
+        out << 0;
 
-        out << std::fixed << startPosition.getDisplayX() << " " << startPosition.getDisplayY() << ",";
-        out << std::fixed << movePosition.getDisplayX() << " " << movePosition.getDisplayY() << ",";
-
-        out << ")\"";
         sPlayerbotAIConfig.log("bot_movement.csv", out.str().c_str());
     }
 
@@ -354,11 +348,10 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
 
         AI_VALUE(LastMovement&, "last movement").nextTeleport = now + (time_t)MoveDelay(startPosition.distance(movePosition));
 
-        return bot->TeleportTo(movePosition.getMapId(), movePosition.getX(), movePosition.getY(), movePosition.getZ(), GetAngle(bot->GetPositionX(), bot->GetPositionY(), movePosition.getX(), movePosition.getY()));
+        return bot->TeleportTo(movePosition.getMapId(), movePosition.getX(), movePosition.getY(), movePosition.getZ(), startPosition.getAngleTo(movePosition));
     }
 
     mm.MovePoint(movePosition.getMapId(), movePosition.getX(), movePosition.getY(), movePosition.getZ(), FORCED_MOVEMENT_RUN, generatePath);
-    //mm.MovePath(vPath, bot->IsWalking() ? FORCED_MOVEMENT_WALK : FORCED_MOVEMENT_RUN, false);
 
     AI_VALUE(LastMovement&, "last movement").setShort(movePosition);            
 #endif

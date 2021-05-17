@@ -159,7 +159,7 @@ bool GoAction::Execute(Event event)
 
             for (auto i : points)
             {
-                CreateWp(bot, i.x, i.y, i.z, GetAngle(x, y, i.x, i.y), 11144);
+                CreateWp(bot, i.x, i.y, i.z, 0.0, 11144);
             }
 
             ai->TellMaster(out);            

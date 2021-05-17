@@ -29,6 +29,7 @@ namespace ai
         WorldPosition(uint32 mapid, float x, float y, float z = 0, float orientation = 0) { wLoc = WorldLocation(mapid, x, y, z, orientation); }
         WorldPosition(WorldObject* wo) { wLoc = WorldLocation(wo->GetMapId(), wo->GetPositionX(), wo->GetPositionY(), wo->GetPositionZ(), wo->GetOrientation()); }
         WorldPosition(vector<WorldPosition*> list, WorldPositionConst conType);
+        WorldPosition(vector<WorldPosition> list, WorldPositionConst conType);
         WorldPosition(uint32 mapid, std::pair<int, int> grid) { wLoc = WorldLocation(mapid, (32 - grid.first) * SIZE_OF_GRIDS, (32 - grid.second) * SIZE_OF_GRIDS, 0, 0); }
 
         //Setters
@@ -83,6 +84,8 @@ namespace ai
         //Returns the closest point of the list. Fast but only works for the same map.
         WorldPosition* closestSq(vector<WorldPosition*> list) { return *std::min_element(list.begin(), list.end(), [this](WorldPosition* i, WorldPosition* j) {return this->sqDistance(i) < this->sqDistance(j); }); }
         WorldPosition closestSq(vector<WorldPosition> list) { return *std::min_element(list.begin(), list.end(), [this](WorldPosition i, WorldPosition j) {return this->sqDistance(i) < this->sqDistance(j); }); }
+
+        float getAngleTo(WorldPosition endPos) {float ang = atan2(endPos.getY() - getY(), endPos.getX() - getX()); return (ang >= 0) ? ang : 2 * M_PI_F + ang;};
 
         WorldPosition lastInRange(vector<WorldPosition> list, float minDist = -1, float maxDist = -1);
         WorldPosition firstOutRange(vector<WorldPosition> list, float minDist = -1, float maxDist = -1);

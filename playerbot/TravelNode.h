@@ -55,7 +55,7 @@
         vector<WorldPosition> getPath() { return path; }
         float getDistance() { return distance; }
         bool getPortal() { return portal; }
-        uint32 gePortalId() { return portalId; }
+        uint32 getPortalId() { return portalId; }
         bool getTransport() { return transport; }        
         bool getCalculated() { return calculated; }
 
@@ -216,6 +216,8 @@
         vector<PathNodePoint> getPath() { return fullPath; }
         WorldPosition getFront() {return fullPath.front().point; }
         WorldPosition getBack() { return fullPath.back().point; }
+
+        vector<WorldPosition> getPointPath() { vector<WorldPosition> retVec;  for (auto p : fullPath) retVec.push_back(p.point); return retVec; };
 
         bool makeShortCut(WorldPosition startPos, float maxDist);
         WorldPosition getNextPoint(WorldPosition startPos, float maxDist, bool &isTeleport, bool &isTransport, uint32& entry);

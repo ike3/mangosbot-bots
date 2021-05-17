@@ -120,7 +120,7 @@ bool SeeSpellAction::Execute(Event event)
 
         for (auto i : points)
         {
-            lastWp = CreateWps(bot, i.x, i.y, i.z, GetAngle(x, y, i.x, i.y), 11144, lastWp);
+            lastWp = CreateWps(bot, i.x, i.y, i.z, 0.0, 11144, lastWp);
         }
 
 
@@ -145,6 +145,8 @@ bool SeeSpellAction::Execute(Event event)
             out << ", slime";
         if (flags & NAV_WATER)
             out << ", water";
+        if (flags & NAV_SLOPE)
+            out << ", slope";
         if (flags & NAV_UNUSED1)
             out << ", unused1";
         if (flags & NAV_UNUSED2)
