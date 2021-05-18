@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Maps/TransportMgr.h>
+#include "TransportMgr.h"
 
 #include "TravelMgr.h"
 #include "TravelNode.h"
@@ -11,11 +11,11 @@
 #include <numeric>
 #include <iomanip>
 
-#include "MotionGenerators/PathFinder.h"
+#include "PathFinder.h"
 #include "PlayerbotAI.h"
-#include "vmap/VMapFactory.h"
-#include "MotionGenerators/MoveMap.h"
-#include "Entities/Transports.h"
+#include "VMapFactory.h"
+#include "MoveMap.h"
+#include "Transports.h"
 
 using namespace ai;
 using namespace MaNGOS;
@@ -173,10 +173,10 @@ void WorldPosition::printWKT(vector<WorldPosition> points, ostringstream& out, u
             out << "\"MULTIPOINT(";
         break;
     case 1:
-        out << "\"LINESTRING (";
+        out << "\"LINESTRING(";
         break;
     case 2:
-        out << "\"POLYGON ((";
+        out << "\"POLYGON((";
     }
 
     for (auto& p : points)

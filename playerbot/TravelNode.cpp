@@ -219,6 +219,10 @@ TravelNodePath* TravelNode::buildPath(TravelNode* endNode, Unit* bot, bool postP
 
                 TravelNodePath* backNodePath = endNode->setPathTo(this);
 
+                backNodePath->setComplete(canPath);
+
+                endNode->setLinkTo(this, true);
+
                 backNodePath->setPath(reversePath);
 
                 backNodePath->calculateCost(!postProcess);
@@ -232,7 +236,6 @@ TravelNodePath* TravelNode::buildPath(TravelNode* endNode, Unit* bot, bool postP
         if (secondPos.getMap() && secondPos.getTerrain() && secondPos.isInWater())
             canPath = false;
     }
-
 
     returnNodePath->setComplete(canPath);
 
@@ -650,7 +653,7 @@ WorldPosition TravelPath::getNextPoint(WorldPosition startPos, float maxDist, bo
 
         float curDist = p->point.distance(startPos);
 
-        if (curDist <= minDist || p == startP)
+        if (curDist <= minDist || startP == beg)
         {
             minDist = curDist;
             startP = p;
@@ -748,11 +751,6 @@ ostringstream TravelPath::print()
 
     WorldPosition().printWKT(getPointPath(), out, 1);
 
-    for (auto& p : fullPath)
-    {
-        out << std::fixed << p.point.getDisplayX() << " " << p.point.getDisplayY() << ",";
-    }
-
     return out;
 }
 
@@ -787,11 +785,22 @@ TravelPath TravelNodeRoute::buildPath(vector<WorldPosition> pathToStart, vector<
             {
                 if(!prevNode->isTransport())
                     nodePath = prevNode->buildPath(node, NULL);
-                else
+                else //For transports we have no proper path since the node is in air/water. Instead we build a reverse path and follow that.
                 {
                     node->buildPath(prevNode, NULL); //Reverse build to get proper path.
                     nodePath = prevNode->getPathTo(node);
                 }
+            }
+
+            TravelNodePath returnNodePath;
+
+            if (!nodePath || !nodePath->getComplete()) //It looks like we can't properly path to our node. Make a temporary reverse path and see if that works instead.
+            {
+                returnNodePath = *node->buildPath(prevNode, NULL); //Build reverse path and save it to a temporary variable.
+                vector<WorldPosition> path = returnNodePath.getPath();
+                reverse(path.begin(), path.end()); //Reverse the path 
+                returnNodePath.setPath(path);      
+                nodePath = &returnNodePath;
             }
 
             if (!nodePath || !nodePath->getComplete()) //If we can not build a path just try to move to the node.
@@ -1122,7 +1131,7 @@ TravelNodeRoute TravelNodeMap::getRoute(WorldPosition* startPos, WorldPosition* 
         {
             //Check if the bot can actually walk to this start position.
             startPath = startPos->getPathTo(*startNode->getPosition(), NULL);
-            if (startNode->getPosition()->isPathTo(startPath))
+            if (startNode->getPosition()->isPathTo(startPath, startNode->isTransport() ? 20.0f: sPlayerbotAIConfig.targetPosRecalcDistance))
                 return route;
             startI++;
         }

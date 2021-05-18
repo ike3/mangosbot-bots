@@ -43,6 +43,7 @@ namespace ai
         //Getters
         operator bool() const { return  wLoc.mapid != 0 || wLoc.coord_x != 0 || wLoc.coord_y != 0 || wLoc.coord_z != 0;}
         bool operator==(const WorldPosition& p1) { return wLoc.mapid == wLoc.mapid && wLoc.coord_x == p1.wLoc.coord_x && wLoc.coord_y == p1.wLoc.coord_y && wLoc.coord_z == p1.wLoc.coord_z && wLoc.orientation == p1.wLoc.orientation; }
+        bool operator!=(const WorldPosition& p1) { return wLoc.mapid != wLoc.mapid || wLoc.coord_x != p1.wLoc.coord_x || wLoc.coord_y != p1.wLoc.coord_y || wLoc.coord_z != p1.wLoc.coord_z || wLoc.orientation != p1.wLoc.orientation; }
 
         WorldLocation getLocation() { return wLoc; }
         uint32 getMapId() { return wLoc.mapid; }
