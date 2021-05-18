@@ -726,6 +726,66 @@ string ExploreTravelDestination::getTitle()
     return points[0]->getAreaName();
 };
 
+uint32 GrindTravelDestination::moneyNeeded(Player* bot)
+{
+    PlayerbotAI* ai = bot->GetPlayerbotAI();
+    AiObjectContext* context = ai->GetAiObjectContext();
+
+    uint32 level = bot->getLevel();
+
+    uint32 moneyWanted = 1000; //We want atleast 10 silver.
+
+    moneyWanted = std::max(moneyWanted, AI_VALUE(uint32, "repair cost") * 2); //Or twice the current repair cost.
+
+    moneyWanted = std::max(moneyWanted, level * level * level); //Or level^2 (10s @ lvl10, 3g @ lvl30, 20g @ lvl60, 50g @ lvl80)
+
+    return moneyWanted;
+}
+
+bool GrindTravelDestination::isActive(Player* bot)
+{
+    PlayerbotAI* ai = bot->GetPlayerbotAI();
+    AiObjectContext* context = ai->GetAiObjectContext();
+    
+    if (moneyNeeded(bot) < bot->GetMoney())
+        return false;
+
+    CreatureInfo const* cInfo = this->getCreatureInfo();
+
+    int32 botLevel = bot->getLevel();
+
+    int32 maxLevel = std::min(botLevel * 0.7f, botLevel - 3.0f);
+ 
+    if (cInfo->MaxLevel > maxLevel)
+        return false;
+
+    int32 minLevel = std::max(botLevel * 0.6f, botLevel - 10.0f);
+
+    if (cInfo->MinLevel < minLevel)
+        return false;
+
+    if (std::min(cInfo->MaxLevel * 1.4f, cInfo->MaxLevel + 5.0f) < bot->getLevel())
+        return false;
+
+    if (cInfo->MinLootGold == 0)
+        return false;
+
+    FactionTemplateEntry const* factionEntry = sFactionTemplateStore.LookupEntry(cInfo->Faction);
+    ReputationRank reaction = ai->getReaction(factionEntry);
+
+    return reaction < REP_NEUTRAL;
+}
+
+string GrindTravelDestination::getTitle() {
+    ostringstream out;
+
+    out << "grind mob ";
+
+    out << " " << ChatHelper::formatWorldEntry(entry);
+
+    return out.str();
+}
+
 TravelTarget::~TravelTarget() {
     if (!tDestination)
         return;
@@ -1355,7 +1415,8 @@ void TravelMgr::LoadQuestTravelTable()
     //Rpg locations
     for (auto& u : units)
     {
-        RpgTravelDestination* loc;
+        RpgTravelDestination* rLoc;
+        GrindTravelDestination* gLoc;
 
         if (u.type != 0)
             continue;
@@ -1385,16 +1446,28 @@ void TravelMgr::LoadQuestTravelTable()
         {
             if ((cInfo->NpcFlags & *i) != 0)
             {
-                loc = new RpgTravelDestination(u.entry, sPlayerbotAIConfig.tooCloseDistance, sPlayerbotAIConfig.sightDistance);
-                loc->setExpireDelay(5 * 60 * 1000);
-                loc->setMaxVisitors(15, 0);
+                rLoc = new RpgTravelDestination(u.entry, sPlayerbotAIConfig.tooCloseDistance, sPlayerbotAIConfig.sightDistance);
+                rLoc->setExpireDelay(5 * 60 * 1000);
+                rLoc->setMaxVisitors(15, 0);
 
                 point = WorldPosition(u.map, u.x, u.y, u.z, u.o);
                 pointsMap.insert_or_assign(u.guid, point);
-                loc->addPoint(&pointsMap.find(u.guid)->second);
-                rpgNpcs.push_back(loc);
+                rLoc->addPoint(&pointsMap.find(u.guid)->second);
+                rpgNpcs.push_back(rLoc);
                 break;
             }
+        }
+
+        if (cInfo->MinLootGold > 0)
+        {
+            gLoc = new GrindTravelDestination(u.entry, sPlayerbotAIConfig.tooCloseDistance, sPlayerbotAIConfig.sightDistance);
+            gLoc->setExpireDelay(5 * 60 * 1000);
+            gLoc->setMaxVisitors(100, 0);
+
+            point = WorldPosition(u.map, u.x, u.y, u.z, u.o);
+            pointsMap.insert_or_assign(u.guid, point);
+            gLoc->addPoint(&pointsMap.find(u.guid)->second);
+            grindMobs.push_back(gLoc);
         }
     }
 
@@ -2502,6 +2575,28 @@ vector<TravelDestination*> TravelMgr::getExploreTravelDestinations(Player* bot, 
     return retTravelLocations;
 }
 
+vector<TravelDestination*> TravelMgr::getGrindTravelDestinations(Player* bot, bool ignoreFull, bool ignoreInactive, float maxDistance)
+{
+    WorldPosition botLocation(bot);
+
+    vector<TravelDestination*> retTravelLocations;
+
+    for (auto& dest : grindMobs)
+    {
+        if (!ignoreInactive && !dest->isActive(bot))
+            continue;
+
+        if (dest->isFull(ignoreFull))
+            continue;
+
+        if (maxDistance > 0 && dest->distanceTo(&botLocation) > maxDistance)
+            continue;
+
+        retTravelLocations.push_back(dest);
+    }
+
+    return retTravelLocations;
+}
 
 void TravelMgr::setNullTravelTarget(Player* player)
 {

@@ -49,6 +49,12 @@ bool GoAction::Execute(Event event)
                 dests.push_back(d);
         }
 
+        for (auto& d : sTravelMgr.getGrindTravelDestinations(bot, true, true))
+        {
+            if (strstri(d->getTitle().c_str(), param.substr(7).c_str()))
+                dests.push_back(d);
+        }
+
         TravelTarget* target = context->GetValue<TravelTarget*>("travel target")->Get();
 
         if (!dests.empty())

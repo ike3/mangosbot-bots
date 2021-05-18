@@ -363,6 +363,25 @@ namespace ai
     protected:
         uint32 areaId;
     };
+
+    //A location with zone exploration target(s) 
+    class GrindTravelDestination : public TravelDestination
+    {
+    public:
+        GrindTravelDestination(uint32 entry1, float radiusMin1, float radiusMax1) : TravelDestination(radiusMin1, radiusMax1) {
+            entry = entry1;
+        }
+
+        static uint32 moneyNeeded(Player* bot);
+
+        virtual bool isActive(Player* bot);
+        virtual CreatureInfo const* getCreatureInfo() { return ObjectMgr::GetCreatureTemplate(entry); }
+        virtual string getName() { return "GrindTravelDestination"; }
+        virtual uint32 getEntry() { return entry; }
+        virtual string getTitle();
+    protected:
+        uint32 entry;
+    };
    
     //A quest destination container for quick lookup of all destinations related to a quest.
     struct QuestContainer
@@ -479,6 +498,7 @@ namespace ai
         vector<TravelDestination *> getQuestTravelDestinations(Player* bot, uint32 questId = -1, bool ignoreFull = false, bool ignoreInactive = false, float maxDistance = 5000, bool ignoreObjectives = false);
         vector<TravelDestination*> getRpgTravelDestinations(Player* bot, bool ignoreFull = false, bool ignoreInactive = false, float maxDistance = 5000);
         vector<TravelDestination*> getExploreTravelDestinations(Player* bot, bool ignoreFull = false, bool ignoreInactive = false);
+        vector<TravelDestination*> getGrindTravelDestinations(Player* bot, bool ignoreFull = false, bool ignoreInactive = false, float maxDistance = 5000);
 
 
         void setNullTravelTarget(Player* player);
@@ -499,6 +519,7 @@ namespace ai
 
         vector<QuestTravelDestination*> questGivers;
         vector<RpgTravelDestination*> rpgNpcs;
+        vector<GrindTravelDestination*> grindMobs;
         
         std::unordered_map<uint32, ExploreTravelDestination*> exploreLocs;
         std::unordered_map<uint32, QuestContainer *> quests;

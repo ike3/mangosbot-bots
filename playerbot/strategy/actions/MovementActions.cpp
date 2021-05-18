@@ -208,7 +208,8 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
 
             AI_VALUE(LastMovement&, "last movement").setPath(movePath);
 
-            ai->TellMasterNoFacing("Too far from path. Rebuilding.");
+            if (ai->HasStrategy("debug move", BOT_STATE_NON_COMBAT))
+                ai->TellMasterNoFacing("Too far from path. Rebuilding.");
             return true;
         }
 
@@ -277,7 +278,8 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
         movePath.clear();
         AI_VALUE(LastMovement&, "last movement").setPath(movePath);
 
-        ai->TellMasterNoFacing("No point. Rebuilding.");
+        if (ai->HasStrategy("debug move", BOT_STATE_NON_COMBAT))
+            ai->TellMasterNoFacing("No point. Rebuilding.");
         return false;
     }
 
