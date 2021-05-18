@@ -107,6 +107,9 @@ void PlayerbotHolder::DisablePlayerBot(uint64 guid)
     {
         bot->GetPlayerbotAI()->TellMaster("Goodbye!");
         bot->StopMoving();
+        MotionMaster& mm = *bot->GetMotionMaster();
+        mm.Clear();
+
         Player* master = bot->GetPlayerbotAI()->GetMaster();
         Group* group = bot->GetGroup();
         if (group && !bot->InBattleGround() && !bot->InBattleGroundQueue() && (master && !master->GetPlayerbotAI()))
