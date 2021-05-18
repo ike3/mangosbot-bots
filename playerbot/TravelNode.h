@@ -127,7 +127,7 @@
         bool isPortal() { for (auto link : *getLinks()) if (link.second->getPortal()) return true; return false; }
                
         //WorldLocation shortcuts
-        WorldLocation* getLocation() { return &point.getLocation(); };
+        WorldLocation* getLocation() { WorldLocation* wLoc = &point.getLocation(); return wLoc; };
         uint32 getMapId() { return point.getMapId(); }
         float getX() { return point.getX(); }
         float getY() { return point.getY(); }

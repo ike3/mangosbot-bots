@@ -1537,7 +1537,7 @@ bool PlayerbotAI::HasPlayerNearby(WorldPosition* pos, float range)
             if (player->GetMapId() != bot->GetMapId())
                 continue;
 
-            if (pos->sqDistance(&WorldPosition(player)) < sqRange)
+            if (pos->sqDistance(WorldPosition(player)) < sqRange)
                 return true;
         }
     }
