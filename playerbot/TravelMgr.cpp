@@ -754,17 +754,14 @@ bool GrindTravelDestination::isActive(Player* bot)
 
     int32 botLevel = bot->getLevel();
 
-    int32 maxLevel = std::min(botLevel * 0.7f, botLevel - 3.0f);
+    int32 maxLevel = std::max(botLevel * 0.7f, botLevel - 3.0f);
  
-    if (cInfo->MaxLevel > maxLevel)
+    if (cInfo->MaxLevel > maxLevel) //@lvl5 max = 3, @lvl60 max = 57
         return false;
 
     int32 minLevel = std::max(botLevel * 0.6f, botLevel - 10.0f);
 
-    if (cInfo->MinLevel < minLevel)
-        return false;
-
-    if (std::min(cInfo->MaxLevel * 1.4f, cInfo->MaxLevel + 5.0f) < bot->getLevel())
+    if (cInfo->MaxLevel < minLevel) //@lvl5 min = 3, @lvl60 max = 50
         return false;
 
     if (cInfo->MinLootGold == 0)

@@ -201,7 +201,7 @@ bool ChooseTravelTargetAction::SetTarget(TravelTarget* target, TravelTarget* old
     if (!foundTarget && urand(1, 100) > 5)                                //95% chance
         foundTarget = SetQuestTarget(target);                             //Do a target of an active quest.
 
-    if (!foundTarget)
+    if (!foundTarget && urand(1, 100) > 5)
         foundTarget = SetNewQuestTarget(target);                          //Find a new quest to do.
 
     if (!foundTarget && ai->HasStrategy("explore", BOT_STATE_NON_COMBAT)) //Explore a unexplored sub-zone.
