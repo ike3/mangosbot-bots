@@ -168,6 +168,53 @@ int RandomPlayerbotMgr::GetMaxAllowedBotCount()
 
 void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed)
 {
+    if (sPlayerbotAIConfig.hasLog("player_location.csv"))
+    {
+        sPlayerbotAIConfig.openLog("player_location.csv", "w");
+        if(sPlayerbotAIConfig.randomBotAutologin)
+        for (auto i : GetAllBots())
+        {
+            Player* bot = i.second;
+            if (!bot)
+                continue;
+            ostringstream out;
+            out << sPlayerbotAIConfig.GetTimestampStr() << "+00,";
+            out << "RND" << ",";
+            out << bot->GetName() << ",";
+            out << std::fixed << std::setprecision(2);
+            WorldPosition(bot).printWKT(out);
+            out << bot->GetOrientation() << ",";
+            out << to_string(bot->getRace()) << ",";
+            out << to_string(bot->getClass()) << ",";
+            out << bot->getLevel() << ",";
+            out << bot->GetHealth() << ",";
+            out << bot->GetPowerPercent() << ",";
+            out << bot->GetMoney() << ",";
+            sPlayerbotAIConfig.log("player_location.csv", out.str().c_str());
+        }
+        for (auto i : GetPlayers())
+        {
+            Player* bot = i;
+            if (!bot)
+                continue;
+            ostringstream out;
+            out << sPlayerbotAIConfig.GetTimestampStr() << "+00,";
+            out << "PLR" << ",";
+            out << bot->GetName() << ",";
+            out << std::fixed << std::setprecision(2);
+            WorldPosition(bot).printWKT(out);
+            out << bot->GetOrientation() << ",";
+            out << to_string(bot->getRace()) << ",";
+            out << to_string(bot->getClass()) << ",";
+            out << bot->getLevel() << ",";
+            out << bot->GetHealth() << ",";
+            out << bot->GetPowerPercent() << ",";
+            out << bot->GetMoney() << ",";
+            out << std::fixed << std::setprecision(2);
+            sPlayerbotAIConfig.log("player_location.csv", out.str().c_str());
+        }
+    }
+
     if (!sPlayerbotAIConfig.randomBotAutologin || !sPlayerbotAIConfig.enabled)
         return;
 
@@ -281,52 +328,6 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed)
         else if (playerBots.size() >= sPlayerbotAIConfig.minRandomBots && botProcessed >= int(sPlayerbotAIConfig.randomBotsPerInterval / 30))
             break;
     }   
-
-    if (sPlayerbotAIConfig.hasLog("player_location.csv"))
-    {
-        sPlayerbotAIConfig.openLog("player_location.csv", "w");
-        for (auto i : GetAllBots())
-        {
-            Player* bot = i.second;
-            if (!bot)
-                continue;
-            ostringstream out;
-            out << sPlayerbotAIConfig.GetTimestampStr() << "+00,";
-            out << "RND" << ",";
-            out << bot->GetName() << ",";
-            out << std::fixed << std::setprecision(2);
-            WorldPosition(bot).printWKT(out);
-            out << bot->GetOrientation() << ",";
-            out << to_string(bot->getRace()) << ",";
-            out << to_string(bot->getClass()) << ",";
-            out << bot->getLevel() << ",";
-            out << bot->GetHealth() << ",";
-            out << bot->GetPowerPercent() << ",";
-            out << bot->GetMoney() << ",";         
-            sPlayerbotAIConfig.log("player_location.csv", out.str().c_str());
-        }
-        for (auto i : GetPlayers())
-        {
-            Player* bot = i;
-            if (!bot)
-                continue;
-            ostringstream out;
-            out << sPlayerbotAIConfig.GetTimestampStr() << "+00,";
-            out << "PLR" << ",";
-            out << bot->GetName() << ",";
-            out << std::fixed << std::setprecision(2);
-            WorldPosition(bot).printWKT(out);
-            out << bot->GetOrientation() << ",";
-            out << to_string(bot->getRace()) << ",";
-            out << to_string(bot->getClass()) << ",";
-            out << bot->getLevel() << ",";
-            out << bot->GetHealth() << ",";
-            out << bot->GetPowerPercent() << ",";
-            out << bot->GetMoney() << ",";
-            out << std::fixed << std::setprecision(2);
-            sPlayerbotAIConfig.log("player_location.csv", out.str().c_str());
-        }
-    }
 
     if (pmo) pmo->finish();
 }
@@ -2843,6 +2844,9 @@ uint32 RandomPlayerbotMgr::GetBattleMasterEntry(Player* bot, BattleGroundTypeId 
                 continue;
 
             AreaTableEntry const* area = GetAreaEntryByAreaID(Bm->GetAreaId());
+            if (!area)
+                continue;
+
             if (area->team == 4 && bot->GetTeam() == ALLIANCE)
                 continue;
             if (area->team == 2 && bot->GetTeam() == HORDE)
