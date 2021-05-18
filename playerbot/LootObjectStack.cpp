@@ -79,12 +79,13 @@ void LootObject::Refresh(Player* bot, ObjectGuid guid)
     }
 
     GameObject* go = ai->GetGameObject(guid);
-    if (go && sServerFacade.isSpawned(go) 
+    if (go && sServerFacade.isSpawned(go)
 #ifdef CMANGOS
-        && !go->IsInUse() 
+        && !go->IsInUse()
 #endif
         && go->GetGoState() == GO_STATE_READY)
     {
+        uint32 goId = go->GetGOInfo()->id;
         uint32 lockId = go->GetGOInfo()->GetLockId();
         LockEntry const *lockInfo = sLockStore.LookupEntry(lockId);
         if (!lockInfo)
@@ -102,7 +103,11 @@ void LootObject::Refresh(Player* bot, ObjectGuid guid)
                 }
                 break;
             case LOCK_KEY_SKILL:
-                if (SkillByLockType(LockType(lockInfo->Index[i])) > 0)
+                if (goId == 13891 || goId == 19535) // Serpentbloom
+                {
+                    this->guid = guid;
+                }
+                else if (SkillByLockType(LockType(lockInfo->Index[i])) > 0)
                 {
                     skillId = SkillByLockType(LockType(lockInfo->Index[i]));
                     reqSkillValue = max((uint32)2, lockInfo->Skill[i]);
