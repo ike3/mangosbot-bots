@@ -66,8 +66,9 @@ Unit* GrindTargetValue::FindTargetForGrinding(int assistCount)
         if (!bot->InBattleGround() && (int)unit->getLevel() - (int)bot->getLevel() > 4 && !unit->GetObjectGuid().IsPlayer())
             continue;
 
-        if (!needForQuest(unit) && (urand(0, 100) < 75 || context->GetValue<TravelTarget*>("travel target")->Get()->isWorking()))
-            continue;
+        if (!needForQuest(unit))
+            if (urand(0, 100) < 75 || (context->GetValue<TravelTarget*>("travel target")->Get()->isWorking() && context->GetValue<TravelTarget*>("travel target")->Get()->getDestination()->getName() != "GrindTravelDestination"))
+                continue;
 
         //if (bot->InBattleGround() && bot->GetDistance(unit) > 40.0f)
             //continue;
