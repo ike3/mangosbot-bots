@@ -192,7 +192,10 @@ bool ChooseTravelTargetAction::SetTarget(TravelTarget* target, TravelTarget* old
     if (AI_VALUE(uint8, "bag space") > 80 || (AI_VALUE(uint8, "durability") < 80 && AI_VALUE(uint32, "repair cost") < bot->GetMoney()) && urand(1, 100) > 10)
         foundTarget = SetRpgTarget(target);                               //Go to town to sell items or repair
 
-    if(GrindTravelDestination::moneyNeeded(bot) > bot->GetMoney())
+    if (!foundTarget && GrindTravelDestination::moneyNeeded(bot) > bot->GetMoney())
+        foundTarget = SetQuestTarget(target, true);                       //Turn in quests for money
+
+    if(!foundTarget && GrindTravelDestination::moneyNeeded(bot) > bot->GetMoney())
         foundTarget = SetGrindTarget(target);                             //Go grind mobs for money
 
     if (!foundTarget && urand(1, 100) > 10)                               //90% chance 
@@ -334,7 +337,7 @@ bool ChooseTravelTargetAction::SetCurrentTarget(TravelTarget* target, TravelTarg
     return target->isActive();
 }
 
-bool ChooseTravelTargetAction::SetQuestTarget(TravelTarget* target)
+bool ChooseTravelTargetAction::SetQuestTarget(TravelTarget* target, bool onlyCompleted)
 {
     vector<TravelDestination*> activeDestinations;
     vector<WorldPosition*> activePoints;
@@ -351,6 +354,9 @@ bool ChooseTravelTargetAction::SetQuestTarget(TravelTarget* target)
 
         uint32 questId = quest.first;
         QuestStatusData* questStatus = &quest.second;
+
+        if (onlyCompleted && sObjectMgr.GetQuestTemplate(questId) && !bot->CanRewardQuest(sObjectMgr.GetQuestTemplate(questId), false))
+            continue;
 
         vector<TravelDestination*> questDestinations = sTravelMgr.getQuestTravelDestinations(bot, questId, ai->hasRealPlayerMaster(), false, 5000);
         vector< WorldPosition*> questPoints;
