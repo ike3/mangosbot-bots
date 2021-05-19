@@ -49,6 +49,31 @@ bool PanicTrigger::IsActive()
 		(!AI_VALUE2(bool, "has mana", "self target") || AI_VALUE2(uint8, "mana", "self target") < sPlayerbotAIConfig.lowMana);
 }
 
+bool OutNumberedTrigger::IsActive()
+{
+    uint32 friends =0, foes = 0;
+    for (auto &attacker : ai->GetAiObjectContext()->GetValue<list<ObjectGuid> >("attackers")->Get())
+    {
+        Creature* creature = ai->GetCreature(attacker);
+
+        if (creature && creature->getLevel() + 2 > bot->getLevel())
+            foes++;
+    }
+
+    if (!foes)
+        return false;
+
+    for (auto & helper : ai->GetAiObjectContext()->GetValue<list<ObjectGuid> >("nearest friendly players")->Get())
+    {
+        Unit* player = ai->GetUnit(helper);
+
+        if (player && player->getLevel() + 2 > bot->getLevel())
+            friends++;
+    }
+
+    return friends * 2 + 1 < foes;
+}
+
 bool BuffTrigger::IsActive()
 {
     Unit* target = GetTarget();
