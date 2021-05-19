@@ -370,6 +370,9 @@ namespace ai
         virtual string getName() { return "panic"; }
     END_TRIGGER()
 
+    BEGIN_TRIGGER(OutNumberedTrigger, Trigger)
+        virtual string getName() { return "outnumbered"; }
+    END_TRIGGER()
 
 	class NoPetTrigger : public Trigger
 	{

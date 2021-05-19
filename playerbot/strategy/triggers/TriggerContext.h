@@ -91,6 +91,7 @@ namespace ai
             creators["no food"] = &TriggerContext::no_food;
 
             creators["panic"] = &TriggerContext::panic;
+            creators["outnumbered"] = &TriggerContext::outnumbered;
             creators["behind target"] = &TriggerContext::behind_target;
             creators["not behind target"] = &TriggerContext::not_behind_target;
             creators["not facing target"] = &TriggerContext::not_facing_target;
@@ -178,6 +179,7 @@ namespace ai
         static Trigger* not_behind_target(PlayerbotAI* ai) { return new IsNotBehindTargetTrigger(ai); }
         static Trigger* not_facing_target(PlayerbotAI* ai) { return new IsNotFacingTargetTrigger(ai); }
         static Trigger* panic(PlayerbotAI* ai) { return new PanicTrigger(ai); }
+        static Trigger* outnumbered(PlayerbotAI* ai) { return new OutNumberedTrigger(ai); }
         static Trigger* no_drink(PlayerbotAI* ai) { return new NoDrinkTrigger(ai); }
         static Trigger* no_food(PlayerbotAI* ai) { return new NoFoodTrigger(ai); }
         static Trigger* LightAoe(PlayerbotAI* ai) { return new LightAoeTrigger(ai); }
