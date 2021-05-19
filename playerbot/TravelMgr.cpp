@@ -754,12 +754,16 @@ bool GrindTravelDestination::isActive(Player* bot)
 
     int32 botLevel = bot->getLevel();
 
-    int32 maxLevel = std::max(botLevel * 0.7f, botLevel - 3.0f);
+    uint8 botPowerLevel = AI_VALUE(uint8, "durability");
+    float levelMod = botPowerLevel / 500.0f; //(0-0.2f)
+    float levelBoost = botPowerLevel / 50.0f; //(0-2.0f)
+
+    int32 maxLevel = std::max(botLevel * (0.5f + levelMod), botLevel - 5.0f + levelBoost);
  
     if (cInfo->MaxLevel > maxLevel) //@lvl5 max = 3, @lvl60 max = 57
         return false;
 
-    int32 minLevel = std::max(botLevel * 0.6f, botLevel - 10.0f);
+    int32 minLevel = std::max(botLevel * (0.4f + levelMod), botLevel - 12.0f + levelBoost);
 
     if (cInfo->MaxLevel < minLevel) //@lvl5 min = 3, @lvl60 max = 50
         return false;
@@ -903,6 +907,12 @@ bool TravelTarget::isTraveling() {
         return false;
     }
 
+    if (!ai->HasStrategy("travel", BOT_STATE_NON_COMBAT))
+    {
+        setTarget(sTravelMgr.nullTravelDestination, sTravelMgr.nullWorldPosition, true);
+        return false;
+    }
+
     return true;
 }
 
@@ -927,6 +937,12 @@ bool TravelTarget::isWorking() {
         return false;
     }
     */
+
+    if (!ai->HasStrategy("travel", BOT_STATE_NON_COMBAT))
+    {
+        setTarget(sTravelMgr.nullTravelDestination, sTravelMgr.nullWorldPosition, true);
+        return false;
+    }
 
     return true;
 }
