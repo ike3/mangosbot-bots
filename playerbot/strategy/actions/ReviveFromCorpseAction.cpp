@@ -75,7 +75,9 @@ bool FindCorpseAction::Execute(Event event)
     {
         float x = corpse->GetPositionX();
         float y = corpse->GetPositionY();
-        float z = corpse->GetPositionZ();;
+        float z = corpse->GetPositionZ();
+
+        bot->GetMap()->GetReachableRandomPointOnGround(x, y, z, CORPSE_RECLAIM_RADIUS - 5.0f, true);
 
         sLog.outDetail("Bot #%d %s:%d <%s> looks for body", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName());
 
