@@ -23,8 +23,43 @@ ItemUsage ItemUsageValue::Calculate()
     switch (proto->Class)
     {
     case ITEM_CLASS_KEY:
-    case ITEM_CLASS_CONSUMABLE:
         return ITEM_USAGE_USE;
+    }
+
+    if (proto->Class == ITEM_CLASS_CONSUMABLE)
+    {
+        string foodType = "";
+        if(proto->Spells[0].SpellCategory == 11)
+            foodType = "food";
+        else if(proto->Spells[0].SpellCategory == 59)
+            foodType = "drink";
+        else if (proto->Spells[0].SpellCategory == SPELL_EFFECT_ENERGIZE)
+            foodType = "mana potion";
+        else if (proto->Spells[0].SpellCategory == SPELL_EFFECT_HEAL)
+            foodType = "healing potion";        
+
+        list<Item*> items = AI_VALUE2(list<Item*>, "inventory items", foodType);
+
+        bool foundBetter = false;;
+
+        for (auto& otherItem : items)
+        {
+            const ItemPrototype* otherProto = otherItem->GetProto();
+
+            if (otherProto->Class != ITEM_CLASS_CONSUMABLE || otherProto->SubClass != proto->SubClass)
+                continue;
+
+            if (otherProto->ItemLevel < proto->ItemLevel)
+                continue;
+
+            if (otherProto->ItemId == proto->ItemId)
+                continue;
+
+            foundBetter = true;
+        }
+
+        if (!foundBetter)
+            return ITEM_USAGE_USE;
     }
 
     if (bot->GetGuildId() && sGuildTaskMgr.IsGuildTaskItem(itemId, bot->GetGuildId()))
