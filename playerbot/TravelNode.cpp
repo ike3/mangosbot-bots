@@ -1007,6 +1007,9 @@ TravelNode* TravelNodeMap::getNode(WorldPosition* pos, vector<WorldPosition>& pp
 
 TravelNodeRoute TravelNodeMap::getRoute(TravelNode* start, TravelNode* goal, Unit* bot)
 {
+    
+    float botSpeed = bot ? bot->GetSpeed(MOVE_RUN) : 7.0f;
+
     if(start == goal)
         return TravelNodeRoute();
 
@@ -1087,7 +1090,7 @@ TravelNodeRoute TravelNodeMap::getRoute(TravelNode* start, TravelNode* goal, Uni
             if ((childNode->open || childNode->close) && childNode->m_g <= g) // n' is already in opend or closed with a lower cost g(n')
                 continue; // consider next successor
 
-            h = childNode->dataNode->getDistance(goalStub->dataNode);
+            h = childNode->dataNode->getDistance(goalStub->dataNode) / botSpeed;
             f = g + h; // compute f(n')
             childNode->m_f = f;
             childNode->m_g = g;
