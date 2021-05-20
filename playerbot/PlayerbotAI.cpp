@@ -1125,6 +1125,56 @@ bool PlayerbotAI::CanCastSpell(uint32 spellid, Unit* target, uint8 effectMask, b
     }
 }
 
+bool PlayerbotAI::CanCastSpell(uint32 spellid, float x, float y, float z, uint8 effectMask, bool checkHasSpell, Item* itemTarget)
+{
+    if (!spellid)
+        return false;
+
+    Pet* pet = bot->GetPet();
+    if (pet && pet->HasSpell(spellid))
+        return true;
+
+    if (checkHasSpell && !bot->HasSpell(spellid))
+        return false;
+
+#ifdef MANGOS
+    if (bot->HasSpellCooldown(spellid))
+        return false;
+#endif
+
+    SpellEntry const* spellInfo = sServerFacade.LookupSpellInfo(spellid);
+    if (!spellInfo)
+        return false;
+
+    if (!itemTarget)
+    {
+        if (bot->GetDistance(x,y,z) > sPlayerbotAIConfig.sightDistance)
+            return false;
+    }
+
+    Spell* spell = new Spell(bot, spellInfo, false);
+
+    spell->m_targets.setDestination(x, y, z);
+    spell->m_CastItem = itemTarget ? itemTarget : aiObjectContext->GetValue<Item*>("item for spell", spellid)->Get();
+    spell->m_targets.setItemTarget(spell->m_CastItem);
+
+    SpellCastResult result = spell->CheckCast(true);
+    delete spell;
+
+    switch (result)
+    {
+    case SPELL_FAILED_NOT_INFRONT:
+    case SPELL_FAILED_NOT_STANDING:
+    case SPELL_FAILED_UNIT_NOT_INFRONT:
+    case SPELL_FAILED_MOVING:
+    case SPELL_FAILED_TRY_AGAIN:
+    case SPELL_CAST_OK:
+        return true;
+    default:
+        return false;
+    }
+}
+
 uint8 PlayerbotAI::GetHealthPercent(const Unit& target) const
 {
    return (static_cast<float>(target.GetHealth()) / target.GetMaxHealth()) * 100;
@@ -1321,6 +1371,150 @@ bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target, Item* itemTarget)
     {
         ostringstream out;
         out << "Casting " <<ChatHelper::formatSpell(pSpellInfo);
+        TellMasterNoFacing(out);
+    }
+
+    return true;
+}
+
+bool PlayerbotAI::CastSpell(uint32 spellId, float x, float y, float z, Item* itemTarget)
+{
+    if (!spellId)
+        return false;
+
+    Pet* pet = bot->GetPet();
+    SpellEntry const* pSpellInfo = sServerFacade.LookupSpellInfo(spellId);
+    if (pet && pet->HasSpell(spellId))
+    {
+        bool autocast = false;
+        for (AutoSpellList::iterator i = pet->m_autospells.begin(); i != pet->m_autospells.end(); ++i)
+        {
+            if (*i == spellId)
+            {
+                autocast = true;
+                break;
+            }
+        }
+
+        pet->ToggleAutocast(spellId, !autocast);
+        ostringstream out;
+        out << (autocast ? "|cffff0000|Disabling" : "|cFF00ff00|Enabling") << " pet auto-cast for ";
+        out << chatHelper.formatSpell(pSpellInfo);
+        TellMaster(out);
+        return true;
+    }
+
+    aiObjectContext->GetValue<LastMovement&>("last movement")->Get().Set(NULL);
+    aiObjectContext->GetValue<time_t>("stay time")->Set(0);
+
+    MotionMaster& mm = *bot->GetMotionMaster();
+
+    if (bot->IsFlying() || bot->IsTaxiFlying())
+        return false;
+
+    bot->clearUnitState(UNIT_STAT_CHASE);
+    bot->clearUnitState(UNIT_STAT_FOLLOW);
+
+    bool failWithDelay = false;
+    if (!bot->IsStandState())
+    {
+        bot->SetStandState(UNIT_STAND_STATE_STAND);
+        failWithDelay = true;
+    }
+
+    ObjectGuid oldSel = bot->GetSelectionGuid();
+
+    if (!sServerFacade.isMoving(bot)) bot->SetFacingTo(bot->GetAngleAt(bot->GetPositionX(), bot->GetPositionY(), x, y));
+
+    if (failWithDelay)
+    {
+        SetNextCheckDelay(sPlayerbotAIConfig.globalCoolDown);
+        return false;
+    }
+
+    Spell* spell = new Spell(bot, pSpellInfo, false);
+
+    SpellCastTargets targets;
+    if (pSpellInfo->Targets & TARGET_FLAG_ITEM)
+    {
+        spell->m_CastItem = itemTarget ? itemTarget : aiObjectContext->GetValue<Item*>("item for spell", spellId)->Get();
+        targets.setItemTarget(spell->m_CastItem);
+
+        if (bot->GetTradeData())
+        {
+            bot->GetTradeData()->SetSpell(spellId);
+            delete spell;
+            return true;
+        }
+    }
+    else if (pSpellInfo->Targets & TARGET_FLAG_DEST_LOCATION)
+    {
+        WorldLocation aoe = aiObjectContext->GetValue<WorldLocation>("aoe position")->Get();
+        targets.setDestination(x, y, z);
+    }
+    else if (pSpellInfo->Targets & TARGET_FLAG_SOURCE_LOCATION)
+    {
+        targets.setDestination(bot->GetPositionX(), bot->GetPositionY(), bot->GetPositionZ());
+    }
+    else
+    {
+        return false;
+    }
+
+    if (pSpellInfo->Effect[0] == SPELL_EFFECT_OPEN_LOCK ||
+        pSpellInfo->Effect[0] == SPELL_EFFECT_SKINNING)
+    {
+        return false;
+    }
+
+#ifdef MANGOS
+    spell->prepare(&targets);
+#endif
+#ifdef CMANGOS
+    spell->SpellStart(&targets);
+#endif
+
+    if (sServerFacade.isMoving(bot) && spell->GetCastTime())
+    {
+        bot->StopMoving();
+        SetNextCheckDelay(sPlayerbotAIConfig.globalCoolDown);
+        spell->cancel();
+        //delete spell;
+        return false;
+    }
+
+    if (pSpellInfo->Effect[0] == SPELL_EFFECT_OPEN_LOCK ||
+        pSpellInfo->Effect[0] == SPELL_EFFECT_SKINNING)
+    {
+        LootObject loot = *aiObjectContext->GetValue<LootObject>("loot target");
+        if (!loot.IsLootPossible(bot))
+        {
+            spell->cancel();
+            //delete spell;
+            return false;
+        }
+    }
+
+    if (!urand(0, 50) && sServerFacade.IsInCombat(bot))
+    {
+        vector<uint32> sounds;
+        sounds.push_back(TEXTEMOTE_OPENFIRE);
+        sounds.push_back(305);
+        sounds.push_back(307);
+        PlaySound(sounds[urand(0, sounds.size() - 1)]);
+    }
+
+    WaitForSpellCast(spell);
+    aiObjectContext->GetValue<LastSpellCast&>("last spell cast")->Get().Set(spellId, bot->GetObjectGuid(), time(0));
+    aiObjectContext->GetValue<ai::PositionMap&>("position")->Get()["random"].Reset();
+
+    if (oldSel)
+        bot->SetSelectionGuid(oldSel);
+
+    if (HasStrategy("debug spell", BOT_STATE_NON_COMBAT))
+    {
+        ostringstream out;
+        out << "Casting " << ChatHelper::formatSpell(pSpellInfo);
         TellMasterNoFacing(out);
     }
 

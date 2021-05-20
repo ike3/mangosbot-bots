@@ -315,9 +315,11 @@ public:
     virtual bool IsInterruptableSpellCasting(Unit* player, string spell, uint8 effectMask);
     virtual bool HasAuraToDispel(Unit* player, uint32 dispelType);
     bool CanCastSpell(uint32 spellid, Unit* target, uint8 effectMask, bool checkHasSpell = true, Item* itemTarget = NULL);
+    bool CanCastSpell(uint32 spellid, float x, float y, float z, uint8 effectMask, bool checkHasSpell = true, Item* itemTarget = NULL);
 
     bool HasAura(uint32 spellId, const Unit* player);
     bool CastSpell(uint32 spellId, Unit* target, Item* itemTarget = NULL);
+    bool CastSpell(uint32 spellId, float x, float y, float z, Item* itemTarget = NULL);
     bool canDispel(const SpellEntry* entry, uint32 dispelType);
 
     uint32 GetEquipGearScore(Player* player, bool withBags, bool withBank);
