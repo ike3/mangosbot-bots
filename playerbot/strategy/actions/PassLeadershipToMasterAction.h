@@ -19,6 +19,10 @@ namespace ai
                 ai->TellMasterNoFacing("Passing leader to you!");
                 return true;
             }
+            else if (bot->GetGroup() && (!master || master->GetPlayerbotAI()))
+            {
+                bot->GetGroup()->SetLootMethod(FREE_FOR_ALL);
+            }
 
             return false;
         }
