@@ -51,27 +51,34 @@ bool PanicTrigger::IsActive()
 
 bool OutNumberedTrigger::IsActive()
 {
-    uint32 friends =0, foes = 0;
+    int32 botLevel = bot->getLevel();
+    uint32 friendPower = 200, foePower = 0;
     for (auto &attacker : ai->GetAiObjectContext()->GetValue<list<ObjectGuid> >("attackers")->Get())
     {
         Creature* creature = ai->GetCreature(attacker);
 
-        if (creature && creature->getLevel() + 2 > bot->getLevel())
-            foes++;
+        int32 dLevel = creature->getLevel() - botLevel;
+        if(dLevel> -10)
+        foePower = std::max(100 + 10 * dLevel, dLevel * 200);
     }
 
-    if (!foes)
+    if (!foePower)
         return false;
 
     for (auto & helper : ai->GetAiObjectContext()->GetValue<list<ObjectGuid> >("nearest friendly players")->Get())
     {
         Unit* player = ai->GetUnit(helper);
 
-        if (player && player->getLevel() + 2 > bot->getLevel())
-            friends++;
+        if (!player || player == bot)
+            continue;
+
+        int32 dLevel = player->getLevel() - botLevel;
+
+        if (dLevel > -10 && bot->GetDistance(player) < 10.0f)
+            friendPower += std::max(200 + 20 * dLevel, dLevel * 200);
     }
 
-    return friends * 2 + 1 < foes;
+    return friendPower < foePower;
 }
 
 bool BuffTrigger::IsActive()
