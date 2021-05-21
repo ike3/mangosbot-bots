@@ -137,6 +137,8 @@ namespace ai
             creators["at dark portal outland"] = &TriggerContext::at_dark_portal_outland;
 
             creators["need world buff"] = &TriggerContext::need_world_buff;
+            creators["falling"] = &TriggerContext::falling;
+            creators["falling far"] = &TriggerContext::falling_far;
         }
 
     private:
@@ -235,6 +237,8 @@ namespace ai
         static Trigger* no_non_bot_players_around(PlayerbotAI* ai) { return new NoNonBotPlayersAroundTrigger(ai); }
         static Trigger* new_player_nearby(PlayerbotAI* ai) { return new NewPlayerNearbyTrigger(ai); }
         static Trigger* need_world_buff(PlayerbotAI* ai) { return new NeedWorldBuffTrigger(ai); }
+        static Trigger* falling(PlayerbotAI* ai) { return new IsFallingTrigger(ai); }
+        static Trigger* falling_far(PlayerbotAI* ai) { return new IsFallingFarTrigger(ai); }
         
     };
 };

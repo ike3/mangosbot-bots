@@ -485,3 +485,13 @@ bool CorpseNearTrigger::IsActive()
 {
     return bot->GetCorpse() && bot->GetCorpse()->IsWithinDistInMap(bot, CORPSE_RECLAIM_RADIUS, true);
 }
+
+bool IsFallingTrigger::IsActive()
+{
+    return bot->HasMovementFlag(MOVEFLAG_FALLING);
+}
+
+bool IsFallingFarTrigger::IsActive()
+{
+    return bot->HasMovementFlag(MOVEFLAG_FALLINGFAR);
+}

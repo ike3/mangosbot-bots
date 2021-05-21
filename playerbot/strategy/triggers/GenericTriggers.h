@@ -804,6 +804,24 @@ namespace ai
     public:
         virtual bool IsActive();
     };
+
+    class IsFallingTrigger : public Trigger
+    {
+    public:
+        IsFallingTrigger(PlayerbotAI* ai) : Trigger(ai, "falling", 10) {}
+
+    public:
+        virtual bool IsActive();
+    };
+
+    class IsFallingFarTrigger : public Trigger
+    {
+    public:
+        IsFallingFarTrigger(PlayerbotAI* ai) : Trigger(ai, "falling far", 10) {}
+
+    public:
+        virtual bool IsActive();
+    };
 }
 
 #include "RangeTriggers.h"

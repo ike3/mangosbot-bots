@@ -87,6 +87,7 @@ namespace ai
             creators["ss"] = &ChatActionContext::ss;
             creators["add all loot"] = &ChatActionContext::add_all_loot;
             creators["release"] = &ChatActionContext::release;
+            creators["repop"] = &ChatActionContext::repop;
             creators["teleport"] = &ChatActionContext::teleport;
             creators["taxi"] = &ChatActionContext::taxi;
             creators["repair"] = &ChatActionContext::repair;
@@ -207,6 +208,7 @@ namespace ai
         static Action* taxi(PlayerbotAI* ai) { return new TaxiAction(ai); }
         static Action* teleport(PlayerbotAI* ai) { return new TeleportAction(ai); }
         static Action* release(PlayerbotAI* ai) { return new ReleaseSpiritAction(ai); }
+        static Action* repop(PlayerbotAI* ai) { return new RepopAction(ai); }
         static Action* query_item_usage(PlayerbotAI* ai) { return new QueryItemUsageAction(ai); }
         static Action* query_quest(PlayerbotAI* ai) { return new QueryQuestAction(ai); }
         static Action* drop(PlayerbotAI* ai) { return new DropQuestAction(ai); }
