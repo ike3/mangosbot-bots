@@ -201,7 +201,9 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
 
     if (!movePath.empty())
     {
-        movePath.makeShortCut(startPosition, maxDist);
+        if(movePath.makeShortCut(startPosition, maxDist))
+            if(ai->HasStrategy("debug move", BOT_STATE_NON_COMBAT))
+                ai->TellMasterNoFacing("Found a shortcut.");
 
         if (movePath.empty())
         {
