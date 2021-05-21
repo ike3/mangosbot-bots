@@ -86,7 +86,7 @@ bool FindCorpseAction::Execute(Event event)
             uint32 delay = bot->GetDistance(corpse) / bot->GetSpeed(MOVE_RUN) * IN_MILLISECONDS + sPlayerbotAIConfig.reactDelay; //Time a bot would take to travel to it's corpse.
             delay = std::min(delay, uint32(10 * MINUTE * IN_MILLISECONDS)); //Cap time to get to corpse at 10 minutes.
 
-            if (corpse->GetGhostTime() > delay)
+            if (corpse->GetGhostTime() + delay > time(nullptr))
             {
                 bot->GetMotionMaster()->Clear();
                 bot->TeleportTo(corpse->GetMapId(), x, y, z, 0);
@@ -96,7 +96,7 @@ bool FindCorpseAction::Execute(Event event)
         {
             bool moved = false;
 
-            if (corpse->GetGhostTime() < 30 * MINUTE * IN_MILLISECONDS) //Look for corpse up to 30 minutes.
+            if (corpse->GetGhostTime() + 30 * MINUTE * IN_MILLISECONDS > time(nullptr)) //Look for corpse up to 30 minutes.
             {
                 if (bot->IsWithinLOS(x, y, z))
                     moved = MoveNear(bot->GetMapId(), x, y, z, 0);
