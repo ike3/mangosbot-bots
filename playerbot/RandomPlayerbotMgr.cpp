@@ -1704,17 +1704,23 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot, vector<WorldLocation> &locs
         return;
     }
 
-    vector<WorldLocation> tlocs = locs;
+    vector<WorldPosition> tlocs;
+
+    for (auto& loc : locs)
+        tlocs.push_back(WorldPosition(loc));
+
+    //Get 10 locations that are reasonable near to the bot. No location is excluded only less likely. Works across maps.
+    tlocs = sTravelMgr.getNextPoint(WorldPosition(bot), tlocs, 10);
 
     //Do not teleport to maps disabled in config
     //tlocs.erase(std::remove_if(tlocs.begin(), tlocs.end(), [bot](WorldLocation const& l) {vector<uint32>::iterator i = find(sPlayerbotAIConfig.randomBotMaps.begin(), sPlayerbotAIConfig.randomBotMaps.end(), l.mapid); return i == sPlayerbotAIConfig.randomBotMaps.end(); }), tlocs.end());
 
     //5% + 0.1% per level chance node on different map in selection.
-    tlocs.erase(std::remove_if(tlocs.begin(), tlocs.end(), [bot](WorldLocation const& l) {return l.mapid != bot->GetMapId() && urand(1, 100) > 0.5 * bot->getLevel(); }), tlocs.end());
+    //tlocs.erase(std::remove_if(tlocs.begin(), tlocs.end(), [bot](WorldLocation const& l) {return l.mapid != bot->GetMapId() && urand(1, 100) > 0.5 * bot->getLevel(); }), tlocs.end());
 
     //Continent is about 20.000 large
     //Bot will travel 0-5000 units + 75-150 units per level.
-    tlocs.erase(std::remove_if(tlocs.begin(), tlocs.end(), [bot](WorldLocation const& l) {return l.mapid == bot->GetMapId() && sServerFacade.GetDistance2d(bot, l.coord_x, l.coord_y) > urand(0, 5000) + bot->getLevel() * 15 * urand(5, 10); }), tlocs.end());
+    //tlocs.erase(std::remove_if(tlocs.begin(), tlocs.end(), [bot](WorldLocation const& l) {return l.mapid == bot->GetMapId() && sServerFacade.GetDistance2d(bot, l.coord_x, l.coord_y) > urand(0, 5000) + bot->getLevel() * 15 * urand(5, 10); }), tlocs.end());
 
     if (tlocs.empty())
     {
@@ -1726,7 +1732,7 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot, vector<WorldLocation> &locs
     for (int attemtps = 0; attemtps < 10; ++attemtps)
     {
         int index = urand(0, tlocs.size() - 1);
-        WorldLocation loc = tlocs[index];
+        WorldLocation loc = tlocs[index].getLocation();
 
 #ifndef MANGOSBOT_ZERO
         // Teleport to Dark Portal area if event is in progress

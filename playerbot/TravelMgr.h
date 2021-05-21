@@ -26,6 +26,7 @@ namespace ai
     public:
         //Constructors
         WorldPosition() { wLoc = WorldLocation(); }
+        WorldPosition(WorldLocation loc) { wLoc = loc; }
         WorldPosition(uint32 mapid, float x, float y, float z = 0, float orientation = 0) { wLoc = WorldLocation(mapid, x, y, z, orientation); }
         WorldPosition(WorldObject* wo) { wLoc = WorldLocation(wo->GetMapId(), wo->GetPositionX(), wo->GetPositionY(), wo->GetPositionZ(), wo->GetOrientation()); }
         WorldPosition(vector<WorldPosition*> list, WorldPositionConst conType);
@@ -491,7 +492,8 @@ namespace ai
         void Clear();
         void LoadQuestTravelTable();
 
-        vector <WorldPosition*> getNextPoint(WorldPosition* center, vector<WorldPosition*> points);
+        vector <WorldPosition*> getNextPoint(WorldPosition* center, vector<WorldPosition*> points, uint32 amount = 1);
+        vector <WorldPosition> getNextPoint(WorldPosition center, vector<WorldPosition> points, uint32 amount = 1);
         QuestStatusData* getQuestStatus(Player* bot, uint32 questId);
         bool getObjectiveStatus(Player* bot, Quest const* pQuest, uint32 objective);
         uint32 getDialogStatus(Player* pPlayer, int32 questgiver, Quest const* pQuest);

@@ -2417,7 +2417,7 @@ uint32 TravelMgr::getDialogStatus(Player* pPlayer, int32 questgiver, Quest const
 }
 
 //Selects a random WorldPosition from a list. Use a distance weighted distribution.
-vector<WorldPosition*> TravelMgr::getNextPoint(WorldPosition* center, vector<WorldPosition*> points) {
+vector<WorldPosition*> TravelMgr::getNextPoint(WorldPosition* center, vector<WorldPosition*> points, uint32 amount) {
     vector<WorldPosition*> retVec;
 
     if (points.size() == 1)
@@ -2438,14 +2438,61 @@ vector<WorldPosition*> TravelMgr::getNextPoint(WorldPosition* center, vector<Wor
     uint32 rnd = urand(0, sum);
 
     //Pick a random point based on weights.
-    for (unsigned i = 0; i < points.size(); ++i)
-        if (rnd < weights[i])
-        {
-            retVec.push_back(points[i]);
-            return retVec;
-        }
-        else
-            rnd -= weights[i];
+    for (uint32 nr = 0; nr < amount; nr++)
+    {
+        for (unsigned i = 0; i < points.size(); ++i)
+            if (rnd < weights[i] && (retVec.empty() || std::find(retVec.begin(), retVec.end(), points[i]) == retVec.end()))
+            {
+                retVec.push_back(points[i]);
+                break;
+            }
+            else
+                rnd -= weights[i];
+    }
+
+    if (!retVec.empty())
+        return retVec;
+
+    assert(!"No valid point found.");
+
+    return retVec;
+}
+
+vector<WorldPosition> TravelMgr::getNextPoint(WorldPosition center, vector<WorldPosition> points, uint32 amount) {
+    vector<WorldPosition> retVec;
+
+    if (points.size() == 1)
+    {
+        retVec.push_back(points[0]);
+        return retVec;
+    }
+
+    //List of weights based on distance (Gausian curve that starts at 100 and lower to 1 at 1000 distance)
+    vector<uint32> weights;
+
+    std::transform(points.begin(), points.end(), std::back_inserter(weights), [center](WorldPosition point) { return 1 + 1000 * exp(-1 * pow(point.distance(center) / 400.0, 2)); });
+
+    //Total sum of all those weights.
+    uint32 sum = std::accumulate(weights.begin(), weights.end(), 0);
+
+    //Pick a random number in that range.
+    uint32 rnd = urand(0, sum);
+
+    //Pick a random point based on weights.
+    for (uint32 nr = 0; nr < amount; nr++)
+    {
+        for (unsigned i = 0; i < points.size(); ++i)
+            if (rnd < weights[i] && (retVec.empty() || std::find(retVec.begin(), retVec.end(), points[i]) == retVec.end()))
+            {
+                retVec.push_back(points[i]);
+                break;
+            }
+            else
+                rnd -= weights[i];
+    }
+
+    if (!retVec.empty())
+        return retVec;
 
     assert(!"No valid point found.");
 
