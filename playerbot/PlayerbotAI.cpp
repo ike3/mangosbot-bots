@@ -533,10 +533,14 @@ void PlayerbotAI::DoNextAction()
         return;
     }
 
-    // change engine if in combat
-    if (currentEngine != engines[BOT_STATE_COMBAT] && sServerFacade.IsInCombat(bot) && sServerFacade.IsAlive(bot))
+    // change engine if just died
+    if (currentEngine != engines[BOT_STATE_DEAD] && !sServerFacade.IsAlive(bot))
     {
-        ChangeEngine(BOT_STATE_COMBAT);
+        bot->StopMoving();
+        bot->GetMotionMaster()->Clear();
+        bot->GetMotionMaster()->MoveIdle();
+
+        ChangeEngine(BOT_STATE_DEAD);
         return;
     }
 
