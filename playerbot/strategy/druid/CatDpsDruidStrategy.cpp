@@ -154,11 +154,11 @@ void CatDpsDruidStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "player has flag",
-        NextAction::array(0, new NextAction("dash", ACTION_EMERGENCY + 2), NULL)));
+        NextAction::array(0, new NextAction("dash", ACTION_EMERGENCY), NULL)));
 
     triggers.push_back(new TriggerNode(
         "enemy flagcarrier near",
-        NextAction::array(0, new NextAction("dash", ACTION_EMERGENCY + 2), NULL)));
+        NextAction::array(0, new NextAction("dash", ACTION_EMERGENCY), NULL)));
 }
 
 void CatAoeDruidStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
