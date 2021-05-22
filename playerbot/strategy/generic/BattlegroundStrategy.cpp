@@ -39,11 +39,16 @@ void WarsongStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "enemy flagcarrier near",
-        NextAction::array(0, new NextAction("attack enemy flag carrier", 55.0f), NULL)));
+        NextAction::array(0, new NextAction("attack enemy flag carrier", 60.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
         "player has flag",
-        NextAction::array(0, new NextAction("bg move to objective", 80.0f), NULL)));
+        NextAction::array(0, new NextAction("bg move to objective", 90.0f), NULL)));
+}
+
+void AlteracStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+{
+    /* placeholder */
 }
 
 void ArathiStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
@@ -81,7 +86,7 @@ void BattlegroundStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "enemy flagcarrier near",
-        NextAction::array(0, new NextAction("attack enemy flag carrier", 45.0f), NULL)));
+        NextAction::array(0, new NextAction("attack enemy flag carrier", 60.0f), NULL)));
 
     /*triggers.push_back(new TriggerNode(
         "team flagcarrier near",
@@ -89,7 +94,7 @@ void BattlegroundStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "player has flag",
-        NextAction::array(0, new NextAction("bg move to objective", 60.0f), NULL)));
+        NextAction::array(0, new NextAction("bg move to objective", 90.0f), NULL)));
 }
 
 void ArenaStrategy::InitTriggers(std::list<TriggerNode*> &triggers)

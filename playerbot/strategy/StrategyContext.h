@@ -84,6 +84,7 @@ namespace ai
             creators["bg"] = &StrategyContext::bg;
             creators["battleground"] = &StrategyContext::battleground;
             creators["warsong"] = &StrategyContext::warsong;
+            creators["alterac"] = &StrategyContext::alterac;
             creators["arathi"] = &StrategyContext::arathi;
             creators["arena"] = &StrategyContext::arena;
             creators["mount"] = &StrategyContext::mount;
@@ -101,6 +102,7 @@ namespace ai
         static Strategy* bg(PlayerbotAI* ai) { return new BGStrategy(ai); }
         static Strategy* battleground(PlayerbotAI* ai) { return new BattlegroundStrategy(ai); }
         static Strategy* warsong(PlayerbotAI* ai) { return new WarsongStrategy(ai); }
+        static Strategy* alterac(PlayerbotAI* ai) { return new AlteracStrategy(ai); }
         static Strategy* arathi(PlayerbotAI* ai) { return new ArathiStrategy(ai); }
         static Strategy* behind(PlayerbotAI* ai) { return new SetBehindCombatStrategy(ai); }
         static Strategy* ranged(PlayerbotAI* ai) { return new RangedCombatStrategy(ai); }

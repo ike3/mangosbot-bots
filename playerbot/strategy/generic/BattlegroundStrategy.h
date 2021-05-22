@@ -36,7 +36,7 @@ namespace ai
         AlteracStrategy(PlayerbotAI* ai) : Strategy(ai) {};
         virtual int GetType() { return STRATEGY_TYPE_GENERIC; }
         virtual void InitTriggers(std::list<TriggerNode*> &triggers);
-        virtual string getName() { return "arathi"; }
+        virtual string getName() { return "alterac"; }
     };
 
     class ArathiStrategy : public Strategy

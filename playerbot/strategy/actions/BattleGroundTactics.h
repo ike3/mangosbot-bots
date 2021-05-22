@@ -36,7 +36,6 @@ class BGTactics : public MovementAction
 public:
     BGTactics(PlayerbotAI* ai, string name = "bg tactics") : MovementAction(ai, name) {}
     virtual bool Execute(Event event);
-    void AtCaveExit();
 private:
     bool moveToStart();
     bool selectObjective(bool reset = false);
@@ -46,27 +45,13 @@ private:
     bool startNewPathBegin(std::vector<BattleBotPath*> const& vPaths);
     bool startNewPathFree(std::vector<BattleBotPath*> const& vPaths);
     bool resetObjective();
+    bool wsgPaths();
     bool atFlag(std::vector<BattleBotPath*> const& vPaths, std::vector<uint32> const& vFlagIds);
     bool flagTaken();
     bool teamFlagTaken();
     bool protectFC();
-    bool attackFC();
-    bool nearFlag();
-    bool atHordeFlag();
     bool useBuff();
-    bool useHealthy();
-    // Movement System
-    void UpdateWaypointMovement();
-    void DoGraveyardJump();
-    void MoveToNextPoint();
-    void MoveToNextPointSpecial();
-    bool StartNewPathFromBeginning();
-    void StartNewPathFromAnywhere();
-    //bool StartNewPathToPosition(Position const& position, std::vector<BattleBotPath*> const& vPaths);
-    void ClearPath();
-    void StopMoving();
-    void AV_AtFlag();
-    void AtFlag(std::vector<uint32> const& vFlagIds);
+    uint32 getDefendersCount(Position point, float range, bool combat = true);
 };
 
 class ArenaTactics : public MovementAction
