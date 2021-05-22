@@ -3201,11 +3201,6 @@ bool ArenaTactics::Execute(Event event)
 
     if (!bot->IsInCombat())
         return moveToCenter(bg);
-    else
-    {
-        AttackAnythingAction* action = new AttackAnythingAction(ai);
-        return action->Execute(event);
-    }
 #endif
     return true;
 }
