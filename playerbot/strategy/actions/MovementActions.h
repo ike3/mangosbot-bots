@@ -18,6 +18,7 @@ namespace ai
         bool MoveTo(uint32 mapId, float x, float y, float z, bool idle = false, bool react = false);
         bool MoveTo(Unit* target, float distance = 0.0f);
         bool MoveNear(WorldObject* target, float distance = sPlayerbotAIConfig.contactDistance);
+        bool MoveToLOS(WorldObject* target, bool ranged = false);
         float GetFollowAngle();
         bool Follow(Unit* target, float distance = sPlayerbotAIConfig.followDistance);
         bool Follow(Unit* target, float distance, float angle);
