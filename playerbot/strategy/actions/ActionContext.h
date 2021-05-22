@@ -43,6 +43,7 @@
 #include "ReleaseSpiritAction.h"
 #include "CombatActions.h"
 #include "WorldBuffAction.h"
+#include "CastCustomSpellAction.h"
 
 namespace ai
 {
@@ -137,6 +138,7 @@ namespace ai
             creators["move from dark portal"] = &ActionContext::move_from_dark_portal;
             creators["use dark portal azeroth"] = &ActionContext::use_dark_portal_azeroth;
             creators["world buff"] = &ActionContext::world_buff;
+            creators["cast random spell"] = &ActionContext::cast_random_spell;
 
             // BG Tactics
             creators["bg tactics"] = &ActionContext::bg_tactics;
@@ -238,6 +240,7 @@ namespace ai
         static Action* use_dark_portal_azeroth(PlayerbotAI* ai) { return new DarkPortalAzerothAction(ai); }
         static Action* move_from_dark_portal(PlayerbotAI* ai) { return new MoveFromDarkPortalAction(ai); }
         static Action* world_buff(PlayerbotAI* ai) { return new WorldBuffAction(ai); }
+        static Action* cast_random_spell(PlayerbotAI* ai) { return new CastRandomSpellAction(ai); }
 
         // BG Tactics
         static Action* bg_tactics(PlayerbotAI* ai) { return new BGTactics(ai); }

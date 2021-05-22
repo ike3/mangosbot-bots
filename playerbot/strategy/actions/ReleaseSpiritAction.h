@@ -7,9 +7,9 @@
 
 namespace ai
 {
-	class ReleaseSpiritAction : public Action {
-	public:
-		ReleaseSpiritAction(PlayerbotAI* ai, string name = "release") : Action(ai, name) {}
+    class ReleaseSpiritAction : public Action {
+    public:
+        ReleaseSpiritAction(PlayerbotAI* ai, string name = "release") : Action(ai, name) {}
 
     public:
         virtual bool Execute(Event event)
@@ -81,6 +81,24 @@ namespace ai
                 sServerFacade.UnitIsDead(ai->GetGroupMaster()) &&
                 bot->GetDeathState() != ai->GetGroupMaster()->GetDeathState()))
                 && sServerFacade.UnitIsDead(bot) && !bot->GetCorpse();
+        }
+    };
+
+    class RepopAction : public Action {
+    public:
+        RepopAction(PlayerbotAI* ai, string name = "repop") : Action(ai, name) {}
+
+    public:
+        virtual bool Execute(Event event)
+        {
+            bot->RepopAtGraveyard();
+
+            return true;
+        }
+
+        virtual bool isUsefull()
+        {
+            return true;
         }
     };
 }

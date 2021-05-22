@@ -48,6 +48,42 @@ bool PanicTrigger::IsActive()
 		(!AI_VALUE2(bool, "has mana", "self target") || AI_VALUE2(uint8, "mana", "self target") < sPlayerbotAIConfig.lowMana);
 }
 
+bool OutNumberedTrigger::IsActive()
+{
+    int32 botLevel = bot->getLevel();
+    uint32 friendPower = 200, foePower = 0;
+    for (auto &attacker : ai->GetAiObjectContext()->GetValue<list<ObjectGuid> >("attackers")->Get())
+    {
+     
+        Creature* creature = ai->GetCreature(attacker);
+        if (!creature)
+            continue;
+
+        int32 dLevel = creature->getLevel() - botLevel;
+
+        if(dLevel > -10)
+            foePower = std::max(100 + 10 * dLevel, dLevel * 200);
+    }
+
+    if (!foePower)
+        return false;
+
+    for (auto & helper : ai->GetAiObjectContext()->GetValue<list<ObjectGuid> >("nearest friendly players")->Get())
+    {
+        Unit* player = ai->GetUnit(helper);
+
+        if (!player || player == bot)
+            continue;
+
+        int32 dLevel = player->getLevel() - botLevel;
+
+        if (dLevel > -10 && bot->GetDistance(player) < 10.0f)
+            friendPower += std::max(200 + 20 * dLevel, dLevel * 200);
+    }
+
+    return friendPower < foePower;
+}
+
 bool BuffTrigger::IsActive()
 {
     Unit* target = GetTarget();
@@ -292,4 +328,14 @@ bool IsMountedTrigger::IsActive()
 bool CorpseNearTrigger::IsActive()
 {
     return bot->GetCorpse() && bot->GetCorpse()->IsWithinDistInMap(bot, CORPSE_RECLAIM_RADIUS, true);
+}
+
+bool IsFallingTrigger::IsActive()
+{
+    return bot->HasMovementFlag(MOVEFLAG_FALLING);
+}
+
+bool IsFallingFarTrigger::IsActive()
+{
+    return bot->HasMovementFlag(MOVEFLAG_FALLINGFAR);
 }

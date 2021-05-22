@@ -22,6 +22,7 @@ namespace ai
         float GetFollowAngle();
         bool Follow(Unit* target, float distance = sPlayerbotAIConfig.followDistance);
         bool Follow(Unit* target, float distance, float angle);
+        float MoveDelay(float distance);
         void WaitForReach(float distance);
         bool IsMovingAllowed(Unit* target);
         bool IsMovingAllowed(uint32 mapId, float x, float y, float z);

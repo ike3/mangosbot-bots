@@ -49,6 +49,12 @@ bool GoAction::Execute(Event event)
                 dests.push_back(d);
         }
 
+        for (auto& d : sTravelMgr.getGrindTravelDestinations(bot, true, true))
+        {
+            if (strstri(d->getTitle().c_str(), param.substr(7).c_str()))
+                dests.push_back(d);
+        }
+
         TravelTarget* target = context->GetValue<TravelTarget*>("travel target")->Get();
 
         if (!dests.empty())
@@ -159,7 +165,7 @@ bool GoAction::Execute(Event event)
 
             for (auto i : points)
             {
-                CreateWp(bot, i.x, i.y, i.z, GetAngle(x, y, i.x, i.y), 11144);
+                CreateWp(bot, i.x, i.y, i.z, 0.0, 11144);
             }
 
             ai->TellMaster(out);            

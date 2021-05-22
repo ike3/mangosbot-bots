@@ -370,6 +370,9 @@ namespace ai
         virtual string getName() { return "panic"; }
     END_TRIGGER()
 
+    BEGIN_TRIGGER(OutNumberedTrigger, Trigger)
+        virtual string getName() { return "outnumbered"; }
+    END_TRIGGER()
 
 	class NoPetTrigger : public Trigger
 	{
@@ -707,6 +710,24 @@ namespace ai
     {
     public:
         CorpseNearTrigger(PlayerbotAI* ai) : Trigger(ai, "corpse near", 10) {}
+
+    public:
+        virtual bool IsActive();
+    };
+
+    class IsFallingTrigger : public Trigger
+    {
+    public:
+        IsFallingTrigger(PlayerbotAI* ai) : Trigger(ai, "falling", 10) {}
+
+    public:
+        virtual bool IsActive();
+    };
+
+    class IsFallingFarTrigger : public Trigger
+    {
+    public:
+        IsFallingFarTrigger(PlayerbotAI* ai) : Trigger(ai, "falling far", 10) {}
 
     public:
         virtual bool IsActive();

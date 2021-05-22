@@ -33,6 +33,7 @@
 #endif
 
 #include "TravelMgr.h"
+#include <iomanip>
 
 using namespace ai;
 using namespace MaNGOS;
@@ -167,6 +168,53 @@ int RandomPlayerbotMgr::GetMaxAllowedBotCount()
 
 void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed)
 {
+    if (sPlayerbotAIConfig.hasLog("player_location.csv"))
+    {
+        sPlayerbotAIConfig.openLog("player_location.csv", "w");
+        if(sPlayerbotAIConfig.randomBotAutologin)
+        for (auto i : GetAllBots())
+        {
+            Player* bot = i.second;
+            if (!bot)
+                continue;
+            ostringstream out;
+            out << sPlayerbotAIConfig.GetTimestampStr() << "+00,";
+            out << "RND" << ",";
+            out << bot->GetName() << ",";
+            out << std::fixed << std::setprecision(2);
+            WorldPosition(bot).printWKT(out);
+            out << bot->GetOrientation() << ",";
+            out << to_string(bot->getRace()) << ",";
+            out << to_string(bot->getClass()) << ",";
+            out << bot->getLevel() << ",";
+            out << bot->GetHealth() << ",";
+            out << bot->GetPowerPercent() << ",";
+            out << bot->GetMoney() << ",";
+            sPlayerbotAIConfig.log("player_location.csv", out.str().c_str());
+        }
+        for (auto i : GetPlayers())
+        {
+            Player* bot = i;
+            if (!bot)
+                continue;
+            ostringstream out;
+            out << sPlayerbotAIConfig.GetTimestampStr() << "+00,";
+            out << "PLR" << ",";
+            out << bot->GetName() << ",";
+            out << std::fixed << std::setprecision(2);
+            WorldPosition(bot).printWKT(out);
+            out << bot->GetOrientation() << ",";
+            out << to_string(bot->getRace()) << ",";
+            out << to_string(bot->getClass()) << ",";
+            out << bot->getLevel() << ",";
+            out << bot->GetHealth() << ",";
+            out << bot->GetPowerPercent() << ",";
+            out << bot->GetMoney() << ",";
+            out << std::fixed << std::setprecision(2);
+            sPlayerbotAIConfig.log("player_location.csv", out.str().c_str());
+        }
+    }
+
     if (!sPlayerbotAIConfig.randomBotAutologin || !sPlayerbotAIConfig.enabled)
         return;
 
@@ -278,7 +326,7 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed)
 
         if (botProcessed >= sPlayerbotAIConfig.randomBotsPerInterval)
             break;
-    }
+    }   
 
     if (pmo) pmo->finish();
 }
@@ -1647,17 +1695,23 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot, vector<WorldLocation> &locs
         return;
     }
 
-    vector<WorldLocation> tlocs = locs;
+    vector<WorldPosition> tlocs;
+
+    for (auto& loc : locs)
+        tlocs.push_back(WorldPosition(loc));
+
+    //Get 10 locations that are reasonable near to the bot. No location is excluded only less likely. Works across maps.
+    tlocs = sTravelMgr.getNextPoint(WorldPosition(bot), tlocs, 10);
 
     //Do not teleport to maps disabled in config
     //tlocs.erase(std::remove_if(tlocs.begin(), tlocs.end(), [bot](WorldLocation const& l) {vector<uint32>::iterator i = find(sPlayerbotAIConfig.randomBotMaps.begin(), sPlayerbotAIConfig.randomBotMaps.end(), l.mapid); return i == sPlayerbotAIConfig.randomBotMaps.end(); }), tlocs.end());
 
     //5% + 0.1% per level chance node on different map in selection.
-    tlocs.erase(std::remove_if(tlocs.begin(), tlocs.end(), [bot](WorldLocation const& l) {return l.mapid != bot->GetMapId() && urand(1, 100) > 0.5 * bot->getLevel(); }), tlocs.end());
+    //tlocs.erase(std::remove_if(tlocs.begin(), tlocs.end(), [bot](WorldLocation const& l) {return l.mapid != bot->GetMapId() && urand(1, 100) > 0.5 * bot->getLevel(); }), tlocs.end());
 
     //Continent is about 20.000 large
     //Bot will travel 0-5000 units + 75-150 units per level.
-    tlocs.erase(std::remove_if(tlocs.begin(), tlocs.end(), [bot](WorldLocation const& l) {return l.mapid == bot->GetMapId() && sServerFacade.GetDistance2d(bot, l.coord_x, l.coord_y) > urand(0, 5000) + bot->getLevel() * 15 * urand(5, 10); }), tlocs.end());
+    //tlocs.erase(std::remove_if(tlocs.begin(), tlocs.end(), [bot](WorldLocation const& l) {return l.mapid == bot->GetMapId() && sServerFacade.GetDistance2d(bot, l.coord_x, l.coord_y) > urand(0, 5000) + bot->getLevel() * 15 * urand(5, 10); }), tlocs.end());
 
     if (tlocs.empty())
     {
@@ -1669,7 +1723,7 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot, vector<WorldLocation> &locs
     for (int attemtps = 0; attemtps < 10; ++attemtps)
     {
         int index = urand(0, tlocs.size() - 1);
-        WorldLocation loc = tlocs[index];
+        WorldLocation loc = tlocs[index].getLocation();
 
 #ifndef MANGOSBOT_ZERO
         // Teleport to Dark Portal area if event is in progress
@@ -2790,6 +2844,9 @@ uint32 RandomPlayerbotMgr::GetBattleMasterEntry(Player* bot, BattleGroundTypeId 
                 continue;
 
             AreaTableEntry const* area = GetAreaEntryByAreaID(Bm->GetAreaId());
+            if (!area)
+                continue;
+
             if (area->team == 4 && bot->GetTeam() == ALLIANCE)
                 continue;
             if (area->team == 2 && bot->GetTeam() == HORDE)

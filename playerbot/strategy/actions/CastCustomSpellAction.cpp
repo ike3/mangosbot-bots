@@ -138,3 +138,91 @@ bool CastCustomSpellAction::Execute(Event event)
 
     return result;
 }
+
+
+bool CastRandomSpellAction::Execute(Event event)
+{
+    PlayerSpellMap const& spellMap = bot->GetSpellMap();
+    Player* master = GetMaster();
+
+    Unit* target;
+    GameObject* got;
+
+    string name = event.getParam();
+    if (name.empty())
+        name = getName();
+
+    list<ObjectGuid> wos = chat->parseGameobjects(name);
+
+    for (auto wo : wos)
+    {
+        target = ai->GetUnit(wo);
+        got = ai->GetGameObject(wo);
+
+        if (got || target)
+            break;
+    }    
+
+    if (!got && !target && bot->GetSelectionGuid())
+    {
+        target = ai->GetUnit(bot->GetSelectionGuid());
+        got = ai->GetGameObject(bot->GetSelectionGuid());
+    }
+
+    if (!got && !target)
+        if (master && master->GetSelectionGuid())
+            target = ai->GetUnit(master->GetSelectionGuid());
+
+    if (!got && !target)
+        target = bot;
+
+    vector<pair<uint32, pair<Unit*, GameObject*>>> spellList;
+
+    for (auto & spell : spellMap)
+    {
+        uint32 spellId = spell.first;
+
+        if (spell.second.state == PLAYERSPELL_REMOVED || spell.second.disabled || IsPassiveSpell(spellId))
+            continue;
+
+        const SpellEntry* pSpellInfo = sServerFacade.LookupSpellInfo(spellId);
+        if (!pSpellInfo)
+            continue;
+
+        if (pSpellInfo->Effect[0] == SPELL_EFFECT_LEARN_SPELL)
+            continue;
+
+        if (bot->HasSpell(spellId))
+        {
+            if (target && ai->CanCastSpell(spellId, target, true))
+                spellList.push_back(make_pair(spellId, make_pair(target, nullptr)));
+            if (got && ai->CanCastSpell(spellId, got->GetPositionX(), got->GetPositionY(), got->GetPositionZ(), true))
+                spellList.push_back(make_pair(spell.first, make_pair(nullptr, got)));
+            if (ai->CanCastSpell(spellId, bot, true))
+                spellList.push_back(make_pair(spellId, make_pair(bot, nullptr)));
+        }
+    }
+
+    bool isCast = false;
+
+    for (uint32 i = 0; i < 5; i++)
+    {
+        uint32 rnd = urand(0, spellList.size() - 1);
+
+        uint32 spellId = spellList[rnd].first;
+
+        Unit* unit = spellList[rnd].second.first;
+        GameObject* go = spellList[rnd].second.second;
+
+
+        if(spellList[rnd].second.first)
+            isCast = ai->CastSpell(spellId, unit);
+        else
+            isCast = ai->CastSpell(spellId, go->GetPositionX(), go->GetPositionY(), go->GetPositionZ());
+
+        if (isCast)
+            return true;
+    }
+
+    return false;
+}
