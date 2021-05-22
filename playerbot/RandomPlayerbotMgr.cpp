@@ -251,9 +251,12 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed)
                             }
                         }
 #endif
-                        AddBgBot(queueTypeId, bracketId);
-                        bgBotsCount++;
-                        continue;
+                        for (auto i = 0; i < 10; ++i)
+                        {
+                            AddBgBot(queueTypeId, bracketId);
+                            bgBotsCount++;
+                            continue;
+                        }
                     }
                     if (!visual_players && !bg_players && bgBotsCount < 5)
                     {
