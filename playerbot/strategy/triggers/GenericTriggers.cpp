@@ -55,11 +55,15 @@ bool OutNumberedTrigger::IsActive()
     uint32 friendPower = 200, foePower = 0;
     for (auto &attacker : ai->GetAiObjectContext()->GetValue<list<ObjectGuid> >("attackers")->Get())
     {
+     
         Creature* creature = ai->GetCreature(attacker);
+        if (!creature)
+            continue;
 
         int32 dLevel = creature->getLevel() - botLevel;
-        if(dLevel> -10)
-        foePower = std::max(100 + 10 * dLevel, dLevel * 200);
+
+        if(dLevel > -10)
+            foePower = std::max(100 + 10 * dLevel, dLevel * 200);
     }
 
     if (!foePower)
