@@ -604,6 +604,36 @@ void PlayerbotAI::DoNextAction()
 	}
 	else if (bot->m_movementInfo.HasMovementFlag(MOVEFLAG_WALK_MODE)) bot->m_movementInfo.RemoveMovementFlag(MOVEFLAG_WALK_MODE);
     else if ((nextAICheckDelay < 1000) && bot->IsSitState()) bot->SetStandState(UNIT_STAND_STATE_STAND);
+
+    /*if (!bot->m_movementInfo.HasMovementFlag(MOVEFLAG_FALLING) && !sServerFacade.IsInCombat(bot))
+    {
+        if (!urand(0, 10) && !sServerFacade.IsInCombat(bot))
+        {
+            WorldPacket jump(MSG_MOVE_JUMP);
+            MovementInfo movementInfo = bot->m_movementInfo;
+            movementInfo.jump.velocity = -7.96f;
+            movementInfo.jump.cosAngle = 1.0f;
+            movementInfo.jump.sinAngle = 0.f;
+            movementInfo.jump.xyspeed = sServerFacade.isMoving(bot) ? bot->GetSpeed(MOVE_RUN) : 0.f;
+            movementInfo.jump.start = movementInfo.pos;
+            movementInfo.jump.startClientTime = time(0);
+            movementInfo.pos = bot->GetPosition();
+            jump << movementInfo;
+            bot->GetSession()->HandleMovementOpcodes(jump);
+            bot->m_movementInfo.AddMovementFlag(MOVEFLAG_FALLING);
+        }
+    }
+    else if (bot->m_movementInfo.HasMovementFlag(MOVEFLAG_FALLING))
+    {
+        bot->SendHeartBeat();
+        bot->m_movementInfo.RemoveMovementFlag(MOVEFLAG_FALLING);
+
+        std::unique_ptr<WorldPacket> jump(new WorldPacket(MSG_MOVE_FALL_LAND));
+        MovementInfo movementInfo = bot->m_movementInfo;
+        movementInfo.pos = bot->GetPosition();
+        *jump << movementInfo;
+        bot->GetSession()->QueuePacket(std::move(jump));
+    }*/
 }
 
 void PlayerbotAI::ReInitCurrentEngine()
