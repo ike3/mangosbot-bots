@@ -1055,6 +1055,9 @@ bool PlayerbotAI::CanCastSpell(uint32 spellid, Unit* target, uint8 effectMask, b
     if (!spellid)
         return false;
 
+    if (bot->hasUnitState(UNIT_STAT_CAN_NOT_REACT_OR_LOST_CONTROL))
+        return false;
+
     if (!target)
         target = bot;
 
