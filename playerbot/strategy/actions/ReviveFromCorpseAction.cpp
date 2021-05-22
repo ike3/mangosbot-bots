@@ -77,7 +77,15 @@ bool FindCorpseAction::Execute(Event event)
         float y = corpse->GetPositionY();
         float z = corpse->GetPositionZ();
 
+
+#ifndef MANGOSBOT_TWO         
         bot->GetMap()->GetReachableRandomPointOnGround(x, y, z, CORPSE_RECLAIM_RADIUS - 5.0f, true);
+#else
+        bot->GetMap()->GetReachableRandomPointOnGround(bot->GetPhaseMask(), x, y, z, CORPSE_RECLAIM_RADIUS - 5.0f, true);
+#endif
+
+        uint32 deadTime = corpse->GetGhostTime() - time(nullptr);
+
 
         sLog.outDetail("Bot #%d %s:%d <%s> looks for body", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName());
        
@@ -86,7 +94,7 @@ bool FindCorpseAction::Execute(Event event)
             uint32 delay = bot->GetDistance(corpse) / bot->GetSpeed(MOVE_RUN) * IN_MILLISECONDS + sPlayerbotAIConfig.reactDelay; //Time a bot would take to travel to it's corpse.
             delay = std::min(delay, uint32(10 * MINUTE * IN_MILLISECONDS)); //Cap time to get to corpse at 10 minutes.
 
-            if (corpse->GetGhostTime() + delay > time(nullptr))
+            if (deadTime > delay)
             {
                 bot->GetMotionMaster()->Clear();
                 bot->TeleportTo(corpse->GetMapId(), x, y, z, 0);
@@ -96,7 +104,7 @@ bool FindCorpseAction::Execute(Event event)
         {
             bool moved = false;
 
-            if (corpse->GetGhostTime() + 30 * MINUTE * IN_MILLISECONDS > time(nullptr)) //Look for corpse up to 30 minutes.
+            if (deadTime < 30 * MINUTE * IN_MILLISECONDS) //Look for corpse up to 30 minutes.
             {
                 if (bot->IsWithinLOS(x, y, z))
                     moved = MoveNear(bot->GetMapId(), x, y, z, 0);

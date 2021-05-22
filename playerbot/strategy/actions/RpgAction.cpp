@@ -273,7 +273,7 @@ void RpgAction::quest(ObjectGuid guid)
 #ifdef MANGOSBOT_ZERO
     if (bot->GetSession()->getDialogStatus(bot, wo, DIALOG_STATUS_NONE) == DIALOG_STATUS_REWARD2 || bot->GetSession()->getDialogStatus(bot, wo, DIALOG_STATUS_NONE) == DIALOG_STATUS_REWARD_REP)
 #else
-    if (bot->GetSession()->getDialogStatus(bot, wo, DIALOG_STATUS_NONE) == DIALOG_STATUS_REWARD2 || bot->GetSession()->getDialogStatus(bot, wo, DIALOG_STATUS_NONE) == DIALOG_STATUS_REWARD || bot->GetSession()->getDialogStatus(bot, wo, DIALOG_STATUS_NONE) == DIALOG_STATUS_REWARD_REP))
+    if (bot->GetSession()->getDialogStatus(bot, wo, DIALOG_STATUS_NONE) == DIALOG_STATUS_REWARD2 || bot->GetSession()->getDialogStatus(bot, wo, DIALOG_STATUS_NONE) == DIALOG_STATUS_REWARD || bot->GetSession()->getDialogStatus(bot, wo, DIALOG_STATUS_NONE) == DIALOG_STATUS_REWARD_REP)
 #endif
         retVal = ai->DoSpecificAction("talk to quest giver", Event("rpg action", p));
     
