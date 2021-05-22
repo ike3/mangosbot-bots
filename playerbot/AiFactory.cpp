@@ -340,6 +340,9 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
 
             if (player->getClass() == CLASS_ROGUE)
                 engine->addStrategies("stealth", NULL);
+
+            if (player->getClass() != CLASS_HUNTER)
+                engine->removeStrategy("ranged");
         }
 
         if (player->getClass() == CLASS_ROGUE)
@@ -356,6 +359,12 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
         if (player->GetBattleGroundTypeId() == BATTLEGROUND_WS)
             engine->addStrategy("warsong");
 
+        if (player->GetBattleGroundTypeId() == BATTLEGROUND_AB)
+            engine->addStrategy("arathi");
+
+        if(player->GetBattleGroundTypeId() == BATTLEGROUND_AV)
+            engine->addStrategy("alterac");
+
 #ifndef MANGOSBOT_ZERO
         if (player->InArena())
         {
@@ -363,7 +372,7 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
             engine->removeStrategy("ranged");
         }
 #endif
-        engine->addStrategies("racials", "chat", "default", "aoe", "potions", "conserve mana", "cast time", NULL);
+        engine->addStrategies("boost", "racials", "chat", "default", "aoe", "potions", "conserve mana", "cast time", "pvp", "dps assist", NULL);
         engine->removeStrategy("custom::say");
         engine->removeStrategy("flee");
         engine->removeStrategy("threat");
@@ -372,11 +381,14 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
         if ((player->getClass() == CLASS_DRUID && tab == 2) || (player->getClass() == CLASS_SHAMAN && tab == 2))
             engine->addStrategies("caster", "caster aoe", NULL);
 
-        if (player->getClass() == CLASS_DRUID && tab == 1 && engine->HasStrategy("dps"))
-            engine->addStrategy("behind");
+        if (player->getClass() == CLASS_DRUID && tab == 1)
+            engine->addStrategies("behind", "dps", NULL);
         
         if (player->getClass() == CLASS_ROGUE)
-            engine->addStrategy("stealth");
+            engine->addStrategies("behind", "stealth", NULL);
+
+        if (player->getClass() != CLASS_HUNTER)
+            engine->removeStrategy("ranged");
     }
 }
 
@@ -458,11 +470,11 @@ void AiFactory::AddDefaultNonCombatStrategies(Player* player, PlayerbotAI* const
 
     if (!player->InBattleGround())
     {
-        nonCombatEngine->addStrategies("nc", "food", "stay", "sit", "chat", "follow",
+        nonCombatEngine->addStrategies("nc", "food", "chat", "follow",
             "default", "quest", "loot", "gather", "duel", "emote", "conserve mana", "buff", "mount", NULL);
     }
 
-    if (sRandomPlayerbotMgr.IsRandomBot(player))
+    if (sRandomPlayerbotMgr.IsRandomBot(player) && !player->InBattleGround())
     {   
         if (!player->GetGroup() || player->GetGroup()->GetLeaderGuid() == player->GetObjectGuid())
         {
@@ -476,6 +488,7 @@ void AiFactory::AddDefaultNonCombatStrategies(Player* player, PlayerbotAI* const
                 nonCombatEngine->addStrategy("travel");
             if (sPlayerbotAIConfig.randomBotJoinLfg)
                 nonCombatEngine->addStrategy("lfg");
+
             nonCombatEngine->ChangeStrategy(sPlayerbotAIConfig.randomBotNonCombatStrategies);
         }
         else {
@@ -505,15 +518,23 @@ void AiFactory::AddDefaultNonCombatStrategies(Player* player, PlayerbotAI* const
     // Battleground switch
     if (player->InBattleGround())
     {
-        nonCombatEngine->addStrategies("nc", "chat", "dps assist",
-            "default", "emote", "buff", "food", "conserve mana", "collision", "mount", NULL);
+        nonCombatEngine->addStrategies("nc", "chat",
+            "default", "buff", "food", "mount", "pvp", "collision", "dps assist", "attack tagged", NULL);
         nonCombatEngine->removeStrategy("custom::say");
         nonCombatEngine->removeStrategy("travel");
         nonCombatEngine->removeStrategy("rpg");
         nonCombatEngine->removeStrategy("grind");
 
+        nonCombatEngine->addStrategies("battleground", NULL);
+
         if (player->GetBattleGroundTypeId() == BATTLEGROUND_WS)
-            nonCombatEngine->addStrategy("warsong");
+            nonCombatEngine->addStrategies("warsong", NULL);
+
+        if (player->GetBattleGroundTypeId() == BATTLEGROUND_AV)
+            nonCombatEngine->addStrategies("alterac", NULL);
+
+        if (player->GetBattleGroundTypeId() == BATTLEGROUND_AB)
+            nonCombatEngine->addStrategies("arathi", NULL);
 
 #ifndef MANGOSBOT_ZERO
         if (player->InArena())
@@ -538,11 +559,6 @@ void AiFactory::AddDefaultDeadStrategies(Player* player, PlayerbotAI* const faca
     if (sRandomPlayerbotMgr.IsRandomBot(player) && !player->GetGroup())
     {
         deadEngine->removeStrategy("follow");
-    }
-
-    if (player->InBattleGround() && player->GetBattleGroundTypeId() == BattleGroundTypeId::BATTLEGROUND_WS)
-    {
-        deadEngine->addStrategies("warsong", NULL);
     }
 }
 
