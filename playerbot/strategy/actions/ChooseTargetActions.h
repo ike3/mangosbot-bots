@@ -94,6 +94,9 @@ namespace ai
     public:
         AttackEnemyPlayerAction(PlayerbotAI* ai) : AttackAction(ai, "attack enemy player") {}
         virtual string GetTargetName() { return "enemy player target"; }
+        virtual bool isUseful() {
+            return !sPlayerbotAIConfig.IsInPvpProhibitedZone(bot->GetAreaId());
+        }
     };
 
     class AttackRtiTargetAction : public AttackAction

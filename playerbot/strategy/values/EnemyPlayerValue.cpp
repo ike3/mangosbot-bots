@@ -134,7 +134,7 @@ Unit* EnemyPlayerValue::Calculate()
         if (!bot->IsWithinDist(pTarget, aggroDistance))
             continue;
 
-        if (bot->IsWithinLOSInMap(pTarget))
+        if (bot->IsWithinLOSInMap(pTarget) && (fabs(bot->GetPositionZ() - pTarget->GetPositionZ()) < 30.0f))
             return pTarget;
     }
 

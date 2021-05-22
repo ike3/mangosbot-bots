@@ -10,7 +10,11 @@ using namespace ai;
 bool InvalidTargetValue::Calculate()
 {
     Unit* target = AI_VALUE(Unit*, qualifier);
-    if (qualifier == "current target")
+    Unit* enemy = AI_VALUE(Unit*, "enemy player target");
+    if (target && enemy && target == enemy && sServerFacade.IsAlive(target))
+        return false;
+
+    if (target && qualifier == "current target")
     {
         return !AttackersValue::IsValidTarget(target, bot);
     }

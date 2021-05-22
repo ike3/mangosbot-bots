@@ -219,6 +219,12 @@ bool NotDpsTargetActiveTrigger::IsActive()
 {
     Unit* dps = AI_VALUE(Unit*, "dps target");
     Unit* target = AI_VALUE(Unit*, "current target");
+    Unit* enemy = AI_VALUE(Unit*, "enemy player target");
+    
+    // do not switch if enemy target
+    if (target && target == enemy && sServerFacade.IsAlive(target))
+        return false;
+
     return dps && target != dps;
 }
 
@@ -226,15 +232,13 @@ bool NotDpsAoeTargetActiveTrigger::IsActive()
 {
     Unit* dps = AI_VALUE(Unit*, "dps aoe target");
     Unit* target = AI_VALUE(Unit*, "current target");
-    return dps && target != dps;
-}
+    Unit* enemy = AI_VALUE(Unit*, "enemy player target");
 
-bool EnemyPlayerNear::IsActive()
-{
-    Unit* enemyPlayer = AI_VALUE(Unit*, "enemy player target");
-    Unit* target = AI_VALUE(Unit*, "current target");
-    Unit* self = AI_VALUE(Unit*, "self target");
-    return (enemyPlayer && (!target || target == self || !target->IsPlayer()));
+    // do not switch if enemy target
+    if (target && target == enemy && sServerFacade.IsAlive(target))
+        return false;
+
+    return dps && target != dps;
 }
 
 bool IsSwimmingTrigger::IsActive()

@@ -33,8 +33,7 @@ namespace ai
     private:
         float GetMaxAttackDistance()
         {
-            if (!bot->GetBattleGround() ||
-                bot->GetBattleGround()->GetTypeId() != BATTLEGROUND_AV)
+            if (!bot->GetBattleGround())
                 return 60.0f;
 
             return 40.0f;

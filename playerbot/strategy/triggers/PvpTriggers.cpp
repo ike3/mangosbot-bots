@@ -6,6 +6,11 @@
 
 using namespace ai;
 
+bool EnemyPlayerNear::IsActive()
+{
+    return AI_VALUE(Unit*, "enemy player target");
+}
+
 bool PlayerHasNoFlag::IsActive()
 {
 #ifdef MANGOS
