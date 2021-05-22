@@ -226,13 +226,17 @@ void PlayerbotAI::HandleTeleportAck()
 		p << (uint32) 0; // supposed to be flags? not used currently
 		p << (uint32) time(0); // time - not currently used
         bot->GetSession()->HandleMoveTeleportAckOpcode(p);
+
+        // add delay to simulate teleport delay
+        SetNextCheckDelay(urand(1000, 5000));
 	}
 	else if (bot->IsBeingTeleportedFar())
 	{
         bot->GetSession()->HandleMoveWorldportAckOpcode();
-	}
 
-    SetNextCheckDelay(sPlayerbotAIConfig.globalCoolDown);
+        // add delay to simulate teleport delay
+        SetNextCheckDelay(urand(5000, 10000));
+	}
 }
 
 void PlayerbotAI::Reset()
