@@ -1352,7 +1352,7 @@ void TravelNodeMap::printNodeStore()
     sPlayerbotAIConfig.log(nodeStore, "    public:");
     sPlayerbotAIConfig.log(nodeStore, "    static void loadNodes()");
     sPlayerbotAIConfig.log(nodeStore, "    {");
-    sPlayerbotAIConfig.log(nodeStore, "        TravelNode* nodes[%d];", anodes.size());
+    sPlayerbotAIConfig.log(nodeStore, "        TravelNode** nodes = new TravelNode*[%d];", anodes.size());
 
     for (uint32 i = 0; i < anodes.size(); i++)
     {
@@ -1386,6 +1386,8 @@ void TravelNodeMap::printNodeStore()
             sPlayerbotAIConfig.log(nodeStore, out.str().c_str());
         }
     }
+
+    sPlayerbotAIConfig.log(nodeStore, "	   delete[] nodes;");
 
     sPlayerbotAIConfig.log(nodeStore, "	}");
     sPlayerbotAIConfig.log(nodeStore, "};");
