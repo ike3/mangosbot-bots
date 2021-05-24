@@ -1363,12 +1363,22 @@ void TravelNodeMap::printNodeStore()
         string name = node->getName();
         name.erase(remove(name.begin(), name.end(), '\"'), name.end());
 
+//        struct addNode {uint32 node; WorldPosition point; string name; bool isPortal; bool isTransport; uint32 transportId; };
+        out << std::fixed << std::setprecision(2) << "        addNodes.push_back(addNode{" << i << ",";
+        out << "WorldPosition(" << node->getMapId() << ", " << node->getX() << "f, " << node->getY() << "f, " << node->getZ() << "f, " << node->getO() << "f),";
+        out << "\"" << name << "\"";
+        if (node->isTransport())
+            out << "," << (node->isTransport() ? "true" : "false") << "," << node->getTransportId();
+        out << "});";
+
+/*
         out << std::fixed << std::setprecision(2) << "        nodes[" << i << "] = sTravelNodeMap.addNode(&WorldPosition(" << node->getMapId() << "," << node->getX() << "f," << node->getY() << "f," << node->getZ() << "f,"<< node->getO() <<"f), \""
             << name << "\", " << (node->isImportant() ? "true" : "false") << ", true";
         if (node->isTransport())
             out << "," << (node->isTransport() ? "true" : "false") << "," << node->getTransportId();
 
         out << ");";
+        */
         sPlayerbotAIConfig.log(nodeStore, out.str().c_str());
 
         saveNodes.insert(make_pair(node, i));
@@ -1381,13 +1391,17 @@ void TravelNodeMap::printNodeStore()
         for (auto& Link : *node->getLinks())
         {
             ostringstream out;
-            out << std::fixed << std::setprecision(1) << "        nodes[" << i << "]->setPathTo(nodes[" << saveNodes.find(Link.first)->second << "],TravelNodePath(";
-            out << Link.second->print() << "), true);";
+
+            //        struct linkNode { uint32 node1; uint32 node2; float distance; float extraCost; bool isPortal; bool isTransport; uint32 maxLevelMob; uint32 maxLevelAlliance; uint32 maxLevelHorde; float swimDistance; };
+
+            out << std::fixed << std::setprecision(2) << "        linkNodes.push_back(linkNode{" << i << "," << saveNodes.find(Link.first)->second << ",";
+            out << Link.second->print() << "});";
+
+            //out << std::fixed << std::setprecision(1) << "        nodes[" << i << "]->setPathTo(nodes[" << saveNodes.find(Link.first)->second << "],TravelNodePath(";
+            //out << Link.second->print() << "), true);";
             sPlayerbotAIConfig.log(nodeStore, out.str().c_str());
         }
     }
-
-    sPlayerbotAIConfig.log(nodeStore, "	   delete[] nodes;");
 
     sPlayerbotAIConfig.log(nodeStore, "	}");
     sPlayerbotAIConfig.log(nodeStore, "};");
