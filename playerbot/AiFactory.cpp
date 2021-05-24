@@ -372,7 +372,7 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
             engine->removeStrategy("ranged");
         }
 #endif
-        engine->addStrategies("boost", "racials", "chat", "default", "aoe", "potions", "conserve mana", "cast time", "pvp", "dps assist", NULL);
+        engine->addStrategies("boost", "racials", "chat", "default", "aoe", "potions", "conserve mana", "cast time", "dps assist", NULL);
         engine->removeStrategy("custom::say");
         engine->removeStrategy("flee");
         engine->removeStrategy("threat");

@@ -66,7 +66,7 @@ bool AttackAction::Attack(Unit* target)
     }
     if (!sServerFacade.IsWithinLOSInMap(bot, target))
     {
-        MoveToLOS(target, ai->HasStrategy("ranged", BOT_STATE_COMBAT));
+        ChaseTo(target);
         msg << " is not on my sight";
         if (verbose) ai->TellError(msg.str());
         return false;

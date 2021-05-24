@@ -681,7 +681,7 @@ bool MovementAction::ChaseTo(WorldObject* obj)
     MotionMaster &mm = *bot->GetMotionMaster();
     mm.Clear();
 
-    mm.MoveChase((Unit*)obj);
+    mm.MoveChase((Unit*)obj, ai->IsRanged(bot) ? 25.0f : 0.f);
     return true;
 }
 
