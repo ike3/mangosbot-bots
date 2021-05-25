@@ -138,9 +138,15 @@ float TravelNodePath::getCost(Unit* bot)
         //Check if we can use this area trigger.
         if (portal && portalId)
         {
-            AreaTrigger const* at = sObjectMgr.GetAreaTrigger(portalId);
-            if (at && at->conditionId && !sObjectMgr.IsConditionSatisfied(at->conditionId, bot, bot->GetMap(), nullptr, CONDITION_FROM_AREATRIGGER_TELEPORT))
-                return -1;
+            AreaTriggerEntry const* atEntry = sAreaTriggerStore.LookupEntry(portalId);
+            AreaTrigger const* at = sObjectMgr.GetAreaTrigger(portalId);            
+            if (atEntry && at && atEntry->mapid == bot->GetMapId())
+            {
+                Map* map = WorldPosition(atEntry->mapid, atEntry->box_x, atEntry->box_y, atEntry->box_z).getMap();
+                if (map)
+                    if (at && at->conditionId && !sObjectMgr.IsConditionSatisfied(at->conditionId, bot, map, nullptr, CONDITION_FROM_AREATRIGGER_TELEPORT))
+                        return -1;
+            }
         }
 
         speed = bot->GetSpeed(MOVE_RUN);

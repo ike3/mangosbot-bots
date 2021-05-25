@@ -98,7 +98,7 @@ namespace ai
         //Map functions. Player independent.
         const MapEntry * getMapEntry() { return sMapStore.LookupEntry(wLoc.mapid); };
         uint32 getInstanceId() { for (auto& map : sMapMgr.Maps()) { if (map.second->GetId() == getMapId()) return map.second->GetInstanceId(); }; return 0; }
-        Map*  getMap() { return sMapMgr.FindMap(wLoc.mapid, getMapEntry()->Instanceable() ? wLoc.mapid : 0); }
+        Map*  getMap() { return sMapMgr.FindMap(wLoc.mapid, getMapEntry()->Instanceable() ? getInstanceId() : 0); }
         const TerrainInfo* getTerrain() { return getMap() ? getMap()->GetTerrain() : NULL; }
 
         std::set<Transport*> getTransports(uint32 entry = 0);
