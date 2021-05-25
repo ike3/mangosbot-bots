@@ -10,14 +10,13 @@ using namespace ahbot;
 bool TradeSkill::Contains(ItemPrototype const* proto)
 {
     if (itemCache.find(proto->ItemId) != itemCache.end())
-        return true;
+        return itemCache[proto->ItemId];
 
     if (!Trade::Contains(proto))
         return false;
 
     bool contains = ContainsInternal(proto);
-    if (contains) itemCache.insert(proto->ItemId);
-    return contains;
+    return itemCache[proto->ItemId] = contains;
 }
 
 bool TradeSkill::ContainsInternal(ItemPrototype const* proto)
