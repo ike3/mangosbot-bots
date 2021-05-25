@@ -203,6 +203,9 @@ bool CastRandomSpellAction::Execute(Event event)
         }
     }
 
+    if (spellList.empty())
+        return false;
+
     bool isCast = false;
 
     for (uint32 i = 0; i < 5; i++)
