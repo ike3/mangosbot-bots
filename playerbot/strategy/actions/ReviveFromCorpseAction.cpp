@@ -84,8 +84,7 @@ bool FindCorpseAction::Execute(Event event)
         bot->GetMap()->GetReachableRandomPointOnGround(bot->GetPhaseMask(), x, y, z, CORPSE_RECLAIM_RADIUS - 5.0f, true);
 #endif
 
-        uint32 deadTime = corpse->GetGhostTime() - time(nullptr);
-
+        int64 deadTime = time(nullptr) - corpse->GetGhostTime();
 
         sLog.outDetail("Bot #%d %s:%d <%s> looks for body", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName());
        
@@ -159,6 +158,30 @@ bool SpiritHealerAction::Execute(Event event)
             return true;
         }
     }
+
+    AreaTableEntry const* zone = GetAreaEntryByAreaID(bot->GetAreaId());
+
+    WorldSafeLocsEntry const* ClosestGrave = nullptr;
+    ClosestGrave = sObjectMgr.GetClosestGraveYard(bot->GetPositionX(), bot->GetPositionY(), bot->GetPositionZ(), bot->GetMapId(), bot->GetTeam());
+
+    if (!ClosestGrave)
+    {
+        return false;
+    }
+
+    float x = ClosestGrave->x;
+    float y = ClosestGrave->y;
+    float z = ClosestGrave->z;
+
+    bool moved = false;
+
+    if (bot->IsWithinLOS(x, y, z))
+        moved = MoveNear(bot->GetMapId(), x, y, z, 0);
+    else
+        moved = MoveTo(bot->GetMapId(), x, y, z, false, false);
+
+    if (moved)
+        return true;
 
     ai->TellError("Cannot find any spirit healer nearby");
     return false;
