@@ -274,7 +274,7 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed)
         if (time(NULL) > (BgCheckTimer + 30))
             activateCheckBgQueueThread();
 
-        if (BgBotsActive && bgBotsCount < 60)
+        /*if (BgBotsActive && bgBotsCount < 80)
         {
             for (int i = BG_BRACKET_ID_FIRST; i < MAX_BATTLEGROUND_BRACKETS; ++i)
             {
@@ -313,7 +313,7 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed)
                     }
                 }
             }
-        }
+        }*/
     }
 
     uint32 botProcessed = 0;
@@ -484,7 +484,8 @@ void RandomPlayerbotMgr::CheckBgQueue()
 
     uint32 count = 0;
     uint32 visual_count = 0;
-    for (int i = BG_BRACKET_ID_FIRST; i < MAX_BATTLEGROUND_BRACKETS; ++i)
+
+    /*for (int i = BG_BRACKET_ID_FIRST; i < MAX_BATTLEGROUND_BRACKETS; ++i)
     {
         for (int j = BATTLEGROUND_QUEUE_AV; j < MAX_BATTLEGROUND_QUEUE_TYPES; ++j)
         {
@@ -494,8 +495,8 @@ void RandomPlayerbotMgr::CheckBgQueue()
             visual_count += VisualBots[j][i][0];
             visual_count += VisualBots[j][i][1];
 
-            if (count == 0)
-                continue;
+            //if (!count)
+            //    continue;
 
             BattleGroundQueueTypeId queueTypeId = BattleGroundQueueTypeId(j);
             BattleGroundBracketId bracketId = BattleGroundBracketId(i);
@@ -522,22 +523,22 @@ void RandomPlayerbotMgr::CheckBgQueue()
                 BracketSize = type * 2;
                 TeamSize = type;
 
-                if ((SCount >= BracketSize && !RCount) || (RCount >= BracketSize && !SCount))
-                    continue;
+                //if ((SCount >= BracketSize && !RCount) || (RCount >= BracketSize && !SCount))
+                //    continue;
             }
 #endif
             uint32 BgCount = ACount + HCount;
 
-            if (BgCount >= BracketSize)
-                continue;
+            //if (BgCount >= BracketSize)
+            //    continue;
         }
-    }
+    }*/
 
-    int check_time = count > 0 ? 180 : 30;
+    int check_time = count > 0 ? 120 : 30;
 
     if (time(NULL) < (BgCheckTimer + check_time))
     {
-        BgBotsActive = (count > 0 || visual_count < (MAX_BATTLEGROUND_BRACKETS * 5));
+        //BgBotsActive = (count > 0 || visual_count < (MAX_BATTLEGROUND_BRACKETS * 5));
         return;
     }
     else
@@ -560,6 +561,8 @@ void RandomPlayerbotMgr::CheckBgQueue()
             ArenaBots[j][i][0][1] = 0;
             ArenaBots[j][i][1][0] = 0;
             ArenaBots[j][i][1][1] = 0;
+            NeedBots[j][i][0] = false;
+            NeedBots[j][i][1] = false;
         }
     }
 
@@ -596,8 +599,7 @@ void RandomPlayerbotMgr::CheckBgQueue()
 #endif
 #endif
 #ifndef MANGOSBOT_ZERO
-        ArenaType arenaType = sServerFacade.BgArenaType(queueTypeId);
-        if (arenaType != ARENA_TYPE_NONE)
+        if (ArenaType arenaType = sServerFacade.BgArenaType(queueTypeId))
         {
 #ifdef MANGOS
             BattleGroundQueue& bgQueue = sServerFacade.bgQueue(queueTypeId);
@@ -669,6 +671,11 @@ void RandomPlayerbotMgr::CheckBgQueue()
             BgBots[queueTypeId][bracketId][TeamId]++;
         else
             BgPlayers[queueTypeId][bracketId][TeamId]++;
+
+        if (!player->IsInvitedForBattleGroundQueueType(queueTypeId) && !player->InBattleGround())
+        {
+            NeedBots[queueTypeId][bracketId][TeamId] = true;
+        }
     }
 
     for (PlayerBotMap::iterator i = playerBots.begin(); i != playerBots.end(); ++i)
@@ -681,13 +688,14 @@ void RandomPlayerbotMgr::CheckBgQueue()
         if (!IsRandomBot(bot->GetGUIDLow()))
             continue;
 
-        if (bot->GetBattleGround() && bot->GetBattleGround()->GetStatus() == STATUS_WAIT_LEAVE)
+        if (bot->InBattleGround() && bot->GetBattleGround()->GetStatus() == STATUS_WAIT_LEAVE)
             continue;
 
         uint32 TeamId = bot->GetTeam() == ALLIANCE ? 0 : 1;
         BattleGroundQueueTypeId queueTypeId = bot->GetBattleGroundQueueTypeId(0);
         if (queueTypeId == BATTLEGROUND_QUEUE_NONE)
             continue;
+
         BattleGroundTypeId bgTypeId = sServerFacade.BgTemplateId(queueTypeId);
 #ifdef MANGOS
         BattleGroundBracketId bracketId = bot->GetBattleGroundBracketIdFromLevel(bgTypeId);
@@ -756,9 +764,8 @@ void RandomPlayerbotMgr::CheckBgQueue()
                 continue;
 
 #ifndef MANGOSBOT_ZERO
-            if (sServerFacade.BgArenaType(queueTypeId))
+            if (ArenaType type = sServerFacade.BgArenaType(queueTypeId))
             {
-                ArenaType type = sServerFacade.BgArenaType(queueTypeId);
                 sLog.outBasic("ARENA:%s %s: P (Skirmish:%d, Rated:%d) B (Skirmish:%d, Rated:%d) Total (Skirmish:%d Rated:%d)",
                     type == ARENA_TYPE_2v2 ? "2v2" : type == ARENA_TYPE_3v3 ? "3v3" : "5v5",
                     i == 0 ? "10-19" : i == 1 ? "20-29" : i == 2 ? "30-39" : i == 3 ? "40-49" : i == 4 ? "50-59" : (i == 5 && MAX_BATTLEGROUND_BRACKETS == 6) ? "60" : (i == 5 && MAX_BATTLEGROUND_BRACKETS == 7) ? "60-69" : i == 6 ? (i == 6 && MAX_BATTLEGROUND_BRACKETS == 16) ? "70-79" : "70" : "80",
@@ -1065,8 +1072,8 @@ void RandomPlayerbotMgr::AddBgBot(BattleGroundQueueTypeId queueTypeId, BattleGro
             if (bot->GetPlayerbotAI()->GetMaster() && !bot->GetPlayerbotAI()->GetMaster()->GetPlayerbotAI())
                 continue;
 
-            //if (bot->GetGroup())
-            //    continue;
+            if (bot->GetGroup())
+                continue;
 
             if (bot->IsInCombat())
                 continue;
@@ -2753,35 +2760,6 @@ void RandomPlayerbotMgr::Remove(Player* bot)
     LogoutPlayerBot(owner);
 }
 
-uint32 RandomPlayerbotMgr::GetBattleMasterEntryByRace(uint8 race)
-{
-    switch (race)
-    {
-    case RACE_HUMAN:       return 14981;
-    case RACE_ORC:         return 3890;
-    case RACE_DWARF:       return 14982;
-    case RACE_NIGHTELF:    return 2302;
-    case RACE_UNDEAD:      return 2804;
-    case RACE_TAUREN:      return 10360;
-    case RACE_GNOME:       return 14982;
-    case RACE_TROLL:       return 3890;
-#ifndef MANGOSBOT_ZERO
-    case RACE_DRAENEI:     return 20118;
-    case RACE_BLOODELF:    return 16696;
-#endif
-    default:    return 0;
-    }
-}
-
-uint32 RandomPlayerbotMgr::GetBattleMasterGuidByRace(uint8 race)
-{
-    uint32 guid = 0;
-    int entry = GetBattleMasterEntryByRace(race);
-    if (entry)
-        guid = GetCreatureGuidByEntry(entry);
-    return guid;
-}
-
 const CreatureDataPair* RandomPlayerbotMgr::GetCreatureDataByEntry(uint32 entry)
 {
     if (entry != 0 && ObjectMgr::GetCreatureTemplate(entry))
@@ -2804,7 +2782,7 @@ uint32 RandomPlayerbotMgr::GetCreatureGuidByEntry(uint32 entry)
     return guid;
 }
 
-uint32 RandomPlayerbotMgr::GetBattleMasterEntry(Player* bot, BattleGroundTypeId bgTypeId)
+uint32 RandomPlayerbotMgr::GetBattleMasterEntry(Player* bot, BattleGroundTypeId bgTypeId, bool fake)
 {
     Team team = bot->GetTeam();
     uint32 entry = 0;
@@ -2823,44 +2801,47 @@ uint32 RandomPlayerbotMgr::GetBattleMasterEntry(Player* bot, BattleGroundTypeId 
     if (Bms.empty())
         return entry;
 
-    float dist1 = 10000.0f;
-    for (auto j = 0; j < 3; ++j)
+    float dist1 = FLT_MAX;
+
+    for (auto i = begin(Bms); i != end(Bms); ++i)
     {
-        for (auto i = begin(Bms); i != end(Bms); ++i)
+        CreatureDataPair const* dataPair = sRandomPlayerbotMgr.GetCreatureDataByEntry(*i);
+        if (!dataPair)
+            continue;
+
+        CreatureData const* data = &dataPair->second;
+
+        Unit* Bm = sMapMgr.FindMap((uint32)data->mapid)->GetUnit(ObjectGuid(HIGHGUID_UNIT, *i, dataPair->first));
+        if (!Bm)
+            continue;
+
+        if (bot->GetMapId() != Bm->GetMapId())
+            continue;
+
+        // return first available guid on map if queue from anywhere
+        if (fake)
         {
-            if (entry && j == 2)
-                break;
+            entry = *i;
+            break;
+        }
 
-            CreatureDataPair const* dataPair = sRandomPlayerbotMgr.GetCreatureDataByEntry(*i);
-            if (!dataPair)
-                continue;
+        AreaTableEntry const* area = GetAreaEntryByAreaID(Bm->GetAreaId());
+        if (!area)
+            continue;
 
-            CreatureData const* data = &dataPair->second;
-            if (bot->GetMapId() != data->mapid && j == 0)
-                continue;
+        if (area->team == 4 && bot->GetTeam() == ALLIANCE)
+            continue;
+        if (area->team == 2 && bot->GetTeam() == HORDE)
+            continue;
 
-            Unit* Bm = sMapMgr.FindMap(data->mapid)->GetUnit(ObjectGuid(HIGHGUID_UNIT, *i, dataPair->first));
-            if (!Bm)
-                continue;
+        if (Bm->GetDeathState() == DEAD)
+            continue;
 
-            AreaTableEntry const* area = GetAreaEntryByAreaID(Bm->GetAreaId());
-            if (!area)
-                continue;
-
-            if (area->team == 4 && bot->GetTeam() == ALLIANCE)
-                continue;
-            if (area->team == 2 && bot->GetTeam() == HORDE)
-                continue;
-
-            if (Bm->GetDeathState() == DEAD)
-                continue;
-
-            float dist2 = sServerFacade.GetDistance2d(bot, data->posX, data->posY);
-            if (dist2 < dist1)
-            {
-                dist1 = dist2;
-                entry = *i;
-            }
+        float dist2 = sServerFacade.GetDistance2d(bot, data->posX, data->posY);
+        if (dist2 < dist1)
+        {
+            dist1 = dist2;
+            entry = *i;
         }
     }
 
