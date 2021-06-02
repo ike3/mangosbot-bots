@@ -302,15 +302,9 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
 	{
         if (!player->GetGroup())
         {
-            engine->ChangeStrategy(sPlayerbotAIConfig.randomBotCombatStrategies);
-
             engine->addStrategy("flee");
             engine->addStrategy("boost");
 
-            if (player->getClass() == CLASS_WARLOCK)
-            {
-                engine->removeStrategy("ranged");
-            }
             
             if (player->getClass() == CLASS_DRUID && tab == 2)
             {
@@ -347,6 +341,8 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
 
         if (player->getClass() == CLASS_ROGUE)
             engine->addStrategy("stealth");
+
+        engine->ChangeStrategy(sPlayerbotAIConfig.randomBotCombatStrategies);
     }
     else
     {
