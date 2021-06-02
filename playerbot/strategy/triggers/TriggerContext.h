@@ -129,6 +129,7 @@ namespace ai
             creators["enemy flagcarrier near"] = &TriggerContext::enemy_flagcarrier_near;
             creators["in battleground"] = &TriggerContext::player_is_in_battleground;
             creators["in battleground without flag"] = &TriggerContext::player_is_in_battleground_no_flag;
+            creators["wants in bg"] = &TriggerContext::player_wants_in_bg;
 
             creators["mounted"] = &TriggerContext::mounted;
 
@@ -140,6 +141,9 @@ namespace ai
             creators["need world buff"] = &TriggerContext::need_world_buff;
             creators["falling"] = &TriggerContext::falling;
             creators["falling far"] = &TriggerContext::falling_far;
+
+
+            creators["has continue target"] = &TriggerContext::has_continue_action;
         }
 
     private:
@@ -240,6 +244,8 @@ namespace ai
         static Trigger* need_world_buff(PlayerbotAI* ai) { return new NeedWorldBuffTrigger(ai); }
         static Trigger* falling(PlayerbotAI* ai) { return new IsFallingTrigger(ai); }
         static Trigger* falling_far(PlayerbotAI* ai) { return new IsFallingFarTrigger(ai); }
+        static Trigger* has_continue_action(PlayerbotAI* ai) { return new HasContinueActionTrigger(ai); }
+        static Trigger* player_wants_in_bg(PlayerbotAI* ai) { return new PlayerWantsInBattlegroundTrigger(ai); }
         
     };
 };

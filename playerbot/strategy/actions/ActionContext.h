@@ -44,6 +44,8 @@
 #include "CombatActions.h"
 #include "WorldBuffAction.h"
 #include "CastCustomSpellAction.h"
+#include "BattleGroundJoinAction.h"
+#include "ChooseMoveDoAction.h"
 
 namespace ai
 {
@@ -139,6 +141,8 @@ namespace ai
             creators["use dark portal azeroth"] = &ActionContext::use_dark_portal_azeroth;
             creators["world buff"] = &ActionContext::world_buff;
             creators["cast random spell"] = &ActionContext::cast_random_spell;
+            creators["continue action"] = &ActionContext::continue_action;
+            creators["queue at bm"] = &ActionContext::queue_at_bm;
 
             // BG Tactics
             creators["bg tactics"] = &ActionContext::bg_tactics;
@@ -241,6 +245,8 @@ namespace ai
         static Action* move_from_dark_portal(PlayerbotAI* ai) { return new MoveFromDarkPortalAction(ai); }
         static Action* world_buff(PlayerbotAI* ai) { return new WorldBuffAction(ai); }
         static Action* cast_random_spell(PlayerbotAI* ai) { return new CastRandomSpellAction(ai); }
+        static Action* continue_action(PlayerbotAI* ai) { return new ContinueMoveDoAction(ai); }
+        static Action* queue_at_bm(PlayerbotAI* ai) { return new QueueAtBmAction(ai); }
 
         // BG Tactics
         static Action* bg_tactics(PlayerbotAI* ai) { return new BGTactics(ai); }
@@ -252,6 +258,6 @@ namespace ai
         static Action* bg_protect_fc(PlayerbotAI* ai) { return new BGTactics(ai, "protect fc"); }
         static Action* attack_enemy_fc(PlayerbotAI* ai) { return new AttackEnemyFlagCarrierAction(ai); }
         static Action* bg_use_buff(PlayerbotAI* ai) { return new BGTactics(ai, "use buff"); }
-        static Action* bg_check_flag(PlayerbotAI* ai) { return new BGTactics(ai, "check flag"); }
+        static Action* bg_check_flag(PlayerbotAI* ai) { return new BGTactics(ai, "check flag"); }       
     };
 };

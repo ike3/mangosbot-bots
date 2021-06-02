@@ -144,6 +144,9 @@ bool Engine::DoNextAction(Unit* unit, int depth, bool minimal)
             ActionNode* actionNode = queue.Pop();
             Action* action = InitializeAction(actionNode);
 
+            if(action)
+                action->setRelevance(relevance);
+
             if (!action)
             {
                 LogAction("A:%s - UNKNOWN", actionNode->getName().c_str());
@@ -154,6 +157,7 @@ bool Engine::DoNextAction(Unit* unit, int depth, bool minimal)
                 {
                     Multiplier* multiplier = *i;
                     relevance *= multiplier->GetValue(action);
+                    action->setRelevance(relevance);
                     if (!relevance)
                     {
                         LogAction("Multiplier %s made action %s useless", multiplier->getName().c_str(), action->getName().c_str());

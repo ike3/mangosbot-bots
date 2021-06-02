@@ -26,9 +26,11 @@ namespace ai
     public:
         //Constructors
         WorldPosition() { wLoc = WorldLocation(); }
-        WorldPosition(WorldLocation loc) { wLoc = loc; }
+        WorldPosition(const WorldLocation loc) { wLoc = loc; }
         WorldPosition(uint32 mapid, float x, float y, float z = 0, float orientation = 0) { wLoc = WorldLocation(mapid, x, y, z, orientation); }
-        WorldPosition(WorldObject* wo) { wLoc = WorldLocation(wo->GetMapId(), wo->GetPositionX(), wo->GetPositionY(), wo->GetPositionZ(), wo->GetOrientation()); }
+        WorldPosition(const WorldObject* wo) { wLoc = WorldLocation(wo->GetMapId(), wo->GetPositionX(), wo->GetPositionY(), wo->GetPositionZ(), wo->GetOrientation()); }
+        WorldPosition(const CreatureDataPair const* cdPair) { if (cdPair) { wLoc = WorldLocation(cdPair->second.mapid, cdPair->second.posX, cdPair->second.posY, cdPair->second.posZ, cdPair->second.orientation); } }
+        WorldPosition(ObjectGuid guid);
         WorldPosition(vector<WorldPosition*> list, WorldPositionConst conType);
         WorldPosition(vector<WorldPosition> list, WorldPositionConst conType);
         WorldPosition(uint32 mapid, std::pair<int, int> grid) { wLoc = WorldLocation(mapid, (32 - grid.first) * SIZE_OF_GRIDS, (32 - grid.second) * SIZE_OF_GRIDS, 0, 0); }
@@ -75,6 +77,17 @@ namespace ai
         //Returns the closest point from the list.
         WorldPosition* closest(vector<WorldPosition*> list) { return *std::min_element(list.begin(), list.end(), [this](WorldPosition* i, WorldPosition* j) {return this->distance(i) < this->distance(j); }); }
         WorldPosition closest(vector<WorldPosition> list) { return *std::min_element(list.begin(), list.end(), [this](WorldPosition i, WorldPosition j) {return this->distance(i) < this->distance(j); }); }
+
+        template<class T>
+        pair<T, WorldPosition>  closest(list<pair<T,WorldPosition>> list) { return *std::min_element(list.begin(), list.end(), [this](pair<T, WorldPosition> i, pair<T, WorldPosition> j) {return this->distance(i.second) < this->distance(j.second); }); }
+        template<class T>
+        pair<T, WorldPosition> closest(list<T> list) { return closest(GetPosList(list)); }
+
+        template<class T>
+        pair<T, WorldPosition>  closest(vector<pair<T, WorldPosition>> list) { return *std::min_element(list.begin(), list.end(), [this](pair<T, WorldPosition> i, pair<T, WorldPosition> j) {return this->distance(i.second) < this->distance(j.second); }); }
+        template<class T>
+        pair<T, WorldPosition> closest(vector<T> list) { return closest(GetPosVector(list)); }
+
 
         //Quick square distance in 2d plane.
         float sqDistance2d(WorldPosition center) { return (getX() - center.getX()) * (getX() - center.getX()) + (getY() - center.getY()) * (getY() - center.getY()); };
@@ -138,6 +151,12 @@ namespace ai
         WorldLocation wLoc;
         uint32 visitors = 0;        
     };
+
+    template<class T>
+    list<pair<T, WorldPosition>> GetPosList(list<T> oList) { list<pair<T, WorldPosition>> retList; for (auto& obj : oList) retList.push_back(make_pair(obj, WorldPosition(obj))); return retList; };
+
+    template<class T>
+    vector<pair<T, WorldPosition>> GetPosVector(vector<T> oList) { vector<pair<T, WorldPosition>> retList; for (auto& obj : oList) retList.push_back(make_pair(obj, WorldPosition(obj))); return retList; };
 
     class mapTransfer
     {

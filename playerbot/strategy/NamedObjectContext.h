@@ -10,8 +10,9 @@ namespace ai
         Qualified() {};
 
     public:
+        virtual void Qualify(uint32 qualifier) { ostringstream out; out << qualifier; this->qualifier = out.str(); }
         virtual void Qualify(string qualifier) { this->qualifier = qualifier; }
-        string GetQualifier() { return qualifier; }
+        string getQualifier() { return qualifier; }
 
     protected:
         string qualifier;
@@ -43,7 +44,7 @@ namespace ai
 
             T *object = (*creator)(ai);
             Qualified *q = dynamic_cast<Qualified *>(object);
-            if (q)
+            if (q && found != string::npos)
                 q->Qualify(qualifier);
 
             return object;

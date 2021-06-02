@@ -22,10 +22,21 @@ public:
     BgRoleValue(PlayerbotAI* ai) : ManualSetValue<uint32>(ai, 0, "bg role") {}
 };
 
-class BgMasterValue : public ManualSetValue<ObjectGuid>
+class BgMastersValue : public CDPairListCalculatedValue, public Qualified
 {
 public:
-    BgMasterValue(PlayerbotAI* ai) : ManualSetValue<ObjectGuid>(ai, ObjectGuid()) {}
+    BgMastersValue(PlayerbotAI* ai) : CDPairListCalculatedValue(ai, "bg masters", 60000) {}
+
+    virtual list<CreatureDataPair const*> Calculate();
+};
+
+class BgMasterValue : public CDPairCalculatedValue, public Qualified
+{
+public:
+    BgMasterValue(PlayerbotAI* ai) : CDPairCalculatedValue(ai, "bg master", 60) {}
+
+    virtual CreatureDataPair const* Calculate();
+    virtual CreatureDataPair const* NearestBm(bool allowDead = true);
 };
 
 class FlagCarrierValue : public UnitCalculatedValue

@@ -154,3 +154,20 @@ bool TeamFlagCarrierNear::IsActive()
     Unit* carrier = AI_VALUE(Unit*, "team flag carrier");
     return carrier && sServerFacade.IsDistanceLessOrEqualThan(sServerFacade.GetDistance2d(bot, carrier), VISIBILITY_DISTANCE_LARGE);
 }
+
+bool PlayerWantsInBattlegroundTrigger::IsActive()
+{
+    if (bot->InBattleGround())
+        return false;
+
+    if (bot->GetBattleGround() && bot->GetBattleGround()->GetStatus() == STATUS_WAIT_JOIN)
+        return false;
+
+    if (bot->GetBattleGround() && bot->GetBattleGround()->GetStatus() == STATUS_IN_PROGRESS)
+        return false;
+
+    if (!bot->CanJoinToBattleground())
+        return false;
+
+    return true;
+};

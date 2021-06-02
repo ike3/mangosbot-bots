@@ -72,6 +72,7 @@
 #include "SkipSpellsListValue.h"
 #include "SnareTargetValue.h"
 #include "Stances.h"
+#include "MoveTargetValue.h"
 
 namespace ai
 {
@@ -213,6 +214,8 @@ namespace ai
             creators["bg master"] = &ValueContext::bg_master;
             creators["enemy flag carrier"] = &ValueContext::enemy_fc;
             creators["team flag carrier"] = &ValueContext::team_fc;
+
+            creators["move target"] = &ValueContext::move_target;
         }
 
     private:
@@ -343,5 +346,7 @@ namespace ai
         static UntypedValue* ignore_rpg_target(PlayerbotAI* ai) { return new IgnoreRpgTargetValue(ai); }
         static UntypedValue* talk_target(PlayerbotAI* ai) { return new TalkTargetValue(ai); }
         static UntypedValue* pull_target(PlayerbotAI* ai) { return new PullTargetValue(ai); }
+
+        static UntypedValue* move_target(PlayerbotAI* ai) { return new MoveTargetValue(ai); }
 };
 };

@@ -96,6 +96,8 @@ class RandomPlayerbotMgr : public PlayerbotHolder
         void CheckLfgQueue();
         void CheckPlayers();
 
+        map<Team, map<BattleGroundTypeId, list<uint32> > > getBattleMastersCache() { return BattleMastersCache; }
+
 	protected:
 	    virtual void OnBotLoginInternal(Player * const bot);
 

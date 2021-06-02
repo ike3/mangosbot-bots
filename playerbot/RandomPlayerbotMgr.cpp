@@ -1336,38 +1336,31 @@ void RandomPlayerbotMgr::AddBgBot(BattleGroundQueueTypeId queueTypeId, BattleGro
         sLog.outDetail("Bot #%d <%s> (%d %s) simulates waiting %s %d (%s) bracket %d", bot, player->GetName(), player->getLevel(), TeamId == 0 ? "A" : "H", bgType, bgTypeId, _bgType, bracketId);
     }
 
-    // Find BattleMaster by Entry
-    uint32 BmEntry = sRandomPlayerbotMgr.GetBattleMasterEntry(player, bgTypeId);
+    PlayerbotAI* pai = player->GetPlayerbotAI();
+    AiObjectContext* context = pai->GetAiObjectContext();
+    CreatureDataPair const* bm = AI_VALUE2(CreatureDataPair const*, "bg master", bgTypeId);
 
     // if found entry
-    if (BmEntry)
+    if (bm)
     {
-        CreatureDataPair const* dataPair = sRandomPlayerbotMgr.GetCreatureDataByEntry(BmEntry);
-        CreatureData const* data = &dataPair->second;
-        // if BattleMaster found, Teleport
-        if (data)
+        if (player->IsTaxiFlying())
         {
-            if (player->IsTaxiFlying())
-            {
-                player->GetMotionMaster()->MovementExpired();
+            player->GetMotionMaster()->MovementExpired();
 #ifdef MANGOS
-                player->m_taxi.ClearTaxiDestinations();
+            player->m_taxi.ClearTaxiDestinations();
 #endif
-            }
-#ifdef MANGOSBOT_TWO
-            if (sServerFacade.BgArenaType(queueTypeId))
-                player->TeleportTo(data->mapid, data->posX, data->posY, data->posZ, player->GetOrientation());
-            else
-                RandomTeleportForRpg(player);
-#else
-            player->TeleportTo(data->mapid, data->posX, data->posY, data->posZ, player->GetOrientation());
-#endif
-            ObjectGuid BmGuid = ObjectGuid(HIGHGUID_UNIT, BmEntry, dataPair->first);
-            player->GetPlayerbotAI()->GetAiObjectContext()->GetValue<ObjectGuid>("bg master")->Set(BmGuid);
         }
+#ifdef MANGOSBOT_TWO
+        if (sServerFacade.BgArenaType(queueTypeId))
+            player->TeleportTo(bm->GetMapId(), bm->GetPositionX(), bm->GetPositionY(), bm->GetPositionZ(), player->GetOrientation());
+        else
+            RandomTeleportForRpg(player);
+#else
+        player->TeleportTo(bm->second.mapid, bm->second.posX, bm->second.posY, bm->second.posZ, player->GetOrientation());
+#endif        
     }
 #ifndef MANGOSBOT_TWO
-    if (!BmEntry)
+    if (!bm)
     {
         if(!visual)
             sLog.outError("Bot #%d <%s> could not find Battlemaster for %s %d (%s) bracket %d", player->GetGUIDLow(), player->GetName(), bgType, bgTypeId, _bgType, bracketId);
@@ -1375,7 +1368,7 @@ void RandomPlayerbotMgr::AddBgBot(BattleGroundQueueTypeId queueTypeId, BattleGro
         return;
     }
 #else
-    if (!BmEntry && isArena)
+    if (!bm && isArena)
     {
         if (!visual)
             sLog.outError("Bot #%d <%s> could not find Battlemaster for %s %d (%s) bracket %d", player->GetGUIDLow(), player->GetName(), bgType, bgTypeId, _bgType, bracketId);
@@ -1384,7 +1377,7 @@ void RandomPlayerbotMgr::AddBgBot(BattleGroundQueueTypeId queueTypeId, BattleGro
     }
     else
     {
-        player->GetPlayerbotAI()->GetAiObjectContext()->GetValue<ObjectGuid>("bg master")->Set(player->GetObjectGuid());
+        player->GetPlayerbotAI()->GetAiObjectContext()->GetValue<ObjectGuid>("bg type")->Set(0);
     }
 #endif
 
