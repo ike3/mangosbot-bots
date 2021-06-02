@@ -33,30 +33,235 @@ using namespace ai;
 
 bool BGJoinAction::Execute(Event event)
 {
-   if (!sPlayerbotAIConfig.randomBotJoinBG)
-      return false;
+    if (bgList.empty())
+        return false;
 
-   if (!bot->CanJoinToBattleground())
-       return false;
+    BattleGroundQueueTypeId queueTypeId = (BattleGroundQueueTypeId)bgList[urand(0, bgList.size() - 1)];
+    BattleGroundTypeId bgTypeId = sServerFacade.BgTemplateId(queueTypeId);
+    bool isArena = false;
+    bool isRated = false;
 
-   if (bot->IsDead())
-      return false;
+    // Find BattleMaster by Entry
+    uint32 BmEntry = sRandomPlayerbotMgr.GetBattleMasterEntry(bot, bgTypeId, true);
+    if (!BmEntry)
+    {
+        sLog.outError("Bot #%d <%s> could not find Battlemaster for %d", bot->GetGUIDLow(), bot->GetName(), bgTypeId);
+        return false;
+    }
 
-   if (bot->getLevel() < 10)
-      return false;
+    // check bm map
+    CreatureDataPair const* dataPair = sRandomPlayerbotMgr.GetCreatureDataByEntry(BmEntry);
+    CreatureData const* data = &dataPair->second;
+    ObjectGuid BmGuid = ObjectGuid(HIGHGUID_UNIT, BmEntry, dataPair->first);
+    if (data->mapid != bot->GetMapId())
+    {
+        sLog.outError("Bot #%d <%s> : Battlemaster is not in map for BG %d", bot->GetGUIDLow(), bot->GetName(), bgTypeId);
+        return false;
+    }
 
-   if (bot->InBattleGroundQueue())
-      return false;
+#ifndef MANGOSBOT_ZERO
+    if (sServerFacade.BgArenaType(queueTypeId))
+    {
+        isArena = true;
 
-   if (bot->IsBeingTeleported())
-      return false;
+        vector<uint32>::iterator i = find(ratedList.begin(), ratedList.end(), queueTypeId);
+        if (i != ratedList.end())
+            isRated = true;
 
-   Map* map = bot->GetMap();
-   if (map && map->Instanceable())
-      return false;
+        ai->GetAiObjectContext()->GetValue<uint32>("arena type")->Set(isRated);
+    }
+#endif
 
-   uint32 queueType = AI_VALUE(uint32, "bg type");
-   return JoinQueue(queueType);
+    // set bg type and bm guid
+    ai->GetAiObjectContext()->GetValue<ObjectGuid>("bg master")->Set(BmGuid);
+    ai->GetAiObjectContext()->GetValue<uint32>("bg type")->Set(queueTypeId);
+
+
+   //uint32 queueType = AI_VALUE(uint32, "bg type");
+   return JoinQueue(queueTypeId);
+}
+
+bool BGJoinAction::canJoinBg(BattleGroundQueueTypeId queueTypeId, BattleGroundBracketId bracketId)
+{
+    BattleGroundTypeId bgTypeId = sServerFacade.BgTemplateId(queueTypeId);
+    BattleGround* bg = sBattleGroundMgr.GetBattleGroundTemplate(bgTypeId);
+    if (!bg)
+        return false;
+
+    // do not try if too low/high level
+    if (!bot->GetBGAccessByLevel(bgTypeId))
+        return false;
+
+    // do not try if bracket is wrong
+#ifdef MANGOSBOT_TWO
+    BattleGround* bg = sBattleGroundMgr.GetBattleGroundTemplate(bgTypeId);
+    uint32 mapId = bg->GetMapId();
+    PvPDifficultyEntry const* pvpDiff = GetBattlegroundBracketByLevel(mapId, bot->getLevel());
+    if (!pvpDiff)
+        return false;
+
+    BattleGroundBracketId bracket_temp = pvpDiff->GetBracketId();
+
+    if (bracket_temp != bracketId)
+        return false;
+#else
+    if (bot->GetBattleGroundBracketIdFromLevel(bgTypeId) != bracketId)
+        return false;
+#endif
+    return true;
+}
+
+bool BGJoinAction::shouldJoinBg(BattleGroundQueueTypeId queueTypeId, BattleGroundBracketId bracketId)
+{
+    BattleGroundTypeId bgTypeId = sServerFacade.BgTemplateId(queueTypeId);
+    BattleGround* bg = sBattleGroundMgr.GetBattleGroundTemplate(bgTypeId);
+    if (!bg)
+        return false;
+
+    if ((sRandomPlayerbotMgr.BgPlayers[queueTypeId][bracketId][0] +
+        sRandomPlayerbotMgr.BgBots[queueTypeId][bracketId][0] +
+        sRandomPlayerbotMgr.BgPlayers[queueTypeId][bracketId][1] +
+        sRandomPlayerbotMgr.BgBots[queueTypeId][bracketId][1]) == 0/* && urand(0, 100) > 5*/) // can enable auto join here
+        return false;
+
+    if ((sRandomPlayerbotMgr.BgPlayers[queueTypeId][bracketId][0] +
+        sRandomPlayerbotMgr.BgPlayers[queueTypeId][bracketId][1]) == 0/* && urand(0, 100) > 5*/) // can enable auto join here
+        return false;
+
+    bool isArena = false;
+    bool isRated = false;
+
+    uint32 BracketSize = bg->GetMaxPlayers();
+    uint32 TeamSize = bg->GetMaxPlayersPerTeam();
+
+    uint32 ACount = sRandomPlayerbotMgr.BgBots[queueTypeId][bracketId][0] + sRandomPlayerbotMgr.BgPlayers[queueTypeId][bracketId][0];
+    uint32 HCount = sRandomPlayerbotMgr.BgBots[queueTypeId][bracketId][1] + sRandomPlayerbotMgr.BgPlayers[queueTypeId][bracketId][1];
+
+    uint32 BgCount = ACount + HCount;
+    uint32 SCount, RCount;
+
+    uint32 TeamId = GetTeamIndexByTeamId(bot->GetTeam());
+
+    bool needBots = sRandomPlayerbotMgr.NeedBots[queueTypeId][bracketId][GetTeamIndexByTeamId(bot->GetTeam())];
+
+#ifndef MANGOSBOT_ZERO
+    ArenaType type = sServerFacade.BgArenaType(queueTypeId);
+    if (type != ARENA_TYPE_NONE)
+    {
+        isArena = true;
+        BracketSize = type * 2;
+        TeamSize = type;
+        ACount = sRandomPlayerbotMgr.ArenaBots[queueTypeId][bracketId][isRated][0];
+        HCount = sRandomPlayerbotMgr.ArenaBots[queueTypeId][bracketId][isRated][1];
+        BgCount = sRandomPlayerbotMgr.BgBots[queueTypeId][bracketId][isRated] + sRandomPlayerbotMgr.BgPlayers[queueTypeId][bracketId][isRated];
+        SCount = sRandomPlayerbotMgr.BgBots[queueTypeId][bracketId][0] + sRandomPlayerbotMgr.BgPlayers[queueTypeId][bracketId][0];
+        RCount = sRandomPlayerbotMgr.BgBots[queueTypeId][bracketId][1] + sRandomPlayerbotMgr.BgPlayers[queueTypeId][bracketId][1];
+        uint32 rated_players = sRandomPlayerbotMgr.BgPlayers[queueTypeId][bracketId][1];
+        if (rated_players)
+        {
+            isRated = true;
+        }
+    }
+
+    // do not try if not a captain of arena team
+    if (isRated && sObjectMgr.GetArenaTeamByCaptain(bot->GetObjectGuid()))
+        return false;
+
+    if (isRated)
+        ratedList.push_back(queueTypeId);
+#endif
+
+    if (needBots || (BgCount > BracketSize && BgCount % BracketSize != 0))
+        return true;
+
+    // do not join if BG queue is full
+    if (BgCount >= BracketSize && (ACount >= TeamSize) && (HCount >= TeamSize))
+    {
+        return false;
+    }
+
+    if (!isArena && ((ACount >= TeamSize && TeamId == 0) || (HCount >= TeamSize && TeamId == 1)))
+    {
+        return false;
+    }
+
+    if (isArena && (((ACount >= TeamSize && HCount > 0) && TeamId == 0) || ((HCount >= TeamSize && ACount > 0) && TeamId == 1)))
+    {
+        return false;
+    }
+
+    if (isArena && (((ACount > TeamSize && HCount == 0) && TeamId == 1) || ((HCount > TeamSize && ACount == 0) && TeamId == 0)))
+    {
+        return false;
+    }
+
+    if (isArena && ((!isRated && SCount >= BracketSize) || (isRated && RCount >= BracketSize)))
+    {
+        return false;
+    }
+
+    return true;
+}
+
+bool BGJoinAction::isUseful()
+{
+    // do not try if BG bots disabled
+    if (!sPlayerbotAIConfig.randomBotJoinBG)
+        return false;
+
+    // do not try right after login
+    if ((time(0) - bot->GetInGameTime()) < 30)
+        return false;
+
+    // do not try if low level
+    if (bot->getLevel() < 10)
+        return false;
+
+    // do not try if with player master
+    if (bot->GetPlayerbotAI()->GetMaster() && bot->GetPlayerbotAI()->hasRealPlayerMaster())
+        return false;
+
+    if (bot->GetGroup())
+        return false;
+
+    if (bot->IsInCombat())
+        return false;
+
+    if (bot->InBattleGroundQueue())
+        return false;
+
+    // check Deserter debuff
+    if (!bot->CanJoinToBattleground())
+        return false;
+
+    // do not try if in dungeon
+    Map* map = bot->GetMap();
+    if (map && map->Instanceable())
+        return false;
+
+    bgList.clear();
+    ratedList.clear();
+
+    for (int i = BG_BRACKET_ID_FIRST; i < MAX_BATTLEGROUND_BRACKETS; ++i)
+    {
+        for (int j = BATTLEGROUND_QUEUE_AV; j < MAX_BATTLEGROUND_QUEUE_TYPES; ++j)
+        {
+            BattleGroundQueueTypeId queueTypeId = BattleGroundQueueTypeId(j);
+            BattleGroundTypeId bgTypeId = sServerFacade.BgTemplateId(queueTypeId);
+            BattleGroundBracketId bracketId = BattleGroundBracketId(i);
+
+            if (!canJoinBg(queueTypeId, bracketId))
+                continue;
+
+            if (shouldJoinBg(queueTypeId, bracketId))
+                bgList.push_back(queueTypeId);
+        }
+    }
+
+    if (!bgList.empty())
+        return true;
+
+    return false;
 }
 
 bool BGJoinAction::JoinQueue(uint32 type)
@@ -68,21 +273,27 @@ bool BGJoinAction::JoinQueue(uint32 type)
     // get BG TypeId
     BattleGroundQueueTypeId queueTypeId = BattleGroundQueueTypeId(type);
     BattleGroundTypeId bgTypeId = sServerFacade.BgTemplateId(queueTypeId);
+    BattleGroundBracketId bracketId;
 
     BattleGround* bg = sBattleGroundMgr.GetBattleGroundTemplate(bgTypeId);
     if (!bg)
         return false;
 
-    // check Deserter debuff
-    if (!bot->CanJoinToBattleground())
+#ifdef MANGOSBOT_TWO
+    BattleGround* bg = sBattleGroundMgr.GetBattleGroundTemplate(bgTypeId);
+    uint32 mapId = bg->GetMapId();
+    PvPDifficultyEntry const* pvpDiff = GetBattlegroundBracketByLevel(mapId, bot->getLevel());
+    if (!pvpDiff)
         return false;
 
-    // check if already in queue
-    if (bot->InBattleGroundQueue())
-        return false;
+    bracketId = pvpDiff->GetBracketId();
+#else
+    bracketId = bot->GetBattleGroundBracketIdFromLevel(bgTypeId);
+#endif
 
-   if (bot->getLevel() < 10)
-      return false;
+    uint32 BracketSize = bg->GetMaxPlayers();
+    uint32 TeamSize = bg->GetMaxPlayersPerTeam();
+    uint32 TeamId = GetTeamIndexByTeamId(bot->GetTeam());
 
    // check if has free queue slots
    if (!bot->HasFreeBattleGroundQueueId())
@@ -91,7 +302,7 @@ bool BGJoinAction::JoinQueue(uint32 type)
    }
 
    // get BattleMaster GUID
-   ObjectGuid guid = bot->GetPlayerbotAI()->GetAiObjectContext()->GetValue<ObjectGuid>("bg master")->Get();
+   ObjectGuid guid = AI_VALUE(ObjectGuid, "bg master");
    if (!guid)
    {
        sLog.outError("Bot %d could not find Battlemaster to join", bot->GetGUIDLow());
@@ -137,6 +348,8 @@ bool BGJoinAction::JoinQueue(uint32 type)
    if (arenaType != ARENA_TYPE_NONE)
    {
        isArena = true;
+       BracketSize = type * 2;
+       TeamSize = type;
        isRated = ai->GetAiObjectContext()->GetValue<uint32>("arena type")->Get();
 
        if (joinAsGroup)
@@ -162,6 +375,24 @@ bool BGJoinAction::JoinQueue(uint32 type)
    }
 #endif
 
+   // refresh food/regs
+   sRandomPlayerbotMgr.Refresh(bot);
+
+   if (isArena)
+   {
+       if (isRated)
+       {
+           sRandomPlayerbotMgr.BgBots[queueTypeId][bracketId][isRated] += TeamSize;
+           sRandomPlayerbotMgr.ArenaBots[queueTypeId][bracketId][isRated][TeamId] += TeamSize;
+       }
+       else
+       {
+           sRandomPlayerbotMgr.BgBots[queueTypeId][bracketId][isRated]++;
+           sRandomPlayerbotMgr.ArenaBots[queueTypeId][bracketId][isRated][TeamId]++;
+       }
+   }
+   else
+       sRandomPlayerbotMgr.BgBots[queueTypeId][bracketId][TeamId]++;
 
    WorldPacket packet(CMSG_BATTLEMASTER_JOIN, 20);
 #ifdef MANGOSBOT_ZERO
@@ -181,6 +412,9 @@ bool BGJoinAction::JoinQueue(uint32 type)
        return true;
    }
 #endif
+   // refresh food/regs
+   sRandomPlayerbotMgr.Refresh(bot);
+
    bot->GetSession()->HandleBattlemasterJoinOpcode(packet);
    return true;
 }
@@ -194,7 +428,7 @@ bool BGLeaveAction::Execute(Event event)
     if (!queueType)
         return false;
 
-    ai->ChangeStrategy("-bg", BOT_STATE_NON_COMBAT);
+    //ai->ChangeStrategy("-bg", BOT_STATE_NON_COMBAT);
 
     BattleGroundQueueTypeId queueTypeId = bot->GetBattleGroundQueueTypeId(0);
     BattleGroundTypeId _bgTypeId = sServerFacade.BgTemplateId(queueTypeId);
@@ -236,6 +470,11 @@ bool BGLeaveAction::Execute(Event event)
     ai->GetAiObjectContext()->GetValue<uint32>("arena type")->Set(NULL);
     ai->GetAiObjectContext()->GetValue<ObjectGuid>("bg master")->Set(ObjectGuid());
     return true;
+}
+
+bool BGStatusAction::isUseful()
+{
+    return bot->InBattleGroundQueue();
 }
 
 bool BGStatusAction::Execute(Event event)
@@ -450,8 +689,8 @@ bool BGStatusAction::Execute(Event event)
 
         bool leaveQ = false;
         uint32 timer;
-        if (_bgTypeId > 4 && _bgTypeId != 7)
-            timer = TIME_TO_AUTOREMOVE + 90 * 1000;
+        if (isArena)
+            timer = TIME_TO_AUTOREMOVE + 30 * 1000;
         else
             timer = TIME_TO_AUTOREMOVE + 1000 * (bg->GetMaxPlayers() * 4);
 
@@ -477,7 +716,7 @@ bool BGStatusAction::Execute(Event event)
             bool realPlayers = sRandomPlayerbotMgr.BgPlayers[queueTypeId][bracketId][TeamId];
             if (realPlayers)
                 return false;
-            ai->ChangeStrategy("-bg", BOT_STATE_NON_COMBAT);
+            //ai->ChangeStrategy("-bg", BOT_STATE_NON_COMBAT);
             sLog.outBasic("Bot #%u <%s> (%u %s) waited too long and leaves queue (%s %s).", bot->GetGUIDLow(), bot->GetName(), bot->getLevel(), bot->GetTeam() == ALLIANCE ? "A" : "H", isArena ? "Arena" : "BG", _bgType);
             WorldPacket packet(CMSG_BATTLEFIELD_PORT, 20);
             action = 0;
