@@ -11,6 +11,7 @@
 #include "CheckMountStateAction.h"
 #include "G3D/Vector3.h"
 #include "GameObject.h"
+#include "ChooseMoveDoAction.h"
 
 using namespace ai;
 
@@ -44,4 +45,22 @@ class BGStatusCheckAction : public Action
 public:
     BGStatusCheckAction(PlayerbotAI* ai, string name = "bg status check") : Action(ai, name) {}
     virtual bool Execute(Event event);
+};
+
+//Picks a random BG and selects all BM's of that bg type.
+//Selects the closest BM as potential move target.
+class QueueAtBmAction : public ChooseMoveDoListAction<CreatureDataPair const*> {
+public:
+    BattleGroundTypeId getBgTypeId(uint32 bgType);  //Get bgTypeId from bgType.
+    bool canJoinBg(uint32 bgType);                  //Check to see if bot can join this bg type
+
+    void GetRandomBg();                             //Select random bg from bgs bot may join
+    QueueAtBmAction(PlayerbotAI* ai, string name = "choose bm target", string targetValueName = "bg masters") : ChooseMoveDoListAction(ai, name, targetValueName) { GetRandomBg(); }
+
+    virtual bool isUseful();                        //Check if bot may join selected bg.
+
+    virtual bool IsValidBm(CreatureDataPair const* bmPair, bool allowDead); //Check if selected BM is friendly/exists/alive
+    virtual bool FilterPotentialTargets();          //Filter only those BM's that are valid.
+
+    virtual bool ExecuteAction(Event event);        //Face BM and set BG strategy and BG type
 };

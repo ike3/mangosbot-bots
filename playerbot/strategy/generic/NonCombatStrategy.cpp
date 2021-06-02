@@ -2,6 +2,7 @@
 #include "../../playerbot.h"
 #include "NonCombatStrategy.h"
 #include "../value.h"
+#include "../values/MoveTargetValue.h"
 
 using namespace ai;
 
@@ -47,6 +48,15 @@ void NonCombatStrategy::InitTriggers(std::list<TriggerNode*>& triggers)
         "need world buff",
         NextAction::array(0, new NextAction("world buff", 1.0f), NULL)));
 
+    AiObjectContext* context = ai->GetAiObjectContext();  
+
+    triggers.push_back(new TriggerNode(
+        "has continue action",
+        NextAction::array(0, new NextAction("continue action", AI_VALUE(MoveTarget*, "move target")->getRelevance()), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "wants in bg",
+        NextAction::array(0, new NextAction("choose bm target", 20.0f), NULL)));
 }
 
 void CollisionStrategy::InitTriggers(std::list<TriggerNode*> &triggers)

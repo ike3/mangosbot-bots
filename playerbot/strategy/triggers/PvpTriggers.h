@@ -101,4 +101,13 @@ namespace ai
     public:
         virtual bool IsActive();
     };
+
+    class PlayerWantsInBattlegroundTrigger : public Trigger
+    {
+    public:
+        PlayerWantsInBattlegroundTrigger(PlayerbotAI* ai) : Trigger(ai, "wants in bg") {}
+
+    public:
+        virtual bool IsActive();
+    };
 }
