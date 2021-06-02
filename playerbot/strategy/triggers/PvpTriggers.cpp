@@ -166,5 +166,8 @@ bool PlayerWantsInBattlegroundTrigger::IsActive()
     if (bot->GetBattleGround() && bot->GetBattleGround()->GetStatus() == STATUS_IN_PROGRESS)
         return false;
 
+    if (!bot->CanJoinToBattleground())
+        return false;
+
     return true;
 };

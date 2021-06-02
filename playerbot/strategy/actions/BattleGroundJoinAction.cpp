@@ -658,7 +658,10 @@ bool QueueAtBmAction::isUseful()
         return false;
 
     if (bot->InBattleGround())
-        return false;   
+        return false;
+
+    if (!bot->CanJoinToBattleground())
+        return false;
 
     if (getQualifier().empty())
         return false;
