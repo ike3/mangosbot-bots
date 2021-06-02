@@ -138,7 +138,7 @@ bool TrainerAction::Execute(Event event)
     if (spell)
         spells.insert(spell);
 
-    if (text.find("learn") != string::npos || sRandomPlayerbotMgr.IsRandomBot(bot) || (sPlayerbotAIConfig.autoTrainSpells != "no" && creature->GetCreatureInfo()->TrainerType != TRAINER_TYPE_TRADESKILLS))
+    if (text.find("learn") != string::npos || sRandomPlayerbotMgr.IsRandomBot(bot) || (sPlayerbotAIConfig.autoTrainSpells != "no" && (creature->GetCreatureInfo()->TrainerType != TRAINER_TYPE_TRADESKILLS || ai->isRealPlayer())))
         Iterate(creature, &TrainerAction::Learn, spells);
     else
         Iterate(creature, NULL, spells);
