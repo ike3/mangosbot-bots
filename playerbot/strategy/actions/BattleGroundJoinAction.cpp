@@ -294,6 +294,12 @@ bool BGJoinAction::JoinQueue(uint32 type)
     uint32 BracketSize = bg->GetMaxPlayers();
     uint32 TeamSize = bg->GetMaxPlayersPerTeam();
     uint32 TeamId = GetTeamIndexByTeamId(bot->GetTeam());
+    // check if already in queue
+    if (bot->InBattleGroundQueueForBattleGroundQueueType(queueTypeId))
+        return false;
+
+   if (bot->getLevel() < bg->GetMinLevel())
+      return false;
 
    // check if has free queue slots
    if (!bot->HasFreeBattleGroundQueueId())
@@ -301,9 +307,9 @@ bool BGJoinAction::JoinQueue(uint32 type)
        return false;
    }
 
-   // get BattleMaster GUID
-   ObjectGuid guid = AI_VALUE(ObjectGuid, "bg master");
-   if (!guid)
+   // get BattleMaster unit
+   Unit* unit = ai->GetUnit(AI_VALUE2(CreatureDataPair const*, "bg master", bgTypeId));
+   if (!unit)
    {
        sLog.outError("Bot %d could not find Battlemaster to join", bot->GetGUIDLow());
        return false;
@@ -396,7 +402,7 @@ bool BGJoinAction::JoinQueue(uint32 type)
 
    WorldPacket packet(CMSG_BATTLEMASTER_JOIN, 20);
 #ifdef MANGOSBOT_ZERO
-   packet << guid << mapId << instanceId << joinAsGroup;
+   packet << unit->GetObjectGuid() << mapId << instanceId << joinAsGroup;
    sLog.outBasic("Bot #%d %s:%d <%s> queued %s", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName(), _bgType);
 #else
    sLog.outBasic("Bot #%d %s:%d <%s> queued %s %s", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName(), _bgType, isRated ? "Rated Arena" : isArena ? "Arena" : "");
@@ -468,7 +474,6 @@ bool BGLeaveAction::Execute(Event event)
     ai->GetAiObjectContext()->GetValue<uint32>("bg type")->Set(NULL);
     ai->GetAiObjectContext()->GetValue<uint32>("bg role")->Set(NULL);
     ai->GetAiObjectContext()->GetValue<uint32>("arena type")->Set(NULL);
-    ai->GetAiObjectContext()->GetValue<ObjectGuid>("bg master")->Set(ObjectGuid());
     return true;
 }
 
@@ -675,7 +680,6 @@ bool BGStatusAction::Execute(Event event)
         ai->GetAiObjectContext()->GetValue<uint32>("bg type")->Set(NULL);
         ai->GetAiObjectContext()->GetValue<uint32>("bg role")->Set(NULL);
         ai->GetAiObjectContext()->GetValue<uint32>("arena type")->Set(NULL);
-        ai->GetAiObjectContext()->GetValue<ObjectGuid>("bg master")->Set(ObjectGuid());
         ai::PositionMap& posMap = context->GetValue<ai::PositionMap&>("position")->Get();
         ai::PositionEntry pos = context->GetValue<ai::PositionMap&>("position")->Get()["bg objective"];
         pos.Reset();
@@ -694,8 +698,8 @@ bool BGStatusAction::Execute(Event event)
         else
             timer = TIME_TO_AUTOREMOVE + 1000 * (bg->GetMaxPlayers() * 4);
 
-        if (Time2 > timer)
-            leaveQ = true;
+        //if (Time2 > timer) Disabled to test 
+        //    leaveQ = true;
 
         if (leaveQ && !(bot->GetGroup() || ai->GetMaster()))
         {
@@ -735,7 +739,6 @@ bool BGStatusAction::Execute(Event event)
             ai->GetAiObjectContext()->GetValue<uint32>("bg type")->Set(NULL);
             ai->GetAiObjectContext()->GetValue<uint32>("bg role")->Set(NULL);
             ai->GetAiObjectContext()->GetValue<uint32>("arena type")->Set(NULL);
-            ai->GetAiObjectContext()->GetValue<ObjectGuid>("bg master")->Set(ObjectGuid());
             sRandomPlayerbotMgr.BgBots[queueTypeId][bracketId][TeamId]--;
             return true;
         }
@@ -830,4 +833,180 @@ bool BGStatusCheckAction::Execute(Event event)
     WorldPacket packet(CMSG_BATTLEFIELD_STATUS);
     bot->GetSession()->HandleBattlefieldStatusOpcode(packet);
     return true;
+}
+
+BattleGroundTypeId QueueAtBmAction::getBgTypeId(uint32 bgType)
+{
+    BattleGroundTypeId bgTypeId;
+    switch (bgType)
+    {
+    case 0:
+        bgTypeId = BATTLEGROUND_TYPE_NONE;
+        break;
+    case 1:
+        bgTypeId = BATTLEGROUND_AV;
+        break;
+    case 2:
+        bgTypeId = BATTLEGROUND_WS;
+        break;
+    case 3:
+        bgTypeId = BATTLEGROUND_AB;
+        break;
+    }
+
+    return bgTypeId;
+}
+
+
+bool QueueAtBmAction::canJoinBg(uint32 bgType)
+{
+    BattleGround* bg = sBattleGroundMgr.GetBattleGroundTemplate(getBgTypeId(bgType));
+    if (!bg)
+        return false;
+
+    if (bot->getLevel() < bg->GetMinLevel())
+        return false;
+
+    // get BG TypeId
+    BattleGroundQueueTypeId queueTypeId = BattleGroundQueueTypeId(getBgTypeId(bgType));
+    BattleGroundTypeId bgTypeId = sServerFacade.BgTemplateId(queueTypeId);
+
+    // check if already in queue
+    if (bot->InBattleGroundQueueForBattleGroundQueueType(queueTypeId))
+        return false;
+
+    return true;
+}
+
+//Select a random BG type.
+void QueueAtBmAction::GetRandomBg()
+{
+    vector<uint32> bgTypes;
+
+    for (uint32 i = 1; i < MAX_BATTLEGROUND_TYPE_ID; i++)
+    {
+        if (canJoinBg(getBgTypeId(i)))
+            bgTypes.push_back(i);
+    }
+
+    uint32 bgType = 0;
+    if (!bgTypes.empty())
+        bgType = bgTypes[urand(0, bgTypes.size() - 1)];
+
+    Qualify(bgType);
+}
+
+//Only go to BM's at level > 9
+bool QueueAtBmAction::isUseful()
+{
+    if (!ChooseMoveDoAction::isUseful())
+        return false;
+
+    if (bot->IsBeingTeleported())
+        return false;
+
+    if (bot->InBattleGround())
+        return false;
+
+    if (!bot->CanJoinToBattleground())
+        return false;
+
+    if (getQualifier().empty())
+        return false;
+
+    return canJoinBg(getBgTypeId(stoi(getQualifier())));
+};
+
+//Check if BM is not hostile and preferably not alive.
+bool QueueAtBmAction::IsValidBm(CreatureDataPair const* bmPair, bool allowDead)
+{
+    if (!bmPair)
+        return false;
+
+    CreatureInfo const* bmTemplate = ObjectMgr::GetCreatureTemplate(bmPair->second.id);
+
+    if (!bmTemplate)
+        return false;
+
+    FactionTemplateEntry const* bmFactionEntry = sFactionTemplateStore.LookupEntry(bmTemplate->Faction);
+
+    //Is the unit hostile?
+    if (ai->getReaction(bmFactionEntry) < REP_NEUTRAL)
+        return false;
+
+    Unit* unit = ai->GetUnit(bmPair);
+
+    if (!unit)
+        return false;
+
+    WorldPosition bmPos(bmPair);
+
+    AreaTableEntry const* area = bmPos.getArea();
+
+    if (!area)
+        return false;
+
+    //Is the area hostile?
+    if (area->team == 4 && bot->GetTeam() == ALLIANCE)
+        return false;
+    if (area->team == 2 && bot->GetTeam() == HORDE)
+        return false;
+
+    if (!allowDead)
+    {
+        //Is the unit dead?
+        if (unit->GetDeathState() == DEAD)
+            return false;
+    }
+
+    return true;
+}
+
+//Try to find a friendly BM that is alive. Otherwise select a dead BM.
+bool QueueAtBmAction::FilterPotentialTargets()
+{
+    list<CreatureDataPair const*> tmpList = potentialTargets;
+
+    potentialTargets.remove_if([this](CreatureDataPair const* bmPair) {return !IsValidBm(bmPair, false); });
+
+    if (potentialTargets.empty())
+    {
+        potentialTargets = tmpList;
+        potentialTargets.remove_if([this](CreatureDataPair const* bmPair) {return !IsValidBm(bmPair, true); });
+    }
+
+    return !potentialTargets.empty();
+}
+
+bool QueueAtBmAction::ExecuteAction(Event event)
+{
+    if (!getObjectTarget())
+        return false;
+
+    CreatureDataPair const* bmPair = getObjectTarget()->Get();
+
+    if (!bmPair)
+        return false;
+
+    Unit* bmUnit = ai->GetUnit(bmPair);
+
+    if (!bmUnit)
+        return false;
+
+    bot->SetFacingTo(bot->GetAngle(bmUnit));
+
+    //Work-around for getting BG-type from unit.
+    for (uint32 i = 0; i < MAX_BATTLEGROUND_TYPE_ID; i++)
+    {
+        list<CreatureDataPair const*> bmPairs = AI_VALUE2(list<CreatureDataPair const*>, "bg masters", i);
+
+        if (std::find(bmPairs.begin(), bmPairs.end(), bmPair) != bmPairs.end())
+        {
+            bot->GetPlayerbotAI()->GetAiObjectContext()->GetValue<uint32>("bg type")->Set(i);
+            bot->GetPlayerbotAI()->ChangeStrategy("+bg", BOT_STATE_NON_COMBAT);
+            return true;
+        }
+    }
+
+    return false;
 }
