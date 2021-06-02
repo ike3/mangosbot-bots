@@ -81,15 +81,9 @@ bool MovementAction::MoveToLOS(WorldObject* target, bool ranged)
     //ostringstream out; out << "Moving to LOS!";
     //bot->Say(out.str(), LANG_UNIVERSAL);
 
-    // test
-    return MoveNear((Unit*)target);
-
     float x = target->GetPositionX();
     float y = target->GetPositionY();
     float z = target->GetPositionZ();
-
-    if (!ranged)
-        return MoveTo((Unit*)target);
 
     //Use standard pathfinder to find a route. 
     PathFinder path(bot);
@@ -98,24 +92,28 @@ bool MovementAction::MoveToLOS(WorldObject* target, bool ranged)
     if (type != PATHFIND_NORMAL && type != PATHFIND_INCOMPLETE)
         return false;
 
-    PointsArray& points = path.getPath();
+    if (!ranged)
+        return MoveTo((Unit*)target, target->GetObjectBoundingRadius());
 
     float dist = FLT_MAX;
     PositionEntry dest;
 
-    for (auto& point : points)
+    if (!path.getPath().empty())
     {
-        if (!target->IsWithinLOS(point.x, point.y, point.z))
-            continue;
-
-        float distPoint = target->GetDistance(point.x, point.y, point.z, DIST_CALC_NONE);
-        if (distPoint < dist)
+        for (auto& point : path.getPath())
         {
-            dist = distPoint;
-            dest.Set(point.x, point.y, point.z, target->GetMapId());
+            if (ai->HasStrategy("debug", BOT_STATE_NON_COMBAT))
+                CreateWp(bot, point.x, point.y, point.z, 0.0, 15631);
 
-            if (ranged)
-                break;
+            float distPoint = target->GetDistance(point.x, point.y, point.z, DIST_CALC_NONE);
+            if (distPoint < dist && target->IsWithinLOS(point.x, point.y, point.z + bot->GetCollisionHeight()))
+            {
+                dist = distPoint;
+                dest.Set(point.x, point.y, point.z, target->GetMapId());
+
+                if (ranged)
+                    break;
+            }
         }
     }
 
@@ -681,7 +679,7 @@ bool MovementAction::ChaseTo(WorldObject* obj)
     MotionMaster &mm = *bot->GetMotionMaster();
     mm.Clear();
 
-    mm.MoveChase((Unit*)obj, ai->IsRanged(bot) ? 25.0f : 0.f);
+    mm.MoveChase((Unit*)obj, ai->IsRanged(bot) ? 25.0f : 1.5f);
     return true;
 }
 
