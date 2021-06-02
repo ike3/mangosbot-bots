@@ -67,8 +67,11 @@ namespace ai
         virtual string GetTargetName() { return "self target"; }
         void MakeVerbose() { verbose = true; }
 
+        void setRelevance(uint32 relevance1) { relevance = relevance1; };
+        virtual uint32 getRelevance() { return relevance; }
     protected:
         bool verbose;
+        uint32 relevance = 0;
 	};
 
     class ActionNode

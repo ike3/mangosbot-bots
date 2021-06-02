@@ -271,6 +271,7 @@ public:
     bool IsRanged(Player* player);
     Creature* GetCreature(ObjectGuid guid);
     Unit* GetUnit(ObjectGuid guid);
+    Unit* GetUnit(CreatureDataPair const* creatureDataPair);
     GameObject* GetGameObject(ObjectGuid guid);
     WorldObject* GetWorldObject(ObjectGuid guid);
     bool TellMaster(ostringstream &stream, PlayerbotSecurityLevel securityLevel = PLAYERBOT_SECURITY_ALLOW_ALL) { return TellMaster(stream.str(), securityLevel); }
