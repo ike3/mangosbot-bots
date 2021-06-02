@@ -16,9 +16,45 @@
 #include "VMapFactory.h"
 #include "MoveMap.h"
 #include "Transports.h"
+#include <playerbot/strategy/StrategyContext.h>
 
 using namespace ai;
 using namespace MaNGOS;
+
+WorldPosition::WorldPosition(ObjectGuid guid)
+{
+    switch (guid.GetHigh())
+    {
+    case HIGHGUID_PLAYER:
+    {
+        Player* player = sObjectAccessor.FindPlayer(guid);
+        if (player)
+            wLoc = WorldLocation(player->GetMapId(), player->GetPositionX(), player->GetPositionY(), player->GetPositionZ(), player->GetOrientation());
+        break;
+    }
+    case HIGHGUID_GAMEOBJECT:    
+    {
+        GameObjectDataPair const* gpair = sObjectMgr.GetGODataPair(guid.GetCounter());
+        if (gpair)
+            wLoc = WorldLocation(gpair->second.mapid, gpair->second.posX, gpair->second.posY, gpair->second.posZ, gpair->second.orientation);
+        break;
+    }
+    case HIGHGUID_UNIT:
+    {
+        CreatureDataPair const* cpair = sObjectMgr.GetCreatureDataPair(guid.GetCounter());
+        if (cpair)
+            wLoc = WorldLocation(cpair->second.mapid, cpair->second.posX, cpair->second.posY, cpair->second.posZ, cpair->second.orientation);
+        break;
+    }
+    case HIGHGUID_TRANSPORT:
+    case HIGHGUID_MO_TRANSPORT:
+    case HIGHGUID_ITEM:
+    case HIGHGUID_PET:
+    case HIGHGUID_DYNAMICOBJECT:
+    case HIGHGUID_CORPSE:
+        return;
+    }
+}
 
 WorldPosition::WorldPosition(vector<WorldPosition*> list, WorldPositionConst conType)
 {
@@ -1975,6 +2011,7 @@ void TravelMgr::LoadQuestTravelTable()
     sPlayerbotAIConfig.openLog("pathfind_attempt_point.csv", "w");
     sPlayerbotAIConfig.openLog("pathfind_result.csv", "w");
     sPlayerbotAIConfig.openLog("load_map_grid.csv", "w");
+    sPlayerbotAIConfig.openLog("strategy.csv", "w");
 
     bool preloadNodePaths = false || fullNavPointReload || storeNavPointReload;             //Calculate paths using pathfinder.
     bool preloadReLinkFullyLinked = false || fullNavPointReload || storeNavPointReload;      //Retry nodes that are fully linked.
@@ -2243,6 +2280,342 @@ void TravelMgr::LoadQuestTravelTable()
             point.printWKT(points, out, 0);
 
             sPlayerbotAIConfig.log("zones.csv", out.str().c_str());
+        }
+    }
+
+
+    bool printStrategyMap = false;
+
+    if (printStrategyMap && sPlayerbotAIConfig.hasLog("strategy.csv"))
+    {
+        static map<uint8, string> classes;
+        static map<uint8, map<uint8, string> > specs;
+        classes[CLASS_DRUID] = "druid";
+        specs[CLASS_DRUID][0] = "balance";
+        specs[CLASS_DRUID][1] = "feral combat";
+        specs[CLASS_DRUID][2] = "restoration";
+
+        classes[CLASS_HUNTER] = "hunter";
+        specs[CLASS_HUNTER][0] = "beast mastery";
+        specs[CLASS_HUNTER][1] = "marksmanship";
+        specs[CLASS_HUNTER][2] = "survival";
+
+        classes[CLASS_MAGE] = "mage";
+        specs[CLASS_MAGE][0] = "arcane";
+        specs[CLASS_MAGE][1] = "fire";
+        specs[CLASS_MAGE][2] = "frost";
+
+        classes[CLASS_PALADIN] = "paladin";
+        specs[CLASS_PALADIN][0] = "holy";
+        specs[CLASS_PALADIN][1] = "protection";
+        specs[CLASS_PALADIN][2] = "retribution";
+
+        classes[CLASS_PRIEST] = "priest";
+        specs[CLASS_PRIEST][0] = "discipline";
+        specs[CLASS_PRIEST][1] = "holy";
+        specs[CLASS_PRIEST][2] = "shadow";
+
+        classes[CLASS_ROGUE] = "rogue";
+        specs[CLASS_ROGUE][0] = "assasination";
+        specs[CLASS_ROGUE][1] = "combat";
+        specs[CLASS_ROGUE][2] = "subtlety";
+
+        classes[CLASS_SHAMAN] = "shaman";
+        specs[CLASS_SHAMAN][0] = "elemental";
+        specs[CLASS_SHAMAN][1] = "enhancement";
+        specs[CLASS_SHAMAN][2] = "restoration";
+
+        classes[CLASS_WARLOCK] = "warlock";
+        specs[CLASS_WARLOCK][0] = "affliction";
+        specs[CLASS_WARLOCK][1] = "demonology";
+        specs[CLASS_WARLOCK][2] = "destruction";
+
+        classes[CLASS_WARRIOR] = "warrior";
+        specs[CLASS_WARRIOR][0] = "arms";
+        specs[CLASS_WARRIOR][1] = "fury";
+        specs[CLASS_WARRIOR][2] = "protection";
+
+#ifdef MANGOSBOT_TWO
+        classes[CLASS_DEATH_KNIGHT] = "dk";
+        specs[CLASS_DEATH_KNIGHT][0] = "blood";
+        specs[CLASS_DEATH_KNIGHT][1] = "frost";
+        specs[CLASS_DEATH_KNIGHT][2] = "unholy";
+#endif
+
+        //Use randombot 0.
+        ostringstream cout; cout << sPlayerbotAIConfig.randomBotAccountPrefix << 0;
+        string accountName = cout.str();
+
+        QueryResult* results = LoginDatabase.PQuery("SELECT id FROM account where username = '%s'", accountName.c_str());
+        if (results)
+        {
+
+            Field* fields = results->Fetch();
+            uint32 accountId = fields[0].GetUInt32();
+
+            WorldSession* session = new WorldSession(accountId, NULL, SEC_PLAYER,
+#ifndef MANGOSBOT_ZERO
+                2,
+#endif
+                0, LOCALE_enUS);
+
+            vector <pair<pair<uint32, uint32>, uint32>> classSpecLevel;
+
+            std::unordered_map<string, vector<pair<pair<uint32, uint32>, uint32>>> actions;
+
+            ostringstream out;
+
+            for (uint8 race = RACE_HUMAN; race < MAX_RACES; race++)
+            {
+                for (uint8 cls = CLASS_WARRIOR; cls < MAX_CLASSES; ++cls)
+                {
+#ifdef MANGOSBOT_TWO
+                    if (cls != 10)
+#else
+                    if (cls != 10 && cls != 6)
+#endif
+                    {
+                        Player* player = new Player(session);
+
+                        if (player->Create(sObjectMgr.GeneratePlayerLowGuid(), "dummy",
+                            race, //race
+                            cls, //class
+                            1, //gender
+                            1, // skinColor,
+                            1,
+                            1,
+                            1, // hairColor,
+                            1, 0))
+                        {
+
+                            for (uint8 tab = 0; tab < 3; tab++)
+                            {
+                                TalentSpec newSpec;
+                                if (tab == 0)
+                                    newSpec = TalentSpec(player, "1-0-0");
+                                else if (tab == 1)
+                                    newSpec = TalentSpec(player, "0-1-0");
+                                else
+                                    newSpec = TalentSpec(player, "0-0-1");
+
+                                for (uint32 lvl = 1; lvl < MAX_LEVEL; lvl++)
+                                {
+                                    player->SetLevel(lvl);
+
+                                    ostringstream tout;
+                                    newSpec.ApplyTalents(player, &tout);
+
+                                    PlayerbotAI* ai = new PlayerbotAI(player);
+
+                                    ai->ResetStrategies(false);
+
+                                    AiObjectContext* con = ai->GetAiObjectContext();
+
+                                    list<string> tstrats;
+                                    set<string> strategies, sstrats;
+
+                                    tstrats = ai->GetStrategies(BOT_STATE_COMBAT);
+                                    sstrats = con->GetSupportedStrategies();
+                                    if (!sstrats.empty())
+                                        strategies.insert(tstrats.begin(), tstrats.end());
+
+                                    tstrats = ai->GetStrategies(BOT_STATE_NON_COMBAT);
+                                    if (!tstrats.empty())
+                                        strategies.insert(tstrats.begin(), tstrats.end());
+
+                                    tstrats = ai->GetStrategies(BOT_STATE_DEAD);
+                                    if (!tstrats.empty())
+                                        strategies.insert(tstrats.begin(), tstrats.end());
+
+                                    sstrats = con->GetSupportedStrategies();
+                                    if(!sstrats.empty())
+                                        strategies.insert(sstrats.begin(), sstrats.end());
+
+                                    for (auto& stratName : strategies)
+                                    {
+                                        Strategy* strat = con->GetStrategy(stratName);
+
+                                        if (strat->getDefaultActions())
+                                            for (uint32 i = 0; i < NextAction::size(strat->getDefaultActions()); i++)
+                                            {
+                                                NextAction* nextAction = strat->getDefaultActions()[i];
+
+                                                ostringstream aout;
+
+                                                aout << nextAction->getRelevance() << "," << nextAction->getName() << ",,S:" << stratName;
+
+                                                if (actions.find(aout.str().c_str()) != actions.end())
+                                                    classSpecLevel = actions.find(aout.str().c_str())->second;
+                                                else
+                                                    classSpecLevel.clear();
+
+                                                classSpecLevel.push_back(make_pair(make_pair(cls, tab), lvl));
+
+                                                actions.insert_or_assign(aout.str().c_str(), classSpecLevel);
+                                            }
+
+                                        std::list<TriggerNode*> triggers;
+                                        strat->InitTriggers(triggers);
+                                        for (auto& triggerNode : triggers)
+                                        {
+                                            //out << " TN:" << triggerNode->getName();
+
+                                            Trigger* trigger = con->GetTrigger(triggerNode->getName());
+
+                                            if (trigger)
+                                            {
+
+                                                triggerNode->setTrigger(trigger);
+
+                                                NextAction** nextActions = triggerNode->getHandlers();
+
+                                                for (uint32 i = 0; i < NextAction::size(nextActions); i++)
+                                                {
+                                                    NextAction* nextAction = nextActions[i];
+                                                    //out << " A:" << nextAction->getName() << "(" << nextAction->getRelevance() << ")";
+
+                                                    ostringstream aout;
+
+                                                    aout << nextAction->getRelevance() << "," << nextAction->getName() << "," << triggerNode->getName() << "," << stratName;
+
+                                                    if (actions.find(aout.str().c_str()) != actions.end())
+                                                        classSpecLevel = actions.find(aout.str().c_str())->second;
+                                                    else
+                                                        classSpecLevel.clear();
+
+                                                    classSpecLevel.push_back(make_pair(make_pair(cls, tab), lvl));
+
+                                                    actions.insert_or_assign(aout.str().c_str(), classSpecLevel);
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    delete ai;
+                                }
+                            }                            
+                        }
+                        delete player;
+                    }
+                }
+            }
+
+            vector< string> actionKeys;
+
+            for (auto& action : actions)
+                actionKeys.push_back(action.first);
+
+            std::sort(actionKeys.begin(), actionKeys.end(), [](string i, string j)
+                {stringstream is(i); stringstream js(j); float iref, jref; string iact, jact, itrig, jtrig, istrat, jstrat;
+            is >> iref >> iact >> itrig >> istrat;
+            js >> jref >> jact >> jtrig >> jstrat;
+            if (iref > jref)
+                return true;
+            if (iref == jref && istrat < jstrat)
+                return true;
+            if (iref == jref && !(istrat > jstrat) && iact < jact)
+                return true;
+            if (iref == jref && !(istrat > jstrat) && !(iact > jact) && itrig < jtrig)
+                return true;
+            return false;
+             });
+
+            sPlayerbotAIConfig.log("strategy.csv", "relevance, action, trigger, strategy, classes");
+
+            for (auto& actionkey : actionKeys)
+            {
+                if (actions.find(actionkey)->second.size() != (MAX_LEVEL - 1) * (MAX_CLASSES - 1))
+                {
+                    classSpecLevel = actions.find(actionkey)->second;
+                    
+                    vector<pair<pair<uint32, uint32>,pair<uint32, uint32>>> classs;
+
+                    for (auto cl : classSpecLevel)
+                    {
+                        uint32 minLevel = MAX_LEVEL; uint32 maxLevel = 0;
+
+                        uint32 cls = cl.first.first;
+                        uint32 tb = cl.first.second;
+
+                        if (std::find_if(classs.begin(), classs.end(), [cls,tb](pair<pair<uint32, uint32>, pair<uint32, uint32>> i){return i.first.first ==cls && i.first.second == tb;}) == classs.end())
+                        {
+                            for (auto cll : classSpecLevel)
+                            {
+                                if (cll.first.first == cl.first.first && cll.first.second == cl.first.second)
+                                {
+                                    minLevel = std::min(minLevel, cll.second);
+                                    maxLevel = std::max(maxLevel, cll.second);
+                                }
+                            }
+
+                            classs.push_back(make_pair(cl.first, make_pair(minLevel, maxLevel)));
+                        }
+                    }
+
+                    out << actionkey;
+
+                    if (classs.size() != 9 * 3)
+                    {
+                        out << ",";
+
+                        for (uint8 cls = CLASS_WARRIOR; cls < MAX_CLASSES; ++cls)
+                        {
+                            bool a[3] = { false,false,false };
+                            uint32 min[3] = { 0,0,0 };
+                            uint32 max[3] = { 0,0,0 };
+
+                            if (std::find_if(classs.begin(), classs.end(), [cls](pair<pair<uint32, uint32>, pair<uint32, uint32>> i) {return i.first.first == cls; }) == classs.end())
+                                continue;
+
+                            for (uint32 tb = 0; tb < 3; tb++)
+                            {
+                                auto tcl = std::find_if(classs.begin(), classs.end(), [cls, tb](pair<pair<uint32, uint32>, pair<uint32, uint32>> i) {return i.first.first == cls && i.first.second == tb; });
+                                if (tcl == classs.end())
+                                    continue;
+
+                                a[tb] = true;
+                                min[tb] = tcl->second.first;
+                                max[tb] = tcl->second.second;
+                            }
+
+                            if (a[0] && a[1] && a[2] && min[0] == min[1] == min[2] && max[0] == max[1] == max[2])
+                            {
+                                if (min[0] != 1 || max[0] != MAX_LEVEL - 1)
+                                    out << classes[cls] << "(" << min[0] << "-" << max[0] << ")";
+                                else
+                                    out << classes[cls];
+
+                                if (cls != classs.back().first.first)
+                                    out << ";";
+                            }
+                            else
+                            {
+                                for (uint32 tb = 0; tb < 3; tb++)
+                                {
+                                    if (!a[tb])
+                                        continue;
+
+                                    if (min[tb] != 1 || max[tb] != MAX_LEVEL - 1)
+                                        out << specs[cls][tb] << " " << classes[cls] << "(" << min[tb] << "-" << max[tb] << ")";
+                                    else
+                                        out << specs[cls][tb] << " " << classes[cls];
+
+                                    if (cls != classs.back().first.first || tb != classs.back().first.second)
+                                        out << ";";
+                                }
+                            }
+                        }                       
+                    }
+                    else
+                        "all";
+
+                    out << "\n";
+                }
+                else
+                    out << actionkey << "\n";
+            }
+
+            sPlayerbotAIConfig.log("strategy.csv", out.str().c_str());
         }
     }
     /*
