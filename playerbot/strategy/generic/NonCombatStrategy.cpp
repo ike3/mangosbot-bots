@@ -56,7 +56,7 @@ void NonCombatStrategy::InitTriggers(std::list<TriggerNode*>& triggers)
 
     triggers.push_back(new TriggerNode(
         "wants in bg",
-        NextAction::array(0, new NextAction("choose bm target", 20.0f), NULL)));
+        NextAction::array(0, new NextAction("queue at bm", 20.0f), NULL)));
 }
 
 void CollisionStrategy::InitTriggers(std::list<TriggerNode*> &triggers)

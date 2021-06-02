@@ -55,7 +55,7 @@ public:
     bool canJoinBg(uint32 bgType);                  //Check to see if bot can join this bg type
 
     void GetRandomBg();                             //Select random bg from bgs bot may join
-    QueueAtBmAction(PlayerbotAI* ai, string name = "choose bm target", string targetValueName = "bg masters") : ChooseMoveDoListAction(ai, name, targetValueName) { GetRandomBg(); }
+    QueueAtBmAction(PlayerbotAI* ai, string name = "queue at bm", string targetValueName = "bg masters") : ChooseMoveDoListAction(ai, name, targetValueName) { GetRandomBg(); }
 
     virtual bool isUseful();                        //Check if bot may join selected bg.
 
