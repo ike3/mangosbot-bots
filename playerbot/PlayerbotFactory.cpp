@@ -2102,7 +2102,7 @@ void PlayerbotFactory::InitReagents()
         break;
     }
 
-    /*for (list<uint32>::iterator i = items.begin(); i != items.end(); ++i)
+    for (list<uint32>::iterator i = items.begin(); i != items.end(); ++i)
     {
         ItemPrototype const* proto = sObjectMgr.GetItemPrototype(*i);
         if (!proto)
@@ -2124,7 +2124,7 @@ void PlayerbotFactory::InitReagents()
             newItem->AddToUpdateQueueOf(bot);
 
         sLog.outDetail("Bot %d got reagent %s x%d", bot->GetGUIDLow(), proto->Name1, randCount);
-    }*/
+    }
 
 
     for (PlayerSpellMap::iterator itr = bot->GetSpellMap().begin(); itr != bot->GetSpellMap().end(); ++itr)
@@ -2140,33 +2140,6 @@ void PlayerbotFactory::InitReagents()
 
         if (pSpellInfo->Effect[0] == SPELL_EFFECT_LEARN_SPELL)
             continue;
-
-        for (const auto& reagent : pSpellInfo->Reagent)
-        {
-            if (reagent)
-            {
-                ItemPrototype const* proto = sObjectMgr.GetItemPrototype(reagent);
-                if (!proto)
-                {
-                    sLog.outError("No reagent (ItemId %d) found for bot %d (Class:%d)", reagent, bot->GetGUIDLow(), bot->getClass());
-                    continue;
-                }
-
-                uint32 maxCount = proto->GetMaxStackSize();
-
-                QueryItemCountVisitor visitor(reagent);
-                IterateItems(&visitor);
-                if (visitor.GetCount() > maxCount) continue;
-
-                uint32 randCount = urand(maxCount / 2, maxCount * regCount);
-
-                Item* newItem = bot->StoreNewItemInInventorySlot(reagent, randCount);
-                if (newItem)
-                    newItem->AddToUpdateQueueOf(bot);
-
-                sLog.outDetail("Bot %d got reagent %s x%d", bot->GetGUIDLow(), proto->Name1, randCount);
-            }
-        }
 
         for (const auto& totem : pSpellInfo->Totem)
         {
