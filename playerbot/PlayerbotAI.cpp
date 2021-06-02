@@ -561,12 +561,6 @@ void PlayerbotAI::DoNextAction()
 
     currentEngine->DoNextAction(NULL, 0, minimal);
 
-    if (minimal)
-    {
-        SetNextCheckDelay(sPlayerbotAIConfig.passiveDelay);
-        //return;
-    }
-
     Group *group = bot->GetGroup();
     // test BG master set
     if ((!master || master->GetPlayerbotAI()) && group && !bot->InBattleGround())
