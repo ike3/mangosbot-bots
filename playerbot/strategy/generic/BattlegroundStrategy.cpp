@@ -7,11 +7,11 @@ using namespace ai;
 void BGStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
-        "no possible targets",
+        "often",
         NextAction::array(0, new NextAction("bg join", relevance), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "often",
+        "random",
         NextAction::array(0, new NextAction("bg status check", relevance), NULL)));
 }
 
