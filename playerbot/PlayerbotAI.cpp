@@ -229,14 +229,14 @@ void PlayerbotAI::HandleTeleportAck()
         bot->GetSession()->HandleMoveTeleportAckOpcode(p);
 
         // add delay to simulate teleport delay
-        SetNextCheckDelay(urand(1000, 5000));
+        SetNextCheckDelay(urand(1000, 3000));
 	}
 	else if (bot->IsBeingTeleportedFar())
 	{
         bot->GetSession()->HandleMoveWorldportAckOpcode();
 
         // add delay to simulate teleport delay
-        SetNextCheckDelay(urand(5000, 10000));
+        SetNextCheckDelay(urand(2000, 5000));
 	}
 }
 
