@@ -48,7 +48,7 @@ void NonCombatStrategy::InitTriggers(std::list<TriggerNode*>& triggers)
         "need world buff",
         NextAction::array(0, new NextAction("world buff", 1.0f), NULL)));
 
-    AiObjectContext* context = ai->GetAiObjectContext();  
+    /*AiObjectContext* context = ai->GetAiObjectContext();
 
     triggers.push_back(new TriggerNode(
         "has continue action",
@@ -56,7 +56,7 @@ void NonCombatStrategy::InitTriggers(std::list<TriggerNode*>& triggers)
 
     triggers.push_back(new TriggerNode(
         "wants in bg",
-        NextAction::array(0, new NextAction("queue at bm", 20.0f), NULL)));
+        NextAction::array(0, new NextAction("queue at bm", 20.0f), NULL)));*/
 }
 
 void CollisionStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
