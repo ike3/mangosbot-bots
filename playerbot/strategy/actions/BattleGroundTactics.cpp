@@ -3058,8 +3058,7 @@ bool BGTactics::atFlag(std::vector<BattleBotPath*> const& vPaths, std::vector<ui
             //ai->SetNextCheckDelay(10000);
 
             // cast banner spell
-            uint32 spellFlag = go->GetGOInfo()->goober.spellId;
-            SpellEntry const *spellInfo = sServerFacade.LookupSpellInfo(spellFlag);
+            SpellEntry const *spellInfo = sServerFacade.LookupSpellInfo(SPELL_CAPTURE_BANNER);
             if (!spellInfo)
                 return false;
 
