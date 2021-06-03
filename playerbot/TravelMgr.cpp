@@ -3045,31 +3045,46 @@ void TravelMgr::setNullTravelTarget(Player* player)
         target->setTarget(sTravelMgr.nullTravelDestination, sTravelMgr.nullWorldPosition, true);
 }
 
-void TravelMgr::addMapTransfer(WorldPosition start, WorldPosition end, float portalDistance)
+void TravelMgr::addMapTransfer(WorldPosition start, WorldPosition end, float portalDistance, bool makeShortcuts)
 {
-    if (start.getMapId() == end.getMapId())
+    uint32 sMap = start.getMapId();
+    uint32 eMap = end.getMapId();
+
+    if (sMap == eMap)
         return;
-
+    
     //Calculate shortcuts.
-    for (auto& mapTrans : mapTransfers)
-    {
-        if (mapTrans.isTo(start) && !mapTrans.isFrom(end)) // [S1 >MT> E1 -> S2] >THIS> E2
+    if(makeShortcuts)
+        for (auto& mapTransfers : mapTransfersMap)
         {
-            float newDistToEnd = mapTransDistance(*mapTrans.getPointFrom(), start) + portalDistance;
-            if (mapTransDistance(*mapTrans.getPointFrom(), end) > newDistToEnd)
-                mapTransfers.push_back(mapTransfer(*mapTrans.getPointFrom(), end, newDistToEnd));
-        }
+            uint32 sMapt = mapTransfers.first.first;
+            uint32 eMapt = mapTransfers.first.second;
 
-        if (mapTrans.isFrom(end) && !mapTrans.isTo(start)) // S1 >THIS> [E1 -> S2 >MT> E2]
-        {
-            float newDistToEnd = portalDistance + mapTransDistance(end, *mapTrans.getPointTo());
-            if (mapTransDistance(start, *mapTrans.getPointTo()) > newDistToEnd)
-                mapTransfers.push_back(mapTransfer(start, *mapTrans.getPointTo(), newDistToEnd));
+            for (auto& mapTransfer : mapTransfers.second)
+            {
+                if (eMapt == sMap && sMapt != eMap) // [S1 >MT> E1 -> S2] >THIS> E2
+                {
+                    float newDistToEnd = mapTransDistance(*mapTransfer.getPointFrom(), start) + portalDistance;
+                    if (mapTransDistance(*mapTransfer.getPointFrom(), end) > newDistToEnd)
+                        addMapTransfer(*mapTransfer.getPointFrom(), end, newDistToEnd, false);
+                }
+
+                if (sMapt == eMap && eMapt != sMap) // S1 >THIS> [E1 -> S2 >MT> E2]
+                {
+                    float newDistToEnd = portalDistance + mapTransDistance(end, *mapTransfer.getPointTo());
+                    if (mapTransDistance(start, *mapTransfer.getPointTo()) > newDistToEnd)
+                        addMapTransfer(start, *mapTransfer.getPointTo(), newDistToEnd, false);
+                }
+            }
         }
-    }
 
     //Add actual transfer.
-    mapTransfers.push_back(mapTransfer(start, end, portalDistance));
+    auto mapTransfers = mapTransfersMap.find(make_pair(start.getMapId(), end.getMapId()));
+    
+    if (mapTransfers == mapTransfersMap.end())
+        mapTransfersMap.insert({ { sMap, eMap }, {mapTransfer(start, end, portalDistance)} });
+    else
+        mapTransfers->second.push_back(mapTransfer(start, end, portalDistance));        
 };
 
 void TravelMgr::loadMapTransfers()
@@ -3085,21 +3100,26 @@ void TravelMgr::loadMapTransfers()
 
 float TravelMgr::mapTransDistance(WorldPosition start, WorldPosition end)
 {
-    if (start.getMapId() == end.getMapId())
+    uint32 sMap = start.getMapId();
+    uint32 eMap = end.getMapId();
+
+    if (sMap == eMap)
         return start.distance(end);
 
     float minDist = 200000;
 
-    for (auto & mapTrans : mapTransfers)
-    {
-        if (!mapTrans.isUsefull(start, end))
-            continue;
+    auto mapTransfers = mapTransfersMap.find({ sMap, eMap });
+    
+    if (mapTransfers == mapTransfersMap.end())
+        return minDist;
 
+    for (auto& mapTrans : mapTransfers->second)
+    {
         float dist = mapTrans.distance(start, end);
 
         if (dist < minDist)
             minDist = dist;
-    }
+    }    
 
     return minDist;
 }

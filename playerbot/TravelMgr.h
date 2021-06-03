@@ -1,6 +1,7 @@
 #pragma once
 
 #include "MoveSplineInitArgs.h"
+#include <boost/functional/hash.hpp>
 
 namespace G3D
 {
@@ -29,7 +30,7 @@ namespace ai
         WorldPosition(const WorldLocation loc) { wLoc = loc; }
         WorldPosition(uint32 mapid, float x, float y, float z = 0, float orientation = 0) { wLoc = WorldLocation(mapid, x, y, z, orientation); }
         WorldPosition(const WorldObject* wo) { wLoc = WorldLocation(wo->GetMapId(), wo->GetPositionX(), wo->GetPositionY(), wo->GetPositionZ(), wo->GetOrientation()); }
-        WorldPosition(const CreatureDataPair const* cdPair) { if (cdPair) { wLoc = WorldLocation(cdPair->second.mapid, cdPair->second.posX, cdPair->second.posY, cdPair->second.posZ, cdPair->second.orientation); } }
+        WorldPosition(CreatureDataPair const* cdPair) { if (cdPair) { wLoc = WorldLocation(cdPair->second.mapid, cdPair->second.posX, cdPair->second.posY, cdPair->second.posZ, cdPair->second.orientation); } }
         WorldPosition(ObjectGuid guid);
         WorldPosition(vector<WorldPosition*> list, WorldPositionConst conType);
         WorldPosition(vector<WorldPosition> list, WorldPositionConst conType);
@@ -524,7 +525,7 @@ namespace ai
 
         void setNullTravelTarget(Player* player);
 
-        void addMapTransfer(WorldPosition start, WorldPosition end, float portalDistance = 0.1f);
+        void addMapTransfer(WorldPosition start, WorldPosition end, float portalDistance = 0.1f, bool makeShortcuts = true);
         void loadMapTransfers();
         float mapTransDistance(WorldPosition start, WorldPosition end);
 
@@ -548,7 +549,7 @@ namespace ai
 
         vector<tuple<uint32,int,int>> badVmap, badMmap;
 
-        vector<mapTransfer> mapTransfers;
+        std::unordered_map<pair<uint32, uint32>, vector<mapTransfer>, boost::hash<pair<uint32, uint32>>> mapTransfersMap;
     };
 }
 
