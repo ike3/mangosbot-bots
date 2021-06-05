@@ -51,6 +51,7 @@ class BGStatusCheckAction : public Action
 public:
     BGStatusCheckAction(PlayerbotAI* ai, string name = "bg status check") : Action(ai, name) {}
     virtual bool Execute(Event event);
+    virtual bool isUseful();
 };
 
 //Picks a random BG and selects all BM's of that bg type.
