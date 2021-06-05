@@ -918,7 +918,7 @@ bool SetBehindTargetAction::Execute(Event event)
     float x = target->GetPositionX() + cos(angle) * distance,
         y = target->GetPositionY() + sin(angle) * distance,
         z = target->GetPositionZ();
-    bot->UpdateGroundPositionZ(x, y, z);
+    //bot->UpdateGroundPositionZ(x, y, z);
 
     return MoveTo(bot->GetMapId(), x, y, z);
 }
