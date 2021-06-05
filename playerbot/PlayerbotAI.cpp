@@ -554,13 +554,13 @@ void PlayerbotAI::DoNextAction()
 
     bool minimal = !AllowActive(ALL_ACTIVITY);
 
+    currentEngine->DoNextAction(NULL, 0, minimal);
+
     if (IsActive() && minimal && urand(0, 4))
     {
         SetNextCheckDelay(sPlayerbotAIConfig.passiveDelay / 2);
         return;
     }
-
-    currentEngine->DoNextAction(NULL, 0, minimal);
 
     Group *group = bot->GetGroup();
     // test BG master set
