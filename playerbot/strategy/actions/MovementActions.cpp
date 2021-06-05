@@ -147,8 +147,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
     if (generatePath)
     {
         z += CONTACT_DISTANCE;
-        if (!bot->InBattleGround())
-            bot->UpdateAllowedPositionZ(x, y, z);
+        bot->UpdateAllowedPositionZ(x, y, z);
     }    
 
     if (!IsMovingAllowed() && sServerFacade.UnitIsDead(bot))
@@ -919,9 +918,7 @@ bool SetBehindTargetAction::Execute(Event event)
     float x = target->GetPositionX() + cos(angle) * distance,
         y = target->GetPositionY() + sin(angle) * distance,
         z = target->GetPositionZ();
-
-    if (!bot->InBattleGround())
-        bot->UpdateGroundPositionZ(x, y, z);
+    bot->UpdateGroundPositionZ(x, y, z);
 
     return MoveTo(bot->GetMapId(), x, y, z);
 }
