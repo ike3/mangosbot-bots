@@ -161,7 +161,7 @@ bool RpgAction::HasIgnore(ObjectGuid guid)
 
 void RpgAction::stay(ObjectGuid guid)
 {
-    if (bot->PlayerTalkClass) bot->PlayerTalkClass->CloseGossip();
+    if (bot->GetPlayerMenu()) bot->GetPlayerMenu()->CloseGossip();
     ai->SetNextCheckDelay(sPlayerbotAIConfig.rpgDelay);
 }
 
