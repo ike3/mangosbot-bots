@@ -383,8 +383,8 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
         if (player->getClass() == CLASS_ROGUE)
             engine->addStrategies("behind", "stealth", NULL);
 
-        if (player->getClass() != CLASS_HUNTER)
-            engine->removeStrategy("ranged");
+        //if (player->getClass() != CLASS_HUNTER)
+        //    engine->removeStrategy("ranged");
     }
 }
 
