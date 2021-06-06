@@ -102,9 +102,9 @@ bool BGJoinAction::Execute(Event event)
    return JoinQueue(queueType);
 }
 
+#ifndef MANGOSBOT_ZERO
 bool BGJoinAction::gatherArenaTeam(ArenaType type)
 {
-#ifndef MANGOSBOT_ZERO
     ArenaTeam* arenateam = nullptr;
     for (uint32 arena_slot = 0; arena_slot < MAX_ARENA_SLOT; ++arena_slot)
     {
@@ -214,9 +214,9 @@ bool BGJoinAction::gatherArenaTeam(ArenaType type)
         sLog.outBasic("Team #%d <%s> is not ready for match", arenateam->GetId(), arenateam->GetName());
         group->Disband();
     }
-#endif
     return false;
 }
+#endif
 
 bool BGJoinAction::canJoinBg(BattleGroundQueueTypeId queueTypeId, BattleGroundBracketId bracketId)
 {
@@ -672,12 +672,12 @@ bool BGStatusAction::Execute(Event event)
     uint32 Time2;
     uint8 unk1;
     string _bgType;
+    uint8 isRated;
 
 #ifndef MANGOSBOT_ZERO
     uint64 arenatype;
     uint64 arenaByte;
     uint8 arenaTeam;
-    uint8 isRated;
     uint64 unk0;
     uint64 x1f90;
     uint8 minlevel;

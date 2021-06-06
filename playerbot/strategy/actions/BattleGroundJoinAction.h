@@ -24,7 +24,9 @@ public:
     virtual bool isUseful();
     virtual bool canJoinBg(BattleGroundQueueTypeId queueTypeId, BattleGroundBracketId bracketId);
     virtual bool shouldJoinBg(BattleGroundQueueTypeId queueTypeId, BattleGroundBracketId bracketId);
+#ifndef MANGOSBOT_ZERO
     virtual bool gatherArenaTeam(ArenaType type);
+#endif
 protected:
     bool JoinQueue(uint32 type);
     vector<uint32> bgList;
