@@ -58,7 +58,6 @@ bool BGJoinAction::Execute(Event event)
             return false;
 
 #ifdef MANGOSBOT_TWO
-        BattleGround* bg = sBattleGroundMgr.GetBattleGroundTemplate(bgTypeId);
         uint32 mapId = bg->GetMapId();
         PvPDifficultyEntry const* pvpDiff = GetBattlegroundBracketByLevel(mapId, bot->getLevel());
         if (!pvpDiff)
@@ -446,7 +445,6 @@ bool BGJoinAction::JoinQueue(uint32 type)
         return false;
 
 #ifdef MANGOSBOT_TWO
-    BattleGround* bg = sBattleGroundMgr.GetBattleGroundTemplate(bgTypeId);
     uint32 mapId = bg->GetMapId();
     PvPDifficultyEntry const* pvpDiff = GetBattlegroundBracketByLevel(mapId, bot->getLevel());
     if (!pvpDiff)
@@ -506,7 +504,11 @@ bool BGJoinAction::JoinQueue(uint32 type)
    uint8 arenaslot = 0;
    uint8 asGroup = false;
    string _bgType;
+#ifndef MANGOSBOT_TWO
    ObjectGuid guid = unit->GetObjectGuid();
+#else
+   ObjectGuid guid = isArena ? unit->GetObjectGuid() : bot->GetObjectGuid();
+#endif
    //ObjectGuid guid = BmGuid;
 
    switch (bgTypeId)
@@ -764,7 +766,6 @@ bool BGStatusAction::Execute(Event event)
 #ifdef CMANGOS
 #ifdef MANGOSBOT_TWO
     BattleGround* bg = sBattleGroundMgr.GetBattleGroundTemplate(_bgTypeId);
-    uint32 mapId = bg->GetMapId();
     PvPDifficultyEntry const* pvpDiff = GetBattlegroundBracketByLevel(mapId, bot->getLevel());
     if (pvpDiff)
         bracketId = pvpDiff->GetBracketId();

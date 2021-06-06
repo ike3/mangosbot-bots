@@ -1262,10 +1262,11 @@ void RandomPlayerbotMgr::AddBgBot(BattleGroundQueueTypeId queueTypeId, BattleGro
 #endif
         }
 #ifdef MANGOSBOT_TWO
-        if (sServerFacade.BgArenaType(queueTypeId))
-            player->TeleportTo(bm->GetMapId(), bm->GetPositionX(), bm->GetPositionY(), bm->GetPositionZ(), player->GetOrientation());
-        else
-            RandomTeleportForRpg(player);
+        //if (sServerFacade.BgArenaType(queueTypeId))
+            //player->TeleportTo(bm->GetMapId(), bm->GetPositionX(), bm->GetPositionY(), bm->GetPositionZ(), player->GetOrientation());
+        //else
+           // RandomTeleportForRpg(player);
+        // subject for removal
 #else
         player->TeleportTo(bm->second.mapid, bm->second.posX, bm->second.posY, bm->second.posZ, player->GetOrientation());
 #endif        
@@ -1288,7 +1289,8 @@ void RandomPlayerbotMgr::AddBgBot(BattleGroundQueueTypeId queueTypeId, BattleGro
     }
     else
     {
-        player->GetPlayerbotAI()->GetAiObjectContext()->GetValue<ObjectGuid>("bg type")->Set(0);
+        //player->GetPlayerbotAI()->GetAiObjectContext()->GetValue<ObjectGuid>("bg type")->Set(0);
+        // subject for removal
     }
 #endif
 
