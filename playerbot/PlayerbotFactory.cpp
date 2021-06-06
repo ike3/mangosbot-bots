@@ -1027,8 +1027,8 @@ void PlayerbotFactory::InitEquipment(bool incremental)
                 Item* newItem = bot->EquipNewItem(dest, newItemId, true);
                 if (newItem)
                 {
-                    newItem->AddToWorld();
-                    newItem->AddToUpdateQueueOf(bot);
+                    //newItem->AddToWorld();
+                    //newItem->AddToUpdateQueueOf(bot);
                     bot->AutoUnequipOffhandIfNeed();
                     EnchantItem(newItem);
                     found = true;
@@ -1151,7 +1151,14 @@ void PlayerbotFactory::InitSecondEquipmentSet()
 
 void PlayerbotFactory::InitBags()
 {
-    vector<uint32> ids;
+    for (uint8 slot = INVENTORY_SLOT_BAG_START; slot < INVENTORY_SLOT_BAG_END; ++slot)
+    {
+        Bag* pBag = (Bag*)bot->GetItemByPos(INVENTORY_SLOT_BAG_0, slot);
+        if (!pBag)
+            bot->StoreNewItemInBestSlots(4500, 1); // add Traveler's Backpack if no bag in slot
+    }
+
+    /*vector<uint32> ids;
 
     for (uint32 itemId = 0; itemId < sItemStorage.GetMaxEntry(); ++itemId)
     {
@@ -1189,7 +1196,7 @@ void PlayerbotFactory::InitBags()
                 break;
             }
         }
-    }
+    }*/
 }
 
 void PlayerbotFactory::EnchantItem(Item* item)
