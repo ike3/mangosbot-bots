@@ -153,7 +153,11 @@ questGivers QuestGiversValue::Calculate()
 			{
 				Quest const* quest = sObjectMgr.GetQuestTemplate(questId);
 
+#ifdef MANGOSBOT_ZERO
 				if (quest && (level < quest->GetMinLevel() || level > quest->GetMaxLevel() || level > quest->GetQuestLevel() + 10))
+#else
+                if (quest && (level < quest->GetMinLevel() || level > quest->GetQuestLevel() + 10))
+#endif
 					continue;
 			}
 
