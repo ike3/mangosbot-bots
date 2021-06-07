@@ -8,9 +8,9 @@ namespace ai
     template<class T>
     class ChooseMoveDoAction : public MovementAction, public Qualified {
     public:
-        void getCurrentTarget() { currentTarget = AI_VALUE(MoveTarget*, "move target"); }
-        void setCurrentTarget() {delete currentTarget; context->GetValue<MoveTarget*>("move target")->Set(newTarget.release()); getCurrentTarget();}
-        void clearCurrentTarget() { delete currentTarget; currentTarget = new MoveTarget(); context->GetValue<MoveTarget*>("move target")->Set(currentTarget); }
+        virtual void getCurrentTarget() { currentTarget = AI_VALUE(MoveTarget*, "move target"); }
+        virtual void setCurrentTarget() {delete currentTarget; context->GetValue<MoveTarget*>("move target")->Set(newTarget.release()); getCurrentTarget();}
+        virtual void clearCurrentTarget() { delete currentTarget; currentTarget = new MoveTarget(); context->GetValue<MoveTarget*>("move target")->Set(currentTarget); }
 
         ChooseMoveDoAction(PlayerbotAI* ai, string name = "choose move target", string targetValueName = "") : MovementAction(ai, name), targetValueName(targetValueName) {}
 
@@ -40,7 +40,7 @@ namespace ai
 
         virtual bool doTargetAction()
         {
-            return currentTarget->doAction(ai);
+            return currentTarget->doAction();
         }
 
         virtual bool SelectNewTarget(Event event)
@@ -55,7 +55,7 @@ namespace ai
             if (isBetter)
                 setCurrentTarget();
 
-            return isBetter;
+            return false; //isBetter continue checking for better values.
         }
 
         virtual bool MoveToTarget()
@@ -78,18 +78,18 @@ namespace ai
 
         virtual bool isAtCurrentTarget() { return currentTarget->isInRange(bot); }
 
-        virtual bool getPotentialTargets() { if (getQualifier().empty()) potentialTargets = { AI_VALUE(T, getTargetValueName()) }; else potentialTargets = { AI_VALUE2(T, getTargetValueName(), getQualifier()) };  return true; }
+        virtual bool getPotentialTargets() { if (getQualifier().empty()) potentialTargets = { AI_VALUE(T, getTargetValueName()) }; else potentialTargets = { AI_VALUE2(T, getTargetValueName(), getQualifier()) };  return !potentialTargets.empty(); }
 
         virtual bool FilterPotentialTargets() { return true; }
 
         virtual bool getPotentialTarget() { potentialTarget = potentialTargets.front();  return true; }
 
-        virtual bool getNewMoveTarget(Event event) { newTarget = std::make_unique<ObjectMoveActionTarget<T>>(potentialTarget, targetValueName, getRelevance(), getName(), event); return true; }
+        virtual bool getNewMoveTarget(Event event) { newTarget = std::make_unique<ObjectMoveActionTarget<T>>(ai, potentialTarget, targetValueName, getRelevance(), getName(), event, getQualifier()); return true; }
 
         virtual bool NewIsBetterTarget()
         {
             WorldPosition botPos(bot);
-            return newTarget->getRelevance() > currentTarget->getRelevance() || (newTarget->getRelevance() == currentTarget->getRelevance() && newTarget->getPos().distance(&botPos) > currentTarget->getPos().distance(&botPos));
+            return newTarget->getBaseRelevance() > currentTarget->getBaseRelevance() || (newTarget->getBaseRelevance() == currentTarget->getBaseRelevance() && newTarget->getPos().distance(&botPos) < currentTarget->getPos().distance(&botPos));
         }
 
         ObjectMoveActionTarget<T>* getObjectTarget() { return dynamic_cast<ObjectMoveActionTarget<T>*>(currentTarget); }
@@ -121,10 +121,10 @@ namespace ai
         ChooseMoveDoListAction(PlayerbotAI* ai, string name = "choose list action", string targetValueName = "") : ChooseMoveDoAction(ai, name, targetValueName) {}
 
         //Default select all targets from the ai-value.
-        virtual bool getPotentialTargets() { if (getQualifier().empty()) potentialTargets = AI_VALUE(list<T>, getTargetValueName()); else potentialTargets = AI_VALUE2(list<T>, getTargetValueName(), getQualifier());  return true; }
+        virtual bool getPotentialTargets() { if (getQualifier().empty()) potentialTargets = AI_VALUE(list<T>, getTargetValueName()); else potentialTargets = AI_VALUE2(list<T>, getTargetValueName(), getQualifier());  return !potentialTargets.empty(); }
 
         //Default pick the closest potential target from the list.
-        virtual bool getPotentialTarget() {return (potentialTarget = WorldPosition(bot).closest<T>(potentialTargets).first); }
+        virtual bool getPotentialTarget() {return !potentialTargets.empty() && (potentialTarget = WorldPosition(bot).closest<T>(potentialTargets).first); }
     };
 
     //Simple example of a multiple target selection.

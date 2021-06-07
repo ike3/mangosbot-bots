@@ -587,41 +587,16 @@ bool BGStatusCheckAction::Execute(Event event)
     return true;
 }
 
-BattleGroundTypeId QueueAtBmAction::getBgTypeId(uint32 bgType)
+bool QueueAtBmAction::canJoinBgQueue(BattleGroundQueueTypeId queueTypeId)
 {
-    BattleGroundTypeId bgTypeId;
-    switch (bgType)
-    {
-    case 0:
-        bgTypeId = BATTLEGROUND_TYPE_NONE;
-        break;
-    case 1:
-        bgTypeId = BATTLEGROUND_AV;
-        break;
-    case 2:
-        bgTypeId = BATTLEGROUND_WS;
-        break;
-    case 3:
-        bgTypeId = BATTLEGROUND_AB;
-        break;
-    }
+    BattleGroundTypeId bgTypeId = sServerFacade.BgTemplateId(queueTypeId);
 
-    return bgTypeId;
-}
-
-
-bool QueueAtBmAction::canJoinBg(uint32 bgType)
-{
-    BattleGround* bg = sBattleGroundMgr.GetBattleGroundTemplate(getBgTypeId(bgType));
+    BattleGround* bg = sBattleGroundMgr.GetBattleGroundTemplate(bgTypeId);
     if (!bg)
         return false;
 
     if (bot->getLevel() < bg->GetMinLevel())
         return false;
-
-    // get BG TypeId
-    BattleGroundQueueTypeId queueTypeId = BattleGroundQueueTypeId(getBgTypeId(bgType));
-    BattleGroundTypeId bgTypeId = sServerFacade.BgTemplateId(queueTypeId);
 
     // check if already in queue
     if (bot->InBattleGroundQueueForBattleGroundQueueType(queueTypeId))
@@ -631,21 +606,25 @@ bool QueueAtBmAction::canJoinBg(uint32 bgType)
 }
 
 //Select a random BG type.
-void QueueAtBmAction::GetRandomBg()
+void QueueAtBmAction::GetRandomBgQueue()
 {
-    vector<uint32> bgTypes;
+    vector<BattleGroundQueueTypeId> bgQueues;
 
-    for (uint32 i = 1; i < MAX_BATTLEGROUND_TYPE_ID; i++)
+
+    for (uint32 i = 1; i < MAX_BATTLEGROUND_QUEUE_TYPES; i++)
     {
-        if (canJoinBg(getBgTypeId(i)))
-            bgTypes.push_back(i);
+        BattleGroundQueueTypeId queueTypeId =(BattleGroundQueueTypeId)i;
+
+        if (canJoinBgQueue(queueTypeId))
+            bgQueues.push_back(queueTypeId);
     }
 
-    uint32 bgType = 0;
-    if (!bgTypes.empty())
-        bgType = bgTypes[urand(0, bgTypes.size() - 1)];
+    BattleGroundQueueTypeId queueTypeId = BATTLEGROUND_QUEUE_NONE;
 
-    Qualify(bgType);
+    if (!bgQueues.empty())
+        queueTypeId = bgQueues[urand(0, bgQueues.size() - 1)];
+
+    Qualify(queueTypeId);
 }
 
 //Only go to BM's at level > 9
@@ -666,8 +645,15 @@ bool QueueAtBmAction::isUseful()
     if (getQualifier().empty())
         return false;
 
-    return canJoinBg(getBgTypeId(stoi(getQualifier())));
+    return canJoinBgQueue(getBgQueue());
 };
+
+bool QueueAtBmAction::getPotentialTargets()
+{
+    potentialTargets = AI_VALUE2(list<CreatureDataPair const*>, getTargetValueName(), getBgQueue());
+
+    return !potentialTargets.empty();
+}
 
 //Check if BM is not hostile and preferably not alive.
 bool QueueAtBmAction::IsValidBm(CreatureDataPair const* bmPair, bool allowDead)
@@ -747,18 +733,14 @@ bool QueueAtBmAction::ExecuteAction(Event event)
 
     bot->SetFacingTo(bot->GetAngle(bmUnit));
 
-    //Work-around for getting BG-type from unit.
-    for (uint32 i = 0; i < MAX_BATTLEGROUND_TYPE_ID; i++)
-    {
-        list<CreatureDataPair const*> bmPairs = AI_VALUE2(list<CreatureDataPair const*>, "bg masters", i);
+    if (getQualifier().empty())
+        return false;
 
-        if (std::find(bmPairs.begin(), bmPairs.end(), bmPair) != bmPairs.end())
-        {
-            bot->GetPlayerbotAI()->GetAiObjectContext()->GetValue<uint32>("bg type")->Set(i);
-            bot->GetPlayerbotAI()->ChangeStrategy("+bg", BOT_STATE_NON_COMBAT);
-            return true;
-        }
-    }
+    BattleGroundTypeId bgTypeId = sServerFacade.BgTemplateId(getBgQueue());
+
+    bot->GetPlayerbotAI()->GetAiObjectContext()->GetValue<uint32>("bg type")->Set((uint32)bgTypeId);
+    bot->GetPlayerbotAI()->ChangeStrategy("+bg", BOT_STATE_NON_COMBAT);
+    return true;
 
     return false;
 }

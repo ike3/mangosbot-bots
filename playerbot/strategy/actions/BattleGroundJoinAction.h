@@ -51,13 +51,16 @@ public:
 //Selects the closest BM as potential move target.
 class QueueAtBmAction : public ChooseMoveDoListAction<CreatureDataPair const*> {
 public:
-    BattleGroundTypeId getBgTypeId(uint32 bgType);  //Get bgTypeId from bgType.
-    bool canJoinBg(uint32 bgType);                  //Check to see if bot can join this bg type
+    bool canJoinBgQueue(BattleGroundQueueTypeId queueTypeId); //Check to see if bot can join this bgqueue
 
-    void GetRandomBg();                             //Select random bg from bgs bot may join
-    QueueAtBmAction(PlayerbotAI* ai, string name = "queue at bm", string targetValueName = "bg masters") : ChooseMoveDoListAction(ai, name, targetValueName) { GetRandomBg(); }
+    void GetRandomBgQueue();                        //Select random bg queue from bgs bot may join
+    BattleGroundQueueTypeId getBgQueue() { return (BattleGroundQueueTypeId)stoi(getQualifier()); }
+
+    QueueAtBmAction(PlayerbotAI* ai, string name = "queue at bm", string targetValueName = "bg masters") : ChooseMoveDoListAction(ai, name, targetValueName) { GetRandomBgQueue(); }
 
     virtual bool isUseful();                        //Check if bot may join selected bg.
+
+    virtual bool getPotentialTargets();
 
     virtual bool IsValidBm(CreatureDataPair const* bmPair, bool allowDead); //Check if selected BM is friendly/exists/alive
     virtual bool FilterPotentialTargets();          //Filter only those BM's that are valid.
