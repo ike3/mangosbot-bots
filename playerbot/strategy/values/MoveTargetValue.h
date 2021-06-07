@@ -8,39 +8,41 @@ namespace ai
     class MoveTarget
     {
     public:
-        MoveTarget(string targetName = "", uint32 relevance = 0) : targetName(targetName), relevance(relevance) {}
+        MoveTarget(string targetName = "", float relevance = 0) : targetName(targetName), relevance(relevance) {}
         virtual string getName() { return targetName; }
-        virtual uint32 getRelevance() { return relevance; }
+        virtual float getBaseRelevance() { return relevance; }
+        virtual float getRelevance() { return isInRange() ? relevance : 1; }
         virtual WorldPosition getPos() { return WorldPosition(); }
 
         virtual float getDist(WorldPosition pos) { return pos.distance(getPos()); }
         virtual bool isInRange(WorldPosition pos) { return getDist(pos) < maxDist; }
-        virtual bool isInRange(Player* bot) { return isInRange(WorldPosition(bot)); }
-        virtual bool doAction(PlayerbotAI* ai) { return true; }
+        virtual bool isInRange() { return false; }
+        virtual bool doAction() { return true; }
     private:
         string targetName = "";
-        uint32 relevance = 0;
+        float relevance = 0;
         float minDist = sPlayerbotAIConfig.targetPosRecalcDistance;
         float maxDist = sPlayerbotAIConfig.followDistance;
     };
 
     template<class T>
-    class ObjectMoveTarget : public MoveTarget
+    class ObjectMoveTarget : public MoveTarget , public AiObject
     {
     public:    
-        ObjectMoveTarget(T value, string targetName = "", uint32 priority = 0) : MoveTarget(targetName,priority), value(value) {};
+        ObjectMoveTarget(PlayerbotAI* ai, T value, string targetName = "", float relevance = 0) : AiObject(ai), MoveTarget(targetName, relevance), value(value) {};
         virtual WorldPosition getPos() { return WorldPosition(value); }
+        virtual bool isInRange() { return MoveTarget::isInRange(WorldPosition(bot)); }
         virtual T Get() { return value; }
     protected:
         T value;
     };
 
     template<class T>
-    class ObjectMoveActionTarget : public ObjectMoveTarget<T>
+    class ObjectMoveActionTarget : public ObjectMoveTarget<T> , public Qualified
     {
     public:
-        ObjectMoveActionTarget(T value, string targetName = "", uint32 priority = 0, string actionName = "", Event actionEvent = Event()) : ObjectMoveTarget(value, targetName, priority), actionName(actionName), actionEvent(actionEvent)  {};
-        virtual bool doAction(PlayerbotAI* ai) {return ai->DoSpecificAction(actionName, actionEvent, true); }
+        ObjectMoveActionTarget(PlayerbotAI* ai, T value, string targetName = "", float relevance = 0, string actionName = "", Event actionEvent = Event(), string qualifier = "") : ObjectMoveTarget(ai, value, targetName, relevance), Qualified(qualifier), actionName(actionName), actionEvent(actionEvent)  {};
+        virtual bool doAction() { return ai->DoSpecificAction(actionName, actionEvent, true, getQualifier()); }
     protected:
         string actionName;
         Event actionEvent;
@@ -49,7 +51,7 @@ namespace ai
     class MoveTargetValue : public ManualSetValue<MoveTarget*>
     {
     public:
-        MoveTargetValue(PlayerbotAI* ai, MoveTarget* defaultValue = new MoveTarget()) : ManualSetValue<MoveTarget*>(ai, defaultValue) {}
+        MoveTargetValue(PlayerbotAI* ai, MoveTarget* defaultValue = new MoveTarget()) : ManualSetValue<MoveTarget*>(ai, defaultValue) { }
 
         virtual ~MoveTargetValue() { delete value; }
     };
