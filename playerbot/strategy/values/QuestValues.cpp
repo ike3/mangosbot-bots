@@ -153,7 +153,7 @@ questGivers QuestGiversValue::Calculate()
 			{
 				Quest const* quest = sObjectMgr.GetQuestTemplate(questId);
 
-				if (quest && (level < quest->GetMinLevel() || level > quest->GetMaxLevel() || level > quest->GetQuestLevel() + 10))
+				if (quest && (level < quest->GetMinLevel() || level > quest->GetQuestLevel() + 10))
 					continue;
 			}
 
