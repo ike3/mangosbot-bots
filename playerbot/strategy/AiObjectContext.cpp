@@ -32,9 +32,7 @@ AiObjectContext::AiObjectContext(PlayerbotAI* ai) : PlayerbotAIAware(ai)
 
     valueContexts.Add(new ValueContext());
 
-    NamedObjectContext<UntypedValue>* sharedContext = &sSharedValueContext;
-
-    valueContexts.Add(sharedContext);
+    valueContexts.Add(&sSharedValueContext);
 }
 
 void AiObjectContext::Update()

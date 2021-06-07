@@ -192,10 +192,12 @@ namespace ai
         {
             creators["quest"] = &QuestStrategyContext::quest;
             creators["accept all quests"] = &QuestStrategyContext::accept_all_quests;
+            creators["active quest"] = &QuestStrategyContext::active_quest;
         }
 
     private:
         static Strategy* quest(PlayerbotAI* ai) { return new DefaultQuestStrategy(ai); }
         static Strategy* accept_all_quests(PlayerbotAI* ai) { return new AcceptAllQuestsStrategy(ai); }
+        static Strategy* active_quest(PlayerbotAI* ai) { return new ActiveQuestStrategy(ai); }
     };
 };

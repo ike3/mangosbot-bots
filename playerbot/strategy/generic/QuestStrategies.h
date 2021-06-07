@@ -25,10 +25,20 @@ namespace ai
     class AcceptAllQuestsStrategy : public QuestStrategy
     {
     public:
-        AcceptAllQuestsStrategy(PlayerbotAI* ai);
+        AcceptAllQuestsStrategy(PlayerbotAI* ai) : QuestStrategy(ai) {};
 
     public:
         virtual void InitTriggers(std::list<TriggerNode*> &triggers);
         virtual string getName() { return "accept all quests"; }
+    };
+
+    class ActiveQuestStrategy : public QuestStrategy
+    {
+    public:
+        ActiveQuestStrategy(PlayerbotAI* ai) : QuestStrategy(ai) {};
+
+    public:
+        virtual void InitTriggers(std::list<TriggerNode*>& triggers);
+        virtual string getName() { return "active quest"; }
     };
 }

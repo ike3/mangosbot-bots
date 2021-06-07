@@ -73,6 +73,7 @@
 #include "SnareTargetValue.h"
 #include "Stances.h"
 #include "MoveTargetValue.h"
+#include "QuestValues.h"
 
 namespace ai
 {
@@ -216,6 +217,11 @@ namespace ai
             creators["team flag carrier"] = &ValueContext::team_fc;
 
             creators["move target"] = &ValueContext::move_target;
+
+            creators["active quest givers"] = &ValueContext::active_quest_givers;
+            creators["active quest takers"] = &ValueContext::active_quest_takers;
+            creators["active quest objectives"] = &ValueContext::active_quest_objectives;
+            creators["free quest log slots"] = &ValueContext::free_quest_log_slots;
         }
 
     private:
@@ -348,5 +354,10 @@ namespace ai
         static UntypedValue* pull_target(PlayerbotAI* ai) { return new PullTargetValue(ai); }
 
         static UntypedValue* move_target(PlayerbotAI* ai) { return new MoveTargetValue(ai); }
+
+        static UntypedValue* active_quest_givers(PlayerbotAI* ai) { return new ActiveQuestGiversValue(ai); }
+        static UntypedValue* active_quest_takers(PlayerbotAI* ai) { return new ActiveQuestTakersValue(ai); }
+        static UntypedValue* active_quest_objectives(PlayerbotAI* ai) { return new ActiveQuestObjectivesValue(ai); }
+        static UntypedValue* free_quest_log_slots(PlayerbotAI* ai) { return new FreeQuestLogSlotValue(ai); }
 };
 };

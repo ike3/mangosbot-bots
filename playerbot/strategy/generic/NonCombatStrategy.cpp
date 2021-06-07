@@ -54,9 +54,9 @@ void NonCombatStrategy::InitTriggers(std::list<TriggerNode*>& triggers)
         "has continue action",
         NextAction::array(0, new NextAction("continue action", AI_VALUE(MoveTarget*, "move target")->getRelevance()), NULL)));
 
-    triggers.push_back(new TriggerNode(
-        "wants in bg",
-        NextAction::array(0, new NextAction("queue at bm", 20.0f), NULL)));
+//    triggers.push_back(new TriggerNode(
+//        "wants in bg",
+//        NextAction::array(0, new NextAction("queue at bm", 20.0f), NULL)));
 }
 
 void CollisionStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
