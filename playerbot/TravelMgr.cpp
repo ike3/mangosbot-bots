@@ -18,6 +18,8 @@
 #include "Transports.h"
 #include <playerbot/strategy/StrategyContext.h>
 
+#include "strategy/values/SharedValueContext.h"
+
 using namespace ai;
 using namespace MaNGOS;
 
@@ -54,6 +56,11 @@ WorldPosition::WorldPosition(ObjectGuid guid)
     case HIGHGUID_CORPSE:
         return;
     }
+}
+
+WorldPosition::WorldPosition(GuidPosition gpos)
+{
+    wLoc = gpos.getPosition().wLoc;
 }
 
 WorldPosition::WorldPosition(vector<WorldPosition*> list, WorldPositionConst conType)
@@ -562,6 +569,43 @@ vector<GameObjectDataPair const*> WorldPosition::getGameObjectsNear(float radius
     FindPointGameObjectData worker(*this, radius, entry);
     sObjectMgr.DoGOData(worker);
     return worker.GetResult();
+}
+
+Unit* GuidPosition::getUnit()
+{
+    if (!*this)
+        return nullptr;
+
+    if (IsPlayer())
+        return sObjectAccessor.FindPlayer(*this);
+
+    return point.getMap()->GetAnyTypeCreature(*this);
+}
+
+GameObject* GuidPosition::getGameObject()
+{
+    if (!*this)
+        return nullptr;
+
+    return point.getMap()->GetGameObject(*this);
+}
+
+
+bool GuidPosition::isDead()
+{
+    if (!point.getMap())
+        return false;
+
+    if (!point.getMap()->IsLoaded(point.getX(), point.getY()))
+        return false;
+
+    if (IsUnit() && getUnit() && getUnit()->IsInWorld() && getUnit()->IsAlive())
+        return false;
+
+    if (IsGameObject() && getGameObject() && getGameObject()->IsInWorld())
+        return false;
+
+    return true;
 }
 
 vector<WorldPosition*> TravelDestination::getPoints(bool ignoreFull) {
@@ -1161,7 +1205,26 @@ void TravelMgr::LoadQuestTravelTable()
     if (!sTravelMgr.quests.empty())
         return;
     // Clearing store (for reloading case)
-    Clear();
+    Clear();    
+
+    /* remove this
+    questGuidMap cQuestMap = GAI_VALUE(questGuidMap,"quest objects");
+       
+    for (auto cQuest : cQuestMap)
+    {
+        sLog.outErrorDb("[Quest id: %d]", cQuest.first);
+
+        for (auto cObj : cQuest.second)
+        {
+            sLog.outErrorDb(" [Objective type: %d]", cObj.first);
+
+            for (auto cCre : cObj.second)
+            {
+                sLog.outErrorDb(" %s %d", cCre.GetTypeName(), cCre.GetEntry());
+            }
+        }
+    }    
+    */
 
     struct unit { uint32 guid; uint32 type; uint32 entry; uint32 map; float  x; float  y; float  z;  float  o; uint32 c; } t_unit;
     vector<unit> units;
@@ -1285,7 +1348,6 @@ void TravelMgr::LoadQuestTravelTable()
     }
 
     bool loadQuestData = true;
-
 
     if (loadQuestData)
     {

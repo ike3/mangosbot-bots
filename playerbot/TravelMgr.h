@@ -21,6 +21,8 @@ namespace ai
         WP_CLOSEST = 3
     };
 
+    class GuidPosition;
+
     //Extension of WorldLocation with distance functions.
     class WorldPosition
     {
@@ -28,10 +30,13 @@ namespace ai
         //Constructors
         WorldPosition() { wLoc = WorldLocation(); }
         WorldPosition(const WorldLocation loc) { wLoc = loc; }
+        WorldPosition(const WorldPosition& pos) { wLoc = pos.wLoc; visitors = pos.visitors; }
         WorldPosition(uint32 mapid, float x, float y, float z = 0, float orientation = 0) { wLoc = WorldLocation(mapid, x, y, z, orientation); }
         WorldPosition(const WorldObject* wo) { wLoc = WorldLocation(wo->GetMapId(), wo->GetPositionX(), wo->GetPositionY(), wo->GetPositionZ(), wo->GetOrientation()); }
         WorldPosition(CreatureDataPair const* cdPair) { if (cdPair) { wLoc = WorldLocation(cdPair->second.mapid, cdPair->second.posX, cdPair->second.posY, cdPair->second.posZ, cdPair->second.orientation); } }
+        WorldPosition(GameObjectDataPair const* cdPair) { if (cdPair) { wLoc = WorldLocation(cdPair->second.mapid, cdPair->second.posX, cdPair->second.posY, cdPair->second.posZ, cdPair->second.orientation); } }
         WorldPosition(ObjectGuid guid);
+        WorldPosition(GuidPosition gpos);
         WorldPosition(vector<WorldPosition*> list, WorldPositionConst conType);
         WorldPosition(vector<WorldPosition> list, WorldPositionConst conType);
         WorldPosition(uint32 mapid, std::pair<int, int> grid) { wLoc = WorldLocation(mapid, (32 - grid.first) * SIZE_OF_GRIDS, (32 - grid.second) * SIZE_OF_GRIDS, 0, 0); }
@@ -40,6 +45,7 @@ namespace ai
         void setX(float x) { wLoc.coord_x = x; }
         void setY(float y) { wLoc.coord_y = y; }
         void setZ(float z) { wLoc.coord_z = z; }
+        void setLocation(const WorldLocation loc) { wLoc = loc; }
 
         void addVisitor() { visitors++; }
         void remVisitor() { visitors--; }
@@ -151,6 +157,31 @@ namespace ai
     private:
         WorldLocation wLoc;
         uint32 visitors = 0;        
+    };
+
+    class GuidPosition : public ObjectGuid
+    {
+    public:
+        GuidPosition() : ObjectGuid() {}
+        GuidPosition(ObjectGuid guid) : ObjectGuid(guid) { point = WorldPosition(guid); }
+        template<class T>
+        GuidPosition(ObjectGuid guid, T) : ObjectGuid(guid) { point = WorlsPosition(T); }
+        GuidPosition(CreatureDataPair const* dataPair) : ObjectGuid(HIGHGUID_UNIT, dataPair->second.id, dataPair->first)  { point = WorldPosition(dataPair); }
+        GuidPosition(GameObjectDataPair const* dataPair) : ObjectGuid(HIGHGUID_GAMEOBJECT, dataPair->second.id, dataPair->first) { point = WorldPosition(dataPair); }
+        GuidPosition(const GuidPosition& guidp) : ObjectGuid(guidp) { point = guidp.point; }
+
+        CreatureData* getCreatureData() { return IsCreature() ? sObjectMgr.GetCreatureData(GetCounter()) : nullptr; }
+        CreatureInfo const* GetCreatureTemplate() {return IsCreature() ? sObjectMgr.GetCreatureTemplate(GetEntry()) : nullptr; };
+
+        WorldPosition getPosition() { return point; }
+
+        WorldObject* GetWorldObject() {return point.getMap()->GetWorldObject(*this);}
+        Unit* getUnit();
+        GameObject* getGameObject();
+
+        bool isDead(); //For loaded grids check if the unit/object is unloaded/dead.
+    private:
+        WorldPosition point = WorldPosition();
     };
 
     template<class T>
