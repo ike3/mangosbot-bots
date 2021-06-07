@@ -8,22 +8,7 @@ using namespace ai;
 
 list<CreatureDataPair const*> BgMastersValue::Calculate()
 {
-    BattleGroundTypeId bgTypeId;
-    switch (stoi(qualifier))
-    {
-    case 0:
-        bgTypeId = BATTLEGROUND_TYPE_NONE;
-        break;
-    case 1:
-        bgTypeId = BATTLEGROUND_AV;
-        break;
-    case 2:
-        bgTypeId = BATTLEGROUND_WS;
-        break;
-    case 3:
-        bgTypeId = BATTLEGROUND_AB;
-        break;
-    }
+    BattleGroundTypeId bgTypeId = (BattleGroundTypeId)stoi(qualifier);
 
     vector<uint32> entries;
     map<Team,map<BattleGroundTypeId, list<uint32>>> battleMastersCache = sRandomPlayerbotMgr.getBattleMastersCache();

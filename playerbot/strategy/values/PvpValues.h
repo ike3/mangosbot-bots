@@ -22,10 +22,10 @@ public:
     BgRoleValue(PlayerbotAI* ai) : ManualSetValue<uint32>(ai, 0, "bg role") {}
 };
 
-class BgMastersValue : public CDPairListCalculatedValue, public Qualified
+class BgMastersValue : public SingleCalculatedValue<list<CreatureDataPair const*>>, public Qualified
 {
 public:
-    BgMastersValue(PlayerbotAI* ai) : CDPairListCalculatedValue(ai, "bg masters", 60000) {}
+    BgMastersValue(PlayerbotAI* ai) : SingleCalculatedValue<list<CreatureDataPair const*>>(ai, "bg masters") {}
 
     virtual list<CreatureDataPair const*> Calculate();
 };

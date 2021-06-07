@@ -8,7 +8,8 @@ namespace ai
     {
     public:
         Qualified() {};
-
+        Qualified(string qualifier) : qualifier(qualifier) {}
+        Qualified(uint32 qualifier1) { Qualify(qualifier1); }
     public:
         virtual void Qualify(uint32 qualifier) { ostringstream out; out << qualifier; this->qualifier = out.str(); }
         virtual void Qualify(string qualifier) { this->qualifier = qualifier; }

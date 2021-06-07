@@ -27,6 +27,38 @@ namespace ai
         operator T() { return Get(); }
     };
 
+    template <class T>
+    class SingleCalculatedValue : public UntypedValue, public Value<T>
+    {
+    public:
+        SingleCalculatedValue(PlayerbotAI* ai, string name = "value") : UntypedValue(ai, name) { Reset(); }
+
+        virtual ~SingleCalculatedValue() {}
+
+        virtual T Get()
+        {
+            if (!calculated)
+            {
+                value = Calculate();
+                calculated = true;
+            }
+            return value;
+        }
+
+        virtual void Set(T value) { this->value = value; }
+        virtual void Update() { }
+
+        virtual void Reset()
+        {
+            calculated = false;
+        }
+    protected:
+        virtual T Calculate() = 0;
+    protected:
+        T value;
+        bool calculated;
+    };
+
     template<class T>
     class CalculatedValue : public UntypedValue, public Value<T>
 	{
