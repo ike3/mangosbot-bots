@@ -670,12 +670,12 @@ list<string> PlayerbotAI::GetStrategies(BotState type)
     return e->GetStrategies();
 }
 
-bool PlayerbotAI::DoSpecificAction(string name, Event event, bool silent)
+bool PlayerbotAI::DoSpecificAction(string name, Event event, bool silent, string qualifier)
 {
     for (int i = 0 ; i < BOT_STATE_MAX; i++)
     {
         ostringstream out;
-        ActionResult res = engines[i]->ExecuteAction(name, event);
+        ActionResult res = engines[i]->ExecuteAction(name, event, qualifier);
         switch (res)
         {
         case ACTION_RESULT_UNKNOWN:
@@ -902,6 +902,24 @@ GameObject* PlayerbotAI::GetGameObject(ObjectGuid guid)
         return NULL;
 
     Map* map = bot->GetMap();
+    if (!map)
+        return NULL;
+
+    return map->GetGameObject(guid);
+}
+
+GameObject* PlayerbotAI::GetGameObject(GameObjectDataPair const* gameObjectDataPair)
+{
+    if (!gameObjectDataPair)
+        return NULL;
+
+    ObjectGuid guid(HIGHGUID_GAMEOBJECT, gameObjectDataPair->second.id, gameObjectDataPair->first);
+
+    if (!guid)
+        return NULL;
+
+    Map* map = sMapMgr.FindMap(gameObjectDataPair->second.mapid);
+
     if (!map)
         return NULL;
 
