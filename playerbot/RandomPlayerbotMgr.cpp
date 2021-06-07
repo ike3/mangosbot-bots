@@ -273,47 +273,6 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed)
     {
         if (time(NULL) > (BgCheckTimer + 30))
             activateCheckBgQueueThread();
-
-        if (BgBotsActive && bgBotsCount < 60)
-        {
-            for (int i = BG_BRACKET_ID_FIRST; i < MAX_BATTLEGROUND_BRACKETS; ++i)
-            {
-                for (int j = BATTLEGROUND_QUEUE_AV; j < MAX_BATTLEGROUND_QUEUE_TYPES; ++j)
-                {
-                    BattleGroundQueueTypeId queueTypeId = BattleGroundQueueTypeId(j);
-                    BattleGroundTypeId bgTypeId = sServerFacade.BgTemplateId(queueTypeId);
-                    BattleGroundBracketId bracketId = BattleGroundBracketId(i);
-                    uint32 bg_players = BgPlayers[queueTypeId][bracketId][0] + BgPlayers[queueTypeId][bracketId][1];
-                    uint32 visual_players = VisualBots[queueTypeId][bracketId][0] + VisualBots[queueTypeId][bracketId][1];
-                    if (bg_players)
-                    {
-#ifndef MANGOSBOT_ZERO
-                        if (sServerFacade.BgArenaType(queueTypeId))
-                        {
-                            uint32 rated_players = BgPlayers[queueTypeId][bracketId][1];
-                            if (rated_players)
-                            {
-                                AddBgBot(queueTypeId, bracketId, true);
-                                bgBotsCount++;
-                                continue;
-                            }
-                        }
-#endif
-                        for (auto i = 0; i < 10; ++i)
-                        {
-                            AddBgBot(queueTypeId, bracketId);
-                            bgBotsCount++;
-                            continue;
-                        }
-                    }
-                    if (!visual_players && !bg_players && bgBotsCount < 5)
-                    {
-                        AddBgBot(queueTypeId, bracketId, false, true);
-                        bgBotsCount++;
-                    }
-                }
-            }
-        }
     }
 
     uint32 botProcessed = 0;
@@ -484,66 +443,16 @@ void RandomPlayerbotMgr::CheckBgQueue()
 
     uint32 count = 0;
     uint32 visual_count = 0;
-    for (int i = BG_BRACKET_ID_FIRST; i < MAX_BATTLEGROUND_BRACKETS; ++i)
-    {
-        for (int j = BATTLEGROUND_QUEUE_AV; j < MAX_BATTLEGROUND_QUEUE_TYPES; ++j)
-        {
-            count += BgPlayers[j][i][0];
-            count += BgPlayers[j][i][1];
 
-            visual_count += VisualBots[j][i][0];
-            visual_count += VisualBots[j][i][1];
-
-            if (count == 0)
-                continue;
-
-            BattleGroundQueueTypeId queueTypeId = BattleGroundQueueTypeId(j);
-            BattleGroundBracketId bracketId = BattleGroundBracketId(i);
-            if (queueTypeId == BATTLEGROUND_QUEUE_NONE)
-                continue;
-            BattleGroundTypeId bgTypeId = sServerFacade.BgTemplateId(queueTypeId);
-            BattleGround* bg = sBattleGroundMgr.GetBattleGroundTemplate(bgTypeId);
-            if (!bg)
-                continue;
-
-            uint32 BracketSize = bg->GetMaxPlayers();
-            uint32 TeamSize = bg->GetMaxPlayersPerTeam();
-
-            uint32 ACount = BgBots[queueTypeId][bracketId][0] + BgPlayers[queueTypeId][bracketId][0];
-            uint32 HCount = BgBots[queueTypeId][bracketId][1] + BgPlayers[queueTypeId][bracketId][1];
-
-#ifndef MANGOSBOT_ZERO
-            uint32 SCount, RCount;
-            if (ArenaType type = sServerFacade.BgArenaType(queueTypeId))
-            {
-                SCount = BgBots[queueTypeId][bracketId][0] + BgPlayers[queueTypeId][bracketId][0];
-                RCount = BgBots[queueTypeId][bracketId][1] + BgPlayers[queueTypeId][bracketId][1];
-
-                BracketSize = type * 2;
-                TeamSize = type;
-
-                if ((SCount >= BracketSize && !RCount) || (RCount >= BracketSize && !SCount))
-                    continue;
-            }
-#endif
-            uint32 BgCount = ACount + HCount;
-
-            if (BgCount >= BracketSize)
-                continue;
-        }
-    }
-
-    int check_time = count > 0 ? 180 : 30;
+    int check_time = count > 0 ? 120 : 30;
 
     if (time(NULL) < (BgCheckTimer + check_time))
     {
-        BgBotsActive = (count > 0 || visual_count < (MAX_BATTLEGROUND_BRACKETS * 5));
         return;
     }
     else
     {
         BgCheckTimer = time(NULL);
-        bgBotsCount = 0;
     }
 
     sLog.outBasic("Checking BG Queue...");
@@ -560,6 +469,8 @@ void RandomPlayerbotMgr::CheckBgQueue()
             ArenaBots[j][i][0][1] = 0;
             ArenaBots[j][i][1][0] = 0;
             ArenaBots[j][i][1][1] = 0;
+            NeedBots[j][i][0] = false;
+            NeedBots[j][i][1] = false;
         }
     }
 
@@ -573,102 +484,110 @@ void RandomPlayerbotMgr::CheckBgQueue()
         if (player->InBattleGround() && player->GetBattleGround()->GetStatus() == STATUS_WAIT_LEAVE)
             continue;
 
-        uint32 TeamId = player->GetTeam() == ALLIANCE ? 0 : 1;
-        BattleGroundQueueTypeId queueTypeId = player->GetBattleGroundQueueTypeId(0);
-        if (queueTypeId == BATTLEGROUND_QUEUE_NONE)
-            continue;
+        for (int i = 0; i < PLAYER_MAX_BATTLEGROUND_QUEUES; ++i)
+        {
+            BattleGroundQueueTypeId queueTypeId = player->GetBattleGroundQueueTypeId(i);
+            if (queueTypeId == BATTLEGROUND_QUEUE_NONE)
+                continue;
 
-        BattleGroundTypeId bgTypeId = sServerFacade.BgTemplateId(queueTypeId);
+            uint32 TeamId = player->GetTeam() == ALLIANCE ? 0 : 1;
+
+            BattleGroundTypeId bgTypeId = sServerFacade.BgTemplateId(queueTypeId);
 #ifdef MANGOS
-        BattleGroundBracketId bracketId = player->GetBattleGroundBracketIdFromLevel(bgTypeId);
+            BattleGroundBracketId bracketId = player->GetBattleGroundBracketIdFromLevel(bgTypeId);
 #endif
 #ifdef CMANGOS
 #ifdef MANGOSBOT_TWO
-        BattleGround* bg = sBattleGroundMgr.GetBattleGroundTemplate(bgTypeId);
-        uint32 mapId = bg->GetMapId();
-        PvPDifficultyEntry const* pvpDiff = GetBattlegroundBracketByLevel(mapId, player->getLevel());
-        if (!pvpDiff)
-            continue;
+            BattleGround* bg = sBattleGroundMgr.GetBattleGroundTemplate(bgTypeId);
+            uint32 mapId = bg->GetMapId();
+            PvPDifficultyEntry const* pvpDiff = GetBattlegroundBracketByLevel(mapId, player->getLevel());
+            if (!pvpDiff)
+                continue;
 
-        BattleGroundBracketId bracketId = pvpDiff->GetBracketId();
+            BattleGroundBracketId bracketId = pvpDiff->GetBracketId();
 #else
-        BattleGroundBracketId bracketId = player->GetBattleGroundBracketIdFromLevel(bgTypeId);
+            BattleGroundBracketId bracketId = player->GetBattleGroundBracketIdFromLevel(bgTypeId);
 #endif
 #endif
 #ifndef MANGOSBOT_ZERO
-        ArenaType arenaType = sServerFacade.BgArenaType(queueTypeId);
-        if (arenaType != ARENA_TYPE_NONE)
-        {
+            if (ArenaType arenaType = sServerFacade.BgArenaType(queueTypeId))
+            {
 #ifdef MANGOS
-            BattleGroundQueue& bgQueue = sServerFacade.bgQueue(queueTypeId);
-            GroupQueueInfo ginfo;
-            uint32 tempT = TeamId;
+                BattleGroundQueue& bgQueue = sServerFacade.bgQueue(queueTypeId);
+                GroupQueueInfo ginfo;
+                uint32 tempT = TeamId;
 
-            if (bgQueue.GetPlayerGroupInfoData(player->GetObjectGuid(), &ginfo))
-            {
-                if (ginfo.IsRated)
+                if (bgQueue.GetPlayerGroupInfoData(player->GetObjectGuid(), &ginfo))
                 {
-                    for (uint32 arena_slot = 0; arena_slot < MAX_ARENA_SLOT; ++arena_slot)
+                    if (ginfo.IsRated)
                     {
-                        uint32 arena_team_id = player->GetArenaTeamId(arena_slot);
-                        ArenaTeam* arenateam = sObjectMgr.GetArenaTeamById(arena_team_id);
-                        if (!arenateam)
-                            continue;
-                        if (arenateam->GetType() != arenaType)
-                            continue;
+                        for (uint32 arena_slot = 0; arena_slot < MAX_ARENA_SLOT; ++arena_slot)
+                        {
+                            uint32 arena_team_id = player->GetArenaTeamId(arena_slot);
+                            ArenaTeam* arenateam = sObjectMgr.GetArenaTeamById(arena_team_id);
+                            if (!arenateam)
+                                continue;
+                            if (arenateam->GetType() != arenaType)
+                                continue;
 
-                        Rating[queueTypeId][bracketId][1] = arenateam->GetRating();
+                            Rating[queueTypeId][bracketId][1] = arenateam->GetRating();
+                        }
                     }
+                    TeamId = ginfo.IsRated ? 1 : 0;
                 }
-                TeamId = ginfo.IsRated ? 1 : 0;
-            }
-            if (player->InArena())
-            {
-                if (player->GetBattleGround()->isRated() && (ginfo.IsRated && ginfo.ArenaTeamId && ginfo.ArenaTeamRating && ginfo.OpponentsTeamRating))
-                    TeamId = 1;
-                else
-                    TeamId = 0;
-            }
-#endif
-#ifdef CMANGOS
-            BattleGroundQueue& bgQueue = sServerFacade.bgQueue(queueTypeId);
-            GroupQueueInfo ginfo;
-            uint32 tempT = TeamId;
-
-            if (bgQueue.GetPlayerGroupInfoData(player->GetObjectGuid(), &ginfo))
-            {
-                if (ginfo.isRated)
+                if (player->InArena())
                 {
-                    for (uint32 arena_slot = 0; arena_slot < MAX_ARENA_SLOT; ++arena_slot)
-                    {
-                        uint32 arena_team_id = player->GetArenaTeamId(arena_slot);
-                        ArenaTeam* arenateam = sObjectMgr.GetArenaTeamById(arena_team_id);
-                        if (!arenateam)
-                            continue;
-                        if (arenateam->GetType() != arenaType)
-                            continue;
-
-                        Rating[queueTypeId][bracketId][1] = arenateam->GetRating();
-                    }
-                }
-                TeamId = ginfo.isRated ? 1 : 0;
-            }
-            if (player->InArena())
-            {
-                if (player->GetBattleGround()->IsRated() && (ginfo.isRated && ginfo.arenaTeamId && ginfo.arenaTeamRating && ginfo.opponentsTeamRating))
-                    TeamId = 1;
-                else
-                    TeamId = 0;
-            }
-#endif
-            ArenaBots[queueTypeId][bracketId][TeamId][tempT]++;
+                    if (player->GetBattleGround()->isRated() && (ginfo.IsRated && ginfo.ArenaTeamId && ginfo.ArenaTeamRating && ginfo.OpponentsTeamRating))
+                        TeamId = 1;
+                    else
+                        TeamId = 0;
         }
 #endif
+#ifdef CMANGOS
+                BattleGroundQueue& bgQueue = sServerFacade.bgQueue(queueTypeId);
+                GroupQueueInfo ginfo;
+                uint32 tempT = TeamId;
 
-        if (player->GetPlayerbotAI())
-            BgBots[queueTypeId][bracketId][TeamId]++;
-        else
-            BgPlayers[queueTypeId][bracketId][TeamId]++;
+                if (bgQueue.GetPlayerGroupInfoData(player->GetObjectGuid(), &ginfo))
+                {
+                    if (ginfo.isRated)
+                    {
+                        for (uint32 arena_slot = 0; arena_slot < MAX_ARENA_SLOT; ++arena_slot)
+                        {
+                            uint32 arena_team_id = player->GetArenaTeamId(arena_slot);
+                            ArenaTeam* arenateam = sObjectMgr.GetArenaTeamById(arena_team_id);
+                            if (!arenateam)
+                                continue;
+                            if (arenateam->GetType() != arenaType)
+                                continue;
+
+                            Rating[queueTypeId][bracketId][1] = arenateam->GetRating();
+                        }
+                    }
+                    TeamId = ginfo.isRated ? 1 : 0;
+                }
+                if (player->InArena())
+                {
+                    if (player->GetBattleGround()->IsRated()/* && (ginfo.isRated && ginfo.arenaTeamId && ginfo.arenaTeamRating && ginfo.opponentsTeamRating)*/)
+                        TeamId = 1;
+                    else
+                        TeamId = 0;
+                }
+#endif
+                ArenaBots[queueTypeId][bracketId][TeamId][tempT]++;
+    }
+#endif
+
+            if (player->GetPlayerbotAI())
+                BgBots[queueTypeId][bracketId][TeamId]++;
+            else
+                BgPlayers[queueTypeId][bracketId][TeamId]++;
+
+            if (!player->IsInvitedForBattleGroundQueueType(queueTypeId) && (!player->InBattleGround() || player->GetBattleGround()->GetTypeId() != sServerFacade.BgTemplateId(queueTypeId)))
+            {
+                NeedBots[queueTypeId][bracketId][TeamId] = true;
+            }
+        }
     }
 
     for (PlayerBotMap::iterator i = playerBots.begin(); i != playerBots.end(); ++i)
@@ -681,71 +600,75 @@ void RandomPlayerbotMgr::CheckBgQueue()
         if (!IsRandomBot(bot->GetGUIDLow()))
             continue;
 
-        if (bot->GetBattleGround() && bot->GetBattleGround()->GetStatus() == STATUS_WAIT_LEAVE)
+        if (bot->InBattleGround() && bot->GetBattleGround()->GetStatus() == STATUS_WAIT_LEAVE)
             continue;
 
-        uint32 TeamId = bot->GetTeam() == ALLIANCE ? 0 : 1;
-        BattleGroundQueueTypeId queueTypeId = bot->GetBattleGroundQueueTypeId(0);
-        if (queueTypeId == BATTLEGROUND_QUEUE_NONE)
-            continue;
-        BattleGroundTypeId bgTypeId = sServerFacade.BgTemplateId(queueTypeId);
+        for (int i = 0; i < PLAYER_MAX_BATTLEGROUND_QUEUES; ++i)
+        {
+            BattleGroundQueueTypeId queueTypeId = bot->GetBattleGroundQueueTypeId(i);
+            if (queueTypeId == BATTLEGROUND_QUEUE_NONE)
+                continue;
+
+            uint32 TeamId = bot->GetTeam() == ALLIANCE ? 0 : 1;
+
+            BattleGroundTypeId bgTypeId = sServerFacade.BgTemplateId(queueTypeId);
 #ifdef MANGOS
-        BattleGroundBracketId bracketId = bot->GetBattleGroundBracketIdFromLevel(bgTypeId);
+            BattleGroundBracketId bracketId = bot->GetBattleGroundBracketIdFromLevel(bgTypeId);
 #endif
 #ifdef CMANGOS
 #ifdef MANGOSBOT_TWO
-        BattleGround* bg = sBattleGroundMgr.GetBattleGroundTemplate(bgTypeId);
-        uint32 mapId = bg->GetMapId();
-        PvPDifficultyEntry const* pvpDiff = GetBattlegroundBracketByLevel(mapId, bot->getLevel());
-        if (!pvpDiff)
-            continue;
+            BattleGround* bg = sBattleGroundMgr.GetBattleGroundTemplate(bgTypeId);
+            uint32 mapId = bg->GetMapId();
+            PvPDifficultyEntry const* pvpDiff = GetBattlegroundBracketByLevel(mapId, bot->getLevel());
+            if (!pvpDiff)
+                continue;
 
-        BattleGroundBracketId bracketId = pvpDiff->GetBracketId();
+            BattleGroundBracketId bracketId = pvpDiff->GetBracketId();
 #else
-        BattleGroundBracketId bracketId = bot->GetBattleGroundBracketIdFromLevel(bgTypeId);
+            BattleGroundBracketId bracketId = bot->GetBattleGroundBracketIdFromLevel(bgTypeId);
 #endif
 #endif
 
 #ifndef MANGOSBOT_ZERO
-        ArenaType arenaType = sServerFacade.BgArenaType(queueTypeId);
-        if (arenaType != ARENA_TYPE_NONE)
-        {
-            BattleGroundQueue& bgQueue = sServerFacade.bgQueue(queueTypeId);
-            GroupQueueInfo ginfo;
-            uint32 tempT = TeamId;
+            ArenaType arenaType = sServerFacade.BgArenaType(queueTypeId);
+            if (arenaType != ARENA_TYPE_NONE)
+            {
+                BattleGroundQueue& bgQueue = sServerFacade.bgQueue(queueTypeId);
+                GroupQueueInfo ginfo;
+                uint32 tempT = TeamId;
 #ifdef MANGOS
-            if (bgQueue.GetPlayerGroupInfoData(bot->GetObjectGuid(), &ginfo))
-            {
-                TeamId = ginfo.IsRated ? 1 : 0;
-            }
-            if (bot->InArena())
-            {
-                if (bot->GetBattleGround()->isRated() && (ginfo.IsRated && ginfo.ArenaTeamId && ginfo.ArenaTeamRating && ginfo.OpponentsTeamRating))
-                    TeamId = 1;
-                else
-                    TeamId = 0;
-            }
+                if (bgQueue.GetPlayerGroupInfoData(bot->GetObjectGuid(), &ginfo))
+                {
+                    TeamId = ginfo.IsRated ? 1 : 0;
+                }
+                if (bot->InArena())
+                {
+                    if (bot->GetBattleGround()->isRated() && (ginfo.IsRated && ginfo.ArenaTeamId && ginfo.ArenaTeamRating && ginfo.OpponentsTeamRating))
+                        TeamId = 1;
+                    else
+                        TeamId = 0;
+                }
 #endif
 #ifdef CMANGOS
-            if (bgQueue.GetPlayerGroupInfoData(bot->GetObjectGuid(), &ginfo))
-            {
-                TeamId = ginfo.isRated ? 1 : 0;
-            }
-            if (bot->InArena())
-            {
-                if (bot->GetBattleGround()->IsRated() && (ginfo.isRated && ginfo.arenaTeamId && ginfo.arenaTeamRating && ginfo.opponentsTeamRating))
-                    TeamId = 1;
-                else
-                    TeamId = 0;
+                if (bgQueue.GetPlayerGroupInfoData(bot->GetObjectGuid(), &ginfo))
+                {
+                    TeamId = ginfo.isRated ? 1 : 0;
+                }
+                if (bot->InArena())
+                {
+                    if (bot->GetBattleGround()->IsRated()/* && (ginfo.isRated && ginfo.arenaTeamId && ginfo.arenaTeamRating && ginfo.opponentsTeamRating)*/)
+                        TeamId = 1;
+                    else
+                        TeamId = 0;
+                }
+#endif
+                ArenaBots[queueTypeId][bracketId][TeamId][tempT]++;
             }
 #endif
-            ArenaBots[queueTypeId][bracketId][TeamId][tempT]++;
+            BgBots[queueTypeId][bracketId][TeamId]++;
         }
-#endif
-        BgBots[queueTypeId][bracketId][TeamId]++;
     }
 
-    BgBotsActive = false;
     for (int i = BG_BRACKET_ID_FIRST; i < MAX_BATTLEGROUND_BRACKETS; ++i)
     {
         for (int j = BATTLEGROUND_QUEUE_AV; j < MAX_BATTLEGROUND_QUEUE_TYPES; ++j)
@@ -756,9 +679,8 @@ void RandomPlayerbotMgr::CheckBgQueue()
                 continue;
 
 #ifndef MANGOSBOT_ZERO
-            if (sServerFacade.BgArenaType(queueTypeId))
+            if (ArenaType type = sServerFacade.BgArenaType(queueTypeId))
             {
-                ArenaType type = sServerFacade.BgArenaType(queueTypeId);
                 sLog.outBasic("ARENA:%s %s: P (Skirmish:%d, Rated:%d) B (Skirmish:%d, Rated:%d) Total (Skirmish:%d Rated:%d)",
                     type == ARENA_TYPE_2v2 ? "2v2" : type == ARENA_TYPE_3v3 ? "3v3" : "5v5",
                     i == 0 ? "10-19" : i == 1 ? "20-29" : i == 2 ? "30-39" : i == 3 ? "40-49" : i == 4 ? "50-59" : (i == 5 && MAX_BATTLEGROUND_BRACKETS == 6) ? "60" : (i == 5 && MAX_BATTLEGROUND_BRACKETS == 7) ? "60-69" : i == 6 ? (i == 6 && MAX_BATTLEGROUND_BRACKETS == 16) ? "70-79" : "70" : "80",
@@ -769,8 +691,6 @@ void RandomPlayerbotMgr::CheckBgQueue()
                     BgPlayers[j][i][0] + BgBots[j][i][0],
                     BgPlayers[j][i][1] + BgBots[j][i][1]
                 );
-
-                BgBotsActive = true;
                 continue;
             }
 #endif
@@ -785,8 +705,6 @@ void RandomPlayerbotMgr::CheckBgQueue()
                 BgPlayers[j][i][0] + BgBots[j][i][0],
                 BgPlayers[j][i][1] + BgBots[j][i][1]
             );
-
-            BgBotsActive = true;
         }
     }
 
@@ -1065,8 +983,8 @@ void RandomPlayerbotMgr::AddBgBot(BattleGroundQueueTypeId queueTypeId, BattleGro
             if (bot->GetPlayerbotAI()->GetMaster() && !bot->GetPlayerbotAI()->GetMaster()->GetPlayerbotAI())
                 continue;
 
-            //if (bot->GetGroup())
-            //    continue;
+            if (bot->GetGroup())
+                continue;
 
             if (bot->IsInCombat())
                 continue;
@@ -1344,10 +1262,11 @@ void RandomPlayerbotMgr::AddBgBot(BattleGroundQueueTypeId queueTypeId, BattleGro
 #endif
         }
 #ifdef MANGOSBOT_TWO
-        if (sServerFacade.BgArenaType(queueTypeId))
-            player->TeleportTo(bm->GetMapId(), bm->GetPositionX(), bm->GetPositionY(), bm->GetPositionZ(), player->GetOrientation());
-        else
-            RandomTeleportForRpg(player);
+        //if (sServerFacade.BgArenaType(queueTypeId))
+            //player->TeleportTo(bm->GetMapId(), bm->GetPositionX(), bm->GetPositionY(), bm->GetPositionZ(), player->GetOrientation());
+        //else
+           // RandomTeleportForRpg(player);
+        // subject for removal
 #else
         player->TeleportTo(bm->second.mapid, bm->second.posX, bm->second.posY, bm->second.posZ, player->GetOrientation());
 #endif        
@@ -1370,7 +1289,8 @@ void RandomPlayerbotMgr::AddBgBot(BattleGroundQueueTypeId queueTypeId, BattleGro
     }
     else
     {
-        player->GetPlayerbotAI()->GetAiObjectContext()->GetValue<ObjectGuid>("bg type")->Set(0);
+        //player->GetPlayerbotAI()->GetAiObjectContext()->GetValue<ObjectGuid>("bg type")->Set(0);
+        // subject for removal
     }
 #endif
 
@@ -2746,35 +2666,6 @@ void RandomPlayerbotMgr::Remove(Player* bot)
     LogoutPlayerBot(owner);
 }
 
-uint32 RandomPlayerbotMgr::GetBattleMasterEntryByRace(uint8 race)
-{
-    switch (race)
-    {
-    case RACE_HUMAN:       return 14981;
-    case RACE_ORC:         return 3890;
-    case RACE_DWARF:       return 14982;
-    case RACE_NIGHTELF:    return 2302;
-    case RACE_UNDEAD:      return 2804;
-    case RACE_TAUREN:      return 10360;
-    case RACE_GNOME:       return 14982;
-    case RACE_TROLL:       return 3890;
-#ifndef MANGOSBOT_ZERO
-    case RACE_DRAENEI:     return 20118;
-    case RACE_BLOODELF:    return 16696;
-#endif
-    default:    return 0;
-    }
-}
-
-uint32 RandomPlayerbotMgr::GetBattleMasterGuidByRace(uint8 race)
-{
-    uint32 guid = 0;
-    int entry = GetBattleMasterEntryByRace(race);
-    if (entry)
-        guid = GetCreatureGuidByEntry(entry);
-    return guid;
-}
-
 const CreatureDataPair* RandomPlayerbotMgr::GetCreatureDataByEntry(uint32 entry)
 {
     if (entry != 0 && ObjectMgr::GetCreatureTemplate(entry))
@@ -2797,7 +2688,7 @@ uint32 RandomPlayerbotMgr::GetCreatureGuidByEntry(uint32 entry)
     return guid;
 }
 
-uint32 RandomPlayerbotMgr::GetBattleMasterEntry(Player* bot, BattleGroundTypeId bgTypeId)
+uint32 RandomPlayerbotMgr::GetBattleMasterEntry(Player* bot, BattleGroundTypeId bgTypeId, bool fake)
 {
     Team team = bot->GetTeam();
     uint32 entry = 0;
@@ -2816,44 +2707,47 @@ uint32 RandomPlayerbotMgr::GetBattleMasterEntry(Player* bot, BattleGroundTypeId 
     if (Bms.empty())
         return entry;
 
-    float dist1 = 10000.0f;
-    for (auto j = 0; j < 3; ++j)
+    float dist1 = FLT_MAX;
+
+    for (auto i = begin(Bms); i != end(Bms); ++i)
     {
-        for (auto i = begin(Bms); i != end(Bms); ++i)
+        CreatureDataPair const* dataPair = sRandomPlayerbotMgr.GetCreatureDataByEntry(*i);
+        if (!dataPair)
+            continue;
+
+        CreatureData const* data = &dataPair->second;
+
+        Unit* Bm = sMapMgr.FindMap((uint32)data->mapid)->GetUnit(ObjectGuid(HIGHGUID_UNIT, *i, dataPair->first));
+        if (!Bm)
+            continue;
+
+        if (bot->GetMapId() != Bm->GetMapId())
+            continue;
+
+        // return first available guid on map if queue from anywhere
+        if (fake)
         {
-            if (entry && j == 2)
-                break;
+            entry = *i;
+            break;
+        }
 
-            CreatureDataPair const* dataPair = sRandomPlayerbotMgr.GetCreatureDataByEntry(*i);
-            if (!dataPair)
-                continue;
+        AreaTableEntry const* area = GetAreaEntryByAreaID(Bm->GetAreaId());
+        if (!area)
+            continue;
 
-            CreatureData const* data = &dataPair->second;
-            if (bot->GetMapId() != data->mapid && j == 0)
-                continue;
+        if (area->team == 4 && bot->GetTeam() == ALLIANCE)
+            continue;
+        if (area->team == 2 && bot->GetTeam() == HORDE)
+            continue;
 
-            Unit* Bm = sMapMgr.FindMap(data->mapid)->GetUnit(ObjectGuid(HIGHGUID_UNIT, *i, dataPair->first));
-            if (!Bm)
-                continue;
+        if (Bm->GetDeathState() == DEAD)
+            continue;
 
-            AreaTableEntry const* area = GetAreaEntryByAreaID(Bm->GetAreaId());
-            if (!area)
-                continue;
-
-            if (area->team == 4 && bot->GetTeam() == ALLIANCE)
-                continue;
-            if (area->team == 2 && bot->GetTeam() == HORDE)
-                continue;
-
-            if (Bm->GetDeathState() == DEAD)
-                continue;
-
-            float dist2 = sServerFacade.GetDistance2d(bot, data->posX, data->posY);
-            if (dist2 < dist1)
-            {
-                dist1 = dist2;
-                entry = *i;
-            }
+        float dist2 = sServerFacade.GetDistance2d(bot, data->posX, data->posY);
+        if (dist2 < dist1)
+        {
+            dist1 = dist2;
+            entry = *i;
         }
     }
 

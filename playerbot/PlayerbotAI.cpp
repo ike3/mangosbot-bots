@@ -229,14 +229,14 @@ void PlayerbotAI::HandleTeleportAck()
         bot->GetSession()->HandleMoveTeleportAckOpcode(p);
 
         // add delay to simulate teleport delay
-        SetNextCheckDelay(urand(1000, 5000));
+        SetNextCheckDelay(urand(1000, 3000));
 	}
 	else if (bot->IsBeingTeleportedFar())
 	{
         bot->GetSession()->HandleMoveWorldportAckOpcode();
 
         // add delay to simulate teleport delay
-        SetNextCheckDelay(urand(5000, 10000));
+        SetNextCheckDelay(urand(2000, 5000));
 	}
 }
 
@@ -554,18 +554,12 @@ void PlayerbotAI::DoNextAction()
 
     bool minimal = !AllowActive(ALL_ACTIVITY);
 
+    currentEngine->DoNextAction(NULL, 0, minimal);
+
     if (IsActive() && minimal && urand(0, 4))
     {
         SetNextCheckDelay(sPlayerbotAIConfig.passiveDelay / 2);
         return;
-    }
-
-    currentEngine->DoNextAction(NULL, 0, minimal);
-
-    if (minimal)
-    {
-        SetNextCheckDelay(sPlayerbotAIConfig.passiveDelay);
-        //return;
     }
 
     Group *group = bot->GetGroup();

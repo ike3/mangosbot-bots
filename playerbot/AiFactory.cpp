@@ -302,15 +302,9 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
 	{
         if (!player->GetGroup())
         {
-            engine->ChangeStrategy(sPlayerbotAIConfig.randomBotCombatStrategies);
-
             engine->addStrategy("flee");
             engine->addStrategy("boost");
 
-            if (player->getClass() == CLASS_WARLOCK)
-            {
-                engine->removeStrategy("ranged");
-            }
             
             if (player->getClass() == CLASS_DRUID && tab == 2)
             {
@@ -347,6 +341,8 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
 
         if (player->getClass() == CLASS_ROGUE)
             engine->addStrategy("stealth");
+
+        engine->ChangeStrategy(sPlayerbotAIConfig.randomBotCombatStrategies);
     }
     else
     {
@@ -387,8 +383,8 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
         if (player->getClass() == CLASS_ROGUE)
             engine->addStrategies("behind", "stealth", NULL);
 
-        if (player->getClass() != CLASS_HUNTER)
-            engine->removeStrategy("ranged");
+        //if (player->getClass() != CLASS_HUNTER)
+        //    engine->removeStrategy("ranged");
     }
 }
 
@@ -489,6 +485,9 @@ void AiFactory::AddDefaultNonCombatStrategies(Player* player, PlayerbotAI* const
             if (sPlayerbotAIConfig.randomBotJoinLfg)
                 nonCombatEngine->addStrategy("lfg");
 
+            if (sPlayerbotAIConfig.randomBotJoinBG)
+                nonCombatEngine->addStrategy("bg");
+
             nonCombatEngine->ChangeStrategy(sPlayerbotAIConfig.randomBotNonCombatStrategies);
         }
         else {
@@ -525,7 +524,19 @@ void AiFactory::AddDefaultNonCombatStrategies(Player* player, PlayerbotAI* const
         nonCombatEngine->removeStrategy("rpg");
         nonCombatEngine->removeStrategy("grind");
 
-        nonCombatEngine->addStrategies("battleground", NULL);
+        bool isArena = false;
+
+#ifndef MANGOSBOT_ZERO
+        if (player->InArena())
+            isArena = true;
+#endif
+        if (isArena)
+        {
+            nonCombatEngine->addStrategy("arena");
+            nonCombatEngine->removeStrategy("mount");
+        }
+        else if (player->GetBattleGround()->GetTypeId() <= BATTLEGROUND_AB)
+            nonCombatEngine->addStrategies("battleground", NULL);
 
         if (player->GetBattleGroundTypeId() == BATTLEGROUND_WS)
             nonCombatEngine->addStrategies("warsong", NULL);

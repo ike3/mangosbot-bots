@@ -21,9 +21,16 @@ class BGJoinAction : public Action
 public:
     BGJoinAction(PlayerbotAI* ai, string name = "bg join") : Action(ai, name) {}
     virtual bool Execute(Event event);
-
+    virtual bool isUseful();
+    virtual bool canJoinBg(BattleGroundQueueTypeId queueTypeId, BattleGroundBracketId bracketId);
+    virtual bool shouldJoinBg(BattleGroundQueueTypeId queueTypeId, BattleGroundBracketId bracketId);
+#ifndef MANGOSBOT_ZERO
+    virtual bool gatherArenaTeam(ArenaType type);
+#endif
 protected:
     bool JoinQueue(uint32 type);
+    vector<uint32> bgList;
+    vector<uint32> ratedList;
 };
 
 class BGLeaveAction : public Action
@@ -33,11 +40,12 @@ public:
     virtual bool Execute(Event event);
 };
 
-class BGStatusAction : public BGJoinAction
+class BGStatusAction : public Action
 {
 public:
-    BGStatusAction(PlayerbotAI* ai) : BGJoinAction(ai, "bg status") {}
+    BGStatusAction(PlayerbotAI* ai) : Action(ai, "bg status") {}
     virtual bool Execute(Event event);
+    virtual bool isUseful();
 };
 
 class BGStatusCheckAction : public Action
@@ -45,6 +53,7 @@ class BGStatusCheckAction : public Action
 public:
     BGStatusCheckAction(PlayerbotAI* ai, string name = "bg status check") : Action(ai, name) {}
     virtual bool Execute(Event event);
+    virtual bool isUseful();
 };
 
 //Picks a random BG and selects all BM's of that bg type.
