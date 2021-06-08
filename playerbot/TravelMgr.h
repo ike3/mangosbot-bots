@@ -543,12 +543,33 @@ namespace ai
         void Clear();
         void LoadQuestTravelTable();
 
+        template <class D, class W, class URBG>
+        void weighted_shuffle
+        (D first, D last
+            , W first_weight, W last_weight
+            , URBG&& g)
+        {
+            while (first != last && first_weight != last_weight)
+            {
+                std::discrete_distribution<int> dd(first_weight, last_weight);
+                auto i = dd(g);
+
+                if (i)
+                {
+                    swap(*first, *std::next(first, i));
+                    swap(*first_weight, *std::next(first_weight, i));
+                }
+                ++first;
+                ++first_weight;
+            }
+        }
+
         vector <WorldPosition*> getNextPoint(WorldPosition* center, vector<WorldPosition*> points, uint32 amount = 1);
         vector <WorldPosition> getNextPoint(WorldPosition center, vector<WorldPosition> points, uint32 amount = 1);
         QuestStatusData* getQuestStatus(Player* bot, uint32 questId);
         bool getObjectiveStatus(Player* bot, Quest const* pQuest, uint32 objective);
         uint32 getDialogStatus(Player* pPlayer, int32 questgiver, Quest const* pQuest);
-        vector<TravelDestination *> getQuestTravelDestinations(Player* bot, uint32 questId = -1, bool ignoreFull = false, bool ignoreInactive = false, float maxDistance = 5000, bool ignoreObjectives = false);
+        vector<TravelDestination*> getQuestTravelDestinations(Player* bot, uint32 questId = -1, bool ignoreFull = false, bool ignoreInactive = false, float maxDistance = 5000, bool ignoreObjectives = false);
         vector<TravelDestination*> getRpgTravelDestinations(Player* bot, bool ignoreFull = false, bool ignoreInactive = false, float maxDistance = 5000);
         vector<TravelDestination*> getExploreTravelDestinations(Player* bot, bool ignoreFull = false, bool ignoreInactive = false);
         vector<TravelDestination*> getGrindTravelDestinations(Player* bot, bool ignoreFull = false, bool ignoreInactive = false, float maxDistance = 5000);
@@ -565,20 +586,20 @@ namespace ai
 
         void addBadVmap(uint32 mapId, int x, int y) { badVmap.push_back(make_tuple(mapId, x, y)); }
         void addBadMmap(uint32 mapId, int x, int y) { badMmap.push_back(make_tuple(mapId, x, y)); }
-        bool isBadVmap(uint32 mapId, int x, int y) { return std::find(badVmap.begin(), badVmap.end(), make_tuple(mapId, x, y)) != badVmap.end();}
+        bool isBadVmap(uint32 mapId, int x, int y) { return std::find(badVmap.begin(), badVmap.end(), make_tuple(mapId, x, y)) != badVmap.end(); }
         bool isBadMmap(uint32 mapId, int x, int y) { return std::find(badMmap.begin(), badMmap.end(), make_tuple(mapId, x, y)) != badMmap.end(); }
     protected:
-        void logQuestError(uint32 errorNr, Quest * quest, uint32 objective = 0, uint32 unitId = 0, uint32 itemId = 0);
+        void logQuestError(uint32 errorNr, Quest* quest, uint32 objective = 0, uint32 unitId = 0, uint32 itemId = 0);
 
         vector<QuestTravelDestination*> questGivers;
         vector<RpgTravelDestination*> rpgNpcs;
         vector<GrindTravelDestination*> grindMobs;
-        
+
         std::unordered_map<uint32, ExploreTravelDestination*> exploreLocs;
-        std::unordered_map<uint32, QuestContainer *> quests;
+        std::unordered_map<uint32, QuestContainer*> quests;
         std::unordered_map<int32, WorldPosition> pointsMap;
 
-        vector<tuple<uint32,int,int>> badVmap, badMmap;
+        vector<tuple<uint32, int, int>> badVmap, badMmap;
 
         std::unordered_map<pair<uint32, uint32>, vector<mapTransfer>, boost::hash<pair<uint32, uint32>>> mapTransfersMap;
     };

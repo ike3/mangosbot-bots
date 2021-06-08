@@ -1602,6 +1602,9 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot, vector<WorldLocation> &locs
 	if (bot->getLevel() < 5)
 		return;
 
+    //Do not teleport to maps disabled in config
+    locs.erase(std::remove_if(locs.begin(), locs.end(), [bot](WorldLocation const& l) {vector<uint32>::iterator i = find(sPlayerbotAIConfig.randomBotMaps.begin(), sPlayerbotAIConfig.randomBotMaps.end(), l.mapid); return i == sPlayerbotAIConfig.randomBotMaps.end(); }), locs.end());
+
     if (locs.empty())
     {
         sLog.outError("Cannot teleport bot %s - no locations available", bot->GetName());
@@ -1613,11 +1616,8 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot, vector<WorldLocation> &locs
     for (auto& loc : locs)
         tlocs.push_back(WorldPosition(loc));
 
-    //Get 10 locations that are reasonable near to the bot. No location is excluded only less likely. Works across maps.
-    tlocs = sTravelMgr.getNextPoint(WorldPosition(bot), tlocs, 10);
-
-    //Do not teleport to maps disabled in config
-    //tlocs.erase(std::remove_if(tlocs.begin(), tlocs.end(), [bot](WorldLocation const& l) {vector<uint32>::iterator i = find(sPlayerbotAIConfig.randomBotMaps.begin(), sPlayerbotAIConfig.randomBotMaps.end(), l.mapid); return i == sPlayerbotAIConfig.randomBotMaps.end(); }), tlocs.end());
+    //Random shuffle based on distance. Closer distances are more likely (but not exclusivly) to be at the begin of the list.
+    tlocs = sTravelMgr.getNextPoint(WorldPosition(bot), tlocs, 0);
 
     //5% + 0.1% per level chance node on different map in selection.
     //tlocs.erase(std::remove_if(tlocs.begin(), tlocs.end(), [bot](WorldLocation const& l) {return l.mapid != bot->GetMapId() && urand(1, 100) > 0.5 * bot->getLevel(); }), tlocs.end());
@@ -1629,14 +1629,18 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot, vector<WorldLocation> &locs
     if (tlocs.empty())
     {
         sLog.outError("Cannot teleport bot %s - no locations available", bot->GetName());
+
         return;
     }
 
     PerformanceMonitorOperation *pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "RandomTeleportByLocations");
-    for (int attemtps = 0; attemtps < 10; ++attemtps)
+
+    int index = 0;
+
+    for (int attemtps = 0; attemtps < std::min(10, (int)tlocs.size()-1); ++attemtps)
     {
-        int index = urand(0, tlocs.size() - 1);
-        WorldLocation loc = tlocs[index].getLocation();
+
+        WorldLocation loc = tlocs[attemtps].getLocation();
 
 #ifndef MANGOSBOT_ZERO
         // Teleport to Dark Portal area if event is in progress
@@ -1711,6 +1715,12 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot, vector<WorldLocation> &locs
         if (pmo) pmo->finish();
         return;
     }
+
+    for (auto& loc : locs)
+        tlocs.push_back(WorldPosition(loc));
+
+    tlocs = sTravelMgr.getNextPoint(WorldPosition(bot), tlocs, 0);
+
 
     if (pmo) pmo->finish();
     sLog.outError("Cannot teleport bot %s - no locations available", bot->GetName());

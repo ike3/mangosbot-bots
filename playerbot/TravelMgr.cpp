@@ -2896,26 +2896,34 @@ vector<WorldPosition*> TravelMgr::getNextPoint(WorldPosition* center, vector<Wor
 vector<WorldPosition> TravelMgr::getNextPoint(WorldPosition center, vector<WorldPosition> points, uint32 amount) {
     vector<WorldPosition> retVec;
 
-    if (points.size() == 1)
+    if (points.size() < 2)
     {
-        retVec.push_back(points[0]);
+        if (points.size() == 1)
+            retVec.push_back(points[0]);
         return retVec;
     }
+
+    retVec = points;
 
     //List of weights based on distance (Gausian curve that starts at 100 and lower to 1 at 1000 distance)
     vector<uint32> weights;
 
-    std::transform(points.begin(), points.end(), std::back_inserter(weights), [center](WorldPosition point) { return 1 + 1000 * exp(-1 * pow(point.distance(center) / 400.0, 2)); });
+    std::transform(retVec.begin(), retVec.end(), std::back_inserter(weights), [center](WorldPosition point) { return 1 + 1000 * exp(-1 * pow(point.distance(center) / 400.0, 2)); });
+
+    std::mt19937 gen(time(0));
+
+    weighted_shuffle(retVec.begin(), retVec.end(), weights.begin(), weights.end(), gen);
 
     //Total sum of all those weights.
+    /*
     uint32 sum = std::accumulate(weights.begin(), weights.end(), 0);
-
-    //Pick a random number in that range.
-    uint32 rnd = urand(0, sum);
 
     //Pick a random point based on weights.
     for (uint32 nr = 0; nr < amount; nr++)
     {
+        //Pick a random number in that range.
+        uint32 rnd = urand(0, sum);
+
         for (unsigned i = 0; i < points.size(); ++i)
             if (rnd < weights[i] && (retVec.empty() || std::find(retVec.begin(), retVec.end(), points[i]) == retVec.end()))
             {
@@ -2925,11 +2933,7 @@ vector<WorldPosition> TravelMgr::getNextPoint(WorldPosition center, vector<World
             else
                 rnd -= weights[i];
     }
-
-    if (!retVec.empty())
-        return retVec;
-
-    assert(!"No valid point found.");
+    */
 
     return retVec;
 }
