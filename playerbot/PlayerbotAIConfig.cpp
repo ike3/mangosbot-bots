@@ -27,9 +27,11 @@ void LoadList(string value, T &list)
     vector<string> ids = split(value, ',');
     for (vector<string>::iterator i = ids.begin(); i != ids.end(); i++)
     {
-        uint32 id = atoi((*i).c_str());
-        if (!id)
+        string string = *i;
+        if (string.empty())
             continue;
+
+        uint32 id = atoi(string.c_str());
 
         list.push_back(id);
     }

@@ -2905,14 +2905,20 @@ vector<WorldPosition> TravelMgr::getNextPoint(WorldPosition center, vector<World
 
     retVec = points;
 
-    //List of weights based on distance (Gausian curve that starts at 100 and lower to 1 at 1000 distance)
+    
     vector<uint32> weights;
 
-    std::transform(retVec.begin(), retVec.end(), std::back_inserter(weights), [center](WorldPosition point) { return 1 + 1000 * exp(-1 * pow(point.distance(center) / 400.0, 2)); });
+    //List of weights based on distance (Gausian curve that starts at 100 and lower to 1 at 1000 distance)
+    //std::transform(retVec.begin(), retVec.end(), std::back_inserter(weights), [center](WorldPosition point) { return 1 + 1000 * exp(-1 * pow(point.distance(center) / 400.0, 2)); });
+
+    //List of weights based on distance (Twice the distance = half the weight). Caps out at 200.0000 range.
+    std::transform(retVec.begin(), retVec.end(), std::back_inserter(weights), [center](WorldPosition point) { return 200000/(1+point.distance(center)); });
 
     std::mt19937 gen(time(0));
 
     weighted_shuffle(retVec.begin(), retVec.end(), weights.begin(), weights.end(), gen);
+
+    vector<float> dists;
 
     //Total sum of all those weights.
     /*
