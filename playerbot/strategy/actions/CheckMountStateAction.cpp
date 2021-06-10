@@ -107,7 +107,7 @@ bool CheckMountStateAction::Execute(Event event)
     if (!bot->IsMounted() && (fartarget || chasedistance))
         return Mount();
 
-    if (attackdistance && bot->IsMounted())
+    if (attackdistance && bot->IsMounted() && (!noattackers && sServerFacade.IsInCombat(bot)))
     {
         WorldPacket emptyPacket;
         bot->GetSession()->HandleCancelMountAuraOpcode(emptyPacket);
@@ -152,13 +152,28 @@ bool CheckMountStateAction::isUseful()
     if (!firstmount)
         return false;
 
+    // Only mount if BG starts in less than 30 sec
+    if (bot->InBattleGround())
+    {
+        BattleGround *bg = bot->GetBattleGround();
+        if (bg && bg->GetStatus() == STATUS_WAIT_JOIN)
+        {
+            if (bg->GetStartDelayTime() > BG_START_DELAY_30S)
+                return false;
+        }
+    }
+
     return true;
 }
 
 bool CheckMountStateAction::Mount()
 {
     if (sServerFacade.isMoving(bot))
-        ai->SetNextCheckDelay(sPlayerbotAIConfig.globalCoolDown);
+    {
+        bot->StopMoving();
+        bot->GetMotionMaster()->Clear();
+        bot->GetMotionMaster()->MoveIdle();
+    }
 
     Player* master = GetMaster();
     ai->RemoveShapeshift();

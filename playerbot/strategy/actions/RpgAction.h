@@ -31,6 +31,7 @@ namespace ai
         void train(ObjectGuid guid);
         void heal(ObjectGuid guid);
         void use(ObjectGuid guid);
+        void spell(ObjectGuid guid);
 
         bool CanTrain(ObjectGuid guid);
     };

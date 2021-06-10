@@ -35,6 +35,9 @@
 #include "generic/RpgStrategy.h"
 #include "generic/TravelStrategy.h"
 #include "generic/RTSCStrategy.h"
+#include "generic/DebugStrategy.h"
+#include "generic/BattlegroundStrategy.h"
+#include "generic/LfgStrategy.h"
 
 namespace ai
 {
@@ -69,6 +72,9 @@ namespace ai
             creators["collision"] = &StrategyContext::collision;
             creators["rpg"] = &StrategyContext::rpg;
 			creators["travel"] = &StrategyContext::travel;
+            creators["explore"] = &StrategyContext::explore;
+            creators["map"] = &StrategyContext::map;
+            creators["map full"] = &StrategyContext::map_full;
             creators["sit"] = &StrategyContext::sit;
             creators["mark rti"] = &StrategyContext::mark_rti;
             creators["ads"] = &StrategyContext::possible_ads;
@@ -76,13 +82,17 @@ namespace ai
             creators["ranged"] = &StrategyContext::ranged;
             creators["behind"] = &StrategyContext::behind;
             creators["bg"] = &StrategyContext::bg;
+            creators["battleground"] = &StrategyContext::battleground;
             creators["warsong"] = &StrategyContext::warsong;
+            creators["alterac"] = &StrategyContext::alterac;
+            creators["arathi"] = &StrategyContext::arathi;
             creators["arena"] = &StrategyContext::arena;
             creators["mount"] = &StrategyContext::mount;
             creators["attack tagged"] = &StrategyContext::attack_tagged;
             creators["debug"] = &StrategyContext::debug;
             creators["debug move"] = &StrategyContext::debug_move;
             creators["debug rpg"] = &StrategyContext::debug_rpg;
+            creators["debug spell"] = &StrategyContext::debug_spell;
             creators["rtsc"] = &StrategyContext::rtsc;
         }
 
@@ -90,7 +100,10 @@ namespace ai
         static Strategy* mount(PlayerbotAI* ai) { return new MountStrategy(ai); }
         static Strategy* arena(PlayerbotAI* ai) { return new ArenaStrategy(ai); }
         static Strategy* bg(PlayerbotAI* ai) { return new BGStrategy(ai); }
+        static Strategy* battleground(PlayerbotAI* ai) { return new BattlegroundStrategy(ai); }
         static Strategy* warsong(PlayerbotAI* ai) { return new WarsongStrategy(ai); }
+        static Strategy* alterac(PlayerbotAI* ai) { return new AlteracStrategy(ai); }
+        static Strategy* arathi(PlayerbotAI* ai) { return new ArathiStrategy(ai); }
         static Strategy* behind(PlayerbotAI* ai) { return new SetBehindCombatStrategy(ai); }
         static Strategy* ranged(PlayerbotAI* ai) { return new RangedCombatStrategy(ai); }
         static Strategy* close(PlayerbotAI* ai) { return new MeleeCombatStrategy(ai); }
@@ -121,12 +134,16 @@ namespace ai
         static Strategy* collision(PlayerbotAI* ai) { return new CollisionStrategy(ai); }
         static Strategy* rpg(PlayerbotAI* ai) { return new RpgStrategy(ai); }
 		static Strategy* travel(PlayerbotAI* ai) { return new TravelStrategy(ai); }
+        static Strategy* explore(PlayerbotAI* ai) { return new ExploreStrategy(ai); }
+        static Strategy* map(PlayerbotAI* ai) { return new MapStrategy(ai); }
+        static Strategy* map_full(PlayerbotAI* ai) { return new MapFullStrategy(ai); }
         static Strategy* sit(PlayerbotAI* ai) { return new SitStrategy(ai); }
         static Strategy* possible_ads(PlayerbotAI* ai) { return new PossibleAdsStrategy(ai); }
         static Strategy* attack_tagged(PlayerbotAI* ai) { return new AttackTaggedStrategy(ai); }
         static Strategy* debug(PlayerbotAI* ai) { return new DebugStrategy(ai); }
         static Strategy* debug_move(PlayerbotAI* ai) { return new DebugMoveStrategy(ai); }
         static Strategy* debug_rpg(PlayerbotAI* ai) { return new DebugRpgStrategy(ai); }
+        static Strategy* debug_spell(PlayerbotAI* ai) { return new DebugSpellStrategy(ai); }
         static Strategy* rtsc(PlayerbotAI* ai) { return new RTSCStrategy(ai); }
     };
 
@@ -175,10 +192,12 @@ namespace ai
         {
             creators["quest"] = &QuestStrategyContext::quest;
             creators["accept all quests"] = &QuestStrategyContext::accept_all_quests;
+            creators["active quest"] = &QuestStrategyContext::active_quest;
         }
 
     private:
         static Strategy* quest(PlayerbotAI* ai) { return new DefaultQuestStrategy(ai); }
         static Strategy* accept_all_quests(PlayerbotAI* ai) { return new AcceptAllQuestsStrategy(ai); }
+        static Strategy* active_quest(PlayerbotAI* ai) { return new ActiveQuestStrategy(ai); }
     };
 };

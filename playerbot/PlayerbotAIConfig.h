@@ -116,12 +116,36 @@ public:
     bool syncLevelWithPlayers;
     uint32 tweakValue; //Debugging config
 
+    std::mutex m_logMtx;
+
+    std::list<string> allowedLogFiles;
+
+    std::unordered_map <std::string, std::pair<FILE*, bool>> logFiles;
+
+    struct worldBuff{
+        uint32 spellId;
+        uint32 factionId = 0;
+        uint32 classId = 0;
+        uint32 minLevel = 0;
+        uint32 maxLevel = 0;
+    };
+
+    vector<worldBuff> worldBuffs;
+
     int commandServerPort;
     bool perfMonEnabled;
 
     std::string GetValue(std::string name);
     void SetValue(std::string name, std::string value);
 
+    void loadWorldBuf(Config* config, uint32 factionId, uint32 classId, uint32 minLevel, uint32 maxLevel);
+
+    std::string GetTimestampStr();
+
+    bool hasLog(string fileName) { return std::find(allowedLogFiles.begin(), allowedLogFiles.end(), fileName) != allowedLogFiles.end(); };
+    bool openLog(string fileName, char const* mode = "a");
+    bool isLogOpen(string fileName) { auto it = logFiles.find(fileName); return it != logFiles.end() && it->second.second;}
+    void log(string fileName, const char* str, ...);
 private:
     Config config;
 };

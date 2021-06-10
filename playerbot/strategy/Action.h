@@ -67,8 +67,11 @@ namespace ai
         virtual string GetTargetName() { return "self target"; }
         void MakeVerbose() { verbose = true; }
 
+        void setRelevance(uint32 relevance1) { relevance = relevance1; };
+        virtual float getRelevance() { return relevance; }
     protected:
         bool verbose;
+        float relevance = 0;
 	};
 
     class ActionNode
@@ -140,3 +143,5 @@ namespace ai
 
 #define AI_VALUE(type, name) context->GetValue<type>(name)->Get()
 #define AI_VALUE2(type, name, param) context->GetValue<type>(name, param)->Get()
+#define GAI_VALUE(type, name) sSharedValueContext.getGlobalValue<type>(name)->Get()
+#define GAI_VALUE2(type, name, param) sSharedValueContext.getGlobalValue<type>(name, param)->Get()

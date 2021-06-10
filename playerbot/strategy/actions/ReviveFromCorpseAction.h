@@ -20,9 +20,9 @@ namespace ai
         virtual bool isUseful();
     };
 
-	class SpiritHealerAction : public Action {
+	class SpiritHealerAction : public MovementAction {
 	public:
-	    SpiritHealerAction(PlayerbotAI* ai) : Action(ai, "spirit healer") {}
+	    SpiritHealerAction(PlayerbotAI* ai) : MovementAction(ai, "spirit healer") {}
 
     public:
         virtual bool Execute(Event event);

@@ -144,6 +144,9 @@ bool Engine::DoNextAction(Unit* unit, int depth, bool minimal)
             ActionNode* actionNode = queue.Pop();
             Action* action = InitializeAction(actionNode);
 
+            if(action)
+                action->setRelevance(relevance);
+
             if (!action)
             {
                 LogAction("A:%s - UNKNOWN", actionNode->getName().c_str());
@@ -154,6 +157,7 @@ bool Engine::DoNextAction(Unit* unit, int depth, bool minimal)
                 {
                     Multiplier* multiplier = *i;
                     relevance *= multiplier->GetValue(action);
+                    action->setRelevance(relevance);
                     if (!relevance)
                     {
                         LogAction("Multiplier %s made action %s useless", multiplier->getName().c_str(), action->getName().c_str());
@@ -290,7 +294,7 @@ bool Engine::MultiplyAndPush(NextAction** actions, float forceRelevance, bool sk
     return pushed;
 }
 
-ActionResult Engine::ExecuteAction(string name, Event event)
+ActionResult Engine::ExecuteAction(string name, Event event, string qualifier)
 {
 	bool result = false;
 
@@ -303,6 +307,16 @@ ActionResult Engine::ExecuteAction(string name, Event event)
     {
         delete actionNode;
         return ACTION_RESULT_UNKNOWN;
+    }
+
+
+
+    if (!qualifier.empty())
+    {
+        Qualified* q = dynamic_cast<Qualified*>(action);
+
+        if (q)
+            q->Qualify(qualifier);
     }
 
     if (!action->isPossible())
@@ -519,9 +533,12 @@ bool Engine::ListenAndExecute(Action* action, Event event)
         out << "do: ";
         out << action->getName();
         if (actionExecuted)
-            out << " 1";
+            out << " 1 (";
         else
-            out << " 0";
+            out << " 0 (";
+
+        out << action->getRelevance() << ")";
+
         ai->TellMasterNoFacing(out);
     }
 

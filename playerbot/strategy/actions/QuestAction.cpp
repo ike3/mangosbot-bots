@@ -154,7 +154,7 @@ bool QuestAction::ProcessQuests(WorldObject* questGiver)
 
     bot->SetSelectionGuid(guid);
     bot->PrepareQuestMenu(guid);
-    QuestMenu& questMenu = bot->PlayerTalkClass->GetQuestMenu();
+    QuestMenu& questMenu = bot->GetPlayerMenu()->GetQuestMenu();
 
     for (uint32 i = 0; i < questMenu.MenuItemCount(); ++i)
     {

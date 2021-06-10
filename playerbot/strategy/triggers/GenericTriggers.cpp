@@ -3,7 +3,6 @@
 #include "GenericTriggers.h"
 #include "../../LootObjectStack.h"
 #include "../../PlayerbotAIConfig.h"
-#include "BattleGroundWS.h"
 
 using namespace ai;
 
@@ -47,6 +46,42 @@ bool PanicTrigger::IsActive()
 {
     return AI_VALUE2(uint8, "health", "self target") < sPlayerbotAIConfig.criticalHealth &&
 		(!AI_VALUE2(bool, "has mana", "self target") || AI_VALUE2(uint8, "mana", "self target") < sPlayerbotAIConfig.lowMana);
+}
+
+bool OutNumberedTrigger::IsActive()
+{
+    int32 botLevel = bot->getLevel();
+    uint32 friendPower = 200, foePower = 0;
+    for (auto &attacker : ai->GetAiObjectContext()->GetValue<list<ObjectGuid> >("attackers")->Get())
+    {
+     
+        Creature* creature = ai->GetCreature(attacker);
+        if (!creature)
+            continue;
+
+        int32 dLevel = creature->getLevel() - botLevel;
+
+        if(dLevel > -10)
+            foePower = std::max(100 + 10 * dLevel, dLevel * 200);
+    }
+
+    if (!foePower)
+        return false;
+
+    for (auto & helper : ai->GetAiObjectContext()->GetValue<list<ObjectGuid> >("nearest friendly players")->Get())
+    {
+        Unit* player = ai->GetUnit(helper);
+
+        if (!player || player == bot)
+            continue;
+
+        int32 dLevel = player->getLevel() - botLevel;
+
+        if (dLevel > -10 && bot->GetDistance(player) < 10.0f)
+            friendPower += std::max(200 + 20 * dLevel, dLevel * 200);
+    }
+
+    return friendPower < foePower;
 }
 
 bool BuffTrigger::IsActive()
@@ -220,6 +255,12 @@ bool NotDpsTargetActiveTrigger::IsActive()
 {
     Unit* dps = AI_VALUE(Unit*, "dps target");
     Unit* target = AI_VALUE(Unit*, "current target");
+    Unit* enemy = AI_VALUE(Unit*, "enemy player target");
+    
+    // do not switch if enemy target
+    if (target && target == enemy && sServerFacade.IsAlive(target))
+        return false;
+
     return dps && target != dps;
 }
 
@@ -227,14 +268,13 @@ bool NotDpsAoeTargetActiveTrigger::IsActive()
 {
     Unit* dps = AI_VALUE(Unit*, "dps aoe target");
     Unit* target = AI_VALUE(Unit*, "current target");
-    return dps && target != dps;
-}
+    Unit* enemy = AI_VALUE(Unit*, "enemy player target");
 
-bool EnemyPlayerIsAttacking::IsActive()
-{
-    Unit* enemyPlayer = AI_VALUE(Unit*, "enemy player target");
-    Unit* target = AI_VALUE(Unit*, "current target");
-    return enemyPlayer && !target;
+    // do not switch if enemy target
+    if (target && target == enemy && sServerFacade.IsAlive(target))
+        return false;
+
+    return dps && target != dps;
 }
 
 bool IsSwimmingTrigger::IsActive()
@@ -280,177 +320,6 @@ bool StayTimeTrigger::IsActive()
     return delay && stayTime && now > stayTime + 2 * delay / 1000;
 }
 
-bool PlayerHasNoFlag::IsActive()
-{
-#ifdef MANGOS
-    if (ai->GetBot()->InBattleGround())
-    {
-        if (ai->GetBot()->GetBattleGroundTypeId() == BattleGroundTypeId::BATTLEGROUND_WS)
-        {
-            BattleGroundWS *bg = (BattleGroundWS*)ai->GetBot()->GetBattleGround();
-            if (!(bg->GetFlagState(bg->GetOtherTeam(bot->GetTeam())) == BG_WS_FLAG_STATE_ON_PLAYER))
-                return true;
-            if (bot->GetObjectGuid() == bg->GetAllianceFlagCarrierGuid() || bot->GetObjectGuid() == bg->GetHordeFlagCarrierGuid())
-            {
-                return false;
-            }
-            return true;
-        }
-        return false;
-    }
-#endif
-    return false;
-}
-
-bool PlayerIsInBattleground::IsActive()
-{
-    return ai->GetBot()->InBattleGround();
-}
-
-bool BgWaitingTrigger::IsActive()
-{
-    if (bot->InBattleGround())
-    {
-        if (bot->GetBattleGround() && bot->GetBattleGround()->GetStatus() == STATUS_WAIT_JOIN)
-            return true;
-    }
-    return false;
-}
-
-bool BgActiveTrigger::IsActive()
-{
-    if (bot->InBattleGround())
-    {
-        if (bot->GetBattleGround() && bot->GetBattleGround()->GetStatus() == STATUS_IN_PROGRESS)
-            return true;
-    }
-    return false;
-}
-
-bool PlayerIsInBattlegroundWithoutFlag::IsActive()
-{
-#ifdef MANGOS
-    if (ai->GetBot()->InBattleGround())
-    {
-        if (ai->GetBot()->GetBattleGroundTypeId() == BattleGroundTypeId::BATTLEGROUND_WS)
-        {
-            BattleGroundWS *bg = (BattleGroundWS*)ai->GetBot()->GetBattleGround();
-            if (!(bg->GetFlagState(bg->GetOtherTeam(bot->GetTeam())) == BG_WS_FLAG_STATE_ON_PLAYER))
-                return true;
-            if (bot->GetGUIDLow() == bg->GetAllianceFlagCarrierGuid() || bot->GetGUIDLow() == bg->GetHordeFlagCarrierGuid())
-            {
-                return false;
-            }
-        }
-        return true;
-    }
-#endif
-    return false;
-}
-
-bool PlayerHasFlag::IsActive()
-{
-#ifdef MANGOS
-    if (ai->GetBot()->InBattleGround())
-    {
-        if (ai->GetBot()->GetBattleGroundTypeId() == BattleGroundTypeId::BATTLEGROUND_WS)
-        {
-            BattleGroundWS *bg = (BattleGroundWS*)ai->GetBot()->GetBattleGround();
-            if (!(bg->GetFlagState(bg->GetOtherTeam(bot->GetTeam())) == BG_WS_FLAG_STATE_ON_PLAYER))
-                return false;
-            if (bot->GetObjectGuid() == bg->GetAllianceFlagCarrierGuid() || bot->GetObjectGuid() == bg->GetHordeFlagCarrierGuid())
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-#endif
-    return false;
-}
-
-bool TeamHasFlag::IsActive()
-{
-#ifdef MANGOS
-    if (ai->GetBot()->InBattleGround())
-    {
-        if (ai->GetBot()->GetBattleGroundTypeId() == BattleGroundTypeId::BATTLEGROUND_WS)
-        {
-            BattleGroundWS *bg = (BattleGroundWS*)ai->GetBot()->GetBattleGround();
-            
-            if (bot->GetObjectGuid() == bg->GetAllianceFlagCarrierGuid() || bot->GetObjectGuid() == bg->GetHordeFlagCarrierGuid())
-            {
-                return false;
-            }
-
-            if (bg->GetFlagState(bg->GetOtherTeam(bot->GetTeam())) == BG_WS_FLAG_STATE_ON_PLAYER)
-                return true;
-        }
-        return false;
-    }
-#endif
-    return false;
-}
-
-bool EnemyTeamHasFlag::IsActive()
-{
-#ifdef MANGOS
-    if (ai->GetBot()->InBattleGround())
-    {
-        if (ai->GetBot()->GetBattleGroundTypeId() == BattleGroundTypeId::BATTLEGROUND_WS)
-        {
-            BattleGroundWS *bg = (BattleGroundWS*)ai->GetBot()->GetBattleGround();
-
-#ifdef MANGOS
-            if (bot->GetObjectGuid() == bg->GetAllianceFlagCarrierGuid() || bot->GetObjectGuid() == bg->GetHordeFlagCarrierGuid())
-#endif
-#ifdef CMANGOS
-            if (bot->GetObjectGuid() == bg->GetFlagCarrierGuid(TEAM_INDEX_ALLIANCE) || bot->GetObjectGuid() == bg->GetFlagCarrierGuid(TEAM_INDEX_HORDE))
-#endif
-            {
-                return false;
-            }
-
-            if (bg->GetFlagState(bot->GetTeam()) == BG_WS_FLAG_STATE_ON_PLAYER)
-                return true;
-
-            if (bg->GetFlagState(bot->GetTeam()) == BG_WS_FLAG_STATE_ON_GROUND)
-                return true;
-        }
-        return false;
-    }
-#endif
-    return false;
-}
-
-bool EnemyFlagCarrierNear::IsActive()
-{
-#ifdef MANGOS
-    if (ai->GetBot()->InBattleGround())
-    {
-        if (ai->GetBot()->GetBattleGroundTypeId() == BattleGroundTypeId::BATTLEGROUND_WS)
-        {
-            BattleGroundWS *bg = (BattleGroundWS*)ai->GetBot()->GetBattleGround();
-
-            Player* carrier = NULL;
-            if (bot->GetTeam() == HORDE)
-                carrier = sObjectAccessor.FindPlayer(bg->GetHordeFlagCarrierGuid());
-            else
-                carrier = sObjectAccessor.FindPlayer(bg->GetAllianceFlagCarrierGuid());
-            if (carrier != nullptr)
-            {
-                if (bot->IsWithinDistInMap(carrier, 45.0f))
-                {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-#endif
-    return false;
-}
-
 bool IsMountedTrigger::IsActive()
 {
     return AI_VALUE2(bool, "mounted", "self target");
@@ -459,4 +328,14 @@ bool IsMountedTrigger::IsActive()
 bool CorpseNearTrigger::IsActive()
 {
     return bot->GetCorpse() && bot->GetCorpse()->IsWithinDistInMap(bot, CORPSE_RECLAIM_RADIUS, true);
+}
+
+bool IsFallingTrigger::IsActive()
+{
+    return bot->HasMovementFlag(MOVEFLAG_FALLING);
+}
+
+bool IsFallingFarTrigger::IsActive()
+{
+    return bot->HasMovementFlag(MOVEFLAG_FALLINGFAR);
 }

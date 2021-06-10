@@ -29,9 +29,7 @@ bool MoveToRpgTargetAction::Execute(Event event)
         ai->TellMasterNoFacing(out);
     }
 
-    float distance = AI_VALUE2(float, "distance", "rpg target");
-    if (distance > 180.0f 
-     || (unit && unit->IsMoving() && urand(1,100) < 5) 
+    if ((unit && unit->IsMoving() && urand(1,100) < 5) 
      || !ChooseRpgTargetAction::isFollowValid(bot, wo))
     {
         context->GetValue<ObjectGuid>("rpg target")->Set(ObjectGuid());

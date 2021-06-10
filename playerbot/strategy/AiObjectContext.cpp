@@ -10,6 +10,8 @@
 #include "triggers/WorldPacketTriggerContext.h"
 #include "actions/WorldPacketActionContext.h"
 #include "values/ValueContext.h"
+#include "values/SharedValueContext.h"
+
 
 using namespace ai;
 
@@ -29,6 +31,8 @@ AiObjectContext::AiObjectContext(PlayerbotAI* ai) : PlayerbotAIAware(ai)
     triggerContexts.Add(new WorldPacketTriggerContext());
 
     valueContexts.Add(new ValueContext());
+
+    valueContexts.Add(&sSharedValueContext);
 }
 
 void AiObjectContext::Update()

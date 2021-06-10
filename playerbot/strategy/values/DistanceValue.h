@@ -64,7 +64,7 @@ namespace ai
             else
             {
                 target = AI_VALUE(Unit*, qualifier);
-                if (target && target == GetMaster())
+                if (target && target == GetMaster() && target != bot)
                 {
                     Formation* formation = AI_VALUE(Formation*, "formation");
                     WorldLocation loc = formation->GetLocation();

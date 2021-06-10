@@ -18,9 +18,11 @@ namespace ai
         bool MoveTo(uint32 mapId, float x, float y, float z, bool idle = false, bool react = false);
         bool MoveTo(Unit* target, float distance = 0.0f);
         bool MoveNear(WorldObject* target, float distance = sPlayerbotAIConfig.contactDistance);
+        bool MoveToLOS(WorldObject* target, bool ranged = false);
         float GetFollowAngle();
         bool Follow(Unit* target, float distance = sPlayerbotAIConfig.followDistance);
         bool Follow(Unit* target, float distance, float angle);
+        float MoveDelay(float distance);
         void WaitForReach(float distance);
         bool IsMovingAllowed(Unit* target);
         bool IsMovingAllowed(uint32 mapId, float x, float y, float z);
@@ -29,7 +31,7 @@ namespace ai
         void ClearIdleState();
         void UpdateMovementState();
         
-        void CreateWp(Player* wpOwner, float x, float y, float z, float o, uint32 entry);
+        void CreateWp(Player* wpOwner, float x, float y, float z, float o, uint32 entry, bool important = false);
         float GetAngle(const float x1, const float y1, const float x2, const float y2);
     };
 

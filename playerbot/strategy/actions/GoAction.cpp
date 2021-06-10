@@ -5,6 +5,8 @@
 #include "../../ServerFacade.h"
 #include "../values/Formations.h"
 #include "../values/PositionValue.h"
+#include "travelMgr.h"
+#include "MotionGenerators/PathFinder.h"
 
 using namespace ai;
 
@@ -27,6 +29,59 @@ bool GoAction::Execute(Event event)
         out << "I am at " << x << "," << y;
         ai->TellMaster(out.str());
         return true;
+    }
+
+    if (param.find("travel") != string::npos && param.size()> 7)
+    {
+        WorldPosition* botPos = &WorldPosition(bot);
+
+        vector<TravelDestination*> dests;
+
+        for (auto& d : sTravelMgr.getExploreTravelDestinations(bot, true, true))
+        {
+            if (strstri(d->getTitle().c_str(), param.substr(7).c_str()))
+                dests.push_back(d);
+        }
+
+        for (auto& d : sTravelMgr.getRpgTravelDestinations(bot, true, true))
+        {
+            if (strstri(d->getTitle().c_str(), param.substr(7).c_str()))
+                dests.push_back(d);
+        }
+
+        for (auto& d : sTravelMgr.getGrindTravelDestinations(bot, true, true))
+        {
+            if (strstri(d->getTitle().c_str(), param.substr(7).c_str()))
+                dests.push_back(d);
+        }
+
+        TravelTarget* target = context->GetValue<TravelTarget*>("travel target")->Get();
+
+        if (!dests.empty())
+        {
+            TravelDestination* dest = *std::min_element(dests.begin(), dests.end(), [botPos](TravelDestination* i, TravelDestination* j) {return i->distanceTo(botPos) < j->distanceTo(botPos); });
+
+            vector <WorldPosition*> points = dest->nextPoint(botPos, true);
+
+
+            if (points.empty())
+                return false;
+
+            target->setTarget(dest, points.front());
+            target->setForced(true);
+
+            ostringstream out; out << "Traveling to " << dest->getTitle();
+            ai->TellMasterNoFacing(out.str());
+
+            return true;
+        }
+        else
+        {
+            ai->TellMasterNoFacing("Clearing travel target");
+            target->setTarget(sTravelMgr.nullTravelDestination, sTravelMgr.nullWorldPosition);
+            target->setForced(false);
+            return true;
+        }
     }
 
     list<ObjectGuid> gos = ChatHelper::parseGameobjects(param);
@@ -77,6 +132,44 @@ bool GoAction::Execute(Event event)
             z = atof(coords[2].c_str());
         else
             z = bot->GetPositionZ();
+
+        if (ai->HasStrategy("debug move", BOT_STATE_NON_COMBAT))
+        {
+            
+            PathFinder path(bot);
+
+            path.calculate(x, y, z, false);
+
+            Vector3 end = path.getEndPosition();
+            Vector3 aend = path.getActualEndPosition();
+
+            PointsArray& points = path.getPath();
+            PathType type = path.getPathType();
+
+            ostringstream out;
+
+            out << x << ";" << y << ";" << z << " =";
+
+            out << "path is: ";
+
+            out << type;
+
+            out << " of length ";
+
+            out << points.size();
+
+            out << " with offset ";
+
+            out << (end - aend).length();
+
+
+            for (auto i : points)
+            {
+                CreateWp(bot, i.x, i.y, i.z, 0.0, 11144);
+            }
+
+            ai->TellMaster(out);            
+        }
 
         if (bot->IsWithinLOS(x, y, z))
             return MoveNear(bot->GetMapId(), x, y, z, 0);

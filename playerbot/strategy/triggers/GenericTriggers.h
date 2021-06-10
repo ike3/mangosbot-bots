@@ -370,6 +370,9 @@ namespace ai
         virtual string getName() { return "panic"; }
     END_TRIGGER()
 
+    BEGIN_TRIGGER(OutNumberedTrigger, Trigger)
+        virtual string getName() { return "outnumbered"; }
+    END_TRIGGER()
 
 	class NoPetTrigger : public Trigger
 	{
@@ -535,15 +538,6 @@ namespace ai
         virtual bool IsActive();
     };
 
-    class EnemyPlayerIsAttacking : public Trigger
-    {
-    public:
-        EnemyPlayerIsAttacking(PlayerbotAI* ai) : Trigger(ai, "enemy player is attacking") {}
-
-    public:
-        virtual bool IsActive();
-    };
-
     class IsSwimmingTrigger : public Trigger
     {
     public:
@@ -703,91 +697,10 @@ namespace ai
         }
     };
 
-    class PlayerHasNoFlag : public Trigger
-    {
-    public:
-        PlayerHasNoFlag(PlayerbotAI* ai) : Trigger(ai, "player has no flag") {}
-
-    public:
-        virtual bool IsActive();
-    };
-
-    class PlayerHasFlag : public Trigger
-    {
-    public:
-        PlayerHasFlag(PlayerbotAI* ai) : Trigger(ai, "player has flag") {}
-
-    public:
-        virtual bool IsActive();
-    };
-
-    class EnemyFlagCarrierNear : public Trigger
-    {
-    public:
-        EnemyFlagCarrierNear(PlayerbotAI* ai) : Trigger(ai, "enemy flagcarrier near") {}
-
-    public:
-        virtual bool IsActive();
-    };
-
-    class TeamHasFlag : public Trigger
-    {
-    public:
-        TeamHasFlag(PlayerbotAI* ai) : Trigger(ai, "team has flag") {}
-
-    public:
-        virtual bool IsActive();
-    };
-
-    class EnemyTeamHasFlag : public Trigger
-    {
-    public:
-        EnemyTeamHasFlag(PlayerbotAI* ai) : Trigger(ai, "enemy team has flag") {}
-
-    public:
-        virtual bool IsActive();
-    };
-
-    class PlayerIsInBattleground : public Trigger
-    {
-    public:
-        PlayerIsInBattleground(PlayerbotAI* ai) : Trigger(ai, "in battleground") {}
-
-    public:
-        virtual bool IsActive();
-    };
-
-    class BgWaitingTrigger : public Trigger
-    {
-    public:
-        BgWaitingTrigger(PlayerbotAI* ai) : Trigger(ai, "bg waiting", 10) {}
-
-    public:
-        virtual bool IsActive();
-    };
-
-    class BgActiveTrigger : public Trigger
-    {
-    public:
-        BgActiveTrigger(PlayerbotAI* ai) : Trigger(ai, "bg active", 1) {}
-
-    public:
-        virtual bool IsActive();
-    };
-
-    class PlayerIsInBattlegroundWithoutFlag : public Trigger
-    {
-    public:
-        PlayerIsInBattlegroundWithoutFlag(PlayerbotAI* ai) : Trigger(ai, "in battleground without flag") {}
-
-    public:
-        virtual bool IsActive();
-    };
-
     class IsMountedTrigger : public Trigger
     {
     public:
-        IsMountedTrigger(PlayerbotAI* ai) : Trigger(ai, "mounted", 2) {}
+        IsMountedTrigger(PlayerbotAI* ai) : Trigger(ai, "mounted", 1) {}
 
     public:
         virtual bool IsActive();
@@ -797,6 +710,24 @@ namespace ai
     {
     public:
         CorpseNearTrigger(PlayerbotAI* ai) : Trigger(ai, "corpse near", 10) {}
+
+    public:
+        virtual bool IsActive();
+    };
+
+    class IsFallingTrigger : public Trigger
+    {
+    public:
+        IsFallingTrigger(PlayerbotAI* ai) : Trigger(ai, "falling", 10) {}
+
+    public:
+        virtual bool IsActive();
+    };
+
+    class IsFallingFarTrigger : public Trigger
+    {
+    public:
+        IsFallingFarTrigger(PlayerbotAI* ai) : Trigger(ai, "falling far", 10) {}
 
     public:
         virtual bool IsActive();

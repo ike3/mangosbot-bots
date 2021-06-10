@@ -44,12 +44,8 @@ bool RpgAction::Execute(Event event)
     if (bot->GetShapeshiftForm() > 0)
         bot->SetShapeshiftForm(FORM_NONE);
 
-    bool withPlayer = false;
-    Player* master = bot->GetPlayerbotAI()->GetMaster();
-    if (master && !master->GetPlayerbotAI())
-        withPlayer = true;
-
-    if (unit && unit->HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_FLIGHTMASTER) && !withPlayer)
+    //Random taxi action.
+    if (unit && unit->HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_FLIGHTMASTER) && !ai->hasRealPlayerMaster())
     {
         WorldPacket emptyPacket;
         bot->GetSession()->HandleCancelMountAuraOpcode(emptyPacket);
@@ -71,7 +67,11 @@ bool RpgAction::Execute(Event event)
         elements.push_back(&RpgAction::heal);
 #endif
 #ifdef CMANGOS
-    if (bot->GetSession()->getDialogStatus(bot, wo, DIALOG_STATUS_NONE) == DIALOG_STATUS_REWARD2  || bot->GetSession()->getDialogStatus(bot, wo, DIALOG_STATUS_NONE) == DIALOG_STATUS_REWARD_REP || bot->GetSession()->getDialogStatus(bot, wo, DIALOG_STATUS_NONE) == DIALOG_STATUS_AVAILABLE)
+#ifdef MANGOSBOT_ZERO  
+    if (bot->GetSession()->getDialogStatus(bot, wo, DIALOG_STATUS_NONE) == DIALOG_STATUS_REWARD2 || bot->GetSession()->getDialogStatus(bot, wo, DIALOG_STATUS_NONE) == DIALOG_STATUS_REWARD_REP || bot->GetSession()->getDialogStatus(bot, wo, DIALOG_STATUS_NONE) == DIALOG_STATUS_AVAILABLE)
+#else
+    if (bot->GetSession()->getDialogStatus(bot, wo, DIALOG_STATUS_NONE) == DIALOG_STATUS_REWARD2 || bot->GetSession()->getDialogStatus(bot, wo, DIALOG_STATUS_NONE) == DIALOG_STATUS_REWARD || bot->GetSession()->getDialogStatus(bot, wo, DIALOG_STATUS_NONE) == DIALOG_STATUS_REWARD_REP || bot->GetSession()->getDialogStatus(bot, wo, DIALOG_STATUS_NONE) == DIALOG_STATUS_AVAILABLE)
+#endif    
         elements.push_back(&RpgAction::quest);
     if (unit)
     {
@@ -86,18 +86,23 @@ bool RpgAction::Execute(Event event)
     }
     else
     {
-        if(!go->IsInUse() && go->GetGoState() == GO_STATE_READY)
+        if (!go->IsInUse() && go->GetGoState() == GO_STATE_READY)
+        {
             elements.push_back(&RpgAction::use);
+            elements.push_back(&RpgAction::work);
+            elements.push_back(&RpgAction::spell);
+        }
     }
 #endif
 
     if (AddIgnore(guid))
     {
-        if (elements.empty() && !ChooseRpgTargetAction::isFollowValid(bot, wo))
+        if (elements.empty() && ChooseRpgTargetAction::isFollowValid(bot, wo))
         {
             elements.push_back(&RpgAction::emote);
             elements.push_back(&RpgAction::stay);
             elements.push_back(&RpgAction::work);
+            elements.push_back(&RpgAction::spell);
         }
     }    
     else
@@ -156,7 +161,7 @@ bool RpgAction::HasIgnore(ObjectGuid guid)
 
 void RpgAction::stay(ObjectGuid guid)
 {
-    if (bot->PlayerTalkClass) bot->PlayerTalkClass->CloseGossip();
+    if (bot->GetPlayerMenu()) bot->GetPlayerMenu()->CloseGossip();
     ai->SetNextCheckDelay(sPlayerbotAIConfig.rpgDelay);
 }
 
@@ -254,7 +259,7 @@ void RpgAction::quest(ObjectGuid guid)
 
     ObjectGuid oldSelection = bot->GetSelectionGuid();
 
-    bot->SetSelectionGuid(guid);        
+    bot->SetSelectionGuid(guid);      
 
     //Parse rpg target to quest action.
     WorldPacket p(CMSG_QUESTGIVER_ACCEPT_QUEST);
@@ -263,12 +268,16 @@ void RpgAction::quest(ObjectGuid guid)
 
     bool retVal = false;
 
-  
-    if (bot->GetSession()->getDialogStatus(bot, wo, DIALOG_STATUS_NONE) == DIALOG_STATUS_REWARD2 || bot->GetSession()->getDialogStatus(bot, wo, DIALOG_STATUS_NONE) == DIALOG_STATUS_REWARD_REP)
-        retVal = ai->DoSpecificAction("talk to quest giver", Event("rpg action", p)); 
-    else if (bot->GetSession()->getDialogStatus(bot, wo, DIALOG_STATUS_NONE) == DIALOG_STATUS_AVAILABLE)
+    if (bot->GetSession()->getDialogStatus(bot, wo, DIALOG_STATUS_NONE) == DIALOG_STATUS_AVAILABLE || bot->GetSession()->getDialogStatus(bot, wo, DIALOG_STATUS_NONE) == DIALOG_STATUS_REWARD_REP)
         retVal = ai->DoSpecificAction("accept all quests", Event("rpg action", p));
-    else
+#ifdef MANGOSBOT_ZERO
+    if (bot->GetSession()->getDialogStatus(bot, wo, DIALOG_STATUS_NONE) == DIALOG_STATUS_REWARD2 || bot->GetSession()->getDialogStatus(bot, wo, DIALOG_STATUS_NONE) == DIALOG_STATUS_REWARD_REP)
+#else
+    if (bot->GetSession()->getDialogStatus(bot, wo, DIALOG_STATUS_NONE) == DIALOG_STATUS_REWARD2 || bot->GetSession()->getDialogStatus(bot, wo, DIALOG_STATUS_NONE) == DIALOG_STATUS_REWARD || bot->GetSession()->getDialogStatus(bot, wo, DIALOG_STATUS_NONE) == DIALOG_STATUS_REWARD_REP)
+#endif
+        retVal = ai->DoSpecificAction("talk to quest giver", Event("rpg action", p));
+    
+    if(!retVal)
         bot->HandleEmoteCommand(type);
 
     if (retVal)
@@ -277,13 +286,15 @@ void RpgAction::quest(ObjectGuid guid)
     bot->HandleEmoteCommand(type);
 
     Unit* unit = ai->GetUnit(guid);
-    if(unit)
+    if (unit)
         unit->SetFacingTo(unit->GetAngle(bot));
 
     if (oldSelection)
         bot->SetSelectionGuid(oldSelection);
 
-    ai->SetNextCheckDelay(sPlayerbotAIConfig.rpgDelay);
+    //Speed up if 
+    if (!ai->hasRealPlayerMaster())
+        ai->SetNextCheckDelay(sPlayerbotAIConfig.rpgDelay);
 
     cancel(guid);
 }
@@ -304,7 +315,8 @@ void RpgAction::trade(ObjectGuid guid)
     if (oldSelection)
         bot->SetSelectionGuid(oldSelection);
 
-    ai->SetNextCheckDelay(sPlayerbotAIConfig.rpgDelay);
+    if (!ai->hasRealPlayerMaster())
+        ai->SetNextCheckDelay(sPlayerbotAIConfig.rpgDelay);
 }
 
 void RpgAction::repair(ObjectGuid guid)
@@ -322,7 +334,8 @@ void RpgAction::repair(ObjectGuid guid)
     if (oldSelection)
         bot->SetSelectionGuid(oldSelection);
 
-    ai->SetNextCheckDelay(sPlayerbotAIConfig.rpgDelay);
+    if (!ai->hasRealPlayerMaster())
+        ai->SetNextCheckDelay(sPlayerbotAIConfig.rpgDelay);
 }
 
 void RpgAction::train(ObjectGuid guid)
@@ -340,7 +353,8 @@ void RpgAction::train(ObjectGuid guid)
     if (oldSelection)
         bot->SetSelectionGuid(oldSelection);
 
-    ai->SetNextCheckDelay(sPlayerbotAIConfig.rpgDelay);
+    if (!ai->hasRealPlayerMaster())
+        ai->SetNextCheckDelay(sPlayerbotAIConfig.rpgDelay);
 }
 
 void RpgAction::heal(ObjectGuid guid)
@@ -378,7 +392,8 @@ void RpgAction::heal(ObjectGuid guid)
     if (oldSelection)
         bot->SetSelectionGuid(oldSelection);
 
-    ai->SetNextCheckDelay(sPlayerbotAIConfig.rpgDelay);
+    if (!ai->hasRealPlayerMaster())
+        ai->SetNextCheckDelay(sPlayerbotAIConfig.rpgDelay);
 }
 
 void RpgAction::use(ObjectGuid guid)
@@ -394,7 +409,29 @@ void RpgAction::use(ObjectGuid guid)
     if (oldSelection)
         bot->SetSelectionGuid(oldSelection);
 
-    ai->SetNextCheckDelay(sPlayerbotAIConfig.rpgDelay);
+    if (!ai->hasRealPlayerMaster())
+        ai->SetNextCheckDelay(sPlayerbotAIConfig.rpgDelay);
+}
+
+void RpgAction::spell(ObjectGuid guid)
+{
+    ObjectGuid oldSelection = bot->GetSelectionGuid();
+
+    bot->SetSelectionGuid(guid);
+
+    WorldObject* wo = ai->GetWorldObject(guid);
+
+    ai->DoSpecificAction("cast random spell", Event("rpg action", chat->formatWorldobject(wo)));
+
+    Unit* unit = ai->GetUnit(guid);
+    if (unit)
+        unit->SetFacingTo(unit->GetAngle(bot));
+
+    if (oldSelection)
+        bot->SetSelectionGuid(oldSelection);
+
+    if (!ai->hasRealPlayerMaster())
+        ai->SetNextCheckDelay(sPlayerbotAIConfig.rpgDelay);
 }
 
 

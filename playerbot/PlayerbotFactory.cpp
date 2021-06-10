@@ -1027,8 +1027,8 @@ void PlayerbotFactory::InitEquipment(bool incremental)
                 Item* newItem = bot->EquipNewItem(dest, newItemId, true);
                 if (newItem)
                 {
-                    newItem->AddToWorld();
-                    newItem->AddToUpdateQueueOf(bot);
+                    //newItem->AddToWorld();
+                    //newItem->AddToUpdateQueueOf(bot);
                     bot->AutoUnequipOffhandIfNeed();
                     EnchantItem(newItem);
                     found = true;
@@ -1151,7 +1151,14 @@ void PlayerbotFactory::InitSecondEquipmentSet()
 
 void PlayerbotFactory::InitBags()
 {
-    vector<uint32> ids;
+    for (uint8 slot = INVENTORY_SLOT_BAG_START; slot < INVENTORY_SLOT_BAG_END; ++slot)
+    {
+        Bag* pBag = (Bag*)bot->GetItemByPos(INVENTORY_SLOT_BAG_0, slot);
+        if (!pBag)
+            bot->StoreNewItemInBestSlots(4500, 1); // add Traveler's Backpack if no bag in slot
+    }
+
+    /*vector<uint32> ids;
 
     for (uint32 itemId = 0; itemId < sItemStorage.GetMaxEntry(); ++itemId)
     {
@@ -1189,7 +1196,7 @@ void PlayerbotFactory::InitBags()
                 break;
             }
         }
-    }
+    }*/
 }
 
 void PlayerbotFactory::EnchantItem(Item* item)
@@ -2124,6 +2131,41 @@ void PlayerbotFactory::InitReagents()
             newItem->AddToUpdateQueueOf(bot);
 
         sLog.outDetail("Bot %d got reagent %s x%d", bot->GetGUIDLow(), proto->Name1, randCount);
+    }
+
+
+    for (PlayerSpellMap::iterator itr = bot->GetSpellMap().begin(); itr != bot->GetSpellMap().end(); ++itr)
+    {
+        uint32 spellId = itr->first;
+
+        if (itr->second.state == PLAYERSPELL_REMOVED || itr->second.disabled || IsPassiveSpell(spellId))
+            continue;
+
+        const SpellEntry* pSpellInfo = sServerFacade.LookupSpellInfo(spellId);
+        if (!pSpellInfo)
+            continue;
+
+        if (pSpellInfo->Effect[0] == SPELL_EFFECT_LEARN_SPELL)
+            continue;
+
+        for (const auto& totem : pSpellInfo->Totem)
+        {
+            if (totem && !bot->HasItemCount(totem, 1))
+            {
+                ItemPrototype const* proto = sObjectMgr.GetItemPrototype(totem);
+                if (!proto)
+                {
+                    sLog.outError("No totem (ItemId %d) found for bot %d (Class:%d)", totem, bot->GetGUIDLow(), bot->getClass());
+                    continue;
+                }
+
+                Item* newItem = bot->StoreNewItemInInventorySlot(totem, 1);
+                if (newItem)
+                    newItem->AddToUpdateQueueOf(bot);
+
+                sLog.outDetail("Bot %d got totem %s x%d", bot->GetGUIDLow(), proto->Name1, 1);
+            }
+        }
     }
 }
 

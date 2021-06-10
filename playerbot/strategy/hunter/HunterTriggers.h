@@ -125,7 +125,7 @@ namespace ai
         virtual bool IsActive()
         {
             Unit* target = AI_VALUE(Unit*, "current target");
-            return ai->HasStrategy("close", BOT_STATE_COMBAT) && sServerFacade.IsInCombat(bot) && target && (target->GetVictim() != bot ||
+            return ai->HasStrategy("close", BOT_STATE_COMBAT) && target && (target->GetVictim() != bot ||
                 sServerFacade.IsDistanceGreaterThan(AI_VALUE2(float, "distance", "current target"), 8.0f));
         }
     };
@@ -136,7 +136,7 @@ namespace ai
         virtual bool IsActive()
         {
             Unit* target = AI_VALUE(Unit*, "current target");
-            return ai->HasStrategy("ranged", BOT_STATE_COMBAT) && sServerFacade.IsInCombat(bot) && target && (target->GetVictim() == bot ||
+            return ai->HasStrategy("ranged", BOT_STATE_COMBAT) && target && (target->GetVictim() == bot ||
                 sServerFacade.IsDistanceLessOrEqualThan(AI_VALUE2(float, "distance", "current target"), 8.0f));
         }
     };

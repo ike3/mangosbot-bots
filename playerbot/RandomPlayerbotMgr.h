@@ -57,6 +57,7 @@ class RandomPlayerbotMgr : public PlayerbotHolder
         void OnPlayerLoginError(uint32 bot);
         Player* GetRandomPlayer();
         vector<Player*> GetPlayers() { return players; };
+        PlayerBotMap GetAllBots() { return playerBots; };
         void PrintStats();
         double GetBuyMultiplier(Player* bot);
         double GetSellMultiplier(Player* bot);
@@ -76,13 +77,11 @@ class RandomPlayerbotMgr : public PlayerbotHolder
         void SetValue(Player* bot, string type, uint32 value);
         void Remove(Player* bot);
         void Hotfix(Player* player, uint32 version);
-        uint32 GetBattleMasterEntryByRace(uint8 race);
-        uint32 GetBattleMasterEntry(Player* bot, BattleGroundTypeId bgTypeId);
-        uint32 GetBattleMasterGuidByRace(uint8 race);
+        uint32 GetBattleMasterEntry(Player* bot, BattleGroundTypeId bgTypeId, bool fake = false);
         const CreatureDataPair* GetCreatureDataByEntry(uint32 entry);
         uint32 GetCreatureGuidByEntry(uint32 entry);
         void LoadBattleMastersCache();
-        bool BgBotsActive;
+        map<uint32, map<uint32, map<uint32, bool> > > NeedBots;
         map<uint32, map<uint32, map<uint32, uint32> > > BgBots;
         map<uint32, map<uint32, map<uint32, uint32> > > VisualBots;
         map<uint32, map<uint32, map<uint32, uint32> > > BgPlayers;
@@ -93,6 +92,8 @@ class RandomPlayerbotMgr : public PlayerbotHolder
         void CheckBgQueue();
         void CheckLfgQueue();
         void CheckPlayers();
+
+        map<Team, map<BattleGroundTypeId, list<uint32> > > getBattleMastersCache() { return BattleMastersCache; }
 
 	protected:
 	    virtual void OnBotLoginInternal(Player * const bot);

@@ -22,9 +22,11 @@ namespace ai
 
         bool SetGroupTarget(TravelTarget* target);
         bool SetCurrentTarget(TravelTarget* target, TravelTarget* oldTarget);
-        bool SetQuestTarget(TravelTarget* target);
+        bool SetQuestTarget(TravelTarget* target, bool onlyCompleted = false);
         bool SetNewQuestTarget(TravelTarget* target);
         bool SetRpgTarget(TravelTarget* target);
+        bool SetGrindTarget(TravelTarget* target);
+        bool SetExploreTarget(TravelTarget* target);
         bool SetNullTarget(TravelTarget* target);
 
         void ReportTravelTarget(TravelTarget* newTarget, TravelTarget* oldTarget);

@@ -68,7 +68,8 @@ bool AttackAction::Attack(Unit* target)
     {
         msg << " is not on my sight";
         if (verbose) ai->TellError(msg.str());
-        return false;
+        if (!ChaseTo(target))
+            return false;
     }
     if (sServerFacade.UnitIsDead(target))
     {
@@ -77,7 +78,7 @@ bool AttackAction::Attack(Unit* target)
         return false;
     }
 
-    if (bot->IsMounted() && bot->IsWithinLOSInMap(target) && (sServerFacade.GetDistance2d(bot, target) < 20.0f))
+    if (bot->IsMounted() && bot->IsWithinLOSInMap(target) && (sServerFacade.GetDistance2d(bot, target) < 40.0f))
     {
         WorldPacket emptyPacket;
         bot->GetSession()->HandleCancelMountAuraOpcode(emptyPacket);
@@ -126,9 +127,13 @@ bool AttackAction::Attack(Unit* target)
     if (!sServerFacade.IsInFront(bot, target, sPlayerbotAIConfig.sightDistance, CAST_ANGLE_IN_FRONT))
         sServerFacade.SetFacingTo(bot, target);
 
-    bot->Attack(target, !ai->IsRanged(bot) || sServerFacade.GetDistance2d(bot, target) <= sPlayerbotAIConfig.tooCloseDistance);
-    ai->ChangeEngine(BOT_STATE_COMBAT);
-    return true;
+    if (bot->Attack(target, !ai->IsRanged(bot) || sServerFacade.GetDistance2d(bot, target) <= sPlayerbotAIConfig.tooCloseDistance))
+    {
+        ai->ChangeEngine(BOT_STATE_COMBAT);
+        return ChaseTo(target);
+    }
+
+    return false;
 }
 
 bool AttackDuelOpponentAction::isUseful()

@@ -99,14 +99,25 @@ bool FindCorpseAction::Execute(Event event)
     {
         float x = corpse->GetPositionX();
         float y = corpse->GetPositionY();
-        float z = corpse->GetPositionZ();;
+        float z = corpse->GetPositionZ();
+
+
+#ifndef MANGOSBOT_TWO         
+        bot->GetMap()->GetReachableRandomPointOnGround(x, y, z, CORPSE_RECLAIM_RADIUS - 5.0f, true);
+#else
+        bot->GetMap()->GetReachableRandomPointOnGround(bot->GetPhaseMask(), x, y, z, CORPSE_RECLAIM_RADIUS - 5.0f, true);
+#endif
+
+        int64 deadTime = time(nullptr) - corpse->GetGhostTime();
 
         sLog.outDetail("Bot #%d %s:%d <%s> looks for body", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName());
-
+       
         if (!ai->AllowActive(ALL_ACTIVITY))
         {
-            float delay = 1000.0f * bot->GetDistance(corpse) / bot->GetSpeed(MOVE_RUN) + sPlayerbotAIConfig.reactDelay;
-            if ((6 * MINUTE * IN_MILLISECONDS - bot->GetDeathTimer()) > delay)
+            uint32 delay = bot->GetDistance(corpse) / bot->GetSpeed(MOVE_RUN) * IN_MILLISECONDS + sPlayerbotAIConfig.reactDelay; //Time a bot would take to travel to it's corpse.
+            delay = std::min(delay, uint32(10 * MINUTE * IN_MILLISECONDS)); //Cap time to get to corpse at 10 minutes.
+
+            if (deadTime > delay)
             {
                 bot->GetMotionMaster()->Clear();
                 bot->TeleportTo(corpse->GetMapId(), x, y, z, 0);
@@ -115,10 +126,14 @@ bool FindCorpseAction::Execute(Event event)
         else
         {
             bool moved = false;
-            if (bot->IsWithinLOS(x, y, z))
-                moved = MoveNear(bot->GetMapId(), x, y, z, 0);
-            else
-                moved = MoveTo(bot->GetMapId(), x, y, z, false, false);
+
+            if (deadTime < 30 * MINUTE * IN_MILLISECONDS) //Look for corpse up to 30 minutes.
+            {
+                if (bot->IsWithinLOS(x, y, z))
+                    moved = MoveNear(bot->GetMapId(), x, y, z, 0);
+                else
+                    moved = MoveTo(bot->GetMapId(), x, y, z, false, false);
+            }
 
             if (!moved)
             {
@@ -136,6 +151,9 @@ bool FindCorpseAction::Execute(Event event)
 
 bool FindCorpseAction::isUseful()
 {
+    if (bot->InBattleGround())
+        return false;
+
     return bot->GetCorpse() && !bot->GetCorpse()->IsWithinDistInMap(bot, CORPSE_RECLAIM_RADIUS - 5, true);
 }
 
@@ -164,6 +182,30 @@ bool SpiritHealerAction::Execute(Event event)
             return true;
         }
     }
+
+    AreaTableEntry const* zone = GetAreaEntryByAreaID(bot->GetAreaId());
+
+    WorldSafeLocsEntry const* ClosestGrave = nullptr;
+    ClosestGrave = sObjectMgr.GetClosestGraveYard(bot->GetPositionX(), bot->GetPositionY(), bot->GetPositionZ(), bot->GetMapId(), bot->GetTeam());
+
+    if (!ClosestGrave)
+    {
+        return false;
+    }
+
+    float x = ClosestGrave->x;
+    float y = ClosestGrave->y;
+    float z = ClosestGrave->z;
+
+    bool moved = false;
+
+    if (bot->IsWithinLOS(x, y, z))
+        moved = MoveNear(bot->GetMapId(), x, y, z, 0);
+    else
+        moved = MoveTo(bot->GetMapId(), x, y, z, false, false);
+
+    if (moved)
+        return true;
 
     ai->TellError("Cannot find any spirit healer nearby");
     return false;

@@ -106,6 +106,10 @@ void PlayerbotHolder::DisablePlayerBot(uint64 guid)
     if (bot)
     {
         bot->GetPlayerbotAI()->TellMaster("Goodbye!");
+        bot->StopMoving();
+        MotionMaster& mm = *bot->GetMotionMaster();
+        mm.Clear();
+
         Player* master = bot->GetPlayerbotAI()->GetMaster();
         Group* group = bot->GetGroup();
         if (group && !bot->InBattleGround() && !bot->InBattleGroundQueue() && (master && !master->GetPlayerbotAI()))
@@ -756,9 +760,8 @@ void PlayerbotMgr::CheckTellErrors(uint32 elapsed)
             out << *j;
         }
         out << "|cfff00000: " << text;
-
-        ChatHandler &chat = ChatHandler(master->GetSession());
-        chat.PSendSysMessage(out.str().c_str());
+        
+        ChatHandler(master->GetSession()).PSendSysMessage(out.str().c_str());
     }
     errors.clear();
 }

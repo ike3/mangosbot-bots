@@ -11,6 +11,8 @@
 
 #include "TravelMgr.h"
 
+#include <iostream>
+
 using namespace std;
 
 INSTANTIATE_SINGLETON_1(PlayerbotAIConfig);
@@ -25,13 +27,30 @@ void LoadList(string value, T &list)
     vector<string> ids = split(value, ',');
     for (vector<string>::iterator i = ids.begin(); i != ids.end(); i++)
     {
-        uint32 id = atoi((*i).c_str());
-        if (!id)
+        string string = *i;
+        if (string.empty())
             continue;
+
+        uint32 id = atoi(string.c_str());
 
         list.push_back(id);
     }
 }
+
+template <class T>
+void LoadListString(string value, T& list)
+{
+    vector<string> strings = split(value, ',');
+    for (vector<string>::iterator i = strings.begin(); i != strings.end(); i++)
+    {
+        string string = *i;
+        if (string.empty())
+            continue;
+
+        list.push_back(string);
+    }
+}
+
 
 bool PlayerbotAIConfig::Initialize()
 {
@@ -160,10 +179,10 @@ bool PlayerbotAIConfig::Initialize()
     sLog.outString("---------------------------------------");
     sLog.outString();
     
-    for (uint32 cls = 0; cls < MAX_CLASSES; ++cls)
+    for (uint32 cls = 1; cls < MAX_CLASSES; ++cls)
     {
         classSpecs[cls] = ClassSpecs(1 << (cls - 1));
-        for (uint32 spec = 0; spec < 100; ++spec)
+        for (uint32 spec = 0; spec < MAX_LEVEL; ++spec)
         {
             ostringstream os; os << "AiPlayerbot.PremadeSpecName." << cls << "." << spec;
             string specName = config.GetStringDefault(os.str().c_str(), "");
@@ -213,7 +232,24 @@ bool PlayerbotAIConfig::Initialize()
             }
         }
     }
+
+    LoadListString<list<string>>(config.GetStringDefault("AiPlayerbot.AllowedLogFiles", ""), allowedLogFiles);
+
+    worldBuffs.clear();
     
+    for (uint32 factionId = 0; factionId < 3; factionId++)
+    {
+        for (uint32 classId = 0; classId < MAX_CLASSES; classId++)
+        {
+            for (uint32 minLevel = 0; minLevel < MAX_LEVEL; minLevel++)
+            {
+                for (uint32 maxLevel = 0; maxLevel < MAX_LEVEL; maxLevel++)
+                {
+                    loadWorldBuf(&config, factionId, classId, minLevel, maxLevel);
+                 }
+            }
+        }
+    }
 
     randomBotAccountPrefix = config.GetStringDefault("AiPlayerbot.RandomBotAccountPrefix", "rndbot");
     randomBotAccountCount = config.GetIntDefault("AiPlayerbot.RandomBotAccountCount", 50);
@@ -380,4 +416,146 @@ void PlayerbotAIConfig::SetValue(string name, string value)
 
     else if (name == "IterationsPerTick")
         out >> iterationsPerTick;
+}
+
+
+void PlayerbotAIConfig::loadWorldBuf(Config* config, uint32 factionId1, uint32 classId1, uint32 minLevel1, uint32 maxLevel1)
+{
+    list<uint32> buffs;
+
+    ostringstream os; os << "AiPlayerbot.WorldBuff." << factionId1 << "." << classId1 << "." << minLevel1 << "." << maxLevel1;
+
+    LoadList<list<uint32> >(config->GetStringDefault(os.str().c_str(), ""), buffs);
+
+    for (auto buff : buffs)
+    {
+        worldBuff wb = { buff, factionId1, classId1, minLevel1, maxLevel1 };
+        worldBuffs.push_back(wb);
+    }
+
+    if (maxLevel1 == 0)
+    {
+        ostringstream os; os << "AiPlayerbot.WorldBuff." << factionId1 << "." << classId1 << "." << minLevel1;
+
+        LoadList<list<uint32> >(config->GetStringDefault(os.str().c_str(), ""), buffs);
+
+        for (auto buff : buffs)
+        {
+            worldBuff wb = { buff, factionId1, classId1, minLevel1, maxLevel1 };
+            worldBuffs.push_back(wb);
+        }
+    }
+
+    if (maxLevel1 == 0 && minLevel1 == 0)
+    {
+        ostringstream os; os << "AiPlayerbot.WorldBuff." << factionId1 << "." << factionId1 << "." << classId1;
+
+        LoadList<list<uint32> >(config->GetStringDefault(os.str().c_str(), ""), buffs);
+
+        for (auto buff : buffs)
+        {
+            worldBuff wb = { buff, factionId1, classId1, minLevel1, maxLevel1 };
+            worldBuffs.push_back(wb);
+        }
+    }
+
+    if (classId1 == 0 && maxLevel1 == 0 && minLevel1 == 0)
+    {
+        ostringstream os; os << "AiPlayerbot.WorldBuff." << factionId1;
+
+        LoadList<list<uint32> >(config->GetStringDefault(os.str().c_str(), ""), buffs);
+
+        for (auto buff : buffs)
+        {
+            worldBuff wb = { buff, factionId1, classId1, minLevel1, maxLevel1 };
+            worldBuffs.push_back(wb);
+        }
+    }
+
+    if (factionId1 == 0 && classId1 == 0 && maxLevel1 == 0 && minLevel1 == 0)
+    {
+        ostringstream os; os << "AiPlayerbot.WorldBuff";
+
+        LoadList<list<uint32> >(config->GetStringDefault(os.str().c_str(), ""), buffs);
+
+        for (auto buff : buffs)
+        {
+            worldBuff wb = { buff, factionId1, classId1, minLevel1, maxLevel1 };
+            worldBuffs.push_back(wb);
+        }
+    }
+}
+
+
+std::string PlayerbotAIConfig::GetTimestampStr()
+{
+    time_t t = time(nullptr);
+    tm* aTm = localtime(&t);
+    //       YYYY   year
+    //       MM     month (2 digits 01-12)
+    //       DD     day (2 digits 01-31)
+    //       HH     hour (2 digits 00-23)
+    //       MM     minutes (2 digits 00-59)
+    //       SS     seconds (2 digits 00-59)
+    char buf[20];
+    snprintf(buf, 20, "%04d-%02d-%02d %02d-%02d-%02d", aTm->tm_year + 1900, aTm->tm_mon + 1, aTm->tm_mday, aTm->tm_hour, aTm->tm_min, aTm->tm_sec);
+    return std::string(buf);
+}
+
+bool PlayerbotAIConfig::openLog(string fileName, char const* mode)
+{
+    if (!hasLog(fileName))
+        return false;
+     
+    auto logFileIt = logFiles.find(fileName);
+    if (logFileIt == logFiles.end())
+    {
+        logFiles.insert(make_pair(fileName, make_pair(nullptr, false)));
+        logFileIt = logFiles.find(fileName);
+    }
+
+    FILE* file = logFileIt->second.first;
+    bool fileOpen = logFileIt->second.second;
+
+    if (fileOpen) //close log file
+        fclose(file);
+
+    string m_logsDir = sConfig.GetStringDefault("LogsDir");
+    if (!m_logsDir.empty())
+    {
+        if ((m_logsDir.at(m_logsDir.length() - 1) != '/') && (m_logsDir.at(m_logsDir.length() - 1) != '\\'))
+            m_logsDir.append("/");
+    }
+
+
+    file = fopen((m_logsDir + fileName).c_str(), mode);
+    fileOpen = true;
+
+    logFileIt->second.first = file;
+    logFileIt->second.second = fileOpen;
+    
+    return true;
+}
+
+void PlayerbotAIConfig::log(string fileName, const char* str, ...)
+{
+    if (!str)
+        return;
+
+    std::lock_guard<std::mutex> guard(m_logMtx);
+
+    if (!isLogOpen(fileName))
+        if (!openLog(fileName, "a"))
+            return;
+
+    FILE* file = logFiles.find(fileName)->second.first;
+
+    va_list ap;
+    va_start(ap, str);
+    vfprintf(file, str, ap);
+    fprintf(file, "\n");
+    va_end(ap);
+    fflush(file);
+
+    fflush(stdout);
 }

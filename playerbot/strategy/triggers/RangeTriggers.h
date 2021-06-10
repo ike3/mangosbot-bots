@@ -2,6 +2,7 @@
 #include "../Trigger.h"
 #include "../../PlayerbotAIConfig.h"
 #include "../../ServerFacade.h"
+#include "../values/MoveTargetValue.h"
 
 namespace ai
 {
@@ -102,5 +103,27 @@ namespace ai
     {
     public:
         OutOfReactRangeTrigger(PlayerbotAI* ai) : FarFromMasterTrigger(ai, "out of react range", 40.0f, 5) {}
+    };
+
+    class HasContinueActionTrigger : public Trigger
+    {
+    public:
+        HasContinueActionTrigger(PlayerbotAI* ai) : Trigger(ai, "has continue action") {}
+
+        virtual bool IsActive()
+        {
+            return AI_VALUE(MoveTarget*, "move target")->getRelevance();
+        }
+    };
+
+    class ArrivedAtMoveTargetTrigger : public Trigger
+    {
+    public:
+        ArrivedAtMoveTargetTrigger(PlayerbotAI* ai) : Trigger(ai, "arrived at move target") {}
+
+        virtual bool IsActive()
+        {
+            return AI_VALUE(MoveTarget*, "move target")->getRelevance() && AI_VALUE(MoveTarget*, "move target")->isInRange(bot);
+        }
     };
 }

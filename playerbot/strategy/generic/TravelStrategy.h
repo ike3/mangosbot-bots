@@ -13,4 +13,24 @@ namespace ai
         virtual void InitTriggers(std::list<TriggerNode*> &triggers);
     };
 
+    class ExploreStrategy : public Strategy
+    {
+    public:
+        ExploreStrategy(PlayerbotAI* ai) : Strategy(ai) {};
+        virtual string getName() { return "explore"; }
+    };
+
+    class MapStrategy : public Strategy
+    {
+    public:
+        MapStrategy(PlayerbotAI* ai) : Strategy(ai) {};
+        virtual string getName() { return "map"; }
+    };
+
+    class MapFullStrategy : public Strategy
+    {
+    public:
+        MapFullStrategy(PlayerbotAI* ai) : Strategy(ai) {};
+        virtual string getName() { return "map full"; }
+    };
 }

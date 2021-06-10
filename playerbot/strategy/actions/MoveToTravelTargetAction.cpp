@@ -11,20 +11,34 @@ using namespace ai;
 
 bool MoveToTravelTargetAction::Execute(Event event)
 {
+    //Check if we still have to loot. If so, loot first.
+    bool addLoot = ai->DoSpecificAction("add all loot", Event(), true);
+
+    if(addLoot)
+        bool addLoot = ai->DoSpecificAction("loot", Event(), true);
+
+    if (context->GetValue<LootObject>("loot target")->Get().IsLootPossible(bot))
+    {
+       return false;
+    }
+
+
     TravelTarget* target = AI_VALUE(TravelTarget*, "travel target");
 
     WorldPosition botLocation(bot);
 
-    float distance = sPlayerbotAIConfig.tooCloseDistance;
+    float maxDistance = target->getDestination()->getRadiusMin();
+
+    //Evenly distribute around the target.
     float angle = 2 * M_PI * urand(0, 100) / 100.0;
 
     WorldLocation location = target->getLocation();
 
     if (target->getMaxTravelTime() > target->getTimeLeft()) //The bot is late. Speed it up.
     {
-        distance = sPlayerbotAIConfig.fleeDistance;
-        angle = bot->GetAngle(location.coord_x, location.coord_y);
-        location = botLocation.getLocation();
+        //distance = sPlayerbotAIConfig.fleeDistance;
+        //angle = bot->GetAngle(location.coord_x, location.coord_y);
+        //location = botLocation.getLocation();
     }
 
     float x = location.coord_x;
@@ -32,18 +46,30 @@ bool MoveToTravelTargetAction::Execute(Event event)
     float z = location.coord_z;
     float mapId = location.mapid;
 
-    float mod = urand(50, 100)/50.0;   
+    //Move between 0.5 and 1.0 times the maxDistance.
+    float mod = urand(50, 100)/100.0;   
 
-    x += cos(angle) * distance * mod;
-    y += sin(angle) * distance * mod;
+    x += cos(angle) * maxDistance * mod;
+    y += sin(angle) * maxDistance * mod;
+
+    bool canMove = false;
 
     if (bot->IsWithinLOS(x, y, z))
-        return MoveNear(mapId, x, y, z, 0);
+        canMove = MoveNear(mapId, x, y, z, 0);
     else
-        return MoveTo(mapId, x, y, z, false, false);
- 
-    AI_VALUE(LastMovement&, "last movement").Set(x, y, z, bot->GetOrientation());
-    return true;
+        canMove = MoveTo(mapId, x, y, z, false, false);
+
+    if (!canMove && !target->isForced())
+    {
+        target->incRetry(true);
+
+        if (target->isMaxRetry(true))
+            target->setStatus(TRAVEL_STATUS_COOLDOWN);
+    }
+    else
+        target->setRetry(true);
+     
+    return canMove;
 }
 
 bool MoveToTravelTargetAction::isUseful()

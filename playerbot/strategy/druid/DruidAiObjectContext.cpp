@@ -157,6 +157,8 @@ namespace ai
                 creators["moonkin form"] = &AiObjectContextInternal::moonkin_form;
                 creators["cat form"] = &AiObjectContextInternal::cat_form;
                 creators["tree form"] = &AiObjectContextInternal::tree_form;
+                creators["travel form"] = &AiObjectContextInternal::travel_form;
+                creators["aquatic form"] = &AiObjectContextInternal::aquatic_form;
                 creators["caster form"] = &AiObjectContextInternal::caster_form;
                 creators["mangle (bear)"] = &AiObjectContextInternal::mangle_bear;
                 creators["maul"] = &AiObjectContextInternal::maul;
@@ -234,6 +236,8 @@ namespace ai
             static Action* dire_bear_form(PlayerbotAI* ai) { return new CastDireBearFormAction(ai); }
             static Action* cat_form(PlayerbotAI* ai) { return new CastCatFormAction(ai); }
             static Action* tree_form(PlayerbotAI* ai) { return new CastTreeFormAction(ai); }
+            static Action* travel_form(PlayerbotAI* ai) { return new CastTravelFormAction(ai); }
+            static Action* aquatic_form(PlayerbotAI* ai) { return new CastAquaticFormAction(ai); }
             static Action* caster_form(PlayerbotAI* ai) { return new CastCasterFormAction(ai); }
             static Action* mangle_bear(PlayerbotAI* ai) { return new CastMangleBearAction(ai); }
             static Action* maul(PlayerbotAI* ai) { return new CastMaulAction(ai); }

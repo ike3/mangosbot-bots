@@ -27,6 +27,38 @@ namespace ai
         operator T() { return Get(); }
     };
 
+    template <class T>
+    class SingleCalculatedValue : public UntypedValue, public Value<T>
+    {
+    public:
+        SingleCalculatedValue(PlayerbotAI* ai, string name = "value") : UntypedValue(ai, name) { Reset(); }
+
+        virtual ~SingleCalculatedValue() {}
+
+        virtual T Get()
+        {
+            if (!calculated)
+            {
+                value = Calculate();
+                calculated = true;
+            }
+            return value;
+        }
+
+        virtual void Set(T value) { this->value = value; }
+        virtual void Update() { }
+
+        virtual void Reset()
+        {
+            calculated = false;
+        }
+    protected:
+        virtual T Calculate() = 0;
+    protected:
+        T value;
+        bool calculated;
+    };
+
     template<class T>
     class CalculatedValue : public UntypedValue, public Value<T>
 	{
@@ -119,7 +151,7 @@ namespace ai
     {
     public:
         UnitCalculatedValue(PlayerbotAI* ai, string name = "value", int checkInterval = 1) :
-            CalculatedValue<Unit*>(ai, name, checkInterval) {}
+            CalculatedValue<Unit*>(ai, name, checkInterval) { lastCheckTime = time(0) - checkInterval / 2; }
 
         virtual string Format()
         {
@@ -127,12 +159,59 @@ namespace ai
             return unit ? unit->GetName() : "<none>";
         }
     };
+    
+    class CDPairCalculatedValue : public CalculatedValue<CreatureDataPair const*>
+    {
+    public:
+        CDPairCalculatedValue(PlayerbotAI* ai, string name = "value", int checkInterval = 1) :
+            CalculatedValue<CreatureDataPair const*>(ai, name, checkInterval) { lastCheckTime = time(0) - checkInterval / 2; }
+
+        virtual string Format()
+        {
+            CreatureDataPair const* creatureDataPair = Calculate();
+            CreatureInfo const* bmTemplate = ObjectMgr::GetCreatureTemplate(creatureDataPair->second.id);
+            return creatureDataPair ? bmTemplate->Name : "<none>";
+        }
+    };
+
+    class CDPairListCalculatedValue : public CalculatedValue<list<CreatureDataPair const*>>
+    {
+    public:
+        CDPairListCalculatedValue(PlayerbotAI* ai, string name = "value", int checkInterval = 1) :
+            CalculatedValue<list<CreatureDataPair const*>>(ai, name, checkInterval) { lastCheckTime = time(0) - checkInterval / 2; }
+
+        virtual string Format()
+        {
+            ostringstream out; out << "{";
+            list<CreatureDataPair const*> cdPairs = Calculate();
+            for (list<CreatureDataPair const*>::iterator i = cdPairs.begin(); i != cdPairs.end(); ++i)
+            {
+                CreatureDataPair const* cdPair = *i;
+                out << cdPair->first << ",";
+            }
+            out << "}";
+            return out.str();
+        }
+    };
+
+    class ObjectGuidCalculatedValue : public CalculatedValue<ObjectGuid>
+    {
+    public:
+        ObjectGuidCalculatedValue(PlayerbotAI* ai, string name = "value", int checkInterval = 1) :
+            CalculatedValue<ObjectGuid>(ai, name, checkInterval) { lastCheckTime = time(0) - checkInterval / 2; }
+
+        virtual string Format()
+        {
+            ObjectGuid guid = Calculate();
+            return guid ? to_string(guid.GetRawValue()) : "<none>";
+        }
+    };
 
     class ObjectGuidListCalculatedValue : public CalculatedValue<list<ObjectGuid> >
     {
     public:
         ObjectGuidListCalculatedValue(PlayerbotAI* ai, string name = "value", int checkInterval = 1) :
-            CalculatedValue<list<ObjectGuid> >(ai, name, checkInterval) {}
+            CalculatedValue<list<ObjectGuid> >(ai, name, checkInterval) { lastCheckTime = time(0) - checkInterval/2; }
 
         virtual string Format()
         {

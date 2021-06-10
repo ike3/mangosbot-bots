@@ -2,6 +2,7 @@
 #include "../../playerbot.h"
 #include "EnemyHealerTargetValue.h"
 #include "../../PlayerbotAIConfig.h"
+#include "../../ServerFacade.h"
 
 using namespace ai;
 
@@ -17,7 +18,7 @@ Unit* EnemyHealerTargetValue::Calculate()
         if (!unit || unit == target)
             continue;
 
-        if (bot->GetDistance(unit) > ai->GetRange("spell"))
+        if (sServerFacade.GetDistance2d(bot, unit) > ai->GetRange("spell"))
             continue;
 
         if (!ai->IsInterruptableSpellCasting(unit, spell, true))

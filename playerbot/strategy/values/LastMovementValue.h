@@ -1,5 +1,6 @@
 #pragma once
 #include "../Value.h"
+#include "TravelNode.h"
 
 namespace ai
 {
@@ -8,13 +9,7 @@ namespace ai
     public:
         LastMovement()
         {
-            lastMoveToX = 0;
-            lastMoveToY = 0;
-            lastMoveToZ = 0;
-            lastMoveToOri = 0;
-            lastFollow = NULL;
-            lastAreaTrigger = 0;
-            lastFlee = 0;
+            clear();
         }
 
         LastMovement(LastMovement& other)
@@ -23,34 +18,69 @@ namespace ai
             taxiMaster = other.taxiMaster;
             lastFollow = other.lastFollow;
             lastAreaTrigger = other.lastAreaTrigger;
+            lastMoveShort = other.lastMoveShort;
+            lastPath = other.lastPath;
+            nextTeleport = other.nextTeleport;
+            /*
+            lastMoveToMapId = other.lastMoveToMapId;
             lastMoveToX = other.lastMoveToX;
             lastMoveToY = other.lastMoveToY;
             lastMoveToZ = other.lastMoveToZ;
             lastMoveToOri = other.lastMoveToOri;
+            */
+        }
+
+        void clear()
+        {
+            lastMoveShort = WorldPosition();
+            lastPath.clear();
+            /*
+            lastMoveToMapId = 0;
+            lastMoveToX = 0;
+            lastMoveToY = 0;
+            lastMoveToZ = 0;
+            lastMoveToOri = 0;
+            */
+            lastFollow = NULL;
+            lastAreaTrigger = 0;
+            lastFlee = 0;
+            nextTeleport = 0;
         }
 
         void Set(Unit* lastFollow)
         {
-            Set(0.0f, 0.0f, 0.0f, 0.0f);
+            //Set(0, 0.0f, 0.0f, 0.0f, 0.0f);
+            setShort(WorldPosition());
             this->lastFollow = lastFollow;
         }
 
-        void Set(float x, float y, float z, float ori)
+        /*
+        void Set(uint32 mapId, float x, float y, float z, float ori)
         {
+            lastMoveToMapId = mapId;
             lastMoveToX = x;
             lastMoveToY = y;
             lastMoveToZ = z;
             lastMoveToOri = ori;
+            lastMoveShort = WorldPosition(mapId, x, y, z, ori);
             lastFollow = NULL;
         }
+        */
 
+        void setShort(WorldPosition point) {lastMoveShort = point; lastFollow = NULL;
+        }
+        void setPath(TravelPath path) { lastPath = path; }
     public:
         vector<uint32> taxiNodes;
         ObjectGuid taxiMaster;
         Unit* lastFollow;
         uint32 lastAreaTrigger;
         time_t lastFlee;
-        float lastMoveToX, lastMoveToY, lastMoveToZ, lastMoveToOri;
+        //uint32 lastMoveToMapId;
+        //float lastMoveToX, lastMoveToY, lastMoveToZ, lastMoveToOri;
+        WorldPosition lastMoveShort;
+        TravelPath lastPath;
+        time_t nextTeleport;
     };
 
     class LastMovementValue : public ManualSetValue<LastMovement&>

@@ -78,7 +78,7 @@ namespace ai
 
     public:
 	    virtual bool DoNextAction(Unit*, int depth = 0, bool minimal = false);
-	    ActionResult ExecuteAction(string name, Event event = Event());
+	    ActionResult ExecuteAction(string name, Event event = Event(), string qualifier = "");
 
     public:
         void AddActionExecutionListener(ActionExecutionListener* listener)

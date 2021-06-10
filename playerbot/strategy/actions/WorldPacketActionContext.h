@@ -24,7 +24,6 @@
 #include "SecurityCheckAction.h"
 #include "GuildAcceptAction.h"
 #include "AcceptBattleGroundInvitationAction.h"
-#include "BattleGroundTacticsWS.h"
 #include "PetitionSignAction.h"
 #include "BattlegroundJoinAction.h"
 #include "SeeSpellAction.h"
@@ -46,7 +45,6 @@ namespace ai
             creators["bg status"] = &WorldPacketActionContext::bg_status;
             creators["bg join"] = &WorldPacketActionContext::bg_join;
             creators["bg leave"] = &WorldPacketActionContext::bg_leave;
-            creators["bg tactics ws"] = &WorldPacketActionContext::bg_tactics_ws;
             creators["arena tactics"] = &WorldPacketActionContext::arena_tactics;
             creators["accept invitation"] = &WorldPacketActionContext::accept_invitation;
             creators["leader"] = &WorldPacketActionContext::pass_leadership_to_master;
@@ -96,7 +94,6 @@ namespace ai
         static Action* bg_status_check(PlayerbotAI* ai) { return new BGStatusCheckAction(ai); }
         static Action* bg_status(PlayerbotAI* ai) { return new BGStatusAction(ai); }
         static Action* arena_tactics(PlayerbotAI* ai) { return new ArenaTactics(ai); }
-        static Action* bg_tactics_ws(PlayerbotAI* ai) { return new BGTacticsWS(ai); }
         static Action* inventory_change_failure(PlayerbotAI* ai) { return new InventoryChangeFailureAction(ai); }
         static Action* guild_accept(PlayerbotAI* ai) { return new GuildAcceptAction(ai); }
         static Action* security_check(PlayerbotAI* ai) { return new SecurityCheckAction(ai); }

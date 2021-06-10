@@ -61,7 +61,7 @@ bool ChooseRpgTargetAction::CanTrain(ObjectGuid guid)
 
 uint32 ChooseRpgTargetAction::HasSameTarget(ObjectGuid guid)
 {
-    if (ai->GetMaster())
+    if (ai->hasRealPlayerMaster())
         return 0;
 
     uint32 num = 0;
@@ -143,7 +143,11 @@ bool ChooseRpgTargetAction::Execute(Event event)
                   priority = 100;
 
             uint32 dialogStatus = bot->GetSession()->getDialogStatus(bot, unit, DIALOG_STATUS_NONE);
-            if (dialogStatus == DIALOG_STATUS_REWARD2)
+#ifdef MANGOSBOT_ZERO  
+            if (dialogStatus == DIALOG_STATUS_REWARD2 || dialogStatus == DIALOG_STATUS_REWARD_REP)
+#else
+            if (dialogStatus == DIALOG_STATUS_REWARD2 || dialogStatus == DIALOG_STATUS_REWARD || dialogStatus == DIALOG_STATUS_REWARD_REP)
+#endif  
                 priority = 90;
             else if (CanTrain(guid) || dialogStatus == DIALOG_STATUS_AVAILABLE)
                 priority = 80;
@@ -163,7 +167,11 @@ bool ChooseRpgTargetAction::Execute(Event event)
                 continue;
 
             uint32 dialogStatus = bot->GetSession()->getDialogStatus(bot, go, DIALOG_STATUS_NONE);
+#ifdef MANGOSBOT_ZERO  
             if (dialogStatus == DIALOG_STATUS_REWARD2 || dialogStatus == DIALOG_STATUS_REWARD_REP)
+#else
+            if (dialogStatus == DIALOG_STATUS_REWARD2 || dialogStatus == DIALOG_STATUS_REWARD || dialogStatus == DIALOG_STATUS_REWARD_REP)
+#endif 
                 priority = 90;
             else if (dialogStatus == DIALOG_STATUS_AVAILABLE)
                 priority = 80;
@@ -172,9 +180,6 @@ bool ChooseRpgTargetAction::Execute(Event event)
             //else if (urand(1, 100) > 10)
             //    continue;            
         }
-
-        if (priority < maxPriority)
-            continue;
 
         if (ai->HasStrategy("debug rpg", BOT_STATE_NON_COMBAT))
         {
@@ -190,7 +195,10 @@ bool ChooseRpgTargetAction::Execute(Event event)
             ai->TellMasterNoFacing(out);
         }
 
-        if (!ai->GetMaster() && HasSameTarget(guid) > urand(5, 15))
+        if (priority < maxPriority)
+            continue;
+
+        if (HasSameTarget(guid) > urand(5, 15))
             continue;
 
         if (priority > maxPriority)
