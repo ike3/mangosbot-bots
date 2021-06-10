@@ -533,9 +533,12 @@ bool Engine::ListenAndExecute(Action* action, Event event)
         out << "do: ";
         out << action->getName();
         if (actionExecuted)
-            out << " 1";
+            out << " 1 (";
         else
-            out << " 0";
+            out << " 0 (";
+
+        out << action->getRelevance() << ")";
+
         ai->TellMasterNoFacing(out);
     }
 
