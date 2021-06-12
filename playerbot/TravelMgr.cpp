@@ -365,7 +365,10 @@ void WorldPosition::loadMapAndVMap(uint32 mapId, int x, int y)
 {
     string fileName = "load_map_grid.csv";
 
-    if ( !VMAP::VMapFactory::createOrGetVMapManager()->IsTileLoaded(mapId, x, y) && !sTravelMgr.isBadVmap(mapId, x, y))
+    //This needs to be disabled or maps will not load.
+    //Needs more testing to check for impact on movement.
+    if(false)
+    if (!VMAP::VMapFactory::createOrGetVMapManager()->IsTileLoaded(mapId, x, y) && !sTravelMgr.isBadVmap(mapId, x, y))
     {
         // load VMAPs for current map/grid...
         const MapEntry* i_mapEntry = sMapStore.LookupEntry(mapId);
