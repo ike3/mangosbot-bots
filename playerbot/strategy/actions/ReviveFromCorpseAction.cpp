@@ -38,16 +38,13 @@ bool ReviveFromCorpseAction::Execute(Event event)
             && sServerFacade.IsDistanceLessThan(AI_VALUE2(float, "distance", "master target"), sPlayerbotAIConfig.farDistance))
             return false;
     }
+
+    sLog.outDetail("Bot #%d %s:%d <%s> revives at body", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName());
     
     WorldPacket packet(CMSG_RECLAIM_CORPSE);
     packet << bot->GetObjectGuid();
     bot->GetSession()->HandleReclaimCorpseOpcode(packet);
 
-    sLog.outDetail("Bot #%d %s:%d <%s> revived", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName());
-
-    context->GetValue<Unit*>("current target")->Set(NULL);
-    bot->SetSelectionGuid(ObjectGuid());
-    ai->ChangeEngine(BOT_STATE_NON_COMBAT);
     return true;
 }
 
@@ -71,7 +68,7 @@ bool FindCorpseAction::Execute(Event event)
             return false;
     }
 
-    if (!corpse->IsWithinDistInMap(bot, CORPSE_RECLAIM_RADIUS - 5, true))
+    if (!corpse->IsWithinDistInMap(bot, CORPSE_RECLAIM_RADIUS - 5.0f, true))
     {
         float x = corpse->GetPositionX();
         float y = corpse->GetPositionY();
@@ -115,7 +112,7 @@ bool FindCorpseAction::Execute(Event event)
             {
                 moved = ai->DoSpecificAction("spirit healer");
                 if (moved)
-                    sLog.outDetail("Bot #%d %s:%d <%s> revived at graveyard", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName());
+                    sLog.outDetail("Bot #%d %s:%d <%s> revives at graveyard", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName());
             }
 
             return moved;
@@ -183,6 +180,7 @@ bool SpiritHealerAction::Execute(Event event)
     if (moved)
         return true;
 
+    sLog.outString("Bot #%d %s:%d <%s> can't find a spirit healer", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName());
     ai->TellError("Cannot find any spirit healer nearby");
     return false;
 }

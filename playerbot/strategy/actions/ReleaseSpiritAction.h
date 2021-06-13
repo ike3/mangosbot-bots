@@ -21,7 +21,7 @@ namespace ai
                 return false;
             }
 
-            if (bot->GetCorpse())
+            if (bot->GetCorpse() && bot->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_GHOST))
             {
                 ai->TellMasterNoFacing("I am already a spirit");
                 return false;
@@ -80,7 +80,7 @@ namespace ai
             return ((!bot->GetGroup()) || (bot->GetGroup() && ai->GetGroupMaster() == bot) || (ai->GetGroupMaster() && ai->GetGroupMaster() != bot &&
                 sServerFacade.UnitIsDead(ai->GetGroupMaster()) &&
                 bot->GetDeathState() != ai->GetGroupMaster()->GetDeathState()))
-                && sServerFacade.UnitIsDead(bot) && !bot->GetCorpse();
+                && sServerFacade.UnitIsDead(bot) && !bot->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_GHOST);
         }
     };
 
@@ -91,6 +91,8 @@ namespace ai
     public:
         virtual bool Execute(Event event)
         {
+            sLog.outString("Bot #%d %s:%d <%s> repops at graveyard", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName());
+
             bot->RepopAtGraveyard();
 
             return true;
