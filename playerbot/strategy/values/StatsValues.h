@@ -180,4 +180,10 @@ namespace ai
 
         virtual bool Calculate() { return bot->GetGroup(); }
     };
+
+    class DeathCountValue : public ManualSetValue<uint32>
+    {
+    public:
+        DeathCountValue(PlayerbotAI* ai) : ManualSetValue<uint32>(ai, 0, "death_count") {}
+    };
 }
