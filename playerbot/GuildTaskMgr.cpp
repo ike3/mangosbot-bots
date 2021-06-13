@@ -455,7 +455,7 @@ bool GuildTaskMgr::SendThanks(uint32 owner, uint32 guildId, uint32 payment)
 
         Player* player = sObjectMgr.GetPlayer(ObjectGuid(HIGHGUID_PLAYER, owner));
         if (player)
-            SendCompletionMessage(player, "payed for");
+            SendCompletionMessage(player, "been payed for");
 
         return true;
     }
@@ -841,7 +841,8 @@ bool GuildTaskMgr::CheckItemTask(uint32 itemId, uint32 obtained, Player* ownerPl
             return false;
 
         uint32 money = GetTaskValue(owner, guildId, "payment");
-        SetTaskValue(owner, guildId, "payment", money + auctionbot.GetBuyPrice(proto) * obtained, rewardTime + 300);
+        if (!obtained) obtained = 1;
+        SetTaskValue(owner, guildId, "payment", money + min(10, auctionbot.GetBuyPrice(proto)) * obtained, rewardTime + 300);
     }
 
     if (obtained >= count)
@@ -909,13 +910,16 @@ bool GuildTaskMgr::Reward(uint32 owner, uint32 guildId)
         if (!proto)
             return false;
 
-        body << "We wish to thank you for the " << proto->Name << " you've killed recently. We really appreciate this and may this small gift bring you our thanks!\n";
+        rewardType = proto->Rank == CREATURE_ELITE_RARE ? RANDOM_ITEM_GUILD_TASK_REWARD_TRADE : RANDOM_ITEM_GUILD_TASK_REWARD_TRADE_RARE;
+        itemId = sRandomItemMgr.GetRandomItem(player->getLevel(), rewardType);
+
+        body << "We wish to thank you for the " << proto->Name << " you've killed recently. We really appreciate this";
+        if (itemId) body << "and may this small gift bring you our thanks";
+        body << "!\n";
         body << "\n";
         body << "Many thanks,\n";
         body << guild->GetName() << "\n";
         body << leader->GetName() << "\n";
-        rewardType = proto->Rank == CREATURE_ELITE_RARE ? RANDOM_ITEM_GUILD_TASK_REWARD_TRADE : RANDOM_ITEM_GUILD_TASK_REWARD_TRADE_RARE;
-        itemId = sRandomItemMgr.GetRandomItem(player->getLevel(), rewardType);
         if (itemId)
         {
             ItemPrototype const* itemProto = sObjectMgr.GetItemPrototype(itemId);
@@ -945,8 +949,10 @@ bool GuildTaskMgr::Reward(uint32 owner, uint32 guildId)
 
     draft.SendMailTo(MailReceiver(ObjectGuid(HIGHGUID_PLAYER, owner)), MailSender(leader));
     player = sObjectMgr.GetPlayer(ObjectGuid(HIGHGUID_PLAYER, owner));
-    if (player)
-        SendCompletionMessage(player, "rewarded for");
+    if (player && itemId)
+        SendCompletionMessage(player, "been rewarded for");
+    else if (player)
+        SendCompletionMessage(player, "been thanked for");
 
     SetTaskValue(owner, guildId, "activeTask", 0, 0);
     SetTaskValue(owner, guildId, "payment", 0, 0);
