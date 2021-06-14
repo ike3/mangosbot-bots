@@ -1640,90 +1640,87 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot, vector<WorldLocation> &locs
 
     int index = 0;
 
-    for (int attemtps = 0; attemtps < std::min(10, (int)tlocs.size()-1); ++attemtps)
+    for (int i = 0; i < tlocs.size(); i++)
     {
-
-        WorldLocation loc = tlocs[attemtps].getLocation();
-
-#ifndef MANGOSBOT_ZERO
-        // Teleport to Dark Portal area if event is in progress
-        if (sWorldState.GetExpansion() == EXPANSION_NONE && bot->getLevel() > 54 && urand(0, 100) > 20)
+        for (int attemtps = 0; attemtps < 3; ++attemtps)
         {
-            if (urand(0, 1))
-                loc = WorldLocation(uint32(0), -11772.43f, -3272.84f, -17.9f, 3.32447f);
-            else
-                loc = WorldLocation(uint32(0), -11741.70f, -3130.3f, -11.7936f, 3.32447f);
-        }
-#endif
 
-        float x = loc.coord_x + (attemtps > 0 ? urand(0, sPlayerbotAIConfig.grindDistance) - sPlayerbotAIConfig.grindDistance / 2 : 0);
-        float y = loc.coord_y + (attemtps > 0 ? urand(0, sPlayerbotAIConfig.grindDistance) - sPlayerbotAIConfig.grindDistance / 2 : 0);
-        float z = loc.coord_z;
-
-        Map* map = sMapMgr.FindMap(loc.mapid, 0);
-        if (!map)
-            continue;
-
-		const TerrainInfo * terrain = map->GetTerrain();
-		if (!terrain)
-			continue;
-
-		AreaTableEntry const* area = GetAreaEntryByAreaID(terrain->GetAreaId(x, y, z));
-		if (!area)
-			continue;
+            WorldLocation loc = tlocs[i].getLocation();
 
 #ifndef MANGOSBOT_ZERO
-        // Do not teleport to outland before portal opening (allow new races zones)
-        if (sWorldState.GetExpansion() == EXPANSION_NONE && loc.mapid == 530 && area->team != 2 && area->team != 4)
-            continue;
+            // Teleport to Dark Portal area if event is in progress
+            if (sWorldState.GetExpansion() == EXPANSION_NONE && bot->getLevel() > 54 && urand(0, 100) > 20)
+            {
+                if (urand(0, 1))
+                    loc = WorldLocation(uint32(0), -11772.43f, -3272.84f, -17.9f, 3.32447f);
+                else
+                    loc = WorldLocation(uint32(0), -11741.70f, -3130.3f, -11.7936f, 3.32447f);
+            }
 #endif
 
-        // Do not teleport to enemy zones if level is low
-        if (area->team == 4 && bot->GetTeam() == ALLIANCE && bot->getLevel() < 40)
-            continue;
-        if (area->team == 2 && bot->GetTeam() == HORDE && bot->getLevel() < 40)
-            continue;
+            float x = loc.coord_x + (attemtps > 0 ? urand(0, sPlayerbotAIConfig.grindDistance) - sPlayerbotAIConfig.grindDistance / 2 : 0);
+            float y = loc.coord_y + (attemtps > 0 ? urand(0, sPlayerbotAIConfig.grindDistance) - sPlayerbotAIConfig.grindDistance / 2 : 0);
+            float z = loc.coord_z;
 
-		if (terrain->IsUnderWater(x, y, z) ||
-			terrain->IsInWater(x, y, z))
-			continue;
+            Map* map = sMapMgr.FindMap(loc.mapid, 0);
+            if (!map)
+                continue;
+
+            const TerrainInfo* terrain = map->GetTerrain();
+            if (!terrain)
+                continue;
+
+            AreaTableEntry const* area = GetAreaEntryByAreaID(terrain->GetAreaId(x, y, z));
+            if (!area)
+                continue;
+
+#ifndef MANGOSBOT_ZERO
+            // Do not teleport to outland before portal opening (allow new races zones)
+            if (sWorldState.GetExpansion() == EXPANSION_NONE && loc.mapid == 530 && area->team != 2 && area->team != 4)
+                continue;
+#endif
+
+            // Do not teleport to enemy zones if level is low
+            if (area->team == 4 && bot->GetTeam() == ALLIANCE && bot->getLevel() < 40)
+                continue;
+            if (area->team == 2 && bot->GetTeam() == HORDE && bot->getLevel() < 40)
+                continue;
+
+            if (terrain->IsUnderWater(x, y, z) ||
+                terrain->IsInWater(x, y, z))
+                continue;
 
 #ifdef MANGOSBOT_TWO
-        float ground = map->GetHeight(bot->GetPhaseMask(), x, y, z + 0.5f);
+            float ground = map->GetHeight(bot->GetPhaseMask(), x, y, z + 0.5f);
 #else
-        float ground = map->GetHeight(x, y, z + 0.5f);
+            float ground = map->GetHeight(x, y, z + 0.5f);
 #endif
-        if (ground <= INVALID_HEIGHT)
-            continue;
+            if (ground <= INVALID_HEIGHT)
+                continue;
 
-        z = 0.05f + ground;
-        sLog.outDetail("Random teleporting bot %s to %s %f,%f,%f (%u/%zu locations)",
+            z = 0.05f + ground;
+            sLog.outDetail("Random teleporting bot %s to %s %f,%f,%f (%u/%zu locations)",
                 bot->GetName(), area->area_name[0], x, y, z, attemtps, tlocs.size());
 
-        if (bot->IsTaxiFlying())
-        {
-            bot->GetMotionMaster()->MovementExpired();
+            if (bot->IsTaxiFlying())
+            {
+                bot->GetMotionMaster()->MovementExpired();
 #ifdef MANGOS
-            bot->m_taxi.ClearTaxiDestinations();
+                bot->m_taxi.ClearTaxiDestinations();
 #endif
+            }
+            if (hearth)
+                bot->SetHomebindToLocation(loc, area->ID);
+
+            bot->GetMotionMaster()->Clear();
+            bot->TeleportTo(loc.mapid, x, y, z, 0);
+            bot->SendHeartBeat();
+            bot->GetPlayerbotAI()->ResetStrategies();
+            bot->GetPlayerbotAI()->Reset();
+            if (pmo) pmo->finish();
+            return;
         }
-        if (hearth)
-            bot->SetHomebindToLocation(loc, area->ID);
-
-        bot->GetMotionMaster()->Clear();
-        bot->TeleportTo(loc.mapid, x, y, z, 0);
-        bot->SendHeartBeat();
-        bot->GetPlayerbotAI()->ResetStrategies();
-        bot->GetPlayerbotAI()->Reset();
-        if (pmo) pmo->finish();
-        return;
     }
-
-    for (auto& loc : locs)
-        tlocs.push_back(WorldPosition(loc));
-
-    tlocs = sTravelMgr.getNextPoint(WorldPosition(bot), tlocs, 0);
-
 
     if (pmo) pmo->finish();
     sLog.outError("Cannot teleport bot %s - no locations available", bot->GetName());
