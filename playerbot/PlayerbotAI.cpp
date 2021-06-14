@@ -542,6 +542,14 @@ void PlayerbotAI::DoNextAction()
         bot->GetMotionMaster()->Clear();
         bot->GetMotionMaster()->MoveIdle();
 
+        //Death Count to prevent skeleton piles
+        Player* master = GetMaster();
+        if (!master || (master && master->GetPlayerbotAI()))
+        {
+            uint32 dCount = aiObjectContext->GetValue<uint32>("death count")->Get();
+            aiObjectContext->GetValue<uint32>("death count")->Set(++dCount);
+        }
+
         ChangeEngine(BOT_STATE_DEAD);
         return;
     }
@@ -753,7 +761,7 @@ void PlayerbotAI::ResetStrategies(bool load)
 bool PlayerbotAI::IsRanged(Player* player)
 {
     PlayerbotAI* botAi = player->GetPlayerbotAI();
-    if (botAi && !player->InBattleGround())
+    if (botAi)
         return botAi->ContainsStrategy(STRATEGY_TYPE_RANGED);
 
     switch (player->getClass())
