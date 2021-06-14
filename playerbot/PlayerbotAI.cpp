@@ -285,6 +285,7 @@ bool PlayerbotAI::IsAllowedCommand(string text)
         unsecuredCommands.insert("who");
         unsecuredCommands.insert("wts");
         unsecuredCommands.insert("sendmail");
+        unsecuredCommands.insert("invite");
     }
 
     for (set<string>::iterator i = unsecuredCommands.begin(); i != unsecuredCommands.end(); ++i)
