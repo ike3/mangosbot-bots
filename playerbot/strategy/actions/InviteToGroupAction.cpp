@@ -15,6 +15,9 @@ namespace ai
         if (!player)
             return false;
 
+        if (!player->GetPlayerbotAI() && !ai->GetSecurity()->CheckLevelFor(PLAYERBOT_SECURITY_INVITE, false, player))
+            return false;
+
         WorldPacket p;
         uint32 roles_mask = 0;
         p << player->GetName();
