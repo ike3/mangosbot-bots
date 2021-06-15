@@ -410,7 +410,15 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
         return bot->TeleportTo(movePosition.getMapId(), movePosition.getX(), movePosition.getY(), movePosition.getZ(), startPosition.getAngleTo(movePosition));
     }
 
-    mm.MovePoint(movePosition.getMapId(), movePosition.getX(), movePosition.getY(), movePosition.getZ(), FORCED_MOVEMENT_RUN, generatePath);
+    // walk if master walks and is close
+    bool masterWalking = false;
+    if (ai->GetMaster())
+    {
+        if (ai->GetMaster()->m_movementInfo.HasMovementFlag(MOVEFLAG_WALK_MODE) && sServerFacade.GetDistance2d(bot, ai->GetMaster()) < 20.0f)
+            masterWalking = true;
+    }
+
+    mm.MovePoint(movePosition.getMapId(), movePosition.getX(), movePosition.getY(), movePosition.getZ(), masterWalking ? FORCED_MOVEMENT_WALK : FORCED_MOVEMENT_RUN, generatePath);
 
     AI_VALUE(LastMovement&, "last movement").setShort(movePosition);            
 #endif
@@ -642,9 +650,6 @@ bool MovementAction::Follow(Unit* target, float distance, float angle)
         ai->InterruptSpell();
     }
 
-    //if (sServerFacade.isMoving(bot))
-    //    return false;
-
     AI_VALUE(LastMovement&, "last movement").Set(target);
     ClearIdleState();
 
@@ -654,7 +659,7 @@ bool MovementAction::Follow(Unit* target, float distance, float angle)
         if (currentTarget && currentTarget->GetObjectGuid() == target->GetObjectGuid()) return false;
     }
 
-    //if(mm.GetCurrent()->GetMovementGeneratorType() != FOLLOW_MOTION_TYPE)
+    if(mm.GetCurrent()->GetMovementGeneratorType() != FOLLOW_MOTION_TYPE)
         mm.Clear();
 
     mm.MoveFollow(target,

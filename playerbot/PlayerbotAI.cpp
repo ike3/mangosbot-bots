@@ -595,7 +595,7 @@ void PlayerbotAI::DoNextAction()
 
     if (master)
 	{
-		if (master->m_movementInfo.HasMovementFlag(MOVEFLAG_WALK_MODE)) bot->m_movementInfo.AddMovementFlag(MOVEFLAG_WALK_MODE);
+		if (master->m_movementInfo.HasMovementFlag(MOVEFLAG_WALK_MODE) && sServerFacade.GetDistance2d(bot, master) < 20.0f) bot->m_movementInfo.AddMovementFlag(MOVEFLAG_WALK_MODE);
 		else bot->m_movementInfo.RemoveMovementFlag(MOVEFLAG_WALK_MODE);
 
         if (master->IsSitState() && nextAICheckDelay < 1000)
