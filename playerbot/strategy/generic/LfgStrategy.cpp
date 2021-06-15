@@ -7,7 +7,7 @@ using namespace ai;
 void LfgStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
-        "often",
+        "random",
         NextAction::array(0, new NextAction("lfg join", relevance), NULL)));
 
     triggers.push_back(new TriggerNode(
