@@ -151,8 +151,11 @@ namespace ai
 		CastBattleStanceAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "battle stance") {}
 	};
 
-    BEGIN_RANGED_SPELL_ACTION(CastChargeAction, "charge")
-    END_SPELL_ACTION()
+    class CastChargeAction : public CastReachTargetSpellAction
+    {
+    public:
+        CastChargeAction(PlayerbotAI* ai) : CastReachTargetSpellAction(ai, "charge", 1.5f) {}
+    };
 
 	class CastDeathWishAction : public CastBuffSpellAction {
 	public:
