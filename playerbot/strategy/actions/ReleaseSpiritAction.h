@@ -91,7 +91,7 @@ namespace ai
     public:
         virtual bool Execute(Event event)
         {
-            sLog.outString("Bot #%d %s:%d <%s> repops at graveyard", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName());
+            sLog.outBasic("Bot #%d %s:%d <%s> repops at graveyard", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName());
 
             bot->RepopAtGraveyard();
 

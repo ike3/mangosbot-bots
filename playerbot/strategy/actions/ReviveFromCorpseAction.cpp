@@ -41,18 +41,6 @@ bool ReviveFromCorpseAction::Execute(Event event)
 
     sLog.outDetail("Bot #%d %s:%d <%s> revives at body", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName());
     
-    if (!master || (master && master->GetPlayerbotAI()))
-    {
-        uint32 dCount = AI_VALUE(uint32, "death count");
-        if (dCount >= 5)
-        {
-            sLog.outBasic("Bot #%d <%s>: died too many times and was sent to an inn", bot->GetGUIDLow(), bot->GetName());
-            context->GetValue<uint32>("death count")->Set(0);
-            sRandomPlayerbotMgr.RandomTeleportForRpg(bot);
-            return true;
-        }
-    }
-    
     WorldPacket packet(CMSG_RECLAIM_CORPSE);
     packet << bot->GetObjectGuid();
     bot->GetSession()->HandleReclaimCorpseOpcode(packet);
@@ -80,12 +68,12 @@ bool FindCorpseAction::Execute(Event event)
             return false;
     }
 
-    if (!master || (master && master->GetPlayerbotAI()))
+    if (!ai->hasRealPlayerMaster())
     {
         uint32 dCount = AI_VALUE(uint32, "death count");
         if (dCount >= 5)
         {
-            sLog.outBasic("Bot #%d <%s>: died too many times and was sent to an inn", bot->GetGUIDLow(), bot->GetName());
+            sLog.outBasic("Bot #%d %s:%d <%s>: died too many times and was sent to an inn", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName());
             context->GetValue<uint32>("death count")->Set(0);
             sRandomPlayerbotMgr.RandomTeleportForRpg(bot);
             return true;
@@ -111,8 +99,8 @@ bool FindCorpseAction::Execute(Event event)
        
         if (!ai->AllowActive(ALL_ACTIVITY))
         {
-            uint32 delay = bot->GetDistance(corpse) / bot->GetSpeed(MOVE_RUN) * IN_MILLISECONDS + sPlayerbotAIConfig.reactDelay; //Time a bot would take to travel to it's corpse.
-            delay = std::min(delay, uint32(10 * MINUTE * IN_MILLISECONDS)); //Cap time to get to corpse at 10 minutes.
+            uint32 delay = sServerFacade.GetDistance2d(bot, corpse) / bot->GetSpeed(MOVE_RUN); //Time a bot would take to travel to it's corpse.
+            delay = min(delay, uint32(10 * MINUTE)); //Cap time to get to corpse at 10 minutes.
 
             if (deadTime > delay)
             {
@@ -122,6 +110,9 @@ bool FindCorpseAction::Execute(Event event)
         }
         else
         {
+            if (bot->IsMoving())
+                return false;
+
             bool moved = false;
 
             if (deadTime < 30 * MINUTE * IN_MILLISECONDS) //Look for corpse up to 30 minutes.
@@ -136,7 +127,7 @@ bool FindCorpseAction::Execute(Event event)
             {
                 moved = ai->DoSpecificAction("spirit healer");
                 if (moved)
-                    sLog.outDetail("Bot #%d %s:%d <%s> revives at graveyard", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName());
+                    sLog.outBasic("Bot #%d %s:%d <%s> moves to graveyard", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName());
             }
 
             return moved;
@@ -169,6 +160,7 @@ bool SpiritHealerAction::Execute(Event event)
         Unit* unit = ai->GetUnit(*i);
         if (unit && unit->HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_SPIRITHEALER))
         {
+            sLog.outBasic("Bot #%d %s:%d <%s> revives at spirit healer", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName());
             PlayerbotChatHandler ch(bot);
             bot->ResurrectPlayer(0.5f);
             bot->SpawnCorpseBones();
@@ -204,7 +196,10 @@ bool SpiritHealerAction::Execute(Event event)
     if (moved)
         return true;
 
-    sLog.outString("Bot #%d %s:%d <%s> can't find a spirit healer", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName());
+    if (!ai->hasRealPlayerMaster())
+        bot->RepopAtGraveyard();
+
+    sLog.outBasic("Bot #%d %s:%d <%s> can't find a spirit healer", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName());
     ai->TellError("Cannot find any spirit healer nearby");
     return false;
 }
