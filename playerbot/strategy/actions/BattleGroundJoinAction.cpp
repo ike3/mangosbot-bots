@@ -271,6 +271,10 @@ bool BGJoinAction::shouldJoinBg(BattleGroundQueueTypeId queueTypeId, BattleGroun
     if (!hasPlayers)
         return false;
 
+    // hack fix crash in queue remove event
+    if (!isArena && bot->GetGroup())
+        return false;
+
     uint32 BracketSize = bg->GetMaxPlayers();
     uint32 TeamSize = bg->GetMaxPlayersPerTeam();
 
@@ -492,7 +496,7 @@ bool BGJoinAction::JoinQueue(uint32 type)
    uint32 bgTypeId_ = bgTypeId;
 #endif
    uint32 instanceId = 0; // 0 = First Available
-   bool joinAsGroup = bot->GetGroup() && bot->GetGroup()->GetLeaderGuid() == bot->GetObjectGuid();
+   uint8 joinAsGroup = bot->GetGroup() && bot->GetGroup()->IsLeader(bot->GetObjectGuid());
    bool isPremade = false;
    bool isArena = false;
    bool isRated = false;
