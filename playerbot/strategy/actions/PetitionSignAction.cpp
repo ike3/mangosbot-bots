@@ -22,7 +22,9 @@ bool PetitionSignAction::Execute(Event event)
     uint8 unk = 0;
     bool isArena = false;
     p >> petitionGuid >> inviter;
+    uint32 type = 9;
 
+#ifndef MANGOSBOT_ZERO
     QueryResult* result = CharacterDatabase.PQuery("SELECT `type` FROM `petition` WHERE `petitionguid` = '%u'", petitionGuid.GetCounter());
     if (!result)
     {
@@ -32,6 +34,7 @@ bool PetitionSignAction::Execute(Event event)
     Field* fields = result->Fetch();
     uint32 type = fields[0].GetUInt32();
     delete result;
+#endif
 
     bool accept = true;
 
@@ -67,7 +70,7 @@ bool PetitionSignAction::Execute(Event event)
     if (!inviter)
         return false;
 
-    if (!accept /*|| !ai->GetSecurity()->CheckLevelFor(PLAYERBOT_SECURITY_INVITE, false, _inviter, true)*/)
+    if (!accept || !ai->GetSecurity()->CheckLevelFor(PLAYERBOT_SECURITY_INVITE, false, _inviter, true))
     {
         WorldPacket data(MSG_PETITION_DECLINE);
         p << petitionGuid;
