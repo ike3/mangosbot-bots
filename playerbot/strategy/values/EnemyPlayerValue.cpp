@@ -47,8 +47,9 @@ bool NearestEnemyPlayersValue::AcceptUnit(Unit* unit)
         enemy->IsPvP() &&
         !sPlayerbotAIConfig.IsInPvpProhibitedZone(enemy->GetAreaId()) &&
         !enemy->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE) &&
-        !enemy->HasStealthAura() &&
-        !enemy->HasInvisibilityAura() &&
+        //!enemy->HasStealthAura() &&
+        //!enemy->HasInvisibilityAura() &&
+        enemy->IsVisibleForOrDetect(bot, enemy, false) &&
         !(enemy->HasAuraType(SPELL_AURA_SPIRIT_OF_REDEMPTION))
         )
         return true;
@@ -70,7 +71,7 @@ Unit* EnemyPlayerValue::Calculate()
         {
             if (pTarget != pVictim &&
                 pTarget->IsPlayer() &&
-                pTarget->IsVisibleForOrDetect(bot, bot, false) &&
+                pTarget->IsVisibleForOrDetect(bot, pTarget, false) &&
                 bot->IsWithinDist(pTarget, VISIBILITY_DISTANCE_NORMAL))
             {
                 if (bot->GetTeam() == HORDE)
@@ -156,6 +157,7 @@ Unit* EnemyPlayerValue::Calculate()
                     if (bot->IsWithinDist(pAttacker, maxAggroDistance * 2.0f) &&
                         bot->IsWithinLOSInMap(pAttacker) &&
                         pAttacker != pVictim &&
+                        pAttacker->IsVisibleForOrDetect(bot, pAttacker, false) &&
                         pAttacker->IsPlayer())
                         return pAttacker;
             }
