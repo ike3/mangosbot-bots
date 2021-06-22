@@ -36,7 +36,7 @@ bool SayAction::Execute(Event event)
                 string type = fields[2].GetString();
 
                 if (type == "yell") text = "/y " + text;
-                if (text != "") stringTable[name].push_back(text);
+                if (!text.empty() && text != "") stringTable[name].push_back(text);
             } while (results->NextRow());
 			delete results;
 		}
