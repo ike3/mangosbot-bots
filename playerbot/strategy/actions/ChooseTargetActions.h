@@ -22,6 +22,12 @@ namespace ai
         DpsAssistAction(PlayerbotAI* ai) : AttackAction(ai, "dps assist") {}
 
         virtual string GetTargetName() { return "dps target"; }
+        virtual bool isUseful()
+        {
+            // if carry flag, do not start fight
+            if (bot->HasAura(23333) || bot->HasAura(23335))
+                return false;
+        }
     };
 
     class TankAssistAction : public AttackAction
@@ -95,6 +101,11 @@ namespace ai
         AttackEnemyPlayerAction(PlayerbotAI* ai) : AttackAction(ai, "attack enemy player") {}
         virtual string GetTargetName() { return "enemy player target"; }
         virtual bool isUseful() {
+
+            // if carry flag, do not start fight
+            if (bot->HasAura(23333) || bot->HasAura(23335))
+                return false;
+
             return !sPlayerbotAIConfig.IsInPvpProhibitedZone(bot->GetAreaId());
         }
     };
@@ -113,7 +124,7 @@ namespace ai
         virtual string GetTargetName() { return "enemy flag carrier"; }
         virtual bool isUseful() {
             Unit* target = context->GetValue<Unit*>("enemy flag carrier")->Get();
-            return target && sServerFacade.IsDistanceLessOrEqualThan(sServerFacade.GetDistance2d(bot, target), VISIBILITY_DISTANCE_SMALL) && (bot->HasAura(23333) || bot->HasAura(23335));
+            return target && sServerFacade.IsDistanceLessOrEqualThan(sServerFacade.GetDistance2d(bot, target), 75.0f) && (bot->HasAura(23333) || bot->HasAura(23335));
         }
     };
 
