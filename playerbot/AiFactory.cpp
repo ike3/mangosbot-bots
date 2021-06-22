@@ -535,25 +535,25 @@ void AiFactory::AddDefaultNonCombatStrategies(Player* player, PlayerbotAI* const
             nonCombatEngine->addStrategy("arena");
             nonCombatEngine->removeStrategy("mount");
         }
-        else if (player->GetBattleGround()->GetTypeId() <= BATTLEGROUND_AB)
-            nonCombatEngine->addStrategies("battleground", NULL);
-
-        if (player->GetBattleGroundTypeId() == BATTLEGROUND_WS)
-            nonCombatEngine->addStrategies("warsong", NULL);
-
-        if (player->GetBattleGroundTypeId() == BATTLEGROUND_AV)
-            nonCombatEngine->addStrategies("alterac", NULL);
-
-        if (player->GetBattleGroundTypeId() == BATTLEGROUND_AB)
-            nonCombatEngine->addStrategies("arathi", NULL);
-
-#ifndef MANGOSBOT_ZERO
-        if (player->InArena())
+        else
         {
-            nonCombatEngine->addStrategy("arena");
-            nonCombatEngine->removeStrategy("mount");
-        }
+#ifndef MANGOSBOT_ZERO
+            if (player->GetBattleGround()->GetTypeId() <= BATTLEGROUND_EY) // do not add for not supported bg
+                nonCombatEngine->addStrategies("battleground", NULL);
+#else
+            if (player->GetBattleGround()->GetTypeId() <= BATTLEGROUND_AB) // do not add for not supported bg
+                nonCombatEngine->addStrategies("battleground", NULL);
 #endif
+
+            if (player->GetBattleGroundTypeId() == BATTLEGROUND_WS)
+                nonCombatEngine->addStrategies("warsong", NULL);
+
+            if (player->GetBattleGroundTypeId() == BATTLEGROUND_AV)
+                nonCombatEngine->addStrategies("alterac", NULL);
+
+            if (player->GetBattleGroundTypeId() == BATTLEGROUND_AB)
+                nonCombatEngine->addStrategies("arathi", NULL);
+        }
     }
 }
 
