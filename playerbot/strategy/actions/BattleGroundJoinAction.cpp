@@ -1000,6 +1000,7 @@ bool BGStatusAction::Execute(Event event)
 
         ai->ResetStrategies(false);
         //ai->ChangeStrategy("-bg,-rpg,-travel,-grind", BOT_STATE_NON_COMBAT);
+        context->GetValue<uint32>("bg role")->Set(urand(0, 9));
         ai::PositionMap& posMap = context->GetValue<ai::PositionMap&>("position")->Get();
         ai::PositionEntry pos = context->GetValue<ai::PositionMap&>("position")->Get()["bg objective"];
         pos.Reset();
