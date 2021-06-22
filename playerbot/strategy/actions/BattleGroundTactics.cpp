@@ -1616,10 +1616,11 @@ std::vector<BattleBotPath*> const vPaths_AV =
     &vPath_AV_Iceblood_Graveyard_to_Iceblood_Tower_Crossroad,
     &vPath_AV_Frostdagger_Pass,
     &vPath_AV_Frostdagger_Pass_Lower_to_Iceblood_Garrison,
-    //&vPath_AV_Frostwolf_Graveyard_Flag_to_Coldtooth_Mine_Entrance,
-    //&vPath_AV_Coldtooth_Mine_Entrance_to_Coldtooth_Mine_Boss,
-    //&vPath_AV_Stormpike_Crossroad_to_Irontooth_Mine_Entrance,
-    //&vPath_AV_Irontooth_Mine_Entrance_to_Irontooth_Mine_Boss,
+    &vPath_AV_Frostwolf_Graveyard_Flag_to_Coldtooth_Mine_Entrance,
+    &vPath_AV_Coldtooth_Mine_Entrance_to_Coldtooth_Mine_Boss,
+    &vPath_AV_Stormpike_Crossroad_to_Irontooth_Mine_Entrance,
+    &vPath_AV_Irontooth_Mine_Entrance_to_Irontooth_Mine_Boss,
+};
 
 #ifndef MANGOSBOT_ZERO
 std::vector<BattleBotPath*> const vPaths_EY =
@@ -2293,29 +2294,29 @@ bool BGTactics::selectObjective(bool reset)
             }
 
             // Mine capture (need paths & script fix)
-            /*if (!BgObjective && supporter && !endBoss && (bg->IsActiveEvent(BG_AV_MINE_BOSSES_NORTH, TEAM_INDEX_ALLIANCE) || bg->IsActiveEvent(BG_AV_MINE_BOSSES_NORTH, TEAM_INDEX_NEUTRAL)) &&
+            if (!BgObjective && supporter && !endBoss && (bg->IsActiveEvent(BG_AV_MINE_BOSSES_NORTH, TEAM_INDEX_ALLIANCE) || bg->IsActiveEvent(BG_AV_MINE_BOSSES_NORTH, TEAM_INDEX_NEUTRAL)) &&
                 !bg->IsActiveEvent(BG_AV_NODES_STORMPIKE_GRAVE, BG_AV_NODE_STATUS_ALLY_OCCUPIED))
             {
                 if (Creature* mBossNeutral = bot->GetMap()->GetCreature(bg->GetSingleCreatureGuid(BG_AV_MINE_BOSSES_NORTH, TEAM_INDEX_NEUTRAL)))
                 {
-                    if (mBossNeutral->GetDeathState() != DEAD && bg->IsActiveEvent(BG_AV_MINE_BOSSES_NORTH, TEAM_INDEX_NEUTRAL))
+                    if (bot->IsWithinDist(mBossNeutral, VISIBILITY_DISTANCE_GIGANTIC) && mBossNeutral->GetDeathState() != DEAD && bg->IsActiveEvent(BG_AV_MINE_BOSSES_NORTH, TEAM_INDEX_NEUTRAL))
                     {
                         BgObjective = mBossNeutral;
-                        ostringstream out; out << "Attacking Neutral Mine Boss!";
-                        bot->Say(out.str(), LANG_UNIVERSAL);
+                        //ostringstream out; out << "Attacking Neutral Mine Boss!";
+                        //bot->Say(out.str(), LANG_UNIVERSAL);
                     }
                 }
 
                 if (Creature* mBossAlly = bot->GetMap()->GetCreature(bg->GetSingleCreatureGuid(BG_AV_MINE_BOSSES_NORTH, TEAM_INDEX_ALLIANCE)))
                 {
-                    if (!BgObjective && mBossAlly->GetDeathState() != DEAD && bg->IsActiveEvent(BG_AV_MINE_BOSSES_NORTH, TEAM_INDEX_ALLIANCE))
+                    if (!BgObjective && bot->IsWithinDist(mBossAlly, VISIBILITY_DISTANCE_GIGANTIC) && mBossAlly->GetDeathState() != DEAD && bg->IsActiveEvent(BG_AV_MINE_BOSSES_NORTH, TEAM_INDEX_ALLIANCE))
                     {
                         BgObjective = mBossAlly;
-                        ostringstream out; out << "Attacking Ally Mine Boss!";
-                        bot->Say(out.str(), LANG_UNIVERSAL);
+                        //ostringstream out; out << "Attacking Ally Mine Boss!";
+                        //bot->Say(out.str(), LANG_UNIVERSAL);
                     }
                 }
-            }*/
+            }
 
             //bool strifeTime = bg->GetStartTime() < (uint32)(5 * MINUTE * IN_MILLISECONDS);
             // small strike team to first bunker
@@ -2390,29 +2391,29 @@ bool BGTactics::selectObjective(bool reset)
             }
 
             // Mine capture (need paths & script fix)
-            /*if (!BgObjective && supporter && !endBoss && (bg->IsActiveEvent(BG_AV_MINE_BOSSES_SOUTH, TEAM_INDEX_HORDE) || bg->IsActiveEvent(BG_AV_MINE_BOSSES_SOUTH, TEAM_INDEX_NEUTRAL)) &&
+            if (!BgObjective && supporter && !endBoss && (bg->IsActiveEvent(BG_AV_MINE_BOSSES_SOUTH, TEAM_INDEX_HORDE) || bg->IsActiveEvent(BG_AV_MINE_BOSSES_SOUTH, TEAM_INDEX_NEUTRAL)) &&
                 !bg->IsActiveEvent(BG_AV_NODES_FROSTWOLF_GRAVE, BG_AV_NODE_STATUS_HORDE_OCCUPIED))
             {
                 if (Creature* mBossNeutral = bot->GetMap()->GetCreature(bg->GetSingleCreatureGuid(BG_AV_MINE_BOSSES_SOUTH, TEAM_INDEX_NEUTRAL)))
                 {
-                    if (mBossNeutral->GetDeathState() != DEAD && bg->IsActiveEvent(BG_AV_MINE_BOSSES_SOUTH, TEAM_INDEX_NEUTRAL))
+                    if (bot->IsWithinDist(mBossNeutral, VISIBILITY_DISTANCE_GIGANTIC) && mBossNeutral->GetDeathState() != DEAD && bg->IsActiveEvent(BG_AV_MINE_BOSSES_SOUTH, TEAM_INDEX_NEUTRAL))
                     {
                         BgObjective = mBossNeutral;
-                        ostringstream out; out << "Attacking Neutral Mine Boss!";
-                        bot->Say(out.str(), LANG_UNIVERSAL);
+                        //ostringstream out; out << "Attacking Neutral Mine Boss!";
+                        //bot->Say(out.str(), LANG_UNIVERSAL);
                     }
                 }
 
                 if (Creature* mBossHorde = bot->GetMap()->GetCreature(bg->GetSingleCreatureGuid(BG_AV_MINE_BOSSES_SOUTH, TEAM_INDEX_HORDE)))
                 {
-                    if (!BgObjective && mBossHorde->GetDeathState() != DEAD && bg->IsActiveEvent(BG_AV_MINE_BOSSES_SOUTH, TEAM_INDEX_HORDE))
+                    if (!BgObjective && bot->IsWithinDist(mBossHorde, VISIBILITY_DISTANCE_GIGANTIC) && mBossHorde->GetDeathState() != DEAD && bg->IsActiveEvent(BG_AV_MINE_BOSSES_SOUTH, TEAM_INDEX_HORDE))
                     {
                         BgObjective = mBossHorde;
-                        ostringstream out; out << "Attacking Horde Mine Boss!";
-                        bot->Say(out.str(), LANG_UNIVERSAL);
+                        //ostringstream out; out << "Attacking Horde Mine Boss!";
+                        //bot->Say(out.str(), LANG_UNIVERSAL);
                     }
                 }
-            }*/
+            }
 
             if (!BgObjective)
             {
@@ -2794,6 +2795,12 @@ bool BGTactics::selectObjectiveWp(std::vector<BattleBotPath*> const& vPaths)
 
     for (const auto& pPath : vPaths)
     {
+        // skip mine paths of own faction
+        if (bot->GetTeam() == ALLIANCE && std::find(vPaths_AllyMine.begin(), vPaths_AllyMine.end(), pPath) != vPaths_AllyMine.end())
+            continue;
+        if (bot->GetTeam() == HORDE && std::find(vPaths_HordeMine.begin(), vPaths_HordeMine.end(), pPath) != vPaths_HordeMine.end())
+            continue;
+
         {
             BattleBotWaypoint& lastPoint = ((*pPath)[pPath->size() - 1]);
             float const distanceFromPathEndToTarget = sqrt(Position(pos.x, pos.y, pos.z, 0.f).GetDistance(Position(lastPoint.x, lastPoint.y, lastPoint.z, 0.f)));
@@ -2943,18 +2950,18 @@ bool BGTactics::startNewPathBegin(std::vector<BattleBotPath*> const& vPaths)
 
     for (const auto& pPath : vPaths)
     {
+        // skip mine paths of own faction
+        if (bot->GetTeam() == ALLIANCE && std::find(vPaths_AllyMine.begin(), vPaths_AllyMine.end(), pPath) != vPaths_AllyMine.end())
+            continue;
+        if (bot->GetTeam() == HORDE && std::find(vPaths_HordeMine.begin(), vPaths_HordeMine.end(), pPath) != vPaths_HordeMine.end())
+            continue;
+
         BattleBotWaypoint* pStart = &((*pPath)[0]);
         if (sqrt(bot->GetDistance(pStart->x, pStart->y, pStart->z, DIST_CALC_NONE) < INTERACTION_DISTANCE))
             availablePaths.emplace_back(AvailablePath(pPath, false));
 
         // Some paths are not allowed backwards.
         if (std::find(vPaths_NoReverseAllowed.begin(), vPaths_NoReverseAllowed.end(), pPath) != vPaths_NoReverseAllowed.end())
-            continue;
-
-        // skip mine paths of own faction
-        if (bot->GetTeam() == ALLIANCE && std::find(vPaths_AllyMine.begin(), vPaths_AllyMine.end(), pPath) != vPaths_AllyMine.end())
-            continue;
-        if (bot->GetTeam() == HORDE && std::find(vPaths_HordeMine.begin(), vPaths_HordeMine.end(), pPath) != vPaths_HordeMine.end())
             continue;
 
         BattleBotWaypoint* pEnd = &((*pPath)[(*pPath).size() - 1]);
@@ -2983,6 +2990,12 @@ bool BGTactics::startNewPathFree(std::vector<BattleBotPath*> const& vPaths)
 
     for (const auto& pPath : vPaths)
     {
+        // skip mine paths of own faction
+        if (bot->GetTeam() == ALLIANCE && std::find(vPaths_AllyMine.begin(), vPaths_AllyMine.end(), pPath) != vPaths_AllyMine.end())
+            continue;
+        if (bot->GetTeam() == HORDE && std::find(vPaths_HordeMine.begin(), vPaths_HordeMine.end(), pPath) != vPaths_HordeMine.end())
+            continue;
+
         for (uint32 i = 0; i < pPath->size(); i++)
         {
             BattleBotWaypoint& waypoint = ((*pPath)[i]);
