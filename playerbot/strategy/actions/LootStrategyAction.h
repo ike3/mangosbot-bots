@@ -9,5 +9,8 @@ namespace ai
     public:
         LootStrategyAction(PlayerbotAI* ai) : ChatCommandAction(ai, "ll") {}
         virtual bool Execute(Event& event) override;
+
+    private:
+        void TellLootList(Player* requester, const string& name);
     };
 }
