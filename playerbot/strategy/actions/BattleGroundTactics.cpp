@@ -51,6 +51,10 @@ std::vector<uint32> const vFlagsAB = { BG_AB_BANNER_ALLIANCE , BG_AB_BANNER_CONT
 
 std::vector<uint32> const vFlagsWS = { GO_WS_SILVERWING_FLAG, GO_WS_WARSONG_FLAG, GO_WS_SILVERWING_FLAG_DROP, GO_WS_WARSONG_FLAG_DROP };
 
+#ifndef MANGOSBOT_ZERO
+std::vector<uint32> const vFlagsEY = { GO_EY_NETHERSTORM_FLAG, GO_EY_NETHERSTORM_FLAG_DROP};
+#endif
+
 // BG Waypoints (vmangos)
 
 // Horde Flag Room to Horde Graveyard
@@ -1616,7 +1620,13 @@ std::vector<BattleBotPath*> const vPaths_AV =
     //&vPath_AV_Coldtooth_Mine_Entrance_to_Coldtooth_Mine_Boss,
     //&vPath_AV_Stormpike_Crossroad_to_Irontooth_Mine_Entrance,
     //&vPath_AV_Irontooth_Mine_Entrance_to_Irontooth_Mine_Boss,
+
+#ifndef MANGOSBOT_ZERO
+std::vector<BattleBotPath*> const vPaths_EY =
+{
+
 };
+#endif
 
 std::vector<BattleBotPath*> const vPaths_NoReverseAllowed =
 {
@@ -2017,6 +2027,14 @@ bool BGTactics::Execute(Event event)
         vFlagIds = &vFlagsWS;
         break;
     }
+#ifndef MANGOSBOT_ZERO
+    case BATTLEGROUND_EY:
+    {
+        vPaths = &vPaths_EY;
+        vFlagIds = &vFlagsEY;
+        break;
+    }
+#endif
     default:
         break;
     }
@@ -2692,6 +2710,25 @@ bool BGTactics::selectObjective(bool reset)
         }
         break;
     }
+#ifndef MANGOSBOT_ZERO
+    case BATTLEGROUND_EY:
+    {
+        if (GameObject* pGO = bot->GetMap()->GetGameObject(bg->GetSingleGameObjectGuid(EY_EVENT_CAPTURE_FLAG, EY_EVENT2_FLAG_CENTER)))
+        {
+            if (pGO->IsSpawned())
+            {
+                BgObjective = pGO;
+            }
+        }
+        if (BgObjective)
+        {
+            pos.Set(BgObjective->GetPositionX(), BgObjective->GetPositionY(), BgObjective->GetPositionZ(), BgObjective->GetMapId());
+            posMap["bg objective"] = pos;
+            return true;
+        }
+        break;
+    }
+#endif
     }
 
     return false;
