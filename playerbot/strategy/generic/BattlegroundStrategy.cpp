@@ -39,7 +39,7 @@ void WarsongStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "enemy flagcarrier near",
-        NextAction::array(0, new NextAction("attack enemy flag carrier", 60.0f), NULL)));
+        NextAction::array(0, new NextAction("attack enemy flag carrier", 80.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
         "player has flag",
@@ -86,7 +86,7 @@ void BattlegroundStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "enemy flagcarrier near",
-        NextAction::array(0, new NextAction("attack enemy flag carrier", 60.0f), NULL)));
+        NextAction::array(0, new NextAction("attack enemy flag carrier", 80.0f), NULL)));
 
     /*triggers.push_back(new TriggerNode(
         "team flagcarrier near",

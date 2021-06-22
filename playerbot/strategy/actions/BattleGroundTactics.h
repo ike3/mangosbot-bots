@@ -6,6 +6,9 @@
 #include "BattleGroundWS.h"
 #include "BattleGroundAV.h"
 #include "BattleGroundAB.h"
+#ifndef MANGOSBOT_ZERO
+#include "BattleGroundEY.h"
+#endif
 #include "CheckMountStateAction.h"
 
 using namespace ai;
@@ -30,6 +33,7 @@ typedef std::vector<BattleBotWaypoint> BattleBotPath;
 extern std::vector<BattleBotPath*> const vPaths_WS;
 extern std::vector<BattleBotPath*> const vPaths_AB;
 extern std::vector<BattleBotPath*> const vPaths_AV;
+extern std::vector<BattleBotPath*> const vPaths_EY;
 
 class BGTactics : public MovementAction
 {
