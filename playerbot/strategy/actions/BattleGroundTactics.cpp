@@ -1742,7 +1742,7 @@ bool BGTactics::wsgPaths()
                 return  true;
             }
         }
-        else if (Preference > 7) { // preference < 7 = move through graveyard (BUGGED)
+        else if (Preference < 7) { // preference < 7 = move through graveyard (BUGGED)
             if (bot->GetPositionX() < 985.f) //to the gate at the upper tunnel
             {
                 MoveTo(bg->GetMapId(), 985.940125f, 1423.260254f, 345.418121f);
@@ -2227,7 +2227,7 @@ bool BGTactics::selectObjective(bool reset)
             }
 
             uint32 role = context->GetValue<uint32>("bg role")->Get();
-            bool supporter = role < 4; // first bunker strike team
+            bool supporter = role < 3; // first bunker strike team
 
             // Only go to Snowfall Graveyard if already close to it.
             // Need to fix AV script
@@ -2283,10 +2283,10 @@ bool BGTactics::selectObjective(bool reset)
                     if (!BgObjective && bg->IsActiveEvent(objective.first, BG_AV_NODE_STATUS_ALLY_CONTESTED))
                     {
                         if (GameObject* pGO = bot->GetMap()->GetGameObject(bg->GetSingleGameObjectGuid(objective.first, objective.second)))
-                            if (bot->IsWithinDist(pGO, VISIBILITY_DISTANCE_LARGE))
+                            if (bot->IsWithinDist(pGO, VISIBILITY_DISTANCE_GIGANTIC))
                             {
                                 BgObjective = pGO;
-                                ostringstream out; out << "Defending Node #" << objective.first;
+                                //ostringstream out; out << "Defending Node #" << objective.first;
                                 //bot->Say(out.str(), LANG_UNIVERSAL);
                             }
                     }
@@ -2359,7 +2359,7 @@ bool BGTactics::selectObjective(bool reset)
             }
 
             uint32 role = context->GetValue<uint32>("bg role")->Get();
-            bool supporter = role < 4;
+            bool supporter = role < 3;
 
             // Only go to Snowfall Graveyard if already close to it.
             if (!BgObjective && supporter && (bg->IsActiveEvent(BG_AV_NODES_SNOWFALL_GRAVE, BG_AV_NODE_STATUS_HORDE_CONTESTED) || bg->IsActiveEvent(BG_AV_NODES_SNOWFALL_GRAVE, BG_AV_NODE_STATUS_HORDE_OCCUPIED) || bg->IsActiveEvent(BG_AV_NODES_SNOWFALL_GRAVE, BG_AV_NODE_STATUS_NEUTRAL_OCCUPIED)))
@@ -2630,9 +2630,9 @@ bool BGTactics::selectObjective(bool reset)
 
                     for (const auto& objective : AB_AttackObjectives)
                     {
-                        if (bg->IsActiveEvent(objective.first, BG_AB_NODE_STATUS_NEUTRAL) || bg->IsActiveEvent(objective.first, BG_AB_NODE_STATUS_ALLY_OCCUPIED) || bg->IsActiveEvent(objective.first, BG_AB_NODE_STATUS_ALLY_CONTESTED))
+                        if (bg->IsActiveEvent(objective.first, BG_AB_NODE_STATUS_NEUTRAL) || ((!defender || !objectives.size()) && bg->IsActiveEvent(objective.first, BG_AB_NODE_STATUS_ALLY_OCCUPIED)) || ((defender || !objectives.size()) && bg->IsActiveEvent(objective.first, BG_AB_NODE_STATUS_ALLY_CONTESTED)))
                         {
-                            if (GameObject* pGO = bot->GetMap()->GetGameObject(bg->GetSingleGameObjectGuid(objective.first, defender ? BG_AB_NODE_STATUS_ALLY_CONTESTED : BG_AB_NODE_STATUS_ALLY_OCCUPIED)))
+                            if (GameObject* pGO = bot->GetMap()->GetGameObject(bg->GetSingleGameObjectGuid(objective.first, BG_AB_NODE_STATUS_NEUTRAL)))
                             {
                                 float const distance = sqrt(bot->GetDistance(pGO));
                                 if (attackObjectiveDistance > distance)
@@ -2672,9 +2672,9 @@ bool BGTactics::selectObjective(bool reset)
 
                 for (const auto& objective : AB_AttackObjectives)
                 {
-                    if (bg->IsActiveEvent(objective.first, BG_AB_NODE_STATUS_NEUTRAL) || bg->IsActiveEvent(objective.first, BG_AB_NODE_STATUS_HORDE_OCCUPIED) || bg->IsActiveEvent(objective.first, BG_AB_NODE_STATUS_HORDE_CONTESTED))
+                    if (bg->IsActiveEvent(objective.first, BG_AB_NODE_STATUS_NEUTRAL) || ((!defender || !objectives.size()) && bg->IsActiveEvent(objective.first, BG_AB_NODE_STATUS_HORDE_OCCUPIED)) || ((defender || !objectives.size()) && bg->IsActiveEvent(objective.first, BG_AB_NODE_STATUS_HORDE_CONTESTED)))
                     {
-                        if (GameObject* pGO = bot->GetMap()->GetGameObject(bg->GetSingleGameObjectGuid(objective.first, defender ? BG_AB_NODE_STATUS_HORDE_CONTESTED : BG_AB_NODE_STATUS_HORDE_OCCUPIED)))
+                        if (GameObject* pGO = bot->GetMap()->GetGameObject(bg->GetSingleGameObjectGuid(objective.first, BG_AB_NODE_STATUS_NEUTRAL)))
                         {
                             float const distance = sqrt(bot->GetDistance(pGO));
                             if (attackObjectiveDistance > distance)
@@ -2785,7 +2785,7 @@ bool BGTactics::selectObjectiveWp(std::vector<BattleBotPath*> const& vPaths)
         return false;
 
     // use Rym's waypoints for WSG
-    if (bg->GetTypeId() == BATTLEGROUND_WS && (bot->HasAura(BG_WS_SPELL_WARSONG_FLAG) || bot->HasAura(BG_WS_SPELL_SILVERWING_FLAG)))
+    if (bg->GetTypeId() == BATTLEGROUND_WS/* && (bot->HasAura(BG_WS_SPELL_WARSONG_FLAG) || bot->HasAura(BG_WS_SPELL_SILVERWING_FLAG))*/)
         return wsgPaths();
 
     BattleBotPath* pClosestPath = nullptr;
