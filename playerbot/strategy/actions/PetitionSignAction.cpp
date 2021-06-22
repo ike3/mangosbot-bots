@@ -32,7 +32,7 @@ bool PetitionSignAction::Execute(Event event)
     }
 
     Field* fields = result->Fetch();
-    uint32 type = fields[0].GetUInt32();
+    type = fields[0].GetUInt32();
     delete result;
 #endif
 
