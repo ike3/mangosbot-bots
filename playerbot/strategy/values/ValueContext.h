@@ -134,6 +134,7 @@ namespace ai
             creators["available loot"] = &ValueContext::available_loot;
             creators["has available loot"] = &ValueContext::has_available_loot;
             creators["always loot list"] = &ValueContext::always_loot_list;
+            creators["skip loot list"] = &ValueContext::skip_loot_list;
             creators["loot strategy"] = &ValueContext::loot_strategy;
             creators["last movement"] = &ValueContext::last_movement;
             creators["stay time"] = &ValueContext::stay_time;
@@ -244,7 +245,8 @@ namespace ai
         static UntypedValue* available_loot(PlayerbotAI* ai) { return new AvailableLootValue(ai); }
         static UntypedValue* loot_target(PlayerbotAI* ai) { return new LootTargetValue(ai); }
         static UntypedValue* has_available_loot(PlayerbotAI* ai) { return new HasAvailableLootValue(ai); }
-        static UntypedValue* always_loot_list(PlayerbotAI* ai) { return new AlwaysLootListValue(ai); }
+        static UntypedValue* always_loot_list(PlayerbotAI* ai) { return new AlwaysLootListValue(ai, "always loot list"); }
+        static UntypedValue* skip_loot_list(PlayerbotAI* ai) { return new AlwaysLootListValue(ai, "skip loot list"); }
         static UntypedValue* loot_strategy(PlayerbotAI* ai) { return new LootStrategyValue(ai); }
 
         static UntypedValue* attacker_count(PlayerbotAI* ai) { return new AttackerCountValue(ai); }

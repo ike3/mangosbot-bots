@@ -324,6 +324,10 @@ bool StoreLootAction::IsLootAllowed(uint32 itemid, PlayerbotAI *ai)
     if (lootItems.find(itemid) != lootItems.end())
         return true;
 
+    set<uint32>& skipItems = AI_VALUE(set<uint32>&, "skip loot list");
+    if (skipItems.find(itemid) != skipItems.end())
+        return false;
+
     ItemPrototype const *proto = sObjectMgr.GetItemPrototype(itemid);
     if (!proto)
         return false;

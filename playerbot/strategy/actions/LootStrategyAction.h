@@ -9,6 +9,9 @@ namespace ai
     public:
         LootStrategyAction(PlayerbotAI* ai) : Action(ai, "ll") {}
         virtual bool Execute(Event event);
+
+    private:
+        void TellLootList(string name);
     };
 
 }

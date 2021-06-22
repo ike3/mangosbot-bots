@@ -11,10 +11,7 @@ bool LootStrategyAction::Execute(Event event)
 {
     string strategy = event.getParam();
 
-    LootObjectStack* lootItems = AI_VALUE(LootObjectStack*, "available loot");
-    set<uint32>& alwaysLootItems = AI_VALUE(set<uint32>&, "always loot list");
     Value<LootStrategy*>* lootStrategy = context->GetValue<LootStrategy*>("loot strategy");
-
     if (strategy == "?")
     {
         {
@@ -24,20 +21,8 @@ bool LootStrategyAction::Execute(Event event)
             ai->TellMaster(out);
         }
 
-        {
-            ostringstream out;
-            out << "Always loot items: ";
-
-            for (set<uint32>::iterator i = alwaysLootItems.begin(); i != alwaysLootItems.end(); i++)
-            {
-                ItemPrototype const *proto = sItemStorage.LookupEntry<ItemPrototype>(*i);
-                if (!proto)
-                    continue;
-
-                out << chat->formatItem(proto);
-            }
-            ai->TellMaster(out);
-        }
+        TellLootList("always loot list");
+        TellLootList("skip loot list");
     }
     else
     {
@@ -52,8 +37,13 @@ bool LootStrategyAction::Execute(Event event)
             return true;
         }
 
+        bool clear = strategy.size() > 1 && strategy.substr(0, 1) == "!";
         bool remove = strategy.size() > 1 && strategy.substr(0, 1) == "-";
         bool query = strategy.size() > 1 && strategy.substr(0, 1) == "?";
+        bool add = !clear && !remove && !query;
+        bool changes = false;
+        set<uint32>& alwaysLootItems = AI_VALUE(set<uint32>&, "always loot list");
+        set<uint32>& skipLootItems = AI_VALUE(set<uint32>&, "skip loot list");
         for (ItemIds::iterator i = items.begin(); i != items.end(); i++)
         {
             uint32 itemid = *i;
@@ -67,22 +57,57 @@ bool LootStrategyAction::Execute(Event event)
                     ai->TellMaster(out.str());
                 }
             }
-            else if (remove)
+
+            if (clear || add)
+            {
+                set<uint32>::iterator j = skipLootItems.find(itemid);
+                if (j != skipLootItems.end()) skipLootItems.erase(j);
+                changes = true;
+            }
+
+            if (clear || remove)
             {
                 set<uint32>::iterator j = alwaysLootItems.find(itemid);
-                if (j != alwaysLootItems.end())
-                    alwaysLootItems.erase(j);
-
-                ai->TellMaster("Item(s) removed from always loot list");
+                if (j != alwaysLootItems.end()) alwaysLootItems.erase(j);
+                changes = true;
             }
-            else
+
+            if (remove)
+            {
+                skipLootItems.insert(itemid);
+                changes = true;
+            }
+
+            if (add)
             {
                 alwaysLootItems.insert(itemid);
-                ai->TellMaster("Item(s) added to always loot list");
+                changes = true;
             }
+        }
+
+        if (changes)
+        {
+            TellLootList("always loot list");
+            TellLootList("skip loot list");
         }
     }
 
     return true;
 }
 
+void LootStrategyAction::TellLootList(string name)
+{
+    set<uint32>& alwaysLootItems = AI_VALUE(set<uint32>&, name);
+    ostringstream out;
+    out << "My " << name << ":";
+
+    for (set<uint32>::iterator i = alwaysLootItems.begin(); i != alwaysLootItems.end(); i++)
+    {
+        ItemPrototype const *proto = sItemStorage.LookupEntry<ItemPrototype>(*i);
+        if (!proto)
+            continue;
+
+        out << " " << chat->formatItem(proto);
+    }
+    ai->TellMaster(out);
+}
