@@ -85,6 +85,7 @@ namespace ai
         SetFacingTargetAction(PlayerbotAI* ai) : MovementAction(ai, "set facing") {}
         virtual bool Execute(Event event);
         virtual bool isUseful();
+        virtual bool isPossible();
     };
 
     class SetBehindTargetAction : public MovementAction

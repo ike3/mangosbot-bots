@@ -529,7 +529,8 @@ bool MovementAction::IsMovingAllowed()
             sServerFacade.IsInRoots(bot) ||
             bot->HasAuraType(SPELL_AURA_SPIRIT_OF_REDEMPTION) ||
             bot->HasAuraType(SPELL_AURA_MOD_CONFUSE) || sServerFacade.IsCharmed(bot) ||
-            bot->HasAuraType(SPELL_AURA_MOD_STUN) || bot->IsFlying())
+            bot->HasAuraType(SPELL_AURA_MOD_STUN) || bot->IsFlying() ||
+            bot->hasUnitState(UNIT_STAT_CAN_NOT_REACT_OR_LOST_CONTROL))
         return false;
 
     MotionMaster &mm = *bot->GetMotionMaster();
@@ -912,6 +913,20 @@ bool SetFacingTargetAction::Execute(Event event)
 bool SetFacingTargetAction::isUseful()
 {
     return !AI_VALUE2(bool, "facing", "current target");
+}
+
+bool SetFacingTargetAction::isPossible()
+{
+    if (sServerFacade.IsFrozen(bot) || bot->IsPolymorphed() ||
+        (sServerFacade.UnitIsDead(bot) && !bot->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_GHOST)) ||
+        bot->IsBeingTeleported() ||
+        bot->HasAuraType(SPELL_AURA_SPIRIT_OF_REDEMPTION) ||
+        bot->HasAuraType(SPELL_AURA_MOD_CONFUSE) || sServerFacade.IsCharmed(bot) ||
+        bot->HasAuraType(SPELL_AURA_MOD_STUN) || bot->IsFlying() ||
+        bot->hasUnitState(UNIT_STAT_CAN_NOT_REACT_OR_LOST_CONTROL))
+        return false;
+
+    return true;
 }
 
 bool SetBehindTargetAction::Execute(Event event)
