@@ -352,7 +352,7 @@ public:
     //Get the group leader or the master of the bot.
     Player* GetGroupMaster() { return bot->GetGroup() ? (sObjectMgr.GetPlayer(bot->GetGroup()->GetLeaderGuid()) ? sObjectMgr.GetPlayer(bot->GetGroup()->GetLeaderGuid()) : master) : master; }
     //Returns a semi-random (cycling) number that is fixed for each bot.
-    uint32 GetFixedBotNumer(BotTypeNumber typeNumber, uint32 maxNum = 100, uint32 cyclePerMin = 1); 
+    uint32 GetFixedBotNumer(BotTypeNumber typeNumber, uint32 maxNum = 100, float cyclePerMin = 1); 
 
     GrouperType GetGrouperType();
     bool HasPlayerNearby(WorldPosition* pos, float range = sPlayerbotAIConfig.reactDistance);

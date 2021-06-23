@@ -1769,7 +1769,7 @@ enum BotTypeNumber
 };
 */
 
-uint32 PlayerbotAI::GetFixedBotNumer(BotTypeNumber typeNumber, uint32 maxNum, uint32 cyclePerMin)
+uint32 PlayerbotAI::GetFixedBotNumer(BotTypeNumber typeNumber, uint32 maxNum, float cyclePerMin)
 {
     std::mt19937 rng(typeNumber);
     uint32 randseed = rng();                                       //Seed random number
