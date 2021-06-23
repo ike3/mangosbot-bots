@@ -50,6 +50,7 @@
 #include "SaveManaAction.h"
 #include "../values/Formations.h"
 #include "../values/Stances.h"
+#include "AhAction.h"
 #include "CustomStrategyEditAction.h"
 #include "DebugAction.h"
 #include "GoAction.h"
@@ -142,9 +143,11 @@ namespace ai
             creators["hire"] = &ChatActionContext::hire;
             creators["craft"] = &ChatActionContext::craft;
             creators["flag"] = &ChatActionContext::flag;
+            creators["ah"] = &ChatActionContext::ah;
         }
 
     private:
+        static Action* ah(PlayerbotAI* ai) { return new AhAction(ai); }
         static Action* range(PlayerbotAI* ai) { return new RangeAction(ai); }
         static Action* flag(PlayerbotAI* ai) { return new FlagAction(ai); }
         static Action* craft(PlayerbotAI* ai) { return new SetCraftAction(ai); }

@@ -88,9 +88,11 @@ namespace ai
             creators["flag"] = &ChatTriggerContext::craft;
             creators["range"] = &ChatTriggerContext::range;
             creators["ra"] = &ChatTriggerContext::ra;
+            creators["ah"] = &ChatTriggerContext::ah;
         }
 
     private:
+        static Trigger* ah(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "ah"); }
         static Trigger* ra(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "ra"); }
         static Trigger* range(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "range"); }
         static Trigger* flag(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "flag"); }
