@@ -204,6 +204,26 @@ bool ItemUsageValue::IsItemUsefulForQuest(Player const* player, uint32 itemId)
 
 bool ItemUsageValue::IsItemUsefulForSkill(ItemPrototype const * proto)
 {
+    switch (proto->ItemId)
+    {
+    case 2901: //Mining pick
+        return ai->HasSkill(SKILL_MINING);
+    case 5956: //Blacksmith Hammer
+        return ai->HasSkill(SKILL_BLACKSMITHING) || ai->HasSkill(SKILL_ENGINEERING);
+    case 6219: //Arclight Spanner
+        return ai->HasSkill(SKILL_ENGINEERING);
+    case 16207: //Runed Arcanite Rod
+        return ai->HasSkill(SKILL_ENCHANTING);
+    case 7005: //Skinning Knife
+        return ai->HasSkill(SKILL_SKINNING);
+    case 4471: //Flint and Tinder
+        return ai->HasSkill(SKILL_COOKING);
+    case 4470: //Simple Wood
+        return ai->HasSkill(SKILL_COOKING);
+    case 6256: //Fishing Rod
+        return ai->HasSkill(SKILL_FISHING);
+    }
+
     switch (proto->Class)
     {
     case ITEM_CLASS_TRADE_GOODS:
