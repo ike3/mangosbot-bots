@@ -71,15 +71,15 @@ void ActiveQuestStrategy::InitTriggers(std::list<TriggerNode*>& triggers)
     triggers.push_back(new TriggerNode(
         "completed quests",
         NextAction::array(0,
-            new NextAction("hand in quest", 1), NULL)));
+            new NextAction("hand in quest", 2), NULL)));
 
     triggers.push_back(new TriggerNode(
         "active objectives",
         NextAction::array(0,
-            new NextAction("do quest objective", 1), NULL)));
+            new NextAction("do quest objective", 2), NULL)));
 
     triggers.push_back(new TriggerNode(
         "free quest log slots",
         NextAction::array(0,
-            new NextAction("pick up quest", 1), NULL)));      
+            new NextAction("pick up quest", 1.9), NULL)));      
 }

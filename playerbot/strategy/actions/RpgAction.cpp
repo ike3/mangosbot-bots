@@ -17,10 +17,13 @@ bool RpgAction::Execute(Event event)
     Unit* unit = ai->GetUnit(guid);
     GameObject* go = ai->GetGameObject(guid);
     if (!wo)
+    {
+        context->GetValue<ObjectGuid>("rpg target")->Set(ObjectGuid());
         return false;
+    }
 
     if (sServerFacade.isMoving(bot))
-        return false;
+        return true;
 
     if (bot->GetMapId() != wo->GetMapId())
     {
@@ -32,7 +35,7 @@ bool RpgAction::Execute(Event event)
     {
         sServerFacade.SetFacingTo(bot, wo, true);
         ai->SetNextCheckDelay(sPlayerbotAIConfig.globalCoolDown);
-        return false;
+        return true;
     }
 
     if (unit && !bot->GetNPCIfCanInteractWith(guid, UNIT_NPC_FLAG_NONE))
@@ -83,6 +86,8 @@ bool RpgAction::Execute(Event event)
             elements.push_back(&RpgAction::train);
         if (unit->GetHealthPercent() < 100 && (bot->getClass() == CLASS_PRIEST || bot->getClass() == CLASS_DRUID || bot->getClass() == CLASS_PALADIN || bot->getClass() == CLASS_SHAMAN))
             elements.push_back(&RpgAction::heal);
+        if (unit->isInnkeeper() && AI_VALUE2(float, "distance", "home bind") > 200.0f)
+            elements.push_back(&RpgAction::homebind);
     }
     else
     {
@@ -434,6 +439,24 @@ void RpgAction::spell(ObjectGuid guid)
         ai->SetNextCheckDelay(sPlayerbotAIConfig.rpgDelay);
 }
 
+void RpgAction::homebind(ObjectGuid guid)
+{
+    ObjectGuid oldSelection = bot->GetSelectionGuid();
+
+    bot->SetSelectionGuid(guid);
+
+    ai->DoSpecificAction("home");
+
+    Unit* unit = ai->GetUnit(guid);
+    if (unit)
+        unit->SetFacingTo(unit->GetAngle(bot));
+
+    if (oldSelection)
+        bot->SetSelectionGuid(oldSelection);
+
+    if (!ai->hasRealPlayerMaster())
+        ai->SetNextCheckDelay(sPlayerbotAIConfig.rpgDelay);
+}
 
 bool RpgAction::isUseful()
 {

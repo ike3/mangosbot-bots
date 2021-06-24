@@ -48,6 +48,10 @@ void NonCombatStrategy::InitTriggers(std::list<TriggerNode*>& triggers)
         "need world buff",
         NextAction::array(0, new NextAction("world buff", 1.0f), NULL)));
 
+    triggers.push_back(new TriggerNode(
+        "hearth is faster",
+        NextAction::array(0, new NextAction("hearthstone", 1.1f), NULL)));
+
     /*AiObjectContext* context = ai->GetAiObjectContext();
 
     triggers.push_back(new TriggerNode(

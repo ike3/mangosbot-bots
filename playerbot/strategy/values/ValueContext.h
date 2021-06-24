@@ -218,6 +218,8 @@ namespace ai
             creators["team flag carrier"] = &ValueContext::team_fc;
 
             creators["move target"] = &ValueContext::move_target;
+            creators["home bind"] = &ValueContext::home_bind;
+            creators["last long move"] = &ValueContext::last_long_move;
 
             creators["active quest givers"] = &ValueContext::active_quest_givers;
             creators["active quest takers"] = &ValueContext::active_quest_takers;
@@ -356,6 +358,8 @@ namespace ai
         static UntypedValue* death_count(PlayerbotAI* ai) { return new DeathCountValue(ai); }
 
         static UntypedValue* move_target(PlayerbotAI* ai) { return new MoveTargetValue(ai); }
+        static UntypedValue* last_long_move(PlayerbotAI* ai) { return new LastLongMoveValue(ai); }
+        static UntypedValue* home_bind(PlayerbotAI* ai) { return new HomeBindValue(ai); }
 
         static UntypedValue* active_quest_givers(PlayerbotAI* ai) { return new ActiveQuestGiversValue(ai); }
         static UntypedValue* active_quest_takers(PlayerbotAI* ai) { return new ActiveQuestTakersValue(ai); }

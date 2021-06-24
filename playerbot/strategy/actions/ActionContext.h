@@ -142,6 +142,7 @@ namespace ai
             creators["move from dark portal"] = &ActionContext::move_from_dark_portal;
             creators["use dark portal azeroth"] = &ActionContext::use_dark_portal_azeroth;
             creators["world buff"] = &ActionContext::world_buff;
+            creators["hearthstone"] = &ActionContext::hearthstone;
             creators["cast random spell"] = &ActionContext::cast_random_spell;
             creators["continue action"] = &ActionContext::continue_action;
             creators["queue at bm"] = &ActionContext::queue_at_bm;
@@ -250,6 +251,7 @@ namespace ai
         static Action* use_dark_portal_azeroth(PlayerbotAI* ai) { return new DarkPortalAzerothAction(ai); }
         static Action* move_from_dark_portal(PlayerbotAI* ai) { return new MoveFromDarkPortalAction(ai); }
         static Action* world_buff(PlayerbotAI* ai) { return new WorldBuffAction(ai); }
+        static Action* hearthstone(PlayerbotAI* ai) { return new UseHearthStone(ai); }
         static Action* cast_random_spell(PlayerbotAI* ai) { return new CastRandomSpellAction(ai); }
         static Action* continue_action(PlayerbotAI* ai) { return new ContinueMoveDoAction(ai); }
         static Action* queue_at_bm(PlayerbotAI* ai) { return new QueueAtBmAction(ai); }

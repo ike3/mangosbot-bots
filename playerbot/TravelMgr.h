@@ -120,6 +120,7 @@ namespace ai
         uint32 getInstanceId() { for (auto& map : sMapMgr.Maps()) { if (map.second->GetId() == getMapId()) return map.second->GetInstanceId(); }; return 0; }
         Map*  getMap() { return sMapMgr.FindMap(wLoc.mapid, getMapEntry()->Instanceable() ? getInstanceId() : 0); }
         const TerrainInfo* getTerrain() { return getMap() ? getMap()->GetTerrain() : NULL; }
+        const float getHeight() { return getMap()->GetHeight(getX(), getY(), getZ()); }
 
         std::set<Transport*> getTransports(uint32 entry = 0);
 
@@ -149,6 +150,8 @@ namespace ai
         vector<WorldPosition> getPathTo(WorldPosition endPos, Unit* bot) { return endPos.getPathFrom(*this, bot); }
         bool isPathTo(vector<WorldPosition> path, float maxDistance = sPlayerbotAIConfig.targetPosRecalcDistance) { return !path.empty() && distance(path.back()) < maxDistance; };
         bool canPathTo(WorldPosition endPos, Unit* bot) { return endPos.isPathTo(getPathTo(endPos, bot)); }
+
+        float getPathLength(vector<WorldPosition> points) { float dist; for (auto& p : points) if (&p == &points.front()) dist = 0; else dist += std::prev(&p, 1)->distance(p); return dist; }
 
         //Creatures
         vector<CreatureDataPair const*> getCreaturesNear(float radius = 0, uint32 entry = 0);

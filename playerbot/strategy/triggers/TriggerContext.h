@@ -114,6 +114,7 @@ namespace ai
             creators["new player nearby"] = &TriggerContext::new_player_nearby;
             creators["no rpg target"] = &TriggerContext::no_rpg_target;
             creators["far from rpg target"] = &TriggerContext::far_from_rpg_target;
+            creators["near rpg target"] = &TriggerContext::near_rpg_target;
             creators["no travel target"] = &TriggerContext::no_travel_target;
             creators["far from travel target"] = &TriggerContext::far_from_travel_target;			
             creators["no rti target"] = &TriggerContext::no_rti;
@@ -142,6 +143,7 @@ namespace ai
             creators["need world buff"] = &TriggerContext::need_world_buff;
             creators["falling"] = &TriggerContext::falling;
             creators["falling far"] = &TriggerContext::falling_far;
+            creators["hearth is faster"] = &TriggerContext::hearth_is_faster;
 
             creators["has continue target"] = &TriggerContext::has_continue_action;
 
@@ -170,6 +172,7 @@ namespace ai
         static Trigger* _return(PlayerbotAI* ai) { return new ReturnTrigger(ai); }
         static Trigger* sit(PlayerbotAI* ai) { return new SitTrigger(ai); }
         static Trigger* far_from_rpg_target(PlayerbotAI* ai) { return new FarFromRpgTargetTrigger(ai); }
+        static Trigger* near_rpg_target(PlayerbotAI* ai) { return new NearRpgTargetTrigger(ai); }
         static Trigger* no_rpg_target(PlayerbotAI* ai) { return new NoRpgTargetTrigger(ai); }
         static Trigger* far_from_travel_target(PlayerbotAI* ai) { return new FarFromTravelTargetTrigger(ai); }
         static Trigger* no_travel_target(PlayerbotAI* ai) { return new NoTravelTargetTrigger(ai); }		
@@ -248,6 +251,7 @@ namespace ai
         static Trigger* need_world_buff(PlayerbotAI* ai) { return new NeedWorldBuffTrigger(ai); }
         static Trigger* falling(PlayerbotAI* ai) { return new IsFallingTrigger(ai); }
         static Trigger* falling_far(PlayerbotAI* ai) { return new IsFallingFarTrigger(ai); }
+        static Trigger* hearth_is_faster(PlayerbotAI* ai) { return new HearthIsFasterTrigger(ai); }
         static Trigger* has_continue_action(PlayerbotAI* ai) { return new HasContinueActionTrigger(ai); }
         static Trigger* player_wants_in_bg(PlayerbotAI* ai) { return new PlayerWantsInBattlegroundTrigger(ai); }
         static Trigger* free_quest_log_slots(PlayerbotAI* ai) { return new FreeQuestLogSlotTrigger(ai); }

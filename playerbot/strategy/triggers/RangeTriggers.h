@@ -126,4 +126,28 @@ namespace ai
             return AI_VALUE(MoveTarget*, "move target")->getRelevance() && AI_VALUE(MoveTarget*, "move target")->isInRange(bot);
         }
     };
+
+    class HearthIsFasterTrigger : public Trigger
+    {
+    public:
+        HearthIsFasterTrigger(PlayerbotAI* ai) : Trigger(ai, "hearth is faster",5) {}
+
+        virtual bool IsActive()
+        {
+            if (!bot->HasItemCount(6948, 1, false))
+                return false;
+
+            if (!sServerFacade.IsSpellReady(bot, 8690))
+                return false;
+
+            WorldPosition longMove = AI_VALUE(WorldPosition, "last long move");
+
+            if (!longMove)
+                return false;
+
+            WorldPosition hearthBind = AI_VALUE(WorldPosition, "home bind");
+
+            return AI_VALUE2(float, "distance", "last long move") > hearthBind.distance(longMove) + 200;
+        }
+    };
 }

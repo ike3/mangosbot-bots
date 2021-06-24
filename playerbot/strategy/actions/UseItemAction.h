@@ -46,4 +46,26 @@ namespace ai
       UseManaPotion(PlayerbotAI* ai) : UseItemAction(ai, "mana potion") {}
       virtual bool isUseful() { return AI_VALUE2(bool, "combat", "self target"); }
    };
+
+   class UseHearthStone : public UseItemAction
+   {
+   public:
+       UseHearthStone(PlayerbotAI* ai) : UseItemAction(ai, "hearthstone") {}
+
+       bool Execute(Event event)
+       {
+           if (bot->IsMoving())
+           {
+               MotionMaster& mm = *bot->GetMotionMaster();
+               bot->StopMoving();
+               mm.Clear();
+           }
+           bool used = UseItemAction::Execute(event);
+
+           if(used)
+                ai->SetNextCheckDelay(10 * IN_MILLISECONDS);
+
+           return used;
+       }
+   };
 }

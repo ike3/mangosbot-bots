@@ -153,6 +153,8 @@ bool ChooseRpgTargetAction::Execute(Event event)
                 priority = 80;
             else if (travelTarget->getDestination() && travelTarget->getDestination()->getEntry() == unit->GetEntry())
                 priority = 70;
+            else if (unit->isInnkeeper() && AI_VALUE2(float, "distance", "home bind") > 200.0f)
+                priority = 60;
         }
         else
         {

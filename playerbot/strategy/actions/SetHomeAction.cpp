@@ -8,14 +8,18 @@ using namespace ai;
 
 bool SetHomeAction::Execute(Event event)
 {
-    Player* master = ai->GetMaster();
-    if (!master)
-        return false;
+    Player* master = GetMaster();
 
-    ObjectGuid selection = master->GetSelectionGuid();
+    ObjectGuid selection = bot->GetSelectionGuid();
+    if (AI_VALUE(ObjectGuid, "rpg target") != bot->GetSelectionGuid())
+        if (master)
+            selection = master->GetSelectionGuid();
+        else
+            return false;
+
     if (selection)
     {
-        Unit* unit = master->GetMap()->GetUnit(selection);
+        Unit* unit = ai->GetUnit(selection);
         if (unit && unit->HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_INNKEEPER))
         {
             float angle = GetFollowAngle();
