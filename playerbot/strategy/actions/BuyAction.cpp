@@ -46,6 +46,13 @@ bool BuyAction::Execute(Event event)
                 ItemUsage usage = AI_VALUE2(ItemUsage, "item usage", tItem->item);
                 if (usage == ITEM_USAGE_REPLACE || usage == ITEM_USAGE_EQUIP || usage == ITEM_USAGE_AMMO)
                     itemIds.insert(tItem->item);
+                else if (usage == ITEM_USAGE_SKILL)
+                {
+                    ItemPrototype const* proto = sObjectMgr.GetItemPrototype(tItem->item);
+
+                    if(!bot->HasItemCount(tItem->item, proto->Stackable))
+                        itemIds.insert(tItem->item);
+                }
                 else
                 {
                     ItemPrototype const* proto = sObjectMgr.GetItemPrototype(tItem->item);
