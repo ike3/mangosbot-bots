@@ -120,7 +120,14 @@ namespace ai
         uint32 getInstanceId() { for (auto& map : sMapMgr.Maps()) { if (map.second->GetId() == getMapId()) return map.second->GetInstanceId(); }; return 0; }
         Map*  getMap() { return sMapMgr.FindMap(wLoc.mapid, getMapEntry()->Instanceable() ? getInstanceId() : 0); }
         const TerrainInfo* getTerrain() { return getMap() ? getMap()->GetTerrain() : NULL; }
-        const float getHeight() { return getMap()->GetHeight(getX(), getY(), getZ()); }
+        const float getHeight() 
+        {
+#ifdef MANGOSBOT_TWO
+            return getMap()->GetHeight(0,getX(), getY(), getZ()); 
+#else
+            return getMap()->GetHeight(getX(), getY(), getZ());
+#endif
+        }
 
         std::set<Transport*> getTransports(uint32 entry = 0);
 
