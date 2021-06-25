@@ -52,6 +52,8 @@ namespace ai
    public:
        UseHearthStone(PlayerbotAI* ai) : UseItemAction(ai, "hearthstone") {}
 
+       bool isUsefull() { return !bot->IsInCombat(); }
+       
        bool Execute(Event event)
        {
            if (bot->IsMoving())
