@@ -16,10 +16,10 @@ list<ObjectGuid> AttackersValue::Calculate()
 
     list<ObjectGuid> result;
 
+    AddAttackersOf(bot, targets);
+
     if (!ai->AllowActive(ALL_ACTIVITY))
         return result;
-
-    AddAttackersOf(bot, targets);
 
     Group* group = bot->GetGroup();
     if (group)
@@ -121,7 +121,7 @@ bool AttackersValue::IsPossibleTarget(Unit *attacker, Player *bot)
         leaderHasThreat = attacker->getThreatManager().getThreat(ai->GetMaster());
 
     bool isMemberBotGroup = false;
-    if (bot->GetGroup() && ai->GetMaster() && ai->GetMaster()->GetPlayerbotAI() && !ai->GetMaster()->GetPlayerbotAI()->isRealPlayer())
+    if (bot->GetGroup() && ai->GetMaster() && ai->GetMaster()->GetPlayerbotAI() && !ai->GetMaster()->GetPlayerbotAI()->IsRealPlayer())
         isMemberBotGroup = true;
 
 

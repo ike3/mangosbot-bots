@@ -210,7 +210,7 @@ void PlayerbotAI::UpdateAIInternal(uint32 elapsed)
 
 void PlayerbotAI::HandleTeleportAck()
 {
-    if (isRealPlayer())
+    if (IsRealPlayer())
         return;
 
 	bot->GetMotionMaster()->Clear(true);
@@ -944,7 +944,7 @@ bool PlayerbotAI::TellMasterNoFacing(string text, PlayerbotSecurityLevel securit
 {
     Player* master = GetMaster();
 
-    if ((!master || (master->GetPlayerbotAI() && !master->GetPlayerbotAI()->isRealPlayer())) && (sPlayerbotAIConfig.randomBotSayWithoutMaster || HasStrategy("debug", BOT_STATE_NON_COMBAT)))
+    if ((!master || (master->GetPlayerbotAI() && !master->GetPlayerbotAI()->IsRealPlayer())) && (sPlayerbotAIConfig.randomBotSayWithoutMaster || HasStrategy("debug", BOT_STATE_NON_COMBAT)))
     {
         bot->Say(text, (bot->GetTeam() == ALLIANCE ? LANG_COMMON : LANG_ORCISH));
         return true;
@@ -1819,7 +1819,7 @@ bool PlayerbotAI::HasPlayerNearby(WorldPosition* pos, float range)
     float sqRange = range * range;
     for (auto& player : sRandomPlayerbotMgr.GetPlayers())
     {
-        if ((!player->GetPlayerbotAI() || player->GetPlayerbotAI()->isRealPlayer()) && (!player->IsGameMaster() || player->isGMVisible()))
+        if ((!player->GetPlayerbotAI() || player->GetPlayerbotAI()->IsRealPlayer()) && (!player->IsGameMaster() || player->isGMVisible()))
         {
             if (player->GetMapId() != bot->GetMapId())
                 continue;
@@ -1875,7 +1875,7 @@ bool PlayerbotAI::AllowActive(ActivityType activityType)
         return true;
 
     if (GetMaster()) //Has player master. Always active.
-        if (!GetMaster()->GetPlayerbotAI() || GetMaster()->GetPlayerbotAI()->isRealPlayer())
+        if (!GetMaster()->GetPlayerbotAI() || GetMaster()->GetPlayerbotAI()->IsRealPlayer())
             return true;
 
     Group* group = bot->GetGroup();
@@ -1884,7 +1884,7 @@ bool PlayerbotAI::AllowActive(ActivityType activityType)
         for (GroupReference *gref = group->GetFirstMember(); gref; gref = gref->next())
         {
             Player* member = gref->getSource();
-            if (member && (!member->GetPlayerbotAI() || (member->GetPlayerbotAI() && member->GetPlayerbotAI()->hasRealPlayerMaster())))
+            if (member && (!member->GetPlayerbotAI() || (member->GetPlayerbotAI() && member->GetPlayerbotAI()->HasRealPlayerMaster())))
                 return true;
         }
     }
@@ -2224,7 +2224,7 @@ string PlayerbotAI::HandleRemoteCommand(string command)
                 out << " vis: " << target->getPosition()->getVisitors();
             }
         }
-        out << " Status = ";
+        out << " Status =";
         if (target->getStatus() == TRAVEL_STATUS_NONE)
             out << " none";
         else if (target->getStatus() == TRAVEL_STATUS_PREPARE)

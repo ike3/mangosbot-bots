@@ -346,9 +346,12 @@ public:
     Player* GetMaster() { return master; }
 
     //Checks if the bot is really a player. Players always have themselves as master.
-    bool isRealPlayer() { return master ? (master == bot) : false; } 
+    bool IsRealPlayer() { return master ? (master == bot) : false; } 
     //Bot has a master that is a player.
-    bool hasRealPlayerMaster() { return master && (!master->GetPlayerbotAI() || master->GetPlayerbotAI()->isRealPlayer()); } 
+    bool HasRealPlayerMaster() { return master && (!master->GetPlayerbotAI() || master->GetPlayerbotAI()->IsRealPlayer()); } 
+    //Bot has a master that is activly playing.
+    bool HasActivePlayerMaster() { return master && !master->GetPlayerbotAI(); }
+
     //Get the group leader or the master of the bot.
     Player* GetGroupMaster() { return bot->GetGroup() ? (sObjectMgr.GetPlayer(bot->GetGroup()->GetLeaderGuid()) ? sObjectMgr.GetPlayer(bot->GetGroup()->GetLeaderGuid()) : master) : master; }
     //Returns a semi-random (cycling) number that is fixed for each bot.

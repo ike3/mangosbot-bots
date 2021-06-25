@@ -68,7 +68,7 @@ bool FindCorpseAction::Execute(Event event)
             return false;
     }
 
-    if (!ai->hasRealPlayerMaster())
+    if (!ai->HasRealPlayerMaster())
     {
         uint32 dCount = AI_VALUE(uint32, "death count");
         if (dCount >= 5)
@@ -196,7 +196,7 @@ bool SpiritHealerAction::Execute(Event event)
     if (moved)
         return true;
 
-    if (!ai->hasRealPlayerMaster())
+    if (!ai->HasRealPlayerMaster())
         bot->RepopAtGraveyard();
 
     sLog.outBasic("Bot #%d %s:%d <%s> can't find a spirit healer", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName());

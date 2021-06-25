@@ -49,8 +49,8 @@ namespace ai
                 return false;
 
             if (botAi->GetMaster())
-                if (!botAi->GetMaster()->GetPlayerbotAI() || botAi->GetMaster()->GetPlayerbotAI()->isRealPlayer()) //Do not invite bots with a player master.
-                    if (!botAi->isRealPlayer()) //Unless the bot is really a player
+                if (!botAi->GetMaster()->GetPlayerbotAI() || botAi->GetMaster()->GetPlayerbotAI()->IsRealPlayer()) //Do not invite bots with a player master.
+                    if (!botAi->IsRealPlayer()) //Unless the bot is really a player
                         continue;
 
             if (abs(int32(player->getLevel() - bot->getLevel())) > 2)
@@ -104,8 +104,8 @@ namespace ai
         }
 
         if (ai->GetMaster())
-            if (!ai->GetMaster()->GetPlayerbotAI() || ai->GetMaster()->GetPlayerbotAI()->isRealPlayer()) //Alts do not invite.
-                if (!ai->isRealPlayer()) //Unless the bot is really a player
+            if (!ai->GetMaster()->GetPlayerbotAI() || ai->GetMaster()->GetPlayerbotAI()->IsRealPlayer()) //Alts do not invite.
+                if (!ai->IsRealPlayer()) //Unless the bot is really a player
                     return false;
 
         return true;

@@ -41,7 +41,7 @@ namespace ai
             
             ai->ResetStrategies();
             ai->ChangeStrategy("+follow,-lfg,-bg", BOT_STATE_NON_COMBAT);
-            if (!inviter->GetPlayerbotAI() && !bot->GetPlayerbotAI()->isRealPlayer())
+            if (!inviter->GetPlayerbotAI() && !bot->GetPlayerbotAI()->IsRealPlayer())
             {
                 ai->ChangeStrategy("-rpg,-travel,-grind", BOT_STATE_NON_COMBAT);
             }

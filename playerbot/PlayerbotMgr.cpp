@@ -59,7 +59,7 @@ void PlayerbotHolder::LogoutAllBots()
     for (auto& itr : bots)
     {
         Player* bot = itr.second;
-        if (!bot->GetPlayerbotAI() || bot->GetPlayerbotAI()->isRealPlayer())
+        if (!bot->GetPlayerbotAI() || bot->GetPlayerbotAI()->IsRealPlayer())
             continue;
 
         LogoutPlayerBot(bot->GetObjectGuid().GetRawValue());

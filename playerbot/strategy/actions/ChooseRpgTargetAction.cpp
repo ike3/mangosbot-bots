@@ -61,7 +61,7 @@ bool ChooseRpgTargetAction::CanTrain(ObjectGuid guid)
 
 uint32 ChooseRpgTargetAction::HasSameTarget(ObjectGuid guid)
 {
-    if (ai->hasRealPlayerMaster())
+    if (ai->HasRealPlayerMaster())
         return 0;
 
     uint32 num = 0;

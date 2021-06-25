@@ -386,7 +386,7 @@ bool BGJoinAction::isUseful()
         return false;
 
     // do not try if with player master or in combat/group
-    if (bot->GetPlayerbotAI()->hasRealPlayerMaster())
+    if (bot->GetPlayerbotAI()->HasRealPlayerMaster())
         return false;
 
     //if (bot->GetGroup())

@@ -46,7 +46,7 @@ bool DropQuestAction::Execute(Event event)
 bool CleanQuestLogAction::Execute(Event event)
 {
     string link = event.getParam();
-    if (GetMaster())
+    if (ai->HasActivePlayerMaster())
         return false;
 
     uint8 totalQuests = 0;

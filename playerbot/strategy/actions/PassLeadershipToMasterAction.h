@@ -29,7 +29,7 @@ namespace ai
 
         virtual bool isUseful()
         {
-            return bot->GetGroup() && bot->GetGroup()->IsLeader(bot->GetObjectGuid()) && !bot->GetPlayerbotAI()->isRealPlayer();
+            return bot->GetGroup() && bot->GetGroup()->IsLeader(bot->GetObjectGuid()) && !bot->GetPlayerbotAI()->IsRealPlayer();
         }
     };
 

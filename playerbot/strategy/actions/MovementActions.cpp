@@ -561,7 +561,7 @@ void MovementAction::UpdateMovementState()
     }
 
     // Temporary speed increase in group
-    if (ai->hasRealPlayerMaster())
+    if (ai->HasRealPlayerMaster())
         bot->UpdateSpeed(MOVE_RUN, true, 1.1f);
 }
 
@@ -583,7 +583,7 @@ bool MovementAction::Follow(Unit* target, float distance, float angle)
     if (!bot->InBattleGround() 
      && sServerFacade.IsDistanceLessOrEqualThan(sServerFacade.GetDistance2d(bot, target->GetPositionX(), target->GetPositionY()), sPlayerbotAIConfig.sightDistance)
      && abs(bot->GetPositionZ() - target->GetPositionZ()) >= sPlayerbotAIConfig.spellDistance
-     && ai->hasRealPlayerMaster()
+     && ai->HasRealPlayerMaster()
      && (target->GetMapId() && bot->GetMapId() != target->GetMapId()))
     {
         bot->StopMoving();
@@ -610,7 +610,7 @@ bool MovementAction::Follow(Unit* target, float distance, float angle)
     }
 
     if (!IsMovingAllowed(target)
-        && ai->hasRealPlayerMaster())
+        && ai->HasRealPlayerMaster())
     {
 #ifdef MANGOSBOT_ZERO
         if ((target->GetMap() && target->GetMap()->IsBattleGround()) || (bot->GetMap() && bot->GetMap()->IsBattleGround()))
@@ -992,5 +992,5 @@ bool MoveRandomAction::Execute(Event event)
 
 bool MoveRandomAction::isUseful()
 {    
-    return !ai->hasRealPlayerMaster() && ai->GetAiObjectContext()->GetValue<list<ObjectGuid> >("nearest friendly players")->Get().size() > urand(25, 100);
+    return !ai->HasRealPlayerMaster() && ai->GetAiObjectContext()->GetValue<list<ObjectGuid> >("nearest friendly players")->Get().size() > urand(25, 100);
 }
