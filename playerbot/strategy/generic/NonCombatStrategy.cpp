@@ -2,7 +2,6 @@
 #include "../../playerbot.h"
 #include "NonCombatStrategy.h"
 #include "../value.h"
-#include "../values/MoveTargetValue.h"
 
 using namespace ai;
 

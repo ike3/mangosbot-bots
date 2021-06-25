@@ -72,7 +72,6 @@
 #include "SkipSpellsListValue.h"
 #include "SnareTargetValue.h"
 #include "Stances.h"
-#include "MoveTargetValue.h"
 #include "QuestValues.h"
 
 namespace ai
@@ -217,7 +216,6 @@ namespace ai
             creators["enemy flag carrier"] = &ValueContext::enemy_fc;
             creators["team flag carrier"] = &ValueContext::team_fc;
 
-            creators["move target"] = &ValueContext::move_target;
             creators["home bind"] = &ValueContext::home_bind;
             creators["last long move"] = &ValueContext::last_long_move;
 
@@ -357,7 +355,6 @@ namespace ai
         static UntypedValue* pull_target(PlayerbotAI* ai) { return new PullTargetValue(ai); }
         static UntypedValue* death_count(PlayerbotAI* ai) { return new DeathCountValue(ai); }
 
-        static UntypedValue* move_target(PlayerbotAI* ai) { return new MoveTargetValue(ai); }
         static UntypedValue* last_long_move(PlayerbotAI* ai) { return new LastLongMoveValue(ai); }
         static UntypedValue* home_bind(PlayerbotAI* ai) { return new HomeBindValue(ai); }
 

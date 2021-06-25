@@ -26,7 +26,6 @@
 #include "ServerFacade.h"
 #include "TravelMgr.h"
 #include "ChatHelper.h"
-#include <playerbot/strategy/values/MoveTargetValue.h>
 
 using namespace ai;
 using namespace std;
@@ -2167,12 +2166,6 @@ string PlayerbotAI::HandleRemoteCommand(string command)
     {
         LastMovement& data = *GetAiObjectContext()->GetValue<LastMovement&>("last movement");
         ostringstream out; out << data.lastMoveShort.getX() << " " << data.lastMoveShort.getY() << " " << data.lastMoveShort.getZ() << " " << data.lastMoveShort.getMapId() << " " << data.lastMoveShort.getO();
-        return out.str();
-    }
-    else if (command == "move")
-    {
-        MoveTarget* data = *GetAiObjectContext()->GetValue<MoveTarget*>("move target");
-        ostringstream out; out << data->getName() << " " << data->getRelevance() << " " << data->getDist(bot) << " " << data->getPos().print();
         return out.str();
     }
     else if (command == "target")

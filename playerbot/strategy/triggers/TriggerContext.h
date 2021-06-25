@@ -10,7 +10,6 @@
 #include "TravelTriggers.h"
 #include "RtiTriggers.h"
 #include "CureTriggers.h"
-#include "ActiveQuestTriggers.h"
 
 namespace ai
 {
@@ -144,12 +143,6 @@ namespace ai
             creators["falling"] = &TriggerContext::falling;
             creators["falling far"] = &TriggerContext::falling_far;
             creators["hearth is faster"] = &TriggerContext::hearth_is_faster;
-
-            creators["has continue target"] = &TriggerContext::has_continue_action;
-
-            creators["free quest log slots"] = &TriggerContext::free_quest_log_slots;
-            creators["active objectives"] = &TriggerContext::active_objectives;
-            creators["completed quests"] = &TriggerContext::completed_quests;
         }
 
     private:
@@ -252,10 +245,6 @@ namespace ai
         static Trigger* falling(PlayerbotAI* ai) { return new IsFallingTrigger(ai); }
         static Trigger* falling_far(PlayerbotAI* ai) { return new IsFallingFarTrigger(ai); }
         static Trigger* hearth_is_faster(PlayerbotAI* ai) { return new HearthIsFasterTrigger(ai); }
-        static Trigger* has_continue_action(PlayerbotAI* ai) { return new HasContinueActionTrigger(ai); }
-        static Trigger* player_wants_in_bg(PlayerbotAI* ai) { return new PlayerWantsInBattlegroundTrigger(ai); }
-        static Trigger* free_quest_log_slots(PlayerbotAI* ai) { return new FreeQuestLogSlotTrigger(ai); }
-        static Trigger* active_objectives(PlayerbotAI* ai) { return new ActiveObjectivesTrigger(ai); }
-        static Trigger* completed_quests(PlayerbotAI* ai) { return new CompletedQuestsTrigger(ai); }        
+        static Trigger* player_wants_in_bg(PlayerbotAI* ai) { return new PlayerWantsInBattlegroundTrigger(ai); }  
     };
 };

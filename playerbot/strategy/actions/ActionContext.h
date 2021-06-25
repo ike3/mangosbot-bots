@@ -45,9 +45,6 @@
 #include "WorldBuffAction.h"
 #include "CastCustomSpellAction.h"
 #include "BattleGroundJoinAction.h"
-#include "ChooseMoveDoAction.h"
-#include "ActiveQuestActions.h"
-
 
 namespace ai
 {
@@ -144,12 +141,6 @@ namespace ai
             creators["world buff"] = &ActionContext::world_buff;
             creators["hearthstone"] = &ActionContext::hearthstone;
             creators["cast random spell"] = &ActionContext::cast_random_spell;
-            creators["continue action"] = &ActionContext::continue_action;
-            creators["queue at bm"] = &ActionContext::queue_at_bm;
-            creators["pick up quest"] = &ActionContext::pick_up_quest;
-            creators["do quest objective"] = &ActionContext::do_quest_objective;
-            creators["hand in quest"] = &ActionContext::hand_in_quest;
-
 
             // BG Tactics
             creators["bg tactics"] = &ActionContext::bg_tactics;
@@ -253,8 +244,6 @@ namespace ai
         static Action* world_buff(PlayerbotAI* ai) { return new WorldBuffAction(ai); }
         static Action* hearthstone(PlayerbotAI* ai) { return new UseHearthStone(ai); }
         static Action* cast_random_spell(PlayerbotAI* ai) { return new CastRandomSpellAction(ai); }
-        static Action* continue_action(PlayerbotAI* ai) { return new ContinueMoveDoAction(ai); }
-        static Action* queue_at_bm(PlayerbotAI* ai) { return new QueueAtBmAction(ai); }
 
         // BG Tactics
         static Action* bg_tactics(PlayerbotAI* ai) { return new BGTactics(ai); }
@@ -267,9 +256,5 @@ namespace ai
         static Action* attack_enemy_fc(PlayerbotAI* ai) { return new AttackEnemyFlagCarrierAction(ai); }
         static Action* bg_use_buff(PlayerbotAI* ai) { return new BGTactics(ai, "use buff"); }
         static Action* bg_check_flag(PlayerbotAI* ai) { return new BGTactics(ai, "check flag"); }       
-        static Action* pick_up_quest(PlayerbotAI* ai) { return new PickUpQuestAction(ai); }
-        static Action* do_quest_objective(PlayerbotAI* ai) { return new DoQuestObjectiveAction(ai); }
-        static Action* hand_in_quest(PlayerbotAI* ai) { return new HandInQuestAction(ai); }
-
     };
 };
