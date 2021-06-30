@@ -833,6 +833,9 @@ bool GrindTravelDestination::isActive(Player* bot)
     if (moneyNeeded(bot) < bot->GetMoney())
         return false;
 
+    if (AI_VALUE(uint8, "bag space") > 80)
+        return false;
+
     CreatureInfo const* cInfo = this->getCreatureInfo();
 
     int32 botLevel = bot->getLevel();
