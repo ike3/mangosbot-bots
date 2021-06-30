@@ -126,7 +126,6 @@ bool FindCorpseAction::Execute(Event event)
 
             if (!moved)
             {
-                context->GetValue<uint32>("death count")->Set(0);
                 moved = ai->DoSpecificAction("spirit healer");
                 if (moved)
                     sLog.outBasic("Bot #%d %s:%d <%s> moves to graveyard", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName());
@@ -170,6 +169,7 @@ bool SpiritHealerAction::Execute(Event event)
             context->GetValue<Unit*>("current target")->Set(NULL);
             bot->SetSelectionGuid(ObjectGuid());
             ai->TellMaster("Hello");
+            context->GetValue<uint32>("death count")->Set(0);
             return true;
         }
     }
