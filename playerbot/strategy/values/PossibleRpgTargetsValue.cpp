@@ -37,6 +37,7 @@ PossibleRpgTargetsValue::PossibleRpgTargetsValue(PlayerbotAI* ai, float range) :
         allowedNpcFlags.push_back(UNIT_NPC_FLAG_STABLEMASTER);
         allowedNpcFlags.push_back(UNIT_NPC_FLAG_PETITIONER);
         allowedNpcFlags.push_back(UNIT_NPC_FLAG_TABARDDESIGNER);
+        allowedNpcFlags.push_back(UNIT_NPC_FLAG_BATTLEMASTER);
 
         allowedNpcFlags.push_back(UNIT_NPC_FLAG_TRAINER);
         allowedNpcFlags.push_back(UNIT_NPC_FLAG_VENDOR);

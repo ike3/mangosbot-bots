@@ -32,6 +32,13 @@ protected:
     vector<uint32> ratedList;
 };
 
+class FreeBGJoinAction : public BGJoinAction
+{
+public:
+    FreeBGJoinAction(PlayerbotAI* ai, string name = "free bg join") : BGJoinAction(ai, name) {}
+    virtual bool shouldJoinBg(BattleGroundQueueTypeId queueTypeId, BattleGroundBracketId bracketId);
+};
+
 class BGLeaveAction : public Action
 {
 public:

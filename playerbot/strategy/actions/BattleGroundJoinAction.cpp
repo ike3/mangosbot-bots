@@ -386,7 +386,7 @@ bool BGJoinAction::isUseful()
         return false;
 
     // do not try if with player master or in combat/group
-    if (bot->GetPlayerbotAI()->HasRealPlayerMaster())
+    if (bot->GetPlayerbotAI()->HasActivePlayerMaster())
         return false;
 
     //if (bot->GetGroup())
@@ -625,6 +625,118 @@ bool BGJoinAction::JoinQueue(uint32 type)
    bot->GetSession()->HandleBattlemasterJoinOpcode(packet);
    return true;
 }
+
+bool FreeBGJoinAction::shouldJoinBg(BattleGroundQueueTypeId queueTypeId, BattleGroundBracketId bracketId)
+{
+    BattleGroundTypeId bgTypeId = sServerFacade.BgTemplateId(queueTypeId);
+    BattleGround* bg = sBattleGroundMgr.GetBattleGroundTemplate(bgTypeId);
+    if (!bg)
+        return false;
+
+    bool isArena = false;
+    bool isRated = false;
+
+#ifndef MANGOSBOT_ZERO
+    ArenaType type = sServerFacade.BgArenaType(queueTypeId);
+    if (type != ARENA_TYPE_NONE)
+        isArena = true;
+#endif
+    // hack fix crash in queue remove event
+    if (!isArena && bot->GetGroup())
+        return false;
+
+    uint32 BracketSize = bg->GetMaxPlayers();
+    uint32 TeamSize = bg->GetMaxPlayersPerTeam();
+
+    uint32 ACount = sRandomPlayerbotMgr.BgBots[queueTypeId][bracketId][0] + sRandomPlayerbotMgr.BgPlayers[queueTypeId][bracketId][0];
+    uint32 HCount = sRandomPlayerbotMgr.BgBots[queueTypeId][bracketId][1] + sRandomPlayerbotMgr.BgPlayers[queueTypeId][bracketId][1];
+
+    uint32 BgCount = ACount + HCount;
+    uint32 SCount, RCount = 0;
+
+    uint32 TeamId = bot->GetTeam() == ALLIANCE ? 0 : 1;
+
+#ifndef MANGOSBOT_ZERO
+    if (isArena)
+    {
+        uint32 rated_players = sRandomPlayerbotMgr.BgPlayers[queueTypeId][bracketId][1];
+        if (rated_players)
+        {
+            isRated = true;
+        }
+        isArena = true;
+        BracketSize = (uint32)(type * 2);
+        TeamSize = type;
+        ACount = sRandomPlayerbotMgr.ArenaBots[queueTypeId][bracketId][isRated][0];
+        HCount = sRandomPlayerbotMgr.ArenaBots[queueTypeId][bracketId][isRated][1];
+        BgCount = sRandomPlayerbotMgr.BgBots[queueTypeId][bracketId][isRated] + sRandomPlayerbotMgr.BgPlayers[queueTypeId][bracketId][isRated];
+        SCount = sRandomPlayerbotMgr.BgBots[queueTypeId][bracketId][0] + sRandomPlayerbotMgr.BgPlayers[queueTypeId][bracketId][0];
+        RCount = sRandomPlayerbotMgr.BgBots[queueTypeId][bracketId][1] + sRandomPlayerbotMgr.BgPlayers[queueTypeId][bracketId][1];
+    }
+
+    // do not try if not a captain of arena team
+
+    if (isRated)
+    {
+        if (!sObjectMgr.GetArenaTeamByCaptain(bot->GetObjectGuid()))
+            return false;
+
+        // check if bot has correct team
+        ArenaTeam* arenateam = nullptr;
+        for (uint32 arena_slot = 0; arena_slot < MAX_ARENA_SLOT; ++arena_slot)
+        {
+            ArenaTeam* temp = sObjectMgr.GetArenaTeamById(bot->GetArenaTeamId(arena_slot));
+            if (!temp)
+                continue;
+
+            if (temp->GetType() != type)
+                continue;
+
+            arenateam = temp;
+        }
+
+        if (!arenateam)
+            return false;
+
+        ratedList.push_back(queueTypeId);
+    }
+#endif
+
+    bool needBots = sRandomPlayerbotMgr.NeedBots[queueTypeId][bracketId][isArena ? isRated : GetTeamIndexByTeamId(bot->GetTeam())];
+
+    // add more bots if players are not invited or 1st BG instance is full
+    if (needBots/* || (hasPlayers && BgCount > BracketSize && (BgCount % BracketSize) != 0)*/)
+        return true;
+
+    // do not join if BG queue is full
+    if (BgCount >= BracketSize && (ACount >= TeamSize) && (HCount >= TeamSize))
+    {
+        return false;
+    }
+
+    if (!isArena && ((ACount >= TeamSize && TeamId == 0) || (HCount >= TeamSize && TeamId == 1)))
+    {
+        return false;
+    }
+
+    if (isArena && (((ACount >= TeamSize && HCount > 0) && TeamId == 0) || ((HCount >= TeamSize && ACount > 0) && TeamId == 1)))
+    {
+        return false;
+    }
+
+    if (isArena && (((ACount > TeamSize && HCount == 0) && TeamId == 1) || ((HCount > TeamSize && ACount == 0) && TeamId == 0)))
+    {
+        return false;
+    }
+
+    if (isArena && ((!isRated && SCount >= BracketSize) || (isRated && RCount >= BracketSize)))
+    {
+        return false;
+    }
+
+    return true;
+}
+
 
 bool BGLeaveAction::Execute(Event event)
 {

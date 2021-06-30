@@ -33,8 +33,10 @@ namespace ai
         void use(ObjectGuid guid);
         void spell(ObjectGuid guid);
         void homebind(ObjectGuid guid);
+        void queuebg(ObjectGuid guid);
 
         bool CanTrain(ObjectGuid guid);
+        BattleGroundTypeId CanQueueBg(ObjectGuid guid);
     };
 
 }

@@ -59,6 +59,39 @@ bool ChooseRpgTargetAction::CanTrain(ObjectGuid guid)
     return false;
 }
 
+BattleGroundTypeId ChooseRpgTargetAction::CanQueueBg(ObjectGuid guid)
+{
+    for (uint32 i = 1; i < MAX_BATTLEGROUND_QUEUE_TYPES; i++)
+    {
+        BattleGroundQueueTypeId queueTypeId = (BattleGroundQueueTypeId)i;
+
+        BattleGroundTypeId bgTypeId = sServerFacade.BgTemplateId(queueTypeId);
+
+        BattleGround* bg = sBattleGroundMgr.GetBattleGroundTemplate(bgTypeId);
+        if (!bg)
+            continue;
+
+        if (bot->getLevel() < bg->GetMinLevel())
+            continue;
+
+        // check if already in queue
+        if (bot->InBattleGroundQueueForBattleGroundQueueType(queueTypeId))
+            continue;        
+
+        map<Team, map<BattleGroundTypeId, list<uint32>>> battleMastersCache = sRandomPlayerbotMgr.getBattleMastersCache();
+
+        for (auto& entry : battleMastersCache[TEAM_BOTH_ALLOWED][bgTypeId])
+            if (entry == guid.GetEntry())
+                return bgTypeId;
+
+        for (auto& entry : battleMastersCache[bot->GetTeam()][bgTypeId])
+            if (entry == guid.GetEntry())
+                return bgTypeId;
+    }
+
+    return BATTLEGROUND_TYPE_NONE;
+}
+
 uint32 ChooseRpgTargetAction::HasSameTarget(ObjectGuid guid)
 {
     if (ai->HasRealPlayerMaster())
@@ -153,8 +186,10 @@ bool ChooseRpgTargetAction::Execute(Event event)
                 priority = 80;
             else if (travelTarget->getDestination() && travelTarget->getDestination()->getEntry() == unit->GetEntry())
                 priority = 70;
-            else if (unit->isInnkeeper() && AI_VALUE2(float, "distance", "home bind") > 200.0f)
+            else if (unit->isInnkeeper() && AI_VALUE2(float, "distance", "home bind") > 1000.0f)
                 priority = 60;
+            else if (unit->isBattleMaster() && CanQueueBg(guid) != BATTLEGROUND_TYPE_NONE)
+                priority = 50;
         }
         else
         {
@@ -239,6 +274,8 @@ bool ChooseRpgTargetAction::Execute(Event event)
             out << chat->formatWorldobject(unit);
         if (go)
             out << chat->formatGameobject(go);
+
+        out << " " << maxPriority;
 
         ai->TellMasterNoFacing(out);
     }

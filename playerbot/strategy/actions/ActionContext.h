@@ -141,6 +141,7 @@ namespace ai
             creators["world buff"] = &ActionContext::world_buff;
             creators["hearthstone"] = &ActionContext::hearthstone;
             creators["cast random spell"] = &ActionContext::cast_random_spell;
+            creators["free bg join"] = &ActionContext::free_bg_join;
 
             // BG Tactics
             creators["bg tactics"] = &ActionContext::bg_tactics;
@@ -244,6 +245,8 @@ namespace ai
         static Action* world_buff(PlayerbotAI* ai) { return new WorldBuffAction(ai); }
         static Action* hearthstone(PlayerbotAI* ai) { return new UseHearthStone(ai); }
         static Action* cast_random_spell(PlayerbotAI* ai) { return new CastRandomSpellAction(ai); }
+        static Action* free_bg_join(PlayerbotAI* ai) { return new FreeBGJoinAction(ai); }
+        
 
         // BG Tactics
         static Action* bg_tactics(PlayerbotAI* ai) { return new BGTactics(ai); }
