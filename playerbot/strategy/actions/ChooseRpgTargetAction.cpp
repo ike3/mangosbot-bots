@@ -172,8 +172,12 @@ bool ChooseRpgTargetAction::Execute(Event event)
 #ifdef CMANGOS
             if (unit->isVendor())
 #endif
-               if (AI_VALUE(uint8, "bag space") > 80 || (AI_VALUE(uint8, "durability") < 80 && AI_VALUE(uint32, "repair cost") < bot->GetMoney()))
+               if (AI_VALUE(uint8, "bag space") > 80)
                   priority = 100;
+
+            if(unit->isArmorer())
+                if (AI_VALUE(uint8, "bag space") > 80 || (AI_VALUE(uint8, "durability") < 80 && AI_VALUE(uint32, "repair cost") < bot->GetMoney()))
+                    priority = 95;
 
             uint32 dialogStatus = bot->GetSession()->getDialogStatus(bot, unit, DIALOG_STATUS_NONE);
 #ifdef MANGOSBOT_ZERO  
