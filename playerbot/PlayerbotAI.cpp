@@ -557,6 +557,7 @@ void PlayerbotAI::DoNextAction()
     if (currentEngine == engines[BOT_STATE_DEAD] && sServerFacade.IsAlive(bot))
     {
         ChangeEngine(BOT_STATE_NON_COMBAT);
+        aiObjectContext->GetValue<Unit*>("current target")->Set(NULL);
         return;
     }
 

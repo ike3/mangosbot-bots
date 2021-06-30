@@ -926,7 +926,7 @@ void TravelTarget::setStatus(TravelStatus status) {
     case TRAVEL_STATUS_NONE:
     case TRAVEL_STATUS_PREPARE:
     case TRAVEL_STATUS_EXPIRED:
-        statusTime = -1;
+        statusTime = 1;
         break;
     case TRAVEL_STATUS_TRAVEL:
         statusTime = getMaxTravelTime() * 2 + sPlayerbotAIConfig.maxWaitForMove;

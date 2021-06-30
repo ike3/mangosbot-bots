@@ -132,6 +132,10 @@ bool AttackAction::Attack(Unit* target)
         ai->ChangeEngine(BOT_STATE_COMBAT);
         return ChaseTo(target);
     }
+    else
+        context->GetValue<Unit*>("current target")->Set(NULL);
+
+
 
     return false;
 }

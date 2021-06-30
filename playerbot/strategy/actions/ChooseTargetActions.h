@@ -27,6 +27,8 @@ namespace ai
             // if carry flag, do not start fight
             if (bot->HasAura(23333) || bot->HasAura(23335))
                 return false;
+
+            return true;
         }
     };
 
