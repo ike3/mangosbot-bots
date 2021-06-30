@@ -9,12 +9,12 @@ using namespace ai;
 
 bool BuyAction::Execute(Event event)
 {
-    bool buyUsefull = false;
+    bool buyUseful = false;
     ItemIds itemIds;
     string link = event.getParam();
 
     if (link == "vendor")
-        buyUsefull = true;
+        buyUseful = true;
     else
     {
         itemIds = chat->parseItems(link);
@@ -34,7 +34,7 @@ bool BuyAction::Execute(Event event)
         if (!pCreature)
             continue;
 
-        if (buyUsefull)
+        if (buyUseful)
         {
             VendorItemData const* tItems = pCreature->GetVendorItems();
 

@@ -212,11 +212,11 @@ namespace ai
         WorldPosition* getPointFrom() { return &pointFrom; }
         WorldPosition* getPointTo() { return &pointTo; }
 
-        bool isUsefull(WorldPosition point) { return isFrom(point) || isTo(point); }
-        float distance(WorldPosition point) { return isUsefull(point) ? (isFrom(point) ? point.distance(pointFrom) : point.distance(pointTo)) : 200000; }
+        bool isUseful(WorldPosition point) { return isFrom(point) || isTo(point); }
+        float distance(WorldPosition point) { return isUseful(point) ? (isFrom(point) ? point.distance(pointFrom) : point.distance(pointTo)) : 200000; }
 
-        bool isUsefull(WorldPosition start, WorldPosition end) { return isFrom(start) && isTo(end); }
-        float distance(WorldPosition start, WorldPosition end) { return (isUsefull(start, end) ? (start.distance(pointFrom) + portalLength + pointTo.distance(end)) : 200000); }
+        bool isUseful(WorldPosition start, WorldPosition end) { return isFrom(start) && isTo(end); }
+        float distance(WorldPosition start, WorldPosition end) { return (isUseful(start, end) ? (start.distance(pointFrom) + portalLength + pointTo.distance(end)) : 200000); }
     private:
         WorldPosition pointFrom, pointTo;
         float portalLength = 0.1f;
