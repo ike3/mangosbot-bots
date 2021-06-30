@@ -212,6 +212,10 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
                     //We have no path. Beyond 450yd the standard pathfinder will probably move the wrong way.
                     if (sServerFacade.IsDistanceGreaterThan(totalDistance, maxDist * 3))
                     {
+                        movePath.clear();
+                        movePath.addPoint(endPosition);
+                        AI_VALUE(LastMovement&, "last movement").setPath(movePath);
+
                         bot->StopMoving();
                         if (ai->HasStrategy("debug move", BOT_STATE_NON_COMBAT))
                             ai->TellMasterNoFacing("I have no path");
