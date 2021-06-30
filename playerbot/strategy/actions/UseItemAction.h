@@ -52,22 +52,20 @@ namespace ai
    public:
        UseHearthStone(PlayerbotAI* ai) : UseItemAction(ai, "hearthstone") {}
 
-       bool isUsefull() { return !bot->IsInCombat(); }
+       bool isUseful() { return !bot->IsInCombat(); }
        
-       bool Execute(Event event)
-       {
-           if (bot->IsMoving())
-           {
-               MotionMaster& mm = *bot->GetMotionMaster();
-               bot->StopMoving();
-               mm.Clear();
-           }
-           bool used = UseItemAction::Execute(event);
+       virtual bool Execute(Event event);
+   };
 
-           if(used)
-                ai->SetNextCheckDelay(10 * IN_MILLISECONDS);
+   class UseRandomRecipe : public UseItemAction
+   {
+   public:
+       UseRandomRecipe(PlayerbotAI* ai) : UseItemAction(ai, "random recipe") {}
 
-           return used;
-       }
+       virtual bool isUseful();
+
+       virtual bool isPossible() { return true; }
+       
+       virtual bool Execute(Event event);
    };
 }

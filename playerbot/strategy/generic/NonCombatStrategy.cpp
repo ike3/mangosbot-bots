@@ -51,6 +51,10 @@ void NonCombatStrategy::InitTriggers(std::list<TriggerNode*>& triggers)
         "hearth is faster",
         NextAction::array(0, new NextAction("hearthstone", 1.1f), NULL)));
 
+    triggers.push_back(new TriggerNode(
+        "often",
+        NextAction::array(0, new NextAction("use random recipe", 1.0f), NULL)));
+
     /*AiObjectContext* context = ai->GetAiObjectContext();
 
     triggers.push_back(new TriggerNode(

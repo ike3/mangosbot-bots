@@ -98,6 +98,7 @@ bool RpgAction::Execute(Event event)
             elements.push_back(&RpgAction::use);
             elements.push_back(&RpgAction::work);
             elements.push_back(&RpgAction::spell);
+            elements.push_back(&RpgAction::craft);
         }
     }
 #endif
@@ -110,6 +111,7 @@ bool RpgAction::Execute(Event event)
             elements.push_back(&RpgAction::stay);
             elements.push_back(&RpgAction::work);
             elements.push_back(&RpgAction::spell);
+            elements.push_back(&RpgAction::craft);
         }
     }    
     else
@@ -436,6 +438,30 @@ void RpgAction::spell(ObjectGuid guid)
 
     if (oldSelection)
         bot->SetSelectionGuid(oldSelection);
+
+    if (!ai->HasRealPlayerMaster())
+        ai->SetNextCheckDelay(sPlayerbotAIConfig.rpgDelay);
+}
+
+void RpgAction::craft(ObjectGuid guid)
+{
+    ObjectGuid oldSelection = bot->GetSelectionGuid();
+
+    bot->SetSelectionGuid(guid);
+
+    WorldObject* wo = ai->GetWorldObject(guid);
+
+    bool crafted = ai->DoSpecificAction("craft random item", Event("rpg action", chat->formatWorldobject(wo)));
+
+    Unit* unit = ai->GetUnit(guid);
+    if (unit)
+        unit->SetFacingTo(unit->GetAngle(bot));
+
+    if (oldSelection)
+        bot->SetSelectionGuid(oldSelection);
+
+    if (crafted)
+        RemIgnore(guid);
 
     if (!ai->HasRealPlayerMaster())
         ai->SetNextCheckDelay(sPlayerbotAIConfig.rpgDelay);

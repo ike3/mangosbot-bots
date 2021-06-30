@@ -145,8 +145,8 @@ bool CastRandomSpellAction::Execute(Event event)
     PlayerSpellMap const& spellMap = bot->GetSpellMap();
     Player* master = GetMaster();
 
-    Unit* target;
-    GameObject* got;
+    Unit* target = nullptr;
+    GameObject* got = nullptr;
 
     string name = event.getParam();
     if (name.empty())
@@ -189,6 +189,9 @@ bool CastRandomSpellAction::Execute(Event event)
         if (!pSpellInfo)
             continue;
 
+        if (!AcceptSpell(pSpellInfo))
+            continue;
+
         if (pSpellInfo->Effect[0] == SPELL_EFFECT_LEARN_SPELL)
             continue;
 
@@ -224,7 +227,15 @@ bool CastRandomSpellAction::Execute(Event event)
             isCast = ai->CastSpell(spellId, go->GetPositionX(), go->GetPositionY(), go->GetPositionZ());
 
         if (isCast)
+        {
+            if (MultiCast)
+            {               
+                ostringstream cmd;
+                cmd << "cast " << chat->formatWorldobject(unit) + " " << spellId << " " << 19;
+                ai->HandleCommand(CHAT_MSG_WHISPER, cmd.str(), *bot);
+            }
             return true;
+        }
     }
 
     return false;

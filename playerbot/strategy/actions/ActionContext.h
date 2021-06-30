@@ -142,6 +142,8 @@ namespace ai
             creators["hearthstone"] = &ActionContext::hearthstone;
             creators["cast random spell"] = &ActionContext::cast_random_spell;
             creators["free bg join"] = &ActionContext::free_bg_join;
+            creators["use random recipe"] = &ActionContext::use_random_recipe;
+            creators["craft random item"] = &ActionContext::craft_random_item;
 
             // BG Tactics
             creators["bg tactics"] = &ActionContext::bg_tactics;
@@ -246,7 +248,8 @@ namespace ai
         static Action* hearthstone(PlayerbotAI* ai) { return new UseHearthStone(ai); }
         static Action* cast_random_spell(PlayerbotAI* ai) { return new CastRandomSpellAction(ai); }
         static Action* free_bg_join(PlayerbotAI* ai) { return new FreeBGJoinAction(ai); }
-        
+        static Action* use_random_recipe(PlayerbotAI* ai) { return new UseRandomRecipe(ai); }
+        static Action* craft_random_item(PlayerbotAI* ai) { return new CraftRandomItemAction(ai); }
 
         // BG Tactics
         static Action* bg_tactics(PlayerbotAI* ai) { return new BGTactics(ai); }
@@ -258,6 +261,6 @@ namespace ai
         static Action* bg_protect_fc(PlayerbotAI* ai) { return new BGTactics(ai, "protect fc"); }
         static Action* attack_enemy_fc(PlayerbotAI* ai) { return new AttackEnemyFlagCarrierAction(ai); }
         static Action* bg_use_buff(PlayerbotAI* ai) { return new BGTactics(ai, "use buff"); }
-        static Action* bg_check_flag(PlayerbotAI* ai) { return new BGTactics(ai, "check flag"); }       
+        static Action* bg_check_flag(PlayerbotAI* ai) { return new BGTactics(ai, "check flag"); }    
     };
 };

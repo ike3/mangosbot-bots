@@ -32,6 +32,7 @@ namespace ai
         void heal(ObjectGuid guid);
         void use(ObjectGuid guid);
         void spell(ObjectGuid guid);
+        void craft(ObjectGuid guid);
         void homebind(ObjectGuid guid);
         void queuebg(ObjectGuid guid);
 

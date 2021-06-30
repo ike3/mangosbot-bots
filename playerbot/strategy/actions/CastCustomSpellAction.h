@@ -15,7 +15,17 @@ namespace ai
     class CastRandomSpellAction : public CastCustomSpellAction
     {
     public:
-        CastRandomSpellAction(PlayerbotAI* ai) : CastCustomSpellAction(ai, "cast random spell") {}
+        CastRandomSpellAction(PlayerbotAI* ai, string name = "cast random spell") : CastCustomSpellAction(ai, name) {}
+        virtual bool AcceptSpell(const SpellEntry* pSpellInfo) {return true; }
         virtual bool Execute(Event event);
+    protected:
+        bool MultiCast = false;
+    };
+
+    class CraftRandomItemAction : public CastRandomSpellAction
+    {
+    public:
+        CraftRandomItemAction(PlayerbotAI* ai) : CastRandomSpellAction(ai, "craft random item") { MultiCast = true; }
+        virtual bool AcceptSpell(const SpellEntry* pSpellInfo) { return pSpellInfo->Effect[0] == 24; }        
     };
 }
