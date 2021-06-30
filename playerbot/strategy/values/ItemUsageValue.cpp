@@ -155,6 +155,16 @@ ItemUsage ItemUsageValue::QueryItemUsageForEquip(ItemPrototype const * item)
     if (oldItem->Class == ITEM_CLASS_ARMOR && !sRandomItemMgr.CanEquipArmor(bot->getClass(), bot->getLevel(), oldItem))
         existingShouldEquip = false;
 
+    if (item->Class == ITEM_CLASS_CONTAINER)
+    {
+        if (item->SubClass != ITEM_SUBCLASS_CONTAINER)
+            return ITEM_USAGE_NONE; //Todo add logic for non-bag containers.
+     
+        if (GetSmallestBagSize() >= item->ContainerSlots)
+           return ITEM_USAGE_NONE;
+    }
+
+
     if (oldItem->ItemId != item->ItemId && //Item is not identical
         (shouldEquip || !existingShouldEquip) && //New item is optimal or old item was already sub-optimal
             (oldItem->ItemLevel + oldItem->Quality * 5 < item->ItemLevel + item->Quality  * 5 // Item is upgrade
@@ -179,6 +189,29 @@ ItemUsage ItemUsageValue::QueryItemUsageForEquip(ItemPrototype const * item)
     }
 
     return ITEM_USAGE_NONE;
+}
+
+//Return smaltest bag size equipped
+uint32 ItemUsageValue::GetSmallestBagSize()
+{
+    int8 curSlot = 0;
+    int8 curSlots = 0;
+    for (uint8 bag = INVENTORY_SLOT_BAG_START + 1; bag < INVENTORY_SLOT_BAG_END; ++bag)
+    {
+        const Bag* const pBag = (Bag*)bot->GetItemByPos(INVENTORY_SLOT_BAG_0, bag);
+        if (pBag)
+        {
+            if (curSlot > 0 && curSlots < pBag->GetBagSize())
+                continue;
+
+            curSlot = pBag->GetSlot();
+            curSlots = pBag->GetBagSize();
+        }
+        else
+            return 0;
+    }
+
+    return curSlots;
 }
 
 bool ItemUsageValue::IsItemUsefulForQuest(Player const* player, uint32 itemId)
@@ -222,6 +255,20 @@ bool ItemUsageValue::IsItemUsefulForSkill(ItemPrototype const * proto)
         return ai->HasSkill(SKILL_COOKING);
     case 6256: //Fishing Rod
         return ai->HasSkill(SKILL_FISHING);
+    }
+
+
+    uint32 maxStack = proto->GetMaxStackSize();
+
+    list<Item*> found = AI_VALUE2(list < Item*>, "inventory items", chat->formatItem(proto));
+
+    uint32 itemCount = 0;
+
+    for (auto stack : found)
+    {
+        itemCount += stack->GetCount();
+        if (itemCount > maxStack)
+            return false;
     }
 
     switch (proto->Class)
