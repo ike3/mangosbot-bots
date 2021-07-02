@@ -34,24 +34,24 @@ void EquipAction::EquipItem(FindItemVisitor* visitor)
 //Return bagslot with smalest bag.
 uint8 EquipAction::GetSmallestBagSlot()
 {
-    int8 curSlot = 0;
+    int8 curBag = 0;
     int8 curSlots = 0;
     for (uint8 bag = INVENTORY_SLOT_BAG_START + 1; bag < INVENTORY_SLOT_BAG_END; ++bag)
     {
         const Bag* const pBag = (Bag*)bot->GetItemByPos(INVENTORY_SLOT_BAG_0, bag);
         if (pBag)
         {
-            if (curSlot > 0 && curSlots < pBag->GetBagSize())
+            if (curBag > 0 && curSlots < pBag->GetBagSize())
                 continue;
              
-            curSlot = pBag->GetSlot();
+            curBag = bag;
             curSlots = pBag->GetBagSize();
         }
         else
-            return 0;
+            return bag;
     }
 
-    return curSlot;
+    return curBag;
 }
 
 void EquipAction::EquipItem(Item& item)
@@ -73,7 +73,7 @@ void EquipAction::EquipItem(Item& item)
             uint8 newBagSlot = GetSmallestBagSlot();
             if (newBagSlot > 0)
             {
-                uint16 src = ((INVENTORY_SLOT_BAG_0 << 8) | slot);
+                uint16 src = ((bagIndex << 8) | slot);
                 uint16 dst = ((INVENTORY_SLOT_BAG_0 << 8) | newBagSlot);
                 bot->SwapItem(src, dst);
                 equipedBag = true;
