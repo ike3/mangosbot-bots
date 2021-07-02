@@ -846,12 +846,12 @@ bool GrindTravelDestination::isActive(Player* bot)
 
     int32 maxLevel = std::max(botLevel * (0.5f + levelMod), botLevel - 5.0f + levelBoost);
  
-    if (cInfo->MaxLevel > maxLevel) //@lvl5 max = 3, @lvl60 max = 57
+    if ((int32)cInfo->MaxLevel > maxLevel) //@lvl5 max = 3, @lvl60 max = 57
         return false;
 
     int32 minLevel = std::max(botLevel * (0.4f + levelMod), botLevel - 12.0f + levelBoost);
 
-    if (cInfo->MaxLevel < minLevel) //@lvl5 min = 3, @lvl60 max = 50
+    if ((int32)cInfo->MaxLevel < minLevel) //@lvl5 min = 3, @lvl60 max = 50
         return false;
 
     if (cInfo->MinLootGold == 0)
@@ -2504,7 +2504,7 @@ void TravelMgr::LoadQuestTravelTable()
                                         Strategy* strat = con->GetStrategy(stratName);
 
                                         if (strat->getDefaultActions())
-                                            for (uint32 i = 0; i < NextAction::size(strat->getDefaultActions()); i++)
+                                            for (int32 i = 0; i < NextAction::size(strat->getDefaultActions()); i++)
                                             {
                                                 NextAction* nextAction = strat->getDefaultActions()[i];
 
@@ -2537,7 +2537,7 @@ void TravelMgr::LoadQuestTravelTable()
 
                                                 NextAction** nextActions = triggerNode->getHandlers();
 
-                                                for (uint32 i = 0; i < NextAction::size(nextActions); i++)
+                                                for (int32 i = 0; i < NextAction::size(nextActions); i++)
                                                 {
                                                     NextAction* nextAction = nextActions[i];
                                                     //out << " A:" << nextAction->getName() << "(" << nextAction->getRelevance() << ")";

@@ -175,7 +175,7 @@ namespace ai
         GuidPosition() : ObjectGuid() {}
         GuidPosition(ObjectGuid guid) : ObjectGuid(guid) { point = WorldPosition(guid); }
         template<class T>
-        GuidPosition(ObjectGuid guid, T) : ObjectGuid(guid) { point = WorlsPosition(T); }
+        GuidPosition(ObjectGuid guid, T) : ObjectGuid(guid) { point = WorldPosition(T); }
         GuidPosition(CreatureDataPair const* dataPair) : ObjectGuid(HIGHGUID_UNIT, dataPair->second.id, dataPair->first)  { point = WorldPosition(dataPair); }
         GuidPosition(GameObjectDataPair const* dataPair) : ObjectGuid(HIGHGUID_GAMEOBJECT, dataPair->second.id, dataPair->first) { point = WorldPosition(dataPair); }
         GuidPosition(const GuidPosition& guidp) : ObjectGuid(guidp) { point = guidp.point; }
