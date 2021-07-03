@@ -209,6 +209,7 @@ void PlayerbotAI::Reset()
     currentEngine = engines[BOT_STATE_NON_COMBAT];
     nextAICheckDelay = 0;
     whispers.clear();
+    sounds.clear();
 
     aiObjectContext->GetValue<Unit*>("old target")->Set(NULL);
     aiObjectContext->GetValue<Unit*>("current target")->Set(NULL);
@@ -604,7 +605,13 @@ bool PlayerbotAI::PlaySound(uint32 emote)
 {
     if (EmotesTextSoundEntry const* soundEntry = FindTextSoundEmoteFor(emote, bot->getRace(), bot->getGender()))
     {
-        bot->PlayDistanceSound(soundEntry->SoundId);
+        uint32 soundId = soundEntry->SoundId;
+        time_t lastSaid = sounds[soundId];
+        if (!lastSaid || (time(0) - lastSaid) >= sPlayerbotAIConfig.soundRepeatDelay / 1000)
+        {
+            sounds[soundId] = time(0);
+            bot->PlayDistanceSound(soundId);
+        }
         return true;
     }
 
