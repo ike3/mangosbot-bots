@@ -100,10 +100,8 @@ bool AttackersValue::IsPossibleTarget(Unit *attacker, Player *bot)
         !attacker->HasStealthAura() &&
         !attacker->HasInvisibilityAura() &&
         !attacker->IsPolymorphed() &&
-        !attacker->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_STUNNED) &&
         !sServerFacade.IsCharmed(attacker) &&
-        !sServerFacade.IsFeared(attacker) &&
-        !sServerFacade.IsInRoots(attacker) &&
+        (!IsCCed(attacker) || !bot->GetGroup()) &&
         !sServerFacade.IsFriendlyTo(attacker, bot) &&
         bot->IsWithinDistInMap(attacker, sPlayerbotAIConfig.sightDistance) &&
         !(attacker->getLevel() == 1 && !sServerFacade.IsHostileTo(attacker, bot)) &&
@@ -113,6 +111,27 @@ bool AttackersValue::IsPossibleTarget(Unit *attacker, Player *bot)
                 (!attacker->HasFlag(UNIT_DYNAMIC_FLAGS, UNIT_DYNFLAG_TAPPED) || bot->IsTappedByMeOrMyGroup(c))
                 )
         );
+}
+
+inline void append(Unit::AuraList* to, Unit::AuraList const& from)
+{
+    to->insert(to->end(), from.begin(), from.end());
+}
+
+bool AttackersValue::IsCCed(Unit* attacker)
+{
+    Unit::AuraList auras;
+    append(&auras, attacker->GetAurasByType(SPELL_AURA_MOD_FEAR));
+    append(&auras, attacker->GetAurasByType(SPELL_AURA_MOD_ROOT));
+    append(&auras, attacker->GetAurasByType(SPELL_AURA_MOD_STUN));
+
+    for (Unit::AuraList::iterator i = auras.begin(); i != auras.end(); ++i)
+    {
+        Aura* aura = *i;
+        if (aura->GetAuraDuration() >= (int32)sPlayerbotAIConfig.dispelAuraDuration) return true;
+    }
+
+    return false;
 }
 
 bool AttackersValue::IsValidTarget(Unit *attacker, Player *bot)
