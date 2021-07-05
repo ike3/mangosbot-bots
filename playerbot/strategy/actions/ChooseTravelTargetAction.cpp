@@ -193,10 +193,10 @@ bool ChooseTravelTargetAction::SetTarget(TravelTarget* target, TravelTarget* old
         foundTarget = SetRpgTarget(target);                               //Go to town to sell items or repair
 
     if (!foundTarget && GrindTravelDestination::moneyNeeded(bot) > bot->GetMoney())
-        foundTarget = SetQuestTarget(target, true);                       //Turn in quests for money
-
-    if(!foundTarget && GrindTravelDestination::moneyNeeded(bot) > bot->GetMoney())
-        foundTarget = SetGrindTarget(target);                             //Go grind mobs for money
+        if(urand(1,100) > 50)
+            foundTarget = SetQuestTarget(target, true);                       //Turn in quests for money
+        else
+            foundTarget = SetGrindTarget(target);                             //Go grind mobs for money
 
     if (!foundTarget && urand(1, 100) > 10)                               //90% chance 
         foundTarget = SetCurrentTarget(target, oldTarget);                //Extend current target.
