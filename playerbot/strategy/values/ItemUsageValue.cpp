@@ -158,11 +158,18 @@ ItemUsage ItemUsageValue::QueryItemUsageForEquip(ItemPrototype const * item)
     if (item->Class == ITEM_CLASS_CONTAINER)
     {
         if (item->SubClass != ITEM_SUBCLASS_CONTAINER)
-            return ITEM_USAGE_NONE; //Todo add logic for non-bag containers.
+            return ITEM_USAGE_NONE; //Todo add logic for non-bag containers. We want to look at professions/class and only replace if non-bag is larger than bag.
      
         if (GetSmallestBagSize() >= item->ContainerSlots)
            return ITEM_USAGE_NONE;
     }
+
+    if (item->Class == ITEM_CLASS_QUIVER)
+        if (bot->getClass() != CLASS_HUNTER)
+            return ITEM_USAGE_NONE;
+        else
+            return ITEM_USAGE_EQUIP; //Todo add logic for replacing larger quiver. Quiver is probably better than a bag as long as it is equal or bigger than current bag.
+
 
 
     if (oldItem->ItemId != item->ItemId && //Item is not identical
@@ -270,6 +277,9 @@ bool ItemUsageValue::IsItemUsefulForSkill(ItemPrototype const * proto)
         if (itemCount > maxStack)
             return false;
     }
+
+    if (AI_VALUE(uint8, "bag space") > 50)
+        return false;
 
     switch (proto->Class)
     {
