@@ -169,7 +169,11 @@ bool SpiritHealerAction::Execute(Event event)
             context->GetValue<Unit*>("current target")->Set(NULL);
             bot->SetSelectionGuid(ObjectGuid());
             ai->TellMaster("Hello");
-            context->GetValue<uint32>("death count")->Set(0);
+
+            uint32 dCount = AI_VALUE(uint32, "death count");
+            if(dCount > 10)
+                context->GetValue<uint32>("death count")->Set(0);
+
             return true;
         }
     }
