@@ -121,6 +121,10 @@ void ChatCommandHandlerStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("cast custom spell", relevance), NULL)));
 
     triggers.push_back(new TriggerNode(
+        "castnc",
+        NextAction::array(0, new NextAction("cast custom nc spell", relevance), NULL)));
+
+    triggers.push_back(new TriggerNode(
         "revive",
         NextAction::array(0, new NextAction("spirit healer", relevance), NULL)));
 

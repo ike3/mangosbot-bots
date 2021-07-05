@@ -123,6 +123,7 @@ namespace ai
             creators["tank attack chat shortcut"] = &ChatActionContext::tank_attack_chat_shortcut;
             creators["gossip hello"] = &ChatActionContext::gossip_hello;
             creators["cast custom spell"] = &ChatActionContext::cast_custom_spell;
+            creators["cast custom nc spell"] = &ChatActionContext::cast_custom_nc_spell;
             creators["invite"] = &ChatActionContext::invite;
             creators["spell"] = &ChatActionContext::spell;
             creators["rti"] = &ChatActionContext::rti;
@@ -173,6 +174,7 @@ namespace ai
         static Action* invite(PlayerbotAI* ai) { return new InviteToGroupAction(ai); }
         static Action* spell(PlayerbotAI* ai) { return new TellSpellAction(ai); }
         static Action* cast_custom_spell(PlayerbotAI* ai) { return new CastCustomSpellAction(ai); }
+        static Action* cast_custom_nc_spell(PlayerbotAI* ai) { return new CastCustomNcSpellAction(ai); }        
         static Action* tank_attack_chat_shortcut(PlayerbotAI* ai) { return new TankAttackChatShortcutAction(ai); }
         static Action* grind_chat_shortcut(PlayerbotAI* ai) { return new GrindChatShortcutAction(ai); }
         static Action* flee_chat_shortcut(PlayerbotAI* ai) { return new FleeChatShortcutAction(ai); }

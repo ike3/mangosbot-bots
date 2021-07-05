@@ -65,6 +65,7 @@ namespace ai
             creators["tank attack"] = &ChatTriggerContext::tank_attack;
             creators["talk"] = &ChatTriggerContext::talk;
             creators["cast"] = &ChatTriggerContext::cast;
+            creators["castnc"] = &ChatTriggerContext::castnc;
             creators["invite"] = &ChatTriggerContext::invite;
             creators["spell"] = &ChatTriggerContext::spell;
             creators["rti"] = &ChatTriggerContext::rti;
@@ -123,6 +124,7 @@ namespace ai
         static Trigger* rti(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "rti"); }
         static Trigger* invite(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "invite"); }
         static Trigger* cast(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "cast"); }
+        static Trigger* castnc(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "castnc"); }
         static Trigger* talk(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "talk"); }
         static Trigger* flee(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "flee"); }
         static Trigger* grind(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "grind"); }
