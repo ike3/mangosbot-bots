@@ -104,7 +104,7 @@ namespace ai
             creators["spells"] = &ChatActionContext::spells;
             creators["co"] = &ChatActionContext::co;
             creators["nc"] = &ChatActionContext::nc;
-            creators["dead"] = &ChatActionContext::dead;
+            creators["de"] = &ChatActionContext::dead;
             creators["trainer"] = &ChatActionContext::trainer;
             creators["attack my target"] = &ChatActionContext::attack_my_target;
             creators["chat"] = &ChatActionContext::chat;
