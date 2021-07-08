@@ -543,12 +543,15 @@ void PlayerbotAI::DoNextAction()
 
         //Death Count to prevent skeleton piles
         Player* master = GetMaster();
-        if (!master || (master && master->GetPlayerbotAI()))
+        if (!HasActivePlayerMaster())
         {
             uint32 dCount = aiObjectContext->GetValue<uint32>("death count")->Get();
             aiObjectContext->GetValue<uint32>("death count")->Set(++dCount);
         }
 
+        aiObjectContext->GetValue<Unit*>("current target")->Set(NULL);
+        aiObjectContext->GetValue<Unit*>("enemy player target")->Set(NULL);
+        
         ChangeEngine(BOT_STATE_DEAD);
         return;
     }
@@ -557,7 +560,6 @@ void PlayerbotAI::DoNextAction()
     if (currentEngine == engines[BOT_STATE_DEAD] && sServerFacade.IsAlive(bot))
     {
         ChangeEngine(BOT_STATE_NON_COMBAT);
-        aiObjectContext->GetValue<Unit*>("current target")->Set(NULL);
         return;
     }
 
@@ -1149,6 +1151,11 @@ bool PlayerbotAI::CanCastSpell(uint32 spellid, Unit* target, uint8 effectMask, b
 
 	SpellEntry const *spellInfo = sServerFacade.LookupSpellInfo(spellid);
 	if (!spellInfo)
+        return false;
+
+    uint32 CastingTime = !IsChanneledSpell(spellInfo) ? GetSpellCastTime(spellInfo, bot) : GetSpellDuration(spellInfo);
+
+    if (CastingTime && bot->IsMoving())
         return false;
 
 	if (!itemTarget)
