@@ -505,7 +505,7 @@ bool MovementAction::IsMovingAllowed(Unit* target)
     if (bot->GetMapId() != target->GetMapId())
         return false;
 
-    float distance = bot->GetDistance(target);
+    float distance = sServerFacade.GetDistance2d(bot, target);
     if (!bot->InBattleGround() && distance > sPlayerbotAIConfig.reactDistance)
         return false;
 
