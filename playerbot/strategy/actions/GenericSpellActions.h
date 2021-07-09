@@ -205,7 +205,27 @@ namespace ai
     class CastShootAction : public CastSpellAction
     {
     public:
-        CastShootAction(PlayerbotAI* ai) : CastSpellAction(ai, "shoot") {}
+        CastShootAction(PlayerbotAI* ai) : CastSpellAction(ai, "shoot")
+        {
+            Item* const pItem = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_RANGED);
+            if (pItem)
+            {
+                spell = "shoot";
+
+                switch (pItem->GetProto()->SubClass)
+                {
+                case ITEM_SUBCLASS_WEAPON_GUN:
+                    spell += " gun";
+                    break;
+                case ITEM_SUBCLASS_WEAPON_BOW:
+                    spell += " bow";
+                    break;
+                case ITEM_SUBCLASS_WEAPON_CROSSBOW:
+                    spell += " crossbow";
+                    break;
+                }
+            }
+        }
         virtual ActionThreatType getThreatType() { return ACTION_THREAT_NONE; }
     };
 
