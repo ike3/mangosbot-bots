@@ -1155,18 +1155,11 @@ bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target, Item* itemTarget)
         }
     }
 
-#ifdef MANGOS
-    spell->prepare(&targets);
-#endif
-#ifdef CMANGOS
-    spell->SpellStart(&targets);
-#endif
-
-    if (sServerFacade.isMoving(bot) && spell->GetCastTime())
+    uint32 castTime = GetSpellCastTime(pSpellInfo);
+    if (sServerFacade.isMoving(bot) && castTime)
     {
         bot->StopMoving();
         SetNextCheckDelay(sPlayerbotAIConfig.globalCoolDown);
-        spell->cancel();
         //delete spell;
         return false;
     }
@@ -1177,11 +1170,17 @@ bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target, Item* itemTarget)
         LootObject loot = *aiObjectContext->GetValue<LootObject>("loot target");
         if (!loot.IsLootPossible(bot))
         {
-            spell->cancel();
             //delete spell;
             return false;
         }
     }
+
+#ifdef MANGOS
+    spell->prepare(&targets);
+#endif
+#ifdef CMANGOS
+    spell->SpellStart(&targets);
+#endif
 
     if (!urand(0, 50) && sServerFacade.IsInCombat(bot))
     {

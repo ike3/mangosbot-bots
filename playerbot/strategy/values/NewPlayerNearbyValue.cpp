@@ -11,7 +11,8 @@ ObjectGuid NewPlayerNearbyValue::Calculate()
     for (list<ObjectGuid>::iterator i = players.begin(); i != players.end(); ++i)
     {
         ObjectGuid guid = *i;
-        if (alreadySeenPlayers.find(guid) == alreadySeenPlayers.end())
+        Player *pl = dynamic_cast<Player*>(ai->GetUnit(guid));
+        if (pl && !ai->IsOpposing(pl) && alreadySeenPlayers.find(guid) == alreadySeenPlayers.end())
             return guid;
     }
 
