@@ -122,8 +122,7 @@ bool CheckMountStateAction::isUseful()
     if (bot->IsDead())
         return false;
 
-    bool isOutdoor;
-    uint16 areaFlag = bot->GetMap()->GetTerrain()->GetAreaFlag(bot->GetPositionX(), bot->GetPositionY(), bot->GetPositionZ(), &isOutdoor);
+    bool isOutdoor = bot->GetMap()->GetTerrain()->IsOutdoors(bot->GetPositionX(), bot->GetPositionY(), bot->GetPositionZ());
     if (!isOutdoor)
         return false;
 
