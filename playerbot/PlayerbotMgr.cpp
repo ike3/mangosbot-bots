@@ -156,12 +156,11 @@ void PlayerbotHolder::OnBotLogin(Player * const bot)
     if (master)
     {
         ObjectGuid masterGuid = master->GetObjectGuid();
-        if (master->GetGroup() &&
-            ! master->GetGroup()->IsLeader(masterGuid))
+        if (master->GetGroup() && !master->GetGroup()->IsLeader(masterGuid))
             master->GetGroup()->ChangeLeader(masterGuid);
     }
 
-    Group *group = bot->GetGroup();
+    Group* group = bot->GetGroup();
     if (group)
     {
         bool groupValid = false;
@@ -169,11 +168,23 @@ void PlayerbotHolder::OnBotLogin(Player * const bot)
         for (Group::MemberSlotList::const_iterator i = slots.begin(); i != slots.end(); ++i)
         {
             ObjectGuid member = i->guid;
-            uint32 account = sObjectMgr.GetPlayerAccountIdByGUID(member);
-            if (!sPlayerbotAIConfig.IsInRandomAccountList(account))
+            
+            if (master)
             {
-                groupValid = true;
-                break;
+                if (master->GetObjectGuid() == member)
+                {
+                    groupValid = true;
+                    break;
+                }
+            }
+            else
+            {
+                uint32 account = sObjectMgr.GetPlayerAccountIdByGUID(member);
+                if (!sPlayerbotAIConfig.IsInRandomAccountList(account))
+                {
+                    groupValid = true;
+                    break;
+                }
             }
         }
 
@@ -186,6 +197,7 @@ void PlayerbotHolder::OnBotLogin(Player * const bot)
         }
     }
 
+    group = bot->GetGroup();
     if (group)
     {
         ai->ResetStrategies();
