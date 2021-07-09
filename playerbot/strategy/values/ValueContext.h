@@ -304,7 +304,7 @@ namespace ai
         static UntypedValue* nearest_corpses(PlayerbotAI* ai) { return new NearestCorpsesValue(ai); }
         static UntypedValue* possible_rpg_targets(PlayerbotAI* ai) { return new PossibleRpgTargetsValue(ai); }
         static UntypedValue* possible_targets(PlayerbotAI* ai) { return new PossibleTargetsValue(ai); }
-        static UntypedValue* possible_targets_no_los(PlayerbotAI* ai) { return new PossibleTargetsValue(ai, "possible targets", 50.0f, true); }
+        static UntypedValue* possible_targets_no_los(PlayerbotAI* ai) { return new PossibleTargetsValue(ai, "possible targets", sPlayerbotAIConfig.sightDistance, true); }
         static UntypedValue* possible_adds(PlayerbotAI* ai) { return new PossibleAddsValue(ai); }
         static UntypedValue* all_targets(PlayerbotAI* ai) { return new AllTargetsValue(ai); }
         static UntypedValue* nearest_adds(PlayerbotAI* ai) { return new NearestAddsValue(ai); }
