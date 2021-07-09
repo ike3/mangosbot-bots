@@ -2,27 +2,6 @@
 #include "../Trigger.h"
 #include "../../PlayerbotAIConfig.h"
 
-#define BUFF_TRIGGER(clazz, spell, action) \
-    class clazz : public BuffTrigger \
-    { \
-    public: \
-        clazz(PlayerbotAI* ai) : BuffTrigger(ai, spell) {} \
-    };
-
-#define BUFF_ON_PARTY_TRIGGER(clazz, spell, action) \
-    class clazz : public BuffOnPartyTrigger \
-    { \
-    public: \
-        clazz(PlayerbotAI* ai) : BuffOnPartyTrigger(ai, spell) {}  \
-    };
-
-#define DEBUFF_TRIGGER(clazz, spell, action) \
-    class clazz : public DebuffTrigger \
-    { \
-    public: \
-        clazz(PlayerbotAI* ai) : DebuffTrigger(ai, spell) {} \
-    };
-
 namespace ai
 {
 	class StatAvailable : public Trigger

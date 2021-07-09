@@ -3,45 +3,6 @@
 #include "../Action.h"
 #include "../../PlayerbotAIConfig.h"
 
-#define BEGIN_SPELL_ACTION(clazz, name) \
-class clazz : public CastSpellAction \
-        { \
-        public: \
-        clazz(PlayerbotAI* ai) : CastSpellAction(ai, name) {} \
-
-
-#define END_SPELL_ACTION() \
-    };
-
-#define BEGIN_DEBUFF_ACTION(clazz, name) \
-class clazz : public CastDebuffSpellAction \
-        { \
-        public: \
-        clazz(PlayerbotAI* ai) : CastDebuffSpellAction(ai, name) {} \
-
-#define BEGIN_RANGED_SPELL_ACTION(clazz, name) \
-class clazz : public CastSpellAction \
-        { \
-        public: \
-        clazz(PlayerbotAI* ai) : CastSpellAction(ai, name) {} \
-
-#define BEGIN_MELEE_SPELL_ACTION(clazz, name) \
-class clazz : public CastMeleeSpellAction \
-        { \
-        public: \
-        clazz(PlayerbotAI* ai) : CastMeleeSpellAction(ai, name) {} \
-
-
-#define END_RANGED_SPELL_ACTION() \
-    };
-
-
-#define BEGIN_BUFF_ON_PARTY_ACTION(clazz, name) \
-class clazz : public BuffOnPartyAction \
-        { \
-        public: \
-        clazz(PlayerbotAI* ai) : BuffOnPartyAction(ai, name) {}
-
 namespace ai
 {
     class CastSpellAction : public Action

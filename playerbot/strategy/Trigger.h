@@ -3,20 +3,6 @@
 #include "Event.h"
 #include "../PlayerbotAIAware.h"
 
-#define NEXT_TRIGGERS(name, relevance) \
-    virtual NextAction* getNextAction() { return new NextAction(name, relevance); }
-
-#define BEGIN_TRIGGER(clazz, super) \
-class clazz : public super \
-    { \
-    public: \
-        clazz(PlayerbotAI* ai) : super(ai) {} \
-    public: \
-        virtual bool IsActive();
-
-#define END_TRIGGER() \
-    };
-
 namespace ai
 {
     class Trigger : public AiNamedObject
