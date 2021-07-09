@@ -39,6 +39,6 @@ namespace ai
     {
     public:
         CraftRandomItemAction(PlayerbotAI* ai) : CastRandomSpellAction(ai, "craft random item") { MultiCast = true; }
-        virtual bool AcceptSpell(const SpellEntry* pSpellInfo) { return pSpellInfo->Effect[0] == SPELL_EFFECT_CREATE_ITEM; }
+        virtual bool AcceptSpell(const SpellEntry* pSpellInfo) { return pSpellInfo->Effect[0] == SPELL_EFFECT_CREATE_ITEM && pSpellInfo->ReagentCount > 0 && pSpellInfo->School == 0; }
     };
 }
