@@ -193,7 +193,7 @@ bool HasNoAuraTrigger::IsActive()
     return !ai->HasAura(getName(), GetTarget());
 }
 
-bool TankAoeTrigger::IsActive()
+bool TankAssistTrigger::IsActive()
 {
     if (!AI_VALUE(uint8, "attacker count"))
         return false;
