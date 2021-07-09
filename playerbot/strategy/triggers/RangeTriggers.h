@@ -12,8 +12,12 @@ namespace ai
         virtual bool IsActive()
 		{
 			Unit* target = AI_VALUE(Unit*, "current target");
-            return target &&
-                sServerFacade.IsDistanceLessOrEqualThan(AI_VALUE2(float, "distance", "current target"), (ai->GetRange("spell") / 2));
+            if (target)
+            {
+                float targetDistance = sServerFacade.GetDistance2d(bot, target);
+                return sServerFacade.IsDistanceLessOrEqualThan(targetDistance, (ai->GetRange("spell") / 2));
+            }
+            return false;
         }
     };
 
@@ -30,10 +34,13 @@ namespace ai
 
     class EnemyTooCloseForMeleeTrigger : public Trigger {
     public:
-        EnemyTooCloseForMeleeTrigger(PlayerbotAI* ai) : Trigger(ai, "enemy too close for melee") {}
+        EnemyTooCloseForMeleeTrigger(PlayerbotAI* ai) : Trigger(ai, "enemy too close for melee", 5) {}
         virtual bool IsActive()
 		{
 			Unit* target = AI_VALUE(Unit*, "current target");
+            if (target && target->IsPlayer())
+                return false;
+
             return target && AI_VALUE2(bool, "inside target", "current target");
         }
     };
@@ -71,12 +78,26 @@ namespace ai
 	{
     public:
         EnemyOutOfMeleeTrigger(PlayerbotAI* ai) : OutOfRangeTrigger(ai, "enemy out of melee range", sPlayerbotAIConfig.meleeDistance) {}
+        virtual bool IsActive()
+        {
+            Unit* target = AI_VALUE(Unit*, GetTargetName());
+            if (!target)
+                return false;
+
+            float targetDistance = sServerFacade.GetDistance2d(bot, target);
+            return target && (targetDistance > max(5.0f, bot->GetCombinedCombatReach(target, true)) || (!bot->IsWithinLOSInMap(target) && targetDistance > 5.0f));
+        }
     };
 
     class EnemyOutOfSpellRangeTrigger : public OutOfRangeTrigger
 	{
     public:
         EnemyOutOfSpellRangeTrigger(PlayerbotAI* ai) : OutOfRangeTrigger(ai, "enemy out of spell range", ai->GetRange("spell")) {}
+        virtual bool IsActive()
+        {
+            Unit* target = AI_VALUE(Unit*, GetTargetName());
+            return target && (sServerFacade.GetDistance2d(bot, target) > distance || !bot->IsWithinLOSInMap(target));
+        }
     };
 
     class PartyMemberToHealOutOfSpellRangeTrigger : public OutOfRangeTrigger
@@ -84,6 +105,11 @@ namespace ai
     public:
         PartyMemberToHealOutOfSpellRangeTrigger(PlayerbotAI* ai) : OutOfRangeTrigger(ai, "party member to heal out of spell range", ai->GetRange("heal")) {}
         virtual string GetTargetName() { return "party member to heal"; }
+        virtual bool IsActive()
+        {
+            Unit* target = AI_VALUE(Unit*, GetTargetName());
+            return target && (sServerFacade.GetDistance2d(bot, target) > distance || !bot->IsWithinLOSInMap(target));
+        }
     };
 
     class FarFromMasterTrigger : public Trigger {
@@ -102,7 +128,7 @@ namespace ai
     class OutOfReactRangeTrigger : public FarFromMasterTrigger
     {
     public:
-        OutOfReactRangeTrigger(PlayerbotAI* ai) : FarFromMasterTrigger(ai, "out of react range", 40.0f, 5) {}
+        OutOfReactRangeTrigger(PlayerbotAI* ai) : FarFromMasterTrigger(ai, "out of react range", 50.0f, 5) {}
     };
 
     class HasContinueActionTrigger : public Trigger
