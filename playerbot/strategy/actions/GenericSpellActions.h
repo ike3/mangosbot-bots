@@ -52,6 +52,12 @@ namespace ai
     public:
         CastMeleeSpellAction(PlayerbotAI* ai, string spell) : CastSpellAction(ai, spell) {
 			range = ATTACK_DISTANCE;
+
+            Unit* target = AI_VALUE(Unit*, "current target");
+            if (target)
+                range = max(5.0f, bot->GetCombinedCombatReach(target, true));
+
+                //range = target->GetCombinedCombatReach();
 		}
     };
 
