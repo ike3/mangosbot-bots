@@ -18,48 +18,42 @@ ItemUsage ItemUsageValue::Calculate()
         return ITEM_USAGE_NONE;
 
     if (IsItemUsefulForSkill(proto))
-        return ITEM_USAGE_SKILL;
-
-    switch (proto->Class)
     {
-    case ITEM_CLASS_KEY:
-        return ITEM_USAGE_USE;
+        float stacks = CurrentStacks(proto);
+        if (stacks < 1)
+            return ITEM_USAGE_SKILL;
+        else if (stacks < 2)
+            return ITEM_USAGE_NONE;
     }
+
+    if (proto->Class == ITEM_CLASS_KEY)
+        return ITEM_USAGE_USE;
 
     if (proto->Class == ITEM_CLASS_CONSUMABLE)
     {
         string foodType = "";
-        if(proto->Spells[0].SpellCategory == 11)
+        if (proto->Spells[0].SpellCategory == 11)
             foodType = "food";
-        else if(proto->Spells[0].SpellCategory == 59)
+        else if (proto->Spells[0].SpellCategory == 59 && bot->HasMana())
             foodType = "drink";
-        else if (proto->Spells[0].SpellCategory == SPELL_EFFECT_ENERGIZE)
+        else if (proto->Spells[0].SpellCategory == SPELL_EFFECT_ENERGIZE && bot->HasMana())
             foodType = "mana potion";
         else if (proto->Spells[0].SpellCategory == SPELL_EFFECT_HEAL)
-            foodType = "healing potion";        
+            foodType = "healing potion";
 
-        list<Item*> items = AI_VALUE2(list<Item*>, "inventory items", foodType);
-
-        bool foundBetter = false;;
-
-        for (auto& otherItem : items)
+        if (!foodType.empty() && bot->CanUseItem(proto) == EQUIP_ERR_OK)
         {
-            const ItemPrototype* otherProto = otherItem->GetProto();
+            float stacks = BetterStacks(proto, foodType);
+            if (stacks < 2)
+            {
+                stacks += CurrentStacks(proto);
 
-            if (otherProto->Class != ITEM_CLASS_CONSUMABLE || otherProto->SubClass != proto->SubClass)
-                continue;
-
-            if (otherProto->ItemLevel < proto->ItemLevel)
-                continue;
-
-            if (otherProto->ItemId == proto->ItemId)
-                continue;
-
-            foundBetter = true;
+                if (stacks < 2) 
+                    return ITEM_USAGE_USE; //Buy some to get to 2 stacks
+                else if (stacks < 3)       //Keep the item if less than 3 stacks
+                    return ITEM_USAGE_NONE;
+            }
         }
-
-        if (!foundBetter)
-            return ITEM_USAGE_USE;
     }
 
     if (bot->GetGuildId() && sGuildTaskMgr.IsGuildTaskItem(itemId, bot->GetGuildId()))
@@ -70,15 +64,15 @@ ItemUsage ItemUsageValue::Calculate()
         return equip;
 
     if ((proto->Class == ITEM_CLASS_ARMOR || proto->Class == ITEM_CLASS_WEAPON) && proto->Bonding != BIND_WHEN_PICKED_UP &&
-            ai->HasSkill(SKILL_ENCHANTING) && proto->Quality >= ITEM_QUALITY_UNCOMMON)
+        ai->HasSkill(SKILL_ENCHANTING) && proto->Quality >= ITEM_QUALITY_UNCOMMON)
         return ITEM_USAGE_DISENCHANT;
 
     //While sync is on, do not loot quest items that are also usefull for master. Master 
-    if (!ai->GetMaster() || !sPlayerbotAIConfig.syncQuestWithPlayer || !IsItemUsefulForQuest(ai->GetMaster(), itemId))
-        if (IsItemUsefulForQuest(bot, itemId))
+    if (!ai->GetMaster() || !sPlayerbotAIConfig.syncQuestWithPlayer || !IsItemUsefulForQuest(ai->GetMaster(), proto))
+        if (IsItemUsefulForQuest(bot, proto))
             return ITEM_USAGE_QUEST;
 
-    if (proto->Class == ITEM_CLASS_PROJECTILE)
+    if (proto->Class == ITEM_CLASS_PROJECTILE && bot->CanUseItem(proto) == EQUIP_ERR_OK)
         if (bot->getClass() == CLASS_HUNTER || bot->getClass() == CLASS_ROGUE || bot->getClass() == CLASS_WARRIOR)
         {
             Item* const pItem = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_RANGED);
@@ -95,10 +89,23 @@ ItemUsage ItemUsageValue::Calculate()
                     subClass = ITEM_SUBCLASS_ARROW;
                     break;
                 }
+
                 if (proto->SubClass == subClass)
-                    return ITEM_USAGE_AMMO;
+                {
+                    float ammo = BetterStacks(proto, "ammo");
+                    float needAmmo = (bot->getClass() == CLASS_HUNTER) ? 8 : 2;
+
+                    if (ammo < needAmmo) //We already have enough of the current ammo.
+                    {
+                        ammo += CurrentStacks(proto);
+
+                        if (ammo < needAmmo)         //Buy ammo to get to the proper supply
+                            return ITEM_USAGE_AMMO;
+                        else if (ammo < needAmmo + 1)
+                            return ITEM_USAGE_NONE;  //Keep the ammo until we have too much.
+                    }
+                }
             }
-            return ITEM_USAGE_NONE;
         }
 
     //Need to add something like free bagspace or item value.
@@ -111,7 +118,7 @@ ItemUsage ItemUsageValue::Calculate()
     return ITEM_USAGE_NONE;
 }
 
-ItemUsage ItemUsageValue::QueryItemUsageForEquip(ItemPrototype const * item)
+ItemUsage ItemUsageValue::QueryItemUsageForEquip(ItemPrototype const* item)
 {
     bool shouldEquip = true;
     bool existingShouldEquip = true;
@@ -122,17 +129,21 @@ ItemUsage ItemUsageValue::QueryItemUsageForEquip(ItemPrototype const * item)
     if (item->InventoryType == INVTYPE_NON_EQUIP)
         return ITEM_USAGE_NONE;
 
-    Item *pItem = Item::CreateItem(item->ItemId, 1, bot);
+    Item* pItem = Item::CreateItem(item->ItemId, 1, bot);
     if (!pItem)
         return ITEM_USAGE_NONE;
 
     uint16 dest;
     InventoryResult result = bot->CanEquipItem(NULL_SLOT, dest, pItem, true, false);
     pItem->RemoveFromUpdateQueueOf(bot);
-    delete pItem;   
+    delete pItem;
 
-    if( result != EQUIP_ERR_OK )
+    if (result != EQUIP_ERR_OK)
         return ITEM_USAGE_NONE;
+
+    if (item->Class == ITEM_CLASS_QUIVER)
+        if (bot->getClass() != CLASS_HUNTER)
+            return ITEM_USAGE_NONE;
 
     if (item->Class == ITEM_CLASS_WEAPON && !sRandomItemMgr.CanEquipWeapon(bot->getClass(), item))
         shouldEquip = false;
@@ -149,40 +160,38 @@ ItemUsage ItemUsageValue::QueryItemUsageForEquip(ItemPrototype const * item)
 
     const ItemPrototype* oldItem = existingItem->GetProto();
 
+    if (item->Class == ITEM_CLASS_CONTAINER)
+    {
+        if (item->SubClass != ITEM_SUBCLASS_CONTAINER)
+            return ITEM_USAGE_NONE; //Todo add logic for non-bag containers. We want to look at professions/class and only replace if non-bag is larger than bag.
+
+        if (GetSmallestBagSize() >= item->ContainerSlots)
+            return ITEM_USAGE_NONE;
+    }
+
+    if (item->Class == ITEM_CLASS_QUIVER)
+        if (!oldItem || oldItem->ContainerSlots < item->ContainerSlots)
+            return ITEM_USAGE_EQUIP;
+        else
+            ITEM_USAGE_NONE;
+
     if (oldItem->Class == ITEM_CLASS_WEAPON && !sRandomItemMgr.CanEquipWeapon(bot->getClass(), oldItem))
         existingShouldEquip = false;
 
     if (oldItem->Class == ITEM_CLASS_ARMOR && !sRandomItemMgr.CanEquipArmor(bot->getClass(), bot->getLevel(), oldItem))
         existingShouldEquip = false;
 
-    if (item->Class == ITEM_CLASS_CONTAINER)
-    {
-        if (item->SubClass != ITEM_SUBCLASS_CONTAINER)
-            return ITEM_USAGE_NONE; //Todo add logic for non-bag containers. We want to look at professions/class and only replace if non-bag is larger than bag.
-     
-        if (GetSmallestBagSize() >= item->ContainerSlots)
-           return ITEM_USAGE_NONE;
-    }
-
-    if (item->Class == ITEM_CLASS_QUIVER)
-        if (bot->getClass() != CLASS_HUNTER)
-            return ITEM_USAGE_NONE;
-        else
-            return ITEM_USAGE_EQUIP; //Todo add logic for replacing larger quiver. Quiver is probably better than a bag as long as it is equal or bigger than current bag.
-
-
-
     if (oldItem->ItemId != item->ItemId && //Item is not identical
         (shouldEquip || !existingShouldEquip) && //New item is optimal or old item was already sub-optimal
-            (oldItem->ItemLevel + oldItem->Quality * 5 < item->ItemLevel + item->Quality  * 5 // Item is upgrade
-                  ))
+        (oldItem->ItemLevel + oldItem->Quality * 5 < item->ItemLevel + item->Quality * 5 // Item is upgrade
+            ))
     {
         switch (item->Class)
         {
         case ITEM_CLASS_ARMOR:
             if (oldItem->SubClass <= item->SubClass) {
-                if(shouldEquip)
-                   return ITEM_USAGE_REPLACE;
+                if (shouldEquip)
+                    return ITEM_USAGE_REPLACE;
                 else
                     return ITEM_USAGE_BAD_EQUIP;
             }
@@ -221,7 +230,7 @@ uint32 ItemUsageValue::GetSmallestBagSize()
     return curSlots;
 }
 
-bool ItemUsageValue::IsItemUsefulForQuest(Player const* player, uint32 itemId)
+bool ItemUsageValue::IsItemUsefulForQuest(Player* player, ItemPrototype const* proto)
 {
     for (uint8 slot = 0; slot < MAX_QUEST_LOG_SIZE; ++slot)
     {
@@ -232,10 +241,13 @@ bool ItemUsageValue::IsItemUsefulForQuest(Player const* player, uint32 itemId)
 
         for (int i = 0; i < 4; i++)
         {
-            if (quest->ReqItemId[i] == itemId)
-            {
-                return true;
-            }
+            if (quest->ReqItemId[i] != proto->ItemId)
+                continue;
+
+            if (player->GetPlayerbotAI() && AI_VALUE2(uint8, "item count", proto->Name1) >= quest->ReqItemCount[i])
+                continue;
+
+            return true;
         }
     }
 
@@ -262,21 +274,7 @@ bool ItemUsageValue::IsItemUsefulForSkill(ItemPrototype const * proto)
         return ai->HasSkill(SKILL_COOKING);
     case 6256: //Fishing Rod
         return ai->HasSkill(SKILL_FISHING);
-    }
-
-
-    uint32 maxStack = proto->GetMaxStackSize();
-
-    list<Item*> found = AI_VALUE2(list < Item*>, "inventory items", chat->formatItem(proto));
-
-    uint32 itemCount = 0;
-
-    for (auto stack : found)
-    {
-        itemCount += stack->GetCount();
-        if (itemCount > maxStack)
-            return false;
-    }
+    }    
 
     if (AI_VALUE(uint8, "bag space") > 50)
         return false;
@@ -357,4 +355,45 @@ bool ItemUsageValue::IsItemUsefulForSkill(ItemPrototype const * proto)
         }
     }
     return false;
+}
+
+float ItemUsageValue::CurrentStacks(ItemPrototype const* proto)
+{
+    uint32 maxStack = proto->GetMaxStackSize();
+
+    list<Item*> found = AI_VALUE2(list < Item*>, "inventory items", chat->formatItem(proto));
+
+    float itemCount = 0;
+
+    for (auto stack : found)
+    {
+        itemCount += stack->GetCount();
+    }
+
+    return itemCount / maxStack;
+}
+
+float ItemUsageValue::BetterStacks(ItemPrototype const* proto, string itemType)
+{
+    list<Item*> items = AI_VALUE2(list<Item*>, "inventory items", itemType);
+
+    float stacks = 0;
+
+    for (auto& otherItem : items)
+    {
+        const ItemPrototype* otherProto = otherItem->GetProto();
+
+        if (otherProto->Class != proto->Class || otherProto->SubClass != proto->SubClass)
+            continue;
+
+        if (otherProto->ItemLevel < proto->ItemLevel)
+            continue;
+
+        if (otherProto->ItemId == proto->ItemId)
+            continue;
+
+        stacks += CurrentStacks(otherProto);
+    }
+
+    return stacks;
 }
