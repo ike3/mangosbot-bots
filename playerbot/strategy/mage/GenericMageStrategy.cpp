@@ -46,10 +46,10 @@ private:
     }
     static ActionNode* frost_nova(PlayerbotAI* ai)
     {
-        return new ActionNode ("frost nova",
+        return new ActionNode("frost nova",
             /*P*/ NULL,
             /*A*/ NULL,
-            /*C*/ NULL);
+            /*C*/ NextAction::array(0, new NextAction("flee"), NULL));
     }
     static ActionNode* icy_veins(PlayerbotAI* ai)
     {
