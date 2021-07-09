@@ -131,14 +131,7 @@ bool AttackersValue::IsPossibleTarget(Unit *attacker, Player *bot)
         !sServerFacade.UnitIsDead(attacker) &&
         !attacker->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE) &&
         !attacker->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE) &&
-#ifdef MANGOS
-        !attacker->IsInvisibleForAlive() &&
-#endif
-#ifdef CMANGOS
-        !attacker->isInvisibleForAlive() &&
-#endif
-        !attacker->HasStealthAura() &&
-        !attacker->HasInvisibilityAura() &&
+        attacker->IsVisibleForOrDetect(bot, attacker, false) &&
 #ifdef CMANGOS
         //!attacker->IsStunned() &&
 #endif
