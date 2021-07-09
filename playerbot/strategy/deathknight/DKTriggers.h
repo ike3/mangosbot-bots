@@ -4,11 +4,11 @@
 namespace ai
 {
     
-    BUFF_TRIGGER(HornOfWinterTrigger, "horn of winter", "horn of winter")
-	BUFF_TRIGGER(BoneShieldTrigger, "bone shield", "bone shield")
-	BUFF_TRIGGER(ImprovedIcyTalonsTrigger, "improved icy talons", "improved icy talons")
-	DEBUFF_TRIGGER(PlagueStrikeDebuffTrigger, "plague strike", "plague strike")
-	DEBUFF_TRIGGER(IcyTouchDebuffTrigger, "icy touch", "icy touch")
+    BUFF_TRIGGER(HornOfWinterTrigger, "horn of winter");
+    BUFF_TRIGGER(BoneShieldTrigger, "bone shield");
+    BUFF_TRIGGER(ImprovedIcyTalonsTrigger, "improved icy talons");
+    DEBUFF_TRIGGER(PlagueStrikeDebuffTrigger, "plague strike");
+    DEBUFF_TRIGGER(IcyTouchDebuffTrigger, "icy touch");
 
 		class PlagueStrikeDebuffOnAttackerTrigger : public DebuffOnAttackerTrigger
 	{
