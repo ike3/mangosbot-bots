@@ -32,6 +32,7 @@ Unit* PartyMemberToHeal::Calculate()
     IsTargetOfHealingSpell predicate;
 
     vector<Unit*> needHeals;
+    vector<Unit*> tankTargets;
 
     if (bot->GetSelectionGuid())
     {
@@ -69,10 +70,16 @@ Unit* PartyMemberToHeal::Calculate()
                 if (health < sPlayerbotAIConfig.almostFullHealth || !IsTargetOfSpellCast(player, predicate))
                     needHeals.push_back(pet);
             }
+
+            if (ai->IsTank(player) && bot->IsInGroup(player, true))
+                tankTargets.push_back(player);
         }
     }
-    if (needHeals.empty())
+    if (needHeals.empty() && tankTargets.empty())
         return NULL;
+
+    if (needHeals.empty() && !tankTargets.empty())
+        needHeals = tankTargets;
 
     sort(needHeals.begin(), needHeals.end(), compareByHealth);
 
@@ -107,5 +114,5 @@ bool PartyMemberToHeal::CanHealPet(Pet* pet)
 bool PartyMemberToHeal::Check(Unit* player)
 {
     return player && player != bot && player->GetMapId() == bot->GetMapId() &&
-        sServerFacade.GetDistance2d(bot, player) < sPlayerbotAIConfig.spellDistance;
+        sServerFacade.GetDistance2d(bot, player) < (player->IsPlayer() && ai->IsTank((Player*)player)) ? 50.0f : sPlayerbotAIConfig.spellDistance;
 }
