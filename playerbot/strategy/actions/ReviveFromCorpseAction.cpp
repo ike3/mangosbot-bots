@@ -202,7 +202,7 @@ bool SpiritHealerAction::Execute(Event event)
     if (moved)
         return true;
 
-    if (!ai->HasRealPlayerMaster())
+    if (!ai->HasActivePlayerMaster())
         bot->RepopAtGraveyard();
 
     sLog.outBasic("Bot #%d %s:%d <%s> can't find a spirit healer", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName());
