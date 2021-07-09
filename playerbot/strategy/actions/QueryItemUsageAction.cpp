@@ -116,6 +116,10 @@ bool QueryItemUsageAction::QueryItemUsage(ItemPrototype const *item)
         return "Equip";
     case ITEM_USAGE_REPLACE:
         return "Equip (replace)";
+    case ITEM_USAGE_BAD_EQUIP:
+        return "Equip (temporary)";
+    case ITEM_USAGE_QUEST:
+        return "Quest (other)";
     case ITEM_USAGE_SKILL:
         return "Tradeskill";
     case ITEM_USAGE_USE:
@@ -124,6 +128,10 @@ bool QueryItemUsageAction::QueryItemUsage(ItemPrototype const *item)
 		return "Guild task";
 	case ITEM_USAGE_DISENCHANT:
 		return "Disenchant";
+    case ITEM_USAGE_VENDOR:
+        return "Vendor";
+    case ITEM_USAGE_AH:
+        return "Auctionhouse";
     case ITEM_USAGE_AMMO:
         return "Ammunition";
 	}
