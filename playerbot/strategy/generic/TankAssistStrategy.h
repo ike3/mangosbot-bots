@@ -3,16 +3,15 @@
 
 namespace ai
 {
-    class TankAoeStrategy : public NonCombatStrategy
+    class TankAssistStrategy : public Strategy
     {
     public:
-        TankAoeStrategy(PlayerbotAI* ai) : NonCombatStrategy(ai) {}
-        virtual string getName() { return "tank aoe"; }
+        TankAssistStrategy(PlayerbotAI* ai) : Strategy(ai) {}
+        virtual string getName() { return "tank assist"; }
         virtual int GetType() { return STRATEGY_TYPE_TANK; }
 
     public:
         virtual void InitTriggers(std::list<TriggerNode*> &triggers);
     };
-
 
 }

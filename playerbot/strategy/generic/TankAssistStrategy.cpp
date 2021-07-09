@@ -1,12 +1,12 @@
 #include "botpch.h"
 #include "../../playerbot.h"
-#include "TankAoeStrategy.h"
+#include "TankAssistStrategy.h"
 
 using namespace ai;
 
-void TankAoeStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void TankAssistStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
-        "tank aoe",
+        "tank assist",
         NextAction::array(0, new NextAction("tank assist", 50.0f), NULL)));
 }

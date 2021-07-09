@@ -7,6 +7,7 @@ using namespace ai;
 
 GenericWarriorStrategy::GenericWarriorStrategy(PlayerbotAI* ai) : CombatStrategy(ai)
 {
+    //actionNodeFactories.Add(new WarriorStanceRequirementActionNodeFactory());
 }
 
 void GenericWarriorStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
@@ -18,18 +19,22 @@ void GenericWarriorStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("battle shout", ACTION_NORMAL + 5), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "bloodrage",
-        NextAction::array(0, new NextAction("bloodrage", ACTION_HIGH + 1), NULL)));
+        "commanding shout",
+        NextAction::array(0, new NextAction("commanding shout", ACTION_NORMAL + 4), NULL)));
 
-    triggers.push_back(new TriggerNode(
+    /*triggers.push_back(new TriggerNode(
+        "bloodrage",
+        NextAction::array(0, new NextAction("bloodrage", ACTION_HIGH + 1), NULL)));*/
+
+    /*triggers.push_back(new TriggerNode(
         "shield bash",
         NextAction::array(0, new NextAction("shield bash", ACTION_INTERRUPT + 4), NULL)));
 
     triggers.push_back(new TriggerNode(
         "shield bash on enemy healer",
-        NextAction::array(0, new NextAction("shield bash on enemy healer", ACTION_INTERRUPT + 3), NULL)));
+        NextAction::array(0, new NextAction("shield bash on enemy healer", ACTION_INTERRUPT + 3), NULL)));*/
 
-	triggers.push_back(new TriggerNode(
+	/*triggers.push_back(new TriggerNode(
 		"critical health",
-		NextAction::array(0, new NextAction("intimidating shout", ACTION_EMERGENCY), NULL)));
+		NextAction::array(0, new NextAction("intimidating shout", ACTION_EMERGENCY), NULL)));*/
 }
