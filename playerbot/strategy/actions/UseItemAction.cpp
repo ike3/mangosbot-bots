@@ -437,7 +437,7 @@ bool UseRandomRecipe::Execute(Event event)
 {
     list<Item*> recipes = AI_VALUE2(list<Item*>, "inventory items", "recipe");   
 
-    name = "";
+    string recipeName = "";
 
     for (auto& recipe : recipes)
     {
@@ -445,16 +445,16 @@ bool UseRandomRecipe::Execute(Event event)
 
         if (usage == ITEM_USAGE_SKILL && bot->CanUseItem(recipe) == EQUIP_ERR_OK)
         {
-            name = recipe->GetProto()->Name1;
+            recipeName = recipe->GetProto()->Name1;
 
             break;
         }
     }
 
-    if (name.empty())
+    if (recipeName.empty())
         return false;
 
-    bool used = UseItemAction::Execute(event);
+    bool used = UseItemAction::Execute(Event(name,recipeName));
 
     if (used)
         ai->SetNextCheckDelay(3.0 * IN_MILLISECONDS);
