@@ -674,7 +674,7 @@ bool MovementAction::Follow(Unit* target, float distance, float angle)
     return true;
 }
 
-bool MovementAction::ChaseTo(WorldObject* obj)
+bool MovementAction::ChaseTo(WorldObject* obj, float distance, float angle)
 {
     if (bot->IsSitState())
         bot->SetStandState(UNIT_STAND_STATE_STAND);
@@ -685,10 +685,9 @@ bool MovementAction::ChaseTo(WorldObject* obj)
         ai->InterruptSpell();
     }
 
-    MotionMaster &mm = *bot->GetMotionMaster();
-    mm.Clear();
+    bot->GetMotionMaster()->Clear();
+    bot->GetMotionMaster()->MoveChase((Unit*)obj, distance, angle);
 
-    mm.MoveChase((Unit*)obj, ai->IsRanged(bot) ? 25.0f : 1.5f);
     return true;
 }
 
