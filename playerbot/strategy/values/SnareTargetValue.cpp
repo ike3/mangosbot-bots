@@ -16,7 +16,7 @@ Unit* SnareTargetValue::Calculate()
     for (list<ObjectGuid>::iterator i = attackers.begin(); i != attackers.end(); ++i)
     {
         Unit* unit = ai->GetUnit(*i);
-        if (!unit || unit == target)
+        if (!unit)
             continue;
 
         if (bot->GetDistance(unit) > ai->GetRange("spell"))
@@ -31,7 +31,21 @@ Unit* SnareTargetValue::Calculate()
             chaseTarget = sServerFacade.GetChaseTarget(unit);
             if (!chaseTarget) continue;
             Player* chaseTargetPlayer = sObjectMgr.GetPlayer(chaseTarget->GetObjectGuid());
-            if (chaseTargetPlayer && !ai->IsTank(chaseTargetPlayer)) {
+            
+            // check if need to snare
+            bool shouldSnare = true;
+
+            // do not slow down if bot is melee and mob/bot attack each other
+            if (chaseTargetPlayer && !ai->IsRanged(bot) && chaseTargetPlayer == bot)
+                shouldSnare = false;
+
+            if (!sServerFacade.isMoving(unit))
+                shouldSnare = false;
+
+            if (unit->HasAuraType(SPELL_AURA_MOD_ROOT))
+                shouldSnare = false;
+
+            if (chaseTargetPlayer && shouldSnare && !ai->IsTank(chaseTargetPlayer)) {
                 return unit;
             }
         }
