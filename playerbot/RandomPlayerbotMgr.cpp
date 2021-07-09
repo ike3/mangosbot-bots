@@ -1384,7 +1384,7 @@ bool RandomPlayerbotMgr::ProcessBot(uint32 bot)
 
     if (!player)
     {
-        if (urand(0, 100) > 50) // less lag during bots login
+        if (urand(0, 100) > 10) // less lag during bots login
         {
             return true;
         }
