@@ -13,6 +13,18 @@ using namespace ai;
 bool RpgAction::Execute(Event event)
 {    
     ObjectGuid guid = AI_VALUE(ObjectGuid, "rpg target");
+
+    if (!guid && ai->GetMaster())
+    {
+        guid = ai->GetMaster()->GetSelectionGuid();
+        if (guid)
+        {
+            RemIgnore(guid);
+            context->GetValue<ObjectGuid>("rpg target")->Set(guid);
+        }
+    }
+
+
     WorldObject* wo = ai->GetWorldObject(guid);
     Unit* unit = ai->GetUnit(guid);
     GameObject* go = ai->GetGameObject(guid);
@@ -315,7 +327,9 @@ void RpgAction::trade(ObjectGuid guid)
     bot->SetSelectionGuid(guid);
 
     ai->DoSpecificAction("sell", Event("rpg action", "vendor"));
-    ai->DoSpecificAction("buy", Event("rpg action", "vendor"));
+
+    if(AI_VALUE(uint8, "durability") > 50)
+        ai->DoSpecificAction("buy", Event("rpg action", "vendor"));
 
     Unit* unit = ai->GetUnit(guid);
     if (unit)

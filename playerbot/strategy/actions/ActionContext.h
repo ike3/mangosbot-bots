@@ -56,6 +56,7 @@ namespace ai
             creators["mark rti"] = &ActionContext::mark_rti;
             creators["set return position"] = &ActionContext::set_return_position;
             creators["rpg"] = &ActionContext::rpg;
+            creators["crpg"] = &ActionContext::crpg;
             creators["choose rpg target"] = &ActionContext::choose_rpg_target;
             creators["move to rpg target"] = &ActionContext::move_to_rpg_target;
 			creators["travel"] = &ActionContext::travel;
@@ -165,6 +166,7 @@ namespace ai
         static Action* mark_rti(PlayerbotAI* ai) { return new MarkRtiAction(ai); }
         static Action* set_return_position(PlayerbotAI* ai) { return new SetReturnPositionAction(ai); }
         static Action* rpg(PlayerbotAI* ai) { return new RpgAction(ai); }
+        static Action* crpg(PlayerbotAI* ai) { return new CRpgAction(ai); }
         static Action* choose_rpg_target(PlayerbotAI* ai) { return new ChooseRpgTargetAction(ai); }
         static Action* move_to_rpg_target(PlayerbotAI* ai) { return new MoveToRpgTargetAction(ai); }
         static Action* travel(PlayerbotAI* ai) { return new TravelAction(ai); }

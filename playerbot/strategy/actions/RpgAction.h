@@ -8,7 +8,7 @@ namespace ai
 {
     class RpgAction : public MovementAction {
     public:
-        RpgAction(PlayerbotAI* ai) : MovementAction(ai, "rpg") {}
+        RpgAction(PlayerbotAI* ai, string name = "rpg") : MovementAction(ai, name) {}
 
         virtual bool Execute(Event event);
         virtual bool isUseful();
@@ -40,4 +40,10 @@ namespace ai
         BattleGroundTypeId CanQueueBg(ObjectGuid guid);
     };
 
+    class CRpgAction : public RpgAction {
+    public:
+        CRpgAction(PlayerbotAI* ai) : RpgAction(ai, "crpg") {}
+
+        virtual bool isUseful() { context->GetValue<ObjectGuid>("rpg target")->Set(ObjectGuid()); return true; };
+    };
 }
