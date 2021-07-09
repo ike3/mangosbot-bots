@@ -29,9 +29,12 @@ bool MoveToRpgTargetAction::Execute(Event event)
         ai->TellMasterNoFacing(out);
     }
 
-    if ((unit && unit->IsMoving() && urand(1,100) < 5) 
-     || !ChooseRpgTargetAction::isFollowValid(bot, wo))
+    if ((unit && unit->IsMoving() && !urand(0, 20))
+        || !ChooseRpgTargetAction::isFollowValid(bot, wo)
+        || !urand(0, 50))
     {
+        context->GetValue<set<ObjectGuid>&>("ignore rpg target")->Get().insert(AI_VALUE(ObjectGuid, "rpg target"));
+
         context->GetValue<ObjectGuid>("rpg target")->Set(ObjectGuid());
         return false;
     }
