@@ -116,6 +116,13 @@ namespace ai
         virtual bool IsActive();
     };
 
+    class DeflectSpellTrigger : public SpellTrigger
+    {
+    public:
+        DeflectSpellTrigger(PlayerbotAI* ai, string spell) : SpellTrigger(ai, spell) {}
+        virtual bool IsActive();
+    };
+
 
     class AttackerCountTrigger : public Trigger
     {

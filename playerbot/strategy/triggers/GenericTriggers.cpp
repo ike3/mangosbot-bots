@@ -183,6 +183,40 @@ bool InterruptSpellTrigger::IsActive()
 	return SpellTrigger::IsActive() && ai->IsInterruptableSpellCasting(GetTarget(), getName(), true);
 }
 
+bool DeflectSpellTrigger::IsActive()
+{
+    Unit* target = GetTarget();
+    if (!target)
+        return false;
+
+    if (!target->IsNonMeleeSpellCasted(true))
+        return false;
+
+    uint32 spellid = context->GetValue<uint32>("spell id", spell)->Get();
+    if (!spellid)
+        return false;
+
+    SpellEntry const *deflectSpell = sServerFacade.LookupSpellInfo(spellid);
+    if (!deflectSpell)
+        return false;
+
+    SpellSchoolMask deflectSchool = SpellSchoolMask(1 << deflectSpell->EffectMiscValue[0]);
+    SpellSchoolMask attackSchool = SPELL_SCHOOL_MASK_NONE;
+
+    Spell* spell = target->GetCurrentSpell(CURRENT_GENERIC_SPELL);
+    if (spell)
+    {
+        SpellEntry const* tarSpellInfo = spell->m_spellInfo;
+        if (tarSpellInfo)
+        {
+            attackSchool = GetSpellSchoolMask(tarSpellInfo);
+            if (deflectSchool == attackSchool)
+                return true;
+        }
+    }
+    return false;
+}
+
 bool HasAuraTrigger::IsActive()
 {
 	return ai->HasAura(getName(), GetTarget());
