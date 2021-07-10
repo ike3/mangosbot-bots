@@ -17,6 +17,9 @@ namespace ai
         virtual bool Execute(Event event)
 		{
             Unit* target = AI_VALUE(Unit*, GetTargetName());
+            if (!target)
+                return false;
+
             if (distance < max(5.0f, bot->GetCombinedCombatReach(target, true)))
             {
                 return ChaseTo(target, 0.0f, GetFollowAngle());
