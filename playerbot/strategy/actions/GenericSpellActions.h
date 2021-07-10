@@ -280,4 +280,15 @@ namespace ai
         }
         virtual string getName() { return spell + " on snare target"; }
     };
+
+    class CastProtectSpellAction : public CastSpellAction
+    {
+    public:
+        CastProtectSpellAction(PlayerbotAI* ai, string spell) : CastSpellAction(ai, spell) {}
+        virtual string GetTargetName() { return "party member to protect"; }
+        virtual bool isUseful()
+        {
+            return GetTarget() && !ai->HasAura(spell, GetTarget());
+        }
+    };
 }

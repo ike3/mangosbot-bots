@@ -221,6 +221,17 @@ namespace ai
 		virtual string getName() { return spell + " on party"; }
     };
 
+    class ProtectPartyMemberTrigger : public Trigger
+    {
+    public:ProtectPartyMemberTrigger(PlayerbotAI* ai) : Trigger(ai, "protect party member") {}
+    public:
+        virtual string GetTargetName() { return "party member to protect"; }
+        virtual bool IsActive()
+        {
+            return AI_VALUE(Unit*, "party member to protect");
+        }
+    };
+
     class NoAttackersTrigger : public Trigger
     {
     public:

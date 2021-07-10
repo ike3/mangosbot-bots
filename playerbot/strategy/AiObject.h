@@ -172,6 +172,13 @@ class clazz : public super \
         virtual bool IsActive(); \
     }
 
+#define PROTECT_TRIGGER(clazz, spell) \
+    class clazz : public ProtectPartyMemberTrigger \
+    { \
+    public: \
+        clazz(PlayerbotAI* ai) : ProtectPartyMemberTrigger(ai) {} \
+    }
+
 #define BOOST_TRIGGER(clazz, spell) \
     class clazz : public BoostTrigger \
     { \
@@ -304,11 +311,11 @@ class clazz : public super \
         clazz(PlayerbotAI* ai) : CastSnareSpellAction(ai, spell) {} \
     }
 
-#define INTERVENE_ACTION(clazz, spell) \
-    class clazz : public CastInterveneSpellAction \
+#define PROTECT_ACTION(clazz, spell) \
+    class clazz : public CastProtectSpellAction \
     { \
     public: \
-        clazz(PlayerbotAI* ai) : CastInterveneSpellAction(ai, spell) {} \
+        clazz(PlayerbotAI* ai) : CastProtectSpellAction(ai, spell) {} \
     }
 
 #define END_RANGED_SPELL_ACTION() \
