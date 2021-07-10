@@ -399,4 +399,6 @@ namespace ai
         CastTurnUndeadAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "turn undead") {}
         virtual Value<Unit*>* GetTargetValue() { return context->GetValue<Unit*>("cc target", getName()); }
     };
+
+    PROTECT_ACTION(CastBlessingOfProtectionProtectAction, "blessing of protection");
 }

@@ -235,9 +235,11 @@ namespace ai
                 creators["hammer of justice on snare target"] = &AiObjectContextInternal::hammer_of_justice_on_snare_target;
                 creators["divine favor"] = &AiObjectContextInternal::divine_favor;
                 creators["turn undead"] = &AiObjectContextInternal::turn_undead;
+                creators["blessing of protection on party"] = &AiObjectContextInternal::blessing_of_protection_on_party;
             }
 
         private:
+            static Action* blessing_of_protection_on_party(PlayerbotAI* ai) { return new CastBlessingOfProtectionProtectAction(ai); }
             static Action* turn_undead(PlayerbotAI* ai) { return new CastTurnUndeadAction(ai); }
             static Action* divine_favor(PlayerbotAI* ai) { return new CastDivineFavorAction(ai); }
             static Action* righteous_fury(PlayerbotAI* ai) { return new CastRighteousFuryAction(ai); }
