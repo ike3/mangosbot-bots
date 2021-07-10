@@ -119,6 +119,12 @@ bool PartyMemberToHeal::Check(Unit* player)
 
 Unit* PartyMemberToProtect::Calculate()
 {
+    Group* group = bot->GetGroup();
+    if (!group)
+        return NULL;
+
+    vector<Unit*> needProtect;
+
     list<ObjectGuid> attackers = ai->GetAiObjectContext()->GetValue<list<ObjectGuid> >("attackers")->Get();
     for (list<ObjectGuid>::iterator i = attackers.begin(); i != attackers.end(); ++i)
     {
@@ -126,8 +132,13 @@ Unit* PartyMemberToProtect::Calculate()
         if (!unit)
             continue;
 
-        if (sServerFacade.GetDistance2d(bot, unit) > 10.0f)
-            continue;
+        bool isRanged = false;
+
+        if (unit->AI())
+        {
+            if (unit->AI()->IsRangedUnit())
+                isRanged = true;
+        }
 
         Unit* pVictim = unit->GetVictim();
         if (!pVictim || !pVictim->IsPlayer())
@@ -136,12 +147,23 @@ Unit* PartyMemberToProtect::Calculate()
         if (pVictim == bot)
             continue;
 
+        float attackDistance = isRanged ? 30.0f : 10.0f;
+        if (sServerFacade.GetDistance2d(pVictim, unit) > attackDistance)
+            continue;
+
         if (ai->IsTank((Player*)pVictim) && pVictim->GetHealthPercent() > 10)
             continue;
         else if (pVictim->GetHealthPercent() > 30)
             continue;
 
-        return pVictim;
+        if (find(needProtect.begin(), needProtect.end(), pVictim) == needProtect.end())
+        needProtect.push_back(pVictim);
     }
-    return NULL;
+
+    if (needProtect.empty())
+        return NULL;
+
+    sort(needProtect.begin(), needProtect.end(), compareByHealth);
+
+    return needProtect[0];
 }
