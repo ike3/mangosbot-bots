@@ -116,3 +116,32 @@ bool PartyMemberToHeal::Check(Unit* player)
     return player && player != bot && player->GetMapId() == bot->GetMapId() &&
         sServerFacade.GetDistance2d(bot, player) < (player->IsPlayer() && ai->IsTank((Player*)player)) ? 50.0f : sPlayerbotAIConfig.spellDistance;
 }
+
+Unit* PartyMemberToProtect::Calculate()
+{
+    list<ObjectGuid> attackers = ai->GetAiObjectContext()->GetValue<list<ObjectGuid> >("attackers")->Get();
+    for (list<ObjectGuid>::iterator i = attackers.begin(); i != attackers.end(); ++i)
+    {
+        Unit* unit = ai->GetUnit(*i);
+        if (!unit)
+            continue;
+
+        if (sServerFacade.GetDistance2d(bot, unit) > 10.0f)
+            continue;
+
+        Unit* pVictim = unit->GetVictim();
+        if (!pVictim || !pVictim->IsPlayer())
+            continue;
+
+        if (pVictim == bot)
+            continue;
+
+        if (ai->IsTank((Player*)pVictim) && pVictim->GetHealthPercent() > 10)
+            continue;
+        else if (pVictim->GetHealthPercent() > 30)
+            continue;
+
+        return pVictim;
+    }
+    return NULL;
+}

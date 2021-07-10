@@ -123,6 +123,7 @@ namespace ai
             creators["rti cc target"] = &ValueContext::rti_cc_target;
             creators["duel target"] = &ValueContext::duel_target;
             creators["party member to dispel"] = &ValueContext::party_member_to_dispel;
+            creators["party member to protect"] = &ValueContext::party_member_to_protect;
             creators["health"] = &ValueContext::health;
             creators["rage"] = &ValueContext::rage;
             creators["energy"] = &ValueContext::energy;
@@ -313,6 +314,7 @@ namespace ai
         static UntypedValue* party_member_to_heal(PlayerbotAI* ai) { return new PartyMemberToHeal(ai); }
         static UntypedValue* party_member_to_resurrect(PlayerbotAI* ai) { return new PartyMemberToResurrect(ai); }
         static UntypedValue* party_member_to_dispel(PlayerbotAI* ai) { return new PartyMemberToDispel(ai); }
+        static UntypedValue* party_member_to_protect(PlayerbotAI* ai) { return new PartyMemberToProtect(ai); }
         static UntypedValue* current_target(PlayerbotAI* ai) { return new CurrentTargetValue(ai); }
         static UntypedValue* old_target(PlayerbotAI* ai) { return new CurrentTargetValue(ai); }
         static UntypedValue* self_target(PlayerbotAI* ai) { return new SelfTargetValue(ai); }

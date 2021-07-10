@@ -15,4 +15,14 @@ namespace ai
         bool CanHealPet(Pet* pet);
         virtual bool Check(Unit* player);
 	};
+
+    class PartyMemberToProtect : public PartyMemberValue
+    {
+    public:
+        PartyMemberToProtect(PlayerbotAI* ai) :
+            PartyMemberValue(ai) {}
+
+    protected:
+        virtual Unit* Calculate();
+    };
 }
