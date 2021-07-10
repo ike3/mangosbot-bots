@@ -14,8 +14,16 @@ namespace ai
     class FarFromRpgTargetTrigger : public Trigger
     {
     public:
-        FarFromRpgTargetTrigger(PlayerbotAI* ai) : Trigger(ai, "far from rpg target") {}
+        FarFromRpgTargetTrigger(PlayerbotAI* ai, string name = "far from rpg target") : Trigger(ai,name) {}
 
         virtual bool IsActive();
+    };
+
+    class NearRpgTargetTrigger : public FarFromRpgTargetTrigger
+    {
+    public:
+        NearRpgTargetTrigger(PlayerbotAI* ai) : FarFromRpgTargetTrigger(ai, "near rpg target") {}
+
+        virtual bool IsActive() { return !FarFromRpgTargetTrigger::IsActive(); };
     };
 }

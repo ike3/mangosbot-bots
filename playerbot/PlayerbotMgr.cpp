@@ -59,7 +59,7 @@ void PlayerbotHolder::LogoutAllBots()
     for (auto& itr : bots)
     {
         Player* bot = itr.second;
-        if (!bot->GetPlayerbotAI() || bot->GetPlayerbotAI()->isRealPlayer())
+        if (!bot->GetPlayerbotAI() || bot->GetPlayerbotAI()->IsRealPlayer())
             continue;
 
         LogoutPlayerBot(bot->GetObjectGuid().GetRawValue());
@@ -398,6 +398,10 @@ list<string> PlayerbotHolder::HandlePlayerbotCommand(char const* args, Player* m
             messages.push_back("Disable player ai");
             DisablePlayerBot(master->GetObjectGuid().GetRawValue());
         }
+        else if (sPlayerbotAIConfig.selfBotLevel == 0)
+            messages.push_back("Self-bot is disabled");
+        else if (sPlayerbotAIConfig.selfBotLevel == 1 && master->GetSession()->GetSecurity() < SEC_GAMEMASTER)
+            messages.push_back("You do not have permission to enable player ai");
         else
         {
             messages.push_back("Enable player ai");
@@ -717,6 +721,9 @@ void PlayerbotMgr::OnBotLoginInternal(Player * const bot)
 
 void PlayerbotMgr::OnPlayerLogin(Player* player)
 {
+    if(sPlayerbotAIConfig.selfBotLevel > 2)
+        HandlePlayerbotCommand("self", player);
+
     if (!sPlayerbotAIConfig.botAutologin)
         return;
 

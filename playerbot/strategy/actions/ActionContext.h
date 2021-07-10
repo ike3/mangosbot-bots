@@ -45,9 +45,6 @@
 #include "WorldBuffAction.h"
 #include "CastCustomSpellAction.h"
 #include "BattleGroundJoinAction.h"
-#include "ChooseMoveDoAction.h"
-#include "ActiveQuestActions.h"
-
 
 namespace ai
 {
@@ -59,6 +56,7 @@ namespace ai
             creators["mark rti"] = &ActionContext::mark_rti;
             creators["set return position"] = &ActionContext::set_return_position;
             creators["rpg"] = &ActionContext::rpg;
+            creators["crpg"] = &ActionContext::crpg;
             creators["choose rpg target"] = &ActionContext::choose_rpg_target;
             creators["move to rpg target"] = &ActionContext::move_to_rpg_target;
 			creators["travel"] = &ActionContext::travel;
@@ -142,13 +140,11 @@ namespace ai
             creators["move from dark portal"] = &ActionContext::move_from_dark_portal;
             creators["use dark portal azeroth"] = &ActionContext::use_dark_portal_azeroth;
             creators["world buff"] = &ActionContext::world_buff;
+            creators["hearthstone"] = &ActionContext::hearthstone;
             creators["cast random spell"] = &ActionContext::cast_random_spell;
-            creators["continue action"] = &ActionContext::continue_action;
-            creators["queue at bm"] = &ActionContext::queue_at_bm;
-            creators["pick up quest"] = &ActionContext::pick_up_quest;
-            creators["do quest objective"] = &ActionContext::do_quest_objective;
-            creators["hand in quest"] = &ActionContext::hand_in_quest;
-
+            creators["free bg join"] = &ActionContext::free_bg_join;
+            creators["use random recipe"] = &ActionContext::use_random_recipe;
+            creators["craft random item"] = &ActionContext::craft_random_item;
 
             // BG Tactics
             creators["bg tactics"] = &ActionContext::bg_tactics;
@@ -170,6 +166,7 @@ namespace ai
         static Action* mark_rti(PlayerbotAI* ai) { return new MarkRtiAction(ai); }
         static Action* set_return_position(PlayerbotAI* ai) { return new SetReturnPositionAction(ai); }
         static Action* rpg(PlayerbotAI* ai) { return new RpgAction(ai); }
+        static Action* crpg(PlayerbotAI* ai) { return new CRpgAction(ai); }
         static Action* choose_rpg_target(PlayerbotAI* ai) { return new ChooseRpgTargetAction(ai); }
         static Action* move_to_rpg_target(PlayerbotAI* ai) { return new MoveToRpgTargetAction(ai); }
         static Action* travel(PlayerbotAI* ai) { return new TravelAction(ai); }
@@ -250,9 +247,11 @@ namespace ai
         static Action* use_dark_portal_azeroth(PlayerbotAI* ai) { return new DarkPortalAzerothAction(ai); }
         static Action* move_from_dark_portal(PlayerbotAI* ai) { return new MoveFromDarkPortalAction(ai); }
         static Action* world_buff(PlayerbotAI* ai) { return new WorldBuffAction(ai); }
+        static Action* hearthstone(PlayerbotAI* ai) { return new UseHearthStone(ai); }
         static Action* cast_random_spell(PlayerbotAI* ai) { return new CastRandomSpellAction(ai); }
-        static Action* continue_action(PlayerbotAI* ai) { return new ContinueMoveDoAction(ai); }
-        static Action* queue_at_bm(PlayerbotAI* ai) { return new QueueAtBmAction(ai); }
+        static Action* free_bg_join(PlayerbotAI* ai) { return new FreeBGJoinAction(ai); }
+        static Action* use_random_recipe(PlayerbotAI* ai) { return new UseRandomRecipe(ai); }
+        static Action* craft_random_item(PlayerbotAI* ai) { return new CraftRandomItemAction(ai); }
 
         // BG Tactics
         static Action* bg_tactics(PlayerbotAI* ai) { return new BGTactics(ai); }
@@ -264,10 +263,6 @@ namespace ai
         static Action* bg_protect_fc(PlayerbotAI* ai) { return new BGTactics(ai, "protect fc"); }
         static Action* attack_enemy_fc(PlayerbotAI* ai) { return new AttackEnemyFlagCarrierAction(ai); }
         static Action* bg_use_buff(PlayerbotAI* ai) { return new BGTactics(ai, "use buff"); }
-        static Action* bg_check_flag(PlayerbotAI* ai) { return new BGTactics(ai, "check flag"); }       
-        static Action* pick_up_quest(PlayerbotAI* ai) { return new PickUpQuestAction(ai); }
-        static Action* do_quest_objective(PlayerbotAI* ai) { return new DoQuestObjectiveAction(ai); }
-        static Action* hand_in_quest(PlayerbotAI* ai) { return new HandInQuestAction(ai); }
-
+        static Action* bg_check_flag(PlayerbotAI* ai) { return new BGTactics(ai, "check flag"); }    
     };
 };

@@ -46,4 +46,26 @@ namespace ai
       UseManaPotion(PlayerbotAI* ai) : UseItemAction(ai, "mana potion") {}
       virtual bool isUseful() { return AI_VALUE2(bool, "combat", "self target"); }
    };
+
+   class UseHearthStone : public UseItemAction
+   {
+   public:
+       UseHearthStone(PlayerbotAI* ai) : UseItemAction(ai, "hearthstone") {}
+
+       bool isUseful() { return !bot->IsInCombat() && !bot->InBattleGround(); }
+       
+       virtual bool Execute(Event event);
+   };
+
+   class UseRandomRecipe : public UseItemAction
+   {
+   public:
+       UseRandomRecipe(PlayerbotAI* ai) : UseItemAction(ai, "random recipe") {}
+
+       virtual bool isUseful();
+
+       virtual bool isPossible() { return true; }
+       
+       virtual bool Execute(Event event);
+   };
 }

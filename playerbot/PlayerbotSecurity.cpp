@@ -131,7 +131,7 @@ bool PlayerbotSecurity::CheckLevelFor(PlayerbotSecurityLevel level, bool silent,
     if (realLevel >= level)
         return true;
 
-    if (silent || (from->GetPlayerbotAI() && !from->GetPlayerbotAI()->isRealPlayer()))
+    if (silent || (from->GetPlayerbotAI() && !from->GetPlayerbotAI()->IsRealPlayer()))
         return false;
 
     Player* master = bot->GetPlayerbotAI()->GetMaster();

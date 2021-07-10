@@ -120,6 +120,14 @@ namespace ai
         uint32 getInstanceId() { for (auto& map : sMapMgr.Maps()) { if (map.second->GetId() == getMapId()) return map.second->GetInstanceId(); }; return 0; }
         Map*  getMap() { return sMapMgr.FindMap(wLoc.mapid, getMapEntry()->Instanceable() ? getInstanceId() : 0); }
         const TerrainInfo* getTerrain() { return getMap() ? getMap()->GetTerrain() : NULL; }
+        const float getHeight() 
+        {
+#ifdef MANGOSBOT_TWO
+            return getMap()->GetHeight(0,getX(), getY(), getZ()); 
+#else
+            return getMap()->GetHeight(getX(), getY(), getZ());
+#endif
+        }
 
         std::set<Transport*> getTransports(uint32 entry = 0);
 
@@ -150,6 +158,8 @@ namespace ai
         bool isPathTo(vector<WorldPosition> path, float maxDistance = sPlayerbotAIConfig.targetPosRecalcDistance) { return !path.empty() && distance(path.back()) < maxDistance; };
         bool canPathTo(WorldPosition endPos, Unit* bot) { return endPos.isPathTo(getPathTo(endPos, bot)); }
 
+        float getPathLength(vector<WorldPosition> points) { float dist; for (auto& p : points) if (&p == &points.front()) dist = 0; else dist += std::prev(&p, 1)->distance(p); return dist; }
+
         //Creatures
         vector<CreatureDataPair const*> getCreaturesNear(float radius = 0, uint32 entry = 0);
         //GameObjects
@@ -165,7 +175,7 @@ namespace ai
         GuidPosition() : ObjectGuid() {}
         GuidPosition(ObjectGuid guid) : ObjectGuid(guid) { point = WorldPosition(guid); }
         template<class T>
-        GuidPosition(ObjectGuid guid, T) : ObjectGuid(guid) { point = WorlsPosition(T); }
+        GuidPosition(ObjectGuid guid, T) : ObjectGuid(guid) { point = WorldPosition(T); }
         GuidPosition(CreatureDataPair const* dataPair) : ObjectGuid(HIGHGUID_UNIT, dataPair->second.id, dataPair->first)  { point = WorldPosition(dataPair); }
         GuidPosition(GameObjectDataPair const* dataPair) : ObjectGuid(HIGHGUID_GAMEOBJECT, dataPair->second.id, dataPair->first) { point = WorldPosition(dataPair); }
         GuidPosition(const GuidPosition& guidp) : ObjectGuid(guidp) { point = guidp.point; }
@@ -202,11 +212,11 @@ namespace ai
         WorldPosition* getPointFrom() { return &pointFrom; }
         WorldPosition* getPointTo() { return &pointTo; }
 
-        bool isUsefull(WorldPosition point) { return isFrom(point) || isTo(point); }
-        float distance(WorldPosition point) { return isUsefull(point) ? (isFrom(point) ? point.distance(pointFrom) : point.distance(pointTo)) : 200000; }
+        bool isUseful(WorldPosition point) { return isFrom(point) || isTo(point); }
+        float distance(WorldPosition point) { return isUseful(point) ? (isFrom(point) ? point.distance(pointFrom) : point.distance(pointTo)) : 200000; }
 
-        bool isUsefull(WorldPosition start, WorldPosition end) { return isFrom(start) && isTo(end); }
-        float distance(WorldPosition start, WorldPosition end) { return (isUsefull(start, end) ? (start.distance(pointFrom) + portalLength + pointTo.distance(end)) : 200000); }
+        bool isUseful(WorldPosition start, WorldPosition end) { return isFrom(start) && isTo(end); }
+        float distance(WorldPosition start, WorldPosition end) { return (isUseful(start, end) ? (start.distance(pointFrom) + portalLength + pointTo.distance(end)) : 200000); }
     private:
         WorldPosition pointFrom, pointTo;
         float portalLength = 0.1f;

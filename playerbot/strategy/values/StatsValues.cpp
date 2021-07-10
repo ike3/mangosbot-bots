@@ -159,6 +159,7 @@ uint8 BagSpaceValue::Calculate()
             {
                 total += pBag->GetBagSize();
                 totalfree += pBag->GetFreeSlots();
+                totalused += pBag->GetBagSize() - pBag->GetFreeSlots();
             }
         }
 

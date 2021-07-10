@@ -96,6 +96,8 @@ public:
     bool randomBotSayWithoutMaster;
     bool randomBotGroupNearby;
 
+    uint32 selfBotLevel;
+
     bool guildTaskEnabled;
     uint32 minGuildTaskChangeTime, maxGuildTaskChangeTime;
     uint32 minGuildTaskAdvertisementTime, maxGuildTaskAdvertisementTime;

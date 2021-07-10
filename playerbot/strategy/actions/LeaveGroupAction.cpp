@@ -51,7 +51,7 @@ namespace ai
         Player* master = ai->GetGroupMaster();
         Player* trueMaster = ai->GetMaster();
 
-        if (!master || !trueMaster || (bot == master && !ai->isRealPlayer()))
+        if (!master || !trueMaster || (bot == master && !ai->IsRealPlayer()))
             return false;
 
         if (master && !master->GetPlayerbotAI())

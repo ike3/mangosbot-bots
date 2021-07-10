@@ -45,7 +45,7 @@ namespace ai
             creators["spells"] = &ChatTriggerContext::spells;
             creators["co"] = &ChatTriggerContext::co;
             creators["nc"] = &ChatTriggerContext::nc;
-            creators["dead"] = &ChatTriggerContext::dead;
+            creators["de"] = &ChatTriggerContext::dead;
             creators["trainer"] = &ChatTriggerContext::trainer;
             creators["attack"] = &ChatTriggerContext::attack;
             creators["chat"] = &ChatTriggerContext::chat;
@@ -65,6 +65,7 @@ namespace ai
             creators["tank attack"] = &ChatTriggerContext::tank_attack;
             creators["talk"] = &ChatTriggerContext::talk;
             creators["cast"] = &ChatTriggerContext::cast;
+            creators["castnc"] = &ChatTriggerContext::castnc;
             creators["invite"] = &ChatTriggerContext::invite;
             creators["spell"] = &ChatTriggerContext::spell;
             creators["rti"] = &ChatTriggerContext::rti;
@@ -123,6 +124,7 @@ namespace ai
         static Trigger* rti(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "rti"); }
         static Trigger* invite(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "invite"); }
         static Trigger* cast(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "cast"); }
+        static Trigger* castnc(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "castnc"); }
         static Trigger* talk(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "talk"); }
         static Trigger* flee(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "flee"); }
         static Trigger* grind(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "grind"); }
@@ -142,7 +144,7 @@ namespace ai
         static Trigger* trainer(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "trainer"); }
         static Trigger* co(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "co"); }
         static Trigger* nc(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "nc"); }
-        static Trigger* dead(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "dead"); }
+        static Trigger* dead(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "de"); }
         static Trigger* spells(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "spells"); }
         static Trigger* talents(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "talents"); }
         static Trigger* equip(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "e"); }

@@ -31,6 +31,28 @@ void EquipAction::EquipItem(FindItemVisitor* visitor)
 	if (!items.empty()) EquipItem(**items.begin());
 }
 
+//Return bagslot with smalest bag.
+uint8 EquipAction::GetSmallestBagSlot()
+{
+    int8 curBag = 0;
+    int8 curSlots = 0;
+    for (uint8 bag = INVENTORY_SLOT_BAG_START + 1; bag < INVENTORY_SLOT_BAG_END; ++bag)
+    {
+        const Bag* const pBag = (Bag*)bot->GetItemByPos(INVENTORY_SLOT_BAG_0, bag);
+        if (pBag)
+        {
+            if (curBag > 0 && curSlots < pBag->GetBagSize())
+                continue;
+             
+            curBag = bag;
+            curSlots = pBag->GetBagSize();
+        }
+        else
+            return bag;
+    }
+
+    return curBag;
+}
 
 void EquipAction::EquipItem(Item& item)
 {
@@ -44,9 +66,26 @@ void EquipAction::EquipItem(Item& item)
     }
     else
     {
-        WorldPacket packet(CMSG_AUTOEQUIP_ITEM, 2);
-        packet << bagIndex << slot;
-        bot->GetSession()->HandleAutoEquipItemOpcode(packet);
+        bool equipedBag = false;
+        if (item.GetProto()->Class == ITEM_CLASS_CONTAINER)
+        {
+            Bag* pBag = (Bag*)&item;
+            uint8 newBagSlot = GetSmallestBagSlot();
+            if (newBagSlot > 0)
+            {
+                uint16 src = ((bagIndex << 8) | slot);
+                uint16 dst = ((INVENTORY_SLOT_BAG_0 << 8) | newBagSlot);
+                bot->SwapItem(src, dst);
+                equipedBag = true;
+            }
+        }
+
+        if (!equipedBag) 
+        {
+            WorldPacket packet(CMSG_AUTOEQUIP_ITEM, 2);
+            packet << bagIndex << slot;
+            bot->GetSession()->HandleAutoEquipItemOpcode(packet);
+        }
     }
 
     ostringstream out; out << "equipping " << chat->formatItem(item.GetProto());

@@ -386,7 +386,7 @@ bool BGJoinAction::isUseful()
         return false;
 
     // do not try if with player master or in combat/group
-    if (bot->GetPlayerbotAI()->hasRealPlayerMaster())
+    if (bot->GetPlayerbotAI()->HasActivePlayerMaster())
         return false;
 
     //if (bot->GetGroup())
@@ -625,6 +625,118 @@ bool BGJoinAction::JoinQueue(uint32 type)
    bot->GetSession()->HandleBattlemasterJoinOpcode(packet);
    return true;
 }
+
+bool FreeBGJoinAction::shouldJoinBg(BattleGroundQueueTypeId queueTypeId, BattleGroundBracketId bracketId)
+{
+    BattleGroundTypeId bgTypeId = sServerFacade.BgTemplateId(queueTypeId);
+    BattleGround* bg = sBattleGroundMgr.GetBattleGroundTemplate(bgTypeId);
+    if (!bg)
+        return false;
+
+    bool isArena = false;
+    bool isRated = false;
+
+#ifndef MANGOSBOT_ZERO
+    ArenaType type = sServerFacade.BgArenaType(queueTypeId);
+    if (type != ARENA_TYPE_NONE)
+        isArena = true;
+#endif
+    // hack fix crash in queue remove event
+    if (!isArena && bot->GetGroup())
+        return false;
+
+    uint32 BracketSize = bg->GetMaxPlayers();
+    uint32 TeamSize = bg->GetMaxPlayersPerTeam();
+
+    uint32 ACount = sRandomPlayerbotMgr.BgBots[queueTypeId][bracketId][0] + sRandomPlayerbotMgr.BgPlayers[queueTypeId][bracketId][0];
+    uint32 HCount = sRandomPlayerbotMgr.BgBots[queueTypeId][bracketId][1] + sRandomPlayerbotMgr.BgPlayers[queueTypeId][bracketId][1];
+
+    uint32 BgCount = ACount + HCount;
+    uint32 SCount, RCount = 0;
+
+    uint32 TeamId = bot->GetTeam() == ALLIANCE ? 0 : 1;
+
+#ifndef MANGOSBOT_ZERO
+    if (isArena)
+    {
+        uint32 rated_players = sRandomPlayerbotMgr.BgPlayers[queueTypeId][bracketId][1];
+        if (rated_players)
+        {
+            isRated = true;
+        }
+        isArena = true;
+        BracketSize = (uint32)(type * 2);
+        TeamSize = type;
+        ACount = sRandomPlayerbotMgr.ArenaBots[queueTypeId][bracketId][isRated][0];
+        HCount = sRandomPlayerbotMgr.ArenaBots[queueTypeId][bracketId][isRated][1];
+        BgCount = sRandomPlayerbotMgr.BgBots[queueTypeId][bracketId][isRated] + sRandomPlayerbotMgr.BgPlayers[queueTypeId][bracketId][isRated];
+        SCount = sRandomPlayerbotMgr.BgBots[queueTypeId][bracketId][0] + sRandomPlayerbotMgr.BgPlayers[queueTypeId][bracketId][0];
+        RCount = sRandomPlayerbotMgr.BgBots[queueTypeId][bracketId][1] + sRandomPlayerbotMgr.BgPlayers[queueTypeId][bracketId][1];
+    }
+
+    // do not try if not a captain of arena team
+
+    if (isRated)
+    {
+        if (!sObjectMgr.GetArenaTeamByCaptain(bot->GetObjectGuid()))
+            return false;
+
+        // check if bot has correct team
+        ArenaTeam* arenateam = nullptr;
+        for (uint32 arena_slot = 0; arena_slot < MAX_ARENA_SLOT; ++arena_slot)
+        {
+            ArenaTeam* temp = sObjectMgr.GetArenaTeamById(bot->GetArenaTeamId(arena_slot));
+            if (!temp)
+                continue;
+
+            if (temp->GetType() != type)
+                continue;
+
+            arenateam = temp;
+        }
+
+        if (!arenateam)
+            return false;
+
+        ratedList.push_back(queueTypeId);
+    }
+#endif
+
+    bool needBots = sRandomPlayerbotMgr.NeedBots[queueTypeId][bracketId][isArena ? isRated : GetTeamIndexByTeamId(bot->GetTeam())];
+
+    // add more bots if players are not invited or 1st BG instance is full
+    if (needBots/* || (hasPlayers && BgCount > BracketSize && (BgCount % BracketSize) != 0)*/)
+        return true;
+
+    // do not join if BG queue is full
+    if (BgCount >= BracketSize && (ACount >= TeamSize) && (HCount >= TeamSize))
+    {
+        return false;
+    }
+
+    if (!isArena && ((ACount >= TeamSize && TeamId == 0) || (HCount >= TeamSize && TeamId == 1)))
+    {
+        return false;
+    }
+
+    if (isArena && (((ACount >= TeamSize && HCount > 0) && TeamId == 0) || ((HCount >= TeamSize && ACount > 0) && TeamId == 1)))
+    {
+        return false;
+    }
+
+    if (isArena && (((ACount > TeamSize && HCount == 0) && TeamId == 1) || ((HCount > TeamSize && ACount == 0) && TeamId == 0)))
+    {
+        return false;
+    }
+
+    if (isArena && ((!isRated && SCount >= BracketSize) || (isRated && RCount >= BracketSize)))
+    {
+        return false;
+    }
+
+    return true;
+}
+
 
 bool BGLeaveAction::Execute(Event event)
 {
@@ -1032,162 +1144,4 @@ bool BGStatusCheckAction::Execute(Event event)
 bool BGStatusCheckAction::isUseful()
 {
     return bot->InBattleGroundQueue();
-}
-
-bool QueueAtBmAction::canJoinBgQueue(BattleGroundQueueTypeId queueTypeId)
-{
-    BattleGroundTypeId bgTypeId = sServerFacade.BgTemplateId(queueTypeId);
-
-    BattleGround* bg = sBattleGroundMgr.GetBattleGroundTemplate(bgTypeId);
-    if (!bg)
-        return false;
-
-    if (bot->getLevel() < bg->GetMinLevel())
-        return false;
-
-    // check if already in queue
-    if (bot->InBattleGroundQueueForBattleGroundQueueType(queueTypeId))
-        return false;
-
-    return true;
-}
-
-//Select a random BG type.
-void QueueAtBmAction::GetRandomBgQueue()
-{
-    vector<BattleGroundQueueTypeId> bgQueues;
-
-
-    for (uint32 i = 1; i < MAX_BATTLEGROUND_QUEUE_TYPES; i++)
-    {
-        BattleGroundQueueTypeId queueTypeId =(BattleGroundQueueTypeId)i;
-
-        if (canJoinBgQueue(queueTypeId))
-            bgQueues.push_back(queueTypeId);
-    }
-
-    BattleGroundQueueTypeId queueTypeId = BATTLEGROUND_QUEUE_NONE;
-
-    if (!bgQueues.empty())
-        queueTypeId = bgQueues[urand(0, bgQueues.size() - 1)];
-
-    Qualify(queueTypeId);
-}
-
-//Only go to BM's at level > 9
-bool QueueAtBmAction::isUseful()
-{
-    if (!ChooseMoveDoAction::isUseful())
-        return false;
-
-    if (bot->IsBeingTeleported())
-        return false;
-
-    if (bot->InBattleGround())
-        return false;
-
-    if (!bot->CanJoinToBattleground())
-        return false;
-
-    if (getQualifier().empty())
-        return false;
-
-    return canJoinBgQueue(getBgQueue());
-};
-
-bool QueueAtBmAction::getPotentialTargets()
-{
-    potentialTargets = AI_VALUE2(list<CreatureDataPair const*>, getTargetValueName(), getBgQueue());
-
-    return !potentialTargets.empty();
-}
-
-//Check if BM is not hostile and preferably not alive.
-bool QueueAtBmAction::IsValidBm(CreatureDataPair const* bmPair, bool allowDead)
-{
-    if (!bmPair)
-        return false;
-
-    CreatureInfo const* bmTemplate = ObjectMgr::GetCreatureTemplate(bmPair->second.id);
-
-    if (!bmTemplate)
-        return false;
-
-    FactionTemplateEntry const* bmFactionEntry = sFactionTemplateStore.LookupEntry(bmTemplate->Faction);
-
-    //Is the unit hostile?
-    if (ai->getReaction(bmFactionEntry) < REP_NEUTRAL)
-        return false;
-
-    Unit* unit = ai->GetUnit(bmPair);
-
-    if (!unit)
-        return false;
-
-    WorldPosition bmPos(bmPair);
-
-    AreaTableEntry const* area = bmPos.getArea();
-
-    if (!area)
-        return false;
-
-    //Is the area hostile?
-    if (area->team == 4 && bot->GetTeam() == ALLIANCE)
-        return false;
-    if (area->team == 2 && bot->GetTeam() == HORDE)
-        return false;
-
-    if (!allowDead)
-    {
-        //Is the unit dead?
-        if (unit->GetDeathState() == DEAD)
-            return false;
-    }
-
-    return true;
-}
-
-//Try to find a friendly BM that is alive. Otherwise select a dead BM.
-bool QueueAtBmAction::FilterPotentialTargets()
-{
-    list<CreatureDataPair const*> tmpList = potentialTargets;
-
-    potentialTargets.remove_if([this](CreatureDataPair const* bmPair) {return !IsValidBm(bmPair, false); });
-
-    if (potentialTargets.empty())
-    {
-        potentialTargets = tmpList;
-        potentialTargets.remove_if([this](CreatureDataPair const* bmPair) {return !IsValidBm(bmPair, true); });
-    }
-
-    return !potentialTargets.empty();
-}
-
-bool QueueAtBmAction::ExecuteAction(Event event)
-{
-    if (!getObjectTarget())
-        return false;
-
-    CreatureDataPair const* bmPair = getObjectTarget()->Get();
-
-    if (!bmPair)
-        return false;
-
-    Unit* bmUnit = ai->GetUnit(bmPair);
-
-    if (!bmUnit)
-        return false;
-
-    bot->SetFacingTo(bot->GetAngle(bmUnit));
-
-    if (getQualifier().empty())
-        return false;
-
-    BattleGroundTypeId bgTypeId = sServerFacade.BgTemplateId(getBgQueue());
-
-    bot->GetPlayerbotAI()->GetAiObjectContext()->GetValue<uint32>("bg type")->Set((uint32)bgTypeId);
-    bot->GetPlayerbotAI()->ChangeStrategy("+bg", BOT_STATE_NON_COMBAT);
-    return true;
-
-    return false;
 }

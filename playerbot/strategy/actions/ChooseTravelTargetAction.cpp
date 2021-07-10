@@ -193,10 +193,10 @@ bool ChooseTravelTargetAction::SetTarget(TravelTarget* target, TravelTarget* old
         foundTarget = SetRpgTarget(target);                               //Go to town to sell items or repair
 
     if (!foundTarget && GrindTravelDestination::moneyNeeded(bot) > bot->GetMoney())
-        foundTarget = SetQuestTarget(target, true);                       //Turn in quests for money
-
-    if(!foundTarget && GrindTravelDestination::moneyNeeded(bot) > bot->GetMoney())
-        foundTarget = SetGrindTarget(target);                             //Go grind mobs for money
+        if(urand(1,100) > 50)
+            foundTarget = SetQuestTarget(target, true);                       //Turn in quests for money
+        else
+            foundTarget = SetGrindTarget(target);                             //Go grind mobs for money
 
     if (!foundTarget && urand(1, 100) > 10)                               //90% chance 
         foundTarget = SetCurrentTarget(target, oldTarget);                //Extend current target.
@@ -358,7 +358,7 @@ bool ChooseTravelTargetAction::SetQuestTarget(TravelTarget* target, bool onlyCom
         if (onlyCompleted && sObjectMgr.GetQuestTemplate(questId) && !bot->CanRewardQuest(sObjectMgr.GetQuestTemplate(questId), false))
             continue;
 
-        vector<TravelDestination*> questDestinations = sTravelMgr.getQuestTravelDestinations(bot, questId, ai->hasRealPlayerMaster(), false, 5000);
+        vector<TravelDestination*> questDestinations = sTravelMgr.getQuestTravelDestinations(bot, questId, ai->HasRealPlayerMaster(), false, 5000);
         vector< WorldPosition*> questPoints;
         
         for (auto& questDestination : questDestinations)
@@ -392,7 +392,7 @@ bool ChooseTravelTargetAction::SetNewQuestTarget(TravelTarget* target)
     WorldPosition botLocation(bot);
 
     //Find quest givers.
-    vector<TravelDestination*> TravelDestinations = sTravelMgr.getQuestTravelDestinations(bot, -1, ai->hasRealPlayerMaster());
+    vector<TravelDestination*> TravelDestinations = sTravelMgr.getQuestTravelDestinations(bot, -1, ai->HasRealPlayerMaster());
 
     activeDestinations.insert(activeDestinations.end(), TravelDestinations.begin(), TravelDestinations.end());
 
@@ -420,7 +420,7 @@ bool ChooseTravelTargetAction::SetRpgTarget(TravelTarget* target)
     WorldPosition botLocation(bot);
 
     //Find rpg npcs
-    vector<TravelDestination*> TravelDestinations = sTravelMgr.getRpgTravelDestinations(bot, ai->hasRealPlayerMaster());
+    vector<TravelDestination*> TravelDestinations = sTravelMgr.getRpgTravelDestinations(bot, ai->HasRealPlayerMaster());
 
     activeDestinations.insert(activeDestinations.end(), TravelDestinations.begin(), TravelDestinations.end());
 
@@ -448,7 +448,7 @@ bool ChooseTravelTargetAction::SetGrindTarget(TravelTarget* target)
     WorldPosition botLocation(bot);
 
     //Find grind mobs.
-    vector<TravelDestination*> TravelDestinations = sTravelMgr.getGrindTravelDestinations(bot, ai->hasRealPlayerMaster());
+    vector<TravelDestination*> TravelDestinations = sTravelMgr.getGrindTravelDestinations(bot, ai->HasRealPlayerMaster());
 
     activeDestinations.insert(activeDestinations.end(), TravelDestinations.begin(), TravelDestinations.end());
 
@@ -495,7 +495,7 @@ bool ChooseTravelTargetAction::SetExploreTarget(TravelTarget* target)
 
     if (activePoints.empty())
     {
-        TravelDestinations = sTravelMgr.getExploreTravelDestinations(bot, ai->hasRealPlayerMaster());
+        TravelDestinations = sTravelMgr.getExploreTravelDestinations(bot, ai->HasRealPlayerMaster());
 
         for (auto& activeTarget : activeDestinations)
         {

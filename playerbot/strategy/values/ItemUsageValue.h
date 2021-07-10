@@ -29,7 +29,10 @@ namespace ai
 
     private:
         ItemUsage QueryItemUsageForEquip(ItemPrototype const * proto);
-        bool IsItemUsefulForQuest(Player const* player, uint32 itemId);
+        uint32 GetSmallestBagSize();
+        bool IsItemUsefulForQuest(Player* player, ItemPrototype const* proto);
         bool IsItemUsefulForSkill(ItemPrototype const * proto);
+        float CurrentStacks(ItemPrototype const* proto);
+        float BetterStacks(ItemPrototype const* proto, string itemType = "");
 	};
 }

@@ -16,7 +16,7 @@ void TalkToQuestGiverAction::ProcessQuest(Quest const* quest, WorldObject* quest
 
     if (sPlayerbotAIConfig.syncQuestForPlayer)
     {
-        if (master && (!master->GetPlayerbotAI() || master->GetPlayerbotAI()->isRealPlayer()))
+        if (master && (!master->GetPlayerbotAI() || master->GetPlayerbotAI()->IsRealPlayer()))
         {
             QuestStatus masterStatus = master->GetQuestStatus(quest->GetQuestId());
             if (masterStatus == QUEST_STATUS_INCOMPLETE || masterStatus == QUEST_STATUS_FAILED)
@@ -63,6 +63,8 @@ void TalkToQuestGiverAction::TurnInQuest(Quest const* quest, WorldObject* questG
         
     if (bot->GetQuestRewardStatus(questID))
         return;
+
+    bot->PlayDistanceSound(621);
 
     if (quest->GetRewChoiceItemsCount() == 0)
         RewardNoItem(quest, questGiver, out);

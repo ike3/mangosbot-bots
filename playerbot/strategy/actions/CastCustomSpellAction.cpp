@@ -124,7 +124,7 @@ bool CastCustomSpellAction::Execute(Event event)
         if (castCount > 1)
         {
             ostringstream cmd;
-            cmd << "cast " << text << " " << (castCount - 1);
+            cmd << castString(target) << " " << text << " " << (castCount - 1);
             ai->HandleCommand(CHAT_MSG_WHISPER, cmd.str(), *master);
             msg << "|cffffff00(x" << (castCount-1) << " left)|r";
         }
@@ -145,8 +145,8 @@ bool CastRandomSpellAction::Execute(Event event)
     PlayerSpellMap const& spellMap = bot->GetSpellMap();
     Player* master = GetMaster();
 
-    Unit* target;
-    GameObject* got;
+    Unit* target = nullptr;
+    GameObject* got = nullptr;
 
     string name = event.getParam();
     if (name.empty())
@@ -189,7 +189,13 @@ bool CastRandomSpellAction::Execute(Event event)
         if (!pSpellInfo)
             continue;
 
+        if (!AcceptSpell(pSpellInfo))
+            continue;
+
         if (pSpellInfo->Effect[0] == SPELL_EFFECT_LEARN_SPELL)
+            continue;
+
+        if (pSpellInfo->Effect[0] == SPELL_EFFECT_TRADE_SKILL)
             continue;
 
         if (bot->HasSpell(spellId))
@@ -215,16 +221,27 @@ bool CastRandomSpellAction::Execute(Event event)
         uint32 spellId = spellList[rnd].first;
 
         Unit* unit = spellList[rnd].second.first;
-        GameObject* go = spellList[rnd].second.second;
+        GameObject* go = spellList[rnd].second.second;        
 
-
-        if(spellList[rnd].second.first)
+        if(unit)
             isCast = ai->CastSpell(spellId, unit);
         else
             isCast = ai->CastSpell(spellId, go->GetPositionX(), go->GetPositionY(), go->GetPositionZ());
 
         if (isCast)
+        {
+            if (MultiCast && ((unit && sServerFacade.IsInFront(bot, unit, sPlayerbotAIConfig.sightDistance, CAST_ANGLE_IN_FRONT)) || (go && sServerFacade.IsInFront(bot, unit, sPlayerbotAIConfig.sightDistance, CAST_ANGLE_IN_FRONT))))
+            {               
+                ostringstream cmd;
+                if(unit)
+                    cmd << "castnc " << chat->formatWorldobject(unit) + " " << spellId << " " << 19;
+                else
+                    cmd << "castnc " << chat->formatWorldobject(go) + " " << spellId << " " << 19;
+
+                ai->HandleCommand(CHAT_MSG_WHISPER, cmd.str(), *bot);
+            }
             return true;
+        }
     }
 
     return false;

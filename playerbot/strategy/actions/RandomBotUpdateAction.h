@@ -16,7 +16,7 @@ namespace ai
             if (!sRandomPlayerbotMgr.IsRandomBot(bot->GetGUIDLow()))
                 return false;
 
-            if (bot->GetGroup() && (!ai->GetGroupMaster()->GetPlayerbotAI() || ai->GetGroupMaster()->GetPlayerbotAI()->isRealPlayer()))
+            if (bot->GetGroup() && (!ai->GetGroupMaster()->GetPlayerbotAI() || ai->GetGroupMaster()->GetPlayerbotAI()->IsRealPlayer()))
                 return true;
 
             if (ai->HasPlayerNearby(sPlayerbotAIConfig.grindDistance))

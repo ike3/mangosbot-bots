@@ -5,6 +5,8 @@
 #include "../../PlayerbotAIConfig.h"
 #include "DBCStore.h"
 #include "../../ServerFacade.h"
+#include "../values/ItemUsageValue.h"
+
 using namespace ai;
 
 bool UseItemAction::Execute(Event event)
@@ -189,7 +191,7 @@ bool UseItemAction::UseItem(Item* item, ObjectGuid goGuid, Item* itemTarget)
    }
 
    Player* master = GetMaster();
-   if (!targetSelected && item->GetProto()->Class != ITEM_CLASS_CONSUMABLE && master)
+   if (!targetSelected && item->GetProto()->Class != ITEM_CLASS_CONSUMABLE && master && ai->HasActivePlayerMaster())
    {
       ObjectGuid masterSelection = master->GetSelectionGuid();
       if (masterSelection)
@@ -408,4 +410,54 @@ bool UseItemAction::isPossible()
 bool UseSpellItemAction::isUseful()
 {
    return AI_VALUE2(bool, "spell cast useful", getName());
+}
+
+bool UseHearthStone::Execute(Event event)
+{
+    if (bot->IsMoving())
+    {
+        MotionMaster& mm = *bot->GetMotionMaster();
+        bot->StopMoving();
+        mm.Clear();
+    }
+    bool used = UseItemAction::Execute(event);
+
+    if (used)
+        ai->SetNextCheckDelay(10 * IN_MILLISECONDS);
+
+    return used;
+}
+
+bool UseRandomRecipe::isUseful()
+{
+   return !bot->IsInCombat() && !ai->HasActivePlayerMaster();
+}
+
+bool UseRandomRecipe::Execute(Event event)
+{
+    list<Item*> recipes = AI_VALUE2(list<Item*>, "inventory items", "recipe");   
+
+    string recipeName = "";
+
+    for (auto& recipe : recipes)
+    {
+        ItemUsage usage = AI_VALUE2(ItemUsage, "item usage", recipe->GetProto()->ItemId);
+
+        if (usage == ITEM_USAGE_SKILL && bot->CanUseItem(recipe) == EQUIP_ERR_OK)
+        {
+            recipeName = recipe->GetProto()->Name1;
+
+            break;
+        }
+    }
+
+    if (recipeName.empty())
+        return false;
+
+    bool used = UseItemAction::Execute(Event(name,recipeName));
+
+    if (used)
+        ai->SetNextCheckDelay(3.0 * IN_MILLISECONDS);
+
+    return used;
 }

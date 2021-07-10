@@ -13,14 +13,29 @@ using namespace ai;
 bool RpgAction::Execute(Event event)
 {    
     ObjectGuid guid = AI_VALUE(ObjectGuid, "rpg target");
+
+    if (!guid && ai->GetMaster())
+    {
+        guid = ai->GetMaster()->GetSelectionGuid();
+        if (guid)
+        {
+            RemIgnore(guid);
+            context->GetValue<ObjectGuid>("rpg target")->Set(guid);
+        }
+    }
+
+
     WorldObject* wo = ai->GetWorldObject(guid);
     Unit* unit = ai->GetUnit(guid);
     GameObject* go = ai->GetGameObject(guid);
     if (!wo)
+    {
+        context->GetValue<ObjectGuid>("rpg target")->Set(ObjectGuid());
         return false;
+    }
 
     if (sServerFacade.isMoving(bot))
-        return false;
+        return true;
 
     if (bot->GetMapId() != wo->GetMapId())
     {
@@ -32,7 +47,7 @@ bool RpgAction::Execute(Event event)
     {
         sServerFacade.SetFacingTo(bot, wo, true);
         ai->SetNextCheckDelay(sPlayerbotAIConfig.globalCoolDown);
-        return false;
+        return true;
     }
 
     if (unit && !bot->GetNPCIfCanInteractWith(guid, UNIT_NPC_FLAG_NONE))
@@ -45,7 +60,7 @@ bool RpgAction::Execute(Event event)
         bot->SetShapeshiftForm(FORM_NONE);
 
     //Random taxi action.
-    if (unit && unit->HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_FLIGHTMASTER) && !ai->hasRealPlayerMaster())
+    if (unit && unit->HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_FLIGHTMASTER) && !ai->HasRealPlayerMaster())
     {
         WorldPacket emptyPacket;
         bot->GetSession()->HandleCancelMountAuraOpcode(emptyPacket);
@@ -83,6 +98,10 @@ bool RpgAction::Execute(Event event)
             elements.push_back(&RpgAction::train);
         if (unit->GetHealthPercent() < 100 && (bot->getClass() == CLASS_PRIEST || bot->getClass() == CLASS_DRUID || bot->getClass() == CLASS_PALADIN || bot->getClass() == CLASS_SHAMAN))
             elements.push_back(&RpgAction::heal);
+        if (unit->isInnkeeper() && AI_VALUE2(float, "distance", "home bind") > 1000.0f)
+            elements.push_back(&RpgAction::homebind);
+        if (unit->isBattleMaster() && CanQueueBg(guid))
+            elements.push_back(&RpgAction::queuebg);
     }
     else
     {
@@ -91,6 +110,7 @@ bool RpgAction::Execute(Event event)
             elements.push_back(&RpgAction::use);
             elements.push_back(&RpgAction::work);
             elements.push_back(&RpgAction::spell);
+            elements.push_back(&RpgAction::craft);
         }
     }
 #endif
@@ -103,6 +123,7 @@ bool RpgAction::Execute(Event event)
             elements.push_back(&RpgAction::stay);
             elements.push_back(&RpgAction::work);
             elements.push_back(&RpgAction::spell);
+            elements.push_back(&RpgAction::craft);
         }
     }    
     else
@@ -293,7 +314,7 @@ void RpgAction::quest(ObjectGuid guid)
         bot->SetSelectionGuid(oldSelection);
 
     //Speed up if 
-    if (!ai->hasRealPlayerMaster())
+    if (!ai->HasRealPlayerMaster())
         ai->SetNextCheckDelay(sPlayerbotAIConfig.rpgDelay);
 
     cancel(guid);
@@ -306,7 +327,9 @@ void RpgAction::trade(ObjectGuid guid)
     bot->SetSelectionGuid(guid);
 
     ai->DoSpecificAction("sell", Event("rpg action", "vendor"));
-    ai->DoSpecificAction("buy", Event("rpg action", "vendor"));
+
+    if(AI_VALUE(uint8, "durability") > 50)
+        ai->DoSpecificAction("buy", Event("rpg action", "vendor"));
 
     Unit* unit = ai->GetUnit(guid);
     if (unit)
@@ -315,7 +338,7 @@ void RpgAction::trade(ObjectGuid guid)
     if (oldSelection)
         bot->SetSelectionGuid(oldSelection);
 
-    if (!ai->hasRealPlayerMaster())
+    if (!ai->HasRealPlayerMaster())
         ai->SetNextCheckDelay(sPlayerbotAIConfig.rpgDelay);
 }
 
@@ -334,7 +357,7 @@ void RpgAction::repair(ObjectGuid guid)
     if (oldSelection)
         bot->SetSelectionGuid(oldSelection);
 
-    if (!ai->hasRealPlayerMaster())
+    if (!ai->HasRealPlayerMaster())
         ai->SetNextCheckDelay(sPlayerbotAIConfig.rpgDelay);
 }
 
@@ -353,7 +376,7 @@ void RpgAction::train(ObjectGuid guid)
     if (oldSelection)
         bot->SetSelectionGuid(oldSelection);
 
-    if (!ai->hasRealPlayerMaster())
+    if (!ai->HasRealPlayerMaster())
         ai->SetNextCheckDelay(sPlayerbotAIConfig.rpgDelay);
 }
 
@@ -392,7 +415,7 @@ void RpgAction::heal(ObjectGuid guid)
     if (oldSelection)
         bot->SetSelectionGuid(oldSelection);
 
-    if (!ai->hasRealPlayerMaster())
+    if (!ai->HasRealPlayerMaster())
         ai->SetNextCheckDelay(sPlayerbotAIConfig.rpgDelay);
 }
 
@@ -409,7 +432,7 @@ void RpgAction::use(ObjectGuid guid)
     if (oldSelection)
         bot->SetSelectionGuid(oldSelection);
 
-    if (!ai->hasRealPlayerMaster())
+    if (!ai->HasRealPlayerMaster())
         ai->SetNextCheckDelay(sPlayerbotAIConfig.rpgDelay);
 }
 
@@ -430,10 +453,74 @@ void RpgAction::spell(ObjectGuid guid)
     if (oldSelection)
         bot->SetSelectionGuid(oldSelection);
 
-    if (!ai->hasRealPlayerMaster())
+    if (!ai->HasRealPlayerMaster())
         ai->SetNextCheckDelay(sPlayerbotAIConfig.rpgDelay);
 }
 
+void RpgAction::craft(ObjectGuid guid)
+{
+    ObjectGuid oldSelection = bot->GetSelectionGuid();
+
+    bot->SetSelectionGuid(guid);
+
+    WorldObject* wo = ai->GetWorldObject(guid);
+
+    bool crafted = ai->DoSpecificAction("craft random item", Event("rpg action", chat->formatWorldobject(wo)));
+
+    Unit* unit = ai->GetUnit(guid);
+    if (unit)
+        unit->SetFacingTo(unit->GetAngle(bot));
+
+    if (oldSelection)
+        bot->SetSelectionGuid(oldSelection);
+
+    if (crafted)
+        RemIgnore(guid);
+
+    if (!ai->HasRealPlayerMaster())
+        ai->SetNextCheckDelay(sPlayerbotAIConfig.rpgDelay);
+}
+
+void RpgAction::homebind(ObjectGuid guid)
+{
+    ObjectGuid oldSelection = bot->GetSelectionGuid();
+
+    bot->SetSelectionGuid(guid);
+
+    ai->DoSpecificAction("home");
+
+    Unit* unit = ai->GetUnit(guid);
+    if (unit)
+        unit->SetFacingTo(unit->GetAngle(bot));
+
+    if (oldSelection)
+        bot->SetSelectionGuid(oldSelection);
+
+    if (!ai->HasRealPlayerMaster())
+        ai->SetNextCheckDelay(sPlayerbotAIConfig.rpgDelay);
+}
+
+void RpgAction::queuebg(ObjectGuid guid)
+{
+    ObjectGuid oldSelection = bot->GetSelectionGuid();
+
+    bot->SetSelectionGuid(guid);
+
+    BattleGroundTypeId bgTypeId = CanQueueBg(guid);
+
+    bot->GetPlayerbotAI()->GetAiObjectContext()->GetValue<uint32>("bg type")->Set((uint32)bgTypeId);
+    ai->DoSpecificAction("free bg join");
+
+    Unit* unit = ai->GetUnit(guid);
+    if (unit)
+        unit->SetFacingTo(unit->GetAngle(bot));
+
+    if (oldSelection)
+        bot->SetSelectionGuid(oldSelection);
+
+    if (!ai->HasRealPlayerMaster())
+        ai->SetNextCheckDelay(sPlayerbotAIConfig.rpgDelay);
+}
 
 bool RpgAction::isUseful()
 {
@@ -492,5 +579,38 @@ bool RpgAction::CanTrain(ObjectGuid guid)
     }
 
     return false;
+}
+
+BattleGroundTypeId RpgAction::CanQueueBg(ObjectGuid guid)
+{
+    for (uint32 i = 1; i < MAX_BATTLEGROUND_QUEUE_TYPES; i++)
+    {
+        BattleGroundQueueTypeId queueTypeId = (BattleGroundQueueTypeId)i;
+
+        BattleGroundTypeId bgTypeId = sServerFacade.BgTemplateId(queueTypeId);
+
+        BattleGround* bg = sBattleGroundMgr.GetBattleGroundTemplate(bgTypeId);
+        if (!bg)
+            continue;
+
+        if (bot->getLevel() < bg->GetMinLevel())
+            continue;
+
+        // check if already in queue
+        if (bot->InBattleGroundQueueForBattleGroundQueueType(queueTypeId))
+            continue;
+
+        map<Team, map<BattleGroundTypeId, list<uint32>>> battleMastersCache = sRandomPlayerbotMgr.getBattleMastersCache();
+
+        for (auto& entry : battleMastersCache[TEAM_BOTH_ALLOWED][bgTypeId])
+            if (entry == guid.GetEntry())
+                return bgTypeId;
+
+        for (auto& entry : battleMastersCache[bot->GetTeam()][bgTypeId])
+            if (entry == guid.GetEntry())
+                return bgTypeId;
+    }
+
+    return BATTLEGROUND_TYPE_NONE;
 }
 

@@ -301,6 +301,8 @@ bool PlayerbotAIConfig::Initialize()
     syncLevelWithPlayers = config.GetBoolDefault("AiPlayerbot.SyncLevelWithPlayers", false);
     tweakValue = config.GetIntDefault("AiPlayerbot.TweakValue", 0);
 
+    selfBotLevel = config.GetIntDefault("AiPlayerbot.SelfBotLevel", 1);
+
     targetPosRecalcDistance = config.GetFloatDefault("AiPlayerbot.TargetPosRecalcDistance", 0.1f),
     BarGoLink::SetOutputState(config.GetBoolDefault("AiPlayerbot.ShowProgressBars", false));
 

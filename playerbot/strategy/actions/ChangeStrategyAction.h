@@ -22,7 +22,7 @@ namespace ai
 
     class ChangeDeadStrategyAction : public Action {
     public:
-        ChangeDeadStrategyAction(PlayerbotAI* ai) : Action(ai, "dead") {}
+        ChangeDeadStrategyAction(PlayerbotAI* ai) : Action(ai, "de") {}
 
     public:
         virtual bool Execute(Event event);

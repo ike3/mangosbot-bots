@@ -2,7 +2,6 @@
 #include "../Trigger.h"
 #include "../../PlayerbotAIConfig.h"
 #include "../../ServerFacade.h"
-#include "../values/MoveTargetValue.h"
 
 namespace ai
 {
@@ -131,25 +130,27 @@ namespace ai
         OutOfReactRangeTrigger(PlayerbotAI* ai) : FarFromMasterTrigger(ai, "out of react range", 50.0f, 5) {}
     };
 
-    class HasContinueActionTrigger : public Trigger
+    class HearthIsFasterTrigger : public Trigger
     {
     public:
-        HasContinueActionTrigger(PlayerbotAI* ai) : Trigger(ai, "has continue action") {}
+        HearthIsFasterTrigger(PlayerbotAI* ai) : Trigger(ai, "hearth is faster",5) {}
 
         virtual bool IsActive()
         {
-            return AI_VALUE(MoveTarget*, "move target")->getRelevance();
-        }
-    };
+            if (!bot->HasItemCount(6948, 1, false))
+                return false;
 
-    class ArrivedAtMoveTargetTrigger : public Trigger
-    {
-    public:
-        ArrivedAtMoveTargetTrigger(PlayerbotAI* ai) : Trigger(ai, "arrived at move target") {}
+            if (!sServerFacade.IsSpellReady(bot, 8690))
+                return false;
 
-        virtual bool IsActive()
-        {
-            return AI_VALUE(MoveTarget*, "move target")->getRelevance() && AI_VALUE(MoveTarget*, "move target")->isInRange(bot);
+            WorldPosition longMove = AI_VALUE(WorldPosition, "last long move");
+
+            if (!longMove)
+                return false;
+
+            WorldPosition hearthBind = AI_VALUE(WorldPosition, "home bind");
+
+            return AI_VALUE2(float, "distance", "last long move") > hearthBind.distance(longMove) + 200;
         }
     };
 }

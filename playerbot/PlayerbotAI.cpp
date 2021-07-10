@@ -26,7 +26,6 @@
 #include "ServerFacade.h"
 #include "TravelMgr.h"
 #include "ChatHelper.h"
-#include <playerbot/strategy/values/MoveTargetValue.h>
 
 using namespace ai;
 using namespace std;
@@ -211,7 +210,7 @@ void PlayerbotAI::UpdateAIInternal(uint32 elapsed)
 
 void PlayerbotAI::HandleTeleportAck()
 {
-    if (isRealPlayer())
+    if (IsRealPlayer())
         return;
 
 	bot->GetMotionMaster()->Clear(true);
@@ -544,12 +543,15 @@ void PlayerbotAI::DoNextAction()
 
         //Death Count to prevent skeleton piles
         Player* master = GetMaster();
-        if (!master || (master && master->GetPlayerbotAI()))
+        if (!HasActivePlayerMaster())
         {
             uint32 dCount = aiObjectContext->GetValue<uint32>("death count")->Get();
             aiObjectContext->GetValue<uint32>("death count")->Set(++dCount);
         }
 
+        aiObjectContext->GetValue<Unit*>("current target")->Set(NULL);
+        aiObjectContext->GetValue<Unit*>("enemy player target")->Set(NULL);
+        
         ChangeEngine(BOT_STATE_DEAD);
         return;
     }
@@ -945,7 +947,7 @@ bool PlayerbotAI::TellMasterNoFacing(string text, PlayerbotSecurityLevel securit
 {
     Player* master = GetMaster();
 
-    if ((!master || (master->GetPlayerbotAI() && !master->GetPlayerbotAI()->isRealPlayer())) && (sPlayerbotAIConfig.randomBotSayWithoutMaster || HasStrategy("debug", BOT_STATE_NON_COMBAT)))
+    if ((!master || (master->GetPlayerbotAI() && !master->GetPlayerbotAI()->IsRealPlayer())) && (sPlayerbotAIConfig.randomBotSayWithoutMaster || HasStrategy("debug", BOT_STATE_NON_COMBAT)))
     {
         bot->Say(text, (bot->GetTeam() == ALLIANCE ? LANG_COMMON : LANG_ORCISH));
         return true;
@@ -1149,6 +1151,11 @@ bool PlayerbotAI::CanCastSpell(uint32 spellid, Unit* target, uint8 effectMask, b
 
 	SpellEntry const *spellInfo = sServerFacade.LookupSpellInfo(spellid);
 	if (!spellInfo)
+        return false;
+
+    uint32 CastingTime = !IsChanneledSpell(spellInfo) ? GetSpellCastTime(spellInfo, bot) : GetSpellDuration(spellInfo);
+
+    if (CastingTime && bot->IsMoving())
         return false;
 
 	if (!itemTarget)
@@ -1769,7 +1776,7 @@ enum BotTypeNumber
 };
 */
 
-uint32 PlayerbotAI::GetFixedBotNumer(BotTypeNumber typeNumber, uint32 maxNum, uint32 cyclePerMin)
+uint32 PlayerbotAI::GetFixedBotNumer(BotTypeNumber typeNumber, uint32 maxNum, float cyclePerMin)
 {
     std::mt19937 rng(typeNumber);
     uint32 randseed = rng();                                       //Seed random number
@@ -1820,7 +1827,7 @@ bool PlayerbotAI::HasPlayerNearby(WorldPosition* pos, float range)
     float sqRange = range * range;
     for (auto& player : sRandomPlayerbotMgr.GetPlayers())
     {
-        if ((!player->GetPlayerbotAI() || player->GetPlayerbotAI()->isRealPlayer()) && (!player->IsGameMaster() || player->isGMVisible()))
+        if ((!player->GetPlayerbotAI() || player->GetPlayerbotAI()->IsRealPlayer()) && (!player->IsGameMaster() || player->isGMVisible()))
         {
             if (player->GetMapId() != bot->GetMapId())
                 continue;
@@ -1876,7 +1883,7 @@ bool PlayerbotAI::AllowActive(ActivityType activityType)
         return true;
 
     if (GetMaster()) //Has player master. Always active.
-        if (!GetMaster()->GetPlayerbotAI() || GetMaster()->GetPlayerbotAI()->isRealPlayer())
+        if (!GetMaster()->GetPlayerbotAI() || GetMaster()->GetPlayerbotAI()->IsRealPlayer())
             return true;
 
     Group* group = bot->GetGroup();
@@ -1885,7 +1892,7 @@ bool PlayerbotAI::AllowActive(ActivityType activityType)
         for (GroupReference *gref = group->GetFirstMember(); gref; gref = gref->next())
         {
             Player* member = gref->getSource();
-            if (member && (!member->GetPlayerbotAI() || (member->GetPlayerbotAI() && member->GetPlayerbotAI()->hasRealPlayerMaster())))
+            if (member && (!member->GetPlayerbotAI() || (member->GetPlayerbotAI() && member->GetPlayerbotAI()->HasRealPlayerMaster())))
                 return true;
         }
     }
@@ -2169,12 +2176,6 @@ string PlayerbotAI::HandleRemoteCommand(string command)
         ostringstream out; out << data.lastMoveShort.getX() << " " << data.lastMoveShort.getY() << " " << data.lastMoveShort.getZ() << " " << data.lastMoveShort.getMapId() << " " << data.lastMoveShort.getO();
         return out.str();
     }
-    else if (command == "move")
-    {
-        MoveTarget* data = *GetAiObjectContext()->GetValue<MoveTarget*>("move target");
-        ostringstream out; out << data->getName() << " " << data->getRelevance() << " " << data->getDist(bot) << " " << data->getPos().print();
-        return out.str();
-    }
     else if (command == "target")
     {
         Unit* target = *GetAiObjectContext()->GetValue<Unit*>("current target");
@@ -2231,7 +2232,7 @@ string PlayerbotAI::HandleRemoteCommand(string command)
                 out << " vis: " << target->getPosition()->getVisitors();
             }
         }
-        out << " Status = ";
+        out << " Status =";
         if (target->getStatus() == TRAVEL_STATUS_NONE)
             out << " none";
         else if (target->getStatus() == TRAVEL_STATUS_PREPARE)

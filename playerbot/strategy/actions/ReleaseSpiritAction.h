@@ -98,7 +98,7 @@ namespace ai
             return true;
         }
 
-        virtual bool isUsefull()
+        virtual bool isUseful()
         {
             return true;
         }

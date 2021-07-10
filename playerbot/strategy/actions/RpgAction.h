@@ -8,7 +8,7 @@ namespace ai
 {
     class RpgAction : public MovementAction {
     public:
-        RpgAction(PlayerbotAI* ai) : MovementAction(ai, "rpg") {}
+        RpgAction(PlayerbotAI* ai, string name = "rpg") : MovementAction(ai, name) {}
 
         virtual bool Execute(Event event);
         virtual bool isUseful();
@@ -32,8 +32,18 @@ namespace ai
         void heal(ObjectGuid guid);
         void use(ObjectGuid guid);
         void spell(ObjectGuid guid);
+        void craft(ObjectGuid guid);
+        void homebind(ObjectGuid guid);
+        void queuebg(ObjectGuid guid);
 
         bool CanTrain(ObjectGuid guid);
+        BattleGroundTypeId CanQueueBg(ObjectGuid guid);
     };
 
+    class CRpgAction : public RpgAction {
+    public:
+        CRpgAction(PlayerbotAI* ai) : RpgAction(ai, "crpg") {}
+
+        virtual bool isUseful() { context->GetValue<ObjectGuid>("rpg target")->Set(ObjectGuid()); return true; };
+    };
 }

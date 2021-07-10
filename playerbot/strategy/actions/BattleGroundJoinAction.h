@@ -11,7 +11,6 @@
 #include "CheckMountStateAction.h"
 #include "G3D/Vector3.h"
 #include "GameObject.h"
-#include "ChooseMoveDoAction.h"
 
 using namespace ai;
 
@@ -31,6 +30,13 @@ protected:
     bool JoinQueue(uint32 type);
     vector<uint32> bgList;
     vector<uint32> ratedList;
+};
+
+class FreeBGJoinAction : public BGJoinAction
+{
+public:
+    FreeBGJoinAction(PlayerbotAI* ai, string name = "free bg join") : BGJoinAction(ai, name) {}
+    virtual bool shouldJoinBg(BattleGroundQueueTypeId queueTypeId, BattleGroundBracketId bracketId);
 };
 
 class BGLeaveAction : public Action
@@ -54,25 +60,4 @@ public:
     BGStatusCheckAction(PlayerbotAI* ai, string name = "bg status check") : Action(ai, name) {}
     virtual bool Execute(Event event);
     virtual bool isUseful();
-};
-
-//Picks a random BG and selects all BM's of that bg type.
-//Selects the closest BM as potential move target.
-class QueueAtBmAction : public ChooseMoveDoListAction<CreatureDataPair const*> {
-public:
-    bool canJoinBgQueue(BattleGroundQueueTypeId queueTypeId); //Check to see if bot can join this bgqueue
-
-    void GetRandomBgQueue();                        //Select random bg queue from bgs bot may join
-    BattleGroundQueueTypeId getBgQueue() { return (BattleGroundQueueTypeId)stoi(getQualifier()); }
-
-    QueueAtBmAction(PlayerbotAI* ai, string name = "queue at bm", string targetValueName = "bg masters") : ChooseMoveDoListAction(ai, name, targetValueName) { GetRandomBgQueue(); }
-
-    virtual bool isUseful();                        //Check if bot may join selected bg.
-
-    virtual bool getPotentialTargets();
-
-    virtual bool IsValidBm(CreatureDataPair const* bmPair, bool allowDead); //Check if selected BM is friendly/exists/alive
-    virtual bool FilterPotentialTargets();          //Filter only those BM's that are valid.
-
-    virtual bool ExecuteAction(Event event);        //Face BM and set BG strategy and BG type
 };

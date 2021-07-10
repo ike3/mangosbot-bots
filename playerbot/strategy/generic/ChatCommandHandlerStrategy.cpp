@@ -121,6 +121,10 @@ void ChatCommandHandlerStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("cast custom spell", relevance), NULL)));
 
     triggers.push_back(new TriggerNode(
+        "castnc",
+        NextAction::array(0, new NextAction("cast custom nc spell", relevance), NULL)));
+
+    triggers.push_back(new TriggerNode(
         "revive",
         NextAction::array(0, new NextAction("spirit healer", relevance), NULL)));
 
@@ -169,7 +173,7 @@ ChatCommandHandlerStrategy::ChatCommandHandlerStrategy(PlayerbotAI* ai) : PassTr
     supported.push_back("spells");
     supported.push_back("co");
     supported.push_back("nc");
-    supported.push_back("dead");
+    supported.push_back("de");
     supported.push_back("trainer");
     supported.push_back("chat");
     supported.push_back("home");

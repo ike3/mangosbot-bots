@@ -423,4 +423,44 @@ namespace ai
     private:
         uint32 weaponType;
     };
+
+    class FindRecipeVisitor : public FindUsableItemVisitor
+    {
+    public:
+        FindRecipeVisitor(Player* bot, SkillType skill = SKILL_NONE) : FindUsableItemVisitor(bot), skill(skill) {};
+
+        virtual bool Accept(const ItemPrototype* proto)
+        {
+            if (proto->Class == ITEM_CLASS_RECIPE)
+            {
+                if (skill == SKILL_NONE)
+                    return true;
+
+                switch (proto->SubClass)
+                {
+                case ITEM_SUBCLASS_LEATHERWORKING_PATTERN:
+                    return skill == SKILL_LEATHERWORKING;
+                case ITEM_SUBCLASS_TAILORING_PATTERN:
+                    return skill == SKILL_TAILORING;
+                case ITEM_SUBCLASS_ENGINEERING_SCHEMATIC:
+                    return skill == SKILL_ENGINEERING;
+                case ITEM_SUBCLASS_BLACKSMITHING:
+                    return skill == SKILL_BLACKSMITHING;
+                case ITEM_SUBCLASS_COOKING_RECIPE:
+                    return skill == SKILL_COOKING;
+                case ITEM_SUBCLASS_ALCHEMY_RECIPE:
+                    return skill == SKILL_ALCHEMY;
+                case ITEM_SUBCLASS_FIRST_AID_MANUAL:
+                    return skill == SKILL_FIRST_AID;
+                case ITEM_SUBCLASS_ENCHANTING_FORMULA:
+                    return skill == SKILL_ENCHANTING;
+                case ITEM_SUBCLASS_FISHING_MANUAL:
+                    return skill == SKILL_FISHING;
+                }
+            }
+            return false;
+        }
+    private:
+        SkillType skill;
+    };
 }

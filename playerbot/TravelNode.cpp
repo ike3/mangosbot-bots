@@ -167,9 +167,9 @@ float TravelNodePath::getCost(Unit* bot)
            factionAnnoyance = (maxLevelAlliance - level) - 30;
 
         if (mobAnnoyance > 0)
-            modifier += 10 * mobAnnoyance;          //For each level the whole path takes 10% longer.
+            modifier += 0.1 * mobAnnoyance;     //For each level the whole path takes 10% longer.
         if (factionAnnoyance > 0)
-            modifier += 1 + 0.1 * factionAnnoyance; //For each level the whole path takes 10% longer.
+            modifier += 0.1 * factionAnnoyance; //For each level the whole path takes 10% longer.
     }
 
     if (portal || transport)

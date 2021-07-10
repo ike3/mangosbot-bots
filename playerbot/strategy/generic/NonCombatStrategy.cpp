@@ -2,7 +2,6 @@
 #include "../../playerbot.h"
 #include "NonCombatStrategy.h"
 #include "../value.h"
-#include "../values/MoveTargetValue.h"
 
 using namespace ai;
 
@@ -47,6 +46,14 @@ void NonCombatStrategy::InitTriggers(std::list<TriggerNode*>& triggers)
     triggers.push_back(new TriggerNode(
         "need world buff",
         NextAction::array(0, new NextAction("world buff", 1.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "hearth is faster",
+        NextAction::array(0, new NextAction("hearthstone", 1.1f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "often",
+        NextAction::array(0, new NextAction("use random recipe", 1.0f), NULL)));
 
     /*AiObjectContext* context = ai->GetAiObjectContext();
 

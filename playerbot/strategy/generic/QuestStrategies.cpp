@@ -64,22 +64,6 @@ void AcceptAllQuestsStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
             new NextAction("talk to quest giver", relevance), new NextAction("accept all quests", relevance), NULL)));
 }
 
-void ActiveQuestStrategy::InitTriggers(std::list<TriggerNode*>& triggers)
+AcceptAllQuestsStrategy::AcceptAllQuestsStrategy(PlayerbotAI* ai) : QuestStrategy(ai)
 {
-    QuestStrategy::InitTriggers(triggers);
-
-    triggers.push_back(new TriggerNode(
-        "completed quests",
-        NextAction::array(0,
-            new NextAction("hand in quest", 1), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "active objectives",
-        NextAction::array(0,
-            new NextAction("do quest objective", 1), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "free quest log slots",
-        NextAction::array(0,
-            new NextAction("pick up quest", 1), NULL)));      
 }

@@ -29,9 +29,12 @@ bool MoveToRpgTargetAction::Execute(Event event)
         ai->TellMasterNoFacing(out);
     }
 
-    if ((unit && unit->IsMoving() && urand(1,100) < 5) 
-     || !ChooseRpgTargetAction::isFollowValid(bot, wo))
+    if ((unit && unit->IsMoving() && !urand(0, 20))
+        || !ChooseRpgTargetAction::isFollowValid(bot, wo)
+        || !urand(0, 50))
     {
+        context->GetValue<set<ObjectGuid>&>("ignore rpg target")->Get().insert(AI_VALUE(ObjectGuid, "rpg target"));
+
         context->GetValue<ObjectGuid>("rpg target")->Set(ObjectGuid());
         return false;
     }
@@ -71,9 +74,11 @@ bool MoveToRpgTargetAction::Execute(Event event)
 
 bool MoveToRpgTargetAction::isUseful()
 {
-    return context->GetValue<ObjectGuid>("rpg target")->Get() 
-        && !context->GetValue<TravelTarget *>("travel target")->Get()->isTraveling()  
+    return context->GetValue<ObjectGuid>("rpg target")->Get()
+        && !context->GetValue<TravelTarget*>("travel target")->Get()->isTraveling()
         && AI_VALUE2(float, "distance", "rpg target") > sPlayerbotAIConfig.followDistance
+        && AI_VALUE2(uint8, "health", "self target") > sPlayerbotAIConfig.mediumHealth 
+        && (!AI_VALUE2(uint8, "mana", "self target") || AI_VALUE2(uint8, "mana", "self target") > sPlayerbotAIConfig.mediumMana)
         && !bot->IsInCombat();
 }
 

@@ -55,6 +55,16 @@ namespace ai
                 TravelTarget * travelTarget = AI_VALUE(TravelTarget *, qualifier);
                 return travelTarget->distance(ai->GetBot());
             }
+            else if (qualifier == "last long move")
+            {
+                WorldPosition target = AI_VALUE(WorldPosition, qualifier);
+                return target.distance(ai->GetBot());
+            }
+            else if (qualifier == "home bind")
+            {
+                WorldPosition target = AI_VALUE(WorldPosition, qualifier);
+                return target.distance(ai->GetBot());
+            }
             else if (qualifier == "current target")
             {
                 Stance* stance = AI_VALUE(Stance*, "stance");

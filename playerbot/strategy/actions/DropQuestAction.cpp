@@ -46,7 +46,7 @@ bool DropQuestAction::Execute(Event event)
 bool CleanQuestLogAction::Execute(Event event)
 {
     string link = event.getParam();
-    if (GetMaster())
+    if (ai->HasActivePlayerMaster())
         return false;
 
     uint8 totalQuests = 0;
@@ -56,9 +56,9 @@ bool CleanQuestLogAction::Execute(Event event)
     if (MAX_QUEST_LOG_SIZE - totalQuests > 6)
         return true;
 
-    DropQuestType(totalQuests, MAX_QUEST_LOG_SIZE - 6); //Drop gray quests.
-    DropQuestType(totalQuests, MAX_QUEST_LOG_SIZE - 6, false, true); //Drop gray quests with progress.
-    DropQuestType(totalQuests, MAX_QUEST_LOG_SIZE - 6, false, true, true); //Drop gray completed quests.
+    DropQuestType(totalQuests, MAX_QUEST_LOG_SIZE - 6); //Drop gray/red quests.
+    DropQuestType(totalQuests, MAX_QUEST_LOG_SIZE - 6, false, true); //Drop gray/red quests with progress.
+    DropQuestType(totalQuests, MAX_QUEST_LOG_SIZE - 6, false, true, true); //Drop gray/red completed quests.
 
     if (MAX_QUEST_LOG_SIZE - totalQuests > 4)
         return true;
@@ -97,9 +97,13 @@ void CleanQuestLogAction::DropQuestType(uint8 &numQuest, uint8 wantNum, bool isG
         if (wantNum == 100)
             numQuest++;
 
-        int32 lowLevelDiff = sWorld.getConfig(CONFIG_INT32_QUEST_LOW_LEVEL_HIDE_DIFF);
-        if ((lowLevelDiff < 0 || bot->getLevel() <= bot->GetQuestLevelForPlayer(quest) + uint32(lowLevelDiff)) && !isGreen)
-            continue;
+        if (!isGreen)
+        {
+            int32 lowLevelDiff = sWorld.getConfig(CONFIG_INT32_QUEST_LOW_LEVEL_HIDE_DIFF);
+            if (lowLevelDiff < 0 || bot->getLevel() <= bot->GetQuestLevelForPlayer(quest) + uint32(lowLevelDiff)) //Quest is not gray
+                if (bot->getLevel() + 5 > bot->GetQuestLevelForPlayer(quest))                                     //Quest is not red
+                    continue;
+        }
 
         if (HasProgress(questId) && !hasProgress)
             continue;

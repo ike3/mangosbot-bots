@@ -68,9 +68,10 @@ bool FindCorpseAction::Execute(Event event)
             return false;
     }
 
-    if (!ai->hasRealPlayerMaster())
+    uint32 dCount = AI_VALUE(uint32, "death count");
+
+    if (!ai->HasRealPlayerMaster())
     {
-        uint32 dCount = AI_VALUE(uint32, "death count");
         if (dCount >= 5)
         {
             sLog.outBasic("Bot #%d %s:%d <%s>: died too many times and was sent to an inn", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName());
@@ -115,7 +116,7 @@ bool FindCorpseAction::Execute(Event event)
 
             bool moved = false;
 
-            if (deadTime < 30 * MINUTE * IN_MILLISECONDS) //Look for corpse up to 30 minutes.
+            if (deadTime < 30 * MINUTE && dCount < 5) //Look for corpse up to 30 minutes.
             {
                 if (bot->IsWithinLOS(x, y, z))
                     moved = MoveNear(bot->GetMapId(), x, y, z, 0);
@@ -168,6 +169,11 @@ bool SpiritHealerAction::Execute(Event event)
             context->GetValue<Unit*>("current target")->Set(NULL);
             bot->SetSelectionGuid(ObjectGuid());
             ai->TellMaster("Hello");
+
+            uint32 dCount = AI_VALUE(uint32, "death count");
+            if(dCount > 10)
+                context->GetValue<uint32>("death count")->Set(0);
+
             return true;
         }
     }
@@ -196,7 +202,7 @@ bool SpiritHealerAction::Execute(Event event)
     if (moved)
         return true;
 
-    if (!ai->hasRealPlayerMaster())
+    if (!ai->HasActivePlayerMaster())
         bot->RepopAtGraveyard();
 
     sLog.outBasic("Bot #%d %s:%d <%s> can't find a spirit healer", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName());

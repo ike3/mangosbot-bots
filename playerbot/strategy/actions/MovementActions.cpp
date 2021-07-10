@@ -212,6 +212,10 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
                     //We have no path. Beyond 450yd the standard pathfinder will probably move the wrong way.
                     if (sServerFacade.IsDistanceGreaterThan(totalDistance, maxDist * 3))
                     {
+                        movePath.clear();
+                        movePath.addPoint(endPosition);
+                        AI_VALUE(LastMovement&, "last movement").setPath(movePath);
+
                         bot->StopMoving();
                         if (ai->HasStrategy("debug move", BOT_STATE_NON_COMBAT))
                             ai->TellMasterNoFacing("I have no path");
@@ -561,7 +565,7 @@ void MovementAction::UpdateMovementState()
     }
 
     // Temporary speed increase in group
-    if (ai->hasRealPlayerMaster())
+    if (ai->HasRealPlayerMaster())
         bot->UpdateSpeed(MOVE_RUN, true, 1.1f);
 }
 
@@ -583,7 +587,7 @@ bool MovementAction::Follow(Unit* target, float distance, float angle)
     if (!bot->InBattleGround() 
      && sServerFacade.IsDistanceLessOrEqualThan(sServerFacade.GetDistance2d(bot, target->GetPositionX(), target->GetPositionY()), sPlayerbotAIConfig.sightDistance)
      && abs(bot->GetPositionZ() - target->GetPositionZ()) >= sPlayerbotAIConfig.spellDistance
-     && ai->hasRealPlayerMaster()
+     && ai->HasRealPlayerMaster()
      && (target->GetMapId() && bot->GetMapId() != target->GetMapId()))
     {
         bot->StopMoving();
@@ -610,7 +614,7 @@ bool MovementAction::Follow(Unit* target, float distance, float angle)
     }
 
     if (!IsMovingAllowed(target)
-        && ai->hasRealPlayerMaster())
+        && ai->HasRealPlayerMaster())
     {
 #ifdef MANGOSBOT_ZERO
         if ((target->GetMap() && target->GetMap()->IsBattleGround()) || (bot->GetMap() && bot->GetMap()->IsBattleGround()))
@@ -990,5 +994,5 @@ bool MoveRandomAction::Execute(Event event)
 
 bool MoveRandomAction::isUseful()
 {    
-    return !ai->hasRealPlayerMaster() && ai->GetAiObjectContext()->GetValue<list<ObjectGuid> >("nearest friendly players")->Get().size() > urand(25, 100);
+    return !ai->HasRealPlayerMaster() && ai->GetAiObjectContext()->GetValue<list<ObjectGuid> >("nearest friendly players")->Get().size() > urand(25, 100);
 }
