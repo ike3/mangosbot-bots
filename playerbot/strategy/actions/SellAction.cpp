@@ -98,7 +98,6 @@ void SellAction::Sell(Item* item)
     ostringstream out;
     list<ObjectGuid> vendors = ai->GetAiObjectContext()->GetValue<list<ObjectGuid> >("nearest npcs")->Get();
 
-    bool bought = false;
     for (list<ObjectGuid>::iterator i = vendors.begin(); i != vendors.end(); ++i)
     {
         ObjectGuid vendorguid = *i;
@@ -114,6 +113,8 @@ void SellAction::Sell(Item* item)
         bot->GetSession()->HandleSellItemOpcode(p);
 
         out << "Selling " << chat->formatItem(item->GetProto());
+        bot->PlayDistanceSound(120);
         ai->TellMaster(out);
+        break;
     }
 }
