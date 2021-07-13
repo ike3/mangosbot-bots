@@ -133,7 +133,7 @@ namespace ai
     class HearthIsFasterTrigger : public Trigger
     {
     public:
-        HearthIsFasterTrigger(PlayerbotAI* ai) : Trigger(ai, "hearth is faster",5) {}
+        HearthIsFasterTrigger(PlayerbotAI* ai) : Trigger(ai, "hearth is faster", 5) {}
 
         virtual bool IsActive()
         {

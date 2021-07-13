@@ -563,7 +563,7 @@ void PlayerbotAI::DoNextAction()
         return;
     }
 
-    bool minimal = !AllowActive(ALL_ACTIVITY);
+    bool minimal = !AllowActivity(ALL_ACTIVITY);
 
     currentEngine->DoNextAction(NULL, 0, minimal);
 
@@ -1930,6 +1930,20 @@ bool PlayerbotAI::AllowActive(ActivityType activityType)
     uint32 ActivityNumber = GetFixedBotNumer(ACTIVITY_TYPE_NUMBER, 100, sPlayerbotAIConfig.botActiveAlone * 0.01);
 
     return ActivityNumber <= sPlayerbotAIConfig.botActiveAlone;           //The given percentage of bots should be active and rotate 1% of those active bots each minute.
+}
+
+bool PlayerbotAI::AllowActivity(ActivityType activityType)
+{
+    if (!allowActiveCheckTimer[activityType])
+        allowActiveCheckTimer[activityType] = time(NULL);
+
+    if (time(NULL) < allowActiveCheckTimer[activityType] + 5)
+        return allowActive[activityType];
+
+    bool allowed = AllowActive(activityType);
+    allowActive[activityType] = allowed;
+    allowActiveCheckTimer[activityType] = time(NULL);
+    return allowed;
 }
 
 bool PlayerbotAI::IsOpposing(Player* player)

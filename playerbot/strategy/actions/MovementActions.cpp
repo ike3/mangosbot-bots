@@ -129,7 +129,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
 {
     UpdateMovementState();
 
-    bool detailedMove = ai->AllowActive(DETAILED_MOVE_ACTIVITY);
+    bool detailedMove = ai->AllowActivity(DETAILED_MOVE_ACTIVITY);
 
     if (!detailedMove)
     {

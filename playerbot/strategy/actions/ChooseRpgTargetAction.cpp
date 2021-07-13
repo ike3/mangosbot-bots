@@ -112,7 +112,7 @@ uint32 ChooseRpgTargetAction::HasSameTarget(ObjectGuid guid)
         if (!ai)
             continue;
 
-        if (!ai->AllowActive(GRIND_ACTIVITY))
+        if (!ai->AllowActivity(GRIND_ACTIVITY))
             continue;
 
         if (ai->GetAiObjectContext()->GetValue<ObjectGuid>("rpg target")->Get() != guid)
@@ -291,7 +291,7 @@ bool ChooseRpgTargetAction::Execute(Event event)
 
 bool ChooseRpgTargetAction::isUseful()
 {
-    return ai->AllowActive(RPG_ACTIVITY)
+    return ai->AllowActivity(RPG_ACTIVITY)
         && !bot->IsInCombat()
         && !context->GetValue<ObjectGuid>("rpg target")->Get()
         && !context->GetValue<TravelTarget*>("travel target")->Get()->isTraveling()

@@ -192,7 +192,8 @@ enum ActivityType
     OUT_OF_PARTY_ACTIVITY = 4,
     PACKET_ACTIVITY = 5,
     DETAILED_MOVE_ACTIVITY = 6,
-    ALL_ACTIVITY = 7
+    ALL_ACTIVITY = 7,
+    MAX_ACTIVITY_TYPE
 };
 
 enum BotRoles
@@ -336,7 +337,7 @@ public:
     bool IsFriendlyTo(uint32 faction) { return GetFactionReaction(bot->GetFactionTemplateEntry(), sFactionTemplateStore.LookupEntry(faction)) >= REP_NEUTRAL; }
     static bool AddAura(Unit* unit, uint32 spellId);
     ReputationRank getReaction(FactionTemplateEntry const* factionTemplate) { return GetFactionReaction(bot->GetFactionTemplateEntry(), factionTemplate);}
-    
+
 private:
     void _fillGearScoreData(Player *player, Item* item, std::vector<uint32>* gearScore, uint32& twoHandScore);
     bool IsTellAllowed(PlayerbotSecurityLevel securityLevel = PLAYERBOT_SECURITY_ALLOW_ALL);
@@ -362,6 +363,7 @@ public:
     bool HasPlayerNearby(float range = sPlayerbotAIConfig.reactDistance) { WorldPosition botPos(bot);  return HasPlayerNearby(&botPos, range); };
     bool HasManyPlayersNearby(uint32 trigerrValue = 20, float range = sPlayerbotAIConfig.sightDistance);
     bool AllowActive(ActivityType activityType);
+    bool AllowActivity(ActivityType activityType = ALL_ACTIVITY);
     void SetMaster(Player* master) { this->master = master; }
     AiObjectContext* GetAiObjectContext() { return aiObjectContext; }
     ChatHelper* GetChatHelper() { return &chatHelper; }
@@ -387,6 +389,8 @@ protected:
     map<string, time_t> whispers;
     pair<ChatMsg, time_t> currentChat;
     static set<string> unsecuredCommands;
+    map<ActivityType, bool> allowActive;
+    map<ActivityType, time_t> allowActiveCheckTimer;
 
 };
 
