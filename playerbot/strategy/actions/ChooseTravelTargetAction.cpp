@@ -11,14 +11,6 @@ bool ChooseTravelTargetAction::Execute(Event event)
     //Get the current travel target. This target is no longer active.
     TravelTarget * target = context->GetValue<TravelTarget *>("travel target")->Get();
 
-    //Check if we still have to loot. If so, loot first.
-    bool addLoot = ai->DoSpecificAction("add all loot", Event(), true);
-    if (context->GetValue<LootObject>("loot target")->Get().IsLootPossible(bot))
-    {
-        target->setStatus(TRAVEL_STATUS_PREPARE);
-        return false;
-    }
-
     //Select a new target to travel to. 
     TravelTarget newTarget = TravelTarget(ai);   
     SetTarget(&newTarget, target);
