@@ -746,6 +746,9 @@ bool MovementAction::Flee(Unit *target)
         Group *group = bot->GetGroup();
         if (group)
         {
+            Unit* fleeTarget = nullptr;
+            float fleeDistance = sPlayerbotAIConfig.sightDistance;
+
             for (GroupReference *gref = group->GetFirstMember(); gref; gref = gref->next())
             {
                 Player* player = gref->getSource();
@@ -754,28 +757,29 @@ bool MovementAction::Flee(Unit *target)
                 {
                     float distanceToTank = sServerFacade.GetDistance2d(bot, player);
                     float distanceToTarget = sServerFacade.GetDistance2d(bot, target);
-                    if (sServerFacade.IsDistanceGreaterThan(distanceToTank, distanceToTarget))
+                    if (distanceToTank < fleeDistance)
                     {
-                        foundFlee = MoveTo(player, sPlayerbotAIConfig.followDistance);
+                        fleeTarget = player;
+                        fleeDistance = distanceToTank;
                     }
                 }
+            }
 
-                if (!foundFlee && master)
-                {
-                    foundFlee = MoveTo(master, sPlayerbotAIConfig.followDistance);
-                }
+            if (!fleeTarget && master)
+            {
+                foundFlee = MoveTo(master, sPlayerbotAIConfig.followDistance);
+            }
 
-                if (foundFlee)
+            if (foundFlee)
+            {
+                if (!urand(0, 25))
                 {
-                    if (!urand(0, 25))
-                    {
-                        vector<uint32> sounds;
-                        sounds.push_back(304); // guard
-                        sounds.push_back(306); // flee
-                        ai->PlaySound(sounds[urand(0, sounds.size() - 1)]);
-                    }
-                    return true;
+                    vector<uint32> sounds;
+                    sounds.push_back(304); // guard
+                    sounds.push_back(306); // flee
+                    ai->PlaySound(sounds[urand(0, sounds.size() - 1)]);
                 }
+                return true;
             }
         }
     }
@@ -790,7 +794,7 @@ bool MovementAction::Flee(Unit *target)
         }
         else
         {
-            if ((now - lastFlee) > urand(5, fleeDelay * 2))
+            if ((now - lastFlee) > urand(2, fleeDelay * 2))
             {
                 AI_VALUE(LastMovement&, "last movement").lastFlee = 0;
             }
