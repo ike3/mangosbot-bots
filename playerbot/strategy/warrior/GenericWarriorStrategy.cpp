@@ -14,14 +14,6 @@ void GenericWarriorStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 {
     CombatStrategy::InitTriggers(triggers);
 
-    triggers.push_back(new TriggerNode(
-        "battle shout",
-        NextAction::array(0, new NextAction("battle shout", ACTION_NORMAL + 5), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "commanding shout",
-        NextAction::array(0, new NextAction("commanding shout", ACTION_NORMAL + 4), NULL)));
-
     /*triggers.push_back(new TriggerNode(
         "bloodrage",
         NextAction::array(0, new NextAction("bloodrage", ACTION_HIGH + 1), NULL)));*/

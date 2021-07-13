@@ -9,7 +9,7 @@ namespace ai
     BUFF_ACTION(CastBerserkerStanceAction, "berserker stance");
 
     // shouts
-    BUFF_ACTION_U(CastBattleShoutAction, "battle shout", CastSpellAction::isUseful()); // useful to rebuff
+    BUFF_ACTION(CastBattleShoutAction, "battle shout");
     MELEE_ACTION_U(CastBattleShoutTauntAction, "battle shout", CastSpellAction::isUseful()); // useful to rebuff
     DEBUFF_ACTION_R(CastDemoralizingShoutAction, "demoralizing shout", 8.0f); // low range debuff
     MELEE_ACTION(CastChallengingShoutAction, "challenging shout");
@@ -56,7 +56,7 @@ namespace ai
     BUFF_ACTION(CastRampageAction, "rampage");
 
     // protection
-    MELEE_ACTION(CastTauntAction, "taunt");
+    MELEE_ACTION_U(CastTauntAction, "taunt", !GetTarget()->HasTarget(bot->GetObjectGuid()));
     SNARE_ACTION(CastTauntOnSnareTargetAction, "taunt");
     BUFF_ACTION(CastBloodrageAction, "bloodrage");
     MELEE_ACTION(CastShieldBashAction, "shield bash");

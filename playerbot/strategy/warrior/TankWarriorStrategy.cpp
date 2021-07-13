@@ -12,10 +12,14 @@ public:
     {
         creators["charge"] = &charge;
         creators["sunder armor"] = &sunder_armor;
+        creators["commanding shout"] = &commanding_shout;
+        creators["shield slam"] = &shield_slam;
     }
 private:
     ACTION_NODE_A(charge, "charge", "reach melee");
     ACTION_NODE_A(sunder_armor, "sunder armor", "melee");
+    ACTION_NODE_A(commanding_shout, "commanding shout", "battle shout");
+    ACTION_NODE_A(shield_slam, "shield slam", "heroic strike");
 };
 
 TankWarriorStrategy::TankWarriorStrategy(PlayerbotAI* ai) : GenericWarriorStrategy(ai)
@@ -41,6 +45,10 @@ void TankWarriorStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("defensive stance", ACTION_HIGH + 9), NULL)));
 
     triggers.push_back(new TriggerNode(
+        "commanding shout",
+        NextAction::array(0, new NextAction("commanding shout", ACTION_HIGH + 8), NULL)));
+
+    triggers.push_back(new TriggerNode(
         "bloodrage",
         NextAction::array(0, new NextAction("bloodrage", ACTION_HIGH + 2), NULL)));
 
@@ -50,7 +58,7 @@ void TankWarriorStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "medium rage available",
-        NextAction::array(0, new NextAction("heroic strike", ACTION_HIGH), NULL)));
+        NextAction::array(0, new NextAction("shield slam", ACTION_HIGH + 1), NULL)));
 
     triggers.push_back(new TriggerNode(
         "shield block",
@@ -59,6 +67,10 @@ void TankWarriorStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
     triggers.push_back(new TriggerNode(
         "revenge",
         NextAction::array(0, new NextAction("revenge", ACTION_HIGH + 2), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "disarm",
+        NextAction::array(0, new NextAction("disarm", ACTION_HIGH + 1), NULL)));
 
     triggers.push_back(new TriggerNode(
         "lose aggro",
