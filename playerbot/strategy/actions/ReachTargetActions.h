@@ -27,7 +27,9 @@ namespace ai
             else
             {
                 bool inLos = bot->IsWithinLOSInMap(target);
-                return ChaseTo(target, inLos ? distance - sPlayerbotAIConfig.contactDistance : distance / 2, bot->GetAngle(target));
+                bool isFriend = sServerFacade.IsFriendlyTo(bot, target);
+                float chaseDist = inLos ? distance - sPlayerbotAIConfig.contactDistance : isFriend ? distance / 2 : distance - sPlayerbotAIConfig.contactDistance;
+                return ChaseTo(target, chaseDist, bot->GetAngle(target));
             }
         }
         virtual bool isUseful()
@@ -36,7 +38,8 @@ namespace ai
             if (bot->IsNonMeleeSpellCasted(true))
                 return false;
 
-            return true;
+            Unit* target = AI_VALUE(Unit*, GetTargetName());
+            return target && !bot->IsWithinDistInMap(target, distance);
         }
         virtual string GetTargetName() { return "current target"; }
 
