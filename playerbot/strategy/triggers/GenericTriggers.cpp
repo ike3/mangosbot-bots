@@ -192,6 +192,9 @@ bool DeflectSpellTrigger::IsActive()
     if (!target->IsNonMeleeSpellCasted(true))
         return false;
 
+    if (!target->HasTarget(bot->GetObjectGuid()))
+        return false;
+
     uint32 spellid = context->GetValue<uint32>("spell id", spell)->Get();
     if (!spellid)
         return false;
@@ -200,7 +203,10 @@ bool DeflectSpellTrigger::IsActive()
     if (!deflectSpell)
         return false;
 
-    SpellSchoolMask deflectSchool = SpellSchoolMask(1 << deflectSpell->EffectMiscValue[0]);
+    if (spell == "spell reflection")
+        return true;
+
+    SpellSchoolMask deflectSchool = SpellSchoolMask(deflectSpell->EffectMiscValue[0]);
     SpellSchoolMask attackSchool = SPELL_SCHOOL_MASK_NONE;
 
     Spell* spell = target->GetCurrentSpell(CURRENT_GENERIC_SPELL);
