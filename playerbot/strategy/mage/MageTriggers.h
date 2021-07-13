@@ -3,6 +3,9 @@
 
 namespace ai
 {
+    DEFLECT_TRIGGER(FireWardTrigger, "fire ward");
+    DEFLECT_TRIGGER(FrostWardTrigger, "frost ward");
+
     class ArcaneIntellectOnPartyTrigger : public BuffOnPartyTrigger {
     public:
         ArcaneIntellectOnPartyTrigger(PlayerbotAI* ai) : BuffOnPartyTrigger(ai, "arcane intellect", 2) {}

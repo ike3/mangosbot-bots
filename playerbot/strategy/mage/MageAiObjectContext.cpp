@@ -109,10 +109,14 @@ namespace ai
                 creators["counterspell on enemy healer"] = &TriggerFactoryInternal::counterspell_enemy_healer;
                 creators["arcane power"] = &TriggerFactoryInternal::arcane_power;
                 creators["presence of mind"] = &TriggerFactoryInternal::presence_of_mind;
+                creators["fire ward"] = &TriggerFactoryInternal::fire_ward;
+                creators["frost ward"] = &TriggerFactoryInternal::frost_ward;
 
             }
 
         private:
+            static Trigger* frost_ward(PlayerbotAI* ai) { return new FrostWardTrigger(ai); }
+            static Trigger* fire_ward(PlayerbotAI* ai) { return new FireWardTrigger(ai); }
             static Trigger* presence_of_mind(PlayerbotAI* ai) { return new PresenceOfMindTrigger(ai); }
             static Trigger* arcane_power(PlayerbotAI* ai) { return new ArcanePowerTrigger(ai); }
             static Trigger* hot_streak(PlayerbotAI* ai) { return new HotStreakTrigger(ai); }
@@ -185,9 +189,13 @@ namespace ai
                 creators["arcane barrage"] = &AiObjectContextInternal::arcane_barrage;
                 creators["arcane missiles"] = &AiObjectContextInternal::arcane_missiles;
                 creators["counterspell on enemy healer"] = &AiObjectContextInternal::counterspell_on_enemy_healer;
+                creators["fire ward"] = &AiObjectContextInternal::fire_ward;
+                creators["frost ward"] = &AiObjectContextInternal::frost_ward;
             }
 
         private:
+            static Action* frost_ward(PlayerbotAI* ai) { return new CastFrostWardAction(ai); }
+            static Action* fire_ward(PlayerbotAI* ai) { return new CastFireWardAction(ai); }
             static Action* presence_of_mind(PlayerbotAI* ai) { return new CastPresenceOfMindAction(ai); }
             static Action* arcane_power(PlayerbotAI* ai) { return new CastArcanePowerAction(ai); }
             static Action* arcane_missiles(PlayerbotAI* ai) { return new CastArcaneMissilesAction(ai); }

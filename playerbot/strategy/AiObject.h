@@ -179,6 +179,13 @@ class clazz : public super \
         clazz(PlayerbotAI* ai) : ProtectPartyMemberTrigger(ai) {} \
     }
 
+#define DEFLECT_TRIGGER(clazz, spell) \
+    class clazz : public DeflectSpellTrigger \
+    { \
+    public: \
+        clazz(PlayerbotAI* ai) : DeflectSpellTrigger(ai, spell) {} \
+    }
+
 #define BOOST_TRIGGER(clazz, spell) \
     class clazz : public BoostTrigger \
     { \
