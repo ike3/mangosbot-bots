@@ -46,7 +46,7 @@ bool FollowAction::isUseful()
         if (fTarget->IsTaxiFlying()
             && (sServerFacade.IsAlive(bot) || bot->GetCorpse())
             || fTarget->GetGUIDLow() == bot->GetGUIDLow()
-            || fTarget->GetDeathState() != bot->GetDeathState())
+            || (fTarget->GetDeathState() != bot->GetDeathState() && fTarget->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_GHOST)))
             return false;
 
 
