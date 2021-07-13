@@ -75,7 +75,7 @@ void AttackersValue::AddAttackersOf(Player* player, set<Unit*>& targets)
 		{
 			Unit* unit = *i;
 #ifdef CMANGOS
-			if (!unit->getThreatManager().getThreat(player))
+			if (!unit->getThreatManager().getThreat(player) && (!unit->getThreatManager().getCurrentVictim() || unit->getThreatManager().getCurrentVictim()->getTarget() == player))
 #endif
 #ifdef MANGOS
 			if (!unit->GetThreatManager().getThreat(player))
