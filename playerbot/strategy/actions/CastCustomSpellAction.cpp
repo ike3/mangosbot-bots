@@ -52,9 +52,11 @@ bool CastCustomSpellAction::Execute(Event event)
         if (master && master->GetSelectionGuid())
             target = ai->GetUnit(master->GetSelectionGuid());
 
-        if (!target)
-            target = bot;
-    
+    if (!target)
+        target = bot;
+
+    if (!master) //Use self as master for permissions.
+        master = bot;
 
     Item* itemTarget = NULL;
 
@@ -83,7 +85,7 @@ bool CastCustomSpellAction::Execute(Event event)
         return false;
     }
 
-    SpellEntry const *pSpellInfo = sServerFacade.LookupSpellInfo(spell);
+    SpellEntry const* pSpellInfo = sServerFacade.LookupSpellInfo(spell);
     if (!pSpellInfo)
     {
         msg << "Unknown spell " << text;
@@ -114,7 +116,7 @@ bool CastCustomSpellAction::Execute(Event event)
         return false;
     }
 
-    MotionMaster &mm = *bot->GetMotionMaster();
+    MotionMaster& mm = *bot->GetMotionMaster();
 
     bool result = spell ? ai->CastSpell(spell, target, itemTarget) : ai->CastSpell(text, target, itemTarget);
     if (result)
@@ -126,7 +128,7 @@ bool CastCustomSpellAction::Execute(Event event)
             ostringstream cmd;
             cmd << castString(target) << " " << text << " " << (castCount - 1);
             ai->HandleCommand(CHAT_MSG_WHISPER, cmd.str(), *master);
-            msg << "|cffffff00(x" << (castCount-1) << " left)|r";
+            msg << "|cffffff00(x" << (castCount - 1) << " left)|r";
         }
         ai->TellMasterNoFacing(msg.str());
     }

@@ -42,16 +42,14 @@ namespace ai
 
             PlayerbotAI* botAi = player->GetPlayerbotAI();
 
-            if (!botAi) //Only invite bots. Maybe change later.
-                continue;
+            if (botAi)
+            {
+                if (botAi->GetGrouperType() == SOLO && !botAi->HasRealPlayerMaster()) //Do not invite solo players. 
+                    continue;
 
-            if (botAi->GetGrouperType() == SOLO)
-                return false;
-
-            if (botAi->GetMaster())
-                if (!botAi->GetMaster()->GetPlayerbotAI() || botAi->GetMaster()->GetPlayerbotAI()->IsRealPlayer()) //Do not invite bots with a player master.
-                    if (!botAi->IsRealPlayer()) //Unless the bot is really a player
-                        continue;
+                if (botAi->HasActivePlayerMaster()) //Do not invite alts of active players. 
+                    continue;
+            }
 
             if (abs(int32(player->getLevel() - bot->getLevel())) > 2)
                 continue;
@@ -103,10 +101,8 @@ namespace ai
                 return false;
         }
 
-        if (ai->GetMaster())
-            if (!ai->GetMaster()->GetPlayerbotAI() || ai->GetMaster()->GetPlayerbotAI()->IsRealPlayer()) //Alts do not invite.
-                if (!ai->IsRealPlayer()) //Unless the bot is really a player
-                    return false;
+        if (ai->HasActivePlayerMaster()) //Alts do not invite randomly          
+           return false;
 
         return true;
     }

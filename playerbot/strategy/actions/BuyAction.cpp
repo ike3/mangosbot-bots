@@ -63,6 +63,9 @@ bool BuyAction::Execute(Event event)
                     ItemUsage usage = AI_VALUE2(ItemUsage, "item usage", tItem->item);
                     ItemPrototype const* proto = sObjectMgr.GetItemPrototype(tItem->item);
 
+                    if (GrindTravelDestination::moneyNeeded(bot) > bot->GetMoney())
+                        break;
+
                     if (usage != ITEM_USAGE_REPLACE && usage != ITEM_USAGE_EQUIP && usage != ITEM_USAGE_AMMO && usage != ITEM_USAGE_QUEST && usage != ITEM_USAGE_SKILL && usage != ITEM_USAGE_USE)
                         break;
 

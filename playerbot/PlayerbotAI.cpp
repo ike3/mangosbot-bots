@@ -166,6 +166,30 @@ PlayerbotAI::~PlayerbotAI()
         delete aiObjectContext;
 }
 
+void PlayerbotAI::UpdateAI(uint32 elapsed)
+{
+    if (nextAICheckDelay > elapsed)
+        nextAICheckDelay -= elapsed;
+    else
+        nextAICheckDelay = 0;
+
+    if (!CanUpdateAI())
+        return;
+
+    Spell* currentSpell = bot->GetCurrentSpell(CURRENT_GENERIC_SPELL);
+
+    if (currentSpell && currentSpell->getState() == SPELL_STATE_CASTING && currentSpell->GetCastedTime())
+    {
+        nextAICheckDelay = currentSpell->GetCastedTime() + sPlayerbotAIConfig.reactDelay;       
+
+        if (!CanUpdateAI())
+            return;
+    }
+
+    UpdateAIInternal(elapsed);
+    YieldThread();
+}
+
 void PlayerbotAI::UpdateAIInternal(uint32 elapsed)
 {
     if (bot->IsBeingTeleported() || !bot->IsInWorld())
@@ -575,23 +599,48 @@ void PlayerbotAI::DoNextAction()
 
     Group *group = bot->GetGroup();
     // test BG master set
-    if ((!master || master->GetPlayerbotAI()) && group && !bot->InBattleGround())
+    if ((!master || (master->GetPlayerbotAI() && !master->GetPlayerbotAI()->IsRealPlayer())) && group && !bot->InBattleGround())
     {
-        for (GroupReference *gref = group->GetFirstMember(); gref; gref = gref->next())
-        {
-            Player* member = gref->getSource();
-            PlayerbotAI* ai = bot->GetPlayerbotAI();
-            if (member && member->IsInWorld() && (member->IsInGroup(bot, true)) && (!master || !member->GetPlayerbotAI()))
-            {
-                ai->SetMaster(member);
-                ai->ResetStrategies();
-                ai->ChangeStrategy("-rpg,-grind,-travel", BOT_STATE_NON_COMBAT);
-                if (sServerFacade.GetDistance2d(bot, member) < 50.0f && member->IsInGroup(bot, true))
-                    ai->ChangeStrategy("+follow", BOT_STATE_NON_COMBAT);
+        PlayerbotAI* ai = bot->GetPlayerbotAI();
 
-                ai->TellMaster("Hello, I follow you!");
+        //Ideally we want to have the leader as master.
+        Player* newMaster = ai->GetGroupMaster();
+
+        //Are there any non-bot players in the group?
+        if (!newMaster || newMaster->GetPlayerbotAI())
+            for (GroupReference* gref = group->GetFirstMember(); gref; gref = gref->next())
+            {
+                Player* member = gref->getSource();
+
+                if (!member)
+                    continue;
+
+                if (member == newMaster)
+                    continue;
+
+                if (!member->IsInWorld())
+                    continue;
+
+                if (!member->IsInGroup(bot, true))
+                    continue;
+
+                if (member->GetPlayerbotAI())
+                    continue;
+
+                newMaster = member;
                 break;
             }
+
+        if (newMaster && (!master || master != newMaster) && bot != newMaster)
+        {
+            master = newMaster;
+            ai->SetMaster(newMaster);
+            ai->ResetStrategies();
+            ai->ChangeStrategy("-rpg,-grind,-travel", BOT_STATE_NON_COMBAT);
+            if (sServerFacade.GetDistance2d(bot, newMaster) < 50.0f && newMaster->IsInGroup(bot, true))
+                ai->ChangeStrategy("+follow", BOT_STATE_NON_COMBAT);
+
+            ai->TellMaster("Hello, I follow you!");
         }
     }
 
@@ -1867,7 +1916,8 @@ enum ActivityType
     OUT_OF_PARTY_ACTIVITY = 4,
     PACKET_ACTIVITY = 5,
     DETAILED_MOVE_ACTIVITY = 6,
-    ALL_ACTIVITY = 7
+    PARTY_ACTIVITY = 7
+    ALL_ACTIVITY = 8
 };
 
    General function to check if a bot is allowed to be active or not.
@@ -1892,7 +1942,17 @@ bool PlayerbotAI::AllowActive(ActivityType activityType)
         for (GroupReference *gref = group->GetFirstMember(); gref; gref = gref->next())
         {
             Player* member = gref->getSource();
-            if (member && (!member->GetPlayerbotAI() || (member->GetPlayerbotAI() && member->GetPlayerbotAI()->HasRealPlayerMaster())))
+
+            if (!member)
+                continue;
+
+            if (member == bot)
+                continue;
+
+            if(!member->GetPlayerbotAI() || (member->GetPlayerbotAI() && member->GetPlayerbotAI()->HasRealPlayerMaster()))
+                return true;
+
+            if (activityType != PARTY_ACTIVITY && member->GetPlayerbotAI()->AllowActive(PARTY_ACTIVITY))
                 return true;
         }
     }
@@ -1903,7 +1963,7 @@ bool PlayerbotAI::AllowActive(ActivityType activityType)
     if (bot->InBattleGroundQueue()) //In bg queue. Speed up bg queue/join.
         return true;
 
-    if (activityType == GRIND_ACTIVITY || activityType == ALL_ACTIVITY) //Is in combat. Defend yourself.
+    if (activityType != OUT_OF_PARTY_ACTIVITY && activityType != PACKET_ACTIVITY) //Is in combat. Defend yourself.
         if (sServerFacade.IsInCombat(bot))
             return true;
 

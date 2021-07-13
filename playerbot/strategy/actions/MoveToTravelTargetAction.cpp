@@ -11,17 +11,6 @@ using namespace ai;
 
 bool MoveToTravelTargetAction::Execute(Event event)
 {
-    //Check if we still have to loot. If so, loot first.
-    bool addLoot = ai->DoSpecificAction("add all loot", Event(), true);
-
-    if(addLoot)
-        bool addLoot = ai->DoSpecificAction("loot", Event(), true);
-
-    if (context->GetValue<LootObject>("loot target")->Get().IsLootPossible(bot))
-    {
-       return false;
-    }
-
 
     TravelTarget* target = AI_VALUE(TravelTarget*, "travel target");
 

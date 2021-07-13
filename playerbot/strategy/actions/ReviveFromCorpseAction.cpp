@@ -57,8 +57,8 @@ bool FindCorpseAction::Execute(Event event)
     if (!corpse)
         return false;
 
-    if (corpse->GetMapId() != bot->GetMapId())
-        return false;
+    //if (corpse->GetMapId() != bot->GetMapId())
+    //    return false;
 
     Player* master = GetMaster();
     if (master)

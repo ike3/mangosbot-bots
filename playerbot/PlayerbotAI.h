@@ -192,7 +192,8 @@ enum ActivityType
     OUT_OF_PARTY_ACTIVITY = 4,
     PACKET_ACTIVITY = 5,
     DETAILED_MOVE_ACTIVITY = 6,
-    ALL_ACTIVITY = 7,
+    PARTY_ACTIVITY = 7,
+    ALL_ACTIVITY = 8,
     MAX_ACTIVITY_TYPE
 };
 
@@ -248,6 +249,7 @@ public:
 	PlayerbotAI(Player* bot);
 	virtual ~PlayerbotAI();
 
+    virtual void UpdateAI(uint32 elapsed);
 public:
 	virtual void UpdateAIInternal(uint32 elapsed);
 	string HandleRemoteCommand(string command);

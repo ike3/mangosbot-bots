@@ -7,6 +7,7 @@ using namespace ai;
 void AcceptAllQuestsAction::ProcessQuest(Quest const* quest, WorldObject* questGiver)
 {
     AcceptQuest(quest, questGiver->GetObjectGuid());
+    bot->PlayDistanceSound(620);
 }
 
 bool AcceptQuestAction::Execute(Event event)
