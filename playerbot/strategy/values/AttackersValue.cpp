@@ -156,7 +156,14 @@ bool AttackersValue::IsPossibleTarget(Unit *attacker, Player *bot)
 #endif
             (
 #ifdef CMANGOS
-                (!isMemberBotGroup && ai->HasStrategy("attack tagged", BOT_STATE_NON_COMBAT)) || leaderHasThreat || !c->HasLootRecipient() || c->IsTappedBy(bot)
+                (!isMemberBotGroup && ai->HasStrategy("attack tagged", BOT_STATE_NON_COMBAT)) || leaderHasThreat ||
+                (!c->HasLootRecipient() &&
+                    (!c->GetVictim() ||
+                    c->GetVictim() &&
+                    ((bot->IsInGroup(c->GetVictim())) ||
+                        (ai->GetMaster() &&
+                            c->GetVictim() == ai->GetMaster())))) ||
+                c->IsTappedBy(bot)
 #endif
 #ifndef MANGOSBOT_TWO
 #ifdef MANGOS
