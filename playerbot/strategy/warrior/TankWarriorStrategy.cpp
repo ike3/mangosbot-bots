@@ -108,6 +108,10 @@ void TankWarriorStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         "rend",
         NextAction::array(0, new NextAction("rend", ACTION_NORMAL + 1), NULL)));
 
+    triggers.push_back(new TriggerNode(
+        "protect party member",
+        NextAction::array(0, new NextAction("intervene", ACTION_EMERGENCY), NULL)));
+
     /*triggers.push_back(new TriggerNode(
         "target critical health",
         NextAction::array(0, new NextAction("battle stance", ACTION_HIGH + 12), new NextAction("execute", ACTION_HIGH + 10), NULL)));*/
