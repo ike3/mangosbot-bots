@@ -134,6 +134,14 @@ void GenericMageStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
     triggers.push_back(new TriggerNode(
         "low mana",
         NextAction::array(0, new NextAction("evocation", ACTION_EMERGENCY + 5), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "fire ward",
+        NextAction::array(0, new NextAction("fire ward", ACTION_EMERGENCY), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "frost ward",
+        NextAction::array(0, new NextAction("frost ward", ACTION_EMERGENCY), NULL)));
 }
 
 void MageCureStrategy::InitTriggers(std::list<TriggerNode*> &triggers)

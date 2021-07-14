@@ -75,7 +75,7 @@ void AttackersValue::AddAttackersOf(Player* player, set<Unit*>& targets)
 		{
 			Unit* unit = *i;
 #ifdef CMANGOS
-			if (!unit->getThreatManager().getThreat(player))
+			if (!unit->getThreatManager().getThreat(player) && (!unit->getThreatManager().getCurrentVictim() || unit->getThreatManager().getCurrentVictim()->getTarget() == player))
 #endif
 #ifdef MANGOS
 			if (!unit->GetThreatManager().getThreat(player))
@@ -156,7 +156,14 @@ bool AttackersValue::IsPossibleTarget(Unit *attacker, Player *bot)
 #endif
             (
 #ifdef CMANGOS
-                (!isMemberBotGroup && ai->HasStrategy("attack tagged", BOT_STATE_NON_COMBAT)) || leaderHasThreat || !c->HasLootRecipient() || c->IsTappedBy(bot)
+                (!isMemberBotGroup && ai->HasStrategy("attack tagged", BOT_STATE_NON_COMBAT)) || leaderHasThreat ||
+                (!c->HasLootRecipient() &&
+                    (!c->GetVictim() ||
+                    c->GetVictim() &&
+                    ((bot->IsInGroup(c->GetVictim())) ||
+                        (ai->GetMaster() &&
+                            c->GetVictim() == ai->GetMaster())))) ||
+                c->IsTappedBy(bot)
 #endif
 #ifndef MANGOSBOT_TWO
 #ifdef MANGOS

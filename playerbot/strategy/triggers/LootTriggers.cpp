@@ -1,6 +1,7 @@
 #include "botpch.h"
 #include "../../playerbot.h"
 #include "LootTriggers.h"
+#include "../../LootObjectStack.h"
 
 #include "../../ServerFacade.h"
 using namespace ai;
@@ -18,6 +19,11 @@ bool LootAvailableTrigger::IsActive()
 
 bool FarFromCurrentLootTrigger::IsActive()
 {
+    LootObject loot = AI_VALUE(LootObject, "loot target");
+
+    if (!loot.IsLootPossible(bot))
+        return false;
+
     return AI_VALUE2(float, "distance", "loot target") > INTERACTION_DISTANCE;
 }
 

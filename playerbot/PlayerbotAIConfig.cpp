@@ -163,8 +163,8 @@ bool PlayerbotAIConfig::Initialize()
 
     randomChangeMultiplier = config.GetFloatDefault("AiPlayerbot.RandomChangeMultiplier", 1.0);
 
-    randomBotCombatStrategies = config.GetStringDefault("AiPlayerbot.RandomBotCombatStrategies", "+dps assist,-threat,+custom::say");
-    randomBotNonCombatStrategies = config.GetStringDefault("AiPlayerbot.RandomBotNonCombatStrategies", "+grind,+loot,+rpg,+custom::say");
+    randomBotCombatStrategies = config.GetStringDefault("AiPlayerbot.RandomBotCombatStrategies", "-threat,+custom::say");
+    randomBotNonCombatStrategies = config.GetStringDefault("AiPlayerbot.RandomBotNonCombatStrategies", "+grind,+loot,+rpg");
     combatStrategies = config.GetStringDefault("AiPlayerbot.CombatStrategies", "");
     nonCombatStrategies = config.GetStringDefault("AiPlayerbot.NonCombatStrategies", "+return");
 
@@ -277,6 +277,7 @@ bool PlayerbotAIConfig::Initialize()
 	//SPP switches
     enableGreet = config.GetBoolDefault("AiPlayerbot.EnableGreet", false);
 	disableRandomLevels = config.GetBoolDefault("AiPlayerbot.DisableRandomLevels", false);
+    randomBotRandomPassword = config.GetBoolDefault("AiPlayerbot.RandomBotRandomPassword", true);
     playerbotsXPrate = config.GetIntDefault("AiPlayerbot.KillXPRate", 1);
     botActiveAlone = config.GetIntDefault("AiPlayerbot.botActiveAlone", 10); //hidden config
     RandombotsWalkingRPG = config.GetBoolDefault("AiPlayerbot.RandombotsWalkingRPG", false);

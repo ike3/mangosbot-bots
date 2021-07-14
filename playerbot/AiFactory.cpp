@@ -296,6 +296,8 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
                 engine->addStrategies("frost", "frost aoe", "dps assist", "threat", NULL);
             else
                 engine->addStrategies("unholy", "unholy aoe", "dps assist", "threat", NULL);
+
+            engine->addStrategies("dps assist", "flee", "close", "cc", NULL);
             break;
 #endif
     }

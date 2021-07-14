@@ -10,6 +10,7 @@ class FuryWarriorStrategyActionNodeFactory : public NamedObjectFactory<ActionNod
 public:
     FuryWarriorStrategyActionNodeFactory()
     {
+        creators["charge"] = &charge;
         creators["intercept"] = &intercept;
         creators["death wish"] = &death_wish;
         creators["piercing howl"] = &piercing_howl;
@@ -18,10 +19,11 @@ public:
         creators["pummel"] = &pummel;
     }
 private:
+    ACTION_NODE_A(charge, "charge", "intercept");
     ACTION_NODE_A(intercept, "intercept", "reach melee");
     ACTION_NODE_A(piercing_howl, "piercing howl", "hamstring");
     ACTION_NODE_A(whirlwind, "whirlwind", "cleave");
-    ACTION_NODE_A(death_wish, "death_wish", "berserker rage");
+    ACTION_NODE_A(death_wish, "death wish", "berserker rage");
     ACTION_NODE_A(bloodthirst, "bloodthirst", "melee");
     ACTION_NODE_A(pummel, "pummel", "intercept");
 };
@@ -42,11 +44,15 @@ void FuryWarriorStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "enemy out of melee",
-        NextAction::array(0, new NextAction("intercept", ACTION_MOVE + 9), NULL)));
+        NextAction::array(0, new NextAction("charge", ACTION_MOVE + 9), NULL)));
 
     triggers.push_back(new TriggerNode(
         "berserker stance",
         NextAction::array(0, new NextAction("berserker stance", ACTION_HIGH + 9), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "battle shout",
+        NextAction::array(0, new NextAction("battle shout", ACTION_HIGH + 8), NULL)));
 
     triggers.push_back(new TriggerNode(
         "bloodthirst",
@@ -89,12 +95,12 @@ void FuryWarriorStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("bloodrage", ACTION_HIGH + 2), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "boost",
+        "death wish",
         NextAction::array(0, new NextAction("death wish", ACTION_HIGH + 2), NULL)));
 
     triggers.push_back(new TriggerNode(
         "medium aoe",
-        NextAction::array(0, new NextAction("demoralizing shout", ACTION_HIGH + 2), NULL)));
+        NextAction::array(0, new NextAction("demoralizing shout", ACTION_HIGH + 1), NULL)));
 }
 
 

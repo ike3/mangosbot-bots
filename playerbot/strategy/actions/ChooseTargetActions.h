@@ -54,7 +54,7 @@ namespace ai
     */
                 (
                     (
-                        ai->AllowActive(GRIND_ACTIVITY)                                                                                                  //Bot allowed to be active
+                        ai->AllowActivity(GRIND_ACTIVITY)                                                                                                  //Bot allowed to be active
                         &&
                         AI_VALUE2(uint8, "health", "self target") > sPlayerbotAIConfig.mediumHealth                                                      //Bot has enough health.
                         &&

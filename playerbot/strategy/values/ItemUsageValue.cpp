@@ -20,10 +20,10 @@ ItemUsage ItemUsageValue::Calculate()
     if (IsItemUsefulForSkill(proto))
     {
         float stacks = CurrentStacks(proto);
-        if (stacks < 1)
-            return ITEM_USAGE_SKILL;
-        else if (stacks < 2)
-            return ITEM_USAGE_NONE;
+        if (stacks < 1 && AI_VALUE(uint8, "bag space") < 50)
+            return ITEM_USAGE_SKILL; //Buy more.
+        if (stacks < 2)
+            return ITEM_USAGE_NONE; //Keep current amount.
     }
 
     if (proto->Class == ITEM_CLASS_KEY)
@@ -167,6 +167,8 @@ ItemUsage ItemUsageValue::QueryItemUsageForEquip(ItemPrototype const* item)
 
         if (GetSmallestBagSize() >= item->ContainerSlots)
             return ITEM_USAGE_NONE;
+
+        return ITEM_USAGE_EQUIP;
     }
 
     if (item->Class == ITEM_CLASS_QUIVER)
@@ -275,9 +277,6 @@ bool ItemUsageValue::IsItemUsefulForSkill(ItemPrototype const * proto)
     case 6256: //Fishing Rod
         return ai->HasSkill(SKILL_FISHING);
     }    
-
-    if (AI_VALUE(uint8, "bag space") > 50)
-        return false;
 
     switch (proto->Class)
     {

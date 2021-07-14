@@ -375,10 +375,16 @@ void RandomPlayerbotFactory::CreateRandomBots()
         }
 
         string password = "";
-        for (int i = 0; i < 10; i++)
+        if (sPlayerbotAIConfig.randomBotRandomPassword)
         {
-            password += (char)urand('!', 'z');
+            for (int i = 0; i < 10; i++)
+            {
+                password += (char)urand('!', 'z');
+            }
         }
+        else
+            password = accountName;
+
         sAccountMgr.CreateAccount(accountName, password
 #ifndef MANGOSBOT_ZERO
             , MAX_EXPANSION

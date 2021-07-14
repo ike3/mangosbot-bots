@@ -57,8 +57,8 @@ bool FindCorpseAction::Execute(Event event)
     if (!corpse)
         return false;
 
-    if (corpse->GetMapId() != bot->GetMapId())
-        return false;
+    //if (corpse->GetMapId() != bot->GetMapId())
+    //    return false;
 
     Player* master = GetMaster();
     if (master)
@@ -98,7 +98,7 @@ bool FindCorpseAction::Execute(Event event)
 
         sLog.outDetail("Bot #%d %s:%d <%s> looks for body", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName());
        
-        if (!ai->AllowActive(ALL_ACTIVITY))
+        if (!ai->AllowActivity(ALL_ACTIVITY))
         {
             uint32 delay = sServerFacade.GetDistance2d(bot, corpse) / bot->GetSpeed(MOVE_RUN); //Time a bot would take to travel to it's corpse.
             delay = min(delay, uint32(10 * MINUTE)); //Cap time to get to corpse at 10 minutes.
