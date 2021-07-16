@@ -44,11 +44,20 @@ bool SeeSpellAction::Execute(Event event)
 {
     WorldPacket p(event.getPacket()); // 
     uint32 spellId;
+    Player* master = ai->GetMaster();
 
     p.rpos(0);
     p >> spellId;
 
     //ai->TellMaster(to_string(spellId));
+
+    //SpellEntry const* spell = sServerFacade.LookupSpellInfo(spellId);
+
+    //ai->TellMaster(to_string(spell->SpellVisual));
+
+    //Spell* Tspell = new Spell(bot, spell, false);
+
+    //delete Tspell;
 
     if (spellId != 30758)
         return false;
@@ -65,14 +74,14 @@ bool SeeSpellAction::Execute(Event event)
 
     if (bot->GetDistance(spellPosition.GetPositionX(), spellPosition.GetPositionY(), spellPosition.GetPositionZ()) <= 10)
     {
-        ai->TellMaster("In range!");
+        //ai->TellMaster("In range!");
+        if(master)
+            master->GetSession()->SendPlaySpellVisual(bot->GetObjectGuid(), 5036);
     }
     else
     {
-        ai->TellMaster("Out of range!");
+        //ai->TellMaster("Out of range!");
     }
-
-    Player* master = ai->GetMaster();
 
     float x = spellPosition.GetPositionX();
     float y = spellPosition.GetPositionY();
