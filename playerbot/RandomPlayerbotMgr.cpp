@@ -190,6 +190,8 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed)
             out << bot->GetHealth() << ",";
             out << bot->GetPowerPercent() << ",";
             out << bot->GetMoney() << ",";
+            out << bot->GetPlayerbotAI()->GetGrouperType() << ",";
+
             sPlayerbotAIConfig.log("player_location.csv", out.str().c_str());
         }
         for (auto i : GetPlayers())
@@ -210,7 +212,8 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed)
             out << bot->GetHealth() << ",";
             out << bot->GetPowerPercent() << ",";
             out << bot->GetMoney() << ",";
-            out << std::fixed << std::setprecision(2);
+            out << 0 << ",";
+
             sPlayerbotAIConfig.log("player_location.csv", out.str().c_str());
         }
     }
@@ -1995,6 +1998,9 @@ uint32 RandomPlayerbotMgr::GetZoneLevel(uint16 mapId, float teleX, float teleY, 
 void RandomPlayerbotMgr::Refresh(Player* bot)
 {
     if (bot->InBattleGround())
+        return;
+
+    if (sPlayerbotAIConfig.disableRandomLevels)
         return;
 
     sLog.outDetail("Refreshing bot #%d <%s>", bot->GetGUIDLow(), bot->GetName());
