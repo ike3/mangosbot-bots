@@ -173,6 +173,13 @@ void PlayerbotAI::UpdateAI(uint32 elapsed)
     else
         nextAICheckDelay = 0;
 
+    // wake up if in combat
+    if (sServerFacade.IsInCombat(bot) && !AllowActivity())
+    {
+        if (AllowActivity(ALL_ACTIVITY, true))
+            nextAICheckDelay = 0;
+    }
+
     if (!CanUpdateAI())
         return;
 
@@ -591,9 +598,9 @@ void PlayerbotAI::DoNextAction()
 
     currentEngine->DoNextAction(NULL, 0, minimal);
 
-    if (IsActive() && minimal && urand(0, 4))
+    if (minimal)
     {
-        SetNextCheckDelay(sPlayerbotAIConfig.passiveDelay / 2);
+        SetNextCheckDelay(sPlayerbotAIConfig.passiveDelay);
         return;
     }
 
@@ -1992,12 +1999,12 @@ bool PlayerbotAI::AllowActive(ActivityType activityType)
     return ActivityNumber <= sPlayerbotAIConfig.botActiveAlone;           //The given percentage of bots should be active and rotate 1% of those active bots each minute.
 }
 
-bool PlayerbotAI::AllowActivity(ActivityType activityType)
+bool PlayerbotAI::AllowActivity(ActivityType activityType, bool checkNow)
 {
     if (!allowActiveCheckTimer[activityType])
         allowActiveCheckTimer[activityType] = time(NULL);
 
-    if (time(NULL) < allowActiveCheckTimer[activityType] + 5)
+    if (!checkNow && time(NULL) < allowActiveCheckTimer[activityType] + 5)
         return allowActive[activityType];
 
     bool allowed = AllowActive(activityType);
