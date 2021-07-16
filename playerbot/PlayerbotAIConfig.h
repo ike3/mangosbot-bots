@@ -95,6 +95,7 @@ public:
     uint32 randombotStartingLevel;
     bool randomBotSayWithoutMaster;
     bool randomBotGroupNearby;
+    bool randomBotRandomPassword;
 
     uint32 selfBotLevel;
 
