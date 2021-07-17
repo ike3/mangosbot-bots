@@ -181,13 +181,14 @@ AiPlayerbot.PremadeSpecLink.4.1.56 = 005302105-0230550100040140231   # Unlock Ad
 AiPlayerbot.PremadeSpecLink.4.1.60 = 00530310503-0230550100050130231 # Final spec. From 56 it will pick up the last point in imp snd and finish with imp poisons.
 
 # Preset talents supplied by Lidocain. Do you have more/improved specs? Let us know!
+
 # Warrior
-AiPlayerbot.PremadeSpecName.1.0 = pve fury
-AiPlayerbot.PremadeSpecLink.1.0.60 = 30305001302-05050005525010051
-AiPlayerbot.PremadeSpecName.1.1 = pve prot
-AiPlayerbot.PremadeSpecLink.1.1.60 = 05005001-05-55250110530101051
-AiPlayerbot.PremadeSpecName.1.2 = pve arms
-AiPlayerbot.PremadeSpecLink.1.2.60 = 303050213520105001-0505300502
+AiPlayerbot.PremadeSpecName.1.0 = pve arms
+AiPlayerbot.PremadeSpecLink.1.0.60 = 303050213520105001-0505300502
+AiPlayerbot.PremadeSpecName.1.1 = pve fury
+AiPlayerbot.PremadeSpecLink.1.1.60 = 30305001302-05050005525010051
+AiPlayerbot.PremadeSpecName.1.2 = pve prot
+AiPlayerbot.PremadeSpecLink.1.2.60 = 05005001-05-55250110530101051
 
 AiPlayerbot.PremadeSpecName.1.3 = pvp arms
 AiPlayerbot.PremadeSpecLink.1.3.60 = 023050213320105031-55000131005

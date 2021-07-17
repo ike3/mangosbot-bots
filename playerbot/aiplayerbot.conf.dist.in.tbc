@@ -164,10 +164,10 @@ AiPlayerbot.AutoDoQuests = 0
 # Preset talents supplied by Lidocain. Do you have more/improved specs? Let us know!
 
 # Warrior
-AiPlayerbot.PremadeSpecName.1.0 = pve fury
-AiPlayerbot.PremadeSpecLink.1.0.70 = 33005001302-050530025050120531151
-AiPlayerbot.PremadeSpecName.1.1 = pve arms
-AiPlayerbot.PremadeSpecLink.1.1.70 = 33005001352010500321-0505300200521202
+AiPlayerbot.PremadeSpecName.1.0 = pve arms
+AiPlayerbot.PremadeSpecLink.1.0.70 = 33005001352010500321-0505300200521202
+AiPlayerbot.PremadeSpecName.1.1 = pve fury
+AiPlayerbot.PremadeSpecLink.1.1.70 = 33005001302-050530025050120531151
 AiPlayerbot.PremadeSpecName.1.2 = pve prot
 AiPlayerbot.PremadeSpecLink.1.2.70 = 35000301-05-0055511033011103501351
 
