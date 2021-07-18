@@ -271,10 +271,6 @@ bool BGJoinAction::shouldJoinBg(BattleGroundQueueTypeId queueTypeId, BattleGroun
     if (!hasPlayers)
         return false;
 
-    // hack fix crash in queue remove event
-    if (!isArena && bot->GetGroup())
-        return false;
-
     uint32 BracketSize = bg->GetMaxPlayers();
     uint32 TeamSize = bg->GetMaxPlayersPerTeam();
 
@@ -331,6 +327,10 @@ bool BGJoinAction::shouldJoinBg(BattleGroundQueueTypeId queueTypeId, BattleGroun
         ratedList.push_back(queueTypeId);
     }
 #endif
+
+    // hack fix crash in queue remove event
+    if (!isRated && bot->GetGroup())
+        return false;
 
     bool needBots = sRandomPlayerbotMgr.NeedBots[queueTypeId][bracketId][isArena ? isRated : GetTeamIndexByTeamId(bot->GetTeam())];
 
@@ -641,9 +641,6 @@ bool FreeBGJoinAction::shouldJoinBg(BattleGroundQueueTypeId queueTypeId, BattleG
     if (type != ARENA_TYPE_NONE)
         isArena = true;
 #endif
-    // hack fix crash in queue remove event
-    if (!isArena && bot->GetGroup())
-        return false;
 
     uint32 BracketSize = bg->GetMaxPlayers();
     uint32 TeamSize = bg->GetMaxPlayersPerTeam();
@@ -701,6 +698,10 @@ bool FreeBGJoinAction::shouldJoinBg(BattleGroundQueueTypeId queueTypeId, BattleG
         ratedList.push_back(queueTypeId);
     }
 #endif
+
+    // hack fix crash in queue remove event
+    if (!isRated && bot->GetGroup())
+        return false;
 
     bool needBots = sRandomPlayerbotMgr.NeedBots[queueTypeId][bracketId][isArena ? isRated : GetTeamIndexByTeamId(bot->GetTeam())];
 
@@ -1010,6 +1011,9 @@ bool BGStatusAction::Execute(Event event)
     }
     if (statusid == STATUS_WAIT_QUEUE) //bot is in queue
     {
+        // temp fix for crash
+        return true;
+
         BattleGround* bg = sBattleGroundMgr.GetBattleGroundTemplate(_bgTypeId);
         if (!bg)
             return false;
