@@ -619,10 +619,10 @@ void MovementAction::UpdateMovementState()
         bot->UpdateSpeed(MOVE_SWIM, true);
     }
 
+#ifndef MANGOSBOT_ZERO
     if (bot->IsFlying())
         bot->UpdateSpeed(MOVE_FLIGHT, true);
-    else
-        bot->UpdateSpeed(MOVE_FLIGHT, true);
+#endif
 
     // Temporary speed increase in group
     //if (ai->HasRealPlayerMaster())
