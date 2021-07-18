@@ -14,12 +14,16 @@ public:
         creators["sunder armor"] = &sunder_armor;
         creators["commanding shout"] = &commanding_shout;
         creators["shield slam"] = &shield_slam;
+        creators["devastate"] = &devastate;
+        creators["last stand"] = &last_stand;
     }
 private:
     ACTION_NODE_A(charge, "charge", "reach melee");
     ACTION_NODE_A(sunder_armor, "sunder armor", "melee");
     ACTION_NODE_A(commanding_shout, "commanding shout", "battle shout");
     ACTION_NODE_A(shield_slam, "shield slam", "heroic strike");
+    ACTION_NODE_A(devastate, "devastate", "sunder armor");
+    ACTION_NODE_A(last_stand, "last stand", "intimidating shout");
 };
 
 TankWarriorStrategy::TankWarriorStrategy(PlayerbotAI* ai) : GenericWarriorStrategy(ai)
@@ -54,7 +58,7 @@ void TankWarriorStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "sunder armor",
-        NextAction::array(0, new NextAction("sunder armor", ACTION_HIGH + 2), NULL)));
+        NextAction::array(0, new NextAction("devastate", ACTION_HIGH + 2), NULL)));
 
     triggers.push_back(new TriggerNode(
         "medium rage available",
@@ -90,7 +94,7 @@ void TankWarriorStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 
 	triggers.push_back(new TriggerNode(
         "light aoe",
-        NextAction::array(0, new NextAction("demoralizing shout", ACTION_HIGH + 2), new NextAction("cleave", ACTION_HIGH + 1), NULL)));
+        NextAction::array(0, new NextAction("demoralizing shout", ACTION_HIGH + 2), NULL)));
 
 	/*triggers.push_back(new TriggerNode(
         "medium aoe",
@@ -113,6 +117,14 @@ void TankWarriorStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("shield bash on enemy healer", ACTION_INTERRUPT), NULL)));
 
     triggers.push_back(new TriggerNode(
+        "spell reflection",
+        NextAction::array(0, new NextAction("spell reflection", ACTION_INTERRUPT + 1), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "victory rush",
+        NextAction::array(0, new NextAction("victory rush", ACTION_INTERRUPT), NULL)));
+
+    triggers.push_back(new TriggerNode(
         "sword and board",
         NextAction::array(0, new NextAction("shield slam", ACTION_HIGH + 3), NULL)));
 
@@ -123,8 +135,19 @@ void TankWarriorStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
     triggers.push_back(new TriggerNode(
         "protect party member",
         NextAction::array(0, new NextAction("intervene", ACTION_EMERGENCY), NULL)));
+}
 
-    /*triggers.push_back(new TriggerNode(
-        "target critical health",
-        NextAction::array(0, new NextAction("battle stance", ACTION_HIGH + 12), new NextAction("execute", ACTION_HIGH + 10), NULL)));*/
+void TankWarrirorAoeStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+{
+    triggers.push_back(new TriggerNode(
+        "thunder clap",
+        NextAction::array(0, new NextAction("thunder clap on snare target", ACTION_HIGH + 3), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "light aoe",
+        NextAction::array(0, new NextAction("thunder clap", ACTION_HIGH + 2), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "light aoe",
+        NextAction::array(0, new NextAction("cleave", ACTION_HIGH + 2), NULL)));
 }

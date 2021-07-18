@@ -26,14 +26,16 @@ namespace ai
             {
                 creators["nc"] = &warrior::StrategyFactoryInternal::nc;
                 creators["pull"] = &warrior::StrategyFactoryInternal::pull;
-                creators["arms aoe"] = &warrior::StrategyFactoryInternal::aoe_arms;
-                creators["fury aoe"] = &warrior::StrategyFactoryInternal::aoe_fury;
+                creators["arms aoe"] = &warrior::StrategyFactoryInternal::arms_aoe;
+                creators["fury aoe"] = &warrior::StrategyFactoryInternal::fury_aoe;
+                creators["tank aoe"] = &warrior::StrategyFactoryInternal::tank_aoe;
             }
 
         private:
             static Strategy* nc(PlayerbotAI* ai) { return new GenericWarriorNonCombatStrategy(ai); }
-            static Strategy* aoe_arms(PlayerbotAI* ai) { return new ArmsWarrirorAoeStrategy(ai); }
-            static Strategy* aoe_fury(PlayerbotAI* ai) { return new FuryWarrirorAoeStrategy(ai); }
+            static Strategy* arms_aoe(PlayerbotAI* ai) { return new ArmsWarrirorAoeStrategy(ai); }
+            static Strategy* fury_aoe(PlayerbotAI* ai) { return new FuryWarrirorAoeStrategy(ai); }
+            static Strategy* tank_aoe(PlayerbotAI* ai) { return new TankWarrirorAoeStrategy(ai); }
             static Strategy* pull(PlayerbotAI* ai) { return new PullStrategy(ai, "shoot"); }
         };
 
@@ -98,9 +100,11 @@ namespace ai
                 creators["taunt on snare target"] = &TriggerFactoryInternal::taunt_on_snare_target;
                 creators["commanding shout"] = &TriggerFactoryInternal::commanding_shout;
                 creators["intercept on snare target"] = &TriggerFactoryInternal::intercept_on_snare_target;
+                creators["spell reflection"] = &TriggerFactoryInternal::spell_reflection;
             }
 
         private:
+            static Trigger* spell_reflection(PlayerbotAI* ai) { return new SpellReflectionTrigger(ai); }
             static Trigger* intercept_on_snare_target(PlayerbotAI* ai) { return new InterceptSnareTrigger(ai); }
             static Trigger* commanding_shout(PlayerbotAI* ai) { return new CommandingShoutTrigger(ai); }
             static Trigger* taunt_on_snare_target(PlayerbotAI* ai) { return new TauntSnareTrigger(ai); }

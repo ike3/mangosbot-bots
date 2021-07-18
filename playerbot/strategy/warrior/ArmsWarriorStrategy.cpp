@@ -67,7 +67,7 @@ void ArmsWarriorStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 
 	triggers.push_back(new TriggerNode(
 		"victory rush",
-		NextAction::array(0, new NextAction("victory rush", ACTION_HIGH + 3), NULL)));
+		NextAction::array(0, new NextAction("victory rush", ACTION_INTERRUPT), NULL)));
 
     triggers.push_back(new TriggerNode(
         "high rage available",
@@ -76,6 +76,10 @@ void ArmsWarriorStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
     triggers.push_back(new TriggerNode(
         "bloodrage",
         NextAction::array(0, new NextAction("bloodrage", ACTION_HIGH + 2), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "death wish",
+        NextAction::array(0, new NextAction("death wish", ACTION_HIGH + 2), NULL)));
 
     triggers.push_back(new TriggerNode(
         "boost",
@@ -89,7 +93,6 @@ void ArmsWarriorStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         "critical health",
         NextAction::array(0, new NextAction("intimidating shout", ACTION_EMERGENCY), NULL)));
 }
-
 
 void ArmsWarrirorAoeStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 {

@@ -15,4 +15,14 @@ namespace ai
         virtual NextAction** getDefaultActions();
         virtual int GetType() { return STRATEGY_TYPE_TANK | STRATEGY_TYPE_MELEE; }
     };
+
+    class TankWarrirorAoeStrategy : public CombatStrategy
+    {
+    public:
+        TankWarrirorAoeStrategy(PlayerbotAI* ai) : CombatStrategy(ai) {}
+
+    public:
+        virtual void InitTriggers(std::list<TriggerNode*> &triggers);
+        virtual string getName() { return "tank aoe"; }
+    };
 }

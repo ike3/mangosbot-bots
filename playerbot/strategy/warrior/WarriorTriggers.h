@@ -19,7 +19,7 @@ namespace ai
     CAN_CAST_TRIGGER(OverpowerAvailableTrigger, "overpower");
     CAN_CAST_TRIGGER(RampageAvailableTrigger, "rampage");
     BUFF_TRIGGER_A(BloodrageBuffTrigger, "bloodrage");
-    HAS_AURA_TRIGGER(VictoryRushTrigger, "victory rush");
+    CAN_CAST_TRIGGER(VictoryRushTrigger, "victory rush");
     HAS_AURA_TRIGGER(SwordAndBoardTrigger, "sword and board");
     SNARE_TRIGGER(ConcussionBlowTrigger, "concussion blow");
     SNARE_TRIGGER(HamstringTrigger, "hamstring");
@@ -36,4 +36,5 @@ namespace ai
     INTERRUPT_TRIGGER(PummelInterruptSpellTrigger, "pummel");
     INTERRUPT_HEALER_TRIGGER(InterceptInterruptEnemyHealerSpellTrigger, "intercept");
     INTERRUPT_TRIGGER(InterceptInterruptSpellTrigger, "intercept");
+    DEFLECT_TRIGGER(SpellReflectionTrigger, "spell reflection");
 }

@@ -13,7 +13,7 @@ namespace ai
     MELEE_ACTION_U(CastBattleShoutTauntAction, "battle shout", CastSpellAction::isUseful()); // useful to rebuff
     DEBUFF_ACTION_R(CastDemoralizingShoutAction, "demoralizing shout", 8.0f); // low range debuff
     MELEE_ACTION(CastChallengingShoutAction, "challenging shout");
-    MELEE_ACTION(CastIntimidatingShoutAction, "intimidating shout");
+    DEBUFF_ACTION_R(CastIntimidatingShoutAction, "intimidating shout", 8.0f);
     // shouts 2.4.3
     BUFF_ACTION(CastCommandingShoutAction, "commanding shout");
 
@@ -22,7 +22,7 @@ namespace ai
     REACH_ACTION_U(CastChargeAction, "charge", 8.0f, !sServerFacade.IsInCombat(bot));
     DEBUFF_ACTION(CastRendAction, "rend");
     DEBUFF_ENEMY_ACTION(CastRendOnAttackerAction, "rend");
-    MELEE_ACTION(CastThunderClapAction, "thunder clap");
+    DEBUFF_ACTION_R(CastThunderClapAction, "thunder clap", 8.0f);
     SNARE_ACTION(CastThunderClapSnareAction, "thunder clap");
     SNARE_ACTION(CastHamstringAction, "hamstring");
     MELEE_ACTION(CastOverpowerAction, "overpower");
@@ -63,7 +63,7 @@ namespace ai
     ENEMY_HEALER_ACTION(CastShieldBashOnEnemyHealerAction, "shield bash");
     MELEE_ACTION(CastRevengeAction, "revenge");
     BUFF_ACTION(CastShieldBlockAction, "shield block");
-    DEBUFF_ACTION_U(CastDisarmAction, "disarm", GetTarget()->IsPlayer() ? !ai->IsRanged((Player*)GetTarget()) : CastDebuffSpellAction::isUseful());
+    DEBUFF_ACTION_U(CastDisarmAction, "disarm", GetTarget() && GetTarget()->IsPlayer() ? !ai->IsRanged((Player*)GetTarget()) : CastDebuffSpellAction::isUseful());
     DEBUFF_ENEMY_ACTION(CastDisarmOnAttackerAction, "disarm");
     BUFF_ACTION(CastShieldWallAction, "shield wall");
     // protection 2.4.3

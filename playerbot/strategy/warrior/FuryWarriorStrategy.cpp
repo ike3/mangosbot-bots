@@ -75,6 +75,10 @@ void FuryWarriorStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("pummel", ACTION_INTERRUPT), NULL)));
 
     triggers.push_back(new TriggerNode(
+        "victory rush",
+        NextAction::array(0, new NextAction("victory rush", ACTION_INTERRUPT), NULL)));
+
+    triggers.push_back(new TriggerNode(
         "intercept on snare target",
         NextAction::array(0, new NextAction("intercept on snare target", ACTION_HIGH), NULL)));
 
@@ -99,8 +103,16 @@ void FuryWarriorStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("death wish", ACTION_HIGH + 2), NULL)));
 
     triggers.push_back(new TriggerNode(
+        "rampage",
+        NextAction::array(0, new NextAction("rampage", ACTION_INTERRUPT), NULL)));
+
+    triggers.push_back(new TriggerNode(
         "medium aoe",
         NextAction::array(0, new NextAction("demoralizing shout", ACTION_HIGH + 1), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "critical health",
+        NextAction::array(0, new NextAction("intimidating shout", ACTION_EMERGENCY), NULL)));
 }
 
 
@@ -109,4 +121,8 @@ void FuryWarrirorAoeStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
     triggers.push_back(new TriggerNode(
         "light aoe",
         NextAction::array(0, new NextAction("whirlwind", ACTION_HIGH + 2), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "light aoe",
+        NextAction::array(0, new NextAction("sweeping strikes", ACTION_HIGH + 3), NULL)));
 }
