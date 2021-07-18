@@ -53,7 +53,7 @@ bool CheckMountStateAction::Execute(Event event)
         if (!bot->IsMounted() && chasedistance && !bot->IsInCombat() && !dps)
             return Mount();
 
-        if ((farFromMaster || !master->IsMounted() || attackdistance) && bot->IsMounted())
+        if (!bot->IsFlying() && (farFromMaster || !master->IsMounted() || attackdistance) && bot->IsMounted())
         {
             WorldPacket emptyPacket;
             bot->GetSession()->HandleCancelMountAuraOpcode(emptyPacket);
@@ -107,7 +107,7 @@ bool CheckMountStateAction::Execute(Event event)
     if (!bot->IsMounted() && (fartarget || chasedistance))
         return Mount();
 
-    if (attackdistance && bot->IsMounted() && (!noattackers && sServerFacade.IsInCombat(bot)))
+    if (!bot->IsFlying() && attackdistance && bot->IsMounted() && (!noattackers && sServerFacade.IsInCombat(bot)))
     {
         WorldPacket emptyPacket;
         bot->GetSession()->HandleCancelMountAuraOpcode(emptyPacket);
@@ -126,7 +126,7 @@ bool CheckMountStateAction::isUseful()
     if (!isOutdoor)
         return false;
 
-    if (bot->IsTaxiFlying() || bot->IsFlying())
+    if (bot->IsTaxiFlying())
         return false;
 
 #ifndef MANGOSBOT_ZERO

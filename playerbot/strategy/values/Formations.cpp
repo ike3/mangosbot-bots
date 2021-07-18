@@ -57,8 +57,8 @@ WorldLocation MoveAheadFormation::GetLocation()
     if (ground <= INVALID_HEIGHT)
         return Formation::NullLocation;
 
-    z += CONTACT_DISTANCE;
-    bot->UpdateAllowedPositionZ(x, y, z);
+    //z += CONTACT_DISTANCE;
+    //bot->UpdateAllowedPositionZ(x, y, z);
     return WorldLocation(master->GetMapId(), x, y, z);
 }
 
@@ -101,8 +101,8 @@ namespace ai
             if (ground <= INVALID_HEIGHT)
                 return Formation::NullLocation;
 
-            z += CONTACT_DISTANCE;
-            bot->UpdateAllowedPositionZ(x, y, z);
+            //z += CONTACT_DISTANCE;
+            //bot->UpdateAllowedPositionZ(x, y, z);
             return WorldLocation(master->GetMapId(), x, y, z);
         }
 

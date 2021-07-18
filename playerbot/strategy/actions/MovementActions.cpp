@@ -140,6 +140,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
 
     float minDist = sPlayerbotAIConfig.targetPosRecalcDistance; //Minium distance a bot should move.
     float maxDist = sPlayerbotAIConfig.reactDistance;           //Maxium distance a bot can move in one single action.
+    float originalZ = z;                                        // save original destination height to check if bot needs to fly up
 
 
     bool generatePath = !bot->IsFlying() && !bot->HasMovementFlag(MOVEFLAG_SWIMMING) && !bot->IsInWater() && !sServerFacade.IsUnderwater(bot);
@@ -422,7 +423,61 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
             masterWalking = true;
     }
 
+#ifdef MANGOSBOT_ZERO
     mm.MovePoint(movePosition.getMapId(), movePosition.getX(), movePosition.getY(), movePosition.getZ(), masterWalking ? FORCED_MOVEMENT_WALK : FORCED_MOVEMENT_RUN, generatePath);
+#else
+    if (!bot->IsFreeFlying())
+        mm.MovePoint(movePosition.getMapId(), movePosition.getX(), movePosition.getY(), movePosition.getZ(), masterWalking ? FORCED_MOVEMENT_WALK : FORCED_MOVEMENT_RUN, generatePath);
+    else
+    {
+        bool needFly = false;
+        bool needLand = false;
+        bool isFly = bot->IsFlying();
+
+        if (!isFly && originalZ > bot->GetPositionZ() && (originalZ - bot->GetPositionZ()) > 5.0f)
+            needFly = true;
+
+        if (needFly && !isFly)
+        {
+            WorldPacket data(SMSG_SPLINE_MOVE_SET_FLYING, 9);
+            data << bot->GetPackGUID();
+            bot->SendMessageToSet(data, true);
+
+            if (!bot->m_movementInfo.HasMovementFlag(MOVEFLAG_FLYING))
+                bot->m_movementInfo.AddMovementFlag(MOVEFLAG_FLYING);
+            if (!bot->m_movementInfo.HasMovementFlag(MOVEFLAG_FLYING2))
+                bot->m_movementInfo.AddMovementFlag(MOVEFLAG_FLYING2);
+            if (!bot->m_movementInfo.HasMovementFlag(MOVEFLAG_LEVITATING))
+                bot->m_movementInfo.AddMovementFlag(MOVEFLAG_LEVITATING);
+        }
+
+        if (isFly)
+        {
+            if (const TerrainInfo* terrain = bot->GetTerrain())
+            {
+                float height = terrain->GetHeightStatic(bot->GetPositionX(), bot->GetPositionY(), bot->GetPositionZ());
+                float ground = terrain->GetWaterOrGroundLevel(bot->GetPositionX(), bot->GetPositionY(), bot->GetPositionZ(), height);
+                if (bot->GetPositionZ() > originalZ && (bot->GetPositionZ() - originalZ < 5.0f) && (fabs(originalZ - ground) < 5.0f))
+                    needLand = true;
+            }
+            if (needLand)
+            {
+                WorldPacket data(SMSG_SPLINE_MOVE_UNSET_FLYING, 9);
+                data << bot->GetPackGUID();
+                bot->SendMessageToSet(data, true);
+
+                if (bot->m_movementInfo.HasMovementFlag(MOVEFLAG_FLYING))
+                    bot->m_movementInfo.RemoveMovementFlag(MOVEFLAG_FLYING);
+                if (bot->m_movementInfo.HasMovementFlag(MOVEFLAG_FLYING2))
+                    bot->m_movementInfo.RemoveMovementFlag(MOVEFLAG_FLYING2);
+                if (bot->m_movementInfo.HasMovementFlag(MOVEFLAG_LEVITATING))
+                    bot->m_movementInfo.RemoveMovementFlag(MOVEFLAG_LEVITATING);
+            }
+        }
+        bot->SendHeartBeat();
+        mm.MovePoint(movePosition.getMapId(), Position(movePosition.getX(), movePosition.getY(), movePosition.getZ(), 0.f), bot->IsFlying() ? FORCED_MOVEMENT_FLIGHT : FORCED_MOVEMENT_RUN, bot->IsFlying() ? bot->GetSpeed(MOVE_FLIGHT) : 0.f, bot->IsFlying());
+    }
+#endif
 
     AI_VALUE(LastMovement&, "last movement").setShort(movePosition);            
 #endif
@@ -533,7 +588,7 @@ bool MovementAction::IsMovingAllowed()
             sServerFacade.IsInRoots(bot) ||
             bot->HasAuraType(SPELL_AURA_SPIRIT_OF_REDEMPTION) ||
             bot->HasAuraType(SPELL_AURA_MOD_CONFUSE) || sServerFacade.IsCharmed(bot) ||
-            bot->HasAuraType(SPELL_AURA_MOD_STUN) || bot->IsFlying() ||
+            bot->HasAuraType(SPELL_AURA_MOD_STUN) || bot->IsTaxiFlying() ||
             bot->hasUnitState(UNIT_STAT_CAN_NOT_REACT_OR_LOST_CONTROL))
         return false;
 
@@ -564,9 +619,14 @@ void MovementAction::UpdateMovementState()
         bot->UpdateSpeed(MOVE_SWIM, true);
     }
 
+    if (bot->IsFlying())
+        bot->UpdateSpeed(MOVE_FLIGHT, true);
+    else
+        bot->UpdateSpeed(MOVE_FLIGHT, true);
+
     // Temporary speed increase in group
-    if (ai->HasRealPlayerMaster())
-        bot->UpdateSpeed(MOVE_RUN, true, 1.1f);
+    //if (ai->HasRealPlayerMaster())
+    //    bot->UpdateSpeed(MOVE_RUN, true, 1.1f);
 }
 
 bool MovementAction::Follow(Unit* target, float distance, float angle)
@@ -909,7 +969,7 @@ bool SetFacingTargetAction::Execute(Event event)
     if (!target)
         return false;
 
-    if (bot->IsTaxiFlying()|| bot->IsFlying())
+    if (bot->IsTaxiFlying())
         return true;
 
     sServerFacade.SetFacingTo(bot, target);
@@ -928,7 +988,7 @@ bool SetFacingTargetAction::isPossible()
         (sServerFacade.UnitIsDead(bot) && !bot->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_GHOST)) ||
         bot->IsBeingTeleported() ||
         bot->HasAuraType(SPELL_AURA_MOD_CONFUSE) || sServerFacade.IsCharmed(bot) ||
-        bot->HasAuraType(SPELL_AURA_MOD_STUN) || bot->IsFlying() ||
+        bot->HasAuraType(SPELL_AURA_MOD_STUN) || bot->IsTaxiFlying() ||
         bot->hasUnitState(UNIT_STAT_CAN_NOT_REACT_OR_LOST_CONTROL))
         return false;
 
