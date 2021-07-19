@@ -445,8 +445,6 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
 
             if (!bot->m_movementInfo.HasMovementFlag(MOVEFLAG_FLYING))
                 bot->m_movementInfo.AddMovementFlag(MOVEFLAG_FLYING);
-            if (!bot->m_movementInfo.HasMovementFlag(MOVEFLAG_FLYING2))
-                bot->m_movementInfo.AddMovementFlag(MOVEFLAG_FLYING2);
             if (!bot->m_movementInfo.HasMovementFlag(MOVEFLAG_LEVITATING))
                 bot->m_movementInfo.AddMovementFlag(MOVEFLAG_LEVITATING);
         }
@@ -468,8 +466,6 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
 
                 if (bot->m_movementInfo.HasMovementFlag(MOVEFLAG_FLYING))
                     bot->m_movementInfo.RemoveMovementFlag(MOVEFLAG_FLYING);
-                if (bot->m_movementInfo.HasMovementFlag(MOVEFLAG_FLYING2))
-                    bot->m_movementInfo.RemoveMovementFlag(MOVEFLAG_FLYING2);
                 if (bot->m_movementInfo.HasMovementFlag(MOVEFLAG_LEVITATING))
                     bot->m_movementInfo.RemoveMovementFlag(MOVEFLAG_LEVITATING);
             }
