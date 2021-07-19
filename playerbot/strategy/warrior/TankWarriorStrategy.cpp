@@ -16,6 +16,8 @@ public:
         creators["shield slam"] = &shield_slam;
         creators["devastate"] = &devastate;
         creators["last stand"] = &last_stand;
+        creators["heroic throw on snare target"] = &heroic_throw_on_snare_target;
+        creators["heroic throw taunt"] = &heroic_throw_taunt;
     }
 private:
     ACTION_NODE_A(charge, "charge", "reach melee");
@@ -24,6 +26,8 @@ private:
     ACTION_NODE_A(shield_slam, "shield slam", "heroic strike");
     ACTION_NODE_A(devastate, "devastate", "sunder armor");
     ACTION_NODE_A(last_stand, "last stand", "intimidating shout");
+    ACTION_NODE_A(heroic_throw_on_snare_target, "heroic throw on snare target", "taunt on snare target");
+    ACTION_NODE_A(heroic_throw_taunt, "heroic throw", "taunt");
 };
 
 TankWarriorStrategy::TankWarriorStrategy(PlayerbotAI* ai) : GenericWarriorStrategy(ai)
@@ -42,7 +46,7 @@ void TankWarriorStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "enemy out of melee",
-        NextAction::array(0, new NextAction("charge", ACTION_MOVE + 9), NULL)));
+        NextAction::array(0, new NextAction("heroic throw", ACTION_MOVE + 10), new NextAction("charge", ACTION_MOVE + 9), NULL)));
 
     triggers.push_back(new TriggerNode(
         "defensive stance",
@@ -66,7 +70,7 @@ void TankWarriorStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "shield block",
-        NextAction::array(0, new NextAction("shield block", ACTION_HIGH + 3), NULL)));
+        NextAction::array(0, new NextAction("shield block", ACTION_INTERRUPT + 1), NULL)));
 
     triggers.push_back(new TriggerNode(
         "revenge",
@@ -78,11 +82,11 @@ void TankWarriorStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "lose aggro",
-        NextAction::array(0, new NextAction("taunt", ACTION_HIGH + 3), NULL)));
+        NextAction::array(0, new NextAction("heroic throw taunt", ACTION_INTERRUPT + 1), NULL)));
 
     triggers.push_back(new TriggerNode(
         "taunt on snare target",
-        NextAction::array(0, new NextAction("taunt on snare target", ACTION_INTERRUPT), NULL)));
+        NextAction::array(0, new NextAction("heroic throw on snare target", ACTION_INTERRUPT), NULL)));
 
     triggers.push_back(new TriggerNode(
         "low health",
@@ -106,7 +110,7 @@ void TankWarriorStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 
 	triggers.push_back(new TriggerNode(
 		"concussion blow",
-		NextAction::array(0, new NextAction("concussion blow", ACTION_INTERRUPT + 1), NULL)));
+		NextAction::array(0, new NextAction("concussion blow", ACTION_INTERRUPT), NULL)));
 
     triggers.push_back(new TriggerNode(
         "shield bash",
@@ -126,7 +130,7 @@ void TankWarriorStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "sword and board",
-        NextAction::array(0, new NextAction("shield slam", ACTION_HIGH + 3), NULL)));
+        NextAction::array(0, new NextAction("shield slam", ACTION_INTERRUPT), NULL)));
 
     triggers.push_back(new TriggerNode(
         "rend",
@@ -140,12 +144,20 @@ void TankWarriorStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 void TankWarrirorAoeStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
-        "thunder clap",
+        "thunder clap on snare target",
         NextAction::array(0, new NextAction("thunder clap on snare target", ACTION_HIGH + 3), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "light aoe",
+        "thunder clap",
         NextAction::array(0, new NextAction("thunder clap", ACTION_HIGH + 2), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "shockwave on snare target",
+        NextAction::array(0, new NextAction("shockwave on snare target", ACTION_HIGH + 5), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "shockwave",
+        NextAction::array(0, new NextAction("shockwave", ACTION_HIGH + 4), NULL)));
 
     triggers.push_back(new TriggerNode(
         "light aoe",

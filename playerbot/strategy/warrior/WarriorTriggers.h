@@ -25,8 +25,11 @@ namespace ai
     SNARE_TRIGGER(HamstringTrigger, "hamstring");
     SNARE_TRIGGER(MockingBlowTrigger, "mocking blow");
     SNARE_TRIGGER(ThunderClapSnareTrigger, "thunder clap");
+    DEBUFF_TRIGGER(ThunderClapTrigger, "thunder clap");
     SNARE_TRIGGER(TauntSnareTrigger, "taunt");
     SNARE_TRIGGER(InterceptSnareTrigger, "intercept");
+    SNARE_TRIGGER(ShockwaveSnareTrigger, "shockwave");
+    DEBUFF_TRIGGER(ShockwaveTrigger, "shockwave");
     BOOST_TRIGGER(DeathWishTrigger, "death wish");
     BUFF_TRIGGER(BloodthirstBuffTrigger, "bloodthirst");
     BUFF_TRIGGER(BerserkerRageBuffTrigger, "berserker rage");
@@ -37,4 +40,7 @@ namespace ai
     INTERRUPT_HEALER_TRIGGER(InterceptInterruptEnemyHealerSpellTrigger, "intercept");
     INTERRUPT_TRIGGER(InterceptInterruptSpellTrigger, "intercept");
     DEFLECT_TRIGGER(SpellReflectionTrigger, "spell reflection");
+    HAS_AURA_TRIGGER(SuddenDeathTrigger, "sudden death");
+    HAS_AURA_TRIGGER(SlamInstantTrigger, "slam!");
+    HAS_AURA_TRIGGER(TasteForBloodTrigger, "taste for blood");
 }

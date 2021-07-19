@@ -90,6 +90,7 @@ namespace ai
                 creators["mocking blow"] = &TriggerFactoryInternal::mocking_blow;
                 creators["rampage"] = &TriggerFactoryInternal::rampage;
                 creators["mortal strike"] = &TriggerFactoryInternal::mortal_strike;
+                creators["thunder clap on snare target"] = &TriggerFactoryInternal::thunder_clap_on_snare_target;
                 creators["thunder clap"] = &TriggerFactoryInternal::thunder_clap;
                 creators["bloodthirst"] = &TriggerFactoryInternal::bloodthirst;
                 creators["berserker rage"] = &TriggerFactoryInternal::berserker_rage;
@@ -101,9 +102,19 @@ namespace ai
                 creators["commanding shout"] = &TriggerFactoryInternal::commanding_shout;
                 creators["intercept on snare target"] = &TriggerFactoryInternal::intercept_on_snare_target;
                 creators["spell reflection"] = &TriggerFactoryInternal::spell_reflection;
+                creators["sudden death"] = &TriggerFactoryInternal::sudden_death;
+                creators["instant slam"] = &TriggerFactoryInternal::instant_slam;
+                creators["shockwave"] = &TriggerFactoryInternal::shockwave;
+                creators["shockwave on snare target"] = &TriggerFactoryInternal::shockwave_on_snare_target;
+                creators["taste for blood"] = &TriggerFactoryInternal::taste_for_blood;
             }
 
         private:
+            static Trigger* taste_for_blood(PlayerbotAI* ai) { return new TasteForBloodTrigger(ai); }
+            static Trigger* shockwave_on_snare_target(PlayerbotAI* ai) { return new ShockwaveSnareTrigger(ai); }
+            static Trigger* shockwave(PlayerbotAI* ai) { return new ShockwaveTrigger(ai); }
+            static Trigger* instant_slam(PlayerbotAI* ai) { return new SlamInstantTrigger(ai); }
+            static Trigger* sudden_death(PlayerbotAI* ai) { return new SuddenDeathTrigger(ai); }
             static Trigger* spell_reflection(PlayerbotAI* ai) { return new SpellReflectionTrigger(ai); }
             static Trigger* intercept_on_snare_target(PlayerbotAI* ai) { return new InterceptSnareTrigger(ai); }
             static Trigger* commanding_shout(PlayerbotAI* ai) { return new CommandingShoutTrigger(ai); }
@@ -114,7 +125,8 @@ namespace ai
             static Trigger* pummel_on_enemy_healer(PlayerbotAI* ai) { return new PummelInterruptEnemyHealerSpellTrigger(ai); }
             static Trigger* berserker_rage(PlayerbotAI* ai) { return new BerserkerRageBuffTrigger(ai); }
             static Trigger* bloodthirst(PlayerbotAI* ai) { return new BloodthirstBuffTrigger(ai); }
-            static Trigger* thunder_clap(PlayerbotAI* ai) { return new ThunderClapSnareTrigger(ai); }
+            static Trigger* thunder_clap_on_snare_target(PlayerbotAI* ai) { return new ThunderClapSnareTrigger(ai); }
+            static Trigger* thunder_clap(PlayerbotAI* ai) { return new ThunderClapTrigger(ai); }
             static Trigger* mortal_strike(PlayerbotAI* ai) { return new MortalStrikeDebuffTrigger(ai); }
             static Trigger* rampage(PlayerbotAI* ai) { return new RampageAvailableTrigger(ai); }
             static Trigger* mocking_blow(PlayerbotAI* ai) { return new MockingBlowTrigger(ai); }
@@ -186,6 +198,7 @@ namespace ai
                 creators["sunder armor"] = &AiObjectContextInternal::sunder_armor;
                 creators["last stand"] = &AiObjectContextInternal::last_stand;
                 creators["shockwave"] = &AiObjectContextInternal::shockwave;
+                creators["shockwave on snare target"] = &AiObjectContextInternal::shockwave_on_snare_target;
                 creators["cleave"] = &AiObjectContextInternal::cleave;
                 creators["concussion blow"] = &AiObjectContextInternal::concussion_blow;
                 creators["shield bash on enemy healer"] = &AiObjectContextInternal::shield_bash_on_enemy_healer;
@@ -207,10 +220,18 @@ namespace ai
                 creators["taunt on snare target"] = &AiObjectContextInternal::taunt_on_snare_target;
                 creators["intercept on enemy healer"] = &AiObjectContextInternal::intercept_on_enemy_healer;
                 creators["intercept on snare target"] = &AiObjectContextInternal::intercept_on_snare_target;
+                creators["bladestorm"] = &AiObjectContextInternal::bladestorm;
+                creators["heroic throw"] = &AiObjectContextInternal::heroic_throw;
+                creators["heroic throw on snare target"] = &AiObjectContextInternal::heroic_throw_on_snare_target;
+                creators["shattering throw"] = &AiObjectContextInternal::shattering_throw;
 
             }
 
         private:
+            static Action* shattering_throw(PlayerbotAI* ai) { return new CastShatteringThrowAction(ai); }
+            static Action* heroic_throw_on_snare_target(PlayerbotAI* ai) { return new CastHeroicThrowSnareAction(ai); }
+            static Action* heroic_throw(PlayerbotAI* ai) { return new CastHeroicThrowAction(ai); }
+            static Action* bladestorm(PlayerbotAI* ai) { return new CastBladestormAction(ai); }
             static Action* intercept_on_snare_target(PlayerbotAI* ai) { return new CastInterceptOnSnareTargetAction(ai); }
             static Action* intercept_on_enemy_healer(PlayerbotAI* ai) { return new CastInterceptOnEnemyHealerAction(ai); }
             static Action* taunt_on_snare_target(PlayerbotAI* ai) { return new CastTauntOnSnareTargetAction(ai); }
@@ -232,6 +253,7 @@ namespace ai
             static Action* devastate(PlayerbotAI* ai) { return new CastDevastateAction(ai); }
             static Action* last_stand(PlayerbotAI* ai) { return new CastLastStandAction(ai); }
             static Action* shockwave(PlayerbotAI* ai) { return new CastShockwaveAction(ai); }
+            static Action* shockwave_on_snare_target(PlayerbotAI* ai) { return new CastShockwaveSnareAction(ai); }
             static Action* cleave(PlayerbotAI* ai) { return new CastCleaveAction(ai); }
             static Action* concussion_blow(PlayerbotAI* ai) { return new CastConcussionBlowAction(ai); }
             static Action* taunt(PlayerbotAI* ai) { return new CastTauntAction(ai); }

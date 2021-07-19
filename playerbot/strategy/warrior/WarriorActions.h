@@ -19,7 +19,7 @@ namespace ai
 
     // arms
     MELEE_ACTION(CastHeroicStrikeAction, "heroic strike");
-    REACH_ACTION_U(CastChargeAction, "charge", 8.0f, !sServerFacade.IsInCombat(bot));
+    REACH_ACTION(CastChargeAction, "charge", 8.0f);
     DEBUFF_ACTION(CastRendAction, "rend");
     DEBUFF_ENEMY_ACTION(CastRendOnAttackerAction, "rend");
     DEBUFF_ACTION_R(CastThunderClapAction, "thunder clap", 8.0f);
@@ -28,10 +28,16 @@ namespace ai
     MELEE_ACTION(CastOverpowerAction, "overpower");
     MELEE_ACTION(CastMockingBlowAction, "mocking blow");
     BUFF_ACTION(CastRetaliationAction, "retaliation");
+    // arms 3.3.5
+    SPELL_ACTION(CastHeroicThrowAction, "heroic throw");
+    SNARE_ACTION(CastHeroicThrowSnareAction, "heroic throw");
+    DEBUFF_ACTION(CastShatteringThrowAction, "shattering throw");
     
     // arms talents
     MELEE_ACTION(CastMortalStrikeAction, "mortal strike");
     BUFF_ACTION(CastSweepingStrikesAction, "sweeping strikes");
+    // arms talents 3.3.5
+    BUFF_ACTION(CastBladestormAction, "bladestorm");
 
     // fury
     MELEE_ACTION(CastCleaveAction, "cleave");
@@ -47,6 +53,9 @@ namespace ai
     BUFF_ACTION(CastRecklessnessAction, "recklessness");
     // fury 2.4.3
     MELEE_ACTION(CastVictoryRushAction, "victory rush");
+    // fury 3.3.5
+    BUFF_ACTION(CastEnragedRegenerationAction, "enraged regeneration");
+    BUFF_ACTION(CastHeroicFuryAction, "heroic fury");
 
     // fury talents
     BUFF_ACTION(CastDeathWishAction, "death wish");
@@ -56,7 +65,7 @@ namespace ai
     BUFF_ACTION(CastRampageAction, "rampage");
 
     // protection
-    MELEE_ACTION_U(CastTauntAction, "taunt", !GetTarget()->HasTarget(bot->GetObjectGuid()));
+    MELEE_ACTION_U(CastTauntAction, "taunt", GetTarget() && !GetTarget()->HasTarget(bot->GetObjectGuid()));
     SNARE_ACTION(CastTauntOnSnareTargetAction, "taunt");
     BUFF_ACTION(CastBloodrageAction, "bloodrage");
     MELEE_ACTION(CastShieldBashAction, "shield bash");
@@ -76,7 +85,9 @@ namespace ai
     MELEE_ACTION(CastConcussionBlowAction, "concussion blow");
     // protection talents 2.4.3
     MELEE_ACTION(CastDevastateAction, "devastate");
-
+    // protection talents 3.3.5
+    DEBUFF_ACTION_R(CastShockwaveAction, "shockwave", 8.0f);
+    SNARE_ACTION(CastShockwaveSnareAction, "shockwave");
 
     class CastSunderArmorAction : public CastDebuffSpellAction
     {
@@ -86,7 +97,4 @@ namespace ai
         }
         virtual bool isUseful() { return CastSpellAction::isUseful(); }
     };
-
-    // WIP
-    MELEE_ACTION(CastShockwaveAction, "shockwave");
 }

@@ -55,11 +55,11 @@ void FuryWarriorStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("battle shout", ACTION_HIGH + 8), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "bloodthirst",
-        NextAction::array(0, new NextAction("bloodthirst", ACTION_HIGH + 1), NULL)));
+        "target critical health",
+        NextAction::array(0, new NextAction("execute", ACTION_HIGH + 4), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "target critical health",
+        "sudden death",
         NextAction::array(0, new NextAction("execute", ACTION_HIGH + 4), NULL)));
 
 	triggers.push_back(new TriggerNode(
@@ -85,6 +85,10 @@ void FuryWarriorStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
     triggers.push_back(new TriggerNode(
         "bloodthirst",
         NextAction::array(0, new NextAction("bloodthirst", ACTION_HIGH + 2), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "instant slam",
+        NextAction::array(0, new NextAction("slam", ACTION_HIGH + 1), NULL)));
 
     triggers.push_back(new TriggerNode(
         "medium rage available",

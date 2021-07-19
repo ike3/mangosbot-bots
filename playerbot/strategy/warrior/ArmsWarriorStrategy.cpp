@@ -57,12 +57,20 @@ void ArmsWarriorStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         "target critical health",
         NextAction::array(0, new NextAction("execute", ACTION_HIGH + 4), NULL)));
 
+    triggers.push_back(new TriggerNode(
+        "sudden death",
+        NextAction::array(0, new NextAction("execute", ACTION_HIGH + 4), NULL)));
+
 	triggers.push_back(new TriggerNode(
 		"hamstring",
 		NextAction::array(0, new NextAction("piercing howl", ACTION_HIGH), NULL)));
 
     triggers.push_back(new TriggerNode(
         "overpower",
+        NextAction::array(0, new NextAction("overpower", ACTION_HIGH + 3), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "taste for blood",
         NextAction::array(0, new NextAction("overpower", ACTION_HIGH + 3), NULL)));
 
 	triggers.push_back(new TriggerNode(
@@ -115,4 +123,8 @@ void ArmsWarrirorAoeStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
     triggers.push_back(new TriggerNode(
         "light aoe",
         NextAction::array(0, new NextAction("sweeping strikes", ACTION_HIGH + 3), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "light aoe",
+        NextAction::array(0, new NextAction("bladestorm", ACTION_HIGH + 3), NULL)));
 }
