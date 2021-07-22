@@ -116,7 +116,7 @@ bool FindCorpseAction::Execute(Event event)
 
             bool moved = false;
 
-            if (deadTime < 30 * MINUTE && dCount < 5) //Look for corpse up to 30 minutes.
+            if (deadTime < 30 * MINUTE && dCount < 5 && corpse->GetMapId() == bot->GetMapId()) //Look for corpse up to 30 minutes.
             {
                 if (bot->IsWithinLOS(x, y, z))
                     moved = MoveNear(bot->GetMapId(), x, y, z, 0);
