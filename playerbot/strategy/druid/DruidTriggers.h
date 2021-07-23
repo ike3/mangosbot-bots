@@ -56,6 +56,8 @@ namespace ai {
     {
     public:
         MoonfireTrigger(PlayerbotAI* ai) : DebuffTrigger(ai, "moonfire") {}
+
+        virtual bool IsActive() { return DebuffTrigger::IsActive() && !GetTarget()->IsRooted(); }
     };
 
     class FaerieFireTrigger : public DebuffTrigger
@@ -92,6 +94,14 @@ namespace ai {
     {
     public:
         EntanglingRootsTrigger(PlayerbotAI* ai) : HasCcTargetTrigger(ai, "entangling roots") {}
+    };
+
+    class EntanglingRootsKiteTrigger : public DebuffTrigger
+    {
+    public:
+        EntanglingRootsKiteTrigger(PlayerbotAI* ai) : DebuffTrigger(ai, "entangling roots") {}
+
+        virtual bool IsActive() { return DebuffTrigger::IsActive() && AI_VALUE(uint8, "attacker count") < 3 && !GetTarget()->HasMana(); }
     };
 
     class HibernateTrigger : public HasCcTargetTrigger
