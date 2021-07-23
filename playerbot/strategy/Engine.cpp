@@ -539,6 +539,9 @@ bool Engine::ListenAndExecute(Action* action, Event event)
 
         out << action->getRelevance() << ")";
 
+        if(!event.getSource().empty())
+            out << " [" << event.getSource() << "]";
+
         ai->TellMasterNoFacing(out);
     }
 
