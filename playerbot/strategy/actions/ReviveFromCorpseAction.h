@@ -25,6 +25,7 @@ namespace ai
 	    SpiritHealerAction(PlayerbotAI* ai) : MovementAction(ai, "spirit healer") {}
 
     public:
+        virtual WorldSafeLocsEntry const* GetGrave(bool startZone);
         virtual bool Execute(Event event);
     };
 

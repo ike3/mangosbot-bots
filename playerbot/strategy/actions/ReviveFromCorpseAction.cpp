@@ -146,6 +146,53 @@ bool FindCorpseAction::isUseful()
     return bot->GetCorpse() && !bot->GetCorpse()->IsWithinDistInMap(bot, CORPSE_RECLAIM_RADIUS - 5, true);
 }
 
+WorldSafeLocsEntry const* SpiritHealerAction::GetGrave(bool startZone)
+{
+    WorldSafeLocsEntry const* ClosestGrave = nullptr;
+    WorldSafeLocsEntry const* NewGrave = nullptr;
+
+    ClosestGrave = sObjectMgr.GetClosestGraveYard(bot->GetPositionX(), bot->GetPositionY(), bot->GetPositionZ(), bot->GetMapId(), bot->GetTeam());
+
+    if (!startZone && ClosestGrave)
+        return ClosestGrave;
+
+    vector<uint32> races;
+
+    if (bot->GetTeam() == ALLIANCE)
+        races = { RACE_HUMAN, RACE_DWARF,RACE_GNOME,RACE_NIGHTELF };
+    else
+        races = { RACE_ORC, RACE_TROLL,RACE_TAUREN,RACE_UNDEAD };
+
+    float graveDistance = -1;
+
+    for (auto race : races)
+    {
+        for (uint32 cls = 0; cls < MAX_CLASSES; cls++)
+        {
+            PlayerInfo const* info = sObjectMgr.GetPlayerInfo(race, cls);
+
+            if (!info)
+                continue;
+
+            if (info->mapId != bot->GetMapId())
+                continue;
+
+            NewGrave = sObjectMgr.GetClosestGraveYard(info->positionX, info->positionY, info->positionZ, info->mapId, bot->GetTeam());
+
+            if (!NewGrave)
+                continue;
+
+            if (graveDistance < 0 || bot->GetDistance2d(info->positionX, info->positionY) < graveDistance)
+            {
+                ClosestGrave = NewGrave;
+                graveDistance = bot->GetDistance2d(info->positionX, info->positionY) < graveDistance;
+            }
+        }
+    }
+
+    return ClosestGrave;
+}
+
 bool SpiritHealerAction::Execute(Event event)
 {
     Corpse* corpse = bot->GetCorpse();
@@ -155,33 +202,35 @@ bool SpiritHealerAction::Execute(Event event)
         return false;
     }
 
-    list<ObjectGuid> npcs = AI_VALUE(list<ObjectGuid>, "nearest npcs");
-    for (list<ObjectGuid>::iterator i = npcs.begin(); i != npcs.end(); i++)
+    uint32 dCount = AI_VALUE(uint32, "death count");
+
+    WorldSafeLocsEntry const* ClosestGrave = GetGrave(dCount > 10);
+
+
+    if (bot->GetDistance2d(ClosestGrave->x, ClosestGrave->y) < sPlayerbotAIConfig.sightDistance)
     {
-        Unit* unit = ai->GetUnit(*i);
-        if (unit && unit->HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_SPIRITHEALER))
+        list<ObjectGuid> npcs = AI_VALUE(list<ObjectGuid>, "nearest npcs");
+        for (list<ObjectGuid>::iterator i = npcs.begin(); i != npcs.end(); i++)
         {
-            sLog.outBasic("Bot #%d %s:%d <%s> revives at spirit healer", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName());
-            PlayerbotChatHandler ch(bot);
-            bot->ResurrectPlayer(0.5f);
-            bot->SpawnCorpseBones();
-            bot->SaveToDB();
-            context->GetValue<Unit*>("current target")->Set(NULL);
-            bot->SetSelectionGuid(ObjectGuid());
-            ai->TellMaster("Hello");
+            Unit* unit = ai->GetUnit(*i);
+            if (unit && unit->HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_SPIRITHEALER))
+            {
+                sLog.outBasic("Bot #%d %s:%d <%s> revives at spirit healer", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName());
+                PlayerbotChatHandler ch(bot);
+                bot->ResurrectPlayer(0.5f);
+                bot->SpawnCorpseBones();
+                bot->SaveToDB();
+                context->GetValue<Unit*>("current target")->Set(NULL);
+                bot->SetSelectionGuid(ObjectGuid());
+                ai->TellMaster("Hello");
 
-            uint32 dCount = AI_VALUE(uint32, "death count");
-            if(dCount > 10)
-                context->GetValue<uint32>("death count")->Set(0);
+                if (dCount > 20)
+                    context->GetValue<uint32>("death count")->Set(0);
 
-            return true;
+                return true;
+            }
         }
     }
-
-    AreaTableEntry const* zone = GetAreaEntryByAreaID(bot->GetAreaId());
-
-    WorldSafeLocsEntry const* ClosestGrave = nullptr;
-    ClosestGrave = sObjectMgr.GetClosestGraveYard(bot->GetPositionX(), bot->GetPositionY(), bot->GetPositionZ(), bot->GetMapId(), bot->GetTeam());
 
     if (!ClosestGrave)
     {
