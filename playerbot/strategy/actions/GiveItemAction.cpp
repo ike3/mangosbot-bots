@@ -20,7 +20,7 @@ bool GiveItemAction::Execute(Event event)
     if (!receiverAi)
         return false;
 
-    if (receiverAi->GetAiObjectContext()->GetValue<uint8>("item count", item)->Get())
+    if (receiverAi->GetAiObjectContext()->GetValue<uint32>("item count", item)->Get())
         return true;
 
     bool moved = false;

@@ -48,7 +48,7 @@ namespace ai
             if (bot->getClass() == CLASS_HUNTER)
             {
                 Unit* target = AI_VALUE(Unit*, "current target");
-                bool hasAmmo = AI_VALUE2(uint8, "item count", "ammo");
+                bool hasAmmo = AI_VALUE2(uint32, "item count", "ammo");
                 return ai->HasStrategy("close", BOT_STATE_COMBAT) && hasAmmo && ((sServerFacade.IsInCombat(bot) && target && (target->GetVictim() != bot ||
                     sServerFacade.IsDistanceGreaterThan(AI_VALUE2(float, "distance", "current target"), 8.0f))) ||
                     (!sServerFacade.IsInCombat(bot)));

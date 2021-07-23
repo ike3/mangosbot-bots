@@ -15,5 +15,5 @@ bool DemonArmorTrigger::IsActive()
 
 bool SpellstoneTrigger::IsActive() 
 {
-    return BuffTrigger::IsActive() && AI_VALUE2(uint8, "item count", getName()) > 0;
+    return BuffTrigger::IsActive() && AI_VALUE2(uint32, "item count", getName()) > 0;
 }

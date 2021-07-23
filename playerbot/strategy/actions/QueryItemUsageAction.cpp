@@ -118,6 +118,8 @@ bool QueryItemUsageAction::QueryItemUsage(ItemPrototype const *item)
         return "Equip (replace)";
     case ITEM_USAGE_BAD_EQUIP:
         return "Equip (temporary)";
+    case ITEM_USAGE_BROKEN_EQUIP:
+        return "Broken Equip";
     case ITEM_USAGE_QUEST:
         return "Quest (other)";
     case ITEM_USAGE_SKILL:

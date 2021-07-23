@@ -37,7 +37,7 @@ public:
         if (!botAi)
             return false;
 
-        return !botAi->GetAiObjectContext()->GetValue<uint8>("item count", item)->Get();
+        return !botAi->GetAiObjectContext()->GetValue<uint32>("item count", item)->Get();
     }
 
 private:

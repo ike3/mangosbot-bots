@@ -30,7 +30,7 @@ namespace ai
 		CastDrainSoulAction(PlayerbotAI* ai) : CastSpellAction(ai, "drain soul") {}
 		virtual bool isUseful()
 		{
-			return AI_VALUE2(uint8, "item count", "soul shard") < 2;
+			return AI_VALUE2(uint32, "item count", "soul shard") < 2;
 		}
 	};
 

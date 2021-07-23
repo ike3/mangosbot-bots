@@ -15,13 +15,13 @@ namespace ai
         list<Item*> Find(string qualifier);
     };
 
-    class ItemCountValue : public Uint8CalculatedValue, public Qualified, InventoryItemValueBase
+    class ItemCountValue : public Uint32CalculatedValue, public Qualified, InventoryItemValueBase
 	{
 	public:
-        ItemCountValue(PlayerbotAI* ai) : Uint8CalculatedValue(ai), InventoryItemValueBase(ai) {}
+        ItemCountValue(PlayerbotAI* ai) : Uint32CalculatedValue(ai), InventoryItemValueBase(ai) {}
 
     public:
-        virtual uint8 Calculate();
+        virtual uint32 Calculate();
 	};
 
     class InventoryItemValue : public CalculatedValue<list<Item*> >, public Qualified, InventoryItemValueBase

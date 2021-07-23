@@ -18,9 +18,9 @@ list<Item*> InventoryItemValueBase::Find(string qualifier)
 }
 
 
-uint8 ItemCountValue::Calculate()
+uint32 ItemCountValue::Calculate()
 {
-    uint8 count = 0;
+    uint32 count = 0;
     list<Item*> items = Find(qualifier);
     for (list<Item*>::iterator i = items.begin(); i != items.end(); ++i)
     {

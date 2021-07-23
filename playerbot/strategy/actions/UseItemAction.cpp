@@ -404,7 +404,7 @@ bool UseItemAction::SocketItem(Item* item, Item* gem, bool replace)
 
 bool UseItemAction::isPossible()
 {
-   return getName() == "use" || AI_VALUE2(uint8, "item count", getName()) > 0;
+   return getName() == "use" || AI_VALUE2(uint32, "item count", getName()) > 0;
 }
 
 bool UseSpellItemAction::isUseful()

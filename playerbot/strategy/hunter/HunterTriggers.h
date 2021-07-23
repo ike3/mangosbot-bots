@@ -103,7 +103,7 @@ namespace ai
     {
     public:
         HunterLowAmmoTrigger(PlayerbotAI* ai) : AmmoCountTrigger(ai, "ammo", 1, 30) {}
-        virtual bool IsActive() { return (AI_VALUE2(uint8, "item count", "ammo") < 2) && (AI_VALUE2(uint8, "item count", "ammo") > 0); }
+        virtual bool IsActive() { return (AI_VALUE2(uint32, "item count", "ammo") < 200) && (AI_VALUE2(uint32, "item count", "ammo") > 0); }
     };
 
     class HunterNoAmmoTrigger : public AmmoCountTrigger

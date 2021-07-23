@@ -175,7 +175,7 @@ bool BoostTrigger::IsActive()
 
 bool ItemCountTrigger::IsActive()
 {
-	return AI_VALUE2(uint8, "item count", item) < count;
+	return AI_VALUE2(uint32, "item count", item) < count;
 }
 
 bool InterruptSpellTrigger::IsActive()

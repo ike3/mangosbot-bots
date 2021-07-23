@@ -118,7 +118,7 @@ bool BuyAction::Execute(Event event)
 
 bool BuyAction::BuyItem(VendorItemData const* tItems, ObjectGuid vendorguid, const ItemPrototype* proto)
 {
-    uint32 oldCount = AI_VALUE2(uint8, "item count", proto->Name1);
+    uint32 oldCount = AI_VALUE2(uint32, "item count", proto->Name1);
 
     if (!tItems)
         return false;
@@ -136,7 +136,7 @@ bool BuyAction::BuyItem(VendorItemData const* tItems, ObjectGuid vendorguid, con
             ostringstream out; out << "Buying " << ChatHelper::formatItem(proto);
             ai->TellMaster(out.str());
 
-            if (oldCount < AI_VALUE2(uint8, "item count", proto->Name1)) //BuyItem Always returns false (unless unique) so we have to check the item counts.
+            if (oldCount < AI_VALUE2(uint32, "item count", proto->Name1)) //BuyItem Always returns false (unless unique) so we have to check the item counts.
                return true;
  
             return false;

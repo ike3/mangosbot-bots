@@ -64,7 +64,7 @@ namespace ai
     public:
         WarlockConjuredItemTrigger(PlayerbotAI* ai, string item) : ItemCountTrigger(ai, item, 1) {}
 
-        virtual bool IsActive() { return ItemCountTrigger::IsActive() && AI_VALUE2(uint8, "item count", "soul shard") > 0; }
+        virtual bool IsActive() { return ItemCountTrigger::IsActive() && AI_VALUE2(uint32, "item count", "soul shard") > 0; }
     };
 
     class HasSpellstoneTrigger : public WarlockConjuredItemTrigger

@@ -63,6 +63,8 @@ ItemUsage ItemUsageValue::Calculate()
     if (equip != ITEM_USAGE_NONE)
         return equip;
 
+
+
     if ((proto->Class == ITEM_CLASS_ARMOR || proto->Class == ITEM_CLASS_WEAPON) && proto->Bonding != BIND_WHEN_PICKED_UP &&
         ai->HasSkill(SKILL_ENCHANTING) && proto->Quality >= ITEM_QUALITY_UNCOMMON)
         return ITEM_USAGE_DISENCHANT;
@@ -193,18 +195,28 @@ ItemUsage ItemUsageValue::QueryItemUsageForEquip(ItemPrototype const* item)
         case ITEM_CLASS_ARMOR:
             if (oldItem->SubClass <= item->SubClass) {
                 if (shouldEquip)
-                    return ITEM_USAGE_REPLACE;
+                    if(CurrentItem(item) && CurrentItem(item)->GetUInt32Value(ITEM_FIELD_DURABILITY) == 0)
+                        return ITEM_USAGE_BROKEN_EQUIP;
+                    else
+                        return ITEM_USAGE_REPLACE;
                 else
                     return ITEM_USAGE_BAD_EQUIP;
             }
             break;
         default:
             if (shouldEquip)
-                return ITEM_USAGE_EQUIP;
+                if (CurrentItem(item) && CurrentItem(item)->GetUInt32Value(ITEM_FIELD_DURABILITY) == 0)
+                    return ITEM_USAGE_BROKEN_EQUIP;
+                else
+                    return ITEM_USAGE_EQUIP;
             else
                 return ITEM_USAGE_BAD_EQUIP;
         }
     }
+
+    //Item is not better but current item is broken and new one is not.
+    if (existingItem->GetUInt32Value(ITEM_FIELD_DURABILITY) == 0 && CurrentItem(item) && CurrentItem(item)->GetUInt32Value(ITEM_FIELD_DURABILITY) > 0)
+        return ITEM_USAGE_EQUIP;
 
     return ITEM_USAGE_NONE;
 }
@@ -246,7 +258,7 @@ bool ItemUsageValue::IsItemUsefulForQuest(Player* player, ItemPrototype const* p
             if (quest->ReqItemId[i] != proto->ItemId)
                 continue;
 
-            if (player->GetPlayerbotAI() && AI_VALUE2(uint8, "item count", proto->Name1) >= quest->ReqItemCount[i])
+            if (player->GetPlayerbotAI() && AI_VALUE2(uint32, "item count", proto->Name1) >= quest->ReqItemCount[i])
                 continue;
 
             return true;
@@ -355,6 +367,26 @@ bool ItemUsageValue::IsItemUsefulForSkill(ItemPrototype const * proto)
     }
     return false;
 }
+
+Item* ItemUsageValue::CurrentItem(ItemPrototype const* proto)
+{
+    Item* bestItem = nullptr;
+    list<Item*> found = AI_VALUE2(list < Item*>, "inventory items", chat->formatItem(proto));
+
+    for (auto item : found)
+    {
+        if (bestItem && item->GetUInt32Value(ITEM_FIELD_DURABILITY) < bestItem->GetUInt32Value(ITEM_FIELD_DURABILITY))
+            continue;
+
+        if (bestItem && item->GetCount() < bestItem->GetCount())
+            continue;
+
+        bestItem = item;
+    }
+
+    return bestItem;
+}
+
 
 float ItemUsageValue::CurrentStacks(ItemPrototype const* proto)
 {
