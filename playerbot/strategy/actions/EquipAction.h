@@ -16,6 +16,7 @@ namespace ai
     private:
         void EquipItem(FindItemVisitor* visitor);
         void EquipItem(Item& item);
+        void ListItems();
     };
 
 }

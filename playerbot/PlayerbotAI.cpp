@@ -209,6 +209,7 @@ void PlayerbotAI::Reset()
     currentEngine = engines[BOT_STATE_NON_COMBAT];
     nextAICheckDelay = 0;
     whispers.clear();
+    sounds.clear();
 
     aiObjectContext->GetValue<Unit*>("old target")->Set(NULL);
     aiObjectContext->GetValue<Unit*>("current target")->Set(NULL);
@@ -604,7 +605,13 @@ bool PlayerbotAI::PlaySound(uint32 emote)
 {
     if (EmotesTextSoundEntry const* soundEntry = FindTextSoundEmoteFor(emote, bot->getRace(), bot->getGender()))
     {
-        bot->PlayDistanceSound(soundEntry->SoundId);
+        uint32 soundId = soundEntry->SoundId;
+        time_t lastSaid = sounds[soundId];
+        if (!lastSaid || (time(0) - lastSaid) >= sPlayerbotAIConfig.soundRepeatDelay / 1000)
+        {
+            sounds[soundId] = time(0);
+            bot->PlayDistanceSound(soundId);
+        }
         return true;
     }
 
@@ -1148,18 +1155,11 @@ bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target, Item* itemTarget)
         }
     }
 
-#ifdef MANGOS
-    spell->prepare(&targets);
-#endif
-#ifdef CMANGOS
-    spell->SpellStart(&targets);
-#endif
-
-    if (sServerFacade.isMoving(bot) && spell->GetCastTime())
+    uint32 castTime = GetSpellCastTime(pSpellInfo);
+    if (sServerFacade.isMoving(bot) && castTime)
     {
         bot->StopMoving();
         SetNextCheckDelay(sPlayerbotAIConfig.globalCoolDown);
-        spell->cancel();
         //delete spell;
         return false;
     }
@@ -1170,11 +1170,17 @@ bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target, Item* itemTarget)
         LootObject loot = *aiObjectContext->GetValue<LootObject>("loot target");
         if (!loot.IsLootPossible(bot))
         {
-            spell->cancel();
             //delete spell;
             return false;
         }
     }
+
+#ifdef MANGOS
+    spell->prepare(&targets);
+#endif
+#ifdef CMANGOS
+    spell->SpellStart(&targets);
+#endif
 
     if (!urand(0, 50) && sServerFacade.IsInCombat(bot))
     {

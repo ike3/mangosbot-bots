@@ -19,6 +19,7 @@ namespace ai
 	public:
 		static bool IsPossibleTarget(Unit* attacker, Player *bot);
 		static bool IsValidTarget(Unit* attacker, Player *bot);
+		static bool IsCCed(Unit* attacker);
     };
 
     class PossibleAdsValue : public BoolCalculatedValue

@@ -196,5 +196,6 @@ protected:
     map<string, time_t> whispers;
     pair<ChatMsg, time_t> currentChat;
     static set<string> unsecuredCommands;
+    map<uint32, time_t> sounds;
 };
 
