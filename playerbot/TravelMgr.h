@@ -2,6 +2,7 @@
 
 #include "MoveSplineInitArgs.h"
 #include <boost/functional/hash.hpp>
+#include "GridDefines.h"
 
 namespace G3D
 {
@@ -39,7 +40,8 @@ namespace ai
         WorldPosition(GuidPosition gpos);
         WorldPosition(vector<WorldPosition*> list, WorldPositionConst conType);
         WorldPosition(vector<WorldPosition> list, WorldPositionConst conType);
-        WorldPosition(uint32 mapid, std::pair<int, int> grid) { wLoc = WorldLocation(mapid, (32 - grid.first) * SIZE_OF_GRIDS, (32 - grid.second) * SIZE_OF_GRIDS, 0, 0); }
+        WorldPosition(uint32 mapid, GridPair grid) { wLoc = WorldLocation(mapid, (int32(grid.x_coord) - CENTER_GRID_ID - 0.5) * SIZE_OF_GRIDS + CENTER_GRID_OFFSET, (int32(grid.y_coord) - CENTER_GRID_ID - 0.5) * SIZE_OF_GRIDS + CENTER_GRID_OFFSET, 0, 0); }
+        WorldPosition(uint32 mapid, CellPair cell) { wLoc = WorldLocation(mapid, (int32(cell.x_coord) - CENTER_GRID_CELL_ID - 0.5) * SIZE_OF_GRID_CELL + CENTER_GRID_CELL_OFFSET, (int32(cell.y_coord) - CENTER_GRID_CELL_ID - 0.5) * SIZE_OF_GRID_CELL + CENTER_GRID_CELL_OFFSET, 0, 0); }
 
         //Setters
         void setX(float x) { wLoc.coord_x = x; }
@@ -51,7 +53,7 @@ namespace ai
         void remVisitor() { visitors--; }
 
         //Getters
-        operator bool() const { return  wLoc.mapid != 0 || wLoc.coord_x != 0 || wLoc.coord_y != 0 || wLoc.coord_z != 0;}
+        operator bool() const { return  wLoc.mapid != 0 || wLoc.coord_x != 0 || wLoc.coord_y != 0 || wLoc.coord_z != 0; }
         bool operator==(const WorldPosition& p1) { return wLoc.mapid == wLoc.mapid && wLoc.coord_x == p1.wLoc.coord_x && wLoc.coord_y == p1.wLoc.coord_y && wLoc.coord_z == p1.wLoc.coord_z && wLoc.orientation == p1.wLoc.orientation; }
         bool operator!=(const WorldPosition& p1) { return wLoc.mapid != wLoc.mapid || wLoc.coord_x != p1.wLoc.coord_x || wLoc.coord_y != p1.wLoc.coord_y || wLoc.coord_z != p1.wLoc.coord_z || wLoc.orientation != p1.wLoc.orientation; }
 
@@ -86,7 +88,7 @@ namespace ai
         WorldPosition closest(vector<WorldPosition> list) { return *std::min_element(list.begin(), list.end(), [this](WorldPosition i, WorldPosition j) {return this->distance(i) < this->distance(j); }); }
 
         template<class T>
-        pair<T, WorldPosition>  closest(list<pair<T,WorldPosition>> list) { return *std::min_element(list.begin(), list.end(), [this](pair<T, WorldPosition> i, pair<T, WorldPosition> j) {return this->distance(i.second) < this->distance(j.second); }); }
+        pair<T, WorldPosition>  closest(list<pair<T, WorldPosition>> list) { return *std::min_element(list.begin(), list.end(), [this](pair<T, WorldPosition> i, pair<T, WorldPosition> j) {return this->distance(i.second) < this->distance(j.second); }); }
         template<class T>
         pair<T, WorldPosition> closest(list<T> list) { return closest(GetPosList(list)); }
 
@@ -107,23 +109,23 @@ namespace ai
         WorldPosition* closestSq(vector<WorldPosition*> list) { return *std::min_element(list.begin(), list.end(), [this](WorldPosition* i, WorldPosition* j) {return this->sqDistance(i) < this->sqDistance(j); }); }
         WorldPosition closestSq(vector<WorldPosition> list) { return *std::min_element(list.begin(), list.end(), [this](WorldPosition i, WorldPosition j) {return this->sqDistance(i) < this->sqDistance(j); }); }
 
-        float getAngleTo(WorldPosition endPos) {float ang = atan2(endPos.getY() - getY(), endPos.getX() - getX()); return (ang >= 0) ? ang : 2 * M_PI_F + ang;};
+        float getAngleTo(WorldPosition endPos) { float ang = atan2(endPos.getY() - getY(), endPos.getX() - getX()); return (ang >= 0) ? ang : 2 * M_PI_F + ang; };
 
         WorldPosition lastInRange(vector<WorldPosition> list, float minDist = -1, float maxDist = -1);
         WorldPosition firstOutRange(vector<WorldPosition> list, float minDist = -1, float maxDist = -1);
 
-        float mSign(WorldPosition* p1, WorldPosition* p2) {return(getX() - p2->getX()) * (p1->getY() - p2->getY()) - (p1->getX() - p2->getX()) * (getY() - p2->getY());}
+        float mSign(WorldPosition* p1, WorldPosition* p2) { return(getX() - p2->getX()) * (p1->getY() - p2->getY()) - (p1->getX() - p2->getX()) * (getY() - p2->getY()); }
         bool isInside(WorldPosition* p1, WorldPosition* p2, WorldPosition* p3);
 
         //Map functions. Player independent.
-        const MapEntry * getMapEntry() { return sMapStore.LookupEntry(wLoc.mapid); };
+        const MapEntry* getMapEntry() { return sMapStore.LookupEntry(wLoc.mapid); };
         uint32 getInstanceId() { for (auto& map : sMapMgr.Maps()) { if (map.second->GetId() == getMapId()) return map.second->GetInstanceId(); }; return 0; }
-        Map*  getMap() { return sMapMgr.FindMap(wLoc.mapid, getMapEntry()->Instanceable() ? getInstanceId() : 0); }
+        Map* getMap() { return sMapMgr.FindMap(wLoc.mapid, getMapEntry()->Instanceable() ? getInstanceId() : 0); }
         const TerrainInfo* getTerrain() { return getMap() ? getMap()->GetTerrain() : NULL; }
-        const float getHeight() 
+        const float getHeight()
         {
 #ifdef MANGOSBOT_TWO
-            return getMap()->GetHeight(0,getX(), getY(), getZ()); 
+            return getMap()->GetHeight(0, getX(), getY(), getZ());
 #else
             return getMap()->GetHeight(getX(), getY(), getZ());
 #endif
@@ -131,12 +133,16 @@ namespace ai
 
         std::set<Transport*> getTransports(uint32 entry = 0);
 
-        std::pair<int,int> getGrid();
-        std::vector<pair<int, int>> getGrids(WorldPosition secondPos);
-        vector<WorldPosition> fromGrid(int x, int y);
+        GridPair getGridPair() { return MaNGOS::ComputeGridPair(getX(), getY()); };
+        std::vector<GridPair> getGridPairs(WorldPosition secondPos);
+        vector<WorldPosition> fromGridPair(GridPair gridPair);
+
+        CellPair getCellPair() { return MaNGOS::ComputeCellPair(getX(), getY()); }
+        vector<WorldPosition> fromCellPair(CellPair cellPair);
+        vector<WorldPosition> gridFromCellPair(CellPair cellPair);
 
         void loadMapAndVMap(uint32 mapId, int x, int y);
-        void loadMapAndVMap() {loadMapAndVMap(getMapId(), getGrid().first, getGrid().second); }
+        void loadMapAndVMap() {loadMapAndVMap(getMapId(), getGridPair().x_coord, getGridPair().y_coord); }
         void loadMapAndVMaps(WorldPosition secondPos);
 
         //Display functions
@@ -598,6 +604,10 @@ namespace ai
         void addBadMmap(uint32 mapId, int x, int y) { badMmap.push_back(make_tuple(mapId, x, y)); }
         bool isBadVmap(uint32 mapId, int x, int y) { return std::find(badVmap.begin(), badVmap.end(), make_tuple(mapId, x, y)) != badVmap.end(); }
         bool isBadMmap(uint32 mapId, int x, int y) { return std::find(badMmap.begin(), badMmap.end(), make_tuple(mapId, x, y)) != badMmap.end(); }
+
+
+        void printGrid(uint32 mapId, int x, int y, string type);
+        void printObj(WorldObject* obj, string type);
     protected:
         void logQuestError(uint32 errorNr, Quest* quest, uint32 objective = 0, uint32 unitId = 0, uint32 itemId = 0);
 

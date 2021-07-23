@@ -69,23 +69,15 @@ bool RpgAction::Execute(Event event)
     }
    
     vector<RpgElement> elements;
-#ifdef MANGOS
-    if (target->IsVendor())
-        elements.push_back(&RpgAction::trade);
-    if (bot->GetSession()->getDialogStatus(bot, target, DIALOG_STATUS_NONE) == DIALOG_STATUS_REWARD2 || bot->GetSession()->getDialogStatus(bot, target, DIALOG_STATUS_NONE) == DIALOG_STATUS_AVAILABLE)
-        elements.push_back(&RpgAction::quest);
-    if (target->IsArmorer() && needRepair())
-        elements.push_back(&RpgAction::repair);
-    if (creature && CanTrain(guid))
-        elements.push_back(&RpgAction::train);
-    if (target->HealthBelowPct(100) && (bot->getClass() == CLASS_PRIEST || bot->getClass() == CLASS_DRUID || bot->getClass() == CLASS_PALADIN || bot->getClass() == CLASS_SHAMAN))
-        elements.push_back(&RpgAction::heal);
-#endif
-#ifdef CMANGOS
+
+    uint32 dStatus = bot->GetSession()->getDialogStatus(bot, wo, DIALOG_STATUS_NONE);
+
 #ifdef MANGOSBOT_ZERO  
-    if (bot->GetSession()->getDialogStatus(bot, wo, DIALOG_STATUS_NONE) == DIALOG_STATUS_REWARD2 || bot->GetSession()->getDialogStatus(bot, wo, DIALOG_STATUS_NONE) == DIALOG_STATUS_REWARD_REP || bot->GetSession()->getDialogStatus(bot, wo, DIALOG_STATUS_NONE) == DIALOG_STATUS_AVAILABLE)
+    if (dStatus == DIALOG_STATUS_REWARD2 || dStatus == DIALOG_STATUS_REWARD_REP || dStatus == DIALOG_STATUS_AVAILABLE || (AI_VALUE(uint8, "durability") <= 20 || dStatus == DIALOG_STATUS_CHAT))
+#elif MANGOSBOT_ONE
+    if (dStatus == DIALOG_STATUS_REWARD2 || dStatus == DIALOG_STATUS_REWARD || dStatus == DIALOG_STATUS_REWARD_REP || dStatus == DIALOG_STATUS_AVAILABLE || (AI_VALUE(uint8, "durability") <= 20 || dStatus == DIALOG_STATUS_CHAT))
 #else
-    if (bot->GetSession()->getDialogStatus(bot, wo, DIALOG_STATUS_NONE) == DIALOG_STATUS_REWARD2 || bot->GetSession()->getDialogStatus(bot, wo, DIALOG_STATUS_NONE) == DIALOG_STATUS_REWARD || bot->GetSession()->getDialogStatus(bot, wo, DIALOG_STATUS_NONE) == DIALOG_STATUS_REWARD_REP || bot->GetSession()->getDialogStatus(bot, wo, DIALOG_STATUS_NONE) == DIALOG_STATUS_AVAILABLE)
+    if (dStatus == DIALOG_STATUS_REWARD2 || dStatus == DIALOG_STATUS_REWARD || dStatus == DIALOG_STATUS_REWARD_REP || dStatus == DIALOG_STATUS_AVAILABLE || (AI_VALUE(uint8, "durability") <= 20 || dStatus == DIALOG_STATUS_LOW_LEVEL_AVAILABLE))
 #endif    
         elements.push_back(&RpgAction::quest);
     if (unit)
@@ -113,7 +105,6 @@ bool RpgAction::Execute(Event event)
             elements.push_back(&RpgAction::craft);
         }
     }
-#endif
 
     if (AddIgnore(guid))
     {
@@ -289,12 +280,18 @@ void RpgAction::quest(ObjectGuid guid)
 
     bool retVal = false;
 
-    if (bot->GetSession()->getDialogStatus(bot, wo, DIALOG_STATUS_NONE) == DIALOG_STATUS_AVAILABLE || bot->GetSession()->getDialogStatus(bot, wo, DIALOG_STATUS_NONE) == DIALOG_STATUS_REWARD_REP)
+    uint32 dStatus = bot->GetSession()->getDialogStatus(bot, wo, DIALOG_STATUS_NONE);
+
+#ifndef MANGOSBOT_TWO
+    if (dStatus == DIALOG_STATUS_AVAILABLE || (AI_VALUE(uint8, "durability") <= 20 || dStatus == DIALOG_STATUS_CHAT))
+#else
+    if (dStatus == DIALOG_STATUS_AVAILABLE || (AI_VALUE(uint8, "durability") <= 20 || dStatus == DIALOG_STATUS_LOW_LEVEL_AVAILABLE))
+#endif    
         retVal = ai->DoSpecificAction("accept all quests", Event("rpg action", p));
 #ifdef MANGOSBOT_ZERO
-    if (bot->GetSession()->getDialogStatus(bot, wo, DIALOG_STATUS_NONE) == DIALOG_STATUS_REWARD2 || bot->GetSession()->getDialogStatus(bot, wo, DIALOG_STATUS_NONE) == DIALOG_STATUS_REWARD_REP)
+    if (dStatus == DIALOG_STATUS_REWARD2 || dStatus == DIALOG_STATUS_REWARD_REP)
 #else
-    if (bot->GetSession()->getDialogStatus(bot, wo, DIALOG_STATUS_NONE) == DIALOG_STATUS_REWARD2 || bot->GetSession()->getDialogStatus(bot, wo, DIALOG_STATUS_NONE) == DIALOG_STATUS_REWARD || bot->GetSession()->getDialogStatus(bot, wo, DIALOG_STATUS_NONE) == DIALOG_STATUS_REWARD_REP)
+    if (dStatus == DIALOG_STATUS_REWARD2 || dStatus == DIALOG_STATUS_REWARD || dStatus == DIALOG_STATUS_REWARD_REP)
 #endif
         retVal = ai->DoSpecificAction("talk to quest giver", Event("rpg action", p));
     

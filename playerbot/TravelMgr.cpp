@@ -20,6 +20,8 @@
 
 #include "strategy/values/SharedValueContext.h"
 
+#include "Grids/CellImpl.h"
+
 using namespace ai;
 using namespace MaNGOS;
 
@@ -307,6 +309,7 @@ std::set<Transport*> WorldPosition::getTransports(uint32 entry)
     return transports;
 }
 
+/*
 std::pair<int, int> WorldPosition::getGrid()
 {
     std::pair<int, int> xy;
@@ -315,51 +318,78 @@ std::pair<int, int> WorldPosition::getGrid()
 
     return xy;
 }
+*/
 
-std::vector<pair<int, int>> WorldPosition::getGrids(WorldPosition secondPos)
+std::vector<GridPair> WorldPosition::getGridPairs(WorldPosition secondPos)
 {
-    std::vector<pair<int, int>> retVec;
+    std::vector<GridPair> retVec;
 
-    int lx = std::min(getGrid().first, secondPos.getGrid().first);
-    int ly = std::min(getGrid().second, secondPos.getGrid().second);
-    int ux = std::max(getGrid().first, secondPos.getGrid().first);
-    int uy = std::max(getGrid().second, secondPos.getGrid().second);
+    int lx = std::min(getGridPair().x_coord, secondPos.getGridPair().x_coord);
+    int ly = std::min(getGridPair().y_coord, secondPos.getGridPair().y_coord);
+    int ux = std::max(getGridPair().x_coord, secondPos.getGridPair().x_coord);
+    int uy = std::max(getGridPair().y_coord, secondPos.getGridPair().y_coord);
+    uint32 border = 1; // isOverworld() ? 1 : 0;
+
     
-    for (int x = lx-1; x <= ux+1; x++)
+    
+
+    for (int x = lx - border; x <= ux + border; x++)
     {
-        for (int y = ly-1; y <= uy+1; y++)
+        for (int y = ly - border; y <= uy + border; y++)
         {
-            retVec.push_back(make_pair(x, y));
+            retVec.push_back(GridPair(x, y));
         }
     }
 
     return retVec;
 }
 
-vector<WorldPosition> WorldPosition::fromGrid(int x, int y)
+vector<WorldPosition> WorldPosition::fromGridPair(GridPair gridPair)
 {
     vector<WorldPosition> retVec;
+    GridPair g;
+
     for (uint32 d = 0; d < 4; d++)
     {
-        float dx = x;
-        float dy = y;
+        g = gridPair;
 
         if (d == 1 || d == 2)
-            dx += 1;
+            g >> 1;
         if (d == 2 || d == 3)
-            dy += 1;
-        
-        dx = 32 - dx;
-        dy = 32 - dy;
+            g += 1;
 
-        dx *=SIZE_OF_GRIDS;
-        dy *= SIZE_OF_GRIDS;
-
-        retVec.push_back(WorldPosition(getMapId(), dx, dy, getZ(), getO()));
+        retVec.push_back(WorldPosition(getMapId(), g));
     }
    
     return retVec;
 }
+
+vector<WorldPosition> WorldPosition::fromCellPair(CellPair cellPair)
+{
+    vector<WorldPosition> retVec;
+    CellPair p;
+
+    for (uint32 d = 0; d < 4; d++)
+    {
+        p = cellPair;
+
+        if (d == 1 || d == 2)
+            p >> 1;
+        if (d == 2 || d == 3)
+            p += 1;
+
+        retVec.push_back(WorldPosition(getMapId(), p));
+    }
+    return retVec;
+}
+
+vector<WorldPosition> WorldPosition::gridFromCellPair(CellPair cellPair)
+{    
+    Cell c(cellPair);
+
+    return fromGridPair(GridPair(c.GridX(), c.GridY()));
+}
+
 
 void WorldPosition::loadMapAndVMap(uint32 mapId, int x, int y)
 {
@@ -395,7 +425,7 @@ void WorldPosition::loadMapAndVMap(uint32 mapId, int x, int y)
             ostringstream out;
             out << sPlayerbotAIConfig.GetTimestampStr();
             out << "+00,\"vmap\", " << x << "," << y << ", " << (sTravelMgr.isBadVmap(mapId, x, y) ? "0": "1") << ",";
-            printWKT(fromGrid(x, y), out, 1, true);
+            printWKT(fromGridPair(GridPair(x, y)), out, 1, true);
             sPlayerbotAIConfig.log(fileName, out.str().c_str());
         }
     }
@@ -411,7 +441,7 @@ void WorldPosition::loadMapAndVMap(uint32 mapId, int x, int y)
             ostringstream out;
             out << sPlayerbotAIConfig.GetTimestampStr();
             out << "+00,\"mmap\", " << x << "," << y << "," << (sTravelMgr.isBadMmap(mapId, x, y) ? "0" : "1") << ",";
-            printWKT(fromGrid(x, y), out, 1, true);
+            printWKT(fromGridPair(GridPair(x, y)), out, 1, true);
             sPlayerbotAIConfig.log(fileName, out.str().c_str());
         }
     }
@@ -419,9 +449,9 @@ void WorldPosition::loadMapAndVMap(uint32 mapId, int x, int y)
 
 void WorldPosition::loadMapAndVMaps(WorldPosition secondPos)
 {
-    for (auto& grid : getGrids(secondPos))
+    for (auto& grid : getGridPairs(secondPos))
     {
-        loadMapAndVMap(getMapId(), grid.first, grid.second);
+        loadMapAndVMap(getMapId(), grid.x_coord, grid.y_coord);
     }
 }
 
@@ -682,8 +712,24 @@ bool QuestRelationTravelDestination::isActive(Player* bot) {
         //    return false;
         if (!bot->CanTakeQuest(questTemplate, false))
             return false;
-        if (sTravelMgr.getDialogStatus(bot, entry, questTemplate) != DIALOG_STATUS_AVAILABLE)
-            return false;
+
+        PlayerbotAI* ai = bot->GetPlayerbotAI();
+        AiObjectContext* context = ai->GetAiObjectContext();
+
+        if (AI_VALUE(uint8, "durability") > 20)
+        {
+            if (sTravelMgr.getDialogStatus(bot, entry, questTemplate) != DIALOG_STATUS_AVAILABLE)
+                return false;
+    }
+        else
+        {
+            #ifndef MANGOSBOT_TWO
+            if (sTravelMgr.getDialogStatus(bot, entry, questTemplate) != DIALOG_STATUS_CHAT)
+            #else
+            if (sTravelMgr.getDialogStatus(bot, entry, questTemplate) != DIALOG_STATUS_LOW_LEVEL_AVAILABLE)
+            #endif
+                return false;
+        }
     }
     else
     {
@@ -718,6 +764,11 @@ string QuestRelationTravelDestination::getTitle() {
 
 bool QuestObjectiveTravelDestination::isActive(Player* bot) {
     if (questTemplate->GetQuestLevel() > bot->getLevel() + 1)
+        return false;
+
+    PlayerbotAI* ai = bot->GetPlayerbotAI();
+    AiObjectContext* context = ai->GetAiObjectContext();
+    if (questTemplate->GetQuestLevel() + 5 > bot->getLevel() && AI_VALUE(uint8, "durability") <= 20)
         return false;
 
     //Check mob level
@@ -2081,6 +2132,10 @@ void TravelMgr::LoadQuestTravelTable()
     sPlayerbotAIConfig.openLog("load_map_grid.csv", "w");
     sPlayerbotAIConfig.openLog("strategy.csv", "w");
 
+    sPlayerbotAIConfig.openLog("unload_grid.csv", "w");
+    sPlayerbotAIConfig.openLog("unload_obj.csv", "w");
+    
+
     bool preloadNodePaths = false || fullNavPointReload || storeNavPointReload;             //Calculate paths using pathfinder.
     bool preloadReLinkFullyLinked = false || fullNavPointReload || storeNavPointReload;      //Retry nodes that are fully linked.
     bool preloadUnlinkedPaths = false || fullNavPointReload;        //Try to connect points currently unlinked.
@@ -3200,4 +3255,72 @@ float TravelMgr::mapTransDistance(WorldPosition start, WorldPosition end)
     }    
 
     return minDist;
+}
+
+void TravelMgr::printGrid(uint32 mapId, int x, int y, string type)
+{
+    string fileName = "unload_grid.csv";
+
+    if (sPlayerbotAIConfig.hasLog(fileName))
+    {
+        WorldPosition p = WorldPosition(mapId, 0, 0, 0, 0);
+
+        ostringstream out;
+        out << sPlayerbotAIConfig.GetTimestampStr();
+        out << "+00, " << 0 << 0 << x << "," << y << ", " << type << ",";
+        p.printWKT(p.fromGridPair(GridPair(x, y)), out, 1, true);
+        sPlayerbotAIConfig.log(fileName, out.str().c_str());
+    }
+}
+
+void TravelMgr::printObj(WorldObject* obj, string type)
+{
+    string fileName = "unload_grid.csv";
+
+    if (sPlayerbotAIConfig.hasLog(fileName))
+    {
+        WorldPosition p = WorldPosition(obj);
+
+        Cell const& cell = obj->GetCurrentCell();
+
+        vector<WorldPosition> vcell, vgrid;
+        vcell = p.fromCellPair(p.getCellPair());
+        vgrid = p.gridFromCellPair(p.getCellPair());
+
+        {
+            ostringstream out;
+            out << sPlayerbotAIConfig.GetTimestampStr();
+            out << "+00, " << obj->GetObjectGuid().GetEntry() << "," << obj->GetObjectGuid().GetCounter() << "," << cell.GridX() << "," << cell.GridY() << ", " << type << ",";
+
+            p.printWKT(vcell, out, 1, true);
+            sPlayerbotAIConfig.log(fileName, out.str().c_str());
+        }
+
+        {
+            ostringstream out;
+            out << sPlayerbotAIConfig.GetTimestampStr();
+            out << "+00, " << obj->GetObjectGuid().GetEntry() << "," << obj->GetObjectGuid().GetCounter() << "," << cell.GridX() << "," << cell.GridY() << ", " << type << ",";
+
+            p.printWKT(vgrid, out, 1, true);
+            sPlayerbotAIConfig.log(fileName, out.str().c_str());
+        }
+    }
+
+    fileName = "unload_obj.csv";
+
+    if (sPlayerbotAIConfig.hasLog(fileName))
+    {
+        WorldPosition p = WorldPosition(obj);
+
+        Cell const& cell = obj->GetCurrentCell();
+
+        {
+            ostringstream out;
+            out << sPlayerbotAIConfig.GetTimestampStr();
+            out << "+00, " << obj->GetObjectGuid().GetEntry() << "," << obj->GetObjectGuid().GetCounter() << "," << cell.GridX() << "," << cell.GridY() << ", " << type << ",";
+
+            p.printWKT({ p }, out, 0);
+            sPlayerbotAIConfig.log(fileName, out.str().c_str());
+        }
+    }
 }
