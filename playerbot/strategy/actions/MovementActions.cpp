@@ -102,7 +102,7 @@ bool MovementAction::MoveToLOS(WorldObject* target, bool ranged)
     {
         for (auto& point : path.getPath())
         {
-            if (ai->HasStrategy("debug", BOT_STATE_NON_COMBAT))
+            if (ai->HasStrategy("debug move", BOT_STATE_NON_COMBAT))
                 CreateWp(bot, point.x, point.y, point.z, 0.0, 15631);
 
             float distPoint = target->GetDistance(point.x, point.y, point.z, DIST_CALC_NONE);
@@ -204,7 +204,8 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
 
                 if (sPlayerbotAIConfig.hasLog("bot_pathfinding.csv"))
                 {
-                    sPlayerbotAIConfig.log("bot_pathfinding.csv", route.print().str().c_str());
+                    if (ai->HasStrategy("debug move", BOT_STATE_NON_COMBAT))
+                        sPlayerbotAIConfig.log("bot_pathfinding.csv", route.print().str().c_str());
                 }
 
                 if (route.isEmpty())
