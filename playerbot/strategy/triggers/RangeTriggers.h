@@ -13,6 +13,9 @@ namespace ai
 			Unit* target = AI_VALUE(Unit*, "current target");
             if (target)
             {
+                if (target->GetTarget() == bot && !bot->GetGroup() && !target->IsRooted())
+                    return false;
+
                 float targetDistance = sServerFacade.GetDistance2d(bot, target);
                 return sServerFacade.IsDistanceLessOrEqualThan(targetDistance, (ai->GetRange("spell") / 2));
             }
@@ -26,8 +29,13 @@ namespace ai
         virtual bool IsActive()
 		{
 			Unit* target = AI_VALUE(Unit*, "current target");
-            return target &&
-                sServerFacade.IsDistanceLessOrEqualThan(AI_VALUE2(float, "distance", "current target"), (ai->GetRange("shoot") / 2));
+            if (!target)
+                return false;
+
+            if (target->GetTarget() == bot && !bot->GetGroup() && !target->IsRooted())
+                return false;
+
+            return sServerFacade.IsDistanceLessOrEqualThan(AI_VALUE2(float, "distance", "current target"), (ai->GetRange("shoot") / 2));
         }
     };
 
