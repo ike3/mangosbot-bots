@@ -794,7 +794,7 @@ uint32 RandomItemMgr::GetFood(uint32 level, uint32 category)
 {
     initializer_list<uint32> items;
     vector<uint32> food;
-    if(category == 11)
+    if (category == 11)
     {
         if (level < 5)
             items = { 787, 117, 4540, 2680 };
@@ -817,6 +817,14 @@ uint32 RandomItemMgr::GetFood(uint32 level, uint32 category)
             items = { 29292, 27859, 30458, 27662 };
         else
             items = { 29450, 29451, 29452 };
+#endif
+#ifdef MANGOSBOT_TWO
+    else if (level < 65)
+        items = { 29292, 27859, 30458, 27662 };
+    else if (level < 75)
+        items = { 29450, 29451, 29452 };
+    else
+        items = { 35947 };
 #endif
     }
 
@@ -843,6 +851,14 @@ uint32 RandomItemMgr::GetFood(uint32 level, uint32 category)
             items = { 28399 };
         else
             items = { 27860 };
+#endif
+#ifdef MANGOSBOT_TWO
+    else if (level < 65)
+        items = { 28399 };
+    else if (level < 75)
+        items = { 27860 };
+    else
+        items = { 33445 };
 #endif
     }
 
