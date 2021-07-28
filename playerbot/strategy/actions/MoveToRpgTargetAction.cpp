@@ -77,7 +77,7 @@ bool MoveToRpgTargetAction::isUseful()
     return context->GetValue<ObjectGuid>("rpg target")->Get()
         && !context->GetValue<TravelTarget*>("travel target")->Get()->isTraveling()
         && AI_VALUE2(float, "distance", "rpg target") > sPlayerbotAIConfig.followDistance
-        && AI_VALUE2(uint8, "health", "self target") > sPlayerbotAIConfig.mediumHealth 
+        && AI_VALUE2(uint8, "health", "self target") > sPlayerbotAIConfig.almostFullHealth 
         && (!AI_VALUE2(uint8, "mana", "self target") || AI_VALUE2(uint8, "mana", "self target") > sPlayerbotAIConfig.mediumMana)
         && !bot->IsInCombat();
 }

@@ -78,7 +78,7 @@ bool MoveToTravelTargetAction::isUseful()
     if (bot->IsInCombat())
         return false;
 
-    if (AI_VALUE2(uint8, "health", "self target") <= sPlayerbotAIConfig.mediumHealth)
+    if (AI_VALUE2(uint8, "health", "self target") <= sPlayerbotAIConfig.almostFullHealth)
         return false;
      
     if (AI_VALUE2(uint8, "mana", "self target") && AI_VALUE2(uint8, "mana", "self target") <= sPlayerbotAIConfig.mediumMana) 
