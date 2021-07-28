@@ -712,7 +712,7 @@ WorldPosition TravelPath::getNextPoint(WorldPosition startPos, float maxDist, bo
 
         float nextMove = p->point.distance(nextP->point);
 
-        if (p->point.getMapId() != startPos.getMapId() || moveDist + nextMove > maxDist)
+        if (p->point.getMapId() != startPos.getMapId() || moveDist + nextMove > maxDist || startPos.distance(nextP->point) > maxDist)
         {
             startP = p;
             break;
