@@ -61,6 +61,7 @@ bool FollowChatShortcutAction::Execute(Event event)
             return true;
         }
     }
+    /* Default mechanics takes care of this now.
     if (bot->GetMapId() != master->GetMapId() || (master && bot->GetDistance(master) > sPlayerbotAIConfig.sightDistance))
     {
         if (sServerFacade.UnitIsDead(bot))
@@ -74,6 +75,8 @@ bool FollowChatShortcutAction::Execute(Event event)
         bot->TeleportTo(master->GetMapId(), master->GetPositionX(), master->GetPositionY(), master->GetPositionZ(), master->GetOrientation());
         return true;
     }
+    */
+
     ai->TellMaster("Following");
     return true;
 }

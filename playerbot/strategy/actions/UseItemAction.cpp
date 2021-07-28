@@ -191,13 +191,13 @@ bool UseItemAction::UseItem(Item* item, ObjectGuid goGuid, Item* itemTarget)
    }
 
    Player* master = GetMaster();
-   if (!targetSelected && item->GetProto()->Class != ITEM_CLASS_CONSUMABLE && master && ai->HasActivePlayerMaster())
+   if (!targetSelected && item->GetProto()->Class != ITEM_CLASS_CONSUMABLE && master && ai->HasActivePlayerMaster() && !selfOnly)
    {
       ObjectGuid masterSelection = master->GetSelectionGuid();
       if (masterSelection)
       {
          Unit* unit = ai->GetUnit(masterSelection);
-         if (unit)
+         if (unit && item->IsTargetValidForItemUse(unit))
          {
             targetFlag = TARGET_FLAG_UNIT;
             packet << targetFlag << masterSelection.WriteAsPacked();

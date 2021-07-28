@@ -50,10 +50,10 @@ bool CheckMountStateAction::Execute(Event event)
             return Mount();
         }
 
-        if (!bot->IsMounted() && chasedistance && !bot->IsInCombat() && !dps)
+        if (!bot->IsMounted() && (chasedistance || farFromMaster) && !bot->IsInCombat() && !dps)
             return Mount();
 
-        if (!bot->IsFlying() && (farFromMaster || !master->IsMounted() || attackdistance) && bot->IsMounted())
+        if (!bot->IsFlying() && ((!farFromMaster && !master->IsMounted()) || attackdistance) && bot->IsMounted())
         {
             WorldPacket emptyPacket;
             bot->GetSession()->HandleCancelMountAuraOpcode(emptyPacket);
