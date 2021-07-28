@@ -56,9 +56,12 @@ bool CleanQuestLogAction::Execute(Event event)
     if (MAX_QUEST_LOG_SIZE - totalQuests > 6)
         return true;
 
-    DropQuestType(totalQuests, MAX_QUEST_LOG_SIZE - 6); //Drop gray/red quests.
-    DropQuestType(totalQuests, MAX_QUEST_LOG_SIZE - 6, false, true); //Drop gray/red quests with progress.
-    DropQuestType(totalQuests, MAX_QUEST_LOG_SIZE - 6, false, true, true); //Drop gray/red completed quests.
+    if (AI_VALUE(uint8, "durability") > 20) //Only drop gray quests when low durability.
+    {
+        DropQuestType(totalQuests, MAX_QUEST_LOG_SIZE - 6); //Drop gray/red quests.
+        DropQuestType(totalQuests, MAX_QUEST_LOG_SIZE - 6, false, true); //Drop gray/red quests with progress.
+        DropQuestType(totalQuests, MAX_QUEST_LOG_SIZE - 6, false, true, true); //Drop gray/red completed quests.
+    }
 
     if (MAX_QUEST_LOG_SIZE - totalQuests > 4)
         return true;
@@ -97,13 +100,19 @@ void CleanQuestLogAction::DropQuestType(uint8 &numQuest, uint8 wantNum, bool isG
         if (wantNum == 100)
             numQuest++;
 
-        if (!isGreen)
-        {
             int32 lowLevelDiff = sWorld.getConfig(CONFIG_INT32_QUEST_LOW_LEVEL_HIDE_DIFF);
             if (lowLevelDiff < 0 || bot->getLevel() <= bot->GetQuestLevelForPlayer(quest) + uint32(lowLevelDiff)) //Quest is not gray
+            {
                 if (bot->getLevel() + 5 > bot->GetQuestLevelForPlayer(quest))                                     //Quest is not red
+                    if (!isGreen)
+                        continue;
+            }
+            else //Quest is gray
+            {
+                if (isGreen)
                     continue;
-        }
+            }                
+
 
         if (HasProgress(questId) && !hasProgress)
             continue;
@@ -111,7 +120,7 @@ void CleanQuestLogAction::DropQuestType(uint8 &numQuest, uint8 wantNum, bool isG
         if (bot->GetQuestStatus(questId) == QUEST_STATUS_COMPLETE && !isComplete)
             continue;
 
-        if (numQuest <= wantNum)
+        if (numQuest <= wantNum && bot->GetQuestStatus(questId) != QUEST_STATUS_FAILED) //Always drop failed quests
             continue;
 
         //Drop quest.
