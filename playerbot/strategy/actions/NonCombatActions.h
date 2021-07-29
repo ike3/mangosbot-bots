@@ -22,7 +22,7 @@ namespace ai
 
         virtual bool isUseful()
         {
-            return UseItemAction::isUseful() && AI_VALUE2(uint8, "mana", "self target") < sPlayerbotAIConfig.lowMana;
+            return UseItemAction::isUseful() && AI_VALUE2(uint8, "mana", "self target") < sPlayerbotAIConfig.mediumMana;
         }
     };
 
