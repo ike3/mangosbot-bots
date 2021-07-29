@@ -672,6 +672,10 @@ void PlayerbotAI::DoNextAction()
     {
         if (bot->m_movementInfo.HasMovementFlag(MOVEFLAG_FLYING))
             bot->m_movementInfo.RemoveMovementFlag(MOVEFLAG_FLYING);
+#ifdef MANGOSBOT_ONE
+        if (bot->m_movementInfo.HasMovementFlag(MOVEFLAG_FLYING2))
+            bot->m_movementInfo.RemoveMovementFlag(MOVEFLAG_FLYING2);
+#endif
         if (bot->m_movementInfo.HasMovementFlag(MOVEFLAG_CAN_FLY))
             bot->m_movementInfo.RemoveMovementFlag(MOVEFLAG_CAN_FLY);
         if (bot->m_movementInfo.HasMovementFlag(MOVEFLAG_LEVITATING))
