@@ -135,7 +135,7 @@ void RandomItemMgr::Init()
 void RandomItemMgr::InitAfterAhBot()
 {
     BuildRandomItemCache();
-    BuildRarityCache();
+    //BuildRarityCache();
 }
 
 RandomItemMgr::~RandomItemMgr()
