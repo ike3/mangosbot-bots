@@ -67,7 +67,7 @@ public:
             if (!ai->IsTank(member))
                 continue;
 
-            float distance = member->GetDistance(creature);
+            float distance = sServerFacade.GetDistance2d(member, creature);
             if (distance < minDistance)
                 minDistance = distance;
         }
