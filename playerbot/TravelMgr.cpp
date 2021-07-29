@@ -309,17 +309,6 @@ std::set<Transport*> WorldPosition::getTransports(uint32 entry)
     return transports;
 }
 
-/*
-std::pair<int, int> WorldPosition::getGrid()
-{
-    std::pair<int, int> xy;
-    xy.first = (int)(32 - getX() / SIZE_OF_GRIDS);
-    xy.second = (int)(32 - getY() / SIZE_OF_GRIDS);
-
-    return xy;
-}
-*/
-
 std::vector<GridPair> WorldPosition::getGridPairs(WorldPosition secondPos)
 {
     std::vector<GridPair> retVec;
@@ -328,10 +317,7 @@ std::vector<GridPair> WorldPosition::getGridPairs(WorldPosition secondPos)
     int ly = std::min(getGridPair().y_coord, secondPos.getGridPair().y_coord);
     int ux = std::max(getGridPair().x_coord, secondPos.getGridPair().x_coord);
     int uy = std::max(getGridPair().y_coord, secondPos.getGridPair().y_coord);
-    uint32 border = 1; // isOverworld() ? 1 : 0;
-
-    
-    
+    uint32 border = 1;
 
     for (int x = lx - border; x <= ux + border; x++)
     {
@@ -395,54 +381,77 @@ void WorldPosition::loadMapAndVMap(uint32 mapId, int x, int y)
 {
     string fileName = "load_map_grid.csv";
 
-    //This needs to be disabled or maps will not load.
-    //Needs more testing to check for impact on movement.
-    if(false)
-    if (!VMAP::VMapFactory::createOrGetVMapManager()->IsTileLoaded(mapId, x, y) && !sTravelMgr.isBadVmap(mapId, x, y))
+    if (isOverworld())
     {
-        // load VMAPs for current map/grid...
-        const MapEntry* i_mapEntry = sMapStore.LookupEntry(mapId);
-        const char* mapName = i_mapEntry ? i_mapEntry->name[sWorld.GetDefaultDbcLocale()] : "UNNAMEDMAP\x0";
+        if (abs(x) < 33 && abs(y) < 33 && !MMAP::MMapFactory::createOrGetMMapManager()->IsMMapIsLoaded(mapId, x, y))
+            if (sPlayerbotAIConfig.hasLog(fileName))
+            {
+                ostringstream out;
+                out << sPlayerbotAIConfig.GetTimestampStr();
+                out << "+00,\"mmap\", " << x << "," << y << "," << (sTravelMgr.isBadMmap(mapId, x, y) ? "0" : "1") << ",";
+                printWKT(fromGridPair(GridPair(x, y)), out, 1, true);
+                sPlayerbotAIConfig.log(fileName, out.str().c_str());
+            }
 
-        int vmapLoadResult = VMAP::VMapFactory::createOrGetVMapManager()->loadMap((sWorld.GetDataPath() + "vmaps").c_str(), mapId, x, y);
-        switch (vmapLoadResult)
-        {
-        case VMAP::VMAP_LOAD_RESULT_OK:
-            //sLog.outError("VMAP loaded name:%s, id:%d, x:%d, y:%d (vmap rep.: x:%d, y:%d)", mapName, mapId, x, y, x, y);
-            break;
-        case VMAP::VMAP_LOAD_RESULT_ERROR:
-            //sLog.outError("Could not load VMAP name:%s, id:%d, x:%d, y:%d (vmap rep.: x:%d, y:%d)", mapName, mapId, x, y, x, y);
-            sTravelMgr.addBadVmap(mapId, x, y);
-            break;
-        case VMAP::VMAP_LOAD_RESULT_IGNORED:
-            sTravelMgr.addBadVmap(mapId, x, y);
-            //sLog.outError("Ignored VMAP name:%s, id:%d, x:%d, y:%d (vmap rep.: x:%d, y:%d)", mapName, mapId, x, y, x, y);
-            break;
-        }
+        int px = (float)(32 - x) * SIZE_OF_GRIDS;
+        int py = (float)(32 - y) * SIZE_OF_GRIDS;
 
-        if (sPlayerbotAIConfig.hasLog(fileName))
-        {
-            ostringstream out;
-            out << sPlayerbotAIConfig.GetTimestampStr();
-            out << "+00,\"vmap\", " << x << "," << y << ", " << (sTravelMgr.isBadVmap(mapId, x, y) ? "0": "1") << ",";
-            printWKT(fromGridPair(GridPair(x, y)), out, 1, true);
-            sPlayerbotAIConfig.log(fileName, out.str().c_str());
-        }
+        if (abs(x) < 33 && abs(y) < 33 && !MMAP::MMapFactory::createOrGetMMapManager()->IsMMapIsLoaded(mapId, x, y))
+            getTerrain()->GetTerrainType(px, py);
+
     }
-
-    if (!MMAP::MMapFactory::createOrGetMMapManager()->IsMMapIsLoaded(mapId, x, y) && !sTravelMgr.isBadMmap(mapId, x, y))
+    else
     {
-        // load navmesh
-        if(!MMAP::MMapFactory::createOrGetMMapManager()->loadMap(mapId, x, y))
-            sTravelMgr.addBadMmap(mapId, x, y);
 
-        if (sPlayerbotAIConfig.hasLog(fileName))
+        //This needs to be disabled or maps will not load.
+        //Needs more testing to check for impact on movement.
+        if (false)
+            if (!VMAP::VMapFactory::createOrGetVMapManager()->IsTileLoaded(mapId, x, y) && !sTravelMgr.isBadVmap(mapId, x, y))
+            {
+                // load VMAPs for current map/grid...
+                const MapEntry* i_mapEntry = sMapStore.LookupEntry(mapId);
+                const char* mapName = i_mapEntry ? i_mapEntry->name[sWorld.GetDefaultDbcLocale()] : "UNNAMEDMAP\x0";
+
+                int vmapLoadResult = VMAP::VMapFactory::createOrGetVMapManager()->loadMap((sWorld.GetDataPath() + "vmaps").c_str(), mapId, x, y);
+                switch (vmapLoadResult)
+                {
+                case VMAP::VMAP_LOAD_RESULT_OK:
+                    //sLog.outError("VMAP loaded name:%s, id:%d, x:%d, y:%d (vmap rep.: x:%d, y:%d)", mapName, mapId, x, y, x, y);
+                    break;
+                case VMAP::VMAP_LOAD_RESULT_ERROR:
+                    //sLog.outError("Could not load VMAP name:%s, id:%d, x:%d, y:%d (vmap rep.: x:%d, y:%d)", mapName, mapId, x, y, x, y);
+                    sTravelMgr.addBadVmap(mapId, x, y);
+                    break;
+                case VMAP::VMAP_LOAD_RESULT_IGNORED:
+                    sTravelMgr.addBadVmap(mapId, x, y);
+                    //sLog.outError("Ignored VMAP name:%s, id:%d, x:%d, y:%d (vmap rep.: x:%d, y:%d)", mapName, mapId, x, y, x, y);
+                    break;
+                }
+
+                if (sPlayerbotAIConfig.hasLog(fileName))
+                {
+                    ostringstream out;
+                    out << sPlayerbotAIConfig.GetTimestampStr();
+                    out << "+00,\"vmap\", " << x << "," << y << ", " << (sTravelMgr.isBadVmap(mapId, x, y) ? "0" : "1") << ",";
+                    printWKT(fromGridPair(GridPair(x, y)), out, 1, true);
+                    sPlayerbotAIConfig.log(fileName, out.str().c_str());
+                }
+            }
+
+        if (!MMAP::MMapFactory::createOrGetMMapManager()->IsMMapIsLoaded(mapId, x, y) && !sTravelMgr.isBadMmap(mapId, x, y))
         {
-            ostringstream out;
-            out << sPlayerbotAIConfig.GetTimestampStr();
-            out << "+00,\"mmap\", " << x << "," << y << "," << (sTravelMgr.isBadMmap(mapId, x, y) ? "0" : "1") << ",";
-            printWKT(fromGridPair(GridPair(x, y)), out, 1, true);
-            sPlayerbotAIConfig.log(fileName, out.str().c_str());
+            // load navmesh
+            if (!MMAP::MMapFactory::createOrGetMMapManager()->loadMap(mapId, x, y))
+                sTravelMgr.addBadMmap(mapId, x, y);
+
+            if (sPlayerbotAIConfig.hasLog(fileName))
+            {
+                ostringstream out;
+                out << sPlayerbotAIConfig.GetTimestampStr();
+                out << "+00,\"mmap\", " << x << "," << y << "," << (sTravelMgr.isBadMmap(mapId, x, y) ? "0" : "1") << ",";
+                printWKT(fromGridPair(GridPair(x, y)), out, 1, true);
+                sPlayerbotAIConfig.log(fileName, out.str().c_str());
+            }
         }
     }
 }
@@ -808,6 +817,17 @@ bool RpgTravelDestination::isActive(Player* bot)
     if (AI_VALUE(uint8, "bag space") <= 80 && (AI_VALUE(uint8, "durability") >= 80 || AI_VALUE(uint32, "repair cost") > bot->GetMoney()))
         return false;
 
+    CreatureInfo const* cInfo = this->getCreatureInfo();
+
+    if (!cInfo)
+        return false;
+
+    if (AI_VALUE(uint8, "bag space") > 80 && (cInfo->NpcFlags & UNIT_NPC_FLAG_VENDOR) == 0)
+        return false;
+
+    if ((AI_VALUE(uint8, "durability") < 80 && AI_VALUE(uint32, "repair cost") <= bot->GetMoney()) && (cInfo->NpcFlags & UNIT_NPC_FLAG_REPAIR) == 0)
+        return false;
+
     //Once the target rpged with it is added to the ignore list. We can now move on.
     set<ObjectGuid>& ignoreList = bot->GetPlayerbotAI()->GetAiObjectContext()->GetValue<set<ObjectGuid>&>("ignore rpg target")->Get();
 
@@ -819,7 +839,7 @@ bool RpgTravelDestination::isActive(Player* bot)
         }
     }
 
-    CreatureInfo const* cInfo = this->getCreatureInfo();
+
     FactionTemplateEntry const* factionEntry = sFactionTemplateStore.LookupEntry(cInfo->Faction);
     ReputationRank reaction = ai->getReaction(factionEntry);
 

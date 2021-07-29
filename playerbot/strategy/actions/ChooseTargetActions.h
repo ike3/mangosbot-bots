@@ -5,6 +5,7 @@
 #include "../../ServerFacade.h"
 #include "../../playerbot.h"
 #include "../../TravelMgr.h"
+#include "../../LootObjectStack.h"
 
 namespace ai
 {
@@ -83,7 +84,12 @@ namespace ai
                 {
                     const char* grindName = grindTarget->GetName();
                     if (grindName)
+                    {
                         context->GetValue<ObjectGuid>("pull target")->Set(grindTarget->GetObjectGuid());
+                        MotionMaster& mm = *bot->GetMotionMaster();
+                        bot->StopMoving();
+                        mm.Clear();
+                    }
                 }
             }
             return result;
@@ -138,6 +144,14 @@ namespace ai
         virtual bool Execute(Event event)
         {
             Unit* target = context->GetValue<Unit*>("current target")->Get();
+
+            if (target && sServerFacade.UnitIsDead(target))
+            {
+                ObjectGuid guid = target->GetObjectGuid();
+                if (guid)
+                    context->GetValue<LootObjectStack*>("available loot")->Get()->Add(guid);
+            }
+
             ObjectGuid pullTarget = context->GetValue<ObjectGuid>("pull target")->Get();
             list<ObjectGuid> possible = ai->GetAiObjectContext()->GetValue<list<ObjectGuid> >("possible targets no los")->Get();
             if (pullTarget && find(possible.begin(), possible.end(), pullTarget) == possible.end())

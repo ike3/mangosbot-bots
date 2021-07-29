@@ -14,7 +14,6 @@ public:
         creators["intercept"] = &intercept;
         creators["death wish"] = &death_wish;
         creators["piercing howl"] = &piercing_howl;
-        creators["whirlwind"] = &whirlwind;
         creators["bloodthirst"] = &bloodthirst;
         creators["pummel"] = &pummel;
     }
@@ -22,7 +21,6 @@ private:
     ACTION_NODE_A(charge, "charge", "intercept");
     ACTION_NODE_A(intercept, "intercept", "reach melee");
     ACTION_NODE_A(piercing_howl, "piercing howl", "hamstring");
-    ACTION_NODE_A(whirlwind, "whirlwind", "cleave");
     ACTION_NODE_A(death_wish, "death wish", "berserker rage");
     ACTION_NODE_A(bloodthirst, "bloodthirst", "melee");
     ACTION_NODE_A(pummel, "pummel", "intercept");
@@ -111,22 +109,6 @@ void FuryWarriorStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("rampage", ACTION_INTERRUPT), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "medium aoe",
-        NextAction::array(0, new NextAction("demoralizing shout", ACTION_HIGH + 1), NULL)));
-
-    triggers.push_back(new TriggerNode(
         "critical health",
         NextAction::array(0, new NextAction("intimidating shout", ACTION_EMERGENCY), NULL)));
-}
-
-
-void FuryWarrirorAoeStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
-{
-    triggers.push_back(new TriggerNode(
-        "light aoe",
-        NextAction::array(0, new NextAction("whirlwind", ACTION_HIGH + 2), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "light aoe",
-        NextAction::array(0, new NextAction("sweeping strikes", ACTION_HIGH + 3), NULL)));
 }

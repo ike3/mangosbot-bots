@@ -50,7 +50,7 @@ namespace ai
    class UseHearthStone : public UseItemAction
    {
    public:
-       UseHearthStone(PlayerbotAI* ai) : UseItemAction(ai, "hearthstone") {}
+       UseHearthStone(PlayerbotAI* ai) : UseItemAction(ai, "hearthstone", true) {}
 
        bool isUseful() { return !bot->IsInCombat() && !bot->InBattleGround(); }
        
@@ -60,7 +60,7 @@ namespace ai
    class UseRandomRecipe : public UseItemAction
    {
    public:
-       UseRandomRecipe(PlayerbotAI* ai) : UseItemAction(ai, "random recipe") {}
+       UseRandomRecipe(PlayerbotAI* ai) : UseItemAction(ai, "random recipe", true) {}
 
        virtual bool isUseful();
 

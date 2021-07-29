@@ -26,16 +26,12 @@ namespace ai
             {
                 creators["nc"] = &warrior::StrategyFactoryInternal::nc;
                 creators["pull"] = &warrior::StrategyFactoryInternal::pull;
-                creators["arms aoe"] = &warrior::StrategyFactoryInternal::arms_aoe;
-                creators["fury aoe"] = &warrior::StrategyFactoryInternal::fury_aoe;
-                creators["tank aoe"] = &warrior::StrategyFactoryInternal::tank_aoe;
+                creators["aoe"] = &warrior::StrategyFactoryInternal::warrior_aoe;
             }
 
         private:
             static Strategy* nc(PlayerbotAI* ai) { return new GenericWarriorNonCombatStrategy(ai); }
-            static Strategy* arms_aoe(PlayerbotAI* ai) { return new ArmsWarrirorAoeStrategy(ai); }
-            static Strategy* fury_aoe(PlayerbotAI* ai) { return new FuryWarrirorAoeStrategy(ai); }
-            static Strategy* tank_aoe(PlayerbotAI* ai) { return new TankWarrirorAoeStrategy(ai); }
+            static Strategy* warrior_aoe(PlayerbotAI* ai) { return new WarrirorAoeStrategy(ai); }
             static Strategy* pull(PlayerbotAI* ai) { return new PullStrategy(ai, "shoot"); }
         };
 

@@ -140,26 +140,3 @@ void TankWarriorStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         "protect party member",
         NextAction::array(0, new NextAction("intervene", ACTION_EMERGENCY), NULL)));
 }
-
-void TankWarrirorAoeStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
-{
-    triggers.push_back(new TriggerNode(
-        "thunder clap on snare target",
-        NextAction::array(0, new NextAction("thunder clap on snare target", ACTION_HIGH + 3), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "thunder clap",
-        NextAction::array(0, new NextAction("thunder clap", ACTION_HIGH + 2), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "shockwave on snare target",
-        NextAction::array(0, new NextAction("shockwave on snare target", ACTION_HIGH + 5), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "shockwave",
-        NextAction::array(0, new NextAction("shockwave", ACTION_HIGH + 4), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "light aoe",
-        NextAction::array(0, new NextAction("cleave", ACTION_HIGH + 2), NULL)));
-}

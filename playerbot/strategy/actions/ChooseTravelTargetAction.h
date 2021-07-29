@@ -27,6 +27,7 @@ namespace ai
         bool SetRpgTarget(TravelTarget* target);
         bool SetGrindTarget(TravelTarget* target);
         bool SetExploreTarget(TravelTarget* target);
+        bool SetBankTarget(TravelTarget* target);
         bool SetNullTarget(TravelTarget* target);
 
         void ReportTravelTarget(TravelTarget* newTarget, TravelTarget* oldTarget);

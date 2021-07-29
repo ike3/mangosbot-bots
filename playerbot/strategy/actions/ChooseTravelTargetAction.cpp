@@ -195,6 +195,9 @@ bool ChooseTravelTargetAction::SetTarget(TravelTarget* target, TravelTarget* old
     if (!foundTarget && urand(1, 100) > 10)                               //90% chance 
         foundTarget = SetCurrentTarget(target, oldTarget);                //Extend current target.
 
+    if (!foundTarget && urand(1, 100) > 90)                               //10% chance
+        foundTarget = SetBankTarget(target);                              //Head to the bank
+
     if (!foundTarget && urand(1, 100) > 5)                                //95% chance
         foundTarget = SetQuestTarget(target);                             //Do a target of an active quest.
 
@@ -507,6 +510,52 @@ bool ChooseTravelTargetAction::SetExploreTarget(TravelTarget* target)
     target->setTarget(activeDestinations.front(), activePoints.front());
 
     return target->isActive();
+}
+
+bool ChooseTravelTargetAction::SetBankTarget(TravelTarget* target)
+{
+    WorldPosition* botPos = &WorldPosition(bot);
+
+    vector<TravelDestination*> dests;
+
+    for (auto& d : sTravelMgr.getRpgTravelDestinations(bot, true, true))
+    {
+        if (!d->getEntry())
+            continue;
+
+        CreatureInfo const* cInfo = ObjectMgr::GetCreatureTemplate(d->getEntry());
+
+        if (!cInfo)
+            continue;
+
+        if ((cInfo->NpcFlags & UNIT_NPC_FLAG_BANKER) == 0)
+            continue;
+
+        FactionTemplateEntry const* factionEntry = sFactionTemplateStore.LookupEntry(cInfo->Faction);
+        ReputationRank reaction = ai->getReaction(factionEntry);
+
+        if (reaction  <= REP_NEUTRAL)
+            continue;
+
+
+    }
+
+    if (!dests.empty())
+    {
+        TravelDestination* dest = *std::min_element(dests.begin(), dests.end(), [botPos](TravelDestination* i, TravelDestination* j) {return i->distanceTo(botPos) < j->distanceTo(botPos); });
+
+        vector <WorldPosition*> points = dest->nextPoint(botPos, true);
+
+        if (points.empty())
+            return false;
+
+        target->setTarget(dest, points.front());
+        target->setForced(true);
+
+        return true;
+    }
+
+    return false;
 }
 
 bool ChooseTravelTargetAction::SetNullTarget(TravelTarget* target)

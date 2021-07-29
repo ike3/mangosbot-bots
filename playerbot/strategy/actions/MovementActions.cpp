@@ -144,12 +144,12 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
 
 
     bool generatePath = !bot->IsFlying() && !bot->HasMovementFlag(MOVEFLAG_SWIMMING) && !bot->IsInWater() && !sServerFacade.IsUnderwater(bot);
-    
+
     if (generatePath)
     {
         z += CONTACT_DISTANCE;
         bot->UpdateAllowedPositionZ(x, y, z);
-    }    
+    }
 
     if (!IsMovingAllowed() && sServerFacade.UnitIsDead(bot))
     {
@@ -169,7 +169,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
 
     if (totalDistance < minDist)
     {
-        if(lastMove.lastMoveShort.distance(endPosition) < maxDistChange)
+        if (lastMove.lastMoveShort.distance(endPosition) < maxDistChange)
             AI_VALUE(LastMovement&, "last movement").clear();
         bot->StopMoving();
         return false;
@@ -259,8 +259,8 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
 
     if (!movePath.empty())
     {
-        if(movePath.makeShortCut(startPosition, maxDist))
-            if(ai->HasStrategy("debug move", BOT_STATE_NON_COMBAT))
+        if (movePath.makeShortCut(startPosition, maxDist))
+            if (ai->HasStrategy("debug move", BOT_STATE_NON_COMBAT))
                 ai->TellMasterNoFacing("Found a shortcut.");
 
         if (movePath.empty())
@@ -278,7 +278,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
         movePosition = movePath.getNextPoint(startPosition, maxDist, isTeleport, isTransport, entry);
 
         if (isTeleport)// && !ai->isRealPlayer())
-        {           
+        {
 
             //Log bot movement
             if (sPlayerbotAIConfig.hasLog("bot_movement.csv"))
@@ -297,9 +297,9 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
                 out << sPlayerbotAIConfig.GetTimestampStr() << "+00,";
                 out << bot->GetName() << ",";
                 if (telePos && telePos != movePosition)
-                    startPosition.printWKT({ startPosition, movePosition, telePos }, out,1);
+                    startPosition.printWKT({ startPosition, movePosition, telePos }, out, 1);
                 else
-                    startPosition.printWKT({ startPosition, movePosition}, out,1);
+                    startPosition.printWKT({ startPosition, movePosition }, out, 1);
 
                 out << to_string(bot->getRace()) << ",";
                 out << to_string(bot->getClass()) << ",";
@@ -324,7 +324,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
                 for (auto& transport : movePosition.getTransports(entry))
                     if (movePosition.sqDistance2d(WorldPosition((WorldObject*)transport)) < 5 * 5)
                         transport->AddPassenger(bot, true);
-            }            
+            }
             WaitForReach(100.0f);
             return true;
         }
@@ -333,6 +333,29 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
     }
 
     AI_VALUE(LastMovement&, "last movement").setPath(movePath);
+
+    if (!movePosition || movePosition.getMapId() != bot->GetMapId())
+    {
+        movePath.clear();
+        AI_VALUE(LastMovement&, "last movement").setPath(movePath);
+
+        if (ai->HasStrategy("debug move", BOT_STATE_NON_COMBAT))
+            ai->TellMasterNoFacing("No point. Rebuilding.");
+        return false;
+    }
+
+    if (movePosition.distance(startPosition) > maxDist)
+    {
+        //Use standard pathfinder to find a route. 
+        PathFinder path(bot);
+        path.calculate(movePosition.getX(), movePosition.getY(), movePosition.getZ(), false);
+        PathType type = path.getPathType();
+        PointsArray& points = path.getPath();
+        movePath.addPath(startPosition.fromPointsArray(points));
+        bool isTeleport, isTransport;
+        uint32 entry;
+        movePosition = movePath.getNextPoint(startPosition, maxDist, isTeleport, isTransport, entry);
+    }
 
     if (movePosition == WorldPosition()) {
         movePath.clear();
@@ -346,7 +369,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
     //Visual waypoints
     if (ai->HasStrategy("debug move", BOT_STATE_NON_COMBAT))
     {
-        if(!movePath.empty())
+        if (!movePath.empty())
         {
             float cx = x;
             float cy = y;
@@ -370,7 +393,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
         ostringstream out;
         out << sPlayerbotAIConfig.GetTimestampStr() << "+00,";
         out << bot->GetName() << ",";
-        startPosition.printWKT({ startPosition, movePosition }, out,1);
+        startPosition.printWKT({ startPosition, movePosition }, out, 1);
         out << to_string(bot->getRace()) << ",";
         out << to_string(bot->getClass()) << ",";
         out << bot->getLevel();
@@ -380,8 +403,8 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
     }
 
     if (!react)
-        if(totalDistance > maxDist)
-            WaitForReach(startPosition.distance(movePosition)- 10.0f);
+        if (totalDistance > maxDist)
+            WaitForReach(startPosition.distance(movePosition) - 10.0f);
         else
             WaitForReach(startPosition.distance(movePosition));
 
@@ -401,13 +424,32 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
     mm.MovePoint(mapId, x, y, z, generatePath);
 #endif
 #ifdef CMANGOS
+    /* Why do we do this?
     if (lastMove.lastMoveShort.distance(movePosition) < minDist)
     {
         bot->StopMoving();
         mm.Clear();
     }
+    */
 
-    if (!detailedMove && !ai->HasPlayerNearby(&movePosition)) //Why walk if you can fly?
+    //Clean movement if not already moving the same way.
+    if (mm.GetCurrent()->GetMovementGeneratorType() != POINT_MOTION_TYPE)
+    {
+        bot->StopMoving();
+        mm.Clear();
+    }
+    else
+    {
+        mm.GetDestination(x, y, z);
+
+        if (movePosition.distance(WorldPosition(movePosition.getMapId(), x, y, z, 0)) > minDist)
+        {
+            bot->StopMoving();
+            mm.Clear();
+        }
+    }
+
+    if (totalDistance > maxDist && !detailedMove && !ai->HasPlayerNearby(&movePosition)) //Why walk if you can fly?
     {
         time_t now = time(0);
 
@@ -484,7 +526,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
     }
 #endif
 
-    AI_VALUE(LastMovement&, "last movement").setShort(movePosition);            
+    AI_VALUE(LastMovement&, "last movement").setShort(movePosition);
 #endif
     if (!idle)
         ClearIdleState();
@@ -494,7 +536,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
 
 bool MovementAction::MoveTo(Unit* target, float distance)
 {
-    if (!IsMovingAllowed(target))
+    if (!target)
     {
         //ai->TellError("Seems I am stuck");
         return false;
@@ -521,6 +563,7 @@ bool MovementAction::MoveTo(Unit* target, float distance)
     float distanceToTarget = sServerFacade.GetDistance2d(bot, tx, ty);
     if (sServerFacade.IsDistanceGreaterThan(distanceToTarget, sPlayerbotAIConfig.targetPosRecalcDistance))
     {
+        /*
         float angle = bot->GetAngle(tx, ty);
         float needToGo = distanceToTarget - distance;
 
@@ -533,7 +576,11 @@ bool MovementAction::MoveTo(Unit* target, float distance)
         float dx = cos(angle) * needToGo + bx;
         float dy = sin(angle) * needToGo + by;
         float dz = bz + (tz - bz) * needToGo / distanceToTarget;
+        */
 
+        float dx = tx;
+        float dy = ty;
+        float dz = tz;
         return MoveTo(target->GetMapId(), dx, dy, dz);
     }
 
@@ -649,6 +696,7 @@ bool MovementAction::Follow(Unit* target, float distance, float angle)
         return false;
     }
 
+    /*
     if (!bot->InBattleGround() 
      && sServerFacade.IsDistanceLessOrEqualThan(sServerFacade.GetDistance2d(bot, target->GetPositionX(), target->GetPositionY()), sPlayerbotAIConfig.sightDistance)
      && abs(bot->GetPositionZ() - target->GetPositionZ()) >= sPlayerbotAIConfig.spellDistance
@@ -699,6 +747,12 @@ bool MovementAction::Follow(Unit* target, float distance, float angle)
         bot->CombatStop(true);
         bot->TeleportTo(target->GetMapId(), target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), target->GetOrientation());
         return false;
+    }
+    */
+
+    if (sServerFacade.IsDistanceGreaterOrEqualThan(sServerFacade.GetDistance2d(bot, target), sPlayerbotAIConfig.sightDistance))
+    {
+        return MoveTo(target, sPlayerbotAIConfig.followDistance);
     }
 
     if (sServerFacade.IsDistanceLessOrEqualThan(sServerFacade.GetDistance2d(bot, target), sPlayerbotAIConfig.followDistance))

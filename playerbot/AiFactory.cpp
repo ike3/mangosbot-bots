@@ -221,11 +221,11 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
             break;
         case CLASS_WARRIOR:
             if (tab == 2)
-                engine->addStrategies("tank", "tank assist", "tank aoe", "close", NULL);
+                engine->addStrategies("tank", "tank assist", "aoe", "close", NULL);
             else if (player->getLevel() < 30 || tab == 0)
-                engine->addStrategies("arms", "arms aoe", "dps assist", "threat", "close", NULL);
+                engine->addStrategies("arms", "aoe", "dps assist", "threat", "close", NULL);
             else
-                engine->addStrategies("fury", "fury aoe", "dps assist", "threat", "close", NULL);
+                engine->addStrategies("fury", "aoe", "dps assist", "threat", "close", NULL);
             break;
         case CLASS_SHAMAN:
             if (tab == 0)
