@@ -30,3 +30,49 @@ void GenericWarriorStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 		"critical health",
 		NextAction::array(0, new NextAction("intimidating shout", ACTION_EMERGENCY), NULL)));*/
 }
+
+class WarrirorAoeStrategyActionNodeFactory : public NamedObjectFactory<ActionNode>
+{
+public:
+    WarrirorAoeStrategyActionNodeFactory()
+    {
+        creators["whirlwind"] = &whirlwind;
+    }
+private:
+    ACTION_NODE_A(whirlwind, "whirlwind", "cleave");
+};
+
+void WarrirorAoeStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+{
+    triggers.push_back(new TriggerNode(
+        "thunder clap on snare target",
+        NextAction::array(0, new NextAction("thunder clap on snare target", ACTION_HIGH + 3), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "thunder clap",
+        NextAction::array(0, new NextAction("thunder clap", ACTION_HIGH + 2), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "medium aoe",
+        NextAction::array(0, new NextAction("demoralizing shout", ACTION_HIGH + 1), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "shockwave on snare target",
+        NextAction::array(0, new NextAction("shockwave on snare target", ACTION_HIGH + 5), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "shockwave",
+        NextAction::array(0, new NextAction("shockwave", ACTION_HIGH + 4), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "light aoe",
+        NextAction::array(0, new NextAction("sweeping strikes", ACTION_HIGH + 3), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "light aoe",
+        NextAction::array(0, new NextAction("bladestorm", ACTION_HIGH + 3), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "light aoe",
+        NextAction::array(0, new NextAction("whirlwind", ACTION_HIGH + 2), NULL)));
+}

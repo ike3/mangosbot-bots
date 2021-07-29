@@ -101,30 +101,3 @@ void ArmsWarriorStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         "critical health",
         NextAction::array(0, new NextAction("intimidating shout", ACTION_EMERGENCY), NULL)));
 }
-
-void ArmsWarrirorAoeStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
-{
-    /*triggers.push_back(new TriggerNode(
-        "rend on attacker",
-        NextAction::array(0, new NextAction("rend on attacker", ACTION_HIGH + 1), NULL)));*/
-
-    triggers.push_back(new TriggerNode(
-        "thunder clap",
-        NextAction::array(0, new NextAction("thunder clap on snare target", ACTION_HIGH + 3), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "medium aoe",
-        NextAction::array(0, new NextAction("thunder clap", ACTION_HIGH + 3), new NextAction("demoralizing shout", ACTION_HIGH + 2), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "light aoe",
-        NextAction::array(0, new NextAction("cleave", ACTION_HIGH + 2), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "light aoe",
-        NextAction::array(0, new NextAction("sweeping strikes", ACTION_HIGH + 3), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "light aoe",
-        NextAction::array(0, new NextAction("bladestorm", ACTION_HIGH + 3), NULL)));
-}
