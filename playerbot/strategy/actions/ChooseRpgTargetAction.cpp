@@ -187,9 +187,9 @@ bool ChooseRpgTargetAction::Execute(Event event)
 #endif  
                 priority = 90;
 #ifndef MANGOSBOT_TWO
-            else if (CanTrain(guid) || dialogStatus == DIALOG_STATUS_AVAILABLE || (AI_VALUE(uint8, "durability") <= 20 || dialogStatus == DIALOG_STATUS_CHAT))
+            else if (CanTrain(guid) || dialogStatus == DIALOG_STATUS_AVAILABLE || (AI_VALUE(uint8, "durability") <= 20 && dialogStatus == DIALOG_STATUS_CHAT))
 #else
-            else if (CanTrain(guid) || dialogStatus == DIALOG_STATUS_AVAILABLE || (AI_VALUE(uint8, "durability") <= 20 || dialogStatus == DIALOG_STATUS_LOW_LEVEL_AVAILABLE))
+            else if (CanTrain(guid) || dialogStatus == DIALOG_STATUS_AVAILABLE || (AI_VALUE(uint8, "durability") <= 20 && dialogStatus == DIALOG_STATUS_LOW_LEVEL_AVAILABLE))
 #endif    
                 priority = 80;
             else if (travelTarget->getDestination() && travelTarget->getDestination()->getEntry() == unit->GetEntry())
