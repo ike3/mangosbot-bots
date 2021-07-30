@@ -83,6 +83,9 @@ namespace ai
         float distance(WorldPosition* center);
         float distance(WorldPosition center) { return distance(&center); };
 
+        float fDist(WorldPosition* center);
+        float fDist(WorldPosition center) { return fDist(&center); };
+
         //Returns the closest point from the list.
         WorldPosition* closest(vector<WorldPosition*> list) { return *std::min_element(list.begin(), list.end(), [this](WorldPosition* i, WorldPosition* j) {return this->distance(i) < this->distance(j); }); }
         WorldPosition closest(vector<WorldPosition> list) { return *std::min_element(list.begin(), list.end(), [this](WorldPosition i, WorldPosition j) {return this->distance(i) < this->distance(j); }); }
@@ -100,6 +103,7 @@ namespace ai
 
         //Quick square distance in 2d plane.
         float sqDistance2d(WorldPosition center) { return (getX() - center.getX()) * (getX() - center.getX()) + (getY() - center.getY()) * (getY() - center.getY()); };
+        float sqDistance2d(WorldPosition* center) { return (getX() - center->getX()) * (getX() - center->getX()) + (getY() - center->getY()) * (getY() - center->getY()); };
 
         //Quick square distance calculation without map check. Used for getting the minimum distant points.
         float sqDistance(WorldPosition center) { return (getX() - center.getX()) * (getX() - center.getX()) + (getY() - center.getY()) * (getY() - center.getY()) + (getZ() - center.getZ()) * (getZ() - center.getZ()); };
@@ -223,6 +227,7 @@ namespace ai
 
         bool isUseful(WorldPosition start, WorldPosition end) { return isFrom(start) && isTo(end); }
         float distance(WorldPosition start, WorldPosition end) { return (isUseful(start, end) ? (start.distance(pointFrom) + portalLength + pointTo.distance(end)) : 200000); }
+        float fDist(WorldPosition start, WorldPosition end) { return start.fDist(pointFrom) + portalLength * portalLength + pointTo.fDist(end); }
     private:
         WorldPosition pointFrom, pointTo;
         float portalLength = 0.1f;
@@ -596,6 +601,7 @@ namespace ai
         void addMapTransfer(WorldPosition start, WorldPosition end, float portalDistance = 0.1f, bool makeShortcuts = true);
         void loadMapTransfers();
         float mapTransDistance(WorldPosition start, WorldPosition end);
+        float fastMapTransDistance(WorldPosition start, WorldPosition end);
 
         NullTravelDestination* nullTravelDestination = new NullTravelDestination();
         WorldPosition* nullWorldPosition = new WorldPosition();

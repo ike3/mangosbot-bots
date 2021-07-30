@@ -134,6 +134,7 @@
         float getO() { return point.getO(); }
         float getDistance(WorldPosition* pos) { return point.distance(pos); }
         float getDistance(TravelNode* node) { return point.distance(node->getPosition()); }
+        float fDist(TravelNode* node) { return point.fDist(node->getPosition()); }
 
         TravelNodePath* setPathTo(TravelNode* node, TravelNodePath path = TravelNodePath(), bool isLink = true) { if (this != node) { paths.insert_or_assign(node, path); TravelNodePath* tPath = &paths.find(node)->second;  if (isLink) links.insert_or_assign(node, tPath); return tPath; } else return nullptr; }
         bool hasPathTo(TravelNode* node) { return paths.find(node) != paths.end(); }
@@ -254,13 +255,13 @@
     public:
         TravelNodeStub(TravelNode* dataNode1) { dataNode = dataNode1; }
 
-        void addChild(TravelNodeStub* stub, float weight) { children.push_back(make_pair(stub, weight)); }
+        //void addChild(TravelNodeStub* stub, float weight) { children.push_back(make_pair(stub, weight)); }
 
         TravelNode* dataNode;
         float m_f = 0.0, m_g = 0.0, m_h = 0.0;
         bool open = false, close = false;
         TravelNodeStub* parent = nullptr;
-        vector<pair<TravelNodeStub*, float>> children;
+        //vector<pair<TravelNodeStub*, float>> children;
     };
 
     //The container of all nodes.

@@ -1032,6 +1032,7 @@ TravelNodeRoute TravelNodeMap::getRoute(TravelNode* start, TravelNode* goal, Uni
     //Basic A* algoritm
     std::unordered_map<TravelNode*, TravelNodeStub> m_stubs;
 
+    /*
     for (auto& node : m_nodes)
     {
         m_stubs.insert(make_pair(node, TravelNodeStub(node)));
@@ -1052,9 +1053,10 @@ TravelNodeRoute TravelNodeMap::getRoute(TravelNode* start, TravelNode* goal, Uni
             }
         }
     }
+    */
 
-    TravelNodeStub* startStub = &m_stubs.find(start)->second;
-    TravelNodeStub* goalStub = &m_stubs.find(goal)->second;
+    
+    TravelNodeStub* startStub = &m_stubs.insert(make_pair(start, TravelNodeStub(start))).first->second;
 
     TravelNodeStub* currentNode, * childNode;
     float f, g, h;
@@ -1080,7 +1082,7 @@ TravelNodeRoute TravelNodeMap::getRoute(TravelNode* start, TravelNode* goal, Uni
         currentNode->close = true;
         closed.push_back(currentNode);
 
-        if (currentNode == goalStub)
+        if (currentNode->dataNode == goal)
         {
             TravelNodeStub* parent = currentNode->parent;
 
@@ -1099,14 +1101,20 @@ TravelNodeRoute TravelNodeMap::getRoute(TravelNode* start, TravelNode* goal, Uni
             return TravelNodeRoute(path);
         }
 
-        for (const auto& children : currentNode->children)// for each successor n' of n
+        for (const auto& link : *currentNode->dataNode->getLinks())// for each successor n' of n
         {
-            childNode = static_cast<TravelNodeStub*>(children.first);
-            g = currentNode->m_g + children.second; // stance from start + distance between the two nodes
+            TravelNode* linkNode = link.first;
+            float linkCost = link.second->getCost(bot);
+
+            if (linkCost <= 0)
+                continue;
+
+            childNode = &m_stubs.insert(make_pair(linkNode, TravelNodeStub(linkNode))).first->second;
+            g = currentNode->m_g + linkCost; // stance from start + distance between the two nodes
             if ((childNode->open || childNode->close) && childNode->m_g <= g) // n' is already in opend or closed with a lower cost g(n')
                 continue; // consider next successor
 
-            h = childNode->dataNode->getDistance(goalStub->dataNode) / botSpeed;
+            h = sqrt(childNode->dataNode->fDist(goal)) / botSpeed;
             f = g + h; // compute f(n')
             childNode->m_f = f;
             childNode->m_g = g;

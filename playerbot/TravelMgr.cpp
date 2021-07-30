@@ -111,6 +111,15 @@ float WorldPosition::distance(WorldPosition* center)
     return sTravelMgr.mapTransDistance(*this, *center);
 };
 
+float WorldPosition::fDist(WorldPosition* center)
+{
+    if (wLoc.mapid == center->getMapId())
+        return sqDistance2d(center);
+
+    //this -> mapTransfer | mapTransfer -> center
+    return sTravelMgr.fastMapTransDistance(*this, *center);
+};
+
 //When moving from this along list return last point that falls within range.
 //Distance is move distance along path.
 WorldPosition WorldPosition::lastInRange(vector<WorldPosition> list, float minDist, float maxDist)
@@ -3273,6 +3282,32 @@ float TravelMgr::mapTransDistance(WorldPosition start, WorldPosition end)
         if (dist < minDist)
             minDist = dist;
     }    
+
+    return minDist;
+}
+
+float TravelMgr::fastMapTransDistance(WorldPosition start, WorldPosition end)
+{
+    uint32 sMap = start.getMapId();
+    uint32 eMap = end.getMapId();
+
+    if (sMap == eMap)
+        return start.fDist(end);
+
+    float minDist = 200000* 200000;
+
+    auto mapTransfers = mapTransfersMap.find({ sMap, eMap });
+
+    if (mapTransfers == mapTransfersMap.end())
+        return minDist;
+
+    for (auto& mapTrans : mapTransfers->second)
+    {
+        float dist = mapTrans.fDist(start, end);
+
+        if (dist < minDist)
+            minDist = dist;
+    }
 
     return minDist;
 }
