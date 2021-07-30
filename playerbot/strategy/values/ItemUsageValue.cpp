@@ -23,7 +23,7 @@ ItemUsage ItemUsageValue::Calculate()
         if (stacks < 1 && AI_VALUE(uint8, "bag space") < 50)
             return ITEM_USAGE_SKILL; //Buy more.
         if (stacks < 2)
-            return ITEM_USAGE_NONE; //Keep current amount.
+            return ITEM_USAGE_KEEP; //Keep current amount.
     }
 
     if (proto->Class == ITEM_CLASS_KEY)
@@ -51,7 +51,7 @@ ItemUsage ItemUsageValue::Calculate()
                 if (stacks < 2) 
                     return ITEM_USAGE_USE; //Buy some to get to 2 stacks
                 else if (stacks < 3)       //Keep the item if less than 3 stacks
-                    return ITEM_USAGE_NONE;
+                    return ITEM_USAGE_KEEP;
             }
         }
     }
@@ -104,7 +104,7 @@ ItemUsage ItemUsageValue::Calculate()
                         if (ammo < needAmmo)         //Buy ammo to get to the proper supply
                             return ITEM_USAGE_AMMO;
                         else if (ammo < needAmmo + 1)
-                            return ITEM_USAGE_NONE;  //Keep the ammo until we have too much.
+                            return ITEM_USAGE_KEEP;  //Keep the ammo until we have too much.
                     }
                 }
             }
