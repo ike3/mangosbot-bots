@@ -174,11 +174,20 @@ void PlayerbotAI::UpdateAI(uint32 elapsed)
         nextAICheckDelay = 0;
 
     // wake up if in combat
-    if (sServerFacade.IsInCombat(bot) && !AllowActivity())
+    if (sServerFacade.IsInCombat(bot))
     {
-        if (AllowActivity(ALL_ACTIVITY, true))
+        if (!inCombat)
             nextAICheckDelay = 0;
+        else if (!AllowActivity())
+        {
+            if (AllowActivity(ALL_ACTIVITY, true))
+                nextAICheckDelay = 0;
+        }
+
+        inCombat = true;
     }
+    else
+        inCombat = false;
 
     if (!CanUpdateAI())
         return;
