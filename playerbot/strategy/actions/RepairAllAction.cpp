@@ -51,11 +51,14 @@ bool RepairAllAction::Execute(Event event)
 #endif
         );
 
-        ostringstream out;
-        out << "Repair: " << chat->formatMoney(totalCost) << " (" << unit->GetName() << ")";
-        ai->TellMasterNoFacing(out.str());
+        if (totalCost > 0)
+        {
+            ostringstream out;
+            out << "Repair: " << chat->formatMoney(totalCost) << " (" << unit->GetName() << ")";
+            ai->TellMasterNoFacing(out.str());
 
-        bot->PlayDistanceSound(1116);
+            bot->PlayDistanceSound(1116);
+        }
 
         return true;
     }
