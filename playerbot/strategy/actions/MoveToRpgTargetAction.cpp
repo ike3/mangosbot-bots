@@ -65,11 +65,22 @@ bool MoveToRpgTargetAction::Execute(Event event)
     y += sin(angle) * sPlayerbotAIConfig.followDistance;
     
     //WaitForReach(distance);
+
+    bool couldMove;
     
     if (bot->IsWithinLOS(x, y, z))
-        return MoveNear(mapId, x , y, z, 0);
+        couldMove = MoveNear(mapId, x , y, z, 0);
     else
-        return MoveTo(mapId, x, y, z, false, false);
+        couldMove = MoveTo(mapId, x, y, z, false, false);
+
+    if (!couldMove)
+    {
+        context->GetValue<set<ObjectGuid>&>("ignore rpg target")->Get().insert(AI_VALUE(ObjectGuid, "rpg target"));
+
+        context->GetValue<ObjectGuid>("rpg target")->Set(ObjectGuid());
+    }
+
+    return couldMove;
 }
 
 bool MoveToRpgTargetAction::isUseful()
@@ -77,7 +88,7 @@ bool MoveToRpgTargetAction::isUseful()
     return context->GetValue<ObjectGuid>("rpg target")->Get()
         && !context->GetValue<TravelTarget*>("travel target")->Get()->isTraveling()
         && AI_VALUE2(float, "distance", "rpg target") > sPlayerbotAIConfig.followDistance
-        && AI_VALUE2(uint8, "health", "self target") > sPlayerbotAIConfig.almostFullHealth 
+        && AI_VALUE2(uint8, "health", "self target") > sPlayerbotAIConfig.almostFullHealth
         && (!AI_VALUE2(uint8, "mana", "self target") || AI_VALUE2(uint8, "mana", "self target") > sPlayerbotAIConfig.mediumMana)
         && !bot->IsInCombat();
 }
