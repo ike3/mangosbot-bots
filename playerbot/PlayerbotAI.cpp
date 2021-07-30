@@ -1276,8 +1276,13 @@ bool PlayerbotAI::CanCastSpell(uint32 spellid, Unit* target, uint8 effectMask, b
 	Spell *spell = new Spell(bot, spellInfo, false);
 
     spell->m_targets.setUnitTarget(target);
+#ifndef MANGOSBOT_ONE
     spell->m_CastItem = itemTarget ? itemTarget : aiObjectContext->GetValue<Item*>("item for spell", spellid)->Get();
     spell->m_targets.setItemTarget(spell->m_CastItem);
+#else
+    spell->SetCastItem(itemTarget ? itemTarget : aiObjectContext->GetValue<Item*>("item for spell", spellid)->Get());
+    spell->m_targets.setItemTarget(spell->GetCastItem());
+#endif
 
     SpellCastResult result = spell->CheckCast(true);
     delete spell;
@@ -1328,8 +1333,13 @@ bool PlayerbotAI::CanCastSpell(uint32 spellid, float x, float y, float z, uint8 
     Spell* spell = new Spell(bot, spellInfo, false);
 
     spell->m_targets.setDestination(x, y, z);
+#ifndef MANGOSBOT_ONE
     spell->m_CastItem = itemTarget ? itemTarget : aiObjectContext->GetValue<Item*>("item for spell", spellid)->Get();
     spell->m_targets.setItemTarget(spell->m_CastItem);
+#else
+    spell->SetCastItem(itemTarget ? itemTarget : aiObjectContext->GetValue<Item*>("item for spell", spellid)->Get());
+    spell->m_targets.setItemTarget(spell->GetCastItem());
+#endif
 
     SpellCastResult result = spell->CheckCast(true);
     delete spell;
@@ -1448,8 +1458,13 @@ bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target, Item* itemTarget)
     SpellCastTargets targets;
     if (pSpellInfo->Targets & TARGET_FLAG_ITEM)
     {
+#ifndef MANGOSBOT_ONE
         spell->m_CastItem = itemTarget ? itemTarget : aiObjectContext->GetValue<Item*>("item for spell", spellId)->Get();
         targets.setItemTarget(spell->m_CastItem);
+#else
+        spell->SetCastItem(itemTarget ? itemTarget : aiObjectContext->GetValue<Item*>("item for spell", spellId)->Get());
+        targets.setItemTarget(spell->GetCastItem());
+#endif
 
         if (bot->GetTradeData())
         {
@@ -1610,8 +1625,13 @@ bool PlayerbotAI::CastSpell(uint32 spellId, float x, float y, float z, Item* ite
     SpellCastTargets targets;
     if (pSpellInfo->Targets & TARGET_FLAG_ITEM)
     {
+#ifndef MANGOSBOT_ONE
         spell->m_CastItem = itemTarget ? itemTarget : aiObjectContext->GetValue<Item*>("item for spell", spellId)->Get();
         targets.setItemTarget(spell->m_CastItem);
+#else
+        spell->SetCastItem(itemTarget ? itemTarget : aiObjectContext->GetValue<Item*>("item for spell", spellId)->Get());
+        targets.setItemTarget(spell->GetCastItem());
+#endif
 
         if (bot->GetTradeData())
         {
