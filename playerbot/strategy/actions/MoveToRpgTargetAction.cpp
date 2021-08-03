@@ -85,12 +85,23 @@ bool MoveToRpgTargetAction::Execute(Event event)
 
 bool MoveToRpgTargetAction::isUseful()
 {
+    Unit* unit = ai->GetUnit(AI_VALUE(ObjectGuid, "rpg target"));
+    GameObject* go = ai->GetGameObject(AI_VALUE(ObjectGuid, "rpg target"));
+    WorldObject* wo;
+    if (unit)
+        wo = unit;
+    else if (go)
+        wo = go;
+    else
+        return false;
+
     return context->GetValue<ObjectGuid>("rpg target")->Get()
         && !context->GetValue<TravelTarget*>("travel target")->Get()->isTraveling()
         && AI_VALUE2(float, "distance", "rpg target") > sPlayerbotAIConfig.followDistance
         && AI_VALUE2(uint8, "health", "self target") > sPlayerbotAIConfig.almostFullHealth
         && (!AI_VALUE2(uint8, "mana", "self target") || AI_VALUE2(uint8, "mana", "self target") > sPlayerbotAIConfig.mediumMana)
-        && !bot->IsInCombat();
+        && !bot->IsInCombat()
+        && ChooseRpgTargetAction::isFollowValid(bot, wo);
 }
 
 
