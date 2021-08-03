@@ -5,6 +5,8 @@
 #include "../../../ahbot/AhBot.h"
 #include "../../GuildTaskMgr.h"
 #include "../../RandomItemMgr.h"
+#include "../../ServerFacade.h"
+
 using namespace ai;
 
 ItemUsage ItemUsageValue::Calculate()
@@ -17,10 +19,10 @@ ItemUsage ItemUsageValue::Calculate()
     if (!proto)
         return ITEM_USAGE_NONE;
 
-    if (IsItemUsefulForSkill(proto))
+    if (IsItemNeededForSkill(proto) || (IsItemUsefulForSkill(proto) && (AI_VALUE(uint8, "bag space") < 50 || IsItemNeededForUsefullSpell(proto, true))))
     {
         float stacks = CurrentStacks(proto);
-        if (stacks < 1 && AI_VALUE(uint8, "bag space") < 50)
+        if (stacks < 1)
             return ITEM_USAGE_SKILL; //Buy more.
         if (stacks < 2)
             return ITEM_USAGE_KEEP; //Keep current amount.
@@ -30,20 +32,13 @@ ItemUsage ItemUsageValue::Calculate()
         return ITEM_USAGE_USE;
 
     if (proto->Class == ITEM_CLASS_CONSUMABLE)
-    {
-        string foodType = "";
-        if (proto->Spells[0].SpellCategory == 11)
-            foodType = "food";
-        else if (proto->Spells[0].SpellCategory == 59 && bot->HasMana())
-            foodType = "drink";
-        else if (proto->Spells[0].SpellCategory == SPELL_EFFECT_ENERGIZE && bot->HasMana())
-            foodType = "mana potion";
-        else if (proto->Spells[0].SpellCategory == SPELL_EFFECT_HEAL)
-            foodType = "healing potion";
+    {       
+        string foodType = GetConsumableType(proto, bot->HasMana());
 
         if (!foodType.empty() && bot->CanUseItem(proto) == EQUIP_ERR_OK)
         {
             float stacks = BetterStacks(proto, foodType);
+
             if (stacks < 2)
             {
                 stacks += CurrentStacks(proto);
@@ -62,8 +57,6 @@ ItemUsage ItemUsageValue::Calculate()
     ItemUsage equip = QueryItemUsageForEquip(proto);
     if (equip != ITEM_USAGE_NONE)
         return equip;
-
-
 
     if ((proto->Class == ITEM_CLASS_ARMOR || proto->Class == ITEM_CLASS_WEAPON) && proto->Bonding != BIND_WHEN_PICKED_UP &&
         ai->HasSkill(SKILL_ENCHANTING) && proto->Quality >= ITEM_QUALITY_UNCOMMON)
@@ -195,7 +188,7 @@ ItemUsage ItemUsageValue::QueryItemUsageForEquip(ItemPrototype const* item)
         case ITEM_CLASS_ARMOR:
             if (oldItem->SubClass <= item->SubClass) {
                 if (shouldEquip)
-                    if(CurrentItem(item) && CurrentItem(item)->GetUInt32Value(ITEM_FIELD_DURABILITY) == 0)
+                    if(CurrentItem(item) && CurrentItem(item)->GetUInt32Value(ITEM_FIELD_DURABILITY) == 0 && CurrentItem(item)->GetUInt32Value(ITEM_FIELD_MAXDURABILITY) > 0)
                         return ITEM_USAGE_BROKEN_EQUIP;
                     else
                         return ITEM_USAGE_REPLACE;
@@ -225,7 +218,7 @@ ItemUsage ItemUsageValue::QueryItemUsageForEquip(ItemPrototype const* item)
 uint32 ItemUsageValue::GetSmallestBagSize()
 {
     int8 curSlot = 0;
-    int8 curSlots = 0;
+    uint32 curSlots = 0;
     for (uint8 bag = INVENTORY_SLOT_BAG_START + 1; bag < INVENTORY_SLOT_BAG_END; ++bag)
     {
         const Bag* const pBag = (Bag*)bot->GetItemByPos(INVENTORY_SLOT_BAG_0, bag);
@@ -268,7 +261,7 @@ bool ItemUsageValue::IsItemUsefulForQuest(Player* player, ItemPrototype const* p
     return false;
 }
 
-bool ItemUsageValue::IsItemUsefulForSkill(ItemPrototype const * proto)
+bool ItemUsageValue::IsItemNeededForSkill(ItemPrototype const* proto)
 {
     switch (proto->ItemId)
     {
@@ -288,84 +281,147 @@ bool ItemUsageValue::IsItemUsefulForSkill(ItemPrototype const * proto)
         return ai->HasSkill(SKILL_COOKING);
     case 6256: //Fishing Rod
         return ai->HasSkill(SKILL_FISHING);
-    }    
+    }
 
+    return false;
+}
+
+
+bool ItemUsageValue::IsItemUsefulForSkill(ItemPrototype const* proto)
+{
     switch (proto->Class)
     {
     case ITEM_CLASS_TRADE_GOODS:
     case ITEM_CLASS_MISC:
     case ITEM_CLASS_REAGENT:
-        {
-            if (ai->HasSkill(SKILL_TAILORING) && auctionbot.IsUsedBySkill(proto, SKILL_TAILORING))
-                return true;
-            if (ai->HasSkill(SKILL_LEATHERWORKING) && auctionbot.IsUsedBySkill(proto, SKILL_LEATHERWORKING))
-                return true;
-            if (ai->HasSkill(SKILL_ENGINEERING) && auctionbot.IsUsedBySkill(proto, SKILL_ENGINEERING))
-                return true;
-            if (ai->HasSkill(SKILL_BLACKSMITHING) && auctionbot.IsUsedBySkill(proto, SKILL_BLACKSMITHING))
-                return true;
-            if (ai->HasSkill(SKILL_ALCHEMY) && auctionbot.IsUsedBySkill(proto, SKILL_ALCHEMY))
-                return true;
-            if (ai->HasSkill(SKILL_ENCHANTING) && auctionbot.IsUsedBySkill(proto, SKILL_ENCHANTING))
-                return true;
-            if (ai->HasSkill(SKILL_FISHING) && auctionbot.IsUsedBySkill(proto, SKILL_FISHING))
-                return true;
-            if (ai->HasSkill(SKILL_FIRST_AID) && auctionbot.IsUsedBySkill(proto, SKILL_FIRST_AID))
-                return true;
-            if (ai->HasSkill(SKILL_COOKING) && auctionbot.IsUsedBySkill(proto, SKILL_COOKING))
-                return true;
+    {
+        return IsItemNeededForUsefullSpell(proto, false);
+            
+        /*
+        if (ai->HasSkill(SKILL_TAILORING) && auctionbot.IsUsedBySkill(proto, SKILL_TAILORING))
+            return true;
+        if (ai->HasSkill(SKILL_LEATHERWORKING) && auctionbot.IsUsedBySkill(proto, SKILL_LEATHERWORKING))
+            return true;
+        if (ai->HasSkill(SKILL_ENGINEERING) && auctionbot.IsUsedBySkill(proto, SKILL_ENGINEERING))
+            return true;
+        if (ai->HasSkill(SKILL_BLACKSMITHING) && auctionbot.IsUsedBySkill(proto, SKILL_BLACKSMITHING))
+            return true;
+        if (ai->HasSkill(SKILL_ALCHEMY) && auctionbot.IsUsedBySkill(proto, SKILL_ALCHEMY))
+            return true;
+        if (ai->HasSkill(SKILL_ENCHANTING) && auctionbot.IsUsedBySkill(proto, SKILL_ENCHANTING))
+            return true;
+        if (ai->HasSkill(SKILL_FISHING) && auctionbot.IsUsedBySkill(proto, SKILL_FISHING))
+            return true;
+        if (ai->HasSkill(SKILL_FIRST_AID) && auctionbot.IsUsedBySkill(proto, SKILL_FIRST_AID))
+            return true;
+        if (ai->HasSkill(SKILL_COOKING) && auctionbot.IsUsedBySkill(proto, SKILL_COOKING))
+            return true;
 #ifndef MANGOSBOT_ZERO
-            if (ai->HasSkill(SKILL_JEWELCRAFTING) && auctionbot.IsUsedBySkill(proto, SKILL_JEWELCRAFTING))
-                return true;
+        if (ai->HasSkill(SKILL_JEWELCRAFTING) && auctionbot.IsUsedBySkill(proto, SKILL_JEWELCRAFTING))
+            return true;
 #endif
-            if (ai->HasSkill(SKILL_MINING) &&
-                    (
-                            auctionbot.IsUsedBySkill(proto, SKILL_MINING) ||
-                            auctionbot.IsUsedBySkill(proto, SKILL_BLACKSMITHING) ||
+        if (ai->HasSkill(SKILL_MINING) &&
+            (
+                auctionbot.IsUsedBySkill(proto, SKILL_MINING) ||
+                auctionbot.IsUsedBySkill(proto, SKILL_BLACKSMITHING) ||
 #ifndef MANGOSBOT_ZERO
-                            auctionbot.IsUsedBySkill(proto, SKILL_JEWELCRAFTING) ||
+                auctionbot.IsUsedBySkill(proto, SKILL_JEWELCRAFTING) ||
 #endif
-                            auctionbot.IsUsedBySkill(proto, SKILL_ENGINEERING)
-                    ))
-                return true;
-            if (ai->HasSkill(SKILL_SKINNING) &&
-                    (auctionbot.IsUsedBySkill(proto, SKILL_SKINNING) || auctionbot.IsUsedBySkill(proto, SKILL_LEATHERWORKING)))
-                return true;
-            if (ai->HasSkill(SKILL_HERBALISM) &&
-                    (auctionbot.IsUsedBySkill(proto, SKILL_HERBALISM) || auctionbot.IsUsedBySkill(proto, SKILL_ALCHEMY)))
-                return true;
-
-            return false;
-        }
+                auctionbot.IsUsedBySkill(proto, SKILL_ENGINEERING)
+                ))
+            return true;
+        if (ai->HasSkill(SKILL_SKINNING) &&
+            (auctionbot.IsUsedBySkill(proto, SKILL_SKINNING) || auctionbot.IsUsedBySkill(proto, SKILL_LEATHERWORKING)))
+            return true;
+        if (ai->HasSkill(SKILL_HERBALISM) &&
+            (auctionbot.IsUsedBySkill(proto, SKILL_HERBALISM) || auctionbot.IsUsedBySkill(proto, SKILL_ALCHEMY)))
+            return true;
+            */
+    }
     case ITEM_CLASS_RECIPE:
-        {
-            if (bot->HasSpell(proto->Spells[2].SpellId))
-                break;
+    {
+        if (bot->HasSpell(proto->Spells[2].SpellId))
+            break;
 
-            switch (proto->SubClass)
-            {
-            case ITEM_SUBCLASS_LEATHERWORKING_PATTERN:
-                return ai->HasSkill(SKILL_LEATHERWORKING);
-            case ITEM_SUBCLASS_TAILORING_PATTERN:
-                return ai->HasSkill(SKILL_TAILORING);
-            case ITEM_SUBCLASS_ENGINEERING_SCHEMATIC:
-                return ai->HasSkill(SKILL_ENGINEERING);
-            case ITEM_SUBCLASS_BLACKSMITHING:
-                return ai->HasSkill(SKILL_BLACKSMITHING);
-            case ITEM_SUBCLASS_COOKING_RECIPE:
-                return ai->HasSkill(SKILL_COOKING);
-            case ITEM_SUBCLASS_ALCHEMY_RECIPE:
-                return ai->HasSkill(SKILL_ALCHEMY);
-            case ITEM_SUBCLASS_FIRST_AID_MANUAL:
-                return ai->HasSkill(SKILL_FIRST_AID);
-            case ITEM_SUBCLASS_ENCHANTING_FORMULA:
-                return ai->HasSkill(SKILL_ENCHANTING);
-            case ITEM_SUBCLASS_FISHING_MANUAL:
-                return ai->HasSkill(SKILL_FISHING);
-            }
+        switch (proto->SubClass)
+        {
+        case ITEM_SUBCLASS_LEATHERWORKING_PATTERN:
+            return ai->HasSkill(SKILL_LEATHERWORKING);
+        case ITEM_SUBCLASS_TAILORING_PATTERN:
+            return ai->HasSkill(SKILL_TAILORING);
+        case ITEM_SUBCLASS_ENGINEERING_SCHEMATIC:
+            return ai->HasSkill(SKILL_ENGINEERING);
+        case ITEM_SUBCLASS_BLACKSMITHING:
+            return ai->HasSkill(SKILL_BLACKSMITHING);
+        case ITEM_SUBCLASS_COOKING_RECIPE:
+            return ai->HasSkill(SKILL_COOKING);
+        case ITEM_SUBCLASS_ALCHEMY_RECIPE:
+            return ai->HasSkill(SKILL_ALCHEMY);
+        case ITEM_SUBCLASS_FIRST_AID_MANUAL:
+            return ai->HasSkill(SKILL_FIRST_AID);
+        case ITEM_SUBCLASS_ENCHANTING_FORMULA:
+            return ai->HasSkill(SKILL_ENCHANTING);
+        case ITEM_SUBCLASS_FISHING_MANUAL:
+            return ai->HasSkill(SKILL_FISHING);
         }
     }
+    }
     return false;
+}
+
+bool ItemUsageValue::IsItemNeededForUsefullSpell(ItemPrototype const* proto, bool checkAllReagents)
+{
+    for (auto spellId : SpellsUsingItem(proto->ItemId, bot))
+    {
+        const SpellEntry* pSpellInfo = sServerFacade.LookupSpellInfo(spellId);
+
+        if (!pSpellInfo)
+            continue;
+
+        if (checkAllReagents && !HasItemsNeededForSpell(spellId, proto))
+            continue;
+
+        if (SpellGivesSkillUp(spellId, bot))
+            return true;
+
+        uint32 newItemId = *pSpellInfo->EffectItemType;
+
+        if (newItemId && newItemId != proto->ItemId)
+        {
+            ItemUsage usage = AI_VALUE2(ItemUsage, "item usage", newItemId);
+
+            if (usage != ITEM_USAGE_REPLACE && usage != ITEM_USAGE_EQUIP && usage != ITEM_USAGE_AMMO && usage != ITEM_USAGE_QUEST && usage != ITEM_USAGE_SKILL && usage != ITEM_USAGE_USE)
+                continue;
+
+            return true;
+        }
+    }
+
+    return false;
+}
+
+bool ItemUsageValue::HasItemsNeededForSpell(uint32 spellId, ItemPrototype const* proto)
+{
+    const SpellEntry* pSpellInfo = sServerFacade.LookupSpellInfo(spellId);
+
+    if (!pSpellInfo)
+        return false;
+
+    for (uint8 i = 0; i < MAX_SPELL_REAGENTS; i++)
+        if (pSpellInfo->ReagentCount[i] > 0 && pSpellInfo->Reagent[i])
+        {
+            if (proto && proto->ItemId == pSpellInfo->Reagent[i] && pSpellInfo->ReagentCount[i] == 1) //If we only need 1 item then current item does not need to be checked since we are looting/buying or already have it.
+                continue;
+
+            const ItemPrototype* reqProto = sObjectMgr.GetItemPrototype(pSpellInfo->Reagent[i]);
+
+            uint32 count = AI_VALUE2(uint32, "item count", reqProto->Name1);
+
+            if (count < pSpellInfo->ReagentCount[i])
+                return false;
+        }
+
+    return true;
 }
 
 Item* ItemUsageValue::CurrentItem(ItemPrototype const* proto)
@@ -427,4 +483,104 @@ float ItemUsageValue::BetterStacks(ItemPrototype const* proto, string itemType)
     }
 
     return stacks;
+}
+
+
+vector<uint32> ItemUsageValue::SpellsUsingItem(uint32 itemId, Player* bot)
+{
+    vector<uint32> retSpells;
+
+    PlayerSpellMap const& spellMap = bot->GetSpellMap();
+
+    for (auto& spell : spellMap)
+    {
+        uint32 spellId = spell.first;
+
+        if (spell.second.state == PLAYERSPELL_REMOVED || spell.second.disabled || IsPassiveSpell(spellId))
+            continue;
+
+        const SpellEntry* pSpellInfo = sServerFacade.LookupSpellInfo(spellId);
+        if (!pSpellInfo)
+            continue;
+
+        if (pSpellInfo->Effect[0] != SPELL_EFFECT_CREATE_ITEM)
+            continue;
+
+        for (uint8 i = 0; i < MAX_SPELL_REAGENTS; i++)
+            if (pSpellInfo->ReagentCount[i] > 0 && pSpellInfo->Reagent[i] == itemId)
+                retSpells.push_back(spellId);
+    }
+
+    return retSpells;
+}
+
+inline int SkillGainChance(uint32 SkillValue, uint32 GrayLevel, uint32 GreenLevel, uint32 YellowLevel)
+{
+    if (SkillValue >= GrayLevel)
+        return sWorld.getConfig(CONFIG_UINT32_SKILL_CHANCE_GREY) * 10;
+    if (SkillValue >= GreenLevel)
+        return sWorld.getConfig(CONFIG_UINT32_SKILL_CHANCE_GREEN) * 10;
+    if (SkillValue >= YellowLevel)
+        return sWorld.getConfig(CONFIG_UINT32_SKILL_CHANCE_YELLOW) * 10;
+    return sWorld.getConfig(CONFIG_UINT32_SKILL_CHANCE_ORANGE) * 10;
+}
+
+bool ItemUsageValue::SpellGivesSkillUp(uint32 spellId, Player* bot)
+{
+    SkillLineAbilityMapBounds bounds = sSpellMgr.GetSkillLineAbilityMapBoundsBySpellId(spellId);
+
+    for (SkillLineAbilityMap::const_iterator _spell_idx = bounds.first; _spell_idx != bounds.second; ++_spell_idx)
+    {
+        SkillLineAbilityEntry const* skill = _spell_idx->second;
+        if (skill->skillId)
+        {
+            uint32 SkillValue = bot->GetSkillValuePure(skill->skillId);
+
+            uint32 craft_skill_gain = sWorld.getConfig(CONFIG_UINT32_SKILL_GAIN_CRAFTING);
+
+            if (SkillGainChance(SkillValue,
+                skill->max_value,
+                (skill->max_value + skill->min_value) / 2,
+                skill->min_value) > 0)
+                return true;
+        }
+    }
+
+    return false;
+}
+
+string ItemUsageValue::GetConsumableType(ItemPrototype const* proto, bool hasMana)
+{
+    string foodType = "";
+
+    if ((proto->SubClass == ITEM_SUBCLASS_CONSUMABLE || proto->SubClass == ITEM_SUBCLASS_FOOD))
+    {
+        if (proto->Spells[0].SpellCategory == 11)
+            return "food";
+        else if (proto->Spells[0].SpellCategory == 59 && hasMana)
+            return "drink";
+    }
+
+    if (proto->SubClass == ITEM_SUBCLASS_POTION || proto->SubClass == ITEM_SUBCLASS_FLASK)
+    {
+        for (int j = 0; j < MAX_ITEM_PROTO_SPELLS; j++)
+        {
+            const SpellEntry* const spellInfo = sServerFacade.LookupSpellInfo(proto->Spells[j].SpellId);
+            if (spellInfo)
+                for (int i = 0; i < 3; i++)
+                {
+                    if (spellInfo->Effect[i] == SPELL_EFFECT_ENERGIZE && hasMana)
+                        return "mana potion";
+                    if (spellInfo->Effect[i] == SPELL_EFFECT_HEAL)
+                        return "healing potion";
+                }
+        }
+    }
+
+    if (proto->SubClass == ITEM_SUBCLASS_BANDAGE)
+    {
+        return "bandage";
+    }
+
+    return "";
 }

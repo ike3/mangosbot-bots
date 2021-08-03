@@ -2,6 +2,7 @@
 
 #include "../Action.h"
 #include "InventoryAction.h"
+#include "../values/ItemUsageValue.h"
 
 namespace ai
 {
@@ -28,6 +29,7 @@ namespace ai
     public:
         CastRandomSpellAction(PlayerbotAI* ai, string name = "cast random spell") : CastCustomSpellAction(ai, name) {}
         virtual bool AcceptSpell(const SpellEntry* pSpellInfo) { return true; }
+        virtual uint32 GetSpellPriority(const SpellEntry* pSpellInfo) { return 1; }
         virtual bool Execute(Event event);
     protected:
         bool MultiCast = false;
@@ -47,6 +49,25 @@ namespace ai
 #else
             pSpellInfo->SchoolMask == 1;
 #endif
+        }
+
+        virtual uint32 GetSpellPriority(const SpellEntry* pSpellInfo) { 
+            if (pSpellInfo->Effect[0] != SPELL_EFFECT_CREATE_ITEM)
+            {
+                uint32 newItemId = *pSpellInfo->EffectItemType;
+
+                if (newItemId)
+                {
+                    ItemUsage usage = AI_VALUE2(ItemUsage, "item usage", newItemId);
+
+                    if (usage == ITEM_USAGE_REPLACE || usage == ITEM_USAGE_EQUIP || usage == ITEM_USAGE_AMMO || usage == ITEM_USAGE_QUEST || usage == ITEM_USAGE_SKILL || usage == ITEM_USAGE_USE)
+                        return 10;
+                }
+
+                if (ItemUsageValue::SpellGivesSkillUp(pSpellInfo->Id, bot))
+                    return 8;
+            }
+            return 1;
         }
     };
 }
