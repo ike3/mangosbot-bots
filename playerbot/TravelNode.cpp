@@ -13,24 +13,25 @@
 using namespace ai;
 using namespace MaNGOS;
 
-TravelNodePath::TravelNodePath(float distance1, float extraCost1, bool portal1, uint32 portalId1, bool transport1, bool calculated1, uint32 maxLevelMob1, uint32 maxLevelAlliance1, uint32 maxLevelHorde1, float swimDistance1)
+TravelNodePath::TravelNodePath(float distance1, float extraCost1, bool portal1, uint32 portalId1, bool transport1, bool calculated1, uint32 maxLevelMob1, uint32 maxLevelAlliance1, uint32 maxLevelHorde1, float swimDistance1, bool flightPath1)
 {
     distance = distance1; 
     extraCost = extraCost1;
     portal = portal1; 
     portalId = portalId1; 
     transport = transport1;  
+    flightPath = flightPath1;
     calculated = calculated1;
     maxLevelMob = maxLevelMob1;
     maxLevelAlliance = maxLevelAlliance1; 
     maxLevelHorde = maxLevelHorde1;
     swimDistance = swimDistance1;
 
-    if (portal || transport)
+    if (portal || transport || flightPath)
         complete = true;
 }
 
-TravelNodePath::TravelNodePath(vector<WorldPosition> path1, float extraCost1, bool portal1, uint32 portalId1, bool transport1, uint32 moveSpeed)
+TravelNodePath::TravelNodePath(vector<WorldPosition> path1, float extraCost1, bool portal1, uint32 portalId1, bool transport1, uint32 moveSpeed, bool flightPath1)
 {
     complete = true;
     path = path1;
@@ -38,6 +39,7 @@ TravelNodePath::TravelNodePath(vector<WorldPosition> path1, float extraCost1, bo
     portal = portal1;
     portalId = portalId1;
     transport = transport1;   
+    flightPath = flightPath1;
 
     calculateCost();
 
@@ -58,7 +60,8 @@ string TravelNodePath::print()
     out << maxLevelMob << ",";
     out << maxLevelAlliance << ",";
     out << maxLevelHorde << ",";
-    out << swimDistance << "f";
+    out << swimDistance << "f" << ",";
+    out << (flightPath ? "true" : "false");
 
     return out.str().c_str();
 }
@@ -149,6 +152,24 @@ float TravelNodePath::getCost(Unit* bot)
             }
         }
 
+        if (flightPath && portalId)
+        {
+            if (!bot->IsAlive())
+                return -1;
+
+            TaxiPathEntry const* taxiPath = sTaxiPathStore.LookupEntry(portalId);
+
+            if (!taxiPath)
+                return -1;
+
+            TaxiNodesEntry const* startTaxiNode = sTaxiNodesStore.LookupEntry(taxiPath->from);
+
+            Player* player = (Player*)bot;
+
+            if (!startTaxiNode || !startTaxiNode->MountCreatureID[player->GetTeam() == ALLIANCE ? 1 : 0])
+                return -1;            
+        }
+
         speed = bot->GetSpeed(MOVE_RUN);
         swimSpeed = bot->GetSpeed(MOVE_SWIM);
 
@@ -172,7 +193,7 @@ float TravelNodePath::getCost(Unit* bot)
             modifier += 0.1 * factionAnnoyance; //For each level the whole path takes 10% longer.
     }
 
-    if (portal || transport)
+    if (portal || transport || flightPath)
         timeCost = extraCost * modifier;
     else
         timeCost = (runDistance / speed + swimDistance / swimSpeed) * modifier;
@@ -561,6 +582,8 @@ void TravelNode::print(bool printFailed)
                 pathType = 3;
             else if (path->getPortal())
                 pathType = 4;
+            else if (path->getFlightPath())
+                pathType = 5;
 
             out << pathType << ",";
             out << std::fixed << std::setprecision(2);
@@ -650,8 +673,54 @@ bool TravelPath::makeShortCut(WorldPosition startPos, float maxDist)
     return true;
 }
 
+bool TravelPath::shouldMoveToNextPoint(WorldPosition startPos, vector<PathNodePoint>::iterator beg, vector<PathNodePoint>::iterator ed, vector<PathNodePoint>::iterator p, float& moveDist, float maxDist)
+{
+    if (p == ed) //We are the end. Stop now.
+        return false;
+
+    auto nextP = std::next(p);
+
+    //We are moving to a teleport node and want to move to the next teleport node.
+    if (p->type == NODE_PORTAL && nextP->type == NODE_PORTAL && p->entry == nextP->entry)
+    {
+        return false; //Move to teleport and activate area trigger.
+    }   
+
+    //We are almost at a transport node. Move to the node before this.
+    if (nextP->type == NODE_TRANSPORT && nextP->entry && moveDist > INTERACTION_DISTANCE)
+    {
+        return false;
+    }
+
+    //We are moving to a transport node.
+    if (p->type == NODE_TRANSPORT && p->entry)
+    {
+        if (nextP->type != NODE_TRANSPORT && p != beg && std::prev(p)->type != NODE_TRANSPORT) //We are not using the transport. Skip it.
+            return true;
+        
+        return false; //Teleport to exit of transport.
+    }
+
+    //We are moving to a flightpath and want to fly.
+    if (p->type == NODE_FLIGHTPATH && nextP->type == NODE_FLIGHTPATH)
+    {
+        return false;
+    }
+
+    float nextMove = p->point.distance(nextP->point);
+
+    if (p->point.getMapId() != startPos.getMapId() || moveDist + nextMove > maxDist || startPos.distance(nextP->point) > maxDist)
+    {
+        return false;
+    }
+
+    moveDist += nextMove;
+
+    return true;
+}
+
 //Next position to move to
-WorldPosition TravelPath::getNextPoint(WorldPosition startPos, float maxDist, bool& isTeleport, bool& isTransport, uint32& entry)
+WorldPosition TravelPath::getNextPoint(WorldPosition startPos, float maxDist, bool& isTeleport, bool& isTransport, bool& isFlightPath, uint32& entry)
 {
     if (getPath().empty())
         return WorldPosition();
@@ -662,6 +731,7 @@ WorldPosition TravelPath::getNextPoint(WorldPosition startPos, float maxDist, bo
     float minDist = 0.0f;
     auto startP = beg;
 
+    //Get the closest point on the path to start from.
     for (auto p = startP; p!=ed;p++)
     {
         if (p->point.getMapId() != startPos.getMapId())
@@ -669,7 +739,7 @@ WorldPosition TravelPath::getNextPoint(WorldPosition startPos, float maxDist, bo
 
         float curDist = p->point.distance(startPos);
 
-        if (curDist <= minDist || startP == beg)
+        if (curDist <= minDist || p == beg)
         {
             minDist = curDist;
             startP = p;
@@ -678,56 +748,33 @@ WorldPosition TravelPath::getNextPoint(WorldPosition startPos, float maxDist, bo
 
     float moveDist = startP->point.distance(startPos);
 
-
-    for (auto p = startP + 1; p != ed; p++)
+    //Move as far as we are allowed
+    for (auto p = startP; p != ed; p++)
     {
-        auto prevP = std::prev(p);
-        auto nextP = std::next(p);
+        if (shouldMoveToNextPoint(startPos, beg, ed, p, moveDist, maxDist))
+            continue;
 
-        if (nextP == ed)
-        {
-            startP = p;
-            break;
-        }
+        startP = p;
 
-        //Teleport with next point to a new map.
-        if (p->type == NODE_PORTAL && nextP->type == NODE_PORTAL && p->entry == nextP->entry)
-        {
-            startP = p; //Move to teleport and activate area trigger.
-            break;
-        }
-
-        //Transport with entry. 
-        if (p->type == NODE_TRANSPORT && p->entry)
-        {
-            if (nextP->type != NODE_TRANSPORT && prevP->type != NODE_TRANSPORT) //We are not using the transport. Skip it.
-                continue;
-
-            if (startPos.distance(prevP->point) > 5.0f)
-            {
-                startP = prevP;
-                break;
-            }
-        }
-
-        float nextMove = p->point.distance(nextP->point);
-
-        if (p->point.getMapId() != startPos.getMapId() || moveDist + nextMove > maxDist || startPos.distance(nextP->point) > maxDist)
-        {
-            startP = p;
-            break;
-        }
-
-        moveDist += nextMove;
+        break;
     }
 
     isTeleport = false;
     isTransport = false;
+    isFlightPath = false;
 
     //We are moving towards a teleport. Move to portal an activate area trigger
     if (startP->type == NODE_PORTAL)
     {
         isTeleport = true;
+        entry = startP->entry;
+        return startP->point;
+    }
+
+    //We are moving towards a flight path. Move to flight master and activate flight path.
+    if (startP->type == NODE_FLIGHTPATH && startPos.distance(startP->point) < INTERACTION_DISTANCE)
+    {
+        isFlightPath = true;
         entry = startP->entry;
         return startP->point;
     }
@@ -846,6 +893,11 @@ TravelPath TravelNodeRoute::buildPath(vector<WorldPosition> pathToStart, vector<
             {
                 travelPath.addPoint(*prevNode->getPosition(), NODE_TRANSPORT, node->getTransportId()); //Departure point
                 travelPath.addPoint(*node->getPosition(), NODE_TRANSPORT, node->getTransportId());     //Arrival point        
+            }
+            else if (nodePath->getFlightPath()) //Use the flightpath
+            {
+                travelPath.addPoint(*prevNode->getPosition(), NODE_FLIGHTPATH, nodePath->getPortalId()); //Departure point
+                travelPath.addPoint(*node->getPosition(), NODE_FLIGHTPATH, nodePath->getPortalId());     //Arrival point        
             }
             else
             {
@@ -1114,7 +1166,7 @@ TravelNodeRoute TravelNodeMap::getRoute(TravelNode* start, TravelNode* goal, Uni
             if ((childNode->open || childNode->close) && childNode->m_g <= g) // n' is already in opend or closed with a lower cost g(n')
                 continue; // consider next successor
 
-            h = sqrt(childNode->dataNode->fDist(goal)) / botSpeed;
+            h = childNode->dataNode->fDist(goal) / botSpeed;
             f = g + h; // compute f(n')
             childNode->m_f = f;
             childNode->m_g = g;
@@ -1142,8 +1194,8 @@ TravelNodeRoute TravelNodeMap::getRoute(WorldPosition* startPos, WorldPosition* 
 
     vector<TravelNode*> startNodes = m_nodes, endNodes = m_nodes;
     //Partial sort to get the closest 5 nodes at the begin of the array.        
-    std::partial_sort(startNodes.begin(), startNodes.begin() + 5, startNodes.end(), [startPos](TravelNode* i, TravelNode* j) {return i->getDistance(startPos) < j->getDistance(startPos); });
-    std::partial_sort(endNodes.begin(), endNodes.begin() + 5, endNodes.end(), [endPos](TravelNode* i, TravelNode* j) {return i->getDistance(endPos) < j->getDistance(endPos); });
+    std::partial_sort(startNodes.begin(), startNodes.begin() + 5, startNodes.end(), [startPos](TravelNode* i, TravelNode* j) {return i->fDist(startPos) < j->fDist(startPos); });
+    std::partial_sort(endNodes.begin(), endNodes.begin() + 5, endNodes.end(), [endPos](TravelNode* i, TravelNode* j) {return i->fDist(endPos) < j->fDist(endPos); });
 
     //Cycle over the combinations of these 5 nodes.
     uint32 startI = 0, endI = 0;

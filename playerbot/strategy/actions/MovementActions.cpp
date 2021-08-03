@@ -189,7 +189,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
 
         vector<WorldPosition> beginPath, endPath;
 
-        if (totalDistance > maxDist)
+        if (startPosition.getMapId() != endPosition.getMapId() || totalDistance > maxDist)
         {
             if (!sTravelNodeMap.getNodes().empty())
             {
@@ -205,7 +205,10 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
                 if (sPlayerbotAIConfig.hasLog("bot_pathfinding.csv"))
                 {
                     if (ai->HasStrategy("debug move", BOT_STATE_NON_COMBAT))
+                    {
+                        sPlayerbotAIConfig.openLog("bot_pathfinding.csv", "w");
                         sPlayerbotAIConfig.log("bot_pathfinding.csv", route.print().str().c_str());
+                    }
                 }
 
                 if (route.isEmpty())
@@ -233,7 +236,11 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
 
                     if (sPlayerbotAIConfig.hasLog("bot_pathfinding.csv"))
                     {
-                        sPlayerbotAIConfig.log("bot_pathfinding.csv", movePath.print().str().c_str());
+                        if (ai->HasStrategy("debug move", BOT_STATE_NON_COMBAT))
+                        {
+                            sPlayerbotAIConfig.openLog("bot_pathfinding.csv", "w");
+                            sPlayerbotAIConfig.log("bot_pathfinding.csv", movePath.print().str().c_str());
+                        }
                     }
 
                     sTravelNodeMap.m_nMapMtx.unlock_shared();
@@ -273,9 +280,9 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
             return true;
         }
 
-        bool isTeleport, isTransport;
+        bool isTeleport, isTransport, isFlightPath;
         uint32 entry;
-        movePosition = movePath.getNextPoint(startPosition, maxDist, isTeleport, isTransport, entry);
+        movePosition = movePath.getNextPoint(startPosition, maxDist, isTeleport, isTransport, isFlightPath, entry);
 
         if (isTeleport)// && !ai->isRealPlayer())
         {
@@ -328,6 +335,23 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
             WaitForReach(100.0f);
             return true;
         }
+
+        if (isFlightPath && entry)
+        {
+            //Todo find flight master.
+
+            TaxiPathEntry const* tEntry = sTaxiPathStore.LookupEntry(entry);
+
+            if (entry)
+            {
+                uint32 money = bot->GetMoney();
+                bot->SetMoney(money + 100000);
+                bool goTaxi = bot->ActivateTaxiPathTo({ tEntry->from, tEntry->to }, nullptr, 1);
+                bot->SetMoney(money);
+
+                return goTaxi;
+            }
+        }
         //if (!isTransport && bot->GetTransport())
         //    bot->GetTransport()->RemovePassenger(bot);
     }
@@ -352,9 +376,9 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
         PathType type = path.getPathType();
         PointsArray& points = path.getPath();
         movePath.addPath(startPosition.fromPointsArray(points));
-        bool isTeleport, isTransport;
+        bool isTeleport, isTransport, isFlightPath;
         uint32 entry;
-        movePosition = movePath.getNextPoint(startPosition, maxDist, isTeleport, isTransport, entry);
+        movePosition = movePath.getNextPoint(startPosition, maxDist, isTeleport, isTransport, isFlightPath, entry);
     }
 
     if (movePosition == WorldPosition()) {
@@ -752,7 +776,8 @@ bool MovementAction::Follow(Unit* target, float distance, float angle)
 
     if (sServerFacade.IsDistanceGreaterOrEqualThan(sServerFacade.GetDistance2d(bot, target), sPlayerbotAIConfig.sightDistance))
     {
-        return MoveTo(target, sPlayerbotAIConfig.followDistance);
+        if (!target->IsTaxiFlying())
+            return MoveTo(target, sPlayerbotAIConfig.followDistance);
     }
 
     if (sServerFacade.IsDistanceLessOrEqualThan(sServerFacade.GetDistance2d(bot, target), sPlayerbotAIConfig.followDistance))

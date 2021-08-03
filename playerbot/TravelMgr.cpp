@@ -114,7 +114,7 @@ float WorldPosition::distance(WorldPosition* center)
 float WorldPosition::fDist(WorldPosition* center)
 {
     if (wLoc.mapid == center->getMapId())
-        return sqDistance2d(center);
+        return sqrt(sqDistance2d(center));
 
     //this -> mapTransfer | mapTransfer -> center
     return sTravelMgr.fastMapTransDistance(*this, *center);
@@ -326,7 +326,7 @@ std::vector<GridPair> WorldPosition::getGridPairs(WorldPosition secondPos)
     int ly = std::min(getGridPair().y_coord, secondPos.getGridPair().y_coord);
     int ux = std::max(getGridPair().x_coord, secondPos.getGridPair().x_coord);
     int uy = std::max(getGridPair().y_coord, secondPos.getGridPair().y_coord);
-    uint32 border = 1;
+    int border = 1;
 
     for (int x = lx - border; x <= ux + border; x++)
     {
@@ -1770,7 +1770,7 @@ void TravelMgr::LoadQuestTravelTable()
 
     if (reloadNavigationPoints)
     {
-        sLog.outString("Loading navigation points");        
+        sLog.outString("Loading navigation points");
 
         //Npc nodes
 
@@ -1805,12 +1805,49 @@ void TravelMgr::LoadQuestTravelTable()
                     else
                         nodeName += " flightMaster";
 
-                    sTravelNodeMap.addNode(&pos, nodeName, true, true);
+                    TravelNode* node = sTravelNodeMap.addNode(&pos, nodeName, true, true);
 
                     break;
                 }
             }
         }
+
+        //Build flight paths
+
+        for (uint32 i = 0; i < sTaxiPathStore.GetNumRows(); ++i)
+        {
+            TaxiPathEntry const* taxiPath = sTaxiPathStore.LookupEntry(i);
+
+            if (!taxiPath)
+                continue;
+
+            TaxiNodesEntry const* startTaxiNode = sTaxiNodesStore.LookupEntry(taxiPath->from);
+            TaxiNodesEntry const* endTaxiNode = sTaxiNodesStore.LookupEntry(taxiPath->to);
+
+            TaxiPathNodeList const& nodes = sTaxiPathNodesByPath[taxiPath->ID];
+
+            WorldPosition startPos(startTaxiNode->map_id, startTaxiNode->x, startTaxiNode->y, startTaxiNode->z);
+            WorldPosition endPos(endTaxiNode->map_id, endTaxiNode->x, endTaxiNode->y, endTaxiNode->z);
+
+            TravelNode* startNode = sTravelNodeMap.getNode(&startPos, nullptr, 15.0f);
+            TravelNode* endNode = sTravelNodeMap.getNode(&endPos, nullptr, 15.0f);
+
+            if (!startNode || !endNode)
+                continue;
+
+            vector<WorldPosition> ppath;
+
+            for (auto& n : nodes)
+                ppath.push_back(WorldPosition(n->mapid, n->x, n->y, n->z, 0.0));
+
+            float totalTime = startPos.getPathLength(ppath) / (450 * 8.0f);
+
+            TravelNodePath travelPath(ppath, 0.1f, false, i, false, (4.5f * 8.0f), true);
+
+            startNode->setPathTo(endNode, travelPath);
+        }
+    
+
 
         //Unique bosses
         for (auto& u : units)
@@ -3294,7 +3331,7 @@ float TravelMgr::fastMapTransDistance(WorldPosition start, WorldPosition end)
     if (sMap == eMap)
         return start.fDist(end);
 
-    float minDist = 200000* 200000;
+    float minDist = 200000;
 
     auto mapTransfers = mapTransfersMap.find({ sMap, eMap });
 
