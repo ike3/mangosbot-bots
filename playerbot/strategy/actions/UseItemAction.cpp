@@ -441,9 +441,7 @@ bool UseRandomRecipe::Execute(Event event)
 
     for (auto& recipe : recipes)
     {
-        ItemUsage usage = AI_VALUE2(ItemUsage, "item usage", recipe->GetProto()->ItemId);
-
-        if (usage == ITEM_USAGE_SKILL && bot->CanUseItem(recipe) == EQUIP_ERR_OK)
+        if (bot->CanUseItem(recipe) == EQUIP_ERR_OK)
         {
             recipeName = recipe->GetProto()->Name1;
 
