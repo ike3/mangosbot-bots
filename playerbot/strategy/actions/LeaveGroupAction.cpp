@@ -57,16 +57,16 @@ namespace ai
         if (master && !master->GetPlayerbotAI())
            return false;
 
-        if (trueMaster && !trueMaster->GetPlayerbotAI())
+        if (trueMaster && !trueMaster->GetPlayerbotAI()) 
+            return false;
+
+        if (ai->IsAlt() && (!master->GetPlayerbotAI() || master->GetPlayerbotAI()->IsRealPlayer())) //Don't leave group when alt grouped with player master.
             return false;
 
         if (ai->GetGrouperType() == SOLO)
             return true;
 
         if (abs(int32(master->getLevel() - bot->getLevel())) > 4)
-            return true;
-
-        if (master->GetDistance(bot) > sPlayerbotAIConfig.reactDistance * 4)
             return true;
 
         return false;
