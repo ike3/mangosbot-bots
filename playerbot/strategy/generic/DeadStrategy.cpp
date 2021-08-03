@@ -18,10 +18,6 @@ void DeadStrategy::InitTriggers(std::list<TriggerNode*>& triggers)
         NextAction::array(0, new NextAction("auto release", relevance), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "often",
-        NextAction::array(0, new NextAction("leave far away", relevance), NULL))); //If partyleader just walks away without reviving. Leave group.
-
-    triggers.push_back(new TriggerNode(
         "dead",
        NextAction::array(0, new NextAction("find corpse", relevance), NULL)));
 
