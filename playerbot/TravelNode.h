@@ -47,9 +47,9 @@
     {
     public:
         //Constructor for travelnodestore
-        TravelNodePath(float distance1 = 0.1f, float extraCost1 = 0, bool portal1 = false, uint32 portalId1 = 0, bool transport1 = false, bool calculated = false, uint32 maxLevelMob1 = 0, uint32 maxLevelAlliance1 = 0, uint32 maxLevelHorde1 = 0, float swimDistance1 = 0);
+        TravelNodePath(float distance1 = 0.1f, float extraCost1 = 0, bool portal1 = false, uint32 portalId1 = 0, bool transport1 = false, bool calculated = false, uint32 maxLevelMob1 = 0, uint32 maxLevelAlliance1 = 0, uint32 maxLevelHorde1 = 0, float swimDistance1 = 0, bool flightPath1 = false);
         //Constructor for portals/transports
-        TravelNodePath(vector<WorldPosition> path1, float extraCost1, bool portal1 = false, uint32 portalId1 = 0, bool transport1 = false, uint32 moveSpeed = 0);
+        TravelNodePath(vector<WorldPosition> path1, float extraCost1, bool portal1 = false, uint32 portalId1 = 0, bool transport1 = false, uint32 moveSpeed = 0, bool flightPath1 = false);
         //Getters
         bool getComplete() { return complete; }
         vector<WorldPosition> getPath() { return path; }
@@ -57,6 +57,7 @@
         bool getPortal() { return portal; }
         uint32 getPortalId() { return portalId; }
         bool getTransport() { return transport; }        
+        bool getFlightPath() { return flightPath; }
         bool getCalculated() { return calculated; }
 
         string print();
@@ -100,6 +101,9 @@
 
         //Is the path transport based?
         bool transport = false;
+
+        //Is the path a flightpath?
+        bool flightPath = false;
     };
 
     //A waypoint to travel from or to.
@@ -134,6 +138,7 @@
         float getO() { return point.getO(); }
         float getDistance(WorldPosition* pos) { return point.distance(pos); }
         float getDistance(TravelNode* node) { return point.distance(node->getPosition()); }
+        float fDist(WorldPosition* pos) { return point.fDist(pos); }
         float fDist(TravelNode* node) { return point.fDist(node->getPosition()); }
 
         TravelNodePath* setPathTo(TravelNode* node, TravelNodePath path = TravelNodePath(), bool isLink = true) { if (this != node) { paths.insert_or_assign(node, path); TravelNodePath* tPath = &paths.find(node)->second;  if (isLink) links.insert_or_assign(node, tPath); return tPath; } else return nullptr; }
@@ -189,7 +194,8 @@
         NODE_PATH = 1,
         NODE_NODE = 2,
         NODE_PORTAL = 3,
-        NODE_TRANSPORT = 4
+        NODE_TRANSPORT = 4,
+        NODE_FLIGHTPATH = 5
     };
 
     struct PathNodePoint
@@ -220,7 +226,8 @@
         vector<WorldPosition> getPointPath() { vector<WorldPosition> retVec;  for (auto p : fullPath) retVec.push_back(p.point); return retVec; };
 
         bool makeShortCut(WorldPosition startPos, float maxDist);
-        WorldPosition getNextPoint(WorldPosition startPos, float maxDist, bool &isTeleport, bool &isTransport, uint32& entry);
+        bool TravelPath::shouldMoveToNextPoint(WorldPosition startPos, vector<PathNodePoint>::iterator beg, vector<PathNodePoint>::iterator ed, vector<PathNodePoint>::iterator p, float &moveDist, float maxDist);
+        WorldPosition getNextPoint(WorldPosition startPos, float maxDist, bool &isTeleport, bool &isTransport, bool& isFlightPath, uint32& entry);
 
         ostringstream print();
     private:

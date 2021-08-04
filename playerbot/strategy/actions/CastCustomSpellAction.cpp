@@ -178,7 +178,7 @@ bool CastRandomSpellAction::Execute(Event event)
     if (!got && !target)
         target = bot;
 
-    vector<pair<uint32, pair<Unit*, GameObject*>>> spellList;
+    vector<pair<uint32, pair<uint32, WorldObject*>>> spellList;
 
     for (auto & spell : spellMap)
     {
@@ -202,12 +202,14 @@ bool CastRandomSpellAction::Execute(Event event)
 
         if (bot->HasSpell(spellId))
         {
+            uint32 spellPriority = GetSpellPriority(pSpellInfo);
+
             if (target && ai->CanCastSpell(spellId, target, true))
-                spellList.push_back(make_pair(spellId, make_pair(target, nullptr)));
+                spellList.push_back(make_pair(spellId,make_pair(spellPriority, target)));
             if (got && ai->CanCastSpell(spellId, got->GetPositionX(), got->GetPositionY(), got->GetPositionZ(), true))
-                spellList.push_back(make_pair(spell.first, make_pair(nullptr, got)));
+                spellList.push_back(make_pair(spellId, make_pair(spellPriority, got)));
             if (ai->CanCastSpell(spellId, bot, true))
-                spellList.push_back(make_pair(spellId, make_pair(bot, nullptr)));
+                spellList.push_back(make_pair(spellId, make_pair(spellPriority, bot)));
         }
     }
 
@@ -216,29 +218,34 @@ bool CastRandomSpellAction::Execute(Event event)
 
     bool isCast = false;
 
+    std::sort(spellList.begin(), spellList.end(), [](pair<uint32, pair<uint32, WorldObject*>> i, pair<uint32, pair<uint32, WorldObject*>> j) {return i.first > j.first; });
+
+    uint32 rndBound = spellList.size() / 4;
+
+    rndBound = std::min(rndBound, (uint32)10);
+    rndBound = std::max(rndBound, (uint32)0);
+
     for (uint32 i = 0; i < 5; i++)
     {
-        uint32 rnd = urand(0, spellList.size() - 1);
+        uint32 rnd = urand(0, rndBound);
 
-        uint32 spellId = spellList[rnd].first;
+        auto spell = spellList[rnd];
 
-        Unit* unit = spellList[rnd].second.first;
-        GameObject* go = spellList[rnd].second.second;        
+        uint32 spellId = spell.first;
+        WorldObject* wo = spell.second.second;
 
-        if(unit)
-            isCast = ai->CastSpell(spellId, unit);
+        if(wo->GetObjectGuid().IsUnit())
+            isCast = ai->CastSpell(spellId, (Unit*)(wo));
         else
-            isCast = ai->CastSpell(spellId, go->GetPositionX(), go->GetPositionY(), go->GetPositionZ());
+            isCast = ai->CastSpell(spellId, wo->GetPositionX(), wo->GetPositionY(), wo->GetPositionZ());
 
         if (isCast)
         {
-            if (MultiCast && ((unit && sServerFacade.IsInFront(bot, unit, sPlayerbotAIConfig.sightDistance, CAST_ANGLE_IN_FRONT)) || (go && sServerFacade.IsInFront(bot, unit, sPlayerbotAIConfig.sightDistance, CAST_ANGLE_IN_FRONT))))
+            if (MultiCast && ((wo && sServerFacade.IsInFront(bot, wo, sPlayerbotAIConfig.sightDistance, CAST_ANGLE_IN_FRONT))))
             {               
                 ostringstream cmd;
-                if(unit)
-                    cmd << "castnc " << chat->formatWorldobject(unit) + " " << spellId << " " << 19;
-                else
-                    cmd << "castnc " << chat->formatWorldobject(go) + " " << spellId << " " << 19;
+
+                cmd << "castnc " << chat->formatWorldobject(wo) + " " << spellId << " " << 19;
 
                 ai->HandleCommand(CHAT_MSG_WHISPER, cmd.str(), *bot);
             }

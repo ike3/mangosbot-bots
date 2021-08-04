@@ -81,7 +81,25 @@ bool FleeToMasterAction::Execute(Event event)
 
 bool FleeToMasterAction::isUseful()
 {
+    if (!ai->GetGroupMaster())
+        return false;
+
+    if (ai->GetGroupMaster() == bot)
+        return false;
+
     Unit* target = AI_VALUE(Unit*, "current target");
-    return ai->GetGroupMaster() && ai->GetGroupMaster() != bot && (!target || (target && !ai->GetGroupMaster()->HasTarget(target->GetObjectGuid()))) && ai->HasStrategy("follow", BOT_STATE_NON_COMBAT);
+
+    if (target && ai->GetGroupMaster()->HasTarget(target->GetObjectGuid()))
+        return false;
+
+    if (!ai->HasStrategy("follow", BOT_STATE_NON_COMBAT))
+        return false;
+
+    Unit* fTarget = AI_VALUE(Unit*, "master target");
+    
+    if (fTarget->GetDeathState() != bot->GetDeathState() && fTarget->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_GHOST))
+        return false;
+
+    return true;
 }
 

@@ -347,6 +347,8 @@ namespace ai
                         return true;
                 }
             }
+
+            return false;
         }
 
     private:

@@ -227,7 +227,7 @@ namespace ai
 
         bool isUseful(WorldPosition start, WorldPosition end) { return isFrom(start) && isTo(end); }
         float distance(WorldPosition start, WorldPosition end) { return (isUseful(start, end) ? (start.distance(pointFrom) + portalLength + pointTo.distance(end)) : 200000); }
-        float fDist(WorldPosition start, WorldPosition end) { return start.fDist(pointFrom) + portalLength * portalLength + pointTo.fDist(end); }
+        float fDist(WorldPosition start, WorldPosition end) { return start.fDist(pointFrom) + portalLength + pointTo.fDist(end); }
     private:
         WorldPosition pointFrom, pointTo;
         float portalLength = 0.1f;

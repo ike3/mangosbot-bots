@@ -35,7 +35,7 @@ void EquipAction::EquipItem(FindItemVisitor* visitor)
 uint8 EquipAction::GetSmallestBagSlot()
 {
     int8 curBag = 0;
-    int8 curSlots = 0;
+    uint32 curSlots = 0;
     for (uint8 bag = INVENTORY_SLOT_BAG_START; bag < INVENTORY_SLOT_BAG_END; ++bag)
     {
         const Bag* const pBag = (Bag*)bot->GetItemByPos(INVENTORY_SLOT_BAG_0, bag);
