@@ -43,12 +43,16 @@ bool FollowAction::isUseful()
         fTarget = AI_VALUE(Unit*, "master target");
 
     if (fTarget)
-        if (fTarget->IsTaxiFlying()
-            && (sServerFacade.IsAlive(bot) || bot->GetCorpse())
-            || fTarget->GetGUIDLow() == bot->GetGUIDLow()
-            || (fTarget->GetDeathState() != bot->GetDeathState() && fTarget->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_GHOST)))
+    {
+        if (fTarget->IsTaxiFlying())
             return false;
 
+        if (!CanDeadFollow(fTarget))
+            return false;
+
+        if (fTarget->GetGUIDLow() == bot->GetGUIDLow())
+            return false;        
+    }
 
     if (!target.empty())
     {
@@ -64,6 +68,19 @@ bool FollowAction::isUseful()
     }
 
     return sServerFacade.IsDistanceGreaterThan(distance, formation->GetMaxDistance());
+}
+
+bool FollowAction::CanDeadFollow(Unit* target)
+{
+    //Follow ghost when dead
+    if (!sServerFacade.IsAlive(bot) && !sServerFacade.IsAlive(target) && target->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_GHOST))
+        return true;
+
+    //Follow when both alive or guard corpse of master
+    if (sServerFacade.IsAlive(bot) && (sServerFacade.IsAlive(target) || !target->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_GHOST)))
+        return true;
+
+    return false;
 }
 
 bool FleeToMasterAction::Execute(Event event)
@@ -97,7 +114,7 @@ bool FleeToMasterAction::isUseful()
 
     Unit* fTarget = AI_VALUE(Unit*, "master target");
     
-    if (fTarget->GetDeathState() != bot->GetDeathState() && fTarget->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_GHOST))
+    if (!CanDeadFollow(fTarget))
         return false;
 
     return true;
