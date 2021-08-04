@@ -1997,7 +1997,10 @@ bool BGTactics::Execute(Event event)
 {
     BattleGround *bg = bot->GetBattleGround();
     if (!bg)
+    {
+        ai->ResetStrategies();
         return false;
+    }
 
     if (bg->GetStatus() == STATUS_WAIT_LEAVE)
         return false;
