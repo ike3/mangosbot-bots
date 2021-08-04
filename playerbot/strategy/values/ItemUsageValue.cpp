@@ -19,13 +19,35 @@ ItemUsage ItemUsageValue::Calculate()
     if (!proto)
         return ITEM_USAGE_NONE;
 
-    if (IsItemNeededForSkill(proto) || (IsItemUsefulForSkill(proto) && (AI_VALUE(uint8, "bag space") < 50 || IsItemNeededForUsefullSpell(proto, true))))
+    if (ai->HasActivePlayerMaster())
     {
-        float stacks = CurrentStacks(proto);
-        if (stacks < 1)
-            return ITEM_USAGE_SKILL; //Buy more.
-        if (stacks < 2)
-            return ITEM_USAGE_KEEP; //Keep current amount.
+        if (IsItemUsefulForSkill(proto) || IsItemNeededForSkill(proto))
+            return ITEM_USAGE_SKILL;
+    }
+    else
+    {
+        bool needItem = false;
+
+        if (IsItemNeededForSkill(proto))
+            needItem = true;
+        else
+        {
+            bool lowBagSpace = AI_VALUE(uint8, "bag space") > 50;
+
+            if (proto->Class == ITEM_CLASS_TRADE_GOODS || proto->Class == ITEM_CLASS_MISC || proto->Class == ITEM_CLASS_REAGENT)
+                needItem = IsItemNeededForUsefullSpell(proto, lowBagSpace);
+            else
+                needItem = IsItemUsefulForSkill(proto);
+        }    
+
+        if (needItem)
+        {
+            float stacks = CurrentStacks(proto);
+            if (stacks < 1)
+                return ITEM_USAGE_SKILL; //Buy more.
+            if (stacks < 2)
+                return ITEM_USAGE_KEEP; //Keep current amount.
+        }
     }
 
     if (proto->Class == ITEM_CLASS_KEY)
@@ -294,10 +316,7 @@ bool ItemUsageValue::IsItemUsefulForSkill(ItemPrototype const* proto)
     case ITEM_CLASS_TRADE_GOODS:
     case ITEM_CLASS_MISC:
     case ITEM_CLASS_REAGENT:
-    {
-        return IsItemNeededForUsefullSpell(proto, false);
-            
-        /*
+    {        
         if (ai->HasSkill(SKILL_TAILORING) && auctionbot.IsUsedBySkill(proto, SKILL_TAILORING))
             return true;
         if (ai->HasSkill(SKILL_LEATHERWORKING) && auctionbot.IsUsedBySkill(proto, SKILL_LEATHERWORKING))
@@ -336,7 +355,6 @@ bool ItemUsageValue::IsItemUsefulForSkill(ItemPrototype const* proto)
         if (ai->HasSkill(SKILL_HERBALISM) &&
             (auctionbot.IsUsedBySkill(proto, SKILL_HERBALISM) || auctionbot.IsUsedBySkill(proto, SKILL_ALCHEMY)))
             return true;
-            */
     }
     case ITEM_CLASS_RECIPE:
     {
