@@ -22,7 +22,7 @@ namespace ai
 
 	class SpiritHealerAction : public MovementAction {
 	public:
-	    SpiritHealerAction(PlayerbotAI* ai) : MovementAction(ai, "spirit healer") {}
+	    SpiritHealerAction(PlayerbotAI* ai, string name = "spirit healer") : MovementAction(ai,name) {}
 
     public:
         virtual WorldSafeLocsEntry const* GetGrave(bool startZone);
