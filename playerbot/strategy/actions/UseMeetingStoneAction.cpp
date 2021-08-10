@@ -175,6 +175,12 @@ bool SummonAction::Teleport(Player *summoner, Player *player)
             float z = summoner->GetPositionZ();
             if (summoner->IsWithinLOS(x, y, z))
             {
+                if (sServerFacade.UnitIsDead(bot) && sServerFacade.IsAlive(ai->GetMaster()))
+                {
+                    bot->ResurrectPlayer(1.0f, false);
+                    ai->TellMasterNoFacing("I live, again!");
+                }                
+
                 player->GetMotionMaster()->Clear();
                 player->TeleportTo(mapId, x, y, z, 0);
                 return true;
