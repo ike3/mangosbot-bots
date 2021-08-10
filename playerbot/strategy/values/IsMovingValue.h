@@ -12,7 +12,6 @@ namespace ai
         virtual bool Calculate()
         {
             Unit* target = AI_VALUE(Unit*, qualifier);
-            Unit* chaseTarget;
 
             if (!target)
                 return false;
