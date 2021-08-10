@@ -20,12 +20,14 @@ using namespace ai;
 void MovementAction::CreateWp(Player* wpOwner, float x, float y, float z, float o, uint32 entry, bool important)
 {
     float dist = wpOwner->GetDistance(x, y, z);
-    float delay = 5000.0f; // 1000.0f * dist / wpOwner->GetSpeed(MOVE_RUN) + sPlayerbotAIConfig.reactDelay;
+    float delay = 1000.0f * dist / wpOwner->GetSpeed(MOVE_RUN) + sPlayerbotAIConfig.reactDelay;
 
-    //if(!important)
-    //    delay *= 0.25;
+    if(!important)
+        delay *= 0.25;
+
 
     Creature* wpCreature = wpOwner->SummonCreature(entry, x, y, z - 1, o, TEMPSPAWN_TIMED_DESPAWN, delay);
+    ai->AddAura(wpCreature, 246);
 
     if (!important)
         wpCreature->SetObjectScale(0.2f);
@@ -103,7 +105,7 @@ bool MovementAction::MoveToLOS(WorldObject* target, bool ranged)
         for (auto& point : path.getPath())
         {
             if (ai->HasStrategy("debug move", BOT_STATE_NON_COMBAT))
-                CreateWp(bot, point.x, point.y, point.z, 0.0, 15631);
+                CreateWp(bot, point.x, point.y, point.z, 0.0, 2334);
 
             float distPoint = target->GetDistance(point.x, point.y, point.z, DIST_CALC_NONE);
             if (distPoint < dist && target->IsWithinLOS(point.x, point.y, point.z + bot->GetCollisionHeight()))
@@ -345,9 +347,9 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
             if (entry)
             {
                 uint32 money = bot->GetMoney();
-                bot->SetMoney(money + 100000);
+                //bot->SetMoney(money + 100000);
                 bool goTaxi = bot->ActivateTaxiPathTo({ tEntry->from, tEntry->to }, nullptr, 1);
-                bot->SetMoney(money);
+                //bot->SetMoney(money);
 
                 return goTaxi;
             }
@@ -400,7 +402,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
             float cz = z;
             for (auto i : movePath.getPath())
             {
-                CreateWp(bot, i.point.getX(), i.point.getY(), i.point.getZ(), 0.0, 15631);
+                CreateWp(bot, i.point.getX(), i.point.getY(), i.point.getZ(), 0.0, 2334);
 
                 cx = i.point.getX();
                 cy = i.point.getY();
@@ -408,7 +410,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
             }
         }
         else
-            CreateWp(bot, movePosition.getX(), movePosition.getY(), movePosition.getZ(), 0, 15631, true);
+            CreateWp(bot, movePosition.getX(), movePosition.getY(), movePosition.getZ(), 0, 2334, true);
     }
 
     //Log bot movement

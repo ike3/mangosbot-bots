@@ -70,7 +70,8 @@
 
         void calculateCost(bool distanceOnly = false);
 
-        float getCost(Unit* bot = nullptr);
+        float getCost(Player* bot = nullptr, uint32 cGold = 0);
+        uint32 getPrice();
     private:
         //Does the path have all the points to get to the destination?
         bool complete = false;
@@ -260,15 +261,13 @@
     class TravelNodeStub
     {
     public:
-        TravelNodeStub(TravelNode* dataNode1) { dataNode = dataNode1; }
-
-        //void addChild(TravelNodeStub* stub, float weight) { children.push_back(make_pair(stub, weight)); }
+        TravelNodeStub(TravelNode* dataNode1) { dataNode = dataNode1; }        
 
         TravelNode* dataNode;
         float m_f = 0.0, m_g = 0.0, m_h = 0.0;
         bool open = false, close = false;
         TravelNodeStub* parent = nullptr;
-        //vector<pair<TravelNodeStub*, float>> children;
+        uint32 currentGold = 0.0;
     };
 
     //The container of all nodes.
@@ -295,10 +294,10 @@
         TravelNode* getRandomNode(WorldPosition* pos) {vector<TravelNode*> rNodes = getNodes(pos); if (rNodes.empty()) return nullptr; return  rNodes[urand(0, rNodes.size() - 1)]; }
 
         //Finds the best nodePath between two nodes
-        TravelNodeRoute getRoute(TravelNode* start, TravelNode* goal, Unit* bot = nullptr);
+        TravelNodeRoute getRoute(TravelNode* start, TravelNode* goal, Player* bot = nullptr);
 
         //Find the best node between two positions
-        TravelNodeRoute getRoute(WorldPosition* startPos, WorldPosition* endPos, vector<WorldPosition>& startPath, Unit* bot = nullptr);
+        TravelNodeRoute getRoute(WorldPosition* startPos, WorldPosition* endPos, vector<WorldPosition>& startPath, Player* bot = nullptr);
 
         //Manage/update nodes
         void manageNodes(Unit* bot, bool mapFull = false);
