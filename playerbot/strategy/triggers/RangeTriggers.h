@@ -13,7 +13,7 @@ namespace ai
 			Unit* target = AI_VALUE(Unit*, "current target");
             if (target)
             {
-                if (target->GetTarget() == bot && !bot->GetGroup() && !target->IsRooted())
+                if (target->GetTarget() == bot && !bot->GetGroup() && !target->IsRooted() && target->GetSpeedInMotion() > bot->GetSpeedInMotion() * 0.9)
                     return false;
 
                 float targetDistance = sServerFacade.GetDistance2d(bot, target);
@@ -32,7 +32,7 @@ namespace ai
             if (!target)
                 return false;
 
-            if (target->GetTarget() == bot && !bot->GetGroup() && !target->IsRooted())
+            if (target->GetTarget() == bot && !bot->GetGroup() && !target->IsRooted() && target->GetSpeedInMotion() > bot->GetSpeedInMotion() * 0.9)
                 return false;
 
             return sServerFacade.IsDistanceLessOrEqualThan(AI_VALUE2(float, "distance", "current target"), (ai->GetRange("shoot") / 2));
