@@ -376,7 +376,6 @@ bool LfgAcceptAction::Execute(Event event)
             //bot->TeleportToHomebind();
         }
 
-        //ai->ChangeStrategy("-grind,-rpg,-travel", BOT_STATE_NON_COMBAT);
         ai->Reset();
 
         return true;
