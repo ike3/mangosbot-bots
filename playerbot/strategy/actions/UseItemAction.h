@@ -63,9 +63,19 @@ namespace ai
        UseRandomRecipe(PlayerbotAI* ai) : UseItemAction(ai, "random recipe", true) {}
 
        virtual bool isUseful();
+       virtual bool isPossible() {return AI_VALUE2(uint32,"item count", "recipe") > 0; }
+      
+       virtual bool Execute(Event event);
+   };
 
-       virtual bool isPossible() { return true; }
-       
+   class UseRandomQuestItem : public UseItemAction
+   {
+   public:
+       UseRandomQuestItem(PlayerbotAI* ai) : UseItemAction(ai, "random quest item", true) {}
+
+       virtual bool isUseful();
+       virtual bool isPossible() { return AI_VALUE2(uint32, "item count", "quest") > 0;}
+
        virtual bool Execute(Event event);
    };
 }

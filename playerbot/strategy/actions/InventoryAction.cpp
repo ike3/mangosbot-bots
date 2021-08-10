@@ -250,6 +250,13 @@ list<Item*> InventoryAction::parseItems(string text, IterateItemsMask mask)
         found.insert(visitor.GetResult().begin(), visitor.GetResult().end());        
     }
 
+    if (text == "quest")
+    {
+        FindQuestItemVisitor visitor(bot);
+        IterateItems(&visitor, ITERATE_ITEMS_IN_BAGS);
+        found.insert(visitor.GetResult().begin(), visitor.GetResult().end());
+    }
+
     FindNamedItemVisitor visitor(bot, text);
     IterateItems(&visitor, ITERATE_ITEMS_IN_BAGS);
     found.insert(visitor.GetResult().begin(), visitor.GetResult().end());

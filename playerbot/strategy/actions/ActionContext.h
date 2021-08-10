@@ -144,6 +144,7 @@ namespace ai
             creators["cast random spell"] = &ActionContext::cast_random_spell;
             creators["free bg join"] = &ActionContext::free_bg_join;
             creators["use random recipe"] = &ActionContext::use_random_recipe;
+            creators["use random quest item"] = &ActionContext::use_random_quest_item;
             creators["craft random item"] = &ActionContext::craft_random_item;
 
             // BG Tactics
@@ -251,6 +252,7 @@ namespace ai
         static Action* cast_random_spell(PlayerbotAI* ai) { return new CastRandomSpellAction(ai); }
         static Action* free_bg_join(PlayerbotAI* ai) { return new FreeBGJoinAction(ai); }
         static Action* use_random_recipe(PlayerbotAI* ai) { return new UseRandomRecipe(ai); }
+        static Action* use_random_quest_item(PlayerbotAI* ai) { return new UseRandomQuestItem(ai); }
         static Action* craft_random_item(PlayerbotAI* ai) { return new CraftRandomItemAction(ai); }
 
         // BG Tactics
