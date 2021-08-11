@@ -281,6 +281,19 @@ namespace ai
         virtual string getName() { return spell + " on snare target"; }
     };
 
+    class CastCrowdControlSpellAction : public CastBuffSpellAction
+    {
+    public:
+        CastCrowdControlSpellAction(PlayerbotAI* ai, string spell) : CastBuffSpellAction(ai, spell) {}
+        Value<Unit*>* GetTargetValue()
+        {
+            return context->GetValue<Unit*>("cc target", getName());
+        }
+        virtual bool Execute(Event event) { return ai->CastSpell(getName(), GetTarget()); }
+        virtual bool isPossible() { return ai->CanCastSpell(getName(), GetTarget(), true); }
+        virtual bool isUseful() { return true; }
+    };
+
     class CastProtectSpellAction : public CastSpellAction
     {
     public:
