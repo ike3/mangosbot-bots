@@ -1339,7 +1339,7 @@ bool PlayerbotAI::CanCastSpell(uint32 spellid, float x, float y, float z, uint8 
 
     if (!itemTarget)
     {
-        if (bot->GetDistance(x,y,z) > sPlayerbotAIConfig.sightDistance)
+        if (sqrt(bot->GetDistance(x,y,z)) > sPlayerbotAIConfig.sightDistance)
             return false;
     }
 

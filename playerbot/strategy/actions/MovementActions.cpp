@@ -105,7 +105,7 @@ bool MovementAction::MoveToLOS(WorldObject* target, bool ranged)
             if (ai->HasStrategy("debug move", BOT_STATE_NON_COMBAT))
                 CreateWp(bot, point.x, point.y, point.z, 0.0, 15631);
 
-            float distPoint = target->GetDistance(point.x, point.y, point.z, DIST_CALC_NONE);
+            float distPoint = sqrt(target->GetDistance(point.x, point.y, point.z, DIST_CALC_NONE));
             if (distPoint < dist && target->IsWithinLOS(point.x, point.y, point.z + bot->GetCollisionHeight()))
             {
                 dist = distPoint;
@@ -649,7 +649,7 @@ bool MovementAction::IsMovingAllowed(Unit* target)
 
 bool MovementAction::IsMovingAllowed(uint32 mapId, float x, float y, float z)
 {
-    float distance = bot->GetDistance(x, y, z);
+    float distance = sqrt(bot->GetDistance(x, y, z));
     if (!bot->InBattleGround() && distance > sPlayerbotAIConfig.reactDistance)
         return false;
 
