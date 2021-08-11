@@ -72,9 +72,8 @@ void PlayerbotHolder::LogoutPlayerBot(uint64 guid)
     if (bot)
     {
         bot->GetPlayerbotAI()->TellMaster("Goodbye!");
-        Player* master = bot->GetPlayerbotAI()->GetMaster();
         Group *group = bot->GetGroup();
-        if (group && !bot->InBattleGround() && !bot->InBattleGroundQueue() && (master && !master->GetPlayerbotAI()))
+        if (group && !bot->InBattleGround() && !bot->InBattleGroundQueue() && bot->GetPlayerbotAI()->HasActivePlayerMaster())
         {
             sPlayerbotDbStore.Save(bot->GetPlayerbotAI());
         }
@@ -110,9 +109,8 @@ void PlayerbotHolder::DisablePlayerBot(uint64 guid)
         MotionMaster& mm = *bot->GetMotionMaster();
         mm.Clear();
 
-        Player* master = bot->GetPlayerbotAI()->GetMaster();
         Group* group = bot->GetGroup();
-        if (group && !bot->InBattleGround() && !bot->InBattleGroundQueue() && (master && !master->GetPlayerbotAI()))
+        if (group && !bot->InBattleGround() && !bot->InBattleGroundQueue() && bot->GetPlayerbotAI()->HasActivePlayerMaster())
         {
             sPlayerbotDbStore.Save(bot->GetPlayerbotAI());
         }
@@ -201,11 +199,6 @@ void PlayerbotHolder::OnBotLogin(Player * const bot)
     if (group)
     {
         ai->ResetStrategies();
-        if (master && !master->GetPlayerbotAI())
-        {
-            ai->ChangeStrategy("-rpg", BOT_STATE_NON_COMBAT);
-            ai->ChangeStrategy("-grind", BOT_STATE_NON_COMBAT);
-        }
     }
     else
     {

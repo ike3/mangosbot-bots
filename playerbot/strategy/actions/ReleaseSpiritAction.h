@@ -4,6 +4,7 @@
 #include "../Action.h"
 #include "MovementActions.h"
 #include "../values/LastMovementValue.h"
+#include "ReviveFromCorpseAction.h"
 
 namespace ai
 {
@@ -84,16 +85,33 @@ namespace ai
         }
     };
 
-    class RepopAction : public Action {
+    class RepopAction : public SpiritHealerAction {
     public:
-        RepopAction(PlayerbotAI* ai, string name = "repop") : Action(ai, name) {}
+        RepopAction(PlayerbotAI* ai, string name = "repop") : SpiritHealerAction(ai, name) {}
 
     public:
         virtual bool Execute(Event event)
         {
             sLog.outBasic("Bot #%d %s:%d <%s> repops at graveyard", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName());
 
-            bot->RepopAtGraveyard();
+            int64 deadTime;
+
+            Corpse* corpse = bot->GetCorpse();
+            if (corpse)
+                deadTime = time(nullptr) - corpse->GetGhostTime();
+            else if (bot->IsDead())
+                deadTime = 0;
+            else
+                deadTime = 60 * MINUTE;
+
+            uint32 dCount = AI_VALUE(uint32, "death count");
+
+            WorldSafeLocsEntry const* ClosestGrave = GetGrave(dCount > 10 || deadTime > 30 * MINUTE);
+
+            if (!ClosestGrave)
+                return false;
+
+            bot->TeleportTo(ClosestGrave->map_id, ClosestGrave->x, ClosestGrave->y, ClosestGrave->z, ClosestGrave->o);
 
             return true;
         }

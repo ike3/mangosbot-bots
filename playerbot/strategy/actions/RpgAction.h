@@ -1,14 +1,14 @@
 #pragma once
 
 #include "../Action.h"
-#include "MovementActions.h"
+#include "ChooseRpgTargetAction.h"
 #include "../values/LastMovementValue.h"
 
 namespace ai
 {
-    class RpgAction : public MovementAction {
+    class RpgAction : public ChooseRpgTargetAction {
     public:
-        RpgAction(PlayerbotAI* ai, string name = "rpg") : MovementAction(ai, name) {}
+        RpgAction(PlayerbotAI* ai, string name = "rpg") : ChooseRpgTargetAction(ai, name) {}
 
         virtual bool Execute(Event event);
         virtual bool isUseful();
@@ -24,6 +24,7 @@ namespace ai
         void cancel(ObjectGuid guid);
         void emote(ObjectGuid guid);
         void work(ObjectGuid guid);
+        void discover(ObjectGuid guid);
         void taxi(ObjectGuid guid);
         void quest(ObjectGuid guid);
         void trade(ObjectGuid guid);
@@ -35,9 +36,6 @@ namespace ai
         void craft(ObjectGuid guid);
         void homebind(ObjectGuid guid);
         void queuebg(ObjectGuid guid);
-
-        bool CanTrain(ObjectGuid guid);
-        BattleGroundTypeId CanQueueBg(ObjectGuid guid);
     };
 
     class CRpgAction : public RpgAction {

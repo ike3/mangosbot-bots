@@ -58,16 +58,7 @@ bool RpgAction::Execute(Event event)
 
     if (bot->GetShapeshiftForm() > 0)
         bot->SetShapeshiftForm(FORM_NONE);
-
-    //Random taxi action.
-    if (unit && unit->HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_FLIGHTMASTER) && !ai->HasRealPlayerMaster())
-    {
-        WorldPacket emptyPacket;
-        bot->GetSession()->HandleCancelMountAuraOpcode(emptyPacket);
-        taxi(guid);
-        return true;
-    }
-   
+  
     vector<RpgElement> elements;
 
     uint32 dStatus = bot->GetSession()->getDialogStatus(bot, wo, DIALOG_STATUS_NONE);
@@ -84,6 +75,8 @@ bool RpgAction::Execute(Event event)
         elements.push_back(&RpgAction::quest);
     if (unit)
     {
+        if(unit->isTaxi() && CanDiscover(guid))
+            elements.push_back(&RpgAction::discover);
         if (unit->isVendor())
             elements.push_back(&RpgAction::trade);
         if (unit->isArmorer() && (AI_VALUE(uint8, "durability") < 100 && AI_VALUE(uint32, "repair cost") < bot->GetMoney()))
@@ -117,6 +110,9 @@ bool RpgAction::Execute(Event event)
             elements.push_back(&RpgAction::work);
             elements.push_back(&RpgAction::spell);
             elements.push_back(&RpgAction::craft);
+
+            if(unit && unit->isTaxi() && !ai->HasRealPlayerMaster())
+                elements.push_back(&RpgAction::taxi);
         }
     }    
     else
@@ -214,16 +210,45 @@ void RpgAction::cancel(ObjectGuid guid)
     context->GetValue<ObjectGuid>("rpg target")->Set(ObjectGuid());
 }
 
+void RpgAction::discover(ObjectGuid guid)
+{
+    ObjectGuid oldSelection = bot->GetSelectionGuid();
+
+    // find current node
+    Creature* unit = ai->GetCreature(guid);
+
+    if (!unit)
+        return;
+
+    uint32 curloc = sObjectMgr.GetNearestTaxiNode(unit->GetPositionX(), unit->GetPositionY(), unit->GetPositionZ(), unit->GetMapId(), bot->GetTeam());
+
+    if (curloc == 0)
+        return;                                        // `true` send to avoid WorldSession::SendTaxiMenu call with one more curlock seartch with same false result.
+
+    bot->GetSession()->SendLearnNewTaxiNode(unit);
+
+    unit->SetFacingTo(unit->GetAngle(bot));
+
+    if (!ai->HasRealPlayerMaster())
+        ai->SetNextCheckDelay(sPlayerbotAIConfig.rpgDelay);
+}
+
 void RpgAction::taxi(ObjectGuid guid)
 {
+    WorldPacket emptyPacket;
+    bot->GetSession()->HandleCancelMountAuraOpcode(emptyPacket);
+
     Unit* unit = ai->GetUnit(guid);
     uint32 curloc = sObjectMgr.GetNearestTaxiNode(unit->GetPositionX(), unit->GetPositionY(), unit->GetPositionZ(), unit->GetMapId(), bot->GetTeam());
+
+    if (!bot->m_taxi.IsTaximaskNodeKnown(curloc) && !bot->isTaxiCheater())
+        return;
 
     vector<uint32> nodes;
     for (uint32 i = 0; i < sTaxiPathStore.GetNumRows(); ++i)
     {
         TaxiPathEntry const* entry = sTaxiPathStore.LookupEntry(i);
-        if (entry && entry->from == curloc)
+        if (entry && entry->from == curloc && (bot->m_taxi.IsTaximaskNodeKnown(entry->to) || bot->isTaxiCheater()))
         {
             //uint8  field = uint8((i - 1) / 32);
             //if (field < TaxiMaskSize) nodes.push_back(i);
@@ -525,91 +550,3 @@ bool RpgAction::isUseful()
 {
     return context->GetValue<ObjectGuid>("rpg target")->Get();
 }
-
-
-bool RpgAction::CanTrain(ObjectGuid guid)
-{
-    Creature* creature = ai->GetCreature(guid);
-
-    if (!creature)
-        return false;
-
-    if (!creature->IsTrainerOf(bot, false))
-        return false;
-
-    // check present spell in trainer spell list
-    TrainerSpellData const* cSpells = creature->GetTrainerSpells();
-    TrainerSpellData const* tSpells = creature->GetTrainerTemplateSpells();
-    if (!cSpells && !tSpells)
-    {
-        return false;
-    }
-
-    float fDiscountMod = bot->GetReputationPriceDiscount(creature);
-
-    TrainerSpellData const* trainer_spells = cSpells;
-    if (!trainer_spells)
-        trainer_spells = tSpells;
-
-    for (TrainerSpellMap::const_iterator itr = trainer_spells->spellList.begin(); itr != trainer_spells->spellList.end(); ++itr)
-    {
-        TrainerSpell const* tSpell = &itr->second;
-
-        if (!tSpell)
-            continue;
-
-        uint32 reqLevel = 0;
-
-        reqLevel = tSpell->isProvidedReqLevel ? tSpell->reqLevel : std::max(reqLevel, tSpell->reqLevel);
-        TrainerSpellState state = bot->GetTrainerSpellState(tSpell, reqLevel);
-        if (state != TRAINER_SPELL_GREEN)
-            continue;
-
-        uint32 spellId = tSpell->spell;
-        const SpellEntry* const pSpellInfo = sServerFacade.LookupSpellInfo(spellId);
-        if (!pSpellInfo)
-            continue;
-
-        uint32 cost = uint32(floor(tSpell->spellCost * fDiscountMod));
-        if (cost > bot->GetMoney())
-            continue;
-
-        return true;
-    }
-
-    return false;
-}
-
-BattleGroundTypeId RpgAction::CanQueueBg(ObjectGuid guid)
-{
-    for (uint32 i = 1; i < MAX_BATTLEGROUND_QUEUE_TYPES; i++)
-    {
-        BattleGroundQueueTypeId queueTypeId = (BattleGroundQueueTypeId)i;
-
-        BattleGroundTypeId bgTypeId = sServerFacade.BgTemplateId(queueTypeId);
-
-        BattleGround* bg = sBattleGroundMgr.GetBattleGroundTemplate(bgTypeId);
-        if (!bg)
-            continue;
-
-        if (bot->getLevel() < bg->GetMinLevel())
-            continue;
-
-        // check if already in queue
-        if (bot->InBattleGroundQueueForBattleGroundQueueType(queueTypeId))
-            continue;
-
-        map<Team, map<BattleGroundTypeId, list<uint32>>> battleMastersCache = sRandomPlayerbotMgr.getBattleMastersCache();
-
-        for (auto& entry : battleMastersCache[TEAM_BOTH_ALLOWED][bgTypeId])
-            if (entry == guid.GetEntry())
-                return bgTypeId;
-
-        for (auto& entry : battleMastersCache[bot->GetTeam()][bgTypeId])
-            if (entry == guid.GetEntry())
-                return bgTypeId;
-    }
-
-    return BATTLEGROUND_TYPE_NONE;
-}
-

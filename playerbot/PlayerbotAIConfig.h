@@ -125,6 +125,8 @@ public:
 
     std::unordered_map <std::string, std::pair<FILE*, bool>> logFiles;
 
+    std::list<string> botCheats;
+
     struct worldBuff{
         uint32 spellId;
         uint32 factionId = 0;
@@ -144,6 +146,8 @@ public:
     void loadWorldBuf(Config* config, uint32 factionId, uint32 classId, uint32 minLevel, uint32 maxLevel);
 
     std::string GetTimestampStr();
+
+    bool hasCheat(string cheat) { return std::find(botCheats.begin(), botCheats.end(), cheat) != botCheats.end(); }
 
     bool hasLog(string fileName) { return std::find(allowedLogFiles.begin(), allowedLogFiles.end(), fileName) != allowedLogFiles.end(); };
     bool openLog(string fileName, char const* mode = "a");

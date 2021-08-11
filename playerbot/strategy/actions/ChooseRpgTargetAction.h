@@ -14,9 +14,11 @@ namespace ai
         virtual bool isUseful();
         static bool isFollowValid(Player* bot, WorldObject* target);
         static bool isFollowValid(Player* bot, WorldLocation location);
-    private:
+    protected:
         virtual bool CanTrain(ObjectGuid guid);
         virtual BattleGroundTypeId CanQueueBg(ObjectGuid guid);
+        virtual bool CanDiscover(ObjectGuid guid);
+    private:        
         virtual uint32 HasSameTarget(ObjectGuid guid);
     };
 

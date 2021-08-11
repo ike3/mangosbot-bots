@@ -128,7 +128,7 @@ void TravelNodePath::calculateCost(bool distanceOnly)
 }
 
 //The cost to travel this path. 
-float TravelNodePath::getCost(Unit* bot)
+float TravelNodePath::getCost(Player* bot, uint32 cGold)
 {
     float modifier = 1.0f; //Global modifier
     float timeCost = 0.1f;
@@ -162,11 +162,15 @@ float TravelNodePath::getCost(Unit* bot)
             if (!taxiPath)
                 return -1;
 
+            if (!bot->isTaxiCheater() && taxiPath->price > cGold)
+                return -1;
+
+            if (!bot->isTaxiCheater() && !bot->m_taxi.IsTaximaskNodeKnown(taxiPath->from) || !bot->m_taxi.IsTaximaskNodeKnown(taxiPath->to))
+                return -1;
+
             TaxiNodesEntry const* startTaxiNode = sTaxiNodesStore.LookupEntry(taxiPath->from);
 
-            Player* player = (Player*)bot;
-
-            if (!startTaxiNode || !startTaxiNode->MountCreatureID[player->GetTeam() == ALLIANCE ? 1 : 0])
+            if (!startTaxiNode || !startTaxiNode->MountCreatureID[bot->GetTeam() == ALLIANCE ? 1 : 0])
                 return -1;            
         }
 
@@ -199,6 +203,19 @@ float TravelNodePath::getCost(Unit* bot)
         timeCost = (runDistance / speed + swimDistance / swimSpeed) * modifier;
 
     return timeCost;
+}
+
+uint32 TravelNodePath::getPrice()
+{
+    if (!flightPath)
+        return 0;
+
+    if (!portalId)
+        return 0;
+
+    TaxiPathEntry const* taxiPath = sTaxiPathStore.LookupEntry(portalId);
+
+    return taxiPath->price;
 }
 
 //Creates or appends the path from one node to another. Returns if the path.
@@ -1073,7 +1090,7 @@ TravelNode* TravelNodeMap::getNode(WorldPosition* pos, vector<WorldPosition>& pp
     return NULL;
 }
 
-TravelNodeRoute TravelNodeMap::getRoute(TravelNode* start, TravelNode* goal, Unit* bot)
+TravelNodeRoute TravelNodeMap::getRoute(TravelNode* start, TravelNode* goal, Player* bot)
 {
     
     float botSpeed = bot ? bot->GetSpeed(MOVE_RUN) : 7.0f;
@@ -1084,31 +1101,8 @@ TravelNodeRoute TravelNodeMap::getRoute(TravelNode* start, TravelNode* goal, Uni
     //Basic A* algoritm
     std::unordered_map<TravelNode*, TravelNodeStub> m_stubs;
 
-    /*
-    for (auto& node : m_nodes)
-    {
-        m_stubs.insert(make_pair(node, TravelNodeStub(node)));
-    }
-
-    for (auto& i : m_stubs)
-    {
-        TravelNodeStub* stub = &i.second;
-        for (auto& j : *i.first->getLinks())
-        {
-            TravelNode* node = j.first;
-            float cost = j.second->getCost(bot);
-            if (cost > 0)
-            {
-                TravelNodeStub* cStub = &m_stubs.find(node)->second;
-                if (cStub)
-                    stub->addChild(cStub, cost);
-            }
-        }
-    }
-    */
-
-    
     TravelNodeStub* startStub = &m_stubs.insert(make_pair(start, TravelNodeStub(start))).first->second;
+    startStub->currentGold = bot->GetMoney();
 
     TravelNodeStub* currentNode, * childNode;
     float f, g, h;
@@ -1156,12 +1150,13 @@ TravelNodeRoute TravelNodeMap::getRoute(TravelNode* start, TravelNode* goal, Uni
         for (const auto& link : *currentNode->dataNode->getLinks())// for each successor n' of n
         {
             TravelNode* linkNode = link.first;
-            float linkCost = link.second->getCost(bot);
+            float linkCost = link.second->getCost(bot, currentNode->currentGold);
 
             if (linkCost <= 0)
                 continue;
 
             childNode = &m_stubs.insert(make_pair(linkNode, TravelNodeStub(linkNode))).first->second;
+
             g = currentNode->m_g + linkCost; // stance from start + distance between the two nodes
             if ((childNode->open || childNode->close) && childNode->m_g <= g) // n' is already in opend or closed with a lower cost g(n')
                 continue; // consider next successor
@@ -1172,6 +1167,9 @@ TravelNodeRoute TravelNodeMap::getRoute(TravelNode* start, TravelNode* goal, Uni
             childNode->m_g = g;
             childNode->m_h = h;
             childNode->parent = currentNode;
+
+            if(!bot->isTaxiCheater())
+                childNode->currentGold = currentNode->currentGold - link.second->getPrice();
 
             if (childNode->close)
                 childNode->close = false;
@@ -1187,7 +1185,7 @@ TravelNodeRoute TravelNodeMap::getRoute(TravelNode* start, TravelNode* goal, Uni
     return TravelNodeRoute();
 }
 
-TravelNodeRoute TravelNodeMap::getRoute(WorldPosition* startPos, WorldPosition* endPos, vector<WorldPosition>& startPath, Unit* bot)
+TravelNodeRoute TravelNodeMap::getRoute(WorldPosition* startPos, WorldPosition* endPos, vector<WorldPosition>& startPath, Player* bot)
 {
     if (m_nodes.empty())
         return TravelNodeRoute();

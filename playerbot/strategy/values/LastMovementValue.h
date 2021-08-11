@@ -51,6 +51,7 @@ namespace ai
         {
             //Set(0, 0.0f, 0.0f, 0.0f, 0.0f);
             setShort(WorldPosition());
+            setPath(TravelPath());
             this->lastFollow = lastFollow;
         }
 

@@ -92,6 +92,29 @@ BattleGroundTypeId ChooseRpgTargetAction::CanQueueBg(ObjectGuid guid)
     return BATTLEGROUND_TYPE_NONE;
 }
 
+
+bool ChooseRpgTargetAction::CanDiscover(ObjectGuid guid)
+{
+    Unit* unit = ai->GetUnit(guid);
+
+    if (!unit)
+        return false;
+
+    if (!unit->isTaxi())
+        return false;
+
+    if (bot->isTaxiCheater())
+        return false;
+
+    uint32 node = sObjectMgr.GetNearestTaxiNode(unit->GetPositionX(), unit->GetPositionY(), unit->GetPositionZ(), unit->GetMapId(), bot->GetTeam());
+
+    if (bot->m_taxi.IsTaximaskNodeKnown(node))
+        return false;
+
+    return true;
+}
+
+
 uint32 ChooseRpgTargetAction::HasSameTarget(ObjectGuid guid)
 {
     if (ai->HasRealPlayerMaster())
@@ -125,7 +148,7 @@ uint32 ChooseRpgTargetAction::HasSameTarget(ObjectGuid guid)
 }
 
 bool ChooseRpgTargetAction::Execute(Event event)
-{    
+{
     TravelTarget* travelTarget = context->GetValue<TravelTarget*>("travel target")->Get();
     list<ObjectGuid> possibleTargets = AI_VALUE(list<ObjectGuid>, "possible rpg targets");
     list<ObjectGuid> possibleObjects = AI_VALUE(list<ObjectGuid>, "nearest game objects no los");
@@ -146,7 +169,7 @@ bool ChooseRpgTargetAction::Execute(Event event)
     int maxPriority = 1;
 
     //First handing in quests
-    for (auto & guid  : possibleTargets)
+    for (auto& guid : possibleTargets)
     {
         GameObject* go = ai->GetGameObject(guid);
         Unit* unit = ai->GetUnit(guid);
@@ -154,9 +177,9 @@ bool ChooseRpgTargetAction::Execute(Event event)
         if (!go && !unit)
             continue;
 
-        if (!ignoreList.empty() 
-          && ignoreList.find(guid) != ignoreList.end()
-          && urand(0, 100) < 10) //10% chance to retry ignored.            
+        if (!ignoreList.empty()
+            && ignoreList.find(guid) != ignoreList.end()
+            && urand(0, 100) < 10) //10% chance to retry ignored.            
             continue;
 
         int priority = 1;
@@ -166,16 +189,19 @@ bool ChooseRpgTargetAction::Execute(Event event)
             if (!isFollowValid(bot, unit))
                 continue;
 
-#ifdef MANGOS
-            if (unit->IsVendor())
-#endif
-#ifdef CMANGOS
-            if (unit->isVendor())
-#endif
-               if (AI_VALUE(uint8, "bag space") > 80)
-                  priority = 100;
+            if (unit->isTaxi() && !bot->isTaxiCheater())
+            {
+                uint32 node = sObjectMgr.GetNearestTaxiNode(unit->GetPositionX(), unit->GetPositionY(), unit->GetPositionZ(), unit->GetMapId(), bot->GetTeam());
 
-            if(unit->isArmorer())
+                if (!bot->m_taxi.IsTaximaskNodeKnown(node))
+                    priority = 110;
+            }
+
+            if (unit->isVendor())
+                if (AI_VALUE(uint8, "bag space") > 80)
+                    priority = 100;
+
+            if (unit->isArmorer())
                 if (AI_VALUE(uint8, "bag space") > 80 || (AI_VALUE(uint8, "durability") < 80 && AI_VALUE(uint32, "repair cost") < bot->GetMoney()))
                     priority = 95;
 
@@ -264,7 +290,7 @@ bool ChooseRpgTargetAction::Execute(Event event)
     }
 
     ObjectGuid* guid = targets[urand(0, targets.size() - 1)];
-    if (!guid) 
+    if (!guid)
     {
         context->GetValue<ObjectGuid>("rpg target")->Set(ObjectGuid());
         return false;
@@ -298,12 +324,15 @@ bool ChooseRpgTargetAction::isUseful()
     return ai->AllowActivity(RPG_ACTIVITY)
         && !bot->IsInCombat()
         && !context->GetValue<ObjectGuid>("rpg target")->Get()
-        && !context->GetValue<TravelTarget*>("travel target")->Get()->isTraveling()
+        && (!context->GetValue<TravelTarget*>("travel target")->Get()->isTraveling() || !ChooseRpgTargetAction::isFollowValid(bot, context->GetValue<TravelTarget*>("travel target")->Get()->getLocation()))
         && !context->GetValue <list<ObjectGuid>>("possible rpg targets")->Get().empty();
 }
 
 bool ChooseRpgTargetAction::isFollowValid(Player* bot, WorldObject* target)
 {
+    if (!target)
+        return false;
+
     WorldLocation location;
     target->GetPosition(location);
     return isFollowValid(bot, location);

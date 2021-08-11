@@ -165,6 +165,8 @@ WorldSafeLocsEntry const* SpiritHealerAction::GetGrave(bool startZone)
 
     float graveDistance = -1;
 
+    WorldPosition botPos(bot);
+
     for (auto race : races)
     {
         for (uint32 cls = 0; cls < MAX_CLASSES; cls++)
@@ -174,18 +176,19 @@ WorldSafeLocsEntry const* SpiritHealerAction::GetGrave(bool startZone)
             if (!info)
                 continue;
 
-            if (info->mapId != bot->GetMapId())
-                continue;
-
             NewGrave = sObjectMgr.GetClosestGraveYard(info->positionX, info->positionY, info->positionZ, info->mapId, bot->GetTeam());
 
             if (!NewGrave)
                 continue;
 
-            if (graveDistance < 0 || bot->GetDistance2d(info->positionX, info->positionY) < graveDistance)
+            WorldPosition gravePos(NewGrave->map_id, NewGrave->x, NewGrave->y, NewGrave->z);
+
+            float newDist = botPos.fDist(gravePos);;
+
+            if (graveDistance < 0 || newDist < graveDistance)
             {
                 ClosestGrave = NewGrave;
-                graveDistance = bot->GetDistance2d(info->positionX, info->positionY) < graveDistance;
+                graveDistance = newDist;
             }
         }
     }
@@ -205,7 +208,6 @@ bool SpiritHealerAction::Execute(Event event)
     uint32 dCount = AI_VALUE(uint32, "death count");
 
     WorldSafeLocsEntry const* ClosestGrave = GetGrave(dCount > 10);
-
 
     if (bot->GetDistance2d(ClosestGrave->x, ClosestGrave->y) < sPlayerbotAIConfig.sightDistance)
     {
@@ -237,22 +239,20 @@ bool SpiritHealerAction::Execute(Event event)
         return false;
     }
 
-    float x = ClosestGrave->x;
-    float y = ClosestGrave->y;
-    float z = ClosestGrave->z;
-
     bool moved = false;
-
-    if (bot->IsWithinLOS(x, y, z))
-        moved = MoveNear(bot->GetMapId(), x, y, z, 0);
+    
+    if (bot->IsWithinLOS(ClosestGrave->x, ClosestGrave->y, ClosestGrave->z))
+        moved = MoveNear(ClosestGrave->map_id, ClosestGrave->x, ClosestGrave->y, ClosestGrave->z, 0.0);
     else
-        moved = MoveTo(bot->GetMapId(), x, y, z, false, false);
+        moved = MoveTo(ClosestGrave->map_id, ClosestGrave->x, ClosestGrave->y, ClosestGrave->z, false, false);
 
     if (moved)
         return true;
 
     if (!ai->HasActivePlayerMaster())
-        bot->RepopAtGraveyard();
+    {
+        bot->TeleportTo(ClosestGrave->map_id, ClosestGrave->x, ClosestGrave->y, ClosestGrave->z, ClosestGrave->o);
+    }
 
     sLog.outBasic("Bot #%d %s:%d <%s> can't find a spirit healer", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName());
     ai->TellError("Cannot find any spirit healer nearby");

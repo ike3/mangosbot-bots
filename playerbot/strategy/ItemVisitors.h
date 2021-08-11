@@ -426,6 +426,21 @@ namespace ai
         uint32 weaponType;
     };
 
+    class FindQuestItemVisitor : public FindUsableItemVisitor
+    {
+    public:
+        FindQuestItemVisitor(Player* bot) : FindUsableItemVisitor(bot) {}
+
+        virtual bool Accept(const ItemPrototype* proto)
+        {
+            if (proto->Class == ITEM_CLASS_QUEST)
+            {
+                return true;
+            }
+            return false;
+        }
+    };
+
     class FindRecipeVisitor : public FindUsableItemVisitor
     {
     public:

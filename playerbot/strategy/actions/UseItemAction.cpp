@@ -430,7 +430,7 @@ bool UseHearthStone::Execute(Event event)
 
 bool UseRandomRecipe::isUseful()
 {
-   return !bot->IsInCombat() && !ai->HasActivePlayerMaster();
+   return !bot->IsInCombat() && !ai->HasActivePlayerMaster() && !bot->InBattleGround();
 }
 
 bool UseRandomRecipe::Execute(Event event)
@@ -441,12 +441,7 @@ bool UseRandomRecipe::Execute(Event event)
 
     for (auto& recipe : recipes)
     {
-        if (bot->CanUseItem(recipe) == EQUIP_ERR_OK)
-        {
-            recipeName = recipe->GetProto()->Name1;
-
-            break;
-        }
+        recipeName = recipe->GetProto()->Name1;
     }
 
     if (recipeName.empty())
@@ -456,6 +451,45 @@ bool UseRandomRecipe::Execute(Event event)
 
     if (used)
         ai->SetNextCheckDelay(3.0 * IN_MILLISECONDS);
+
+    return used;
+}
+
+bool UseRandomQuestItem::isUseful()
+{
+    return !ai->HasActivePlayerMaster() && !bot->InBattleGround();
+}
+
+bool UseRandomQuestItem::Execute(Event event)
+{
+    list<Item*> questItems = AI_VALUE2(list<Item*>, "inventory items", "quest");
+
+    string questItemName = "";
+    uint32 delay = 0;
+
+    for (auto& questItem : questItems)
+    {
+        uint32 spellId = questItem->GetProto()->Spells[0].SpellId;
+
+
+        if (spellId)
+        {
+            questItemName = questItem->GetProto()->Name1;
+
+            SpellEntry const* spellInfo = sServerFacade.LookupSpellInfo(spellId);
+            if (spellInfo)
+                delay = (!IsChanneledSpell(spellInfo) ? GetSpellCastTime(spellInfo, bot) : GetSpellDuration(spellInfo)) + sPlayerbotAIConfig.globalCoolDown;
+            break;
+        }
+    }
+
+    if (questItemName.empty())
+        return false;
+
+    bool used = UseItemAction::Execute(Event(name, questItemName));
+
+    if (used)
+        ai->SetNextCheckDelay(delay);
 
     return used;
 }
