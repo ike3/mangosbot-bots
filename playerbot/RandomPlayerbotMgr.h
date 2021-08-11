@@ -17,15 +17,16 @@ using namespace std;
 class CachedEvent
 {
 public:
-    CachedEvent() : value(0), lastChangeTime(0), validIn(0) {}
-    CachedEvent(const CachedEvent& other) : value(other.value), lastChangeTime(other.lastChangeTime), validIn(other.validIn) {}
-    CachedEvent(uint32 value, uint32 lastChangeTime, uint32 validIn) : value(value), lastChangeTime(lastChangeTime), validIn(validIn) {}
+    CachedEvent() : value(0), lastChangeTime(0), validIn(0), data("") {}
+    CachedEvent(const CachedEvent& other) : value(other.value), lastChangeTime(other.lastChangeTime), validIn(other.validIn), data(other.data) {}
+    CachedEvent(uint32 value, uint32 lastChangeTime, uint32 validIn, string data = "") : value(value), lastChangeTime(lastChangeTime), validIn(validIn), data(data) {}
 
 public:
     bool IsEmpty() { return !lastChangeTime; }
 
 public:
     uint32 value, lastChangeTime, validIn;
+    string data;
 };
 
 class RandomPlayerbotMgr : public PlayerbotHolder
@@ -73,8 +74,9 @@ class RandomPlayerbotMgr : public PlayerbotHolder
         void ChangeStrategy(Player* player);
         uint32 GetValue(Player* bot, string type);
         uint32 GetValue(uint32 bot, string type);
-        void SetValue(uint32 bot, string type, uint32 value);
-        void SetValue(Player* bot, string type, uint32 value);
+        string GetData(uint32 bot, string type);
+        void SetValue(uint32 bot, string type, uint32 value, string data = "");
+        void SetValue(Player* bot, string type, uint32 value, string data = "");
         void Remove(Player* bot);
         void Hotfix(Player* player, uint32 version);
         uint32 GetBattleMasterEntry(Player* bot, BattleGroundTypeId bgTypeId, bool fake = false);
@@ -100,7 +102,8 @@ class RandomPlayerbotMgr : public PlayerbotHolder
 
     private:
         uint32 GetEventValue(uint32 bot, string event);
-        uint32 SetEventValue(uint32 bot, string event, uint32 value, uint32 validIn);
+        string GetEventData(uint32 bot, string event);
+        uint32 SetEventValue(uint32 bot, string event, uint32 value, uint32 validIn, string data = "");
         list<uint32> GetBots();
         list<uint32> GetBgBots(uint32 bracket);
         void AddBgBot(BattleGroundQueueTypeId queueTypeId, BattleGroundBracketId bracketId, bool isRated = false, bool visual = false);
