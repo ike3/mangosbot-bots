@@ -2895,18 +2895,23 @@ void PlayerbotAI::EnchantItemT(uint32 spellid, uint8 slot)
 uint32 PlayerbotAI::GetBuffedCount(Player* player, string spellname)
 {
     Group* group = bot->GetGroup();
+    uint32 bcount = 0;
 
     if (group)
     {
-        uint32 bcount = 0;
         for (GroupReference *gref = group->GetFirstMember(); gref; gref = gref->next())
         {
             Player* member = gref->getSource();
-            PlayerbotAI* ai = bot->GetPlayerbotAI();
-            if (ai->HasAura(spellname, member, true))
+            if (!member || !member->IsInWorld())
+                continue;
+
+            if (!member->IsInGroup(player, true))
+                continue;
+
+            if (HasAura(spellname, member, true))
                 bcount++;
         }
-        return bcount;
     }
-    return 0;
+    return bcount;
+}
 }
