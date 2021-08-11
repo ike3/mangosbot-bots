@@ -39,7 +39,7 @@ namespace ai
                 return false;
 
             Unit* target = AI_VALUE(Unit*, GetTargetName());
-            return target && !bot->IsWithinDistInMap(target, distance);
+            return target && (!bot->IsWithinDistInMap(target, distance) || (bot->IsWithinDistInMap(target, distance) && !bot->IsWithinLOSInMap(target)));
         }
         virtual string GetTargetName() { return "current target"; }
 
