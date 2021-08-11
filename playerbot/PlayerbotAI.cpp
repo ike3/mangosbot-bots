@@ -593,6 +593,8 @@ void PlayerbotAI::DoNextAction()
 
         aiObjectContext->GetValue<Unit*>("current target")->Set(NULL);
         aiObjectContext->GetValue<Unit*>("enemy player target")->Set(NULL);
+        aiObjectContext->GetValue<ObjectGuid>("pull target")->Set(ObjectGuid());
+        aiObjectContext->GetValue<LootObject>("loot target")->Set(LootObject());
         
         ChangeEngine(BOT_STATE_DEAD);
         return;
