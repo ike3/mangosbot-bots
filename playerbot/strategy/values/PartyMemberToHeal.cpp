@@ -114,7 +114,7 @@ bool PartyMemberToHeal::CanHealPet(Pet* pet)
 bool PartyMemberToHeal::Check(Unit* player)
 {
     return player && player != bot && player->GetMapId() == bot->GetMapId() &&
-        sServerFacade.GetDistance2d(bot, player) < (player->IsPlayer() && ai->IsTank((Player*)player)) ? 50.0f : sPlayerbotAIConfig.spellDistance;
+        sServerFacade.GetDistance2d(bot, player) < (player->IsPlayer() && ai->IsTank((Player*)player)) ? 50.0f : 40.0f;
 }
 
 Unit* PartyMemberToProtect::Calculate()
