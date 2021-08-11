@@ -277,6 +277,8 @@ void PlayerbotAI::HandleTeleportAck()
         // add delay to simulate teleport delay
         SetNextCheckDelay(urand(2000, 5000));
 	}
+
+    Reset();
 }
 
 void PlayerbotAI::Reset()
