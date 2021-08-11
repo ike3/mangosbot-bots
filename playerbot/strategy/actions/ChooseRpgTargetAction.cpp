@@ -323,7 +323,7 @@ bool ChooseRpgTargetAction::isFollowValid(Player* bot, WorldLocation location)
     if (bot->GetDistance(master) > sPlayerbotAIConfig.rpgDistance * 2)
         return true;
 
-    float distance = master->GetDistance(location.coord_x, location.coord_y, location.coord_z);
+    float distance = sqrt(master->GetDistance(location.coord_x, location.coord_y, location.coord_z));
 
     if (!master->IsMoving() && distance < sPlayerbotAIConfig.sightDistance)
         return true;
