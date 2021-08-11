@@ -76,7 +76,7 @@ bool AddGatheringLootAction::AddLoot(ObjectGuid guid)
         list<Unit*> targets;
         MaNGOS::AnyUnfriendlyUnitInObjectRangeCheck u_check(bot, sPlayerbotAIConfig.lootDistance);
         MaNGOS::UnitListSearcher<MaNGOS::AnyUnfriendlyUnitInObjectRangeCheck> searcher(targets, u_check);
-        Cell::VisitAllObjects(wo, searcher, sPlayerbotAIConfig.spellDistance);
+        Cell::VisitAllObjects(wo, searcher, sPlayerbotAIConfig.spellDistance * 1.5);
         if (!targets.empty())
         {
             ostringstream out;
