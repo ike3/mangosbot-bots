@@ -133,7 +133,7 @@ bool AttackersValue::IsPossibleTarget(Unit *attacker, Player *bot)
         !attacker->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE) &&
         attacker->IsVisibleForOrDetect(bot, attacker, false) &&
 #ifdef CMANGOS
-        //!attacker->IsStunned() &&
+        !(attacker->IsStunned() && ai->HasAura("shackle undead", attacker)) &&
 #endif
 #ifdef MANGOS
         //!attacker->hasUnitState(UNIT_STAT_STUNNED) &&
