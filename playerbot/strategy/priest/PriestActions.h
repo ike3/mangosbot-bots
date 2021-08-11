@@ -73,16 +73,16 @@ namespace ai
     ENEMY_HEALER_ACTION(CastSilenceOnEnemyHealerAction, "silence");
 
     // racials
-    DEBUFF_ACTION_U(CastDevouringPlagueAction, "devouring plague", bot->getRace() == RACE_UNDEAD);
-    BUFF_ACTION_U(CastTouchOfWeaknessAction, "touch of weakness", bot->getRace() == RACE_UNDEAD);
-    DEBUFF_ACTION_U(CastHexOfWeaknessAction, "hex of weakness", bot->getRace() == RACE_TROLL);
-    BUFF_ACTION_U(CastShadowguardAction, "shadowguard", bot->getRace() == RACE_TROLL);
-    HEAL_ACTION_U(CastDesperatePrayerAction, "desperate prayer", (bot->getRace() == RACE_DWARF || bot->getRace() == RACE_HUMAN));
-    BUFF_ACTION_U(CastFearWardAction, "fear ward", bot->getRace() == RACE_DWARF);
+    DEBUFF_ACTION(CastDevouringPlagueAction, "devouring plague");
+    BUFF_ACTION(CastTouchOfWeaknessAction, "touch of weakness");
+    DEBUFF_ACTION(CastHexOfWeaknessAction, "hex of weakness");
+    BUFF_ACTION(CastShadowguardAction, "shadowguard");
+    HEAL_ACTION(CastDesperatePrayerAction, "desperate prayer");
+    BUFF_ACTION(CastFearWardAction, "fear ward");
     BUFF_PARTY_ACTION(CastFearWardOnPartyAction, "fear ward");
-    SPELL_ACTION_U(CastStarshardsAction, "starshards", (AI_VALUE2(uint8, "mana", "self target") > 50 && bot->getRace() == RACE_NIGHTELF && AI_VALUE(Unit*, "current target") && AI_VALUE2(float, "distance", "current target") > 15.0f));
-    BUFF_ACTION_U(CastElunesGraceAction, "elune's grace", bot->getRace() == RACE_NIGHTELF);
-    BUFF_ACTION_U(CastFeedbackAction, "feedback", bot->getRace() == RACE_HUMAN);
+    SPELL_ACTION_U(CastStarshardsAction, "starshards", (AI_VALUE2(uint8, "mana", "self target") > 50 && AI_VALUE(Unit*, "current target") && AI_VALUE2(float, "distance", "current target") > 15.0f));
+    BUFF_ACTION(CastElunesGraceAction, "elune's grace");
+    BUFF_ACTION(CastFeedbackAction, "feedback");
 
     class CastRemoveShadowformAction : public Action {
     public:
