@@ -145,7 +145,7 @@ bool AttackersValue::IsPossibleTarget(Unit *attacker, Player *bot)
         //!sServerFacade.IsInRoots(attacker) &&
         !sServerFacade.IsFriendlyTo(attacker, bot) &&
         bot->IsWithinDistInMap(attacker, sPlayerbotAIConfig.sightDistance) &&
-        !(attacker->GetCreatureType() == CREATURE_TYPE_CRITTER) &&
+        !(attacker->GetCreatureType() == CREATURE_TYPE_CRITTER && !attacker->IsInCombat()) &&
         !(sPlayerbotAIConfig.IsInPvpProhibitedZone(attacker->GetAreaId()) && (attacker->GetObjectGuid().IsPlayer() || attacker->GetObjectGuid().IsPet())) &&
         (!c || (
 #ifdef MANGOS
