@@ -2095,6 +2095,27 @@ list<uint32> RandomPlayerbotMgr::GetBgBots(uint32 bracket)
 
 uint32 RandomPlayerbotMgr::GetEventValue(uint32 bot, string event)
 {
+    // load all events at once on first event load
+    if (eventCache[bot].empty())
+    {
+        QueryResult* results = PlayerbotDatabase.PQuery("SELECT `event`, `value`, `time`, validIn, `data` from ai_playerbot_random_bots where owner = 0 and bot = '%u'", bot);
+        if (results)
+        {
+            do
+            {
+                Field* fields = results->Fetch();
+                string eventName = fields[0].GetString();
+                CachedEvent e;
+                e.value = fields[1].GetUInt32();
+                e.lastChangeTime = fields[2].GetUInt32();
+                e.validIn = fields[3].GetUInt32();
+                e.data = fields[4].GetString();
+                eventCache[bot][eventName] = e;
+            } while (results->NextRow());
+
+            delete results;
+        }
+    }
     CachedEvent e = eventCache[bot][event];
     if (e.IsEmpty())
     {
