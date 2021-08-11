@@ -11,7 +11,7 @@ Unit* CurrentTargetValue::Get()
         return NULL;
 
     Unit* unit = sObjectAccessor.GetUnit(*bot, selection);
-    if (unit && !sServerFacade.IsWithinLOSInMap(bot, unit))
+    if (unit && !bot->IsWithinDistInMap(unit, sPlayerbotAIConfig.sightDistance))
         return NULL;
 
     return unit;

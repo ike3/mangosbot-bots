@@ -68,8 +68,6 @@ bool AttackAction::Attack(Unit* target)
     {
         msg << " is not on my sight";
         if (verbose) ai->TellError(msg.str());
-        //if (!ChaseTo(target))
-        //    return false;
     }
     if (sServerFacade.UnitIsDead(target))
     {
@@ -130,12 +128,10 @@ bool AttackAction::Attack(Unit* target)
     if (bot->Attack(target, !ai->IsRanged(bot) || sServerFacade.GetDistance2d(bot, target) <= sPlayerbotAIConfig.tooCloseDistance))
     {
         ai->ChangeEngine(BOT_STATE_COMBAT);
-        return ChaseTo(target);
+        return true;
     }
     else
         context->GetValue<Unit*>("current target")->Set(NULL);
-
-
 
     return false;
 }
