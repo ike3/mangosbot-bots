@@ -203,7 +203,12 @@ bool DeflectSpellTrigger::IsActive()
     if (!deflectSpell)
         return false;
 
+    // warrior deflects all
     if (spell == "spell reflection")
+        return true;
+
+    // human priest feedback
+    if (spell == "feedback")
         return true;
 
     SpellSchoolMask deflectSchool = SpellSchoolMask(deflectSpell->EffectMiscValue[0]);
