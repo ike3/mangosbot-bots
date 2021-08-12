@@ -165,7 +165,7 @@ float TravelNodePath::getCost(Player* bot, uint32 cGold)
             if (!bot->isTaxiCheater() && taxiPath->price > cGold)
                 return -1;
 
-            if (!bot->isTaxiCheater() && !bot->m_taxi.IsTaximaskNodeKnown(taxiPath->from) || !bot->m_taxi.IsTaximaskNodeKnown(taxiPath->to))
+            if (!bot->isTaxiCheater() && (!bot->m_taxi.IsTaximaskNodeKnown(taxiPath->from) || !bot->m_taxi.IsTaximaskNodeKnown(taxiPath->to)))
                 return -1;
 
             TaxiNodesEntry const* startTaxiNode = sTaxiNodesStore.LookupEntry(taxiPath->from);
@@ -352,6 +352,9 @@ vector<TravelNode*> TravelNode::getNodeMap(bool importantOnly, vector<TravelNode
 
 bool TravelNode::isUselessLink(TravelNode* farNode)
 {
+    if (getPathTo(farNode)->getPortal() || getPathTo(farNode)->getTransport() || getPathTo(farNode)->getFlightPath())
+        return false;
+
     float farLength;
     if (hasLinkTo(farNode))
         farLength = getPathTo(farNode)->getDistance();
@@ -608,6 +611,7 @@ void TravelNode::print(bool printFailed)
             out << path->getPortalId() << ",";
             out << path->getDistance() << ",";
             out << path->getCost();
+            out << path->getComplete() ? 0 : 1;
 
             sPlayerbotAIConfig.log("travelPaths.csv", out.str().c_str());
         }
@@ -625,7 +629,7 @@ bool TravelPath::makeShortCut(WorldPosition startPos, float maxDist)
     vector<PathNodePoint> newPath;
     WorldPosition firstNode;
 
-    for (auto & p : fullPath) //cycle over the full path
+    for (auto& p : fullPath) //cycle over the full path
     {
         if (p.point.getMapId() != startPos.getMapId())
             continue;
@@ -640,7 +644,7 @@ bool TravelPath::makeShortCut(WorldPosition startPos, float maxDist)
             minDist = curDist;
             totalDist = curDist;
             newPath.clear();
-        }     
+        }
 
         if (p.type != NODE_PREPATH) //Only look at the part after the first node and in the same map.
         {
@@ -654,10 +658,11 @@ bool TravelPath::makeShortCut(WorldPosition startPos, float maxDist)
                 newPath.clear();
             }
         }
+
         newPath.push_back(p);
     }
 
-    if (newPath.empty() || minDist > maxDistSq)
+    if (newPath.empty() || minDist > maxDistSq || newPath.front().point.getMapId() != startPos.getMapId())
     {
         clear();
         return false;
@@ -1102,7 +1107,9 @@ TravelNodeRoute TravelNodeMap::getRoute(TravelNode* start, TravelNode* goal, Pla
     std::unordered_map<TravelNode*, TravelNodeStub> m_stubs;
 
     TravelNodeStub* startStub = &m_stubs.insert(make_pair(start, TravelNodeStub(start))).first->second;
-    startStub->currentGold = bot->GetMoney();
+
+    if(bot)
+        startStub->currentGold = bot->GetMoney();
 
     TravelNodeStub* currentNode, * childNode;
     float f, g, h;
@@ -1168,7 +1175,7 @@ TravelNodeRoute TravelNodeMap::getRoute(TravelNode* start, TravelNode* goal, Pla
             childNode->m_h = h;
             childNode->parent = currentNode;
 
-            if(!bot->isTaxiCheater())
+            if(bot && !bot->isTaxiCheater())
                 childNode->currentGold = currentNode->currentGold - link.second->getPrice();
 
             if (childNode->close)
