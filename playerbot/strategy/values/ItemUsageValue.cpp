@@ -36,8 +36,13 @@ ItemUsage ItemUsageValue::Calculate()
 
             if (proto->Class == ITEM_CLASS_TRADE_GOODS || proto->Class == ITEM_CLASS_MISC || proto->Class == ITEM_CLASS_REAGENT)
                 needItem = IsItemNeededForUsefullSpell(proto, lowBagSpace);
-            else
-                needItem = IsItemUsefulForSkill(proto);
+            else if(proto->Class == ITEM_CLASS_RECIPE)
+            {
+                if (bot->HasSpell(proto->Spells[2].SpellId))
+                    needItem = false;
+                else
+                    needItem = bot->CanUseItem(proto) == EQUIP_ERR_OK; 
+            }
         }    
 
         if (needItem)
