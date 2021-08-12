@@ -42,6 +42,11 @@ private:
     ACTION_NODE_A(whirlwind, "whirlwind", "cleave");
 };
 
+WarrirorAoeStrategy::WarrirorAoeStrategy(PlayerbotAI* ai) : CombatStrategy(ai)
+{
+    actionNodeFactories.Add(new WarrirorAoeStrategyActionNodeFactory());
+}
+
 void WarrirorAoeStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
@@ -53,7 +58,7 @@ void WarrirorAoeStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("thunder clap", ACTION_HIGH + 2), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "medium aoe",
+        "light aoe",
         NextAction::array(0, new NextAction("demoralizing shout", ACTION_HIGH + 1), NULL)));
 
     triggers.push_back(new TriggerNode(

@@ -18,7 +18,7 @@ namespace ai
     class PriestCureStrategy : public Strategy
     {
     public:
-        PriestCureStrategy(PlayerbotAI* ai) : Strategy(ai) {}
+        PriestCureStrategy(PlayerbotAI* ai);
 
     public:
         virtual void InitTriggers(std::list<TriggerNode*> &triggers);

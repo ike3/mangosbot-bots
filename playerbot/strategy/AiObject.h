@@ -67,14 +67,14 @@ class clazz : public super \
         virtual bool IsActive(); \
     }
 
-#define BUFF_ON_PARTY_TRIGGER(clazz, spell) \
+#define BUFF_PARTY_TRIGGER(clazz, spell) \
     class clazz : public BuffOnPartyTrigger \
     { \
     public: \
         clazz(PlayerbotAI* ai) : BuffOnPartyTrigger(ai, spell) {}  \
     }
 
-#define BUFF_ON_PARTY_TRIGGER_A(clazz, spell) \
+#define BUFF_PARTY_TRIGGER_A(clazz, spell) \
     class clazz : public BuffOnPartyTrigger \
     { \
     public: \
@@ -110,6 +110,20 @@ class clazz : public super \
     public: \
         clazz(PlayerbotAI* ai) : DebuffOnAttackerTrigger(ai, spell) {} \
         virtual bool IsActive(); \
+    }
+
+#define CURE_TRIGGER(clazz, spell, dispel) \
+    class clazz : public NeedCureTrigger \
+    { \
+    public: \
+        clazz(PlayerbotAI* ai) : NeedCureTrigger(ai, spell, dispel) {} \
+    }
+
+#define CURE_PARTY_TRIGGER(clazz, spell, dispel) \
+    class clazz : public PartyMemberNeedCureTrigger \
+    { \
+    public: \
+        clazz(PlayerbotAI* ai) : PartyMemberNeedCureTrigger(ai, spell, dispel) {} \
     }
 
 #define CAN_CAST_TRIGGER(clazz, spell) \
@@ -216,6 +230,13 @@ class clazz : public super \
         virtual bool IsActive(); \
     }
 
+#define CC_TRIGGER(clazz, spell) \
+    class clazz : public HasCcTargetTrigger \
+    { \
+    public: \
+        clazz(PlayerbotAI* ai) : HasCcTargetTrigger(ai, spell) {} \
+    }
+
 //
 // ACTIONS
 //
@@ -242,6 +263,43 @@ class clazz : public super \
         clazz(PlayerbotAI* ai) : CastSpellAction(ai, spell) {} \
     }
 
+#define SPELL_ACTION_U(clazz, spell, useful) \
+    class clazz : public CastSpellAction \
+    { \
+    public: \
+        clazz(PlayerbotAI* ai) : CastSpellAction(ai, spell) {} \
+        virtual bool isUseful() { return useful; } \
+    }
+
+#define HEAL_ACTION(clazz, spell) \
+    class clazz : public CastHealingSpellAction \
+    { \
+    public: \
+        clazz(PlayerbotAI* ai) : CastHealingSpellAction(ai, spell) {} \
+    }
+
+#define HEAL_ACTION_U(clazz, spell, useful) \
+    class clazz : public CastHealingSpellAction \
+    { \
+    public: \
+        clazz(PlayerbotAI* ai) : CastHealingSpellAction(ai, spell) {} \
+        virtual bool isUseful() { return useful; } \
+    }
+
+#define HEAL_PARTY_ACTION(clazz, spell) \
+    class clazz : public HealPartyMemberAction \
+    { \
+    public: \
+        clazz(PlayerbotAI* ai) : HealPartyMemberAction(ai, spell) {} \
+    }
+
+#define AOE_HEAL_ACTION(clazz, spell) \
+    class clazz : public CastAoeHealSpellAction \
+    { \
+    public: \
+        clazz(PlayerbotAI* ai) : CastAoeHealSpellAction(ai, spell) {} \
+    }
+
 #define BUFF_ACTION(clazz, spell) \
     class clazz : public CastBuffSpellAction \
     { \
@@ -255,6 +313,34 @@ class clazz : public super \
     public: \
         clazz(PlayerbotAI* ai) : CastBuffSpellAction(ai, spell) {} \
         virtual bool isUseful() { return useful; } \
+    }
+
+#define BUFF_PARTY_ACTION(clazz, spell) \
+    class clazz : public BuffOnPartyAction \
+    { \
+    public: \
+        clazz(PlayerbotAI* ai) : BuffOnPartyAction(ai, spell) {} \
+    }
+
+#define CURE_ACTION(clazz, spell) \
+    class clazz : public CastCureSpellAction \
+    { \
+    public: \
+        clazz(PlayerbotAI* ai) : CastCureSpellAction(ai, spell) {} \
+    }
+
+#define CURE_PARTY_ACTION(clazz, spell, dispel) \
+    class clazz : public CurePartyMemberAction \
+    { \
+    public: \
+        clazz(PlayerbotAI* ai) : CurePartyMemberAction(ai, spell, dispel) {} \
+    }
+
+#define RESS_ACTION(clazz, spell) \
+    class clazz : public ResurrectPartyMemberAction \
+    { \
+    public: \
+        clazz(PlayerbotAI* ai) : ResurrectPartyMemberAction(ai, spell) {} \
     }
 
 #define DEBUFF_ACTION(clazz, spell) \
@@ -316,6 +402,13 @@ class clazz : public super \
     { \
     public: \
         clazz(PlayerbotAI* ai) : CastSnareSpellAction(ai, spell) {} \
+    }
+
+#define CC_ACTION(clazz, spell) \
+    class clazz : public CastCrowdControlSpellAction \
+    { \
+    public: \
+        clazz(PlayerbotAI* ai) : CastCrowdControlSpellAction(ai, spell) {} \
     }
 
 #define PROTECT_ACTION(clazz, spell) \

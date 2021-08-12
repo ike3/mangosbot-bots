@@ -18,6 +18,7 @@ public:
         creators["last stand"] = &last_stand;
         creators["heroic throw on snare target"] = &heroic_throw_on_snare_target;
         creators["heroic throw taunt"] = &heroic_throw_taunt;
+        creators["taunt"] = &taunt;
     }
 private:
     ACTION_NODE_A(charge, "charge", "reach melee");
@@ -28,6 +29,7 @@ private:
     ACTION_NODE_A(last_stand, "last stand", "intimidating shout");
     ACTION_NODE_A(heroic_throw_on_snare_target, "heroic throw on snare target", "taunt on snare target");
     ACTION_NODE_A(heroic_throw_taunt, "heroic throw", "taunt");
+    ACTION_NODE_A(taunt, "taunt", "battle shout taunt");
 };
 
 TankWarriorStrategy::TankWarriorStrategy(PlayerbotAI* ai) : GenericWarriorStrategy(ai)
@@ -97,12 +99,8 @@ void TankWarriorStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 		NextAction::array(0, new NextAction("last stand", ACTION_EMERGENCY + 3), NULL)));
 
 	triggers.push_back(new TriggerNode(
-        "light aoe",
-        NextAction::array(0, new NextAction("demoralizing shout", ACTION_HIGH + 2), NULL)));
-
-	/*triggers.push_back(new TriggerNode(
         "medium aoe",
-        NextAction::array(0, new NextAction("battle shout taunt", ACTION_HIGH + 3), NULL)));*/
+        NextAction::array(0, new NextAction("battle shout taunt", ACTION_HIGH + 1), NULL)));
 
     triggers.push_back(new TriggerNode(
         "high aoe",

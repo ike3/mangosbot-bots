@@ -186,7 +186,7 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
 
     if (!player->InBattleGround())
     {
-        engine->addStrategies("racials", "chat", "default", "aoe", "potions", "cast time", "conserve mana", "duel", NULL);
+        engine->addStrategies("racials", "chat", "default", "potions", "cast time", "conserve mana", "duel", NULL);
     }
 
     switch (player->getClass())
@@ -194,18 +194,16 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
         case CLASS_PRIEST:
             if (tab == 2)
             {
-                engine->addStrategies("dps", "threat", NULL);
-                if (player->getLevel() >= 4)
-                    engine->addStrategy("dps debuff");
+                engine->addStrategies("dps", "shadow debuff", "shadow aoe", "threat", NULL);
             }
             else if (tab == 0)
             {
-                engine->addStrategies("holy", NULL);
+                engine->addStrategies("holy", "shadow debuff", "shadow aoe", "threat", NULL);
                     //if (player->getLevel() >= 4)
                        //engine->addStrategy("dps debuff");
             }
             else
-                engine->addStrategy("heal");
+                engine->addStrategies("heal", "threat", NULL);
 
             engine->addStrategies("dps assist", "flee", "cure", "ranged", "cc", NULL);
             break;
@@ -323,7 +321,7 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
             if (player->getClass() == CLASS_PRIEST && tab == 1)
             {
                 engine->removeStrategy("heal");
-                engine->addStrategies("shadow aoe", "holy", NULL);
+                engine->addStrategies("holy", "shadow debuff", "shadow aoe", "threat", NULL);
             }
 
             if (player->getClass() == CLASS_SHAMAN && tab == 2)
@@ -338,9 +336,6 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
 
             if (player->getClass() == CLASS_ROGUE)
                 engine->addStrategies("stealth", NULL);
-
-            if (player->getClass() != CLASS_HUNTER)
-                engine->removeStrategy("ranged");
         }
 
         if (player->getClass() == CLASS_ROGUE)
@@ -386,9 +381,6 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
         
         if (player->getClass() == CLASS_ROGUE)
             engine->addStrategies("behind", "stealth", NULL);
-
-        //if (player->getClass() != CLASS_HUNTER)
-        //    engine->removeStrategy("ranged");
     }
 }
 

@@ -91,8 +91,8 @@ namespace ai
                 creators["divine spirit on party"] = &TriggerFactoryInternal::divine_spirit_on_party;
                 creators["inner fire"] = &TriggerFactoryInternal::inner_fire;
                 creators["vampiric touch"] = &TriggerFactoryInternal::vampiric_touch;
-                creators["shadowform"] = &TriggerFactoryInternal::shadowform;
                 creators["vampiric embrace"] = &TriggerFactoryInternal::vampiric_embrace;
+                creators["shadowform"] = &TriggerFactoryInternal::shadowform;
                 creators["power infusion"] = &TriggerFactoryInternal::power_infusion;
                 creators["inner focus"] = &TriggerFactoryInternal::inner_focus;
                 creators["shadow protection"] = &TriggerFactoryInternal::shadow_protection;
@@ -100,12 +100,23 @@ namespace ai
                 creators["prayer of fortitude on party"] = &TriggerFactoryInternal::prayer_of_fortitude_on_party;
                 creators["prayer of spirit on party"] = &TriggerFactoryInternal::prayer_of_spirit_on_party;
                 creators["shackle undead"] = &TriggerFactoryInternal::shackle_undead;
-
+                creators["holy fire"] = &TriggerFactoryInternal::holy_fire;
+                creators["touch of weakness"] = &TriggerFactoryInternal::touch_of_weakness;
+                creators["hex of weakness"] = &TriggerFactoryInternal::hex_of_weakness;
+                creators["shadowguard"] = &TriggerFactoryInternal::shadowguard;
+                creators["fear ward"] = &TriggerFactoryInternal::fear_ward;
+                creators["feedback"] = &TriggerFactoryInternal::feedback;
             }
 
         private:
-            static Trigger* vampiric_embrace(PlayerbotAI* ai) { return new VampiricEmbraceTrigger(ai); }
+            static Trigger* feedback(PlayerbotAI* ai) { return new FeedbackTrigger(ai); }
+            static Trigger* fear_ward(PlayerbotAI* ai) { return new FearWardTrigger(ai); }
+            static Trigger* shadowguard(PlayerbotAI* ai) { return new ShadowguardTrigger(ai); }
+            static Trigger* hex_of_weakness(PlayerbotAI* ai) { return new HexOfWeaknessTrigger(ai); }
+            static Trigger* touch_of_weakness(PlayerbotAI* ai) { return new TouchOfWeaknessTrigger(ai); }
+            static Trigger* holy_fire(PlayerbotAI* ai) { return new HolyFireTrigger(ai); }
             static Trigger* shadowform(PlayerbotAI* ai) { return new ShadowformTrigger(ai); }
+            static Trigger* vampiric_embrace(PlayerbotAI* ai) { return new VampiricEmbraceTrigger(ai); }
             static Trigger* vampiric_touch(PlayerbotAI* ai) { return new VampiricTouchTrigger(ai); }
             static Trigger* devouring_plague(PlayerbotAI* ai) { return new DevouringPlagueTrigger(ai); }
             static Trigger* shadow_word_pain(PlayerbotAI* ai) { return new PowerWordPainTrigger(ai); }
@@ -144,6 +155,7 @@ namespace ai
             AiObjectContextInternal()
             {
                 creators["power infusion"] = &AiObjectContextInternal::power_infusion;
+                creators["power infusion on party"] = &AiObjectContextInternal::power_infusion_on_party;
                 creators["inner focus"] = &AiObjectContextInternal::inner_focus;
                 creators["shadow word: pain"] = &AiObjectContextInternal::shadow_word_pain;
                 creators["shadow word: pain on attacker"] = &AiObjectContextInternal::shadow_word_pain_on_attacker;
@@ -185,23 +197,56 @@ namespace ai
                 creators["psychic scream"] = &AiObjectContextInternal::psychic_scream;
                 creators["vampiric touch"] = &AiObjectContextInternal::vampiric_touch;
                 creators["vampiric embrace"] = &AiObjectContextInternal::vampiric_embrace;
-                creators["dispersion"] = &AiObjectContextInternal::dispersion;
+                //creators["dispersion"] = &AiObjectContextInternal::dispersion;
                 creators["shadow protection"] = &AiObjectContextInternal::shadow_protection;
                 creators["shadow protection on party"] = &AiObjectContextInternal::shadow_protection_on_party;
                 creators["shackle undead"] = &AiObjectContextInternal::shackle_undead;
                 creators["prayer of fortitude on party"] = &AiObjectContextInternal::prayer_of_fortitude_on_party;
                 creators["prayer of spirit on party"] = &AiObjectContextInternal::prayer_of_spirit_on_party;
+                creators["silence"] = &AiObjectContextInternal::silence;
+                creators["silence on enemy healer"] = &AiObjectContextInternal::silence_on_enemy_healer;
+                creators["mana burn"] = &AiObjectContextInternal::mana_burn;
+                creators["levitate"] = &AiObjectContextInternal::levitate;
+                creators["prayer of healing"] = &AiObjectContextInternal::prayer_of_healing;
+                creators["lightwell"] = &AiObjectContextInternal::lightwell;
+                creators["mind soothe"] = &AiObjectContextInternal::mind_soothe;
+                creators["touch of weakness"] = &AiObjectContextInternal::touch_of_weakness;
+                creators["hex of weakness"] = &AiObjectContextInternal::hex_of_weakness;
+                creators["shadowguard"] = &AiObjectContextInternal::shadowguard;
+                creators["desperate prayer"] = &AiObjectContextInternal::desperate_prayer;
+                creators["fear ward"] = &AiObjectContextInternal::fear_ward;
+                creators["fear ward on party"] = &AiObjectContextInternal::fear_ward_on_party;
+                creators["starshards"] = &AiObjectContextInternal::starshards;
+                creators["elune's grace"] = &AiObjectContextInternal::elunes_grace;
+                creators["feedback"] = &AiObjectContextInternal::feedback;
             }
 
         private:
+            static Action* feedback(PlayerbotAI* ai) { return new CastFeedbackAction(ai); }
+            static Action* elunes_grace(PlayerbotAI* ai) { return new CastElunesGraceAction(ai); }
+            static Action* starshards(PlayerbotAI* ai) { return new CastStarshardsAction(ai); }
+            static Action* fear_ward_on_party(PlayerbotAI* ai) { return new CastFearWardOnPartyAction(ai); }
+            static Action* fear_ward(PlayerbotAI* ai) { return new CastFearWardAction(ai); }
+            static Action* desperate_prayer(PlayerbotAI* ai) { return new CastDesperatePrayerAction(ai); }
+            static Action* shadowguard(PlayerbotAI* ai) { return new CastShadowguardAction(ai); }
+            static Action* hex_of_weakness(PlayerbotAI* ai) { return new CastHexOfWeaknessAction(ai); }
+            static Action* touch_of_weakness(PlayerbotAI* ai) { return new CastTouchOfWeaknessAction(ai); }
+            static Action* mind_soothe(PlayerbotAI* ai) { return new CastMindSootheAction(ai); }
+            static Action* lightwell(PlayerbotAI* ai) { return new CastLightwellAction(ai); }
+            static Action* prayer_of_healing(PlayerbotAI* ai) { return new CastPrayerOfHealingAction(ai); }
+            static Action* levitate(PlayerbotAI* ai) { return new CastLevitateAction(ai); }
+            static Action* mana_burn(PlayerbotAI* ai) { return new CastManaBurnAction(ai); }
+            static Action* silence_on_enemy_healer(PlayerbotAI* ai) { return new CastSilenceOnEnemyHealerAction(ai); }
+            static Action* silence(PlayerbotAI* ai) { return new CastSilenceAction(ai); }
             static Action* prayer_of_spirit_on_party(PlayerbotAI* ai) { return new CastPrayerOfSpiritOnPartyAction(ai); }
             static Action* prayer_of_fortitude_on_party(PlayerbotAI* ai) { return new CastPrayerOfFortitudeOnPartyAction(ai); }
             static Action* shackle_undead(PlayerbotAI* ai) { return new CastShackleUndeadAction(ai); }
             static Action* shadow_protection_on_party(PlayerbotAI* ai) { return new CastShadowProtectionOnPartyAction(ai); }
             static Action* shadow_protection(PlayerbotAI* ai) { return new CastShadowProtectionAction(ai); }
             static Action* power_infusion(PlayerbotAI* ai) { return new CastPowerInfusionAction(ai); }
+            static Action* power_infusion_on_party(PlayerbotAI* ai) { return new CastPowerInfusionOnPartyAction(ai); }
             static Action* inner_focus(PlayerbotAI* ai) { return new CastInnerFocusAction(ai); }
-            static Action* dispersion(PlayerbotAI* ai) { return new CastDispersionAction(ai); }
+            //static Action* dispersion(PlayerbotAI* ai) { return new CastDispersionAction(ai); }
             static Action* vampiric_embrace(PlayerbotAI* ai) { return new CastVampiricEmbraceAction(ai); }
             static Action* vampiric_touch(PlayerbotAI* ai) { return new CastVampiricTouchAction(ai); }
             static Action* psychic_scream(PlayerbotAI* ai) { return new CastPsychicScreamAction(ai); }

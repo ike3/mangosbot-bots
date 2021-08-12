@@ -68,7 +68,7 @@ namespace ai
     class WarrirorAoeStrategy : public CombatStrategy
     {
     public:
-        WarrirorAoeStrategy(PlayerbotAI* ai) : CombatStrategy(ai) {}
+        WarrirorAoeStrategy(PlayerbotAI* ai);
 
     public:
         virtual void InitTriggers(std::list<TriggerNode*> &triggers);

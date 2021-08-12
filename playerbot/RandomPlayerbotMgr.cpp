@@ -351,7 +351,7 @@ uint32 RandomPlayerbotMgr::AddRandomBots()
                 ScheduleRandomize(bot, randomTime);
 				SetEventValue(bot, "teleport", 1, sPlayerbotAIConfig.maxRandomBotInWorldTime);
 				SetEventValue(bot, "change_strategy", 1, sPlayerbotAIConfig.maxRandomBotInWorldTime);
-                SetEventValue(bot, "version", MANGOSBOT_VERSION, sPlayerbotAIConfig.maxRandomBotInWorldTime);
+                //SetEventValue(bot, "version", MANGOSBOT_VERSION, sPlayerbotAIConfig.maxRandomBotInWorldTime);
                 bots.insert(bot);
                 currentBots.push_back(bot);
                 sLog.outDetail("Bot #%d %s:%d <%s>: log in", guid, IsAlliance(race) ? "A" : "H", level, name);
@@ -2095,11 +2095,32 @@ list<uint32> RandomPlayerbotMgr::GetBgBots(uint32 bracket)
 
 uint32 RandomPlayerbotMgr::GetEventValue(uint32 bot, string event)
 {
+    // load all events at once on first event load
+    if (eventCache[bot].empty())
+    {
+        QueryResult* results = PlayerbotDatabase.PQuery("SELECT `event`, `value`, `time`, validIn, `data` from ai_playerbot_random_bots where owner = 0 and bot = '%u'", bot);
+        if (results)
+        {
+            do
+            {
+                Field* fields = results->Fetch();
+                string eventName = fields[0].GetString();
+                CachedEvent e;
+                e.value = fields[1].GetUInt32();
+                e.lastChangeTime = fields[2].GetUInt32();
+                e.validIn = fields[3].GetUInt32();
+                e.data = fields[4].GetString();
+                eventCache[bot][eventName] = e;
+            } while (results->NextRow());
+
+            delete results;
+        }
+    }
     CachedEvent e = eventCache[bot][event];
     if (e.IsEmpty())
     {
         QueryResult* results = PlayerbotDatabase.PQuery(
-                "select `value`, `time`, validIn from ai_playerbot_random_bots where owner = 0 and bot = '%u' and event = '%s'",
+                "select `value`, `time`, validIn, `data` from ai_playerbot_random_bots where owner = 0 and bot = '%u' and event = '%s'",
                 bot, event.c_str());
 
         if (results)
@@ -2108,29 +2129,50 @@ uint32 RandomPlayerbotMgr::GetEventValue(uint32 bot, string event)
             e.value = fields[0].GetUInt32();
             e.lastChangeTime = fields[1].GetUInt32();
             e.validIn = fields[2].GetUInt32();
+            e.data = fields[3].GetString();
             eventCache[bot][event] = e;
             delete results;
         }
     }
 
-    if ((time(0) - e.lastChangeTime) >= e.validIn && (event == "add" || IsRandomBot(bot)))
+    if ((time(0) - e.lastChangeTime) >= e.validIn && (event == "add" || IsRandomBot(bot)) && event != "specNo" && event != "specLink")
         e.value = 0;
 
     return e.value;
 }
 
-uint32 RandomPlayerbotMgr::SetEventValue(uint32 bot, string event, uint32 value, uint32 validIn)
+string RandomPlayerbotMgr::GetEventData(uint32 bot, string event)
+{
+    string data = "";
+    if (GetEventValue(bot, event))
+    {
+        CachedEvent e = eventCache[bot][event];
+        data = e.data;
+    }
+    return data;
+}
+
+uint32 RandomPlayerbotMgr::SetEventValue(uint32 bot, string event, uint32 value, uint32 validIn, string data)
 {
     PlayerbotDatabase.PExecute("delete from ai_playerbot_random_bots where owner = 0 and bot = '%u' and event = '%s'",
             bot, event.c_str());
     if (value)
     {
-        PlayerbotDatabase.PExecute(
+        if (data != "")
+        {
+            PlayerbotDatabase.PExecute(
+                "insert into ai_playerbot_random_bots (owner, bot, `time`, validIn, event, `value`, `data`) values ('%u', '%u', '%u', '%u', '%s', '%u', '%s')",
+                0, bot, (uint32)time(0), validIn, event.c_str(), value, data.c_str());
+        }
+        else
+        {
+            PlayerbotDatabase.PExecute(
                 "insert into ai_playerbot_random_bots (owner, bot, `time`, validIn, event, `value`) values ('%u', '%u', '%u', '%u', '%s', '%u')",
                 0, bot, (uint32)time(0), validIn, event.c_str(), value);
+        }
     }
 
-    CachedEvent e(value, (uint32)time(0), validIn);
+    CachedEvent e(value, (uint32)time(0), validIn, data);
     eventCache[bot][event] = e;
     return value;
 }
@@ -2145,14 +2187,19 @@ uint32 RandomPlayerbotMgr::GetValue(Player* bot, string type)
     return GetValue(bot->GetObjectGuid().GetCounter(), type);
 }
 
-void RandomPlayerbotMgr::SetValue(uint32 bot, string type, uint32 value)
+string RandomPlayerbotMgr::GetData(uint32 bot, string type)
 {
-    SetEventValue(bot, type, value, sPlayerbotAIConfig.maxRandomBotInWorldTime);
+    return GetEventData(bot, type);
 }
 
-void RandomPlayerbotMgr::SetValue(Player* bot, string type, uint32 value)
+void RandomPlayerbotMgr::SetValue(uint32 bot, string type, uint32 value, string data)
 {
-    SetValue(bot->GetObjectGuid().GetCounter(), type, value);
+    SetEventValue(bot, type, value, sPlayerbotAIConfig.maxRandomBotInWorldTime, data);
+}
+
+void RandomPlayerbotMgr::SetValue(Player* bot, string type, uint32 value, string data)
+{
+    SetValue(bot->GetObjectGuid().GetCounter(), type, value, data);
 }
 
 bool RandomPlayerbotMgr::HandlePlayerbotConsoleCommand(ChatHandler* handler, char const* args)

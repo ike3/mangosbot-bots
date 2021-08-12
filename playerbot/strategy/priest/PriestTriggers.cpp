@@ -11,3 +11,7 @@ bool InnerFireTrigger::IsActive()
     return SpellTrigger::IsActive() && !ai->HasAura(spell, target);
 }
 
+bool ShadowformTrigger::IsActive()
+{
+    return !ai->HasAura("shadowform", bot);
+}

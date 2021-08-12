@@ -2,6 +2,7 @@
 #include "../../playerbot.h"
 #include "PartyMemberValue.h"
 #include "../../PlayerbotAIConfig.h"
+#include "../../ServerFacade.h"
 
 using namespace ai;
 using namespace std;
@@ -94,7 +95,7 @@ Unit* PartyMemberValue::FindPartyMember(FindPlayerPredicate &predicate, bool ign
 bool PartyMemberValue::Check(Unit* player)
 {
     return player && player != bot && player->GetMapId() == bot->GetMapId() &&
-        bot->GetDistance(player) < sPlayerbotAIConfig.spellDistance &&
+        sServerFacade.GetDistance2d(bot, player) < sPlayerbotAIConfig.spellDistance &&
         bot->IsWithinLOS(player->GetPositionX(), player->GetPositionY(), player->GetPositionZ());
 }
 

@@ -279,6 +279,8 @@ void PlayerbotAI::HandleTeleportAck()
         // add delay to simulate teleport delay
         SetNextCheckDelay(urand(2000, 5000));
 	}
+
+    Reset();
 }
 
 void PlayerbotAI::Reset()
@@ -594,6 +596,8 @@ void PlayerbotAI::DoNextAction()
 
         aiObjectContext->GetValue<Unit*>("current target")->Set(NULL);
         aiObjectContext->GetValue<Unit*>("enemy player target")->Set(NULL);
+        aiObjectContext->GetValue<ObjectGuid>("pull target")->Set(ObjectGuid());
+        aiObjectContext->GetValue<LootObject>("loot target")->Set(LootObject());
         
         ChangeEngine(BOT_STATE_DEAD);
         return;
@@ -1341,7 +1345,7 @@ bool PlayerbotAI::CanCastSpell(uint32 spellid, float x, float y, float z, uint8 
 
     if (!itemTarget)
     {
-        if (bot->GetDistance(x,y,z) > sPlayerbotAIConfig.sightDistance)
+        if (sqrt(bot->GetDistance(x,y,z)) > sPlayerbotAIConfig.sightDistance)
             return false;
     }
 
@@ -2897,18 +2901,22 @@ void PlayerbotAI::EnchantItemT(uint32 spellid, uint8 slot)
 uint32 PlayerbotAI::GetBuffedCount(Player* player, string spellname)
 {
     Group* group = bot->GetGroup();
+    uint32 bcount = 0;
 
     if (group)
     {
-        uint32 bcount = 0;
         for (GroupReference *gref = group->GetFirstMember(); gref; gref = gref->next())
         {
             Player* member = gref->getSource();
-            PlayerbotAI* ai = bot->GetPlayerbotAI();
-            if (ai->HasAura(spellname, member, true))
+            if (!member || !member->IsInWorld())
+                continue;
+
+            if (!member->IsInGroup(player, true))
+                continue;
+
+            if (HasAura(spellname, member, true))
                 bcount++;
         }
-        return bcount;
     }
-    return 0;
+    return bcount;
 }
