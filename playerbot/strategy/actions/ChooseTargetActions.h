@@ -47,30 +47,9 @@ namespace ai
     public:
         AttackAnythingAction(PlayerbotAI* ai) : AttackAction(ai, "attack anything") {}
         virtual string GetTargetName() { return "grind target"; }
-        virtual bool isUseful() {
-            return GetTarget() &&
-                /*    (!AI_VALUE(list<ObjectGuid>, "nearest non bot players").empty() &&
-                        AI_VALUE2(uint8, "health", "self target") > sPlayerbotAIConfig.mediumHealth &&
-                        (!AI_VALUE2(uint8, "mana", "self target") || AI_VALUE2(uint8, "mana", "self target") > sPlayerbotAIConfig.mediumMana)
-                    ) || AI_VALUE2(bool, "combat", "self target")
-    */
-                (
-                    (
-                        ai->AllowActivity(GRIND_ACTIVITY)                                                                                                //Bot allowed to be active
-                        &&
-                        ChooseRpgTargetAction::isFollowValid(bot, GetTarget())                                                                           //Only grind mobs near master.
-                        &&
-                        AI_VALUE2(uint8, "health", "self target") > sPlayerbotAIConfig.mediumHealth                                                      //Bot has enough health.
-                        &&
-                        (!AI_VALUE2(uint8, "mana", "self target") || AI_VALUE2(uint8, "mana", "self target") > sPlayerbotAIConfig.mediumMana)            //Bot has no mana or enough mana.
-                        &&
-                        (!context->GetValue<TravelTarget *>("travel target")->Get()->isTraveling()  || !ChooseRpgTargetAction::isFollowValid(bot, context->GetValue<TravelTarget*>("travel target")->Get()->getLocation())) //Bot is not traveling.
-                    )
-                    ||
-                    AI_VALUE2(bool, "combat", "self target")                                                                                             //Bot is already in combat
-                )
-                ;
-        }
+
+        virtual bool isUseful();
+
         virtual bool isPossible()
         {
             return AttackAction::isPossible() && GetTarget();
