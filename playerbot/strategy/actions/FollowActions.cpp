@@ -117,6 +117,9 @@ bool FleeToMasterAction::isUseful()
     if (!CanDeadFollow(fTarget))
         return false;
 
+    if (fTarget->IsTaxiFlying())
+        return false;
+
     return true;
 }
 
