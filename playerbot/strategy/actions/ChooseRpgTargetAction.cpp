@@ -4,6 +4,7 @@
 #include "../../PlayerbotAIConfig.h"
 #include "../values/PossibleRpgTargetsValue.h"
 #include "../../Travelmgr.h"
+#include "../values/Formations.h"
 
 using namespace ai;
 
@@ -342,6 +343,7 @@ bool ChooseRpgTargetAction::isFollowValid(Player* bot, WorldLocation location)
 {
     PlayerbotAI* ai = bot->GetPlayerbotAI();
     Player* master = ai->GetGroupMaster();
+    AiObjectContext* context = ai->GetAiObjectContext();
 
     if (!master || bot == master)
         return true;
@@ -350,14 +352,18 @@ bool ChooseRpgTargetAction::isFollowValid(Player* bot, WorldLocation location)
         return true;
 
     if (bot->GetDistance(master) > sPlayerbotAIConfig.rpgDistance * 2)
+        return false;
+
+    Formation* formation = AI_VALUE(Formation*, "formation");
+    float distance = master->GetDistance2d(location.coord_x, location.coord_y);
+
+    if (!ai->HasActivePlayerMaster() && distance < 50.0f)
         return true;
 
-    float distance = sqrt(master->GetDistance(location.coord_x, location.coord_y, location.coord_z));
-
-    if (!master->IsMoving() && distance < sPlayerbotAIConfig.sightDistance)
+    if (!master->IsMoving() && distance < 25.0f)
         return true;
 
-    if (distance < sPlayerbotAIConfig.lootDistance)
+    if (distance < formation->GetMaxDistance())
         return true;
 
     return false;

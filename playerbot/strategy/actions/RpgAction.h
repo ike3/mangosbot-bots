@@ -20,6 +20,8 @@ namespace ai
         virtual bool RemIgnore(ObjectGuid guid);
         virtual bool HasIgnore(ObjectGuid guid);
 
+        void setDelay();
+
         void stay(ObjectGuid guid);
         void cancel(ObjectGuid guid);
         void emote(ObjectGuid guid);

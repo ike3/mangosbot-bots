@@ -24,7 +24,6 @@ bool RpgAction::Execute(Event event)
         }
     }
 
-
     WorldObject* wo = ai->GetWorldObject(guid);
     Unit* unit = ai->GetUnit(guid);
     GameObject* go = ai->GetGameObject(guid);
@@ -46,8 +45,12 @@ bool RpgAction::Execute(Event event)
     if (!sServerFacade.IsInFront(bot, wo, sPlayerbotAIConfig.sightDistance, CAST_ANGLE_IN_FRONT) && !bot->IsTaxiFlying() && !bot->IsFlying())
     {
         sServerFacade.SetFacingTo(bot, wo, true);
-        ai->SetNextCheckDelay(sPlayerbotAIConfig.globalCoolDown);
-        return true;
+
+        if (!ai->HasStrategy("follow", BOT_STATE_NON_COMBAT))
+        {
+            ai->SetNextCheckDelay(sPlayerbotAIConfig.globalCoolDown);
+            return true;
+        }
     }
 
     if (unit && !bot->GetNPCIfCanInteractWith(guid, UNIT_NPC_FLAG_NONE))
@@ -169,16 +172,24 @@ bool RpgAction::HasIgnore(ObjectGuid guid)
     return true;
 }
 
+void RpgAction::setDelay()
+{
+    if (!ai->HasRealPlayerMaster())
+        ai->SetNextCheckDelay(sPlayerbotAIConfig.rpgDelay);
+    else
+        ai->SetNextCheckDelay(sPlayerbotAIConfig.rpgDelay/5);
+}
+
 void RpgAction::stay(ObjectGuid guid)
 {
     if (bot->GetPlayerMenu()) bot->GetPlayerMenu()->CloseGossip();
-    ai->SetNextCheckDelay(sPlayerbotAIConfig.rpgDelay);
+    setDelay();
 }
 
 void RpgAction::work(ObjectGuid guid)
 {
     bot->HandleEmoteCommand(EMOTE_STATE_USESTANDING);
-    ai->SetNextCheckDelay(sPlayerbotAIConfig.rpgDelay);
+    setDelay();
 }
 
 void RpgAction::emote(ObjectGuid guid)
@@ -202,7 +213,7 @@ void RpgAction::emote(ObjectGuid guid)
     if (oldSelection)
         bot->SetSelectionGuid(oldSelection);
 
-    ai->SetNextCheckDelay(sPlayerbotAIConfig.rpgDelay);
+    setDelay();
 }
 
 void RpgAction::cancel(ObjectGuid guid)
@@ -229,8 +240,7 @@ void RpgAction::discover(ObjectGuid guid)
 
     unit->SetFacingTo(unit->GetAngle(bot));
 
-    if (!ai->HasRealPlayerMaster())
-        ai->SetNextCheckDelay(sPlayerbotAIConfig.rpgDelay);
+    setDelay();
 }
 
 void RpgAction::taxi(ObjectGuid guid)
@@ -337,9 +347,7 @@ void RpgAction::quest(ObjectGuid guid)
     if (oldSelection)
         bot->SetSelectionGuid(oldSelection);
 
-    //Speed up if 
-    if (!ai->HasRealPlayerMaster())
-        ai->SetNextCheckDelay(sPlayerbotAIConfig.rpgDelay);
+    setDelay();
 
     cancel(guid);
 }
@@ -362,8 +370,7 @@ void RpgAction::trade(ObjectGuid guid)
     if (oldSelection)
         bot->SetSelectionGuid(oldSelection);
 
-    if (!ai->HasRealPlayerMaster())
-        ai->SetNextCheckDelay(sPlayerbotAIConfig.rpgDelay);
+    setDelay();
 }
 
 void RpgAction::repair(ObjectGuid guid)
@@ -381,8 +388,7 @@ void RpgAction::repair(ObjectGuid guid)
     if (oldSelection)
         bot->SetSelectionGuid(oldSelection);
 
-    if (!ai->HasRealPlayerMaster())
-        ai->SetNextCheckDelay(sPlayerbotAIConfig.rpgDelay);
+    setDelay();
 }
 
 void RpgAction::train(ObjectGuid guid)
@@ -400,8 +406,7 @@ void RpgAction::train(ObjectGuid guid)
     if (oldSelection)
         bot->SetSelectionGuid(oldSelection);
 
-    if (!ai->HasRealPlayerMaster())
-        ai->SetNextCheckDelay(sPlayerbotAIConfig.rpgDelay);
+    setDelay();
 }
 
 void RpgAction::heal(ObjectGuid guid)
@@ -439,8 +444,7 @@ void RpgAction::heal(ObjectGuid guid)
     if (oldSelection)
         bot->SetSelectionGuid(oldSelection);
 
-    if (!ai->HasRealPlayerMaster())
-        ai->SetNextCheckDelay(sPlayerbotAIConfig.rpgDelay);
+    setDelay();
 }
 
 void RpgAction::use(ObjectGuid guid)
@@ -456,8 +460,7 @@ void RpgAction::use(ObjectGuid guid)
     if (oldSelection)
         bot->SetSelectionGuid(oldSelection);
 
-    if (!ai->HasRealPlayerMaster())
-        ai->SetNextCheckDelay(sPlayerbotAIConfig.rpgDelay);
+    setDelay();
 }
 
 void RpgAction::spell(ObjectGuid guid)
@@ -477,8 +480,7 @@ void RpgAction::spell(ObjectGuid guid)
     if (oldSelection)
         bot->SetSelectionGuid(oldSelection);
 
-    if (!ai->HasRealPlayerMaster())
-        ai->SetNextCheckDelay(sPlayerbotAIConfig.rpgDelay);
+    setDelay();
 }
 
 void RpgAction::craft(ObjectGuid guid)
@@ -501,8 +503,7 @@ void RpgAction::craft(ObjectGuid guid)
     if (crafted)
         RemIgnore(guid);
 
-    if (!ai->HasRealPlayerMaster())
-        ai->SetNextCheckDelay(sPlayerbotAIConfig.rpgDelay);
+    setDelay();
 }
 
 void RpgAction::homebind(ObjectGuid guid)
@@ -520,8 +521,7 @@ void RpgAction::homebind(ObjectGuid guid)
     if (oldSelection)
         bot->SetSelectionGuid(oldSelection);
 
-    if (!ai->HasRealPlayerMaster())
-        ai->SetNextCheckDelay(sPlayerbotAIConfig.rpgDelay);
+    setDelay();
 }
 
 void RpgAction::queuebg(ObjectGuid guid)
@@ -542,8 +542,7 @@ void RpgAction::queuebg(ObjectGuid guid)
     if (oldSelection)
         bot->SetSelectionGuid(oldSelection);
 
-    if (!ai->HasRealPlayerMaster())
-        ai->SetNextCheckDelay(sPlayerbotAIConfig.rpgDelay);
+    setDelay();
 }
 
 bool RpgAction::isUseful()
