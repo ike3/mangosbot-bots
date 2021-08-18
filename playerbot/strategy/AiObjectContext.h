@@ -34,7 +34,7 @@ namespace ai
         }
 
         template<class T>
-        Value<T>* GetValue(string name, uint32 param)
+        Value<T>* GetValue(string name, int32 param)
         {
         	ostringstream out; out << param;
             return GetValue<T>(name, out.str());
