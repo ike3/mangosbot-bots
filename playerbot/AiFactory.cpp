@@ -300,7 +300,7 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
 #endif
     }
 
-	if (sRandomPlayerbotMgr.IsRandomBot(player))
+	if (facade->IsRealPlayer() || sRandomPlayerbotMgr.IsRandomBot(player))
 	{
         if (!player->GetGroup())
         {
@@ -466,7 +466,7 @@ void AiFactory::AddDefaultNonCombatStrategies(Player* player, PlayerbotAI* const
             "default", "quest", "loot", "gather", "duel", "emote", "conserve mana", "buff", "mount", NULL);
     }
 
-    if (sRandomPlayerbotMgr.IsRandomBot(player) && !player->InBattleGround())
+    if ((facade->IsRealPlayer() || sRandomPlayerbotMgr.IsRandomBot(player)) && !player->InBattleGround())
     {   
         if (!player->GetGroup() || player->GetGroup()->GetLeaderGuid() == player->GetObjectGuid())
         {
