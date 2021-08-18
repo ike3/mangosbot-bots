@@ -631,31 +631,34 @@ bool TravelPath::makeShortCut(WorldPosition startPos, float maxDist)
 
     for (auto& p : fullPath) //cycle over the full path
     {
-        if (p.point.getMapId() != startPos.getMapId())
-            continue;
+        //if (p.point.getMapId() != startPos.getMapId())
+        //    continue;
 
-        float curDist = p.point.sqDistance(startPos);
-
-        if (&p != &fullPath.front())
-            totalDist += p.point.sqDistance(std::prev(&p)->point);
-
-        if (curDist < sPlayerbotAIConfig.tooCloseDistance * sPlayerbotAIConfig.tooCloseDistance) //We are on the path. This is a good starting point
+        if (p.point.getMapId() == startPos.getMapId())
         {
-            minDist = curDist;
-            totalDist = curDist;
-            newPath.clear();
-        }
+            float curDist = p.point.sqDistance(startPos);
 
-        if (p.type != NODE_PREPATH) //Only look at the part after the first node and in the same map.
-        {
-            if (!firstNode)
-                firstNode = p.point;
+            if (&p != &fullPath.front())
+                totalDist += p.point.sqDistance(std::prev(&p)->point);
 
-            if (minDist == -1 || curDist < minDist || (curDist < maxDistSq && curDist < totalDist / 2)) //Start building from the last closest point or a point that is close but far on the path.
+            if (curDist < sPlayerbotAIConfig.tooCloseDistance * sPlayerbotAIConfig.tooCloseDistance) //We are on the path. This is a good starting point
             {
                 minDist = curDist;
                 totalDist = curDist;
                 newPath.clear();
+            }
+
+            if (p.type != NODE_PREPATH) //Only look at the part after the first node and in the same map.
+            {
+                if (!firstNode)
+                    firstNode = p.point;
+
+                if (minDist == -1 || curDist < minDist || (curDist < maxDistSq && curDist < totalDist / 2)) //Start building from the last closest point or a point that is close but far on the path.
+                {
+                    minDist = curDist;
+                    totalDist = curDist;
+                    newPath.clear();
+                }
             }
         }
 
@@ -731,7 +734,7 @@ bool TravelPath::shouldMoveToNextPoint(WorldPosition startPos, vector<PathNodePo
 
     float nextMove = p->point.distance(nextP->point);
 
-    if (p->point.getMapId() != startPos.getMapId() || moveDist + nextMove > maxDist || startPos.distance(nextP->point) > maxDist)
+    if (p->point.getMapId() != startPos.getMapId() || ((moveDist + nextMove > maxDist || startPos.distance(nextP->point) > maxDist) && moveDist > 0))
     {
         return false;
     }
