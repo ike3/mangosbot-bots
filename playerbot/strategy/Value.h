@@ -66,7 +66,7 @@ namespace ai
         CalculatedValue(PlayerbotAI* ai, string name = "value", int checkInterval = 1) : UntypedValue(ai, name),
             checkInterval(checkInterval)
         {
-            lastCheckTime = time(0) - rand() % checkInterval;
+            lastCheckTime = time(0);// -rand() % checkInterval;
         }
         virtual ~CalculatedValue() {}
 
@@ -86,7 +86,7 @@ namespace ai
         }
         virtual void Set(T value) { this->value = value; }
         virtual void Update() { }
-
+        virtual void Reset() { lastCheckTime = 0; }
     protected:
         virtual T Calculate() = 0;
 
