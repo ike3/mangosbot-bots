@@ -173,15 +173,6 @@ ItemUsage ItemUsageValue::QueryItemUsageForEquip(ItemPrototype const* item)
     if (item->Class == ITEM_CLASS_ARMOR && !sRandomItemMgr.CanEquipArmor(bot->getClass(), bot->getLevel(), item))
         shouldEquip = false;
 
-    Item* existingItem = bot->GetItemByPos(dest);
-    if (!existingItem)
-        if (shouldEquip)
-            return ITEM_USAGE_EQUIP;
-        else
-            return ITEM_USAGE_BAD_EQUIP;
-
-    const ItemPrototype* oldItem = existingItem->GetProto();
-
     if (item->Class == ITEM_CLASS_CONTAINER)
     {
         if (item->SubClass != ITEM_SUBCLASS_CONTAINER)
@@ -192,6 +183,15 @@ ItemUsage ItemUsageValue::QueryItemUsageForEquip(ItemPrototype const* item)
 
         return ITEM_USAGE_EQUIP;
     }
+
+    Item* existingItem = bot->GetItemByPos(dest);
+    if (!existingItem)
+        if (shouldEquip)
+            return ITEM_USAGE_EQUIP;
+        else
+            return ITEM_USAGE_BAD_EQUIP;
+
+    const ItemPrototype* oldItem = existingItem->GetProto();
 
     if (item->Class == ITEM_CLASS_QUIVER)
         if (!oldItem || oldItem->ContainerSlots < item->ContainerSlots)
