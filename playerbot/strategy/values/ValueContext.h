@@ -73,6 +73,8 @@
 #include "SnareTargetValue.h"
 #include "Stances.h"
 #include "QuestValues.h"
+#include "BudgetValues.h"
+#include "MaintenanceValues.h"
 
 namespace ai
 {
@@ -199,7 +201,7 @@ namespace ai
             creators["already seen players"] = &ValueContext::already_seen_players;
             creators["rpg target"] = &ValueContext::rpg_target;
             creators["ignore rpg target"] = &ValueContext::ignore_rpg_target;
-            creators["travel target"] = &ValueContext::travel_target;			
+            creators["travel target"] = &ValueContext::travel_target;
             creators["talk target"] = &ValueContext::talk_target;
             creators["pull target"] = &ValueContext::pull_target;
             creators["group"] = &ValueContext::group;
@@ -220,10 +222,24 @@ namespace ai
             creators["home bind"] = &ValueContext::home_bind;
             creators["last long move"] = &ValueContext::last_long_move;
 
-            creators["active quest givers"] = &ValueContext::active_quest_givers;
-            creators["active quest takers"] = &ValueContext::active_quest_takers;
-            creators["active quest objectives"] = &ValueContext::active_quest_objectives;
+            
             creators["free quest log slots"] = &ValueContext::free_quest_log_slots;
+            creators["dialog status"] = &ValueContext::dialog_status;
+            creators["dialog status quest"] = &ValueContext::dialog_status_quest;
+            creators["can accept quest npc"] = &ValueContext::can_accept_quest_npc;
+            creators["can accept quest low level npc"] = &ValueContext::can_accept_quest_low_level_npc;
+            creators["can turn in quest npc"] = &ValueContext::can_turn_in_quest_npc;
+            
+            creators["money needed"] = &ValueContext::money_needed;
+            creators["should get money"] = &ValueContext::should_get_money;
+            
+            creators["should home bind"] = &ValueContext::should_home_bind;
+            creators["should repair"] = &ValueContext::should_repair;
+            creators["can repair"] = &ValueContext::can_repair;
+            creators["should sell"] = &ValueContext::should_sell;
+            creators["can sell"] = &ValueContext::can_sell;
+            creators["can fight equal"] = &ValueContext::can_fight_equal;
+            creators["can fight boss"] = &ValueContext::can_fight_boss;
         }
 
     private:
@@ -360,9 +376,22 @@ namespace ai
         static UntypedValue* last_long_move(PlayerbotAI* ai) { return new LastLongMoveValue(ai); }
         static UntypedValue* home_bind(PlayerbotAI* ai) { return new HomeBindValue(ai); }
 
-        static UntypedValue* active_quest_givers(PlayerbotAI* ai) { return new ActiveQuestGiversValue(ai); }
-        static UntypedValue* active_quest_takers(PlayerbotAI* ai) { return new ActiveQuestTakersValue(ai); }
-        static UntypedValue* active_quest_objectives(PlayerbotAI* ai) { return new ActiveQuestObjectivesValue(ai); }
         static UntypedValue* free_quest_log_slots(PlayerbotAI* ai) { return new FreeQuestLogSlotValue(ai); }
-};
+        static UntypedValue* dialog_status(PlayerbotAI* ai) { return new DialogStatusValue(ai); }
+        static UntypedValue* dialog_status_quest(PlayerbotAI* ai) { return new DialogStatusQuestValue(ai); }
+        static UntypedValue* can_accept_quest_npc(PlayerbotAI* ai) { return new CanAcceptQuestValue(ai); }
+        static UntypedValue* can_accept_quest_low_level_npc(PlayerbotAI* ai) { return new CanAcceptQuestLowLevelValue(ai); }
+        static UntypedValue* can_turn_in_quest_npc(PlayerbotAI* ai) { return new CanTurnInQuestValue(ai); }
+
+        static UntypedValue* money_needed(PlayerbotAI* ai) { return new MoneyNeededValue(ai); }
+        static UntypedValue* should_get_money(PlayerbotAI* ai) { return new ShouldGetMoneyValue(ai); }
+
+        static UntypedValue* should_home_bind(PlayerbotAI* ai) { return new ShouldHomeBindValue(ai); }
+        static UntypedValue* should_repair(PlayerbotAI* ai) { return new ShouldRepairValue(ai); }
+        static UntypedValue* can_repair(PlayerbotAI* ai) { return new CanRepairValue(ai); }
+        static UntypedValue* should_sell(PlayerbotAI* ai) { return new ShouldSellValue(ai); }
+        static UntypedValue* can_sell(PlayerbotAI* ai) { return new CanSellValue(ai); }
+        static UntypedValue* can_fight_equal(PlayerbotAI* ai) { return new CanFightEqualValue(ai); }
+        static UntypedValue* can_fight_boss(PlayerbotAI* ai) { return new CanFightBossValue(ai); }
+    };
 };

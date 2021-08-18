@@ -1,4 +1,5 @@
 #pragma once
+#include <cstdarg>
 
 namespace ai
 {
@@ -9,12 +10,15 @@ namespace ai
     public:
         Qualified() {};
         Qualified(string qualifier) : qualifier(qualifier) {}
-        Qualified(uint32 qualifier1) { Qualify(qualifier1); }
+        Qualified(int32 qualifier1) { Qualify(qualifier1); }
     public:
-        virtual void Qualify(uint32 qualifier) { ostringstream out; out << qualifier; this->qualifier = out.str(); }
+        virtual void Qualify(int32 qualifier) { ostringstream out; out << qualifier; this->qualifier = out.str(); }
         virtual void Qualify(string qualifier) { this->qualifier = qualifier; }
         string getQualifier() { return qualifier; }
 
+        static string MultiQualify(vector<string> qualifiers) { ostringstream out; for (auto& qualifier : qualifiers) out << qualifier << (&qualifier != &qualifiers.back() ? " " : ""); return out.str();}
+        static vector<string> getMultiQualifiers(string qualifier1) { istringstream iss(qualifier1);   return { istream_iterator<string>{iss}, istream_iterator<string>{} }; }
+        static int32 getMultiQualifier(string qualifier1, uint32 pos) { return stoi(getMultiQualifiers(qualifier1)[pos]); }
     protected:
         string qualifier;
     };

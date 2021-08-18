@@ -32,6 +32,13 @@ bool RpgAction::Execute(Event event)
         context->GetValue<ObjectGuid>("rpg target")->Set(ObjectGuid());
         return false;
     }
+    
+    int32 entry;
+
+    if (unit)
+        entry = unit->GetEntry();
+    else
+        entry = -((int32)wo->GetEntry());
 
     if (sServerFacade.isMoving(bot))
         return true;
@@ -64,31 +71,22 @@ bool RpgAction::Execute(Event event)
   
     vector<RpgElement> elements;
 
-    uint32 dStatus = bot->GetSession()->getDialogStatus(bot, wo, DIALOG_STATUS_NONE);
-
-#ifdef MANGOSBOT_ZERO  
-    if (dStatus == DIALOG_STATUS_REWARD2 || dStatus == DIALOG_STATUS_REWARD_REP || dStatus == DIALOG_STATUS_AVAILABLE || (AI_VALUE(uint8, "durability") <= 20 || dStatus == DIALOG_STATUS_CHAT))
-#endif
-#ifdef MANGOSBOT_ONE
-    if (dStatus == DIALOG_STATUS_REWARD2 || dStatus == DIALOG_STATUS_REWARD || dStatus == DIALOG_STATUS_REWARD_REP || dStatus == DIALOG_STATUS_AVAILABLE || (AI_VALUE(uint8, "durability") <= 20 || dStatus == DIALOG_STATUS_CHAT))
-#endif
-#ifdef MANGOSBOT_TWO
-    if (dStatus == DIALOG_STATUS_REWARD2 || dStatus == DIALOG_STATUS_REWARD || dStatus == DIALOG_STATUS_REWARD_REP || dStatus == DIALOG_STATUS_AVAILABLE || (AI_VALUE(uint8, "durability") <= 20 || dStatus == DIALOG_STATUS_LOW_LEVEL_AVAILABLE))
-#endif  
+    if(AI_VALUE2(bool, "can accept quest npc",entry) || AI_VALUE2(bool, "can turn in quest npc", entry) || (AI_VALUE(bool, "can fight equal") && AI_VALUE2(bool, "can accept quest low level npc", entry)))
         elements.push_back(&RpgAction::quest);
+
     if (unit)
     {
         if(unit->isTaxi() && CanDiscover(guid))
             elements.push_back(&RpgAction::discover);
         if (unit->isVendor())
             elements.push_back(&RpgAction::trade);
-        if (unit->isArmorer() && (AI_VALUE(uint8, "durability") < 100 && AI_VALUE(uint32, "repair cost") < bot->GetMoney()))
+        if (unit->isArmorer() && AI_VALUE(bool, "should repair") && AI_VALUE(bool, "can repair"))
             elements.push_back(&RpgAction::repair);
         if (CanTrain(guid))
             elements.push_back(&RpgAction::train);
         if (unit->GetHealthPercent() < 100 && (bot->getClass() == CLASS_PRIEST || bot->getClass() == CLASS_DRUID || bot->getClass() == CLASS_PALADIN || bot->getClass() == CLASS_SHAMAN))
             elements.push_back(&RpgAction::heal);
-        if (unit->isInnkeeper() && AI_VALUE2(float, "distance", "home bind") > 1000.0f)
+        if (unit->isInnkeeper() && AI_VALUE(bool, "should home bind"))
             elements.push_back(&RpgAction::homebind);
         if (unit->isBattleMaster() && CanQueueBg(guid))
             elements.push_back(&RpgAction::queuebg);

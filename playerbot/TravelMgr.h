@@ -179,6 +179,38 @@ namespace ai
         uint32 visitors = 0;        
     };
 
+    //Generic creature finder
+    class FindPointCreatureData
+    {
+    public:
+        FindPointCreatureData(WorldPosition point1 = WorldPosition(), float radius1 = 0, uint32 entry1 = 0) { point = point1; radius = radius1; entry = entry1; }
+
+        bool operator()(CreatureDataPair const& dataPair);
+        vector<CreatureDataPair const*> GetResult() const { return data; };
+    private:
+        WorldPosition point;
+        float radius;
+        uint32 entry;
+
+        vector<CreatureDataPair const*> data;
+    };
+
+    //Generic gameObject finder
+    class FindPointGameObjectData
+    {
+    public:
+        FindPointGameObjectData(WorldPosition point1 = WorldPosition(), float radius1 = 0, uint32 entry1 = 0) { point = point1; radius = radius1; entry = entry1; }
+
+        bool operator()(GameObjectDataPair const& dataPair);
+        vector<GameObjectDataPair const*> GetResult() const { return data; };
+    private:
+        WorldPosition point;
+        float radius;
+        uint32 entry;
+
+        vector<GameObjectDataPair const*> data;
+    };
+
     class GuidPosition : public ObjectGuid
     {
     public:
@@ -259,7 +291,7 @@ namespace ai
         bool isFull(bool ignoreFull = false);
 
         virtual string getName() { return "TravelDestination"; }
-        virtual uint32 getEntry() { return NULL; }
+        virtual int32 getEntry() { return NULL; }
         virtual string getTitle() { return "generic travel destination"; }
 
         WorldPosition* nearestPoint(WorldPosition* pos);
@@ -281,38 +313,6 @@ namespace ai
         uint32 maxVisitorsPerPoint = 0;
         uint32 expireDelay = 5 * 1000;
         uint32 cooldownDelay = 60 * 1000;
-    };
-
-    //Generic creature finder
-    class FindPointCreatureData
-    {
-    public:
-        FindPointCreatureData(WorldPosition point1 = WorldPosition(), float radius1 = 0, uint32 entry1 = 0) { point = point1; radius = radius1; entry = entry1; }
-
-        bool operator()(CreatureDataPair const&  dataPair);
-        vector<CreatureDataPair const*> GetResult() const { return data; };
-    private:
-        WorldPosition point;
-        float radius;
-        uint32 entry;
-
-        vector<CreatureDataPair const*> data;
-    };
-
-    //Generic gameObject finder
-    class FindPointGameObjectData
-    {
-    public:
-        FindPointGameObjectData(WorldPosition point1 = WorldPosition(), float radius1 = 0, uint32 entry1 = 0) { point = point1; radius = radius1; entry = entry1; }
-
-        bool operator()(GameObjectDataPair const& dataPair);
-        vector<GameObjectDataPair const*> GetResult() const { return data; };
-    private:
-        WorldPosition point;
-        float radius;
-        uint32 entry;
-
-        vector<GameObjectDataPair const*> data;
     };
 
     //A travel target that is always inactive and jumps to cooldown.
@@ -346,7 +346,7 @@ namespace ai
         virtual bool isActive(Player* bot) { return bot->IsActiveQuest(questId); }
 
         virtual string getName() { return "QuestTravelDestination"; }
-        virtual uint32 getEntry() { return NULL; }
+        virtual int32 getEntry() { return NULL; }
         virtual string getTitle();
     protected:
         uint32 questId;
@@ -362,7 +362,7 @@ namespace ai
         virtual bool isActive(Player* bot);
 
         virtual string getName() { return "QuestRelationTravelDestination"; }
-        virtual uint32 getEntry() { return entry; }
+        virtual int32 getEntry() { return entry; }
         virtual string getTitle();
         virtual uint32 getRelation() { return relation; }
     private:
@@ -392,7 +392,7 @@ namespace ai
 
         virtual string getName() { return "QuestObjectiveTravelDestination"; }
 
-        virtual uint32 getEntry() { return entry; }
+        virtual int32 getEntry() { return entry; }
 
         virtual string getTitle();
     private:
@@ -413,10 +413,10 @@ namespace ai
 
         virtual CreatureInfo const* getCreatureInfo() { return ObjectMgr::GetCreatureTemplate(entry); }
         virtual string getName() { return "RpgTravelDestination"; }
-        virtual uint32 getEntry() { return NULL; }
+        virtual int32 getEntry() { return NULL; }
         virtual string getTitle();
     protected:
-        uint32 entry;
+        int32 entry;
     };
 
     //A location with zone exploration target(s) 
@@ -430,7 +430,7 @@ namespace ai
         virtual bool isActive(Player* bot);
 
         virtual string getName() { return "ExploreTravelDestination"; }
-        virtual uint32 getEntry() { return NULL; }
+        virtual int32 getEntry() { return NULL; }
         virtual string getTitle();
         virtual uint32 getAreaId() { return areaId; }
     protected:
@@ -441,19 +441,34 @@ namespace ai
     class GrindTravelDestination : public TravelDestination
     {
     public:
-        GrindTravelDestination(uint32 entry1, float radiusMin1, float radiusMax1) : TravelDestination(radiusMin1, radiusMax1) {
+        GrindTravelDestination(int32 entry1, float radiusMin1, float radiusMax1) : TravelDestination(radiusMin1, radiusMax1) {
             entry = entry1;
         }
-
-        static uint32 moneyNeeded(Player* bot);
 
         virtual bool isActive(Player* bot);
         virtual CreatureInfo const* getCreatureInfo() { return ObjectMgr::GetCreatureTemplate(entry); }
         virtual string getName() { return "GrindTravelDestination"; }
-        virtual uint32 getEntry() { return entry; }
+        virtual int32 getEntry() { return entry; }
         virtual string getTitle();
     protected:
-        uint32 entry;
+        int32 entry;
+    };
+
+    //A location with a boss
+    class BossTravelDestination : public TravelDestination
+    {
+    public:
+        BossTravelDestination(int32 entry1, float radiusMin1, float radiusMax1) : TravelDestination(radiusMin1, radiusMax1) {
+            entry = entry1;
+        }
+
+        virtual bool isActive(Player* bot);
+        virtual CreatureInfo const* getCreatureInfo() { return ObjectMgr::GetCreatureTemplate(entry); }
+        virtual string getName() { return "BossTravelDestination"; }
+        virtual int32 getEntry() { return entry; }
+        virtual string getTitle();
+    protected:
+        int32 entry;
     };
    
     //A quest destination container for quick lookup of all destinations related to a quest.
@@ -594,6 +609,7 @@ namespace ai
         vector<TravelDestination*> getRpgTravelDestinations(Player* bot, bool ignoreFull = false, bool ignoreInactive = false, float maxDistance = 5000);
         vector<TravelDestination*> getExploreTravelDestinations(Player* bot, bool ignoreFull = false, bool ignoreInactive = false);
         vector<TravelDestination*> getGrindTravelDestinations(Player* bot, bool ignoreFull = false, bool ignoreInactive = false, float maxDistance = 5000);
+        vector<TravelDestination*> getBossTravelDestinations(Player* bot, bool ignoreFull = false, bool ignoreInactive = false, float maxDistance = 5000);
 
 
         void setNullTravelTarget(Player* player);
@@ -614,16 +630,17 @@ namespace ai
 
         void printGrid(uint32 mapId, int x, int y, string type);
         void printObj(WorldObject* obj, string type);
-    protected:
+    //protected:
         void logQuestError(uint32 errorNr, Quest* quest, uint32 objective = 0, uint32 unitId = 0, uint32 itemId = 0);
 
         vector<QuestTravelDestination*> questGivers;
         vector<RpgTravelDestination*> rpgNpcs;
         vector<GrindTravelDestination*> grindMobs;
+        vector<BossTravelDestination*> bossMobs;
 
         std::unordered_map<uint32, ExploreTravelDestination*> exploreLocs;
         std::unordered_map<uint32, QuestContainer*> quests;
-        std::unordered_map<int32, WorldPosition> pointsMap;
+        std::unordered_map<uint64, WorldPosition> pointsMap;
 
         vector<tuple<uint32, int, int>> badVmap, badMmap;
 

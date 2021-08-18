@@ -56,7 +56,7 @@ bool CleanQuestLogAction::Execute(Event event)
     if (MAX_QUEST_LOG_SIZE - totalQuests > 6)
         return true;
 
-    if (AI_VALUE(uint8, "durability") > 20) //Only drop gray quests when low durability.
+    if (AI_VALUE(bool, "can fight equal")) //Only drop gray quests when able to fight proper lvl quests.
     {
         DropQuestType(totalQuests, MAX_QUEST_LOG_SIZE - 6); //Drop gray/red quests.
         DropQuestType(totalQuests, MAX_QUEST_LOG_SIZE - 6, false, true); //Drop gray/red quests with progress.

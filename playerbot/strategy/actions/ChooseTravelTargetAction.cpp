@@ -84,7 +84,7 @@ void ChooseTravelTargetAction::ReportTravelTarget(TravelTarget* newTarget, Trave
         else
             out << "Traveling ";
 
-        out << round(newTarget->getDestination()->distanceTo(&botLocation));
+        out << round(newTarget->getDestination()->distanceTo(&botLocation)) << "y";
 
         out << " for " << chat->formatQuest(quest);
 
@@ -107,7 +107,7 @@ void ChooseTravelTargetAction::ReportTravelTarget(TravelTarget* newTarget, Trave
         else
             out << "Traveling ";
 
-        out << round(newTarget->getDestination()->distanceTo(&botLocation));
+        out << round(newTarget->getDestination()->distanceTo(&botLocation)) << "y";
 
         out << " for rpg ";
 
@@ -130,7 +130,7 @@ void ChooseTravelTargetAction::ReportTravelTarget(TravelTarget* newTarget, Trave
         else
             out << "Traveling ";
 
-        out << round(newTarget->getDestination()->distanceTo(&botLocation));
+        out << round(newTarget->getDestination()->distanceTo(&botLocation)) << "y";
 
         out << " for exploration";
 
@@ -153,11 +153,34 @@ void ChooseTravelTargetAction::ReportTravelTarget(TravelTarget* newTarget, Trave
         else
             out << "Traveling ";
 
-        out << round(newTarget->getDestination()->distanceTo(&botLocation));
+        out << round(newTarget->getDestination()->distanceTo(&botLocation)) << "y";
 
         out << " for grinding money";
 
         out << " to " << GrindDestination->getTitle();
+
+        ai->TellMaster(out);
+    }
+    else if (destination->getName() == "BossTravelDestination")
+    {
+        BossTravelDestination* BossDestination = (BossTravelDestination*)destination;
+
+        WorldPosition botLocation(bot);
+
+        ostringstream out;
+
+        if (newTarget->isGroupCopy())
+            out << "Following group ";
+        else if (oldDestination && oldDestination == destination)
+            out << "Continuing ";
+        else
+            out << "Traveling ";
+
+        out << round(newTarget->getDestination()->distanceTo(&botLocation)) << "y";
+
+        out << " for good loot";
+
+        out << " to " << BossDestination->getTitle();
 
         ai->TellMaster(out);
     }
@@ -181,22 +204,33 @@ bool ChooseTravelTargetAction::SetTarget(TravelTarget* target, TravelTarget* old
 
     foundTarget = SetGroupTarget(target);                                 //Join groups members
 
-    if (AI_VALUE(uint8, "bag space") > 80 || (AI_VALUE(uint8, "durability") < 80 && AI_VALUE(uint32, "repair cost") < bot->GetMoney()) && urand(1, 100) > 10)
-        foundTarget = SetRpgTarget(target);                               //Go to town to sell items or repair
+    //Enpty bags/repair
+    if (!foundTarget && urand(1, 100) > 10)                               //90% chance
+        if ((AI_VALUE(bool, "should sell") && AI_VALUE(bool, "can sell")) || (AI_VALUE(bool, "should repair") && AI_VALUE(bool, "can repair")))
+            foundTarget = SetRpgTarget(target);                           //Go to town to sell items or repair
 
-    if (!foundTarget && GrindTravelDestination::moneyNeeded(bot) > bot->GetMoney())
-        if(urand(1,100) > 60)
+    //Rpg in city
+    if (!foundTarget && urand(1, 100) > 90)                               //10% chance
+        foundTarget = SetBankTarget(target);                              //Head to the bank
+
+    //Grind for money
+    if (!foundTarget && AI_VALUE(bool, "should get money"))
+        if(urand(1,100) > 66)
             foundTarget = SetQuestTarget(target);                         //Turn in quests for money / Do low level quests
         else if (urand(1,100) > 50)
             foundTarget = SetGrindTarget(target);                         //Go grind mobs for money
         else
             foundTarget = SetNewQuestTarget(target);                      //Find a low level quest to do
 
+
+    //Continue
     if (!foundTarget && urand(1, 100) > 10)                               //90% chance 
         foundTarget = SetCurrentTarget(target, oldTarget);                //Extend current target.
 
-    if (!foundTarget && urand(1, 100) > 90)                               //10% chance
-        foundTarget = SetBankTarget(target);                              //Head to the bank
+    //Dungeon in group
+    if (!foundTarget && urand(1, 100) > 50)                               //50% chance
+        if(AI_VALUE(bool, "can fight boss"))
+             foundTarget = SetBossTarget(target);                         //Go fight a (dungeon boss)
 
     if (!foundTarget && urand(1, 100) > 5)                                //95% chance
         foundTarget = SetQuestTarget(target);                             //Do a target of an active quest.
@@ -465,6 +499,34 @@ bool ChooseTravelTargetAction::SetGrindTarget(TravelTarget* target)
     return target->isActive();
 }
 
+bool ChooseTravelTargetAction::SetBossTarget(TravelTarget* target)
+{
+    vector<TravelDestination*> activeDestinations;
+    vector<WorldPosition*> activePoints;
+
+    WorldPosition botLocation(bot);
+
+    //Find boss mobs.
+    vector<TravelDestination*> TravelDestinations = sTravelMgr.getBossTravelDestinations(bot, ai->HasRealPlayerMaster());
+
+    activeDestinations.insert(activeDestinations.end(), TravelDestinations.begin(), TravelDestinations.end());
+
+    //Pick one good point per destination.
+    for (auto& activeTarget : activeDestinations)
+    {
+        vector<WorldPosition*> points = activeTarget->nextPoint(&botLocation);
+        if (!points.empty())
+            activePoints.push_back(points.front());
+    }
+
+    if (!getBestDestination(&activeDestinations, &activePoints))
+        return false;
+
+    target->setTarget(activeDestinations.front(), activePoints.front());
+
+    return target->isActive();
+}
+
 bool ChooseTravelTargetAction::SetExploreTarget(TravelTarget* target)
 {
     vector<TravelDestination*> activeDestinations;
@@ -603,7 +665,7 @@ bool ChooseTravelTargetAction::needForQuest(Unit* target)
         {
             QuestStatusData questStatus = quest.second;
 
-            if (questTemplate->GetQuestLevel() > bot->getLevel())
+            if (questTemplate->GetQuestLevel() > (int)bot->getLevel())
                 continue;
 
             for (int j = 0; j < QUEST_OBJECTIVES_COUNT; j++)
