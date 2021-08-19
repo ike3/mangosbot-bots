@@ -46,10 +46,12 @@ LootTemplateAccess const* LootMapValue::GetLootTemplate(ObjectGuid guid, LootTyp
 				lTemplate = LootTemplates_Item.GetLootFor(proto->ItemId);
 			else if (type == LOOT_DISENCHANTING && proto->DisenchantID)
 				lTemplate = LootTemplates_Disenchant.GetLootFor(proto->DisenchantID);
+#ifdef MANGOSBOT_TWO
 			if (type == LOOT_MILLING)
 				lTemplate = LootTemplates_Milling.GetLootFor(proto->ItemId);
 			if (type == LOOT_PROSPECTING)
 				lTemplate = LootTemplates_Prospecting.GetLootFor(proto->ItemId);
+#endif
 		}
 	}
 

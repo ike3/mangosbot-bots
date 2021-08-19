@@ -12,7 +12,9 @@ bool AttackAnythingAction::isUseful() {
     if (!target)
         return false;
 
-    if (!target->GetNameStr().empty() && target->GetNameStr().find("Training Dummy") != std::string::npos) //Target is not a targetdummy
+    string name = string(target->GetName());
+
+    if (!name.empty() && name.find("Dummy") != std::string::npos) //Target is not a targetdummy
         return false;
 
     if (AI_VALUE2(bool, "combat", "self target"))                                        //Bot is already in combat
