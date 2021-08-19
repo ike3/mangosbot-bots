@@ -16,11 +16,11 @@ LootTemplateAccess const* LootMapValue::GetLootTemplate(ObjectGuid guid, LootTyp
 
 		if (info)
 		{
-			if (type == LootType::normal)
+			if (type == LOOT_CORPSE)
 				lTemplate = LootTemplates_Creature.GetLootFor(info->LootId);
-			else if (type == LootType::pickpocket && info->PickpocketLootId)
+			else if (type == LOOT_PICKPOCKETING && info->PickpocketLootId)
 				lTemplate = LootTemplates_Pickpocketing.GetLootFor(info->PickpocketLootId);
-			else if (type == LootType::skinning && info->SkinningLootId)
+			else if (type == LOOT_SKINNING && info->SkinningLootId)
 				lTemplate = LootTemplates_Skinning.GetLootFor(info->SkinningLootId);
 		}
 	}
@@ -30,9 +30,9 @@ LootTemplateAccess const* LootMapValue::GetLootTemplate(ObjectGuid guid, LootTyp
 
 		if (info && info->GetLootId() != 0)
 		{
-			if (type == LootType::normal)
+			if (type == LOOT_CORPSE)
 				lTemplate = LootTemplates_Gameobject.GetLootFor(info->GetLootId());
-			else if (type == LootType::fishing)
+			else if (type == LOOT_FISHINGHOLE)
 				lTemplate = LootTemplates_Fishing.GetLootFor(info->GetLootId());
 		}
 	}
@@ -42,13 +42,13 @@ LootTemplateAccess const* LootMapValue::GetLootTemplate(ObjectGuid guid, LootTyp
 		
 		if (proto)
 		{
-			if (type == LootType::normal)
+			if (type == LOOT_CORPSE)
 				lTemplate = LootTemplates_Item.GetLootFor(proto->ItemId);
-			else if (type == LootType::disenchant && proto->DisenchantID)
+			else if (type == LOOT_DISENCHANTING && proto->DisenchantID)
 				lTemplate = LootTemplates_Disenchant.GetLootFor(proto->DisenchantID);
-			if (type == LootType::milling)
+			if (type == LOOT_MILLING)
 				lTemplate = LootTemplates_Milling.GetLootFor(proto->ItemId);
-			if (type == LootType::prospecting)
+			if (type == LOOT_PROSPECTING)
 				lTemplate = LootTemplates_Prospecting.GetLootFor(proto->ItemId);
 		}
 	}
@@ -68,7 +68,7 @@ LootMap* LootMapValue::Calculate()
 	{
 		sEntry = entry;
 
-		LootTemplateAccess const* lTemplateA = GetLootTemplate(ObjectGuid(HIGHGUID_UNIT, entry, uint32(1)),LootType::normal);
+		LootTemplateAccess const* lTemplateA = GetLootTemplate(ObjectGuid(HIGHGUID_UNIT, entry, uint32(1)), LOOT_CORPSE);
 
 		if(lTemplateA)
 			for (LootStoreItem const& lItem : lTemplateA->Entries)
@@ -79,7 +79,7 @@ LootMap* LootMapValue::Calculate()
 	{
 		sEntry = entry;
 
-		LootTemplateAccess const* lTemplateA = GetLootTemplate(ObjectGuid(HIGHGUID_GAMEOBJECT, entry, uint32(1)), LootType::normal);
+		LootTemplateAccess const* lTemplateA = GetLootTemplate(ObjectGuid(HIGHGUID_GAMEOBJECT, entry, uint32(1)), LOOT_CORPSE);
 
 		if(lTemplateA)
 			for (LootStoreItem const& lItem : lTemplateA->Entries)

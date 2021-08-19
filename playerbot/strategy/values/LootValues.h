@@ -3,20 +3,7 @@
 #include <boost/bimap/multiset_of.hpp>
 
 namespace ai
-{
-    //
-    enum class LootType : uint8
-    {
-        normal = 0, 
-        disenchant = 1, 
-        fishing = 2, 
-        mail = 3,
-        milling = 4,
-        pickpocket = 5,
-        prospecting = 6,
-        skinning = 7
-    };    
-
+{ 
     //Cheat class copy to hack into the loot system
     class LootTemplateAccess
     {
@@ -36,7 +23,7 @@ namespace ai
     public:
         LootMapValue(PlayerbotAI* ai) : SingleCalculatedValue(ai, "loot map") {}
 
-        static LootTemplateAccess const* GetLootTemplate(ObjectGuid guid, LootType type = LootType::normal);
+        static LootTemplateAccess const* GetLootTemplate(ObjectGuid guid, LootType type = LOOT_CORPSE);
 
         virtual LootMap* Calculate();
     };
