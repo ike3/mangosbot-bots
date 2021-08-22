@@ -74,7 +74,7 @@ Unit* GrindTargetValue::FindTargetForGrinding(int assistCount)
             //continue;
 
         Creature* creature = dynamic_cast<Creature*>(unit);
-        if (creature && creature->GetCreatureInfo() && creature->GetCreatureInfo()->Rank > CREATURE_ELITE_NORMAL)
+        if (creature && creature->GetCreatureInfo() && creature->GetCreatureInfo()->Rank > CREATURE_ELITE_NORMAL && !AI_VALUE(bool, "can fight boss"))
             continue;
 
         if (group)
@@ -137,7 +137,7 @@ bool GrindTargetValue::needForQuest(Unit* target)
         {
             QuestStatusData* questStatus = sTravelMgr.getQuestStatus(bot, questId);
 
-            if (questTemplate->GetQuestLevel() > bot->getLevel())
+            if (questTemplate->GetQuestLevel() > (int)bot->getLevel())
                 continue;
 
             for (int j = 0; j < QUEST_OBJECTIVES_COUNT; j++)
