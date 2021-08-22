@@ -8,11 +8,17 @@ namespace ai
 {
     class LootRollAction : public QueryItemUsageAction {
     public:
-        LootRollAction(PlayerbotAI* ai) : QueryItemUsageAction(ai, "loot roll") {}
+        LootRollAction(PlayerbotAI* ai, string name = "loot roll") : QueryItemUsageAction(ai, name) {}
         virtual bool Execute(Event event);
 
-    private:
-        RollVote CalculateRollVote(ItemPrototype const *proto);
+    protected:
+        virtual RollVote CalculateRollVote(ItemPrototype const *proto);
     };
 
+    class MasterLootRollAction : public LootRollAction {
+    public:
+        MasterLootRollAction(PlayerbotAI* ai) : LootRollAction(ai, "master loot roll") {}
+        virtual bool isUseful() { return !ai->HasActivePlayerMaster(); };
+        virtual bool Execute(Event event);
+    };
 }
