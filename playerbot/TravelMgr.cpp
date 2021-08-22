@@ -728,7 +728,7 @@ bool QuestRelationTravelDestination::isActive(Player* bot) {
             return false;
         //if (questTemplate->XPValue(bot) == 0)
         //    return false;
-        if (!bot->CanTakeQuest(questTemplate, false))
+        if (bot->GetMap()->Instanceable() || !bot->CanTakeQuest(questTemplate, false))
             return false;
 
         PlayerbotAI* ai = bot->GetPlayerbotAI();
@@ -801,7 +801,23 @@ bool QuestObjectiveTravelDestination::isActive(Player* bot) {
     if (questTemplate->GetType() == QUEST_TYPE_ELITE && !AI_VALUE(bool, "can fight boss"))
         return false;
 
-    return sTravelMgr.getObjectiveStatus(bot, questTemplate, objective);
+    if (!sTravelMgr.getObjectiveStatus(bot, questTemplate, objective))
+        return false;
+
+    WorldPosition botPos(bot);
+
+    if (getEntry() > 0 && !isOut(&botPos))
+    {
+        list<ObjectGuid> targets = AI_VALUE(list<ObjectGuid>, "possible targets");
+
+        for (auto& target : targets)
+            if (target.GetEntry() == getEntry() && target.IsCreature() && ai->GetCreature(target) && ai->GetCreature(target)->IsAlive())
+                return true;
+
+        return false;
+    }
+
+    return true;
 }
 
 string QuestObjectiveTravelDestination::getTitle() {
@@ -970,7 +986,23 @@ bool BossTravelDestination::isActive(Player* bot)
     FactionTemplateEntry const* factionEntry = sFactionTemplateStore.LookupEntry(cInfo->Faction);
     ReputationRank reaction = ai->getReaction(factionEntry);
 
-    return reaction < REP_NEUTRAL;
+    if (reaction >= REP_NEUTRAL)
+        return false;
+
+    WorldPosition botPos(bot);
+
+    if (!isOut(&botPos))
+    {
+        list<ObjectGuid> targets = AI_VALUE(list<ObjectGuid>, "possible targets");
+
+        for (auto& target : targets)
+            if (target.GetEntry() == getEntry() && target.IsCreature() && ai->GetCreature(target) && ai->GetCreature(target)->IsAlive())
+                return true;
+
+        return false;
+    }
+
+    return true;
 }
 
 string BossTravelDestination::getTitle() {

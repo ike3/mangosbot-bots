@@ -295,9 +295,10 @@ namespace ai
         virtual string getTitle() { return "generic travel destination"; }
 
         WorldPosition* nearestPoint(WorldPosition* pos);
-        float distanceTo(WorldPosition* pos) { return nearestPoint(pos)->distance(pos); }
-        virtual bool isIn(WorldPosition* pos) { return distanceTo(pos) <= radiusMin; }
-        virtual bool isOut(WorldPosition* pos) { return distanceTo(pos) > radiusMax; }
+        float distanceTo(WorldPosition* pos) { return nearestPoint(pos)->fDist(pos); }
+        bool onMap(WorldPosition* pos) {return nearestPoint(pos)->getMapId() == pos->getMapId();}
+        virtual bool isIn(WorldPosition* pos) { return onMap(pos) && distanceTo(pos) <= radiusMin; }
+        virtual bool isOut(WorldPosition* pos) { return !onMap(pos) || distanceTo(pos) > radiusMax; }
         float getRadiusMin() { return radiusMin; }
 
         vector<WorldPosition*> touchingPoints(WorldPosition* pos);
