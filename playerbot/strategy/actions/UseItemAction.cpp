@@ -468,7 +468,7 @@ bool UseRandomRecipe::Execute(Event event)
 
 bool UseRandomQuestItem::isUseful()
 {
-    return !ai->HasActivePlayerMaster() && !bot->InBattleGround();
+    return !ai->HasActivePlayerMaster() && !bot->InBattleGround() && !bot->IsTaxiFlying();
 }
 
 bool UseRandomQuestItem::Execute(Event event)
@@ -498,7 +498,7 @@ bool UseRandomQuestItem::Execute(Event event)
         {
             SpellEntry const* spellInfo = sServerFacade.LookupSpellInfo(spellId);
 
-            if (ai->CanCastSpell(spellId, bot, 0, false))
+            if (ai->CanCastSpell(spellId, bot, 0, false) && questItem->IsTargetValidForItemUse(bot))
             {
 
                 item = questItem;
@@ -524,13 +524,27 @@ bool UseRandomQuestItem::Execute(Event event)
             for (auto& go : gos)
             {
                 GameObject* gameObject = ai->GetGameObject(go);
-                if (ai->CanCastSpell(spellId, gameObject, 0, false))
+                GameObjectInfo const* goInfo = gameObject->GetGOInfo();
+                if (!goInfo->GetLockId())
+                    continue;
+
+                LockEntry const* lock = sLockStore.LookupEntry(goInfo->GetLockId());
+
+                for (uint8 i = 0; i < MAX_LOCK_CASE; ++i)
                 {
-                    item = questItem;
-                    goTarget = go;
-                    unitTarget = nullptr;
-                    break;
-                }
+                    if (!lock->Type[i])
+                        continue;
+                    if (lock->Type[i] != LOCK_KEY_ITEM)
+                        continue;
+
+                    if (lock->Index[i] == proto->ItemId)
+                    {
+                        item = questItem;
+                        goTarget = go;
+                        unitTarget = nullptr;
+                        break;
+                    }
+                }               
             }
         }
 
