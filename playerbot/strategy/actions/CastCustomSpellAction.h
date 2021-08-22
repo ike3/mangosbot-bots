@@ -28,7 +28,16 @@ namespace ai
     {
     public:
         CastRandomSpellAction(PlayerbotAI* ai, string name = "cast random spell") : CastCustomSpellAction(ai, name) {}
-        virtual bool AcceptSpell(const SpellEntry* pSpellInfo) { return true; }
+        virtual bool AcceptSpell(const SpellEntry* pSpellInfo)
+        {
+            if (pSpellInfo->Id == 7355)
+                return false;
+
+            if (pSpellInfo->Id == 22027)
+                return false;
+
+            return true;
+        }
         virtual uint32 GetSpellPriority(const SpellEntry* pSpellInfo) { return 1; }
         virtual bool Execute(Event event);
     protected:
