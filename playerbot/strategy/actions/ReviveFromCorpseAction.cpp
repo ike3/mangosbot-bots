@@ -251,7 +251,8 @@ bool SpiritHealerAction::Execute(Event event)
 
     if (!ai->HasActivePlayerMaster())
     {
-        bot->TeleportTo(ClosestGrave->map_id, ClosestGrave->x, ClosestGrave->y, ClosestGrave->z, ClosestGrave->o);
+        context->GetValue<uint32>("death count")->Set(dCount + 1);
+        return bot->TeleportTo(ClosestGrave->map_id, ClosestGrave->x, ClosestGrave->y, ClosestGrave->z, ClosestGrave->o);
     }
 
     sLog.outBasic("Bot #%d %s:%d <%s> can't find a spirit healer", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName());
