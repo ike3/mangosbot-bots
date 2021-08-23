@@ -328,6 +328,11 @@ std::vector<GridPair> WorldPosition::getGridPairs(WorldPosition secondPos)
     int uy = std::max(getGridPair().y_coord, secondPos.getGridPair().y_coord);
     int border = 1;
 
+    lx = std::min(std::max(border, lx), MAX_NUMBER_OF_GRIDS - border);
+    ly = std::min(std::max(border, ly), MAX_NUMBER_OF_GRIDS - border);
+    ux = std::min(std::max(border, ux), MAX_NUMBER_OF_GRIDS - border);
+    uy = std::min(std::max(border, uy), MAX_NUMBER_OF_GRIDS - border);
+
     for (int x = lx - border; x <= ux + border; x++)
     {
         for (int y = ly - border; y <= uy + border; y++)
@@ -392,7 +397,7 @@ void WorldPosition::loadMapAndVMap(uint32 mapId, int x, int y)
 
     if (isOverworld())
     {
-        if (abs(x) < 33 && abs(y) < 33 && !MMAP::MMapFactory::createOrGetMMapManager()->IsMMapIsLoaded(mapId, x, y))
+        if (!MMAP::MMapFactory::createOrGetMMapManager()->IsMMapIsLoaded(mapId, x, y))
             if (sPlayerbotAIConfig.hasLog(fileName))
             {
                 ostringstream out;
@@ -405,7 +410,7 @@ void WorldPosition::loadMapAndVMap(uint32 mapId, int x, int y)
         int px = (float)(32 - x) * SIZE_OF_GRIDS;
         int py = (float)(32 - y) * SIZE_OF_GRIDS;
 
-        if (abs(x) < 33 && abs(y) < 33 && !MMAP::MMapFactory::createOrGetMMapManager()->IsMMapIsLoaded(mapId, x, y))
+        if (!MMAP::MMapFactory::createOrGetMMapManager()->IsMMapIsLoaded(mapId, x, y))
             getTerrain()->GetTerrainType(px, py);
 
     }
@@ -728,7 +733,7 @@ bool QuestRelationTravelDestination::isActive(Player* bot) {
             return false;
         //if (questTemplate->XPValue(bot) == 0)
         //    return false;
-        if (bot->GetMap()->Instanceable() || !bot->CanTakeQuest(questTemplate, false))
+        if (!bot->GetMap()->IsContinent() || !bot->CanTakeQuest(questTemplate, false))
             return false;
 
         PlayerbotAI* ai = bot->GetPlayerbotAI();
