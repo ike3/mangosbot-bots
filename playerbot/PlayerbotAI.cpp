@@ -665,7 +665,7 @@ void PlayerbotAI::DoNextAction()
         }
     }
 
-    if (master)
+    if (master && master->IsInWorld())
 	{
         if (!group && sRandomPlayerbotMgr.IsRandomBot(bot))
         {
