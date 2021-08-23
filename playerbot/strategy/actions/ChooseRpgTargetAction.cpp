@@ -28,11 +28,13 @@ bool ChooseRpgTargetAction::CanTrain(ObjectGuid guid)
 
     float fDiscountMod = bot->GetReputationPriceDiscount(creature);
 
-    TrainerSpellData const* trainer_spells = cSpells;
-    if (!trainer_spells)
-        trainer_spells = tSpells;
+    TrainerSpellMap trainer_spells;      
+    if(cSpells)
+        trainer_spells.insert(cSpells->spellList.begin(), cSpells->spellList.end());
+    if(tSpells)
+        trainer_spells.insert(tSpells->spellList.begin(), tSpells->spellList.end());
 
-    for (TrainerSpellMap::const_iterator itr = trainer_spells->spellList.begin(); itr != trainer_spells->spellList.end(); ++itr)
+    for (TrainerSpellMap::const_iterator itr = trainer_spells.begin(); itr != trainer_spells.end(); ++itr)
     {
         TrainerSpell const* tSpell = &itr->second;
 
