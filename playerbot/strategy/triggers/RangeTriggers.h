@@ -92,7 +92,7 @@ namespace ai
                 return false;
 
             float targetDistance = sServerFacade.GetDistance2d(bot, target);
-            return target && (targetDistance > max(5.0f, bot->GetCombinedCombatReach(target, true)) || (!bot->IsWithinLOSInMap(target) && targetDistance > 5.0f));
+            return target && (targetDistance > max(5.0f, bot->GetCombinedCombatReach(target, true)) || (!bot->IsWithinLOSInMap(target, true) && targetDistance > 5.0f));
         }
     };
 
@@ -103,7 +103,7 @@ namespace ai
         virtual bool IsActive()
         {
             Unit* target = AI_VALUE(Unit*, GetTargetName());
-            return target && (sServerFacade.GetDistance2d(bot, target) > distance || !bot->IsWithinLOSInMap(target));
+            return target && (sServerFacade.GetDistance2d(bot, target) > distance || !bot->IsWithinLOSInMap(target, true));
         }
     };
 
@@ -115,7 +115,7 @@ namespace ai
         virtual bool IsActive()
         {
             Unit* target = AI_VALUE(Unit*, GetTargetName());
-            return target && (sServerFacade.GetDistance2d(bot, target) > distance || !bot->IsWithinLOSInMap(target));
+            return target && (sServerFacade.GetDistance2d(bot, target) > distance || !bot->IsWithinLOSInMap(target, true));
         }
     };
 
