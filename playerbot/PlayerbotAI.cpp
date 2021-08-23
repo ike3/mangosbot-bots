@@ -1811,6 +1811,9 @@ bool PlayerbotAI::IsInterruptableSpellCasting(Unit* target, string spell, uint8 
 		if ((spellInfo->Effect[i] == SPELL_EFFECT_INTERRUPT_CAST) &&
 			!target->IsImmuneToSpellEffect(spellInfo, (SpellEffectIndex)i, true))
 			return true;
+
+        if ((spellInfo->Effect[i] == SPELL_EFFECT_APPLY_AURA) && spellInfo->EffectApplyAuraName[i] == SPELL_AURA_MOD_SILENCE)
+            return true;
 	}
 
 	return false;
