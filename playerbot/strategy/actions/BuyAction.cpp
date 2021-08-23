@@ -133,11 +133,12 @@ bool BuyAction::BuyItem(VendorItemData const* tItems, ObjectGuid vendorguid, con
 #else
             bot->BuyItemFromVendor(vendorguid, itemId, 1, NULL_BAG, NULL_SLOT);
 #endif
-            ostringstream out; out << "Buying " << ChatHelper::formatItem(proto);
-            ai->TellMaster(out.str());
-
             if (oldCount < AI_VALUE2(uint32, "item count", proto->Name1)) //BuyItem Always returns false (unless unique) so we have to check the item counts.
-               return true;
+            {
+                ostringstream out; out << "Buying " << ChatHelper::formatItem(proto);
+                ai->TellMaster(out.str());
+                return true;
+            }
  
             return false;
         }
