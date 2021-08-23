@@ -85,13 +85,32 @@ bool FollowAction::CanDeadFollow(Unit* target)
 
 bool FleeToMasterAction::Execute(Event event)
 {
-    bool canFollow = Follow(AI_VALUE(Unit*, "master target"));
+    Unit* fTarget = AI_VALUE(Unit*, "master target");
+    bool canFollow = Follow(fTarget);
     if (!canFollow)
     {
         //ai->SetNextCheckDelay(5000);
         return false;
     }
-    ai->TellMaster("Wait for me!");
+
+    WorldPosition targetPos(fTarget);
+    WorldPosition bosPos(bot);
+    float distance = bosPos.fDist(targetPos);
+
+    if (distance < sPlayerbotAIConfig.reactDistance * 3)
+    {
+        if (!urand(0, 3))
+            ai->TellMaster("I am close, wait for me!");
+    }
+    else if (distance < 1000)
+    {
+        if (!urand(0, 10))
+            ai->TellMaster("I heading to your position.");
+    }
+    else
+        if (!urand(0,20))
+            ai->TellMaster("I am traveling to your position.");
+           
     ai->SetNextCheckDelay(3000);
     return true;
 }
@@ -115,6 +134,9 @@ bool FleeToMasterAction::isUseful()
     Unit* fTarget = AI_VALUE(Unit*, "master target");
     
     if (!CanDeadFollow(fTarget))
+        return false;
+
+    if (fTarget->IsTaxiFlying())
         return false;
 
     return true;

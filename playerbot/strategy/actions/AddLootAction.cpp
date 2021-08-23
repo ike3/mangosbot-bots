@@ -41,12 +41,12 @@ bool AddAllLootAction::Execute(Event event)
 
 bool AddLootAction::isUseful()
 {
-    return true; // AI_VALUE(uint8, "bag space") < 80 || GrindTravelDestination::moneyNeeded(bot) > bot->GetMoney();
+    return true;
 }
 
 bool AddAllLootAction::isUseful()
 {
-    return true; // AI_VALUE(uint8, "bag space") < 80 || GrindTravelDestination::moneyNeeded(bot) > bot->GetMoney();
+    return true;
 }
 
 bool AddAllLootAction::AddLoot(ObjectGuid guid)

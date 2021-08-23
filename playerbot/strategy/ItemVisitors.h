@@ -1,5 +1,7 @@
 #pragma once
 #include "../ServerFacade.h"
+#include "../ServerFacade.h"
+#include "values/ItemUsageValue.h"
 
 char * strstri (const char* str1, const char* str2);
 
@@ -479,5 +481,22 @@ namespace ai
         }
     private:
         SkillType skill;
+    };
+
+    class FindItemUsageVisitor : public FindUsableItemVisitor
+    {
+    public:
+        FindItemUsageVisitor(Player* bot, ItemUsage usage = ITEM_USAGE_NONE) : FindUsableItemVisitor(bot), usage(usage) { context = bot->GetPlayerbotAI()->GetAiObjectContext();};
+
+        virtual bool Accept(const ItemPrototype* proto)
+        {
+            if (AI_VALUE2(ItemUsage, "item usage", proto->ItemId) == usage)
+                return true;
+
+            return false;
+        }
+    private:
+        AiObjectContext* context;
+        ItemUsage usage;
     };
 }

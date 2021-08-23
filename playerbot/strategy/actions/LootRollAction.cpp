@@ -81,15 +81,15 @@ RollVote LootRollAction::CalculateRollVote(ItemPrototype const *proto)
     ostringstream out; out << proto->ItemId;
     ItemUsage usage = AI_VALUE2(ItemUsage, "item usage", out.str());
 
-    RollVote needVote = ROLL_GREED;
+    RollVote needVote = ROLL_PASS;
     switch (usage)
     {
     case ITEM_USAGE_EQUIP:
     case ITEM_USAGE_REPLACE:
     case ITEM_USAGE_GUILD_TASK:
+    case ITEM_USAGE_BAD_EQUIP:
         needVote = ROLL_NEED;
         break;
-    case ITEM_USAGE_BAD_EQUIP:
     case ITEM_USAGE_SKILL:
     case ITEM_USAGE_USE:
     case ITEM_USAGE_DISENCHANT:
@@ -99,4 +99,51 @@ RollVote LootRollAction::CalculateRollVote(ItemPrototype const *proto)
         break;
     }
     return StoreLootAction::IsLootAllowed(proto->ItemId, bot->GetPlayerbotAI()) ? needVote : ROLL_PASS;
+}
+
+bool MasterLootRollAction::Execute(Event event)
+{
+    Player* bot = QueryItemUsageAction::ai->GetBot();
+
+    WorldPacket p(event.getPacket()); //WorldPacket packet for CMSG_LOOT_ROLL, (8+4+1)
+    ObjectGuid creatureGuid;
+    uint32 mapId;
+    uint32 itemSlot;
+    uint32 itemId;
+    uint32 randomSuffix;
+    uint32 randomPropertyId;
+    uint32 count;
+    uint32 timeout;
+
+    p.rpos(0); //reset packet pointer
+    p >> creatureGuid; //creature guid what we're looting
+    p >> mapId; /// 3.3.3 mapid
+    p >> itemSlot; // the itemEntryId for the item that shall be rolled for
+    p >> itemId; // the itemEntryId for the item that shall be rolled for
+    p >> randomSuffix; // randomSuffix
+    p >> randomPropertyId; // item random property ID
+    p >> count; // items in stack
+    p >> timeout;  // the countdown time to choose "need" or "greed"
+
+    Group* group = bot->GetGroup();
+    if (!group)
+        return false;
+
+    Loot* loot = sLootMgr.GetLoot(bot, creatureGuid);
+    if (!loot)
+        return false;
+
+    ItemPrototype const* proto = sItemStorage.LookupEntry<ItemPrototype>(itemId);
+    if (!proto)
+        return false;
+    
+    RollVote vote = CalculateRollVote(proto);
+
+    GroupLootRoll* lootRoll = loot->GetRollForSlot(itemSlot);
+    if (!lootRoll)
+        return false;
+
+    lootRoll->PlayerVote(bot, vote);
+
+    return true;
 }

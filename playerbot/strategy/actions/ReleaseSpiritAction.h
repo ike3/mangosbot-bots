@@ -75,13 +75,31 @@ namespace ai
 
         virtual bool isUseful()
         {
-            if (bot->InBattleGround())
-                return sServerFacade.UnitIsDead(bot) && !bot->GetCorpse();
+            if (!sServerFacade.UnitIsDead(bot))
+                return false;
 
-            return ((!bot->GetGroup()) || (bot->GetGroup() && ai->GetGroupMaster() == bot) || (ai->GetGroupMaster() && ai->GetGroupMaster() != bot &&
-                sServerFacade.UnitIsDead(ai->GetGroupMaster()) &&
-                bot->GetDeathState() != ai->GetGroupMaster()->GetDeathState()))
-                && sServerFacade.UnitIsDead(bot) && !bot->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_GHOST);
+            if (bot->InBattleGround())
+                return !bot->GetCorpse();
+
+            if (bot->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_GHOST))
+                return false;
+
+            if (!bot->GetGroup())
+                return true;
+
+            if (!ai->GetGroupMaster())
+                return true;
+
+            if (ai->GetGroupMaster() == bot)
+                return true;
+
+            if(ai->GetGroupMaster() && sServerFacade.UnitIsDead(ai->GetGroupMaster()))
+                return true;
+
+            if (sServerFacade.IsDistanceGreaterThan(AI_VALUE2(float, "distance", "master target"), sPlayerbotAIConfig.sightDistance))
+                return true;
+
+            return false;
         }
     };
 

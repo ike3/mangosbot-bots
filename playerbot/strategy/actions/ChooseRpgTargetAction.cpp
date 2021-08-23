@@ -4,6 +4,7 @@
 #include "../../PlayerbotAIConfig.h"
 #include "../values/PossibleRpgTargetsValue.h"
 #include "../../Travelmgr.h"
+#include "../values/Formations.h"
 
 using namespace ai;
 
@@ -27,11 +28,13 @@ bool ChooseRpgTargetAction::CanTrain(ObjectGuid guid)
 
     float fDiscountMod = bot->GetReputationPriceDiscount(creature);
 
-    TrainerSpellData const* trainer_spells = cSpells;
-    if (!trainer_spells)
-        trainer_spells = tSpells;
+    TrainerSpellMap trainer_spells;      
+    if(cSpells)
+        trainer_spells.insert(cSpells->spellList.begin(), cSpells->spellList.end());
+    if(tSpells)
+        trainer_spells.insert(tSpells->spellList.begin(), tSpells->spellList.end());
 
-    for (TrainerSpellMap::const_iterator itr = trainer_spells->spellList.begin(); itr != trainer_spells->spellList.end(); ++itr)
+    for (TrainerSpellMap::const_iterator itr = trainer_spells.begin(); itr != trainer_spells.end(); ++itr)
     {
         TrainerSpell const* tSpell = &itr->second;
 
@@ -177,6 +180,13 @@ bool ChooseRpgTargetAction::Execute(Event event)
         if (!go && !unit)
             continue;
 
+        int32 entry;
+
+        if (unit)
+            entry = unit->GetEntry();
+        else
+            entry = -((int32)go->GetEntry());
+
         if (!ignoreList.empty()
             && ignoreList.find(guid) != ignoreList.end()
             && urand(0, 100) < 10) //10% chance to retry ignored.            
@@ -197,30 +207,17 @@ bool ChooseRpgTargetAction::Execute(Event event)
                     priority = 110;
             }
 
-            if (unit->isVendor())
-                if (AI_VALUE(uint8, "bag space") > 80)
+            if (unit->isVendor() && AI_VALUE(bool, "should sell") && AI_VALUE(bool, "can sell"))
                     priority = 100;
-
-            if (unit->isArmorer())
-                if (AI_VALUE(uint8, "bag space") > 80 || (AI_VALUE(uint8, "durability") < 80 && AI_VALUE(uint32, "repair cost") < bot->GetMoney()))
+            else if (unit->isArmorer() && AI_VALUE(bool, "should repair") && AI_VALUE(bool, "can repair"))
                     priority = 95;
-
-            uint32 dialogStatus = bot->GetSession()->getDialogStatus(bot, unit, DIALOG_STATUS_NONE);
-#ifdef MANGOSBOT_ZERO  
-            if (dialogStatus == DIALOG_STATUS_REWARD2 || dialogStatus == DIALOG_STATUS_REWARD_REP)
-#else
-            if (dialogStatus == DIALOG_STATUS_REWARD2 || dialogStatus == DIALOG_STATUS_REWARD || dialogStatus == DIALOG_STATUS_REWARD_REP)
-#endif  
+            else if (AI_VALUE2(bool, "can turn in quest npc", unit->GetEntry()))
                 priority = 90;
-#ifndef MANGOSBOT_TWO
-            else if (CanTrain(guid) || dialogStatus == DIALOG_STATUS_AVAILABLE || (AI_VALUE(uint8, "durability") <= 20 && dialogStatus == DIALOG_STATUS_CHAT))
-#else
-            else if (CanTrain(guid) || dialogStatus == DIALOG_STATUS_AVAILABLE || (AI_VALUE(uint8, "durability") <= 20 && dialogStatus == DIALOG_STATUS_LOW_LEVEL_AVAILABLE))
-#endif    
+            else if (CanTrain(guid) || AI_VALUE2(bool, "can accept quest npc", unit->GetEntry()) || (!AI_VALUE(bool, "can fight equal") && AI_VALUE2(bool, "can accept quest low level npc", unit->GetEntry())))
                 priority = 80;
             else if (travelTarget->getDestination() && travelTarget->getDestination()->getEntry() == unit->GetEntry())
                 priority = 70;
-            else if (unit->isInnkeeper() && AI_VALUE2(float, "distance", "home bind") > 1000.0f)
+            else if (unit->isInnkeeper() && AI_VALUE(bool, "should home bind"))
                 priority = 60;
             else if (unit->isBattleMaster() && CanQueueBg(guid) != BATTLEGROUND_TYPE_NONE)
                 priority = 50;
@@ -228,28 +225,19 @@ bool ChooseRpgTargetAction::Execute(Event event)
         else
         {
             if (!sServerFacade.isSpawned(go)
-#ifdef CMANGOS
                 || go->IsInUse()
-#endif
                 || go->GetGoState() != GO_STATE_READY)
                 continue;
 
             if (!isFollowValid(bot, go))
                 continue;
 
-            uint32 dialogStatus = bot->GetSession()->getDialogStatus(bot, go, DIALOG_STATUS_NONE);
-#ifdef MANGOSBOT_ZERO  
-            if (dialogStatus == DIALOG_STATUS_REWARD2 || dialogStatus == DIALOG_STATUS_REWARD_REP)
-#else
-            if (dialogStatus == DIALOG_STATUS_REWARD2 || dialogStatus == DIALOG_STATUS_REWARD || dialogStatus == DIALOG_STATUS_REWARD_REP)
-#endif 
+            if(AI_VALUE2(bool, "can turn in quest npc", entry))
                 priority = 90;
-            else if (dialogStatus == DIALOG_STATUS_AVAILABLE)
+            else if (AI_VALUE2(bool, "can accept quest npc", entry))
                 priority = 80;
-            else if (travelTarget->getDestination() && travelTarget->getDestination()->getEntry() * -1 == go->GetEntry())
-                priority = 70;
-            //else if (urand(1, 100) > 10)
-            //    continue;            
+            else if (travelTarget->getDestination() && travelTarget->getDestination()->getEntry() == entry)
+                priority = 70;     
         }
 
         if (ai->HasStrategy("debug rpg", BOT_STATE_NON_COMBAT))
@@ -342,6 +330,7 @@ bool ChooseRpgTargetAction::isFollowValid(Player* bot, WorldLocation location)
 {
     PlayerbotAI* ai = bot->GetPlayerbotAI();
     Player* master = ai->GetGroupMaster();
+    AiObjectContext* context = ai->GetAiObjectContext();
 
     if (!master || bot == master)
         return true;
@@ -350,14 +339,18 @@ bool ChooseRpgTargetAction::isFollowValid(Player* bot, WorldLocation location)
         return true;
 
     if (bot->GetDistance(master) > sPlayerbotAIConfig.rpgDistance * 2)
+        return false;
+
+    Formation* formation = AI_VALUE(Formation*, "formation");
+    float distance = master->GetDistance2d(location.coord_x, location.coord_y);
+
+    if (!ai->HasActivePlayerMaster() && distance < 50.0f)
         return true;
 
-    float distance = sqrt(master->GetDistance(location.coord_x, location.coord_y, location.coord_z));
-
-    if (!master->IsMoving() && distance < sPlayerbotAIConfig.sightDistance)
+    if (!master->IsMoving() && distance < 25.0f)
         return true;
 
-    if (distance < sPlayerbotAIConfig.lootDistance)
+    if (distance < formation->GetMaxDistance())
         return true;
 
     return false;

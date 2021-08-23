@@ -22,16 +22,15 @@ void MovementAction::CreateWp(Player* wpOwner, float x, float y, float z, float 
     float dist = wpOwner->GetDistance(x, y, z);
     float delay = 1000.0f * dist / wpOwner->GetSpeed(MOVE_RUN) + sPlayerbotAIConfig.reactDelay;
 
-    if(!important)
-        delay *= 0.25;
+    //if(!important)
+    //    delay *= 0.25;
 
 
     Creature* wpCreature = wpOwner->SummonCreature(entry, x, y, z - 1, o, TEMPSPAWN_TIMED_DESPAWN, delay);
     ai->AddAura(wpCreature, 246);
 
     if (!important)
-        wpCreature->SetObjectScale(0.2f);
-
+        wpCreature->SetObjectScale(0.5f);
 }
 
 bool MovementAction::MoveNear(uint32 mapId, float x, float y, float z, float distance)

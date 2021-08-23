@@ -76,7 +76,7 @@ bool UseItemAction::UseItemOnItem(Item* item, Item* itemTarget)
    return UseItem(item, ObjectGuid(), itemTarget);
 }
 
-bool UseItemAction::UseItem(Item* item, ObjectGuid goGuid, Item* itemTarget)
+bool UseItemAction::UseItem(Item* item, ObjectGuid goGuid, Item* itemTarget, Unit* unitTarget)
 {
    if (bot->CanUseItem(item) != EQUIP_ERR_OK)
       return false;
@@ -207,6 +207,17 @@ bool UseItemAction::UseItem(Item* item, ObjectGuid goGuid, Item* itemTarget)
       }
    }
 
+   if (!targetSelected && item->GetProto()->Class != ITEM_CLASS_CONSUMABLE && unitTarget)
+   {
+       if (item->IsTargetValidForItemUse(unitTarget))
+       {
+           targetFlag = TARGET_FLAG_UNIT;
+           packet << targetFlag << unitTarget->GetObjectGuid().WriteAsPacked();
+           out << " on " << unitTarget->GetName();
+           targetSelected = true;
+       }
+   }
+
    if (uint32 questid = item->GetProto()->StartQuest)
    {
       Quest const* qInfo = sObjectMgr.GetQuestTemplate(questid);
@@ -328,8 +339,12 @@ bool UseItemAction::UseItem(Item* item, ObjectGuid goGuid, Item* itemTarget)
       return true;
    }
 
+   if (!spellId)
+       return false;
+
    ai->SetNextCheckDelay(sPlayerbotAIConfig.globalCoolDown);
    ai->TellMasterNoFacing(out.str());
+
    bot->GetSession()->HandleUseItemOpcode(packet);
    return true;
 }
@@ -457,36 +472,94 @@ bool UseRandomRecipe::Execute(Event event)
 
 bool UseRandomQuestItem::isUseful()
 {
-    return !ai->HasActivePlayerMaster() && !bot->InBattleGround();
+    return !ai->HasActivePlayerMaster() && !bot->InBattleGround() && !bot->IsTaxiFlying();
 }
 
 bool UseRandomQuestItem::Execute(Event event)
 {
+    Unit* unitTarget = nullptr;
+    ObjectGuid goTarget = ObjectGuid();
+
     list<Item*> questItems = AI_VALUE2(list<Item*>, "inventory items", "quest");
 
-    string questItemName = "";
+    Item* item = nullptr;
     uint32 delay = 0;
 
-    for (auto& questItem : questItems)
+    if (questItems.empty())
+        return false;
+
+
+    for (uint8 i = 0; i< 5;i++)
     {
-        uint32 spellId = questItem->GetProto()->Spells[0].SpellId;
+        auto itr = questItems.begin();
+        std::advance(itr, urand(0, questItems.size()- 1));
+        Item* questItem = *itr;
 
+        ItemPrototype const* proto = questItem->GetProto();
 
+        if (proto->StartQuest)
+        {
+            Quest const* qInfo = sObjectMgr.GetQuestTemplate(proto->StartQuest);
+            if (bot->CanTakeQuest(qInfo, false))
+            {
+                item = questItem;
+                break;
+            }
+        }
+
+        uint32 spellId = proto->Spells[0].SpellId;
         if (spellId)
         {
-            questItemName = questItem->GetProto()->Name1;
-
             SpellEntry const* spellInfo = sServerFacade.LookupSpellInfo(spellId);
-            if (spellInfo)
-                delay = (!IsChanneledSpell(spellInfo) ? GetSpellCastTime(spellInfo, bot) : GetSpellDuration(spellInfo)) + sPlayerbotAIConfig.globalCoolDown;
-            break;
+
+            list<ObjectGuid> npcs = AI_VALUE(list<ObjectGuid>, ("nearest npcs"));
+            for (auto& npc : npcs)
+            {
+                Unit* unit = ai->GetUnit(npc);
+                if (questItem->IsTargetValidForItemUse(unit) || ai->CanCastSpell(spellId, unit, 0, false))
+                {
+                    item = questItem;
+                    unitTarget = unit;
+                    break;
+                }
+            }
+
+            list<ObjectGuid> gos = AI_VALUE(list<ObjectGuid>, ("nearest game objects"));
+            for (auto& go : gos)
+            {
+                GameObject* gameObject = ai->GetGameObject(go);
+                GameObjectInfo const* goInfo = gameObject->GetGOInfo();
+                if (!goInfo->GetLockId())
+                    continue;
+
+                LockEntry const* lock = sLockStore.LookupEntry(goInfo->GetLockId());
+
+                for (uint8 i = 0; i < MAX_LOCK_CASE; ++i)
+                {
+                    if (!lock->Type[i])
+                        continue;
+                    if (lock->Type[i] != LOCK_KEY_ITEM)
+                        continue;
+
+                    if (lock->Index[i] == proto->ItemId)
+                    {
+                        item = questItem;
+                        goTarget = go;
+                        unitTarget = nullptr;
+                        break;
+                    }
+                }               
+            }
         }
     }
 
-    if (questItemName.empty())
+    if (!item)
         return false;
 
-    bool used = UseItemAction::Execute(Event(name, questItemName));
+    if (!goTarget && !unitTarget)
+        return false;
+
+    bool used = UseItem(item, goTarget, nullptr, unitTarget);
 
     if (used)
         ai->SetNextCheckDelay(delay);

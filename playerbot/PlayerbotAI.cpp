@@ -113,7 +113,7 @@ PlayerbotAI::PlayerbotAI(Player* bot) :
 #ifdef MANGOSBOT_TWO
     masterIncomingPacketHandlers.AddHandler(CMSG_LFG_TELEPORT, "lfg teleport");
 #endif
-
+    
     botOutgoingPacketHandlers.AddHandler(SMSG_PETITION_SHOW_SIGNATURES, "petition offer");
     botOutgoingPacketHandlers.AddHandler(SMSG_BATTLEFIELD_STATUS, "bg status");
     botOutgoingPacketHandlers.AddHandler(SMSG_GROUP_INVITE, "group invite");
@@ -133,6 +133,9 @@ PlayerbotAI::PlayerbotAI(Player* bot) :
     botOutgoingPacketHandlers.AddHandler(SMSG_LOG_XPGAIN, "xpgain");
     botOutgoingPacketHandlers.AddHandler(SMSG_TEXT_EMOTE, "receive text emote");
     botOutgoingPacketHandlers.AddHandler(SMSG_EMOTE, "receive emote");
+    botOutgoingPacketHandlers.AddHandler(SMSG_LOOT_START_ROLL, "master loot roll");
+
+    
 #ifndef MANGOSBOT_ZERO
     botOutgoingPacketHandlers.AddHandler(SMSG_ARENA_TEAM_INVITE, "arena team invite");
 #endif
@@ -308,6 +311,11 @@ void PlayerbotAI::Reset()
     aiObjectContext->GetValue<LastMovement& >("last taxi")->Get().Set(NULL);
 
     aiObjectContext->GetValue<TravelTarget* >("travel target")->Get()->setTarget(sTravelMgr.nullTravelDestination, sTravelMgr.nullWorldPosition, true);
+    
+    aiObjectContext->GetValue<TravelTarget* >("travel target")->Get()->setStatus(TRAVEL_STATUS_EXPIRED);
+    aiObjectContext->GetValue<TravelTarget* >("travel target")->Get()->setExpireIn(1000);
+
+    aiObjectContext->GetValue<set<ObjectGuid>&>("ignore rpg target")->Get().clear();
 
     bot->GetMotionMaster()->Clear();
 #ifdef MANGOS
@@ -1318,6 +1326,84 @@ bool PlayerbotAI::CanCastSpell(uint32 spellid, Unit* target, uint8 effectMask, b
     delete spell;
 	if (oldSel)
 		bot->SetSelectionGuid(oldSel);
+
+    switch (result)
+    {
+    case SPELL_FAILED_NOT_INFRONT:
+    case SPELL_FAILED_NOT_STANDING:
+    case SPELL_FAILED_UNIT_NOT_INFRONT:
+    case SPELL_FAILED_MOVING:
+    case SPELL_FAILED_TRY_AGAIN:
+    case SPELL_CAST_OK:
+        return true;
+    default:
+        return false;
+    }
+}
+
+bool PlayerbotAI::CanCastSpell(uint32 spellid, GameObject* goTarget, uint8 effectMask, bool checkHasSpell)
+{
+    if (!spellid)
+        return false;
+
+    if (bot->hasUnitState(UNIT_STAT_CAN_NOT_REACT_OR_LOST_CONTROL))
+        return false;
+
+    Pet* pet = bot->GetPet();
+    if (pet && pet->HasSpell(spellid))
+        return true;
+
+    if (checkHasSpell && !bot->HasSpell(spellid))
+        return false;
+
+#ifdef MANGOS
+    if (bot->HasSpellCooldown(spellid))
+        return false;
+#endif
+#ifdef CMANGOS
+    if (!bot->IsSpellReady(spellid))
+        return false;
+#endif
+
+    SpellEntry const* spellInfo = sServerFacade.LookupSpellInfo(spellid);
+    if (!spellInfo)
+        return false;
+
+    uint32 CastingTime = !IsChanneledSpell(spellInfo) ? GetSpellCastTime(spellInfo, bot) : GetSpellDuration(spellInfo);
+
+    if (CastingTime && bot->IsMoving())
+        return false;
+
+   
+        bool damage = false;
+        for (int32 i = EFFECT_INDEX_0; i <= EFFECT_INDEX_2; i++)
+        {
+            if (spellInfo->Effect[(SpellEffectIndex)i] == SPELL_EFFECT_SCHOOL_DAMAGE)
+            {
+                damage = true;
+                break;
+            }
+        }
+        if (bot->GetDistance(goTarget) > sPlayerbotAIConfig.sightDistance)
+            return false;
+
+    ObjectGuid oldSel = bot->GetSelectionGuid();
+    bot->SetSelectionGuid(goTarget->GetObjectGuid());
+    Spell* spell = new Spell(bot, spellInfo, false);
+
+    spell->m_targets.setGOTarget(goTarget);
+#ifndef MANGOSBOT_ONE
+    spell->m_CastItem = aiObjectContext->GetValue<Item*>("item for spell", spellid)->Get();
+    spell->m_targets.setItemTarget(spell->m_CastItem);
+#else
+    spell->SetCastItem(aiObjectContext->GetValue<Item*>("item for spell", spellid)->Get());
+    spell->m_targets.setItemTarget(spell->GetCastItem());
+#endif
+
+    SpellCastResult result = spell->CheckCast(true);
+    delete spell;
+    if (oldSel)
+        bot->SetSelectionGuid(oldSel);
 
     switch (result)
     {

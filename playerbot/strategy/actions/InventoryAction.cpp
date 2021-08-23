@@ -256,6 +256,12 @@ list<Item*> InventoryAction::parseItems(string text, IterateItemsMask mask)
         IterateItems(&visitor, ITERATE_ITEMS_IN_BAGS);
         found.insert(visitor.GetResult().begin(), visitor.GetResult().end());
     }
+    if (text.find("usage ") != std::string::npos)
+    {
+        FindItemUsageVisitor visitor(bot, ItemUsage(stoi(text.substr(6))));
+        IterateItems(&visitor, ITERATE_ITEMS_IN_BAGS);
+        found.insert(visitor.GetResult().begin(), visitor.GetResult().end());
+    }
 
     FindNamedItemVisitor visitor(bot, text);
     IterateItems(&visitor, ITERATE_ITEMS_IN_BAGS);

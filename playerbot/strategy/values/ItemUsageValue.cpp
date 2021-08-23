@@ -36,8 +36,13 @@ ItemUsage ItemUsageValue::Calculate()
 
             if (proto->Class == ITEM_CLASS_TRADE_GOODS || proto->Class == ITEM_CLASS_MISC || proto->Class == ITEM_CLASS_REAGENT)
                 needItem = IsItemNeededForUsefullSpell(proto, lowBagSpace);
-            else
-                needItem = IsItemUsefulForSkill(proto);
+            else if(proto->Class == ITEM_CLASS_RECIPE)
+            {
+                if (bot->HasSpell(proto->Spells[2].SpellId))
+                    needItem = false;
+                else
+                    needItem = bot->CanUseItem(proto) == EQUIP_ERR_OK; 
+            }
         }    
 
         if (needItem)
@@ -168,15 +173,6 @@ ItemUsage ItemUsageValue::QueryItemUsageForEquip(ItemPrototype const* item)
     if (item->Class == ITEM_CLASS_ARMOR && !sRandomItemMgr.CanEquipArmor(bot->getClass(), bot->getLevel(), item))
         shouldEquip = false;
 
-    Item* existingItem = bot->GetItemByPos(dest);
-    if (!existingItem)
-        if (shouldEquip)
-            return ITEM_USAGE_EQUIP;
-        else
-            return ITEM_USAGE_BAD_EQUIP;
-
-    const ItemPrototype* oldItem = existingItem->GetProto();
-
     if (item->Class == ITEM_CLASS_CONTAINER)
     {
         if (item->SubClass != ITEM_SUBCLASS_CONTAINER)
@@ -187,6 +183,15 @@ ItemUsage ItemUsageValue::QueryItemUsageForEquip(ItemPrototype const* item)
 
         return ITEM_USAGE_EQUIP;
     }
+
+    Item* existingItem = bot->GetItemByPos(dest);
+    if (!existingItem)
+        if (shouldEquip)
+            return ITEM_USAGE_EQUIP;
+        else
+            return ITEM_USAGE_BAD_EQUIP;
+
+    const ItemPrototype* oldItem = existingItem->GetProto();
 
     if (item->Class == ITEM_CLASS_QUIVER)
         if (!oldItem || oldItem->ContainerSlots < item->ContainerSlots)
@@ -220,7 +225,7 @@ ItemUsage ItemUsageValue::QueryItemUsageForEquip(ItemPrototype const* item)
             break;
         default:
             if (shouldEquip)
-                if (CurrentItem(item) && CurrentItem(item)->GetUInt32Value(ITEM_FIELD_DURABILITY) == 0)
+                if (CurrentItem(item) && CurrentItem(item)->GetUInt32Value(ITEM_FIELD_DURABILITY) == 0 && CurrentItem(item)->GetUInt32Value(ITEM_FIELD_MAXDURABILITY) > 0)
                     return ITEM_USAGE_BROKEN_EQUIP;
                 else
                     return ITEM_USAGE_EQUIP;

@@ -165,7 +165,7 @@ float TravelNodePath::getCost(Player* bot, uint32 cGold)
             if (!bot->isTaxiCheater() && taxiPath->price > cGold)
                 return -1;
 
-            if (!bot->isTaxiCheater() && !bot->m_taxi.IsTaximaskNodeKnown(taxiPath->from) || !bot->m_taxi.IsTaximaskNodeKnown(taxiPath->to))
+            if (!bot->isTaxiCheater() && (!bot->m_taxi.IsTaximaskNodeKnown(taxiPath->from) || !bot->m_taxi.IsTaximaskNodeKnown(taxiPath->to)))
                 return -1;
 
             TaxiNodesEntry const* startTaxiNode = sTaxiNodesStore.LookupEntry(taxiPath->from);
@@ -352,6 +352,9 @@ vector<TravelNode*> TravelNode::getNodeMap(bool importantOnly, vector<TravelNode
 
 bool TravelNode::isUselessLink(TravelNode* farNode)
 {
+    if (getPathTo(farNode)->getPortal() || getPathTo(farNode)->getTransport() || getPathTo(farNode)->getFlightPath())
+        return false;
+
     float farLength;
     if (hasLinkTo(farNode))
         farLength = getPathTo(farNode)->getDistance();
@@ -608,6 +611,7 @@ void TravelNode::print(bool printFailed)
             out << path->getPortalId() << ",";
             out << path->getDistance() << ",";
             out << path->getCost();
+            out << path->getComplete() ? 0 : 1;
 
             sPlayerbotAIConfig.log("travelPaths.csv", out.str().c_str());
         }
@@ -625,39 +629,43 @@ bool TravelPath::makeShortCut(WorldPosition startPos, float maxDist)
     vector<PathNodePoint> newPath;
     WorldPosition firstNode;
 
-    for (auto & p : fullPath) //cycle over the full path
+    for (auto& p : fullPath) //cycle over the full path
     {
-        if (p.point.getMapId() != startPos.getMapId())
-            continue;
+        //if (p.point.getMapId() != startPos.getMapId())
+        //    continue;
 
-        float curDist = p.point.sqDistance(startPos);
-
-        if (&p != &fullPath.front())
-            totalDist += p.point.sqDistance(std::prev(&p)->point);
-
-        if (curDist < sPlayerbotAIConfig.tooCloseDistance * sPlayerbotAIConfig.tooCloseDistance) //We are on the path. This is a good starting point
+        if (p.point.getMapId() == startPos.getMapId())
         {
-            minDist = curDist;
-            totalDist = curDist;
-            newPath.clear();
-        }     
+            float curDist = p.point.sqDistance(startPos);
 
-        if (p.type != NODE_PREPATH) //Only look at the part after the first node and in the same map.
-        {
-            if (!firstNode)
-                firstNode = p.point;
+            if (&p != &fullPath.front())
+                totalDist += p.point.sqDistance(std::prev(&p)->point);
 
-            if (minDist == -1 || curDist < minDist || (curDist < maxDistSq && curDist < totalDist / 2)) //Start building from the last closest point or a point that is close but far on the path.
+            if (curDist < sPlayerbotAIConfig.tooCloseDistance * sPlayerbotAIConfig.tooCloseDistance) //We are on the path. This is a good starting point
             {
                 minDist = curDist;
                 totalDist = curDist;
                 newPath.clear();
             }
+
+            if (p.type != NODE_PREPATH) //Only look at the part after the first node and in the same map.
+            {
+                if (!firstNode)
+                    firstNode = p.point;
+
+                if (minDist == -1 || curDist < minDist || (curDist < maxDistSq && curDist < totalDist / 2)) //Start building from the last closest point or a point that is close but far on the path.
+                {
+                    minDist = curDist;
+                    totalDist = curDist;
+                    newPath.clear();
+                }
+            }
         }
+
         newPath.push_back(p);
     }
 
-    if (newPath.empty() || minDist > maxDistSq)
+    if (newPath.empty() || minDist > maxDistSq || newPath.front().point.getMapId() != startPos.getMapId())
     {
         clear();
         return false;
@@ -726,7 +734,7 @@ bool TravelPath::shouldMoveToNextPoint(WorldPosition startPos, vector<PathNodePo
 
     float nextMove = p->point.distance(nextP->point);
 
-    if (p->point.getMapId() != startPos.getMapId() || moveDist + nextMove > maxDist || startPos.distance(nextP->point) > maxDist)
+    if (p->point.getMapId() != startPos.getMapId() || ((moveDist + nextMove > maxDist || startPos.distance(nextP->point) > maxDist) && moveDist > 0))
     {
         return false;
     }
@@ -1102,7 +1110,9 @@ TravelNodeRoute TravelNodeMap::getRoute(TravelNode* start, TravelNode* goal, Pla
     std::unordered_map<TravelNode*, TravelNodeStub> m_stubs;
 
     TravelNodeStub* startStub = &m_stubs.insert(make_pair(start, TravelNodeStub(start))).first->second;
-    startStub->currentGold = bot->GetMoney();
+
+    if(bot)
+        startStub->currentGold = bot->GetMoney();
 
     TravelNodeStub* currentNode, * childNode;
     float f, g, h;
@@ -1168,7 +1178,7 @@ TravelNodeRoute TravelNodeMap::getRoute(TravelNode* start, TravelNode* goal, Pla
             childNode->m_h = h;
             childNode->parent = currentNode;
 
-            if(!bot->isTaxiCheater())
+            if(bot && !bot->isTaxiCheater())
                 childNode->currentGold = currentNode->currentGold - link.second->getPrice();
 
             if (childNode->close)
