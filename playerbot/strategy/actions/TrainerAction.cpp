@@ -55,11 +55,13 @@ void TrainerAction::Iterate(Creature* creature, TrainerSpellAction action, Spell
     float fDiscountMod =  bot->GetReputationPriceDiscount(creature);
     uint32 totalCost = 0;
 
-    TrainerSpellData const* trainer_spells = cSpells;
-    if (!trainer_spells)
-        trainer_spells = tSpells;
+    TrainerSpellMap trainer_spells;
+    if (cSpells)
+        trainer_spells.insert(cSpells->spellList.begin(), cSpells->spellList.end());
+    if (tSpells)
+        trainer_spells.insert(tSpells->spellList.begin(), tSpells->spellList.end());
 
-    for (TrainerSpellMap::const_iterator itr =  trainer_spells->spellList.begin(); itr !=  trainer_spells->spellList.end(); ++itr)
+    for (TrainerSpellMap::const_iterator itr =  trainer_spells.begin(); itr !=  trainer_spells.end(); ++itr)
     {
         TrainerSpell const* tSpell = &itr->second;
 
@@ -138,7 +140,7 @@ bool TrainerAction::Execute(Event event)
     if (spell)
         spells.insert(spell);
 
-    if (text.find("learn") != string::npos || sRandomPlayerbotMgr.IsRandomBot(bot) || (sPlayerbotAIConfig.autoTrainSpells != "no" && (creature->GetCreatureInfo()->TrainerType != TRAINER_TYPE_TRADESKILLS || ai->IsRealPlayer()))) //Todo rewrite to only exclude start primary profession skills and make config dependent.
+    if (text.find("learn") != string::npos || sRandomPlayerbotMgr.IsRandomBot(bot) || (sPlayerbotAIConfig.autoTrainSpells != "no" && (creature->GetCreatureInfo()->TrainerType != TRAINER_TYPE_TRADESKILLS || !ai->HasActivePlayerMaster()))) //Todo rewrite to only exclude start primary profession skills and make config dependent.
         Iterate(creature, &TrainerAction::Learn, spells);
     else
         Iterate(creature, NULL, spells);
