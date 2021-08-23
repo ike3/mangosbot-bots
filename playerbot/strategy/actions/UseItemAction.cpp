@@ -339,8 +339,12 @@ bool UseItemAction::UseItem(Item* item, ObjectGuid goGuid, Item* itemTarget, Uni
       return true;
    }
 
+   if (!spellId)
+       return false;
+
    ai->SetNextCheckDelay(sPlayerbotAIConfig.globalCoolDown);
    ai->TellMasterNoFacing(out.str());
+
    bot->GetSession()->HandleUseItemOpcode(packet);
    return true;
 }
@@ -473,7 +477,7 @@ bool UseRandomQuestItem::isUseful()
 
 bool UseRandomQuestItem::Execute(Event event)
 {
-    Unit* unitTarget = bot;
+    Unit* unitTarget = nullptr;
     ObjectGuid goTarget = ObjectGuid();
 
     list<Item*> questItems = AI_VALUE2(list<Item*>, "inventory items", "quest");
@@ -493,20 +497,20 @@ bool UseRandomQuestItem::Execute(Event event)
 
         ItemPrototype const* proto = questItem->GetProto();
 
+        if (proto->StartQuest)
+        {
+            Quest const* qInfo = sObjectMgr.GetQuestTemplate(proto->StartQuest);
+            if (bot->CanTakeQuest(qInfo, false))
+            {
+                item = questItem;
+                break;
+            }
+        }
+
         uint32 spellId = proto->Spells[0].SpellId;
         if (spellId)
         {
             SpellEntry const* spellInfo = sServerFacade.LookupSpellInfo(spellId);
-
-            if (ai->CanCastSpell(spellId, bot, 0, false) && questItem->IsTargetValidForItemUse(bot))
-            {
-
-                item = questItem;
-
-                if (spellInfo)
-                    delay = (!IsChanneledSpell(spellInfo) ? GetSpellCastTime(spellInfo, bot) : GetSpellDuration(spellInfo)) + sPlayerbotAIConfig.globalCoolDown;
-                break;
-            }
 
             list<ObjectGuid> npcs = AI_VALUE(list<ObjectGuid>, ("nearest npcs"));
             for (auto& npc : npcs)
@@ -547,19 +551,12 @@ bool UseRandomQuestItem::Execute(Event event)
                 }               
             }
         }
-
-        if (proto->StartQuest)
-        {
-            Quest const* qInfo = sObjectMgr.GetQuestTemplate(proto->StartQuest);
-            if (bot->CanTakeQuest(qInfo, false))
-            {
-                item = questItem;
-                break;
-            }
-        }
     }
 
     if (!item)
+        return false;
+
+    if (!goTarget && !unitTarget)
         return false;
 
     bool used = UseItem(item, goTarget, nullptr, unitTarget);
