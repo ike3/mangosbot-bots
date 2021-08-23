@@ -90,10 +90,6 @@ void ArmsWarriorStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("death wish", ACTION_HIGH + 2), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "boost",
-        NextAction::array(0, new NextAction("death wish", ACTION_HIGH), NULL)));
-
-    triggers.push_back(new TriggerNode(
         "rend",
         NextAction::array(0, new NextAction("rend", ACTION_NORMAL + 1), NULL)));
 
