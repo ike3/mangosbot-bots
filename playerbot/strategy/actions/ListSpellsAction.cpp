@@ -53,12 +53,8 @@ bool CompareSpells(pair<uint32, string>& s1, pair<uint32, string>& s2)
     return p1 > p2;
 }
 
-bool ListSpellsAction::Execute(Event event)
-{
-    Player* master = GetMaster();
-    if (!master)
-        return false;
-
+list<pair<uint32, string> > ListSpellsAction::GetSpellList(string filter)
+{    
     if (skillSpells.empty())
     {
         for (uint32 j = 0; j < sSkillLineAbilityStore.GetNumRows(); ++j)
@@ -74,20 +70,19 @@ bool ListSpellsAction::Execute(Event event)
         QueryResult* results = WorldDatabase.PQuery("SELECT item FROM npc_vendor where maxcount = 0");
         if (results != NULL)
         {
-          do
-          {
-              Field* fields = results->Fetch();
-              vendorItems.insert(fields[0].GetUInt32());
-          } while (results->NextRow());
+            do
+            {
+                Field* fields = results->Fetch();
+                vendorItems.insert(fields[0].GetUInt32());
+            } while (results->NextRow());
 
-          delete results;
+            delete results;
         }
     }
 
     std::ostringstream posOut;
     std::ostringstream negOut;
 
-    string filter = event.getParam();
     uint32 skill = 0;
 
     vector<string> ss = split(filter, ' ');
@@ -158,7 +153,9 @@ bool ListSpellsAction::Execute(Event event)
         for (uint32 x = 0; x < MAX_SPELL_REAGENTS; ++x)
         {
             if (pSpellInfo->Reagent[x] <= 0)
-                { continue; }
+            {
+                continue;
+            }
 
             uint32 itemid = pSpellInfo->Reagent[x];
             uint32 reagentsRequired = pSpellInfo->ReagentCount[x];
@@ -167,7 +164,8 @@ bool ListSpellsAction::Execute(Event event)
                 ItemPrototype const* proto = sObjectMgr.GetItemPrototype(itemid);
                 if (proto)
                 {
-                    if (first) { materials << ": "; first = false; } else materials << ", ";
+                    if (first) { materials << ": "; first = false; }
+                    else materials << ", ";
                     materials << chat->formatItem(proto, reagentsRequired);
 
                     FindItemByIdVisitor visitor(itemid);
@@ -175,7 +173,7 @@ bool ListSpellsAction::Execute(Event event)
                     bool buyable = (vendorItems.find(itemid) != vendorItems.end());
                     if (!buyable)
                     {
-                        uint32 craftable = reagentsInInventory / reagentsRequired;
+                        int32 craftable = reagentsInInventory / reagentsRequired;
                         if (craftCount < 0 || craftCount > craftable)
                             craftCount = craftable;
                     }
@@ -205,7 +203,7 @@ bool ListSpellsAction::Execute(Event event)
                             out << "|cffffff00(x" << craftCount << ")|r ";
                         out << chat->formatItem(proto);
 
-                        if ((minLevel || maxLevel) && (!proto->RequiredLevel || proto->RequiredLevel < minLevel || proto->RequiredLevel > maxLevel))
+                        if ((minLevel || maxLevel) && (!proto->RequiredLevel || (int)proto->RequiredLevel < minLevel || (int)proto->RequiredLevel > maxLevel))
                         {
                             filtered = true;
                             break;
@@ -235,9 +233,9 @@ bool ListSpellsAction::Execute(Event event)
         if (skillLine && skillLine->skillId)
         {
             int GrayLevel = (int)skillLine->max_value,
-                   GreenLevel = (int)(skillLine->max_value + skillLine->min_value) / 2,
-                   YellowLevel = (int)skillLine->min_value,
-                   SkillValue = (int)bot->GetSkillValue(skillLine->skillId);
+                GreenLevel = (int)(skillLine->max_value + skillLine->min_value) / 2,
+                YellowLevel = (int)skillLine->min_value,
+                SkillValue = (int)bot->GetSkillValue(skillLine->skillId);
 
             out << " - ";
             if (SkillValue >= GrayLevel)
@@ -258,6 +256,19 @@ bool ListSpellsAction::Execute(Event event)
         alreadySeenList += pSpellInfo->SpellName[0];
         alreadySeenList += ",";
     }
+
+    return spells;
+}
+
+bool ListSpellsAction::Execute(Event event)
+{
+    Player* master = GetMaster();
+    if (!master)
+        return false;
+
+    string filter = event.getParam();
+
+    list<pair<uint32, string> > spells = GetSpellList(filter);
 
     ai->TellMaster("=== Spells ===");
     spells.sort(CompareSpells);

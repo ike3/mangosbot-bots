@@ -2,6 +2,7 @@
 
 #include "../Action.h"
 #include "InventoryAction.h"
+#include "ListSpellsAction.h"
 #include "../values/ItemUsageValue.h"
 
 namespace ai
@@ -24,19 +25,20 @@ namespace ai
         virtual string castString(WorldObject* target) { return "castnc " + chat->formatWorldobject(target); }
     };
 
-    class CastRandomSpellAction : public CastCustomSpellAction
+    class CastRandomSpellAction : public ListSpellsAction
     {
     public:
-        CastRandomSpellAction(PlayerbotAI* ai, string name = "cast random spell") : CastCustomSpellAction(ai, name) {}
+        CastRandomSpellAction(PlayerbotAI* ai, string name = "cast random spell") : ListSpellsAction(ai, name) {}
         virtual bool AcceptSpell(const SpellEntry* pSpellInfo)
         {
-            if (pSpellInfo->Id == 7355)
-                return false;
+            bool isTradeSkill = pSpellInfo->Effect[0] == SPELL_EFFECT_CREATE_ITEM && pSpellInfo->ReagentCount > 0 &&
+#ifdef MANGOSBOT_ZERO
+                pSpellInfo->School == 0;
+#else
+                pSpellInfo->SchoolMask == 1;
+#endif
 
-            if (pSpellInfo->Id == 22027)
-                return false;
-
-            return true;
+            return !isTradeSkill && GetSpellRecoveryTime(pSpellInfo) < MINUTE * IN_MILLISECONDS;
         }
         virtual uint32 GetSpellPriority(const SpellEntry* pSpellInfo) { return 1; }
         virtual bool Execute(Event event);
