@@ -20,7 +20,8 @@ bool ChooseTravelTargetAction::Execute(Event event)
        return false;
 
     //Tell the master where we are going.
-    ReportTravelTarget(&newTarget, target);
+    if(!bot->GetGroup() || (ai->GetGroupMaster() == bot))
+        ReportTravelTarget(&newTarget, target);
 
     //If we are heading to a creature/npc clear it from the ignore list. 
     if (target && target == &newTarget && newTarget.getEntry())
@@ -212,11 +213,16 @@ bool ChooseTravelTargetAction::SetTarget(TravelTarget* target, TravelTarget* old
     //Rpg in city
     if (!foundTarget && urand(1, 100) > 90)                               //10% chance
         foundTarget = SetBankTarget(target);                              //Head to the bank
-
+    
     //Grind for money
     if (!foundTarget && AI_VALUE(bool, "should get money"))
-        if(urand(1,100) > 66)
-            foundTarget = SetQuestTarget(target);                         //Turn in quests for money / Do low level quests
+        if (urand(1, 100) > 66)
+        {
+            foundTarget = SetQuestTarget(target,true);                    //Turn in quests for money.
+
+            if(!foundTarget)
+                foundTarget = SetQuestTarget(target);                     //Do low level quests
+        }
         else if (urand(1,100) > 50)
             foundTarget = SetGrindTarget(target);                         //Go grind mobs for money
         else
