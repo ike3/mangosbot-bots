@@ -363,6 +363,22 @@ namespace ai
 		virtual bool IsActive();
 	};
 
+    class HighManaTrigger : public Trigger
+    {
+    public:
+        HighManaTrigger(PlayerbotAI* ai) : Trigger(ai, "high mana") {}
+
+        virtual bool IsActive();
+    };
+
+    class AlmostFullManaTrigger : public Trigger
+    {
+    public:
+        AlmostFullManaTrigger(PlayerbotAI* ai) : Trigger(ai, "almost full mana") {}
+
+        virtual bool IsActive();
+    };
+
     BEGIN_TRIGGER(PanicTrigger, Trigger)
         virtual string getName() { return "panic"; }
     END_TRIGGER()
