@@ -298,6 +298,7 @@ void PlayerbotAI::Reset()
     aiObjectContext->GetValue<ObjectGuid>("rpg target")->Set(ObjectGuid());
     aiObjectContext->GetValue<LootObject>("loot target")->Set(LootObject());
     aiObjectContext->GetValue<uint32>("lfg proposal")->Set(0);
+    bot->SetSelectionGuid(ObjectGuid());
 
     LastSpellCast & lastSpell = aiObjectContext->GetValue<LastSpellCast& >("last spell cast")->Get();
     lastSpell.Reset();
@@ -608,6 +609,16 @@ void PlayerbotAI::DoNextAction()
     {
         ChangeEngine(BOT_STATE_NON_COMBAT);
         return;
+    }
+
+    // if in combat but stick with old data - clear targets
+    if (currentEngine == engines[BOT_STATE_NON_COMBAT] && sServerFacade.IsInCombat(bot))
+    {
+        if (aiObjectContext->GetValue<Unit*>("current target")->Get() != NULL ||
+            aiObjectContext->GetValue<ObjectGuid>("pull target")->Get() != ObjectGuid() || aiObjectContext->GetValue<Unit*>("dps target")->Get() != NULL)
+        {
+            Reset();
+        }
     }
 
     bool minimal = !AllowActivity(ALL_ACTIVITY);
