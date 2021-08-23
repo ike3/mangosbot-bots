@@ -707,6 +707,47 @@ void MovementAction::UpdateMovementState()
     //    bot->UpdateSpeed(MOVE_RUN, true, 1.1f);
     
     // check if target is not reachable (from Vmangos)
+    if (bot->GetMotionMaster()->GetCurrentMovementGeneratorType() == CHASE_MOTION_TYPE &&
+        !bot->GetMotionMaster()->GetCurrent()->IsReachable())
+    {
+        if (Unit* pTarget = bot->GetMotionMaster()->GetCurrent()->GetCurrentTarget())
+        {
+            if (!bot->CanReachWithMeleeAttack(pTarget))
+            {
+                if (pTarget->IsCreature() && !bot->IsMoving() && bot->IsWithinDist(pTarget, 10.0f))
+                {
+                    // Cheating to prevent getting stuck because of bad mmaps.
+                    bot->StopMoving();
+                    bot->GetMotionMaster()->Clear();
+                    bot->GetMotionMaster()->MovePoint(bot->GetMapId(), pTarget->GetPosition(), FORCED_MOVEMENT_RUN, false);
+                    return;
+                }
+            }
+        }
+    }
+
+    if ((bot->GetMotionMaster()->GetCurrentMovementGeneratorType() == FOLLOW_MOTION_TYPE ||
+        bot->GetMotionMaster()->GetCurrentMovementGeneratorType() == POINT_MOTION_TYPE ) &&
+        !bot->GetMotionMaster()->GetCurrent()->IsReachable())
+    {
+        if (Unit* pTarget = bot->GetMotionMaster()->GetCurrent()->GetCurrentTarget())
+        {
+            if (pTarget != ai->GetGroupMaster())
+                return;
+
+            if (!bot->CanReachWithMeleeAttack(pTarget))
+            {
+                if (!bot->IsMoving() && bot->IsWithinDist(pTarget, 10.0f))
+                {
+                    // Cheating to prevent getting stuck because of bad mmaps.
+                    bot->StopMoving();
+                    bot->GetMotionMaster()->Clear();
+                    bot->GetMotionMaster()->MovePoint(bot->GetMapId(), pTarget->GetPosition(), FORCED_MOVEMENT_RUN, false);
+                    return;
+                }
+            }
+        }
+    }
 }
 
 bool MovementAction::Follow(Unit* target, float distance, float angle)
@@ -828,6 +869,8 @@ bool MovementAction::Follow(Unit* target, float distance, float angle)
 
 bool MovementAction::ChaseTo(WorldObject* obj, float distance, float angle)
 {
+    UpdateMovementState();
+
     if (bot->IsSitState())
         bot->SetStandState(UNIT_STAND_STATE_STAND);
 
