@@ -927,13 +927,12 @@ bool MovementAction::Flee(Unit *target)
         return false;
     }
     bool foundFlee = false;
-    bool isTarget = false;
     time_t lastFlee = AI_VALUE(LastMovement&, "last movement").lastFlee;
     //HostileReference *ref = target->GetThreatManager().getCurrentVictim();
     HostileReference *ref = sServerFacade.GetThreatManager(target).getCurrentVictim();
-    if (ref && ref->getTarget() == bot)
+
+    if (ref && ref->getTarget() == bot) // bot is target - try to flee to tank or master
     {
-        isTarget = true;
         Group *group = bot->GetGroup();
         if (group)
         {
@@ -943,7 +942,7 @@ bool MovementAction::Flee(Unit *target)
             for (GroupReference *gref = group->GetFirstMember(); gref; gref = gref->next())
             {
                 Player* player = gref->getSource();
-                if (!player || player == bot) continue;
+                if (!player || player == bot || !sServerFacade.IsAlive(player)) continue;
                 if (ai->IsTank(player))
                 {
                     float distanceToTank = sServerFacade.GetDistance2d(bot, player);
@@ -956,9 +955,12 @@ bool MovementAction::Flee(Unit *target)
                 }
             }
 
-            if (!fleeTarget && master)
+            if (fleeTarget)
+                foundFlee = MoveNear(fleeTarget);
+
+            if ((!fleeTarget || !foundFlee) && master)
             {
-                foundFlee = MoveTo(master, sPlayerbotAIConfig.followDistance);
+                foundFlee = MoveNear(master);
             }
 
             if (foundFlee)
@@ -970,7 +972,89 @@ bool MovementAction::Flee(Unit *target)
                     sounds.push_back(306); // flee
                     ai->PlaySound(sounds[urand(0, sounds.size() - 1)]);
                 }
-                return true;
+            }
+        }
+    }
+    else // bot is not targeted, try to flee dps/healers
+    {
+        bool isHealer = ai->IsHeal(bot);
+        bool isDps = !isHealer && !ai->IsTank(bot);
+        bool isTank = ai->IsTank(bot);
+        bool needHealer = !isHealer && AI_VALUE2(uint8, "health", "self target") < 50;
+        bool isRanged = ai->IsRanged(bot);
+
+        Group *group = bot->GetGroup();
+        if (group)
+        {
+            Unit* fleeTarget = nullptr;
+            float fleeDistance = sPlayerbotAIConfig.sightDistance;
+            Unit* spareTarget = nullptr;
+            float spareDistance = sPlayerbotAIConfig.sightDistance;
+            vector<Unit*> possibleTargets;
+
+            for (GroupReference *gref = group->GetFirstMember(); gref; gref = gref->next())
+            {
+                Player* player = gref->getSource();
+                if (!player || player == bot || !sServerFacade.IsAlive(player)) continue;
+
+                if ((isHealer && ai->IsHeal(player)) || needHealer)
+                {
+                    float distanceToHealer = sServerFacade.GetDistance2d(bot, player);
+                    float distanceToTarget = sServerFacade.GetDistance2d(player, target);
+                    if (distanceToHealer < fleeDistance && distanceToTarget > (ai->GetRange("shoot") / 2 + sPlayerbotAIConfig.followDistance) && (needHealer || player->IsWithinLOSInMap(target, true)))
+                    {
+                        fleeTarget = player;
+                        fleeDistance = distanceToHealer;
+                        possibleTargets.push_back(fleeTarget);
+                    }
+                }
+                else if (isRanged && ai->IsRanged(player))
+                {
+                    float distanceToRanged = sServerFacade.GetDistance2d(bot, player);
+                    float distanceToTarget = sServerFacade.GetDistance2d(player, target);
+                    if (distanceToRanged < fleeDistance && distanceToTarget > (ai->GetRange("shoot") / 2 + sPlayerbotAIConfig.followDistance) && player->IsWithinLOSInMap(target, true))
+                    {
+                        fleeTarget = player;
+                        fleeDistance = distanceToRanged;
+                        possibleTargets.push_back(fleeTarget);
+                    }
+                }
+                // remember any group member in case no one else found
+                float distanceToFlee = sServerFacade.GetDistance2d(bot, player);
+                float distanceToTarget = sServerFacade.GetDistance2d(player, target);
+                if (distanceToFlee < spareDistance && distanceToTarget >(ai->GetRange("shoot") / 2 + sPlayerbotAIConfig.followDistance) && player->IsWithinLOSInMap(target, true))
+                {
+                    spareTarget = player;
+                    spareDistance = distanceToFlee;
+                    possibleTargets.push_back(fleeTarget);
+                }
+            }
+
+            if (!possibleTargets.empty())
+                fleeTarget = possibleTargets[urand(0, possibleTargets.size() - 1)];
+
+            if (!fleeTarget)
+                fleeTarget = spareTarget;
+
+            if (fleeTarget)
+                foundFlee = MoveNear(fleeTarget);
+
+            if ((!fleeTarget || !foundFlee) && master && sServerFacade.IsAlive(master) && master->IsWithinLOSInMap(target, true))
+            {
+                float distanceToTarget = sServerFacade.GetDistance2d(master, target);
+                if (distanceToTarget > (ai->GetRange("shoot") / 2 + sPlayerbotAIConfig.followDistance))
+                    foundFlee = MoveNear(master);
+            }
+
+            if (foundFlee)
+            {
+                if (!urand(0, 25))
+                {
+                    vector<uint32> sounds;
+                    sounds.push_back(304); // guard
+                    sounds.push_back(306); // flee
+                    ai->PlaySound(sounds[urand(0, sounds.size() - 1)]);
+                }
             }
         }
     }
