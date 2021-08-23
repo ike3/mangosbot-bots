@@ -705,6 +705,8 @@ void MovementAction::UpdateMovementState()
     // Temporary speed increase in group
     //if (ai->HasRealPlayerMaster())
     //    bot->UpdateSpeed(MOVE_RUN, true, 1.1f);
+    
+    // check if target is not reachable (from Vmangos)
 }
 
 bool MovementAction::Follow(Unit* target, float distance, float angle)

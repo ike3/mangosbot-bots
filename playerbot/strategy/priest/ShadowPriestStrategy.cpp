@@ -35,6 +35,26 @@ void ShadowPriestStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
     triggers.push_back(new TriggerNode(
         "vampiric embrace",
         NextAction::array(0, new NextAction("vampiric embrace", 16.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "silence",
+        NextAction::array(0, new NextAction("silence", ACTION_INTERRUPT + 1), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "silence on enemy healer",
+        NextAction::array(0, new NextAction("silence on enemy healer", ACTION_INTERRUPT), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "shadowfiend",
+        NextAction::array(0, new NextAction("shadowfiend", ACTION_HIGH), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "medium mana",
+        NextAction::array(0, new NextAction("shadowfiend", ACTION_HIGH), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "low mana",
+        NextAction::array(0, new NextAction("mana burn", ACTION_HIGH), NULL)));
 }
 
 void ShadowPriestAoeStrategy::InitTriggers(std::list<TriggerNode*> &triggers)

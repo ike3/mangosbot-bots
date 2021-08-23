@@ -17,7 +17,7 @@ void GenericPriestStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "medium health",
-        NextAction::array(0, new NextAction("heal", 25.0f), NULL)));
+        NextAction::array(0, new NextAction("greater heal", 25.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
         "low health",
@@ -32,8 +32,8 @@ void GenericPriestStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("remove shadowform", 62.0f), new NextAction("power word: shield on party", 61.0f), new NextAction("flash heal on party", 60.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "low threat",
-        NextAction::array(0, new NextAction("fade", 50.0f), NULL)));
+        "medium threat",
+        NextAction::array(0, new NextAction("fade", 55.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
         "enemy is close",
@@ -44,12 +44,32 @@ void GenericPriestStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("inner focus", 42.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
+        "medium mana",
+        NextAction::array(0, new NextAction("symbol of hope", ACTION_EMERGENCY), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "low mana",
+        NextAction::array(0, new NextAction("consume magic", 10.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
         "critical health",
-        NextAction::array(0, new NextAction("desperate prayer", 73.0f), NULL)));
+        NextAction::array(0, new NextAction("desperate prayer", ACTION_EMERGENCY), NULL)));
 
     triggers.push_back(new TriggerNode(
         "enemy is close",
-        NextAction::array(0, new NextAction("elune's grace", 49.0f), NULL)));
+        NextAction::array(0, new NextAction("elune's grace", ACTION_EMERGENCY), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "chastise",
+        NextAction::array(0, new NextAction("chastise", ACTION_INTERRUPT), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "critical health",
+        NextAction::array(0, new NextAction("pain suppression", ACTION_EMERGENCY + 1), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "protect party member",
+        NextAction::array(0, new NextAction("pain suppression on party", ACTION_EMERGENCY), NULL)));
 }
 
 PriestCureStrategy::PriestCureStrategy(PlayerbotAI* ai) : Strategy(ai)
@@ -85,6 +105,10 @@ void PriestBoostStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
     triggers.push_back(new TriggerNode(
         "power infusion",
         NextAction::array(0, new NextAction("power infusion", 41.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "boost",
+        NextAction::array(0, new NextAction("shadowfiend", 20.0f), NULL)));
 }
 
 void PriestCcStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
