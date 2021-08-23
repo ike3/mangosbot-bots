@@ -225,7 +225,7 @@ ItemUsage ItemUsageValue::QueryItemUsageForEquip(ItemPrototype const* item)
             break;
         default:
             if (shouldEquip)
-                if (CurrentItem(item) && CurrentItem(item)->GetUInt32Value(ITEM_FIELD_DURABILITY) == 0)
+                if (CurrentItem(item) && CurrentItem(item)->GetUInt32Value(ITEM_FIELD_DURABILITY) == 0 && CurrentItem(item)->GetUInt32Value(ITEM_FIELD_MAXDURABILITY) > 0)
                     return ITEM_USAGE_BROKEN_EQUIP;
                 else
                     return ITEM_USAGE_EQUIP;
