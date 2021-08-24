@@ -163,6 +163,9 @@
 
         //Returns all nodes that can be reached from this node.
         vector<TravelNode*> getNodeMap(bool importantOnly = false, vector<TravelNode*> ignoreNodes = {});
+
+        //Checks if it is even possible to route to this node.
+        bool hasRouteTo(TravelNode* node) { if (routes.empty()) for (auto mNode : getNodeMap()) routes[mNode] = true; return routes[node]; };
         
         void print(bool printFailed = true);
     private:
@@ -175,6 +178,9 @@
         std::unordered_map<TravelNode*, TravelNodePath> paths;
         //List of links to other nodes.
         std::unordered_map<TravelNode*, TravelNodePath*> links;
+
+        //List of nodes and if there is 'any' route possible
+        std::unordered_map<TravelNode*, bool> routes;
 
         //This node should not be removed
         bool important = false;
