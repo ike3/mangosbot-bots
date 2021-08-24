@@ -10,7 +10,7 @@ namespace ai
 	{
 	public:
         NearestAddsValue(PlayerbotAI* ai, float range = sPlayerbotAIConfig.fleeDistance) :
-            PossibleTargetsValue(ai, "nearest adds", range) {}
+            PossibleTargetsValue(ai, "nearest adds", range, true) {}
 
     protected:
         bool AcceptUnit(Unit* unit);

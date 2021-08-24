@@ -16,6 +16,16 @@ bool MediumManaTrigger::IsActive()
     return AI_VALUE2(bool, "has mana", "self target") && AI_VALUE2(uint8, "mana", "self target") < sPlayerbotAIConfig.mediumMana;
 }
 
+bool HighManaTrigger::IsActive()
+{
+    return AI_VALUE2(bool, "has mana", "self target") && AI_VALUE2(uint8, "mana", "self target") < 65;
+}
+
+bool AlmostFullManaTrigger::IsActive()
+{
+    return AI_VALUE2(bool, "has mana", "self target") && AI_VALUE2(uint8, "mana", "self target") > 85;
+}
+
 
 bool RageAvailable::IsActive()
 {

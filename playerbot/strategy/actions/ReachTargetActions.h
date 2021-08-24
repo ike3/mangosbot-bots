@@ -20,16 +20,18 @@ namespace ai
             if (!target)
                 return false;
 
-            if (distance < max(5.0f, bot->GetCombinedCombatReach(target, true)))
+            float combatReach = bot->GetCombinedCombatReach(target, true);
+
+            if (distance < max(5.0f, combatReach))
             {
                 return ChaseTo(target, 0.0f, GetFollowAngle());
             }
             else
             {
-                bool inLos = bot->IsWithinLOSInMap(target);
+                bool inLos = bot->IsWithinLOSInMap(target, true);
                 bool isFriend = sServerFacade.IsFriendlyTo(bot, target);
-                float chaseDist = inLos ? distance - sPlayerbotAIConfig.contactDistance : isFriend ? distance / 2 : distance - sPlayerbotAIConfig.contactDistance;
-                return ChaseTo(target, chaseDist, bot->GetAngle(target));
+                float chaseDist = inLos ? distance : isFriend ? distance / 2 : distance;
+                return ChaseTo(target, chaseDist - combatReach, bot->GetAngle(target));
             }
         }
         virtual bool isUseful()
@@ -39,7 +41,7 @@ namespace ai
                 return false;
 
             Unit* target = AI_VALUE(Unit*, GetTargetName());
-            return target && (!bot->IsWithinDistInMap(target, distance) || (bot->IsWithinDistInMap(target, distance) && !bot->IsWithinLOSInMap(target)));
+            return target && (!bot->IsWithinDistInMap(target, distance) || (bot->IsWithinDistInMap(target, distance) && !bot->IsWithinLOSInMap(target, true)));
         }
         virtual string GetTargetName() { return "current target"; }
 

@@ -76,7 +76,7 @@ bool AttackAction::Attack(Unit* target)
         return false;
     }
 
-    if (bot->IsMounted() && bot->IsWithinLOSInMap(target) && (sServerFacade.GetDistance2d(bot, target) < 40.0f))
+    if (bot->IsMounted() && bot->IsWithinLOSInMap(target, true) && (sServerFacade.GetDistance2d(bot, target) < 40.0f))
     {
         WorldPacket emptyPacket;
         bot->GetSession()->HandleCancelMountAuraOpcode(emptyPacket);
@@ -125,15 +125,10 @@ bool AttackAction::Attack(Unit* target)
     if (IsMovingAllowed() && !sServerFacade.IsInFront(bot, target, sPlayerbotAIConfig.sightDistance, CAST_ANGLE_IN_FRONT))
         sServerFacade.SetFacingTo(bot, target);
 
-    if (bot->Attack(target, !ai->IsRanged(bot) || sServerFacade.GetDistance2d(bot, target) <= sPlayerbotAIConfig.tooCloseDistance))
-    {
-        ai->ChangeEngine(BOT_STATE_COMBAT);
-        return true;
-    }
-    else
-        context->GetValue<Unit*>("current target")->Set(NULL);
+    bool attacked = bot->Attack(target, !ai->IsRanged(bot));
+    ai->ChangeEngine(BOT_STATE_COMBAT);
 
-    return false;
+    return attacked;
 }
 
 bool AttackDuelOpponentAction::isUseful()

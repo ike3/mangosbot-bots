@@ -8,9 +8,8 @@ namespace ai
     BUFF_PARTY_ACTION(CastPowerWordFortitudeOnPartyAction, "power word: fortitude");
     BUFF_PARTY_ACTION(CastPrayerOfFortitudeOnPartyAction, "prayer of fortitude");
     BUFF_ACTION(CastPowerWordShieldAction, "power word: shield");
-    BUFF_PARTY_ACTION(CastPowerWordShieldOnPartyAction, "power word: shield");
+    HEAL_PARTY_ACTION(CastPowerWordShieldOnPartyAction, "power word: shield");
     BUFF_ACTION(CastInnerFireAction, "inner fire");
-
     CURE_ACTION(CastDispelMagicAction, "dispel magic");
     CURE_PARTY_ACTION(CastDispelMagicOnPartyAction, "dispel magic", DISPEL_MAGIC);
     SPELL_ACTION(CastDispelMagicOnTargetAction, "dispel magic");
@@ -20,11 +19,17 @@ namespace ai
     BUFF_ACTION(CastDivineSpiritAction, "divine spirit");
     BUFF_PARTY_ACTION(CastDivineSpiritOnPartyAction, "divine spirit");
     BUFF_PARTY_ACTION(CastPrayerOfSpiritOnPartyAction, "prayer of spirit");
+    //disc 2.4.3
+    SPELL_ACTION(CastMassDispelAction, "mass dispel");
 
     // disc talents
     BUFF_ACTION(CastPowerInfusionAction, "power infusion");
     BUFF_PARTY_ACTION(CastPowerInfusionOnPartyAction, "power infusion");
     BUFF_ACTION(CastInnerFocusAction, "inner focus");
+    // disc 2.4.3 talents
+    BUFF_ACTION(CastPainSuppressionAction, "pain suppression");
+    PROTECT_ACTION(CastPainSuppressionProtectAction, "pain suppression");
+
 
     // holy
     HEAL_ACTION(CastLesserHealAction, "lesser heal");
@@ -37,8 +42,12 @@ namespace ai
     HEAL_PARTY_ACTION(CastFlashHealOnPartyAction, "flash heal");
     HEAL_ACTION(CastRenewAction, "renew");
     HEAL_PARTY_ACTION(CastRenewOnPartyAction, "renew");
+    // holy 2.4.3
+    HEAL_PARTY_ACTION(CastPrayerOfMendingAction, "prayer of mending");
+    HEAL_PARTY_ACTION(CastBindingHealAction, "binding heal");
+    
 
-    AOE_HEAL_ACTION(CastPrayerOfHealingAction, "prayer of healing");
+    BUFF_ACTION(CastPrayerOfHealingAction, "prayer of healing");
     AOE_HEAL_ACTION(CastLightwellAction, "lightwell");
     AOE_HEAL_ACTION(CastCircleOfHealingAction, "circle of healing");
 
@@ -64,6 +73,9 @@ namespace ai
     BUFF_ACTION(CastShadowProtectionAction, "shadow protection");
     BUFF_PARTY_ACTION(CastShadowProtectionOnPartyAction, "shadow protection");
     BUFF_PARTY_ACTION(CastPrayerOfShadowProtectionAction, "prayer of shadow protection");
+    // shadow 2.4.3
+    BUFF_ACTION(CastShadowfiendAction, "shadowfiend");
+    SPELL_ACTION(CastShadowWordDeathAction, "shadow word: death");
 
     // shadow talents
     SPELL_ACTION(CastMindFlayAction, "mind flay");
@@ -71,6 +83,8 @@ namespace ai
     BUFF_ACTION(CastShadowformAction, "shadowform");
     SPELL_ACTION(CastSilenceAction, "silence");
     ENEMY_HEALER_ACTION(CastSilenceOnEnemyHealerAction, "silence");
+    // shadow talents 2.4.3
+    DEBUFF_ACTION(CastVampiricTouchAction, "vampiric touch");
 
     // racials
     DEBUFF_ACTION(CastDevouringPlagueAction, "devouring plague");
@@ -83,6 +97,9 @@ namespace ai
     SPELL_ACTION_U(CastStarshardsAction, "starshards", (AI_VALUE2(uint8, "mana", "self target") > 50 && AI_VALUE(Unit*, "current target") && AI_VALUE2(float, "distance", "current target") > 15.0f));
     BUFF_ACTION(CastElunesGraceAction, "elune's grace");
     BUFF_ACTION(CastFeedbackAction, "feedback");
+    BUFF_ACTION(CastSymbolOfHopeAction, "symbol of hope");
+    SPELL_ACTION(CastConsumeMagicAction, "consume magic");
+    SNARE_ACTION(CastChastiseAction, "chastise");
 
     class CastRemoveShadowformAction : public Action {
     public:
@@ -94,6 +111,4 @@ namespace ai
             return true;
         }
     };
-
-    DEBUFF_ACTION(CastVampiricTouchAction, "vampiric touch");
 }

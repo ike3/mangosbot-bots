@@ -36,28 +36,24 @@ void PriestNonCombatStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("greater heal on party", 60.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "low health",
-        NextAction::array(0, new NextAction("heal", 21.0f), NULL)));
+        "medium health",
+        NextAction::array(0, new NextAction("renew", 41.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "party member low health",
-        NextAction::array(0, new NextAction("heal on party", 20.0f), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "low aoe heal",
-        NextAction::array(0, new NextAction("circle of healing", 26.0f), NULL)));
+        "party member medium health",
+        NextAction::array(0, new NextAction("renew on party", 40.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
         "medium aoe heal",
-        NextAction::array(0, new NextAction("lightwell", 27.0f), NULL)));
+        NextAction::array(0, new NextAction("lightwell", 42.0f), NULL)));
 
 	triggers.push_back(new TriggerNode(
 		"party member dead",
-		NextAction::array(0, new NextAction("remove shadowform", 20.0f), new NextAction("resurrection", 19.0f), NULL)));
+		NextAction::array(0, new NextAction("remove shadowform", 51.0f), new NextAction("resurrection", 50.0f), NULL)));
 
-    triggers.push_back(new TriggerNode(
+    /*triggers.push_back(new TriggerNode(
         "swimming",
-        NextAction::array(0, new NextAction("levitate", 1.0f), NULL)));
+        NextAction::array(0, new NextAction("levitate", 1.0f), NULL)));*/
 
     triggers.push_back(new TriggerNode(
        "often",

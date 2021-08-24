@@ -18,8 +18,6 @@ namespace ai
             creators["psychic scream"] = &psychic_scream;
             creators["lightwell"] = &lightwell;
             creators["circle of healing"] = &circle_of_healing;
-            creators["prayer of healing"] = &prayer_of_healing;
-            //creators["shoot"] = &shoot;
         }
     private:
         ACTION_NODE_A(power_word_shield, "power word: shield", "renew");
@@ -33,8 +31,6 @@ namespace ai
         ACTION_NODE_A(psychic_scream, "psychic scream", "fade");
         ACTION_NODE_A(lightwell, "lightwell", "circle of healing");
         ACTION_NODE_A(circle_of_healing, "circle of healing", "prayer of healing");
-        ACTION_NODE_A(prayer_of_healing, "prayer of healing", "renew on party");
-        //ACTION_NODE_A(shoot, "shoot", "melee");
     };
 
     class CurePriestStrategyActionNodeFactory : public NamedObjectFactory<ActionNode>

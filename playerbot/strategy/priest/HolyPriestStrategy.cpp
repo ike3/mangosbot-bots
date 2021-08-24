@@ -42,4 +42,16 @@ void HolyPriestStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
     triggers.push_back(new TriggerNode(
         "holy fire",
         NextAction::array(0, new NextAction("holy fire", ACTION_NORMAL + 9), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "shadowfiend",
+        NextAction::array(0, new NextAction("shadowfiend", ACTION_HIGH), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "medium mana",
+        NextAction::array(0, new NextAction("shadowfiend", ACTION_HIGH), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "low mana",
+        NextAction::array(0, new NextAction("mana burn", ACTION_HIGH), NULL)));
 }

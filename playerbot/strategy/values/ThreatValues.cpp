@@ -45,23 +45,36 @@ uint8 ThreatValue::Calculate(Unit* target)
 
     float botThreat = sServerFacade.GetThreatManager(target).getThreat(bot);
     float maxThreat = -1.0f;
+    bool hasTank = false;
 
-    Group::MemberSlotList const& groupSlot = group->GetMemberSlots();
-    for (Group::member_citerator itr = groupSlot.begin(); itr != groupSlot.end(); itr++)
+    for (GroupReference* gref = group->GetFirstMember(); gref; gref = gref->next())
     {
-        Player *player = sObjectMgr.GetPlayer(itr->guid);
-        if( !player || !sServerFacade.IsAlive(player) || player == bot)
+        Player* player = gref->getSource();
+        if (!player || !sServerFacade.IsAlive(player) || player == bot)
             continue;
 
         if (ai->IsTank(player))
         {
+            hasTank = true;
             float threat = sServerFacade.GetThreatManager(target).getThreat(player);
             if (maxThreat < threat)
                 maxThreat = threat;
         }
     }
 
-    if (maxThreat <= 0)
+    if (maxThreat <= 0 && !hasTank)
+        return 0;
+
+    // calculate normal threat for fleeing targets
+    bool fleeing = target->GetMotionMaster()->GetCurrentMovementGeneratorType() == FLEEING_MOTION_TYPE ||
+        target->GetMotionMaster()->GetCurrentMovementGeneratorType() == TIMED_FLEEING_MOTION_TYPE;
+
+    // return high threat if tank has no threat
+    if (maxThreat <= 0 && botThreat <= 0 && hasTank && !fleeing)
+        return 100;
+
+    // return low threat if mob if fleeing
+    if (hasTank && fleeing)
         return 0;
 
     return botThreat * 100 / maxThreat;

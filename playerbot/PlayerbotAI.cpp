@@ -301,6 +301,7 @@ void PlayerbotAI::Reset()
     aiObjectContext->GetValue<ObjectGuid>("rpg target")->Set(ObjectGuid());
     aiObjectContext->GetValue<LootObject>("loot target")->Set(LootObject());
     aiObjectContext->GetValue<uint32>("lfg proposal")->Set(0);
+    bot->SetSelectionGuid(ObjectGuid());
 
     LastSpellCast & lastSpell = aiObjectContext->GetValue<LastSpellCast& >("last spell cast")->Get();
     lastSpell.Reset();
@@ -618,6 +619,16 @@ void PlayerbotAI::DoNextAction()
         return;
     }
 
+    // if in combat but stick with old data - clear targets
+    if (currentEngine == engines[BOT_STATE_NON_COMBAT] && sServerFacade.IsInCombat(bot))
+    {
+        if (aiObjectContext->GetValue<Unit*>("current target")->Get() != NULL ||
+            aiObjectContext->GetValue<ObjectGuid>("pull target")->Get() != ObjectGuid() || aiObjectContext->GetValue<Unit*>("dps target")->Get() != NULL)
+        {
+            Reset();
+        }
+    }
+
     bool minimal = !AllowActivity(ALL_ACTIVITY);
 
     currentEngine->DoNextAction(NULL, 0, minimal);
@@ -673,7 +684,7 @@ void PlayerbotAI::DoNextAction()
         }
     }
 
-    if (master)
+    if (master && master->IsInWorld())
 	{
         if (!group && sRandomPlayerbotMgr.IsRandomBot(bot))
         {
@@ -1897,6 +1908,9 @@ bool PlayerbotAI::IsInterruptableSpellCasting(Unit* target, string spell, uint8 
 		if ((spellInfo->Effect[i] == SPELL_EFFECT_INTERRUPT_CAST) &&
 			!target->IsImmuneToSpellEffect(spellInfo, (SpellEffectIndex)i, true))
 			return true;
+
+        if ((spellInfo->Effect[i] == SPELL_EFFECT_APPLY_AURA) && spellInfo->EffectApplyAuraName[i] == SPELL_AURA_MOD_SILENCE)
+            return true;
 	}
 
 	return false;

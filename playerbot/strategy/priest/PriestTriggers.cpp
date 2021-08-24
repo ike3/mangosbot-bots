@@ -15,3 +15,8 @@ bool ShadowformTrigger::IsActive()
 {
     return !ai->HasAura("shadowform", bot);
 }
+
+bool ShadowfiendTrigger::IsActive()
+{
+    return BoostTrigger::IsActive() && bot->IsSpellReady(34433);
+}

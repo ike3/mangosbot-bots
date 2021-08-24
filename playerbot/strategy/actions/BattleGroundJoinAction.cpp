@@ -329,7 +329,7 @@ bool BGJoinAction::shouldJoinBg(BattleGroundQueueTypeId queueTypeId, BattleGroun
 #endif
 
     // hack fix crash in queue remove event
-    if (!isRated && bot->GetGroup())
+    if (bot->GetGroup() && !bot->GetGroup()->IsLeader(bot->GetObjectGuid()))
         return false;
 
     bool needBots = sRandomPlayerbotMgr.NeedBots[queueTypeId][bracketId][isArena ? isRated : GetTeamIndexByTeamId(bot->GetTeam())];
@@ -389,8 +389,8 @@ bool BGJoinAction::isUseful()
     if (bot->GetPlayerbotAI()->HasActivePlayerMaster())
         return false;
 
-    //if (bot->GetGroup())
-    //    return false;
+    if (bot->GetGroup() && !bot->GetGroup()->IsLeader(bot->GetObjectGuid()))
+        return false;
 
     if (bot->IsInCombat())
         return false;
@@ -700,7 +700,7 @@ bool FreeBGJoinAction::shouldJoinBg(BattleGroundQueueTypeId queueTypeId, BattleG
 #endif
 
     // hack fix crash in queue remove event
-    if (!isRated && bot->GetGroup())
+    if (bot->GetGroup() && !bot->GetGroup()->IsLeader(bot->GetObjectGuid()))
         return false;
 
     bool needBots = sRandomPlayerbotMgr.NeedBots[queueTypeId][bracketId][isArena ? isRated : GetTeamIndexByTeamId(bot->GetTeam())];
@@ -895,6 +895,10 @@ bool BGStatusAction::Execute(Event event)
     BattleGroundQueueTypeId queueTypeId = bot->GetBattleGroundQueueTypeId(QueueSlot);
     BattleGroundTypeId _bgTypeId = sServerFacade.BgTemplateId(queueTypeId);
     BattleGroundBracketId bracketId;
+
+    if (_bgTypeId == BATTLEGROUND_TYPE_NONE)
+        return false;
+
 #ifdef CMANGOS
 #ifdef MANGOSBOT_TWO
     BattleGround* bg = sBattleGroundMgr.GetBattleGroundTemplate(_bgTypeId);
@@ -1012,7 +1016,7 @@ bool BGStatusAction::Execute(Event event)
     if (statusid == STATUS_WAIT_QUEUE) //bot is in queue
     {
         // temp fix for crash
-        return true;
+        // return true;
 
         BattleGround* bg = sBattleGroundMgr.GetBattleGroundTemplate(_bgTypeId);
         if (!bg)

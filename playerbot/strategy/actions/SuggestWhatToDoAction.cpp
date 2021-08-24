@@ -287,6 +287,7 @@ void SuggestWhatToDoAction::spam(string msg, uint32 channelId)
             char channelName[255];
             snprintf(channelName, 255, channel->pattern[0], area->area_name[0]);
             if (said.find(channelName) != said.end()) continue;
+            said.insert(channelName);
 
             if (ChannelMgr* cMgr = channelMgr(bot->GetTeam()))
             {
@@ -298,7 +299,6 @@ void SuggestWhatToDoAction::spam(string msg, uint32 channelId)
                 {
                     chn->Join(bot, "");
                     chn->Say(bot, msg.c_str(), LANG_UNIVERSAL);
-                    said.insert(channelName);
                 }
             }
         }

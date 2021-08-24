@@ -77,6 +77,7 @@ namespace ai
 	{
 	public:
 		CastBlizzardAction(PlayerbotAI* ai) : CastSpellAction(ai, "blizzard") {}
+        virtual ActionThreatType getThreatType() { return ACTION_THREAT_AOE; }
 	};
 
 	class CastArcaneIntellectAction : public CastBuffSpellAction

@@ -9,9 +9,9 @@ void RangedCombatStrategy::InitTriggers(list<TriggerNode*> &triggers)
 {
     CombatStrategy::InitTriggers(triggers);
 
-    triggers.push_back(new TriggerNode(
+    /*triggers.push_back(new TriggerNode(
         "enemy too close for shoot",
-        NextAction::array(0, new NextAction("flee", ACTION_HIGH), NULL)));
+        NextAction::array(0, new NextAction("flee", ACTION_HIGH), NULL)));*/
 
     triggers.push_back(new TriggerNode(
         "enemy too close for spell",

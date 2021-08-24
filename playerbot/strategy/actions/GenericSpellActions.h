@@ -279,6 +279,7 @@ namespace ai
             return context->GetValue<Unit*>("snare target", spell);
         }
         virtual string getName() { return spell + " on snare target"; }
+        virtual ActionThreatType getThreatType() { return ACTION_THREAT_NONE; }
     };
 
     class CastCrowdControlSpellAction : public CastBuffSpellAction
@@ -292,6 +293,7 @@ namespace ai
         virtual bool Execute(Event event) { return ai->CastSpell(getName(), GetTarget()); }
         virtual bool isPossible() { return ai->CanCastSpell(getName(), GetTarget(), true); }
         virtual bool isUseful() { return true; }
+        virtual ActionThreatType getThreatType() { return ACTION_THREAT_NONE; }
     };
 
     class CastProtectSpellAction : public CastSpellAction
@@ -303,5 +305,6 @@ namespace ai
         {
             return GetTarget() && !ai->HasAura(spell, GetTarget());
         }
+        virtual ActionThreatType getThreatType() { return ACTION_THREAT_NONE; }
     };
 }

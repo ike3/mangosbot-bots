@@ -20,6 +20,8 @@ namespace ai
     BUFF_TRIGGER(ShadowProtectionTrigger, "shadow protection");
     BUFF_PARTY_TRIGGER(ShadowProtectionOnPartyTrigger, "shadow protection");
     CC_TRIGGER(ShackleUndeadTrigger, "shackle undead");
+    INTERRUPT_TRIGGER(SilenceTrigger, "silence");
+    INTERRUPT_HEALER_TRIGGER(SilenceEnemyHealerTrigger, "silence");
 
     // racials
     DEBUFF_TRIGGER(DevouringPlagueTrigger, "devouring plague");
@@ -28,38 +30,41 @@ namespace ai
     BUFF_TRIGGER(ShadowguardTrigger, "shadowguard");
     BUFF_TRIGGER(FearWardTrigger, "fear ward");
     DEFLECT_TRIGGER(FeedbackTrigger, "feedback");
+    SNARE_TRIGGER(ChastiseTrigger, "chastise");
+
+    BOOST_TRIGGER_A(ShadowfiendTrigger, "shadowfiend");
 
     class PowerWordFortitudeOnPartyTrigger : public BuffOnPartyTrigger {
     public:
-        PowerWordFortitudeOnPartyTrigger(PlayerbotAI* ai) : BuffOnPartyTrigger(ai, "power word: fortitude", 2) {}
+        PowerWordFortitudeOnPartyTrigger(PlayerbotAI* ai) : BuffOnPartyTrigger(ai, "power word: fortitude", 4) {}
 
         virtual bool IsActive() { return BuffOnPartyTrigger::IsActive() && !ai->HasAura("power word: fortitude", GetTarget()) && !ai->HasAura("prayer of fortitude", GetTarget()); }
     };
 
     class PowerWordFortitudeTrigger : public BuffTrigger {
     public:
-        PowerWordFortitudeTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "power word: fortitude", 2) {}
+        PowerWordFortitudeTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "power word: fortitude", 4) {}
 
         virtual bool IsActive() { return BuffTrigger::IsActive() && !ai->HasAura("power word: fortitude", GetTarget()) && !ai->HasAura("prayer of fortitude", GetTarget()); }
     };
 
     class DivineSpiritOnPartyTrigger : public BuffOnPartyTrigger {
     public:
-        DivineSpiritOnPartyTrigger(PlayerbotAI* ai) : BuffOnPartyTrigger(ai, "divine spirit", 2) {}
+        DivineSpiritOnPartyTrigger(PlayerbotAI* ai) : BuffOnPartyTrigger(ai, "divine spirit", 4) {}
 
         virtual bool IsActive() { return BuffOnPartyTrigger::IsActive() && !ai->HasAura("divine spirit", GetTarget()) && !ai->HasAura("prayer of spirit", GetTarget()); }
     };
 
     class DivineSpiritTrigger : public BuffTrigger {
     public:
-        DivineSpiritTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "divine spirit") {}
+        DivineSpiritTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "divine spirit", 4) {}
 
         virtual bool IsActive() { return BuffTrigger::IsActive() && !ai->HasAura("divine spirit", GetTarget()) && !ai->HasAura("prayer of spirit", GetTarget()); }
     };
 
     class PrayerOfFortitudeTrigger : public BuffOnPartyTrigger {
     public:
-        PrayerOfFortitudeTrigger(PlayerbotAI* ai) : BuffOnPartyTrigger(ai, "prayer of fortitude") {}
+        PrayerOfFortitudeTrigger(PlayerbotAI* ai) : BuffOnPartyTrigger(ai, "prayer of fortitude", 3) {}
 
         virtual bool IsActive() { return BuffOnPartyTrigger::IsActive() &&
             !ai->HasAura("prayer of fortitude", GetTarget()) &&
@@ -76,7 +81,7 @@ namespace ai
 
     class PrayerOfSpiritTrigger : public BuffOnPartyTrigger {
     public:
-        PrayerOfSpiritTrigger(PlayerbotAI* ai) : BuffOnPartyTrigger(ai, "prayer of spirit", 2) {}
+        PrayerOfSpiritTrigger(PlayerbotAI* ai) : BuffOnPartyTrigger(ai, "prayer of spirit", 3) {}
 
         virtual bool IsActive() { return BuffOnPartyTrigger::IsActive() &&
             !ai->HasAura("prayer of spirit", GetTarget()) &&
@@ -90,5 +95,14 @@ namespace ai
             ai->GetBuffedCount((Player*)GetTarget(), "prayer of spirit") < 4 &&
             !ai->GetBuffedCount((Player*)GetTarget(), "divine spirit")
             ; }
+    };
+
+    class BindingHealTrigger : public PartyMemberLowHealthTrigger {
+    public:
+        BindingHealTrigger(PlayerbotAI* ai) : PartyMemberLowHealthTrigger(ai, "binding heal", sPlayerbotAIConfig.lowHealth, 0) {}
+        virtual bool IsActive()
+        {
+            return PartyMemberLowHealthTrigger::IsActive() && AI_VALUE2(uint8, "health", "self target") < sPlayerbotAIConfig.mediumHealth;
+        }
     };
 }

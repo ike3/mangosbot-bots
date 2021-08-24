@@ -106,9 +106,19 @@ namespace ai
                 creators["shadowguard"] = &TriggerFactoryInternal::shadowguard;
                 creators["fear ward"] = &TriggerFactoryInternal::fear_ward;
                 creators["feedback"] = &TriggerFactoryInternal::feedback;
+                creators["binding heal"] = &TriggerFactoryInternal::binding_heal;
+                creators["chastise"] = &TriggerFactoryInternal::chastise;
+                creators["silence"] = &TriggerFactoryInternal::silence;
+                creators["silence on enemy healer"] = &TriggerFactoryInternal::silence_on_enemy_healer;
+                creators["shadowfiend"] = &TriggerFactoryInternal::shadowfiend;
             }
 
         private:
+            static Trigger* shadowfiend(PlayerbotAI* ai) { return new ShadowfiendTrigger(ai); }
+            static Trigger* silence_on_enemy_healer(PlayerbotAI* ai) { return new SilenceEnemyHealerTrigger(ai); }
+            static Trigger* silence(PlayerbotAI* ai) { return new SilenceTrigger(ai); }
+            static Trigger* chastise(PlayerbotAI* ai) { return new ChastiseTrigger(ai); }
+            static Trigger* binding_heal(PlayerbotAI* ai) { return new BindingHealTrigger(ai); }
             static Trigger* feedback(PlayerbotAI* ai) { return new FeedbackTrigger(ai); }
             static Trigger* fear_ward(PlayerbotAI* ai) { return new FearWardTrigger(ai); }
             static Trigger* shadowguard(PlayerbotAI* ai) { return new ShadowguardTrigger(ai); }
@@ -219,9 +229,29 @@ namespace ai
                 creators["starshards"] = &AiObjectContextInternal::starshards;
                 creators["elune's grace"] = &AiObjectContextInternal::elunes_grace;
                 creators["feedback"] = &AiObjectContextInternal::feedback;
+                creators["symbol of hope"] = &AiObjectContextInternal::symbol_of_hope;
+                creators["consume magic"] = &AiObjectContextInternal::consume_magic;
+                creators["chastise"] = &AiObjectContextInternal::chastise;
+                creators["shadow word: death"] = &AiObjectContextInternal::shadow_word_death;
+                creators["shadowfiend"] = &AiObjectContextInternal::shadowfiend;
+                creators["mass dispel"] = &AiObjectContextInternal::mass_dispel;
+                creators["pain suppression"] = &AiObjectContextInternal::pain_suppression;
+                creators["pain suppression on party"] = &AiObjectContextInternal::pain_suppression_on_party;
+                creators["prayer of mending"] = &AiObjectContextInternal::prayer_of_mending;
+                creators["binding heal"] = &AiObjectContextInternal::binding_heal;
             }
 
         private:
+            static Action* binding_heal(PlayerbotAI* ai) { return new CastBindingHealAction(ai); }
+            static Action* prayer_of_mending(PlayerbotAI* ai) { return new CastPrayerOfMendingAction(ai); }
+            static Action* pain_suppression_on_party(PlayerbotAI* ai) { return new CastPainSuppressionProtectAction(ai); }
+            static Action* pain_suppression(PlayerbotAI* ai) { return new CastPainSuppressionAction(ai); }
+            static Action* mass_dispel(PlayerbotAI* ai) { return new CastMassDispelAction(ai); }
+            static Action* shadowfiend(PlayerbotAI* ai) { return new CastShadowfiendAction(ai); }
+            static Action* shadow_word_death(PlayerbotAI* ai) { return new CastShadowWordDeathAction(ai); }
+            static Action* chastise(PlayerbotAI* ai) { return new CastChastiseAction(ai); }
+            static Action* consume_magic(PlayerbotAI* ai) { return new CastConsumeMagicAction(ai); }
+            static Action* symbol_of_hope(PlayerbotAI* ai) { return new CastSymbolOfHopeAction(ai); }
             static Action* feedback(PlayerbotAI* ai) { return new CastFeedbackAction(ai); }
             static Action* elunes_grace(PlayerbotAI* ai) { return new CastElunesGraceAction(ai); }
             static Action* starshards(PlayerbotAI* ai) { return new CastStarshardsAction(ai); }
