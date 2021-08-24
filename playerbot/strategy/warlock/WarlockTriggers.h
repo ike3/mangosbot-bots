@@ -17,9 +17,9 @@ namespace ai
         virtual bool IsActive();
     };
 
-    DEBUFF_TRIGGER(CurseOfAgonyTrigger, "curse of agony", "curse of agony");
-    DEBUFF_TRIGGER(CorruptionTrigger, "corruption", "corruption");
-    DEBUFF_TRIGGER(SiphonLifeTrigger, "siphon life", "siphon life");
+    DEBUFF_TRIGGER(CurseOfAgonyTrigger, "curse of agony");
+    DEBUFF_TRIGGER(CorruptionTrigger, "corruption");
+    DEBUFF_TRIGGER(SiphonLifeTrigger, "siphon life");
 
     class CorruptionOnAttackerTrigger : public DebuffOnAttackerTrigger
     {
@@ -39,7 +39,7 @@ namespace ai
         SiphonLifeOnAttackerTrigger(PlayerbotAI* ai) : DebuffOnAttackerTrigger(ai, "siphon life") {}
     };
 
-    DEBUFF_TRIGGER(ImmolateTrigger, "immolate", "immolate");
+    DEBUFF_TRIGGER(ImmolateTrigger, "immolate");
 
     class ShadowTranceTrigger : public HasAuraTrigger
     {
