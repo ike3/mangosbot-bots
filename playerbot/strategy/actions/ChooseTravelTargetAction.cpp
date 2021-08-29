@@ -61,6 +61,11 @@ void ChooseTravelTargetAction::ReportTravelTarget(TravelTarget* newTarget, Trave
 
     TravelDestination* oldDestination = oldTarget->getDestination();
 
+    ostringstream out;
+
+    if (newTarget->isForced())
+        out << "(Forced) ";
+
     if (destination->getName() == "QuestRelationTravelDestination" || destination->getName() == "QuestObjectiveTravelDestination")
     {
         QuestTravelDestination* QuestDestination = (QuestTravelDestination*)destination;
@@ -75,8 +80,6 @@ void ChooseTravelTargetAction::ReportTravelTarget(TravelTarget* newTarget, Trave
             gInfo = ObjectMgr::GetGameObjectInfo(destination->getEntry() * -1);
 
         string Sub;
-
-        ostringstream out;
 
         if (newTarget->isGroupCopy())
             out << "Following group ";
@@ -99,8 +102,6 @@ void ChooseTravelTargetAction::ReportTravelTarget(TravelTarget* newTarget, Trave
 
         WorldPosition botLocation(bot);
 
-        ostringstream out;
-
         if (newTarget->isGroupCopy())
             out << "Following group ";
         else if (oldDestination && oldDestination == destination)
@@ -121,8 +122,6 @@ void ChooseTravelTargetAction::ReportTravelTarget(TravelTarget* newTarget, Trave
         ExploreTravelDestination* ExploreDestination = (ExploreTravelDestination*)destination;
 
         WorldPosition botLocation(bot);
-
-        ostringstream out;
 
         if (newTarget->isGroupCopy())
             out << "Following group ";
@@ -145,8 +144,6 @@ void ChooseTravelTargetAction::ReportTravelTarget(TravelTarget* newTarget, Trave
 
         WorldPosition botLocation(bot);
 
-        ostringstream out;
-
         if (newTarget->isGroupCopy())
             out << "Following group ";
         else if (oldDestination && oldDestination == destination)
@@ -167,8 +164,6 @@ void ChooseTravelTargetAction::ReportTravelTarget(TravelTarget* newTarget, Trave
         BossTravelDestination* BossDestination = (BossTravelDestination*)destination;
 
         WorldPosition botLocation(bot);
-
-        ostringstream out;
 
         if (newTarget->isGroupCopy())
             out << "Following group ";
@@ -212,7 +207,7 @@ bool ChooseTravelTargetAction::SetTarget(TravelTarget* target, TravelTarget* old
 
     //Rpg in city
     if (!foundTarget && urand(1, 100) > 90)                               //10% chance
-        foundTarget = SetBankTarget(target);                              //Head to the bank
+        foundTarget = SetCapitalTarget(target);                           //Head to a city
     
     //Grind for money
     if (!foundTarget && AI_VALUE(bool, "should get money"))
@@ -580,7 +575,7 @@ bool ChooseTravelTargetAction::SetExploreTarget(TravelTarget* target)
     return target->isActive();
 }
 
-bool ChooseTravelTargetAction::SetBankTarget(TravelTarget* target)
+bool ChooseTravelTargetAction::SetCapitalTarget(TravelTarget* target)
 {
     WorldPosition* botPos = &WorldPosition(bot);
 
@@ -596,7 +591,7 @@ bool ChooseTravelTargetAction::SetBankTarget(TravelTarget* target)
         if (!cInfo)
             continue;
 
-        if ((cInfo->NpcFlags & UNIT_NPC_FLAG_BANKER) == 0)
+        if ((cInfo->NpcFlags & UNIT_NPC_FLAG_BANKER) == 0 && (cInfo->NpcFlags & UNIT_NPC_FLAG_BATTLEMASTER) == 0 && (cInfo->NpcFlags & UNIT_NPC_FLAG_AUCTIONEER) == 0)
             continue;
 
         FactionTemplateEntry const* factionEntry = sFactionTemplateStore.LookupEntry(cInfo->Faction);
@@ -605,7 +600,7 @@ bool ChooseTravelTargetAction::SetBankTarget(TravelTarget* target)
         if (reaction  <= REP_NEUTRAL)
             continue;
 
-
+        dests.push_back(d);
     }
 
     if (!dests.empty())
