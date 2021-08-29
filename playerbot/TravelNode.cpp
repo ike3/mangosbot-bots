@@ -169,8 +169,9 @@ float TravelNodePath::getCost(Player* bot, uint32 cGold)
                 return -1;
 
             TaxiNodesEntry const* startTaxiNode = sTaxiNodesStore.LookupEntry(taxiPath->from);
+            TaxiNodesEntry const* endTaxiNode = sTaxiNodesStore.LookupEntry(taxiPath->to);
 
-            if (!startTaxiNode || !startTaxiNode->MountCreatureID[bot->GetTeam() == ALLIANCE ? 1 : 0])
+            if (!startTaxiNode  || !endTaxiNode || !startTaxiNode->MountCreatureID[bot->GetTeam() == ALLIANCE ? 1 : 0] || !endTaxiNode->MountCreatureID[bot->GetTeam() == ALLIANCE ? 1 : 0])
                 return -1;            
         }
 
