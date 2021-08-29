@@ -322,7 +322,7 @@ namespace ai
     class NullTravelDestination : public TravelDestination
     {
     public:
-        NullTravelDestination(uint32 coodownDelay1 = 5 * 60 * 1000) : TravelDestination() { cooldownDelay = coodownDelay1;};
+        NullTravelDestination(uint32 cooldownDelay1 = 5 * 60 * 1000) : TravelDestination() { cooldownDelay = cooldownDelay1;};
 
         virtual Quest const* GetQuestTemplate() { return NULL; }
 
@@ -462,7 +462,7 @@ namespace ai
     {
     public:
         BossTravelDestination(int32 entry1, float radiusMin1, float radiusMax1) : TravelDestination(radiusMin1, radiusMax1) {
-            entry = entry1;
+            entry = entry1; cooldownDelay = 1000;
         }
 
         virtual bool isActive(Player* bot);
@@ -612,7 +612,7 @@ namespace ai
         vector<TravelDestination*> getRpgTravelDestinations(Player* bot, bool ignoreFull = false, bool ignoreInactive = false, float maxDistance = 5000);
         vector<TravelDestination*> getExploreTravelDestinations(Player* bot, bool ignoreFull = false, bool ignoreInactive = false);
         vector<TravelDestination*> getGrindTravelDestinations(Player* bot, bool ignoreFull = false, bool ignoreInactive = false, float maxDistance = 5000);
-        vector<TravelDestination*> getBossTravelDestinations(Player* bot, bool ignoreFull = false, bool ignoreInactive = false, float maxDistance = 5000);
+        vector<TravelDestination*> getBossTravelDestinations(Player* bot, bool ignoreFull = false, bool ignoreInactive = false, float maxDistance = 25000);
 
 
         void setNullTravelTarget(Player* player);
