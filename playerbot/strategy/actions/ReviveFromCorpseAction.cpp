@@ -39,6 +39,16 @@ bool ReviveFromCorpseAction::Execute(Event event)
             return false;
     }
 
+    if (!ai->HasRealPlayerMaster())
+    {
+        uint32 dCount = AI_VALUE(uint32, "death count");
+
+        if (dCount >= 5)
+        {
+            return ai->DoSpecificAction("spirit healer");
+        }
+    }
+
     sLog.outDetail("Bot #%d %s:%d <%s> revives at body", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName());
     
     WorldPacket packet(CMSG_RECLAIM_CORPSE);
