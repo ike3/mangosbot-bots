@@ -11,7 +11,9 @@ bool SetHomeAction::Execute(Event event)
     Player* master = GetMaster();
 
     ObjectGuid selection = bot->GetSelectionGuid();
-    if (AI_VALUE(ObjectGuid, "rpg target") != bot->GetSelectionGuid())
+    bool isRpgAction = AI_VALUE(ObjectGuid, "rpg target") == selection;
+
+    if (!isRpgAction)
         if (master)
             selection = master->GetSelectionGuid();
         else
@@ -22,14 +24,24 @@ bool SetHomeAction::Execute(Event event)
         Unit* unit = ai->GetUnit(selection);
         if (unit && unit->HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_INNKEEPER))
         {
-            float angle = GetFollowAngle();
-            float x = unit->GetPositionX() + sPlayerbotAIConfig.followDistance * cos(angle);
-            float y = unit->GetPositionY() + sPlayerbotAIConfig.followDistance * sin(angle);
-            float z = unit->GetPositionZ();
-            WorldLocation loc(unit->GetMapId(), x, y, z);
-            bot->SetHomebindToLocation(loc, unit->GetAreaId());
-            ai->TellMaster("This inn is my new home");
-            return true;
+            if (isRpgAction)
+            {
+                Creature* creature = ai->GetCreature(selection);                   
+                bot->GetSession()->SendBindPoint(creature);
+                ai->TellMaster("This inn is my new home");
+                return true;
+            }
+            else
+            {
+                float angle = GetFollowAngle();
+                float x = unit->GetPositionX() + sPlayerbotAIConfig.followDistance * cos(angle);
+                float y = unit->GetPositionY() + sPlayerbotAIConfig.followDistance * sin(angle);
+                float z = unit->GetPositionZ();
+                WorldLocation loc(unit->GetMapId(), x, y, z);
+                bot->SetHomebindToLocation(loc, unit->GetAreaId());
+                ai->TellMaster("This inn is my new home");
+                return true;
+            }
         }
     }
 
