@@ -3,6 +3,7 @@
 #include "DebugAction.h"
 #include "../../PlayerbotAIConfig.h"
 #include <playerbot/TravelNode.h>
+#include "ChooseTravelTargetAction.h"
 
 using namespace ai;
 
@@ -52,6 +53,7 @@ bool DebugAction::Execute(Event event)
     else if (text.find("printmap") != std::string::npos)
     {
         sTravelNodeMap.printMap();
+        return true;
     }
     else if (text.find("travel ") != std::string::npos)
     {
@@ -59,30 +61,9 @@ bool DebugAction::Execute(Event event)
 
         string destination = text.substr(7);
 
-        vector<TravelDestination*> dests;
-
-        for (auto& d : sTravelMgr.getExploreTravelDestinations(bot, true, true))
+        TravelDestination* dest = ChooseTravelTargetAction::FindDestination(bot, destination);
+        if (dest)
         {
-            if (strstri(d->getTitle().c_str(), destination.c_str()))
-                dests.push_back(d);
-        }
-
-        for (auto& d : sTravelMgr.getRpgTravelDestinations(bot, true, true))
-        {
-            if (strstri(d->getTitle().c_str(), destination.c_str()))
-                dests.push_back(d);
-        }
-
-        for (auto& d : sTravelMgr.getGrindTravelDestinations(bot, true, true))
-        {
-            if (strstri(d->getTitle().c_str(), destination.c_str()))
-                dests.push_back(d);
-        }
-
-        if (!dests.empty())
-        {
-            TravelDestination* dest = *std::min_element(dests.begin(), dests.end(), [botPos](TravelDestination* i, TravelDestination* j) {return i->distanceTo(botPos) < j->distanceTo(botPos); });
-
             vector <WorldPosition*> points = dest->nextPoint(botPos, true);
 
             if (points.empty())
@@ -107,8 +88,6 @@ bool DebugAction::Execute(Event event)
             ai->TellMasterNoFacing("Destination " + destination + " not found.");            
             return true;
         }
-
-
     }
     else if (text.find("quest ") != std::string::npos)
     {

@@ -31,6 +31,10 @@ namespace ai
         bool SetCapitalTarget(TravelTarget* target);
         bool SetNullTarget(TravelTarget* target);
 
+    public:
+        static TravelDestination* FindDestination(Player* bot, string name);
+    private:
+
         void ReportTravelTarget(TravelTarget* newTarget, TravelTarget* oldTarget);
 
         virtual bool needForQuest(Unit* target);
