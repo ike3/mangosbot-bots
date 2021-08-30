@@ -38,6 +38,7 @@
 #include "generic/DebugStrategy.h"
 #include "generic/BattlegroundStrategy.h"
 #include "generic/LfgStrategy.h"
+#include "generic/MaintenanceStrategy.h"
 
 namespace ai
 {
@@ -94,6 +95,7 @@ namespace ai
             creators["debug rpg"] = &StrategyContext::debug_rpg;
             creators["debug spell"] = &StrategyContext::debug_spell;
             creators["rtsc"] = &StrategyContext::rtsc;
+            creators["maintenance"] = &StrategyContext::maintenance;
         }
 
     private:
@@ -145,6 +147,7 @@ namespace ai
         static Strategy* debug_rpg(PlayerbotAI* ai) { return new DebugRpgStrategy(ai); }
         static Strategy* debug_spell(PlayerbotAI* ai) { return new DebugSpellStrategy(ai); }
         static Strategy* rtsc(PlayerbotAI* ai) { return new RTSCStrategy(ai); }
+        static Strategy* maintenance(PlayerbotAI* ai) { return new MaintenanceStrategy(ai); }
     };
 
     class MovementStrategyContext : public NamedObjectContext<Strategy>

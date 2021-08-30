@@ -477,11 +477,12 @@ void AiFactory::AddDefaultNonCombatStrategies(Player* player, PlayerbotAI* const
             nonCombatEngine->addStrategy("pvp");
             nonCombatEngine->addStrategy("collision");
             nonCombatEngine->addStrategy("grind");
+            nonCombatEngine->addStrategy("maintenance");
 
             if (sPlayerbotAIConfig.autoDoQuests)
             {
                 nonCombatEngine->addStrategy("travel");
-                nonCombatEngine->addStrategy("rpg");
+                nonCombatEngine->addStrategy("rpg");                
             }
             if (sPlayerbotAIConfig.randomBotJoinLfg)
                 nonCombatEngine->addStrategy("lfg");
@@ -503,6 +504,7 @@ void AiFactory::AddDefaultNonCombatStrategies(Player* player, PlayerbotAI* const
                         nonCombatEngine->addStrategy("pvp");
                         nonCombatEngine->addStrategy("collision");
                         nonCombatEngine->addStrategy("grind");
+                        nonCombatEngine->addStrategy("maintenance");
 
                         if (sPlayerbotAIConfig.autoDoQuests)
                         {
