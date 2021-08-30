@@ -2586,6 +2586,40 @@ void TravelMgr::LoadQuestTravelTable()
         sLog.outString(">> Calculated pathcost for " SIZEFMTD " nodes.", sTravelNodeMap.getNodes().size());
     }
 
+    bool mirrorMissingPaths = true || fullNavPointReload || storeNavPointReload;
+
+    if (mirrorMissingPaths)
+    {
+        BarGoLink bar(sTravelNodeMap.getNodes().size());
+
+        for (auto& startNode : sTravelNodeMap.getNodes())
+        {
+            for (auto& path : *startNode->getLinks())
+            {
+                TravelNode* endNode = path.first;
+
+                if (endNode->hasLinkTo(startNode))
+                    continue;
+
+                if (path.second->getTransport() || path.second->getPortal() || path.second->getFlightPath())
+                    continue;
+
+                TravelNodePath nodePath = *path.second;
+
+                vector<WorldPosition> pPath = nodePath.getPath();
+                std::reverse(pPath.begin(), pPath.end());
+
+                nodePath.setPath(pPath);
+
+                endNode->setPathTo(startNode, nodePath, true);
+            }
+
+            bar.step();
+        }
+
+        sLog.outString(">> Reversed missing paths for " SIZEFMTD " nodes.", sTravelNodeMap.getNodes().size());
+    }
+
     sTravelNodeMap.printMap();
     sTravelNodeMap.printNodeStore();
 

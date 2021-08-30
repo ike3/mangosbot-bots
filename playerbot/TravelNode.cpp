@@ -231,10 +231,10 @@ TravelNodePath* TravelNode::buildPath(TravelNode* endNode, Unit* bot, bool postP
         returnNodePath = setPathTo(endNode, TravelNodePath(), false);
     else
         returnNodePath = getPathTo(endNode);                //Get the exsisting path.
-
+    
     if (returnNodePath->getComplete())                      //Path is already complete. Return it.
         return returnNodePath;
-
+    
     vector<WorldPosition> path = returnNodePath->getPath();
 
     if (path.empty())
@@ -245,6 +245,36 @@ TravelNodePath* TravelNode::buildPath(TravelNode* endNode, Unit* bot, bool postP
     path = endPos->getPathFromPath(path, bot);          //Pathfind from the existing path to the end Node.
 
     bool canPath = endPos->isPathTo(path);              //Check if we reached our destination.
+
+    if (!canPath && endNode->hasLinkTo(this)) //Unable to find a path? See if the reverse is possible.
+    {
+        TravelNodePath backNodePath = *endNode->getPathTo(this);
+
+        if (!backNodePath.getTransport() && !backNodePath.getPortal() && !backNodePath.getFlightPath())
+        {
+            vector<WorldPosition> bPath = backNodePath.getPath();
+
+            if (!backNodePath.getComplete()) //Build it if it's not already complete.
+            {
+                if (bPath.empty())
+                    bPath = { *endNode->getPosition() };            //Start the path from the end Node.
+
+                WorldPosition* thisPos = getPosition();             //Build the path to this Node.
+
+                bPath = thisPos->getPathFromPath(bPath, bot);         //Pathfind from the existing path to the this Node.
+
+                canPath = thisPos->isPathTo(bPath);              //Check if we reached our destination.
+            }
+            else
+                canPath = true;
+
+            if (canPath)
+            {
+                std::reverse(bPath.begin(), bPath.end());
+                path = bPath;
+            }
+        }
+    }
 
     //Transports are (probably?) not solid at this moment. We need to walk over them so we need extra code for this.
     //Some portals are 'too' solid so we can't properly walk in them. Again we need to bypass this.
