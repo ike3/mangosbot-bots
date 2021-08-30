@@ -2457,15 +2457,13 @@ string PlayerbotAI::HandleRemoteCommand(string command)
 
             out << ": " << target->getDestination()->getTitle();
 
-            out << " vis: " << target->getDestination()->getVisitors();
-
-            out << " Location = " << target->getPosition()->print();
+            out << " v: " << target->getDestination()->getVisitors();
 
             if (!(*target->getPosition() == WorldPosition()))
             {
                 out << "(" << target->getPosition()->getAreaName() << ")";
-                out << " at: " << target->getPosition()->distance(bot) << "y";
-                out << " vis: " << target->getPosition()->getVisitors();
+                out << " distance: " << target->getPosition()->distance(bot) << "y";
+                out << " v: " << target->getPosition()->getVisitors();
             }
         }
         out << " Status =";
@@ -2482,7 +2480,8 @@ string PlayerbotAI::HandleRemoteCommand(string command)
         else if (target->getStatus() == TRAVEL_STATUS_EXPIRED)
             out << " expired";
 
-        out << " Expire in " << (target->getTimeLeft()/1000) << "s";
+        if(target->getStatus() != TRAVEL_STATUS_EXPIRED)
+            out << " Expire in " << (target->getTimeLeft()/1000) << "s";
 
         out << " Retry " << target->getRetryCount(true) << "/" << target->getRetryCount(false);
 
