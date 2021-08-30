@@ -1008,6 +1008,17 @@ bool MovementAction::Flee(Unit *target)
     }
     bool foundFlee = false;
     time_t lastFlee = AI_VALUE(LastMovement&, "last movement").lastFlee;
+    time_t now = time(0);
+    uint32 fleeDelay = urand(2, sPlayerbotAIConfig.returnDelay / 1000);
+
+    if (lastFlee)
+    {
+        if ((now - lastFlee) <= fleeDelay)
+        {
+            return false;
+        }
+    }
+
     //HostileReference *ref = target->GetThreatManager().getCurrentVictim();
     HostileReference *ref = sServerFacade.GetThreatManager(target).getCurrentVictim();
 
@@ -1067,9 +1078,9 @@ bool MovementAction::Flee(Unit *target)
         if (group)
         {
             Unit* fleeTarget = nullptr;
-            float fleeDistance = sPlayerbotAIConfig.sightDistance;
+            float fleeDistance = ai->GetRange("shoot") * 1.5;
             Unit* spareTarget = nullptr;
-            float spareDistance = sPlayerbotAIConfig.sightDistance;
+            float spareDistance = ai->GetRange("shoot") * 2;
             vector<Unit*> possibleTargets;
 
             for (GroupReference *gref = group->GetFirstMember(); gref; gref = gref->next())
@@ -1141,15 +1152,13 @@ bool MovementAction::Flee(Unit *target)
 
     if ((foundFlee || lastFlee) && bot->GetGroup())
     {
-        uint32 fleeDelay = sPlayerbotAIConfig.returnDelay / 1000;
-        time_t now = time(0);
         if (!lastFlee)
         {
             AI_VALUE(LastMovement&, "last movement").lastFlee = now;
         }
         else
         {
-            if ((now - lastFlee) > urand(2, fleeDelay * 2))
+            if ((now - lastFlee) > fleeDelay)
             {
                 AI_VALUE(LastMovement&, "last movement").lastFlee = 0;
             }
