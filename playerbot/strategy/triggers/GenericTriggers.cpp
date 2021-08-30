@@ -115,7 +115,7 @@ Value<Unit*>* DebuffOnAttackerTrigger::GetTargetValue()
 
 bool NoAttackersTrigger::IsActive()
 {
-    return !AI_VALUE(Unit*, "current target") && AI_VALUE(uint8, "attacker count") > 0;
+    return !AI_VALUE(Unit*, "current target") && AI_VALUE(uint8, "my attacker count") > 0;
 }
 
 bool InvalidTargetTrigger::IsActive()
@@ -130,12 +130,12 @@ bool NoTargetTrigger::IsActive()
 
 bool MyAttackerCountTrigger::IsActive()
 {
-    return AI_VALUE(uint8, "my attacker count") >= amount;
+    return AI_VALUE2(bool, "combat", "self target") && AI_VALUE(uint8, "my attacker count") >= amount;
 }
 
 bool AoeTrigger::IsActive()
 {
-    return AI_VALUE(uint8, "aoe count") >= amount && AI_VALUE(uint8, "attacker count") >= amount;
+    return AI_VALUE2(bool, "combat", "self target") && AI_VALUE(uint8, "aoe count") >= amount && AI_VALUE(uint8, "attacker count") >= amount;
 }
 
 bool DebuffTrigger::IsActive()
