@@ -52,7 +52,7 @@ bool MovementAction::MoveNear(WorldObject* target, float distance)
     float y = target->GetPositionY();
     float z = target->GetPositionZ();
     float followAngle = GetFollowAngle();
-    for (float angle = followAngle; angle <= followAngle + 2 * M_PI; angle += M_PI / 4.0f)
+    for (float angle = followAngle; angle <= followAngle + 2 * M_PI; angle += M_PI_F / 4.0f)
     {
 #ifdef CMANGOS
         float dist = distance + target->GetObjectBoundingRadius();
@@ -136,7 +136,10 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
     {
         time_t now = time(0);
         if (AI_VALUE(LastMovement&, "last movement").nextTeleport > now) //We can not teleport yet. Wait.
+        {
+            ai->SetNextCheckDelay(AI_VALUE(LastMovement&, "last movement").nextTeleport - now);
             return true;
+        }
     }
 
     float minDist = sPlayerbotAIConfig.targetPosRecalcDistance; //Minium distance a bot should move.
@@ -842,10 +845,64 @@ bool MovementAction::Follow(Unit* target, float distance, float angle)
     }
     */
 
+    //Move to target corpse if alive.
+    if (!target->IsAlive() && bot->IsAlive() && target->GetObjectGuid().IsPlayer())
+    {
+        Player* pTarget = (Player*)target;
+
+        Corpse* corpse = pTarget->GetCorpse();
+
+        if (corpse)
+        {
+            WorldPosition botPos(bot);
+            WorldPosition cPos(corpse);
+
+            if(botPos.fDist(cPos) > sPlayerbotAIConfig.spellDistance)
+                return MoveTo(cPos.getMapId(),cPos.getX(),cPos.getY(), cPos.getZ());
+        }
+    }
+
     if (sServerFacade.IsDistanceGreaterOrEqualThan(sServerFacade.GetDistance2d(bot, target), sPlayerbotAIConfig.sightDistance))
     {
+        if (target->GetObjectGuid().IsPlayer())
+        {
+            Player* pTarget = (Player*)target;
+
+            if (pTarget->GetPlayerbotAI()) //Try to move to where the bot is going if it is closer and in the same direction.
+            {
+                WorldPosition botPos(bot);
+                WorldPosition tarPos(target);
+                WorldPosition longMove = pTarget->GetPlayerbotAI()->GetAiObjectContext()->GetValue<WorldPosition>("last long move")->Get();
+
+                if (longMove)
+                {
+                    float lDist = botPos.fDist(longMove);
+                    float tDist = botPos.fDist(tarPos);
+                    float ang = botPos.getAngleBetween(tarPos, longMove);
+                    if ((lDist * 1.5 < tDist && ang < M_PI_F / 2) || target->IsTaxiFlying())
+                    {
+                        return MoveTo(longMove.getMapId(), longMove.getX(), longMove.getY(), longMove.getZ());
+                    }
+                }
+            }
+            else 
+            {
+                if (pTarget->IsTaxiFlying()) //Move to where the player is flying to.
+                {
+                    const Taxi::Map tMap = pTarget->GetTaxiPathSpline();
+                    if (!tMap.empty())
+                    {
+                        auto tEnd = tMap.back();
+
+                        if (tEnd)
+                            return MoveTo(tEnd->mapid, tEnd->x, tEnd->y, tEnd->z);
+                    }
+                }
+            }
+        }
+
         if (!target->IsTaxiFlying())
-            return MoveTo(target, sPlayerbotAIConfig.followDistance);
+           return MoveTo(target, sPlayerbotAIConfig.followDistance);
     }
 
     if (sServerFacade.IsDistanceLessOrEqualThan(sServerFacade.GetDistance2d(bot, target), sPlayerbotAIConfig.followDistance))

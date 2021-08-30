@@ -56,6 +56,7 @@ namespace ai
             creators["accept all quests"] = &WorldPacketActionContext::accept_all_quests;
             creators["accept quest share"] = &WorldPacketActionContext::accept_quest_share;
             creators["loot roll"] = &WorldPacketActionContext::loot_roll;
+            creators["master loot roll"] = &WorldPacketActionContext::master_loot_roll;
             creators["revive from corpse"] = &WorldPacketActionContext::revive_from_corpse;
             creators["find corpse"] = &WorldPacketActionContext::find_corpse;
             creators["auto release"] = &WorldPacketActionContext::auto_release;
@@ -125,6 +126,7 @@ namespace ai
         static Action* accept_all_quests(PlayerbotAI* ai) { return new AcceptAllQuestsAction(ai); }
         static Action* accept_quest_share(PlayerbotAI* ai) { return new AcceptQuestShareAction(ai); }
         static Action* loot_roll(PlayerbotAI* ai) { return (QueryItemUsageAction*)new LootRollAction(ai); }
+        static Action* master_loot_roll(PlayerbotAI* ai) { return (QueryItemUsageAction*)new MasterLootRollAction(ai); }
         static Action* see_spell(PlayerbotAI* ai) { return new SeeSpellAction(ai); }
         static Action* arena_team_accept(PlayerbotAI* ai) { return new ArenaTeamAcceptAction(ai); }
     };

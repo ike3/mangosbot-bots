@@ -818,7 +818,8 @@ bool QuestObjectiveTravelDestination::isActive(Player* bot) {
         for (auto& target : targets)
             if (target.GetEntry() == getEntry() && target.IsCreature() && ai->GetCreature(target) && ai->GetCreature(target)->IsAlive())
                 return true;
-
+        
+        setCooldownDelay(1000);
         return false;
     }
 
@@ -1004,6 +1005,7 @@ bool BossTravelDestination::isActive(Player* bot)
             if (target.GetEntry() == getEntry() && target.IsCreature() && ai->GetCreature(target) && ai->GetCreature(target)->IsAlive())
                 return true;
 
+        setCooldownDelay(1000);
         return false;
     }
 

@@ -59,6 +59,10 @@ void NonCombatStrategy::InitTriggers(std::list<TriggerNode*>& triggers)
         "often",
         NextAction::array(0, new NextAction("use random quest item", 10.0f), NULL)));
 
+    triggers.push_back(new TriggerNode(
+        "often",
+        NextAction::array(0, new NextAction("smart destroy item", 1.0f), NULL)));
+
     /*AiObjectContext* context = ai->GetAiObjectContext();
 
     triggers.push_back(new TriggerNode(

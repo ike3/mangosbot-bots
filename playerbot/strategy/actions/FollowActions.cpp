@@ -72,15 +72,11 @@ bool FollowAction::isUseful()
 
 bool FollowAction::CanDeadFollow(Unit* target)
 {
-    //Follow ghost when dead
-    if (!sServerFacade.IsAlive(bot) && !sServerFacade.IsAlive(target) && target->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_GHOST))
-        return true;
-
-    //Follow when both alive or guard corpse of master
-    if (sServerFacade.IsAlive(bot) && (sServerFacade.IsAlive(target) || !target->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_GHOST)))
-        return true;
-
-    return false;
+    //Move to corpse when dead and player is alive or not a ghost.
+    if (!sServerFacade.IsAlive(bot) && (sServerFacade.IsAlive(target) || !target->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_GHOST)))
+        return false;
+    
+    return true;
 }
 
 bool FleeToMasterAction::Execute(Event event)
@@ -134,9 +130,6 @@ bool FleeToMasterAction::isUseful()
     Unit* fTarget = AI_VALUE(Unit*, "master target");
     
     if (!CanDeadFollow(fTarget))
-        return false;
-
-    if (fTarget->IsTaxiFlying())
         return false;
 
     return true;
