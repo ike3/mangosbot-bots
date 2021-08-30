@@ -285,8 +285,10 @@ AiPlayerbot.PremadeSpecLink.5.2.70 = 050230013--503250310250103051551
 
 AiPlayerbot.PremadeSpecName.5.3 = pvp dps disc
 AiPlayerbot.PremadeSpecLink.5.3.70 = 5050320103025000531551-20305-05
-AiPlayerbot.PremadeSpecName.5.4 = pvp dps shadow
-AiPlayerbot.PremadeSpecLink.5.4.70 = 505032000302--050232410251120051151
+AiPlayerbot.PremadeSpecName.5.4 = pvp dps holy
+AiPlayerbot.PremadeSpecLink.5.4.70 = 5000323110505002501-225051102020152
+AiPlayerbot.PremadeSpecName.5.5 = pvp dps shadow
+AiPlayerbot.PremadeSpecLink.5.5.70 = 505032000302--050232410251120051151
 
 # Shaman
 AiPlayerbot.PremadeSpecName.7.0 = pve dps elem
