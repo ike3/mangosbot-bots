@@ -268,7 +268,7 @@ public:
     bool HasStrategy(string name, BotState type);
     void ResetStrategies(bool load = true);
     void ReInitCurrentEngine();
-    void Reset();
+    void Reset(bool full = false);
     bool IsTank(Player* player);
     bool IsHeal(Player* player);
     bool IsRanged(Player* player);
