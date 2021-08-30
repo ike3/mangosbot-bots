@@ -286,7 +286,7 @@ void PlayerbotAI::HandleTeleportAck()
     Reset();
 }
 
-void PlayerbotAI::Reset()
+void PlayerbotAI::Reset(bool full)
 {
     if (bot->IsTaxiFlying())
         return;
@@ -306,15 +306,17 @@ void PlayerbotAI::Reset()
     LastSpellCast & lastSpell = aiObjectContext->GetValue<LastSpellCast& >("last spell cast")->Get();
     lastSpell.Reset();
 
-    aiObjectContext->GetValue<LastMovement& >("last movement")->Get().Set(NULL);
-    aiObjectContext->GetValue<LastMovement& >("last area trigger")->Get().Set(NULL);
-    aiObjectContext->GetValue<LastMovement& >("last taxi")->Get().Set(NULL);
+    if (full)
+    {
+        aiObjectContext->GetValue<LastMovement& >("last movement")->Get().Set(NULL);
+        aiObjectContext->GetValue<LastMovement& >("last area trigger")->Get().Set(NULL);
+        aiObjectContext->GetValue<LastMovement& >("last taxi")->Get().Set(NULL);
 
-    aiObjectContext->GetValue<TravelTarget* >("travel target")->Get()->setTarget(sTravelMgr.nullTravelDestination, sTravelMgr.nullWorldPosition, true);
+        aiObjectContext->GetValue<TravelTarget* >("travel target")->Get()->setTarget(sTravelMgr.nullTravelDestination, sTravelMgr.nullWorldPosition, true);
+        aiObjectContext->GetValue<TravelTarget* >("travel target")->Get()->setStatus(TRAVEL_STATUS_EXPIRED);
+        aiObjectContext->GetValue<TravelTarget* >("travel target")->Get()->setExpireIn(1000);
+    }
     
-    aiObjectContext->GetValue<TravelTarget* >("travel target")->Get()->setStatus(TRAVEL_STATUS_EXPIRED);
-    aiObjectContext->GetValue<TravelTarget* >("travel target")->Get()->setExpireIn(1000);
-
     aiObjectContext->GetValue<set<ObjectGuid>&>("ignore rpg target")->Get().clear();
 
     bot->GetMotionMaster()->Clear();
@@ -323,9 +325,12 @@ void PlayerbotAI::Reset()
 #endif
     InterruptSpell();
 
-    for (int i = 0 ; i < BOT_STATE_MAX; i++)
+    if (full)
     {
-        engines[i]->Init();
+        for (int i = 0; i < BOT_STATE_MAX; i++)
+        {
+            engines[i]->Init();
+        }
     }
 }
 
@@ -451,7 +456,7 @@ void PlayerbotAI::HandleCommand(uint32 type, const string& text, Player& fromPla
     }
     else if (filtered == "reset")
     {
-        Reset();
+        Reset(true);
     }
     else
     {

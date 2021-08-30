@@ -135,7 +135,7 @@ Unit* EnemyPlayerValue::Calculate()
         if (!bot->IsWithinDist(pTarget, aggroDistance))
             continue;
 
-        if (bot->IsWithinLOSInMap(pTarget) && (fabs(bot->GetPositionZ() - pTarget->GetPositionZ()) < 30.0f))
+        if (bot->IsWithinLOSInMap(pTarget, true) && (fabs(bot->GetPositionZ() - pTarget->GetPositionZ()) < 30.0f))
             return pTarget;
     }
 
@@ -155,7 +155,7 @@ Unit* EnemyPlayerValue::Calculate()
 
                 if (Unit* pAttacker = pMember->getAttackerForHelper())
                     if (bot->IsWithinDist(pAttacker, maxAggroDistance * 2.0f) &&
-                        bot->IsWithinLOSInMap(pAttacker) &&
+                        bot->IsWithinLOSInMap(pAttacker, true) &&
                         pAttacker != pVictim &&
                         pAttacker->IsVisibleForOrDetect(bot, pAttacker, false) &&
                         pAttacker->IsPlayer())

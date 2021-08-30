@@ -1502,7 +1502,7 @@ bool RandomPlayerbotMgr::ProcessBot(Player* player)
         }
     }*/
 
-	if (urand(0, 100) > 20) // move optimisation to the next step
+	if (urand(0, 100) > 10) // move optimisation to the next step
 	{
 		return true;
 	}
@@ -1544,13 +1544,15 @@ bool RandomPlayerbotMgr::ProcessBot(Player* player)
             sLog.outBasic("Bot #%d %s <%s>: consumables refreshed", bot, player->GetName(), sGuildMgr.GetGuildById(player->GetGuildId())->GetName());
         }
 
-        ChangeStrategy(player);
+        // disable until needed
+        // ChangeStrategy(player);
 
         uint32 randomTime = urand(sPlayerbotAIConfig.minRandomBotRandomizeTime, sPlayerbotAIConfig.maxRandomBotRandomizeTime);
         ScheduleRandomize(bot, randomTime);
         return true;
     }
 
+    /*
 	uint32 teleport = GetEventValue(bot, "teleport");
 	if (!teleport)
 	{
@@ -1567,7 +1569,7 @@ bool RandomPlayerbotMgr::ProcessBot(Player* player)
 		sLog.outDetail("Changing strategy for bot #%d <%s>", bot, player->GetName());
 		ChangeStrategy(player);
 		return true;
-	}
+	}*/
 
     return false;
 }
@@ -1904,7 +1906,7 @@ void RandomPlayerbotMgr::Randomize(Player* bot)
     else
         IncreaseLevel(bot);
 
-    RandomTeleportForRpg(bot);
+    //RandomTeleportForRpg(bot);
 
     //SetValue(bot, "version", MANGOSBOT_VERSION);
 }
@@ -1964,6 +1966,10 @@ void RandomPlayerbotMgr::RandomizeFirst(Player* bot)
     PlayerbotDatabase.PExecute("update ai_playerbot_random_bots set validIn = '%u' where event = 'logout' and bot = '%u'",
 			inworldTime, bot->GetGUIDLow());
 
+    // teleport to a random inn for bot level
+    bot->GetPlayerbotAI()->Reset(true);
+    RandomTeleportForRpg(bot);
+
 	if (pmo) pmo->finish();
 }
 
@@ -1997,10 +2003,10 @@ uint32 RandomPlayerbotMgr::GetZoneLevel(uint16 mapId, float teleX, float teleY, 
 
 void RandomPlayerbotMgr::Refresh(Player* bot)
 {
-    if (bot->InBattleGround())
+    if (sPlayerbotAIConfig.disableRandomLevels)
         return;
 
-    if (sPlayerbotAIConfig.disableRandomLevels)
+    if (bot->InBattleGround())
         return;
 
     sLog.outDetail("Refreshing bot #%d <%s>", bot->GetGUIDLow(), bot->GetName());
