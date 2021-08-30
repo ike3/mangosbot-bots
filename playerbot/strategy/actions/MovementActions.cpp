@@ -711,16 +711,30 @@ void MovementAction::UpdateMovementState()
     {
         if (Unit* pTarget = bot->GetMotionMaster()->GetCurrent()->GetCurrentTarget())
         {
-            if (!bot->CanReachWithMeleeAttack(pTarget))
+            if (!bot->CanReachWithMeleeAttack(pTarget) && pTarget->IsCreature())
             {
-                if (pTarget->IsCreature() && !bot->IsMoving() && bot->IsWithinDist(pTarget, 10.0f))
+                float angle = bot->GetAngle(pTarget);
+                float distance = 5.0f;
+                float x = bot->GetPositionX() + cos(angle) * distance,
+                    y = bot->GetPositionY() + sin(angle) * distance,
+                    z = bot->GetPositionZ();
+
+                z += CONTACT_DISTANCE;
+                bot->UpdateAllowedPositionZ(x, y, z);
+
+                bot->StopMoving();
+                bot->GetMotionMaster()->Clear();
+                bot->NearTeleportTo(x, y, z, bot->GetOrientation());
+                //bot->GetMotionMaster()->MovePoint(bot->GetMapId(), x, y, z, FORCED_MOVEMENT_RUN, false);
+                return;
+                /*if (pTarget->IsCreature() && !bot->IsMoving() && bot->IsWithinDist(pTarget, 10.0f))
                 {
                     // Cheating to prevent getting stuck because of bad mmaps.
                     bot->StopMoving();
                     bot->GetMotionMaster()->Clear();
                     bot->GetMotionMaster()->MovePoint(bot->GetMapId(), pTarget->GetPosition(), FORCED_MOVEMENT_RUN, false);
                     return;
-                }
+                }*/
             }
         }
     }
@@ -739,9 +753,19 @@ void MovementAction::UpdateMovementState()
                 if (!bot->IsMoving() && bot->IsWithinDist(pTarget, 10.0f))
                 {
                     // Cheating to prevent getting stuck because of bad mmaps.
+                    float angle = bot->GetAngle(pTarget);
+                    float distance = 5.0f;
+                    float x = bot->GetPositionX() + cos(angle) * distance,
+                        y = bot->GetPositionY() + sin(angle) * distance,
+                        z = bot->GetPositionZ();
+
+                    z += CONTACT_DISTANCE;
+                    bot->UpdateAllowedPositionZ(x, y, z);
+
                     bot->StopMoving();
                     bot->GetMotionMaster()->Clear();
-                    bot->GetMotionMaster()->MovePoint(bot->GetMapId(), pTarget->GetPosition(), FORCED_MOVEMENT_RUN, false);
+                    bot->NearTeleportTo(x, y, z, bot->GetOrientation());
+                    //bot->GetMotionMaster()->MovePoint(bot->GetMapId(), x, y, z, FORCED_MOVEMENT_RUN, false);
                     return;
                 }
             }

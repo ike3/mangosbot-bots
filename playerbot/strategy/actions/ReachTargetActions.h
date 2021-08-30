@@ -20,6 +20,8 @@ namespace ai
             if (!target)
                 return false;
 
+            UpdateMovementState();
+
             float combatReach = bot->GetCombinedCombatReach(target, true);
 
             if (distance < max(5.0f, combatReach))
