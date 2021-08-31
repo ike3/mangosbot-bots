@@ -16,6 +16,7 @@ namespace ai
         virtual bool Execute(Event event);
 
         void DropQuestType(uint8& numQuest, uint8 wantNum = 100, bool isGreen = false, bool hasProgress = false, bool isComplete = false);
-        bool HasProgress(uint32 questId);
+
+        static bool HasProgress(Player* bot, Quest const* quest);
     };
 }
