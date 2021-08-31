@@ -9,6 +9,7 @@
 #include "MoveMapSharedDefines.h"
 #include "MotionGenerators/PathFinder.h"
 #include "Entities/Transports.h"
+#include "strategy/values/BudgetValues.h"
 
 using namespace ai;
 using namespace MaNGOS;
@@ -1145,8 +1146,17 @@ TravelNodeRoute TravelNodeMap::getRoute(TravelNode* start, TravelNode* goal, Pla
 
     TravelNodeStub* startStub = &m_stubs.insert(make_pair(start, TravelNodeStub(start))).first->second;
 
-    if(bot)
-        startStub->currentGold = bot->GetMoney();
+    if (bot)
+    {
+        PlayerbotAI* ai = bot->GetPlayerbotAI();
+        if (ai)
+        {
+            AiObjectContext* context = ai->GetAiObjectContext();
+            startStub->currentGold = AI_VALUE2(uint32, "free money for", (uint32)NeedMoneyFor::travel);
+        }
+        else
+            startStub->currentGold = bot->GetMoney();
+    }
 
     TravelNodeStub* currentNode, * childNode;
     float f, g, h;

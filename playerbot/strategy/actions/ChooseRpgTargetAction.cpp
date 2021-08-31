@@ -5,6 +5,7 @@
 #include "../values/PossibleRpgTargetsValue.h"
 #include "../../Travelmgr.h"
 #include "../values/Formations.h"
+#include "../values/BudgetValues.h"
 
 using namespace ai;
 
@@ -54,7 +55,7 @@ bool ChooseRpgTargetAction::CanTrain(ObjectGuid guid)
             continue;
 
         uint32 cost = uint32(floor(tSpell->spellCost * fDiscountMod));
-        if (cost > bot->GetMoney())
+        if (cost > AI_VALUE2(uint32, "free money for", (uint32)NeedMoneyFor::spells))
             continue;
 
         return true;

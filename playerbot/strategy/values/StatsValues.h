@@ -152,15 +152,7 @@ namespace ai
         virtual uint8 Calculate();
     };
 
-    class RepairCostValue : public Uint32CalculatedValue
-    {
-    public:
-        RepairCostValue(PlayerbotAI* ai) : Uint32CalculatedValue(ai) {}
-
-        virtual uint32 Calculate();
-    };
-
-    class SpeedValue : public Uint8CalculatedValue, public Qualified
+     class SpeedValue : public Uint8CalculatedValue, public Qualified
     {
     public:
         SpeedValue(PlayerbotAI* ai) : Uint8CalculatedValue(ai) {}

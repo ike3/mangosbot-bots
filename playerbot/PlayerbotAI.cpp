@@ -26,6 +26,7 @@
 #include "ServerFacade.h"
 #include "TravelMgr.h"
 #include "ChatHelper.h"
+#include "strategy/values/BudgetValues.h"
 
 using namespace ai;
 using namespace std;
@@ -2489,6 +2490,48 @@ string PlayerbotAI::HandleRemoteCommand(string command)
             out << " Expire in " << (target->getTimeLeft()/1000) << "s";
 
         out << " Retry " << target->getRetryCount(true) << "/" << target->getRetryCount(false);
+
+        return out.str();
+    }
+    else if (command == "budget")
+    {
+        ostringstream out;
+
+        AiObjectContext* context = GetAiObjectContext();
+
+        out << "Current money: " << ChatHelper::formatMoney(bot->GetMoney()) << " free to use:" << ChatHelper::formatMoney(AI_VALUE2(uint32, "free money for", (uint32)NeedMoneyFor::anything)) << "\n";
+        out << "Purpose | Available / Needed \n";
+
+        for (uint32 i = 1; i < (uint32)NeedMoneyFor::anything; i++)
+        {
+            NeedMoneyFor needMoneyFor = NeedMoneyFor(i);
+
+            switch (needMoneyFor)
+            {
+            case NeedMoneyFor::none:
+                out << "nothing";
+                break;
+            case NeedMoneyFor::repair:
+                out << "repair";
+                break;
+            case NeedMoneyFor::ammo:
+                out << "ammo";
+                break;
+            case NeedMoneyFor::spells:
+                out << "spells";
+                break;
+            case NeedMoneyFor::travel:
+                out << "travel";
+                break;
+            case NeedMoneyFor::consumables:
+                out << "consumables";
+                break;
+            case NeedMoneyFor::gear:
+                out << "gear";
+                break;
+            }
+            out << " | " << ChatHelper::formatMoney(AI_VALUE2(uint32, "free money for", i)) << " / " << ChatHelper::formatMoney(AI_VALUE2(uint32, "money needed for", i)) << "\n";
+        }
 
         return out.str();
     }

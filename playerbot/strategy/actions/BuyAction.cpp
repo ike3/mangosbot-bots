@@ -4,6 +4,7 @@
 #include "../ItemVisitors.h"
 #include "../values/ItemCountValue.h"
 #include "../values/ItemUsageValue.h"
+#include "../values/BudgetValues.h"
 
 using namespace ai;
 
@@ -46,7 +47,7 @@ bool BuyAction::Execute(Event event)
 
             if (!tItems)
                 continue;
-
+            
             VendorItemList m_items_sorted = tItems->m_items;
 
             std::remove_if(m_items_sorted.begin(), m_items_sorted.end(), [](VendorItem* i) {ItemPrototype const* proto = sObjectMgr.GetItemPrototype(i->item); return !proto; });
@@ -63,10 +64,34 @@ bool BuyAction::Execute(Event event)
                     ItemUsage usage = AI_VALUE2(ItemUsage, "item usage", tItem->item);
                     ItemPrototype const* proto = sObjectMgr.GetItemPrototype(tItem->item);
 
-                    if (AI_VALUE(bool, "should get money"))
+                    uint32 price = proto->BuyPrice;
+
+                    // reputation discount
+                    price = uint32(floor(price * bot->GetReputationPriceDiscount(pCreature)));
+
+                    NeedMoneyFor needMoneyFor = NeedMoneyFor::none;
+
+                    switch (usage)
+                    {
+                    case ITEM_USAGE_REPLACE:
+                    case ITEM_USAGE_EQUIP:
+                        needMoneyFor = NeedMoneyFor::gear;
+                        break;
+                    case ITEM_USAGE_AMMO:
+                        needMoneyFor = NeedMoneyFor::ammo;
+                        break;
+                    case ITEM_USAGE_QUEST:
+                        needMoneyFor = NeedMoneyFor::anything;
+                        break;
+                    case ITEM_USAGE_USE:
+                        needMoneyFor = NeedMoneyFor::consumables;
+                        break;
+                    }
+
+                    if (needMoneyFor == NeedMoneyFor::none)
                         break;
 
-                    if (usage != ITEM_USAGE_REPLACE && usage != ITEM_USAGE_EQUIP && usage != ITEM_USAGE_AMMO && usage != ITEM_USAGE_QUEST && usage != ITEM_USAGE_SKILL && usage != ITEM_USAGE_USE)
+                    if (AI_VALUE2(uint32, "free money for", uint32(needMoneyFor)) > price)
                         break;
 
                     if (!BuyItem(pCreature->GetVendorItems(), vendorguid, proto))
