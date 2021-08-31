@@ -633,7 +633,7 @@ char* strstri(const char* haystack, const char* needle);
 
 TravelDestination* ChooseTravelTargetAction::FindDestination(Player* bot, string name)
 {
-    PlayerbotAI* ai = new PlayerbotAI(bot);
+    PlayerbotAI* ai = bot->GetPlayerbotAI();
 
     AiObjectContext* context = ai->GetAiObjectContext();
 
