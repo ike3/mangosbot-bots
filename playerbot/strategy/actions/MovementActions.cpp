@@ -348,10 +348,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
 
             if (entry)
             {
-                uint32 money = bot->GetMoney();
-                //bot->SetMoney(money + 100000);
                 bool goTaxi = bot->ActivateTaxiPathTo({ tEntry->from, tEntry->to }, nullptr, 1);
-                //bot->SetMoney(money);
 
                 return goTaxi;
             }
