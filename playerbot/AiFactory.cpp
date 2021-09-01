@@ -499,7 +499,7 @@ void AiFactory::AddDefaultNonCombatStrategies(Player* player, PlayerbotAI* const
                 Player* master = botAi->GetMaster();
                 if (master)
                 {
-                    if (master->GetPlayerbotAI())
+                    if (master->GetPlayerbotAI() || sRandomPlayerbotMgr.IsRandomBot(player))
                     {
                         nonCombatEngine->addStrategy("pvp");
                         nonCombatEngine->addStrategy("collision");
