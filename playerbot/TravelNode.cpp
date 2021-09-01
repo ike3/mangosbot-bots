@@ -166,7 +166,7 @@ float TravelNodePath::getCost(Player* bot, uint32 cGold)
             if (!bot->isTaxiCheater() && taxiPath->price > cGold)
                 return -1;
 
-            if (!bot->isTaxiCheater() && (!bot->m_taxi.IsTaximaskNodeKnown(taxiPath->from) || !bot->m_taxi.IsTaximaskNodeKnown(taxiPath->to)))
+            if (!bot->isTaxiCheater() && !bot->m_taxi.IsTaximaskNodeKnown(taxiPath->to))
                 return -1;
 
             TaxiNodesEntry const* startTaxiNode = sTaxiNodesStore.LookupEntry(taxiPath->from);

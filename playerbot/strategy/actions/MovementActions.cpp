@@ -137,7 +137,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
         time_t now = time(0);
         if (AI_VALUE(LastMovement&, "last movement").nextTeleport > now) //We can not teleport yet. Wait.
         {
-            ai->SetNextCheckDelay(AI_VALUE(LastMovement&, "last movement").nextTeleport - now);
+            ai->SetNextCheckDelay((AI_VALUE(LastMovement&, "last movement").nextTeleport - now) * 1000);
             return true;
         }
     }
@@ -342,13 +342,27 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
 
         if (isFlightPath && entry)
         {
-            //Todo find flight master.
-
             TaxiPathEntry const* tEntry = sTaxiPathStore.LookupEntry(entry);
 
-            if (entry)
+            if (tEntry)
             {
-                bool goTaxi = bot->ActivateTaxiPathTo({ tEntry->from, tEntry->to }, nullptr, 1);
+                Creature* unit = nullptr;
+
+                if (!bot->m_taxi.IsTaximaskNodeKnown(tEntry->from))
+                {
+                    list<ObjectGuid> npcs = AI_VALUE(list<ObjectGuid>, "nearest npcs");
+                    for (list<ObjectGuid>::iterator i = npcs.begin(); i != npcs.end(); i++)
+                    {
+                        Creature* unit = bot->GetNPCIfCanInteractWith(*i, UNIT_NPC_FLAG_FLIGHTMASTER);
+                        if (!unit)
+                            continue;
+
+                        bot->GetSession()->SendLearnNewTaxiNode(unit);
+
+                        unit->SetFacingTo(unit->GetAngle(bot));
+                    }
+                }
+                bool goTaxi = bot->ActivateTaxiPathTo({ tEntry->from, tEntry->to }, unit, 1);
 
                 return goTaxi;
             }
