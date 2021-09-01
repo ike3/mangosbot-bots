@@ -63,6 +63,7 @@
 #include "RangeAction.h"
 #include "SetCraftAction.h"
 #include "WtsAction.h"
+#include "PassLeadershipToMasterAction.h"
 
 namespace ai
 {
@@ -147,6 +148,7 @@ namespace ai
             creators["hire"] = &ChatActionContext::hire;
             creators["craft"] = &ChatActionContext::craft;
             creators["flag"] = &ChatActionContext::flag;
+            creators["give leader"] = &ChatActionContext::give_leader;
         }
 
     private:
@@ -227,6 +229,7 @@ namespace ai
         static Action* add_all_loot(PlayerbotAI* ai) { return new AddAllLootAction(ai); }
         static Action* reset_ai(PlayerbotAI* ai) { return new ResetAiAction(ai); }
         static Action* gossip_hello(PlayerbotAI* ai) { return new GossipHelloAction(ai); }
+        static Action* give_leader(PlayerbotAI* ai) { return new GiveLeaderAction(ai); }
     };
 
 
