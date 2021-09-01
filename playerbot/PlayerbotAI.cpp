@@ -691,12 +691,7 @@ void PlayerbotAI::DoNextAction()
     }
 
     if (master && master->IsInWorld())
-	{
-        if (!group && sRandomPlayerbotMgr.IsRandomBot(bot))
-        {
-            bot->GetPlayerbotAI()->SetMaster(nullptr);
-        }
-        
+	{       
 		if (master->m_movementInfo.HasMovementFlag(MOVEFLAG_WALK_MODE) && sServerFacade.GetDistance2d(bot, master) < 20.0f) bot->m_movementInfo.AddMovementFlag(MOVEFLAG_WALK_MODE);
 		else bot->m_movementInfo.RemoveMovementFlag(MOVEFLAG_WALK_MODE);
 
@@ -707,6 +702,11 @@ void PlayerbotAI::DoNextAction()
         }
         else if (nextAICheckDelay < 1000)
             bot->SetStandState(UNIT_STAND_STATE_STAND);
+
+        if (!group && sRandomPlayerbotMgr.IsRandomBot(bot))
+        {
+            bot->GetPlayerbotAI()->SetMaster(nullptr);
+        }
 	}
 	else if (bot->m_movementInfo.HasMovementFlag(MOVEFLAG_WALK_MODE)) bot->m_movementInfo.RemoveMovementFlag(MOVEFLAG_WALK_MODE);
     else if ((nextAICheckDelay < 1000) && bot->IsSitState()) bot->SetStandState(UNIT_STAND_STATE_STAND);
@@ -1061,20 +1061,45 @@ WorldObject* PlayerbotAI::GetWorldObject(ObjectGuid guid)
 
 bool PlayerbotAI::TellMasterNoFacing(string text, PlayerbotSecurityLevel securityLevel)
 {
-    Player* master = GetMaster();
-
-    if ((!master || (master->GetPlayerbotAI() && !master->GetPlayerbotAI()->IsRealPlayer())) && (sPlayerbotAIConfig.randomBotSayWithoutMaster || HasStrategy("debug", BOT_STATE_NON_COMBAT)))
-    {
-        bot->Say(text, (bot->GetTeam() == ALLIANCE ? LANG_COMMON : LANG_ORCISH));
-        return true;
-    }
-
-    if (!IsTellAllowed(securityLevel))
-        return false;
-
     time_t lastSaid = whispers[text];
     if (!lastSaid || (time(0) - lastSaid) >= sPlayerbotAIConfig.repeatDelay / 1000)
     {
+        whispers[text] = time(0);
+
+        Player* master = GetMaster();
+
+        if ((!master || (master->GetPlayerbotAI() && !master->GetPlayerbotAI()->IsRealPlayer())) && (sPlayerbotAIConfig.randomBotSayWithoutMaster || HasStrategy("debug", BOT_STATE_NON_COMBAT)))
+        {
+            bot->Say(text, (bot->GetTeam() == ALLIANCE ? LANG_COMMON : LANG_ORCISH));
+            return true;
+        }
+        else if (master && GetGroupMaster() != master && bot->GetGroup()->IsMember(master->GetObjectGuid()))
+        {
+            WorldPacket data;
+            ChatHandler::BuildChatPacket(data,
+                CHAT_MSG_PARTY,
+                text.c_str(),
+                LANG_UNIVERSAL,
+                CHAT_TAG_NONE, bot->GetObjectGuid(), bot->GetName());
+
+            Group* group = bot->GetGroup();
+            if (group)
+            {
+                for (GroupReference* ref = group->GetFirstMember(); ref; ref = ref->next())
+                {
+                    if (ref->getSource()->GetPlayerbotAI() && !ref->getSource()->GetPlayerbotAI()->IsRealPlayer())
+                        continue;
+
+                    sServerFacade.SendPacket(ref->getSource(), data);
+                }
+            }
+
+            return true;
+        }
+
+        if (!IsTellAllowed(securityLevel))
+            return false;
+
         whispers[text] = time(0);
 
         ChatMsg type = CHAT_MSG_WHISPER;
@@ -1083,12 +1108,13 @@ bool PlayerbotAI::TellMasterNoFacing(string text, PlayerbotSecurityLevel securit
 
         WorldPacket data;
         ChatHandler::BuildChatPacket(data,
-                type == CHAT_MSG_ADDON ? CHAT_MSG_PARTY : type,
-                text.c_str(),
-                type == CHAT_MSG_ADDON ? LANG_ADDON : LANG_UNIVERSAL,
-                CHAT_TAG_NONE, bot->GetObjectGuid(), bot->GetName());
+            type == CHAT_MSG_ADDON ? CHAT_MSG_PARTY : type,
+            text.c_str(),
+            type == CHAT_MSG_ADDON ? LANG_ADDON : LANG_UNIVERSAL,
+            CHAT_TAG_NONE, bot->GetObjectGuid(), bot->GetName());
         sServerFacade.SendPacket(master, data);
     }
+
     return true;
 }
 
