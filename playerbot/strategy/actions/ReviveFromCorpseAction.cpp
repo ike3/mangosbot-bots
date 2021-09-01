@@ -8,7 +8,7 @@ using namespace ai;
 
 bool ReviveFromCorpseAction::Execute(Event event)
 {
-    Player* master = GetMaster();
+    Player* master = ai->GetGroupMaster();
     Corpse* corpse = bot->GetCorpse();
 
     // follow master when master revives
@@ -70,7 +70,7 @@ bool FindCorpseAction::Execute(Event event)
     //if (corpse->GetMapId() != bot->GetMapId())
     //    return false;
 
-    Player* master = GetMaster();
+    Player* master = ai->GetGroupMaster();
     if (master)
     {
         if (!master->GetPlayerbotAI() &&
