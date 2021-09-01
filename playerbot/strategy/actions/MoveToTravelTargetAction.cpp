@@ -11,17 +11,66 @@ using namespace ai;
 
 bool MoveToTravelTargetAction::Execute(Event event)
 {
-
     TravelTarget* target = AI_VALUE(TravelTarget*, "travel target");
 
     WorldPosition botLocation(bot);
+    WorldLocation location = target->getLocation();
+
+    Group* group = bot->GetGroup();
+    if (group && !urand(0, 1))
+    {        
+        for (GroupReference* ref = group->GetFirstMember(); ref; ref = ref->next())
+        {
+            Player* member = ref->getSource();
+            if (member == bot)
+                continue;
+
+            if (!member->IsAlive())
+                continue;
+
+            if (!member->IsMoving())
+                continue;
+
+            WorldPosition memberPos(member);
+            WorldPosition targetPos = *target->getPosition();
+
+            float memberDistance = botLocation.distance(memberPos);
+
+            if (memberDistance < 50.0f)
+                continue;
+            if (memberDistance > sPlayerbotAIConfig.reactDistance * 20)
+                continue;
+
+           // float memberAngle = botLocation.getAngleBetween(targetPos, memberPos);
+
+           // if (botLocation.getMapId() == targetPos.getMapId() && botLocation.getMapId() == memberPos.getMapId() && memberAngle < M_PI_F / 2) //We are heading that direction anyway.
+           //     continue;
+
+            if (!urand(0, 5))
+            {
+                ostringstream out;
+                if (ai->GetMaster() && !bot->GetGroup()->IsMember(ai->GetMaster()->GetObjectGuid()))
+                    out << "Waiting a bit for ";
+                else
+                    out << "Please hurry up ";
+
+                out << member->GetName();
+
+                ai->TellMasterNoFacing(out);
+            }
+
+            target->setExpireIn(target->getTimeLeft() + sPlayerbotAIConfig.maxWaitForMove);
+
+            ai->SetNextCheckDelay(sPlayerbotAIConfig.maxWaitForMove);
+
+            return true;
+        }
+    }
 
     float maxDistance = target->getDestination()->getRadiusMin();
 
     //Evenly distribute around the target.
     float angle = 2 * M_PI * urand(0, 100) / 100.0;
-
-    WorldLocation location = target->getLocation();
 
     if (target->getMaxTravelTime() > target->getTimeLeft()) //The bot is late. Speed it up.
     {

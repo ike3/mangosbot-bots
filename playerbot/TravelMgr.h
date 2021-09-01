@@ -114,7 +114,7 @@ namespace ai
         WorldPosition closestSq(vector<WorldPosition> list) { return *std::min_element(list.begin(), list.end(), [this](WorldPosition i, WorldPosition j) {return this->sqDistance(i) < this->sqDistance(j); }); }
 
         float getAngleTo(WorldPosition endPos) { float ang = atan2(endPos.getY() - getY(), endPos.getX() - getX()); return (ang >= 0) ? ang : 2 * M_PI_F + ang; };
-        float getAngleBetween(WorldPosition dir1, WorldPosition dir2) { return abs(atan2((dir1.getY() - getY()) - (dir2.getY() - getY()), (dir1.getX() - getX()) - (dir2.getX() - getX()))); };
+        float getAngleBetween(WorldPosition dir1, WorldPosition dir2) { return abs(getAngleTo(dir1) - getAngleTo(dir2)); };
 
 
         WorldPosition lastInRange(vector<WorldPosition> list, float minDist = -1, float maxDist = -1);
