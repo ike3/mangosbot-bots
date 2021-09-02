@@ -636,6 +636,8 @@ void TravelNode::print(bool printFailed)
                 pathType = 4;
             else if (path->getFlightPath())
                 pathType = 5;
+            else if (!path->getComplete())
+                pathType = 6;
 
             out << pathType << ",";
             out << std::fixed << std::setprecision(2);
@@ -1151,8 +1153,12 @@ TravelNodeRoute TravelNodeMap::getRoute(TravelNode* start, TravelNode* goal, Pla
         PlayerbotAI* ai = bot->GetPlayerbotAI();
         if (ai)
         {
-            AiObjectContext* context = ai->GetAiObjectContext();
-            startStub->currentGold = AI_VALUE2(uint32, "free money for", (uint32)NeedMoneyFor::travel);
+            if (sPlayerbotAIConfig.hasCheat(BotCheatMask::gold))
+                startStub->currentGold = 10000000;
+            else {
+                AiObjectContext* context = ai->GetAiObjectContext();
+                startStub->currentGold = AI_VALUE2(uint32, "free money for", (uint32)NeedMoneyFor::travel);
+            }
         }
         else
             startStub->currentGold = bot->GetMoney();

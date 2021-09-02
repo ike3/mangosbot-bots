@@ -207,6 +207,9 @@ uint32 FreeMoneyForValue::Calculate()
 {
     uint32 money = bot->GetMoney();
 
+    if (sPlayerbotAIConfig.hasCheat(BotCheatMask::gold))
+        return 10000000;
+
     if (ai->HasActivePlayerMaster())
         return money;
 

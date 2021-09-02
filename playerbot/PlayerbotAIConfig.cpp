@@ -233,7 +233,22 @@ bool PlayerbotAIConfig::Initialize()
         }
     }
 
+    botCheats.clear();
     LoadListString<list<string>>(config.GetStringDefault("AiPlayerbot.BotCheats", "taxi"), botCheats);
+
+    botCheatMask = 0;
+
+    if (std::find(botCheats.begin(), botCheats.end(), "taxi") != botCheats.end())
+        botCheatMask |= (uint32)BotCheatMask::taxi;
+    if (std::find(botCheats.begin(), botCheats.end(), "gold") != botCheats.end())
+        botCheatMask |= (uint32)BotCheatMask::gold;
+    if (std::find(botCheats.begin(), botCheats.end(), "health") != botCheats.end())
+        botCheatMask |= (uint32)BotCheatMask::health;
+    if (std::find(botCheats.begin(), botCheats.end(), "mana") != botCheats.end())
+        botCheatMask |= (uint32)BotCheatMask::mana;
+    if (std::find(botCheats.begin(), botCheats.end(), "power") != botCheats.end())
+        botCheatMask |= (uint32)BotCheatMask::power;
+
 
     LoadListString<list<string>>(config.GetStringDefault("AiPlayerbot.AllowedLogFiles", ""), allowedLogFiles);
 
