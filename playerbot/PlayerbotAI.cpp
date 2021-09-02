@@ -757,7 +757,7 @@ void PlayerbotAI::DoNextAction()
         bot->GetSession()->QueuePacket(std::move(jump));
     }*/
 
-    if ((uint32)GetCheat() > 0)
+    if ((uint32)GetCheat() > 0 || (uint32)sPlayerbotAIConfig.botCheatMask > 0)
     {
         if (HasCheat(BotCheatMask::health))
             bot->SetHealthPercent(100);
