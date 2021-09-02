@@ -78,7 +78,7 @@ PlayerbotAI::PlayerbotAI(Player* bot) :
     PlayerbotAIBase(), chatHelper(this), chatFilter(this), security(bot), master(NULL)
 {
 	this->bot = bot;    
-    if (!bot->isTaxiCheater() && sPlayerbotAIConfig.hasCheat(BotCheatMask::taxi))
+    if (!bot->isTaxiCheater() && HasCheat(BotCheatMask::taxi))
         bot->SetTaxiCheater(true);
 
 	accountId = sObjectMgr.GetPlayerAccountIdByGUID(bot->GetObjectGuid());
@@ -757,13 +757,13 @@ void PlayerbotAI::DoNextAction()
         bot->GetSession()->QueuePacket(std::move(jump));
     }*/
 
-    if (sPlayerbotAIConfig.botCheatMask > 0)
+    if ((uint32)GetCheat() > 0)
     {
-        if (sPlayerbotAIConfig.hasCheat(BotCheatMask::health))
+        if (HasCheat(BotCheatMask::health))
             bot->SetHealthPercent(100);
-        if (sPlayerbotAIConfig.hasCheat(BotCheatMask::mana) && bot->GetPowerType() == POWER_MANA)
+        if (HasCheat(BotCheatMask::mana) && bot->GetPowerType() == POWER_MANA)
             bot->SetPower(POWER_MANA, bot->GetMaxPower(POWER_MANA));
-        if (sPlayerbotAIConfig.hasCheat(BotCheatMask::power) && bot->GetPowerType() != POWER_MANA)
+        if (HasCheat(BotCheatMask::power) && bot->GetPowerType() != POWER_MANA)
             bot->SetPower(bot->GetPowerType(), bot->GetMaxPower(bot->GetPowerType()));
     }
 }

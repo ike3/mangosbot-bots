@@ -364,14 +364,14 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
                 }
 
                 uint32 botMoney = bot->GetMoney();
-                if (sPlayerbotAIConfig.hasCheat(BotCheatMask::gold))
+                if (ai->HasCheat(BotCheatMask::gold))
                 {
                     bot->SetMoney(10000000);
                 }
 
                 bool goTaxi = bot->ActivateTaxiPathTo({ tEntry->from, tEntry->to }, unit, 1);
 
-                if (sPlayerbotAIConfig.hasCheat(BotCheatMask::gold))
+                if (ai->HasCheat(BotCheatMask::gold))
                 {
                     bot->SetMoney(botMoney);
                 }

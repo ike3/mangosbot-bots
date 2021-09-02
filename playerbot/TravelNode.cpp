@@ -1153,7 +1153,7 @@ TravelNodeRoute TravelNodeMap::getRoute(TravelNode* start, TravelNode* goal, Pla
         PlayerbotAI* ai = bot->GetPlayerbotAI();
         if (ai)
         {
-            if (sPlayerbotAIConfig.hasCheat(BotCheatMask::gold))
+            if (ai->HasCheat(BotCheatMask::gold))
                 startStub->currentGold = 10000000;
             else {
                 AiObjectContext* context = ai->GetAiObjectContext();

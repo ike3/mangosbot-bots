@@ -207,4 +207,5 @@ ChatCommandHandlerStrategy::ChatCommandHandlerStrategy(PlayerbotAI* ai) : PassTr
     supported.push_back("range");
     supported.push_back("ra");
     supported.push_back("give leader");
+    supported.push_back("cheat");
 }

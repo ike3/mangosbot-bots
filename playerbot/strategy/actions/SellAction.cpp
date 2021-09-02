@@ -114,7 +114,7 @@ void SellAction::Sell(Item* item)
         p << vendorguid << itemguid << count;
         bot->GetSession()->HandleSellItemOpcode(p);
 
-        if (sPlayerbotAIConfig.hasCheat(BotCheatMask::gold))
+        if (ai->HasCheat(BotCheatMask::gold))
         {
             bot->SetMoney(botMoney);
         }

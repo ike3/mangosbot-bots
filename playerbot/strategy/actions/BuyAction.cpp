@@ -165,7 +165,7 @@ bool BuyAction::BuyItem(VendorItemData const* tItems, ObjectGuid vendorguid, con
         if (tItems->GetItem(slot)->item == itemId)
         {       
             uint32 botMoney = bot->GetMoney();
-            if (sPlayerbotAIConfig.hasCheat(BotCheatMask::gold))
+            if (ai->HasCheat(BotCheatMask::gold))
             {
                 bot->SetMoney(10000000);
             }
@@ -175,7 +175,7 @@ bool BuyAction::BuyItem(VendorItemData const* tItems, ObjectGuid vendorguid, con
 #else
             bot->BuyItemFromVendor(vendorguid, itemId, 1, NULL_BAG, NULL_SLOT);
 #endif
-            if (sPlayerbotAIConfig.hasCheat(BotCheatMask::gold))
+            if (ai->HasCheat(BotCheatMask::gold))
             {
                 bot->SetMoney(botMoney);
             }

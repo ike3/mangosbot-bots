@@ -14,7 +14,8 @@ enum class BotCheatMask : uint32
     gold = 2,
     health = 4,
     mana = 8,
-    power = 16
+    power = 16,
+    maxMask = 32
 };
 
 class PlayerbotAIConfig
@@ -157,8 +158,6 @@ public:
     void loadWorldBuf(Config* config, uint32 factionId, uint32 classId, uint32 minLevel, uint32 maxLevel);
 
     std::string GetTimestampStr();
-
-    bool hasCheat(BotCheatMask cheat) { return (uint32)botCheatMask & (uint32)cheat; }
 
     bool hasLog(string fileName) { return std::find(allowedLogFiles.begin(), allowedLogFiles.end(), fileName) != allowedLogFiles.end(); };
     bool openLog(string fileName, char const* mode = "a");

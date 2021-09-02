@@ -95,6 +95,7 @@ namespace ai
             creators["range"] = &ChatTriggerContext::range;
             creators["ra"] = &ChatTriggerContext::ra;
             creators["give leader"] = &ChatTriggerContext::give_leader;
+            creators["cheat"] = &ChatTriggerContext::cheat;
         }
 
     private:
@@ -178,5 +179,6 @@ namespace ai
         static Trigger* spell(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "spell"); }
         static Trigger* ready_check(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "ready check"); }
         static Trigger* give_leader(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "give leader"); }
+        static Trigger* cheat(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "cheat"); }
     };
 };

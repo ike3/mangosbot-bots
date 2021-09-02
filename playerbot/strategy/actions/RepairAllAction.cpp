@@ -27,7 +27,7 @@ bool RepairAllAction::Execute(Event event)
         float discountMod = bot->GetReputationPriceDiscount(unit);
 
         uint32 botMoney = bot->GetMoney();
-        if (sPlayerbotAIConfig.hasCheat(BotCheatMask::gold))
+        if (ai->HasCheat(BotCheatMask::gold))
         {
             bot->SetMoney(10000000);
         }
@@ -57,7 +57,7 @@ bool RepairAllAction::Execute(Event event)
 #endif
         );
 
-        if (sPlayerbotAIConfig.hasCheat(BotCheatMask::gold))
+        if (ai->HasCheat(BotCheatMask::gold))
         {
             bot->SetMoney(botMoney);
         }
