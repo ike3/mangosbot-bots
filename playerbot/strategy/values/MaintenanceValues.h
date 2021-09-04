@@ -52,6 +52,6 @@ namespace ai
     {
     public:
         CanFightBossValue(PlayerbotAI* ai) : BoolCalculatedValue(ai, "can fight boss") {}
-        virtual bool Calculate() { return AI_VALUE(bool, "can fight equal") && bot->GetGroup() && bot->GetGroup()->GetMembersCount() > 2; };
+        virtual bool Calculate() { return bot->GetGroup() && bot->GetGroup()->GetMembersCount() > 2 && AI_VALUE2(bool, "group and", "can fight equal") && AI_VALUE2(bool, "group and", "following party") && !AI_VALUE2(bool, "group or", "should sell"); };
     };  
 }

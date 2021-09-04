@@ -75,6 +75,7 @@
 #include "QuestValues.h"
 #include "BudgetValues.h"
 #include "MaintenanceValues.h"
+#include "GroupValues.h"
 
 namespace ai
 {
@@ -244,6 +245,14 @@ namespace ai
             creators["can sell"] = &ValueContext::can_sell;
             creators["can fight equal"] = &ValueContext::can_fight_equal;
             creators["can fight boss"] = &ValueContext::can_fight_boss;
+
+            creators["following party"] = &ValueContext::following_party;
+            creators["near leader"] = &ValueContext::near_leader;
+
+            creators["and"] = &ValueContext::and_value;
+            creators["and"] = &ValueContext::and_value;
+            creators["group and"] = &ValueContext::group_and;
+            creators["group or"] = &ValueContext::group_or;
         }
 
     private:
@@ -401,5 +410,11 @@ namespace ai
         static UntypedValue* can_sell(PlayerbotAI* ai) { return new CanSellValue(ai); }
         static UntypedValue* can_fight_equal(PlayerbotAI* ai) { return new CanFightEqualValue(ai); }
         static UntypedValue* can_fight_boss(PlayerbotAI* ai) { return new CanFightBossValue(ai); }
+
+        static UntypedValue* following_party(PlayerbotAI* ai) { return new IsFollowingPartyValue(ai); }
+        static UntypedValue* near_leader(PlayerbotAI* ai) { return new IsNearLeaderValue(ai); }
+        static UntypedValue* and_value(PlayerbotAI* ai) { return new BoolANDValue(ai); }
+        static UntypedValue* group_and(PlayerbotAI* ai) { return new GroupBoolANDValue(ai); }
+        static UntypedValue* group_or(PlayerbotAI* ai) { return new GroupBoolORValue(ai); }
     };
 };

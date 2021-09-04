@@ -853,11 +853,11 @@ bool RpgTravelDestination::isActive(Player* bot)
     bool isUsefull = false;
 
     if (cInfo->NpcFlags & UNIT_NPC_FLAG_VENDOR)
-        if (AI_VALUE(bool, "should sell") && AI_VALUE(bool, "can sell"))
+        if (AI_VALUE2(bool, "group or", "should sell,can sell,following party"))
             isUsefull = true;
 
     if (cInfo->NpcFlags & UNIT_NPC_FLAG_REPAIR)
-        if (AI_VALUE(bool, "should repair") && AI_VALUE(bool, "can repair"))
+        if (AI_VALUE2(bool, "group or", "should repair,can repair,following party"))
             isUsefull = true;
 
     if (!isUsefull)
@@ -966,9 +966,6 @@ bool BossTravelDestination::isActive(Player* bot)
     AiObjectContext* context = ai->GetAiObjectContext();
 
     if (!AI_VALUE(bool, "can fight boss"))
-        return false;
-
-    if (AI_VALUE(bool, "should sell"))
         return false;
 
     CreatureInfo const* cInfo = this->getCreatureInfo();
