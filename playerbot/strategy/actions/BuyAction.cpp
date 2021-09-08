@@ -44,7 +44,7 @@ bool BuyAction::Execute(Event event)
             //Bot will buy until no usefull items are left.
 
             VendorItemData const* tItems = pCreature->GetVendorItems();
-            VendorItemData const* vItems;
+            VendorItemData const* vItems = {};
 #ifndef MANGOSBOT_ZERO                
             vItems = pCreature->GetVendorTemplateItems();
 #endif
