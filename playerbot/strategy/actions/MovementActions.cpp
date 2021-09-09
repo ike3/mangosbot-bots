@@ -284,11 +284,11 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
             return true;
         }
 
-        bool isTeleport, isTransport, isFlightPath;
+        TravelNodePathType pathType;
         uint32 entry;
-        movePosition = movePath.getNextPoint(startPosition, maxDist, isTeleport, isTransport, isFlightPath, entry);
+        movePosition = movePath.getNextPoint(startPosition, maxDist, pathType, entry);
 
-        if (isTeleport)// && !ai->isRealPlayer())
+        if (pathType == TravelNodePathType::portal)// && !ai->isRealPlayer())
         {
 
             //Log bot movement
@@ -328,7 +328,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
                 return bot->TeleportTo(movePosition.getMapId(), movePosition.getX(), movePosition.getY(), movePosition.getZ(), movePosition.getO(), 0);
         }
 
-        if (isTransport && entry)
+        if (pathType == TravelNodePathType::transport && entry)
         {
             if (!bot->GetTransport())
             {
@@ -340,7 +340,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
             return true;
         }
 
-        if (isFlightPath && entry)
+        if (pathType == TravelNodePathType::flightPath && entry)
         {
             TaxiPathEntry const* tEntry = sTaxiPathStore.LookupEntry(entry);
 
@@ -379,6 +379,20 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
                 return goTaxi;
             }
         }
+
+        if (pathType == TravelNodePathType::teleportSpell && entry)
+        {
+            if (sServerFacade.IsSpellReady(bot, entry))
+            {
+                if(entry == 8690)
+                    return ai->DoSpecificAction("hearthstone", Event("move action"));
+            }
+            else
+            {
+                movePath.clear();
+                return false;
+            }
+        }
         //if (!isTransport && bot->GetTransport())
         //    bot->GetTransport()->RemovePassenger(bot);
     }
@@ -403,9 +417,9 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
         PathType type = path.getPathType();
         PointsArray& points = path.getPath();
         movePath.addPath(startPosition.fromPointsArray(points));
-        bool isTeleport, isTransport, isFlightPath;
+        TravelNodePathType pathType;
         uint32 entry;
-        movePosition = movePath.getNextPoint(startPosition, maxDist, isTeleport, isTransport, isFlightPath, entry);
+        movePosition = movePath.getNextPoint(startPosition, maxDist, pathType, entry);
     }
 
     if (movePosition == WorldPosition()) {

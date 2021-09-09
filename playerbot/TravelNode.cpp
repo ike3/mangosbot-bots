@@ -10,59 +10,23 @@
 #include "MotionGenerators/PathFinder.h"
 #include "Entities/Transports.h"
 #include "strategy/values/BudgetValues.h"
+#include "ServerFacade.h"
 
 using namespace ai;
 using namespace MaNGOS;
 
-TravelNodePath::TravelNodePath(float distance1, float extraCost1, bool portal1, uint32 portalId1, bool transport1, bool calculated1, uint32 maxLevelMob1, uint32 maxLevelAlliance1, uint32 maxLevelHorde1, float swimDistance1, bool flightPath1)
-{
-    distance = distance1; 
-    extraCost = extraCost1;
-    portal = portal1; 
-    portalId = portalId1; 
-    transport = transport1;  
-    flightPath = flightPath1;
-    calculated = calculated1;
-    maxLevelMob = maxLevelMob1;
-    maxLevelAlliance = maxLevelAlliance1; 
-    maxLevelHorde = maxLevelHorde1;
-    swimDistance = swimDistance1;
-
-    if (portal || transport || flightPath)
-        complete = true;
-}
-
-TravelNodePath::TravelNodePath(vector<WorldPosition> path1, float extraCost1, bool portal1, uint32 portalId1, bool transport1, uint32 moveSpeed, bool flightPath1)
-{
-    complete = true;
-    path = path1;
-    extraCost = extraCost1;        
-    portal = portal1;
-    portalId = portalId1;
-    transport = transport1;   
-    flightPath = flightPath1;
-
-    calculateCost();
-
-    if (moveSpeed)
-        extraCost += distance / moveSpeed;
-}
-
+//TravelNodePath(float distance = 0.1f, float extraCost = 0, TravelNodePathType pathType = TravelNodePathType::walk, uint64 pathObject = 0, bool calculated = false, vector<uint8> maxLevelCreature = { 0,0,0 }, float swimDistance = 0)
 string TravelNodePath::print()
 {
     ostringstream out; 
     out << std::fixed << std::setprecision(1);
     out << distance << "f,";
     out << extraCost << "f,";
-    out << (portal ? "true" : "false") << ",";
-    out << portalId << ",";
-    out << (transport ? "true" : "false") << ",";
+    out << uint8(pathType) << ",";
+    out << pathObject << ",";
     out << (calculated ? "true" : "false") << ",";
-    out << maxLevelMob << ",";
-    out << maxLevelAlliance << ",";
-    out << maxLevelHorde << ",";
+    out << "{" << maxLevelCreature[0] << "," << maxLevelCreature[1] << "," << maxLevelCreature[2] << "}";
     out << swimDistance << "f" << ",";
-    out << (flightPath ? "true" : "false");
 
     return out.str().c_str();
 }
@@ -78,9 +42,7 @@ void TravelNodePath::calculateCost(bool distanceOnly)
         return;
 
     distance = 0.1f;
-    maxLevelMob = 0;
-    maxLevelAlliance = 0;
-    maxLevelHorde = 0;
+    maxLevelCreature = { 0,0,0 };
     swimDistance = 0;
 
     WorldPosition lastPoint = WorldPosition();
@@ -104,12 +66,12 @@ void TravelNodePath::calculateCost(bool distanceOnly)
                     hReact.insert(make_pair(factionEntry, PlayerbotAI::friendToHorde(factionEntry)));
                 hFriend = hReact.find(factionEntry)->second;
 
-                if (maxLevelMob < cInfo->MaxLevel && !aFriend && !hFriend)
-                    maxLevelMob = cInfo->MaxLevel;
-                if (maxLevelAlliance < cInfo->MaxLevel && aFriend && !hFriend)
-                    maxLevelAlliance = cInfo->MaxLevel;
-                if (maxLevelHorde < cInfo->MaxLevel && !aFriend && hFriend)
-                    maxLevelHorde = cInfo->MaxLevel;
+                if (maxLevelCreature[0] < cInfo->MaxLevel && !aFriend && !hFriend)
+                    maxLevelCreature[0] = cInfo->MaxLevel;
+                if (maxLevelCreature[1] < cInfo->MaxLevel && aFriend && !hFriend)
+                    maxLevelCreature[1] = cInfo->MaxLevel;
+                if (maxLevelCreature[2] < cInfo->MaxLevel && !aFriend && hFriend)
+                    maxLevelCreature[2] = cInfo->MaxLevel;
             }
         }
 
@@ -140,10 +102,11 @@ float TravelNodePath::getCost(Player* bot, uint32 cGold)
     if(bot)
     {
         //Check if we can use this area trigger.
-        if (portal && portalId)
+        if (getPathType() == TravelNodePathType::portal && pathObject)
         {
-            AreaTriggerEntry const* atEntry = sAreaTriggerStore.LookupEntry(portalId);
-            AreaTrigger const* at = sObjectMgr.GetAreaTrigger(portalId);            
+            uint32 triggerId = getPathObject();
+            AreaTriggerEntry const* atEntry = sAreaTriggerStore.LookupEntry(pathObject);
+            AreaTrigger const* at = sObjectMgr.GetAreaTrigger(pathObject);
             if (atEntry && at && atEntry->mapid == bot->GetMapId())
             {
                 Map* map = WorldPosition(atEntry->mapid, atEntry->box_x, atEntry->box_y, atEntry->box_z).getMap();
@@ -153,12 +116,12 @@ float TravelNodePath::getCost(Player* bot, uint32 cGold)
             }
         }
 
-        if (flightPath && portalId)
+        if (getPathType() == TravelNodePathType::flightPath && pathObject)
         {
             if (!bot->IsAlive())
                 return -1;
 
-            TaxiPathEntry const* taxiPath = sTaxiPathStore.LookupEntry(portalId);
+            TaxiPathEntry const* taxiPath = sTaxiPathStore.LookupEntry(pathObject);
 
             if (!taxiPath)
                 return -1;
@@ -186,20 +149,24 @@ float TravelNodePath::getCost(Player* bot, uint32 cGold)
         bool isAlliance = PlayerbotAI::friendToAlliance(bot->GetFactionTemplateEntry());
                                   
         int factionAnnoyance = 0;
-        int mobAnnoyance = (maxLevelMob - level) - 10; //Mobs 10 levels below do not bother us.
 
-        if(isAlliance)
-           factionAnnoyance = (maxLevelHorde - level) - 30;              //Opposite faction below 30 do not bother us.
-        else if (!isAlliance)
-           factionAnnoyance = (maxLevelAlliance - level) - 30;
+        if (maxLevelCreature.size() > 0)
+        {
+            int mobAnnoyance = (maxLevelCreature[0] - level) - 10; //Mobs 10 levels below do not bother us.
 
-        if (mobAnnoyance > 0)
-            modifier += 0.1 * mobAnnoyance;     //For each level the whole path takes 10% longer.
-        if (factionAnnoyance > 0)
-            modifier += 0.1 * factionAnnoyance; //For each level the whole path takes 10% longer.
+            if (isAlliance)
+                factionAnnoyance = (maxLevelCreature[2] - level) - 30;              //Opposite faction below 30 do not bother us.
+            else if (!isAlliance)
+                factionAnnoyance = (maxLevelCreature[1] - level) - 30;
+
+            if (mobAnnoyance > 0)
+                modifier += 0.1 * mobAnnoyance;     //For each level the whole path takes 10% longer.
+            if (factionAnnoyance > 0)
+                modifier += 0.1 * factionAnnoyance; //For each level the whole path takes 10% longer.
+        }
     }
 
-    if (portal || transport || flightPath)
+    if (getPathType() != TravelNodePathType::walk)
         timeCost = extraCost * modifier;
     else
         timeCost = (runDistance / speed + swimDistance / swimSpeed) * modifier;
@@ -209,13 +176,13 @@ float TravelNodePath::getCost(Player* bot, uint32 cGold)
 
 uint32 TravelNodePath::getPrice()
 {
-    if (!flightPath)
+    if (getPathType() != TravelNodePathType::flightPath)
         return 0;
 
-    if (!portalId)
+    if (!pathObject)
         return 0;
 
-    TaxiPathEntry const* taxiPath = sTaxiPathStore.LookupEntry(portalId);
+    TaxiPathEntry const* taxiPath = sTaxiPathStore.LookupEntry(pathObject);
 
     return taxiPath->price;
 }
@@ -251,7 +218,7 @@ TravelNodePath* TravelNode::buildPath(TravelNode* endNode, Unit* bot, bool postP
     {
         TravelNodePath backNodePath = *endNode->getPathTo(this);
 
-        if (!backNodePath.getTransport() && !backNodePath.getPortal() && !backNodePath.getFlightPath())
+        if (backNodePath.getPathType() == TravelNodePathType::walk)
         {
             vector<WorldPosition> bPath = backNodePath.getPath();
 
@@ -384,7 +351,7 @@ vector<TravelNode*> TravelNode::getNodeMap(bool importantOnly, vector<TravelNode
 
 bool TravelNode::isUselessLink(TravelNode* farNode)
 {
-    if (getPathTo(farNode)->getPortal() || getPathTo(farNode)->getTransport() || getPathTo(farNode)->getFlightPath())
+    if (getPathTo(farNode)->getPathType() != TravelNodePathType::walk)
         return false;
 
     float farLength;
@@ -628,13 +595,13 @@ void TravelNode::print(bool printFailed)
             uint32 pathType = 1;
             if (!hasLinkTo(endNode))
                 pathType = 0;
-            else if (path->getTransport())
+            else if (path->getPathType() == TravelNodePathType::transport)
                 pathType = 2;
-            else if (path->getPortal() && getMapId() == endNode->getMapId())
+            else if (path->getPathType() == TravelNodePathType::portal && getMapId() == endNode->getMapId())
                 pathType = 3;
-            else if (path->getPortal())
+            else if (path->getPathType() == TravelNodePathType::portal)
                 pathType = 4;
-            else if (path->getFlightPath())
+            else if (path->getPathType() == TravelNodePathType::flightPath)
                 pathType = 5;
             else if (!path->getComplete())
                 pathType = 6;
@@ -642,7 +609,7 @@ void TravelNode::print(bool printFailed)
             out << pathType << ",";
             out << std::fixed << std::setprecision(2);
             point.printWKT(ppath, out, 1);
-            out << path->getPortalId() << ",";
+            out << path->getPathObject() << ",";
             out << path->getDistance() << ",";
             out << path->getCost();
             out << path->getComplete() ? 0 : 1;
@@ -739,11 +706,17 @@ bool TravelPath::shouldMoveToNextPoint(WorldPosition startPos, vector<PathNodePo
 
     auto nextP = std::next(p);
 
-    //We are moving to a teleport node and want to move to the next teleport node.
+    //We are moving to a area trigger node and want to move to the next teleport node.
     if (p->type == NODE_PORTAL && nextP->type == NODE_PORTAL && p->entry == nextP->entry)
     {
         return false; //Move to teleport and activate area trigger.
     }   
+
+    //We are using a hearthstone.
+    if (p->type == NODE_TELEPORT && nextP->type == NODE_TELEPORT && p->entry == nextP->entry)
+    {
+        return false; //Move to teleport and activate area trigger.
+    }
 
     //We are almost at a transport node. Move to the node before this.
     if (nextP->type == NODE_TRANSPORT && nextP->entry && moveDist > INTERACTION_DISTANCE)
@@ -779,7 +752,7 @@ bool TravelPath::shouldMoveToNextPoint(WorldPosition startPos, vector<PathNodePo
 }
 
 //Next position to move to
-WorldPosition TravelPath::getNextPoint(WorldPosition startPos, float maxDist, bool& isTeleport, bool& isTransport, bool& isFlightPath, uint32& entry)
+WorldPosition TravelPath::getNextPoint(WorldPosition startPos, float maxDist, TravelNodePathType& pathType, uint32& entry)
 {
     if (getPath().empty())
         return WorldPosition();
@@ -818,14 +791,18 @@ WorldPosition TravelPath::getNextPoint(WorldPosition startPos, float maxDist, bo
         break;
     }
 
-    isTeleport = false;
-    isTransport = false;
-    isFlightPath = false;
-
     //We are moving towards a teleport. Move to portal an activate area trigger
     if (startP->type == NODE_PORTAL)
     {
-        isTeleport = true;
+        pathType = TravelNodePathType::portal;
+        entry = startP->entry;
+        return startP->point;
+    }
+
+    //We are using a hearthstone
+    if (startP->type == NODE_TELEPORT)
+    {
+        pathType = TravelNodePathType::teleportSpell;
         entry = startP->entry;
         return startP->point;
     }
@@ -833,7 +810,7 @@ WorldPosition TravelPath::getNextPoint(WorldPosition startPos, float maxDist, bo
     //We are moving towards a flight path. Move to flight master and activate flight path.
     if (startP->type == NODE_FLIGHTPATH && startPos.distance(startP->point) < INTERACTION_DISTANCE)
     {
-        isFlightPath = true;
+        pathType = TravelNodePathType::flightPath;
         entry = startP->entry;
         return startP->point;
     }
@@ -845,7 +822,7 @@ WorldPosition TravelPath::getNextPoint(WorldPosition startPos, float maxDist, bo
         {
             if (p->type != NODE_TRANSPORT)
             {
-                isTeleport = true;
+                pathType = TravelNodePathType::portal;
                 entry = 0;
                 return p->point;
             }
@@ -890,6 +867,8 @@ float TravelNodeRoute::getTotalDistance()
 TravelPath TravelNodeRoute::buildPath(vector<WorldPosition> pathToStart, vector<WorldPosition> pathToEnd, Unit* bot)
 {
     TravelPath travelPath;
+
+
 
     if (!pathToStart.empty()) //From start position to start of path.
         travelPath.addPath(pathToStart, NODE_PREPATH);
@@ -937,26 +916,31 @@ TravelPath TravelNodeRoute::buildPath(vector<WorldPosition> pathToStart, vector<
             if (node != nodes.back()) //Remove the last point since that will also be the start of the next path.
                 path.pop_back();
 
-            if (prevNode->isPortal() && !nodePath->getPortal()) //Do not move to the area trigger if we don't plan to take the portal.
+            if (prevNode->isPortal() && nodePath->getPathType() != TravelNodePathType::portal) //Do not move to the area trigger if we don't plan to take the portal.
                 path.erase(path.begin());
 
-            if (prevNode->isTransport() && !nodePath->getTransport()) //Do not move to the transport if we aren't going to take it.
+            if (prevNode->isTransport() && nodePath->getPathType() != TravelNodePathType::transport) //Do not move to the transport if we aren't going to take it.
                 path.erase(path.begin());
 
-            if (nodePath->getPortal()) //Teleport to next node.
+            if (nodePath->getPathType() == TravelNodePathType::portal) //Teleport to next node.
             {
-                travelPath.addPoint(*prevNode->getPosition(), NODE_PORTAL, nodePath->getPortalId()); //Entry point
-                travelPath.addPoint(*node->getPosition(), NODE_PORTAL, nodePath->getPortalId());     //Exit point
+                travelPath.addPoint(*prevNode->getPosition(), NODE_PORTAL, nodePath->getPathObject()); //Entry point
+                travelPath.addPoint(*node->getPosition(), NODE_PORTAL, nodePath->getPathObject());     //Exit point
             }
-            else if (nodePath->getTransport()) //Move onto transport
+            else if (nodePath->getPathType() == TravelNodePathType::transport) //Move onto transport
             {
-                travelPath.addPoint(*prevNode->getPosition(), NODE_TRANSPORT, node->getTransportId()); //Departure point
-                travelPath.addPoint(*node->getPosition(), NODE_TRANSPORT, node->getTransportId());     //Arrival point        
+                travelPath.addPoint(*prevNode->getPosition(), NODE_TRANSPORT, nodePath->getPathObject()); //Departure point
+                travelPath.addPoint(*node->getPosition(), NODE_TRANSPORT, nodePath->getPathObject());     //Arrival point        
             }
-            else if (nodePath->getFlightPath()) //Use the flightpath
+            else if (nodePath->getPathType() == TravelNodePathType::flightPath) //Use the flightpath
             {
-                travelPath.addPoint(*prevNode->getPosition(), NODE_FLIGHTPATH, nodePath->getPortalId()); //Departure point
-                travelPath.addPoint(*node->getPosition(), NODE_FLIGHTPATH, nodePath->getPortalId());     //Arrival point        
+                travelPath.addPoint(*prevNode->getPosition(), NODE_FLIGHTPATH, nodePath->getPathObject()); //Departure point
+                travelPath.addPoint(*node->getPosition(), NODE_FLIGHTPATH, nodePath->getPathObject());     //Arrival point        
+            }
+            else if (nodePath->getPathType() == TravelNodePathType::teleportSpell)
+            {
+                travelPath.addPoint(*prevNode->getPosition(), NODE_TELEPORT, nodePath->getPathObject());
+                travelPath.addPoint(*node->getPosition(), NODE_TELEPORT, nodePath->getPathObject());
             }
             else
             {
@@ -1045,10 +1029,8 @@ TravelNode* TravelNodeMap::addNode(WorldPosition* pos, string preferedName, bool
         finalName += to_string(nameCount);
     }
 
-    if(!transport)
-        newNode = new TravelNode(pos, finalName, isImportant);
-    else
-        newNode = new TravelNode(pos, finalName, isImportant, transport, transportId);
+     newNode = new TravelNode(pos, finalName, isImportant);
+
 
     m_nodes.push_back(newNode);
 
@@ -1097,7 +1079,7 @@ vector<TravelNode*> TravelNodeMap::getNodes(WorldPosition* pos, float range)
     for (auto& node : m_nodes)
     {
         if (node->getMapId() == pos->getMapId())
-            if(range == -1 || node->getDistance(pos) <= range)
+            if (range == -1 || node->getDistance(pos) <= range)
                 retVec.push_back(node);
     }
 
@@ -1134,19 +1116,25 @@ TravelNode* TravelNodeMap::getNode(WorldPosition* pos, vector<WorldPosition>& pp
 
 TravelNodeRoute TravelNodeMap::getRoute(TravelNode* start, TravelNode* goal, Player* bot)
 {
-    
+
     float botSpeed = bot ? bot->GetSpeed(MOVE_RUN) : 7.0f;
 
-    if(start == goal)
+    if (start == goal)
         return TravelNodeRoute();
 
-    if(!start->hasRouteTo(goal))
+    if (!start->hasRouteTo(goal))
         return TravelNodeRoute();
 
     //Basic A* algoritm
     std::unordered_map<TravelNode*, TravelNodeStub> m_stubs;
 
     TravelNodeStub* startStub = &m_stubs.insert(make_pair(start, TravelNodeStub(start))).first->second;
+
+    TravelNodeStub* currentNode, * childNode;
+
+    float f, g, h;
+
+    std::vector<TravelNodeStub*> open, closed;
 
     if (bot)
     {
@@ -1162,12 +1150,33 @@ TravelNodeRoute TravelNodeMap::getRoute(TravelNode* start, TravelNode* goal, Pla
         }
         else
             startStub->currentGold = bot->GetMoney();
+
+        if (sServerFacade.IsSpellReady(bot, 8690))
+        {
+            AiObjectContext* context = ai->GetAiObjectContext();
+
+            TravelNode* homeNode = sTravelNodeMap.getNode(&AI_VALUE(WorldPosition, "home bind"), nullptr, 10.0f);
+            if (homeNode)
+            {                
+                PortalNode* portNode = sTravelNodeMap.teleportNodes[bot->GetObjectGuid()][8690];
+                if (!portNode)
+                    portNode = new PortalNode(start);
+
+                portNode->SetPortal(start, homeNode, 8690);
+
+                childNode = &m_stubs.insert(make_pair(portNode, TravelNodeStub(portNode))).first->second;
+
+                childNode->m_g = 10 * MINUTE;
+                childNode->m_h = childNode->dataNode->fDist(goal) / botSpeed;
+                childNode->m_f = childNode->m_g + childNode->m_h;
+                childNode->parent = startStub;
+
+                open.push_back(childNode);
+                std::push_heap(open.begin(), open.end(), [](TravelNodeStub* i, TravelNodeStub* j) {return i->m_f < j->m_f; });
+                childNode->open = true;
+            }
+        }
     }
-
-    TravelNodeStub* currentNode, * childNode;
-    float f, g, h;
-
-    std::vector<TravelNodeStub*> open, closed;
 
     std::make_heap(open.begin(), open.end(), [](TravelNodeStub* i, TravelNodeStub* j) {return i->m_f < j->m_f; });
 
@@ -1210,6 +1219,12 @@ TravelNodeRoute TravelNodeMap::getRoute(TravelNode* start, TravelNode* goal, Pla
         for (const auto& link : *currentNode->dataNode->getLinks())// for each successor n' of n
         {
             TravelNode* linkNode = link.first;
+
+            if (link.second->maxLevelCreature.size() == 0)
+            {
+                sLog.outError("%d", link.second->maxLevelCreature.size());
+            }
+
             float linkCost = link.second->getCost(bot, currentNode->currentGold);
 
             if (linkCost <= 0)
