@@ -2003,6 +2003,13 @@ uint32 RandomPlayerbotMgr::GetZoneLevel(uint16 mapId, float teleX, float teleY, 
 
 void RandomPlayerbotMgr::Refresh(Player* bot)
 {
+    if (sServerFacade.UnitIsDead(bot))
+    {
+        bot->ResurrectPlayer(1.0f);
+        bot->SpawnCorpseBones();
+        bot->GetPlayerbotAI()->ResetStrategies(false);
+    }
+
     if (sPlayerbotAIConfig.disableRandomLevels)
         return;
 
@@ -2011,12 +2018,6 @@ void RandomPlayerbotMgr::Refresh(Player* bot)
 
     sLog.outDetail("Refreshing bot #%d <%s>", bot->GetGUIDLow(), bot->GetName());
     PerformanceMonitorOperation *pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "Refresh");
-    if (sServerFacade.UnitIsDead(bot))
-    {
-        bot->ResurrectPlayer(1.0f);
-        bot->SpawnCorpseBones();
-        bot->GetPlayerbotAI()->ResetStrategies(false);
-    }
 
     bot->GetPlayerbotAI()->Reset();
 
