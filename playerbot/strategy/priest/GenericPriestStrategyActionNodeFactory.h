@@ -25,9 +25,9 @@ namespace ai
         ACTION_NODE_A(greater_heal, "greater heal", "heal");
         ACTION_NODE_A(greater_heal_on_party, "greater heal on party", "heal on party");
         ACTION_NODE_A(heal, "heal", "lesser heal");
-        ACTION_NODE_A(heal_on_party, "heal on party", "lesset heal on party");
+        ACTION_NODE_A(heal_on_party, "heal on party", "lesser heal on party");
         ACTION_NODE_A(flash_heal, "flash heal", "greater heal");
-        ACTION_NODE_A(flash_heal_on_party, "flash heal on party", "greate heal on party");
+        ACTION_NODE_A(flash_heal_on_party, "flash heal on party", "greater heal on party");
         ACTION_NODE_A(psychic_scream, "psychic scream", "fade");
         ACTION_NODE_A(lightwell, "lightwell", "circle of healing");
         ACTION_NODE_A(circle_of_healing, "circle of healing", "prayer of healing");
