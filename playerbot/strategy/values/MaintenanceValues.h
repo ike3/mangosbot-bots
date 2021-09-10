@@ -1,6 +1,7 @@
 #pragma once
 #include "../Value.h"
 #include "../values/ItemUsageValue.h"
+#include "../values/BudgetValues.h"
 
 namespace ai
 {
@@ -23,7 +24,7 @@ namespace ai
     {
     public:
         CanRepairValue(PlayerbotAI* ai) : BoolCalculatedValue(ai, "can repair",2) {}
-        virtual bool Calculate() { return AI_VALUE(uint8, "durability") < 100 && AI_VALUE(uint32, "repair cost") < bot->GetMoney(); };
+        virtual bool Calculate() { return AI_VALUE(uint8, "durability") < 100 && AI_VALUE(uint32, "repair cost") < AI_VALUE2(uint32, "free money for", (uint32)NeedMoneyFor::repair); };
     };
 
     class ShouldSellValue : public BoolCalculatedValue
@@ -37,7 +38,7 @@ namespace ai
     {
     public:
         CanSellValue(PlayerbotAI* ai) : BoolCalculatedValue(ai, "can sell",2) {}
-        virtual bool Calculate() { return (AI_VALUE2(uint32, "item count", "usage " + ITEM_USAGE_VENDOR) + AI_VALUE2(uint32, "item count", "usage " + ITEM_USAGE_AH)) > 1; };
+        virtual bool Calculate() { return (AI_VALUE2(uint32, "item count", "usage " + to_string(ITEM_USAGE_VENDOR)) + AI_VALUE2(uint32, "item count", "usage " + to_string(ITEM_USAGE_AH))) > 1; };
     };
 
     class CanFightEqualValue: public BoolCalculatedValue
@@ -51,6 +52,6 @@ namespace ai
     {
     public:
         CanFightBossValue(PlayerbotAI* ai) : BoolCalculatedValue(ai, "can fight boss") {}
-        virtual bool Calculate() { return AI_VALUE(bool, "can fight equal") && bot->GetGroup() && bot->GetGroup()->GetMembersCount() > 2; };
+        virtual bool Calculate() { return bot->GetGroup() && bot->GetGroup()->GetMembersCount() > 2 && AI_VALUE2(bool, "group and", "can fight equal") && AI_VALUE2(bool, "group and", "following party") && !AI_VALUE2(bool, "group or", "should sell"); };
     };  
 }

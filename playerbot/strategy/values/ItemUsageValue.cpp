@@ -140,18 +140,15 @@ ItemUsage ItemUsageValue::Calculate()
     return ITEM_USAGE_NONE;
 }
 
-ItemUsage ItemUsageValue::QueryItemUsageForEquip(ItemPrototype const* item)
+ItemUsage ItemUsageValue::QueryItemUsageForEquip(ItemPrototype const* itemProto)
 {
-    bool shouldEquip = true;
-    bool existingShouldEquip = true;
-
-    if (bot->CanUseItem(item) != EQUIP_ERR_OK)
+    if (bot->CanUseItem(itemProto) != EQUIP_ERR_OK)
         return ITEM_USAGE_NONE;
 
-    if (item->InventoryType == INVTYPE_NON_EQUIP)
+    if (itemProto->InventoryType == INVTYPE_NON_EQUIP)
         return ITEM_USAGE_NONE;
 
-    Item* pItem = Item::CreateItem(item->ItemId, 1, bot);
+    Item* pItem = Item::CreateItem(itemProto->ItemId, 1, bot);
     if (!pItem)
         return ITEM_USAGE_NONE;
 
@@ -163,79 +160,95 @@ ItemUsage ItemUsageValue::QueryItemUsageForEquip(ItemPrototype const* item)
     if (result != EQUIP_ERR_OK)
         return ITEM_USAGE_NONE;
 
-    if (item->Class == ITEM_CLASS_QUIVER)
+    if (itemProto->Class == ITEM_CLASS_QUIVER)
         if (bot->getClass() != CLASS_HUNTER)
             return ITEM_USAGE_NONE;
 
-    if (item->Class == ITEM_CLASS_WEAPON && !sRandomItemMgr.CanEquipWeapon(bot->getClass(), item))
-        shouldEquip = false;
-
-    if (item->Class == ITEM_CLASS_ARMOR && !sRandomItemMgr.CanEquipArmor(bot->getClass(), bot->getLevel(), item))
-        shouldEquip = false;
-
-    if (item->Class == ITEM_CLASS_CONTAINER)
+    if (itemProto->Class == ITEM_CLASS_CONTAINER)
     {
-        if (item->SubClass != ITEM_SUBCLASS_CONTAINER)
+        if (itemProto->SubClass != ITEM_SUBCLASS_CONTAINER)
             return ITEM_USAGE_NONE; //Todo add logic for non-bag containers. We want to look at professions/class and only replace if non-bag is larger than bag.
 
-        if (GetSmallestBagSize() >= item->ContainerSlots)
+        if (GetSmallestBagSize() >= itemProto->ContainerSlots)
             return ITEM_USAGE_NONE;
 
         return ITEM_USAGE_EQUIP;
     }
 
-    Item* existingItem = bot->GetItemByPos(dest);
-    if (!existingItem)
+    bool shouldEquip = true;
+    if (itemProto->Class == ITEM_CLASS_WEAPON && !sRandomItemMgr.CanEquipWeapon(bot->getClass(), itemProto))
+        shouldEquip = false;
+    if (itemProto->Class == ITEM_CLASS_ARMOR && !sRandomItemMgr.CanEquipArmor(bot->getClass(), bot->getLevel(), itemProto))
+        shouldEquip = false;
+
+    Item* oldItem = bot->GetItemByPos(dest);
+
+    //No item equiped
+    if (!oldItem) 
         if (shouldEquip)
             return ITEM_USAGE_EQUIP;
         else
             return ITEM_USAGE_BAD_EQUIP;
 
-    const ItemPrototype* oldItem = existingItem->GetProto();
+    const ItemPrototype* oldItemProto = oldItem->GetProto();
 
-    if (item->Class == ITEM_CLASS_QUIVER)
-        if (!oldItem || oldItem->ContainerSlots < item->ContainerSlots)
+    //Bigger quiver
+    if (itemProto->Class == ITEM_CLASS_QUIVER)
+        if (!oldItem || oldItemProto->ContainerSlots < itemProto->ContainerSlots)
             return ITEM_USAGE_EQUIP;
         else
             ITEM_USAGE_NONE;
 
-    if (oldItem->Class == ITEM_CLASS_WEAPON && !sRandomItemMgr.CanEquipWeapon(bot->getClass(), oldItem))
+    bool existingShouldEquip = true;
+    if (oldItemProto->Class == ITEM_CLASS_WEAPON && !sRandomItemMgr.CanEquipWeapon(bot->getClass(), oldItemProto))
+        existingShouldEquip = false;
+    if (oldItemProto->Class == ITEM_CLASS_ARMOR && !sRandomItemMgr.CanEquipArmor(bot->getClass(), bot->getLevel(), oldItemProto))
         existingShouldEquip = false;
 
-    if (oldItem->Class == ITEM_CLASS_ARMOR && !sRandomItemMgr.CanEquipArmor(bot->getClass(), bot->getLevel(), oldItem))
-        existingShouldEquip = false;
+    uint32 oldItemPower = oldItemProto->ItemLevel + oldItemProto->Quality * 5;
+    uint32 newItemPower = itemProto->ItemLevel + itemProto->Quality * 5;
 
-    if (oldItem->ItemId != item->ItemId && //Item is not identical
-        (shouldEquip || !existingShouldEquip) && //New item is optimal or old item was already sub-optimal
-        (oldItem->ItemLevel + oldItem->Quality * 5 < item->ItemLevel + item->Quality * 5 // Item is upgrade
-            ))
+    //Compare items based on item level, quality or itemId.
+    bool isBetter = false;
+    if (newItemPower > oldItemPower)
+        isBetter = true;
+    else if (newItemPower == oldItemPower && itemProto->Quality > oldItemProto->Quality)
+        isBetter = true;
+    else if (newItemPower == oldItemPower && itemProto->Quality == oldItemProto->Quality && itemProto->ItemId > oldItemProto->ItemId)
+        isBetter = true;
+
+    Item* item = CurrentItem(itemProto);
+    bool itemIsBroken = item && item->GetUInt32Value(ITEM_FIELD_DURABILITY) == 0 && item->GetUInt32Value(ITEM_FIELD_MAXDURABILITY) > 0;
+    bool oldItemIsBroken = oldItem->GetUInt32Value(ITEM_FIELD_DURABILITY) == 0 && oldItem->GetUInt32Value(ITEM_FIELD_MAXDURABILITY) > 0;
+
+    if (itemProto->ItemId != oldItemProto->ItemId && (shouldEquip || !existingShouldEquip) && isBetter)
     {
-        switch (item->Class)
+        switch (itemProto->Class)
         {
         case ITEM_CLASS_ARMOR:
-            if (oldItem->SubClass <= item->SubClass) {
-                if (shouldEquip)
-                    if(CurrentItem(item) && CurrentItem(item)->GetUInt32Value(ITEM_FIELD_DURABILITY) == 0 && CurrentItem(item)->GetUInt32Value(ITEM_FIELD_MAXDURABILITY) > 0)
-                        return ITEM_USAGE_BROKEN_EQUIP;
-                    else
-                        return ITEM_USAGE_REPLACE;
+            if (oldItemProto->SubClass <= itemProto->SubClass) {
+                if (itemIsBroken && !oldItemIsBroken)
+                    return ITEM_USAGE_BROKEN_EQUIP;
                 else
-                    return ITEM_USAGE_BAD_EQUIP;
+                    if (shouldEquip)
+                        return ITEM_USAGE_REPLACE;
+                    else
+                        return ITEM_USAGE_BAD_EQUIP;
             }
             break;
         default:
-            if (shouldEquip)
-                if (CurrentItem(item) && CurrentItem(item)->GetUInt32Value(ITEM_FIELD_DURABILITY) == 0 && CurrentItem(item)->GetUInt32Value(ITEM_FIELD_MAXDURABILITY) > 0)
-                    return ITEM_USAGE_BROKEN_EQUIP;
-                else
-                    return ITEM_USAGE_EQUIP;
+            if (itemIsBroken && !oldItemIsBroken)
+                return ITEM_USAGE_BROKEN_EQUIP;
             else
-                return ITEM_USAGE_BAD_EQUIP;
+                if (shouldEquip)
+                    return ITEM_USAGE_EQUIP;
+                else
+                    return ITEM_USAGE_BAD_EQUIP;
         }
     }
 
     //Item is not better but current item is broken and new one is not.
-    if (existingItem->GetUInt32Value(ITEM_FIELD_DURABILITY) == 0 && CurrentItem(item) && CurrentItem(item)->GetUInt32Value(ITEM_FIELD_DURABILITY) > 0)
+    if (oldItemIsBroken && !itemIsBroken)
         return ITEM_USAGE_EQUIP;
 
     return ITEM_USAGE_NONE;

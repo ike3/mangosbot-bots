@@ -35538,7 +35538,18 @@ namespace ai
 
             for (auto lnode : linkNodes)
             {
-                nodes[lnode.node1]->setPathTo(nodes[lnode.node2], TravelNodePath(lnode.distance, lnode.extraCost, lnode.isPortal, lnode.portalId, lnode.isTransport, lnode.calculated, lnode.maxLevelMob, lnode.maxLevelAlliance, lnode.maxLevelHorde, lnode.swimDistance, lnode.isFlightPath), true);
+                TravelNodePathType pathType = TravelNodePathType::walk;
+                if (lnode.isPortal)
+                    pathType = TravelNodePathType::portal;
+                if (lnode.isTransport)
+                    pathType = TravelNodePathType::transport;
+                if (lnode.isFlightPath)
+                    pathType = TravelNodePathType::flightPath;
+
+                vector<uint8> maxLevelCreature = { (uint8)lnode.maxLevelMob, (uint8)lnode.maxLevelAlliance, (uint8)lnode.maxLevelHorde };
+
+
+                nodes[lnode.node1]->setPathTo(nodes[lnode.node2], TravelNodePath(lnode.distance, lnode.extraCost, (uint8)pathType, lnode.portalId, lnode.calculated, maxLevelCreature, lnode.swimDistance), true);
             }
         }
 

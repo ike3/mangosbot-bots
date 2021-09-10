@@ -2,14 +2,15 @@
 #include "../../playerbot.h"
 #include "TrainerAction.h"
 #include "../../ServerFacade.h"
+#include "../values/BudgetValues.h"
 
 using namespace ai;
 
 void TrainerAction::Learn(uint32 cost, TrainerSpell const* tSpell, ostringstream& msg)
 {
-    if (sPlayerbotAIConfig.autoTrainSpells != "free")
+    if (sPlayerbotAIConfig.autoTrainSpells != "free" &&  !ai->HasCheat(BotCheatMask::gold))
     {
-        if (bot->GetMoney() < cost)
+        if (AI_VALUE2(uint32, "free money for", (uint32)NeedMoneyFor::spells) < cost)
         {
             msg << " - too expensive";
             return;

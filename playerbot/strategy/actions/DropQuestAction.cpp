@@ -97,6 +97,9 @@ void CleanQuestLogAction::DropQuestType(uint8 &numQuest, uint8 wantNum, bool isG
         if (!quest)
             continue;
 
+        if (quest->GetRequiredClasses() && (quest->GetRewSpellCast() || quest->GetRewSpell())) //Do not drop class specific quests that learn spells.
+            continue;
+
         if (wantNum == 100)
             numQuest++;
 
@@ -114,7 +117,7 @@ void CleanQuestLogAction::DropQuestType(uint8 &numQuest, uint8 wantNum, bool isG
             }                
 
 
-        if (HasProgress(questId) && !hasProgress)
+        if (HasProgress(bot, quest) && !hasProgress)
             continue;
 
         if (bot->GetQuestStatus(questId) == QUEST_STATUS_COMPLETE && !isComplete)
@@ -138,30 +141,31 @@ void CleanQuestLogAction::DropQuestType(uint8 &numQuest, uint8 wantNum, bool isG
     }
 }
 
-bool CleanQuestLogAction::HasProgress(uint32 questId)
+bool CleanQuestLogAction::HasProgress(Player* bot, Quest const* quest)
 {
+    uint32 questId = quest->GetQuestId();
+
     if (bot->GetQuestStatus(questId) == QUEST_STATUS_COMPLETE)
         return true;
 
-    Quest const* questTemplate = sObjectMgr.GetQuestTemplate(questId);
     QuestStatusData questStatus = bot->getQuestStatusMap()[questId];
 
     for (int i = 0; i < QUEST_OBJECTIVES_COUNT; i++)
     {
-        if (!questTemplate->ObjectiveText[i].empty())
+        if (!quest->ObjectiveText[i].empty())
             return true;
 
-        if (questTemplate->ReqItemId[i])
+        if (quest->ReqItemId[i])
         {
-            int required = questTemplate->ReqItemCount[i];
+            int required = quest->ReqItemCount[i];
             int available = questStatus.m_itemcount[i];
             if (available > 0 && required > 0)
                 return true;
         }
 
-        if (questTemplate->ReqCreatureOrGOId[i])
+        if (quest->ReqCreatureOrGOId[i])
         {
-            int required = questTemplate->ReqCreatureOrGOCount[i];
+            int required = quest->ReqCreatureOrGOCount[i];
             int available = questStatus.m_creatureOrGOcount[i];
 
             if (available > 0 && required > 0)

@@ -108,9 +108,16 @@ void SellAction::Sell(Item* item)
         ObjectGuid itemguid = item->GetObjectGuid();
         uint32 count = item->GetCount();
 
+        uint32 botMoney = bot->GetMoney();
+
         WorldPacket p;
         p << vendorguid << itemguid << count;
         bot->GetSession()->HandleSellItemOpcode(p);
+
+        if (ai->HasCheat(BotCheatMask::gold))
+        {
+            bot->SetMoney(botMoney);
+        }
 
         out << "Selling " << chat->formatItem(item->GetProto());
         bot->PlayDistanceSound(120);

@@ -75,6 +75,7 @@
 #include "QuestValues.h"
 #include "BudgetValues.h"
 #include "MaintenanceValues.h"
+#include "GroupValues.h"
 
 namespace ai
 {
@@ -181,7 +182,9 @@ namespace ai
             creators["lfg proposal"] = &ValueContext::lfg_proposal;
             creators["bag space"] = &ValueContext::bag_space;
             creators["durability"] = &ValueContext::durability;
+            creators["max repair cost"] = &ValueContext::max_repair_cost;
             creators["repair cost"] = &ValueContext::repair_cost;
+            creators["train cost"] = &ValueContext::train_cost;
             creators["enemy healer target"] = &ValueContext::enemy_healer_target;
             creators["snare target"] = &ValueContext::snare_target;
             creators["formation"] = &ValueContext::formation;
@@ -230,7 +233,9 @@ namespace ai
             creators["can accept quest low level npc"] = &ValueContext::can_accept_quest_low_level_npc;
             creators["can turn in quest npc"] = &ValueContext::can_turn_in_quest_npc;
             
-            creators["money needed"] = &ValueContext::money_needed;
+            creators["money needed for"] = &ValueContext::money_needed_for;
+            creators["total money needed for"] = &ValueContext::total_money_needed_for;
+            creators["free money for"] = &ValueContext::free_money_for;            
             creators["should get money"] = &ValueContext::should_get_money;
             
             creators["should home bind"] = &ValueContext::should_home_bind;
@@ -240,6 +245,14 @@ namespace ai
             creators["can sell"] = &ValueContext::can_sell;
             creators["can fight equal"] = &ValueContext::can_fight_equal;
             creators["can fight boss"] = &ValueContext::can_fight_boss;
+
+            creators["following party"] = &ValueContext::following_party;
+            creators["near leader"] = &ValueContext::near_leader;
+
+            creators["and"] = &ValueContext::and_value;
+            creators["and"] = &ValueContext::and_value;
+            creators["group and"] = &ValueContext::group_and;
+            creators["group or"] = &ValueContext::group_or;
         }
 
     private:
@@ -354,7 +367,9 @@ namespace ai
         static UntypedValue* lfg_proposal(PlayerbotAI* ai) { return new LfgProposalValue(ai); }
         static UntypedValue* bag_space(PlayerbotAI* ai) { return new BagSpaceValue(ai); }
         static UntypedValue* durability(PlayerbotAI* ai) { return new DurabilityValue(ai); }
+        static UntypedValue* max_repair_cost(PlayerbotAI* ai) { return new MaxGearRepairCostValue(ai); }
         static UntypedValue* repair_cost(PlayerbotAI* ai) { return new RepairCostValue(ai); }
+        static UntypedValue* train_cost(PlayerbotAI* ai) { return new TrainCostValue(ai); }
         static UntypedValue* enemy_healer_target(PlayerbotAI* ai) { return new EnemyHealerTargetValue(ai); }
         static UntypedValue* snare_target(PlayerbotAI* ai) { return new SnareTargetValue(ai); }
         static UntypedValue* speed(PlayerbotAI* ai) { return new SpeedValue(ai); }
@@ -383,7 +398,9 @@ namespace ai
         static UntypedValue* can_accept_quest_low_level_npc(PlayerbotAI* ai) { return new CanAcceptQuestLowLevelValue(ai); }
         static UntypedValue* can_turn_in_quest_npc(PlayerbotAI* ai) { return new CanTurnInQuestValue(ai); }
 
-        static UntypedValue* money_needed(PlayerbotAI* ai) { return new MoneyNeededValue(ai); }
+        static UntypedValue* money_needed_for(PlayerbotAI* ai) { return new MoneyNeededForValue(ai); }
+        static UntypedValue* total_money_needed_for(PlayerbotAI* ai) { return new TotalMoneyNeededForValue(ai); }
+        static UntypedValue* free_money_for(PlayerbotAI* ai) { return new FreeMoneyForValue(ai); }
         static UntypedValue* should_get_money(PlayerbotAI* ai) { return new ShouldGetMoneyValue(ai); }
 
         static UntypedValue* should_home_bind(PlayerbotAI* ai) { return new ShouldHomeBindValue(ai); }
@@ -393,5 +410,11 @@ namespace ai
         static UntypedValue* can_sell(PlayerbotAI* ai) { return new CanSellValue(ai); }
         static UntypedValue* can_fight_equal(PlayerbotAI* ai) { return new CanFightEqualValue(ai); }
         static UntypedValue* can_fight_boss(PlayerbotAI* ai) { return new CanFightBossValue(ai); }
+
+        static UntypedValue* following_party(PlayerbotAI* ai) { return new IsFollowingPartyValue(ai); }
+        static UntypedValue* near_leader(PlayerbotAI* ai) { return new IsNearLeaderValue(ai); }
+        static UntypedValue* and_value(PlayerbotAI* ai) { return new BoolANDValue(ai); }
+        static UntypedValue* group_and(PlayerbotAI* ai) { return new GroupBoolANDValue(ai); }
+        static UntypedValue* group_or(PlayerbotAI* ai) { return new GroupBoolORValue(ai); }
     };
 };

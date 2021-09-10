@@ -137,7 +137,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
         time_t now = time(0);
         if (AI_VALUE(LastMovement&, "last movement").nextTeleport > now) //We can not teleport yet. Wait.
         {
-            ai->SetNextCheckDelay(AI_VALUE(LastMovement&, "last movement").nextTeleport - now);
+            ai->SetNextCheckDelay((AI_VALUE(LastMovement&, "last movement").nextTeleport - now) * 1000);
             return true;
         }
     }
@@ -284,11 +284,11 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
             return true;
         }
 
-        bool isTeleport, isTransport, isFlightPath;
+        TravelNodePathType pathType;
         uint32 entry;
-        movePosition = movePath.getNextPoint(startPosition, maxDist, isTeleport, isTransport, isFlightPath, entry);
+        movePosition = movePath.getNextPoint(startPosition, maxDist, pathType, entry);
 
-        if (isTeleport)// && !ai->isRealPlayer())
+        if (pathType == TravelNodePathType::portal)// && !ai->isRealPlayer())
         {
 
             //Log bot movement
@@ -328,7 +328,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
                 return bot->TeleportTo(movePosition.getMapId(), movePosition.getX(), movePosition.getY(), movePosition.getZ(), movePosition.getO(), 0);
         }
 
-        if (isTransport && entry)
+        if (pathType == TravelNodePathType::transport && entry)
         {
             if (!bot->GetTransport())
             {
@@ -340,20 +340,57 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
             return true;
         }
 
-        if (isFlightPath && entry)
+        if (pathType == TravelNodePathType::flightPath && entry)
         {
-            //Todo find flight master.
-
             TaxiPathEntry const* tEntry = sTaxiPathStore.LookupEntry(entry);
 
-            if (entry)
+            if (tEntry)
             {
-                uint32 money = bot->GetMoney();
-                //bot->SetMoney(money + 100000);
-                bool goTaxi = bot->ActivateTaxiPathTo({ tEntry->from, tEntry->to }, nullptr, 1);
-                //bot->SetMoney(money);
+                Creature* unit = nullptr;
+
+                if (!bot->m_taxi.IsTaximaskNodeKnown(tEntry->from))
+                {
+                    list<ObjectGuid> npcs = AI_VALUE(list<ObjectGuid>, "nearest npcs");
+                    for (list<ObjectGuid>::iterator i = npcs.begin(); i != npcs.end(); i++)
+                    {
+                        Creature* unit = bot->GetNPCIfCanInteractWith(*i, UNIT_NPC_FLAG_FLIGHTMASTER);
+                        if (!unit)
+                            continue;
+
+                        bot->GetSession()->SendLearnNewTaxiNode(unit);
+
+                        unit->SetFacingTo(unit->GetAngle(bot));
+                    }
+                }
+
+                uint32 botMoney = bot->GetMoney();
+                if (ai->HasCheat(BotCheatMask::gold))
+                {
+                    bot->SetMoney(10000000);
+                }
+
+                bool goTaxi = bot->ActivateTaxiPathTo({ tEntry->from, tEntry->to }, unit, 1);
+
+                if (ai->HasCheat(BotCheatMask::gold))
+                {
+                    bot->SetMoney(botMoney);
+                }
 
                 return goTaxi;
+            }
+        }
+
+        if (pathType == TravelNodePathType::teleportSpell && entry)
+        {
+            if (sServerFacade.IsSpellReady(bot, entry))
+            {
+                if(entry == 8690)
+                    return ai->DoSpecificAction("hearthstone", Event("move action"));
+            }
+            else
+            {
+                movePath.clear();
+                return false;
             }
         }
         //if (!isTransport && bot->GetTransport())
@@ -380,9 +417,9 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
         PathType type = path.getPathType();
         PointsArray& points = path.getPath();
         movePath.addPath(startPosition.fromPointsArray(points));
-        bool isTeleport, isTransport, isFlightPath;
+        TravelNodePathType pathType;
         uint32 entry;
-        movePosition = movePath.getNextPoint(startPosition, maxDist, isTeleport, isTransport, isFlightPath, entry);
+        movePosition = movePath.getNextPoint(startPosition, maxDist, pathType, entry);
     }
 
     if (movePosition == WorldPosition()) {

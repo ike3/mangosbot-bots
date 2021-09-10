@@ -26,6 +26,12 @@ bool RepairAllAction::Execute(Event event)
         sServerFacade.SetFacingTo(bot, unit);
         float discountMod = bot->GetReputationPriceDiscount(unit);
 
+        uint32 botMoney = bot->GetMoney();
+        if (ai->HasCheat(BotCheatMask::gold))
+        {
+            bot->SetMoney(10000000);
+        }
+
         //Repair weapons first.
         uint32 totalCost = bot->DurabilityRepair(EQUIPMENT_SLOT_MAINHAND, true, discountMod
 #ifndef MANGOSBOT_ZERO
@@ -50,6 +56,11 @@ bool RepairAllAction::Execute(Event event)
             , false
 #endif
         );
+
+        if (ai->HasCheat(BotCheatMask::gold))
+        {
+            bot->SetMoney(botMoney);
+        }
 
         if (totalCost > 0)
         {

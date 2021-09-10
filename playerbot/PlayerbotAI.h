@@ -371,6 +371,11 @@ public:
     bool HasManyPlayersNearby(uint32 trigerrValue = 20, float range = sPlayerbotAIConfig.sightDistance);
     bool AllowActive(ActivityType activityType);
     bool AllowActivity(ActivityType activityType = ALL_ACTIVITY, bool checkNow = false);
+
+    bool HasCheat(BotCheatMask mask) { return ((uint32)mask & (uint32)cheatMask) != 0 || ((uint32)mask & (uint32)sPlayerbotAIConfig.botCheatMask) != 0; }
+    BotCheatMask GetCheat() { return cheatMask; }
+    void SetCheat(BotCheatMask mask) { cheatMask = mask; }
+
     void SetMaster(Player* master) { this->master = master; }
     AiObjectContext* GetAiObjectContext() { return aiObjectContext; }
     ChatHelper* GetChatHelper() { return &chatHelper; }
@@ -399,5 +404,6 @@ protected:
     map<ActivityType, bool> allowActive;
     map<ActivityType, time_t> allowActiveCheckTimer;
     bool inCombat = false;;
+    BotCheatMask cheatMask = BotCheatMask::none;
 };
 

@@ -729,7 +729,7 @@ string QuestTravelDestination::getTitle() {
 bool QuestRelationTravelDestination::isActive(Player* bot) {
     if (relation == 0)
     {
-        if (questTemplate->GetQuestLevel() >= (int)bot->getLevel() + 5)
+        if (questTemplate->GetQuestLevel() >= bot->getLevel() + (uint32)5)
             return false;
         //if (questTemplate->XPValue(bot) == 0)
         //    return false;
@@ -786,7 +786,7 @@ string QuestRelationTravelDestination::getTitle() {
 }
 
 bool QuestObjectiveTravelDestination::isActive(Player* bot) {
-    if (questTemplate->GetQuestLevel() > (int)bot->getLevel() + 1)
+    if (questTemplate->GetQuestLevel() > bot->getLevel() + (uint32)1)
         return false;
 
     PlayerbotAI* ai = bot->GetPlayerbotAI();
@@ -853,11 +853,11 @@ bool RpgTravelDestination::isActive(Player* bot)
     bool isUsefull = false;
 
     if (cInfo->NpcFlags & UNIT_NPC_FLAG_VENDOR)
-        if (AI_VALUE(bool, "should sell") && AI_VALUE(bool, "can sell"))
+        if (AI_VALUE2(bool, "group or", "should sell,can sell,following party"))
             isUsefull = true;
 
     if (cInfo->NpcFlags & UNIT_NPC_FLAG_REPAIR)
-        if (AI_VALUE(bool, "should repair") && AI_VALUE(bool, "can repair"))
+        if (AI_VALUE2(bool, "group or", "should repair,can repair,following party"))
             isUsefull = true;
 
     if (!isUsefull)
@@ -966,9 +966,6 @@ bool BossTravelDestination::isActive(Player* bot)
     AiObjectContext* context = ai->GetAiObjectContext();
 
     if (!AI_VALUE(bool, "can fight boss"))
-        return false;
-
-    if (AI_VALUE(bool, "should sell"))
         return false;
 
     CreatureInfo const* cInfo = this->getCreatureInfo();
@@ -1384,11 +1381,11 @@ void TravelMgr::LoadQuestTravelTable()
     struct unit { uint64 guid; uint32 type; uint32 entry; uint32 map; float  x; float  y; float  z;  float  o; uint32 c; } t_unit;
     vector<unit> units;
 
-    struct relation { uint32 type; uint32 role;  uint32 entry; uint32 questId; } t_rel;
-    vector<relation> relations;
+    //struct relation { uint32 type; uint32 role;  uint32 entry; uint32 questId; } t_rel;
+    //vector<relation> relations;
 
-    struct loot { uint32 type; uint32 entry;  uint32 item; } t_loot;
-    vector<loot> loots;
+    //struct loot { uint32 type; uint32 entry;  uint32 item; } t_loot;
+    //vector<loot> loots;
 
     ObjectMgr::QuestMap const& questMap = sObjectMgr.GetQuestTemplates();
     vector<uint32> questIds;
@@ -1627,7 +1624,7 @@ void TravelMgr::LoadQuestTravelTable()
             }
         }
     }
-   
+    /*
     if (loadQuestData && false)
     {
         BarGoLink bar(questIds.size());
@@ -1799,6 +1796,7 @@ void TravelMgr::LoadQuestTravelTable()
 
         sLog.outString(">> Loaded " SIZEFMTD " quest details.", questIds.size());
     }
+    */
 
     sLog.outErrorDb("Loading Rpg, Grind and Boss locations.");
 
@@ -2062,7 +2060,8 @@ void TravelMgr::LoadQuestTravelTable()
 
             float totalTime = startPos.getPathLength(ppath) / (450 * 8.0f);
 
-            TravelNodePath travelPath(ppath, 0.1f, false, i, false, (4.5f * 8.0f), true);
+            TravelNodePath travelPath(0.1f, totalTime, (uint8)TravelNodePathType::flightPath, i, true);
+            travelPath.setPath(ppath);
 
             startNode->setPathTo(endNode, travelPath);
         }
@@ -2179,8 +2178,9 @@ void TravelMgr::LoadQuestTravelTable()
 
             //Portal link from area trigger to area trigger destination.
             if (outNode && inNode)
-            {
-                TravelNodePath travelPath({ *inNode->getPosition(), *outNode->getPosition() }, 3.0f, true, i, false);
+            {                
+                TravelNodePath travelPath(0.1f, 3.0f, (uint8)TravelNodePathType::portal, i, true);
+                travelPath.setPath({ *inNode->getPosition(), *outNode->getPosition() });
                 inNode->setPathTo(outNode, travelPath);
             }
 
@@ -2261,7 +2261,8 @@ void TravelMgr::LoadQuestTravelTable()
                                     else
                                     {
                                         float totalTime = (p.second->TimeSeg - timeStart) / 1000.0f;
-                                        TravelNodePath travelPath(ppath, totalTime,false, 0, true);
+
+                                        TravelNodePath travelPath(0.1f, totalTime, (uint8)TravelNodePathType::transport, entry, true);
                                         node->setPathTo(prevNode, travelPath);
                                         ppath.clear();
                                         ppath.push_back(pos);
@@ -2294,7 +2295,9 @@ void TravelMgr::LoadQuestTravelTable()
                                         TravelNode* node = sTravelNodeMap.addNode(&pos, data->name, true, true, true, entry);
                                         if (node != prevNode) {
                                             float totalTime = (p.second->TimeSeg - timeStart) / 1000.0f;
-                                            TravelNodePath travelPath(ppath, totalTime, false, 0, true);
+
+                                            TravelNodePath travelPath(0.1f, totalTime, (uint8)TravelNodePathType::transport, entry, true);
+                                            travelPath.setPath(ppath);
                                             node->setPathTo(prevNode, travelPath);
                                             ppath.clear();
                                             ppath.push_back(pos);
@@ -2337,7 +2340,8 @@ void TravelMgr::LoadQuestTravelTable()
                             }
                             else
                             {
-                                TravelNodePath travelPath(ppath, 0.1f, false, 0, true, moveSpeed);
+                                TravelNodePath travelPath(0.1f, 0.0, (uint8)TravelNodePathType::transport, entry, true);
+                                travelPath.setPathAndCost(ppath, moveSpeed);
                                 node->setPathTo(prevNode, travelPath);
                                 ppath.clear();
                                 ppath.push_back(pos);
@@ -2366,7 +2370,9 @@ void TravelMgr::LoadQuestTravelTable()
                                 TravelNode* node = sTravelNodeMap.getNode(&pos, NULL, 5.0f);
 
                                 if (node != prevNode) {
-                                    TravelNodePath travelPath(ppath, 0.1f, false, 0, true, moveSpeed);
+                                    TravelNodePath travelPath(0.1f, 0.0, (uint8)TravelNodePathType::transport, entry, true);
+                                    travelPath.setPathAndCost(ppath, moveSpeed);
+
                                     node->setPathTo(prevNode, travelPath);
                                 }
                             }
@@ -2571,7 +2577,7 @@ void TravelMgr::LoadQuestTravelTable()
             {
                 TravelNodePath* nodePath = path.second;
 
-                if (nodePath->getPortal() || nodePath->getTransport())
+                if (path.second->getPathType() != TravelNodePathType::walk)
                     continue;
 
                 if (nodePath->getCalculated() && !forceReCalculate)
@@ -2584,6 +2590,40 @@ void TravelMgr::LoadQuestTravelTable()
         }
 
         sLog.outString(">> Calculated pathcost for " SIZEFMTD " nodes.", sTravelNodeMap.getNodes().size());
+    }
+
+    bool mirrorMissingPaths = true || fullNavPointReload || storeNavPointReload;
+
+    if (mirrorMissingPaths)
+    {
+        BarGoLink bar(sTravelNodeMap.getNodes().size());
+
+        for (auto& startNode : sTravelNodeMap.getNodes())
+        {
+            for (auto& path : *startNode->getLinks())
+            {
+                TravelNode* endNode = path.first;
+
+                if (endNode->hasLinkTo(startNode))
+                    continue;
+
+                if (path.second->getPathType() != TravelNodePathType::walk)
+                    continue;
+
+                TravelNodePath nodePath = *path.second;
+
+                vector<WorldPosition> pPath = nodePath.getPath();
+                std::reverse(pPath.begin(), pPath.end());
+
+                nodePath.setPath(pPath);
+
+                endNode->setPathTo(startNode, nodePath, true);
+            }
+
+            bar.step();
+        }
+
+        sLog.outString(">> Reversed missing paths for " SIZEFMTD " nodes.", sTravelNodeMap.getNodes().size());
     }
 
     sTravelNodeMap.printMap();

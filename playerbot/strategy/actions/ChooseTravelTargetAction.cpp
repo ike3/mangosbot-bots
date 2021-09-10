@@ -111,7 +111,14 @@ void ChooseTravelTargetAction::ReportTravelTarget(TravelTarget* newTarget, Trave
 
         out << round(newTarget->getDestination()->distanceTo(&botLocation)) << "y";
 
-        out << " for rpg ";
+        out << " for ";
+
+        if (AI_VALUE2(bool, "group or", "should sell,can sell"))
+            out << "selling items";
+        else if (AI_VALUE2(bool, "group or", "should repair,can repair"))
+            out << "repairing";
+        else
+            out << "rpg";
 
         out << " to " << RpgDestination->getTitle();
 
@@ -202,7 +209,7 @@ bool ChooseTravelTargetAction::SetTarget(TravelTarget* target, TravelTarget* old
 
     //Enpty bags/repair
     if (!foundTarget && urand(1, 100) > 10)                               //90% chance
-        if ((AI_VALUE(bool, "should sell") && AI_VALUE(bool, "can sell")) || (AI_VALUE(bool, "should repair") && AI_VALUE(bool, "can repair")))
+        if (AI_VALUE2(bool, "group or", "should sell,can sell,following party") || AI_VALUE2(bool, "group or", "should repair,can repair,following party"))
             foundTarget = SetRpgTarget(target);                           //Go to town to sell items or repair
 
     //Rpg in city
@@ -627,6 +634,55 @@ bool ChooseTravelTargetAction::SetNullTarget(TravelTarget* target)
     
     return true;
 }
+
+vector<string> split(const string& s, char delim);
+char* strstri(const char* haystack, const char* needle);
+
+TravelDestination* ChooseTravelTargetAction::FindDestination(Player* bot, string name)
+{
+    PlayerbotAI* ai = bot->GetPlayerbotAI();
+
+    AiObjectContext* context = ai->GetAiObjectContext();
+
+    vector<TravelDestination*> dests;
+
+    //Zones
+    for (auto& d : sTravelMgr.getExploreTravelDestinations(bot, true, true))
+    {
+        if (strstri(d->getTitle().c_str(), name.c_str()))
+            dests.push_back(d);
+    }
+
+    //Npcs
+    for (auto& d : sTravelMgr.getRpgTravelDestinations(bot, true, true))
+    {
+        if (strstri(d->getTitle().c_str(), name.c_str()))
+            dests.push_back(d);
+    }
+
+    //Mobs
+    for (auto& d : sTravelMgr.getGrindTravelDestinations(bot, true, true))
+    {
+        if (strstri(d->getTitle().c_str(), name.c_str()))
+            dests.push_back(d);
+    }
+
+    //Bosses
+    for (auto& d : sTravelMgr.getBossTravelDestinations(bot, true, true))
+    {
+        if (strstri(d->getTitle().c_str(), name.c_str()))
+            dests.push_back(d);
+    }
+
+    WorldPosition* botPos = &WorldPosition(bot);
+
+    if (dests.empty())
+        return nullptr;
+
+    TravelDestination* dest = *std::min_element(dests.begin(), dests.end(), [botPos](TravelDestination* i, TravelDestination* j) {return i->distanceTo(botPos) < j->distanceTo(botPos); });
+
+    return dest;
+};
 
 bool ChooseTravelTargetAction::isUseful()
 {

@@ -26,6 +26,7 @@
 #include "ServerFacade.h"
 #include "TravelMgr.h"
 #include "ChatHelper.h"
+#include "strategy/values/BudgetValues.h"
 
 using namespace ai;
 using namespace std;
@@ -77,7 +78,7 @@ PlayerbotAI::PlayerbotAI(Player* bot) :
     PlayerbotAIBase(), chatHelper(this), chatFilter(this), security(bot), master(NULL)
 {
 	this->bot = bot;    
-    if (!bot->isTaxiCheater() && sPlayerbotAIConfig.hasCheat("taxi"))
+    if (!bot->isTaxiCheater() && HasCheat(BotCheatMask::taxi))
         bot->SetTaxiCheater(true);
 
 	accountId = sObjectMgr.GetPlayerAccountIdByGUID(bot->GetObjectGuid());
@@ -690,12 +691,7 @@ void PlayerbotAI::DoNextAction()
     }
 
     if (master && master->IsInWorld())
-	{
-        if (!group && sRandomPlayerbotMgr.IsRandomBot(bot))
-        {
-            bot->GetPlayerbotAI()->SetMaster(nullptr);
-        }
-        
+	{       
 		if (master->m_movementInfo.HasMovementFlag(MOVEFLAG_WALK_MODE) && sServerFacade.GetDistance2d(bot, master) < 20.0f) bot->m_movementInfo.AddMovementFlag(MOVEFLAG_WALK_MODE);
 		else bot->m_movementInfo.RemoveMovementFlag(MOVEFLAG_WALK_MODE);
 
@@ -706,6 +702,11 @@ void PlayerbotAI::DoNextAction()
         }
         else if (nextAICheckDelay < 1000)
             bot->SetStandState(UNIT_STAND_STATE_STAND);
+
+        if (!group && sRandomPlayerbotMgr.IsRandomBot(bot))
+        {
+            bot->GetPlayerbotAI()->SetMaster(nullptr);
+        }
 	}
 	else if (bot->m_movementInfo.HasMovementFlag(MOVEFLAG_WALK_MODE)) bot->m_movementInfo.RemoveMovementFlag(MOVEFLAG_WALK_MODE);
     else if ((nextAICheckDelay < 1000) && bot->IsSitState()) bot->SetStandState(UNIT_STAND_STATE_STAND);
@@ -755,6 +756,16 @@ void PlayerbotAI::DoNextAction()
         *jump << movementInfo;
         bot->GetSession()->QueuePacket(std::move(jump));
     }*/
+
+    if ((uint32)GetCheat() > 0 || (uint32)sPlayerbotAIConfig.botCheatMask > 0)
+    {
+        if (HasCheat(BotCheatMask::health))
+            bot->SetHealthPercent(100);
+        if (HasCheat(BotCheatMask::mana) && bot->GetPowerType() == POWER_MANA)
+            bot->SetPower(POWER_MANA, bot->GetMaxPower(POWER_MANA));
+        if (HasCheat(BotCheatMask::power) && bot->GetPowerType() != POWER_MANA)
+            bot->SetPower(bot->GetPowerType(), bot->GetMaxPower(bot->GetPowerType()));
+    }
 }
 
 void PlayerbotAI::ReInitCurrentEngine()
@@ -1060,20 +1071,45 @@ WorldObject* PlayerbotAI::GetWorldObject(ObjectGuid guid)
 
 bool PlayerbotAI::TellMasterNoFacing(string text, PlayerbotSecurityLevel securityLevel)
 {
-    Player* master = GetMaster();
-
-    if ((!master || (master->GetPlayerbotAI() && !master->GetPlayerbotAI()->IsRealPlayer())) && (sPlayerbotAIConfig.randomBotSayWithoutMaster || HasStrategy("debug", BOT_STATE_NON_COMBAT)))
-    {
-        bot->Say(text, (bot->GetTeam() == ALLIANCE ? LANG_COMMON : LANG_ORCISH));
-        return true;
-    }
-
-    if (!IsTellAllowed(securityLevel))
-        return false;
-
     time_t lastSaid = whispers[text];
     if (!lastSaid || (time(0) - lastSaid) >= sPlayerbotAIConfig.repeatDelay / 1000)
     {
+        whispers[text] = time(0);
+
+        Player* master = GetMaster();
+
+        if ((!master || (master->GetPlayerbotAI() && !master->GetPlayerbotAI()->IsRealPlayer())) && (sPlayerbotAIConfig.randomBotSayWithoutMaster || HasStrategy("debug", BOT_STATE_NON_COMBAT)))
+        {
+            bot->Say(text, (bot->GetTeam() == ALLIANCE ? LANG_COMMON : LANG_ORCISH));
+            return true;
+        }
+        else if (master && GetGroupMaster() != master && bot->GetGroup()->IsMember(master->GetObjectGuid()))
+        {
+            WorldPacket data;
+            ChatHandler::BuildChatPacket(data,
+                CHAT_MSG_PARTY,
+                text.c_str(),
+                LANG_UNIVERSAL,
+                CHAT_TAG_NONE, bot->GetObjectGuid(), bot->GetName());
+
+            Group* group = bot->GetGroup();
+            if (group)
+            {
+                for (GroupReference* ref = group->GetFirstMember(); ref; ref = ref->next())
+                {
+                    if (ref->getSource()->GetPlayerbotAI() && !ref->getSource()->GetPlayerbotAI()->IsRealPlayer())
+                        continue;
+
+                    sServerFacade.SendPacket(ref->getSource(), data);
+                }
+            }
+
+            return true;
+        }
+
+        if (!IsTellAllowed(securityLevel))
+            return false;
+
         whispers[text] = time(0);
 
         ChatMsg type = CHAT_MSG_WHISPER;
@@ -1082,12 +1118,13 @@ bool PlayerbotAI::TellMasterNoFacing(string text, PlayerbotSecurityLevel securit
 
         WorldPacket data;
         ChatHandler::BuildChatPacket(data,
-                type == CHAT_MSG_ADDON ? CHAT_MSG_PARTY : type,
-                text.c_str(),
-                type == CHAT_MSG_ADDON ? LANG_ADDON : LANG_UNIVERSAL,
-                CHAT_TAG_NONE, bot->GetObjectGuid(), bot->GetName());
+            type == CHAT_MSG_ADDON ? CHAT_MSG_PARTY : type,
+            text.c_str(),
+            type == CHAT_MSG_ADDON ? LANG_ADDON : LANG_UNIVERSAL,
+            CHAT_TAG_NONE, bot->GetObjectGuid(), bot->GetName());
         sServerFacade.SendPacket(master, data);
     }
+
     return true;
 }
 
@@ -2462,15 +2499,13 @@ string PlayerbotAI::HandleRemoteCommand(string command)
 
             out << ": " << target->getDestination()->getTitle();
 
-            out << " vis: " << target->getDestination()->getVisitors();
-
-            out << " Location = " << target->getPosition()->print();
+            out << " v: " << target->getDestination()->getVisitors();
 
             if (!(*target->getPosition() == WorldPosition()))
             {
                 out << "(" << target->getPosition()->getAreaName() << ")";
-                out << " at: " << target->getPosition()->distance(bot) << "y";
-                out << " vis: " << target->getPosition()->getVisitors();
+                out << " distance: " << target->getPosition()->distance(bot) << "y";
+                out << " v: " << target->getPosition()->getVisitors();
             }
         }
         out << " Status =";
@@ -2487,9 +2522,52 @@ string PlayerbotAI::HandleRemoteCommand(string command)
         else if (target->getStatus() == TRAVEL_STATUS_EXPIRED)
             out << " expired";
 
-        out << " Expire in " << (target->getTimeLeft()/1000) << "s";
+        if(target->getStatus() != TRAVEL_STATUS_EXPIRED)
+            out << " Expire in " << (target->getTimeLeft()/1000) << "s";
 
         out << " Retry " << target->getRetryCount(true) << "/" << target->getRetryCount(false);
+
+        return out.str();
+    }
+    else if (command == "budget")
+    {
+        ostringstream out;
+
+        AiObjectContext* context = GetAiObjectContext();
+
+        out << "Current money: " << ChatHelper::formatMoney(bot->GetMoney()) << " free to use:" << ChatHelper::formatMoney(AI_VALUE2(uint32, "free money for", (uint32)NeedMoneyFor::anything)) << "\n";
+        out << "Purpose | Available / Needed \n";
+
+        for (uint32 i = 1; i < (uint32)NeedMoneyFor::anything; i++)
+        {
+            NeedMoneyFor needMoneyFor = NeedMoneyFor(i);
+
+            switch (needMoneyFor)
+            {
+            case NeedMoneyFor::none:
+                out << "nothing";
+                break;
+            case NeedMoneyFor::repair:
+                out << "repair";
+                break;
+            case NeedMoneyFor::ammo:
+                out << "ammo";
+                break;
+            case NeedMoneyFor::spells:
+                out << "spells";
+                break;
+            case NeedMoneyFor::travel:
+                out << "travel";
+                break;
+            case NeedMoneyFor::consumables:
+                out << "consumables";
+                break;
+            case NeedMoneyFor::gear:
+                out << "gear";
+                break;
+            }
+            out << " | " << ChatHelper::formatMoney(AI_VALUE2(uint32, "free money for", i)) << " / " << ChatHelper::formatMoney(AI_VALUE2(uint32, "money needed for", i)) << "\n";
+        }
 
         return out.str();
     }

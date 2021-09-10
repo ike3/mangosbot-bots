@@ -246,11 +246,11 @@ bool UseItemAction::UseItem(Item* item, ObjectGuid goGuid, Item* itemTarget, Uni
 
    for (int i = 0; i < MAX_ITEM_PROTO_SPELLS; i++)
    {
-      uint32 spellId = item->GetProto()->Spells[i].SpellId;
+      spellId = item->GetProto()->Spells[i].SpellId;
       if (!spellId)
          continue;
 
-      if (!ai->CanCastSpell(spellId, bot, false))
+      if (!ai->CanCastSpell(spellId, bot, 0, false))
          continue;
 
       const SpellEntry* const pSpellInfo = sServerFacade.LookupSpellInfo(spellId);
