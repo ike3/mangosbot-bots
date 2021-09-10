@@ -395,7 +395,7 @@ void WorldPosition::loadMapAndVMap(uint32 mapId, int x, int y)
 {
     string fileName = "load_map_grid.csv";
 
-    if (isOverworld())
+    if (isOverworld() && false)
     {
         if (!MMAP::MMapFactory::createOrGetMMapManager()->IsMMapIsLoaded(mapId, x, y))
             if (sPlayerbotAIConfig.hasLog(fileName))
