@@ -911,17 +911,6 @@ TravelPath TravelNodeRoute::buildPath(vector<WorldPosition> pathToStart, vector<
                 continue;
             }
 
-            vector<WorldPosition> path = nodePath->getPath();
-
-            if (node != nodes.back()) //Remove the last point since that will also be the start of the next path.
-                path.pop_back();
-
-            if (prevNode->isPortal() && nodePath->getPathType() != TravelNodePathType::portal) //Do not move to the area trigger if we don't plan to take the portal.
-                path.erase(path.begin());
-
-            if (prevNode->isTransport() && nodePath->getPathType() != TravelNodePathType::transport) //Do not move to the transport if we aren't going to take it.
-                path.erase(path.begin());
-
             if (nodePath->getPathType() == TravelNodePathType::portal) //Teleport to next node.
             {
                 travelPath.addPoint(*prevNode->getPosition(), NODE_PORTAL, nodePath->getPathObject()); //Entry point
@@ -944,6 +933,17 @@ TravelPath TravelNodeRoute::buildPath(vector<WorldPosition> pathToStart, vector<
             }
             else
             {
+                vector<WorldPosition> path = nodePath->getPath();
+
+                if (node != nodes.back()) //Remove the last point since that will also be the start of the next path.
+                    path.pop_back();
+
+                if (prevNode->isPortal() && nodePath->getPathType() != TravelNodePathType::portal) //Do not move to the area trigger if we don't plan to take the portal.
+                    path.erase(path.begin());
+
+                if (prevNode->isTransport() && nodePath->getPathType() != TravelNodePathType::transport) //Do not move to the transport if we aren't going to take it.
+                    path.erase(path.begin());
+
                 travelPath.addPath(path, NODE_PATH);
             }
         }
@@ -1121,9 +1121,9 @@ TravelNodeRoute TravelNodeMap::getRoute(TravelNode* start, TravelNode* goal, Pla
 
     if (start == goal)
         return TravelNodeRoute();
-
-    if (!start->hasRouteTo(goal))
-        return TravelNodeRoute();
+    
+    //if (!start->hasRouteTo(goal))
+    //    return TravelNodeRoute();
 
     //Basic A* algoritm
     std::unordered_map<TravelNode*, TravelNodeStub> m_stubs;
@@ -1151,14 +1151,14 @@ TravelNodeRoute TravelNodeMap::getRoute(TravelNode* start, TravelNode* goal, Pla
         else
             startStub->currentGold = bot->GetMoney();
 
-        if (sServerFacade.IsSpellReady(bot, 8690))
+        if (sServerFacade.IsSpellReady(bot, 8690, 6948))
         {
             AiObjectContext* context = ai->GetAiObjectContext();
 
             TravelNode* homeNode = sTravelNodeMap.getNode(&AI_VALUE(WorldPosition, "home bind"), nullptr, 10.0f);
             if (homeNode)
             {                
-                PortalNode* portNode = sTravelNodeMap.teleportNodes[bot->GetObjectGuid()][8690];
+                PortalNode* portNode = (PortalNode*)sTravelNodeMap.teleportNodes[bot->GetObjectGuid()][8690];
                 if (!portNode)
                     portNode = new PortalNode(start);
 
@@ -1296,6 +1296,26 @@ TravelNodeRoute TravelNodeMap::getRoute(WorldPosition* startPos, WorldPosition* 
         {
             startI++;
             endI = 0;
+        }
+    }
+
+    if (bot && sServerFacade.IsSpellReady(bot, 8690, 6948))
+    {
+        TravelNode* botNode = sTravelNodeMap.teleportNodes[bot->GetObjectGuid()][0];
+        if (!botNode)
+            botNode = new TravelNode(startPos, "Bot Pos", false);
+
+        botNode->setPoint(*startPos);
+
+        endI = 0;
+        while (endI < 5)
+        {
+            TravelNode* endNode = endNodes[endI];
+            TravelNodeRoute route = getRoute(botNode, endNode, bot);
+
+            if (!route.isEmpty())
+                return route;
+            endI++;
         }
     }
 

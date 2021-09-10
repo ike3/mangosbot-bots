@@ -110,15 +110,23 @@ bool ServerFacade::IsHostileTo(WorldObject* bot, Unit* to)
 }
 
 
-bool ServerFacade::IsSpellReady(Player* bot, uint32 spell)
+bool ServerFacade::IsSpellReady(Player* bot, uint32 spell, uint32 itemId)
 {
 #ifdef MANGOS
     return !bot->HasSpellCooldown(spell);
 #endif
 #ifdef CMANGOS
-    return bot->IsSpellReady(spell);
+    if (itemId)
+    {
+        const ItemPrototype* proto = sObjectMgr.GetItemPrototype(itemId);
+        return bot->IsSpellReady(spell, proto);
+    }
+    else
+        return bot->IsSpellReady(spell);
 #endif
 }
+
+
 
 bool ServerFacade::IsUnderwater(Unit *unit)
 {

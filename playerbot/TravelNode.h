@@ -149,6 +149,7 @@ enum class TravelNodePathType : uint8
 
         //Setters
         void setLinked(bool linked1) { linked = linked1; }
+        void setPoint(WorldPosition point1) { point = point1; }
 
         //Getters
         string getName() { return nodeName; };
@@ -368,7 +369,7 @@ enum class TravelNodePathType : uint8
 
         std::shared_mutex m_nMapMtx;
 
-        unordered_map<ObjectGuid, unordered_map<uint32, PortalNode *>> teleportNodes;
+        unordered_map<ObjectGuid, unordered_map<uint32, TravelNode *>> teleportNodes;
     private:
         vector<TravelNode*> m_nodes;
 

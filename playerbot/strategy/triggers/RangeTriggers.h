@@ -148,7 +148,7 @@ namespace ai
             if (!bot->HasItemCount(6948, 1, false))
                 return false;
 
-            if (!sServerFacade.IsSpellReady(bot, 8690))
+            if (!sServerFacade.IsSpellReady(bot, 8690, 6948))
                 return false;
 
             WorldPosition longMove = AI_VALUE(WorldPosition, "last long move");

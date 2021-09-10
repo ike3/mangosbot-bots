@@ -382,15 +382,18 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
 
         if (pathType == TravelNodePathType::teleportSpell && entry)
         {
-            if (sServerFacade.IsSpellReady(bot, entry))
+            if (entry == 8690)
             {
-                if(entry == 8690)
+                if (sServerFacade.IsSpellReady(bot, 8690, 6948))
+                {
                     return ai->DoSpecificAction("hearthstone", Event("move action"));
-            }
-            else
-            {
-                movePath.clear();
-                return false;
+
+                }
+                else
+                {
+                    movePath.clear();
+                    return false;
+                }
             }
         }
         //if (!isTransport && bot->GetTransport())
