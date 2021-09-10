@@ -209,7 +209,7 @@ bool ChooseTravelTargetAction::SetTarget(TravelTarget* target, TravelTarget* old
 
     //Enpty bags/repair
     if (!foundTarget && urand(1, 100) > 10)                               //90% chance
-        if (AI_VALUE2(bool, "group or", "should sell,can sell,following party") || AI_VALUE2(bool, "group or", "should repair,can repair,following party"))
+        if (AI_VALUE2(bool, "group or", "should sell,can sell,following party,near leader") || AI_VALUE2(bool, "group or", "should repair,can repair,following party,near leader"))
             foundTarget = SetRpgTarget(target);                           //Go to town to sell items or repair
 
     //Rpg in city

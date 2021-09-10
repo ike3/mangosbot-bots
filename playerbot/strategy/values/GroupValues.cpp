@@ -26,7 +26,7 @@ bool IsNearLeaderValue::Calculate()
     if (!groupMaster)
         return false;
 
-    return sServerFacade.GetDistance2d(bot, ai->GetGroupMaster()) < sPlayerbotAIConfig.sightDistance;
+    return sServerFacade.GetDistance2d(bot, ai->GetGroupMaster()) < sPlayerbotAIConfig.reactDistance;
 }
 
 bool BoolANDValue::Calculate()

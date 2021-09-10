@@ -6,7 +6,7 @@ namespace ai
     class IsFollowingPartyValue : public BoolCalculatedValue
     {
     public:
-        IsFollowingPartyValue(PlayerbotAI* ai) : BoolCalculatedValue(ai, "is following party") {}
+        IsFollowingPartyValue(PlayerbotAI* ai) : BoolCalculatedValue(ai, "following party") {}
         
         virtual bool Calculate();
     };
@@ -14,7 +14,7 @@ namespace ai
     class IsNearLeaderValue : public BoolCalculatedValue
     {
     public:
-        IsNearLeaderValue(PlayerbotAI* ai) : BoolCalculatedValue(ai, "is near leader") {}
+        IsNearLeaderValue(PlayerbotAI* ai) : BoolCalculatedValue(ai, "near leader") {}
 
         virtual bool Calculate();
     };
