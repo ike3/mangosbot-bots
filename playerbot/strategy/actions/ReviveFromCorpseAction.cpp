@@ -93,7 +93,7 @@ bool FindCorpseAction::Execute(Event event)
 
     WorldPosition botPos(bot),corpsePos(corpse), moveToPos = corpsePos, masterPos(master);
     float reclaimDist = CORPSE_RECLAIM_RADIUS - 5.0f;
-    float corpseDist = botPos.fDist(corpsePos);
+    float corpseDist = botPos.distance(corpsePos);
     int64 deadTime = time(nullptr) - corpse->GetGhostTime();
 
     bool moveToMaster = master && master != bot && masterPos.fDist(corpsePos) < reclaimDist;
