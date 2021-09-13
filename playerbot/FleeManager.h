@@ -31,11 +31,12 @@ namespace ai
 	class FleeManager
 	{
 	public:
-        FleeManager(Player* bot, float maxAllowedDistance, float followAngle, bool forceMaxDistance = false) {
+        FleeManager(Player* bot, float maxAllowedDistance, float followAngle, bool forceMaxDistance = false, WorldPosition startPosition = WorldPosition()) {
 			this->bot = bot;
 			this->maxAllowedDistance = maxAllowedDistance;
 			this->followAngle = followAngle;
             this->forceMaxDistance = forceMaxDistance;
+			this->startPosition = startPosition ? startPosition : WorldPosition(bot);
 		}
 
 	public:
@@ -54,6 +55,7 @@ namespace ai
 		float maxAllowedDistance;
 		float followAngle;
         bool forceMaxDistance;
+		WorldPosition startPosition;
 	};
 
 };

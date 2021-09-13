@@ -40,10 +40,10 @@ void FleeManager::calculatePossibleDestinations(list<FleePoint*> &points)
 {
     Unit *target = *bot->GetPlayerbotAI()->GetAiObjectContext()->GetValue<Unit*>("current target");
 
-	float botPosX = bot->GetPositionX();
-	float botPosY = bot->GetPositionY();
-	float botPosZ = bot->GetPositionZ();
-
+    float botPosX = startPosition.getX();
+    float botPosY = startPosition.getY();
+    float botPosZ = startPosition.getZ();
+    
     FleePoint start(bot->GetPlayerbotAI(), botPosX, botPosY, botPosZ);
     calculateDistanceToCreatures(&start);
 
@@ -65,7 +65,7 @@ void FleeManager::calculatePossibleDestinations(list<FleePoint*> &points)
         float angleIncrement = max(M_PI / 20, M_PI / 4 / (1.0 + dist - sPlayerbotAIConfig.tooCloseDistance));
         for (float add = 0.0f; add < M_PI / 4 + angleIncrement; add += angleIncrement)
         {
-            for (float angle = add; angle < add + 2 * M_PI + angleIncrement; angle += M_PI / 4)
+            for (float angle = add; angle < add + 2 * M_PI_F + angleIncrement; angle += M_PI_F / 4)
             {
                 if (intersectsOri(angle, enemyOri, angleIncrement)) continue;
 
@@ -76,7 +76,7 @@ void FleeManager::calculatePossibleDestinations(list<FleePoint*> &points)
 
                 bot->UpdateAllowedPositionZ(x, y, z);
 
-                Map* map = bot->GetMap();
+                Map* map = startPosition.getMap();
                 const TerrainInfo* terrain = map->GetTerrain();
                 if (terrain && terrain->IsInWater(x, y, z))
                     continue;
@@ -153,8 +153,11 @@ bool FleeManager::isUseful()
         if (!unit)
             continue;
 
-        float d = sServerFacade.GetDistance2d(unit, bot);
-        if (sServerFacade.IsDistanceLessThan(d, sPlayerbotAIConfig.aggroDistance)) return true;
+        if (startPosition.sqDistance(WorldPosition(unit)) < unit->GetAttackDistance(bot) * unit->GetAttackDistance(bot))
+            return true;
+
+        //float d = sServerFacade.GetDistance2d(unit, bot);
+        //if (sServerFacade.IsDistanceLessThan(d, sPlayerbotAIConfig.aggroDistance)) return true;
     }
     return false;
 }

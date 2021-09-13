@@ -3,6 +3,7 @@
 #include "ReviveFromCorpseAction.h"
 #include "../../PlayerbotFactory.h"
 #include "../../PlayerbotAIConfig.h"
+#include "../../FleeManager.h"
 
 using namespace ai;
 
@@ -50,7 +51,9 @@ bool ReviveFromCorpseAction::Execute(Event event)
     }
 
     sLog.outDetail("Bot #%d %s:%d <%s> revives at body", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName());
-    
+
+    bot->GetMotionMaster()->Clear();
+    bot->StopMoving();
     WorldPacket packet(CMSG_RECLAIM_CORPSE);
     packet << bot->GetObjectGuid();
     bot->GetSession()->HandleReclaimCorpseOpcode(packet);
@@ -66,9 +69,6 @@ bool FindCorpseAction::Execute(Event event)
     Corpse* corpse = bot->GetCorpse();
     if (!corpse)
         return false;
-
-    //if (corpse->GetMapId() != bot->GetMapId())
-    //    return false;
 
     Player* master = ai->GetGroupMaster();
     if (master)
@@ -91,61 +91,87 @@ bool FindCorpseAction::Execute(Event event)
         }
     }
 
-    if (!corpse->IsWithinDistInMap(bot, CORPSE_RECLAIM_RADIUS - 5.0f, true))
+    WorldPosition botPos(bot),corpsePos(corpse), moveToPos = corpsePos, masterPos(master);
+    float reclaimDist = CORPSE_RECLAIM_RADIUS - 5.0f;
+    float corpseDist = botPos.fDist(corpsePos);
+    int64 deadTime = time(nullptr) - corpse->GetGhostTime();
+
+    bool moveToMaster = master && master != bot && masterPos.fDist(corpsePos) < reclaimDist;
+
+    //Should we ressurect? If so, return false.
+    if (corpseDist < reclaimDist)
     {
-        float x = corpse->GetPositionX();
-        float y = corpse->GetPositionY();
-        float z = corpse->GetPositionZ();
-
-
-#ifndef MANGOSBOT_TWO         
-        bot->GetMap()->GetReachableRandomPointOnGround(x, y, z, CORPSE_RECLAIM_RADIUS - 5.0f, true);
-#else
-        bot->GetMap()->GetReachableRandomPointOnGround(bot->GetPhaseMask(), x, y, z, CORPSE_RECLAIM_RADIUS - 5.0f, true);
-#endif
-
-        int64 deadTime = time(nullptr) - corpse->GetGhostTime();
-
-        sLog.outDetail("Bot #%d %s:%d <%s> looks for body", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName());
-       
-        if (!ai->AllowActivity(ALL_ACTIVITY))
+        if (moveToMaster) //We are near master.
         {
-            uint32 delay = sServerFacade.GetDistance2d(bot, corpse) / bot->GetSpeed(MOVE_RUN); //Time a bot would take to travel to it's corpse.
-            delay = min(delay, uint32(10 * MINUTE)); //Cap time to get to corpse at 10 minutes.
-
-            if (deadTime > delay)
-            {
-                bot->GetMotionMaster()->Clear();
-                bot->TeleportTo(corpse->GetMapId(), x, y, z, 0);
-            }
+            if (botPos.fDist(masterPos) < sPlayerbotAIConfig.spellDistance)
+                return false;
         }
+        else if (deadTime > 8 * MINUTE) //We have walked too long already.
+            return false;
+        else 
+        {
+            list<ObjectGuid> units = AI_VALUE(list<ObjectGuid>, "possible targets no los");
+            
+            if (botPos.getUnitsAggro(units, bot) == 0) //There are no mobs near.
+                return false;
+        }
+    }
+
+    //If we are getting close move to a save ressurrection spot instead of just the corpse.
+    if (corpseDist < sPlayerbotAIConfig.reactDistance)
+    {
+        if (moveToMaster)
+            moveToPos = masterPos;
         else
         {
-            if (bot->IsMoving())
-                return false;
+            FleeManager manager(bot, reclaimDist, 0.0, urand(0, 1), moveToPos);
 
-            bool moved = false;
-
-            if (deadTime < 10 * MINUTE && dCount < 5 && corpse->GetMapId() == bot->GetMapId()) //Look for corpse up to 30 minutes.
+            if (manager.isUseful())
             {
-                if (bot->IsWithinLOS(x, y, z))
-                    moved = MoveNear(bot->GetMapId(), x, y, z, 0);
-                else
-                    moved = MoveTo(bot->GetMapId(), x, y, z, false, false);
+                float rx, ry, rz;
+                if (manager.CalculateDestination(&rx, &ry, &rz))
+                    moveToPos = WorldPosition(moveToPos.getMapId(), rx, ry, rz, 0.0);
+                else if (!moveToPos.GetReachableRandomPointOnGround(bot, reclaimDist, urand(0, 1)))
+                    moveToPos = corpsePos;
+            }
+        }
+    }
+
+    //Actual mobing part.
+    bool moved = false;
+
+    if (!ai->AllowActivity(ALL_ACTIVITY))
+    {
+        uint32 delay = sServerFacade.GetDistance2d(bot, corpse) / bot->GetSpeed(MOVE_RUN); //Time a bot would take to travel to it's corpse.
+        delay = min(delay, uint32(10 * MINUTE)); //Cap time to get to corpse at 10 minutes.
+
+        if (deadTime > delay)
+        {
+            bot->GetMotionMaster()->Clear();
+            bot->TeleportTo(moveToPos.getMapId(), moveToPos.getX(), moveToPos.getY(), moveToPos.getZ(), 0);
+        }
+
+        moved = true;
+    }
+    else
+    {
+        if (bot->IsMoving())
+            moved = true;
+        else
+        {
+            if (deadTime < 10 * MINUTE && dCount < 5) //Look for corpse up to 30 minutes.
+            {
+                moved = MoveTo(moveToPos.getMapId(), moveToPos.getX(), moveToPos.getY(), moveToPos.getZ(), false, false);
             }
 
             if (!moved)
             {
                 moved = ai->DoSpecificAction("spirit healer");
-                if (moved)
-                    sLog.outBasic("Bot #%d %s:%d <%s> moves to graveyard", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName());
             }
-
-            return moved;
         }
-        return false;
-    }
-    return false;
+    }   
+
+    return moved;
 }
 
 bool FindCorpseAction::isUseful()
@@ -153,7 +179,7 @@ bool FindCorpseAction::isUseful()
     if (bot->InBattleGround())
         return false;
 
-    return bot->GetCorpse() && !bot->GetCorpse()->IsWithinDistInMap(bot, CORPSE_RECLAIM_RADIUS - 5, true);
+    return bot->GetCorpse();
 }
 
 WorldSafeLocsEntry const* SpiritHealerAction::GetGrave(bool startZone)
@@ -165,6 +191,19 @@ WorldSafeLocsEntry const* SpiritHealerAction::GetGrave(bool startZone)
 
     if (!startZone && ClosestGrave)
         return ClosestGrave;
+
+    if (ai->HasStrategy("follow", BOT_STATE_NON_COMBAT))
+    {
+        Player* master = ai->GetGroupMaster();
+
+        if (master && master != bot)
+        {
+            ClosestGrave = sObjectMgr.GetClosestGraveYard(master->GetPositionX(), master->GetPositionY(), master->GetPositionZ(), master->GetMapId(), bot->GetTeam());
+
+            if (ClosestGrave)
+                return ClosestGrave;
+        }
+    }
 
     vector<uint32> races;
 
