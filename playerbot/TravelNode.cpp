@@ -22,11 +22,11 @@ string TravelNodePath::print()
     out << std::fixed << std::setprecision(1);
     out << distance << "f,";
     out << extraCost << "f,";
-    out << uint8(pathType) << ",";
+    out << to_string(uint8(pathType)) << ",";
     out << pathObject << ",";
     out << (calculated ? "true" : "false") << ",";
-    out << "{" << maxLevelCreature[0] << "," << maxLevelCreature[1] << "," << maxLevelCreature[2] << "}";
-    out << swimDistance << "f" << ",";
+    out << "{" << to_string(maxLevelCreature[0]) << "," << to_string(maxLevelCreature[1]) << "," << to_string(maxLevelCreature[2]) << "},";
+    out << swimDistance << "f";
 
     return out.str().c_str();
 }
@@ -935,13 +935,13 @@ TravelPath TravelNodeRoute::buildPath(vector<WorldPosition> pathToStart, vector<
             {
                 vector<WorldPosition> path = nodePath->getPath();
 
-                if (node != nodes.back()) //Remove the last point since that will also be the start of the next path.
+                if (path.size() > 1 && node != nodes.back()) //Remove the last point since that will also be the start of the next path.
                     path.pop_back();
 
-                if (prevNode->isPortal() && nodePath->getPathType() != TravelNodePathType::portal) //Do not move to the area trigger if we don't plan to take the portal.
+                if (path.size() > 1 && prevNode->isPortal() && nodePath->getPathType() != TravelNodePathType::portal) //Do not move to the area trigger if we don't plan to take the portal.
                     path.erase(path.begin());
 
-                if (prevNode->isTransport() && nodePath->getPathType() != TravelNodePathType::transport) //Do not move to the transport if we aren't going to take it.
+                if (path.size() > 1 && prevNode->isTransport() && nodePath->getPathType() != TravelNodePathType::transport) //Do not move to the transport if we aren't going to take it.
                     path.erase(path.begin());
 
                 travelPath.addPath(path, NODE_PATH);
@@ -1122,9 +1122,6 @@ TravelNodeRoute TravelNodeMap::getRoute(TravelNode* start, TravelNode* goal, Pla
     if (start == goal)
         return TravelNodeRoute();
     
-    //if (!start->hasRouteTo(goal))
-    //    return TravelNodeRoute();
-
     //Basic A* algoritm
     std::unordered_map<TravelNode*, TravelNodeStub> m_stubs;
 
@@ -1177,6 +1174,9 @@ TravelNodeRoute TravelNodeMap::getRoute(TravelNode* start, TravelNode* goal, Pla
             }
         }
     }
+
+    if (open.size() == 0 && !start->hasRouteTo(goal))
+       return TravelNodeRoute();
 
     std::make_heap(open.begin(), open.end(), [](TravelNodeStub* i, TravelNodeStub* j) {return i->m_f < j->m_f; });
 

@@ -590,6 +590,21 @@ vector<WorldPosition> WorldPosition::getPathFromPath(vector<WorldPosition> start
     return fullPath;
 }
 
+uint32 WorldPosition::getUnitsNear(list<ObjectGuid>& units, float radius)
+{
+    units.remove_if([this, radius](ObjectGuid guid) {return this->sqDistance(WorldPosition(guid)) > radius * radius; });
+
+    return units.size();
+};
+
+uint32 WorldPosition::getUnitsAggro(list<ObjectGuid>& units, Player* bot)
+{
+    units.remove_if([this, bot](ObjectGuid guid) {Unit* unit = GuidPosition(guid).getUnit(); if (!unit) return true; return this->sqDistance(WorldPosition(guid)) > unit->GetAttackDistance(bot) * unit->GetAttackDistance(bot); });
+
+    return units.size();
+};
+
+
 
 bool FindPointCreatureData::operator()(CreatureDataPair const& dataPair)
 {

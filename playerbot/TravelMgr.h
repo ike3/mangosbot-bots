@@ -33,7 +33,7 @@ namespace ai
         WorldPosition(const WorldLocation loc) { wLoc = loc; }
         WorldPosition(const WorldPosition& pos) { wLoc = pos.wLoc; visitors = pos.visitors; }
         WorldPosition(uint32 mapid, float x, float y, float z = 0, float orientation = 0) { wLoc = WorldLocation(mapid, x, y, z, orientation); }
-        WorldPosition(const WorldObject* wo) { wLoc = WorldLocation(wo->GetMapId(), wo->GetPositionX(), wo->GetPositionY(), wo->GetPositionZ(), wo->GetOrientation()); }
+        WorldPosition(const WorldObject* wo) { if (wo) { wLoc = WorldLocation(wo->GetMapId(), wo->GetPositionX(), wo->GetPositionY(), wo->GetPositionZ(), wo->GetOrientation()); } }
         WorldPosition(CreatureDataPair const* cdPair) { if (cdPair) { wLoc = WorldLocation(cdPair->second.mapid, cdPair->second.posX, cdPair->second.posY, cdPair->second.posZ, cdPair->second.orientation); } }
         WorldPosition(GameObjectDataPair const* cdPair) { if (cdPair) { wLoc = WorldLocation(cdPair->second.mapid, cdPair->second.posX, cdPair->second.posY, cdPair->second.posZ, cdPair->second.orientation); } }
         WorldPosition(ObjectGuid guid);
@@ -171,6 +171,17 @@ namespace ai
         bool canPathTo(WorldPosition endPos, Unit* bot) { return endPos.isPathTo(getPathTo(endPos, bot)); }
 
         float getPathLength(vector<WorldPosition> points) { float dist; for (auto& p : points) if (&p == &points.front()) dist = 0; else dist += std::prev(&p, 1)->distance(p); return dist; }
+
+        bool GetReachableRandomPointOnGround(Player* bot, float radius, bool randomRange = true) {
+#ifndef MANGOSBOT_TWO         
+            return getMap()->GetReachableRandomPointOnGround(wLoc.coord_x, wLoc.coord_y, wLoc.coord_z, radius, randomRange);
+#else
+           return getMap()->GetReachableRandomPointOnGround(bot->GetPhaseMask(), wLoc.coord_x, wLoc.coord_y, wLoc.coord_z, radius, randomRange);
+#endif
+        }
+
+        uint32 getUnitsNear(list<ObjectGuid>& units, float radius);
+        uint32 getUnitsAggro(list<ObjectGuid>& units, Player* bot);
 
         //Creatures
         vector<CreatureDataPair const*> getCreaturesNear(float radius = 0, uint32 entry = 0);

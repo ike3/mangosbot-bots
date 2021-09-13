@@ -175,7 +175,7 @@ enum class TravelNodePathType : uint8
 
         TravelNodePath* setPathTo(TravelNode* node, TravelNodePath path = TravelNodePath(), bool isLink = true) { if (this != node) { paths[node] = path; if (isLink) links[node] = &paths[node]; return  &paths[node]; } else return nullptr; }
         bool hasPathTo(TravelNode* node) { return paths.find(node) != paths.end(); }
-        TravelNodePath* getPathTo(TravelNode* node) { return &paths.find(node)->second; }
+        TravelNodePath* getPathTo(TravelNode* node) { return &paths[node]; }
         bool hasCompletePathTo(TravelNode* node) { return hasPathTo(node) && getPathTo(node)->getComplete(); }
         TravelNodePath* buildPath(TravelNode* endNode, Unit* bot, bool postProcess = false);
 
