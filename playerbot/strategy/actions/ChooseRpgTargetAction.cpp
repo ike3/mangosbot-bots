@@ -208,9 +208,9 @@ bool ChooseRpgTargetAction::Execute(Event event)
                     priority = 110;
             }
 
-            if (unit->isVendor() && AI_VALUE(bool, "should sell") && AI_VALUE(bool, "can sell"))
+            if (unit->isVendor() && AI_VALUE2(bool, "group or", "should sell,can sell,following party,near leader"))
                     priority = 100;
-            else if (unit->isArmorer() && AI_VALUE(bool, "should repair") && AI_VALUE(bool, "can repair"))
+            else if (unit->isArmorer() && AI_VALUE2(bool, "group or", "should repair,can repair,following party,near leader"))
                     priority = 95;
             else if (AI_VALUE2(bool, "can turn in quest npc", unit->GetEntry()))
                 priority = 90;
