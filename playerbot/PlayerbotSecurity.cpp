@@ -68,6 +68,15 @@ PlayerbotSecurityLevel PlayerbotSecurity::LevelFor(Player* from, DenyReason* rea
         group = bot->GetGroup();
         if (!group)
         {
+            if (bot->GetMapId() != from->GetMapId() || bot->GetDistance(from) > sPlayerbotAIConfig.whisperDistance)
+            {
+                if (!bot->GetGuildId() || bot->GetGuildId() != from->GetGuildId())
+                {
+                    if (reason) *reason = PLAYERBOT_DENY_FAR;
+                    return PLAYERBOT_SECURITY_TALK;
+                }
+            }
+
             if (reason) *reason = PLAYERBOT_DENY_INVITE;
             return PLAYERBOT_SECURITY_INVITE;
         }
@@ -83,15 +92,6 @@ PlayerbotSecurityLevel PlayerbotSecurity::LevelFor(Player* from, DenyReason* rea
         {
             if (reason) *reason = PLAYERBOT_DENY_FULL_GROUP;
             return PLAYERBOT_SECURITY_TALK;
-        }
-
-        if (bot->GetMapId() != from->GetMapId() || bot->GetDistance(from) > sPlayerbotAIConfig.whisperDistance)
-        {
-            if (!bot->GetGuildId() || bot->GetGuildId() != from->GetGuildId())
-            {
-                if (reason) *reason = PLAYERBOT_DENY_FAR;
-                return PLAYERBOT_SECURITY_TALK;
-            }
         }
 
         if (bot->GetPlayerbotAI()->HasStrategy("bg", BOT_STATE_NON_COMBAT))
@@ -115,6 +115,17 @@ PlayerbotSecurityLevel PlayerbotSecurity::LevelFor(Player* from, DenyReason* rea
                 }
 #endif
             }
+        }
+
+        if (group->GetLeaderGuid() != bot->GetObjectGuid())
+        {
+            if (reason) *reason = PLAYERBOT_DENY_NOT_LEADER;
+            return PLAYERBOT_SECURITY_TALK;
+        }
+        else
+        {
+            if (reason) *reason = PLAYERBOT_DENY_IS_LEADER;
+            return PLAYERBOT_SECURITY_TALK;
         }
 
         if (reason) *reason = PLAYERBOT_DENY_INVITE;
@@ -194,6 +205,12 @@ bool PlayerbotSecurity::CheckLevelFor(PlayerbotSecurityLevel level, bool silent,
             break;
         case PLAYERBOT_DENY_FULL_GROUP:
             out << "I am in a full group. Will do it later";
+            break;
+        case PLAYERBOT_DENY_IS_LEADER:
+            out << "I am currently leading a group. I can invite you if you want.";
+            break;
+        case PLAYERBOT_DENY_NOT_LEADER:
+            out << "I am in a group with " << bot->GetPlayerbotAI()->GetGroupMaster()->GetName() << ". Will do it later.";
             break;
         case PLAYERBOT_DENY_BG:
             out << "I am in a queue for BG. Will do it later";
