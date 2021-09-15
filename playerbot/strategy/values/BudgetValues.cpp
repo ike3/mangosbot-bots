@@ -178,6 +178,9 @@ uint32 MoneyNeededForValue::Calculate()
     case NeedMoneyFor::consumables:
         moneyWanted = (level * level * level)/10; //Or level^3 (1s @ lvl10, 30s @ lvl30, 2g @ lvl60, 5g @ lvl80): Todo replace
         break;
+    case NeedMoneyFor::guild:
+        moneyWanted = bot->GetGuildId()?0:1000; //10 silver
+        break;
 	}    
 
 	return moneyWanted;

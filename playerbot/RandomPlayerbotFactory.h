@@ -23,10 +23,10 @@ class RandomPlayerbotFactory
         static void CreateRandomBots();
         static void CreateRandomGuilds();
         static void CreateRandomArenaTeams();
+        static string CreateRandomGuildName();
 
 	private:
         string CreateRandomBotName(uint8 gender);
-        static string CreateRandomGuildName();
         static string CreateRandomArenaTeamName();
 
     private:

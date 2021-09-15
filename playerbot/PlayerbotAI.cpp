@@ -345,6 +345,7 @@ bool PlayerbotAI::IsAllowedCommand(string text)
         unsecuredCommands.insert("wts");
         unsecuredCommands.insert("sendmail");
         unsecuredCommands.insert("invite");
+        unsecuredCommands.insert("leave");
     }
 
     for (set<string>::iterator i = unsecuredCommands.begin(); i != unsecuredCommands.end(); ++i)
@@ -2031,7 +2032,8 @@ enum BotTypeNumber
 
 uint32 PlayerbotAI::GetFixedBotNumer(BotTypeNumber typeNumber, uint32 maxNum, float cyclePerMin)
 {
-    std::mt19937 rng(typeNumber);
+    uint8 seedNumber = uint8(typeNumber);
+    std::mt19937 rng(seedNumber);
     uint32 randseed = rng();                                       //Seed random number
     uint32 randnum = bot->GetGUIDLow() + randseed;                 //Semi-random but fixed number for each bot.
 
@@ -2059,20 +2061,38 @@ enum GrouperType
 
 GrouperType PlayerbotAI::GetGrouperType()
 {
-    uint32 grouperNumber = GetFixedBotNumer(GROUPER_TYPE_NUMBER, 100, 0);
+    uint32 grouperNumber = GetFixedBotNumer(BotTypeNumber::GROUPER_TYPE_NUMBER, 100, 0);
 
     if (grouperNumber < 20)
-        return SOLO;
+        return GrouperType::SOLO;
     if (grouperNumber < 80)
-        return MEMBER;
+        return GrouperType::MEMBER;
     if (grouperNumber < 85)
-        return LEADER_2;
+        return GrouperType::LEADER_2;
     if (grouperNumber < 90)
-        return LEADER_3;
+        return GrouperType::LEADER_3;
     if (grouperNumber < 95)
-        return LEADER_4;
+        return GrouperType::LEADER_4;
     
-   return LEADER_5;
+   return GrouperType::LEADER_5;
+}
+
+GuilderType PlayerbotAI::GetGuilderType()
+{
+    uint32 grouperNumber = GetFixedBotNumer(BotTypeNumber::GUILDER_TYPE_NUMBER, 100, 0);
+
+    if (grouperNumber < 20)
+        return GuilderType::SOLO;
+    if (grouperNumber < 30)
+        return GuilderType::TINY;
+    if (grouperNumber < 40)
+        return GuilderType::SMALL;
+    if (grouperNumber < 60)
+        return GuilderType::MEDIUM;
+    if (grouperNumber < 80)
+        return GuilderType::LARGE;
+
+    return GuilderType::HUGE;
 }
 
 bool PlayerbotAI::HasPlayerNearby(WorldPosition* pos, float range)
@@ -2191,7 +2211,7 @@ bool PlayerbotAI::AllowActive(ActivityType activityType)
     if (sPlayerbotAIConfig.botActiveAlone >= 100)
         return true;
 
-    uint32 ActivityNumber = GetFixedBotNumer(ACTIVITY_TYPE_NUMBER, 100, sPlayerbotAIConfig.botActiveAlone * 0.01);
+    uint32 ActivityNumber = GetFixedBotNumer(BotTypeNumber::ACTIVITY_TYPE_NUMBER, 100, sPlayerbotAIConfig.botActiveAlone * 0.01);
 
     return ActivityNumber <= sPlayerbotAIConfig.botActiveAlone;           //The given percentage of bots should be active and rotate 1% of those active bots each minute.
 }
@@ -2564,6 +2584,9 @@ string PlayerbotAI::HandleRemoteCommand(string command)
                 break;
             case NeedMoneyFor::gear:
                 out << "gear";
+                break;
+            case NeedMoneyFor::guild:
+                out << "guild";
                 break;
             }
             out << " | " << ChatHelper::formatMoney(AI_VALUE2(uint32, "free money for", i)) << " / " << ChatHelper::formatMoney(AI_VALUE2(uint32, "money needed for", i)) << "\n";

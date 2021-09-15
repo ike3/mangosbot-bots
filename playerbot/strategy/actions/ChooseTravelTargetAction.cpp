@@ -9,28 +9,95 @@ using namespace ai;
 bool ChooseTravelTargetAction::Execute(Event event)
 {
     //Get the current travel target. This target is no longer active.
-    TravelTarget * target = context->GetValue<TravelTarget *>("travel target")->Get();
+    TravelTarget * oldTarget = context->GetValue<TravelTarget *>("travel target")->Get();
 
     //Select a new target to travel to. 
     TravelTarget newTarget = TravelTarget(ai);   
-    SetTarget(&newTarget, target);
+    getNewTarget(&newTarget, oldTarget);
 
     //If the new target is not active we failed.
     if (!newTarget.isActive())
-       return false;
+       return false;    
 
+    setNewTarget(&newTarget, oldTarget);
+
+    return true;
+}
+
+//Select a new travel target.
+//Currently this selectes mostly based on priority (current quest > new quest).
+//This works fine because destinations can be full (max 15 bots per quest giver, max 1 bot per quest mob).
+//
+//Eventually we want to rewrite this to be more intelligent.
+void ChooseTravelTargetAction::getNewTarget(TravelTarget* newTarget, TravelTarget* oldTarget)
+{
+    bool foundTarget = false;
+
+    foundTarget = SetGroupTarget(newTarget);                                 //Join groups members
+
+    //Enpty bags/repair
+    if (!foundTarget && urand(1, 100) > 10)                               //90% chance
+        if (AI_VALUE2(bool, "group or", "should sell,can sell,following party,near leader") || AI_VALUE2(bool, "group or", "should repair,can repair,following party,near leader"))
+            foundTarget = SetRpgTarget(newTarget);                           //Go to town to sell items or repair
+
+    //Rpg in city
+    if (!foundTarget && urand(1, 100) > 90)                               //10% chance
+        foundTarget = SetNpcFlagTarget(newTarget, { UNIT_NPC_FLAG_BANKER,UNIT_NPC_FLAG_BATTLEMASTER,UNIT_NPC_FLAG_AUCTIONEER });
+
+    //Grind for money
+    if (!foundTarget && AI_VALUE(bool, "should get money"))
+        if (urand(1, 100) > 66)
+        {
+            foundTarget = SetQuestTarget(newTarget, true);                    //Turn in quests for money.
+
+            if (!foundTarget)
+                foundTarget = SetQuestTarget(newTarget);                     //Do low level quests
+        }
+        else if (urand(1, 100) > 50)
+            foundTarget = SetGrindTarget(newTarget);                         //Go grind mobs for money
+        else
+            foundTarget = SetNewQuestTarget(newTarget);                      //Find a low level quest to do
+
+
+    //Continue
+    if (!foundTarget && urand(1, 100) > 10)                               //90% chance 
+        foundTarget = SetCurrentTarget(newTarget, oldTarget);                //Extend current target.
+
+    //Dungeon in group
+    if (!foundTarget && urand(1, 100) > 50)                               //50% chance
+        if (AI_VALUE(bool, "can fight boss"))
+            foundTarget = SetBossTarget(newTarget);                         //Go fight a (dungeon boss)
+
+    if (!foundTarget && urand(1, 100) > 5)                                //95% chance
+        foundTarget = SetQuestTarget(newTarget);                             //Do a target of an active quest.
+
+    if (!foundTarget && urand(1, 100) > 5)
+        foundTarget = SetNewQuestTarget(newTarget);                          //Find a new quest to do.
+
+    if (!foundTarget && ai->HasStrategy("explore", BOT_STATE_NON_COMBAT)) //Explore a unexplored sub-zone.
+        foundTarget = SetExploreTarget(newTarget);
+
+    // if (!foundTarget)
+    //foundTarget = SetRpgTarget(target);
+
+    if (!foundTarget)
+        SetNullTarget(newTarget);                                    //Idle a bit.
+}
+
+void ChooseTravelTargetAction::setNewTarget(TravelTarget* newTarget, TravelTarget* oldTarget)
+{
     //Tell the master where we are going.
-    if(!bot->GetGroup() || (ai->GetGroupMaster() == bot))
-        ReportTravelTarget(&newTarget, target);
+    if (!bot->GetGroup() || (ai->GetGroupMaster() == bot))
+        ReportTravelTarget(newTarget, oldTarget);
 
     //If we are heading to a creature/npc clear it from the ignore list. 
-    if (target && target == &newTarget && newTarget.getEntry())
+    if (oldTarget && oldTarget == newTarget && newTarget->getEntry())
     {
         set<ObjectGuid>& ignoreList = context->GetValue<set<ObjectGuid>&>("ignore rpg target")->Get();
-        
+
         for (auto& i : ignoreList)
         {
-            if (i.GetEntry() == newTarget.getEntry())
+            if (i.GetEntry() == newTarget->getEntry())
             {
                 ignoreList.erase(i);
             }
@@ -40,18 +107,18 @@ bool ChooseTravelTargetAction::Execute(Event event)
     }
 
     //Actually apply the new target to the travel target used by the bot.
-    target->copyTarget(&newTarget);
+    oldTarget->copyTarget(newTarget);
 
     //If we are idling but have a master. Idle only 10 seconds.
-    if (ai->GetMaster() && target->isActive() && target->getDestination()->getName() == "NullTravelDestination")
-        target->setExpireIn(10 * 1000);
+    if (ai->GetMaster() && oldTarget->isActive() && oldTarget->getDestination()->getName() == "NullTravelDestination")
+        oldTarget->setExpireIn(10 * IN_MILLISECONDS);
+    else if (oldTarget->isForced()) //Make sure travel goes into cooldown after getting to the destination.
+        oldTarget->setExpireIn(HOUR * IN_MILLISECONDS);
 
     //Clear rpg and pull/grind target. We want to travel, not hang around some more.
     context->GetValue<ObjectGuid>("rpg target")->Set(ObjectGuid());
     context->GetValue<ObjectGuid>("pull target")->Set(ObjectGuid());
-
-    return true;
-}
+};
 
 //Tell the master what travel target we are moving towards.
 //This should at some point be rewritten to be denser or perhaps logic moved to ->getTitle()
@@ -194,68 +261,6 @@ void ChooseTravelTargetAction::ReportTravelTarget(TravelTarget* newTarget, Trave
             ai->TellMaster("No where to travel. Idling a bit.");
         }
     }
-}
-
-//Select a new travel target.
-//Currently this selectes mostly based on priority (current quest > new quest).
-//This works fine because destinations can be full (max 15 bots per quest giver, max 1 bot per quest mob).
-//
-//Eventually we want to rewrite this to be more intelligent.
-bool ChooseTravelTargetAction::SetTarget(TravelTarget* target, TravelTarget* oldTarget)
-{
-    bool foundTarget = false;
-
-    foundTarget = SetGroupTarget(target);                                 //Join groups members
-
-    //Enpty bags/repair
-    if (!foundTarget && urand(1, 100) > 10)                               //90% chance
-        if (AI_VALUE2(bool, "group or", "should sell,can sell,following party,near leader") || AI_VALUE2(bool, "group or", "should repair,can repair,following party,near leader"))
-            foundTarget = SetRpgTarget(target);                           //Go to town to sell items or repair
-
-    //Rpg in city
-    if (!foundTarget && urand(1, 100) > 90)                               //10% chance
-        foundTarget = SetCapitalTarget(target);                           //Head to a city
-    
-    //Grind for money
-    if (!foundTarget && AI_VALUE(bool, "should get money"))
-        if (urand(1, 100) > 66)
-        {
-            foundTarget = SetQuestTarget(target,true);                    //Turn in quests for money.
-
-            if(!foundTarget)
-                foundTarget = SetQuestTarget(target);                     //Do low level quests
-        }
-        else if (urand(1,100) > 50)
-            foundTarget = SetGrindTarget(target);                         //Go grind mobs for money
-        else
-            foundTarget = SetNewQuestTarget(target);                      //Find a low level quest to do
-
-
-    //Continue
-    if (!foundTarget && urand(1, 100) > 10)                               //90% chance 
-        foundTarget = SetCurrentTarget(target, oldTarget);                //Extend current target.
-
-    //Dungeon in group
-    if (!foundTarget && urand(1, 100) > 50)                               //50% chance
-        if(AI_VALUE(bool, "can fight boss"))
-             foundTarget = SetBossTarget(target);                         //Go fight a (dungeon boss)
-
-    if (!foundTarget && urand(1, 100) > 5)                                //95% chance
-        foundTarget = SetQuestTarget(target);                             //Do a target of an active quest.
-
-    if (!foundTarget && urand(1, 100) > 5)
-        foundTarget = SetNewQuestTarget(target);                          //Find a new quest to do.
-
-    if (!foundTarget && ai->HasStrategy("explore", BOT_STATE_NON_COMBAT)) //Explore a unexplored sub-zone.
-        foundTarget = SetExploreTarget(target);
-
-   // if (!foundTarget)
-   //foundTarget = SetRpgTarget(target);
-
-    if (!foundTarget)
-        SetNullTarget(target);                                    //Idle a bit.
-
-    return target;
 }
 
 bool ChooseTravelTargetAction::getBestDestination(vector<TravelDestination*>* activeDestinations, vector<WorldPosition*>* activePoints)
@@ -582,7 +587,7 @@ bool ChooseTravelTargetAction::SetExploreTarget(TravelTarget* target)
     return target->isActive();
 }
 
-bool ChooseTravelTargetAction::SetCapitalTarget(TravelTarget* target)
+bool ChooseTravelTargetAction::SetNpcFlagTarget(TravelTarget* target, vector<NPCFlags> flags)
 {
     WorldPosition* botPos = &WorldPosition(bot);
 
@@ -598,7 +603,15 @@ bool ChooseTravelTargetAction::SetCapitalTarget(TravelTarget* target)
         if (!cInfo)
             continue;
 
-        if ((cInfo->NpcFlags & UNIT_NPC_FLAG_BANKER) == 0 && (cInfo->NpcFlags & UNIT_NPC_FLAG_BATTLEMASTER) == 0 && (cInfo->NpcFlags & UNIT_NPC_FLAG_AUCTIONEER) == 0)
+        bool foundFlag = false;
+        for(auto flag : flags)
+            if (cInfo->NpcFlags & flag)
+            {
+                foundFlag = true;
+                break;
+            }
+
+        if (!foundFlag)
             continue;
 
         FactionTemplateEntry const* factionEntry = sFactionTemplateStore.LookupEntry(cInfo->Faction);

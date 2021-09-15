@@ -834,7 +834,6 @@ bool QuestObjectiveTravelDestination::isActive(Player* bot) {
             if (target.GetEntry() == getEntry() && target.IsCreature() && ai->GetCreature(target) && ai->GetCreature(target)->IsAlive())
                 return true;
         
-        setCooldownDelay(1000);
         return false;
     }
 
@@ -1017,7 +1016,6 @@ bool BossTravelDestination::isActive(Player* bot)
             if (target.GetEntry() == getEntry() && target.IsCreature() && ai->GetCreature(target) && ai->GetCreature(target)->IsAlive())
                 return true;
 
-        setCooldownDelay(1000);
         return false;
     }
 
@@ -1048,6 +1046,8 @@ void TravelTarget::setTarget(TravelDestination* tDestination1, WorldPosition* wP
     wPosition = wPosition1;
     tDestination = tDestination1;
     groupCopy = groupCopy1;
+    forced = false;
+    radius = 0;
 
     addVisitors();
 
@@ -1057,6 +1057,7 @@ void TravelTarget::setTarget(TravelDestination* tDestination1, WorldPosition* wP
 void TravelTarget::copyTarget(TravelTarget* target) {
     setTarget(target->tDestination, target->wPosition);
     groupCopy = target->isGroupCopy();
+    forced = target->forced;
     extendRetryCount = target->extendRetryCount;
 }
 
@@ -1121,7 +1122,7 @@ bool TravelTarget::isActive() {
 
     if (isWorking())
         return true;
-
+    
     if (m_status == TRAVEL_STATUS_COOLDOWN)
         return true;
 
@@ -1146,7 +1147,7 @@ bool TravelTarget::isTraveling() {
 
     WorldPosition pos(bot);
 
-    bool HasArrived = tDestination->isIn(&pos);
+    bool HasArrived = tDestination->isIn(&pos, radius);
 
     if (HasArrived)
     {

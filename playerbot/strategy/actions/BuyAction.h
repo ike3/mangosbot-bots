@@ -17,4 +17,11 @@ namespace ai
 
     };
 
+    class BuyPetitionAction : public InventoryAction {
+    public:
+        BuyPetitionAction(PlayerbotAI* ai) : InventoryAction(ai, "buy petition") {}
+        virtual bool Execute(Event event);
+        virtual bool isUseful();
+        static bool canBuyPetition(Player* bot);
+    };
 }

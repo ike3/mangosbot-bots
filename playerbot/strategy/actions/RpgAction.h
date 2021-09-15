@@ -38,6 +38,7 @@ namespace ai
         void craft(ObjectGuid guid);
         void homebind(ObjectGuid guid);
         void queuebg(ObjectGuid guid);
+        void buyPetition(ObjectGuid guid);
     };
 
     class CRpgAction : public RpgAction {

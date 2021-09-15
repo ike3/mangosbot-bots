@@ -6,6 +6,7 @@
 #include "../values/PossibleRpgTargetsValue.h"
 #include "EmoteAction.h"
 #include "GossipDef.h"
+#include "BuyAction.h"
 
 
 using namespace ai;
@@ -90,6 +91,8 @@ bool RpgAction::Execute(Event event)
             elements.push_back(&RpgAction::homebind);
         if (unit->isBattleMaster() && CanQueueBg(guid))
             elements.push_back(&RpgAction::queuebg);
+        else if (unit->isGuildMaster() && BuyPetitionAction::canBuyPetition(bot))
+            elements.push_back(&RpgAction::buyPetition);
     }
     else
     {
@@ -237,7 +240,7 @@ void RpgAction::discover(ObjectGuid guid)
     bot->GetSession()->SendLearnNewTaxiNode(unit);
 
     unit->SetFacingTo(unit->GetAngle(bot));
-
+    
     setDelay();
 }
 
@@ -532,6 +535,26 @@ void RpgAction::queuebg(ObjectGuid guid)
 
     bot->GetPlayerbotAI()->GetAiObjectContext()->GetValue<uint32>("bg type")->Set((uint32)bgTypeId);
     ai->DoSpecificAction("free bg join");
+
+    Unit* unit = ai->GetUnit(guid);
+    if (unit)
+        unit->SetFacingTo(unit->GetAngle(bot));
+
+    if (oldSelection)
+        bot->SetSelectionGuid(oldSelection);
+
+    setDelay();
+}
+
+void RpgAction::buyPetition(ObjectGuid guid)
+{
+    ObjectGuid oldSelection = bot->GetSelectionGuid();
+
+    bot->SetSelectionGuid(guid);
+
+    BattleGroundTypeId bgTypeId = CanQueueBg(guid);
+
+    ai->DoSpecificAction("buy petition");
 
     Unit* unit = ai->GetUnit(guid);
     if (unit)

@@ -11,7 +11,8 @@ namespace ai
         travel = 4,
         consumables = 5,
         gear = 6,
-        anything = 7
+        guild = 7,
+        anything = 8
     };
 
     class MaxGearRepairCostValue : public Uint32CalculatedValue
@@ -51,7 +52,7 @@ namespace ai
         TotalMoneyNeededForValue(PlayerbotAI* ai) : Uint32CalculatedValue(ai, "total money needed for", 60) {}
         virtual uint32 Calculate();
     private:
-        vector<NeedMoneyFor> saveMoneyFor = { NeedMoneyFor::repair,NeedMoneyFor::ammo, NeedMoneyFor::spells, NeedMoneyFor::travel };
+        vector<NeedMoneyFor> saveMoneyFor = { NeedMoneyFor::guild,NeedMoneyFor::repair,NeedMoneyFor::ammo, NeedMoneyFor::spells, NeedMoneyFor::travel };
     };
 
     class FreeMoneyForValue : public Uint32CalculatedValue, public Qualified
@@ -64,7 +65,7 @@ namespace ai
     class ShouldGetMoneyValue : public BoolCalculatedValue
     {
     public:
-        ShouldGetMoneyValue(PlayerbotAI* ai) : BoolCalculatedValue(ai, "should get money") {}
+        ShouldGetMoneyValue(PlayerbotAI* ai) : BoolCalculatedValue(ai, "should get money",2) {}
         virtual bool Calculate() { return !AI_VALUE2(uint32, "free money for", (uint32)NeedMoneyFor::anything); };
     };
 }

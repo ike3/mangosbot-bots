@@ -168,13 +168,14 @@ enum ShieldWardDisplayId
    GREATER_WARD_OFSHIELDING = 38760,
 };
 
-enum BotTypeNumber
-{
-    GROUPER_TYPE_NUMBER = 1,
-    ACTIVITY_TYPE_NUMBER = 2
+enum class BotTypeNumber : uint8
+{    
+    ACTIVITY_TYPE_NUMBER = 1,
+    GROUPER_TYPE_NUMBER = 2,
+    GUILDER_TYPE_NUMBER = 3,
 };
 
-enum GrouperType
+enum class GrouperType : uint8
 {
     SOLO = 0,
     MEMBER = 1,
@@ -182,6 +183,16 @@ enum GrouperType
     LEADER_3 = 3,
     LEADER_4 = 4,
     LEADER_5 = 5
+};
+
+enum class GuilderType : uint8
+{
+    SOLO = 0,
+    TINY = 30,
+    SMALL = 50,
+    MEDIUM = 70,
+    LARGE = 120,
+    HUGE = 250
 };
 
 enum ActivityType
@@ -366,6 +377,7 @@ public:
     uint32 GetFixedBotNumer(BotTypeNumber typeNumber, uint32 maxNum = 100, float cyclePerMin = 1); 
 
     GrouperType GetGrouperType();
+    GuilderType GetGuilderType();
     bool HasPlayerNearby(WorldPosition* pos, float range = sPlayerbotAIConfig.reactDistance);
     bool HasPlayerNearby(float range = sPlayerbotAIConfig.reactDistance) { WorldPosition botPos(bot);  return HasPlayerNearby(&botPos, range); };
     bool HasManyPlayersNearby(uint32 trigerrValue = 20, float range = sPlayerbotAIConfig.sightDistance);

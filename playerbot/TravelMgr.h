@@ -310,8 +310,8 @@ namespace ai
         WorldPosition* nearestPoint(WorldPosition* pos);
         float distanceTo(WorldPosition* pos) { return nearestPoint(pos)->fDist(pos); }
         bool onMap(WorldPosition* pos) {return nearestPoint(pos)->getMapId() == pos->getMapId();}
-        virtual bool isIn(WorldPosition* pos) { return onMap(pos) && distanceTo(pos) <= radiusMin; }
-        virtual bool isOut(WorldPosition* pos) { return !onMap(pos) || distanceTo(pos) > radiusMax; }
+        virtual bool isIn(WorldPosition* pos, float radius = 0) { return onMap(pos) && distanceTo(pos) <= (radius? radius : radiusMin); }
+        virtual bool isOut(WorldPosition* pos, float radius = 0) { return !onMap(pos) || distanceTo(pos) > (radius? radius : radiusMax); }
         float getRadiusMin() { return radiusMin; }
 
         vector<WorldPosition*> touchingPoints(WorldPosition* pos);
@@ -338,7 +338,7 @@ namespace ai
         virtual Quest const* GetQuestTemplate() { return NULL; }
 
         virtual bool isActive(Player* bot) { return false; }
-
+        
         virtual string getName() { return "NullTravelDestination"; }
         virtual string getTitle() { return "no destination"; }
 
@@ -353,12 +353,12 @@ namespace ai
     class QuestTravelDestination : public TravelDestination
     {
     public:
-        QuestTravelDestination(uint32 questId1, float radiusMin1, float radiusMax1) : TravelDestination(radiusMin1, radiusMax1) { questId = questId1; questTemplate = sObjectMgr.GetQuestTemplate(questId);}
+        QuestTravelDestination(uint32 questId1, float radiusMin1, float radiusMax1) : TravelDestination(radiusMin1, radiusMax1) { questId = questId1; questTemplate = sObjectMgr.GetQuestTemplate(questId); }
 
         virtual Quest const* GetQuestTemplate() { return questTemplate;  }
 
         virtual bool isActive(Player* bot) { return bot->IsActiveQuest(questId); }
-
+        
         virtual string getName() { return "QuestTravelDestination"; }
         virtual int32 getEntry() { return NULL; }
         virtual string getTitle();
@@ -427,7 +427,7 @@ namespace ai
 
         virtual CreatureInfo const* getCreatureInfo() { return ObjectMgr::GetCreatureTemplate(entry); }
         virtual string getName() { return "RpgTravelDestination"; }
-        virtual int32 getEntry() { return NULL; }
+        virtual int32 getEntry() { return entry; }
         virtual string getTitle();
     protected:
         int32 entry;
@@ -539,6 +539,7 @@ namespace ai
         void incRetry(bool isMove) { if (isMove) moveRetryCount++; else extendRetryCount++; }
         void setRetry(bool isMove, uint32 newCount = 0) { if (isMove) moveRetryCount = newCount; else extendRetryCount = newCount; }
         void setForced(bool forced1) { forced = forced1; }
+        void setRadius(float radius1) { radius = radius1; }
 
         void copyTarget(TravelTarget* target);
         void addVisitors();
@@ -575,6 +576,7 @@ namespace ai
         uint32 statusTime = 0;
 
         bool forced = false;
+        float radius = 0;
         bool groupCopy = false;
         bool visitor = true;
 

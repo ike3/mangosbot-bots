@@ -27,4 +27,27 @@ namespace ai
         virtual bool Execute(Event event);
         virtual bool isUseful();
     };
+
+    //Generic guid member finder
+    class FindGuildMembers
+    {
+    public:
+        FindGuildMembers() {};
+
+        void operator()(Player* player) { data.push_back(player); };
+        vector<Player*> const GetResult() { return data; };
+    private:
+        vector<Player*> data;
+    };
+
+    class InviteGuildToGroupAction : public InviteNearbyToGroupAction
+    {
+    public:
+        InviteGuildToGroupAction(PlayerbotAI* ai, string name = "invite guild") : InviteNearbyToGroupAction(ai, name) {}
+
+        virtual bool Execute(Event event);
+        virtual bool isUseful() { return bot->GetGuildId() && InviteNearbyToGroupAction::isUseful(); };
+    private:
+        vector<Player*> getGuildMembers();
+    };
 }

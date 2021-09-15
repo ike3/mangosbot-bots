@@ -11,10 +11,11 @@ namespace ai
 
         virtual bool Execute(Event event)
         {            
-            return Leave();
+            Player* master = event.getOwner();
+            return Leave(master);
         }
 
-        virtual bool Leave();
+        virtual bool Leave(Player* player);
     };
 
     class PartyCommandAction : public LeaveGroupAction {
@@ -35,7 +36,7 @@ namespace ai
 
             Player* master = GetMaster();
             if (master && member == master->GetName())
-                return Leave();
+                return Leave(bot);
 
             return false;
         }
@@ -62,7 +63,7 @@ namespace ai
                 }
 
                 if (bot->GetName() == membername)
-                    return Leave();
+                    return Leave(bot);
             }
 
             if (p.GetOpcode() == CMSG_GROUP_UNINVITE_GUID)
@@ -72,7 +73,7 @@ namespace ai
                 p >> guid;
 
                 if (bot->GetObjectGuid() == guid)
-                    return Leave();
+                    return Leave(bot);
             }
 
             return false;
@@ -83,6 +84,11 @@ namespace ai
     class LeaveFarAwayAction : public LeaveGroupAction {
     public:
         LeaveFarAwayAction(PlayerbotAI* ai) : LeaveGroupAction(ai, "leave far away") {}
+
+        virtual bool Execute(Event event)
+        {
+            return Leave(nullptr);
+        }
 
         virtual bool isUseful();
     };

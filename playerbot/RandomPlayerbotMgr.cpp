@@ -190,7 +190,7 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed)
             out << bot->GetHealth() << ",";
             out << bot->GetPowerPercent() << ",";
             out << bot->GetMoney() << ",";
-            out << bot->GetPlayerbotAI()->GetGrouperType() << ",";
+            out << to_string(uint8(bot->GetPlayerbotAI()->GetGrouperType())) << ",";
 
             sPlayerbotAIConfig.log("player_location.csv", out.str().c_str());
         }

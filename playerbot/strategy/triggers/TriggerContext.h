@@ -10,6 +10,7 @@
 #include "TravelTriggers.h"
 #include "RtiTriggers.h"
 #include "CureTriggers.h"
+#include "GuildTriggers.h"
 
 namespace ai
 {
@@ -147,6 +148,9 @@ namespace ai
             creators["falling"] = &TriggerContext::falling;
             creators["falling far"] = &TriggerContext::falling_far;
             creators["hearth is faster"] = &TriggerContext::hearth_is_faster;
+
+            creators["petition signed"] = &TriggerContext::petition_signed;
+            creators["leave large guild"] = &TriggerContext::leave_large_guild;
         }
 
     private:
@@ -252,6 +256,9 @@ namespace ai
         static Trigger* falling(PlayerbotAI* ai) { return new IsFallingTrigger(ai); }
         static Trigger* falling_far(PlayerbotAI* ai) { return new IsFallingFarTrigger(ai); }
         static Trigger* hearth_is_faster(PlayerbotAI* ai) { return new HearthIsFasterTrigger(ai); }
-        static Trigger* player_wants_in_bg(PlayerbotAI* ai) { return new PlayerWantsInBattlegroundTrigger(ai); }  
+        static Trigger* player_wants_in_bg(PlayerbotAI* ai) { return new PlayerWantsInBattlegroundTrigger(ai); } 
+
+        static Trigger* petition_signed(PlayerbotAI* ai) { return new PetitionTurnInTrigger(ai); }
+        static Trigger* leave_large_guild(PlayerbotAI* ai) { return new LeaveLargeGuildTrigger(ai); }
     };
 };

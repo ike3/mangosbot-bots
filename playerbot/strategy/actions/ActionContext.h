@@ -47,6 +47,9 @@
 #include "BattleGroundJoinAction.h"
 #include "DestroyItemAction.h"
 #include "ResetInstancesAction.h"
+#include "BuyAction.h"
+#include "PetitionSignAction.h"
+#include "GuildAcceptAction.h"
 
 namespace ai
 {
@@ -137,6 +140,7 @@ namespace ai
 			creators["auto learn spell"] = &ActionContext::auto_learn_spell;
             creators["xp gain"] = &ActionContext::xp_gain;
             creators["invite nearby"] = &ActionContext::invite_nearby;
+            creators["invite guild"] = &ActionContext::invite_guild;
             creators["leave far away"] = &ActionContext::leave_far_away;
             creators["move to dark portal"] = &ActionContext::move_to_dark_portal;
             creators["move from dark portal"] = &ActionContext::move_from_dark_portal;
@@ -150,6 +154,13 @@ namespace ai
             creators["craft random item"] = &ActionContext::craft_random_item;
             creators["smart destroy item"] = &ActionContext::smart_destroy_item;
             creators["reset instances"] = &ActionContext::reset_instances;
+            creators["buy petition"] = &ActionContext::buy_petition;
+            creators["offer petition"] = &ActionContext::offer_petition;
+            creators["offer petition nearby"] = &ActionContext::offer_petition_nearby;
+            creators["turn in petition"] = &ActionContext::turn_in_petition;
+            creators["guild invite"] = &ActionContext::guild_invite;
+            creators["guild invite nearby"] = &ActionContext::guild_invite_nearby;
+            creators["guild leave"] = &ActionContext::guild_leave;
 
             // BG Tactics
             creators["bg tactics"] = &ActionContext::bg_tactics;
@@ -247,6 +258,7 @@ namespace ai
 		static Action* auto_learn_spell(PlayerbotAI* ai) { return new AutoLearnSpellAction(ai); }
         static Action* xp_gain(PlayerbotAI* ai) { return new XpGainAction(ai); }
         static Action* invite_nearby(PlayerbotAI* ai) { return new InviteNearbyToGroupAction(ai); }
+        static Action* invite_guild(PlayerbotAI* ai) { return new InviteGuildToGroupAction(ai); }
         static Action* leave_far_away(PlayerbotAI* ai) { return new LeaveFarAwayAction(ai); }
         static Action* move_to_dark_portal(PlayerbotAI* ai) { return new MoveToDarkPortalAction(ai); }
         static Action* use_dark_portal_azeroth(PlayerbotAI* ai) { return new DarkPortalAzerothAction(ai); }
@@ -260,6 +272,13 @@ namespace ai
         static Action* craft_random_item(PlayerbotAI* ai) { return new CraftRandomItemAction(ai); }
         static Action* smart_destroy_item(PlayerbotAI* ai) { return new SmartDestroyItemAction(ai); }
         static Action* reset_instances(PlayerbotAI* ai) { return new ResetInstancesAction(ai); }
+        static Action* buy_petition(PlayerbotAI* ai) { return new BuyPetitionAction(ai); }
+        static Action* offer_petition(PlayerbotAI* ai) { return new PetitionOfferAction(ai); }
+        static Action* offer_petition_nearby(PlayerbotAI* ai) { return new PetitionOfferNearbyAction(ai); }
+        static Action* turn_in_petition(PlayerbotAI* ai) { return new PetitionTurnInAction(ai); }
+        static Action* guild_invite(PlayerbotAI* ai) { return new GuidInviteAction(ai); }
+        static Action* guild_invite_nearby(PlayerbotAI* ai) { return new GuidInviteNearbyAction(ai); }
+        static Action* guild_leave(PlayerbotAI* ai) { return new GuildLeaveAction(ai); }
         
 
         // BG Tactics

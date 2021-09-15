@@ -44,11 +44,16 @@ namespace ai
 
             if (botAi)
             {
-                if (botAi->GetGrouperType() == SOLO && !botAi->HasRealPlayerMaster()) //Do not invite solo players. 
+                if (botAi->GetGrouperType() == GrouperType::SOLO && !botAi->HasRealPlayerMaster()) //Do not invite solo players. 
                     continue;
 
                 if (botAi->HasActivePlayerMaster()) //Do not invite alts of active players. 
                     continue;
+            }
+            else
+            {
+                if (!sPlayerbotAIConfig.randomBotGroupNearby)
+                    return false;
             }
 
             if (abs(int32(player->getLevel() - bot->getLevel())) > 2)
@@ -65,9 +70,6 @@ namespace ai
 
     bool InviteNearbyToGroupAction::isUseful()
     {
-        if (!sPlayerbotAIConfig.randomBotGroupNearby)
-            return false;
-
         if (bot->InBattleGround())
             return false;
         
@@ -76,7 +78,7 @@ namespace ai
 
         GrouperType grouperType = ai->GetGrouperType();
 
-        if (grouperType == SOLO || grouperType == MEMBER)
+        if (grouperType == GrouperType::SOLO || grouperType == GrouperType::MEMBER)
             return false;
 
         Group* group = bot->GetGroup();
@@ -91,13 +93,7 @@ namespace ai
 
             uint32 memberCount = group->GetMembersCount();
 
-            if (memberCount > 1 && grouperType == LEADER_2)
-                return false;
-
-            if (memberCount > 2 && grouperType == LEADER_3)
-                return false;
-
-            if (memberCount > 3 && grouperType == LEADER_4)
+            if (memberCount >= uint8(grouperType))
                 return false;
         }
 
@@ -105,5 +101,55 @@ namespace ai
            return false;
 
         return true;
+    }
+
+    vector<Player*> InviteGuildToGroupAction::getGuildMembers()
+    {
+        Guild* guild = sGuildMgr.GetGuildById(bot->GetGuildId());
+
+        FindGuildMembers worker;
+        guild->BroadcastWorker(worker);
+
+        return worker.GetResult();
+    }
+
+    bool InviteGuildToGroupAction::Execute(Event event)
+    {
+        for (auto& member : getGuildMembers())
+        {
+            Player* player = member;
+
+            if (!player)
+                continue;
+
+            if (player->GetGroup())
+                continue;
+
+            PlayerbotAI* botAi = player->GetPlayerbotAI();
+
+            if (botAi)
+            {
+                if (botAi->GetGrouperType() == GrouperType::SOLO && !botAi->HasRealPlayerMaster()) //Do not invite solo players. 
+                    continue;
+
+                if (botAi->HasActivePlayerMaster()) //Do not invite alts of active players. 
+                    continue;
+            }
+            else
+            {
+                if (!sPlayerbotAIConfig.randomBotGroupNearby)
+                    return false;
+            }
+
+            if (player->getLevel() + 2 < bot->getLevel())
+                continue;
+
+            if (player->getLevel() > bot->getLevel() + 20)
+                continue;
+
+            return Invite(player);
+        }
+
+        return false;
     }
 }

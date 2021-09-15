@@ -13,10 +13,12 @@ namespace ai
         virtual bool Execute(Event event);
         virtual bool isUseful();
 
-        private:
+        protected:
 
+        void getNewTarget(TravelTarget* newTarget, TravelTarget* oldTarget);
 
-        bool SetTarget(TravelTarget* target, TravelTarget* oldTarget);
+        void setNewTarget(TravelTarget* newTarget, TravelTarget* oldTarget);
+        void ReportTravelTarget(TravelTarget* newTarget, TravelTarget* oldTarget);
 
         bool getBestDestination(vector<TravelDestination*>* activeDestinations, vector<WorldPosition*>* activePoints);
 
@@ -28,15 +30,12 @@ namespace ai
         bool SetGrindTarget(TravelTarget* target);
         bool SetBossTarget(TravelTarget* target);
         bool SetExploreTarget(TravelTarget* target);
-        bool SetCapitalTarget(TravelTarget* target);
+        bool SetNpcFlagTarget(TravelTarget* target, vector<NPCFlags> flags);
         bool SetNullTarget(TravelTarget* target);
 
     public:
         static TravelDestination* FindDestination(Player* bot, string name);
     private:
-
-        void ReportTravelTarget(TravelTarget* newTarget, TravelTarget* oldTarget);
-
         virtual bool needForQuest(Unit* target);
         virtual bool needItemForQuest(uint32 itemId, const Quest* questTemplate, const QuestStatusData* questStatus);
     };

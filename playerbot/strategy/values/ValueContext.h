@@ -76,6 +76,7 @@
 #include "BudgetValues.h"
 #include "MaintenanceValues.h"
 #include "GroupValues.h"
+#include "GuildValues.h"
 
 namespace ai
 {
@@ -253,6 +254,8 @@ namespace ai
             creators["and"] = &ValueContext::and_value;
             creators["group and"] = &ValueContext::group_and;
             creators["group or"] = &ValueContext::group_or;
+
+            creators["petition signs"] = &ValueContext::petition_signs;
         }
 
     private:
@@ -416,5 +419,7 @@ namespace ai
         static UntypedValue* and_value(PlayerbotAI* ai) { return new BoolANDValue(ai); }
         static UntypedValue* group_and(PlayerbotAI* ai) { return new GroupBoolANDValue(ai); }
         static UntypedValue* group_or(PlayerbotAI* ai) { return new GroupBoolORValue(ai); }
+
+        static UntypedValue* petition_signs(PlayerbotAI* ai) { return new PetitionSignsValue(ai); }        
     };
 };
