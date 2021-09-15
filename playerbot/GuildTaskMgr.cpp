@@ -1138,4 +1138,6 @@ bool GuildTaskMgr::CheckTaskTransfer(string text, Player* ownerPlayer, Player* b
         } while (results->NextRow());
         delete results;
     }
+
+    return true;
 }
