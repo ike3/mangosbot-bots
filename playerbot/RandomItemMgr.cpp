@@ -389,6 +389,9 @@ bool RandomItemMgr::CheckItemStats(uint8 clazz, uint8 sp, uint8 ap, uint8 tank)
 
 bool RandomItemMgr::CanEquipArmor(uint8 clazz, uint32 level, ItemPrototype const* proto)
 {
+    if (proto->InventoryType == INVTYPE_TABARD)
+        return true;
+
     if ((clazz == CLASS_WARRIOR || clazz == CLASS_PALADIN || clazz == CLASS_SHAMAN)
             && proto->SubClass == ITEM_SUBCLASS_ARMOR_SHIELD)
         return true;
