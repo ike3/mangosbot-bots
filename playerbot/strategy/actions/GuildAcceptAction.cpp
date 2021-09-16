@@ -102,19 +102,25 @@ bool GuidInviteNearbyAction::Execute(Event event)
         if(player->GetGuildId()) //Promote or demote nearby members based on chance.
         {          
             MemberSlot* member = guild->GetMemberSlot(player->GetObjectGuid());
+            uint32 dCount = AI_VALUE(uint32, "death count");
 
-            if (member->RankId <= botMember->RankId)
-                continue;
-
-            if (botMember->RankId > 0 && guild->GetRankRights(botMember->RankId) & GR_RIGHT_PROMOTE && !urand(0, 10))
+            if(dCount < 2 || !urand(0,10))
+            if (botMember->RankId > member->RankId + 1 && guild->GetRankRights(botMember->RankId) & GR_RIGHT_PROMOTE && !urand(0, 10))
             {
-                member->ChangeRank(botMember->RankId - 1);
+                WorldPacket data(CMSG_GUILD_PROMOTE, 8);
+                data << player->GetName();
+                bot->GetSession()->HandleGuildPromoteOpcode(data);
+
                 continue;
             }
 
-            if (botMember->RankId > 0 && botMember->RankId < guild->GetLowestRank() - 1 && guild->GetRankRights(botMember->RankId) & GR_RIGHT_DEMOTE && !urand(0, 10))
+            if (dCount > 3 || !urand(0, 10))
+            if (botMember->RankId > member->RankId && botMember->RankId < guild->GetLowestRank() - 1 && guild->GetRankRights(botMember->RankId) & GR_RIGHT_DEMOTE && !urand(0, 10))
             {
-                member->ChangeRank(botMember->RankId + 1);
+                WorldPacket data(CMSG_GUILD_DEMOTE, 8);
+                data << player->GetName();
+                bot->GetSession()->HandleGuildDemoteOpcode(data);
+
                 continue;
             }
 
