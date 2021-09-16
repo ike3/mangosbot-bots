@@ -384,7 +384,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
         {
             if (entry == 8690)
             {
-                if (sServerFacade.IsSpellReady(bot, 8690, 6948))
+                if (sServerFacade.IsSpellReady(bot, 8690))
                 {
                     return ai->DoSpecificAction("hearthstone", Event("move action"));
 

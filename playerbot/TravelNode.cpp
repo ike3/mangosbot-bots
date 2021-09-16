@@ -1148,7 +1148,7 @@ TravelNodeRoute TravelNodeMap::getRoute(TravelNode* start, TravelNode* goal, Pla
         else
             startStub->currentGold = bot->GetMoney();
 
-        if (sServerFacade.IsSpellReady(bot, 8690, 6948))
+        if (sServerFacade.IsSpellReady(bot, 8690))
         {
             AiObjectContext* context = ai->GetAiObjectContext();
 
@@ -1157,8 +1157,10 @@ TravelNodeRoute TravelNodeMap::getRoute(TravelNode* start, TravelNode* goal, Pla
             {                
                 PortalNode* portNode = (PortalNode*)sTravelNodeMap.teleportNodes[bot->GetObjectGuid()][8690];
                 if (!portNode)
+                {
                     portNode = new PortalNode(start);
-
+                    sTravelNodeMap.teleportNodes[bot->GetObjectGuid()][8690] = portNode;
+                }
                 portNode->SetPortal(start, homeNode, 8690);
 
                 childNode = &m_stubs.insert(make_pair(portNode, TravelNodeStub(portNode))).first->second;
@@ -1166,7 +1168,7 @@ TravelNodeRoute TravelNodeMap::getRoute(TravelNode* start, TravelNode* goal, Pla
                 childNode->m_g = 10 * MINUTE;
                 childNode->m_h = childNode->dataNode->fDist(goal) / botSpeed;
                 childNode->m_f = childNode->m_g + childNode->m_h;
-                childNode->parent = startStub;
+                //childNode->parent = startStub;
 
                 open.push_back(childNode);
                 std::push_heap(open.begin(), open.end(), [](TravelNodeStub* i, TravelNodeStub* j) {return i->m_f < j->m_f; });
@@ -1303,7 +1305,10 @@ TravelNodeRoute TravelNodeMap::getRoute(WorldPosition* startPos, WorldPosition* 
     {
         TravelNode* botNode = sTravelNodeMap.teleportNodes[bot->GetObjectGuid()][0];
         if (!botNode)
+        {
             botNode = new TravelNode(startPos, "Bot Pos", false);
+            sTravelNodeMap.teleportNodes[bot->GetObjectGuid()][0] = botNode;
+        }
 
         botNode->setPoint(*startPos);
 

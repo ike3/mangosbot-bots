@@ -232,7 +232,8 @@ enum class TravelNodePathType : uint8
 
         void SetPortal(TravelNode* baseNode, TravelNode* endNode, uint32 portalSpell)
         {
-            TravelNode::TravelNode(baseNode);
+            nodeName = baseNode->getName(); 
+            point = *baseNode->getPosition();
             paths.clear();
             links.clear();
             TravelNodePath path(0.1f, 0.1f, (uint8)TravelNodePathType::teleportSpell, portalSpell, true);
