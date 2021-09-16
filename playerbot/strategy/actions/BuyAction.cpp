@@ -7,7 +7,6 @@
 #include "../values/ItemCountValue.h"
 #include "../values/ItemUsageValue.h"
 #include "../values/BudgetValues.h"
-#include "../../RandomPlayerbotFactory.h"
 
 using namespace ai;
 
@@ -195,85 +194,4 @@ bool BuyAction::BuyItem(VendorItemData const* tItems, ObjectGuid vendorguid, con
     }
 
     return false;
-}
-
-bool BuyPetitionAction::Execute(Event event)
-{
-    list<ObjectGuid> vendors = ai->GetAiObjectContext()->GetValue<list<ObjectGuid> >("nearest npcs")->Get();
-    bool vendored = false, result = false;
-    for (list<ObjectGuid>::iterator i = vendors.begin(); i != vendors.end(); ++i)
-    {
-        ObjectGuid vendorguid = *i;
-        Creature* pCreature = bot->GetNPCIfCanInteractWith(vendorguid, UNIT_NPC_FLAG_PETITIONER);
-        if (!pCreature)
-            continue;
-
-        string guildName = RandomPlayerbotFactory::CreateRandomGuildName();
-        if (guildName.empty())
-            continue;
-
-        WorldPacket data(CMSG_PETITION_BUY, 8 + 4 + 4 + 4);
-
-        data << pCreature->GetObjectGuid();
-        data << uint32(0);
-        data << uint32(0);
-        data << guildName;
-        data << uint32(0);
-        data << uint32(0);
-        data << uint32(0);
-        data << uint32(0);
-        data << uint32(0);
-        data << uint32(0);
-        data << uint32(0);
-        data << uint32(0);
-        data << uint32(0);
-        data << uint32(0);
-        data << uint16(0);
-        data << uint8(0);
-
-        data << uint32(0); // index
-        data << uint32(0);
-
-        bot->GetSession()->HandlePetitionBuyOpcode(data);
-
-        return true;
-    }
-
-    return false;
-}
-
-bool BuyPetitionAction::isUseful()
-{
-    return canBuyPetition(bot);
-};
-
-bool BuyPetitionAction::canBuyPetition(Player* bot)
-{
-    if (bot->GetGuildId())
-        return false;
-
-    if (bot->GetGuildIdInvited())
-        return false;
-
-    if (bot->GetItemByEntry(5863))
-        return false;
-
-    PlayerbotAI* ai = bot->GetPlayerbotAI();
-    AiObjectContext* context = ai->GetAiObjectContext();
-
-    if (ai->GetGuilderType() == GuilderType::SOLO)
-        return false;
-
-    if (ai->GetGrouperType() == GrouperType::SOLO)
-        return false;
-
-    if (!ai->HasStrategy("guild", BOT_STATE_NON_COMBAT))
-        return false;
-
-    uint32 cost = 1000; //GUILD_CHARTER_COST;
-
-    if (AI_VALUE2(uint32, "free money for", uint32(NeedMoneyFor::guild)) < cost)
-        return false;
-
-    return true;
 }

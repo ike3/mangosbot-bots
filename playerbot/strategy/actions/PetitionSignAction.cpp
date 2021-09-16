@@ -1,6 +1,7 @@
 #include "botpch.h"
 #include "../../playerbot.h"
 #include "PetitionSignAction.h"
+#include "../../RandomPlayerbotFactory.h"
 #ifndef MANGOSBOT_ZERO
 #ifdef CMANGOS
 #include "Arena/ArenaTeam.h"
@@ -96,6 +97,87 @@ bool PetitionSignAction::Execute(Event event)
         return true;
     }
     return false;
+}
+
+bool BuyPetitionAction::Execute(Event event)
+{
+    list<ObjectGuid> vendors = ai->GetAiObjectContext()->GetValue<list<ObjectGuid> >("nearest npcs")->Get();
+    bool vendored = false, result = false;
+    for (list<ObjectGuid>::iterator i = vendors.begin(); i != vendors.end(); ++i)
+    {
+        ObjectGuid vendorguid = *i;
+        Creature* pCreature = bot->GetNPCIfCanInteractWith(vendorguid, UNIT_NPC_FLAG_PETITIONER);
+        if (!pCreature)
+            continue;
+
+        string guildName = RandomPlayerbotFactory::CreateRandomGuildName();
+        if (guildName.empty())
+            continue;
+
+        WorldPacket data(CMSG_PETITION_BUY, 8 + 4 + 4 + 4);
+
+        data << pCreature->GetObjectGuid();
+        data << uint32(0);
+        data << uint32(0);
+        data << guildName;
+        data << uint32(0);
+        data << uint32(0);
+        data << uint32(0);
+        data << uint32(0);
+        data << uint32(0);
+        data << uint32(0);
+        data << uint32(0);
+        data << uint32(0);
+        data << uint32(0);
+        data << uint32(0);
+        data << uint16(0);
+        data << uint8(0);
+
+        data << uint32(0); // index
+        data << uint32(0);
+
+        bot->GetSession()->HandlePetitionBuyOpcode(data);
+
+        return true;
+    }
+
+    return false;
+}
+
+bool BuyPetitionAction::isUseful()
+{
+    return canBuyPetition(bot);
+};
+
+bool BuyPetitionAction::canBuyPetition(Player* bot)
+{
+    if (bot->GetGuildId())
+        return false;
+
+    if (bot->GetGuildIdInvited())
+        return false;
+
+    if (bot->GetItemByEntry(5863))
+        return false;
+
+    PlayerbotAI* ai = bot->GetPlayerbotAI();
+    AiObjectContext* context = ai->GetAiObjectContext();
+
+    if (ai->GetGuilderType() == GuilderType::SOLO)
+        return false;
+
+    if (ai->GetGrouperType() == GrouperType::SOLO)
+        return false;
+
+    if (!ai->HasStrategy("guild", BOT_STATE_NON_COMBAT))
+        return false;
+
+    uint32 cost = 1000; //GUILD_CHARTER_COST;
+
+    if (AI_VALUE2(uint32, "free money for", uint32(NeedMoneyFor::guild)) < cost)
+        return false;
+
+    return true;
 }
 
 bool PetitionOfferAction::Execute(Event event)
@@ -246,6 +328,31 @@ bool PetitionTurnInAction::Execute(Event event)
     TravelTarget newTarget = TravelTarget(ai);
 
     bool foundTarget = SetNpcFlagTarget(&newTarget, { UNIT_NPC_FLAG_PETITIONER });
+
+    if (!foundTarget || !newTarget.isActive())
+        return false;
+
+    newTarget.setRadius(INTERACTION_DISTANCE);
+
+    setNewTarget(&newTarget, oldTarget);
+
+    return true;
+};
+
+
+bool BuyTabardAction::Execute(Event event)
+{
+    bool canBuy = ai->DoSpecificAction("buy", Event("buy tabard", "Hitem:5976:"));
+
+    if (canBuy)
+        return true;
+
+    TravelTarget* oldTarget = context->GetValue<TravelTarget*>("travel target")->Get();
+
+    //Select a new target to travel to. 
+    TravelTarget newTarget = TravelTarget(ai);
+
+    bool foundTarget = SetNpcFlagTarget(&newTarget, { UNIT_NPC_FLAG_TABARDDESIGNER }, "Tabard Vendor", { 5976 });
 
     if (!foundTarget || !newTarget.isActive())
         return false;

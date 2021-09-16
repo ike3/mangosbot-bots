@@ -6,7 +6,7 @@
 #include "../values/PossibleRpgTargetsValue.h"
 #include "EmoteAction.h"
 #include "GossipDef.h"
-#include "BuyAction.h"
+#include "PetitionSignAction.h"
 
 
 using namespace ai;

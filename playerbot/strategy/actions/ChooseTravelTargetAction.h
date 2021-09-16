@@ -30,7 +30,7 @@ namespace ai
         bool SetGrindTarget(TravelTarget* target);
         bool SetBossTarget(TravelTarget* target);
         bool SetExploreTarget(TravelTarget* target);
-        bool SetNpcFlagTarget(TravelTarget* target, vector<NPCFlags> flags);
+        bool SetNpcFlagTarget(TravelTarget* target, vector<NPCFlags> flags, string name = "", vector<uint32> items = {});
         bool SetNullTarget(TravelTarget* target);
 
     public:

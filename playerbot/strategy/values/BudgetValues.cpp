@@ -155,33 +155,39 @@ uint32 MoneyNeededForValue::Calculate()
 
 	uint32 level = bot->getLevel();
 
-	switch (needMoneyFor)
-	{
-	case NeedMoneyFor::none:
-		moneyWanted = 0;
-		break;
-	case NeedMoneyFor::repair:
-		moneyWanted = AI_VALUE(uint32, "max repair cost");
-		break;
+    switch (needMoneyFor)
+    {
+    case NeedMoneyFor::none:
+        moneyWanted = 0;
+        break;
+    case NeedMoneyFor::repair:
+        moneyWanted = AI_VALUE(uint32, "max repair cost");
+        break;
     case NeedMoneyFor::ammo:
         moneyWanted = (bot->getClass() == CLASS_HUNTER) ? (level * level * level) / 10 : 0; //Or level^3 (1s @ lvl10, 30s @ lvl30, 2g @ lvl60, 5g @ lvl80): Todo replace
         break;
-	case NeedMoneyFor::spells:
-		moneyWanted = AI_VALUE(uint32, "train cost");
-		break;
-	case NeedMoneyFor::travel:
-		moneyWanted = bot->isTaxiCheater() ? 0 : 1500; //15s for traveling half a continent. Todo: Add better calculation
-		break;
-	case NeedMoneyFor::gear:
-		moneyWanted = level * level * level; //Or level^3 (10s @ lvl10, 3g @ lvl30, 20g @ lvl60, 50g @ lvl80): Todo replace
-		break;
+    case NeedMoneyFor::spells:
+        moneyWanted = AI_VALUE(uint32, "train cost");
+        break;
+    case NeedMoneyFor::travel:
+        moneyWanted = bot->isTaxiCheater() ? 0 : 1500; //15s for traveling half a continent. Todo: Add better calculation
+        break;
+    case NeedMoneyFor::gear:
+        moneyWanted = level * level * level; //Or level^3 (10s @ lvl10, 3g @ lvl30, 20g @ lvl60, 50g @ lvl80): Todo replace
+        break;
     case NeedMoneyFor::consumables:
-        moneyWanted = (level * level * level)/10; //Or level^3 (1s @ lvl10, 30s @ lvl30, 2g @ lvl60, 5g @ lvl80): Todo replace
+        moneyWanted = (level * level * level) / 10; //Or level^3 (1s @ lvl10, 30s @ lvl30, 2g @ lvl60, 5g @ lvl80): Todo replace
         break;
     case NeedMoneyFor::guild:
-        moneyWanted = bot->GetGuildId()?0:1000; //10 silver
+        if (ai->HasStrategy("guild", BOT_STATE_NON_COMBAT))
+        {
+            if (bot->GetGuildId())
+                moneyWanted = bot->GetItemByEntry(5976) ? 0 : 10000; //1g (tabard)
+            else
+                moneyWanted = bot->GetItemByEntry(5863) ? 0 : 10000; //10s (guild charter)
+        }
         break;
-	}    
+    }
 
 	return moneyWanted;
 };

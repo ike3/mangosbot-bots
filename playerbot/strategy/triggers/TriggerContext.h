@@ -150,6 +150,7 @@ namespace ai
             creators["hearth is faster"] = &TriggerContext::hearth_is_faster;
 
             creators["petition signed"] = &TriggerContext::petition_signed;
+            creators["buy tabard"] = &TriggerContext::buy_tabard;
             creators["leave large guild"] = &TriggerContext::leave_large_guild;
         }
 
@@ -259,6 +260,7 @@ namespace ai
         static Trigger* player_wants_in_bg(PlayerbotAI* ai) { return new PlayerWantsInBattlegroundTrigger(ai); } 
 
         static Trigger* petition_signed(PlayerbotAI* ai) { return new PetitionTurnInTrigger(ai); }
+        static Trigger* buy_tabard(PlayerbotAI* ai) { return new BuyTabardTrigger(ai); }        
         static Trigger* leave_large_guild(PlayerbotAI* ai) { return new LeaveLargeGuildTrigger(ai); }
     };
 };

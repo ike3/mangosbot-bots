@@ -161,6 +161,7 @@ namespace ai
             creators["guild invite"] = &ActionContext::guild_invite;
             creators["guild invite nearby"] = &ActionContext::guild_invite_nearby;
             creators["guild leave"] = &ActionContext::guild_leave;
+            creators["buy tabard"] = &ActionContext::buy_tabard;
 
             // BG Tactics
             creators["bg tactics"] = &ActionContext::bg_tactics;
@@ -279,6 +280,8 @@ namespace ai
         static Action* guild_invite(PlayerbotAI* ai) { return new GuidInviteAction(ai); }
         static Action* guild_invite_nearby(PlayerbotAI* ai) { return new GuidInviteNearbyAction(ai); }
         static Action* guild_leave(PlayerbotAI* ai) { return new GuildLeaveAction(ai); }
+        static Action* buy_tabard(PlayerbotAI* ai) { return new BuyTabardAction(ai); }
+        
         
 
         // BG Tactics

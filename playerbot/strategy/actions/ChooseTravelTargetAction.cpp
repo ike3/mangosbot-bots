@@ -587,7 +587,9 @@ bool ChooseTravelTargetAction::SetExploreTarget(TravelTarget* target)
     return target->isActive();
 }
 
-bool ChooseTravelTargetAction::SetNpcFlagTarget(TravelTarget* target, vector<NPCFlags> flags)
+char* strstri(const char* haystack, const char* needle);
+
+bool ChooseTravelTargetAction::SetNpcFlagTarget(TravelTarget* target, vector<NPCFlags> flags, string name, vector<uint32> items)
 {
     WorldPosition* botPos = &WorldPosition(bot);
 
@@ -613,6 +615,41 @@ bool ChooseTravelTargetAction::SetNpcFlagTarget(TravelTarget* target, vector<NPC
 
         if (!foundFlag)
             continue;
+
+        if (!name.empty() && !strstri(cInfo->Name, name.c_str()) && !strstri(cInfo->SubName, name.c_str()))
+            continue;
+
+        if (!items.empty())
+        {
+            bool foundItem = false;
+            VendorItemData const* vItems;
+            VendorItemData const* tItems;
+
+            vItems = sObjectMgr.GetNpcVendorItemList(d->getEntry());
+
+//#ifndef MANGOSBOT_ZERO    
+            uint32 vendorId = cInfo->VendorTemplateId;
+            if (vendorId)
+                tItems = sObjectMgr.GetNpcVendorTemplateItemList(vendorId);
+//#endif
+            for (auto item : items)
+            {
+                if (vItems->FindItem(item))
+                {
+                    foundItem = true;
+                    break;
+                }
+
+                if (!tItems->Empty() && tItems->FindItem(item))
+                {
+                    foundItem = true;
+                    break;
+                }
+            }
+
+            if (!foundItem)
+                continue;
+        }
 
         FactionTemplateEntry const* factionEntry = sFactionTemplateStore.LookupEntry(cInfo->Faction);
         ReputationRank reaction = ai->getReaction(factionEntry);

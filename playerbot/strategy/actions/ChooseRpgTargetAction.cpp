@@ -6,7 +6,7 @@
 #include "../../Travelmgr.h"
 #include "../values/Formations.h"
 #include "../values/BudgetValues.h"
-#include "BuyAction.h"
+#include "PetitionSignAction.h"
 
 using namespace ai;
 

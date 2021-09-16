@@ -14,14 +14,5 @@ namespace ai
         bool BuyItem(VendorItemData const* tItems, ObjectGuid vendorguid, const ItemPrototype* proto);
         bool TradeItem(FindItemVisitor *visitor, int8 slot);
         bool TradeItem(const Item& item, int8 slot);
-
-    };
-
-    class BuyPetitionAction : public InventoryAction {
-    public:
-        BuyPetitionAction(PlayerbotAI* ai) : InventoryAction(ai, "buy petition") {}
-        virtual bool Execute(Event event);
-        virtual bool isUseful();
-        static bool canBuyPetition(Player* bot);
     };
 }
