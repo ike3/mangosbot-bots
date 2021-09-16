@@ -67,9 +67,10 @@ bool RepairAllAction::Execute(Event event)
             ostringstream out;
             out << "Repair: " << chat->formatMoney(totalCost) << " (" << unit->GetName() << ")";
             ai->TellMasterNoFacing(out.str());
-
             bot->PlayDistanceSound(1116);
         }
+
+        context->GetValue<uint32>("death count")->Set(0);
 
         return true;
     }
