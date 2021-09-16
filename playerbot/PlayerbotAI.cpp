@@ -2063,7 +2063,7 @@ GrouperType PlayerbotAI::GetGrouperType()
 {
     uint32 grouperNumber = GetFixedBotNumer(BotTypeNumber::GROUPER_TYPE_NUMBER, 100, 0);
 
-    if (grouperNumber < 20)
+    if (grouperNumber < 20 && !HasRealPlayerMaster())
         return GrouperType::SOLO;
     if (grouperNumber < 80)
         return GrouperType::MEMBER;
@@ -2081,7 +2081,7 @@ GuilderType PlayerbotAI::GetGuilderType()
 {
     uint32 grouperNumber = GetFixedBotNumer(BotTypeNumber::GUILDER_TYPE_NUMBER, 100, 0);
 
-    if (grouperNumber < 20)
+    if (grouperNumber < 20 && !HasRealPlayerMaster())
         return GuilderType::SOLO;
     if (grouperNumber < 30)
         return GuilderType::TINY;
