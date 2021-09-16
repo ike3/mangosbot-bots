@@ -69,6 +69,14 @@ namespace ai
         if (ai->GetGrouperType() == GrouperType::SOLO)
             return true;
 
+        uint32 dCount = AI_VALUE(uint32, "death count");
+
+        if (dCount > 9)
+            return true;
+
+        if (dCount > 4 && !ai->HasRealPlayerMaster())
+            return true;
+
         if (bot->GetGuildId() == master->GetGuildId())
             return false;
 
