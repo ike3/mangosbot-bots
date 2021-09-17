@@ -93,20 +93,20 @@ bool GuildManageNearbyAction::Execute(Event event)
             uint32 dCount = AI_VALUE(uint32, "death count");
 
             if(dCount < 2 || !urand(0,10))
-            //if (botMember->RankId > member->RankId + 1 && guild->GetRankRights(botMember->RankId) & GR_RIGHT_PROMOTE && !urand(0, 10))
-            {
-                ai->DoSpecificAction("guild promote", Event("guild management", guid));
+                if (!urand(0, 10))
+                {
+                    ai->DoSpecificAction("guild promote", Event("guild management", guid));
 
-                continue;
-            }
+                    continue;
+                }
 
             if (dCount > 3 || !urand(0, 10))
-            //if (botMember->RankId > member->RankId && botMember->RankId < guild->GetLowestRank() - 1 && guild->GetRankRights(botMember->RankId) & GR_RIGHT_DEMOTE && !urand(0, 10))
-            {
-                ai->DoSpecificAction("guild demote", Event("guild management", guid));
+                if (!urand(0, 10))
+                {
+                    ai->DoSpecificAction("guild demote", Event("guild management", guid));
 
-                continue;
-            }
+                    continue;
+                }
 
             continue;
         }
