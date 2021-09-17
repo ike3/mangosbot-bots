@@ -15,9 +15,9 @@ bool MoveToTravelTargetAction::Execute(Event event)
 
     WorldPosition botLocation(bot);
     WorldLocation location = target->getLocation();
-
+    
     Group* group = bot->GetGroup();
-    if (group && !urand(0, 1))
+    if (group && !urand(0, 1) && bot == ai->GetGroupMaster())
     {        
         for (GroupReference* ref = group->GetFirstMember(); ref; ref = ref->next())
         {
@@ -29,6 +29,9 @@ bool MoveToTravelTargetAction::Execute(Event event)
                 continue;
 
             if (!member->IsMoving())
+                continue;
+
+            if (member->GetPlayerbotAI() && !member->GetPlayerbotAI()->HasStrategy("follow", BOT_STATE_NON_COMBAT))
                 continue;
 
             WorldPosition memberPos(member);
