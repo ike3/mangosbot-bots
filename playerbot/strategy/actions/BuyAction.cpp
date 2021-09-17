@@ -21,11 +21,6 @@ bool BuyAction::Execute(Event event)
     else
     {
         itemIds = chat->parseItems(link);
-
-        Player* master = GetMaster();
-
-        if (!master)
-            return false;
     }
 
     list<ObjectGuid> vendors = ai->GetAiObjectContext()->GetValue<list<ObjectGuid> >("nearest npcs")->Get();
