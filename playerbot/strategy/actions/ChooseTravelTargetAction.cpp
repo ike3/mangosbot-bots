@@ -634,17 +634,19 @@ bool ChooseTravelTargetAction::SetNpcFlagTarget(TravelTarget* target, vector<NPC
 //#endif
             for (auto item : items)
             {
-                if (vItems->FindItem(item))
-                {
-                    foundItem = true;
-                    break;
-                }
+                for(auto vitem : vItems->m_items) 
+                    if (vitem->item == item)
+                    {
+                        foundItem = true;
+                        break;
+                    }
 
-                if (!tItems->Empty() && tItems->FindItem(item))
-                {
-                    foundItem = true;
-                    break;
-                }
+                for (auto titem : tItems->m_items)
+                    if (titem->item == item)
+                    {
+                        foundItem = true;
+                        break;
+                    }
             }
 
             if (!foundItem)
