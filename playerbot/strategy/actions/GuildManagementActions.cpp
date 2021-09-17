@@ -60,7 +60,7 @@ bool GuidManageAction::Execute(Event event)
     if (!player || !PlayerIsValid(player) || player == bot)
         return false;
 
-    WorldPacket data(opcode, 8);
+    WorldPacket data(Opcodes(opcode), 8);
 
     data << player->GetName();
 
@@ -95,7 +95,7 @@ bool GuildManageNearbyAction::Execute(Event event)
             if(dCount < 2 || !urand(0,10))
                 if (!urand(0, 10))
                 {
-                    ai->DoSpecificAction("guild promote", Event("guild management", guid));
+                    ai->DoSpecificAction("guild promote", Event("guild management", guid), true);
 
                     continue;
                 }
@@ -103,7 +103,7 @@ bool GuildManageNearbyAction::Execute(Event event)
             if (dCount > 3 || !urand(0, 10))
                 if (!urand(0, 10))
                 {
-                    ai->DoSpecificAction("guild demote", Event("guild management", guid));
+                    ai->DoSpecificAction("guild demote", Event("guild management", guid), true);
 
                     continue;
                 }
