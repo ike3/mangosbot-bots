@@ -654,6 +654,7 @@ void PlayerbotAI::DoNextAction()
 
         //Ideally we want to have the leader as master.
         Player* newMaster = ai->GetGroupMaster();
+        Player* playerMaster = nullptr;
 
         //Are there any non-bot players in the group?
         if (!newMaster || newMaster->GetPlayerbotAI())
@@ -662,6 +663,9 @@ void PlayerbotAI::DoNextAction()
                 Player* member = gref->getSource();
 
                 if (!member)
+                    continue;
+
+                if (member == bot)
                     continue;
 
                 if (member == newMaster)
@@ -674,11 +678,18 @@ void PlayerbotAI::DoNextAction()
                     continue;
 
                 if (member->GetPlayerbotAI())
+                {
+                    if (member->GetPlayerbotAI()->IsRealPlayer())
+                        playerMaster = member;
                     continue;
+                }
 
                 newMaster = member;
                 break;
             }
+
+        if (!newMaster && playerMaster)
+            newMaster = playerMaster;
 
         if (newMaster && (!master || master != newMaster) && bot != newMaster)
         {
