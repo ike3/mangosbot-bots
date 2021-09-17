@@ -208,4 +208,9 @@ ChatCommandHandlerStrategy::ChatCommandHandlerStrategy(PlayerbotAI* ai) : PassTr
     supported.push_back("ra");
     supported.push_back("give leader");
     supported.push_back("cheat");
+    supported.push_back("ginvite");
+    supported.push_back("guild promote");
+    supported.push_back("guild demote");
+    supported.push_back("guild remove");
+    supported.push_back("guild leave");
 }

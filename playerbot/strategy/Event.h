@@ -16,6 +16,7 @@ namespace ai
         Event(string source) : source(source) {}
         Event(string source, string param, Player* owner = NULL) : source(source), param(param), owner(owner) {}
         Event(string source, WorldPacket &packet, Player* owner = NULL) : source(source), packet(packet), owner(owner) {}
+        Event(string source, ObjectGuid object, Player* owner = NULL) : source(source), owner(owner) { packet << object; }
         virtual ~Event() {}
 
 	public:
@@ -30,7 +31,7 @@ namespace ai
         string source;
         string param;
         WorldPacket packet;
-        ObjectGuid object;
-        Player* owner;
+        //ObjectGuid object;
+        Player* owner = nullptr;
 	};
 }

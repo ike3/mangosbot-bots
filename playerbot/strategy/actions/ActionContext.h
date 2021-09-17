@@ -48,8 +48,10 @@
 #include "DestroyItemAction.h"
 #include "ResetInstancesAction.h"
 #include "BuyAction.h"
-#include "PetitionSignAction.h"
+#include "GuildCreateActions.h"
+#include "GuildManagementActions.h"
 #include "GuildAcceptAction.h"
+
 
 namespace ai
 {
@@ -158,10 +160,8 @@ namespace ai
             creators["offer petition"] = &ActionContext::offer_petition;
             creators["offer petition nearby"] = &ActionContext::offer_petition_nearby;
             creators["turn in petition"] = &ActionContext::turn_in_petition;
-            creators["guild invite"] = &ActionContext::guild_invite;
-            creators["guild invite nearby"] = &ActionContext::guild_invite_nearby;
-            creators["guild leave"] = &ActionContext::guild_leave;
             creators["buy tabard"] = &ActionContext::buy_tabard;
+            creators["guild manage nearby"] = &ActionContext::guild_manage_nearby;
 
             // BG Tactics
             creators["bg tactics"] = &ActionContext::bg_tactics;
@@ -277,11 +277,9 @@ namespace ai
         static Action* offer_petition(PlayerbotAI* ai) { return new PetitionOfferAction(ai); }
         static Action* offer_petition_nearby(PlayerbotAI* ai) { return new PetitionOfferNearbyAction(ai); }
         static Action* turn_in_petition(PlayerbotAI* ai) { return new PetitionTurnInAction(ai); }
-        static Action* guild_invite(PlayerbotAI* ai) { return new GuidInviteAction(ai); }
-        static Action* guild_invite_nearby(PlayerbotAI* ai) { return new GuidInviteNearbyAction(ai); }
-        static Action* guild_leave(PlayerbotAI* ai) { return new GuildLeaveAction(ai); }
         static Action* buy_tabard(PlayerbotAI* ai) { return new BuyTabardAction(ai); }
-        
+        static Action* guild_manage_nearby(PlayerbotAI* ai) { return new GuildManageNearbyAction(ai); }
+       
         
 
         // BG Tactics

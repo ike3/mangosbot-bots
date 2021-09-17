@@ -18,7 +18,7 @@ void GuildStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "often",
-        NextAction::array(0, new NextAction("guild invite nearby", 4.0f), NULL)));
+        NextAction::array(0, new NextAction("guild manage nearby", 4.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
         "petition signed",

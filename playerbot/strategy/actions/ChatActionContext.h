@@ -65,6 +65,7 @@
 #include "WtsAction.h"
 #include "PassLeadershipToMasterAction.h"
 #include "CheatAction.h"
+#include "GuildManagementActions.h"
 
 namespace ai
 {
@@ -151,6 +152,12 @@ namespace ai
             creators["flag"] = &ChatActionContext::flag;
             creators["give leader"] = &ChatActionContext::give_leader;
             creators["cheat"] = &ChatActionContext::cheat;
+
+            creators["ginvite"] = &ChatActionContext::ginvite;
+            creators["guild promote"] = &ChatActionContext::guild_promote;
+            creators["guild demote"] = &ChatActionContext::guild_demote;
+            creators["guild remove"] = &ChatActionContext::guild_remove;
+            creators["guild leave"] = &ChatActionContext::guild_leave;
         }
 
     private:
@@ -233,6 +240,12 @@ namespace ai
         static Action* gossip_hello(PlayerbotAI* ai) { return new GossipHelloAction(ai); }
         static Action* give_leader(PlayerbotAI* ai) { return new GiveLeaderAction(ai); }
         static Action* cheat(PlayerbotAI* ai) { return new CheatAction(ai); }
+
+        static Action* ginvite(PlayerbotAI* ai) { return new GuildInviteAction(ai); }
+        static Action* guild_promote(PlayerbotAI* ai) { return new GuildPromoteAction(ai); }
+        static Action* guild_demote(PlayerbotAI* ai) { return new GuildDemoteAction(ai); }
+        static Action* guild_remove(PlayerbotAI* ai) { return new GuildRemoveAction(ai); }
+        static Action* guild_leave(PlayerbotAI* ai) { return new GuildLeaveAction(ai); }
     };
 
 
