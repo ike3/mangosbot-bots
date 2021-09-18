@@ -8,7 +8,7 @@ namespace ai
         PetitionTurnInTrigger(PlayerbotAI* ai) :
             Trigger(ai) {}
 
-        bool IsActive() { return !bot->GetGuildId() && bot->GetItemByEntry(5863) && AI_VALUE(uint8, "petition signs") >= sWorld.getConfig(CONFIG_UINT32_MIN_PETITION_SIGNS); };
+        bool IsActive() { return !bot->GetGuildId() && AI_VALUE2(uint32, "item count", chat->formatQItem(5863)) && AI_VALUE(uint8, "petition signs") >= sWorld.getConfig(CONFIG_UINT32_MIN_PETITION_SIGNS); };
     };
 
     class BuyTabardTrigger : public Trigger {
@@ -16,7 +16,7 @@ namespace ai
         BuyTabardTrigger(PlayerbotAI* ai) :
             Trigger(ai) {}
 
-        bool IsActive() { return bot->GetGuildId() && !bot->GetItemByEntry(5976); };
+        bool IsActive() { return bot->GetGuildId() && !AI_VALUE2(uint32, "item count", chat->formatQItem(5976)); };
     };
 
     class LeaveLargeGuildTrigger : public Trigger {

@@ -345,6 +345,19 @@ string ChatHelper::formatItem(ItemPrototype const * proto, int count, int total)
     return out.str();
 }
 
+string ChatHelper::formatQItem(uint32 itemId)
+{
+    char color[32];
+    sprintf(color, "%x", ItemQualityColors[0]);
+
+    ostringstream out;
+    out << "|c" << color << "|Hitem:" << itemId
+        << ":0:0:0:0:0:0:0" << "|h[item"
+        << "]|h|r";
+
+    return out.str();
+}
+
 ChatMsg ChatHelper::parseChat(string& text)
 {
     if (chats.find(text) != chats.end())

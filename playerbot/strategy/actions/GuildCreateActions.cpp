@@ -72,11 +72,11 @@ bool BuyPetitionAction::canBuyPetition(Player* bot)
     if (bot->GetGuildIdInvited())
         return false;
 
-    if (bot->GetItemByEntry(5863))
-        return false;
-
     PlayerbotAI* ai = bot->GetPlayerbotAI();
     AiObjectContext* context = ai->GetAiObjectContext();
+
+    if (AI_VALUE2(uint32, "item count", "Hitem:5863:"))
+        return false;
 
     if (ai->GetGuilderType() == GuilderType::SOLO)
         return false;
@@ -98,9 +98,9 @@ bool BuyPetitionAction::canBuyPetition(Player* bot)
 bool PetitionOfferAction::Execute(Event event)
 {
     uint32 petitionEntry = 5863; //GUILD_CHARTER
-    Item* petition = bot->GetItemByEntry(5863);
+    list<Item*> petitions = AI_VALUE2(list<Item*>, "inventory items", chat->formatQItem(5863));
 
-    if (!petition)
+    if (petitions.empty())
         return false;
 
     ObjectGuid guid = event.getObject();
@@ -126,10 +126,10 @@ bool PetitionOfferAction::Execute(Event event)
 
     WorldPacket data(CMSG_OFFER_PETITION);
 
-    data << petition->GetObjectGuid();
+    data << petitions.front()->GetObjectGuid();
     data << guid;
 
-    QueryResult* result = CharacterDatabase.PQuery("SELECT playerguid FROM petition_sign WHERE player_account = '%u' AND petitionguid = '%u'", player->GetSession()->GetAccountId(), petition->GetObjectGuid().GetCounter());
+    QueryResult* result = CharacterDatabase.PQuery("SELECT playerguid FROM petition_sign WHERE player_account = '%u' AND petitionguid = '%u'", player->GetSession()->GetAccountId(), petitions.front()->GetObjectGuid().GetCounter());
 
     if (result)
     {
@@ -138,7 +138,7 @@ bool PetitionOfferAction::Execute(Event event)
 
     bot->GetSession()->HandleOfferPetitionOpcode(data);
 
-    result = CharacterDatabase.PQuery("SELECT playerguid FROM petition_sign WHERE petitionguid = '%u'", petition->GetObjectGuid().GetCounter());
+    result = CharacterDatabase.PQuery("SELECT playerguid FROM petition_sign WHERE petitionguid = '%u'", petitions.front()->GetObjectGuid().GetCounter());
     uint8 signs = result ? (uint8)result->GetRowCount() : 0;
 
     context->GetValue<uint8>("petition signs")->Set(signs);
@@ -201,6 +201,12 @@ bool PetitionTurnInAction::Execute(Event event)
 {
     list<ObjectGuid> vendors = ai->GetAiObjectContext()->GetValue<list<ObjectGuid> >("nearest npcs")->Get();
     bool vendored = false, result = false;
+
+    list<Item*> petitions = AI_VALUE2(list<Item*>, "inventory items", chat->formatQItem(5863));
+
+    if (petitions.empty())
+        return false;
+
     for (list<ObjectGuid>::iterator i = vendors.begin(); i != vendors.end(); ++i)
     {
         ObjectGuid vendorguid = *i;
@@ -210,7 +216,7 @@ bool PetitionTurnInAction::Execute(Event event)
 
         WorldPacket data(CMSG_TURN_IN_PETITION, 8);
 
-        Item* petition = bot->GetItemByEntry(5863);
+        Item* petition = petitions.front();
 
         if (!petition)
             return false;

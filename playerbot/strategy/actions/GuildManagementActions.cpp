@@ -59,9 +59,11 @@ bool GuidManageAction::Execute(Event event)
 
     if (!player || !PlayerIsValid(player) || player == bot)
         return false;
-
+#ifdef MANGOSBOT_ZERO
+    WorldPacket data(opcode, 8);
+#else
     WorldPacket data(Opcodes(opcode), 8);
-
+#endif
     data << player->GetName();
 
     SendPacket(data);
