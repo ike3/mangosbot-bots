@@ -190,6 +190,26 @@ list<Item*> InventoryAction::parseItems(string text, IterateItemsMask mask)
     if (count < 1) count = 1;
     else if (count > TRADE_SLOT_TRADED_COUNT) count = TRADE_SLOT_TRADED_COUNT;
 
+
+    ItemIds ids = chat->parseItems(text);
+    if (!ids.empty())
+    {
+        for (ItemIds::iterator i = ids.begin(); i != ids.end(); i++)
+        {
+            FindItemByIdVisitor visitor(*i);
+            IterateItems(&visitor, mask);
+            found.insert(visitor.GetResult().begin(), visitor.GetResult().end());
+        }
+
+        list<Item*> result;
+        for (set<Item*>::iterator i = found.begin(); i != found.end(); ++i)
+            result.push_back(*i);
+
+        result.sort(compare_items_by_level);
+
+        return result;
+    }
+
     if (text == "food" || text == "conjured food")
     {
         FindFoodVisitor visitor(bot, 11, (text == "conjured food"));
@@ -295,14 +315,6 @@ list<Item*> InventoryAction::parseItems(string text, IterateItemsMask mask)
     if (!outfit.empty())
     {
         FindItemByIdsVisitor visitor(outfit);
-        IterateItems(&visitor, mask);
-        found.insert(visitor.GetResult().begin(), visitor.GetResult().end());
-    }
-
-    ItemIds ids = chat->parseItems(text);
-    for (ItemIds::iterator i = ids.begin(); i != ids.end(); i++)
-    {
-        FindItemByIdVisitor visitor(*i);
         IterateItems(&visitor, mask);
         found.insert(visitor.GetResult().begin(), visitor.GetResult().end());
     }

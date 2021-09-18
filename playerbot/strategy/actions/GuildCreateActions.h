@@ -26,20 +26,20 @@ namespace ai
     public:
         PetitionOfferNearbyAction(PlayerbotAI* ai) : PetitionOfferAction(ai, "petition offer nearby") {}
         virtual bool Execute(Event event);
-        virtual bool isUseful() { return !bot->GetGuildId() && bot->GetItemByEntry(5863); };
+        virtual bool isUseful() { return !bot->GetGuildId() && AI_VALUE2(uint32, "item count", chat->formatQItem(5863)); };
     };
 
     class PetitionTurnInAction : public ChooseTravelTargetAction {
     public:
         PetitionTurnInAction(PlayerbotAI* ai) : ChooseTravelTargetAction(ai, "petition turn in") {}
         virtual bool Execute(Event event);
-        virtual bool isUseful() { return !bot->GetGuildId() && bot->GetItemByEntry(5863) && AI_VALUE(uint8, "petition signs") >= sWorld.getConfig(CONFIG_UINT32_MIN_PETITION_SIGNS) && !context->GetValue<TravelTarget*>("travel target")->Get()->isTraveling(); };
+        virtual bool isUseful() { return !bot->GetGuildId() && AI_VALUE2(uint32, "item count", chat->formatQItem(5863)) && AI_VALUE(uint8, "petition signs") >= sWorld.getConfig(CONFIG_UINT32_MIN_PETITION_SIGNS) && !context->GetValue<TravelTarget*>("travel target")->Get()->isTraveling(); };
     };
 
     class BuyTabardAction : public ChooseTravelTargetAction {
     public:
         BuyTabardAction(PlayerbotAI* ai) : ChooseTravelTargetAction(ai, "buy tabard") {}
         virtual bool Execute(Event event);
-        virtual bool isUseful() { return bot->GetGuildId() && !bot->GetItemByEntry(5976) && AI_VALUE2(uint32, "free money for", uint32(NeedMoneyFor::guild)) >= 10000 && !context->GetValue<TravelTarget*>("travel target")->Get()->isTraveling(); };
+        virtual bool isUseful() { return bot->GetGuildId() && !AI_VALUE2(uint32, "item count", chat->formatQItem(5976)) && AI_VALUE2(uint32, "free money for", uint32(NeedMoneyFor::guild)) >= 10000 && !context->GetValue<TravelTarget*>("travel target")->Get()->isTraveling(); };
     };
 }

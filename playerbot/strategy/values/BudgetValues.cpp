@@ -182,9 +182,9 @@ uint32 MoneyNeededForValue::Calculate()
         if (ai->HasStrategy("guild", BOT_STATE_NON_COMBAT))
         {
             if (bot->GetGuildId())
-                moneyWanted = bot->GetItemByEntry(5976) ? 0 : 10000; //1g (tabard)
+                moneyWanted = AI_VALUE2(uint32, "item count", chat->formatQItem(5976)) ? 0 : 10000; //1g (tabard)
             else
-                moneyWanted = bot->GetItemByEntry(5863) ? 0 : 10000; //10s (guild charter)
+                moneyWanted = AI_VALUE2(uint32, "item count", chat->formatQItem(5863)) ? 0 : 10000; //10s (guild charter)
         }
         break;
     }

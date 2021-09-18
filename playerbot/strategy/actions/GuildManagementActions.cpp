@@ -59,9 +59,11 @@ bool GuidManageAction::Execute(Event event)
 
     if (!player || !PlayerIsValid(player) || player == bot)
         return false;
-
+#ifdef MANGOSBOT_ZERO
+    WorldPacket data(opcode, 8);
+#else
     WorldPacket data(Opcodes(opcode), 8);
-
+#endif
     data << player->GetName();
 
     SendPacket(data);
@@ -92,21 +94,25 @@ bool GuildManageNearbyAction::Execute(Event event)
             MemberSlot* member = guild->GetMemberSlot(player->GetObjectGuid());
             uint32 dCount = AI_VALUE(uint32, "death count");
 
-            if(dCount < 2 || !urand(0,10))
+            if (dCount < 2 || !urand(0, 10))
+            {
                 if (!urand(0, 10))
                 {
                     ai->DoSpecificAction("guild promote", Event("guild management", guid), true);
 
                     continue;
                 }
+            }
 
             if (dCount > 3 || !urand(0, 10))
+            {
                 if (!urand(0, 10))
                 {
                     ai->DoSpecificAction("guild demote", Event("guild management", guid), true);
 
                     continue;
                 }
+            }
 
             continue;
         }
