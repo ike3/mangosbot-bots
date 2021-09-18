@@ -622,8 +622,8 @@ bool ChooseTravelTargetAction::SetNpcFlagTarget(TravelTarget* target, vector<NPC
         if (!items.empty())
         {
             bool foundItem = false;
-            VendorItemData const* vItems;
-            VendorItemData const* tItems;
+            VendorItemData const* vItems = nullptr;
+            VendorItemData const* tItems = nullptr;
 
             vItems = sObjectMgr.GetNpcVendorItemList(d->getEntry());
 
@@ -632,15 +632,17 @@ bool ChooseTravelTargetAction::SetNpcFlagTarget(TravelTarget* target, vector<NPC
             if (vendorId)
                 tItems = sObjectMgr.GetNpcVendorTemplateItemList(vendorId);
 //#endif
+
             for (auto item : items)
             {
+                if (vItems && !vItems->Empty())
                 for(auto vitem : vItems->m_items) 
-                    if (vitem->item == item)
+                   if (vitem->item == item)
                     {
                         foundItem = true;
                         break;
                     }
-
+                if(tItems && !tItems->Empty())
                 for (auto titem : tItems->m_items)
                     if (titem->item == item)
                     {
