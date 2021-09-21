@@ -958,6 +958,9 @@ bool GrindTravelDestination::isActive(Player* bot)
     if (cInfo->MinLootGold == 0)
         return false;
 
+    if (cInfo->Rank > 0 && !AI_VALUE(bool, "can fight boss"))
+        return false;
+
     FactionTemplateEntry const* factionEntry = sFactionTemplateStore.LookupEntry(cInfo->Faction);
     ReputationRank reaction = ai->getReaction(factionEntry);
 
