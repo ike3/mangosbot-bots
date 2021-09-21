@@ -33,7 +33,7 @@ bool BuyPetitionAction::Execute(Event event)
 
         data << pCreature->GetObjectGuid();
         data << uint32(0);
-        data << uint32(0);
+        data << uint64(0);
         data << guildName.c_str();
         data << uint32(0);
         data << uint32(0);
