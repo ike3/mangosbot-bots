@@ -186,11 +186,13 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed)
             out << bot->GetOrientation() << ",";
             out << to_string(bot->getRace()) << ",";
             out << to_string(bot->getClass()) << ",";
+            out << bot->GetMapId() << ",";
             out << bot->getLevel() << ",";
             out << bot->GetHealth() << ",";
             out << bot->GetPowerPercent() << ",";
             out << bot->GetMoney() << ",";
             out << to_string(uint8(bot->GetPlayerbotAI()->GetGrouperType())) << ",";
+            out << to_string(uint8(bot->GetPlayerbotAI()->GetGuilderType()));
 
             sPlayerbotAIConfig.log("player_location.csv", out.str().c_str());
         }
@@ -208,11 +210,12 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed)
             out << bot->GetOrientation() << ",";
             out << to_string(bot->getRace()) << ",";
             out << to_string(bot->getClass()) << ",";
+            out << bot->GetMapId() << ",";
             out << bot->getLevel() << ",";
             out << bot->GetHealth() << ",";
             out << bot->GetPowerPercent() << ",";
             out << bot->GetMoney() << ",";
-            out << 0 << ",";
+            out << 0 << "," << 0;
 
             sPlayerbotAIConfig.log("player_location.csv", out.str().c_str());
         }
