@@ -173,9 +173,9 @@ bool RpgAction::HasIgnore(ObjectGuid guid)
     return true;
 }
 
-void RpgAction::setDelay()
+void RpgAction::setDelay(bool important)
 {
-    if (!ai->HasRealPlayerMaster())
+    if (!ai->HasRealPlayerMaster() || (important && ai->GetGroupMaster() == bot && bot->GetGroup()))
         ai->SetNextCheckDelay(sPlayerbotAIConfig.rpgDelay);
     else
         ai->SetNextCheckDelay(sPlayerbotAIConfig.rpgDelay/5);
@@ -241,7 +241,7 @@ void RpgAction::discover(ObjectGuid guid)
 
     unit->SetFacingTo(unit->GetAngle(bot));
     
-    setDelay();
+    setDelay(true);
 }
 
 void RpgAction::taxi(ObjectGuid guid)
@@ -348,7 +348,7 @@ void RpgAction::quest(ObjectGuid guid)
     if (oldSelection)
         bot->SetSelectionGuid(oldSelection);
 
-    setDelay();
+    setDelay(true);
 
     cancel(guid);
 }
@@ -371,7 +371,7 @@ void RpgAction::trade(ObjectGuid guid)
     if (oldSelection)
         bot->SetSelectionGuid(oldSelection);
 
-    setDelay();
+    setDelay(true);
 }
 
 void RpgAction::repair(ObjectGuid guid)
@@ -389,7 +389,7 @@ void RpgAction::repair(ObjectGuid guid)
     if (oldSelection)
         bot->SetSelectionGuid(oldSelection);
 
-    setDelay();
+    setDelay(true);
 }
 
 void RpgAction::train(ObjectGuid guid)
@@ -407,7 +407,7 @@ void RpgAction::train(ObjectGuid guid)
     if (oldSelection)
         bot->SetSelectionGuid(oldSelection);
 
-    setDelay();
+    setDelay(true);
 }
 
 void RpgAction::heal(ObjectGuid guid)
@@ -522,7 +522,7 @@ void RpgAction::homebind(ObjectGuid guid)
     if (oldSelection)
         bot->SetSelectionGuid(oldSelection);
 
-    setDelay();
+    setDelay(true);
 }
 
 void RpgAction::queuebg(ObjectGuid guid)
@@ -543,7 +543,7 @@ void RpgAction::queuebg(ObjectGuid guid)
     if (oldSelection)
         bot->SetSelectionGuid(oldSelection);
 
-    setDelay();
+    setDelay(true);
 }
 
 void RpgAction::buyPetition(ObjectGuid guid)
