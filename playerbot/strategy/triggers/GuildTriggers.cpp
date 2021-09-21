@@ -28,7 +28,7 @@ bool LeaveLargeGuildTrigger::IsActive()
 	if (!leader || !leader->GetPlayerbotAI() || leader->GetPlayerbotAI()->IsRealPlayer())
 		return false;
 
-	if (type == GuilderType::SOLO)
+	if (type == GuilderType::SOLO && guild->GetLeaderGuid() != bot->GetObjectGuid())
 		return true;
 
 	uint32 members = guild->GetMemberSize();
