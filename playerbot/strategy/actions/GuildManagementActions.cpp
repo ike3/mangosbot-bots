@@ -168,6 +168,7 @@ bool GuildLeaveAction::Execute(Event event)
     if (owner && !ai->GetSecurity()->CheckLevelFor(PLAYERBOT_SECURITY_INVITE, false, owner, true))
     {
         ai->TellError("Sorry, I am happy in my guild :)");
+        return false;
     }
 
     WorldPacket packet;
