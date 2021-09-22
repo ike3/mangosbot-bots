@@ -134,6 +134,14 @@ namespace ai
 
                 if (botAi->HasActivePlayerMaster()) //Do not invite alts of active players. 
                     continue;
+
+                if (player->getLevel() > bot->getLevel() + 5) //Only invite higher levels that need money so they can grind money and help out.
+                {
+                    AiObjectContext* botContext = botAi->GetAiObjectContext();
+
+                    if (!botContext->GetValue<bool>("should get money")->Get())
+                        continue;
+                }
             }
             else
             {
