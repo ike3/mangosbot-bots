@@ -78,7 +78,13 @@ namespace ai
             return true;
 
         if (bot->GetGuildId() == master->GetGuildId())
-            return false;
+        {
+            if (bot->getLevel() > master->getLevel() + 5)
+            {
+                if(AI_VALUE(bool, "should get money"))
+                    return false;
+            }
+        }
 
         if (abs(int32(master->getLevel() - bot->getLevel())) > 4)
             return true;

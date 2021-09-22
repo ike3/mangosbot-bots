@@ -29,12 +29,12 @@ bool BuyPetitionAction::Execute(Event event)
         if (guildName.empty())
             continue;
 
-        WorldPacket data(CMSG_PETITION_BUY, 8 + 4 + 4 + 4);
+        WorldPacket data(CMSG_PETITION_BUY);
 
         data << pCreature->GetObjectGuid();
         data << uint32(0);
-        data << uint32(0);
-        data << guildName;
+        data << uint64(0);
+        data << guildName.c_str();
 #ifdef MANGOSBOT_TWO
         data << std::string("");
 #else
