@@ -47,6 +47,7 @@ namespace ai
             creators["bg leave"] = &WorldPacketActionContext::bg_leave;
             creators["arena tactics"] = &WorldPacketActionContext::arena_tactics;
             creators["accept invitation"] = &WorldPacketActionContext::accept_invitation;
+            creators["give leader in dungeon"] = &WorldPacketActionContext::give_leader_in_dungeon;
             creators["leader"] = &WorldPacketActionContext::pass_leadership_to_master;
             creators["tell not enough money"] = &WorldPacketActionContext::tell_not_enough_money;
             creators["tell not enough reputation"] = &WorldPacketActionContext::tell_not_enough_reputation;
@@ -118,6 +119,7 @@ namespace ai
         static Action* auto_release(PlayerbotAI* ai) { return new AutoReleaseSpiritAction(ai); }
         static Action* accept_invitation(PlayerbotAI* ai) { return new AcceptInvitationAction(ai); }
         static Action* pass_leadership_to_master(PlayerbotAI* ai) { return new PassLeadershipToMasterAction(ai); }
+        static Action* give_leader_in_dungeon(PlayerbotAI* ai) { return new GiveLeaderAction(ai, "I don't know this dungeon, lead the way!"); }
         static Action* tell_not_enough_money(PlayerbotAI* ai) { return new TellMasterAction(ai, "Not enough money"); }
         static Action* tell_not_enough_reputation(PlayerbotAI* ai) { return new TellMasterAction(ai, "Not enough reputation"); }
         static Action* tell_cannot_equip(PlayerbotAI* ai) { return new InventoryChangeFailureAction(ai); }
