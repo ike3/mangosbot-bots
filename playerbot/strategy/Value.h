@@ -96,6 +96,42 @@ namespace ai
         T value;
 	};
 
+    
+    template<class T> class MemoryCalculatedValue : public CalculatedValue<T>
+    {
+    public:
+        MemoryCalculatedValue(PlayerbotAI* ai, string name = "value", int checkInterval = 1) : CalculatedValue<T>(ai, name,checkInterval) { lastChangeTime = time(0); }
+        virtual bool EqualToLast(T value) = 0;
+        virtual bool CanCheckChange() { return time(0) - lastChangeTime < minChangeInterval || EqualToLast(value); }
+        virtual bool UpdateChange() { if (CanCheckChange()) return false; lastChangeTime = time(0); lastValue = value; return true; }
+
+        virtual void Set(T value) { CalculatedValue<T>::Set(value); UpdateChange(); }
+        virtual T Get() {value = CalculatedValue<T>::Get(); UpdateChange(); return value;}
+
+        time_t LastChangeOn() {Get(); UpdateChange(); return lastChangeTime;}
+        uint32 LastChangeDelay() { return time(0) - LastChangeOn(); }
+
+        virtual void Reset() { CalculatedValue::Reset(); lastChangeTime = time(0); }
+    protected:
+        T lastValue;
+        uint32 minChangeInterval = 0;
+        time_t lastChangeTime;
+    };
+
+    template<class T> class LogCalculatedValue : public MemoryCalculatedValue<T>
+    {
+    public:
+        LogCalculatedValue(PlayerbotAI* ai, string name = "value", int checkInterval = 1) : MemoryCalculatedValue<T>(ai, name, checkInterval) {};
+        virtual bool UpdateChange() { if (MemoryCalculatedValue::UpdateChange()) return false; valueLog.push_back(make_pair(value, time(0))); if (valueLog.size() > logLength) valueLog.pop_front(); return true; }
+
+        list<pair<T, time_t>> ValueLog() { return valueLog; }
+
+        virtual void Reset() { MemoryCalculatedValue::Reset(); valueLog.clear(); }
+    protected:
+        list<pair<T, time_t>> valueLog;
+        uint8 logLength = 10;
+    };    
+
     class Uint8CalculatedValue : public CalculatedValue<uint8>
     {
     public:

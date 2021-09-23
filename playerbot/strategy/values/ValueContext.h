@@ -173,6 +173,7 @@ namespace ai
             creators["rti cc"] = &ValueContext::rti_cc;
             creators["rti"] = &ValueContext::rti;
             creators["position"] = &ValueContext::position;
+            creators["current position"] = &ValueContext::current_position;
             creators["threat"] = &ValueContext::threat;
 
             creators["balance"] = &ValueContext::balance;
@@ -256,6 +257,8 @@ namespace ai
             creators["group or"] = &ValueContext::group_or;
 
             creators["petition signs"] = &ValueContext::petition_signs;
+
+            creators["experience"] = &ValueContext::experience;
         }
 
     private:
@@ -285,6 +288,7 @@ namespace ai
         static UntypedValue* attackers(PlayerbotAI* ai) { return new AttackersValue(ai); }
 
         static UntypedValue* position(PlayerbotAI* ai) { return new PositionValue(ai); }
+        static UntypedValue* current_position(PlayerbotAI* ai) { return new CurrentPositionValue(ai); }
         static UntypedValue* rti(PlayerbotAI* ai) { return new RtiValue(ai); }
         static UntypedValue* rti_cc(PlayerbotAI* ai) { return new RtiCcValue(ai); }
 
@@ -421,5 +425,7 @@ namespace ai
         static UntypedValue* group_or(PlayerbotAI* ai) { return new GroupBoolORValue(ai); }
 
         static UntypedValue* petition_signs(PlayerbotAI* ai) { return new PetitionSignsValue(ai); }        
+
+        static UntypedValue* experience(PlayerbotAI* ai) { return new ExperienceValue(ai); }
     };
 };

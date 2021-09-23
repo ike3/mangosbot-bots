@@ -30,10 +30,6 @@ void NonCombatStrategy::InitTriggers(std::list<TriggerNode*>& triggers)
     triggers.push_back(new TriggerNode(
         "need world buff",
         NextAction::array(0, new NextAction("world buff", 1.0f), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "hearth is faster",
-        NextAction::array(0, new NextAction("hearthstone", 1.1f), NULL)));
 }
 
 void CollisionStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
