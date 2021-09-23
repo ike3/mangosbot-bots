@@ -334,7 +334,24 @@ bool ChooseRpgTargetAction::isFollowValid(Player* bot, WorldLocation location)
 {
     PlayerbotAI* ai = bot->GetPlayerbotAI();
     Player* master = ai->GetGroupMaster();
+    Player* realMaster = ai->GetMaster();
     AiObjectContext* context = ai->GetAiObjectContext();
+
+    bool inDungeon = false;
+
+    if (ai->HasActivePlayerMaster())
+    {
+        if (realMaster->IsInWorld() &&
+            realMaster->GetMap()->IsDungeon() &&
+            bot->GetMapId() == realMaster->GetMapId())
+            inDungeon = true;
+
+        if (realMaster &&
+            realMaster->IsInWorld() &&
+            realMaster->GetMap()->IsDungeon() &&
+            (realMaster->GetMapId() != location.mapid))
+            return false;
+    }
 
     if (!master || bot == master)
         return true;
@@ -342,7 +359,7 @@ bool ChooseRpgTargetAction::isFollowValid(Player* bot, WorldLocation location)
     if (!ai->HasStrategy("follow", BOT_STATE_NON_COMBAT))
         return true;
 
-    if (bot->GetDistance(master) > sPlayerbotAIConfig.rpgDistance * 2)
+    if (sqrt(bot->GetDistance(master)) > sPlayerbotAIConfig.rpgDistance * 2)
         return false;
 
     Formation* formation = AI_VALUE(Formation*, "formation");
@@ -350,6 +367,9 @@ bool ChooseRpgTargetAction::isFollowValid(Player* bot, WorldLocation location)
 
     if (!ai->HasActivePlayerMaster() && distance < 50.0f)
         return true;
+
+    if (inDungeon && (realMaster == master) && distance > 5.0f)
+        return false;
 
     if (!master->IsMoving() && distance < 25.0f)
         return true;

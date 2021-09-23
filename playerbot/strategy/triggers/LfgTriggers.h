@@ -11,4 +11,12 @@ public:
 
     virtual bool IsActive();
 };
+
+class UnknownDungeonTrigger : public Trigger
+{
+public:
+    UnknownDungeonTrigger(PlayerbotAI* ai) : Trigger(ai, "unknown dungeon", 20) {}
+
+    virtual bool IsActive();
+};
 }

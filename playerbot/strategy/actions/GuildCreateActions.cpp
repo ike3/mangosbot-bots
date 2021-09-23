@@ -35,6 +35,11 @@ bool BuyPetitionAction::Execute(Event event)
         data << uint32(0);
         data << uint64(0);
         data << guildName.c_str();
+#ifdef MANGOSBOT_TWO
+        data << std::string("");
+#else
+        data << uint32(0);
+#endif
         data << uint32(0);
         data << uint32(0);
         data << uint32(0);
@@ -47,6 +52,11 @@ bool BuyPetitionAction::Execute(Event event)
         data << uint32(0);
         data << uint16(0);
         data << uint8(0);
+
+#ifdef MANGOSBOT_TWO
+        for (int i = 0; i < 10; ++i)
+            data << std::string("");
+#endif
 
         data << uint32(0); // index
         data << uint32(0);
@@ -126,6 +136,9 @@ bool PetitionOfferAction::Execute(Event event)
 
     WorldPacket data(CMSG_OFFER_PETITION);
 
+#ifndef MANGOSBOT_ZERO
+    data << uint32(0);
+#endif
     data << petitions.front()->GetObjectGuid();
     data << guid;
 
