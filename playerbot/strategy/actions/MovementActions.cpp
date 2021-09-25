@@ -989,6 +989,11 @@ bool MovementAction::Follow(Unit* target, float distance, float angle)
 
 bool MovementAction::ChaseTo(WorldObject* obj, float distance, float angle)
 {
+    if (!IsMovingAllowed())
+    {
+        return false;
+    }
+
     UpdateMovementState();
 
     if (bot->IsSitState())
