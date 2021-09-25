@@ -100,6 +100,7 @@ namespace ai
             creators["maintenance"] = &StrategyContext::maintenance;
             creators["group"] = &StrategyContext::group;
             creators["guild"] = &StrategyContext::guild;
+            creators["grind"] = &StrategyContext::grind;
         }
 
     private:
@@ -154,6 +155,7 @@ namespace ai
         static Strategy* maintenance(PlayerbotAI* ai) { return new MaintenanceStrategy(ai); }
         static Strategy* group(PlayerbotAI* ai) { return new GroupStrategy(ai); }
         static Strategy* guild (PlayerbotAI* ai) { return new GuildStrategy(ai); }
+        static Strategy* grind(PlayerbotAI* ai) { return new GrindingStrategy(ai); }
     };
 
     class MovementStrategyContext : public NamedObjectContext<Strategy>
@@ -184,14 +186,12 @@ namespace ai
             creators["dps assist"] = &AssistStrategyContext::dps_assist;
             creators["dps aoe"] = &AssistStrategyContext::dps_aoe;
             creators["tank assist"] = &AssistStrategyContext::tank_assist;
-            creators["grind"] = &AssistStrategyContext::grind;
         }
 
     private:
         static Strategy* dps_assist(PlayerbotAI* ai) { return new DpsAssistStrategy(ai); }
         static Strategy* dps_aoe(PlayerbotAI* ai) { return new DpsAoeStrategy(ai); }
         static Strategy* tank_assist(PlayerbotAI* ai) { return new TankAssistStrategy(ai); }
-        static Strategy* grind(PlayerbotAI* ai) { return new GrindingStrategy(ai); }
     };
 
     class QuestStrategyContext : public NamedObjectContext<Strategy>

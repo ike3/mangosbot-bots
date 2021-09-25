@@ -2,6 +2,7 @@
 #include "../Trigger.h"
 #include "../../PlayerbotAIConfig.h"
 #include "../../ServerFacade.h"
+#include <MotionGenerators/MoveMap.h>
 
 namespace ai
 {
@@ -138,27 +139,131 @@ namespace ai
         OutOfReactRangeTrigger(PlayerbotAI* ai) : FarFromMasterTrigger(ai, "out of react range", 50.0f, 5) {}
     };
 
-    class HearthIsFasterTrigger : public Trigger
+    class MovementStuckTrigger : public Trigger
     {
     public:
-        HearthIsFasterTrigger(PlayerbotAI* ai) : Trigger(ai, "hearth is faster", 5) {}
+        MovementStuckTrigger(PlayerbotAI* ai) : Trigger(ai, "movement stuck", 5) {}
 
         virtual bool IsActive()
         {
-            if (!bot->HasItemCount(6948, 1, false))
+            if (ai->HasActivePlayerMaster())
                 return false;
 
-            if (!sServerFacade.IsSpellReady(bot, 8690))
+            if (!ai->AllowActive(ALL_ACTIVITY))
                 return false;
 
-            WorldPosition longMove = AI_VALUE(WorldPosition, "last long move");
+            WorldPosition botPos(bot);            
 
-            if (!longMove)
+            LogCalculatedValue<WorldPosition>* posVal = dynamic_cast<LogCalculatedValue<WorldPosition>*>(context->GetUntypedValue("current position"));
+
+            if (posVal->LastChangeDelay() > 5 * MINUTE)
+            {
+                sLog.outBasic("Bot #%d %s:%d <%s> was in the same position for %d seconds", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName(), posVal->LastChangeDelay());
+
+                return true;
+            }
+
+            bool longLog = false;
+
+            for (auto tPos : posVal->ValueLog())
+            {
+                uint32 timePassed = time(0) - tPos.second;
+
+                if (timePassed > 10 * MINUTE)
+                {
+                    if (botPos.fDist(tPos.first) > 50.0f)
+                        return false;
+
+                    longLog = true;
+                }
+            }
+
+            if (longLog)
+            {
+                sLog.outBasic("Bot #%d %s:%d <%s> was in the same position for 10mins", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName(), posVal->LastChangeDelay());
+            }
+
+            return longLog;
+        }
+    };
+
+    class LocationStuckTrigger : public Trigger
+    {
+    public:
+        LocationStuckTrigger(PlayerbotAI* ai) : Trigger(ai, "location stuck", 5) {}
+
+        virtual bool IsActive()
+        {
+            if (ai->HasActivePlayerMaster())
                 return false;
 
-            WorldPosition hearthBind = AI_VALUE(WorldPosition, "home bind");
+            if (!ai->AllowActive(ALL_ACTIVITY))
+                return false;
 
-            return AI_VALUE2(float, "distance", "last long move") > hearthBind.distance(longMove) + 200;
+            WorldPosition botPos(bot);
+
+            Cell const& cell = bot->GetCurrentCell();
+
+            GridPair grid = botPos.getGridPair();
+
+            if (grid.x_coord < 0 || grid.x_coord >= MAX_NUMBER_OF_GRIDS)
+            {
+                sLog.outBasic("Bot #%d %s:%d <%s> was in grid %d,%d on map %d", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName(), grid.x_coord, grid.y_coord, botPos.getMapId());
+
+                return true;
+            }
+
+            if (grid.y_coord < 0 || grid.y_coord >= MAX_NUMBER_OF_GRIDS)
+            {
+                sLog.outBasic("Bot #%d %s:%d <%s> was in grid %d,%d on map %d", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName(), grid.x_coord, grid.y_coord, botPos.getMapId());
+
+                return true;
+            }
+
+            if (cell.GridX() > 0 && cell.GridY() > 0 && !MMAP::MMapFactory::createOrGetMMapManager()->IsMMapIsLoaded(botPos.getMapId(), cell.GridX(), cell.GridY()) && !MMAP::MMapFactory::createOrGetMMapManager()->loadMap(botPos.getMapId(), cell.GridX(), cell.GridY()))
+            {
+                sLog.outBasic("Bot #%d %s:%d <%s> was in unloaded grid %d,%d on map %d", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName(), grid.x_coord, grid.y_coord, botPos.getMapId());
+
+                return true;
+            }
+
+            LogCalculatedValue<WorldPosition>* posVal = dynamic_cast<LogCalculatedValue<WorldPosition>*>(context->GetUntypedValue("current position"));
+
+            if (posVal->LastChangeDelay() > 10 * MINUTE)
+            {
+                sLog.outBasic("Bot #%d %s:%d <%s> was in the same position for %d seconds", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName(), posVal->LastChangeDelay());
+
+                posVal->Reset();
+                return true;
+            }
+
+            MemoryCalculatedValue<uint32>* expVal = dynamic_cast<MemoryCalculatedValue<uint32>*>(context->GetUntypedValue("experience"));
+
+            if (expVal->LastChangeDelay() < 15 * MINUTE)
+                return false;            
+
+            bool longLog = false;
+
+            for (auto tPos : posVal->ValueLog())
+            {
+                uint32 timePassed = time(0) - tPos.second;
+
+                if (timePassed > 15 * MINUTE)
+                {
+                    if (botPos.fDist(tPos.first) > 50.0f)
+                        return false;
+
+                    longLog = true;
+                }
+            }
+
+            if (longLog)
+            {
+                posVal->Reset();
+                sLog.outBasic("Bot #%d %s:%d <%s> was in the same position for 15mins", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName(), posVal->LastChangeDelay());
+            }
+
+            return longLog;
         }
     };
 }

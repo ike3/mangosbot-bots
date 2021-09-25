@@ -30,4 +30,13 @@ namespace ai
 	private:
         PositionMap positions;
     };
+    
+    class CurrentPositionValue : public LogCalculatedValue<WorldPosition>
+    {
+    public:
+        CurrentPositionValue(PlayerbotAI* ai, string name = "current position", uint32 checkInterval = 1) : LogCalculatedValue<WorldPosition>(ai, name, checkInterval) { minChangeInterval = 60;  logLength = 30; };
+        virtual bool EqualToLast(WorldPosition value) { return value.fDist(lastValue) < sPlayerbotAIConfig.tooCloseDistance; }
+
+        virtual WorldPosition Calculate() {return WorldPosition(bot);};
+    };  
 }

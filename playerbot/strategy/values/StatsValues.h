@@ -178,4 +178,15 @@ namespace ai
     public:
         DeathCountValue(PlayerbotAI* ai) : ManualSetValue<uint32>(ai, 0, "death_count") {}
     };
+
+
+    class ExperienceValue : public MemoryCalculatedValue<uint32>
+    {
+    public:
+        ExperienceValue(PlayerbotAI* ai, string name = "experience", uint32 checkInterval = 60) : MemoryCalculatedValue<uint32>(ai) {}
+
+        virtual bool EqualToLast(uint32 value) { return value != lastValue; }
+
+        virtual uint32 Calculate() { return bot->GetUInt32Value(PLAYER_XP);}
+    };
 }
