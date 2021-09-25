@@ -406,6 +406,7 @@ enum class TravelNodePathType : uint8
 
         bool hasToSave = false;
         bool hasToGen = false;
+        bool hasToFullGen = false;
     };
   
 

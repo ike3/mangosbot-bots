@@ -1909,12 +1909,6 @@ void TravelNodeMap::generateNodes()
     generateTransportNodes();
     sLog.outString("-Generating zone mean nodes");
     generateZoneMeanNodes();
-
-    sLog.outString("-Calculating mapoffset");
-    calcMapOffset();
-
-    sLog.outString("-Generating maptransfers");
-    sTravelMgr.loadMapTransfers();
 }
 
 void TravelNodeMap::generateWalkPaths()
@@ -2105,13 +2099,22 @@ void TravelNodeMap::generatePaths()
 
 void TravelNodeMap::generateAll()
 {
-    if (!hasToGen)
-        return;
+    if (hasToFullGen)
+        generateNodes();
 
-    generateNodes();
-    generatePaths();
+    sLog.outString("-Calculating mapoffset");
+    calcMapOffset();
 
-    hasToSave = true;
+    sLog.outString("-Generating maptransfers");
+    sTravelMgr.loadMapTransfers();
+
+    if (hasToGen || hasToFullGen)
+    {
+        generatePaths();
+        hasToGen = false;
+        hasToFullGen = false;
+        hasToSave = true;
+    }
 }
 
 void TravelNodeMap::printMap()
@@ -2224,6 +2227,7 @@ void TravelNodeMap::saveNodeStore()
     if (!hasToSave)
         return;
 
+    hasToSave = false;
 
     PlayerbotDatabase.PExecute("DELETE FROM ai_playerbot_travelnode");
     PlayerbotDatabase.PExecute("DELETE FROM ai_playerbot_travelnode_link");
@@ -2335,7 +2339,7 @@ void TravelNodeMap::loadNodeStore()
         }
         else
         {
-            hasToGen = true;
+            hasToFullGen = true;
             sLog.outString();
             sLog.outErrorDb(">> Error loading travelNodes.");
         }
