@@ -24,6 +24,8 @@ namespace ai
 
     class GuidPosition;
 
+    typedef pair<int, int> mGridPair;
+
     //Extension of WorldLocation with distance functions.
     class WorldPosition
     {
@@ -42,6 +44,7 @@ namespace ai
         WorldPosition(vector<WorldPosition> list, WorldPositionConst conType);
         WorldPosition(uint32 mapid, GridPair grid) { wLoc = WorldLocation(mapid, (int32(grid.x_coord) - CENTER_GRID_ID - 0.5) * SIZE_OF_GRIDS + CENTER_GRID_OFFSET, (int32(grid.y_coord) - CENTER_GRID_ID - 0.5) * SIZE_OF_GRIDS + CENTER_GRID_OFFSET, 0, 0); }
         WorldPosition(uint32 mapid, CellPair cell) { wLoc = WorldLocation(mapid, (int32(cell.x_coord) - CENTER_GRID_CELL_ID - 0.5) * SIZE_OF_GRID_CELL + CENTER_GRID_CELL_OFFSET, (int32(cell.y_coord) - CENTER_GRID_CELL_ID - 0.5) * SIZE_OF_GRID_CELL + CENTER_GRID_CELL_OFFSET, 0, 0); }
+        WorldPosition(uint32 mapid, mGridPair grid) { wLoc = WorldLocation(mapid, (32-grid.first) * SIZE_OF_GRIDS, (32 - grid.second) * SIZE_OF_GRIDS, 0, 0); }
 
         //Setters
         void setX(float x) { wLoc.coord_x = x; }
@@ -147,8 +150,14 @@ namespace ai
         vector<WorldPosition> fromCellPair(CellPair cellPair);
         vector<WorldPosition> gridFromCellPair(CellPair cellPair);
 
+        mGridPair getmGridPair() {
+            return make_pair((int)(32 - getX() / SIZE_OF_GRIDS), (int)(32 - getY() / SIZE_OF_GRIDS)); }
+
+        vector<mGridPair> getmGridPairs(WorldPosition secondPos);
+        vector<WorldPosition> frommGridPair(mGridPair gridPair);
+
         void loadMapAndVMap(uint32 mapId, int x, int y);
-        void loadMapAndVMap() {loadMapAndVMap(getMapId(), getGridPair().x_coord, getGridPair().y_coord); }
+        void loadMapAndVMap() {loadMapAndVMap(getMapId(), getmGridPair().first, getmGridPair().second); }
         void loadMapAndVMaps(WorldPosition secondPos);
 
         //Display functions

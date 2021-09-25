@@ -48,29 +48,30 @@ bool DebugAction::Execute(Event event)
 
             i = zoneId;
         }
-        return i == 0;        
+        return i == 0;
     }
     else if (text.find("printmap") != std::string::npos)
     {
         sTravelNodeMap.printMap();
+        sTravelNodeMap.printNodeStore();
         return true;
     }
     else if (text.find("travel ") != std::string::npos)
     {
-        WorldPosition* botPos = &WorldPosition(bot);
+        WorldPosition botPos = WorldPosition(bot);
 
         string destination = text.substr(7);
 
         TravelDestination* dest = ChooseTravelTargetAction::FindDestination(bot, destination);
         if (dest)
         {
-            vector <WorldPosition*> points = dest->nextPoint(botPos, true);
+            vector <WorldPosition*> points = dest->nextPoint(&botPos, true);
 
             if (points.empty())
                 return false;
 
             vector<WorldPosition> beginPath, endPath;
-            TravelNodeRoute route = sTravelNodeMap.getRoute(botPos, points.front(), beginPath, bot);
+            TravelNodeRoute route = sTravelNodeMap.getRoute(botPos, *points.front(), beginPath, bot);
 
             ostringstream out; out << "Traveling to " << dest->getTitle() << ": ";
 
@@ -85,7 +86,7 @@ bool DebugAction::Execute(Event event)
         }
         else
         {
-            ai->TellMasterNoFacing("Destination " + destination + " not found.");            
+            ai->TellMasterNoFacing("Destination " + destination + " not found.");
             return true;
         }
     }
@@ -186,11 +187,91 @@ bool DebugAction::Execute(Event event)
         ai->TellMasterNoFacing(out);
 
     }
-    else if (text.find("node") != std::string::npos)
+    else if (text.find("add node") != std::string::npos)
     {
         WorldPosition pos(bot);
 
-        vector<TravelNode*> nodes = sTravelNodeMap.getNodes(&pos, 500);
+        string name = "USER:" + text.substr(9);
+
+        TravelNode* startNode = sTravelNodeMap.addNode(pos, name, false, false);
+
+        for (auto& endNode : sTravelNodeMap.getNodes(pos, 2000))
+        {
+            endNode->setLinked(false);
+        }
+
+        ai->TellMasterNoFacing("Node " + name + " created.");
+        
+        sTravelNodeMap.setHasToGen();
+
+        return true;
+    }
+    else if (text.find("rem node") != std::string::npos)
+    {
+        WorldPosition pos(bot);
+
+        TravelNode* startNode = sTravelNodeMap.getNode(pos, nullptr, 50);
+
+        if (!startNode)
+            return false;
+
+        if (startNode->isImportant())
+        {
+            ai->TellMasterNoFacing("Node can not be removed.");
+        }
+
+        sTravelNodeMap.removeNode(startNode);
+        ai->TellMasterNoFacing("Node removed.");
+        sTravelNodeMap.m_nMapMtx.unlock();
+
+        sTravelNodeMap.setHasToGen();
+
+        return true;
+
+    }
+    else if (text.find("reset node") != std::string::npos) {
+        for (auto& node : sTravelNodeMap.getNodes())
+            node->setLinked(false);
+        return true;
+    }
+    else if (text.find("reset path") != std::string::npos) {
+        for (auto& node : sTravelNodeMap.getNodes())
+            for (auto& path : *node->getLinks())
+                node->removeLinkTo(path.first, true);
+        return true;
+    }
+    else if (text.find("gen node") != std::string::npos) {
+
+        //Pathfinder
+        sTravelNodeMap.generateNodes();
+        return true;
+    }
+    else if (text.find("gen path") != std::string::npos) {
+    sTravelNodeMap.generatePaths();
+    return true;
+    }
+    else if (text.find("crop path") != std::string::npos) {
+    sTravelNodeMap.removeUselessPaths();
+    sTravelNodeMap.setHasToGen();
+    return true;
+    }
+    else if (text.find("save node") != std::string::npos)
+    {
+        sTravelNodeMap.printNodeStore();
+        sTravelNodeMap.saveNodeStore();
+        return true;
+    }
+    else if (text.find("load node") != std::string::npos)
+    {
+        sTravelNodeMap.removeNodes();
+        sTravelNodeMap.loadNodeStore();
+        return true;
+    }
+    else if (text.find("show node") != std::string::npos)
+    {
+        WorldPosition pos(bot);
+
+        vector<TravelNode*> nodes = sTravelNodeMap.getNodes(pos, 500);
 
         for (auto& node : nodes)
         {
@@ -205,15 +286,15 @@ bool DebugAction::Execute(Event event)
 
                 for (auto p : ppath)
                 {
-                    Creature* wpCreature = bot->SummonCreature(2334, p.getX(), p.getY(), p.getZ(), 0, TEMPSPAWN_TIMED_DESPAWN, 20000.0f);
-                    addAura(246, wpCreature);
+                    Creature* wpCreature = bot->SummonCreature(1, p.getX(), p.getY(), p.getZ(), 0, TEMPSPAWN_TIMED_DESPAWN, 20000.0f);
+                    //addAura(246, wpCreature);
                     units.push_back(wpCreature->GetObjectGuid());
 
                     if (!start)
                         start = wpCreature;
                 }
 
-                FakeSpell(1064, bot, start, units.front(), units, {}, pos, pos);
+                //FakeSpell(1064, bot, start, units.front(), units, {}, pos, pos);
             }
         }
         return true;

@@ -390,12 +390,57 @@ vector<WorldPosition> WorldPosition::gridFromCellPair(CellPair cellPair)
     return fromGridPair(GridPair(c.GridX(), c.GridY()));
 }
 
+vector<pair<int,int>> WorldPosition::getmGridPairs(WorldPosition secondPos)
+{
+    std::vector<mGridPair> retVec;
+
+    int lx = std::min(getmGridPair().first, secondPos.getmGridPair().first);
+    int ly = std::min(getmGridPair().second, secondPos.getmGridPair().second);
+    int ux = std::max(getmGridPair().first, secondPos.getmGridPair().first);
+    int uy = std::max(getmGridPair().second, secondPos.getmGridPair().second);
+    int border = 1;
+
+    //lx = std::min(std::max(border, lx), MAX_NUMBER_OF_GRIDS - border);
+    //ly = std::min(std::max(border, ly), MAX_NUMBER_OF_GRIDS - border);
+    //ux = std::min(std::max(border, ux), MAX_NUMBER_OF_GRIDS - border);
+    //uy = std::min(std::max(border, uy), MAX_NUMBER_OF_GRIDS - border);
+
+    for (int x = lx - border; x <= ux + border; x++)
+    {
+        for (int y = ly - border; y <= uy + border; y++)
+        {
+            retVec.push_back(make_pair(x, y));
+        }
+    }
+
+    return retVec;
+}
+
+vector<WorldPosition> WorldPosition::frommGridPair(mGridPair gridPair)
+{
+    vector<WorldPosition> retVec;
+    mGridPair g;
+
+    for (uint32 d = 0; d < 4; d++)
+    {
+        g = gridPair;
+
+        if (d == 1 || d == 2)
+            g.second++;
+        if (d == 2 || d == 3)
+            g.first++;
+
+        retVec.push_back(WorldPosition(getMapId(), g));
+    }
+
+    return retVec;
+}
 
 void WorldPosition::loadMapAndVMap(uint32 mapId, int x, int y)
 {
     string fileName = "load_map_grid.csv";
 
-    if (isOverworld() && false)
+    if (isOverworld() && false || false)
     {
         if (!MMAP::MMapFactory::createOrGetMMapManager()->IsMMapIsLoaded(mapId, x, y))
             if (sPlayerbotAIConfig.hasLog(fileName))
@@ -411,7 +456,8 @@ void WorldPosition::loadMapAndVMap(uint32 mapId, int x, int y)
         int py = (float)(32 - y) * SIZE_OF_GRIDS;
 
         if (!MMAP::MMapFactory::createOrGetMMapManager()->IsMMapIsLoaded(mapId, x, y))
-            getTerrain()->GetTerrainType(px, py);
+            if(getTerrain())
+                getTerrain()->GetTerrainType(px, py);
 
     }
     else
@@ -463,7 +509,7 @@ void WorldPosition::loadMapAndVMap(uint32 mapId, int x, int y)
                 ostringstream out;
                 out << sPlayerbotAIConfig.GetTimestampStr();
                 out << "+00,\"mmap\", " << x << "," << y << "," << (sTravelMgr.isBadMmap(mapId, x, y) ? "0" : "1") << ",";
-                printWKT(fromGridPair(GridPair(x, y)), out, 1, true);
+                printWKT(frommGridPair(mGridPair(x, y)), out, 1, true);
                 sPlayerbotAIConfig.log(fileName, out.str().c_str());
             }
         }
@@ -472,9 +518,9 @@ void WorldPosition::loadMapAndVMap(uint32 mapId, int x, int y)
 
 void WorldPosition::loadMapAndVMaps(WorldPosition secondPos)
 {
-    for (auto& grid : getGridPairs(secondPos))
+    for (auto& grid : getmGridPairs(secondPos))
     {
-        loadMapAndVMap(getMapId(), grid.x_coord, grid.y_coord);
+        loadMapAndVMap(getMapId(), grid.first, grid.second);
     }
 }
 
@@ -1111,7 +1157,7 @@ bool TravelTarget::isActive() {
     if (m_status == TRAVEL_STATUS_NONE || m_status == TRAVEL_STATUS_EXPIRED || m_status == TRAVEL_STATUS_PREPARE)
         return false;
 
-    if (isTraveling() && forced)
+    if (forced && isTraveling())
         return true;
 
     if ((statusTime > 0 && startTime + statusTime < WorldTimer::getMSTime()))
@@ -1982,11 +2028,97 @@ void TravelMgr::LoadQuestTravelTable()
     }
 #endif
 
-    bool fullNavPointReload = false;
-    bool storeNavPointReload = false;
+    //unittest
+    if(false)
+    {
+        //arrange
+        TravelNode* centernode = sTravelNodeMap.addNode(WorldPosition(0, 0, 0), "center", true);
+        TravelNode* nearnode = sTravelNodeMap.addNode(WorldPosition(0, 10, 0), "near", true);
+        TravelNode* farnode = sTravelNodeMap.addNode(WorldPosition(0, 100, 0), "far", true);
 
-    if(!fullNavPointReload)
+        centernode->setPathTo(nearnode, TravelNodePath(10));
+        nearnode->setPathTo(centernode, TravelNodePath(10));
+        
+        centernode->setPathTo(farnode, TravelNodePath(100));
+        farnode->setPathTo(centernode,  TravelNodePath(100));
+        
+        nearnode->setPathTo(farnode, TravelNodePath(90));
+        farnode->setPathTo(nearnode, TravelNodePath(90));
+
+        //act
+        sTravelNodeMap.removeUselessPaths();
+
+        //assert
+        MANGOS_ASSERT(centernode->hasPathTo(farnode));
+
+        //teardown
+        sTravelNodeMap.removeNode(centernode);
+        sTravelNodeMap.removeNode(nearnode);
+        sTravelNodeMap.removeNode(farnode);
+    }
+
+    //unittest
+    if (false)
+    {
+        //arrange
+        TravelNode* centernode = sTravelNodeMap.addNode(WorldPosition(0, 0, 0), "center", true);
+        TravelNode* nearnode = sTravelNodeMap.addNode(WorldPosition(0, 10, 0), "near", true);
+        TravelNode* subnode = sTravelNodeMap.addNode(WorldPosition(0, 20, 0), "near", true);
+        TravelNode* farnode = sTravelNodeMap.addNode(WorldPosition(0, 100, 0), "far", true);
+
+        centernode->setPathTo(nearnode, TravelNodePath(10));
+        nearnode->setPathTo(centernode, TravelNodePath(10));
+
+        centernode->setPathTo(farnode, TravelNodePath(100));
+        farnode->setPathTo(centernode, TravelNodePath(100));
+
+        nearnode->setPathTo(subnode, TravelNodePath(10));
+        subnode->setPathTo(nearnode, TravelNodePath(10));
+
+        subnode->setPathTo(farnode, TravelNodePath(80));
+        farnode->setPathTo(subnode, TravelNodePath(80));
+
+        //act
+        sTravelNodeMap.removeUselessPaths();
+
+        //assert
+        MANGOS_ASSERT(centernode->hasPathTo(farnode));
+
+        //teardown
+        sTravelNodeMap.removeNode(centernode);
+        sTravelNodeMap.removeNode(nearnode);
+        sTravelNodeMap.removeNode(subnode);
+        sTravelNodeMap.removeNode(farnode);
+    }
+
+    //Clear these logs files
+    sPlayerbotAIConfig.openLog("zones.csv", "w");
+    sPlayerbotAIConfig.openLog("creatures.csv", "w");
+    sPlayerbotAIConfig.openLog("gos.csv", "w");
+    sPlayerbotAIConfig.openLog("bot_movement.csv", "w");
+    sPlayerbotAIConfig.openLog("bot_pathfinding.csv", "w");
+    sPlayerbotAIConfig.openLog("pathfind_attempt.csv", "w");
+    sPlayerbotAIConfig.openLog("pathfind_attempt_point.csv", "w");
+    sPlayerbotAIConfig.openLog("pathfind_result.csv", "w");
+    sPlayerbotAIConfig.openLog("load_map_grid.csv", "w");
+    sPlayerbotAIConfig.openLog("strategy.csv", "w");
+
+    sPlayerbotAIConfig.openLog("unload_grid.csv", "w");
+    sPlayerbotAIConfig.openLog("unload_obj.csv", "w");
+
+    sTravelNodeMap.loadNodeStore();
+
+    sTravelNodeMap.generateAll();
+
+
+    /*
+    bool fullNavPointReload = false;
+    bool storeNavPointReload = true;
+
+    if(!fullNavPointReload && true)
         TravelNodeStore::loadNodes();
+
+    //sTravelNodeMap.loadNodeStore();
 
     for (auto node : sTravelNodeMap.getNodes())
     {
@@ -2085,8 +2217,6 @@ void TravelMgr::LoadQuestTravelTable()
             startNode->setPathTo(endNode, travelPath);
         }
     
-
-
         //Unique bosses
         for (auto& u : units)
         {
@@ -2203,16 +2333,6 @@ void TravelMgr::LoadQuestTravelTable()
                 inNode->setPathTo(outNode, travelPath);
             }
 
-            /*
-            //Possible to walk from destination back into the portal.
-            if (outNode && entryNode)
-            {
-                TravelNodePath travelPath(outNode->getDistance(entryNode));
-                travelPath.setPath({ *outNode->getPosition(), *entryNode->getPosition() });
-
-                outNode->setPathTo(entryNode, travelPath);
-            }
-            */
         }
 
         //Transports
@@ -2430,23 +2550,10 @@ void TravelMgr::LoadQuestTravelTable()
 
     sTravelNodeMap.calcMapOffset();
     loadMapTransfers();
+    */
 
-    //Clear these logs files
-    sPlayerbotAIConfig.openLog("zones.csv", "w");
-    sPlayerbotAIConfig.openLog("creatures.csv", "w");
-    sPlayerbotAIConfig.openLog("gos.csv", "w");
-    sPlayerbotAIConfig.openLog("bot_movement.csv", "w");
-    sPlayerbotAIConfig.openLog("bot_pathfinding.csv", "w");    
-    sPlayerbotAIConfig.openLog("pathfind_attempt.csv", "w");
-    sPlayerbotAIConfig.openLog("pathfind_attempt_point.csv", "w");
-    sPlayerbotAIConfig.openLog("pathfind_result.csv", "w");
-    sPlayerbotAIConfig.openLog("load_map_grid.csv", "w");
-    sPlayerbotAIConfig.openLog("strategy.csv", "w");
-
-    sPlayerbotAIConfig.openLog("unload_grid.csv", "w");
-    sPlayerbotAIConfig.openLog("unload_obj.csv", "w");
     
-
+    /*
     bool preloadNodePaths = false || fullNavPointReload || storeNavPointReload;             //Calculate paths using pathfinder.
     bool preloadReLinkFullyLinked = false || fullNavPointReload || storeNavPointReload;      //Retry nodes that are fully linked.
     bool preloadUnlinkedPaths = false || fullNavPointReload;        //Try to connect points currently unlinked.
@@ -2494,8 +2601,8 @@ void TravelMgr::LoadQuestTravelTable()
 
                 startNode->buildPath(endNode, NULL, false);
 
-                if (startNode->hasLinkTo(endNode) && !startNode->getPathTo(endNode)->getComplete())
-                    startNode->removeLinkTo(endNode);
+                //if (startNode->hasLinkTo(endNode) && !startNode->getPathTo(endNode)->getComplete())
+                //    startNode->removeLinkTo(endNode);
             }
 
             startNode->setLinked(true);
@@ -2520,7 +2627,7 @@ void TravelMgr::LoadQuestTravelTable()
         sLog.outString(">> Loaded paths for " SIZEFMTD " nodes.", sTravelNodeMap.getNodes().size());
     }
 
-    bool removeLowLinkNodes = false || fullNavPointReload;
+    bool removeLowLinkNodes = false || fullNavPointReload || storeNavPointReload;
 
     if (removeLowLinkNodes)
     {
@@ -2644,9 +2751,11 @@ void TravelMgr::LoadQuestTravelTable()
 
         sLog.outString(">> Reversed missing paths for " SIZEFMTD " nodes.", sTravelNodeMap.getNodes().size());
     }
+    */
 
     sTravelNodeMap.printMap();
     sTravelNodeMap.printNodeStore();
+    sTravelNodeMap.saveNodeStore();
 
     //Creature/gos/zone export.
     if (sPlayerbotAIConfig.hasLog("creatures.csv"))
