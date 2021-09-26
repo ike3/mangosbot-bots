@@ -252,7 +252,8 @@ bool DebugAction::Execute(Event event)
     }
     else if (text.find("crop path") != std::string::npos) {
     sTravelNodeMap.removeUselessPaths();
-    sTravelNodeMap.setHasToGen();
+    sTravelNodeMap.saveNodeStore();
+    sTravelNodeMap.loadNodeStore();
     return true;
     }
     else if (text.find("save node") != std::string::npos)

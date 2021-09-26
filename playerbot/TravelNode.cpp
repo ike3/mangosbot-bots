@@ -2052,6 +2052,8 @@ void TravelNodeMap::removeUselessPaths()
         if (!rem)
             break;
 
+        hasToSave = true;
+
         it++;
 
         sLog.outString("Iteration %d, removed %d", it, rem);
