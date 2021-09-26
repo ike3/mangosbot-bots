@@ -5,7 +5,6 @@
 #include "TravelMgr.h"
 #include "TravelNode.h"
 #include "PlayerbotAI.h"
-#include "TravelNodeStore.h"
 
 #include "ObjectMgr.h"
 #include <numeric>
