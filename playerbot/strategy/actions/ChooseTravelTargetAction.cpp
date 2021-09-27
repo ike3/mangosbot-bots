@@ -658,7 +658,7 @@ bool ChooseTravelTargetAction::SetNpcFlagTarget(TravelTarget* target, vector<NPC
         FactionTemplateEntry const* factionEntry = sFactionTemplateStore.LookupEntry(cInfo->Faction);
         ReputationRank reaction = ai->getReaction(factionEntry);
 
-        if (reaction  <= REP_NEUTRAL)
+        if (reaction  < REP_NEUTRAL)
             continue;
 
         dests.push_back(d);
