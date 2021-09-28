@@ -1395,7 +1395,7 @@ void PlayerbotFactory::UpdateTradeSkills()
 void PlayerbotFactory::InitSkills()
 {
     uint32 maxValue = level * 5;
-    SetRandomSkill(SKILL_DEFENSE);
+    bot->UpdateSkillsForLevel(true);
 
 // Riding skills requirements are different
 #ifdef MANGOSBOT_ZERO
