@@ -278,7 +278,7 @@ bool BuyTabardAction::Execute(Event event)
 {
     bool canBuy = ai->DoSpecificAction("buy", Event("buy tabard", "Hitem:5976:"));
 
-    if (canBuy)
+    if (canBuy && AI_VALUE2(uint32, "item count", chat->formatQItem(5976)))
         return true;
 
     TravelTarget* oldTarget = context->GetValue<TravelTarget*>("travel target")->Get();
