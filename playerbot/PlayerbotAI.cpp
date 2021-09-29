@@ -193,7 +193,16 @@ void PlayerbotAI::UpdateAI(uint32 elapsed)
         inCombat = true;
     }
     else
+    {
+        if (inCombat)
+            nextAICheckDelay = 0;
+        else if (!AllowActivity())
+        {
+            if (AllowActivity(ALL_ACTIVITY, true))
+                nextAICheckDelay = 0;
+        }
         inCombat = false;
+    }
 
     if (!CanUpdateAI())
         return;
