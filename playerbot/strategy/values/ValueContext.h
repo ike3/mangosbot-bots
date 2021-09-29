@@ -246,15 +246,17 @@ namespace ai
             creators["should sell"] = &ValueContext::should_sell;
             creators["can sell"] = &ValueContext::can_sell;
             creators["can fight equal"] = &ValueContext::can_fight_equal;
+            creators["can fight elite"] = &ValueContext::can_fight_elite;
             creators["can fight boss"] = &ValueContext::can_fight_boss;
 
+            creators["group members"] = &ValueContext::group_members;
             creators["following party"] = &ValueContext::following_party;
             creators["near leader"] = &ValueContext::near_leader;
-
             creators["and"] = &ValueContext::and_value;
-            creators["and"] = &ValueContext::and_value;
+            creators["group count"] = &ValueContext::group_count;
             creators["group and"] = &ValueContext::group_and;
             creators["group or"] = &ValueContext::group_or;
+            creators["group ready"] = &ValueContext::group_ready;
 
             creators["petition signs"] = &ValueContext::petition_signs;
 
@@ -416,13 +418,17 @@ namespace ai
         static UntypedValue* should_sell(PlayerbotAI* ai) { return new ShouldSellValue(ai); }
         static UntypedValue* can_sell(PlayerbotAI* ai) { return new CanSellValue(ai); }
         static UntypedValue* can_fight_equal(PlayerbotAI* ai) { return new CanFightEqualValue(ai); }
+        static UntypedValue* can_fight_elite(PlayerbotAI* ai) { return new CanFightEliteValue(ai); }
         static UntypedValue* can_fight_boss(PlayerbotAI* ai) { return new CanFightBossValue(ai); }
 
+        static UntypedValue* group_members(PlayerbotAI* ai) { return new GroupMembersValue(ai); }
         static UntypedValue* following_party(PlayerbotAI* ai) { return new IsFollowingPartyValue(ai); }
         static UntypedValue* near_leader(PlayerbotAI* ai) { return new IsNearLeaderValue(ai); }
         static UntypedValue* and_value(PlayerbotAI* ai) { return new BoolANDValue(ai); }
+        static UntypedValue* group_count(PlayerbotAI* ai) { return new GroupBoolCountValue(ai); }
         static UntypedValue* group_and(PlayerbotAI* ai) { return new GroupBoolANDValue(ai); }
         static UntypedValue* group_or(PlayerbotAI* ai) { return new GroupBoolORValue(ai); }
+        static UntypedValue* group_ready(PlayerbotAI* ai) { return new GroupReadyValue(ai); }
 
         static UntypedValue* petition_signs(PlayerbotAI* ai) { return new PetitionSignsValue(ai); }        
 

@@ -23,10 +23,7 @@ bool AttackAnythingAction::isUseful() {
     if(!ChooseRpgTargetAction::isFollowValid(bot, target))                               //Do not grind mobs far away from master.
         return false;
 
-    if (AI_VALUE2(uint8, "health", "self target") <=  sPlayerbotAIConfig.mediumHealth)   //Bot does not has enough health.
-        return false;
-
-    if (AI_VALUE2(uint8, "mana", "self target") && AI_VALUE2(uint8, "mana", "self target") <= sPlayerbotAIConfig.mediumMana) //Bot has mana and not enough mana.
+    if (!AI_VALUE(bool, "group ready"))
         return false;
 
     if(context->GetValue<TravelTarget*>("travel target")->Get()->isTraveling() && ChooseRpgTargetAction::isFollowValid(bot, context->GetValue<TravelTarget*>("travel target")->Get()->getLocation())) //Bot is traveling
