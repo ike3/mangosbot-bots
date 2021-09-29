@@ -56,7 +56,7 @@ bool BuyAction::Execute(Event event)
                 m_items_sorted.insert(m_items_sorted.begin(), vItems->m_items.begin(), vItems->m_items.end());
             
 
-            std::remove_if(m_items_sorted.begin(), m_items_sorted.end(), [](VendorItem* i) {ItemPrototype const* proto = sObjectMgr.GetItemPrototype(i->item); return !proto; });
+            m_items_sorted.erase(std::remove_if(m_items_sorted.begin(), m_items_sorted.end(), [](VendorItem* i) {ItemPrototype const* proto = sObjectMgr.GetItemPrototype(i->item); return !proto; }), m_items_sorted.end());
 
             if (m_items_sorted.empty())
                 continue;
@@ -91,6 +91,9 @@ bool BuyAction::Execute(Event event)
                         break;
                     case ITEM_USAGE_USE:
                         needMoneyFor = NeedMoneyFor::consumables;
+                        break;
+                    case ITEM_USAGE_SKILL:
+                        needMoneyFor = NeedMoneyFor::tradeskill;
                         break;
                     }
 
