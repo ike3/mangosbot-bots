@@ -29,6 +29,7 @@ namespace ai
     {
     public:
         CastRandomSpellAction(PlayerbotAI* ai, string name = "cast random spell") : ListSpellsAction(ai, name) {}
+
         virtual bool AcceptSpell(const SpellEntry* pSpellInfo)
         {
             bool isTradeSkill = pSpellInfo->Effect[0] == SPELL_EFFECT_CREATE_ITEM && pSpellInfo->ReagentCount > 0 &&
@@ -42,12 +43,12 @@ namespace ai
         }
         virtual uint32 GetSpellPriority(const SpellEntry* pSpellInfo) { return 1; }
         virtual bool Execute(Event event);
+
+        virtual bool castSpell(uint32 spellId, WorldObject* wo);
     protected:
         bool MultiCast = false;
     };
-    
-    
-
+       
     class CraftRandomItemAction : public CastRandomSpellAction
     {
     public:
@@ -80,5 +81,35 @@ namespace ai
             }
             return 1;
         }
+    };
+
+    class DisEnchantRandomItemAction : public CastCustomSpellAction
+    {
+    public:
+        DisEnchantRandomItemAction(PlayerbotAI* ai) : CastCustomSpellAction(ai, "disenchant random item")  {}
+        virtual bool isUseful() { return ai->HasSkill(SKILL_ENCHANTING) && !bot->IsInCombat() && AI_VALUE2(uint32, "item count", "usage " + to_string(ITEM_USAGE_DISENCHANT)) > 0; }
+        virtual bool Execute(Event event);
+    };
+
+    class EnchantRandomItemAction : public CastRandomSpellAction
+    {
+    public:
+        EnchantRandomItemAction(PlayerbotAI* ai) : CastRandomSpellAction(ai, "enchant random item") {}
+        virtual bool isUseful() { return ai->HasSkill(SKILL_ENCHANTING) && !bot->IsInCombat() ; }
+
+        virtual bool AcceptSpell(const SpellEntry* pSpellInfo)
+        {
+            return pSpellInfo->Effect[0] == SPELL_EFFECT_ENCHANT_ITEM && pSpellInfo->ReagentCount > 0;
+        }
+
+        virtual uint32 GetSpellPriority(const SpellEntry* pSpellInfo) {
+            if (pSpellInfo->Effect[0] == SPELL_EFFECT_ENCHANT_ITEM)
+            {
+                if(AI_VALUE2(Item*, "item for spell", pSpellInfo->Id) && ItemUsageValue::SpellGivesSkillUp(pSpellInfo->Id, bot))
+                   return 10;
+            }
+            return 1;
+        }
+
     };
 }

@@ -26,6 +26,14 @@ void MaintenanceStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "random",
+        NextAction::array(0, new NextAction("disenchant random item", 1.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "random",
+        NextAction::array(0, new NextAction("enchant random item", 1.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "random",
         NextAction::array(0, new NextAction("smart destroy item", 1.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
