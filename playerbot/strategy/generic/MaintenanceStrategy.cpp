@@ -29,11 +29,11 @@ void MaintenanceStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("smart destroy item", 1.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "movement stuck",
+        "move stuck",
         NextAction::array(0, new NextAction("reset", 1.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "location stuck",
+        "move long stuck",
         NextAction::array(0, new NextAction("hearthstone", 0.9f), new NextAction("repop", 0.8f), NULL)));
 }
 

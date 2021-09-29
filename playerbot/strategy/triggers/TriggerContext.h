@@ -11,6 +11,7 @@
 #include "RtiTriggers.h"
 #include "CureTriggers.h"
 #include "GuildTriggers.h"
+#include "StuckTriggers.h"
 
 namespace ai
 {
@@ -149,8 +150,10 @@ namespace ai
             creators["need world buff"] = &TriggerContext::need_world_buff;
             creators["falling"] = &TriggerContext::falling;
             creators["falling far"] = &TriggerContext::falling_far;
-            creators["movement stuck"] = &TriggerContext::movement_stuck;
-            creators["location stuck"] = &TriggerContext::location_stuck;
+            creators["move stuck"] = &TriggerContext::move_stuck;
+            creators["move stuck long"] = &TriggerContext::move_long_stuck;
+            creators["combat stuck"] = &TriggerContext::combat_stuck;
+            creators["combat long stuck"] = &TriggerContext::combat_long_stuck;
 
             creators["petition signed"] = &TriggerContext::petition_signed;
             creators["buy tabard"] = &TriggerContext::buy_tabard;
@@ -260,8 +263,10 @@ namespace ai
         static Trigger* need_world_buff(PlayerbotAI* ai) { return new NeedWorldBuffTrigger(ai); }
         static Trigger* falling(PlayerbotAI* ai) { return new IsFallingTrigger(ai); }
         static Trigger* falling_far(PlayerbotAI* ai) { return new IsFallingFarTrigger(ai); }
-        static Trigger* movement_stuck(PlayerbotAI* ai) { return new MovementStuckTrigger(ai); }
-        static Trigger* location_stuck(PlayerbotAI* ai) { return new LocationStuckTrigger(ai); }
+        static Trigger* move_stuck(PlayerbotAI* ai) { return new MoveStuckTrigger(ai); }
+        static Trigger* move_long_stuck(PlayerbotAI* ai) { return new MoveLongStuckTrigger(ai); }
+        static Trigger* combat_stuck(PlayerbotAI* ai) { return new CombatStuckTrigger(ai); }
+        static Trigger* combat_long_stuck(PlayerbotAI* ai) { return new CombatLongStuckTrigger(ai); }
         static Trigger* player_wants_in_bg(PlayerbotAI* ai) { return new PlayerWantsInBattlegroundTrigger(ai); } 
 
         static Trigger* petition_signed(PlayerbotAI* ai) { return new PetitionTurnInTrigger(ai); }

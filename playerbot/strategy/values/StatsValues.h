@@ -123,16 +123,19 @@ namespace ai
         virtual bool Calculate();
     };
 
-    class IsInCombatValue : public BoolCalculatedValue, public Qualified
+    class IsInCombatValue : public MemoryCalculatedValue<bool>, public Qualified
     {
     public:
-        IsInCombatValue(PlayerbotAI* ai) : BoolCalculatedValue(ai) {}
+        IsInCombatValue(PlayerbotAI* ai) : MemoryCalculatedValue(ai) {}
 
         Unit* GetTarget()
         {
             AiObjectContext* ctx = AiObject::context;
             return ctx->GetValue<Unit*>(qualifier)->Get();
         }
+
+        virtual bool EqualToLast(bool value) { return value == lastValue; }
+
         virtual bool Calculate() ;
     };
 
