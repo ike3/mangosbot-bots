@@ -842,7 +842,7 @@ bool GuildTaskMgr::CheckItemTask(uint32 itemId, uint32 obtained, Player* ownerPl
 
         uint32 money = GetTaskValue(owner, guildId, "payment");
         if (!obtained) obtained = 1;
-        SetTaskValue(owner, guildId, "payment", money + min(10, auctionbot.GetBuyPrice(proto)) * obtained, rewardTime + 300);
+        SetTaskValue(owner, guildId, "payment", money + max(10, auctionbot.GetBuyPrice(proto)) * obtained, rewardTime + 300);
     }
 
     if (obtained >= count)
