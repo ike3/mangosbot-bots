@@ -49,7 +49,7 @@ bool RpgStartQuestTrigger::IsActive()
 {
     GuidPosition guidP(getGuidP());
 
-    if (!guidP.IsCreature() || !guidP.IsGameObject())
+    if (!guidP.IsCreature() && !guidP.IsGameObject())
         return false;
 
     if (AI_VALUE(bool, "can fight equal"))
@@ -70,7 +70,7 @@ bool RpgEndQuestTrigger::IsActive()
 {
     GuidPosition guidP(getGuidP());
 
-    if (!guidP.IsCreature() || !guidP.IsGameObject())
+    if (!guidP.IsCreature() && !guidP.IsGameObject())
         return false;
 
     if (AI_VALUE2(bool, "can turn in quest npc", guidP.GetEntry()))
