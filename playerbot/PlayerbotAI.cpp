@@ -226,7 +226,9 @@ void PlayerbotAI::UpdateAIInternal(uint32 elapsed)
     if (bot->IsBeingTeleported() || !bot->IsInWorld())
         return;
 
-    PerformanceMonitorOperation *pmo = sPerformanceMonitor.start(PERF_MON_TOTAL, "PlayerbotAI::UpdateAIInternal");
+    string mapString = WorldPosition(bot).isOverworld() ? to_string(bot->GetMapId()) : "I";
+
+    PerformanceMonitorOperation *pmo = sPerformanceMonitor.start(PERF_MON_TOTAL, "PlayerbotAI::UpdateAIInternal " + mapString);
     ExternalEventHelper helper(aiObjectContext);
     list<ChatCommandHolder> delayed;
     while (!chatCommands.empty())

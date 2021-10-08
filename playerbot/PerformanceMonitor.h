@@ -58,7 +58,7 @@ class PerformanceMonitor
 
 	public:
         PerformanceMonitorOperation* start(PerformanceMetric metric, string name, PerformanceStack* stack = nullptr);
-        void PrintStats(bool fullStack = false);
+        void PrintStats(bool perTick = false,  bool fullStack = false);
         void Reset();
 
 	private:

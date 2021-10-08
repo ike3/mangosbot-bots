@@ -48,125 +48,139 @@ PerformanceMonitorOperation* PerformanceMonitor::start(PerformanceMetric metric,
 #endif
 }
 
-void PerformanceMonitor::PrintStats(bool fullStack)
+void PerformanceMonitor::PrintStats(bool perTick, bool fullStack)
 {
     if(data.empty())
         return;
-    uint32 total = data[PERF_MON_TOTAL]["PlayerbotAI::UpdateAIInternal"]->totalTime;
-
-    sLog.outString("--------------------------------------[TOTAL]----------------------------------------------------------");
-    sLog.outString("percentage   time    |   min  ..    max (     avg  of     count ) - type : name                        ");
 
 
-    for (map<PerformanceMetric, map<string, PerformanceData*> >::iterator i = data.begin(); i != data.end(); ++i)
+    uint32 total = 0;
+
+    if (!perTick)
     {
-        map<string, PerformanceData*> pdMap = i->second;
 
-        string key;
-        switch (i->first)
+        for (auto& map : data[PERF_MON_TOTAL])
+            if (map.first.find("PlayerbotAI::UpdateAIInternal") != std::string::npos)
+                total += map.second->totalTime;
+
+        sLog.outString("--------------------------------------[TOTAL BOT]------------------------------------------------------");
+        sLog.outString("percentage   time    |   min  ..    max (     avg  of     count ) - type : name                        ");
+
+
+        for (map<PerformanceMetric, map<string, PerformanceData*> >::iterator i = data.begin(); i != data.end(); ++i)
         {
-        case PERF_MON_TRIGGER: key = "T"; break;
-        case PERF_MON_VALUE: key = "V"; break;
-        case PERF_MON_ACTION: key = "A"; break;
-        case PERF_MON_RNDBOT: key = "RndBot"; break;
-        case PERF_MON_TOTAL: key = "Total"; break;
-        default: key = "?";
-        }
+            map<string, PerformanceData*> pdMap = i->second;
 
-        list<string> names;
-
-        for (map<string, PerformanceData*>::iterator j = pdMap.begin(); j != pdMap.end(); ++j)
-        {
-            if (key == "Total" && j->first != "PlayerbotAI::UpdateAIInternal")
-                continue;
-            names.push_back(j->first);
-        }
-
-        names.sort([pdMap](string i, string j) {return pdMap.at(i)->totalTime < pdMap.at(j)->totalTime; });
-
-        for (auto& name : names)
-        {
-            PerformanceData* pd = pdMap[name];
-            float perc = (float)pd->totalTime / (float)total * 100.0f;
-            float secs = (float)pd->totalTime / 1000.0f;
-            float avg = (float)pd->totalTime / (float)pd->count;
-            string disName = name;
-            if(!fullStack && disName.find("|") != std::string::npos)
-                disName = disName.substr(0, disName.find("|"))+"]";
-
-            if (avg >= 0.5f || pd->maxTime > 10)
+            string key;
+            switch (i->first)
             {
-                sLog.outString("%7.3f%% %10.3fs | %6u .. %6u (%9.4f of %10u) - %s    : %s"
-                    , perc
-                    , secs
-                    , pd->minTime
-                    , pd->maxTime
-                    , avg
-                    , pd->count
-                    , key.c_str()
-                    , disName.c_str());
+            case PERF_MON_TRIGGER: key = "T"; break;
+            case PERF_MON_VALUE: key = "V"; break;
+            case PERF_MON_ACTION: key = "A"; break;
+            case PERF_MON_RNDBOT: key = "RndBot"; break;
+            case PERF_MON_TOTAL: key = "Total"; break;
+            default: key = "?";
             }
+
+            list<string> names;
+
+            for (map<string, PerformanceData*>::iterator j = pdMap.begin(); j != pdMap.end(); ++j)
+            {
+                if (key == "Total" && j->first.find("PlayerbotAI::UpdateAIInternal") == std::string::npos)
+                    continue;
+                names.push_back(j->first);
+            }
+
+            names.sort([pdMap](string i, string j) {return pdMap.at(i)->totalTime < pdMap.at(j)->totalTime; });
+
+            for (auto& name : names)
+            {
+                PerformanceData* pd = pdMap[name];
+                float perc = (float)pd->totalTime / (float)total * 100.0f;
+                float secs = (float)pd->totalTime / 1000.0f;
+                float avg = (float)pd->totalTime / (float)pd->count;
+                string disName = name;
+                if (!fullStack && disName.find("|") != std::string::npos)
+                    disName = disName.substr(0, disName.find("|")) + "]";
+
+                if (avg >= 0.5f || pd->maxTime > 10)
+                {
+                    sLog.outString("%7.3f%% %10.3fs | %6u .. %6u (%9.4f of %10u) - %s    : %s"
+                        , perc
+                        , secs
+                        , pd->minTime
+                        , pd->maxTime
+                        , avg
+                        , pd->count
+                        , key.c_str()
+                        , disName.c_str());
+                }
+            }
+            sLog.outString(" ");
         }
-        sLog.outString(" ");
+
     }
-
-    float totalCount = data[PERF_MON_TOTAL]["RandomPlayerbotMgr::FullTick"]->count;
-    total = data[PERF_MON_TOTAL]["RandomPlayerbotMgr::FullTick"]->totalTime;
-
-    sLog.outString(" ");
-    sLog.outString(" ");
-    sLog.outString("---------------------------------------[PER TICK]------------------------------------------------------");
-    sLog.outString("percentage   time    |   min  ..    max (     avg  of     count ) - type : name                        ");
-
-    for (map<PerformanceMetric, map<string, PerformanceData*> >::iterator i = data.begin(); i != data.end(); ++i)
+    else
     {
-        map<string, PerformanceData*> pdMap = i->second;
 
-        string key;
-        switch (i->first)
-        {
-        case PERF_MON_TRIGGER: key = "T"; break;
-        case PERF_MON_VALUE: key = "V"; break;
-        case PERF_MON_ACTION: key = "A"; break;
-        case PERF_MON_RNDBOT: key = "RndBot"; break;
-        case PERF_MON_TOTAL: key = "Total"; break;
-        default: key = "?";
-        }
+        float totalCount = data[PERF_MON_TOTAL]["RandomPlayerbotMgr::FullTick"]->count;
+        total = data[PERF_MON_TOTAL]["RandomPlayerbotMgr::FullTick"]->totalTime;
 
-        list<string> names;
-
-        for (map<string, PerformanceData*>::iterator j = pdMap.begin(); j != pdMap.end(); ++j)
-        {
-            names.push_back(j->first);
-        }
-
-        names.sort([pdMap](string i, string j) {return pdMap.at(i)->totalTime < pdMap.at(j)->totalTime; });
-
-        for (auto& name : names)
-        {
-            PerformanceData* pd = pdMap[name];
-            float perc = (float)pd->totalTime / (float)total * 100.0f;
-            uint32 secs = pd->totalTime / totalCount;
-            float avg = (float)pd->totalTime / (float)pd->count;
-            float amount = (float)pd->count / (float)totalCount;
-            string disName = name;
-            if (!fullStack && disName.find("|") != std::string::npos)
-                disName = disName.substr(0, disName.find("|")) + "]";
-
-            if (avg >= 0.5f || pd->maxTime > 10)
-            {
-                sLog.outString("%7.3f%% %9ums | %6u .. %6u (%9.4f of %10.3f) - %s    : %s"
-                    , perc
-                    , secs
-                    , pd->minTime
-                    , pd->maxTime
-                    , avg
-                    , amount
-                    , key.c_str()
-                    , disName.c_str());
-            }
-        }
         sLog.outString(" ");
+        sLog.outString(" ");
+        sLog.outString("---------------------------------------[PER TICK]------------------------------------------------------");
+        sLog.outString("percentage   time    |   min  ..    max (     avg  of     count ) - type : name                        ");
+
+        for (map<PerformanceMetric, map<string, PerformanceData*> >::iterator i = data.begin(); i != data.end(); ++i)
+        {
+            map<string, PerformanceData*> pdMap = i->second;
+
+            string key;
+            switch (i->first)
+            {
+            case PERF_MON_TRIGGER: key = "T"; break;
+            case PERF_MON_VALUE: key = "V"; break;
+            case PERF_MON_ACTION: key = "A"; break;
+            case PERF_MON_RNDBOT: key = "RndBot"; break;
+            case PERF_MON_TOTAL: key = "Total"; break;
+            default: key = "?";
+            }
+
+            list<string> names;
+
+            for (map<string, PerformanceData*>::iterator j = pdMap.begin(); j != pdMap.end(); ++j)
+            {
+                names.push_back(j->first);
+            }
+
+            names.sort([pdMap](string i, string j) {return pdMap.at(i)->totalTime < pdMap.at(j)->totalTime; });
+
+            for (auto& name : names)
+            {
+                PerformanceData* pd = pdMap[name];
+                float perc = (float)pd->totalTime / (float)total * 100.0f;
+                uint32 secs = pd->totalTime / totalCount;
+                float avg = (float)pd->totalTime / (float)pd->count;
+                float amount = (float)pd->count / (float)totalCount;
+                string disName = name;
+                if (!fullStack && disName.find("|") != std::string::npos)
+                    disName = disName.substr(0, disName.find("|")) + "]";
+
+                if (avg >= 0.5f || pd->maxTime > 10)
+                {
+                    sLog.outString("%7.3f%% %9ums | %6u .. %6u (%9.4f of %10.3f) - %s    : %s"
+                        , perc
+                        , secs
+                        , pd->minTime
+                        , pd->maxTime
+                        , avg
+                        , amount
+                        , key.c_str()
+                        , disName.c_str());
+                }
+            }
+            sLog.outString(" ");
+        }
     }
 
 }
@@ -226,9 +240,15 @@ bool ChatHandler::HandlePerfMonCommand(char* args)
         return true;
     }
 
+    if (!strcmp(args, "tick"))
+    {
+        sPerformanceMonitor.PrintStats(true,false);
+        return true;
+    }
+
     if (!strcmp(args, "stack"))
     {
-        sPerformanceMonitor.PrintStats(true);
+        sPerformanceMonitor.PrintStats(false,true);
         return true;
     }
 
