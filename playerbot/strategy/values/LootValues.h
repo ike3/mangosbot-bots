@@ -47,6 +47,8 @@ namespace ai
         virtual list<uint32> Calculate();
     };
 
+    typedef unordered_map<ItemUsage, vector<uint32>> itemUsageMap;
+
     class EntryLootUsageValue : public CalculatedValue<itemUsageMap>, public Qualified
     {
     public:
