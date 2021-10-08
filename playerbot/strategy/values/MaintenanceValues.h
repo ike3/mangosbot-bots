@@ -1,10 +1,32 @@
 #pragma once
 #include "../Value.h"
-#include "../values/ItemUsageValue.h"
-#include "../values/BudgetValues.h"
+#include "ItemUsageValue.h"
+#include "BudgetValues.h"
 
 namespace ai
 {
+    class CanMoveAroundValue : public BoolCalculatedValue
+    {
+    public:
+        CanMoveAroundValue(PlayerbotAI* ai) : BoolCalculatedValue(ai, "can move around", 2) {}
+        virtual bool Calculate()
+        {
+            if (bot->IsInCombat())
+                return false;
+
+            if (bot->GetTradeData())
+                return false;
+
+            if (ai->HasStrategy("stay", BOT_STATE_NON_COMBAT))
+                return false;
+
+            if (!AI_VALUE(bool, "group ready"))
+                return false;
+
+            return true;
+        }
+    };
+
     class ShouldHomeBindValue : public BoolCalculatedValue
     {
     public:

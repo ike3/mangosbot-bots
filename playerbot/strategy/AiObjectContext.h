@@ -45,6 +45,11 @@ namespace ai
             return strategyContexts.supports();
         }
 
+        set<string> GetSupportedActions()
+        {
+            return actionContexts.supports();
+        }
+
         string FormatValues()
         {
             ostringstream out;

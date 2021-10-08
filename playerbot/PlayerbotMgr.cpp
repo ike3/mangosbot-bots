@@ -384,6 +384,16 @@ list<string> PlayerbotHolder::HandlePlayerbotCommand(char const* args, Player* m
         return messages;
     }   
 
+    if (!strcmp(cmd, "tweak"))
+    {
+        sPlayerbotAIConfig.tweakValue = sPlayerbotAIConfig.tweakValue++;
+        if (sPlayerbotAIConfig.tweakValue > 2)
+            sPlayerbotAIConfig.tweakValue = 0;
+
+        messages.push_back("Set tweakvalue to " + to_string(sPlayerbotAIConfig.tweakValue));
+        return messages;
+    }
+
     if (!strcmp(cmd, "self"))
     {
         if (master->GetPlayerbotAI())

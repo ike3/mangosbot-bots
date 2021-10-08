@@ -120,6 +120,7 @@ namespace ai
             creators["no non bot players around"] = &TriggerContext::no_non_bot_players_around;
             creators["new player nearby"] = &TriggerContext::new_player_nearby;
             creators["no rpg target"] = &TriggerContext::no_rpg_target;
+            creators["has rpg target"] = &TriggerContext::has_rpg_target;
             creators["far from rpg target"] = &TriggerContext::far_from_rpg_target;
             creators["near rpg target"] = &TriggerContext::near_rpg_target;
             creators["no travel target"] = &TriggerContext::no_travel_target;
@@ -151,13 +152,32 @@ namespace ai
             creators["falling"] = &TriggerContext::falling;
             creators["falling far"] = &TriggerContext::falling_far;
             creators["move stuck"] = &TriggerContext::move_stuck;
-            creators["move stuck long"] = &TriggerContext::move_long_stuck;
+            creators["move long stuck"] = &TriggerContext::move_long_stuck;
             creators["combat stuck"] = &TriggerContext::combat_stuck;
             creators["combat long stuck"] = &TriggerContext::combat_long_stuck;
 
             creators["petition signed"] = &TriggerContext::petition_signed;
             creators["buy tabard"] = &TriggerContext::buy_tabard;
             creators["leave large guild"] = &TriggerContext::leave_large_guild;
+
+            creators["rpg"] = &TriggerContext::rpg;
+            creators["rpg taxi"] = &TriggerContext::rpg_taxi;
+            creators["rpg discover"] = &TriggerContext::rpg_discover;
+            creators["rpg start quest"] = &TriggerContext::rpg_start_quest;
+            creators["rpg end quest"] = &TriggerContext::rpg_end_quest;
+            creators["rpg buy"] = &TriggerContext::rpg_buy;
+            creators["rpg sell"] = &TriggerContext::rpg_sell;
+            creators["rpg repair"] = &TriggerContext::rpg_repair;
+            creators["rpg train"] = &TriggerContext::rpg_train;
+            creators["rpg heal"] = &TriggerContext::rpg_heal;
+            creators["rpg home bind"] = &TriggerContext::rpg_home_bind;
+            creators["rpg queue bg"] = &TriggerContext::rpg_queue_bg;
+            creators["rpg buy petition"] = &TriggerContext::rpg_buy_petition;
+            creators["rpg use"] = &TriggerContext::rpg_use;
+            creators["rpg spell"] = &TriggerContext::rpg_spell;
+            creators["rpg craft"] = &TriggerContext::rpg_craft;
+            creators["rpg trade useful"] = &TriggerContext::rpg_trade_useful;
+            creators["rpg duel"] = &TriggerContext::rpg_duel;
         }
 
     private:
@@ -182,6 +202,7 @@ namespace ai
         static Trigger* far_from_rpg_target(PlayerbotAI* ai) { return new FarFromRpgTargetTrigger(ai); }
         static Trigger* near_rpg_target(PlayerbotAI* ai) { return new NearRpgTargetTrigger(ai); }
         static Trigger* no_rpg_target(PlayerbotAI* ai) { return new NoRpgTargetTrigger(ai); }
+        static Trigger* has_rpg_target(PlayerbotAI* ai) { return new HasRpgTargetTrigger(ai); }
         static Trigger* far_from_travel_target(PlayerbotAI* ai) { return new FarFromTravelTargetTrigger(ai); }
         static Trigger* no_travel_target(PlayerbotAI* ai) { return new NoTravelTargetTrigger(ai); }		
         static Trigger* collision(PlayerbotAI* ai) { return new CollisionTrigger(ai); }
@@ -272,5 +293,24 @@ namespace ai
         static Trigger* petition_signed(PlayerbotAI* ai) { return new PetitionTurnInTrigger(ai); }
         static Trigger* buy_tabard(PlayerbotAI* ai) { return new BuyTabardTrigger(ai); }        
         static Trigger* leave_large_guild(PlayerbotAI* ai) { return new LeaveLargeGuildTrigger(ai); }
+
+        static Trigger* rpg(PlayerbotAI* ai) { return new RpgTrigger(ai); }
+        static Trigger* rpg_taxi(PlayerbotAI* ai) { return new RpgTaxiTrigger(ai); }
+        static Trigger* rpg_discover(PlayerbotAI* ai) { return new RpgDiscoverTrigger(ai); }
+        static Trigger* rpg_start_quest(PlayerbotAI* ai) { return new RpgStartQuestTrigger(ai); }
+        static Trigger* rpg_end_quest(PlayerbotAI* ai) { return new RpgEndQuestTrigger(ai); }
+        static Trigger* rpg_buy(PlayerbotAI* ai) { return new RpgBuyTrigger(ai); }
+        static Trigger* rpg_sell(PlayerbotAI* ai) { return new RpgSellTrigger(ai); }
+        static Trigger* rpg_repair(PlayerbotAI* ai) { return new RpgRepairTrigger(ai); }
+        static Trigger* rpg_train(PlayerbotAI* ai) { return new RpgTrainTrigger(ai); }
+        static Trigger* rpg_heal(PlayerbotAI* ai) { return new RpgHealTrigger(ai); }
+        static Trigger* rpg_home_bind(PlayerbotAI* ai) { return new RpgHomeBindTrigger(ai); }
+        static Trigger* rpg_queue_bg(PlayerbotAI* ai) { return new RpgQueueBGTrigger(ai); }
+        static Trigger* rpg_buy_petition(PlayerbotAI* ai) { return new RpgBuyPetitionTrigger(ai); }
+        static Trigger* rpg_use(PlayerbotAI* ai) { return new RpgUseTrigger(ai); }
+        static Trigger* rpg_spell(PlayerbotAI* ai) { return new RpgUseTrigger(ai); }
+        static Trigger* rpg_craft(PlayerbotAI* ai) { return new RpgCraftTrigger(ai); }
+        static Trigger* rpg_trade_useful(PlayerbotAI* ai) { return new RpgTradeUsefulTrigger(ai); }
+        static Trigger* rpg_duel(PlayerbotAI* ai) { return new RpgDuelTrigger(ai); }
     };
 };

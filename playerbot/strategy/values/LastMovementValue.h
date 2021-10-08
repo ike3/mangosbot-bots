@@ -71,6 +71,18 @@ namespace ai
         void setShort(WorldPosition point) {lastMoveShort = point; lastFollow = NULL;
         }
         void setPath(TravelPath path) { lastPath = path; }
+
+        LastMovement& operator=(const LastMovement& other) { 
+            taxiNodes = other.taxiNodes;
+            taxiMaster = other.taxiMaster;
+            lastFollow = other.lastFollow;
+            lastAreaTrigger = other.lastAreaTrigger;
+            lastMoveShort = other.lastMoveShort;
+            lastPath = other.lastPath;
+            nextTeleport = other.nextTeleport;
+
+            return *this;
+        };
     public:
         vector<uint32> taxiNodes;
         ObjectGuid taxiMaster;
@@ -82,6 +94,7 @@ namespace ai
         WorldPosition lastMoveShort;
         TravelPath lastPath;
         time_t nextTeleport;
+        std::future<TravelPath> future;
     };
 
     class LastMovementValue : public ManualSetValue<LastMovement&>
@@ -90,7 +103,7 @@ namespace ai
         LastMovementValue(PlayerbotAI* ai) : ManualSetValue<LastMovement&>(ai, data) {}
 
     private:
-        LastMovement data;
+        LastMovement data = LastMovement();
     };
 
     class StayTimeValue : public ManualSetValue<time_t>

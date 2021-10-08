@@ -10,7 +10,7 @@ namespace ai
     class DistanceValue : public FloatCalculatedValue, public Qualified
 	{
 	public:
-        DistanceValue(PlayerbotAI* ai) : FloatCalculatedValue(ai) {}
+        DistanceValue(PlayerbotAI* ai, string name = "distance") : FloatCalculatedValue(ai, name) {}
 
     public:
         float Calculate()
@@ -40,15 +40,8 @@ namespace ai
             Unit* target = NULL;
             if (qualifier == "rpg target")
             {
-                ObjectGuid rpgTarget = AI_VALUE(ObjectGuid, qualifier);
-                target = ai->GetUnit(rpgTarget);
-
-                if (!target)
-                {
-                    GameObject* go = ai->GetGameObject(rpgTarget);
-                    if (go)
-                        return sServerFacade.GetDistance2d(ai->GetBot(), go);
-                }
+                GuidPosition rpgTarget = AI_VALUE(GuidPosition, qualifier);
+                return rpgTarget.distance(bot);
             }
             else if (qualifier == "travel target")
             {
@@ -95,7 +88,7 @@ namespace ai
     class InsideTargetValue : public BoolCalculatedValue, public Qualified
     {
     public:
-        InsideTargetValue(PlayerbotAI* ai) : BoolCalculatedValue(ai) {}
+        InsideTargetValue(PlayerbotAI* ai, string name = "inside target") : BoolCalculatedValue(ai, name) {}
 
     public:
         bool Calculate()
