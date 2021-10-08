@@ -45,7 +45,7 @@ entryQuestRelationMap EntryQuestRelationMapValue::Calculate()
 			//Loot objective
 			if (quest->ReqItemId[objective])
 			{
-				for (auto& entry : GAI_VALUE2(list<int32>, "item loot list", quest->ReqItemId[objective]))
+				for (auto& entry : GAI_VALUE2(list<int32>, "item drop list", quest->ReqItemId[objective]))
 					rMap[entry][questId] |= relationFlag;
 			}
 		}
@@ -69,137 +69,7 @@ entryQuestRelationMap EntryQuestRelationMapValue::Calculate()
 void FindQuestObjectData::GetObjectiveEntries()
 {
 	relationMap = GAI_VALUE(entryQuestRelationMap, "entry quest relation");
-	/*
-	ObjectMgr::QuestMap const& questMap = sObjectMgr.GetQuestTemplates();
-
-	for (auto& quest : questMap)
-	{
-		for (uint32 objective = 0; objective < QUEST_OBJECTIVES_COUNT; objective++)
-		{
-			vector<uint32> entries;
-
-			QuestRelationFlag objectiveRelation = QuestRelationFlag(1 << objective);
-
-			//Entries required (to kill)
-			if (quest.second->ReqCreatureOrGOId[objective] && quest.second->ReqCreatureOrGOCount[objective] > 0)
-				entryMap[quest.second->ReqCreatureOrGOId[objective]].push_back(make_pair(quest.first, objectiveRelation));
-		
-			//Items required (to loot/buy)
-			if (quest.second->ReqItemId[objective] && quest.second->ReqItemCount[objective] > 0)
-				itemMap[quest.second->ReqItemId[objective]].push_back(make_pair(quest.first, objectiveRelation));
-		}
-
-		if (quest.second->GetSrcItemId())
-		{
-			ItemRequiredTargetMapBounds bounds = sObjectMgr.GetItemRequiredTargetMapBounds(quest.second->GetSrcItemId());
-
-			if (bounds.first != bounds.second) //Add target of source item to second quest objective.
-				for (ItemRequiredTargetMap::const_iterator itr = bounds.first; itr != bounds.second; ++itr)
-					entryMap[itr->second.m_uiTargetEntry].push_back(make_pair(quest.first, QuestRelationFlag::objective1));
-		}
-	}
-	*/
 }
-
-/*
-//Data worker. Checks for a specific creature what quest they are needed for and puts them in the proper place in the quest map.
-bool FindQuestObjectData::operator()(CreatureDataPair const& dataPair)
-{
-	uint32 entry = dataPair.second.id;
-
-	QuestRelationsMapBounds	rbounds = sObjectMgr.GetCreatureQuestRelationsMapBounds(entry);
-
-	for (QuestRelationsMap::const_iterator itr = rbounds.first; itr != rbounds.second; ++itr)
-	{
-		data[itr->second][(int)QuestRelationFlag::questGiver][entry].push_back(GuidPosition(&dataPair));
-	}
-
-	QuestRelationsMapBounds	ibounds = sObjectMgr.GetCreatureQuestInvolvedRelationsMapBounds(entry);
-
-	for (QuestRelationsMap::const_iterator itr = ibounds.first; itr != ibounds.second; ++itr)
-	{
-		data[itr->second][(int)QuestRelationFlag::questTaker][entry].push_back(GuidPosition(&dataPair));
-	}
-
-	for (auto entryPair : entryMap[entry])
-	{
-		data[entryPair.first][(int)entryPair.second][entry].push_back(GuidPosition(&dataPair));
-	}
-
-	CreatureInfo const* info = sObjectMgr.GetCreatureTemplate(entry);
-
-	if (!info || info->LootId == 0)
-		return false;
-
-	LootTemplate const* lTemplate = LootTemplates_Creature.GetLootFor(info->LootId);
-
-	if (!lTemplate)
-		return false;
-
-	LootTemplateAccess const* lTemplateA = reinterpret_cast<LootTemplateAccess const*>(lTemplate);
-
-	for (auto& item : lTemplateA->Entries)
-	{
-		for (auto& itemPair : itemMap[item.itemid])
-		{
-			data[itemPair.first][(int)itemPair.second][entry].push_back(GuidPosition(&dataPair));
-		}
-	}
-
-	return false;
-}
-
-
-//GameObject data worker. Checks for a specific gameObject what quest they are needed for and puts them in the proper place in the quest map.
-bool FindQuestObjectData::operator()(GameObjectDataPair const& dataPair)
-{
-	uint32 entry = dataPair.second.id; 
-	int32 sentry = dataPair.second.id * -1; //GameObjectData entry is negative in quest objectives.
-
-	QuestRelationsMapBounds	rbounds = sObjectMgr.GetGOQuestRelationsMapBounds(entry);
-
-	for (QuestRelationsMap::const_iterator itr = rbounds.first; itr != rbounds.second; ++itr)
-	{
-		data[itr->second][(int)QuestRelationFlag::questGiver][sentry].push_back(GuidPosition(&dataPair));
-	}
-
-	QuestRelationsMapBounds	ibounds = sObjectMgr.GetGOQuestInvolvedRelationsMapBounds(entry);
-
-	for (QuestRelationsMap::const_iterator itr = ibounds.first; itr != ibounds.second; ++itr)
-	{
-		data[itr->second][(int)QuestRelationFlag::questTaker][sentry].push_back(GuidPosition(&dataPair));
-	}
-
-	for (auto entryPair : entryMap[sentry]) 
-	{
-		data[entryPair.first][(int)entryPair.second][sentry].push_back(GuidPosition(&dataPair));
-	}
-
-	GameObjectInfo const* info = sObjectMgr.GetGameObjectInfo(entry);
-
-	if (!info || info->GetLootId() == 0)
-		return false;
-
-	LootTemplate const* lTemplate = LootTemplates_Gameobject.GetLootFor(info->GetLootId());
-
-	if (!lTemplate)
-		return false;
-
-	LootTemplateAccess const* lTemplateA = reinterpret_cast<LootTemplateAccess const*>(lTemplate);
-
-	for (auto& item : lTemplateA->Entries)
-	{
-		for (auto& itemPair : itemMap[item.itemid])
-		{
-			data[itemPair.first][(int)itemPair.second][sentry].push_back(GuidPosition(&dataPair));
-		}
-	}
-
-	return false;
-}
-*/
-
-
 
 //Data worker. Checks for a specific creature what quest they are needed for and puts them in the proper place in the quest map.
 bool FindQuestObjectData::operator()(CreatureDataPair const& dataPair)

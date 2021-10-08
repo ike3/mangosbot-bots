@@ -1,6 +1,7 @@
 #pragma once
 #include <boost/bimap.hpp>
 #include <boost/bimap/multiset_of.hpp>
+#include "ItemUsageValue.h"
 
 namespace ai
 { 
@@ -15,17 +16,26 @@ namespace ai
     };
 
     //                   itemId, entry
-    typedef boost::bimap<boost::bimaps::multiset_of<uint32>, boost::bimaps::multiset_of<int32>> LootMap;
+    typedef unordered_map<uint32, int32> DropMap;
 
     //Returns the loot map of all entries
-    class LootMapValue : public SingleCalculatedValue<LootMap*>
+    class DropMapValue : public SingleCalculatedValue<DropMap*>
     {
     public:
-        LootMapValue(PlayerbotAI* ai) : SingleCalculatedValue(ai, "loot map") {}
+        DropMapValue(PlayerbotAI* ai) : SingleCalculatedValue(ai, "drop map") {}
 
         static LootTemplateAccess const* GetLootTemplate(ObjectGuid guid, LootType type = LOOT_CORPSE);
 
-        virtual LootMap* Calculate();
+        virtual DropMap* Calculate();
+    };
+
+    //Returns the entries that drop a specific item
+    class ItemDropListValue : public SingleCalculatedValue<list<int32>>, public Qualified
+    {
+    public:
+        ItemDropListValue(PlayerbotAI* ai) : SingleCalculatedValue(ai, "item drop list") {}
+
+        virtual list<int32> Calculate();
     };
 
     //Returns the items a specific entry can drop
@@ -37,14 +47,20 @@ namespace ai
         virtual list<uint32> Calculate();
     };
 
-    //Returns the entries that drop a specific item
-    class ItemLootListValue : public SingleCalculatedValue<list<int32>>, public Qualified
+    class EntryLootUsageValue : public CalculatedValue<itemUsageMap>, public Qualified
     {
     public:
-        ItemLootListValue(PlayerbotAI* ai) : SingleCalculatedValue(ai, "item loot list") {}
+        EntryLootUsageValue(PlayerbotAI* ai) : CalculatedValue(ai, "entry loot usage",2) {}
 
-        virtual list<int32> Calculate();
+        virtual itemUsageMap Calculate();
     };
 
+    class HasUpgradeValue : public BoolCalculatedValue, public Qualified
+    {
+    public:
+        HasUpgradeValue(PlayerbotAI* ai) : BoolCalculatedValue(ai, "has upgrade", 2) {}
+
+        virtual bool Calculate() { itemUsageMap uMap = AI_VALUE2(itemUsageMap, "entry loot usage", getQualifier()); return uMap.find(ITEM_USAGE_EQUIP) != uMap.end() || uMap.find(ITEM_USAGE_REPLACE) != uMap.end(); };
+    };
 }
 
