@@ -23,40 +23,10 @@ namespace ai
     {
     public:
         virtual T Get() = 0;
+        virtual T LazyGet() = 0;
+        virtual void Reset() {}
         virtual void Set(T value) = 0;
         operator T() { return Get(); }
-    };
-
-    template <class T>
-    class SingleCalculatedValue : public UntypedValue, public Value<T>
-    {
-    public:
-        SingleCalculatedValue(PlayerbotAI* ai, string name = "value") : UntypedValue(ai, name) { Reset(); }
-
-        virtual ~SingleCalculatedValue() {}
-
-        virtual T Get()
-        {
-            if (!calculated)
-            {
-                value = Calculate();
-                calculated = true;
-            }
-            return value;
-        }
-
-        virtual void Set(T value) { this->value = value; }
-        virtual void Update() { }
-
-        virtual void Reset()
-        {
-            calculated = false;
-        }
-    protected:
-        virtual T Calculate() = 0;
-    protected:
-        T value;
-        bool calculated;
     };
 
     template<class T>
@@ -66,7 +36,7 @@ namespace ai
         CalculatedValue(PlayerbotAI* ai, string name = "value", int checkInterval = 1) : UntypedValue(ai, name),
             checkInterval(checkInterval)
         {
-            lastCheckTime = time(0) - checkInterval;
+            lastCheckTime = 0;
         }
         virtual ~CalculatedValue() {}
 
@@ -84,6 +54,12 @@ namespace ai
             }
             return value;
         }
+        virtual T LazyGet()
+        {
+            if (!lastCheckTime)
+                return Get();
+            return value;
+        }
         virtual void Set(T value) { this->value = value; }
         virtual void Update() { }
         virtual void Reset() { lastCheckTime = 0; }
@@ -96,6 +72,25 @@ namespace ai
         T value;
 	};
 
+    template <class T> class SingleCalculatedValue : public CalculatedValue<T>
+    {
+    public:
+        SingleCalculatedValue(PlayerbotAI* ai, string name = "value") : CalculatedValue(ai, name) { Reset(); }
+
+        virtual T Get()
+        {
+            time_t now = time(0);
+            if (!lastCheckTime)
+            {
+                lastCheckTime = now;
+
+                PerformanceMonitorOperation* pmo = sPerformanceMonitor.start(PERF_MON_VALUE, getName());
+                value = Calculate();
+                if (pmo) pmo->finish();
+            }
+            return value;
+        }
+    };
     
     template<class T> class MemoryCalculatedValue : public CalculatedValue<T>
     {
@@ -273,6 +268,7 @@ namespace ai
 
     public:
         virtual T Get() { return value; }
+        virtual T LazyGet() { return value; }
         virtual void Set(T value) { this->value = value; }
         virtual void Update() { }
         virtual void Reset() { value = defaultValue; }
