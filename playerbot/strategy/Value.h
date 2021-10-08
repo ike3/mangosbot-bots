@@ -48,7 +48,7 @@ namespace ai
             {
                 lastCheckTime = now;
 
-                PerformanceMonitorOperation *pmo = sPerformanceMonitor.start(PERF_MON_VALUE, getName());
+                PerformanceMonitorOperation *pmo = sPerformanceMonitor.start(PERF_MON_VALUE, getName(), context ? &context->performanceStack : nullptr);
                 value = Calculate();
                 if (pmo) pmo->finish();
             }
@@ -84,7 +84,7 @@ namespace ai
             {
                 lastCheckTime = now;
 
-                PerformanceMonitorOperation* pmo = sPerformanceMonitor.start(PERF_MON_VALUE, getName());
+                PerformanceMonitorOperation* pmo = sPerformanceMonitor.start(PERF_MON_VALUE, getName(), context ?  &context->performanceStack : nullptr);
                 value = Calculate();
                 if (pmo) pmo->finish();
             }

@@ -14,25 +14,41 @@ PerformanceMonitor::~PerformanceMonitor()
 {
 }
 
-PerformanceMonitorOperation* PerformanceMonitor::start(PerformanceMetric metric, string name)
+PerformanceMonitorOperation* PerformanceMonitor::start(PerformanceMetric metric, string name, PerformanceStack* stack)
 {
-	if (!sPlayerbotAIConfig.perfMonEnabled) return NULL;
+	if (!sPlayerbotAIConfig.perfMonEnabled) return NULL;    
+
+    string stackName = name;
+
+
+    if (stack)
+    {
+        if (!stack->empty())
+        {
+            ostringstream out; out << stackName << " [";
+            for (vector<string>::reverse_iterator i = stack->rbegin(); i != stack->rend(); ++i) 
+                out << *i << (std::next(i)==stack->rend()? "":"|");
+            out << "]";
+            stackName = out.str().c_str();
+        }
+        stack->push_back(name);
+    }
 
 #ifdef CMANGOS
 	std::lock_guard<std::mutex> guard(lock);
-    PerformanceData *pd = data[metric][name];
+    PerformanceData *pd = data[metric][stackName];
     if (!pd)
     {
         pd = new PerformanceData();
         pd->minTime = pd->maxTime = pd->totalTime = pd->count = 0;
-        data[metric][name] = pd;
+        data[metric][stackName] = pd;
     }
 
-	return new PerformanceMonitorOperation(pd);
+	return new PerformanceMonitorOperation(pd, name, stack);
 #endif
 }
 
-void PerformanceMonitor::PrintStats()
+void PerformanceMonitor::PrintStats(bool fullStack)
 {
     if(data.empty())
         return;
@@ -74,6 +90,10 @@ void PerformanceMonitor::PrintStats()
             float perc = (float)pd->totalTime / (float)total * 100.0f;
             float secs = (float)pd->totalTime / 1000.0f;
             float avg = (float)pd->totalTime / (float)pd->count;
+            string disName = name;
+            if(!fullStack && disName.find("|") != std::string::npos)
+                disName = disName.substr(0, disName.find("|"))+"]";
+
             if (avg >= 0.5f || pd->maxTime > 10)
             {
                 sLog.outString("%7.3f%% %10.3fs | %6u .. %6u (%9.4f of %10u) - %s    : %s"
@@ -84,7 +104,7 @@ void PerformanceMonitor::PrintStats()
                     , avg
                     , pd->count
                     , key.c_str()
-                    , name.c_str());
+                    , disName.c_str());
             }
         }
         sLog.outString(" ");
@@ -129,6 +149,10 @@ void PerformanceMonitor::PrintStats()
             uint32 secs = pd->totalTime / totalCount;
             float avg = (float)pd->totalTime / (float)pd->count;
             float amount = (float)pd->count / (float)totalCount;
+            string disName = name;
+            if (!fullStack && disName.find("|") != std::string::npos)
+                disName = disName.substr(0, disName.find("|")) + "]";
+
             if (avg >= 0.5f || pd->maxTime > 10)
             {
                 sLog.outString("%7.3f%% %9ums | %6u .. %6u (%9.4f of %10.3f) - %s    : %s"
@@ -139,7 +163,7 @@ void PerformanceMonitor::PrintStats()
                     , avg
                     , amount
                     , key.c_str()
-                    , name.c_str());
+                    , disName.c_str());
             }
         }
         sLog.outString(" ");
@@ -163,7 +187,7 @@ void PerformanceMonitor::Reset()
     }
 }
 
-PerformanceMonitorOperation::PerformanceMonitorOperation(PerformanceData* data) : data(data)
+PerformanceMonitorOperation::PerformanceMonitorOperation(PerformanceData* data, string name, PerformanceStack* stack) : data(data), name(name), stack(stack)
 {
 #ifdef CMANGOS
     started = (std::chrono::time_point_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now())).time_since_epoch();
@@ -185,6 +209,11 @@ void PerformanceMonitorOperation::finish()
     }
     data->count++;
 #endif
+
+    if (stack)
+    {
+        stack->erase(std::remove(stack->begin(), stack->end(), name), stack->end());
+    }
     delete this;
 }
 
@@ -194,6 +223,12 @@ bool ChatHandler::HandlePerfMonCommand(char* args)
     if (!strcmp(args, "reset"))
     {
         sPerformanceMonitor.Reset();
+        return true;
+    }
+
+    if (!strcmp(args, "stack"))
+    {
+        sPerformanceMonitor.PrintStats(true);
         return true;
     }
 
