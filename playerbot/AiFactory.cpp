@@ -468,6 +468,8 @@ void AiFactory::AddDefaultNonCombatStrategies(Player* player, PlayerbotAI* const
 
     if ((facade->IsRealPlayer() || sRandomPlayerbotMgr.IsRandomBot(player)) && !player->InBattleGround())
     {   
+        Player* master = facade->GetMaster();
+
         if (!player->GetGroup() || player->GetGroup()->GetLeaderGuid() == player->GetObjectGuid())
         {
             // let 50% of random not grouped (or grp leader) bots help other players
@@ -476,8 +478,7 @@ void AiFactory::AddDefaultNonCombatStrategies(Player* player, PlayerbotAI* const
 
             nonCombatEngine->addStrategy("pvp");
             nonCombatEngine->addStrategy("collision");
-            nonCombatEngine->addStrategy("grind");
-            nonCombatEngine->addStrategy("maintenance");
+            nonCombatEngine->addStrategy("grind");            
             nonCombatEngine->addStrategy("group");
             nonCombatEngine->addStrategy("guild");
 
@@ -492,13 +493,15 @@ void AiFactory::AddDefaultNonCombatStrategies(Player* player, PlayerbotAI* const
             if (sPlayerbotAIConfig.randomBotJoinBG)
                 nonCombatEngine->addStrategy("bg");
 
+            if(!master || master->GetPlayerbotAI())
+                nonCombatEngine->addStrategy("maintenance");
+
+
             nonCombatEngine->ChangeStrategy(sPlayerbotAIConfig.randomBotNonCombatStrategies);
         }
         else {
-            PlayerbotAI* botAi = player->GetPlayerbotAI();
-            if (botAi)
+            if (facade)
             {
-                Player* master = botAi->GetMaster();
                 if (master)
                 {
                     if (master->GetPlayerbotAI() || sRandomPlayerbotMgr.IsRandomBot(player))
@@ -506,7 +509,6 @@ void AiFactory::AddDefaultNonCombatStrategies(Player* player, PlayerbotAI* const
                         nonCombatEngine->addStrategy("pvp");
                         nonCombatEngine->addStrategy("collision");
                         nonCombatEngine->addStrategy("grind");
-                        nonCombatEngine->addStrategy("maintenance");
                         nonCombatEngine->addStrategy("group");
                         nonCombatEngine->addStrategy("guild");
 
@@ -515,6 +517,10 @@ void AiFactory::AddDefaultNonCombatStrategies(Player* player, PlayerbotAI* const
                             nonCombatEngine->addStrategy("travel");
                             nonCombatEngine->addStrategy("rpg");
                         }
+
+                        if (!master || master->GetPlayerbotAI())
+                            nonCombatEngine->addStrategy("maintenance");
+
                         nonCombatEngine->ChangeStrategy(sPlayerbotAIConfig.randomBotNonCombatStrategies);
                     }
                     else
