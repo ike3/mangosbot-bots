@@ -192,7 +192,7 @@ WorldSafeLocsEntry const* SpiritHealerAction::GetGrave(bool startZone)
     if (!startZone && ClosestGrave)
         return ClosestGrave;
 
-    if (ai->HasStrategy("follow", BOT_STATE_NON_COMBAT))
+    if (ai->HasStrategy("follow", BOT_STATE_NON_COMBAT)&& ai->GetGroupMaster() && ai->GetGroupMaster() != bot)
     {
         Player* master = ai->GetGroupMaster();
 
@@ -204,6 +204,20 @@ WorldSafeLocsEntry const* SpiritHealerAction::GetGrave(bool startZone)
                 return ClosestGrave;
         }
     }
+    else if(startZone && AI_VALUE(uint8, "durability"))
+    {
+        TravelTarget* travelTarget = AI_VALUE(TravelTarget*, "travel target");
+
+        if (travelTarget->getPosition())
+        {
+            WorldPosition travelPos = *travelTarget->getPosition();
+            ClosestGrave = sObjectMgr.GetClosestGraveYard(travelPos.getX(), travelPos.getY(), travelPos.getZ(), travelPos.getMapId(), bot->GetTeam());
+
+            if (ClosestGrave)
+                return ClosestGrave;
+        }
+    }
+
 
     vector<uint32> races;
 
