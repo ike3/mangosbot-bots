@@ -168,6 +168,11 @@ int RandomPlayerbotMgr::GetMaxAllowedBotCount()
 
 void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed)
 {
+    if(totalPmo)
+        totalPmo->finish();
+
+    totalPmo = sPerformanceMonitor.start(PERF_MON_TOTAL, "RandomPlayerbotMgr::FullTick");
+
     if (sPlayerbotAIConfig.hasLog("player_location.csv"))
     {
         sPlayerbotAIConfig.openLog("player_location.csv", "w");
@@ -1653,7 +1658,7 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot, vector<WorldLocation> &locs
         for (int attemtps = 0; attemtps < 3; ++attemtps)
         {
 
-            WorldLocation loc = tlocs[i].getLocation();
+            WorldLocation loc = tlocs[i];
 
 #ifndef MANGOSBOT_ZERO
             // Teleport to Dark Portal area if event is in progress

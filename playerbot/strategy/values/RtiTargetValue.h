@@ -10,7 +10,7 @@ namespace ai
     class RtiTargetValue : public TargetValue
     {
     public:
-        RtiTargetValue(PlayerbotAI* ai, string type = "rti") : type(type), TargetValue(ai)
+        RtiTargetValue(PlayerbotAI* ai, string type = "rti", string name = "rti target") : type(type), TargetValue(ai,name)
         {}
 
     public:
@@ -63,6 +63,6 @@ namespace ai
     class RtiCcTargetValue : public RtiTargetValue
     {
     public:
-        RtiCcTargetValue(PlayerbotAI* ai) : RtiTargetValue(ai, "rti cc") {}
+        RtiCcTargetValue(PlayerbotAI* ai, string name = "rti cc target") : RtiTargetValue(ai, "rti cc", name) {}
     };
 }

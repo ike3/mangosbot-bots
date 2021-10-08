@@ -8,7 +8,7 @@ namespace ai
     class SpellCastUsefulValue : public BoolCalculatedValue, public Qualified
 	{
 	public:
-        SpellCastUsefulValue(PlayerbotAI* ai) : BoolCalculatedValue(ai) {}
+        SpellCastUsefulValue(PlayerbotAI* ai, string name = "spell cast useful") : BoolCalculatedValue(ai, name) {}
       
     public:
         virtual bool Calculate();

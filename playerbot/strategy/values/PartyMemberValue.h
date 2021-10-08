@@ -18,7 +18,7 @@ namespace ai
     class PartyMemberValue : public UnitCalculatedValue
 	{
 	public:
-        PartyMemberValue(PlayerbotAI* ai) : UnitCalculatedValue(ai) {}
+        PartyMemberValue(PlayerbotAI* ai, string name = "party member") : UnitCalculatedValue(ai, name) {}
 
     public:
         bool IsTargetOfSpellCast(Player* target, SpellEntryPredicate &predicate);

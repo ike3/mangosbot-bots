@@ -6,6 +6,6 @@ namespace ai
     class RandomBotUpdateValue : public ManualSetValue<bool>
 	{
 	public:
-        RandomBotUpdateValue(PlayerbotAI* ai) : ManualSetValue<bool>(ai, false) {}
+        RandomBotUpdateValue(PlayerbotAI* ai, string name = "random bot update") : ManualSetValue<bool>(ai, false, name) {}
     };
 }

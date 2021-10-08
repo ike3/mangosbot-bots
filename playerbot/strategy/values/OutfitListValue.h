@@ -7,7 +7,7 @@ namespace ai
     class OutfitListValue : public ManualSetValue<Outfit&>
 	{
 	public:
-        OutfitListValue(PlayerbotAI* ai) : ManualSetValue<Outfit&>(ai, list) {}
+        OutfitListValue(PlayerbotAI* ai, string name = "outfit list") : ManualSetValue<Outfit&>(ai, list, name) {}
 
         virtual string Save();
         virtual bool Load(string value);

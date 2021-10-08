@@ -29,6 +29,8 @@ public:
     string data;
 };
 
+class PerformanceMonitorOperation;
+
 class RandomPlayerbotMgr : public PlayerbotHolder
 {
     public:
@@ -131,6 +133,7 @@ class RandomPlayerbotMgr : public PlayerbotHolder
         list<uint32> currentBots;
         uint32 bgBotsCount;
         uint32 playersLevel = sPlayerbotAIConfig.randombotStartingLevel;
+        PerformanceMonitorOperation* totalPmo;
 };
 
 #define sRandomPlayerbotMgr RandomPlayerbotMgr::instance()

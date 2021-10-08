@@ -4,8 +4,8 @@
 
 using namespace ai;
 
-PositionValue::PositionValue(PlayerbotAI* ai)
-    : ManualSetValue<ai::PositionMap&>(ai, positions)
+PositionValue::PositionValue(PlayerbotAI* ai, string name)
+    : ManualSetValue<ai::PositionMap&>(ai, positions, name)
 {
 }
 
