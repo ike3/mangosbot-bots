@@ -370,6 +370,10 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot, vector<WorldLocation> &locs
         bot->GetMotionMaster()->Clear();
         bot->TeleportTo(loc.mapid, x, y, z, 0);
         bot->SendHeartBeat();
+        float cx = (50 - urand(0, 100)) / 100.0f;
+        float cy = (50 - urand(0, 100)) / 100.0f;
+        bot->GetMotionMaster()->MovePoint(loc.mapid, x + cx, y + cy, z, true);
+        bot->GetPlayerbotAI()->SetNextCheckDelay(sPlayerbotAIConfig.globalCoolDown);
         if (pmo) pmo->finish();
         return;
     }
@@ -1170,14 +1174,16 @@ void RandomPlayerbotMgr::ChangeStrategy(Player* player)
 {
     uint32 bot = player->GetGUIDLow();
 
-    if ((float)urand(0, 100) > sPlayerbotAIConfig.randomBotRpgChance)
+    if ((float)urand(0, 100) > 100 * sPlayerbotAIConfig.randomBotRpgChance)
     {
         sLog.outDetail("Changing strategy for bot %s to grinding", player->GetName());
+        player->GetPlayerbotAI()->ChangeStrategy("-rpg", BOT_STATE_NON_COMBAT);
         ScheduleTeleport(bot, 30);
     }
     else
     {
         sLog.outDetail("Changing strategy for bot %s to RPG", player->GetName());
+        player->GetPlayerbotAI()->ChangeStrategy("+rpg", BOT_STATE_NON_COMBAT);
         RandomTeleportForRpg(player);
     }
 
