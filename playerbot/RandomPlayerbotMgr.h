@@ -85,7 +85,7 @@ class RandomPlayerbotMgr : public PlayerbotHolder
         bool ProcessBot(uint32 bot);
         void ScheduleRandomize(uint32 bot, uint32 time);
         void RandomTeleport(Player* bot);
-        void RandomTeleport(Player* bot, vector<WorldLocation> &locs);
+        void RandomTeleport(Player* bot, vector<WorldLocation> &locs, bool useFleeManager = false);
         uint32 GetZoneLevel(uint16 mapId, float teleX, float teleY, float teleZ);
         void PrepareTeleportCache();
         typedef void (RandomPlayerbotMgr::*ConsoleCommandHandler) (Player*);

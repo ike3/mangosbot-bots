@@ -323,7 +323,7 @@ void RandomPlayerbotMgr::Revive(Player* player)
     }
 }
 
-void RandomPlayerbotMgr::RandomTeleport(Player* bot, vector<WorldLocation> &locs)
+void RandomPlayerbotMgr::RandomTeleport(Player* bot, vector<WorldLocation> &locs, bool useFleeManager /* = false */)
 {
     if (bot->IsBeingTeleported())
         return;
@@ -339,6 +339,24 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot, vector<WorldLocation> &locs
     {
         int index = urand(0, locs.size() - 1);
         WorldLocation loc = locs[index];
+
+        if (useFleeManager)
+        {
+            float ox = bot->GetPositionX();
+            float oy = bot->GetPositionY();
+            float oz = bot->GetPositionZ();
+            bot->SetPosition(loc.coord_x, loc.coord_y, loc.coord_z, 0);
+            FleeManager manager(bot, sPlayerbotAIConfig.sightDistance, 0, true);
+            float rx, ry, rz;
+            if (manager.CalculateDestination(&rx, &ry, &rz))
+            {
+                loc.coord_x = rx;
+                loc.coord_y = ry;
+                loc.coord_z = rz;
+            }
+            bot->SetPosition(ox, oy, oz, 0);
+        }
+
         float x = loc.coord_x + (attemtps > 0 ? urand(0, sPlayerbotAIConfig.grindDistance) - sPlayerbotAIConfig.grindDistance / 2 : 0);
         float y = loc.coord_y + (attemtps > 0 ? urand(0, sPlayerbotAIConfig.grindDistance) - sPlayerbotAIConfig.grindDistance / 2 : 0);
         float z = loc.coord_z;
@@ -526,7 +544,7 @@ void RandomPlayerbotMgr::RandomTeleportForLevel(Player* bot)
 
 void RandomPlayerbotMgr::RandomTeleport(Player* bot)
 {
-    PerformanceMonitorOperation *pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "RandomTeleport");
+    PerformanceMonitorOperation *pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "RandomTeleportFindNearestUnits");
     vector<WorldLocation> locs;
 
     list<Unit*> targets;
@@ -534,23 +552,19 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot)
     MaNGOS::AnyUnitInObjectRangeCheck u_check(bot, range);
     MaNGOS::UnitListSearcher<MaNGOS::AnyUnitInObjectRangeCheck> searcher(targets, u_check);
     Cell::VisitAllObjects(bot, searcher, range);
+    if (pmo) pmo->finish();
 
-    for(list<Unit *>::iterator i = targets.begin(); i!= targets.end(); ++i)
+    pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "RandomTeleportFindUnitLocations");
+    for(list<Unit *>::iterator i = targets.begin(); i!= targets.end() && locs.size() < 10; ++i)
     {
         Unit* unit = *i;
 
-        bot->SetPosition(unit->GetPositionX(), unit->GetPositionY(), unit->GetPositionZ(), 0);
-        FleeManager manager(bot, sPlayerbotAIConfig.sightDistance, 0, true);
-        float rx, ry, rz;
-        if (manager.CalculateDestination(&rx, &ry, &rz))
-        {
-            WorldLocation loc(bot->GetMapId(), rx, ry, rz);
-            locs.push_back(loc);
-        }
+        WorldLocation loc(bot->GetMapId(), unit->GetPositionX(), unit->GetPositionY(), unit->GetPositionZ());
+        locs.push_back(loc);
     }
-
-    RandomTeleport(bot, locs);
     if (pmo) pmo->finish();
+
+    RandomTeleport(bot, locs, true);
 
     Refresh(bot);
 }
@@ -1177,13 +1191,13 @@ void RandomPlayerbotMgr::ChangeStrategy(Player* player)
     if ((float)urand(0, 100) > 100 * sPlayerbotAIConfig.randomBotRpgChance)
     {
         sLog.outDetail("Changing strategy for bot %s to grinding", player->GetName());
-        player->GetPlayerbotAI()->ChangeStrategy("-rpg", BOT_STATE_NON_COMBAT);
+        player->GetPlayerbotAI()->ChangeStrategy("-rpg,+grind", BOT_STATE_NON_COMBAT);
         ScheduleTeleport(bot, 30);
     }
     else
     {
         sLog.outDetail("Changing strategy for bot %s to RPG", player->GetName());
-        player->GetPlayerbotAI()->ChangeStrategy("+rpg", BOT_STATE_NON_COMBAT);
+        player->GetPlayerbotAI()->ChangeStrategy("+rpg,-grind", BOT_STATE_NON_COMBAT);
         RandomTeleportForRpg(player);
     }
 
