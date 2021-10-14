@@ -44,7 +44,13 @@ bool AhAction::Execute(string text, Unit* auctioneer)
     packet << item->GetObjectGuid();
     packet << price * 95 / 100;
     packet << price;
+#ifdef MANGOSBOT_ZERO
+    packet << 8 * HOUR / MINUTE;
+#endif
+#ifdef MANGOSBOT_ONE
     packet << 12 * HOUR / MINUTE;
+#endif
+
     bot->GetSession()->HandleAuctionSellItem(packet);
 
     ostringstream out;
