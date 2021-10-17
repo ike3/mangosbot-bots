@@ -225,7 +225,7 @@ bool RandomPlayerbotMgr::ProcessBot(uint32 bot)
     }
 
     SetEventValue(bot, "login", 0, 0);
-    if (player->GetGroup() || player->IsTaxiFlying())
+    if (player->GetGroup() || sServerFacade.IsTaxiFlying(player))
         return false;
 
     uint32 update = GetEventValue(bot, "update");

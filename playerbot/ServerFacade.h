@@ -64,6 +64,7 @@ class ServerFacade
         }
 
         bool isMoving(Unit *unit);
+        bool IsTaxiFlying(Unit *unit);
 
         bool IsInCombat(Unit *unit)
         {

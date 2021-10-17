@@ -453,7 +453,7 @@ bool SetFacingTargetAction::Execute(Event event)
     if (!target)
         return false;
 
-    if (bot->IsTaxiFlying() || bot->IsFlying())
+    if (sServerFacade.IsTaxiFlying(bot))
         return true;
 
     sServerFacade.SetFacingTo(bot, target);

@@ -152,3 +152,13 @@ bool ServerFacade::isMoving(Unit *unit)
     return unit->IsMoving();
 #endif
 }
+
+bool ServerFacade::IsTaxiFlying(Unit *unit)
+{
+#ifdef MANGOS
+    return unit->GetMotionMaster()->GetCurrent()->GetMovementGeneratorType() == FLIGHT_MOTION_TYPE;
+#endif
+#ifdef CMANGOS
+    return unit->IsTaxiFlying() || unit->IsFlying();
+#endif
+}

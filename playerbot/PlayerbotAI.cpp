@@ -203,7 +203,7 @@ void PlayerbotAI::HandleTeleportAck()
 
 void PlayerbotAI::Reset()
 {
-    if (bot->IsTaxiFlying() || bot->IsFlying())
+    if (sServerFacade.IsTaxiFlying(bot))
         return;
 
     currentEngine = engines[BOT_STATE_NON_COMBAT];
@@ -495,7 +495,7 @@ void PlayerbotAI::DoNextAction()
         return;
     }
 
-    if (bot->IsTaxiFlying() || bot->IsFlying())
+    if (sServerFacade.IsTaxiFlying(bot))
     {
         SetNextCheckDelay(sPlayerbotAIConfig.passiveDelay);
         return;
@@ -831,7 +831,10 @@ bool PlayerbotAI::TellMaster(string text, PlayerbotSecurityLevel securityLevel)
     if (!TellMasterNoFacing(text, securityLevel))
         return false;
 
-    if (!sServerFacade.isMoving(bot) && !sServerFacade.IsInCombat(bot) && bot->GetMapId() == master->GetMapId() && !bot->IsTaxiFlying() && !bot->IsFlying())
+    if (!sServerFacade.isMoving(bot) &&
+            !sServerFacade.IsInCombat(bot) &&
+            bot->GetMapId() == master->GetMapId() &&
+            !sServerFacade.IsTaxiFlying(bot))
     {
         if (!sServerFacade.IsInFront(bot, master, sPlayerbotAIConfig.sightDistance, EMOTE_ANGLE_IN_FRONT))
             sServerFacade.SetFacingTo(bot, master);
@@ -1073,7 +1076,7 @@ bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target, Item* itemTarget)
 
     MotionMaster &mm = *bot->GetMotionMaster();
 
-    if (bot->IsFlying() || bot->IsTaxiFlying())
+    if (sServerFacade.IsTaxiFlying(bot))
         return false;
 
 	bot->clearUnitState(UNIT_STAT_CHASE);
