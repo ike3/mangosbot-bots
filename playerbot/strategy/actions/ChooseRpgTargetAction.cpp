@@ -10,14 +10,13 @@
 
 using namespace ai;
 
-uint32 ChooseRpgTargetAction::HasSameTarget(ObjectGuid guid)
+bool ChooseRpgTargetAction::HasSameTarget(ObjectGuid guid, uint32 max, list<ObjectGuid>& nearGuids)
 {
     if (ai->HasRealPlayerMaster())
         return 0;
 
     uint32 num = 0;
 
-    list<ObjectGuid> nearGuids = ai->GetAiObjectContext()->GetValue<list<ObjectGuid> >("nearest friendly players")->Get();
     for (auto& i : nearGuids)
     {
         Player* player = sObjectMgr.GetPlayer(i);
@@ -37,6 +36,9 @@ uint32 ChooseRpgTargetAction::HasSameTarget(ObjectGuid guid)
             continue;
 
         num++;
+
+        if (num >= max)
+            break;
     }
 
     return num;
@@ -60,33 +62,28 @@ float ChooseRpgTargetAction::getMaxRelevance(GuidPosition guidP)
 
         if (trigger)
         {
-
             triggerNode->setTrigger(trigger);
 
-            NextAction** nextActions = triggerNode->getHandlers();
+            if (triggerNode->getFirstRelevance() < maxRelevance || triggerNode->getFirstRelevance() > 2.0f)
+                continue;
 
             Trigger* trigger = triggerNode->getTrigger();
 
-            bool isChecked = false;
+            if (!trigger->IsActive())
+                continue;
 
-            for (int32 i = 0; i < NextAction::size(nextActions); i++)
-            {
-                NextAction* nextAction = nextActions[i];
-
-                if (nextAction->getRelevance() < maxRelevance || nextAction->getRelevance() > 2.0f)
-                    continue;
-
-                if (!isChecked && !trigger->IsActive())
-                    break;
-
-                isChecked = true;
-
-                maxRelevance = nextAction->getRelevance();
-            }
+            maxRelevance = triggerNode->getFirstRelevance();            
         }
     }
 
     SET_AI_VALUE(GuidPosition,"rpg target", currentRpgTarget);
+
+    for (list<TriggerNode*>::iterator i = triggerNodes.begin(); i != triggerNodes.end(); i++)
+    {
+        TriggerNode* trigger = *i;
+        delete trigger;
+    }
+    triggerNodes.clear();
 
     return (maxRelevance - 1.0) * 1000.0f;
 }
@@ -161,7 +158,7 @@ bool ChooseRpgTargetAction::Execute(Event event)
             }
         }
 
-        if (HasSameTarget(guidP) > urand(5, 15))
+        if (possiblePlayers.size() > 200 || HasSameTarget(guidP, urand(5, 15), possiblePlayers))
             continue;
 
         float relevance = getMaxRelevance(guidP);

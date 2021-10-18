@@ -17,7 +17,7 @@ namespace ai
         static bool isFollowValid(Player* bot, WorldPosition pos);
     private:        
         float getMaxRelevance(GuidPosition guidP);
-        virtual uint32 HasSameTarget(ObjectGuid guid);
+        bool HasSameTarget(ObjectGuid guid, uint32 max, list<ObjectGuid>& nearGuids);
     };
 
     class ClearRpgTargetAction : public ChooseRpgTargetAction {
