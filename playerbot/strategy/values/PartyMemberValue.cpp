@@ -32,7 +32,7 @@ Unit* PartyMemberValue::FindPartyMember(FindPlayerPredicate &predicate, bool ign
     Player* master = GetMaster();
     list<ObjectGuid> nearestPlayers;
     if(ai->AllowActivity(OUT_OF_PARTY_ACTIVITY))
-        nearestPlayers = AI_VALUE(list<ObjectGuid>, "nearest friendly players");
+        nearestPlayers = AI_VALUE(list<ObjectGuid>, "nearest friendly players");      
 
     list<ObjectGuid> nearestGroupPlayers;
 
@@ -55,7 +55,7 @@ Unit* PartyMemberValue::FindPartyMember(FindPlayerPredicate &predicate, bool ign
         }
     }
     
-    if (!ignoreOutOfGroup && !nearestPlayers.empty())
+    if (!ignoreOutOfGroup && !nearestPlayers.empty() && nearestPlayers.size() < 100)
         nearestGroupPlayers.insert(nearestGroupPlayers.end(), nearestPlayers.begin(), nearestPlayers.end());
 
     nearestPlayers = nearestGroupPlayers;
