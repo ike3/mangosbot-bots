@@ -141,6 +141,9 @@ bool RpgDiscoverAction::Execute(Event event)
 
     Creature* flightMaster = bot->GetNPCIfCanInteractWith(guidP, UNIT_NPC_FLAG_FLIGHTMASTER);
 
+    if (!flightMaster)
+        return false;
+
     return bot->GetSession()->SendLearnNewTaxiNode(flightMaster);    
 }
 
@@ -203,11 +206,13 @@ list<Item*> RpgTradeUsefulAction::CanGiveItems(GuidPosition guidPosition)
 bool RpgTradeUsefulAction::Execute(Event event)
 {
     GuidPosition guidP = AI_VALUE(GuidPosition, "rpg target");
-    list<Item*> items = CanGiveItems(guidP);
+
     Player* player = guidP.GetPlayer();
 
     if (!player)
         return false;
+
+    list<Item*> items = CanGiveItems(guidP);
 
     if (items.empty())
         return false;
