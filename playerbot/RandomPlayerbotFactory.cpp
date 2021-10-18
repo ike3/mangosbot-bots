@@ -688,8 +688,19 @@ void RandomPlayerbotFactory::CreateRandomArenaTeams()
             continue;
         }
         arenateam->SetCaptain(player->GetObjectGuid());
+        // set random rating
+        arenateam->SetRatingForAll(urand(1500, 2300));
+        // set random emblem
+        uint32 backgroundColor = urand(0xFF000000, 0xFFFFFFFF), emblemStyle = urand(0, 5), emblemColor = urand(0xFF000000, 0xFFFFFFFF), borderStyle = urand(0, 5), borderColor = urand(0xFF000000, 0xFFFFFFFF);
+        arenateam->SetEmblem(backgroundColor, emblemStyle, emblemColor, borderStyle, borderColor);
+        // set random kills (wip)
+        //arenateam->SetStats(STAT_TYPE_GAMES_WEEK, urand(0, 30));
+        //arenateam->SetStats(STAT_TYPE_WINS_WEEK, urand(0, arenateam->GetStats().games_week));
+        //arenateam->SetStats(STAT_TYPE_GAMES_SEASON, urand(arenateam->GetStats().games_week, arenateam->GetStats().games_week * 5));
+        //arenateam->SetStats(STAT_TYPE_WINS_SEASON, urand(arenateam->GetStats().wins_week, arenateam->GetStats().games_season));
         sObjectMgr.AddArenaTeam(arenateam);
         sPlayerbotAIConfig.randomBotArenaTeams.push_back(arenateam->GetId());
+        arenateam->SaveToDB();
     }
 
     sLog.outString("%d random bot arena teams available", arenaTeamNumber);
