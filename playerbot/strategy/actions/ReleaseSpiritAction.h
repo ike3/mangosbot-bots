@@ -98,7 +98,10 @@ namespace ai
             if (ai->GetGroupMaster() == bot)
                 return true;
 
-            if(ai->GetGroupMaster() && sServerFacade.UnitIsDead(ai->GetGroupMaster()))
+            if (!ai->HasActivePlayerMaster())
+                return true;
+
+            if(sServerFacade.UnitIsDead(ai->GetGroupMaster()))
                 return true;
 
             if (sServerFacade.IsDistanceGreaterThan(AI_VALUE2(float, "distance", "master target"), sPlayerbotAIConfig.sightDistance))

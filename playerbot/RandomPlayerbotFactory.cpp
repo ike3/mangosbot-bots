@@ -116,14 +116,26 @@ RandomPlayerbotFactory::RandomPlayerbotFactory(uint32 accountId) : accountId(acc
 #endif
 }
 
-bool RandomPlayerbotFactory::CreateRandomBot(uint8 cls)
+bool RandomPlayerbotFactory::CreateRandomBot(uint8 cls, unordered_map<uint8, vector<string>>& names)
 {
     sLog.outDebug( "Creating new random bot for class %d", cls);
 
     uint8 gender = rand() % 2 ? GENDER_MALE : GENDER_FEMALE;
 
     uint8 race = availableRaces[cls][urand(0, availableRaces[cls].size() - 1)];
-    string name = CreateRandomBotName(gender);
+
+    string name;
+    if(names.empty())
+        name = CreateRandomBotName(gender);
+    else
+    {
+        if (names[gender].empty())
+            return false;
+        uint32 i = urand(0, names[gender].size() - 1);
+        name = names[gender][i];
+        swap(names[gender][i], names[gender].back());
+        names[gender].pop_back();
+    }
     if (name.empty())
         return false;
 
@@ -207,7 +219,11 @@ bool RandomPlayerbotFactory::CreateRandomBot(uint8 cls)
 
     player->setCinematic(2);
     player->SetAtLoginFlag(AT_LOGIN_NONE);
-    player->SaveToDB();
+    //player->SetSemaphoreTeleportFar(true); //Fake teleport to delay sql save
+    //player->SaveToDB();
+    //player->SetSemaphoreTeleportFar(false);
+
+    sObjectAccessor.AddObject(player);
 
     sLog.outDebug( "Random bot created for account %d - name: \"%s\"; race: %u; class: %u",
             accountId, name.c_str(), race, cls);
@@ -269,7 +285,7 @@ void RandomPlayerbotFactory::CreateRandomBots()
         std::list<uint32> botAccounts;
         std::list<uint32> botFriends;
 
-        for (int accountNumber = 0; accountNumber < sPlayerbotAIConfig.randomBotAccountCount; ++accountNumber)
+        for (uint32 accountNumber = 0; accountNumber < sPlayerbotAIConfig.randomBotAccountCount; ++accountNumber)
         {
             ostringstream out; out << sPlayerbotAIConfig.randomBotAccountPrefix << accountNumber;
             string accountName = out.str();
@@ -307,6 +323,8 @@ void RandomPlayerbotFactory::CreateRandomBots()
                 delete result;
             }
         }
+
+        vector<std::future<void>> dels;
 
         QueryResult* results = LoginDatabase.PQuery("SELECT id FROM account where username like '%s%%'", sPlayerbotAIConfig.randomBotAccountPrefix.c_str());
         if (results)
@@ -351,10 +369,17 @@ void RandomPlayerbotFactory::CreateRandomBots()
                     }
                 }
                 else
-                    sAccountMgr.DeleteAccount(accId);
+                    dels.push_back(std::async([accId] {sAccountMgr.DeleteAccount(accId); }));
 
             } while (results->NextRow());
 			delete results;
+        }
+
+        BarGoLink bar4(dels .size());
+        for (uint32 i=0;i<dels.size();i++)
+        {
+            bar4.step();
+            dels[i].wait();
         }
 
         PlayerbotDatabase.Execute("DELETE FROM ai_playerbot_random_bots");
@@ -362,15 +387,18 @@ void RandomPlayerbotFactory::CreateRandomBots()
     }
 	int totalAccCount = sPlayerbotAIConfig.randomBotAccountCount;
 	sLog.outString("Creating random bot accounts...");
-	//BarGoLink bar(totalAccCount);
-    for (int accountNumber = 0; accountNumber < sPlayerbotAIConfig.randomBotAccountCount; ++accountNumber)
+    
+    vector<std::future<void>> account_creations;
+
+    BarGoLink bar(totalAccCount);
+    for (uint32 accountNumber = 0; accountNumber < sPlayerbotAIConfig.randomBotAccountCount; ++accountNumber)
     {
         ostringstream out; out << sPlayerbotAIConfig.randomBotAccountPrefix << accountNumber;
         string accountName = out.str();
         QueryResult* results = LoginDatabase.PQuery("SELECT id FROM account where username = '%s'", accountName.c_str());
         if (results)
         {
-			delete results;
+            delete results;
             continue;
         }
 
@@ -385,14 +413,21 @@ void RandomPlayerbotFactory::CreateRandomBots()
         else
             password = accountName;
 
-        sAccountMgr.CreateAccount(accountName, password
+        account_creations.push_back(std::async([accountName, password] {sAccountMgr.CreateAccount(accountName, password); }));
 #ifndef MANGOSBOT_ZERO
-            , MAX_EXPANSION
+        uint8 max_expansion = MAX_EXPANSION;
+        account_creations.push_back(std::async([accountName, password, max_expansion] {sAccountMgr.CreateAccount(accountName, password, max_expansion); }));
 #endif
-        );
 
-        sLog.outDebug( "Account %s created for random bots", accountName.c_str());
-		//bar.step();
+        sLog.outDebug("Account %s created for random bots", accountName.c_str());
+        bar.step();
+    }
+
+    BarGoLink bar3(account_creations.size());
+    for (uint32 i = 0; i < account_creations.size(); i++)
+    {
+        bar3.step();
+        account_creations[i].wait();
     }
 
     LoginDatabase.PExecute("UPDATE account SET expansion = '%u' where username like '%s%%'", 2, sPlayerbotAIConfig.randomBotAccountPrefix.c_str());
@@ -404,9 +439,30 @@ void RandomPlayerbotFactory::CreateRandomBots()
 #else
 		* 9;
 #endif
+
+    sLog.outString("Loading available names...");
+    
+    unordered_map<uint8,vector<string>> names;
+    QueryResult* result = CharacterDatabase.PQuery("SELECT n.gender, n.name FROM ai_playerbot_names n LEFT OUTER JOIN characters e ON e.name = n.name WHERE e.guid IS NULL");
+    if (!result)
+    {
+        sLog.outError("No more names left for random bots");
+        return;
+    }
+
+    do
+    {
+        Field* fields = result->Fetch();
+        uint8 gender = fields[0].GetUInt8();
+        string bname = fields[1].GetString();
+        names[gender].push_back(bname);
+    } while (result->NextRow());
+
+    delete result;
+
 	sLog.outString("Creating random bot characters...");
 	BarGoLink bar1(totalCharCount);
-    for (int accountNumber = 0; accountNumber < sPlayerbotAIConfig.randomBotAccountCount; ++accountNumber)
+    for (uint32 accountNumber = 0; accountNumber < sPlayerbotAIConfig.randomBotAccountCount; ++accountNumber)
     {
         ostringstream out; out << sPlayerbotAIConfig.randomBotAccountPrefix << accountNumber;
         string accountName = out.str();
@@ -433,7 +489,7 @@ void RandomPlayerbotFactory::CreateRandomBots()
         }
 
         RandomPlayerbotFactory factory(accountId);
-        for (uint8 cls = CLASS_WARRIOR; cls < MAX_CLASSES; ++cls)
+        for (uint8 cls = CLASS_WARRIOR; cls < MAX_CLASSES - count; ++cls)
         {
 #ifdef MANGOSBOT_TWO
             if (cls != 10)
@@ -441,13 +497,28 @@ void RandomPlayerbotFactory::CreateRandomBots()
             if (cls != 10 && cls != 6)
 #endif
 			{
-				factory.CreateRandomBot(cls);
+                factory.CreateRandomBot(cls, names);
 				bar1.step();
 			}
         }
 
         totalRandomBotChars += sAccountMgr.GetCharactersCount(accountId);
     }
+
+    vector<std::future<void>> bot_creations;
+
+    BarGoLink bar2(sObjectAccessor.GetPlayers().size());
+    for (auto pl : sObjectAccessor.GetPlayers())
+    {
+        Player* player = pl.second;
+        account_creations.push_back(std::async([player] {player->SaveToDB(); }));
+    }
+
+    for (uint32 i = 0; i < account_creations.size(); i++)
+    {
+        bar2.step();
+        account_creations[i].wait();
+    }    
 
     sLog.outString("%zu random bot accounts with %d characters available", sPlayerbotAIConfig.randomBotAccounts.size(), totalRandomBotChars);
 }
@@ -483,7 +554,7 @@ void RandomPlayerbotFactory::CreateRandomGuilds()
         sLog.outString("Random bot guilds deleted");
     }
 
-    int guildNumber = 0;
+    uint32 guildNumber = 0;
     vector<ObjectGuid> availableLeaders;
     for (vector<uint32>::iterator i = randomBots.begin(); i != randomBots.end(); ++i)
     {

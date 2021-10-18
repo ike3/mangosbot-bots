@@ -8,8 +8,8 @@ namespace ai
     class PartyMemberWithoutItemValue : public PartyMemberValue, public Qualified
     {
     public:
-        PartyMemberWithoutItemValue(PlayerbotAI* ai, float range = sPlayerbotAIConfig.farDistance) :
-          PartyMemberValue(ai) {}
+        PartyMemberWithoutItemValue(PlayerbotAI* ai, string name = "party member without item", float range = sPlayerbotAIConfig.farDistance) :
+          PartyMemberValue(ai, name) {}
 
     protected:
         virtual Unit* Calculate();
@@ -19,7 +19,7 @@ namespace ai
     class PartyMemberWithoutFoodValue : public PartyMemberWithoutItemValue
     {
     public:
-        PartyMemberWithoutFoodValue(PlayerbotAI* ai) : PartyMemberWithoutItemValue(ai) {}
+        PartyMemberWithoutFoodValue(PlayerbotAI* ai, string name = "party member without food") : PartyMemberWithoutItemValue(ai, name) {}
 
     protected:
         virtual FindPlayerPredicate* CreatePredicate();
@@ -28,7 +28,7 @@ namespace ai
     class PartyMemberWithoutWaterValue : public PartyMemberWithoutItemValue
     {
     public:
-        PartyMemberWithoutWaterValue(PlayerbotAI* ai) : PartyMemberWithoutItemValue(ai) {}
+        PartyMemberWithoutWaterValue(PlayerbotAI* ai, string name = "party member without water") : PartyMemberWithoutItemValue(ai, name) {}
 
     protected:
         virtual FindPlayerPredicate* CreatePredicate();

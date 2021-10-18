@@ -18,7 +18,7 @@ namespace ai
     class ItemCountValue : public Uint32CalculatedValue, public Qualified, InventoryItemValueBase
 	{
 	public:
-        ItemCountValue(PlayerbotAI* ai) : Uint32CalculatedValue(ai), InventoryItemValueBase(ai) {}
+        ItemCountValue(PlayerbotAI* ai, string name = "item count") : Uint32CalculatedValue(ai, name), InventoryItemValueBase(ai) {}
 
     public:
         virtual uint32 Calculate();
@@ -27,7 +27,7 @@ namespace ai
     class InventoryItemValue : public CalculatedValue<list<Item*> >, public Qualified, InventoryItemValueBase
     {
     public:
-        InventoryItemValue(PlayerbotAI* ai) : CalculatedValue<list<Item*> >(ai), InventoryItemValueBase(ai) {}
+        InventoryItemValue(PlayerbotAI* ai, string name = "inventory items") : CalculatedValue<list<Item*> >(ai, name), InventoryItemValueBase(ai) {}
 
     public:
         virtual list<Item*> Calculate();

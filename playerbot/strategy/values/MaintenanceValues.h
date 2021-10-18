@@ -1,10 +1,32 @@
 #pragma once
 #include "../Value.h"
-#include "../values/ItemUsageValue.h"
-#include "../values/BudgetValues.h"
+#include "ItemUsageValue.h"
+#include "BudgetValues.h"
 
 namespace ai
 {
+    class CanMoveAroundValue : public BoolCalculatedValue
+    {
+    public:
+        CanMoveAroundValue(PlayerbotAI* ai) : BoolCalculatedValue(ai, "can move around", 2) {}
+        virtual bool Calculate()
+        {
+            if (bot->IsInCombat())
+                return false;
+
+            if (bot->GetTradeData())
+                return false;
+
+            if (ai->HasStrategy("stay", BOT_STATE_NON_COMBAT))
+                return false;
+
+            if (!AI_VALUE(bool, "group ready"))
+                return false;
+
+            return true;
+        }
+    };
+
     class ShouldHomeBindValue : public BoolCalculatedValue
     {
     public:
@@ -48,10 +70,17 @@ namespace ai
         virtual bool Calculate() { return AI_VALUE(uint8, "durability") > 20; };
     };
 
+    class CanFightEliteValue : public BoolCalculatedValue
+    {
+    public:
+        CanFightEliteValue(PlayerbotAI* ai) : BoolCalculatedValue(ai, "can fight elite") {}
+        virtual bool Calculate() { return bot->GetGroup() && AI_VALUE2(bool, "group and", "can fight equal") && AI_VALUE2(bool, "group and", "following party") && !AI_VALUE2(bool, "group or", "should sell,can sell"); };
+    };
+
     class CanFightBossValue : public BoolCalculatedValue
     {
     public:
         CanFightBossValue(PlayerbotAI* ai) : BoolCalculatedValue(ai, "can fight boss") {}
-        virtual bool Calculate() { return bot->GetGroup() && bot->GetGroup()->GetMembersCount() > 2 && AI_VALUE2(bool, "group and", "can fight equal") && AI_VALUE2(bool, "group and", "following party") && !AI_VALUE2(bool, "group or", "should sell"); };
-    };  
+        virtual bool Calculate() { return bot->GetGroup() && bot->GetGroup()->GetMembersCount() > 3 && AI_VALUE2(bool, "group and", "can fight equal") && AI_VALUE2(bool, "group and", "following party") && !AI_VALUE2(bool, "group or", "should sell,can sell"); };
+    };        
 }

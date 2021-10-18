@@ -94,7 +94,7 @@ bool CheckMountStateAction::Execute(Event event)
         return Mount();
     }
 
-    ObjectGuid unit = AI_VALUE(ObjectGuid, "rpg target");
+    GuidPosition unit = AI_VALUE(GuidPosition, "rpg target");
     if (unit)
     {
         if (sServerFacade.IsDistanceGreaterThan(AI_VALUE2(float, "distance", "rpg target"), sPlayerbotAIConfig.farDistance) && noattackers && !dps && !enemy)

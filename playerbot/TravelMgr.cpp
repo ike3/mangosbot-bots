@@ -24,7 +24,17 @@
 using namespace ai;
 using namespace MaNGOS;
 
-WorldPosition::WorldPosition(ObjectGuid guid)
+WorldPosition::WorldPosition(GuidPosition guid)
+{
+    if (guid.mapid !=0 || guid.coord_x != 0 || guid.coord_y != 0 || guid.coord_z !=0) {
+        set(WorldPosition(guid.mapid, guid.coord_x, guid.coord_y, guid.coord_z, guid.orientation));
+        return;
+    }
+
+    set(ObjectGuid(guid));
+ }
+
+void WorldPosition::set(ObjectGuid guid)
 {
     switch (guid.GetHigh())
     {
@@ -32,21 +42,21 @@ WorldPosition::WorldPosition(ObjectGuid guid)
     {
         Player* player = sObjectAccessor.FindPlayer(guid);
         if (player)
-            wLoc = WorldLocation(player->GetMapId(), player->GetPositionX(), player->GetPositionY(), player->GetPositionZ(), player->GetOrientation());
+            set(WorldLocation(player->GetMapId(), player->GetPositionX(), player->GetPositionY(), player->GetPositionZ(), player->GetOrientation()));
         break;
     }
-    case HIGHGUID_GAMEOBJECT:    
+    case HIGHGUID_GAMEOBJECT:
     {
         GameObjectDataPair const* gpair = sObjectMgr.GetGODataPair(guid.GetCounter());
         if (gpair)
-            wLoc = WorldLocation(gpair->second.mapid, gpair->second.posX, gpair->second.posY, gpair->second.posZ, gpair->second.orientation);
+            set(WorldLocation(gpair->second.mapid, gpair->second.posX, gpair->second.posY, gpair->second.posZ, gpair->second.orientation));
         break;
     }
     case HIGHGUID_UNIT:
     {
         CreatureDataPair const* cpair = sObjectMgr.GetCreatureDataPair(guid.GetCounter());
         if (cpair)
-            wLoc = WorldLocation(cpair->second.mapid, cpair->second.posX, cpair->second.posY, cpair->second.posZ, cpair->second.orientation);
+            set(WorldLocation(cpair->second.mapid, cpair->second.posX, cpair->second.posY, cpair->second.posZ, cpair->second.orientation));
         break;
     }
     case HIGHGUID_TRANSPORT:
@@ -57,11 +67,7 @@ WorldPosition::WorldPosition(ObjectGuid guid)
     case HIGHGUID_CORPSE:
         return;
     }
-}
 
-WorldPosition::WorldPosition(GuidPosition gpos)
-{
-    wLoc = gpos.getPosition().wLoc;
 }
 
 WorldPosition::WorldPosition(vector<WorldPosition*> list, WorldPositionConst conType)
@@ -70,15 +76,15 @@ WorldPosition::WorldPosition(vector<WorldPosition*> list, WorldPositionConst con
     if (size == 0)
         return;
     else if (size == 1)
-        wLoc = list.front()->wLoc;
+        set(*list.front());
     else if (conType == WP_RANDOM)
-        wLoc = list[urand(0, size - 1)]->wLoc;
+        set(*list[urand(0, size - 1)]);
     else if (conType == WP_CENTROID)
-        wLoc = std::accumulate(list.begin(), list.end(), WorldLocation(list[0]->getMapId(), 0, 0, 0, 0), [size](WorldLocation i, WorldPosition* j) {i.coord_x += j->getX() / size; i.coord_y += j->getY() / size; i.coord_z += j->getZ() / size; i.orientation += j->getO() / size; return i; });
+        set(std::accumulate(list.begin(), list.end(), WorldLocation(list[0]->getMapId(), 0, 0, 0, 0), [size](WorldLocation i, WorldPosition* j) {i.coord_x += j->getX() / size; i.coord_y += j->getY() / size; i.coord_z += j->getZ() / size; i.orientation += j->getO() / size; return i; }));
     else if (conType == WP_MEAN_CENTROID)
     {
         WorldPosition pos = WorldPosition(list, WP_CENTROID);
-        wLoc = pos.closestSq(list)->wLoc;
+        set(*pos.closestSq(list));
     }
 }
 
@@ -88,22 +94,21 @@ WorldPosition::WorldPosition(vector<WorldPosition> list, WorldPositionConst conT
     if (size == 0)
         return;
     else if (size == 1)
-        wLoc = list.front().wLoc;
+        set(list.front());
     else if (conType == WP_RANDOM)
-        wLoc = list[urand(0, size - 1)].wLoc;
+        set(list[urand(0, size - 1)]);
     else if (conType == WP_CENTROID)
-        wLoc = std::accumulate(list.begin(), list.end(), WorldLocation(list[0].getMapId(), 0, 0, 0, 0), [size](WorldLocation i, WorldPosition j) {i.coord_x += j.getX() / size; i.coord_y += j.getY() / size; i.coord_z += j.getZ() / size; i.orientation += j.getO() / size; return i; });
+        set(std::accumulate(list.begin(), list.end(), WorldLocation(list[0].getMapId(), 0, 0, 0, 0), [size](WorldLocation i, WorldPosition j) {i.coord_x += j.getX() / size; i.coord_y += j.getY() / size; i.coord_z += j.getZ() / size; i.orientation += j.getO() / size; return i; }));
     else if (conType == WP_MEAN_CENTROID)
     {
         WorldPosition pos = WorldPosition(list, WP_CENTROID);
-        wLoc = pos.closestSq(list).wLoc;
+        set(pos.closestSq(list));
     }    
 }
 
-
 float WorldPosition::distance(WorldPosition* center)
 {
-    if(wLoc.mapid == center->getMapId())
+    if(mapid == center->getMapId())
         return relPoint(center).size(); 
 
     //this -> mapTransfer | mapTransfer -> center
@@ -112,7 +117,7 @@ float WorldPosition::distance(WorldPosition* center)
 
 float WorldPosition::fDist(WorldPosition* center)
 {
-    if (wLoc.mapid == center->getMapId())
+    if (mapid == center->getMapId())
         return sqrt(sqDistance2d(center));
 
     //this -> mapTransfer | mapTransfer -> center
@@ -201,17 +206,17 @@ bool WorldPosition::isInside(WorldPosition* p1, WorldPosition* p2, WorldPosition
 
 G3D::Vector3 WorldPosition::getVector3() 
 {
-    return G3D::Vector3(wLoc.coord_x, wLoc.coord_y, wLoc.coord_z); 
+    return G3D::Vector3(coord_x, coord_y, coord_z); 
 }
 
 string WorldPosition::print()
 {
     ostringstream out;
-    out << wLoc.mapid << std::fixed << std::setprecision(2);
-    out << ';'<< wLoc.coord_x;
-    out << ';' << wLoc.coord_y;
-    out << ';' << wLoc.coord_z;
-    out << ';' << wLoc.orientation;
+    out << mapid << std::fixed << std::setprecision(2);
+    out << ';'<< coord_x;
+    out << ';' << coord_y;
+    out << ';' << coord_z;
+    out << ';' << orientation;
 
     return out.str();
 }
@@ -599,8 +604,25 @@ vector<WorldPosition> WorldPosition::getPathStepFrom(WorldPosition startPos, Uni
 
 }
 
+bool WorldPosition::cropPathTo(vector<WorldPosition>& path, float maxDistance)
+{
+    if (path.empty())
+        return false;
+
+   auto bestPos = std::min_element(path.begin(), path.end(), [this](WorldPosition i, WorldPosition j) {return this->sqDistance(i) < this->sqDistance(j); });
+
+   bool insRange = this->sqDistance(*bestPos) <= maxDistance * maxDistance;
+
+   if (bestPos == path.end())
+       return insRange;
+
+   path.erase(std::next(bestPos), path.end());
+
+   return insRange;
+}
+
 //A sequential series of pathfinding attempts. Returns the complete path and if the patfinder eventually found a way to the destination.
-vector<WorldPosition> WorldPosition::getPathFromPath(vector<WorldPosition> startPath, Unit* bot)
+vector<WorldPosition> WorldPosition::getPathFromPath(vector<WorldPosition> startPath, Unit* bot, uint8 maxAttempt)
 {
     //We start at the end of the last path.
     WorldPosition currentPos = startPath.back();
@@ -611,8 +633,8 @@ vector<WorldPosition> WorldPosition::getPathFromPath(vector<WorldPosition> start
 
     vector<WorldPosition> subPath, fullPath = startPath;
 
-    //Limit the pathfinding attempts to 40
-    for (uint32 i = 0; i < 40; i++)
+    //Limit the pathfinding attempts
+    for (uint32 i = 0; i < maxAttempt; i++)
     {
         //Try to pathfind to this position.
         subPath = getPathStepFrom(currentPos, bot);
@@ -644,7 +666,7 @@ uint32 WorldPosition::getUnitsNear(list<ObjectGuid>& units, float radius)
 
 uint32 WorldPosition::getUnitsAggro(list<ObjectGuid>& units, Player* bot)
 {
-    units.remove_if([this, bot](ObjectGuid guid) {Unit* unit = GuidPosition(guid).getUnit(); if (!unit) return true; return this->sqDistance(WorldPosition(guid)) > unit->GetAttackDistance(bot) * unit->GetAttackDistance(bot); });
+    units.remove_if([this, bot](ObjectGuid guid) {Unit* unit = GuidPosition(guid).GetUnit(); if (!unit) return true; return this->sqDistance(WorldPosition(guid)) > unit->GetAttackDistance(bot) * unit->GetAttackDistance(bot); });
 
     return units.size();
 };
@@ -687,7 +709,15 @@ vector<GameObjectDataPair const*> WorldPosition::getGameObjectsNear(float radius
     return worker.GetResult();
 }
 
-Unit* GuidPosition::getUnit()
+Creature* GuidPosition::GetCreature()
+{
+    if (!*this)
+        return nullptr;
+
+    return getMap()->GetAnyTypeCreature(*this);
+}
+
+Unit* GuidPosition::GetUnit()
 {
     if (!*this)
         return nullptr;
@@ -695,30 +725,40 @@ Unit* GuidPosition::getUnit()
     if (IsPlayer())
         return sObjectAccessor.FindPlayer(*this);
 
-    return point.getMap()->GetAnyTypeCreature(*this);
+    return GetCreature();
 }
 
-GameObject* GuidPosition::getGameObject()
+GameObject* GuidPosition::GetGameObject()
 {
     if (!*this)
         return nullptr;
 
-    return point.getMap()->GetGameObject(*this);
+    return getMap()->GetGameObject(*this);
 }
 
+Player* GuidPosition::GetPlayer()
+{
+    if (!*this)
+        return nullptr;
+
+    if (IsPlayer())
+        return sObjectAccessor.FindPlayer(*this);
+
+    return nullptr;
+}
 
 bool GuidPosition::isDead()
 {
-    if (!point.getMap())
+    if (!getMap())
         return false;
 
-    if (!point.getMap()->IsLoaded(point.getX(), point.getY()))
+    if (!getMap()->IsLoaded(getX(), getY()))
         return false;
 
-    if (IsUnit() && getUnit() && getUnit()->IsInWorld() && getUnit()->IsAlive())
+    if (IsUnit() && GetUnit() && GetUnit()->IsInWorld() && GetUnit()->IsAlive())
         return false;
 
-    if (IsGameObject() && getGameObject() && getGameObject()->IsInWorld())
+    if (IsGameObject() && GetGameObject() && GetGameObject()->IsInWorld())
         return false;
 
     return true;
@@ -799,20 +839,26 @@ bool QuestRelationTravelDestination::isActive(Player* bot) {
         PlayerbotAI* ai = bot->GetPlayerbotAI();
         AiObjectContext* context = ai->GetAiObjectContext();
 
+        uint32 dialogStatus = sTravelMgr.getDialogStatus(bot, entry, questTemplate);
+
         if (AI_VALUE(bool, "can fight equal"))
         {
-            if (sTravelMgr.getDialogStatus(bot, entry, questTemplate) != DIALOG_STATUS_AVAILABLE)
-                return false;
-    }
-        else
-        {
-            #ifndef MANGOSBOT_TWO
-            if (sTravelMgr.getDialogStatus(bot, entry, questTemplate) != DIALOG_STATUS_CHAT)
-            #else
-            if (sTravelMgr.getDialogStatus(bot, entry, questTemplate) != DIALOG_STATUS_LOW_LEVEL_AVAILABLE)
-            #endif
+            if (dialogStatus != DIALOG_STATUS_AVAILABLE)
                 return false;
         }
+        else
+        {
+#ifndef MANGOSBOT_TWO
+            if (dialogStatus != DIALOG_STATUS_CHAT)
+#else
+            if (dialogStatus != DIALOG_STATUS_LOW_LEVEL_AVAILABLE)
+#endif
+                return false;
+        }
+
+        //Do not try to pick up dungeon/elite quests in instances without a group.
+        if ((questTemplate->GetType() == QUEST_TYPE_ELITE || questTemplate->GetType() == QUEST_TYPE_DUNGEON) && !AI_VALUE(bool, "can fight boss"))
+            return false;
     }
     else
     {
@@ -822,12 +868,24 @@ bool QuestRelationTravelDestination::isActive(Player* bot) {
         if (!bot->CanRewardQuest(questTemplate, false))
             return false;
 
+        uint32 dialogStatus = sTravelMgr.getDialogStatus(bot, entry, questTemplate);
+        
 #ifdef MANGOSBOT_ZERO
-        if (sTravelMgr.getDialogStatus(bot, entry, questTemplate) != DIALOG_STATUS_REWARD2 && sTravelMgr.getDialogStatus(bot, entry, questTemplate) != DIALOG_STATUS_REWARD_REP)
+        if (dialogStatus != DIALOG_STATUS_REWARD2 && dialogStatus != DIALOG_STATUS_REWARD_REP)
 #else
-        if (sTravelMgr.getDialogStatus(bot, entry, questTemplate) != DIALOG_STATUS_REWARD2 && sTravelMgr.getDialogStatus(bot, entry, questTemplate) != DIALOG_STATUS_REWARD && sTravelMgr.getDialogStatus(bot, entry, questTemplate) != DIALOG_STATUS_REWARD_REP)
+        if (dialogStatus != DIALOG_STATUS_REWARD2 && dialogStatus != DIALOG_STATUS_REWARD && dialogStatus != DIALOG_STATUS_REWARD_REP)
 #endif
             return false;
+
+        PlayerbotAI* ai = bot->GetPlayerbotAI();
+        AiObjectContext* context = ai->GetAiObjectContext();
+
+        //Do not try to hand-in dungeon/elite quests in instances without a group.
+        if ((questTemplate->GetType() == QUEST_TYPE_ELITE || questTemplate->GetType() == QUEST_TYPE_DUNGEON) && !AI_VALUE(bool, "can fight boss"))
+        {
+            if (!this->nearestPoint(&WorldPosition(bot))->isOverworld())
+                return false;
+        }
     }
 
     return true;
@@ -861,9 +919,18 @@ bool QuestObjectiveTravelDestination::isActive(Player* bot) {
 
         if (cInfo && (int)cInfo->MaxLevel - (int)bot->getLevel() > 4)
             return false;
+
+        //Do not try to hand-in dungeon/elite quests in instances without a group.
+        if (cInfo->Rank > CREATURE_ELITE_NORMAL)
+        {
+            if (!this->nearestPoint(&WorldPosition(bot))->isOverworld() && !AI_VALUE(bool, "can fight boss"))
+                return false;
+            else if (!AI_VALUE(bool, "can fight elite"))
+                return false;
+        }
     }
 
-    if (questTemplate->GetType() == QUEST_TYPE_ELITE && !AI_VALUE(bool, "can fight boss"))
+    if (questTemplate->GetType() == QUEST_TYPE_ELITE && !AI_VALUE(bool, "can fight elite"))
         return false;
 
     if (!sTravelMgr.getObjectiveStatus(bot, questTemplate, objective))
@@ -912,11 +979,11 @@ bool RpgTravelDestination::isActive(Player* bot)
     bool isUsefull = false;
 
     if (cInfo->NpcFlags & UNIT_NPC_FLAG_VENDOR)
-        if (AI_VALUE2(bool, "group or", "should sell,can sell,following party"))
+        if (AI_VALUE2_LAZY(bool, "group or", "should sell,can sell,following party,near leader"))
             isUsefull = true;
 
     if (cInfo->NpcFlags & UNIT_NPC_FLAG_REPAIR)
-        if (AI_VALUE2(bool, "group or", "should repair,can repair,following party"))
+        if (AI_VALUE2_LAZY(bool, "group or", "should repair,can repair,following party,near leader"))
             isUsefull = true;
 
     if (!isUsefull)
@@ -1003,7 +1070,7 @@ bool GrindTravelDestination::isActive(Player* bot)
     if (cInfo->MinLootGold == 0)
         return false;
 
-    if (cInfo->Rank > 0 && !AI_VALUE(bool, "can fight boss"))
+    if (cInfo->Rank > CREATURE_ELITE_NORMAL && !AI_VALUE(bool, "can fight elite"))
         return false;
 
     FactionTemplateEntry const* factionEntry = sFactionTemplateStore.LookupEntry(cInfo->Faction);
@@ -1030,9 +1097,9 @@ bool BossTravelDestination::isActive(Player* bot)
     if (!AI_VALUE(bool, "can fight boss"))
         return false;
 
-    CreatureInfo const* cInfo = this->getCreatureInfo();
+    CreatureInfo const* cInfo = getCreatureInfo();
 
-    int32 botLevel = bot->getLevel();
+    /*int32 botLevel = bot->getLevel();
 
     uint8 botPowerLevel = AI_VALUE(uint8, "durability");
     float levelMod = botPowerLevel / 500.0f; //(0-0.2f)
@@ -1046,6 +1113,10 @@ bool BossTravelDestination::isActive(Player* bot)
     int32 minLevel = botLevel - 10;
 
     if ((int32)cInfo->MaxLevel < minLevel) //@lvl5 min = 3, @lvl60 max = 50
+        return false;
+        */
+
+    if ((int32)cInfo->MaxLevel > bot->getLevel() + 3)
         return false;
 
     FactionTemplateEntry const* factionEntry = sFactionTemplateStore.LookupEntry(cInfo->Faction);
@@ -1066,6 +1137,9 @@ bool BossTravelDestination::isActive(Player* bot)
 
         return false;
     }
+
+    if (!AI_VALUE2(bool, "has upgrade",  getEntry()))
+        return false;
 
     return true;
 }
@@ -1165,14 +1239,14 @@ bool TravelTarget::isActive() {
         return false;
     }
 
+    if (m_status == TRAVEL_STATUS_COOLDOWN)
+        return true;
+
     if (isTraveling())
         return true;
 
     if (isWorking())
-        return true;
-    
-    if (m_status == TRAVEL_STATUS_COOLDOWN)
-        return true;
+        return true;   
 
     if (!tDestination->isActive(bot)) //Target has become invalid. Stop.
     {
@@ -1416,10 +1490,50 @@ void TravelMgr::logQuestError(uint32 errorNr, Quest* quest, uint32 objective, ui
     }
 }
 
+void TravelMgr::SetMobAvoidArea() 
+{
+    sLog.outString("start mob avoidance maps");
+    PathFinder path;
+    FactionTemplateEntry const* humanFaction = sFactionTemplateStore.LookupEntry(1);
+    FactionTemplateEntry const* orcFaction = sFactionTemplateStore.LookupEntry(2);
+
+    for (auto& creaturePair : WorldPosition().getCreaturesNear())
+    {
+
+        CreatureData const cData = creaturePair->second;
+        CreatureInfo const* cInfo = ObjectMgr::GetCreatureTemplate(cData.id);
+
+        if (!cInfo)
+            continue;
+
+        WorldPosition point = WorldPosition(cData.mapid, cData.posX, cData.posY, cData.posZ, cData.orientation);
+
+        if (cInfo->NpcFlags > 0)
+            continue;
+
+        FactionTemplateEntry const* factionEntry = sFactionTemplateStore.LookupEntry(cInfo->Faction);
+        ReputationRank reactionHum = PlayerbotAI::GetFactionReaction(humanFaction, factionEntry);
+        ReputationRank reactionOrc = PlayerbotAI::GetFactionReaction(orcFaction, factionEntry);
+
+        if (reactionHum >= REP_NEUTRAL || reactionOrc >= REP_NEUTRAL)
+            continue;
+
+        if (!point.getTerrain())
+            continue;
+
+        point.loadMapAndVMap();
+
+        path.setArea(point.getMapId(), point.getX(), point.getY(), point.getZ(), 11, 50.0f);
+        path.setArea(point.getMapId(), point.getX(), point.getY(), point.getZ(), 12, 20.0f);
+    }
+    sLog.outString("end mob avoidance maps");
+}
+
 void TravelMgr::LoadQuestTravelTable()
 {
     if (!sTravelMgr.quests.empty())
         return;
+
     // Clearing store (for reloading case)
     Clear();
 
@@ -1668,7 +1782,7 @@ void TravelMgr::LoadQuestTravelTable()
 
                     for (auto& guidP : e.second)
                     {
-                        WorldPosition point = guidP.getPosition();
+                        WorldPosition point = guidP;
                         pointsMap.insert(make_pair(guidP.GetRawValue(), point));
 
                         for (auto tLoc : locs)
@@ -1983,114 +2097,7 @@ void TravelMgr::LoadQuestTravelTable()
     }     
 
 
-#ifdef IKE_PATHFINDER
-    bool mmapAvoidMobMod = true;
-
-    if (mmapAvoidMobMod)
-    {
-        sLog.outString("Loading mob avoidance maps");
-
-        //Mob avoidance
-        PathFinder path;
-        WorldPosition emptyPoint;
-        FactionTemplateEntry const* humanFaction = sFactionTemplateStore.LookupEntry(1);
-        FactionTemplateEntry const* orcFaction = sFactionTemplateStore.LookupEntry(2);        
-
-        for (auto& creaturePair : emptyPoint.getCreaturesNear())
-        {
-            CreatureData const cData = creaturePair->second;
-            CreatureInfo const* cInfo = ObjectMgr::GetCreatureTemplate(cData.id);
-
-            if (!cInfo)
-                continue;
-
-            WorldPosition point = WorldPosition(cData.mapid, cData.posX, cData.posY, cData.posZ, cData.orientation);
-
-            if (cInfo->NpcFlags > 0)
-                continue;
-
-            FactionTemplateEntry const* factionEntry = sFactionTemplateStore.LookupEntry(cInfo->Faction);
-            ReputationRank reactionHum = PlayerbotAI::GetFactionReaction(humanFaction, factionEntry);
-            ReputationRank reactionOrc = PlayerbotAI::GetFactionReaction(orcFaction, factionEntry);
-
-            if (reactionHum >= REP_NEUTRAL || reactionOrc >= REP_NEUTRAL)
-                continue;
-
-            if (!point.getTerrain())
-                continue;
-
-            point.loadMapAndVMap();
-
-            path.setArea(point.getMapId(), point.getX(), point.getY(), point.getZ(), 11, 50.0f);
-            path.setArea(point.getMapId(), point.getX(), point.getY(), point.getZ(), 12, 20.0f);
-        }
-    }
-#endif
-
-    //unittest
-    if(false)
-    {
-        //arrange
-        TravelNode* centernode = sTravelNodeMap.addNode(WorldPosition(0, 0, 0), "center", true);
-        TravelNode* nearnode = sTravelNodeMap.addNode(WorldPosition(0, 10, 0), "near", true);
-        TravelNode* farnode = sTravelNodeMap.addNode(WorldPosition(0, 100, 0), "far", true);
-
-        centernode->setPathTo(nearnode, TravelNodePath(10));
-        nearnode->setPathTo(centernode, TravelNodePath(10));
-        
-        centernode->setPathTo(farnode, TravelNodePath(100));
-        farnode->setPathTo(centernode,  TravelNodePath(100));
-        
-        nearnode->setPathTo(farnode, TravelNodePath(90));
-        farnode->setPathTo(nearnode, TravelNodePath(90));
-
-        //act
-        sTravelNodeMap.removeUselessPaths();
-
-        //assert
-        MANGOS_ASSERT(centernode->hasPathTo(farnode));
-
-        //teardown
-        sTravelNodeMap.removeNode(centernode);
-        sTravelNodeMap.removeNode(nearnode);
-        sTravelNodeMap.removeNode(farnode);
-    }
-
-    //unittest
-    if (false)
-    {
-        //arrange
-        TravelNode* centernode = sTravelNodeMap.addNode(WorldPosition(0, 0, 0), "center", true);
-        TravelNode* nearnode = sTravelNodeMap.addNode(WorldPosition(0, 10, 0), "near", true);
-        TravelNode* subnode = sTravelNodeMap.addNode(WorldPosition(0, 20, 0), "near", true);
-        TravelNode* farnode = sTravelNodeMap.addNode(WorldPosition(0, 100, 0), "far", true);
-
-        centernode->setPathTo(nearnode, TravelNodePath(10));
-        nearnode->setPathTo(centernode, TravelNodePath(10));
-
-        centernode->setPathTo(farnode, TravelNodePath(100));
-        farnode->setPathTo(centernode, TravelNodePath(100));
-
-        nearnode->setPathTo(subnode, TravelNodePath(10));
-        subnode->setPathTo(nearnode, TravelNodePath(10));
-
-        subnode->setPathTo(farnode, TravelNodePath(80));
-        farnode->setPathTo(subnode, TravelNodePath(80));
-
-        //act
-        sTravelNodeMap.removeUselessPaths();
-
-        //assert
-        MANGOS_ASSERT(centernode->hasPathTo(farnode));
-
-        //teardown
-        sTravelNodeMap.removeNode(centernode);
-        sTravelNodeMap.removeNode(nearnode);
-        sTravelNodeMap.removeNode(subnode);
-        sTravelNodeMap.removeNode(farnode);
-    }
-
-    //Clear these logs files
+     //Clear these logs files
     sPlayerbotAIConfig.openLog("zones.csv", "w");
     sPlayerbotAIConfig.openLog("creatures.csv", "w");
     sPlayerbotAIConfig.openLog("gos.csv", "w");
@@ -2104,6 +2111,16 @@ void TravelMgr::LoadQuestTravelTable()
 
     sPlayerbotAIConfig.openLog("unload_grid.csv", "w");
     sPlayerbotAIConfig.openLog("unload_obj.csv", "w");
+
+#ifdef IKE_PATHFINDER
+    bool mmapAvoidMobMod = true;
+
+    if (mmapAvoidMobMod)
+    {
+        //Mob avoidance
+        SetMobAvoidArea();
+    }
+#endif
 
     sTravelNodeMap.loadNodeStore();
 
@@ -2787,6 +2804,419 @@ void TravelMgr::LoadQuestTravelTable()
         }
     }
 
+    if (sPlayerbotAIConfig.hasLog("vmangoslines.csv"))
+    {
+
+        uint32 mapId = 0;
+        vector<WorldPosition> pos;
+
+            static float const topNorthSouthLimit[] = {
+                2032.048340f, -6927.750000f,
+                1634.863403f, -6157.505371f,
+                1109.519775f, -5181.036133f,
+                1315.204712f, -4096.020508f,
+                1073.089233f, -3372.571533f,
+                 825.833191f, -3125.778809f,
+                 657.343994f, -2314.813232f,
+                 424.736145f, -1888.283691f,
+                 744.395813f, -1647.935425f,
+                1424.160645f,  -654.948181f,
+                1447.065308f,  -169.751358f,
+                1208.715454f,   189.748703f,
+                1596.240356f,   998.616699f,
+                1577.923706f,  1293.419922f,
+                1458.520264f,  1727.373291f,
+                1591.916138f,  3728.139404f
+            };
+
+            pos.clear();
+
+# define my_sizeof(type) ((char *)(&type+1)-(char*)(&type))
+
+            int size = my_sizeof(topNorthSouthLimit) / my_sizeof(topNorthSouthLimit[0]);
+
+            for (uint32 i = 0; i < size-1; i=i+2)
+            {
+                if (topNorthSouthLimit[i] == 0)
+                    break;
+                pos.push_back(WorldPosition(mapId, topNorthSouthLimit[i], topNorthSouthLimit[i + 1], 0));
+            }
+
+            ostringstream out;
+            out << "topNorthSouthLimit" << ",";
+            WorldPosition().printWKT(pos,out,1);
+            out << std::fixed;
+
+            sPlayerbotAIConfig.log("vmangoslines.csv", out.str().c_str());
+
+            static float const ironforgeAreaSouthLimit[] = {
+                -7491.33f,  3093.74f,
+                -7472.04f,  -391.88f,
+                -6366.68f,  -730.10f,
+                -6063.96f, -1411.76f,
+                -6087.62f, -2190.21f,
+                -6349.54f, -2533.66f,
+                -6308.63f, -3049.32f,
+                -6107.82f, -3345.30f,
+                -6008.49f, -3590.52f,
+                -5989.37f, -4312.29f,
+                -5806.26f, -5864.11f
+            };
+
+            pos.clear();
+
+            size = my_sizeof(ironforgeAreaSouthLimit) / my_sizeof(ironforgeAreaSouthLimit[0]);
+
+            for (uint32 i = 0; i < size - 1; i = i + 2)
+            {
+                if (ironforgeAreaSouthLimit[i] == 0)
+                    break;
+                pos.push_back(WorldPosition(mapId, ironforgeAreaSouthLimit[i], ironforgeAreaSouthLimit[i + 1], 0));
+            }
+
+            out.str("");
+            out.clear();
+            
+            out << "ironforgeAreaSouthLimit" << ",";
+            WorldPosition().printWKT(pos, out, 1);
+            out << std::fixed;
+
+            sPlayerbotAIConfig.log("vmangoslines.csv", out.str().c_str());
+
+            static float const stormwindAreaNorthLimit[] = {
+                 -8004.25f,  3714.11f,
+                 -8075.00f, -179.00f,
+                 -8638.00f, 169.00f,
+                 -9044.00f, 35.00f,
+                 -9068.00f, -125.00f,
+                 -9094.00f, -147.00f,
+                 -9206.00f, -290.00f,
+                 -9097.00f, -510.00f,
+                 -8739.00f, -501.00f,
+                 -8725.50f, -1618.45f,
+                 -9810.40f, -1698.41f,
+                -10049.60f, -1740.40f,
+                -10670.61f, -1692.51f,
+                -10908.48f, -1563.87f,
+                -13006.40f, -1622.80f,
+                -12863.23f, -4798.42f
+            };
+
+            pos.clear();
+
+            size = my_sizeof(stormwindAreaNorthLimit) / my_sizeof(stormwindAreaNorthLimit[0]);
+
+            for (uint32 i = 0; i < size - 1; i = i + 2)
+            {
+                if (stormwindAreaNorthLimit[i] == 0)
+                    break;
+                pos.push_back(WorldPosition(mapId, stormwindAreaNorthLimit[i], stormwindAreaNorthLimit[i + 1], 0));
+            }
+
+            out.str("");
+            out.clear();
+
+            out << "stormwindAreaNorthLimit" << ",";
+            WorldPosition().printWKT(pos, out, 1);
+            out << std::fixed;
+
+            sPlayerbotAIConfig.log("vmangoslines.csv", out.str().c_str());
+
+            static float const stormwindAreaSouthLimit[] = {
+                 -8725.337891f,  3535.624023f,
+                 -9525.699219f,   910.132568f,
+                 -9796.953125f,   839.069580f,
+                 -9946.341797f,   743.102844f,
+                -10287.361328f,   760.076477f,
+                -10083.828125f,   380.389893f,
+                -10148.072266f,    80.056450f,
+                -10014.583984f,  -161.638519f,
+                 -9978.146484f,  -361.638031f,
+                 -9877.489258f,  -563.304871f,
+                 -9980.967773f, -1128.510498f,
+                 -9991.717773f, -1428.793213f,
+                 -9887.579102f, -1618.514038f,
+                -10169.600586f, -1801.582031f,
+                 -9966.274414f, -2227.197754f,
+                 -9861.309570f, -2989.841064f,
+                 -9944.026367f, -3205.886963f,
+                 -9610.209961f, -3648.369385f,
+                 -7949.329590f, -4081.389404f,
+                 -7910.859375f, -5855.578125f
+            };
+
+            pos.clear();
+
+            size = my_sizeof(stormwindAreaSouthLimit) / my_sizeof(stormwindAreaSouthLimit[0]);
+
+            for (uint32 i = 0; i < size - 1; i = i + 2)
+            {
+                if (stormwindAreaSouthLimit[i] == 0)
+                    break;
+                pos.push_back(WorldPosition(mapId, stormwindAreaSouthLimit[i], stormwindAreaSouthLimit[i + 1], 0));
+            }
+
+            out.str("");
+            out.clear();
+
+            out << "stormwindAreaSouthLimit" << ",";
+            WorldPosition().printWKT(pos, out, 1);
+            out << std::fixed;
+
+            sPlayerbotAIConfig.log("vmangoslines.csv", out.str().c_str());
+            
+            mapId = 1;
+       
+            static float const northMiddleLimit[] = {
+                  -2280.00f,  4054.00f,
+                  -2401.00f,  2365.00f,
+                  -2432.00f,  1338.00f,
+                  -2286.00f,   769.00f,
+                  -2137.00f,   662.00f,
+                  -2044.54f,   489.86f,
+                  -1808.52f,   436.39f,
+                  -1754.85f,   504.55f,
+                  -1094.55f,   651.75f,
+                   -747.46f,   647.73f,
+                   -685.55f,   408.43f,
+                   -311.38f,   114.43f,
+                   -358.40f,  -587.42f,
+                   -377.92f,  -748.70f,
+                   -512.57f,  -919.49f,
+                   -280.65f, -1008.87f,
+                    -81.29f,  -930.89f,
+                    284.31f, -1105.39f,
+                    568.86f,  -892.28f,
+                   1211.09f, -1135.55f,
+                    879.60f, -2110.18f,
+                    788.96f, -2276.02f,
+                    899.68f, -2625.56f,
+                   1281.54f, -2689.42f,
+                   1521.82f, -3047.85f,
+                   1424.22f, -3365.69f,
+                   1694.11f, -3615.20f,
+                   2373.78f, -4019.96f,
+                   2388.13f, -5124.35f,
+                   2193.79f, -5484.38f,
+                   1703.57f, -5510.53f,
+                   1497.59f, -6376.56f,
+                   1368.00f, -8530.00f
+            };
+
+            pos.clear();
+
+            size = my_sizeof(northMiddleLimit) / my_sizeof(northMiddleLimit[0]);
+
+            for (uint32 i = 0; i < size - 1; i = i + 2)
+            {
+                if (northMiddleLimit[i] == 0)
+                    break;
+                pos.push_back(WorldPosition(mapId, northMiddleLimit[i], northMiddleLimit[i + 1], 0));
+            }
+
+            out.str("");
+            out.clear();
+
+            out << "northMiddleLimit" << ",";
+            WorldPosition().printWKT(pos, out, 1);
+            out << std::fixed;
+
+            sPlayerbotAIConfig.log("vmangoslines.csv", out.str().c_str());
+
+            static float const durotarSouthLimit[] = {
+                    2755.00f, -3766.00f,
+                    2225.00f, -3596.00f,
+                    1762.00f, -3746.00f,
+                    1564.00f, -3943.00f,
+                    1184.00f, -3915.00f,
+                     737.00f, -3782.00f,
+                     -75.00f, -3742.00f,
+                    -263.00f, -3836.00f,
+                    -173.00f, -4064.00f,
+                     -81.00f, -4091.00f,
+                     -49.00f, -4089.00f,
+                     -16.00f, -4187.00f,
+                      -5.00f, -4192.00f,
+                     -14.00f, -4551.00f,
+                    -397.00f, -4601.00f,
+                    -522.00f, -4583.00f,
+                    -668.00f, -4539.00f,
+                    -790.00f, -4502.00f,
+                   -1176.00f, -4213.00f,
+                   -1387.00f, -4674.00f,
+                   -2243.00f, -6046.00f
+            };
+
+            pos.clear();
+
+            size = my_sizeof(durotarSouthLimit) / my_sizeof(durotarSouthLimit[0]);
+
+            for (uint32 i = 0; i < size - 1; i = i + 2)
+            {
+                if (durotarSouthLimit[i] == 0)
+                    break;
+                pos.push_back(WorldPosition(mapId, durotarSouthLimit[i], durotarSouthLimit[i + 1], 0));
+            }
+
+            out.str("");
+            out.clear();
+
+            out << "durotarSouthLimit" << ",";
+            WorldPosition().printWKT(pos, out, 1);
+            out << std::fixed;
+
+            sPlayerbotAIConfig.log("vmangoslines.csv", out.str().c_str());
+
+            static float const valleyoftrialsSouthLimit[] = {
+                    -324.00f, -3869.00f,
+                    -774.00f, -3992.00f,
+                    -965.00f, -4290.00f,
+                    -932.00f, -4349.00f,
+                    -828.00f, -4414.00f,
+                    -661.00f, -4541.00f,
+                    -521.00f, -4582.00f
+            };
+
+            pos.clear();
+
+            size = my_sizeof(valleyoftrialsSouthLimit) / my_sizeof(valleyoftrialsSouthLimit[0]);
+
+            for (uint32 i = 0; i < size - 1; i = i + 2)
+            {
+                if (valleyoftrialsSouthLimit[i] == 0)
+                    break;
+                pos.push_back(WorldPosition(mapId, valleyoftrialsSouthLimit[i], valleyoftrialsSouthLimit[i + 1], 0));
+            }
+
+            out.str("");
+            out.clear();
+
+            out << "valleyoftrialsSouthLimit" << ",";
+            WorldPosition().printWKT(pos, out, 1);
+            out << std::fixed;
+
+            sPlayerbotAIConfig.log("vmangoslines.csv", out.str().c_str());
+
+            static float const middleToSouthLimit[] = {
+                        -2402.01f,      4255.70f,
+                    -2475.933105f,  3199.568359f, // Desolace
+                    -2344.124023f,  1756.164307f,
+                    -2826.438965f,   403.824738f, // Mulgore
+                    -3472.819580f,   182.522476f, // Feralas
+                    -4365.006836f, -1602.575439f, // the Barrens
+                    -4515.219727f, -1681.356079f,
+                    -4543.093750f, -1882.869385f, // Thousand Needles
+                        -4824.16f,     -2310.11f,
+                    -5102.913574f, -2647.062744f,
+                    -5248.286621f, -3034.536377f,
+                    -5246.920898f, -3339.139893f,
+                    -5459.449707f, -4920.155273f, // Tanaris
+                        -5437.00f,     -5863.00f
+            };
+
+            pos.clear();
+
+            size = my_sizeof(middleToSouthLimit) / my_sizeof(middleToSouthLimit[0]);
+
+            for (uint32 i = 0; i < size - 1; i = i + 2)
+            {
+                if (middleToSouthLimit[i] == 0)
+                    break;
+                pos.push_back(WorldPosition(mapId, middleToSouthLimit[i], middleToSouthLimit[i + 1], 0));
+            }
+
+            out.str("");
+            out.clear();
+
+            out << "middleToSouthLimit" << ",";
+            WorldPosition().printWKT(pos, out, 1);
+            out << std::fixed;
+
+            sPlayerbotAIConfig.log("vmangoslines.csv", out.str().c_str());
+
+            static float const orgrimmarSouthLimit[] = {
+                    2132.5076f, -3912.2478f,
+                    1944.4298f, -3855.2583f,
+                    1735.6906f, -3834.2417f,
+                    1654.3671f, -3380.9902f,
+                    1593.9861f, -3975.5413f,
+                    1439.2548f, -4249.6923f,
+                    1436.3106f, -4007.8950f,
+                    1393.3199f, -4196.0625f,
+                    1445.2428f, -4373.9052f,
+                    1407.2349f, -4429.4145f,
+                    1464.7142f, -4545.2875f,
+                    1584.1331f, -4596.8764f,
+                    1716.8065f, -4601.1323f,
+                    1875.8312f, -4788.7187f,
+                    1979.7647f, -4883.4585f,
+                    2219.1562f, -4854.3330f
+            };
+
+            pos.clear();
+
+            size = my_sizeof(orgrimmarSouthLimit) / my_sizeof(orgrimmarSouthLimit[0]);
+
+            for (uint32 i = 0; i < size - 1; i = i + 2)
+            {
+                if (orgrimmarSouthLimit[i] == 0)
+                    break;
+                pos.push_back(WorldPosition(mapId, orgrimmarSouthLimit[i], orgrimmarSouthLimit[i + 1], 0));
+            }
+
+            out.str("");
+            out.clear();
+
+            out << "orgrimmarSouthLimit" << ",";
+            WorldPosition().printWKT(pos, out, 1);
+            out << std::fixed;
+
+            sPlayerbotAIConfig.log("vmangoslines.csv", out.str().c_str());
+
+            static float const feralasThousandNeedlesSouthLimit[] = {
+                    -6495.4995f, -4711.981f,
+                    -6674.9995f, -4515.0019f,
+                    -6769.5717f, -4122.4272f,
+                    -6838.2651f, -3874.2792f,
+                    -6851.1314f, -3659.1179f,
+                    -6624.6845f, -3063.3843f,
+                    -6416.9067f, -2570.1301f,
+                    -5959.8466f, -2287.2634f,
+                    -5947.9135f, -1866.5028f,
+                    -5947.9135f,  -820.4881f,
+                    -5876.7114f,    -3.5138f,
+                    -5876.7114f,   917.6407f,
+                    -6099.3603f,  1153.2884f,
+                    -6021.8989f,  1638.1809f,
+                    -6091.6176f,  2335.8892f,
+                    -6744.9946f,  2393.4855f,
+                    -6973.8608f,  3077.0281f,
+                    -7068.7241f,  4376.2304f,
+                    -7142.1211f,  4808.4331f
+            };
+
+
+            pos.clear();
+
+            size = my_sizeof(feralasThousandNeedlesSouthLimit) / my_sizeof(feralasThousandNeedlesSouthLimit[0]);
+
+            for (uint32 i = 0; i < size - 1; i = i + 2)
+            {
+                if (feralasThousandNeedlesSouthLimit[i] == 0)
+                    break;
+                pos.push_back(WorldPosition(mapId, feralasThousandNeedlesSouthLimit[i], feralasThousandNeedlesSouthLimit[i + 1], 0));
+            }
+
+            out.str("");
+            out.clear();
+
+            out << "feralasThousandNeedlesSouthLimit" << ",";
+            WorldPosition().printWKT(pos, out, 1);
+            out << std::fixed;
+
+            sPlayerbotAIConfig.log("vmangoslines.csv", out.str().c_str());
+    }
+
     if (sPlayerbotAIConfig.hasLog("gos.csv"))
     {
         for (auto& gameObjectPair : WorldPosition().getGameObjectsNear())
@@ -2864,7 +3294,6 @@ void TravelMgr::LoadQuestTravelTable()
             sPlayerbotAIConfig.log("zones.csv", out.str().c_str());
         }
     }
-
 
     bool printStrategyMap = false;
 

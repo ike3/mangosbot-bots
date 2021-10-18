@@ -3,6 +3,14 @@
 
 namespace ai
 {
+    class GroupMembersValue : public ObjectGuidListCalculatedValue
+    {
+    public:
+        GroupMembersValue(PlayerbotAI* ai) : ObjectGuidListCalculatedValue(ai, "group members",2) {}
+
+        virtual list<ObjectGuid> Calculate();
+    };
+
     class IsFollowingPartyValue : public BoolCalculatedValue
     {
     public:
@@ -26,6 +34,14 @@ namespace ai
 
         virtual bool Calculate();
     };
+
+    class GroupBoolCountValue : public Uint32CalculatedValue, public Qualified
+    {
+    public:
+        GroupBoolCountValue(PlayerbotAI* ai) : Uint32CalculatedValue(ai, "group count") {}
+
+        virtual uint32 Calculate();
+    };
     
     class GroupBoolANDValue : public BoolCalculatedValue, public Qualified
     {
@@ -39,6 +55,14 @@ namespace ai
     {
     public:
         GroupBoolORValue(PlayerbotAI* ai) : BoolCalculatedValue(ai, "group bool or") {}
+
+        virtual bool Calculate();
+    };
+
+    class GroupReadyValue : public BoolCalculatedValue, public Qualified
+    {
+    public:
+        GroupReadyValue(PlayerbotAI* ai) : BoolCalculatedValue(ai, "group ready", 2) {}
 
         virtual bool Calculate();
     };

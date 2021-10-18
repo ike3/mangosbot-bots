@@ -11,6 +11,8 @@
 
 using namespace std;
 
+typedef vector<string> PerformanceStack;
+
 struct PerformanceData
 {
     uint32 minTime, maxTime, totalTime, count;
@@ -31,11 +33,13 @@ enum PerformanceMetric
 class PerformanceMonitorOperation
 {
 public:
-    PerformanceMonitorOperation(PerformanceData* data);
+    PerformanceMonitorOperation(PerformanceData* data, string name, PerformanceStack* stack);
     void finish();
 
 private:
     PerformanceData* data;
+    string name;
+    PerformanceStack* stack;
 #ifdef CMANGOS
     std::chrono::milliseconds started;
 #endif
@@ -53,8 +57,8 @@ class PerformanceMonitor
         }
 
 	public:
-        PerformanceMonitorOperation* start(PerformanceMetric metric, string name);
-        void PrintStats();
+        PerformanceMonitorOperation* start(PerformanceMetric metric, string name, PerformanceStack* stack = nullptr);
+        void PrintStats(bool perTick = false,  bool fullStack = false);
         void Reset();
 
 	private:

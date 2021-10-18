@@ -8,7 +8,7 @@ namespace ai
     class HealthValue : public Uint8CalculatedValue, public Qualified
     {
     public:
-        HealthValue(PlayerbotAI* ai) : Uint8CalculatedValue(ai) {}
+        HealthValue(PlayerbotAI* ai, string name = "health") : Uint8CalculatedValue(ai, name) {}
 
         Unit* GetTarget()
         {
@@ -21,7 +21,7 @@ namespace ai
     class IsDeadValue : public BoolCalculatedValue, public Qualified
     {
     public:
-        IsDeadValue(PlayerbotAI* ai) : BoolCalculatedValue(ai) {}
+        IsDeadValue(PlayerbotAI* ai, string name = "dead") : BoolCalculatedValue(ai, name) {}
 
         Unit* GetTarget()
         {
@@ -34,21 +34,21 @@ namespace ai
     class PetIsDeadValue : public BoolCalculatedValue
     {
     public:
-        PetIsDeadValue(PlayerbotAI* ai) : BoolCalculatedValue(ai) {}
+        PetIsDeadValue(PlayerbotAI* ai, string name = "pet dead") : BoolCalculatedValue(ai, name) {}
         virtual bool Calculate();
     };
 
     class PetIsHappyValue : public BoolCalculatedValue
     {
     public:
-        PetIsHappyValue(PlayerbotAI* ai) : BoolCalculatedValue(ai) {}
+        PetIsHappyValue(PlayerbotAI* ai, string name = "pet happy") : BoolCalculatedValue(ai, name) {}
         virtual bool Calculate();
     };
 
     class RageValue : public Uint8CalculatedValue, public Qualified
     {
     public:
-        RageValue(PlayerbotAI* ai) : Uint8CalculatedValue(ai) {}
+        RageValue(PlayerbotAI* ai, string name = "rage") : Uint8CalculatedValue(ai, name) {}
 
         Unit* GetTarget()
         {
@@ -61,7 +61,7 @@ namespace ai
     class EnergyValue : public Uint8CalculatedValue, public Qualified
     {
     public:
-        EnergyValue(PlayerbotAI* ai) : Uint8CalculatedValue(ai) {}
+        EnergyValue(PlayerbotAI* ai, string name = "energy") : Uint8CalculatedValue(ai, name) {}
 
         Unit* GetTarget()
         {
@@ -74,7 +74,7 @@ namespace ai
     class ManaValue : public Uint8CalculatedValue, public Qualified
     {
     public:
-        ManaValue(PlayerbotAI* ai) : Uint8CalculatedValue(ai) {}
+        ManaValue(PlayerbotAI* ai, string name = "mana") : Uint8CalculatedValue(ai, name) {}
 
         Unit* GetTarget()
         {
@@ -87,7 +87,7 @@ namespace ai
     class HasManaValue : public BoolCalculatedValue, public Qualified
     {
     public:
-        HasManaValue(PlayerbotAI* ai) : BoolCalculatedValue(ai) {}
+        HasManaValue(PlayerbotAI* ai, string name = "has mana") : BoolCalculatedValue(ai, name) {}
 
         Unit* GetTarget()
         {
@@ -100,7 +100,7 @@ namespace ai
     class ComboPointsValue : public Uint8CalculatedValue, public Qualified
     {
     public:
-        ComboPointsValue(PlayerbotAI* ai) : Uint8CalculatedValue(ai) {}
+        ComboPointsValue(PlayerbotAI* ai, string name = "combo points") : Uint8CalculatedValue(ai, name) {}
 
         Unit* GetTarget()
         {
@@ -113,7 +113,7 @@ namespace ai
     class IsMountedValue : public BoolCalculatedValue, public Qualified
     {
     public:
-        IsMountedValue(PlayerbotAI* ai) : BoolCalculatedValue(ai) {}
+        IsMountedValue(PlayerbotAI* ai, string name = "mounted") : BoolCalculatedValue(ai, name) {}
 
         Unit* GetTarget()
         {
@@ -123,23 +123,26 @@ namespace ai
         virtual bool Calculate();
     };
 
-    class IsInCombatValue : public BoolCalculatedValue, public Qualified
+    class IsInCombatValue : public MemoryCalculatedValue<bool>, public Qualified
     {
     public:
-        IsInCombatValue(PlayerbotAI* ai) : BoolCalculatedValue(ai) {}
+        IsInCombatValue(PlayerbotAI* ai, string name = "combat") : MemoryCalculatedValue(ai, name) {}
 
         Unit* GetTarget()
         {
             AiObjectContext* ctx = AiObject::context;
             return ctx->GetValue<Unit*>(qualifier)->Get();
         }
+
+        virtual bool EqualToLast(bool value) { return value == lastValue; }
+
         virtual bool Calculate() ;
     };
 
     class BagSpaceValue : public Uint8CalculatedValue
     {
     public:
-        BagSpaceValue(PlayerbotAI* ai) : Uint8CalculatedValue(ai) {}
+        BagSpaceValue(PlayerbotAI* ai, string name = "bag space") : Uint8CalculatedValue(ai, name) {}
 
         virtual uint8 Calculate();
     };
@@ -147,7 +150,7 @@ namespace ai
     class DurabilityValue : public Uint8CalculatedValue
     {
     public:
-        DurabilityValue(PlayerbotAI* ai) : Uint8CalculatedValue(ai) {}
+        DurabilityValue(PlayerbotAI* ai, string name = "durability") : Uint8CalculatedValue(ai, name) {}
 
         virtual uint8 Calculate();
     };
@@ -155,7 +158,7 @@ namespace ai
      class SpeedValue : public Uint8CalculatedValue, public Qualified
     {
     public:
-        SpeedValue(PlayerbotAI* ai) : Uint8CalculatedValue(ai) {}
+        SpeedValue(PlayerbotAI* ai, string name = "speed") : Uint8CalculatedValue(ai, name) {}
 
         Unit* GetTarget()
         {
@@ -168,7 +171,7 @@ namespace ai
     class IsInGroupValue : public BoolCalculatedValue
     {
     public:
-        IsInGroupValue(PlayerbotAI* ai) : BoolCalculatedValue(ai) {}
+        IsInGroupValue(PlayerbotAI* ai, string name = "in group") : BoolCalculatedValue(ai, name) {}
 
         virtual bool Calculate() { return bot->GetGroup(); }
     };
@@ -176,14 +179,14 @@ namespace ai
     class DeathCountValue : public ManualSetValue<uint32>
     {
     public:
-        DeathCountValue(PlayerbotAI* ai) : ManualSetValue<uint32>(ai, 0, "death_count") {}
+        DeathCountValue(PlayerbotAI* ai, string name = "death count") : ManualSetValue<uint32>(ai, 0, name) {}
     };
 
 
     class ExperienceValue : public MemoryCalculatedValue<uint32>
     {
     public:
-        ExperienceValue(PlayerbotAI* ai, string name = "experience", uint32 checkInterval = 60) : MemoryCalculatedValue<uint32>(ai) {}
+        ExperienceValue(PlayerbotAI* ai, string name = "experience", uint32 checkInterval = 60) : MemoryCalculatedValue<uint32>(ai, name, checkInterval) {}
 
         virtual bool EqualToLast(uint32 value) { return value != lastValue; }
 

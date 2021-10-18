@@ -77,6 +77,8 @@
 #include "MaintenanceValues.h"
 #include "GroupValues.h"
 #include "GuildValues.h"
+#include "TradeValues.h"
+#include "RpgValues.h"
 
 namespace ai
 {
@@ -206,6 +208,7 @@ namespace ai
             creators["already seen players"] = &ValueContext::already_seen_players;
             creators["rpg target"] = &ValueContext::rpg_target;
             creators["ignore rpg target"] = &ValueContext::ignore_rpg_target;
+            creators["next rpg action"] = &ValueContext::next_rpg_action;
             creators["travel target"] = &ValueContext::travel_target;
             creators["talk target"] = &ValueContext::talk_target;
             creators["pull target"] = &ValueContext::pull_target;
@@ -218,6 +221,7 @@ namespace ai
             creators["death count"] = &ValueContext::death_count;
 
             creators["bg type"] = &ValueContext::bg_type;
+            creators["rpg bg type"] = &ValueContext::rpg_bg_type; 
             creators["arena type"] = &ValueContext::arena_type;
             creators["bg role"] = &ValueContext::bg_role;
             creators["bg master"] = &ValueContext::bg_master;
@@ -240,25 +244,32 @@ namespace ai
             creators["free money for"] = &ValueContext::free_money_for;            
             creators["should get money"] = &ValueContext::should_get_money;
             
+            creators["can move around"] = &ValueContext::can_move_around;
             creators["should home bind"] = &ValueContext::should_home_bind;
             creators["should repair"] = &ValueContext::should_repair;
             creators["can repair"] = &ValueContext::can_repair;
             creators["should sell"] = &ValueContext::should_sell;
             creators["can sell"] = &ValueContext::can_sell;
             creators["can fight equal"] = &ValueContext::can_fight_equal;
+            creators["can fight elite"] = &ValueContext::can_fight_elite;
             creators["can fight boss"] = &ValueContext::can_fight_boss;
 
+            creators["group members"] = &ValueContext::group_members;
             creators["following party"] = &ValueContext::following_party;
             creators["near leader"] = &ValueContext::near_leader;
-
             creators["and"] = &ValueContext::and_value;
-            creators["and"] = &ValueContext::and_value;
+            creators["group count"] = &ValueContext::group_count;
             creators["group and"] = &ValueContext::group_and;
             creators["group or"] = &ValueContext::group_or;
+            creators["group ready"] = &ValueContext::group_ready;
 
             creators["petition signs"] = &ValueContext::petition_signs;
 
             creators["experience"] = &ValueContext::experience;
+
+            creators["entry loot usage"] = &ValueContext::entry_loot_usage;
+            creators["has upgrade"] = &ValueContext::has_upgrade;
+            creators["items useful to give"] = &ValueContext::items_useful_to_give;
         }
 
     private:
@@ -268,6 +279,7 @@ namespace ai
         static UntypedValue* bg_role(PlayerbotAI* ai) { return new BgRoleValue(ai); }
         static UntypedValue* arena_type(PlayerbotAI* ai) { return new ArenaTypeValue(ai); }
         static UntypedValue* bg_type(PlayerbotAI* ai) { return new BgTypeValue(ai); }
+        static UntypedValue* rpg_bg_type(PlayerbotAI* ai) { return new RpgBgTypeValue(ai); }
         static UntypedValue* party_member_without_water(PlayerbotAI* ai) { return new PartyMemberWithoutWaterValue(ai); }
         static UntypedValue* party_member_without_food(PlayerbotAI* ai) { return new PartyMemberWithoutFoodValue(ai); }
         static UntypedValue* party_member_without_item(PlayerbotAI* ai) { return new PartyMemberWithoutItemValue(ai); }
@@ -389,8 +401,9 @@ namespace ai
         static UntypedValue* nearest_non_bot_players(PlayerbotAI* ai) { return new NearestNonBotPlayersValue(ai); }
         static UntypedValue* skip_spells_list_value(PlayerbotAI* ai) { return new SkipSpellsListValue(ai); }
         static UntypedValue* rpg_target(PlayerbotAI* ai) { return new RpgTargetValue(ai); }
-        static UntypedValue* travel_target(PlayerbotAI* ai) { return new TravelTargetValue(ai); }
         static UntypedValue* ignore_rpg_target(PlayerbotAI* ai) { return new IgnoreRpgTargetValue(ai); }
+        static UntypedValue* next_rpg_action(PlayerbotAI* ai) { return new NextRpgActionValue(ai); }
+        static UntypedValue* travel_target(PlayerbotAI* ai) { return new TravelTargetValue(ai); }
         static UntypedValue* talk_target(PlayerbotAI* ai) { return new TalkTargetValue(ai); }
         static UntypedValue* pull_target(PlayerbotAI* ai) { return new PullTargetValue(ai); }
         static UntypedValue* death_count(PlayerbotAI* ai) { return new DeathCountValue(ai); }
@@ -410,22 +423,32 @@ namespace ai
         static UntypedValue* free_money_for(PlayerbotAI* ai) { return new FreeMoneyForValue(ai); }
         static UntypedValue* should_get_money(PlayerbotAI* ai) { return new ShouldGetMoneyValue(ai); }
 
+        static UntypedValue* can_move_around(PlayerbotAI* ai) { return new CanMoveAroundValue(ai); }
         static UntypedValue* should_home_bind(PlayerbotAI* ai) { return new ShouldHomeBindValue(ai); }
         static UntypedValue* should_repair(PlayerbotAI* ai) { return new ShouldRepairValue(ai); }
         static UntypedValue* can_repair(PlayerbotAI* ai) { return new CanRepairValue(ai); }
         static UntypedValue* should_sell(PlayerbotAI* ai) { return new ShouldSellValue(ai); }
         static UntypedValue* can_sell(PlayerbotAI* ai) { return new CanSellValue(ai); }
         static UntypedValue* can_fight_equal(PlayerbotAI* ai) { return new CanFightEqualValue(ai); }
+        static UntypedValue* can_fight_elite(PlayerbotAI* ai) { return new CanFightEliteValue(ai); }
         static UntypedValue* can_fight_boss(PlayerbotAI* ai) { return new CanFightBossValue(ai); }
 
+        static UntypedValue* group_members(PlayerbotAI* ai) { return new GroupMembersValue(ai); }
         static UntypedValue* following_party(PlayerbotAI* ai) { return new IsFollowingPartyValue(ai); }
         static UntypedValue* near_leader(PlayerbotAI* ai) { return new IsNearLeaderValue(ai); }
         static UntypedValue* and_value(PlayerbotAI* ai) { return new BoolANDValue(ai); }
+        static UntypedValue* group_count(PlayerbotAI* ai) { return new GroupBoolCountValue(ai); }
         static UntypedValue* group_and(PlayerbotAI* ai) { return new GroupBoolANDValue(ai); }
         static UntypedValue* group_or(PlayerbotAI* ai) { return new GroupBoolORValue(ai); }
+        static UntypedValue* group_ready(PlayerbotAI* ai) { return new GroupReadyValue(ai); }
 
         static UntypedValue* petition_signs(PlayerbotAI* ai) { return new PetitionSignsValue(ai); }        
 
         static UntypedValue* experience(PlayerbotAI* ai) { return new ExperienceValue(ai); }
+
+        static UntypedValue* entry_loot_usage(PlayerbotAI* ai) { return new EntryLootUsageValue(ai); }
+        static UntypedValue* has_upgrade(PlayerbotAI* ai) { return new HasUpgradeValue(ai); }
+        static UntypedValue* items_useful_to_give(PlayerbotAI* ai) { return new ItemsUsefulToGiveValue(ai); }
+        
     };
 };

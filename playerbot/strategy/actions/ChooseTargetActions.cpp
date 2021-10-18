@@ -7,6 +7,15 @@
 
 bool AttackAnythingAction::isUseful() {
 
+    if (!ai->AllowActivity(GRIND_ACTIVITY))                                              //Bot not allowed to be active
+        return false;
+
+    if (!AI_VALUE(bool, "can move around"))
+        return false;
+
+    if (context->GetValue<TravelTarget*>("travel target")->Get()->isTraveling() && ChooseRpgTargetAction::isFollowValid(bot, *context->GetValue<TravelTarget*>("travel target")->Get()->getPosition())) //Bot is traveling
+        return false;
+
     Unit* target = GetTarget();
 
     if (!target)
@@ -17,19 +26,7 @@ bool AttackAnythingAction::isUseful() {
     if (!name.empty() && name.find("Dummy") != std::string::npos) //Target is not a targetdummy
         return false;
 
-    if (!ai->AllowActivity(GRIND_ACTIVITY))                                              //Bot not allowed to be active
-        return false;
-
     if(!ChooseRpgTargetAction::isFollowValid(bot, target))                               //Do not grind mobs far away from master.
-        return false;
-
-    if (AI_VALUE2(uint8, "health", "self target") <=  sPlayerbotAIConfig.mediumHealth)   //Bot does not has enough health.
-        return false;
-
-    if (AI_VALUE2(uint8, "mana", "self target") && AI_VALUE2(uint8, "mana", "self target") <= sPlayerbotAIConfig.mediumMana) //Bot has mana and not enough mana.
-        return false;
-
-    if(context->GetValue<TravelTarget*>("travel target")->Get()->isTraveling() && ChooseRpgTargetAction::isFollowValid(bot, context->GetValue<TravelTarget*>("travel target")->Get()->getLocation())) //Bot is traveling
         return false;
 
     return true;

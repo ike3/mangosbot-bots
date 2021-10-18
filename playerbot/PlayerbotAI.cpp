@@ -193,7 +193,16 @@ void PlayerbotAI::UpdateAI(uint32 elapsed)
         inCombat = true;
     }
     else
+    {
+        if (inCombat)
+            nextAICheckDelay = 0;
+        else if (!AllowActivity())
+        {
+            if (AllowActivity(ALL_ACTIVITY, true))
+                nextAICheckDelay = 0;
+        }
         inCombat = false;
+    }
 
     if (!CanUpdateAI())
         return;
@@ -217,7 +226,9 @@ void PlayerbotAI::UpdateAIInternal(uint32 elapsed)
     if (bot->IsBeingTeleported() || !bot->IsInWorld())
         return;
 
-    PerformanceMonitorOperation *pmo = sPerformanceMonitor.start(PERF_MON_TOTAL, "PlayerbotAI::UpdateAIInternal");
+    string mapString = WorldPosition(bot).isOverworld() ? to_string(bot->GetMapId()) : "I";
+
+    PerformanceMonitorOperation *pmo = sPerformanceMonitor.start(PERF_MON_TOTAL, "PlayerbotAI::UpdateAIInternal " + mapString);
     ExternalEventHelper helper(aiObjectContext);
     list<ChatCommandHolder> delayed;
     while (!chatCommands.empty())
@@ -299,7 +310,7 @@ void PlayerbotAI::Reset(bool full)
     aiObjectContext->GetValue<Unit*>("old target")->Set(NULL);
     aiObjectContext->GetValue<Unit*>("current target")->Set(NULL);
     aiObjectContext->GetValue<ObjectGuid>("pull target")->Set(ObjectGuid());
-    aiObjectContext->GetValue<ObjectGuid>("rpg target")->Set(ObjectGuid());
+    aiObjectContext->GetValue<GuidPosition>("rpg target")->Set(GuidPosition());
     aiObjectContext->GetValue<LootObject>("loot target")->Set(LootObject());
     aiObjectContext->GetValue<uint32>("lfg proposal")->Set(0);
     bot->SetSelectionGuid(ObjectGuid());

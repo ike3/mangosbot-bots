@@ -11,7 +11,7 @@ bool SetHomeAction::Execute(Event event)
     Player* master = GetMaster();
 
     ObjectGuid selection = bot->GetSelectionGuid();
-    bool isRpgAction = AI_VALUE(ObjectGuid, "rpg target") == selection;
+    bool isRpgAction = AI_VALUE(GuidPosition, "rpg target") == selection;
 
     if (!isRpgAction)
         if (master)

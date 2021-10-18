@@ -39,6 +39,14 @@ public:
     virtual CreatureDataPair const* NearestBm(bool allowDead = true);
 };
 
+class RpgBgTypeValue : public CalculatedValue<BattleGroundTypeId>
+{
+public:
+    RpgBgTypeValue(PlayerbotAI* ai) : CalculatedValue(ai, "rpg bg type") {}
+
+    virtual BattleGroundTypeId Calculate();
+};
+
 class FlagCarrierValue : public UnitCalculatedValue
 {
 public:

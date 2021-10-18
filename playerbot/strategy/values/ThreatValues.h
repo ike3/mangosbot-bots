@@ -6,7 +6,7 @@ namespace ai
     class ThreatValue : public Uint8CalculatedValue, public Qualified
 	{
 	public:
-        ThreatValue(PlayerbotAI* ai) : Uint8CalculatedValue(ai) {}
+        ThreatValue(PlayerbotAI* ai, string name = "threat") : Uint8CalculatedValue(ai, name) {}
 
     public:
     	virtual uint8 Calculate();

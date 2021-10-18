@@ -155,14 +155,14 @@ float TravelNodePath::getCost(Player* bot, uint32 cGold)
             int mobAnnoyance = (maxLevelCreature[0] - level) - 10; //Mobs 10 levels below do not bother us.
 
             if (isAlliance)
-                factionAnnoyance = (maxLevelCreature[2] - level) - 30;              //Opposite faction below 30 do not bother us.
+                factionAnnoyance = (maxLevelCreature[2] - level) - 10;              //Opposite faction below 10 do not bother us.
             else if (!isAlliance)
-                factionAnnoyance = (maxLevelCreature[1] - level) - 30;
+                factionAnnoyance = (maxLevelCreature[1] - level) - 10;
 
             if (mobAnnoyance > 0)
                 modifier += 0.1 * mobAnnoyance;     //For each level the whole path takes 10% longer.
             if (factionAnnoyance > 0)
-                modifier += 0.1 * factionAnnoyance; //For each level the whole path takes 10% longer.
+                modifier += 0.3 * factionAnnoyance; //For each level the whole path takes 30% longer.
         }
     }
     else if (getPathType() == TravelNodePathType::flightPath)
@@ -1203,7 +1203,7 @@ TravelNodeRoute TravelNodeMap::getRoute(TravelNode* start, TravelNode* goal, Pla
         else
             startStub->currentGold = bot->GetMoney();
 
-        if (sServerFacade.IsSpellReady(bot, 8690))
+        if (sServerFacade.IsSpellReady(bot, 8690) && bot->IsAlive())
         {
             AiObjectContext* context = ai->GetAiObjectContext();
 
@@ -1317,6 +1317,7 @@ TravelNodeRoute TravelNodeMap::getRoute(WorldPosition startPos, WorldPosition en
     if (m_nodes.empty())
         return TravelNodeRoute();
 
+    vector<WorldPosition> newStartPath;
     vector<TravelNode*> startNodes = m_nodes, endNodes = m_nodes;
     //Partial sort to get the closest 5 nodes at the begin of the array.        
     std::partial_sort(startNodes.begin(), startNodes.begin() + 5, startNodes.end(), [startPos](TravelNode* i, TravelNode* j) {return i->fDist(startPos) < j->fDist(startPos); });
@@ -1329,14 +1330,22 @@ TravelNodeRoute TravelNodeMap::getRoute(WorldPosition startPos, WorldPosition en
         TravelNode* startNode = startNodes[startI];
         TravelNode* endNode = endNodes[endI];
 
+        WorldPosition startNodePosition = *startNode->getPosition();
+        WorldPosition endNodePosition = *endNode->getPosition();
+
+        float maxStartDistance = startNode->isTransport() ? 20.0f : sPlayerbotAIConfig.targetPosRecalcDistance;
+
         TravelNodeRoute route = getRoute(startNode, endNode, bot);
 
         if (!route.isEmpty())
         {
             //Check if the bot can actually walk to this start position.
-            startPath = startPos.getPathTo(*startNode->getPosition(), bot);
-            if (startNode->getPosition()->isPathTo(startPath, startNode->isTransport() ? 20.0f : sPlayerbotAIConfig.targetPosRecalcDistance))
+            newStartPath = startPath;
+            if (startNodePosition.cropPathTo(newStartPath, maxStartDistance) || startNode->getPosition()->isPathTo(newStartPath = startPos.getPathTo(startNodePosition, nullptr), maxStartDistance))
+            {
+                startPath = newStartPath;
                 return route;
+            }
             startI++;
         }
 
@@ -1353,6 +1362,7 @@ TravelNodeRoute TravelNodeMap::getRoute(WorldPosition startPos, WorldPosition en
 
     if (bot && sServerFacade.IsSpellReady(bot, 8690))
     {
+        startPath.clear();
         TravelNode* botNode = sTravelNodeMap.teleportNodes[bot->GetObjectGuid()][0];
         if (!botNode)
         {
@@ -1375,6 +1385,55 @@ TravelNodeRoute TravelNodeMap::getRoute(WorldPosition startPos, WorldPosition en
     }
 
     return TravelNodeRoute();
+}
+
+TravelPath TravelNodeMap::getFullPath(WorldPosition startPos, WorldPosition endPos, Player* bot)
+{
+    TravelPath movePath;
+    PlayerbotAI* ai = bot->GetPlayerbotAI();
+    vector<WorldPosition> beginPath, endPath;
+
+    beginPath = endPos.getPathFromPath({ startPos }, nullptr, 40);
+
+    if (endPos.isPathTo(beginPath))
+        return TravelPath(beginPath);
+
+    //[[Node pathfinding system]]
+                //We try to find nodes near the bot and near the end position that have a route between them.
+                //Then bot has to move towards/along the route.
+    sTravelNodeMap.m_nMapMtx.lock_shared();
+
+    //Find the route of nodes starting at a node closest to the start position and ending at a node closest to the endposition.
+    //Also returns longPath: The path from the start position to the first node in the route.
+    TravelNodeRoute route = sTravelNodeMap.getRoute(startPos, endPos, beginPath, bot);
+
+    if(route.isEmpty())
+        return movePath;
+
+    if (sPlayerbotAIConfig.hasLog("bot_pathfinding.csv"))
+    {
+        if (ai->HasStrategy("debug move", BOT_STATE_NON_COMBAT))
+        {
+            sPlayerbotAIConfig.openLog("bot_pathfinding.csv", "w");
+            sPlayerbotAIConfig.log("bot_pathfinding.csv", route.print().str().c_str());
+        }
+    }
+
+    endPath = route.getNodes().back()->getPosition()->getPathTo(endPos, nullptr);
+    movePath = route.buildPath(beginPath, endPath);
+
+    if (sPlayerbotAIConfig.hasLog("bot_pathfinding.csv"))
+    {
+        if (ai->HasStrategy("debug move", BOT_STATE_NON_COMBAT))
+        {
+            sPlayerbotAIConfig.openLog("bot_pathfinding.csv", "w");
+            sPlayerbotAIConfig.log("bot_pathfinding.csv", movePath.print().str().c_str());
+        }
+    }
+
+    sTravelNodeMap.m_nMapMtx.unlock_shared();
+
+    return movePath;
 }
 
 bool TravelNodeMap::cropUselessNode(TravelNode* startNode)
@@ -1537,7 +1596,7 @@ void TravelNodeMap::generateNpcNodes()
 
         if (cInfo->NpcFlags & flagMask)
         {
-            string nodeName = guidP.getPosition().getAreaName(false);
+            string nodeName = guidP.getAreaName(false);
 
             if (cInfo->NpcFlags & UNIT_NPC_FLAG_INNKEEPER)
                 nodeName += " innkeeper";
@@ -1548,15 +1607,15 @@ void TravelNodeMap::generateNpcNodes()
             else if (cInfo->NpcFlags & UNIT_NPC_FLAG_SPIRITGUIDE)
                 nodeName += " spiritguide";
 
-            TravelNode* node = sTravelNodeMap.addNode(guidP.getPosition(), nodeName, true, true);
+            TravelNode* node = sTravelNodeMap.addNode(guidP, nodeName, true, true);
         }
         else if (cInfo->Rank == 3)
         {
             string nodeName = cInfo->Name;
 
-            sTravelNodeMap.addNode(guidP.getPosition(), nodeName, true, true);
+            sTravelNodeMap.addNode(guidP, nodeName, true, true);
         }
-        else if (cInfo->Rank == 1 && !guidP.getPosition().isOverworld())
+        else if (cInfo->Rank == 1 && !guidP.isOverworld())
         {
             if (bossMap.find(cInfo->Entry) == bossMap.end())
                 bossMap[cInfo->Entry] = guidP;
@@ -1579,7 +1638,7 @@ void TravelNodeMap::generateNpcNodes()
 
         string nodeName = cInfo->Name;
 
-        sTravelNodeMap.addNode(guidP.getPosition(), nodeName, true, true);
+        sTravelNodeMap.addNode(guidP, nodeName, true, true);
     }
 }
 
@@ -1952,7 +2011,7 @@ void TravelNodeMap::generateWalkPaths()
         }
     }
 
-    sLog.outString(">> Loaded paths for " SIZEFMTD " nodes.", sTravelNodeMap.getNodes().size());
+    sLog.outString(">> Generated paths for " SIZEFMTD " nodes.", sTravelNodeMap.getNodes().size());
 }
 
 void TravelNodeMap::generateTaxiPaths()

@@ -274,6 +274,7 @@ enum class TravelNodePathType : uint8
     public:
         TravelPath() {};
         TravelPath(vector<PathNodePoint> fullPath1) { fullPath = fullPath1; }
+        TravelPath(vector<WorldPosition> path, PathNodeType type = NODE_PATH, uint32 entry = 0) { addPath(path, type, entry); }
 
         void addPoint(PathNodePoint point) { fullPath.push_back(point); }
         void addPoint(WorldPosition point, PathNodeType type = NODE_PATH, uint32 entry = 0) { fullPath.push_back(PathNodePoint{ point, type, entry }); }
@@ -341,7 +342,7 @@ enum class TravelNodePathType : uint8
 
         TravelNode* addNode(WorldPosition pos, string preferedName = "Travel Node", bool isImportant = false, bool checkDuplicate = true, bool transport = false, uint32 transportId = 0);
         void removeNode(TravelNode* node);
-        void removeNodes() { m_nMapMtx.lock(); for (auto& node : m_nodes) removeNode(node); m_nMapMtx.unlock(); };
+        bool removeNodes() { if (m_nMapMtx.try_lock_for(std::chrono::seconds(10))) { for (auto& node : m_nodes) removeNode(node); m_nMapMtx.unlock(); return true; } return false; };
         void fullLinkNode(TravelNode* startNode, Unit* bot);
 
         //Get all nodes
@@ -361,6 +362,9 @@ enum class TravelNodePathType : uint8
 
         //Find the best node between two positions
         TravelNodeRoute getRoute(WorldPosition startPos, WorldPosition endPos, vector<WorldPosition>& startPath, Player* bot = nullptr);
+
+        //Find the full path between those locations
+        static TravelPath getFullPath(WorldPosition startPos, WorldPosition endPos, Player* bot = nullptr);
 
         //Manage/update nodes
         void manageNodes(Unit* bot, bool mapFull = false);
@@ -396,7 +400,7 @@ enum class TravelNodePathType : uint8
         void calcMapOffset();
         WorldPosition getMapOffset(uint32 mapId);        
 
-        std::shared_mutex m_nMapMtx;
+        std::shared_timed_mutex m_nMapMtx;
 
         unordered_map<ObjectGuid, unordered_map<uint32, TravelNode *>> teleportNodes;
     private:

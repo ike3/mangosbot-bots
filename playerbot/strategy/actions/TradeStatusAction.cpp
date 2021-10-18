@@ -23,12 +23,12 @@ bool TradeStatusAction::Execute(Event event)
     if (!trader)
         return false;
 
-    if (trader != master)
+    if (trader != master && !trader->GetPlayerbotAI())
     {
 		bot->Whisper("I'm kind of busy now", LANG_UNIVERSAL, trader->GetObjectGuid());
     }
 
-    if (trader != master || !ai->GetSecurity()->CheckLevelFor(PLAYERBOT_SECURITY_ALLOW_ALL, true, master))
+    if ((trader != master || !ai->GetSecurity()->CheckLevelFor(PLAYERBOT_SECURITY_ALLOW_ALL, true, master)) && !trader->GetPlayerbotAI())
     {
         WorldPacket p;
         uint32 status = 0;
@@ -48,7 +48,7 @@ bool TradeStatusAction::Execute(Event event)
         uint32 status = 0;
         p << status;
 
-        uint32 discount = sRandomPlayerbotMgr.GetTradeDiscount(bot, master);
+        uint32 discount = sRandomPlayerbotMgr.GetTradeDiscount(bot, trader);
         if (CheckTrade())
         {
             int32 botMoney = CalculateCost(bot, true);
@@ -56,7 +56,7 @@ bool TradeStatusAction::Execute(Event event)
             map<uint32, uint32> givenItemIds, takenItemIds;
             for (uint32 slot = 0; slot < TRADE_SLOT_TRADED_COUNT; ++slot)
             {
-                Item* item = master->GetTradeData()->GetItem((TradeSlots)slot);
+                Item* item = trader->GetTradeData()->GetItem((TradeSlots)slot);
                 if (item)
                     givenItemIds[item->GetProto()->ItemId] += item->GetCount();
 
@@ -68,7 +68,7 @@ bool TradeStatusAction::Execute(Event event)
             bot->GetSession()->HandleAcceptTradeOpcode(p);
             if (bot->GetTradeData())
             {
-                sRandomPlayerbotMgr.SetTradeDiscount(bot, master, discount);
+                sRandomPlayerbotMgr.SetTradeDiscount(bot, trader, discount);
                 return false;
             }
 
@@ -83,7 +83,7 @@ bool TradeStatusAction::Execute(Event event)
                     craftData.AddObtained(itemId, count);
                 }
 
-                sGuildTaskMgr.CheckItemTask(itemId, count, master, bot);
+                sGuildTaskMgr.CheckItemTask(itemId, count, trader, bot);
             }
 
 
@@ -106,7 +106,9 @@ bool TradeStatusAction::Execute(Event event)
     {
         if (!sServerFacade.IsInFront(bot, trader, sPlayerbotAIConfig.sightDistance, CAST_ANGLE_IN_FRONT))
             sServerFacade.SetFacingTo(bot, trader);
+
         BeginTrade();
+
         return true;
     }
 
@@ -118,6 +120,9 @@ void TradeStatusAction::BeginTrade()
 {
     WorldPacket p;
     bot->GetSession()->HandleBeginTradeOpcode(p);
+
+    if (bot->GetTrader()->GetPlayerbotAI())
+        return;
 
     ListItemsVisitor visitor;
     IterateItems(&visitor);
@@ -138,16 +143,50 @@ void TradeStatusAction::BeginTrade()
 
 bool TradeStatusAction::CheckTrade()
 {
-    Player* master = GetMaster();
-    if (!bot->GetTradeData() || !master->GetTradeData())
+    Player* trader = bot->GetTrader();
+    if (!bot->GetTradeData() || !trader->GetTradeData())
         return false;
+
+    if (!ai->HasActivePlayerMaster() && bot->GetTrader()->GetPlayerbotAI())
+    {
+        bool isGivingItem = false;
+        for (uint32 slot = 0; slot < TRADE_SLOT_TRADED_COUNT; ++slot)
+        {
+            Item* item = bot->GetTradeData()->GetItem((TradeSlots)slot);
+            if (item)
+            {
+                isGivingItem = true;
+                break;
+            }
+        }
+
+        bool isGettingItem = false;
+        for (uint32 slot = 0; slot < TRADE_SLOT_TRADED_COUNT; ++slot)
+        {
+            Item* item = trader->GetTradeData()->GetItem((TradeSlots)slot);
+            if (item)
+            {
+                isGettingItem = true;
+                break;
+            }
+        }
+
+        if (isGettingItem)
+        {
+            if (bot->GetGroup() && bot->GetGroup()->IsMember(bot->GetTrader()->GetObjectGuid()) && ai->HasRealPlayerMaster())
+                ai->TellMasterNoFacing("Thank you " + chat->formatWorldobject(bot->GetTrader()));
+            else
+                bot->Say("Thank you " + chat->formatWorldobject(bot->GetTrader()), (bot->GetTeam() == ALLIANCE ? LANG_COMMON : LANG_ORCISH));
+        }
+        return isGettingItem;
+    }
 
     if (!sRandomPlayerbotMgr.IsRandomBot(bot))
     {
         int32 botItemsMoney = CalculateCost(bot, true);
         int32 botMoney = bot->GetTradeData()->GetMoney() + botItemsMoney;
-        int32 playerItemsMoney = CalculateCost(master, false);
-        int32 playerMoney = master->GetTradeData()->GetMoney() + playerItemsMoney;
+        int32 playerItemsMoney = CalculateCost(trader, false);
+        int32 playerMoney = trader->GetTradeData()->GetMoney() + playerItemsMoney;
         if (playerMoney || botMoney)
             ai->PlaySound(playerMoney < botMoney ? TEXTEMOTE_SIGH : TEXTEMOTE_THANK);
         return true;
@@ -155,8 +194,8 @@ bool TradeStatusAction::CheckTrade()
 
     int32 botItemsMoney = CalculateCost(bot, true);
     int32 botMoney = bot->GetTradeData()->GetMoney() + botItemsMoney;
-    int32 playerItemsMoney = CalculateCost(master, false);
-    int32 playerMoney = master->GetTradeData()->GetMoney() + playerItemsMoney;
+    int32 playerItemsMoney = CalculateCost(trader, false);
+    int32 playerMoney = trader->GetTradeData()->GetMoney() + playerItemsMoney;
 
     for (uint32 slot = 0; slot < TRADE_SLOT_TRADED_COUNT; ++slot)
     {
@@ -170,7 +209,7 @@ bool TradeStatusAction::CheckTrade()
             return false;
         }
 
-        item = master->GetTradeData()->GetItem((TradeSlots)slot);
+        item = trader->GetTradeData()->GetItem((TradeSlots)slot);
         if (item)
         {
             ostringstream out; out << item->GetProto()->ItemId;
@@ -195,9 +234,9 @@ bool TradeStatusAction::CheckTrade()
         return false;
     }
 
-    int32 discount = (int32)sRandomPlayerbotMgr.GetTradeDiscount(bot, master);
+    int32 discount = (int32)sRandomPlayerbotMgr.GetTradeDiscount(bot, trader);
     int32 delta = playerMoney - botMoney;
-    int32 moneyDelta = (int32)master->GetTradeData()->GetMoney() - (int32)bot->GetTradeData()->GetMoney();
+    int32 moneyDelta = (int32)trader->GetTradeData()->GetMoney() - (int32)bot->GetTradeData()->GetMoney();
     bool success = false;
     if (delta < 0)
     {
@@ -219,7 +258,7 @@ bool TradeStatusAction::CheckTrade()
 
     if (success)
     {
-        sRandomPlayerbotMgr.AddTradeDiscount(bot, master, delta);
+        sRandomPlayerbotMgr.AddTradeDiscount(bot, trader, delta);
         switch (urand(0, 4)) {
         case 0:
             ai->TellMaster("A pleasure doing business with you");
@@ -247,7 +286,7 @@ bool TradeStatusAction::CheckTrade()
 
 int32 TradeStatusAction::CalculateCost(Player* player, bool sell)
 {
-    Player* master = GetMaster();
+    Player* trader = bot->GetTrader();
     TradeData* data = player->GetTradeData();
     if (!data)
         return 0;
@@ -269,7 +308,7 @@ int32 TradeStatusAction::CalculateCost(Player* player, bool sell)
         CraftData &craftData = AI_VALUE(CraftData&, "craft");
         if (!craftData.IsEmpty())
         {
-            if (player == master && !sell && craftData.IsRequired(proto->ItemId))
+            if (player == trader && !sell && craftData.IsRequired(proto->ItemId))
             {
                 continue;
             }

@@ -164,19 +164,19 @@ uint32 MoneyNeededForValue::Calculate()
         moneyWanted = AI_VALUE(uint32, "max repair cost");
         break;
     case NeedMoneyFor::ammo:
-        moneyWanted = (bot->getClass() == CLASS_HUNTER) ? (level * level * level) / 10 : 0; //Or level^3 (1s @ lvl10, 30s @ lvl30, 2g @ lvl60, 5g @ lvl80): Todo replace
+        moneyWanted = (bot->getClass() == CLASS_HUNTER) ? (level * level * level) / 10 : 0; //Or level^3 (1s @ lvl10, 30s @ lvl30, 2g @ lvl60, 5g @ lvl80): Todo replace (should be best ammo buyable x 8 stacks cost)
         break;
     case NeedMoneyFor::spells:
         moneyWanted = AI_VALUE(uint32, "train cost");
         break;
     case NeedMoneyFor::travel:
-        moneyWanted = bot->isTaxiCheater() ? 0 : 1500; //15s for traveling half a continent. Todo: Add better calculation
+        moneyWanted = bot->isTaxiCheater() ? 0 : 1500; //15s for traveling half a continent. Todo: Add better calculation (Should be ???)
         break;
     case NeedMoneyFor::gear:
-        moneyWanted = level * level * level; //Or level^3 (10s @ lvl10, 3g @ lvl30, 20g @ lvl60, 50g @ lvl80): Todo replace
+        moneyWanted = level * level * level; //Or level^3 (10s @ lvl10, 3g @ lvl30, 20g @ lvl60, 50g @ lvl80): Todo replace (Should be ~total cost of all >green gear equiped)
         break;
     case NeedMoneyFor::consumables:
-        moneyWanted = (level * level * level) / 10; //Or level^3 (1s @ lvl10, 30s @ lvl30, 2g @ lvl60, 5g @ lvl80): Todo replace
+        moneyWanted = (level * level * level) / 10; //Or level^3 (1s @ lvl10, 30s @ lvl30, 2g @ lvl60, 5g @ lvl80): Todo replace (Should be best food/drink x 2 stacks cost)
         break;
     case NeedMoneyFor::guild:
         if (ai->HasStrategy("guild", BOT_STATE_NON_COMBAT))
@@ -186,6 +186,9 @@ uint32 MoneyNeededForValue::Calculate()
             else
                 moneyWanted = AI_VALUE2(uint32, "item count", chat->formatQItem(5863)) ? 0 : 10000; //10s (guild charter)
         }
+        break;
+    case NeedMoneyFor::tradeskill:
+        moneyWanted = (level * level * level); //Or level^3 (10s @ lvl10, 3g @ lvl30, 20g @ lvl60, 50g @ lvl80): Todo replace (Should be buyable reagents that combined allow crafting of usefull items)
         break;
     }
 
