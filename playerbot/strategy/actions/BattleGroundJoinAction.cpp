@@ -117,6 +117,9 @@ bool BGJoinAction::gatherArenaTeam(ArenaType type)
         if (temp->GetType() != type)
             continue;
 
+        if (temp->GetMembersSize() < ((uint32)temp->GetType()))
+            continue;
+
         arenateam = temp;
     }
     if (!arenateam)
@@ -141,7 +144,13 @@ bool BGJoinAction::gatherArenaTeam(ArenaType type)
 
         if (member)
         {
-            if (member->GetGroup() && !member->GetGroup()->IsLeader(bot->GetObjectGuid()))
+            if (!member->GetPlayerbotAI())
+                continue;
+
+            if (member->GetGroup() && member->GetPlayerbotAI()->HasRealPlayerMaster())
+                continue;
+
+            if (!sPlayerbotAIConfig.IsInRandomAccountList(member->GetSession()->GetAccountId()))
                 continue;
 
             if (member->IsInCombat())
@@ -150,8 +159,8 @@ bool BGJoinAction::gatherArenaTeam(ArenaType type)
             if (member->GetObjectGuid() == bot->GetObjectGuid())
                 continue;
 
-            if (!member->GetPlayerbotAI())
-                continue;
+            if (member->GetGroup())
+                member->GetGroup()->RemoveMember(member->GetObjectGuid(), 0);
 
             member->GetPlayerbotAI()->Reset();
         }
@@ -172,13 +181,30 @@ bool BGJoinAction::gatherArenaTeam(ArenaType type)
     Group* group = new Group(GROUPTYPE_NORMAL);
 #endif
     uint32 count = 1;
-    group->Create(bot->GetObjectGuid(), bot->GetName());
+    
+    // disband leaders group
+    if (bot->GetGroup())
+        bot->GetGroup()->Disband(true);
+
+    if (!group->Create(bot->GetObjectGuid(), bot->GetName()))
+    {
+        sLog.outBasic("Team #%d <%s>: Can't create group for arena queue", arenateam->GetId(), arenateam->GetName());
+        return false;
+    }
+    else
+        sObjectMgr.AddGroup(group);
+
+    sLog.outBasic("Bot #%d <%s>: Leader of <%s>", bot->GetGUIDLow(), bot->GetName(), arenateam->GetName());
+
     for (auto i = begin(members); i != end(members); ++i)
     {
         if (*i == bot->GetGUIDLow())
             continue;
 
-        if (count >= (int)arenateam->GetType())
+        //if (count >= (int)arenateam->GetType())
+        //    break;
+
+        if (group->GetMembersCount() >= (uint32)arenateam->GetType())
             break;
 
         Player* member = sObjectMgr.GetPlayer(ObjectGuid(HIGHGUID_PLAYER, *i));
@@ -198,19 +224,19 @@ bool BGJoinAction::gatherArenaTeam(ArenaType type)
 
         member->TeleportTo(bot->GetMapId(), bot->GetPositionX(), bot->GetPositionY(), bot->GetPositionZ(), 0);
 
-        sLog.outBasic("Bot #%d <%s>: member of <%s>", member->GetGUIDLow(), member->GetName(), arenateam->GetName());
+        sLog.outBasic("Bot #%d <%s>: Member of <%s>", member->GetGUIDLow(), member->GetName(), arenateam->GetName());
 
         count++;
     }
 
-    if (group && group->GetMembersCount() == (uint32)arenateam->GetType())
+    if (group && group->GetMembersCount() >= (uint32)arenateam->GetType())
     {
-        sLog.outBasic("Team #%d <%s> is ready for match", arenateam->GetId(), arenateam->GetName());
+        sLog.outBasic("Team #%d <%s>: Group is ready for match", arenateam->GetId(), arenateam->GetName());
         return true;
     }
     else
     {
-        sLog.outBasic("Team #%d <%s> is not ready for match", arenateam->GetId(), arenateam->GetName());
+        sLog.outBasic("Team #%d <%s>: Group is not ready for match (not enough members)", arenateam->GetId(), arenateam->GetName());
         group->Disband();
     }
     return false;
@@ -616,7 +642,7 @@ bool BGJoinAction::JoinQueue(uint32 type)
    else
    {
        WorldPacket arena_packet(CMSG_BATTLEMASTER_JOIN_ARENA, 20);
-       arena_packet << guid << arenaslot << asGroup << isRated;
+       arena_packet << guid << arenaslot << asGroup << uint8(isRated);
        bot->GetSession()->HandleBattlemasterJoinArena(arena_packet);
        return true;
    }
@@ -896,7 +922,7 @@ bool BGStatusAction::Execute(Event event)
     BattleGroundTypeId _bgTypeId = sServerFacade.BgTemplateId(queueTypeId);
     BattleGroundBracketId bracketId;
 
-    if (_bgTypeId == BATTLEGROUND_TYPE_NONE)
+    if (!queueTypeId)
         return false;
 
 #ifdef CMANGOS
@@ -965,6 +991,7 @@ bool BGStatusAction::Execute(Event event)
 
     if (Time1 == TIME_TO_AUTOREMOVE) //battleground is over, bot needs to leave
     {
+        sLog.outDetail("Bot #%u <%s> (%u %s): Received BG status TIME_REMOVE for %s %s", bot->GetGUIDLow(), bot->GetName(), bot->getLevel(), bot->GetTeam() == ALLIANCE ? "A" : "H", isArena ? "Arena" : "BG", _bgType);
         BattleGround* bg = bot->GetBattleGround();
         if (bg)
         {
@@ -992,7 +1019,7 @@ bool BGStatusAction::Execute(Event event)
         ai->ChangeStrategy("-battleground", BOT_STATE_NON_COMBAT);
         ai->ChangeStrategy("-arena", BOT_STATE_COMBAT);
         ai->ChangeStrategy("-arena", BOT_STATE_NON_COMBAT);
-        sLog.outBasic("Bot #%d <%s> leaves %s (%s).", bot->GetGUIDLow(), bot->GetName(), isArena ? "Arena" : "BG", _bgType);
+        sLog.outBasic("Bot #%d %s:%d <%s> leaves %s - %s", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName(), isArena ? "Arena" : "BG", _bgType);
 
         WorldPacket packet(CMSG_LEAVE_BATTLEFIELD);
         packet << uint8(0);
@@ -1015,8 +1042,60 @@ bool BGStatusAction::Execute(Event event)
     }
     if (statusid == STATUS_WAIT_QUEUE) //bot is in queue
     {
+        sLog.outDetail("Bot #%u %s:%d <%s>: Received BG status WAIT_QUEUE (wait time: %u) for %s %s", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName(), Time2, isArena ? "Arena" : "BG", _bgType);
         // temp fix for crash
-        // return true;
+         //return true;
+
+        BattleGroundQueue& bgQueue = sServerFacade.bgQueue(queueTypeId);
+        GroupQueueInfo ginfo;
+        if (bgQueue.GetPlayerGroupInfoData(bot->GetObjectGuid(), &ginfo))
+        {
+            if (ginfo.isInvitedToBgInstanceGuid && !bot->InBattleGround())
+            {
+                BattleGround* bg = sBattleGroundMgr.GetBattleGround(ginfo.isInvitedToBgInstanceGuid, BATTLEGROUND_TYPE_NONE);
+                if (bg)
+                {
+#ifndef MANGOSBOT_ZERO
+                    if (isArena)
+                    {
+#ifdef MANGOS
+                        _bgTypeId = bg->GetTypeID();
+#endif
+#ifdef CMANGOS
+                        _bgTypeId = bg->GetTypeId();
+                    }
+#endif
+#endif
+                    sLog.outBasic("Bot #%u %s:%d <%s>: Force join %s %s", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName(), isArena ? "Arena" : "BG", _bgType);
+                    bot->Unmount();
+                    action = 0x1;
+                    // bg started so players should get invites by now
+                    sRandomPlayerbotMgr.NeedBots[queueTypeId][bracketId][isArena ? isRated : GetTeamIndexByTeamId(bot->GetTeam())] = false;
+
+                    WorldPacket packet(CMSG_BATTLEFIELD_PORT, 20);
+#ifdef MANGOSBOT_ZERO
+                    packet << mapId << action;
+#else
+                    packet << type << unk2 << (uint32)_bgTypeId << unk << action;
+#endif
+#ifdef MANGOS
+                    bot->GetSession()->HandleBattleFieldPortOpcode(packet);
+#endif
+#ifdef CMANGOS
+                    bot->GetSession()->HandleBattlefieldPortOpcode(packet);
+#endif
+
+                    ai->ResetStrategies(false);
+                    context->GetValue<uint32>("bg role")->Set(urand(0, 9));
+                    ai::PositionMap& posMap = context->GetValue<ai::PositionMap&>("position")->Get();
+                    ai::PositionEntry pos = context->GetValue<ai::PositionMap&>("position")->Get()["bg objective"];
+                    pos.Reset();
+                    posMap["bg objective"] = pos;
+
+                    return true;
+                }
+            }
+        }
 
         BattleGround* bg = sBattleGroundMgr.GetBattleGroundTemplate(_bgTypeId);
         if (!bg)
@@ -1038,7 +1117,7 @@ bool BGStatusAction::Execute(Event event)
             bool realPlayers = sRandomPlayerbotMgr.BgPlayers[queueTypeId][bracketId][TeamId];
             if (realPlayers)
                 return false;
-            sLog.outBasic("Bot #%u <%s> (%u %s) waited too long and leaves queue (%s %s).", bot->GetGUIDLow(), bot->GetName(), bot->getLevel(), bot->GetTeam() == ALLIANCE ? "A" : "H", isArena ? "Arena" : "BG", _bgType);
+            sLog.outBasic("Bot #%u %s:%d <%s> waited too long and leaves queue (%s %s).", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName(), isArena ? "Arena" : "BG", _bgType);
             WorldPacket packet(CMSG_BATTLEFIELD_PORT, 20);
             action = 0;
 #ifdef MANGOSBOT_ZERO
@@ -1060,8 +1139,14 @@ bool BGStatusAction::Execute(Event event)
             return true;
         }
     }
+    if (statusid == STATUS_IN_PROGRESS) // placeholder for Leave BG if it takes too long
+    {
+        sLog.outDetail("Bot #%u %s:%d <%s>: Received BG status IN_PROGRESS for %s %s", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName(), isArena ? "Arena" : "BG", _bgType);
+        return false;
+    }
     if (statusid == STATUS_WAIT_JOIN) //bot may join
     {
+        sLog.outDetail("Bot #%u %s:%d <%s>: Received BG status WAIT_JOIN for %s %s", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName(), isArena ? "Arena" : "BG", _bgType);
 #ifndef MANGOSBOT_ZERO
         if (isArena)
         {
@@ -1070,6 +1155,7 @@ bool BGStatusAction::Execute(Event event)
             GroupQueueInfo ginfo;
             if (!bgQueue.GetPlayerGroupInfoData(bot->GetObjectGuid(), &ginfo))
             {
+                sLog.outError("Bot #%u %s:%d <%s>: Missing QueueInfo for %s %s", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName(), isArena ? "Arena" : "BG", _bgType);
                 return false;
             }
 #ifdef MANGOS
@@ -1090,6 +1176,7 @@ bool BGStatusAction::Execute(Event event)
                 BattleGround* bg = sBattleGroundMgr.GetBattleGround(ginfo.isInvitedToBgInstanceGuid, BATTLEGROUND_TYPE_NONE);
                 if (!bg)
                 {
+                    sLog.outError("Bot #%u %s:%d <%s>: Missing QueueInfo for %s %s", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName(), isArena ? "Arena" : "BG", _bgType);
                     return false;
                 }
 
@@ -1102,10 +1189,10 @@ bool BGStatusAction::Execute(Event event)
 #ifdef MANGOSBOT_ZERO
         sLog.outBasic("Bot #%d <%s> (%u %s) joined BG (%s)", bot->GetGUIDLow(), bot->GetName(), bot->getLevel(), bot->GetTeam() == ALLIANCE ? "A" : "H", _bgType);
 #else
-        sLog.outBasic("Bot #%d <%s> (%u %s) joined %s (%s)", bot->GetGUIDLow(), bot->GetName(), bot->getLevel(), bot->GetTeam() == ALLIANCE ? "A" : "H", isArena ? "Arena" : "BG", _bgType);
+        sLog.outBasic("Bot #%d %s:%d <%s> joined %s - %s", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName(), isArena ? "Arena" : "BG", _bgType);
 #endif
         bot->Unmount();
-
+        action = 0x1;
         // bg started so players should get invites by now
         sRandomPlayerbotMgr.NeedBots[queueTypeId][bracketId][isArena ? isRated : GetTeamIndexByTeamId(bot->GetTeam())] = false;
 
@@ -1131,11 +1218,6 @@ bool BGStatusAction::Execute(Event event)
 
         return true;
     }
-
-    if (statusid == STATUS_IN_PROGRESS) // placeholder for Leave BG if it takes too long
-    {
-        return true;
-    }
     return true;
 }
 
@@ -1146,6 +1228,7 @@ bool BGStatusCheckAction::Execute(Event event)
 
     WorldPacket packet(CMSG_BATTLEFIELD_STATUS);
     bot->GetSession()->HandleBattlefieldStatusOpcode(packet);
+    sLog.outDetail("Bot #%d <%s> (%u %s) : Checking BG invite status", bot->GetGUIDLow(), bot->GetName(), bot->getLevel(), bot->GetTeam() == ALLIANCE ? "A" : "H");
     return true;
 }
 bool BGStatusCheckAction::isUseful()
