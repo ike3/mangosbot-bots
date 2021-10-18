@@ -213,6 +213,9 @@ void PlayerbotHolder::OnBotLogin(Player * const bot)
 #endif
     }
 
+    // set delay on login
+    ai->SetNextCheckDelay(urand(3000, 5000));
+
     ai->TellMaster("Hello!");
 }
 
