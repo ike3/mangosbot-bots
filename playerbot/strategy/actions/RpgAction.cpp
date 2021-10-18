@@ -79,6 +79,7 @@ bool RpgAction::SetNextRpgAction()
                 actions.push_back(action);
                 relevances.push_back((nextAction->getRelevance() - 1) * 1000);
             }
+            NextAction::destroy(nextActions);
         }
     }
 
@@ -90,6 +91,13 @@ bool RpgAction::SetNextRpgAction()
     sTravelMgr.weighted_shuffle(actions.begin(), actions.end(), relevances.begin(), relevances.end(), gen);
 
     Action* action = actions.front();
+
+    for (list<TriggerNode*>::iterator i = triggerNodes.begin(); i != triggerNodes.end(); i++)
+    {
+        TriggerNode* trigger = *i;
+        delete trigger;
+    }
+    triggerNodes.clear();
 
     SET_AI_VALUE(string, "next rpg action", action->getName());
 
