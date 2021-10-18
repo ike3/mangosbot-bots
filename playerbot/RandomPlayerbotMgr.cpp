@@ -484,6 +484,9 @@ void RandomPlayerbotMgr::CheckBgQueue()
     {
         Player* player = *i;
 
+        if (!player || !player->IsInWorld())
+            continue;
+
         if (!player->InBattleGroundQueue())
             continue;
 
@@ -600,6 +603,9 @@ void RandomPlayerbotMgr::CheckBgQueue()
     {
         Player* bot = i->second;
 
+        if (!bot || !bot->IsInWorld())
+            continue;
+
         if (!bot->InBattleGroundQueue())
             continue;
 
@@ -687,7 +693,7 @@ void RandomPlayerbotMgr::CheckBgQueue()
 #ifndef MANGOSBOT_ZERO
             if (ArenaType type = sServerFacade.BgArenaType(queueTypeId))
             {
-                sLog.outBasic("ARENA:%s %s: P (Skirmish:%d, Rated:%d) B (Skirmish:%d, Rated:%d) Total (Skirmish:%d Rated:%d)",
+                sLog.outBasic("ARENA:%s %s: Plr (Skirmish:%d, Rated:%d) Bot (Skirmish:%d, Rated:%d) Total (Skirmish:%d Rated:%d)",
                     type == ARENA_TYPE_2v2 ? "2v2" : type == ARENA_TYPE_3v3 ? "3v3" : "5v5",
                     i == 0 ? "10-19" : i == 1 ? "20-29" : i == 2 ? "30-39" : i == 3 ? "40-49" : i == 4 ? "50-59" : (i == 5 && MAX_BATTLEGROUND_BRACKETS == 6) ? "60" : (i == 5 && MAX_BATTLEGROUND_BRACKETS == 7) ? "60-69" : i == 6 ? (i == 6 && MAX_BATTLEGROUND_BRACKETS == 16) ? "70-79" : "70" : "80",
                     BgPlayers[j][i][0],
@@ -701,7 +707,7 @@ void RandomPlayerbotMgr::CheckBgQueue()
             }
 #endif
             BattleGroundTypeId bgTypeId = sServerFacade.BgTemplateId(queueTypeId);
-            sLog.outBasic("BG:%s %s: P (%d:%d) B (%d:%d) Total (A:%d H:%d)",
+            sLog.outBasic("BG:%s %s: Plr (%d:%d) Bot (%d:%d) Total (A:%d H:%d)",
                 bgTypeId == BATTLEGROUND_AV ? "AV" : bgTypeId == BATTLEGROUND_WS ? "WSG" : bgTypeId == BATTLEGROUND_AB ? "AB" : "EoTS",
                 i == 0 ? "10-19" : i == 1 ? "20-29" : i == 2 ? "30-39" : i == 3 ? "40-49" : i == 4 ? "50-59" : (i == 5 && MAX_BATTLEGROUND_BRACKETS == 6) ? "60" : (i == 5 && MAX_BATTLEGROUND_BRACKETS == 7) ? "60-69" : i == 6 ? (i == 6 && MAX_BATTLEGROUND_BRACKETS == 16) ? "70-79" : "70" : "80",
                 BgPlayers[j][i][0],
@@ -1627,11 +1633,11 @@ bool RandomPlayerbotMgr::ProcessBot(Player* player)
 
         if (randomiser)
         {
-            sLog.outBasic("Bot #%d <%s>: randomized", bot, player->GetName());
+            sLog.outBasic("Bot #%d %s:%d <%s>: randomized", bot, player->GetTeam() == ALLIANCE ? "A" : "H", player->getLevel(), player->GetName());
         }
         else
         {
-            sLog.outBasic("Bot #%d %s <%s>: consumables refreshed", bot, player->GetName(), sGuildMgr.GetGuildById(player->GetGuildId())->GetName());
+            sLog.outBasic("Bot #%d %s:%d %s <%s>: consumables refreshed", bot, player->GetTeam() == ALLIANCE ? "A" : "H", player->getLevel(), player->GetName(), sGuildMgr.GetGuildById(player->GetGuildId())->GetName());
         }
 
         // disable until needed
@@ -2214,7 +2220,7 @@ uint32 RandomPlayerbotMgr::GetEventValue(uint32 bot, string event)
         }
     }
     CachedEvent e = eventCache[bot][event];
-    if (e.IsEmpty())
+    /*if (e.IsEmpty())
     {
         QueryResult* results = PlayerbotDatabase.PQuery(
                 "select `value`, `time`, validIn, `data` from ai_playerbot_random_bots where owner = 0 and bot = '%u' and event = '%s'",
@@ -2230,7 +2236,7 @@ uint32 RandomPlayerbotMgr::GetEventValue(uint32 bot, string event)
             eventCache[bot][event] = e;
             delete results;
         }
-    }
+    }*/
 
     if ((time(0) - e.lastChangeTime) >= e.validIn && (event == "add" || IsRandomBot(bot)) && event != "specNo" && event != "specLink")
         e.value = 0;
@@ -2525,7 +2531,7 @@ void RandomPlayerbotMgr::PrintStats()
         perClass[cls] = 0;
     }
 
-    int dps = 0, heal = 0, tank = 0, active = 0, update = 0, randomize = 0, teleport = 0, changeStrategy = 0, dead = 0, revive = 0;
+    int dps = 0, heal = 0, tank = 0, active = 0, update = 0, randomize = 0, teleport = 0, changeStrategy = 0, dead = 0, combat = 0, revive = 0, taxi = 0, moving = 0, mounted = 0;
     int stateCount[MAX_TRAVEL_STATE + 1] = { 0 };
     vector<pair<Quest const*, int32>> questCount;
     for (PlayerBotMap::iterator i = playerBots.begin(); i != playerBots.end(); ++i)
@@ -2539,7 +2545,7 @@ void RandomPlayerbotMgr::PrintStats()
         perRace[bot->getRace()]++;
         perClass[bot->getClass()]++;
 
-        if (bot->GetPlayerbotAI()->IsActive())
+        if (bot->GetPlayerbotAI()->AllowActivity())
             active++;
 
         if (bot->GetPlayerbotAI()->GetAiObjectContext()->GetValue<bool>("random bot update")->Get())
@@ -2554,6 +2560,18 @@ void RandomPlayerbotMgr::PrintStats()
 
         if (!GetEventValue(botId, "change_strategy"))
             changeStrategy++;
+
+        if (bot->IsTaxiFlying())
+            taxi++;
+
+        if (bot->IsMoving() && !bot->IsTaxiFlying())
+            moving++;
+
+        if (bot->IsMounted() && !bot->IsTaxiFlying())
+            mounted++;
+
+        if (bot->IsInCombat())
+            combat++;
 
         if (sServerFacade.UnitIsDead(bot))
         {
@@ -2641,7 +2659,7 @@ void RandomPlayerbotMgr::PrintStats()
         }
     }
 
-    sLog.outString("Per level:");
+    sLog.outString("Bots level:");
 	uint32 maxLevel = sWorld.getConfig(CONFIG_UINT32_MAX_PLAYER_LEVEL);
 	for (uint32 i = 0; i < 10; ++i)
     {
@@ -2653,43 +2671,44 @@ void RandomPlayerbotMgr::PrintStats()
         if (!from) from = 1;
         sLog.outString("    %d..%d: %d alliance, %d horde", from, to, alliance[i], horde[i]);
     }
-    sLog.outString("Per race:");
+    sLog.outString("Bots race:");
     for (uint8 race = RACE_HUMAN; race < MAX_RACES; ++race)
     {
         if (perRace[race])
             sLog.outString("    %s: %d", ChatHelper::formatRace(race).c_str(), perRace[race]);
     }
-    sLog.outString("Per class:");
+    sLog.outString("Bots class:");
     for (uint8 cls = CLASS_WARRIOR; cls < MAX_CLASSES; ++cls)
     {
         if (perClass[cls])
             sLog.outString("    %s: %d", ChatHelper::formatClass(cls).c_str(), perClass[cls]);
     }
-    sLog.outString("Per role:");
-    sLog.outString("    tank: %d", tank);
-    sLog.outString("    heal: %d", heal);
-    sLog.outString("    dps: %d", dps);
+    sLog.outString("Bots role:");
+    sLog.outString("    tank: %d, heal: %d, dps: %d", tank, heal, dps);
 
-    sLog.outString("Active bots: %d", active);
-    sLog.outString("Dead bots: %d", dead);
-    sLog.outString("Bots to:");
-    sLog.outString("    update: %d", update);
-    sLog.outString("    randomize: %d", randomize);
-    sLog.outString("    teleport: %d", teleport);
-    sLog.outString("    change_strategy: %d", changeStrategy);
-    sLog.outString("    revive: %d", revive);
+    sLog.outString("Bots status:");
+    sLog.outString("    Active: %d", active);
+    sLog.outString("    Moving: %d", moving);
+    
+    //sLog.outString("Bots to:");
+    //sLog.outString("    update: %d", update);
+    //sLog.outString("    randomize: %d", randomize);
+    //sLog.outString("    teleport: %d", teleport);
+    //sLog.outString("    change_strategy: %d", changeStrategy);
+    //sLog.outString("    revive: %d", revive);
 
-    sLog.outString("Bots travel:");
-    sLog.outString("    travel to pick up quest: %d", stateCount[TRAVEL_STATE_TRAVEL_PICK_UP_QUEST]);
-    sLog.outString("    try to pick up quest: %d", stateCount[TRAVEL_STATE_WORK_PICK_UP_QUEST]);
-    sLog.outString("    travel to do quest: %d", stateCount[TRAVEL_STATE_TRAVEL_DO_QUEST]);
-    sLog.outString("    try to do quest: %d", stateCount[TRAVEL_STATE_WORK_DO_QUEST]);
-    sLog.outString("    travel to hand in quest: %d", stateCount[TRAVEL_STATE_TRAVEL_HAND_IN_QUEST]);
-    sLog.outString("    try to hand in quest: %d", stateCount[TRAVEL_STATE_WORK_HAND_IN_QUEST]);
-    sLog.outString("    idling: %d", stateCount[TRAVEL_STATE_IDLE]);
+    sLog.outString("    On taxi: %d", taxi);
+    sLog.outString("    On mount: %d", mounted);
+    sLog.outString("    In combat: %d", combat);
+    sLog.outString("    Dead: %d", dead);
 
+    sLog.outString("Bots questing:");
+    sLog.outString("    Picking quests: %d", stateCount[TRAVEL_STATE_TRAVEL_PICK_UP_QUEST] + stateCount[TRAVEL_STATE_WORK_PICK_UP_QUEST]);
+    sLog.outString("    Doing quests: %d", stateCount[TRAVEL_STATE_TRAVEL_DO_QUEST] + stateCount[TRAVEL_STATE_WORK_DO_QUEST]);
+    sLog.outString("    Completing quests: %d", stateCount[TRAVEL_STATE_TRAVEL_HAND_IN_QUEST] + stateCount[TRAVEL_STATE_WORK_HAND_IN_QUEST]);
+    sLog.outString("    Idling: %d", stateCount[TRAVEL_STATE_IDLE]);
 
-    sort(questCount.begin(), questCount.end(), [](pair<Quest const*, int32> i, pair<Quest const*, int32> j) {return i.second > j.second; });
+    /*sort(questCount.begin(), questCount.end(), [](pair<Quest const*, int32> i, pair<Quest const*, int32> j) {return i.second > j.second; });
 
     sLog.outString("Bots top quests:");
 
@@ -2700,7 +2719,7 @@ void RandomPlayerbotMgr::PrintStats()
         cnt++;
         if (cnt > 25)
             break;
-    }
+    }*/
 }
 
 double RandomPlayerbotMgr::GetBuyMultiplier(Player* bot)
