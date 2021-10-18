@@ -415,7 +415,8 @@ void RandomPlayerbotFactory::CreateRandomBots()
 
         account_creations.push_back(std::async([accountName, password] {sAccountMgr.CreateAccount(accountName, password); }));
 #ifndef MANGOSBOT_ZERO
-        creates.push_back(std::async([accountName, password, MAX_EXPANSION] {sAccountMgr.CreateAccount(accountName, password, MAX_EXPANSION); }));
+        uint8 max_expansion = MAX_EXPANSION;
+        account_creations.push_back(std::async([accountName, password, max_expansion] {sAccountMgr.CreateAccount(accountName, password, max_expansion); }));
 #endif
 
         sLog.outDebug("Account %s created for random bots", accountName.c_str());
