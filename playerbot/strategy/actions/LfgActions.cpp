@@ -472,7 +472,7 @@ bool LfgJoinAction::JoinLFG()
                     ClosestGrave = sWorldSafeLocsStore.LookupEntry<WorldSafeLocsEntry>(zoneId);
                     if (ClosestGrave)
                     {
-                        if (bot->GetMapId() != ClosestGrave->map_id || !bot->IsWithinDist2d(ClosestGrave->x, ClosestGrave->y, 5000.0f))
+                        if (bot->GetMapId() != ClosestGrave->map_id || !bot->IsWithinDist2d(ClosestGrave->x, ClosestGrave->y, 2000.0f))
                             continue;
                     }
                     else
