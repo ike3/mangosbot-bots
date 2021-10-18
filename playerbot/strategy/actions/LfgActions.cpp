@@ -111,12 +111,31 @@ bool LfgJoinAction::JoinLFG()
         return false;
 
     vector<MeetingStoneInfo> selected;
-
-    for (MeetingStoneSet::iterator i = stones.begin(); i != stones.end(); ++i)
+    for (vector<uint32>::iterator i = dungeons.begin(); i != dungeons.end(); ++i)
     {
-        vector<uint32>::iterator it = find(dungeons.begin(), dungeons.end(), i->area);
-        if (it != dungeons.end())
-            selected.push_back(*i);
+        uint32 zoneId = 0;
+        uint32 dungeonId = (*i & 0xFFFF);
+        zoneId = ((*i >> 16) & 0xFFFF);
+
+        // join only if close to closest graveyard
+        if (zoneId)
+        {
+            WorldSafeLocsEntry const* ClosestGrave = nullptr;
+            ClosestGrave = sWorldSafeLocsStore.LookupEntry<WorldSafeLocsEntry>(zoneId);
+            if (ClosestGrave)
+            {
+                if (bot->GetMapId() != ClosestGrave->map_id || !bot->IsWithinDist2d(ClosestGrave->x, ClosestGrave->y, 2000.0f))
+                    continue;
+            }
+            else
+                continue;
+        }
+
+        for (MeetingStoneSet::iterator i = stones.begin(); i != stones.end(); ++i)
+        {
+            if (i->area == dungeonId)
+                selected.push_back(*i);
+        }
     }
 
     if (!selected.size())
@@ -139,6 +158,9 @@ bool LfgJoinAction::JoinLFG()
         _botRoles = "Dps";
         break;
     }
+
+    if (botRoles & BOT_ROLE_TANK && botRoles & BOT_ROLE_DPS)
+        _botRoles = "Tank/Dps";
     /*for (MeetingStoneSet::const_iterator itr = stones.begin(); itr != stones.end(); ++itr)
     {
         auto data = *itr;
@@ -149,7 +171,7 @@ bool LfgJoinAction::JoinLFG()
     if (idx.empty())
         return false;*/
 
-    sLog.outBasic("Bot #%d %s:%d <%s>: queues LFG to %s as %s", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName(), stoneInfo.name, _botRoles);
+    sLog.outBasic("Bot #%d %s:%d <%s>: uses LFG, Dungeon - %s (%s)", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName(), stoneInfo.name, _botRoles);
 
     sLFGMgr.AddToQueue(bot, stoneInfo.area);
 #endif
@@ -505,7 +527,7 @@ bool LfgJoinAction::isUseful()
     if (sLFGMgr.IsPlayerInQueue(bot->GetObjectGuid()))
         return false;
 
-    BotRoles botRoles = AiFactory::GetPlayerRoles(bot);
+    ClassRoles botRoles = sLFGMgr.CalculateTalentRoles(bot);
 
     RolesPriority prio = sLFGMgr.getPriority((Classes)bot->getClass(), (ClassRoles)botRoles);
     if (prio < LFG_PRIORITY_NORMAL)
