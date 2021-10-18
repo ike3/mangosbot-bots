@@ -219,7 +219,7 @@ bool DebugAction::Execute(Event event)
         {
             ai->TellMasterNoFacing("Node can not be removed.");
         }
-
+        sTravelNodeMap.m_nMapMtx.lock();
         sTravelNodeMap.removeNode(startNode);
         ai->TellMasterNoFacing("Node removed.");
         sTravelNodeMap.m_nMapMtx.unlock();
@@ -227,7 +227,6 @@ bool DebugAction::Execute(Event event)
         sTravelNodeMap.setHasToGen();
 
         return true;
-
     }
     else if (text.find("reset node") != std::string::npos) {
         for (auto& node : sTravelNodeMap.getNodes())
@@ -251,10 +250,8 @@ bool DebugAction::Execute(Event event)
     return true;
     }
     else if (text.find("crop path") != std::string::npos) {
-    sTravelNodeMap.removeUselessPaths();
-    sTravelNodeMap.saveNodeStore();
-    sTravelNodeMap.loadNodeStore();
-    return true;
+        sTravelNodeMap.removeUselessPaths();
+        return true;
     }
     else if (text.find("save node") != std::string::npos)
     {
@@ -264,8 +261,11 @@ bool DebugAction::Execute(Event event)
     }
     else if (text.find("load node") != std::string::npos)
     {
-        sTravelNodeMap.removeNodes();
-        sTravelNodeMap.loadNodeStore();
+        std::thread t([] {if (sTravelNodeMap.removeNodes())
+            sTravelNodeMap.loadNodeStore(); });
+
+        t.detach();
+
         return true;
     }
     else if (text.find("show node") != std::string::npos)

@@ -11,7 +11,7 @@ void BGStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("bg join", relevance), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "often",
+        "bg invite active",
         NextAction::array(0, new NextAction("bg status check", relevance), NULL)));
 }
 

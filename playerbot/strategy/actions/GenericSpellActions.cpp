@@ -73,7 +73,14 @@ bool CastSpellAction::isUseful()
         return false;
     }
 
-    return GetTarget() && (GetTarget() != nullptr) && (GetTarget() != NULL) && AI_VALUE2(bool, "spell cast useful", spell) && sServerFacade.GetDistance2d(bot, GetTarget()) <= range;
+    Unit* spellTarget = GetTarget();
+    if (!spellTarget)
+        return false;
+
+    if (!spellTarget->IsInWorld() || spellTarget->GetMapId() != bot->GetMapId())
+        return false;
+
+    return spellTarget && AI_VALUE2(bool, "spell cast useful", spell) && sServerFacade.GetDistance2d(bot, spellTarget) <= range;
 }
 
 bool CastAuraSpellAction::isUseful()

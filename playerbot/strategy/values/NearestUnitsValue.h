@@ -8,7 +8,7 @@ namespace ai
     class NearestUnitsValue : public ObjectGuidListCalculatedValue
 	{
 	public:
-        NearestUnitsValue(PlayerbotAI* ai, string name, float range = sPlayerbotAIConfig.sightDistance, bool ignoreLos = false) :
+        NearestUnitsValue(PlayerbotAI* ai, string name = "nearest units", float range = sPlayerbotAIConfig.sightDistance, bool ignoreLos = false) :
             ObjectGuidListCalculatedValue(ai, name, 2), range(range), ignoreLos(ignoreLos) {}
 
 	public:

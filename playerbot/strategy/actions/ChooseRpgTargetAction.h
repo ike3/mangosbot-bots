@@ -1,25 +1,23 @@
 #pragma once
 
 #include "../Action.h"
-#include "MovementActions.h"
+#include "RpgAction.h"
 #include "../values/LastMovementValue.h"
 
 namespace ai
 {
-    class ChooseRpgTargetAction : public MovementAction {
+    class ChooseRpgTargetAction : public Action {
     public:
-        ChooseRpgTargetAction(PlayerbotAI* ai, string name = "choose rpg target") : MovementAction(ai, name) {}
+        ChooseRpgTargetAction(PlayerbotAI* ai, string name = "choose rpg target") : Action(ai, name) {}
 
         virtual bool Execute(Event event);
         virtual bool isUseful();
+
         static bool isFollowValid(Player* bot, WorldObject* target);
-        static bool isFollowValid(Player* bot, WorldLocation location);
-    protected:
-        virtual bool CanTrain(ObjectGuid guid);
-        virtual BattleGroundTypeId CanQueueBg(ObjectGuid guid);
-        virtual bool CanDiscover(ObjectGuid guid);
+        static bool isFollowValid(Player* bot, WorldPosition pos);
     private:        
-        virtual uint32 HasSameTarget(ObjectGuid guid);
+        float getMaxRelevance(GuidPosition guidP);
+        bool HasSameTarget(ObjectGuid guid, uint32 max, list<ObjectGuid>& nearGuids);
     };
 
     class ClearRpgTargetAction : public ChooseRpgTargetAction {

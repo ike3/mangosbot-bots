@@ -24,7 +24,7 @@ namespace ai
     class PossibleAddsValue : public BoolCalculatedValue
     {
     public:
-        PossibleAddsValue(PlayerbotAI* const ai) : BoolCalculatedValue(ai) {}
+        PossibleAddsValue(PlayerbotAI* const ai, string name = "possible adds") : BoolCalculatedValue(ai, name) {}
         virtual bool Calculate();
     };
 }

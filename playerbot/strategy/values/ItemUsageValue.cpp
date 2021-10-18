@@ -311,6 +311,14 @@ bool ItemUsageValue::IsItemNeededForSkill(ItemPrototype const* proto)
         return ai->HasSkill(SKILL_BLACKSMITHING) || ai->HasSkill(SKILL_ENGINEERING);
     case 6219: //Arclight Spanner
         return ai->HasSkill(SKILL_ENGINEERING);
+    case 6218: //Runed copper rod
+        return ai->HasSkill(SKILL_ENCHANTING);
+    case 6339: //Runed silver rod
+        return ai->HasSkill(SKILL_ENCHANTING);
+    case 11130: //Runed golden rod
+        return ai->HasSkill(SKILL_ENCHANTING);
+    case 11145: //Runed truesilver rod
+        return ai->HasSkill(SKILL_ENCHANTING);
     case 16207: //Runed Arcanite Rod
         return ai->HasSkill(SKILL_ENCHANTING);
     case 7005: //Skinning Knife

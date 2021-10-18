@@ -47,9 +47,9 @@ bool TravelAction::Execute(Event event)
             continue;
 
         if (sServerFacade.IsHostileTo(bot, newTarget))
-            context->GetValue<ObjectGuid>("pull target")->Set(newTarget->GetObjectGuid());
+            SET_AI_VALUE(ObjectGuid,"pull target",newTarget->GetObjectGuid());
         else
-            context->GetValue<ObjectGuid>("rpg target")->Set(newTarget->GetObjectGuid());
+            SET_AI_VALUE(GuidPosition,"rpg target",GuidPosition(newTarget));
 
         break;
     }
@@ -59,7 +59,7 @@ bool TravelAction::Execute(Event event)
 
 bool TravelAction::isUseful()
 {
-    return false && context->GetValue<TravelTarget *>("travel target")->Get()->isActive() && (!context->GetValue<ObjectGuid>("rpg target")->Get() || !context->GetValue<ObjectGuid>("pull target")->Get());
+    return false && AI_VALUE(TravelTarget *,"travel target")->isActive() && (!AI_VALUE(GuidPosition,"rpg target") || !AI_VALUE(ObjectGuid,"pull target"));
 }
 
 bool MoveToDarkPortalAction::Execute(Event event)
@@ -148,7 +148,7 @@ bool DarkPortalAzerothAction::isUseful()
 
 bool MoveFromDarkPortalAction::Execute(Event event)
 {
-    context->GetValue<ObjectGuid>("rpg target")->Set(ObjectGuid());
+    RESET_AI_VALUE(GuidPosition,"rpg target");
 
     if (bot->GetTeam() == ALLIANCE)
         return MoveTo(530, -319.261f, 1027.213, 54.172638f, false, true);

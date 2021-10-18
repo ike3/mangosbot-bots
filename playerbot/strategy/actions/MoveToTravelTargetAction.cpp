@@ -14,7 +14,7 @@ bool MoveToTravelTargetAction::Execute(Event event)
     TravelTarget* target = AI_VALUE(TravelTarget*, "travel target");
 
     WorldPosition botLocation(bot);
-    WorldLocation location = target->getLocation();
+    WorldLocation location = *target->getPosition();
     
     Group* group = bot->GetGroup();
     if (group && !urand(0, 1) && bot == ai->GetGroupMaster())
@@ -127,20 +127,14 @@ bool MoveToTravelTargetAction::isUseful()
     if (bot->IsMoving())
         return false;
 
-    if (bot->IsInCombat())
-        return false;
-
-    if (AI_VALUE2(uint8, "health", "self target") <= sPlayerbotAIConfig.almostFullHealth)
+    if (!AI_VALUE(bool, "can move around"))
         return false;
      
-    if (AI_VALUE2(uint8, "mana", "self target") && AI_VALUE2(uint8, "mana", "self target") <= sPlayerbotAIConfig.mediumMana) 
-        return false;
-
     LootObject loot = AI_VALUE(LootObject, "loot target");
     if (loot.IsLootPossible(bot))
         return false;
 
-    if (!ChooseRpgTargetAction::isFollowValid(bot, context->GetValue<TravelTarget*>("travel target")->Get()->getLocation()))
+    if (!ChooseRpgTargetAction::isFollowValid(bot, *context->GetValue<TravelTarget*>("travel target")->Get()->getPosition()))
         return false;
 
     return true;

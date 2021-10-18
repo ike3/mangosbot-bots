@@ -106,7 +106,7 @@ bool TrainerAction::Execute(Event event)
     Player* master = GetMaster();
 
     Creature* creature = ai->GetCreature(bot->GetSelectionGuid());
-    if (AI_VALUE(ObjectGuid, "rpg target") != bot->GetSelectionGuid())
+    if (AI_VALUE(GuidPosition, "rpg target") != bot->GetSelectionGuid())
         if (master)
             creature = ai->GetCreature(master->GetSelectionGuid());
         else

@@ -128,7 +128,7 @@ bool Engine::DoNextAction(Unit* unit, int depth, bool minimal)
 
     time_t currentTime = time(0);
     aiObjectContext->Update();
-    ProcessTriggers();
+    ProcessTriggers(minimal);
 
     int iterations = 0;
     int iterationsPerTick = queue.Size() * (minimal ? 1 : sPlayerbotAIConfig.iterationsPerTick);
@@ -177,7 +177,7 @@ bool Engine::DoNextAction(Unit* unit, int depth, bool minimal)
                         }
                     }
 
-                    PerformanceMonitorOperation *pmo = sPerformanceMonitor.start(PERF_MON_ACTION, action->getName());
+                    PerformanceMonitorOperation *pmo = sPerformanceMonitor.start(PERF_MON_ACTION, action->getName(), &aiObjectContext->performanceStack);
                     actionExecuted = ListenAndExecute(action, event);
                     if (pmo) pmo->finish();
 
@@ -403,7 +403,7 @@ bool Engine::HasStrategy(string name)
     return strategies.find(name) != strategies.end();
 }
 
-void Engine::ProcessTriggers()
+void Engine::ProcessTriggers(bool minimal)
 {
     map<Trigger*, Event> fires;
     for (list<TriggerNode*>::iterator i = triggers.begin(); i != triggers.end(); i++)
@@ -424,7 +424,10 @@ void Engine::ProcessTriggers()
 
         if (testMode || trigger->needCheck())
         {
-            PerformanceMonitorOperation *pmo = sPerformanceMonitor.start(PERF_MON_TRIGGER, trigger->getName());
+            if (minimal && node->getFirstRelevance() < 100)
+                continue;
+
+            PerformanceMonitorOperation* pmo = sPerformanceMonitor.start(PERF_MON_TRIGGER, trigger->getName(), &aiObjectContext->performanceStack);
             Event event = trigger->Check();
             if (pmo) pmo->finish();
             if (!event)

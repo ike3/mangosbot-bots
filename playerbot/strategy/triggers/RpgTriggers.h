@@ -6,24 +6,167 @@ namespace ai
     class NoRpgTargetTrigger : public Trigger
     {
     public:
-        NoRpgTargetTrigger(PlayerbotAI* ai) : Trigger(ai, "no rpg target") {}
+        NoRpgTargetTrigger(PlayerbotAI* ai, string name = "no rpg target", int checkInterval = 1) : Trigger(ai, name, checkInterval) {}
 
-        virtual bool IsActive();
+        virtual bool IsActive() { return !AI_VALUE(GuidPosition, "rpg target"); };
     };
 
-    class FarFromRpgTargetTrigger : public Trigger
+    class HasRpgTargetTrigger : public NoRpgTargetTrigger
     {
     public:
-        FarFromRpgTargetTrigger(PlayerbotAI* ai, string name = "far from rpg target") : Trigger(ai,name) {}
+        HasRpgTargetTrigger(PlayerbotAI* ai, string name = "has rpg target", int checkInterval = 1) : NoRpgTargetTrigger(ai, name, checkInterval) {}
 
-        virtual bool IsActive();
+        virtual bool IsActive() { return !NoRpgTargetTrigger::IsActive(); };
+    };
+
+    class FarFromRpgTargetTrigger : public NoRpgTargetTrigger
+    {
+    public:
+        FarFromRpgTargetTrigger(PlayerbotAI* ai, string name = "far from rpg target", int checkInterval = 1) : NoRpgTargetTrigger(ai, name, checkInterval) {}
+
+        virtual bool IsActive() { return !NoRpgTargetTrigger::IsActive() && AI_VALUE2(float, "distance", "rpg target") > INTERACTION_DISTANCE; };
     };
 
     class NearRpgTargetTrigger : public FarFromRpgTargetTrigger
     {
     public:
-        NearRpgTargetTrigger(PlayerbotAI* ai) : FarFromRpgTargetTrigger(ai, "near rpg target") {}
+        NearRpgTargetTrigger(PlayerbotAI* ai, string name = "near rpg target", int checkInterval = 1) : FarFromRpgTargetTrigger(ai, name, checkInterval) {}
 
-        virtual bool IsActive() { return !FarFromRpgTargetTrigger::IsActive(); };
+        virtual bool IsActive() { return !NoRpgTargetTrigger::IsActive() && !FarFromRpgTargetTrigger::IsActive(); };
+    };
+
+
+    //Sub actions:
+    class RpgTrigger : public FarFromRpgTargetTrigger
+    {
+    public:
+        RpgTrigger(PlayerbotAI* ai, string name = "sub rpg", int checkInterval = 2) : FarFromRpgTargetTrigger(ai, name, checkInterval) {}
+
+        GuidPosition getGuidP() { return AI_VALUE(GuidPosition, "rpg target"); }
+
+        virtual bool IsActive() { return true; };
+        virtual Event Check() { if (!NoRpgTargetTrigger::IsActive() && (AI_VALUE(string, "next rpg action") == "choose rpg target") || !FarFromRpgTargetTrigger::IsActive()) return Trigger::Check(); return Event(); };
+    };
+
+    class RpgTaxiTrigger : public RpgTrigger
+    {
+    public:
+        RpgTaxiTrigger(PlayerbotAI* ai, string name = "rpg taxi") : RpgTrigger(ai, name) {}
+        virtual bool IsActive();
+    };
+
+    class RpgDiscoverTrigger : public RpgTrigger
+    {
+    public:
+        RpgDiscoverTrigger(PlayerbotAI* ai, string name = "rpg discover") : RpgTrigger(ai, name) {}
+        virtual bool IsActive();
+    };
+
+    class RpgStartQuestTrigger : public RpgTrigger
+    {
+    public:
+        RpgStartQuestTrigger(PlayerbotAI* ai, string name = "rpg start quest") : RpgTrigger(ai, name) {}
+        virtual bool IsActive();
+    };
+
+    class RpgEndQuestTrigger : public RpgTrigger
+    {
+    public:
+        RpgEndQuestTrigger(PlayerbotAI* ai, string name = "rpg end quest") : RpgTrigger(ai, name) {}
+        virtual bool IsActive();
+    };
+
+    class RpgBuyTrigger : public RpgTrigger
+    {
+    public:
+        RpgBuyTrigger(PlayerbotAI* ai, string name = "rpg buy") : RpgTrigger(ai, name) {}
+        virtual bool IsActive();
+    };
+
+    class RpgSellTrigger : public RpgTrigger
+    {
+    public:
+        RpgSellTrigger(PlayerbotAI* ai, string name = "rpg sell") : RpgTrigger(ai, name) {}
+        virtual bool IsActive();
+    };
+
+    class RpgRepairTrigger : public RpgTrigger
+    {
+    public:
+        RpgRepairTrigger(PlayerbotAI* ai, string name = "rpg repair") : RpgTrigger(ai, name) {}
+        virtual bool IsActive();
+    };
+
+    class RpgTrainTrigger : public RpgTrigger
+    {
+    public:
+        RpgTrainTrigger(PlayerbotAI* ai, string name = "rpg train") : RpgTrigger(ai, name) {}
+
+        static bool IsTrainerOf(CreatureInfo const* cInfo, Player* pPlayer);
+
+        virtual bool IsActive();
+    };
+
+    class RpgHealTrigger : public RpgTrigger
+    {
+    public:
+        RpgHealTrigger(PlayerbotAI* ai, string name = "rpg heal") : RpgTrigger(ai, name) {}
+        virtual bool IsActive();
+    };
+
+    class RpgHomeBindTrigger : public RpgTrigger
+    {
+    public:
+        RpgHomeBindTrigger(PlayerbotAI* ai, string name = "rpg home bind") : RpgTrigger(ai, name) {}
+        virtual bool IsActive();
+    };
+
+    class RpgQueueBGTrigger : public RpgTrigger
+    {
+    public:
+        RpgQueueBGTrigger(PlayerbotAI* ai, string name = "rpg queue bg") : RpgTrigger(ai, name) {}
+        virtual bool IsActive();
+    };
+
+    class RpgBuyPetitionTrigger : public RpgTrigger
+    {
+    public:
+        RpgBuyPetitionTrigger(PlayerbotAI* ai, string name = "rpg buy petition") : RpgTrigger(ai, name) {}
+        virtual bool IsActive();
+    };
+
+    class RpgUseTrigger : public RpgTrigger
+    {
+    public:
+        RpgUseTrigger(PlayerbotAI* ai, string name = "rpg use") : RpgTrigger(ai, name) {}
+        virtual bool IsActive();
+    };
+
+    class RpgSpellTrigger : public RpgTrigger
+    {
+    public:
+        RpgSpellTrigger(PlayerbotAI* ai, string name = "rpg spell") : RpgTrigger(ai, name) {}
+        virtual bool IsActive();
+    };
+
+    class RpgCraftTrigger : public RpgTrigger
+    {
+    public:
+        RpgCraftTrigger(PlayerbotAI* ai, string name = "rpg craft") : RpgTrigger(ai, name) {}
+        virtual bool IsActive();
+    };
+
+    class RpgTradeUsefulTrigger : public RpgTrigger
+    {
+    public:
+        RpgTradeUsefulTrigger(PlayerbotAI* ai, string name = "rpg trade useful") : RpgTrigger(ai, name) {}
+        virtual bool IsActive();
+    };
+
+    class RpgDuelTrigger : public RpgTrigger
+    {
+    public:
+        RpgDuelTrigger(PlayerbotAI* ai, string name = "rpg duel") : RpgTrigger(ai, name) {}
+        virtual bool IsActive();
     };
 }

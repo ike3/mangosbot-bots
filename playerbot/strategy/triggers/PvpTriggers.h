@@ -93,6 +93,15 @@ namespace ai
         virtual bool IsActive();
     };
 
+    class BgInviteActiveTrigger : public Trigger
+    {
+    public:
+        BgInviteActiveTrigger(PlayerbotAI* ai) : Trigger(ai, "bg invite active", 10) {}
+
+    public:
+        virtual bool IsActive();
+    };
+
     class PlayerIsInBattlegroundWithoutFlag : public Trigger
     {
     public:

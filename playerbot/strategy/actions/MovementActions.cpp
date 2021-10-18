@@ -161,6 +161,12 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
         return false;
     }
 
+    if (bot->IsMoving() && !IsMovingAllowed())
+    {
+        bot->StopMoving();
+        return false;
+    }
+
     LastMovement& lastMove = *context->GetValue<LastMovement&>("last movement");
 
     WorldPosition startPosition = WorldPosition(bot);             //Current location of the bot
@@ -191,33 +197,27 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
     {
         movePosition = endPosition;
 
-        vector<WorldPosition> beginPath, endPath;
-
         if (startPosition.getMapId() != endPosition.getMapId() || totalDistance > maxDist)
         {
             if (!sTravelNodeMap.getNodes().empty() && !bot->InBattleGround())
             {
-                //[[Node pathfinding system]]
-                //We try to find nodes near the bot and near the end position that have a route between them.
-                //Then bot has to move towards/along the route.
-                sTravelNodeMap.m_nMapMtx.lock_shared();
-
-                //Find the route of nodes starting at a node closest to the start position and ending at a node closest to the endposition.
-                //Also returns longPath: The path from the start position to the first node in the route.
-                TravelNodeRoute route = sTravelNodeMap.getRoute(startPosition, endPosition, beginPath, bot);
-
-                if (sPlayerbotAIConfig.hasLog("bot_pathfinding.csv"))
+                if (sPlayerbotAIConfig.tweakValue)
                 {
-                    if (ai->HasStrategy("debug move", BOT_STATE_NON_COMBAT))
+                    if (lastMove.future.valid())
                     {
-                        sPlayerbotAIConfig.openLog("bot_pathfinding.csv", "w");
-                        sPlayerbotAIConfig.log("bot_pathfinding.csv", route.print().str().c_str());
+                        movePath = lastMove.future.get();
+                    }
+                    else
+                    {
+                        lastMove.future = std::async(&TravelNodeMap::getFullPath, startPosition, endPosition, bot);
+                        return true;
                     }
                 }
+                else
+                    movePath = sTravelNodeMap.getFullPath(startPosition, endPosition, bot);
 
-                if (route.isEmpty())
+                if (movePath.empty())
                 {
-                    sTravelNodeMap.m_nMapMtx.unlock_shared();
                     //We have no path. Beyond 450yd the standard pathfinder will probably move the wrong way.
                     if (sServerFacade.IsDistanceGreaterThan(totalDistance, maxDist * 3))
                     {
@@ -232,22 +232,6 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
                     }
 
                     movePosition = endPosition;
-                }
-                else
-                {
-                    endPath = route.getNodes().back()->getPosition()->getPathTo(endPosition, nullptr);
-                    movePath = route.buildPath(beginPath, endPath);
-
-                    if (sPlayerbotAIConfig.hasLog("bot_pathfinding.csv"))
-                    {
-                        if (ai->HasStrategy("debug move", BOT_STATE_NON_COMBAT))
-                        {
-                            sPlayerbotAIConfig.openLog("bot_pathfinding.csv", "w");
-                            sPlayerbotAIConfig.log("bot_pathfinding.csv", movePath.print().str().c_str());
-                        }
-                    }
-
-                    sTravelNodeMap.m_nMapMtx.unlock_shared();
                 }
             }
             else
@@ -392,6 +376,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
                 else
                 {
                     movePath.clear();
+                    AI_VALUE(LastMovement&, "last movement").setPath(movePath);
                     return false;
                 }
             }
@@ -533,7 +518,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
         if (ai->GetMaster()->m_movementInfo.HasMovementFlag(MOVEFLAG_WALK_MODE) && sServerFacade.GetDistance2d(bot, ai->GetMaster()) < 20.0f)
             masterWalking = true;
     }
-
+    bot->SendHeartBeat();
 #ifdef MANGOSBOT_ZERO
     mm.MovePoint(movePosition.getMapId(), movePosition.getX(), movePosition.getY(), movePosition.getZ(), masterWalking ? FORCED_MOVEMENT_WALK : FORCED_MOVEMENT_RUN, generatePath);
 #else
@@ -589,7 +574,6 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
                     bot->m_movementInfo.RemoveMovementFlag(MOVEFLAG_LEVITATING);
             }
         }
-        bot->SendHeartBeat();
         mm.MovePoint(movePosition.getMapId(), Position(movePosition.getX(), movePosition.getY(), movePosition.getZ(), 0.f), bot->IsFlying() ? FORCED_MOVEMENT_FLIGHT : FORCED_MOVEMENT_RUN, bot->IsFlying() ? bot->GetSpeed(MOVE_FLIGHT) : 0.f, bot->IsFlying());
     }
 #endif
@@ -750,7 +734,7 @@ void MovementAction::UpdateMovementState()
     
     // check if target is not reachable (from Vmangos)
     if (bot->GetMotionMaster()->GetCurrentMovementGeneratorType() == CHASE_MOTION_TYPE &&
-        !bot->GetMotionMaster()->GetCurrent()->IsReachable())
+        !bot->GetMotionMaster()->GetCurrent()->IsReachable() && !bot->InBattleGround())
     {
         if (Unit* pTarget = bot->GetMotionMaster()->GetCurrent()->GetCurrentTarget())
         {
@@ -784,7 +768,7 @@ void MovementAction::UpdateMovementState()
 
     if ((bot->GetMotionMaster()->GetCurrentMovementGeneratorType() == FOLLOW_MOTION_TYPE ||
         bot->GetMotionMaster()->GetCurrentMovementGeneratorType() == POINT_MOTION_TYPE ) &&
-        !bot->GetMotionMaster()->GetCurrent()->IsReachable())
+        !bot->GetMotionMaster()->GetCurrent()->IsReachable() && !bot->InBattleGround())
     {
         if (Unit* pTarget = bot->GetMotionMaster()->GetCurrent()->GetCurrentTarget())
         {

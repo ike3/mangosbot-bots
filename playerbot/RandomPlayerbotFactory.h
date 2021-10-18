@@ -19,7 +19,7 @@ class RandomPlayerbotFactory
 		virtual ~RandomPlayerbotFactory() {}
 
 	public:
-        bool CreateRandomBot(uint8 cls);
+        bool CreateRandomBot(uint8 cls, unordered_map<uint8, vector<string>>& names);
         static void CreateRandomBots();
         static void CreateRandomGuilds();
         static void CreateRandomArenaTeams();

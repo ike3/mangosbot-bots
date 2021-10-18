@@ -140,18 +140,18 @@ void TalkToQuestGiverAction::RewardMultipleItem(Quest const* quest, WorldObject*
     Item* newItem;
 
     ostringstream outid;
-    if (sPlayerbotAIConfig.autoPickReward == "no")
-    {   //Old functionality, list rewards.
-        AskToSelectReward(quest, out, false);       
-    }
-    else if(sPlayerbotAIConfig.autoPickReward == "yes")
+    if (!ai->IsAlt() || sPlayerbotAIConfig.autoPickReward == "yes")
     {
         //Pick the first item of the best rewards.
         bestIds = BestRewards(quest);
         ItemPrototype const* item = sObjectMgr.GetItemPrototype(quest->RewChoiceItemId[*bestIds.begin()]);
-        bot->RewardQuest(quest, *bestIds.begin(), questGiver, true);        
+        bot->RewardQuest(quest, *bestIds.begin(), questGiver, true);
 
         out << "Rewarded " << chat->formatItem(item);
+    }
+    else if (sPlayerbotAIConfig.autoPickReward == "no")
+    {   //Old functionality, list rewards.
+        AskToSelectReward(quest, out, false);       
     }
     else 
     {   //Try to pick the usable item. If multiple list usable rewards.

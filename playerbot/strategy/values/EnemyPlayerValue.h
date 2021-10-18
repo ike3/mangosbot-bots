@@ -27,7 +27,7 @@ namespace ai
     class EnemyPlayerValue : public UnitCalculatedValue
     {
     public:
-        EnemyPlayerValue(PlayerbotAI* ai) : UnitCalculatedValue(ai) {}
+        EnemyPlayerValue(PlayerbotAI* ai, string name = "enemy player") : UnitCalculatedValue(ai, name) {}
 
         virtual Unit* Calculate();
     private:

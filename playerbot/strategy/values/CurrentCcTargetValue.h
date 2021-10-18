@@ -8,7 +8,7 @@ namespace ai
     class CurrentCcTargetValue : public TargetValue, public Qualified
 	{
 	public:
-        CurrentCcTargetValue(PlayerbotAI* ai) : TargetValue(ai) {}
+        CurrentCcTargetValue(PlayerbotAI* ai, string name = "current cc target") : TargetValue(ai, name) {}
 
     public:
         Unit* Calculate();

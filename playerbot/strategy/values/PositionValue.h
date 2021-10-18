@@ -22,7 +22,7 @@ namespace ai
     class PositionValue : public ManualSetValue<PositionMap&>
 	{
 	public:
-        PositionValue(PlayerbotAI* ai);
+        PositionValue(PlayerbotAI* ai, string name = "position");
 
         virtual string Save();
         virtual bool Load(string value);
