@@ -532,6 +532,9 @@ string PlayerbotHolder::ListBots(Player* master)
     classNames[CLASS_SHAMAN] = "Shaman";
     classNames[CLASS_WARLOCK] = "Warlock";
     classNames[CLASS_WARRIOR] = "Warrior";
+#ifdef MANGOSBOT_TWO
+    classNames[CLASS_DEATH_KNIGHT] = "DeathKnight";
+#endif
 
     map<string, string> online;
     list<string> names;
