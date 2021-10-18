@@ -42,9 +42,12 @@ class RandomPlayerbotMgr : public PlayerbotHolder
             return instance;
         }
 
+        void LogPlayerLocation();
+
         virtual void UpdateAIInternal(uint32 elapsed);
 
 	public:
+        uint32 activeBots = 0;
         static bool HandlePlayerbotConsoleCommand(ChatHandler* handler, char const* args);
         bool IsRandomBot(Player* bot);
         bool IsRandomBot(uint32 bot);
