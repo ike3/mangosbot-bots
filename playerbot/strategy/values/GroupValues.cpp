@@ -67,22 +67,18 @@ uint32 GroupBoolCountValue::Calculate()
 
     for (ObjectGuid guid : AI_VALUE(list<ObjectGuid>, "group members"))
     {
-        Player* member = sObjectMgr.GetPlayer(guid);
+        Player* player = sObjectMgr.GetPlayer(guid);
 
-        if (!member)
+        if (!player)
             continue;
 
-        PlayerbotAI* memberAi = member->GetPlayerbotAI();
-
-        if (!memberAi)
+        if (player->GetMapId() != bot->GetMapId())
             continue;
 
-        AiObjectContext* memberContext = memberAi->GetAiObjectContext();
-
-        if (!memberContext)
+        if (!player->GetPlayerbotAI())
             continue;
 
-        if (memberContext->GetValue<bool>("and", getQualifier())->Get())
+        if (PAI_VALUE2(bool, "and", getQualifier()))
             return count++;
     }
 
@@ -93,22 +89,18 @@ bool GroupBoolANDValue::Calculate()
 {
     for (ObjectGuid guid : AI_VALUE(list<ObjectGuid>, "group members"))
     {
-        Player* member = sObjectMgr.GetPlayer(guid);
+        Player* player = sObjectMgr.GetPlayer(guid);
 
-        if (!member)
+        if (!player)
             continue;
 
-        PlayerbotAI* memberAi = member->GetPlayerbotAI();
-
-        if (!memberAi)
+        if (player->GetMapId() != bot->GetMapId())
             continue;
 
-        AiObjectContext* memberContext = memberAi->GetAiObjectContext();
-
-        if (!memberContext)
+        if (!player->GetPlayerbotAI())
             continue;
 
-        if (!memberContext->GetValue<bool>("and", getQualifier())->Get())
+        if (!PAI_VALUE2(bool,"and", getQualifier()))
             return false;
     }
 
@@ -119,22 +111,18 @@ bool GroupBoolORValue::Calculate()
 {
     for (ObjectGuid guid : AI_VALUE(list<ObjectGuid>, "group members"))
     {
-        Player* member = sObjectMgr.GetPlayer(guid);
+        Player* player = sObjectMgr.GetPlayer(guid);
 
-        if (!member)
+        if (!player)
             continue;
 
-        PlayerbotAI* memberAi = member->GetPlayerbotAI();
-
-        if (!memberAi)
+        if (player->GetMapId() != bot->GetMapId())
             continue;
 
-        AiObjectContext* memberContext = memberAi->GetAiObjectContext();
-
-        if (!memberContext)
+        if (!player->GetPlayerbotAI())
             continue;
 
-        if (memberContext->GetValue<bool>("and", getQualifier())->Get())
+        if (PAI_VALUE2(bool, "and", getQualifier()))
             return true;
     }
 
