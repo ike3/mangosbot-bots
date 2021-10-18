@@ -161,6 +161,12 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
         return false;
     }
 
+    if (bot->IsMoving() && !IsMovingAllowed())
+    {
+        bot->StopMoving();
+        return false;
+    }
+
     LastMovement& lastMove = *context->GetValue<LastMovement&>("last movement");
 
     WorldPosition startPosition = WorldPosition(bot);             //Current location of the bot
@@ -533,7 +539,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
         if (ai->GetMaster()->m_movementInfo.HasMovementFlag(MOVEFLAG_WALK_MODE) && sServerFacade.GetDistance2d(bot, ai->GetMaster()) < 20.0f)
             masterWalking = true;
     }
-
+    bot->SendHeartBeat();
 #ifdef MANGOSBOT_ZERO
     mm.MovePoint(movePosition.getMapId(), movePosition.getX(), movePosition.getY(), movePosition.getZ(), masterWalking ? FORCED_MOVEMENT_WALK : FORCED_MOVEMENT_RUN, generatePath);
 #else
@@ -589,7 +595,6 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
                     bot->m_movementInfo.RemoveMovementFlag(MOVEFLAG_LEVITATING);
             }
         }
-        bot->SendHeartBeat();
         mm.MovePoint(movePosition.getMapId(), Position(movePosition.getX(), movePosition.getY(), movePosition.getZ(), 0.f), bot->IsFlying() ? FORCED_MOVEMENT_FLIGHT : FORCED_MOVEMENT_RUN, bot->IsFlying() ? bot->GetSpeed(MOVE_FLIGHT) : 0.f, bot->IsFlying());
     }
 #endif
@@ -750,7 +755,7 @@ void MovementAction::UpdateMovementState()
     
     // check if target is not reachable (from Vmangos)
     if (bot->GetMotionMaster()->GetCurrentMovementGeneratorType() == CHASE_MOTION_TYPE &&
-        !bot->GetMotionMaster()->GetCurrent()->IsReachable())
+        !bot->GetMotionMaster()->GetCurrent()->IsReachable() && !bot->InBattleGround())
     {
         if (Unit* pTarget = bot->GetMotionMaster()->GetCurrent()->GetCurrentTarget())
         {
@@ -784,7 +789,7 @@ void MovementAction::UpdateMovementState()
 
     if ((bot->GetMotionMaster()->GetCurrentMovementGeneratorType() == FOLLOW_MOTION_TYPE ||
         bot->GetMotionMaster()->GetCurrentMovementGeneratorType() == POINT_MOTION_TYPE ) &&
-        !bot->GetMotionMaster()->GetCurrent()->IsReachable())
+        !bot->GetMotionMaster()->GetCurrent()->IsReachable() && !bot->InBattleGround())
     {
         if (Unit* pTarget = bot->GetMotionMaster()->GetCurrent()->GetCurrentTarget())
         {
