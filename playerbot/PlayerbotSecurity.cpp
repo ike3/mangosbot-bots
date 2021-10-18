@@ -94,7 +94,7 @@ PlayerbotSecurityLevel PlayerbotSecurity::LevelFor(Player* from, DenyReason* rea
             return PLAYERBOT_SECURITY_TALK;
         }
 
-        if (bot->GetPlayerbotAI()->HasStrategy("bg", BOT_STATE_NON_COMBAT))
+        if (bot->InBattleGroundQueue())
         {
             if (!bot->GetGuildId() || bot->GetGuildId() != from->GetGuildId())
             {
@@ -103,7 +103,9 @@ PlayerbotSecurityLevel PlayerbotSecurity::LevelFor(Player* from, DenyReason* rea
             }
         }
 
-        if (bot->GetPlayerbotAI()->HasStrategy("lfg", BOT_STATE_NON_COMBAT))
+#ifdef MANGOSBOT_ONE
+        if (!bot->m_lookingForGroup.Empty())
+#endif
         {
             if (!bot->GetGuildId() || bot->GetGuildId() != from->GetGuildId())
             {
