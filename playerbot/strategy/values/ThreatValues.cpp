@@ -70,7 +70,7 @@ uint8 ThreatValue::Calculate(Unit* target)
         target->GetMotionMaster()->GetCurrentMovementGeneratorType() == TIMED_FLEEING_MOTION_TYPE;
 
     // return high threat if tank has no threat
-    if (maxThreat <= 0 && botThreat <= 0 && hasTank && !fleeing)
+    if (target->IsInCombat() && maxThreat <= 0 && botThreat <= 0 && hasTank && !fleeing)
         return 100;
 
     // return low threat if mob if fleeing
