@@ -733,9 +733,18 @@ void RandomPlayerbotMgr::CheckLfgQueue()
     {
         Player* player = *i;
 
+        if (!player || !player->IsInWorld())
+            continue;
+
         bool isLFG = false;
 
 #ifdef MANGOSBOT_ZERO
+        WorldSafeLocsEntry const* ClosestGrave = nullptr;
+        ClosestGrave = sObjectMgr.GetClosestGraveYard(player->GetPositionX(), player->GetPositionY(), player->GetPositionZ(), player->GetMapId(), player->GetTeam());
+        uint32 zoneId = 0;
+        if (ClosestGrave)
+            zoneId = ClosestGrave->ID;
+
         Group* group = player->GetGroup();
         if (group)
         {
@@ -744,7 +753,8 @@ void RandomPlayerbotMgr::CheckLfgQueue()
                 isLFG = true;
                 LFGGroupQueueInfo lfgInfo;
                 sLFGMgr.GetGroupQueueInfo(&lfgInfo, group->GetId());
-                LfgDungeons[player->GetTeam()].push_back(lfgInfo.areaId);
+                uint32 lfgType = (zoneId << 16) | lfgInfo.areaId;
+                LfgDungeons[player->GetTeam()].push_back(lfgType);
             }
         }
         else
@@ -754,8 +764,46 @@ void RandomPlayerbotMgr::CheckLfgQueue()
                 isLFG = true;
                 LFGPlayerQueueInfo lfgInfo;
                 sLFGMgr.GetPlayerQueueInfo(&lfgInfo, player->GetObjectGuid());
+                uint32 lfgType = (zoneId << 16) | lfgInfo.areaId;
+                LfgDungeons[player->GetTeam()].push_back(lfgType);
+            }
+        }
+#endif
+#ifdef MANGOSBOT_ONE
+        WorldSafeLocsEntry const* ClosestGrave = nullptr;
+        ClosestGrave = sObjectMgr.GetClosestGraveYard(player->GetPositionX(), player->GetPositionY(), player->GetPositionZ(), player->GetMapId(), player->GetTeam());
+        uint32 zoneId = 0;
+        if (ClosestGrave)
+            zoneId = ClosestGrave->ID;
 
-                LfgDungeons[player->GetTeam()].push_back(lfgInfo.areaId);
+        Group* group = player->GetGroup();
+        if (group && !group->IsFull())
+        {
+            if (group->IsLeader(player->GetObjectGuid()))
+            {
+                if (!player->m_lookingForGroup.more.Empty() && player->GetSession()->LookingForGroup_auto_add && player->m_lookingForGroup.more.canAutoJoin())
+                {
+                    uint32 lfgType = (zoneId << 16) | ((1 << 8) | uint8(player->m_lookingForGroup.more.entry));
+                    LfgDungeons[player->GetTeam()].push_back(lfgType);
+                    isLFG = true;
+                }
+            }
+        }
+        else if (!group)
+        {
+            for (int i = 0; i < MAX_LOOKING_FOR_GROUP_SLOT; ++i)
+                if (!player->m_lookingForGroup.slots[i].Empty() && player->GetSession()->LookingForGroup_auto_join && player->m_lookingForGroup.slots[i].canAutoJoin())
+                {
+                    isLFG = true;
+                    uint32 lfgType = (zoneId << 16) | ((0 << 8) | uint8(player->m_lookingForGroup.slots[i].entry));
+                    LfgDungeons[player->GetTeam()].push_back(lfgType);
+                }
+
+            if (!player->m_lookingForGroup.more.Empty() && player->GetSession()->LookingForGroup_auto_add && player->m_lookingForGroup.more.canAutoJoin())
+            {
+                uint32 lfgType = (zoneId << 16) | ((1 << 8) | uint8(player->m_lookingForGroup.more.entry));
+                LfgDungeons[player->GetTeam()].push_back(lfgType);
+                isLFG = true;
             }
         }
 #endif
@@ -805,6 +853,45 @@ void RandomPlayerbotMgr::CheckLfgQueue()
         }
 #endif
     }
+#ifdef MANGOSBOT_ONE
+    for (PlayerBotMap::iterator i = playerBots.begin(); i != playerBots.end(); ++i)
+    {
+        Player* bot = i->second;
+
+        if (!bot || !bot->IsInWorld())
+            continue;
+
+        if (LfgDungeons[bot->GetTeam()].empty())
+            continue;
+
+        WorldSafeLocsEntry const* ClosestGrave = nullptr;
+        ClosestGrave = sObjectMgr.GetClosestGraveYard(bot->GetPositionX(), bot->GetPositionY(), bot->GetPositionZ(), bot->GetMapId(), bot->GetTeam());
+        uint32 zoneId = 0;
+        if (ClosestGrave)
+            zoneId = ClosestGrave->ID;
+
+        Group* group = bot->GetGroup();
+        if (group && !group->IsFull())
+        {
+            if (group->IsLeader(bot->GetObjectGuid()))
+            {
+                if (!bot->m_lookingForGroup.more.Empty() && bot->GetSession()->LookingForGroup_auto_add && bot->m_lookingForGroup.more.canAutoJoin())
+                {
+                    uint32 lfgType = (zoneId << 16) | ((1 << 8) | uint8(bot->m_lookingForGroup.more.entry));
+                    LfgDungeons[bot->GetTeam()].push_back(lfgType);
+                }
+            }
+        }
+        else if (!group)
+        {
+            if (!bot->m_lookingForGroup.more.Empty() && bot->GetSession()->LookingForGroup_auto_add && bot->m_lookingForGroup.more.canAutoJoin())
+            {
+                uint32 lfgType = (zoneId << 16) | ((1 << 8) | uint8(bot->m_lookingForGroup.more.entry));
+                LfgDungeons[bot->GetTeam()].push_back(lfgType);
+            }
+        }
+    }
+#endif
     sLog.outBasic("LFG Queue check finished");
     return;
 }
