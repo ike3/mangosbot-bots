@@ -58,6 +58,33 @@ bool BgActiveTrigger::IsActive()
     return false;
 }
 
+bool BgInviteActiveTrigger::IsActive()
+{
+    if (bot->InBattleGround() || !bot->InBattleGroundQueue())
+    {
+        return false;
+    }
+
+    for (int i = 0; i < PLAYER_MAX_BATTLEGROUND_QUEUES; ++i)
+    {
+        BattleGroundQueueTypeId queueTypeId = bot->GetBattleGroundQueueTypeId(i);
+        if (queueTypeId == BATTLEGROUND_QUEUE_NONE)
+            continue;
+
+        BattleGroundQueue& bgQueue = sServerFacade.bgQueue(queueTypeId);
+        GroupQueueInfo ginfo;
+        if (bgQueue.GetPlayerGroupInfoData(bot->GetObjectGuid(), &ginfo))
+        {
+            if (ginfo.isInvitedToBgInstanceGuid && ginfo.removeInviteTime)
+            {
+                sLog.outDetail("Bot #%d <%s> (%u %s) : Invited to BG but not in BG", bot->GetGUIDLow(), bot->GetName(), bot->getLevel(), bot->GetTeam() == ALLIANCE ? "A" : "H");
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 bool PlayerIsInBattlegroundWithoutFlag::IsActive()
 {
 #ifdef MANGOS

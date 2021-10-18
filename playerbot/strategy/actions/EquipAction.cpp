@@ -98,6 +98,17 @@ bool EquipUpgradesAction::Execute(Event event)
     if (!sPlayerbotAIConfig.autoEquipUpgradeLoot && !sRandomPlayerbotMgr.IsRandomBot(bot))
         return false;
 
+    if (event.getSource() == "trade status")
+    {
+        WorldPacket p(event.getPacket());
+        p.rpos(0);
+        uint32 status;
+        p >> status;
+
+        if (status != TRADE_STATUS_TRADE_ACCEPT)
+            return false;
+    }
+
     ListItemsVisitor visitor;
     IterateItems(&visitor, ITERATE_ITEMS_IN_BAGS);
 

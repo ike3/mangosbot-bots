@@ -18,7 +18,7 @@ void TravelStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
     triggers.push_back(new TriggerNode(
         //"random",
         "no travel target",
-        NextAction::array(0, new NextAction("choose travel target", 1), NULL)));
+        NextAction::array(0, new NextAction("choose travel target", 6.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
         "far from travel target",

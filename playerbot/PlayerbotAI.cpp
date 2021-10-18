@@ -193,7 +193,16 @@ void PlayerbotAI::UpdateAI(uint32 elapsed)
         inCombat = true;
     }
     else
+    {
+        if (inCombat)
+            nextAICheckDelay = 0;
+        else if (!AllowActivity())
+        {
+            if (AllowActivity(ALL_ACTIVITY, true))
+                nextAICheckDelay = 0;
+        }
         inCombat = false;
+    }
 
     if (!CanUpdateAI())
         return;
@@ -217,7 +226,9 @@ void PlayerbotAI::UpdateAIInternal(uint32 elapsed)
     if (bot->IsBeingTeleported() || !bot->IsInWorld())
         return;
 
-    PerformanceMonitorOperation *pmo = sPerformanceMonitor.start(PERF_MON_TOTAL, "PlayerbotAI::UpdateAIInternal");
+    string mapString = WorldPosition(bot).isOverworld() ? to_string(bot->GetMapId()) : "I";
+
+    PerformanceMonitorOperation *pmo = sPerformanceMonitor.start(PERF_MON_TOTAL, "PlayerbotAI::UpdateAIInternal " + mapString);
     ExternalEventHelper helper(aiObjectContext);
     list<ChatCommandHolder> delayed;
     while (!chatCommands.empty())
@@ -299,7 +310,7 @@ void PlayerbotAI::Reset(bool full)
     aiObjectContext->GetValue<Unit*>("old target")->Set(NULL);
     aiObjectContext->GetValue<Unit*>("current target")->Set(NULL);
     aiObjectContext->GetValue<ObjectGuid>("pull target")->Set(ObjectGuid());
-    aiObjectContext->GetValue<ObjectGuid>("rpg target")->Set(ObjectGuid());
+    aiObjectContext->GetValue<GuidPosition>("rpg target")->Set(GuidPosition());
     aiObjectContext->GetValue<LootObject>("loot target")->Set(LootObject());
     aiObjectContext->GetValue<uint32>("lfg proposal")->Set(0);
     bot->SetSelectionGuid(ObjectGuid());
@@ -2222,9 +2233,40 @@ bool PlayerbotAI::AllowActive(ActivityType activityType)
     if (sPlayerbotAIConfig.botActiveAlone >= 100)
         return true;
 
-    uint32 ActivityNumber = GetFixedBotNumer(BotTypeNumber::ACTIVITY_TYPE_NUMBER, 100, sPlayerbotAIConfig.botActiveAlone * 0.01);
+    uint32 botActive = sPlayerbotAIConfig.botActiveAlone;
 
-    return ActivityNumber <= sPlayerbotAIConfig.botActiveAlone;           //The given percentage of bots should be active and rotate 1% of those active bots each minute.
+    uint32 AvgDiff = sWorld.GetAverageDiff();
+    if (AvgDiff > 500)
+        return false;
+
+    // if has real players - slow down continents without player
+    if (sRandomPlayerbotMgr.GetPlayers().size())
+    {
+        if (AvgDiff > 100)
+            botActive = 10;
+
+        if (AvgDiff > 150)
+            botActive = 5;
+
+        if (AvgDiff > 200)
+            botActive = 1;
+
+        if (AvgDiff > 300)
+        {
+            if (!bot->GetMap()->HasRealPlayers() && bot->GetMap()->IsContinent())
+                return false;
+            else
+            {
+                uint32 currentArea = sMapMgr.GetContinentInstanceId(bot->GetMapId(), bot->GetPositionX(), bot->GetPositionY());
+                if (!bot->GetMap()->HasActiveAreas(currentArea))
+                    return false;
+            }
+        }
+    }
+
+    uint32 ActivityNumber = GetFixedBotNumer(BotTypeNumber::ACTIVITY_TYPE_NUMBER, 100, sPlayerbotAIConfig.botActiveAlone);
+
+    return ActivityNumber <= botActive;           //The given percentage of bots should be active and rotate 1% of those active bots each minute.
 }
 
 bool PlayerbotAI::AllowActivity(ActivityType activityType, bool checkNow)

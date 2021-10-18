@@ -2,7 +2,6 @@
 #include "../Trigger.h"
 #include "../../PlayerbotAIConfig.h"
 #include "../../ServerFacade.h"
-#include <MotionGenerators/MoveMap.h>
 
 namespace ai
 {
@@ -10,8 +9,8 @@ namespace ai
     public:
         EnemyTooCloseForSpellTrigger(PlayerbotAI* ai) : Trigger(ai, "enemy too close for spell") {}
         virtual bool IsActive()
-		{
-			Unit* target = AI_VALUE(Unit*, "current target");
+        {
+            Unit* target = AI_VALUE(Unit*, "current target");
             if (target)
             {
                 if (target->GetTarget() == bot && !bot->GetGroup() && !target->IsRooted() && target->GetSpeedInMotion() > bot->GetSpeedInMotion() * 0.65)
@@ -28,8 +27,8 @@ namespace ai
     public:
         EnemyTooCloseForShootTrigger(PlayerbotAI* ai) : Trigger(ai, "enemy too close for shoot") {}
         virtual bool IsActive()
-		{
-			Unit* target = AI_VALUE(Unit*, "current target");
+        {
+            Unit* target = AI_VALUE(Unit*, "current target");
             if (!target)
                 return false;
 
@@ -44,8 +43,8 @@ namespace ai
     public:
         EnemyTooCloseForMeleeTrigger(PlayerbotAI* ai) : Trigger(ai, "enemy too close for melee", 5) {}
         virtual bool IsActive()
-		{
-			Unit* target = AI_VALUE(Unit*, "current target");
+        {
+            Unit* target = AI_VALUE(Unit*, "current target");
             if (target && target->IsPlayer())
                 return false;
 
@@ -57,24 +56,24 @@ namespace ai
     public:
         EnemyIsCloseTrigger(PlayerbotAI* ai) : Trigger(ai, "enemy is close") {}
         virtual bool IsActive()
-		{
-			Unit* target = AI_VALUE(Unit*, "current target");
+        {
+            Unit* target = AI_VALUE(Unit*, "current target");
             return target &&
-                    sServerFacade.IsDistanceLessOrEqualThan(AI_VALUE2(float, "distance", "current target"), sPlayerbotAIConfig.tooCloseDistance);
+                sServerFacade.IsDistanceLessOrEqualThan(AI_VALUE2(float, "distance", "current target"), sPlayerbotAIConfig.tooCloseDistance);
         }
     };
 
     class OutOfRangeTrigger : public Trigger {
     public:
         OutOfRangeTrigger(PlayerbotAI* ai, string name, float distance) : Trigger(ai, name)
-		{
+        {
             this->distance = distance;
         }
         virtual bool IsActive()
-		{
-			Unit* target = AI_VALUE(Unit*, GetTargetName());
-			return target &&
-			        sServerFacade.IsDistanceGreaterThan(AI_VALUE2(float, "distance", GetTargetName()), distance);
+        {
+            Unit* target = AI_VALUE(Unit*, GetTargetName());
+            return target &&
+                sServerFacade.IsDistanceGreaterThan(AI_VALUE2(float, "distance", GetTargetName()), distance);
         }
         virtual string GetTargetName() { return "current target"; }
 
@@ -83,7 +82,7 @@ namespace ai
     };
 
     class EnemyOutOfMeleeTrigger : public OutOfRangeTrigger
-	{
+    {
     public:
         EnemyOutOfMeleeTrigger(PlayerbotAI* ai) : OutOfRangeTrigger(ai, "enemy out of melee range", sPlayerbotAIConfig.meleeDistance) {}
         virtual bool IsActive()
@@ -98,7 +97,7 @@ namespace ai
     };
 
     class EnemyOutOfSpellRangeTrigger : public OutOfRangeTrigger
-	{
+    {
     public:
         EnemyOutOfSpellRangeTrigger(PlayerbotAI* ai) : OutOfRangeTrigger(ai, "enemy out of spell range", ai->GetRange("spell")) {}
         virtual bool IsActive()
@@ -109,7 +108,7 @@ namespace ai
     };
 
     class PartyMemberToHealOutOfSpellRangeTrigger : public OutOfRangeTrigger
-	{
+    {
     public:
         PartyMemberToHealOutOfSpellRangeTrigger(PlayerbotAI* ai) : OutOfRangeTrigger(ai, "party member to heal out of spell range", ai->GetRange("heal")) {}
         virtual string GetTargetName() { return "party member to heal"; }
@@ -137,134 +136,5 @@ namespace ai
     {
     public:
         OutOfReactRangeTrigger(PlayerbotAI* ai) : FarFromMasterTrigger(ai, "out of react range", 50.0f, 5) {}
-    };
-
-    class MovementStuckTrigger : public Trigger
-    {
-    public:
-        MovementStuckTrigger(PlayerbotAI* ai) : Trigger(ai, "movement stuck", 5) {}
-
-        virtual bool IsActive()
-        {
-            if (ai->HasActivePlayerMaster())
-                return false;
-
-            if (!ai->AllowActive(ALL_ACTIVITY))
-                return false;
-
-            WorldPosition botPos(bot);            
-
-            LogCalculatedValue<WorldPosition>* posVal = dynamic_cast<LogCalculatedValue<WorldPosition>*>(context->GetUntypedValue("current position"));
-
-            if (posVal->LastChangeDelay() > 5 * MINUTE)
-            {
-                //sLog.outBasic("Bot #%d %s:%d <%s> was in the same position for %d seconds", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName(), posVal->LastChangeDelay());
-
-                return true;
-            }
-
-            bool longLog = false;
-
-            for (auto tPos : posVal->ValueLog())
-            {
-                uint32 timePassed = time(0) - tPos.second;
-
-                if (timePassed > 10 * MINUTE)
-                {
-                    if (botPos.fDist(tPos.first) > 50.0f)
-                        return false;
-
-                    longLog = true;
-                }
-            }
-
-            if (longLog)
-            {
-                //sLog.outBasic("Bot #%d %s:%d <%s> was in the same position for 10mins", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName(), posVal->LastChangeDelay());
-
-            }
-
-            return longLog;
-        }
-    };
-
-    class LocationStuckTrigger : public Trigger
-    {
-    public:
-        LocationStuckTrigger(PlayerbotAI* ai) : Trigger(ai, "location stuck", 5) {}
-
-        virtual bool IsActive()
-        {
-            if (ai->HasActivePlayerMaster())
-                return false;
-
-            if (!ai->AllowActive(ALL_ACTIVITY))
-                return false;
-
-            WorldPosition botPos(bot);
-
-            Cell const& cell = bot->GetCurrentCell();
-
-            GridPair grid = botPos.getGridPair();
-
-            if (grid.x_coord < 0 || grid.x_coord >= MAX_NUMBER_OF_GRIDS)
-            {
-                //sLog.outBasic("Bot #%d %s:%d <%s> was in grid %d,%d on map %d", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName(), grid.x_coord, grid.y_coord, botPos.getMapId());
-
-                return true;
-            }
-
-            if (grid.y_coord < 0 || grid.y_coord >= MAX_NUMBER_OF_GRIDS)
-            {
-                //sLog.outBasic("Bot #%d %s:%d <%s> was in grid %d,%d on map %d", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName(), grid.x_coord, grid.y_coord, botPos.getMapId());
-
-                return true;
-            }
-
-            if (cell.GridX() > 0 && cell.GridY() > 0 && !MMAP::MMapFactory::createOrGetMMapManager()->IsMMapIsLoaded(botPos.getMapId(), cell.GridX(), cell.GridY()) && !MMAP::MMapFactory::createOrGetMMapManager()->loadMap(botPos.getMapId(), cell.GridX(), cell.GridY()))
-            {
-                //sLog.outBasic("Bot #%d %s:%d <%s> was in unloaded grid %d,%d on map %d", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName(), grid.x_coord, grid.y_coord, botPos.getMapId());
-
-                return true;
-            }
-
-            LogCalculatedValue<WorldPosition>* posVal = dynamic_cast<LogCalculatedValue<WorldPosition>*>(context->GetUntypedValue("current position"));
-
-            if (posVal->LastChangeDelay() > 10 * MINUTE)
-            {
-                //sLog.outBasic("Bot #%d %s:%d <%s> was in the same position for %d seconds", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName(), posVal->LastChangeDelay());
-
-                posVal->Reset();
-                return true;
-            }
-
-            MemoryCalculatedValue<uint32>* expVal = dynamic_cast<MemoryCalculatedValue<uint32>*>(context->GetUntypedValue("experience"));
-
-            if (expVal->LastChangeDelay() < 15 * MINUTE)
-                return false;            
-
-            bool longLog = false;
-
-            for (auto tPos : posVal->ValueLog())
-            {
-                uint32 timePassed = time(0) - tPos.second;
-
-                if (timePassed > 15 * MINUTE)
-                {
-                    if (botPos.fDist(tPos.first) > 50.0f)
-                        return false;
-
-                    longLog = true;
-                }
-            }
-
-            if (longLog)
-            {
-                posVal->Reset();
-                //sLog.outBasic("Bot #%d %s:%d <%s> was in the same position for 15mins", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName(), posVal->LastChangeDelay());
-            }
-
-            return longLog;
-        }
     };
 }

@@ -6,7 +6,7 @@ namespace ai
     class LineTargetValue : public UnitCalculatedValue
 	{
 	public:
-        LineTargetValue(PlayerbotAI* ai) : UnitCalculatedValue(ai) {}
+        LineTargetValue(PlayerbotAI* ai, string name = "line target") : UnitCalculatedValue(ai, name) {}
 
     public:
         virtual Unit* Calculate();

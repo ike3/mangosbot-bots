@@ -2445,7 +2445,7 @@ void PlayerbotFactory::InitArenaTeam()
         return;
     }
 
-    if (arenateam->GetMembersSize() < ((uint32)arenateam->GetType() * 2) && bot->getLevel() >= 70)
+    if (arenateam->GetMembersSize() < ((uint32)arenateam->GetType()) && bot->getLevel() >= 70)
     {
         ObjectGuid capt = arenateam->GetCaptainGuid();
         Player* botcaptain = sObjectMgr.GetPlayer(capt);
@@ -2453,10 +2453,7 @@ void PlayerbotFactory::InitArenaTeam()
         if (botcaptain && botcaptain->GetTeam() == bot->GetTeam()) //need?
         {
             arenateam->AddMember(bot->GetObjectGuid());
-
-            uint32 backgroundColor = urand(0xFF000000, 0xFFFFFFFF), emblemStyle = urand(0, 5), emblemColor = urand(0xFF000000, 0xFFFFFFFF), borderStyle = urand(0, 5), borderColor = urand(0xFF000000, 0xFFFFFFFF);
-
-            arenateam->SetEmblem(backgroundColor, emblemStyle, emblemColor, borderStyle, borderColor);
+            arenateam->SaveToDB();
         }
     }
     bot->SaveToDB();

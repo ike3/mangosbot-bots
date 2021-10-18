@@ -2960,7 +2960,7 @@ bool BGTactics::startNewPathBegin(std::vector<BattleBotPath*> const& vPaths)
             continue;
 
         BattleBotWaypoint* pStart = &((*pPath)[0]);
-        if (sqrt(bot->GetDistance(pStart->x, pStart->y, pStart->z, DIST_CALC_NONE) < INTERACTION_DISTANCE))
+        if (sqrt(bot->GetDistance(pStart->x, pStart->y, pStart->z, DIST_CALC_NONE)) < INTERACTION_DISTANCE)
             availablePaths.emplace_back(AvailablePath(pPath, false));
 
         // Some paths are not allowed backwards.
@@ -2968,7 +2968,7 @@ bool BGTactics::startNewPathBegin(std::vector<BattleBotPath*> const& vPaths)
             continue;
 
         BattleBotWaypoint* pEnd = &((*pPath)[(*pPath).size() - 1]);
-        if (sqrt(bot->GetDistance(pEnd->x, pEnd->y, pEnd->z, DIST_CALC_NONE) < INTERACTION_DISTANCE))
+        if (sqrt(bot->GetDistance(pEnd->x, pEnd->y, pEnd->z, DIST_CALC_NONE)) < INTERACTION_DISTANCE)
             availablePaths.emplace_back(AvailablePath(pPath, true));
     }
 
@@ -3297,13 +3297,16 @@ bool ArenaTactics::Execute(Event event)
         return false;
     }
 
-    if (bot->GetBattleGround()->GetStatus() == STATUS_WAIT_LEAVE)
+    if (bot->GetBattleGround()->GetStatus() != STATUS_IN_PROGRESS)
         return false;
 
     if (bot->IsDead())
     {
         return false;
     }
+
+    if (bot->IsMoving())
+        return false;
 
     BattleGround *bg = bot->GetBattleGround();
     if (!bg)

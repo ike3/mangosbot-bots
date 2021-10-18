@@ -12,7 +12,8 @@ namespace ai
         consumables = 5,
         gear = 6,
         guild = 7,
-        anything = 8
+        tradeskill = 8,
+        anything = 9
     };
 
     class MaxGearRepairCostValue : public Uint32CalculatedValue

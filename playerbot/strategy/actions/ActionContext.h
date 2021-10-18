@@ -51,6 +51,7 @@
 #include "GuildCreateActions.h"
 #include "GuildManagementActions.h"
 #include "GuildAcceptAction.h"
+#include "RpgSubActions.h"
 
 
 namespace ai
@@ -155,6 +156,8 @@ namespace ai
             creators["use random quest item"] = &ActionContext::use_random_quest_item;
             creators["craft random item"] = &ActionContext::craft_random_item;
             creators["smart destroy item"] = &ActionContext::smart_destroy_item;
+            creators["disenchant random item"] = &ActionContext::disenchant_random_item;
+            creators["enchant random item"] = &ActionContext::enchant_random_item;
             creators["reset instances"] = &ActionContext::reset_instances;
             creators["buy petition"] = &ActionContext::buy_petition;
             creators["offer petition"] = &ActionContext::offer_petition;
@@ -174,6 +177,29 @@ namespace ai
             creators["bg use buff"] = &ActionContext::bg_use_buff;
             creators["attack enemy flag carrier"] = &ActionContext::attack_enemy_fc;
             creators["bg check flag"] = &ActionContext::bg_check_flag;
+
+            //Rpg
+            creators["rpg stay"] = &ActionContext::rpg_stay;
+            creators["rpg work"] = &ActionContext::rpg_work;
+            creators["rpg emote"] = &ActionContext::rpg_emote;
+            creators["rpg cancel"] = &ActionContext::rpg_cancel;
+            creators["rpg taxi"] = &ActionContext::rpg_taxi;
+            creators["rpg discover"] = &ActionContext::rpg_discover;
+            creators["rpg start quest"] = &ActionContext::rpg_start_quest;
+            creators["rpg end quest"] = &ActionContext::rpg_end_quest;
+            creators["rpg buy"] = &ActionContext::rpg_buy;
+            creators["rpg sell"] = &ActionContext::rpg_sell;
+            creators["rpg repair"] = &ActionContext::rpg_repair;
+            creators["rpg train"] = &ActionContext::rpg_train;
+            creators["rpg heal"] = &ActionContext::rpg_heal;
+            creators["rpg home bind"] = &ActionContext::rpg_home_bind;
+            creators["rpg queue bg"] = &ActionContext::rpg_queue_bg;
+            creators["rpg buy petition"] = &ActionContext::rpg_buy_petition;
+            creators["rpg use"] = &ActionContext::rpg_use;
+            creators["rpg spell"] = &ActionContext::rpg_spell;
+            creators["rpg craft"] = &ActionContext::rpg_craft;
+            creators["rpg trade useful"] = &ActionContext::rpg_trade_useful;
+            creators["rpg duel"] = &ActionContext::rpg_duel;
         }
 
     private:
@@ -272,6 +298,8 @@ namespace ai
         static Action* use_random_quest_item(PlayerbotAI* ai) { return new UseRandomQuestItem(ai); }
         static Action* craft_random_item(PlayerbotAI* ai) { return new CraftRandomItemAction(ai); }
         static Action* smart_destroy_item(PlayerbotAI* ai) { return new SmartDestroyItemAction(ai); }
+        static Action* disenchant_random_item(PlayerbotAI* ai) { return new DisEnchantRandomItemAction(ai); }
+        static Action* enchant_random_item(PlayerbotAI* ai) { return new EnchantRandomItemAction(ai); }
         static Action* reset_instances(PlayerbotAI* ai) { return new ResetInstancesAction(ai); }
         static Action* buy_petition(PlayerbotAI* ai) { return new BuyPetitionAction(ai); }
         static Action* offer_petition(PlayerbotAI* ai) { return new PetitionOfferAction(ai); }
@@ -293,5 +321,28 @@ namespace ai
         static Action* attack_enemy_fc(PlayerbotAI* ai) { return new AttackEnemyFlagCarrierAction(ai); }
         static Action* bg_use_buff(PlayerbotAI* ai) { return new BGTactics(ai, "use buff"); }
         static Action* bg_check_flag(PlayerbotAI* ai) { return new BGTactics(ai, "check flag"); }    
+
+        //Rpg
+        static Action* rpg_stay(PlayerbotAI* ai) { return new RpgStayAction(ai); }
+        static Action* rpg_work(PlayerbotAI* ai) { return new RpgWorkAction(ai); }
+        static Action* rpg_emote(PlayerbotAI* ai) { return new RpgEmoteAction(ai); }
+        static Action* rpg_cancel(PlayerbotAI* ai) { return new RpgCancelAction(ai); }
+        static Action* rpg_taxi(PlayerbotAI* ai) { return new RpgTaxiAction(ai); }
+        static Action* rpg_discover(PlayerbotAI* ai) { return new RpgDiscoverAction(ai); }
+        static Action* rpg_start_quest(PlayerbotAI* ai) { return new RpgStartQuestAction(ai); }
+        static Action* rpg_end_quest(PlayerbotAI* ai) { return new RpgEndQuestAction(ai); }
+        static Action* rpg_buy(PlayerbotAI* ai) { return new RpgBuyAction(ai); }
+        static Action* rpg_sell(PlayerbotAI* ai) { return new RpgSellAction(ai); }
+        static Action* rpg_repair(PlayerbotAI* ai) { return new RpgRepairAction(ai); }
+        static Action* rpg_train(PlayerbotAI* ai) { return new RpgTrainAction(ai); }
+        static Action* rpg_heal(PlayerbotAI* ai) { return new RpgHealAction(ai); }
+        static Action* rpg_home_bind(PlayerbotAI* ai) { return new RpgHomeBindAction(ai); }
+        static Action* rpg_queue_bg(PlayerbotAI* ai) { return new RpgQueueBgAction(ai); }
+        static Action* rpg_buy_petition(PlayerbotAI* ai) { return new RpgBuyPetitionAction(ai); }
+        static Action* rpg_use(PlayerbotAI* ai) { return new RpgUseAction(ai); }
+        static Action* rpg_spell(PlayerbotAI* ai) { return new RpgUseAction(ai); }
+        static Action* rpg_craft(PlayerbotAI* ai) { return new RpgCraftAction(ai); }
+        static Action* rpg_trade_useful(PlayerbotAI* ai) { return new RpgTradeUsefulAction(ai); }
+        static Action* rpg_duel(PlayerbotAI* ai) { return new RpgDuelAction(ai); }
     };
 };

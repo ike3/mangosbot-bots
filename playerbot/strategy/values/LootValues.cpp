@@ -6,7 +6,7 @@
 using namespace ai;
 
 
-LootTemplateAccess const* LootMapValue::GetLootTemplate(ObjectGuid guid, LootType type)
+LootTemplateAccess const* DropMapValue::GetLootTemplate(ObjectGuid guid, LootType type)
 {
 	LootTemplate const* lTemplate = nullptr;
 
@@ -60,9 +60,9 @@ LootTemplateAccess const* LootMapValue::GetLootTemplate(ObjectGuid guid, LootTyp
 	return lTemplateA;
 }
 
-LootMap* LootMapValue::Calculate()
+DropMap* DropMapValue::Calculate()
 {
-	LootMap* lootMap = new LootMap;
+	DropMap* dropMap = new DropMap;
 
 	int32 sEntry;
 
@@ -74,7 +74,7 @@ LootMap* LootMapValue::Calculate()
 
 		if(lTemplateA)
 			for (LootStoreItem const& lItem : lTemplateA->Entries)
-				lootMap->insert({ lItem.itemid,sEntry });
+				dropMap->insert(make_pair(lItem.itemid,sEntry));
 	}
 
 	for (uint32 entry = 0; entry < sGOStorage.GetMaxEntry(); entry++)
@@ -85,10 +85,27 @@ LootMap* LootMapValue::Calculate()
 
 		if(lTemplateA)
 			for (LootStoreItem const& lItem : lTemplateA->Entries)
-				lootMap->insert({ lItem.itemid,-sEntry });
+				dropMap->insert(make_pair(lItem.itemid, -sEntry));
 	}
 
-	return lootMap;
+	return dropMap;
+}
+
+//What items does this entry have in its loot list?
+list<int32> ItemDropListValue::Calculate()
+{
+	uint32 itemId = stoi(getQualifier());
+
+	DropMap* dropMap = GAI_VALUE(DropMap*, "drop map");
+
+	list<int32> entries;
+
+	auto range = dropMap->equal_range(itemId);
+
+	for (auto itr = range.first; itr != range.second; ++itr)
+		entries.push_back(itr->second);
+
+	return entries;
 }
 
 //What items does this entry have in its loot list?
@@ -98,29 +115,29 @@ list<uint32> EntryLootListValue::Calculate()
 
 	list<uint32> items;
 
-	LootMap* lootMap = GAI_VALUE(LootMap*, "loot map");
+	LootTemplateAccess const* lTemplateA;
 
-	auto range = lootMap->right.equal_range(entry);
+	if (entry > 0)
+		lTemplateA = DropMapValue::GetLootTemplate(ObjectGuid(HIGHGUID_UNIT, entry, uint32(1)), LOOT_CORPSE);
+	else
+		lTemplateA = DropMapValue::GetLootTemplate(ObjectGuid(HIGHGUID_GAMEOBJECT, entry, uint32(1)), LOOT_CORPSE);
 
-	for (auto itr = range.first; itr != range.second; ++itr)
-		items.push_back(itr->second);
+	if (lTemplateA)
+		for (LootStoreItem const& lItem : lTemplateA->Entries)
+			items.push_back(lItem.itemid);
 
 	return items;
 }
 
-//What items does this entry have in its loot list?
-list<int32> ItemLootListValue::Calculate()
+itemUsageMap EntryLootUsageValue::Calculate()
 {
-	uint32 itemId = stoi(getQualifier());
+	itemUsageMap items;
 
-	LootMap* lootMap = GAI_VALUE(LootMap*, "loot map");
+	for (auto itemId : GAI_VALUE2(list<uint32>, "entry loot list", getQualifier()))
+	{
+		items[AI_VALUE2(ItemUsage, "item usage", itemId)].push_back(itemId);
+	}
 
-	list<int32> entries;
+	return items;
+};
 
-	auto range = lootMap->left.equal_range(itemId);
-
-	for (auto itr = range.first; itr != range.second; ++itr)
-		entries.push_back(itr->second);
-
-	return entries;
-}

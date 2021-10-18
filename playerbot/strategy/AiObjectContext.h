@@ -45,6 +45,11 @@ namespace ai
             return strategyContexts.supports();
         }
 
+        set<string> GetSupportedActions()
+        {
+            return actionContexts.supports();
+        }
+
         string FormatValues()
         {
             ostringstream out;
@@ -74,6 +79,7 @@ namespace ai
         list<string> Save();
         void Load(list<string> data);
 
+        vector<string> performanceStack;
     protected:
         NamedObjectContextList<Strategy> strategyContexts;
         NamedObjectContextList<Action> actionContexts;

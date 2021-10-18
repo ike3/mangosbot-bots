@@ -52,7 +52,7 @@ namespace ai
    public:
        UseHearthStone(PlayerbotAI* ai) : UseItemAction(ai, "hearthstone", true) {}
 
-       bool isUseful() { return !bot->IsInCombat() && !bot->InBattleGround(); }
+       bool isUseful() { return !bot->InBattleGround(); }
        
        virtual bool Execute(Event event);
    };

@@ -116,8 +116,8 @@ void ChooseTravelTargetAction::setNewTarget(TravelTarget* newTarget, TravelTarge
         oldTarget->setExpireIn(HOUR * IN_MILLISECONDS);
 
     //Clear rpg and pull/grind target. We want to travel, not hang around some more.
-    context->GetValue<ObjectGuid>("rpg target")->Set(ObjectGuid());
-    context->GetValue<ObjectGuid>("pull target")->Set(ObjectGuid());
+    RESET_AI_VALUE(GuidPosition,"rpg target");
+    RESET_AI_VALUE(ObjectGuid,"pull target");
 };
 
 //Tell the master what travel target we are moving towards.
