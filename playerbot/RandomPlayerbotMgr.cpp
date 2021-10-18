@@ -170,62 +170,18 @@ void RandomPlayerbotMgr::LogPlayerLocation()
 {
     activeBots = 0;
 
-    if (sPlayerbotAIConfig.hasLog("player_location.csv"))
+    try
     {
-        try
-        {
-            sPlayerbotAIConfig.openLog("player_location.csv", "w");
-            if (sPlayerbotAIConfig.randomBotAutologin)
-                for (auto i : GetAllBots())
-                {
-                    Player* bot = i.second;
-                    if (!bot)
-                        continue;
-                    ostringstream out;
-                    out << sPlayerbotAIConfig.GetTimestampStr() << "+00,";
-                    out << "RND" << ",";
-                    out << bot->GetName() << ",";
-                    out << std::fixed << std::setprecision(2);
-                    WorldPosition(bot).printWKT(out);
-                    out << bot->GetOrientation() << ",";
-                    out << to_string(bot->getRace()) << ",";
-                    out << to_string(bot->getClass()) << ",";
-                    out << bot->GetMapId() << ",";
-                    out << bot->getLevel() << ",";
-                    out << bot->GetHealth() << ",";
-                    out << bot->GetPowerPercent() << ",";
-                    out << bot->GetMoney() << ",";
-
-                    if (bot->GetPlayerbotAI())
-                    {
-                        out << to_string(uint8(bot->GetPlayerbotAI()->GetGrouperType())) << ",";
-                        out << to_string(uint8(bot->GetPlayerbotAI()->GetGuilderType())) << ",";
-                        out << (bot->GetPlayerbotAI()->AllowActivity(ALL_ACTIVITY) ? "active" : "inactive") << ",";
-                        out << (bot->GetPlayerbotAI()->IsActive() ? "active" : "delay") << ",";
-                        out << bot->GetPlayerbotAI()->HandleRemoteCommand("state") << ",";
-
-                        if (bot->GetPlayerbotAI()->AllowActivity(ALL_ACTIVITY))
-                            activeBots++;
-                    }
-                    else
-                    {
-                        out << 0 << "," << 0 << ",err,err,err,";
-                    }
-
-                    out << (bot->IsInCombat() ? "combat" : "safe") << ",";
-                    out << (bot->IsDead() ? (bot->GetCorpse() ? "ghost" : "dead") : "alive");
-
-
-                    sPlayerbotAIConfig.log("player_location.csv", out.str().c_str());
-                }
-            for (auto i : GetPlayers())
+        sPlayerbotAIConfig.openLog("player_location.csv", "w");
+        if (sPlayerbotAIConfig.randomBotAutologin)
+            for (auto i : GetAllBots())
             {
-                Player* bot = i;
+                Player* bot = i.second;
                 if (!bot)
                     continue;
                 ostringstream out;
                 out << sPlayerbotAIConfig.GetTimestampStr() << "+00,";
-                out << "PLR" << ",";
+                out << "RND" << ",";
                 out << bot->GetName() << ",";
                 out << std::fixed << std::setprecision(2);
                 WorldPosition(bot).printWKT(out);
@@ -237,7 +193,8 @@ void RandomPlayerbotMgr::LogPlayerLocation()
                 out << bot->GetHealth() << ",";
                 out << bot->GetPowerPercent() << ",";
                 out << bot->GetMoney() << ",";
-                if (i->GetPlayerbotAI())
+
+                if (bot->GetPlayerbotAI())
                 {
                     out << to_string(uint8(bot->GetPlayerbotAI()->GetGrouperType())) << ",";
                     out << to_string(uint8(bot->GetPlayerbotAI()->GetGuilderType())) << ",";
@@ -250,22 +207,63 @@ void RandomPlayerbotMgr::LogPlayerLocation()
                 }
                 else
                 {
-                    out << 0 << "," << 0 << ",player,player,player,";
+                    out << 0 << "," << 0 << ",err,err,err,";
                 }
 
                 out << (bot->IsInCombat() ? "combat" : "safe") << ",";
                 out << (bot->IsDead() ? (bot->GetCorpse() ? "ghost" : "dead") : "alive");
 
+
                 sPlayerbotAIConfig.log("player_location.csv", out.str().c_str());
             }
-        }
-        catch (...)
+        for (auto i : GetPlayers())
         {
-            return; 
-            //This is to prevent some thread-unsafeness. Crashes would happen if bots get added or removed.
-            //We really don't care here. Just skip a log. Making this thread-safe is not worth the effort.
+            Player* bot = i;
+            if (!bot)
+                continue;
+            ostringstream out;
+            out << sPlayerbotAIConfig.GetTimestampStr() << "+00,";
+            out << "PLR" << ",";
+            out << bot->GetName() << ",";
+            out << std::fixed << std::setprecision(2);
+            WorldPosition(bot).printWKT(out);
+            out << bot->GetOrientation() << ",";
+            out << to_string(bot->getRace()) << ",";
+            out << to_string(bot->getClass()) << ",";
+            out << bot->GetMapId() << ",";
+            out << bot->getLevel() << ",";
+            out << bot->GetHealth() << ",";
+            out << bot->GetPowerPercent() << ",";
+            out << bot->GetMoney() << ",";
+            if (i->GetPlayerbotAI())
+            {
+                out << to_string(uint8(bot->GetPlayerbotAI()->GetGrouperType())) << ",";
+                out << to_string(uint8(bot->GetPlayerbotAI()->GetGuilderType())) << ",";
+                out << (bot->GetPlayerbotAI()->AllowActivity(ALL_ACTIVITY) ? "active" : "inactive") << ",";
+                out << (bot->GetPlayerbotAI()->IsActive() ? "active" : "delay") << ",";
+                out << bot->GetPlayerbotAI()->HandleRemoteCommand("state") << ",";
+
+                if (bot->GetPlayerbotAI()->AllowActivity(ALL_ACTIVITY))
+                    activeBots++;
+            }
+            else
+            {
+                out << 0 << "," << 0 << ",player,player,player,";
+            }
+
+            out << (bot->IsInCombat() ? "combat" : "safe") << ",";
+            out << (bot->IsDead() ? (bot->GetCorpse() ? "ghost" : "dead") : "alive");
+
+            sPlayerbotAIConfig.log("player_location.csv", out.str().c_str());
         }
     }
+    catch (...)
+    {
+        return;
+        //This is to prevent some thread-unsafeness. Crashes would happen if bots get added or removed.
+        //We really don't care here. Just skip a log. Making this thread-safe is not worth the effort.
+    }
+
 }
 
 void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed)
@@ -274,9 +272,6 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed)
         totalPmo->finish();
 
     totalPmo = sPerformanceMonitor.start(PERF_MON_TOTAL, "RandomPlayerbotMgr::FullTick");
-
-    std::thread t([this] {LogPlayerLocation(); });
-    t.detach();
 
     if (!sPlayerbotAIConfig.randomBotAutologin || !sPlayerbotAIConfig.enabled)
         return;
@@ -383,6 +378,12 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed)
         }
     }
     if (pmo) pmo->finish();
+
+    if (sPlayerbotAIConfig.hasLog("player_location.csv"))
+    {
+        std::thread t([this] {LogPlayerLocation(); });
+        t.detach();
+    }
 }
 
 uint32 RandomPlayerbotMgr::AddRandomBots()
