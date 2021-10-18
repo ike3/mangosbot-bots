@@ -273,18 +273,13 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
                 engine->addStrategy("dps debuff");
             break;
         case CLASS_ROGUE:
-            engine->addStrategies("dps", "threat", "dps assist", "aoe", "close", "cc", "behind", NULL);
+            engine->addStrategies("dps", "threat", "dps assist", "aoe", "close", "cc", "behind", "stealth", NULL);
             break;
         case CLASS_WARLOCK:
-            if (tab == 1)
-                engine->addStrategies("tank", "threat", NULL);
-            else
-                engine->addStrategies("dps", "threat", NULL);
-
             if (player->getLevel() > 19)
                 engine->addStrategy("dps debuff");
 
-            engine->addStrategies("dps assist", "flee", "ranged", "cc", "pet", NULL);
+            engine->addStrategies("dps assist", "dps", "flee", "ranged", "cc", "pet", "threat", NULL);
             break;
 #ifdef MANGOSBOT_TWO
         case CLASS_DEATH_KNIGHT:
@@ -333,13 +328,7 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
             {
                 engine->addStrategies("dps", "close", NULL);
             }
-
-            if (player->getClass() == CLASS_ROGUE)
-                engine->addStrategies("stealth", NULL);
         }
-
-        if (player->getClass() == CLASS_ROGUE)
-            engine->addStrategy("stealth");
 
         engine->ChangeStrategy(sPlayerbotAIConfig.randomBotCombatStrategies);
     }
@@ -364,7 +353,6 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
         if (player->InArena())
         {
             engine->addStrategy("arena");
-            engine->removeStrategy("ranged");
         }
 #endif
         engine->addStrategies("boost", "racials", "chat", "default", "aoe", "potions", "conserve mana", "cast time", "dps assist", NULL);
