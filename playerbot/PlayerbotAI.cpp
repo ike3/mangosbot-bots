@@ -2203,7 +2203,7 @@ bool PlayerbotAI::AllowActive(ActivityType activityType)
         }
     }
 
-    if (bot->InBattleGround()) //In battle ground. Always active.
+    if (bot->GetMap()->Instanceable()) // bg, raid, dungeon
         return true;
 
     if (bot->InBattleGroundQueue()) //In bg queue. Speed up bg queue/join.
@@ -2233,23 +2233,24 @@ bool PlayerbotAI::AllowActive(ActivityType activityType)
     if (sPlayerbotAIConfig.botActiveAlone >= 100)
         return true;
 
-    uint32 botActive = sPlayerbotAIConfig.botActiveAlone;
-
     uint32 AvgDiff = sWorld.GetAverageDiff();
     if (AvgDiff > 500)
         return false;
 
+    uint32 mod = 100;
+
     // if has real players - slow down continents without player
     if (sRandomPlayerbotMgr.GetPlayers().size())
     {
+
         if (AvgDiff > 100)
-            botActive = 10;
+            mod = 50;
 
         if (AvgDiff > 150)
-            botActive = 5;
+            mod = 25;
 
         if (AvgDiff > 200)
-            botActive = 1;
+            mod = 10;
 
         if (AvgDiff > 300)
         {
@@ -2264,9 +2265,9 @@ bool PlayerbotAI::AllowActive(ActivityType activityType)
         }
     }
 
-    uint32 ActivityNumber = GetFixedBotNumer(BotTypeNumber::ACTIVITY_TYPE_NUMBER, 100, sPlayerbotAIConfig.botActiveAlone);
+    uint32 ActivityNumber = GetFixedBotNumer(BotTypeNumber::ACTIVITY_TYPE_NUMBER, 100, (sPlayerbotAIConfig.botActiveAlone * mod) / 100 * 0.01);
 
-    return ActivityNumber <= botActive;           //The given percentage of bots should be active and rotate 1% of those active bots each minute.
+    return ActivityNumber <= (sPlayerbotAIConfig.botActiveAlone * mod) / 100;           //The given percentage of bots should be active and rotate 1% of those active bots each minute.
 }
 
 bool PlayerbotAI::AllowActivity(ActivityType activityType, bool checkNow)
