@@ -288,12 +288,10 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed)
     uint32 availableBotCount = availableBots.size();
     uint32 onlineBotCount = playerBots.size();
     
-    uint32 onlineBotFocus = 75;
+    uint32 onlineBotFocus = 50;
 
-    if (onlineBotCount < sPlayerbotAIConfig.minRandomBots / 4)
+    if (onlineBotCount < sPlayerbotAIConfig.minRandomBots)
         onlineBotFocus = 25;
-    else if (playerBots.size() < int(sPlayerbotAIConfig.minRandomBots / 2))
-        onlineBotFocus = 50;
 
     SetNextCheckDelay(sPlayerbotAIConfig.randomBotUpdateInterval * (onlineBotFocus+25) * 10);
 
