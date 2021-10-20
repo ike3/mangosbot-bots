@@ -383,11 +383,11 @@ bool LfgJoinAction::JoinLFG()
             // if moving to boss
             if (target->getDestination() && target->getDestination()->getName() == "BossTravelDestination")
             {
-                WorldLocation location = target->getLocation();
-                uint32 targetAreaFlag = GetAreaFlagByMapId(location.mapid);
+                WorldPosition* location = target->getPosition();
+                uint32 targetAreaFlag = GetAreaFlagByMapId(location->mapid);
                 if (targetAreaFlag)
                 {
-                    AreaTableEntry const* areaEntry = GetAreaEntryByAreaFlagAndMap(targetAreaFlag, location.mapid);
+                    AreaTableEntry const* areaEntry = GetAreaEntryByAreaFlagAndMap(targetAreaFlag, location->mapid);
                     if (areaEntry)
                     {
                         if (areaEntry->zone)
