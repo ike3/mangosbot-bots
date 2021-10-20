@@ -1597,6 +1597,7 @@ bool RandomPlayerbotMgr::ProcessBot(uint32 bot)
         sLog.outBasic("Bot #%d %s:%d <%s>: log out", bot, IsAlliance(player->getRace()) ? "A" : "H", player->getLevel(), player->GetName());
         LogoutPlayerBot(bot);
         SetEventValue(bot, "logout", 1, urand(sPlayerbotAIConfig.minRandomBotInWorldTime, sPlayerbotAIConfig.maxRandomBotInWorldTime));
+        currentBots.remove(bot);
         return true;
     }
 
