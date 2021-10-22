@@ -99,7 +99,6 @@ namespace ai
             {
                 //sLog.outBasic("Bot #%d %s:%d <%s> was in the same position for %d seconds", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName(), posVal->LastChangeDelay());
 
-                posVal->Reset();
                 return true;
             }
 
@@ -125,7 +124,6 @@ namespace ai
 
             if (longLog)
             {
-                posVal->Reset();
                 //sLog.outBasic("Bot #%d %s:%d <%s> was in the same position for 15mins", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName(), posVal->LastChangeDelay());
             }
 
@@ -188,7 +186,6 @@ namespace ai
             {
                 //sLog.outBasic("Bot #%d %s:%d <%s> was in combat for %d seconds", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName(), posVal->LastChangeDelay());
 
-                combatVal->Reset();
                 return true;
             }
 

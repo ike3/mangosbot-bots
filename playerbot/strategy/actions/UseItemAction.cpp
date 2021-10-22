@@ -438,7 +438,11 @@ bool UseHearthStone::Execute(Event event)
     bool used = UseItemAction::Execute(event);
 
     if (used)
+    {
+        RESET_AI_VALUE(bool, "combat::self target");
+        RESET_AI_VALUE(WorldPosition, "current position");
         ai->SetNextCheckDelay(10 * IN_MILLISECONDS);
+    }
 
     return used;
 }

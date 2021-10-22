@@ -139,6 +139,9 @@ namespace ai
 
             bot->TeleportTo(ClosestGrave->map_id, ClosestGrave->x, ClosestGrave->y, ClosestGrave->z, ClosestGrave->o);
 
+            RESET_AI_VALUE(bool,"combat::self target");
+            RESET_AI_VALUE(WorldPosition, "current position");
+
             return true;
         }
 
