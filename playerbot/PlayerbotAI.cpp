@@ -2202,11 +2202,8 @@ bool PlayerbotAI::AllowActive(ActivityType activityType)
 
             if(!member->GetPlayerbotAI() || (member->GetPlayerbotAI() && member->GetPlayerbotAI()->HasRealPlayerMaster()))
                 return true;
-
-            if (activityType != PARTY_ACTIVITY && member->GetPlayerbotAI()->AllowActive(PARTY_ACTIVITY))
-                return true;
         }
-    }
+    }   
 
     if (!WorldPosition(bot).isOverworld()) // bg, raid, dungeon
         return true;
@@ -2268,6 +2265,12 @@ bool PlayerbotAI::AllowActive(ActivityType activityType)
                     return false;
             }
         }
+    }
+
+    if (group)
+    {
+        if (activityType != PARTY_ACTIVITY && GetGroupMaster())
+            return GetGroupMaster()->GetPlayerbotAI()->AllowActive(PARTY_ACTIVITY);
     }
 
     uint32 ActivityNumber = GetFixedBotNumer(BotTypeNumber::ACTIVITY_TYPE_NUMBER, 100, (sPlayerbotAIConfig.botActiveAlone * mod) / 100 * 0.01);
