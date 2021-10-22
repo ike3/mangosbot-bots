@@ -379,8 +379,7 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed)
 
     if (sPlayerbotAIConfig.hasLog("player_location.csv"))
     {
-        std::thread t([this] {LogPlayerLocation(); });
-        t.detach();
+        LogPlayerLocation();
     }
 }
 
@@ -413,6 +412,7 @@ uint32 RandomPlayerbotMgr::AddRandomBots()
                     continue;
 
                 SetEventValue(guid, "add", 1, urand(sPlayerbotAIConfig.minRandomBotInWorldTime, sPlayerbotAIConfig.maxRandomBotInWorldTime));
+                SetEventValue(guid, "logout", 0, 0);
                 currentBots.push_back(guid);
 
                 maxAllowedBotCount--;
@@ -1594,6 +1594,7 @@ bool RandomPlayerbotMgr::ProcessBot(uint32 bot)
     {
         sLog.outBasic("Bot #%d %s:%d <%s>: log out", bot, IsAlliance(player->getRace()) ? "A" : "H", player->getLevel(), player->GetName());
         LogoutPlayerBot(bot);
+        currentBots.remove(bot);
         SetEventValue(bot, "logout", 1, urand(sPlayerbotAIConfig.minRandomBotInWorldTime, sPlayerbotAIConfig.maxRandomBotInWorldTime));
         return true;
     }
@@ -2304,7 +2305,7 @@ uint32 RandomPlayerbotMgr::GetEventValue(uint32 bot, string event)
         }
     }*/
 
-    if ((time(0) - e.lastChangeTime) >= e.validIn && (event == "add" || IsRandomBot(bot)) && event != "specNo" && event != "specLink")
+    if (bot > 0 && (time(0) - e.lastChangeTime) >= e.validIn && (event == "add" || IsRandomBot(bot)) && event != "specNo" && event != "specLink")
         e.value = 0;
 
     return e.value;
@@ -2560,18 +2561,17 @@ void RandomPlayerbotMgr::OnPlayerLogin(Player* player)
         }
     }
 
-    if (botsNearby > 100)
+    if (botsNearby > 100 && false)
     {
         WorldPosition botPos(player);
 
-        botPos.GetReachableRandomPointOnGround(player, sPlayerbotAIConfig.reactDistance * 2, true);
-        botPos.GetReachableRandomPointOnGround(player, sPlayerbotAIConfig.reactDistance * 2, true);
-        botPos.GetReachableRandomPointOnGround(player, sPlayerbotAIConfig.reactDistance * 2, true);
+        //botPos.GetReachableRandomPointOnGround(player, sPlayerbotAIConfig.reactDistance * 2, true);
+        //botPos.GetReachableRandomPointOnGround(player, sPlayerbotAIConfig.reactDistance * 2, true);
+        //botPos.GetReachableRandomPointOnGround(player, sPlayerbotAIConfig.reactDistance * 2, true);
 
-        player->TeleportTo(botPos);
+        //player->Relocate(botPos.getX(), botPos.getY(), botPos.getZ(), botPos.getO());
         //player->Relocate(botPos.coord_x, botPos.coord_y, botPos.coord_z, botPos.orientation);
         
-        /*
         if (!player->GetFactionTemplateEntry())
         {
             botPos.GetReachableRandomPointOnGround(player, sPlayerbotAIConfig.reactDistance * 2, true);
@@ -2601,7 +2601,8 @@ void RandomPlayerbotMgr::OnPlayerLogin(Player* player)
         }
 
         player->TeleportTo(botPos);
-        */
+        //player->Relocate(botPos.getX(), botPos.getY(), botPos.getZ(), botPos.getO());
+        
     }
 
     if (IsRandomBot(player))
