@@ -653,9 +653,14 @@ void PlayerbotAI::DoNextAction()
 
     if (minimal)
     {
+        if(!bot->isAFK())
+            bot->ToggleAFK();
         SetNextCheckDelay(sPlayerbotAIConfig.passiveDelay);
         return;
     }
+    else if (bot->isAFK())
+        bot->ToggleAFK();
+
 
     Group *group = bot->GetGroup();
     // test BG master set
@@ -2203,7 +2208,7 @@ bool PlayerbotAI::AllowActive(ActivityType activityType)
         }
     }
 
-    if (bot->GetMap()->Instanceable()) // bg, raid, dungeon
+    if (!WorldPosition(bot).isOverworld()) // bg, raid, dungeon
         return true;
 
     if (bot->InBattleGroundQueue()) //In bg queue. Speed up bg queue/join.
