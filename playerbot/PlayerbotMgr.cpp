@@ -728,7 +728,7 @@ void PlayerbotMgr::HandleMasterOutgoingPacket(const WorldPacket& packet)
         for (Group::member_citerator itr = groupSlot.begin(); itr != groupSlot.end(); itr++)
         {
             Player* bot = sObjectMgr.GetPlayer(itr->guid);
-            if (bot->GetPlayerbotAI() && bot->GetPlayerbotAI()->GetMaster() == GetMaster())
+            if (bot && bot->GetPlayerbotAI() && bot->GetPlayerbotAI()->GetMaster() == GetMaster())
                 bot->GetPlayerbotAI()->HandleMasterOutgoingPacket(packet);
         }
     }
