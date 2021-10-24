@@ -653,9 +653,14 @@ void PlayerbotAI::DoNextAction()
 
     if (minimal)
     {
+        if(!bot->isAFK())
+            bot->ToggleAFK();
         SetNextCheckDelay(sPlayerbotAIConfig.passiveDelay);
         return;
     }
+    else if (bot->isAFK())
+        bot->ToggleAFK();
+
 
     Group *group = bot->GetGroup();
     // test BG master set
@@ -2200,13 +2205,10 @@ bool PlayerbotAI::AllowActive(ActivityType activityType)
 
             if(!member->GetPlayerbotAI() || (member->GetPlayerbotAI() && member->GetPlayerbotAI()->HasRealPlayerMaster()))
                 return true;
-
-            if (activityType != PARTY_ACTIVITY && member->GetPlayerbotAI()->AllowActive(PARTY_ACTIVITY))
-                return true;
         }
-    }
+    }   
 
-    if (bot->GetMap()->Instanceable()) // bg, raid, dungeon
+    if (!WorldPosition(bot).isOverworld()) // bg, raid, dungeon
         return true;
 
     if (bot->InBattleGroundQueue()) //In bg queue. Speed up bg queue/join.
@@ -2266,6 +2268,12 @@ bool PlayerbotAI::AllowActive(ActivityType activityType)
                     return false;
             }
         }
+    }
+
+    if (group)
+    {
+        if (activityType != PARTY_ACTIVITY && GetGroupMaster())
+            return GetGroupMaster()->GetPlayerbotAI()->AllowActive(PARTY_ACTIVITY);
     }
 
     uint32 ActivityNumber = GetFixedBotNumer(BotTypeNumber::ACTIVITY_TYPE_NUMBER, 100, (sPlayerbotAIConfig.botActiveAlone * mod) / 100 * 0.01);
