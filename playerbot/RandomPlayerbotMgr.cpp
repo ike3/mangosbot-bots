@@ -322,57 +322,46 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed)
     }
 
     uint32 updateBots = sPlayerbotAIConfig.randomBotsPerInterval * onlineBotFocus / 100;
-    uint32 loginBots = std::min(sPlayerbotAIConfig.randomBotsPerInterval - updateBots, onlineBotCount - maxAllowedBotCount);
+
+    uint32 maxNewBots = onlineBotCount < maxAllowedBotCount ? maxAllowedBotCount - onlineBotCount : 0;
+    uint32 loginBots = std::min(sPlayerbotAIConfig.randomBotsPerInterval - updateBots, maxNewBots);
 
     if(!availableBots.empty())
     {
-        vector<uint32> rbots(availableBots.begin(), availableBots.end());
-        vector<uint32> bots = rbots;
-
         //Update bots
-        do
+        for (auto bot : availableBots)
         {
-            uint32 i = urand(0, bots.size());
-            uint32 bot = bots[i];
-            swap(bots[i], bots.back());
-            bots.pop_back();
-
             if (!GetPlayerBot(bot))
                 continue;
 
             if (ProcessBot(bot)) {
-               updateBots--;
+                updateBots--;
             }
 
-        } while (updateBots && bots.size() > 1);
+            if (!updateBots)
+                break;
+        }
 
         if (loginBots)
         {
             loginBots += updateBots;
+            loginBots = std::min(loginBots, maxNewBots);
 
             sLog.outDetail("%d new bots", loginBots);
-
-            bots = rbots;
-
+            
             //Log in bots
-            do
+            for (auto bot : availableBots)
             {
-                uint32 i = urand(0, bots.size());
-                uint32 bot = bots[i];
-                swap(bots[i], bots.back());
-                bots.pop_back();
-
-                if (GetPlayerBot(bot))
+               if (GetPlayerBot(bot))
                     continue;
 
                 if (ProcessBot(bot)) {
                     loginBots--;
                 }
 
-            } while ((loginBots) && bots.size() > 1);
-
-            if (loginBots > 0)
-                sLog.outError("Unable to log in %d bots (not enough characters?)", loginBots);
+                if (!loginBots)
+                    break;
+            };
         }
     }
     if (pmo) pmo->finish();
@@ -409,6 +398,15 @@ uint32 RandomPlayerbotMgr::AddRandomBots()
                 uint64 guid = fields[0].GetUInt64();
 
                 if (GetEventValue(guid, "add"))
+                    continue;
+
+                if (GetEventValue(guid, "logout"))
+                    continue;
+
+                if (GetPlayerBot(guid))
+                    continue;
+
+                if (std::find(currentBots.begin(), currentBots.end(), guid) != currentBots.end())
                     continue;
 
                 SetEventValue(guid, "add", 1, urand(sPlayerbotAIConfig.minRandomBotInWorldTime, sPlayerbotAIConfig.maxRandomBotInWorldTime));
@@ -2305,7 +2303,7 @@ uint32 RandomPlayerbotMgr::GetEventValue(uint32 bot, string event)
         }
     }*/
 
-    if (bot > 0 && (time(0) - e.lastChangeTime) >= e.validIn && (event == "add" || IsRandomBot(bot)) && event != "specNo" && event != "specLink")
+    if ((time(0) - e.lastChangeTime) >= e.validIn && (event == "add" || IsRandomBot(bot)) && event != "specNo" && event != "specLink")
         e.value = 0;
 
     return e.value;
