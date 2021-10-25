@@ -1594,7 +1594,6 @@ bool RandomPlayerbotMgr::ProcessBot(uint32 bot)
         LogoutPlayerBot(bot);
         currentBots.remove(bot);
         SetEventValue(bot, "logout", 1, urand(sPlayerbotAIConfig.minRandomBotInWorldTime, sPlayerbotAIConfig.maxRandomBotInWorldTime));
-        currentBots.remove(bot);
         return true;
     }
 
