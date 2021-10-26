@@ -66,6 +66,7 @@
 #include "PassLeadershipToMasterAction.h"
 #include "CheatAction.h"
 #include "GuildManagementActions.h"
+#include "RTSCAction.h"
 
 namespace ai
 {
@@ -152,6 +153,7 @@ namespace ai
             creators["flag"] = &ChatActionContext::flag;
             creators["give leader"] = &ChatActionContext::give_leader;
             creators["cheat"] = &ChatActionContext::cheat;
+            creators["rtsc"] = &ChatActionContext::rtsc;
 
             creators["ginvite"] = &ChatActionContext::ginvite;
             creators["guild promote"] = &ChatActionContext::guild_promote;
@@ -240,6 +242,7 @@ namespace ai
         static Action* gossip_hello(PlayerbotAI* ai) { return new GossipHelloAction(ai); }
         static Action* give_leader(PlayerbotAI* ai) { return new GiveLeaderAction(ai); }
         static Action* cheat(PlayerbotAI* ai) { return new CheatAction(ai); }
+        static Action* rtsc(PlayerbotAI* ai) { return new RTSCAction(ai); }
 
         static Action* ginvite(PlayerbotAI* ai) { return new GuildInviteAction(ai); }
         static Action* guild_promote(PlayerbotAI* ai) { return new GuildPromoteAction(ai); }
