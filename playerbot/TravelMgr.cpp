@@ -1995,7 +1995,7 @@ void TravelMgr::LoadQuestTravelTable()
         if (!cInfo)
             continue;
 
-        if (cInfo->ExtraFlags & CREATURE_EXTRA_FLAG_INVISIBLE != 0)
+        if (cInfo->ExtraFlags & CREATURE_EXTRA_FLAG_INVISIBLE)
             continue;
 
         vector<uint32> allowedNpcFlags;

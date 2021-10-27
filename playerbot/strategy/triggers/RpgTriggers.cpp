@@ -406,6 +406,9 @@ bool RpgTradeUsefulTrigger::IsActive()
 
 bool RpgDuelTrigger::IsActive()
 {
+    if(!ai->HasStrategy("start duel", BOT_STATE_NON_COMBAT))
+        return false;
+
     GuidPosition guidP(getGuidP());
 
     if (!guidP.IsPlayer())

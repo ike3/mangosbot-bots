@@ -147,14 +147,17 @@ bool ChooseRpgTargetAction::Execute(Event event)
         {
             Player* player = guidP.GetPlayer();
 
-            if (!player || !player->GetPlayerbotAI())
+            if (!player)
                 continue;
 
-            GuidPosition guidPP = PAI_VALUE(GuidPosition, "rpg target");
-
-            if (guidPP.IsPlayer())
+            if (player->GetPlayerbotAI())
             {
-                continue;
+                GuidPosition guidPP = PAI_VALUE(GuidPosition, "rpg target");
+
+                if (guidPP.IsPlayer())
+                {
+                    continue;
+                }
             }
         }
 

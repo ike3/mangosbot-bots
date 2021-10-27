@@ -458,10 +458,14 @@ void AiFactory::AddDefaultNonCombatStrategies(Player* player, PlayerbotAI* const
     {   
         Player* master = facade->GetMaster();
 
+        // let 25% of free bots start duels.
+        if (!urand(0, 3))
+            nonCombatEngine->addStrategy("start duel");
+
         if (!player->GetGroup() || player->GetGroup()->GetLeaderGuid() == player->GetObjectGuid())
         {
-            // let 50% of random not grouped (or grp leader) bots help other players
-            if (!urand(0, 4))
+            // let 25% of random not grouped (or grp leader) bots help other players
+            if (!urand(0, 3))
                 nonCombatEngine->addStrategy("attack tagged");
 
             nonCombatEngine->addStrategy("pvp");
