@@ -174,6 +174,7 @@ namespace ai
                 creators["searing totem"] = &AiObjectContextInternal::searing_totem;
                 creators["magma totem"] = &AiObjectContextInternal::magma_totem;
                 creators["windfury totem"] = &AiObjectContextInternal::windfury_totem;
+                creators["stoneskin totem"] = &AiObjectContextInternal::stoneskin_totem;
                 creators["grace of air totem"] = &AiObjectContextInternal::grace_of_air_totem;
                 creators["mana spring totem"] = &AiObjectContextInternal::mana_spring_totem;
                 creators["mana tide totem"] = &AiObjectContextInternal::mana_tide_totem;
@@ -246,6 +247,7 @@ namespace ai
             static Action* searing_totem(PlayerbotAI* ai) { return new CastSearingTotemAction(ai); }
             static Action* fire_nova(PlayerbotAI* ai) { return new CastFireNovaAction(ai); }
             static Action* windfury_totem(PlayerbotAI* ai) { return new CastWindfuryTotemAction(ai); }
+            static Action* stoneskin_totem(PlayerbotAI* ai) { return new CastStoneskinTotemAction(ai); }
             static Action* grace_of_air_totem(PlayerbotAI* ai) { return new CastGraceOfAirTotemAction(ai); }
             static Action* mana_spring_totem(PlayerbotAI* ai) { return new CastManaSpringTotemAction(ai); }
             static Action* mana_tide_totem(PlayerbotAI* ai) { return new CastManaTideTotemAction(ai); }

@@ -74,7 +74,7 @@ void MeleeShamanStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "medium aoe",
-        NextAction::array(0, new NextAction("strength of earth totem", ACTION_LIGHT_HEAL), NULL)));
+        NextAction::array(0, new NextAction("stoneskin totem", ACTION_LIGHT_HEAL), NULL)));
 }
 
 void MeleeAoeShamanStrategy::InitTriggers(std::list<TriggerNode*> &triggers)

@@ -65,7 +65,14 @@ Item* ItemForSpellValue::Calculate()
     if (!(spellInfo->Targets & TARGET_FLAG_ITEM))
         return NULL;
 
-    if (!strcmpi(spellInfo->SpellName[0], "disenchant"))
+    if (!strcmpi(spellInfo->SpellName[0], "disenchant") ||
+            !strcmpi(spellInfo->SpellName[0], "strength of earth totem") ||
+            !strcmpi(spellInfo->SpellName[0], "mana spring totem") ||
+            !strcmpi(spellInfo->SpellName[0], "healing stream totem") ||
+            !strcmpi(spellInfo->SpellName[0], "flametongue totem") ||
+            !strcmpi(spellInfo->SpellName[0], "flametongue totem") ||
+            !strcmpi(spellInfo->SpellName[0], "windfury totem") ||
+            !strcmpi(spellInfo->SpellName[0], "grace of air totem"))
         return NULL;
 
     for( uint8 slot = EQUIPMENT_SLOT_START; slot < EQUIPMENT_SLOT_END; slot++ ) {
