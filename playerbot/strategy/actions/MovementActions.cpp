@@ -176,6 +176,9 @@ bool MovementAction::IsMovingAllowed(Unit* target)
     if (bot->GetMapId() != target->GetMapId())
         return false;
 
+    if (sServerFacade.IsTaxiFlying(target))
+        return false;
+
     float distance = bot->GetDistance(target);
     if (distance > sPlayerbotAIConfig.reactDistance)
         return false;

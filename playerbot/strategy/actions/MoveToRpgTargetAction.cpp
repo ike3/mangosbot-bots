@@ -12,6 +12,8 @@ bool MoveToRpgTargetAction::Execute(Event event)
     Unit* target = ai->GetUnit(AI_VALUE(ObjectGuid, "rpg target"));
     if (!target) return false;
 
+    if (sServerFacade.IsTaxiFlying(bot)) return false;
+
     float distance = AI_VALUE2(float, "distance", "rpg target");
     if (distance > 180.0f)
     {

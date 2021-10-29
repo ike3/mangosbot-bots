@@ -146,7 +146,7 @@ Unit* ServerFacade::GetChaseTarget(Unit* target)
 bool ServerFacade::isMoving(Unit *unit)
 {
 #ifdef MANGOS
-    return unit->m_movementInfo.HasMovementFlag(movementFlagsMask);
+    return unit->m_movementInfo.HasMovementFlag(movementFlagsMask) || IsTaxiFlying(unit);
 #endif
 #ifdef CMANGOS
     return unit->IsMoving();
