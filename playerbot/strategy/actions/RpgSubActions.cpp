@@ -255,7 +255,7 @@ bool RpgTradeUsefulAction::Execute(Event event)
     return false;
 }
 
-bool RpgDuelAction::isUsefull(Event event)
+bool RpgDuelAction::isUseful(Event event)
 {
     // Players can only fight a duel with each other outside (=not inside dungeons and not in capital cities)
     AreaTableEntry const* casterAreaEntry = GetAreaEntryByAreaID(bot->GetAreaId());
@@ -264,6 +264,10 @@ bool RpgDuelAction::isUsefull(Event event)
         // Dueling isn't allowed here
         return false;
     }
+
+    // Less spammy duels
+    if (bot->getLevel() == 1)
+        return false;
 
     return true;
 }

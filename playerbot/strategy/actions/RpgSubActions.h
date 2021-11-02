@@ -243,7 +243,7 @@ namespace ai
     public:
         RpgDuelAction(PlayerbotAI* ai, string name = "rpg duel") : RpgSubAction(ai, name) {}
 
-        virtual bool isUsefull(Event event);
+        virtual bool isUseful(Event event);
         virtual bool Execute(Event event);
     };
 }
