@@ -163,7 +163,9 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
 
     if (bot->IsMoving() && !IsMovingAllowed())
     {
-        bot->StopMoving();
+        if (!bot->IsTaxiFlying())
+            bot->StopMoving();
+
         return false;
     }
 
