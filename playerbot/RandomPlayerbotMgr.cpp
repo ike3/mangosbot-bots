@@ -290,7 +290,7 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed)
     
     uint32 onlineBotFocus = 75;
 
-    if (onlineBotCount < (uint32)(sPlayerbotAIConfig.minRandomBots * 0.8))
+    if (onlineBotCount < (uint32)(sPlayerbotAIConfig.minRandomBots * 90 / 100))
         onlineBotFocus = 25;
 
     SetNextCheckDelay(sPlayerbotAIConfig.randomBotUpdateInterval * (onlineBotFocus+25) * 10);
@@ -1541,7 +1541,7 @@ bool RandomPlayerbotMgr::ProcessBot(uint32 bot)
 
 			SetEventValue(bot, "add", 0, 0);
 			currentBots.remove(bot);
-			if (player) LogoutPlayerBot(bot);
+			if (player) LogoutPlayerBot(player->GetObjectGuid().GetRawValue());
 		}
         return false;
     }
@@ -1591,7 +1591,7 @@ bool RandomPlayerbotMgr::ProcessBot(uint32 bot)
     if (player && !logout && !isValid)
     {
         sLog.outBasic("Bot #%d %s:%d <%s>: log out", bot, IsAlliance(player->getRace()) ? "A" : "H", player->getLevel(), player->GetName());
-        LogoutPlayerBot(bot);
+        LogoutPlayerBot(player->GetObjectGuid().GetRawValue());
         currentBots.remove(bot);
         SetEventValue(bot, "logout", 1, urand(sPlayerbotAIConfig.minRandomBotInWorldTime, sPlayerbotAIConfig.maxRandomBotInWorldTime));
         return true;
