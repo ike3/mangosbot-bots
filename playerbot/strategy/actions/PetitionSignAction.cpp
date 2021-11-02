@@ -75,7 +75,7 @@ bool PetitionSignAction::Execute(Event event)
     }
 
     Player* _inviter = sObjectMgr.GetPlayer(inviter);
-    if (!inviter)
+    if (!_inviter)
         return false;
 
     if (_inviter == bot)
