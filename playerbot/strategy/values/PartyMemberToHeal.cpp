@@ -59,6 +59,10 @@ Unit* PartyMemberToHeal::Calculate()
             if (!Check(player) || !sServerFacade.IsAlive(player))
                 continue;
 
+            // do not heal dueling members
+            if (player->duel && player->duel->opponent)
+                continue;
+
             uint8 health = player->GetHealthPercent();
             if (health < sPlayerbotAIConfig.almostFullHealth || !IsTargetOfSpellCast(player, predicate))
                 needHeals.push_back(player);
