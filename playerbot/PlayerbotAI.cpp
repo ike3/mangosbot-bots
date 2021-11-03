@@ -196,11 +196,7 @@ void PlayerbotAI::UpdateAI(uint32 elapsed)
     {
         if (inCombat)
             nextAICheckDelay = 0;
-        else if (!AllowActivity())
-        {
-            if (AllowActivity(ALL_ACTIVITY, true))
-                nextAICheckDelay = 0;
-        }
+
         inCombat = false;
     }
 
@@ -2130,13 +2126,22 @@ bool PlayerbotAI::HasPlayerNearby(WorldPosition* pos, float range)
     float sqRange = range * range;
     for (auto& player : sRandomPlayerbotMgr.GetPlayers())
     {
-        if ((!player->GetPlayerbotAI() || player->GetPlayerbotAI()->IsRealPlayer()) && (!player->IsGameMaster() || player->isGMVisible()))
+        if (!player->IsGameMaster() || player->isGMVisible())
         {
             if (player->GetMapId() != bot->GetMapId())
                 continue;
 
             if (pos->sqDistance(WorldPosition(player)) < sqRange)
                 return true;
+
+            // if player is far check farsight/cinematic camera
+            Camera& viewPoint = player->GetCamera();
+            WorldObject* viewObj = viewPoint.GetBody();
+            if (viewObj && viewObj != player)
+            {
+                if (pos->sqDistance(WorldPosition(viewObj)) < sqRange)
+                    return true;
+            }
         }
     }
 
@@ -2206,7 +2211,7 @@ bool PlayerbotAI::AllowActive(ActivityType activityType)
             if(!member->GetPlayerbotAI() || (member->GetPlayerbotAI() && member->GetPlayerbotAI()->HasRealPlayerMaster()))
                 return true;
         }
-    }   
+    } 
 
     if (!WorldPosition(bot).isOverworld()) // bg, raid, dungeon
         return true;
@@ -2218,7 +2223,7 @@ bool PlayerbotAI::AllowActive(ActivityType activityType)
         if (sServerFacade.IsInCombat(bot))
             return true;
 
-    if (HasPlayerNearby()) //Player is near. Always active.
+    if (HasPlayerNearby(300.0f)) //Player is near. Always active.
         return true;
 
     if (activityType == OUT_OF_PARTY_ACTIVITY || activityType == GRIND_ACTIVITY) //Many bots nearby. Do not do heavy area checks.
@@ -2245,16 +2250,15 @@ bool PlayerbotAI::AllowActive(ActivityType activityType)
     uint32 mod = 100;
 
     // if has real players - slow down continents without player
-    if (sRandomPlayerbotMgr.GetPlayers().size())
+    if (!sRandomPlayerbotMgr.GetPlayers().empty())
     {
-
         if (AvgDiff > 100)
             mod = 50;
 
-        if (AvgDiff > 150)
+        if (AvgDiff > 200)
             mod = 25;
 
-        if (AvgDiff > 200)
+        if (AvgDiff > 250)
             mod = 10;
 
         if (AvgDiff > 300)
@@ -2267,6 +2271,12 @@ bool PlayerbotAI::AllowActive(ActivityType activityType)
                 if (!bot->GetMap()->HasActiveAreas(currentArea))
                     return false;
             }
+        }
+        else if (AvgDiff < 150)
+        {
+            /*uint32 currentArea = sMapMgr.GetContinentInstanceId(bot->GetMapId(), bot->GetPositionX(), bot->GetPositionY());
+            if (bot->GetMap()->HasActiveAreas(currentArea))
+                return true;*/
         }
     }
 
@@ -2286,7 +2296,7 @@ bool PlayerbotAI::AllowActivity(ActivityType activityType, bool checkNow)
     if (!allowActiveCheckTimer[activityType])
         allowActiveCheckTimer[activityType] = time(NULL);
 
-    if (!checkNow && time(NULL) < allowActiveCheckTimer[activityType] + 5)
+    if (!checkNow && time(NULL) < (allowActiveCheckTimer[activityType] + 5))
         return allowActive[activityType];
 
     bool allowed = AllowActive(activityType);
