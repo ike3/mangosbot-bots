@@ -25,11 +25,16 @@ public:
         if (!member)
             return false;
 
-        PlayerbotAI *botAi = member->GetPlayerbotAI();
-        if (!botAi)
+        PlayerbotAI *memberAi = member->GetPlayerbotAI();
+        if (!memberAi)
             return false;
 
-        return !botAi->GetAiObjectContext()->GetValue<uint8>("item count", item)->Get();
+        Player* bot = ai->GetBot();
+        bool sameGroup = member->GetGroup() && bot->GetGroup() && member->GetGroup() == bot->GetGroup();
+        if (abs((int32)member->getLevel() - (int32)bot->getLevel()) >= 3 && !sameGroup)
+            return false;
+
+        return !memberAi->GetAiObjectContext()->GetValue<uint8>("item count", item)->Get();
     }
 
 private:
