@@ -62,41 +62,6 @@ PlayerbotSecurityLevel PlayerbotSecurity::LevelFor(Player* from, DenyReason* rea
             }
         }
 
-        if (sServerFacade.UnitIsDead(bot))
-        {
-            if (reason) *reason = PLAYERBOT_DENY_DEAD;
-            return PLAYERBOT_SECURITY_TALK;
-        }
-
-        group = bot->GetGroup();
-        if (!group)
-        {
-            if (bot->GetMapId() != from->GetMapId() || bot->GetDistance(from) > sPlayerbotAIConfig.whisperDistance)
-            {
-                if (!bot->GetGuildId() || bot->GetGuildId() != from->GetGuildId())
-                {
-                    if (reason) *reason = PLAYERBOT_DENY_FAR;
-                    return PLAYERBOT_SECURITY_TALK;
-                }
-            }
-
-            if (reason) *reason = PLAYERBOT_DENY_INVITE;
-            return PLAYERBOT_SECURITY_INVITE;
-        }
-
-        for (GroupReference *gref = group->GetFirstMember(); gref; gref = gref->next())
-        {
-            Player* player = gref->getSource();
-            if (player == from)
-                return PLAYERBOT_SECURITY_ALLOW_ALL;
-        }
-
-        if (group->IsFull())
-        {
-            if (reason) *reason = PLAYERBOT_DENY_FULL_GROUP;
-            return PLAYERBOT_SECURITY_TALK;
-        }
-
         if (bot->InBattleGroundQueue())
         {
             if (!bot->GetGuildId() || bot->GetGuildId() != from->GetGuildId())
@@ -120,6 +85,41 @@ PlayerbotSecurityLevel PlayerbotSecurity::LevelFor(Player* from, DenyReason* rea
                 }
 #endif
             }
+        }
+
+        /*if (sServerFacade.UnitIsDead(bot))
+        {
+            if (reason) *reason = PLAYERBOT_DENY_DEAD;
+            return PLAYERBOT_SECURITY_TALK;
+        }*/
+
+        group = bot->GetGroup();
+        if (!group)
+        {
+            /*if (bot->GetMapId() != from->GetMapId() || bot->GetDistance(from) > sPlayerbotAIConfig.whisperDistance)
+            {
+                if (!bot->GetGuildId() || bot->GetGuildId() != from->GetGuildId())
+                {
+                    if (reason) *reason = PLAYERBOT_DENY_FAR;
+                    return PLAYERBOT_SECURITY_TALK;
+                }
+            }*/
+
+            if (reason) *reason = PLAYERBOT_DENY_INVITE;
+            return PLAYERBOT_SECURITY_INVITE;
+        }
+
+        for (GroupReference *gref = group->GetFirstMember(); gref; gref = gref->next())
+        {
+            Player* player = gref->getSource();
+            if (player == from)
+                return PLAYERBOT_SECURITY_ALLOW_ALL;
+        }
+
+        if (group->IsFull())
+        {
+            if (reason) *reason = PLAYERBOT_DENY_FULL_GROUP;
+            return PLAYERBOT_SECURITY_TALK;
         }
 
         if (group->GetLeaderGuid() != bot->GetObjectGuid())
@@ -215,7 +215,7 @@ bool PlayerbotSecurity::CheckLevelFor(PlayerbotSecurityLevel level, bool silent,
             out << "I am currently leading a group. I can invite you if you want.";
             break;
         case PLAYERBOT_DENY_NOT_LEADER:
-            out << "I am in a group with " << bot->GetPlayerbotAI()->GetGroupMaster()->GetName() << ". Will do it later.";
+            out << "I am in a group with " << bot->GetPlayerbotAI()->GetGroupMaster()->GetName() << ". You can ask him for invite.";
             break;
         case PLAYERBOT_DENY_BG:
             out << "I am in a queue for BG. Will do it later";
