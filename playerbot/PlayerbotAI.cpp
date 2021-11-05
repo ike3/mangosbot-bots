@@ -649,7 +649,7 @@ void PlayerbotAI::DoNextAction()
 
     if (minimal)
     {
-        if(!bot->isAFK())
+        if(!bot->isAFK() && !bot->InBattleGround())
             bot->ToggleAFK();
         SetNextCheckDelay(sPlayerbotAIConfig.passiveDelay);
         return;
@@ -2124,6 +2124,7 @@ GuilderType PlayerbotAI::GetGuilderType()
 bool PlayerbotAI::HasPlayerNearby(WorldPosition* pos, float range)
 {
     float sqRange = range * range;
+    bool nearPlayer = false;
     for (auto& player : sRandomPlayerbotMgr.GetPlayers())
     {
         if (!player->IsGameMaster() || player->isGMVisible())
@@ -2132,7 +2133,7 @@ bool PlayerbotAI::HasPlayerNearby(WorldPosition* pos, float range)
                 continue;
 
             if (pos->sqDistance(WorldPosition(player)) < sqRange)
-                return true;
+                nearPlayer = true;
 
             // if player is far check farsight/cinematic camera
             Camera& viewPoint = player->GetCamera();
@@ -2140,12 +2141,12 @@ bool PlayerbotAI::HasPlayerNearby(WorldPosition* pos, float range)
             if (viewObj && viewObj != player)
             {
                 if (pos->sqDistance(WorldPosition(viewObj)) < sqRange)
-                    return true;
+                    nearPlayer = true;
             }
         }
     }
 
-    return false;
+    return nearPlayer;
 }
 
 bool PlayerbotAI::HasManyPlayersNearby(uint32 trigerrValue, float range)
@@ -2267,7 +2268,7 @@ bool PlayerbotAI::AllowActive(ActivityType activityType)
                 return false;
             else
             {
-                uint32 currentArea = sMapMgr.GetContinentInstanceId(bot->GetMapId(), bot->GetPositionX(), bot->GetPositionY());
+                ContinentArea currentArea = sMapMgr.GetContinentInstanceId(bot->GetMapId(), bot->GetPositionX(), bot->GetPositionY());
                 if (!bot->GetMap()->HasActiveAreas(currentArea))
                     return false;
             }
