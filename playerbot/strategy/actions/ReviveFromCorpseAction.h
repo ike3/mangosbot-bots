@@ -27,6 +27,7 @@ namespace ai
     public:
         virtual WorldSafeLocsEntry const* GetGrave(bool startZone);
         virtual bool Execute(Event event);
+        virtual bool isUseful();
     };
 
 }

@@ -323,3 +323,8 @@ bool SpiritHealerAction::Execute(Event event)
     ai->TellError("Cannot find any spirit healer nearby");
     return false;
 }
+
+bool SpiritHealerAction::isUseful()
+{
+    return bot->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_GHOST);
+}
