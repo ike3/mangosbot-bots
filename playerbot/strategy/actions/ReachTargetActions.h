@@ -30,10 +30,11 @@ namespace ai
             }
             else
             {
+                combatReach = bot->GetCombinedCombatReach(target, false);
                 bool inLos = bot->IsWithinLOSInMap(target, true);
                 bool isFriend = sServerFacade.IsFriendlyTo(bot, target);
                 float chaseDist = inLos ? distance : isFriend ? distance / 2 : distance;
-                return ChaseTo(target, chaseDist - combatReach, bot->GetAngle(target));
+                return ChaseTo(target, chaseDist + combatReach, bot->GetAngle(target));
             }
         }
         virtual bool isUseful()

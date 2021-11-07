@@ -80,7 +80,11 @@ bool CastSpellAction::isUseful()
     if (!spellTarget->IsInWorld() || spellTarget->GetMapId() != bot->GetMapId())
         return false;
 
-    return spellTarget && AI_VALUE2(bool, "spell cast useful", spell) && sServerFacade.GetDistance2d(bot, spellTarget) <= range;
+    float combatReach = bot->GetCombinedCombatReach(spellTarget, true);
+    if (ai->IsRanged(bot))
+        combatReach = bot->GetCombinedCombatReach(spellTarget, false);
+
+    return spellTarget && AI_VALUE2(bool, "spell cast useful", spell) && sServerFacade.GetDistance2d(bot, spellTarget) <= (range + combatReach);
 }
 
 bool CastAuraSpellAction::isUseful()
