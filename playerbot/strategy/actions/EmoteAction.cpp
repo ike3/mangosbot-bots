@@ -573,7 +573,7 @@ bool EmoteAction::Execute(Event event)
         if (namlen > 1)
             p.read(nam, namlen);
 
-        if (strstri(bot->GetName(), nam.c_str()))
+        if (strstri(bot->GetName(), nam.c_str()) || namlen == 1)
         {
             pSource = sObjectMgr.GetPlayer(source);
 
@@ -597,7 +597,7 @@ bool EmoteAction::Execute(Event event)
         pSource = sObjectMgr.GetPlayer(source);
         if (pSource && sServerFacade.GetDistance2d(bot, pSource) < sPlayerbotAIConfig.farDistance && emoteId != EMOTE_ONESHOT_NONE)
         {
-            if (pSource->GetSelectionGuid() == bot->GetObjectGuid())
+            if (pSource->GetSelectionGuid() != bot->GetObjectGuid())
             {
                 sLog.outDetail("Bot #%d %s:%d <%s> received SMSG_EMOTE %d", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName(), emoteId);
                 vector<uint32> types;
