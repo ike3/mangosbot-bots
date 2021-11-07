@@ -22,3 +22,11 @@ void DuelStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 DuelStrategy::DuelStrategy(PlayerbotAI* ai) : PassTroughStrategy(ai)
 {
 }
+
+void StartDuelStrategy::InitTriggers(std::list<TriggerNode*>& triggers)
+{
+}
+
+StartDuelStrategy::StartDuelStrategy(PlayerbotAI* ai) : Strategy(ai)
+{
+}

@@ -277,6 +277,7 @@ public:
     list<string> GetStrategies(BotState type);
     bool ContainsStrategy(StrategyType type);
     bool HasStrategy(string name, BotState type);
+    BotState GetState() { return currentState; };
     void ResetStrategies(bool load = true);
     void ReInitCurrentEngine();
     void Reset(bool full = false);

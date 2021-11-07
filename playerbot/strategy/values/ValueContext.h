@@ -79,6 +79,7 @@
 #include "GuildValues.h"
 #include "TradeValues.h"
 #include "RpgValues.h"
+#include "RTSCValues.h"
 
 namespace ai
 {
@@ -270,6 +271,11 @@ namespace ai
             creators["entry loot usage"] = &ValueContext::entry_loot_usage;
             creators["has upgrade"] = &ValueContext::has_upgrade;
             creators["items useful to give"] = &ValueContext::items_useful_to_give;
+
+            creators["see spell location"] = &ValueContext::see_spell_location;
+            creators["RTSC selected"] = &ValueContext::RTSC_selected;
+            creators["RTSC next spell action"] = &ValueContext::RTSC_next_spell_action;
+            creators["RTSC saved location"] = &ValueContext::RTSC_saved_location;
         }
 
     private:
@@ -449,6 +455,10 @@ namespace ai
         static UntypedValue* entry_loot_usage(PlayerbotAI* ai) { return new EntryLootUsageValue(ai); }
         static UntypedValue* has_upgrade(PlayerbotAI* ai) { return new HasUpgradeValue(ai); }
         static UntypedValue* items_useful_to_give(PlayerbotAI* ai) { return new ItemsUsefulToGiveValue(ai); }
-        
+
+        static UntypedValue* see_spell_location(PlayerbotAI* ai) { return new SeeSpellLocationValue(ai); }
+        static UntypedValue* RTSC_selected(PlayerbotAI* ai) { return new RTSCSelectedValue(ai); }
+        static UntypedValue* RTSC_next_spell_action(PlayerbotAI* ai) { return new RTSCNextSpellActionValue(ai); }
+        static UntypedValue* RTSC_saved_location(PlayerbotAI* ai) { return new RTSCSavedLocationValue(ai); }
     };
 };

@@ -40,6 +40,11 @@ namespace ai
             return GetValue<T>(name, out.str());
         }
 
+        set<string> GetValues()
+        {
+            return valueContexts.GetCreated();
+        }
+
         set<string> GetSupportedStrategies()
         {
             return strategyContexts.supports();

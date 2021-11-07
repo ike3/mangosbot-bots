@@ -548,7 +548,7 @@ bool DebugAction::Execute(Event event)
                     //wpCreature->SendMessageToSet(data, true);
                     datMap.push_back(data);
 
-                    wpCreature->MonsterMoveWithSpeed(botPos.getX(), botPos.getY()+80, botPos.getZ(), 8.0f,true,true);
+                    //wpCreature->MonsterMoveWithSpeed(botPos.getX(), botPos.getY()+80, botPos.getZ(), 8.0f,true,true);
                 }
             }
         }

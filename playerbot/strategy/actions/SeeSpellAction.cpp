@@ -9,7 +9,7 @@
 #endif
 
 #include <MotionGenerators/PathFinder.h>
-
+#include "RtscAction.h"
 #include "../../TravelMgr.h"
 
 
@@ -49,18 +49,16 @@ bool SeeSpellAction::Execute(Event event)
     p.rpos(0);
     p >> spellId;
 
-    //ai->TellMaster(to_string(spellId));
-
-    //SpellEntry const* spell = sServerFacade.LookupSpellInfo(spellId);
-
-    //ai->TellMaster(to_string(spell->SpellVisual));
-
-    //Spell* Tspell = new Spell(bot, spell, false);
-
-    //delete Tspell;
-
-    if (spellId != 30758)
+    if (!master)
         return false;
+
+    //if (!ai->HasStrategy("RTSC", ai->GetState()))
+    //    return false;
+
+    if (spellId != RTSC_MOVE_SPELL)
+        return false;
+
+    SpellEntry const* pSpellInfo = sServerFacade.LookupSpellInfo(spellId);
 
     SpellCastTargets targets;
 
@@ -70,141 +68,91 @@ bool SeeSpellAction::Execute(Event event)
     p >> targets.ReadForCaster(ai->GetMaster());
 #endif
 
-    Position spellPosition = targets.m_destPos;
+    WorldPosition spellPosition(master->GetMapId(), targets.m_destPos);
+    SET_AI_VALUE(WorldPosition, "see spell location", spellPosition);
 
-    if (bot->GetDistance(spellPosition.GetPositionX(), spellPosition.GetPositionY(), spellPosition.GetPositionZ()) <= 10)
+    bool selected = AI_VALUE(bool, "RTSC selected");
+    bool inRange = spellPosition.distance(bot) <= 10;
+    string nextAction = AI_VALUE(string, "RTSC next spell action");
+
+    if (nextAction.empty())
     {
-        //ai->TellMaster("In range!");
-        if(master)
+        if (!inRange && selected)
+            master->GetSession()->SendPlaySpellVisual(bot->GetObjectGuid(), 6372);
+        else if (inRange && !selected)
             master->GetSession()->SendPlaySpellVisual(bot->GetObjectGuid(), 5036);
+
+        SET_AI_VALUE(bool, "RTSC selected", inRange);
+
+        if (selected)
+            return MoveToSpell(spellPosition);
+
+        return inRange;
     }
-    else
+    else if (nextAction == "move")
     {
-        //ai->TellMaster("Out of range!");
+        return MoveToSpell(spellPosition);
     }
-
-    float x = spellPosition.GetPositionX();
-    float y = spellPosition.GetPositionY();
-    float z = spellPosition.GetPositionZ();
-
-    Formation* formation = AI_VALUE(Formation*, "formation");
-    WorldLocation formationLocation = formation->GetLocation();
-    if (formationLocation.coord_x != 0 || formationLocation.coord_y != 0)
+    else if (nextAction.find("save ") != std::string::npos)
     {
-        x = x - master->GetPositionX() + formationLocation.coord_x;
-        y = y - master->GetPositionY() + formationLocation.coord_y;
-        z = z - master->GetPositionZ() + formationLocation.coord_z;
-    }
-
-    if (ai->HasStrategy("debug move", BOT_STATE_NON_COMBAT))
-    {                
-        
-        PathFinder path(bot);
-
-        path.calculate(x, y, z, false);
-
-        Vector3 end = path.getEndPosition();
-        Vector3 aend = path.getActualEndPosition();
-
-        PointsArray& points = path.getPath();
-        PathType type = path.getPathType();
-
-        ostringstream out;
-
-        out << x << ";" << y << ";" << z << " =";
-
-        out << "path is: ";
-
-        out << type;
-
-        out << " of length ";
-
-        out << points.size();
-
-        out << " with offset ";
-
-        out << (end - aend).length();
-
-        Creature* lastWp;
-
-        for (auto i : points)
+        string locationName;
+        if (nextAction.find("save selected ") != std::string::npos)
         {
-            lastWp = CreateWps(bot, i.x, i.y, i.z, 0.0, 11144, lastWp);
-        }
-
-
-        ai->TellMaster(out);
-
-        /*
-        PathFinder path(bot);
-
-        ostringstream out;
-
-        out << " area = ";
-
-        out << path.getArea(bot->GetMapId(), x, y, z);
-
-        unsigned short flags = path.getFlags(bot->GetMapId(), x, y, z);
-
-        if (flags & NAV_GROUND)
-            out << ", ground";
-        if (flags & NAV_MAGMA)
-            out << ", magma";
-        if (flags & NAV_SLIME)
-            out << ", slime";
-        if (flags & NAV_WATER)
-            out << ", water";
-        if (flags & NAV_SLOPE)
-            out << ", slope";
-        if (flags & NAV_UNUSED1)
-            out << ", unused1";
-        if (flags & NAV_UNUSED2)
-            out << ", unsued2";
-        if (flags & NAV_UNUSED3)
-            out << ", unsued3";
-        if (flags & NAV_UNUSED4)
-            out << ", unused4";
-
-        ai->TellMaster(out);
-        */
-
-        /*
-        WorldPosition pos = WorldPosition(bot->GetMapId(), x, y, z, 0);
-
-        sTravelNodeMap.m_nMapMtx.lock();
-        TravelNode* node = sTravelNodeMap.getNode(&pos,NULL, 20);
-
-        if (!node)
-        {
-            node = sTravelNodeMap.addNode(&pos,"User Node", false, true, false);
-
-            if (node)
-            {
-                ai->TellMaster("node added");
-            }
+            if (!selected)
+                return false;
+            locationName = nextAction.substr(14);
         }
         else
-        {
-            if (!node->isImportant())
-            {
-                sTravelNodeMap.removeNode(node);
-                ai->TellMaster("node removed");
-            }
-            else
-            {
-                ostringstream out;
-                out << "node found" << node->getName();
-                ai->TellMaster(out);
-            }
-        }
+            locationName = nextAction.substr(5);
 
-        sTravelNodeMap.m_nMapMtx.unlock();
-        */
+        SetFormationOffset(spellPosition);
+
+        SET_AI_VALUE2(WorldPosition, "RTSC saved location", locationName, spellPosition);
+        
+        Creature* wpCreature = bot->SummonCreature(15631, spellPosition.getX(), spellPosition.getY(), spellPosition.getZ(), spellPosition.getO(), TEMPSPAWN_TIMED_DESPAWN, 2000.0f);
+        wpCreature->SetObjectScale(0.5f);
+        RESET_AI_VALUE(string, "RTSC next spell action");
+
+        return true;
     }
 
- 
-    if (bot->IsWithinLOS(x, y, z))
-        return MoveNear(bot->GetMapId(), x, y, z, 0);
-    else
-        return MoveTo(bot->GetMapId(), x, y, z, false, false);
+    return false;        
 }
+
+bool SeeSpellAction::SelectSpell(WorldPosition& spellPosition)
+{
+    Player* master = ai->GetMaster();
+    if (spellPosition.distance(bot) <= 5 || AI_VALUE(bool, "RTSC selected"))
+    {
+        SET_AI_VALUE(bool, "RTSC selected", true);
+        master->GetSession()->SendPlaySpellVisual(bot->GetObjectGuid(), 5036);
+    }
+    return true;
+}
+
+bool SeeSpellAction::MoveToSpell(WorldPosition& spellPosition, bool inFormation)
+{
+    if(inFormation)
+        SetFormationOffset(spellPosition);
+
+    if (bot->IsWithinLOS(spellPosition.getX(), spellPosition.getY(), spellPosition.getZ()))
+        return MoveNear(spellPosition.getMapId(), spellPosition.getX(), spellPosition.getY(), spellPosition.getZ(), 0);
+    else
+        return MoveTo(spellPosition.getMapId(), spellPosition.getX(), spellPosition.getY(), spellPosition.getZ(), false, false);
+}
+
+void SeeSpellAction::SetFormationOffset(WorldPosition& spellPosition)
+{
+    Player* master = ai->GetMaster();
+
+    Formation* formation = AI_VALUE(Formation*, "formation");
+
+    WorldLocation formationLocation = formation->GetLocation();
+
+    if (formationLocation.coord_x != 0 || formationLocation.coord_y != 0)
+    {
+        spellPosition -= WorldPosition(master);
+        spellPosition += formationLocation;
+    }
+}
+
