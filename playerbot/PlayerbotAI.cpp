@@ -2275,9 +2275,9 @@ bool PlayerbotAI::AllowActive(ActivityType activityType)
         }
         else if (AvgDiff < 150)
         {
-            /*uint32 currentArea = sMapMgr.GetContinentInstanceId(bot->GetMapId(), bot->GetPositionX(), bot->GetPositionY());
+            ContinentArea currentArea = sMapMgr.GetContinentInstanceId(bot->GetMapId(), bot->GetPositionX(), bot->GetPositionY());
             if (bot->GetMap()->HasActiveAreas(currentArea))
-                return true;*/
+                return true;
         }
     }
 
