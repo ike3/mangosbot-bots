@@ -413,10 +413,11 @@ void RandomPlayerbotFactory::CreateRandomBots()
         else
             password = accountName;
 
-        account_creations.push_back(std::async([accountName, password] {sAccountMgr.CreateAccount(accountName, password); }));
 #ifndef MANGOSBOT_ZERO
         uint8 max_expansion = MAX_EXPANSION;
         account_creations.push_back(std::async([accountName, password, max_expansion] {sAccountMgr.CreateAccount(accountName, password, max_expansion); }));
+#else
+        account_creations.push_back(std::async([accountName, password] {sAccountMgr.CreateAccount(accountName, password); }));
 #endif
 
         sLog.outDebug("Account %s created for random bots", accountName.c_str());
@@ -430,7 +431,7 @@ void RandomPlayerbotFactory::CreateRandomBots()
         account_creations[i].wait();
     }
 
-    LoginDatabase.PExecute("UPDATE account SET expansion = '%u' where username like '%s%%'", 2, sPlayerbotAIConfig.randomBotAccountPrefix.c_str());
+    //LoginDatabase.PExecute("UPDATE account SET expansion = '%u' where username like '%s%%'", 2, sPlayerbotAIConfig.randomBotAccountPrefix.c_str());
 
     int totalRandomBotChars = 0;
 	int totalCharCount = sPlayerbotAIConfig.randomBotAccountCount
