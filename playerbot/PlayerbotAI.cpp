@@ -2219,6 +2219,8 @@ bool PlayerbotAI::AllowActive(ActivityType activityType)
         if (!GetMaster()->GetPlayerbotAI() || GetMaster()->GetPlayerbotAI()->IsRealPlayer())
             return true;
 
+    uint32 AvgDiff = sWorld.GetAverageDiff();
+
     Group* group = bot->GetGroup();
     if (group)
     {
@@ -2226,7 +2228,7 @@ bool PlayerbotAI::AllowActive(ActivityType activityType)
         {
             Player* member = gref->getSource();
 
-            if (!member)
+            if (!member || !member->IsInWorld())
                 continue;
 
             if (member == bot)
@@ -2234,6 +2236,9 @@ bool PlayerbotAI::AllowActive(ActivityType activityType)
 
             if(!member->GetPlayerbotAI() || (member->GetPlayerbotAI() && member->GetPlayerbotAI()->HasRealPlayerMaster()))
                 return true;
+
+            if (group->IsLeader(member->GetObjectGuid()) && AvgDiff < 200)
+                return member->GetPlayerbotAI()->AllowActivity(PARTY_ACTIVITY);
         }
     } 
 
@@ -2241,6 +2246,24 @@ bool PlayerbotAI::AllowActive(ActivityType activityType)
         return true;
 
     if (bot->InBattleGroundQueue()) //In bg queue. Speed up bg queue/join.
+        return true;
+
+    bool isLFG = false;
+#ifdef MANGOSBOT_TWO
+    if (group)
+    {
+        if (sLFGMgr.GetQueueInfo(group->GetObjectGuid()))
+        {
+            isLFG = true;
+        }
+    }
+    if (sLFGMgr.GetQueueInfo(bot->GetObjectGuid()))
+    {
+        isLFG = true;
+    }
+#endif
+
+    if (isLFG)
         return true;
 
     if (activityType != OUT_OF_PARTY_ACTIVITY && activityType != PACKET_ACTIVITY) //Is in combat. Defend yourself.
@@ -2267,50 +2290,36 @@ bool PlayerbotAI::AllowActive(ActivityType activityType)
     if (sPlayerbotAIConfig.botActiveAlone >= 100)
         return true;
 
-    uint32 AvgDiff = sWorld.GetAverageDiff();
-    if (AvgDiff > 500)
+    if (AvgDiff > 1000)
         return false;
 
     uint32 mod = 100;
 
     // if has real players - slow down continents without player
-    if (!sRandomPlayerbotMgr.GetPlayers().empty())
+    if (AvgDiff > 100)
+        mod = 50;
+
+    if (AvgDiff > 150)
+        mod = 25;
+
+    if (AvgDiff > 200)
+        mod = 10;
+
+    if (AvgDiff > 250)
     {
-        if (AvgDiff > 100)
-            mod = 50;
-
-        if (AvgDiff > 200)
-            mod = 25;
-
-        if (AvgDiff > 250)
-            mod = 10;
-
-        if (AvgDiff > 300)
-        {
-            if (!bot->GetMap()->HasRealPlayers() && bot->GetMap()->IsContinent())
-                return false;
-            else
-            {
-                ContinentArea currentArea = sMapMgr.GetContinentInstanceId(bot->GetMapId(), bot->GetPositionX(), bot->GetPositionY());
-                if (!bot->GetMap()->HasActiveAreas(currentArea))
-                    return false;
-            }
-        }
-        else if (AvgDiff < 150)
+        if (bot->GetMap() && !bot->GetMap()->HasRealPlayers() && bot->GetMap()->IsContinent())
+            return false;
+        else if (bot->GetMap() && bot->GetMap()->IsContinent())
         {
             ContinentArea currentArea = sMapMgr.GetContinentInstanceId(bot->GetMapId(), bot->GetPositionX(), bot->GetPositionY());
-            if (bot->GetMap()->HasActiveAreas(currentArea))
-                return true;
+            if (currentArea == MAP_NO_AREA)
+                return false;
+            else if (!bot->GetMap()->HasActiveAreas(currentArea))
+                return false;
         }
     }
 
-    if (group)
-    {
-        if (activityType != PARTY_ACTIVITY && GetGroupMaster())
-            return GetGroupMaster()->GetPlayerbotAI()->AllowActive(PARTY_ACTIVITY);
-    }
-
-    uint32 ActivityNumber = GetFixedBotNumer(BotTypeNumber::ACTIVITY_TYPE_NUMBER, 100, (sPlayerbotAIConfig.botActiveAlone * mod) / 100 * 0.01);
+    uint32 ActivityNumber = GetFixedBotNumer(BotTypeNumber::ACTIVITY_TYPE_NUMBER, 100, sPlayerbotAIConfig.botActiveAlone * static_cast<float>(mod) / 100 * 0.01f);
 
     return ActivityNumber <= (sPlayerbotAIConfig.botActiveAlone * mod) / 100;           //The given percentage of bots should be active and rotate 1% of those active bots each minute.
 }
