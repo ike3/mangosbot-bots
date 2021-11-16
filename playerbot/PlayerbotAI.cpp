@@ -226,6 +226,9 @@ void PlayerbotAI::UpdateAI(uint32 elapsed, bool minimal)
     if (!CanUpdateAI())
         return;
 
+    // check activity
+    AllowActivity();
+
     Spell* currentSpell = bot->GetCurrentSpell(CURRENT_GENERIC_SPELL);
 
     if (currentSpell && currentSpell->getState() == SPELL_STATE_CASTING && currentSpell->GetCastedTime())
@@ -737,7 +740,10 @@ void PlayerbotAI::DoNextAction(bool min)
             ai->ResetStrategies();
             ai->ChangeStrategy("+follow", BOT_STATE_NON_COMBAT);
 
-            ai->TellMaster("Hello, I follow you!");
+            if (ai->GetMaster() == ai->GetGroupMaster())
+                ai->TellMaster("Hello, I follow you!");
+            else
+                ai->TellMaster(!urand(0, 2) ? "Hello!" : "Hi!");
         }
     }
 

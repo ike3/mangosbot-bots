@@ -243,7 +243,7 @@ void PlayerbotHolder::OnBotLogin(Player * const bot)
     // check activity
     ai->AllowActivity(ALL_ACTIVITY, true);
     // set delay on login
-    ai->SetNextCheckDelay(urand(1000, 2000));
+    ai->SetNextCheckDelay(urand(2000, 4000));
 
     ai->TellMaster("Hello!");
 }
