@@ -340,7 +340,7 @@ namespace ai
         static Action* rpg_queue_bg(PlayerbotAI* ai) { return new RpgQueueBgAction(ai); }
         static Action* rpg_buy_petition(PlayerbotAI* ai) { return new RpgBuyPetitionAction(ai); }
         static Action* rpg_use(PlayerbotAI* ai) { return new RpgUseAction(ai); }
-        static Action* rpg_spell(PlayerbotAI* ai) { return new RpgUseAction(ai); }
+        static Action* rpg_spell(PlayerbotAI* ai) { return new RpgSpellAction(ai); }
         static Action* rpg_craft(PlayerbotAI* ai) { return new RpgCraftAction(ai); }
         static Action* rpg_trade_useful(PlayerbotAI* ai) { return new RpgTradeUsefulAction(ai); }
         static Action* rpg_duel(PlayerbotAI* ai) { return new RpgDuelAction(ai); }
