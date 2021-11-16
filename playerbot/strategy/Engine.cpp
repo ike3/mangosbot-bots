@@ -131,7 +131,7 @@ bool Engine::DoNextAction(Unit* unit, int depth, bool minimal)
     ProcessTriggers(minimal);
 
     int iterations = 0;
-    int iterationsPerTick = queue.Size() * (minimal ? 1 : sPlayerbotAIConfig.iterationsPerTick);
+    int iterationsPerTick = queue.Size() * (minimal ? 2 : sPlayerbotAIConfig.iterationsPerTick);
     do {
         basket = queue.Peek();
         if (basket) {
