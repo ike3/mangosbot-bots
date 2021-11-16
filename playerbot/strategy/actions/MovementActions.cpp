@@ -590,7 +590,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
 
 bool MovementAction::MoveTo(Unit* target, float distance)
 {
-    if (!target)
+    if (!target || !target->IsInWorld())
     {
         //ai->TellError("Seems I am stuck");
         return false;
@@ -612,7 +612,7 @@ bool MovementAction::MoveTo(Unit* target, float distance)
         tx = loc.coord_x;
         ty = loc.coord_y;
         tz = loc.coord_z;
-}
+    }
 
     float distanceToTarget = sServerFacade.GetDistance2d(bot, tx, ty);
     if (sServerFacade.IsDistanceGreaterThan(distanceToTarget, sPlayerbotAIConfig.targetPosRecalcDistance))
