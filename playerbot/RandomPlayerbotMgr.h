@@ -44,7 +44,7 @@ class RandomPlayerbotMgr : public PlayerbotHolder
 
         void LogPlayerLocation();
 
-        virtual void UpdateAIInternal(uint32 elapsed);
+        virtual void UpdateAIInternal(uint32 elapsed, bool minimal = false);
 
 	public:
         uint32 activeBots = 0;

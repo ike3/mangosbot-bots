@@ -47,10 +47,13 @@ bool PlayerbotAIBase::CanUpdateAI()
     return nextAICheckDelay < 100;
 }
 
-void PlayerbotAIBase::YieldThread()
+void PlayerbotAIBase::YieldThread(bool delay)
 {
     if (nextAICheckDelay < sPlayerbotAIConfig.reactDelay)
         nextAICheckDelay = sPlayerbotAIConfig.reactDelay;
+
+    if (delay && nextAICheckDelay <= sPlayerbotAIConfig.reactDelay)
+        nextAICheckDelay = sPlayerbotAIConfig.reactDelay * 2;
 }
 
 bool PlayerbotAIBase::IsActive()

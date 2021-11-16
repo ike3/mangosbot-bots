@@ -72,6 +72,12 @@ PlayerbotAI::PlayerbotAI() : PlayerbotAIBase(), bot(NULL), aiObjectContext(NULL)
 {
     for (int i = 0 ; i < BOT_STATE_MAX; i++)
         engines[i] = NULL;
+
+    for (int i = 0; i < MAX_ACTIVITY_TYPE; i++)
+    {
+        allowActiveCheckTimer[i] = time(nullptr);
+        allowActive[i] = false;
+    }
 }
 
 PlayerbotAI::PlayerbotAI(Player* bot) :
@@ -80,6 +86,12 @@ PlayerbotAI::PlayerbotAI(Player* bot) :
 	this->bot = bot;    
     if (!bot->isTaxiCheater() && HasCheat(BotCheatMask::taxi))
         bot->SetTaxiCheater(true);
+
+    for (int i = 0; i < MAX_ACTIVITY_TYPE; i++)
+    {
+        allowActiveCheckTimer[i] = time(nullptr);
+        allowActive[i] = false;
+    }
 
 	accountId = sObjectMgr.GetPlayerAccountIdByGUID(bot->GetObjectGuid());
 
@@ -172,7 +184,7 @@ PlayerbotAI::~PlayerbotAI()
         delete aiObjectContext;
 }
 
-void PlayerbotAI::UpdateAI(uint32 elapsed)
+void PlayerbotAI::UpdateAI(uint32 elapsed, bool minimal)
 {
     if (nextAICheckDelay > elapsed)
         nextAICheckDelay -= elapsed;
@@ -213,11 +225,15 @@ void PlayerbotAI::UpdateAI(uint32 elapsed)
             return;
     }
 
-    UpdateAIInternal(elapsed);
-    YieldThread();
+    bool min = minimal;
+    if (HasRealPlayerMaster())
+        min = false;
+
+    UpdateAIInternal(elapsed, min);
+    YieldThread((!AllowActivity() || min));
 }
 
-void PlayerbotAI::UpdateAIInternal(uint32 elapsed)
+void PlayerbotAI::UpdateAIInternal(uint32 elapsed, bool minimal)
 {
     if (bot->IsBeingTeleported() || !bot->IsInWorld())
         return;
@@ -257,7 +273,7 @@ void PlayerbotAI::UpdateAIInternal(uint32 elapsed)
     masterIncomingPacketHandlers.Handle(helper);
     masterOutgoingPacketHandlers.Handle(helper);
 
-	DoNextAction();
+	DoNextAction(minimal);
 	if (pmo) pmo->finish();
 }
 
@@ -588,7 +604,7 @@ void PlayerbotAI::ChangeEngine(BotState type)
     }
 }
 
-void PlayerbotAI::DoNextAction()
+void PlayerbotAI::DoNextAction(bool min)
 {
     if (bot->IsBeingTeleported() || (GetMaster() && GetMaster()->IsBeingTeleported()))
     {
@@ -611,7 +627,7 @@ void PlayerbotAI::DoNextAction()
 
         //Death Count to prevent skeleton piles
         Player* master = GetMaster();
-        if (!HasActivePlayerMaster())
+        if (!HasActivePlayerMaster() && !bot->InBattleGround())
         {
             uint32 dCount = aiObjectContext->GetValue<uint32>("death count")->Get();
             aiObjectContext->GetValue<uint32>("death count")->Set(++dCount);
@@ -643,13 +659,13 @@ void PlayerbotAI::DoNextAction()
         }
     }
 
-    bool minimal = !AllowActivity(ALL_ACTIVITY);
+    bool minimal = !AllowActivity();
 
-    currentEngine->DoNextAction(NULL, 0, minimal);
+    currentEngine->DoNextAction(NULL, 0, (minimal || min));
 
     if (minimal)
     {
-        if(!bot->isAFK() && !bot->InBattleGround())
+        if(!bot->isAFK() && !bot->InBattleGround() && (!HasRealPlayerMaster() || (GetMaster() && GetMaster()->isAFK())))
             bot->ToggleAFK();
         SetNextCheckDelay(sPlayerbotAIConfig.passiveDelay);
         return;

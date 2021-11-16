@@ -22,7 +22,7 @@ PlayerbotHolder::~PlayerbotHolder()
 }
 
 
-void PlayerbotHolder::UpdateAIInternal(uint32 elapsed)
+void PlayerbotHolder::UpdateAIInternal(uint32 elapsed, bool minimal)
 {
 }
 
@@ -59,6 +59,9 @@ void PlayerbotHolder::LogoutAllBots()
     for (auto& itr : bots)
     {
         Player* bot = itr.second;
+        if (!bot)
+            continue;
+
         if (!bot->GetPlayerbotAI() || bot->GetPlayerbotAI()->IsRealPlayer())
             continue;
 
@@ -237,8 +240,10 @@ void PlayerbotHolder::OnBotLogin(Player * const bot)
 #endif
     }
 
+    // check activity
+    ai->AllowActivity(ALL_ACTIVITY, true);
     // set delay on login
-    ai->SetNextCheckDelay(urand(3000, 5000));
+    ai->SetNextCheckDelay(urand(1000, 2000));
 
     ai->TellMaster("Hello!");
 }
@@ -700,6 +705,9 @@ void PlayerbotMgr::HandleMasterIncomingPacket(const WorldPacket& packet)
     for (PlayerBotMap::const_iterator it = sRandomPlayerbotMgr.GetPlayerBotsBegin(); it != sRandomPlayerbotMgr.GetPlayerBotsEnd(); ++it)
     {
         Player* const bot = it->second;
+        if (!bot)
+            continue;
+
         if (bot->GetPlayerbotAI()->GetMaster() == GetMaster())
             bot->GetPlayerbotAI()->HandleMasterIncomingPacket(packet);
     }
@@ -719,6 +727,9 @@ void PlayerbotMgr::HandleMasterOutgoingPacket(const WorldPacket& packet)
     for (PlayerBotMap::const_iterator it = GetPlayerBotsBegin(); it != GetPlayerBotsEnd(); ++it)
     {
         Player* const bot = it->second;
+        if (!bot)
+            continue;
+
         bot->GetPlayerbotAI()->HandleMasterOutgoingPacket(packet);
     }
 
@@ -737,6 +748,9 @@ void PlayerbotMgr::HandleMasterOutgoingPacket(const WorldPacket& packet)
     for (PlayerBotMap::const_iterator it = sRandomPlayerbotMgr.GetPlayerBotsBegin(); it != sRandomPlayerbotMgr.GetPlayerBotsEnd(); ++it)
     {
         Player* const bot = it->second;
+        if (!bot)
+            continue;
+
         if (bot->GetPlayerbotAI()->GetMaster() == GetMaster())
             bot->GetPlayerbotAI()->HandleMasterOutgoingPacket(packet);
     }

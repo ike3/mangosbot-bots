@@ -260,9 +260,9 @@ public:
 	PlayerbotAI(Player* bot);
 	virtual ~PlayerbotAI();
 
-    virtual void UpdateAI(uint32 elapsed);
+    virtual void UpdateAI(uint32 elapsed, bool minimal = false);
 public:
-	virtual void UpdateAIInternal(uint32 elapsed);
+	virtual void UpdateAIInternal(uint32 elapsed, bool minimal = false);
 	string HandleRemoteCommand(string command);
     void HandleCommand(uint32 type, const string& text, Player& fromPlayer);
 	void HandleBotOutgoingPacket(const WorldPacket& packet);
@@ -270,7 +270,7 @@ public:
     void HandleMasterOutgoingPacket(const WorldPacket& packet);
 	void HandleTeleportAck();
     void ChangeEngine(BotState type);
-    void DoNextAction();
+    void DoNextAction(bool minimal = false);
     virtual bool DoSpecificAction(string name, Event event = Event(), bool silent = false, string qualifier = "");
     void ChangeStrategy(string name, BotState type);
     void ClearStrategies(BotState type);
@@ -414,8 +414,8 @@ protected:
     map<string, time_t> whispers;
     pair<ChatMsg, time_t> currentChat;
     static set<string> unsecuredCommands;
-    map<ActivityType, bool> allowActive;
-    map<ActivityType, time_t> allowActiveCheckTimer;
+    bool allowActive[MAX_ACTIVITY_TYPE];
+    time_t allowActiveCheckTimer[MAX_ACTIVITY_TYPE];
     bool inCombat = false;;
     BotCheatMask cheatMask = BotCheatMask::none;
 };
