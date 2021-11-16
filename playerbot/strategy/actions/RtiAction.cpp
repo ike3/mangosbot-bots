@@ -50,12 +50,19 @@ bool MarkRtiAction::Execute(Event event)
     Group *group = bot->GetGroup();
     if (!group) return false;
 
+    if (bot->InBattleGround())
+        return false;
+
     Unit* target = NULL;
     list<ObjectGuid> attackers = ai->GetAiObjectContext()->GetValue<list<ObjectGuid> >("attackers")->Get();
     for (list<ObjectGuid>::iterator i = attackers.begin(); i != attackers.end(); ++i)
     {
         Unit* unit = ai->GetUnit(*i);
         if (!unit)
+            continue;
+
+        // do not mark players
+        if (unit->IsPlayer())
             continue;
 
         bool marked = false;
