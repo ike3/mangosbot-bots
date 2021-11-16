@@ -46,6 +46,9 @@ void RpgHelper::setFacing(GuidPosition guidPosition)
     if (!guidPosition.IsUnit())
         return;
 
+    if (guidPosition.IsPlayer())
+        return;
+
     Unit* unit = guidPosition.GetUnit();
 
     unit->SetFacingTo(unit->GetAngle(bot));
