@@ -57,6 +57,7 @@ namespace ai
             creators["buff"] = &ChatTriggerContext::buff;
             creators["help"] = &ChatTriggerContext::help;
             creators["gb"] = &ChatTriggerContext::gb;
+            creators["gbank"] = &ChatTriggerContext::gb;
             creators["bank"] = &ChatTriggerContext::bank;
             creators["follow"] = &ChatTriggerContext::follow;
             creators["stay"] = &ChatTriggerContext::stay;
