@@ -111,7 +111,6 @@ class RandomPlayerbotMgr : public PlayerbotHolder
         uint32 SetEventValue(uint32 bot, string event, uint32 value, uint32 validIn, string data = "");
         list<uint32> GetBots();
         list<uint32> GetBgBots(uint32 bracket);
-        void AddBgBot(BattleGroundQueueTypeId queueTypeId, BattleGroundBracketId bracketId, bool isRated = false, bool visual = false);
         time_t BgCheckTimer;
         time_t LfgCheckTimer;
         time_t PlayersCheckTimer;
