@@ -33,12 +33,8 @@ bool SetHomeAction::Execute(Event event)
             }
             else
             {
-                float angle = GetFollowAngle();
-                float x = unit->GetPositionX() + sPlayerbotAIConfig.followDistance * cos(angle);
-                float y = unit->GetPositionY() + sPlayerbotAIConfig.followDistance * sin(angle);
-                float z = unit->GetPositionZ();
-                WorldLocation loc(unit->GetMapId(), x, y, z);
-                bot->SetHomebindToLocation(loc, unit->GetAreaId());
+                Creature* creature = ai->GetCreature(selection);
+                bot->GetSession()->SendBindPoint(creature);
                 ai->TellMaster("This inn is my new home");
                 return true;
             }
