@@ -255,7 +255,7 @@ void PlayerbotAI::UpdateAI(uint32 elapsed, bool minimal)
         min = false;
 
     UpdateAIInternal(elapsed, min);
-    YieldThread((!AllowActivity() || min));
+    YieldThread(min);
 }
 
 void PlayerbotAI::UpdateAIInternal(uint32 elapsed, bool minimal)
@@ -372,6 +372,7 @@ void PlayerbotAI::Reset(bool full)
 #ifdef MANGOS
     bot->m_taxi.ClearTaxiDestinations();
 #endif
+    bot->OnTaxiFlightEject(true);
     InterruptSpell();
 
     if (full)
