@@ -4,12 +4,6 @@
 
 using namespace ai;
 
-
-NextAction** GuildStrategy::getDefaultActions()
-{
-    return NULL;
-}
-
 void GuildStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
