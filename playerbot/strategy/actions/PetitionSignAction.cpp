@@ -65,13 +65,15 @@ bool PetitionSignAction::Execute(Event event)
             accept = false;
         }
 
-        QueryResult* result = CharacterDatabase.PQuery("SELECT playerguid FROM petition_sign WHERE player_account = '%u' AND petitionguid = '%u'", bot->GetSession()->GetAccountId(), petitionGuid.GetCounter());
+        // check for same acc id
+        /*QueryResult* result = CharacterDatabase.PQuery("SELECT playerguid FROM petition_sign WHERE player_account = '%u' AND petitionguid = '%u'", bot->GetSession()->GetAccountId(), petitionGuid.GetCounter());
 
         if (result)
         {
             ai->TellError("Sorry, I already signed this pettition");
             accept = false;
         }
+        delete result;*/
     }
 
     Player* _inviter = sObjectMgr.GetPlayer(inviter);
@@ -81,7 +83,7 @@ bool PetitionSignAction::Execute(Event event)
     if (_inviter == bot)
         return false;
 
-    if (!accept || !ai->GetSecurity()->CheckLevelFor(PLAYERBOT_SECURITY_TALK, false, _inviter, true))
+    if (!accept || !ai->GetSecurity()->CheckLevelFor(PLAYERBOT_SECURITY_INVITE, false, _inviter, true))
     {
         WorldPacket data(MSG_PETITION_DECLINE);
         data << petitionGuid;
