@@ -302,6 +302,7 @@ public:
     void RemoveShapeshift();
     void WaitForSpellCast(Spell *spell);
     bool PlaySound(uint32 emote);
+    bool PlayEmote(uint32 emote);
     void Ping(float x, float y);
     Item * FindPoison() const;
     Item * FindConsumable(uint32 displayId) const;

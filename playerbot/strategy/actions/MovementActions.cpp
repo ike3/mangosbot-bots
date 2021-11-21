@@ -1087,12 +1087,12 @@ bool MovementAction::Flee(Unit *target)
 
             if (foundFlee)
             {
-                if (!urand(0, 25))
+                if (!urand(0, 50) && ai->HasStrategy("emote", BOT_STATE_NON_COMBAT))
                 {
                     vector<uint32> sounds;
                     sounds.push_back(304); // guard
                     sounds.push_back(306); // flee
-                    ai->PlaySound(sounds[urand(0, sounds.size() - 1)]);
+                    ai->PlayEmote(sounds[urand(0, sounds.size() - 1)]);
                 }
             }
         }
@@ -1170,12 +1170,12 @@ bool MovementAction::Flee(Unit *target)
 
             if (foundFlee)
             {
-                if (!urand(0, 25))
+                if (!urand(0, 50) && ai->HasStrategy("emote", BOT_STATE_NON_COMBAT))
                 {
                     vector<uint32> sounds;
                     sounds.push_back(304); // guard
                     sounds.push_back(306); // flee
-                    ai->PlaySound(sounds[urand(0, sounds.size() - 1)]);
+                    ai->PlayEmote(sounds[urand(0, sounds.size() - 1)]);
                 }
             }
         }
@@ -1203,12 +1203,12 @@ bool MovementAction::Flee(Unit *target)
     if (!manager.isUseful())
         return false;
 
-    if (!urand(0, 25))
+    if (!urand(0, 50) && ai->HasStrategy("emote", BOT_STATE_NON_COMBAT))
     {
         vector<uint32> sounds;
         sounds.push_back(304); // guard
         sounds.push_back(306); // flee
-        ai->PlaySound(sounds[urand(0, sounds.size() - 1)]);
+        ai->PlayEmote(sounds[urand(0, sounds.size() - 1)]);
     }
 
     float rx, ry, rz;
@@ -1219,12 +1219,12 @@ bool MovementAction::Flee(Unit *target)
     }
 
     bool result = MoveTo(target->GetMapId(), rx, ry, rz);
-    if (result && !urand(0, 25))
+    if (result && !urand(0, 50) && ai->HasStrategy("emote", BOT_STATE_NON_COMBAT))
     {
         vector<uint32> sounds;
         sounds.push_back(304); // guard
         sounds.push_back(306); // flee
-        ai->PlaySound(sounds[urand(0, sounds.size() - 1)]);
+        ai->PlayEmote(sounds[urand(0, sounds.size() - 1)]);
     }
     if (result)
         AI_VALUE(LastMovement&, "last movement").lastFlee = time(0);

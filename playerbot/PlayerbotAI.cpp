@@ -10,6 +10,7 @@
 #include "CellImpl.h"
 #include "strategy/values/LastMovementValue.h"
 #include "strategy/actions/LogLevelAction.h"
+#include "strategy/actions/EmoteAction.h"
 #include "strategy/values/LastSpellCastValue.h"
 #include "LootObjectStack.h"
 #include "PlayerbotAIConfig.h"
@@ -910,6 +911,17 @@ bool PlayerbotAI::PlaySound(uint32 emote)
     return false;
 }
 
+bool PlayerbotAI::PlayEmote(uint32 emote)
+{
+    WorldPacket data(SMSG_TEXT_EMOTE);
+    data << (TextEmotes)emote;
+    data << EmoteAction::GetNumberOfEmoteVariants((TextEmotes)emote, bot->getRace(), bot->getGender());
+    data << ((master && (sServerFacade.GetDistance2d(bot, master) < 30.0f) && urand(0, 1)) ? master->GetObjectGuid() : (bot->GetSelectionGuid() && urand(0, 1)) ? bot->GetSelectionGuid() : ObjectGuid());
+    bot->GetSession()->HandleTextEmoteOpcode(data);
+
+    return false;
+}
+
 bool PlayerbotAI::ContainsStrategy(StrategyType type)
 {
     for (int i = 0 ; i < BOT_STATE_MAX; i++)
@@ -1747,13 +1759,13 @@ bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target, Item* itemTarget)
         }
     }
 
-    if (!urand(0, 50) && sServerFacade.IsInCombat(bot))
+    if (!urand(0, 50) && sServerFacade.IsInCombat(bot) && HasStrategy("emote", BOT_STATE_NON_COMBAT))
     {
         vector<uint32> sounds;
         sounds.push_back(TEXTEMOTE_OPENFIRE);
         sounds.push_back(305);
         sounds.push_back(307);
-        PlaySound(sounds[urand(0, sounds.size() - 1)]);
+        PlayEmote(sounds[urand(0, sounds.size() - 1)]);
     }
 
     WaitForSpellCast(spell);
@@ -1896,13 +1908,13 @@ bool PlayerbotAI::CastSpell(uint32 spellId, float x, float y, float z, Item* ite
         }
     }
 
-    if (!urand(0, 50) && sServerFacade.IsInCombat(bot))
+    if (!urand(0, 50) && sServerFacade.IsInCombat(bot) && HasStrategy("emote", BOT_STATE_NON_COMBAT))
     {
         vector<uint32> sounds;
         sounds.push_back(TEXTEMOTE_OPENFIRE);
         sounds.push_back(305);
         sounds.push_back(307);
-        PlaySound(sounds[urand(0, sounds.size() - 1)]);
+        PlayEmote(sounds[urand(0, sounds.size() - 1)]);
     }
 
     WaitForSpellCast(spell);

@@ -8,11 +8,11 @@ namespace ai
     {
     public:
         EmoteActionBase(PlayerbotAI* ai, string name);
+        static uint32 GetNumberOfEmoteVariants(TextEmotes emote, uint8 race, uint8 gender);
 
     protected:
         bool Emote(Unit* target, uint32 type, bool textEmote = false);
         bool ReceiveEmote(Player* source, uint32 emote, bool verbal = false);
-        uint32 GetNumberOfEmoteVariants(TextEmotes emote, uint8 race, uint8 gender);
         Unit* GetTarget();
         void InitEmotes();
         static map<string, uint32> emotes;
