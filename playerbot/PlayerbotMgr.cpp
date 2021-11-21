@@ -245,20 +245,6 @@ Player* PlayerbotHolder::GetPlayerBot(uint64 playerGuid) const
     return (it == playerBots.end()) ? 0 : it->second;
 }
 
-class ViewPointAccess
-{
-public:
-    friend class Camera;
-
-    typedef std::list<Camera*> CameraList;
-
-    CameraList m_cameras;
-    GridType* m_grid;
-
-    void Attach(Camera* c) { m_cameras.push_back(c); }
-    void Detach(Camera* c) { m_cameras.remove(c); }
-};
-
 void PlayerbotHolder::OnBotLogin(Player * const bot)
 {
 	PlayerbotAI* ai = new PlayerbotAI(bot);
@@ -269,14 +255,6 @@ void PlayerbotHolder::OnBotLogin(Player * const bot)
 
 
     Player* master = ai->GetMaster();
-
-    if (master != bot)
-    {
-        ViewPoint* view = &bot->GetViewPoint();
-        ViewPointAccess* viewAccess = reinterpret_cast<ViewPointAccess*>(view);
-
-        viewAccess->m_cameras.clear();
-    }
 
     if (master)
     {
@@ -842,18 +820,6 @@ void PlayerbotMgr::HandleMasterOutgoingPacket(const WorldPacket& packet)
         bot->GetPlayerbotAI()->HandleMasterOutgoingPacket(packet);
     }
 
-    if (GetMaster()->GetGroup())
-    {
-        Group::MemberSlotList const& groupSlot = GetMaster()->GetGroup()->GetMemberSlots();
-        for (Group::member_citerator itr = groupSlot.begin(); itr != groupSlot.end(); itr++)
-        {
-            Player* bot = sObjectMgr.GetPlayer(itr->guid);
-            if (bot && bot->GetPlayerbotAI() && bot->GetPlayerbotAI()->GetMaster() == GetMaster())
-                bot->GetPlayerbotAI()->HandleMasterOutgoingPacket(packet);
-        }
-    }
-
-    /*
     for (PlayerBotMap::const_iterator it = sRandomPlayerbotMgr.GetPlayerBotsBegin(); it != sRandomPlayerbotMgr.GetPlayerBotsEnd(); ++it)
     {
         Player* const bot = it->second;
@@ -863,7 +829,6 @@ void PlayerbotMgr::HandleMasterOutgoingPacket(const WorldPacket& packet)
         if (bot->GetPlayerbotAI()->GetMaster() == GetMaster())
             bot->GetPlayerbotAI()->HandleMasterOutgoingPacket(packet);
     }
-    */
 }
 
 void PlayerbotMgr::SaveToDB()
