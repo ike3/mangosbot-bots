@@ -83,11 +83,9 @@ void EmoteActionBase::InitEmotes()
     textEmotes["train"] = 264;
 }
 
-bool EmoteActionBase::Emote(Unit* target, uint32 type)
+bool EmoteActionBase::Emote(Unit* target, uint32 type, bool textEmote)
 {
-    if (sServerFacade.isMoving(bot)) return false;
-
-    if (target && !sServerFacade.IsInFront(bot, target, sPlayerbotAIConfig.sightDistance, EMOTE_ANGLE_IN_FRONT))
+    if (target && !sServerFacade.IsInFront(bot, target, sPlayerbotAIConfig.sightDistance, M_PI_F))
         sServerFacade.SetFacingTo(bot, target);
 
     ObjectGuid oldSelection = bot->GetSelectionGuid();
@@ -95,11 +93,20 @@ bool EmoteActionBase::Emote(Unit* target, uint32 type)
     {
         bot->SetSelectionGuid(target->GetObjectGuid());
         Player* player = dynamic_cast<Player*>(target);
-        if (player && player->GetPlayerbotAI() && !sServerFacade.IsInFront(player, bot, sPlayerbotAIConfig.sightDistance, EMOTE_ANGLE_IN_FRONT))
+        if (player && player->GetPlayerbotAI() && !sServerFacade.IsInFront(player, bot, sPlayerbotAIConfig.sightDistance, M_PI_F))
             sServerFacade.SetFacingTo(player, bot);
     }
 
-    bot->HandleEmoteCommand(type);
+    if (textEmote)
+    {
+        WorldPacket data(SMSG_TEXT_EMOTE);
+        data << type;
+        data << GetNumberOfEmoteVariants((TextEmotes)type, bot->getRace(), bot->getGender());
+        data << ((bot->GetSelectionGuid() && urand(0, 1)) ? bot->GetSelectionGuid() : ObjectGuid());
+        bot->GetSession()->HandleTextEmoteOpcode(data);
+    }
+    else
+        bot->HandleEmoteCommand(type);
 
     if (oldSelection)
         bot->SetSelectionGuid(oldSelection);
@@ -125,18 +132,21 @@ Unit* EmoteActionBase::GetTarget()
     return target;
 }
 
-bool EmoteActionBase::ReceiveEmote(Player* source, uint32 emote)
+bool EmoteActionBase::ReceiveEmote(Player* source, uint32 emote, bool verbal)
 {
     uint32 emoteId = 0;
+    uint32 textEmote = 0;
     string emoteText;
     string emoteYell;
     switch (emote)
     {
     case TEXTEMOTE_BONK:
         emoteId = EMOTE_ONESHOT_CRY;
+        textEmote = TEXTEMOTE_CRY;
         break;
     case TEXTEMOTE_SALUTE:
         emoteId = EMOTE_ONESHOT_SALUTE;
+        textEmote = TEXTEMOTE_SALUTE;
         break;
     case 325:
         if (ai->GetMaster() == source)
@@ -161,10 +171,12 @@ bool EmoteActionBase::ReceiveEmote(Player* source, uint32 emote)
     case TEXTEMOTE_INTRODUCE:
         emoteText = "Hey there!";
         emoteId = EMOTE_ONESHOT_WAVE;
+        textEmote = TEXTEMOTE_HELLO;
         break;
     case TEXTEMOTE_DANCE:
         emoteText = "Shake what your mama gave you!";
         emoteId = EMOTE_ONESHOT_DANCE;
+        textEmote = TEXTEMOTE_DANCE;
         break;
     case TEXTEMOTE_FLIRT:
     case TEXTEMOTE_KISS:
@@ -175,10 +187,12 @@ bool EmoteActionBase::ReceiveEmote(Player* source, uint32 emote)
         //case TEXTEMOTE_HOLDHAND:
         emoteText = "Awwwww...";
         emoteId = EMOTE_ONESHOT_SHY;
+        textEmote = TEXTEMOTE_SHY;
         break;
     case TEXTEMOTE_FLEX:
         emoteText = "Hercules! Hercules!";
         emoteId = EMOTE_ONESHOT_APPLAUD;
+        textEmote = TEXTEMOTE_APPLAUD;
         break;
     case TEXTEMOTE_ANGRY:
         //case TEXTEMOTE_FACEPALM:
@@ -190,6 +204,7 @@ bool EmoteActionBase::ReceiveEmote(Player* source, uint32 emote)
         //case TEXTEMOTE_CROSSARMS:
         emoteText = "Did I do thaaaaat?";
         emoteId = EMOTE_ONESHOT_QUESTION;
+        textEmote = TEXTEMOTE_SHRUG;
         break;
     case TEXTEMOTE_FART:
     case TEXTEMOTE_BURP:
@@ -199,17 +214,21 @@ bool EmoteActionBase::ReceiveEmote(Player* source, uint32 emote)
     case TEXTEMOTE_STINK:
         emoteText = "Wasn't me! Just sayin'..";
         emoteId = EMOTE_ONESHOT_POINT;
+        textEmote = TEXTEMOTE_POINT;
         break;
     case TEXTEMOTE_JOKE:
         emoteId = EMOTE_ONESHOT_LAUGH;
+        textEmote = TEXTEMOTE_LAUGH;
         emoteText = "Oh.. was I not supposed to laugh so soon?";
         break;
     case TEXTEMOTE_CHICKEN:
         emoteText = "We'll see who's chicken soon enough!";
         emoteId = EMOTE_ONESHOT_RUDE;
+        textEmote = TEXTEMOTE_RUDE;
         break;
     case TEXTEMOTE_APOLOGIZE:
         emoteId = EMOTE_ONESHOT_POINT;
+        textEmote = TEXTEMOTE_APOLOGIZE;
         emoteText = "You damn right you're sorry!";
         break;
     case TEXTEMOTE_APPLAUD:
@@ -218,12 +237,14 @@ bool EmoteActionBase::ReceiveEmote(Player* source, uint32 emote)
     case TEXTEMOTE_HAPPY:
         //case TEXTEMOTE_GOLFCLAP:
         emoteId = EMOTE_ONESHOT_BOW;
+        textEmote = TEXTEMOTE_BOW;
         emoteText = "Thank you.. Thank you.. I'm here all week.";
         break;
     case TEXTEMOTE_BEG:
     case TEXTEMOTE_GROVEL:
     case TEXTEMOTE_PLEAD:
         emoteId = EMOTE_ONESHOT_NO;
+        textEmote = TEXTEMOTE_NO;
         emoteText = "Beg all you want.. I have nothing for you.";
         break;
     case TEXTEMOTE_BITE:
@@ -232,24 +253,29 @@ bool EmoteActionBase::ReceiveEmote(Player* source, uint32 emote)
         //case TEXTEMOTE_PINCH:
         //case TEXTEMOTE_PUNCH:
         emoteId = EMOTE_ONESHOT_ROAR;
+        textEmote = TEXTEMOTE_ROAR;
         emoteYell = "OUCH! Dammit, that hurt!";
         break;
     case TEXTEMOTE_BORED:
         emoteId = EMOTE_ONESHOT_NO;
+        textEmote = TEXTEMOTE_NO;
         emoteText = "My job description doesn't include entertaining you..";
         break;
     case TEXTEMOTE_BOW:
     case TEXTEMOTE_CURTSEY:
         emoteId = EMOTE_ONESHOT_BOW;
+        textEmote = TEXTEMOTE_BOW;
         break;
     case TEXTEMOTE_BRB:
     case TEXTEMOTE_SIT:
         emoteId = EMOTE_ONESHOT_EAT;
+        textEmote = TEXTEMOTE_EAT;
         emoteText = "Looks like time for an AFK break..";
         break;
     case TEXTEMOTE_AGREE:
     case TEXTEMOTE_NOD:
         emoteId = EMOTE_ONESHOT_EXCLAMATION;
+        textEmote = TEXTEMOTE_NOD;
         emoteText = "At least SOMEONE agrees with me!";
         break;
     case TEXTEMOTE_AMAZE:
@@ -266,6 +292,7 @@ bool EmoteActionBase::ReceiveEmote(Player* source, uint32 emote)
         //case TEXTEMOTE_JEALOUS:
         //case TEXTEMOTE_PROUD:
         emoteId = EMOTE_ONESHOT_FLEX;
+        textEmote = TEXTEMOTE_FLEX;
         emoteText = "Yes, Yes. I know I'm amazing..";
         break;
     case TEXTEMOTE_BLEED:
@@ -274,6 +301,7 @@ bool EmoteActionBase::ReceiveEmote(Player* source, uint32 emote)
         //case TEXTEMOTE_FAINT:
         //case TEXTEMOTE_PULSE:
         emoteId = EMOTE_ONESHOT_KNEEL;
+        textEmote = TEXTEMOTE_KNEEL;
         emoteText = "MEDIC! Stat!";
         break;
     case TEXTEMOTE_BLINK:
@@ -283,10 +311,12 @@ bool EmoteActionBase::ReceiveEmote(Player* source, uint32 emote)
     case TEXTEMOTE_BOUNCE:
     case TEXTEMOTE_BARK:
         emoteId = EMOTE_ONESHOT_POINT;
+        textEmote = TEXTEMOTE_POINT;
         emoteText = "Who's a good doggy? You're a good doggy!";
         break;
     case TEXTEMOTE_BYE:
         emoteId = EMOTE_ONESHOT_WAVE;
+        textEmote = TEXTEMOTE_WAVE;
         emoteText = "Umm.... wait! Where are you going?!";
         break;
     case TEXTEMOTE_CACKLE:
@@ -298,6 +328,7 @@ bool EmoteActionBase::ReceiveEmote(Player* source, uint32 emote)
     case TEXTEMOTE_SNICKER:
         //case TEXTEMOTE_SNORT:
         emoteId = EMOTE_ONESHOT_LAUGH;
+        textEmote = TEXTEMOTE_LAUGH;
         emoteText = "Wait... what are we laughing at again?";
         break;
     case TEXTEMOTE_CONFUSED:
@@ -317,6 +348,7 @@ bool EmoteActionBase::ReceiveEmote(Player* source, uint32 emote)
     case TEXTEMOTE_SERIOUS:
     case TEXTEMOTE_EYEBROW:
         emoteId = EMOTE_ONESHOT_QUESTION;
+        textEmote = TEXTEMOTE_SHRUG;
         emoteText = "Don't look at  me.. I just work here";
         break;
     case TEXTEMOTE_COUGH:
@@ -327,19 +359,23 @@ bool EmoteActionBase::ReceiveEmote(Player* source, uint32 emote)
         //case TEXTEMOTE_SNEEZE:
         //case TEXTEMOTE_SWEAT:
         emoteId = EMOTE_ONESHOT_POINT;
+        textEmote = TEXTEMOTE_POINT;
         emoteText = "Ewww! Keep your nasty germs over there!";
         break;
     case TEXTEMOTE_CRY:
         emoteId = EMOTE_ONESHOT_CRY;
+        textEmote = TEXTEMOTE_CRY;
         emoteText = "Don't you start crying or it'll make me start crying!";
         break;
     case TEXTEMOTE_CRACK:
         emoteId = EMOTE_ONESHOT_ROAR;
+        textEmote = TEXTEMOTE_ROAR;
         emoteText = "It's clobbering time!";
         break;
     case TEXTEMOTE_EAT:
     case TEXTEMOTE_DRINK:
         emoteId = EMOTE_ONESHOT_EAT;
+        textEmote = TEXTEMOTE_EAT;
         emoteText = "I hope you brought enough for the whole class...";
         break;
     case TEXTEMOTE_GLOAT:
@@ -347,16 +383,19 @@ bool EmoteActionBase::ReceiveEmote(Player* source, uint32 emote)
     case TEXTEMOTE_TEASE:
     case TEXTEMOTE_EMBARRASS:
         emoteId = EMOTE_ONESHOT_CRY;
+        textEmote = TEXTEMOTE_CRY;
         emoteText = "Doesn't mean you need to be an ass about it..";
         break;
     case TEXTEMOTE_HUNGRY:
         emoteId = EMOTE_ONESHOT_EAT;
+        textEmote = TEXTEMOTE_EAT;
         emoteText = "What? You want some of this?";
         break;
     case TEXTEMOTE_LAYDOWN:
     case TEXTEMOTE_TIRED:
     case TEXTEMOTE_YAWN:
         emoteId = EMOTE_ONESHOT_KNEEL;
+        textEmote = TEXTEMOTE_KNEEL;
         emoteText = "Is it break time already?";
         break;
     case TEXTEMOTE_MOAN:
@@ -371,6 +410,7 @@ bool EmoteActionBase::ReceiveEmote(Player* source, uint32 emote)
     case TEXTEMOTE_WINK:
         //case TEXTEMOTE_CHARM:
         emoteId = EMOTE_ONESHOT_NO;
+        textEmote = TEXTEMOTE_NO;
         emoteText = "Keep it in your pants, boss..";
         break;
     case TEXTEMOTE_NO:
@@ -378,19 +418,23 @@ bool EmoteActionBase::ReceiveEmote(Player* source, uint32 emote)
     case TEXTEMOTE_DISAGREE:
     case TEXTEMOTE_DOUBT:
         emoteId = EMOTE_ONESHOT_QUESTION;
+        textEmote = TEXTEMOTE_SHRUG;
         emoteText = "Aww.... why not?!";
         break;
     case TEXTEMOTE_PANIC:
         emoteId = EMOTE_ONESHOT_EXCLAMATION;
+        textEmote = TEXTEMOTE_CALM;
         emoteText = "Now is NOT the time to panic!";
         break;
     case TEXTEMOTE_POINT:
         emoteId = EMOTE_ONESHOT_POINT;
+        textEmote = TEXTEMOTE_POINT;
         emoteText = "What?! I can do that TOO!";
         break;
     case TEXTEMOTE_RUDE:
     case TEXTEMOTE_RASP:
         emoteId = EMOTE_ONESHOT_RUDE;
+        textEmote = TEXTEMOTE_RASP;
         emoteText = "Right back at you, bub!", LANG_UNIVERSAL;
         break;
     case TEXTEMOTE_ROAR:
@@ -412,17 +456,26 @@ bool EmoteActionBase::ReceiveEmote(Player* source, uint32 emote)
         //case TEXTEMOTE_REVENGE:
         //case TEXTEMOTE_SHAKEFIST:
         emoteId = EMOTE_ONESHOT_ROAR;
+        textEmote = TEXTEMOTE_ROAR;
         emoteYell = "RAWR!";
         break;
     case TEXTEMOTE_TALK:
+        emoteId = EMOTE_ONESHOT_TALK;
+        textEmote = TEXTEMOTE_LISTEN;
+        break;
     case TEXTEMOTE_TALKEX:
+        emoteId = EMOTE_ONESHOT_YES;
+        textEmote = TEXTEMOTE_AGREE;
+        break;
     case TEXTEMOTE_TALKQ:
     case TEXTEMOTE_LISTEN:
         emoteId = EMOTE_ONESHOT_TALK;
+        textEmote = TEXTEMOTE_TALKQ;
         emoteText = "Blah Blah Blah Yakety Smackety..";
         break;
     case TEXTEMOTE_THANK:
         emoteId = EMOTE_ONESHOT_BOW;
+        textEmote = TEXTEMOTE_BOW;
         emoteText = "You are quite welcome!";
         break;
     case TEXTEMOTE_VICTORY:
@@ -431,6 +484,7 @@ bool EmoteActionBase::ReceiveEmote(Player* source, uint32 emote)
         //case TEXTEMOTE_HIGHFIVE:
         //case TEXTEMOTE_DING:
         emoteId = EMOTE_ONESHOT_CHEER;
+        textEmote = TEXTEMOTE_CHEER;
         emoteText = "Yay!";
         break;
     case TEXTEMOTE_COLD:
@@ -440,49 +494,60 @@ bool EmoteActionBase::ReceiveEmote(Player* source, uint32 emote)
         //case TEXTEMOTE_HEALME:
         //case TEXTEMOTE_POUT:
         emoteId = EMOTE_ONESHOT_QUESTION;
+        textEmote = TEXTEMOTE_PUZZLE;
         emoteText = "And what exactly am I supposed to do about that?";
         break;
     case TEXTEMOTE_COMFORT:
     case TEXTEMOTE_SOOTHE:
     case TEXTEMOTE_PAT:
         emoteId = EMOTE_ONESHOT_CRY;
+        textEmote = TEXTEMOTE_CRY;
         emoteText = "Thanks...";
         break;
     case TEXTEMOTE_INSULT:
         emoteId = EMOTE_ONESHOT_CRY;
+        textEmote = TEXTEMOTE_CRY;
         emoteText = "You hurt my feelings..";
         break;
     case TEXTEMOTE_JK:
         emoteId = EMOTE_ONESHOT_POINT;
+        textEmote = TEXTEMOTE_POINT;
         emoteText = "You.....";
         break;
     case TEXTEMOTE_RAISE:
         emoteId = EMOTE_ONESHOT_POINT;
+        textEmote = TEXTEMOTE_POINT;
         emoteText = "Yes.. you.. at the back of the class..";
         break;
     case TEXTEMOTE_READY:
         emoteId = EMOTE_ONESHOT_SALUTE;
+        textEmote = TEXTEMOTE_SALUTE;
         emoteText = "Ready here, too!";
         break;
     case TEXTEMOTE_SHOO:
         emoteId = EMOTE_ONESHOT_KICK;
+        textEmote = TEXTEMOTE_SHOO;
         emoteText = "Shoo yourself!";
         break;
     case TEXTEMOTE_SLAP:
         //case TEXTEMOTE_SMACK:
         emoteId = EMOTE_ONESHOT_CRY;
+        textEmote = TEXTEMOTE_CRY;
         emoteText = "What did I do to deserve that?";
         break;
     case TEXTEMOTE_STAND:
         emoteId = EMOTE_ONESHOT_NONE;
+        textEmote = TEXTEMOTE_STAND;
         emoteText = "What? Break time's over? Fine..";
         break;
     case TEXTEMOTE_TICKLE:
         emoteId = EMOTE_ONESHOT_LAUGH;
+        textEmote = TEXTEMOTE_GIGGLE;
         emoteText = "Hey! Stop that!";
         break;
     case TEXTEMOTE_VIOLIN:
         emoteId = EMOTE_ONESHOT_TALK;
+        textEmote = TEXTEMOTE_SIGH;
         emoteText = "Har Har.. very funny..";
         break;
         //case TEXTEMOTE_HELPME:
@@ -492,11 +557,13 @@ bool EmoteActionBase::ReceiveEmote(Player* source, uint32 emote)
     case TEXTEMOTE_GOODLUCK:
         //case TEXTEMOTE_LUCK:
         emoteId = EMOTE_ONESHOT_TALK;
+        textEmote = TEXTEMOTE_THANK;
         emoteText = "Thanks... I'll need it..";
         break;
     case TEXTEMOTE_BRANDISH:
         //case TEXTEMOTE_MERCY:
         emoteId = EMOTE_ONESHOT_BEG;
+        textEmote = TEXTEMOTE_BEG;
         emoteText = "Please don't kill me!";
         break;
         /*case TEXTEMOTE_BADFEELING:
@@ -539,17 +606,31 @@ bool EmoteActionBase::ReceiveEmote(Player* source, uint32 emote)
         break;
     }
 
-    if (source && !sServerFacade.isMoving(bot) && !sServerFacade.IsInFront(bot, source, sPlayerbotAIConfig.sightDistance, EMOTE_ANGLE_IN_FRONT))
+    if (source && !sServerFacade.isMoving(bot) && !sServerFacade.IsInFront(bot, source, sPlayerbotAIConfig.farDistance, M_PI_F))
         sServerFacade.SetFacingTo(bot, source);
 
-    if (emoteText.size())
-        bot->Say(emoteText, (bot->GetTeam() == ALLIANCE ? LANG_COMMON : LANG_ORCISH));
+    if (verbal)
+    {
+        if (emoteText.size())
+            bot->Say(emoteText, (bot->GetTeam() == ALLIANCE ? LANG_COMMON : LANG_ORCISH));
 
-    if (emoteYell.size())
-        bot->Yell(emoteYell, (bot->GetTeam() == ALLIANCE ? LANG_COMMON : LANG_ORCISH));
+        if (emoteYell.size())
+            bot->Yell(emoteYell, (bot->GetTeam() == ALLIANCE ? LANG_COMMON : LANG_ORCISH));
+    }
 
-    if (emoteId)
-        bot->HandleEmoteCommand(emoteId);
+    if (textEmote)
+    {
+        WorldPacket data(SMSG_TEXT_EMOTE);
+        data << textEmote;
+        data << GetNumberOfEmoteVariants((TextEmotes)textEmote, bot->getRace(), bot->getGender());
+        data << ((source && urand(0, 1)) ? source->GetObjectGuid() : ObjectGuid());
+        bot->GetSession()->HandleTextEmoteOpcode(data);
+    }
+    else
+    {
+        if (emoteId)
+            bot->HandleEmoteCommand(emoteId);
+    }
 
     return true;
 }
@@ -573,16 +654,12 @@ bool EmoteAction::Execute(Event event)
         if (namlen > 1)
             p.read(nam, namlen);
 
-        if (strstri(bot->GetName(), nam.c_str()) || namlen == 1)
+        pSource = sObjectMgr.GetPlayer(source);
+
+        if (pSource && (pSource->GetObjectGuid() != bot->GetObjectGuid()) && (sServerFacade.IsInFront(bot, pSource, sPlayerbotAIConfig.farDistance, M_PI_F) || strstri(bot->GetName(), nam.c_str()) || namlen == 1))
         {
-            pSource = sObjectMgr.GetPlayer(source);
-
-            if (pSource && sServerFacade.GetDistance2d(bot, pSource) < sPlayerbotAIConfig.farDistance)
-            {
-                sLog.outDetail("Bot #%d %s:%d <%s> received SMSG_TEXT_EMOTE %d", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName(), text_emote);
-                emote = text_emote;
-            }
-
+            sLog.outDetail("Bot #%d %s:%d <%s> received SMSG_TEXT_EMOTE %d from player #%d <%s>", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName(), text_emote, pSource->GetGUIDLow(), pSource->GetName());
+            emote = text_emote;
         }
     }
 
@@ -595,11 +672,11 @@ bool EmoteAction::Execute(Event event)
         p >> emoteId >> source;
 
         pSource = sObjectMgr.GetPlayer(source);
-        if (pSource && sServerFacade.GetDistance2d(bot, pSource) < sPlayerbotAIConfig.farDistance && emoteId != EMOTE_ONESHOT_NONE)
+        if (pSource && pSource != bot && sServerFacade.GetDistance2d(bot, pSource) < sPlayerbotAIConfig.farDistance && emoteId != EMOTE_ONESHOT_NONE)
         {
-            if (pSource->GetSelectionGuid() != bot->GetObjectGuid())
+            if ((pSource->GetObjectGuid() != bot->GetObjectGuid()) && (pSource->GetSelectionGuid() == bot->GetObjectGuid() || sServerFacade.IsInFront(bot, pSource, sPlayerbotAIConfig.farDistance, M_PI_F)))
             {
-                sLog.outDetail("Bot #%d %s:%d <%s> received SMSG_EMOTE %d", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName(), emoteId);
+                sLog.outDetail("Bot #%d %s:%d <%s> received SMSG_EMOTE %d from player #%d <%s>", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName(), emoteId, pSource->GetGUIDLow(), pSource->GetName());
                 vector<uint32> types;
                 for (int32 i = sEmotesTextStore.GetNumRows(); i >= 0; --i)
                 {
@@ -639,7 +716,7 @@ bool EmoteAction::Execute(Event event)
     }
 
     if (emote)
-        return ReceiveEmote(pSource, emote);
+        return ReceiveEmote(pSource, emote, urand(0, 1));
 
     if (param.find("sound") == 0)
     {
@@ -648,7 +725,12 @@ bool EmoteAction::Execute(Event event)
 
     if (!param.empty() && textEmotes.find(param) != textEmotes.end())
     {
-        return ai->PlaySound(textEmotes[param]);
+        WorldPacket data(SMSG_TEXT_EMOTE);
+        data << textEmotes[param];
+        data << GetNumberOfEmoteVariants((TextEmotes)textEmotes[param], bot->getRace(), bot->getGender());
+        data << ((bot->GetSelectionGuid() && urand(0, 1)) ? bot->GetSelectionGuid() : ObjectGuid());
+        bot->GetSession()->HandleTextEmoteOpcode(data);
+        return true;
     }
 
     if (param.empty() || emotes.find(param) == emotes.end())
@@ -672,10 +754,7 @@ bool EmoteAction::Execute(Event event)
 
 bool EmoteAction::isUseful()
 {
-    if (!ai->HasPlayerNearby())
-        return false;
-
-    if (sServerFacade.isMoving(bot))
+    if (!ai->AllowActivity())
         return false;
 
     time_t lastEmote = AI_VALUE2(time_t, "last emote", qualifier);
@@ -703,15 +782,42 @@ bool TalkAction::Execute(Event event)
             player->GetPlayerbotAI()->GetAiObjectContext()->GetValue<ObjectGuid>("talk target")->Set(bot->GetObjectGuid());
 
         context->GetValue<ObjectGuid>("talk target")->Set(target->GetObjectGuid());
-        return Emote(target, GetRandomEmote(target));
+        return Emote(target, GetRandomEmote(target, true), true);
     }
 
     return false;
 }
 
-uint32 TalkAction::GetRandomEmote(Unit* unit)
+uint32 TalkAction::GetRandomEmote(Unit* unit, bool textEmote)
 {
     vector<uint32> types;
+    if (textEmote)
+    {
+        if (!urand(0, 20))
+        {
+            // expressions
+            types.push_back(TEXTEMOTE_BOW);
+            types.push_back(TEXTEMOTE_RUDE);
+            types.push_back(TEXTEMOTE_CRY);
+            types.push_back(TEXTEMOTE_LAUGH);
+            types.push_back(TEXTEMOTE_POINT);
+            types.push_back(TEXTEMOTE_CHEER);
+            types.push_back(TEXTEMOTE_SHY);
+        }
+        else
+        {
+            // talk
+            types.push_back(TEXTEMOTE_TALK);
+            types.push_back(TEXTEMOTE_TALKEX);
+            types.push_back(TEXTEMOTE_TALKQ);
+            if (unit && (unit->HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_TRAINER) || unit->HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_QUESTGIVER)))
+            {
+                types.push_back(TEXTEMOTE_SALUTE);
+            }
+        }
+        return types[urand(0, types.size() - 1)];
+    }
+
     if (!urand(0, 20))
     {
         // expressions
@@ -735,4 +841,519 @@ uint32 TalkAction::GetRandomEmote(Unit* unit)
         }
     }
     return types[urand(0, types.size() - 1)];
+}
+
+uint32 EmoteActionBase::GetNumberOfEmoteVariants(TextEmotes emote, uint8 Race, uint8 Gender)
+{
+    if (emote == 304)
+    {
+        switch (Race)
+        {
+        case RACE_HUMAN:
+        case RACE_DWARF:
+        case RACE_NIGHTELF:
+        case RACE_UNDEAD:
+        case RACE_TROLL:
+        {
+            if (Gender == GENDER_MALE)
+                return 2;
+            return 2;
+        }
+        case RACE_GNOME:
+        {
+            if (Gender == GENDER_MALE)
+                return 1;
+            return 1;
+        }
+        case RACE_ORC:
+        {
+            if (Gender == GENDER_MALE)
+                return 3;
+            return 2;
+        }
+        case RACE_TAUREN:
+        {
+            if (Gender == GENDER_MALE)
+                return 2;
+            return 3;
+        }
+        }
+    }
+    else if (emote == 305)
+    {
+        switch (Race)
+        {
+        case RACE_HUMAN:
+        case RACE_DWARF:
+        case RACE_UNDEAD:
+        case RACE_TROLL:
+        {
+            if (Gender == GENDER_MALE)
+                return 2;
+            return 2;
+        }
+        case RACE_NIGHTELF:
+        {
+            if (Gender == GENDER_MALE)
+                return 2;
+            return 3;
+        }
+        case RACE_GNOME:
+        case RACE_TAUREN:
+        {
+            if (Gender == GENDER_MALE)
+                return 3;
+            return 2;
+        }
+        case RACE_ORC:
+        {
+            if (Gender == GENDER_MALE)
+                return 3;
+            return 3;
+        }
+        }
+    }
+    else if (emote == 306)
+    {
+        switch (Race)
+        {
+        case RACE_HUMAN:
+        case RACE_NIGHTELF:
+        case RACE_ORC:
+        case RACE_UNDEAD:
+        case RACE_TAUREN:
+        case RACE_TROLL:
+        {
+            if (Gender == GENDER_MALE)
+                return 2;
+            return 2;
+        }
+        case RACE_DWARF:
+        {
+            if (Gender == GENDER_MALE)
+                return 3;
+            return 2;
+        }
+        case RACE_GNOME:
+        {
+            if (Gender == GENDER_MALE)
+                return 3;
+            return 3;
+        }
+        }
+    }
+    else if (emote == TEXTEMOTE_HELLO)
+    {
+        switch (Race)
+        {
+        case RACE_HUMAN:
+        case RACE_DWARF:
+        case RACE_GNOME:
+        {
+            if (Gender == GENDER_MALE)
+                return 4;
+            return 3;
+        }
+        case RACE_NIGHTELF:
+        {
+            if (Gender == GENDER_MALE)
+                return 3;
+            return 4;
+        }
+        case RACE_ORC:
+        case RACE_UNDEAD:
+        case RACE_TAUREN:
+        case RACE_TROLL:
+        {
+            if (Gender == GENDER_MALE)
+                return 3;
+            return 3;
+        }
+        }
+    }
+    else if (emote == 323)
+    {
+        return 2;
+    }
+    else if (emote == 324)
+    {
+        switch (Race)
+        {
+        case RACE_HUMAN:
+        case RACE_NIGHTELF:
+        case RACE_ORC:
+        case RACE_UNDEAD:
+        case RACE_TAUREN:
+        case RACE_TROLL:
+        {
+            if (Gender == GENDER_MALE)
+                return 2;
+            return 2;
+        }
+        case RACE_DWARF:
+        {
+            if (Gender == GENDER_MALE)
+                return 3;
+            return 2;
+        }
+        case RACE_GNOME:
+        {
+            if (Gender == GENDER_MALE)
+                return 2;
+            return 1;
+        }
+        }
+    }
+    else if (emote == 325)
+    {
+        switch (Race)
+        {
+        case RACE_HUMAN:
+        case RACE_TROLL:
+        {
+            if (Gender == GENDER_MALE)
+                return 3;
+            return 3;
+        }
+        case RACE_DWARF:
+        case RACE_TAUREN:
+        {
+            if (Gender == GENDER_MALE)
+                return 3;
+            return 2;
+        }
+        case RACE_NIGHTELF:
+        case RACE_GNOME:
+        case RACE_ORC:
+        case RACE_UNDEAD:
+        {
+            if (Gender == GENDER_MALE)
+                return 2;
+            return 2;
+        }
+        }
+    }
+    else if (emote == 326)
+    {
+        switch (Race)
+        {
+        case RACE_HUMAN:
+        case RACE_NIGHTELF:
+        case RACE_GNOME:
+        case RACE_ORC:
+        case RACE_UNDEAD:
+        case RACE_TAUREN:
+        {
+            if (Gender == GENDER_MALE)
+                return 2;
+            return 2;
+        }
+        case RACE_DWARF:
+        case RACE_TROLL:
+        {
+            if (Gender == GENDER_MALE)
+                return 3;
+            return 3;
+        }
+        }
+    }
+    else if (emote == TEXTEMOTE_CHEER)
+    {
+        switch (Race)
+        {
+        case RACE_HUMAN:
+        case RACE_NIGHTELF:
+        case RACE_GNOME:
+        case RACE_ORC:
+        case RACE_UNDEAD:
+        case RACE_TAUREN:
+        {
+            if (Gender == GENDER_MALE)
+                return 2;
+            return 2;
+        }
+        case RACE_DWARF:
+        case RACE_TROLL:
+        {
+            if (Gender == GENDER_MALE)
+                return 3;
+            return 2;
+        }
+        }
+    }
+    else if (emote == TEXTEMOTE_OPENFIRE)
+    {
+        switch (Race)
+        {
+        case RACE_HUMAN:
+        case RACE_DWARF:
+        case RACE_NIGHTELF:
+        case RACE_UNDEAD:
+        case RACE_TAUREN:
+        case RACE_TROLL:
+        case RACE_GNOME:
+        {
+            return 2;
+        }
+        case RACE_ORC:
+        {
+            if (Gender == GENDER_MALE)
+                return 2;
+            return 3;
+        }
+        }
+    }
+    else if (emote == TEXTEMOTE_BYE)
+    {
+        switch (Race)
+        {
+        case RACE_HUMAN:
+        case RACE_DWARF:
+        case RACE_NIGHTELF:
+        case RACE_ORC:
+        case RACE_UNDEAD:
+        case RACE_TAUREN:
+        case RACE_TROLL:
+        {
+            if (Gender == GENDER_MALE)
+                return 3;
+            return 3;
+        }
+        case RACE_GNOME:
+        {
+            if (Gender == GENDER_MALE)
+                return 4;
+            return 4;
+        }
+        }
+    }
+    else if (emote == TEXTEMOTE_NOD)
+    {
+        switch (Race)
+        {
+        case RACE_HUMAN:
+        case RACE_NIGHTELF:
+        case RACE_GNOME:
+        case RACE_UNDEAD:
+        case RACE_TAUREN:
+        {
+            if (Gender == GENDER_MALE)
+                return 3;
+            return 3;
+        }
+        case RACE_DWARF:
+        case RACE_TROLL:
+        {
+            if (Gender == GENDER_MALE)
+                return 4;
+            return 3;
+        }
+        case RACE_ORC:
+        {
+            if (Gender == GENDER_MALE)
+                return 4;
+            return 4;
+        }
+        }
+    }
+    else if (emote == TEXTEMOTE_NO)
+    {
+        switch (Race)
+        {
+        case RACE_HUMAN:
+        case RACE_DWARF:
+        case RACE_TROLL:
+        {
+            if (Gender == GENDER_MALE)
+                return 4;
+            return 3;
+        }
+        case RACE_NIGHTELF:
+        case RACE_GNOME:
+        case RACE_ORC:
+        case RACE_UNDEAD:
+        case RACE_TAUREN:
+        {
+            if (Gender == GENDER_MALE)
+                return 3;
+            return 3;
+        }
+        }
+    }
+    else if (emote == TEXTEMOTE_THANK)
+    {
+        switch (Race)
+        {
+        case RACE_HUMAN:
+        case RACE_NIGHTELF:
+        case RACE_GNOME:
+        case RACE_ORC:
+        case RACE_UNDEAD:
+        case RACE_TROLL:
+        {
+            if (Gender == GENDER_MALE)
+                return 3;
+            return 3;
+        }
+        case RACE_DWARF:
+        {
+            if (Gender == GENDER_MALE)
+                return 4;
+            return 4;
+        }
+        case RACE_TAUREN:
+        {
+            if (Gender == GENDER_MALE)
+                return 4;
+            return 3;
+        }
+        }
+    }
+    else if (emote == TEXTEMOTE_WELCOME)
+    {
+        switch (Race)
+        {
+        case RACE_HUMAN:
+        case RACE_DWARF:
+        case RACE_NIGHTELF:
+        case RACE_GNOME:
+        case RACE_ORC:
+        case RACE_TAUREN:
+        case RACE_TROLL:
+        {
+            if (Gender == GENDER_MALE)
+                return 3;
+            return 3;
+        }
+        case RACE_UNDEAD:
+        {
+            if (Gender == GENDER_MALE)
+                return 2;
+            return 3;
+        }
+        }
+    }
+    else if (emote == TEXTEMOTE_CONGRATULATE)
+    {
+        switch (Race)
+        {
+        case RACE_HUMAN:
+        case RACE_NIGHTELF:
+        case RACE_ORC:
+        case RACE_TAUREN:
+        case RACE_TROLL:
+        {
+            if (Gender == GENDER_MALE)
+                return 3;
+            return 3;
+        }
+        case RACE_DWARF:
+        {
+            if (Gender == GENDER_MALE)
+                return 5;
+            return 4;
+        }
+        case RACE_GNOME:
+        case RACE_UNDEAD:
+        {
+            if (Gender == GENDER_MALE)
+                return 3;
+            return 4;
+        }
+        }
+    }
+    else if (emote == TEXTEMOTE_FLIRT)
+    {
+        switch (Race)
+        {
+        case RACE_HUMAN:
+        {
+            if (Gender == GENDER_MALE)
+                return 6;
+            return 3;
+        }
+        case RACE_DWARF:
+        case RACE_TAUREN:
+        {
+            if (Gender == GENDER_MALE)
+                return 6;
+            return 5;
+        }
+        case RACE_NIGHTELF:
+        {
+            if (Gender == GENDER_MALE)
+                return 5;
+            return 4;
+        }
+        case RACE_GNOME:
+        case RACE_TROLL:
+        {
+            if (Gender == GENDER_MALE)
+                return 4;
+            return 5;
+        }
+        case RACE_ORC:
+        case RACE_UNDEAD:
+        {
+            if (Gender == GENDER_MALE)
+                return 6;
+            return 6;
+        }
+        }
+    }
+    else if (emote == TEXTEMOTE_JOKE)
+    {
+        switch (Race)
+        {
+        case RACE_HUMAN:
+        {
+            if (Gender == GENDER_MALE)
+                return 5;
+            return 6;
+        }
+        case RACE_DWARF:
+        {
+            if (Gender == GENDER_MALE)
+                return 6;
+            return 5;
+        }
+        case RACE_NIGHTELF:
+        {
+            if (Gender == GENDER_MALE)
+                return 7;
+            return 4;
+        }
+        case RACE_GNOME:
+        {
+            if (Gender == GENDER_MALE)
+                return 5;
+            return 3;
+        }
+        case RACE_ORC:
+        {
+            if (Gender == GENDER_MALE)
+                return 5;
+            return 5;
+        }
+        case RACE_TAUREN:
+        {
+            if (Gender == GENDER_MALE)
+                return 4;
+            return 3;
+        }
+        case RACE_TROLL:
+        {
+            if (Gender == GENDER_MALE)
+                return 5;
+            return 4;
+        }
+        case RACE_UNDEAD:
+        {
+            if (Gender == GENDER_MALE)
+                return 4;
+            return 7;
+        }
+        }
+    }
+    return 1;
 }
