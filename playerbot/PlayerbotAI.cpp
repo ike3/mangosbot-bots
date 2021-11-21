@@ -202,6 +202,17 @@ void PlayerbotAI::UpdateAI(uint32 elapsed, bool minimal)
     else
         nextAICheckDelay = 0;
 
+    // cancel logout in combat
+    if (bot->IsStunnedByLogout() || bot->GetSession()->isLogingOut())
+    {
+        if (sServerFacade.IsInCombat(bot) || (master && sServerFacade.IsInCombat(master) && sServerFacade.GetDistance2d(bot, master) < 30.0f))
+        {
+            WorldPacket p;
+            bot->GetSession()->HandleLogoutCancelOpcode(p);
+            TellMaster("Logout cancelled!");
+        }
+    }
+
     // wake up if in combat
     if (sServerFacade.IsInCombat(bot))
     {
@@ -294,6 +305,43 @@ void PlayerbotAI::UpdateAIInternal(uint32 elapsed, bool minimal)
         chatCommands.push(*i);
     }
 
+    // logout if logout timer is ready or if instant logout is possible
+    if (bot->IsStunnedByLogout() || bot->GetSession()->isLogingOut())
+    {
+        WorldSession* botWorldSessionPtr = bot->GetSession();
+        bool logout = botWorldSessionPtr->ShouldLogOut(time(nullptr));
+        if (!master || master->GetSession()->GetState() != WORLD_SESSION_STATE_READY)
+            logout = true;
+
+        if (bot->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_RESTING) || bot->IsTaxiFlying() ||
+            botWorldSessionPtr->GetSecurity() >= (AccountTypes)sWorld.getConfig(CONFIG_UINT32_INSTANT_LOGOUT))
+        {
+            logout = true;
+        }
+
+        if (master && (master->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_RESTING) || master->IsTaxiFlying() ||
+            (master->GetSession() && master->GetSession()->GetSecurity() >= (AccountTypes)sWorld.getConfig(CONFIG_UINT32_INSTANT_LOGOUT))))
+        {
+            logout = true;
+        }
+
+        if (logout)
+        {
+            if (master && master->GetPlayerbotMgr())
+            {
+                master->GetPlayerbotMgr()->LogoutPlayerBot(bot->GetObjectGuid().GetRawValue());
+            }
+            else
+            {
+                sRandomPlayerbotMgr.LogoutPlayerBot(bot->GetObjectGuid().GetRawValue());
+            }
+            return;
+        }
+
+        SetNextCheckDelay(sPlayerbotAIConfig.reactDelay);
+        return;
+    }
+
     botOutgoingPacketHandlers.Handle(helper);
     masterIncomingPacketHandlers.Handle(helper);
     masterOutgoingPacketHandlers.Handle(helper);
@@ -339,6 +387,17 @@ void PlayerbotAI::Reset(bool full)
 {
     if (bot->IsTaxiFlying())
         return;
+
+    WorldSession* botWorldSessionPtr = bot->GetSession();
+    bool logout = botWorldSessionPtr->ShouldLogOut(time(nullptr));
+
+    // cancel logout
+    if (!logout && (bot->IsStunnedByLogout() || bot->GetSession()->isLogingOut()))
+    {
+        WorldPacket p;
+        bot->GetSession()->HandleLogoutCancelOpcode(p);
+        TellMaster("Logout cancelled!");
+    }
 
     currentEngine = engines[BOT_STATE_NON_COMBAT];
     nextAICheckDelay = 0;
@@ -508,6 +567,28 @@ void PlayerbotAI::HandleCommand(uint32 type, const string& text, Player& fromPla
     else if (filtered == "reset")
     {
         Reset(true);
+    }
+    else if (filtered == "logout")
+    {
+        if (!(bot->IsStunnedByLogout() || bot->GetSession()->isLogingOut()))
+        {
+            if (type == CHAT_MSG_WHISPER)
+                TellMaster("I'm logging out!");
+
+            WorldPacket p;
+            bot->GetSession()->HandleLogoutRequestOpcode(p);
+        }
+    }
+    else if (filtered == "logout cancel")
+    {
+        if (bot->IsStunnedByLogout() || bot->GetSession()->isLogingOut())
+        {
+            if (type == CHAT_MSG_WHISPER)
+                TellMaster("Logout cancelled!");
+
+            WorldPacket p;
+            bot->GetSession()->HandleLogoutCancelOpcode(p);
+        }
     }
     else
     {

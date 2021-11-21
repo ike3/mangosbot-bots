@@ -58,6 +58,7 @@ public:
     void HandleMasterOutgoingPacket(const WorldPacket& packet);
     void HandleCommand(uint32 type, const string& text);
     void OnPlayerLogin(Player* player);
+    void CancelLogout();
 
     virtual void UpdateAIInternal(uint32 elapsed);
     void TellError(string botName, string text);
