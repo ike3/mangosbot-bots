@@ -63,6 +63,16 @@ void PacketHandlingHelper::Handle(ExternalEventHelper &helper)
 
 void PacketHandlingHelper::AddPacket(const WorldPacket& packet)
 {
+    if (!packet.empty() && packet.GetOpcode() == SMSG_EMOTE)
+    {
+        WorldPacket p = packet;
+        ObjectGuid source;
+        uint32 emoteId;
+        p.rpos(0);
+        p >> emoteId >> source;
+        if (!source.IsPlayer())
+            return;
+    }
 	if (handlers.find(packet.GetOpcode()) != handlers.end())
         queue.push(WorldPacket(packet));
 }
