@@ -656,7 +656,7 @@ bool EmoteAction::Execute(Event event)
 
         pSource = sObjectMgr.GetPlayer(source);
 
-        if (pSource && (pSource->GetObjectGuid() != bot->GetObjectGuid()) && (sServerFacade.IsInFront(bot, pSource, sPlayerbotAIConfig.farDistance, M_PI_F) || strstri(bot->GetName(), nam.c_str()) || namlen == 1))
+        if (pSource && (pSource->GetObjectGuid() != bot->GetObjectGuid()) && ((urand(0, 1) && sServerFacade.IsInFront(bot, pSource, 10.0f, M_PI_F)) || (namlen > 1 && strstri(bot->GetName(), nam.c_str()))))
         {
             sLog.outDetail("Bot #%d %s:%d <%s> received SMSG_TEXT_EMOTE %d from player #%d <%s>", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName(), text_emote, pSource->GetGUIDLow(), pSource->GetName());
             emote = text_emote;
@@ -674,7 +674,7 @@ bool EmoteAction::Execute(Event event)
         pSource = sObjectMgr.GetPlayer(source);
         if (pSource && pSource != bot && sServerFacade.GetDistance2d(bot, pSource) < sPlayerbotAIConfig.farDistance && emoteId != EMOTE_ONESHOT_NONE)
         {
-            if ((pSource->GetObjectGuid() != bot->GetObjectGuid()) && (pSource->GetSelectionGuid() == bot->GetObjectGuid() || sServerFacade.IsInFront(bot, pSource, sPlayerbotAIConfig.farDistance, M_PI_F)))
+            if ((pSource->GetObjectGuid() != bot->GetObjectGuid()) && (pSource->GetSelectionGuid() == bot->GetObjectGuid() || (urand(0, 1) && sServerFacade.IsInFront(bot, pSource, 10.0f, M_PI_F))))
             {
                 sLog.outDetail("Bot #%d %s:%d <%s> received SMSG_EMOTE %d from player #%d <%s>", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName(), emoteId, pSource->GetGUIDLow(), pSource->GetName());
                 vector<uint32> types;
