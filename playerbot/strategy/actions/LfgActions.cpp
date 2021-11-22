@@ -122,9 +122,21 @@ bool LfgJoinAction::JoinLFG()
         {
             WorldSafeLocsEntry const* ClosestGrave = nullptr;
             ClosestGrave = sWorldSafeLocsStore.LookupEntry<WorldSafeLocsEntry>(zoneId);
+
+            bool inCity = false;
+            AreaTableEntry const* areaEntry = GetAreaEntryByAreaID(bot->GetAreaId());
+            if (areaEntry)
+            {
+                if (areaEntry->zone)
+                    areaEntry = GetAreaEntryByAreaID(areaEntry->zone);
+
+                if (areaEntry && areaEntry->flags & AREA_FLAG_CAPITAL)
+                    inCity = true;
+            }
+
             if (ClosestGrave)
             {
-                if (bot->GetMapId() != ClosestGrave->map_id || !bot->IsWithinDist2d(ClosestGrave->x, ClosestGrave->y, 2000.0f))
+                if (!(inCity || (bot->GetMapId() == ClosestGrave->map_id && bot->IsWithinDist2d(ClosestGrave->x, ClosestGrave->y, 2000.0f))))
                     continue;
             }
             else
@@ -445,9 +457,21 @@ bool LfgJoinAction::JoinLFG()
                                                 {
                                                     WorldSafeLocsEntry const* ClosestGrave = nullptr;
                                                     ClosestGrave = sWorldSafeLocsStore.LookupEntry<WorldSafeLocsEntry>(zoneId);
+
+                                                    bool inCity = false;
+                                                    AreaTableEntry const* areaEntry = GetAreaEntryByAreaID(bot->GetAreaId());
+                                                    if (areaEntry)
+                                                    {
+                                                        if (areaEntry->zone)
+                                                            areaEntry = GetAreaEntryByAreaID(areaEntry->zone);
+
+                                                        if (areaEntry && areaEntry->flags & AREA_FLAG_CAPITAL)
+                                                            inCity = true;
+                                                    }
+
                                                     if (ClosestGrave)
                                                     {
-                                                        if (bot->GetMapId() != ClosestGrave->map_id || !bot->IsWithinDist2d(ClosestGrave->x, ClosestGrave->y, 2000.0f))
+                                                        if (!(inCity || (bot->GetMapId() == ClosestGrave->map_id && bot->IsWithinDist2d(ClosestGrave->x, ClosestGrave->y, 2000.0f))))
                                                             continue;
                                                     }
                                                     else
@@ -492,9 +516,21 @@ bool LfgJoinAction::JoinLFG()
                 {
                     WorldSafeLocsEntry const* ClosestGrave = nullptr;
                     ClosestGrave = sWorldSafeLocsStore.LookupEntry<WorldSafeLocsEntry>(zoneId);
+
+                    bool inCity = false;
+                    AreaTableEntry const* areaEntry = GetAreaEntryByAreaID(bot->GetAreaId());
+                    if (areaEntry)
+                    {
+                        if (areaEntry->zone)
+                            areaEntry = GetAreaEntryByAreaID(areaEntry->zone);
+
+                        if (areaEntry && areaEntry->flags & AREA_FLAG_CAPITAL)
+                            inCity = true;
+                    }
+
                     if (ClosestGrave)
                     {
-                        if (bot->GetMapId() != ClosestGrave->map_id || !bot->IsWithinDist2d(ClosestGrave->x, ClosestGrave->y, 2000.0f))
+                        if (!(inCity || (bot->GetMapId() == ClosestGrave->map_id && bot->IsWithinDist2d(ClosestGrave->x, ClosestGrave->y, 2000.0f))))
                             continue;
                     }
                     else
@@ -601,9 +637,21 @@ bool LfgJoinAction::JoinLFG()
                 {
                     WorldSafeLocsEntry const* ClosestGrave = nullptr;
                     ClosestGrave = sWorldSafeLocsStore.LookupEntry<WorldSafeLocsEntry>(zoneId);
+
+                    bool inCity = false;
+                    AreaTableEntry const* areaEntry = GetAreaEntryByAreaID(bot->GetAreaId());
+                    if (areaEntry)
+                    {
+                        if (areaEntry->zone)
+                            areaEntry = GetAreaEntryByAreaID(areaEntry->zone);
+
+                        if (areaEntry && areaEntry->flags & AREA_FLAG_CAPITAL)
+                            inCity = true;
+                    }
+
                     if (ClosestGrave)
                     {
-                        if (bot->GetMapId() != ClosestGrave->map_id || !bot->IsWithinDist2d(ClosestGrave->x, ClosestGrave->y, 5000.0f))
+                        if (!(inCity || (bot->GetMapId() == ClosestGrave->map_id && bot->IsWithinDist2d(ClosestGrave->x, ClosestGrave->y, 2000.0f))))
                             continue;
                     }
                     else
