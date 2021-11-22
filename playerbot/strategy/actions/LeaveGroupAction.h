@@ -35,8 +35,7 @@ namespace ai
                 return false;
 
             Player* master = GetMaster();
-            Player* leader = ai->GetGroupMaster();
-            if (master && member == master->GetName() && master == leader)
+            if (master && member == master->GetName())
                 return Leave(bot);
 
             return false;
