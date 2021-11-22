@@ -63,7 +63,10 @@ void PacketHandlingHelper::Handle(ExternalEventHelper &helper)
 
 void PacketHandlingHelper::AddPacket(const WorldPacket& packet)
 {
-    if (!packet.empty() && packet.GetOpcode() == SMSG_EMOTE)
+    if (packet.empty())
+        return;
+
+    if (packet.GetOpcode() == SMSG_EMOTE)
     {
         WorldPacket p = packet;
         ObjectGuid source;
@@ -575,8 +578,8 @@ void PlayerbotAI::HandleCommand(uint32 type, const string& text, Player& fromPla
             if (type == CHAT_MSG_WHISPER)
                 TellMaster("I'm logging out!");
 
-            WorldPacket p;
-            bot->GetSession()->HandleLogoutRequestOpcode(p);
+            if (master && master->GetPlayerbotMgr())
+                master->GetPlayerbotMgr()->LogoutPlayerBot(bot->GetObjectGuid().GetRawValue());
         }
     }
     else if (filtered == "logout cancel")
