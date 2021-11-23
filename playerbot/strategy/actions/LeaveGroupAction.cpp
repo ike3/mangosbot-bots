@@ -18,16 +18,21 @@ namespace ai
 
         ai->TellMaster("Goodbye!", PLAYERBOT_SECURITY_TALK);
 
-        WorldPacket p;
-        string member = bot->GetName();
-        p << uint32(PARTY_OP_LEAVE) << member << uint32(0);
-        bot->GetSession()->HandleGroupDisbandOpcode(p);
-
         bool randomBot = sRandomPlayerbotMgr.IsRandomBot(bot);
+
+        bool shouldStay = randomBot && bot->GetGroup() && player == bot;
+
+        if (!shouldStay)
+        {
+            WorldPacket p;
+            string member = bot->GetName();
+            p << uint32(PARTY_OP_LEAVE) << member << uint32(0);
+            bot->GetSession()->HandleGroupDisbandOpcode(p);
+        }
+
         if (randomBot)
         {
             bot->GetPlayerbotAI()->SetMaster(NULL);
-            sRandomPlayerbotMgr.ScheduleTeleport(bot->GetObjectGuid());
         }        
 
         if(!aiMaster)
