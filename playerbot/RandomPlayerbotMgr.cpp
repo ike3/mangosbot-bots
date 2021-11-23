@@ -1664,14 +1664,15 @@ void RandomPlayerbotMgr::Refresh(Player* bot)
 bool RandomPlayerbotMgr::IsRandomBot(Player* bot)
 {
     if (bot)
-        return IsRandomBot(bot->GetGUIDLow());
+        return IsRandomBot(bot->GetGUIDLow()) || sPlayerbotAIConfig.IsInRandomAccountList(bot->GetSession()->GetAccountId());
 
     return false;
 }
 
 bool RandomPlayerbotMgr::IsRandomBot(uint32 bot)
 {
-    return GetEventValue(bot, "add");
+    ObjectGuid guid = ObjectGuid(HIGHGUID_PLAYER, bot);
+    return GetEventValue(bot, "add") || sPlayerbotAIConfig.IsInRandomAccountList(sObjectMgr.GetPlayerAccountIdByGUID(guid));
 }
 
 list<uint32> RandomPlayerbotMgr::GetBots()
@@ -1758,7 +1759,7 @@ uint32 RandomPlayerbotMgr::GetEventValue(uint32 bot, string event)
         }
     }*/
 
-    if ((time(0) - e.lastChangeTime) >= e.validIn && (event == "add" || IsRandomBot(bot)) && event != "specNo" && event != "specLink")
+    if ((time(0) - e.lastChangeTime) >= e.validIn && event != "specNo" && event != "specLink")
         e.value = 0;
 
     return e.value;
