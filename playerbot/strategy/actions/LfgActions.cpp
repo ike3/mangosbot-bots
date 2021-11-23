@@ -136,7 +136,7 @@ bool LfgJoinAction::JoinLFG()
 
             if (ClosestGrave)
             {
-                if (!(inCity || (bot->GetMapId() == ClosestGrave->map_id && bot->IsWithinDist2d(ClosestGrave->x, ClosestGrave->y, 2000.0f))))
+                if (!(inCity || bot->GetMapId() == ClosestGrave->map_id))
                     continue;
             }
             else
@@ -299,6 +299,7 @@ bool LfgJoinAction::JoinLFG()
     }
 
     bool joinedLFG = false;
+    bool realLFG = false;
     // if bot wants to lead
     if (isLFM)
     {
@@ -471,7 +472,7 @@ bool LfgJoinAction::JoinLFG()
 
                                                     if (ClosestGrave)
                                                     {
-                                                        if (!(inCity || (bot->GetMapId() == ClosestGrave->map_id && bot->IsWithinDist2d(ClosestGrave->x, ClosestGrave->y, 2000.0f))))
+                                                        if (!(inCity || bot->GetMapId() == ClosestGrave->map_id))
                                                             continue;
                                                     }
                                                     else
@@ -482,6 +483,8 @@ bool LfgJoinAction::JoinLFG()
                                                 {
                                                     if (player_dungeon->ID == dungeon->ID)
                                                         bot->GetSession()->HandleLfmSetAutoFillOpcode(p);
+
+                                                    realLFG = true;
                                                 }
                                             }
                                         }
@@ -530,7 +533,7 @@ bool LfgJoinAction::JoinLFG()
 
                     if (ClosestGrave)
                     {
-                        if (!(inCity || (bot->GetMapId() == ClosestGrave->map_id && bot->IsWithinDist2d(ClosestGrave->x, ClosestGrave->y, 2000.0f))))
+                        if (!(inCity || bot->GetMapId() == ClosestGrave->map_id))
                             continue;
                     }
                     else
@@ -562,6 +565,7 @@ bool LfgJoinAction::JoinLFG()
                     bot->GetSession()->HandleSetLfmOpcode(p);
                     bot->GetSession()->HandleLfmSetAutoFillOpcode(p);
                     joinedLFG = true;
+                    realLFG = true;
                     break;
                 }
             }
@@ -651,7 +655,7 @@ bool LfgJoinAction::JoinLFG()
 
                     if (ClosestGrave)
                     {
-                        if (!(inCity || (bot->GetMapId() == ClosestGrave->map_id && bot->IsWithinDist2d(ClosestGrave->x, ClosestGrave->y, 2000.0f))))
+                        if (!(inCity || bot->GetMapId() == ClosestGrave->map_id))
                             continue;
                     }
                     else
@@ -684,6 +688,7 @@ bool LfgJoinAction::JoinLFG()
                     bot->GetSession()->HandleSetLfgOpcode(p);
                     bot->GetSession()->HandleLfgSetAutoJoinOpcode(p);
                     joinedLFG = true;
+                    realLFG = true;
                     break;
                 }
             }
@@ -813,7 +818,10 @@ bool LfgJoinAction::JoinLFG()
     string lfgGroup = isLFG ? "LFG" : "LFM";
     string lfgOption = lfgType == LFG_TYPE_QUEST ? "Quest" : (lfgType == LFG_TYPE_ZONE ? "Zone" : "Dungeon");
 
-    sLog.outDetail("Bot #%d %s:%d <%s>: uses %s, %s - %s (%s)", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName(), lfgGroup.c_str(), lfgOption.c_str(), lfgName.c_str(), _botRoles.c_str());
+    if (realLFG)
+        sLog.outBasic("Bot #%d %s:%d <%s>: uses %s, %s - %s (%s)", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName(), lfgGroup.c_str(), lfgOption.c_str(), lfgName.c_str(), _botRoles.c_str());
+    else
+        sLog.outDetail("Bot #%d %s:%d <%s>: uses %s, %s - %s (%s)", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName(), lfgGroup.c_str(), lfgOption.c_str(), lfgName.c_str(), _botRoles.c_str());
 #endif
 #ifdef MANGOSBOT_TWO
     LFGPlayerState* pState = sLFGMgr.GetLFGPlayerState(bot->GetObjectGuid());
