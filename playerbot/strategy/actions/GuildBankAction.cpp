@@ -16,6 +16,12 @@ bool GuildBankAction::Execute(Event event)
     if (text.empty())
         return false;
 
+    if (!bot->GetGuildId() || (GetMaster() && GetMaster()->GetGuildId() != bot->GetGuildId()))
+    {
+        ai->TellMaster("I'm not in your guild!");
+            return false;
+    }
+
     list<ObjectGuid> gos = *ai->GetAiObjectContext()->GetValue<list<ObjectGuid> >("nearest game objects");
     for (list<ObjectGuid>::iterator i = gos.begin(); i != gos.end(); ++i)
     {
@@ -56,11 +62,20 @@ bool GuildBankAction::MoveFromCharToBank(Item* item, GameObject* bank)
 #ifndef MANGOSBOT_ZERO
     uint32 playerSlot = item->GetSlot();
     uint32 playerBag = item->GetBagSlot();
+    ostringstream out;
 
     Guild* guild = sGuildMgr.GetGuildById(bot->GetGuildId());
-    guild->SwapItems(bot, 0, playerSlot, 0, INVENTORY_SLOT_BAG_0, 0);
+    //guild->SwapItems(bot, 0, playerSlot, 0, INVENTORY_SLOT_BAG_0, 0);
 
-    ostringstream out; out << chat->formatItem(item->GetProto()) << " put to guild bank";
+    // check source pos rights (item moved to bank)
+    if (!guild->IsMemberHaveRights(bot->GetGUIDLow(), 0, GUILD_BANK_RIGHT_DEPOSIT_ITEM))
+        out << "I can't put " << chat->formatItem(item->GetProto()) << " to guild bank. I have no rights to put items in the first guild bank tab";
+    else
+    {
+        out << chat->formatItem(item->GetProto()) << " put to guild bank";
+        guild->MoveFromCharToBank(bot, playerBag, playerSlot, 0, 255, 0);
+    }
+
     ai->TellMaster(out);
     return true;
 #else
