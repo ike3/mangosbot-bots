@@ -61,10 +61,10 @@ AiObjectContext* AiFactory::createAiObjectContext(Player* player, PlayerbotAI* a
 
 int AiFactory::GetPlayerSpecTab(Player* bot)
 {
-    if (bot->getLevel() >= 10 && ((bot->GetTalentsCount(0) + bot->GetTalentsCount(1) + bot->GetTalentsCount(2)) > 0))
-    {
-        map<uint32, int32> tabs = GetPlayerSpecTabs(bot);
+    map<uint32, int32> tabs = GetPlayerSpecTabs(bot);
 
+    if (bot->getLevel() >= 10 && ((tabs[0] + tabs[1] + tabs[2]) > 0))
+    {
         int tab = -1, max = 0;
         for (uint32 i = 0; i < uint32(3); i++)
         {
