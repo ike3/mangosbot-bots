@@ -772,11 +772,7 @@ bool FreeBGJoinAction::shouldJoinBg(BattleGroundQueueTypeId queueTypeId, BattleG
 
 bool BGLeaveAction::Execute(Event event)
 {
-    if (!bot->InBattleGroundQueue())
-        return false;
-
-    uint32 queueType = AI_VALUE(uint32, "bg type");
-    if (!queueType)
+    if (!(bot->InBattleGroundQueue() || bot->InBattleGround()))
         return false;
 
     //ai->ChangeStrategy("-bg", BOT_STATE_NON_COMBAT);
@@ -796,7 +792,31 @@ bool BGLeaveAction::Execute(Event event)
         isArena = true;
         type = arenaType;
     }
+
+    if (bot->InBattleGround())
+    {
+        sLog.outDetail("Bot #%d %s:%d <%s> leaves %s", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName(), isArena ? "Arena" : "BG");
+
+        WorldPacket leave(CMSG_LEAVE_BATTLEFIELD);
+        leave << uint8(0) << uint8(0) << uint32(0) << uint16(0);
+        bot->GetSession()->HandleLeaveBattlefieldOpcode(leave);
+
+        if (IsRandomBot)
+            ai->SetMaster(NULL);
+
+        ai->ResetStrategies(!IsRandomBot);
+        ai->GetAiObjectContext()->GetValue<uint32>("bg type")->Set(NULL);
+        ai->GetAiObjectContext()->GetValue<uint32>("bg role")->Set(NULL);
+        ai->GetAiObjectContext()->GetValue<uint32>("arena type")->Set(NULL);
+
+        return true;
+    }
 #endif
+
+    uint32 queueType = AI_VALUE(uint32, "bg type");
+    if (!queueType)
+        return false;
+
     sLog.outDetail("Bot #%d %s:%d <%s> leaves %s queue", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName(), isArena ? "Arena" : "BG");
 
     WorldPacket packet(CMSG_BATTLEFIELD_PORT, 20);
