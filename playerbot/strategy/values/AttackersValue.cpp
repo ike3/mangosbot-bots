@@ -16,7 +16,7 @@ list<ObjectGuid> AttackersValue::Calculate()
 
     list<ObjectGuid> result;
 
-    if (!ai->AllowActive(ALL_ACTIVITY))
+    if (!ai->AllowActivity(ALL_ACTIVITY))
         return result;
 
     AddAttackersOf(bot, targets);

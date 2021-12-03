@@ -48,6 +48,15 @@ namespace ai
         virtual string getName() { return "arathi"; }
     };
 
+    class EyeStrategy : public Strategy
+    {
+    public:
+        EyeStrategy(PlayerbotAI* ai) : Strategy(ai) {};
+        virtual int GetType() { return STRATEGY_TYPE_GENERIC; }
+        virtual void InitTriggers(std::list<TriggerNode*>& triggers);
+        virtual string getName() { return "eye"; }
+    };
+
     class ArenaStrategy : public Strategy
     {
     public:

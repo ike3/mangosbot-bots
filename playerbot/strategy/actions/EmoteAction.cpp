@@ -716,7 +716,7 @@ bool EmoteAction::Execute(Event event)
     }
 
     if (emote)
-        return ReceiveEmote(pSource, emote, urand(0, 1));
+        return ReceiveEmote(pSource, emote, bot->InBattleGround() ? false : urand(0, 1));
 
     if (param.find("sound") == 0)
     {
@@ -803,6 +803,7 @@ uint32 TalkAction::GetRandomEmote(Unit* unit, bool textEmote)
             types.push_back(TEXTEMOTE_POINT);
             types.push_back(TEXTEMOTE_CHEER);
             types.push_back(TEXTEMOTE_SHY);
+            types.push_back(TEXTEMOTE_JOKE);
         }
         else
         {

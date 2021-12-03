@@ -14,7 +14,7 @@ namespace ai
             if (ai->HasActivePlayerMaster())
                 return false;
 
-            if (!ai->AllowActive(ALL_ACTIVITY))
+            if (!ai->AllowActivity(ALL_ACTIVITY))
                 return false;
 
             WorldPosition botPos(bot);
@@ -63,7 +63,7 @@ namespace ai
             if (ai->HasActivePlayerMaster())
                 return false;
 
-            if (!ai->AllowActive(ALL_ACTIVITY))
+            if (!ai->AllowActivity(ALL_ACTIVITY))
                 return false;
 
             WorldPosition botPos(bot);
@@ -144,7 +144,7 @@ namespace ai
             if (ai->HasActivePlayerMaster())
                 return false;
 
-            if (!ai->AllowActive(ALL_ACTIVITY))
+            if (!ai->AllowActivity(ALL_ACTIVITY))
                 return false;
 
             WorldPosition botPos(bot);
@@ -175,7 +175,7 @@ namespace ai
             if (ai->HasActivePlayerMaster())
                 return false;
 
-            if (!ai->AllowActive(ALL_ACTIVITY))
+            if (!ai->AllowActivity(ALL_ACTIVITY))
                 return false;
 
             WorldPosition botPos(bot);

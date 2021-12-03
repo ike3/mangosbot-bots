@@ -3,6 +3,9 @@
 #include "PvpValues.h"
 #include "BattleGroundWS.h"
 #include "ServerFacade.h"
+#ifndef MANGOSBOT_ZERO
+#include "BattleGroundEY.h"
+#endif
 
 using namespace ai;
 
@@ -163,8 +166,39 @@ Unit* FlagCarrierValue::Calculate()
                 {
                     return carrier;
                 }
+                else
+                    return nullptr;
             }
         }
+#ifndef MANGOSBOT_ZERO
+        if (ai->GetBot()->GetBattleGroundTypeId() == BattleGroundTypeId::BATTLEGROUND_EY)
+        {
+            BattleGroundEY* bg = (BattleGroundEY*)ai->GetBot()->GetBattleGround();
+
+            if (bg->GetFlagCarrierGuid().IsEmpty())
+                return nullptr;
+
+            Player* fc = bg->GetBgMap()->GetPlayer(bg->GetFlagCarrierGuid());
+            if (!fc)
+                return nullptr;
+
+            if (!sameTeam && (fc->GetTeam() != bot->GetTeam()))
+                carrier = fc;
+
+            if (sameTeam && (fc->GetTeam() == bot->GetTeam()))
+                carrier = fc;
+
+            if (carrier)
+            {
+                if (ignoreRange || bot->IsWithinDistInMap(carrier, sPlayerbotAIConfig.sightDistance))
+                {
+                    return carrier;
+                }
+                else
+                    return nullptr;
+            }
+        }
+#endif
     }
     return carrier;
 }

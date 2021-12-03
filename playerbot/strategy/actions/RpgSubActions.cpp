@@ -235,13 +235,13 @@ bool RpgTradeUsefulAction::Execute(Event event)
         if (bot->GetTradeData() && bot->GetTradeData()->HasItem(item->GetObjectGuid()))
         {
             if (bot->GetGroup() && bot->GetGroup()->IsMember(guidP) && ai->HasRealPlayerMaster())
-                ai->TellMasterNoFacing("You can use this " + chat->formatItem(item->GetProto()) + " better than me, " + chat->formatWorldobject(guidP.GetPlayer()) + ".");
+                ai->TellMasterNoFacing("You can use this " + chat->formatItem(item->GetProto()) + " better than me, " + guidP.GetPlayer()->GetName()/*chat->formatWorldobject(guidP.GetPlayer())*/ + ".");
             else
-                bot->Say("You can use this " + chat->formatItem(item->GetProto()) + " better than me, " + chat->formatWorldobject(player) + ".", (bot->GetTeam() == ALLIANCE ? LANG_COMMON : LANG_ORCISH));
+                bot->Say("You can use this " + chat->formatItem(item->GetProto()) + " better than me, " + player->GetName()/*chat->formatWorldobject(player)*/ + ".", (bot->GetTeam() == ALLIANCE ? LANG_COMMON : LANG_ORCISH));
 
             if (!urand(0, 4) || items.size() < 2)
             {
-                bot->Say("End trade with" + chat->formatWorldobject(player), (bot->GetTeam() == ALLIANCE ? LANG_COMMON : LANG_ORCISH));
+                //bot->Say("End trade with" + chat->formatWorldobject(player), (bot->GetTeam() == ALLIANCE ? LANG_COMMON : LANG_ORCISH));
                 WorldPacket p;
                 uint32 status = TRADE_STATUS_TRADE_ACCEPT;
                 p << status;
@@ -249,7 +249,7 @@ bool RpgTradeUsefulAction::Execute(Event event)
             }
         }
         else
-            bot->Say("Start trade with" + chat->formatWorldobject(player), (bot->GetTeam() == ALLIANCE ? LANG_COMMON : LANG_ORCISH));
+            //bot->Say("Start trade with" + chat->formatWorldobject(player), (bot->GetTeam() == ALLIANCE ? LANG_COMMON : LANG_ORCISH));
 
         ai->SetNextCheckDelay(sPlayerbotAIConfig.rpgDelay);
         return true;
@@ -260,6 +260,10 @@ bool RpgTradeUsefulAction::Execute(Event event)
 
 bool RpgDuelAction::isUseful(Event event)
 {
+    // do not offer duel in non pvp areas
+    if (sPlayerbotAIConfig.IsInPvpProhibitedZone(bot->GetAreaId()))
+        return false;
+
     // Players can only fight a duel with each other outside (=not inside dungeons and not in capital cities)
     AreaTableEntry const* casterAreaEntry = GetAreaEntryByAreaID(bot->GetAreaId());
     if (casterAreaEntry && !(casterAreaEntry->flags & AREA_FLAG_DUEL))
