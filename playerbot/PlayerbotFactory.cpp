@@ -1903,8 +1903,8 @@ void PlayerbotFactory::InitMounts()
     if (bot->getLevel() < firstmount)
         return;
 
-    map<uint8, map<int32, vector<uint32> > > mounts;
-    initializer_list<uint32> slow, fast, fslow, ffast;
+    map<uint8, map<uint32, vector<uint32> > > mounts;
+    vector<uint32> slow, fast, fslow, ffast;
     switch (bot->getRace())
     {
     case RACE_HUMAN:
@@ -1962,10 +1962,10 @@ void PlayerbotFactory::InitMounts()
         break;
 #endif
     }
-    mounts[bot->getRace()][0].insert(mounts[bot->getRace()][0].end(), slow);
-    mounts[bot->getRace()][1].insert(mounts[bot->getRace()][1].end(), fast);
-    mounts[bot->getRace()][2].insert(mounts[bot->getRace()][2].end(), fslow);
-    mounts[bot->getRace()][3].insert(mounts[bot->getRace()][3].end(), ffast);
+    mounts[bot->getRace()][0] = slow;
+    mounts[bot->getRace()][1] = fast;
+    mounts[bot->getRace()][2] = fslow;
+    mounts[bot->getRace()][3] = ffast;
 
     for (uint32 type = 0; type < 4; type++)
     {
@@ -1980,7 +1980,7 @@ void PlayerbotFactory::InitMounts()
 
         uint32 index = urand(0, mounts[bot->getRace()][type].size() - 1);
         uint32 spell = mounts[bot->getRace()][type][index];
-        if (spell && spell != 0)
+        if (spell)
         {
             bot->learnSpell(spell, false);
             sLog.outDetail("Bot %d (%d) learned %s mount %d", bot->GetGUIDLow(), bot->getLevel(), type == 0 ? "slow" : (type == 1 ? "fast" : "flying"), spell);
