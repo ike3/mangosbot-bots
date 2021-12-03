@@ -1120,8 +1120,8 @@ bool RandomPlayerbotMgr::ProcessBot(Player* player)
     if (player->InBattleGroundQueue())
         return false;
 
-    if (sServerFacade.UnitIsDead(player))
-        return false;
+    //if (sServerFacade.UnitIsDead(player))
+    //    return false;
 
 	//player->GetPlayerbotAI()->GetAiObjectContext()->GetValue<bool>("random bot update")->Set(false);
 
@@ -1585,6 +1585,9 @@ void RandomPlayerbotMgr::RandomizeFirst(Player* bot)
     // teleport to a random inn for bot level
     bot->GetPlayerbotAI()->Reset(true);
     RandomTeleportForRpg(bot);
+
+    if (bot->GetGroup())
+        bot->RemoveFromGroup();
 
 	if (pmo) pmo->finish();
 }
