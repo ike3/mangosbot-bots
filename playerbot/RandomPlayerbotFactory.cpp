@@ -761,7 +761,7 @@ void RandomPlayerbotFactory::CreateRandomArenaTeams()
         }
         arenateam->SetCaptain(player->GetObjectGuid());
         // set random rating
-        arenateam->SetRatingForAll(urand(1500, 2300));
+        arenateam->SetRatingForAll(urand(1500, 2700));
         // set random emblem
         uint32 backgroundColor = urand(0xFF000000, 0xFFFFFFFF), emblemStyle = urand(0, 5), emblemColor = urand(0xFF000000, 0xFFFFFFFF), borderStyle = urand(0, 5), borderColor = urand(0xFF000000, 0xFFFFFFFF);
         arenateam->SetEmblem(backgroundColor, emblemStyle, emblemColor, borderStyle, borderColor);
