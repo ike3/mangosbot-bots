@@ -167,10 +167,10 @@ namespace ai
                     pet->AttackStop();
                 }
             }
-            if (!urand(0, 50))
+            if (!urand(0, 50) && ai->HasStrategy("emote", BOT_STATE_NON_COMBAT))
             {
                 vector<uint32> sounds;
-                if (target && sServerFacade.UnitIsDead(target) && ai->HasStrategy("emote", BOT_STATE_NON_COMBAT))
+                if (target && sServerFacade.UnitIsDead(target))
                 {
                     sounds.push_back(TEXTEMOTE_CHEER);
                     sounds.push_back(TEXTEMOTE_CONGRATULATE);
