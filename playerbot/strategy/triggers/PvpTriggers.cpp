@@ -3,6 +3,9 @@
 #include "PvpTriggers.h"
 #include "ServerFacade.h"
 #include "BattleGroundWS.h"
+#ifndef MANGOSBOT_ZERO
+#include "BattleGroundEY.h"
+#endif
 
 using namespace ai;
 
@@ -118,6 +121,13 @@ bool PlayerHasFlag::IsActive()
                 return true;
             }
         }
+#ifndef MANGOSBOT_ZERO
+        if (bot->GetBattleGroundTypeId() == BattleGroundTypeId::BATTLEGROUND_EY)
+        {
+            BattleGroundEY* bg = (BattleGroundEY*)ai->GetBot()->GetBattleGround();
+            return bot->GetObjectGuid() == bg->GetFlagCarrierGuid();
+        }
+#endif
         return false;
     }
     return false;
@@ -173,13 +183,13 @@ bool EnemyTeamHasFlag::IsActive()
 bool EnemyFlagCarrierNear::IsActive()
 {
     Unit* carrier = AI_VALUE(Unit*, "enemy flag carrier");
-    return carrier && sServerFacade.IsDistanceLessOrEqualThan(sServerFacade.GetDistance2d(bot, carrier), VISIBILITY_DISTANCE_LARGE);
+    return carrier && sServerFacade.IsDistanceLessOrEqualThan(sServerFacade.GetDistance2d(bot, carrier), VISIBILITY_DISTANCE_SMALL);
 }
 
 bool TeamFlagCarrierNear::IsActive()
 {
     Unit* carrier = AI_VALUE(Unit*, "team flag carrier");
-    return carrier && sServerFacade.IsDistanceLessOrEqualThan(sServerFacade.GetDistance2d(bot, carrier), VISIBILITY_DISTANCE_LARGE);
+    return carrier && sServerFacade.IsDistanceLessOrEqualThan(sServerFacade.GetDistance2d(bot, carrier), VISIBILITY_DISTANCE_SMALL);
 }
 
 bool PlayerWantsInBattlegroundTrigger::IsActive()
