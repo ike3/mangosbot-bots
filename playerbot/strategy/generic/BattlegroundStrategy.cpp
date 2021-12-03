@@ -23,19 +23,19 @@ void WarsongStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
         "bg active",
-        NextAction::array(0, new NextAction("bg check flag", 5.0f), NULL)));
+        NextAction::array(0, new NextAction("bg check flag", 70.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
         "often",
-        NextAction::array(0, new NextAction("bg use buff", 5.0f), NULL)));
+        NextAction::array(0, new NextAction("bg use buff", 30.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
         "low health",
-        NextAction::array(0, new NextAction("bg use buff", 10.0f), NULL)));
+        NextAction::array(0, new NextAction("bg use buff", 30.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
         "low mana",
-        NextAction::array(0, new NextAction("bg use buff", 10.0f), NULL)));
+        NextAction::array(0, new NextAction("bg use buff", 30.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
         "enemy flagcarrier near",
@@ -55,19 +55,19 @@ void ArathiStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
         "bg active",
-        NextAction::array(0, new NextAction("bg check flag", 5.0f), NULL)));
+        NextAction::array(0, new NextAction("bg check flag", 70.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
         "often",
-        NextAction::array(0, new NextAction("bg use buff", 5.0f), NULL)));
+        NextAction::array(0, new NextAction("bg use buff", 30.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
         "low health",
-        NextAction::array(0, new NextAction("bg use buff", 10.0f), NULL)));
+        NextAction::array(0, new NextAction("bg use buff", 30.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
         "low mana",
-        NextAction::array(0, new NextAction("bg use buff", 10.0f), NULL)));
+        NextAction::array(0, new NextAction("bg use buff", 30.0f), NULL)));
 }
 
 void BattlegroundStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
@@ -91,6 +91,33 @@ void BattlegroundStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
     /*triggers.push_back(new TriggerNode(
         "team flagcarrier near",
         NextAction::array(0, new NextAction("bg protect fc", 40.0f), NULL)));*/
+
+    triggers.push_back(new TriggerNode(
+        "player has flag",
+        NextAction::array(0, new NextAction("bg move to objective", 90.0f), NULL)));
+}
+
+void EyeStrategy::InitTriggers(std::list<TriggerNode*>& triggers)
+{
+    triggers.push_back(new TriggerNode(
+        "bg active",
+        NextAction::array(0, new NextAction("bg check flag", 70.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "often",
+        NextAction::array(0, new NextAction("bg use buff", 30.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "low health",
+        NextAction::array(0, new NextAction("bg use buff", 30.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "low mana",
+        NextAction::array(0, new NextAction("bg use buff", 30.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "enemy flagcarrier near",
+        NextAction::array(0, new NextAction("attack enemy flag carrier", 80.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
         "player has flag",

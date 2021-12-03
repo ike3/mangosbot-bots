@@ -340,14 +340,24 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
     // Battleground switch
     if (player->InBattleGround())
     {
-        if (player->GetBattleGroundTypeId() == BATTLEGROUND_WS)
+        BattleGroundTypeId bgType = player->GetBattleGroundTypeId();
+#ifdef MANGOSBOT_TWO
+        if (bgType == BATTLEGROUND_RB)
+            bgType = player->GetBattleGround()->GetTypeId(true);
+#endif
+        if (bgType == BATTLEGROUND_WS)
             engine->addStrategy("warsong");
 
-        if (player->GetBattleGroundTypeId() == BATTLEGROUND_AB)
+        if (bgType == BATTLEGROUND_AB)
             engine->addStrategy("arathi");
 
-        if(player->GetBattleGroundTypeId() == BATTLEGROUND_AV)
+        if(bgType == BATTLEGROUND_AV)
             engine->addStrategy("alterac");
+
+#ifndef MANGOSBOT_ZERO
+        if (bgType == BATTLEGROUND_EY)
+            engine->addStrategy("eye");
+#endif
 
 #ifndef MANGOSBOT_ZERO
         if (player->InArena())
@@ -531,11 +541,17 @@ void AiFactory::AddDefaultNonCombatStrategies(Player* player, PlayerbotAI* const
     if (player->InBattleGround())
     {
         nonCombatEngine->addStrategies("nc", "chat",
-            "default", "buff", "food", "mount", "pvp", "collision", "dps assist", "attack tagged", NULL);
+            "default", "buff", "food", "mount", "pvp", "collision", "dps assist", "attack tagged", "emote", NULL);
         nonCombatEngine->removeStrategy("custom::say");
         nonCombatEngine->removeStrategy("travel");
         nonCombatEngine->removeStrategy("rpg");
         nonCombatEngine->removeStrategy("grind");
+
+        BattleGroundTypeId bgType = player->GetBattleGroundTypeId();
+#ifdef MANGOSBOT_TWO
+        if (bgType == BATTLEGROUND_RB)
+            bgType = player->GetBattleGround()->GetTypeId(true);
+#endif
 
         bool isArena = false;
 
@@ -551,21 +567,26 @@ void AiFactory::AddDefaultNonCombatStrategies(Player* player, PlayerbotAI* const
         else
         {
 #ifndef MANGOSBOT_ZERO
-            if (player->GetBattleGround()->GetTypeId() <= BATTLEGROUND_EY) // do not add for not supported bg
+            if (bgType <= BATTLEGROUND_EY) // do not add for not supported bg
                 nonCombatEngine->addStrategies("battleground", NULL);
 #else
-            if (player->GetBattleGround()->GetTypeId() <= BATTLEGROUND_AB) // do not add for not supported bg
+            if (bgType <= BATTLEGROUND_AB) // do not add for not supported bg
                 nonCombatEngine->addStrategies("battleground", NULL);
 #endif
 
-            if (player->GetBattleGroundTypeId() == BATTLEGROUND_WS)
+            if (bgType == BATTLEGROUND_WS)
                 nonCombatEngine->addStrategies("warsong", NULL);
 
-            if (player->GetBattleGroundTypeId() == BATTLEGROUND_AV)
+            if (bgType == BATTLEGROUND_AV)
                 nonCombatEngine->addStrategies("alterac", NULL);
 
-            if (player->GetBattleGroundTypeId() == BATTLEGROUND_AB)
+            if (bgType == BATTLEGROUND_AB)
                 nonCombatEngine->addStrategies("arathi", NULL);
+
+#ifndef MANGOSBOT_ZERO
+            if (bgType == BATTLEGROUND_EY)
+                nonCombatEngine->addStrategies("eye", NULL);
+#endif
         }
     }
 }

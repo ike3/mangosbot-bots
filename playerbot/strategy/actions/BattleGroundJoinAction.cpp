@@ -571,6 +571,11 @@ bool BGJoinAction::JoinQueue(uint32 type)
        _bgType = "EotS";
        break;
 #endif
+#ifdef MANGOSBOT_TWO
+   case BATTLEGROUND_RB:
+       _bgType = "Random";
+       break;
+#endif
    default:
        break;
 }
@@ -968,6 +973,11 @@ bool BGStatusAction::Execute(Event event)
         _bgType = "EotS";
         break;
 #endif
+#ifdef MANGOSBOT_TWO
+    case BATTLEGROUND_RB:
+        _bgType = "Random";
+        break;
+#endif
     default:
         break;
     }
@@ -1015,6 +1025,8 @@ bool BGStatusAction::Execute(Event event)
         ai->ChangeStrategy("-warsong", BOT_STATE_NON_COMBAT);
         ai->ChangeStrategy("-arathi", BOT_STATE_COMBAT);
         ai->ChangeStrategy("-arathi", BOT_STATE_NON_COMBAT);
+        ai->ChangeStrategy("-eye", BOT_STATE_COMBAT);
+        ai->ChangeStrategy("-eye", BOT_STATE_NON_COMBAT);
         ai->ChangeStrategy("-battleground", BOT_STATE_COMBAT);
         ai->ChangeStrategy("-battleground", BOT_STATE_NON_COMBAT);
         ai->ChangeStrategy("-arena", BOT_STATE_COMBAT);

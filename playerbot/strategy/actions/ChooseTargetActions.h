@@ -27,7 +27,7 @@ namespace ai
         virtual bool isUseful()
         {
             // if carry flag, do not start fight
-            if (bot->HasAura(23333) || bot->HasAura(23335))
+            if (bot->HasAura(23333) || bot->HasAura(23335) || bot->HasAura(34976))
                 return false;
 
             return true;
@@ -93,7 +93,7 @@ namespace ai
         virtual bool isUseful() {
 
             // if carry flag, do not start fight
-            if (bot->HasAura(23333) || bot->HasAura(23335))
+            if (bot->HasAura(23333) || bot->HasAura(23335) || bot->HasAura(34976))
                 return false;
 
             return !sPlayerbotAIConfig.IsInPvpProhibitedZone(bot->GetAreaId());
@@ -114,7 +114,7 @@ namespace ai
         virtual string GetTargetName() { return "enemy flag carrier"; }
         virtual bool isUseful() {
             Unit* target = context->GetValue<Unit*>("enemy flag carrier")->Get();
-            return target && sServerFacade.IsDistanceLessOrEqualThan(sServerFacade.GetDistance2d(bot, target), 75.0f) && (bot->HasAura(23333) || bot->HasAura(23335));
+            return target && sServerFacade.IsDistanceLessOrEqualThan(sServerFacade.GetDistance2d(bot, target), 75.0f) && (bot->HasAura(23333) || bot->HasAura(23335) || bot->HasAura(34976));
         }
     };
 
