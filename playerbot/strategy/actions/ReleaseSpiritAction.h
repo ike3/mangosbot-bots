@@ -150,6 +150,9 @@ namespace ai
 
         virtual bool isUseful()
         {
+            if (bot->InBattleGround())
+                return false;
+
             return true;
         }
     };
