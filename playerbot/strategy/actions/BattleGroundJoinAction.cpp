@@ -294,7 +294,8 @@ bool BGJoinAction::shouldJoinBg(BattleGroundQueueTypeId queueTypeId, BattleGroun
         isArena = true;
 #endif
     bool hasPlayers = (sRandomPlayerbotMgr.BgPlayers[queueTypeId][bracketId][0] + sRandomPlayerbotMgr.BgPlayers[queueTypeId][bracketId][1]) > 0;
-    if (!hasPlayers)
+    bool hasBots = (sRandomPlayerbotMgr.BgBots[queueTypeId][bracketId][0] + sRandomPlayerbotMgr.BgBots[queueTypeId][bracketId][1]) >= bg->GetMinPlayersPerTeam();
+    if (!(hasPlayers || hasBots))
         return false;
 
     uint32 BracketSize = bg->GetMaxPlayers();
@@ -574,6 +575,12 @@ bool BGJoinAction::JoinQueue(uint32 type)
 #ifdef MANGOSBOT_TWO
    case BATTLEGROUND_RB:
        _bgType = "Random";
+       break;
+   case BATTLEGROUND_SA:
+       _bgType = "SotA";
+       break;
+   case BATTLEGROUND_IC:
+       _bgType = "IoC";
        break;
 #endif
    default:
@@ -997,6 +1004,12 @@ bool BGStatusAction::Execute(Event event)
     case BATTLEGROUND_RB:
         _bgType = "Random";
         break;
+    case BATTLEGROUND_SA:
+        _bgType = "SotA";
+        break;
+    case BATTLEGROUND_IC:
+        _bgType = "IoC";
+        break;
 #endif
     default:
         break;
@@ -1099,7 +1112,8 @@ bool BGStatusAction::Execute(Event event)
 #endif
 #endif
                     sLog.outBasic("Bot #%u %s:%d <%s>: Force join %s %s", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName(), isArena ? "Arena" : "BG", _bgType);
-                    bot->Unmount();
+                    WorldPacket emptyPacket;
+                    bot->GetSession()->HandleCancelMountAuraOpcode(emptyPacket);
                     action = 0x1;
                     // bg started so players should get invites by now
                     sRandomPlayerbotMgr.NeedBots[queueTypeId][bracketId][isArena ? isRated : GetTeamIndexByTeamId(bot->GetTeam())] = false;
@@ -1223,7 +1237,8 @@ bool BGStatusAction::Execute(Event event)
 #else
         sLog.outBasic("Bot #%d %s:%d <%s> joined %s - %s", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName(), isArena ? "Arena" : "BG", _bgType);
 #endif
-        bot->Unmount();
+        WorldPacket emptyPacket;
+        bot->GetSession()->HandleCancelMountAuraOpcode(emptyPacket);
         action = 0x1;
         // bg started so players should get invites by now
         sRandomPlayerbotMgr.NeedBots[queueTypeId][bracketId][isArena ? isRated : GetTeamIndexByTeamId(bot->GetTeam())] = false;
