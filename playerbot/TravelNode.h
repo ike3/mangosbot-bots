@@ -160,6 +160,7 @@ enum class TravelNodePathType : uint8
         bool isTransport() { for (auto link : *getLinks()) if (link.second->getPathType() == TravelNodePathType::transport) return true; return false; }
         uint32 getTransportId() { for (auto link : *getLinks()) if (link.second->getPathType() == TravelNodePathType::transport) return link.second->getPathObject(); return false; }
         bool isPortal() { for (auto link : *getLinks()) if (link.second->getPathType() == TravelNodePathType::portal) return true; return false; }
+        bool isWalking() { for (auto link : *getLinks()) if (link.second->getPathType() == TravelNodePathType::walk) return true; return false; }
 
         //WorldLocation shortcuts
         uint32 getMapId() { return point.getMapId(); }

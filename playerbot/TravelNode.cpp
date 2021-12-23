@@ -1254,7 +1254,7 @@ TravelNodeRoute TravelNodeMap::getRoute(TravelNode* start, TravelNode* goal, Pla
         currentNode->close = true;
         closed.push_back(currentNode);
 
-        if (currentNode->dataNode == goal)
+        if (currentNode->dataNode == goal || (currentNode->dataNode->getMapId() != start->getMapId() && currentNode->dataNode->isWalking()))
         {
             TravelNodeStub* parent = currentNode->parent;
 
