@@ -98,7 +98,7 @@ void PlayerbotFactory::Prepare()
 		else if (level < 80)
 			itemQuality = urand(ITEM_QUALITY_RARE, ITEM_QUALITY_EPIC);
         else
-            itemQuality = ITEM_QUALITY_EPIC;
+            itemQuality = urand(ITEM_QUALITY_RARE, ITEM_QUALITY_EPIC);
     }
 
     if (sServerFacade.UnitIsDead(bot))
@@ -144,7 +144,11 @@ void PlayerbotFactory::Randomize(bool incremental)
     bot->resetTalents(true);
     ClearSkills();
     ClearSpells();
-    ClearInventory();
+    if (!incremental)
+    {
+        ClearInventory();
+        ResetQuests();
+    }
     CancelAuras();
     bot->SaveToDB();
     if (pmo) pmo->finish();
@@ -192,7 +196,7 @@ void PlayerbotFactory::Randomize(bool incremental)
     pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Talents");
     sLog.outDetail("Initializing talents...");
     //InitTalentsTree(incremental);    
-    sRandomPlayerbotMgr.SetValue(bot->GetGUIDLow(), "specNo", 0);
+    //sRandomPlayerbotMgr.SetValue(bot->GetGUIDLow(), "specNo", 0);
     ai->DoSpecificAction("auto talents");
 
     sPlayerbotDbStore.Reset(ai);
@@ -607,6 +611,34 @@ void PlayerbotFactory::ClearSpells()
 #endif
 }
 
+void PlayerbotFactory::ResetQuests()
+{
+    ObjectMgr::QuestMap const& questTemplates = sObjectMgr.GetQuestTemplates();
+    for (ObjectMgr::QuestMap::const_iterator i = questTemplates.begin(); i != questTemplates.end(); ++i)
+    {
+        Quest const* quest = i->second;
+
+        uint32 entry = quest->GetQuestId();
+
+        // remove all quest entries for 'entry' from quest log
+        for (uint8 slot = 0; slot < MAX_QUEST_LOG_SIZE; ++slot)
+        {
+            uint32 quest = bot->GetQuestSlotQuestId(slot);
+            if (quest == entry)
+            {
+                bot->SetQuestSlot(slot, 0);
+            }
+        }
+
+        // reset rewarded for restart repeatable quest
+        bot->getQuestStatusMap().erase(entry);
+        //bot->getQuestStatusMap()[entry].m_rewarded = false;
+        //bot->getQuestStatusMap()[entry].m_status = QUEST_STATUS_NONE;
+    }
+    //bot->UpdateForQuestWorldObjects();
+    CharacterDatabase.PExecute("DELETE FROM character_queststatus WHERE guid = '%u'", bot->GetGUIDLow());
+}
+
 void PlayerbotFactory::InitSpells()
 {
     for (int i = 0; i < 15; i++)
@@ -953,6 +985,10 @@ bool PlayerbotFactory::CanEquipItem(ItemPrototype const* proto, uint32 desiredQu
 
     uint32 requiredLevel = proto->RequiredLevel;
     if (!requiredLevel)
+    {
+        requiredLevel = sRandomItemMgr.GetMinLevelFromCache(proto->ItemId);
+    }
+    if (!requiredLevel)
         return false;
 
     uint32 level = bot->getLevel();
@@ -985,10 +1021,136 @@ bool PlayerbotFactory::CanEquipItem(ItemPrototype const* proto, uint32 desiredQu
     return true;
 }
 
-void PlayerbotFactory::InitEquipment(bool incremental)
+void PlayerbotFactory::InitEquipmentNew(bool incremental)
 {
+    if (incremental)
+    {
+        DestroyItemsVisitor visitor(bot);
+        IterateItems(&visitor, (IterateItemsMask)(ITERATE_ITEMS_IN_BAGS | ITERATE_ITEMS_IN_BANK));
+    }
+    else
+    {
         DestroyItemsVisitor visitor(bot);
         IterateItems(&visitor, ITERATE_ALL_ITEMS);
+    }
+
+    string specName = AiFactory::GetPlayerSpecName(bot);
+    if (specName.empty())
+        return;
+
+    // look for upgrades
+    for (uint8 slot = 0; slot < EQUIPMENT_SLOT_END; ++slot)
+    {
+        if (slot == EQUIPMENT_SLOT_TABARD && !bot->GetGuildId())
+            continue;
+
+        bool isUpgrade = false;
+        bool found = false;
+        bool noItem = false;
+        uint32 quality = urand(ITEM_QUALITY_UNCOMMON, ITEM_QUALITY_EPIC);
+        uint32 attempts = 10;
+        if (urand(0, 100) < 100 * sPlayerbotAIConfig.randomGearLoweringChance && quality > ITEM_QUALITY_NORMAL) {
+            quality--;
+        }
+        // current item;
+        Item* oldItem = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, slot);
+        if (oldItem)
+            isUpgrade = true;
+
+        uint32 itemInSlot = isUpgrade ? oldItem->GetProto()->ItemId : 0;
+
+        uint32 maxLevel = sPlayerbotAIConfig.randomBotMaxLevel;
+        if (maxLevel > sWorld.getConfig(CONFIG_UINT32_MAX_PLAYER_LEVEL))
+            maxLevel = sWorld.getConfig(CONFIG_UINT32_MAX_PLAYER_LEVEL);
+
+        uint32 minLevel = sPlayerbotAIConfig.randomBotMinLevel;
+        if (minLevel < sWorld.getConfig(CONFIG_UINT32_START_PLAYER_LEVEL))
+            minLevel = sWorld.getConfig(CONFIG_UINT32_START_PLAYER_LEVEL);
+
+        // test
+        do
+        {
+            if (isUpgrade)
+            {
+                vector<uint32> ids = sRandomItemMgr.GetUpgradeList(bot, specName, slot, 0, itemInSlot);
+                if (!ids.empty()) ahbot::Shuffle(ids);
+                for (uint32 index = 0; index < ids.size(); ++index)
+                {
+                    uint32 newItemId = ids[index];
+                    if (incremental && !IsDesiredReplacement(oldItem)) {
+                        continue;
+                    }
+
+                    uint16 dest;
+                    if (!CanEquipUnseenItem(slot, dest, newItemId))
+                        continue;
+
+                    if (oldItem)
+                    {
+                        bot->RemoveItem(INVENTORY_SLOT_BAG_0, slot, true);
+                        oldItem->DestroyForPlayer(bot);
+                    }
+
+                    Item* newItem = bot->EquipNewItem(dest, newItemId, true);
+                    if (newItem)
+                    {
+                        newItem->AddToWorld();
+                        newItem->AddToUpdateQueueOf(bot);
+                        bot->AutoUnequipOffhandIfNeed();
+                        EnchantItem(newItem);
+                        sLog.outString("Bot #%d %s:%d <%s>: Equip: %d, slot: %d, Old item: %d", bot->GetGUIDLow(), IsAlliance(bot->getRace()) ? "A" : "H", bot->getLevel(), bot->GetName(), newItemId, slot, itemInSlot);
+                        found = true;
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                vector<uint32> ids = sRandomItemMgr.GetUpgradeList(bot, specName, slot, quality, itemInSlot);
+                if (!ids.empty()) ahbot::Shuffle(ids);
+                for (uint32 index = 0; index < ids.size(); ++index)
+                {
+                    uint32 newItemId = ids[index];
+                    uint16 dest;
+                    if (!CanEquipUnseenItem(slot, dest, newItemId))
+                        continue;
+
+                    Item* newItem = bot->EquipNewItem(dest, newItemId, true);
+                    if (newItem)
+                    {
+                        bot->AutoUnequipOffhandIfNeed();
+                        EnchantItem(newItem);
+                        found = true;
+                        sLog.outString("Bot #%d %s:%d <%s>: Equip: %d, slot: %d", bot->GetGUIDLow(), IsAlliance(bot->getRace()) ? "A" : "H", bot->getLevel(), bot->GetName(), newItemId, slot);
+                        break;
+                    }
+                }
+            }
+            quality--;
+        } while (!found && quality != ITEM_QUALITY_POOR);
+        if (!found)
+        {
+            sLog.outDetail("Bot #%d %s:%d <%s>: no item for slot %d", bot->GetGUIDLow(), IsAlliance(bot->getRace()) ? "A" : "H", bot->getLevel(), bot->GetName(), slot);
+            continue;
+        }
+    }
+}
+
+void PlayerbotFactory::InitEquipment(bool incremental)
+{
+        //DestroyItemsVisitor visitor(bot);
+        //IterateItems(&visitor, ITERATE_ALL_ITEMS);
+
+    if (incremental)
+    {
+        //DestroyItemsVisitor visitor(bot);
+        //IterateItems(&visitor, (IterateItemsMask)(ITERATE_ITEMS_IN_BAGS | ITERATE_ITEMS_IN_BANK));
+    }
+    else
+    {
+        DestroyItemsVisitor visitor(bot);
+        IterateItems(&visitor, ITERATE_ITEMS_IN_EQUIP);
+    }
 
     for(uint8 slot = 0; slot < EQUIPMENT_SLOT_END; ++slot)
     {
@@ -1012,6 +1174,18 @@ void PlayerbotFactory::InitEquipment(bool incremental)
 
                 if (incremental && !IsDesiredReplacement(oldItem)) {
                     continue;
+                }
+
+                if (sRandomItemMgr.HasStatWeight(newItemId) || (oldItem && sRandomItemMgr.HasStatWeight(oldItem->GetProto()->ItemId)))
+                {
+                    if (!sRandomItemMgr.GetLiveStatWeight(bot, newItemId))
+                        continue;
+
+                    if (oldItem)
+                    {
+                        if (sRandomItemMgr.GetLiveStatWeight(bot, newItemId) < sRandomItemMgr.GetLiveStatWeight(bot, oldItem->GetProto()->ItemId))
+                            continue;
+                    }
                 }
 
                 uint16 dest;
@@ -1051,8 +1225,14 @@ bool PlayerbotFactory::IsDesiredReplacement(Item* item)
         return true;
 
     ItemPrototype const* proto = item->GetProto();
+    uint32 requiredLevel = proto->RequiredLevel;
+    if (!requiredLevel)
+    {
+        requiredLevel = sRandomItemMgr.GetMinLevelFromCache(proto->ItemId);
+    }
+
     int delta = 1 + (80 - bot->getLevel()) / 10;
-    return (int)bot->getLevel() - (int)proto->RequiredLevel > delta;
+    return (int)bot->getLevel() - (int)requiredLevel > delta;
 }
 
 void PlayerbotFactory::InitSecondEquipmentSet()
@@ -1080,8 +1260,14 @@ void PlayerbotFactory::InitSecondEquipmentSet()
 
             if (proto->Class == ITEM_CLASS_WEAPON)
             {
-                if (!CanEquipWeapon(proto))
-                    continue;
+                //if (!CanEquipWeapon(proto))
+                //    continue;
+
+                if (sRandomItemMgr.HasStatWeight(proto->ItemId))
+                {
+                    if (!sRandomItemMgr.GetLiveStatWeight(bot, proto->ItemId))
+                        continue;
+                }
 
                 Item* existingItem = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND);
                 if (existingItem)
@@ -1109,8 +1295,14 @@ void PlayerbotFactory::InitSecondEquipmentSet()
             }
             else if (proto->Class == ITEM_CLASS_ARMOR && proto->SubClass == ITEM_SUBCLASS_ARMOR_SHIELD)
             {
-                if (!CanEquipArmor(proto))
-                    continue;
+                //if (!CanEquipArmor(proto))
+                //    continue;
+
+                if (sRandomItemMgr.HasStatWeight(proto->ItemId))
+                {
+                    if (!sRandomItemMgr.GetLiveStatWeight(bot, proto->ItemId))
+                        continue;
+                }
 
                 Item* existingItem = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_OFFHAND);
                 if (existingItem && existingItem->GetProto()->SubClass == ITEM_SUBCLASS_ARMOR_SHIELD)

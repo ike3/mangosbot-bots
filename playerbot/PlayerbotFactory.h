@@ -57,6 +57,7 @@ private:
     void Prepare();
     void InitSecondEquipmentSet();
     void InitEquipment(bool incremental);
+    void InitEquipmentNew(bool incremental);
     bool CanEquipItem(ItemPrototype const* proto, uint32 desiredQuality);
     bool CanEquipUnseenItem(uint8 slot, uint16 &dest, uint32 item);
     void InitTradeSkills();
@@ -74,6 +75,7 @@ private:
     void InitPet();
     void ClearInventory();
     void ClearAllItems();
+    void ResetQuests();
     void InitAmmo();
     void InitMounts();
     void InitPotions();

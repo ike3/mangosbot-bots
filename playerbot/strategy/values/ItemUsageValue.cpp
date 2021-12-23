@@ -175,7 +175,12 @@ ItemUsage ItemUsageValue::QueryItemUsageForEquip(ItemPrototype const* itemProto)
         return ITEM_USAGE_EQUIP;
     }
 
-    bool shouldEquip = true;
+    bool shouldEquip = false;
+
+    uint32 statWeight = sRandomItemMgr.GetLiveStatWeight(bot, itemProto->ItemId);
+    if (statWeight)
+        shouldEquip = true;
+
     if (itemProto->Class == ITEM_CLASS_WEAPON && !sRandomItemMgr.CanEquipWeapon(bot->getClass(), itemProto))
         shouldEquip = false;
     if (itemProto->Class == ITEM_CLASS_ARMOR && !sRandomItemMgr.CanEquipArmor(bot->getClass(), bot->getLevel(), itemProto))
@@ -192,6 +197,15 @@ ItemUsage ItemUsageValue::QueryItemUsageForEquip(ItemPrototype const* itemProto)
 
     const ItemPrototype* oldItemProto = oldItem->GetProto();
 
+    if (oldItem)
+    {
+        uint32 oldStatWeight = sRandomItemMgr.GetLiveStatWeight(bot, oldItemProto->ItemId);
+        if (statWeight || oldStatWeight)
+        {
+            shouldEquip = statWeight >= oldStatWeight;
+        }
+    }
+
     //Bigger quiver
     if (itemProto->Class == ITEM_CLASS_QUIVER)
         if (!oldItem || oldItemProto->ContainerSlots < itemProto->ContainerSlots)
@@ -205,8 +219,8 @@ ItemUsage ItemUsageValue::QueryItemUsageForEquip(ItemPrototype const* itemProto)
     if (oldItemProto->Class == ITEM_CLASS_ARMOR && !sRandomItemMgr.CanEquipArmor(bot->getClass(), bot->getLevel(), oldItemProto))
         existingShouldEquip = false;
 
-    uint32 oldItemPower = oldItemProto->ItemLevel + oldItemProto->Quality * 5;
-    uint32 newItemPower = itemProto->ItemLevel + itemProto->Quality * 5;
+    uint32 oldItemPower = sRandomItemMgr.GetLiveStatWeight(bot, oldItemProto->ItemId);
+    uint32 newItemPower = sRandomItemMgr.GetLiveStatWeight(bot, itemProto->ItemId);
 
     //Compare items based on item level, quality or itemId.
     bool isBetter = false;
