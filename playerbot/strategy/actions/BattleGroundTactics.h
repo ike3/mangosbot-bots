@@ -9,6 +9,10 @@
 #ifndef MANGOSBOT_ZERO
 #include "BattleGroundEY.h"
 #endif
+#ifdef MANGOSBOT_TWO
+#include "BattleGroundIC.h"
+#include "BattleGroundSA.h"
+#endif
 #include "CheckMountStateAction.h"
 
 using namespace ai;
@@ -34,6 +38,7 @@ extern std::vector<BattleBotPath*> const vPaths_WS;
 extern std::vector<BattleBotPath*> const vPaths_AB;
 extern std::vector<BattleBotPath*> const vPaths_AV;
 extern std::vector<BattleBotPath*> const vPaths_EY;
+extern std::vector<BattleBotPath*> const vPaths_IC;
 
 class BGTactics : public MovementAction
 {
@@ -41,7 +46,7 @@ public:
     BGTactics(PlayerbotAI* ai, string name = "bg tactics") : MovementAction(ai, name) {}
     virtual bool Execute(Event event);
 private:
-    bool moveToStart();
+    bool moveToStart(bool force = false);
     bool selectObjective(bool reset = false);
     bool moveToObjective();
     bool selectObjectiveWp(std::vector<BattleBotPath*> const& vPaths);
@@ -56,6 +61,7 @@ private:
     bool protectFC();
     bool useBuff();
     uint32 getDefendersCount(Position point, float range, bool combat = true);
+    bool IsLockedInsideKeep();
 };
 
 class ArenaTactics : public MovementAction

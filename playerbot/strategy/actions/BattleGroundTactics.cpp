@@ -5,6 +5,9 @@
 #include "BattleGround.h"
 #include "BattleGroundMgr.h"
 #include "BattlegroundTactics.h"
+#ifdef MANGOSBOT_TWO
+#include "Entities/Vehicle.h"
+#endif
 
 using namespace ai;
 
@@ -43,6 +46,18 @@ Position const EY_FLAG_RETURN_POS_MAGE_TOWER = { 2284.585f, 1731.297f, 1189.862f
 Position const EY_FLAG_RETURN_POS_RETREAT_HORDE = { 1885.529f, 1532.157f, 1200.635f, 0.0f };
 Position const EY_FLAG_RETURN_POS_RETREAT_ALLIANCE = { 2452.253f, 1602.356f, 1203.617f, 0.0f };
 
+Position const IC_WAITING_POS_HORDE = { 1166.322f, -762.402f, 48.628f, 3.14f };
+Position const IC_WAITING_POS_ALLIANCE = { 387.893f, -833.384f, 48.714f, 6.28f };
+
+Position const IC_WEST_WAITING_POS_HORDE = { 1217.666f, -685.449f, 48.915f, 1.54f };
+Position const IC_EAST_WAITING_POS_HORDE = { 1219.068f, -838.791f, 48.916f, 4.72f };
+Position const IC_SIDE_WAITING_POS_ALLIANCE = { 351.517f, -882.477f, 48.916f, 4.68f };
+
+Position const IC_CANNON_POS_HORDE1 = { 1140.938f, -838.685f, 88.124f, 2.30f };
+Position const IC_CANNON_POS_HORDE2 = { 1139.695f, -686.574f, 88.173f, 3.95f };
+Position const IC_CANNON_POS_ALLIANCE1 = { 424.860f, -855.795f, 87.96f, 0.44f };
+Position const IC_CANNON_POS_ALLIANCE2 = { 425.525f, -779.538f, 87.717f, 5.88f };
+
 enum BattleBotWsgWaitSpot
 {
     BB_WSG_WAIT_SPOT_SPAWN,
@@ -62,6 +77,35 @@ std::vector<uint32> const vFlagsWS = { GO_WS_SILVERWING_FLAG, GO_WS_WARSONG_FLAG
 
 #ifndef MANGOSBOT_ZERO
 std::vector<uint32> const vFlagsEY = { GO_EY_NETHERSTORM_FLAG, GO_EY_NETHERSTORM_FLAG_DROP};
+#endif
+
+#ifdef MANGOSBOT_TWO
+std::vector<uint32> const vFlagsIC = { BG_IC_GO_BANNER_ALLIANCE_KEEP_A, BG_IC_GO_BANNER_ALLIANCE_KEEP_A, BG_IC_GO_BANNER_ALLIANCE_KEEP_H, BG_IC_GO_BANNER_ALLIANCE_KEEP_A_GREY, BG_IC_GO_BANNER_ALLIANCE_KEEP_H_GREY,
+BG_IC_GO_BANNER_HORDE_KEEP_A, BG_IC_GO_BANNER_HORDE_KEEP_A, BG_IC_GO_BANNER_HORDE_KEEP_H, BG_IC_GO_BANNER_HORDE_KEEP_A_GREY, BG_IC_GO_BANNER_HORDE_KEEP_H_GREY,
+BG_IC_GO_BANNER_WORKSHOP, BG_IC_GO_BANNER_WORKSHOP_A, BG_IC_GO_BANNER_WORKSHOP_H, BG_IC_GO_BANNER_WORKSHOP_A_GREY, BG_IC_GO_BANNER_WORKSHOP_H_GREY,
+BG_IC_GO_BANNER_DOCKS, BG_IC_GO_BANNER_DOCKS_A, BG_IC_GO_BANNER_DOCKS_H, BG_IC_GO_BANNER_DOCKS_A_GREY, BG_IC_GO_BANNER_DOCKS_H_GREY,
+BG_IC_GO_BANNER_HANGAR, BG_IC_GO_BANNER_HANGAR_A, BG_IC_GO_BANNER_HANGAR_H, BG_IC_GO_BANNER_HANGAR_A_GREY, BG_IC_GO_BANNER_HANGAR_H_GREY,
+BG_IC_GO_BANNER_REFINERY, BG_IC_GO_BANNER_REFINERY_A, BG_IC_GO_BANNER_REFINERY_H, BG_IC_GO_BANNER_REFINERY_A_GREY, BG_IC_GO_BANNER_REFINERY_H_GREY,
+BG_IC_GO_BANNER_QUARRY, BG_IC_GO_BANNER_QUARRY_A, BG_IC_GO_BANNER_QUARRY_H, BG_IC_GO_BANNER_QUARRY_A_GREY, BG_IC_GO_BANNER_QUARRY_H_GREY};
+
+struct IsleBanners
+{
+    uint32 entryNeutral;
+    uint32 entryAlly;
+    uint32 entryHorde;
+    uint32 entryAlly_Grey;
+    uint32 entryHorde_Grey;
+};
+static const IsleBanners isleBanners[] =
+{
+    {BG_IC_GO_BANNER_ALLIANCE_KEEP_A, BG_IC_GO_BANNER_ALLIANCE_KEEP_A, BG_IC_GO_BANNER_ALLIANCE_KEEP_H, BG_IC_GO_BANNER_ALLIANCE_KEEP_A_GREY, BG_IC_GO_BANNER_ALLIANCE_KEEP_H_GREY},
+    {BG_IC_GO_BANNER_HORDE_KEEP_A, BG_IC_GO_BANNER_HORDE_KEEP_A, BG_IC_GO_BANNER_HORDE_KEEP_H, BG_IC_GO_BANNER_HORDE_KEEP_A_GREY, BG_IC_GO_BANNER_HORDE_KEEP_H_GREY},
+    {BG_IC_GO_BANNER_WORKSHOP, BG_IC_GO_BANNER_WORKSHOP_A, BG_IC_GO_BANNER_WORKSHOP_H, BG_IC_GO_BANNER_WORKSHOP_A_GREY, BG_IC_GO_BANNER_WORKSHOP_H_GREY},
+    {BG_IC_GO_BANNER_DOCKS, BG_IC_GO_BANNER_DOCKS_A, BG_IC_GO_BANNER_DOCKS_H, BG_IC_GO_BANNER_DOCKS_A_GREY, BG_IC_GO_BANNER_DOCKS_H_GREY},
+    {BG_IC_GO_BANNER_HANGAR, BG_IC_GO_BANNER_HANGAR_A, BG_IC_GO_BANNER_HANGAR_H, BG_IC_GO_BANNER_HANGAR_A_GREY, BG_IC_GO_BANNER_HANGAR_H_GREY},
+    {BG_IC_GO_BANNER_REFINERY, BG_IC_GO_BANNER_REFINERY_A, BG_IC_GO_BANNER_REFINERY_H, BG_IC_GO_BANNER_REFINERY_A_GREY, BG_IC_GO_BANNER_REFINERY_H_GREY},
+    {BG_IC_GO_BANNER_QUARRY, BG_IC_GO_BANNER_QUARRY_A, BG_IC_GO_BANNER_QUARRY_H, BG_IC_GO_BANNER_QUARRY_A_GREY, BG_IC_GO_BANNER_QUARRY_H_GREY},
+};
 #endif
 
 // BG Waypoints (vmangos)
@@ -1672,6 +1716,337 @@ BattleBotPath vPath_EY_Fel_Reaver_to_Mage_Tower =
     { 2284.522f, 1728.234f, 1189.015f, nullptr }
 };
 
+BattleBotPath vPath_IC_Ally_Keep_to_Ally_Front_Crossroad =
+{
+    //{ 351.652f, -834.837f, 48.916f, nullptr },
+    { 434.768f, -833.976f, 46.090f, nullptr },
+    { 506.782f, -828.594f, 24.313f, nullptr },
+    { 524.955f, -799.002f, 19.498f, nullptr }
+};
+
+BattleBotPath vPath_IC_Ally_Front_Crossroad_to_Workshop =
+{
+    { 524.955f, -799.002f, 19.498f, nullptr },
+    { 573.557f, -804.838f, 9.6291f, nullptr },
+    { 627.977f, -810.197f, 3.5154f, nullptr },
+    { 681.501f, -805.208f, 3.1464f, nullptr },
+    { 721.905f, -797.917f, 4.5112f, nullptr },
+    { 774.466f, -801.058f, 6.3428f, nullptr }
+};
+
+BattleBotPath vPath_IC_Ally_Keep_to_Ally_Dock_Crossroad =
+{
+    { 434.768f, -833.976f, 46.090f, nullptr },
+    { 446.710f, -776.008f, 48.783f, nullptr },
+    { 463.745f, -742.368f, 48.584f, nullptr },
+    { 488.201f, -714.563f, 36.564f, nullptr },
+    { 525.923f, -666.880f, 25.425f, nullptr }
+};
+
+BattleBotPath vPath_IC_Ally_Front_Crossroad_to_Ally_Dock_Crossroad =
+{
+    { 524.955f, -799.002f, 19.498f, nullptr },
+    { 542.225f, -745.142f, 18.348f, nullptr },
+    { 545.309f, -712.497f, 22.005f, nullptr },
+    { 538.678f, -748.361f, 18.261f, nullptr },
+    { 525.923f, -666.880f, 25.425f, nullptr }
+};
+
+BattleBotPath vPath_IC_Lower_Graveyard_to_Lower_Graveyard_Crossroad =
+{
+    { 443.095f, -310.797f, 51.749f, nullptr },
+    { 462.733f, -323.587f, 48.706f, nullptr },
+    { 471.540f, -343.914f, 40.706f, nullptr },
+    { 475.622f, -360.728f, 34.384f, nullptr },
+    { 484.458f, -379.796f, 33.122f, nullptr }
+};
+
+BattleBotPath vPath_IC_Lower_Graveyard_Crossroad_to_Ally_Docks_Crossroad =
+{
+    { 484.458f, -379.796f, 33.122f, nullptr },
+    { 509.786f, -380.592f, 33.122f, nullptr },
+    { 532.549f, -381.576f, 33.122f, nullptr },
+    { 553.506f, -386.102f, 33.507f, nullptr },
+    { 580.533f, -398.536f, 33.416f, nullptr },
+    { 605.112f, -409.843f, 33.121f, nullptr },
+    { 619.212f, -419.169f, 33.121f, nullptr },
+    { 631.702f, -428.763f, 33.070f, nullptr },
+    { 648.483f, -444.714f, 28.629f, nullptr }
+};
+
+BattleBotPath vPath_IC_Lower_Graveyard_Crossroad_to_Ally_Docks_Second_Crossroad =
+{
+    { 484.458f, -379.796f, 33.122f, nullptr },
+    { 470.771f, -394.789f, 33.112f, nullptr },
+    { 461.191f, -409.475f, 33.120f, nullptr },
+    { 452.794f, -431.842f, 33.120f, nullptr },
+    { 452.794f, -456.896f, 33.658f, nullptr },
+    { 453.279f, -481.742f, 33.052f, nullptr },
+    { 453.621f, -504.979f, 32.956f, nullptr },
+    { 452.006f, -526.792f, 32.221f, nullptr },
+    { 453.150f, -548.212f, 29.133f, nullptr },
+    { 455.224f, -571.323f, 26.119f, nullptr },
+    { 465.486f, -585.424f, 25.756f, nullptr },
+    { 475.366f, -598.414f, 25.784f, nullptr },
+    { 477.702f, -605.757f, 25.714f, nullptr }
+};
+
+BattleBotPath vPath_IC_Ally_Dock_Crossroad_to_Ally_Docks_Second_Crossroad =
+{
+    { 525.923f, -666.880f, 25.425f, nullptr },
+    { 497.190f, -630.709f, 25.626f, nullptr },
+    { 477.702f, -605.757f, 25.714f, nullptr }
+};
+
+BattleBotPath vPath_IC_Ally_Docks_Second_Crossroad_to_Ally_Docks_Crossroad =
+{
+    { 477.702f, -605.757f, 25.714f, nullptr },
+    { 493.697f, -555.838f, 26.014f, nullptr },
+    { 522.939f, -525.199f, 26.014f, nullptr },
+    { 580.398f, -486.274f, 26.013f, nullptr },
+    { 650.132f, -445.811f, 28.503f, nullptr }
+};
+
+BattleBotPath vPath_IC_Ally_Docks_Crossroad_to_Docks_Flag =
+{
+    { 650.132f, -445.811f, 28.503f, nullptr },
+    { 690.527f, -452.961f, 18.039f, nullptr },
+    { 706.813f, -430.003f, 13.797f, nullptr },
+    { 726.427f, -364.849f, 17.815f, nullptr }
+};
+
+BattleBotPath vPath_IC_Docks_Graveyard_to_Docks_Flag =
+{
+    { 638.142f, -283.782f, 11.512f, nullptr },
+    { 655.760f, -284.433f, 13.220f, nullptr },
+    { 661.656f, -299.912f, 12.756f, nullptr },
+    { 675.068f, -317.192f, 12.627f, nullptr },
+    { 692.712f, -323.866f, 12.686f, nullptr },
+    { 712.968f, -341.285f, 13.350f, nullptr },
+    { 726.427f, -364.849f, 17.815f, nullptr }
+};
+
+BattleBotPath vPath_IC_Ally_Keep_to_Quarry_Crossroad =
+{
+    { 320.547f, -919.896f, 48.481f, nullptr },
+    { 335.384f, -922.371f, 49.518f, nullptr },
+    { 353.471f, -920.316f, 48.660f, nullptr },
+    { 353.305f, -958.823f, 47.665f, nullptr },
+    { 369.196f, -989.960f, 37.719f, nullptr },
+    { 380.671f, -1023.51f, 29.369f, nullptr }
+};
+
+BattleBotPath vPath_IC_Quarry_Crossroad_to_Quarry_Flag =
+{
+    { 380.671f, -1023.51f, 29.369f, nullptr },
+    { 361.584f, -1052.89f, 27.445f, nullptr },
+    { 341.853f, -1070.17f, 24.024f, nullptr },
+    { 295.845f, -1075.22f, 16.164f, nullptr },
+    { 253.030f, -1094.06f, 4.1517f, nullptr },
+    { 211.391f, -1121.80f, 1.9591f, nullptr },
+    { 187.836f, -1155.66f, 1.9749f, nullptr },
+    { 221.193f, -1186.87f, 8.0247f, nullptr },
+    { 249.181f, -1162.09f, 16.687f, nullptr }
+};
+
+BattleBotPath vPath_IC_Ally_Front_Crossroad_to_Hangar_First_Crossroad =
+{
+    { 524.955f, -799.002f, 19.498f, nullptr },
+    { 512.563f, -840.166f, 23.913f, nullptr },
+    { 513.418f, -877.726f, 26.333f, nullptr },
+    { 512.962f, -945.951f, 39.382f, nullptr }
+};
+
+BattleBotPath vPath_IC_Ally_Keep_to_Hangar_First_Crossroad =
+{
+    { 434.768f, -833.976f, 46.090f, nullptr },
+    { 486.355f, -909.736f, 26.112f, nullptr },
+    { 512.962f, -945.951f, 39.382f, nullptr }
+};
+
+BattleBotPath vPath_IC_Hangar_First_Crossroad_to_Hangar_Second_Crossroad =
+{
+    { 512.962f, -945.951f, 39.382f, nullptr },
+    { 499.525f, -985.850f, 47.659f, nullptr },
+    { 492.794f, -1016.36f, 49.834f, nullptr },
+    { 481.738f, -1052.67f, 60.190f, nullptr }
+};
+
+BattleBotPath vPath_IC_Quarry_Crossroad_to_Hangar_Second_Crossroad =
+{
+    { 380.671f, -1023.51f, 29.369f, nullptr },
+    { 430.997f, -1021.72f, 31.021f, nullptr },
+    { 439.528f, -1044.88f, 41.827f, nullptr },
+    { 455.062f, -1060.67f, 67.209f, nullptr },
+    { 481.738f, -1052.67f, 60.190f, nullptr }
+};
+
+BattleBotPath vPath_IC_Hangar_Second_Crossroad_to_Hangar_Flag =
+{
+    { 508.945f, -1103.30f, 79.054f, nullptr },
+    { 536.397f, -1145.79f, 95.478f, nullptr },
+    { 573.242f, -1138.19f, 109.26f, nullptr },
+    { 609.051f, -1112.93f, 128.31f, nullptr },
+    { 645.569f, -1094.58f, 132.13f, nullptr },
+    { 689.621f, -1068.33f, 132.87f, nullptr },
+    { 730.045f, -1042.67f, 133.03f, nullptr },
+    { 755.322f, -1030.28f, 133.30f, nullptr },
+    { 801.685f, -1005.46f, 132.39f, nullptr },
+    { 806.404f, -1001.709f, 132.382f, nullptr }
+};
+
+BattleBotPath vPath_IC_Horde_Keep_to_Horde_Front_Crossroad =
+{
+    { 1128.646f, -763.221f, 48.385f, nullptr },
+    { 1091.273f, -763.619f, 42.352f, nullptr },
+    { 1032.825f, -763.024f, 30.420f, nullptr },
+    { 991.4235f, -807.672f, 21.788f, nullptr }
+};
+
+BattleBotPath vPath_IC_Horde_Front_Crossroad_to_Horde_Hangar_Crossroad =
+{
+    { 991.4235f, -807.672f, 21.788f, nullptr },
+    { 999.1844f, -855.182f, 21.484f, nullptr },
+    { 1012.089f, -923.098f, 19.296f, nullptr }
+};
+
+BattleBotPath vPath_IC_Horde_Keep_to_Horde_Hangar_Crossroad =
+{
+    { 1128.646f, -763.221f, 48.385f, nullptr },
+    { 1121.090f, -816.666f, 49.008f, nullptr },
+    { 1107.106f, -851.459f, 48.804f, nullptr },
+    { 1072.313f, -888.355f, 30.853f, nullptr },
+    { 1012.089f, -923.098f, 19.296f, nullptr }
+};
+
+BattleBotPath vPath_IC_Horde_Hangar_Crossroad_to_Hangar_Flag =
+{
+    { 1001.745f, -973.174f, 15.784f, nullptr },
+    { 1015.437f, -1019.47f, 15.578f, nullptr },
+    { 1009.622f, -1067.78f, 15.777f, nullptr },
+    { 988.0692f, -1113.32f, 18.254f, nullptr },
+    { 943.7221f, -1134.50f, 32.296f, nullptr },
+    { 892.2205f, -1115.16f, 63.319f, nullptr },
+    { 849.6576f, -1090.88f, 91.943f, nullptr },
+    { 814.9168f, -1056.42f, 117.275f, nullptr },
+    { 799.0856f, -1034.62f, 129.000f, nullptr },
+    { 801.685f, -1005.46f, 132.39f, nullptr }
+};
+
+BattleBotPath vPath_IC_Horde_Keep_to_Horde_Dock_Crossroad =
+{
+    { 1128.646f, -763.221f, 48.385f, nullptr },
+    { 1116.203f, -723.328f, 48.655f, nullptr },
+    { 1093.246f, -696.880f, 37.041f, nullptr },
+    { 1034.226f, -653.581f, 24.432f, nullptr }
+};
+
+BattleBotPath vPath_IC_Horde_Front_Crossroad_to_Horde_Dock_Crossroad =
+{
+    { 991.4235f, -807.672f, 21.788f, nullptr },
+    { 1025.305f, -757.165f, 29.241f, nullptr },
+    { 1029.308f, -710.366f, 26.366f, nullptr },
+    { 1034.226f, -653.581f, 24.432f, nullptr }
+};
+
+BattleBotPath vPath_IC_Horde_Dock_Crossroad_to_Refinery_Crossroad =
+{
+    { 1034.226f, -653.581f, 24.432f, nullptr },
+    { 1102.358f, -617.505f, 5.4963f, nullptr },
+    { 1116.255f, -580.956f, 18.184f, nullptr },
+    { 1114.414f, -546.731f, 23.422f, nullptr },
+    { 1148.358f, -503.947f, 23.423f, nullptr }
+};
+
+BattleBotPath vPath_IC_Refinery_Crossroad_to_Refinery_Base =
+{
+    { 1148.358f, -503.947f, 23.423f, nullptr },
+    { 1201.885f, -500.425f, 4.7262f, nullptr },
+    { 1240.595f, -471.971f, 0.8933f, nullptr },
+    { 1265.993f, -435.419f, 10.669f, nullptr }
+};
+
+BattleBotPath vPath_IC_Horde_Side_Gate_to_Refinery_Base =
+{
+    { 1218.676f, -660.487f, 47.870f, nullptr },
+    { 1211.677f, -626.181f, 46.085f, nullptr },
+    { 1212.720f, -562.300f, 19.514f, nullptr },
+    { 1238.803f, -538.997f, 3.9892f, nullptr },
+    { 1248.875f, -482.852f, 0.8933f, nullptr },
+    { 1265.993f, -435.419f, 10.669f, nullptr }
+};
+
+BattleBotPath vPath_IC_Refinery_Crossroad_to_Docks_Crossroad =
+{
+    { 1148.358f, -503.947f, 23.423f, nullptr },
+    { 1127.010f, -469.451f, 23.422f, nullptr },
+    { 1100.976f, -431.146f, 21.312f, nullptr },
+    { 1053.812f, -405.457f, 12.749f, nullptr },
+    { 1005.570f, -375.439f, 12.695f, nullptr },
+    { 963.4349f, -353.282f, 12.356f, nullptr },
+    { 907.1394f, -380.470f, 11.912f, nullptr }
+};
+
+BattleBotPath vPath_IC_Horde_Dock_Crossroad_to_Docks_Crossroad =
+{
+    { 1034.226f, -653.581f, 24.432f, nullptr },
+    { 1013.435f, -622.066f, 24.486f, nullptr },
+    { 988.1990f, -547.937f, 24.424f, nullptr },
+    { 982.4955f, -508.332f, 24.524f, nullptr },
+    { 982.5065f, -462.920f, 16.833f, nullptr },
+    { 948.8842f, -421.200f, 16.877f, nullptr },
+    { 907.1394f, -380.470f, 11.912f, nullptr }
+};
+
+BattleBotPath vPath_IC_Docks_Crossroad_to_Docks_Flag =
+{
+    { 907.1394f, -380.470f, 11.912f, nullptr },
+    { 851.5726f, -382.503f, 11.906f, nullptr },
+    { 808.1441f, -381.199f, 11.906f, nullptr },
+    { 761.1740f, -381.854f, 14.504f, nullptr },
+    { 726.427f, -364.849f, 17.815f, nullptr }
+};
+
+BattleBotPath vPath_IC_Horde_Front_Crossroad_to_Workshop =
+{
+    { 991.4235f, -807.672f, 21.788f, nullptr },
+    { 944.5518f, -800.344f, 13.155f, nullptr },
+    { 907.1300f, -798.892f, 8.3237f, nullptr },
+    { 842.9721f, -795.224f, 5.2007f, nullptr },
+    { 804.5959f, -794.269f, 5.9836f, nullptr },
+    { 774.466f, -801.058f, 6.3428f, nullptr }
+};
+
+BattleBotPath vPath_IC_Central_Graveyard_to_Workshop =
+{
+    { 775.377f, -664.151f, 8.388f, nullptr },
+    { 776.299f, -684.079f, 5.036f, nullptr },
+    { 777.451f, -707.525f, 0.051f, nullptr },
+    { 779.059f, -734.611f, 1.695f, nullptr },
+    { 779.643f, -767.010f, 4.843f, nullptr },
+    { 774.466f, -801.058f, 6.3428f, nullptr }
+};
+
+BattleBotPath vPath_IC_Horde_East_Gate_to_Horde_Keep =
+{
+    { 1216.1918f, -864.922f, 48.852f, nullptr },
+    { 1197.3117f, -866.054f, 48.916f, nullptr },
+    { 1174.195f, -867.931f, 48.621f, nullptr },
+    { 1149.671f, -869.240f, 48.096f, nullptr },
+    { 1128.257f, -860.087f, 49.562f, nullptr },
+    { 1118.730f, -829.959f, 49.074f, nullptr },
+    { 1123.201f, -806.498f, 48.896f, nullptr },
+    { 1129.685f, -787.156f, 48.680f, nullptr},
+    { 1128.646f, -763.221f, 48.385f, nullptr }
+};
+
+BattleBotPath vPath_IC_Workshop_to_Workshop_Keep =
+{
+    { 773.792f, -825.637f, 8.127f, nullptr },
+    { 772.706f, -841.881f, 11.622f, nullptr },
+    { 773.057f, -859.936f, 12.418f, nullptr }
+};
+
 std::vector<BattleBotPath*> const vPaths_WS =
 {
     &vPath_WSG_HordeFlagRoom_to_HordeGraveyard,
@@ -1791,6 +2166,46 @@ std::vector<BattleBotPath*> const vPaths_EY =
 };
 #endif
 
+#ifdef MANGOSBOT_TWO
+std::vector<BattleBotPath*> const vPaths_IC =
+{
+    &vPath_IC_Ally_Dock_Crossroad_to_Ally_Docks_Second_Crossroad,
+    &vPath_IC_Ally_Docks_Crossroad_to_Docks_Flag,
+    &vPath_IC_Ally_Docks_Second_Crossroad_to_Ally_Docks_Crossroad,
+    &vPath_IC_Lower_Graveyard_Crossroad_to_Ally_Docks_Crossroad,
+    &vPath_IC_Lower_Graveyard_Crossroad_to_Ally_Docks_Second_Crossroad,
+    &vPath_IC_Lower_Graveyard_to_Lower_Graveyard_Crossroad,
+    &vPath_IC_Ally_Front_Crossroad_to_Ally_Dock_Crossroad,
+    &vPath_IC_Ally_Front_Crossroad_to_Hangar_First_Crossroad,
+    &vPath_IC_Ally_Front_Crossroad_to_Workshop,
+    &vPath_IC_Ally_Keep_to_Ally_Dock_Crossroad,
+    &vPath_IC_Ally_Keep_to_Ally_Front_Crossroad,
+    &vPath_IC_Ally_Keep_to_Hangar_First_Crossroad,
+    &vPath_IC_Ally_Keep_to_Quarry_Crossroad,
+    &vPath_IC_Docks_Crossroad_to_Docks_Flag,
+    &vPath_IC_Docks_Graveyard_to_Docks_Flag,
+    &vPath_IC_Hangar_First_Crossroad_to_Hangar_Second_Crossroad,
+    &vPath_IC_Hangar_Second_Crossroad_to_Hangar_Flag,
+    &vPath_IC_Horde_Dock_Crossroad_to_Docks_Crossroad,
+    &vPath_IC_Horde_Dock_Crossroad_to_Refinery_Crossroad,
+    &vPath_IC_Horde_Front_Crossroad_to_Horde_Dock_Crossroad,
+    &vPath_IC_Horde_Front_Crossroad_to_Horde_Hangar_Crossroad,
+    &vPath_IC_Horde_Front_Crossroad_to_Workshop,
+    &vPath_IC_Horde_Hangar_Crossroad_to_Hangar_Flag,
+    &vPath_IC_Horde_Keep_to_Horde_Dock_Crossroad,
+    &vPath_IC_Horde_Keep_to_Horde_Front_Crossroad,
+    &vPath_IC_Horde_Keep_to_Horde_Hangar_Crossroad,
+    &vPath_IC_Horde_Side_Gate_to_Refinery_Base,
+    &vPath_IC_Quarry_Crossroad_to_Hangar_Second_Crossroad,
+    &vPath_IC_Quarry_Crossroad_to_Quarry_Flag,
+    &vPath_IC_Refinery_Crossroad_to_Docks_Crossroad,
+    &vPath_IC_Refinery_Crossroad_to_Refinery_Base,
+    &vPath_IC_Central_Graveyard_to_Workshop,
+    &vPath_IC_Horde_East_Gate_to_Horde_Keep,
+    &vPath_IC_Workshop_to_Workshop_Keep,
+};
+#endif
+
 std::vector<BattleBotPath*> const vPaths_NoReverseAllowed =
 {
     &vPath_AV_Horde_Cave_to_Tower_Point_Crossroad,
@@ -1801,6 +2216,8 @@ std::vector<BattleBotPath*> const vPaths_NoReverseAllowed =
     &vPath_AV_Horde_Cave_to_Frostwolf_Graveyard_Flag,
     &vPath_AV_Alliance_Cave_Slop_Crossroad_to_Alliance_Slope_Crossroad,
     &vPath_AV_Iceblood_Graveyard_to_Iceblood_Tower_Crossroad,
+    &vPath_IC_Central_Graveyard_to_Workshop,
+    &vPath_IC_Docks_Graveyard_to_Docks_Flag,
 };
 
 std::vector<BattleBotPath*> const vPaths_AllyMine =
@@ -2217,6 +2634,14 @@ bool BGTactics::Execute(Event event)
         break;
     }
 #endif
+#ifdef MANGOSBOT_TWO
+    case BATTLEGROUND_IC:
+    {
+        vPaths = &vPaths_IC;
+        vFlagIds = &vFlagsIC;
+        break;
+    }
+#endif
     default:
         break;
     }
@@ -2325,13 +2750,13 @@ bool BGTactics::Execute(Event event)
     return false;
 }
 
-bool BGTactics::moveToStart()
+bool BGTactics::moveToStart(bool force)
 {
     BattleGround *bg = bot->GetBattleGround();
     if (!bg)
         return false;
 
-    if (bg->GetStatus() != STATUS_WAIT_JOIN)
+    if (!force && bg->GetStatus() != STATUS_WAIT_JOIN)
         return false;
 
     BattleGroundTypeId bgType = bg->GetTypeId();
@@ -2381,6 +2806,47 @@ bool BGTactics::moveToStart()
             MoveTo(bg->GetMapId(), EY_WAITING_POS_HORDE.x + frand(-3.0f, 3.0f), EY_WAITING_POS_HORDE.y + frand(-3.0f, 3.0f), EY_WAITING_POS_HORDE.z);
         else
             MoveTo(bg->GetMapId(), EY_WAITING_POS_ALLIANCE.x + frand(-3.0f, 3.0f), EY_WAITING_POS_ALLIANCE.y + frand(-3.0f, 3.0f), EY_WAITING_POS_ALLIANCE.z);
+    }
+#endif
+#ifdef MANGOSBOT_TWO
+    else if (bgType == BATTLEGROUND_IC)
+    {
+        uint32 role = context->GetValue<uint32>("bg role")->Get();
+
+        if (bot->GetTeam() == HORDE)
+        {
+            if (role < 3)
+            {
+                if (urand(0, 1))
+                    MoveTo(bg->GetMapId(), IC_WEST_WAITING_POS_HORDE.x + frand(-5.0f, 5.0f), IC_WEST_WAITING_POS_HORDE.y + frand(-5.0f, 5.0f), IC_WEST_WAITING_POS_HORDE.z);
+                else
+                    MoveTo(bg->GetMapId(), IC_WAITING_POS_HORDE.x + frand(-5.0f, 5.0f), IC_WAITING_POS_HORDE.y + frand(-5.0f, 5.0f), IC_WAITING_POS_HORDE.z);
+            }
+            else
+            {
+                if (urand(0, 1))
+                    MoveTo(bg->GetMapId(), IC_EAST_WAITING_POS_HORDE.x + frand(-5.0f, 5.0f), IC_EAST_WAITING_POS_HORDE.y + frand(-5.0f, 5.0f), IC_EAST_WAITING_POS_HORDE.z);
+                else
+                    MoveTo(bg->GetMapId(), IC_WAITING_POS_HORDE.x + frand(-5.0f, 5.0f), IC_WAITING_POS_HORDE.y + frand(-5.0f, 5.0f), IC_WAITING_POS_HORDE.z);
+            }
+        }
+        else
+        {
+            if (role < 3)
+            {
+                if (urand(0, 1))
+                    MoveTo(bg->GetMapId(), IC_SIDE_WAITING_POS_ALLIANCE.x + frand(-5.0f, 5.0f), IC_SIDE_WAITING_POS_ALLIANCE.y + frand(-5.0f, 5.0f), IC_SIDE_WAITING_POS_ALLIANCE.z);
+                else
+                    MoveTo(bg->GetMapId(), IC_WAITING_POS_ALLIANCE.x + frand(-5.0f, 5.0f), IC_WAITING_POS_ALLIANCE.y + frand(-5.0f, 5.0f), IC_WAITING_POS_ALLIANCE.z);
+            }
+            else
+            {
+                if (urand(0, 1))
+                    MoveTo(bg->GetMapId(), IC_SIDE_WAITING_POS_ALLIANCE.x + frand(-5.0f, 5.0f), IC_SIDE_WAITING_POS_ALLIANCE.y + frand(-5.0f, 5.0f), IC_SIDE_WAITING_POS_ALLIANCE.z);
+                else
+                    MoveTo(bg->GetMapId(), IC_WAITING_POS_ALLIANCE.x + frand(-5.0f, 5.0f), IC_WAITING_POS_ALLIANCE.y + frand(-5.0f, 5.0f), IC_WAITING_POS_ALLIANCE.z);
+            }
+        }
     }
 #endif
 
@@ -3103,6 +3569,559 @@ bool BGTactics::selectObjective(bool reset)
         break;
     }
 #endif
+#ifdef MANGOSBOT_TWO
+    case BATTLEGROUND_IC:
+    {
+        uint32 currentObjective = BG_IC_MAX_OBJECTIVES;
+        uint32 role = context->GetValue<uint32>("bg role")->Get();
+        bool inVehicle = ai->IsInVehicle();
+        bool controlsVehicle = ai->IsInVehicle(true);
+        uint32 vehicleId = inVehicle ? bot->GetTransportInfo()->GetTransport()->GetEntry() : 0;
+
+        // skip if not the driver
+        if (inVehicle && !controlsVehicle)
+            return false;
+
+        /* TACTICS */
+        if (bot->GetTeam() == HORDE) // HORDE
+        {
+            // If all bases are captured, go to enemy boss
+            bool allCaptured = true;
+            for (uint8 i = 0; i < BG_IC_MAX_OBJECTIVES; ++i)
+            {
+                // skip quarry and keep
+                if (i == BG_IC_OBJECTIVE_QUARY || i == BG_IC_OBJECTIVE_KEEP_HORDE || i == BG_IC_OBJECTIVE_REFINERY)
+                    continue;
+
+                uint32 objectId = isleBanners[i].entryHorde;
+                uint32 objectConflict = isleBanners[i].entryHorde_Grey;
+                bool capped = true;
+                bool capping = true;
+
+                if (GameObject* pGO = bg->GetSingleGameObjectFromStorage(objectId))
+                {
+                    if (!sServerFacade.isSpawned(pGO))
+                        capped = false;
+                }
+                if (GameObject* pGO = bg->GetSingleGameObjectFromStorage(objectConflict))
+                {
+                    if (!sServerFacade.isSpawned(pGO))
+                        capping = false;
+                }
+
+                if (!(capped || capping))
+                {
+                    allCaptured = false;
+                    break;
+                }
+            }
+            if (allCaptured) // target enemy boss
+            {
+                if (Creature* allyboss = bg->GetSingleCreatureFromStorage(BG_IC_NPC_COMMANDER_WYRMBANE))
+                {
+                    if (!allyboss->IsDespawned())
+                    {
+                        BgObjective = allyboss;
+                        //ostringstream out;
+                        //out << "Attackign BOSS! BG objective set to " << BgObjective->GetName();
+                        //bot->Say(out.str(), LANG_UNIVERSAL);
+                    }
+                }
+            }
+
+
+            // If main bases are not captured, split tasks
+            if (!BgObjective)
+            {
+                bool foundTask = false;
+                // mount defensive cannons
+                if (role > 6)
+                {
+                    uint32 firstTower = getDefendersCount(IC_CANNON_POS_HORDE1, 10.0f);
+                    uint32 secondTower = getDefendersCount(IC_CANNON_POS_HORDE2, 10.0f);
+
+                    if (firstTower < 2)
+                    {
+                        pos.Set(IC_CANNON_POS_HORDE1.x, IC_CANNON_POS_HORDE1.y, IC_CANNON_POS_HORDE1.z, bg->GetMapId());
+                        posMap["bg objective"] = pos;
+                        return true;
+                    }
+                    if (secondTower < 2)
+                    {
+                        pos.Set(IC_CANNON_POS_HORDE2.x, IC_CANNON_POS_HORDE2.y, IC_CANNON_POS_HORDE2.z, bg->GetMapId());
+                        posMap["bg objective"] = pos;
+                        return true;
+                    }
+                }
+                if (role < 3) // Capture Side base or Docks
+                {
+                    // Capture Quarry/Refinery
+                    bool isCapping = false;
+                    if (GameObject* pGO = bg->GetSingleGameObjectFromStorage(isleBanners[BG_IC_OBJECTIVE_REFINERY].entryHorde))
+                    {
+                        if (sServerFacade.isSpawned(pGO))
+                            isCapping = true;
+                    }
+                    if (GameObject* pGO = bg->GetSingleGameObjectFromStorage(isleBanners[BG_IC_OBJECTIVE_REFINERY].entryHorde_Grey))
+                    {
+                        if (sServerFacade.isSpawned(pGO))
+                            isCapping = true;
+                    }
+                    if (!isCapping)
+                    {
+                        if (GameObject* pGO = bg->GetSingleGameObjectFromStorage(isleBanners[BG_IC_OBJECTIVE_REFINERY].entryNeutral))
+                        {
+                            BgObjective = pGO;
+                            currentObjective = BG_IC_OBJECTIVE_REFINERY;
+                            foundTask = true;
+
+                            //ostringstream out;
+                            //out << "REFINERY! BG objective set to " << BgObjective->GetName();
+                            //bot->Say(out.str(), LANG_UNIVERSAL);
+                        }
+                    }
+                }
+                if (!BgObjective && role < 6 && urand(0, 1)) // Capture Docks
+                {
+                    // Capture Docks
+                    bool isCapping = false;
+                    if (GameObject* pGO = bg->GetSingleGameObjectFromStorage(isleBanners[BG_IC_OBJECTIVE_DOCKS].entryHorde))
+                    {
+                        if (sServerFacade.isSpawned(pGO))
+                            isCapping = true;
+                    }
+                    if (GameObject* pGO = bg->GetSingleGameObjectFromStorage(isleBanners[BG_IC_OBJECTIVE_DOCKS].entryHorde_Grey))
+                    {
+                        if (sServerFacade.isSpawned(pGO))
+                            isCapping = true;
+                    }
+                    if (!isCapping)
+                    {
+                        if (GameObject* pGO = bg->GetSingleGameObjectFromStorage(isleBanners[BG_IC_OBJECTIVE_DOCKS].entryNeutral))
+                        {
+                            BgObjective = pGO;
+                            currentObjective = BG_IC_OBJECTIVE_DOCKS;
+                            foundTask = true;
+
+                            //ostringstream out;
+                            //out << "DOCKS! BG objective set to " << BgObjective->GetName();
+                            //bot->Say(out.str(), LANG_UNIVERSAL);
+                        }
+                    }
+                }
+                // If docks/side capped, help capture workshop
+                if (!BgObjective && role < 3)
+                {
+                    bool isCapping = false;
+                    if (GameObject* pGO = bg->GetSingleGameObjectFromStorage(isleBanners[BG_IC_OBJECTIVE_WORKSHOP].entryHorde))
+                    {
+                        if (sServerFacade.isSpawned(pGO))
+                            isCapping = true;
+                    }
+                    if (GameObject* pGO = bg->GetSingleGameObjectFromStorage(isleBanners[BG_IC_OBJECTIVE_WORKSHOP].entryHorde_Grey))
+                    {
+                        if (sServerFacade.isSpawned(pGO))
+                            isCapping = true;
+                    }
+                    if (!isCapping)
+                    {
+                        if (GameObject* pGO = bg->GetSingleGameObjectFromStorage(isleBanners[BG_IC_OBJECTIVE_WORKSHOP].entryNeutral))
+                        {
+                            BgObjective = pGO;
+                            currentObjective = BG_IC_OBJECTIVE_WORKSHOP;
+                            foundTask = true;
+
+                            //ostringstream out;
+                            //out << "WORKSHOP! BG objective set to " << BgObjective->GetName();
+                            //bot->Say(out.str(), LANG_UNIVERSAL);
+                        }
+                    }
+                }
+                if (!BgObjective && role < 6) // Capture Hangar
+                {
+                    bool isCapping = false;
+                    if (GameObject* pGO = bg->GetSingleGameObjectFromStorage(isleBanners[BG_IC_OBJECTIVE_HANGAR].entryHorde))
+                    {
+                        if (sServerFacade.isSpawned(pGO))
+                            isCapping = true;
+                    }
+                    if (GameObject* pGO = bg->GetSingleGameObjectFromStorage(isleBanners[BG_IC_OBJECTIVE_HANGAR].entryHorde_Grey))
+                    {
+                        if (sServerFacade.isSpawned(pGO))
+                            isCapping = true;
+                    }
+                    if (!isCapping)
+                    {
+                        if (GameObject* pGO = bg->GetSingleGameObjectFromStorage(isleBanners[BG_IC_OBJECTIVE_HANGAR].entryNeutral))
+                        {
+                            BgObjective = pGO;
+                            currentObjective = BG_IC_OBJECTIVE_HANGAR;
+                            foundTask = true;
+                            //ostringstream out;
+                            //out << "HANGAR! BG objective set to " << BgObjective->GetName();
+                            //bot->Say(out.str(), LANG_UNIVERSAL);
+                        }
+                    }
+                }
+                bool gateOpen = false;
+                if (!BgObjective || controlsVehicle) // Check gates
+                {
+                    // Keep Gates open if any wall is destroyed, check it
+                    if (GameObject* pGO = bg->GetSingleGameObjectFromStorage(BG_IC_GO_PORTCULLIS_KEEP_A1))
+                    {
+                        if (sServerFacade.isSpawned(pGO) && pGO->GetLootState() == GO_ACTIVATED)
+                        {
+                            gateOpen = true;
+                        }
+                        else
+                        {
+                            if (GameObject* gate = bg->GetSingleGameObjectFromStorage(BG_IC_GO_GATE_FRONT_A))
+                            {
+                                if (controlsVehicle)
+                                {
+                                    // come close to gate if siege engine
+                                    if (vehicleId == BG_IC_VEHICLE_SIEGE_ENGINE_H)
+                                    {
+                                        BgObjective = gate;
+                                    }
+                                    else
+                                    {
+                                        // take a siege position
+                                        pos.Set(506.782f + frand(-5, +5), -828.594f + frand(-5, +5), 24.313f, bot->GetMapId());
+                                        posMap["bg objective"] = pos;
+
+                                        // set siege position
+                                        ai::PositionEntry siegePos = context->GetValue<ai::PositionMap&>("position")->Get()["bg siege"];
+                                        siegePos.Set(gate->GetPositionX(), gate->GetPositionY(), gate->GetPositionZ(), bot->GetMapId());
+                                        posMap["bg siege"] = siegePos;
+                                        return true;
+                                    }
+                                }
+                                else
+                                {
+                                    pos.Set(506.782f + frand(-5, +5), -828.594f + frand(-5, +5), 24.313f, bot->GetMapId());
+                                    posMap["bg objective"] = pos;
+                                    return true;
+                                    //BgObjective = gate;
+                                }
+                            }
+                        }
+                    }
+                }
+                if (!BgObjective && gateOpen) // Capture Keep
+                {
+                    // reset siege position
+                    ai::PositionEntry siegePos = context->GetValue<ai::PositionMap&>("position")->Get()["bg siege"];
+                    siegePos.Reset();
+                    posMap["bg siege"] = siegePos;
+
+                    bool isCapping = false;
+                    if (GameObject* pGO = bg->GetSingleGameObjectFromStorage(isleBanners[BG_IC_OBJECTIVE_KEEP_ALLY].entryHorde))
+                    {
+                        if (sServerFacade.isSpawned(pGO) && pGO->GetLootState() == GO_READY)
+                            isCapping = true;
+                    }
+                    if (GameObject* pGO = bg->GetSingleGameObjectFromStorage(isleBanners[BG_IC_OBJECTIVE_KEEP_ALLY].entryHorde_Grey))
+                    {
+                        if (sServerFacade.isSpawned(pGO) && pGO->GetLootState() == GO_READY)
+                            isCapping = true;
+                    }
+                    if (!isCapping)
+                    {
+                        if (GameObject* pGO = bg->GetSingleGameObjectFromStorage(isleBanners[BG_IC_OBJECTIVE_KEEP_ALLY].entryAlly))
+                        {
+                            BgObjective = pGO;
+                            currentObjective = BG_IC_OBJECTIVE_KEEP_ALLY;
+                            foundTask = true;
+
+                            //ostringstream out;
+                            //out << "ALLY KEEP! BG objective set to " << BgObjective->GetName();
+                            //bot->Say(out.str(), LANG_UNIVERSAL);
+                        }
+                    }
+                }
+            }
+        }
+
+        if (bot->GetTeam() == ALLIANCE) // ALLIANCE
+        {
+            // If all bases are captured, go to enemy boss
+            bool allCaptured = true;
+            for (uint8 i = 0; i < BG_IC_MAX_OBJECTIVES; ++i)
+            {
+                // skip refinery and keep
+                if (i == BG_IC_OBJECTIVE_REFINERY || i == BG_IC_OBJECTIVE_KEEP_ALLY || i == BG_IC_OBJECTIVE_QUARY)
+                    continue;
+
+                uint32 objectId = isleBanners[i].entryAlly;
+                uint32 objectConflict = isleBanners[i].entryAlly_Grey;
+                bool capped = true;
+                bool capping = true;
+
+                if (GameObject* pGO = bg->GetSingleGameObjectFromStorage(objectId))
+                {
+                    if (!sServerFacade.isSpawned(pGO))
+                        capped = false;
+                }
+                if (GameObject* pGO = bg->GetSingleGameObjectFromStorage(objectConflict))
+                {
+                    if (!sServerFacade.isSpawned(pGO))
+                        capping = false;
+                }
+
+                if (!(capped || capping))
+                {
+                    allCaptured = false;
+                    break;
+                }
+            }
+            if (allCaptured) // target enemy boss
+            {
+                if (Creature* hordeboss = bg->GetSingleCreatureFromStorage(BG_IC_NPC_OVERLORD_AGMAR))
+                {
+                    if (!hordeboss->IsDespawned())
+                    {
+                        BgObjective = hordeboss;
+                        //ostringstream out;
+                        //out << "HORDE BOSS! BG objective set to " << BgObjective->GetName();
+                        //bot->Say(out.str(), LANG_UNIVERSAL);
+                    }
+                }
+            }
+
+            // If main bases are not captured, split tasks
+            if (!BgObjective)
+            {
+                bool foundTask = false;
+                // mount defensive cannons
+                if (role > 3)
+                {
+                    uint32 firstTower = getDefendersCount(IC_CANNON_POS_ALLIANCE1, 10.0f);
+                    uint32 secondTower = getDefendersCount(IC_CANNON_POS_ALLIANCE2, 10.0f);
+
+                    if (firstTower < 3)
+                    {
+                        pos.Set(IC_CANNON_POS_ALLIANCE1.x, IC_CANNON_POS_ALLIANCE1.y, IC_CANNON_POS_ALLIANCE1.z, bg->GetMapId());
+                        posMap["bg objective"] = pos;
+                        return true;
+                    }
+                    if (secondTower < 3)
+                    {
+                        pos.Set(IC_CANNON_POS_ALLIANCE2.x, IC_CANNON_POS_ALLIANCE2.y, IC_CANNON_POS_ALLIANCE2.z, bg->GetMapId());
+                        posMap["bg objective"] = pos;
+                        return true;
+                    }
+                }
+                if (role < 3) // Capture Side base or Docks
+                {
+                    // Capture Quarry/Refinery
+                    bool isCapping = false;
+                    if (GameObject* pGO = bg->GetSingleGameObjectFromStorage(isleBanners[BG_IC_OBJECTIVE_QUARY].entryAlly))
+                    {
+                        if (sServerFacade.isSpawned(pGO))
+                            isCapping = true;
+                    }
+                    if (GameObject* pGO = bg->GetSingleGameObjectFromStorage(isleBanners[BG_IC_OBJECTIVE_QUARY].entryAlly_Grey))
+                    {
+                        if (sServerFacade.isSpawned(pGO))
+                            isCapping = true;
+                    }
+                    if (!isCapping)
+                    {
+                        if (GameObject* pGO = bg->GetSingleGameObjectFromStorage(isleBanners[BG_IC_OBJECTIVE_QUARY].entryNeutral))
+                        {
+                            BgObjective = pGO;
+                            currentObjective = BG_IC_OBJECTIVE_QUARY;
+                            foundTask = true;
+
+                            //ostringstream out;
+                            //out << "QUARRY! BG objective set to " << BgObjective->GetName();
+                            //bot->Say(out.str(), LANG_UNIVERSAL);
+                        }
+                    }
+                }
+                // take position at cannon
+                /*if (!BgObjective)
+                {
+                    if (GameObject* pGO =  bg->interactwith(BG_IC_VEHICLE_KEEP_CANNON))
+                    {
+                        if (sServerFacade.isSpawned(pGO) && pGO->GetLootState() == GO_READY)
+                            isCapping = true;
+                    }
+                }*/
+                if (!BgObjective && role < 6 && urand(0, 1))
+                {
+                    // Capture Docks
+                    bool isCapping = false;
+                    if (GameObject* pGO = bg->GetSingleGameObjectFromStorage(isleBanners[BG_IC_OBJECTIVE_DOCKS].entryAlly))
+                    {
+                        if (sServerFacade.isSpawned(pGO))
+                            isCapping = true;
+                    }
+                    if (GameObject* pGO = bg->GetSingleGameObjectFromStorage(isleBanners[BG_IC_OBJECTIVE_DOCKS].entryAlly_Grey))
+                    {
+                        if (sServerFacade.isSpawned(pGO))
+                            isCapping = true;
+                    }
+                    if (!isCapping)
+                    {
+                        if (GameObject* pGO = bg->GetSingleGameObjectFromStorage(isleBanners[BG_IC_OBJECTIVE_DOCKS].entryNeutral))
+                        {
+                            BgObjective = pGO;
+                            currentObjective = BG_IC_OBJECTIVE_DOCKS;
+                            foundTask = true;
+
+                            //ostringstream out;
+                            //out << "DOCKS! BG objective set to " << BgObjective->GetName();
+                            //bot->Say(out.str(), LANG_UNIVERSAL);
+                        }
+                    }
+                }
+                // If docks/side capped, help capture workshop
+                if (!BgObjective && role < 3)
+                {
+                    bool isCapping = false;
+                    if (GameObject* pGO = bg->GetSingleGameObjectFromStorage(isleBanners[BG_IC_OBJECTIVE_WORKSHOP].entryAlly))
+                    {
+                        if (sServerFacade.isSpawned(pGO))
+                            isCapping = true;
+                    }
+                    if (GameObject* pGO = bg->GetSingleGameObjectFromStorage(isleBanners[BG_IC_OBJECTIVE_WORKSHOP].entryAlly_Grey))
+                    {
+                        if (sServerFacade.isSpawned(pGO))
+                            isCapping = true;
+                    }
+                    if (!isCapping)
+                    {
+                        if (GameObject* pGO = bg->GetSingleGameObjectFromStorage(isleBanners[BG_IC_OBJECTIVE_WORKSHOP].entryNeutral))
+                        {
+                            BgObjective = pGO;
+                            currentObjective = BG_IC_OBJECTIVE_WORKSHOP;
+                            foundTask = true;
+
+                            //ostringstream out;
+                            //out << "WORKSHOP! BG objective set to " << BgObjective->GetName();
+                            //bot->Say(out.str(), LANG_UNIVERSAL);
+                        }
+                    }
+                }
+                if (!BgObjective && role < 6) // Capture Hangar
+                {
+                    bool isCapping = false;
+                    if (GameObject* pGO = bg->GetSingleGameObjectFromStorage(isleBanners[BG_IC_OBJECTIVE_HANGAR].entryAlly))
+                    {
+                        if (sServerFacade.isSpawned(pGO))
+                            isCapping = true;
+                    }
+                    if (GameObject* pGO = bg->GetSingleGameObjectFromStorage(isleBanners[BG_IC_OBJECTIVE_HANGAR].entryAlly_Grey))
+                    {
+                        if (sServerFacade.isSpawned(pGO))
+                            isCapping = true;
+                    }
+                    if (!isCapping)
+                    {
+                        if (GameObject* pGO = bg->GetSingleGameObjectFromStorage(isleBanners[BG_IC_OBJECTIVE_HANGAR].entryNeutral))
+                        {
+                            BgObjective = pGO;
+                            currentObjective = BG_IC_OBJECTIVE_HANGAR;
+                            foundTask = true;
+
+                            //ostringstream out;
+                            //out << "HANGAR! BG objective set to " << BgObjective->GetName();
+                            //bot->Say(out.str(), LANG_UNIVERSAL);
+                        }
+                    }
+                }
+                bool gateOpen = false;
+                if (!BgObjective || controlsVehicle) // Check gates
+                {
+                    // Keep Gates open if any wall is destroyed, check it
+                    if (GameObject* pGO = bg->GetSingleGameObjectFromStorage(BG_IC_GO_PORTCULLIS_KEEP_H))
+                    {
+                        if (sServerFacade.isSpawned(pGO) && pGO->GetLootState() == GO_ACTIVATED)
+                        {
+                            gateOpen = true;
+                        }
+                        else
+                        {
+                            if (GameObject* gate = bg->GetSingleGameObjectFromStorage(BG_IC_GO_GATE_FRONT_H))
+                            {
+                                if (controlsVehicle)
+                                {
+                                    // come close to gate if siege engine
+                                    if (vehicleId == BG_IC_VEHICLE_SIEGE_ENGINE_A)
+                                    {
+                                        BgObjective = gate;
+                                    }
+                                    else
+                                    {
+                                        // take a siege position
+                                        pos.Set(1091.273f + frand(-5, +5), -763.619f + frand(-5, +5), 42.352f, bot->GetMapId());
+                                        posMap["bg objective"] = pos;
+
+                                        // set siege position
+                                        ai::PositionEntry siegePos = context->GetValue<ai::PositionMap&>("position")->Get()["bg siege"];
+                                        siegePos.Set(gate->GetPositionX(), gate->GetPositionY(), gate->GetPositionZ(), bot->GetMapId());
+                                        posMap["bg siege"] = siegePos;
+                                        return true;
+                                    }
+                                }
+                                else
+                                {
+                                    pos.Set(1091.273f + frand(-5, +5), -763.619f + frand(-5, +5), 42.352f, bot->GetMapId());
+                                    posMap["bg objective"] = pos;
+                                    return true;
+                                    // take a siege position
+                                    //BgObjective = gate;
+                                }
+                            }
+                        }
+                    }
+                }
+                if (!BgObjective && gateOpen) // Capture Keep
+                {
+                    // reset siege position
+                    ai::PositionEntry siegePos = context->GetValue<ai::PositionMap&>("position")->Get()["bg siege"];
+                    siegePos.Reset();
+                    posMap["bg siege"] = siegePos;
+
+                    bool isCapping = false;
+                    if (GameObject* pGO = bg->GetSingleGameObjectFromStorage(isleBanners[BG_IC_OBJECTIVE_KEEP_HORDE].entryAlly))
+                    {
+                        if (sServerFacade.isSpawned(pGO))
+                            isCapping = true;
+                    }
+                    if (GameObject* pGO = bg->GetSingleGameObjectFromStorage(isleBanners[BG_IC_OBJECTIVE_KEEP_HORDE].entryAlly_Grey))
+                    {
+                        if (sServerFacade.isSpawned(pGO))
+                            isCapping = true;
+                    }
+                    if (!isCapping)
+                    {
+                        if (GameObject* pGO = bg->GetSingleGameObjectFromStorage(isleBanners[BG_IC_OBJECTIVE_KEEP_HORDE].entryHorde))
+                        {
+                            BgObjective = pGO;
+                            currentObjective = BG_IC_OBJECTIVE_KEEP_HORDE;
+                            foundTask = true;
+
+                            //ostringstream out;
+                            //out << "HORDE KEEP! BG objective set to " << BgObjective->GetName();
+                            //bot->Say(out.str(), LANG_UNIVERSAL);
+                        }
+                    }
+                }
+            }
+        }
+
+        if (BgObjective)
+        {
+            pos.Set(BgObjective->GetPositionX(), BgObjective->GetPositionY(), BgObjective->GetPositionZ(), bot->GetMapId());
+            posMap["bg objective"] = pos;
+            return true;
+        }
+        break;
+    }
+#endif
     }
 
     return false;
@@ -3125,6 +4144,15 @@ bool BGTactics::moveToObjective()
         return selectObjective();
     else
     {
+#ifdef MANGOSBOT_TWO
+        // Use portals in Isle of Conquest Base
+        if (bgType == BATTLEGROUND_IC)
+        {
+            if (IsLockedInsideKeep())
+                return true;
+        }
+#endif
+
         if (sServerFacade.IsDistanceGreaterThan(sServerFacade.GetDistance2d(bot, pos.x, pos.y), 100.0f))
         {
             //ostringstream out; out << "It is too far away! " << pos.x << ", " << pos.y << ", Distance: " << sServerFacade.GetDistance2d(bot, pos.x, pos.y);
@@ -3177,6 +4205,11 @@ bool BGTactics::selectObjectiveWp(std::vector<BattleBotPath*> const& vPaths)
     uint32 closestPoint = 0;
     float closestDistanceToTarget = FLT_MAX;
     bool reverse = false;
+    float maxDistanceToPoint = 50.0f;
+#ifdef MANGOSBOT_TWO
+    if (bgType == BATTLEGROUND_IC)
+        maxDistanceToPoint = 80.0f;
+#endif
 
     for (const auto& pPath : vPaths)
     {
@@ -3197,7 +4230,7 @@ bool BGTactics::selectObjectiveWp(std::vector<BattleBotPath*> const& vPaths)
                 {
                     BattleBotWaypoint& waypoint = ((*pPath)[i]);
                     float const distanceFromMeToPoint = sqrt(bot->GetDistance(waypoint.x, waypoint.y, waypoint.z, DIST_CALC_NONE));
-                    if (distanceFromMeToPoint < 50.0f && closestDistanceFromMeToPoint > distanceFromMeToPoint)
+                    if (distanceFromMeToPoint < maxDistanceToPoint && closestDistanceFromMeToPoint > distanceFromMeToPoint)
                     {
                         reverse = false;
                         pClosestPath = pPath;
@@ -3230,7 +4263,7 @@ bool BGTactics::selectObjectiveWp(std::vector<BattleBotPath*> const& vPaths)
                 {
                     BattleBotWaypoint& waypoint = ((*pPath)[i]);
                     float const distanceFromMeToPoint = sqrt(bot->GetDistance(waypoint.x, waypoint.y, waypoint.z, DIST_CALC_NONE));
-                    if (distanceFromMeToPoint < 50.0f && closestDistanceFromMeToPoint > distanceFromMeToPoint)
+                    if (distanceFromMeToPoint < maxDistanceToPoint && closestDistanceFromMeToPoint > distanceFromMeToPoint)
                     {
                         reverse = true;
                         pClosestPath = pPath;
@@ -3333,6 +4366,20 @@ bool BGTactics::moveToObjectiveWp(BattleBotPath* const& currentPath, uint32 curr
 
 bool BGTactics::startNewPathBegin(std::vector<BattleBotPath*> const& vPaths)
 {
+    BattleGround* bg = bot->GetBattleGround();
+    if (!bg)
+        return false;
+
+    BattleGroundTypeId bgType = bg->GetTypeId();
+#ifdef MANGOSBOT_TWO
+    if (bgType == BATTLEGROUND_RB)
+        bgType = bg->GetTypeId(true);
+#endif
+#ifdef MANGOSBOT_TWO
+    if (bgType == BATTLEGROUND_IC)
+        return false;
+#endif
+
     struct AvailablePath
     {
         AvailablePath(BattleBotPath* pPath_, bool reverse_) : pPath(pPath_), reverse(reverse_) {}
@@ -3377,6 +4424,20 @@ bool BGTactics::startNewPathBegin(std::vector<BattleBotPath*> const& vPaths)
 
 bool BGTactics::startNewPathFree(std::vector<BattleBotPath*> const& vPaths)
 {
+    BattleGround* bg = bot->GetBattleGround();
+    if (!bg)
+        return false;
+
+    BattleGroundTypeId bgType = bg->GetTypeId();
+#ifdef MANGOSBOT_TWO
+    if (bgType == BATTLEGROUND_RB)
+        bgType = bg->GetTypeId(true);
+#endif
+#ifdef MANGOSBOT_TWO
+    if (bgType == BATTLEGROUND_IC)
+        return false;
+#endif
+
     BattleBotPath* pClosestPath = nullptr;
     uint32 closestPoint = 0;
     float closestDistance = FLT_MAX;
@@ -3432,6 +4493,9 @@ bool BGTactics::atFlag(std::vector<BattleBotPath*> const& vPaths, std::vector<ui
     {
     case BATTLEGROUND_AV:
     case BATTLEGROUND_AB:
+#ifdef MANGOSBOT_TWO
+    case BATTLEGROUND_IC:
+#endif
     {
         closeObjects = *context->GetValue<list<ObjectGuid> >("closest game objects");
         closePlayers = *context->GetValue<list<ObjectGuid> >("closest friendly players");
@@ -3505,6 +4569,9 @@ bool BGTactics::atFlag(std::vector<BattleBotPath*> const& vPaths, std::vector<ui
         {
         case BATTLEGROUND_AV:
         case BATTLEGROUND_AB:
+#ifdef MANGOSBOT_TWO
+        case BATTLEGROUND_IC:
+#endif
         {
             if (bot->IsMounted())
                 bot->RemoveSpellsCausingAura(SPELL_AURA_MOUNTED);
@@ -3748,6 +4815,139 @@ uint32 BGTactics::getDefendersCount(Position point, float range, bool combat)
     }
 
     return defCount;
+}
+
+// check Isle of Conquest Keep position
+bool BGTactics::IsLockedInsideKeep()
+{
+    BattleGround* bg = bot->GetBattleGround();
+    if (!bg)
+        return false;
+
+    BattleGroundTypeId bgType = bg->GetTypeId();
+#ifdef MANGOSBOT_TWO
+    if (bgType == BATTLEGROUND_RB)
+        bgType = bg->GetTypeId(true);
+
+    if (bgType != BATTLEGROUND_IC)
+        return false;
+
+    bool isInside = false;
+    if (bot->GetTeam() == ALLIANCE && bot->GetPositionX() < 410.0f && bot->GetPositionY() > -900.0f && bot->GetPositionY() < -765.0f)
+        isInside = true;
+    if (bot->GetTeam() == HORDE && bot->GetPositionX() > 1153.0f && bot->GetPositionY() > -849.0f && bot->GetPositionY() < -679.0f)
+        isInside = true;
+
+    if (!isInside)
+        return false;
+
+    list<ObjectGuid> closeObjects;
+    closeObjects = *context->GetValue<list<ObjectGuid> >("nearest game objects no los");
+    if (closeObjects.empty())
+        return moveToStart(true);
+
+    GameObject* closestPortal = nullptr;
+    float closestDistance = 100.0f;
+    bool gateLock = false;
+
+    // check inner gates status
+    // ALLIANCE
+    if (bot->GetTeam() == ALLIANCE)
+    {
+        if (GameObject* go = bg->GetSingleGameObjectFromStorage(BG_IC_GO_PORTCULLIS_GATE_A))
+        {
+            if (sServerFacade.isSpawned(go))
+            {
+                gateLock = go->GetLootState() != GO_ACTIVATED;
+            }
+            else
+            {
+                gateLock = false;
+            }
+        }
+    }
+    // HORDE
+    if (bot->GetTeam() == HORDE)
+    {
+        if (GameObject* go = bg->GetSingleGameObjectFromStorage(BG_IC_GO_PORTCULLIS_GATE_H))
+        {
+            if (sServerFacade.isSpawned(go))
+            {
+                gateLock = go->GetLootState() != GO_ACTIVATED;
+            }
+            else
+            {
+                gateLock = false;
+            }
+        }
+    }
+
+    for (list<ObjectGuid>::iterator i = closeObjects.begin(); i != closeObjects.end(); ++i)
+    {
+        GameObject* go = ai->GetGameObject(*i);
+        if (!go)
+            continue;
+
+        // ALLIANCE
+        // get closest portal
+        if (bot->GetTeam() == ALLIANCE && go->GetEntry() == BG_IC_GO_TELEPORTER_INSIDE_A)
+        {
+            float tempDist = sServerFacade.GetDistance2d(bot, go->GetPositionX(), go->GetPositionY());
+
+            if (sServerFacade.IsDistanceLessThan(tempDist, closestDistance))
+            {
+                closestDistance = tempDist;
+                closestPortal = go;
+            }
+        }
+
+        // HORDE
+        // get closest portal
+        if (bot->GetTeam() == HORDE && go->GetEntry() == BG_IC_GO_TELEPORTER_INSIDE_H)
+        {
+            float tempDist = sServerFacade.GetDistance2d(bot, go->GetPositionX(), go->GetPositionY());
+
+            if (sServerFacade.IsDistanceLessThan(tempDist, closestDistance))
+            {
+                closestDistance = tempDist;
+                closestPortal = go;
+            }
+        }
+    }
+
+    // portal not found, move closer
+    if (gateLock && !closestPortal)
+        return moveToStart(true);
+
+    // portal not found, move closer
+    if (!gateLock && !closestPortal)
+        return moveToStart(true);
+
+    // nothing found, allow move through
+    if (!gateLock || !closestPortal)
+        return false;
+
+    // portal found
+    if (closestPortal)
+    {
+        // if close
+        if (bot->IsWithinDistInMap(closestPortal, INTERACTION_DISTANCE))
+        {
+            WorldPacket data(CMSG_GAMEOBJ_USE);
+            data << closestPortal->GetObjectGuid();
+            bot->GetSession()->HandleGameObjectUseOpcode(data);
+            return true;
+        }
+        else
+        {
+            return MoveTo(bot->GetMapId(), closestPortal->GetPositionX(), closestPortal->GetPositionY(), closestPortal->GetPositionZ());
+        }
+    }
+
+    return moveToStart(true);
+    
+#endif
+    return false;
 }
 
 bool ArenaTactics::Execute(Event event)
