@@ -91,6 +91,7 @@ namespace ai
             creators["alterac"] = &StrategyContext::alterac;
             creators["arathi"] = &StrategyContext::arathi;
             creators["eye"] = &StrategyContext::eye;
+            creators["isle"] = &StrategyContext::isle;
             creators["arena"] = &StrategyContext::arena;
             creators["mount"] = &StrategyContext::mount;
             creators["attack tagged"] = &StrategyContext::attack_tagged;
@@ -114,6 +115,7 @@ namespace ai
         static Strategy* alterac(PlayerbotAI* ai) { return new AlteracStrategy(ai); }
         static Strategy* arathi(PlayerbotAI* ai) { return new ArathiStrategy(ai); }
         static Strategy* eye(PlayerbotAI* ai) { return new EyeStrategy(ai); }
+        static Strategy* isle(PlayerbotAI* ai) { return new IsleStrategy(ai); }
         static Strategy* behind(PlayerbotAI* ai) { return new SetBehindCombatStrategy(ai); }
         static Strategy* ranged(PlayerbotAI* ai) { return new RangedCombatStrategy(ai); }
         static Strategy* close(PlayerbotAI* ai) { return new MeleeCombatStrategy(ai); }

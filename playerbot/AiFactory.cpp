@@ -344,6 +344,9 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
 #ifdef MANGOSBOT_TWO
         if (bgType == BATTLEGROUND_RB)
             bgType = player->GetBattleGround()->GetTypeId(true);
+
+        if (bgType == BATTLEGROUND_IC)
+            engine->addStrategy("isle");
 #endif
         if (bgType == BATTLEGROUND_WS)
             engine->addStrategy("warsong");
@@ -567,25 +570,29 @@ void AiFactory::AddDefaultNonCombatStrategies(Player* player, PlayerbotAI* const
         else
         {
 #ifndef MANGOSBOT_ZERO
-            if (bgType <= BATTLEGROUND_EY) // do not add for not supported bg
-                nonCombatEngine->addStrategies("battleground", NULL);
+            if (bgType <= BATTLEGROUND_EY || bgType == BATTLEGROUND_IC) // do not add for not supported bg
+                nonCombatEngine->addStrategy("battleground");
 #else
             if (bgType <= BATTLEGROUND_AB) // do not add for not supported bg
-                nonCombatEngine->addStrategies("battleground", NULL);
+                nonCombatEngine->addStrategy("battleground");
 #endif
 
             if (bgType == BATTLEGROUND_WS)
-                nonCombatEngine->addStrategies("warsong", NULL);
+                nonCombatEngine->addStrategy("warsong");
 
             if (bgType == BATTLEGROUND_AV)
-                nonCombatEngine->addStrategies("alterac", NULL);
+                nonCombatEngine->addStrategy("alterac");
 
             if (bgType == BATTLEGROUND_AB)
-                nonCombatEngine->addStrategies("arathi", NULL);
+                nonCombatEngine->addStrategy("arathi");
 
 #ifndef MANGOSBOT_ZERO
             if (bgType == BATTLEGROUND_EY)
-                nonCombatEngine->addStrategies("eye", NULL);
+                nonCombatEngine->addStrategy("eye");
+#endif
+#ifdef MANGOSBOT_TWO
+            if (bgType == BATTLEGROUND_IC)
+                nonCombatEngine->addStrategy("isle");
 #endif
         }
     }
