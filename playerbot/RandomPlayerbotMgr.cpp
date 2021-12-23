@@ -1092,6 +1092,9 @@ bool RandomPlayerbotMgr::ProcessBot(uint32 bot)
 
     if (!player)
     {
+        if (!urand(0, 4))
+            return true;
+
         AddPlayerBot(bot, 0);
         SetEventValue(bot, "login", 1, sPlayerbotAIConfig.randomBotUpdateInterval);
         uint32 randomTime = urand(sPlayerbotAIConfig.minRandomBotReviveTime, sPlayerbotAIConfig.maxRandomBotReviveTime);
@@ -1121,20 +1124,20 @@ bool RandomPlayerbotMgr::ProcessBot(uint32 bot)
     uint32 update = GetEventValue(bot, "update");
     if (!update && !sPlayerbotAIConfig.disableRandomLevels)
     {
-        bool randomise = true;
+        bool update = true;
         if (ai)
         {
             //ai->GetAiObjectContext()->GetValue<bool>("random bot update")->Set(true);
             if (!sRandomPlayerbotMgr.IsRandomBot(player->GetGUIDLow()))
-                randomise = false;
+                update = false;
 
             if (player->GetGroup() && ai->GetGroupMaster() && (!ai->GetGroupMaster()->GetPlayerbotAI() || ai->GetGroupMaster()->GetPlayerbotAI()->IsRealPlayer()))
-                randomise = false;
+                update = false;
 
             if (ai->HasPlayerNearby(sPlayerbotAIConfig.grindDistance))
-                randomise = false;
+                update = false;
         }
-        if (randomise)
+        if (update)
             ProcessBot(player);
 
         uint32 randomTime = urand(sPlayerbotAIConfig.minRandomBotReviveTime, sPlayerbotAIConfig.maxRandomBotReviveTime * 5);
@@ -1157,6 +1160,9 @@ bool RandomPlayerbotMgr::ProcessBot(uint32 bot)
 
 bool RandomPlayerbotMgr::ProcessBot(Player* player)
 {
+    if (!urand(0, 4))
+        return true;
+
     uint32 bot = player->GetGUIDLow();
 
     if (player->InBattleGround())
@@ -1206,31 +1212,35 @@ bool RandomPlayerbotMgr::ProcessBot(Player* player)
         }
 
         // disable until needed
-        // ChangeStrategy(player);
+        if (!sPlayerbotAIConfig.autoDoQuests)
+            ChangeStrategy(player);
 
         uint32 randomTime = urand(sPlayerbotAIConfig.minRandomBotRandomizeTime, sPlayerbotAIConfig.maxRandomBotRandomizeTime);
         ScheduleRandomize(bot, randomTime);
         return true;
     }
 
-    /*
-	uint32 teleport = GetEventValue(bot, "teleport");
-	if (!teleport)
-	{
-		sLog.outBasic("Bot #%d <%s>: sent to grind", bot, player->GetName());
-		RandomTeleportForLevel(player);
-		Refresh(player);
-		SetEventValue(bot, "teleport", 1, sPlayerbotAIConfig.maxRandomBotInWorldTime);
-		return true;
-	}
+    // enable random teleport logic if no auto traveling enabled
+    if (!sPlayerbotAIConfig.autoDoQuests)
+    {
+        uint32 teleport = GetEventValue(bot, "teleport");
+        if (!teleport)
+        {
+            sLog.outBasic("Bot #%d <%s>: sent to grind", bot, player->GetName());
+            RandomTeleportForLevel(player);
+            Refresh(player);
+            SetEventValue(bot, "teleport", 1, sPlayerbotAIConfig.maxRandomBotInWorldTime);
+            return true;
+        }
 
-	uint32 changeStrategy = GetEventValue(bot, "change_strategy");
-	if (!changeStrategy)
-	{
-		sLog.outDetail("Changing strategy for bot #%d <%s>", bot, player->GetName());
-		ChangeStrategy(player);
-		return true;
-	}*/
+        uint32 changeStrategy = GetEventValue(bot, "change_strategy");
+        if (!changeStrategy)
+        {
+            sLog.outDetail("Changing strategy for bot #%d <%s>", bot, player->GetName());
+            ChangeStrategy(player);
+            return true;
+        }
+    }
 
     return false;
 }
@@ -1313,7 +1323,7 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot, vector<WorldLocation> &locs
 
             WorldLocation loc = tlocs[i];
 
-#ifndef MANGOSBOT_ZERO
+#ifdef MANGOSBOT_ONE
             // Teleport to Dark Portal area if event is in progress
             if (sWorldState.GetExpansion() == EXPANSION_NONE && bot->getLevel() > 54 && urand(0, 100) > 20)
             {
@@ -1558,10 +1568,10 @@ void RandomPlayerbotMgr::Randomize(Player* bot)
     if (bot->InBattleGround())
         return;
 
-    if (bot->getLevel() == 1)
+    if (bot->getLevel() < 3)
         RandomizeFirst(bot);
 #ifdef MANGOSBOT_TWO
-    else if (bot->getLevel() == 55 && bot->getClass() == CLASS_DEATH_KNIGHT)
+    else if (bot->getLevel() < 57 && bot->getClass() == CLASS_DEATH_KNIGHT)
         RandomizeFirst(bot);
 #endif
     else
