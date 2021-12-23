@@ -269,6 +269,11 @@ void PlayerbotAI::UpdateAI(uint32 elapsed, bool minimal)
         min = false;
 
     UpdateAIInternal(elapsed, min);
+
+    // test fix lags because of BG
+    if (!bot->IsInCombat())
+        min = true;
+
     YieldThread(min);
 }
 
