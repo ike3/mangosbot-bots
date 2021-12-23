@@ -2370,7 +2370,7 @@ bool PlayerbotAI::AllowActive(ActivityType activityType)
         if (!GetMaster()->GetPlayerbotAI() || GetMaster()->GetPlayerbotAI()->IsRealPlayer())
             return true;
 
-    uint32 AvgDiff = sWorld.GetAverageDiff();
+    uint32 maxDiff = sWorld.GetMaxDiff();
 
     Group* group = bot->GetGroup();
     if (group)
@@ -2388,7 +2388,7 @@ bool PlayerbotAI::AllowActive(ActivityType activityType)
             if(!member->GetPlayerbotAI() || (member->GetPlayerbotAI() && member->GetPlayerbotAI()->HasRealPlayerMaster()))
                 return true;
 
-            if (group->IsLeader(member->GetObjectGuid()) && AvgDiff < 200)
+            if (group->IsLeader(member->GetObjectGuid()))
                 return member->GetPlayerbotAI()->AllowActivity(PARTY_ACTIVITY);
         }
     } 
@@ -2451,22 +2451,22 @@ bool PlayerbotAI::AllowActive(ActivityType activityType)
     if (sPlayerbotAIConfig.botActiveAlone >= 100)
         return true;
 
-    if (AvgDiff > 1000)
+    if (maxDiff > 1000)
         return false;
 
     uint32 mod = 100;
 
     // if has real players - slow down continents without player
-    if (AvgDiff > 100)
+    if (maxDiff > 100)
         mod = 50;
 
-    if (AvgDiff > 150)
+    if (maxDiff > 150)
         mod = 25;
 
-    if (AvgDiff > 200)
+    if (maxDiff > 200)
         mod = 10;
 
-    if (AvgDiff > 250)
+    if (maxDiff > 250)
     {
         if (bot->GetMap() && !bot->GetMap()->HasRealPlayers() && bot->GetMap()->IsContinent())
             return false;
