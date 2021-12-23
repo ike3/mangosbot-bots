@@ -28,6 +28,7 @@
 #include "TravelMgr.h"
 #include "ChatHelper.h"
 #include "strategy/values/BudgetValues.h"
+#include "Social/SocialMgr.h"
 
 using namespace ai;
 using namespace std;
@@ -2422,6 +2423,16 @@ bool PlayerbotAI::AllowActive(ActivityType activityType)
 
     if (HasPlayerNearby(300.0f)) //Player is near. Always active.
         return true;
+
+    // friends always active
+    for (auto& player : sRandomPlayerbotMgr.GetPlayers())
+    {
+        if (!player || !player->IsInWorld())
+            continue;
+
+        if (player->GetSocial()->HasFriend(bot->GetObjectGuid()))
+            return true;
+    }
 
     if (activityType == OUT_OF_PARTY_ACTIVITY || activityType == GRIND_ACTIVITY) //Many bots nearby. Do not do heavy area checks.
         if (HasManyPlayersNearby())
