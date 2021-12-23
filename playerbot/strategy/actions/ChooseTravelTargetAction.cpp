@@ -740,10 +740,12 @@ TravelDestination* ChooseTravelTargetAction::FindDestination(Player* bot, string
 
 bool ChooseTravelTargetAction::isUseful()
 {
+    if (!ai->AllowActivity(TRAVEL_ACTIVITY))
+        return false;
+
     return !context->GetValue<TravelTarget *>("travel target")->Get()->isActive() 
         && !context->GetValue<LootObject>("loot target")->Get().IsLootPossible(bot)
-        && !bot->IsInCombat()
-        && ai->AllowActivity(TRAVEL_ACTIVITY);
+        && !bot->IsInCombat();
 }
 
 
