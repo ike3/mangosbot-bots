@@ -791,7 +791,7 @@ void PlayerbotAI::DoNextAction(bool min)
 
     Group *group = bot->GetGroup();
     // test BG master set
-    if ((!master || (master->GetPlayerbotAI() && !master->GetPlayerbotAI()->IsRealPlayer())) && group && !bot->InBattleGround())
+    if ((!master || (master->GetPlayerbotAI() && !master->GetPlayerbotAI()->IsRealPlayer())) && group)
     {
         PlayerbotAI* ai = bot->GetPlayerbotAI();
 
@@ -820,12 +820,50 @@ void PlayerbotAI::DoNextAction(bool min)
                 if (!member->IsInGroup(bot, true))
                     continue;
 
-                if (member->GetPlayerbotAI())
+                if (member->GetPlayerbotAI() && !bot->InBattleGround())
                 {
                     if (member->GetPlayerbotAI()->IsRealPlayer())
                         playerMaster = member;
                     continue;
                 }
+
+                // same BG
+                if (bot->InBattleGround() && !member->GetPlayerbotAI() && member->InBattleGround() && bot->GetMapId() == member->GetMapId())
+                {
+                    if (!group->SameSubGroup(bot, member))
+                        continue;
+
+                    if (member->getLevel() < bot->getLevel())
+                        continue;
+
+                    // follow real player only if he has more honor/arena points
+                    bool isArena = false;
+#ifndef MANGOSBOT_ZERO
+                    if (bot->GetBattleGround()->IsArena())
+                        isArena = true;
+#endif
+                    if (isArena)
+                    {
+                        if (group->IsLeader(member->GetObjectGuid()))
+                        {
+                            playerMaster = member;
+                            break;
+                        }
+                        else
+                            continue;
+                    }
+                    else
+                    {
+                        uint32 honorpts = member->GetHonorPoints();
+                        if (bot->GetHonorPoints() && honorpts < bot->GetHonorPoints())
+                            continue;
+                    }
+
+                    playerMaster = member;
+                    continue;
+                }
+                if (bot->InBattleGround() && member->GetPlayerbotAI())
+                    continue;
 
                 newMaster = member;
                 break;
