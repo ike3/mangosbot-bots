@@ -1201,14 +1201,14 @@ void PlayerbotFactory::InitBags()
 
 void PlayerbotFactory::EnchantItem(Item* item)
 {
+    if (bot->getLevel() < sPlayerbotAIConfig.minEnchantingBotLevel)
+        return;
+
 #ifdef CMANGOS
     if (item->GetOwner() == nullptr)
         return;
 #endif
     if (urand(0, 100) < 100 * sPlayerbotAIConfig.randomGearLoweringChance)
-        return;
-
-    if (bot->getLevel() < urand(40, 50))
         return;
 
     ItemPrototype const* proto = item->GetProto();
