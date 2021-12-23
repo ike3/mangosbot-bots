@@ -50,6 +50,9 @@ bool CastSpellAction::Execute(Event event)
 
 bool CastSpellAction::isPossible()
 {
+    if (ai->IsInVehicle() && !ai->IsInVehicle(false, false, true))
+        return false;
+
     if (spell == "mount" && !bot->IsMounted() && !bot->IsInCombat())
         return true;
     if (spell == "mount" && bot->IsInCombat())
@@ -65,6 +68,9 @@ bool CastSpellAction::isPossible()
 
 bool CastSpellAction::isUseful()
 {
+    if (ai->IsInVehicle() && !ai->IsInVehicle(false, false, true))
+        return false;
+
     if (spell == "mount" && !bot->IsMounted() && !bot->IsInCombat())
         return true;
     if (spell == "mount" && bot->IsInCombat())
@@ -119,4 +125,21 @@ Value<Unit*>* CurePartyMemberAction::GetTargetValue()
 Value<Unit*>* BuffOnPartyAction::GetTargetValue()
 {
     return context->GetValue<Unit*>("party member without aura", spell);
+}
+
+bool CastVehicleSpellAction::isPossible()
+{
+    uint32 spellId = AI_VALUE2(uint32, "vehicle spell id", spell);
+    return ai->CanCastVehicleSpell(spellId, GetTarget());
+}
+
+bool CastVehicleSpellAction::isUseful()
+{
+    return ai->IsInVehicle(false, true);
+}
+
+bool CastVehicleSpellAction::Execute(Event event)
+{
+    uint32 spellId = AI_VALUE2(uint32, "vehicle spell id", spell);
+    return ai->CastVehicleSpell(spellId, GetTarget());
 }

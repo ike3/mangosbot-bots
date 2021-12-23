@@ -1,0 +1,92 @@
+#include "botpch.h"
+#include "../../playerbot.h"
+#include "VehicleActions.h"
+#include "../ItemVisitors.h"
+#ifdef MANGOSBOT_TWO
+#include "Entities/Vehicle.h"
+#endif
+
+using namespace ai;
+
+bool EnterVehicleAction::Execute(Event event)
+{
+#ifdef MANGOSBOT_TWO
+    // do not switch vehicles yet
+    TransportInfo* transportInfo = bot->GetTransportInfo();
+    if (transportInfo && transportInfo->IsOnVehicle())
+        return false;
+
+    list<ObjectGuid> npcs = AI_VALUE(list<ObjectGuid>, "nearest vehicles");
+    for (list<ObjectGuid>::iterator i = npcs.begin(); i != npcs.end(); i++)
+    {
+        Unit* vehicle = ai->GetUnit(*i);
+        if (!vehicle)
+            return false;
+
+        if (!vehicle->IsFriend(bot))
+            return false;
+
+        if (!vehicle->GetVehicleInfo()->CanBoard(bot))
+            return false;
+
+        if (fabs(bot->GetPositionZ() - vehicle->GetPositionZ()) < 20.0f)
+
+        //if (sServerFacade.GetDistance2d(bot, vehicle) > 100.0f)
+        //    continue;
+
+        if (sServerFacade.GetDistance2d(bot, vehicle) > 10.0f)
+            return MoveTo(vehicle, INTERACTION_DISTANCE);
+
+        uint8 seat = 0;
+        vehicle->GetVehicleInfo()->Board(bot, seat);
+
+        TransportInfo* transportCheck = bot->GetTransportInfo();
+        if (!transportCheck || !transportCheck->IsOnVehicle())
+            return false;
+        else
+        {
+            // dismount because bots can enter vehicle on mount
+            WorldPacket emptyPacket;
+            bot->GetSession()->HandleCancelMountAuraOpcode(emptyPacket);
+            return true;
+        }
+
+        // check if bot is on vehicle
+        if (Unit* passenger = vehicle->GetVehicleInfo()->GetPassenger(seat))
+        {
+            if (passenger->GetObjectGuid() == bot->GetObjectGuid())
+                return true;
+        }
+    }
+#endif
+
+	return false;
+}
+
+bool LeaveVehicleAction::Execute(Event event)
+{
+#ifdef MANGOSBOT_TWO
+    TransportInfo* transportInfo = bot->GetTransportInfo();
+    if (!transportInfo || !transportInfo->IsOnVehicle())
+        return false;
+
+    Unit* vehicle = (Unit*)transportInfo->GetTransport();
+    VehicleInfo* veh = vehicle->GetVehicleInfo();
+    VehicleSeatEntry const* seat = veh->GetSeatEntry(transportInfo->GetTransportSeat());
+    if (!seat || !seat->HasFlag(SEAT_FLAG_CAN_EXIT))
+        return false;
+
+    WorldPacket p;
+    bot->GetSession()->HandleRequestVehicleExit(p);
+
+    veh->UnBoard(bot, false);
+
+    bot->GetCamera().ResetView();
+
+    bot->SetCharm(nullptr);
+
+    return true;
+#endif
+
+    return false;
+}

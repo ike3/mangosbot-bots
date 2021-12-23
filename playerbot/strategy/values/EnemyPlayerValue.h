@@ -17,7 +17,7 @@ namespace ai
     class NearestEnemyPlayersValue : public PossibleTargetsValue
     {
     public:
-        NearestEnemyPlayersValue(PlayerbotAI* ai, float range = sPlayerbotAIConfig.sightDistance) :
+        NearestEnemyPlayersValue(PlayerbotAI* ai, float range = 120.0f) :
             PossibleTargetsValue(ai, "nearest enemy players", range) {}
 
     public:
@@ -35,6 +35,25 @@ namespace ai
         {
             if (!bot->GetBattleGround())
                 return 60.0f;
+
+#ifdef MANGOSBOT_TWO
+            if (bot->InBattleGround())
+            {
+                BattleGround* bg = bot->GetBattleGround();
+                if (!bg)
+                    return 40.0f;
+
+                BattleGroundTypeId bgType = bg->GetTypeId();
+                if (bgType == BATTLEGROUND_RB)
+                    bgType = bg->GetTypeId(true);
+
+                if (bgType == BATTLEGROUND_IC)
+                {
+                    if (ai->IsInVehicle(false, true))
+                        return 120.0f;
+                }
+            }
+#endif
 
             return 40.0f;
         }

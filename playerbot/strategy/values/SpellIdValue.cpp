@@ -3,11 +3,19 @@
 #include "SpellIdValue.h"
 #include "../../PlayerbotAIConfig.h"
 #include "../../ServerFacade.h"
+#ifdef MANGOSBOT_TWO
+#include "Entities/Vehicle.h"
+#endif
 
 using namespace ai;
 
 SpellIdValue::SpellIdValue(PlayerbotAI* ai) :
         CalculatedValue<uint32>(ai, "spell id")
+{
+}
+
+VehicleSpellIdValue::VehicleSpellIdValue(PlayerbotAI* ai) :
+    CalculatedValue<uint32>(ai, "vehicle spell id")
 {
 }
 
@@ -106,4 +114,68 @@ uint32 SpellIdValue::Calculate()
     }
 
     return saveMana > 1 ? lowest : highest;
+}
+
+uint32 VehicleSpellIdValue::Calculate()
+{
+#ifdef MANGOSBOT_TWO
+    TransportInfo* transportInfo = bot->GetTransportInfo();
+    if (!transportInfo || !transportInfo->IsOnVehicle())
+        return 0;
+
+    Unit* vehicle = (Unit*)transportInfo->GetTransport();
+    if (!vehicle || !vehicle->IsAlive())
+        return 0;
+
+    // do not allow if no spells
+    VehicleSeatEntry const* seat = vehicle->GetVehicleInfo()->GetSeatEntry(transportInfo->GetTransportSeat());
+    if (!seat || !seat->HasFlag(SEAT_FLAG_CAN_CAST))
+        return 0;
+
+    string namepart = qualifier;
+
+    PlayerbotChatHandler handler(bot);
+    uint32 extractedSpellId = handler.extractSpellId(namepart);
+    if (extractedSpellId)
+    {
+        const SpellEntry* pSpellInfo = sServerFacade.LookupSpellInfo(extractedSpellId);
+        if (pSpellInfo) namepart = pSpellInfo->SpellName[0];
+    }
+
+    wstring wnamepart;
+
+    if (!Utf8toWStr(namepart, wnamepart))
+        return 0;
+
+    wstrToLower(wnamepart);
+    char firstSymbol = tolower(namepart[0]);
+    int spellLength = wnamepart.length();
+
+    int loc = bot->GetSession()->GetSessionDbcLocale();
+
+    Creature* creature = static_cast<Creature*>(vehicle);
+
+    for (uint32 x = 0; x < CREATURE_MAX_SPELLS; ++x)
+    {
+        if (creature->m_spells[x] == 2)
+            continue;
+        if (IsPassiveSpell(creature->m_spells[x]))
+            continue;
+        else
+        {
+            uint32 spellId = creature->m_spells[x];
+            const SpellEntry* pSpellInfo = sServerFacade.LookupSpellInfo(spellId);
+            if (!pSpellInfo)
+                continue;
+
+            char* spellName = pSpellInfo->SpellName[loc];
+            if (tolower(spellName[0]) != firstSymbol || strlen(spellName) != spellLength || !Utf8FitTo(spellName, wnamepart))
+                continue;
+
+            return spellId;
+        }
+    }
+#endif
+
+    return 0;
 }

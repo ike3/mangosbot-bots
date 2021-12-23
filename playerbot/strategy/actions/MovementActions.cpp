@@ -14,6 +14,9 @@
 #include "../../TravelMgr.h"
 #include "../../TravelNode.h"
 #include "Entities/Transports.h"
+#ifdef MANGOSBOT_TWO
+#include "Entities/Vehicle.h"
+#endif
 
 using namespace ai;
 
@@ -24,7 +27,6 @@ void MovementAction::CreateWp(Player* wpOwner, float x, float y, float z, float 
 
     //if(!important)
     //    delay *= 0.25;
-
 
     Creature* wpCreature = wpOwner->SummonCreature(entry, x, y, z - 1, o, TEMPSPAWN_TIMED_DESPAWN, delay);
     ai->AddAura(wpCreature, 246);
@@ -130,6 +132,25 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
 {
     UpdateMovementState();
 
+    if (!IsMovingAllowed())
+        return false;
+
+    bool isVehicle = false;
+    Unit* mover = bot;
+#ifdef MANGOSBOT_TWO
+    TransportInfo* transportInfo = bot->GetTransportInfo();
+    if (transportInfo && transportInfo->IsOnVehicle())
+    {
+        Unit* vehicle = (Unit*)transportInfo->GetTransport();
+        VehicleSeatEntry const* seat = vehicle->GetVehicleInfo()->GetSeatEntry(transportInfo->GetTransportSeat());
+        if (!seat || !seat->HasFlag(SEAT_FLAG_CAN_CONTROL))
+            return false;
+
+        isVehicle = true;
+        mover = vehicle;
+    }
+#endif
+
     bool detailedMove = ai->AllowActivity(DETAILED_MOVE_ACTIVITY);
 
     if (!detailedMove)
@@ -152,16 +173,16 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
     if (generatePath)
     {
         z += CONTACT_DISTANCE;
-        bot->UpdateAllowedPositionZ(x, y, z);
+        mover->UpdateAllowedPositionZ(x, y, z);
     }
 
-    if (!IsMovingAllowed() && sServerFacade.UnitIsDead(bot))
+    if (!isVehicle && !IsMovingAllowed() && sServerFacade.UnitIsDead(bot))
     {
         bot->StopMoving();
         return false;
     }
 
-    if (bot->IsMoving() && !IsMovingAllowed())
+    if (!isVehicle && bot->IsMoving() && !IsMovingAllowed())
     {
         if (!bot->IsTaxiFlying())
             bot->StopMoving();
@@ -183,7 +204,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
     {
         if (lastMove.lastMoveShort.distance(endPosition) < maxDistChange)
             AI_VALUE(LastMovement&, "last movement").clear();
-        bot->StopMoving();
+        mover->StopMoving();
         return false;
     }
 
@@ -247,7 +268,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
     if (movePath.empty() && movePosition.distance(startPosition) > maxDist)
     {
         //Use standard pathfinder to find a route. 
-        PathFinder path(bot);
+        PathFinder path(mover);
         path.calculate(movePosition.getX(), movePosition.getY(), movePosition.getZ(), false);
         PathType type = path.getPathType();
         PointsArray& points = path.getPath();
@@ -402,7 +423,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
     if (movePosition.distance(startPosition) > maxDist)
     {
         //Use standard pathfinder to find a route. 
-        PathFinder path(bot);
+        PathFinder path(mover);
         path.calculate(movePosition.getX(), movePosition.getY(), movePosition.getZ(), false);
         PathType type = path.getPathType();
         PointsArray& points = path.getPath();
@@ -463,17 +484,20 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
         else
             WaitForReach(startPosition.distance(movePosition));
 
-    bot->HandleEmoteState(0);
-    if (bot->IsSitState())
-        bot->SetStandState(UNIT_STAND_STATE_STAND);
-
-    if (bot->IsNonMeleeSpellCasted(true))
+    if (!isVehicle)
     {
-        bot->CastStop();
-        ai->InterruptSpell();
+        bot->HandleEmoteState(0);
+        if (bot->IsSitState())
+            bot->SetStandState(UNIT_STAND_STATE_STAND);
+
+        if (bot->IsNonMeleeSpellCasted(true))
+        {
+            bot->CastStop();
+            ai->InterruptSpell();
+        }
     }
 
-    MotionMaster& mm = *bot->GetMotionMaster();
+    MotionMaster& mm = *mover->GetMotionMaster();
 
 #ifdef MANGOS
     mm.MovePoint(mapId, x, y, z, generatePath);
@@ -490,7 +514,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
     //Clean movement if not already moving the same way.
     if (mm.GetCurrent()->GetMovementGeneratorType() != POINT_MOTION_TYPE)
     {
-        bot->StopMoving();
+        mover->StopMoving();
         mm.Clear();
     }
     else
@@ -499,7 +523,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
 
         if (movePosition.distance(WorldPosition(movePosition.getMapId(), x, y, z, 0)) > minDist)
         {
-            bot->StopMoving();
+            mover->StopMoving();
             mm.Clear();
         }
     }
@@ -688,6 +712,10 @@ bool MovementAction::IsMovingAllowed(uint32 mapId, float x, float y, float z)
 
 bool MovementAction::IsMovingAllowed()
 {
+    // do not allow if not vehicle driver
+    if (ai->IsInVehicle() && !ai->IsInVehicle(true))
+        return false;
+
     if (sServerFacade.IsFrozen(bot) || bot->IsPolymorphed() ||
 			(sServerFacade.UnitIsDead(bot) && !bot->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_GHOST)) ||
             bot->IsBeingTeleported() ||
@@ -979,6 +1007,21 @@ bool MovementAction::ChaseTo(WorldObject* obj, float distance, float angle)
     {
         return false;
     }
+
+#ifdef MANGOSBOT_TWO
+    TransportInfo* transportInfo = bot->GetTransportInfo();
+    if (transportInfo && transportInfo->IsOnVehicle())
+    {
+        Unit* vehicle = (Unit*)transportInfo->GetTransport();
+        VehicleSeatEntry const* seat = vehicle->GetVehicleInfo()->GetSeatEntry(transportInfo->GetTransportSeat());
+        if (!seat || !seat->HasFlag(SEAT_FLAG_CAN_CONTROL))
+            return false;
+
+        //vehicle->GetMotionMaster()->Clear();
+        vehicle->GetMotionMaster()->MoveChase((Unit*)obj, 30.0f, angle);
+        return true;
+    }
+#endif
 
     UpdateMovementState();
 
@@ -1372,6 +1415,12 @@ bool MoveOutOfCollisionAction::Execute(Event event)
 
 bool MoveOutOfCollisionAction::isUseful()
 {
+#ifdef MANGOSBOT_TWO
+    // do not avoid collision on vehicle
+    if (ai->IsInVehicle())
+        return false;
+#endif
+
     return AI_VALUE2(bool, "collision", "self target") && ai->GetAiObjectContext()->GetValue<list<ObjectGuid> >("nearest friendly players")->Get().size() < 15 &&
         ai->GetAiObjectContext()->GetValue<list<ObjectGuid> >("nearest non bot players")->Get().size() > 0;
 }

@@ -307,4 +307,84 @@ namespace ai
         }
         virtual ActionThreatType getThreatType() { return ACTION_THREAT_NONE; }
     };
+
+    //--------------------//
+    //   Vehicle Actions  //
+    //--------------------//
+
+    class CastVehicleSpellAction : public CastSpellAction
+    {
+    public:
+        CastVehicleSpellAction(PlayerbotAI* ai, string spell) : CastSpellAction(ai, spell)
+        {
+            range = 120.0f;
+        }
+        virtual string GetTargetName() { return "current target"; }
+        virtual bool Execute(Event event);
+        virtual bool isUseful();
+        virtual bool isPossible();
+        virtual ActionThreatType getThreatType() { return ACTION_THREAT_NONE; }
+    protected:
+        WorldObject* spellTarget;
+    };
+
+    class CastHurlBoulderAction : public CastVehicleSpellAction
+    {
+    public:
+        CastHurlBoulderAction(PlayerbotAI* ai) : CastVehicleSpellAction(ai, "hurl boulder") {}
+    };
+
+    class CastSteamRushAction : public CastVehicleSpellAction
+    {
+    public:
+        CastSteamRushAction(PlayerbotAI* ai) : CastVehicleSpellAction(ai, "steam rush") {}
+    };
+
+    class CastRamAction : public CastVehicleSpellAction
+    {
+    public:
+        CastRamAction(PlayerbotAI* ai) : CastVehicleSpellAction(ai, "ram") {}
+    };
+
+    class CastNapalmAction : public CastVehicleSpellAction
+    {
+    public:
+        CastNapalmAction(PlayerbotAI* ai) : CastVehicleSpellAction(ai, "napalm") {}
+    };
+
+    class CastFireCannonAction : public CastVehicleSpellAction
+    {
+    public:
+        CastFireCannonAction(PlayerbotAI* ai) : CastVehicleSpellAction(ai, "fire cannon") {}
+    };
+
+    class CastSteamBlastAction : public CastVehicleSpellAction
+    {
+    public:
+        CastSteamBlastAction(PlayerbotAI* ai) : CastVehicleSpellAction(ai, "steam blast") {}
+    };
+
+    class CastIncendiaryRocketAction : public CastVehicleSpellAction
+    {
+    public:
+        CastIncendiaryRocketAction(PlayerbotAI* ai) : CastVehicleSpellAction(ai, "incendiary rocket") {}
+    };
+
+    class CastRocketBlastAction : public CastVehicleSpellAction
+    {
+    public:
+        CastRocketBlastAction(PlayerbotAI* ai) : CastVehicleSpellAction(ai, "rocket blast") {}
+    };
+
+    class CastGlaiveThrowAction : public CastVehicleSpellAction
+    {
+    public:
+        CastGlaiveThrowAction(PlayerbotAI* ai) : CastVehicleSpellAction(ai, "glaive throw") {}
+    };
+
+    class CastBladeSalvoAction : public CastVehicleSpellAction
+    {
+    public:
+        CastBladeSalvoAction(PlayerbotAI* ai) : CastVehicleSpellAction(ai, "blade salvo") {}
+    };
 }

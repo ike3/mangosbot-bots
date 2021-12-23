@@ -42,23 +42,28 @@ Unit* EnemyPlayerValue::Calculate()
 bool NearestEnemyPlayersValue::AcceptUnit(Unit* unit)
 {
     Player* enemy = dynamic_cast<Player*>(unit);
-    if (enemy &&
+
+    bool inCannon = ai->IsInVehicle(false, true);
+
+    return (enemy &&
         ai->IsOpposing(enemy) &&
         enemy->IsPvP() &&
         !sPlayerbotAIConfig.IsInPvpProhibitedZone(enemy->GetAreaId()) &&
         !enemy->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE) &&
+        ((inCannon || !enemy->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE))) &&
         //!enemy->HasStealthAura() &&
         //!enemy->HasInvisibilityAura() &&
         enemy->IsVisibleForOrDetect(bot, enemy, false) &&
         !(enemy->HasAuraType(SPELL_AURA_SPIRIT_OF_REDEMPTION))
-        )
-        return true;
+        );
 }
 
 Unit* EnemyPlayerValue::Calculate()
 {
     // from VMaNGOS
     // 1. Check units we are currently in combat with.
+
+    bool inCannon = ai->IsInVehicle(false, true);
 
     std::list<Unit*> targets;
     Unit* pVictim = bot->GetVictim();
@@ -131,11 +136,11 @@ Unit* EnemyPlayerValue::Calculate()
         }
 
         // Aggro weak enemies from further away.
-        uint32 const aggroDistance = bot->GetHealth() > pTarget->GetHealth() ? maxAggroDistance : 20.0f;
+        uint32 const aggroDistance = (inCannon || bot->GetHealth() > pTarget->GetHealth()) ? maxAggroDistance : 20.0f;
         if (!bot->IsWithinDist(pTarget, aggroDistance))
             continue;
 
-        if (bot->IsWithinLOSInMap(pTarget, true) && (fabs(bot->GetPositionZ() - pTarget->GetPositionZ()) < 30.0f))
+        if (bot->IsWithinLOSInMap(pTarget, true) && (inCannon || (fabs(bot->GetPositionZ() - pTarget->GetPositionZ()) < 30.0f)))
             return pTarget;
     }
 

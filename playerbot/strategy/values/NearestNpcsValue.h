@@ -15,4 +15,15 @@ namespace ai
         void FindUnits(list<Unit*> &targets);
         bool AcceptUnit(Unit* unit);
 	};
+
+    class NearestVehiclesValue : public NearestUnitsValue
+    {
+    public:
+        NearestVehiclesValue(PlayerbotAI* ai, float range = sPlayerbotAIConfig.sightDistance) :
+            NearestUnitsValue(ai, "nearest vehicles", range) {}
+
+    protected:
+        void FindUnits(list<Unit*>& targets);
+        bool AcceptUnit(Unit* unit);
+    };
 }

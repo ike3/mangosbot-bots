@@ -1262,8 +1262,11 @@ bool BGStatusAction::Execute(Event event)
         context->GetValue<uint32>("bg role")->Set(urand(0, 9));
         ai::PositionMap& posMap = context->GetValue<ai::PositionMap&>("position")->Get();
         ai::PositionEntry pos = context->GetValue<ai::PositionMap&>("position")->Get()["bg objective"];
+        ai::PositionEntry pos2 = context->GetValue<ai::PositionMap&>("position")->Get()["bg siege"];
         pos.Reset();
+        pos2.Reset();
         posMap["bg objective"] = pos;
+        posMap["bg siege"] = pos2;
 
         return true;
     }

@@ -30,6 +30,10 @@ void NonCombatStrategy::InitTriggers(std::list<TriggerNode*>& triggers)
     triggers.push_back(new TriggerNode(
         "need world buff",
         NextAction::array(0, new NextAction("world buff", 1.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "vehicle near",
+        NextAction::array(0, new NextAction("enter vehicle", 10.0f), NULL)));
 }
 
 void CollisionStrategy::InitTriggers(std::list<TriggerNode*> &triggers)

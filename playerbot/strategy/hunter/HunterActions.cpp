@@ -36,6 +36,9 @@ bool FeedPetAction::Execute(Event event)
 
 bool CastAutoShotAction::isUseful()
 {
+    if (ai->IsInVehicle() && !ai->IsInVehicle(false, false, true))
+        return false;
+
     return ai->HasStrategy("ranged", BOT_STATE_COMBAT) && AI_VALUE(uint32, "active spell") != AI_VALUE2(uint32, "spell id", getName());
 }
 

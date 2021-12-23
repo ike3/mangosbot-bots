@@ -5,7 +5,6 @@
 #include "../../PlayerbotAIConfig.h"
 #include "../../ServerFacade.h"
 
-
 using namespace ai;
 
 int FindLastSeparator(string text, string sep)
@@ -29,6 +28,10 @@ static inline void ltrim(std::string& s) {
 
 bool CastCustomSpellAction::Execute(Event event)
 {
+    // only allow proper vehicle seats
+    if (ai->IsInVehicle() && !ai->IsInVehicle(false, false, true))
+        return false;
+
     Unit* target = NULL;
     string text = event.getParam();
     Player* master = GetMaster();

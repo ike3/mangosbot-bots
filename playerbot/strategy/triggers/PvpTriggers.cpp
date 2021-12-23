@@ -208,3 +208,14 @@ bool PlayerWantsInBattlegroundTrigger::IsActive()
 
     return true;
 };
+
+bool VehicleNearTrigger::IsActive()
+{
+    list<ObjectGuid> npcs = AI_VALUE(list<ObjectGuid>, "nearest vehicles");
+    return npcs.size();
+}
+
+bool InVehicleTrigger::IsActive()
+{
+    return ai->IsInVehicle();
+}

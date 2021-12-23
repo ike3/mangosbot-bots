@@ -341,6 +341,11 @@ public:
     bool CastSpell(uint32 spellId, float x, float y, float z, Item* itemTarget = NULL);
     bool canDispel(const SpellEntry* entry, uint32 dispelType);
 
+    bool CanCastVehicleSpell(uint32 spellid, Unit* target);
+    bool CastVehicleSpell(uint32 spellId, Unit* target);
+    bool CastVehicleSpell(uint32 spellId, float x, float y, float z);
+    bool IsInVehicle(bool canControl = false, bool canCast = false, bool canAttack = false, bool canTurn = false, bool fixed = false);
+
     uint32 GetEquipGearScore(Player* player, bool withBags, bool withBank);
     bool HasSkill(SkillType skill);
     bool IsAllowedCommand(string text);

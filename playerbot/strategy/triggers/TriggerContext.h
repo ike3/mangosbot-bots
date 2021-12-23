@@ -149,6 +149,9 @@ namespace ai
             creators["at dark portal azeroth"] = &TriggerContext::at_dark_portal_azeroth;
             creators["at dark portal outland"] = &TriggerContext::at_dark_portal_outland;
 
+            creators["vehicle near"] = &TriggerContext::vehicle_near;
+            creators["in vehicle"] = &TriggerContext::in_vehicle;
+
             creators["need world buff"] = &TriggerContext::need_world_buff;
             creators["falling"] = &TriggerContext::falling;
             creators["falling far"] = &TriggerContext::falling_far;
@@ -182,6 +185,8 @@ namespace ai
         }
 
     private:
+        static Trigger* in_vehicle(PlayerbotAI* ai) { return new InVehicleTrigger(ai); }
+        static Trigger* vehicle_near(PlayerbotAI* ai) { return new VehicleNearTrigger(ai); }
         static Trigger* at_dark_portal_outland(PlayerbotAI* ai) { return new AtDarkPortalOutlandTrigger(ai); }
         static Trigger* at_dark_portal_azeroth(PlayerbotAI* ai) { return new AtDarkPortalAzerothTrigger(ai); }
         static Trigger* near_dark_portal(PlayerbotAI* ai) { return new NearDarkPortalTrigger(ai); }

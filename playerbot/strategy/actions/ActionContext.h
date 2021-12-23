@@ -52,6 +52,7 @@
 #include "GuildManagementActions.h"
 #include "GuildAcceptAction.h"
 #include "RpgSubActions.h"
+#include "VehicleActions.h"
 
 
 namespace ai
@@ -177,6 +178,20 @@ namespace ai
             creators["bg use buff"] = &ActionContext::bg_use_buff;
             creators["attack enemy flag carrier"] = &ActionContext::attack_enemy_fc;
             creators["bg check flag"] = &ActionContext::bg_check_flag;
+
+            // Vehicles
+            creators["enter vehicle"] = &ActionContext::enter_vehicle;
+            creators["leave vehicle"] = &ActionContext::leave_vehicle;
+            creators["hurl boulder"] = &ActionContext::hurl_boulder;
+            creators["ram"] = &ActionContext::ram;
+            creators["steam rush"] = &ActionContext::steam_rush;
+            creators["steam blast"] = &ActionContext::steam_blast;
+            creators["napalm"] = &ActionContext::napalm;
+            creators["fire cannon"] = &ActionContext::fire_cannon;
+            creators["incendiary rocket"] = &ActionContext::incendiary_rocket;
+            creators["rocket blast"] = &ActionContext::rocket_blast;
+            creators["blade salvo"] = &ActionContext::blade_salvo;
+            creators["glaive throw"] = &ActionContext::glaive_throw;
 
             //Rpg
             creators["rpg stay"] = &ActionContext::rpg_stay;
@@ -320,7 +335,21 @@ namespace ai
         static Action* bg_protect_fc(PlayerbotAI* ai) { return new BGTactics(ai, "protect fc"); }
         static Action* attack_enemy_fc(PlayerbotAI* ai) { return new AttackEnemyFlagCarrierAction(ai); }
         static Action* bg_use_buff(PlayerbotAI* ai) { return new BGTactics(ai, "use buff"); }
-        static Action* bg_check_flag(PlayerbotAI* ai) { return new BGTactics(ai, "check flag"); }    
+        static Action* bg_check_flag(PlayerbotAI* ai) { return new BGTactics(ai, "check flag"); }   
+
+        // Vehicles
+        static Action* enter_vehicle(PlayerbotAI* ai) { return new EnterVehicleAction(ai); }
+        static Action* leave_vehicle(PlayerbotAI* ai) { return new LeaveVehicleAction(ai); }
+        static Action* hurl_boulder(PlayerbotAI* ai) { return new CastHurlBoulderAction(ai); }
+        static Action* ram(PlayerbotAI* ai) { return new CastRamAction(ai); }
+        static Action* steam_blast(PlayerbotAI* ai) { return new CastSteamBlastAction(ai); }
+        static Action* steam_rush(PlayerbotAI* ai) { return new CastSteamRushAction(ai); }
+        static Action* napalm(PlayerbotAI* ai) { return new CastNapalmAction(ai); }
+        static Action* fire_cannon(PlayerbotAI* ai) { return new CastFireCannonAction(ai); }
+        static Action* incendiary_rocket(PlayerbotAI* ai) { return new CastIncendiaryRocketAction(ai); }
+        static Action* rocket_blast(PlayerbotAI* ai) { return new CastRocketBlastAction(ai); }
+        static Action* glaive_throw(PlayerbotAI* ai) { return new CastGlaiveThrowAction(ai); }
+        static Action* blade_salvo(PlayerbotAI* ai) { return new CastBladeSalvoAction(ai); }
 
         //Rpg
         static Action* rpg_stay(PlayerbotAI* ai) { return new RpgStayAction(ai); }

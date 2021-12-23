@@ -29,6 +29,9 @@
 #include "ChatHelper.h"
 #include "strategy/values/BudgetValues.h"
 #include "Social/SocialMgr.h"
+#ifdef MANGOSBOT_TWO
+#include "Entities/Vehicle.h"
+#endif
 
 using namespace ai;
 using namespace std;
@@ -2072,6 +2075,301 @@ bool PlayerbotAI::CastSpell(uint32 spellId, float x, float y, float z, Item* ite
 
     return true;
 }
+
+#ifdef MANGOSBOT_TWO
+bool PlayerbotAI::CanCastVehicleSpell(uint32 spellId, Unit* target)
+{
+#ifdef MANGOSBOT_TWO
+    if (!spellId)
+        return false;
+
+    TransportInfo* transportInfo = bot->GetTransportInfo();
+    if (!transportInfo || !transportInfo->IsOnVehicle())
+        return false;
+
+    Unit* vehicle = (Unit*)transportInfo->GetTransport();
+
+    // do not allow if no spells
+    VehicleSeatEntry const* seat = transportInfo ? vehicle->GetVehicleInfo()->GetSeatEntry(transportInfo->GetTransportSeat()) : nullptr;
+    if (seat && !seat->HasFlag(SEAT_FLAG_CAN_CAST))
+        return false;
+
+    bool canControl = seat ? (seat->HasFlag(SEAT_FLAG_CAN_CONTROL)) : false;
+
+    if (!vehicle)
+        return false;
+
+    Unit* spellTarget = target;
+
+    if (!spellTarget)
+        spellTarget = vehicle;
+
+    if (!spellTarget)
+        return false;
+
+#ifdef MANGOS
+    if (vehicle->HasSpellCooldown(spellId))
+        return false;
+#endif
+#ifdef CMANGOS
+    if (!vehicle->IsSpellReady(spellId))
+        return false;
+#endif
+
+    SpellEntry const* spellInfo = sServerFacade.LookupSpellInfo(spellId);
+    if (!spellInfo)
+        return false;
+
+    // check BG siege position set in BG Tactics
+    PositionEntry siegePos = GetAiObjectContext()->GetValue<ai::PositionMap&>("position")->Get()["bg siege"];
+
+    // do not cast spell on self if spell is location based
+    if (!(siegePos.isSet() || spellTarget != vehicle) && spellInfo->Targets & TARGET_FLAG_DEST_LOCATION)
+        return false;
+
+    uint32 CastingTime = !IsChanneledSpell(spellInfo) ? GetSpellCastTime(spellInfo, vehicle) : GetSpellDuration(spellInfo);
+
+    if (CastingTime && vehicle->IsMoving())
+        return false;
+
+    if (vehicle != spellTarget && sServerFacade.GetDistance2d(vehicle, spellTarget) > 120.0f)
+        return false;
+
+    if (!target && siegePos.isSet())
+    {
+        if (sServerFacade.GetDistance2d(vehicle, siegePos.x, siegePos.y) > 120.0f)
+            return false;
+    }
+
+    Spell* spell = new Spell(vehicle, spellInfo, false);
+
+    WorldLocation dest;
+    if (siegePos.isSet())
+        dest = WorldLocation(bot->GetMapId(), siegePos.x, siegePos.y, siegePos.z, 0);
+    else if (spellTarget != vehicle)
+        dest = WorldLocation(spellTarget->GetMapId(), spellTarget->GetPosition());
+
+    if (spellInfo->Targets & TARGET_FLAG_DEST_LOCATION)
+        spell->m_targets.setDestination(dest.coord_x, dest.coord_y, dest.coord_z);
+    else if (spellTarget != vehicle)
+    {
+        spell->m_targets.setUnitTarget(spellTarget);
+    }
+
+    SpellCastResult result = spell->CheckCast(true);
+    delete spell;
+
+    switch (result)
+    {
+    case SPELL_FAILED_NOT_INFRONT:
+    case SPELL_FAILED_NOT_STANDING:
+    case SPELL_FAILED_UNIT_NOT_INFRONT:
+    case SPELL_FAILED_MOVING:
+    case SPELL_FAILED_TRY_AGAIN:
+    case SPELL_CAST_OK:
+        return true;
+    default:
+        return false;
+    }
+#endif
+    return false;
+}
+
+bool PlayerbotAI::CastVehicleSpell(uint32 spellId, Unit* target)
+{
+#ifdef MANGOSBOT_TWO
+    if (!spellId)
+        return false;
+
+    TransportInfo* transportInfo = bot->GetTransportInfo();
+    if (!transportInfo || !transportInfo->IsOnVehicle())
+        return false;
+
+    Unit* vehicle = (Unit*)transportInfo->GetTransport();
+
+    // do not allow if no spells
+    VehicleSeatEntry const* seat = transportInfo ? vehicle->GetVehicleInfo()->GetSeatEntry(transportInfo->GetTransportSeat()) : nullptr;
+    if (!seat->HasFlag(SEAT_FLAG_CAN_CAST))
+        return false;
+
+    bool canControl = seat ? (seat->HasFlag(SEAT_FLAG_CAN_CONTROL)) : false;
+    bool canTurn = seat ? (seat->HasFlag(SEAT_FLAG_ALLOW_TURNING)) : false;
+
+    if (!vehicle)
+        return false;
+
+    Unit* spellTarget = target;
+
+    if (!spellTarget)
+        spellTarget = vehicle;
+
+    if (!spellTarget)
+        return false;
+
+    SpellEntry const* pSpellInfo = sServerFacade.LookupSpellInfo(spellId);
+
+    // check BG siege position set in BG Tactics
+    PositionEntry siegePos = GetAiObjectContext()->GetValue<ai::PositionMap&>("position")->Get()["bg siege"];
+    if (!target && siegePos.isSet())
+    {
+        if (sServerFacade.GetDistance2d(vehicle, siegePos.x, siegePos.y) > 120.0f)
+            return false;
+    }
+
+    // do not cast spell on self if spell is location based
+    if (!(siegePos.isSet() || spellTarget != vehicle) && pSpellInfo->Targets & TARGET_FLAG_DEST_LOCATION)
+        return false;
+
+    if (canControl)
+    {
+        //aiObjectContext->GetValue<LastMovement&>("last movement")->Get().Set(NULL);
+        //aiObjectContext->GetValue<time_t>("stay time")->Set(0);
+    }
+
+    MotionMaster& mm = *vehicle->GetMotionMaster();
+
+    //bot->clearUnitState(UNIT_STAT_CHASE);
+    //bot->clearUnitState(UNIT_STAT_FOLLOW);
+
+    //ObjectGuid oldSel = bot->GetSelectionGuid();
+    //bot->SetSelectionGuid(target->GetObjectGuid());
+
+    // turn vehicle if target is not in front
+    bool failWithDelay = false;
+    if (spellTarget != vehicle && (canControl || canTurn))
+    {
+        if (!sServerFacade.IsInFront(vehicle, spellTarget, 100.0f, CAST_ANGLE_IN_FRONT))
+        {
+            vehicle->SetFacingToObject(spellTarget);
+            failWithDelay = true;
+        }
+    }
+
+    if (siegePos.isSet() && (canControl || canTurn))
+    {
+        vehicle->SetFacingTo(vehicle->GetAngle(siegePos.x, siegePos.y));
+    }
+
+    if (failWithDelay)
+    {
+        SetNextCheckDelay(sPlayerbotAIConfig.globalCoolDown);
+        return false;
+    }
+
+    Spell* spell = new Spell(vehicle, pSpellInfo, false);
+
+    SpellCastTargets targets;
+    if ((spellTarget != vehicle || siegePos.isSet()) && pSpellInfo->Targets & TARGET_FLAG_DEST_LOCATION)
+    {
+        WorldLocation dest;
+        if (spellTarget != vehicle)
+            dest = WorldLocation(spellTarget->GetMapId(), spellTarget->GetPosition());
+        else if (siegePos.isSet())
+            dest = WorldLocation(bot->GetMapId(), siegePos.x + frand(-5.0f, 5.0f), siegePos.y + frand(-5.0f, 5.0f), siegePos.z, 0.0f);
+        else
+            return false;
+
+        targets.setDestination(dest.coord_x, dest.coord_y, dest.coord_z);
+        targets.setSpeed(30.0f);
+        float distanceToDest = sqrt(vehicle->GetPosition().GetDistance(Position(dest.coord_x, dest.coord_y, dest.coord_z, 0.0f)));
+        float elev = 0.01f;
+        if (distanceToDest < 25.0f)
+            elev = 0.04f;
+        else if (distanceToDest < 55.0f)
+            elev = 0.22f;
+        else if (distanceToDest < 85.0f)
+            elev = 0.42f;
+        else if (distanceToDest < 95.0f)
+            elev = 0.70f;
+        else if (distanceToDest < 110.0f)
+            elev = 0.88f;
+        else
+            elev = 1.0f;
+
+        targets.setElevation(elev);
+    }
+    if (pSpellInfo->Targets & TARGET_FLAG_SOURCE_LOCATION)
+    {
+        targets.setSource(vehicle->GetPositionX(), vehicle->GetPositionY(), vehicle->GetPositionZ());
+    }
+
+    if (target && !(pSpellInfo->Targets & TARGET_FLAG_DEST_LOCATION))
+    {
+        targets.setUnitTarget(spellTarget);
+    }
+
+#ifdef MANGOS
+    spell->prepare(&targets);
+#endif
+#ifdef CMANGOS
+    spell->SpellStart(&targets);
+#endif
+
+    if (canControl && sServerFacade.isMoving(vehicle) && spell->GetCastTime())
+    {
+        vehicle->StopMoving();
+        SetNextCheckDelay(sPlayerbotAIConfig.globalCoolDown);
+        spell->cancel();
+        //delete spell;
+        return false;
+    }
+
+    WaitForSpellCast(spell);
+
+    //aiObjectContext->GetValue<LastSpellCast&>("last spell cast")->Get().Set(spellId, target->GetObjectGuid(), time(0));
+    //aiObjectContext->GetValue<ai::PositionMap&>("position")->Get()["random"].Reset();
+
+    if (HasStrategy("debug spell", BOT_STATE_NON_COMBAT))
+    {
+        ostringstream out;
+        out << "Casting Vehicle Spell" << ChatHelper::formatSpell(pSpellInfo);
+        TellMasterNoFacing(out);
+    }
+
+    return true;
+#endif
+    return false;
+}
+
+bool PlayerbotAI::IsInVehicle(bool canControl, bool canCast, bool canAttack, bool canTurn, bool fixed)
+{
+#ifdef MANGOSBOT_TWO
+    TransportInfo* transportInfo = bot->GetTransportInfo();
+    if (!transportInfo || !transportInfo->IsOnVehicle())
+        return false;
+
+    // get vehicle
+    Unit* vehicle = (Unit*)transportInfo->GetTransport();
+    if (!vehicle || !vehicle->IsAlive())
+        return false;
+
+    // get seat
+    VehicleSeatEntry const* seat = vehicle->GetVehicleInfo()->GetSeatEntry(transportInfo->GetTransportSeat());
+    if (!seat)
+        return false;
+
+    if (!(canControl || canCast || canAttack || canTurn || fixed))
+        return true;
+
+    if (canControl)
+        return seat->HasFlag(SEAT_FLAG_CAN_CONTROL) && vehicle->GetVehicleInfo()->GetVehicleEntry()->m_flags & VEHICLE_FLAG_FIXED_POSITION == 0;
+
+    if (canCast)
+        return seat->HasFlag(SEAT_FLAG_CAN_CAST);
+
+    if (canAttack)
+        return seat->HasFlag(SEAT_FLAG_CAN_ATTACK);
+
+    if (canTurn)
+        return seat->HasFlag(SEAT_FLAG_ALLOW_TURNING);
+
+    if (fixed)
+        return vehicle->GetVehicleInfo()->GetVehicleEntry()->m_flags & VEHICLE_FLAG_FIXED_POSITION;
+
+#endif
+    return false;
+}
+#endif
 
 void PlayerbotAI::WaitForSpellCast(Spell *spell)
 {

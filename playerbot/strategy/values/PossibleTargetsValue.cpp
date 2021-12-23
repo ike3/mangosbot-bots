@@ -20,5 +20,5 @@ void PossibleTargetsValue::FindUnits(list<Unit*> &targets)
 
 bool PossibleTargetsValue::AcceptUnit(Unit* unit)
 {
-    return AttackersValue::IsPossibleTarget(unit, bot);
+    return AttackersValue::IsPossibleTarget(unit, bot, range);
 }

@@ -106,7 +106,7 @@ void AttackersValue::RemoveNonThreating(set<Unit*>& targets)
     }
 }
 
-bool AttackersValue::IsPossibleTarget(Unit *attacker, Player *bot)
+bool AttackersValue::IsPossibleTarget(Unit *attacker, Player *bot, float range)
 {
     Creature *c = dynamic_cast<Creature*>(attacker);
 
@@ -124,13 +124,14 @@ bool AttackersValue::IsPossibleTarget(Unit *attacker, Player *bot)
     if (bot->GetGroup() && ai->GetMaster() && ai->GetMaster()->GetPlayerbotAI() && !ai->GetMaster()->GetPlayerbotAI()->IsRealPlayer())
         isMemberBotGroup = true;
 
+    bool inCannon = ai->IsInVehicle(false, true);
 
     return attacker &&
         attacker->IsInWorld() &&
         attacker->GetMapId() == bot->GetMapId() &&
         !sServerFacade.UnitIsDead(attacker) &&
         !attacker->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE) &&
-        !attacker->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE) &&
+        (inCannon || !attacker->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE)) &&
         attacker->IsVisibleForOrDetect(bot, attacker, false) &&
 #ifdef CMANGOS
         !(attacker->IsStunned() && ai->HasAura("shackle undead", attacker)) &&
@@ -140,11 +141,11 @@ bool AttackersValue::IsPossibleTarget(Unit *attacker, Player *bot)
 #endif
         !((attacker->IsPolymorphed() ||
         bot->GetPlayerbotAI()->HasAura("sap", attacker) ||
-        sServerFacade.IsCharmed(attacker) ||
+        //sServerFacade.IsCharmed(attacker) ||
         sServerFacade.IsFeared(attacker)) && !rti) &&
         //!sServerFacade.IsInRoots(attacker) &&
         !sServerFacade.IsFriendlyTo(attacker, bot) &&
-        bot->IsWithinDistInMap(attacker, sPlayerbotAIConfig.sightDistance) &&
+        bot->IsWithinDistInMap(attacker, range) &&
         !(attacker->GetCreatureType() == CREATURE_TYPE_CRITTER && !attacker->IsInCombat()) &&
         !(sPlayerbotAIConfig.IsInPvpProhibitedZone(attacker->GetAreaId()) && (attacker->GetObjectGuid().IsPlayer() || attacker->GetObjectGuid().IsPet())) &&
         (!c || (

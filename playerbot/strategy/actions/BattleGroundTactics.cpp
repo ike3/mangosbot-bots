@@ -3635,7 +3635,7 @@ bool BGTactics::selectObjective(bool reset)
             {
                 bool foundTask = false;
                 // mount defensive cannons
-                if (role > 6)
+                if (role > 10) // disabled
                 {
                     uint32 firstTower = getDefendersCount(IC_CANNON_POS_HORDE1, 10.0f);
                     uint32 secondTower = getDefendersCount(IC_CANNON_POS_HORDE2, 10.0f);
@@ -3894,7 +3894,7 @@ bool BGTactics::selectObjective(bool reset)
             {
                 bool foundTask = false;
                 // mount defensive cannons
-                if (role > 3)
+                if (role > 10) // disabled
                 {
                     uint32 firstTower = getDefendersCount(IC_CANNON_POS_ALLIANCE1, 10.0f);
                     uint32 secondTower = getDefendersCount(IC_CANNON_POS_ALLIANCE2, 10.0f);

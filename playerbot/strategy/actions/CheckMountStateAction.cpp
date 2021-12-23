@@ -4,6 +4,7 @@
 
 #include "../../ServerFacade.h"
 #include "BattleGroundWS.h"
+
 using namespace ai;
 
 uint64 extractGuid(WorldPacket& packet);
@@ -122,6 +123,10 @@ bool CheckMountStateAction::Execute(Event event)
 
 bool CheckMountStateAction::isUseful()
 {
+    // do not use on vehicle
+    if (ai->IsInVehicle())
+        return false;
+
     if (bot->IsDead())
         return false;
 

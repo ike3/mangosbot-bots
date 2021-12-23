@@ -119,4 +119,22 @@ namespace ai
     public:
         virtual bool IsActive();
     };
+
+    class VehicleNearTrigger : public Trigger
+    {
+    public:
+        VehicleNearTrigger(PlayerbotAI* ai) : Trigger(ai, "vehicle near", 10) {}
+
+    public:
+        virtual bool IsActive();
+    };
+
+    class InVehicleTrigger : public Trigger
+    {
+    public:
+        InVehicleTrigger(PlayerbotAI* ai) : Trigger(ai, "in vehicle") {}
+
+    public:
+        virtual bool IsActive();
+    };
 }
