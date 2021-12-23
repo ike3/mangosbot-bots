@@ -896,6 +896,52 @@ CREATE TABLE `ahbot_price` (
   KEY `ahbot_price_item` (`item`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+DROP TABLE IF EXISTS `ai_playerbot_item_info_cache`;
+CREATE TABLE IF NOT EXISTS `ai_playerbot_item_info_cache` (
+  `id` bigint(20) NOT NULL,
+  `quality` bigint(20) DEFAULT NULL,
+  `slot` bigint(20) DEFAULT NULL,
+  `source` mediumint(8) DEFAULT NULL,
+  `sourceId` mediumint(8) DEFAULT NULL,
+  `team` mediumint(8) DEFAULT NULL,
+  `faction` mediumint(8) DEFAULT NULL,
+  `factionRepRank` mediumint(8) DEFAULT NULL,
+  `minLevel` mediumint(8) DEFAULT NULL,
+  `scale_1` mediumint(8) DEFAULT NULL,
+  `scale_2` mediumint(8) DEFAULT NULL,
+  `scale_3` mediumint(8) DEFAULT NULL,
+  `scale_4` mediumint(8) DEFAULT NULL,
+  `scale_5` mediumint(8) DEFAULT NULL,
+  `scale_6` mediumint(8) DEFAULT NULL,
+  `scale_7` mediumint(8) DEFAULT NULL,
+  `scale_8` mediumint(8) DEFAULT NULL,
+  `scale_9` mediumint(8) DEFAULT NULL,
+  `scale_10` mediumint(8) DEFAULT NULL,
+  `scale_11` mediumint(8) DEFAULT NULL,
+  `scale_12` mediumint(8) DEFAULT NULL,
+  `scale_13` mediumint(8) DEFAULT NULL,
+  `scale_14` mediumint(8) DEFAULT NULL,
+  `scale_15` mediumint(8) DEFAULT NULL,
+  `scale_16` mediumint(8) DEFAULT NULL,
+  `scale_17` mediumint(8) DEFAULT NULL,
+  `scale_18` mediumint(8) DEFAULT NULL,
+  `scale_19` mediumint(8) DEFAULT NULL,
+  `scale_20` mediumint(8) DEFAULT NULL,
+  `scale_21` mediumint(8) DEFAULT NULL,
+  `scale_22` mediumint(8) DEFAULT NULL,
+  `scale_23` mediumint(8) DEFAULT NULL,
+  `scale_24` mediumint(8) DEFAULT NULL,
+  `scale_25` mediumint(8) DEFAULT NULL,
+  `scale_26` mediumint(8) DEFAULT NULL,
+  `scale_27` mediumint(8) DEFAULT NULL,
+  `scale_28` mediumint(8) DEFAULT NULL,
+  `scale_29` mediumint(8) DEFAULT NULL,
+  `scale_30` mediumint(8) DEFAULT NULL,
+  `scale_31` mediumint(8) DEFAULT NULL,
+  `scale_32` mediumint(8) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED COMMENT='PlayerbotAI item info Cache';
+
 create index idx_ahbot_history_item on ahbot_history(item);
 create index idx_ahbot_history_buytime on ahbot_history(buytime);
 create index idx_ahbot_price_auction_house on ahbot_price(auction_house);
