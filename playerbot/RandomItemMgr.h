@@ -22,9 +22,7 @@ enum RandomItemType
     RANDOM_ITEM_GUILD_TASK_REWARD_TRADE_RARE
 };
 
-#ifdef MANGOSBOT_TWO
 #define MAX_STAT_SCALES 32
-#endif
 
 enum ItemSource
 {

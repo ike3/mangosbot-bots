@@ -61,7 +61,7 @@ INSERT INTO `ai_playerbot_weightscales` (`id`, `name`, `class`) VALUES
 DROP TABLE IF EXISTS `ai_playerbot_weightscale_data`;
 CREATE TABLE IF NOT EXISTS `ai_playerbot_weightscale_data` (
   `id` int(32) NOT NULL,
-  `field` varchar(15) NOT NULL,
+  `field` varchar(18) NOT NULL,
   `val` smallint(6) unsigned NOT NULL,
   KEY `id` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

@@ -158,6 +158,40 @@ RandomItemMgr::RandomItemMgr()
     weightRatingLink["blockrtng"] = CR_BLOCK;
     weightRatingLink["parryrtng"] = CR_PARRY;
 #endif
+
+#ifdef MANGOSBOT_ONE
+    //weightStatLink["splpwr"] = ITEM_MOD_SPELL_POWER;
+    //weightStatLink["atkpwr"] = ITEM_MOD_ATTACK_POWER;
+    //weightStatLink["feratkpwr"] = ITEM_MOD_FERAL_ATTACK_POWER;
+
+    weightStatLink["exprtng"] = ITEM_MOD_EXPERTISE_RATING;
+    weightStatLink["critstrkrtng"] = ITEM_MOD_CRIT_RATING;
+    weightStatLink["spellcritstrkrtng"] = ITEM_MOD_CRIT_SPELL_RATING;
+    weightStatLink["hitrtng"] = ITEM_MOD_HIT_RATING;
+    weightStatLink["spellhitrtng"] = ITEM_MOD_HIT_SPELL_RATING;
+    weightStatLink["hastertng"] = ITEM_MOD_HASTE_RATING;
+    weightStatLink["spellhastertng"] = ITEM_MOD_HASTE_SPELL_RATING;
+    //weightStatLink["armorpenrtng"] = ITEM_MOD_ARMOR_PENETRATION_RATING;
+
+    weightStatLink["defrtng"] = ITEM_MOD_DEFENSE_SKILL_RATING;
+    weightStatLink["dodgertng"] = ITEM_MOD_DODGE_RATING;
+    //weightStatLink["block"] = ITEM_MOD_BLOCK_VALUE;
+    weightStatLink["blockrtng"] = ITEM_MOD_BLOCK_RATING;
+    weightStatLink["parryrtng"] = ITEM_MOD_PARRY_RATING;
+
+    //weightStatLink["manargn"] = ITEM_MOD_MANA_REGENERATION;
+
+    weightRatingLink["exprtng"] = CR_EXPERTISE;
+    weightRatingLink["critstrkrtng"] = CR_CRIT_MELEE;
+    weightRatingLink["hitrtng"] = CR_HIT_MELEE;
+    weightRatingLink["hastertng"] = CR_HASTE_MELEE;
+    //weightRatingLink["armorpenrtng"] = CR_ARMOR_PENETRATION;
+
+    weightRatingLink["defrtng"] = CR_DEFENSE_SKILL;
+    weightRatingLink["dodgertng"] = CR_DODGE;
+    weightRatingLink["blockrtng"] = CR_BLOCK;
+    weightRatingLink["parryrtng"] = CR_PARRY;
+#endif
 }
 
 void RandomItemMgr::Init()
@@ -477,6 +511,7 @@ bool RandomItemMgr::ShouldEquipArmorForSpec(uint8 playerclass, uint8 spec, ItemP
             resultArmorSubClass = { ITEM_SUBCLASS_ARMOR_MAIL, ITEM_SUBCLASS_ARMOR_PLATE };
         break;
     }
+#ifdef MANGOSBOT_TWO
     case CLASS_DEATH_KNIGHT:
     {
         if (proto->InventoryType == INVTYPE_HOLDABLE)
@@ -484,6 +519,7 @@ bool RandomItemMgr::ShouldEquipArmorForSpec(uint8 playerclass, uint8 spec, ItemP
 
         resultArmorSubClass = { ITEM_SUBCLASS_ARMOR_SIGIL, ITEM_SUBCLASS_ARMOR_PLATE };
     }
+#endif
     case CLASS_PALADIN:
     {
         if (m_weightScales[playerclass][spec].info.name != "holy" && proto->InventoryType == INVTYPE_HOLDABLE)
@@ -1004,9 +1040,11 @@ void RandomItemMgr::BuildItemInfoCache()
         if (proto->RandomProperty)
             continue;
 
+#ifdef MANGOSBOT_TWO
         // skip heirloom items
         if (proto->Quality == ITEM_QUALITY_HEIRLOOM)
             continue;
+#endif
 
         // check possible equip slots
         EquipmentSlots slot = EQUIPMENT_SLOT_START;
@@ -1069,6 +1107,7 @@ void RandomItemMgr::BuildItemInfoCache()
             }
         }
 
+#ifdef MANGOSBOT_TWO
         // check faction
         if (proto->Flags2 & ITEM_FLAG2_FACTION_HORDE)
             cacheInfo->team = HORDE;
@@ -1086,6 +1125,19 @@ void RandomItemMgr::BuildItemInfoCache()
                 if ((proto->AllowableRace & faction->BaseRepRaceMask[0]) != 0)
                     cacheInfo->team = ALLIANCE;
         }
+#else
+        // check faction
+        if (!cacheInfo->team && proto->AllowableRace > 1 && proto->AllowableRace < 8388607)
+        {
+            if (FactionEntry const* faction = sFactionStore.LookupEntry<FactionEntry>(HORDE))
+                if ((proto->AllowableRace & faction->BaseRepRaceMask[0]) != 0)
+                    cacheInfo->team = HORDE;
+
+            if (FactionEntry const* faction = sFactionStore.LookupEntry<FactionEntry>(ALLIANCE))
+                if ((proto->AllowableRace & faction->BaseRepRaceMask[0]) != 0)
+                    cacheInfo->team = ALLIANCE;
+        }
+#endif
 
         if (cacheInfo->team)
             sLog.outDetail("Item: %d, team (item): %s", proto->ItemId, cacheInfo->team == ALLIANCE ? "Alliance" : "Horde");
@@ -1233,7 +1285,7 @@ void RandomItemMgr::BuildItemInfoCache()
         SqlStatement stmt = PlayerbotDatabase.CreateStatement(delCache, "DELETE FROM ai_playerbot_equip_cache_new WHERE id = ?");
         stmt.PExecute(proto->ItemId);
 
-        stmt = PlayerbotDatabase.CreateStatement(insertCache, "INSERT INTO ai_playerbot_equip_cache_new (id, quality, slot, source, sourceId, team, faction, factionRepRank, minLevel, "
+        stmt = PlayerbotDatabase.CreateStatement(insertCache, "INSERT INTO ai_playerbot_item_info_cache (id, quality, slot, source, sourceId, team, faction, factionRepRank, minLevel, "
             "scale_1, scale_2, scale_3, scale_4, scale_5, scale_6, scale_7, scale_8, scale_9, scale_10, scale_11, scale_12, scale_13, scale_14, scale_15, "
             "scale_16, scale_17, scale_18, scale_19, scale_20, scale_21, scale_22, scale_23, scale_24, scale_25, scale_26, scale_27, scale_28, scale_29, scale_30, scale_31, scale_32)"
             "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
@@ -1267,14 +1319,27 @@ uint32 RandomItemMgr::CalculateStatWeight(uint8 playerclass, uint8 spec, ItemPro
     uint32 statWeight = 0;
     bool isCasterItem = false;
     bool isAttackItem = false;
+#ifdef MANGOSBOT_TWO
     bool noCaster = (Classes)playerclass == CLASS_WARRIOR || (Classes)playerclass == CLASS_ROGUE || (Classes)playerclass == CLASS_DEATH_KNIGHT || (Classes)playerclass == CLASS_HUNTER;
     uint32 spellPower = 0;
+    uint32 spellHeal = 0;
     uint32 attackPower = 0;
     bool hasInt = false;
     bool hasMana = !((Classes)playerclass == CLASS_WARRIOR || (Classes)playerclass == CLASS_ROGUE || (Classes)playerclass == CLASS_DEATH_KNIGHT);
 
     if (proto->SubClass == ITEM_SUBCLASS_ARMOR_LIBRAM || proto->SubClass == ITEM_SUBCLASS_ARMOR_IDOL || proto->SubClass == ITEM_SUBCLASS_ARMOR_TOTEM || proto->SubClass == ITEM_SUBCLASS_ARMOR_SIGIL)
         return (uint32)(proto->Quality + proto->ItemLevel);
+#else
+    bool noCaster = (Classes)playerclass == CLASS_WARRIOR || (Classes)playerclass == CLASS_ROGUE || (Classes)playerclass == CLASS_HUNTER;
+    uint32 spellPower = 0;
+    uint32 spellHeal = 0;
+    uint32 attackPower = 0;
+    bool hasInt = false;
+    bool hasMana = !((Classes)playerclass == CLASS_WARRIOR || (Classes)playerclass == CLASS_ROGUE);
+
+    if (proto->SubClass == ITEM_SUBCLASS_ARMOR_LIBRAM || proto->SubClass == ITEM_SUBCLASS_ARMOR_IDOL || proto->SubClass == ITEM_SUBCLASS_ARMOR_TOTEM)
+        return (uint32)(proto->Quality + proto->ItemLevel);
+#endif
 
     // check basic item stats
     int32 basicStatsWeight = 0;
@@ -1381,6 +1446,7 @@ uint32 RandomItemMgr::CalculateStatWeight(uint8 playerclass, uint8 spec, ItemPro
             if ((spellproto->Effect[j] == SPELL_EFFECT_APPLY_AURA) &&
                 (spellproto->EffectBasePoints[j]))
             {
+#ifdef MANGOSBOT_TWO
                 // spell damage
                 // SPELL_AURA_MOD_DAMAGE_DONE
                 if (spellproto->EffectApplyAuraName[j] == SPELL_AURA_MOD_DAMAGE_DONE)
@@ -1399,9 +1465,76 @@ uint32 RandomItemMgr::CalculateStatWeight(uint8 playerclass, uint8 spec, ItemPro
                     isCasterItem = true;
                     spellPower += CalculateSingleStatWeight(playerclass, spec, "splpwr", spellDamage);
                 }
+#else
+                // spell damage
+                // SPELL_AURA_MOD_DAMAGE_DONE
+                if (spellproto->EffectApplyAuraName[j] == SPELL_AURA_MOD_DAMAGE_DONE)
+                {
+                    spellDamage = spellproto->EffectBasePoints[j] + 1;
+                    // generic spell damage
+                    if (spellproto->EffectMiscValue[j] == SPELL_SCHOOL_MASK_MAGIC)
+                    {
+                        spellPower += CalculateSingleStatWeight(playerclass, spec, "splpwr", spellDamage);
+                    }
+                    else
+                    {
+                        if (spellproto->EffectMiscValue[j] & SPELL_SCHOOL_MASK_ARCANE)
+                            spellPower += CalculateSingleStatWeight(playerclass, spec, "arcsplpwr", spellDamage);
+
+                        if (spellproto->EffectMiscValue[j] & SPELL_SCHOOL_MASK_FROST)
+                            spellPower += CalculateSingleStatWeight(playerclass, spec, "frosplpwr", spellDamage);
+
+                        if (spellproto->EffectMiscValue[j] & SPELL_SCHOOL_MASK_FIRE)
+                            spellPower += CalculateSingleStatWeight(playerclass, spec, "firsplpwr", spellDamage);
+
+                        if (spellproto->EffectMiscValue[j] & SPELL_SCHOOL_MASK_SHADOW)
+                            spellPower += CalculateSingleStatWeight(playerclass, spec, "shasplpwr", spellDamage);
+
+                        if (spellproto->EffectMiscValue[j] & SPELL_SCHOOL_MASK_NATURE)
+                            spellPower += CalculateSingleStatWeight(playerclass, spec, "natsplpwr", spellDamage);
+                    }
+                }
+                // spell healing
+                // SPELL_AURA_MOD_HEALING_DONE
+                if (spellproto->EffectApplyAuraName[j] == SPELL_AURA_MOD_HEALING_DONE)
+                {
+                    spellHeal += CalculateSingleStatWeight(playerclass, spec, "splheal", spellproto->EffectBasePoints[j] + 1);
+                }
+#endif
+
+                // spell hit rating (pre tbc)
+                // SPELL_AURA_MOD_SPELL_HIT_CHANCE
+                if (spellproto->EffectApplyAuraName[j] == SPELL_AURA_MOD_SPELL_HIT_CHANCE)
+                {
+                    statWeight += CalculateSingleStatWeight(playerclass, spec, "spellhitrtng", spellproto->EffectBasePoints[j] + 1);
+                }
+
+                // spell crit rating (pre tbc)
+                // SPELL_AURA_MOD_SPELL_CRIT_CHANCE
+                if (spellproto->EffectApplyAuraName[j] == SPELL_AURA_MOD_SPELL_CRIT_CHANCE)
+                {
+                    statWeight += CalculateSingleStatWeight(playerclass, spec, "spellcritstrkrtng", spellproto->EffectBasePoints[j] + 1);
+                }
+
+                // spell penetration
+                // SPELL_AURA_MOD_TARGET_RESISTANCE
+                if (spellproto->EffectApplyAuraName[j] == SPELL_AURA_MOD_TARGET_RESISTANCE)
+                {
+                    // check if magic type
+                    if (spellproto->EffectMiscValue[j] == SPELL_SCHOOL_MASK_SPELL)
+                        statWeight += CalculateSingleStatWeight(playerclass, spec, "spellpenrtng", abs(spellproto->EffectBasePoints[j] + 1));
+                }
 
                 // check attack power
                 if (spellproto->EffectApplyAuraName[j] == SPELL_AURA_MOD_ATTACK_POWER)
+                {
+                    isAttackItem = true;
+                    attackPower += CalculateSingleStatWeight(playerclass, spec, "atkpwr", spellproto->EffectBasePoints[j] + 1);
+                }
+
+                // check ranged ap
+                // SPELL_AURA_MOD_RANGED_ATTACK_POWER
+                if (spellproto->EffectApplyAuraName[j] == SPELL_AURA_MOD_RANGED_ATTACK_POWER)
                 {
                     isAttackItem = true;
                     attackPower += CalculateSingleStatWeight(playerclass, spec, "atkpwr", spellproto->EffectBasePoints[j] + 1);
@@ -1413,13 +1546,42 @@ uint32 RandomItemMgr::CalculateStatWeight(uint8 playerclass, uint8 spec, ItemPro
                     statWeight += CalculateSingleStatWeight(playerclass, spec, "block", spellproto->EffectBasePoints[j] + 1);
                 }
 
+                // block chance
+                // SPELL_AURA_MOD_BLOCK_PERCENT
+                if (spellproto->EffectApplyAuraName[j] == SPELL_AURA_MOD_BLOCK_PERCENT)
+                {
+                    statWeight += CalculateSingleStatWeight(playerclass, spec, "blockrtng", spellproto->EffectBasePoints[j] + 1);
+                }
+
+                // armor penetration
+                // SPELL_AURA_MOD_TARGET_RESISTANCE
+                if (spellproto->EffectApplyAuraName[j] == SPELL_AURA_MOD_TARGET_RESISTANCE)
+                {
+                    // check if physical type
+                    if (spellproto->EffectMiscValue[j] == SPELL_SCHOOL_MASK_NORMAL)
+                        statWeight += CalculateSingleStatWeight(playerclass, spec, "armorpenrtng", abs(spellproto->EffectBasePoints[j] + 1));
+                }
+
+                // hit rating (pre tbc)
+                // SPELL_AURA_MOD_HIT_CHANCE
+                if (spellproto->EffectApplyAuraName[j] == SPELL_AURA_MOD_HIT_CHANCE)
+                {
+                    statWeight += CalculateSingleStatWeight(playerclass, spec, "hitrtng", spellproto->EffectBasePoints[j] + 1);
+                }
+
+                // crit rating (pre tbc)
+                // SPELL_AURA_MOD_HIT_CHANCE
+                if (spellproto->EffectApplyAuraName[j] == SPELL_AURA_MOD_CRIT_PERCENT)
+                {
+                    statWeight += CalculateSingleStatWeight(playerclass, spec, "critstrkrtng", spellproto->EffectBasePoints[j] + 1);
+                }
+
                 // check defense SPELL_AURA_MOD_SKILL
                 // check block
                 //if (spellproto->EffectApplyAuraName[j] == SPELL_AURA_MOD_SKILL)
                 //{
                 //    statWeight += CalculateSingleStatWeight(playerclass, spec, "block", spellproto->EffectBasePoints[j] + 1);
                 //}
-
 
                 // ratings
                 // enum CombatRating
@@ -1507,6 +1669,7 @@ uint32 RandomItemMgr::CalculateStatWeight(uint8 playerclass, uint8 spec, ItemPro
     }
 
     statWeight += spellPower;
+    statWeight += spellHeal;
     statWeight += attackPower;
 
     // handle negative stats

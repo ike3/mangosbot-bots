@@ -2076,7 +2076,6 @@ bool PlayerbotAI::CastSpell(uint32 spellId, float x, float y, float z, Item* ite
     return true;
 }
 
-#ifdef MANGOSBOT_TWO
 bool PlayerbotAI::CanCastVehicleSpell(uint32 spellId, Unit* target)
 {
 #ifdef MANGOSBOT_TWO
@@ -2369,7 +2368,6 @@ bool PlayerbotAI::IsInVehicle(bool canControl, bool canCast, bool canAttack, boo
 #endif
     return false;
 }
-#endif
 
 void PlayerbotAI::WaitForSpellCast(Spell *spell)
 {

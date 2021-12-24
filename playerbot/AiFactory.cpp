@@ -242,6 +242,7 @@ std::string AiFactory::GetPlayerSpecName(Player* player)
         else if (tab == 2)
             specName = "surv";
         break;
+#ifdef MANGOSBOT_TWO
     case CLASS_DEATH_KNIGHT:
         if (tab == 0)
             specName = "blooddps";
@@ -250,6 +251,7 @@ std::string AiFactory::GetPlayerSpecName(Player* player)
         else if (tab == 2)
             specName = "unholydps";
         break;
+#endif
     case CLASS_MAGE:
         if (tab == 0)
             specName = "arcane";
@@ -662,8 +664,13 @@ void AiFactory::AddDefaultNonCombatStrategies(Player* player, PlayerbotAI* const
         else
         {
 #ifndef MANGOSBOT_ZERO
+#ifdef MANGOSBOT_TWO
             if (bgType <= BATTLEGROUND_EY || bgType == BATTLEGROUND_IC) // do not add for not supported bg
                 nonCombatEngine->addStrategy("battleground");
+#else
+            if (bgType <= BATTLEGROUND_EY) // do not add for not supported bg
+                nonCombatEngine->addStrategy("battleground");
+#endif
 #else
             if (bgType <= BATTLEGROUND_AB) // do not add for not supported bg
                 nonCombatEngine->addStrategy("battleground");
