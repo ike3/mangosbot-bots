@@ -858,9 +858,14 @@ void PlayerbotAI::DoNextAction(bool min)
                     }
                     else
                     {
+#ifndef MANGOSBOT_ZERO
                         uint32 honorpts = member->GetHonorPoints();
                         if (bot->GetHonorPoints() && honorpts < bot->GetHonorPoints())
                             continue;
+#else
+                        if (bot->GetHonorRankInfo().rank > member->GetHonorRankInfo().rank)
+                            continue;
+#endif
                     }
 
                     playerMaster = member;

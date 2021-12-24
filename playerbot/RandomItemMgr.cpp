@@ -1125,7 +1125,8 @@ void RandomItemMgr::BuildItemInfoCache()
                 if ((proto->AllowableRace & faction->BaseRepRaceMask[0]) != 0)
                     cacheInfo->team = ALLIANCE;
         }
-#else
+#endif
+#ifdef MANGOSBOT_ONE
         // check faction
         if (!cacheInfo->team && proto->AllowableRace > 1 && proto->AllowableRace < 8388607)
         {
@@ -1134,6 +1135,19 @@ void RandomItemMgr::BuildItemInfoCache()
                     cacheInfo->team = HORDE;
 
             if (FactionEntry const* faction = sFactionStore.LookupEntry<FactionEntry>(ALLIANCE))
+                if ((proto->AllowableRace & faction->BaseRepRaceMask[0]) != 0)
+                    cacheInfo->team = ALLIANCE;
+        }
+#endif
+#ifdef MANGOSBOT_ZERO
+        // check faction
+        if (!cacheInfo->team && proto->AllowableRace > 1 && proto->AllowableRace < 8388607)
+        {
+            if (FactionEntry const* faction = sFactionStore.LookupEntry(HORDE))
+                if ((proto->AllowableRace & faction->BaseRepRaceMask[0]) != 0)
+                    cacheInfo->team = HORDE;
+
+            if (FactionEntry const* faction = sFactionStore.LookupEntry(ALLIANCE))
                 if ((proto->AllowableRace & faction->BaseRepRaceMask[0]) != 0)
                     cacheInfo->team = ALLIANCE;
         }
@@ -1282,7 +1296,7 @@ void RandomItemMgr::BuildItemInfoCache()
         static SqlStatementID delCache;
         static SqlStatementID insertCache;
 
-        SqlStatement stmt = PlayerbotDatabase.CreateStatement(delCache, "DELETE FROM ai_playerbot_equip_cache_new WHERE id = ?");
+        SqlStatement stmt = PlayerbotDatabase.CreateStatement(delCache, "DELETE FROM ai_playerbot_item_info_cache WHERE id = ?");
         stmt.PExecute(proto->ItemId);
 
         stmt = PlayerbotDatabase.CreateStatement(insertCache, "INSERT INTO ai_playerbot_item_info_cache (id, quality, slot, source, sourceId, team, faction, factionRepRank, minLevel, "
@@ -1576,13 +1590,13 @@ uint32 RandomItemMgr::CalculateStatWeight(uint8 playerclass, uint8 spec, ItemPro
                     statWeight += CalculateSingleStatWeight(playerclass, spec, "critstrkrtng", spellproto->EffectBasePoints[j] + 1);
                 }
 
-                // check defense SPELL_AURA_MOD_SKILL
-                // check block
+                //check defense SPELL_AURA_MOD_SKILL
                 //if (spellproto->EffectApplyAuraName[j] == SPELL_AURA_MOD_SKILL)
                 //{
                 //    statWeight += CalculateSingleStatWeight(playerclass, spec, "block", spellproto->EffectBasePoints[j] + 1);
                 //}
 
+#ifndef MANGOSBOT_ZERO
                 // ratings
                 // enum CombatRating
                 if (spellproto->EffectApplyAuraName[j] == SPELL_AURA_MOD_RATING)
@@ -1611,6 +1625,7 @@ uint32 RandomItemMgr::CalculateStatWeight(uint8 playerclass, uint8 spec, ItemPro
                         }
                     }
                 }
+#endif
 
                 // mana regen
                 // SPELL_AURA_MOD_POWER_REGEN
@@ -2137,8 +2152,13 @@ uint32 RandomItemMgr::GetLiveStatWeight(Player* player, uint32 itemId)
     // skip pvp items
     if (info->source == ITEM_SOURCE_PVP)
     {
+#ifndef MANGOSBOT_ZERO
         if (!player->GetHonorPoints() && !player->GetArenaPoints())
             return 0;
+#else
+        if (!player->GetHonorRankInfo().rank)
+            return 0;
+#endif
     }
 
     // skip no stats trinkets
