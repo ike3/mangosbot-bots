@@ -155,6 +155,27 @@ RandomPlayerbotMgr::RandomPlayerbotMgr() : PlayerbotHolder(), processTicks(0), l
         sPlayerbotCommandServer.Start();
         PrepareTeleportCache();
     }
+
+    for (int i = BG_BRACKET_ID_FIRST; i < MAX_BATTLEGROUND_BRACKETS; ++i)
+    {
+        for (int j = BATTLEGROUND_QUEUE_AV; j < MAX_BATTLEGROUND_QUEUE_TYPES; ++j)
+        {
+            BgPlayers[j][i][0] = 0;
+            BgPlayers[j][i][1] = 0;
+            BgBots[j][i][0] = 0;
+            BgBots[j][i][1] = 0;
+            ArenaBots[j][i][0][0] = 0;
+            ArenaBots[j][i][0][1] = 0;
+            ArenaBots[j][i][1][0] = 0;
+            ArenaBots[j][i][1][1] = 0;
+            NeedBots[j][i][0] = false;
+            NeedBots[j][i][1] = false;
+        }
+    }
+
+    BgCheckTimer = 0;
+    LfgCheckTimer = 0;
+    PlayersCheckTimer = 0;
 }
 
 RandomPlayerbotMgr::~RandomPlayerbotMgr()
@@ -315,7 +336,7 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed, bool minimal)
             activateCheckLfgQueueThread();
     }
 
-    if (sPlayerbotAIConfig.randomBotJoinBG && players.size())
+    if (sPlayerbotAIConfig.randomBotJoinBG)
     {
         if (time(NULL) > (BgCheckTimer + 30))
             activateCheckBgQueueThread();
