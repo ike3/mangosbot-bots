@@ -17,7 +17,7 @@ namespace ai
     class NearestEnemyPlayersValue : public PossibleTargetsValue
     {
     public:
-        NearestEnemyPlayersValue(PlayerbotAI* ai, float range = 120.0f) :
+        NearestEnemyPlayersValue(PlayerbotAI* ai, float range = sPlayerbotAIConfig.sightDistance) :
             PossibleTargetsValue(ai, "nearest enemy players", range) {}
 
     public:
