@@ -42,7 +42,7 @@ void AttackersValue::AddAttackersOf(Group* group, set<Unit*>& targets)
     for (Group::member_citerator itr = groupSlot.begin(); itr != groupSlot.end(); itr++)
     {
         Player *member = sObjectMgr.GetPlayer(itr->guid);
-        if (!member || !sServerFacade.IsAlive(member) || member == bot)
+        if (!member || !sServerFacade.IsAlive(member) || member == bot || member->GetMapId() != bot->GetMapId())
             continue;
 
         AddAttackersOf(member, targets);
@@ -62,7 +62,7 @@ struct AddGuardiansHelper
 
 void AttackersValue::AddAttackersOf(Player* player, set<Unit*>& targets)
 {
-    if (player->IsBeingTeleported())
+    if (!player || !player->IsInWorld() || player->IsBeingTeleported())
         return;
 
 	list<Unit*> units;
