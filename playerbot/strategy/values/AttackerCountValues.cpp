@@ -85,7 +85,7 @@ uint8 BalancePercentValue::Calculate()
             if( !player || !sServerFacade.IsAlive(player))
                 continue;
 
-            playerLevel += player->getLevel();
+            playerLevel += player->GetLevel();
         }
     }
 
@@ -97,7 +97,7 @@ uint8 BalancePercentValue::Calculate()
         if (!creature || !sServerFacade.IsAlive(creature))
             continue;
 
-        uint32 level = creature->getLevel();
+        uint32 level = creature->GetLevel();
 
         switch (creature->GetCreatureInfo()->Rank) {
         case CREATURE_ELITE_RARE:

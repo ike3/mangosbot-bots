@@ -121,7 +121,7 @@ void AutoLearnSpellAction::LearnQuestSpells(ostringstream* out)
             continue;
 
         if (!bot->SatisfyQuestClass(quest, false) ||
-            quest->GetMinLevel() > bot->getLevel() ||
+            quest->GetMinLevel() > bot->GetLevel() ||
             !bot->SatisfyQuestRace(quest, false))
             continue;
 

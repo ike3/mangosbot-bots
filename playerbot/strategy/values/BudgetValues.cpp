@@ -153,7 +153,7 @@ uint32 MoneyNeededForValue::Calculate()
 
 	uint32 moneyWanted = 0;
 
-	uint32 level = bot->getLevel();
+	uint32 level = bot->GetLevel();
 
     switch (needMoneyFor)
     {

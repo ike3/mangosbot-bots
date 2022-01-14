@@ -69,7 +69,7 @@ bool MoveToDarkPortalAction::Execute(Event event)
             return false;
 
 #ifndef MANGOSBOT_ZERO
-    if (sWorldState.GetExpansion() == EXPANSION_TBC && bot->getLevel() > 57)
+    if (sWorldState.GetExpansion() == EXPANSION_TBC && bot->GetLevel() > 57)
     {
         if ((bot->GetTeam() == ALLIANCE && bot->GetQuestStatus(10119) == QUEST_STATUS_NONE) || (bot->GetTeam() == HORDE && bot->GetQuestStatus(9407) == QUEST_STATUS_NONE))
         {
@@ -119,7 +119,7 @@ bool MoveToDarkPortalAction::Execute(Event event)
 bool MoveToDarkPortalAction::isUseful()
 {
 #ifndef MANGOSBOT_ZERO
-    return bot->getLevel() > 54;
+    return bot->GetLevel() > 54;
 #endif
     return false;
 }
@@ -127,7 +127,7 @@ bool MoveToDarkPortalAction::isUseful()
 bool DarkPortalAzerothAction::Execute(Event event)
 {
 #ifndef MANGOSBOT_ZERO
-    if (sWorldState.GetExpansion() == EXPANSION_TBC && bot->getLevel() > 57)
+    if (sWorldState.GetExpansion() == EXPANSION_TBC && bot->GetLevel() > 57)
     {
         WorldPacket packet(CMSG_AREATRIGGER);
         packet << 4354;
@@ -141,7 +141,7 @@ bool DarkPortalAzerothAction::Execute(Event event)
 bool DarkPortalAzerothAction::isUseful()
 {
 #ifndef MANGOSBOT_ZERO
-    return bot->getLevel() > 57;
+    return bot->GetLevel() > 57;
 #endif
     return false;
 }

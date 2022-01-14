@@ -107,7 +107,7 @@ void PlayerbotFactory::Prepare()
     bot->CombatStop(true);
     if (sPlayerbotAIConfig.disableRandomLevels)
     {
-        if (bot->getLevel() < sPlayerbotAIConfig.randombotStartingLevel)
+        if (bot->GetLevel() < sPlayerbotAIConfig.randombotStartingLevel)
         {
             bot->SetLevel(sPlayerbotAIConfig.randombotStartingLevel);
         }
@@ -166,7 +166,7 @@ void PlayerbotFactory::Randomize(bool incremental)
 		// quest rewards boost bot level, so reduce back
 		if (sPlayerbotAIConfig.disableRandomLevels)
 		{
-			if (bot->getLevel() < sPlayerbotAIConfig.randombotStartingLevel)
+			if (bot->GetLevel() < sPlayerbotAIConfig.randombotStartingLevel)
 			{
 				bot->SetLevel(sPlayerbotAIConfig.randombotStartingLevel);
 			}
@@ -224,7 +224,7 @@ void PlayerbotFactory::Randomize(bool incremental)
     sLog.outDetail("Initializing equipmemt...");
     InitEquipment(incremental);
 	
-	if (bot->getLevel() >= sPlayerbotAIConfig.minEnchantingBotLevel)
+	if (bot->GetLevel() >= sPlayerbotAIConfig.minEnchantingBotLevel)
 	{
 		sLog.outDetail("Initializing enchant templates...");
 		LoadEnchantContainer();
@@ -260,7 +260,7 @@ void PlayerbotFactory::Randomize(bool incremental)
 	pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_EqSets");
     sLog.outDetail("Initializing second equipment set...");
     InitSecondEquipmentSet();
-	if (bot->getLevel() >= sPlayerbotAIConfig.minEnchantingBotLevel)
+	if (bot->GetLevel() >= sPlayerbotAIConfig.minEnchantingBotLevel)
 	{
 		ApplyEnchantTemplate();
 	}
@@ -277,12 +277,12 @@ void PlayerbotFactory::Randomize(bool incremental)
     bot->SaveToDB(); //thesawolf - save save save (hopefully avoids dupes)
     InitGuild();
 #ifndef MANGOSBOT_ZERO
-    if (bot->getLevel() >= 70)
+    if (bot->GetLevel() >= 70)
         InitArenaTeam();
 #endif
     if (pmo) pmo->finish();
 
-	if (bot->getLevel() >= 10) {
+	if (bot->GetLevel() >= 10) {
 		pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Pet");
 		sLog.outDetail("Initializing pet...");
 		InitPet();
@@ -464,7 +464,7 @@ void PlayerbotFactory::InitPet()
 #endif
                 continue;
 
-            if ((int)co->MinLevel > (int)bot->getLevel())
+            if ((int)co->MinLevel > (int)bot->GetLevel())
                 continue;
 
 			ids.push_back(id);
@@ -472,7 +472,7 @@ void PlayerbotFactory::InitPet()
 
         if (ids.empty())
         {
-            sLog.outError("No pets available for bot %s (%d level)", bot->GetName(), bot->getLevel());
+            sLog.outError("No pets available for bot %s (%d level)", bot->GetName(), bot->GetLevel());
             return;
         }
 
@@ -500,9 +500,9 @@ void PlayerbotFactory::InitPet()
 
             pet->SetOwnerGuid(bot->GetObjectGuid());
             pet->SetGuidValue(UNIT_FIELD_CREATEDBY, bot->GetObjectGuid());
-            pet->setFaction(bot->getFaction());
-            pet->SetLevel(bot->getLevel());
-            pet->InitStatsForLevel(bot->getLevel());
+            pet->setFaction(bot->GetFaction());
+            pet->SetLevel(bot->GetLevel());
+            pet->InitStatsForLevel(bot->GetLevel());
 #ifdef MANGOSBOT_TWO
 
 #else
@@ -535,7 +535,7 @@ void PlayerbotFactory::InitPet()
             bot->SetPet(pet);
             bot->SetPetGuid(pet->GetObjectGuid());
 
-            sLog.outDebug(  "Bot %s: assign pet %d (%d level)", bot->GetName(), co->Entry, bot->getLevel());
+            sLog.outDebug(  "Bot %s: assign pet %d (%d level)", bot->GetName(), co->Entry, bot->GetLevel());
             pet->SavePetToDB(PET_SAVE_AS_CURRENT
 #ifdef CMANGOS
                     , bot
@@ -549,8 +549,8 @@ void PlayerbotFactory::InitPet()
     pet = bot->GetPet();
     if (pet)
     {
-        pet->InitStatsForLevel(bot->getLevel());
-        pet->SetLevel(bot->getLevel());
+        pet->InitStatsForLevel(bot->GetLevel());
+        pet->SetLevel(bot->GetLevel());
 #ifdef MANGOSBOT_TWO
 
 #else
@@ -858,7 +858,7 @@ bool PlayerbotFactory::CanEquipWeapon(ItemPrototype const* proto)
             proto->SubClass != ITEM_SUBCLASS_WEAPON_THROWN)
             return false;
       }
-      if ((tab == 0) && (bot->getLevel() > 10))   //arms
+      if ((tab == 0) && (bot->GetLevel() > 10))   //arms
       {
          if (proto->SubClass != ITEM_SUBCLASS_WEAPON_MACE2 &&
             proto->SubClass != ITEM_SUBCLASS_WEAPON_SWORD2 &&
@@ -991,7 +991,7 @@ bool PlayerbotFactory::CanEquipItem(ItemPrototype const* proto, uint32 desiredQu
     if (!requiredLevel)
         return false;
 
-    uint32 level = bot->getLevel();
+    uint32 level = bot->GetLevel();
     uint32 delta = 2;
     if (level < 15)
         delta = urand(7, 15);
@@ -1098,7 +1098,7 @@ void PlayerbotFactory::InitEquipmentNew(bool incremental)
                         newItem->AddToUpdateQueueOf(bot);
                         bot->AutoUnequipOffhandIfNeed();
                         EnchantItem(newItem);
-                        sLog.outString("Bot #%d %s:%d <%s>: Equip: %d, slot: %d, Old item: %d", bot->GetGUIDLow(), IsAlliance(bot->getRace()) ? "A" : "H", bot->getLevel(), bot->GetName(), newItemId, slot, itemInSlot);
+                        sLog.outString("Bot #%d %s:%d <%s>: Equip: %d, slot: %d, Old item: %d", bot->GetGUIDLow(), IsAlliance(bot->getRace()) ? "A" : "H", bot->GetLevel(), bot->GetName(), newItemId, slot, itemInSlot);
                         found = true;
                         break;
                     }
@@ -1121,7 +1121,7 @@ void PlayerbotFactory::InitEquipmentNew(bool incremental)
                         bot->AutoUnequipOffhandIfNeed();
                         EnchantItem(newItem);
                         found = true;
-                        sLog.outString("Bot #%d %s:%d <%s>: Equip: %d, slot: %d", bot->GetGUIDLow(), IsAlliance(bot->getRace()) ? "A" : "H", bot->getLevel(), bot->GetName(), newItemId, slot);
+                        sLog.outString("Bot #%d %s:%d <%s>: Equip: %d, slot: %d", bot->GetGUIDLow(), IsAlliance(bot->getRace()) ? "A" : "H", bot->GetLevel(), bot->GetName(), newItemId, slot);
                         break;
                     }
                 }
@@ -1130,7 +1130,7 @@ void PlayerbotFactory::InitEquipmentNew(bool incremental)
         } while (!found && quality != ITEM_QUALITY_POOR);
         if (!found)
         {
-            sLog.outDetail("Bot #%d %s:%d <%s>: no item for slot %d", bot->GetGUIDLow(), IsAlliance(bot->getRace()) ? "A" : "H", bot->getLevel(), bot->GetName(), slot);
+            sLog.outDetail("Bot #%d %s:%d <%s>: no item for slot %d", bot->GetGUIDLow(), IsAlliance(bot->getRace()) ? "A" : "H", bot->GetLevel(), bot->GetName(), slot);
             continue;
         }
     }
@@ -1231,8 +1231,8 @@ bool PlayerbotFactory::IsDesiredReplacement(Item* item)
         requiredLevel = sRandomItemMgr.GetMinLevelFromCache(proto->ItemId);
     }
 
-    int delta = 1 + (80 - bot->getLevel()) / 10;
-    return (int)bot->getLevel() - (int)requiredLevel > delta;
+    int delta = 1 + (80 - bot->GetLevel()) / 10;
+    return (int)bot->GetLevel() - (int)requiredLevel > delta;
 }
 
 void PlayerbotFactory::InitSecondEquipmentSet()
@@ -1393,7 +1393,7 @@ void PlayerbotFactory::InitBags()
 
 void PlayerbotFactory::EnchantItem(Item* item)
 {
-    if (bot->getLevel() < sPlayerbotAIConfig.minEnchantingBotLevel)
+    if (bot->GetLevel() < sPlayerbotAIConfig.minEnchantingBotLevel)
         return;
 
 #ifdef CMANGOS
@@ -1591,35 +1591,35 @@ void PlayerbotFactory::InitSkills()
 
 // Riding skills requirements are different
 #ifdef MANGOSBOT_ZERO
-    if (bot->getLevel() >= 60)
+    if (bot->GetLevel() >= 60)
         bot->SetSkill(SKILL_RIDING, 150, 150);
-    else if (bot->getLevel() >= 40)
+    else if (bot->GetLevel() >= 40)
         bot->SetSkill(SKILL_RIDING, 75, 75);
 #endif
 #ifdef MANGOSBOT_ONE
-    if (bot->getLevel() >= 70)
+    if (bot->GetLevel() >= 70)
         bot->SetSkill(SKILL_RIDING, 300, 300);
-    else if (bot->getLevel() >= 68)
+    else if (bot->GetLevel() >= 68)
         bot->SetSkill(SKILL_RIDING, 225, 225);
-    else if (bot->getLevel() >= 60)
+    else if (bot->GetLevel() >= 60)
         bot->SetSkill(SKILL_RIDING, 150, 150);
-    else if (bot->getLevel() >= 30)
+    else if (bot->GetLevel() >= 30)
         bot->SetSkill(SKILL_RIDING, 75, 75);
 #endif
 #ifdef MANGOSBOT_TWO
-    if (bot->getLevel() >= 70)
+    if (bot->GetLevel() >= 70)
         bot->SetSkill(SKILL_RIDING, 300, 300);
-    else if (bot->getLevel() >= 60)
+    else if (bot->GetLevel() >= 60)
         bot->SetSkill(SKILL_RIDING, 225, 225);
-    else if (bot->getLevel() >= 40)
+    else if (bot->GetLevel() >= 40)
         bot->SetSkill(SKILL_RIDING, 150, 150);
-    else if (bot->getLevel() >= 20)
+    else if (bot->GetLevel() >= 20)
         bot->SetSkill(SKILL_RIDING, 75, 75);
 #endif
     else
         bot->SetSkill(SKILL_RIDING, 0, 0);
 
-    uint32 skillLevel = bot->getLevel() < 40 ? 0 : 1;
+    uint32 skillLevel = bot->GetLevel() < 40 ? 0 : 1;
     switch (bot->getClass())
     {
     case CLASS_WARRIOR:
@@ -1970,14 +1970,14 @@ void PlayerbotFactory::InitQuests(list<uint32>& questMap)
         Quest const *quest = sObjectMgr.GetQuestTemplate(questId);
 
         if (!bot->SatisfyQuestClass(quest, false) ||
-                quest->GetMinLevel() > bot->getLevel() ||
+                quest->GetMinLevel() > bot->GetLevel() ||
                 !bot->SatisfyQuestRace(quest, false))
             continue;
 
         bot->SetQuestStatus(questId, QUEST_STATUS_COMPLETE);
         bot->RewardQuest(quest, 0, bot, false);
         sLog.outDetail("Bot %s (%d level) rewarded quest %d: %s (MinLevel=%d, QuestLevel=%d)",
-                bot->GetName(), bot->getLevel(), questId, quest->GetTitle().c_str(),
+                bot->GetName(), bot->GetLevel(), questId, quest->GetTitle().c_str(),
                 quest->GetMinLevel(), quest->GetQuestLevel());
         if (!(count++ % 10))
             ClearInventory();
@@ -2092,7 +2092,7 @@ void PlayerbotFactory::InitMounts()
 #endif
         ;
 
-    if (bot->getLevel() < firstmount)
+    if (bot->GetLevel() < firstmount)
         return;
 
     map<uint8, map<uint32, vector<uint32> > > mounts;
@@ -2161,13 +2161,13 @@ void PlayerbotFactory::InitMounts()
 
     for (uint32 type = 0; type < 4; type++)
     {
-        if (bot->getLevel() < secondmount && type == 1)
+        if (bot->GetLevel() < secondmount && type == 1)
             continue;
 
-        if (bot->getLevel() < thirdmount && type == 2)
+        if (bot->GetLevel() < thirdmount && type == 2)
             continue;
 
-        if (bot->getLevel() < fourthmount && type == 3)
+        if (bot->GetLevel() < fourthmount && type == 3)
             continue;
 
         uint32 index = urand(0, mounts[bot->getRace()][type].size() - 1);
@@ -2175,7 +2175,7 @@ void PlayerbotFactory::InitMounts()
         if (spell)
         {
             bot->learnSpell(spell, false);
-            sLog.outDetail("Bot %d (%d) learned %s mount %d", bot->GetGUIDLow(), bot->getLevel(), type == 0 ? "slow" : (type == 1 ? "fast" : "flying"), spell);
+            sLog.outDetail("Bot %d (%d) learned %s mount %d", bot->GetGUIDLow(), bot->GetLevel(), type == 0 ? "slow" : (type == 1 ? "fast" : "flying"), spell);
         }
     }
 }
@@ -2193,7 +2193,7 @@ void PlayerbotFactory::InitPotions()
         uint32 itemId = sRandomItemMgr.GetRandomPotion(level, effect);
         if (!itemId)
         {
-            sLog.outDetail("No potions (type %d) available for bot %s (%d level)", effect, bot->GetName(), bot->getLevel());
+            sLog.outDetail("No potions (type %d) available for bot %s (%d level)", effect, bot->GetName(), bot->GetLevel());
             continue;
         }
 
@@ -2221,7 +2221,7 @@ void PlayerbotFactory::InitFood()
         uint32 itemId = sRandomItemMgr.GetFood(level, category);
         if (!itemId)
         {
-            sLog.outDetail("No food (category %d) available for bot %s (%d level)", category, bot->GetName(), bot->getLevel());
+            sLog.outDetail("No food (category %d) available for bot %s (%d level)", category, bot->GetName(), bot->GetLevel());
             continue;
         }
         ItemPrototype const* proto = sObjectMgr.GetItemPrototype(itemId);
@@ -2242,61 +2242,61 @@ void PlayerbotFactory::InitReagents()
     {
     case CLASS_MAGE:
         regCount = 2;
-        if (bot->getLevel() > 11)
+        if (bot->GetLevel() > 11)
             items = { 17056 };
-        if (bot->getLevel() > 19)
+        if (bot->GetLevel() > 19)
             items = { 17056, 17031 };
-        if (bot->getLevel() > 35)
+        if (bot->GetLevel() > 35)
             items = { 17056, 17031, 17032 };
-        if (bot->getLevel() > 55)
+        if (bot->GetLevel() > 55)
             items = { 17056, 17031, 17032, 17020 };
         break;
     case CLASS_DRUID:
         regCount = 2;
-        if (bot->getLevel() > 19)
+        if (bot->GetLevel() > 19)
             items = { 17034 };
-        if (bot->getLevel() > 29)
+        if (bot->GetLevel() > 29)
             items = { 17035 };
-        if (bot->getLevel() > 39)
+        if (bot->GetLevel() > 39)
             items = { 17036 };
-        if (bot->getLevel() > 49)
+        if (bot->GetLevel() > 49)
             items = { 17037, 17021 };
-        if (bot->getLevel() > 59)
+        if (bot->GetLevel() > 59)
             items = { 17038, 17026 };
-        if (bot->getLevel() > 69)
+        if (bot->GetLevel() > 69)
             items = { 22147, 22148 };
         break;
     case CLASS_PALADIN:
         regCount = 3;
-        if (bot->getLevel() > 50)
+        if (bot->GetLevel() > 50)
             items = { 21177 };
         break;
     case CLASS_SHAMAN:
         regCount = 1;
-        if (bot->getLevel() > 22)
+        if (bot->GetLevel() > 22)
             items = { 17057 };
-        if (bot->getLevel() > 28)
+        if (bot->GetLevel() > 28)
             items = { 17057, 17058 };
-        if (bot->getLevel() > 29)
+        if (bot->GetLevel() > 29)
             items = { 17057, 17058, 17030 };
         break;
     case CLASS_WARLOCK:
         regCount = 10;
-        if (bot->getLevel() > 9)
+        if (bot->GetLevel() > 9)
             items = { 6265 };
         break;
     case CLASS_PRIEST:
         regCount = 3;
-        if (bot->getLevel() > 48)
+        if (bot->GetLevel() > 48)
             items = { 17028 };
-        if (bot->getLevel() > 55)
+        if (bot->GetLevel() > 55)
             items = { 17028, 17029 };
         break;
     case CLASS_ROGUE:
         regCount = 1;
-        if (bot->getLevel() > 21)
+        if (bot->GetLevel() > 21)
             items = { 5140 };
-        if (bot->getLevel() > 33)
+        if (bot->GetLevel() > 33)
             items = { 5140, 5530 };
         break;
     }
@@ -2409,7 +2409,7 @@ void PlayerbotFactory::InitInventoryTrade()
     uint32 itemId = sRandomItemMgr.GetRandomTrade(level);
     if (!itemId)
     {
-        sLog.outError("No trade items available for bot %s (%d level)", bot->GetName(), bot->getLevel());
+        sLog.outError("No trade items available for bot %s (%d level)", bot->GetName(), bot->GetLevel());
         return;
     }
 
@@ -2516,7 +2516,7 @@ void PlayerbotFactory::InitGuild()
         guild->AddMember(bot->GetObjectGuid(), urand(GR_OFFICER, GR_INITIATE));
 
     // add guild tabard
-    if (bot->GetGuildId() && bot->getLevel() > 9 && urand(0, 4) && !bot->HasItemCount(5976, 1))
+    if (bot->GetGuildId() && bot->GetLevel() > 9 && urand(0, 4) && !bot->HasItemCount(5976, 1))
         StoreItem(5976, 1);
 
     bot->SaveToDB();
@@ -2590,7 +2590,7 @@ void PlayerbotFactory::InitImmersive()
         {
             Stats from = (Stats)urand(STAT_STRENGTH, MAX_STATS - 1);
             Stats to = (Stats)urand(STAT_STRENGTH, MAX_STATS - 1);
-            int32 delta = urand(0, 5 + bot->getLevel() / 3);
+            int32 delta = urand(0, 5 + bot->GetLevel() / 3);
             if (from != to && percentMap[to] + delta <= 100 && percentMap[from] - delta >= 0)
             {
                 percentMap[to] += delta;
@@ -2637,7 +2637,7 @@ void PlayerbotFactory::InitArenaTeam()
         return;
     }
 
-    if (arenateam->GetMembersSize() < ((uint32)arenateam->GetType()) && bot->getLevel() >= 70)
+    if (arenateam->GetMembersSize() < ((uint32)arenateam->GetType()) && bot->GetLevel() >= 70)
     {
         ObjectGuid capt = arenateam->GetCaptainGuid();
         Player* botcaptain = sObjectMgr.GetPlayer(capt);

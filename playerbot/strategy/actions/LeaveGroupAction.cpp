@@ -84,14 +84,14 @@ namespace ai
 
         if (bot->GetGuildId() == master->GetGuildId())
         {
-            if (bot->getLevel() > master->getLevel() + 5)
+            if (bot->GetLevel() > master->GetLevel() + 5)
             {
                 if(AI_VALUE(bool, "should get money"))
                     return false;
             }
         }
 
-        if (abs(int32(master->getLevel() - bot->getLevel())) > 4)
+        if (abs(int32(master->GetLevel() - bot->GetLevel())) > 4)
             return true;
 
         return false;

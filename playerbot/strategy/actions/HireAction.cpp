@@ -30,15 +30,15 @@ bool HireAction::Execute(Event event)
         return false;
     }
 
-    if ((int)bot->getLevel() > (int)master->getLevel())
+    if ((int)bot->GetLevel() > (int)master->GetLevel())
     {
         ai->TellMaster("You cannot hire higher level characters than you");
         return false;
     }
 
     uint32 discount = sRandomPlayerbotMgr.GetTradeDiscount(bot, master);
-    uint32 m = 1 + (bot->getLevel() / 10);
-    uint32 moneyReq = m * 5000 * bot->getLevel();
+    uint32 m = 1 + (bot->GetLevel() / 10);
+    uint32 moneyReq = m * 5000 * bot->GetLevel();
     if ((int)discount < (int)moneyReq)
     {
         ostringstream out;

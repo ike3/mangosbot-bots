@@ -183,7 +183,7 @@ ItemUsage ItemUsageValue::QueryItemUsageForEquip(ItemPrototype const* itemProto)
 
     if (itemProto->Class == ITEM_CLASS_WEAPON && !sRandomItemMgr.CanEquipWeapon(bot->getClass(), itemProto))
         shouldEquip = false;
-    if (itemProto->Class == ITEM_CLASS_ARMOR && !sRandomItemMgr.CanEquipArmor(bot->getClass(), bot->getLevel(), itemProto))
+    if (itemProto->Class == ITEM_CLASS_ARMOR && !sRandomItemMgr.CanEquipArmor(bot->getClass(), bot->GetLevel(), itemProto))
         shouldEquip = false;
 
     Item* oldItem = bot->GetItemByPos(dest);
@@ -216,7 +216,7 @@ ItemUsage ItemUsageValue::QueryItemUsageForEquip(ItemPrototype const* itemProto)
     bool existingShouldEquip = true;
     if (oldItemProto->Class == ITEM_CLASS_WEAPON && !sRandomItemMgr.CanEquipWeapon(bot->getClass(), oldItemProto))
         existingShouldEquip = false;
-    if (oldItemProto->Class == ITEM_CLASS_ARMOR && !sRandomItemMgr.CanEquipArmor(bot->getClass(), bot->getLevel(), oldItemProto))
+    if (oldItemProto->Class == ITEM_CLASS_ARMOR && !sRandomItemMgr.CanEquipArmor(bot->getClass(), bot->GetLevel(), oldItemProto))
         existingShouldEquip = false;
 
     uint32 oldItemPower = sRandomItemMgr.GetLiveStatWeight(bot, oldItemProto->ItemId);

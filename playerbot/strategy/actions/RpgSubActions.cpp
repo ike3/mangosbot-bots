@@ -273,7 +273,7 @@ bool RpgDuelAction::isUseful(Event event)
     }
 
     // Less spammy duels
-    if (bot->getLevel() == 1)
+    if (bot->GetLevel() == 1)
         return false;
 
     return true;

@@ -111,9 +111,9 @@ class RandomPlayerbotMgr : public PlayerbotHolder
         uint32 SetEventValue(uint32 bot, string event, uint32 value, uint32 validIn, string data = "");
         list<uint32> GetBots();
         list<uint32> GetBgBots(uint32 bracket);
-        uint32 BgCheckTimer;
-        uint32 LfgCheckTimer;
-        uint32 PlayersCheckTimer;
+        time_t BgCheckTimer;
+        time_t LfgCheckTimer;
+        time_t PlayersCheckTimer;
         uint32 AddRandomBots();
         bool ProcessBot(uint32 bot);
         void ScheduleRandomize(uint32 bot, uint32 time);

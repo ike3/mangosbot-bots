@@ -66,7 +66,7 @@ Unit* GrindTargetValue::FindTargetForGrinding(int assistCount)
         //if (master && master->GetDistance(unit) >= sPlayerbotAIConfig.grindDistance && !sRandomPlayerbotMgr.IsRandomBot(bot))
         //    continue;
 
-        if (!bot->InBattleGround() && (int)unit->getLevel() - (int)bot->getLevel() > 4 && !unit->GetObjectGuid().IsPlayer())
+        if (!bot->InBattleGround() && (int)unit->GetLevel() - (int)bot->GetLevel() > 4 && !unit->GetObjectGuid().IsPlayer())
             continue;
 
         if (needForQuestMap.find(unit->GetEntry()) == needForQuestMap.end())
@@ -143,7 +143,7 @@ bool GrindTargetValue::needForQuest(Unit* target)
         {
             QuestStatusData* questStatus = sTravelMgr.getQuestStatus(bot, questId);
 
-            if (questTemplate->GetQuestLevel() > (int)bot->getLevel())
+            if (questTemplate->GetQuestLevel() > (int)bot->GetLevel())
                 continue;
 
             for (int j = 0; j < QUEST_OBJECTIVES_COUNT; j++)

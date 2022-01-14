@@ -145,7 +145,7 @@ bool CheckMountStateAction::isUseful()
     if (!bot->GetPlayerbotAI()->HasStrategy("mount", BOT_STATE_NON_COMBAT) && !bot->IsMounted())
         return false;
 
-    bool firstmount = bot->getLevel() >=
+    bool firstmount = bot->GetLevel() >=
 #ifdef MANGOSBOT_ZERO
         40
 #else
@@ -234,10 +234,10 @@ bool CheckMountStateAction::Mount()
     //map<int32, vector<uint32> > spells;
     map<uint32, map<int32, vector<uint32> > > allSpells;
 #ifdef MANGOS
-    if (bot->GetPureSkillValue(SKILL_RIDING) <= 75 && bot->getLevel() < 60)
+    if (bot->GetPureSkillValue(SKILL_RIDING) <= 75 && bot->GetLevel() < 60)
 #endif
 #ifdef CMANGOS
-    if (bot->GetSkillValuePure(SKILL_RIDING) <= 75 && bot->getLevel() < secondmount)
+    if (bot->GetSkillValuePure(SKILL_RIDING) <= 75 && bot->GetLevel() < secondmount)
 #endif
         masterSpeed = 59;
 
