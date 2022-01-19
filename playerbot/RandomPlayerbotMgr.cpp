@@ -1113,9 +1113,6 @@ bool RandomPlayerbotMgr::ProcessBot(uint32 bot)
 
     if (!player)
     {
-        if (!urand(0, 4))
-            return true;
-
         AddPlayerBot(bot, 0);
         SetEventValue(bot, "login", 1, sPlayerbotAIConfig.randomBotUpdateInterval);
         uint32 randomTime = urand(sPlayerbotAIConfig.minRandomBotReviveTime, sPlayerbotAIConfig.maxRandomBotReviveTime);
@@ -1181,9 +1178,6 @@ bool RandomPlayerbotMgr::ProcessBot(uint32 bot)
 
 bool RandomPlayerbotMgr::ProcessBot(Player* player)
 {
-    if (!urand(0, 4))
-        return true;
-
     uint32 bot = player->GetGUIDLow();
 
     if (player->InBattleGround())
@@ -2070,8 +2064,8 @@ void RandomPlayerbotMgr::OnPlayerLogin(Player* player)
         if (player == bot/* || player->GetPlayerbotAI()*/) // TEST
             continue;
 
-        if (player->GetCurrentCell() == bot->GetCurrentCell())
-            botsNearby++;
+        //if (player->GetCurrentCell() == bot->GetCurrentCell())
+        //    botsNearby++;
 
         Group* group = bot->GetGroup();
         if (!group)
