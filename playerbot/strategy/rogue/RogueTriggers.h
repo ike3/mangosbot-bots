@@ -127,7 +127,7 @@ namespace ai
         SapTrigger(PlayerbotAI* ai) : HasCcTargetTrigger(ai, "sap") {}
         virtual bool IsPossible()
         {
-            return bot->getLevel() > 10 && bot->HasSpell(6770) && !sServerFacade.IsInCombat(bot);
+            return bot->GetLevel() > 10 && bot->HasSpell(6770) && !sServerFacade.IsInCombat(bot);
         }
     };
 

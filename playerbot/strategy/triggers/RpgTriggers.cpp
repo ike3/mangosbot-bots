@@ -419,10 +419,10 @@ bool RpgDuelTrigger::IsActive()
     if (!player)
         return false;
 
-    if (player->getLevel() > bot->getLevel() + 3)
+    if (player->GetLevel() > bot->GetLevel() + 3)
         return false;
 
-    if (bot->getLevel() > player->getLevel() + 20)
+    if (bot->GetLevel() > player->GetLevel() + 20)
         return false;
 
     // caster or target already have requested duel

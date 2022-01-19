@@ -49,7 +49,8 @@ bool NearestEnemyPlayersValue::AcceptUnit(Unit* unit)
         ai->IsOpposing(enemy) &&
         enemy->IsPvP() &&
         !sPlayerbotAIConfig.IsInPvpProhibitedZone(enemy->GetAreaId()) &&
-        !enemy->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE) &&
+        !enemy->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_1) &&
+        !enemy->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE_2) &&
         ((inCannon || !enemy->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE))) &&
         //!enemy->HasStealthAura() &&
         //!enemy->HasInvisibilityAura() &&

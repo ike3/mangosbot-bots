@@ -199,9 +199,16 @@ bool RandomPlayerbotFactory::CreateRandomBot(uint8 cls, unordered_map<uint8, vec
 #ifndef MANGOSBOT_ZERO
 		2,
 #endif
-        0, LOCALE_enUS, name, 0, 0, false);
+        0, LOCALE_enUS, "", 0, 0, false);
 
-    Player *player = new Player(session);
+    session->SetNoAnticheat();
+
+    Player* player = new Player(session);
+    if (!player || !session)
+    {
+        sLog.outError("BOTS: Unable to create session or player for random acc %d - name: \"%s\"; race: %u; class: %u", accountId, name.c_str(), race, cls);
+        return false;
+    }
 	if (!player->Create(sObjectMgr.GeneratePlayerLowGuid(), name, race, cls, gender,
 	        face.second, // skinColor,
 	        face.first,

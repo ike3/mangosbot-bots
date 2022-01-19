@@ -187,7 +187,7 @@ WorldSafeLocsEntry const* SpiritHealerAction::GetGrave(bool startZone)
     WorldSafeLocsEntry const* ClosestGrave = nullptr;
     WorldSafeLocsEntry const* NewGrave = nullptr;
 
-    ClosestGrave = sObjectMgr.GetClosestGraveYard(bot->GetPositionX(), bot->GetPositionY(), bot->GetPositionZ(), bot->GetMapId(), bot->GetTeam());
+    ClosestGrave = bot->GetMap()->GetGraveyardManager().GetClosestGraveYard(bot->GetPositionX(), bot->GetPositionY(), bot->GetPositionZ(), bot->GetMapId(), bot->GetTeam());
 
     if (!startZone && ClosestGrave)
         return ClosestGrave;
@@ -198,7 +198,7 @@ WorldSafeLocsEntry const* SpiritHealerAction::GetGrave(bool startZone)
 
         if (master && master != bot)
         {
-            ClosestGrave = sObjectMgr.GetClosestGraveYard(master->GetPositionX(), master->GetPositionY(), master->GetPositionZ(), master->GetMapId(), bot->GetTeam());
+            ClosestGrave = bot->GetMap()->GetGraveyardManager().GetClosestGraveYard(master->GetPositionX(), master->GetPositionY(), master->GetPositionZ(), master->GetMapId(), bot->GetTeam());
 
             if (ClosestGrave)
                 return ClosestGrave;
@@ -211,7 +211,7 @@ WorldSafeLocsEntry const* SpiritHealerAction::GetGrave(bool startZone)
         if (travelTarget->getPosition())
         {
             WorldPosition travelPos = *travelTarget->getPosition();
-            ClosestGrave = sObjectMgr.GetClosestGraveYard(travelPos.getX(), travelPos.getY(), travelPos.getZ(), travelPos.getMapId(), bot->GetTeam());
+            ClosestGrave = bot->GetMap()->GetGraveyardManager().GetClosestGraveYard(travelPos.getX(), travelPos.getY(), travelPos.getZ(), travelPos.getMapId(), bot->GetTeam());
 
             if (ClosestGrave)
                 return ClosestGrave;
@@ -239,7 +239,7 @@ WorldSafeLocsEntry const* SpiritHealerAction::GetGrave(bool startZone)
             if (!info)
                 continue;
 
-            NewGrave = sObjectMgr.GetClosestGraveYard(info->positionX, info->positionY, info->positionZ, info->mapId, bot->GetTeam());
+            NewGrave = bot->GetMap()->GetGraveyardManager().GetClosestGraveYard(info->positionX, info->positionY, info->positionZ, info->mapId, bot->GetTeam());
 
             if (!NewGrave)
                 continue;
