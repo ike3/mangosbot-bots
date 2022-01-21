@@ -110,9 +110,9 @@ void RpgStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         "rpg spell",
         NextAction::array(0, new NextAction("rpg spell", 1.001f), NULL)));*/
 
-    triggers.push_back(new TriggerNode(
+    /*triggers.push_back(new TriggerNode(
         "rpg craft",
-        NextAction::array(0, new NextAction("rpg craft", 1.001f), NULL)));
+        NextAction::array(0, new NextAction("rpg craft", 1.001f), NULL)));*/
 
     triggers.push_back(new TriggerNode(
         "rpg trade useful",
