@@ -1020,6 +1020,8 @@ int32 AhBot::GetSellPrice(ItemPrototype const* proto)
     if (!sAhBotConfig.enabled)
         return 0;
 
+    PerformanceMonitorOperation *pmo = sPerformanceMonitor.start(PERF_MON_AHBOT, "GetSellPrice");
+
     int32 maxPrice = 0;
     for (int i=0; i<CategoryList::instance.size(); i++)
     {
@@ -1042,6 +1044,7 @@ int32 AhBot::GetSellPrice(ItemPrototype const* proto)
         }
     }
 
+    if (pmo) pmo->finish();
     return maxPrice;
 }
 
@@ -1050,6 +1053,7 @@ int32 AhBot::GetBuyPrice(ItemPrototype const* proto)
     if (!sAhBotConfig.enabled)
         return 0;
 
+    PerformanceMonitorOperation *pmo = sPerformanceMonitor.start(PERF_MON_AHBOT, "GetBuyPrice");
     int32 maxPrice = 0;
     for (int i=0; i<CategoryList::instance.size(); i++)
     {
@@ -1072,6 +1076,7 @@ int32 AhBot::GetBuyPrice(ItemPrototype const* proto)
         }
     }
 
+    if (pmo) pmo->finish();
     return maxPrice;
 }
 

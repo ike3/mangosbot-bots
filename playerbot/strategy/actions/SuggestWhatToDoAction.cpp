@@ -1,6 +1,7 @@
 #include "botpch.h"
 #include "../../playerbot.h"
 #include "SuggestWhatToDoAction.h"
+
 #include "../../../ahbot/AhBot.h"
 #include "../../../ahbot/PricingStrategy.h"
 #include "../../AiFactory.h"
@@ -14,6 +15,8 @@ using namespace ai;
 
 map<string, int> SuggestWhatToDoAction::instances;
 map<string, int> SuggestWhatToDoAction::factions;
+map<string, double> SuggestWhatToDoAction::categories;
+time_t SuggestWhatToDoAction::categoriesUpdated = 0;
 
 SuggestWhatToDoAction::SuggestWhatToDoAction(PlayerbotAI* ai, string name) : InventoryAction(ai, name)
 {
@@ -145,18 +148,22 @@ void SuggestWhatToDoAction::grindMaterials()
     if (bot->getLevel() <= 5)
         return;
 
-    QueryResult *result = CharacterDatabase.PQuery("SELECT distinct category, multiplier FROM ahbot_category where category not in ('other', 'quest', 'trade', 'reagent') and multiplier > 3 order by multiplier desc limit 10");
-    if (!result)
-        return;
-
-    map<string, double> categories;
-    do
+    if (categories.empty() || time(0) - categoriesUpdated > sAhBotConfig.updateInterval)
     {
-        Field* fields = result->Fetch();
-        categories[fields[0].GetCppString()] = fields[1].GetFloat();
-    } while (result->NextRow());
-    delete result;
+        QueryResult *result = CharacterDatabase.PQuery("SELECT distinct category, multiplier FROM ahbot_category where category not in ('other', 'quest', 'trade', 'reagent') and multiplier > 3 order by multiplier desc limit 10");
+        if (!result)
+            return;
+        do
+        {
+            Field* fields = result->Fetch();
+            categories[fields[0].GetCppString()] = fields[1].GetFloat();
+        } while (result->NextRow());
+        delete result;
 
+        categoriesUpdated = time(0);
+    }
+
+    PerformanceMonitorOperation *pmo = sPerformanceMonitor.start(PERF_MON_ACTION, "suggest grind materials");
     for (map<string, double>::iterator i = categories.begin(); i != categories.end(); ++i)
     {
         if (urand(0, 10) < 3) {
@@ -179,11 +186,13 @@ void SuggestWhatToDoAction::grindMaterials()
                     placeholders["%category"] = item;
 
                     spam(sPlayerbotTextMgr.Format("suggest_trade", placeholders));
+                    if (pmo) pmo->finish();
                     return;
                 }
             }
         }
     }
+    if (pmo) pmo->finish();
 }
 
 void SuggestWhatToDoAction::grindReputation()
@@ -273,36 +282,22 @@ void SuggestWhatToDoAction::something()
 
 void SuggestWhatToDoAction::spam(string msg, uint32 channelId)
 {
-    set<string> said;
-    for (uint32 i = 0; i < sChatChannelsStore.GetNumRows(); ++i)
+    Player* to = sRandomPlayerbotMgr.GetRandomPlayer();
+    if (!to) return;
+
+    PerformanceMonitorOperation *pmo = sPerformanceMonitor.start(PERF_MON_ACTION, "spam");
+    list<Channel*> channels = to->GetJoinedChannels();
+    for (list<Channel*>::iterator i = channels.begin(); i != channels.end(); ++i)
     {
-        ChatChannelsEntry const* channel = sChatChannelsStore.LookupEntry(i);
-        if (!channel || channel->ChannelID != channelId) continue;
-
-        for (uint32 j = 0; j < sAreaStore.GetNumRows(); ++j)
+        Channel* chn = *i;
+        if (chn->GetFlags() & 0x10) // Channel::CHANNEL_FLAG_GENERAL
         {
-            AreaTableEntry const* area = sAreaStore.LookupEntry(j);
-            if (!area) continue;
-
-            char channelName[255];
-            snprintf(channelName, 255, channel->pattern[0], area->area_name[0]);
-            if (said.find(channelName) != said.end()) continue;
-
-            if (ChannelMgr* cMgr = channelMgr(bot->GetTeam()))
-            {
-                if (Channel* chn = cMgr->GetJoinChannel(channelName
-#ifdef MANGOSBOT_ONE
-                    , channel->ChannelID
-#endif
-                ))
-                {
-                    chn->Join(bot, "");
-                    chn->Say(bot, msg.c_str(), LANG_UNIVERSAL);
-                    said.insert(channelName);
-                }
-            }
+            chn->Join(bot, "");
+            chn->Say(bot, msg.c_str(), LANG_UNIVERSAL);
+            break;
         }
     }
+    if (pmo) pmo->finish();
 }
 
 

@@ -44,6 +44,7 @@ void PerformanceMonitor::PrintStats()
         case PERF_MON_ACTION: key = "A"; break;
         case PERF_MON_RNDBOT: key = "RndBot"; break;
         case PERF_MON_TOTAL: key = "Total"; break;
+        case PERF_MON_AHBOT: key = "AhBot"; break;
         default: key = "?";
         }
 
