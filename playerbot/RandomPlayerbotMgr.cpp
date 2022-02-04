@@ -1594,7 +1594,7 @@ void RandomPlayerbotMgr::Randomize(Player* bot)
 
     //RandomTeleportForRpg(bot);
 
-    //SetValue(bot, "version", MANGOSBOT_VERSION);
+    SetValue(bot, "version", MANGOSBOT_VERSION);
 }
 
 void RandomPlayerbotMgr::IncreaseLevel(Player* bot)

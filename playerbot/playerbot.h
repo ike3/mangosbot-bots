@@ -29,11 +29,4 @@ int strcmpi(std::string s1, std::string s2);
 #include "PlayerbotAI.h"
 #include "PlayerbotDbStore.h"
 
-#if MAX_EXPANSION == 1
-    #define MANGOSBOT_ONE
-#elif MAX_EXPANSION == 2
-    #define MANGOSBOT_TWO
-#else
-    #define MANGOSBOT_ZERO
-#endif
 #define MANGOSBOT_VERSION 2
