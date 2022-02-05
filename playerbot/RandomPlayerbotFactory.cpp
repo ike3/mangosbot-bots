@@ -197,9 +197,10 @@ bool RandomPlayerbotFactory::CreateRandomBot(uint8 cls, unordered_map<uint8, vec
 	WorldSession* session = new WorldSession(accountId, NULL, SEC_PLAYER,
 
 #ifndef MANGOSBOT_ZERO
-		2,
+		2, 0, LOCALE_enUS, "", 0, );
+#else
+        0, LOCALE_enUS, "", 0);
 #endif
-        0, LOCALE_enUS, "", 0, 0, false);
 
     session->SetNoAnticheat();
 

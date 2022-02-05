@@ -1437,9 +1437,15 @@ void PlayerbotFactory::EnchantItem(Item* item)
             if (!enchant_id)
                 continue;
 
+#ifndef MANGOSBOT_ONE
+            SpellItemEnchantmentEntry const* enchant = sSpellItemEnchantmentStore.LookupEntry(enchant_id);
+            if (!enchant || enchant->flags != PERM_ENCHANTMENT_SLOT)
+                continue;
+#else
             SpellItemEnchantmentEntry const* enchant = sSpellItemEnchantmentStore.LookupEntry(enchant_id);
             if (!enchant || enchant->slot != PERM_ENCHANTMENT_SLOT)
                 continue;
+#endif
 
 			const SpellEntry *enchantSpell = sServerFacade.LookupSpellInfo(enchant->spellid[0]);
             if (!enchantSpell || (enchantSpell->spellLevel && enchantSpell->spellLevel > level))

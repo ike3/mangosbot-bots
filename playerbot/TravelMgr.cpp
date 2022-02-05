@@ -3369,9 +3369,10 @@ void TravelMgr::LoadQuestTravelTable()
 
             WorldSession* session = new WorldSession(accountId, NULL, SEC_PLAYER,
 #ifndef MANGOSBOT_ZERO
-                2,
+                2, 0, LOCALE_enUS, accountName.c_str(), 0, 0, false);
+#else
+                0, LOCALE_enUS, accountName.c_str(), 0);
 #endif
-                0, LOCALE_enUS, accountName.c_str(), 0, 0, false);
 
             vector <pair<pair<uint32, uint32>, uint32>> classSpecLevel;
 

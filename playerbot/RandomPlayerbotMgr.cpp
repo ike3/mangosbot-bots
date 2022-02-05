@@ -881,7 +881,7 @@ void RandomPlayerbotMgr::CheckLfgQueue()
 
 #ifdef MANGOSBOT_ZERO
         WorldSafeLocsEntry const* ClosestGrave = nullptr;
-        ClosestGrave = sObjectMgr.GetClosestGraveYard(player->GetPositionX(), player->GetPositionY(), player->GetPositionZ(), player->GetMapId(), player->GetTeam());
+        ClosestGrave = player->GetMap()->GetGraveyardManager().GetClosestGraveYard(player->GetPositionX(), player->GetPositionY(), player->GetPositionZ(), player->GetMapId(), player->GetTeam());
         uint32 zoneId = 0;
         if (ClosestGrave)
             zoneId = ClosestGrave->ID;
