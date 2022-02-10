@@ -832,7 +832,7 @@ void PlayerbotAI::DoNextAction(bool min)
                 }
 
                 // same BG
-                if (bot->InBattleGround() && !member->GetPlayerbotAI() && member->InBattleGround() && bot->GetMapId() == member->GetMapId())
+                if (bot->InBattleGround() && bot->GetBattleGround()->GetTypeId() == BATTLEGROUND_AV && !member->GetPlayerbotAI() && member->InBattleGround() && bot->GetMapId() == member->GetMapId())
                 {
                     if (!group->SameSubGroup(bot, member))
                         continue;
