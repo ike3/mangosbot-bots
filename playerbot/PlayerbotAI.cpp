@@ -871,7 +871,7 @@ void PlayerbotAI::DoNextAction(bool min)
                     playerMaster = member;
                     continue;
                 }
-                if (bot->InBattleGround() && member->GetPlayerbotAI())
+                if (bot->InBattleGround())
                     continue;
 
                 newMaster = member;
