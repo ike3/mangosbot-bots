@@ -133,6 +133,7 @@ namespace ai
                 creators["hammer of justice on snare target"] = &TriggerFactoryInternal::hammer_of_justice_on_snare_target;
                 creators["divine favor"] = &TriggerFactoryInternal::divine_favor;
                 creators["turn undead"] = &TriggerFactoryInternal::turn_undead;
+                creators["avenger's shield"] = &TriggerFactoryInternal::avenger_shield;
             }
 
         private:
@@ -162,6 +163,7 @@ namespace ai
             static Trigger* CleanseCurePartyMemberMagic(PlayerbotAI* ai) { return new CleanseCurePartyMemberMagicTrigger(ai); }
             static Trigger* hammer_of_justice_on_enemy_target(PlayerbotAI* ai) { return new HammerOfJusticeEnemyHealerTrigger(ai); }
             static Trigger* hammer_of_justice_on_snare_target(PlayerbotAI* ai) { return new HammerOfJusticeSnareTrigger(ai); }
+            static Trigger* avenger_shield(PlayerbotAI* ai) { return new AvengerShieldTrigger(ai); }
         };
     };
 };
@@ -211,6 +213,7 @@ namespace ai
                 creators["hand of reckoning"] = &AiObjectContextInternal::hand_of_reckoning;
                 creators["avenger's shield"] = &AiObjectContextInternal::avengers_shield;
                 creators["exorcism"] = &AiObjectContextInternal::exorcism;
+                creators["judgement"] = &AiObjectContextInternal::judgement;
                 creators["judgement of light"] = &AiObjectContextInternal::judgement_of_light;
                 creators["judgement of wisdom"] = &AiObjectContextInternal::judgement_of_wisdom;
                 creators["divine shield"] = &AiObjectContextInternal::divine_shield;
@@ -236,6 +239,7 @@ namespace ai
                 creators["divine favor"] = &AiObjectContextInternal::divine_favor;
                 creators["turn undead"] = &AiObjectContextInternal::turn_undead;
                 creators["blessing of protection on party"] = &AiObjectContextInternal::blessing_of_protection_on_party;
+                creators["righteous defense"] = &AiObjectContextInternal::righteous_defense;
             }
 
         private:
@@ -277,6 +281,7 @@ namespace ai
             static Action* hand_of_reckoning(PlayerbotAI* ai) { return new CastHandOfReckoningAction(ai); }
             static Action* avengers_shield(PlayerbotAI* ai) { return new CastAvengersShieldAction(ai); }
             static Action* exorcism(PlayerbotAI* ai) { return new CastExorcismAction(ai); }
+            static Action* judgement(PlayerbotAI* ai) { return new CastJudgementAction(ai); }
             static Action* judgement_of_light(PlayerbotAI* ai) { return new CastJudgementOfLightAction(ai); }
             static Action* judgement_of_wisdom(PlayerbotAI* ai) { return new CastJudgementOfWisdomAction(ai); }
             static Action* divine_shield(PlayerbotAI* ai) { return new CastDivineShieldAction(ai); }
@@ -298,6 +303,7 @@ namespace ai
             static Action* fire_resistance_aura(PlayerbotAI* ai) { return new CastFireResistanceAuraAction(ai); }
             static Action* hammer_of_justice_on_enemy_healer(PlayerbotAI* ai) { return new CastHammerOfJusticeOnEnemyHealerAction(ai); }
             static Action* hammer_of_justice_on_snare_target(PlayerbotAI* ai) { return new CastHammerOfJusticeSnareAction(ai); }
+            static Action* righteous_defense(PlayerbotAI* ai) { return new CastRighteousDefenseAction(ai); }
         };
     };
 };

@@ -5,8 +5,29 @@
 
 using namespace ai;
 
+class TankPaladinStrategyActionNodeFactory : public NamedObjectFactory<ActionNode>
+{
+public:
+    TankPaladinStrategyActionNodeFactory()
+    {
+        creators["seal of vengeance"] = &seal_of_vengeance;
+        creators["hand of reckoning"] = &hand_of_reckoning;
+    }
+
+private:
+    static ActionNode* seal_of_vengeance(PlayerbotAI* ai)
+    {
+        return new ActionNode("seal of vengeance",
+            /*P*/ NULL,
+            /*A*/ NextAction::array(0, new NextAction("seal of righteousness"), NULL),
+            /*C*/ NULL);
+    }
+    ACTION_NODE_A(hand_of_reckoning, "hand of reckoning", "righteous defense");
+};
+
 TankPaladinStrategy::TankPaladinStrategy(PlayerbotAI* ai) : GenericPaladinStrategy(ai)
 {
+    actionNodeFactories.Add(new TankPaladinStrategyActionNodeFactory());
 }
 
 NextAction** TankPaladinStrategy::getDefaultActions()
@@ -20,7 +41,7 @@ void TankPaladinStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "seal",
-        NextAction::array(0, new NextAction("seal of light", 90.0f), NULL)));
+        NextAction::array(0, new NextAction("seal of vengeance", 90.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
         "judgement of light",
@@ -31,11 +52,23 @@ void TankPaladinStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("judgement of wisdom", ACTION_NORMAL + 3), NULL)));
 
     triggers.push_back(new TriggerNode(
+        "enemy is close",
+        NextAction::array(0, new NextAction("judgement", ACTION_NORMAL + 3), NULL)));
+
+    triggers.push_back(new TriggerNode(
         "light aoe",
         NextAction::array(0, new NextAction("hammer of the righteous", ACTION_HIGH + 6), new NextAction("avenger's shield", ACTION_HIGH + 6), NULL)));
 
     triggers.push_back(new TriggerNode(
+        "avenger's shield",
+        NextAction::array(0, new NextAction("avenger's shield", ACTION_HIGH + 6), NULL)));
+
+    triggers.push_back(new TriggerNode(
         "medium aoe",
+        NextAction::array(0, new NextAction("consecration", ACTION_HIGH + 6), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "enemy is close",
         NextAction::array(0, new NextAction("consecration", ACTION_HIGH + 6), NULL)));
 
     triggers.push_back(new TriggerNode(

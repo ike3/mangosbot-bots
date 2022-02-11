@@ -133,4 +133,6 @@ namespace ai
     public:
         TurnUndeadTrigger(PlayerbotAI* ai) : HasCcTargetTrigger(ai, "turn undead") {}
     };
+
+    DEBUFF_TRIGGER(AvengerShieldTrigger, "avenger's shield");
 }
