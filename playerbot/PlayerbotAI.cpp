@@ -1357,6 +1357,7 @@ bool PlayerbotAI::IsOpposing(Player* player)
 
 bool PlayerbotAI::IsOpposing(uint8 race1, uint8 race2)
 {
+    if (sWorld.getConfig(CONFIG_BOOL_ALLOW_TWO_SIDE_INTERACTION_GROUP)) return false;
     return (IsAlliance(race1) && !IsAlliance(race2)) || (!IsAlliance(race1) && IsAlliance(race2));
 }
 
