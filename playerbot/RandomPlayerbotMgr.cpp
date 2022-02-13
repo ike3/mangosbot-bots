@@ -499,12 +499,23 @@ void RandomPlayerbotMgr::PrepareTeleportCache()
             "t.Name, r.race "
             "from creature c inner join creature_template t on c.id = t.entry "
             "left join ai_playerbot_rpg_races r on r.entry = t.entry "
-            "where t.NpcFlags & %u <> 0",
+            "where t.NpcFlags & %u <> 0 and t.FactionAlliance <> 35",
         UNIT_NPC_FLAG_INNKEEPER);
     if (results)
     {
         do
         {
+            Field* fields = results->Fetch();
+            uint16 mapId = fields[0].GetUInt16();
+            float x = fields[1].GetFloat();
+            float y = fields[2].GetFloat();
+            float z = fields[3].GetFloat();
+            uint32 faction = fields[4].GetUInt32();
+            string name = fields[5].GetCppString();
+            uint32 race = fields[6].GetUInt32();
+
+            FactionTemplateEntry const* coFaction = sFactionTemplateStore.LookupEntry(faction);
+
             for (uint32 factionId = 0; factionId < sFactionTemplateStore.GetNumRows(); ++factionId)
             {
                 FactionTemplateEntry const* botFaction = sFactionTemplateStore.LookupEntry(factionId);
@@ -512,16 +523,6 @@ void RandomPlayerbotMgr::PrepareTeleportCache()
                 if (!botFaction)
                     continue;
 
-                Field* fields = results->Fetch();
-                uint16 mapId = fields[0].GetUInt16();
-                float x = fields[1].GetFloat();
-                float y = fields[2].GetFloat();
-                float z = fields[3].GetFloat();
-                uint32 faction = fields[4].GetUInt32();
-                string name = fields[5].GetCppString();
-                uint32 race = fields[6].GetUInt32();
-
-                FactionTemplateEntry const* coFaction = sFactionTemplateStore.LookupEntry(faction);
                 if (!botFaction->IsFriendlyTo(*coFaction)) continue;
 
                 WorldLocation loc(mapId, x, y, z, 0);
