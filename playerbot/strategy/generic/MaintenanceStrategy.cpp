@@ -20,9 +20,9 @@ void MaintenanceStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         "random",
         NextAction::array(0, new NextAction("use random recipe", 1.0f), NULL)));
 
-    triggers.push_back(new TriggerNode(
+    /*triggers.push_back(new TriggerNode(
         "often",
-        NextAction::array(0, new NextAction("use random quest item", 10.0f), NULL)));
+        NextAction::array(0, new NextAction("use random quest item", 10.0f), NULL)));*/
 
     triggers.push_back(new TriggerNode(
         "random",

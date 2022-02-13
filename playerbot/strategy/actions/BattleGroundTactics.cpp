@@ -4500,8 +4500,8 @@ bool BGTactics::atFlag(std::vector<BattleBotPath*> const& vPaths, std::vector<ui
         closeObjects = *context->GetValue<list<ObjectGuid> >("closest game objects");
         closePlayers = *context->GetValue<list<ObjectGuid> >("closest friendly players");
         flagRange = INTERACTION_DISTANCE;
+        break;
     }
-    break;
     case BATTLEGROUND_WS:
 #ifndef MANGOSBOT_ZERO
     case BATTLEGROUND_EY:
@@ -4510,18 +4510,17 @@ bool BGTactics::atFlag(std::vector<BattleBotPath*> const& vPaths, std::vector<ui
         closeObjects = *context->GetValue<list<ObjectGuid> >("nearest game objects no los");
         closePlayers = *context->GetValue<list<ObjectGuid> >("closest friendly players");
         flagRange = VISIBILITY_DISTANCE_TINY;
+        break;
     }
-    break;
     }
 
     if (closeObjects.empty())
         return false;
 
-    if (!closePlayers.empty())
+    for (auto& guid : closePlayers)
     {
-        for (auto & guid : closePlayers)
+        if (Unit* pFriend = ai->GetUnit(guid))
         {
-            Unit* pFriend = ai->GetUnit(guid);
             if (pFriend->GetCurrentSpell(CURRENT_GENERIC_SPELL) &&
                 pFriend->GetCurrentSpell(CURRENT_GENERIC_SPELL)->m_spellInfo->Id == SPELL_CAPTURE_BANNER)
             {
