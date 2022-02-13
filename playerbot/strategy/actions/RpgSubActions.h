@@ -142,7 +142,7 @@ namespace ai
 
     private:
         virtual string ActionName() { return "sell"; }
-        virtual Event ActionEvent(Event event) { return Event("rpg action", "vendor"); }
+        virtual Event ActionEvent(Event event) { return Event("rpg action", "gray"); }
     };
 
     class RpgRepairAction : public RpgSubAction
