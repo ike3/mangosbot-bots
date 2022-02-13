@@ -62,7 +62,7 @@ namespace ai
     MELEE_ACTION(CastBloodthirstAction, "bloodthirst");
     DEBUFF_ACTION_R(CastPiercingHowlAction, "piercing howl", 8.0f);
     // fury talents 2.4.3
-    BUFF_ACTION(CastRampageAction, "rampage");
+    SPELL_ACTION(CastRampageAction, "rampage");
 
     // protection
     MELEE_ACTION_U(CastTauntAction, "taunt", GetTarget() && !GetTarget()->HasTarget(bot->GetObjectGuid()));
