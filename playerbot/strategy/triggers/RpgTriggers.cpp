@@ -409,6 +409,21 @@ bool RpgDuelTrigger::IsActive()
     if(!ai->HasStrategy("start duel", BOT_STATE_NON_COMBAT))
         return false;
 
+    // Less spammy duels
+    if (bot->GetLevel() < 3)
+        return false;
+
+    if (ai->HasRealPlayerMaster())
+    {
+        // do not auto duel if master is not afk
+        if (ai->GetMaster() && !ai->GetMaster()->isAFK())
+            return false;
+    }
+
+    // do not auto duel with low hp
+    if (AI_VALUE2(uint8, "health", "self target") < 90)
+        return false;
+
     GuidPosition guidP(getGuidP());
 
     if (!guidP.IsPlayer())
@@ -422,7 +437,7 @@ bool RpgDuelTrigger::IsActive()
     if (player->GetLevel() > bot->GetLevel() + 3)
         return false;
 
-    if (bot->GetLevel() > player->GetLevel() + 20)
+    if (bot->GetLevel() > player->GetLevel() + 10)
         return false;
 
     // caster or target already have requested duel
