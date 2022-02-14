@@ -106,7 +106,7 @@ void FuryWarriorStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "rampage",
-        NextAction::array(0, new NextAction("rampage", ACTION_INTERRUPT), NULL)));
+        NextAction::array(0, new NextAction("rampage", ACTION_INTERRUPT + 1), NULL)));
 
     triggers.push_back(new TriggerNode(
         "critical health",
