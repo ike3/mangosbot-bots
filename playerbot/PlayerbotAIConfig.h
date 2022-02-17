@@ -128,6 +128,7 @@ public:
     bool autoLearnQuestSpells;
     bool autoDoQuests;
     bool syncLevelWithPlayers;
+    bool freeFood;
     uint32 tweakValue; //Debugging config
 
     std::mutex m_logMtx;
