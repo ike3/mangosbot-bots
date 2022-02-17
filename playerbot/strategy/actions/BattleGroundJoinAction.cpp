@@ -790,7 +790,7 @@ bool BGLeaveAction::Execute(Event event)
     uint16 unk = 0x1F90;
     uint8 unk2 = 0x0;
     bool isArena = false;
-    bool IsRandomBot = sRandomPlayerbotMgr.IsRandomBot(bot->GetGUIDLow());
+    bool IsRandomBot = sRandomPlayerbotMgr.IsRandomBot(bot);
 
 #ifndef MANGOSBOT_ZERO
     ArenaType arenaType = sServerFacade.BgArenaType(queueTypeId);
@@ -949,7 +949,7 @@ bool BGStatusAction::Execute(Event event)
     }
 #endif
 
-    bool IsRandomBot = sRandomPlayerbotMgr.IsRandomBot(bot->GetGUIDLow());
+    bool IsRandomBot = sRandomPlayerbotMgr.IsRandomBot(bot);
     BattleGroundQueueTypeId queueTypeId = bot->GetBattleGroundQueueTypeId(QueueSlot);
     BattleGroundTypeId _bgTypeId = sServerFacade.BgTemplateId(queueTypeId);
     BattleGroundBracketId bracketId;

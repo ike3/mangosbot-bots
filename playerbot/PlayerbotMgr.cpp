@@ -307,7 +307,7 @@ void PlayerbotHolder::OnBotLogin(Player * const bot)
     }
     else
     {
-        ai->ResetStrategies(!sRandomPlayerbotMgr.IsRandomBot(bot->GetGUIDLow()));
+        ai->ResetStrategies(!sRandomPlayerbotMgr.IsRandomBot(bot));
     }
 
     if (master && !master->IsTaxiFlying())

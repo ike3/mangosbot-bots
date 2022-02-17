@@ -13,7 +13,7 @@ namespace ai
 
         virtual bool Execute(Event event)
         {
-            if (!sRandomPlayerbotMgr.IsRandomBot(bot->GetGUIDLow()))
+            if (!sRandomPlayerbotMgr.IsRandomBot(bot))
                 return false;
 
             if (bot->GetGroup() && ai->GetGroupMaster() && (!ai->GetGroupMaster()->GetPlayerbotAI() || ai->GetGroupMaster()->GetPlayerbotAI()->IsRealPlayer()))

@@ -712,7 +712,7 @@ void RandomPlayerbotMgr::CheckBgQueue()
         if (!bot->InBattleGroundQueue())
             continue;
 
-        if (!IsRandomBot(bot->GetGUIDLow()))
+        if (!IsRandomBot(bot))
             continue;
 
         if (bot->InBattleGround() && bot->GetBattleGround()->GetStatus() == STATUS_WAIT_LEAVE)
@@ -1146,7 +1146,7 @@ bool RandomPlayerbotMgr::ProcessBot(uint32 bot)
         if (ai)
         {
             //ai->GetAiObjectContext()->GetValue<bool>("random bot update")->Set(true);
-            if (!sRandomPlayerbotMgr.IsRandomBot(player->GetGUIDLow()))
+            if (!sRandomPlayerbotMgr.IsRandomBot(player))
                 update = false;
 
             if (player->GetGroup() && ai->GetGroupMaster() && (!ai->GetGroupMaster()->GetPlayerbotAI() || ai->GetGroupMaster()->GetPlayerbotAI()->IsRealPlayer()))
@@ -1736,6 +1736,11 @@ void RandomPlayerbotMgr::Refresh(Player* bot)
 
 bool RandomPlayerbotMgr::IsRandomBot(Player* bot)
 {
+    if (bot && bot->GetPlayerbotAI())
+    {
+        if (bot->GetPlayerbotAI()->IsRealPlayer())
+            return false;
+    }
     if (bot)
         return IsRandomBot(bot->GetGUIDLow()) || sPlayerbotAIConfig.IsInRandomAccountList(bot->GetSession()->GetAccountId());
 
