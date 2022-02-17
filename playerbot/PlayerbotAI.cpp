@@ -834,6 +834,9 @@ void PlayerbotAI::DoNextAction(bool min)
                 // same BG
                 if (bot->InBattleGround() && bot->GetBattleGround()->GetTypeId() == BATTLEGROUND_AV && !member->GetPlayerbotAI() && member->InBattleGround() && bot->GetMapId() == member->GetMapId())
                 {
+                    // TODO disable move to objective if have master in bg
+                    continue;
+
                     if (!group->SameSubGroup(bot, member))
                         continue;
 
@@ -863,7 +866,7 @@ void PlayerbotAI::DoNextAction(bool min)
                         if (bot->GetHonorPoints() && honorpts < bot->GetHonorPoints())
                             continue;
 #else
-                        if (bot->GetHonorRankInfo().rank > member->GetHonorRankInfo().rank)
+                        if (bot->GetHonorRankInfo().rank >= member->GetHonorRankInfo().rank)
                             continue;
 #endif
                     }
