@@ -15,7 +15,7 @@ bool StayActionBase::Stay()
 
     MotionMaster &mm = *bot->GetMotionMaster();
 #ifdef CMANGOS
-	if (mm.GetCurrentMovementGeneratorType() == TAXI_MOTION_TYPE || bot->IsFlying())
+	if (mm.GetCurrentMovementGeneratorType() == TAXI_MOTION_TYPE || bot->IsTaxiFlying())
 #endif
 #ifdef MANGOS
 	if (mm.GetCurrentMovementGeneratorType() == FLIGHT_MOTION_TYPE || bot->IsFlying())
