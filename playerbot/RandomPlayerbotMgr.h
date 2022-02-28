@@ -77,6 +77,7 @@ class RandomPlayerbotMgr : public PlayerbotHolder
         bool ProcessBot(Player* player);
         void Revive(Player* player);
         void ChangeStrategy(Player* player);
+        void ChangeStrategyOnce(Player* player);
         uint32 GetValue(Player* bot, string type);
         uint32 GetValue(uint32 bot, string type);
         string GetData(uint32 bot, string type);

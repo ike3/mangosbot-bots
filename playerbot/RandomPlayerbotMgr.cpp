@@ -1296,7 +1296,9 @@ bool RandomPlayerbotMgr::ProcessBot(Player* player)
         }
 
         // disable until needed
-        if (!sPlayerbotAIConfig.autoDoQuests)
+        if (sPlayerbotAIConfig.autoDoQuests)
+            ChangeStrategyOnce(player);
+        else
             ChangeStrategy(player);
 
         uint32 randomTime = urand(sPlayerbotAIConfig.minRandomBotRandomizeTime, sPlayerbotAIConfig.maxRandomBotRandomizeTime);
@@ -1436,7 +1438,7 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot, vector<WorldLocation> &locs
 
 #ifndef MANGOSBOT_ZERO
             // Do not teleport to outland before portal opening (allow new races zones)
-            if (sWorldState.GetExpansion() == EXPANSION_NONE && loc.mapid == 530 && area->team != 2 && area->team != 4)
+            if (sWorldState.GetExpansion() == EXPANSION_NONE && (loc.mapid == 571 || (loc.mapid == 530 && area->team != 2 && area->team != 4)))
                 continue;
 #endif
 
@@ -1476,7 +1478,7 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot, vector<WorldLocation> &locs
             bot->TeleportTo(loc.mapid, x, y, z, 0);
             bot->SendHeartBeat();
             bot->GetPlayerbotAI()->ResetStrategies();
-            bot->GetPlayerbotAI()->Reset();
+            bot->GetPlayerbotAI()->Reset(true);
             if (pmo) pmo->finish();
             return;
         }
@@ -1723,7 +1725,7 @@ void RandomPlayerbotMgr::RandomizeFirst(Player* bot)
 
     // teleport to a random inn for bot level
     bot->GetPlayerbotAI()->Reset(true);
-    RandomTeleportForRpg(bot);
+    //RandomTeleportForRpg(bot);
 
     if (bot->GetGroup())
         bot->RemoveFromGroup();
@@ -2249,7 +2251,7 @@ void RandomPlayerbotMgr::PrintStats()
         perClass[cls] = 0;
     }
 
-    int dps = 0, heal = 0, tank = 0, active = 0, update = 0, randomize = 0, teleport = 0, changeStrategy = 0, dead = 0, combat = 0, revive = 0, taxi = 0, moving = 0, mounted = 0;
+    int dps = 0, heal = 0, tank = 0, active = 0, update = 0, randomize = 0, teleport = 0, changeStrategy = 0, dead = 0, combat = 0, revive = 0, taxi = 0, moving = 0, mounted = 0, afk = 0;
     int stateCount[MAX_TRAVEL_STATE + 1] = { 0 };
     vector<pair<Quest const*, int32>> questCount;
     for (PlayerBotMap::iterator i = playerBots.begin(); i != playerBots.end(); ++i)
@@ -2282,7 +2284,7 @@ void RandomPlayerbotMgr::PrintStats()
         if (bot->IsTaxiFlying())
             taxi++;
 
-        if (bot->IsMoving() && !bot->IsTaxiFlying())
+        if (bot->IsMoving() && !bot->IsTaxiFlying() && !bot->IsFlying())
             moving++;
 
         if (bot->IsMounted() && !bot->IsTaxiFlying())
@@ -2290,6 +2292,9 @@ void RandomPlayerbotMgr::PrintStats()
 
         if (bot->IsInCombat())
             combat++;
+
+        if (bot->isAFK())
+            afk++;
 
         if (sServerFacade.UnitIsDead(bot))
         {
@@ -2419,6 +2424,7 @@ void RandomPlayerbotMgr::PrintStats()
     sLog.outString("    On mount: %d", mounted);
     sLog.outString("    In combat: %d", combat);
     sLog.outString("    Dead: %d", dead);
+    sLog.outString("    AFK: %d", afk);
 
     sLog.outString("Bots questing:");
     sLog.outString("    Picking quests: %d", stateCount[TRAVEL_STATE_TRAVEL_PICK_UP_QUEST] + stateCount[TRAVEL_STATE_WORK_PICK_UP_QUEST]);
@@ -2524,18 +2530,34 @@ void RandomPlayerbotMgr::ChangeStrategy(Player* player)
 
     if (urand(0, 100) > 100 * sPlayerbotAIConfig.randomBotRpgChance) // select grind / pvp
     {
-        sLog.outDetail("Changing strategy for bot #%d <%s> to grinding", bot, player->GetName());
+        sLog.outBasic("Bot #%d <%s>: sent to grind spot", bot, player->GetName());
         ScheduleTeleport(bot, 30);
     }
     else
     {
-        sLog.outDetail("Changing strategy for bot #%d <%s> to RPG", bot, player->GetName());
 		sLog.outBasic("Bot #%d <%s>: sent to inn", bot, player->GetName());
         RandomTeleportForRpg(player);
 		SetEventValue(bot, "teleport", 1, sPlayerbotAIConfig.maxRandomBotInWorldTime);
     }
 
     ScheduleChangeStrategy(bot);
+}
+
+void RandomPlayerbotMgr::ChangeStrategyOnce(Player* player)
+{
+    uint32 bot = player->GetGUIDLow();
+
+    if (urand(0, 100) > 100 * sPlayerbotAIConfig.randomBotRpgChance) // select grind / pvp
+    {
+        sLog.outBasic("Bot #%d <%s>: sent to grind spot", bot, player->GetName());
+        RandomTeleportForLevel(player);
+        Refresh(player);
+    }
+    else
+    {
+        sLog.outBasic("Bot #%d <%s>: sent to inn", bot, player->GetName());
+        RandomTeleportForRpg(player);
+    }
 }
 
 void RandomPlayerbotMgr::RandomTeleportForRpg(Player* bot)
