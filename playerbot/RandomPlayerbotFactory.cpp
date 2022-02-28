@@ -768,7 +768,7 @@ void RandomPlayerbotFactory::CreateRandomArenaTeams()
         // set random rating
         arenateam->SetRatingForAll(urand(1500, 2700));
         // set random emblem
-        uint32 backgroundColor = urand(0xFF000000, 0xFFFFFFFF), emblemStyle = urand(0, 5), emblemColor = urand(0xFF000000, 0xFFFFFFFF), borderStyle = urand(0, 5), borderColor = urand(0xFF000000, 0xFFFFFFFF);
+        uint32 backgroundColor = urand(0xFF000000, 0xFFFFFFFF), emblemStyle = urand(0, 101), emblemColor = urand(0xFF000000, 0xFFFFFFFF), borderStyle = urand(0, 5), borderColor = urand(0xFF000000, 0xFFFFFFFF);
         arenateam->SetEmblem(backgroundColor, emblemStyle, emblemColor, borderStyle, borderColor);
         // set random kills (wip)
         //arenateam->SetStats(STAT_TYPE_GAMES_WEEK, urand(0, 30));
