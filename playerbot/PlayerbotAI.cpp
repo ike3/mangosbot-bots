@@ -70,16 +70,6 @@ void PacketHandlingHelper::AddPacket(const WorldPacket& packet)
     if (packet.empty())
         return;
 
-    if (packet.GetOpcode() == SMSG_EMOTE)
-    {
-        WorldPacket p = packet;
-        ObjectGuid source;
-        uint32 emoteId;
-        p.rpos(0);
-        p >> emoteId >> source;
-        if (!source.IsPlayer())
-            return;
-    }
 	if (handlers.find(packet.GetOpcode()) != handlers.end())
         queue.push(WorldPacket(packet));
 }
@@ -241,6 +231,14 @@ void PlayerbotAI::UpdateAI(uint32 elapsed, bool minimal)
         inCombat = false;
     }
 
+    // force stop if moving but should not
+    if (bot->IsMoving() && !CanMove() && !bot->m_movementInfo.HasMovementFlag(MOVEFLAG_FALLING) && !bot->IsTaxiFlying())
+    {
+        bot->StopMoving();
+        bot->GetMotionMaster()->Clear();
+        bot->GetMotionMaster()->MoveIdle();
+    }
+
     // cheat options
     if (bot->IsAlive() && ((uint32)GetCheat() > 0 || (uint32)sPlayerbotAIConfig.botCheatMask > 0))
     {
@@ -275,7 +273,7 @@ void PlayerbotAI::UpdateAI(uint32 elapsed, bool minimal)
     UpdateAIInternal(elapsed, min);
 
     // test fix lags because of BG
-    if (!bot->IsInCombat())
+    if (!inCombat)
         min = true;
 
     YieldThread(min);
@@ -368,7 +366,7 @@ void PlayerbotAI::HandleTeleportAck()
         return;
 
 	bot->GetMotionMaster()->Clear(true);
-	bot->InterruptMoving(1);
+	bot->InterruptMoving(true);
 	if (bot->IsBeingTeleportedNear())
 	{
 		WorldPacket p = WorldPacket(MSG_MOVE_TELEPORT_ACK, 8 + 4 + 4);
@@ -393,6 +391,7 @@ void PlayerbotAI::HandleTeleportAck()
 	}
 
     Reset();
+    bot->SendHeartBeat();
 }
 
 void PlayerbotAI::Reset(bool full)
@@ -440,10 +439,15 @@ void PlayerbotAI::Reset(bool full)
     aiObjectContext->GetValue<set<ObjectGuid>&>("ignore rpg target")->Get().clear();
 
     bot->GetMotionMaster()->Clear();
+
+    if (bot->IsTaxiFlying())
+    {
 #ifdef MANGOS
-    bot->m_taxi.ClearTaxiDestinations();
+        bot->m_taxi.ClearTaxiDestinations();
 #endif
-    bot->OnTaxiFlightEject(true);
+        bot->OnTaxiFlightEject(true);
+    }
+
     InterruptSpell();
 
     if (full)
@@ -643,6 +647,84 @@ void PlayerbotAI::HandleBotOutgoingPacket(const WorldPacket& packet)
 			IncreaseNextCheckDelay(delaytime);
 		return;
 	}
+    case SMSG_EMOTE: // do not react to NPC emotes
+    {
+        WorldPacket p(packet);
+        ObjectGuid source;
+        uint32 emoteId;
+        p.rpos(0);
+        p >> emoteId >> source;
+        if (!source.IsPlayer())
+            return;
+        else
+            botOutgoingPacketHandlers.AddPacket(packet);
+
+        return;
+    }
+    case SMSG_MOVE_KNOCK_BACK: // handle knockbacks
+    {
+        WorldPacket p(packet);
+        p.rpos(0);
+
+        ObjectGuid guid;
+        uint32 counter;
+        float vcos, vsin, horizontalSpeed, verticalSpeed = 0.f;
+
+        p >> guid.ReadAsPacked() >> counter >> vcos >> vsin >> horizontalSpeed >> verticalSpeed;
+        verticalSpeed = -verticalSpeed;
+
+        // calculate rough knockback time
+        float moveTimeHalf = verticalSpeed / 19.29f;
+
+        float dis = 2 * moveTimeHalf * horizontalSpeed;
+        float max_height = -Movement::computeFallElevation(moveTimeHalf, false, -verticalSpeed);
+        float disHalf = dis / 3.0f;
+        float ox, oy, oz;
+        bot->GetPosition(ox, oy, oz);
+        float fx = ox + dis * vcos;
+        float fy = oy + dis * vsin;
+        float fz = oz + 0.5f;
+        bot->GetMap()->GetHitPosition(ox, oy, oz + max_height, fx, fy, fz, bot->GetPhaseMask(), -0.5f);
+        bot->UpdateAllowedPositionZ(fx, fy, fz);
+
+        // stop casting
+        InterruptSpell();
+
+        // stop movement
+        bot->StopMoving();
+        bot->GetMotionMaster()->Clear();
+        bot->GetMotionMaster()->MoveIdle();
+
+        // set delay based on actual distance
+        float newdis = sqrt(bot->GetDistance2d(fx, fy, DIST_CALC_NONE));
+        SetNextCheckDelay((uint32)((newdis / dis) * moveTimeHalf * 4 * IN_MILLISECONDS));
+
+        // add moveflags
+        bot->m_movementInfo.SetMovementFlags(MOVEFLAG_FALLING);
+        bot->m_movementInfo.AddMovementFlag(MOVEFLAG_FORWARD);
+        bot->m_movementInfo.AddMovementFlag(MOVEFLAG_PENDINGSTOP);
+
+        // copy MovementInfo
+        MovementInfo movementInfo = bot->m_movementInfo;
+
+        // send ack
+        WorldPacket ack(CMSG_MOVE_KNOCK_BACK_ACK);
+        movementInfo.jump.cosAngle = vcos;
+        movementInfo.jump.sinAngle = vsin;
+        movementInfo.jump.velocity = -verticalSpeed;
+        movementInfo.jump.xyspeed = horizontalSpeed;
+        ack << bot->GetObjectGuid().WriteAsPacked();
+        ack << uint32(0);
+        ack << movementInfo;
+        bot->GetSession()->HandleMoveKnockBackAck(ack);
+
+        // set jump destination for MSG_LAND packet
+        SetJumpDestination(Position(fx, fy, fz, bot->GetOrientation()));
+
+        //bot->SendHeartBeat();
+
+        return;
+    }
 	default:
 		botOutgoingPacketHandlers.AddPacket(packet);
 	}
@@ -725,7 +807,7 @@ void PlayerbotAI::ChangeEngine(BotState type)
 
 void PlayerbotAI::DoNextAction(bool min)
 {
-    if (bot->IsBeingTeleported() || (GetMaster() && GetMaster()->IsBeingTeleported()))
+    if (bot->IsBeingTeleported() || !bot->IsInWorld() || (GetMaster() && GetMaster()->IsBeingTeleported()))
     {
         SetNextCheckDelay(sPlayerbotAIConfig.globalCoolDown);
         return;
@@ -932,35 +1014,121 @@ void PlayerbotAI::DoNextAction(bool min)
     }
 #endif
 
-    /*if (!bot->m_movementInfo.HasMovementFlag(MOVEFLAG_FALLING) && !sServerFacade.IsInCombat(bot))
+    // land after knockback/jump
+    if (bot->m_movementInfo.HasMovementFlag(MOVEFLAG_FALLING))
     {
-        if (!urand(0, 10) && !sServerFacade.IsInCombat(bot))
-        {
-            WorldPacket jump(MSG_MOVE_JUMP);
-            MovementInfo movementInfo = bot->m_movementInfo;
-            movementInfo.jump.velocity = -7.96f;
-            movementInfo.jump.cosAngle = 1.0f;
-            movementInfo.jump.sinAngle = 0.f;
-            movementInfo.jump.xyspeed = sServerFacade.isMoving(bot) ? bot->GetSpeed(MOVE_RUN) : 0.f;
-            movementInfo.jump.start = movementInfo.pos;
-            movementInfo.jump.startClientTime = time(0);
-            movementInfo.pos = bot->GetPosition();
-            jump << movementInfo;
-            bot->GetSession()->HandleMovementOpcodes(jump);
-            bot->m_movementInfo.AddMovementFlag(MOVEFLAG_FALLING);
-        }
-    }
-    else if (bot->m_movementInfo.HasMovementFlag(MOVEFLAG_FALLING))
-    {
-        bot->SendHeartBeat();
-        bot->m_movementInfo.RemoveMovementFlag(MOVEFLAG_FALLING);
+        // stop movement
+        bot->StopMoving();
+        bot->GetMotionMaster()->Clear();
+        bot->GetMotionMaster()->MoveIdle();
 
-        std::unique_ptr<WorldPacket> jump(new WorldPacket(MSG_MOVE_FALL_LAND));
-        MovementInfo movementInfo = bot->m_movementInfo;
-        movementInfo.pos = bot->GetPosition();
-        *jump << movementInfo;
-        bot->GetSession()->QueuePacket(std::move(jump));
-    }*/
+        // remove moveflags
+        bot->m_movementInfo.RemoveMovementFlag(MOVEFLAG_FALLING);
+        bot->m_movementInfo.RemoveMovementFlag(MOVEFLAG_PENDINGSTOP);
+
+        // set jump destination
+        bot->m_movementInfo.pos = !GetJumpDestination().IsEmpty() ? GetJumpDestination() : bot->GetPosition();
+        bot->m_movementInfo.jump = MovementInfo::JumpInfo();
+
+        WorldPacket land(MSG_MOVE_FALL_LAND);
+        land << bot->GetObjectGuid().WriteAsPacked();
+        land << bot->m_movementInfo;
+        bot->GetSession()->HandleMovementOpcodes(land);
+
+        // move stop
+        WorldPacket stop(MSG_MOVE_STOP);
+        stop << bot->GetObjectGuid().WriteAsPacked();
+        stop << bot->m_movementInfo;
+        bot->GetSession()->HandleMovementOpcodes(stop);
+
+        ResetJumpDestination();
+    }
+
+    // random jumping (WIP, not working properly)
+    //if ((!master || (master && sServerFacade.GetDistance2d(bot, master) < 20.0f)) && !bot->m_movementInfo.HasMovementFlag(MOVEFLAG_FALLING) && !(bot->IsMoving() || bot->IsMounted()))
+    //{
+    //    if (!urand(0, 3))
+    //    {
+    //        //float dx, dy, dz = 0.f;
+    //        //if (bot->IsMoving())
+    //        //    bot->GetMotionMaster()->GetDestination(dx, dy, dz);
+
+    //        float angle = bot->GetOrientation();
+    //        //if (angle > M_PI_F)
+    //        //    angle -= 2.0f * M_PI_F;
+
+    //        float vsin = sin(angle);
+    //        float vcos = cos(angle);
+
+    //        // calculate jump time
+    //        float moveTimeHalf = 7.96f / 19.29f;
+
+    //        // calculate jump distance
+    //        float dis = 2 * moveTimeHalf * bot->GetSpeed(MOVE_RUN);
+
+    //        // calculate jump destination
+    //        float ox, oy, oz;
+    //        bot->GetPosition(ox, oy, oz);
+    //        float fx = ox + dis * vsin;
+    //        float fy = oy + dis * vcos;
+    //        float fz = oz +0.5f;
+    //        bot->GetMap()->GetHitPosition(ox, oy, oz + 2.5f, fx, fy, fz, bot->GetPhaseMask(), -0.5f);
+    //        bot->UpdateAllowedPositionZ(fx, fy, fz);
+    //        // set jump destination for MSG_LAND packet
+    //        SetJumpDestination(Position(fx, fy, fz, bot->GetOrientation()));
+
+    //        if (HasStrategy("debug", BOT_STATE_NON_COMBAT))
+    //        {
+    //            Creature* wpCreature = bot->SummonCreature(2334, fx, fy, fz - 1, 0.f, TEMPSPAWN_TIMED_DESPAWN, 5000);
+    //            AddAura(wpCreature, 246);
+    //            TellMasterNoFacing("Jumping here");
+    //        }
+
+    //        // set delay based on actual distance
+    //        //float newdis = sqrt(bot->GetDistance2d(fx, fy, DIST_CALC_NONE));
+    //        //SetNextCheckDelay((uint32)((newdis / dis)* moveTimeHalf * 4 * IN_MILLISECONDS));
+
+    //        // stop movement
+    //        bot->StopMoving();
+    //        bot->GetMotionMaster()->Clear();
+    //        bot->GetMotionMaster()->MoveIdle();
+
+    //        // jump packet
+    //        WorldPacket jump(MSG_MOVE_JUMP);
+
+    //        // add moveflags
+    //        bot->m_movementInfo.SetMovementFlags(MOVEFLAG_FALLING);
+    //        bot->m_movementInfo.AddMovementFlag(MOVEFLAG_FORWARD);
+
+    //        // copy MovementInfo
+    //        MovementInfo movementInfo = bot->m_movementInfo;
+
+    //        // write jump info
+    //        movementInfo.jump.velocity = -7.96f;
+    //        movementInfo.jump.cosAngle = vcos;
+    //        movementInfo.jump.sinAngle = vsin;
+    //        movementInfo.jump.xyspeed = sServerFacade.isMoving(bot) ? bot->GetSpeed(MOVE_RUN) : 0.f;
+    //        //movementInfo.jump.start = movementInfo.pos;
+    //        //movementInfo.jump.startClientTime = WorldTimer::getMSTime();
+    //        //movementInfo.pos = bot->GetPosition();
+
+    //        // write packet info
+    //        jump << bot->GetObjectGuid().WriteAsPacked();
+    //        jump << movementInfo;
+    //        bot->GetSession()->HandleMovementOpcodes(jump);
+    //        //bot->SendHeartBeat();
+
+    //        //bot->m_movementInfo.ChangePosition(fx, fy, fz, bot->GetOrientation());
+
+    //        // add moveflag
+    //        //bot->m_movementInfo.AddMovementFlag(MOVEFLAG_PENDINGSTOP);
+    //        //bot->SendHeartBeat();
+
+    //        // calculate rough jump time
+    //        float moveTime = 7.96f / 19.29f * 4;
+    //        SetNextCheckDelay((uint32)(moveTime * IN_MILLISECONDS));
+    //    }
+    //}
 }
 
 void PlayerbotAI::ReInitCurrentEngine()
@@ -2339,7 +2507,7 @@ bool PlayerbotAI::IsInVehicle(bool canControl, bool canCast, bool canAttack, boo
 {
 #ifdef MANGOSBOT_TWO
     TransportInfo* transportInfo = bot->GetTransportInfo();
-    if (!transportInfo || !transportInfo->IsOnVehicle())
+    if (!transportInfo || !transportInfo->GetTransport() || !transportInfo->IsOnVehicle())
         return false;
 
     // get vehicle
@@ -2356,7 +2524,7 @@ bool PlayerbotAI::IsInVehicle(bool canControl, bool canCast, bool canAttack, boo
         return true;
 
     if (canControl)
-        return seat->HasFlag(SEAT_FLAG_CAN_CONTROL) && vehicle->GetVehicleInfo()->GetVehicleEntry()->m_flags & VEHICLE_FLAG_FIXED_POSITION == 0;
+        return seat->HasFlag(SEAT_FLAG_CAN_CONTROL) && (vehicle->GetVehicleInfo()->GetVehicleEntry()->m_flags & VEHICLE_FLAG_FIXED_POSITION) == 0;
 
     if (canCast)
         return seat->HasFlag(SEAT_FLAG_CAN_CAST);
@@ -3684,7 +3852,7 @@ uint32 PlayerbotAI::GetBuffedCount(Player* player, string spellname)
         for (GroupReference *gref = group->GetFirstMember(); gref; gref = gref->next())
         {
             Player* member = gref->getSource();
-            if (!member || !member->IsInWorld())
+            if (!member || !member->IsInWorld() && member->GetMapId() != bot->GetMapId())
                 continue;
 
             if (!member->IsInGroup(player, true))
@@ -3695,4 +3863,30 @@ uint32 PlayerbotAI::GetBuffedCount(Player* player, string spellname)
         }
     }
     return bcount;
+}
+
+bool PlayerbotAI::CanMove()
+{
+    // do not allow if not vehicle driver
+    if (IsInVehicle() && !IsInVehicle(true))
+        return false;
+
+    if (sServerFacade.IsFrozen(bot) || bot->IsPolymorphed() ||
+        (sServerFacade.UnitIsDead(bot) && !bot->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_GHOST)) ||
+        bot->IsBeingTeleported() ||
+        sServerFacade.IsInRoots(bot) ||
+        bot->HasAuraType(SPELL_AURA_SPIRIT_OF_REDEMPTION) ||
+        bot->HasAuraType(SPELL_AURA_MOD_CONFUSE) || sServerFacade.IsCharmed(bot) ||
+        bot->HasAuraType(SPELL_AURA_MOD_STUN) || bot->IsTaxiFlying() ||
+        bot->hasUnitState(UNIT_STAT_CAN_NOT_REACT_OR_LOST_CONTROL))// ||
+        //bot->m_movementInfo.HasMovementFlag(MOVEFLAG_FALLING))
+        return false;
+
+    MotionMaster& mm = *bot->GetMotionMaster();
+#ifdef CMANGOS
+    return mm.GetCurrentMovementGeneratorType() != TAXI_MOTION_TYPE;
+#endif
+#ifdef MANGOS
+    return mm.GetCurrentMovementGeneratorType() != FLIGHT_MOTION_TYPE;
+#endif
 }

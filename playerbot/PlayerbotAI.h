@@ -402,6 +402,12 @@ public:
     static bool IsOpposing(uint8 race1, uint8 race2);
     PlayerbotSecurity* GetSecurity() { return &security; }
 
+    Position GetJumpDestination() { return jumpDestination; }
+    void SetJumpDestination(Position pos) { jumpDestination = pos; }
+    void ResetJumpDestination() { jumpDestination = Position(); }
+
+    bool CanMove();
+
 protected:
 	Player* bot;
 	Player* master;
@@ -422,7 +428,8 @@ protected:
     static set<string> unsecuredCommands;
     bool allowActive[MAX_ACTIVITY_TYPE];
     time_t allowActiveCheckTimer[MAX_ACTIVITY_TYPE];
-    bool inCombat = false;;
+    bool inCombat = false;
     BotCheatMask cheatMask = BotCheatMask::none;
+    Position jumpDestination = Position();
 };
 
