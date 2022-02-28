@@ -369,18 +369,19 @@ void RandomPlayerbotFactory::CreateRandomBots()
                     }
                 }
                 else
-                    dels.push_back(std::async([accId] {sAccountMgr.DeleteAccount(accId); }));
+                    sAccountMgr.DeleteAccount(accId);
+                    //dels.push_back(std::async([accId] {sAccountMgr.DeleteAccount(accId); }));
 
             } while (results->NextRow());
 			delete results;
         }
 
-        BarGoLink bar4(dels .size());
+        /*bargolink bar4(dels .size());
         for (uint32 i=0;i<dels.size();i++)
         {
             bar4.step();
             dels[i].wait();
-        }
+        }*/
 
         PlayerbotDatabase.Execute("DELETE FROM ai_playerbot_random_bots");
         sLog.outString("Random bot characters deleted");
@@ -492,6 +493,10 @@ void RandomPlayerbotFactory::CreateRandomBots()
         RandomPlayerbotFactory factory(accountId);
         for (uint8 cls = CLASS_WARRIOR; cls < MAX_CLASSES - count; ++cls)
         {
+            // skip nonexistent classes
+            if (!((1 << (cls - 1)) & CLASSMASK_ALL_PLAYABLE) || !sChrClassesStore.LookupEntry(cls))
+                continue;
+
 #ifdef MANGOSBOT_TWO
             if (cls != 10)
 #else
