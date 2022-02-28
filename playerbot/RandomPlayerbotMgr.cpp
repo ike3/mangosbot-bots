@@ -416,7 +416,7 @@ uint32 RandomPlayerbotMgr::AddRandomBots()
             do
             {
                 Field* fields = result->Fetch();
-                uint64 guid = fields[0].GetUInt64();
+                uint32 guid = fields[0].GetUInt32();
 
                 if (GetEventValue(guid, "add"))
                     continue;
@@ -1085,6 +1085,46 @@ void RandomPlayerbotMgr::ScheduleChangeStrategy(uint32 bot, uint32 time)
     SetEventValue(bot, "change_strategy", 1, time);
 }
 
+bool RandomPlayerbotMgr::AddRandomBot(uint32 bot)
+{
+    Player* player = GetPlayerBot(bot);
+    if (player)
+        return true;
+
+    uint32 accountId = sObjectMgr.GetPlayerAccountIdByGUID(ObjectGuid(HIGHGUID_PLAYER, bot));
+
+    if (!sPlayerbotAIConfig.IsInRandomAccountList(accountId))
+    {
+        sLog.outError("Bot #%d login fail: Not random bot!", bot);
+        return false;
+    }
+
+    AddPlayerBot(bot, 0);
+    SetEventValue(bot, "add", 1, urand(sPlayerbotAIConfig.minRandomBotInWorldTime, sPlayerbotAIConfig.maxRandomBotInWorldTime));
+    SetEventValue(bot, "logout", 0, 0);
+    SetEventValue(bot, "login", 1, sPlayerbotAIConfig.randomBotUpdateInterval);
+    uint32 randomTime = urand(sPlayerbotAIConfig.minRandomBotReviveTime, sPlayerbotAIConfig.maxRandomBotReviveTime);
+    SetEventValue(bot, "update", 1, randomTime);
+    currentBots.push_back(bot);
+    sLog.outBasic("Random bot added #%d", bot);
+    return true;
+
+    player = GetPlayerBot(bot);
+
+    if (player)
+    {
+        sLog.outError("Random bot added #%d", bot);
+        return true;
+    }
+    else
+    {
+        sLog.outError("Failed to add random bot #%d", bot);
+        return false;
+    }
+
+    return false;
+}
+
 bool RandomPlayerbotMgr::ProcessBot(uint32 bot)
 {
     Player* player = GetPlayerBot(bot);
@@ -1102,7 +1142,7 @@ bool RandomPlayerbotMgr::ProcessBot(uint32 bot)
 
 			SetEventValue(bot, "add", 0, 0);
 			currentBots.remove(bot);
-			if (player) LogoutPlayerBot(player->GetObjectGuid().GetRawValue());
+			if (player) LogoutPlayerBot(bot);
 		}
         return false;
     }
@@ -1170,7 +1210,7 @@ bool RandomPlayerbotMgr::ProcessBot(uint32 bot)
     if (player && !logout && !isValid)
     {
         sLog.outBasic("Bot #%d %s:%d <%s>: log out", bot, IsAlliance(player->getRace()) ? "A" : "H", player->getLevel(), player->GetName());
-        LogoutPlayerBot(player->GetObjectGuid().GetRawValue());
+        LogoutPlayerBot(player->GetGUIDLow());
         currentBots.remove(bot);
         SetEventValue(bot, "logout", 1, urand(sPlayerbotAIConfig.minRandomBotInWorldTime, sPlayerbotAIConfig.maxRandomBotInWorldTime));
         return true;
@@ -2028,7 +2068,7 @@ void RandomPlayerbotMgr::HandleCommand(uint32 type, const string& text, Player& 
 
 void RandomPlayerbotMgr::OnPlayerLogout(Player* player)
 {
-     DisablePlayerBot(player->GetObjectGuid().GetRawValue());
+     DisablePlayerBot(player->GetGUIDLow());
 
     for (PlayerBotMap::const_iterator it = GetPlayerBotsBegin(); it != GetPlayerBotsEnd(); ++it)
     {
@@ -2140,8 +2180,8 @@ void RandomPlayerbotMgr::OnPlayerLogin(Player* player)
 
     if (IsRandomBot(player))
     {
-        uint64 guid = player->GetObjectGuid().GetRawValue();
-        SetEventValue((uint32)guid, "login", 0, 0);
+        uint32 guid = player->GetGUIDLow();
+        SetEventValue(guid, "login", 0, 0);
     }
     else
     {
@@ -2206,7 +2246,7 @@ void RandomPlayerbotMgr::PrintStats()
         if (bot->GetPlayerbotAI()->GetAiObjectContext()->GetValue<bool>("random bot update")->Get())
             update++;
 
-        uint32 botId = (uint32)bot->GetObjectGuid().GetRawValue();
+        uint32 botId = bot->GetGUIDLow();
         if (!GetEventValue(botId, "randomize"))
             randomize++;
 
@@ -2443,7 +2483,7 @@ string RandomPlayerbotMgr::HandleRemoteCommand(string request)
     }
 
     string command = string(request.begin(), pos);
-    uint64 guid = atoi(string(pos + 1, request.end()).c_str());
+    uint32 guid = atoi(string(pos + 1, request.end()).c_str());
     Player* bot = GetPlayerBot(guid);
     if (!bot)
         return "invalid guid";
@@ -2486,7 +2526,7 @@ void RandomPlayerbotMgr::RandomTeleportForRpg(Player* bot)
 
 void RandomPlayerbotMgr::Remove(Player* bot)
 {
-    uint64 owner = bot->GetObjectGuid().GetRawValue();
+    uint32 owner = bot->GetGUIDLow();
     PlayerbotDatabase.PExecute("delete from ai_playerbot_random_bots where owner = 0 and bot = '%lu'", owner);
     eventCache[owner].clear();
 

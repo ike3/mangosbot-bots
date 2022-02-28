@@ -100,6 +100,8 @@ class RandomPlayerbotMgr : public PlayerbotHolder
         void CheckLfgQueue();
         void CheckPlayers();
 
+        bool AddRandomBot(uint32 bot);
+
         map<Team, map<BattleGroundTypeId, list<uint32> > > getBattleMastersCache() { return BattleMastersCache; }
 
 	protected:
