@@ -135,6 +135,7 @@ class RandomPlayerbotMgr : public PlayerbotHolder
         map<uint32, map<string, CachedEvent> > eventCache;
         BarGoLink* loginProgressBar;
         list<uint32> currentBots;
+        list<uint32> arenaTeamMembers;
         uint32 bgBotsCount;
         uint32 playersLevel = sPlayerbotAIConfig.randombotStartingLevel;
         PerformanceMonitorOperation* totalPmo;

@@ -154,28 +154,44 @@ RandomPlayerbotMgr::RandomPlayerbotMgr() : PlayerbotHolder(), processTicks(0), l
     {
         sPlayerbotCommandServer.Start();
         PrepareTeleportCache();
-    }
 
-    for (int i = BG_BRACKET_ID_FIRST; i < MAX_BATTLEGROUND_BRACKETS; ++i)
-    {
-        for (int j = BATTLEGROUND_QUEUE_AV; j < MAX_BATTLEGROUND_QUEUE_TYPES; ++j)
+        for (int i = BG_BRACKET_ID_FIRST; i < MAX_BATTLEGROUND_BRACKETS; ++i)
         {
-            BgPlayers[j][i][0] = 0;
-            BgPlayers[j][i][1] = 0;
-            BgBots[j][i][0] = 0;
-            BgBots[j][i][1] = 0;
-            ArenaBots[j][i][0][0] = 0;
-            ArenaBots[j][i][0][1] = 0;
-            ArenaBots[j][i][1][0] = 0;
-            ArenaBots[j][i][1][1] = 0;
-            NeedBots[j][i][0] = false;
-            NeedBots[j][i][1] = false;
+            for (int j = BATTLEGROUND_QUEUE_AV; j < MAX_BATTLEGROUND_QUEUE_TYPES; ++j)
+            {
+                BgPlayers[j][i][0] = 0;
+                BgPlayers[j][i][1] = 0;
+                BgBots[j][i][0] = 0;
+                BgBots[j][i][1] = 0;
+                ArenaBots[j][i][0][0] = 0;
+                ArenaBots[j][i][0][1] = 0;
+                ArenaBots[j][i][1][0] = 0;
+                ArenaBots[j][i][1][1] = 0;
+                NeedBots[j][i][0] = false;
+                NeedBots[j][i][1] = false;
+            }
         }
-    }
 
-    BgCheckTimer = 0;
-    LfgCheckTimer = 0;
-    PlayersCheckTimer = 0;
+        BgCheckTimer = 0;
+        LfgCheckTimer = 0;
+        PlayersCheckTimer = 0;
+
+#ifndef MANGOSBOT_ZERO
+        // load random bot team members
+        QueryResult* results = CharacterDatabase.PQuery("SELECT guid FROM arena_team_member");
+        if (results)
+        {
+            sLog.outString("Loading arena team bot members...");
+            do
+            {
+                Field* fields = results->Fetch();
+                uint32 lowguid = fields[0].GetUInt32();
+                arenaTeamMembers.push_back(lowguid);
+            } while (results->NextRow());
+            delete results;
+        }
+#endif
+    }
 }
 
 RandomPlayerbotMgr::~RandomPlayerbotMgr()
@@ -1204,6 +1220,18 @@ bool RandomPlayerbotMgr::ProcessBot(uint32 bot)
     uint32 logout = GetEventValue(bot, "logout");
     if (player && !logout && !isValid)
     {
+        // don't logout arena team members
+        bool hasTeam = false;
+        if (std::find(arenaTeamMembers.begin(), arenaTeamMembers.end(), bot) != arenaTeamMembers.end())
+            hasTeam = true;
+
+        if (hasTeam && sPlayerbotAIConfig.randomBotJoinBG)
+        {
+            SetEventValue(bot, "add", 1, urand(sPlayerbotAIConfig.minRandomBotInWorldTime, sPlayerbotAIConfig.maxRandomBotInWorldTime));
+            SetEventValue(bot, "logout", 0, 0);
+            return true;
+        }
+
         sLog.outBasic("Bot #%d %s:%d <%s>: log out", bot, IsAlliance(player->getRace()) ? "A" : "H", player->getLevel(), player->GetName());
         LogoutPlayerBot(player->GetGUIDLow());
         currentBots.remove(bot);
