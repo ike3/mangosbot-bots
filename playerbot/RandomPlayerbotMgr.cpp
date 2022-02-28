@@ -326,19 +326,19 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed, bool minimal)
 
     if (sPlayerbotAIConfig.syncLevelWithPlayers && players.size())
     {
-        if (time(NULL) > (PlayersCheckTimer + 60))
+        if (time(nullptr) > ((int)PlayersCheckTimer + 60))
             activateCheckPlayersThread();
     }
 
     if (sPlayerbotAIConfig.randomBotJoinLfg && players.size())
     {
-        if (time(NULL) > (LfgCheckTimer + 30))
+        if (time(nullptr) > ((int)LfgCheckTimer + 30))
             activateCheckLfgQueueThread();
     }
 
     if (sPlayerbotAIConfig.randomBotJoinBG)
     {
-        if (time(NULL) > (BgCheckTimer + 30))
+        if (time(nullptr) > ((int)BgCheckTimer + 30))
             activateCheckBgQueueThread();
     }
 
@@ -535,20 +535,15 @@ void RandomPlayerbotMgr::LoadBattleMastersCache()
 void RandomPlayerbotMgr::CheckBgQueue()
 {
     if (!BgCheckTimer)
-        BgCheckTimer = time(NULL);
+        BgCheckTimer = time(nullptr);
 
-    uint32 count = 0;
-    uint32 visual_count = 0;
-
-    int check_time = count > 0 ? 120 : 30;
-
-    if (time(NULL) < (BgCheckTimer + check_time))
+    if (time(nullptr) < (BgCheckTimer + 30))
     {
         return;
     }
     else
     {
-        BgCheckTimer = time(NULL);
+        BgCheckTimer = time(nullptr);
     }
 
     sLog.outBasic("Checking BG Queue...");
