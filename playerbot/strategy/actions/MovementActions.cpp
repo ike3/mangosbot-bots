@@ -142,10 +142,13 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
     if (transportInfo && transportInfo->IsOnVehicle())
     {
         Unit* vehicle = (Unit*)transportInfo->GetTransport();
-        VehicleSeatEntry const* seat = vehicle->GetVehicleInfo()->GetSeatEntry(transportInfo->GetTransportSeat());
-        if (!seat || !seat->HasFlag(SEAT_FLAG_CAN_CONTROL))
-            return false;
-
+        if (vehicle && vehicle->GetVehicleInfo())
+        {
+            VehicleSeatEntry const* seat = vehicle->GetVehicleInfo()->GetSeatEntry(transportInfo->GetTransportSeat());
+            if (!seat || !seat->HasFlag(SEAT_FLAG_CAN_CONTROL))
+                return false;
+        }
+        
         isVehicle = true;
         mover = vehicle;
     }
