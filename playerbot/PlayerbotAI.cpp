@@ -719,9 +719,15 @@ void PlayerbotAI::HandleBotOutgoingPacket(const WorldPacket& packet)
         movementInfo.jump.sinAngle = vsin;
 #ifdef MANGOSBOT_TWO
         movementInfo.jump.velocity = -verticalSpeed;
+#else
+        movementInfo.jump.zspeed = -verticalSpeed;
 #endif
         movementInfo.jump.xyspeed = horizontalSpeed;
+#ifdef MANGOSBOT_TWO
         ack << bot->GetObjectGuid().WriteAsPacked();
+#else
+        ack << bot->GetObjectGuid();
+#endif
         ack << uint32(0);
         ack << movementInfo;
         bot->GetSession()->HandleMoveKnockBackAck(ack);
@@ -1044,13 +1050,17 @@ void PlayerbotAI::DoNextAction(bool min)
         bot->m_movementInfo.jump = MovementInfo::JumpInfo();
 
         WorldPacket land(MSG_MOVE_FALL_LAND);
+#ifdef MANGOSBOT_TWO
         land << bot->GetObjectGuid().WriteAsPacked();
+#endif
         land << bot->m_movementInfo;
         bot->GetSession()->HandleMovementOpcodes(land);
 
         // move stop
         WorldPacket stop(MSG_MOVE_STOP);
+#ifdef MANGOSBOT_TWO
         stop << bot->GetObjectGuid().WriteAsPacked();
+#endif
         stop << bot->m_movementInfo;
         bot->GetSession()->HandleMovementOpcodes(stop);
 
