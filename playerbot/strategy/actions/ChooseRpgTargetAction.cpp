@@ -95,7 +95,7 @@ bool ChooseRpgTargetAction::Execute(Event event)
     unordered_map<ObjectGuid, uint32> targets;
 
     list<ObjectGuid> possibleTargets = AI_VALUE(list<ObjectGuid>, "possible rpg targets");
-    list<ObjectGuid> possibleObjects = AI_VALUE(list<ObjectGuid>, "nearest game objects no los");
+    list<ObjectGuid> possibleObjects = bot->GetMap()->IsDungeon() ? AI_VALUE(list<ObjectGuid>, "nearest game objects") : AI_VALUE(list<ObjectGuid>, "nearest game objects no los"); // skip not in LOS objects in dungeons
     list<ObjectGuid> possiblePlayers = AI_VALUE(list<ObjectGuid>, "nearest friendly players");
     set<ObjectGuid>& ignoreList = AI_VALUE(set<ObjectGuid>&, "ignore rpg target");
 
@@ -141,6 +141,10 @@ bool ChooseRpgTargetAction::Execute(Event event)
             if (!go || !sServerFacade.isSpawned(go)
                 || go->IsInUse()
                 || go->GetGoState() != GO_STATE_READY)
+                continue;
+
+            // skip objects too high
+            if (fabs(go->GetPositionZ() - bot->GetPositionZ()) > 20.f)
                 continue;
         }
         else if (guidP.IsPlayer())
