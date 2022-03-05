@@ -34,7 +34,7 @@ namespace ai
             else
                 ai->TellMasterNoFacing("Meet me at the graveyard");
 
-            sLog.outDetail("Bot #%d %s:%d <%s> released", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName());
+            sLog.outDetail("Bot #%d %s:%d <%s> released", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->GetLevel(), bot->GetName());
 
             WorldPacket packet(CMSG_REPOP_REQUEST);
             packet << uint8(0);
@@ -57,7 +57,7 @@ namespace ai
 
         virtual bool Execute(Event event)
         {
-            sLog.outDetail("Bot #%d %s:%d <%s> auto released", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName());
+            sLog.outDetail("Bot #%d %s:%d <%s> auto released", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->GetLevel(), bot->GetName());
 
             WorldPacket packet(CMSG_REPOP_REQUEST);
             packet << uint8(0);
@@ -121,7 +121,7 @@ namespace ai
     public:
         virtual bool Execute(Event event)
         {
-            sLog.outBasic("Bot #%d %s:%d <%s> repops at graveyard", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName());
+            sLog.outBasic("Bot #%d %s:%d <%s> repops at graveyard", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->GetLevel(), bot->GetName());
 
             int64 deadTime;
 

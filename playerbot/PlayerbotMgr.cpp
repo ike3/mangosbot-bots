@@ -307,7 +307,7 @@ void PlayerbotHolder::OnBotLogin(Player * const bot)
     }
     else
     {
-        ai->ResetStrategies(!sRandomPlayerbotMgr.IsRandomBot(bot->GetGUIDLow()));
+        ai->ResetStrategies(!sRandomPlayerbotMgr.IsRandomBot(bot));
     }
 
     if (master && !master->IsTaxiFlying())
@@ -379,31 +379,31 @@ string PlayerbotHolder::ProcessBotCommand(string cmd, ObjectGuid guid, ObjectGui
         {
             if (cmd == "init=white" || cmd == "init=common")
             {
-                PlayerbotFactory factory(bot, master->getLevel(), ITEM_QUALITY_NORMAL);
+                PlayerbotFactory factory(bot, master->GetLevel(), ITEM_QUALITY_NORMAL);
                 factory.Randomize(false);
                 return "ok";
             }
             else if (cmd == "init=green" || cmd == "init=uncommon")
             {
-                PlayerbotFactory factory(bot, master->getLevel(), ITEM_QUALITY_UNCOMMON);
+                PlayerbotFactory factory(bot, master->GetLevel(), ITEM_QUALITY_UNCOMMON);
                 factory.Randomize(false);
                 return "ok";
             }
             else if (cmd == "init=blue" || cmd == "init=rare")
             {
-                PlayerbotFactory factory(bot, master->getLevel(), ITEM_QUALITY_RARE);
+                PlayerbotFactory factory(bot, master->GetLevel(), ITEM_QUALITY_RARE);
                 factory.Randomize(false);
                 return "ok";
             }
             else if (cmd == "init=epic" || cmd == "init=purple")
             {
-                PlayerbotFactory factory(bot, master->getLevel(), ITEM_QUALITY_EPIC);
+                PlayerbotFactory factory(bot, master->GetLevel(), ITEM_QUALITY_EPIC);
                 factory.Randomize(false);
                 return "ok";
             }
             else if (cmd == "init=legendary" || cmd == "init=yellow")
             {
-                PlayerbotFactory factory(bot, master->getLevel(), ITEM_QUALITY_LEGENDARY);
+                PlayerbotFactory factory(bot, master->GetLevel(), ITEM_QUALITY_LEGENDARY);
                 factory.Randomize(false);
                 return "ok";
             }
@@ -411,13 +411,13 @@ string PlayerbotHolder::ProcessBotCommand(string cmd, ObjectGuid guid, ObjectGui
 
         if (cmd == "levelup" || cmd == "level")
         {
-            PlayerbotFactory factory(bot, bot->getLevel());
+            PlayerbotFactory factory(bot, bot->GetLevel());
             factory.Randomize(true);
             return "ok";
         }
         else if (cmd == "refresh")
         {
-            PlayerbotFactory factory(bot, bot->getLevel());
+            PlayerbotFactory factory(bot, bot->GetLevel());
             factory.Refresh();
             return "ok";
         }

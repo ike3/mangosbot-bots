@@ -42,7 +42,7 @@ float ConserveManaMultiplier::GetValue(Action* action)
 
     if (target)
     {
-        if (((int)target->getLevel() - (int)bot->getLevel()) >= 0)
+        if (((int)target->GetLevel() - (int)bot->GetLevel()) >= 0)
             return 1.0f;
     }
 

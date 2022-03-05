@@ -807,7 +807,7 @@ void PlayerbotAI::ChangeEngine(BotState type)
 
 void PlayerbotAI::DoNextAction(bool min)
 {
-    if (bot->IsBeingTeleported() || !bot->IsInWorld() || (GetMaster() && GetMaster()->IsBeingTeleported()))
+    if (!bot->IsInWorld() || bot->IsBeingTeleported() || (GetMaster() && GetMaster()->IsBeingTeleported()))
     {
         SetNextCheckDelay(sPlayerbotAIConfig.globalCoolDown);
         return;
@@ -914,12 +914,15 @@ void PlayerbotAI::DoNextAction(bool min)
                 }
 
                 // same BG
-                if (bot->InBattleGround() && !member->GetPlayerbotAI() && member->InBattleGround() && bot->GetMapId() == member->GetMapId())
+                if (bot->InBattleGround() && bot->GetBattleGround()->GetTypeId() == BATTLEGROUND_AV && !member->GetPlayerbotAI() && member->InBattleGround() && bot->GetMapId() == member->GetMapId())
                 {
+                    // TODO disable move to objective if have master in bg
+                    continue;
+
                     if (!group->SameSubGroup(bot, member))
                         continue;
 
-                    if (member->getLevel() < bot->getLevel())
+                    if (member->GetLevel() < bot->GetLevel())
                         continue;
 
                     // follow real player only if he has more honor/arena points
@@ -945,7 +948,7 @@ void PlayerbotAI::DoNextAction(bool min)
                         if (bot->GetHonorPoints() && honorpts < bot->GetHonorPoints())
                             continue;
 #else
-                        if (bot->GetHonorRankInfo().rank > member->GetHonorRankInfo().rank)
+                        if (bot->GetHonorRankInfo().rank >= member->GetHonorRankInfo().rank)
                             continue;
 #endif
                     }
@@ -953,7 +956,7 @@ void PlayerbotAI::DoNextAction(bool min)
                     playerMaster = member;
                     continue;
                 }
-                if (bot->InBattleGround() && member->GetPlayerbotAI())
+                if (bot->InBattleGround())
                     continue;
 
                 newMaster = member;
@@ -1733,7 +1736,7 @@ bool PlayerbotAI::CanCastSpell(uint32 spellid, Unit* target, uint8 effectMask, b
 	Spell *spell = new Spell(bot, spellInfo, false);
 
     spell->m_targets.setUnitTarget(target);
-#ifndef MANGOSBOT_ONE
+#ifdef MANGOSBOT_TWO
     spell->m_CastItem = itemTarget ? itemTarget : aiObjectContext->GetValue<Item*>("item for spell", spellid)->Get();
     spell->m_targets.setItemTarget(spell->m_CastItem);
 #else
@@ -1811,7 +1814,7 @@ bool PlayerbotAI::CanCastSpell(uint32 spellid, GameObject* goTarget, uint8 effec
     Spell* spell = new Spell(bot, spellInfo, false);
 
     spell->m_targets.setGOTarget(goTarget);
-#ifndef MANGOSBOT_ONE
+#ifdef MANGOSBOT_TWO
     spell->m_CastItem = aiObjectContext->GetValue<Item*>("item for spell", spellid)->Get();
     spell->m_targets.setItemTarget(spell->m_CastItem);
 #else
@@ -1868,7 +1871,7 @@ bool PlayerbotAI::CanCastSpell(uint32 spellid, float x, float y, float z, uint8 
     Spell* spell = new Spell(bot, spellInfo, false);
 
     spell->m_targets.setDestination(x, y, z);
-#ifndef MANGOSBOT_ONE
+#ifdef MANGOSBOT_TWO
     spell->m_CastItem = itemTarget ? itemTarget : aiObjectContext->GetValue<Item*>("item for spell", spellid)->Get();
     spell->m_targets.setItemTarget(spell->m_CastItem);
 #else
@@ -1993,7 +1996,7 @@ bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target, Item* itemTarget)
     SpellCastTargets targets;
     if (pSpellInfo->Targets & TARGET_FLAG_ITEM)
     {
-#ifndef MANGOSBOT_ONE
+#ifdef MANGOSBOT_TWO
         spell->m_CastItem = itemTarget ? itemTarget : aiObjectContext->GetValue<Item*>("item for spell", spellId)->Get();
         targets.setItemTarget(spell->m_CastItem);
 #else
@@ -2160,7 +2163,7 @@ bool PlayerbotAI::CastSpell(uint32 spellId, float x, float y, float z, Item* ite
     SpellCastTargets targets;
     if (pSpellInfo->Targets & TARGET_FLAG_ITEM)
     {
-#ifndef MANGOSBOT_ONE
+#ifdef MANGOSBOT_TWO
         spell->m_CastItem = itemTarget ? itemTarget : aiObjectContext->GetValue<Item*>("item for spell", spellId)->Get();
         targets.setItemTarget(spell->m_CastItem);
 #else
@@ -2614,7 +2617,11 @@ bool PlayerbotAI::IsInterruptableSpellCasting(Unit* target, string spell, uint8 
 
 	for (int32 i = EFFECT_INDEX_0; i <= EFFECT_INDEX_2; i++)
 	{
-		if ((spellInfo->InterruptFlags & SPELL_INTERRUPT_FLAG_INTERRUPT) && spellInfo->PreventionType == SPELL_PREVENTION_TYPE_SILENCE)
+#ifdef MANGOSBOT_ZERO
+		if ((spellInfo->InterruptFlags & SPELL_INTERRUPT_FLAG_COMBAT) && spellInfo->PreventionType == SPELL_PREVENTION_TYPE_SILENCE)
+#else
+        if ((spellInfo->InterruptFlags & SPELL_INTERRUPT_FLAG_INTERRUPT) && spellInfo->PreventionType == SPELL_PREVENTION_TYPE_SILENCE)
+#endif
 			return true;
 
 		if ((spellInfo->Effect[i] == SPELL_EFFECT_INTERRUPT_CAST) &&

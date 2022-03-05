@@ -50,7 +50,7 @@ bool ReviveFromCorpseAction::Execute(Event event)
         }
     }
 
-    sLog.outDetail("Bot #%d %s:%d <%s> revives at body", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName());
+    sLog.outDetail("Bot #%d %s:%d <%s> revives at body", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->GetLevel(), bot->GetName());
 
     bot->GetMotionMaster()->Clear();
     bot->StopMoving();
@@ -84,7 +84,7 @@ bool FindCorpseAction::Execute(Event event)
     {
         if (dCount >= 5)
         {
-            sLog.outBasic("Bot #%d %s:%d <%s>: died too many times and was sent to an inn", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName());
+            sLog.outBasic("Bot #%d %s:%d <%s>: died too many times and was sent to an inn", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->GetLevel(), bot->GetName());
             context->GetValue<uint32>("death count")->Set(0);
             sRandomPlayerbotMgr.RandomTeleportForRpg(bot);
             return true;
@@ -187,7 +187,7 @@ WorldSafeLocsEntry const* SpiritHealerAction::GetGrave(bool startZone)
     WorldSafeLocsEntry const* ClosestGrave = nullptr;
     WorldSafeLocsEntry const* NewGrave = nullptr;
 
-    ClosestGrave = sObjectMgr.GetClosestGraveYard(bot->GetPositionX(), bot->GetPositionY(), bot->GetPositionZ(), bot->GetMapId(), bot->GetTeam());
+    ClosestGrave = bot->GetMap()->GetGraveyardManager().GetClosestGraveYard(bot->GetPositionX(), bot->GetPositionY(), bot->GetPositionZ(), bot->GetMapId(), bot->GetTeam());
 
     if (!startZone && ClosestGrave)
         return ClosestGrave;
@@ -198,7 +198,7 @@ WorldSafeLocsEntry const* SpiritHealerAction::GetGrave(bool startZone)
 
         if (master && master != bot)
         {
-            ClosestGrave = sObjectMgr.GetClosestGraveYard(master->GetPositionX(), master->GetPositionY(), master->GetPositionZ(), master->GetMapId(), bot->GetTeam());
+            ClosestGrave = bot->GetMap()->GetGraveyardManager().GetClosestGraveYard(master->GetPositionX(), master->GetPositionY(), master->GetPositionZ(), master->GetMapId(), bot->GetTeam());
 
             if (ClosestGrave)
                 return ClosestGrave;
@@ -211,7 +211,7 @@ WorldSafeLocsEntry const* SpiritHealerAction::GetGrave(bool startZone)
         if (travelTarget->getPosition())
         {
             WorldPosition travelPos = *travelTarget->getPosition();
-            ClosestGrave = sObjectMgr.GetClosestGraveYard(travelPos.getX(), travelPos.getY(), travelPos.getZ(), travelPos.getMapId(), bot->GetTeam());
+            ClosestGrave = bot->GetMap()->GetGraveyardManager().GetClosestGraveYard(travelPos.getX(), travelPos.getY(), travelPos.getZ(), travelPos.getMapId(), bot->GetTeam());
 
             if (ClosestGrave)
                 return ClosestGrave;
@@ -239,7 +239,7 @@ WorldSafeLocsEntry const* SpiritHealerAction::GetGrave(bool startZone)
             if (!info)
                 continue;
 
-            NewGrave = sObjectMgr.GetClosestGraveYard(info->positionX, info->positionY, info->positionZ, info->mapId, bot->GetTeam());
+            NewGrave = bot->GetMap()->GetGraveyardManager().GetClosestGraveYard(info->positionX, info->positionY, info->positionZ, info->mapId, bot->GetTeam());
 
             if (!NewGrave)
                 continue;
@@ -281,7 +281,7 @@ bool SpiritHealerAction::Execute(Event event)
             Unit* unit = ai->GetUnit(*i);
             if (unit && unit->HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_SPIRITHEALER))
             {
-                sLog.outBasic("Bot #%d %s:%d <%s> revives at spirit healer", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName());
+                sLog.outBasic("Bot #%d %s:%d <%s> revives at spirit healer", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->GetLevel(), bot->GetName());
                 PlayerbotChatHandler ch(bot);
                 bot->ResurrectPlayer(0.5f);
                 bot->SpawnCorpseBones();
@@ -319,7 +319,7 @@ bool SpiritHealerAction::Execute(Event event)
         return bot->TeleportTo(ClosestGrave->map_id, ClosestGrave->x, ClosestGrave->y, ClosestGrave->z, ClosestGrave->o);
     }
 
-    sLog.outBasic("Bot #%d %s:%d <%s> can't find a spirit healer", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName());
+    sLog.outBasic("Bot #%d %s:%d <%s> can't find a spirit healer", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->GetLevel(), bot->GetName());
     ai->TellError("Cannot find any spirit healer nearby");
     return false;
 }

@@ -130,7 +130,8 @@ bool AttackersValue::IsPossibleTarget(Unit *attacker, Player *bot, float range)
         attacker->IsInWorld() &&
         attacker->GetMapId() == bot->GetMapId() &&
         !sServerFacade.UnitIsDead(attacker) &&
-        !attacker->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE) &&
+        !attacker->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_1) &&
+        !attacker->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE_2) &&
         (inCannon || !attacker->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE)) &&
         attacker->IsVisibleForOrDetect(bot, attacker, false) &&
 #ifdef CMANGOS

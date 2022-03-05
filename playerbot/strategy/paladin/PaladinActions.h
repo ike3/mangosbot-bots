@@ -3,6 +3,12 @@
 
 namespace ai
 {
+	class CastJudgementAction : public CastMeleeSpellAction
+	{
+	public:
+		CastJudgementAction(PlayerbotAI* ai) : CastMeleeSpellAction(ai, "judgement") {}
+	};
+
     class CastJudgementOfLightAction : public CastMeleeSpellAction
     {
     public:
@@ -313,6 +319,12 @@ namespace ai
 	{
 	public:
 		CastHandOfReckoningAction(PlayerbotAI* ai) : CastSpellAction(ai, "hand of reckoning") {}
+	};
+
+	class CastRighteousDefenseAction : public CastSpellAction
+	{
+	public:
+		CastRighteousDefenseAction(PlayerbotAI* ai) : CastSpellAction(ai, "righteous defense") {}
 	};
 
 	class CastCleansePoisonAction : public CastCureSpellAction

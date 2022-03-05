@@ -46,7 +46,7 @@ namespace ai {
     public:
         CastTravelFormAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "travel form") {}
         virtual bool isUseful() {
-            bool firstmount = bot->getLevel() >=
+            bool firstmount = bot->GetLevel() >=
 #ifdef MANGOSBOT_ZERO
                 40
 #else

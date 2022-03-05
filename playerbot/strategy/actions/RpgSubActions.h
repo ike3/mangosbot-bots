@@ -142,7 +142,7 @@ namespace ai
 
     private:
         virtual string ActionName() { return "sell"; }
-        virtual Event ActionEvent(Event event) { return Event("rpg action", "vendor"); }
+        virtual Event ActionEvent(Event event) { return Event("rpg action", "gray"); }
     };
 
     class RpgRepairAction : public RpgSubAction
@@ -214,6 +214,7 @@ namespace ai
         RpgSpellAction(PlayerbotAI* ai, string name = "rpg spell") : RpgSubAction(ai, name) {}
 
     private:
+        virtual bool isUseful(Event event) { return false; }
         virtual string ActionName() { return "cast random spell"; }
         virtual Event ActionEvent(Event event) { return Event("rpg action", chat->formatWorldobject(rpg->guidP().GetWorldObject())); }
     };

@@ -90,7 +90,7 @@ void SuggestWhatToDoAction::instance()
     vector<string> allowedInstances;
     for (map<string, int>::iterator i = instances.begin(); i != instances.end(); ++i)
     {
-        if (bot->getLevel() >= i->second) allowedInstances.push_back(i->first);
+        if (bot->GetLevel() >= i->second) allowedInstances.push_back(i->first);
     }
 
     if (allowedInstances.empty()) return;
@@ -142,7 +142,7 @@ void SuggestWhatToDoAction::specificQuest()
 
 void SuggestWhatToDoAction::grindMaterials()
 {
-    if (bot->getLevel() <= 5)
+    if (bot->GetLevel() <= 5)
         return;
 
     QueryResult *result = PlayerbotDatabase.PQuery("SELECT distinct category, multiplier FROM ahbot_category where category not in ('other', 'quest', 'trade', 'reagent') and multiplier > 3 order by multiplier desc limit 10");
@@ -237,7 +237,7 @@ void SuggestWhatToDoAction::grindReputation()
 
     vector<string> allowedFactions;
     for (map<string, int>::iterator i = factions.begin(); i != factions.end(); ++i) {
-        if (bot->getLevel() >= i->second) allowedFactions.push_back(i->first);
+        if (bot->GetLevel() >= i->second) allowedFactions.push_back(i->first);
     }
 
     if (allowedFactions.empty()) return;

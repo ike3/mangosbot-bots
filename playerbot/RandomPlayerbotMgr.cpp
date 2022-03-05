@@ -226,7 +226,7 @@ void RandomPlayerbotMgr::LogPlayerLocation()
                 out << to_string(bot->getRace()) << ",";
                 out << to_string(bot->getClass()) << ",";
                 out << bot->GetMapId() << ",";
-                out << bot->getLevel() << ",";
+                out << bot->GetLevel() << ",";
                 out << bot->GetHealth() << ",";
                 out << bot->GetPowerPercent() << ",";
                 out << bot->GetMoney() << ",";
@@ -268,7 +268,7 @@ void RandomPlayerbotMgr::LogPlayerLocation()
             out << to_string(bot->getRace()) << ",";
             out << to_string(bot->getClass()) << ",";
             out << bot->GetMapId() << ",";
-            out << bot->getLevel() << ",";
+            out << bot->GetLevel() << ",";
             out << bot->GetHealth() << ",";
             out << bot->GetPowerPercent() << ",";
             out << bot->GetMoney() << ",";
@@ -352,7 +352,7 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed, bool minimal)
             activateCheckLfgQueueThread();
     }
 
-    if (sPlayerbotAIConfig.randomBotJoinBG)
+    if (sPlayerbotAIConfig.randomBotJoinBG && players.size())
     {
         if (time(nullptr) > ((int)BgCheckTimer + 30))
             activateCheckBgQueueThread();
@@ -610,7 +610,7 @@ void RandomPlayerbotMgr::CheckBgQueue()
 #ifdef MANGOSBOT_TWO
             BattleGround* bg = sBattleGroundMgr.GetBattleGroundTemplate(bgTypeId);
             uint32 mapId = bg->GetMapId();
-            PvPDifficultyEntry const* pvpDiff = GetBattlegroundBracketByLevel(mapId, player->getLevel());
+            PvPDifficultyEntry const* pvpDiff = GetBattlegroundBracketByLevel(mapId, player->GetLevel());
             if (!pvpDiff)
                 continue;
 
@@ -723,7 +723,7 @@ void RandomPlayerbotMgr::CheckBgQueue()
         if (!bot->InBattleGroundQueue())
             continue;
 
-        if (!IsRandomBot(bot->GetGUIDLow()))
+        if (!IsRandomBot(bot))
             continue;
 
         if (bot->InBattleGround() && bot->GetBattleGround()->GetStatus() == STATUS_WAIT_LEAVE)
@@ -745,7 +745,7 @@ void RandomPlayerbotMgr::CheckBgQueue()
 #ifdef MANGOSBOT_TWO
             BattleGround* bg = sBattleGroundMgr.GetBattleGroundTemplate(bgTypeId);
             uint32 mapId = bg->GetMapId();
-            PvPDifficultyEntry const* pvpDiff = GetBattlegroundBracketByLevel(mapId, bot->getLevel());
+            PvPDifficultyEntry const* pvpDiff = GetBattlegroundBracketByLevel(mapId, bot->GetLevel());
             if (!pvpDiff)
                 continue;
 
@@ -892,7 +892,7 @@ void RandomPlayerbotMgr::CheckLfgQueue()
 
 #ifdef MANGOSBOT_ZERO
         WorldSafeLocsEntry const* ClosestGrave = nullptr;
-        ClosestGrave = sObjectMgr.GetClosestGraveYard(player->GetPositionX(), player->GetPositionY(), player->GetPositionZ(), player->GetMapId(), player->GetTeam());
+        ClosestGrave = player->GetMap()->GetGraveyardManager().GetClosestGraveYard(player->GetPositionX(), player->GetPositionY(), player->GetPositionZ(), player->GetMapId(), player->GetTeam());
         uint32 zoneId = 0;
         if (ClosestGrave)
             zoneId = ClosestGrave->ID;
@@ -923,7 +923,7 @@ void RandomPlayerbotMgr::CheckLfgQueue()
 #endif
 #ifdef MANGOSBOT_ONE
         WorldSafeLocsEntry const* ClosestGrave = nullptr;
-        ClosestGrave = sObjectMgr.GetClosestGraveYard(player->GetPositionX(), player->GetPositionY(), player->GetPositionZ(), player->GetMapId(), player->GetTeam());
+        ClosestGrave = player->GetMap()->GetGraveyardManager().GetClosestGraveYard(player->GetPositionX(), player->GetPositionY(), player->GetPositionZ(), player->GetMapId(), player->GetTeam());
         uint32 zoneId = 0;
         if (ClosestGrave)
             zoneId = ClosestGrave->ID;
@@ -1017,7 +1017,7 @@ void RandomPlayerbotMgr::CheckLfgQueue()
             continue;
 
         WorldSafeLocsEntry const* ClosestGrave = nullptr;
-        ClosestGrave = sObjectMgr.GetClosestGraveYard(bot->GetPositionX(), bot->GetPositionY(), bot->GetPositionZ(), bot->GetMapId(), bot->GetTeam());
+        ClosestGrave = bot->GetMap()->GetGraveyardManager().GetClosestGraveYard(bot->GetPositionX(), bot->GetPositionY(), bot->GetPositionZ(), bot->GetMapId(), bot->GetTeam());
         uint32 zoneId = 0;
         if (ClosestGrave)
             zoneId = ClosestGrave->ID;
@@ -1069,8 +1069,8 @@ void RandomPlayerbotMgr::CheckPlayers()
         //if (player->GetSession()->GetSecurity() > SEC_PLAYER)
         //    continue;
 
-        if (player->getLevel() > playersLevel)
-            playersLevel = player->getLevel() + 3;
+        if (player->GetLevel() > playersLevel)
+            playersLevel = player->GetLevel() + 3;
     }
     sLog.outBasic("Max player level is %d, max bot level set to %d", playersLevel - 3, playersLevel);
     return;
@@ -1147,7 +1147,7 @@ bool RandomPlayerbotMgr::ProcessBot(uint32 bot)
 		if (!player || !player->GetGroup())
 		{
             if (player)
-                sLog.outDetail("Bot #%d %s:%d <%s>: log out", bot, IsAlliance(player->getRace()) ? "A" : "H", player->getLevel(), player->GetName());
+                sLog.outDetail("Bot #%d %s:%d <%s>: log out", bot, IsAlliance(player->getRace()) ? "A" : "H", player->GetLevel(), player->GetName());
             else
                 sLog.outDetail("Bot #%d: log out", bot);
 
@@ -1164,9 +1164,6 @@ bool RandomPlayerbotMgr::ProcessBot(uint32 bot)
 
     if (!player)
     {
-        if (!urand(0, 4))
-            return true;
-
         AddPlayerBot(bot, 0);
         SetEventValue(bot, "login", 1, sPlayerbotAIConfig.randomBotUpdateInterval);
         uint32 randomTime = urand(sPlayerbotAIConfig.minRandomBotReviveTime, sPlayerbotAIConfig.maxRandomBotReviveTime);
@@ -1200,7 +1197,7 @@ bool RandomPlayerbotMgr::ProcessBot(uint32 bot)
         if (ai)
         {
             //ai->GetAiObjectContext()->GetValue<bool>("random bot update")->Set(true);
-            if (!sRandomPlayerbotMgr.IsRandomBot(player->GetGUIDLow()))
+            if (!sRandomPlayerbotMgr.IsRandomBot(player))
                 update = false;
 
             if (player->GetGroup() && ai->GetGroupMaster() && (!ai->GetGroupMaster()->GetPlayerbotAI() || ai->GetGroupMaster()->GetPlayerbotAI()->IsRealPlayer()))
@@ -1244,9 +1241,6 @@ bool RandomPlayerbotMgr::ProcessBot(uint32 bot)
 
 bool RandomPlayerbotMgr::ProcessBot(Player* player)
 {
-    if (!urand(0, 4))
-        return true;
-
     uint32 bot = player->GetGUIDLow();
 
     if (player->InBattleGround())
@@ -1288,11 +1282,11 @@ bool RandomPlayerbotMgr::ProcessBot(Player* player)
 
         if (randomiser)
         {
-            sLog.outBasic("Bot #%d %s:%d <%s>: randomized", bot, player->GetTeam() == ALLIANCE ? "A" : "H", player->getLevel(), player->GetName());
+            sLog.outBasic("Bot #%d %s:%d <%s>: randomized", bot, player->GetTeam() == ALLIANCE ? "A" : "H", player->GetLevel(), player->GetName());
         }
         else
         {
-            sLog.outBasic("Bot #%d %s:%d %s <%s>: consumables refreshed", bot, player->GetTeam() == ALLIANCE ? "A" : "H", player->getLevel(), player->GetName(), sGuildMgr.GetGuildById(player->GetGuildId())->GetName());
+            sLog.outBasic("Bot #%d %s:%d %s <%s>: consumables refreshed", bot, player->GetTeam() == ALLIANCE ? "A" : "H", player->GetLevel(), player->GetName(), sGuildMgr.GetGuildById(player->GetGuildId())->GetName());
         }
 
         // disable until needed
@@ -1361,7 +1355,7 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot, vector<WorldLocation> &locs
     if (bot->InBattleGroundQueue())
         return;
 
-	if (bot->getLevel() < 5)
+	if (bot->GetLevel() < 5)
 		return;
 
     if (sPlayerbotAIConfig.randomBotRpgChance < 0)
@@ -1385,11 +1379,11 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot, vector<WorldLocation> &locs
     tlocs = sTravelMgr.getNextPoint(WorldPosition(bot), tlocs, 0);
 
     //5% + 0.1% per level chance node on different map in selection.
-    //tlocs.erase(std::remove_if(tlocs.begin(), tlocs.end(), [bot](WorldLocation const& l) {return l.mapid != bot->GetMapId() && urand(1, 100) > 0.5 * bot->getLevel(); }), tlocs.end());
+    //tlocs.erase(std::remove_if(tlocs.begin(), tlocs.end(), [bot](WorldLocation const& l) {return l.mapid != bot->GetMapId() && urand(1, 100) > 0.5 * bot->GetLevel(); }), tlocs.end());
 
     //Continent is about 20.000 large
     //Bot will travel 0-5000 units + 75-150 units per level.
-    //tlocs.erase(std::remove_if(tlocs.begin(), tlocs.end(), [bot](WorldLocation const& l) {return l.mapid == bot->GetMapId() && sServerFacade.GetDistance2d(bot, l.coord_x, l.coord_y) > urand(0, 5000) + bot->getLevel() * 15 * urand(5, 10); }), tlocs.end());
+    //tlocs.erase(std::remove_if(tlocs.begin(), tlocs.end(), [bot](WorldLocation const& l) {return l.mapid == bot->GetMapId() && sServerFacade.GetDistance2d(bot, l.coord_x, l.coord_y) > urand(0, 5000) + bot->GetLevel() * 15 * urand(5, 10); }), tlocs.end());
 
     if (tlocs.empty())
     {
@@ -1411,7 +1405,7 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot, vector<WorldLocation> &locs
 
 #ifdef MANGOSBOT_ONE
             // Teleport to Dark Portal area if event is in progress
-            if (sWorldState.GetExpansion() == EXPANSION_NONE && bot->getLevel() > 54 && urand(0, 100) > 20)
+            if (sWorldState.GetExpansion() == EXPANSION_NONE && bot->GetLevel() > 54 && urand(0, 100) > 20)
             {
                 if (urand(0, 1))
                     loc = WorldLocation(uint32(0), -11772.43f, -3272.84f, -17.9f, 3.32447f);
@@ -1443,9 +1437,9 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot, vector<WorldLocation> &locs
 #endif
 
             // Do not teleport to enemy zones if level is low
-            if (area->team == 4 && bot->GetTeam() == ALLIANCE && bot->getLevel() < 40)
+            if (area->team == 4 && bot->GetTeam() == ALLIANCE && bot->GetLevel() < 40)
                 continue;
-            if (area->team == 2 && bot->GetTeam() == HORDE && bot->getLevel() < 40)
+            if (area->team == 2 && bot->GetTeam() == HORDE && bot->GetLevel() < 40)
                 continue;
 
             if (terrain->IsUnderWater(x, y, z) ||
@@ -1606,8 +1600,8 @@ void RandomPlayerbotMgr::RandomTeleportForLevel(Player* bot)
     if (bot->InBattleGround())
         return;
 
-    sLog.outDetail("Preparing location to random teleporting bot %s for level %u", bot->GetName(), bot->getLevel());
-    RandomTeleport(bot, locsPerLevelCache[bot->getLevel()]);
+    sLog.outDetail("Preparing location to random teleporting bot %s for level %u", bot->GetName(), bot->GetLevel());
+    RandomTeleport(bot, locsPerLevelCache[bot->GetLevel()]);
 }
 
 void RandomPlayerbotMgr::RandomTeleport(Player* bot)
@@ -1654,10 +1648,10 @@ void RandomPlayerbotMgr::Randomize(Player* bot)
     if (bot->InBattleGround())
         return;
 
-    if (bot->getLevel() < 3)
+    if (bot->GetLevel() < 3)
         RandomizeFirst(bot);
 #ifdef MANGOSBOT_TWO
-    else if (bot->getLevel() < 57 && bot->getClass() == CLASS_DEATH_KNIGHT)
+    else if (bot->GetLevel() < 57 && bot->getClass() == CLASS_DEATH_KNIGHT)
         RandomizeFirst(bot);
 #endif
     else
@@ -1665,7 +1659,7 @@ void RandomPlayerbotMgr::Randomize(Player* bot)
 
     //RandomTeleportForRpg(bot);
 
-    //SetValue(bot, "version", MANGOSBOT_VERSION);
+    SetValue(bot, "version", MANGOSBOT_VERSION);
 }
 
 void RandomPlayerbotMgr::IncreaseLevel(Player* bot)
@@ -1676,7 +1670,7 @@ void RandomPlayerbotMgr::IncreaseLevel(Player* bot)
 
 	PerformanceMonitorOperation *pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "IncreaseLevel");
 	uint32 lastLevel = GetValue(bot, "level");
-	uint32 level = bot->getLevel();
+	uint32 level = bot->GetLevel();
 	if (lastLevel != level)
 	{
         PlayerbotFactory factory(bot, level);
@@ -1789,7 +1783,7 @@ void RandomPlayerbotMgr::Refresh(Player* bot)
 	bot->SetHealthPercent(100);
 	bot->SetPvP(true);
 
-    PlayerbotFactory factory(bot, bot->getLevel());
+    PlayerbotFactory factory(bot, bot->GetLevel());
     factory.Refresh();
 
     if (bot->GetMaxPower(POWER_MANA) > 0)
@@ -1799,7 +1793,7 @@ void RandomPlayerbotMgr::Refresh(Player* bot)
         bot->SetPower(POWER_ENERGY, bot->GetMaxPower(POWER_ENERGY));
 
     uint32 money = bot->GetMoney();
-    bot->SetMoney(money + 500 * sqrt(urand(1, bot->getLevel() * 5)));
+    bot->SetMoney(money + 500 * sqrt(urand(1, bot->GetLevel() * 5)));
 
     if (pmo) pmo->finish();
 }
@@ -1807,6 +1801,11 @@ void RandomPlayerbotMgr::Refresh(Player* bot)
 
 bool RandomPlayerbotMgr::IsRandomBot(Player* bot)
 {
+    if (bot && bot->GetPlayerbotAI())
+    {
+        if (bot->GetPlayerbotAI()->IsRealPlayer())
+            return false;
+    }
     if (bot)
         return IsRandomBot(bot->GetGUIDLow()) || sPlayerbotAIConfig.IsInRandomAccountList(bot->GetSession()->GetAccountId());
 
@@ -2135,8 +2134,8 @@ void RandomPlayerbotMgr::OnPlayerLogin(Player* player)
         if (player == bot/* || player->GetPlayerbotAI()*/) // TEST
             continue;
 
-        if (player->GetCurrentCell() == bot->GetCurrentCell())
-            botsNearby++;
+        //if (player->GetCurrentCell() == bot->GetCurrentCell())
+        //    botsNearby++;
 
         Group* group = bot->GetGroup();
         if (!group)
@@ -2258,9 +2257,9 @@ void RandomPlayerbotMgr::PrintStats()
     {
         Player* bot = i->second;
         if (IsAlliance(bot->getRace()))
-            alliance[bot->getLevel() / 10]++;
+            alliance[bot->GetLevel() / 10]++;
         else
-            horde[bot->getLevel() / 10]++;
+            horde[bot->GetLevel() / 10]++;
 
         perRace[bot->getRace()]++;
         perClass[bot->getClass()]++;
@@ -2563,7 +2562,7 @@ void RandomPlayerbotMgr::ChangeStrategyOnce(Player* player)
 void RandomPlayerbotMgr::RandomTeleportForRpg(Player* bot)
 {
     uint32 race = bot->getRace();
-	uint32 level = bot->getLevel();
+	uint32 level = bot->GetLevel();
     sLog.outDetail("Random teleporting bot %s for RPG (%zu locations available)", bot->GetName(), rpgLocsCacheLevel[race][level].size());
     RandomTeleport(bot, rpgLocsCacheLevel[race][level], true);
 	Refresh(bot);
@@ -2668,9 +2667,9 @@ uint32 RandomPlayerbotMgr::GetBattleMasterEntry(Player* bot, BattleGroundTypeId 
 
 void RandomPlayerbotMgr::Hotfix(Player* bot, uint32 version)
 {
-    PlayerbotFactory factory(bot, bot->getLevel());
+    PlayerbotFactory factory(bot, bot->GetLevel());
     uint32 exp = bot->GetUInt32Value(PLAYER_XP);
-    uint32 level = bot->getLevel();
+    uint32 level = bot->GetLevel();
     uint32 id = bot->GetGUIDLow();
 
     for (int fix = version; fix <= MANGOSBOT_VERSION; fix++)
@@ -2691,7 +2690,7 @@ void RandomPlayerbotMgr::Hotfix(Player* bot, uint32 version)
                     Quest const *quest = sObjectMgr.GetQuestTemplate(questId);
 
                     if (!bot->SatisfyQuestClass(quest, false) ||
-                        quest->GetMinLevel() > bot->getLevel() ||
+                        quest->GetMinLevel() > bot->GetLevel() ||
                         !bot->SatisfyQuestRace(quest, false) || bot->GetQuestStatus(questId) == QUEST_STATUS_COMPLETE)
                         continue;
 

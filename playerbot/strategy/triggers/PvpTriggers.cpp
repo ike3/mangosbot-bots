@@ -80,7 +80,7 @@ bool BgInviteActiveTrigger::IsActive()
         {
             if (ginfo.isInvitedToBgInstanceGuid && ginfo.removeInviteTime)
             {
-                sLog.outDetail("Bot #%d <%s> (%u %s) : Invited to BG but not in BG", bot->GetGUIDLow(), bot->GetName(), bot->getLevel(), bot->GetTeam() == ALLIANCE ? "A" : "H");
+                sLog.outDetail("Bot #%d <%s> (%u %s) : Invited to BG but not in BG", bot->GetGUIDLow(), bot->GetName(), bot->GetLevel(), bot->GetTeam() == ALLIANCE ? "A" : "H");
                 return true;
             }
         }

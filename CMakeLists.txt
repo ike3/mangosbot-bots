@@ -126,6 +126,26 @@ if (BUILD_IKE3_BOTS)
   add_definitions(-DENABLE_PLAYERBOTS)
 endif()
 
+# Define Core
+if ( ${CMAKE_PROJECT_NAME} MATCHES "CMaNGOS")
+  add_definitions(-DCMANGOS)
+else()
+  if ( ${CMAKE_PROJECT_NAME} MATCHES "MaNGOS")
+    add_definitions(-DMANGOS)
+  endif()
+endif()
+
+# Define Expansion
+if ( ${CMAKE_PROJECT_NAME} MATCHES "Classic")
+  add_definitions(-DMANGOSBOT_ZERO)
+endif()
+if ( ${CMAKE_PROJECT_NAME} MATCHES "TBC")
+  add_definitions(-DMANGOSBOT_ONE)
+endif()
+if ( ${CMAKE_PROJECT_NAME} MATCHES "WoTLK")
+  add_definitions(-DMANGOSBOT_TWO)
+endif()
+
 # Define ENABLE_IMMERSIVE if need
 if (BUILD_IMMERSIVE)
   add_definitions(-DENABLE_IMMERSIVE)

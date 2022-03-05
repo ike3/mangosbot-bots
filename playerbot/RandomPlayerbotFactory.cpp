@@ -196,12 +196,24 @@ bool RandomPlayerbotFactory::CreateRandomBot(uint8 cls, unordered_map<uint8, vec
 
 	WorldSession* session = new WorldSession(accountId, NULL, SEC_PLAYER,
 
-#ifndef MANGOSBOT_ZERO
-		2,
+#ifdef MANGOSBOT_TWO
+        2, 0, LOCALE_enUS, 0);
 #endif
-        0, LOCALE_enUS);
+#ifdef MANGOSBOT_ONE
+		2, 0, LOCALE_enUS, "", 0, 0, false);
+#endif
+#ifdef MANGOSBOT_ZERO
+        0, LOCALE_enUS, "", 0);
+#endif
 
-    Player *player = new Player(session);
+    session->SetNoAnticheat();
+
+    Player* player = new Player(session);
+    if (!player || !session)
+    {
+        sLog.outError("BOTS: Unable to create session or player for random acc %d - name: \"%s\"; race: %u; class: %u", accountId, name.c_str(), race, cls);
+        return false;
+    }
 	if (!player->Create(sObjectMgr.GeneratePlayerLowGuid(), name, race, cls, gender,
 	        face.second, // skinColor,
 	        face.first,
@@ -701,7 +713,7 @@ void RandomPlayerbotFactory::CreateRandomArenaTeams()
         {
             Player* player = sObjectMgr.GetPlayer(captain);
 
-            if (!arenateam && player && player->getLevel() >= 70)
+            if (!arenateam && player && player->GetLevel() >= 70)
                 availableCaptains.push_back(captain);
         }
     }
@@ -727,7 +739,7 @@ void RandomPlayerbotFactory::CreateRandomArenaTeams()
             continue;
         }
 
-        if (player->getLevel() < 70)
+        if (player->GetLevel() < 70)
         {
             sLog.outError("Bot %d must be level 70 to create an arena team", captain);
             continue;

@@ -17,7 +17,7 @@ namespace ai
     DEBUFF_ENEMY_TRIGGER(RendDebuffOnAttackerTrigger, "rend");
     CAN_CAST_TRIGGER(RevengeAvailableTrigger, "revenge");
     CAN_CAST_TRIGGER(OverpowerAvailableTrigger, "overpower");
-    CAN_CAST_TRIGGER(RampageAvailableTrigger, "rampage");
+    BUFF_TRIGGER(RampageAvailableTrigger, "rampage");
     BUFF_TRIGGER_A(BloodrageBuffTrigger, "bloodrage");
     CAN_CAST_TRIGGER(VictoryRushTrigger, "victory rush");
     HAS_AURA_TRIGGER(SwordAndBoardTrigger, "sword and board");

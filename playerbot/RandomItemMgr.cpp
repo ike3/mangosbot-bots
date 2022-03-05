@@ -1838,11 +1838,11 @@ uint32 RandomItemMgr::GetUpgrade(Player* player, std::string spec, uint8 slot, u
             continue;
 
         // skip higher lvl
-        if (info->minLevel > player->getLevel())
+        if (info->minLevel > player->GetLevel())
             continue;
 
         // skip too low level
-        if (info->minLevel < (player->getLevel() - 10))
+        if (info->minLevel < (player->GetLevel() - 10))
             continue;
 
         // skip wrong team
@@ -1862,7 +1862,7 @@ uint32 RandomItemMgr::GetUpgrade(Player* player, std::string spec, uint8 slot, u
             continue;
 
         // skip items that only fit in slot, but not stats
-        if (!itemId && info->weights[specId] == 1 && player->getLevel() > 40)
+        if (!itemId && info->weights[specId] == 1 && player->GetLevel() > 40)
             continue;
 
         // skip quest items
@@ -1893,7 +1893,7 @@ uint32 RandomItemMgr::GetUpgrade(Player* player, std::string spec, uint8 slot, u
             }
         }
 
-        if (bestSpecId && bestSpecId != specId && player->getLevel() > 40)
+        if (bestSpecId && bestSpecId != specId && player->GetLevel() > 40)
             return 0;
 
         if (!closestUpgrade)
@@ -1963,11 +1963,11 @@ vector<uint32> RandomItemMgr::GetUpgradeList(Player* player, std::string spec, u
             continue;
 
         // skip higher lvl
-        if (info->minLevel > player->getLevel())
+        if (info->minLevel > player->GetLevel())
             continue;
 
         // skip too low level
-        if ((int32)info->minLevel < (int32)(player->getLevel() - 20))
+        if ((int32)info->minLevel < (int32)(player->GetLevel() - 20))
             continue;
 
         // skip wrong team
@@ -1987,7 +1987,7 @@ vector<uint32> RandomItemMgr::GetUpgradeList(Player* player, std::string spec, u
             continue;
 
         // skip items that only fit in slot, but not stats
-        if (!itemId && info->weights[specId] == 1 && player->getLevel() > 40)
+        if (!itemId && info->weights[specId] == 1 && player->GetLevel() > 40)
             continue;
 
         // skip quest items
@@ -2006,7 +2006,7 @@ vector<uint32> RandomItemMgr::GetUpgradeList(Player* player, std::string spec, u
             info->slot == EQUIPMENT_SLOT_FINGER2))
             continue;
 
-        //if (player->getLevel() >= 40)
+        //if (player->GetLevel() >= 40)
         //{
         //    // check if item stat score is the best among class specs
         //    uint32 bestSpecId = 0;
@@ -2131,11 +2131,11 @@ uint32 RandomItemMgr::GetLiveStatWeight(Player* player, uint32 itemId)
     statWeight = info->weights[specId];
 
     // skip higher lvl
-    if (info->minLevel > player->getLevel())
+    if (info->minLevel > player->GetLevel())
         return 0;
 
     // skip too low level
-    //if ((int32)info->minLevel < (int32)(player->getLevel() - 20))
+    //if ((int32)info->minLevel < (int32)(player->GetLevel() - 20))
     //    return 0;
 
     // skip wrong team
@@ -2171,7 +2171,7 @@ uint32 RandomItemMgr::GetLiveStatWeight(Player* player, uint32 itemId)
         return 0;
 
     // skip items that only fit in slot, but not stats
-    if (!itemId && info->weights[specId] == 1 && player->getLevel() > 20)
+    if (!itemId && info->weights[specId] == 1 && player->GetLevel() > 20)
         return 0;
 
     // check if item stat score is the best among class specs
@@ -2186,7 +2186,7 @@ uint32 RandomItemMgr::GetLiveStatWeight(Player* player, uint32 itemId)
         }
     }
 
-    if (bestSpecId && bestSpecId != specId && player->getLevel() >= 60)
+    if (bestSpecId && bestSpecId != specId && player->GetLevel() >= 60)
         return 0;*/
 
     return statWeight;

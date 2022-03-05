@@ -164,10 +164,10 @@ uint32 GuildTaskMgr::CreateTask(uint32 owner, uint32 guildId)
 bool GuildTaskMgr::CreateItemTask(uint32 owner, uint32 guildId)
 {
     Player* player = sObjectMgr.GetPlayer(ObjectGuid(HIGHGUID_PLAYER, owner));
-    if (!player || player->getLevel() < 5)
+    if (!player || player->GetLevel() < 5)
         return false;
 
-    uint32 itemId = sRandomItemMgr.GetRandomItem(player->getLevel() - 5, RANDOM_ITEM_GUILD_TASK);
+    uint32 itemId = sRandomItemMgr.GetRandomItem(player->GetLevel() - 5, RANDOM_ITEM_GUILD_TASK);
     if (!itemId)
     {
         sLog.outError( "%s / %s: no items avaible for item task",
@@ -203,7 +203,7 @@ bool GuildTaskMgr::CreateKillTask(uint32 owner, uint32 guildId)
         if (co->Rank != rank)
             continue;
 
-        if (co->MaxLevel > player->getLevel() + 4 || co->MinLevel < player->getLevel() - 3)
+        if (co->MaxLevel > player->GetLevel() + 4 || co->MinLevel < player->GetLevel() - 3)
             continue;
 
         if (strstr(co->Name, "UNUSED"))
@@ -872,7 +872,7 @@ bool GuildTaskMgr::Reward(uint32 owner, uint32 guildId)
         body << guild->GetName() << "\n";
         body << leader->GetName() << "\n";
         rewardType = proto->Quality > ITEM_QUALITY_NORMAL ? RANDOM_ITEM_GUILD_TASK_REWARD_EQUIP_BLUE : RANDOM_ITEM_GUILD_TASK_REWARD_EQUIP_GREEN;
-        itemId = sRandomItemMgr.GetRandomItem(player->getLevel() - 5, rewardType);
+        itemId = sRandomItemMgr.GetRandomItem(player->GetLevel() - 5, rewardType);
     }
     else if (killTask)
     {
@@ -886,7 +886,7 @@ bool GuildTaskMgr::Reward(uint32 owner, uint32 guildId)
         body << guild->GetName() << "\n";
         body << leader->GetName() << "\n";
         rewardType = proto->Rank == CREATURE_ELITE_RARE ? RANDOM_ITEM_GUILD_TASK_REWARD_TRADE : RANDOM_ITEM_GUILD_TASK_REWARD_TRADE_RARE;
-        itemId = sRandomItemMgr.GetRandomItem(player->getLevel(), rewardType);
+        itemId = sRandomItemMgr.GetRandomItem(player->GetLevel(), rewardType);
         if (itemId)
         {
             ItemPrototype const* itemProto = sObjectMgr.GetItemPrototype(itemId);

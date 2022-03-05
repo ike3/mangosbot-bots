@@ -56,7 +56,7 @@ namespace ai
                     return false;
             }
 
-            if (abs(int32(player->getLevel() - bot->getLevel())) > 2)
+            if (abs(int32(player->GetLevel() - bot->GetLevel())) > 2)
                 continue;
 
             if (sServerFacade.GetDistance2d(bot, player) > sPlayerbotAIConfig.sightDistance)
@@ -135,7 +135,7 @@ namespace ai
                 if (botAi->HasActivePlayerMaster()) //Do not invite alts of active players. 
                     continue;
 
-                if (player->getLevel() > bot->getLevel() + 5) //Only invite higher levels that need money so they can grind money and help out.
+                if (player->GetLevel() > bot->GetLevel() + 5) //Only invite higher levels that need money so they can grind money and help out.
                 {
                     AiObjectContext* botContext = botAi->GetAiObjectContext();
 
@@ -149,10 +149,10 @@ namespace ai
                     return false;
             }
 
-            if (player->getLevel() + 2 < bot->getLevel())
+            if (player->GetLevel() + 2 < bot->GetLevel())
                 continue;
 
-            if (player->getLevel() > bot->getLevel() + 20)
+            if (player->GetLevel() > bot->GetLevel() + 20)
                 continue;
 
             return Invite(player);

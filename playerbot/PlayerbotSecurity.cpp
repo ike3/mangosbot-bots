@@ -42,7 +42,7 @@ PlayerbotSecurityLevel PlayerbotSecurity::LevelFor(Player* from, DenyReason* rea
             }
         }
 
-        if ((int)bot->getLevel() - (int)from->getLevel() > 30)
+        if ((int)bot->GetLevel() - (int)from->GetLevel() > 30)
         {
             if (!bot->GetGuildId() || bot->GetGuildId() != from->GetGuildId())
             {
@@ -55,7 +55,7 @@ PlayerbotSecurityLevel PlayerbotSecurity::LevelFor(Player* from, DenyReason* rea
         int fromGS = (int)bot->GetPlayerbotAI()->GetEquipGearScore(from, false, false);
         if (sPlayerbotAIConfig.gearscorecheck)
         {
-            if (botGS && bot->getLevel() > 15 && botGS > fromGS && (100 * (botGS - fromGS) / botGS) >= 12 * sWorld.getConfig(CONFIG_UINT32_MAX_PLAYER_LEVEL) / from->getLevel())
+            if (botGS && bot->GetLevel() > 15 && botGS > fromGS && (100 * (botGS - fromGS) / botGS) >= 12 * sWorld.getConfig(CONFIG_UINT32_MAX_PLAYER_LEVEL) / from->GetLevel())
             {
                 if (reason) *reason = PLAYERBOT_DENY_GEARSCORE;
                 return PLAYERBOT_SECURITY_TALK;
@@ -172,14 +172,14 @@ bool PlayerbotSecurity::CheckLevelFor(PlayerbotSecurityLevel level, bool silent,
             out << "I'll do it later";
             break;
         case PLAYERBOT_DENY_LOW_LEVEL:
-            out << "You are too low level: |cffff0000" << (uint32)from->getLevel() << "|cffffffff/|cff00ff00" << (uint32)bot->getLevel();
+            out << "You are too low level: |cffff0000" << (uint32)from->GetLevel() << "|cffffffff/|cff00ff00" << (uint32)bot->GetLevel();
             break;
         case PLAYERBOT_DENY_GEARSCORE:
             {
                 int botGS = (int)bot->GetPlayerbotAI()->GetEquipGearScore(bot, false, false);
                 int fromGS = (int)bot->GetPlayerbotAI()->GetEquipGearScore(from, false, false);
                 int diff = (100 * (botGS - fromGS) / botGS);
-                int req = 12 * sWorld.getConfig(CONFIG_UINT32_MAX_PLAYER_LEVEL) / from->getLevel();
+                int req = 12 * sWorld.getConfig(CONFIG_UINT32_MAX_PLAYER_LEVEL) / from->GetLevel();
                 out << "Your gearscore is too low: |cffff0000" << fromGS << "|cffffffff/|cff00ff00" << botGS << " |cffff0000" << diff << "%|cffffffff/|cff00ff00" << req << "%";
             }
             break;
