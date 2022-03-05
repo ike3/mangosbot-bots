@@ -124,8 +124,13 @@ bool MoveToTravelTargetAction::isUseful()
     if (bot->IsTaxiFlying())
         return false;
 
+#ifndef MANGOSBOT_ZERO
     if (bot->IsMovingIgnoreFlying())
         return false;
+#else
+    if (bot->IsMoving())
+        return false;
+#endif
 
     if (!AI_VALUE(bool, "can move around"))
         return false;

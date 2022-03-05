@@ -232,7 +232,7 @@ void PlayerbotAI::UpdateAI(uint32 elapsed, bool minimal)
     }
 
     // force stop if moving but should not
-    if (bot->IsMoving() && !CanMove() && !bot->m_movementInfo.HasMovementFlag(MOVEFLAG_FALLING) && !bot->IsTaxiFlying())
+    if (bot->IsMoving() && !CanMove() && !bot->m_movementInfo.HasMovementFlag(MOVEFLAG_JUMPING) && !bot->IsTaxiFlying())
     {
         bot->StopMoving();
         bot->GetMotionMaster()->Clear();
@@ -684,7 +684,11 @@ void PlayerbotAI::HandleBotOutgoingPacket(const WorldPacket& packet)
         float fx = ox + dis * vcos;
         float fy = oy + dis * vsin;
         float fz = oz + 0.5f;
+#ifdef MANGOSBOT_TWO
         bot->GetMap()->GetHitPosition(ox, oy, oz + max_height, fx, fy, fz, bot->GetPhaseMask(), -0.5f);
+#else
+        bot->GetMap()->GetHitPosition(ox, oy, oz + max_height, fx, fy, fz, -0.5f);
+#endif
         bot->UpdateAllowedPositionZ(fx, fy, fz);
 
         // stop casting
@@ -700,9 +704,11 @@ void PlayerbotAI::HandleBotOutgoingPacket(const WorldPacket& packet)
         SetNextCheckDelay((uint32)((newdis / dis) * moveTimeHalf * 4 * IN_MILLISECONDS));
 
         // add moveflags
-        bot->m_movementInfo.SetMovementFlags(MOVEFLAG_FALLING);
+        bot->m_movementInfo.SetMovementFlags(MOVEFLAG_JUMPING);
         bot->m_movementInfo.AddMovementFlag(MOVEFLAG_FORWARD);
+#ifdef MANGOSBOT_TWO
         bot->m_movementInfo.AddMovementFlag(MOVEFLAG_PENDINGSTOP);
+#endif
 
         // copy MovementInfo
         MovementInfo movementInfo = bot->m_movementInfo;
@@ -711,7 +717,9 @@ void PlayerbotAI::HandleBotOutgoingPacket(const WorldPacket& packet)
         WorldPacket ack(CMSG_MOVE_KNOCK_BACK_ACK);
         movementInfo.jump.cosAngle = vcos;
         movementInfo.jump.sinAngle = vsin;
+#ifdef MANGOSBOT_TWO
         movementInfo.jump.velocity = -verticalSpeed;
+#endif
         movementInfo.jump.xyspeed = horizontalSpeed;
         ack << bot->GetObjectGuid().WriteAsPacked();
         ack << uint32(0);
@@ -1018,7 +1026,7 @@ void PlayerbotAI::DoNextAction(bool min)
 #endif
 
     // land after knockback/jump
-    if (bot->m_movementInfo.HasMovementFlag(MOVEFLAG_FALLING))
+    if (bot->m_movementInfo.HasMovementFlag(MOVEFLAG_JUMPING))
     {
         // stop movement
         bot->StopMoving();
@@ -1026,8 +1034,10 @@ void PlayerbotAI::DoNextAction(bool min)
         bot->GetMotionMaster()->MoveIdle();
 
         // remove moveflags
-        bot->m_movementInfo.RemoveMovementFlag(MOVEFLAG_FALLING);
+        bot->m_movementInfo.RemoveMovementFlag(MOVEFLAG_JUMPING);
+#ifdef MANGOSBOT_TWO
         bot->m_movementInfo.RemoveMovementFlag(MOVEFLAG_PENDINGSTOP);
+#endif
 
         // set jump destination
         bot->m_movementInfo.pos = !GetJumpDestination().IsEmpty() ? GetJumpDestination() : bot->GetPosition();
