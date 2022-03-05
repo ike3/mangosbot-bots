@@ -44,6 +44,29 @@ void ChooseTravelTargetAction::getNewTarget(TravelTarget* newTarget, TravelTarge
     if (!foundTarget && urand(1, 100) > 90)                               //10% chance
         foundTarget = SetNpcFlagTarget(newTarget, { UNIT_NPC_FLAG_BANKER,UNIT_NPC_FLAG_BATTLEMASTER,UNIT_NPC_FLAG_AUCTIONEER });
 
+    // PvP activities
+    if (false && !foundTarget && urand(0, 3))
+    {
+        WorldPosition* botPos = &WorldPosition(bot);
+        TravelTarget* target = context->GetValue<TravelTarget*>("travel target")->Get();
+
+        TravelDestination* dest = ChooseTravelTargetAction::FindDestination(bot, "Tarren Mill");
+        if (dest)
+        {
+            vector <WorldPosition*> points = dest->nextPoint(botPos, true);
+
+            if (!points.empty())
+            {
+                target->setTarget(dest, points.front());
+                target->setForced(true);
+
+                ostringstream out; out << "Traveling to " << dest->getTitle();
+                ai->TellMasterNoFacing(out.str());
+                foundTarget = true;
+            }
+        }
+    }
+
     //Grind for money
     if (!foundTarget && AI_VALUE(bool, "should get money"))
         if (urand(1, 100) > 66)
