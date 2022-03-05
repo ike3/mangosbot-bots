@@ -212,6 +212,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
     }
 
     TravelPath movePath;
+    bool isWalking = false;
 
     if (lastMove.lastMoveShort.distance(endPosition) < maxDistChange && startPosition.distance(lastMove.lastMoveShort) < maxDist) //The last short movement was to the same place we want to move now.
         movePosition = endPosition;
@@ -374,14 +375,14 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
                 }
 
                 uint32 botMoney = bot->GetMoney();
-                if (ai->HasCheat(BotCheatMask::gold))
+                if (ai->HasCheat(BotCheatMask::gold) || ai->HasCheat(BotCheatMask::taxi))
                 {
                     bot->SetMoney(10000000);
                 }
 
                 bool goTaxi = bot->ActivateTaxiPathTo({ tEntry->from, tEntry->to }, unit, 1);
 
-                if (ai->HasCheat(BotCheatMask::gold))
+                if (ai->HasCheat(BotCheatMask::gold) || ai->HasCheat(BotCheatMask::taxi))
                 {
                     bot->SetMoney(botMoney);
                 }
@@ -407,6 +408,9 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
                 }
             }
         }
+
+        if (pathType == TravelNodePathType::walk && movePath.getPath().begin()->type != NODE_FLIGHTPATH)
+            isWalking = true;
         //if (!isTransport && bot->GetTransport())
         //    bot->GetTransport()->RemovePassenger(bot);
     }
@@ -558,8 +562,43 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
         bool needFly = false;
         bool needLand = false;
         bool isFly = bot->IsFlying();
+        bool isFar = false;
 
-        if (!isFly && originalZ > bot->GetPositionZ() && (originalZ - bot->GetPositionZ()) > 5.0f)
+        // if bot is on flying mount, fly up or down depending on distance to target
+        if (totalDistance > maxDist && isWalking)
+        {
+            isFar = true;
+            needFly = true;
+            // only use in clear LOS betweek points
+            Position pos = bot->GetPosition();
+            if (!bot->GetMap()->IsInLineOfSight(pos.x, pos.y, pos.z + 100.f, movePosition.getX(), movePosition.getY(), movePosition.getZ() + 100.f, bot->GetPhaseMask(), true))
+                needFly = false;
+
+            if (const TerrainInfo* terrain = bot->GetTerrain())
+            {
+                if (needFly)
+                {
+                    // get ground level data at next waypoint
+                    float height = terrain->GetHeightStatic(movePosition.getX(), movePosition.getY(), movePosition.getZ());
+                    float ground = terrain->GetWaterOrGroundLevel(movePosition.getX(), movePosition.getY(), movePosition.getZ(), height);
+
+                    float botheight = terrain->GetHeightStatic(bot->GetPositionX(), bot->GetPositionY(), bot->GetPositionZ());
+                    float botground = terrain->GetWaterOrGroundLevel(bot->GetPositionX(), bot->GetPositionY(), bot->GetPositionZ(), botheight);
+
+                    // fly up if destination is far
+                    if (totalDistance > maxDist && ground <= movePosition.getZ()) // check if ground level is not higher than path (tunnels)
+                    {
+                        movePosition.setZ(min(max(ground, botground) + 100.0f, max(movePosition.getZ() + 10.0f, bot->GetPositionZ() + 10.0f)));
+                    }
+                    else
+                    {
+                        movePosition.setZ(max(max(ground, botground), bot->GetPositionZ() - 10.0f));
+                    }
+                }
+            }
+        }
+
+        if (!isFar && !isFly && originalZ > bot->GetPositionZ() && (originalZ - bot->GetPositionZ()) > 5.0f)
             needFly = true;
 
         if (needFly && !isFly)
@@ -578,7 +617,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
                 bot->m_movementInfo.AddMovementFlag(MOVEFLAG_LEVITATING);
         }
 
-        if (isFly)
+        if (!isFar && isFly)
         {
             if (const TerrainInfo* terrain = bot->GetTerrain())
             {
@@ -726,7 +765,8 @@ bool MovementAction::IsMovingAllowed()
             bot->HasAuraType(SPELL_AURA_SPIRIT_OF_REDEMPTION) ||
             bot->HasAuraType(SPELL_AURA_MOD_CONFUSE) || sServerFacade.IsCharmed(bot) ||
             bot->HasAuraType(SPELL_AURA_MOD_STUN) || bot->IsTaxiFlying() ||
-            bot->hasUnitState(UNIT_STAT_CAN_NOT_REACT_OR_LOST_CONTROL))
+            bot->hasUnitState(UNIT_STAT_CAN_NOT_REACT_OR_LOST_CONTROL))// ||
+            //bot->m_movementInfo.HasMovementFlag(MOVEFLAG_FALLING))
         return false;
 
     MotionMaster &mm = *bot->GetMotionMaster();
