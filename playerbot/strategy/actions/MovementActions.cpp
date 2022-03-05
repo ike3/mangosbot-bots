@@ -172,7 +172,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
 
     if (generatePath)
     {
-        z += CONTACT_DISTANCE;
+        z += 2.0f;
         mover->UpdateAllowedPositionZ(x, y, z);
     }
 
