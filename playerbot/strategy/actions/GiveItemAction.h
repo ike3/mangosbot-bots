@@ -22,6 +22,15 @@ namespace ai
     public:
         GiveFoodAction(PlayerbotAI* ai) : GiveItemAction(ai, "give food", "conjured food") {}
         virtual Unit* GetTarget();
+        virtual bool isUseful()
+        {
+            if (!GetTarget())
+                return false;
+
+            bool isRandomBot = GetTarget()->IsPlayer() && sRandomPlayerbotMgr.IsRandomBot((Player*)GetTarget());
+
+            return !isRandomBot || (isRandomBot && !sPlayerbotAIConfig.freeFood);
+        }
     };
 
     class GiveWaterAction : public GiveItemAction
@@ -29,6 +38,15 @@ namespace ai
     public:
         GiveWaterAction(PlayerbotAI* ai) : GiveItemAction(ai, "give water", "conjured water") {}
         virtual Unit* GetTarget();
+        virtual bool isUseful()
+        {
+            if (!GetTarget())
+                return false;
+
+            bool isRandomBot = GetTarget()->IsPlayer() && sRandomPlayerbotMgr.IsRandomBot((Player*)GetTarget());
+
+            return !isRandomBot || (isRandomBot && !sPlayerbotAIConfig.freeFood);
+        }
     };
 
 }

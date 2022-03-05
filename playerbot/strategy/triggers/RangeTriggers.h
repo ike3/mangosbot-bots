@@ -18,7 +18,8 @@ namespace ai
 
                 bool isBoss = false;
                 bool isRaid = false;
-                float targetDistance = sServerFacade.GetDistance2d(bot, target) + bot->GetCombinedCombatReach(target, false);
+                float combatReach = bot->GetCombinedCombatReach(target, false);
+                float targetDistance = sServerFacade.GetDistance2d(bot, target) + combatReach;
                 if (target->IsCreature())
                 {
                     Creature* creature = ai->GetCreature(target->GetObjectGuid());
@@ -30,10 +31,10 @@ namespace ai
                 if (bot->GetMap() && bot->GetMap()->IsRaid())
                     isRaid = true;
 
-                if (isBoss || isRaid)
-                    return sServerFacade.IsDistanceLessThan(targetDistance, ai->GetRange("spell"));
+                //if (isBoss || isRaid)
+                //    return sServerFacade.IsDistanceLessThan(targetDistance, (ai->GetRange("spell") + combatReach) / 2);
 
-                return sServerFacade.IsDistanceLessOrEqualThan(targetDistance, (ai->GetRange("spell") / 2));
+                return sServerFacade.IsDistanceLessOrEqualThan(targetDistance, (ai->GetRange("spell") + combatReach) / 2);
             }
             return false;
         }
@@ -52,7 +53,9 @@ namespace ai
                 return false;
 
             bool isBoss = false;
-            float targetDistance = sServerFacade.GetDistance2d(bot, target) + bot->GetCombinedCombatReach(target, false);
+            bool isRaid = false;
+            float combatReach = bot->GetCombinedCombatReach(target, false);
+            float targetDistance = sServerFacade.GetDistance2d(bot, target) + combatReach;
             if (target->IsCreature())
             {
                 Creature* creature = ai->GetCreature(target->GetObjectGuid());
@@ -61,10 +64,13 @@ namespace ai
                     isBoss = creature->IsWorldBoss();
                 }
             }
-            if (isBoss)
-                return sServerFacade.IsDistanceLessThan(targetDistance, ai->GetRange("shoot"));
+            if (bot->GetMap() && bot->GetMap()->IsRaid())
+                isRaid = true;
 
-            return sServerFacade.IsDistanceLessOrEqualThan(targetDistance, (ai->GetRange("shoot") / 2));
+            //if (isBoss || isRaid)
+            //    return sServerFacade.IsDistanceLessThan(targetDistance, ai->GetRange("shoot") + combatReach);
+
+            return sServerFacade.IsDistanceLessOrEqualThan(targetDistance, (ai->GetRange("shoot") + combatReach) / 2);
         }
     };
 
@@ -136,7 +142,7 @@ namespace ai
                 return false;
 
             float combatReach = bot->GetCombinedCombatReach(target, false);
-            return target && (sServerFacade.GetDistance2d(bot, target) > (distance + combatReach) || !bot->IsWithinLOSInMap(target, true));
+            return target && (sServerFacade.GetDistance2d(bot, target) > (distance + combatReach + sPlayerbotAIConfig.contactDistance) || !bot->IsWithinLOSInMap(target, true));
         }
     };
 
@@ -148,7 +154,11 @@ namespace ai
         virtual bool IsActive()
         {
             Unit* target = AI_VALUE(Unit*, GetTargetName());
-            return target && (sServerFacade.GetDistance2d(bot, target) > distance || !bot->IsWithinLOSInMap(target, true));
+            if (!target)
+                return false;
+
+            float combatReach = bot->GetCombinedCombatReach(target, false);
+            return target && (sServerFacade.GetDistance2d(bot, target) > (distance + sPlayerbotAIConfig.contactDistance) || !bot->IsWithinLOSInMap(target, true));
         }
     };
 

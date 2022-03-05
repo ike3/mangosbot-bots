@@ -86,7 +86,10 @@ bool BGJoinAction::Execute(Event event)
                 isRated = true;
 
             if (isRated && !gatherArenaTeam(type))
+            {
+                sLog.outBasic("Team %dv%d, captain #%d <%s>: error making arena group!", uint32(type), uint32(type), bot->GetGUIDLow(), bot->GetName());
                 return false;
+            }
 
             ai->GetAiObjectContext()->GetValue<uint32>("arena type")->Set(isRated);
         }
@@ -105,6 +108,11 @@ bool BGJoinAction::Execute(Event event)
 bool BGJoinAction::gatherArenaTeam(ArenaType type)
 {
     ArenaTeam* arenateam = nullptr;
+    Group* leaderGroup = nullptr;
+    uint32 needMembers = (uint32)type;
+    //if (bot->GetGroup() && bot->GetGroup()->IsLeader(bot->GetObjectGuid()))
+    //    leaderGroup = bot->GetGroup();
+
     for (uint32 arena_slot = 0; arena_slot < MAX_ARENA_SLOT; ++arena_slot)
     {
         ArenaTeam* temp = sObjectMgr.GetArenaTeamById(bot->GetArenaTeamId(arena_slot));
@@ -117,19 +125,25 @@ bool BGJoinAction::gatherArenaTeam(ArenaType type)
         if (temp->GetType() != type)
             continue;
 
-        if (temp->GetMembersSize() < ((uint32)temp->GetType()))
-            continue;
+        //if ((int)temp->GetMembersSize() < (int)needMembers)
+        //    continue;
 
         arenateam = temp;
     }
     if (!arenateam)
+    {
+        sLog.outBasic("Bot #%d <%s>: No proper arena team found!", bot->GetGUIDLow(), bot->GetName());
         return false;
+    }
 
     vector<uint32> members;
 
     // search for arena team members and make them online
     for (ArenaTeam::MemberList::iterator itr = arenateam->GetMembers().begin(); itr != arenateam->GetMembers().end(); ++itr)
     {
+        if ((int)members.size() >= (int)needMembers)
+            break;
+
         bool offline = false;
         Player* member = sObjectMgr.GetPlayer(itr->guid);
         if (!member)
@@ -140,7 +154,17 @@ bool BGJoinAction::gatherArenaTeam(ArenaType type)
         //    continue;
 
         if (offline)
-            sRandomPlayerbotMgr.AddPlayerBot(itr->guid.GetRawValue(), 0);
+        {
+            if (!sRandomPlayerbotMgr.AddRandomBot(itr->guid.GetCounter()))
+            {
+                sLog.outBasic("Team #%d <%s>: error logging in an offline member!", arenateam->GetId(), arenateam->GetName().c_str());
+                return false;
+            }
+            else
+                continue;
+        }
+
+        //member = sObjectMgr.GetPlayer(itr->guid);
 
         if (member)
         {
@@ -159,8 +183,10 @@ bool BGJoinAction::gatherArenaTeam(ArenaType type)
             if (member->GetObjectGuid() == bot->GetObjectGuid())
                 continue;
 
-            if (member->GetGroup())
+            if (member->GetGroup() && member->GetGroup() != leaderGroup)
                 member->GetGroup()->RemoveMember(member->GetObjectGuid(), 0);
+
+            member->TeleportTo(bot->GetMapId(), bot->GetPositionX(), bot->GetPositionY(), bot->GetPositionZ(), 0);
 
             member->GetPlayerbotAI()->Reset();
         }
@@ -169,32 +195,39 @@ bool BGJoinAction::gatherArenaTeam(ArenaType type)
             members.push_back(member->GetGUIDLow());
     }
 
-    if (!members.size() || (int)members.size() < (int)(arenateam->GetType() - 1))
+    if (!members.size() || (int)members.size() < (int)(needMembers - 1))
     {
-        sLog.outBasic("Team #%d <%s> has not enough members for match", arenateam->GetId(), arenateam->GetName());
+        sLog.outBasic("Team #%d <%s> has not enough members for match", arenateam->GetId(), arenateam->GetName().c_str());
         return false;
     }
 
+    if (!leaderGroup)
+    {
 #ifndef MANGOSBOT_TWO
-    Group* group = new Group();
+        Group* group = new Group();
 #else
-    Group* group = new Group(GROUPTYPE_NORMAL);
+        Group* group = new Group(GROUPTYPE_NORMAL);
 #endif
-    uint32 count = 1;
-    
-    // disband leaders group
-    if (bot->GetGroup())
-        bot->GetGroup()->Disband(true);
+        uint32 count = 1;
 
-    if (!group->Create(bot->GetObjectGuid(), bot->GetName()))
-    {
-        sLog.outBasic("Team #%d <%s>: Can't create group for arena queue", arenateam->GetId(), arenateam->GetName());
-        return false;
+        // disband leaders group
+        if (bot->GetGroup())
+            bot->GetGroup()->RemoveMember(bot->GetObjectGuid(), 0);
+
+        if (!group->Create(bot->GetObjectGuid(), bot->GetName()))
+        {
+            sLog.outBasic("Team #%d <%s>: Can't create group for arena queue", arenateam->GetId(), arenateam->GetName().c_str());
+            delete group;
+            return false;
+        }
+        else
+        {
+            sObjectMgr.AddGroup(group);
+            leaderGroup = group;
+        }
     }
-    else
-        sObjectMgr.AddGroup(group);
 
-    sLog.outBasic("Bot #%d <%s>: Leader of <%s>", bot->GetGUIDLow(), bot->GetName(), arenateam->GetName());
+    sLog.outBasic("Bot #%d <%s>: Leader of <%s>", bot->GetGUIDLow(), bot->GetName(), arenateam->GetName().c_str());
 
     for (auto i = begin(members); i != end(members); ++i)
     {
@@ -204,7 +237,7 @@ bool BGJoinAction::gatherArenaTeam(ArenaType type)
         //if (count >= (int)arenateam->GetType())
         //    break;
 
-        if (group->GetMembersCount() >= (uint32)arenateam->GetType())
+        if (leaderGroup->GetMembersCount() >= needMembers)
             break;
 
         Player* member = sObjectMgr.GetPlayer(ObjectGuid(HIGHGUID_PLAYER, *i));
@@ -212,32 +245,37 @@ bool BGJoinAction::gatherArenaTeam(ArenaType type)
             continue;
 
         if (member->GetLevel() < 70)
-            continue;
-
-        if (!group->AddMember(ObjectGuid(HIGHGUID_PLAYER, *i), member->GetName()))
-            continue;
-
+        continue;
+        
         if (!member->GetPlayerbotAI())
             continue;
 
-        member->GetPlayerbotAI()->Reset();
+        if (member->getLevel() < 70)
+            continue;
+
+        if (member->GetGroup() == leaderGroup)
+            continue;
+
+        if (!leaderGroup->AddMember(ObjectGuid(HIGHGUID_PLAYER, *i), member->GetName()))
+            continue;
+
+        member->GetPlayerbotAI()->Reset(true);
 
         member->TeleportTo(bot->GetMapId(), bot->GetPositionX(), bot->GetPositionY(), bot->GetPositionZ(), 0);
 
-        sLog.outBasic("Bot #%d <%s>: Member of <%s>", member->GetGUIDLow(), member->GetName(), arenateam->GetName());
-
-        count++;
+        sLog.outBasic("Bot #%d <%s>: Member of <%s>", member->GetGUIDLow(), member->GetName(), arenateam->GetName().c_str());
     }
 
-    if (group && group->GetMembersCount() >= (uint32)arenateam->GetType())
+    if (leaderGroup && leaderGroup->GetMembersCount() >= needMembers)
     {
-        sLog.outBasic("Team #%d <%s>: Group is ready for match", arenateam->GetId(), arenateam->GetName());
+        sLog.outBasic("Team #%d <%s>: Group is ready for match", arenateam->GetId(), arenateam->GetName().c_str());
         return true;
     }
-    else
+    else if (leaderGroup && leaderGroup->GetMembersCount() < needMembers)
     {
-        sLog.outBasic("Team #%d <%s>: Group is not ready for match (not enough members)", arenateam->GetId(), arenateam->GetName());
-        group->Disband();
+        sLog.outBasic("Team #%d <%s>: Group is not ready for match (not enough members)", arenateam->GetId(), arenateam->GetName().c_str());
+        leaderGroup->Disband();
+        return false;
     }
     return false;
 }
@@ -287,16 +325,25 @@ bool BGJoinAction::shouldJoinBg(BattleGroundQueueTypeId queueTypeId, BattleGroun
 
     bool isArena = false;
     bool isRated = false;
+    bool isTeamLead = false;
+    bool noLag = sWorld.GetMaxDiff() < 100;
 
 #ifndef MANGOSBOT_ZERO
     ArenaType type = sServerFacade.BgArenaType(queueTypeId);
     if (type != ARENA_TYPE_NONE)
         isArena = true;
+
+    isTeamLead = sObjectMgr.GetArenaTeamByCaptain(bot->GetObjectGuid());
 #endif
     bool hasPlayers = (sRandomPlayerbotMgr.BgPlayers[queueTypeId][bracketId][0] + sRandomPlayerbotMgr.BgPlayers[queueTypeId][bracketId][1]) > 0;
     bool hasBots = (sRandomPlayerbotMgr.BgBots[queueTypeId][bracketId][0] + sRandomPlayerbotMgr.BgBots[queueTypeId][bracketId][1]) >= bg->GetMinPlayersPerTeam();
-    if (!(hasPlayers || hasBots))
+    if (!(hasPlayers || hasBots) && !isArena/* && !noLag*/)
         return false;
+
+#ifdef MANGOSBOT_TWO
+    if (!hasPlayers && bgTypeId == BATTLEGROUND_RB)
+        return false;
+#endif
 
     uint32 BracketSize = bg->GetMaxPlayers();
     uint32 TeamSize = bg->GetMaxPlayersPerTeam();
@@ -309,6 +356,12 @@ bool BGJoinAction::shouldJoinBg(BattleGroundQueueTypeId queueTypeId, BattleGroun
 
     uint32 TeamId = bot->GetTeam() == ALLIANCE ? 0 : 1;
 
+    //if (!hasPlayers && !isArena)
+    //{
+    //    if (BgCount >= bg->GetMaxPlayers())
+    //        return false;
+    //}
+
 #ifndef MANGOSBOT_ZERO
     if (isArena)
     {
@@ -317,6 +370,13 @@ bool BGJoinAction::shouldJoinBg(BattleGroundQueueTypeId queueTypeId, BattleGroun
         {
             isRated = true;
         }
+        if (!hasPlayers && isTeamLead)
+            isRated = true;
+
+        // do not queue skirmish without real players
+        if (!hasPlayers && !(isTeamLead || isRated))
+            return false;
+
         isArena = true;
         BracketSize = (uint32)(type * 2);
         TeamSize = type;
@@ -331,7 +391,7 @@ bool BGJoinAction::shouldJoinBg(BattleGroundQueueTypeId queueTypeId, BattleGroun
 
     if (isRated)
     {
-        if (!sObjectMgr.GetArenaTeamByCaptain(bot->GetObjectGuid()))
+        if (!isTeamLead)
             return false;
 
         // check if bot has correct team
@@ -356,8 +416,8 @@ bool BGJoinAction::shouldJoinBg(BattleGroundQueueTypeId queueTypeId, BattleGroun
 #endif
 
     // hack fix crash in queue remove event
-    if (bot->GetGroup() && !bot->GetGroup()->IsLeader(bot->GetObjectGuid()))
-        return false;
+    //if (bot->GetGroup() && !bot->GetGroup()->IsLeader(bot->GetObjectGuid()))
+    //    return false;
 
     bool needBots = sRandomPlayerbotMgr.NeedBots[queueTypeId][bracketId][isArena ? isRated : GetTeamIndexByTeamId(bot->GetTeam())];
 
@@ -412,12 +472,17 @@ bool BGJoinAction::isUseful()
     if (bot->GetLevel() < 10)
         return false;
 
+#ifdef MANGOSBOT_TWO
+    if (bot->getClass() == CLASS_DEATH_KNIGHT && bot->getLevel() < 60)
+        return false;
+#endif
+
     // do not try if with player master or in combat/group
     if (bot->GetPlayerbotAI()->HasActivePlayerMaster())
         return false;
 
-    if (bot->GetGroup() && !bot->GetGroup()->IsLeader(bot->GetObjectGuid()))
-        return false;
+    //if (bot->GetGroup() && !bot->GetGroup()->IsLeader(bot->GetObjectGuid()))
+    //    return false;
 
     if (bot->IsInCombat())
         return false;
@@ -738,8 +803,8 @@ bool FreeBGJoinAction::shouldJoinBg(BattleGroundQueueTypeId queueTypeId, BattleG
 #endif
 
     // hack fix crash in queue remove event
-    if (bot->GetGroup() && !bot->GetGroup()->IsLeader(bot->GetObjectGuid()))
-        return false;
+    //if (bot->GetGroup() && !bot->GetGroup()->IsLeader(bot->GetObjectGuid()))
+    //    return false;
 
     bool needBots = sRandomPlayerbotMgr.NeedBots[queueTypeId][bracketId][isArena ? isRated : GetTeamIndexByTeamId(bot->GetTeam())];
 
@@ -790,7 +855,7 @@ bool BGLeaveAction::Execute(Event event)
     uint16 unk = 0x1F90;
     uint8 unk2 = 0x0;
     bool isArena = false;
-    bool IsRandomBot = sRandomPlayerbotMgr.IsRandomBot(bot->GetGUIDLow());
+    bool IsRandomBot = sRandomPlayerbotMgr.IsRandomBot(bot);
 
 #ifndef MANGOSBOT_ZERO
     ArenaType arenaType = sServerFacade.BgArenaType(queueTypeId);
@@ -949,7 +1014,7 @@ bool BGStatusAction::Execute(Event event)
     }
 #endif
 
-    bool IsRandomBot = sRandomPlayerbotMgr.IsRandomBot(bot->GetGUIDLow());
+    bool IsRandomBot = sRandomPlayerbotMgr.IsRandomBot(bot);
     BattleGroundQueueTypeId queueTypeId = bot->GetBattleGroundQueueTypeId(QueueSlot);
     BattleGroundTypeId _bgTypeId = sServerFacade.BgTemplateId(queueTypeId);
     BattleGroundBracketId bracketId;

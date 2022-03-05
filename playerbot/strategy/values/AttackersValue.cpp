@@ -42,7 +42,7 @@ void AttackersValue::AddAttackersOf(Group* group, set<Unit*>& targets)
     for (Group::member_citerator itr = groupSlot.begin(); itr != groupSlot.end(); itr++)
     {
         Player *member = sObjectMgr.GetPlayer(itr->guid);
-        if (!member || !sServerFacade.IsAlive(member) || member == bot || member->GetMapId() != bot->GetMapId())
+        if (!member || !sServerFacade.IsAlive(member) || member == bot || member->GetMapId() != bot->GetMapId() || sServerFacade.GetDistance2d(bot, member) > sPlayerbotAIConfig.sightDistance)
             continue;
 
         AddAttackersOf(member, targets);

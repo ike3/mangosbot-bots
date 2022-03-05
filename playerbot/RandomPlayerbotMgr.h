@@ -77,6 +77,7 @@ class RandomPlayerbotMgr : public PlayerbotHolder
         bool ProcessBot(Player* player);
         void Revive(Player* player);
         void ChangeStrategy(Player* player);
+        void ChangeStrategyOnce(Player* player);
         uint32 GetValue(Player* bot, string type);
         uint32 GetValue(uint32 bot, string type);
         string GetData(uint32 bot, string type);
@@ -99,6 +100,8 @@ class RandomPlayerbotMgr : public PlayerbotHolder
         void CheckBgQueue();
         void CheckLfgQueue();
         void CheckPlayers();
+
+        bool AddRandomBot(uint32 bot);
 
         map<Team, map<BattleGroundTypeId, list<uint32> > > getBattleMastersCache() { return BattleMastersCache; }
 
@@ -133,6 +136,7 @@ class RandomPlayerbotMgr : public PlayerbotHolder
         map<uint32, map<string, CachedEvent> > eventCache;
         BarGoLink* loginProgressBar;
         list<uint32> currentBots;
+        list<uint32> arenaTeamMembers;
         uint32 bgBotsCount;
         uint32 playersLevel = sPlayerbotAIConfig.randombotStartingLevel;
         PerformanceMonitorOperation* totalPmo;

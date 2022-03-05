@@ -425,7 +425,7 @@ bool ChooseTravelTargetAction::SetQuestTarget(TravelTarget* target, bool onlyCom
         if (onlyCompleted && sObjectMgr.GetQuestTemplate(questId) && !bot->CanRewardQuest(sObjectMgr.GetQuestTemplate(questId), false))
             continue;
 
-        vector<TravelDestination*> questDestinations = sTravelMgr.getQuestTravelDestinations(bot, questId, ai->HasRealPlayerMaster(), false, 5000);
+        vector<TravelDestination*> questDestinations = sTravelMgr.getQuestTravelDestinations(bot, questId, ai->HasRealPlayerMaster() ? true : bot->GetLevel() >= 10, false, 5000);
         vector< WorldPosition*> questPoints;
         
         for (auto& questDestination : questDestinations)
@@ -459,7 +459,7 @@ bool ChooseTravelTargetAction::SetNewQuestTarget(TravelTarget* target)
     WorldPosition botLocation(bot);
 
     //Find quest givers.
-    vector<TravelDestination*> TravelDestinations = sTravelMgr.getQuestTravelDestinations(bot, -1, ai->HasRealPlayerMaster());
+    vector<TravelDestination*> TravelDestinations = sTravelMgr.getQuestTravelDestinations(bot, -1, ai->HasRealPlayerMaster() ? true : bot->GetLevel() >= 10);
 
     activeDestinations.insert(activeDestinations.end(), TravelDestinations.begin(), TravelDestinations.end());
 
@@ -515,7 +515,7 @@ bool ChooseTravelTargetAction::SetGrindTarget(TravelTarget* target)
     WorldPosition botLocation(bot);
 
     //Find grind mobs.
-    vector<TravelDestination*> TravelDestinations = sTravelMgr.getGrindTravelDestinations(bot, ai->HasRealPlayerMaster());
+    vector<TravelDestination*> TravelDestinations = sTravelMgr.getGrindTravelDestinations(bot, ai->HasRealPlayerMaster() ? true : bot->GetLevel() >= 10);
 
     activeDestinations.insert(activeDestinations.end(), TravelDestinations.begin(), TravelDestinations.end());
 
@@ -543,7 +543,7 @@ bool ChooseTravelTargetAction::SetBossTarget(TravelTarget* target)
     WorldPosition botLocation(bot);
 
     //Find boss mobs.
-    vector<TravelDestination*> TravelDestinations = sTravelMgr.getBossTravelDestinations(bot, ai->HasRealPlayerMaster());
+    vector<TravelDestination*> TravelDestinations = sTravelMgr.getBossTravelDestinations(bot, ai->HasRealPlayerMaster() ? true : bot->GetLevel() >= 10);
 
     activeDestinations.insert(activeDestinations.end(), TravelDestinations.begin(), TravelDestinations.end());
 
@@ -590,7 +590,7 @@ bool ChooseTravelTargetAction::SetExploreTarget(TravelTarget* target)
 
     if (activePoints.empty())
     {
-        TravelDestinations = sTravelMgr.getExploreTravelDestinations(bot, ai->HasRealPlayerMaster());
+        TravelDestinations = sTravelMgr.getExploreTravelDestinations(bot, ai->HasRealPlayerMaster() ? true : bot->GetLevel() >= 10);
 
         for (auto& activeTarget : activeDestinations)
         {

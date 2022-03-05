@@ -124,10 +124,7 @@ bool MoveToTravelTargetAction::isUseful()
     if (bot->IsTaxiFlying())
         return false;
 
-    if (bot->IsFlying())
-        return false;
-
-    if (bot->IsMoving())
+    if (bot->IsMovingIgnoreFlying())
         return false;
 
     if (!AI_VALUE(bool, "can move around"))

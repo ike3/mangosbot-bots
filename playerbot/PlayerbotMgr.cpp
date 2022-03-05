@@ -65,7 +65,7 @@ void PlayerbotHolder::LogoutAllBots()
         if (!bot->GetPlayerbotAI() || bot->GetPlayerbotAI()->IsRealPlayer())
             continue;
 
-        LogoutPlayerBot(bot->GetObjectGuid().GetRawValue());
+        LogoutPlayerBot(bot->GetGUIDLow());
     }
 }
 
@@ -108,7 +108,7 @@ void PlayerbotMgr::CancelLogout()
     }
 }
 
-void PlayerbotHolder::LogoutPlayerBot(uint64 guid)
+void PlayerbotHolder::LogoutPlayerBot(uint32 guid)
 {
     Player* bot = GetPlayerBot(guid);
     if (bot)
@@ -202,7 +202,7 @@ void PlayerbotHolder::LogoutPlayerBot(uint64 guid)
     }
 }
 
-void PlayerbotHolder::DisablePlayerBot(uint64 guid)
+void PlayerbotHolder::DisablePlayerBot(uint32 guid)
 {
     Player* bot = GetPlayerBot(guid);
     if (bot)
@@ -239,7 +239,7 @@ void PlayerbotHolder::DisablePlayerBot(uint64 guid)
     }
 }
 
-Player* PlayerbotHolder::GetPlayerBot(uint64 playerGuid) const
+Player* PlayerbotHolder::GetPlayerBot(uint32 playerGuid) const
 {
     PlayerBotMap::const_iterator it = playerBots.find(playerGuid);
     return (it == playerBots.end()) ? 0 : it->second;
@@ -251,7 +251,7 @@ void PlayerbotHolder::OnBotLogin(Player * const bot)
 	bot->SetPlayerbotAI(ai);
 	OnBotLoginInternal(bot);
 
-    playerBots[bot->GetObjectGuid().GetRawValue()] = bot;
+    playerBots[bot->GetGUIDLow()] = bot;
 
 
     Player* master = ai->GetMaster();
@@ -307,7 +307,7 @@ void PlayerbotHolder::OnBotLogin(Player * const bot)
     }
     else
     {
-        ai->ResetStrategies(!sRandomPlayerbotMgr.IsRandomBot(bot->GetGUIDLow()));
+        ai->ResetStrategies(!sRandomPlayerbotMgr.IsRandomBot(bot));
     }
 
     if (master && !master->IsTaxiFlying())
@@ -348,7 +348,11 @@ string PlayerbotHolder::ProcessBotCommand(string cmd, ObjectGuid guid, ObjectGui
         if (sObjectMgr.GetPlayer(guid))
             return "player already logged in";
 
-        AddPlayerBot(guid.GetRawValue(), masterAccountId);
+        if (isRandomAccount)
+            sRandomPlayerbotMgr.AddRandomBot(guid.GetCounter());
+        else
+            AddPlayerBot(guid.GetCounter(), masterAccountId);
+
         return "ok";
     }
     else if (cmd == "remove" || cmd == "logout" || cmd == "rm")
@@ -356,17 +360,17 @@ string PlayerbotHolder::ProcessBotCommand(string cmd, ObjectGuid guid, ObjectGui
         if (!sObjectMgr.GetPlayer(guid))
             return "player is offline";
 
-        if (!GetPlayerBot(guid.GetRawValue()))
+        if (!GetPlayerBot(guid.GetCounter()))
             return "not your bot";
 
-        LogoutPlayerBot(guid.GetRawValue());
+        LogoutPlayerBot(guid.GetCounter());
         return "ok";
     }
 
     if (admin)
     {
-        Player* bot = GetPlayerBot(guid.GetRawValue());
-        if (!bot) bot = sRandomPlayerbotMgr.GetPlayerBot(guid.GetRawValue());
+        Player* bot = GetPlayerBot(guid.GetCounter());
+        if (!bot) bot = sRandomPlayerbotMgr.GetPlayerBot(guid.GetCounter());
         if (!bot)
             return "bot not found";
 
@@ -509,7 +513,7 @@ list<string> PlayerbotHolder::HandlePlayerbotCommand(char const* args, Player* m
         if (master->GetPlayerbotAI())
         {
             messages.push_back("Disable player ai");
-            DisablePlayerBot(master->GetObjectGuid().GetRawValue());
+            DisablePlayerBot(master->GetGUIDLow());
         }
         else if (sPlayerbotAIConfig.selfBotLevel == 0)
             messages.push_back("Self-bot is disabled");

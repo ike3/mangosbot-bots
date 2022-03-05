@@ -88,7 +88,7 @@ ItemBag::ItemBag()
 void ItemBag::Init(bool silent)
 {
     // test skip ahbot loading at start
-    return;
+    // return;
 
     if (silent)
     {

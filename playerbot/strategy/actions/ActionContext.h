@@ -215,6 +215,7 @@ namespace ai
             creators["rpg craft"] = &ActionContext::rpg_craft;
             creators["rpg trade useful"] = &ActionContext::rpg_trade_useful;
             creators["rpg duel"] = &ActionContext::rpg_duel;
+            creators["rpg mount anim"] = &ActionContext::rpg_mount_anim;
         }
 
     private:
@@ -373,5 +374,6 @@ namespace ai
         static Action* rpg_craft(PlayerbotAI* ai) { return new RpgCraftAction(ai); }
         static Action* rpg_trade_useful(PlayerbotAI* ai) { return new RpgTradeUsefulAction(ai); }
         static Action* rpg_duel(PlayerbotAI* ai) { return new RpgDuelAction(ai); }
+        static Action* rpg_mount_anim(PlayerbotAI* ai) { return new RpgMountAnimAction(ai); }
     };
 };

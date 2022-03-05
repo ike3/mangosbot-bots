@@ -183,13 +183,27 @@ namespace ai
     class NoFoodTrigger : public Trigger {
     public:
         NoFoodTrigger(PlayerbotAI* ai) : Trigger(ai, "no food trigger") {}
-        virtual bool IsActive() { return AI_VALUE2(list<Item*>, "inventory items", "conjured food").empty(); }
+        virtual bool IsActive()
+        {
+            bool isRandomBot = sRandomPlayerbotMgr.IsRandomBot(bot);
+            if (isRandomBot && sPlayerbotAIConfig.freeFood)
+                return false;
+
+            return AI_VALUE2(list<Item*>, "inventory items", "conjured food").empty();
+        }
     };
 
     class NoDrinkTrigger : public Trigger {
     public:
         NoDrinkTrigger(PlayerbotAI* ai) : Trigger(ai, "no drink trigger") {}
-        virtual bool IsActive() { return AI_VALUE2(list<Item*>, "inventory items", "conjured water").empty(); }
+        virtual bool IsActive()
+        {
+            bool isRandomBot = sRandomPlayerbotMgr.IsRandomBot(bot);
+            if (isRandomBot && sPlayerbotAIConfig.freeFood)
+                return false;
+
+            return AI_VALUE2(list<Item*>, "inventory items", "conjured water").empty();
+        }
     };
 
     class LightAoeTrigger : public AoeTrigger

@@ -193,6 +193,30 @@ bool CheckMountStateAction::Mount()
 #endif
         ;
 
+    uint32 thirdmount =
+#ifdef MANGOSBOT_ZERO
+        90
+#else
+#ifdef MANGOSBOT_ONE
+        68
+#else
+        60
+#endif
+#endif
+        ;
+
+    uint32 fourthmount =
+#ifdef MANGOSBOT_ZERO
+        90
+#else
+#ifdef MANGOSBOT_ONE
+        70
+#else
+        70
+#endif
+#endif
+        ;
+
     if (sServerFacade.isMoving(bot))
     {
         bot->StopMoving();
@@ -217,6 +241,14 @@ bool CheckMountStateAction::Mount()
     else
     {
         masterSpeed = 59;
+        // use flying mounts in outland and northrend if no master
+        if (!master && (bot->GetMapId() == 530 || bot->GetMapId() == 571))
+        {
+            if (bot->getLevel() >= fourthmount)
+                masterSpeed = 279;
+            else if (bot->getLevel() >= thirdmount)
+                masterSpeed = 149;
+        }
         for (PlayerSpellMap::iterator itr = bot->GetSpellMap().begin(); itr != bot->GetSpellMap().end(); ++itr)
         {
             uint32 spellId = itr->first;
@@ -283,7 +315,17 @@ bool CheckMountStateAction::Mount()
         masterMountType = (masterSpell->EffectApplyAuraName[1] == SPELL_AURA_MOD_FLIGHT_SPEED_MOUNTED ||
             masterSpell->EffectApplyAuraName[2] == SPELL_AURA_MOD_FLIGHT_SPEED_MOUNTED) ? 1 : 0;
     }
+
+    // use flying mounts in outland and northrend if no master
+    if (!master && (bot->GetMapId() == 530 || bot->GetMapId() == 571))
+    {
+        if (bot->getLevel() >= fourthmount)
+            masterMountType = 1;
+        else if (bot->getLevel() >= thirdmount)
+            masterMountType = 1;
+    }
 #endif
+
 
     map<int32, vector<uint32> >& spells = allSpells[masterMountType];
 
@@ -319,8 +361,10 @@ bool CheckMountStateAction::Mount()
         return true;
     }
 
+#ifndef MANGOSBOT_TWO
     list<Item*> items = AI_VALUE2(list<Item*>, "inventory items", "mount");
     if (!items.empty()) return UseItemAuto(*items.begin());
+#endif
 
     return false;
 }

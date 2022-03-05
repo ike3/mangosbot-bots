@@ -60,6 +60,9 @@ bool PanicTrigger::IsActive()
 
 bool OutNumberedTrigger::IsActive()
 {
+    if (bot->GetMap() && (bot->GetMap()->IsDungeon() || bot->GetMap()->IsRaid()))
+        return false;
+
     int32 botLevel = bot->GetLevel();
     uint32 friendPower = 200, foePower = 0;
     for (auto &attacker : ai->GetAiObjectContext()->GetValue<list<ObjectGuid> >("attackers")->Get())

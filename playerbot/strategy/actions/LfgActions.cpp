@@ -1208,7 +1208,7 @@ bool LfgJoinAction::isUseful()
 
     ClassRoles botRoles = sLFGMgr.CalculateTalentRoles(bot);
 
-    RolesPriority prio = sLFGMgr.getPriority((Classes)bot->getClass(), (ClassRoles)botRoles);
+    RolesPriority prio = sLFGMgr.GetPriority((Classes)bot->getClass(), (ClassRoles)botRoles);
     if (prio < LFG_PRIORITY_NORMAL)
         return false;
 

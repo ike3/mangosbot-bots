@@ -262,6 +262,10 @@ bool RpgHomeBindTrigger::IsActive()
 
 bool RpgQueueBGTrigger::IsActive()
 {
+    // skip bots not in continents
+    if (!WorldPosition(bot).isOverworld()) // bg, raid, dungeon
+        return false;
+
     GuidPosition guidP(getGuidP());
 
     if (!guidP.IsCreature())
