@@ -3946,6 +3946,11 @@ vector<TravelDestination*> TravelMgr::getQuestTravelDestinations(Player* bot, ui
             if (maxDistance > 0 && dest->distanceTo(&botLocation) > maxDistance)
                 continue;
 
+            // ignore PvP Halls for now
+            for (auto p : dest->getPoints(true))
+                if (!p->getMapId() == 449 || !p->getMapId() == 450)
+                    continue;
+
             retTravelLocations.push_back(dest);
         }
     }
@@ -3965,6 +3970,11 @@ vector<TravelDestination*> TravelMgr::getQuestTravelDestinations(Player* bot, ui
 
                 if (maxDistance > 0 && dest->distanceTo(&botLocation) > maxDistance)
                     continue;
+
+                // ignore PvP Halls for now
+                for (auto p : dest->getPoints(true))
+                    if (!p->getMapId() == 449 || !p->getMapId() == 450)
+                        continue;
 
                 retTravelLocations.push_back(dest);
             }
@@ -4006,6 +4016,11 @@ vector<TravelDestination*> TravelMgr::getRpgTravelDestinations(Player* bot, bool
         if (maxDistance > 0 && dest->distanceTo(&botLocation) > maxDistance)
             continue;
 
+        // ignore PvP Halls for now
+        for (auto p : dest->getPoints(true))
+            if (!p->getMapId() == 449 || !p->getMapId() == 450)
+                continue;
+
         retTravelLocations.push_back(dest);
     }
 
@@ -4025,6 +4040,11 @@ vector<TravelDestination*> TravelMgr::getExploreTravelDestinations(Player* bot, 
 
         if (dest.second->isFull(ignoreFull))
             continue;
+
+        // ignore PvP Halls for now
+        for (auto p : dest.second->getPoints(true))
+            if (!p->getMapId() == 449 || !p->getMapId() == 450)
+                continue;
 
         retTravelLocations.push_back(dest.second);
     }
@@ -4048,6 +4068,11 @@ vector<TravelDestination*> TravelMgr::getGrindTravelDestinations(Player* bot, bo
 
         if (maxDistance > 0 && dest->distanceTo(&botLocation) > maxDistance)
             continue;
+
+        // ignore PvP Halls for now
+        for (auto p : dest->getPoints(true))
+            if (!p->getMapId() == 449 || !p->getMapId() == 450)
+                continue;
 
         retTravelLocations.push_back(dest);
     }
