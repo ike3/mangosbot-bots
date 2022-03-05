@@ -7,8 +7,11 @@ using namespace ai;
 
 bool ResetAiAction::Execute(Event event)
 {
-    sPlayerbotDbStore.Reset(ai);
-    ai->ResetStrategies(false);
-    ai->TellMaster("AI was reset to defaults");
+    if (fullReset)
+    {
+        sPlayerbotDbStore.Reset(ai);
+        ai->TellMaster("AI was reset to defaults");
+    }
+    ai->ResetStrategies(!fullReset);
     return true;
 }
