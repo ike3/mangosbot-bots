@@ -2928,7 +2928,7 @@ bool BGTactics::selectObjective(bool reset)
                         attackCount += getDefendersCount(AV_STONEHEARTH_WAITING_HORDE, 10.0f, false);
 
                         // prepare to attack Captain
-                        if (attackCount < 10 && !sServerFacade.IsInCombat(pBalinda))
+                        if (attackCount < 5 && !sServerFacade.IsInCombat(pBalinda))
                         {
                             // get in position to attack Captain
                             pos.Set(AV_STONEHEARTH_WAITING_HORDE.x, AV_STONEHEARTH_WAITING_HORDE.y, AV_STONEHEARTH_WAITING_HORDE.z, bg->GetMapId());
@@ -3000,6 +3000,10 @@ bool BGTactics::selectObjective(bool reset)
             {
                 for (const auto& objective : AV_HordeAttackObjectives)
                 {
+                    // split team to capture 2 towers at same time
+                    if (supporter && objective.first == BG_AV_NODES_DUNBALDAR_SOUTH && bg->IsActiveEvent(BG_AV_NODES_DUNBALDAR_NORTH, BG_AV_NODE_STATUS_ALLY_OCCUPIED))
+                        continue;
+
                     if ((!BgObjective/* || (supporter && objective.first == BG_AV_NODES_STONEHEART_BUNKER && !bg->IsActiveEvent(BG_AV_NODE_CAPTAIN_DEAD_A, 0))*/) &&
                         (bg->IsActiveEvent(objective.first, BG_AV_NODE_STATUS_ALLY_CONTESTED) ||
                             bg->IsActiveEvent(objective.first, BG_AV_NODE_STATUS_ALLY_OCCUPIED) ||
@@ -3050,25 +3054,24 @@ bool BGTactics::selectObjective(bool reset)
             }
 
             // Chance to defend.
-            if (!BgObjective && (!endBoss && supporter))
-            {
-                for (const auto& objective : AV_AllianceDefendObjectives)
-                {
-                    if (!BgObjective && bg->IsActiveEvent(objective.first, BG_AV_NODE_STATUS_HORDE_CONTESTED))
-                    {
-                        if (GameObject* pGO = bot->GetMap()->GetGameObject(bg->GetSingleGameObjectGuid(objective.first, objective.second)))
-                        {
-                            BgObjective = pGO;
-                            //ostringstream out; out << "Defending Node #" << objective.first;
-                            //bot->Say(out.str(), LANG_UNIVERSAL);
-                        }
-                    }
-                }
-            }
+            //if (!BgObjective && (!endBoss && supporter))
+            //{
+            //    for (const auto& objective : AV_AllianceDefendObjectives)
+            //    {
+            //        if (!BgObjective && bg->IsActiveEvent(objective.first, BG_AV_NODE_STATUS_HORDE_CONTESTED))
+            //        {
+            //            if (GameObject* pGO = bot->GetMap()->GetGameObject(bg->GetSingleGameObjectGuid(objective.first, objective.second)))
+            //            {
+            //                BgObjective = pGO;
+            //                //ostringstream out; out << "Defending Node #" << objective.first;
+            //                //bot->Say(out.str(), LANG_UNIVERSAL);
+            //            }
+            //        }
+            //    }
+            //}
 
-            // Mine capture (need paths & script fix)
-            if (!BgObjective && supporter && !endBoss && (bg->IsActiveEvent(BG_AV_MINE_BOSSES_SOUTH, TEAM_INDEX_HORDE) || bg->IsActiveEvent(BG_AV_MINE_BOSSES_SOUTH, TEAM_INDEX_NEUTRAL)) &&
-                !bg->IsActiveEvent(BG_AV_NODES_FROSTWOLF_GRAVE, BG_AV_NODE_STATUS_HORDE_OCCUPIED))
+            // Mine capture
+            if (!BgObjective && supporter && !endBoss && (bg->IsActiveEvent(BG_AV_MINE_BOSSES_SOUTH, TEAM_INDEX_HORDE) || bg->IsActiveEvent(BG_AV_MINE_BOSSES_SOUTH, TEAM_INDEX_NEUTRAL)))
             {
                 if (Creature* mBossNeutral = bot->GetMap()->GetCreature(bg->GetSingleCreatureGuid(BG_AV_MINE_BOSSES_SOUTH, TEAM_INDEX_NEUTRAL)))
                 {
@@ -3105,7 +3108,7 @@ bool BGTactics::selectObjective(bool reset)
                         attackCount += getDefendersCount(AV_ICEBLOOD_GARRISON_WAITING_ALLIANCE, 10.0f, false);
 
                         // prepare to attack Captain
-                        if (attackCount < 10 && !sServerFacade.IsInCombat(pGalvangar))
+                        if (attackCount < 5 && !sServerFacade.IsInCombat(pGalvangar))
                         {
                             // get in position to attack Captain
                             pos.Set(AV_ICEBLOOD_GARRISON_WAITING_ALLIANCE.x, AV_ICEBLOOD_GARRISON_WAITING_ALLIANCE.y, AV_ICEBLOOD_GARRISON_WAITING_ALLIANCE.z, bg->GetMapId());
@@ -3125,6 +3128,10 @@ bool BGTactics::selectObjective(bool reset)
 
                 for (const auto& objective : AV_AllianceAttackObjectives)
                 {
+                    // split team to capture 2 towers at same time
+                    if (supporter && objective.first == BG_AV_NODES_FROSTWOLF_ETOWER && bg->IsActiveEvent(BG_AV_NODES_FROSTWOLF_WTOWER, BG_AV_NODE_STATUS_HORDE_OCCUPIED))
+                        continue;
+
                     if (bg->IsActiveEvent(objective.first, BG_AV_NODE_STATUS_HORDE_CONTESTED) || bg->IsActiveEvent(objective.first, BG_AV_NODE_STATUS_HORDE_OCCUPIED) || bg->IsActiveEvent(objective.first, BG_AV_NODE_STATUS_NEUTRAL_OCCUPIED))
                     {
                         if (GameObject* pGO = bot->GetMap()->GetGameObject(bg->GetSingleGameObjectGuid(objective.first, objective.second)))
