@@ -523,10 +523,12 @@ namespace ai
 
         virtual string getName() { return "ExploreTravelDestination"; }
         virtual int32 getEntry() { return NULL; }
-        virtual string getTitle();
+        virtual string getTitle() { return title; }
+        virtual void setTitle(std::string newTitle) { title = newTitle; }
         virtual uint32 getAreaId() { return areaId; }
     protected:
         uint32 areaId;
+        std::string title = "";
     };
 
     //A location with zone exploration target(s) 

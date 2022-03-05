@@ -1033,10 +1033,10 @@ bool ExploreTravelDestination::isActive(Player* bot)
     return !(currFields & val);    
 }
 
-string ExploreTravelDestination::getTitle()
-{
-    return points[0]->getAreaName();
-};
+//string ExploreTravelDestination::getTitle()
+//{
+//    return points[0]->getAreaName();
+//};
 
 bool GrindTravelDestination::isActive(Player* bot)
 {
@@ -2089,6 +2089,7 @@ void TravelMgr::LoadQuestTravelTable()
             loc->setMaxVisitors(1000, 0);
             loc->setCooldownDelay(1000);
             loc->setExpireDelay(1000);
+            loc->setTitle(area->area_name[0]);
             exploreLocs.insert_or_assign(area->ID, loc);
         }
         else
