@@ -45,7 +45,8 @@ void ChooseTravelTargetAction::getNewTarget(TravelTarget* newTarget, TravelTarge
         foundTarget = SetNpcFlagTarget(newTarget, { UNIT_NPC_FLAG_BANKER,UNIT_NPC_FLAG_BATTLEMASTER,UNIT_NPC_FLAG_AUCTIONEER });
 
     // PvP activities
-    if (false && !foundTarget && urand(0, 3))
+    bool pvpActivate = false;
+    if (pvpActivate && !foundTarget && urand(0, 4) && bot->GetLevel() > 50)
     {
         WorldPosition* botPos = &WorldPosition(bot);
         TravelTarget* target = context->GetValue<TravelTarget*>("travel target")->Get();
