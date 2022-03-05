@@ -3949,7 +3949,7 @@ vector<TravelDestination*> TravelMgr::getQuestTravelDestinations(Player* bot, ui
 
             // ignore PvP Halls for now
             for (auto p : dest->getPoints(true))
-                if (!p->getMapId() == 449 || !p->getMapId() == 450)
+                if (p->getMapId() == 449 || p->getMapId() == 450)
                     continue;
 
             retTravelLocations.push_back(dest);
@@ -3974,7 +3974,7 @@ vector<TravelDestination*> TravelMgr::getQuestTravelDestinations(Player* bot, ui
 
                 // ignore PvP Halls for now
                 for (auto p : dest->getPoints(true))
-                    if (!p->getMapId() == 449 || !p->getMapId() == 450)
+                    if (p->getMapId() == 449 || p->getMapId() == 450)
                         continue;
 
                 retTravelLocations.push_back(dest);
@@ -4019,7 +4019,7 @@ vector<TravelDestination*> TravelMgr::getRpgTravelDestinations(Player* bot, bool
 
         // ignore PvP Halls for now
         for (auto p : dest->getPoints(true))
-            if (!p->getMapId() == 449 || !p->getMapId() == 450)
+            if (p->getMapId() == 449 || p->getMapId() == 450)
                 continue;
 
         retTravelLocations.push_back(dest);
@@ -4044,7 +4044,7 @@ vector<TravelDestination*> TravelMgr::getExploreTravelDestinations(Player* bot, 
 
         // ignore PvP Halls for now
         for (auto p : dest.second->getPoints(true))
-            if (!p->getMapId() == 449 || !p->getMapId() == 450)
+            if (p->getMapId() == 449 || p->getMapId() == 450)
                 continue;
 
         retTravelLocations.push_back(dest.second);
@@ -4072,7 +4072,7 @@ vector<TravelDestination*> TravelMgr::getGrindTravelDestinations(Player* bot, bo
 
         // ignore PvP Halls for now
         for (auto p : dest->getPoints(true))
-            if (!p->getMapId() == 449 || !p->getMapId() == 450)
+            if (p->getMapId() == 449 || p->getMapId() == 450)
                 continue;
 
         retTravelLocations.push_back(dest);
