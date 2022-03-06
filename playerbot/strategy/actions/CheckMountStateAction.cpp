@@ -319,9 +319,9 @@ bool CheckMountStateAction::Mount()
     // use flying mounts in outland and northrend if no master
     if (!master && (bot->GetMapId() == 530 || bot->GetMapId() == 571))
     {
-        if (bot->getLevel() >= fourthmount)
+        if (bot->GetLevel() >= fourthmount)
             masterMountType = 1;
-        else if (bot->getLevel() >= thirdmount)
+        else if (bot->GetLevel() >= thirdmount)
             masterMountType = 1;
     }
 #endif

@@ -571,7 +571,11 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
             needFly = true;
             // only use in clear LOS betweek points
             Position pos = bot->GetPosition();
+#ifdef MANGOSBOT_TWO
             if (!bot->GetMap()->IsInLineOfSight(pos.x, pos.y, pos.z + 100.f, movePosition.getX(), movePosition.getY(), movePosition.getZ() + 100.f, bot->GetPhaseMask(), true))
+#else
+            if (!bot->GetMap()->IsInLineOfSight(pos.x, pos.y, pos.z + 100.f, movePosition.getX(), movePosition.getY(), movePosition.getZ() + 100.f, true))
+#endif
                 needFly = false;
 
             if (const TerrainInfo* terrain = bot->GetTerrain())
