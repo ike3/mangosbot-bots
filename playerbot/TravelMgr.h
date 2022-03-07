@@ -139,14 +139,12 @@ namespace ai
         uint32 getInstanceId() { for (auto& map : sMapMgr.Maps()) { if (map.second->GetId() == getMapId()) return map.second->GetInstanceId(); }; return 0; }
         Map* getMap() { return sMapMgr.FindMap(mapid, getMapEntry()->Instanceable() ? getInstanceId() : 0); }
         const TerrainInfo* getTerrain() { return getMap() ? getMap()->GetTerrain() : NULL; }
-        const float getHeight()
-        {
-#ifdef MANGOSBOT_TWO
-            return getMap()->GetHeight(0, getX(), getY(), getZ());
+
+#if defined(MANGOSBOT_TWO) || MAX_EXPANSION == 2
+        const float getHeight() { return getMap()->GetHeight(0, getX(), getY(), getZ()); }
 #else
-            return getMap()->GetHeight(getX(), getY(), getZ());
+        const float getHeight() { return getMap()->GetHeight(getX(), getY(), getZ()); }
 #endif
-        }
 
         std::set<Transport*> getTransports(uint32 entry = 0);
 
@@ -194,7 +192,7 @@ namespace ai
 #ifndef MANGOSBOT_TWO         
             return getMap()->GetReachableRandomPointOnGround(coord_x, coord_y, coord_z, radius, randomRange);
 #else
-           return getMap()->GetReachableRandomPointOnGround(bot->GetPhaseMask(), coord_x, coord_y, coord_z, radius, randomRange);
+            return getMap()->GetReachableRandomPointOnGround(bot->GetPhaseMask(), coord_x, coord_y, coord_z, radius, randomRange);
 #endif
         }
 
