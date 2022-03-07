@@ -1,6 +1,9 @@
 #include "botpch.h"
 #include "../../playerbot.h"
 #include "CheckMountStateAction.h"
+#ifdef ENABLE_IMMERSIVE
+#include "immersive.h"
+#endif
 
 #include "../../ServerFacade.h"
 using namespace ai;
@@ -10,6 +13,10 @@ uint64 extractGuid(WorldPacket& packet);
 bool CheckMountStateAction::Execute(Event event)
 {
 	Player* master = GetMaster();
+#ifdef ENABLE_IMMERSIVE
+    sImmersive.CheckScaleChange(bot);
+    if (master) sImmersive.CheckScaleChange(master);
+#endif
 	if (!bot->GetGroup() || !master || bot->GetGroup()->GetLeaderGuid() != master->GetObjectGuid())
 		return false;
 
