@@ -34,7 +34,7 @@ namespace ai
         bool JoinLFG();
         bool SetRoles();
 #ifdef MANGOSBOT_TWO
-        LFGRoleMask GetRoles();
+        //LFGRoleMask GetRoles();
 #endif
     };
 

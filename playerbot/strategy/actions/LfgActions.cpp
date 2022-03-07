@@ -15,7 +15,7 @@ bool LfgJoinAction::Execute(Event event)
     return JoinLFG();
 }
 
-#ifdef MANGOSBOT_TWO
+#ifdef MANGOSBOT_TWO_LFG
 LFGRoleMask LfgJoinAction::GetRoles()
 {
     if (!sRandomPlayerbotMgr.IsRandomBot(bot))
@@ -84,7 +84,7 @@ LFGRoleMask LfgJoinAction::GetRoles()
 
 bool LfgJoinAction::SetRoles()
 {
-#ifdef MANGOSBOT_TWO
+#ifdef MANGOSBOT_TWO_LFG
     LFGPlayerState* pState = sLFGMgr.GetLFGPlayerState(bot->GetObjectGuid());
     if (!pState)
         return false;
@@ -823,7 +823,7 @@ bool LfgJoinAction::JoinLFG()
     else
         sLog.outDetail("Bot #%d %s:%d <%s>: uses %s, %s - %s (%s)", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->GetLevel(), bot->GetName(), lfgGroup.c_str(), lfgOption.c_str(), lfgName.c_str(), _botRoles.c_str());
 #endif
-#ifdef MANGOSBOT_TWO
+#ifdef MANGOSBOT_TWO_LFG
     LFGPlayerState* pState = sLFGMgr.GetLFGPlayerState(bot->GetObjectGuid());
 
     // check if already in lfg
@@ -992,7 +992,7 @@ bool LfgJoinAction::JoinLFG()
 
 bool LfgRoleCheckAction::Execute(Event event)
 {
-#ifdef MANGOSBOT_TWO
+#ifdef MANGOSBOT_TWO_LFG
     Group* group = bot->GetGroup();
     if (group)
     {
@@ -1016,7 +1016,7 @@ bool LfgRoleCheckAction::Execute(Event event)
 
 bool LfgAcceptAction::Execute(Event event)
 {
-#ifdef MANGOSBOT_TWO
+#ifdef MANGOSBOT_TWO_LFG
     LFGPlayerState* pState = sLFGMgr.GetLFGPlayerState(bot->GetObjectGuid());
     if (!pState || pState->GetState() != LFG_STATE_PROPOSAL)
         return false;
@@ -1102,7 +1102,7 @@ bool LfgLeaveAction::Execute(Event event)
         bot->GetSession()->HandleSetLfgCommentOpcode(p);
     }
 #endif
-#ifdef MANGOSBOT_TWO
+#ifdef MANGOSBOT_TWO_LFG
     // Don't leave if already invited / in dungeon
     if (sLFGMgr.GetLFGPlayerState(bot->GetObjectGuid())->GetState() > LFG_STATE_QUEUED)
         return false;
@@ -1141,7 +1141,7 @@ bool LfgLeaveAction::isUseful()
 
 bool LfgTeleportAction::Execute(Event event)
 {
-#ifdef MANGOSBOT_TWO
+#ifdef MANGOSBOT_TWO_LFG
     bool out = false;
 
     WorldPacket p(event.getPacket());
@@ -1165,7 +1165,7 @@ bool LfgJoinAction::isUseful()
         return false;
     }
 
-#ifdef MANGOSBOT_TWO
+#ifdef MANGOSBOT_TWO_LFG
     if (bot->GetLevel() < 15)
         return false;
 #endif
@@ -1228,7 +1228,7 @@ bool LfgJoinAction::isUseful()
     if ((isLFG || isLFM) && sRandomPlayerbotMgr.LfgDungeons[bot->GetTeam()].empty())
         return false;
 #endif
-#ifdef MANGOSBOT_TWO
+#ifdef MANGOSBOT_TWO_LFG
 
     if (sRandomPlayerbotMgr.LfgDungeons[bot->GetTeam()].empty())
         return false;

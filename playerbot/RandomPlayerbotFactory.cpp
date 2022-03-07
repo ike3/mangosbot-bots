@@ -197,7 +197,7 @@ bool RandomPlayerbotFactory::CreateRandomBot(uint8 cls, unordered_map<uint8, vec
 	WorldSession* session = new WorldSession(accountId, NULL, SEC_PLAYER,
 
 #ifdef MANGOSBOT_TWO
-        2, 0, LOCALE_enUS, 0);
+        2, 0, LOCALE_enUS, "", 0, 0, false);
 #endif
 #ifdef MANGOSBOT_ONE
 		2, 0, LOCALE_enUS, "", 0, 0, false);

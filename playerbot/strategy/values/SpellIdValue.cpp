@@ -157,13 +157,15 @@ uint32 VehicleSpellIdValue::Calculate()
 
     for (uint32 x = 0; x < CREATURE_MAX_SPELLS; ++x)
     {
-        if (creature->m_spells[x] == 2)
+        CharmSpellEntry* cspell = creature->GetCharmInfo()->GetCharmSpell(x);
+        uint32 spellId = cspell->GetAction();
+
+        if (spellId == 2)
             continue;
-        if (IsPassiveSpell(creature->m_spells[x]))
+        if (IsPassiveSpell(spellId))
             continue;
         else
         {
-            uint32 spellId = creature->m_spells[x];
             const SpellEntry* pSpellInfo = sServerFacade.LookupSpellInfo(spellId);
             if (!pSpellInfo)
                 continue;
