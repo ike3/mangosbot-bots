@@ -960,7 +960,7 @@ void RandomPlayerbotMgr::CheckLfgQueue()
         }
 #endif
 #ifdef MANGOSBOT_TWO
-        Group* group = player->GetGroup();
+        /*Group* group = player->GetGroup();
         if (group)
         {
             if (sLFGMgr.GetQueueInfo(group->GetObjectGuid()))
@@ -1002,7 +1002,7 @@ void RandomPlayerbotMgr::CheckLfgQueue()
                     }
                 }
             }
-        }
+        }*/
 #endif
     }
 #ifdef MANGOSBOT_ONE

@@ -82,7 +82,7 @@ PlayerbotSecurityLevel PlayerbotSecurity::LevelFor(Player* from, DenyReason* rea
         if (sLFGMgr.IsPlayerInQueue(bot->GetObjectGuid()))
 #endif
 #ifdef MANGOSBOT_TWO
-        if (sLFGMgr.GetQueueInfo(bot->GetObjectGuid()))
+        if (false/*sLFGMgr.GetQueueInfo(bot->GetObjectGuid())*/)
 #endif
         {
             if (!bot->GetGuildId() || bot->GetGuildId() != from->GetGuildId())

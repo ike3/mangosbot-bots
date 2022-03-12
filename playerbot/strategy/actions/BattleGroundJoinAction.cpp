@@ -206,7 +206,7 @@ bool BGJoinAction::gatherArenaTeam(ArenaType type)
 #ifndef MANGOSBOT_TWO
         Group* group = new Group();
 #else
-        Group* group = new Group(GROUPTYPE_NORMAL);
+        Group* group = new Group();//Group* group = new Group(GROUPTYPE_NORMAL);
 #endif
         uint32 count = 1;
 
@@ -473,7 +473,7 @@ bool BGJoinAction::isUseful()
         return false;
 
 #ifdef MANGOSBOT_TWO
-    if (bot->getClass() == CLASS_DEATH_KNIGHT && bot->getLevel() < 60)
+    if (bot->getClass() == CLASS_DEATH_KNIGHT && bot->GetLevel() < 60)
         return false;
 #endif
 

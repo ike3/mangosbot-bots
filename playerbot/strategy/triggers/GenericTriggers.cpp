@@ -390,7 +390,7 @@ bool CorpseNearTrigger::IsActive()
 
 bool IsFallingTrigger::IsActive()
 {
-#ifndef MANGOSBOT_ONE
+#ifndef MANGOSBOT_TWO
     return bot->HasMovementFlag(MOVEFLAG_JUMPING);
 #else
     return bot->HasMovementFlag(MOVEFLAG_FALLING);

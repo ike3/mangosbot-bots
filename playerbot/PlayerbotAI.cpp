@@ -232,7 +232,11 @@ void PlayerbotAI::UpdateAI(uint32 elapsed, bool minimal)
     }
 
     // force stop if moving but should not
+#ifndef MANGOSBOT_TWO
     if (bot->IsMoving() && !CanMove() && !bot->m_movementInfo.HasMovementFlag(MOVEFLAG_JUMPING) && !bot->IsTaxiFlying())
+#else
+    if (bot->IsMoving() && !CanMove() && !bot->m_movementInfo.HasMovementFlag(MOVEFLAG_FALLING) && !bot->IsTaxiFlying())
+#endif
     {
         bot->StopMoving();
         bot->GetMotionMaster()->Clear();
@@ -704,10 +708,13 @@ void PlayerbotAI::HandleBotOutgoingPacket(const WorldPacket& packet)
         SetNextCheckDelay((uint32)((newdis / dis) * moveTimeHalf * 4 * IN_MILLISECONDS));
 
         // add moveflags
-        bot->m_movementInfo.SetMovementFlags(MOVEFLAG_JUMPING);
-        bot->m_movementInfo.AddMovementFlag(MOVEFLAG_FORWARD);
 #ifdef MANGOSBOT_TWO
         bot->m_movementInfo.AddMovementFlag(MOVEFLAG_PENDINGSTOP);
+        bot->m_movementInfo.SetMovementFlags(MOVEFLAG_FALLING);
+        bot->m_movementInfo.AddMovementFlag(MOVEFLAG_FORWARD);
+#else
+        bot->m_movementInfo.SetMovementFlags(MOVEFLAG_JUMPING);
+        bot->m_movementInfo.AddMovementFlag(MOVEFLAG_FORWARD);
 #endif
 
         // copy MovementInfo
@@ -717,11 +724,7 @@ void PlayerbotAI::HandleBotOutgoingPacket(const WorldPacket& packet)
         WorldPacket ack(CMSG_MOVE_KNOCK_BACK_ACK);
         movementInfo.jump.cosAngle = vcos;
         movementInfo.jump.sinAngle = vsin;
-#ifdef MANGOSBOT_TWO
-        movementInfo.jump.velocity = -verticalSpeed;
-#else
         movementInfo.jump.zspeed = -verticalSpeed;
-#endif
         movementInfo.jump.xyspeed = horizontalSpeed;
 #ifdef MANGOSBOT_TWO
         ack << bot->GetObjectGuid().WriteAsPacked();
@@ -1032,7 +1035,11 @@ void PlayerbotAI::DoNextAction(bool min)
 #endif
 
     // land after knockback/jump
+#ifdef MANGOSBOT_TWO
+    if (bot->m_movementInfo.HasMovementFlag(MOVEFLAG_FALLING))
+#else
     if (bot->m_movementInfo.HasMovementFlag(MOVEFLAG_JUMPING))
+#endif
     {
         // stop movement
         bot->StopMoving();
@@ -1040,9 +1047,11 @@ void PlayerbotAI::DoNextAction(bool min)
         bot->GetMotionMaster()->MoveIdle();
 
         // remove moveflags
-        bot->m_movementInfo.RemoveMovementFlag(MOVEFLAG_JUMPING);
 #ifdef MANGOSBOT_TWO
+        bot->m_movementInfo.RemoveMovementFlag(MOVEFLAG_FALLING);
         bot->m_movementInfo.RemoveMovementFlag(MOVEFLAG_PENDINGSTOP);
+#else
+        bot->m_movementInfo.RemoveMovementFlag(MOVEFLAG_JUMPING);
 #endif
 
         // set jump destination
@@ -1756,13 +1765,8 @@ bool PlayerbotAI::CanCastSpell(uint32 spellid, Unit* target, uint8 effectMask, b
 	Spell *spell = new Spell(bot, spellInfo, false);
 
     spell->m_targets.setUnitTarget(target);
-#ifdef MANGOSBOT_TWO
-    spell->m_CastItem = itemTarget ? itemTarget : aiObjectContext->GetValue<Item*>("item for spell", spellid)->Get();
-    spell->m_targets.setItemTarget(spell->m_CastItem);
-#else
     spell->SetCastItem(itemTarget ? itemTarget : aiObjectContext->GetValue<Item*>("item for spell", spellid)->Get());
     spell->m_targets.setItemTarget(spell->GetCastItem());
-#endif
 
     SpellCastResult result = spell->CheckCast(true);
     delete spell;
@@ -1834,13 +1838,8 @@ bool PlayerbotAI::CanCastSpell(uint32 spellid, GameObject* goTarget, uint8 effec
     Spell* spell = new Spell(bot, spellInfo, false);
 
     spell->m_targets.setGOTarget(goTarget);
-#ifdef MANGOSBOT_TWO
-    spell->m_CastItem = aiObjectContext->GetValue<Item*>("item for spell", spellid)->Get();
-    spell->m_targets.setItemTarget(spell->m_CastItem);
-#else
     spell->SetCastItem(aiObjectContext->GetValue<Item*>("item for spell", spellid)->Get());
     spell->m_targets.setItemTarget(spell->GetCastItem());
-#endif
 
     SpellCastResult result = spell->CheckCast(true);
     delete spell;
@@ -1891,13 +1890,8 @@ bool PlayerbotAI::CanCastSpell(uint32 spellid, float x, float y, float z, uint8 
     Spell* spell = new Spell(bot, spellInfo, false);
 
     spell->m_targets.setDestination(x, y, z);
-#ifdef MANGOSBOT_TWO
-    spell->m_CastItem = itemTarget ? itemTarget : aiObjectContext->GetValue<Item*>("item for spell", spellid)->Get();
-    spell->m_targets.setItemTarget(spell->m_CastItem);
-#else
     spell->SetCastItem(itemTarget ? itemTarget : aiObjectContext->GetValue<Item*>("item for spell", spellid)->Get());
     spell->m_targets.setItemTarget(spell->GetCastItem());
-#endif
 
     SpellCastResult result = spell->CheckCast(true);
     delete spell;
@@ -2016,13 +2010,8 @@ bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target, Item* itemTarget)
     SpellCastTargets targets;
     if (pSpellInfo->Targets & TARGET_FLAG_ITEM)
     {
-#ifdef MANGOSBOT_TWO
-        spell->m_CastItem = itemTarget ? itemTarget : aiObjectContext->GetValue<Item*>("item for spell", spellId)->Get();
-        targets.setItemTarget(spell->m_CastItem);
-#else
         spell->SetCastItem(itemTarget ? itemTarget : aiObjectContext->GetValue<Item*>("item for spell", spellId)->Get());
         targets.setItemTarget(spell->GetCastItem());
-#endif
 
         if (bot->GetTradeData())
         {
@@ -2183,13 +2172,8 @@ bool PlayerbotAI::CastSpell(uint32 spellId, float x, float y, float z, Item* ite
     SpellCastTargets targets;
     if (pSpellInfo->Targets & TARGET_FLAG_ITEM)
     {
-#ifdef MANGOSBOT_TWO
-        spell->m_CastItem = itemTarget ? itemTarget : aiObjectContext->GetValue<Item*>("item for spell", spellId)->Get();
-        targets.setItemTarget(spell->m_CastItem);
-#else
         spell->SetCastItem(itemTarget ? itemTarget : aiObjectContext->GetValue<Item*>("item for spell", spellId)->Get());
         targets.setItemTarget(spell->GetCastItem());
-#endif
 
         if (bot->GetTradeData())
         {
@@ -2897,7 +2881,7 @@ bool PlayerbotAI::AllowActive(ActivityType activityType)
 
     bool isLFG = false;
 #ifdef MANGOSBOT_TWO
-    if (group)
+    /*if (group)
     {
         if (sLFGMgr.GetQueueInfo(group->GetObjectGuid()))
         {
@@ -2907,7 +2891,7 @@ bool PlayerbotAI::AllowActive(ActivityType activityType)
     if (sLFGMgr.GetQueueInfo(bot->GetObjectGuid()))
     {
         isLFG = true;
-    }
+    }*/
 #endif
 
     if (isLFG)
