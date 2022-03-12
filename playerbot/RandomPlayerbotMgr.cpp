@@ -933,7 +933,7 @@ void RandomPlayerbotMgr::CheckLfgQueue()
         {
             if (group->IsLeader(player->GetObjectGuid()))
             {
-                if (!player->m_lookingForGroup.more.Empty() && player->GetSession()->LookingForGroup_auto_add && player->m_lookingForGroup.more.canAutoJoin())
+                if (!player->m_lookingForGroup.more.empty() && player->GetSession()->LookingForGroup_auto_add && player->m_lookingForGroup.more.isAuto())
                 {
                     uint32 lfgType = (zoneId << 16) | ((1 << 8) | uint8(player->m_lookingForGroup.more.entry));
                     LfgDungeons[player->GetTeam()].push_back(lfgType);
@@ -944,14 +944,14 @@ void RandomPlayerbotMgr::CheckLfgQueue()
         else if (!group)
         {
             for (int i = 0; i < MAX_LOOKING_FOR_GROUP_SLOT; ++i)
-                if (!player->m_lookingForGroup.slots[i].Empty() && player->GetSession()->LookingForGroup_auto_join && player->m_lookingForGroup.slots[i].canAutoJoin())
+                if (!player->m_lookingForGroup.group[i].empty() && player->GetSession()->LookingForGroup_auto_join && player->m_lookingForGroup.group[i].isAuto())
                 {
                     isLFG = true;
-                    uint32 lfgType = (zoneId << 16) | ((0 << 8) | uint8(player->m_lookingForGroup.slots[i].entry));
+                    uint32 lfgType = (zoneId << 16) | ((0 << 8) | uint8(player->m_lookingForGroup.group[i].entry));
                     LfgDungeons[player->GetTeam()].push_back(lfgType);
                 }
 
-            if (!player->m_lookingForGroup.more.Empty() && player->GetSession()->LookingForGroup_auto_add && player->m_lookingForGroup.more.canAutoJoin())
+            if (!player->m_lookingForGroup.more.empty() && player->GetSession()->LookingForGroup_auto_add && player->m_lookingForGroup.more.isAuto())
             {
                 uint32 lfgType = (zoneId << 16) | ((1 << 8) | uint8(player->m_lookingForGroup.more.entry));
                 LfgDungeons[player->GetTeam()].push_back(lfgType);
@@ -1027,7 +1027,7 @@ void RandomPlayerbotMgr::CheckLfgQueue()
         {
             if (group->IsLeader(bot->GetObjectGuid()))
             {
-                if (!bot->m_lookingForGroup.more.Empty() && bot->GetSession()->LookingForGroup_auto_add && bot->m_lookingForGroup.more.canAutoJoin())
+                if (!bot->m_lookingForGroup.more.empty() && bot->GetSession()->LookingForGroup_auto_add && bot->m_lookingForGroup.more.isAuto())
                 {
                     uint32 lfgType = (zoneId << 16) | ((1 << 8) | uint8(bot->m_lookingForGroup.more.entry));
                     LfgDungeons[bot->GetTeam()].push_back(lfgType);
@@ -1036,7 +1036,7 @@ void RandomPlayerbotMgr::CheckLfgQueue()
         }
         else if (!group)
         {
-            if (!bot->m_lookingForGroup.more.Empty() && bot->GetSession()->LookingForGroup_auto_add && bot->m_lookingForGroup.more.canAutoJoin())
+            if (!bot->m_lookingForGroup.more.empty() && bot->GetSession()->LookingForGroup_auto_add && bot->m_lookingForGroup.more.isAuto())
             {
                 uint32 lfgType = (zoneId << 16) | ((1 << 8) | uint8(bot->m_lookingForGroup.more.entry));
                 LfgDungeons[bot->GetTeam()].push_back(lfgType);

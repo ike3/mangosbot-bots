@@ -72,11 +72,11 @@ PlayerbotSecurityLevel PlayerbotSecurity::LevelFor(Player* from, DenyReason* rea
         }
 
 #ifdef MANGOSBOT_ONE
-        if (bot->GetPlayerbotAI()->HasRealPlayerMaster() && !bot->m_lookingForGroup.Empty() &&
-            (!bot->m_lookingForGroup.slots[0].Empty() && bot->m_lookingForGroup.slots[0].type == LFG_TYPE_DUNGEON ||
-            (!bot->m_lookingForGroup.slots[1].Empty() && bot->m_lookingForGroup.slots[1].type == LFG_TYPE_DUNGEON) ||
-            (!bot->m_lookingForGroup.slots[2].Empty() && bot->m_lookingForGroup.slots[2].type == LFG_TYPE_DUNGEON) ||
-                (!bot->m_lookingForGroup.more.Empty() && bot->m_lookingForGroup.more.type == LFG_TYPE_DUNGEON)))
+        if (bot->GetPlayerbotAI()->HasRealPlayerMaster() && !bot->m_lookingForGroup.isEmpty() &&
+            (!bot->m_lookingForGroup.group[0].empty() && bot->m_lookingForGroup.group[0].type == LFG_TYPE_DUNGEON ||
+            (!bot->m_lookingForGroup.group[1].empty() && bot->m_lookingForGroup.group[1].type == LFG_TYPE_DUNGEON) ||
+            (!bot->m_lookingForGroup.group[2].empty() && bot->m_lookingForGroup.group[2].type == LFG_TYPE_DUNGEON) ||
+                (!bot->m_lookingForGroup.more.empty() && bot->m_lookingForGroup.more.type == LFG_TYPE_DUNGEON)))
 #endif
 #ifdef MANGOSBOT_ZERO
         if (sLFGMgr.IsPlayerInQueue(bot->GetObjectGuid()))

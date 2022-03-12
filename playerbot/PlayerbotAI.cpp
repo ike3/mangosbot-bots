@@ -2637,7 +2637,7 @@ bool PlayerbotAI::IsInterruptableSpellCasting(Unit* target, string spell, uint8 
 
 	for (int32 i = EFFECT_INDEX_0; i <= EFFECT_INDEX_2; i++)
 	{
-#ifdef MANGOSBOT_ZERO
+#ifndef MANGOSBOT_TWO
 		if ((spellInfo->InterruptFlags & SPELL_INTERRUPT_FLAG_COMBAT) && spellInfo->PreventionType == SPELL_PREVENTION_TYPE_SILENCE)
 #else
         if ((spellInfo->InterruptFlags & SPELL_INTERRUPT_FLAG_INTERRUPT) && spellInfo->PreventionType == SPELL_PREVENTION_TYPE_SILENCE)

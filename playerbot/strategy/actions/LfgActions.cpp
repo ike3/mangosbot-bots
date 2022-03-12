@@ -1081,10 +1081,10 @@ bool LfgLeaveAction::Execute(Event event)
     bool isLFG = false;
     bool isLFM = false;
     for (int i = 0; i < MAX_LOOKING_FOR_GROUP_SLOT; ++i)
-        if (!bot->m_lookingForGroup.slots[i].Empty())
+        if (!bot->m_lookingForGroup.group[i].empty())
             isLFG = true;
 
-    if (!bot->m_lookingForGroup.more.Empty())
+    if (!bot->m_lookingForGroup.more.empty())
         isLFM = true;
 
     if (isLFG || isLFM)
@@ -1219,10 +1219,10 @@ bool LfgJoinAction::isUseful()
     bool isLFG = false;
     bool isLFM = false;
     for (int i = 0; i < MAX_LOOKING_FOR_GROUP_SLOT; ++i)
-        if (!bot->m_lookingForGroup.slots[i].Empty())
+        if (!bot->m_lookingForGroup.group[i].empty())
             isLFG = true;
 
-    if (!bot->m_lookingForGroup.more.Empty())
+    if (!bot->m_lookingForGroup.more.empty())
         isLFM = true;
 
     if ((isLFG || isLFM) && sRandomPlayerbotMgr.LfgDungeons[bot->GetTeam()].empty())
