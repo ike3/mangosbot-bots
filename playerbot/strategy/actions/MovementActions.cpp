@@ -62,7 +62,6 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle)
     bool generatePath = !bot->IsFlying() && !bot->HasMovementFlag(MOVEFLAG_SWIMMING) && !bot->IsInWater() && !sServerFacade.IsUnderwater(bot);
     if (generatePath)
     {
-        z += CONTACT_DISTANCE;
         bot->UpdateAllowedPositionZ(x, y, z);
     }
 
