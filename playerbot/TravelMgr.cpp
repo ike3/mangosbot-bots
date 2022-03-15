@@ -551,9 +551,9 @@ vector<WorldPosition> WorldPosition::getPathStepFrom(WorldPosition startPos, Uni
         PathFinder path(bot);
 
 #ifdef IKE_PATHFINDER
-        path.setAreaCost(8, 10.0f);  //Water
-        path.setAreaCost(11, 5.0f);  //Mob proximity
-        path.setAreaCost(12, 20.0f); //Mob agro
+        path.setAreaCost(9, 10.0f);  //Water
+        path.setAreaCost(12, 5.0f);  //Mob proximity
+        path.setAreaCost(13, 20.0f); //Mob agro
 #endif
         path.calculate(startPos.getVector3(), getVector3(), false);
 
@@ -567,9 +567,9 @@ vector<WorldPosition> WorldPosition::getPathStepFrom(WorldPosition startPos, Uni
         std::hash<std::thread::id> hasher;
         PathFinder path(getMapId(), hasher(std::this_thread::get_id()));
 
-        path.setAreaCost(8, 10.0f);
-        path.setAreaCost(11, 5.0f);
-        path.setAreaCost(12, 20.0f);
+        path.setAreaCost(9, 10.0f);
+        path.setAreaCost(12, 5.0f);
+        path.setAreaCost(13, 20.0f);
 
         path.calculate(startPos.getVector3(), getVector3(), false);
 
@@ -1523,8 +1523,8 @@ void TravelMgr::SetMobAvoidArea()
 
         point.loadMapAndVMap();
 
-        path.setArea(point.getMapId(), point.getX(), point.getY(), point.getZ(), 11, 50.0f);
-        path.setArea(point.getMapId(), point.getX(), point.getY(), point.getZ(), 12, 20.0f);
+        path.setArea(point.getMapId(), point.getX(), point.getY(), point.getZ(), 12, 50.0f);
+        path.setArea(point.getMapId(), point.getX(), point.getY(), point.getZ(), 13, 20.0f);
     }
     sLog.outString("end mob avoidance maps");
 }
