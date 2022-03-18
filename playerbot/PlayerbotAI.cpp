@@ -3454,7 +3454,7 @@ bool PlayerbotAI::AddAura(Unit* unit, uint32 spellId)
             eff == SPELL_EFFECT_PERSISTENT_AREA_AURA)
         {
             int32 basePoints = spellInfo->CalculateSimpleValue(SpellEffectIndex(i));
-            int32 damage = 0; // no damage cos caster doesnt exist
+            int32 damage = basePoints;
             Aura* aur = CreateAura(spellInfo, SpellEffectIndex(i), &damage, &basePoints, holder, unit);
             holder->AddAura(aur, SpellEffectIndex(i));
         }

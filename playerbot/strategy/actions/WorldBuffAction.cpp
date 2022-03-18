@@ -1,5 +1,8 @@
 #pragma once
+#include "../Action.h"
 #include "WorldBuffAction.h"
+#include "AiFactory.h"
+#include "PlayerbotAIConfig.h"
 
 
 using namespace ai;
@@ -22,6 +25,8 @@ vector<uint32> WorldBuffAction::NeedWorldBuffs(Unit* unit)
 
     if (sPlayerbotAIConfig.worldBuffs.empty())
         return retVec;
+
+    Player* plr = static_cast<Player*>(unit);
    
     FactionTemplateEntry const* humanFaction = sFactionTemplateStore.LookupEntry(1);
     uint32 factionId = PlayerbotAI::GetFactionReaction(unit->GetFactionTemplateEntry(), humanFaction) >= REP_NEUTRAL ? 1 : 2;
@@ -32,6 +37,9 @@ vector<uint32> WorldBuffAction::NeedWorldBuffs(Unit* unit)
             continue;
 
         if (wb.classId != 0 && wb.classId != unit->getClass())
+            continue;
+
+        if (plr && wb.specId != 0 && wb.specId != (AiFactory::GetPlayerSpecTab(plr) + 1))
             continue;
 
         if (wb.minLevel != 0 && wb.minLevel > unit->GetLevel())
