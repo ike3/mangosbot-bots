@@ -40,6 +40,27 @@ bool SmartDestroyItemAction::Execute(Event event)
     if (bagSpace < 90)
         return false;
 
+    // only destoy grey items if with real player/guild
+    if (ai->HasRealPlayerMaster() && ai->IsInRealGuild())
+    {
+        set<Item*> items;
+        FindItemsToTradeByQualityVisitor visitor(ITEM_QUALITY_POOR, 5);
+        IterateItems(&visitor, ITERATE_ITEMS_IN_BAGS);
+        items.insert(visitor.GetResult().begin(), visitor.GetResult().end());
+
+        for (auto& item : items)
+        {
+            FindItemByIdVisitor visitor(item->GetProto()->ItemId);
+            DestroyItem(&visitor);
+
+            bagSpace = AI_VALUE(uint8, "bag space");
+
+            if (bagSpace < 90)
+                return true;
+        }
+        return true;
+    }
+
     vector<uint32> bestToDestroy = { ITEM_USAGE_NONE }; //First destroy anything useless.
 
     if (!AI_VALUE(bool, "can sell") && AI_VALUE(bool, "should get money")) //We need money so quest items are less important since they can't directly be sold.
