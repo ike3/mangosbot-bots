@@ -271,14 +271,15 @@ void PlayerbotAI::UpdateAI(uint32 elapsed, bool minimal)
     }
 
     bool min = minimal;
-    if (HasRealPlayerMaster())
-        min = false;
 
     UpdateAIInternal(elapsed, min);
 
     // test fix lags because of BG
     if (!inCombat)
         min = true;
+
+    if (HasRealPlayerMaster())
+        min = false;
 
     YieldThread(min);
 }
@@ -3896,4 +3897,17 @@ bool PlayerbotAI::CanMove()
 #ifdef MANGOS
     return mm.GetCurrentMovementGeneratorType() != FLIGHT_MOTION_TYPE;
 #endif
+}
+
+bool PlayerbotAI::IsInRealGuild()
+{
+    if (!bot->GetGuildId())
+        return false;
+
+    Guild* guild = sGuildMgr.GetGuildById(bot->GetGuildId());
+    uint32 leaderAccount = sObjectMgr.GetPlayerAccountIdByGUID(guild->GetLeaderGuid());
+    if (!leaderAccount)
+        return false;
+
+    return sPlayerbotAIConfig.IsInRandomAccountList(leaderAccount);
 }

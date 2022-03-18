@@ -407,6 +407,7 @@ public:
     void ResetJumpDestination() { jumpDestination = Position(); }
 
     bool CanMove();
+    bool IsInRealGuild();
 
 protected:
 	Player* bot;
