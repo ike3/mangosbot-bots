@@ -86,7 +86,7 @@ int AiFactory::GetPlayerSpecTab(Player* bot)
             tab = 1;
             break;
         case CLASS_PALADIN:
-            tab = 2;
+            tab = 0;
             break;
         case CLASS_PRIEST:
             tab = 1;
