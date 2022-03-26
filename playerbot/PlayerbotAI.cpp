@@ -3915,9 +3915,12 @@ bool PlayerbotAI::IsInRealGuild()
         return false;
 
     Guild* guild = sGuildMgr.GetGuildById(bot->GetGuildId());
+    if (!guild)
+        return false;
+
     uint32 leaderAccount = sObjectMgr.GetPlayerAccountIdByGUID(guild->GetLeaderGuid());
     if (!leaderAccount)
         return false;
 
-    return sPlayerbotAIConfig.IsInRandomAccountList(leaderAccount);
+    return !sPlayerbotAIConfig.IsInRandomAccountList(leaderAccount);
 }
