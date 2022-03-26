@@ -739,7 +739,7 @@ PlayerbotMgr::~PlayerbotMgr()
 {
 }
 
-void PlayerbotMgr::UpdateAIInternal(uint32 elapsed)
+void PlayerbotMgr::UpdateAIInternal(uint32 elapsed, bool minimal)
 {
     SetNextCheckDelay(sPlayerbotAIConfig.reactDelay);
     CheckTellErrors(elapsed);

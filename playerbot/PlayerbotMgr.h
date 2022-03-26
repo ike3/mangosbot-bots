@@ -60,7 +60,7 @@ public:
     void OnPlayerLogin(Player* player);
     void CancelLogout();
 
-    virtual void UpdateAIInternal(uint32 elapsed);
+    virtual void UpdateAIInternal(uint32 elapsed, bool minimal = false);
     void TellError(string botName, string text);
 
     Player* GetMaster() const { return master; };
