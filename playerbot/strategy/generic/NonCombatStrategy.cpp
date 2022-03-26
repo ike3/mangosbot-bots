@@ -12,10 +12,6 @@ void NonCombatStrategy::InitTriggers(std::list<TriggerNode*>& triggers)
         NextAction::array(0, new NextAction("check mount state", 1.0f), new NextAction("check values", 1.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "often",
-        NextAction::array(0, new NextAction("leader", 2.0f), NULL)));
-
-    triggers.push_back(new TriggerNode(
         "near dark portal",
         NextAction::array(0, new NextAction("move to dark portal", 1.0f), NULL)));
 
