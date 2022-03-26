@@ -777,6 +777,34 @@ void PlayerbotAI::HandleBotOutgoingPacket(const WorldPacket& packet)
                 break;
             }
 #endif
+#ifdef MANGOSBOT_TWO
+            p >> guid1 >> unused;
+            if (guid1.IsEmpty() || p.size() > p.DEFAULT_SIZE)
+                return;
+
+            if (p.GetOpcode() == SMSG_GM_MESSAGECHAT)
+            {
+                p >> textLen;
+                p >> name;
+            }
+
+            switch (msgtype)
+            {
+            case CHAT_MSG_CHANNEL:
+                p >> chanName;
+                [[fallthrough]];
+            case CHAT_MSG_SAY:
+            case CHAT_MSG_PARTY:
+            case CHAT_MSG_YELL:
+            case CHAT_MSG_WHISPER:
+            case CHAT_MSG_GUILD:
+                p >> guid2;
+                p >> textLen >> message >> chatTag;
+                break;
+            default:
+                break;
+            }
+#endif
 
             if (guid1 != bot->GetObjectGuid()) // do not reply to self
             {
