@@ -2078,8 +2078,15 @@ uint32 RandomItemMgr::GetStatWeight(Player* player, uint32 itemId)
 
         classspecs.push_back(m_weightScales[player->getClass()][specNum].info.id);
 
+        // TODO CHECK
         if (m_weightScales[player->getClass()][specNum].info.name == specName)
             specId = m_weightScales[player->getClass()][specNum].info.id;
+
+        if (m_weightScales[player->getClass()][specNum].info.name == specName)
+        {
+            specId = specNum;
+            break;
+        }
     }
     if (!specId)
         return 0;
