@@ -149,10 +149,10 @@ namespace ai
                     return false;
             }
 
-            if (player->GetLevel() + 2 < bot->GetLevel())
+            if (abs(int32(player->GetLevel() - bot->GetLevel())) > 4)
                 continue;
 
-            if (player->GetLevel() > bot->GetLevel() + 20)
+            if (!botAi && sServerFacade.GetDistance2d(bot, player) > sPlayerbotAIConfig.sightDistance)
                 continue;
 
             return Invite(player);
