@@ -3,53 +3,28 @@
 
 namespace ai
 {
-	class CastJudgementAction : public CastMeleeSpellAction
-	{
-	public:
-		CastJudgementAction(PlayerbotAI* ai) : CastMeleeSpellAction(ai, "judgement") {}
-	};
+	// judgements
+	MELEE_ACTION(CastJudgementAction, "judgement");
+	MELEE_ACTION(CastJudgementOfLightAction, "judgement of light");
+	MELEE_ACTION(CastJudgementOfWisdomAction, "judgement of wisdom");
+	MELEE_ACTION(CastJudgementOfJusticeAction, "judgement of justice");
 
-    class CastJudgementOfLightAction : public CastMeleeSpellAction
-    {
-    public:
-        CastJudgementOfLightAction(PlayerbotAI* ai) : CastMeleeSpellAction(ai, "judgement of light") {}
-    };
 
-    class CastJudgementOfWisdomAction : public CastMeleeSpellAction
-    {
-    public:
-        CastJudgementOfWisdomAction(PlayerbotAI* ai) : CastMeleeSpellAction(ai, "judgement of wisdom") {}
-    };
+	// seals
+	BUFF_ACTION(CastSealOfRighteousnessAction, "seal of righteousness");
+	BUFF_ACTION(CastSealOfJusticeAction, "seal of justice");
+	BUFF_ACTION(CastSealOfLightAction, "seal of light");
+	BUFF_ACTION(CastSealOfWisdomAction, "seal of wisdom");
+	BUFF_ACTION(CastSealOfCommandAction, "seal of command");
+	BUFF_ACTION(CastSealOfVengeanceAction, "seal of vengeance");
 
-    class CastJudgementOfJusticeAction : public CastMeleeSpellAction
-    {
-    public:
-        CastJudgementOfJusticeAction(PlayerbotAI* ai) : CastMeleeSpellAction(ai, "judgement of justice") {}
-    };
+	// auras
+	BUFF_ACTION(CastDevotionAuraAction, "devotion aura");
+	BUFF_ACTION(CastRetributionAuraAction, "retribution aura");
+	BUFF_ACTION(CastConcentrationAuraAction, "concentration aura");
 
-	class CastRighteousFuryAction : public CastBuffSpellAction
-	{
-	public:
-		CastRighteousFuryAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "righteous fury") {}
-	};
-
-	class CastDevotionAuraAction : public CastBuffSpellAction
-	{
-	public:
-		CastDevotionAuraAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "devotion aura") {}
-	};
-
-	class CastRetributionAuraAction : public CastBuffSpellAction
-	{
-	public:
-		CastRetributionAuraAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "retribution aura") {}
-	};
-
-	class CastConcentrationAuraAction : public CastBuffSpellAction
-	{
-	public:
-		CastConcentrationAuraAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "concentration aura") {}
-	};
+	// fury
+	BUFF_ACTION(CastRighteousFuryAction, "righteous fury");
 
 	class CastDivineStormAction : public CastBuffSpellAction
 	{
@@ -94,42 +69,7 @@ namespace ai
         virtual bool isUseful() { return AI_VALUE2(bool, "combat", "self target"); }
     };
 
-    class CastSealOfRighteousnessAction : public CastSealSpellAction
-	{
-	public:
-        CastSealOfRighteousnessAction(PlayerbotAI* ai) : CastSealSpellAction(ai, "seal of righteousness") {}
-	};
-
-	class CastSealOfJusticeAction : public CastSealSpellAction
-	{
-	public:
-		CastSealOfJusticeAction(PlayerbotAI* ai) : CastSealSpellAction(ai, "seal of justice") {}
-	};
-
-
-	class CastSealOfLightAction : public CastSealSpellAction
-	{
-	public:
-		CastSealOfLightAction(PlayerbotAI* ai) : CastSealSpellAction(ai, "seal of light") {}
-	};
-
-	class CastSealOfWisdomAction : public CastSealSpellAction
-	{
-	public:
-		CastSealOfWisdomAction(PlayerbotAI* ai) : CastSealSpellAction(ai, "seal of wisdom") {}
-	};
-
-	class CastSealOfCommandAction : public CastSealSpellAction
-	{
-	public:
-		CastSealOfCommandAction(PlayerbotAI* ai) : CastSealSpellAction(ai, "seal of command") {}
-	};
-
-	class CastSealOfVengeanceAction : public CastSealSpellAction
-	{
-	public:
-	    CastSealOfVengeanceAction(PlayerbotAI* ai) : CastSealSpellAction(ai, "seal of vengeance") {}
-	};
+    
 
 
 	class CastBlessingOfMightAction : public CastBuffSpellAction
