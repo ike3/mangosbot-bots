@@ -4,7 +4,7 @@
 #include "../../../ahbot/AhBot.h"
 #include "../../../ahbot/PricingStrategy.h"
 #include "../../AiFactory.h"
-#include "ChannelMgr.h"
+#include "Chat/ChannelMgr.h"
 #include "../../PlayerbotAIConfig.h"
 #include "../../PlayerbotTextMgr.h"
 
@@ -99,10 +99,11 @@ void SuggestWhatToDoAction::instance()
     placeholders["%role"] = chat->formatClass(bot, AiFactory::GetPlayerSpecTab(bot));
 
     ostringstream itemout;
-    itemout << "|c00b000b0" << allowedInstances[urand(0, allowedInstances.size() - 1)] << "|r";
+    //itemout << "|c00b000b0" << allowedInstances[urand(0, allowedInstances.size() - 1)] << "|r";
+    itemout << allowedInstances[urand(0, allowedInstances.size() - 1)];
     placeholders["%instance"] = itemout.str();
 
-    spam(sPlayerbotTextMgr.Format("suggest_instance", placeholders));
+    spam(BOT_TEXT2("suggest_instance", placeholders), urand(0, 1) ? 0x50 : 0, urand(0, 2), urand(0, 2));
 }
 
 vector<uint32> SuggestWhatToDoAction::GetIncompletedQuests()
@@ -137,7 +138,7 @@ void SuggestWhatToDoAction::specificQuest()
     placeholders["%role"] = chat->formatClass(bot, AiFactory::GetPlayerSpecTab(bot));
     placeholders["%quest"] = chat->formatQuest(quest);
 
-    spam(sPlayerbotTextMgr.Format("suggest_quest", placeholders));
+    spam(BOT_TEXT2("suggest_quest", placeholders), urand(0, 1) ? 0x18 : 0, urand(0, 2), urand(0, 2));
 }
 
 void SuggestWhatToDoAction::grindMaterials()
@@ -178,7 +179,7 @@ void SuggestWhatToDoAction::grindMaterials()
                     placeholders["%role"] = chat->formatClass(bot, AiFactory::GetPlayerSpecTab(bot));
                     placeholders["%category"] = item;
 
-                    spam(sPlayerbotTextMgr.Format("suggest_trade", placeholders));
+                    spam(BOT_TEXT2("suggest_trade", placeholders), urand(0, 1) ? 0x3C : 0, urand(0, 2), urand(0, 2));
                     return;
                 }
             }
@@ -249,10 +250,11 @@ void SuggestWhatToDoAction::grindReputation()
     placeholders["%rndK"] = rnd.str();
 
     ostringstream itemout;
-    itemout << "|c004040b0" << allowedFactions[urand(0, allowedFactions.size() - 1)] << "|r";
+    //itemout << "|c004040b0" << allowedFactions[urand(0, allowedFactions.size() - 1)] << "|r";
+    itemout << allowedFactions[urand(0, allowedFactions.size() - 1)];
     placeholders["%faction"] = itemout.str();
 
-    spam(sPlayerbotTextMgr.Format("suggest_faction", placeholders));
+    spam(BOT_TEXT2("suggest_faction", placeholders), 0x18, true);
 }
 
 void SuggestWhatToDoAction::something()
@@ -265,43 +267,87 @@ void SuggestWhatToDoAction::something()
         return;
 
     ostringstream out;
-    out << "|cffb04040" << entry->area_name[0] << "|r";
+    //out << "|cffb04040" << entry->area_name[0] << "|r";
+    out << entry->area_name[0];
     placeholders["%zone"] = out.str();
 
-    spam(sPlayerbotTextMgr.Format("suggest_something", placeholders));
+    spam(BOT_TEXT2("suggest_something", placeholders), urand(0, 1) ? 0x18 : 0, urand(0, 2), urand(0, 2));
 }
 
-void SuggestWhatToDoAction::spam(string msg, uint32 channelId)
+void SuggestWhatToDoAction::spam(string msg, uint8 flags, bool worldChat, bool guild)
 {
-    set<string> said;
+    if (msg.empty())
+        return;
+
+    vector<string> channelNames;
+    ChannelMgr* cMgr = channelMgr(bot->GetTeam());
+    if (!cMgr)
+        return;
+
     for (uint32 i = 0; i < sChatChannelsStore.GetNumRows(); ++i)
     {
         ChatChannelsEntry const* channel = sChatChannelsStore.LookupEntry(i);
-        if (!channel || channel->ChannelID != channelId) continue;
+        if (!channel) continue;
 
-        for (uint32 j = 0; j < sAreaStore.GetNumRows(); ++j)
+        AreaTableEntry const* current_zone = GetAreaEntryByAreaID(bot->GetAreaId());
+        if (!current_zone)
+            continue;
+
+        // combine full channel name
+        char channelName[100];
+        Channel* chn = nullptr;
+        if ((channel->flags & Channel::CHANNEL_DBC_FLAG_LFG) != 0)
         {
-            AreaTableEntry const* area = sAreaStore.LookupEntry(j);
-            if (!area) continue;
-
-            char channelName[255];
-            snprintf(channelName, 255, channel->pattern[0], area->area_name[0]);
-            if (said.find(channelName) != said.end()) continue;
-            said.insert(channelName);
-
-            if (ChannelMgr* cMgr = channelMgr(bot->GetTeam()))
-            {
-                if (Channel* chn = cMgr->GetJoinChannel(channelName
-#ifndef MANGOSBOT_ZERO
-                    , channel->ChannelID
-#endif
-                ))
-                {
-                    chn->Join(bot, "");
-                    chn->Say(bot, msg.c_str(), LANG_UNIVERSAL);
-                }
-            }
+            string chanName = channel->pattern[0];
+            chn = cMgr->GetChannel(chanName, bot);
         }
+        else
+        {
+            snprintf(channelName, 100, channel->pattern[0], current_zone->area_name[0]);
+            chn = cMgr->GetChannel(channelName, bot);
+        }
+
+        if (!chn)
+            continue;
+
+        // skip world chat here
+        if (chn->GetName() == "World")
+            continue;
+
+        if (flags != 0 && !chn->GetFlags() != flags)
+            continue;
+
+        // skip local defense
+        //if (chn->GetFlags() == 0x18)
+        //    continue;
+
+        // no filter, pick several options
+        if (flags == Channel::CHANNEL_FLAG_NONE)
+        {
+            channelNames.push_back(chn->GetName());
+        }
+        else
+            chn->Say(bot, msg.c_str(), LANG_UNIVERSAL);
+    }
+
+    if (!channelNames.empty())
+    {
+        string randomName = channelNames[urand(0, channelNames.size() - 1)];
+        if (Channel* chn = cMgr->GetChannel(randomName, bot))
+            chn->Say(bot, msg.c_str(), LANG_UNIVERSAL);
+    }
+
+    if (worldChat)
+    {
+        if (Channel* worldChannel = cMgr->GetChannel("World", bot))
+            worldChannel->Say(bot, msg.c_str(), LANG_UNIVERSAL);
+    }
+    
+    if (guild && bot->GetGuildId())
+    {
+        Guild* guild = sGuildMgr.GetGuildById(bot->GetGuildId());
+        if (guild)
+            guild->BroadcastToGuild(bot->GetSession(), msg.c_str(), LANG_UNIVERSAL);
     }
 }
 
@@ -401,7 +447,7 @@ bool SuggestTradeAction::Execute(Event event)
     placeholders["%item"] = chat->formatItem(proto, count);
     placeholders["%gold"] = chat->formatMoney(price);
 
-    spam(sPlayerbotTextMgr.Format("suggest_sell", placeholders));
+    spam(BOT_TEXT2("suggest_sell", placeholders), urand(0, 1) ? 0x3C : 0, urand(0, 1), urand(0, 5));
     return true;
 }
 

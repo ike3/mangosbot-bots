@@ -20,7 +20,7 @@ namespace ai
         void grindReputation();
         void something();
         void trade();
-        void spam(string msg, uint32 channelId = 1);
+        void spam(string msg, uint8 flags = 0, bool worldChat = false, bool guild = false);
 
         vector<uint32> GetIncompletedQuests();
 

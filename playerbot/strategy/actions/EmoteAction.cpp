@@ -1,6 +1,7 @@
 #include "botpch.h"
 #include "../../playerbot.h"
 #include "EmoteAction.h"
+#include "../../PlayerbotTextMgr.h"
 
 #include "../../PlayerbotAIConfig.h"
 #include "../../ServerFacade.h"
@@ -758,7 +759,7 @@ bool EmoteAction::isUseful()
         return false;
 
     time_t lastEmote = AI_VALUE2(time_t, "last emote", qualifier);
-    return (time(0) - lastEmote) >= sPlayerbotAIConfig.repeatDelay / 1000;
+    return time(0) >= lastEmote;
 }
 
 

@@ -20,6 +20,7 @@
 
 #include "BattleGround.h"
 #include "BattleGroundMgr.h"
+#include "Chat/ChannelMgr.h"
 
 #include "World/WorldState.h"
 
@@ -2081,11 +2082,24 @@ bool RandomPlayerbotMgr::HandlePlayerbotConsoleCommand(ChatHandler* handler, cha
     return true;
 }
 
-void RandomPlayerbotMgr::HandleCommand(uint32 type, const string& text, Player& fromPlayer)
+void RandomPlayerbotMgr::HandleCommand(uint32 type, const string& text, Player& fromPlayer, string channelName)
 {
     for (PlayerBotMap::const_iterator it = GetPlayerBotsBegin(); it != GetPlayerBotsEnd(); ++it)
     {
         Player* const bot = it->second;
+        if (!bot)
+            continue;
+
+        if (!channelName.empty())
+        {
+            if (ChannelMgr* cMgr = channelMgr(bot->GetTeam()))
+            {
+                Channel* chn = cMgr->GetChannel(channelName, bot);
+                if (!chn)
+                    continue;
+            }
+        }
+
         bot->GetPlayerbotAI()->HandleCommand(type, text, fromPlayer);
     }
 }

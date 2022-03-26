@@ -9,6 +9,7 @@
 #include "ChatFilter.h"
 #include "PlayerbotSecurity.h"
 #include "TravelMgr.h"
+#include "PlayerbotTextMgr.h"
 #include <stack>
 
 class Player;
@@ -265,6 +266,7 @@ public:
 	virtual void UpdateAIInternal(uint32 elapsed, bool minimal = false);
 	string HandleRemoteCommand(string command);
     void HandleCommand(uint32 type, const string& text, Player& fromPlayer);
+    void QueueChatResponse(uint8 msgtype, ObjectGuid guid1, ObjectGuid guid2, std::string message, std::string chanName, std::string name);
 	void HandleBotOutgoingPacket(const WorldPacket& packet);
     void HandleMasterIncomingPacket(const WorldPacket& packet);
     void HandleMasterOutgoingPacket(const WorldPacket& packet);
@@ -419,6 +421,7 @@ protected:
     BotState currentState;
     ChatHelper chatHelper;
     queue<ChatCommandHolder> chatCommands;
+    queue<ChatQueuedReply> chatReplies;
     PacketHandlingHelper botOutgoingPacketHandlers;
     PacketHandlingHelper masterIncomingPacketHandlers;
     PacketHandlingHelper masterOutgoingPacketHandlers;

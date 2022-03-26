@@ -10,6 +10,7 @@
 #include "CellImpl.h"
 #include "strategy/values/LastMovementValue.h"
 #include "strategy/actions/LogLevelAction.h"
+#include "strategy/actions/SayAction.h"
 #include "strategy/actions/EmoteAction.h"
 #include "strategy/values/LastSpellCastValue.h"
 #include "LootObjectStack.h"
@@ -326,6 +327,27 @@ void PlayerbotAI::UpdateAIInternal(uint32 elapsed, bool minimal)
         chatCommands.push(*i);
     }
 
+    // chat replies
+    list<ChatQueuedReply> delayedResponses;
+    while (!chatReplies.empty())
+    {
+        ChatQueuedReply holder = chatReplies.front();
+        time_t checkTime = holder.m_time;
+        if (checkTime && time(0) < checkTime)
+        {
+            delayedResponses.push_back(holder);
+            chatReplies.pop();
+            continue;
+        }
+        ChatReplyAction::ChatReplyDo(bot, holder.m_type, holder.m_guid1, holder.m_guid2, holder.m_msg, holder.m_chanName, holder.m_name);
+        chatReplies.pop();
+    }
+
+    for (list<ChatQueuedReply>::iterator i = delayedResponses.begin(); i != delayedResponses.end(); ++i)
+    {
+        chatReplies.push(*i);
+    }
+
     // logout if logout timer is ready or if instant logout is possible
     if (bot->IsStunnedByLogout() || bot->GetSession()->isLogingOut())
     {
@@ -504,6 +526,9 @@ void PlayerbotAI::HandleCommand(uint32 type, const string& text, Player& fromPla
     if (type == CHAT_MSG_ADDON)
         return;
 
+    if (type == CHAT_MSG_SYSTEM)
+        return;
+
     if (text.find(sPlayerbotAIConfig.commandSeparator) != string::npos)
     {
         vector<string> commands;
@@ -628,6 +653,9 @@ void PlayerbotAI::HandleCommand(uint32 type, const string& text, Player& fromPla
 
 void PlayerbotAI::HandleBotOutgoingPacket(const WorldPacket& packet)
 {
+    if (packet.empty())
+        return;
+
 	switch (packet.GetOpcode())
 	{
 	case SMSG_SPELL_FAILURE:
@@ -667,10 +695,76 @@ void PlayerbotAI::HandleBotOutgoingPacket(const WorldPacket& packet)
         uint32 emoteId;
         p.rpos(0);
         p >> emoteId >> source;
-        if (!source.IsPlayer())
-            return;
-        else
+        if (source.IsPlayer())
             botOutgoingPacketHandlers.AddPacket(packet);
+
+        return;
+    }
+    case SMSG_MESSAGECHAT: // do not react to self or if not ready to reply
+    {
+        if (!AllowActivity())
+            return;
+
+        WorldPacket p(packet);
+        if (!p.empty() && (p.GetOpcode() == SMSG_MESSAGECHAT || p.GetOpcode() == SMSG_GM_MESSAGECHAT))
+        {
+            p.rpos(0);
+            uint8 msgtype, chatTag;
+            uint32 lang, textLen, nameLen, unused;
+            ObjectGuid guid1, guid2;
+            std::string name, chanName, message;
+            p >> msgtype >> lang;
+
+#ifdef MANGOSBOT_ONE
+            p >> guid1 >> unused;
+            if (guid1.IsEmpty() || p.size() > p.DEFAULT_SIZE)
+                return;
+
+            switch (msgtype)
+            {
+            case CHAT_MSG_CHANNEL:
+                p >> chanName;
+                [[fallthrough]];
+            case CHAT_MSG_SAY:
+            case CHAT_MSG_PARTY:
+            case CHAT_MSG_YELL:
+            case CHAT_MSG_WHISPER:
+            case CHAT_MSG_GUILD:
+                p >> guid2;
+                p >> textLen >> message >> chatTag;
+#endif
+
+                if (guid1 != bot->GetObjectGuid()) // do not reply to self
+                {
+                    // try to always reply to real player
+                    time_t lastChat = GetAiObjectContext()->GetValue<time_t>("last said", "chat")->Get();
+                    bool isPaused = time(0) < lastChat;
+                    bool shouldReply = false;
+                    bool isRandomBot = false;
+                    sObjectMgr.GetPlayerNameByGUID(guid1, name);
+                    uint32 accountId = sObjectMgr.GetPlayerAccountIdByGUID(guid1);
+                    isRandomBot = sPlayerbotAIConfig.IsInRandomAccountList(accountId);
+                    bool isMentioned = message.find(bot->GetName()) != std::string::npos;
+
+                    // random bot speaks, chat CD
+                    if (isRandomBot && isPaused)
+                        return;
+                    // BG: react only if mentioned or if not channel and real player spoke
+                    if (bot->InBattleGround() && !(isMentioned || (msgtype != CHAT_MSG_CHANNEL && !isRandomBot)))
+                        return;
+
+                    if ((isRandomBot && !isPaused && (!urand(0, 20) || (!urand(0, 10) && message.find(bot->GetName()) != std::string::npos))) || (!isRandomBot && (isMentioned || msgtype != CHAT_MSG_CHANNEL || !urand(0, 4))))
+                    {
+                        QueueChatResponse(msgtype, guid1, ObjectGuid(), message, chanName, name);
+                        GetAiObjectContext()->GetValue<time_t>("last said", "chat")->Set(time(0) + urand(5, 25));
+                        return;
+                    }
+                }
+                break;
+            default:
+                break;
+            }
+        }
 
         return;
     }
@@ -1550,7 +1644,7 @@ bool PlayerbotAI::TellMasterNoFacing(string text, PlayerbotSecurityLevel securit
 bool PlayerbotAI::TellError(string text, PlayerbotSecurityLevel securityLevel)
 {
     Player* master = GetMaster();
-    if (!IsTellAllowed(securityLevel) || master->GetPlayerbotAI())
+    if (!IsTellAllowed(securityLevel) || !master || master->GetPlayerbotAI())
         return false;
 
     PlayerbotMgr* mgr = master->GetPlayerbotMgr();
@@ -3924,4 +4018,9 @@ bool PlayerbotAI::IsInRealGuild()
         return false;
 
     return !sPlayerbotAIConfig.IsInRandomAccountList(leaderAccount);
+}
+
+void PlayerbotAI::QueueChatResponse(uint8 msgtype, ObjectGuid guid1, ObjectGuid guid2, std::string message, std::string chanName, std::string name)
+{
+    chatReplies.push(ChatQueuedReply(msgtype, guid1.GetCounter(), guid2.GetCounter(), message, chanName, name, time(0) + urand(inCombat ? 10 : 5, inCombat ? 25 : 15)));
 }

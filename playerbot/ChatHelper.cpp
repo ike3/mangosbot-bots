@@ -519,7 +519,7 @@ string ChatHelper::formatClass(Player* player, int spec)
     out << (c1 ? "|h|cff00ff00" : "") << c1 << "|h|cffffffff/";
     out << (c2 ? "|h|cff00ff00" : "") << c2 << "|h|cffffffff";
 
-    out << ") " << classes[cls];
+    out << ")|r " << classes[cls];
     return out.str();
 }
 
