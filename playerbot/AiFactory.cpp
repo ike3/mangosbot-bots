@@ -280,7 +280,7 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
 
     if (!player->InBattleGround())
     {
-        engine->addStrategies("racials", "chat", "default", "potions", "cast time", "conserve mana", "duel", NULL);
+        engine->addStrategies("racials", "chat", "default", "potions", "cast time", "duel", NULL);
     }
 
     switch (player->getClass())
@@ -558,7 +558,7 @@ void AiFactory::AddDefaultNonCombatStrategies(Player* player, PlayerbotAI* const
     if (!player->InBattleGround())
     {
         nonCombatEngine->addStrategies("nc", "food", "chat", "follow",
-            "default", "quest", "loot", "gather", "duel", "emote", "conserve mana", "buff", "mount", NULL);
+            "default", "quest", "loot", "gather", "duel", "emote", "buff", "mount", NULL);
     }
 
     if ((facade->IsRealPlayer() || sRandomPlayerbotMgr.IsRandomBot(player)) && !player->InBattleGround())
