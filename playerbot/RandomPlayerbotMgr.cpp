@@ -353,7 +353,7 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed, bool minimal)
             activateCheckLfgQueueThread();
     }
 
-    if (sPlayerbotAIConfig.randomBotJoinBG && players.size())
+    if (sPlayerbotAIConfig.randomBotJoinBG/* && players.size()*/)
     {
         if (time(nullptr) > ((int)BgCheckTimer + 30))
             activateCheckBgQueueThread();
@@ -1808,7 +1808,12 @@ bool RandomPlayerbotMgr::IsRandomBot(Player* bot)
             return false;
     }
     if (bot)
-        return IsRandomBot(bot->GetGUIDLow()) || sPlayerbotAIConfig.IsInRandomAccountList(bot->GetSession()->GetAccountId());
+    {
+        if (sPlayerbotAIConfig.IsInRandomAccountList(bot->GetSession()->GetAccountId()))
+            return true;
+
+        return IsRandomBot(bot->GetGUIDLow());
+    }
 
     return false;
 }
@@ -1816,7 +1821,10 @@ bool RandomPlayerbotMgr::IsRandomBot(Player* bot)
 bool RandomPlayerbotMgr::IsRandomBot(uint32 bot)
 {
     ObjectGuid guid = ObjectGuid(HIGHGUID_PLAYER, bot);
-    return GetEventValue(bot, "add") || sPlayerbotAIConfig.IsInRandomAccountList(sObjectMgr.GetPlayerAccountIdByGUID(guid));
+    if (sPlayerbotAIConfig.IsInRandomAccountList(sObjectMgr.GetPlayerAccountIdByGUID(guid)))
+        return true;
+
+    return GetEventValue(bot, "add");
 }
 
 list<uint32> RandomPlayerbotMgr::GetBots()
