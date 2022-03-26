@@ -702,6 +702,7 @@ void PlayerbotAI::HandleBotOutgoingPacket(const WorldPacket& packet)
 #else
         bot->GetMap()->GetHitPosition(ox, oy, oz + max_height, fx, fy, fz, -0.5f);
 #endif
+        bot->UpdateFallInformationIfNeed(bot->m_movementInfo, CMSG_MOVE_KNOCK_BACK_ACK);
         bot->UpdateAllowedPositionZ(fx, fy, fz);
 
         // stop casting
