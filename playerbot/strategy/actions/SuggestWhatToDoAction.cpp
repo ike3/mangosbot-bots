@@ -296,7 +296,11 @@ void SuggestWhatToDoAction::spam(string msg, uint8 flags, bool worldChat, bool g
         // combine full channel name
         char channelName[100];
         Channel* chn = nullptr;
+#ifndef MANGOSBOT_ZERO
         if ((channel->flags & Channel::CHANNEL_DBC_FLAG_LFG) != 0)
+#else
+        if (channel->ChannelID == 24)
+#endif
         {
             string chanName = channel->pattern[0];
             chn = cMgr->GetChannel(chanName, bot);

@@ -332,10 +332,23 @@ void PlayerbotHolder::OnBotLogin(Player * const bot)
         // TODO make action/config
         // Make the bot join the world channel for chat
         WorldPacket pkt(CMSG_JOIN_CHANNEL);
+#ifndef MANGOSBOT_ZERO
         pkt << uint32(0) << uint8(0) << uint8(0);
+#endif
         pkt << std::string("World");
         pkt << ""; // Pass
         bot->GetSession()->HandleJoinChannelOpcode(pkt);
+
+#ifdef MANGOSBOT_ZERO
+        // bots join World Defense
+        WorldPacket pkt2(CMSG_JOIN_CHANNEL);
+#ifndef MANGOSBOT_ZERO
+        pkt2 << uint32(0) << uint8(0) << uint8(0);
+#endif
+        pkt2 << std::string("WorldDefense");
+        pkt2 << ""; // Pass
+        bot->GetSession()->HandleJoinChannelOpcode(pkt2);
+#endif
     }
     // join standard channels
     AreaTableEntry const* current_zone = GetAreaEntryByAreaID(bot->GetAreaId());
@@ -349,7 +362,11 @@ void PlayerbotHolder::OnBotLogin(Player * const bot)
             ChatChannelsEntry const* channel = sChatChannelsStore.LookupEntry(i);
             if (!channel) continue;
 
+#ifndef MANGOSBOT_ZERO
             bool isLfg = (channel->flags & Channel::CHANNEL_DBC_FLAG_LFG) != 0;
+#else
+            bool isLfg = channel->ChannelID == 24;
+#endif
 
             // skip non built-in channels or global channel without zone name in pattern
             if (!isLfg && (!channel || (channel->flags & 4) == 4))
@@ -360,13 +377,21 @@ void PlayerbotHolder::OnBotLogin(Player * const bot)
             if (isLfg)
             {
                 string lfgChannelName = channel->pattern[0];
+#ifndef MANGOSBOT_ZERO
                 new_channel = cMgr->GetJoinChannel("LookingForGroup", channel->ChannelID);
+#else
+                new_channel = cMgr->GetJoinChannel("LookingForGroup");
+#endif
             }
             else
             {
                 char new_channel_name_buf[100];
                 snprintf(new_channel_name_buf, 100, channel->pattern[0], current_zone_name.c_str());
+#ifndef MANGOSBOT_ZERO
                 new_channel = cMgr->GetJoinChannel(new_channel_name_buf, channel->ChannelID);
+#else
+                new_channel = cMgr->GetJoinChannel(new_channel_name_buf);
+#endif
             }
             if (new_channel)
                 new_channel->Join(bot, "");

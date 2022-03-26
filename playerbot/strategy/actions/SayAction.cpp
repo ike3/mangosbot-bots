@@ -585,7 +585,11 @@ void ChatReplyAction::ChatReplyDo(Player* bot, uint32 type, uint32 guid1, uint32
             if (ChannelMgr* cMgr = channelMgr(bot->GetTeam()))
             {
                 std::string worldChan = "World";
+#ifndef MANGOSBOT_ZERO
                 if (Channel* chn = cMgr->GetJoinChannel(worldChan.c_str(), 0))
+#else
+                if (Channel* chn = cMgr->GetJoinChannel(worldChan.c_str()))
+#endif
                     if (bot->GetTeam() == ALLIANCE)
                         chn->Say(bot, c, LANG_COMMON);
                     else
@@ -597,13 +601,17 @@ void ChatReplyAction::ChatReplyDo(Player* bot, uint32 type, uint32 guid1, uint32
             if (type == CHAT_MSG_WHISPER)
             {
                 ObjectGuid receiver = sObjectMgr.GetPlayerGuidByName(name.c_str());
-                if (bot->GetTeam() == ALLIANCE)
+                Player* rPlayer = sObjectMgr.GetPlayer(receiver);
+                if (rPlayer)
                 {
-                    bot->Whisper(c, LANG_COMMON, receiver);
-                }
-                else
-                {
-                    bot->Whisper(c, LANG_ORCISH, receiver);
+                    if (bot->GetTeam() == ALLIANCE)
+                    {
+                        bot->Whisper(c, LANG_COMMON, receiver);
+                    }
+                    else
+                    {
+                        bot->Whisper(c, LANG_ORCISH, receiver);
+                    }
                 }
             }
 
@@ -628,11 +636,8 @@ void ChatReplyAction::ChatReplyDo(Player* bot, uint32 type, uint32 guid1, uint32
                 if (!bot->GetGuildId())
                     return;
 
-                Guild* guild = sGuildMgr.GetGuildById(bot->GetGuildId());
-                if (!guild)
-                    return;
-
-                guild->BroadcastToGuild(bot->GetSession(), respondsText, LANG_UNIVERSAL);
+                if (Guild* guild = sGuildMgr.GetGuildById(bot->GetGuildId()))
+                    guild->BroadcastToGuild(bot->GetSession(), respondsText, LANG_UNIVERSAL);
             }
         }
         bot->GetPlayerbotAI()->GetAiObjectContext()->GetValue<time_t>("last said", "chat")->Set(time(0) + urand(5, 25));
