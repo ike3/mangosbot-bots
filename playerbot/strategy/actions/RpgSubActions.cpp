@@ -258,7 +258,7 @@ bool RpgTradeUsefulAction::Execute(Event event)
     return false;
 }
 
-bool RpgDuelAction::isUseful(Event event)
+bool RpgDuelAction::isUseful()
 {
     // do not offer duel in non pvp areas
     if (sPlayerbotAIConfig.IsInPvpProhibitedZone(bot->GetAreaId()))
@@ -287,7 +287,7 @@ bool RpgDuelAction::Execute(Event event)
     return ai->DoSpecificAction("cast custom spell", Event("rpg action", chat->formatWorldobject(player) + " 7266"), true);
 }
 
-bool RpgMountAnimAction::isUseful(Event event)
+bool RpgMountAnimAction::isUseful()
 {
     return AI_VALUE2(bool, "mounted", "self target") && !AI_VALUE2(bool, "moving", "self target");
 }

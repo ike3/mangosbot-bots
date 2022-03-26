@@ -214,7 +214,7 @@ namespace ai
         RpgSpellAction(PlayerbotAI* ai, string name = "rpg spell") : RpgSubAction(ai, name) {}
 
     private:
-        virtual bool isUseful(Event event) { return false; }
+        virtual bool isUseful() { return false; }
         virtual string ActionName() { return "cast random spell"; }
         virtual Event ActionEvent(Event event) { return Event("rpg action", chat->formatWorldobject(rpg->guidP().GetWorldObject())); }
     };
@@ -244,7 +244,7 @@ namespace ai
     public:
         RpgDuelAction(PlayerbotAI* ai, string name = "rpg duel") : RpgSubAction(ai, name) {}
 
-        virtual bool isUseful(Event event);
+        virtual bool isUseful();
         virtual bool Execute(Event event);
     };
 
@@ -253,7 +253,7 @@ namespace ai
     public:
         RpgMountAnimAction(PlayerbotAI* ai, string name = "rpg mount anim") : Action(ai, name) {}
 
-        virtual bool isUseful(Event event);
+        virtual bool isUseful();
         virtual bool Execute(Event event);
     };
 }
