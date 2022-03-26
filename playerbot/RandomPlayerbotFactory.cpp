@@ -318,6 +318,12 @@ void RandomPlayerbotFactory::CreateRandomBots()
         else
             sLog.outString("Deleting all random bot characters...");
 
+#ifdef MANGOSBOT_TWO
+        BarGoLink bar(sPlayerbotAIConfig.randomBotAccountCount * 10);
+#else
+        BarGoLink bar(sPlayerbotAIConfig.randomBotAccountCount * 9);
+#endif
+
         // load list of friends
         if (!delFriends)
         {
@@ -374,6 +380,7 @@ void RandomPlayerbotFactory::CreateRandomBots()
                             }
 
                             Player::DeleteFromDB(guid, accId, false, true);       // no need to update realm characters
+                            bar.step();
 
                         } while (result->NextRow());
 
@@ -381,8 +388,11 @@ void RandomPlayerbotFactory::CreateRandomBots()
                     }
                 }
                 else
+                {
+                    bar.step();
                     sAccountMgr.DeleteAccount(accId);
                     //dels.push_back(std::async([accId] {sAccountMgr.DeleteAccount(accId); }));
+                }
 
             } while (results->NextRow());
 			delete results;
