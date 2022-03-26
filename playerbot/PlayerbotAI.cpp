@@ -238,9 +238,15 @@ void PlayerbotAI::UpdateAI(uint32 elapsed, bool minimal)
     if (bot->IsMoving() && !CanMove() && !bot->m_movementInfo.HasMovementFlag(MOVEFLAG_FALLING) && !bot->IsTaxiFlying())
 #endif
     {
-        bot->StopMoving();
-        bot->GetMotionMaster()->Clear();
-        bot->GetMotionMaster()->MoveIdle();
+        MotionMaster& mm = *bot->GetMotionMaster();
+        MovementGeneratorType moveType = mm.GetCurrentMovementGeneratorType();
+        if (moveType == FOLLOW_MOTION_TYPE ||
+            moveType == CHASE_MOTION_TYPE ||
+            moveType == POINT_MOTION_TYPE)
+        {
+            bot->StopMoving();
+            bot->GetMotionMaster()->Clear();
+        }
     }
 
     // cheat options
@@ -370,8 +376,10 @@ void PlayerbotAI::HandleTeleportAck()
     if (IsRealPlayer())
         return;
 
-	bot->GetMotionMaster()->Clear(true);
-	bot->InterruptMoving(true);
+    bot->StopMoving();
+    bot->GetMotionMaster()->Clear(true);
+    bot->InterruptMoving(true);
+
 	if (bot->IsBeingTeleportedNear())
 	{
 		WorldPacket p = WorldPacket(MSG_MOVE_TELEPORT_ACK, 8 + 4 + 4);
@@ -396,7 +404,7 @@ void PlayerbotAI::HandleTeleportAck()
 	}
 
     Reset();
-    bot->SendHeartBeat();
+    //bot->SendHeartBeat();
 }
 
 void PlayerbotAI::Reset(bool full)
@@ -3879,14 +3887,16 @@ bool PlayerbotAI::CanMove()
     if (IsInVehicle() && !IsInVehicle(true))
         return false;
 
-    if (sServerFacade.IsFrozen(bot) || bot->IsPolymorphed() ||
+    if (sServerFacade.IsFrozen(bot) || 
+        sServerFacade.IsInRoots(bot) ||
+        sServerFacade.IsFeared(bot) ||
+        sServerFacade.IsCharmed(bot) ||
+        bot->HasAuraType(SPELL_AURA_SPIRIT_OF_REDEMPTION) ||
+        bot->IsPolymorphed() ||
+        bot->IsTaxiFlying() ||
         (sServerFacade.UnitIsDead(bot) && !bot->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_GHOST)) ||
         bot->IsBeingTeleported() ||
-        sServerFacade.IsInRoots(bot) ||
-        bot->HasAuraType(SPELL_AURA_SPIRIT_OF_REDEMPTION) ||
-        bot->HasAuraType(SPELL_AURA_MOD_CONFUSE) || sServerFacade.IsCharmed(bot) ||
-        bot->HasAuraType(SPELL_AURA_MOD_STUN) || bot->IsTaxiFlying() ||
-        bot->hasUnitState(UNIT_STAT_CAN_NOT_REACT_OR_LOST_CONTROL))// ||
+        bot->hasUnitState(UNIT_STAT_CAN_NOT_REACT_OR_LOST_CONTROL))
         //bot->m_movementInfo.HasMovementFlag(MOVEFLAG_FALLING))
         return false;
 

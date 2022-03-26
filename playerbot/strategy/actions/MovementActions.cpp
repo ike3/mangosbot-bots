@@ -175,20 +175,20 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
 
     if (generatePath)
     {
-        z += 2.0f;
-        mover->UpdateAllowedPositionZ(x, y, z);
+        //z += 2.0f;
+        //mover->UpdateAllowedPositionZ(x, y, z);
     }
 
     if (!isVehicle && !IsMovingAllowed() && sServerFacade.UnitIsDead(bot))
     {
-        bot->StopMoving();
+        //bot->StopMoving();
         return false;
     }
 
     if (!isVehicle && bot->IsMoving() && !IsMovingAllowed())
     {
-        if (!bot->IsTaxiFlying())
-            bot->StopMoving();
+        //if (!bot->IsTaxiFlying())
+        //    bot->StopMoving();
 
         return false;
     }
@@ -761,6 +761,9 @@ bool MovementAction::IsMovingAllowed()
     // do not allow if not vehicle driver
     if (ai->IsInVehicle() && !ai->IsInVehicle(true))
         return false;
+
+    // test
+    return ai->CanMove();
 
     if (sServerFacade.IsFrozen(bot) || bot->IsPolymorphed() ||
 			(sServerFacade.UnitIsDead(bot) && !bot->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_GHOST)) ||
