@@ -126,6 +126,8 @@ bool AttackersValue::IsPossibleTarget(Unit *attacker, Player *bot, float range)
 
     bool inCannon = ai->IsInVehicle(false, true);
 
+    bool enemy = ai->GetAiObjectContext()->GetValue<Unit*>("enemy player target")->Get();
+
     return attacker &&
         attacker->IsInWorld() &&
         attacker->GetMapId() == bot->GetMapId() &&
@@ -147,6 +149,8 @@ bool AttackersValue::IsPossibleTarget(Unit *attacker, Player *bot, float range)
         //!sServerFacade.IsInRoots(attacker) &&
         !sServerFacade.IsFriendlyTo(attacker, bot) &&
         bot->IsWithinDistInMap(attacker, range) &&
+        !attacker->HasAuraType(SPELL_AURA_SPIRIT_OF_REDEMPTION) &&
+        !(attacker->GetObjectGuid().IsPet() && enemy) &&
         !(attacker->GetCreatureType() == CREATURE_TYPE_CRITTER && !attacker->IsInCombat()) &&
         !(sPlayerbotAIConfig.IsInPvpProhibitedZone(attacker->GetAreaId()) && (attacker->GetObjectGuid().IsPlayer() || attacker->GetObjectGuid().IsPet())) &&
         (!c || (
