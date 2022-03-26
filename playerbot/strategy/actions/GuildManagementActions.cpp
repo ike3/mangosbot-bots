@@ -88,24 +88,16 @@ bool GuildManageNearbyAction::Execute(Event event)
             MemberSlot* member = guild->GetMemberSlot(player->GetObjectGuid());
             uint32 dCount = AI_VALUE(uint32, "death count");
 
-            if ((dCount < 2 || !urand(0, 10)) && guild->GetRankRights(botMember->RankId) & GR_RIGHT_PROMOTE)
+            if (!urand(0, 30))
             {
-                if (!urand(0, 10))
-                {
-                    ai->DoSpecificAction("guild promote", Event("guild management", guid), true);
-
-                    continue;
-                }
+                ai->DoSpecificAction("guild promote", Event("guild management", guid), true);
+                continue;
             }
 
-            if ((dCount > 3 || !urand(0, 10)) && guild->GetRankRights(botMember->RankId) & GR_RIGHT_DEMOTE)
+            if (!urand(0, 30))
             {
-                if (!urand(0, 10))
-                {
-                    ai->DoSpecificAction("guild demote", Event("guild management", guid), true);
-
-                    continue;
-                }
+                ai->DoSpecificAction("guild demote", Event("guild management", guid), true);
+                continue;
             }
 
             continue;

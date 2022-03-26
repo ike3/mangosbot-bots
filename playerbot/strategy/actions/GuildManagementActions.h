@@ -44,6 +44,15 @@ namespace ai
         virtual void SendPacket(WorldPacket data) { bot->GetSession()->HandleGuildDemoteOpcode(data); };
         virtual bool PlayerIsValid(Player* member) { return member->GetGuildId() == bot->GetGuildId() && GetRankId(bot) < GetRankId(member); };
     };
+
+    class GuildLeaderAction : public GuidManageAction {
+    public:
+        GuildLeaderAction(PlayerbotAI* ai, string name = "guild leader", uint16 opcode = CMSG_GUILD_LEADER) : GuidManageAction(ai, name, opcode) {}
+        virtual bool isUseful() { return bot->GetGuildId() && sGuildMgr.GetGuildById(bot->GetGuildId())->GetLeaderGuid() == bot->GetObjectGuid(); }
+    protected:
+        virtual void SendPacket(WorldPacket data) { bot->GetSession()->HandleGuildLeaderOpcode(data); };
+        virtual bool PlayerIsValid(Player* member) { return member->GetGuildId() == bot->GetGuildId() && GetRankId(bot) < GetRankId(member) - 1; };
+    };
     
     class GuildRemoveAction : public GuidManageAction {
     public:

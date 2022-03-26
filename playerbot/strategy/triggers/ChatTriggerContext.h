@@ -103,6 +103,7 @@ namespace ai
             creators["guild demote"] = &ChatTriggerContext::guild_demote;
             creators["guild remove"] = &ChatTriggerContext::guild_remove;
             creators["guild leave"] = &ChatTriggerContext::guild_leave;
+            creators["guild leader"] = &ChatTriggerContext::guild_leader;
         }
 
     private:
@@ -193,5 +194,6 @@ namespace ai
         static Trigger* guild_demote(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "guild demote"); }
         static Trigger* guild_remove(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "guild remove"); }
         static Trigger* guild_leave(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "guild leave"); }
+        static Trigger* guild_leader(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "guild leader"); }
     };
 };
