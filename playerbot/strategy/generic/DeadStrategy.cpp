@@ -14,10 +14,6 @@ void DeadStrategy::InitTriggers(std::list<TriggerNode*>& triggers)
         NextAction::array(0, new NextAction("auto release", relevance), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "bg active",
-        NextAction::array(0, new NextAction("auto release", relevance), NULL)));
-
-    triggers.push_back(new TriggerNode(
         "dead",
        NextAction::array(0, new NextAction("find corpse", relevance), NULL)));
 
