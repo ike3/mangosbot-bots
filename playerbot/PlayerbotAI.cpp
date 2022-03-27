@@ -825,6 +825,12 @@ void PlayerbotAI::HandleBotOutgoingPacket(const WorldPacket& packet)
                 if (bot->InBattleGround() && !(isMentioned || (msgtype != CHAT_MSG_CHANNEL && !isRandomBot)))
                     return;
 
+                if (isRandomBot && HasManyPlayersNearby() && urand(0, 3))
+                    return;
+
+                if (isRandomBot && (msgtype == CHAT_MSG_SAY || msgtype == CHAT_MSG_YELL) && urand(0, 3))
+                    return;
+
                 if ((isRandomBot && !isPaused && (!urand(0, 20) || (!urand(0, 10) && message.find(bot->GetName()) != std::string::npos))) || (!isRandomBot && (isMentioned || (msgtype == CHAT_MSG_GUILD) || !urand(0, 4))))
                 {
                     QueueChatResponse(msgtype, guid1, ObjectGuid(), message, chanName, name);
