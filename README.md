@@ -9,6 +9,7 @@ TBC - https://github.com/celguar/mangos-tbc
 WotLK - https://github.com/celguar/mangos-wotlk
 
 Important: use --recursive and use branch "ike3-bots" when you clone any of these repos, e.g.:
+
 git clone https://github.com/celguar/mangos-classic.git --recursive -b ike3-bots
 
 💡  If you're new to building CMaNGOS, check the official Windows guide
