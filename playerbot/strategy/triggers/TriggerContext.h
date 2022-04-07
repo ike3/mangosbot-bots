@@ -141,6 +141,7 @@ namespace ai
             creators["in battleground"] = &TriggerContext::player_is_in_battleground;
             creators["in battleground without flag"] = &TriggerContext::player_is_in_battleground_no_flag;
             creators["wants in bg"] = &TriggerContext::player_wants_in_bg;
+            creators["use trinket"] = &TriggerContext::use_trinket;
 
             creators["mounted"] = &TriggerContext::mounted;
 
@@ -295,7 +296,8 @@ namespace ai
         static Trigger* move_long_stuck(PlayerbotAI* ai) { return new MoveLongStuckTrigger(ai); }
         static Trigger* combat_stuck(PlayerbotAI* ai) { return new CombatStuckTrigger(ai); }
         static Trigger* combat_long_stuck(PlayerbotAI* ai) { return new CombatLongStuckTrigger(ai); }
-        static Trigger* player_wants_in_bg(PlayerbotAI* ai) { return new PlayerWantsInBattlegroundTrigger(ai); } 
+        static Trigger* player_wants_in_bg(PlayerbotAI* ai) { return new PlayerWantsInBattlegroundTrigger(ai); }
+        static Trigger* use_trinket(PlayerbotAI* ai) { return new UseTrinketTrigger(ai); }
 
         static Trigger* petition_signed(PlayerbotAI* ai) { return new PetitionTurnInTrigger(ai); }
         static Trigger* buy_tabard(PlayerbotAI* ai) { return new BuyTabardTrigger(ai); }        

@@ -53,6 +53,7 @@
 #include "GuildAcceptAction.h"
 #include "RpgSubActions.h"
 #include "VehicleActions.h"
+#include "UseTrinketAction.h"
 
 
 namespace ai
@@ -166,6 +167,7 @@ namespace ai
             creators["turn in petition"] = &ActionContext::turn_in_petition;
             creators["buy tabard"] = &ActionContext::buy_tabard;
             creators["guild manage nearby"] = &ActionContext::guild_manage_nearby;
+            creators["use trinket"] = &ActionContext::use_trinket;
 
             // BG Tactics
             creators["bg tactics"] = &ActionContext::bg_tactics;
@@ -323,6 +325,7 @@ namespace ai
         static Action* turn_in_petition(PlayerbotAI* ai) { return new PetitionTurnInAction(ai); }
         static Action* buy_tabard(PlayerbotAI* ai) { return new BuyTabardAction(ai); }
         static Action* guild_manage_nearby(PlayerbotAI* ai) { return new GuildManageNearbyAction(ai); }
+        static Action* use_trinket(PlayerbotAI* ai) { return new UseTrinketAction(ai); }
        
         
 

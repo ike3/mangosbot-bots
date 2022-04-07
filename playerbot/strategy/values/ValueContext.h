@@ -163,6 +163,7 @@ namespace ai
 
             creators["item count"] = &ValueContext::item_count;
             creators["inventory items"] = &ValueContext::inventory_item;
+            creators["trinkets on use"] = &ValueContext::trinkets_on_use;
 
             creators["spell id"] = &ValueContext::spell_id;
             creators["vehicle spell id"] = &ValueContext::vehicle_spell_id;
@@ -322,6 +323,7 @@ namespace ai
         static UntypedValue* spell_id(PlayerbotAI* ai) { return new SpellIdValue(ai); }
         static UntypedValue* vehicle_spell_id(PlayerbotAI* ai) { return new VehicleSpellIdValue(ai); }
         static UntypedValue* inventory_item(PlayerbotAI* ai) { return new InventoryItemValue(ai); }
+        static UntypedValue* trinkets_on_use(PlayerbotAI* ai) { return new EquipedUsableTrinketValue(ai); }
         static UntypedValue* item_count(PlayerbotAI* ai) { return new ItemCountValue(ai); }
         static UntypedValue* behind(PlayerbotAI* ai) { return new IsBehindValue(ai); }
         static UntypedValue* facing(PlayerbotAI* ai) { return new IsFacingValue(ai); }

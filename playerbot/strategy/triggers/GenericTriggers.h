@@ -762,6 +762,15 @@ namespace ai
     public:
         virtual bool IsActive();
     };
+
+    class UseTrinketTrigger : public BoostTrigger
+    {
+    public:
+        UseTrinketTrigger(PlayerbotAI* ai) : BoostTrigger(ai, "use trinket", 3) {}
+
+    public:
+        virtual bool IsActive() { return AI_VALUE(list<Item*>, "trinkets on use").size() > 0; }
+    };
 }
 
 #include "RangeTriggers.h"

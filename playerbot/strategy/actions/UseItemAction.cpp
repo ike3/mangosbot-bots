@@ -63,7 +63,33 @@ bool UseItemAction::UseGameObject(ObjectGuid guid)
 
 bool UseItemAction::UseItemAuto(Item* item)
 {
-   return UseItem(item, ObjectGuid(), nullptr);
+    uint8 bagIndex = item->GetBagSlot();
+    uint8 slot = item->GetSlot();
+    uint8 spell_index = 0;
+    uint16 targetFlag = TARGET_FLAG_SELF;
+
+    ItemPrototype const* proto = item->GetProto();
+
+    for (uint8 i = 0; i < MAX_ITEM_PROTO_SPELLS; ++i)
+    {
+        // wrong triggering type
+        if (proto->Spells[i].SpellTrigger != ITEM_SPELLTRIGGER_ON_USE)
+            continue;
+
+        if (proto->Spells[i].SpellId > 0)
+        {
+            spell_index = i;
+        }
+    }
+
+    WorldPacket packet(CMSG_USE_ITEM);
+    packet << bagIndex << slot << spell_index << targetFlag;
+
+    ai->SetNextCheckDelay(sPlayerbotAIConfig.globalCoolDown);
+    bot->GetSession()->HandleUseItemOpcode(packet);
+    return true;
+
+   //return UseItem(item, ObjectGuid(), nullptr);
 }
 
 bool UseItemAction::UseItemOnGameObject(Item* item, ObjectGuid go)
@@ -234,8 +260,8 @@ bool UseItemAction::UseItem(Item* item, ObjectGuid goGuid, Item* itemTarget, Uni
       }
    }
 
-   bot->clearUnitState(UNIT_STAT_CHASE);
-   bot->clearUnitState(UNIT_STAT_FOLLOW);
+   //bot->clearUnitState(UNIT_STAT_CHASE);
+   //bot->clearUnitState(UNIT_STAT_FOLLOW);
 
    if (sServerFacade.isMoving(bot))
    {

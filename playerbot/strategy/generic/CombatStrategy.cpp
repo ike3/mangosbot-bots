@@ -29,4 +29,8 @@ void CombatStrategy::InitTriggers(list<TriggerNode*> &triggers)
     triggers.push_back(new TriggerNode(
         "combat long stuck",
         NextAction::array(0, new NextAction("hearthstone", 0.9f), new NextAction("repop", 0.8f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "use trinket",
+        NextAction::array(0, new NextAction("use trinket", ACTION_HIGH + 9), NULL)));
 }
