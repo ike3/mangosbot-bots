@@ -103,6 +103,7 @@ namespace ai
                 creators["riposte"] = &AiObjectContextInternal::riposte;
                 creators["mutilate"] = &AiObjectContextInternal::mutilate;
                 creators["sinister strike"] = &AiObjectContextInternal::sinister_strike;
+                creators["gouge"] = &AiObjectContextInternal::gouge;
                 creators["kidney shot"] = &AiObjectContextInternal::kidney_shot;
                 creators["rupture"] = &AiObjectContextInternal::rupture;
                 creators["slice and dice"] = &AiObjectContextInternal::slice_and_dice;
@@ -142,6 +143,7 @@ namespace ai
             static Action* riposte(PlayerbotAI* ai) { return new CastRiposteAction(ai); }
             static Action* mutilate(PlayerbotAI* ai) { return new CastMutilateAction(ai); }
             static Action* sinister_strike(PlayerbotAI* ai) { return new CastSinisterStrikeAction(ai); }
+            static Action* gouge(PlayerbotAI* ai) { return new CastGougeAction(ai); }
             static Action* kidney_shot(PlayerbotAI* ai) { return new CastKidneyShotAction(ai); }
             static Action* rupture(PlayerbotAI* ai) { return new CastRuptureAction(ai); }
             static Action* slice_and_dice(PlayerbotAI* ai) { return new CastSliceAndDiceAction(ai); }

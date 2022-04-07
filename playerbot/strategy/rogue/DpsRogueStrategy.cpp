@@ -15,6 +15,7 @@ public:
         creators["sinister strike"] = &sinister_strike;
         creators["kick"] = &kick;
         creators["kidney shot"] = &kidney_shot;
+        creators["slice and dice"] = &slice_and_dice;
         creators["rupture"] = &rupture;
         creators["backstab"] = &backstab;
     }
@@ -61,6 +62,7 @@ private:
             /*A*/ NextAction::array(0, new NextAction("eviscerate"), NULL),
             /*C*/ NULL);
     }
+    ACTION_NODE_A(slice_and_dice, "slice and dice", "rupture");
     static ActionNode* backstab(PlayerbotAI* ai)
     {
         return new ActionNode ("backstab",
@@ -86,7 +88,7 @@ void DpsRogueStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "combo points available",
-        NextAction::array(0, new NextAction("rupture", ACTION_HIGH + 2), NULL)));
+        NextAction::array(0, new NextAction("slice and dice", ACTION_HIGH + 2), NULL)));
 
 	triggers.push_back(new TriggerNode(
 		"medium threat",
