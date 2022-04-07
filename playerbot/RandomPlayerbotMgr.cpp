@@ -2664,7 +2664,7 @@ uint32 RandomPlayerbotMgr::GetBattleMasterEntry(Player* bot, BattleGroundTypeId 
             break;
         }
 
-        AreaTableEntry const* area = GetAreaEntryByAreaID(Bm->GetAreaId());
+        AreaTableEntry const* area = GetAreaEntryByAreaID(sServerFacade.GetAreaId(Bm));
         if (!area)
             continue;
 

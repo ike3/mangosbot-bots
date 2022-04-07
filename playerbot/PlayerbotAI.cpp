@@ -3389,7 +3389,7 @@ string PlayerbotAI::HandleRemoteCommand(string command)
     else if (command == "position")
     {
         ostringstream out; out << bot->GetPositionX() << " " << bot->GetPositionY() << " " << bot->GetPositionZ() << " " << bot->GetMapId() << " " << bot->GetOrientation();
-        uint32 area = bot->GetAreaId();
+        uint32 area = sServerFacade.GetAreaId(bot);
         if (const AreaTableEntry* areaEntry = GetAreaEntryByAreaID(area))
         {
             if (AreaTableEntry const* zoneEntry = areaEntry->zone ? GetAreaEntryByAreaID(areaEntry->zone) : areaEntry)

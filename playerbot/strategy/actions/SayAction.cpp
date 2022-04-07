@@ -3,6 +3,7 @@
 #include "SayAction.h"
 #include "../../PlayerbotTextMgr.h"
 #include "ChannelMgr.h"
+#include "../../ServerFacade.h"
 #include <regex>
 
 using namespace ai;
@@ -41,7 +42,7 @@ bool SayAction::Execute(Event event)
 
     if (bot->GetMap())
     {
-        if (AreaTableEntry const* area = GetAreaEntryByAreaID(bot->GetAreaId()))
+        if (AreaTableEntry const* area = GetAreaEntryByAreaID(sServerFacade.GetAreaId(bot)))
             placeholders["<subzone>"] = area->area_name[0];
     }
 

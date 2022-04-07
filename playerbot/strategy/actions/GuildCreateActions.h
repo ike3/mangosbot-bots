@@ -36,7 +36,7 @@ namespace ai
         virtual bool isUseful()
         {
             bool inCity = false;
-            AreaTableEntry const* areaEntry = GetAreaEntryByAreaID(bot->GetAreaId());
+            AreaTableEntry const* areaEntry = GetAreaEntryByAreaID(sServerFacade.GetAreaId(bot));
             if (areaEntry)
             {
                 if (areaEntry->zone)
@@ -57,7 +57,7 @@ namespace ai
         virtual bool isUseful()
         {
             bool inCity = false;
-            AreaTableEntry const* areaEntry = GetAreaEntryByAreaID(bot->GetAreaId());
+            AreaTableEntry const* areaEntry = GetAreaEntryByAreaID(sServerFacade.GetAreaId(bot));
             if (areaEntry)
             {
                 if (areaEntry->zone)

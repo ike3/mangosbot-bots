@@ -261,11 +261,11 @@ bool RpgTradeUsefulAction::Execute(Event event)
 bool RpgDuelAction::isUseful()
 {
     // do not offer duel in non pvp areas
-    if (sPlayerbotAIConfig.IsInPvpProhibitedZone(bot->GetAreaId()))
+    if (sPlayerbotAIConfig.IsInPvpProhibitedZone(sServerFacade.GetAreaId(bot)))
         return false;
 
     // Players can only fight a duel with each other outside (=not inside dungeons and not in capital cities)
-    AreaTableEntry const* casterAreaEntry = GetAreaEntryByAreaID(bot->GetAreaId());
+    AreaTableEntry const* casterAreaEntry = GetAreaEntryByAreaID(sServerFacade.GetAreaId(bot));
     if (casterAreaEntry && !(casterAreaEntry->flags & AREA_FLAG_DUEL))
     {
         // Dueling isn't allowed here

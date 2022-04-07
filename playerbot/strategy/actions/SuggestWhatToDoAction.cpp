@@ -262,7 +262,7 @@ void SuggestWhatToDoAction::something()
     map<string, string> placeholders;
     placeholders["%role"] = chat->formatClass(bot, AiFactory::GetPlayerSpecTab(bot));
 
-    AreaTableEntry const* entry = GetAreaEntryByAreaID(bot->GetAreaId());
+    AreaTableEntry const* entry = GetAreaEntryByAreaID(sServerFacade.GetAreaId(bot));
     if (!entry)
         return;
 
@@ -289,7 +289,7 @@ void SuggestWhatToDoAction::spam(string msg, uint8 flags, bool worldChat, bool g
         ChatChannelsEntry const* channel = sChatChannelsStore.LookupEntry(i);
         if (!channel) continue;
 
-        AreaTableEntry const* current_zone = GetAreaEntryByAreaID(bot->GetAreaId());
+        AreaTableEntry const* current_zone = GetAreaEntryByAreaID(sServerFacade.GetAreaId(bot));
         if (!current_zone)
             continue;
 

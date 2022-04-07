@@ -202,7 +202,7 @@ bool PlayerbotSecurity::CheckLevelFor(PlayerbotSecurityLevel level, bool silent,
             {
                 out << "You must be closer to invite me to your group. I am in ";
 
-                uint32 area = bot->GetAreaId();
+                uint32 area = sServerFacade.GetAreaId(bot);
                 if (area)
                 {
 					const AreaTableEntry* entry = GetAreaEntryByAreaID(area);

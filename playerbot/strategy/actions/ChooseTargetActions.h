@@ -96,7 +96,7 @@ namespace ai
             if (bot->HasAura(23333) || bot->HasAura(23335) || bot->HasAura(34976))
                 return false;
 
-            return !sPlayerbotAIConfig.IsInPvpProhibitedZone(bot->GetAreaId());
+            return !sPlayerbotAIConfig.IsInPvpProhibitedZone(sServerFacade.GetAreaId(bot));
         }
     };
 

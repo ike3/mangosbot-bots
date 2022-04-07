@@ -19,12 +19,12 @@ bool FarFromTravelTargetTrigger::IsActive()
 
 bool NearDarkPortalTrigger::IsActive()
 {
-    return bot->GetAreaId() == 72;
+    return sServerFacade.GetAreaId(bot) == 72;
 }
 
 bool AtDarkPortalAzerothTrigger::IsActive()
 {
-    if (bot->GetAreaId() == 72)
+    if (sServerFacade.GetAreaId(bot) == 72)
     {
         if (sServerFacade.GetDistance2d(bot, -11906.9f, -3208.53f) < 20.0f)
         {
@@ -36,7 +36,7 @@ bool AtDarkPortalAzerothTrigger::IsActive()
 
 bool AtDarkPortalOutlandTrigger::IsActive()
 {
-    if (bot->GetAreaId() == 3539)
+    if (sServerFacade.GetAreaId(bot) == 3539)
     {
         if (sServerFacade.GetDistance2d(bot, -248.1939f, 921.919f) < 10.0f)
         {
