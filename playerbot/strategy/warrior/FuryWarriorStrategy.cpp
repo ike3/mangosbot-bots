@@ -90,7 +90,7 @@ void FuryWarriorStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "medium rage available",
-        NextAction::array(0, new NextAction("heroic strike", ACTION_HIGH), NULL)));
+        NextAction::array(0, new NextAction("heroic strike", ACTION_HIGH + 10), NULL)));
 
     triggers.push_back(new TriggerNode(
         "berserker rage",

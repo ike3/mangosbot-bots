@@ -14,12 +14,14 @@ public:
         creators["death wish"] = &death_wish;
         creators["piercing howl"] = &piercing_howl;
         creators["mocking blow"] = &mocking_blow;
+        creators["heroic strike"] = &heroic_strike;
     }
 private:
     ACTION_NODE_A(charge, "charge", "reach melee");
     ACTION_NODE_A(death_wish, "death wish", "bloodrage");
     ACTION_NODE_A(piercing_howl, "piercing howl", "mocking blow");
     ACTION_NODE_A(mocking_blow, "mocking blow", "hamstring");
+    ACTION_NODE_A(heroic_strike, "heric strike", "melee");
 };
 
 ArmsWarriorStrategy::ArmsWarriorStrategy(PlayerbotAI* ai) : GenericWarriorStrategy(ai)
@@ -30,7 +32,7 @@ ArmsWarriorStrategy::ArmsWarriorStrategy(PlayerbotAI* ai) : GenericWarriorStrate
 
 NextAction** ArmsWarriorStrategy::getDefaultActions()
 {
-    return NextAction::array(0, new NextAction("melee", ACTION_NORMAL), NULL);
+    return NextAction::array(0, new NextAction("heroic strike", ACTION_NORMAL), NULL);
 }
 
 void ArmsWarriorStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
@@ -78,8 +80,12 @@ void ArmsWarriorStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 		NextAction::array(0, new NextAction("victory rush", ACTION_INTERRUPT), NULL)));
 
     triggers.push_back(new TriggerNode(
+        "medium rage available",
+        NextAction::array(0, new NextAction("heroic strike", ACTION_HIGH + 10), NULL)));
+
+    /*triggers.push_back(new TriggerNode(
         "high rage available",
-        NextAction::array(0, new NextAction("heroic strike", ACTION_HIGH), NULL)));
+        NextAction::array(0, new NextAction("slam", ACTION_HIGH + 1), NULL)));*/
 
     triggers.push_back(new TriggerNode(
         "bloodrage",
@@ -91,7 +97,7 @@ void ArmsWarriorStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "rend",
-        NextAction::array(0, new NextAction("rend", ACTION_NORMAL + 1), NULL)));
+        NextAction::array(0, new NextAction("rend", ACTION_HIGH + 5), NULL)));
 
     triggers.push_back(new TriggerNode(
         "critical health",

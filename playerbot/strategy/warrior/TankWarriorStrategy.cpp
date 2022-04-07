@@ -2,6 +2,7 @@
 #include "../../playerbot.h"
 #include "WarriorMultipliers.h"
 #include "TankWarriorStrategy.h"
+#include "WarriorTriggers.h"
 
 using namespace ai;
 
@@ -21,6 +22,7 @@ public:
         creators["taunt"] = &taunt;
     }
 private:
+    //ACTION_NODE_A(charge, "charge", "intercept with stance");
     ACTION_NODE_A(charge, "charge", "reach melee");
     ACTION_NODE_A(sunder_armor, "sunder armor", "melee");
     ACTION_NODE_A(commanding_shout, "commanding shout", "battle shout");
@@ -48,7 +50,23 @@ void TankWarriorStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "enemy out of melee",
-        NextAction::array(0, new NextAction("heroic throw", ACTION_MOVE + 10), new NextAction("charge", ACTION_MOVE + 9), NULL)));
+        NextAction::array(0, new NextAction("heroic throw", ACTION_MOVE + 11), new NextAction("charge", ACTION_MOVE + 10), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "intercept and rage",
+        NextAction::array(0, new NextAction("berserker stance", ACTION_HIGH + 14), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "intercept and rage",
+        NextAction::array(0, new NextAction("intercept", ACTION_HIGH + 13), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "thunder clap and rage",
+        NextAction::array(0, new NextAction("battle stance", ACTION_HIGH + 12), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "thunder clap and rage",
+        NextAction::array(0, new NextAction("thunder clap", ACTION_HIGH + 11), NULL)));
 
     triggers.push_back(new TriggerNode(
         "defensive stance",

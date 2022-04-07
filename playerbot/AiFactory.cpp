@@ -315,9 +315,9 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
             if (tab == 2)
                 engine->addStrategies("tank", "tank assist", "aoe", "close", "mark rti", NULL);
             else if (player->GetLevel() < 30 || tab == 0)
-                engine->addStrategies("arms", "aoe", "dps assist", "threat", "close", NULL);
+                engine->addStrategies("arms", "aoe", "dps assist", "threat", "close", "behind", NULL);
             else
-                engine->addStrategies("fury", "aoe", "dps assist", "threat", "close", NULL);
+                engine->addStrategies("fury", "aoe", "dps assist", "threat", "close", "behind", NULL);
             break;
         case CLASS_SHAMAN:
             if (tab == 0)
