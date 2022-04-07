@@ -158,7 +158,7 @@ uint32 SpellIdValue::Calculate()
         }
     }
 
-    return saveMana > 1 ? lowest : highest;
+    return saveMana > 1 ? lowestSpellId : highestSpellId;
 }
 
 uint32 VehicleSpellIdValue::Calculate()
