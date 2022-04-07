@@ -48,8 +48,13 @@ namespace ai
                 else
                     delay = 20000.0f * (100 - p) / 100.0f;
 
-                ai->CastSpell(24707, bot);
+                const SpellEntry* pSpellInfo = sServerFacade.LookupSpellInfo(24355);
+                if (!pSpellInfo)
+                    return false;
+
+                ai->CastSpell(24355, bot);
                 ai->SetNextCheckDelay(delay);
+                bot->RemoveSpellCooldown(*pSpellInfo);
 
                 return true;
             }
@@ -106,8 +111,13 @@ namespace ai
                 else
                     delay = 20000.0f * (100 - p) / 100.0f;
 
-                ai->CastSpell(24707, bot);
+                const SpellEntry* pSpellInfo = sServerFacade.LookupSpellInfo(24005);
+                if (!pSpellInfo)
+                    return false;
+
+                ai->CastSpell(24005, bot);
                 ai->SetNextCheckDelay(delay);
+                bot->RemoveSpellCooldown(*pSpellInfo);
 
                 return true;
             }
