@@ -351,7 +351,7 @@ void PlayerbotHolder::OnBotLogin(Player * const bot)
 #endif
     }
     // join standard channels
-    AreaTableEntry const* current_zone = GetAreaEntryByAreaID(bot->GetAreaId());
+    AreaTableEntry const* current_zone = GetAreaEntryByAreaID(sTerrainMgr.GetAreaId(bot->GetMapId(), bot->GetPositionX(), bot->GetPositionY(), bot->GetPositionZ()));
     ChannelMgr* cMgr = channelMgr(bot->GetTeam());
     std::string current_zone_name = current_zone ? current_zone->area_name[0] : "";
 
