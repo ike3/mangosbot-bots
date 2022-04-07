@@ -3,6 +3,7 @@
 #include "playerbot.h"
 #include "PlayerbotAIConfig.h"
 #include "ServerFacade.h"
+#include "strategy/values/SharedValueContext.h"
 
 using namespace ai;
 using namespace std;
@@ -85,6 +86,38 @@ void LootObject::Refresh(Player* bot, ObjectGuid guid)
 #endif
         && go->GetGoState() == GO_STATE_READY)
     {
+        bool isQuestItemOnly = false;
+
+#ifdef MANGOSBOT_TWO
+        for (int i = 0; i < QUEST_ITEM_OBJECTIVES_COUNT; i++)
+        {
+            int itemId = go->GetGOInfo()->questItems[i];
+
+            if (IsNeededForQuest(bot, itemId))
+            {
+                this->guid = guid;
+                return;
+            }
+            isQuestItemOnly |= itemId > 0;
+        }
+#else
+        /*if (!guid.IsEmpty())
+        {
+            for (auto& entry : GAI_VALUE2(list<int32>, "item drop list", -go->GetEntry()))
+            {
+                if (IsNeededForQuest(bot, entry))
+                {
+                    this->guid = guid;
+                    return;
+                }
+                isQuestItemOnly |= entry > 0;
+            }
+        }*/
+#endif
+
+        if (isQuestItemOnly)
+            return;
+
         uint32 goId = go->GetGOInfo()->id;
         uint32 lockId = go->GetGOInfo()->GetLockId();
         LockEntry const *lockInfo = sLockStore.LookupEntry(lockId);
@@ -120,6 +153,37 @@ void LootObject::Refresh(Player* bot, ObjectGuid guid)
             }
         }
     }
+}
+
+bool LootObject::IsNeededForQuest(Player* bot, uint32 itemId)
+{
+    for (int qs = 0; qs < MAX_QUEST_LOG_SIZE; ++qs)
+    {
+        uint32 questId = bot->GetQuestSlotQuestId(qs);
+        if (questId == 0)
+            continue;
+
+        QuestStatusData& qData = bot->getQuestStatusMap()[questId];
+        if (qData.m_status != QUEST_STATUS_INCOMPLETE)
+            continue;
+
+        Quest const* qInfo = sObjectMgr.GetQuestTemplate(questId);
+        if (!qInfo)
+            continue;
+
+        for (int i = 0; i < QUEST_ITEM_OBJECTIVES_COUNT; ++i)
+        {
+            if (!qInfo->ReqItemCount[i] || (qInfo->ReqItemCount[i] - qData.m_itemcount[i]) <= 0)
+                continue;
+
+            if (qInfo->ReqItemId[i] != itemId)
+                continue;
+
+            return true;
+        }
+    }
+
+    return false;
 }
 
 WorldObject* LootObject::GetWorldObject(Player* bot)
