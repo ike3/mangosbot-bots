@@ -41,9 +41,12 @@ namespace ai
 	class CastAuraSpellAction : public CastSpellAction
 	{
 	public:
-		CastAuraSpellAction(PlayerbotAI* ai, string spell) : CastSpellAction(ai, spell) {}
+		CastAuraSpellAction(PlayerbotAI* ai, string spell, bool isOwner = false) : CastSpellAction(ai, spell) { this->isOwner = isOwner; }
 
 		virtual bool isUseful();
+
+    protected:
+        bool isOwner;
 	};
 
     //---------------------------------------------------------------------------------------------------------------------
@@ -65,13 +68,13 @@ namespace ai
     class CastDebuffSpellAction : public CastAuraSpellAction
     {
     public:
-        CastDebuffSpellAction(PlayerbotAI* ai, string spell) : CastAuraSpellAction(ai, spell) {}
+        CastDebuffSpellAction(PlayerbotAI* ai, string spell, bool isOwner = false) : CastAuraSpellAction(ai, spell, isOwner) {}
     };
 
     class CastDebuffSpellOnAttackerAction : public CastAuraSpellAction
     {
     public:
-        CastDebuffSpellOnAttackerAction(PlayerbotAI* ai, string spell) : CastAuraSpellAction(ai, spell) {}
+        CastDebuffSpellOnAttackerAction(PlayerbotAI* ai, string spell, bool isOwner = false) : CastAuraSpellAction(ai, spell, isOwner) {}
         Value<Unit*>* GetTargetValue()
         {
             return context->GetValue<Unit*>("attacker without aura", spell);

@@ -227,10 +227,13 @@ namespace ai
     class BuffTrigger : public SpellTrigger
     {
     public:
-        BuffTrigger(PlayerbotAI* ai, string spell, int checkInterval = 1) : SpellTrigger(ai, spell, checkInterval) {}
+        BuffTrigger(PlayerbotAI* ai, string spell, int checkInterval = 1, bool checkIsOwner = false) : SpellTrigger(ai, spell, checkInterval) { this->checkIsOwner = checkIsOwner; }
     public:
 		virtual string GetTargetName() { return "self target"; }
         virtual bool IsActive();
+
+    protected:
+        bool checkIsOwner;
     };
 
     class BuffOnPartyTrigger : public BuffTrigger
@@ -283,7 +286,7 @@ namespace ai
     class DebuffTrigger : public BuffTrigger
     {
     public:
-        DebuffTrigger(PlayerbotAI* ai, string spell, int checkInterval = 1) : BuffTrigger(ai, spell, checkInterval) {
+        DebuffTrigger(PlayerbotAI* ai, string spell, int checkInterval = 1, bool checkIsOwner = false) : BuffTrigger(ai, spell, checkInterval, checkIsOwner) {
 			checkInterval = 1;
 		}
     public:
