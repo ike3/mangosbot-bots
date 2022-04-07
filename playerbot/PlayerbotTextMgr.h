@@ -73,7 +73,7 @@ class PlayerbotTextMgr
         bool rollTextChance(string text);
 
         uint32 GetLocalePriority();
-        void AddLocalePriority(uint32 locale);
+        void AddLocalePriority(int32 locale);
         void ResetLocalePriority();
 
     private:
