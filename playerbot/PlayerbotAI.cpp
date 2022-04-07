@@ -1738,7 +1738,7 @@ bool PlayerbotAI::IsTellAllowed(PlayerbotSecurityLevel securityLevel)
 
     if (sPlayerbotAIConfig.whisperDistance && !bot->GetGroup() && sRandomPlayerbotMgr.IsRandomBot(bot) &&
             master->GetSession()->GetSecurity() < SEC_GAMEMASTER &&
-            (bot->GetMapId() != master->GetMapId() || bot->GetDistance(master) > sPlayerbotAIConfig.whisperDistance))
+            (bot->GetMapId() != master->GetMapId() || sServerFacade.GetDistance2d(bot, master) > sPlayerbotAIConfig.whisperDistance))
         return false;
 
     return true;
@@ -1961,7 +1961,7 @@ bool PlayerbotAI::CanCastSpell(uint32 spellid, Unit* target, uint8 effectMask, b
             }
         }
 
-        if (bot != target && bot->GetDistance(target) > sPlayerbotAIConfig.sightDistance)
+        if (bot != target && sServerFacade.GetDistance2d(bot, target) > sPlayerbotAIConfig.sightDistance)
             return false;
 	}
 
@@ -2035,7 +2035,7 @@ bool PlayerbotAI::CanCastSpell(uint32 spellid, GameObject* goTarget, uint8 effec
                 break;
             }
         }
-        if (bot->GetDistance(goTarget) > sPlayerbotAIConfig.sightDistance)
+        if (sServerFacade.GetDistance2d(bot, goTarget) > sPlayerbotAIConfig.sightDistance)
             return false;
 
     ObjectGuid oldSel = bot->GetSelectionGuid();
@@ -2200,8 +2200,8 @@ bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target, Item* itemTarget)
     WorldObject* faceTo = target;
     if (!sServerFacade.IsInFront(bot, faceTo, sPlayerbotAIConfig.sightDistance, CAST_ANGLE_IN_FRONT))
     {
-        if (!sServerFacade.isMoving(bot)) sServerFacade.SetFacingTo(bot, faceTo);
-        failWithDelay = true;
+        sServerFacade.SetFacingTo(bot, faceTo);
+        //failWithDelay = true;
     }
 
     if (failWithDelay)
@@ -2263,21 +2263,21 @@ bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target, Item* itemTarget)
         }
     }
 
+    if (sServerFacade.isMoving(bot) && spell->GetCastTime())
+    {
+        bot->InterruptMoving();
+        //SetNextCheckDelay(sPlayerbotAIConfig.globalCoolDown);
+        //spell->cancel();
+        //delete spell;
+        //return false;
+    }
+
 #ifdef MANGOS
     spell->prepare(&targets);
 #endif
 #ifdef CMANGOS
-    spell->SpellStart(&targets);
+    SpellCastResult spellSuccess = spell->SpellStart(&targets);
 #endif
-
-    if (sServerFacade.isMoving(bot) && spell->GetCastTime())
-    {
-        bot->StopMoving();
-        SetNextCheckDelay(sPlayerbotAIConfig.globalCoolDown);
-        spell->cancel();
-        //delete spell;
-        return false;
-    }
 
     if (pSpellInfo->Effect[0] == SPELL_EFFECT_OPEN_LOCK ||
         pSpellInfo->Effect[0] == SPELL_EFFECT_SKINNING)
@@ -2291,9 +2291,13 @@ bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target, Item* itemTarget)
         }
     }
 
+    if (spellSuccess != SPELL_CAST_OK)
+        return false;
 
     WaitForSpellCast(spell);
-    aiObjectContext->GetValue<LastSpellCast&>("last spell cast")->Get().Set(spellId, target->GetObjectGuid(), time(0));
+    if (spell->GetCastTime())
+        aiObjectContext->GetValue<LastSpellCast&>("last spell cast")->Get().Set(spellId, target->GetObjectGuid(), time(0));
+
     aiObjectContext->GetValue<ai::PositionMap&>("position")->Get()["random"].Reset();
 
     if (oldSel)
@@ -2710,6 +2714,9 @@ bool PlayerbotAI::IsInVehicle(bool canControl, bool canCast, bool canAttack, boo
     if (!vehicle || !vehicle->IsAlive())
         return false;
 
+    if (!vehicle->GetVehicleInfo())
+        return false;
+
     // get seat
     VehicleSeatEntry const* seat = vehicle->GetVehicleInfo()->GetSeatEntry(transportInfo->GetTransportSeat());
     if (!seat)
@@ -2826,7 +2833,6 @@ bool PlayerbotAI::IsInterruptableSpellCasting(Unit* target, string spell, uint8 
 bool PlayerbotAI::HasAuraToDispel(Unit* target, uint32 dispelType)
 {
     bool isFriend = sServerFacade.IsFriendlyTo(bot, target);
-    bool isHostile = sServerFacade.IsHostileTo(bot, target);
 	for (uint32 type = SPELL_AURA_NONE; type < TOTAL_AURAS; ++type)
 	{
 		Unit::AuraList const& auras = target->GetAurasByType((AuraType)type);
@@ -2840,7 +2846,7 @@ bool PlayerbotAI::HasAuraToDispel(Unit* target, uint32 dispelType)
 			if (isPositiveSpell && isFriend)
 				continue;
 
-			if (!isPositiveSpell && isHostile)
+			if (!isPositiveSpell && !isFriend)
 				continue;
 
 			if (sPlayerbotAIConfig.dispelAuraDuration && aura->GetAuraDuration() && aura->GetAuraDuration() < (int32)sPlayerbotAIConfig.dispelAuraDuration)
@@ -2994,7 +3000,7 @@ bool PlayerbotAI::HasManyPlayersNearby(uint32 trigerrValue, float range)
 
     for (auto& player : sRandomPlayerbotMgr.GetPlayers())
     {
-        if ((!player->IsGameMaster() || player->isGMVisible()) && player->GetDistance(bot, false, DIST_CALC_NONE) < sqRange)
+        if ((!player->IsGameMaster() || player->isGMVisible()) && sServerFacade.GetDistance2d(player, bot) < sqRange)
         {
             found++;
 

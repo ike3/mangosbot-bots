@@ -126,6 +126,8 @@ namespace ai
             if (!target)
                 return false;
 
+            return !bot->CanReachWithMeleeAttack(target);
+
             float targetDistance = sServerFacade.GetDistance2d(bot, target);
             return target && (targetDistance > max(5.0f, bot->GetCombinedCombatReach(target, true)) || (!bot->IsWithinLOSInMap(target, true) && targetDistance > 5.0f));
         }
@@ -141,8 +143,7 @@ namespace ai
             if (!target)
                 return false;
 
-            float combatReach = bot->GetCombinedCombatReach(target, false);
-            return target && (sServerFacade.GetDistance2d(bot, target) > (distance + combatReach + sPlayerbotAIConfig.contactDistance) || !bot->IsWithinLOSInMap(target, true));
+            return target && (bot->GetDistance(target, true, DIST_CALC_COMBAT_REACH) > (distance + sPlayerbotAIConfig.contactDistance)) || !bot->IsWithinLOSInMap(target, true);
         }
     };
 
@@ -157,8 +158,7 @@ namespace ai
             if (!target)
                 return false;
 
-            float combatReach = bot->GetCombinedCombatReach(target, false);
-            return target && (sServerFacade.GetDistance2d(bot, target) > (distance + sPlayerbotAIConfig.contactDistance) || !bot->IsWithinLOSInMap(target, true));
+            return target && (bot->GetDistance(target, true, DIST_CALC_COMBAT_REACH) > (distance + sPlayerbotAIConfig.contactDistance)) || !bot->IsWithinLOSInMap(target, true);
         }
     };
 

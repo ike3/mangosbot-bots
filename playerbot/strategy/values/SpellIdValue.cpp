@@ -103,14 +103,59 @@ uint32 SpellIdValue::Calculate()
 
     int saveMana = (int) round(AI_VALUE(double, "mana save level"));
     int rank = 1;
-    int highest = 0;
-    int lowest = 0;
-    for (set<uint32>::reverse_iterator i = spellIds.rbegin(); i != spellIds.rend(); ++i)
+    int highestRank = 0;
+    int highestSpellId = 0;
+    int lowestRank = 0;
+    int lowestSpellId = 0;
+
+    if (saveMana <= 1)
     {
-        if (!highest) highest = *i;
-        if (saveMana == rank) return *i;
-        lowest = *i;
-        rank++;
+        for (set<uint32>::reverse_iterator itr = spellIds.rbegin(); itr != spellIds.rend(); ++itr)
+        {
+            const SpellEntry* pSpellInfo = sServerFacade.LookupSpellInfo(*itr);
+            if (!pSpellInfo)
+                continue;
+
+            std::string spellName = pSpellInfo->Rank[0];
+
+            // For atoi, the input string has to start with a digit, so lets search for the first digit
+            size_t i = 0;
+            for (; i < spellName.length(); i++) { if (isdigit(spellName[i])) break; }
+
+            // remove the first chars, which aren't digits
+            spellName = spellName.substr(i, spellName.length() - i);
+
+            // convert the remaining text to an integer
+            int id = atoi(spellName.c_str());
+
+            if (!id)
+            {
+                highestSpellId = *itr;
+                continue;
+            }
+
+            if (!highestRank || id > highestRank)
+            {
+                highestRank = id;
+                highestSpellId = *itr;
+            }
+
+            if (!lowestRank || (lowestRank && id < lowestRank))
+            {
+                lowestRank = id;
+                lowestSpellId = *itr;
+            }
+        }
+    }
+    else
+    {
+        for (set<uint32>::reverse_iterator i = spellIds.rbegin(); i != spellIds.rend(); ++i)
+        {
+            if (!highestSpellId) highestSpellId = *i;
+            if (saveMana == rank) return *i;
+            lowestSpellId = *i;
+            rank++;
+        }
     }
 
     return saveMana > 1 ? lowest : highest;
