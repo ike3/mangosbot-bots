@@ -28,5 +28,5 @@ void SetBehindCombatStrategy::InitTriggers(list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "not behind target",
-        NextAction::array(0, new NextAction("set behind", ACTION_NORMAL + 9), NULL)));
+        NextAction::array(0, new NextAction("set behind", ACTION_MOVE + 7), NULL)));
 }

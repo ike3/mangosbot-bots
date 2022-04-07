@@ -79,10 +79,10 @@ namespace ai
         virtual bool isUseful();
     };
 
-    class SetFacingTargetAction : public MovementAction
+    class SetFacingTargetAction : public Action
     {
     public:
-        SetFacingTargetAction(PlayerbotAI* ai) : MovementAction(ai, "set facing") {}
+        SetFacingTargetAction(PlayerbotAI* ai) : Action(ai, "set facing") {}
         virtual bool Execute(Event event);
         virtual bool isUseful();
         virtual bool isPossible();

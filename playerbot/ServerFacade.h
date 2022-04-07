@@ -208,12 +208,7 @@ class ServerFacade
             return bot->IsWithinLOSInMap(wo);
 #endif
 #ifdef CMANGOS
-            float x = wo->GetPositionX(), y = wo->GetPositionY(), z = wo->GetPositionZ();
-            return //bot->GetMapId() == wo->GetMapId() &&
-                (
-                    bot->IsWithinLOS(x, y, z + 0.5f, true) ||
-                    GetDistance2d(bot, wo) <= sPlayerbotAIConfig.tooCloseDistance
-                );
+            return bot->IsWithinLOSInMap(wo, true);
 #endif
         }
 

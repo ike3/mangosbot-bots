@@ -1075,7 +1075,7 @@ bool MovementAction::ChaseTo(WorldObject* obj, float distance, float angle)
 
     UpdateMovementState();
 
-    if (bot->IsSitState())
+    if (!bot->IsStandState())
         bot->SetStandState(UNIT_STAND_STATE_STAND);
 
     if (bot->IsNonMeleeSpellCasted(true))
@@ -1402,11 +1402,13 @@ bool SetBehindTargetAction::Execute(Event event)
 
     float angle = GetFollowAngle() / 3 + target->GetOrientation() + M_PI;
 
+    //return ChaseTo(target, 0.f, angle);
+
     float distance = sPlayerbotAIConfig.contactDistance;
     float x = target->GetPositionX() + cos(angle) * distance,
         y = target->GetPositionY() + sin(angle) * distance,
         z = target->GetPositionZ();
-    //bot->UpdateGroundPositionZ(x, y, z);
+    bot->UpdateGroundPositionZ(x, y, z);
 
     return MoveTo(bot->GetMapId(), x, y, z);
 }
