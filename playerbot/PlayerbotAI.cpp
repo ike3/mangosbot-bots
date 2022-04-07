@@ -825,16 +825,13 @@ void PlayerbotAI::HandleBotOutgoingPacket(const WorldPacket& packet)
                 if (bot->InBattleGround() && !(isMentioned || (msgtype != CHAT_MSG_CHANNEL && !isRandomBot)))
                     return;
 
-                if (isRandomBot && HasManyPlayersNearby() && urand(0, 10))
+                if (HasRealPlayerMaster())
                     return;
 
-                if (isRandomBot && (msgtype == CHAT_MSG_SAY || msgtype == CHAT_MSG_YELL) && urand(0, 10))
+                if (isRandomBot && urand(0, 20))
                     return;
 
-                if (isRandomBot && HasRealPlayerMaster() && urand(0, 5))
-                    return;
-
-                if ((isRandomBot && !isPaused && (!urand(0, 20) || (!urand(0, 10) && message.find(bot->GetName()) != std::string::npos))) || (!isRandomBot && (isMentioned || (msgtype == CHAT_MSG_GUILD) || !urand(0, 4))))
+                if ((isRandomBot && !isPaused && (!urand(0, 30) || (!urand(0, 20) && message.find(bot->GetName()) != std::string::npos))) || (!isRandomBot && (isMentioned || !urand(0, 4))))
                 {
                     QueueChatResponse(msgtype, guid1, ObjectGuid(), message, chanName, name);
                     GetAiObjectContext()->GetValue<time_t>("last said", "chat")->Set(time(0) + urand(5, 25));
