@@ -308,7 +308,7 @@ bool ChooseRpgTargetAction::isFollowValid(Player* bot, WorldPosition pos)
             return true;
     }
 
-    if (inDungeon && (realMaster == master) && distance > 5.0f)
+    if ((inDungeon || !master->GetRestType()) && (realMaster == master) && distance > 5.0f)
         return false;
 
     if (!master->IsMoving() && distance < 25.0f)
