@@ -401,3 +401,8 @@ bool IsFallingFarTrigger::IsActive()
 {
     return bot->HasMovementFlag(MOVEFLAG_FALLINGFAR);
 }
+
+bool HasAreaDebuffTrigger::IsActive()
+{
+    return AI_VALUE2(bool, "has area debuff", "self target");
+}

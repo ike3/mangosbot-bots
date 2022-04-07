@@ -74,6 +74,9 @@ namespace ai
             creators["medium aoe"] = &TriggerContext::MediumAoe;
             creators["high aoe"] = &TriggerContext::HighAoe;
 
+            creators["has area debuff"] = &TriggerContext::HasAreaDebuff;
+
+
             creators["enemy out of melee"] = &TriggerContext::EnemyOutOfMelee;
             creators["enemy out of spell"] = &TriggerContext::EnemyOutOfSpell;
             creators["enemy too close for spell"] = &TriggerContext::enemy_too_close_for_spell;
@@ -237,6 +240,7 @@ namespace ai
         static Trigger* LightAoe(PlayerbotAI* ai) { return new LightAoeTrigger(ai); }
         static Trigger* MediumAoe(PlayerbotAI* ai) { return new MediumAoeTrigger(ai); }
         static Trigger* HighAoe(PlayerbotAI* ai) { return new HighAoeTrigger(ai); }
+        static Trigger* HasAreaDebuff(PlayerbotAI* ai) { return new HasAreaDebuffTrigger(ai); }
         static Trigger* LoseAggro(PlayerbotAI* ai) { return new LoseAggroTrigger(ai); }
         static Trigger* HasAggro(PlayerbotAI* ai) { return new HasAggroTrigger(ai); }
         static Trigger* LowHealth(PlayerbotAI* ai) { return new LowHealthTrigger(ai); }

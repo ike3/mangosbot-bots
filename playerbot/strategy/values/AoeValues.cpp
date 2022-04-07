@@ -76,3 +76,47 @@ uint8 AoeCountValue::Calculate()
 {
     return FindMaxDensity(bot).size();
 }
+
+bool HasAreaDebuffValue::Calculate()
+{
+    for (uint32 auraType = SPELL_AURA_BIND_SIGHT; auraType < TOTAL_AURAS; auraType++)
+    {
+        Unit::AuraList const& auras = ai->GetBot()->GetAurasByType((AuraType)auraType);
+
+        if (auras.empty())
+            continue;
+
+        for (Unit::AuraList::const_iterator i = auras.begin(); i != auras.end(); i++)
+        {
+            Aura* aura = *i;
+            if (!aura)
+                continue;
+
+            SpellEntry const* proto = aura->GetSpellProto();
+
+            if (IsSpellEffectTriggerSpellByAura(proto, aura->GetEffIndex()))
+            {
+                uint32 trigger_spell_id = proto->EffectTriggerSpell[aura->GetEffIndex()];
+                return trigger_spell_id == 29767;//Overload
+            }
+            else
+            {
+                if (!aura->IsPositive() && aura->IsPeriodic())
+                {
+                    if (proto)
+                    {
+                        for (int i = 0; i < MAX_EFFECT_INDEX; i++)
+                        {
+                            SpellRadiusEntry const* radius = sSpellRadiusStore.LookupEntry(proto->EffectRadiusIndex[i]);
+
+                            if (radius)
+                                return radius->Radius > 0;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    return false;
+}

@@ -279,6 +279,8 @@ namespace ai
             creators["RTSC selected"] = &ValueContext::RTSC_selected;
             creators["RTSC next spell action"] = &ValueContext::RTSC_next_spell_action;
             creators["RTSC saved location"] = &ValueContext::RTSC_saved_location;
+
+            creators["has area debuff"] = &ValueContext::has_area_debuff;
         }
 
     private:
@@ -466,5 +468,7 @@ namespace ai
         static UntypedValue* RTSC_selected(PlayerbotAI* ai) { return new RTSCSelectedValue(ai); }
         static UntypedValue* RTSC_next_spell_action(PlayerbotAI* ai) { return new RTSCNextSpellActionValue(ai); }
         static UntypedValue* RTSC_saved_location(PlayerbotAI* ai) { return new RTSCSavedLocationValue(ai); }
+
+        static UntypedValue* has_area_debuff(PlayerbotAI* ai) { return new HasAreaDebuffValue(ai); }
     };
 };

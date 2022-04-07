@@ -771,6 +771,12 @@ namespace ai
     public:
         virtual bool IsActive() { return AI_VALUE(list<Item*>, "trinkets on use").size() > 0; }
     };
+
+    class HasAreaDebuffTrigger : public Trigger {
+    public:
+        HasAreaDebuffTrigger(PlayerbotAI* ai) : Trigger(ai, "have area debuff") {}
+        virtual bool IsActive();
+    };
 }
 
 #include "RangeTriggers.h"
