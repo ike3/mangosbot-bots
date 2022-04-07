@@ -7,6 +7,7 @@ namespace ai
     BUFF_TRIGGER(RighteousFuryTrigger, "righteous fury");
 
     BUFF_TRIGGER(RetributionAuraTrigger, "retribution aura");
+    BUFF_TRIGGER(SanctityAuraTrigger, "sanctity aura");
 
 	class CrusaderAuraTrigger : public BuffTrigger
 	{
@@ -22,8 +23,17 @@ namespace ai
 		virtual bool IsActive();
 	};
 
+    // judgements
+    DEBUFF_TRIGGER(JudgementTrigger, "judgement");
     DEBUFF_TRIGGER(JudgementOfLightTrigger, "judgement of light");
     DEBUFF_TRIGGER(JudgementOfWisdomTrigger, "judgement of wisdom");
+
+    DEBUFF_TRIGGER(ConsecrationTrigger, "consecration");
+
+    // repentance triggers
+    INTERRUPT_HEALER_TRIGGER(RepentanceOnHealerTrigger, "repentance on enemy healer");
+    SNARE_TRIGGER(RepentanceSnareTrigger, "repentance on snare target");
+    INTERRUPT_TRIGGER(RepentanceInterruptTrigger, "repentance");
 
     class BlessingOnPartyTrigger : public BuffOnPartyTrigger
     {
@@ -79,6 +89,8 @@ namespace ai
     public:
         DevotionAuraTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "devotion aura") {}
     };
+
+    BUFF_TRIGGER(ConcentrationAuraTrigger, "concentration aura");
 
     class CleanseCureDiseaseTrigger : public NeedCureTrigger
     {

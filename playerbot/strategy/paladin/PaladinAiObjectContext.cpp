@@ -107,6 +107,7 @@ namespace ai
         public:
             TriggerFactoryInternal()
             {
+                creators["judgement"] = &TriggerFactoryInternal::judgement;
                 creators["judgement of wisdom"] = &TriggerFactoryInternal::judgement_of_wisdom;
                 creators["judgement of light"] = &TriggerFactoryInternal::judgement_of_light;
                 creators["blessing"] = &TriggerFactoryInternal::blessing;
@@ -116,6 +117,8 @@ namespace ai
                 creators["crusader aura"] = &TriggerFactoryInternal::crusader_aura;
                 creators["retribution aura"] = &TriggerFactoryInternal::retribution_aura;
                 creators["devotion aura"] = &TriggerFactoryInternal::devotion_aura;
+                creators["sanctity aura"] = &TriggerFactoryInternal::sanctity_aura;
+                creators["concentration aura"] = &TriggerFactoryInternal::concentration_aura;
                 creators["shadow resistance aura"] = &TriggerFactoryInternal::shadow_resistance_aura;
                 creators["frost resistance aura"] = &TriggerFactoryInternal::frost_resistance_aura;
                 creators["fire resistance aura"] = &TriggerFactoryInternal::fire_resistance_aura;
@@ -134,6 +137,10 @@ namespace ai
                 creators["divine favor"] = &TriggerFactoryInternal::divine_favor;
                 creators["turn undead"] = &TriggerFactoryInternal::turn_undead;
                 creators["avenger's shield"] = &TriggerFactoryInternal::avenger_shield;
+                creators["consecration"] = &TriggerFactoryInternal::consecration;
+                creators["repentance on enemy healer"] = &TriggerFactoryInternal::repentance_on_enemy_healer;
+                creators["repentance on snare target"] = &TriggerFactoryInternal::repentance_on_snare_target;
+                creators["repentance interrupt"] = &TriggerFactoryInternal::repentance_interrupt;
             }
 
         private:
@@ -141,6 +148,7 @@ namespace ai
             static Trigger* divine_favor(PlayerbotAI* ai) { return new DivineFavorTrigger(ai); }
             static Trigger* holy_shield(PlayerbotAI* ai) { return new HolyShieldTrigger(ai); }
             static Trigger* righteous_fury(PlayerbotAI* ai) { return new RighteousFuryTrigger(ai); }
+            static Trigger* judgement(PlayerbotAI* ai) { return new JudgementTrigger(ai); }
             static Trigger* judgement_of_wisdom(PlayerbotAI* ai) { return new JudgementOfWisdomTrigger(ai); }
             static Trigger* judgement_of_light(PlayerbotAI* ai) { return new JudgementOfLightTrigger(ai); }
             static Trigger* blessing(PlayerbotAI* ai) { return new BlessingTrigger(ai); }
@@ -150,6 +158,8 @@ namespace ai
             static Trigger* crusader_aura(PlayerbotAI* ai) { return new CrusaderAuraTrigger(ai); }
             static Trigger* retribution_aura(PlayerbotAI* ai) { return new RetributionAuraTrigger(ai); }
             static Trigger* devotion_aura(PlayerbotAI* ai) { return new DevotionAuraTrigger(ai); }
+            static Trigger* sanctity_aura(PlayerbotAI* ai) { return new SanctityAuraTrigger(ai); }
+            static Trigger* concentration_aura(PlayerbotAI* ai) { return new ConcentrationAuraTrigger(ai); }
             static Trigger* shadow_resistance_aura(PlayerbotAI* ai) { return new ShadowResistanceAuraTrigger(ai); }
             static Trigger* frost_resistance_aura(PlayerbotAI* ai) { return new FrostResistanceAuraTrigger(ai); }
             static Trigger* fire_resistance_aura(PlayerbotAI* ai) { return new FireResistanceAuraTrigger(ai); }
@@ -164,6 +174,10 @@ namespace ai
             static Trigger* hammer_of_justice_on_enemy_target(PlayerbotAI* ai) { return new HammerOfJusticeEnemyHealerTrigger(ai); }
             static Trigger* hammer_of_justice_on_snare_target(PlayerbotAI* ai) { return new HammerOfJusticeSnareTrigger(ai); }
             static Trigger* avenger_shield(PlayerbotAI* ai) { return new AvengerShieldTrigger(ai); }
+            static Trigger* consecration(PlayerbotAI* ai) { return new ConsecrationTrigger(ai); }
+            static Trigger* repentance_on_enemy_healer(PlayerbotAI* ai) { return new RepentanceOnHealerTrigger(ai); }
+            static Trigger* repentance_on_snare_target(PlayerbotAI* ai) { return new RepentanceSnareTrigger(ai); }
+            static Trigger* repentance_interrupt(PlayerbotAI* ai) { return new RepentanceInterruptTrigger(ai); }
         };
     };
 };
@@ -194,6 +208,7 @@ namespace ai
                 creators["crusader aura"] = &AiObjectContextInternal::crusader_aura;
                 creators["seal of light"] = &AiObjectContextInternal::seal_of_light;
                 creators["devotion aura"] = &AiObjectContextInternal::devotion_aura;
+                creators["concentration aura"] = &AiObjectContextInternal::concentration_aura;
                 creators["holy wrath"] = &AiObjectContextInternal::holy_wrath;
                 creators["consecration"] = &AiObjectContextInternal::consecration;
                 creators["cleanse disease"] = &AiObjectContextInternal::cleanse_disease;
@@ -240,6 +255,12 @@ namespace ai
                 creators["turn undead"] = &AiObjectContextInternal::turn_undead;
                 creators["blessing of protection on party"] = &AiObjectContextInternal::blessing_of_protection_on_party;
                 creators["righteous defense"] = &AiObjectContextInternal::righteous_defense;
+                creators["repentance"] = &AiObjectContextInternal::repentance;
+                creators["repentance on snare target"] = &AiObjectContextInternal::repentance_on_snare_target;
+                creators["repentance on enemy healer"] = &AiObjectContextInternal::repentance_on_enemy_healer;
+                creators["sanctity aura"] = &AiObjectContextInternal::sanctity_aura;
+                creators["holy shock"] = &AiObjectContextInternal::holy_shock;
+                creators["holy shock on party"] = &AiObjectContextInternal::holy_shock_on_party;
             }
 
         private:
@@ -262,6 +283,7 @@ namespace ai
             static Action* crusader_aura(PlayerbotAI* ai) { return new CastCrusaderAuraAction(ai); }
             static Action* seal_of_light(PlayerbotAI* ai) { return new CastSealOfLightAction(ai); }
             static Action* devotion_aura(PlayerbotAI* ai) { return new CastDevotionAuraAction(ai); }
+            static Action* concentration_aura(PlayerbotAI* ai) { return new CastConcentrationAuraAction(ai); }
             static Action* holy_wrath(PlayerbotAI* ai) { return new CastHolyWrathAction(ai); }
             static Action* consecration(PlayerbotAI* ai) { return new CastConsecrationAction(ai); }
             static Action* cleanse_poison(PlayerbotAI* ai) { return new CastCleansePoisonAction(ai); }
@@ -304,6 +326,12 @@ namespace ai
             static Action* hammer_of_justice_on_enemy_healer(PlayerbotAI* ai) { return new CastHammerOfJusticeOnEnemyHealerAction(ai); }
             static Action* hammer_of_justice_on_snare_target(PlayerbotAI* ai) { return new CastHammerOfJusticeSnareAction(ai); }
             static Action* righteous_defense(PlayerbotAI* ai) { return new CastRighteousDefenseAction(ai); }
+            static Action* repentance(PlayerbotAI* ai) { return new CastRepentanceAction(ai); }
+            static Action* repentance_on_snare_target(PlayerbotAI* ai) { return new CastRepentanceSnareAction(ai); }
+            static Action* repentance_on_enemy_healer(PlayerbotAI* ai) { return new CastRepentanceOnHealerAction(ai); }
+            static Action* sanctity_aura(PlayerbotAI* ai) { return new CastSanctityAuraAction(ai); }
+            static Action* holy_shock(PlayerbotAI* ai) { return new CastHolyShockAction(ai); }
+            static Action* holy_shock_on_party(PlayerbotAI* ai) { return new CastHolyShockOnPartyAction(ai); }
         };
     };
 };
