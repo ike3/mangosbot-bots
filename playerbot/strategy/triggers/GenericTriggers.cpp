@@ -157,6 +157,15 @@ bool SpellCanBeCastTrigger::IsActive()
 	return target && ai->CanCastSpell(spell, target, true);
 }
 
+bool SpellNoCooldownTrigger::IsActive()
+{
+    uint32 spellId = AI_VALUE2(uint32, "spell id", name);
+    if (!spellId)
+        return false;
+
+    return bot->IsSpellReady(spellId);
+}
+
 bool RandomTrigger::IsActive()
 {
     if (time(0) - lastCheck < sPlayerbotAIConfig.repeatDelay / 1000)
@@ -170,7 +179,7 @@ bool RandomTrigger::IsActive()
 
 bool AndTrigger::IsActive()
 {
-    return ls->IsActive() && rs->IsActive();
+    return ls && rs && ls->IsActive() && rs->IsActive();
 }
 
 string AndTrigger::getName()
@@ -178,6 +187,27 @@ string AndTrigger::getName()
     std::string name(ls->getName());
     name = name + " and ";
     name = name + rs->getName();
+    return name;
+}
+
+bool TwoTriggers::IsActive()
+{
+    if (name1.empty() || name2.empty())
+        return false;
+
+    Trigger* trigger1 = ai->GetAiObjectContext()->GetTrigger(name1);
+    Trigger* trigger2 = ai->GetAiObjectContext()->GetTrigger(name2);
+
+    if (!trigger1 || !trigger2)
+        return false;
+
+    return trigger1->IsActive() && trigger2->IsActive();
+}
+
+string TwoTriggers::getName()
+{
+    std::string name;
+    name = name1 + " and " + name2;
     return name;
 }
 

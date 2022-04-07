@@ -108,6 +108,13 @@ namespace ai
 		virtual bool IsActive();
 	};
 
+    class SpellNoCooldownTrigger : public SpellTrigger
+    {
+    public:
+        SpellNoCooldownTrigger(PlayerbotAI* ai, string spell) : SpellTrigger(ai, spell) {}
+        virtual bool IsActive();
+    };
+
 	// TODO: check other targets
     class InterruptSpellTrigger : public SpellTrigger
 	{
@@ -353,6 +360,21 @@ namespace ai
     protected:
         Trigger* ls;
         Trigger* rs;
+    };
+
+    class TwoTriggers : public Trigger
+    {
+    public:
+        TwoTriggers(PlayerbotAI* ai, std::string name1 = "", std::string name2 = "") : Trigger(ai)
+        {
+            this->name1 = name1;
+            this->name2 = name2;
+        }
+        virtual bool IsActive();
+        virtual string getName();
+    protected:
+        std::string name1;
+        std::string name2;
     };
 
     class SnareTargetTrigger : public DebuffTrigger
