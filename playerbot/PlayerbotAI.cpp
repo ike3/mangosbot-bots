@@ -2291,14 +2291,6 @@ bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target, Item* itemTarget)
         }
     }
 
-    if (!urand(0, 50) && sServerFacade.IsInCombat(bot) && HasStrategy("emote", BOT_STATE_NON_COMBAT))
-    {
-        vector<uint32> sounds;
-        sounds.push_back(TEXTEMOTE_OPENFIRE);
-        sounds.push_back(305);
-        sounds.push_back(307);
-        PlayEmote(sounds[urand(0, sounds.size() - 1)]);
-    }
 
     WaitForSpellCast(spell);
     aiObjectContext->GetValue<LastSpellCast&>("last spell cast")->Get().Set(spellId, target->GetObjectGuid(), time(0));
@@ -2433,15 +2425,6 @@ bool PlayerbotAI::CastSpell(uint32 spellId, float x, float y, float z, Item* ite
             //delete spell;
             return false;
         }
-    }
-
-    if (!urand(0, 50) && sServerFacade.IsInCombat(bot) && HasStrategy("emote", BOT_STATE_NON_COMBAT))
-    {
-        vector<uint32> sounds;
-        sounds.push_back(TEXTEMOTE_OPENFIRE);
-        sounds.push_back(305);
-        sounds.push_back(307);
-        PlayEmote(sounds[urand(0, sounds.size() - 1)]);
     }
 
     WaitForSpellCast(spell);

@@ -113,15 +113,6 @@ bool AttackAction::Attack(Unit* target)
         }
     }
 
-    if (!urand(0, 300) && ai->HasStrategy("emote", BOT_STATE_NON_COMBAT))
-    {
-        vector<uint32> sounds;
-        sounds.push_back(TEXTEMOTE_OPENFIRE);
-        sounds.push_back(305);
-        sounds.push_back(307);
-        ai->PlayEmote(sounds[urand(0, sounds.size() - 1)]);
-    }
-
     if (IsMovingAllowed() && !sServerFacade.IsInFront(bot, target, sPlayerbotAIConfig.sightDistance, CAST_ANGLE_IN_FRONT))
         sServerFacade.SetFacingTo(bot, target);
 

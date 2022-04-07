@@ -167,21 +167,6 @@ namespace ai
                     pet->AttackStop();
                 }
             }
-            if (!urand(0, 50) && ai->HasStrategy("emote", BOT_STATE_NON_COMBAT))
-            {
-                vector<uint32> sounds;
-                if (target && sServerFacade.UnitIsDead(target))
-                {
-                    sounds.push_back(TEXTEMOTE_CHEER);
-                    sounds.push_back(TEXTEMOTE_CONGRATULATE);
-                }
-                else
-                {
-                    sounds.push_back(304); // guard
-                    sounds.push_back(325); // stay
-                }
-                if (!sounds.empty()) ai->PlayEmote(sounds[urand(0, sounds.size() - 1)]);
-            }
             return true;
         }
     };
