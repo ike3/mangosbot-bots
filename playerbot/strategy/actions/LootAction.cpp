@@ -430,7 +430,7 @@ bool StoreLootAction::Execute(Event event)
         bot->GetSession()->HandleAutostoreLootItemOpcode(packet);
 
         if (proto->Quality > ITEM_QUALITY_NORMAL && !urand(0, 50) && ai->HasStrategy("emote", BOT_STATE_NON_COMBAT)) ai->PlayEmote(TEXTEMOTE_CHEER);
-        if (proto->Quality >= ITEM_QUALITY_RARE && ai->HasStrategy("emote", BOT_STATE_NON_COMBAT)) ai->PlayEmote(TEXTEMOTE_CHEER);
+        if (proto->Quality >= ITEM_QUALITY_RARE && !urand(0, 1) && ai->HasStrategy("emote", BOT_STATE_NON_COMBAT)) ai->PlayEmote(TEXTEMOTE_CHEER);
 
         ostringstream out; out << "Looting " << chat->formatItem(proto);
 
@@ -454,13 +454,13 @@ bool StoreLootAction::IsLootAllowed(uint32 itemid, PlayerbotAI *ai)
     AiObjectContext *context = ai->GetAiObjectContext();
     LootStrategy* lootStrategy = AI_VALUE(LootStrategy*, "loot strategy");
 
-    set<uint32>& lootItems = AI_VALUE(set<uint32>&, "always loot list");
-    if (lootItems.find(itemid) != lootItems.end()) 
-        return true;    
-
-    ItemPrototype const *proto = sObjectMgr.GetItemPrototype(itemid);
+    ItemPrototype const* proto = sObjectMgr.GetItemPrototype(itemid);
     if (!proto)
         return false;
+
+    set<uint32>& lootItems = AI_VALUE(set<uint32>&, "always loot list");
+    if (lootItems.find(itemid) != lootItems.end())
+        return true;
 
     uint32 max = proto->MaxCount;
     if (max > 0 && ai->GetBot()->HasItemCount(itemid, max, true))
@@ -474,11 +474,6 @@ bool StoreLootAction::IsLootAllowed(uint32 itemid, PlayerbotAI *ai)
             return true;
     }
 
-    //if (proto->Bonding == BIND_QUEST_ITEM ||  //Still testing if it works ok without these lines.
-    //    proto->Bonding == BIND_QUEST_ITEM1 || //Eventually this has to be removed.
-    //    proto->Class == ITEM_CLASS_QUEST)
-    //{
-    
     for (uint8 slot = 0; slot < MAX_QUEST_LOG_SIZE; ++slot)
     {
         uint32 entry = ai->GetBot()->GetQuestSlotQuestId(slot);
@@ -492,11 +487,17 @@ bool StoreLootAction::IsLootAllowed(uint32 itemid, PlayerbotAI *ai)
             {
                 if (ai->GetMaster() && sPlayerbotAIConfig.syncQuestWithPlayer)
                     return false; //Quest is autocomplete for the bot so no item needed.
-                if (AI_VALUE2(uint32, "item count", proto->Name1) < quest->ReqItemCount[i])
-                    return true;
+
+                if (AI_VALUE2(uint32, "item count", proto->Name1) >= quest->ReqItemCount[i])
+                    return false;
             }
         }
     }
+
+    //if (proto->Bonding == BIND_QUEST_ITEM ||  //Still testing if it works ok without these lines.
+    //    proto->Bonding == BIND_QUEST_ITEM1 || //Eventually this has to be removed.
+    //    proto->Class == ITEM_CLASS_QUEST)
+    //{
 
     bool canLoot = lootStrategy->CanLoot(proto, context);
 
