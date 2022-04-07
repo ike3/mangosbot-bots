@@ -141,6 +141,13 @@ class clazz : public super \
         virtual bool IsActive(); \
     }
 
+#define CD_TRIGGER(clazz, spell) \
+    class clazz : public SpellNoCooldownTrigger \
+    { \
+    public: \
+        clazz(PlayerbotAI* ai) : SpellNoCooldownTrigger(ai, spell) {} \
+    }
+
 #define INTERRUPT_TRIGGER(clazz, spell) \
     class clazz : public InterruptSpellTrigger \
     { \
@@ -491,5 +498,5 @@ static ActionNode* name(PlayerbotAI* ai) \
     return new ActionNode(spell, \
         /*P*/ NULL, \
         /*A*/ NULL, \
-        /*C*/ NextAction::array(0, new NextAction(con), NULL); \
+        /*C*/ NextAction::array(0, new NextAction(con), NULL)); \
     }
