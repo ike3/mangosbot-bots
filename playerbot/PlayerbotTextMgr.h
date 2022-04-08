@@ -4,16 +4,16 @@
 #include "Common.h"
 #include "PlayerbotAIBase.h"
 
-#define BOT_TEXT1(name) sPlayerbotTextMgr.GetBotText(name)
+#define BOT_TEXT(name) sPlayerbotTextMgr.GetBotText(name)
 #define BOT_TEXT2(name, replace) sPlayerbotTextMgr.GetBotText(name, replace)
 
 using namespace std;
 
 struct BotTextEntry
 {
-    BotTextEntry(std::string name, std::map<uint32, std::string> text, uint32 say_type, uint32 reply_type) : m_name(name), m_text(text), m_sayType(say_type), m_replyType(reply_type) {}
+    BotTextEntry(std::string name, std::map<int32, std::string> text, uint32 say_type, uint32 reply_type) : m_name(name), m_text(text), m_sayType(say_type), m_replyType(reply_type) {}
     std::string m_name;
-    std::map<uint32, std::string> m_text;
+    std::map<int32, std::string> m_text;
     uint32 m_sayType;
     uint32 m_replyType;
 };
@@ -72,7 +72,7 @@ class PlayerbotTextMgr
         void replaceAll(std::string& str, const std::string& from, const std::string& to);
         bool rollTextChance(string text);
 
-        uint32 GetLocalePriority();
+        int32 GetLocalePriority();
         void AddLocalePriority(int32 locale);
         void ResetLocalePriority();
 

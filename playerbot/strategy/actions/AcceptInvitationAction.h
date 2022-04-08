@@ -43,7 +43,7 @@ namespace ai
             ai->ChangeStrategy("+follow,-lfg,-bg", BOT_STATE_NON_COMBAT);
             ai->Reset();
 
-            ai->TellMaster("Hello");
+            ai->TellMaster(BOT_TEXT("hello"));
             return true;
         }
     };

@@ -32,7 +32,7 @@ bool GuildBankAction::Execute(Event event)
         return Execute(text, go);
     }
 
-    ai->TellMaster("Cannot find the guild bank nearby");
+    ai->TellMaster(BOT_TEXT("error_gbank_found"));
     return false;
 #else
     return false;
@@ -69,10 +69,10 @@ bool GuildBankAction::MoveFromCharToBank(Item* item, GameObject* bank)
 
     // check source pos rights (item moved to bank)
     if (!guild->IsMemberHaveRights(bot->GetGUIDLow(), 0, GUILD_BANK_RIGHT_DEPOSIT_ITEM))
-        out << "I can't put " << chat->formatItem(item->GetProto()) << " to guild bank. I have no rights to put items in the first guild bank tab";
+        out << BOT_TEXT("error_cant_put") << chat->formatItem(item->GetProto()) << BOT_TEXT("error_gbank_rights");
     else
     {
-        out << chat->formatItem(item->GetProto()) << " put to guild bank";
+        out << chat->formatItem(item->GetProto()) << BOT_TEXT("gbank_put");
         guild->MoveFromCharToBank(bot, playerBag, playerSlot, 0, 255, 0);
     }
 

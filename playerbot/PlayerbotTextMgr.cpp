@@ -37,10 +37,10 @@ void PlayerbotTextMgr::LoadBotTexts()
     {
         do
         {
-            std::map<uint32, std::string> text;
+            std::map<int32, std::string> text;
             Field* fields = results->Fetch();
             string name = fields[0].GetString();
-            text[0] = fields[1].GetString();
+            text[-1] = fields[1].GetString();
             uint32 sayType = fields[2].GetUInt32();
             uint32 replyType = fields[3].GetUInt32();
             for (uint8 i = 1; i < MAX_LOCALE; ++i)
@@ -93,13 +93,13 @@ string PlayerbotTextMgr::GetBotText(string name)
 
     vector<BotTextEntry>& list = botTexts[name];
     BotTextEntry textEntry = list[urand(0, list.size() - 1)];
-    uint32 localePrio = GetLocalePriority();
-    if (localePrio > 0)
+    int32 localePrio = GetLocalePriority();
+    if (localePrio != -1)
     {
-        sLog.outBasic("Bot Text locale priority is %u", localePrio);
-        sLog.outBasic("Bot Text for locale %u is %s", localePrio, textEntry.m_text[GetLocalePriority()]);
+        sLog.outDetail("Bot Text locale priority is %u", localePrio);
+        sLog.outDetail("Bot Text for locale %u is %s", localePrio, textEntry.m_text[localePrio]);
     }
-    return !textEntry.m_text[GetLocalePriority()].empty() ? textEntry.m_text[GetLocalePriority()] : textEntry.m_text[0];
+    return !textEntry.m_text[localePrio].empty() ? textEntry.m_text[localePrio] : textEntry.m_text[-1];
 }
 
 string PlayerbotTextMgr::GetBotText(string name, map<string, string> placeholders)
@@ -138,7 +138,7 @@ string PlayerbotTextMgr::GetBotText(ChatReplyType replyType, map<string, string>
     }
 
     BotTextEntry textEntry = proper_list[urand(0, proper_list.size() - 1)];
-    string botText = !textEntry.m_text[GetLocalePriority()].empty() ? textEntry.m_text[GetLocalePriority()] : textEntry.m_text[0];
+    string botText = !textEntry.m_text[GetLocalePriority()].empty() ? textEntry.m_text[GetLocalePriority()] : textEntry.m_text[-1];
 
     for (map<string, string>::iterator i = placeholders.begin(); i != placeholders.end(); ++i)
         replaceAll(botText, i->first, i->second);
@@ -184,15 +184,16 @@ bool PlayerbotTextMgr::GetBotText(string name, string& text, map<string, string>
 
 void PlayerbotTextMgr::AddLocalePriority(int32 locale)
 {
-    if (locale < 0)
+    if (locale == -1)
         return;
 
     botTextLocalePriority[locale]++;
 }
 
-uint32 PlayerbotTextMgr::GetLocalePriority()
+int32 PlayerbotTextMgr::GetLocalePriority()
 {
-    uint32 topLocale = 0;
+    int32 topLocale = -1;
+    uint32 tempCheck = 0;
 
     // if no real players online, reset top locale
     if (!sWorld.GetActiveSessionCount())
@@ -203,13 +204,18 @@ uint32 PlayerbotTextMgr::GetLocalePriority()
 
     for (uint8 i = 1; i < MAX_LOCALE; ++i)
     {
-        if (botTextLocalePriority[sObjectMgr.GetStorageLocaleIndexFor(LocaleConstant(i))] > topLocale)
-            topLocale = i;
-    }
-    if (!topLocale)
-        return 0;
+        int32 locale_idx = sObjectMgr.GetStorageLocaleIndexFor(LocaleConstant(i));
+        if (locale_idx == -1)
+            continue;
 
-    return sObjectMgr.GetStorageLocaleIndexFor(LocaleConstant(topLocale));
+        if (botTextLocalePriority[locale_idx] > tempCheck)
+        {
+            tempCheck = botTextLocalePriority[locale_idx];
+            topLocale = locale_idx;
+        }
+    }
+
+    return topLocale;
 }
 
 void PlayerbotTextMgr::ResetLocalePriority()

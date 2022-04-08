@@ -57,7 +57,7 @@ bool FollowChatShortcutAction::Execute(Event event)
         }
         if (moved)
         {
-            ai->TellMaster("Following");
+            ai->TellMaster(BOT_TEXT("following"));
             return true;
         }
     }
@@ -77,7 +77,7 @@ bool FollowChatShortcutAction::Execute(Event event)
     }
     */
 
-    ai->TellMaster("Following");
+    ai->TellMaster(BOT_TEXT("following"));
     return true;
 }
 
@@ -93,7 +93,7 @@ bool StayChatShortcutAction::Execute(Event event)
 
     SetReturnPosition(bot->GetPositionX(), bot->GetPositionY(), bot->GetPositionZ());
 
-    ai->TellMaster("Staying");
+    ai->TellMaster(BOT_TEXT("staying"));
     return true;
 }
 
@@ -109,10 +109,10 @@ bool FleeChatShortcutAction::Execute(Event event)
     ResetReturnPosition();
     if (bot->GetMapId() != master->GetMapId() || bot->GetDistance(master) > sPlayerbotAIConfig.sightDistance)
     {
-        ai->TellError("I will not flee with you - too far away");
+        ai->TellError(BOT_TEXT("fleeing_far"));
         return true;
     }
-    ai->TellMaster("Fleeing");
+    ai->TellMaster(BOT_TEXT("fleeing"));
     return true;
 }
 
@@ -139,7 +139,7 @@ bool GrindChatShortcutAction::Execute(Event event)
     ai->Reset();
     ai->ChangeStrategy("+grind,-passive", BOT_STATE_NON_COMBAT);
     ResetReturnPosition();
-    ai->TellMaster("Grinding");
+    ai->TellMaster(BOT_TEXT("grinding"));
     return true;
 }
 
@@ -156,7 +156,7 @@ bool TankAttackChatShortcutAction::Execute(Event event)
     ai->ChangeStrategy("-passive", BOT_STATE_NON_COMBAT);
     ai->ChangeStrategy("-passive", BOT_STATE_COMBAT);
     ResetReturnPosition();
-    ai->TellMaster("Attacking");
+    ai->TellMaster(BOT_TEXT("attacking"));
     return true;
 }
 

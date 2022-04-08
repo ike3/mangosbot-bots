@@ -24,7 +24,7 @@ namespace ai
 
         virtual bool Execute(Event event)
         {
-            ai->TellMaster("Wait for me!");
+            ai->TellMaster(BOT_TEXT("wait_travel_close"));
             return true;
         }
 

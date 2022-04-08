@@ -30,6 +30,7 @@
 #include "ChatHelper.h"
 #include "strategy/values/BudgetValues.h"
 #include "Social/SocialMgr.h"
+#include "PlayerbotTextMgr.h"
 #ifdef MANGOSBOT_TWO
 #include "Entities/Vehicle.h"
 #endif
@@ -207,7 +208,7 @@ void PlayerbotAI::UpdateAI(uint32 elapsed, bool minimal)
         {
             WorldPacket p;
             bot->GetSession()->HandleLogoutCancelOpcode(p);
-            TellMaster("Logout cancelled!");
+            TellMaster(BOT_TEXT("logout_cancel"));
         }
     }
 
@@ -442,7 +443,7 @@ void PlayerbotAI::Reset(bool full)
     {
         WorldPacket p;
         bot->GetSession()->HandleLogoutCancelOpcode(p);
-        TellMaster("Logout cancelled!");
+        TellMaster(BOT_TEXT("logout_cancel"));
     }
 
     currentEngine = engines[BOT_STATE_NON_COMBAT];
@@ -627,7 +628,7 @@ void PlayerbotAI::HandleCommand(uint32 type, const string& text, Player& fromPla
         if (!(bot->IsStunnedByLogout() || bot->GetSession()->isLogingOut()))
         {
             if (type == CHAT_MSG_WHISPER)
-                TellMaster("I'm logging out!");
+                TellMaster(BOT_TEXT("logout_start"));
 
             if (master && master->GetPlayerbotMgr())
                 master->GetPlayerbotMgr()->LogoutPlayerBot(bot->GetObjectGuid().GetRawValue());
@@ -638,7 +639,7 @@ void PlayerbotAI::HandleCommand(uint32 type, const string& text, Player& fromPla
         if (bot->IsStunnedByLogout() || bot->GetSession()->isLogingOut())
         {
             if (type == CHAT_MSG_WHISPER)
-                TellMaster("Logout cancelled!");
+                TellMaster(BOT_TEXT("logout_cancel"));
 
             WorldPacket p;
             bot->GetSession()->HandleLogoutCancelOpcode(p);
@@ -1169,9 +1170,9 @@ void PlayerbotAI::DoNextAction(bool min)
             ai->ChangeStrategy("+follow", BOT_STATE_NON_COMBAT);
 
             if (ai->GetMaster() == ai->GetGroupMaster())
-                ai->TellMaster("Hello, I follow you!");
+                ai->TellMaster(BOT_TEXT("hello_follow"));
             else
-                ai->TellMaster(!urand(0, 2) ? "Hello!" : "Hi!");
+                ai->TellMaster(BOT_TEXT("hello"));
         }
     }
 

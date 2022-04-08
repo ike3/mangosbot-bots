@@ -2173,7 +2173,7 @@ void RandomPlayerbotMgr::OnPlayerLogin(Player* player)
                 {
                     ai->SetMaster(player);
                     ai->ResetStrategies();
-                    ai->TellMaster("Hello");
+                    ai->TellMaster(BOT_TEXT("hello"));
                 }
                 break;
             }

@@ -52,18 +52,18 @@ void SuggestWhatToDoAction::instance()
         instances["Gnomeregan"] = 35;
         instances["Razorfen Kraul"] = 35;
         instances["Maraudon"] = 50;
-        instances["Scarlet Monestery"] = 40;
+        instances["Scarlet Monastery"] = 40;
         instances["Uldaman"] = 45;
         instances["Dire Maul"] = 58;
         instances["Scholomance"] = 59;
         instances["Razorfen Downs"] = 40;
-        instances["Strathholme"] = 59;
+        instances["Stratholme"] = 59;
         instances["Zul'Farrak"] = 45;
         instances["Blackrock Depths"] = 55;
         instances["Temple of Atal'Hakkar"] = 55;
         instances["Lower Blackrock Spire"] = 57;
 
-        instances["Hellfire Citidel"] = 65;
+        instances["Hellfire Citadel"] = 65;
         instances["Coilfang Reservoir"] = 65;
         instances["Auchindoun"] = 65;
         instances["Cavens of Time"] = 68;
@@ -103,7 +103,7 @@ void SuggestWhatToDoAction::instance()
     itemout << allowedInstances[urand(0, allowedInstances.size() - 1)];
     placeholders["%instance"] = itemout.str();
 
-    spam(BOT_TEXT2("suggest_instance", placeholders), urand(0, 1) ? 0x50 : 0, urand(0, 2), urand(0, 2));
+    spam(BOT_TEXT2("suggest_instance", placeholders), urand(0, 1) ? 0x50 : 0, !urand(0, 2), !urand(0, 3));
 }
 
 vector<uint32> SuggestWhatToDoAction::GetIncompletedQuests()
@@ -138,7 +138,7 @@ void SuggestWhatToDoAction::specificQuest()
     placeholders["%role"] = chat->formatClass(bot, AiFactory::GetPlayerSpecTab(bot));
     placeholders["%quest"] = chat->formatQuest(quest);
 
-    spam(BOT_TEXT2("suggest_quest", placeholders), urand(0, 1) ? 0x18 : 0, urand(0, 2), urand(0, 2));
+    spam(BOT_TEXT2("suggest_quest", placeholders), urand(0, 1) ? 0x18 : 0, !urand(0, 2), !urand(0, 3));
 }
 
 void SuggestWhatToDoAction::grindMaterials()
@@ -179,7 +179,7 @@ void SuggestWhatToDoAction::grindMaterials()
                     placeholders["%role"] = chat->formatClass(bot, AiFactory::GetPlayerSpecTab(bot));
                     placeholders["%category"] = item;
 
-                    spam(BOT_TEXT2("suggest_trade", placeholders), urand(0, 1) ? 0x3C : 0, urand(0, 2), urand(0, 2));
+                    spam(BOT_TEXT2("suggest_trade", placeholders), urand(0, 1) ? 0x3C : 0, !urand(0, 2), !urand(0, 3));
                     return;
                 }
             }
@@ -271,7 +271,7 @@ void SuggestWhatToDoAction::something()
     out << entry->area_name[0];
     placeholders["%zone"] = out.str();
 
-    spam(BOT_TEXT2("suggest_something", placeholders), urand(0, 1) ? 0x18 : 0, urand(0, 2), urand(0, 2));
+    spam(BOT_TEXT2("suggest_something", placeholders), urand(0, 1) ? 0x18 : 0, !urand(0, 2), !urand(0, 3));
 }
 
 void SuggestWhatToDoAction::spam(string msg, uint8 flags, bool worldChat, bool guild)
@@ -451,7 +451,7 @@ bool SuggestTradeAction::Execute(Event event)
     placeholders["%item"] = chat->formatItem(proto, count);
     placeholders["%gold"] = chat->formatMoney(price);
 
-    spam(BOT_TEXT2("suggest_sell", placeholders), urand(0, 1) ? 0x3C : 0, urand(0, 1), urand(0, 5));
+    spam(BOT_TEXT2("suggest_sell", placeholders), urand(0, 1) ? 0x3C : 0, !urand(0, 2), !urand(0, 5));
     return true;
 }
 

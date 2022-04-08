@@ -16,7 +16,7 @@ namespace ai
 
         bool aiMaster = (ai->GetMaster() && ai->GetMaster()->GetPlayerbotAI());
 
-        ai->TellMaster("Goodbye!", PLAYERBOT_SECURITY_TALK);
+        ai->TellMaster(BOT_TEXT("goodbye"), PLAYERBOT_SECURITY_TALK);
 
         bool randomBot = sRandomPlayerbotMgr.IsRandomBot(bot);
 

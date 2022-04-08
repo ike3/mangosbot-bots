@@ -87,7 +87,7 @@ void PlayerbotMgr::CancelLogout()
         {
             WorldPacket p;
             bot->GetSession()->HandleLogoutCancelOpcode(p);
-            ai->TellMaster("Logout cancelled!");
+            ai->TellMaster(BOT_TEXT("logout_cancel"));
         }
     }
 
@@ -167,7 +167,7 @@ void PlayerbotHolder::LogoutPlayerBot(uint32 guid)
                 return;
             else if (bot)
             {
-                ai->TellMaster("I'm logging out!");
+                ai->TellMaster(BOT_TEXT("logout_start"));
                 WorldPacket p;
                 botWorldSessionPtr->HandleLogoutRequestOpcode(p);
                 if (!bot)
@@ -190,7 +190,7 @@ void PlayerbotHolder::LogoutPlayerBot(uint32 guid)
         } // if instant logout possible, do it
         else if (bot && (logout || !botWorldSessionPtr->isLogingOut()))
         {
-            ai->TellMaster("Goodbye!");
+            ai->TellMaster(BOT_TEXT("goodbye"));
             playerBots.erase(guid);    // deletes bot player ptr inside this WorldSession PlayerBotMap
 #ifdef CMANGOS
             botWorldSessionPtr->LogoutPlayer(); // this will delete the bot Player object and PlayerbotAI object
@@ -208,7 +208,7 @@ void PlayerbotHolder::DisablePlayerBot(uint32 guid)
     Player* bot = GetPlayerBot(guid);
     if (bot)
     {
-        bot->GetPlayerbotAI()->TellMaster("Goodbye!");
+        bot->GetPlayerbotAI()->TellMaster(BOT_TEXT("goodbye"));
         bot->StopMoving();
         MotionMaster& mm = *bot->GetMotionMaster();
         mm.Clear();
@@ -324,7 +324,7 @@ void PlayerbotHolder::OnBotLogin(Player * const bot)
     // set delay on login
     ai->SetNextCheckDelay(urand(2000, 4000));
 
-    ai->TellMaster("Hello!");
+    ai->TellMaster(BOT_TEXT("hello"));
 
     // bots join World chat if not solo oriented
     if (bot->GetLevel() >= 10 && sRandomPlayerbotMgr.IsRandomBot(bot) && bot->GetPlayerbotAI() && bot->GetPlayerbotAI()->GetGrouperType() != GrouperType::SOLO)

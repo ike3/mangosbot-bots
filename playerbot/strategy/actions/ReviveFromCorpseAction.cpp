@@ -288,7 +288,7 @@ bool SpiritHealerAction::Execute(Event event)
                 bot->SaveToDB();
                 context->GetValue<Unit*>("current target")->Set(NULL);
                 bot->SetSelectionGuid(ObjectGuid());
-                ai->TellMaster("Hello");
+                ai->TellMaster(BOT_TEXT("hello"));
 
                 if (dCount > 20)
                     context->GetValue<uint32>("death count")->Set(0);
