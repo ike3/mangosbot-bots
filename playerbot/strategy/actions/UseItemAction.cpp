@@ -66,7 +66,15 @@ bool UseItemAction::UseItemAuto(Item* item)
     uint8 bagIndex = item->GetBagSlot();
     uint8 slot = item->GetSlot();
     uint8 spell_index = 0;
+    uint8 cast_count = 1;
+    ObjectGuid item_guid = item->GetObjectGuid();
+#ifdef MANGOSBOT_ZERO
     uint16 targetFlag = TARGET_FLAG_SELF;
+#else
+    uint32 targetFlag = TARGET_FLAG_SELF;
+#endif
+    uint32 glyphIndex = 0;
+    uint8 unk_flags = 0;
 
     ItemPrototype const* proto = item->GetProto();
 
@@ -82,8 +90,30 @@ bool UseItemAction::UseItemAuto(Item* item)
         }
     }
 
+#ifdef MANGOSBOT_ZERO
     WorldPacket packet(CMSG_USE_ITEM);
-    packet << bagIndex << slot << spell_index << targetFlag;
+    packet << bagIndex << slot << spell_index;
+#endif
+#ifdef MANGOSBOT_ONE
+    WorldPacket packet(CMSG_USE_ITEM);
+    packet << bagIndex << slot << spell_index << cast_count << item_guid;
+#endif
+#ifdef MANGOSBOT_TWO
+    for (uint8 i = 0; i < MAX_ITEM_PROTO_SPELLS; ++i)
+    {
+        if (item->GetProto()->Spells[i].SpellId > 0)
+        {
+            spellId = item->GetProto()->Spells[i].SpellId;
+            break;
+        }
+    }
+
+    WorldPacket packet(CMSG_USE_ITEM, 1 + 1 + 1 + 4 + 8 + 4 + 1 + 8 + 1);
+    packet << bagIndex << slot << cast_count << spellId << item_guid << glyphIndex << unk_flags;
+#endif
+
+    packet << targetFlag;
+    packet.appendPackGUID(bot->GetObjectGuid());
 
     ai->SetNextCheckDelay(sPlayerbotAIConfig.globalCoolDown);
     bot->GetSession()->HandleUseItemOpcode(packet);
