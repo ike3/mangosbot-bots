@@ -247,6 +247,7 @@ bool StoreLootAction::Execute(Event event)
         bot->GetSession()->HandleLootMoneyOpcode(packet);
     }
 
+    bool looted = false;
     for (uint8 i = 0; i < items; ++i)
     {
         uint32 itemid;
@@ -304,8 +305,10 @@ bool StoreLootAction::Execute(Event event)
 
         ostringstream out; out << "Looting " << chat->formatItem(proto);
         ai->TellMasterNoFacing(out.str());
+        looted = true;
     }
 
+    if (!looted) AI_VALUE(LootObjectStack*, "available loot")->AlreadyChecked(guid);
     AI_VALUE(LootObjectStack*, "available loot")->Remove(guid);
 
     // release loot

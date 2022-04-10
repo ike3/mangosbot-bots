@@ -63,6 +63,7 @@ namespace ai
         void Clear();
         bool CanLoot(float maxDistance);
         LootObject GetLoot(float maxDistance = 0);
+        void AlreadyChecked(ObjectGuid guid);
 
     private:
         vector<LootObject> OrderByDistance(float maxDistance = 0);
@@ -70,6 +71,7 @@ namespace ai
     private:
         Player* bot;
         LootTargetList availableLoot;
+        map<ObjectGuid, time_t> alreadyChecked;
     };
 
 };

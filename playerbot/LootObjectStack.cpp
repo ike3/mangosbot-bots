@@ -61,7 +61,7 @@ void LootObject::Refresh(Player* bot, ObjectGuid guid)
 
     PlayerbotAI* ai = bot->GetPlayerbotAI();
     Creature *creature = ai->GetCreature(guid);
-    if (creature && sServerFacade.GetDeathState(creature) == CORPSE)
+    if (creature && sServerFacade.GetDeathState(creature) == CORPSE && bot->isAllowedToLoot(creature))
     {
         if (creature->HasFlag(UNIT_DYNAMIC_FLAGS, UNIT_DYNFLAG_LOOTABLE))
             this->guid = guid;
@@ -187,6 +187,16 @@ bool LootObject::IsLootPossible(Player* bot)
 
 bool LootObjectStack::Add(ObjectGuid guid)
 {
+    time_t now = time(0);
+    for (map<ObjectGuid, time_t>::iterator i = alreadyChecked.begin(); i != alreadyChecked.end(); )
+    {
+        if (now - i->second > sPlayerbotAIConfig.lootInterval / 1000) alreadyChecked.erase(i++);
+        else ++i;
+    }
+
+    if (alreadyChecked.find(guid) != alreadyChecked.end())
+        return false;
+
     if (!availableLoot.insert(guid).second)
         return false;
 
@@ -248,3 +258,7 @@ vector<LootObject> LootObjectStack::OrderByDistance(float maxDistance)
     return result;
 }
 
+void LootObjectStack::AlreadyChecked(ObjectGuid guid)
+{
+    alreadyChecked[guid] = time(0);
+}
