@@ -89,6 +89,7 @@ bool LootStrategyAction::Execute(Event event)
         {
             TellLootList("always loot list");
             TellLootList("skip loot list");
+            AI_VALUE(LootObjectStack*, "available loot")->Clear();
         }
     }
 

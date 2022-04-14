@@ -72,8 +72,9 @@ ItemUsage ItemUsageValue::QueryItemUsageForEquip(ItemPrototype const * item)
         return ITEM_USAGE_EQUIP;
 
     const ItemPrototype* oldItem = existingItem->GetProto();
-    if (oldItem->ItemId != item->ItemId &&
-            (oldItem->ItemLevel < item->ItemLevel || oldItem->Quality < item->Quality))
+
+    if (oldItem->ItemId == item->ItemId) return ITEM_USAGE_NONE;
+    if ((item->ItemLevel > oldItem->ItemLevel && item->Quality >= oldItem->Quality) || item->Quality > oldItem->Quality)
     {
         switch (item->Class)
         {

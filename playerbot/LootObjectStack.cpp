@@ -220,6 +220,7 @@ void LootObjectStack::Remove(ObjectGuid guid)
 void LootObjectStack::Clear()
 {
     availableLoot.clear();
+    alreadyChecked.clear();
 }
 
 bool LootObjectStack::CanLoot(float maxDistance)
