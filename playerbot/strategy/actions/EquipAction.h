@@ -12,8 +12,6 @@ namespace ai
 
     protected:
         void EquipItems(ItemIds ids);
-
-    private:
         void EquipItem(FindItemVisitor* visitor);
         void EquipItem(Item& item);
         void ListItems();

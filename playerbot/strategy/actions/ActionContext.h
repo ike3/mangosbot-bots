@@ -13,6 +13,7 @@
 #include "SuggestWhatToDoAction.h"
 #include "PositionAction.h"
 #include "AttackAction.h"
+#include "CheckInventoryAction.h"
 #include "CheckMailAction.h"
 #include "CheckValuesAction.h"
 #include "ChooseRpgTargetAction.h"
@@ -102,9 +103,11 @@ namespace ai
             creators["ra"] = &ActionContext::ra;
             creators["give food"] = &ActionContext::give_food;
             creators["give water"] = &ActionContext::give_water;
+            creators["check inventory"] = &ActionContext::check_inventory;
         }
 
     private:
+        static Action* check_inventory(PlayerbotAI* ai) { return new CheckInventoryAction(ai); }
         static Action* give_water(PlayerbotAI* ai) { return new GiveWaterAction(ai); }
         static Action* give_food(PlayerbotAI* ai) { return new GiveFoodAction(ai); }
         static Action* ra(PlayerbotAI* ai) { return new RemoveAuraAction(ai); }
