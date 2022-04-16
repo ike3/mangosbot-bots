@@ -236,24 +236,6 @@ bool MovementAction::Follow(Unit* target, float distance, float angle)
     if (!target)
         return false;
 
-    if (sServerFacade.IsDistanceLessOrEqualThan(sServerFacade.GetDistance2d(bot, target->GetPositionX(), target->GetPositionY()), sPlayerbotAIConfig.sightDistance) &&
-            abs(bot->GetPositionZ() - target->GetPositionZ()) >= sPlayerbotAIConfig.spellDistance)
-    {
-        bot->StopMoving();
-        float x = bot->GetPositionX(), y = bot->GetPositionY(), z = target->GetPositionZ();
-        if (target->GetMapId() && bot->GetMapId() != target->GetMapId())
-        {
-            bot->TeleportTo(target->GetMapId(), x, y, z, bot->GetOrientation());
-        }
-        else
-        {
-            bot->Relocate(x, y, z, bot->GetOrientation());
-        }
-        AI_VALUE(LastMovement&, "last movement").Set(target);
-        ClearIdleState();
-        return true;
-    }
-
     if (!IsMovingAllowed(target))
     {
         ai->TellError("I am stuck while following");

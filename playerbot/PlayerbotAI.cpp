@@ -498,6 +498,7 @@ void PlayerbotAI::DoNextAction()
     if (sServerFacade.IsTaxiFlying(bot))
     {
         SetNextCheckDelay(sPlayerbotAIConfig.passiveDelay);
+        if (bot->IsStopped()) bot->ContinueTaxiFlight();
         return;
     }
 
