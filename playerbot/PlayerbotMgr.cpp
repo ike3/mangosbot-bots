@@ -934,7 +934,7 @@ void PlayerbotMgr::OnPlayerLogin(Player* player)
 {
     // set locale priority for bot texts
     sPlayerbotTextMgr.AddLocalePriority(player->GetSession()->GetSessionDbLocaleIndex());
-    sLog.outDetail("Player %s logged in, localeDbc %u, localeDb %u", player->GetName(), (uint32)(player->GetSession()->GetSessionDbcLocale()), player->GetSession()->GetSessionDbLocaleIndex());
+    sLog.outBasic("Player %s logged in, localeDbc %i, localeDb %i", player->GetName(), (uint32)(player->GetSession()->GetSessionDbcLocale()), player->GetSession()->GetSessionDbLocaleIndex());
 
     if(sPlayerbotAIConfig.selfBotLevel > 2)
         HandlePlayerbotCommand("self", player);

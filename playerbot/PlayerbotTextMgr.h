@@ -11,9 +11,10 @@ using namespace std;
 
 struct BotTextEntry
 {
-    BotTextEntry(std::string name, std::map<int32, std::string> text, uint32 say_type, uint32 reply_type) : m_name(name), m_text(text), m_sayType(say_type), m_replyType(reply_type) {}
+    BotTextEntry(std::string name, std::string text, std::map<int32, std::string> text_locales, uint32 say_type, uint32 reply_type) : m_name(name), m_text(text), m_text_locales(text_locales), m_sayType(say_type), m_replyType(reply_type) {}
     std::string m_name;
-    std::map<int32, std::string> m_text;
+    std::string m_text;
+    std::map<int32, std::string> m_text_locales;
     uint32 m_sayType;
     uint32 m_replyType;
 };
