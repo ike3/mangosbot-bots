@@ -130,7 +130,7 @@ bool GuildManageNearbyAction::Execute(Event event)
         if (sServerFacade.GetDistance2d(bot, player) > sPlayerbotAIConfig.sightDistance)
             continue;
         
-        if (ai->DoSpecificAction("ginvite", Event("guild management", guid)))
+        if (ai->DoSpecificAction("ginvite", Event("guild management", guid), true))
             found++;
     }
 

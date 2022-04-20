@@ -57,7 +57,7 @@ bool FollowChatShortcutAction::Execute(Event event)
         }
         if (moved)
         {
-            ai->TellMaster(BOT_TEXT("following"));
+            ai->TellError(BOT_TEXT("following"));
             return true;
         }
     }
@@ -77,7 +77,7 @@ bool FollowChatShortcutAction::Execute(Event event)
     }
     */
 
-    ai->TellMaster(BOT_TEXT("following"));
+    ai->TellError(BOT_TEXT("following"));
     return true;
 }
 
@@ -93,7 +93,7 @@ bool StayChatShortcutAction::Execute(Event event)
 
     SetReturnPosition(bot->GetPositionX(), bot->GetPositionY(), bot->GetPositionZ());
 
-    ai->TellMaster(BOT_TEXT("staying"));
+    ai->TellError(BOT_TEXT("staying"));
     return true;
 }
 
@@ -112,7 +112,7 @@ bool FleeChatShortcutAction::Execute(Event event)
         ai->TellError(BOT_TEXT("fleeing_far"));
         return true;
     }
-    ai->TellMaster(BOT_TEXT("fleeing"));
+    ai->TellError(BOT_TEXT("fleeing"));
     return true;
 }
 
@@ -126,7 +126,7 @@ bool GoawayChatShortcutAction::Execute(Event event)
     ai->ChangeStrategy("+runaway", BOT_STATE_NON_COMBAT);
     ai->ChangeStrategy("+runaway", BOT_STATE_COMBAT);
     ResetReturnPosition();
-    ai->TellMaster("Running away");
+    ai->TellError("Running away");
     return true;
 }
 
@@ -139,7 +139,7 @@ bool GrindChatShortcutAction::Execute(Event event)
     ai->Reset();
     ai->ChangeStrategy("+grind,-passive", BOT_STATE_NON_COMBAT);
     ResetReturnPosition();
-    ai->TellMaster(BOT_TEXT("grinding"));
+    ai->TellError(BOT_TEXT("grinding"));
     return true;
 }
 
@@ -156,7 +156,7 @@ bool TankAttackChatShortcutAction::Execute(Event event)
     ai->ChangeStrategy("-passive", BOT_STATE_NON_COMBAT);
     ai->ChangeStrategy("-passive", BOT_STATE_COMBAT);
     ResetReturnPosition();
-    ai->TellMaster(BOT_TEXT("attacking"));
+    ai->TellError(BOT_TEXT("attacking"));
     return true;
 }
 
@@ -171,6 +171,6 @@ bool MaxDpsChatShortcutAction::Execute(Event event)
 
     ai->Reset();
     ai->ChangeStrategy("-threat,-conserve mana,-cast time,+dps debuff,+boost", BOT_STATE_COMBAT);
-    ai->TellMaster("Max DPS!");
+    ai->TellError("Max DPS!");
     return true;
 }

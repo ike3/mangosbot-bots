@@ -46,7 +46,7 @@ bool ReviveFromCorpseAction::Execute(Event event)
 
         if (dCount >= 5)
         {
-            return ai->DoSpecificAction("spirit healer");
+            return ai->DoSpecificAction("spirit healer", Event(), true);
         }
     }
 
@@ -166,7 +166,7 @@ bool FindCorpseAction::Execute(Event event)
 
             if (!moved)
             {
-                moved = ai->DoSpecificAction("spirit healer");
+                moved = ai->DoSpecificAction("spirit healer", Event(), true);
             }
         }
     }   

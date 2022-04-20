@@ -10,7 +10,7 @@ bool ResetAiAction::Execute(Event event)
     if (fullReset)
     {
         sPlayerbotDbStore.Reset(ai);
-        ai->TellMaster("AI was reset to defaults");
+        ai->TellError("AI was reset to defaults");
     }
     ai->ResetStrategies(!fullReset);
     return true;
