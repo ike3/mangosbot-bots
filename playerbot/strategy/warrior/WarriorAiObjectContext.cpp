@@ -104,6 +104,7 @@ namespace ai
                 creators["shockwave on snare target"] = &TriggerFactoryInternal::shockwave_on_snare_target;
                 creators["taste for blood"] = &TriggerFactoryInternal::taste_for_blood;
                 creators["thunder clap and rage"] = &TriggerFactoryInternal::thunderclap_and_rage;
+                creators["thunder clap and rage and aoe"] = &TriggerFactoryInternal::thunderclap_and_rage_and_aoe;
                 creators["intercept can cast"] = &TriggerFactoryInternal::intercept_can_cast;
                 creators["intercept and far enemy"] = &TriggerFactoryInternal::intercept_and_far_enemy;
                 creators["intercept and rage"] = &TriggerFactoryInternal::intercept_and_rage;
@@ -149,7 +150,8 @@ namespace ai
             static Trigger* concussion_blow(PlayerbotAI* ai) { return new ConcussionBlowTrigger(ai); }
             static Trigger* SwordAndBoard(PlayerbotAI* ai) { return new SwordAndBoardTrigger(ai); }
             static Trigger* shield_bash_on_enemy_healer(PlayerbotAI* ai) { return new ShieldBashInterruptEnemyHealerSpellTrigger(ai); }
-            static Trigger* thunderclap_and_rage(PlayerbotAI* ai) { return new TwoTriggers(ai, "thunderclap", "light rage available"); }
+            static Trigger* thunderclap_and_rage(PlayerbotAI* ai) { return new TwoTriggers(ai, "thunder clap", "medium rage available"); }
+            static Trigger* thunderclap_and_rage_and_aoe(PlayerbotAI* ai) { return new TwoTriggers(ai, "thunder clap and rage", "light aoe"); }
             static Trigger* intercept_can_cast(PlayerbotAI* ai) { return new InterceptCanCastTrigger(ai); }
             static Trigger* intercept_and_far_enemy(PlayerbotAI* ai) { return new TwoTriggers(ai, "enemy is out of melee", "intercept can cast"); }
             static Trigger* intercept_and_rage(PlayerbotAI* ai) { return new TwoTriggers(ai, "intercept and far enemy", "light rage available"); }

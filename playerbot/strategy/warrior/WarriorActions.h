@@ -65,7 +65,7 @@ namespace ai
     BUFF_ACTION(CastRampageAction, "rampage");
 
     // protection
-    MELEE_ACTION_U(CastTauntAction, "taunt", GetTarget() && !GetTarget()->HasTarget(bot->GetObjectGuid()));
+    MELEE_ACTION_U(CastTauntAction, "taunt", GetTarget() && GetTarget()->GetVictim() && GetTarget()->GetVictim() != bot);
     SNARE_ACTION(CastTauntOnSnareTargetAction, "taunt");
     BUFF_ACTION(CastBloodrageAction, "bloodrage");
     MELEE_ACTION(CastShieldBashAction, "shield bash");

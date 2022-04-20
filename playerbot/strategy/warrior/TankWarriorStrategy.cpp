@@ -54,23 +54,25 @@ void TankWarriorStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "intercept and rage",
-        NextAction::array(0, new NextAction("berserker stance", ACTION_HIGH + 14), NULL)));
+        NextAction::array(0, new NextAction("berserker stance", ACTION_INTERRUPT + 14), NULL)));
 
     triggers.push_back(new TriggerNode(
         "intercept and rage",
-        NextAction::array(0, new NextAction("intercept", ACTION_HIGH + 13), NULL)));
+        NextAction::array(0, new NextAction("intercept", ACTION_INTERRUPT + 13), NULL)));
+
+#ifdef MANGOSBOT_ZERO
+    triggers.push_back(new TriggerNode(
+        "thunder clap and rage and aoe",
+        NextAction::array(0, new NextAction("thunder clap", ACTION_INTERRUPT + 11), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "thunder clap and rage",
-        NextAction::array(0, new NextAction("battle stance", ACTION_HIGH + 12), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "thunder clap and rage",
-        NextAction::array(0, new NextAction("thunder clap", ACTION_HIGH + 11), NULL)));
+        "thunder clap and rage and aoe",
+        NextAction::array(0, new NextAction("battle stance", ACTION_INTERRUPT + 12), NULL)));
+#endif
 
     triggers.push_back(new TriggerNode(
         "defensive stance",
-        NextAction::array(0, new NextAction("defensive stance", ACTION_HIGH + 9), NULL)));
+        NextAction::array(0, new NextAction("defensive stance", ACTION_HIGH + 5), NULL)));
 
     triggers.push_back(new TriggerNode(
         "commanding shout",
@@ -78,7 +80,7 @@ void TankWarriorStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "bloodrage",
-        NextAction::array(0, new NextAction("bloodrage", ACTION_HIGH + 2), NULL)));
+        NextAction::array(0, new NextAction("bloodrage", ACTION_INTERRUPT + 2), NULL)));
 
     triggers.push_back(new TriggerNode(
         "sunder armor",
