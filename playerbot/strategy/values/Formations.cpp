@@ -393,6 +393,7 @@ float Formation::GetFollowAngle()
         for (GroupReference *ref = group->GetFirstMember(); ref; ref = ref->next())
         {
             Player* member = ref->getSource();
+            if (!member || member == bot || !sServerFacade.IsAlive(member) || bot->GetMapId() != member->GetMapId()) continue;
             if (member && member != master && !ai->IsTank(member) && !ai->IsHeal(member))
             {
                 roster.insert(roster.begin() + roster.size() / 2, member);
@@ -401,6 +402,7 @@ float Formation::GetFollowAngle()
         for (GroupReference *ref = group->GetFirstMember(); ref; ref = ref->next())
         {
             Player* member = ref->getSource();
+            if (!member || member == bot || !sServerFacade.IsAlive(member) || bot->GetMapId() != member->GetMapId()) continue;
             if (member && member != master && ai->IsHeal(member))
             {
                 roster.insert(roster.begin() + roster.size() / 2, member);
@@ -410,6 +412,7 @@ float Formation::GetFollowAngle()
         for (GroupReference *ref = group->GetFirstMember(); ref; ref = ref->next())
         {
             Player* member = ref->getSource();
+            if (!member || member == bot || !sServerFacade.IsAlive(member) || bot->GetMapId() != member->GetMapId()) continue;
             if (member && member != master && ai->IsTank(member))
             {
                 if (left) roster.push_back(member); else roster.insert(roster.begin(), member);
