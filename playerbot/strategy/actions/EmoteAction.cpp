@@ -642,6 +642,7 @@ bool EmoteAction::Execute(Event event)
     uint32 emote = 0;
     Player* pSource = NULL;
     bool isReact = false;
+    bool isTarget = false;
     if (!p.empty() && p.GetOpcode() == SMSG_TEXT_EMOTE)
     {
         isReact = true;
@@ -655,9 +656,25 @@ bool EmoteAction::Execute(Event event)
         if (namlen > 1)
             p.read(nam, namlen);
 
+        isTarget = nam.find(bot->GetName()) != std::string::npos;
+
         pSource = sObjectMgr.GetPlayer(source);
 
-        if (pSource && (pSource->GetObjectGuid() != bot->GetObjectGuid()) && ((urand(0, 1) && sServerFacade.IsInFront(bot, pSource, 10.0f, M_PI_F)) || (namlen > 1 && strstri(bot->GetName(), nam.c_str()))))
+        bool allowEmote = true;
+
+        if (text_emote == TEXTEMOTE_TALKQ)
+            allowEmote = false;
+
+        if (text_emote == TEXTEMOTE_TALK)
+            allowEmote = false;
+
+        if (text_emote == TEXTEMOTE_TALKEX)
+            allowEmote = false;
+
+        if (text_emote == TEXTEMOTE_EAT)
+            allowEmote = false;
+
+        if (allowEmote && pSource && (pSource->GetObjectGuid() != bot->GetObjectGuid()))
         {
             sLog.outDetail("Bot #%d %s:%d <%s> received SMSG_TEXT_EMOTE %d from player #%d <%s>", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->GetLevel(), bot->GetName(), text_emote, pSource->GetGUIDLow(), pSource->GetName());
             emote = text_emote;
@@ -694,6 +711,9 @@ bool EmoteAction::Execute(Event event)
                     if(em->textid == EMOTE_ONESHOT_EXCLAMATION)
                         continue;
 
+                    if (em->textid == EMOTE_ONESHOT_EAT)
+                        continue;
+
                     if (em->textid == emoteId)
                     {
                         types.push_back(em->Id);
@@ -708,11 +728,41 @@ bool EmoteAction::Execute(Event event)
     if (isReact && !emote)
         return false;
 
+    // less often emotes
+    if (isReact && pSource)
+    {
+        // try to always reply to real player
+        time_t lastEmote = AI_VALUE2(time_t, "last emote", qualifier);
+        bool isPaused = time(0) < lastEmote;
+        bool shouldReply = true;
+        bool isRandomBot = false;
+        uint32 accountId = pSource->GetSession()->GetAccountId();
+        isRandomBot = sPlayerbotAIConfig.IsInRandomAccountList(accountId);
+
+        // random bot speaks, emote CD
+        if (isRandomBot && isPaused)
+            shouldReply = false;
+
+        if (ai->HasRealPlayerMaster())
+            shouldReply = false;
+
+        if (isRandomBot && urand(0, 20))
+            shouldReply = false;
+
+        if (!((isRandomBot && !isPaused && (!urand(0, 30)) || (!isRandomBot && (isTarget || !urand(0, 4))))))
+        {
+            shouldReply = false;
+        }
+
+        if (!shouldReply)
+            return false;
+    }
+
     string param = event.getParam();
     if ((!isReact && param.empty()) || emote)
     {
         time_t lastEmote = AI_VALUE2(time_t, "last emote", qualifier);
-        ai->GetAiObjectContext()->GetValue<time_t>("last emote", qualifier)->Set(time(0) + urand(1000, sPlayerbotAIConfig.repeatDelay) / 1000);
+        ai->GetAiObjectContext()->GetValue<time_t>("last emote", qualifier)->Set(time(0) + urand(5, 25));
         param = qualifier;
     }
 
