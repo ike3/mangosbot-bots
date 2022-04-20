@@ -70,7 +70,6 @@ bool OutNumberedTrigger::IsActive()
     uint32 friendPower = 200, foePower = 0;
     for (auto &attacker : ai->GetAiObjectContext()->GetValue<list<ObjectGuid> >("attackers")->Get())
     {
-     
         Creature* creature = ai->GetCreature(attacker);
         if (!creature)
             continue;
@@ -93,7 +92,7 @@ bool OutNumberedTrigger::IsActive()
 
         int32 dLevel = player->GetLevel() - botLevel;
 
-        if (dLevel > -10 && bot->GetDistance(player) < 10.0f)
+        if (dLevel > -10 && sServerFacade.GetDistance2d(bot, player) < 10.0f)
             friendPower += std::max(200 + 20 * dLevel, dLevel * 200);
     }
 

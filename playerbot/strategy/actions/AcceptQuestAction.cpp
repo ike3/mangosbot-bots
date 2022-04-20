@@ -36,7 +36,7 @@ bool AcceptQuestAction::Execute(Event event)
                 guid = unit->GetObjectGuid().GetRawValue();
                 break;
             }
-            if (unit && text == "*" && bot->GetDistance(unit) <= INTERACTION_DISTANCE)
+            if (unit && text == "*" && sqrt(bot->GetDistance(unit)) <= INTERACTION_DISTANCE)
                 QuestAction::ProcessQuests(unit);
         }
         list<ObjectGuid> gos = AI_VALUE(list<ObjectGuid>, "nearest game objects");
@@ -48,7 +48,7 @@ bool AcceptQuestAction::Execute(Event event)
                 guid = go->GetObjectGuid().GetRawValue();
                 break;
             }
-            if (go && text == "*" && bot->GetDistance(go) <= INTERACTION_DISTANCE)
+            if (go && text == "*" && sqrt(bot->GetDistance(go)) <= INTERACTION_DISTANCE)
                 QuestAction::ProcessQuests(go);
         }
     }

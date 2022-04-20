@@ -19,7 +19,7 @@ Unit* SnareTargetValue::Calculate()
         if (!unit)
             continue;
 
-        if (bot->GetDistance(unit) > ai->GetRange("spell"))
+        if (sServerFacade.GetDistance2d(bot, unit) > ai->GetRange("spell"))
             continue;
 
         Unit* chaseTarget;

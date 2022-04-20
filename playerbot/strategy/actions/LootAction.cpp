@@ -72,7 +72,7 @@ bool OpenLootAction::DoLoot(LootObject& lootObject)
         return false;
 
     Creature* creature = ai->GetCreature(lootObject.guid);
-    if (creature && bot->GetDistance(creature) > INTERACTION_DISTANCE)
+    if (creature && sServerFacade.GetDistance2d(bot, creature) > INTERACTION_DISTANCE)
         return false;
 
     if (creature && creature->HasFlag(UNIT_DYNAMIC_FLAGS, UNIT_DYNFLAG_LOOTABLE)
@@ -108,7 +108,7 @@ bool OpenLootAction::DoLoot(LootObject& lootObject)
     }
 
     GameObject* go = ai->GetGameObject(lootObject.guid);
-    if (go && bot->GetDistance(go) > INTERACTION_DISTANCE)
+    if (go && sServerFacade.GetDistance2d(bot, go) > INTERACTION_DISTANCE)
         return false;
 
     if (go && (

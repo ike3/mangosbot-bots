@@ -92,7 +92,7 @@ Unit* GrindTargetValue::FindTargetForGrinding(int assistCount)
                 if (!member || !sServerFacade.IsAlive(member))
                     continue;
 
-                float d = member->GetDistance(unit);
+                float d = sServerFacade.GetDistance2d(member, unit);
                 if (!result || d < distance)
                 {
                     distance = d;
@@ -102,7 +102,7 @@ Unit* GrindTargetValue::FindTargetForGrinding(int assistCount)
         }
         else
         {
-            float newdistance = bot->GetDistance(unit);
+            float newdistance = sServerFacade.GetDistance2d(bot, unit);
             if (!result || (newdistance < distance && urand(0, abs(distance - newdistance)) > sPlayerbotAIConfig.sightDistance * 0.1))
             {
                 distance = newdistance;

@@ -143,7 +143,7 @@ bool QuestAction::ProcessQuests(WorldObject* questGiver)
 {
     ObjectGuid guid = questGiver->GetObjectGuid();
 
-    if (bot->GetDistance(questGiver) > INTERACTION_DISTANCE && !sPlayerbotAIConfig.syncQuestWithPlayer)
+    if (sServerFacade.GetDistance2d(bot, questGiver) > INTERACTION_DISTANCE && !sPlayerbotAIConfig.syncQuestWithPlayer)
     {
         ai->TellError("Cannot talk to quest giver");
         return false;

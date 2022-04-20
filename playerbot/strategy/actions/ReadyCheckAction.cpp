@@ -68,7 +68,7 @@ public:
         Player* master = ai->GetMaster();
         if (master)
         {
-            bool distance = bot->GetDistance(master) <= sPlayerbotAIConfig.sightDistance;
+            bool distance = sServerFacade.GetDistance2d(bot, master) <= sPlayerbotAIConfig.sightDistance;
             if (!distance)
             {
                 return false;

@@ -24,7 +24,7 @@ namespace ai
                 if (!creature || !creature->IsTotem())
                     continue;
 
-                if (strstri(creature->GetName(), qualifier.c_str()) && bot->GetDistance(creature) <= ai->GetRange("spell"))
+                if (strstri(creature->GetName(), qualifier.c_str()) && sServerFacade.GetDistance2d(bot, creature) <= ai->GetRange("spell"))
                     return true;
             }
 

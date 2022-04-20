@@ -221,9 +221,6 @@ bool LootObject::IsLootPossible(Player* bot)
     if (reqItem && !bot->HasItemCount(reqItem, 1))
         return false;
 
-    if (abs(GetWorldObject(bot)->GetPositionZ() - bot->GetPositionZ()) > INTERACTION_DISTANCE)
-        return false;
-
     Creature* creature = ai->GetCreature(guid);
     if (creature && sServerFacade.GetDeathState(creature) == CORPSE)
     {
@@ -231,7 +228,6 @@ bool LootObject::IsLootPossible(Player* bot)
             if (!creature->m_loot->CanLoot(bot))
                 return false;
     }
-
 
     if (skillId == SKILL_NONE)
         return true;
@@ -310,7 +306,7 @@ vector<LootObject> LootObjectStack::OrderByDistance(float maxDistance)
         if (!lootObject.IsLootPossible(bot))
             continue;
 
-        float distance = bot->GetDistance(lootObject.GetWorldObject(bot));
+        float distance = sqrt(bot->GetDistance(lootObject.GetWorldObject(bot)));
         if (!maxDistance || distance <= maxDistance)
             sortedMap[distance] = lootObject;
     }

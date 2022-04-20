@@ -15,7 +15,7 @@ Unit* AttackerWithoutAuraTargetValue::Calculate()
         if (!unit || unit == target)
             continue;
 
-        if (bot->GetDistance(unit) > ai->GetRange("spell"))
+        if (sqrt(bot->GetDistance(unit)) > ai->GetRange("spell"))
             continue;
 
         if (!ai->HasAura(qualifier, unit))

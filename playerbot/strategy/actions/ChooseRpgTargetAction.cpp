@@ -299,7 +299,7 @@ bool ChooseRpgTargetAction::isFollowValid(Player* bot, WorldPosition pos)
         return false;
 
     Formation* formation = AI_VALUE(Formation*, "formation");
-    float distance = master->GetDistance2d(pos.getX(), pos.getY());
+    float distance = sqrt(master->GetDistance2d(pos.getX(), pos.getY(), DIST_CALC_NONE));
 
     if (!ai->HasActivePlayerMaster() && distance < 50.0f)
     {

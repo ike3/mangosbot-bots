@@ -62,7 +62,7 @@ uint8 AttackerCountValue::Calculate()
         if (!unit || !sServerFacade.IsAlive(unit))
             continue;
 
-        float distance = bot->GetDistance(unit);
+        float distance = sServerFacade.GetDistance2d(bot, unit);
         if (distance <= range)
             count++;
     }
