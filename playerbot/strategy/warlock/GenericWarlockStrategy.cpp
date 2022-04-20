@@ -76,9 +76,9 @@ void WarlockCcStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
         "banish",
-        NextAction::array(0, new NextAction("banish on cc", 32.0f), NULL)));
+        NextAction::array(0, new NextAction("banish on cc", 52.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
         "fear",
-        NextAction::array(0, new NextAction("fear on cc", 33.0f), NULL)));
+        NextAction::array(0, new NextAction("fear on cc", 53.0f), NULL)));
 }

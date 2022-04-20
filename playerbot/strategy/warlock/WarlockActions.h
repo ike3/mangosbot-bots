@@ -118,12 +118,10 @@ namespace ai
 		CastCreateSpellstoneAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "create spellstone") {}
 	};
 
-    class CastBanishAction : public CastBuffSpellAction
+    class CastBanishAction : public CastCrowdControlSpellAction
     {
     public:
-        CastBanishAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "banish on cc") {}
-        virtual Value<Unit*>* GetTargetValue() { return context->GetValue<Unit*>("cc target", "banish"); }
-        virtual bool Execute(Event event) { return ai->CastSpell("banish", GetTarget()); }
+        CastBanishAction(PlayerbotAI* ai) : CastCrowdControlSpellAction(ai, "banish") {}
     };
 
     class CastSeedOfCorruptionAction : public CastDebuffSpellAction

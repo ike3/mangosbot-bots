@@ -61,7 +61,7 @@ public:
         for (Group::member_citerator itr = groupSlot.begin(); itr != groupSlot.end(); itr++)
         {
             Player *member = sObjectMgr.GetPlayer(itr->guid);
-            if( !member || !sServerFacade.IsAlive(member) || member == bot)
+            if(!member || !sServerFacade.IsAlive(member) || member == bot || bot->GetMapId() != member->GetMapId())
                 continue;
 
             if (!ai->IsTank(member))
@@ -86,6 +86,19 @@ private:
 
 Unit* CcTargetValue::Calculate()
 {
+    list<ObjectGuid> possible = ai->GetAiObjectContext()->GetValue<list<ObjectGuid> >("possible targets no los")->Get();
+
+    for (list<ObjectGuid>::iterator i = possible.begin(); i != possible.end(); ++i)
+    {
+        ObjectGuid guid = *i;
+        Unit* add = ai->GetUnit(guid);
+        if (!add)
+            continue;
+
+        if (ai->HasAura(qualifier, add, false, true, -1, true))
+            return add;
+    }
+
     FindTargetForCcStrategy strategy(ai, qualifier);
     return FindTarget(&strategy);
 }

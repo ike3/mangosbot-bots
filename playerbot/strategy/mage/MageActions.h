@@ -173,11 +173,10 @@ namespace ai
         CastFrostArmorAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "frost armor") {}
     };
 
-    class CastPolymorphAction : public CastBuffSpellAction
+    class CastPolymorphAction : public CastCrowdControlSpellAction
     {
     public:
-        CastPolymorphAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "polymorph") {}
-        virtual Value<Unit*>* GetTargetValue();
+        CastPolymorphAction(PlayerbotAI* ai) : CastCrowdControlSpellAction(ai, "polymorph") {}
     };
 
 	class CastSpellstealAction : public CastSpellAction

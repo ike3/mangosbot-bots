@@ -20,5 +20,16 @@ void PossibleTargetsValue::FindUnits(list<Unit*> &targets)
 
 bool PossibleTargetsValue::AcceptUnit(Unit* unit)
 {
-    return AttackersValue::IsPossibleTarget(unit, bot, range);
+    // check for CC-ed targets
+    bool isCCtarget = false;
+    if (ai->HasAura("polymorph", unit, false, false, -1, true))
+        isCCtarget = true;
+    if (ai->HasAura("sap", unit, false, false, -1, true))
+        isCCtarget = true;
+    if (ai->HasAura("fear", unit, false, false, -1, true))
+        isCCtarget = true;
+    if (ai->HasAura("banish", unit, false, false, -1, true))
+        isCCtarget = true;
+
+    return isCCtarget || AttackersValue::IsPossibleTarget(unit, bot, range);
 }
