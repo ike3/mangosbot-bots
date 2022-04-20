@@ -58,7 +58,7 @@ float AvoidAoeStrategyMultiplier::GetValue(Action* action)
         return 1.0f;
 
     string name = action->getName();
-    if (name == "follow" || name == "co" || name == "nc" || name == "drop target")
+    if (name == "follow" || name == "co" || name == "nc" || name == "drop target" || name == "flee")
         return 1.0f;
 
     uint32 spellId = AI_VALUE2(uint32, "spell id", name);

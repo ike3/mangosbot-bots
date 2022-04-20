@@ -8,7 +8,7 @@ using namespace ai;
 
 list<ObjectGuid> FindMaxDensity(Player* bot)
 {
-    list<ObjectGuid> units = *bot->GetPlayerbotAI()->GetAiObjectContext()->GetValue<list<ObjectGuid> >("possible targets");
+    list<ObjectGuid> units = *bot->GetPlayerbotAI()->GetAiObjectContext()->GetValue<list<ObjectGuid> >("attackers");
     map<ObjectGuid, list<ObjectGuid> > groups;
     int maxCount = 0;
     ObjectGuid maxGroup;
@@ -79,9 +79,12 @@ uint8 AoeCountValue::Calculate()
 
 bool HasAreaDebuffValue::Calculate()
 {
+    if (!GetTarget())
+        return false;
+
     for (uint32 auraType = SPELL_AURA_BIND_SIGHT; auraType < TOTAL_AURAS; auraType++)
     {
-        Unit::AuraList const& auras = ai->GetBot()->GetAurasByType((AuraType)auraType);
+        Unit::AuraList const& auras = GetTarget()->GetAurasByType((AuraType)auraType);
 
         if (auras.empty())
             continue;
@@ -94,24 +97,16 @@ bool HasAreaDebuffValue::Calculate()
 
             SpellEntry const* proto = aura->GetSpellProto();
 
-            if (IsSpellEffectTriggerSpellByAura(proto, aura->GetEffIndex()))
+            if (!aura->IsPositive() && aura->IsPeriodic())
             {
-                uint32 trigger_spell_id = proto->EffectTriggerSpell[aura->GetEffIndex()];
-                return trigger_spell_id == 29767;//Overload
-            }
-            else
-            {
-                if (!aura->IsPositive() && aura->IsPeriodic())
+                if (proto)
                 {
-                    if (proto)
+                    for (int i = 0; i < MAX_EFFECT_INDEX; i++)
                     {
-                        for (int i = 0; i < MAX_EFFECT_INDEX; i++)
-                        {
-                            SpellRadiusEntry const* radius = sSpellRadiusStore.LookupEntry(proto->EffectRadiusIndex[i]);
+                        SpellRadiusEntry const* radius = sSpellRadiusStore.LookupEntry(proto->EffectRadiusIndex[i]);
 
-                            if (radius)
-                                return radius->Radius > 0;
-                        }
+                        if (radius)
+                            return radius->Radius > 0;
                     }
                 }
             }

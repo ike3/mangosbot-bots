@@ -1161,7 +1161,18 @@ bool MovementAction::Flee(Unit *target)
             for (GroupReference *gref = group->GetFirstMember(); gref; gref = gref->next())
             {
                 Player* player = gref->getSource();
-                if (!player || player == bot || !sServerFacade.IsAlive(player)) continue;
+                if (!player || player == bot || !sServerFacade.IsAlive(player) || bot->GetMapId() != player->GetMapId()) continue;
+
+                bool hasAoe = false;
+                if (PlayerbotAI* botAi = player->GetPlayerbotAI())
+                {
+                    if (botAi->GetAiObjectContext()->GetValue<bool>("has area debuff", "self target")->Get())
+                        hasAoe = true;
+                }
+
+                if (hasAoe)
+                    continue;
+
                 if (ai->IsTank(player))
                 {
                     float distanceToTank = sServerFacade.GetDistance2d(bot, player);
@@ -1195,15 +1206,25 @@ bool MovementAction::Flee(Unit *target)
         if (group)
         {
             Unit* fleeTarget = nullptr;
-            float fleeDistance = ai->GetRange("shoot") * 1.5;
+            float fleeDistance = ai->GetRange("spell") * 1.5;
             Unit* spareTarget = nullptr;
-            float spareDistance = ai->GetRange("shoot") * 2;
+            float spareDistance = ai->GetRange("spell") * 2;
             vector<Unit*> possibleTargets;
 
             for (GroupReference *gref = group->GetFirstMember(); gref; gref = gref->next())
             {
                 Player* player = gref->getSource();
-                if (!player || player == bot || !sServerFacade.IsAlive(player)) continue;
+                if (!player || player == bot || !sServerFacade.IsAlive(player) || bot->GetMapId() != player->GetMapId()) continue;
+
+                bool hasAoe = false;
+                if (PlayerbotAI* botAi = player->GetPlayerbotAI())
+                {
+                    if (botAi->GetAiObjectContext()->GetValue<bool>("has area debuff", "self target")->Get())
+                        hasAoe = true;
+                }
+
+                if (hasAoe)
+                    continue;
 
                 if ((isHealer && ai->IsHeal(player)) || needHealer)
                 {
