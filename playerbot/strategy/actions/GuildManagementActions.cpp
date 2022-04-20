@@ -103,7 +103,7 @@ bool GuildManageNearbyAction::Execute(Event event)
             continue;
         }
 
-        if (!(guild->GetRankRights(botMember->RankId) & GR_RIGHT_INVITE))
+        if ((guild->GetRankRights(botMember->RankId) & GR_RIGHT_INVITE) == 0)
             continue;
 
         if (player->GetGuildIdInvited())
