@@ -410,6 +410,7 @@ public:
 
     bool CanMove();
     bool IsInRealGuild();
+    time_t GetCombatStartTime() { return combatStart; }
 
 protected:
 	Player* bot;
@@ -433,6 +434,7 @@ protected:
     bool allowActive[MAX_ACTIVITY_TYPE];
     time_t allowActiveCheckTimer[MAX_ACTIVITY_TYPE];
     bool inCombat = false;
+    time_t combatStart = 0;
     BotCheatMask cheatMask = BotCheatMask::none;
     Position jumpDestination = Position();
 };

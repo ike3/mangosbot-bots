@@ -216,7 +216,10 @@ void PlayerbotAI::UpdateAI(uint32 elapsed, bool minimal)
     if (sServerFacade.IsInCombat(bot))
     {
         if (!inCombat)
+        {
             nextAICheckDelay = 0;
+            combatStart = time(0);
+        }
         else if (!AllowActivity())
         {
             if (AllowActivity(ALL_ACTIVITY, true))
@@ -231,6 +234,7 @@ void PlayerbotAI::UpdateAI(uint32 elapsed, bool minimal)
             nextAICheckDelay = 0;
 
         inCombat = false;
+        combatStart = 0;
     }
 
     // force stop if moving but should not
