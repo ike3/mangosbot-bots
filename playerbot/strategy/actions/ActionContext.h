@@ -83,10 +83,7 @@ namespace ai
             creators["reach party member to heal"] = &ActionContext::reach_party_member_to_heal;
             creators["flee"] = &ActionContext::flee;
             creators["flee with pet"] = &ActionContext::flee_with_pet;
-            creators["gift of the naaru"] = &ActionContext::gift_of_the_naaru;
             creators["shoot"] = &ActionContext::shoot;
-            creators["lifeblood"] = &ActionContext::lifeblood;
-            creators["arcane torrent"] = &ActionContext::arcane_torrent;
             creators["end pull"] = &ActionContext::end_pull;
             creators["healthstone"] = &ActionContext::healthstone;
             creators["healing potion"] = &ActionContext::healing_potion;
@@ -140,7 +137,6 @@ namespace ai
             creators["give food"] = &ActionContext::give_food;
             creators["give water"] = &ActionContext::give_water;
             creators["mount"] = &ActionContext::mount;
-            creators["war stomp"] = &ActionContext::war_stomp;
             creators["auto talents"] = &ActionContext::auto_talents;
 			creators["auto learn spell"] = &ActionContext::auto_learn_spell;
             creators["xp gain"] = &ActionContext::xp_gain;
@@ -218,6 +214,25 @@ namespace ai
             creators["rpg trade useful"] = &ActionContext::rpg_trade_useful;
             creators["rpg duel"] = &ActionContext::rpg_duel;
             creators["rpg mount anim"] = &ActionContext::rpg_mount_anim;
+
+            //racials
+            creators["war stomp"] = &ActionContext::war_stomp;
+            creators["berserking"] = &ActionContext::berserking;
+            creators["blood fury"] = &ActionContext::blood_fury;
+            creators["cannibalize"] = &ActionContext::cannibalize;
+            creators["escape artist"] = &ActionContext::escape_artist;
+            creators["shadowmeld"] = &ActionContext::shadowmeld;
+            creators["stoneform"] = &ActionContext::stoneform;
+            creators["perception"] = &ActionContext::perception;
+            creators["will of the forsaken"] = &ActionContext::will_of_the_forsaken;
+#ifndef MANGOSBOT_ZERO
+            creators["mana tap"] = &ActionContext::mana_tap;
+            creators["arcane torrent"] = &ActionContext::arcane_torrent;
+            creators["gift of the naaru"] = &ActionContext::gift_of_the_naaru;
+#endif
+#ifdef MANGOSBOT_TWO
+            creators["every_man_for_himself"] = &ActionContext::every_man_for_himself;
+#endif    
         }
 
     private:
@@ -257,12 +272,26 @@ namespace ai
         static Action* reach_party_member_to_heal(PlayerbotAI* ai) { return new ReachPartyMemberToHealAction(ai); }
         static Action* flee_with_pet(PlayerbotAI* ai) { return new FleeWithPetAction(ai); }
         static Action* flee(PlayerbotAI* ai) { return new FleeAction(ai); }
+        static Action* end_pull(PlayerbotAI* ai) { return new ChangeCombatStrategyAction(ai, "-pull"); }
+
+        //racials      
+        static Action* war_stomp(PlayerbotAI* ai) { return new CastWarStompAction(ai); }
+        static Action* berserking(PlayerbotAI* ai) { return new CastBerserkingAction(ai); }
+        static Action* blood_fury(PlayerbotAI* ai) { return new CastBloodFuryAction(ai); }
+        static Action* cannibalize(PlayerbotAI* ai) { return new CastCannibalizeAction(ai); }
+        static Action* escape_artist(PlayerbotAI* ai) { return new CastEscapeArtistAction(ai); }
+        static Action* shadowmeld(PlayerbotAI* ai) { return new CastShadowmeldAction(ai); }
+        static Action* stoneform(PlayerbotAI* ai) { return new CastStoneformAction(ai); }
+        static Action* perception(PlayerbotAI* ai) { return new CastPerceptionAction(ai); }
+        static Action* will_of_the_forsaken(PlayerbotAI* ai) { return new CastWillOfTheForsakenAction(ai); }
+#ifndef MANGOSBOT_ZERO
         static Action* gift_of_the_naaru(PlayerbotAI* ai) { return new CastGiftOfTheNaaruAction(ai); }
-        static Action* lifeblood(PlayerbotAI* ai) { return new CastLifeBloodAction(ai); }
         static Action* arcane_torrent(PlayerbotAI* ai) { return new CastArcaneTorrentAction(ai); }
         static Action* mana_tap(PlayerbotAI* ai) { return new CastManaTapAction(ai); }
-        static Action* war_stomp(PlayerbotAI* ai) { return new CastWarStompAction(ai); }
-        static Action* end_pull(PlayerbotAI* ai) { return new ChangeCombatStrategyAction(ai, "-pull"); }
+#endif 
+#ifdef MANGOSBOT_TWO
+        static Action* every_man_for_himself(PlayerbotAI* ai) { return new CastEveryManforHimselfAction(ai); }
+#endif 
 
         static Action* emote(PlayerbotAI* ai) { return new EmoteAction(ai); }
         static Action* talk(PlayerbotAI* ai) { return new TalkAction(ai); }

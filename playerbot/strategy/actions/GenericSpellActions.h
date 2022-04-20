@@ -232,35 +232,42 @@ namespace ai
         virtual ActionThreatType getThreatType() { return ACTION_THREAT_NONE; }
     };
 
-	class CastLifeBloodAction : public CastHealingSpellAction
-	{
-	public:
-		CastLifeBloodAction(PlayerbotAI* ai) : CastHealingSpellAction(ai, "lifeblood") {}
-	};
+    // racials
 
-	class CastGiftOfTheNaaruAction : public CastHealingSpellAction
-	{
-	public:
-		CastGiftOfTheNaaruAction(PlayerbotAI* ai) : CastHealingSpellAction(ai, "gift of the naaru") {}
-	};
+    // heal
+#ifndef MANGOSBOT_ZERO
+    HEAL_ACTION(CastGiftOfTheNaaruAction, "gift of the naaru");
+#endif
+    HEAL_ACTION(CastCannibalizeAction, "cannibalize");
 
-    class CastArcaneTorrentAction : public CastBuffSpellAction
-    {
-    public:
-        CastArcaneTorrentAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "arcane torrent") {}
-    };
+    // buff
 
-    class CastManaTapAction : public CastBuffSpellAction
-    {
-    public:
-        CastManaTapAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "mana tap") {}
-    };
+    BUFF_ACTION(CastShadowmeldAction, "shadowmeld");
+    BUFF_ACTION(CastBerserkingAction, "berserking");
+    BUFF_ACTION(CastBloodFuryAction, "blood fury");
+    BUFF_ACTION(CastStoneformAction, "stoneform");
+    BUFF_ACTION(CastPerceptionAction, "perception");
+
+    // spells
+
+#ifndef MANGOSBOT_ZERO
+    SPELL_ACTION(CastManaTapAction, "mana tap");
+    SPELL_ACTION(CastArcaneTorrentAction, "arcane torrent");
+#endif
 
     class CastWarStompAction : public CastSpellAction
     {
     public:
         CastWarStompAction(PlayerbotAI* ai) : CastSpellAction(ai, "war stomp") {}
     };
+
+    //cc breakers
+
+    SPELL_ACTION(CastWillOfTheForsakenAction, "will of the forsaken");
+    SPELL_ACTION(CastEscapeArtistAction, "escape artist");
+#ifdef MANGOSBOT_TWO
+    SPELL_ACTION(CastEveryManforHimselfAction, "every man for himself");
+#endif
 
     class CastSpellOnEnemyHealerAction : public CastSpellAction
     {

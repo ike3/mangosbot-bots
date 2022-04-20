@@ -557,7 +557,7 @@ void AiFactory::AddDefaultNonCombatStrategies(Player* player, PlayerbotAI* const
 
     if (!player->InBattleGround())
     {
-        nonCombatEngine->addStrategies("nc", "food", "chat", "follow",
+        nonCombatEngine->addStrategies("racials", "nc", "food", "chat", "follow",
             "default", "quest", "loot", "gather", "duel", "emote", "buff", "mount", NULL);
     }
 
@@ -638,7 +638,7 @@ void AiFactory::AddDefaultNonCombatStrategies(Player* player, PlayerbotAI* const
     // Battleground switch
     if (player->InBattleGround())
     {
-        nonCombatEngine->addStrategies("nc", "chat",
+        nonCombatEngine->addStrategies("racials", "nc", "chat",
             "default", "buff", "food", "mount", "pvp", "collision", "dps assist", "attack tagged", "emote", NULL);
         nonCombatEngine->removeStrategy("custom::say");
         nonCombatEngine->removeStrategy("travel");

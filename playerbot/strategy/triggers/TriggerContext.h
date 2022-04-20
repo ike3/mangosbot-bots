@@ -186,9 +186,33 @@ namespace ai
             creators["rpg craft"] = &TriggerContext::rpg_craft;
             creators["rpg trade useful"] = &TriggerContext::rpg_trade_useful;
             creators["rpg duel"] = &TriggerContext::rpg_duel;
+
+            // racials
+            creators["berserking"] = &TriggerContext::berserking;
+            creators["blood fury"] = &TriggerContext::blood_fury;
+            creators["cannibalize"] = &TriggerContext::cannibalize;
+            creators["will of the forsaken"] = &TriggerContext::will_of_the_forsaken;
+            creators["rooted"] = &TriggerContext::rooted;
+            creators["stoneform"] = &TriggerContext::stoneform;
+            creators["shadowmeld"] = &TriggerContext::shadowmeld;
+            creators["mana tap"] = &TriggerContext::mana_tap;
+            creators["arcane torrent"] = &TriggerContext::arcane_torrent;
+            creators["war stomp"] = &TriggerContext::war_stomp;
+            creators["perception"] = &TriggerContext::cannibalize;
         }
 
     private:
+        static Trigger* berserking(PlayerbotAI* ai) { return new BerserkingTrigger(ai); }
+        static Trigger* blood_fury(PlayerbotAI* ai) { return new BloodFuryTrigger(ai); }
+        static Trigger* cannibalize(PlayerbotAI* ai) { return new CannibalizeTrigger(ai); }
+        static Trigger* will_of_the_forsaken(PlayerbotAI* ai) { return new WOtFTrigger(ai); }
+        static Trigger* rooted(PlayerbotAI* ai) { return new RootedTrigger(ai); }
+        static Trigger* stoneform(PlayerbotAI* ai) { return new StoneformTrigger(ai); }
+        static Trigger* shadowmeld(PlayerbotAI* ai) { return new ShadowmeldTrigger(ai); }
+        static Trigger* mana_tap(PlayerbotAI* ai) { return new ManaTapTrigger(ai); }
+        static Trigger* arcane_torrent(PlayerbotAI* ai) { return new ArcanetorrentTrigger(ai); }
+        static Trigger* war_stomp(PlayerbotAI* ai) { return new WarStompTrigger(ai); }
+        static Trigger* perception(PlayerbotAI* ai) { return new PerceptionTrigger(ai); }
         static Trigger* in_vehicle(PlayerbotAI* ai) { return new InVehicleTrigger(ai); }
         static Trigger* vehicle_near(PlayerbotAI* ai) { return new VehicleNearTrigger(ai); }
         static Trigger* at_dark_portal_outland(PlayerbotAI* ai) { return new AtDarkPortalOutlandTrigger(ai); }
