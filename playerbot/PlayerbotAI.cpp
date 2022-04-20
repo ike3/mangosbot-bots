@@ -2814,21 +2814,6 @@ void PlayerbotAI::InterruptSpell()
             continue;
 
         bot->InterruptSpell((CurrentSpellTypes)type);
-
-        WorldPacket data(SMSG_SPELL_FAILURE, 8 + 1 + 4 + 1);
-        data.appendPackGUID(bot->GetObjectGuid().GetRawValue());
-        data << uint8(1);
-        data << uint32(spell->m_spellInfo->Id);
-        data << uint8(0);
-        sServerFacade.SendMessageToSet(bot, data, true);
-
-        data.Initialize(SMSG_SPELL_FAILED_OTHER, 8 + 1 + 4 + 1);
-        data.appendPackGUID(bot->GetObjectGuid().GetRawValue());
-        data << uint8(1);
-        data << uint32(spell->m_spellInfo->Id);
-        data << uint8(0);
-        sServerFacade.SendMessageToSet(bot, data, true);
-
         SpellInterrupted(spell->m_spellInfo->Id);
     }
 }
