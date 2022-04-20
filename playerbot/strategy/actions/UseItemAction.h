@@ -2,6 +2,7 @@
 
 #include "../Action.h"
 #include "../../ServerFacade.h"
+#include "../../RandomItemMgr.h"
 
 namespace ai
 {
@@ -38,6 +39,45 @@ namespace ai
    public:
       UseHealingPotion(PlayerbotAI* ai) : UseItemAction(ai, "healing potion") {}
       virtual bool isUseful() { return AI_VALUE2(bool, "combat", "self target"); }
+      virtual bool Execute(Event event)
+      {
+          bool isRandomBot = sRandomPlayerbotMgr.IsRandomBot(bot);
+          if (isRandomBot && sPlayerbotAIConfig.freeFood)
+          {
+              if (bot->IsNonMeleeSpellCasted(true))
+                  return false;
+
+              uint32 itemId = sRandomItemMgr.GetRandomPotion(bot->GetLevel(), SPELL_EFFECT_HEAL);
+              if (!itemId)
+              {
+                  return false;
+              }
+
+              ItemPrototype const* proto = sObjectMgr.GetItemPrototype(itemId);
+              if (!proto)
+                  return false;
+
+              uint32 spellId = 0;
+              for (uint8 i = 0; i < MAX_ITEM_PROTO_SPELLS; ++i)
+              {
+                  if (proto->Spells[i].SpellTrigger != ITEM_SPELLTRIGGER_ON_USE)
+                      continue;
+
+                  if (proto->Spells[i].SpellId > 0)
+                  {
+                      spellId = proto->Spells[i].SpellId;
+                  }
+              }
+
+              if (spellId && bot->IsSpellReady(spellId))
+              {
+                  ai->CastSpell(spellId, bot);
+                  return true;
+              }
+          }
+
+          return UseItemAction::Execute(event);
+      }
    };
 
    class UseManaPotion : public UseItemAction
@@ -45,6 +85,45 @@ namespace ai
    public:
       UseManaPotion(PlayerbotAI* ai) : UseItemAction(ai, "mana potion") {}
       virtual bool isUseful() { return AI_VALUE2(bool, "combat", "self target"); }
+      virtual bool Execute(Event event)
+      {
+          bool isRandomBot = sRandomPlayerbotMgr.IsRandomBot(bot);
+          if (isRandomBot && sPlayerbotAIConfig.freeFood)
+          {
+              if (bot->IsNonMeleeSpellCasted(true))
+                  return false;
+
+              uint32 itemId = sRandomItemMgr.GetRandomPotion(bot->GetLevel(), SPELL_EFFECT_ENERGIZE);
+              if (!itemId)
+              {
+                  return false;
+              }
+
+              ItemPrototype const* proto = sObjectMgr.GetItemPrototype(itemId);
+              if (!proto)
+                  return false;
+
+              uint32 spellId = 0;
+              for (uint8 i = 0; i < MAX_ITEM_PROTO_SPELLS; ++i)
+              {
+                  if (proto->Spells[i].SpellTrigger != ITEM_SPELLTRIGGER_ON_USE)
+                      continue;
+
+                  if (proto->Spells[i].SpellId > 0)
+                  {
+                      spellId = proto->Spells[i].SpellId;
+                  }
+              }
+
+              if (spellId && bot->IsSpellReady(spellId))
+              {
+                  ai->CastSpell(spellId, bot);
+                  return true;
+              }
+          }
+
+          return UseItemAction::Execute(event);
+      }
    };
 
    class UseHearthStone : public UseItemAction
