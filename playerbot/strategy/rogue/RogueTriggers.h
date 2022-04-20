@@ -3,7 +3,6 @@
 
 namespace ai
 {
-
     class KickInterruptSpellTrigger : public InterruptSpellTrigger
     {
     public:

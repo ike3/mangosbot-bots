@@ -68,6 +68,9 @@ namespace ai
                 creators["no stealth"] = &TriggerFactoryInternal::no_stealth;
                 creators["stealth"] = &TriggerFactoryInternal::stealth;
                 creators["sprint"] = &TriggerFactoryInternal::sprint;
+                creators["2 combo"] = &TriggerFactoryInternal::combo2;
+                creators["3 combo"] = &TriggerFactoryInternal::combo3;
+                creators["4 combo"] = &TriggerFactoryInternal::combo3;
 
             }
 
@@ -84,6 +87,9 @@ namespace ai
             static Trigger* no_stealth(PlayerbotAI* ai) { return new NoStealthTrigger(ai); }
             static Trigger* stealth(PlayerbotAI* ai) { return new StealthTrigger(ai); }
             static Trigger* sprint(PlayerbotAI* ai) { return new SprintTrigger(ai); }
+            static Trigger* combo2(PlayerbotAI* ai) { return new ComboPointsAvailableTrigger(ai, 2); }
+            static Trigger* combo3(PlayerbotAI* ai) { return new ComboPointsAvailableTrigger(ai, 3); }
+            static Trigger* combo4(PlayerbotAI* ai) { return new ComboPointsAvailableTrigger(ai, 4); }
         };
     };
 };
