@@ -1112,6 +1112,9 @@ void PlayerbotAI::DoNextAction(bool min)
                     continue;
                 }
 
+                if (bot->InBattleGround())
+                    continue;
+
                 // same BG
                 if (bot->InBattleGround() && bot->GetBattleGround()->GetTypeId() == BATTLEGROUND_AV && !member->GetPlayerbotAI() && member->InBattleGround() && bot->GetMapId() == member->GetMapId())
                 {
@@ -1155,8 +1158,6 @@ void PlayerbotAI::DoNextAction(bool min)
                     playerMaster = member;
                     continue;
                 }
-                if (bot->InBattleGround())
-                    continue;
 
                 newMaster = member;
                 break;
