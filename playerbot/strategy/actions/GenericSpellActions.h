@@ -20,7 +20,7 @@ namespace ai
 		virtual bool isUseful();
         virtual ActionThreatType getThreatType() { return ACTION_THREAT_SINGLE; }
 
-		virtual NextAction** getPrerequisites()
+		/*virtual NextAction** getPrerequisites()
 		{
             if (spell == "mount")
                 return NULL;
@@ -30,7 +30,7 @@ namespace ai
 				return NextAction::merge( NextAction::array(0, new NextAction("reach spell"), NULL), Action::getPrerequisites());
 			else
 				return NextAction::merge( NextAction::array(0, new NextAction("reach melee"), NULL), Action::getPrerequisites());
-		}
+		}*/
 
     protected:
         string spell;
