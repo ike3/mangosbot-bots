@@ -97,6 +97,11 @@ namespace ai
     class CastThornsOnPartyAction : public BuffOnPartyAction {
     public:
         CastThornsOnPartyAction(PlayerbotAI* ai) : BuffOnPartyAction(ai, "thorns") {}
+		virtual bool isUseful()
+		{
+			Unit* target = GetTarget();
+			return CastBuffSpellAction::isUseful() && (!target->IsPlayer() || !ai->IsRanged((Player*)target));
+		}
     };
 
 	class CastOmenOfClarityAction : public CastBuffSpellAction {

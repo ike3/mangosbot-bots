@@ -529,7 +529,7 @@ void AiFactory::AddDefaultNonCombatStrategies(Player* player, PlayerbotAI* const
             break;
         case CLASS_DRUID:
             if (tab == 1)
-                nonCombatEngine->addStrategy("tank assist");
+                nonCombatEngine->addStrategies("tank assist", "cure", NULL);
             else
                 nonCombatEngine->addStrategies("dps assist", "cure", NULL);
             break;
