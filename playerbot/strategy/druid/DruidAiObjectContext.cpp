@@ -96,6 +96,8 @@ namespace ai
                 creators["mark of the wild on party"] = &TriggerFactoryInternal::mark_of_the_wild_on_party;
                 creators["cure poison"] = &TriggerFactoryInternal::cure_poison;
                 creators["party member cure poison"] = &TriggerFactoryInternal::party_member_cure_poison;
+                creators["remove curse"] = &TriggerFactoryInternal::remove_curse;
+                creators["party member remove curse"] = &TriggerFactoryInternal::party_member_remove_curse;
                 creators["entangling roots"] = &TriggerFactoryInternal::entangling_roots;
                 creators["entangling roots kite"] = &TriggerFactoryInternal::entangling_roots_kite;
                 creators["hibernate"] = &TriggerFactoryInternal::hibernate;
@@ -126,6 +128,8 @@ namespace ai
             static Trigger* mark_of_the_wild_on_party(PlayerbotAI* ai) { return new MarkOfTheWildOnPartyTrigger(ai); }
             static Trigger* cure_poison(PlayerbotAI* ai) { return new CurePoisonTrigger(ai); }
             static Trigger* party_member_cure_poison(PlayerbotAI* ai) { return new PartyMemberCurePoisonTrigger(ai); }
+            static Trigger* remove_curse(PlayerbotAI* ai) { return new RemoveCurseTrigger(ai); }
+            static Trigger* party_member_remove_curse(PlayerbotAI* ai) { return new RemoveCurseOnPartyTrigger(ai); }
             static Trigger* entangling_roots(PlayerbotAI* ai) { return new EntanglingRootsTrigger(ai); }
             static Trigger* entangling_roots_kite(PlayerbotAI* ai) { return new EntanglingRootsKiteTrigger(ai); }
             static Trigger* hibernate(PlayerbotAI* ai) { return new HibernateTrigger(ai); }
@@ -193,6 +197,8 @@ namespace ai
                 creators["cure poison on party"] = &AiObjectContextInternal::cure_poison_on_party;
                 creators["abolish poison"] = &AiObjectContextInternal::abolish_poison;
                 creators["abolish poison on party"] = &AiObjectContextInternal::abolish_poison_on_party;
+                creators["remove curse"] = &AiObjectContextInternal::remove_curse;
+                creators["remove curse on party"] = &AiObjectContextInternal::remove_curse_on_party;
                 creators["berserk"] = &AiObjectContextInternal::berserk;
                 creators["tiger's fury"] = &AiObjectContextInternal::tigers_fury;
                 creators["mark of the wild"] = &AiObjectContextInternal::mark_of_the_wild;
@@ -272,6 +278,8 @@ namespace ai
             static Action* cure_poison_on_party(PlayerbotAI* ai) { return new CastCurePoisonOnPartyAction(ai); }
             static Action* abolish_poison(PlayerbotAI* ai) { return new CastAbolishPoisonAction(ai); }
             static Action* abolish_poison_on_party(PlayerbotAI* ai) { return new CastAbolishPoisonOnPartyAction(ai); }
+            static Action* remove_curse(PlayerbotAI* ai) { return new CastRemoveCurseAction(ai); }
+            static Action* remove_curse_on_party(PlayerbotAI* ai) { return new CastRemoveCurseOnPartyAction(ai); }
             static Action* berserk(PlayerbotAI* ai) { return new CastBerserkAction(ai); }
             static Action* tigers_fury(PlayerbotAI* ai) { return new CastTigersFuryAction(ai); }
             static Action* mark_of_the_wild(PlayerbotAI* ai) { return new CastMarkOfTheWildAction(ai); }

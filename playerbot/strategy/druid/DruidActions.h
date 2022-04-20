@@ -190,16 +190,16 @@ namespace ai
 	{
 	public:
 		CastAbolishPoisonAction(PlayerbotAI* ai) : CastCureSpellAction(ai, "abolish poison") {}
-		virtual NextAction** getAlternatives();
 	};
 
     class CastAbolishPoisonOnPartyAction : public CurePartyMemberAction
     {
     public:
         CastAbolishPoisonOnPartyAction(PlayerbotAI* ai) : CurePartyMemberAction(ai, "abolish poison", DISPEL_POISON) {}
-
-        virtual NextAction** getAlternatives();
     };
+
+	CURE_ACTION(CastRemoveCurseAction, "remove curse");
+	CURE_PARTY_ACTION(CastRemoveCurseOnPartyAction, "remove curse", DISPEL_CURSE);
 
     class CastBarskinAction : public CastBuffSpellAction
     {

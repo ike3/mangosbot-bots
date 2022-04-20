@@ -48,27 +48,27 @@ void PaladinCureStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
         "cleanse cure disease",
-        NextAction::array(0, new NextAction("cleanse disease", ACTION_DISPEL + 2), NULL)));
+        NextAction::array(0, new NextAction("cleanse disease", ACTION_MEDIUM_HEAL + 2), NULL)));
 
     triggers.push_back(new TriggerNode(
         "cleanse party member cure disease",
-        NextAction::array(0, new NextAction("cleanse disease on party", ACTION_DISPEL + 1), NULL)));
+        NextAction::array(0, new NextAction("cleanse disease on party", ACTION_MEDIUM_HEAL + 1), NULL)));
 
     triggers.push_back(new TriggerNode(
         "cleanse cure poison",
-        NextAction::array(0, new NextAction("cleanse poison", ACTION_DISPEL + 2), NULL)));
+        NextAction::array(0, new NextAction("cleanse poison", ACTION_MEDIUM_HEAL + 2), NULL)));
 
     triggers.push_back(new TriggerNode(
         "cleanse party member cure poison",
-        NextAction::array(0, new NextAction("cleanse poison on party", ACTION_DISPEL + 1), NULL)));
+        NextAction::array(0, new NextAction("cleanse poison on party", ACTION_MEDIUM_HEAL + 1), NULL)));
 
     triggers.push_back(new TriggerNode(
         "cleanse cure magic",
-        NextAction::array(0, new NextAction("cleanse magic", ACTION_DISPEL + 2), NULL)));
+        NextAction::array(0, new NextAction("cleanse magic", ACTION_MEDIUM_HEAL + 2), NULL)));
 
     triggers.push_back(new TriggerNode(
         "cleanse party member cure magic",
-        NextAction::array(0, new NextAction("cleanse magic on party", ACTION_DISPEL + 1), NULL)));
+        NextAction::array(0, new NextAction("cleanse magic on party", ACTION_MEDIUM_HEAL + 1), NULL)));
 }
 
 void PaladinBoostStrategy::InitTriggers(std::list<TriggerNode*> &triggers)

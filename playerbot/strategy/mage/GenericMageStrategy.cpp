@@ -152,11 +152,11 @@ void MageCureStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
         "remove curse",
-        NextAction::array(0, new NextAction("remove curse", 41.0f), NULL)));
+        NextAction::array(0, new NextAction("remove curse", ACTION_DISPEL + 1), NULL)));
 
     triggers.push_back(new TriggerNode(
         "remove curse on party",
-        NextAction::array(0, new NextAction("remove curse on party", 40.0f), NULL)));
+        NextAction::array(0, new NextAction("remove curse on party", ACTION_DISPEL), NULL)));
 
 }
 

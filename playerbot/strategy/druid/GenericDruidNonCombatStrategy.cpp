@@ -71,14 +71,6 @@ void GenericDruidNonCombatStrategy::InitTriggers(std::list<TriggerNode*> &trigge
         "thorns",
         NextAction::array(0, new NextAction("thorns", 12.0f), NULL)));
 
-    triggers.push_back(new TriggerNode(
-        "cure poison",
-        NextAction::array(0, new NextAction("abolish poison", 21.0f), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "party member cure poison",
-        NextAction::array(0, new NextAction("abolish poison on party", 20.0f), NULL)));
-
 	triggers.push_back(new TriggerNode(
 		"party member dead",
 		NextAction::array(0, new NextAction("revive", 22.0f), NULL)));

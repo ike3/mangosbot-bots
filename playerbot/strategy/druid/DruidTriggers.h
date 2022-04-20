@@ -122,6 +122,9 @@ namespace ai {
         PartyMemberCurePoisonTrigger(PlayerbotAI* ai) : PartyMemberNeedCureTrigger(ai, "cure poison", DISPEL_POISON) {}
     };
 
+    CURE_TRIGGER(RemoveCurseTrigger, "remove curse", DISPEL_CURSE);
+    CURE_PARTY_TRIGGER(RemoveCurseOnPartyTrigger, "remove curse", DISPEL_CURSE);
+
     class BearFormTrigger : public BuffTrigger
     {
     public:

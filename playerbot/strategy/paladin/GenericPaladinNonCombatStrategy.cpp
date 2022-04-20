@@ -44,30 +44,6 @@ void GenericPaladinNonCombatStrategy::InitTriggers(std::list<TriggerNode*> &trig
         NextAction::array(0, new NextAction("holy light on party", 40.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "cleanse cure disease",
-        NextAction::array(0, new NextAction("cleanse disease", 41.0f), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "cleanse party member cure disease",
-        NextAction::array(0, new NextAction("cleanse disease on party", 40.0f), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "cleanse cure poison",
-        NextAction::array(0, new NextAction("cleanse poison", 41.0f), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "cleanse party member cure poison",
-        NextAction::array(0, new NextAction("cleanse poison on party", 40.0f), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "cleanse cure magic",
-        NextAction::array(0, new NextAction("cleanse magic", 41.0f), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "cleanse party member cure magic",
-        NextAction::array(0, new NextAction("cleanse magic on party", 40.0f), NULL)));
-
-    triggers.push_back(new TriggerNode(
        "often",
        NextAction::array(0, new NextAction("apply stone", 1.0f), NULL)));
 }

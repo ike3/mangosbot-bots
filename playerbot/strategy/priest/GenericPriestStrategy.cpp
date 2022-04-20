@@ -81,19 +81,19 @@ void PriestCureStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
         "dispel magic",
-        NextAction::array(0, new NextAction("dispel magic", 41.0f), NULL)));
+        NextAction::array(0, new NextAction("dispel magic", 53.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
         "dispel magic on party",
-        NextAction::array(0, new NextAction("dispel magic on party", 40.0f), NULL)));
+        NextAction::array(0, new NextAction("dispel magic on party", 52.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
         "cure disease",
-        NextAction::array(0, new NextAction("abolish disease", 31.0f), NULL)));
+        NextAction::array(0, new NextAction("abolish disease", 51.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
         "party member cure disease",
-        NextAction::array(0, new NextAction("abolish disease on party", 30.0f), NULL)));
+        NextAction::array(0, new NextAction("abolish disease on party", 50.0f), NULL)));
 }
 
 void PriestBoostStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
