@@ -59,23 +59,25 @@ Unit* PartyMemberToHeal::Calculate()
             if (!Check(player) || !sServerFacade.IsAlive(player))
                 continue;
 
+            bool isTank = ai->IsTank(player);
+
             // do not heal dueling members
             if (player->duel && player->duel->opponent)
                 continue;
 
             uint8 health = player->GetHealthPercent();
-            if (health < sPlayerbotAIConfig.almostFullHealth || !IsTargetOfSpellCast(player, predicate))
+            if (health < sPlayerbotAIConfig.almostFullHealth || (!isTank && !IsTargetOfSpellCast(player, predicate)))
                 needHeals.push_back(player);
 
             Pet* pet = player->GetPet();
             if (pet && CanHealPet(pet))
             {
                 health = pet->GetHealthPercent();
-                if (health < sPlayerbotAIConfig.almostFullHealth || !IsTargetOfSpellCast(player, predicate))
+                if (health < sPlayerbotAIConfig.almostFullHealth || (!isTank && !IsTargetOfSpellCast(player, predicate)))
                     needHeals.push_back(pet);
             }
 
-            if (ai->IsTank(player) && bot->IsInGroup(player, true))
+            if (isTank && bot->IsInGroup(player))
                 tankTargets.push_back(player);
         }
     }
