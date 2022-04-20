@@ -434,6 +434,7 @@ protected:
     bool allowActive[MAX_ACTIVITY_TYPE];
     time_t allowActiveCheckTimer[MAX_ACTIVITY_TYPE];
     bool inCombat = false;
+    bool isMoving = false;
     time_t combatStart = 0;
     BotCheatMask cheatMask = BotCheatMask::none;
     Position jumpDestination = Position();

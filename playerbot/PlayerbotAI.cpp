@@ -212,6 +212,25 @@ void PlayerbotAI::UpdateAI(uint32 elapsed, bool minimal)
         }
     }
 
+    // Leontiesh - fix movement desync
+    if (bot->IsMoving())
+        isMoving = true;
+    else if (isMoving)
+    {
+        bot->InterruptMoving(true);
+        MovementInfo mInfo = bot->m_movementInfo;
+        float x, y, z;
+        bot->GetPosition(x, y, z);
+        float o = bot->GetPosition().o;
+        bot->UpdateAllowedPositionZ(x, y, z);
+        mInfo.ChangePosition(x, y, z, o);
+        WorldPacket data(MSG_MOVE_STOP);
+        data << mInfo;
+        bot->GetSession()->HandleMovementOpcodes(data);
+
+        isMoving = false;
+    }
+
     // wake up if in combat
     if (sServerFacade.IsInCombat(bot))
     {
