@@ -1284,90 +1284,92 @@ void PlayerbotAI::DoNextAction(bool min)
     }
 
     // random jumping (WIP, not working properly)
-    //if ((!master || (master && sServerFacade.GetDistance2d(bot, master) < 20.0f)) && !bot->m_movementInfo.HasMovementFlag(MOVEFLAG_FALLING) && !(bot->IsMoving() || bot->IsMounted()))
-    //{
-    //    if (!urand(0, 3))
-    //    {
-    //        //float dx, dy, dz = 0.f;
-    //        //if (bot->IsMoving())
-    //        //    bot->GetMotionMaster()->GetDestination(dx, dy, dz);
+    bool randomJump = false;
+    if (randomJump && !inCombat && (!master || (master && sServerFacade.GetDistance2d(bot, master) < 20.0f)) && !bot->m_movementInfo.HasMovementFlag(MOVEFLAG_JUMPING) && !bot->IsMoving())
+    {
+        if (!urand(0, 50))
+        {
+            //float dx, dy, dz = 0.f;
+            //if (bot->IsMoving())
+            //    bot->GetMotionMaster()->GetDestination(dx, dy, dz);
 
-    //        float angle = bot->GetOrientation();
-    //        //if (angle > M_PI_F)
-    //        //    angle -= 2.0f * M_PI_F;
+            float angle = master ? master->GetOrientation() : bot->GetOrientation();
+            //if (angle > M_PI_F)
+            //    angle -= 2.0f * M_PI_F;
 
-    //        float vsin = sin(angle);
-    //        float vcos = cos(angle);
+            float vsin = 1.f;// sin(angle);
+            float vcos = 0.f;// cos(angle);
 
-    //        // calculate jump time
-    //        float moveTimeHalf = 7.96f / 19.29f;
+            // calculate jump time
+            float moveTimeHalf = 7.96f / 19.29f;
 
-    //        // calculate jump distance
-    //        float dis = 2 * moveTimeHalf * bot->GetSpeed(MOVE_RUN);
+            // calculate jump distance
+            float dis = 0.f;// 2 * moveTimeHalf * bot->GetSpeed(MOVE_RUN);
+            float max_height = -Movement::computeFallElevation(moveTimeHalf, false, -7.96f);
 
-    //        // calculate jump destination
-    //        float ox, oy, oz;
-    //        bot->GetPosition(ox, oy, oz);
-    //        float fx = ox + dis * vsin;
-    //        float fy = oy + dis * vcos;
-    //        float fz = oz +0.5f;
-    //        bot->GetMap()->GetHitPosition(ox, oy, oz + 2.5f, fx, fy, fz, bot->GetPhaseMask(), -0.5f);
-    //        bot->UpdateAllowedPositionZ(fx, fy, fz);
-    //        // set jump destination for MSG_LAND packet
-    //        SetJumpDestination(Position(fx, fy, fz, bot->GetOrientation()));
+            // calculate jump destination
+            float ox, oy, oz;
+            bot->GetPosition(ox, oy, oz);
+            float fx = ox + dis * vsin;
+            float fy = oy + dis * vcos;
+            float fz = oz +0.5f;
+#ifdef MANGOSBOT_TWO
+            bot->GetMap()->GetHitPosition(ox, oy, oz + 2.5f, fx, fy, fz, bot->GetPhaseMask(), -0.5f);
+#else
+            bot->GetMap()->GetHitPosition(ox, oy, oz + max_height, fx, fy, fz, -0.5f);
+#endif
+            bot->UpdateFallInformationIfNeed(bot->m_movementInfo, MSG_MOVE_JUMP);
+            bot->UpdateAllowedPositionZ(fx, fy, fz);
+            // set jump destination for MSG_LAND packet
+            SetJumpDestination(Position(fx, fy, fz, bot->GetOrientation()));
 
-    //        if (HasStrategy("debug", BOT_STATE_NON_COMBAT))
-    //        {
-    //            Creature* wpCreature = bot->SummonCreature(2334, fx, fy, fz - 1, 0.f, TEMPSPAWN_TIMED_DESPAWN, 5000);
-    //            AddAura(wpCreature, 246);
-    //            TellMasterNoFacing("Jumping here");
-    //        }
+            // set delay based on actual distance
+            //float newdis = sqrt(bot->GetDistance2d(fx, fy, DIST_CALC_NONE));
+            //SetNextCheckDelay((uint32)((newdis / dis)* moveTimeHalf * 4 * IN_MILLISECONDS));
 
-    //        // set delay based on actual distance
-    //        //float newdis = sqrt(bot->GetDistance2d(fx, fy, DIST_CALC_NONE));
-    //        //SetNextCheckDelay((uint32)((newdis / dis)* moveTimeHalf * 4 * IN_MILLISECONDS));
+            // stop movement
+            bot->InterruptMoving(true);
+            bot->GetMotionMaster()->Clear();
+            bot->GetMotionMaster()->MoveIdle();
 
-    //        // stop movement
-    //        bot->StopMoving();
-    //        bot->GetMotionMaster()->Clear();
-    //        bot->GetMotionMaster()->MoveIdle();
+            // set delay based on actual distance
+            float newdis = sqrt(bot->GetDistance2d(fx, fy, DIST_CALC_NONE));
+            SetNextCheckDelay((uint32)((newdis / dis)* moveTimeHalf * 4 * IN_MILLISECONDS));
 
-    //        // jump packet
-    //        WorldPacket jump(MSG_MOVE_JUMP);
+            // jump packet
+            WorldPacket jump(MSG_MOVE_JUMP);
 
-    //        // add moveflags
-    //        bot->m_movementInfo.SetMovementFlags(MOVEFLAG_FALLING);
-    //        bot->m_movementInfo.AddMovementFlag(MOVEFLAG_FORWARD);
+            // add moveflags
+            bot->m_movementInfo.SetMovementFlags(MOVEFLAG_JUMPING);
+            bot->m_movementInfo.AddMovementFlag(MOVEFLAG_FORWARD);
 
-    //        // copy MovementInfo
-    //        MovementInfo movementInfo = bot->m_movementInfo;
+            // copy MovementInfo
+            MovementInfo movementInfo = bot->m_movementInfo;
 
-    //        // write jump info
-    //        movementInfo.jump.velocity = -7.96f;
-    //        movementInfo.jump.cosAngle = vcos;
-    //        movementInfo.jump.sinAngle = vsin;
-    //        movementInfo.jump.xyspeed = sServerFacade.isMoving(bot) ? bot->GetSpeed(MOVE_RUN) : 0.f;
-    //        //movementInfo.jump.start = movementInfo.pos;
-    //        //movementInfo.jump.startClientTime = WorldTimer::getMSTime();
-    //        //movementInfo.pos = bot->GetPosition();
+            // write jump info
+            movementInfo.jump.zspeed = -7.96f;
+            movementInfo.jump.cosAngle = vcos;
+            movementInfo.jump.sinAngle = vsin;
+            movementInfo.jump.xyspeed = 0.f;// bot->GetSpeed(MOVE_RUN);
+            //movementInfo.jump.start = movementInfo.pos;
+            //movementInfo.jump.startClientTime = WorldTimer::getMSTime();
+            //movementInfo.pos = bot->GetPosition();
 
-    //        // write packet info
-    //        jump << bot->GetObjectGuid().WriteAsPacked();
-    //        jump << movementInfo;
-    //        bot->GetSession()->HandleMovementOpcodes(jump);
-    //        //bot->SendHeartBeat();
+            // write packet info
+#ifndef MANGOSBOT_ZERO
+            jump << bot->GetObjectGuid().WriteAsPacked();
+#endif
+            jump << movementInfo;
+            bot->GetSession()->HandleMovementOpcodes(jump);
+            //bot->SendHeartBeat();
 
-    //        //bot->m_movementInfo.ChangePosition(fx, fy, fz, bot->GetOrientation());
+            //bot->m_movementInfo.ChangePosition(fx, fy, fz, bot->GetOrientation());
 
-    //        // add moveflag
-    //        //bot->m_movementInfo.AddMovementFlag(MOVEFLAG_PENDINGSTOP);
-    //        //bot->SendHeartBeat();
-
-    //        // calculate rough jump time
-    //        float moveTime = 7.96f / 19.29f * 4;
-    //        SetNextCheckDelay((uint32)(moveTime * IN_MILLISECONDS));
-    //    }
-    //}
+            // add moveflag
+            //bot->m_movementInfo.AddMovementFlag(MOVEFLAG_PENDINGSTOP);
+            //bot->SendHeartBeat();
+        }
+    }
 }
 
 void PlayerbotAI::ReInitCurrentEngine()
