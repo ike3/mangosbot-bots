@@ -341,7 +341,7 @@ void PlayerbotAI::UpdateAIInternal(uint32 elapsed, bool minimal)
         {
             ostringstream out; out << "Unknown command " << command;
             TellMaster(out);
-            helper.ParseChatCommand("help");
+            //helper.ParseChatCommand("help");
         }
         chatCommands.pop();
     }
