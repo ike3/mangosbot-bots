@@ -41,6 +41,8 @@ Unit* PartyMemberValue::FindPartyMember(FindPlayerPredicate &predicate, bool ign
     {
         for (GroupReference *ref = group->GetFirstMember(); ref; ref = ref->next())
         {
+            if (!ref->getSource() || bot->GetMapId() != ref->getSource()->GetMapId()) continue;
+
             if (ref->getSource() != bot)
             {
                 if (ref->getSubGroup() != bot->GetSubGroup())
