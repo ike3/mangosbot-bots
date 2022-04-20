@@ -1863,7 +1863,7 @@ void PlayerbotFactory::InitAvailableSpells()
     }
 
 #ifndef MANGOSBOT_TWO
-    if (!bot->HasSpell(20271)) // judgement missing
+    if (bot->getClass() == CLASS_PALADIN && !bot->HasSpell(20271)) // judgement missing
         bot->learnSpell(20271, false);
 #endif
 }
