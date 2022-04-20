@@ -193,10 +193,6 @@ namespace ai
         NoFoodTrigger(PlayerbotAI* ai) : Trigger(ai, "no food trigger") {}
         virtual bool IsActive()
         {
-            bool isRandomBot = sRandomPlayerbotMgr.IsRandomBot(bot);
-            if (isRandomBot && sPlayerbotAIConfig.freeFood)
-                return false;
-
             return AI_VALUE2(list<Item*>, "inventory items", "conjured food").empty();
         }
     };
@@ -206,10 +202,6 @@ namespace ai
         NoDrinkTrigger(PlayerbotAI* ai) : Trigger(ai, "no drink trigger") {}
         virtual bool IsActive()
         {
-            bool isRandomBot = sRandomPlayerbotMgr.IsRandomBot(bot);
-            if (isRandomBot && sPlayerbotAIConfig.freeFood)
-                return false;
-
             return AI_VALUE2(list<Item*>, "inventory items", "conjured water").empty();
         }
     };
