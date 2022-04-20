@@ -18,8 +18,8 @@ void GroupStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         "seldom",
         NextAction::array(0, new NextAction("leave far away", 4.0f), NULL)));
 
-    triggers.push_back(new TriggerNode(
+    /*triggers.push_back(new TriggerNode(
         "seldom",
-        NextAction::array(0, new NextAction("reset instances", 1.0f), NULL)));
+        NextAction::array(0, new NextAction("reset instances", 1.0f), NULL)));*/
 }
 
