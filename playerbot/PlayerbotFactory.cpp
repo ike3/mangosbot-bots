@@ -1098,6 +1098,7 @@ void PlayerbotFactory::InitEquipmentNew(bool incremental)
                         newItem->AddToWorld();
                         newItem->AddToUpdateQueueOf(bot);
                         bot->AutoUnequipOffhandIfNeed();
+                        newItem->SetOwnerGuid(bot->GetObjectGuid());
                         EnchantItem(newItem);
                         sLog.outString("Bot #%d %s:%d <%s>: Equip: %d, slot: %d, Old item: %d", bot->GetGUIDLow(), IsAlliance(bot->getRace()) ? "A" : "H", bot->GetLevel(), bot->GetName(), newItemId, slot, itemInSlot);
                         found = true;
@@ -1204,6 +1205,7 @@ void PlayerbotFactory::InitEquipment(bool incremental)
                 {
                     //newItem->AddToWorld();
                     //newItem->AddToUpdateQueueOf(bot);
+                    newItem->SetOwnerGuid(bot->GetObjectGuid());
                     bot->AutoUnequipOffhandIfNeed();
                     EnchantItem(newItem);
                     found = true;
@@ -1339,6 +1341,7 @@ void PlayerbotFactory::InitSecondEquipmentSet()
             {
                 newItem->AddToWorld();
                 newItem->AddToUpdateQueueOf(bot);
+                newItem->SetOwnerGuid(bot->GetObjectGuid());
                 EnchantItem(newItem);
                 break;
             }
