@@ -337,6 +337,9 @@ bool BGJoinAction::shouldJoinBg(BattleGroundQueueTypeId queueTypeId, BattleGroun
 #endif
     bool hasPlayers = (sRandomPlayerbotMgr.BgPlayers[queueTypeId][bracketId][0] + sRandomPlayerbotMgr.BgPlayers[queueTypeId][bracketId][1]) > 0;
     bool hasBots = (sRandomPlayerbotMgr.BgBots[queueTypeId][bracketId][0] + sRandomPlayerbotMgr.BgBots[queueTypeId][bracketId][1]) >= bg->GetMinPlayersPerTeam();
+    if (!sPlayerbotAIConfig.randomBotAutoJoinBG && !hasPlayers)
+        return false;
+
     if (!hasPlayers && !isArena && queueTypeId != BATTLEGROUND_QUEUE_WS)
         return false;
 

@@ -68,6 +68,7 @@ public:
     uint32 minRandomBotsPriceChangeInterval, maxRandomBotsPriceChangeInterval;
     bool randomBotJoinLfg;
     bool randomBotJoinBG;
+    bool randomBotAutoJoinBG;
     uint32 randomBotBracketCount;
     bool randomBotLoginAtStartup;
     uint32 randomBotTeleLevel;
