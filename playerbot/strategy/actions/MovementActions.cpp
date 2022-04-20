@@ -1073,8 +1073,12 @@ bool MovementAction::ChaseTo(WorldObject* obj, float distance, float angle)
     }
 #endif
 
+    if (ai->HasStrategy("behind", BOT_STATE_COMBAT))
+        angle = GetFollowAngle() / 3 + obj->GetOrientation() + M_PI;
+
     UpdateMovementState();
 
+    bot->HandleEmoteState(0);
     if (!bot->IsStandState())
         bot->SetStandState(UNIT_STAND_STATE_STAND);
 
@@ -1402,7 +1406,37 @@ bool SetBehindTargetAction::Execute(Event event)
 
     float angle = GetFollowAngle() / 3 + target->GetOrientation() + M_PI;
 
-    //return ChaseTo(target, 0.f, angle);
+    float distance = bot->GetCombinedCombatReach(target, true) - sPlayerbotAIConfig.contactDistance;
+    float x = target->GetPositionX() + cos(angle) * distance,
+        y = target->GetPositionY() + sin(angle) * distance,
+        z = target->GetPositionZ();
+    bot->UpdateGroundPositionZ(x, y, z);
+
+    bool isLos = target->IsWithinLOS(x, y, z + bot->GetCollisionHeight(), true);
+
+    if (!MoveTo(bot->GetMapId(), x, y, z) && !isLos)
+    {
+        distance = sPlayerbotAIConfig.contactDistance;
+        x = target->GetPositionX() + cos(angle) * distance;
+        y = target->GetPositionY() + sin(angle) * distance;
+        z = target->GetPositionZ();
+        bot->UpdateGroundPositionZ(x, y, z);
+
+        return MoveTo(bot->GetMapId(), x, y, z);
+    }
+
+    return true;
+}
+
+bool SetBehindTargetAction::isUseful()
+{
+    Unit* target = AI_VALUE(Unit*, "current target");
+    if (!target)
+        return false;
+
+    return !bot->IsFacingTargetsBack(target);
+
+    /*float angle = GetFollowAngle() / 3 + target->GetOrientation() + M_PI;
 
     float distance = sPlayerbotAIConfig.contactDistance;
     float x = target->GetPositionX() + cos(angle) * distance,
@@ -1410,12 +1444,9 @@ bool SetBehindTargetAction::Execute(Event event)
         z = target->GetPositionZ();
     bot->UpdateGroundPositionZ(x, y, z);
 
-    return MoveTo(bot->GetMapId(), x, y, z);
-}
+    bool isLos = target->IsWithinLOS(x, y, z + bot->GetCollisionHeight(), true);
 
-bool SetBehindTargetAction::isUseful()
-{
-    return !AI_VALUE2(bool, "behind", "current target");
+    return isLos && !AI_VALUE2(bool, "behind", "current target");*/
 }
 
 bool SetBehindTargetAction::isPossible()
