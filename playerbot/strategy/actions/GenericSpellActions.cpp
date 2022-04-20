@@ -86,12 +86,45 @@ bool CastSpellAction::isUseful()
     if (!spellTarget->IsInWorld() || spellTarget->GetMapId() != bot->GetMapId())
         return false;
 
-    return spellTarget && AI_VALUE2(bool, "spell cast useful", spell) && bot->GetDistance(spellTarget, true, DIST_CALC_COMBAT_REACH) <= (range + sPlayerbotAIConfig.contactDistance);
+    bool canReach = false;
+
+    if (spellTarget == bot)
+        canReach = true;
+    else
+    {
+        float dist = bot->GetDistance(spellTarget, true, ai->IsRanged(bot) ? DIST_CALC_COMBAT_REACH : DIST_CALC_COMBAT_REACH_WITH_MELEE);
+        if (range == ATTACK_DISTANCE) // melee action
+        {
+            canReach = bot->CanReachWithMeleeAttack(spellTarget);
+        }
+        else // range check
+        {
+            canReach = dist <= (range + sPlayerbotAIConfig.contactDistance);
+
+            uint32 spellId = AI_VALUE2(uint32, "spell id", spell);
+            if (!spellId)
+                return true; // there can be known alternatives
+
+            const SpellEntry* pSpellInfo = sServerFacade.LookupSpellInfo(spellId);
+            if (!pSpellInfo)
+                return true; // there can be known alternatives
+
+            if (range != ATTACK_DISTANCE && pSpellInfo->rangeIndex != SPELL_RANGE_IDX_COMBAT && pSpellInfo->rangeIndex != SPELL_RANGE_IDX_SELF_ONLY && pSpellInfo->rangeIndex != SPELL_RANGE_IDX_ANYWHERE)
+            {
+                SpellRangeEntry const* srange = sSpellRangeStore.LookupEntry(pSpellInfo->rangeIndex);
+                float max_range = GetSpellMaxRange(srange);
+                float min_range = GetSpellMinRange(srange);
+                canReach = dist < max_range && dist >= min_range;
+            }
+        }
+    }
+
+    return spellTarget && AI_VALUE2(bool, "spell cast useful", spell) && canReach; // bot->GetDistance(spellTarget, true, DIST_CALC_COMBAT_REACH) <= (range + sPlayerbotAIConfig.contactDistance);
 }
 
 bool CastAuraSpellAction::isUseful()
 {
-    return GetTarget() && (GetTarget() != nullptr) && (GetTarget() != NULL) && CastSpellAction::isUseful() && !ai->HasAura(spell, GetTarget(), true);
+    return GetTarget() && (GetTarget() != nullptr) && (GetTarget() != NULL) && CastSpellAction::isUseful() && !ai->HasAura(spell, GetTarget(), true, isOwner);
 }
 
 bool CastEnchantItemAction::isPossible()
@@ -101,11 +134,6 @@ bool CastEnchantItemAction::isPossible()
 
     uint32 spellId = AI_VALUE2(uint32, "spell id", spell);
     return spellId && AI_VALUE2(Item*, "item for spell", spellId);
-}
-
-bool CastHealingSpellAction::isUseful()
-{
-    return CastAuraSpellAction::isUseful();
 }
 
 bool CastAoeHealSpellAction::isUseful()

@@ -34,7 +34,7 @@ namespace ai
                 //if (isBoss || isRaid)
                 //    return sServerFacade.IsDistanceLessThan(targetDistance, (ai->GetRange("spell") + combatReach) / 2);
 
-                return sServerFacade.IsDistanceLessOrEqualThan(targetDistance, (ai->GetRange("spell") + combatReach) / 2);
+                return sServerFacade.IsDistanceLessOrEqualThan(targetDistance, (ai->GetRange("spell") + combatReach) * 0.7f);
             }
             return false;
         }
@@ -70,13 +70,13 @@ namespace ai
             //if (isBoss || isRaid)
             //    return sServerFacade.IsDistanceLessThan(targetDistance, ai->GetRange("shoot") + combatReach);
 
-            return sServerFacade.IsDistanceLessOrEqualThan(targetDistance, (ai->GetRange("shoot") + combatReach) / 2);
+            return sServerFacade.IsDistanceLessOrEqualThan(targetDistance, (ai->GetRange("shoot") + combatReach) * 0.7f);
         }
     };
 
     class EnemyTooCloseForMeleeTrigger : public Trigger {
     public:
-        EnemyTooCloseForMeleeTrigger(PlayerbotAI* ai) : Trigger(ai, "enemy too close for melee", 5) {}
+        EnemyTooCloseForMeleeTrigger(PlayerbotAI* ai) : Trigger(ai, "enemy too close for melee", 3) {}
         virtual bool IsActive()
         {
             Unit* target = AI_VALUE(Unit*, "current target");
@@ -126,10 +126,7 @@ namespace ai
             if (!target)
                 return false;
 
-            return !bot->CanReachWithMeleeAttack(target);
-
-            float targetDistance = sServerFacade.GetDistance2d(bot, target);
-            return target && (targetDistance > max(5.0f, bot->GetCombinedCombatReach(target, true)) || (!bot->IsWithinLOSInMap(target, true) && targetDistance > 5.0f));
+            return !bot->CanReachWithMeleeAttack(target) || !bot->IsWithinLOSInMap(target, true);
         }
     };
 
@@ -143,7 +140,7 @@ namespace ai
             if (!target)
                 return false;
 
-            return target && (bot->GetDistance(target, true, DIST_CALC_COMBAT_REACH) > (distance + sPlayerbotAIConfig.contactDistance)) || !bot->IsWithinLOSInMap(target, true);
+            return target && (bot->GetDistance(target, true, DIST_CALC_COMBAT_REACH) > (distance - sPlayerbotAIConfig.contactDistance)) || !bot->IsWithinLOSInMap(target, true);
         }
     };
 
@@ -158,7 +155,7 @@ namespace ai
             if (!target)
                 return false;
 
-            return target && (bot->GetDistance(target, true, DIST_CALC_COMBAT_REACH) > (distance + sPlayerbotAIConfig.contactDistance)) || !bot->IsWithinLOSInMap(target, true);
+            return target && (bot->GetDistance(target, true, DIST_CALC_COMBAT_REACH) > (distance - sPlayerbotAIConfig.contactDistance)) || !bot->IsWithinLOSInMap(target, true);
         }
     };
 

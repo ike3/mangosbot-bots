@@ -24,7 +24,7 @@ namespace ai
 
             float combatReach = bot->GetCombinedCombatReach(target, true);
 
-            if (distance < max(5.0f, combatReach))
+            if (distance == ATTACK_DISTANCE)
             {
                 return ChaseTo(target, 0.0f, GetFollowAngle());
             }
@@ -34,7 +34,7 @@ namespace ai
                 bool inLos = bot->IsWithinLOSInMap(target, true);
                 bool isFriend = sServerFacade.IsFriendlyTo(bot, target);
                 float chaseDist = inLos ? distance : isFriend ? distance / 2 : distance;
-                return ChaseTo(target, (chaseDist - sPlayerbotAIConfig.contactDistance), bot->GetAngle(target));
+                return ChaseTo(target, (chaseDist - sPlayerbotAIConfig.contactDistance) * 0.8, bot->GetAngle(target));
             }
         }
         virtual bool isUseful()
@@ -43,8 +43,10 @@ namespace ai
             if (bot->IsNonMeleeSpellCasted(true))
                 return false;
 
-            Unit* target = AI_VALUE(Unit*, GetTargetName());
-            return target && (!bot->IsWithinDistInMap(target, distance) || (bot->IsWithinDistInMap(target, distance) && !bot->IsWithinLOSInMap(target, true)));
+            return true;
+
+            //Unit* target = AI_VALUE(Unit*, GetTargetName());
+            //return target && (!bot->IsWithinDistInMap(target, distance) || (bot->IsWithinDistInMap(target, distance) && !bot->IsWithinLOSInMap(target, true)));
         }
         virtual string GetTargetName() { return "current target"; }
 
@@ -71,7 +73,7 @@ namespace ai
     class ReachMeleeAction : public ReachTargetAction
 	{
     public:
-        ReachMeleeAction(PlayerbotAI* ai) : ReachTargetAction(ai, "reach melee", sPlayerbotAIConfig.meleeDistance) {}
+        ReachMeleeAction(PlayerbotAI* ai) : ReachTargetAction(ai, "reach melee", ATTACK_DISTANCE) {}
     };
 
     class ReachSpellAction : public ReachTargetAction

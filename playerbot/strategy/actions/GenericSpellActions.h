@@ -58,9 +58,7 @@ namespace ai
 
             Unit* target = AI_VALUE(Unit*, "current target");
             if (target)
-                range = max(5.0f, bot->GetCombinedCombatReach(target, true));
-
-                //range = target->GetCombinedCombatReach();
+                range = max(ATTACK_DISTANCE, bot->GetCombinedCombatReach(target, true));
 		}
     };
 
@@ -68,13 +66,13 @@ namespace ai
     class CastDebuffSpellAction : public CastAuraSpellAction
     {
     public:
-        CastDebuffSpellAction(PlayerbotAI* ai, string spell, bool isOwner = false) : CastAuraSpellAction(ai, spell, isOwner) {}
+        CastDebuffSpellAction(PlayerbotAI* ai, string spell, bool isOwner = true) : CastAuraSpellAction(ai, spell, isOwner) {}
     };
 
     class CastDebuffSpellOnAttackerAction : public CastAuraSpellAction
     {
     public:
-        CastDebuffSpellOnAttackerAction(PlayerbotAI* ai, string spell, bool isOwner = false) : CastAuraSpellAction(ai, spell, isOwner) {}
+        CastDebuffSpellOnAttackerAction(PlayerbotAI* ai, string spell, bool isOwner = true) : CastAuraSpellAction(ai, spell, isOwner) {}
         Value<Unit*>* GetTargetValue()
         {
             return context->GetValue<Unit*>("attacker without aura", spell);
@@ -111,13 +109,12 @@ namespace ai
     class CastHealingSpellAction : public CastAuraSpellAction
     {
     public:
-        CastHealingSpellAction(PlayerbotAI* ai, string spell, uint8 estAmount = 15.0f) : CastAuraSpellAction(ai, spell)
+        CastHealingSpellAction(PlayerbotAI* ai, string spell, uint8 estAmount = 15.0f) : CastAuraSpellAction(ai, spell, true)
 		{
             this->estAmount = estAmount;
             range = ai->GetRange("spell");
         }
 		virtual string GetTargetName() { return "self target"; }
-        virtual bool isUseful();
         virtual ActionThreatType getThreatType() { return ACTION_THREAT_AOE; }
 
     protected:

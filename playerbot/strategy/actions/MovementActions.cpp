@@ -1058,6 +1058,9 @@ bool MovementAction::ChaseTo(WorldObject* obj, float distance, float angle)
         return false;
     }
 
+    if (!obj || obj == bot || bot->GetMapId() != obj->GetMapId())
+        return false;
+
 #ifdef MANGOSBOT_TWO
     TransportInfo* transportInfo = bot->GetTransportInfo();
     if (transportInfo && transportInfo->IsOnVehicle())
@@ -1091,6 +1094,7 @@ bool MovementAction::ChaseTo(WorldObject* obj, float distance, float angle)
     bot->GetMotionMaster()->Clear();
     bot->GetMotionMaster()->MoveChase((Unit*)obj, distance, angle);
 
+    WaitForReach(sServerFacade.GetDistance2d(bot, obj));
     return true;
 }
 
@@ -1114,7 +1118,7 @@ void MovementAction::WaitForReach(float distance)
     if (delay < 0)
         delay = 0;
 
-    ai->SetNextCheckDelay((uint32)delay);
+    ai->SetNextCheckDelay((uint32)(delay * 0.8f));
 }
 
 bool MovementAction::Flee(Unit *target)
@@ -1230,7 +1234,7 @@ bool MovementAction::Flee(Unit *target)
                 {
                     float distanceToHealer = sServerFacade.GetDistance2d(bot, player);
                     float distanceToTarget = sServerFacade.GetDistance2d(player, target);
-                    if (distanceToHealer < fleeDistance && distanceToTarget > (ai->GetRange("shoot") / 2 + sPlayerbotAIConfig.followDistance) && (needHealer || player->IsWithinLOSInMap(target, true)))
+                    if (distanceToHealer < fleeDistance && distanceToTarget > (ai->GetRange("spell") / 2 + sPlayerbotAIConfig.followDistance) && (needHealer || player->IsWithinLOSInMap(target, true)))
                     {
                         fleeTarget = player;
                         fleeDistance = distanceToHealer;
@@ -1241,7 +1245,7 @@ bool MovementAction::Flee(Unit *target)
                 {
                     float distanceToRanged = sServerFacade.GetDistance2d(bot, player);
                     float distanceToTarget = sServerFacade.GetDistance2d(player, target);
-                    if (distanceToRanged < fleeDistance && distanceToTarget > (ai->GetRange("shoot") / 2 + sPlayerbotAIConfig.followDistance) && player->IsWithinLOSInMap(target, true))
+                    if (distanceToRanged < fleeDistance && distanceToTarget > (ai->GetRange("spell") / 2 + sPlayerbotAIConfig.followDistance) && player->IsWithinLOSInMap(target, true))
                     {
                         fleeTarget = player;
                         fleeDistance = distanceToRanged;
@@ -1251,7 +1255,7 @@ bool MovementAction::Flee(Unit *target)
                 // remember any group member in case no one else found
                 float distanceToFlee = sServerFacade.GetDistance2d(bot, player);
                 float distanceToTarget = sServerFacade.GetDistance2d(player, target);
-                if (distanceToFlee < spareDistance && distanceToTarget >(ai->GetRange("shoot") / 2 + sPlayerbotAIConfig.followDistance) && player->IsWithinLOSInMap(target, true))
+                if (distanceToFlee < spareDistance && distanceToTarget >(ai->GetRange("spell") / 2 + sPlayerbotAIConfig.followDistance) && player->IsWithinLOSInMap(target, true))
                 {
                     spareTarget = player;
                     spareDistance = distanceToFlee;
@@ -1271,7 +1275,7 @@ bool MovementAction::Flee(Unit *target)
             if ((!fleeTarget || !foundFlee) && master && sServerFacade.IsAlive(master) && master->IsWithinLOSInMap(target, true))
             {
                 float distanceToTarget = sServerFacade.GetDistance2d(master, target);
-                if (distanceToTarget > (ai->GetRange("shoot") / 2 + sPlayerbotAIConfig.followDistance))
+                if (distanceToTarget > (ai->GetRange("spell") / 2 + sPlayerbotAIConfig.followDistance))
                     foundFlee = MoveNear(master);
             }
         }
