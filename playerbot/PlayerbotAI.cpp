@@ -1807,7 +1807,7 @@ bool IsRealAura(Player* bot, Aura const* aura, Unit* unit)
     return false;
 }
 
-bool PlayerbotAI::HasAura(string name, Unit* unit, bool maxStack, bool checkIsOwner, int maxAuraAmount)
+bool PlayerbotAI::HasAura(string name, Unit* unit, bool maxStack, bool checkIsOwner, int maxAuraAmount, bool hasMyAura)
 {
     if (!unit)
         return false;
@@ -1839,6 +1839,12 @@ bool PlayerbotAI::HasAura(string name, Unit* unit, bool maxStack, bool checkIsOw
 
 			if (IsRealAura(bot, aura, unit))
             {
+                if (hasMyAura && aura->GetHolder())
+                {
+                    if (aura->GetHolder()->GetCasterGuid() == bot->GetObjectGuid())
+                        return true;
+                }
+
                 if (checkIsOwner && aura->GetHolder())
                 {
                     if (aura->GetHolder()->GetCasterGuid() != bot->GetObjectGuid())
