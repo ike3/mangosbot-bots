@@ -207,7 +207,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
     {
         if (lastMove.lastMoveShort.distance(endPosition) < maxDistChange)
             AI_VALUE(LastMovement&, "last movement").clear();
-        mover->StopMoving();
+        mover->InterruptMoving(true);
         return false;
     }
 
@@ -252,7 +252,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
                         movePath.addPoint(endPosition);
                         AI_VALUE(LastMovement&, "last movement").setPath(movePath);
 
-                        bot->StopMoving();
+                        bot->InterruptMoving(true);
                         if (ai->HasStrategy("debug move", BOT_STATE_NON_COMBAT))
                             ai->TellMasterNoFacing("I have no path");
                         return false;
@@ -494,7 +494,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
     if (!isVehicle)
     {
         bot->HandleEmoteState(0);
-        if (bot->IsSitState())
+        if (!bot->IsStandState())
             bot->SetStandState(UNIT_STAND_STATE_STAND);
 
         if (bot->IsNonMeleeSpellCasted(true))
@@ -521,7 +521,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
     //Clean movement if not already moving the same way.
     if (mm.GetCurrent()->GetMovementGeneratorType() != POINT_MOTION_TYPE)
     {
-        mover->StopMoving();
+        mover->InterruptMoving(true);
         mm.Clear();
     }
     else
@@ -530,7 +530,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
 
         if (movePosition.distance(WorldPosition(movePosition.getMapId(), x, y, z, 0)) > minDist)
         {
-            mover->StopMoving();
+            mover->InterruptMoving(true);
             mm.Clear();
         }
     }
@@ -829,7 +829,7 @@ void MovementAction::UpdateMovementState()
                 z += CONTACT_DISTANCE;
                 bot->UpdateAllowedPositionZ(x, y, z);
 
-                bot->StopMoving();
+                bot->InterruptMoving(true);
                 bot->GetMotionMaster()->Clear();
                 bot->NearTeleportTo(x, y, z, bot->GetOrientation());
                 //bot->GetMotionMaster()->MovePoint(bot->GetMapId(), x, y, z, FORCED_MOVEMENT_RUN, false);
@@ -869,7 +869,7 @@ void MovementAction::UpdateMovementState()
                     z += CONTACT_DISTANCE;
                     bot->UpdateAllowedPositionZ(x, y, z);
 
-                    bot->StopMoving();
+                    bot->InterruptMoving(true);
                     bot->GetMotionMaster()->Clear();
                     bot->NearTeleportTo(x, y, z, bot->GetOrientation());
                     //bot->GetMotionMaster()->MovePoint(bot->GetMapId(), x, y, z, FORCED_MOVEMENT_RUN, false);
@@ -1019,7 +1019,7 @@ bool MovementAction::Follow(Unit* target, float distance, float angle)
         distance += angle;
 
     bot->HandleEmoteState(0);
-    if (bot->IsSitState())
+    if (!bot->IsStandState())
         bot->SetStandState(UNIT_STAND_STATE_STAND);
 
     if (bot->IsNonMeleeSpellCasted(true))

@@ -246,7 +246,7 @@ void PlayerbotAI::UpdateAI(uint32 elapsed, bool minimal)
             moveType == CHASE_MOTION_TYPE ||
             moveType == POINT_MOTION_TYPE)
         {
-            bot->StopMoving();
+            bot->InterruptMoving(true);
             bot->GetMotionMaster()->Clear();
         }
     }
@@ -399,9 +399,8 @@ void PlayerbotAI::HandleTeleportAck()
     if (IsRealPlayer())
         return;
 
-    bot->StopMoving();
-    bot->GetMotionMaster()->Clear(true);
     bot->InterruptMoving(true);
+    bot->GetMotionMaster()->Clear(true);
 
 	if (bot->IsBeingTeleportedNear())
 	{
@@ -878,7 +877,7 @@ void PlayerbotAI::HandleBotOutgoingPacket(const WorldPacket& packet)
         InterruptSpell();
 
         // stop movement
-        bot->StopMoving();
+        bot->InterruptMoving(true);
         bot->GetMotionMaster()->Clear();
         bot->GetMotionMaster()->MoveIdle();
 
@@ -1018,7 +1017,7 @@ void PlayerbotAI::DoNextAction(bool min)
     // change engine if just died
     if (currentEngine != engines[BOT_STATE_DEAD] && !sServerFacade.IsAlive(bot))
     {
-        bot->StopMoving();
+        bot->InterruptMoving(true);
         bot->GetMotionMaster()->Clear();
         bot->GetMotionMaster()->MoveIdle();
 
@@ -1220,10 +1219,10 @@ void PlayerbotAI::DoNextAction(bool min)
     if (bot->m_movementInfo.HasMovementFlag(MOVEFLAG_JUMPING))
 #endif
     {
-        // stop movement
-        bot->StopMoving();
-        bot->GetMotionMaster()->Clear();
-        bot->GetMotionMaster()->MoveIdle();
+        //// stop movement
+        //bot->InterruptMoving(true);
+        //bot->GetMotionMaster()->Clear();
+        //bot->GetMotionMaster()->MoveIdle();
 
         // remove moveflags
 #ifdef MANGOSBOT_TWO
@@ -1251,6 +1250,11 @@ void PlayerbotAI::DoNextAction(bool min)
 #endif
         stop << bot->m_movementInfo;
         bot->GetSession()->HandleMovementOpcodes(stop);
+
+        // stop movement
+        bot->InterruptMoving(true);
+        bot->GetMotionMaster()->Clear();
+        bot->GetMotionMaster()->MoveIdle();
 
         ResetJumpDestination();
     }
@@ -2266,7 +2270,7 @@ bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target, Item* itemTarget)
 
     if (sServerFacade.isMoving(bot) && spell->GetCastTime())
     {
-        bot->InterruptMoving();
+        bot->InterruptMoving(true);
         //SetNextCheckDelay(sPlayerbotAIConfig.globalCoolDown);
         //spell->cancel();
         //delete spell;

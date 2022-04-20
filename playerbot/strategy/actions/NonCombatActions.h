@@ -30,7 +30,7 @@ namespace ai
 
                 if (sServerFacade.isMoving(bot))
                 {
-                    bot->StopMoving();
+                    bot->InterruptMoving(true);
                     ai->SetNextCheckDelay(sPlayerbotAIConfig.globalCoolDown);
                     return false;
                 }
@@ -93,7 +93,7 @@ namespace ai
 
                 if (sServerFacade.isMoving(bot))
                 {
-                    bot->StopMoving();
+                    bot->InterruptMoving(true);
                     ai->SetNextCheckDelay(sPlayerbotAIConfig.globalCoolDown);
                     return false;
                 }

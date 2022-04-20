@@ -69,7 +69,7 @@ namespace ai
                     {
                         context->GetValue<ObjectGuid>("pull target")->Set(grindTarget->GetObjectGuid());
                         MotionMaster& mm = *bot->GetMotionMaster();
-                        bot->StopMoving();
+                        bot->InterruptMoving(true);
                         mm.Clear();
                     }
                 }
