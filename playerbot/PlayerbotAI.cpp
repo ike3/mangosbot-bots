@@ -1958,9 +1958,6 @@ bool PlayerbotAI::CanCastSpell(uint32 spellid, Unit* target, uint8 effectMask, b
 
     uint32 CastingTime = !IsChanneledSpell(spellInfo) ? GetSpellCastTime(spellInfo, bot) : GetSpellDuration(spellInfo);
 
-    if (CastingTime && bot->IsMoving())
-        return false;
-
 	if (!itemTarget)
 	{
         bool positiveSpell = IsPositiveSpell(spellInfo);
@@ -1987,7 +1984,6 @@ bool PlayerbotAI::CanCastSpell(uint32 spellid, Unit* target, uint8 effectMask, b
         if (target->IsImmuneToSpell(spellInfo, false, GetSpellSchoolMask(spellInfo)))
 #endif
             return false;
-
         if (!damage)
         {
             for (int32 i = EFFECT_INDEX_0; i <= EFFECT_INDEX_2; i++)
@@ -2003,7 +1999,7 @@ bool PlayerbotAI::CanCastSpell(uint32 spellid, Unit* target, uint8 effectMask, b
 	}
 
 	ObjectGuid oldSel = bot->GetSelectionGuid();
-	bot->SetSelectionGuid(target->GetObjectGuid());
+	//bot->SetSelectionGuid(target->GetObjectGuid());
 	Spell *spell = new Spell(bot, spellInfo, false);
 
     spell->m_targets.setUnitTarget(target);
@@ -2012,8 +2008,8 @@ bool PlayerbotAI::CanCastSpell(uint32 spellid, Unit* target, uint8 effectMask, b
 
     SpellCastResult result = spell->CheckCast(true);
     delete spell;
-	if (oldSel)
-		bot->SetSelectionGuid(oldSel);
+	//if (oldSel)
+	//	bot->SetSelectionGuid(oldSel);
 
     switch (result)
     {
@@ -2075,7 +2071,7 @@ bool PlayerbotAI::CanCastSpell(uint32 spellid, GameObject* goTarget, uint8 effec
         if (sServerFacade.GetDistance2d(bot, goTarget) > sPlayerbotAIConfig.sightDistance)
             return false;
 
-    ObjectGuid oldSel = bot->GetSelectionGuid();
+    //ObjectGuid oldSel = bot->GetSelectionGuid();
     bot->SetSelectionGuid(goTarget->GetObjectGuid());
     Spell* spell = new Spell(bot, spellInfo, false);
 
@@ -2085,8 +2081,8 @@ bool PlayerbotAI::CanCastSpell(uint32 spellid, GameObject* goTarget, uint8 effec
 
     SpellCastResult result = spell->CheckCast(true);
     delete spell;
-    if (oldSel)
-        bot->SetSelectionGuid(oldSel);
+    //if (oldSel)
+    //    bot->SetSelectionGuid(oldSel);
 
     switch (result)
     {
@@ -2303,7 +2299,7 @@ bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target, Item* itemTarget)
     if (sServerFacade.isMoving(bot) && spell->GetCastTime())
     {
         bot->InterruptMoving(true);
-        //SetNextCheckDelay(sPlayerbotAIConfig.globalCoolDown);
+        SetNextCheckDelay(sPlayerbotAIConfig.globalCoolDown);
         //spell->cancel();
         //delete spell;
         //return false;
