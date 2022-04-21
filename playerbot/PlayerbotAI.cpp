@@ -1217,7 +1217,7 @@ void PlayerbotAI::WaitForSpellCast(Spell *spell)
             castTime += duration;
     }
 
-    castTime = ceil(castTime);
+    castTime = min(15000.0f, ceil(castTime));
 
     uint32 globalCooldown = CalculateGlobalCooldown(pSpellInfo->Id);
     if (castTime < globalCooldown)
