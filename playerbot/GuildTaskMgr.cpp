@@ -272,16 +272,16 @@ bool GuildTaskMgr::SendAdvertisement(uint32 owner, uint32 guildId)
     if (!leader)
         return false;
 
-    uint32 validIn;
-    GetTaskValue(owner, guildId, "activeTask", &validIn);
+    uint32 validIn, lastChange;
+    GetTaskValue(owner, guildId, "activeTask", &validIn, &lastChange);
 
     uint32 itemTask = GetTaskValue(owner, guildId, "itemTask");
     if (itemTask)
-        return SendItemAdvertisement(itemTask, owner, guildId, validIn);
+        return SendItemAdvertisement(itemTask, owner, guildId, lastChange + validIn);
 
     uint32 killTask = GetTaskValue(owner, guildId, "killTask");
     if (killTask)
-        return SendKillAdvertisement(killTask, owner, guildId, validIn);
+        return SendKillAdvertisement(killTask, owner, guildId, lastChange + validIn);
 
     return false;
 }
@@ -308,9 +308,9 @@ string formatTime(uint32 secs)
     return out.str();
 }
 
-string formatDateTime(uint32 secs)
+string formatDateTime(uint32 validId)
 {
-    time_t rawtime = time(0) + secs;
+    time_t rawtime = validId;
     tm* timeinfo = localtime (&rawtime);
 
     char buffer[256];
@@ -346,7 +346,10 @@ bool GuildTaskMgr::SendItemAdvertisement(uint32 itemId, uint32 owner, uint32 gui
         body << "at least " << count << " of them ";
     else
         body << "some ";
-    body << "we'd really appreciate that and pay a high price.\n\n";
+    body << "we'd really appreciate that and even may pay ";
+    body << ChatHelper::formatMoney(max(10, auctionbot.GetBuyPrice(proto)));
+    if (count > 1) body << " per item.";
+    body << "\n\n";
     body << "The task will expire at " << formatDateTime(validIn) << "\n";
     body << "\n";
     body << "Best Regards,\n";
@@ -557,7 +560,7 @@ map<uint32,uint32> GuildTaskMgr::GetTaskValues(uint32 owner, string type, uint32
 	return result;
 }
 
-uint32 GuildTaskMgr::GetTaskValue(uint32 owner, uint32 guildId, string type, uint32 *validIn /* = NULL */)
+uint32 GuildTaskMgr::GetTaskValue(uint32 owner, uint32 guildId, string type, uint32 *validIn /* = NULL */, uint32 *lastChange /* = NULL */)
 {
     uint32 value = 0;
 
@@ -575,6 +578,7 @@ uint32 GuildTaskMgr::GetTaskValue(uint32 owner, uint32 guildId, string type, uin
             value = 0;
 
         if (validIn) *validIn = secs;
+        if (lastChange) *lastChange = lastChangeTime;
     }
 
 	delete results;
@@ -727,8 +731,8 @@ bool GuildTaskMgr::HandleConsoleCommand(ChatHandler* handler, char const* args)
                 if (payment && paymentValidIn < validIn)
                     name << " payment " << ChatHelper::formatMoney(payment) << " in " << formatTime(paymentValidIn);
 
-                sLog.outString("%s: %s valid in %s ['%s']",
-                        charName.c_str(), name.str().c_str(), formatTime(validIn).c_str(), guild->GetName().c_str());
+                sLog.outString("%s: [%s] %s ['%s']",
+                        charName.c_str(), formatTime(validIn).c_str(), name.str().c_str(), guild->GetName().c_str());
 
             } while (result->NextRow());
 
@@ -842,14 +846,14 @@ bool GuildTaskMgr::CheckItemTask(uint32 itemId, uint32 obtained, Player* ownerPl
 
         uint32 money = GetTaskValue(owner, guildId, "payment");
         if (!obtained) obtained = 1;
-        SetTaskValue(owner, guildId, "payment", money + max(10, auctionbot.GetBuyPrice(proto)) * obtained, rewardTime + 300);
+        SetTaskValue(owner, guildId, "payment", money + max(10, auctionbot.GetBuyPrice(proto)) * obtained, sPlayerbotAIConfig.minGuildTaskChangeTime);
     }
 
     if (obtained >= count)
     {
         sLog.outDebug("%s / %s: guild task complete",
 				guild->GetName().c_str(), ownerPlayer->GetName());
-        SetTaskValue(owner, guildId, "reward", 1, rewardTime - 15);
+        SetTaskValue(owner, guildId, "reward", 1, rewardTime);
         SetTaskValue(owner, guildId, "itemCount", 0, 0);
         SetTaskValue(owner, guildId, "thanks", 0, 0);
         SendCompletionMessage(ownerPlayer, "completed");
@@ -859,7 +863,7 @@ bool GuildTaskMgr::CheckItemTask(uint32 itemId, uint32 obtained, Player* ownerPl
         sLog.outDebug("%s / %s: guild task progress %u/%u",
 				guild->GetName().c_str(), ownerPlayer->GetName(), obtained, count);
         SetTaskValue(owner, guildId, "itemCount", count - obtained, sPlayerbotAIConfig.maxGuildTaskChangeTime);
-        SetTaskValue(owner, guildId, "thanks", 1, rewardTime - 30);
+        SetTaskValue(owner, guildId, "thanks", 1, rewardTime);
         SendCompletionMessage(ownerPlayer, "made a progress with");
     }
     return true;

@@ -29,7 +29,7 @@ class GuildTaskMgr
 
     private:
         map<uint32,uint32> GetTaskValues(uint32 owner, string type, uint32 *validIn = NULL);
-        uint32 GetTaskValue(uint32 owner, uint32 guildId, string type, uint32 *validIn = NULL);
+        uint32 GetTaskValue(uint32 owner, uint32 guildId, string type, uint32 *validIn = NULL, uint32 *lastChangeTime = NULL);
         uint32 SetTaskValue(uint32 owner, uint32 guildId, string type, uint32 value, uint32 validIn);
         uint32 CreateTask(uint32 owner, uint32 guildId);
         bool SendAdvertisement(uint32 owner, uint32 guildId);
