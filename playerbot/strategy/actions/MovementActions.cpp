@@ -179,7 +179,7 @@ bool MovementAction::IsMovingAllowed(Unit* target)
         return false;
 
     float distance = bot->GetDistance(target);
-    if (distance > sPlayerbotAIConfig.reactDistance)
+    if (distance > sPlayerbotAIConfig.reactDistance && sServerFacade.IsAlive(bot))
         return false;
 
     return IsMovingAllowed();
@@ -188,7 +188,7 @@ bool MovementAction::IsMovingAllowed(Unit* target)
 bool MovementAction::IsMovingAllowed(uint32 mapId, float x, float y, float z)
 {
     float distance = bot->GetDistance(x, y, z);
-    if (distance > sPlayerbotAIConfig.reactDistance)
+    if (distance > sPlayerbotAIConfig.reactDistance && sServerFacade.IsAlive(bot))
         return false;
 
     return IsMovingAllowed();
