@@ -773,6 +773,11 @@ bool GuildTaskMgr::HandleConsoleCommand(ChatHandler* handler, char const* args)
 
 bool GuildTaskMgr::CheckItemTask(uint32 itemId, uint32 obtained, Player* ownerPlayer, Player* bot, bool byMail)
 {
+    if (!sPlayerbotAIConfig.guildTaskEnabled)
+    {
+        return false;
+    }
+
     if (!bot) return false;
     uint32 guildId = bot->GetGuildId();
     if (!guildId)
