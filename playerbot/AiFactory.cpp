@@ -373,7 +373,7 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
             if (player->GetLevel() > 19)
                 engine->addStrategy("dps debuff");
 
-            engine->addStrategies("dps assist", "dps", "flee", "ranged", "cc", "pet", "threat", NULL);
+            engine->addStrategies("dps assist", "dps", "flee", "ranged", "cc", "pet", "threat", "aoe", NULL);
             break;
 #ifdef MANGOSBOT_TWO
         case CLASS_DEATH_KNIGHT:
