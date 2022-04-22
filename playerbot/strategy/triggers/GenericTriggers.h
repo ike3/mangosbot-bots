@@ -245,6 +245,15 @@ namespace ai
 		virtual string getName() { return spell + " on party"; }
     };
 
+    class MyBuffOnPartyTrigger : public BuffOnPartyTrigger
+    {
+    public:
+        MyBuffOnPartyTrigger(PlayerbotAI* ai, string spell, int checkInterval = 1) : BuffOnPartyTrigger(ai, spell, checkInterval) {}
+    public:
+        virtual Value<Unit*>* GetTargetValue();
+        virtual string getName() { return spell + " on party"; }
+    };
+
     class ProtectPartyMemberTrigger : public Trigger
     {
     public:ProtectPartyMemberTrigger(PlayerbotAI* ai) : Trigger(ai, "protect party member") {}

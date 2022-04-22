@@ -113,6 +113,11 @@ Value<Unit*>* BuffOnPartyTrigger::GetTargetValue()
 	return context->GetValue<Unit*>("party member without aura", spell);
 }
 
+Value<Unit*>* MyBuffOnPartyTrigger::GetTargetValue()
+{
+    return context->GetValue<Unit*>("party member without my aura", spell);
+}
+
 Value<Unit*>* DebuffOnAttackerTrigger::GetTargetValue()
 {
 	return context->GetValue<Unit*>("attacker without aura", spell);

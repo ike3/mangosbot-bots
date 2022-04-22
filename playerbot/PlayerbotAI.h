@@ -327,6 +327,7 @@ public:
     virtual bool CastSpell(string name, Unit* target, Item* itemTarget = NULL);
     virtual bool HasAura(string spellName, Unit* player, bool maxStack = false, bool checkIsOwner = false, int maxAmount = -1, bool hasMyAura = false);
     virtual bool HasAnyAuraOf(Unit* player, ...);
+    virtual bool HasMyAura(string spellName, Unit* player) { return HasAura(spellName, player, false, false, -1, true); }
     uint8 GetHealthPercent(const Unit& target) const;
     uint8 GetHealthPercent() const;
     uint8 GetManaPercent(const Unit& target) const;
