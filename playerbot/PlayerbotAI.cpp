@@ -2303,7 +2303,7 @@ bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target, Item* itemTarget)
         SetNextCheckDelay(sPlayerbotAIConfig.globalCoolDown);
         //spell->cancel();
         //delete spell;
-        //return false;
+        return false;
     }
 
 #ifdef MANGOS
@@ -2325,8 +2325,8 @@ bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target, Item* itemTarget)
         }
     }
 
-    if (spellSuccess != SPELL_CAST_OK)
-        return false;
+    //if (spellSuccess != SPELL_CAST_OK)
+    //    return false;
 
     WaitForSpellCast(spell);
     if (spell->GetCastTime())
