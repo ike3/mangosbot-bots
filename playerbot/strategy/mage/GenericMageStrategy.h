@@ -18,7 +18,7 @@ namespace ai
     class MageCureStrategy : public Strategy
     {
     public:
-        MageCureStrategy(PlayerbotAI* ai) : Strategy(ai) {}
+        MageCureStrategy(PlayerbotAI* ai);
 
     public:
         virtual void InitTriggers(std::list<TriggerNode*> &triggers);

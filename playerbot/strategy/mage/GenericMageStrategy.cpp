@@ -148,6 +148,11 @@ void GenericMageStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("frost ward", ACTION_EMERGENCY), NULL)));
 }
 
+MageCureStrategy::MageCureStrategy(PlayerbotAI* ai) : Strategy(ai)
+{
+    actionNodeFactories.Add(new GenericMageStrategyActionNodeFactory());
+}
+
 void MageCureStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
