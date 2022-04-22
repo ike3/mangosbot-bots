@@ -30,8 +30,23 @@ namespace ai
             creators["blessing of kings on party"] = &blessing_of_kings_on_party;
             creators["blessing of wisdom on party"] = &blessing_of_wisdom_on_party;
             creators["blessing of sanctuary"] = &blessing_of_sanctuary;
+
+            creators["greater blessing of might"] = &greater_blessing_of_might;
+            creators["greater blessing of kings"] = &greater_blessing_of_kings;
+            creators["greater blessing of wisdom"] = &greater_blessing_of_wisdom;
+            creators["greater blessing of sanctuary"] = &greater_blessing_of_sanctuary;
+            creators["greater blessing of might on party"] = &greater_blessing_of_might_on_party;
+            creators["greater blessing of kings on party"] = &greater_blessing_of_kings_on_party;
+            creators["greater blessing of wisdom on party"] = &greater_blessing_of_wisdom_on_party;
         }
     private:
+        ACTION_NODE_A(greater_blessing_of_might, "greater blessing of might", "blessing of might");
+        ACTION_NODE_A(greater_blessing_of_kings, "greater blessing of kings", "blessing of kings");
+        ACTION_NODE_A(greater_blessing_of_wisdom, "greater blessing of wisdom", "blessing of wisdom");
+        ACTION_NODE_A(greater_blessing_of_sanctuary, "greater blessing of sanctuary", "blessing of sanctuary");
+        ACTION_NODE_A(greater_blessing_of_might_on_party, "greater blessing of might on party", "blessing of might on party");
+        ACTION_NODE_A(greater_blessing_of_kings_on_party, "greater blessing of kings on party", "blessing of kings on party");
+        ACTION_NODE_A(greater_blessing_of_wisdom_on_party, "greater blessing of wisdom on party", "blessing of wisdom on party");
         static ActionNode* blessing_of_sanctuary(PlayerbotAI* ai)
         {
             return new ActionNode ("blessing of sanctuary",

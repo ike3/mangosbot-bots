@@ -495,7 +495,7 @@ void AiFactory::AddDefaultNonCombatStrategies(Player* player, PlayerbotAI* const
             break;
         case CLASS_PALADIN:
             if (tab == 1)
-                nonCombatEngine->addStrategies("bthreat", "tank assist", "baoe", "bstats", NULL);
+                nonCombatEngine->addStrategies("bthreat", "tank assist", "baoe", "bstats", "crusader", NULL);
             else if (tab == 0)
                 nonCombatEngine->addStrategies("dps assist", "bmana", NULL);
             else

@@ -28,6 +28,7 @@ namespace ai
                 creators["boost"] = &paladin::StrategyFactoryInternal::boost;
                 creators["bthreat"] = &paladin::StrategyFactoryInternal::bthreat;
                 creators["cc"] = &paladin::StrategyFactoryInternal::cc;
+                creators["crusader"] = &paladin::StrategyFactoryInternal::crusader;
             }
 
         private:
@@ -36,6 +37,7 @@ namespace ai
             static Strategy* boost(PlayerbotAI* ai) { return new PaladinBoostStrategy(ai); }
             static Strategy* bthreat(PlayerbotAI* ai) { return new PaladinBuffThreatStrategy(ai); }
             static Strategy* cc(PlayerbotAI* ai) { return new PaladinCcStrategy(ai); }
+            static Strategy* crusader(PlayerbotAI* ai) { return new PaladinBuffSpeedStrategy(ai); }
         };
 
         class ResistanceStrategyFactoryInternal : public NamedObjectContext<Strategy>
@@ -66,7 +68,6 @@ namespace ai
                 creators["bhealth"] = &paladin::BuffStrategyFactoryInternal::bhealth;
                 creators["bmana"] = &paladin::BuffStrategyFactoryInternal::bmana;
                 creators["bdps"] = &paladin::BuffStrategyFactoryInternal::bdps;
-                creators["bspeed"] = &paladin::BuffStrategyFactoryInternal::bspeed;
                 creators["bstats"] = &paladin::BuffStrategyFactoryInternal::bstats;
             }
 
@@ -74,7 +75,6 @@ namespace ai
             static Strategy* bhealth(PlayerbotAI* ai) { return new PaladinBuffHealthStrategy(ai); }
             static Strategy* bmana(PlayerbotAI* ai) { return new PaladinBuffManaStrategy(ai); }
             static Strategy* bdps(PlayerbotAI* ai) { return new PaladinBuffDpsStrategy(ai); }
-            static Strategy* bspeed(PlayerbotAI* ai) { return new PaladinBuffSpeedStrategy(ai); }
             static Strategy* bstats(PlayerbotAI* ai) { return new PaladinBuffStatsStrategy(ai); }
         };
 
@@ -196,13 +196,20 @@ namespace ai
                 creators["seal of command"] = &AiObjectContextInternal::seal_of_command;
                 creators["seal of vengeance"] = &AiObjectContextInternal::seal_of_vengeance;
                 creators["blessing of might"] = &AiObjectContextInternal::blessing_of_might;
+                creators["greater blessing of might"] = &AiObjectContextInternal::greater_blessing_of_might;
                 creators["blessing of wisdom"] = &AiObjectContextInternal::blessing_of_wisdom;
+                creators["greater blessing of wisdom"] = &AiObjectContextInternal::greater_blessing_of_wisdom;
                 creators["blessing of kings"] = &AiObjectContextInternal::blessing_of_kings;
+                creators["greater blessing of kings"] = &AiObjectContextInternal::greater_blessing_of_kings;
                 creators["blessing of sanctuary"] = &AiObjectContextInternal::blessing_of_sanctuary;
+                creators["greater blessing of sanctuary"] = &AiObjectContextInternal::greater_blessing_of_sanctuary;
                 creators["divine storm"] = &AiObjectContextInternal::divine_storm;
                 creators["blessing of kings on party"] = &AiObjectContextInternal::blessing_of_kings_on_party;
                 creators["blessing of might on party"] = &AiObjectContextInternal::blessing_of_might_on_party;
                 creators["blessing of wisdom on party"] = &AiObjectContextInternal::blessing_of_wisdom_on_party;
+                creators["greater blessing of kings on party"] = &AiObjectContextInternal::greater_blessing_of_kings_on_party;
+                creators["greater blessing of might on party"] = &AiObjectContextInternal::greater_blessing_of_might_on_party;
+                creators["greater blessing of wisdom on party"] = &AiObjectContextInternal::greater_blessing_of_wisdom_on_party;
                 creators["redemption"] = &AiObjectContextInternal::redemption;
                 creators["crusader strike"] = &AiObjectContextInternal::crusader_strike;
                 creators["crusader aura"] = &AiObjectContextInternal::crusader_aura;
@@ -274,10 +281,17 @@ namespace ai
             static Action* blessing_of_might(PlayerbotAI* ai) { return new CastBlessingOfMightAction(ai); }
             static Action* blessing_of_wisdom(PlayerbotAI* ai) { return new CastBlessingOfWisdomAction(ai); }
             static Action* blessing_of_kings(PlayerbotAI* ai) { return new CastBlessingOfKingsAction(ai); }
+            static Action* greater_blessing_of_sanctuary(PlayerbotAI* ai) { return new CastGreaterBlessingOfSanctuaryAction(ai); }
+            static Action* greater_blessing_of_might(PlayerbotAI* ai) { return new CastGreaterBlessingOfMightAction(ai); }
+            static Action* greater_blessing_of_wisdom(PlayerbotAI* ai) { return new CastGreaterBlessingOfWisdomAction(ai); }
+            static Action* greater_blessing_of_kings(PlayerbotAI* ai) { return new CastGreaterBlessingOfKingsAction(ai); }
             static Action* divine_storm(PlayerbotAI* ai) { return new CastDivineStormAction(ai); }
             static Action* blessing_of_kings_on_party(PlayerbotAI* ai) { return new CastBlessingOfKingsOnPartyAction(ai); }
             static Action* blessing_of_might_on_party(PlayerbotAI* ai) { return new CastBlessingOfMightOnPartyAction(ai); }
             static Action* blessing_of_wisdom_on_party(PlayerbotAI* ai) { return new CastBlessingOfWisdomOnPartyAction(ai); }
+            static Action* greater_blessing_of_kings_on_party(PlayerbotAI* ai) { return new CastGreaterBlessingOfKingsOnPartyAction(ai); }
+            static Action* greater_blessing_of_might_on_party(PlayerbotAI* ai) { return new CastGreaterBlessingOfMightOnPartyAction(ai); }
+            static Action* greater_blessing_of_wisdom_on_party(PlayerbotAI* ai) { return new CastGreaterBlessingOfWisdomOnPartyAction(ai); }
             static Action* redemption(PlayerbotAI* ai) { return new CastRedemptionAction(ai); }
             static Action* crusader_strike(PlayerbotAI* ai) { return new CastCrusaderStrikeAction(ai); }
             static Action* crusader_aura(PlayerbotAI* ai) { return new CastCrusaderAuraAction(ai); }

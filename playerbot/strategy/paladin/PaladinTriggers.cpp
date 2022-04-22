@@ -26,6 +26,30 @@ bool CrusaderAuraTrigger::IsActive()
 bool BlessingTrigger::IsActive()
 {
     Unit* target = GetTarget();
-    return SpellTrigger::IsActive() && !ai->HasAnyAuraOf(target,
-        "blessing of might", "blessing of wisdom", "blessing of kings", "blessing of sanctuary", NULL);
+
+    return SpellTrigger::IsActive() &&
+        !((ai->HasMyAura("blessing of might", target) || ai->HasMyAura("greater blessing of might", target)) ||
+            (ai->HasMyAura("blessing of wisdom", target) || ai->HasMyAura("greater blessing of wisdom", target)) ||
+            (ai->HasMyAura("blessing of kings", target) || ai->HasMyAura("greater blessing of kings", target)) ||
+            (ai->HasMyAura("blessing of sanctuary", target) || ai->HasMyAura("greater blessing of sanctuary", target)) ||
+            (ai->HasMyAura("blessing of salvation", target) || ai->HasMyAura("greater blessing of salvation", target)) ||
+            (ai->HasMyAura("blessing of light", target) || ai->HasMyAura("greater blessing of light", target))
+            );
+}
+
+bool BlessingOnPartyTrigger::IsActive()
+{
+    Value<Unit*>* smallBless = context->GetValue<Unit*>("party member without my aura",
+        "blessing of kings,blessing of might,blessing of wisdom,blessing of sanctuary,blessing of salvation,blessing of light");
+
+    Value<Unit*>* bigBless = context->GetValue<Unit*>("party member without my aura",
+        "greater blessing of kings,greater blessing of might,greater blessing of wisdom,greater blessing of sanctuary,greater blessing of salvation,greater blessing of light");
+
+    if (!(smallBless || bigBless))
+        return false;
+
+    if (smallBless && !bigBless)
+        return true;
+
+    return true;
 }

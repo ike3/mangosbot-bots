@@ -71,7 +71,7 @@ namespace ai
 
 	public:
 		virtual void InitTriggers(std::list<TriggerNode*> &triggers);
-		virtual string getName() { return "bspeed"; }
+		virtual string getName() { return "crusader"; }
 	};
 
     class PaladinBuffStatsStrategy : public Strategy
