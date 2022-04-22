@@ -1118,7 +1118,7 @@ void MovementAction::WaitForReach(float distance)
     if (delay < 0)
         delay = 0;
 
-    ai->SetNextCheckDelay((uint32)(delay * 0.8f));
+    ai->SetNextCheckDelay((uint32)(delay));
 }
 
 bool MovementAction::Flee(Unit *target)
