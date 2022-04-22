@@ -96,7 +96,7 @@ Unit* CcTargetValue::Calculate()
             continue;
 
         if (ai->HasAura(qualifier, add, false, true, -1, true))
-            return add;
+            return NULL;
     }
 
     FindTargetForCcStrategy strategy(ai, qualifier);
