@@ -296,7 +296,7 @@ bool UseItemAction::UseItem(Item* item, ObjectGuid goGuid, Item* itemTarget, Uni
 
    if (sServerFacade.isMoving(bot))
    {
-       bot->InterruptMoving(true);
+       ai->StopMoving();
        ai->SetNextCheckDelay(sPlayerbotAIConfig.globalCoolDown);
       return false;
    }
@@ -488,9 +488,7 @@ bool UseHearthStone::Execute(Event event)
 {
     if (bot->IsMoving())
     {
-        MotionMaster& mm = *bot->GetMotionMaster();
-        bot->InterruptMoving(true);
-        mm.Clear();
+        ai->StopMoving();
     }
     bool used = UseItemAction::Execute(event);
 

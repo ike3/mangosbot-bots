@@ -175,8 +175,8 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
 
     if (generatePath)
     {
-        //z += 2.0f;
-        //mover->UpdateAllowedPositionZ(x, y, z);
+        z += CONTACT_DISTANCE;
+        mover->UpdateAllowedPositionZ(x, y, z);
     }
 
     if (!isVehicle && !IsMovingAllowed() && sServerFacade.UnitIsDead(bot))
@@ -207,7 +207,10 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
     {
         if (lastMove.lastMoveShort.distance(endPosition) < maxDistChange)
             AI_VALUE(LastMovement&, "last movement").clear();
-        mover->InterruptMoving(true);
+        if (mover == bot)
+            ai->StopMoving();
+        else
+            mover->InterruptMoving(true);
         return false;
     }
 
@@ -252,7 +255,10 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
                         movePath.addPoint(endPosition);
                         AI_VALUE(LastMovement&, "last movement").setPath(movePath);
 
-                        bot->InterruptMoving(true);
+                        if (mover == bot)
+                            ai->StopMoving();
+                        else
+                            mover->InterruptMoving(true);
                         if (ai->HasStrategy("debug move", BOT_STATE_NON_COMBAT))
                             ai->TellMasterNoFacing("I have no path");
                         return false;
@@ -521,7 +527,10 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
     //Clean movement if not already moving the same way.
     if (mm.GetCurrent()->GetMovementGeneratorType() != POINT_MOTION_TYPE)
     {
-        mover->InterruptMoving(true);
+        if (mover == bot)
+            ai->StopMoving();
+        else
+            mover->InterruptMoving(true);
         mm.Clear();
     }
     else
@@ -530,7 +539,10 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
 
         if (movePosition.distance(WorldPosition(movePosition.getMapId(), x, y, z, 0)) > minDist)
         {
-            mover->InterruptMoving(true);
+            if (mover == bot)
+                ai->StopMoving();
+            else
+                mover->InterruptMoving(true);
             mm.Clear();
         }
     }
@@ -829,8 +841,7 @@ void MovementAction::UpdateMovementState()
                 z += CONTACT_DISTANCE;
                 bot->UpdateAllowedPositionZ(x, y, z);
 
-                bot->InterruptMoving(true);
-                bot->GetMotionMaster()->Clear();
+                ai->StopMoving();
                 bot->NearTeleportTo(x, y, z, bot->GetOrientation());
                 //bot->GetMotionMaster()->MovePoint(bot->GetMapId(), x, y, z, FORCED_MOVEMENT_RUN, false);
                 return;
@@ -869,8 +880,7 @@ void MovementAction::UpdateMovementState()
                     z += CONTACT_DISTANCE;
                     bot->UpdateAllowedPositionZ(x, y, z);
 
-                    bot->InterruptMoving(true);
-                    bot->GetMotionMaster()->Clear();
+                    ai->StopMoving();
                     bot->NearTeleportTo(x, y, z, bot->GetOrientation());
                     //bot->GetMotionMaster()->MovePoint(bot->GetMapId(), x, y, z, FORCED_MOVEMENT_RUN, false);
                     return;

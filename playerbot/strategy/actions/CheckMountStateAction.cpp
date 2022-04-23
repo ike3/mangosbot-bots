@@ -219,9 +219,7 @@ bool CheckMountStateAction::Mount()
 
     if (sServerFacade.isMoving(bot))
     {
-        bot->InterruptMoving(true);
-        bot->GetMotionMaster()->Clear();
-        bot->GetMotionMaster()->MoveIdle();
+        ai->StopMoving();
     }
 
     Player* master = GetMaster();

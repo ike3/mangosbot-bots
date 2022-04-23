@@ -209,7 +209,7 @@ void PlayerbotHolder::DisablePlayerBot(uint32 guid)
     if (bot)
     {
         bot->GetPlayerbotAI()->TellMaster(BOT_TEXT("goodbye"));
-        bot->InterruptMoving(true);
+        bot->GetPlayerbotAI()->StopMoving();
         MotionMaster& mm = *bot->GetMotionMaster();
         mm.Clear();
 

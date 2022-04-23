@@ -217,17 +217,7 @@ void PlayerbotAI::UpdateAI(uint32 elapsed, bool minimal)
         isMoving = true;
     else if (isMoving && !bot->IsTaxiFlying())
     {
-        bot->InterruptMoving(true);
-        bot->UpdateObjectVisibility();
-        MovementInfo mInfo = bot->m_movementInfo;
-        float x, y, z;
-        bot->GetPosition(x, y, z);
-        float o = bot->GetPosition().o;
-        bot->UpdateAllowedPositionZ(x, y, z);
-        mInfo.ChangePosition(x, y, z, o);
-        WorldPacket data(MSG_MOVE_STOP);
-        data << mInfo;
-        bot->GetSession()->HandleMovementOpcodes(data);
+        StopMoving();
 
         isMoving = false;
     }
@@ -423,8 +413,7 @@ void PlayerbotAI::HandleTeleportAck()
     if (IsRealPlayer())
         return;
 
-    bot->InterruptMoving(true);
-    bot->GetMotionMaster()->Clear(true);
+    StopMoving();
 
 	if (bot->IsBeingTeleportedNear())
 	{
@@ -901,9 +890,7 @@ void PlayerbotAI::HandleBotOutgoingPacket(const WorldPacket& packet)
         InterruptSpell();
 
         // stop movement
-        bot->InterruptMoving(true);
-        bot->GetMotionMaster()->Clear();
-        bot->GetMotionMaster()->MoveIdle();
+        StopMoving();
 
         // set delay based on actual distance
         float newdis = sqrt(bot->GetDistance2d(fx, fy, DIST_CALC_NONE));
@@ -1041,9 +1028,7 @@ void PlayerbotAI::DoNextAction(bool min)
     // change engine if just died
     if (currentEngine != engines[BOT_STATE_DEAD] && !sServerFacade.IsAlive(bot))
     {
-        bot->InterruptMoving(true);
-        bot->GetMotionMaster()->Clear();
-        bot->GetMotionMaster()->MoveIdle();
+        StopMoving();
 
         //Death Count to prevent skeleton piles
         Player* master = GetMaster();
@@ -1277,9 +1262,7 @@ void PlayerbotAI::DoNextAction(bool min)
         bot->GetSession()->HandleMovementOpcodes(stop);
 
         // stop movement
-        bot->InterruptMoving(true);
-        bot->GetMotionMaster()->Clear();
-        bot->GetMotionMaster()->MoveIdle();
+        StopMoving();
 
         ResetJumpDestination();
     }
@@ -1329,9 +1312,7 @@ void PlayerbotAI::DoNextAction(bool min)
             //SetNextCheckDelay((uint32)((newdis / dis)* moveTimeHalf * 4 * IN_MILLISECONDS));
 
             // stop movement
-            bot->InterruptMoving(true);
-            bot->GetMotionMaster()->Clear();
-            bot->GetMotionMaster()->MoveIdle();
+            StopMoving();
 
             // set delay based on actual distance
             float newdis = sqrt(bot->GetDistance2d(fx, fy, DIST_CALC_NONE));
@@ -2055,10 +2036,6 @@ bool PlayerbotAI::CanCastSpell(uint32 spellid, GameObject* goTarget, uint8 effec
         return false;
 
     uint32 CastingTime = !IsChanneledSpell(spellInfo) ? GetSpellCastTime(spellInfo, bot) : GetSpellDuration(spellInfo);
-
-    if (CastingTime && bot->IsMoving())
-        return false;
-
    
         bool damage = false;
         for (int32 i = EFFECT_INDEX_0; i <= EFFECT_INDEX_2; i++)
@@ -2299,7 +2276,7 @@ bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target, Item* itemTarget)
 
     if (sServerFacade.isMoving(bot) && spell->GetCastTime())
     {
-        bot->InterruptMoving(true);
+        StopMoving();
         SetNextCheckDelay(sPlayerbotAIConfig.globalCoolDown);
         //spell->cancel();
         //delete spell;
@@ -4111,6 +4088,28 @@ bool PlayerbotAI::CanMove()
 #ifdef MANGOS
     return mm.GetCurrentMovementGeneratorType() != FLIGHT_MOTION_TYPE;
 #endif
+}
+
+void PlayerbotAI::StopMoving()
+{
+    // remove movement flags, checked in bot->IsMoving()
+    if (bot->IsFalling())
+        bot->m_movementInfo.RemoveMovementFlag(MovementFlags(movementFlagsMask & ~(MOVEFLAG_FALLING | MOVEFLAG_FALLINGFAR)));
+    else
+        bot->m_movementInfo.RemoveMovementFlag(movementFlagsMask);
+    // interrupt movement as much as we can...
+    bot->InterruptMoving(true);
+    bot->GetMotionMaster()->Clear();
+    bot->UpdateObjectVisibility();
+    MovementInfo mInfo = bot->m_movementInfo;
+    float x, y, z;
+    bot->GetPosition(x, y, z);
+    float o = bot->GetPosition().o;
+    bot->UpdateAllowedPositionZ(x, y, z);
+    mInfo.ChangePosition(x, y, z, o);
+    WorldPacket data(MSG_MOVE_STOP);
+    data << mInfo;
+    bot->GetSession()->HandleMovementOpcodes(data);
 }
 
 bool PlayerbotAI::IsInRealGuild()

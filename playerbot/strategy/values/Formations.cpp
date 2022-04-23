@@ -101,7 +101,7 @@ namespace ai
             if (ground <= INVALID_HEIGHT)
                 return Formation::NullLocation;
 
-            z += 2.0f;
+            z += CONTACT_DISTANCE;
             bot->UpdateAllowedPositionZ(x, y, z);
             return WorldLocation(master->GetMapId(), x, y, z);
         }
@@ -142,7 +142,7 @@ namespace ai
             if (ground <= INVALID_HEIGHT)
                 return Formation::NullLocation;
 
-            z += 2.0f;
+            z += CONTACT_DISTANCE;
             bot->UpdateAllowedPositionZ(x, y, z);
             return WorldLocation(master->GetMapId(), x, y, z);
         }
@@ -200,7 +200,7 @@ namespace ai
             if (ground <= INVALID_HEIGHT)
                 return Formation::NullLocation;
 
-            z += 2.0f;
+            z += CONTACT_DISTANCE;
             bot->UpdateAllowedPositionZ(x, y, z);
             return WorldLocation(bot->GetMapId(), x, y, z);
         }
@@ -358,7 +358,7 @@ namespace ai
                 }
                 if (minDist)
                 {
-                    z += 2.0f;
+                    z += CONTACT_DISTANCE;
                     bot->UpdateAllowedPositionZ(minX, minY, z);
                     return WorldLocation(bot->GetMapId(), minX, minY, z);
                 }
@@ -366,7 +366,7 @@ namespace ai
                 return Formation::NullLocation;
             }
 
-            z += 2.0f;
+            z += CONTACT_DISTANCE;
             bot->UpdateAllowedPositionZ(x, y, z);
             return WorldLocation(bot->GetMapId(), x, y, z);
         }
@@ -585,7 +585,7 @@ WorldLocation MoveFormation::MoveSingleLine(vector<Player*> line, float diff, fl
             if (ground <= INVALID_HEIGHT)
                 return Formation::NullLocation;
 
-            lz += 2.0f;
+            lz += CONTACT_DISTANCE;
             bot->UpdateAllowedPositionZ(lx, ly, lz);
             return WorldLocation(bot->GetMapId(), lx, ly, lz);
         }

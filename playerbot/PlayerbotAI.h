@@ -410,6 +410,7 @@ public:
     void ResetJumpDestination() { jumpDestination = Position(); }
 
     bool CanMove();
+    void StopMoving();
     bool IsInRealGuild();
     time_t GetCombatStartTime() { return combatStart; }
 
