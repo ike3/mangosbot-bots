@@ -4094,7 +4094,11 @@ void PlayerbotAI::StopMoving()
 {
     // remove movement flags, checked in bot->IsMoving()
     if (bot->IsFalling())
+#ifdef MANGOSBOT_TWO
         bot->m_movementInfo.RemoveMovementFlag(MovementFlags(movementFlagsMask & ~(MOVEFLAG_FALLING | MOVEFLAG_FALLINGFAR)));
+#else
+        bot->m_movementInfo.RemoveMovementFlag(MovementFlags(movementFlagsMask & ~(MOVEFLAG_JUMPING | MOVEFLAG_FALLINGFAR)));
+#endif
     else
         bot->m_movementInfo.RemoveMovementFlag(movementFlagsMask);
     // interrupt movement as much as we can...
