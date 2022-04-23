@@ -12,7 +12,7 @@ namespace ai
 
     DEBUFF_TRIGGER(RendDebuffTrigger, "rend");
     DEBUFF_TRIGGER(DisarmDebuffTrigger, "disarm");
-    DEBUFF_TRIGGER(SunderArmorDebuffTrigger, "sunder armor");
+    DEBUFF_TRIGGER_A(SunderArmorDebuffTrigger, "sunder armor");
     DEBUFF_TRIGGER(MortalStrikeDebuffTrigger, "mortal strike");
     DEBUFF_ENEMY_TRIGGER(RendDebuffOnAttackerTrigger, "rend");
     CAN_CAST_TRIGGER(RevengeAvailableTrigger, "revenge");

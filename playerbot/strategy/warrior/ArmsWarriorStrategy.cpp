@@ -15,13 +15,15 @@ public:
         creators["piercing howl"] = &piercing_howl;
         creators["mocking blow"] = &mocking_blow;
         creators["heroic strike"] = &heroic_strike;
+        creators["mortal strike"] = &mortal_strike;
     }
 private:
     ACTION_NODE_A(charge, "charge", "reach melee");
     ACTION_NODE_A(death_wish, "death wish", "bloodrage");
     ACTION_NODE_A(piercing_howl, "piercing howl", "mocking blow");
     ACTION_NODE_A(mocking_blow, "mocking blow", "hamstring");
-    ACTION_NODE_A(heroic_strike, "heric strike", "melee");
+    ACTION_NODE_A(heroic_strike, "heroic strike", "melee");
+    ACTION_NODE_A(mortal_strike, "mortal strike", "heroic strike");
 };
 
 ArmsWarriorStrategy::ArmsWarriorStrategy(PlayerbotAI* ai) : GenericWarriorStrategy(ai)
@@ -32,7 +34,7 @@ ArmsWarriorStrategy::ArmsWarriorStrategy(PlayerbotAI* ai) : GenericWarriorStrate
 
 NextAction** ArmsWarriorStrategy::getDefaultActions()
 {
-    return NextAction::array(0, new NextAction("heroic strike", ACTION_NORMAL), NULL);
+    return NextAction::array(0, new NextAction("melee", ACTION_NORMAL), NULL);
 }
 
 void ArmsWarriorStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
@@ -50,6 +52,10 @@ void ArmsWarriorStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
     triggers.push_back(new TriggerNode(
         "battle shout",
         NextAction::array(0, new NextAction("battle shout", ACTION_HIGH + 8), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "medium rage available",
+        NextAction::array(0, new NextAction("heroic strike", ACTION_HIGH + 1), NULL)));
 
     triggers.push_back(new TriggerNode(
         "mortal strike",

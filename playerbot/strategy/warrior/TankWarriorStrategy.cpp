@@ -87,8 +87,8 @@ void TankWarriorStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("devastate", ACTION_HIGH + 2), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "medium rage available",
-        NextAction::array(0, new NextAction("shield slam", ACTION_HIGH + 1), NULL)));
+        "low rage available",
+        NextAction::array(0, new NextAction("shield slam", ACTION_HIGH + 2), NULL)));
 
     triggers.push_back(new TriggerNode(
         "shield block",

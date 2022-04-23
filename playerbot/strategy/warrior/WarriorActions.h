@@ -95,6 +95,6 @@ namespace ai
         CastSunderArmorAction(PlayerbotAI* ai) : CastDebuffSpellAction(ai, "sunder armor") {
             range = ATTACK_DISTANCE;
         }
-        virtual bool isUseful() { return CastSpellAction::isUseful(); }
+        virtual bool isUseful() { return GetTarget() && !ai->HasAura("sunder armor", GetTarget(), true); }
     };
 }
