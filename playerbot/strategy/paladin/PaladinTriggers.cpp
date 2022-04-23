@@ -23,6 +23,11 @@ bool CrusaderAuraTrigger::IsActive()
 	return AI_VALUE2(bool, "mounted", "self target") && !ai->HasAura("crusader aura", target);
 }
 
+bool SanctityAuraTrigger::IsActive()
+{
+    return !(ai->HasMyAura("sanctity aura", bot) || ai->HasMyAura("retribution aura", bot));
+}
+
 bool BlessingTrigger::IsActive()
 {
     Unit* target = GetTarget();
