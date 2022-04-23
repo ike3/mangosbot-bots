@@ -383,7 +383,7 @@ void PlayerbotAI::UpdateAIInternal(uint32 elapsed, bool minimal)
             logout = true;
         }
 
-        if (logout)
+        if (logout && !bot->GetSession()->ShouldLogOut(time(nullptr)))
         {
             if (master && master->GetPlayerbotMgr())
             {
