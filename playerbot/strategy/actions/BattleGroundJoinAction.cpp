@@ -742,6 +742,9 @@ bool BGJoinAction::JoinQueue(uint32 type)
 
 bool FreeBGJoinAction::shouldJoinBg(BattleGroundQueueTypeId queueTypeId, BattleGroundBracketId bracketId)
 {
+    if (!sPlayerbotAIConfig.randomBotAutoJoinBG)
+        return false;
+
     BattleGroundTypeId bgTypeId = sServerFacade.BgTemplateId(queueTypeId);
     BattleGround* bg = sBattleGroundMgr.GetBattleGroundTemplate(bgTypeId);
     if (!bg)
