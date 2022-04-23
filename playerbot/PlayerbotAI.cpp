@@ -1269,7 +1269,7 @@ void PlayerbotAI::DoNextAction(bool min)
 
     // random jumping (WIP, not working properly)
     bool randomJump = false;
-    if (randomJump && !inCombat && (!master || (master && sServerFacade.GetDistance2d(bot, master) < 20.0f)) && !bot->m_movementInfo.HasMovementFlag(MOVEFLAG_JUMPING) && !bot->IsMoving())
+    if (randomJump && !inCombat /*&& (!master || (master && sServerFacade.GetDistance2d(bot, master) < 20.0f)) && !bot->m_movementInfo.HasMovementFlag(MOVEFLAG_JUMPING) && !bot->IsMoving()*/)
     {
         if (!urand(0, 50))
         {
@@ -1321,9 +1321,9 @@ void PlayerbotAI::DoNextAction(bool min)
             // jump packet
             WorldPacket jump(MSG_MOVE_JUMP);
 
-            // add moveflags
-            bot->m_movementInfo.SetMovementFlags(MOVEFLAG_JUMPING);
-            bot->m_movementInfo.AddMovementFlag(MOVEFLAG_FORWARD);
+            //// add moveflags
+            //bot->m_movementInfo.SetMovementFlags(MOVEFLAG_JUMPING);
+            //bot->m_movementInfo.AddMovementFlag(MOVEFLAG_FORWARD);
 
             // copy MovementInfo
             MovementInfo movementInfo = bot->m_movementInfo;
