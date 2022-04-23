@@ -1846,8 +1846,8 @@ bool PlayerbotAI::HasAura(string name, Unit* unit, bool maxStack, bool checkIsOw
                     if (maxProcCharges && aura->GetHolder()->GetAuraCharges() >= maxProcCharges)
                         auraAmount++;
                 }
-
-                auraAmount++;
+                else
+                    auraAmount++;
 
                 if (maxAuraAmount < 0)
                     return auraAmount > 0;
