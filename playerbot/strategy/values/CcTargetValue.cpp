@@ -49,6 +49,9 @@ public:
                 return;
         }
 
+        if (creature->HasAuraType(SPELL_AURA_PERIODIC_DAMAGE) && !(spell == "fear" || spell == "banish"))
+            return;
+
         int tankCount, dpsCount;
         GetPlayerCount(creature, &tankCount, &dpsCount);
         if (!tankCount || !dpsCount)
@@ -95,7 +98,7 @@ Unit* CcTargetValue::Calculate()
         if (!add)
             continue;
 
-        if (ai->HasAura(qualifier, add, false, true, -1, true))
+        if (ai->HasMyAura(qualifier, add))
             return NULL;
     }
 
