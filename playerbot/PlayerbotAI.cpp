@@ -4112,6 +4112,9 @@ void PlayerbotAI::StopMoving()
     bot->UpdateAllowedPositionZ(x, y, z);
     mInfo.ChangePosition(x, y, z, o);
     WorldPacket data(MSG_MOVE_STOP);
+#ifdef MANGOSBOT_TWO
+    data << bot->GetPackGUID();
+#endif
     data << mInfo;
     bot->GetSession()->HandleMovementOpcodes(data);
 }
