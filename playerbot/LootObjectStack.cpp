@@ -61,7 +61,8 @@ void LootObject::Refresh(Player* bot, ObjectGuid guid)
 
     PlayerbotAI* ai = bot->GetPlayerbotAI();
     Creature *creature = ai->GetCreature(guid);
-    if (creature && sServerFacade.GetDeathState(creature) == CORPSE && bot->isAllowedToLoot(creature))
+    if (creature && sServerFacade.GetDeathState(creature) == CORPSE &&
+            (bot->isAllowedToLoot(creature) || creature->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SKINNABLE)))
     {
         if (creature->HasFlag(UNIT_DYNAMIC_FLAGS, UNIT_DYNFLAG_LOOTABLE))
             this->guid = guid;
@@ -195,7 +196,12 @@ bool LootObjectStack::Add(ObjectGuid guid)
     }
 
     if (alreadyChecked.find(guid) != alreadyChecked.end())
-        return false;
+    {
+        PlayerbotAI* ai = bot->GetPlayerbotAI();
+        Creature *creature = ai->GetCreature(guid);
+        if (!creature || sServerFacade.GetDeathState(creature) != CORPSE || !creature->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SKINNABLE))
+            return false;
+    }
 
     if (!availableLoot.insert(guid).second)
         return false;
