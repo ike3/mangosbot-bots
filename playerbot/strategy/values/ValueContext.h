@@ -71,6 +71,7 @@
 #include "SkipSpellsListValue.h"
 #include "SnareTargetValue.h"
 #include "Stances.h"
+#include "VendorListValue.h"
 
 namespace ai
 {
@@ -134,6 +135,7 @@ namespace ai
             creators["available loot"] = &ValueContext::available_loot;
             creators["has available loot"] = &ValueContext::has_available_loot;
             creators["always loot list"] = &ValueContext::always_loot_list;
+            creators["vendor list"] = &ValueContext::vendor_list;
             creators["skip loot list"] = &ValueContext::skip_loot_list;
             creators["loot strategy"] = &ValueContext::loot_strategy;
             creators["last movement"] = &ValueContext::last_movement;
@@ -246,6 +248,7 @@ namespace ai
         static UntypedValue* loot_target(PlayerbotAI* ai) { return new LootTargetValue(ai); }
         static UntypedValue* has_available_loot(PlayerbotAI* ai) { return new HasAvailableLootValue(ai); }
         static UntypedValue* always_loot_list(PlayerbotAI* ai) { return new AlwaysLootListValue(ai, "always loot list"); }
+        static UntypedValue* vendor_list(PlayerbotAI* ai) { return new VendorListValue(ai, "vendor list"); }
         static UntypedValue* skip_loot_list(PlayerbotAI* ai) { return new AlwaysLootListValue(ai, "skip loot list"); }
         static UntypedValue* loot_strategy(PlayerbotAI* ai) { return new LootStrategyValue(ai); }
 

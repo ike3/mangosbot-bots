@@ -37,6 +37,25 @@ public:
     }
 };
 
+class SellVendorItemsVisitor : public SellItemsVisitor
+{
+public:
+    SellVendorItemsVisitor(SellAction* action, set<uint32>& itemIds) : SellItemsVisitor(action), itemIds(itemIds) {}
+
+    virtual bool Visit(Item* item)
+    {
+        uint32 id = item->GetProto()->ItemId;
+
+        if (itemIds.find(id) == itemIds.end())
+            return true;
+
+        return SellItemsVisitor::Visit(item);
+    }
+
+private:
+    set<uint32>& itemIds;
+};
+
 
 bool SellAction::Execute(Event event)
 {
@@ -50,6 +69,13 @@ bool SellAction::Execute(Event event)
     {
         SellGrayItemsVisitor visitor(this);
         IterateItems(&visitor);
+
+        if (text == "*")
+        {
+            set<uint32>& ids = ai->GetAiObjectContext()->GetValue<set<uint32>& >("vendor list")->Get();
+            SellVendorItemsVisitor visitor2(this, ids);
+            IterateItems(&visitor2);
+        }
         return true;
     }
 
