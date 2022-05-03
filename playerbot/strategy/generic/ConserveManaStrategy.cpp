@@ -40,7 +40,7 @@ float ConserveManaMultiplier::GetValue(Action* action)
     if (mediumMana && dynamic_cast<CastBuffSpellAction*>(action))
         return 0.0f;
 
-    if (((int)target->getLevel() - (int)bot->getLevel()) >= 0)
+    if (target && ((int)target->getLevel() - (int)bot->getLevel()) >= 0)
         return 1.0f;
 
     return 1.0f;
