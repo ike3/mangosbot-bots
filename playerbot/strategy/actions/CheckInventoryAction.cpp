@@ -170,6 +170,9 @@ void CheckInventoryAction::HandleUse(Item* item, bool randomBot)
 
 void CheckInventoryAction::HandleNone(Item* item, bool randomBot)
 {
+    if (sPlayerbotAIConfig.IsInRandomItemKeepList(item->GetProto()->ItemId))
+        return;
+
     if (!randomBot)
     {
         ostringstream out; out << "I don't see any use of " << chat->formatItem(item->GetProto(), item->GetCount());

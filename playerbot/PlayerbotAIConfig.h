@@ -20,6 +20,7 @@ public:
     bool Initialize();
     bool IsInRandomAccountList(uint32 id);
     bool IsInRandomQuestItemList(uint32 id);
+    bool IsInRandomItemKeepList(uint32 id);
     bool IsInPvpProhibitedZone(uint32 id);
 
     bool enabled;
@@ -42,6 +43,7 @@ public:
     std::list<uint32> randomBotAccounts;
     std::list<uint32> randomBotSpellIds;
     std::list<uint32> randomBotQuestIds;
+    std::list<uint32> randomBotKeepItemIds;
     uint32 randomBotTeleportDistance;
     float randomGearLoweringChance;
     float randomBotMaxLevelChance;
