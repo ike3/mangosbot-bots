@@ -65,6 +65,40 @@ void GuildTaskMgr::Update(Player* player, Player* guildMaster)
 
     uint32 owner = (uint32)player->GetGUIDLow();
 
+    uint32 thanks = GetTaskValue(owner, guildId, "thanks");
+    if (!thanks)
+    {
+        sLog.outDebug("%s / %s: sending thanks",
+                guild->GetName(), player->GetName());
+        if (SendThanks(owner, guildId, GetTaskValue(owner, guildId, "payment")))
+        {
+            SetTaskValue(owner, guildId, "thanks", 1, 2 * sPlayerbotAIConfig.maxGuildTaskChangeTime);
+            SetTaskValue(owner, guildId, "payment", 0, 0);
+        }
+        else
+        {
+            sLog.outError( "%s / %s: error sending thanks",
+                    guild->GetName(), player->GetName());
+        }
+    }
+
+    uint32 reward = GetTaskValue(owner, guildId, "reward");
+    if (!reward)
+    {
+        sLog.outDebug("%s / %s: sending reward",
+                guild->GetName(), player->GetName());
+        if (Reward(owner, guildId))
+        {
+            SetTaskValue(owner, guildId, "reward", 1, 2 * sPlayerbotAIConfig.maxGuildTaskChangeTime);
+            SetTaskValue(owner, guildId, "payment", 0, 0);
+        }
+        else
+        {
+            sLog.outError( "%s / %s: error sending reward",
+                    guild->GetName(), player->GetName());
+        }
+    }
+
     uint32 activeTask = GetTaskValue(owner, guildId, "activeTask");
     if (!activeTask)
     {
@@ -113,39 +147,6 @@ void GuildTaskMgr::Update(Player* player, Player* guildMaster)
         }
     }
 
-    uint32 thanks = GetTaskValue(owner, guildId, "thanks");
-    if (!thanks)
-    {
-        sLog.outDebug("%s / %s: sending thanks",
-				guild->GetName(), player->GetName());
-        if (SendThanks(owner, guildId, GetTaskValue(owner, guildId, "payment")))
-        {
-            SetTaskValue(owner, guildId, "thanks", 1, 2 * sPlayerbotAIConfig.maxGuildTaskChangeTime);
-            SetTaskValue(owner, guildId, "payment", 0, 0);
-        }
-        else
-        {
-            sLog.outError( "%s / %s: error sending thanks",
-					guild->GetName(), player->GetName());
-        }
-    }
-
-    uint32 reward = GetTaskValue(owner, guildId, "reward");
-    if (!reward)
-    {
-        sLog.outDebug("%s / %s: sending reward",
-				guild->GetName(), player->GetName());
-        if (Reward(owner, guildId))
-        {
-            SetTaskValue(owner, guildId, "reward", 1, 2 * sPlayerbotAIConfig.maxGuildTaskChangeTime);
-            SetTaskValue(owner, guildId, "payment", 0, 0);
-        }
-        else
-        {
-            sLog.outError( "%s / %s: error sending reward",
-					guild->GetName(), player->GetName());
-        }
-    }
 }
 
 uint32 GuildTaskMgr::CreateTask(uint32 owner, uint32 guildId)
@@ -458,7 +459,11 @@ bool GuildTaskMgr::SendThanks(uint32 owner, uint32 guildId, uint32 payment)
 
         Player* player = sObjectMgr.GetPlayer(ObjectGuid(HIGHGUID_PLAYER, owner));
         if (player)
-            SendCompletionMessage(player, "been payed for");
+        {
+            ostringstream os;
+            os << "been payed " << ChatHelper::formatMoney(payment) << " for";
+            SendCompletionMessage(player, os.str());
+        }
 
         return true;
     }
@@ -935,15 +940,12 @@ bool GuildTaskMgr::Reward(uint32 owner, uint32 guildId)
         }
     }
 
-    uint32 payment = GetTaskValue(owner, guildId, "payment");
-    if (payment)
-        SendThanks(owner, guildId, payment);
-
     MailDraft draft("Thank You", body.str());
 
+    Item* item = NULL;
     if (itemId)
     {
-        Item* item = Item::CreateItem(itemId, itemCount);
+        item = Item::CreateItem(itemId, itemCount);
         if (item)
         {
             item->SaveToDB();
@@ -951,15 +953,18 @@ bool GuildTaskMgr::Reward(uint32 owner, uint32 guildId)
         }
     }
 
-    draft.SendMailTo(MailReceiver(ObjectGuid(HIGHGUID_PLAYER, owner)), MailSender(leader));
     player = sObjectMgr.GetPlayer(ObjectGuid(HIGHGUID_PLAYER, owner));
-    if (player && itemId)
-        SendCompletionMessage(player, "been rewarded for");
+    if (player && item)
+    {
+        ostringstream os;
+        os << "been rewarded with " << ChatHelper::formatItem(item->GetProto()) << " for";
+        SendCompletionMessage(player, os.str());
+    }
     else if (player)
         SendCompletionMessage(player, "been thanked for");
 
     SetTaskValue(owner, guildId, "activeTask", 0, 0);
-    SetTaskValue(owner, guildId, "payment", 0, 0);
+    draft.SendMailTo(MailReceiver(ObjectGuid(HIGHGUID_PLAYER, owner)), MailSender(leader));
     return true;
 }
 
