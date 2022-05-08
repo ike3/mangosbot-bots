@@ -120,6 +120,10 @@ namespace ai
         virtual float GetAngle()
         {
             Unit* target = GetTarget();
+            if (target && target->getVictim() == bot)
+            {
+                return target->GetOrientation();
+            }
             Group* group = bot->GetGroup();
             int index = 0, count = 0;
             if (group)
