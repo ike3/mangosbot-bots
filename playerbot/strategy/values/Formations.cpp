@@ -119,6 +119,12 @@ namespace ai
                 dr = sqrt(dx*dx + dy*dy);
             }
 
+            Unit *masterTarget = ai->GetUnit(master->GetTargetGuid());
+            if (masterTarget && !masterTarget->IsHostileTo(bot) && !master->GetTargetGuid().IsPlayer())
+            {
+                dr = dx = dy = 0.0f;
+            }
+
             float x = master->GetPositionX() + cos(angle) * range + dx;
             float y = master->GetPositionY() + sin(angle) * range + dy;
             float z = master->GetPositionZ();

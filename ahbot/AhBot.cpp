@@ -373,7 +373,7 @@ int AhBot::Answer(int auction, Category* category, ItemBag* inAuctionItems)
         }
 
         double priceLevel = (double)curPrice / (double)buyoutPrice;
-        uint32 buytime = GetBuyTime(entry->Id, proto->ItemId, auctionIds[auction], category, priceLevel);
+        uint32 buytime = GetBuyTime(entry->Id, proto->ItemId, auctionIds[auction], category, priceLevel, true);
         if (time(0) < buytime)
         {
             sLog.outDetail( "%s (x%d) in auction %d: will buy/bid in %d seconds",
@@ -450,7 +450,7 @@ void AhBot::SetTime(string category, uint32 id, uint32 auctionHouse, uint32 type
         category.c_str(), type, factions[auctionHouse]);
 }
 
-uint32 AhBot::GetBuyTime(uint32 entry, uint32 itemId, uint32 auctionHouse, Category*& category, double priceLevel)
+uint32 AhBot::GetBuyTime(uint32 entry, uint32 itemId, uint32 auctionHouse, Category*& category, double priceLevel, bool update/* = false*/)
 {
     uint32 entryTime = GetTime("entry", entry, auctionHouse, AHBOT_WON_DELAY);
     if (entryTime > time(0))
@@ -458,26 +458,29 @@ uint32 AhBot::GetBuyTime(uint32 entry, uint32 itemId, uint32 auctionHouse, Categ
 
     uint32 result = entryTime;
 
-    string categoryName = category->GetName();
-    uint32 categoryTime = GetTime(categoryName, 0, auctionHouse, AHBOT_WON_DELAY);
-    uint32 itemTime = GetTime("item", itemId, auctionHouse, AHBOT_WON_DELAY);
+    if (update)
+    {
+        string categoryName = category->GetName();
+        uint32 categoryTime = GetTime(categoryName, 0, auctionHouse, AHBOT_WON_DELAY);
+        uint32 itemTime = GetTime("item", itemId, auctionHouse, AHBOT_WON_DELAY);
 
-    if (categoryTime < time(0)) categoryTime = time(0);
-    if (itemTime < time(0)) itemTime = time(0);
+        if (categoryTime < time(0)) categoryTime = time(0);
+        if (itemTime < time(0)) itemTime = time(0);
 
-    double rarity = category->GetPricingStrategy()->GetRarityPriceMultiplier(itemId);
-    categoryTime += urand(sAhBotConfig.itemBuyMinInterval, sAhBotConfig.itemBuyMaxInterval) * priceLevel;
-    itemTime += urand(sAhBotConfig.itemBuyMinInterval, sAhBotConfig.itemBuyMaxInterval) * priceLevel / rarity;
-    entryTime = max(categoryTime, itemTime);
+        double rarity = category->GetPricingStrategy()->GetRarityPriceMultiplier(itemId);
+        categoryTime += (double)urand(sAhBotConfig.categoryBuyMinInterval, sAhBotConfig.categoryBuyMaxInterval) * priceLevel;
+        itemTime += (double)urand(sAhBotConfig.itemBuyMinInterval, sAhBotConfig.itemBuyMaxInterval) * priceLevel / rarity;
+        entryTime = max(categoryTime, itemTime);
 
-    SetTime(categoryName, 0, auctionHouse, AHBOT_WON_DELAY, categoryTime);
-    SetTime("item", itemId, auctionHouse, AHBOT_WON_DELAY, itemTime);
-    SetTime("entry", entry, auctionHouse, AHBOT_WON_DELAY, entryTime);
+        SetTime(categoryName, 0, auctionHouse, AHBOT_WON_DELAY, categoryTime);
+        SetTime("item", itemId, auctionHouse, AHBOT_WON_DELAY, itemTime);
+        SetTime("entry", entry, auctionHouse, AHBOT_WON_DELAY, entryTime);
+    }
 
     return result ? result : entryTime;
 }
 
-uint32 AhBot::GetSellTime(uint32 itemId, uint32 auctionHouse, Category*& category)
+uint32 AhBot::GetSellTime(uint32 itemId, uint32 auctionHouse, Category*& category, bool update/* = false*/)
 {
     uint32 itemSellTime = GetTime("item", itemId, auctionHouse, AHBOT_SELL_DELAY);
     uint32 itemBuyTime = GetTime("item", itemId, auctionHouse, AHBOT_WON_DELAY);
@@ -488,21 +491,24 @@ uint32 AhBot::GetSellTime(uint32 itemId, uint32 auctionHouse, Category*& categor
 
     uint32 result = itemTime;
 
-    string categoryName = category->GetName();
-    uint32 categorySellTime = GetTime(categoryName, 0, auctionHouse, AHBOT_SELL_DELAY);
-    uint32 categoryBuyTime = GetTime(categoryName, 0, auctionHouse, AHBOT_WON_DELAY);
-    uint32 categoryTime = max(categorySellTime, categoryBuyTime);
+    if (update)
+    {
+        string categoryName = category->GetName();
+        uint32 categorySellTime = GetTime(categoryName, 0, auctionHouse, AHBOT_SELL_DELAY);
+        uint32 categoryBuyTime = GetTime(categoryName, 0, auctionHouse, AHBOT_WON_DELAY);
+        uint32 categoryTime = max(categorySellTime, categoryBuyTime);
 
-    if (categoryTime < time(0)) categoryTime = time(0);
-    if (itemTime < time(0)) itemTime = time(0);
+        if (categoryTime < time(0)) categoryTime = time(0);
+        if (itemTime < time(0)) itemTime = time(0);
 
-    double rarity = category->GetPricingStrategy()->GetRarityPriceMultiplier(itemId);
-    categoryTime += urand(sAhBotConfig.itemSellMinInterval, sAhBotConfig.itemSellMaxInterval);
-    itemTime += urand(sAhBotConfig.itemSellMinInterval, sAhBotConfig.itemSellMaxInterval) * rarity;
-    itemTime = max(itemTime, categoryTime);
+        double rarity = category->GetPricingStrategy()->GetRarityPriceMultiplier(itemId);
+        categoryTime += urand(sAhBotConfig.categorySellMinInterval, sAhBotConfig.categorySellMaxInterval);
+        itemTime += (double)urand(sAhBotConfig.itemSellMinInterval, sAhBotConfig.itemSellMaxInterval) * rarity;
+        itemTime = max(itemTime, categoryTime);
 
-    SetTime(categoryName, 0, auctionHouse, AHBOT_SELL_DELAY, categoryTime);
-    SetTime("item", itemId, auctionHouse, AHBOT_SELL_DELAY, itemTime);
+        SetTime(categoryName, 0, auctionHouse, AHBOT_SELL_DELAY, categoryTime);
+        SetTime("item", itemId, auctionHouse, AHBOT_SELL_DELAY, itemTime);
+    }
 
     return result ? result : itemTime;
 }
@@ -512,25 +518,34 @@ int AhBot::AddAuctions(int auction, Category* category, ItemBag* inAuctionItems)
     vector<uint32>& inAuction = inAuctionItems->Get(category);
 
     int32 maxAllowedAuctionCount = categoryMaxAuctionCount[category->GetName()];
+    sLog.outDetail("Category %s has %d auctions, maxAllowedAuctionCount=%d",
+            category->GetName().c_str(), inAuctionItems->GetCount(category), maxAllowedAuctionCount);
     if (inAuctionItems->GetCount(category) >= maxAllowedAuctionCount)
         return 0;
 
     int added = 0;
     vector<uint32> available = availableItems.Get(category);
+    vector<uint32> checked;
     for (int32 i = 0; i <= maxAllowedAuctionCount && available.size() > 0 && inAuctionItems->GetCount(category) < maxAllowedAuctionCount; ++i)
     {
         uint32 index = urand(0, available.size() - 1);
         uint32 itemId = available[index];
+
+        if (find(checked.begin(), checked.end(), itemId) != checked.end())
+            continue;
+
+        checked.push_back(itemId);
 
         ItemPrototype const* proto = sObjectMgr.GetItemPrototype(itemId);
         if (!proto)
             continue;
 
         int32 maxAllowedItems = category->GetMaxAllowedItemAuctionCount(proto);
-        if (maxAllowedItems && inAuctionItems->GetCount(category, proto->ItemId) >= maxAllowedItems)
+        int32 auctionCount = inAuctionItems->GetCount(category, proto->ItemId);
+        if (!maxAllowedItems || auctionCount >= maxAllowedItems)
             continue;
 
-        uint32 sellTime = GetSellTime(proto->ItemId, auctionIds[auction], category);
+        uint32 sellTime = GetSellTime(proto->ItemId, auctionIds[auction], category, true);
         if (time(0) < sellTime)
         {
             sLog.outDetail( "%s in auction %d: will add in %d seconds",
@@ -544,8 +559,15 @@ int AhBot::AddAuctions(int auction, Category* category, ItemBag* inAuctionItems)
             continue;
         }
 
-        inAuctionItems->Add(proto);
-        added += AddAuction(auction, category, proto);
+        int32 auctionsToAdd = urand(1, maxAllowedItems - auctionCount);
+        sLog.outDetail("auction %d category '%s' - [%s]x%d to add (%d/%d count/allowed)",
+                auction, category->GetName().c_str(), proto->Name1, auctionsToAdd,
+                auctionCount, maxAllowedItems);
+        for (int32 j = 0; j < auctionsToAdd; j++)
+        {
+            inAuctionItems->Add(proto);
+            added += AddAuction(auction, category, proto);
+        }
     }
 
     return added;
@@ -612,15 +634,12 @@ int AhBot::AddAuction(int auction, Category* category, ItemPrototype const* prot
     auctionEntry->bidder = 0;
     auctionEntry->bid = 0;
     auctionEntry->deposit = 0;
-    auctionEntry->expireTime = (time_t) (urand(8, 24) * 60 * 60 + time(NULL));
+    auctionEntry->expireTime = (time_t) (urand(2, 12) * 60 * 60 + time(NULL));
     auctionEntry->auctionHouseEntry = ahEntry;
 
     item->SaveToDB();
 
     sAuctionMgr.AddAItem(item);
-
-
-    auctionHouse->AddAuction(auctionEntry);
 
     auctionHouse->AddAuction(auctionEntry);
     auctionEntry->SaveToDB();
@@ -639,7 +658,7 @@ void AhBot::HandleCommand(string command)
         for (int i = 0; i < MAX_AUCTIONS; i++)
             Expire(i);
         CharacterDatabase.PExecute("DELETE FROM ahbot_category");
-        CharacterDatabase.PExecute("UPDATE ahbot_history SET buytime = buytime - 3600 * 24;");
+        CharacterDatabase.PExecute("UPDATE ahbot_history SET buytime = buytime - 3600 * 3");
 
         return;
     }
@@ -694,6 +713,9 @@ void AhBot::HandleCommand(string command)
                     << "\n";
             for (int auction = 0; auction < MAX_AUCTIONS; auction++)
             {
+                InAuctionItemsBag inAuctionItems(auctionIds[auction]);
+                inAuctionItems.Init(true);
+
                 const AuctionHouseEntry* ahEntry = sAuctionHouseStore.LookupEntry(auctionIds[auction]);
                 out << "--- auction house " << auctionIds[auction] << "(faction: " << factions[auctionIds[auction]] << ", money: "
                     << GetAvailableMoney(auctionIds[auction])
@@ -709,6 +731,16 @@ void AhBot::HandleCommand(string command)
 
                 out << "market: " << ChatHelper::formatMoney(category->GetPricingStrategy()->GetMarketPrice(proto->ItemId, auctionIds[auction]))
                     << "\n";
+
+                uint32 sellTime = GetSellTime(proto->ItemId, auctionIds[auction], category);
+                if (sellTime <= time(0))
+                {
+                    int32 maxAllowedAuctionCount = categoryMaxAuctionCount[category->GetName()];
+                    out << "could sell NOW, having " <<
+                            inAuctionItems.GetCount(category, proto->ItemId) << " (" <<
+                            inAuctionItems.GetCount(category) << "/" << maxAllowedAuctionCount << " by category) auctions\n";
+                }
+                else out << "could sell in " << ChatHelper::formatTime(sellTime - time(0)) << "\n";
             }
             sLog.outString(out.str().c_str());
         }
