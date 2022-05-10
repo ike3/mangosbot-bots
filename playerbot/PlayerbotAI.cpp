@@ -2196,8 +2196,8 @@ bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target, Item* itemTarget)
     if (bot->IsFlying() || bot->IsTaxiFlying())
         return false;
 
-	bot->clearUnitState(UNIT_STAT_CHASE);
-	bot->clearUnitState(UNIT_STAT_FOLLOW);
+	//bot->clearUnitState(UNIT_STAT_CHASE);
+	//bot->clearUnitState(UNIT_STAT_FOLLOW);
 
 	bool failWithDelay = false;
     if (!bot->IsStandState())
@@ -2275,11 +2275,11 @@ bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target, Item* itemTarget)
         }
     }
 
-    if (sServerFacade.isMoving(bot) && spell->GetCastTime())
+    if (sServerFacade.isMoving(bot) && (spell->GetCastTime() || (IsChanneledSpell(pSpellInfo) && GetSpellDuration(pSpellInfo) > 0)))
     {
         StopMoving();
         SetNextCheckDelay(sPlayerbotAIConfig.globalCoolDown);
-        //spell->cancel();
+        spell->cancel();
         //delete spell;
         return false;
     }
@@ -2307,7 +2307,7 @@ bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target, Item* itemTarget)
     //    return false;
 
     WaitForSpellCast(spell);
-    if (spell->GetCastTime())
+    if (spell->GetCastTime() || (IsChanneledSpell(pSpellInfo) && GetSpellDuration(pSpellInfo) > 0))
         aiObjectContext->GetValue<LastSpellCast&>("last spell cast")->Get().Set(spellId, target->GetObjectGuid(), time(0));
 
     aiObjectContext->GetValue<ai::PositionMap&>("position")->Get()["random"].Reset();
