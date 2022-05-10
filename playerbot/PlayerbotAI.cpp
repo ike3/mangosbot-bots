@@ -215,8 +215,15 @@ void PlayerbotAI::UpdateAI(uint32 elapsed, bool minimal)
 
     // Leontiesh - fix movement desync
     if (bot->IsMoving())
+    {
         isMoving = true;
-    else if (isMoving && !bot->IsTaxiFlying())
+
+        // release loot if moving
+        if (!bot->GetLootGuid().IsEmpty())
+            if (Loot* loot = sLootMgr.GetLoot(bot, bot->GetLootGuid()))
+                loot->Release(bot);
+    }
+    else if (isMoving)
     {
         StopMoving();
 
