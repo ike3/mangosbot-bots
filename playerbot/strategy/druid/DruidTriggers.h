@@ -23,7 +23,11 @@ namespace ai {
     public:
         ThornsOnPartyTrigger(PlayerbotAI* ai) : BuffOnPartyTrigger(ai, "thorns", 2) {}
 
-        virtual bool IsActive() { return BuffOnPartyTrigger::IsActive() && !ai->HasAura("thorns", GetTarget()); }
+        virtual bool IsActive()
+        {
+            Unit* target = GetTarget();
+            return BuffOnPartyTrigger::IsActive() && (!target->IsPlayer() || !ai->IsRanged((Player*)target));
+        }
     };
 
     class ThornsTrigger : public BuffTrigger
