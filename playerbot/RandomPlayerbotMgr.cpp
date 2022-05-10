@@ -343,20 +343,20 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed, bool minimal)
 
     if (sPlayerbotAIConfig.syncLevelWithPlayers && players.size())
     {
-        if (time(nullptr) > ((int)PlayersCheckTimer + 60))
-            activateCheckPlayersThread();
+        if (time(nullptr) > (PlayersCheckTimer + 60))
+            CheckPlayers();
     }
 
     if (sPlayerbotAIConfig.randomBotJoinLfg && players.size())
     {
-        if (time(nullptr) > ((int)LfgCheckTimer + 30))
-            activateCheckLfgQueueThread();
+        if (time(nullptr) > (LfgCheckTimer + 30))
+            CheckLfgQueue();
     }
 
     if (sPlayerbotAIConfig.randomBotJoinBG/* && players.size()*/)
     {
-        if (time(nullptr) > ((int)BgCheckTimer + 30))
-            activateCheckBgQueueThread();
+        if (time(nullptr) > (BgCheckTimer + 30))
+            CheckBgQueue();
     }
 
     uint32 updateBots = sPlayerbotAIConfig.randomBotsPerInterval * onlineBotFocus / 100;
