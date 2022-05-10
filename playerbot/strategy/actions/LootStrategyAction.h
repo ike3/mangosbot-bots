@@ -12,6 +12,7 @@ namespace ai
 
     private:
         void TellLootList(string name);
+        void TellGoList(string name);
     };
 
 }

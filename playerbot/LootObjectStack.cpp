@@ -87,6 +87,9 @@ void LootObject::Refresh(Player* bot, ObjectGuid guid)
         && go->GetGoState() == GO_STATE_READY)
     {
         uint32 goId = go->GetGOInfo()->id;
+        set<uint32>& skipGoLootList = ai->GetAiObjectContext()->GetValue<set<uint32>& >("skip go loot list")->Get();
+        if (skipGoLootList.find(goId) != skipGoLootList.end()) return;
+
         uint32 lockId = go->GetGOInfo()->GetLockId();
         LockEntry const *lockInfo = sLockStore.LookupEntry(lockId);
         if (!lockInfo)

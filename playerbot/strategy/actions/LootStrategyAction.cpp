@@ -23,12 +23,14 @@ bool LootStrategyAction::Execute(Event event)
 
         TellLootList("always loot list");
         TellLootList("skip loot list");
+        TellGoList("skip go loot list");
     }
     else
     {
         ItemIds items = chat->parseItems(strategy);
+        list<ObjectGuid> gos = chat->parseGameobjects(strategy);
 
-        if (items.size() == 0)
+        if (items.size() == 0 && gos.size() == 0)
         {
             lootStrategy->Set(LootStrategyValue::instance(strategy));
             ostringstream out;
@@ -85,10 +87,32 @@ bool LootStrategyAction::Execute(Event event)
             }
         }
 
+        set<uint32>& skipGoLootList = AI_VALUE(set<uint32>&, "skip go loot list");
+        for (list<ObjectGuid>::iterator i = gos.begin(); i != gos.end(); ++i)
+        {
+            GameObject *go = ai->GetGameObject(*i);
+            if (!go) continue;
+            uint32 goId = go->GetGOInfo()->id;
+
+            if (clear || add)
+            {
+                set<uint32>::iterator j = skipGoLootList.find(goId);
+                if (j != skipGoLootList.end()) skipGoLootList.erase(j);
+                changes = true;
+            }
+
+            if (remove)
+            {
+                skipGoLootList.insert(goId);
+                changes = true;
+            }
+        }
+
         if (changes)
         {
             TellLootList("always loot list");
             TellLootList("skip loot list");
+            TellGoList("skip go loot list");
             AI_VALUE(LootObjectStack*, "available loot")->Clear();
         }
     }
@@ -109,6 +133,24 @@ void LootStrategyAction::TellLootList(string name)
             continue;
 
         out << " " << chat->formatItem(proto);
+    }
+    ai->TellMaster(out);
+}
+
+void LootStrategyAction::TellGoList(string name)
+{
+    set<uint32>& alwaysLootItems = AI_VALUE(set<uint32>&, name);
+    ostringstream out;
+    out << "My " << name << ":";
+
+    for (set<uint32>::iterator i = alwaysLootItems.begin(); i != alwaysLootItems.end(); i++)
+    {
+        uint32 id = *i;
+        GameObjectInfo const *proto = sGOStorage.LookupEntry<GameObjectInfo>(id);
+        if (!proto)
+            continue;
+
+        out << " |cFFFFFF00|Hfound:" << 0 << ":" << id << ":" <<  "|h[" << proto->name << "]|h|r";
     }
     ai->TellMaster(out);
 }
