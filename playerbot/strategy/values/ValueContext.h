@@ -236,6 +236,8 @@ namespace ai
             creators["home bind"] = &ValueContext::home_bind;
             creators["last long move"] = &ValueContext::last_long_move;
 
+            creators["bot roles"] = &ValueContext::bot_roles;
+
             
             creators["free quest log slots"] = &ValueContext::free_quest_log_slots;
             creators["dialog status"] = &ValueContext::dialog_status;
@@ -426,6 +428,8 @@ namespace ai
 
         static UntypedValue* last_long_move(PlayerbotAI* ai) { return new LastLongMoveValue(ai); }
         static UntypedValue* home_bind(PlayerbotAI* ai) { return new HomeBindValue(ai); }
+
+        static UntypedValue* bot_roles(PlayerbotAI* ai) { return new BotRolesValue(ai); }
 
         static UntypedValue* free_quest_log_slots(PlayerbotAI* ai) { return new FreeQuestLogSlotValue(ai); }
         static UntypedValue* dialog_status(PlayerbotAI* ai) { return new DialogStatusValue(ai); }
