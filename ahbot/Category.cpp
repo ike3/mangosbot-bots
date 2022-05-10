@@ -19,7 +19,7 @@ uint32 Category::GetStackCount(ItemPrototype const* proto)
 
 uint32 Category::GetMaxAllowedItemAuctionCount(ItemPrototype const* proto)
 {
-    return 0;
+    return 1;
 }
 
 uint32 Category::GetMaxAllowedAuctionCount()

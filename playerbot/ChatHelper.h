@@ -32,6 +32,7 @@ namespace ai
         static string formatRace(uint8 race);
         static string formatSkill(uint32 skill);
         static string formatBoolean(bool flag);
+        static string formatTime(uint32 seconds);
 
         static uint32 parseItemQuality(string text);
         static bool parseItemClass(string text, uint32 *itemClass, uint32 *itemSubClass);

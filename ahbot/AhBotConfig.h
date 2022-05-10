@@ -23,6 +23,8 @@ public:
     uint32 historyDays, maxSellInterval;
     uint32 itemBuyMinInterval, itemBuyMaxInterval;
     uint32 itemSellMinInterval, itemSellMaxInterval;
+    uint32 categoryBuyMinInterval, categoryBuyMaxInterval;
+    uint32 categorySellMinInterval, categorySellMaxInterval;
     uint32 alwaysAvailableMoney;
     float priceMultiplier, priceQualityMultiplier;
     uint32 defaultMinPrice, stackReducePrice;

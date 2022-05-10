@@ -487,3 +487,29 @@ string ChatHelper::formatBoolean(bool flag)
 {
     return flag ? "|cff00ff00ON|r" : "|cffffff00OFF|r";
 }
+
+string ChatHelper::formatTime(uint32 seconds)
+{
+    ostringstream out;
+    if (seconds < 60)
+    {
+        out << seconds << " sec";
+        return out.str();
+    }
+    if (seconds < 3600)
+    {
+        uint32 mins = seconds / 60;
+        uint32 secs = seconds % 60;
+        out << mins << " min";
+        if (secs) out << ", " << secs << " sec";
+
+        return out.str();
+    }
+
+    uint32 hrs = seconds / 3600;
+    uint32 mins = (seconds % 3600) / 60;
+    out << hrs << " hrs";
+    if (mins) out << ", " << mins << " min";
+
+    return out.str();
+}

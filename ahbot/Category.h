@@ -94,7 +94,7 @@ namespace ahbot
 
         virtual uint32 GetMaxAllowedItemAuctionCount(ItemPrototype const* proto)
         {
-            return 5;
+            return 10;
         }
     };
 
