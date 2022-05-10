@@ -101,6 +101,11 @@ namespace ai
             if (ground <= INVALID_HEIGHT)
                 return Formation::NullLocation;
 
+            // prevent going into terrain
+            float ox, oy, oz;
+            master->GetPosition(ox, oy, oz);
+            master->GetMap()->GetHitPosition(ox, oy, oz + bot->GetCollisionHeight(), x, y, z, -0.5f);
+
             z += CONTACT_DISTANCE;
             bot->UpdateAllowedPositionZ(x, y, z);
             return WorldLocation(master->GetMapId(), x, y, z);
@@ -365,6 +370,11 @@ namespace ai
 
                 return Formation::NullLocation;
             }
+
+            // prevent going into terrain
+            float ox, oy, oz;
+            master->GetPosition(ox, oy, oz);
+            master->GetMap()->GetHitPosition(ox, oy, oz + bot->GetCollisionHeight(), x, y, z, -0.5f);
 
             z += CONTACT_DISTANCE;
             bot->UpdateAllowedPositionZ(x, y, z);
