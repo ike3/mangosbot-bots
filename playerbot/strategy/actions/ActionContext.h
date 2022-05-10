@@ -164,6 +164,9 @@ namespace ai
             creators["buy tabard"] = &ActionContext::buy_tabard;
             creators["guild manage nearby"] = &ActionContext::guild_manage_nearby;
             creators["use trinket"] = &ActionContext::use_trinket;
+            creators["goblin sapper"] = &ActionContext::goblin_sapper;
+            creators["oil of immolation"] = &ActionContext::oil_of_immolation;
+            creators["dark rune"] = &ActionContext::dark_rune;
 
             // BG Tactics
             creators["bg tactics"] = &ActionContext::bg_tactics;
@@ -358,6 +361,11 @@ namespace ai
        
         
 
+        // item helpers
+        static Action* goblin_sapper(PlayerbotAI* ai) { return new CastGoblinSappersAction(ai); }
+        static Action* oil_of_immolation(PlayerbotAI* ai) { return new CastOilOfImmolationAction(ai); }
+        static Action* dark_rune(PlayerbotAI* ai) { return new DarkRuneAction(ai); }
+        
         // BG Tactics
         static Action* bg_tactics(PlayerbotAI* ai) { return new BGTactics(ai); }
         static Action* bg_move_to_start(PlayerbotAI* ai) { return new BGTactics(ai, "move to start"); }

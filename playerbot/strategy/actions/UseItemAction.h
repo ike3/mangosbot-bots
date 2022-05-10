@@ -157,4 +157,103 @@ namespace ai
 
        virtual bool Execute(Event event);
    };
+
+   // goblin sappers
+   class CastGoblinSappersAction : public UseItemAction
+   {
+   public:
+       CastGoblinSappersAction(PlayerbotAI* ai) : UseItemAction(ai, "goblin sapper") {}
+       virtual bool isPossible() { return true; }
+       virtual bool isUseful()
+       {
+           return bot->GetLevel() >= 50 && bot->GetHealth() > 1000;
+       }
+       virtual bool Execute(Event event)
+       {
+           uint32 goblinSapper = 10646;
+           bool added = true;
+
+           if (!bot->HasItemCount(goblinSapper, 1))
+               added = bot->StoreNewItemInBestSlots(goblinSapper, 10);
+
+           if (!added)
+               return false;
+
+           list<Item*> items = AI_VALUE2(list<Item*>, "inventory items", "goblin sapper charge");
+           list<Item*>::iterator i = items.begin();
+           Item* item = *i;
+
+           if (!item)
+               return false;
+
+           return UseItemAuto(item);
+       }
+   };
+
+   // oil of immolation
+   class CastOilOfImmolationAction : public UseItemAction
+   {
+   public:
+       CastOilOfImmolationAction(PlayerbotAI* ai) : UseItemAction(ai, "oil of immolation") {}
+       virtual bool isPossible() { return true; }
+       virtual bool isUseful()
+       {
+           return bot->GetLevel() >= 31 && !ai->HasAura(11350, bot);
+       }
+       virtual bool Execute(Event event)
+       {
+           uint32 oil = 8956;
+           bool added = true;
+
+           if (!bot->HasItemCount(oil, 1))
+               added = bot->StoreNewItemInBestSlots(oil, 5);
+
+           if (!added)
+               return false;
+
+           list<Item*> items = AI_VALUE2(list<Item*>, "inventory items", "oil of immolation");
+           list<Item*>::iterator i = items.begin();
+           Item* item = *i;
+
+           if (!item)
+               return false;
+
+           return UseItemAuto(item);
+       }
+   };
+
+   // dark rune
+   class DarkRuneAction : public UseItemAction
+   {
+   public:
+       DarkRuneAction(PlayerbotAI* ai) : UseItemAction(ai, "dark rune") {}
+       virtual bool isPossible() { return true; }
+       virtual bool isUseful()
+       {
+           if (bot->getClass() == CLASS_MAGE) // mage should use mana gem, shares cd with dark rune
+               return false;
+
+           return bot->GetLevel() == 60 && AI_VALUE2(uint8, "health", "self target") > sPlayerbotAIConfig.lowHealth;
+       }
+       virtual bool Execute(Event event)
+       {
+           uint32 rune = 20520;
+           bool added = true;
+
+           if (!bot->HasItemCount(rune, 1))
+               added = bot->StoreNewItemInBestSlots(rune, 20);
+
+           if (!added)
+               return false;
+
+           list<Item*> items = AI_VALUE2(list<Item*>, "inventory items", "dark rune");
+           list<Item*>::iterator i = items.begin();
+           Item* item = *i;
+
+           if (!item)
+               return false;
+
+           return UseItemAuto(item);
+       }
+   };
 }

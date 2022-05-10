@@ -32,9 +32,13 @@ void UsePotionsStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "critical health",
-        NextAction::array(0, new NextAction("healthstone", ACTION_MEDIUM_HEAL + 1), NULL)));
+        NextAction::array(0, new NextAction("healthstone", ACTION_EMERGENCY + 2), NULL)));
 
     triggers.push_back(new TriggerNode(
         "low mana",
-        NextAction::array(0,  new NextAction("mana potion", ACTION_EMERGENCY), NULL)));
+        NextAction::array(0,  new NextAction("mana potion", ACTION_EMERGENCY + 1), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "low mana",
+        NextAction::array(0, new NextAction("dark rune", ACTION_EMERGENCY), NULL)));
 }
