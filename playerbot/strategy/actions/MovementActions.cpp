@@ -1439,13 +1439,38 @@ bool SetBehindTargetAction::Execute(Event event)
     if (!target)
         return false;
 
-    float angle = GetFollowAngle() / 3 + target->GetOrientation() + M_PI;
+    /*float angle = GetFollowAngle() / 3 + target->GetOrientation() + M_PI;
 
-    float distance = bot->GetCombinedCombatReach(target, true) - sPlayerbotAIConfig.contactDistance;
-    float x = target->GetPositionX() + cos(angle) * distance,
-        y = target->GetPositionY() + sin(angle) * distance,
+    float x, y, z;
+    float orientation = target->GetOrientation() + M_PI / 2.0f;
+
+    float x_coef = cos(orientation);
+    float y_coef = sin(orientation);
+
+    float x_range_add = cos(target->GetOrientation()) * -1.0f;
+    float y_range_add = sin(target->GetOrientation()) * -1.0f;
+
+    x = target->GetPositionX() + x_coef * 0.0f + x_range_add;
+    y = target->GetPositionY() + y_coef * 0.0f + y_range_add;
+    z = target->GetPositionZ() + 0.0f;
+    bot->GetMotionMaster()->MovePoint(bot->GetMapId(), x, y, z, FORCED_MOVEMENT_RUN, true);
+    bot->SetInFront(target);
+    return true;*/
+
+    // TEST
+
+    float angle = GetFollowAngle() / 3 + target->GetOrientation() + M_PI / 2.0f;
+
+    float distance = bot->GetCombinedCombatReach(target, true) * 0.8f;
+    float x = target->GetPositionX() + cos(target->GetOrientation()) * -1.0f * distance,
+        y = target->GetPositionY() + sin(target->GetOrientation()) * -1.0f * distance,
         z = target->GetPositionZ();
     bot->UpdateGroundPositionZ(x, y, z);
+
+    // prevent going into terrain
+    float ox, oy, oz;
+    target->GetPosition(ox, oy, oz);
+    target->GetMap()->GetHitPosition(ox, oy, oz + bot->GetCollisionHeight(), x, y, z, -0.5f);
 
     bool isLos = target->IsWithinLOS(x, y, z + bot->GetCollisionHeight(), true);
 
