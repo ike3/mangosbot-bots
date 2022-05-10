@@ -3,7 +3,7 @@
 #include "../../playerbot.h"
 #include "GenericTriggers.h"
 #include "CureTriggers.h"
-#include "../actions/WorldBuffAction.h""
+#include "../actions/WorldBuffAction.h"
 
 
 using namespace ai;
