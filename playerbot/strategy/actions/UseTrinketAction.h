@@ -11,5 +11,6 @@ namespace ai
         UseTrinketAction(PlayerbotAI* ai) : UseItemAction(ai, "use trinket", true) {}
         virtual bool Execute(Event event);    
         virtual bool isPossible();
+        virtual bool isUseful() { return UseItemAction::isUseful() && !bot->HasStealthAura(); }
     };
 }
