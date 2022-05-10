@@ -276,8 +276,8 @@ namespace ai
 
     //cc breakers
 
-    SPELL_ACTION(CastWillOfTheForsakenAction, "will of the forsaken");
-    SPELL_ACTION(CastEscapeArtistAction, "escape artist");
+    BUFF_ACTION(CastWillOfTheForsakenAction, "will of the forsaken");
+    BUFF_ACTION(CastEscapeArtistAction, "escape artist");
 #ifdef MANGOSBOT_TWO
     SPELL_ACTION(CastEveryManforHimselfAction, "every man for himself");
 #endif
