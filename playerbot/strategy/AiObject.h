@@ -59,11 +59,26 @@ class clazz : public super \
         clazz(PlayerbotAI* ai) : BuffTrigger(ai, spell) {} \
     }
 
+#define MY_BUFF_TRIGGER(clazz, spell) \
+    class clazz : public MyBuffTrigger \
+    { \
+    public: \
+        clazz(PlayerbotAI* ai) : MyBuffTrigger(ai, spell) {} \
+    }
+
 #define BUFF_TRIGGER_A(clazz, spell) \
     class clazz : public BuffTrigger \
     { \
     public: \
         clazz(PlayerbotAI* ai) : BuffTrigger(ai, spell) {} \
+        virtual bool IsActive(); \
+    }
+
+#define MY_BUFF_TRIGGER_A(clazz, spell) \
+    class clazz : public MyBuffTrigger \
+    { \
+    public: \
+        clazz(PlayerbotAI* ai) : MyBuffTrigger(ai, spell) {} \
         virtual bool IsActive(); \
     }
 
@@ -83,6 +98,13 @@ class clazz : public super \
     }
 
 #define DEBUFF_TRIGGER(clazz, spell) \
+    class clazz : public DebuffTrigger \
+    { \
+    public: \
+        clazz(PlayerbotAI* ai) : DebuffTrigger(ai, spell) {} \
+    }
+
+#define DEBUFF_ONLY_TRIGGER(clazz, spell) \
     class clazz : public DebuffTrigger \
     { \
     public: \
@@ -298,6 +320,13 @@ class clazz : public super \
     { \
     public: \
         clazz(PlayerbotAI* ai) : HealPartyMemberAction(ai, spell) {} \
+    }
+
+#define HEAL_HOT_PARTY_ACTION(clazz, spell) \
+    class clazz : public HealHotPartyMemberAction \
+    { \
+    public: \
+        clazz(PlayerbotAI* ai) : HealHotPartyMemberAction(ai, spell) {} \
     }
 
 #define AOE_HEAL_ACTION(clazz, spell) \
