@@ -14,6 +14,9 @@ namespace ai
             if (ai->HasActivePlayerMaster())
                 return false;
 
+            if (ai->GetGroupMaster() && !ai->GetGroupMaster()->GetPlayerbotAI())
+                return false;
+
             if (!ai->AllowActivity(ALL_ACTIVITY))
                 return false;
 
@@ -61,6 +64,9 @@ namespace ai
         virtual bool IsActive()
         {
             if (ai->HasActivePlayerMaster())
+                return false;
+
+            if (ai->GetGroupMaster() && !ai->GetGroupMaster()->GetPlayerbotAI())
                 return false;
 
             if (!ai->AllowActivity(ALL_ACTIVITY))
@@ -144,6 +150,9 @@ namespace ai
             if (ai->HasActivePlayerMaster())
                 return false;
 
+            if (ai->GetGroupMaster() && !ai->GetGroupMaster()->GetPlayerbotAI())
+                return false;
+
             if (!ai->AllowActivity(ALL_ACTIVITY))
                 return false;
 
@@ -173,6 +182,9 @@ namespace ai
                 return false;
 
             if (ai->HasActivePlayerMaster())
+                return false;
+
+            if (ai->GetGroupMaster() && !ai->GetGroupMaster()->GetPlayerbotAI())
                 return false;
 
             if (!ai->AllowActivity(ALL_ACTIVITY))
