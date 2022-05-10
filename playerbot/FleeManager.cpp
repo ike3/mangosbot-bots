@@ -59,6 +59,8 @@ void FleeManager::calculatePossibleDestinations(list<FleePoint*> &points)
         enemyOri.push_back(ori);
     }
 
+    Map* map = bot->GetMap();
+    const TerrainInfo* terrain = map->GetTerrain();
     float distIncrement = max(sPlayerbotAIConfig.followDistance, (maxAllowedDistance - sPlayerbotAIConfig.tooCloseDistance) / 10.0f);
     for (float dist = maxAllowedDistance; dist >= sPlayerbotAIConfig.tooCloseDistance ; dist -= distIncrement)
     {
@@ -69,15 +71,14 @@ void FleeManager::calculatePossibleDestinations(list<FleePoint*> &points)
             {
                 if (intersectsOri(angle, enemyOri, angleIncrement)) continue;
 
-                float x = botPosX + cos(angle) * maxAllowedDistance, y = botPosY + sin(angle) * maxAllowedDistance, z = botPosZ + CONTACT_DISTANCE;
+                float x = botPosX + cos(angle) * dist, y = botPosY + sin(angle) * dist, z = botPosZ + CONTACT_DISTANCE;
+                if (isTooCloseToEdge(x, y, z, angle)) continue;
 
                 if (forceMaxDistance && sServerFacade.IsDistanceLessThan(sServerFacade.GetDistance2d(bot, x, y), maxAllowedDistance - sPlayerbotAIConfig.tooCloseDistance))
                     continue;
 
                 bot->UpdateAllowedPositionZ(x, y, z);
 
-                Map* map = bot->GetMap();
-                const TerrainInfo* terrain = map->GetTerrain();
                 if (terrain && terrain->IsInWater(x, y, z))
                     continue;
 
@@ -92,6 +93,28 @@ void FleeManager::calculatePossibleDestinations(list<FleePoint*> &points)
             }
         }
     }
+}
+
+bool FleeManager::isTooCloseToEdge(float x, float y, float z, float angle)
+{
+    Map* map = bot->GetMap();
+    const TerrainInfo* terrain = map->GetTerrain();
+    for (float a = angle; a <= angle + 2*M_PI; a += M_PI / 4)
+    {
+        float dist = sPlayerbotAIConfig.tooCloseDistance;
+        float tx = x + cos(a) * dist;
+        float ty = y + sin(a) * dist;
+        float tz = z;
+        bot->UpdateAllowedPositionZ(tx, ty, tz);
+
+        if (terrain && terrain->IsInWater(tx, ty, tz))
+            return true;
+
+        if (!bot->IsWithinLOS(tx, ty, tz))
+            return true;
+    }
+
+    return false;
 }
 
 void FleeManager::cleanup(list<FleePoint*> &points)
