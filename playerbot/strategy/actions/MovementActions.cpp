@@ -26,7 +26,7 @@ bool MovementAction::MoveNear(WorldObject* target, float distance)
         return false;
 
 #ifdef MANGOS
-    distance += target->GetObjectBoundingRadius();
+    distance += target->GetObjectBoundingRadius() + bot->GetObjectBoundingRadius();
 #endif
 
     float x = target->GetPositionX();
@@ -59,10 +59,13 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle)
 {
     UpdateMovementState();
 
-    bool generatePath = !bot->IsFlying() && !bot->HasMovementFlag(MOVEFLAG_SWIMMING) && !bot->IsInWater() && !sServerFacade.IsUnderwater(bot);
+    bool generatePath = !bot->IsFlying() && !bot->HasMovementFlag(MOVEFLAG_SWIMMING) && !bot->IsInWater() && !sServerFacade.IsUnderwater(bot) &&
+            !bot->m_movementInfo.HasMovementFlag(MOVEFLAG_ONTRANSPORT);
     if (generatePath)
     {
-        bot->UpdateAllowedPositionZ(x, y, z);
+        float ground = z;
+        z = bot->GetMap()->GetTerrain()->GetWaterOrGroundLevel(x, y, z, &ground);
+        if (sServerFacade.IsDistanceLessThan(abs(ground - z), sPlayerbotAIConfig.contactDistance)) z = ground;
     }
 
     if (!IsMovingAllowed(mapId, x, y, z))
