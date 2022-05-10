@@ -78,7 +78,7 @@ namespace ai
 	public:
 		CastBlizzardAction(PlayerbotAI* ai) : CastSpellAction(ai, "blizzard") {}
         virtual ActionThreatType getThreatType() { return ACTION_THREAT_AOE; }
-        virtual bool isUseful() { return CastSpellAction::isUseful() && (time(0) - ai->GetCombatStartTime()) > 10; }
+        virtual bool isUseful() { return CastSpellAction::isUseful() && ai->GetCombatStartTime() && (time(0) - ai->GetCombatStartTime()) > 10; }
 	};
 
 	class CastArcaneIntellectAction : public CastBuffSpellAction
