@@ -7,7 +7,7 @@ namespace ai
 	{
 	public:
         AttackerWithoutAuraTargetValue(PlayerbotAI* ai) :
-            UnitCalculatedValue(ai, "attacker without aura") {}
+            UnitCalculatedValue(ai, "attacker without aura", 2) {}
 
     protected:
         virtual Unit* Calculate();

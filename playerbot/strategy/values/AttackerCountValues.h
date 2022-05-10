@@ -7,7 +7,7 @@ namespace ai
     class AttackerCountValue : public Uint8CalculatedValue, public Qualified
     {
     public:
-        AttackerCountValue(PlayerbotAI* ai, string name = "attackers count") : Uint8CalculatedValue(ai, name) {}
+        AttackerCountValue(PlayerbotAI* ai, string name = "attackers count") : Uint8CalculatedValue(ai, name, 2) {}
 
         Unit* GetTarget()
         {
@@ -20,7 +20,7 @@ namespace ai
     class MyAttackerCountValue : public Uint8CalculatedValue, public Qualified
     {
     public:
-        MyAttackerCountValue(PlayerbotAI* ai, string name = "my attackers count") : Uint8CalculatedValue(ai, name) {}
+        MyAttackerCountValue(PlayerbotAI* ai, string name = "my attackers count") : Uint8CalculatedValue(ai, name, 2) {}
 
         Unit* GetTarget()
         {
@@ -33,7 +33,7 @@ namespace ai
     class HasAggroValue : public BoolCalculatedValue, public Qualified
     {
     public:
-        HasAggroValue(PlayerbotAI* ai, string name = "has agro") : BoolCalculatedValue(ai, name) {}
+        HasAggroValue(PlayerbotAI* ai, string name = "has agro") : BoolCalculatedValue(ai, name, 2) {}
 
         Unit* GetTarget()
         {
@@ -46,7 +46,7 @@ namespace ai
     class BalancePercentValue : public Uint8CalculatedValue, public Qualified
     {
     public:
-        BalancePercentValue(PlayerbotAI* ai, string name = "balance percentage") : Uint8CalculatedValue(ai, name) {}
+        BalancePercentValue(PlayerbotAI* ai, string name = "balance percentage") : Uint8CalculatedValue(ai, name, 2) {}
 
         Unit* GetTarget()
         {
