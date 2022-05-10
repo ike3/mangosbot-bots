@@ -1206,9 +1206,9 @@ bool LfgJoinAction::isUseful()
     if (sLFGMgr.IsPlayerInQueue(bot->GetObjectGuid()))
         return false;
 
-    ClassRoles botRoles = sLFGMgr.CalculateTalentRoles(bot);
+    LfgRoles botRoles = sLFGMgr.CalculateTalentRoles(bot);
 
-    RolesPriority prio = sLFGMgr.GetPriority((Classes)bot->getClass(), (ClassRoles)botRoles);
+    LfgRolePriority prio = sLFGMgr.GetPriority((Classes)bot->getClass(), (LfgRoles)botRoles);
     if (prio < LFG_PRIORITY_NORMAL)
         return false;
 
