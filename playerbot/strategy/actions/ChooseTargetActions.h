@@ -140,6 +140,15 @@ namespace ai
             }
             context->GetValue<Unit*>("current target")->Set(NULL);
             bot->SetSelectionGuid(ObjectGuid());
+
+            // attack next target if in combat
+            uint32 attackers = AI_VALUE(uint8, "attacker count");
+            if (attackers > 0)
+            {
+                Unit* target = context->GetValue<Unit*>("dps target")->Get();
+                return ai->DoSpecificAction("dps assist", Event(), true);
+            }
+
             ai->ChangeEngine(BOT_STATE_NON_COMBAT);
             ai->InterruptSpell();
             bot->AttackStop();

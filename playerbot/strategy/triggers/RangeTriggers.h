@@ -177,4 +177,10 @@ namespace ai
     public:
         OutOfReactRangeTrigger(PlayerbotAI* ai) : FarFromMasterTrigger(ai, "out of react range", 50.0f, 5) {}
     };
+
+    class NotNearMasterTrigger : public FarFromMasterTrigger
+    {
+    public:
+        NotNearMasterTrigger(PlayerbotAI* ai) : FarFromMasterTrigger(ai, "not near master", 5.0f, 2) {}
+    };
 }
