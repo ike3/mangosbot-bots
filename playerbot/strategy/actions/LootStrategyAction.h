@@ -12,5 +12,6 @@ namespace ai
 
     private:
         void TellLootList(Player* requester, const string& name);
+        void TellGoList(Player* requester, const string& name);
     };
 }
