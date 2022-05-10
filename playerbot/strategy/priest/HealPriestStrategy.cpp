@@ -26,7 +26,7 @@ void HealPriestStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "party member almost full health",
-        NextAction::array(0, new NextAction("renew on party", 41.0f), new NextAction("heal on party", 40.0f), NULL)));
+        NextAction::array(0, new NextAction("heal on party", 41.0f), new NextAction("renew on party", 40.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
         "party member medium health",

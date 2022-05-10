@@ -69,6 +69,12 @@ namespace ai
         CastDebuffSpellAction(PlayerbotAI* ai, string spell, bool isOwner = true) : CastAuraSpellAction(ai, spell, isOwner) {}
     };
 
+    class CastOnlyDebuffSpellAction : public CastAuraSpellAction
+    {
+    public:
+        CastOnlyDebuffSpellAction(PlayerbotAI* ai, string spell, bool isOwner = false) : CastAuraSpellAction(ai, spell, isOwner) {}
+    };
+
     class CastDebuffSpellOnAttackerAction : public CastAuraSpellAction
     {
     public:
@@ -161,6 +167,16 @@ namespace ai
 
 		virtual string GetTargetName() { return "party member to heal"; }
 		virtual string getName() { return PartyMemberActionNameSupport::getName(); }
+    };
+
+    class HealHotPartyMemberAction : public HealPartyMemberAction
+    {
+    public:
+        HealHotPartyMemberAction(PlayerbotAI* ai, string spell) : HealPartyMemberAction(ai, spell) {}
+        virtual bool isUseful()
+        {
+            return HealPartyMemberAction::isUseful() && GetTarget() && !ai->HasAura(spell, GetTarget());
+        }
     };
 
 	class ResurrectPartyMemberAction : public CastSpellAction

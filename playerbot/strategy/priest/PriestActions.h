@@ -41,7 +41,7 @@ namespace ai
     HEAL_ACTION(CastFlashHealAction, "flash heal");
     HEAL_PARTY_ACTION(CastFlashHealOnPartyAction, "flash heal");
     HEAL_ACTION(CastRenewAction, "renew");
-    HEAL_PARTY_ACTION(CastRenewOnPartyAction, "renew");
+    HEAL_HOT_PARTY_ACTION(CastRenewOnPartyAction, "renew");
     // holy 2.4.3
     HEAL_PARTY_ACTION(CastPrayerOfMendingAction, "prayer of mending");
     HEAL_PARTY_ACTION(CastBindingHealAction, "binding heal");

@@ -236,6 +236,14 @@ namespace ai
         bool checkIsOwner;
     };
 
+    class MyBuffTrigger : public BuffTrigger
+    {
+    public:
+        MyBuffTrigger(PlayerbotAI* ai, string spell, int checkInterval = 1) : BuffTrigger(ai, spell, checkInterval) {}
+    public:
+        virtual bool IsActive();
+    };
+
     class BuffOnPartyTrigger : public BuffTrigger
     {
     public:

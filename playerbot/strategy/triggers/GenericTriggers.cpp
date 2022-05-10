@@ -108,6 +108,13 @@ bool BuffTrigger::IsActive()
         ;
 }
 
+bool MyBuffTrigger::IsActive()
+{
+    Unit* target = GetTarget();
+    return SpellTrigger::IsActive() &&
+        !ai->HasMyAura(spell, target);
+}
+
 Value<Unit*>* BuffOnPartyTrigger::GetTargetValue()
 {
 	return context->GetValue<Unit*>("party member without aura", spell);
