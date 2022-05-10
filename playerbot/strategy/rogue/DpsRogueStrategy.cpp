@@ -251,7 +251,7 @@ void StealthStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
         "stealth",
-        NextAction::array(0, new NextAction("stealth", ACTION_INTERRUPT), NULL)));
+        NextAction::array(0, new NextAction("stealth", ACTION_EMERGENCY), NULL)));
 }
 
 void RogueAoeStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
