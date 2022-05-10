@@ -63,6 +63,7 @@ namespace ai
             creators["auto release"] = &WorldPacketActionContext::auto_release;
             creators["accept resurrect"] = &WorldPacketActionContext::accept_resurrect;
             creators["use meeting stone"] = &WorldPacketActionContext::use_meeting_stone;
+            creators["accept summon"] = &WorldPacketActionContext::accept_summon;
             creators["area trigger"] = &WorldPacketActionContext::area_trigger;
             creators["reach area trigger"] = &WorldPacketActionContext::reach_area_trigger;
             creators["check mount state"] = &WorldPacketActionContext::check_mount_state;
@@ -113,6 +114,7 @@ namespace ai
         static Action* area_trigger(PlayerbotAI* ai) { return new AreaTriggerAction(ai); }
         static Action* reach_area_trigger(PlayerbotAI* ai) { return new ReachAreaTriggerAction(ai); }
         static Action* use_meeting_stone(PlayerbotAI* ai) { return new UseMeetingStoneAction(ai); }
+        static Action* accept_summon(PlayerbotAI* ai) { return new AcceptSummonAction(ai); }
         static Action* accept_resurrect(PlayerbotAI* ai) { return new AcceptResurrectAction(ai); }
         static Action* revive_from_corpse(PlayerbotAI* ai) { return new ReviveFromCorpseAction(ai); }
         static Action* find_corpse(PlayerbotAI* ai) { return new FindCorpseAction(ai); }

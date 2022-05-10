@@ -81,7 +81,7 @@ bool SummonAction::Execute(Event event)
 
     if (SummonUsingGos(master, bot) || SummonUsingNpcs(master, bot))
     {
-        ai->TellMasterNoFacing("Hello!");
+        ai->TellMasterNoFacing(BOT_TEXT("hello"));
         return true;
     }
 
@@ -171,8 +171,15 @@ bool SummonAction::Teleport(Player *summoner, Player *player)
         {
             uint32 mapId = summoner->GetMapId();
             float x = summoner->GetPositionX() + cos(angle) * sPlayerbotAIConfig.followDistance;
-            float y = summoner->GetPositionY()+ sin(angle) * sPlayerbotAIConfig.followDistance;
+            float y = summoner->GetPositionY() + sin(angle) * sPlayerbotAIConfig.followDistance;
             float z = summoner->GetPositionZ();
+            summoner->UpdateGroundPositionZ(x, y, z);
+            if (!summoner->IsWithinLOS(x, y, z))
+            {
+                x = summoner->GetPositionX();
+                y = summoner->GetPositionY();
+                z = summoner->GetPositionZ();
+            }
             if (summoner->IsWithinLOS(x, y, z))
             {
                 if (sServerFacade.UnitIsDead(bot) && sServerFacade.IsAlive(ai->GetMaster()))
@@ -190,4 +197,18 @@ bool SummonAction::Teleport(Player *summoner, Player *player)
 
     ai->TellError("Not enough place to summon");
     return false;
+}
+
+bool AcceptSummonAction::Execute(Event event)
+{
+    WorldPacket p(event.getPacket());
+    p.rpos(0);
+    ObjectGuid summonerGuid;
+    p >> summonerGuid;
+
+    WorldPacket response(CMSG_SUMMON_RESPONSE);
+    response << summonerGuid;
+    bot->GetSession()->HandleSummonResponseOpcode(response);
+    
+    return true;
 }

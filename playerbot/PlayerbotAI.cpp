@@ -157,6 +157,7 @@ PlayerbotAI::PlayerbotAI(Player* bot) :
     botOutgoingPacketHandlers.AddHandler(SMSG_TEXT_EMOTE, "receive text emote");
     botOutgoingPacketHandlers.AddHandler(SMSG_EMOTE, "receive emote");
     botOutgoingPacketHandlers.AddHandler(SMSG_LOOT_START_ROLL, "master loot roll");
+    botOutgoingPacketHandlers.AddHandler(SMSG_SUMMON_REQUEST, "summon request");
 
     
 #ifndef MANGOSBOT_ZERO

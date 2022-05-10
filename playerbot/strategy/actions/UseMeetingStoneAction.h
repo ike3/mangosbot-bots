@@ -25,4 +25,12 @@ namespace ai
 
         virtual bool Execute(Event event);
     };
+
+    class AcceptSummonAction : public Action
+    {
+    public:
+        AcceptSummonAction(PlayerbotAI* ai) : Action(ai, "accept summon") {}
+
+        virtual bool Execute(Event event);
+    };
 }
