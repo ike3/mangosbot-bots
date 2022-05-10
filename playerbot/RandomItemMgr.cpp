@@ -571,7 +571,11 @@ bool RandomItemMgr::ShouldEquipArmorForSpec(uint8 playerclass, uint8 spec, ItemP
         if ((m_weightScales[playerclass][spec].info.name == "feraltank" || m_weightScales[playerclass][spec].info.name == "feraldps") && proto->InventoryType == INVTYPE_HOLDABLE)
             return false;
 
-        resultArmorSubClass = { ITEM_SUBCLASS_ARMOR_IDOL, ITEM_SUBCLASS_ARMOR_CLOTH, ITEM_SUBCLASS_ARMOR_LEATHER };
+        if (m_weightScales[playerclass][spec].info.name == "feraltank" || m_weightScales[playerclass][spec].info.name == "feraldps")
+            resultArmorSubClass = { ITEM_SUBCLASS_ARMOR_IDOL, ITEM_SUBCLASS_ARMOR_LEATHER };
+        else
+            resultArmorSubClass = { ITEM_SUBCLASS_ARMOR_IDOL, ITEM_SUBCLASS_ARMOR_CLOTH, ITEM_SUBCLASS_ARMOR_LEATHER };
+
         break;
     }
     }
@@ -2079,8 +2083,8 @@ uint32 RandomItemMgr::GetStatWeight(Player* player, uint32 itemId)
         classspecs.push_back(m_weightScales[player->getClass()][specNum].info.id);
 
         // TODO CHECK
-        if (m_weightScales[player->getClass()][specNum].info.name == specName)
-            specId = m_weightScales[player->getClass()][specNum].info.id;
+        //if (m_weightScales[player->getClass()][specNum].info.name == specName)
+        //    specId = m_weightScales[player->getClass()][specNum].info.id;
 
         if (m_weightScales[player->getClass()][specNum].info.name == specName)
         {

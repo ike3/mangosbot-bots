@@ -34,6 +34,14 @@ enum ItemSource
     ITEM_SOURCE_PVP
 };
 
+enum ItemSpecType
+{
+    ITEM_SPEC_NONE = 0x00,
+    ITEM_SPEC_SPELL_DAMAGE = 0x01,
+    ITEM_SPEC_SPELL_HEALING = 0x02,
+    ITEM_SPEC_
+};
+
 struct WeightScaleInfo
 {
     uint32 id;
