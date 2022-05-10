@@ -63,11 +63,11 @@ void TankWarriorStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 #ifdef MANGOSBOT_ZERO
     triggers.push_back(new TriggerNode(
         "thunder clap and rage and aoe",
-        NextAction::array(0, new NextAction("thunder clap", ACTION_INTERRUPT + 11), NULL)));
+        NextAction::array(0, new NextAction("battle stance", ACTION_INTERRUPT + 12), NULL)));
 
     triggers.push_back(new TriggerNode(
         "thunder clap and rage and aoe",
-        NextAction::array(0, new NextAction("battle stance", ACTION_INTERRUPT + 12), NULL)));
+        NextAction::array(0, new NextAction("thunder clap", ACTION_INTERRUPT + 11), NULL)));
 #endif
 
     triggers.push_back(new TriggerNode(
@@ -87,7 +87,7 @@ void TankWarriorStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("devastate", ACTION_HIGH + 2), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "low rage available",
+        "medium rage available",
         NextAction::array(0, new NextAction("shield slam", ACTION_HIGH + 2), NULL)));
 
     triggers.push_back(new TriggerNode(

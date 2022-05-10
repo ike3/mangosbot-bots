@@ -8,7 +8,7 @@ namespace ai
     BUFF_TRIGGER(DefensiveStanceTrigger, "defensive stance");
     BUFF_TRIGGER(BerserkerStanceTrigger, "berserker stance");
     BUFF_TRIGGER(ShieldBlockTrigger, "shield block");
-    BUFF_TRIGGER(CommandingShoutTrigger, "commanding shout");
+    BUFF_TRIGGER_A(CommandingShoutTrigger, "commanding shout");
 
     DEBUFF_TRIGGER(RendDebuffTrigger, "rend");
     DEBUFF_TRIGGER(DisarmDebuffTrigger, "disarm");

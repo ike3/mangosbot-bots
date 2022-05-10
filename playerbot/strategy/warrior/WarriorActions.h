@@ -89,10 +89,10 @@ namespace ai
     DEBUFF_ACTION_R(CastShockwaveAction, "shockwave", 8.0f);
     SNARE_ACTION(CastShockwaveSnareAction, "shockwave");
 
-    class CastSunderArmorAction : public CastDebuffSpellAction
+    class CastSunderArmorAction : public CastOnlyDebuffSpellAction
     {
     public:
-        CastSunderArmorAction(PlayerbotAI* ai) : CastDebuffSpellAction(ai, "sunder armor") {
+        CastSunderArmorAction(PlayerbotAI* ai) : CastOnlyDebuffSpellAction(ai, "sunder armor") {
             range = ATTACK_DISTANCE;
         }
         virtual bool isUseful() { return GetTarget() && !ai->HasAura("sunder armor", GetTarget(), true); }
