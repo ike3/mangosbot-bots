@@ -42,7 +42,7 @@ Value<Unit*>* CastBlessingOnPartyAction::GetTargetValue()
         return NULL;
 
     if (bigBless && actualBless == smallBless)
-        return actualBless;
+        return NULL;
 
     if (bigBless && smallBless == bigBless && smallBless == actualBless)
         return bigBless;

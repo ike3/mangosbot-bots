@@ -23,11 +23,6 @@ bool CrusaderAuraTrigger::IsActive()
 	return AI_VALUE2(bool, "mounted", "self target") && !ai->HasAura("crusader aura", target);
 }
 
-bool SanctityAuraTrigger::IsActive()
-{
-    return !(ai->HasMyAura("sanctity aura", bot) || ai->HasMyAura("retribution aura", bot));
-}
-
 bool BlessingTrigger::IsActive()
 {
     Unit* target = GetTarget();
@@ -57,4 +52,83 @@ bool BlessingOnPartyTrigger::IsActive()
         return true;
 
     return true;
+}
+
+bool ConcentrationAuraTrigger::IsActive()
+{
+    uint32 concAura = AI_VALUE2(uint32, "spell id", "concentration aura");
+    uint32 devoAura = AI_VALUE2(uint32, "spell id", "devotion aura");
+    if (!(concAura || devoAura))
+        return false;
+
+    if (bot->HasSpell(concAura))
+        return !ai->HasAura("concentration aura", bot);
+
+    if (bot->HasSpell(devoAura))
+        return !ai->HasAura("devotion aura", bot);
+
+    return false;
+}
+
+bool SanctityAuraTrigger::IsActive()
+{
+    uint32 sancAura = AI_VALUE2(uint32, "spell id", "sanctity aura");
+    uint32 retrAura = AI_VALUE2(uint32, "spell id", "retribution aura");
+    uint32 devoAura = AI_VALUE2(uint32, "spell id", "devotion aura");
+    if (!(sancAura || devoAura || retrAura))
+        return false;
+
+    if (bot->HasSpell(sancAura))
+        return !ai->HasAura("sanctity aura", bot);
+
+    if (bot->HasSpell(retrAura))
+        return !ai->HasAura("retribution aura", bot);
+
+    if (bot->HasSpell(devoAura))
+        return !ai->HasAura("devotion aura", bot);
+
+    return false;
+}
+
+bool RetributionAuraTrigger::IsActive()
+{
+    uint32 retrAura = AI_VALUE2(uint32, "spell id", "retribution aura");
+    uint32 devoAura = AI_VALUE2(uint32, "spell id", "devotion aura");
+    if (!(devoAura || retrAura))
+        return false;
+
+    if (bot->HasSpell(retrAura))
+        return !ai->HasAura("retribution aura", bot);
+
+    if (bot->HasSpell(devoAura))
+        return !ai->HasAura("devotion aura", bot);
+
+    return false;
+}
+
+bool PaladinAuraTrigger::IsActive()
+{
+    // already has aura
+    if (ai->HasMyAura("Devotion Aura", bot))
+        return false;
+
+    if (ai->HasMyAura("Retribution Aura", bot))
+        return false;
+
+    if (ai->HasMyAura("Concentration Aura", bot))
+        return false;
+
+    if (ai->HasMyAura("Sanctity Aura", bot))
+        return false;
+
+    if (ai->HasMyAura("Fire Resistance Aura", bot))
+        return false;
+
+    if (ai->HasMyAura("Frost Resistance Aura", bot))
+        return false;
+
+    if (ai->HasMyAura("Shadow Resistance Aura", bot))
+        return false;
+
+    //BotRoles roles = AI_VALUE()
 }

@@ -33,7 +33,7 @@ void HealPaladinStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "concentration aura",
-        NextAction::array(0, new NextAction("concentration aura", 90.0f), NULL)));
+        NextAction::array(0, new NextAction("concentration aura", ACTION_HIGH), NULL)));
 
     triggers.push_back(new TriggerNode(
         "seal",

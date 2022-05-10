@@ -20,6 +20,7 @@ public:
         creators["repentance on enemy healer"] = &repentance_on_enemy_healer;
         creators["repentance on snare target"] = &repentance_on_snare_target;
         creators["repentance of shield"] = &repentance_or_shield;
+        creators["judgement"] = &judgement;
     }
 
 private:
@@ -57,6 +58,7 @@ private:
     ACTION_NODE_A(sanctity_aura, "sanctity aura", "retribution aura");
     ACTION_NODE_A(retribution_aura, "retribution aura", "devotion aura");
     ACTION_NODE_A(repentance_or_shield, "repentance", "divine shield");
+    ACTION_NODE_A(judgement, "judgement", "exorcism");
 };
 
 DpsPaladinStrategy::DpsPaladinStrategy(PlayerbotAI* ai) : GenericPaladinStrategy(ai)
@@ -75,15 +77,15 @@ void DpsPaladinStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "seal",
-        NextAction::array(0, new NextAction("seal of command", 90.0f), NULL)));
+        NextAction::array(0, new NextAction("seal of command", ACTION_INTERRUPT), NULL)));
 
     triggers.push_back(new TriggerNode(
         "low mana",
-        NextAction::array(0, new NextAction("seal of wisdom", 91.0f), NULL)));
+        NextAction::array(0, new NextAction("seal of wisdom", ACTION_INTERRUPT), NULL)));
 
     triggers.push_back(new TriggerNode(
         "sanctity aura",
-        NextAction::array(0, new NextAction("sanctity aura", 90.0f), NULL)));
+        NextAction::array(0, new NextAction("sanctity aura", ACTION_INTERRUPT), NULL)));
 
     triggers.push_back(new TriggerNode(
         "low health",
@@ -123,5 +125,5 @@ void DpsPaladinStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "target critical health",
-        NextAction::array(0, new NextAction("hammer of wrath", ACTION_CRITICAL_HEAL), NULL)));
+        NextAction::array(0, new NextAction("hammer of wrath", ACTION_INTERRUPT + 1), NULL)));
 }

@@ -12,6 +12,7 @@ public:
     {
         creators["seal of vengeance"] = &seal_of_vengeance;
         creators["hand of reckoning"] = &hand_of_reckoning;
+        creators["judgement"] = &judgement;
     }
 
 private:
@@ -23,6 +24,7 @@ private:
             /*C*/ NULL);
     }
     ACTION_NODE_A(hand_of_reckoning, "hand of reckoning", "righteous defense");
+    ACTION_NODE_A(judgement, "judgement", "exorcism");
 };
 
 TankPaladinStrategy::TankPaladinStrategy(PlayerbotAI* ai) : GenericPaladinStrategy(ai)
@@ -41,11 +43,11 @@ void TankPaladinStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "seal",
-        NextAction::array(0, new NextAction("seal of vengeance", 90.0f), NULL)));
+        NextAction::array(0, new NextAction("seal of vengeance", ACTION_INTERRUPT), NULL)));
 
     triggers.push_back(new TriggerNode(
         "low mana",
-        NextAction::array(0, new NextAction("seal of wisdom", 91.0f), NULL)));
+        NextAction::array(0, new NextAction("seal of wisdom", ACTION_INTERRUPT), NULL)));
 
     triggers.push_back(new TriggerNode(
         "judgement of light",
@@ -94,4 +96,12 @@ void TankPaladinStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
     triggers.push_back(new TriggerNode(
         "target critical health",
         NextAction::array(0, new NextAction("hammer of wrath", ACTION_CRITICAL_HEAL), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "light aoe",
+        NextAction::array(0, new NextAction("goblin sapper", ACTION_HIGH + 9), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "light aoe",
+        NextAction::array(0, new NextAction("oil of immolation", ACTION_HIGH + 8), NULL)));
 }

@@ -3,10 +3,12 @@
 
 namespace ai
 {
+    // master aura trigger
+    MY_BUFF_TRIGGER_A(PaladinAuraTrigger, "aura");
     BUFF_TRIGGER(HolyShieldTrigger, "holy shield");
     BUFF_TRIGGER(RighteousFuryTrigger, "righteous fury");
 
-    BUFF_TRIGGER(RetributionAuraTrigger, "retribution aura");
+    BUFF_TRIGGER_A(RetributionAuraTrigger, "retribution aura");
     BUFF_TRIGGER_A(SanctityAuraTrigger, "sanctity aura");
 
 	class CrusaderAuraTrigger : public BuffTrigger
@@ -34,6 +36,9 @@ namespace ai
     INTERRUPT_HEALER_TRIGGER(RepentanceOnHealerTrigger, "repentance on enemy healer");
     SNARE_TRIGGER(RepentanceSnareTrigger, "repentance on snare target");
     INTERRUPT_TRIGGER(RepentanceInterruptTrigger, "repentance");
+
+    // sanctuary for tanks
+    BUFF_TRIGGER(BlessingOfSanctuaryTrigger, "blessing of sanctuary");
 
     class BlessingOnPartyTrigger : public BuffOnPartyTrigger
     {
@@ -91,7 +96,7 @@ namespace ai
         DevotionAuraTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "devotion aura") {}
     };
 
-    BUFF_TRIGGER(ConcentrationAuraTrigger, "concentration aura");
+    BUFF_TRIGGER_A(ConcentrationAuraTrigger, "concentration aura");
 
     class CleanseCureDiseaseTrigger : public NeedCureTrigger
     {
