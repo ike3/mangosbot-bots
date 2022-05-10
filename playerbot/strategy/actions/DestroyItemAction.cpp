@@ -41,7 +41,7 @@ bool SmartDestroyItemAction::Execute(Event event)
         return false;
 
     // only destoy grey items if with real player/guild
-    if (ai->HasRealPlayerMaster() && ai->IsInRealGuild())
+    if (ai->HasRealPlayerMaster() || ai->IsInRealGuild())
     {
         set<Item*> items;
         FindItemsToTradeByQualityVisitor visitor(ITEM_QUALITY_POOR, 5);
