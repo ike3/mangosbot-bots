@@ -42,7 +42,7 @@ namespace ai
       virtual bool Execute(Event event)
       {
           bool isRandomBot = sRandomPlayerbotMgr.IsRandomBot(bot);
-          if (isRandomBot && sPlayerbotAIConfig.freeFood)
+          if (/*isRandomBot && */sPlayerbotAIConfig.freeFood)
           {
               if (bot->IsNonMeleeSpellCasted(true))
                   return false;
@@ -88,7 +88,7 @@ namespace ai
       virtual bool Execute(Event event)
       {
           bool isRandomBot = sRandomPlayerbotMgr.IsRandomBot(bot);
-          if (isRandomBot && sPlayerbotAIConfig.freeFood)
+          if (/*isRandomBot && */sPlayerbotAIConfig.freeFood)
           {
               if (bot->IsNonMeleeSpellCasted(true))
                   return false;

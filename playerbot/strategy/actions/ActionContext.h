@@ -358,8 +358,6 @@ namespace ai
         static Action* buy_tabard(PlayerbotAI* ai) { return new BuyTabardAction(ai); }
         static Action* guild_manage_nearby(PlayerbotAI* ai) { return new GuildManageNearbyAction(ai); }
         static Action* use_trinket(PlayerbotAI* ai) { return new UseTrinketAction(ai); }
-       
-        
 
         // item helpers
         static Action* goblin_sapper(PlayerbotAI* ai) { return new CastGoblinSappersAction(ai); }
