@@ -84,12 +84,8 @@ void LootObject::Refresh(Player* bot, ObjectGuid guid)
 #ifdef CMANGOS
         && !go->IsInUse()
 #endif
-        && go->getLootState() == GO_READY
         && go->GetGoState() == GO_STATE_READY)
     {
-        if (sObjectMgr.IsGameObjectForQuests(go->GetEntry()) && !go->ActivateToQuest(bot))
-            return;
-
         uint32 goId = go->GetGOInfo()->id;
         uint32 lockId = go->GetGOInfo()->GetLockId();
         LockEntry const *lockInfo = sLockStore.LookupEntry(lockId);
