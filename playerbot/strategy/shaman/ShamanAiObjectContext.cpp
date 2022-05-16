@@ -220,9 +220,11 @@ namespace ai
                 creators["cure disease on party"] = &AiObjectContextInternal::cure_disease_on_party;
                 creators["cure poison"] = &AiObjectContextInternal::cure_poison;
                 creators["cure poison on party"] = &AiObjectContextInternal::cure_poison_on_party;
+                creators["caster form"] = &AiObjectContextInternal::caster_form;
             }
 
         private:
+            static Action* caster_form(PlayerbotAI* ai) { return new CastShamanCasterFormAction(ai); }
             static Action* heroism(PlayerbotAI* ai) { return new CastHeroismAction(ai); }
             static Action* bloodlust(PlayerbotAI* ai) { return new CastBloodlustAction(ai); }
             static Action* thunderstorm(PlayerbotAI* ai) { return new CastThunderstormAction(ai); }

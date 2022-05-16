@@ -334,4 +334,17 @@ namespace ai
         CastCureDiseaseOnPartyAction(PlayerbotAI* ai) : CurePartyMemberAction(ai, "cure disease", DISPEL_DISEASE) {}
         virtual string getName() { return "cure disease on party"; }
     };
+
+    class CastShamanCasterFormAction : public CastBuffSpellAction {
+    public:
+        CastShamanCasterFormAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "caster form") {}
+
+        virtual bool isUseful() {
+            return ai->HasAura("ghost wolf", GetTarget());
+        }
+        virtual bool isPossible() { return true; }
+
+        virtual bool Execute(Event event);
+    };
+
 }

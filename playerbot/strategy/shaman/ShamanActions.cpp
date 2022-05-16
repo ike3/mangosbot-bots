@@ -4,3 +4,8 @@
 
 using namespace ai;
 
+bool CastShamanCasterFormAction::Execute(Event event)
+{
+    ai->RemoveShapeshift();
+    return true;
+}
