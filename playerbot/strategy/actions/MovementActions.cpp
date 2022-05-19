@@ -61,12 +61,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle)
 
     bool generatePath = !bot->IsFlying() && !bot->HasMovementFlag(MOVEFLAG_SWIMMING) && !bot->IsInWater() && !sServerFacade.IsUnderwater(bot) &&
             !bot->m_movementInfo.HasMovementFlag(MOVEFLAG_ONTRANSPORT);
-    if (generatePath)
-    {
-        float ground = z;
-        z = bot->GetMap()->GetTerrain()->GetWaterOrGroundLevel(x, y, z, &ground);
-        if (sServerFacade.IsDistanceLessThan(abs(ground - z), sPlayerbotAIConfig.contactDistance)) z = ground;
-    }
+    if (generatePath) Formation::UpdateAllowedPositionZ(bot, x, y, z);
 
     if (!IsMovingAllowed(mapId, x, y, z))
     {

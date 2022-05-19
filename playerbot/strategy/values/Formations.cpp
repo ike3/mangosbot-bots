@@ -19,6 +19,12 @@ bool Formation::IsNullLocation(WorldLocation const& loc)
 	return IsSameLocation(loc, Formation::NullLocation);
 }
 
+void Formation::UpdateAllowedPositionZ(Player* bot, float x, float y, float &z)
+{
+    float ground = z;
+    z = bot->GetMap()->GetTerrain()->GetWaterOrGroundLevel(x, y, z, &ground);
+    if (sServerFacade.IsDistanceLessThan(abs(ground - z), sPlayerbotAIConfig.contactDistance)) z = ground;
+}
 
 WorldLocation MoveAheadFormation::GetLocation()
 {
@@ -49,8 +55,7 @@ WorldLocation MoveAheadFormation::GetLocation()
     if (ground <= INVALID_HEIGHT)
         return Formation::NullLocation;
 
-    z += CONTACT_DISTANCE;
-    bot->UpdateAllowedPositionZ(x, y, z);
+    UpdateAllowedPositionZ(bot, x, y, z);
     return WorldLocation(master->GetMapId(), x, y, z);
 }
 
@@ -89,8 +94,7 @@ namespace ai
             if (ground <= INVALID_HEIGHT)
                 return Formation::NullLocation;
 
-            z += CONTACT_DISTANCE;
-            bot->UpdateAllowedPositionZ(x, y, z);
+            UpdateAllowedPositionZ(bot, x, y, z);
             return WorldLocation(master->GetMapId(), x, y, z);
         }
 
@@ -132,8 +136,7 @@ namespace ai
             if (ground <= INVALID_HEIGHT)
                 return Formation::NullLocation;
 
-            z += CONTACT_DISTANCE;
-            bot->UpdateAllowedPositionZ(x, y, z);
+            UpdateAllowedPositionZ(bot, x, y, z);
             return WorldLocation(master->GetMapId(), x, y, z);
         }
 
@@ -186,8 +189,7 @@ namespace ai
             if (ground <= INVALID_HEIGHT)
                 return Formation::NullLocation;
 
-            z += CONTACT_DISTANCE;
-            bot->UpdateAllowedPositionZ(x, y, z);
+            UpdateAllowedPositionZ(bot, x, y, z);
             return WorldLocation(bot->GetMapId(), x, y, z);
         }
     };
@@ -336,16 +338,14 @@ namespace ai
                 }
                 if (minDist)
                 {
-                    z += CONTACT_DISTANCE;
-                    bot->UpdateAllowedPositionZ(minX, minY, z);
+                    UpdateAllowedPositionZ(bot, minX, minY, z);
                     return WorldLocation(bot->GetMapId(), minX, minY, z);
                 }
 
                 return Formation::NullLocation;
             }
 
-            z += CONTACT_DISTANCE;
-            bot->UpdateAllowedPositionZ(x, y, z);
+            UpdateAllowedPositionZ(bot, x, y, z);
             return WorldLocation(bot->GetMapId(), x, y, z);
         }
     };
@@ -557,8 +557,7 @@ WorldLocation MoveFormation::MoveSingleLine(vector<Player*> line, float diff, fl
             if (ground <= INVALID_HEIGHT)
                 return Formation::NullLocation;
 
-            lz += CONTACT_DISTANCE;
-            bot->UpdateAllowedPositionZ(lx, ly, lz);
+            UpdateAllowedPositionZ(bot, lx, ly, lz);
             return WorldLocation(bot->GetMapId(), lx, ly, lz);
         }
 
