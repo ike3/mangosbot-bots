@@ -125,7 +125,7 @@ bool SetReturnPositionAction::Execute(Event event)
              z = bot->GetPositionZ();
         bot->UpdateAllowedPositionZ(x, y, z);
 
-        if (!bot->IsWithinLOS(x, y, z))
+        if (!bot->IsWithinLOS(x, y, z, true))
             return false;
 
         randomPos.Set(x, y, z, bot->GetMapId());

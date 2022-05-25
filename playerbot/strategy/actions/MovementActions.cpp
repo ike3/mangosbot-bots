@@ -65,7 +65,7 @@ bool MovementAction::MoveNear(WorldObject* target, float distance)
              y = target->GetPositionY()+ sin(angle) * distance,
              z = target->GetPositionZ();
 #endif
-        if (!bot->IsWithinLOS(x, y, z))
+        if (!bot->IsWithinLOS(x, y, z + bot->GetCollisionHeight(), true))
             continue;
         bool moved = MoveTo(target->GetMapId(), x, y, z);
         if (moved)

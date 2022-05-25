@@ -152,7 +152,7 @@ bool GoAction::Execute(Event event)
             ai->TellMaster(out);            
         }
 
-        if (bot->IsWithinLOS(x, y, z))
+        if (bot->IsWithinLOS(x, y, z, true))
             return MoveNear(bot->GetMapId(), x, y, z, 0);
         else
             return MoveTo(bot->GetMapId(), x, y, z, false, false);    

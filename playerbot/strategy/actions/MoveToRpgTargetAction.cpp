@@ -74,7 +74,7 @@ bool MoveToRpgTargetAction::Execute(Event event)
     float angle;
     float distance = 1.0f;
     
-    if (bot->IsWithinLOS(x, y, z))
+    if (bot->IsWithinLOS(x, y, z, true))
     {
         if (!unit || !unit->IsMoving())
             angle = wo->GetAngle(bot) + (M_PI * irand(-25, 25) / 100.0); //Closest 45 degrees towards the target
@@ -93,7 +93,7 @@ bool MoveToRpgTargetAction::Execute(Event event)
 
     bool couldMove;
     
-    if (bot->IsWithinLOS(x, y, z))
+    if (bot->IsWithinLOS(x, y, z, true))
         couldMove = MoveNear(mapId, x , y, z, 0);
     else
         couldMove = MoveTo(mapId, x, y, z, false, false);
