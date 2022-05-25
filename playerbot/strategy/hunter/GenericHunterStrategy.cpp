@@ -13,9 +13,9 @@ public:
         creators["rapid fire"] = &rapid_fire;
         creators["boost"] = &rapid_fire;
         creators["aspect of the pack"] = &aspect_of_the_pack;
-        creators["feign death"] = &feign_death;
         creators["wing clip"] = &wing_clip;
         creators["raptor strike"] = &raptor_strike;
+        creators["freezing trap"] = &freezing_trap;
     }
 private:
     static ActionNode* rapid_fire(PlayerbotAI* ai)
@@ -32,13 +32,6 @@ private:
             /*A*/ NextAction::array(0, new NextAction("aspect of the cheetah"), NULL),
             /*C*/ NULL);
     }
-    static ActionNode* feign_death(PlayerbotAI* ai)
-    {
-        return new ActionNode ("feign death",
-            /*P*/ NULL,
-            /*A*/ NULL,
-            /*C*/ NULL);
-    }
     static ActionNode* wing_clip(PlayerbotAI* ai)
     {
         return new ActionNode("wing clip",
@@ -53,6 +46,7 @@ private:
             /*A*/ NULL,
             /*C*/ NULL);
     }
+    ACTION_NODE_A(freezing_trap, "freezing trap", "remove feign death");
 };
 
 GenericHunterStrategy::GenericHunterStrategy(PlayerbotAI* ai) : CombatStrategy(ai)
@@ -68,9 +62,17 @@ void GenericHunterStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         "enemy is close",
         NextAction::array(0, new NextAction("wing clip", ACTION_HIGH), NULL)));
 
+    /*triggers.push_back(new TriggerNode(
+        "enemy is close",
+        NextAction::array(0, new NextAction("freezing trap", ACTION_HIGH + 5), NULL)));*/
+
     triggers.push_back(new TriggerNode(
         "medium threat",
-        NextAction::array(0, new NextAction("feign death", 35.0f), NULL)));
+        NextAction::array(0, new NextAction("feign death", 35.0f), new NextAction("shadowmeld", 34.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "feign death",
+        NextAction::array(0, new NextAction("freezing trap", ACTION_INTERRUPT), NULL)));
 
     triggers.push_back(new TriggerNode(
         "hunters pet low health",
