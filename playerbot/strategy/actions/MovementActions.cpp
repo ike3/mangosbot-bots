@@ -1120,10 +1120,10 @@ void MovementAction::WaitForReach(float distance)
     if (delay > sPlayerbotAIConfig.maxWaitForMove)
         delay = sPlayerbotAIConfig.maxWaitForMove;
 
-    Unit* target = *ai->GetAiObjectContext()->GetValue<Unit*>("current target");
+    /*Unit* target = *ai->GetAiObjectContext()->GetValue<Unit*>("current target");
     Unit* player = *ai->GetAiObjectContext()->GetValue<Unit*>("enemy player target");
     if ((player || target) && delay > sPlayerbotAIConfig.globalCoolDown)
-        delay = sPlayerbotAIConfig.globalCoolDown;
+        delay = sPlayerbotAIConfig.globalCoolDown;*/
 
     if (delay < 0)
         delay = 0;
