@@ -245,6 +245,25 @@ namespace ai
         virtual ActionThreatType getThreatType() { return ACTION_THREAT_NONE; }
     };
 
+    class RemoveBuffAction : public Action
+    {
+    public:
+        RemoveBuffAction(PlayerbotAI* ai, string spell) : Action(ai, "remove aura")
+        {
+            name = string(spell);
+        }
+    public:
+        virtual string getName() { return "remove " + name; }
+        virtual bool isUseful() { return ai->HasAura(name, bot); }
+        virtual bool Execute(Event event)
+        {
+            ai->RemoveAura(name);
+            return !ai->HasAura(name, bot);
+        }
+    private:
+        string name;
+    };
+
     // racials
 
     // heal
