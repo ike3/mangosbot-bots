@@ -32,7 +32,7 @@ void HealPaladinStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
     GenericPaladinStrategy::InitTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
-        "concentration aura",
+        "paladin aura",
         NextAction::array(0, new NextAction("concentration aura", ACTION_HIGH), NULL)));
 
     triggers.push_back(new TriggerNode(
@@ -82,4 +82,8 @@ void HealPaladinStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
     triggers.push_back(new TriggerNode(
         "party member to heal out of spell range",
         NextAction::array(0, new NextAction("reach party member to heal", ACTION_EMERGENCY + 3), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "blessing",
+        NextAction::array(0, new NextAction("blessing of wisdom", ACTION_HIGH + 9), NULL)));
 }

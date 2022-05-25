@@ -84,7 +84,7 @@ void DpsPaladinStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("seal of wisdom", ACTION_INTERRUPT), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "sanctity aura",
+        "paladin aura",
         NextAction::array(0, new NextAction("sanctity aura", ACTION_INTERRUPT), NULL)));
 
     triggers.push_back(new TriggerNode(
@@ -126,4 +126,8 @@ void DpsPaladinStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
     triggers.push_back(new TriggerNode(
         "target critical health",
         NextAction::array(0, new NextAction("hammer of wrath", ACTION_INTERRUPT + 1), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "blessing",
+        NextAction::array(0, new NextAction("blessing of might", ACTION_HIGH + 9), NULL)));
 }

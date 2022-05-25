@@ -4,7 +4,7 @@
 namespace ai
 {
     // master aura trigger
-    MY_BUFF_TRIGGER_A(PaladinAuraTrigger, "aura");
+    BUFF_TRIGGER_A(PaladinAuraTrigger, "paladin aura");
     BUFF_TRIGGER(HolyShieldTrigger, "holy shield");
     BUFF_TRIGGER(RighteousFuryTrigger, "righteous fury");
 
