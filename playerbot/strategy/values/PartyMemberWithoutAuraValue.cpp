@@ -55,10 +55,11 @@ public:
             return false;
 
         if (!sServerFacade.IsAlive(unit)) return false;
+        if (sServerFacade.GetDistance2d(unit, ai->GetBot()) > 30.0f) return false;
 
         for (vector<string>::iterator i = auras.begin(); i != auras.end(); ++i)
         {
-            if (ai->HasAura(*i, unit, false, false, -1, true))
+            if (ai->HasMyAura(*i, unit))
                 return false;
         }
 
