@@ -1828,6 +1828,8 @@ bool PlayerbotAI::HasAura(string name, Unit* unit, bool maxStack, bool checkIsOw
                 {
                     if (aura->GetHolder()->GetCasterGuid() == bot->GetObjectGuid())
                         return true;
+                    else
+                        continue;
                 }
 
                 if (checkIsOwner && aura->GetHolder())
