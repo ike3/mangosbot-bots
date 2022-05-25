@@ -1907,7 +1907,7 @@ bool PlayerbotAI::HasAnyAuraOf(Unit* player, ...)
 
 bool PlayerbotAI::CanCastSpell(string name, Unit* target, uint8 effectMask, Item* itemTarget)
 {
-    return CanCastSpell(aiObjectContext->GetValue<uint32>("spell id", name)->Get(), target, true, itemTarget);
+    return CanCastSpell(aiObjectContext->GetValue<uint32>("spell id", name)->Get(), target, 0, true, itemTarget);
 }
 
 bool PlayerbotAI::CanCastSpell(uint32 spellid, Unit* target, uint8 effectMask, bool checkHasSpell, Item* itemTarget)
@@ -4095,6 +4095,9 @@ bool PlayerbotAI::CanMove()
 
 void PlayerbotAI::StopMoving()
 {
+    if (bot->IsTaxiFlying())
+        return;
+
     // remove movement flags, checked in bot->IsMoving()
     if (bot->IsFalling())
 #ifdef MANGOSBOT_TWO
