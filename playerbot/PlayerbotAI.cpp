@@ -69,7 +69,7 @@ void PacketHandlingHelper::Handle(ExternalEventHelper &helper)
 
 void PacketHandlingHelper::AddPacket(const WorldPacket& packet)
 {
-    if (packet.empty())
+    if (packet.empty() && packet.GetOpcode() != MSG_RAID_READY_CHECK)
         return;
 
 	if (handlers.find(packet.GetOpcode()) != handlers.end())
@@ -158,6 +158,7 @@ PlayerbotAI::PlayerbotAI(Player* bot) :
     botOutgoingPacketHandlers.AddHandler(SMSG_EMOTE, "receive emote");
     botOutgoingPacketHandlers.AddHandler(SMSG_LOOT_START_ROLL, "master loot roll");
     botOutgoingPacketHandlers.AddHandler(SMSG_SUMMON_REQUEST, "summon request");
+    botOutgoingPacketHandlers.AddHandler(MSG_RAID_READY_CHECK, "ready check");
 
     
 #ifndef MANGOSBOT_ZERO
@@ -179,7 +180,6 @@ PlayerbotAI::PlayerbotAI(Player* bot) :
     botOutgoingPacketHandlers.AddHandler(SMSG_INVENTORY_CHANGE_FAILURE, "inventory change failure");
 
     masterOutgoingPacketHandlers.AddHandler(SMSG_PARTY_COMMAND_RESULT, "party command");
-    masterOutgoingPacketHandlers.AddHandler(MSG_RAID_READY_CHECK, "ready check");
     masterOutgoingPacketHandlers.AddHandler(MSG_RAID_READY_CHECK_FINISHED, "ready check finished");
 }
 
@@ -667,8 +667,8 @@ void PlayerbotAI::HandleCommand(uint32 type, const string& text, Player& fromPla
 
 void PlayerbotAI::HandleBotOutgoingPacket(const WorldPacket& packet)
 {
-    if (packet.empty())
-        return;
+    //if (packet.empty())
+    //    return;
 
 	switch (packet.GetOpcode())
 	{
