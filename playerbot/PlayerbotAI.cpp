@@ -287,7 +287,7 @@ void PlayerbotAI::UpdateAI(uint32 elapsed, bool minimal)
 
     if (currentSpell && currentSpell->getState() == SPELL_STATE_CASTING && currentSpell->GetCastedTime())
     {
-        nextAICheckDelay = currentSpell->GetCastedTime() + sPlayerbotAIConfig.reactDelay;       
+        nextAICheckDelay = currentSpell->GetCastedTime() + sPlayerbotAIConfig.reactDelay + sWorld.GetMaxDiff();       
 
         if (!CanUpdateAI())
             return;
