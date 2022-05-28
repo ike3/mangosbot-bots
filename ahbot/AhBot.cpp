@@ -1208,9 +1208,25 @@ void AhBot::CheckSendMail(uint32 bidder, uint32 price, AuctionEntry *entry)
     body << name << "\n";
 
     ostringstream title; title << "AH Proposition: " << item->GetProto()->Name1;
-    MailDraft draft(title.str(), body.str());
-    ObjectGuid receiverGuid(HIGHGUID_PLAYER, entry->owner);
-    draft.SendMailTo(MailReceiver(receiverGuid), MailSender(MAIL_NORMAL, bidder));
+
+    QueryResult *result = CharacterDatabase.PQuery("select count(id) from mail where subject like '%s'", title.str().c_str());
+    if (!result)
+        return;
+
+    int count = 0;
+    do
+    {
+        Field* fields = result->Fetch();
+        count = fields[0].GetUInt32();
+    } while (result->NextRow());
+    delete result;
+
+    if (!count)
+    {
+        MailDraft draft(title.str(), body.str());
+        ObjectGuid receiverGuid(HIGHGUID_PLAYER, entry->owner);
+        draft.SendMailTo(MailReceiver(receiverGuid), MailSender(MAIL_NORMAL, bidder));
+    }
 
     SetTime("entry", entry->Id, entry->auctionHouseEntry->houseId, AHBOT_SENDMAIL, entry->expireTime);
 }
