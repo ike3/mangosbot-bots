@@ -13,21 +13,19 @@ bool ShareQuestAction::Execute(Event event)
 
     PlayerbotChatHandler handler(GetMaster());
     uint32 entry = handler.extractQuestId(link);
-    if (!entry)
-        return false;
-
-    Quest const* quest = sObjectMgr.GetQuestTemplate(entry);
-    if (!quest)
-        return false;
 
     // remove all quest entries for 'entry' from quest log
     for (uint8 slot = 0; slot < MAX_QUEST_LOG_SIZE; ++slot)
     {
         uint32 logQuest = bot->GetQuestSlotQuestId(slot);
-        if (logQuest == entry)
+        Quest const* quest = sObjectMgr.GetQuestTemplate(logQuest);
+        if (!quest)
+            continue;
+
+        if (logQuest == entry || link.find(quest->GetTitle()) != string::npos)
         {
             WorldPacket p;
-            p << entry;
+            p << logQuest;
             bot->GetSession()->HandlePushQuestToParty(p);
             ai->TellMaster("Quest shared");
             return true;
