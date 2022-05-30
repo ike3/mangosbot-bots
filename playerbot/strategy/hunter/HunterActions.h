@@ -118,6 +118,8 @@ namespace ai
         CastFeignDeathAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "feign death") {}
     };
 
+    REMOVE_BUFF_ACTION(RemoveFeignDeathAction, "feign death");
+
 	class CastRapidFireAction : public CastBuffSpellAction
 	{
 	public:
@@ -136,12 +138,7 @@ namespace ai
 		CastBlackArrow(PlayerbotAI* ai) : CastDebuffSpellAction(ai, "black arrow") {}
 	};
 
-    class CastFreezingTrap : public CastDebuffSpellAction
-    {
-    public:
-        CastFreezingTrap(PlayerbotAI* ai) : CastDebuffSpellAction(ai, "freezing trap") {}
-        virtual Value<Unit*>* GetTargetValue();
-    };
+    BUFF_ACTION(CastFreezingTrapAction, "freezing trap");
 
     class CastWingClipAction : public CastMeleeSpellAction
     {

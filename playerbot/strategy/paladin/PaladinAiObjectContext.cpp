@@ -50,9 +50,13 @@ namespace ai
                 creators["rfire"] = &paladin::ResistanceStrategyFactoryInternal::rfire;
                 creators["baoe"] = &paladin::ResistanceStrategyFactoryInternal::baoe;
                 creators["barmor"] = &paladin::ResistanceStrategyFactoryInternal::barmor;
+                creators["bconcentration"] = &paladin::ResistanceStrategyFactoryInternal::bconcentration;
+                creators["bsanctity"] = &paladin::ResistanceStrategyFactoryInternal::bsanctity;
             }
 
         private:
+            static Strategy* bconcentration(PlayerbotAI* ai) { return new PaladinBuffConcentrationStrategy(ai); }
+            static Strategy* bsanctity(PlayerbotAI* ai) { return new PaladinBuffSanctityStrategy(ai); }
             static Strategy* rshadow(PlayerbotAI* ai) { return new PaladinShadowResistanceStrategy(ai); }
             static Strategy* rfrost(PlayerbotAI* ai) { return new PaladinFrostResistanceStrategy(ai); }
             static Strategy* rfire(PlayerbotAI* ai) { return new PaladinFireResistanceStrategy(ai); }
@@ -65,17 +69,15 @@ namespace ai
         public:
             BuffStrategyFactoryInternal() : NamedObjectContext<Strategy>(false, true)
             {
-                creators["bhealth"] = &paladin::BuffStrategyFactoryInternal::bhealth;
-                creators["bmana"] = &paladin::BuffStrategyFactoryInternal::bmana;
-                creators["bdps"] = &paladin::BuffStrategyFactoryInternal::bdps;
-                creators["bstats"] = &paladin::BuffStrategyFactoryInternal::bstats;
+                creators["bwisdom"] = &paladin::BuffStrategyFactoryInternal::bwisdom;
+                creators["bmight"] = &paladin::BuffStrategyFactoryInternal::bmight;
+                creators["bkings"] = &paladin::BuffStrategyFactoryInternal::bkings;
             }
 
         private:
-            static Strategy* bhealth(PlayerbotAI* ai) { return new PaladinBuffHealthStrategy(ai); }
-            static Strategy* bmana(PlayerbotAI* ai) { return new PaladinBuffManaStrategy(ai); }
-            static Strategy* bdps(PlayerbotAI* ai) { return new PaladinBuffDpsStrategy(ai); }
-            static Strategy* bstats(PlayerbotAI* ai) { return new PaladinBuffStatsStrategy(ai); }
+            static Strategy* bwisdom(PlayerbotAI* ai) { return new PaladinBuffWisdomStrategy(ai); }
+            static Strategy* bmight(PlayerbotAI* ai) { return new PaladinBuffMightStrategy(ai); }
+            static Strategy* bkings(PlayerbotAI* ai) { return new PaladinBuffKingsStrategy(ai); }
         };
 
         class CombatStrategyFactoryInternal : public NamedObjectContext<Strategy>
@@ -114,6 +116,7 @@ namespace ai
                 creators["seal"] = &TriggerFactoryInternal::seal;
                 creators["art of war"] = &TriggerFactoryInternal::art_of_war;
                 creators["blessing on party"] = &TriggerFactoryInternal::blessing_on_party;
+                creators["paladin aura"] = &TriggerFactoryInternal::paladin_aura;
                 creators["crusader aura"] = &TriggerFactoryInternal::crusader_aura;
                 creators["retribution aura"] = &TriggerFactoryInternal::retribution_aura;
                 creators["devotion aura"] = &TriggerFactoryInternal::devotion_aura;
@@ -155,6 +158,7 @@ namespace ai
             static Trigger* seal(PlayerbotAI* ai) { return new SealTrigger(ai); }
             static Trigger* art_of_war(PlayerbotAI* ai) { return new ArtOfWarTrigger(ai); }
             static Trigger* blessing_on_party(PlayerbotAI* ai) { return new BlessingOnPartyTrigger(ai); }
+            static Trigger* paladin_aura(PlayerbotAI* ai) { return new PaladinAuraTrigger(ai); }
             static Trigger* crusader_aura(PlayerbotAI* ai) { return new CrusaderAuraTrigger(ai); }
             static Trigger* retribution_aura(PlayerbotAI* ai) { return new RetributionAuraTrigger(ai); }
             static Trigger* devotion_aura(PlayerbotAI* ai) { return new DevotionAuraTrigger(ai); }

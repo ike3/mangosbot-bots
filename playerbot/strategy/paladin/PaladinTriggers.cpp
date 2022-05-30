@@ -28,30 +28,45 @@ bool BlessingTrigger::IsActive()
     Unit* target = GetTarget();
 
     return SpellTrigger::IsActive() &&
-        !((ai->HasMyAura("blessing of might", target) || ai->HasMyAura("greater blessing of might", target)) ||
-            (ai->HasMyAura("blessing of wisdom", target) || ai->HasMyAura("greater blessing of wisdom", target)) ||
-            (ai->HasMyAura("blessing of kings", target) || ai->HasMyAura("greater blessing of kings", target)) ||
-            (ai->HasMyAura("blessing of sanctuary", target) || ai->HasMyAura("greater blessing of sanctuary", target)) ||
-            (ai->HasMyAura("blessing of salvation", target) || ai->HasMyAura("greater blessing of salvation", target)) ||
-            (ai->HasMyAura("blessing of light", target) || ai->HasMyAura("greater blessing of light", target))
+        !(ai->HasMyAura("blessing of might", target) ||
+            ai->HasMyAura("blessing of wisdom", target) ||
+            ai->HasMyAura("blessing of kings", target) ||
+            ai->HasMyAura("blessing of sanctuary", target) ||
+            ai->HasMyAura("blessing of salvation", target) ||
+            ai->HasMyAura("blessing of light", target)
             );
 }
 
 bool BlessingOnPartyTrigger::IsActive()
 {
-    Value<Unit*>* smallBless = context->GetValue<Unit*>("party member without my aura",
-        "blessing of kings,blessing of might,blessing of wisdom,blessing of sanctuary,blessing of salvation,blessing of light");
+    vector<std::string> altBlessings;
+    vector<std::string> haveBlessings;
+    altBlessings.push_back("blessing of might");
+    altBlessings.push_back("blessing of wisdom");
+    altBlessings.push_back("blessing of kings");
+    altBlessings.push_back("blessing of salvation");
+    altBlessings.push_back("blessing of light");
 
-    Value<Unit*>* bigBless = context->GetValue<Unit*>("party member without my aura",
-        "greater blessing of kings,greater blessing of might,greater blessing of wisdom,greater blessing of sanctuary,greater blessing of salvation,greater blessing of light");
-
-    if (!(smallBless || bigBless))
+    for (auto blessing : altBlessings)
+    {
+        if (AI_VALUE2(uint32, "spell id", blessing))
+        {
+            haveBlessings.push_back(blessing);
+            haveBlessings.push_back("greater " + blessing);
+        }
+    }
+    if (haveBlessings.empty())
         return false;
 
-    if (smallBless && !bigBless)
-        return true;
+    std::string blessList = "";
+    for (auto blessing : haveBlessings)
+    {
+        blessList += blessing;
+        if (blessing != haveBlessings[haveBlessings.size() - 1])
+            blessList += ",";
+    }
 
-    return true;
+    return AI_VALUE2(Unit*, "party member without my aura", blessList);
 }
 
 bool ConcentrationAuraTrigger::IsActive()
@@ -108,27 +123,45 @@ bool RetributionAuraTrigger::IsActive()
 
 bool PaladinAuraTrigger::IsActive()
 {
-    // already has aura
-    if (ai->HasMyAura("Devotion Aura", bot))
+    vector<std::string> altAuras;
+    vector<std::string> haveAuras;
+    altAuras.push_back("devotion aura");
+    altAuras.push_back("retribution aura");
+    altAuras.push_back("concentration aura");
+    altAuras.push_back("sanctity aura");
+    altAuras.push_back("shadow resistance aura");
+    altAuras.push_back("fire resistance aura");
+    altAuras.push_back("frost resistance aura");
+    altAuras.push_back("crusader aura");
+
+    for (auto aura : altAuras)
+    {
+        if (AI_VALUE2(uint32, "spell id", aura))
+            haveAuras.push_back(aura);
+    }
+    if (haveAuras.empty())
         return false;
 
-    if (ai->HasMyAura("Retribution Aura", bot))
+    bool hasAura = false;
+    for (auto aura : haveAuras)
+    {
+        if (ai->HasMyAura(aura, bot))
+        {
+            hasAura = true;
+            break;
+        }
+    }
+    if (hasAura)
         return false;
 
-    if (ai->HasMyAura("Concentration Aura", bot))
-        return false;
-
-    if (ai->HasMyAura("Sanctity Aura", bot))
-        return false;
-
-    if (ai->HasMyAura("Fire Resistance Aura", bot))
-        return false;
-
-    if (ai->HasMyAura("Frost Resistance Aura", bot))
-        return false;
-
-    if (ai->HasMyAura("Shadow Resistance Aura", bot))
-        return false;
-
-    //BotRoles roles = AI_VALUE()
+    bool needAura = false;
+    for (auto aura : haveAuras)
+    {
+        if (!ai->HasAura(aura, bot))
+        {
+            needAura = true;
+            break;
+        }
+    }
+    return needAura;
 }

@@ -95,6 +95,7 @@ namespace ai
                 creators["has ammo"] = &TriggerFactoryInternal::has_ammo;
                 creators["switch to melee"] = &TriggerFactoryInternal::switch_to_melee;
                 creators["switch to ranged"] = &TriggerFactoryInternal::switch_to_ranged;
+                creators["feign death"] = &TriggerFactoryInternal::feign_death;
             }
 
         private:
@@ -119,6 +120,7 @@ namespace ai
             static Trigger* has_ammo(PlayerbotAI* ai) { return new HunterHasAmmoTrigger(ai); }
             static Trigger* switch_to_melee(PlayerbotAI* ai) { return new SwitchToMeleeTrigger(ai); }
             static Trigger* switch_to_ranged(PlayerbotAI* ai) { return new SwitchToRangedTrigger(ai); }
+            static Trigger* feign_death(PlayerbotAI* ai) { return new FeignDeathTrigger(ai); }
         };
     };
 };
@@ -172,6 +174,7 @@ namespace ai
                 creators["bestial wrath"] = &AiObjectContextInternal::bestial_wrath;
                 creators["scare beast"] = &AiObjectContextInternal::scare_beast;
                 creators["scare beast on cc"] = &AiObjectContextInternal::scare_beast_on_cc;
+                creators["remove feigh death"] = &AiObjectContextInternal::remove_feign_death;
             }
 
         private:
@@ -200,7 +203,7 @@ namespace ai
             static Action* revive_pet(PlayerbotAI* ai) { return new CastRevivePetAction(ai); }
             static Action* call_pet(PlayerbotAI* ai) { return new CastCallPetAction(ai); }
             static Action* black_arrow(PlayerbotAI* ai) { return new CastBlackArrow(ai); }
-            static Action* freezing_trap(PlayerbotAI* ai) { return new CastFreezingTrap(ai); }
+            static Action* freezing_trap(PlayerbotAI* ai) { return new CastFreezingTrapAction(ai); }
             static Action* rapid_fire(PlayerbotAI* ai) { return new CastRapidFireAction(ai); }
             static Action* readiness(PlayerbotAI* ai) { return new CastReadinessAction(ai); }
             static Action* aspect_of_the_hawk(PlayerbotAI* ai) { return new CastAspectOfTheHawkAction(ai); }
@@ -210,6 +213,7 @@ namespace ai
             static Action* aspect_of_the_cheetah(PlayerbotAI* ai) { return new CastAspectOfTheCheetahAction(ai); }
             static Action* wing_clip(PlayerbotAI* ai) { return new CastWingClipAction(ai); }
             static Action* raptor_strike(PlayerbotAI* ai) { return new CastRaptorStrikeAction(ai); }
+            static Action* remove_feign_death(PlayerbotAI* ai) { return new RemoveFeignDeathAction(ai); }
         };
     };
 };

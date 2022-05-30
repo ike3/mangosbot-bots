@@ -19,6 +19,10 @@ void FleeManager::calculateDistanceToCreatures(FleePoint *point)
 		if (!unit)
 		    continue;
 
+        // do not count non-LOS mobs
+        if (!unit->IsWithinLOS(point->x, point->y, point->z + unit->GetCollisionHeight(), true))
+            continue;
+
 		float d = sServerFacade.GetDistance2d(unit, point->x, point->y);
         point->sumDistance += d;
         if (point->minDistance < 0 || point->minDistance > d) point->minDistance = d;
@@ -81,7 +85,7 @@ void FleeManager::calculatePossibleDestinations(list<FleePoint*> &points)
                 if (terrain && terrain->IsInWater(x, y, z))
                     continue;
 
-                if (!bot->IsWithinLOS(x, y, z) || (target && !target->IsWithinLOS(x, y, z)))
+                if (/*!bot->IsWithinLOS(x, y, z + bot->GetCollisionHeight(), true) || */(target && !target->IsWithinLOS(x, y, z + bot->GetCollisionHeight(), true)))
                     continue;
 
                 FleePoint *point = new FleePoint(bot->GetPlayerbotAI(), x, y, z);

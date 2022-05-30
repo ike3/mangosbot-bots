@@ -95,7 +95,7 @@ bool MoveToTravelTargetAction::Execute(Event event)
 
     bool canMove = false;
 
-    if (bot->IsWithinLOS(x, y, z))
+    if (bot->IsWithinLOS(x, y, z, true))
         canMove = MoveNear(mapId, x, y, z, 0);
     else
         canMove = MoveTo(mapId, x, y, z, false, false);

@@ -59,6 +59,13 @@ class clazz : public super \
         clazz(PlayerbotAI* ai) : BuffTrigger(ai, spell) {} \
     }
 
+#define BUFF_TRIGGER_TIME(clazz, spell, time) \
+    class clazz : public BuffTrigger \
+    { \
+    public: \
+        clazz(PlayerbotAI* ai) : BuffTrigger(ai, spell, time) {} \
+    }
+
 #define MY_BUFF_TRIGGER(clazz, spell) \
     class clazz : public MyBuffTrigger \
     { \
@@ -334,6 +341,13 @@ class clazz : public super \
     { \
     public: \
         clazz(PlayerbotAI* ai) : CastAoeHealSpellAction(ai, spell) {} \
+    }
+
+#define REMOVE_BUFF_ACTION(clazz, spell) \
+    class clazz : public RemoveBuffAction \
+    { \
+    public: \
+        clazz(PlayerbotAI* ai) : RemoveBuffAction(ai, spell) {} \
     }
 
 #define BUFF_ACTION(clazz, spell) \

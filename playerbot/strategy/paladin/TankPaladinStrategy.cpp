@@ -46,24 +46,28 @@ void TankPaladinStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("seal of vengeance", ACTION_INTERRUPT), NULL)));
 
     triggers.push_back(new TriggerNode(
+        "paladin aura",
+        NextAction::array(0, new NextAction("retribution aura", ACTION_INTERRUPT), NULL)));
+
+    triggers.push_back(new TriggerNode(
         "low mana",
         NextAction::array(0, new NextAction("seal of wisdom", ACTION_INTERRUPT), NULL)));
 
     triggers.push_back(new TriggerNode(
         "judgement of light",
-        NextAction::array(0, new NextAction("judgement of light", ACTION_HIGH + 6), NULL)));
+        NextAction::array(0, new NextAction("judgement of light", ACTION_HIGH + 10), NULL)));
 
     triggers.push_back(new TriggerNode(
         "medium mana",
-        NextAction::array(0, new NextAction("judgement of wisdom", ACTION_HIGH + 6), NULL)));
+        NextAction::array(0, new NextAction("judgement of wisdom", ACTION_HIGH + 10), NULL)));
 
     triggers.push_back(new TriggerNode(
         "judgement",
-        NextAction::array(0, new NextAction("judgement", ACTION_HIGH + 6), NULL)));
+        NextAction::array(0, new NextAction("judgement", ACTION_HIGH + 10), NULL)));
 
     triggers.push_back(new TriggerNode(
         "judgement",
-        NextAction::array(0, new NextAction("exorcism", ACTION_HIGH + 6), NULL)));
+        NextAction::array(0, new NextAction("exorcism", ACTION_HIGH + 9), NULL)));
 
     triggers.push_back(new TriggerNode(
         "light aoe",

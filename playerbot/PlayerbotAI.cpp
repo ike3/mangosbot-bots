@@ -69,7 +69,7 @@ void PacketHandlingHelper::Handle(ExternalEventHelper &helper)
 
 void PacketHandlingHelper::AddPacket(const WorldPacket& packet)
 {
-    if (packet.empty())
+    if (packet.empty() && packet.GetOpcode() != MSG_RAID_READY_CHECK)
         return;
 
 	if (handlers.find(packet.GetOpcode()) != handlers.end())
@@ -158,6 +158,7 @@ PlayerbotAI::PlayerbotAI(Player* bot) :
     botOutgoingPacketHandlers.AddHandler(SMSG_EMOTE, "receive emote");
     botOutgoingPacketHandlers.AddHandler(SMSG_LOOT_START_ROLL, "master loot roll");
     botOutgoingPacketHandlers.AddHandler(SMSG_SUMMON_REQUEST, "summon request");
+    botOutgoingPacketHandlers.AddHandler(MSG_RAID_READY_CHECK, "ready check");
 
     
 #ifndef MANGOSBOT_ZERO
@@ -179,7 +180,6 @@ PlayerbotAI::PlayerbotAI(Player* bot) :
     botOutgoingPacketHandlers.AddHandler(SMSG_INVENTORY_CHANGE_FAILURE, "inventory change failure");
 
     masterOutgoingPacketHandlers.AddHandler(SMSG_PARTY_COMMAND_RESULT, "party command");
-    masterOutgoingPacketHandlers.AddHandler(MSG_RAID_READY_CHECK, "ready check");
     masterOutgoingPacketHandlers.AddHandler(MSG_RAID_READY_CHECK_FINISHED, "ready check finished");
 }
 
@@ -287,7 +287,7 @@ void PlayerbotAI::UpdateAI(uint32 elapsed, bool minimal)
 
     if (currentSpell && currentSpell->getState() == SPELL_STATE_CASTING && currentSpell->GetCastedTime())
     {
-        nextAICheckDelay = currentSpell->GetCastedTime() + sPlayerbotAIConfig.reactDelay;       
+        nextAICheckDelay = currentSpell->GetCastedTime() + sPlayerbotAIConfig.reactDelay + sWorld.GetMaxDiff();       
 
         if (!CanUpdateAI())
             return;
@@ -667,8 +667,8 @@ void PlayerbotAI::HandleCommand(uint32 type, const string& text, Player& fromPla
 
 void PlayerbotAI::HandleBotOutgoingPacket(const WorldPacket& packet)
 {
-    if (packet.empty())
-        return;
+    //if (packet.empty())
+    //    return;
 
 	switch (packet.GetOpcode())
 	{
@@ -1828,6 +1828,8 @@ bool PlayerbotAI::HasAura(string name, Unit* unit, bool maxStack, bool checkIsOw
                 {
                     if (aura->GetHolder()->GetCasterGuid() == bot->GetObjectGuid())
                         return true;
+                    else
+                        continue;
                 }
 
                 if (checkIsOwner && aura->GetHolder())
@@ -1905,7 +1907,7 @@ bool PlayerbotAI::HasAnyAuraOf(Unit* player, ...)
 
 bool PlayerbotAI::CanCastSpell(string name, Unit* target, uint8 effectMask, Item* itemTarget)
 {
-    return CanCastSpell(aiObjectContext->GetValue<uint32>("spell id", name)->Get(), target, true, itemTarget);
+    return CanCastSpell(aiObjectContext->GetValue<uint32>("spell id", name)->Get(), target, 0, true, itemTarget);
 }
 
 bool PlayerbotAI::CanCastSpell(uint32 spellid, Unit* target, uint8 effectMask, bool checkHasSpell, Item* itemTarget)
@@ -4093,6 +4095,9 @@ bool PlayerbotAI::CanMove()
 
 void PlayerbotAI::StopMoving()
 {
+    if (bot->IsTaxiFlying())
+        return;
+
     // remove movement flags, checked in bot->IsMoving()
     if (bot->IsFalling())
 #ifdef MANGOSBOT_TWO

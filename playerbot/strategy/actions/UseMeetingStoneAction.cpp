@@ -174,13 +174,13 @@ bool SummonAction::Teleport(Player *summoner, Player *player)
             float y = summoner->GetPositionY() + sin(angle) * sPlayerbotAIConfig.followDistance;
             float z = summoner->GetPositionZ();
             summoner->UpdateGroundPositionZ(x, y, z);
-            if (!summoner->IsWithinLOS(x, y, z))
+            if (!summoner->IsWithinLOS(x, y, z + bot->GetCollisionHeight(), true))
             {
                 x = summoner->GetPositionX();
                 y = summoner->GetPositionY();
                 z = summoner->GetPositionZ();
             }
-            if (summoner->IsWithinLOS(x, y, z))
+            if (summoner->IsWithinLOS(x, y, z + bot->GetCollisionHeight(), true))
             {
                 if (sServerFacade.UnitIsDead(bot) && sServerFacade.IsAlive(ai->GetMaster()))
                 {

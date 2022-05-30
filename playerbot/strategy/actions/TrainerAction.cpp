@@ -25,7 +25,21 @@ void TrainerAction::Learn(uint32 cost, TrainerSpell const* tSpell, ostringstream
 
 #ifdef CMANGOS
     if (tSpell->learnedSpell)
-        bot->learnSpell(tSpell->learnedSpell, false);
+    {
+        // old code
+        // bot->learnSpell(tSpell->learnedSpell, false);
+        bool learned = false;
+        for (int j = 0; j < 3; ++j)
+        {
+            if (proto->Effect[j] == SPELL_EFFECT_LEARN_SPELL)
+            {
+                uint32 learnedSpell = proto->EffectTriggerSpell[j];
+                bot->learnSpell(learnedSpell, false);
+                learned = true;
+            }
+        }
+        if (!learned) bot->learnSpell(tSpell->learnedSpell, false);
+    }
     else
         ai->CastSpell(tSpell->spell, bot);
 #endif
