@@ -446,7 +446,11 @@ void WorldPosition::loadMapAndVMap(uint32 mapId, int x, int y)
 
     if (isOverworld() && false || false)
     {
+#ifdef MANGOSBOT_TWO
+        if (!MMAP::MMapFactory::createOrGetMMapManager()->IsMMapTileLoaded(mapId, 0, x, y))
+#else
         if (!MMAP::MMapFactory::createOrGetMMapManager()->IsMMapIsLoaded(mapId, x, y))
+#endif
             if (sPlayerbotAIConfig.hasLog(fileName))
             {
                 ostringstream out;
@@ -459,7 +463,11 @@ void WorldPosition::loadMapAndVMap(uint32 mapId, int x, int y)
         int px = (float)(32 - x) * SIZE_OF_GRIDS;
         int py = (float)(32 - y) * SIZE_OF_GRIDS;
 
+#ifdef MANGOSBOT_TWO
+        if (!MMAP::MMapFactory::createOrGetMMapManager()->IsMMapTileLoaded(mapId, 0, x, y))
+#else
         if (!MMAP::MMapFactory::createOrGetMMapManager()->IsMMapIsLoaded(mapId, x, y))
+#endif
             if(getTerrain())
                 getTerrain()->GetTerrainType(px, py);
 
@@ -502,10 +510,18 @@ void WorldPosition::loadMapAndVMap(uint32 mapId, int x, int y)
                 }
             }
 
+#ifdef MANGOSBOT_TWO
+        if (!MMAP::MMapFactory::createOrGetMMapManager()->IsMMapTileLoaded(mapId, 0, x, y) && !sTravelMgr.isBadMmap(mapId, x, y))
+#else
         if (!MMAP::MMapFactory::createOrGetMMapManager()->IsMMapIsLoaded(mapId, x, y) && !sTravelMgr.isBadMmap(mapId, x, y))
+#endif
         {
             // load navmesh
+#ifdef MANGOSBOT_TWO
+            if (!MMAP::MMapFactory::createOrGetMMapManager()->loadMap(mapId, 0, x, y, 0))
+#else
             if (!MMAP::MMapFactory::createOrGetMMapManager()->loadMap(mapId, x, y))
+#endif
                 sTravelMgr.addBadMmap(mapId, x, y);
 
             if (sPlayerbotAIConfig.hasLog(fileName))

@@ -961,49 +961,45 @@ void RandomPlayerbotMgr::CheckLfgQueue()
         }
 #endif
 #ifdef MANGOSBOT_TWO
-        /*Group* group = player->GetGroup();
+        Group* group = player->GetGroup();
         if (group)
         {
-            if (sLFGMgr.GetQueueInfo(group->GetObjectGuid()))
+            if (group->IsLFGGroup())
             {
                 isLFG = true;
-                LFGGroupState* gState = sLFGMgr.GetLFGGroupState(group->GetObjectGuid());
-                if (gState->GetState() != LFG_STATE_NONE && gState->GetState() < LFG_STATE_DUNGEON)
+                LFGData lfgData = group->GetLfgData();
+                if (lfgData.GetState() != LFG_STATE_NONE && lfgData.GetState() < LFG_STATE_DUNGEON)
                 {
-                    LFGDungeonSet const* dList = gState->GetDungeons();
-                    for (LFGDungeonSet::const_iterator itr = dList->begin(); itr != dList->end(); ++itr)
+                    LfgDungeonSet dList = lfgData.GetListedDungeonSet();
+                    for (auto dungeon : dList)
                     {
-                        LFGDungeonEntry const* dungeon = *itr;
-
                         if (!dungeon)
                             continue;
 
-                        LfgDungeons[player->GetTeam()].push_back(dungeon->ID);
+                        LfgDungeons[player->GetTeam()].push_back(dungeon);
                     }
                 }
             }
         }
         else
         {
-            if (sLFGMgr.GetQueueInfo(player->GetObjectGuid()))
+            if (player->GetLfgData().GetState() != LFG_STATE_NONE)
             {
                 isLFG = true;
-                LFGPlayerState* pState = sLFGMgr.GetLFGPlayerState(player->GetObjectGuid());
-                if (pState->GetState() != LFG_STATE_NONE && pState->GetState() < LFG_STATE_DUNGEON)
+                LFGData lfgData = player->GetLfgData();
+                if (lfgData.GetState() < LFG_STATE_DUNGEON)
                 {
-                    LFGDungeonSet const* dList = pState->GetDungeons();
-                    for (LFGDungeonSet::const_iterator itr = dList->begin(); itr != dList->end(); ++itr)
+                    LfgDungeonSet dList = lfgData.GetListedDungeonSet();
+                    for (auto dungeon : dList)
                     {
-                        LFGDungeonEntry const* dungeon = *itr;
-
                         if (!dungeon)
                             continue;
 
-                        LfgDungeons[player->GetTeam()].push_back(dungeon->ID);
+                        LfgDungeons[player->GetTeam()].push_back(dungeon);
                     }
                 }
             }
-        }*/
+        }
 #endif
     }
 #ifdef MANGOSBOT_ONE

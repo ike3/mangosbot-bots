@@ -104,7 +104,11 @@ namespace ai
             // prevent going into terrain
             float ox, oy, oz;
             master->GetPosition(ox, oy, oz);
+#ifdef MANGOSBOT_TWO
+            master->GetMap()->GetHitPosition(ox, oy, oz + bot->GetCollisionHeight(), x, y, z, bot->GetPhaseMask(), -0.5f);
+#else
             master->GetMap()->GetHitPosition(ox, oy, oz + bot->GetCollisionHeight(), x, y, z, -0.5f);
+#endif
 
             z += CONTACT_DISTANCE;
             bot->UpdateAllowedPositionZ(x, y, z);
@@ -374,7 +378,11 @@ namespace ai
             // prevent going into terrain
             float ox, oy, oz;
             master->GetPosition(ox, oy, oz);
+#ifdef MANGOSBOT_TWO
+            master->GetMap()->GetHitPosition(ox, oy, oz + bot->GetCollisionHeight(), x, y, z, bot->GetPhaseMask(), -0.5f);
+#else
             master->GetMap()->GetHitPosition(ox, oy, oz + bot->GetCollisionHeight(), x, y, z, -0.5f);
+#endif
 
             z += CONTACT_DISTANCE;
             bot->UpdateAllowedPositionZ(x, y, z);

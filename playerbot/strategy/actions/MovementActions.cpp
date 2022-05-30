@@ -1470,7 +1470,11 @@ bool SetBehindTargetAction::Execute(Event event)
     // prevent going into terrain
     float ox, oy, oz;
     target->GetPosition(ox, oy, oz);
+#ifdef MANGOSBOT_TWO
+    target->GetMap()->GetHitPosition(ox, oy, oz + bot->GetCollisionHeight(), x, y, z, bot->GetPhaseMask(), -0.5f);
+#else
     target->GetMap()->GetHitPosition(ox, oy, oz + bot->GetCollisionHeight(), x, y, z, -0.5f);
+#endif
 
     bool isLos = target->IsWithinLOS(x, y, z + bot->GetCollisionHeight(), true);
 
