@@ -71,9 +71,10 @@ class RandomPlayerbotMgr : public PlayerbotHolder
         void SetTradeDiscount(Player* bot, Player* master, uint32 value);
         uint32 GetTradeDiscount(Player* bot, Player* master);
         void Refresh(Player* bot);
-        void RandomTeleportForLevel(Player* bot, bool activeOnly = false);
+        void RandomTeleportForLevel(Player* bot, bool activeOnly);
         void RandomTeleportForLevel(Player* bot) { return RandomTeleportForLevel(bot, true); }
-        void RandomTeleportForRpg(Player* bot);
+        void RandomTeleportForRpg(Player* bot, bool activeOnly);
+        void RandomTeleportForRpg(Player* bot) { return RandomTeleportForRpg(bot, true); }
         int GetMaxAllowedBotCount();
         bool ProcessBot(Player* player);
         void Revive(Player* player);

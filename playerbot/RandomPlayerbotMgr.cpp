@@ -1290,6 +1290,10 @@ bool RandomPlayerbotMgr::ProcessBot(Player* player)
             ChangeStrategy(player);
 
         uint32 randomTime = urand(sPlayerbotAIConfig.minRandomBotRandomizeTime, sPlayerbotAIConfig.maxRandomBotRandomizeTime);
+        // speed up if real player is online
+        if (sPlayerbotAIConfig.autoDoQuests && players.size())
+            randomTime /= 10;
+
         ScheduleRandomize(bot, randomTime);
         return true;
     }
@@ -1303,7 +1307,7 @@ bool RandomPlayerbotMgr::ProcessBot(Player* player)
             sLog.outBasic("Bot #%d <%s>: sent to grind", bot, player->GetName());
             RandomTeleportForLevel(player, true);
             Refresh(player);
-            SetEventValue(bot, "teleport", 1, sPlayerbotAIConfig.maxRandomBotInWorldTime);
+            SetEventValue(bot, "teleport", 1, players.size() ? sPlayerbotAIConfig.maxRandomBotInWorldTime / 10 : sPlayerbotAIConfig.maxRandomBotInWorldTime);
             return true;
         }
 
@@ -1399,7 +1403,7 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot, vector<WorldLocation> &locs
     if (tlocs.empty())
     {
         if (activeOnly)
-            return RandomTeleportForRpg(bot);
+            return hearth ? RandomTeleportForRpg(bot, false) : RandomTeleportForLevel(bot, false);
 
         sLog.outError("Cannot teleport bot %s - no locations available", bot->GetName());
 
@@ -2590,8 +2594,8 @@ void RandomPlayerbotMgr::ChangeStrategy(Player* player)
     else
     {
 		sLog.outBasic("Bot #%d <%s>: sent to inn", bot, player->GetName());
-        RandomTeleportForRpg(player);
-		SetEventValue(bot, "teleport", 1, sPlayerbotAIConfig.maxRandomBotInWorldTime);
+        RandomTeleportForRpg(player, true);
+		SetEventValue(bot, "teleport", 1, sPlayerbotAIConfig.minRandomBotInWorldTime);
     }
 
     ScheduleChangeStrategy(bot);
@@ -2610,16 +2614,16 @@ void RandomPlayerbotMgr::ChangeStrategyOnce(Player* player)
     else
     {
         sLog.outBasic("Bot #%d <%s>: sent to inn", bot, player->GetName());
-        RandomTeleportForRpg(player);
+        RandomTeleportForRpg(player, true);
     }
 }
 
-void RandomPlayerbotMgr::RandomTeleportForRpg(Player* bot)
+void RandomPlayerbotMgr::RandomTeleportForRpg(Player* bot, bool activeOnly)
 {
     uint32 race = bot->getRace();
 	uint32 level = bot->GetLevel();
     sLog.outDetail("Random teleporting bot %s for RPG (%zu locations available)", bot->GetName(), rpgLocsCacheLevel[race][level].size());
-    RandomTeleport(bot, rpgLocsCacheLevel[race][level], false);
+    RandomTeleport(bot, rpgLocsCacheLevel[race][level], true, activeOnly);
 	Refresh(bot);
 }
 
