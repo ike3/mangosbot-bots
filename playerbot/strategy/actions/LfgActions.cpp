@@ -15,17 +15,17 @@ bool LfgJoinAction::Execute(Event event)
     return JoinLFG();
 }
 
-#ifdef MANGOSBOT_TWO_LFG
-LFGRoleMask LfgJoinAction::GetRoles()
+#ifdef MANGOSBOT_TWO
+LfgRoles LfgJoinAction::GetRoles()
 {
     if (!sRandomPlayerbotMgr.IsRandomBot(bot))
     {
         if (ai->IsTank(bot))
-            return LFG_ROLE_MASK_TANK;
+            return PLAYER_ROLE_TANK;
         if (ai->IsHeal(bot))
-            return LFG_ROLE_MASK_HEALER;
+            return PLAYER_ROLE_HEALER;
         else
-            return LFG_ROLE_MASK_DAMAGE;
+            return PLAYER_ROLE_DAMAGE;
     }
 
     int spec = AiFactory::GetPlayerSpecTab(bot);
@@ -33,65 +33,61 @@ LFGRoleMask LfgJoinAction::GetRoles()
     {
     case CLASS_DRUID:
         if (spec == 2)
-            return LFG_ROLE_MASK_HEALER;
+            return PLAYER_ROLE_HEALER;
         else if (spec == 1 && bot->GetLevel() >= 20)
-            return LFG_ROLE_MASK_TANK_DAMAGE;
+            return LfgRoles(PLAYER_ROLE_TANK | PLAYER_ROLE_DAMAGE);
         else
-            return LFG_ROLE_MASK_DAMAGE;
+            return PLAYER_ROLE_DAMAGE;
         break;
     case CLASS_PALADIN:
         if (spec == 1)
-            return LFG_ROLE_MASK_TANK;
+            return PLAYER_ROLE_TANK;
         else if (spec == 0)
-            return LFG_ROLE_MASK_HEALER;
+            return PLAYER_ROLE_HEALER;
         else
-            return LFG_ROLE_MASK_DAMAGE;
+            return PLAYER_ROLE_DAMAGE;
         break;
     case CLASS_PRIEST:
         if (spec != 2)
-            return LFG_ROLE_MASK_HEALER;
+            return PLAYER_ROLE_HEALER;
         else
-            return LFG_ROLE_MASK_DAMAGE;
+            return PLAYER_ROLE_DAMAGE;
         break;
     case CLASS_SHAMAN:
         if (spec == 2)
-            return LFG_ROLE_MASK_HEALER;
+            return PLAYER_ROLE_HEALER;
         else
-            return LFG_ROLE_MASK_DAMAGE;
+            return PLAYER_ROLE_DAMAGE;
         break;
     case CLASS_WARRIOR:
         if (spec == 2)
-            return LFG_ROLE_MASK_TANK;
+            return PLAYER_ROLE_TANK;
         else
-            return LFG_ROLE_MASK_DAMAGE;
+            return PLAYER_ROLE_DAMAGE;
         break;
 #ifdef MANGOSBOT_TWO
     case CLASS_DEATH_KNIGHT:
         if (spec == 0)
-            return LFG_ROLE_MASK_TANK;
+            return PLAYER_ROLE_TANK;
         else
-            return LFG_ROLE_MASK_DAMAGE;
+            return PLAYER_ROLE_DAMAGE;
         break;
 #endif
     default:
-        return LFG_ROLE_MASK_DAMAGE;
+        return PLAYER_ROLE_DAMAGE;
         break;
     }
 
-    return LFG_ROLE_MASK_DAMAGE;
+    return PLAYER_ROLE_DAMAGE;
 }
 #endif
 
 bool LfgJoinAction::SetRoles()
 {
-#ifdef MANGOSBOT_TWO_LFG
-    LFGPlayerState* pState = sLFGMgr.GetLFGPlayerState(bot->GetObjectGuid());
-    if (!pState)
-        return false;
-
-    pState->SetRoles(GetRoles());
+#ifdef MANGOSBOT_TWO_UNUSED
+    LFGData pState = bot->GetLfgData();
+    pState.SetPlayerRoles(GetRoles());
 #endif
-
     return true;
 }
 
@@ -823,15 +819,11 @@ bool LfgJoinAction::JoinLFG()
     else
         sLog.outDetail("Bot #%d %s:%d <%s>: uses %s, %s - %s (%s)", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->GetLevel(), bot->GetName(), lfgGroup.c_str(), lfgOption.c_str(), lfgName.c_str(), _botRoles.c_str());
 #endif
-#ifdef MANGOSBOT_TWO_LFG
-    LFGPlayerState* pState = sLFGMgr.GetLFGPlayerState(bot->GetObjectGuid());
+#ifdef MANGOSBOT_TWO
+    LFGData pState = bot->GetLfgData();
 
     // check if already in lfg
-    if (pState->GetDungeons() && !pState->GetDungeons()->empty())
-        return false;
-
-    // set roles
-    if (!SetRoles())
+    if (!pState.GetListedDungeonSet().empty())
         return false;
 
     ItemCountByQuality visitor;
@@ -840,7 +832,7 @@ bool LfgJoinAction::JoinLFG()
     bool heroic = urand(0, 100) < 50 && (visitor.count[ITEM_QUALITY_EPIC] >= 3 || visitor.count[ITEM_QUALITY_RARE] >= 10) && bot->GetLevel() >= 70;
     bool raid = !heroic && (urand(0, 100) < 50 && visitor.count[ITEM_QUALITY_EPIC] >= 5 && (bot->GetLevel() == 60 || bot->GetLevel() == 70 || bot->GetLevel() == 80));
 
-    LFGDungeonSet list;
+    LfgDungeonSet list;
     vector<uint32> selected;
 
     vector<uint32> dungeons = sRandomPlayerbotMgr.LfgDungeons[bot->GetTeam()];
@@ -849,23 +841,19 @@ bool LfgJoinAction::JoinLFG()
 
     for (vector<uint32>::iterator i = dungeons.begin(); i != dungeons.end(); ++i)
     {
-        LFGDungeonEntry const* dungeon = sLFGDungeonStore.LookupEntry(*i);
+        LFGDungeonData const* dungeon = sLFGMgr.GetLFGDungeon(*i);
         if (!dungeon || (dungeon->type != LFG_TYPE_RANDOM_DUNGEON && dungeon->type != LFG_TYPE_DUNGEON && dungeon->type != LFG_TYPE_HEROIC_DUNGEON &&
             dungeon->type != LFG_TYPE_RAID))
             continue;
 
         uint32 botLevel = bot->GetLevel();
-        if (dungeon->minlevel && botLevel < dungeon->minlevel)
+        if (!dungeon->CheckMinLevel(2, botLevel))
+            continue;
+        if (!dungeon->CheckMaxLevel(2, botLevel))
             continue;
 
-        if (dungeon->minlevel && botLevel > dungeon->minlevel + 10)
-            continue;
-
-        if (dungeon->maxlevel && botLevel > dungeon->maxlevel)
-            continue;
-
-        selected.push_back(dungeon->ID);
-        list.insert(dungeon);
+        selected.push_back(dungeon->id);
+        list.insert(dungeon->id);
     }
 
     if (!selected.size())
@@ -875,7 +863,8 @@ bool LfgJoinAction::JoinLFG()
         return false;
 
     bool many = list.size() > 1;
-    LFGDungeonEntry const* dungeon = *list.begin();
+    //LFGDungeonEntry const* dungeon = *list.begin();
+    LFGDungeonData const* dungeon = sLFGMgr.GetLFGDungeon(*list.begin());
 
     /*for (uint32 i = 0; i < sLFGDungeonStore.GetNumRows(); ++i)
     {
@@ -912,15 +901,15 @@ bool LfgJoinAction::JoinLFG()
     // check role for console msg
     string _roles = "multiple roles";
 
-    if (pState->HasRole(ROLE_TANK))
+    if ((pState.GetPlayerRoles() & PLAYER_ROLE_TANK) != 0)
         _roles = "TANK";
-    if (pState->HasRole(ROLE_HEALER))
+    if ((pState.GetPlayerRoles() & PLAYER_ROLE_HEALER) != 0)
         _roles = "HEAL";
-    if (pState->HasRole(ROLE_DAMAGE))
+    if ((pState.GetPlayerRoles() & PLAYER_ROLE_DAMAGE) != 0)
         _roles = "DPS";
 
-    pState->SetType(LFG_TYPE_DUNGEON);
-    sLog.outBasic("Bot #%d %s:%d <%s>: queues LFG, Dungeon as %s (%s)", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->GetLevel(), bot->GetName(), _roles, many ? "several dungeons" : dungeon->name[0]);
+    //pState->SetType(LFG_TYPE_DUNGEON);
+    sLog.outBasic("Bot #%d %s:%d <%s>: queues LFG, Dungeon as %s (%s)", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->GetLevel(), bot->GetName(), _roles, many ? "several dungeons" : dungeon->name);
 
     /*if (lfgState->IsSingleRole())
     {
@@ -980,46 +969,41 @@ bool LfgJoinAction::JoinLFG()
 
     // Set Raid Browser comment
     string _gs = to_string(bot->GetEquipGearScore());
-    pState->SetComment("Bot " + _roles + " GS:" + _gs + " for LFG");
-
-
-    pState->SetDungeons(list);
-    sLFGMgr.Join(bot);
-
+    sLFGMgr.JoinLfg(bot, GetRoles(), list, "Bot " + _roles + " GS:" + _gs + " for LFG");
 #endif
     return true;
 }
 
 bool LfgRoleCheckAction::Execute(Event event)
 {
-#ifdef MANGOSBOT_TWO_LFG
+#ifdef MANGOSBOT_TWO
     Group* group = bot->GetGroup();
     if (group)
     {
-        LFGPlayerState* pState = sLFGMgr.GetLFGPlayerState(bot->GetObjectGuid());
-        LFGRoleMask currentRoles = pState->GetRoles();
-        LFGRoleMask newRoles = GetRoles();
-        if (currentRoles == newRoles) return false;
+        LFGQueuePlayer pData = sWorld.GetLFGQueue().GetQueueData(group->GetObjectGuid()).m_playerInfoPerGuid[bot->GetObjectGuid()];
+        uint8 currentRoles = pData.m_roles;
+        LfgRoles newRoles = GetRoles();
+        if (currentRoles == (uint8)newRoles) return false;
         
-        pState->SetRoles(newRoles);
-
-        sLFGMgr.UpdateRoleCheck(group);
-
+        sWorld.GetLFGQueue().GetMessager().AddMessage([group = group->GetObjectGuid(), playerGuid = bot->GetObjectGuid(), newRoles](LFGQueue* queue)
+        {
+            queue->SetPlayerRoles(group, playerGuid, newRoles);
+        });
         sLog.outBasic("Bot #%d %s:%d <%s>: LFG roles checked", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->GetLevel(), bot->GetName());
-
         return true;
     }
 #endif
-
     return false;
 }
 
 bool LfgAcceptAction::Execute(Event event)
 {
-#ifdef MANGOSBOT_TWO_LFG
-    LFGPlayerState* pState = sLFGMgr.GetLFGPlayerState(bot->GetObjectGuid());
-    if (!pState || pState->GetState() != LFG_STATE_PROPOSAL)
-        return false;
+#ifdef MANGOSBOT_TWO
+    //LFGData pState = bot->GetLfgData();
+    //if (pState.GetState() != LFG_STATE_PROPOSAL)
+    //    return false;
+
+    //if (sWorld.GetLFGQueue().GetQueueData(bot->GetGroup() ? bot->GetGroup()->GetObjectGuid() : bot->GetObjectGuid()))
 
     uint32 id = AI_VALUE(uint32, "lfg proposal");
     if (id)
@@ -1030,14 +1014,31 @@ bool LfgAcceptAction::Execute(Event event)
         if (bot->IsInCombat() || bot->IsDead())
         {
             sLog.outBasic("Bot #%d %s:%d <%s> is in combat and refuses LFG proposal %d", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->GetLevel(), bot->GetName(), id);
-            sLFGMgr.UpdateProposal(id, bot->GetObjectGuid(), false);
+            /*WorldPacket p(CMSG_LFG_PROPOSAL_RESULT);
+            p << id;
+            p << false;
+            bot->GetSession()->HandleLfgProposalResultOpcode(p);*/
+            bool accept = false;
+            sWorld.GetLFGQueue().GetMessager().AddMessage([playerGuid = bot->GetObjectGuid(), id, accept](LFGQueue* queue)
+            {
+                queue->UpdateProposal(playerGuid, id, accept);
+            });
             return true;
         }
 
         sLog.outBasic("Bot #%d %s:%d <%s> accepts LFG proposal %d", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->GetLevel(), bot->GetName(), id);
         ai->GetAiObjectContext()->GetValue<uint32>("lfg proposal")->Set(0);
         bot->clearUnitState(UNIT_STAT_ALL_STATE);
-        sLFGMgr.UpdateProposal(id, bot->GetObjectGuid(), true);
+        /*WorldPacket p(CMSG_LFG_PROPOSAL_RESULT);
+        p << id;
+        p << uint8(1);
+        bot->GetSession()->HandleLfgProposalResultOpcode(p);*/
+
+        bool accept = true;
+        sWorld.GetLFGQueue().GetMessager().AddMessage([playerGuid = bot->GetObjectGuid(), id, accept](LFGQueue* queue)
+        {
+            queue->UpdateProposal(playerGuid, id, accept);
+        });
 
         if (sRandomPlayerbotMgr.IsRandomBot(bot) && !bot->GetGroup())
         {
@@ -1045,9 +1046,7 @@ bool LfgAcceptAction::Execute(Event event)
             ai->ResetStrategies();
             //bot->TeleportToHomebind();
         }
-
         ai->Reset();
-
         return true;
     }
 
@@ -1102,12 +1101,12 @@ bool LfgLeaveAction::Execute(Event event)
         bot->GetSession()->HandleSetLfgCommentOpcode(p);
     }
 #endif
-#ifdef MANGOSBOT_TWO_LFG
+#ifdef MANGOSBOT_TWO
     // Don't leave if already invited / in dungeon
-    if (sLFGMgr.GetLFGPlayerState(bot->GetObjectGuid())->GetState() > LFG_STATE_QUEUED)
+    if (bot->GetLfgData().GetState() > LFG_STATE_QUEUED)
         return false;
 
-    sLFGMgr.Leave(bot);
+    sLFGMgr.LeaveLfg(bot);
 #endif
     return true;
 }
@@ -1141,7 +1140,7 @@ bool LfgLeaveAction::isUseful()
 
 bool LfgTeleportAction::Execute(Event event)
 {
-#ifdef MANGOSBOT_TWO_LFG
+#ifdef MANGOSBOT_TWO
     bool out = false;
 
     WorldPacket p(event.getPacket());
@@ -1152,7 +1151,7 @@ bool LfgTeleportAction::Execute(Event event)
     }
 
     bot->clearUnitState(UNIT_STAT_ALL_STATE);
-    sLFGMgr.Teleport(bot, out);
+    sLFGMgr.TeleportPlayer(bot, out, false);
 #endif
     return true;
 }
@@ -1165,7 +1164,7 @@ bool LfgJoinAction::isUseful()
         return false;
     }
 
-#ifdef MANGOSBOT_TWO_LFG
+#ifdef MANGOSBOT_TWO
     if (bot->GetLevel() < 15)
         return false;
 #endif
@@ -1228,16 +1227,12 @@ bool LfgJoinAction::isUseful()
     if ((isLFG || isLFM) && sRandomPlayerbotMgr.LfgDungeons[bot->GetTeam()].empty())
         return false;
 #endif
-#ifdef MANGOSBOT_TWO_LFG
-
+#ifdef MANGOSBOT_TWO
     if (sRandomPlayerbotMgr.LfgDungeons[bot->GetTeam()].empty())
         return false;
 
-    if (sLFGMgr.GetQueueInfo(bot->GetObjectGuid()))
-        return false;
-
-    LFGPlayerState* pState = sLFGMgr.GetLFGPlayerState(bot->GetObjectGuid());
-    if (pState->GetState() != LFG_STATE_NONE)
+    LFGData pState = bot->GetLfgData();
+    if (pState.GetState() != LFG_STATE_NONE)
         return false;
 #endif
     return true;

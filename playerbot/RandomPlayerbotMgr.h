@@ -56,7 +56,7 @@ class RandomPlayerbotMgr : public PlayerbotHolder
         void IncreaseLevel(Player* bot);
         void ScheduleTeleport(uint32 bot, uint32 time = 0);
         void ScheduleChangeStrategy(uint32 bot, uint32 time = 0);
-        void HandleCommand(uint32 type, const string& text, Player& fromPlayer, string channelName = "");
+        void HandleCommand(uint32 type, const string& text, Player& fromPlayer, string channelName = "", Team team = TEAM_BOTH_ALLOWED);
         string HandleRemoteCommand(string request);
         void OnPlayerLogout(Player* player);
         void OnPlayerLogin(Player* player);
@@ -71,7 +71,8 @@ class RandomPlayerbotMgr : public PlayerbotHolder
         void SetTradeDiscount(Player* bot, Player* master, uint32 value);
         uint32 GetTradeDiscount(Player* bot, Player* master);
         void Refresh(Player* bot);
-        void RandomTeleportForLevel(Player* bot);
+        void RandomTeleportForLevel(Player* bot, bool activeOnly = false);
+        void RandomTeleportForLevel(Player* bot) { return RandomTeleportForLevel(bot, true); }
         void RandomTeleportForRpg(Player* bot);
         int GetMaxAllowedBotCount();
         bool ProcessBot(Player* player);
@@ -121,7 +122,7 @@ class RandomPlayerbotMgr : public PlayerbotHolder
         bool ProcessBot(uint32 bot);
         void ScheduleRandomize(uint32 bot, uint32 time);
         void RandomTeleport(Player* bot);
-        void RandomTeleport(Player* bot, vector<WorldLocation> &locs, bool hearth = false);
+        void RandomTeleport(Player* bot, vector<WorldLocation> &locs, bool hearth = false, bool activeOnly = false);
         uint32 GetZoneLevel(uint16 mapId, float teleX, float teleY, float teleZ);
         void PrepareTeleportCache();
         typedef void (RandomPlayerbotMgr::*ConsoleCommandHandler) (Player*);

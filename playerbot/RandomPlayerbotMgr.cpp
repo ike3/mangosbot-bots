@@ -967,15 +967,12 @@ void RandomPlayerbotMgr::CheckLfgQueue()
             if (group->IsLFGGroup())
             {
                 isLFG = true;
-                LFGData lfgData = group->GetLfgData();
+                LFGQueueData& lfgData = sWorld.GetLFGQueue().GetQueueData(group->GetObjectGuid());
                 if (lfgData.GetState() != LFG_STATE_NONE && lfgData.GetState() < LFG_STATE_DUNGEON)
                 {
-                    LfgDungeonSet dList = lfgData.GetListedDungeonSet();
+                    LfgDungeonSet dList = lfgData.GetDungeons();
                     for (auto dungeon : dList)
                     {
-                        if (!dungeon)
-                            continue;
-
                         LfgDungeons[player->GetTeam()].push_back(dungeon);
                     }
                 }
@@ -985,16 +982,13 @@ void RandomPlayerbotMgr::CheckLfgQueue()
         {
             if (player->GetLfgData().GetState() != LFG_STATE_NONE)
             {
+                LFGQueueData& lfgData = sWorld.GetLFGQueue().GetQueueData(player->GetObjectGuid());
                 isLFG = true;
-                LFGData lfgData = player->GetLfgData();
                 if (lfgData.GetState() < LFG_STATE_DUNGEON)
                 {
-                    LfgDungeonSet dList = lfgData.GetListedDungeonSet();
+                    LfgDungeonSet dList = lfgData.GetDungeons();
                     for (auto dungeon : dList)
                     {
-                        if (!dungeon)
-                            continue;
-
                         LfgDungeons[player->GetTeam()].push_back(dungeon);
                     }
                 }
@@ -1041,7 +1035,10 @@ void RandomPlayerbotMgr::CheckLfgQueue()
         }
     }
 #endif
-    sLog.outBasic("LFG Queue check finished");
+    if (LfgDungeons[ALLIANCE].size() || LfgDungeons[HORDE].size())
+        sLog.outBasic("LFG Queue check finished. There are real players in queue.");
+    else
+        sLog.outBasic("LFG Queue check finished. No real players in queue.");
     return;
 }
 
@@ -1304,7 +1301,7 @@ bool RandomPlayerbotMgr::ProcessBot(Player* player)
         if (!teleport)
         {
             sLog.outBasic("Bot #%d <%s>: sent to grind", bot, player->GetName());
-            RandomTeleportForLevel(player);
+            RandomTeleportForLevel(player, true);
             Refresh(player);
             SetEventValue(bot, "teleport", 1, sPlayerbotAIConfig.maxRandomBotInWorldTime);
             return true;
@@ -1336,12 +1333,12 @@ void RandomPlayerbotMgr::Revive(Player* player)
     }
     else
     {
-        RandomTeleportForLevel(player);
+        RandomTeleportForLevel(player, false);
         Refresh(player);
     }
 }
 
-void RandomPlayerbotMgr::RandomTeleport(Player* bot, vector<WorldLocation> &locs, bool hearth)
+void RandomPlayerbotMgr::RandomTeleport(Player* bot, vector<WorldLocation> &locs, bool hearth, bool activeOnly)
 {
     if (bot->IsBeingTeleported())
         return;
@@ -1382,8 +1379,28 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot, vector<WorldLocation> &locs
     //Bot will travel 0-5000 units + 75-150 units per level.
     //tlocs.erase(std::remove_if(tlocs.begin(), tlocs.end(), [bot](WorldLocation const& l) {return l.mapid == bot->GetMapId() && sServerFacade.GetDistance2d(bot, l.coord_x, l.coord_y) > urand(0, 5000) + bot->GetLevel() * 15 * urand(5, 10); }), tlocs.end());
 
+    // teleport to active areas only
+    if (activeOnly)
+    {
+        tlocs.erase(std::remove_if(tlocs.begin(), tlocs.end(), [bot](WorldPosition l)
+        {
+            uint32 mapId = l.getMapId();
+            Map* tMap = sMapMgr.FindMap(mapId, 0);
+            if (!tMap || !tMap->IsContinent())
+                return true;
+
+            if (!tMap->HasActiveAreas())
+                return true;
+
+            ContinentArea teleportArea = sMapMgr.GetContinentInstanceId(mapId, l.getX(), l.getY());
+            return !tMap->HasActiveAreas(teleportArea);
+        }), tlocs.end());
+    }
     if (tlocs.empty())
     {
+        if (activeOnly)
+            return RandomTeleportForRpg(bot);
+
         sLog.outError("Cannot teleport bot %s - no locations available", bot->GetName());
 
         return;
@@ -1432,7 +1449,24 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot, vector<WorldLocation> &locs
             if (sWorldState.GetExpansion() == EXPANSION_NONE && (loc.mapid == 571 || (loc.mapid == 530 && area->team != 2 && area->team != 4)))
                 continue;
 #endif
-
+            if (area->team)
+            {
+                bool isEnemyZone = false;
+                switch (area->team)
+                {
+                case AREATEAM_ALLY:
+                    isEnemyZone = bot->GetTeam() != ALLIANCE && (sWorld.IsPvPRealm() || area->flags & AREA_FLAG_CAPITAL);
+                    break;
+                case AREATEAM_HORDE:
+                    isEnemyZone = bot->GetTeam() != HORDE && (sWorld.IsPvPRealm() || area->flags & AREA_FLAG_CAPITAL);
+                    break;
+                default:                                            // 6 in fact
+                    isEnemyZone = false;
+                    break;
+                }
+                if (isEnemyZone)
+                    continue;
+            }
             // Do not teleport to enemy zones if level is low
             if (area->team == 4 && bot->GetTeam() == ALLIANCE && bot->GetLevel() < 40)
                 continue;
@@ -1592,13 +1626,13 @@ void RandomPlayerbotMgr::PrepareTeleportCache()
 	}
 }
 
-void RandomPlayerbotMgr::RandomTeleportForLevel(Player* bot)
+void RandomPlayerbotMgr::RandomTeleportForLevel(Player* bot, bool activeOnly)
 {
     if (bot->InBattleGround())
         return;
 
     sLog.outDetail("Preparing location to random teleporting bot %s for level %u", bot->GetName(), bot->GetLevel());
-    RandomTeleport(bot, locsPerLevelCache[bot->GetLevel()]);
+    RandomTeleport(bot, locsPerLevelCache[bot->GetLevel()], false, activeOnly);
 }
 
 void RandomPlayerbotMgr::RandomTeleport(Player* bot)
@@ -1632,7 +1666,7 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot)
     }
     else
     {
-        RandomTeleportForLevel(bot);
+        RandomTeleportForLevel(bot, true);
     }
 
     if (pmo) pmo->finish();
@@ -2086,12 +2120,15 @@ bool RandomPlayerbotMgr::HandlePlayerbotConsoleCommand(ChatHandler* handler, cha
     return true;
 }
 
-void RandomPlayerbotMgr::HandleCommand(uint32 type, const string& text, Player& fromPlayer, string channelName)
+void RandomPlayerbotMgr::HandleCommand(uint32 type, const string& text, Player& fromPlayer, string channelName, Team team)
 {
     for (PlayerBotMap::const_iterator it = GetPlayerBotsBegin(); it != GetPlayerBotsEnd(); ++it)
     {
         Player* const bot = it->second;
         if (!bot)
+            continue;
+
+        if (team != TEAM_BOTH_ALLOWED && bot->GetTeam() != team)
             continue;
 
         if (!channelName.empty())
@@ -2567,7 +2604,7 @@ void RandomPlayerbotMgr::ChangeStrategyOnce(Player* player)
     if (urand(0, 100) > 100 * sPlayerbotAIConfig.randomBotRpgChance) // select grind / pvp
     {
         sLog.outBasic("Bot #%d <%s>: sent to grind spot", bot, player->GetName());
-        RandomTeleportForLevel(player);
+        RandomTeleportForLevel(player, true);
         Refresh(player);
     }
     else
@@ -2582,7 +2619,7 @@ void RandomPlayerbotMgr::RandomTeleportForRpg(Player* bot)
     uint32 race = bot->getRace();
 	uint32 level = bot->GetLevel();
     sLog.outDetail("Random teleporting bot %s for RPG (%zu locations available)", bot->GetName(), rpgLocsCacheLevel[race][level].size());
-    RandomTeleport(bot, rpgLocsCacheLevel[race][level], true);
+    RandomTeleport(bot, rpgLocsCacheLevel[race][level], false);
 	Refresh(bot);
 }
 
