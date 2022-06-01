@@ -1103,6 +1103,9 @@ bool MovementAction::ChaseTo(WorldObject* obj, float distance, float angle)
 
     bot->GetMotionMaster()->Clear();
     bot->GetMotionMaster()->MoveChase((Unit*)obj, distance, angle);
+    // if failed to move
+    if (bot->GetMotionMaster()->GetCurrentMovementGeneratorType() != CHASE_MOTION_TYPE)
+        return MoveNear(obj, distance);
 
     WaitForReach(sServerFacade.GetDistance2d(bot, obj));
     return true;
