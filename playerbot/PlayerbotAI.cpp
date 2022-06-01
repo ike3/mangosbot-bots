@@ -1071,7 +1071,7 @@ void PlayerbotAI::DoNextAction(bool min)
 
     if (minimal)
     {
-        if(!bot->isAFK() && !bot->InBattleGround() && (!HasRealPlayerMaster() || (GetMaster() && GetMaster()->isAFK())))
+        if(!bot->isAFK() && !bot->InBattleGround() && !HasRealPlayerMaster())
             bot->ToggleAFK();
         SetNextCheckDelay(sPlayerbotAIConfig.passiveDelay);
         return;
@@ -3058,7 +3058,8 @@ bool PlayerbotAI::AllowActive(ActivityType activityType)
                 return true;
 
             if (group->IsLeader(member->GetObjectGuid()))
-                return member->GetPlayerbotAI()->AllowActivity(PARTY_ACTIVITY);
+                if (!member->GetPlayerbotAI()->AllowActivity(PARTY_ACTIVITY))
+                    return false;
         }
     } 
 
