@@ -83,5 +83,5 @@ void WarrirorAoeStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "high rage available",
-        NextAction::array(0, new NextAction("whirlwind", ACTION_HIGH + 10), NULL)));
+        NextAction::array(0, new NextAction("whirlwind", ACTION_HIGH + 4), NULL)));
 }

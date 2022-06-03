@@ -55,11 +55,11 @@ void ArmsWarriorStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "medium rage available",
-        NextAction::array(0, new NextAction("heroic strike", ACTION_HIGH + 1), NULL)));
+        NextAction::array(0, new NextAction("heroic strike", ACTION_HIGH + 5), NULL)));
 
     triggers.push_back(new TriggerNode(
         "mortal strike",
-        NextAction::array(0, new NextAction("mortal strike", ACTION_HIGH + 1), NULL)));
+        NextAction::array(0, new NextAction("mortal strike", ACTION_HIGH + 5), NULL)));
 
     triggers.push_back(new TriggerNode(
         "target critical health",
