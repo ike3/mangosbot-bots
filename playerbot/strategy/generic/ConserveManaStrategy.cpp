@@ -23,15 +23,12 @@ float ConserveManaMultiplier::GetValue(Action* action)
     if (health < sPlayerbotAIConfig.lowHealth)
         return 1.0f;
 
-    Unit* target = AI_VALUE(Unit*, "current target");
-    if (action->GetTarget() != target)
-        return 1.0f;
-
     CastSpellAction* spellAction = dynamic_cast<CastSpellAction*>(action);
     if (!spellAction)
         return 1.0f;
 
     string spell = spellAction->getName();
+    if (spell.find(" on party") != string::npos) spell = spell.substr(0, spell.size() - 9);
     uint32 spellId = AI_VALUE2(uint32, "spell id", spell);
     const SpellEntry* const spellInfo = sServerFacade.LookupSpellInfo(spellId);
     if (!spellInfo || spellInfo->powerType != POWER_MANA)
@@ -40,8 +37,28 @@ float ConserveManaMultiplier::GetValue(Action* action)
     if (mediumMana && dynamic_cast<CastBuffSpellAction*>(action))
         return 0.0f;
 
-    if (target && ((int)target->getLevel() - (int)bot->getLevel()) >= 0)
-        return 1.0f;
+    if (dynamic_cast<HealPartyMemberAction*>(action) && bot->GetGroup() && !ai->IsHeal(bot))
+    {
+        Group::MemberSlotList const& groupSlot = bot->GetGroup()->GetMemberSlots();
+        bool foundHealers = false;
+        bool foundLowManaHealers = false;
+        for (Group::member_citerator itr = groupSlot.begin(); itr != groupSlot.end(); itr++)
+        {
+            Player *member = sObjectMgr.GetPlayer(itr->guid);
+            if (!member || !sServerFacade.IsAlive(member) || member == bot)
+                continue;
+
+            if (ai->IsHeal(member) && bot->GetMapId() == member->GetMapId() &&
+                    sServerFacade.IsDistanceLessOrEqualThan(sServerFacade.GetDistance2d(bot, member), sPlayerbotAIConfig.spellDistance))
+            {
+                float manaLevel = (static_cast<float> (member->GetPower(POWER_MANA)) / member->GetMaxPower(POWER_MANA)) * 100;
+                foundHealers = true;
+                if (manaLevel < sPlayerbotAIConfig.lowMana) foundLowManaHealers = true;
+            }
+        }
+
+        if (foundHealers && !foundLowManaHealers) return 0.0f;
+    }
 
     return 1.0f;
 }
