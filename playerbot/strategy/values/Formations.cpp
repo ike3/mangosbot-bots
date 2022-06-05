@@ -21,9 +21,17 @@ bool Formation::IsNullLocation(WorldLocation const& loc)
 
 void Formation::UpdateAllowedPositionZ(Player* bot, float x, float y, float &z)
 {
+    float orig = z;
     float ground = z;
-    z = bot->GetMap()->GetTerrain()->GetWaterOrGroundLevel(x, y, z, &ground);
-    if (sServerFacade.IsDistanceLessThan(abs(ground - z), sPlayerbotAIConfig.contactDistance)) z = ground;
+
+    const TerrainInfo* terrain = bot->GetMap()->GetTerrain();
+    terrain->GetWaterOrGroundLevel(x, y, z, &ground);
+    if (sServerFacade.IsDistanceLessThan(abs(ground - z), sPlayerbotAIConfig.meleeDistance))
+    {
+        z = ground;
+        return;
+    }
+    if (terrain->IsUnderWater(x, y, z) || terrain->IsInWater(x, y, z)) z =  orig;
 }
 
 WorldLocation MoveAheadFormation::GetLocation()
