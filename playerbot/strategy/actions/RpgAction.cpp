@@ -64,7 +64,7 @@ void RpgAction::work(Unit* unit)
 
 void RpgAction::emote(Unit* unit)
 {
-    uint32 type = TalkAction::GetRandomEmote(unit);
+    uint32 type = TalkAction::GetRandomEmote(bot, unit);
 
     ObjectGuid oldSelection = bot->GetSelectionGuid();
 

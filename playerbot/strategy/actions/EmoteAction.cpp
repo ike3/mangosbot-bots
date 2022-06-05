@@ -86,8 +86,20 @@ bool EmoteActionBase::Emote(Unit* target, uint32 type)
 {
     if (sServerFacade.isMoving(bot)) return false;
 
+    list<ObjectGuid> possible_targets = *context->GetValue<list<ObjectGuid> >("possible targets");
+    if (!possible_targets.empty())
+    {
+        vector<ObjectGuid> ordered;
+        for (list<ObjectGuid>::iterator i = possible_targets.begin(); i != possible_targets.end(); ++i)
+            ordered.push_back(*i);
+
+        uint32 index = urand(0, ordered.size() - 1);
+        target = ai->GetUnit(ordered[index]);
+    }
+
     if (target && !sServerFacade.IsInFront(bot, target, sPlayerbotAIConfig.sightDistance, EMOTE_ANGLE_IN_FRONT))
         sServerFacade.SetFacingTo(bot, target);
+
 
     ObjectGuid oldSelection = bot->GetSelectionGuid();
     if (target)
@@ -193,13 +205,13 @@ bool TalkAction::Execute(Event event)
             player->GetPlayerbotAI()->GetAiObjectContext()->GetValue<ObjectGuid>("talk target")->Set(bot->GetObjectGuid());
 
         context->GetValue<ObjectGuid>("talk target")->Set(target->GetObjectGuid());
-        return Emote(target, GetRandomEmote(target));
+        return Emote(target, GetRandomEmote(bot, target));
     }
 
     return false;
 }
 
-uint32 TalkAction::GetRandomEmote(Unit* unit)
+uint32 TalkAction::GetRandomEmote(Player* bot, Unit* unit)
 {
     vector<uint32> types;
     if (!urand(0, 20))
@@ -212,6 +224,11 @@ uint32 TalkAction::GetRandomEmote(Unit* unit)
         types.push_back(EMOTE_ONESHOT_POINT);
         types.push_back(EMOTE_ONESHOT_CHEER);
         types.push_back(EMOTE_ONESHOT_SHY);
+    }
+    else if (unit && unit->IsHostileTo(bot))
+    {
+        types.push_back(EMOTE_ONESHOT_RUDE);
+        types.push_back(EMOTE_ONESHOT_POINT);
     }
     else
     {

@@ -32,6 +32,6 @@ namespace ai
         TalkAction(PlayerbotAI* ai) : EmoteActionBase(ai, "talk") {}
         virtual bool Execute(Event event);
 
-        static uint32 GetRandomEmote(Unit* unit);
+        static uint32 GetRandomEmote(Player* bot, Unit* unit);
     };
 }

@@ -527,12 +527,8 @@ void PlayerbotAI::DoNextAction()
         }
     }
 
-    if (master)
-    {
-        if (master->m_movementInfo.HasMovementFlag(MOVEFLAG_WALK_MODE)) bot->m_movementInfo.AddMovementFlag(MOVEFLAG_WALK_MODE);
-        else bot->m_movementInfo.RemoveMovementFlag(MOVEFLAG_WALK_MODE);
-    }
-    else if (bot->m_movementInfo.HasMovementFlag(MOVEFLAG_WALK_MODE)) bot->m_movementInfo.RemoveMovementFlag(MOVEFLAG_WALK_MODE);
+    if (master) SetWalkMode(master->m_movementInfo.HasMovementFlag(MOVEFLAG_WALK_MODE));
+    else SetWalkMode(false);
 }
 
 void PlayerbotAI::ReInitCurrentEngine()
@@ -1687,4 +1683,19 @@ void PlayerbotAI::Ping(float x, float y)
             data,
 #endif
             true, -1, bot->GetObjectGuid());
+}
+
+void PlayerbotAI::SetWalkMode(bool walk)
+{
+    Pet* pet = bot->GetPet();
+    if (walk)
+    {
+        bot->m_movementInfo.AddMovementFlag(MOVEFLAG_WALK_MODE);
+        if (pet) pet->m_movementInfo.AddMovementFlag(MOVEFLAG_WALK_MODE);
+    }
+    else
+    {
+        bot->m_movementInfo.RemoveMovementFlag(MOVEFLAG_WALK_MODE);
+        if (pet) pet->m_movementInfo.RemoveMovementFlag(MOVEFLAG_WALK_MODE);
+    }
 }
