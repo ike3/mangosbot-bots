@@ -29,7 +29,7 @@ public:
         soundRepeatDelay, errorDelay, rpgDelay, sitDelay, returnDelay, lootDelay, lootInterval;
     float sightDistance, spellDistance, reactDistance, grindDistance, lootDistance, shootDistance,
         fleeDistance, tooCloseDistance, meleeDistance, followDistance, whisperDistance, contactDistance,
-        aoeRadius, rpgDistance, targetPosRecalcDistance, farDistance, healDistance, aggroDistance;
+        aoeRadius, rpgDistance, targetPosRecalcDistance, farDistance, healDistance, aggroDistance, patrolDistance;
     uint32 criticalHealth, lowHealth, mediumHealth, almostFullHealth;
     uint32 lowMana, mediumMana;
 

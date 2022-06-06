@@ -82,7 +82,6 @@ void PlayerbotHolder::OnBotLogin(Player * const bot)
 {
 	PlayerbotAI* ai = new PlayerbotAI(bot);
 	bot->SetPlayerbotAI(ai);
-	OnBotLoginInternal(bot);
 
     playerBots[bot->GetObjectGuid().GetRawValue()] = bot;
 
@@ -121,6 +120,8 @@ void PlayerbotHolder::OnBotLogin(Player * const bot)
     }
 
     ai->ResetStrategies();
+    OnBotLoginInternal(bot);
+
     ai->TellMaster("Hello!");
 }
 

@@ -26,6 +26,7 @@
 #include "RevealGatheringItemAction.h"
 #include "SayAction.h"
 #include "OutfitAction.h"
+#include "PatrolAction.h"
 #include "RandomBotUpdateAction.h"
 #include "RemoveAuraAction.h"
 #include "RpgAction.h"
@@ -104,9 +105,11 @@ namespace ai
             creators["give food"] = &ActionContext::give_food;
             creators["give water"] = &ActionContext::give_water;
             creators["check inventory"] = &ActionContext::check_inventory;
+            creators["patrol"] = &ActionContext::patrol;
         }
 
     private:
+        static Action* patrol(PlayerbotAI* ai) { return new PatrolAction(ai); }
         static Action* check_inventory(PlayerbotAI* ai) { return new CheckInventoryAction(ai); }
         static Action* give_water(PlayerbotAI* ai) { return new GiveWaterAction(ai); }
         static Action* give_food(PlayerbotAI* ai) { return new GiveFoodAction(ai); }

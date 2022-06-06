@@ -903,7 +903,7 @@ void RandomPlayerbotMgr::OnPlayerLogout(Player* player)
         if (ai && player == ai->GetMaster())
         {
             ai->SetMaster(NULL);
-            ai->ResetStrategies();
+            ai->ResetStrategies(false);
         }
     }
 
@@ -915,6 +915,8 @@ void RandomPlayerbotMgr::OnPlayerLogout(Player* player)
 void RandomPlayerbotMgr::OnBotLoginInternal(Player * const bot)
 {
     sLog.outDetail("%d/%d Bot %s logged in", playerBots.size(), sRandomPlayerbotMgr.GetMaxAllowedBotCount(), bot->GetName());
+    bot->GetPlayerbotAI()->ResetStrategies(false);
+    ChangeStrategy(bot);
     if (loginProgressBar) loginProgressBar->step();
 }
 
@@ -1189,6 +1191,7 @@ void RandomPlayerbotMgr::ChangeStrategy(Player* player)
 {
     uint32 bot = player->GetGUIDLow();
 
+    player->GetPlayerbotAI()->ResetStrategies(false);
     if ((float)urand(0, 100) > 100 * sPlayerbotAIConfig.randomBotRpgChance)
     {
         sLog.outDetail("Changing strategy for bot %s to grinding", player->GetName());

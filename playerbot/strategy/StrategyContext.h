@@ -29,6 +29,7 @@
 #include "generic/AttackEnemyPlayersStrategy.h"
 #include "generic/MarkRtiStrategy.h"
 #include "generic/MeleeCombatStrategy.h"
+#include "generic/PatrolStrategy.h"
 #include "generic/PullStrategy.h"
 #include "generic/RangedCombatStrategy.h"
 #include "generic/ReturnStrategy.h"
@@ -118,10 +119,12 @@ namespace ai
             creators["runaway"] = &MovementStrategyContext::runaway;
             creators["flee from adds"] = &MovementStrategyContext::flee_from_adds;
             creators["guard"] = &MovementStrategyContext::guard;
+            creators["patrol"] = &MovementStrategyContext::patrol;
         }
 
     private:
         static Strategy* guard(PlayerbotAI* ai) { return new GuardStrategy(ai); }
+        static Strategy* patrol(PlayerbotAI* ai) { return new PatrolStrategy(ai); }
         static Strategy* follow_master(PlayerbotAI* ai) { return new FollowMasterStrategy(ai); }
         static Strategy* stay(PlayerbotAI* ai) { return new StayStrategy(ai); }
         static Strategy* runaway(PlayerbotAI* ai) { return new RunawayStrategy(ai); }
