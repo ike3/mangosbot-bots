@@ -26,8 +26,11 @@ bool MoveToRpgTargetAction::Execute(Event event)
     float z = target->GetPositionZ();
     float mapId = target->GetMapId();
 
-    ai->SetWalkMode(true);
-    if (bot->IsWithinLOS(x, y, z)) return MoveNear(target, sPlayerbotAIConfig.followDistance);
+    if (bot->IsWithinLOS(x, y, z))
+    {
+        ai->SetWalkMode(true);
+        return MoveNear(target, sPlayerbotAIConfig.followDistance);
+    }
 
     WaitForReach(distance);
 
@@ -40,6 +43,7 @@ bool MoveToRpgTargetAction::Execute(Event event)
         ai->InterruptSpell();
     }
 
+    ai->SetWalkMode(true);
     bool generatePath = !bot->IsFlying() && !sServerFacade.IsUnderwater(bot);
     MotionMaster &mm = *bot->GetMotionMaster();
     mm.MovePoint(mapId, x, y, z, generatePath);

@@ -526,9 +526,6 @@ void PlayerbotAI::DoNextAction()
             }
         }
     }
-
-    if (master) SetWalkMode(master->m_movementInfo.HasMovementFlag(MOVEFLAG_WALK_MODE));
-    else SetWalkMode(false);
 }
 
 void PlayerbotAI::ReInitCurrentEngine()

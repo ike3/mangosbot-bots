@@ -223,6 +223,9 @@ void MovementAction::UpdateMovementState()
         bot->m_movementInfo.RemoveMovementFlag(MOVEFLAG_SWIMMING);
         bot->UpdateSpeed(MOVE_SWIM, true);
     }
+
+    Player* master = GetMaster();
+    if (master) ai->SetWalkMode(master->m_movementInfo.HasMovementFlag(MOVEFLAG_WALK_MODE));
 }
 
 bool MovementAction::Follow(Unit* target, float distance, float angle)
@@ -475,6 +478,7 @@ bool MoveOutOfCollisionAction::Execute(Event event)
 {
     float angle = M_PI * 2000 / (float)urand(1, 1000);
     float distance = sPlayerbotAIConfig.followDistance;
+    ai->SetWalkMode(true);
     return MoveTo(bot->GetMapId(), bot->GetPositionX() + cos(angle) * distance, bot->GetPositionY() + sin(angle) * distance, bot->GetPositionZ());
 }
 
