@@ -64,6 +64,7 @@ bool SellAction::Execute(Event event)
         return false;
 
     string text = event.getParam();
+    if (text.empty()) return false;
 
     if (text == "gray" || text == "*")
     {
