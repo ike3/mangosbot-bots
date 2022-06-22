@@ -29,6 +29,7 @@ namespace ai
             creators["taxi"] = &ChatTriggerContext::taxi;
             creators["repair"] = &ChatTriggerContext::repair;
             creators["u"] = &ChatTriggerContext::use;
+            creators["o"] = &ChatTriggerContext::open;
             creators["use"] = &ChatTriggerContext::use;
             creators["c"] = &ChatTriggerContext::item_count;
             creators["e"] = &ChatTriggerContext::equip;
@@ -152,6 +153,7 @@ namespace ai
 
         static Trigger* item_count(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "c"); }
         static Trigger* use(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "use"); }
+        static Trigger* open(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "open"); }
         static Trigger* repair(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "repair"); }
         static Trigger* taxi(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "taxi"); }
         static Trigger* teleport(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "teleport"); }

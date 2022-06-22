@@ -61,6 +61,7 @@
 #include "CustomStrategyEditAction.h"
 #include "FlagAction.h"
 #include "HireAction.h"
+#include "OpenItemAction.h"
 #include "RangeAction.h"
 #include "SetCraftAction.h"
 #include "VendorListAction.h"
@@ -93,6 +94,7 @@ namespace ai
             creators["taxi"] = &ChatActionContext::taxi;
             creators["repair"] = &ChatActionContext::repair;
             creators["use"] = &ChatActionContext::use;
+            creators["open"] = &ChatActionContext::open;
             creators["item count"] = &ChatActionContext::item_count;
             creators["equip"] = &ChatActionContext::equip;
             creators["unequip"] = &ChatActionContext::unequip;
@@ -204,6 +206,7 @@ namespace ai
 
         static Action* item_count(PlayerbotAI* ai) { return new TellItemCountAction(ai); }
         static Action* use(PlayerbotAI* ai) { return new UseItemAction(ai); }
+        static Action* open(PlayerbotAI* ai) { return new OpenItemAction(ai); }
         static Action* repair(PlayerbotAI* ai) { return new RepairAllAction(ai); }
         static Action* taxi(PlayerbotAI* ai) { return new TaxiAction(ai); }
         static Action* teleport(PlayerbotAI* ai) { return new TeleportAction(ai); }
