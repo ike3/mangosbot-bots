@@ -137,9 +137,16 @@ bool AttackersValue::IsCCed(Unit* attacker)
 
 bool AttackersValue::IsValidTarget(Unit *attacker, Player *bot)
 {
-    return IsPossibleTarget(attacker, bot) &&
+    bool valid = IsPossibleTarget(attacker, bot) &&
             (sServerFacade.GetThreatManager(attacker).getCurrentVictim() || attacker->GetTargetGuid() || attacker->GetObjectGuid().IsPlayer() ||
                     attacker->GetObjectGuid() == bot->GetPlayerbotAI()->GetAiObjectContext()->GetValue<ObjectGuid>("pull target")->Get());
+    if (!valid) return false;
+    Player *victim = dynamic_cast<Player*>(bot->GetPlayerbotAI()->GetUnit(attacker->GetTargetGuid()));
+    if (!victim ||
+            victim == bot ||
+            (victim->GetGroup() && victim->GetGroup() == bot->GetGroup()) ||
+            victim->GetSession()->GetAccountId() == bot->GetSession()->GetAccountId()) return true;
+    return false;
 }
 
 bool PossibleAdsValue::Calculate()
