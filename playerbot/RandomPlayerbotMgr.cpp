@@ -335,10 +335,27 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot, vector<WorldLocation> &locs
     }
 
     PerformanceMonitorOperation *pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "RandomTeleportByLocations");
+
+    Player *player = GetRandomPlayer(bot);
+    vector<WorldLocation> priority;
+    if (player)
+    {
+        for (vector<WorldLocation>::iterator i = locs.begin(); i != locs.end(); ++i)
+        {
+            WorldLocation loc = *i;
+            if (sServerFacade.IsDistanceLessOrEqualThan(sServerFacade.GetDistance2d(player, loc.coord_x, loc.coord_y), sPlayerbotAIConfig.reactDistance))
+            {
+                priority.push_back(loc);
+            }
+        }
+    }
+
+    vector<WorldLocation>* chooseFrom = !priority.empty() ? &priority : &locs;
+
     for (int attemtps = 0; attemtps < 10; ++attemtps)
     {
-        int index = urand(0, locs.size() - 1);
-        WorldLocation loc = locs[index];
+        int index = urand(0, chooseFrom->size() - 1);
+        WorldLocation loc = (*chooseFrom)[index];
 
         if (useFleeManager)
         {
@@ -383,7 +400,7 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot, vector<WorldLocation> &locs
 
         z = 0.05f + ground;
         sLog.outDetail("Random teleporting bot %s to %s %f,%f,%f (%u/%u locations)",
-                bot->GetName(), area->area_name[0], x, y, z, attemtps, locs.size());
+                bot->GetName(), area->area_name[0], x, y, z, attemtps, (*chooseFrom).size());
 
         bot->GetMotionMaster()->Clear();
         bot->TeleportTo(loc.mapid, x, y, z, 0);
@@ -964,13 +981,23 @@ void RandomPlayerbotMgr::OnPlayerLoginError(uint32 bot)
     currentBots.remove(bot);
 }
 
-Player* RandomPlayerbotMgr::GetRandomPlayer()
+Player* RandomPlayerbotMgr::GetRandomPlayer(Player* bot)
 {
     if (players.empty())
         return NULL;
 
-    uint32 index = urand(0, players.size() - 1);
-    return players[index];
+    vector<Player*> chooseFrom;
+    for (vector<Player*>::iterator i = players.begin(); i != players.end(); ++i)
+    {
+        Player* player = *i;
+        if (IsAlliance(player->getRace()) == IsAlliance(bot->getRace())) chooseFrom.push_back(player);
+    }
+
+    if (chooseFrom.empty())
+        return NULL;
+
+    uint32 index = urand(0, chooseFrom.size() - 1);
+    return chooseFrom[index];
 }
 
 void RandomPlayerbotMgr::PrintStats()
@@ -1195,13 +1222,13 @@ void RandomPlayerbotMgr::ChangeStrategy(Player* player)
     if ((float)urand(0, 100) > 100 * sPlayerbotAIConfig.randomBotRpgChance)
     {
         sLog.outDetail("Changing strategy for bot %s to grinding", player->GetName());
-        player->GetPlayerbotAI()->ChangeStrategy("-rpg,+grind", BOT_STATE_NON_COMBAT);
+        player->GetPlayerbotAI()->ChangeStrategy("-rpg,+grind,+patrol", BOT_STATE_NON_COMBAT);
         ScheduleTeleport(bot, 30);
     }
     else
     {
         sLog.outDetail("Changing strategy for bot %s to RPG", player->GetName());
-        player->GetPlayerbotAI()->ChangeStrategy("+rpg,-grind", BOT_STATE_NON_COMBAT);
+        player->GetPlayerbotAI()->ChangeStrategy("+rpg,-grind,-patrol", BOT_STATE_NON_COMBAT);
         RandomTeleportForRpg(player);
     }
 

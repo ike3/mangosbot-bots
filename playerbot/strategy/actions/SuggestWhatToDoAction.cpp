@@ -282,7 +282,7 @@ void SuggestWhatToDoAction::something()
 
 void SuggestWhatToDoAction::spam(string msg, uint32 channelId)
 {
-    Player* to = sRandomPlayerbotMgr.GetRandomPlayer();
+    Player* to = sRandomPlayerbotMgr.GetRandomPlayer(bot);
     if (!to) return;
 
     PerformanceMonitorOperation *pmo = sPerformanceMonitor.start(PERF_MON_ACTION, "spam");
