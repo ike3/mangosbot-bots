@@ -1135,9 +1135,6 @@ bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target, Item* itemTarget)
         GameObject* go = GetGameObject(loot.guid);
         if (go && sServerFacade.isSpawned(go))
         {
-            WorldPacket packetgouse(CMSG_GAMEOBJ_USE, 8);
-            packetgouse << loot.guid;
-            bot->GetSession()->HandleGameObjectUseOpcode(packetgouse);
             targets.setGOTarget(go);
             faceTo = go;
         }
