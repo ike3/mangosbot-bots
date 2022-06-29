@@ -252,6 +252,12 @@ namespace ai
 		CastGiftOfTheNaaruAction(PlayerbotAI* ai) : CastHealingSpellAction(ai, "gift of the naaru") {}
 	};
 
+    class CastManaTapAction : public CastSpellAction
+    {
+    public:
+	    CastManaTapAction(PlayerbotAI* ai) : CastSpellAction(ai, "mana tap") {}
+    };
+
     class CastArcaneTorrentAction : public CastBuffSpellAction
     {
     public:
