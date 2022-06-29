@@ -106,6 +106,7 @@ bool PlayerbotAIConfig::Initialize()
     LoadList<list<uint32> >(config.GetStringDefault("AiPlayerbot.PvpProhibitedZoneIds", "2255,656,2361,2362,2363,976,35,2268"), pvpProhibitedZoneIds);
     LoadList<list<uint32> >(config.GetStringDefault("AiPlayerbot.RandomBotQuestIds", "7848"), randomBotQuestIds);
     LoadList<list<uint32> >(config.GetStringDefault("AiPlayerbot.RandomBotKeepItemIds", "2901,7005,5956,6219,6948,16207"), randomBotKeepItemIds);
+    LoadList<list<uint32> >(config.GetStringDefault("AiPlayerbot.IgnoreLockSkillsGoIds", "13891,19535,182127"), ignoreLockSkillsGoIds);
 
     botAutologin = config.GetBoolDefault("AiPlayerbot.BotAutologin", false);
     randomBotAutologin = config.GetBoolDefault("AiPlayerbot.RandomBotAutologin", true);
@@ -212,6 +213,11 @@ bool PlayerbotAIConfig::IsInPvpProhibitedZone(uint32 id)
 bool PlayerbotAIConfig::IsInRandomItemKeepList(uint32 id)
 {
     return find(randomBotKeepItemIds.begin(), randomBotKeepItemIds.end(), id) != randomBotKeepItemIds.end();
+}
+
+bool PlayerbotAIConfig::IsInIgnoreLockSkillsGoList(uint32 id)
+{
+    return find(ignoreLockSkillsGoIds.begin(), ignoreLockSkillsGoIds.end(), id) != ignoreLockSkillsGoIds.end();
 }
 
 string PlayerbotAIConfig::GetValue(string name)

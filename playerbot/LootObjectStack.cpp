@@ -107,7 +107,7 @@ void LootObject::Refresh(Player* bot, ObjectGuid guid)
                 }
                 break;
             case LOCK_KEY_SKILL:
-                if (goId == 13891 || goId == 19535) // Serpentbloom
+                if (sPlayerbotAIConfig.IsInIgnoreLockSkillsGoList(goId))
                 {
                     this->guid = guid;
                 }

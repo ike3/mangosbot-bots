@@ -115,11 +115,14 @@ bool OpenLootAction::DoLoot(LootObject& lootObject)
         ))
         return false;
 
-    if (lootObject.skillId == SKILL_MINING)
-        return ai->HasSkill(SKILL_MINING) ? ai->CastSpell(MINING, bot) : false;
+    if (go && !sPlayerbotAIConfig.IsInIgnoreLockSkillsGoList(go->GetGOInfo()->id))
+    {
+        if (lootObject.skillId == SKILL_MINING)
+            return ai->HasSkill(SKILL_MINING) ? ai->CastSpell(MINING, bot) : false;
 
-    if (lootObject.skillId == SKILL_HERBALISM)
-        return ai->HasSkill(SKILL_HERBALISM) ? ai->CastSpell(HERB_GATHERING, bot) : false;
+        if (lootObject.skillId == SKILL_HERBALISM)
+            return ai->HasSkill(SKILL_HERBALISM) ? ai->CastSpell(HERB_GATHERING, bot) : false;
+    }
 
     uint32 spellId = GetOpeningSpell(lootObject);
     if (!spellId)
@@ -202,6 +205,9 @@ bool OpenLootAction::CanOpenLock(LootObject& lootObject, const SpellEntry* pSpel
                 {
                     if(uint32(pSpellInfo->EffectMiscValue[effIndex]) != lockInfo->Index[j])
                         continue;
+
+                    if (sPlayerbotAIConfig.IsInIgnoreLockSkillsGoList(go->GetGOInfo()->id))
+                        return true;
 
                     uint32 skillId = SkillByLockType(LockType(lockInfo->Index[j]));
                     if (skillId == SKILL_NONE)

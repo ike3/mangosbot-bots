@@ -21,6 +21,7 @@ public:
     bool IsInRandomAccountList(uint32 id);
     bool IsInRandomQuestItemList(uint32 id);
     bool IsInRandomItemKeepList(uint32 id);
+    bool IsInIgnoreLockSkillsGoList(uint32 id);
     bool IsInPvpProhibitedZone(uint32 id);
 
     bool enabled;
@@ -44,6 +45,7 @@ public:
     std::list<uint32> randomBotSpellIds;
     std::list<uint32> randomBotQuestIds;
     std::list<uint32> randomBotKeepItemIds;
+    std::list<uint32> ignoreLockSkillsGoIds;
     uint32 randomBotTeleportDistance;
     float randomGearLoweringChance;
     float randomBotMaxLevelChance;
