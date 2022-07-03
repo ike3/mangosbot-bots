@@ -323,7 +323,7 @@ void RandomPlayerbotMgr::Revive(Player* player)
     }
 }
 
-void RandomPlayerbotMgr::RandomTeleport(Player* bot, vector<WorldLocation> &locs, bool useFleeManager /* = false */)
+void RandomPlayerbotMgr::RandomTeleport(Player* bot, vector<WorldLocation> &locs, bool useFleeManager, bool usePriorityList)
 {
     if (bot->IsBeingTeleported())
         return;
@@ -338,7 +338,7 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot, vector<WorldLocation> &locs
 
     Player *player = GetRandomPlayer(bot);
     vector<WorldLocation> priority;
-    if (player)
+    if (player && usePriorityList)
     {
         for (vector<WorldLocation>::iterator i = locs.begin(); i != locs.end(); ++i)
         {
@@ -557,7 +557,7 @@ void RandomPlayerbotMgr::PrepareTeleportCache()
 void RandomPlayerbotMgr::RandomTeleportForLevel(Player* bot)
 {
     sLog.outDetail("Preparing location to random teleporting bot %s for level %u", bot->GetName(), bot->getLevel());
-    RandomTeleport(bot, locsPerLevelCache[bot->getLevel()]);
+    RandomTeleport(bot, locsPerLevelCache[bot->getLevel()], false, false);
 }
 
 void RandomPlayerbotMgr::RandomTeleport(Player* bot)
@@ -582,7 +582,7 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot)
     }
     if (pmo) pmo->finish();
 
-    RandomTeleport(bot, locs, true);
+    RandomTeleport(bot, locs, true, true);
 
     Refresh(bot);
 }
@@ -1239,7 +1239,7 @@ void RandomPlayerbotMgr::RandomTeleportForRpg(Player* bot)
 {
     uint32 race = bot->getRace();
     sLog.outDetail("Random teleporting bot %s for RPG (%d locations available)", bot->GetName(), rpgLocsCache[race].size());
-    RandomTeleport(bot, rpgLocsCache[race]);
+    RandomTeleport(bot, rpgLocsCache[race], false, false);
 }
 
 void RandomPlayerbotMgr::Remove(Player* bot)
