@@ -103,10 +103,24 @@ bool ServerFacade::IsSpellReady(Player* bot, uint32 spell)
 bool ServerFacade::IsUnderwater(Unit *unit)
 {
 #ifdef MANGOS
-    return unit->IsUnderWater();
+    return unit->GetMap() &&
+            unit->GetMap()->GetTerrain() &&
+            unit->GetMap()->GetTerrain()->IsUnderWater(unit->GetPositionX(), unit->GetPositionY(), unit->GetPositionZ());
 #endif
 #ifdef CMANGOS
     return unit->IsUnderwater();
+#endif
+}
+
+bool ServerFacade::IsInWater(Unit *unit)
+{
+#ifdef MANGOS
+    return unit->GetMap() &&
+            unit->GetMap()->GetTerrain() &&
+            unit->GetMap()->GetTerrain()->IsSwimmable(unit->GetPositionX(), unit->GetPositionY(), unit->GetPositionZ());
+#endif
+#ifdef CMANGOS
+    return unit->IsInWater();
 #endif
 }
 

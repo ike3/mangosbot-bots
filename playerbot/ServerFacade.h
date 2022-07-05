@@ -214,6 +214,7 @@ class ServerFacade
         bool IsSpellReady(Player* bot, uint32 spell);
 
         bool IsUnderwater(Unit *unit);
+        bool IsInWater(Unit *unit);
         FactionTemplateEntry const* GetFactionTemplateEntry(Unit *unit);
         Unit* GetChaseTarget(Unit* target);
 };

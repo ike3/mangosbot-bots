@@ -59,7 +59,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle)
 {
     UpdateMovementState();
 
-    bool generatePath = !bot->IsFlying() && !bot->HasMovementFlag(MOVEFLAG_SWIMMING) && !bot->IsInWater() && !sServerFacade.IsUnderwater(bot) &&
+    bool generatePath = !bot->IsFlying() && !bot->HasMovementFlag(MOVEFLAG_SWIMMING) && !sServerFacade.IsInWater(bot) && !sServerFacade.IsUnderwater(bot) &&
             !bot->m_movementInfo.HasMovementFlag(MOVEFLAG_ONTRANSPORT);
     if (generatePath) Formation::UpdateAllowedPositionZ(bot, x, y, z);
 
@@ -213,7 +213,7 @@ bool MovementAction::Follow(Unit* target, float distance)
 
 void MovementAction::UpdateMovementState()
 {
-    if (bot->IsInWater() || sServerFacade.IsUnderwater(bot))
+    if (sServerFacade.IsInWater(bot) || sServerFacade.IsUnderwater(bot))
     {
         bot->m_movementInfo.AddMovementFlag(MOVEFLAG_SWIMMING);
         bot->UpdateSpeed(MOVE_SWIM, true);
