@@ -54,6 +54,9 @@ public:
     std::list<uint32> randomBotSpellIds;
     std::list<uint32> randomBotQuestIds;
     uint32 randomBotTeleportDistance;
+    uint32 randomGearMaxLevel;
+    uint32 randomGearMaxDiff;
+    bool randomGearProgression;
     float randomGearLoweringChance;
     float randomBotMaxLevelChance;
     float randomBotRpgChance;

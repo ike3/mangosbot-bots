@@ -1208,6 +1208,18 @@ bool RandomPlayerbotMgr::ProcessBot(uint32 bot)
         return true;
     }
 
+    if (!sPlayerbotAIConfig.disableRandomLevels)
+    {
+        uint32 enchantEquip = GetEventValue(bot, "enchant_equip");
+        if (!enchantEquip && player->GetLevel() >= sPlayerbotAIConfig.minEnchantingBotLevel)
+        {
+            sLog.outDetail("Bot #%d %s:%d <%s>: equipment enchanted", bot, player->GetTeam() == ALLIANCE ? "A" : "H", player->GetLevel(), player->GetName());
+            PlayerbotFactory factory(player, player->GetLevel());
+            factory.EnchantEquipment(player);
+            SetEventValue(bot, "enchant_equip", 1, sPlayerbotAIConfig.maxRandomBotRandomizeTime);
+        }
+    }
+
     uint32 logout = GetEventValue(bot, "logout");
     if (player && !logout && !isValid)
     {
@@ -1224,6 +1236,7 @@ bool RandomPlayerbotMgr::ProcessBot(uint32 bot)
         }
 
         sLog.outBasic("Bot #%d %s:%d <%s>: log out", bot, IsAlliance(player->getRace()) ? "A" : "H", player->GetLevel(), player->GetName());
+        SetEventValue(bot, "add", 0, 0);
         LogoutPlayerBot(player->GetGUIDLow());
         currentBots.remove(bot);
         SetEventValue(bot, "logout", 1, urand(sPlayerbotAIConfig.minRandomBotInWorldTime, sPlayerbotAIConfig.maxRandomBotInWorldTime));
@@ -1280,23 +1293,8 @@ bool RandomPlayerbotMgr::ProcessBot(Player* player)
             if (randomiser)
             {
                 Randomize(player);
+                return true;
             }
-
-            uint32 randomTime = urand(sPlayerbotAIConfig.minRandomBotRandomizeTime, sPlayerbotAIConfig.maxRandomBotRandomizeTime);
-            ScheduleRandomize(bot, randomTime);
-            // schedule enchantments
-            SetEventValue(bot, "enchant_equip", 1, 1);
-            return true;
-        }
-
-        uint32 enchantEquip = GetEventValue(bot, "enchant_equip");
-        if (!enchantEquip && player->GetLevel() >= sPlayerbotAIConfig.minEnchantingBotLevel)
-        {
-            sLog.outBasic("Bot #%d %s:%d <%s>: equipment enchanted", bot, player->GetTeam() == ALLIANCE ? "A" : "H", player->GetLevel(), player->GetName());
-            PlayerbotFactory factory(player, player->GetLevel());
-            factory.EnchantEquipment(player);
-            SetEventValue(bot, "enchant_equip", 1, GetEventValue(bot, "randomize"));
-            return true;
         }
 
         uint32 changeStrategy = GetEventValue(bot, "change_strategy");
@@ -1716,12 +1714,8 @@ void RandomPlayerbotMgr::Randomize(Player* bot)
     }
     else
     {
-        uint32 oldGS = bot->GetPlayerbotAI() ? bot->GetPlayerbotAI()->GetEquipStatsValue(bot) : 0;
         UpdateGearSpells(bot);
-        uint32 newGS = bot->GetPlayerbotAI() ? bot->GetPlayerbotAI()->GetEquipStatsValue(bot) : 0;
-
-        if (newGS > oldGS)
-            sLog.outBasic("Bot #%d %s:%d <%s>: gear upgraded", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->GetLevel(), bot->GetName());
+        sLog.outBasic("Bot #%d %s:%d <%s>: gear upgraded", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->GetLevel(), bot->GetName());
     }
 
     SetValue(bot, "version", MANGOSBOT_VERSION);
@@ -1739,6 +1733,9 @@ void RandomPlayerbotMgr::UpdateGearSpells(Player* bot)
     uint32 level = bot->GetLevel();
     PlayerbotFactory factory(bot, min(maxLevel, level));
     factory.Randomize(true);
+
+    // schedule enchantments
+    SetEventValue(bot->GetGUIDLow(), "enchant_equip", 1, 10);
 
     if (pmo) pmo->finish();
 }
@@ -1773,16 +1770,14 @@ void RandomPlayerbotMgr::RandomizeFirst(Player* bot)
     PlayerbotFactory factory(bot, level);
     factory.Randomize(false);
 	
+    // schedule randomise
     uint32 randomTime = urand(sPlayerbotAIConfig.minRandomBotRandomizeTime, sPlayerbotAIConfig.maxRandomBotRandomizeTime);
-	uint32 inworldTime = urand(sPlayerbotAIConfig.minRandomBotInWorldTime, sPlayerbotAIConfig.maxRandomBotInWorldTime);
-    PlayerbotDatabase.PExecute("update ai_playerbot_random_bots set validIn = '%u' where event = 'randomize' and bot = '%u'",
-            randomTime, bot->GetGUIDLow());
-    PlayerbotDatabase.PExecute("update ai_playerbot_random_bots set validIn = '%u' where event = 'logout' and bot = '%u'",
-			inworldTime, bot->GetGUIDLow());
+    SetEventValue(bot->GetGUIDLow(), "randomize", 1, randomTime);
+    // schedule enchantments
+    SetEventValue(bot->GetGUIDLow(), "enchant_equip", 1, 10);
 
     // teleport to a random inn for bot level
     bot->GetPlayerbotAI()->Reset(true);
-    //RandomTeleportForRpg(bot);
 
     if (bot->GetGroup())
         bot->RemoveFromGroup();

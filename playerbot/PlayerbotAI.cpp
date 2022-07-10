@@ -3295,6 +3295,20 @@ uint32 PlayerbotAI::GetEquipGearScore(Player* player, bool withBags, bool withBa
         return 0;
 }
 
+uint32 PlayerbotAI::GetEquipStatsValue(Player* player)
+{
+    uint32 statsValue = 0;
+    uint32 specId = sRandomItemMgr.GetPlayerSpecId(player);
+
+    for (uint8 i = EQUIPMENT_SLOT_START; i < EQUIPMENT_SLOT_END; ++i)
+    {
+        if (Item* item = player->GetItemByPos(INVENTORY_SLOT_BAG_0, i))
+            statsValue += sRandomItemMgr.GetStatWeight(item->GetProto()->ItemId, specId);
+    }
+
+    return statsValue;
+}
+
 void PlayerbotAI::_fillGearScoreData(Player *player, Item* item, std::vector<uint32>* gearScore, uint32& twoHandScore)
 {
     if (!item)

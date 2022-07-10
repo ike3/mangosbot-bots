@@ -79,27 +79,27 @@ void PlayerbotFactory::Init()
 
 void PlayerbotFactory::Prepare()
 {
-    if (!itemQuality)
+    /*if (!itemQuality)
     {
         if (level < 20)
-            itemQuality = urand(ITEM_QUALITY_NORMAL, ITEM_QUALITY_UNCOMMON);
+            itemQuality = urand(ITEM_QUALITY_POOR, ITEM_QUALITY_RARE);
         else if (level < 40)
             itemQuality = urand(ITEM_QUALITY_UNCOMMON, ITEM_QUALITY_RARE);
         else if (level < 60)
 #ifdef MANGOSBOT_ZERO
-            itemQuality = urand(ITEM_QUALITY_RARE, ITEM_QUALITY_EPIC);
+            itemQuality = urand(ITEM_QUALITY_UNCOMMON, ITEM_QUALITY_EPIC);
 		else if (level < 70)
-			itemQuality = ITEM_QUALITY_EPIC;
+			itemQuality = urand(ITEM_QUALITY_RARE, ITEM_QUALITY_EPIC);
 #else
 			itemQuality = urand(ITEM_QUALITY_UNCOMMON, ITEM_QUALITY_EPIC);
 		else if (level < 70)
-			itemQuality = urand(ITEM_QUALITY_RARE, ITEM_QUALITY_EPIC);
+			itemQuality = urand(ITEM_QUALITY_UNCOMMON, ITEM_QUALITY_EPIC);
 #endif
 		else if (level < 80)
 			itemQuality = urand(ITEM_QUALITY_RARE, ITEM_QUALITY_EPIC);
         else
             itemQuality = urand(ITEM_QUALITY_RARE, ITEM_QUALITY_EPIC);
-    }
+    }*/
 
     if (sServerFacade.UnitIsDead(bot))
         bot->ResurrectPlayer(1.0f, false);
@@ -141,16 +141,20 @@ void PlayerbotFactory::Randomize(bool incremental)
 
     sLog.outDetail("Resetting player...");
     PerformanceMonitorOperation* pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Reset");
-    bot->resetTalents(true);
-    ClearSkills();
+    //ClearSkills();
     ClearSpells();
     if (!incremental)
     {
         ClearInventory();
         ResetQuests();
+        bot->resetTalents(true);
+        CancelAuras();
     }
-    CancelAuras();
-    bot->SaveToDB();
+    if (pmo) pmo->finish();
+
+    pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Bags");
+    sLog.outDetail("Initializing bags...");
+    InitBags();
     if (pmo) pmo->finish();
 
     /*pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Immersive");
@@ -175,10 +179,12 @@ void PlayerbotFactory::Randomize(bool incremental)
 		{
 			bot->SetLevel(level);
 		}
-        ClearInventory();
-        bot->SetUInt32Value(PLAYER_XP, 0);
-        CancelAuras();
-        bot->SaveToDB();
+        if (!incremental)
+        {
+            ClearInventory();
+            bot->SetUInt32Value(PLAYER_XP, 0);
+            CancelAuras();
+        }
         if (pmo) pmo->finish();
     }
 
@@ -217,12 +223,12 @@ void PlayerbotFactory::Randomize(bool incremental)
     pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Skills2");
     sLog.outDetail("Initializing skills (step 2)...");
     UpdateTradeSkills();
-    bot->SaveToDB();
     if (pmo) pmo->finish();
 
     pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Equip");
     sLog.outDetail("Initializing equipmemt...");
     InitEquipment(incremental);
+    //InitEquipmentNew(incremental);
 	
 	if (bot->GetLevel() >= sPlayerbotAIConfig.minEnchantingBotLevel)
 	{
@@ -230,12 +236,6 @@ void PlayerbotFactory::Randomize(bool incremental)
 		LoadEnchantContainer();
 		if (pmo) pmo->finish();
 	}
-
-    pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Bags");
-    sLog.outDetail("Initializing bags...");
-    InitBags();
-    bot->SaveToDB();
-    if (pmo) pmo->finish();
 
     pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Ammo");
     sLog.outDetail("Initializing ammo...");
@@ -274,7 +274,6 @@ void PlayerbotFactory::Randomize(bool incremental)
 
     pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Guilds & ArenaTeams");
     sLog.outDetail("Initializing guilds & ArenaTeams");
-    bot->SaveToDB(); //thesawolf - save save save (hopefully avoids dupes)
     InitGuild();
 #ifndef MANGOSBOT_ZERO
     if (bot->GetLevel() >= 70)
@@ -294,13 +293,16 @@ void PlayerbotFactory::Randomize(bool incremental)
     if (incremental)
     {
         uint32 money = bot->GetMoney();
-        bot->SetMoney(money + 1000 * sqrt(urand(1, level * 5)));
+        bot->SetMoney(money + 1000 * urand(1, level * 5));
     }
     else
     {
-        bot->SetMoney(10000 * sqrt(urand(1, level * 5)));
+        bot->SetMoney(10000 * urand(1, level * 5));
     }
-    bot->SaveToDB();
+
+    if (bot->GetSaveTimer() >= 60 * IN_MILLISECONDS)
+        bot->SetSaveTimer(urand(30, 60) * IN_MILLISECONDS);
+
     sLog.outDetail("Done.");
     if (pmo) pmo->finish();
 }
@@ -312,8 +314,9 @@ void PlayerbotFactory::Refresh()
     InitFood();
     InitPotions();
     InitReagents();
-    bot->SaveToDB();
-    //bot->SaveToDB();
+
+    if (bot->GetSaveTimer() >= 60 * IN_MILLISECONDS)
+        bot->SetSaveTimer(urand(30, 60) * IN_MILLISECONDS);
 }
 
 void PlayerbotFactory::AddConsumables()
@@ -992,7 +995,7 @@ bool PlayerbotFactory::CanEquipItem(ItemPrototype const* proto, uint32 desiredQu
     if (!requiredLevel)
         return false;
 
-    uint32 level = bot->GetLevel();
+    /*uint32 level = bot->GetLevel();
     uint32 delta = 2;
     if (level < 15)
         delta = urand(7, 15);
@@ -1017,7 +1020,7 @@ bool PlayerbotFactory::CanEquipItem(ItemPrototype const* proto, uint32 desiredQu
     {
         if (level > gap && requiredLevel <= gap)
             return false;
-    }
+    }*/
 
     return true;
 }
@@ -1035,8 +1038,8 @@ void PlayerbotFactory::InitEquipmentNew(bool incremental)
         IterateItems(&visitor, ITERATE_ALL_ITEMS);
     }
 
-    string specName = AiFactory::GetPlayerSpecName(bot);
-    if (specName.empty())
+    uint32 specId = sRandomItemMgr.GetPlayerSpecId(bot);
+    if (specId == 0)
         return;
 
     // look for upgrades
@@ -1052,6 +1055,9 @@ void PlayerbotFactory::InitEquipmentNew(bool incremental)
         uint32 attempts = 10;
         if (urand(0, 100) < 100 * sPlayerbotAIConfig.randomGearLoweringChance && quality > ITEM_QUALITY_NORMAL) {
             quality--;
+        }
+        else if (urand(0, 100) < 100 * sPlayerbotAIConfig.randomGearLoweringChance && quality >= ITEM_QUALITY_EPIC) {
+            quality++;
         }
         // current item;
         Item* oldItem = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, slot);
@@ -1073,12 +1079,12 @@ void PlayerbotFactory::InitEquipmentNew(bool incremental)
         {
             if (isUpgrade)
             {
-                vector<uint32> ids = sRandomItemMgr.GetUpgradeList(bot, specName, slot, 0, itemInSlot);
-                if (!ids.empty()) ahbot::Shuffle(ids);
+                vector<uint32> ids = sRandomItemMgr.GetUpgradeList(bot, specId, slot, 0, itemInSlot);
+                //if (!ids.empty()) ahbot::Shuffle(ids);
                 for (uint32 index = 0; index < ids.size(); ++index)
                 {
                     uint32 newItemId = ids[index];
-                    if (incremental && !IsDesiredReplacement(oldItem)) {
+                    if (incremental && !IsDesiredReplacement(newItemId)) {
                         continue;
                     }
 
@@ -1095,11 +1101,12 @@ void PlayerbotFactory::InitEquipmentNew(bool incremental)
                     Item* newItem = bot->EquipNewItem(dest, newItemId, true);
                     if (newItem)
                     {
+                        newItem->SaveToDB();
                         newItem->AddToWorld();
                         newItem->AddToUpdateQueueOf(bot);
                         bot->AutoUnequipOffhandIfNeed();
                         newItem->SetOwnerGuid(bot->GetObjectGuid());
-                        EnchantItem(newItem);
+                        //EnchantItem(newItem);
                         sLog.outString("Bot #%d %s:%d <%s>: Equip: %d, slot: %d, Old item: %d", bot->GetGUIDLow(), IsAlliance(bot->getRace()) ? "A" : "H", bot->GetLevel(), bot->GetName(), newItemId, slot, itemInSlot);
                         found = true;
                         break;
@@ -1108,8 +1115,8 @@ void PlayerbotFactory::InitEquipmentNew(bool incremental)
             }
             else
             {
-                vector<uint32> ids = sRandomItemMgr.GetUpgradeList(bot, specName, slot, quality, itemInSlot);
-                if (!ids.empty()) ahbot::Shuffle(ids);
+                vector<uint32> ids = sRandomItemMgr.GetUpgradeList(bot, specId, slot, quality, itemInSlot);
+                //if (!ids.empty()) ahbot::Shuffle(ids);
                 for (uint32 index = 0; index < ids.size(); ++index)
                 {
                     uint32 newItemId = ids[index];
@@ -1120,15 +1127,16 @@ void PlayerbotFactory::InitEquipmentNew(bool incremental)
                     Item* newItem = bot->EquipNewItem(dest, newItemId, true);
                     if (newItem)
                     {
+                        newItem->SaveToDB();
                         bot->AutoUnequipOffhandIfNeed();
-                        EnchantItem(newItem);
+                        //EnchantItem(newItem);
                         found = true;
                         sLog.outString("Bot #%d %s:%d <%s>: Equip: %d, slot: %d", bot->GetGUIDLow(), IsAlliance(bot->getRace()) ? "A" : "H", bot->GetLevel(), bot->GetName(), newItemId, slot);
                         break;
                     }
                 }
             }
-            quality--;
+            quality++;
         } while (!found && quality != ITEM_QUALITY_POOR);
         if (!found)
         {
@@ -1143,102 +1151,348 @@ void PlayerbotFactory::InitEquipment(bool incremental)
         //DestroyItemsVisitor visitor(bot);
         //IterateItems(&visitor, ITERATE_ALL_ITEMS);
 
-    if (incremental)
-    {
-        //DestroyItemsVisitor visitor(bot);
-        //IterateItems(&visitor, (IterateItemsMask)(ITERATE_ITEMS_IN_BAGS | ITERATE_ITEMS_IN_BANK));
-    }
-    else
+    bool isRandomBot = sRandomPlayerbotMgr.IsRandomBot(bot) && bot->GetPlayerbotAI() && !bot->GetPlayerbotAI()->HasRealPlayerMaster();
+    if (isRandomBot)
     {
         DestroyItemsVisitor visitor(bot);
-        IterateItems(&visitor, ITERATE_ITEMS_IN_EQUIP);
+        IterateItems(&visitor, incremental ? (IterateItemsMask)(ITERATE_ITEMS_IN_BAGS) : (IterateItemsMask)(ITERATE_ITEMS_IN_BAGS | ITERATE_ITEMS_IN_BANK));
     }
+
+    uint32 specId = sRandomItemMgr.GetPlayerSpecId(bot);
+    if (specId == 0)
+        return;
+
+    // update only limited amount of slots with worst items
+    map<uint32, bool> upgradeSlots;
+    if (incremental)
+    {
+        vector<uint32> emptySlots;
+        vector<uint32> itemIds;
+        map<uint32, uint32> itemSlots;
+        uint32 maxSlots = urand(1, 4);
+        for (uint8 slot = 0; slot < EQUIPMENT_SLOT_END; ++slot)
+            upgradeSlots[slot] = false;
+
+        for (uint8 slot = 0; slot < EQUIPMENT_SLOT_END; ++slot)
+        {
+            if (slot == EQUIPMENT_SLOT_TABARD/* && !bot->GetGuildId()*/ || slot == EQUIPMENT_SLOT_TRINKET1 || slot == EQUIPMENT_SLOT_TRINKET2)
+                continue;
+
+            Item* oldItem = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, slot);
+            if (!oldItem)
+            {
+                emptySlots.push_back(slot);
+                continue;
+            }
+
+            ItemPrototype const* proto = oldItem->GetProto();
+            if (proto)
+            {
+                if (proto->ItemLevel >= sPlayerbotAIConfig.randomGearMaxLevel)
+                    continue;
+
+                itemIds.push_back(proto->ItemId);
+                itemSlots[proto->ItemId] = slot;
+            }
+        }
+
+        std::sort(itemIds.begin(), itemIds.end(), [specId](int a, int b)
+            {
+                ItemPrototype const* proto1 = sObjectMgr.GetItemPrototype(a);
+                ItemPrototype const* proto2 = sObjectMgr.GetItemPrototype(b);
+                return proto1->Quality * proto1->ItemLevel <= proto2->Quality * proto2->ItemLevel;
+            });
+
+        uint32 counter = 0;
+        for (auto emptySlot : emptySlots)
+        {
+            if (counter > maxSlots)
+                break;
+
+            upgradeSlots[emptySlot] = true;
+            counter++;
+        }
+        for (auto itemId : itemIds)
+        {
+            if (counter > maxSlots)
+                break;
+
+            upgradeSlots[itemSlots[itemId]] = true;
+            counter++;
+        }
+    }
+
+    uint32 oldGS = ai->GetEquipStatsValue(bot);
+    uint32 newGS = 0;
 
     for(uint8 slot = 0; slot < EQUIPMENT_SLOT_END; ++slot)
     {
-        if (slot == EQUIPMENT_SLOT_TABARD && !bot->GetGuildId())
+        if (slot == EQUIPMENT_SLOT_TABARD && bot->GetGuildId())
             continue;
 
+        /*if (incremental && upgradeSlots.size() && upgradeSlots[slot] != true && !(slot == EQUIPMENT_SLOT_TRINKET1 || slot == EQUIPMENT_SLOT_TRINKET2))
+            continue;*/
+
         bool found = false;
-        uint32 quality = itemQuality;
-        if (urand(0, 100) < 100 * sPlayerbotAIConfig.randomGearLoweringChance && quality > ITEM_QUALITY_NORMAL) {
+        uint32 quality = ITEM_QUALITY_POOR;
+        bool progressiveGear = sPlayerbotAIConfig.randomGearProgression;
+        if (progressiveGear)
+        {
+            if (!incremental)
+            {
+                if (level < 10)
+                    quality = urand(ITEM_QUALITY_POOR, ITEM_QUALITY_UNCOMMON);
+                if (level < 20)
+                    quality = urand(ITEM_QUALITY_NORMAL, ITEM_QUALITY_UNCOMMON);
+                else if (level < 40)
+                    quality = urand(ITEM_QUALITY_UNCOMMON, ITEM_QUALITY_RARE);
+                else if (level < 60)
+#ifdef MANGOSBOT_ZERO
+                    quality = urand(ITEM_QUALITY_UNCOMMON, ITEM_QUALITY_RARE);
+                else if (level < 70)
+                    quality = urand(ITEM_QUALITY_RARE, ITEM_QUALITY_EPIC);
+#else
+                    quality = urand(ITEM_QUALITY_UNCOMMON, ITEM_QUALITY_RARE);
+                else if (level < 70)
+                    quality = urand(ITEM_QUALITY_RARE, ITEM_QUALITY_EPIC);
+#endif
+                else if (level < 80)
+                    quality = urand(ITEM_QUALITY_UNCOMMON, ITEM_QUALITY_RARE);
+                else
+                    quality = urand(ITEM_QUALITY_RARE, ITEM_QUALITY_EPIC);
+            }
+            else
+            {
+                if (level < 10)
+                    quality = ITEM_QUALITY_POOR;
+                if (level < 20)
+                    quality = ITEM_QUALITY_NORMAL;
+                else if (level < 40)
+                    quality = ITEM_QUALITY_UNCOMMON;
+                else if (level < 60)
+#ifdef MANGOSBOT_ZERO
+                    quality = ITEM_QUALITY_UNCOMMON;
+                else if (level < 70)
+                    quality = ITEM_QUALITY_RARE;
+#else
+                    quality = ITEM_QUALITY_UNCOMMON;
+                else if (level < 70)
+                    quality = ITEM_QUALITY_RARE;
+#endif
+                else if (level < 80)
+                    quality = ITEM_QUALITY_UNCOMMON;
+                else
+                    quality = ITEM_QUALITY_RARE;
+            }
+        }
+        if (progressiveGear && urand(0, 100) < 100 * sPlayerbotAIConfig.randomGearLoweringChance && quality > ITEM_QUALITY_NORMAL) {
             quality--;
         }
+
+        uint32 attempts = 0;
         do
         {
-            vector<uint32> ids = sRandomItemMgr.Query(level, bot->getClass(), slot, quality);
-
-            if (!ids.empty()) ahbot::Shuffle(ids);
-            for (uint32 index = 0; index < ids.size(); ++index)
+            // pick random shirt
+            if (slot == EQUIPMENT_SLOT_BODY || slot == EQUIPMENT_SLOT_TABARD)
             {
-                uint32 newItemId = ids[index];
-                Item* oldItem = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, slot);
+                vector<uint32> ids = sRandomItemMgr.Query(60, 1, 1, slot, 1);
+                sLog.outDetail("Bot #%d %s:%d <%s>: %u possible items for slot %d", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->GetLevel(), bot->GetName(), ids.size(), slot);
 
-                if (incremental && !IsDesiredReplacement(oldItem)) {
-                    continue;
-                }
+                if (!ids.empty()) ahbot::Shuffle(ids);
 
-                if (sRandomItemMgr.HasStatWeight(newItemId) || (oldItem && sRandomItemMgr.HasStatWeight(oldItem->GetProto()->ItemId)))
+                for (uint32 index = 0; index < ids.size(); ++index)
                 {
-                    if (!sRandomItemMgr.GetLiveStatWeight(bot, newItemId))
+                    uint32 newItemId = ids[index];
+
+                    // filter item level
+                    ItemPrototype const* proto = sObjectMgr.GetItemPrototype(newItemId);
+                    if (!proto)
                         continue;
+
+                    if (proto->ItemLevel > sPlayerbotAIConfig.randomGearMaxLevel)
+                        continue;
+
+                    Item* oldItem = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, slot);
+                    ItemPrototype const* oldProto = oldItem ? oldItem->GetProto() : nullptr;
+
+                    if (oldItem && oldProto->ItemId == newItemId)
+                        continue;
+
+                    uint16 dest;
+                    if (bot->CanEquipNewItem(NULL_SLOT, dest, newItemId, false) != EQUIP_ERR_OK)
+                    {
+                        if (bot->CanEquipNewItem(NULL_SLOT, dest, newItemId, true) != EQUIP_ERR_OK)
+                            continue;
+                    }
 
                     if (oldItem)
                     {
-                        if (sRandomItemMgr.GetLiveStatWeight(bot, newItemId) < sRandomItemMgr.GetLiveStatWeight(bot, oldItem->GetProto()->ItemId))
-                            continue;
+                        bot->DestroyItem(oldItem->GetBagSlot(), oldItem->GetSlot(), true);
                     }
-                }
 
-                uint16 dest;
-                if (!CanEquipUnseenItem(slot, dest, newItemId))
-                    continue;
-
-                if (oldItem)
-                {
-                    bot->RemoveItem(INVENTORY_SLOT_BAG_0, slot, true);
-                    oldItem->DestroyForPlayer(bot);
-                }
-
-                Item* newItem = bot->EquipNewItem(dest, newItemId, true);
-                if (newItem)
-                {
-                    //newItem->AddToWorld();
-                    //newItem->AddToUpdateQueueOf(bot);
-                    newItem->SetOwnerGuid(bot->GetObjectGuid());
-                    bot->AutoUnequipOffhandIfNeed();
-                    EnchantItem(newItem);
-                    found = true;
-                    break;
+                    Item* newGear = bot->StoreNewItemInInventorySlot(newItemId, 1);
+                    if (newGear)
+                    {
+                        std::unique_ptr<WorldPacket> packet(new WorldPacket(CMSG_AUTOEQUIP_ITEM, 2));
+                        *packet << newGear->GetBagSlot() << newGear->GetSlot();
+                        bot->GetSession()->QueuePacket(std::move(packet));
+                        found = true;
+                    }
+                    if (found)
+                        break;
                 }
             }
-            quality--;
-        } while (!found && quality != ITEM_QUALITY_POOR);
+            else
+            {
+                vector<uint32> ids;
+                for (uint32 q = quality; q < ITEM_QUALITY_ARTIFACT; ++q)
+                {
+                    vector<uint32> newItems = sRandomItemMgr.Query(level, bot->getClass(), uint8(specId), slot, q);
+                    if (newItems.size())
+                        ids.insert(ids.begin(), newItems.begin(), newItems.end());
+                }
+
+                sLog.outDetail("Bot #%d %s:%d <%s>: %u possible items for slot %d", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->GetLevel(), bot->GetName(), ids.size(), slot);
+
+                if (incremental || !progressiveGear)
+                {
+                    // sort items based on stat value, ilvl or quality
+                    std::sort(ids.begin(), ids.end(), [specId](int a, int b)
+                        {
+                            bool diffValue = sRandomItemMgr.GetStatWeight(a, specId) < sRandomItemMgr.GetStatWeight(b, specId);
+                            if (diffValue)
+                                return true;
+
+                            ItemPrototype const* proto1 = sObjectMgr.GetItemPrototype(a);
+                            ItemPrototype const* proto2 = sObjectMgr.GetItemPrototype(b);
+
+                            if (!proto1 || !proto2)
+                                return false;
+
+                            bool diffLevel = proto1->ItemLevel < proto2->ItemLevel;
+                            if (diffLevel)
+                                return true;
+
+                            return proto1->Quality <= proto2->Quality;
+                        });
+
+                    if (!progressiveGear)
+                        std::reverse(ids.begin(), ids.end());
+                }
+                else
+                    if (!ids.empty()) ahbot::Shuffle(ids);
+
+                for (uint32 index = 0; index < ids.size(); ++index)
+                {
+                    uint32 newItemId = ids[index];
+
+                    // filter item level
+                    ItemPrototype const* proto = sObjectMgr.GetItemPrototype(newItemId);
+                    if (!proto)
+                        continue;
+
+                    if (proto->ItemLevel > sPlayerbotAIConfig.randomGearMaxLevel)
+                        continue;
+
+                    // chance to get legendary
+                    if (proto->Quality == ITEM_QUALITY_LEGENDARY && urand(0, 100) > uint32(100 * 0.5f))
+                        continue;
+
+                    // check req level difference from config
+                    int delta = sPlayerbotAIConfig.randomGearMaxDiff + (80 - bot->GetLevel()) / 10;
+                    if ((int)bot->GetLevel() - (int)sRandomItemMgr.GetMinLevelFromCache(newItemId) > delta)
+                        continue;
+
+                    Item* oldItem = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, slot);
+                    ItemPrototype const* oldProto = oldItem ? oldItem->GetProto() : nullptr;
+
+                    if (oldItem && oldProto->ItemId == newItemId)
+                        continue;
+
+                    uint32 oldStatValue = oldItem ? sRandomItemMgr.GetStatWeight(oldProto->ItemId, specId) : 0;
+                    uint32 newStatValue = sRandomItemMgr.GetLiveStatWeight(bot, newItemId, specId);
+                    if (newStatValue <= 0)
+                        continue;
+
+                    if (incremental && oldItem && oldStatValue >= newStatValue && oldStatValue > 1)
+                        continue;
+
+                    // replace grey items right away
+                    if ((incremental || progressiveGear) && oldItem && oldProto->Quality < ITEM_QUALITY_NORMAL && proto->Quality < ITEM_QUALITY_NORMAL && level > 5)
+                        continue;
+
+                    uint16 dest;
+                    if (bot->CanEquipNewItem(NULL_SLOT, dest, newItemId, false) != EQUIP_ERR_OK)
+                    {
+                        if (bot->CanEquipNewItem(NULL_SLOT, dest, newItemId, true) != EQUIP_ERR_OK)
+                            continue;
+                    }
+
+                    if (oldItem)
+                    {
+                        bot->DestroyItem(oldItem->GetBagSlot(), oldItem->GetSlot(), true);
+                    }
+
+                    Item* newGear = bot->StoreNewItemInInventorySlot(newItemId, 1);
+                    if (newGear)
+                    {
+                        std::unique_ptr<WorldPacket> packet(new WorldPacket(CMSG_AUTOEQUIP_ITEM, 2));
+                        *packet << newGear->GetBagSlot() << newGear->GetSlot();
+                        bot->GetSession()->QueuePacket(std::move(packet));
+                        found = true;
+                    }
+                    if (found)
+                    {
+                        if (incremental)
+                        {
+                            if (oldItem)
+                                sLog.outDetail("Bot #%d %s:%d <%s>: Old Item: slot: %u, id: %u, value: %u (%s)", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->GetLevel(), bot->GetName(), slot, oldProto->ItemId, oldStatValue, oldProto->Name1);
+                            sLog.outDetail("Bot #%d %s:%d <%s>: New Item: slot: %u, id: %u, value: %u (%s)", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->GetLevel(), bot->GetName(), slot, proto->ItemId, newStatValue, proto->Name1);
+                        }
+                        break;
+                    }
+                }
+            }
+
+            if (!incremental && quality == ITEM_QUALITY_EPIC)
+                quality--;
+
+            attempts++;
+        } while (!found && attempts < 2/* && (progressiveGear ? (quality != ITEM_QUALITY_ARTIFACT) : (quality != ITEM_QUALITY_POOR))*/);
         if (!found)
         {
-            sLog.outDetail(  "%s: no items to equip for slot %d", bot->GetName(), slot);
+            if (slot != EQUIPMENT_SLOT_TRINKET1 && slot != EQUIPMENT_SLOT_TRINKET2)
+                sLog.outDetail("Bot #%d %s:%d <%s>: no items for slot %d, quality >= %u", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->GetLevel(), bot->GetName(), slot, quality);
             continue;
         }
     }
+
+    /*if (incremental && oldGS != newGS)
+        sLog.outBasic("Bot #%d %s:%d <%s>: GS: %u -> %u", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->GetLevel(), bot->GetName(), oldGS, newGS);*/
 
     // Update stats here so the bots will benefit from the new equipped items' stats
     bot->InitStatsForLevel(true);
     bot->UpdateAllStats();
 }
 
-bool PlayerbotFactory::IsDesiredReplacement(Item* item)
+bool PlayerbotFactory::IsDesiredReplacement(uint32 itemId)
 {
-    if (!item)
+    if (!itemId)
         return true;
 
-    ItemPrototype const* proto = item->GetProto();
+    ItemPrototype const* proto = sObjectMgr.GetItemPrototype(itemId);
+    if (!proto)
+        return false;
+
     uint32 requiredLevel = proto->RequiredLevel;
     if (!requiredLevel)
     {
         requiredLevel = sRandomItemMgr.GetMinLevelFromCache(proto->ItemId);
     }
+    if (!requiredLevel)
+        return false;
 
-    int delta = 1 + (80 - bot->GetLevel()) / 10;
+    int delta = sPlayerbotAIConfig.randomGearMaxDiff + (80 - bot->GetLevel()) / 10;
     return (int)bot->GetLevel() - (int)requiredLevel > delta;
 }
 
@@ -1249,7 +1503,28 @@ void PlayerbotFactory::InitSecondEquipmentSet()
 
     map<uint32, vector<uint32> > items;
 
-    uint32 desiredQuality = itemQuality;
+    uint32 desiredQuality = ITEM_QUALITY_NORMAL;
+    if (level < 10)
+        desiredQuality = urand(ITEM_QUALITY_POOR, ITEM_QUALITY_UNCOMMON);
+    if (level < 20)
+        desiredQuality = urand(ITEM_QUALITY_NORMAL, ITEM_QUALITY_UNCOMMON);
+    else if (level < 40)
+        desiredQuality = urand(ITEM_QUALITY_UNCOMMON, ITEM_QUALITY_RARE);
+    else if (level < 60)
+#ifdef MANGOSBOT_ZERO
+        desiredQuality = urand(ITEM_QUALITY_UNCOMMON, ITEM_QUALITY_RARE);
+    else if (level < 70)
+        desiredQuality = urand(ITEM_QUALITY_RARE, ITEM_QUALITY_EPIC);
+#else
+        desiredQuality = urand(ITEM_QUALITY_UNCOMMON, ITEM_QUALITY_RARE);
+    else if (level < 70)
+        desiredQuality = urand(ITEM_QUALITY_RARE, ITEM_QUALITY_EPIC);
+#endif
+    else if (level < 80)
+        desiredQuality = urand(ITEM_QUALITY_UNCOMMON, ITEM_QUALITY_RARE);
+    else
+        desiredQuality = urand(ITEM_QUALITY_RARE, ITEM_QUALITY_EPIC);
+
     while (urand(0, 100) < 100 * sPlayerbotAIConfig.randomGearLoweringChance && desiredQuality > ITEM_QUALITY_NORMAL) {
         desiredQuality--;
     }
@@ -1262,19 +1537,28 @@ void PlayerbotFactory::InitSecondEquipmentSet()
             if (!proto)
                 continue;
 
+            // filter item level
+            if (proto->ItemLevel > sPlayerbotAIConfig.randomGearMaxLevel)
+                continue;
+
+            // check req level difference from config
+            int delta = sPlayerbotAIConfig.randomGearMaxDiff + (80 - bot->GetLevel()) / 10;
+            if ((int)bot->GetLevel() - (int)sRandomItemMgr.GetMinLevelFromCache(itemId) > delta)
+                continue;
+
             if (!CanEquipItem(proto, desiredQuality))
                 continue;
 
             if (proto->Class == ITEM_CLASS_WEAPON)
             {
-                //if (!CanEquipWeapon(proto))
-                //    continue;
+                /*if (!CanEquipWeapon(proto))
+                    continue;*/
 
-                if (sRandomItemMgr.HasStatWeight(proto->ItemId))
+                /*if (sRandomItemMgr.HasStatWeight(proto->ItemId))
                 {
                     if (!sRandomItemMgr.GetLiveStatWeight(bot, proto->ItemId))
                         continue;
-                }
+                }*/
 
                 Item* existingItem = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND);
                 if (existingItem)
@@ -1302,47 +1586,52 @@ void PlayerbotFactory::InitSecondEquipmentSet()
             }
             else if (proto->Class == ITEM_CLASS_ARMOR && proto->SubClass == ITEM_SUBCLASS_ARMOR_SHIELD)
             {
-                //if (!CanEquipArmor(proto))
-                //    continue;
-
-                if (sRandomItemMgr.HasStatWeight(proto->ItemId))
+                /*if (sRandomItemMgr.HasStatWeight(proto->ItemId))
                 {
                     if (!sRandomItemMgr.GetLiveStatWeight(bot, proto->ItemId))
                         continue;
-                }
+                }*/
 
-                Item* existingItem = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_OFFHAND);
+                /*Item* existingItem = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_OFFHAND);
                 if (existingItem && existingItem->GetProto()->SubClass == ITEM_SUBCLASS_ARMOR_SHIELD)
-                    continue;
+                    continue;*/
             }
             else
                 continue;
 
             items[proto->Class].push_back(itemId);
         }
-    } while (items[ITEM_CLASS_ARMOR].empty() && items[ITEM_CLASS_WEAPON].empty() && desiredQuality-- > ITEM_QUALITY_NORMAL);
+    } while (items[ITEM_CLASS_ARMOR].empty() && items[ITEM_CLASS_WEAPON].empty() && desiredQuality++ != ITEM_QUALITY_ARTIFACT);
 
+    int maxCount = urand(0, 5);
+    int count = 0;
     for (map<uint32, vector<uint32> >::iterator i = items.begin(); i != items.end(); ++i)
     {
+        if (count++ >= maxCount)
+            break;
+
         vector<uint32>& ids = i->second;
         if (ids.empty())
         {
             sLog.outDebug(  "%s: no items to make second equipment set for slot %d", bot->GetName(), i->first);
             continue;
         }
-
         for (int attempts = 0; attempts < 15; attempts++)
         {
             uint32 index = urand(0, ids.size() - 1);
             uint32 newItemId = ids[index];
+            ItemPosCountVec dest;
+            if (!bot->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, newItemId, 1))
+                continue;
 
             Item* newItem = bot->StoreNewItemInInventorySlot(newItemId, 1);
             if (newItem)
             {
-                newItem->AddToWorld();
-                newItem->AddToUpdateQueueOf(bot);
-                newItem->SetOwnerGuid(bot->GetObjectGuid());
-                EnchantItem(newItem);
+                count++;
+                //newItem->AddToWorld();
+                //newItem->AddToUpdateQueueOf(bot);
+                //newItem->SetOwnerGuid(bot->GetObjectGuid());
+                //EnchantItem(newItem);
                 break;
             }
         }
@@ -1528,7 +1817,7 @@ void PlayerbotFactory::InitTradeSkills()
         case CLASS_DEATH_KNIGHT:
 #endif
             firstSkills.push_back(SKILL_MINING);
-            secondSkills.push_back(SKILL_BLACKSMITHING);
+            //secondSkills.push_back(SKILL_BLACKSMITHING);
             secondSkills.push_back(SKILL_ENGINEERING);
             break;
         case CLASS_SHAMAN:
@@ -1543,33 +1832,41 @@ void PlayerbotFactory::InitTradeSkills()
             secondSkills.push_back(SKILL_ENCHANTING);
         }
 
-        switch (urand(0, 6))
+        if (!ai->IsTank(bot))
         {
-        case 0:
-            firstSkill = SKILL_HERBALISM;
-            secondSkill = SKILL_ALCHEMY;
-            break;
-        case 1:
-            firstSkill = SKILL_HERBALISM;
-            secondSkill = SKILL_MINING;
-            break;
-        case 2:
-            firstSkill = SKILL_MINING;
-            secondSkill = SKILL_SKINNING;
-            break;
-        case 3:
+            switch (urand(0, 6))
+            {
+            case 0:
+                firstSkill = SKILL_HERBALISM;
+                secondSkill = SKILL_ALCHEMY;
+                break;
+            case 1:
+                firstSkill = SKILL_HERBALISM;
+                secondSkill = SKILL_MINING;
+                break;
+            case 2:
+                firstSkill = SKILL_MINING;
+                secondSkill = SKILL_SKINNING;
+                break;
+            case 3:
 #ifdef MANGOSBOT_ZERO
-            firstSkill = SKILL_HERBALISM;
-            secondSkill = SKILL_SKINNING;
+                firstSkill = SKILL_HERBALISM;
+                secondSkill = SKILL_SKINNING;
 #else
-			firstSkill = SKILL_JEWELCRAFTING;
-			secondSkill = SKILL_MINING;
+                firstSkill = SKILL_JEWELCRAFTING;
+                secondSkill = SKILL_MINING;
 #endif
-            break;
-        default:
+                break;
+            default:
+                firstSkill = firstSkills[urand(0, firstSkills.size() - 1)];
+                secondSkill = secondSkills[urand(0, secondSkills.size() - 1)];
+                break;
+            }
+        }
+        else
+        {
             firstSkill = firstSkills[urand(0, firstSkills.size() - 1)];
             secondSkill = secondSkills[urand(0, secondSkills.size() - 1)];
-            break;
         }
         sRandomPlayerbotMgr.SetValue(bot, "firstSkill", firstSkill);
         sRandomPlayerbotMgr.SetValue(bot, "secondSkill", secondSkill);
@@ -2451,7 +2748,28 @@ void PlayerbotFactory::InitInventoryEquip()
 {
     vector<uint32> ids;
 
-    uint32 desiredQuality = itemQuality;
+    uint32 desiredQuality = ITEM_QUALITY_NORMAL;
+    if (level < 10)
+        desiredQuality = urand(ITEM_QUALITY_POOR, ITEM_QUALITY_UNCOMMON);
+    if (level < 20)
+        desiredQuality = urand(ITEM_QUALITY_NORMAL, ITEM_QUALITY_UNCOMMON);
+    else if (level < 40)
+        desiredQuality = urand(ITEM_QUALITY_UNCOMMON, ITEM_QUALITY_RARE);
+    else if (level < 60)
+#ifdef MANGOSBOT_ZERO
+        desiredQuality = urand(ITEM_QUALITY_UNCOMMON, ITEM_QUALITY_RARE);
+    else if (level < 70)
+        desiredQuality = urand(ITEM_QUALITY_RARE, ITEM_QUALITY_EPIC);
+#else
+        desiredQuality = urand(ITEM_QUALITY_UNCOMMON, ITEM_QUALITY_RARE);
+    else if (level < 70)
+        desiredQuality = urand(ITEM_QUALITY_RARE, ITEM_QUALITY_EPIC);
+#endif
+    else if (level < 80)
+        desiredQuality = urand(ITEM_QUALITY_UNCOMMON, ITEM_QUALITY_RARE);
+    else
+        desiredQuality = urand(ITEM_QUALITY_RARE, ITEM_QUALITY_EPIC);
+
     if (urand(0, 100) < 100 * sPlayerbotAIConfig.randomGearLoweringChance && desiredQuality > ITEM_QUALITY_NORMAL) {
         desiredQuality--;
     }
@@ -2462,39 +2780,57 @@ void PlayerbotFactory::InitInventoryEquip()
         if (!proto)
             continue;
 
+        if (proto->ItemLevel > sPlayerbotAIConfig.randomGearMaxLevel)
+            continue;
+
+        // check req level difference from config
+        int delta = sPlayerbotAIConfig.randomGearMaxDiff + (80 - bot->GetLevel()) / 10;
+        if ((int)bot->GetLevel() - (int)sRandomItemMgr.GetMinLevelFromCache(itemId) > delta)
+            continue;
+
         if ((proto->Class != ITEM_CLASS_ARMOR && proto->Class != ITEM_CLASS_WEAPON) || (proto->Bonding == BIND_WHEN_PICKED_UP ||
                 proto->Bonding == BIND_WHEN_USE))
             continue;
 
-        if (proto->Class == ITEM_CLASS_ARMOR && !CanEquipArmor(proto))
+        /*if (sRandomItemMgr.HasStatWeight(proto->ItemId))
+        {
+            if (!sRandomItemMgr.GetLiveStatWeight(bot, proto->ItemId))
+                continue;
+        }*/
+
+        /*if (proto->Class == ITEM_CLASS_ARMOR && !CanEquipArmor(proto))
             continue;
 
         if (proto->Class == ITEM_CLASS_WEAPON && !CanEquipWeapon(proto))
-            continue;
+            continue;*/
 
-        if (!CanEquipItem(proto, desiredQuality))
-            continue;
+        // TODO test
+        /*if (!CanEquipItem(proto, desiredQuality))
+            continue;*/
 
         ids.push_back(itemId);
     }
 
-    int maxCount = urand(0, 3);
+    int maxCount = urand(0, 5);
     int count = 0;
     for (int attempts = 0; attempts < 15; attempts++)
     {
         uint32 index = urand(0, ids.size() - 1);
-        if (index >= ids.size())
+        uint32 itemId = ids[index];
+
+        ItemPosCountVec dest;
+        if (!bot->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, itemId, 1))
             continue;
 
-        uint32 itemId = ids[index];
-        if (StoreItem(itemId, 1) && count++ >= maxCount)
+        Item* newItem = bot->StoreNewItemInInventorySlot(itemId, 1);
+        if (newItem && count++ >= maxCount)
             break;
    }
 }
 
 void PlayerbotFactory::InitGuild()
 {
-    bot->SaveToDB();
+    //bot->SaveToDB();
 
     // add guild tabard
     if (bot->GetGuildId() && !bot->HasItemCount(5976, 1))
@@ -2507,8 +2843,18 @@ void PlayerbotFactory::InitGuild()
         RandomPlayerbotFactory::CreateRandomGuilds();
 
     vector<uint32> guilds;
-    for(list<uint32>::iterator i = sPlayerbotAIConfig.randomBotGuilds.begin(); i != sPlayerbotAIConfig.randomBotGuilds.end(); ++i)
+    for (list<uint32>::iterator i = sPlayerbotAIConfig.randomBotGuilds.begin(); i != sPlayerbotAIConfig.randomBotGuilds.end(); ++i)
+    {
+        Guild* guild = sGuildMgr.GetGuildById(*i);
+        if (!guild)
+            continue;
+
+        ObjectGuid leaderGuid = guild->GetLeaderGuid();
+        if (sObjectMgr.GetPlayerTeamByGUID(leaderGuid) != bot->GetTeam())
+            continue;
+
         guilds.push_back(*i);
+    }
 
     if (guilds.empty())
     {
@@ -2532,7 +2878,7 @@ void PlayerbotFactory::InitGuild()
     if (bot->GetGuildId() && bot->GetLevel() > 9 && urand(0, 4) && !bot->HasItemCount(5976, 1))
         StoreItem(5976, 1);
 
-    bot->SaveToDB();
+    //bot->SaveToDB();
 }
 
 void PlayerbotFactory::InitImmersive()
@@ -2661,9 +3007,18 @@ void PlayerbotFactory::InitArenaTeam()
             arenateam->SaveToDB();
         }
     }
-    bot->SaveToDB();
+    //bot->SaveToDB();
 }
 #endif
+
+void PlayerbotFactory::EnchantEquipment(Player* bot)
+{
+    PlayerbotFactory factory(bot, bot->GetLevel());
+    factory.ApplyEnchantTemplate();
+    //save to db
+    if (bot->GetSaveTimer() >= 60 * IN_MILLISECONDS)
+        bot->SetSaveTimer(urand(30, 60) * IN_MILLISECONDS);
+}
 
 void PlayerbotFactory::ApplyEnchantTemplate()
 {
@@ -2672,25 +3027,25 @@ void PlayerbotFactory::ApplyEnchantTemplate()
    switch (bot->getClass())
    {
    case CLASS_WARRIOR:
-      if (tab == 2)   
-      ApplyEnchantTemplate(12);
-      if (tab == 1)
-         ApplyEnchantTemplate(11);
+      if (tab == 2)
+          ApplyEnchantTemplate(12);
+      else if (tab == 1)
+          ApplyEnchantTemplate(11);
       else
-        ApplyEnchantTemplate(10);
+          ApplyEnchantTemplate(10);
       break;
    case CLASS_DRUID:
       if (tab == 2)    
-      ApplyEnchantTemplate(112);
-      if (tab == 0) 
-      ApplyEnchantTemplate(110);
+          ApplyEnchantTemplate(112);
+      else if (tab == 0) 
+          ApplyEnchantTemplate(110);
       else 
-      ApplyEnchantTemplate(111);
+          ApplyEnchantTemplate(111);
       break;
    case CLASS_SHAMAN:
       if (tab == 0)
          ApplyEnchantTemplate(70);
-      if (tab == 2)
+      else if (tab == 2)
          ApplyEnchantTemplate(71);
       else
          ApplyEnchantTemplate(72);
@@ -2698,24 +3053,26 @@ void PlayerbotFactory::ApplyEnchantTemplate()
    case CLASS_PALADIN:
       if (tab == 0)
          ApplyEnchantTemplate(20);
-      if (tab == 2)
+      else if (tab == 2)
          ApplyEnchantTemplate(22);
       else if (tab == 1)
          ApplyEnchantTemplate(21);
       break;
    case CLASS_HUNTER:
       ApplyEnchantTemplate(30);
+      break;
    case CLASS_ROGUE:
       ApplyEnchantTemplate(40);
       break;
    case CLASS_MAGE:
       ApplyEnchantTemplate(80);
+      break;
    case CLASS_WARLOCK:
       ApplyEnchantTemplate(90);
       break;
    case CLASS_PRIEST:
-         ApplyEnchantTemplate(50);
-      break;
+       ApplyEnchantTemplate(50);
+       break;
    }
 }
 

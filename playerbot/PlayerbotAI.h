@@ -350,6 +350,7 @@ public:
     bool IsInVehicle(bool canControl = false, bool canCast = false, bool canAttack = false, bool canTurn = false, bool fixed = false);
 
     uint32 GetEquipGearScore(Player* player, bool withBags, bool withBank);
+    uint32 GetEquipStatsValue(Player* player);
     bool HasSkill(SkillType skill);
     bool IsAllowedCommand(string text);
     float GetRange(string type);

@@ -52,6 +52,7 @@ public:
     static list<uint32> classQuestIds;
     static list<uint32> specialQuestIds;
     void InitSkills();
+    static void EnchantEquipment(Player* bot);
 
 private:
     void Prepare();
@@ -87,7 +88,7 @@ private:
     void AddItemStats(uint32 mod, uint8 &sp, uint8 &ap, uint8 &tank);
     bool CheckItemStats(uint8 sp, uint8 ap, uint8 tank);
     void CancelAuras();
-    bool IsDesiredReplacement(Item* item);
+    bool IsDesiredReplacement(uint32 itemId);
     void InitBags();
     void InitInventory();
     void InitInventoryTrade();
