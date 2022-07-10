@@ -3070,9 +3070,9 @@ bool PlayerbotAI::AllowActive(ActivityType activityType)
             if(!member->GetPlayerbotAI() || (member->GetPlayerbotAI() && member->GetPlayerbotAI()->HasRealPlayerMaster()))
                 return true;
 
-            if (group->IsLeader(member->GetObjectGuid()))
+            /*if (group->IsLeader(member->GetObjectGuid()))
                 if (!member->GetPlayerbotAI()->AllowActivity(PARTY_ACTIVITY))
-                    return false;
+                    return false;*/
         }
     } 
 
