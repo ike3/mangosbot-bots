@@ -213,4 +213,27 @@ namespace ai
             return false;
         }
     };
+
+    class LeaderIsAfkTrigger : public Trigger
+    {
+    public:
+        LeaderIsAfkTrigger(PlayerbotAI* ai) : Trigger(ai, "leader is afk", 10) {}
+
+        virtual bool IsActive()
+        {
+            if (ai->HasRealPlayerMaster())
+                return false;
+
+            if (Group* group = bot->GetGroup())
+            {
+                Player* leader = sObjectMgr.GetPlayer(group->GetLeaderGuid(), true);
+                if (!leader)
+                    return false;
+
+                return leader->isAFK();
+            }
+
+            return false;
+        }
+    };
 }

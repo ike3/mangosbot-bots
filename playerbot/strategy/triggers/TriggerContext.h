@@ -164,6 +164,7 @@ namespace ai
             creators["move long stuck"] = &TriggerContext::move_long_stuck;
             creators["combat stuck"] = &TriggerContext::combat_stuck;
             creators["combat long stuck"] = &TriggerContext::combat_long_stuck;
+            creators["leader is afk"] = &TriggerContext::leader_is_afk;
 
             creators["petition signed"] = &TriggerContext::petition_signed;
             creators["buy tabard"] = &TriggerContext::buy_tabard;
@@ -326,6 +327,7 @@ namespace ai
         static Trigger* move_long_stuck(PlayerbotAI* ai) { return new MoveLongStuckTrigger(ai); }
         static Trigger* combat_stuck(PlayerbotAI* ai) { return new CombatStuckTrigger(ai); }
         static Trigger* combat_long_stuck(PlayerbotAI* ai) { return new CombatLongStuckTrigger(ai); }
+        static Trigger* leader_is_afk(PlayerbotAI* ai) { return new LeaderIsAfkTrigger(ai); }
         static Trigger* player_wants_in_bg(PlayerbotAI* ai) { return new PlayerWantsInBattlegroundTrigger(ai); }
         static Trigger* use_trinket(PlayerbotAI* ai) { return new UseTrinketTrigger(ai); }
 
