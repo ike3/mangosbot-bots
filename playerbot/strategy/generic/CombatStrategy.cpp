@@ -13,7 +13,7 @@ void CombatStrategy::InitTriggers(list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "invalid target",
-        NextAction::array(0, new NextAction("drop target", 100), NULL)));
+        NextAction::array(0, new NextAction("drop target", 101), new NextAction("attack enemy player", 100), new NextAction("dps assist", 99), NULL)));
 
     triggers.push_back(new TriggerNode(
         "mounted",
