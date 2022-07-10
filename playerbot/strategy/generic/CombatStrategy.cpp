@@ -32,7 +32,7 @@ void CombatStrategy::InitTriggers(list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("hearthstone", 0.9f), new NextAction("repop", 0.8f), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "use trinket",
+        "often",
         NextAction::array(0, new NextAction("use trinket", ACTION_HIGH + 9), NULL)));
 }
 
