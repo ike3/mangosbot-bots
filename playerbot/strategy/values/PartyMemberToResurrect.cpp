@@ -22,15 +22,15 @@ public:
 
 };
 
-class FindDeadPlayer : public FindPlayerPredicate
+class FindDeadPlayer : public FindPlayerPredicate, public PlayerbotAIAware
 {
 public:
-    FindDeadPlayer(PartyMemberValue* value) : value(value) {}
+    FindDeadPlayer(PlayerbotAI* ai, PartyMemberValue* value) : PlayerbotAIAware(ai), value(value) {}
 
     virtual bool Check(Unit* unit)
     {
         Player* player = dynamic_cast<Player*>(unit);
-        return player && !player->isRessurectRequested() && sServerFacade.GetDeathState(player) == CORPSE && !value->IsTargetOfSpellCast(player, predicate);
+        return player && !player->isRessurectRequested() && sServerFacade.GetDistance2d(ai->GetBot(), player) <= ai->GetRange("spell") && sServerFacade.GetDeathState(player) == CORPSE && !value->IsTargetOfSpellCast(player, predicate);
     }
 
 private:
@@ -40,6 +40,6 @@ private:
 
 Unit* PartyMemberToResurrect::Calculate()
 {
-	FindDeadPlayer finder(this);
+	FindDeadPlayer finder(ai, this);
     return FindPartyMember(finder);
 }
