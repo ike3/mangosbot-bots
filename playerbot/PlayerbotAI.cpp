@@ -658,6 +658,19 @@ void PlayerbotAI::HandleCommand(uint32 type, const string& text, Player& fromPla
             bot->GetSession()->HandleLogoutCancelOpcode(p);
         }
     }
+    else if (filtered.size() > 5 && filtered.substr(0, 5) == "wait ")
+    {
+        std::string remaining = filtered.substr(filtered.find(" ") + 1);
+        uint32 delay = atof(remaining.c_str());
+        if (delay > 20)
+        {
+            TellMaster("Max wait time is 20 seconds!");
+            return;
+        }
+        IncreaseNextCheckDelay(delay);
+        TellError("Waiting for " + remaining + " seconds!");
+        return;
+    }
     else
     {
         ChatCommandHolder cmd(filtered, &fromPlayer, type);
