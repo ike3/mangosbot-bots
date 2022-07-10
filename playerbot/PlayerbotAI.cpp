@@ -331,8 +331,8 @@ void PlayerbotAI::UpdateAIInternal(uint32 elapsed, bool minimal)
         Player* owner = holder.GetOwner();
         if (!helper.ParseChatCommand(command, owner) && holder.GetType() == CHAT_MSG_WHISPER)
         {
-            ostringstream out; out << "Unknown command " << command;
-            TellMaster(out);
+            //ostringstream out; out << "Unknown command " << command;
+            //TellMaster(out);
             //helper.ParseChatCommand("help");
         }
         chatCommands.pop();
@@ -534,7 +534,9 @@ bool PlayerbotAI::IsAllowedCommand(string text)
 
 void PlayerbotAI::HandleCommand(uint32 type, const string& text, Player& fromPlayer)
 {
-    if (!GetSecurity()->CheckLevelFor(PLAYERBOT_SECURITY_INVITE, type != CHAT_MSG_WHISPER, &fromPlayer))
+    string filtered = text;
+
+    if (!IsAllowedCommand(filtered) && !GetSecurity()->CheckLevelFor(PLAYERBOT_SECURITY_INVITE, type != CHAT_MSG_WHISPER, &fromPlayer))
         return;
 
     if (type == CHAT_MSG_ADDON)
@@ -554,7 +556,6 @@ void PlayerbotAI::HandleCommand(uint32 type, const string& text, Player& fromPla
         return;
     }
 
-    string filtered = text;
     if (!sPlayerbotAIConfig.commandPrefix.empty())
     {
         if (filtered.find(sPlayerbotAIConfig.commandPrefix) != 0)
