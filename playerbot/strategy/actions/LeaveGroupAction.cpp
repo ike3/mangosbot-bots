@@ -11,8 +11,11 @@ namespace ai
 {
 	bool LeaveGroupAction::Leave(Player* player) {
 
-        if (player && !player->GetPlayerbotAI() && !ai->GetSecurity()->CheckLevelFor(PLAYERBOT_SECURITY_INVITE, false, player))
+        if (!player)
             return false;
+
+        /*if (!player->GetPlayerbotAI() && !ai->GetSecurity()->CheckLevelFor(PLAYERBOT_SECURITY_INVITE, false, player))
+            return false;*/
 
         bool aiMaster = (ai->GetMaster() && ai->GetMaster()->GetPlayerbotAI());
 
@@ -28,6 +31,7 @@ namespace ai
             string member = bot->GetName();
             p << uint32(PARTY_OP_LEAVE) << member << uint32(0);
             bot->GetSession()->HandleGroupDisbandOpcode(p);
+            bot->Whisper("I left my group", LANG_UNIVERSAL, player->GetObjectGuid());
         }
 
         if (randomBot)
