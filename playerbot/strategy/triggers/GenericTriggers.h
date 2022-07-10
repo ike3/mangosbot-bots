@@ -350,6 +350,20 @@ namespace ai
         time_t lastCheck;
     };
 
+    class TimeTrigger : public Trigger
+    {
+    public:
+        TimeTrigger(PlayerbotAI* ai, string name, int interval = 2) : Trigger(ai, name, interval) {}
+    public:
+        virtual bool IsActive()
+        {
+            return true;
+        }
+
+    protected:
+        int interval;
+    };
+
     class AndTrigger : public Trigger
     {
     public:
