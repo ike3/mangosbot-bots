@@ -100,6 +100,8 @@ bool ChangeTalentsAction::Execute(Event event)
                 }
             }
         }
+        // learn available spells
+        ai->DoSpecificAction("auto learn spell");
     }
     else
     {
@@ -220,7 +222,7 @@ bool ChangeTalentsAction::AutoSelectTalents(ostringstream* out)
     }
 
     uint32 specNo = sRandomPlayerbotMgr.GetValue(bot->GetGUIDLow(), "specNo");
-    uint32 specId = specNo - 1;
+    uint32 specId = specNo ? specNo - 1 : 0;
     string specLink = sRandomPlayerbotMgr.GetData(bot->GetGUIDLow(), "specLink");
 
     //Continue the current spec
