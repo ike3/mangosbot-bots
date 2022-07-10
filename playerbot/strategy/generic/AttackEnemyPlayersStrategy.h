@@ -3,10 +3,10 @@
 
 namespace ai
 {
-    class AttackEnemyPlayersStrategy : public NonCombatStrategy
+    class AttackEnemyPlayersStrategy : public Strategy
     {
     public:
-        AttackEnemyPlayersStrategy(PlayerbotAI* ai) : NonCombatStrategy(ai) {}
+        AttackEnemyPlayersStrategy(PlayerbotAI* ai) : Strategy(ai) {}
         virtual string getName() { return "pvp"; }
 
     public:

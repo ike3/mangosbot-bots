@@ -54,7 +54,7 @@ bool NearestEnemyPlayersValue::AcceptUnit(Unit* unit)
         ((inCannon || !enemy->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE))) &&
         //!enemy->HasStealthAura() &&
         //!enemy->HasInvisibilityAura() &&
-        enemy->IsVisibleForOrDetect(bot, enemy, false) &&
+        enemy->IsVisibleForOrDetect(bot, bot->GetCamera().GetBody(), true) &&
         !(enemy->HasAuraType(SPELL_AURA_SPIRIT_OF_REDEMPTION))
         );
 }
@@ -77,7 +77,7 @@ Unit* EnemyPlayerValue::Calculate()
         {
             if (pTarget != pVictim &&
                 pTarget->IsPlayer() &&
-                pTarget->IsVisibleForOrDetect(bot, pTarget, false) &&
+                pTarget->IsVisibleForOrDetect(bot, bot->GetCamera().GetBody(), true) &&
                 bot->IsWithinDist(pTarget, VISIBILITY_DISTANCE_NORMAL))
             {
                 if (bot->GetTeam() == HORDE)
@@ -111,6 +111,7 @@ Unit* EnemyPlayerValue::Calculate()
 
     list<ObjectGuid> players = AI_VALUE(list<ObjectGuid>, "nearest enemy players");
     float const maxAggroDistance = GetMaxAttackDistance();
+    vector<Player*> targetsList;
 
     for (const auto& gTarget : players)
     {
@@ -136,14 +137,19 @@ Unit* EnemyPlayerValue::Calculate()
                 return pTarget;
         }
 
+        // TODO choose proper targets
+
         // Aggro weak enemies from further away.
-        uint32 const aggroDistance = (inCannon || bot->GetHealth() > pTarget->GetHealth()) ? maxAggroDistance : 20.0f;
-        if (!bot->IsWithinDist(pTarget, aggroDistance))
+        //uint32 const aggroDistance = (inCannon || bot->GetHealth() > pTarget->GetHealth()) ? maxAggroDistance : 20.0f;
+        if (!bot->IsWithinDist(pTarget, maxAggroDistance))
             continue;
 
-        if (bot->IsWithinLOSInMap(pTarget, true) && (inCannon || (fabs(bot->GetPositionZ() - pTarget->GetPositionZ()) < 30.0f)))
-            return pTarget;
+        if (/*bot->IsWithinLOSInMap(pTarget, true) && */(inCannon || (fabs(bot->GetPositionZ() - pTarget->GetPositionZ()) < 30.0f)))
+            targetsList.push_back(pTarget);
     }
+
+    if (!targetsList.empty())
+        return targetsList[urand(0, targetsList.size() - 1)];
 
     // 3. Check party attackers.
 
@@ -161,9 +167,9 @@ Unit* EnemyPlayerValue::Calculate()
 
                 if (Unit* pAttacker = pMember->getAttackerForHelper())
                     if (bot->IsWithinDist(pAttacker, maxAggroDistance * 2.0f) &&
-                        bot->IsWithinLOSInMap(pAttacker, true) &&
+                        /*bot->IsWithinLOSInMap(pAttacker, true) &&*/
                         pAttacker != pVictim &&
-                        pAttacker->IsVisibleForOrDetect(bot, pAttacker, false) &&
+                        pAttacker->IsVisibleForOrDetect(bot, bot->GetCamera().GetBody(), true) &&
                         pAttacker->IsPlayer())
                         return pAttacker;
             }

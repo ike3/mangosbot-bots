@@ -6,7 +6,7 @@ namespace ai
     class EnemyPlayerNear : public Trigger
     {
     public:
-        EnemyPlayerNear(PlayerbotAI* ai) : Trigger(ai, "enemy player near", 3) {}
+        EnemyPlayerNear(PlayerbotAI* ai) : Trigger(ai, "enemy player near", 5) {}
 
     public:
         virtual bool IsActive();
