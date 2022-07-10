@@ -14,6 +14,8 @@ bool CheckMountStateAction::Execute(Event event)
     bool noattackers = AI_VALUE2(bool, "combat", "self target") ? (AI_VALUE(uint8, "attacker count") > 0 ? false : true) : true;
     bool enemy = AI_VALUE(Unit*, "enemy player target");
     bool dps = (AI_VALUE(Unit*, "dps target") || AI_VALUE(Unit*, "grind target"));
+    if (enemy || dps)
+        noattackers = false;
     bool fartarget = (enemy && sServerFacade.IsDistanceGreaterThan(AI_VALUE2(float, "distance", "enemy player target"), 40.0f)) ||
         (dps && sServerFacade.IsDistanceGreaterThan(AI_VALUE2(float, "distance", "dps target"), 50.0f));
     bool attackdistance = false;
@@ -27,11 +29,14 @@ bool CheckMountStateAction::Execute(Event event)
         attack_distance = 10.0f;
         break;
     case CLASS_ROGUE:
-        attack_distance = 40.0f;
+        attack_distance = 50.0f;
         break;
     }
-    if (enemy)
-        attack_distance /= 2;
+    /*if (enemy)
+        attack_distance /= 2;*/
+
+    if (ai->IsHeal(bot) || ai->IsRanged(bot))
+        attack_distance = 40.0f;
 
     if (dps || enemy)
     {
