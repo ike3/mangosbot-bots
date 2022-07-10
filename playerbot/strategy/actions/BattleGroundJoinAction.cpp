@@ -506,6 +506,10 @@ bool BGJoinAction::isUseful()
     if (!bot->HasFreeBattleGroundQueueId())
         return false;
 
+    // reduce amount of healers in BG
+    if ((ai->IsTank(bot) || ai->IsHeal(bot)) && urand(0, 100) > 20)
+        return false;
+
     // do not try if in dungeon
     //Map* map = bot->GetMap();
     //if (map && map->Instanceable())
