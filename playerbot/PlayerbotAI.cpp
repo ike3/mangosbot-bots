@@ -3117,6 +3117,10 @@ bool PlayerbotAI::AllowActive(ActivityType activityType)
             return true;
     }
 
+    // real guild always active if member+
+    if (IsInRealGuild())
+        return true;
+
     if (activityType == OUT_OF_PARTY_ACTIVITY || activityType == GRIND_ACTIVITY) //Many bots nearby. Do not do heavy area checks.
         if (HasManyPlayersNearby())
             return false;
