@@ -424,6 +424,12 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
             }
         }
 
+        // enable paladin fight at low level
+        if (player->getClass() == CLASS_PALADIN && tab == 0 && player->GetLevel() < 10)
+        {
+            engine->addStrategies("dps", "close", NULL);
+        }
+
         engine->ChangeStrategy(sPlayerbotAIConfig.randomBotCombatStrategies);
     }
     else
