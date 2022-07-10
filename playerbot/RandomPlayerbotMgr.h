@@ -53,7 +53,7 @@ class RandomPlayerbotMgr : public PlayerbotHolder
         bool IsRandomBot(uint32 bot);
         void Randomize(Player* bot);
         void RandomizeFirst(Player* bot);
-        void IncreaseLevel(Player* bot);
+        void UpdateGearSpells(Player* bot);
         void ScheduleTeleport(uint32 bot, uint32 time = 0);
         void ScheduleChangeStrategy(uint32 bot, uint32 time = 0);
         void HandleCommand(uint32 type, const string& text, Player& fromPlayer, string channelName = "", Team team = TEAM_BOTH_ALLOWED);
