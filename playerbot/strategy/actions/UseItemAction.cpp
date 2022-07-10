@@ -78,6 +78,8 @@ bool UseItemAction::UseItemAuto(Item* item)
     uint8 unk_flags = 0;
 
     ItemPrototype const* proto = item->GetProto();
+    bool isDrink = proto->Spells[0].SpellCategory == 59;
+    bool isFood = proto->Spells[0].SpellCategory == 11;
 
     for (uint8 i = 0; i < MAX_ITEM_PROTO_SPELLS; ++i)
     {
@@ -117,6 +119,40 @@ bool UseItemAction::UseItemAuto(Item* item)
     packet.appendPackGUID(bot->GetObjectGuid());
 
     ai->SetNextCheckDelay(sPlayerbotAIConfig.globalCoolDown);
+    if (proto->Class == ITEM_CLASS_CONSUMABLE && (proto->SubClass == ITEM_SUBCLASS_FOOD || proto->SubClass == ITEM_SUBCLASS_CONSUMABLE) &&
+        (isFood || isDrink))
+    {
+        if (sServerFacade.IsInCombat(bot))
+            return false;
+
+        bot->addUnitState(UNIT_STAND_STATE_SIT);
+        ai->InterruptSpell();
+
+        float hp = bot->GetHealthPercent();
+        float mp = bot->GetPower(POWER_MANA) * 100.0f / bot->GetMaxPower(POWER_MANA);
+        float p;
+        if (isDrink && isFood)
+        {
+            p = min(hp, mp);
+            TellConsumableUse(item, "Feasting", p);
+        }
+        else if (isDrink)
+        {
+            p = mp;
+            TellConsumableUse(item, "Drinking", p);
+        }
+        else if (isFood)
+        {
+            p = hp;
+            TellConsumableUse(item, "Eating", p);
+        }
+        if (!bot->IsInCombat() && !bot->InBattleGround())
+            ai->SetNextCheckDelay(27000.0f * (100 - p) / 100.0f);
+
+        if (!bot->IsInCombat() && bot->InBattleGround())
+            ai->SetNextCheckDelay(20000.0f * (100 - p) / 100.0f);
+    }
+
     bot->GetSession()->HandleUseItemOpcode(packet);
     return true;
 
@@ -353,47 +389,6 @@ bool UseItemAction::UseItem(Item* item, ObjectGuid goGuid, Item* itemTarget, Uni
       packet.appendPackGUID(bot->GetObjectGuid());
       targetSelected = true;
       out << " on self";
-   }
-
-   ItemPrototype const* proto = item->GetProto();
-   bool isDrink = proto->Spells[0].SpellCategory == 59;
-   bool isFood = proto->Spells[0].SpellCategory == 11;
-   if (proto->Class == ITEM_CLASS_CONSUMABLE && (proto->SubClass == ITEM_SUBCLASS_FOOD || proto->SubClass == ITEM_SUBCLASS_CONSUMABLE) &&
-       (isFood || isDrink))
-   {
-      if (sServerFacade.IsInCombat(bot))
-         return false;
-
-      bot->addUnitState(UNIT_STAND_STATE_SIT);
-      ai->InterruptSpell();
-
-      float hp = bot->GetHealthPercent();
-      float mp = bot->GetPower(POWER_MANA) * 100.0f / bot->GetMaxPower(POWER_MANA);
-      float p;
-      if (isDrink && isFood)
-      {
-          p = min(hp, mp);
-          TellConsumableUse(item, "Feasting", p);
-      }
-      else if (isDrink)
-      {
-          p = mp;
-          TellConsumableUse(item, "Drinking", p);
-      }
-      else if (isFood)
-      {
-          p = hp;
-          TellConsumableUse(item, "Eating", p);
-      }
-      if(!bot->IsInCombat() && !bot->InBattleGround())
-          ai->SetNextCheckDelay(27000.0f * (100 - p) / 100.0f);
-
-      if (!bot->IsInCombat() && bot->InBattleGround())
-          ai->SetNextCheckDelay(20000.0f * (100 - p) / 100.0f);
-
-      //ai->SetNextCheckDelay(27000.0f * (100 - p) / 100.0f);
-      bot->GetSession()->HandleUseItemOpcode(packet);
-      return true;
    }
 
    if (!spellId)
