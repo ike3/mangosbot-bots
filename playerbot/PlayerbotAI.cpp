@@ -31,6 +31,7 @@
 #include "strategy/values/BudgetValues.h"
 #include "Social/SocialMgr.h"
 #include "PlayerbotTextMgr.h"
+#include "RandomItemMgr.h"
 #ifdef MANGOSBOT_TWO
 #include "Entities/Vehicle.h"
 #endif
@@ -1087,6 +1088,7 @@ void PlayerbotAI::DoNextAction(bool min)
     {
         if(!bot->isAFK() && !bot->InBattleGround() && !HasRealPlayerMaster())
             bot->ToggleAFK();
+
         SetNextCheckDelay(sPlayerbotAIConfig.passiveDelay);
         return;
     }
@@ -3122,9 +3124,9 @@ bool PlayerbotAI::AllowActive(ActivityType activityType)
     if (IsInRealGuild())
         return true;
 
-    if (activityType == OUT_OF_PARTY_ACTIVITY || activityType == GRIND_ACTIVITY) //Many bots nearby. Do not do heavy area checks.
-        if (HasManyPlayersNearby())
-            return false;
+    //if (activityType == OUT_OF_PARTY_ACTIVITY || activityType == GRIND_ACTIVITY) //Many bots nearby. Do not do heavy area checks.
+    //    if (HasManyPlayersNearby())
+    //        return false;
 
     //Bots don't need to move using pathfinder.
     if (activityType == DETAILED_MOVE_ACTIVITY)
