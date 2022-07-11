@@ -133,8 +133,8 @@ bool AttackersValue::IsPossibleTarget(Unit *attacker, Player *bot, float range)
         attacker->GetMapId() == bot->GetMapId() &&
         !sServerFacade.UnitIsDead(attacker) &&
         !attacker->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_1) &&
-        !attacker->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE_2) &&
-        (inCannon || !attacker->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE)) &&
+        !attacker->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_UNTARGETABLE) &&
+        (inCannon || !attacker->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_UNINTERACTIBLE)) &&
         attacker->IsVisibleForOrDetect(bot, bot->GetCamera().GetBody(), true) &&
 #ifdef CMANGOS
         !(attacker->IsStunned() && ai->HasAura("shackle undead", attacker)) &&

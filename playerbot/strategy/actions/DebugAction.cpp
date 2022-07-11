@@ -891,7 +891,7 @@ void DebugAction::FakeSpell(uint32 spellId, Unit* truecaster, Unit* caster, Obje
     {
         uint32 castFlags = CAST_FLAG_UNKNOWN2;
 
-        if (spellInfo && spellInfo->HasAttribute(SPELL_ATTR_RANGED))
+        if (spellInfo && spellInfo->HasAttribute(SPELL_ATTR_USES_RANGED_SLOT))
             castFlags |= CAST_FLAG_AMMO;                        // arrows/bullets visual
 
         WorldPacket data(SMSG_SPELL_START, (8 + 8 + 4 + 2 + 4));
@@ -928,7 +928,7 @@ void DebugAction::FakeSpell(uint32 spellId, Unit* truecaster, Unit* caster, Obje
 
 
 
-        if (spellInfo && spellInfo->HasAttribute(SPELL_ATTR_RANGED))
+        if (spellInfo && spellInfo->HasAttribute(SPELL_ATTR_USES_RANGED_SLOT))
             castFlags |= CAST_FLAG_AMMO;                        // arrows/bullets visual
         if (spellInfo && HasPersistentAuraEffect(spellInfo))
             castFlags |= CAST_FLAG_PERSISTENT_AA;
