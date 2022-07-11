@@ -2368,9 +2368,15 @@ uint32 RandomItemMgr::GetLiveStatWeight(Player* player, uint32 itemId, uint32 sp
     if (info->repFaction && uint32(player->GetReputationRank(info->repFaction)) < info->repRank)
         return 0;
     
+#ifdef MANGOSBOT_ZERO
     // skip missing pvp ranks
     if (info->pvpRank && player->GetHonorHighestRankInfo().rank < info->pvpRank)
         return 0;
+#else
+    // skip missing pvp ranks
+    if (info->pvpRank && player->GetHighestPvPRankIndex() < info->pvpRank)
+        return 0;
+#endif
 
     // skip missing skills
     if (info->reqSkill && player->GetSkillValue(info->reqSkill) < info->reqSkillRank)
