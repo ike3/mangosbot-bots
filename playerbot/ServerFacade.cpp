@@ -117,7 +117,14 @@ bool ServerFacade::IsInWater(Unit *unit)
 #ifdef MANGOS
     return unit->GetMap() &&
             unit->GetMap()->GetTerrain() &&
-            unit->GetMap()->GetTerrain()->IsSwimmable(unit->GetPositionX(), unit->GetPositionY(), unit->GetPositionZ());
+            unit->GetMap()->GetTerrain()->
+#ifdef MANGOSBOT_ZERO
+            IsSwimmable
+#endif
+#ifdef MANGOSBOT_ONE
+            IsInWater
+#endif
+            (unit->GetPositionX(), unit->GetPositionY(), unit->GetPositionZ());
 #endif
 #ifdef CMANGOS
     return unit->IsInWater();
