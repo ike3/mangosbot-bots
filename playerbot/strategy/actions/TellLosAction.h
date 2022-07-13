@@ -12,6 +12,7 @@ namespace ai
     private:
         void ListUnits(string title, list<ObjectGuid> units);
         void ListGameObjects(string title, list<ObjectGuid> gos);
+        void ListGrouped(string title, map<string, int32> grouped);
     };
 
 }
