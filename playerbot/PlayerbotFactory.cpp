@@ -162,7 +162,7 @@ void PlayerbotFactory::Randomize(bool incremental)
     InitImmersive();
     if (pmo) pmo->finish();*/
 
-	if (sPlayerbotAIConfig.randomBotPreQuests) {
+	if (!incremental && sPlayerbotAIConfig.randomBotPreQuests) {
 		sLog.outDetail("Initializing quests...");
 		pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Quests");
         InitQuests(classQuestIds);
@@ -205,8 +205,10 @@ void PlayerbotFactory::Randomize(bool incremental)
     //sRandomPlayerbotMgr.SetValue(bot->GetGUIDLow(), "specNo", 0);
     ai->DoSpecificAction("auto talents");
 
-    sPlayerbotDbStore.Reset(ai);
-    ai->ResetStrategies(false); // fix wrong stored strategy
+    if (!incremental)
+        sPlayerbotDbStore.Reset(ai);
+
+    ai->ResetStrategies(incremental); // fix wrong stored strategy
     if (pmo) pmo->finish();
 
     pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Spells2");
@@ -260,10 +262,6 @@ void PlayerbotFactory::Randomize(bool incremental)
 	pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_EqSets");
     sLog.outDetail("Initializing second equipment set...");
     InitSecondEquipmentSet();
-	if (bot->GetLevel() >= sPlayerbotAIConfig.minEnchantingBotLevel)
-	{
-		ApplyEnchantTemplate();
-	}
     if (pmo) pmo->finish();
 
     pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Inventory");
@@ -352,7 +350,7 @@ void PlayerbotFactory::AddConsumables()
             StoreItem(CONSUM_ID_SUPERIOR_MANA_OIL, 5);
             StoreItem(CONSUM_ID_BRILLIANT_WIZARD_OIL, 5);
          }
-         if (level >= 58) {
+         if (level >= 58 && level < 72) {
            StoreItem(CONSUM_ID_SUPERIOR_MANA_OIL, 5);
            StoreItem(CONSUM_ID_SUPERIOR_WIZARD_OIL, 5);
       }
@@ -412,17 +410,29 @@ void PlayerbotFactory::AddConsumables()
             StoreItem(CONSUM_ID_DEADLY_POISON, 5);
             StoreItem(CONSUM_ID_INSTANT_POISON_II, 5);
          }
-         if (level >= 36 && level < 44) {
-            StoreItem(CONSUM_ID_DEADLY_POISON_II, 5);
-           StoreItem(CONSUM_ID_INSTANT_POISON_III, 5);
+         if (level >= 36 && level < 38) {
+             StoreItem(CONSUM_ID_DEADLY_POISON, 5);
+             StoreItem(CONSUM_ID_INSTANT_POISON_III, 5);
          }
-         if (level >= 44 && level < 52) {
-            StoreItem(CONSUM_ID_DEADLY_POISON_III, 5);
+         if (level >= 38 && level < 44) {
+             StoreItem(CONSUM_ID_DEADLY_POISON_II, 5);
+             StoreItem(CONSUM_ID_INSTANT_POISON_III, 5);
+         }
+         if (level >= 44 && level < 46) {
+             StoreItem(CONSUM_ID_DEADLY_POISON_II, 5);
             StoreItem(CONSUM_ID_INSTANT_POISON_IV, 5);
          }
-         if (level >= 52 && level < 60) {
-            StoreItem(CONSUM_ID_DEADLY_POISON_IV, 5);
+         if (level >= 46 && level < 52) {
+             StoreItem(CONSUM_ID_DEADLY_POISON_III, 5);
+             StoreItem(CONSUM_ID_INSTANT_POISON_IV, 5);
+         }
+         if (level >= 52 && level < 54) {
+             StoreItem(CONSUM_ID_DEADLY_POISON_III, 5);
             StoreItem(CONSUM_ID_INSTANT_POISON_V, 5);
+         }
+         if (level >= 54 && level < 60) {
+             StoreItem(CONSUM_ID_DEADLY_POISON_IV, 5);
+             StoreItem(CONSUM_ID_INSTANT_POISON_V, 5);
          }
          if (level >= 60 && level < 62) {
             StoreItem(CONSUM_ID_DEADLY_POISON_V, 5);
@@ -432,9 +442,29 @@ void PlayerbotFactory::AddConsumables()
             StoreItem(CONSUM_ID_DEADLY_POISON_VI, 5);
             StoreItem(CONSUM_ID_INSTANT_POISON_VI, 5);
          }
-         if (level >= 68) {
-            StoreItem(CONSUM_ID_DEADLY_POISON_VII, 5);
+         if (level >= 68 && level < 70) {
+             StoreItem(CONSUM_ID_DEADLY_POISON_VI, 5);
             StoreItem(CONSUM_ID_INSTANT_POISON_VII, 5);
+         }
+         if (level >= 70 && level < 73) {
+             StoreItem(CONSUM_ID_DEADLY_POISON_VII, 5);
+             StoreItem(CONSUM_ID_INSTANT_POISON_VII, 5);
+         }
+         if (level >= 73 && level < 76) {
+             StoreItem(CONSUM_ID_DEADLY_POISON_VII, 5);
+             StoreItem(CONSUM_ID_INSTANT_POISON_VIII, 5);
+         }
+         if (level >= 76 && level < 79) {
+             StoreItem(CONSUM_ID_DEADLY_POISON_VIII, 5);
+             StoreItem(CONSUM_ID_INSTANT_POISON_VIII, 5);
+         }
+         if (level >= 79 && level < 80) {
+             StoreItem(CONSUM_ID_DEADLY_POISON_VIII, 5);
+             StoreItem(CONSUM_ID_INSTANT_POISON_IX, 5);
+         }
+         if (level = 80) {
+             StoreItem(CONSUM_ID_DEADLY_POISON_IX, 5);
+             StoreItem(CONSUM_ID_INSTANT_POISON_IX, 5);
          }
          break;
       }
@@ -1162,6 +1192,18 @@ void PlayerbotFactory::InitEquipment(bool incremental)
     if (specId == 0)
         return;
 
+    // choose type of weapon
+    uint32 weaponType = 0;
+    if (bot->getClass() == CLASS_PRIEST || bot->getClass() == CLASS_MAGE || bot->getClass() == CLASS_WARLOCK || bot->getClass() == CLASS_SHAMAN || (bot->getClass() == CLASS_DRUID && (specId == 29 || specId == 31)))
+    {
+        weaponType = sRandomPlayerbotMgr.GetValue(bot, "weaponType");
+        if (!weaponType || !incremental)
+        {
+            weaponType = urand(0, 1) ? (uint32)INVTYPE_WEAPON : (uint32)INVTYPE_2HWEAPON;
+            sRandomPlayerbotMgr.SetValue(bot, "weaponType", weaponType);
+        }
+    }
+
     // update only limited amount of slots with worst items
     map<uint32, bool> upgradeSlots;
     if (incremental)
@@ -1242,7 +1284,7 @@ void PlayerbotFactory::InitEquipment(bool incremental)
             {
                 if (level < 10)
                     quality = urand(ITEM_QUALITY_POOR, ITEM_QUALITY_UNCOMMON);
-                if (level < 20)
+                else if (level < 20)
                     quality = urand(ITEM_QUALITY_NORMAL, ITEM_QUALITY_UNCOMMON);
                 else if (level < 40)
                     quality = urand(ITEM_QUALITY_UNCOMMON, ITEM_QUALITY_RARE);
@@ -1250,22 +1292,30 @@ void PlayerbotFactory::InitEquipment(bool incremental)
 #ifdef MANGOSBOT_ZERO
                     quality = urand(ITEM_QUALITY_UNCOMMON, ITEM_QUALITY_RARE);
                 else if (level < 70)
-                    quality = urand(ITEM_QUALITY_RARE, ITEM_QUALITY_EPIC);
-#else
+                    quality = urand(ITEM_QUALITY_UNCOMMON, ITEM_QUALITY_EPIC);
+#endif
+#ifdef MANGOSBOT_ONE
                     quality = urand(ITEM_QUALITY_UNCOMMON, ITEM_QUALITY_RARE);
                 else if (level < 70)
-                    quality = urand(ITEM_QUALITY_RARE, ITEM_QUALITY_EPIC);
+                    quality = urand(ITEM_QUALITY_UNCOMMON, ITEM_QUALITY_RARE);
+                else if (level < 80)
+                    quality = urand(ITEM_QUALITY_UNCOMMON, ITEM_QUALITY_EPIC);
 #endif
+#ifdef MANGOSBOT_TWO
+                quality = urand(ITEM_QUALITY_UNCOMMON, ITEM_QUALITY_RARE);
+                else if (level < 70)
+                    quality = urand(ITEM_QUALITY_UNCOMMON, ITEM_QUALITY_RARE);
                 else if (level < 80)
                     quality = urand(ITEM_QUALITY_UNCOMMON, ITEM_QUALITY_RARE);
                 else
-                    quality = urand(ITEM_QUALITY_RARE, ITEM_QUALITY_EPIC);
+                    quality = urand(ITEM_QUALITY_UNCOMMON, ITEM_QUALITY_EPIC);
+#endif
             }
             else
             {
                 if (level < 10)
                     quality = ITEM_QUALITY_POOR;
-                if (level < 20)
+                else if (level < 20)
                     quality = ITEM_QUALITY_NORMAL;
                 else if (level < 40)
                     quality = ITEM_QUALITY_UNCOMMON;
@@ -1274,18 +1324,26 @@ void PlayerbotFactory::InitEquipment(bool incremental)
                     quality = ITEM_QUALITY_UNCOMMON;
                 else if (level < 70)
                     quality = ITEM_QUALITY_RARE;
-#else
+#endif
+#ifdef MANGOSBOT_ONE
                     quality = ITEM_QUALITY_UNCOMMON;
                 else if (level < 70)
+                    quality = ITEM_QUALITY_UNCOMMON;
+                else if (level < 80)
                     quality = ITEM_QUALITY_RARE;
 #endif
+#ifdef MANGOSBOT_TWO
+                    quality = ITEM_QUALITY_UNCOMMON;
+                else if (level < 70)
+                    quality = ITEM_QUALITY_UNCOMMON;
                 else if (level < 80)
                     quality = ITEM_QUALITY_UNCOMMON;
                 else
                     quality = ITEM_QUALITY_RARE;
+#endif
             }
         }
-        if (progressiveGear && urand(0, 100) < 100 * sPlayerbotAIConfig.randomGearLoweringChance && quality > ITEM_QUALITY_NORMAL) {
+        if (progressiveGear && !incremental && urand(0, 100) < 100 * sPlayerbotAIConfig.randomGearLoweringChance && quality > ITEM_QUALITY_NORMAL) {
             quality--;
         }
 
@@ -1307,6 +1365,10 @@ void PlayerbotFactory::InitEquipment(bool incremental)
                     // filter item level
                     ItemPrototype const* proto = sObjectMgr.GetItemPrototype(newItemId);
                     if (!proto)
+                        continue;
+
+                    // skip unique-equippable items if already have one in inventory
+                    if (proto->Flags & ITEM_FLAG_UNIQUE_EQUIPPABLE && bot->HasItemCount(proto->ItemId, 1))
                         continue;
 
                     if (proto->ItemLevel > sPlayerbotAIConfig.randomGearMaxLevel)
@@ -1350,6 +1412,30 @@ void PlayerbotFactory::InitEquipment(bool incremental)
                     vector<uint32> newItems = sRandomItemMgr.Query(level, bot->getClass(), uint8(specId), slot, q);
                     if (newItems.size())
                         ids.insert(ids.begin(), newItems.begin(), newItems.end());
+
+                    // add one hand weapons for tanks
+                    if ((specId == 3 || specId == 5) && slot == EQUIPMENT_SLOT_MAINHAND)
+                    {
+                        vector<uint32> oneHanded = sRandomItemMgr.Query(level, bot->getClass(), uint8(specId), EQUIPMENT_SLOT_OFFHAND, q);
+                        if (oneHanded.size())
+                            ids.insert(ids.begin(), oneHanded.begin(), oneHanded.end());
+                    }
+
+                    // add one hand weapons for casters
+                    if ((specId == 4 || (bot->getClass() == CLASS_DRUID || bot->getClass() == CLASS_PRIEST || bot->getClass() == CLASS_MAGE || bot->getClass() == CLASS_WARLOCK || bot->getClass() == CLASS_ROGUE || bot->getClass() == CLASS_SHAMAN)) && slot == EQUIPMENT_SLOT_MAINHAND)
+                    {
+                        vector<uint32> oneHanded = sRandomItemMgr.Query(level, bot->getClass(), uint8(specId), EQUIPMENT_SLOT_OFFHAND, q);
+                        if (oneHanded.size())
+                            ids.insert(ids.begin(), oneHanded.begin(), oneHanded.end());
+                    }
+
+                    // add weapons for dual wield
+                    if (slot == EQUIPMENT_SLOT_MAINHAND && (bot->getClass() == CLASS_ROGUE || specId == 2 || specId == 21))
+                    {
+                        vector<uint32> oneHanded = sRandomItemMgr.Query(level, bot->getClass(), uint8(specId), EQUIPMENT_SLOT_OFFHAND, q);
+                        if (oneHanded.size())
+                            ids.insert(ids.begin(), oneHanded.begin(), oneHanded.end());
+                    }
                 }
 
                 sLog.outDetail("Bot #%d %s:%d <%s>: %u possible items for slot %d", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->GetLevel(), bot->GetName(), ids.size(), slot);
@@ -1359,7 +1445,20 @@ void PlayerbotFactory::InitEquipment(bool incremental)
                     // sort items based on stat value, ilvl or quality
                     std::sort(ids.begin(), ids.end(), [specId](int a, int b)
                         {
-                            bool diffValue = sRandomItemMgr.GetStatWeight(a, specId) < sRandomItemMgr.GetStatWeight(b, specId);
+                            uint32 baseCompareA = sRandomItemMgr.GetStatWeight(a, specId) * 1000;
+                            uint32 baseCompareB = sRandomItemMgr.GetStatWeight(b, specId) * 1000;
+                            if (baseCompareA < baseCompareB)
+                                return true;
+
+                            ItemPrototype const* proto1 = sObjectMgr.GetItemPrototype(a);
+                            ItemPrototype const* proto2 = sObjectMgr.GetItemPrototype(b);
+
+                            baseCompareA += proto1->Quality * proto1->ItemLevel;
+                            baseCompareB += proto2->Quality * proto2->ItemLevel;
+
+                            return baseCompareA < baseCompareB;
+
+                            /*bool diffValue = sRandomItemMgr.GetStatWeight(a, specId) < sRandomItemMgr.GetStatWeight(b, specId);
                             if (diffValue)
                                 return true;
 
@@ -1373,7 +1472,7 @@ void PlayerbotFactory::InitEquipment(bool incremental)
                             if (diffLevel)
                                 return true;
 
-                            return proto1->Quality <= proto2->Quality;
+                            return proto1->Quality <= proto2->Quality;*/
                         });
 
                     if (!progressiveGear)
@@ -1391,16 +1490,68 @@ void PlayerbotFactory::InitEquipment(bool incremental)
                     if (!proto)
                         continue;
 
+                    // skip unique-equippable items if already have one in inventory
+                    if (proto->Flags & ITEM_FLAG_UNIQUE_EQUIPPABLE && bot->HasItemCount(proto->ItemId, 1))
+                        continue;
+
                     if (proto->ItemLevel > sPlayerbotAIConfig.randomGearMaxLevel)
                         continue;
 
-                    // chance to get legendary
-                    if (proto->Quality == ITEM_QUALITY_LEGENDARY && urand(0, 100) > uint32(100 * 0.5f))
+                    // filter tank weapons
+                    if (slot == EQUIPMENT_SLOT_OFFHAND && (specId == 3 || specId == 5) && !(proto->Class == ITEM_CLASS_ARMOR && proto->SubClass == ITEM_SUBCLASS_ARMOR_SHIELD))
+                        continue;
+
+                    // filter tank weapons
+                    if (slot == EQUIPMENT_SLOT_MAINHAND && (specId == 3 || specId == 5) && !(proto->Class == ITEM_CLASS_WEAPON && proto->InventoryType != INVTYPE_HOLDABLE))
+                        continue;
+
+                    // filter caster weapons
+                    if (weaponType)
+                    {
+                        if (slot == EQUIPMENT_SLOT_MAINHAND)
+                        {
+                            if (weaponType == INVTYPE_2HWEAPON && proto->Class == ITEM_CLASS_WEAPON && proto->InventoryType != INVTYPE_2HWEAPON)
+                                continue;
+                            if (weaponType != INVTYPE_2HWEAPON && proto->Class == ITEM_CLASS_WEAPON && proto->InventoryType == INVTYPE_2HWEAPON)
+                                continue;
+                            if (proto->InventoryType == INVTYPE_HOLDABLE)
+                                continue;
+                        }
+                        if (slot == EQUIPMENT_SLOT_OFFHAND)
+                        {
+                            if (weaponType != INVTYPE_2HWEAPON && (bot->getClass() == CLASS_PRIEST || bot->getClass() == CLASS_MAGE || bot->getClass() == CLASS_WARLOCK) && proto->InventoryType != INVTYPE_HOLDABLE)
+                                continue;
+                            if (weaponType == INVTYPE_2HWEAPON && (bot->getClass() == CLASS_PRIEST || bot->getClass() == CLASS_MAGE || bot->getClass() == CLASS_WARLOCK))
+                                continue;
+
+                            if (weaponType != INVTYPE_2HWEAPON && proto->Class == ITEM_CLASS_WEAPON && proto->InventoryType == INVTYPE_2HWEAPON)
+                                continue;
+                        }
+                    }
+
+                    // unavailable legendaries list
+                    vector<uint32> lockedItems;
+                    lockedItems.push_back(30311); // Warp Slicer
+                    lockedItems.push_back(30312); // Infinity Blade
+                    lockedItems.push_back(30313); // Staff of Disentagration
+                    lockedItems.push_back(30314); // Phaseshift Bulwark
+                    lockedItems.push_back(30316); // Devastation
+                    lockedItems.push_back(30317); // Cosmic Infuser
+                    lockedItems.push_back(30318); // Netherstrand Longbow
+                    lockedItems.push_back(18582); // Twin Blades of Azzinoth
+                    lockedItems.push_back(18583); // Right Blade
+                    lockedItems.push_back(18584); // Left Blade
+                    lockedItems.push_back(22736); // Andonisus, Reaper of Souls
+                    lockedItems.push_back(23051); // Glaive of the Defender
+                    lockedItems.push_back(13262); // Ashbringer
+                    lockedItems.push_back(17142); // Shard of the Defiler
+                    lockedItems.push_back(12947); // Alex's Ring of Audacity
+                    if (std::find(lockedItems.begin(), lockedItems.end(), proto->ItemId) != lockedItems.end())
                         continue;
 
                     // check req level difference from config
                     int delta = sPlayerbotAIConfig.randomGearMaxDiff + (80 - bot->GetLevel()) / 10;
-                    if ((int)bot->GetLevel() - (int)sRandomItemMgr.GetMinLevelFromCache(newItemId) > delta)
+                    if (proto->Quality < ITEM_QUALITY_LEGENDARY && ((int)bot->GetLevel() - (int)sRandomItemMgr.GetMinLevelFromCache(newItemId) > delta))
                         continue;
 
                     Item* oldItem = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, slot);
@@ -1409,12 +1560,20 @@ void PlayerbotFactory::InitEquipment(bool incremental)
                     if (oldItem && oldProto->ItemId == newItemId)
                         continue;
 
+                    // chance to get legendary
+                    if (proto->Quality == ITEM_QUALITY_LEGENDARY && urand(0, 100) > uint32(100 * 0.5f))
+                        continue;
+
+                    // chance to not replace legendary
+                    if (incremental && oldItem && oldProto->Quality == ITEM_QUALITY_LEGENDARY && urand(0, 100) > uint32(100 * 0.5f))
+                        continue;
+
                     uint32 oldStatValue = oldItem ? sRandomItemMgr.GetStatWeight(oldProto->ItemId, specId) : 0;
                     uint32 newStatValue = sRandomItemMgr.GetLiveStatWeight(bot, newItemId, specId);
                     if (newStatValue <= 0)
                         continue;
 
-                    if (incremental && oldItem && oldStatValue >= newStatValue && oldStatValue > 1)
+                    if (incremental && oldItem && oldStatValue > newStatValue && oldStatValue > 1)
                         continue;
 
                     // replace grey items right away
@@ -1816,8 +1975,7 @@ void PlayerbotFactory::InitTradeSkills()
 #ifdef MANGOSBOT_TWO
         case CLASS_DEATH_KNIGHT:
 #endif
-            firstSkills.push_back(SKILL_MINING);
-            //secondSkills.push_back(SKILL_BLACKSMITHING);
+            secondSkills.push_back(SKILL_BLACKSMITHING);
             secondSkills.push_back(SKILL_ENGINEERING);
             break;
         case CLASS_SHAMAN:
@@ -1832,7 +1990,7 @@ void PlayerbotFactory::InitTradeSkills()
             secondSkills.push_back(SKILL_ENCHANTING);
         }
 
-        if (!ai->IsTank(bot))
+        /*if (!ai->IsTank(bot))
         {
             switch (urand(0, 6))
             {
@@ -1867,7 +2025,39 @@ void PlayerbotFactory::InitTradeSkills()
         {
             firstSkill = firstSkills[urand(0, firstSkills.size() - 1)];
             secondSkill = secondSkills[urand(0, secondSkills.size() - 1)];
+        }*/
+        if (firstSkills.empty() || secondSkills.empty())
+        {
+            switch (urand(0, 6))
+            {
+            case 0:
+                firstSkill = SKILL_HERBALISM;
+                secondSkill = SKILL_ALCHEMY;
+                break;
+            case 1:
+                firstSkill = SKILL_HERBALISM;
+                secondSkill = SKILL_MINING;
+                break;
+            case 2:
+                firstSkill = SKILL_MINING;
+                secondSkill = SKILL_SKINNING;
+                break;
+            case 3:
+#ifdef MANGOSBOT_ZERO
+                firstSkill = SKILL_HERBALISM;
+                secondSkill = SKILL_SKINNING;
+#else
+                firstSkill = SKILL_JEWELCRAFTING;
+                secondSkill = SKILL_MINING;
+#endif
+            }
         }
+        else
+        {
+            firstSkill = firstSkills[urand(0, firstSkills.size() - 1)];
+            secondSkill = secondSkills[urand(0, secondSkills.size() - 1)];
+        }
+
         sRandomPlayerbotMgr.SetValue(bot, "firstSkill", firstSkill);
         sRandomPlayerbotMgr.SetValue(bot, "secondSkill", secondSkill);
     }
@@ -1878,6 +2068,25 @@ void PlayerbotFactory::InitTradeSkills()
 
     SetRandomSkill(firstSkill);
     SetRandomSkill(secondSkill);
+
+#ifndef MANGOSBOT_ZERO
+    // skill proficiencies
+    switch (bot->getClass())
+    {
+    case CLASS_WARRIOR:
+    case CLASS_PALADIN:
+#ifdef MANGOSBOT_TWO
+    case CLASS_DEATH_KNIGHT:
+#endif
+        bot->learnSpell(9788, false);  // armorsmith
+        bot->learnSpell(9788, false);  // armorsmith
+        bot->learnSpell(9787, false);  // weaponsmith
+        bot->learnSpell(17040, false); // hammersmith
+        bot->learnSpell(17039, false); // swordsmith
+        bot->learnSpell(17041, false); // axesmith
+        break;
+    }
+#endif
 }
 
 void PlayerbotFactory::UpdateTradeSkills()
@@ -3015,6 +3224,10 @@ void PlayerbotFactory::EnchantEquipment(Player* bot)
 {
     PlayerbotFactory factory(bot, bot->GetLevel());
     factory.ApplyEnchantTemplate();
+#ifndef MANGOSBOT_ZERO
+    factory.InitGems();
+#endif
+
     //save to db
     if (bot->GetSaveTimer() >= 60 * IN_MILLISECONDS)
         bot->SetSaveTimer(urand(30, 60) * IN_MILLISECONDS);
@@ -3113,4 +3326,122 @@ void PlayerbotFactory::LoadEnchantContainer()
 
       delete result;
    }
+}
+
+void PlayerbotFactory::InitGems() //WIP
+{
+    vector<uint32> gems = sRandomItemMgr.GetGemsList();
+    if (!gems.empty()) ahbot::Shuffle(gems);
+
+    for (int slot = EQUIPMENT_SLOT_START; slot < EQUIPMENT_SLOT_END; slot++)
+    {
+        if (Item* item = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, slot))
+        {
+            if (ItemPrototype const* proto = item->GetProto())
+            {
+                uint32 gemsList[MAX_GEM_SOCKETS];
+                ObjectGuid gem_guids[MAX_GEM_SOCKETS];
+                bool gemCreated = false;
+                bool hasSockets = false;
+
+                for (int i = 0; i < MAX_GEM_SOCKETS; ++i)               // check for hack maybe
+                {
+                    // tried to put gem in socket where no socket exists
+                    if (!proto->Socket[i].Color)
+                        continue;
+
+                    if (proto->Socket[i].Color)
+                        hasSockets = true;
+                }
+                if (!hasSockets)
+                    continue;
+
+                for (uint32 enchant_slot = SOCK_ENCHANTMENT_SLOT; enchant_slot < SOCK_ENCHANTMENT_SLOT + MAX_GEM_SOCKETS; ++enchant_slot)
+                {
+                    ObjectGuid gem_GUID;
+                    uint32 SocketColor = proto->Socket[enchant_slot - SOCK_ENCHANTMENT_SLOT].Color;
+                    uint32 gem_id = 0;
+                    switch (SocketColor) {
+                    case SOCKET_COLOR_META:
+                        gem_id = 25890;
+                        break;
+                    default:
+                    {
+                        for (vector<uint32>::const_iterator itr = gems.begin(); itr != gems.end(); itr++)
+                        {
+                            if (ItemPrototype const* gemProto = sObjectMgr.GetItemPrototype(*itr))
+                            {
+                                if (GemPropertiesEntry const* gemProperty = sGemPropertiesStore.LookupEntry(gemProto->GemProperties))
+                                {
+                                    if (SpellItemEnchantmentEntry const* pEnchant = sSpellItemEnchantmentStore.LookupEntry(gemProperty->spellitemenchantement))
+                                    {
+                                        uint32 GemColor = gemProperty->color;
+
+                                        /*if (GemColor == 14)
+                                            if ((bot->HasItemOrGemWithIdEquipped(gemProto->ItemId, 1)) || (bot->HasItemCount(gemProto->ItemId, 1)))
+                                                continue;*/
+
+                                        if (gemProto->RequiredSkillRank > bot->GetSkillValue(SKILL_JEWELCRAFTING))
+                                            continue;
+
+
+                                        /*if ((bot->GetLevel()) < (gemProto->ItemLevel - 10))
+                                            continue;*/
+
+                                        uint8 sp = 0, ap = 0, tank = 0;
+                                        if (GemColor & SocketColor && GemColor == SocketColor)
+                                        {
+                                            for (int i = 0; i < 3; ++i)
+                                            {
+                                                if (pEnchant->type[i] != ITEM_ENCHANTMENT_TYPE_STAT)
+                                                    continue;
+
+                                                AddItemStats(pEnchant->spellid[i], sp, ap, tank);
+                                            }
+                                        }
+
+                                        if (!CheckItemStats(sp, ap, tank))
+                                            continue;
+
+                                        if (gemProto->RequiredSkillRank > bot->GetSkillValue(SKILL_JEWELCRAFTING))
+                                            continue;
+
+                                        gem_id = gemProto->ItemId;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    break;
+                    }
+                    if (gem_id > 0)
+                    {
+                        gemsList[enchant_slot - SOCK_ENCHANTMENT_SLOT] = gem_id;
+                        ItemPosCountVec dest;
+                        InventoryResult res = bot->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, gem_id, 1);
+                        if (res == EQUIP_ERR_OK)
+                        {
+                            if (Item* gem = bot->StoreNewItemInInventorySlot(gem_id, 1))
+                            {
+                                gem_GUID = gem->GetObjectGuid();
+                                gem_guids[enchant_slot - SOCK_ENCHANTMENT_SLOT] = gem_GUID;
+                                gemCreated = true;
+                            }
+                        }
+                    }
+                }
+                if (gemCreated)
+                {
+                    std::unique_ptr<WorldPacket> packet(new WorldPacket(CMSG_SOCKET_GEMS));
+                    *packet << item->GetObjectGuid();
+                    for (int i = 0; i < MAX_GEM_SOCKETS; ++i)
+                    {
+                        *packet << gem_guids[i];
+                    }
+                    bot->GetSession()->QueuePacket(std::move(packet));
+                }
+            }
+        }
+    }
 }
