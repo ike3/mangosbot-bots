@@ -327,6 +327,7 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
             if (player->getClass() == CLASS_PALADIN && tab == 0)
             {
                 engine->addStrategies("dps", "close", NULL);
+                engine->removeStrategy("ranged");
             }
         }
 
@@ -334,6 +335,7 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
         if (player->getClass() == CLASS_PALADIN && tab == 0 && player->GetLevel() < 10)
         {
             engine->addStrategies("dps", "close", NULL);
+            engine->removeStrategy("ranged");
         }
 
         engine->ChangeStrategy(sPlayerbotAIConfig.randomBotCombatStrategies);
