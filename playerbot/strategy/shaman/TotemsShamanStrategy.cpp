@@ -7,12 +7,12 @@ using namespace ai;
 
 TotemsShamanStrategy::TotemsShamanStrategy(PlayerbotAI* ai) : GenericShamanStrategy(ai)
 {
+    
 }
 
 void TotemsShamanStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 {
     GenericShamanStrategy::InitTriggers(triggers);
-
     triggers.push_back(new TriggerNode(
         "grace of air totem",
         NextAction::array(0, new NextAction("grace of air totem", 16.0f), NULL)));
