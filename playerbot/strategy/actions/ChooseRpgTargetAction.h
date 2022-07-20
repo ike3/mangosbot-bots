@@ -18,6 +18,8 @@ namespace ai
     private:        
         float getMaxRelevance(GuidPosition guidP);
         bool HasSameTarget(ObjectGuid guid, uint32 max, list<ObjectGuid>& nearGuids);
+
+        unordered_map <ObjectGuid, string> rgpActionReason;
     };
 
     class ClearRpgTargetAction : public ChooseRpgTargetAction {

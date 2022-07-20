@@ -72,7 +72,8 @@ float ChooseRpgTargetAction::getMaxRelevance(GuidPosition guidP)
             if (!trigger->IsActive())
                 continue;
 
-            maxRelevance = triggerNode->getFirstRelevance();            
+            maxRelevance = triggerNode->getFirstRelevance();  
+            rgpActionReason[guidP] = triggerNode->getName();
         }
     }
 
@@ -122,6 +123,8 @@ bool ChooseRpgTargetAction::Execute(Event event)
     SET_AI_VALUE(string, "next rpg action", this->getName());
 
     bool hasGoodRelevance = false;
+
+    rgpActionReason.clear();
 
     for (auto& target : targets)
     {
@@ -224,7 +227,7 @@ bool ChooseRpgTargetAction::Execute(Event event)
         out << "found: ";
         out << chat->formatWorldobject(guidP.GetWorldObject());
 
-        out << " " << relevances.front();
+        out << " " << rgpActionReason[guidP];
 
         ai->TellMasterNoFacing(out);
     }
