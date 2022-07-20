@@ -2131,6 +2131,7 @@ void TravelMgr::LoadQuestTravelTable()
 
     sPlayerbotAIConfig.openLog("unload_grid.csv", "w");
     sPlayerbotAIConfig.openLog("unload_obj.csv", "w");
+    sPlayerbotAIConfig.openLog("bot_events.csv", "w");
 
 #ifdef IKE_PATHFINDER
     bool mmapAvoidMobMod = true;
@@ -3831,6 +3832,19 @@ vector<WorldPosition*> TravelMgr::getNextPoint(WorldPosition* center, vector<Wor
         return retVec;
     }
 
+    retVec = points;
+
+    vector<uint32> weights;
+
+    std::transform(retVec.begin(), retVec.end(), std::back_inserter(weights), [center](WorldPosition* point) { return 200000 / (1 + point->distance(center)); });
+
+    std::mt19937 gen(time(0));
+
+    weighted_shuffle(retVec.begin(), retVec.end(), weights.begin(), weights.end(), gen);
+
+    /*
+    vector<float> dists;
+
     //List of weights based on distance (Gausian curve that starts at 100 and lower to 1 at 1000 distance)
     vector<uint32> weights;
 
@@ -3859,6 +3873,8 @@ vector<WorldPosition*> TravelMgr::getNextPoint(WorldPosition* center, vector<Wor
         return retVec;
 
     assert(!"No valid point found.");
+
+    */
 
     return retVec;
 }

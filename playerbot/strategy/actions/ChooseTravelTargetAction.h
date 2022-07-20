@@ -20,7 +20,10 @@ namespace ai
         void setNewTarget(TravelTarget* newTarget, TravelTarget* oldTarget);
         void ReportTravelTarget(TravelTarget* newTarget, TravelTarget* oldTarget);
 
-        bool getBestDestination(vector<TravelDestination*>* activeDestinations, vector<WorldPosition*>* activePoints);
+        void getLogicalDestinations(vector<TravelDestination*>& activeDestinations);
+        bool getBestDestination(vector<TravelDestination*>& activeDestinations, vector<WorldPosition*>& activePoints);
+        bool getBestDestination(vector<TravelDestination*>& activeDestinations);
+        bool SetBestTarget(TravelTarget* target, vector<TravelDestination*>& activeDestinations);
 
         bool SetGroupTarget(TravelTarget* target);
         bool SetCurrentTarget(TravelTarget* target, TravelTarget* oldTarget);
