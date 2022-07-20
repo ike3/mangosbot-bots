@@ -52,8 +52,8 @@ bool SeeSpellAction::Execute(Event event)
     if (!master)
         return false;
 
-    //if (!ai->HasStrategy("RTSC", ai->GetState()))
-    //    return false;
+    if (!ai->HasStrategy("RTSC", ai->GetState()))
+        return false;
 
     if (spellId != RTSC_MOVE_SPELL)
         return false;
@@ -70,6 +70,39 @@ bool SeeSpellAction::Execute(Event event)
 
     WorldPosition spellPosition(master->GetMapId(), targets.m_destPos);
     SET_AI_VALUE(WorldPosition, "see spell location", spellPosition);
+
+    if (ai->HasStrategy("debug", BOT_STATE_NON_COMBAT))
+    {
+        PathFinder path(bot);
+
+        float x = spellPosition.getX();
+        float y = spellPosition.getY();
+        float z = spellPosition.getZ();
+
+        ostringstream out;
+
+        out << " area = ";
+
+        out << path.getArea(bot->GetMapId(), x, y, z);
+
+        unsigned short flags = path.getFlags(bot->GetMapId(), x, y, z);
+
+        out << " flags = " << flags;
+
+        if (flags & NAV_GROUND)
+            out << ", ground";
+        if (flags & NAV_EMPTY)
+            out << ", empty";
+        if (flags & NAV_GROUND_STEEP)
+            out << ", slope";
+        if (flags & NAV_WATER)
+            out << ", water";
+        if (flags & NAV_MAGMA_SLIME)
+            out << ", magma slime";
+
+        ai->TellMaster(out);
+    }
+
 
     bool selected = AI_VALUE(bool, "RTSC selected");
     bool inRange = spellPosition.distance(bot) <= 10;
