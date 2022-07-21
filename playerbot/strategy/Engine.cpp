@@ -197,10 +197,10 @@ bool Engine::DoNextAction(Unit* unit, int depth, bool minimal)
                 }
                 else
                 {
-                    if (ai->HasStrategy("debug", BOT_STATE_NON_COMBAT))
+                    if (ai->HasStrategy("debug action", BOT_STATE_NON_COMBAT))
                     {
                         ostringstream out;
-                        out << "do: ";
+                        out << "try: ";
                         out << action->getName();
                         out << " impossible (";
 
@@ -217,10 +217,10 @@ bool Engine::DoNextAction(Unit* unit, int depth, bool minimal)
             }
             else
             {
-                if (ai->HasStrategy("debug", BOT_STATE_NON_COMBAT))
+                if (ai->HasStrategy("debug action", BOT_STATE_NON_COMBAT))
                 {
                     ostringstream out;
-                    out << "do: ";
+                    out << "try: ";
                     out << action->getName();
                     out << " useless (";
 
