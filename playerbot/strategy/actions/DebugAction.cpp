@@ -187,6 +187,12 @@ bool DebugAction::Execute(Event event)
         ai->TellMasterNoFacing(out);
 
     }
+    else if (text.find("values ") != std::string::npos)
+    {
+        ai->TellMasterNoFacing(ai->GetAiObjectContext()->FormatValues(text.substr(7)));
+
+        return true;
+    }
     else if (text.find("add node") != std::string::npos)
     {
         WorldPosition pos(bot);
