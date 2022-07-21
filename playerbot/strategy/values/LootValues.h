@@ -16,7 +16,7 @@ namespace ai
     };
 
     //                   itemId, entry
-    typedef unordered_map<uint32, int32> DropMap;
+    typedef unordered_multimap<uint32, int32> DropMap;
 
     //Returns the loot map of all entries
     class DropMapValue : public SingleCalculatedValue<DropMap*>
