@@ -956,13 +956,19 @@ bool QuestObjectiveTravelDestination::isActive(Player* bot) {
 
     if (getEntry() > 0 && !isOut(&botPos))
     {
-        list<ObjectGuid> targets = AI_VALUE(list<ObjectGuid>, "possible targets");
+        TravelTarget* target = context->GetValue<TravelTarget*>("travel target")->Get();
 
-        for (auto& target : targets)
-            if (target.GetEntry() == getEntry() && target.IsCreature() && ai->GetCreature(target) && ai->GetCreature(target)->IsAlive())
-                return true;
-        
-        return false;
+        //Only look for the target if it is unique or if we are currently working on it.
+        if (points.size() == 1 || (target->getStatus() == TRAVEL_STATUS_WORK && target->getEntry() == getEntry()))
+        {
+            list<ObjectGuid> targets = AI_VALUE(list<ObjectGuid>, "possible targets");
+
+            for (auto& target : targets)
+                if (target.GetEntry() == getEntry() && target.IsCreature() && ai->GetCreature(target) && ai->GetCreature(target)->IsAlive())
+                    return true;
+
+            return false;
+        }
     }
 
     return true;
@@ -2132,6 +2138,7 @@ void TravelMgr::LoadQuestTravelTable()
     sPlayerbotAIConfig.openLog("unload_grid.csv", "w");
     sPlayerbotAIConfig.openLog("unload_obj.csv", "w");
     sPlayerbotAIConfig.openLog("bot_events.csv", "w");
+    sPlayerbotAIConfig.openLog("travel_map.csv", "w");
 
 #ifdef IKE_PATHFINDER
     bool mmapAvoidMobMod = true;
@@ -3826,7 +3833,7 @@ uint32 TravelMgr::getDialogStatus(Player* pPlayer, int32 questgiver, Quest const
 vector<WorldPosition*> TravelMgr::getNextPoint(WorldPosition* center, vector<WorldPosition*> points, uint32 amount) {
     vector<WorldPosition*> retVec;
 
-    if (points.size() == 1)
+    if (points.size() < 2)
     {
         retVec.push_back(points[0]);
         return retVec;
@@ -3841,40 +3848,6 @@ vector<WorldPosition*> TravelMgr::getNextPoint(WorldPosition* center, vector<Wor
     std::mt19937 gen(time(0));
 
     weighted_shuffle(retVec.begin(), retVec.end(), weights.begin(), weights.end(), gen);
-
-    /*
-    vector<float> dists;
-
-    //List of weights based on distance (Gausian curve that starts at 100 and lower to 1 at 1000 distance)
-    vector<uint32> weights;
-
-    std::transform(points.begin(), points.end(), std::back_inserter(weights), [center](WorldPosition* point) { return 1 + 1000 * exp(-1 * pow(point->distance(center) / 400.0, 2)); });
-
-    //Total sum of all those weights.
-    uint32 sum = std::accumulate(weights.begin(), weights.end(), 0);
-
-    //Pick a random number in that range.
-    uint32 rnd = urand(0, sum);
-
-    //Pick a random point based on weights.
-    for (uint32 nr = 0; nr < amount; nr++)
-    {
-        for (unsigned i = 0; i < points.size(); ++i)
-            if (rnd < weights[i] && (retVec.empty() || std::find(retVec.begin(), retVec.end(), points[i]) == retVec.end()))
-            {
-                retVec.push_back(points[i]);
-                break;
-            }
-            else
-                rnd -= weights[i];
-    }
-
-    if (!retVec.empty())
-        return retVec;
-
-    assert(!"No valid point found.");
-
-    */
 
     return retVec;
 }
@@ -3903,29 +3876,6 @@ vector<WorldPosition> TravelMgr::getNextPoint(WorldPosition center, vector<World
     std::mt19937 gen(time(0));
 
     weighted_shuffle(retVec.begin(), retVec.end(), weights.begin(), weights.end(), gen);
-
-    vector<float> dists;
-
-    //Total sum of all those weights.
-    /*
-    uint32 sum = std::accumulate(weights.begin(), weights.end(), 0);
-
-    //Pick a random point based on weights.
-    for (uint32 nr = 0; nr < amount; nr++)
-    {
-        //Pick a random number in that range.
-        uint32 rnd = urand(0, sum);
-
-        for (unsigned i = 0; i < points.size(); ++i)
-            if (rnd < weights[i] && (retVec.empty() || std::find(retVec.begin(), retVec.end(), points[i]) == retVec.end()))
-            {
-                retVec.push_back(points[i]);
-                break;
-            }
-            else
-                rnd -= weights[i];
-    }
-    */
 
     return retVec;
 }
