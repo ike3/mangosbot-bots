@@ -183,8 +183,8 @@ uint32 MoneyNeededForValue::Calculate()
         {
             if (bot->GetGuildId() && bot->GetLevel() > 20)
                 moneyWanted = AI_VALUE2(uint32, "item count", chat->formatQItem(5976)) ? 0 : 10000; //1g (tabard)
-            else
-                moneyWanted = AI_VALUE2(uint32, "item count", chat->formatQItem(5863)) ? 0 : 10000; //10s (guild charter)
+            else if (bot->GetLevel() > 10)
+                moneyWanted = AI_VALUE2(uint32, "item count", chat->formatQItem(5863)) ? 0 : 1000; //10s (guild charter)
         }
         break;
     case NeedMoneyFor::tradeskill:
