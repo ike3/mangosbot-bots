@@ -26,6 +26,7 @@ namespace ai
         static string formatWorldEntry(int32 entry);
         static string formatQuestObjective(string name, int available, int required);
         static list<ObjectGuid> parseGameobjects(string& text);
+        static list<int32> parseWorldEntries(string& text);
 
         static ChatMsg parseChat(string& text);
         static string formatChat(ChatMsg chat);

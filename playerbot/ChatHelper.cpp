@@ -487,6 +487,35 @@ list<ObjectGuid> ChatHelper::parseGameobjects(string& text)
     return gos;
 }
 
+list<int32> ChatHelper::parseWorldEntries(string& text)
+{
+    list<int32> entries;
+    //    Link format
+    //    |cFFFFFF00|Hentry:" << entry << ':'  <<  "|h[" << gInfo->name << "]|h|r";
+    //    |cFFFFFF00|Hfound:9582:1731|h[Copper Vein]|h|r
+
+    uint8 pos = 0;
+    while (true)
+    {
+        // extract GO guid
+        int i = text.find("Hentry:", pos);     // base H = 11
+        if (i == -1)     // break if error
+            break;
+
+        pos = i + 7;     //start of window in text 11 + 7 = 18
+        int endPos = text.find(':', pos);     // end of window in text 22
+        if (endPos == -1)     //break if error
+            break;
+        std::string entryC = text.substr(pos, endPos - pos);     // get string within window i.e entry        
+        uint32 entry = atol(entryC.c_str());     // convert ascii to float
+
+        if (entry)
+            entries.push_back(entry);
+    }
+
+    return entries;
+}
+
 string ChatHelper::formatQuestObjective(string name, int available, int required)
 {
     ostringstream out;

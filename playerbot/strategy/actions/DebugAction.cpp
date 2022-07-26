@@ -4,6 +4,7 @@
 #include "../../PlayerbotAIConfig.h"
 #include <playerbot/TravelNode.h>
 #include "ChooseTravelTargetAction.h"
+#include "strategy/values/SharedValueContext.h"
 
 using namespace ai;
 
@@ -192,6 +193,88 @@ bool DebugAction::Execute(Event event)
         ai->TellMasterNoFacing(ai->GetAiObjectContext()->FormatValues(text.substr(7)));
 
         return true;
+    }
+    else if (text.find("loot ") != std::string::npos)
+    {
+        ostringstream out;
+        for (auto itemId : chat->parseItems(text.substr(5)))
+        {
+            list<int32> entries = GAI_VALUE2(list<int32>, "item drop list", itemId);
+
+            if (entries.empty())
+                out << chat->formatItem(sObjectMgr.GetItemPrototype(itemId), 0, 0) << " no sources found.";
+            else
+                out << chat->formatItem(sObjectMgr.GetItemPrototype(itemId), 0, 0) << " " << to_string(entries.size()) << " sources found:";
+
+            ai->TellMasterNoFacing(out);
+            out.str("");
+            out.clear();
+
+            vector<pair<int32, float>> chances;
+
+            for (auto entry : entries)
+            {
+                string qualifier = Qualified::MultiQualify({ to_string(entry) , to_string(itemId) });
+                float chance = GAI_VALUE2(float, "loot chance", qualifier);
+                if(chance > 0)
+                    chances.push_back(make_pair(entry, chance));
+            }
+
+            std::sort(chances.begin(), chances.end(), [](std::pair<int32, float> i, std::pair<int32, float> j) {return i.second > j.second; });
+
+            chances.resize(std::min(20, (int)chances.size()));
+
+            for (auto chance : chances)
+            {
+                out << chat->formatWorldEntry(chance.first) << ": " << chance.second << "%";
+                ai->TellMasterNoFacing(out);
+                out.str("");
+                out.clear();
+            }
+        }
+        return true;
+    }
+    else if (text.find("drops ") != std::string::npos)
+    {
+    ostringstream out;
+    for (auto entry : chat->parseWorldEntries(text.substr(6)))
+    {
+        list<uint32> itemIds = GAI_VALUE2(list<uint32>, "entry loot list", entry);
+
+        if (itemIds.empty())
+            out << chat->formatWorldEntry(entry) << " no drops found.";
+        else
+            out << chat->formatWorldEntry(entry) << " " << to_string(itemIds.size()) << " drops found:";
+
+        ai->TellMasterNoFacing(out);
+        out.str("");
+        out.clear();
+
+        vector<pair<uint32, float>> chances;
+
+        for (auto itemId : itemIds)
+        {
+            string qualifier = Qualified::MultiQualify({ to_string(entry) , to_string(itemId) });
+            float chance = GAI_VALUE2(float, "loot chance", qualifier);
+            if (chance > 0 && sObjectMgr.GetItemPrototype(itemId))
+            {
+                chances.push_back(make_pair(itemId, chance));
+            }
+        }
+
+        std::sort(chances.begin(), chances.end(), [](std::pair<uint32, float> i, std::pair<int32, float> j) {return i.second > j.second; });
+
+        chances.resize(std::min(20, (int)chances.size()));
+
+        for (auto chance : chances)
+        {
+            out << chat->formatItem(sObjectMgr.GetItemPrototype(chance.first), 0, 0) << ": " << chance.second << "%";
+            ai->TellMasterNoFacing(out);
+            out.str("");
+            out.clear();
+        }
+    }
+    return true;
     }
     else if (text.find("add node") != std::string::npos)
     {

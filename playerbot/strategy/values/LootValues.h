@@ -17,6 +17,7 @@ namespace ai
 
     //                   itemId, entry
     typedef unordered_multimap<uint32, int32> DropMap;
+    typedef unordered_map<pair<uint32, int32> , float > ChanceMap;
 
     //Returns the loot map of all entries
     class DropMapValue : public SingleCalculatedValue<DropMap*>
@@ -45,6 +46,14 @@ namespace ai
         EntryLootListValue(PlayerbotAI* ai) : SingleCalculatedValue(ai, "entry loot list") {}
 
         virtual list<uint32> Calculate();
+    };
+
+    class LootChanceValue : public SingleCalculatedValue<float>, public Qualified
+    {
+    public:
+        LootChanceValue(PlayerbotAI* ai) : SingleCalculatedValue(ai, "loot chance") {}
+
+        virtual float Calculate();
     };
 
     typedef unordered_map<ItemUsage, vector<uint32>> itemUsageMap;
