@@ -39,4 +39,12 @@ namespace ai
 
         virtual WorldPosition Calculate() {return WorldPosition(bot);};
     };  
+
+    class CustomPositionValue : public ManualSetValue<WorldPosition>, public Qualified
+    {
+    public:
+        CustomPositionValue(PlayerbotAI* ai, string name = "custom position") : ManualSetValue<WorldPosition>(ai, WorldPosition(), name) { };
+
+        virtual WorldPosition Calculate() { return WorldPosition(bot); };
+    };
 }

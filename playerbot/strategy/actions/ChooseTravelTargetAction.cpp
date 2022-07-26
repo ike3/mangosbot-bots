@@ -3,6 +3,7 @@
 #include "../../LootObjectStack.h"
 #include "ChooseTravelTargetAction.h"
 #include "../../PlayerbotAIConfig.h"
+#include <iomanip>
 
 using namespace ai;
 
@@ -71,26 +72,15 @@ void ChooseTravelTargetAction::getNewTarget(TravelTarget* newTarget, TravelTarge
     //Grind for money
     if (!foundTarget && AI_VALUE(bool, "should get money"))
     {
-        if (urand(1, 100) > 66) //Focus on active quests for money.
+        if (urand(1, 100) > 50) //50% Focus on active quests for money.
         {
-            foundTarget = SetQuestTarget(newTarget, true);                    //Turn in quests for money.
+            foundTarget = SetQuestTarget(newTarget, false, true, true);           //Turn in quests for money.
 
             if (!foundTarget)
-                foundTarget = SetQuestTarget(newTarget);                     //Do low level quests
+                foundTarget = SetQuestTarget(newTarget, true, false, false);      //Find new (low) level quests
         }
-        else //Focus on mobs and new quests for money.
-        {
-            if (urand(1, 100) > 50)
-                foundTarget = SetGrindTarget(newTarget);                         //Go grind mobs for money
-            else
-                foundTarget = SetNewQuestTarget(newTarget);                      //Find a low level quest to do
-
-            if (!foundTarget)
-                foundTarget = SetQuestTarget(newTarget, true);                   //Turn in quests for money.
-
-            if (!foundTarget)
-                foundTarget = SetQuestTarget(newTarget);                         //Do low level quests
-        }
+        else
+           foundTarget = SetGrindTarget(newTarget);                               //Go grind mobs for money            
     }
 
 
@@ -103,13 +93,18 @@ void ChooseTravelTargetAction::getNewTarget(TravelTarget* newTarget, TravelTarge
         if (AI_VALUE(bool, "can fight boss"))
             foundTarget = SetBossTarget(newTarget);                         //Go fight a (dungeon boss)
 
-    //Continue current quests
+    //Do quests (start, do, end)
     if (!foundTarget && urand(1, 100) > 5)                                 //95% chance
-        foundTarget = SetQuestTarget(newTarget);                           //Do a target of an active quest.
-
-    //Find a new quest to do.
-    if (!foundTarget && urand(1, 100) > 5)                                 //95% chance
-        foundTarget = SetNewQuestTarget(newTarget);                        //Find a new quest to do.
+    {
+        if (urand(1, 100) > 70)                                           //30%
+        {
+            foundTarget = SetQuestTarget(newTarget, false, true, true);   //Work on current quests
+            if(!foundTarget)
+                SetQuestTarget(newTarget, true, false, false);            //Find a new quest
+        }
+        else
+            foundTarget = SetQuestTarget(newTarget, true, true, true);    //Do any nearby                                              
+    }
 
     //Explore a nearby unexplored area.
     if (!foundTarget && ai->HasStrategy("explore", BOT_STATE_NON_COMBAT))  //Explore a unexplored sub-zone.
@@ -203,8 +198,6 @@ void ChooseTravelTargetAction::ReportTravelTarget(TravelTarget* newTarget, Trave
         out << " for " << chat->formatQuest(quest);
 
         out << " to " << QuestDestination->getTitle();
-
-        ai->TellMaster(out);
     }
     else if (destination->getName() == "RpgTravelDestination")
     {
@@ -230,9 +223,7 @@ void ChooseTravelTargetAction::ReportTravelTarget(TravelTarget* newTarget, Trave
         else
             out << "rpg";
 
-        out << " to " << RpgDestination->getTitle();
-
-        ai->TellMaster(out);
+        out << " to " << RpgDestination->getTitle();        
     }
     else if (destination->getName() == "ExploreTravelDestination")
     {
@@ -252,8 +243,6 @@ void ChooseTravelTargetAction::ReportTravelTarget(TravelTarget* newTarget, Trave
         out << " for exploration";
 
         out << " to " << ExploreDestination->getTitle();
-
-        ai->TellMaster(out);
     }
     else if (destination->getName() == "GrindTravelDestination")
     {
@@ -273,8 +262,6 @@ void ChooseTravelTargetAction::ReportTravelTarget(TravelTarget* newTarget, Trave
         out << " for grinding money";
 
         out << " to " << GrindDestination->getTitle();
-
-        ai->TellMaster(out);
     }
     else if (destination->getName() == "BossTravelDestination")
     {
@@ -294,133 +281,196 @@ void ChooseTravelTargetAction::ReportTravelTarget(TravelTarget* newTarget, Trave
         out << " for good loot";
 
         out << " to " << BossDestination->getTitle();
-
-        ai->TellMaster(out);
     }
     else if (destination->getName() == "NullTravelDestination")
     {
         if (!oldTarget->getDestination() || oldTarget->getDestination()->getName() != "NullTravelDestination")
         {
-            ai->TellMaster("No where to travel. Idling a bit.");
+            out.clear();
+            out << "No where to travel. Idling a bit.";
         }
     }
-}
 
-//Select only those destinations that are in sight distance or failing that a multiplication of the sight distance.
-void ChooseTravelTargetAction::getLogicalDestinations(vector<TravelDestination*>& activeDestinations)
-{   
-    WorldPosition botLocation(bot);
+    ai->TellMaster(out);
 
-    unordered_map <TravelDestination*, float> distances;
+    string message = out.str().c_str();
 
-    for (auto dest : activeDestinations) //Calculate the distances to all the destinations.
-        distances[dest] = dest->distanceTo(&botLocation);
-
-    //Find the lowest distance.
-    float minDistance = std::min_element(distances.begin(), distances.end(), [](std::pair< TravelDestination*, float> i, std::pair< TravelDestination*, float> j) { return i.second < j.second; })->second;
-
-    vector<float> distancesToLookAt = { 1,4,10,100 }; //Multiplications of sightdistance.
-
-    //Increase the minimal distance to a multiplication of sightdistance.
-    for (float distanceToLookAt : distancesToLookAt)
-        if (minDistance < sPlayerbotAIConfig.sightDistance * distanceToLookAt)
-        {
-            minDistance = sPlayerbotAIConfig.sightDistance * distanceToLookAt;
-            break;
-        }
-
-
-    //Remove all destinations that fall outside this increased distance.
-    auto it = activeDestinations.begin();
-
-    while (it != activeDestinations.end())
-        if (distances[*it] > minDistance)
-            it = activeDestinations.erase(it);
-        else
-            ++it;
-}
-
-//Narrows down the destinations and points to the closest (random shuffle) ones.
-bool ChooseTravelTargetAction::getBestDestination(vector<TravelDestination*>& activeDestinations, vector<WorldPosition*>& activePoints)
-{
-    if (activeDestinations.empty() || activePoints.empty()) //No targets or no points.
-        return false;
-
-    if (activeDestinations.size() == 1 && activePoints.size() == 1)
-        return true;
-
-    WorldPosition botLocation(bot);
-    vector<WorldPosition*> availablePoints = sTravelMgr.getNextPoint(&botLocation, activePoints); //Pick a good point.
-
-    if (availablePoints.empty()) //No points available.
-        return false;
-
-    TravelDestination* targetDestination;
-
-    for (auto activeTarget : activeDestinations) //Pick the destination that has this point.
-        if (activeTarget->distanceTo(availablePoints.front()) == 0)
-            targetDestination = activeTarget;
-
-    if (!targetDestination)
-        return false;
-
-    activeDestinations.clear();
-    activePoints.clear();
-
-    activeDestinations.push_back(targetDestination);
-    activePoints.push_back(availablePoints.front());
-
-    return true;
-}
-
-//Overload to only narrow down destinations.
-bool ChooseTravelTargetAction::getBestDestination(vector<TravelDestination*>& activeDestinations)
-{
-    WorldPosition botLocation(bot);
-
-    vector<WorldPosition*> activePoints;
-
-    for (auto& activeTarget : activeDestinations)
+    if (sPlayerbotAIConfig.hasLog("travel_map.csv"))
     {
-        vector<WorldPosition*> points = activeTarget->nextPoint(&botLocation, true);
-        if (!points.empty())
-            activePoints.push_back(points.front());
-    }
+        WorldPosition botPos(bot);
+        WorldPosition destPos = *newTarget->getPosition();
 
-    return getBestDestination(activeDestinations, activePoints);
+        ostringstream out;
+        out << sPlayerbotAIConfig.GetTimestampStr() << "+00,";
+        out << bot->GetName() << ",";
+        out << std::fixed << std::setprecision(2);
+
+        out << to_string(bot->getRace()) << ",";
+        out << to_string(bot->getClass()) << ",";
+        float subLevel = ((float)bot->GetLevel() + ((float)bot->GetUInt32Value(PLAYER_XP) / (float)bot->GetUInt32Value(PLAYER_NEXT_LEVEL_XP)));
+
+        out << subLevel << ",";
+
+        if (!destPos)
+            destPos = botPos;
+
+        botPos.printWKT({ botPos,destPos }, out, 1);
+
+        if (destination->getName() == "NullTravelDestination")
+            out << "0,";
+        else
+            out << round(newTarget->getDestination()->distanceTo(&botPos)) << ",";
+
+        out << "1," << "\"" << destination->getTitle() << "\",\"" << message << "\"";
+
+        sPlayerbotAIConfig.log("travel_map.csv", out.str().c_str());
+
+        WorldPosition lastPos = AI_VALUE2(WorldPosition, "custom position", "last choose travel");
+
+        if (lastPos)
+        {
+            ostringstream out;
+            out << sPlayerbotAIConfig.GetTimestampStr() << "+00,";
+            out << bot->GetName() << ",";
+            out << std::fixed << std::setprecision(2);
+
+            out << to_string(bot->getRace()) << ",";
+            out << to_string(bot->getClass()) << ",";
+            float subLevel = ((float)bot->GetLevel() + ((float)bot->GetUInt32Value(PLAYER_XP) / (float)bot->GetUInt32Value(PLAYER_NEXT_LEVEL_XP)));
+
+            out << subLevel << ",";
+
+            WorldPosition lastPos = AI_VALUE2(WorldPosition, "custom position", "last choose travel");
+
+            botPos.printWKT({ lastPos, botPos }, out, 1);
+
+            if (destination->getName() == "NullTravelDestination")
+                out << "0,";
+            else
+                out << round(newTarget->getDestination()->distanceTo(&botPos)) << ",";
+
+            out << "0," << "\"" << destination->getTitle() << "\",\""<< message << "\"";
+
+            sPlayerbotAIConfig.log("travel_map.csv", out.str().c_str());
+        }
+
+        SET_AI_VALUE2(WorldPosition, "custom position", "last choose travel", botPos);
+    }
+}
+
+//Select only those points that are in sight distance or failing that a multiplication of the sight distance.
+vector<WorldPosition*> ChooseTravelTargetAction::getLogicalPoints(vector<WorldPosition*>& travelPoints)
+{
+    vector<WorldPosition*> retvec;
+
+    vector<float> distancesBrackets = { 1,4,10,20,50,100,10000 }; //Multiplications of sightdistance.
+
+    float minDistance = 10000 * sPlayerbotAIConfig.sightDistance;
+    float lastMinDistance = 10000* sPlayerbotAIConfig.sightDistance;
+
+    WorldPosition botLocation(bot);
+
+    auto it = travelPoints.begin();
+
+    //Loop over all points
+    while (it != travelPoints.end())
+    {
+        float distance = (*it)->distance(&botLocation);
+
+        //Select the minimal distance to work with.
+        if (distance < minDistance)
+        {
+            minDistance = distance;
+        }
+
+        //Increase the minimal distance to a multiplication of sightdistance.
+        for (float distanceBracket : distancesBrackets)
+            if (minDistance <= sPlayerbotAIConfig.sightDistance * distanceBracket)
+            {
+                minDistance = sPlayerbotAIConfig.sightDistance * distanceBracket;
+                break;
+            }
+
+        //Clear all previous added points if the bracket decreased.
+        if (minDistance < lastMinDistance)
+            retvec.clear();
+
+        //Add the point if it falls within current bracket.
+        if (distance <= minDistance)
+            retvec.push_back(*it);
+
+        lastMinDistance = minDistance;
+
+        ++it;
+    }
+    
+    return retvec;
 }
 
 //Sets the target to the best destination.
 bool ChooseTravelTargetAction::SetBestTarget(TravelTarget* target, vector<TravelDestination*>& TravelDestinations)
 {
+    ostringstream out;
+
+    out << bot->GetName() << " has got " << TravelDestinations.size() << ", targets totaling ";
+
     if (TravelDestinations.empty())
         return false;
 
-    //Narrow down the destinations on sight distance or a multiplier.
-    if (TravelDestinations.size() > 1)
-        getLogicalDestinations(TravelDestinations);
-
     WorldPosition botLocation(bot);
-    vector<WorldPosition*> activePoints;
 
-    //Pick one good point per destination.
+    vector<WorldPosition*> travelPoints;
+
+    //Select all points from the selected destinations
     for (auto& activeTarget : TravelDestinations)
     {
-        vector<WorldPosition*> points = activeTarget->nextPoint(&botLocation, true);
+        vector<WorldPosition*> points = activeTarget->getPoints(true);
         if (!points.empty())
-            activePoints.push_back(points.front());
+            travelPoints.insert(travelPoints.end(), points.begin(), points.end());
     }
 
-    //Pick the best destination and point (random shuffle).
-    if (!getBestDestination(TravelDestinations, activePoints))
+    float minDist, maxDist;
+
+    minDist = botLocation.distance(botLocation.closest(travelPoints));
+    maxDist = botLocation.distance(botLocation.furtest(travelPoints));
+
+    out << travelPoints.size() << " points, between " << minDist << " and " << maxDist << " unsorted and";
+
+    if (travelPoints.empty()) //No targets or no points.
         return false;
 
-    target->setTarget(TravelDestinations.front(), activePoints.front());
+    if (TravelDestinations.size() == 1 && travelPoints.size() == 1)
+    {
+        target->setTarget(TravelDestinations.front(), travelPoints.front());
+        return target->isActive();
+    }
+
+    travelPoints = getLogicalPoints(travelPoints);
+
+    minDist = botLocation.distance(botLocation.closest(travelPoints));
+    maxDist = botLocation.distance(botLocation.furtest(travelPoints));
+
+    out << travelPoints.size() << " between " << minDist << " and " << maxDist << " sorted.";
+
+    travelPoints = sTravelMgr.getNextPoint(&botLocation, travelPoints); //Pick a good point.
+
+    //Pick the best destination and point (random shuffle).
+
+    for (auto destination : TravelDestinations) //Pick the destination that has this point.
+        if (destination->hasPoint(travelPoints.front()))
+        {
+            TravelDestinations.front() = destination;
+            break;
+        }
+
+    out << " Picked " << travelPoints.front()->distance(botLocation) << ".";
+
+    target->setTarget(TravelDestinations.front(), travelPoints.front());
+
+    sPlayerbotAIConfig.log("travel_search.txt", out.str().c_str());
 
     return target->isActive();
 }
-
-
 
 bool ChooseTravelTargetAction::SetGroupTarget(TravelTarget* target)
 {
@@ -477,12 +527,7 @@ bool ChooseTravelTargetAction::SetGroupTarget(TravelTarget* target)
         activePoints.push_back(groupTarget->getPosition());
     }
 
-    if (!getBestDestination(activeDestinations, activePoints))
-        return false;
-
-    target->setTarget(activeDestinations.front(), activePoints.front(), true);
-
-    return target->isActive();
+    return SetBestTarget(target, activeDestinations);
 }
 
 bool ChooseTravelTargetAction::SetCurrentTarget(TravelTarget* target, TravelTarget* oldTarget)
@@ -498,56 +543,50 @@ bool ChooseTravelTargetAction::SetCurrentTarget(TravelTarget* target, TravelTarg
     if (!oldDestination->isActive(bot)) //Is the destination still valid?
         return false;
 
-    WorldPosition botLocation(bot);
-    vector<WorldPosition*> availablePoints = oldDestination->nextPoint(&botLocation, true);
+    vector<TravelDestination*> TravelDestinations = { oldDestination };
 
-    if (availablePoints.empty())
+    if (!SetBestTarget(target, TravelDestinations))
         return false;
-
-    target->setTarget(oldTarget->getDestination(), availablePoints.front());
+   
     target->setStatus(TRAVEL_STATUS_TRAVEL);
     target->setRetry(false, oldTarget->getRetryCount(false) + 1);
 
     return target->isActive();
 }
 
-bool ChooseTravelTargetAction::SetQuestTarget(TravelTarget* target, bool onlyCompleted)
+bool ChooseTravelTargetAction::SetQuestTarget(TravelTarget* target, bool newQuests, bool activeQuests, bool completedQuests)
 {
     vector<TravelDestination*> TravelDestinations;
 
-    QuestStatusMap& questMap = bot->getQuestStatusMap();
+    if (newQuests)
+        TravelDestinations = sTravelMgr.getQuestTravelDestinations(bot, -1, true, false, 0);
 
-    //Find destinations related to the active quests.
-    for (auto& quest : questMap)
+    if (activeQuests || completedQuests)
     {
-        if (quest.second.m_rewarded)
-            continue;
+        QuestStatusMap& questMap = bot->getQuestStatusMap();
 
-        uint32 questId = quest.first;
-        QuestStatusData* questStatus = &quest.second;
-
-        if (onlyCompleted && sObjectMgr.GetQuestTemplate(questId) && !bot->CanRewardQuest(sObjectMgr.GetQuestTemplate(questId), false))
-            continue;
-
-        //Find quest takers or objectives
-        vector<TravelDestination*> questDestinations = sTravelMgr.getQuestTravelDestinations(bot, questId, true, false);
-
-        if (questDestinations.size() == 1)
-            TravelDestinations.push_back(questDestinations.front());
-        else if (getBestDestination(questDestinations))
+        //Find destinations related to the active quests.
+        for (auto& quest : questMap)
         {
-            TravelDestinations.push_back(questDestinations.front());
-        }               
+            if (quest.second.m_rewarded)
+                continue;
+
+            uint32 questId = quest.first;
+            QuestStatusData* questStatus = &quest.second;
+
+            if (!activeQuests && !bot->CanRewardQuest(sObjectMgr.GetQuestTemplate(questId), false))
+                continue;
+
+            if (!completedQuests && bot->CanRewardQuest(sObjectMgr.GetQuestTemplate(questId), false))
+                continue;
+
+            //Find quest takers or objectives
+            vector<TravelDestination*> questDestinations = sTravelMgr.getQuestTravelDestinations(bot, questId, true, false,0);
+
+            TravelDestinations.insert(TravelDestinations.end(), questDestinations.begin(), questDestinations.end());
+        }
     }
 
-    return SetBestTarget(target, TravelDestinations);
-}
-
-bool ChooseTravelTargetAction::SetNewQuestTarget(TravelTarget* target)
-{
-    //Find quest givers
-    vector<TravelDestination*> TravelDestinations = sTravelMgr.getQuestTravelDestinations(bot, -1, true, false);
-   
     return SetBestTarget(target, TravelDestinations);
 }
 
