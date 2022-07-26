@@ -66,7 +66,12 @@ bool AcceptQuestAction::Execute(Event event)
     if (!qInfo)
         return false;
 
-    return AcceptQuest(qInfo, guid);
+    bool hasAccept = AcceptQuest(qInfo, guid);
+
+    if (hasAccept)
+        sTravelMgr.logEvent(ai, "AcceptQuestAction", qInfo->GetTitle(), to_string(qInfo->GetQuestId()));
+
+    return hasAccept;
 }
 
 bool AcceptQuestShareAction::Execute(Event event)
@@ -103,6 +108,8 @@ bool AcceptQuestShareAction::Execute(Event event)
     if( bot->CanAddQuest( qInfo, false ) )
     {
         bot->AddQuest( qInfo, master );
+
+        sTravelMgr.logEvent(ai, "AcceptQuestShareAction", qInfo->GetTitle(), to_string(qInfo->GetQuestId()));
 
         if( bot->CanCompleteQuest( quest ) )
             bot->CompleteQuest( quest );

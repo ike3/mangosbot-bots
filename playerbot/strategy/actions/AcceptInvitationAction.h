@@ -44,6 +44,9 @@ namespace ai
             ai->Reset();
 
             ai->TellMaster(BOT_TEXT("hello"));
+
+            sTravelMgr.logEvent(ai, "AcceptInvitationAction", grp->GetLeaderName(), to_string(grp->GetMembersCount()));
+
             return true;
         }
     };

@@ -207,6 +207,9 @@ bool QuestAction::AcceptQuest(Quest const* quest, uint64 questGiver)
 
         if (bot->GetQuestStatus(questId) != QUEST_STATUS_NONE && bot->GetQuestStatus(questId) != QUEST_STATUS_AVAILABLE)
         {
+
+            sTravelMgr.logEvent(ai, "AcceptQuestAction", quest->GetTitle(), to_string(quest->GetQuestId()));          
+
             out << "Accepted " << chat->formatQuest(quest);
             ai->TellMaster(out);
             return true;
@@ -241,5 +244,9 @@ bool QuestObjectiveCompletedAction::Execute(Event event)
             ai->TellMaster(chat->formatQuestObjective(info->Name, available, required));
     }
 
-    return true;
+    Quest const* qInfo = sObjectMgr.GetQuestTemplate(questId);
+
+    sTravelMgr.logEvent(ai, "QuestObjectiveCompletedAction", qInfo->GetTitle(), to_string((float)available / (float)required));   
+
+    return false;
 }

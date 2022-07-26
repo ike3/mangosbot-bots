@@ -58,6 +58,8 @@ void TrainerAction::Learn(uint32 cost, TrainerSpell const* tSpell, ostringstream
     if (!learned) bot->learnSpell(tSpell->spell, false);
 #endif
 
+    sTravelMgr.logEvent(ai, "TrainerAction", proto->SpellName[0], to_string(proto->Id));   
+
     msg << " - learned";
 }
 

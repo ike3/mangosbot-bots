@@ -46,6 +46,41 @@ bool QueryItemUsageAction::Execute(Event event)
 
         ai->TellMaster(QueryItem(item, count, GetCount(item)));
 
+        if (sPlayerbotAIConfig.hasLog("bot_events.csv"))
+        {
+            if (event.getSource() == "item push result")
+            {
+
+                QuestStatusMap& questMap = bot->getQuestStatusMap();
+                for (QuestStatusMap::const_iterator i = questMap.begin(); i != questMap.end(); i++)
+                {
+                    const Quest* questTemplate = sObjectMgr.GetQuestTemplate(i->first);
+                    if (!questTemplate)
+                        continue;
+
+                    uint32 questId = questTemplate->GetQuestId();
+                    QuestStatus status = bot->GetQuestStatus(questId);
+                    if (status == QUEST_STATUS_INCOMPLETE || (status == QUEST_STATUS_COMPLETE && !bot->GetQuestRewardStatus(questId)))
+                    {
+                        QuestStatusData const& questStatus = i->second;
+                        for (int i = 0; i < QUEST_OBJECTIVES_COUNT; i++)
+                        {
+                            if (questTemplate->ReqItemId[i] != itemId)
+                                continue;
+
+                            int required = questTemplate->ReqItemCount[i];
+                            int available = questStatus.m_itemcount[i];
+
+                            if (!required)
+                                continue;
+
+                            sTravelMgr.logEvent(ai, "QueryItemUsageAction", questTemplate->GetTitle(), to_string((float)available / (float)required));                          
+                        }
+                    }
+                }
+            }
+        }
+
         return true;
     }
 

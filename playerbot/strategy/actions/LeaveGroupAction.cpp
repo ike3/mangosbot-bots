@@ -14,6 +14,8 @@ namespace ai
         if (!player)
             return false;
 
+        Group* group = bot->GetGroup();
+
         /*if (!player->GetPlayerbotAI() && !ai->GetSecurity()->CheckLevelFor(PLAYERBOT_SECURITY_INVITE, false, player))
             return false;*/
 
@@ -42,6 +44,9 @@ namespace ai
         if(!aiMaster)
             ai->ResetStrategies(!randomBot);
         ai->Reset();
+
+        if(group)
+            sTravelMgr.logEvent(ai, "LeaveGroupAction", group->GetLeaderName(), to_string(group->GetMembersCount()));
 
         return true;
 	}

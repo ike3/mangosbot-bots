@@ -13,8 +13,25 @@ bool XpGainAction::Execute(Event event)
 {
     context->GetValue<uint32>("death count")->Set(0);
 
+    if (sPlayerbotAIConfig.hasLog("bot_events.csv"))
+    {
+        WorldPacket p(event.getPacket()); // (8+4+1+4+8)
+        ObjectGuid guid;
+        uint32 xpgain;
+        uint8 type = 0; // 00-kill_xp type, 01-non_kill_xp type
+        uint32 givenXp = 0;
+        float groupBonus = 0;
+
+        p.rpos(0);
+        p >> guid;      // 8 victim
+        p >> xpgain;    // 1 given experience
+        p >> type;      //1 00-kill_xp type, 01-non_kill_xp type
+
+        sTravelMgr.logEvent(ai, "XpGainAction", guid, to_string(xpgain));
+    }
+
     if (!sRandomPlayerbotMgr.IsRandomBot(bot) || sPlayerbotAIConfig.playerbotsXPrate == 1)
-        return true;
+        return false;
 
     WorldPacket p(event.getPacket()); // (8+4+1+4+8)
     ObjectGuid guid;
@@ -40,8 +57,7 @@ bool XpGainAction::Execute(Event event)
     xpgain = xpgain * (sPlayerbotAIConfig.playerbotsXPrate - 1);
     GiveXP(xpgain, victim);
 
-
-    return true;
+    return false;
 }
 
 void XpGainAction::GiveXP(uint32 xp, Unit* victim)

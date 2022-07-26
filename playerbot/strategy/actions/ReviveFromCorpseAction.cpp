@@ -57,6 +57,8 @@ bool ReviveFromCorpseAction::Execute(Event event)
     packet << bot->GetObjectGuid();
     bot->GetSession()->HandleReclaimCorpseOpcode(packet);
 
+    sTravelMgr.logEvent(ai, "ReviveFromCorpseAction");
+   
     return true;
 }
 

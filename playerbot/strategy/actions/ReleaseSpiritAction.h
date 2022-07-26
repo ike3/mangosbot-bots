@@ -70,6 +70,8 @@ namespace ai
                 bot->CastSpell(bot, 2584, TRIGGERED_OLD_TRIGGERED);
             }
 
+            sTravelMgr.logEvent(ai, "AutoReleaseSpiritAction");           
+
             return true;
         }
 
