@@ -33,7 +33,7 @@ namespace ai
         ItemUsage QueryItemUsageForEquip(ItemPrototype const * proto);
 
         uint32 GetSmallestBagSize();
-        bool IsItemUsefulForQuest(Player* player, ItemPrototype const* proto);
+        bool IsItemUsefulForQuest(Player* player, ItemPrototype const* proto, bool ignoreInventory = false);
         bool IsItemNeededForSkill(ItemPrototype const* proto);
         bool IsItemUsefulForSkill(ItemPrototype const * proto);
         bool IsItemNeededForUsefullSpell(ItemPrototype const* proto, bool checkAllReagents = false);
