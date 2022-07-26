@@ -40,6 +40,9 @@ namespace ai
             if (player->GetGroup())
                 continue;
 
+            if (player->isDND())
+                continue;
+
             PlayerbotAI* botAi = player->GetPlayerbotAI();
 
             if (botAi)
@@ -53,9 +56,6 @@ namespace ai
             else
             {
                 if (!sPlayerbotAIConfig.randomBotGroupNearby)
-                    return false;
-
-                if (player->isDND())
                     return false;
             }
 
