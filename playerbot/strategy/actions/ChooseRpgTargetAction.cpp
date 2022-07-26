@@ -84,7 +84,11 @@ float ChooseRpgTargetAction::getMaxRelevance(GuidPosition guidP)
         TriggerNode* trigger = *i;
         delete trigger;
     }
+    
     triggerNodes.clear();
+
+    if (!maxRelevance)
+        return 0.0;
 
     return (maxRelevance - 1.0) * 1000.0f;
 }
@@ -168,7 +172,7 @@ bool ChooseRpgTargetAction::Execute(Event event)
             }
         }
 
-        if (possiblePlayers.size() > 200 || HasSameTarget(guidP, urand(5, 15), possiblePlayers))
+        if (possiblePlayers.size() < 200 && HasSameTarget(guidP, urand(5, 15), possiblePlayers))
             continue;
 
         float relevance = getMaxRelevance(guidP);
@@ -184,7 +188,7 @@ bool ChooseRpgTargetAction::Execute(Event event)
 
     for (auto it = begin(targets); it != end(targets);)
     {
-        if (it->second == 0 || hasGoodRelevance && it->second <= 1.0)
+        if (it->second == 0 || (hasGoodRelevance && it->second <= 1.0))
         {
             it = targets.erase(it);
         }
@@ -227,7 +231,7 @@ bool ChooseRpgTargetAction::Execute(Event event)
         out << "found: ";
         out << chat->formatWorldobject(guidP.GetWorldObject());
 
-        out << " " << rgpActionReason[guidP];
+        out << " " << rgpActionReason[guidP] << " " << targets[guidP];
 
         ai->TellMasterNoFacing(out);
     }
