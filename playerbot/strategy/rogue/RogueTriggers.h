@@ -9,16 +9,19 @@ namespace ai
         KickInterruptSpellTrigger(PlayerbotAI* ai) : InterruptSpellTrigger(ai, "kick") {}
     };
 
+    CAN_CAST_TRIGGER_A(RiposteCastTrigger, "riposte");
+
     class SliceAndDiceTrigger : public BuffTrigger
     {
     public:
         SliceAndDiceTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "slice and dice") {}
+        virtual bool IsActive();
     };
 
-    class AdrenalineRushTrigger : public BuffTrigger
+    class RogueBoostBuffTrigger : public BoostTrigger
     {
     public:
-        AdrenalineRushTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "adrenaline rush") {}
+        RogueBoostBuffTrigger(PlayerbotAI* ai, string spellName) : BoostTrigger(ai, spellName, 200.0f) {}
         virtual bool IsPossible()
         {
             return !ai->HasAura("stealth", bot);
@@ -29,7 +32,39 @@ namespace ai
     {
     public:
         RuptureTrigger(PlayerbotAI* ai) : DebuffTrigger(ai, "rupture") {}
+        virtual bool IsActive();
     };
+
+    class EviscerateTrigger : public SpellTrigger
+    {
+    public:
+        EviscerateTrigger(PlayerbotAI* ai) : SpellTrigger(ai, "eviscerate") {}
+        virtual bool IsActive();
+    };
+
+    class CloakOfShadowsTrigger : public NeedCureTrigger
+    {
+    public:
+        CloakOfShadowsTrigger(PlayerbotAI* ai) : NeedCureTrigger(ai, "cloak of shadows", DISPEL_MAGIC) {}
+    };
+
+    /*class TricksOfTheTradeOnTankTrigger : public BuffOnTankTrigger {
+    public:
+        TricksOfTheTradeOnTankTrigger(PlayerbotAI* ai) : BuffOnTankTrigger(ai, "tricks of the trade", 1) {}
+
+        virtual bool IsActive() {
+            return BuffOnTankTrigger::IsActive() &&
+                GetTarget() &&
+                !ai->HasAura("tricks of the trade", GetTarget()) &&
+#ifdef MANGOS
+                (ai->GetBot()->IsInSameGroupWith((Player*)GetTarget()) || ai->GetBot()->IsInSameRaidWith((Player*)GetTarget())) &&
+#endif
+#ifdef CMANGOS
+                (ai->GetBot()->IsInGroup((Player*)GetTarget(), true) || ai->GetBot()->IsInGroup((Player*)GetTarget()))
+#endif               
+                ;
+        }
+    };*/
 
     class ExposeArmorTrigger : public DebuffTrigger
     {
@@ -62,6 +97,9 @@ namespace ai
         virtual bool IsActive()
         {
             if (!ai->HasAura("stealth", bot))
+                return false;
+
+            if (bot->InBattleGround())
                 return false;
 
             return ai->HasAura("stealth", bot) &&
@@ -155,6 +193,10 @@ namespace ai
                 targeted = (dps == AI_VALUE(Unit*, "current target"));
             if (enemyPlayer && !targeted)
                 targeted = (enemyPlayer == AI_VALUE(Unit*, "current target"));
+
+            // use sprint on players
+            if (enemyPlayer && !bot->CanReachWithMeleeAttack(enemyPlayer))
+                return true;
 
             if (!targeted)
                 return false;

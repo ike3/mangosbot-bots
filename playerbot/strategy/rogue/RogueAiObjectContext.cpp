@@ -30,6 +30,9 @@ namespace ai
                 creators["stealthed"] = &rogue::StrategyFactoryInternal::stealthed;
                 creators["stealth"] = &rogue::StrategyFactoryInternal::stealth;
                 creators["cc"] = &rogue::StrategyFactoryInternal::cc;
+                creators["combat"] = &rogue::StrategyFactoryInternal::combat;
+                creators["assassin"] = &rogue::StrategyFactoryInternal::assassination;
+                creators["subtlety"] = &rogue::StrategyFactoryInternal::subtlety;
             }
 
         private:
@@ -41,6 +44,27 @@ namespace ai
             static Strategy* stealthed(PlayerbotAI* ai) { return new StealthedRogueStrategy(ai); }
             static Strategy* stealth(PlayerbotAI* ai) { return new StealthStrategy(ai); }
             static Strategy* cc(PlayerbotAI* ai) { return new RogueCcStrategy(ai); }
+            static Strategy* combat(PlayerbotAI* ai) { return new CombatRogueStrategy(ai); }
+            static Strategy* assassination(PlayerbotAI* ai) { return new AssassinationRogueStrategy(ai); }
+            static Strategy* subtlety(PlayerbotAI* ai) { return new CombatRogueStrategy(ai); }
+        };
+
+        class RogueStrategyFactoryInternal : public NamedObjectContext<Strategy>
+        {
+        public:
+            RogueStrategyFactoryInternal() : NamedObjectContext<Strategy>(false, true)
+            {
+                creators["dps"] = &rogue::RogueStrategyFactoryInternal::dps;
+                creators["combat"] = &rogue::RogueStrategyFactoryInternal::combat;
+                creators["subtlety"] = &rogue::RogueStrategyFactoryInternal::subtlety;
+                creators["assassin"] = &rogue::RogueStrategyFactoryInternal::assassination;
+            }
+
+        private:
+            static Strategy* dps(PlayerbotAI* ai) { return new DpsRogueStrategy(ai); }
+            static Strategy* combat(PlayerbotAI* ai) { return new CombatRogueStrategy(ai); }
+            static Strategy* subtlety(PlayerbotAI* ai) { return new CombatRogueStrategy(ai); }
+            static Strategy* assassination(PlayerbotAI* ai) { return new AssassinationRogueStrategy(ai); }
         };
     };
 };
@@ -72,10 +96,20 @@ namespace ai
                 creators["3 combo"] = &TriggerFactoryInternal::combo3;
                 creators["4 combo"] = &TriggerFactoryInternal::combo3;
 
+                creators["sinister strike"] = &TriggerFactoryInternal::sinister_strike;
+                creators["killing spree"] = &TriggerFactoryInternal::killing_spree;
+                creators["eviscerate"] = &TriggerFactoryInternal::eviscerate;
+                creators["blade flurry"] = &TriggerFactoryInternal::blade_flurry;
+                //creators["tricks of the trade on tank"] = &TriggerFactoryInternal::tricks_of_the_trade_on_tank;
+                creators["cloak of shadows"] = &TriggerFactoryInternal::cloak_of_shadows;
+                creators["fan of knives"] = &TriggerFactoryInternal::fan_of_knives;
+                creators["riposte"] = &TriggerFactoryInternal::riposte;
+
             }
 
         private:
-            static Trigger* adrenaline_rush(PlayerbotAI* ai) { return new AdrenalineRushTrigger(ai); }
+            static Trigger* riposte(PlayerbotAI* ai) { return new RiposteCastTrigger(ai); }
+            static Trigger* adrenaline_rush(PlayerbotAI* ai) { return new RogueBoostBuffTrigger(ai, "adrenaline rush"); }
             static Trigger* kick(PlayerbotAI* ai) { return new KickInterruptSpellTrigger(ai); }
             static Trigger* rupture(PlayerbotAI* ai) { return new RuptureTrigger(ai); }
             static Trigger* slice_and_dice(PlayerbotAI* ai) { return new SliceAndDiceTrigger(ai); }
@@ -90,6 +124,14 @@ namespace ai
             static Trigger* combo2(PlayerbotAI* ai) { return new ComboPointsAvailableTrigger(ai, 2); }
             static Trigger* combo3(PlayerbotAI* ai) { return new ComboPointsAvailableTrigger(ai, 3); }
             static Trigger* combo4(PlayerbotAI* ai) { return new ComboPointsAvailableTrigger(ai, 4); }
+
+            static Trigger* sinister_strike(PlayerbotAI* ai) { return new SpellCanBeCastTrigger(ai, "sinister strike"); }
+            static Trigger* killing_spree(PlayerbotAI* ai) { return new RogueBoostBuffTrigger(ai, "killing spree"); }
+            static Trigger* eviscerate(PlayerbotAI* ai) { return new EviscerateTrigger(ai); }
+            static Trigger* blade_flurry(PlayerbotAI* ai) { return new RogueBoostBuffTrigger(ai, "blade flurry"); }
+            //static Trigger* tricks_of_the_trade_on_tank(PlayerbotAI* ai) { return new TricksOfTheTradeOnTankTrigger(ai); }
+            static Trigger* cloak_of_shadows(PlayerbotAI* ai) { return new CloakOfShadowsTrigger(ai); }
+            static Trigger* fan_of_knives(PlayerbotAI* ai) { return new SpellCanBeCastTrigger(ai, "fan of knives"); }
         };
     };
 };
@@ -132,9 +174,16 @@ namespace ai
                 creators["unstealth"] = &AiObjectContextInternal::unstealth;
                 creators["sap"] = &AiObjectContextInternal::sap;
                 creators["check stealth"] = &AiObjectContextInternal::check_stealth;
+
+                creators["killing spree"] = &AiObjectContextInternal::killing_spree;
+                creators["tricks of the trade"] = &AiObjectContextInternal::tricks_of_the_trade;
+                creators["cloak of shadows"] = &AiObjectContextInternal::cloak_of_shadows;
+                //creators["fan of knives"] = &AiObjectContextInternal::fan_of_knives;
+                creators["cold blood"] = &AiObjectContextInternal::cold_blood;
             }
 
         private:
+            static Action* cold_blood(PlayerbotAI* ai) { return new CastColdBloodAction(ai); }
             static Action* check_stealth(PlayerbotAI* ai) { return new CheckStealthAction(ai); }
             static Action* sap(PlayerbotAI* ai) { return new CastSapAction(ai); }
             static Action* unstealth(PlayerbotAI* ai) { return new UnstealthAction(ai); }
@@ -161,6 +210,11 @@ namespace ai
             static Action* backstab(PlayerbotAI* ai) { return new CastBackstabAction(ai); }
             static Action* expose_armor(PlayerbotAI* ai) { return new CastExposeArmorAction(ai); }
             static Action* kick_on_enemy_healer(PlayerbotAI* ai) { return new CastKickOnEnemyHealerAction(ai); }
+
+            static Action* killing_spree(PlayerbotAI* ai) { return new CastKillingSpreeAction(ai); }
+            static Action* tricks_of_the_trade(PlayerbotAI* ai) { return new CastTricksOfTheTradeOnPartyAction(ai); }
+            static Action* cloak_of_shadows(PlayerbotAI* ai) { return new CastCloakOfShadowsAction(ai); }
+            //static Action* fan_of_knives(PlayerbotAI* ai) { return new CastFanOfKnivesAction(ai); }
         };
     };
 };
@@ -168,6 +222,7 @@ namespace ai
 RogueAiObjectContext::RogueAiObjectContext(PlayerbotAI* ai) : AiObjectContext(ai)
 {
     strategyContexts.Add(new ai::rogue::StrategyFactoryInternal());
+    strategyContexts.Add(new ai::rogue::RogueStrategyFactoryInternal());
     actionContexts.Add(new ai::rogue::AiObjectContextInternal());
     triggerContexts.Add(new ai::rogue::TriggerFactoryInternal());
 }
