@@ -8,7 +8,7 @@ namespace ai
     public:
         WorldBuffAction(PlayerbotAI* ai) : Action(ai, "world buff") {}
         virtual bool Execute(Event event);
-        virtual bool isUseful(Event event);
+        virtual bool isUseful();
 
         static vector<uint32> NeedWorldBuffs(Unit* unit);
         //static bool AddAura(Unit* unit, uint32 spellId);

@@ -19,9 +19,13 @@ bool WorldBuffAction::Execute(Event event)
     return false;
 }
 
-bool WorldBuffAction::isUseful(Event event)
+bool WorldBuffAction::isUseful()
 {
+#ifdef MANGOSBOT_ZERO
     return !bot->InBattleGround();
+#else
+    return true;
+#endif
 }
 
 vector<uint32> WorldBuffAction::NeedWorldBuffs(Unit* unit)
