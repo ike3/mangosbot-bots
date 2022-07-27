@@ -307,7 +307,7 @@ bool CheckMountStateAction::Mount()
         if (index == 0 && max(spellInfo->EffectBasePoints[1], spellInfo->EffectBasePoints[2]) > 59)
             hasSwiftMount = true;
 
-        if (index == 1 && max(spellInfo->EffectBasePoints[1], spellInfo->EffectBasePoints[2]) > 149)
+        if (index == 1 && max(spellInfo->EffectBasePoints[1], spellInfo->EffectBasePoints[2]) > 59)
             hasSwiftMount = true;
 
         allSpells[index][effect].push_back(spellId);
@@ -349,8 +349,8 @@ bool CheckMountStateAction::Mount()
                 if (masterMountType == 0 && masterSpeed > 59 && max(spellInfo->EffectBasePoints[1], spellInfo->EffectBasePoints[2]) < 99)
                     spells[59].clear();
 
-                if (masterMountType == 1 && masterSpeed > 149 && max(spellInfo->EffectBasePoints[1], spellInfo->EffectBasePoints[2]) < 279)
-                    spells[149].clear();
+                if (masterMountType == 1 && masterSpeed > 59 && max(spellInfo->EffectBasePoints[1], spellInfo->EffectBasePoints[2]) < 279)
+                    spells[59].clear();
             }
         }
     }
