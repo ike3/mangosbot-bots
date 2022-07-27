@@ -186,7 +186,7 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
 
     if (!player->InBattleGround())
     {
-        engine->addStrategies("racials", "chat", "default", "potions", "cast time", "duel", NULL);
+        engine->addStrategies("racials", "chat", "default", "potions", "cast time", "duel", "pvp", NULL);
     }
 
     switch (player->getClass())
@@ -268,12 +268,20 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
             }
             break;
         case CLASS_HUNTER:
-            engine->addStrategies("dps", "bdps", "threat", "dps assist", "ranged", "pet", "cc", NULL);
+            engine->addStrategies("dps", "bdps", "threat", "dps assist", "ranged", "cc", "aoe", NULL);
             if (player->GetLevel() > 19)
                 engine->addStrategy("dps debuff");
             break;
         case CLASS_ROGUE:
-            engine->addStrategies("dps", "threat", "dps assist", "aoe", "close", "cc", "behind", "stealth", NULL);
+            if (tab == 0)
+                engine->addStrategies("assassin", "threat", "dps assist", "aoe", "close", "cc", "behind", "stealth", NULL);
+            else if (tab == 1)
+                engine->addStrategies("combat", "threat", "dps assist", "aoe", "close", "cc", "behind", "stealth", NULL);
+            else
+                engine->addStrategies("subtlety", "threat", "dps assist", "aoe", "close", "cc", "behind", "stealth", NULL);
+
+            if (player->GetLevel() < 15)
+                engine->addStrategies("dps", NULL);
             break;
         case CLASS_WARLOCK:
             if (player->GetLevel() > 19)
@@ -326,6 +334,7 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
 
             if (player->getClass() == CLASS_PALADIN && tab == 0)
             {
+                engine->removeStrategy("ranged");
                 engine->addStrategies("dps", "close", NULL);
             }
         }
@@ -333,8 +342,12 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
         // enable paladin fight at low level
         if (player->getClass() == CLASS_PALADIN && tab == 0 && player->GetLevel() < 10)
         {
+            engine->removeStrategy("ranged");
             engine->addStrategies("dps", "close", NULL);
         }
+
+        // remove threat for now
+        engine->removeStrategy("threat");
 
         engine->ChangeStrategy(sPlayerbotAIConfig.randomBotCombatStrategies);
     }
@@ -374,7 +387,7 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
             engine->addStrategy("arena");
         }
 #endif
-        engine->addStrategies("boost", "racials", "chat", "default", "aoe", "potions", "conserve mana", "cast time", "dps assist", NULL);
+        engine->addStrategies("boost", "racials", "chat", "default", "aoe", "potions", "conserve mana", "cast time", "dps assist", "pvp", NULL);
         engine->removeStrategy("custom::say");
         engine->removeStrategy("flee");
         engine->removeStrategy("threat");
@@ -421,7 +434,7 @@ void AiFactory::AddDefaultNonCombatStrategies(Player* player, PlayerbotAI* const
             nonCombatEngine->addStrategies("cure", NULL);
             break;
         case CLASS_HUNTER:
-            nonCombatEngine->addStrategies("bdps", "dps assist", NULL);
+            nonCombatEngine->addStrategies("bdps", "dps assist", "pet", NULL);
             break;
         case CLASS_SHAMAN:
             if (tab == 0 || tab == 2)
