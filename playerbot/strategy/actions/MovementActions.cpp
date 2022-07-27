@@ -128,7 +128,7 @@ bool MovementAction::MoveToLOS(WorldObject* target, bool ranged)
     return false;
 }
 
-bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, bool react)
+bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, bool react, bool noPath)
 {
     UpdateMovementState();
 
@@ -172,6 +172,8 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
 
 
     bool generatePath = !bot->IsFlying() && !bot->HasMovementFlag(MOVEFLAG_SWIMMING) && !bot->IsInWater() && !sServerFacade.IsUnderwater(bot);
+    if (noPath)
+        generatePath = false;
 
     if (generatePath)
     {
@@ -905,60 +907,6 @@ bool MovementAction::Follow(Unit* target, float distance, float angle)
         return false;
     }
 
-    /*
-    if (!bot->InBattleGround() 
-     && sServerFacade.IsDistanceLessOrEqualThan(sServerFacade.GetDistance2d(bot, target->GetPositionX(), target->GetPositionY()), sPlayerbotAIConfig.sightDistance)
-     && abs(bot->GetPositionZ() - target->GetPositionZ()) >= sPlayerbotAIConfig.spellDistance
-     && ai->HasRealPlayerMaster()
-     && (target->GetMapId() && bot->GetMapId() != target->GetMapId()))
-    {
-        bot->StopMoving();
-        mm.Clear();
-        float x = bot->GetPositionX(), y = bot->GetPositionY(), z = target->GetPositionZ();
-        if (target->GetMapId() && bot->GetMapId() != target->GetMapId())
-        {
-#ifdef MANGOSBOT_ZERO
-            if ((target->GetMap() && target->GetMap()->IsBattleGround()) || (bot->GetMap() && bot->GetMap()->IsBattleGround()))
-#else
-            if ((target->GetMap() && target->GetMap()->IsBattleGroundOrArena()) || (bot->GetMap() && bot->GetMap()->IsBattleGroundOrArena()))
-#endif
-                return false;
-
-            bot->TeleportTo(target->GetMapId(), x, y, z, bot->GetOrientation());
-        }
-        else
-        {
-            bot->Relocate(x, y, z, bot->GetOrientation());
-        }
-        AI_VALUE(LastMovement&, "last movement").Set(target);
-        ClearIdleState();
-        return true;
-    }
-
-    if (!IsMovingAllowed(target)
-        && ai->HasRealPlayerMaster())
-    {
-#ifdef MANGOSBOT_ZERO
-        if ((target->GetMap() && target->GetMap()->IsBattleGround()) || (bot->GetMap() && bot->GetMap()->IsBattleGround()))
-#else
-        if((target->GetMap() && target->GetMap()->IsBattleGroundOrArena()) || (bot->GetMap() && bot->GetMap()->IsBattleGroundOrArena()))
-#endif
-            return false;
-
-        if (sServerFacade.UnitIsDead(bot) && sServerFacade.IsAlive(ai->GetMaster()))
-        {
-            bot->ResurrectPlayer(1.0f, false);
-            ai->TellMasterNoFacing("I live, again!");
-        }
-        else
-            ai->TellError("I am stuck while following");
-
-        bot->CombatStop(true);
-        bot->TeleportTo(target->GetMapId(), target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), target->GetOrientation());
-        return false;
-    }
-    */
-
     //Move to target corpse if alive.
     if (!target->IsAlive() && bot->IsAlive() && target->GetObjectGuid().IsPlayer())
     {
@@ -1068,6 +1016,15 @@ bool MovementAction::ChaseTo(WorldObject* obj, float distance, float angle)
         return false;
     }
 
+    /*if (bot->GetMotionMaster()->GetCurrentMovementGeneratorType() == CHASE_MOTION_TYPE)
+    {
+        if (Unit* pTarget = bot->GetMotionMaster()->GetCurrent()->GetCurrentTarget())
+        {
+            if (distance == 0.0f && bot->IsMoving())
+                return true;
+        }
+    }*/
+
     if (!obj || obj == bot || bot->GetMapId() != obj->GetMapId())
         return false;
 
@@ -1105,9 +1062,9 @@ bool MovementAction::ChaseTo(WorldObject* obj, float distance, float angle)
     bot->GetMotionMaster()->MoveChase((Unit*)obj, distance, angle);
     // if failed to move
     if (bot->GetMotionMaster()->GetCurrentMovementGeneratorType() != CHASE_MOTION_TYPE)
-        return MoveNear(obj, distance);
+        return false; // return MoveNear(obj, distance);
 
-    WaitForReach(sServerFacade.GetDistance2d(bot, obj));
+    //WaitForReach(sServerFacade.GetDistance2d(bot, obj));
     return true;
 }
 
@@ -1414,7 +1371,7 @@ bool SetFacingTargetAction::Execute(Event event)
         return true;
 
     sServerFacade.SetFacingTo(bot, target);
-    ai->SetNextCheckDelay(sPlayerbotAIConfig.globalCoolDown);
+    //ai->SetNextCheckDelay(sPlayerbotAIConfig.globalCoolDown);
     return true;
 }
 
@@ -1441,26 +1398,6 @@ bool SetBehindTargetAction::Execute(Event event)
     Unit* target = AI_VALUE(Unit*, "current target");
     if (!target)
         return false;
-
-    /*float angle = GetFollowAngle() / 3 + target->GetOrientation() + M_PI;
-
-    float x, y, z;
-    float orientation = target->GetOrientation() + M_PI / 2.0f;
-
-    float x_coef = cos(orientation);
-    float y_coef = sin(orientation);
-
-    float x_range_add = cos(target->GetOrientation()) * -1.0f;
-    float y_range_add = sin(target->GetOrientation()) * -1.0f;
-
-    x = target->GetPositionX() + x_coef * 0.0f + x_range_add;
-    y = target->GetPositionY() + y_coef * 0.0f + y_range_add;
-    z = target->GetPositionZ() + 0.0f;
-    bot->GetMotionMaster()->MovePoint(bot->GetMapId(), x, y, z, FORCED_MOVEMENT_RUN, true);
-    bot->SetInFront(target);
-    return true;*/
-
-    // TEST
 
     float angle = GetFollowAngle() / 3 + target->GetOrientation() + M_PI / 2.0f;
 
@@ -1502,18 +1439,6 @@ bool SetBehindTargetAction::isUseful()
         return false;
 
     return !bot->IsFacingTargetsBack(target);
-
-    /*float angle = GetFollowAngle() / 3 + target->GetOrientation() + M_PI;
-
-    float distance = sPlayerbotAIConfig.contactDistance;
-    float x = target->GetPositionX() + cos(angle) * distance,
-        y = target->GetPositionY() + sin(angle) * distance,
-        z = target->GetPositionZ();
-    bot->UpdateGroundPositionZ(x, y, z);
-
-    bool isLos = target->IsWithinLOS(x, y, z + bot->GetCollisionHeight(), true);
-
-    return isLos && !AI_VALUE2(bool, "behind", "current target");*/
 }
 
 bool SetBehindTargetAction::isPossible()
