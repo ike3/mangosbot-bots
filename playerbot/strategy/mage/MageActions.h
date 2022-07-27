@@ -7,6 +7,7 @@ namespace ai
 {
     BUFF_ACTION(CastFireWardAction, "fire ward");
     BUFF_ACTION(CastFrostWardAction, "frost ward");
+    BUFF_ACTION(CastBlinkAction, "blink");
 
     class CastFireballAction : public CastSpellAction
     {

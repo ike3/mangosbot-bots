@@ -146,6 +146,10 @@ void GenericMageStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
     triggers.push_back(new TriggerNode(
         "frost ward",
         NextAction::array(0, new NextAction("frost ward", ACTION_EMERGENCY), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "blink",
+        NextAction::array(0, new NextAction("blink", 60.0f), NULL)));
 }
 
 MageCureStrategy::MageCureStrategy(PlayerbotAI* ai) : Strategy(ai)
