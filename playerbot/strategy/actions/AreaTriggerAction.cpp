@@ -70,7 +70,5 @@ bool AreaTriggerAction::Execute(Event event)
     p << triggerId;
     p.rpos(0);
     bot->GetSession()->HandleAreaTriggerOpcode(p);
-
-    ai->TellMaster(BOT_TEXT("hello"));
     return true;
 }
