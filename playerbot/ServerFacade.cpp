@@ -64,7 +64,7 @@ void ServerFacade::SetFacingTo(Player* bot, WorldObject* wo, bool force)
 {
     float angle = bot->GetAngle(wo);
     MotionMaster &mm = *bot->GetMotionMaster();
-    if (!force && isMoving(bot)) bot->SetFacingTo(bot->GetAngle(wo));
+    if (!force && !bot->IsStopped()) bot->SetFacingTo(bot->GetAngle(wo));
     else
     {
         bot->SetOrientation(angle);
