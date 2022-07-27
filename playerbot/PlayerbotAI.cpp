@@ -4071,12 +4071,19 @@ void PlayerbotAI::ImbueItem(Item* item, uint32 targetFlag, ObjectGuid targetGUID
 #endif
 }
 
-void PlayerbotAI::EnchantItemT(uint32 spellid, uint8 slot)
+void PlayerbotAI::EnchantItemT(uint32 spellid, uint8 slot, Item* item)
 {
-   Item* pItem = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, slot);
+    Item* pItem = nullptr;
+    if (item)
+        pItem = item;
+    else
+        pItem = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, slot);
 
    if (!pItem)
     return;
+
+   if (pItem->GetSlot() != slot)
+       return;
 
 #ifdef CMANGOS
    if (pItem->GetOwner() == nullptr)

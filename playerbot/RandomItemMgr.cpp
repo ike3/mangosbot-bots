@@ -678,7 +678,7 @@ bool RandomItemMgr::ShouldEquipWeaponForSpec(uint8 playerclass, uint8 spec, Item
     {
         if (m_weightScales[spec].info.name == "prot")
         {
-            mh_weapons = { ITEM_SUBCLASS_WEAPON_SWORD, ITEM_SUBCLASS_WEAPON_AXE, ITEM_SUBCLASS_WEAPON_MACE, ITEM_SUBCLASS_WEAPON_DAGGER, ITEM_SUBCLASS_WEAPON_FIST };
+            mh_weapons = { ITEM_SUBCLASS_WEAPON_SWORD, ITEM_SUBCLASS_WEAPON_AXE, ITEM_SUBCLASS_WEAPON_MACE, ITEM_SUBCLASS_WEAPON_FIST };
             oh_weapons = { ITEM_SUBCLASS_ARMOR_SHIELD };
             r_weapons = { ITEM_SUBCLASS_WEAPON_BOW, ITEM_SUBCLASS_WEAPON_CROSSBOW, ITEM_SUBCLASS_WEAPON_GUN };
         }
@@ -723,8 +723,22 @@ bool RandomItemMgr::ShouldEquipWeaponForSpec(uint8 playerclass, uint8 spec, Item
     }
     case CLASS_ROGUE:
     {
-        mh_weapons = { ITEM_SUBCLASS_WEAPON_DAGGER, ITEM_SUBCLASS_WEAPON_SWORD, ITEM_SUBCLASS_WEAPON_MACE };
-        oh_weapons = { ITEM_SUBCLASS_WEAPON_DAGGER, ITEM_SUBCLASS_WEAPON_SWORD, ITEM_SUBCLASS_WEAPON_MACE };
+        if (m_weightScales[spec].info.name == "assas")
+        {
+            mh_weapons = { ITEM_SUBCLASS_WEAPON_DAGGER };
+            oh_weapons = { ITEM_SUBCLASS_WEAPON_DAGGER };
+        }
+        if (m_weightScales[spec].info.name == "combat")
+        {
+            mh_weapons = { ITEM_SUBCLASS_WEAPON_SWORD, ITEM_SUBCLASS_WEAPON_MACE };
+            oh_weapons = { ITEM_SUBCLASS_WEAPON_SWORD, ITEM_SUBCLASS_WEAPON_MACE };
+        }
+        else
+        {
+            mh_weapons = { ITEM_SUBCLASS_WEAPON_DAGGER, ITEM_SUBCLASS_WEAPON_SWORD, ITEM_SUBCLASS_WEAPON_MACE };
+            oh_weapons = { ITEM_SUBCLASS_WEAPON_DAGGER, ITEM_SUBCLASS_WEAPON_SWORD, ITEM_SUBCLASS_WEAPON_MACE };
+        }
+
         r_weapons = { ITEM_SUBCLASS_WEAPON_BOW, ITEM_SUBCLASS_WEAPON_CROSSBOW, ITEM_SUBCLASS_WEAPON_GUN };
         break;
     }
@@ -748,14 +762,14 @@ bool RandomItemMgr::ShouldEquipWeaponForSpec(uint8 playerclass, uint8 spec, Item
 #ifdef MANGOSBOT_ZERO
             mh_weapons = { ITEM_SUBCLASS_WEAPON_MACE2, ITEM_SUBCLASS_WEAPON_AXE2 };
 #else
-            mh_weapons = { ITEM_SUBCLASS_WEAPON_MACE2, ITEM_SUBCLASS_WEAPON_AXE2, ITEM_SUBCLASS_WEAPON_DAGGER, ITEM_SUBCLASS_WEAPON_AXE, ITEM_SUBCLASS_WEAPON_MACE, ITEM_SUBCLASS_WEAPON_FIST };
-            oh_weapons = { ITEM_SUBCLASS_ARMOR_SHIELD };
+            mh_weapons = { ITEM_SUBCLASS_WEAPON_MACE2, ITEM_SUBCLASS_WEAPON_AXE2, ITEM_SUBCLASS_WEAPON_AXE, ITEM_SUBCLASS_WEAPON_MACE, ITEM_SUBCLASS_WEAPON_FIST };
 #endif
             r_weapons = { ITEM_SUBCLASS_ARMOR_TOTEM };
         }
         else
         {
-            mh_weapons = { ITEM_SUBCLASS_WEAPON_STAFF };
+            mh_weapons = { ITEM_SUBCLASS_WEAPON_STAFF, ITEM_SUBCLASS_WEAPON_DAGGER, ITEM_SUBCLASS_WEAPON_MACE };
+            oh_weapons = { ITEM_SUBCLASS_ARMOR_MISC, ITEM_SUBCLASS_ARMOR_SHIELD };
             r_weapons = { ITEM_SUBCLASS_ARMOR_TOTEM };
         }
         break;
@@ -1432,6 +1446,14 @@ uint32 RandomItemMgr::CalculateStatWeight(uint8 playerclass, uint8 spec, ItemPro
             if (modd == statType)
             {
                 weightName = i->first;
+
+                // mark tank item (skip items with def stats for dps)
+                if (modd == ITEM_MOD_DODGE_RATING || modd == ITEM_MOD_PARRY_RATING || modd == ITEM_MOD_BLOCK_RATING || modd == ITEM_MOD_DEFENSE_SKILL_RATING)
+                    isTankItem = true;
+
+                if (modd == ITEM_MOD_CRIT_MELEE_RATING || modd == ITEM_MOD_CRIT_RATING)
+                    isDpsItem = true;
+
                 break;
             }
         }
@@ -1464,12 +1486,10 @@ uint32 RandomItemMgr::CalculateStatWeight(uint8 playerclass, uint8 spec, ItemPro
         }
     }
 
-    // check armor
-    statWeight += CalculateSingleStatWeight(playerclass, spec, "armor", proto->Armor);
-
     // check defensive stats
     uint32 defenseStats = 0;
     defenseStats += CalculateSingleStatWeight(playerclass, spec, "block", proto->Block);
+    defenseStats += CalculateSingleStatWeight(playerclass, spec, "armor", proto->Armor);
 
     // check weapon dps
     if (proto->IsWeapon())
@@ -1715,10 +1735,10 @@ uint32 RandomItemMgr::CalculateStatWeight(uint8 playerclass, uint8 spec, ItemPro
                                 {
                                     weightName = i->first;
                                     // mark tank item (skip items with def stats for dps)
-                                    if (modd == ITEM_MOD_DODGE_RATING || modd == ITEM_MOD_PARRY_RATING || modd == ITEM_MOD_BLOCK_RATING || modd == ITEM_MOD_DEFENSE_SKILL_RATING)
+                                    if (modd == CR_DODGE || modd == CR_PARRY || modd == CR_BLOCK || modd == CR_DEFENSE_SKILL)
                                         isTankItem = true;
 
-                                    if (modd == ITEM_MOD_CRIT_MELEE_RATING || modd == ITEM_MOD_CRIT_RATING || modd == ITEM_MOD_CRIT_RANGED_RATING)
+                                    if (modd == CR_CRIT_MELEE || modd == CR_CRIT_RANGED)
                                         isDpsItem = true;
 
                                     break;
@@ -1841,7 +1861,7 @@ uint32 RandomItemMgr::CalculateStatWeight(uint8 playerclass, uint8 spec, ItemPro
             }
         }
 
-        if ((spec != 6 && spec != 21) && !playerCaster)
+        if ((spec != 6 && spec != 21 && playerclass != CLASS_HUNTER) && !playerCaster)
             return 0;
     }
 
@@ -1869,10 +1889,13 @@ uint32 RandomItemMgr::CalculateStatWeight(uint8 playerclass, uint8 spec, ItemPro
     statWeight += spellPower;
     statWeight += spellHeal;
     statWeight += attackPower;
+    statWeight += defenseStats;
 
     // if stat value consists of only socket bonuses - skip
-    if (socketBonus && statWeight == socketBonus)
+    if (socketBonus && !(statWeight || basicStatsWeight))
         return 0;
+
+    statWeight += socketBonus;
 
     // handle negative stats
     if (basicStatsWeight < 0 && (abs(basicStatsWeight) >= statWeight))
@@ -2587,6 +2610,9 @@ void RandomItemMgr::BuildEquipCache()
                             {
                                 ItemPrototype const* proto = sObjectMgr.GetItemPrototype(itemId);
                                 if (!proto)
+                                    continue;
+
+                                if (proto->Quality != key.quality)
                                     continue;
 
                                 if ((slot == EQUIPMENT_SLOT_BODY || slot == EQUIPMENT_SLOT_TABARD))

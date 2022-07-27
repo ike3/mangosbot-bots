@@ -85,6 +85,7 @@ private:
     bool CanEquipArmor(ItemPrototype const* proto);
     bool CanEquipWeapon(ItemPrototype const* proto);
     void EnchantItem(Item* item);
+    void AddGems(Item* item);
     void AddItemStats(uint32 mod, uint8 &sp, uint8 &ap, uint8 &tank);
     bool CheckItemStats(uint8 sp, uint8 ap, uint8 tank);
     void CancelAuras();
@@ -102,7 +103,7 @@ private:
     static void AddPrevQuests(uint32 questId, list<uint32>& questIds);
     void LoadEnchantContainer();
     void ApplyEnchantTemplate();
-    void ApplyEnchantTemplate(uint8 spec);
+    void ApplyEnchantTemplate(uint8 spec, Item* item = nullptr);
     void InitGems();
     EnchantContainer::const_iterator GetEnchantContainerBegin() { return m_EnchantContainer.begin(); }
     EnchantContainer::const_iterator GetEnchantContainerEnd() { return m_EnchantContainer.end(); }
