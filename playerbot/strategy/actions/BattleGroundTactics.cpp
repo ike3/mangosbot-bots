@@ -2311,10 +2311,12 @@ bool BGTactics::wsgPaths()
 
     uint32 Preference = context->GetValue<uint32>("bg role")->Get();
 
+    bool atAllyGY = bot->GetPositionX() > 1388.f && bot->GetPositionY() > 1515.f && bot->GetPositionZ() > 335.0f;
+    bool atHordeGY = bot->GetPositionY() < 1400.0f && bot->GetPositionX() < 1075.0f && bot->GetPositionZ() > 330.0f;
 
     if (pos.x > bot->GetPositionX()) //He's somewhere at the alliance side
     {
-        if (Preference < 4) //preference < 4 = move through tunnel (< 6 becuse GY disabled)
+        if (Preference < 4 && !atHordeGY) //preference < 4 = move through tunnel (< 6 becuse GY disabled)
         {
             if (bot->GetPositionX() < 1006.f) //to the fasty
             {
@@ -2326,11 +2328,11 @@ bool BGTactics::wsgPaths()
                 if (bot->GetPositionY() < 1400.f)
                     MoveTo(bg->GetMapId(), 1125.778076f, bot->GetPositionY(), 316.567047f);
                 else
-                    MoveTo(bg->GetMapId(), 1125.778076f, 1452.059937f, 315.698883f);
+                    MoveTo(bg->GetMapId(), 1125.778076f, 1460.059937f, 316.0f);
                 return  true;
             }
         }
-        else if (Preference < 7) { // preference < 7 = move through graveyard (BUGGED)
+        else if (Preference < 7 || (atHordeGY && urand(0, 2))) { // preference < 7 = move through graveyard (BUGGED)
             if (bot->GetPositionX() < 985.f) //to the gate at the upper tunnel
             {
                 MoveTo(bg->GetMapId(), 985.940125f, 1423.260254f, 345.418121f);
@@ -2341,13 +2343,18 @@ bool BGTactics::wsgPaths()
                 MoveTo(bg->GetMapId(), 1055.182251f, 1396.967529f, 339.361511f);
                 return  true;
             }
+            else if (bot->GetPositionX() < 1070.f) //to the horde entrance
+            {
+                MoveTo(bg->GetMapId(), 1076.778076f, 1396.0f, 324.0f, false, false, true);
+                return  true;
+            }
             else if (bot->GetPositionX() < 1125.f) //to the horde entrance
             {
                 MoveTo(bg->GetMapId(), 1125.778076f, bot->GetPositionY(), 316.567047f);
                 return  true;
             }
         }
-        else { //all other preference: run down the ramp 
+        else if (!atHordeGY || urand(0, 2)){ //all other preference: run down the ramp 
             if (bot->GetPositionX() < 985.f) //to the gate at the upper tunnel
             {
                 MoveTo(bg->GetMapId(), 985.940125f, 1423.260254f, 345.418121f);
@@ -2366,11 +2373,6 @@ bool BGTactics::wsgPaths()
             else if (bot->GetPositionX() < 1050.f && bot->GetPositionY() < 1538.f) //down the ramp
             {
                 MoveTo(bg->GetMapId(), 1050.089478f, 1538.054443f, 332.460388f);
-                return  true;
-            }
-            else if (bot->GetPositionX() < 1050.f && bot->GetPositionY() < 1560.f) //down the ramp
-            {
-                MoveTo(bg->GetMapId(), 1050.089478f, 1560.054443f, 332.460388f);
                 return  true;
             }
             else if (bot->GetPositionX() < 1098.f) //at the ground now
@@ -2438,7 +2440,7 @@ bool BGTactics::wsgPaths()
     }
     else //move towards horde base
     {
-        if (Preference < 4) //through the tunnel
+        if (Preference < 4 && !atAllyGY) //through the tunnel
         {
             if (bot->GetPositionX() > 1449.7f) //to the fasty
             {
@@ -2468,7 +2470,7 @@ bool BGTactics::wsgPaths()
                 return  true;
             }
         }
-        else if (Preference < 7) // through the graveyard
+        else if (Preference < 7 || (atAllyGY && urand(0, 2))) // through the graveyard
         {
             if (bot->GetPositionX() > 1510.2f) //To the first gate
             {
@@ -2480,9 +2482,14 @@ bool BGTactics::wsgPaths()
                 MoveTo(bg->GetMapId(), 1459.490234f, 1494.175072f, 351.565155f);
                 return  true;
             }
-            else if (bot->GetPositionX() > 1424.f) //to the graveyard
+            else if (bot->GetPositionX() > 1424.f || (bot->GetPositionX() > 1388.f && bot->GetPositionY() > 1530.f && bot->GetPositionZ() > 335.0f)) //to the graveyard
             {
-                MoveTo(bg->GetMapId(), 1423.106201f + frand(-2, +2), 1532.851196f, 342.152100f);
+                MoveTo(bg->GetMapId(), 1422.106201f, 1529.851196f, 342.0f);
+                return  true;
+            }
+            else if (bot->GetPositionX() > 1400.f) // to the field (jump down)
+            {
+                MoveTo(bg->GetMapId(), 1398.7f, 1534.6f, 322.5f, false, false, true);
                 return  true;
             }
             else if (bot->GetPositionX() > 1345.f) // to the field
@@ -2491,7 +2498,7 @@ bool BGTactics::wsgPaths()
                 return  true;
             }
         }
-        else
+        else if (!atAllyGY || urand(0, 2))
         {
             if (bot->GetPositionX() > 1505.2f) //To the first gate
             {
@@ -2557,9 +2564,9 @@ bool BGTactics::wsgPaths()
         }
         else { //horde tunnel
 
-            if (bot->GetPositionX() > 1125.9f) //move to the horde entrance
+            if (bot->GetPositionX() > 1127.9f) //move to the horde entrance
             {
-                MoveTo(bg->GetMapId(), 1125.778076f, 1452.059937f, 315.698883f);
+                MoveTo(bg->GetMapId(), 1127.778076f, 1462.059937f, 315.698883f);
                 return  true;
             }
             else if (bot->GetPositionX() > 1006.7f) //move to the horde fasty
@@ -2670,9 +2677,6 @@ bool BGTactics::Execute(Event event)
     if (getName() == "move to objective")
     {
         if (bg->GetStatus() == STATUS_WAIT_JOIN)
-            return false;
-
-        if (bot->IsMoving())
             return false;
         
         if (!bot->IsStopped())
