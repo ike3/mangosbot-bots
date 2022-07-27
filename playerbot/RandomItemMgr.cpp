@@ -1447,12 +1447,14 @@ uint32 RandomItemMgr::CalculateStatWeight(uint8 playerclass, uint8 spec, ItemPro
             {
                 weightName = i->first;
 
+#ifndef MANGOSBOT_ZERO
                 // mark tank item (skip items with def stats for dps)
                 if (modd == ITEM_MOD_DODGE_RATING || modd == ITEM_MOD_PARRY_RATING || modd == ITEM_MOD_BLOCK_RATING || modd == ITEM_MOD_DEFENSE_SKILL_RATING)
                     isTankItem = true;
 
                 if (modd == ITEM_MOD_CRIT_MELEE_RATING || modd == ITEM_MOD_CRIT_RATING)
                     isDpsItem = true;
+#endif
 
                 break;
             }

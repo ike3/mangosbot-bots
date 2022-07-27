@@ -2050,6 +2050,7 @@ void PlayerbotFactory::AddGems(Item* item)
     if (!item)
         return;
 
+#ifndef MANGOSBOT_ZERO
     if (ItemPrototype const* proto = item->GetProto())
     {
         uint32 gemsList[MAX_GEM_SOCKETS];
@@ -2169,6 +2170,9 @@ void PlayerbotFactory::AddGems(Item* item)
             bot->GetSession()->QueuePacket(std::move(packet));*/
         }
     }
+#else
+    return;
+#endif
 }
 
 bool PlayerbotFactory::CanEquipUnseenItem(uint8 slot, uint16 &dest, uint32 item)
@@ -3558,6 +3562,7 @@ void PlayerbotFactory::LoadEnchantContainer()
 
 void PlayerbotFactory::InitGems() //WIP
 {
+#ifndef MANGOSBOT_ZERO
     vector<uint32> gems = sRandomItemMgr.GetGemsList();
     if (!gems.empty()) ahbot::Shuffle(gems);
 
@@ -3672,4 +3677,5 @@ void PlayerbotFactory::InitGems() //WIP
             }
         }
     }
+#endif
 }
