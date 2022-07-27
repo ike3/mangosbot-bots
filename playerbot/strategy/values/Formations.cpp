@@ -110,8 +110,11 @@ namespace ai
             master->GetMap()->GetHitPosition(ox, oy, oz + bot->GetCollisionHeight(), x, y, z, -0.5f);
 #endif
 
-            z += CONTACT_DISTANCE;
-            bot->UpdateAllowedPositionZ(x, y, z);
+            if (!bot->IsFlying() && !bot->IsFreeFlying())
+            {
+                z += CONTACT_DISTANCE;
+                bot->UpdateAllowedPositionZ(x, y, z);
+            }
             return WorldLocation(master->GetMapId(), x, y, z);
         }
 
@@ -151,8 +154,11 @@ namespace ai
             if (ground <= INVALID_HEIGHT)
                 return Formation::NullLocation;
 
-            z += CONTACT_DISTANCE;
-            bot->UpdateAllowedPositionZ(x, y, z);
+            if (!bot->IsFlying() && !bot->IsFreeFlying())
+            {
+                z += CONTACT_DISTANCE;
+                bot->UpdateAllowedPositionZ(x, y, z);
+            }
             return WorldLocation(master->GetMapId(), x, y, z);
         }
 
@@ -209,8 +215,11 @@ namespace ai
             if (ground <= INVALID_HEIGHT)
                 return Formation::NullLocation;
 
-            z += CONTACT_DISTANCE;
-            bot->UpdateAllowedPositionZ(x, y, z);
+            if (!bot->IsFlying() && !bot->IsFreeFlying())
+            {
+                z += CONTACT_DISTANCE;
+                bot->UpdateAllowedPositionZ(x, y, z);
+            }
             return WorldLocation(bot->GetMapId(), x, y, z);
         }
     };
@@ -367,8 +376,11 @@ namespace ai
                 }
                 if (minDist)
                 {
-                    z += CONTACT_DISTANCE;
-                    bot->UpdateAllowedPositionZ(minX, minY, z);
+                    if (!bot->IsFlying() && !bot->IsFreeFlying())
+                    {
+                        z += CONTACT_DISTANCE;
+                        bot->UpdateAllowedPositionZ(minX, minY, z);
+                    }
                     return WorldLocation(bot->GetMapId(), minX, minY, z);
                 }
 
@@ -383,9 +395,11 @@ namespace ai
 #else
             master->GetMap()->GetHitPosition(ox, oy, oz + bot->GetCollisionHeight(), x, y, z, -0.5f);
 #endif
-
-            z += CONTACT_DISTANCE;
-            bot->UpdateAllowedPositionZ(x, y, z);
+            if (!bot->IsFlying() && !bot->IsFreeFlying())
+            {
+                z += CONTACT_DISTANCE;
+                bot->UpdateAllowedPositionZ(x, y, z);
+            }
             return WorldLocation(bot->GetMapId(), x, y, z);
         }
     };
@@ -603,8 +617,11 @@ WorldLocation MoveFormation::MoveSingleLine(vector<Player*> line, float diff, fl
             if (ground <= INVALID_HEIGHT)
                 return Formation::NullLocation;
 
-            lz += CONTACT_DISTANCE;
-            bot->UpdateAllowedPositionZ(lx, ly, lz);
+            if (!bot->IsFlying() && !bot->IsFreeFlying())
+            {
+                lz += CONTACT_DISTANCE;
+                bot->UpdateAllowedPositionZ(lx, ly, lz);
+            }
             return WorldLocation(bot->GetMapId(), lx, ly, lz);
         }
 
