@@ -142,6 +142,9 @@ bool CheckMountStateAction::isUseful()
     if (bot->IsTaxiFlying())
         return false;
 
+    if (bot->getClass() == CLASS_ROGUE && bot->InBattleGround() && ai->HasAura("stealth", bot))
+        return false;
+
 #ifndef MANGOSBOT_ZERO
     if (bot->InArena())
         return false;
