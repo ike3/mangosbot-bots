@@ -4170,6 +4170,10 @@ void PlayerbotAI::StopMoving()
     if (bot->IsTaxiFlying())
         return;
 
+    if (!bot->GetMotionMaster()->empty())
+        if (MovementGenerator* movgen = bot->GetMotionMaster()->top())
+            movgen->Interrupt(*bot);
+
     // remove movement flags, checked in bot->IsMoving()
     if (bot->IsFalling())
 #ifdef MANGOSBOT_TWO
