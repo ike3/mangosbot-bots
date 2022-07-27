@@ -692,7 +692,7 @@ bool EmoteAction::Execute(Event event)
         pSource = sObjectMgr.GetPlayer(source);
         if (pSource && pSource != bot && sServerFacade.GetDistance2d(bot, pSource) < sPlayerbotAIConfig.farDistance && emoteId != EMOTE_ONESHOT_NONE)
         {
-            if ((pSource->GetObjectGuid() != bot->GetObjectGuid()) && (pSource->GetSelectionGuid() == bot->GetObjectGuid() || (urand(0, 1) && sServerFacade.IsInFront(bot, pSource, 10.0f, M_PI_F))))
+            if ((pSource->GetObjectGuid() != bot->GetObjectGuid()) && (pSource->GetSelectionGuid() == bot->GetObjectGuid() || (urand(0, 1) && sServerFacade.IsInFront(pSource, bot, 10.0f, M_PI_F))))
             {
                 sLog.outDetail("Bot #%d %s:%d <%s> received SMSG_EMOTE %d from player #%d <%s>", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->GetLevel(), bot->GetName(), emoteId, pSource->GetGUIDLow(), pSource->GetName());
                 vector<uint32> types;
@@ -833,7 +833,14 @@ bool TalkAction::Execute(Event event)
             player->GetPlayerbotAI()->GetAiObjectContext()->GetValue<ObjectGuid>("talk target")->Set(bot->GetObjectGuid());
 
         context->GetValue<ObjectGuid>("talk target")->Set(target->GetObjectGuid());
-        return Emote(target, GetRandomEmote(target, true), true);
+        //return Emote(target, GetRandomEmote(target, true), true);
+        uint32 emote = GetRandomEmote(target, true);
+        WorldPacket data(SMSG_TEXT_EMOTE);
+        data << emote;
+        data << GetNumberOfEmoteVariants((TextEmotes)emote, bot->getRace(), bot->getGender());
+        data << ((target && urand(0, 1)) ? target->GetObjectGuid() : ObjectGuid());
+        bot->GetSession()->HandleTextEmoteOpcode(data);
+        return true;
     }
 
     return false;
