@@ -114,7 +114,7 @@ bool PlayerbotAIConfig::Initialize()
     randomBotMaxLevelChance = config.GetFloatDefault("AiPlayerbot.RandomBotMaxLevelChance", 0.15f);
     randomBotRpgChance = config.GetFloatDefault("AiPlayerbot.RandomBotRpgChance", 0.35f);
 
-    iterationsPerTick = config.GetIntDefault("AiPlayerbot.IterationsPerTick", 10);
+    iterationsPerTick = config.GetIntDefault("AiPlayerbot.IterationsPerTick", 100);
 
     allowGuildBots = config.GetBoolDefault("AiPlayerbot.AllowGuildBots", true);
 
