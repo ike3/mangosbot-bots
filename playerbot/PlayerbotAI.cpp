@@ -201,7 +201,10 @@ void PlayerbotAI::UpdateAI(uint32 elapsed, bool minimal)
     if (nextAICheckDelay > elapsed)
         nextAICheckDelay -= elapsed;
     else
+    {
         nextAICheckDelay = 0;
+        isWaiting = false;
+    }
 
     // cancel logout in combat
     if (bot->IsStunnedByLogout() || bot->GetSession()->isLogingOut())
@@ -233,9 +236,10 @@ void PlayerbotAI::UpdateAI(uint32 elapsed, bool minimal)
     }
 
     // wake up if in combat
+    bool isCasting = bot->IsNonMeleeSpellCasted(true);
     if (sServerFacade.IsInCombat(bot))
     {
-        if (!inCombat)
+        if (!inCombat && !isCasting && !isWaiting)
         {
             nextAICheckDelay = 0;
             combatStart = time(0);
@@ -250,7 +254,7 @@ void PlayerbotAI::UpdateAI(uint32 elapsed, bool minimal)
     }
     else
     {
-        if (inCombat)
+        if (inCombat && !isCasting && !isWaiting)
             nextAICheckDelay = 0;
 
         inCombat = false;
@@ -663,13 +667,14 @@ void PlayerbotAI::HandleCommand(uint32 type, const string& text, Player& fromPla
     else if (filtered.size() > 5 && filtered.substr(0, 5) == "wait ")
     {
         std::string remaining = filtered.substr(filtered.find(" ") + 1);
-        uint32 delay = atof(remaining.c_str());
-        if (delay > 20)
+        uint32 delay = atof(remaining.c_str()) * IN_MILLISECONDS;
+        if (delay > 20000)
         {
             TellMaster("Max wait time is 20 seconds!");
             return;
         }
         IncreaseNextCheckDelay(delay);
+        isWaiting = true;
         TellError("Waiting for " + remaining + " seconds!");
         return;
     }
