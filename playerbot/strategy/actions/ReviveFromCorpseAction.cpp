@@ -85,7 +85,7 @@ bool FindCorpseAction::Execute(Event event)
         {
             sLog.outBasic("Bot #%d %s:%d <%s>: died too many times and was sent to an inn", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->GetLevel(), bot->GetName());
             context->GetValue<uint32>("death count")->Set(0);
-            sRandomPlayerbotMgr.RandomTeleportForRpg(bot);
+            sRandomPlayerbotMgr.RandomTeleportForRpg(bot, false);
             return true;
         }
     }
