@@ -873,7 +873,7 @@ void PlayerbotAI::HandleBotOutgoingPacket(const WorldPacket& packet)
                 if (bot->InBattleGround() && !(isMentioned || (msgtype != CHAT_MSG_CHANNEL && !isRandomBot)))
                     return;
 
-                if (HasRealPlayerMaster())
+                if (HasRealPlayerMaster() && guid1 != GetMaster()->GetObjectGuid())
                     return;
 
                 if (isRandomBot && urand(0, 20))
