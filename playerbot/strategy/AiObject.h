@@ -207,6 +207,13 @@ class clazz : public super \
         virtual bool IsActive(); \
     }
 
+#define HAS_AURA_TRIGGER_TIME(clazz, spell, time) \
+    class clazz : public HasAuraTrigger \
+    { \
+    public: \
+        clazz(PlayerbotAI* ai) : HasAuraTrigger(ai, spell, time) {} \
+    }
+
 #define SNARE_TRIGGER(clazz, spell) \
     class clazz : public SnareTargetTrigger \
     { \
