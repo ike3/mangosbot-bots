@@ -5,6 +5,7 @@
 
 #include "AiFactory.h"
 
+#include "MotionGenerators/MovementGenerator.h"
 #include "GridNotifiers.h"
 #include "GridNotifiersImpl.h"
 #include "CellImpl.h"
@@ -218,7 +219,14 @@ void PlayerbotAI::UpdateAI(uint32 elapsed, bool minimal)
     }
 
     // Leontiesh - fix movement desync
-    if (bot->IsMoving())
+    bool botMoving = false;
+    if (!bot->IsStopped())
+        botMoving = true;
+    if (!bot->GetMotionMaster()->empty())
+        if (MovementGenerator* movgen = bot->GetMotionMaster()->top())
+            botMoving = true;
+
+    if (botMoving)
     {
         isMoving = true;
 
@@ -423,6 +431,13 @@ void PlayerbotAI::HandleTeleportAck()
 
 	if (bot->IsBeingTeleportedNear())
 	{
+        if (!bot->GetMotionMaster()->empty())
+            if (MovementGenerator* movgen = bot->GetMotionMaster()->top())
+                movgen->Interrupt(*bot);
+
+       /* WorldLocation dest = bot->GetTeleportDest();
+        bot->Relocate(dest.coord_x, dest.coord_y, dest.coord_z, dest.orientation);*/
+
 		WorldPacket p = WorldPacket(MSG_MOVE_TELEPORT_ACK, 8 + 4 + 4);
 #ifdef MANGOSBOT_TWO
         p << bot->GetObjectGuid().WriteAsPacked();
@@ -434,7 +449,7 @@ void PlayerbotAI::HandleTeleportAck()
         bot->GetSession()->HandleMoveTeleportAckOpcode(p);
 
         // add delay to simulate teleport delay
-        SetNextCheckDelay(urand(1000, 3000));
+        SetNextCheckDelay(urand(1000, 2000));
 	}
 	else if (bot->IsBeingTeleportedFar())
 	{
@@ -445,24 +460,12 @@ void PlayerbotAI::HandleTeleportAck()
 	}
 
     Reset();
-    //bot->SendHeartBeat();
 }
 
 void PlayerbotAI::Reset(bool full)
 {
     if (bot->IsTaxiFlying())
         return;
-
-    WorldSession* botWorldSessionPtr = bot->GetSession();
-    bool logout = botWorldSessionPtr->ShouldLogOut(time(nullptr));
-
-    // cancel logout
-    if (!logout && (bot->IsStunnedByLogout() || bot->GetSession()->isLogingOut()))
-    {
-        WorldPacket p;
-        bot->GetSession()->HandleLogoutCancelOpcode(p);
-        TellMaster(BOT_TEXT("logout_cancel"));
-    }
 
     currentEngine = engines[BOT_STATE_NON_COMBAT];
     nextAICheckDelay = 0;
@@ -488,11 +491,24 @@ void PlayerbotAI::Reset(bool full)
         aiObjectContext->GetValue<TravelTarget* >("travel target")->Get()->setTarget(sTravelMgr.nullTravelDestination, sTravelMgr.nullWorldPosition, true);
         aiObjectContext->GetValue<TravelTarget* >("travel target")->Get()->setStatus(TRAVEL_STATUS_EXPIRED);
         aiObjectContext->GetValue<TravelTarget* >("travel target")->Get()->setExpireIn(1000);
+
+        InterruptSpell();
+
+        bot->GetMotionMaster()->Clear();
+
+        WorldSession* botWorldSessionPtr = bot->GetSession();
+        bool logout = botWorldSessionPtr->ShouldLogOut(time(nullptr));
+
+        // cancel logout
+        if (!logout && (bot->IsStunnedByLogout() || bot->GetSession()->isLogingOut()))
+        {
+            WorldPacket p;
+            bot->GetSession()->HandleLogoutCancelOpcode(p);
+            TellMaster(BOT_TEXT("logout_cancel"));
+        }
     }
     
     aiObjectContext->GetValue<set<ObjectGuid>&>("ignore rpg target")->Get().clear();
-
-    bot->GetMotionMaster()->Clear();
 
     if (bot->IsTaxiFlying())
     {
@@ -501,8 +517,6 @@ void PlayerbotAI::Reset(bool full)
 #endif
         bot->OnTaxiFlightEject(true);
     }
-
-    InterruptSpell();
 
     if (full)
     {
@@ -2298,7 +2312,12 @@ bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target, Item* itemTarget)
         }
     }
 
-    if (sServerFacade.isMoving(bot) && (spell->GetCastTime() || (IsChanneledSpell(pSpellInfo) && GetSpellDuration(pSpellInfo) > 0)))
+    bool isMoving = false;
+    if (!bot->GetMotionMaster()->empty())
+        if (MovementGenerator* movgen = bot->GetMotionMaster()->top())
+            isMoving = true;
+
+    if ((sServerFacade.isMoving(bot) || isMoving) && ((spell->GetCastTime() || (IsChanneledSpell(pSpellInfo)) && GetSpellDuration(pSpellInfo) > 0)))
     {
         StopMoving();
         SetNextCheckDelay(sPlayerbotAIConfig.globalCoolDown);
@@ -2395,7 +2414,12 @@ bool PlayerbotAI::CastSpell(uint32 spellId, float x, float y, float z, Item* ite
 
     ObjectGuid oldSel = bot->GetSelectionGuid();
 
-    if (!sServerFacade.isMoving(bot)) bot->SetFacingTo(bot->GetAngleAt(bot->GetPositionX(), bot->GetPositionY(), x, y));
+    bool isMoving = false;
+    if (!bot->GetMotionMaster()->empty())
+        if (MovementGenerator* movgen = bot->GetMotionMaster()->top())
+            isMoving = true;
+
+    if (!sServerFacade.isMoving(bot) || isMoving) bot->SetFacingTo(bot->GetAngleAt(bot->GetPositionX(), bot->GetPositionY(), x, y));
 
     if (failWithDelay)
     {
