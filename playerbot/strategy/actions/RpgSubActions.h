@@ -14,7 +14,7 @@ namespace ai
 
         void OnExecute(string nextAction = "rpg") { if (ai->HasRealPlayerMaster() && nextAction == "rpg") nextAction = "rpg cancel"; SET_AI_VALUE(string, "next rpg action", nextAction); };
         void BeforeExecute();
-        void AfterExecute(bool doDelay = true,  bool waitForGroup = false);
+        void AfterExecute(bool doDelay = true,  bool waitForGroup = false, string nextAction = "rpg");
 
         virtual GuidPosition guidP() { return AI_VALUE(GuidPosition, "rpg target"); }
         virtual ObjectGuid guid() { return (ObjectGuid)guidP(); }        
@@ -74,7 +74,7 @@ namespace ai
     public:
         RpgEmoteAction(PlayerbotAI* ai, string name = "rpg emote") : RpgSubAction(ai, name) {}
 
-        virtual bool isUseful() { return rpg->InRange() && !ai->HasRealPlayerMaster(); }
+        virtual bool isUseful() { Unit* unit = rpg->guidP().GetUnit(); if (unit && unit->GetName() == "chicken") return rpg->InRange(); return rpg->InRange() && !ai->HasRealPlayerMaster(); }
 
         virtual bool Execute(Event event);
     };
@@ -119,6 +119,7 @@ namespace ai
     {
     public:
         RpgEndQuestAction(PlayerbotAI* ai, string name = "rpg end quest") : RpgSubAction(ai, name) {}
+        virtual bool Execute(Event event) { bool doAction = ai->DoSpecificAction(ActionName(), ActionEvent(event), true); rpg->AfterExecute(doAction, true, "rpg start quest"); return doAction; }
 
     private:
         virtual string ActionName() { return "talk to quest giver"; }
@@ -142,7 +143,7 @@ namespace ai
 
     private:
         virtual string ActionName() { return "sell"; }
-        virtual Event ActionEvent(Event event) { return Event("rpg action", "gray"); }
+        virtual Event ActionEvent(Event event) { return Event("rpg action", "vendor"); }
     };
 
     class RpgRepairAction : public RpgSubAction

@@ -55,22 +55,26 @@ namespace ai
             return actionContexts.supports();
         }
 
-        string FormatValues()
+        string FormatValues(string findName = "")
         {
             ostringstream out;
             set<string> names = valueContexts.GetCreated();
-            for (set<string>::iterator i = names.begin(); i != names.end(); ++i, out << "|")
+            for (set<string>::iterator i = names.begin(); i != names.end(); ++i)
             {
                 UntypedValue* value = GetUntypedValue(*i);
                 if (!value)
+                    continue;
+
+                if (!findName.empty() && i->find(findName) == string::npos)
                     continue;
 
                 string text = value->Format();
                 if (text == "?")
                     continue;
 
-                out << "{" << *i << "=" << text << "}";
+                out << "{" << *i << "=" << text << "}|";
             }
+            out.seekp(-1, out.cur);
             return out.str();
         }
 

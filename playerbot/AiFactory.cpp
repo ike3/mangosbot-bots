@@ -336,6 +336,7 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
             {
                 engine->removeStrategy("ranged");
                 engine->addStrategies("dps", "close", NULL);
+                engine->removeStrategy("ranged");
             }
         }
 
@@ -344,6 +345,7 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
         {
             engine->removeStrategy("ranged");
             engine->addStrategies("dps", "close", NULL);
+            engine->removeStrategy("ranged");
         }
 
         // remove threat for now

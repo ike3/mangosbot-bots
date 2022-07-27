@@ -22,9 +22,9 @@ void RpgHelper::BeforeExecute()
     setFacingTo(guidP());
 }
 
-void RpgHelper::AfterExecute(bool doDelay, bool waitForGroup)
+void RpgHelper::AfterExecute(bool doDelay, bool waitForGroup, string nextAction)
 {
-    OnExecute();
+    OnExecute(nextAction);
 
     bot->SetSelectionGuid(guidP());
 
@@ -64,7 +64,14 @@ void RpgHelper::setDelay(bool waitForGroup)
 
 bool RpgEmoteAction::Execute(Event event)
 {
-    uint32 type = TalkAction::GetRandomEmote(rpg->guidP().GetUnit());
+    Unit* unit = rpg->guidP().GetUnit();
+
+    uint32 type;
+
+    if (unit && unit->GetName() == "chicken" && !urand(0, 2))
+        type = EMOTE_ONESHOT_CHICKEN;
+    else
+        type = TalkAction::GetRandomEmote(rpg->guidP().GetUnit());
 
     WorldPacket p1;
     p1 << rpg->guid();
@@ -72,7 +79,10 @@ bool RpgEmoteAction::Execute(Event event)
 
     bot->HandleEmoteCommand(type);
 
-    rpg->AfterExecute();
+    if (type != EMOTE_ONESHOT_CHICKEN)
+        rpg->AfterExecute();
+    else
+        rpg->AfterExecute(true,false, "rpg start quest");
 
     return true;
 }

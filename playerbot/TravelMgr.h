@@ -101,6 +101,9 @@ namespace ai
         WorldPosition* closest(vector<WorldPosition*> list) { return *std::min_element(list.begin(), list.end(), [this](WorldPosition* i, WorldPosition* j) {return this->distance(i) < this->distance(j); }); }
         WorldPosition closest(vector<WorldPosition> list) { return *std::min_element(list.begin(), list.end(), [this](WorldPosition i, WorldPosition j) {return this->distance(i) < this->distance(j); }); }
 
+        WorldPosition* furtest(vector<WorldPosition*> list) { return *std::max_element(list.begin(), list.end(), [this](WorldPosition* i, WorldPosition* j) {return this->distance(i) < this->distance(j); }); }
+        WorldPosition furtest(vector<WorldPosition> list) { return *std::max_element(list.begin(), list.end(), [this](WorldPosition i, WorldPosition j) {return this->distance(i) < this->distance(j); }); }
+
         template<class T>
         pair<T, WorldPosition>  closest(list<pair<T, WorldPosition>> list) { return *std::min_element(list.begin(), list.end(), [this](pair<T, WorldPosition> i, pair<T, WorldPosition> j) {return this->distance(i.second) < this->distance(j.second); }); }
         template<class T>
@@ -363,6 +366,7 @@ namespace ai
         TravelDestination(vector<WorldPosition*> points1, float radiusMin1, float radiusMax1) { points = points1;  radiusMin = radiusMin1; radiusMax = radiusMax1; }
 
         void addPoint(WorldPosition* pos) { points.push_back(pos); }
+        bool hasPoint(WorldPosition* pos) { return std::find(points.begin(), points.end(), pos) != points.end(); }
         void setExpireDelay(uint32 delay) { expireDelay = delay; }
         void setCooldownDelay(uint32 delay) { cooldownDelay = delay; }
         void setMaxVisitors(uint32 maxVisitors1 = 0, uint32 maxVisitorsPerPoint1 = 0) { maxVisitors = maxVisitors1; maxVisitorsPerPoint = maxVisitorsPerPoint1; }
@@ -727,6 +731,9 @@ namespace ai
 
         void printGrid(uint32 mapId, int x, int y, string type);
         void printObj(WorldObject* obj, string type);
+
+        void logEvent(PlayerbotAI* ai, string eventName, string info1 = "", string info2 = "");
+        void logEvent(PlayerbotAI* ai, string eventName, ObjectGuid guid, string info2);
     //protected:
         void logQuestError(uint32 errorNr, Quest* quest, uint32 objective = 0, uint32 unitId = 0, uint32 itemId = 0);
 

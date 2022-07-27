@@ -466,10 +466,13 @@ uint32 RandomPlayerbotMgr::AddRandomBots()
         PlayerbotDatabase.CommitTransaction();
 
         if (maxAllowedBotCount)
+            maxAllowedBotCount = GetEventValue(0, "bot_count") - currentBots.size();
+
+        if (maxAllowedBotCount)
 #ifdef MANGOSBOT_TWO
-            sLog.outError("Not enough random bot accounts available. Need %d more!!", ceil(maxAllowedBotCount / 10));
+            sLog.outError("Not enough random bot accounts available. Need %d more!!", (uint32)ceil(maxAllowedBotCount / 10));
 #else
-            sLog.outError("Not enough random bot accounts available. Need %d more!!", ceil(maxAllowedBotCount / 9));
+            sLog.outError("Not enough random bot accounts available. Need %d more!!", (uint32)ceil(maxAllowedBotCount / 9));
 #endif
       
     }

@@ -956,13 +956,19 @@ bool QuestObjectiveTravelDestination::isActive(Player* bot) {
 
     if (getEntry() > 0 && !isOut(&botPos))
     {
-        list<ObjectGuid> targets = AI_VALUE(list<ObjectGuid>, "possible targets");
+        TravelTarget* target = context->GetValue<TravelTarget*>("travel target")->Get();
 
-        for (auto& target : targets)
-            if (target.GetEntry() == getEntry() && target.IsCreature() && ai->GetCreature(target) && ai->GetCreature(target)->IsAlive())
-                return true;
-        
-        return false;
+        //Only look for the target if it is unique or if we are currently working on it.
+        if (points.size() == 1 || (target->getStatus() == TRAVEL_STATUS_WORK && target->getEntry() == getEntry()))
+        {
+            list<ObjectGuid> targets = AI_VALUE(list<ObjectGuid>, "possible targets");
+
+            for (auto& target : targets)
+                if (target.GetEntry() == getEntry() && target.IsCreature() && ai->GetCreature(target) && ai->GetCreature(target)->IsAlive())
+                    return true;
+
+            return false;
+        }
     }
 
     return true;
@@ -1418,6 +1424,48 @@ void TravelMgr::Clear()
     quests.clear();
     pointsMap.clear();
 }
+
+void TravelMgr::logEvent(PlayerbotAI* ai, string eventName, string info1, string info2)
+{
+    if (sPlayerbotAIConfig.hasLog("bot_events.csv"))
+    {
+        Player* bot = ai->GetBot();
+
+        ostringstream out;
+        out << sPlayerbotAIConfig.GetTimestampStr() << "+00,";
+        out << bot->GetName() << ",";
+        out << eventName << ",";
+        out << std::fixed << std::setprecision(2);
+        WorldPosition(bot).printWKT(out);
+
+        out << to_string(bot->getRace()) << ",";
+        out << to_string(bot->getClass()) << ",";
+        float subLevel = ((float)bot->GetLevel() + ((float)bot->GetUInt32Value(PLAYER_XP) / (float)bot->GetUInt32Value(PLAYER_NEXT_LEVEL_XP)));
+
+        out << subLevel << ",";
+
+        out << "\""<<info1 << "\",";
+        out << "\""<<info2 << "\"";
+
+        sPlayerbotAIConfig.log("bot_events.csv", out.str().c_str());
+    }
+};
+
+
+void TravelMgr::logEvent(PlayerbotAI* ai, string eventName, ObjectGuid guid, string info2)
+{
+    string info1 = "";
+
+    Unit* victim;
+    if (guid)
+    {
+        victim = ai->GetUnit(guid);
+        if (victim)
+            info1 = victim->GetName();
+    }
+
+    logEvent(ai, eventName, info1, info2);
+};
 
 void TravelMgr::logQuestError(uint32 errorNr, Quest* quest, uint32 objective, uint32 unitId, uint32 itemId)
 {
@@ -2131,6 +2179,8 @@ void TravelMgr::LoadQuestTravelTable()
 
     sPlayerbotAIConfig.openLog("unload_grid.csv", "w");
     sPlayerbotAIConfig.openLog("unload_obj.csv", "w");
+    sPlayerbotAIConfig.openLog("bot_events.csv", "w");
+    sPlayerbotAIConfig.openLog("travel_map.csv", "w");
 
 #ifdef IKE_PATHFINDER
     bool mmapAvoidMobMod = true;
@@ -3825,40 +3875,21 @@ uint32 TravelMgr::getDialogStatus(Player* pPlayer, int32 questgiver, Quest const
 vector<WorldPosition*> TravelMgr::getNextPoint(WorldPosition* center, vector<WorldPosition*> points, uint32 amount) {
     vector<WorldPosition*> retVec;
 
-    if (points.size() == 1)
+    if (points.size() < 2)
     {
         retVec.push_back(points[0]);
         return retVec;
     }
 
-    //List of weights based on distance (Gausian curve that starts at 100 and lower to 1 at 1000 distance)
+    retVec = points;
+
     vector<uint32> weights;
 
-    std::transform(points.begin(), points.end(), std::back_inserter(weights), [center](WorldPosition* point) { return 1 + 1000 * exp(-1 * pow(point->distance(center) / 400.0, 2)); });
+    std::transform(retVec.begin(), retVec.end(), std::back_inserter(weights), [center](WorldPosition* point) { return 200000 / (1 + point->distance(center)); });
 
-    //Total sum of all those weights.
-    uint32 sum = std::accumulate(weights.begin(), weights.end(), 0);
+    std::mt19937 gen(time(0));
 
-    //Pick a random number in that range.
-    uint32 rnd = urand(0, sum);
-
-    //Pick a random point based on weights.
-    for (uint32 nr = 0; nr < amount; nr++)
-    {
-        for (unsigned i = 0; i < points.size(); ++i)
-            if (rnd < weights[i] && (retVec.empty() || std::find(retVec.begin(), retVec.end(), points[i]) == retVec.end()))
-            {
-                retVec.push_back(points[i]);
-                break;
-            }
-            else
-                rnd -= weights[i];
-    }
-
-    if (!retVec.empty())
-        return retVec;
-
-    assert(!"No valid point found.");
+    weighted_shuffle(retVec.begin(), retVec.end(), weights.begin(), weights.end(), gen);
 
     return retVec;
 }
@@ -3887,29 +3918,6 @@ vector<WorldPosition> TravelMgr::getNextPoint(WorldPosition center, vector<World
     std::mt19937 gen(time(0));
 
     weighted_shuffle(retVec.begin(), retVec.end(), weights.begin(), weights.end(), gen);
-
-    vector<float> dists;
-
-    //Total sum of all those weights.
-    /*
-    uint32 sum = std::accumulate(weights.begin(), weights.end(), 0);
-
-    //Pick a random point based on weights.
-    for (uint32 nr = 0; nr < amount; nr++)
-    {
-        //Pick a random number in that range.
-        uint32 rnd = urand(0, sum);
-
-        for (unsigned i = 0; i < points.size(); ++i)
-            if (rnd < weights[i] && (retVec.empty() || std::find(retVec.begin(), retVec.end(), points[i]) == retVec.end()))
-            {
-                retVec.push_back(points[i]);
-                break;
-            }
-            else
-                rnd -= weights[i];
-    }
-    */
 
     return retVec;
 }

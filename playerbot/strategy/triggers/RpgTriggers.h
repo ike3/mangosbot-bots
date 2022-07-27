@@ -16,7 +16,7 @@ namespace ai
     public:
         HasRpgTargetTrigger(PlayerbotAI* ai, string name = "has rpg target", int checkInterval = 1) : NoRpgTargetTrigger(ai, name, checkInterval) {}
 
-        virtual bool IsActive() { return !NoRpgTargetTrigger::IsActive(); };
+        virtual bool IsActive() { return !NoRpgTargetTrigger::IsActive() && AI_VALUE(string, "next rpg action") != "choose rpg target"; }; //Ingore rpg targets that only have the cancel action available.
     };
 
     class FarFromRpgTargetTrigger : public NoRpgTargetTrigger
@@ -44,8 +44,8 @@ namespace ai
 
         GuidPosition getGuidP() { return AI_VALUE(GuidPosition, "rpg target"); }
 
-        virtual bool IsActive() { return true; };
-        virtual Event Check() { if (!NoRpgTargetTrigger::IsActive() && (AI_VALUE(string, "next rpg action") == "choose rpg target") || !FarFromRpgTargetTrigger::IsActive()) return Trigger::Check(); return Event(); };
+        virtual bool IsActive() { return !ai->HasRealPlayerMaster() || (AI_VALUE(GuidPosition, "rpg target").GetEntry() == AI_VALUE(TravelTarget*, "travel target")->getEntry()); };
+        virtual Event Check() { if (!NoRpgTargetTrigger::IsActive() && (AI_VALUE(string, "next rpg action") == "choose rpg target" || !FarFromRpgTargetTrigger::IsActive())) return Trigger::Check(); return Event(); };
     };
 
     class RpgTaxiTrigger : public RpgTrigger

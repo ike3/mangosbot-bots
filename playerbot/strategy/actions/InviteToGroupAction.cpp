@@ -40,6 +40,9 @@ namespace ai
             if (player->GetGroup())
                 continue;
 
+            if (player->isDND())
+                continue;
+
             PlayerbotAI* botAi = player->GetPlayerbotAI();
 
             if (botAi)

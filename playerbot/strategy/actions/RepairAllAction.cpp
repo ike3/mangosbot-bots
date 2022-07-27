@@ -26,6 +26,8 @@ bool RepairAllAction::Execute(Event event)
         sServerFacade.SetFacingTo(bot, unit);
         float discountMod = bot->GetReputationPriceDiscount(unit);
 
+        float durability = AI_VALUE(uint8, "durability");
+
         uint32 botMoney = bot->GetMoney();
         if (ai->HasCheat(BotCheatMask::gold))
         {
@@ -68,6 +70,8 @@ bool RepairAllAction::Execute(Event event)
             out << "Repair: " << chat->formatMoney(totalCost) << " (" << unit->GetName() << ")";
             ai->TellMasterNoFacing(out.str());
             bot->PlayDistanceSound(1116);
+
+            sTravelMgr.logEvent(ai, "RepairAllAction", to_string(durability), to_string(totalCost));
         }
 
         context->GetValue<uint32>("death count")->Set(0);

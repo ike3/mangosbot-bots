@@ -2606,7 +2606,11 @@ void PlayerbotFactory::InitSpecialSpells()
     for (list<uint32>::iterator i = sPlayerbotAIConfig.randomBotSpellIds.begin(); i != sPlayerbotAIConfig.randomBotSpellIds.end(); ++i)
     {
         uint32 spellId = *i;
-        bot->learnSpell(spellId, false);
+
+        SpellEntry const* spellInfo = sSpellTemplate.LookupEntry<SpellEntry>(spellId);
+
+        if(spellInfo)
+            bot->learnSpell(spellId, false);
     }
 }
 

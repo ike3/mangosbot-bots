@@ -81,7 +81,10 @@ bool MoveToRpgTargetAction::Execute(Event event)
         else
             angle = wo->GetOrientation() + (M_PI * irand(-25, 25) / 100.0); //45 degrees infront of target (leading it's movement)
 
-        distance = frand(0.5, 1);
+        if(unit)
+            distance = frand(0.5, 1);
+        else
+            distance = frand(0, 0.5);
     }
     else
         angle = 2 * M_PI * urand(0, 100) / 100.0; //A circle around the target.

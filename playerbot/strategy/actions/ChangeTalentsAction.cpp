@@ -313,6 +313,8 @@ TalentSpec* ChangeTalentsAction::GetBestPremadeSpec(int specId)
 
 bool AutoSetTalentsAction::Execute(Event event)
 {
+    sTravelMgr.logEvent(ai, "AutoSetTalentsAction", to_string(bot->m_Played_time[PLAYED_TIME_LEVEL]), to_string(bot->m_Played_time[PLAYED_TIME_TOTAL]));
+
     ostringstream out;
 
     if (sPlayerbotAIConfig.autoPickTalents == "no" && !sRandomPlayerbotMgr.IsRandomBot(bot))

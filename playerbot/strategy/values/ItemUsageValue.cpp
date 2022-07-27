@@ -93,6 +93,9 @@ ItemUsage ItemUsageValue::Calculate()
     if (!ai->GetMaster() || !sPlayerbotAIConfig.syncQuestWithPlayer || !IsItemUsefulForQuest(ai->GetMaster(), proto))
         if (IsItemUsefulForQuest(bot, proto))
             return ITEM_USAGE_QUEST;
+        else if (IsItemUsefulForQuest(bot, proto, true) && CurrentStacks(proto) < 2) //Do not sell quest items unless selling a full stack will stil keep enough in inventory.
+            return ITEM_USAGE_KEEP;
+
 
     if (proto->Class == ITEM_CLASS_PROJECTILE && bot->CanUseItem(proto) == EQUIP_ERR_OK)
         if (bot->getClass() == CLASS_HUNTER || bot->getClass() == CLASS_ROGUE || bot->getClass() == CLASS_WARRIOR)
@@ -293,7 +296,7 @@ uint32 ItemUsageValue::GetSmallestBagSize()
     return curSlots;
 }
 
-bool ItemUsageValue::IsItemUsefulForQuest(Player* player, ItemPrototype const* proto)
+bool ItemUsageValue::IsItemUsefulForQuest(Player* player, ItemPrototype const* proto, bool ignoreInventory)
 {
     for (uint8 slot = 0; slot < MAX_QUEST_LOG_SIZE; ++slot)
     {
@@ -307,7 +310,7 @@ bool ItemUsageValue::IsItemUsefulForQuest(Player* player, ItemPrototype const* p
             if (quest->ReqItemId[i] != proto->ItemId)
                 continue;
 
-            if (player->GetPlayerbotAI() && AI_VALUE2(uint32, "item count", proto->Name1) >= quest->ReqItemCount[i])
+            if (player->GetPlayerbotAI() && AI_VALUE2(uint32, "item count", proto->Name1) >= quest->ReqItemCount[i] && !ignoreInventory)
                 continue;
 
             return true;
