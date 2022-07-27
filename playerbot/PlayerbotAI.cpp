@@ -1221,6 +1221,10 @@ void PlayerbotAI::DoNextAction(bool min)
         }
     }
 
+    // fix bots in BG not having proper strats
+    if (bot->InBattleGround() && !HasStrategy("battleground", BOT_STATE_NON_COMBAT))
+        ResetStrategies();
+
     if (master && master->IsInWorld())
 	{       
 		if (master->m_movementInfo.HasMovementFlag(MOVEFLAG_WALK_MODE) && sServerFacade.GetDistance2d(bot, master) < 20.0f) bot->m_movementInfo.AddMovementFlag(MOVEFLAG_WALK_MODE);
