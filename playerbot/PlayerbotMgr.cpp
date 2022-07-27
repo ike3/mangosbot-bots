@@ -136,6 +136,9 @@ void PlayerbotHolder::LogoutPlayerBot(uint32 guid)
         // check for instant logout
         bool logout = botWorldSessionPtr->ShouldLogOut(time(nullptr));
 
+        // make instant logout for now
+        logout = true;
+
         if (masterWorldSessionPtr && masterWorldSessionPtr->ShouldLogOut(time(nullptr)))
             logout = true;
         
@@ -243,7 +246,7 @@ void PlayerbotHolder::DisablePlayerBot(uint32 guid)
 Player* PlayerbotHolder::GetPlayerBot(uint32 playerGuid) const
 {
     PlayerBotMap::const_iterator it = playerBots.find(playerGuid);
-    return (it == playerBots.end()) ? 0 : it->second;
+    return (it == playerBots.end()) ? nullptr : it->second ? it->second : nullptr;
 }
 
 void PlayerbotHolder::OnBotLogin(Player * const bot)
