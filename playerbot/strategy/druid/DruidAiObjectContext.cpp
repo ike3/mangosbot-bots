@@ -108,9 +108,11 @@ namespace ai
                 creators["eclipse (lunar)"] = &TriggerFactoryInternal::eclipse_lunar;
                 creators["bash on enemy healer"] = &TriggerFactoryInternal::bash_on_enemy_healer;
                 creators["nature's swiftness"] = &TriggerFactoryInternal::natures_swiftness;
+                creators["ferocious bite"] = &TriggerFactoryInternal::ferocious_bite;
             }
 
         private:
+            static Trigger* ferocious_bite(PlayerbotAI* ai) { return new ComboPointsAvailableTrigger(ai, 3); }
             static Trigger* natures_swiftness(PlayerbotAI* ai) { return new NaturesSwiftnessTrigger(ai); }
             static Trigger* eclipse_solar(PlayerbotAI* ai) { return new EclipseSolarTrigger(ai); }
             static Trigger* eclipse_lunar(PlayerbotAI* ai) { return new EclipseLunarTrigger(ai); }

@@ -79,13 +79,17 @@ void GenericDruidNonCombatStrategy::InitTriggers(std::list<TriggerNode*> &trigge
         "low mana",
         NextAction::array(0, new NextAction("innervate", ACTION_EMERGENCY + 5), NULL)));
 
-    triggers.push_back(new TriggerNode(
+    /*triggers.push_back(new TriggerNode(
         "swimming",
-        NextAction::array(0, new NextAction("aquatic form", 1.0f), NULL)));
+        NextAction::array(0, new NextAction("aquatic form", 1.0f), NULL)));*/
 
     triggers.push_back(new TriggerNode(
        "often",
        NextAction::array(0, new NextAction("apply oil", 1.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "player has flag",
+        NextAction::array(0, new NextAction("travel form", ACTION_EMERGENCY + 2), NULL)));
 }
 
 GenericDruidBuffStrategy::GenericDruidBuffStrategy(PlayerbotAI* ai) : NonCombatStrategy(ai)
