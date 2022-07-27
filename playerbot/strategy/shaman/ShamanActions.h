@@ -4,6 +4,7 @@
 
 namespace ai
 {
+    BUFF_ACTION(CastGhostWolfAction, "ghost wolf");
     class CastLesserHealingWaveAction : public CastHealingSpellAction {
     public:
         CastLesserHealingWaveAction(PlayerbotAI* ai) : CastHealingSpellAction(ai, "lesser healing wave") {}
