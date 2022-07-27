@@ -42,9 +42,10 @@ namespace ai
 	BUFF_ACTION(CastDivineFavorAction, "divine favor");
 
 	// blessings
-
+	BUFF_ACTION(CastBlessingOfFreedomAction, "blessing of freedom");
 	// fury
 	BUFF_ACTION(CastRighteousFuryAction, "righteous fury");
+	BUFF_ACTION(CastAvengingWrathAction, "avenging wrath");
 
 	class CastDivineStormAction : public CastBuffSpellAction
 	{
@@ -93,6 +94,7 @@ namespace ai
 	public:
 		CastBlessingOfMightAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "blessing of might") {}
 		virtual bool Execute(Event event);
+		virtual bool isUseful() { return !ai->HasMyAura("blessing of freedom", bot); }
 	};
 
 	class CastGreaterBlessingOfMightAction : public CastBuffSpellAction
@@ -121,6 +123,7 @@ namespace ai
 	public:
 		CastBlessingOfWisdomAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "blessing of wisdom") {}
         virtual bool Execute(Event event);
+		virtual bool isUseful() { return !ai->HasMyAura("blessing of freedom", bot); }
     };
 
 	class CastGreaterBlessingOfWisdomAction : public CastBuffSpellAction
@@ -156,6 +159,7 @@ namespace ai
 	{
 	public:
 		CastGreaterBlessingOfKingsAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "greater blessing of kings") {}
+		virtual bool isUseful() { return !ai->HasMyAura("blessing of freedom", bot); }
 	};
 
     class CastBlessingOfKingsOnPartyAction : public CastBlessingOnPartyAction
@@ -176,6 +180,7 @@ namespace ai
 	{
 	public:
 		CastBlessingOfSanctuaryAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "blessing of sanctuary") {}
+		virtual bool isUseful() { return !ai->HasMyAura("blessing of freedom", bot); }
 	};
 
 	class CastGreaterBlessingOfSanctuaryAction : public CastBuffSpellAction

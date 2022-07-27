@@ -79,7 +79,11 @@ void TankPaladinStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "enemy is close",
-        NextAction::array(0, new NextAction("consecration", ACTION_INTERRUPT), NULL)));
+        NextAction::array(0, new NextAction("consecration", ACTION_INTERRUPT + 10), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "hammer of justice on enemy",
+        NextAction::array(0, new NextAction("hammer of justice", ACTION_INTERRUPT + 1), NULL)));
 
     triggers.push_back(new TriggerNode(
         "lose aggro",
@@ -103,9 +107,13 @@ void TankPaladinStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "light aoe",
-        NextAction::array(0, new NextAction("goblin sapper", ACTION_HIGH + 9), NULL)));
+        NextAction::array(0, new NextAction("goblin sapper", ACTION_HIGH + 8), NULL)));
 
     triggers.push_back(new TriggerNode(
         "light aoe",
-        NextAction::array(0, new NextAction("oil of immolation", ACTION_HIGH + 8), NULL)));
+        NextAction::array(0, new NextAction("oil of immolation", ACTION_HIGH + 9), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "light aoe",
+        NextAction::array(0, new NextAction("avenging wrath", ACTION_HIGH + 9), NULL)));
 }

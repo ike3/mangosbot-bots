@@ -165,3 +165,26 @@ bool PaladinAuraTrigger::IsActive()
     }
     return needAura;
 }
+
+bool HammerOfJusticeOnEnemyTrigger::IsActive()
+{
+    Unit* target = GetTarget();
+    if (!target)
+        return false;
+
+    uint8 targetHP = AI_VALUE2(uint8, "health", GetTargetName());
+    uint8 selfHP = AI_VALUE2(uint8, "health", "self target");
+    uint8 selfMP = AI_VALUE2(uint8, "mana", "self target");
+    bool isMoving = AI_VALUE2(bool, "moving", GetTargetName());
+
+    if (isMoving && target->IsPlayer())
+        return true;
+
+    if (targetHP < 10)
+        return true;
+
+    if (selfHP < sPlayerbotAIConfig.lowHealth && selfMP > 10)
+        return true;
+
+    return false;
+}

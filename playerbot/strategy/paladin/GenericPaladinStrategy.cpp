@@ -42,6 +42,10 @@ void GenericPaladinStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
     triggers.push_back(new TriggerNode(
         "protect party member",
         NextAction::array(0, new NextAction("blessing of protection on party", ACTION_EMERGENCY + 2), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "rooted",
+        NextAction::array(0, new NextAction("blessing of freedom", 71.0f), NULL)));
 }
 
 void PaladinCureStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
