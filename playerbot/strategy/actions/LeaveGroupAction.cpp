@@ -31,7 +31,8 @@ namespace ai
             string member = bot->GetName();
             p << uint32(PARTY_OP_LEAVE) << member << uint32(0);
             bot->GetSession()->HandleGroupDisbandOpcode(p);
-            bot->Whisper("I left my group", LANG_UNIVERSAL, player->GetObjectGuid());
+            if (ai->GetMaster() && ai->GetMaster()->GetObjectGuid() != player->GetObjectGuid())
+                bot->Whisper("I left my group", LANG_UNIVERSAL, player->GetObjectGuid());
         }
 
         if (randomBot)
