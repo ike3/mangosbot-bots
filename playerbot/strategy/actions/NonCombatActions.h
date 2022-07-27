@@ -52,6 +52,12 @@ namespace ai
                 if (!pSpellInfo)
                     return false;
 
+                if (bot->IsMounted())
+                {
+                    WorldPacket emptyPacket;
+                    bot->GetSession()->HandleCancelMountAuraOpcode(emptyPacket);
+                }
+
                 ai->CastSpell(24355, bot);
                 ai->SetNextCheckDelay(delay);
                 bot->RemoveSpellCooldown(*pSpellInfo);
@@ -114,6 +120,12 @@ namespace ai
                 const SpellEntry* pSpellInfo = sServerFacade.LookupSpellInfo(24005);
                 if (!pSpellInfo)
                     return false;
+
+                if (bot->IsMounted())
+                {
+                    WorldPacket emptyPacket;
+                    bot->GetSession()->HandleCancelMountAuraOpcode(emptyPacket);
+                }
 
                 ai->CastSpell(24005, bot);
                 ai->SetNextCheckDelay(delay);
