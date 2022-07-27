@@ -363,6 +363,9 @@ bool NotDpsTargetActiveTrigger::IsActive()
     if (target && target == enemy && sServerFacade.IsAlive(target))
         return false;
 
+    if (target && target->IsPlayer())
+        return false;
+
     return dps && target != dps;
 }
 

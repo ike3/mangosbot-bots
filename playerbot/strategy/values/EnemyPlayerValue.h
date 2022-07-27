@@ -17,8 +17,8 @@ namespace ai
     class NearestEnemyPlayersValue : public PossibleTargetsValue
     {
     public:
-        NearestEnemyPlayersValue(PlayerbotAI* ai, float range = 120.0f) :
-            PossibleTargetsValue(ai, "nearest enemy players", range) {}
+        NearestEnemyPlayersValue(PlayerbotAI* ai, float range = 60.0f) :
+            PossibleTargetsValue(ai, "nearest enemy players", range, true) {}
 
     public:
         virtual bool AcceptUnit(Unit* unit);
@@ -27,11 +27,10 @@ namespace ai
     class EnemyPlayerValue : public UnitCalculatedValue
     {
     public:
-        EnemyPlayerValue(PlayerbotAI* ai, string name = "enemy player") : UnitCalculatedValue(ai, name) {}
+        EnemyPlayerValue(PlayerbotAI* ai, string name = "enemy player") : UnitCalculatedValue(ai, name, 2) {}
 
         virtual Unit* Calculate();
-    private:
-        float GetMaxAttackDistance()
+        static float GetMaxAttackDistance(Player* bot)
         {
             if (!bot->GetBattleGround())
                 return 60.0f;

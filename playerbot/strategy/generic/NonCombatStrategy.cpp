@@ -8,8 +8,8 @@ using namespace ai;
 void NonCombatStrategy::InitTriggers(std::list<TriggerNode*>& triggers)
 {
     triggers.push_back(new TriggerNode(
-        "timer",
-        NextAction::array(0, new NextAction("check mount state", 1.0f), new NextAction("check values", 1.0f), NULL)));
+        "very often",
+        NextAction::array(0, new NextAction("check mount state", 90.0f), new NextAction("check values", 89.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
         "near dark portal",
