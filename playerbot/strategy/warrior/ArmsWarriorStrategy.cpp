@@ -59,7 +59,7 @@ void ArmsWarriorStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "mortal strike",
-        NextAction::array(0, new NextAction("mortal strike", ACTION_HIGH + 5), NULL)));
+        NextAction::array(0, new NextAction("mortal strike", ACTION_HIGH + 6), NULL)));
 
     triggers.push_back(new TriggerNode(
         "target critical health",
@@ -67,11 +67,11 @@ void ArmsWarriorStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "sudden death",
-        NextAction::array(0, new NextAction("execute", ACTION_HIGH + 4), NULL)));
+        NextAction::array(0, new NextAction("execute", ACTION_HIGH + 10), NULL)));
 
 	triggers.push_back(new TriggerNode(
 		"hamstring",
-		NextAction::array(0, new NextAction("piercing howl", ACTION_HIGH), NULL)));
+		NextAction::array(0, new NextAction("piercing howl", ACTION_HIGH + 5), NULL)));
 
     triggers.push_back(new TriggerNode(
         "overpower",
@@ -84,10 +84,6 @@ void ArmsWarriorStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 	triggers.push_back(new TriggerNode(
 		"victory rush",
 		NextAction::array(0, new NextAction("victory rush", ACTION_INTERRUPT), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "medium rage available",
-        NextAction::array(0, new NextAction("heroic strike", ACTION_HIGH + 10), NULL)));
 
     /*triggers.push_back(new TriggerNode(
         "high rage available",
