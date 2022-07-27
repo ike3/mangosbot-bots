@@ -4,7 +4,7 @@
 
 namespace ai
 {
-    BUFF_TRIGGER_TIME(FeignDeathTrigger, "feign death", 5);
+    HAS_AURA_TRIGGER_TIME(FeignDeathTrigger, "feign death", 5);
     BEGIN_TRIGGER(HunterNoStingsActiveTrigger, Trigger)
     END_TRIGGER()
 

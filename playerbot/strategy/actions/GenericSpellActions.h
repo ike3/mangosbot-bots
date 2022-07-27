@@ -254,7 +254,8 @@ namespace ai
         }
     public:
         virtual string getName() { return "remove " + name; }
-        virtual bool isUseful() { return ai->HasAura(name, bot); }
+        virtual bool isUseful() { return ai->HasAura(name, AI_VALUE(Unit*, "self target")); }
+        virtual bool isPossible() { return true; }
         virtual bool Execute(Event event)
         {
             ai->RemoveAura(name);

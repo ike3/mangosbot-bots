@@ -68,11 +68,11 @@ void GenericHunterStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "medium threat",
-        NextAction::array(0, new NextAction("feign death", 35.0f), new NextAction("shadowmeld", 34.0f), NULL)));
+        NextAction::array(0, new NextAction("feign death", ACTION_INTERRUPT + 1), new NextAction("shadowmeld", ACTION_INTERRUPT), NULL)));
 
     triggers.push_back(new TriggerNode(
         "feign death",
-        NextAction::array(0, new NextAction("freezing trap", ACTION_INTERRUPT), NULL)));
+        NextAction::array(0, new NextAction("remove feign death", ACTION_INTERRUPT + 1), new NextAction("freezing trap", ACTION_INTERRUPT), NULL)));
 
     triggers.push_back(new TriggerNode(
         "hunters pet low health",
