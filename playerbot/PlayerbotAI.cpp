@@ -2821,6 +2821,10 @@ void PlayerbotAI::WaitForSpellCast(Spell *spell)
 
     castTime = ceil(castTime);
 
+    // fix hunter Feign Death delay
+    if (pSpellInfo->Id == 5384)
+        castTime = 1000.0f;
+
     uint32 globalCooldown = CalculateGlobalCooldown(pSpellInfo->Id);
     if (castTime < globalCooldown)
         castTime = globalCooldown;
