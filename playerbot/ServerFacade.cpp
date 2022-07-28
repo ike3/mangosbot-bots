@@ -60,16 +60,16 @@ bool ServerFacade::IsDistanceLessOrEqualThan(float dist1, float dist2)
     return !IsDistanceGreaterThan(dist1, dist2);
 }
 
-void ServerFacade::SetFacingTo(Player* bot, WorldObject* wo, bool force)
+void ServerFacade::SetFacingTo(Unit* unit, float angle, bool force)
 {
-    float angle = bot->GetAngle(wo);
-    MotionMaster &mm = *bot->GetMotionMaster();
-    if (!force && !bot->IsStopped()) bot->SetFacingTo(bot->GetAngle(wo));
+    MotionMaster &mm = *unit->GetMotionMaster();
+    if (!force && !unit->IsStopped()) unit->SetFacingTo(angle);
     else
     {
-        bot->SetOrientation(angle);
-        bot->SendHeartBeat();
+        unit->SetOrientation(angle);
+        unit->SendHeartBeat();
     }
+    unit->m_movementInfo.RemoveMovementFlag(MovementFlags(MOVEFLAG_SPLINE_ENABLED | MOVEFLAG_FORWARD));
 }
 
 bool ServerFacade::IsFriendlyTo(Unit* bot, Unit* to)
