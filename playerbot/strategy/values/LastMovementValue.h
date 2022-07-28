@@ -19,6 +19,7 @@ namespace ai
             lastFollow = other.lastFollow;
             lastAreaTrigger = other.lastAreaTrigger;
             lastMoveShort = other.lastMoveShort;
+            lastMoveShortStart = other.lastMoveShortStart;
             lastPath = other.lastPath;
             nextTeleport = other.nextTeleport;
             /*
@@ -33,6 +34,7 @@ namespace ai
         void clear()
         {
             lastMoveShort = WorldPosition();
+            lastMoveShortStart = WorldPosition();
             lastPath.clear();
             /*
             lastMoveToMapId = 0;
@@ -50,7 +52,7 @@ namespace ai
         void Set(Unit* lastFollow)
         {
             //Set(0, 0.0f, 0.0f, 0.0f, 0.0f);
-            setShort(WorldPosition());
+            setShort(WorldPosition(),WorldPosition());
             setPath(TravelPath());
             this->lastFollow = lastFollow;
         }
@@ -68,7 +70,8 @@ namespace ai
         }
         */
 
-        void setShort(WorldPosition point) {lastMoveShort = point; lastFollow = NULL;
+        void setShort(WorldPosition start, WorldPosition end) {
+            lastMoveShortStart = start; lastMoveShort = end; lastFollow = NULL;
         }
         void setPath(TravelPath path) { lastPath = path; }
 
@@ -78,6 +81,7 @@ namespace ai
             lastFollow = other.lastFollow;
             lastAreaTrigger = other.lastAreaTrigger;
             lastMoveShort = other.lastMoveShort;
+            lastMoveShortStart = other.lastMoveShortStart;
             lastPath = other.lastPath;
             nextTeleport = other.nextTeleport;
 
@@ -91,6 +95,7 @@ namespace ai
         time_t lastFlee;
         //uint32 lastMoveToMapId;
         //float lastMoveToX, lastMoveToY, lastMoveToZ, lastMoveToOri;
+        WorldPosition lastMoveShortStart;
         WorldPosition lastMoveShort;
         TravelPath lastPath;
         time_t nextTeleport;

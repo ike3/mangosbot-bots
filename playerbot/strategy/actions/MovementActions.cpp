@@ -285,6 +285,11 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
         movePath.addPath(startPosition.fromPointsArray(points));
     }
 
+    if (!lastMove.lastPath.empty() && !movePath.empty() && lastMove.lastPath.getBack().distance(endPosition) <= movePath.getBack().distance(endPosition)) //new path is worse than the last path. Keep going the old path.
+    {
+        movePath = lastMove.lastPath;
+    }
+
     if (!movePath.empty())
     {
         if (movePath.makeShortCut(startPosition, maxDist))
@@ -331,7 +336,8 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
 
                 out << to_string(bot->getRace()) << ",";
                 out << to_string(bot->getClass()) << ",";
-                out << bot->GetLevel() << ",";
+                float subLevel = ((float)bot->GetLevel() + ((float)bot->GetUInt32Value(PLAYER_XP) / (float)bot->GetUInt32Value(PLAYER_NEXT_LEVEL_XP)));
+                out << subLevel << ",";
                 out << (entry ? -1 : entry);
 
                 sPlayerbotAIConfig.log("bot_movement.csv", out.str().c_str());
@@ -485,7 +491,8 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
         startPosition.printWKT({ startPosition, movePosition }, out, 1);
         out << to_string(bot->getRace()) << ",";
         out << to_string(bot->getClass()) << ",";
-        out << bot->GetLevel();
+        float subLevel = ((float)bot->GetLevel() + ((float)bot->GetUInt32Value(PLAYER_XP) / (float)bot->GetUInt32Value(PLAYER_NEXT_LEVEL_XP)));
+        out << subLevel << ",";
         out << 0;
 
         sPlayerbotAIConfig.log("bot_movement.csv", out.str().c_str());
@@ -662,7 +669,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
     }
 #endif
 
-    AI_VALUE(LastMovement&, "last movement").setShort(movePosition);
+    AI_VALUE(LastMovement&, "last movement").setShort(startPosition, movePosition);
 #endif
     if (!idle)
         ClearIdleState();
