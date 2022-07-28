@@ -174,7 +174,7 @@ namespace ai
                 creators["bestial wrath"] = &AiObjectContextInternal::bestial_wrath;
                 creators["scare beast"] = &AiObjectContextInternal::scare_beast;
                 creators["scare beast on cc"] = &AiObjectContextInternal::scare_beast_on_cc;
-                creators["remove feigh death"] = &AiObjectContextInternal::remove_feign_death;
+                creators["remove feign death"] = &AiObjectContextInternal::remove_feign_death;
             }
 
         private:

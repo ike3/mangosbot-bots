@@ -111,10 +111,12 @@ namespace ai
                 creators["presence of mind"] = &TriggerFactoryInternal::presence_of_mind;
                 creators["fire ward"] = &TriggerFactoryInternal::fire_ward;
                 creators["frost ward"] = &TriggerFactoryInternal::frost_ward;
+                creators["blink"] = &TriggerFactoryInternal::blink;
 
             }
 
         private:
+            static Trigger* blink(PlayerbotAI* ai) { return new BlinkTrigger(ai); }
             static Trigger* frost_ward(PlayerbotAI* ai) { return new FrostWardTrigger(ai); }
             static Trigger* fire_ward(PlayerbotAI* ai) { return new FireWardTrigger(ai); }
             static Trigger* presence_of_mind(PlayerbotAI* ai) { return new PresenceOfMindTrigger(ai); }
@@ -191,9 +193,11 @@ namespace ai
                 creators["counterspell on enemy healer"] = &AiObjectContextInternal::counterspell_on_enemy_healer;
                 creators["fire ward"] = &AiObjectContextInternal::fire_ward;
                 creators["frost ward"] = &AiObjectContextInternal::frost_ward;
+                creators["blink"] = &AiObjectContextInternal::blink;
             }
 
         private:
+            static Action* blink(PlayerbotAI* ai) { return new CastBlinkAction(ai); }
             static Action* frost_ward(PlayerbotAI* ai) { return new CastFrostWardAction(ai); }
             static Action* fire_ward(PlayerbotAI* ai) { return new CastFireWardAction(ai); }
             static Action* presence_of_mind(PlayerbotAI* ai) { return new CastPresenceOfMindAction(ai); }

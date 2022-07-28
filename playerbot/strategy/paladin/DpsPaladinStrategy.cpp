@@ -112,7 +112,7 @@ void DpsPaladinStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("repentance on snare target", ACTION_INTERRUPT + 2), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "repentance",
+        "repentance interrupt",
         NextAction::array(0, new NextAction("repentance", ACTION_INTERRUPT + 2), NULL)));
 
 	triggers.push_back(new TriggerNode(
@@ -128,6 +128,14 @@ void DpsPaladinStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("hammer of wrath", ACTION_INTERRUPT + 1), NULL)));
 
     triggers.push_back(new TriggerNode(
+        "hammer of justice on enemy",
+        NextAction::array(0, new NextAction("hammer of justice", ACTION_INTERRUPT + 1), NULL)));
+
+    triggers.push_back(new TriggerNode(
         "blessing",
         NextAction::array(0, new NextAction("blessing of might", ACTION_HIGH + 9), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "light aoe",
+        NextAction::array(0, new NextAction("avenging wrath", ACTION_HIGH + 9), NULL)));
 }

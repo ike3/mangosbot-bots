@@ -69,7 +69,7 @@ namespace ai
                   }
               }
 
-              if (spellId && bot->IsSpellReady(spellId))
+              if (spellId && bot->IsSpellReady(spellId, proto))
               {
                   ai->CastSpell(spellId, bot);
                   return true;
@@ -115,7 +115,7 @@ namespace ai
                   }
               }
 
-              if (spellId && bot->IsSpellReady(spellId))
+              if (spellId && bot->IsSpellReady(spellId, proto))
               {
                   ai->CastSpell(spellId, bot);
                   return true;
@@ -171,9 +171,8 @@ namespace ai
        virtual bool Execute(Event event)
        {
            uint32 goblinSapper = 10646;
-           bool added = true;
-
-           if (!bot->HasItemCount(goblinSapper, 1))
+           bool added = bot->HasItemCount(goblinSapper, 1);
+           if (!added)
                added = bot->StoreNewItemInBestSlots(goblinSapper, 10);
 
            if (!added)
@@ -203,10 +202,9 @@ namespace ai
        virtual bool Execute(Event event)
        {
            uint32 oil = 8956;
-           bool added = true;
-
-           if (!bot->HasItemCount(oil, 1))
-               added = bot->StoreNewItemInBestSlots(oil, 5);
+           bool added = bot->HasItemCount(oil, 1);
+           if (!added)
+               added = bot->StoreNewItemInBestSlots(oil, 1);
 
            if (!added)
                return false;
@@ -238,9 +236,8 @@ namespace ai
        virtual bool Execute(Event event)
        {
            uint32 rune = 20520;
-           bool added = true;
-
-           if (!bot->HasItemCount(rune, 1))
+           bool added = bot->HasItemCount(rune, 1);
+           if (!added)
                added = bot->StoreNewItemInBestSlots(rune, 20);
 
            if (!added)

@@ -15,6 +15,10 @@ bool AttackAction::Execute(Event event)
     if (!target)
         return false;
 
+    Unit* victim = bot->GetVictim();
+    if (victim && victim->IsPlayer() && victim->GetObjectGuid() == target->GetObjectGuid())
+        return false;
+
     return Attack(target);
 }
 

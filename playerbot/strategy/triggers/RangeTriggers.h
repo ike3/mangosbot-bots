@@ -20,6 +20,7 @@ namespace ai
                 bool isRaid = false;
                 float combatReach = bot->GetCombinedCombatReach(target, false);
                 float targetDistance = sServerFacade.GetDistance2d(bot, target) + combatReach;
+                bool isVictim = target->GetVictim() && target->GetVictim()->GetObjectGuid() == bot->GetObjectGuid();
                 if (target->IsCreature())
                 {
                     Creature* creature = ai->GetCreature(target->GetObjectGuid());
@@ -33,8 +34,27 @@ namespace ai
 
                 //if (isBoss || isRaid)
                 //    return sServerFacade.IsDistanceLessThan(targetDistance, (ai->GetRange("spell") + combatReach) / 2);
+                float coeff = 0.5f;
+                if (target->IsPlayer())
+                {
+                    if (!isVictim)
+                        coeff = 0.4f;
+                    else
+                        coeff = 0.8f;
+                }
+                else
+                {
+                    if (!isVictim)
+                        coeff = 0.3f;
+                    else
+                        coeff = 0.5f;
+                }
 
-                return sServerFacade.IsDistanceLessOrEqualThan(targetDistance, (ai->GetRange("spell") + combatReach) * 0.7f);
+                if (isRaid)
+                    coeff = 1.0f;
+
+
+                return sServerFacade.IsDistanceLessOrEqualThan(targetDistance, (ai->GetRange("spell") + combatReach) * coeff);
             }
             return false;
         }
@@ -56,6 +76,7 @@ namespace ai
             bool isRaid = false;
             float combatReach = bot->GetCombinedCombatReach(target, false);
             float targetDistance = sServerFacade.GetDistance2d(bot, target) + combatReach;
+            bool isVictim = target->GetVictim() && target->GetVictim()->GetObjectGuid() == bot->GetObjectGuid();
             if (target->IsCreature())
             {
                 Creature* creature = ai->GetCreature(target->GetObjectGuid());
@@ -67,10 +88,29 @@ namespace ai
             if (bot->GetMap() && bot->GetMap()->IsRaid())
                 isRaid = true;
 
+            float coeff = 0.5f;
+            if (target->IsPlayer())
+            {
+                if (!isVictim)
+                    coeff = 0.4f;
+                else
+                    coeff = 0.8f;
+            }
+            else
+            {
+                if (!isVictim)
+                    coeff = 0.3f;
+                else
+                    coeff = 0.5f;
+            }
+
+            if (isRaid)
+                coeff = 1.0f;
+
             //if (isBoss || isRaid)
             //    return sServerFacade.IsDistanceLessThan(targetDistance, ai->GetRange("shoot") + combatReach);
 
-            return sServerFacade.IsDistanceLessOrEqualThan(targetDistance, (ai->GetRange("shoot") + combatReach) * 0.7f);
+            return sServerFacade.IsDistanceLessOrEqualThan(targetDistance, (ai->GetRange("shoot") + combatReach) * coeff);
         }
     };
 

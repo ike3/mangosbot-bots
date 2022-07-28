@@ -66,6 +66,13 @@ namespace ai
         HammerOfJusticeSnareTrigger(PlayerbotAI* ai) : SnareTargetTrigger(ai, "hammer of justice") {}
     };
 
+    class HammerOfJusticeOnEnemyTrigger : public Trigger
+    {
+    public:
+        HammerOfJusticeOnEnemyTrigger(PlayerbotAI* ai) : Trigger(ai, "hammer of justice on enemy") {}
+        virtual bool IsActive();
+    };
+
     class ArtOfWarTrigger : public HasAuraTrigger
     {
     public:

@@ -63,7 +63,7 @@ bool ServerFacade::IsDistanceLessOrEqualThan(float dist1, float dist2)
 void ServerFacade::SetFacingTo(Unit* unit, float angle, bool force)
 {
     MotionMaster &mm = *unit->GetMotionMaster();
-    if (!force && isMoving(unit)) unit->SetFacingTo(angle);
+    if (!force && !unit->IsStopped()) unit->SetFacingTo(angle);
     else
     {
         unit->SetOrientation(angle);

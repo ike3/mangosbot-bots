@@ -145,10 +145,18 @@ namespace ai
             uint32 attackers = AI_VALUE(uint8, "attacker count");
             if (attackers > 0)
             {
-                ai->Reset();
-                //Unit* target = context->GetValue<Unit*>("dps target")->Get();
-                return true;
-                //return ai->DoSpecificAction("dps assist", Event(), true);
+                Unit* enemy = AI_VALUE(Unit*, "enemy player target");
+                if (!enemy)
+                {
+                    ai->ChangeEngine(BOT_STATE_NON_COMBAT);
+                    ai->InterruptSpell();
+                    bot->AttackStop();
+
+                    if (ai->HasStrategy("dps assist", BOT_STATE_NON_COMBAT))
+                        return ai->DoSpecificAction("dps assist", Event(), true);
+                    if (ai->HasStrategy("tank assist", BOT_STATE_NON_COMBAT))
+                        return ai->DoSpecificAction("tank assist", Event(), true);
+                }
             }
 
             ai->ChangeEngine(BOT_STATE_NON_COMBAT);

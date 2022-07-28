@@ -85,6 +85,7 @@ private:
     bool CanEquipArmor(ItemPrototype const* proto);
     bool CanEquipWeapon(ItemPrototype const* proto);
     void EnchantItem(Item* item);
+    void AddGems(Item* item);
     void AddItemStats(uint32 mod, uint8 &sp, uint8 &ap, uint8 &tank);
     bool CheckItemStats(uint8 sp, uint8 ap, uint8 tank);
     void CancelAuras();
@@ -102,7 +103,8 @@ private:
     static void AddPrevQuests(uint32 questId, list<uint32>& questIds);
     void LoadEnchantContainer();
     void ApplyEnchantTemplate();
-    void ApplyEnchantTemplate(uint8 spec);
+    void ApplyEnchantTemplate(uint8 spec, Item* item = nullptr);
+    void InitGems();
     EnchantContainer::const_iterator GetEnchantContainerBegin() { return m_EnchantContainer.begin(); }
     EnchantContainer::const_iterator GetEnchantContainerEnd() { return m_EnchantContainer.end(); }
 
@@ -161,6 +163,8 @@ enum PriorizedConsumables
    CONSUM_ID_INSTANT_POISON_V = 8927,
    CONSUM_ID_INSTANT_POISON_VI = 8928,
    CONSUM_ID_INSTANT_POISON_VII = 21927,
+   CONSUM_ID_INSTANT_POISON_VIII = 43230,
+   CONSUM_ID_INSTANT_POISON_IX = 43231,
    CONSUM_ID_DEADLY_POISON = 2892,
    CONSUM_ID_DEADLY_POISON_II = 2893,
    CONSUM_ID_DEADLY_POISON_III = 8984,
@@ -168,5 +172,7 @@ enum PriorizedConsumables
    CONSUM_ID_DEADLY_POISON_V = 20844,
    CONSUM_ID_DEADLY_POISON_VI = 22053,
    CONSUM_ID_DEADLY_POISON_VII = 22054,
+   CONSUM_ID_DEADLY_POISON_VIII = 43232,
+   CONSUM_ID_DEADLY_POISON_IX = 43233,
 };
-#define MAX_CONSUM_ID 28
+#define MAX_CONSUM_ID 55

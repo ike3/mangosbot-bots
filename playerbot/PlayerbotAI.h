@@ -319,7 +319,7 @@ public:
     void ImbueItem(Item* item, uint8 targetInventorySlot);
     void ImbueItem(Item* item, Unit* target);
     void ImbueItem(Item* item);
-    void EnchantItemT(uint32 spellid, uint8 slot);
+    void EnchantItemT(uint32 spellid, uint8 slot, Item* item = nullptr);
     uint32 GetBuffedCount(Player* player, string spellname);
   
 
@@ -438,6 +438,7 @@ protected:
     time_t allowActiveCheckTimer[MAX_ACTIVITY_TYPE];
     bool inCombat = false;
     bool isMoving = false;
+    bool isWaiting = false;
     time_t combatStart = 0;
     BotCheatMask cheatMask = BotCheatMask::none;
     Position jumpDestination = Position();

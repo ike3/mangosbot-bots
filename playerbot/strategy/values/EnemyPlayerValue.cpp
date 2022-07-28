@@ -46,15 +46,20 @@ bool NearestEnemyPlayersValue::AcceptUnit(Unit* unit)
     bool inCannon = ai->IsInVehicle(false, true);
 
     return (enemy &&
+        enemy->IsWithinDist(bot, EnemyPlayerValue::GetMaxAttackDistance(bot), false) &&
+        enemy->GetMapId() == bot->GetMapId() &&
         ai->IsOpposing(enemy) &&
         enemy->IsPvP() &&
+        !enemy->IsPolymorphed() &&
+        !ai->HasAura("sap", enemy) &&
+        !sServerFacade.IsFeared(enemy) &&
         !sPlayerbotAIConfig.IsInPvpProhibitedZone(sServerFacade.GetAreaId(enemy)) &&
         !enemy->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_1) &&
         !enemy->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_UNTARGETABLE) &&
         ((inCannon || !enemy->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_UNINTERACTIBLE))) &&
         //!enemy->HasStealthAura() &&
         //!enemy->HasInvisibilityAura() &&
-        enemy->IsVisibleForOrDetect(bot, bot->GetCamera().GetBody(), true) &&
+        enemy->IsVisibleForOrDetect(bot, bot->GetCamera().GetBody(), false) &&
         !(enemy->HasAuraType(SPELL_AURA_SPIRIT_OF_REDEMPTION))
         );
 }
@@ -62,23 +67,32 @@ bool NearestEnemyPlayersValue::AcceptUnit(Unit* unit)
 Unit* EnemyPlayerValue::Calculate()
 {
     // from VMaNGOS
-    // 1. Check units we are currently in combat with.
+
+    Unit* duel = AI_VALUE(Unit*, "duel target");
+    if (duel)
+        return duel;
 
     bool inCannon = ai->IsInVehicle(false, true);
-
-    std::list<Unit*> targets;
+    float const maxAggroDistance = GetMaxAttackDistance(bot);
     Unit* pVictim = bot->GetVictim();
-    HostileReference* pReference = bot->getHostileRefManager().getFirst();
+    bool isMelee = !ai->IsRanged(bot);
 
+    // chance to not change target
+    /*if (pVictim && pVictim->IsPlayer() && bot->IsWithinDist(pVictim, maxAggroDistance)&&)*/
+
+    // 1. Check units we are currently in combat with.
+    std::list<Unit*> targets;
+    HostileReference* pReference = bot->getHostileRefManager().getFirst();
     while (pReference)
     {
-        ThreatManager *threatManager = pReference->getSource();
+        ThreatManager* threatManager = pReference->getSource();
         if (Unit* pTarget = threatManager->getOwner())
         {
-            if (pTarget != pVictim &&
+            if (/*pTarget != pVictim &&*/
                 pTarget->IsPlayer() &&
-                pTarget->IsVisibleForOrDetect(bot, bot->GetCamera().GetBody(), true) &&
-                bot->IsWithinDist(pTarget, VISIBILITY_DISTANCE_NORMAL))
+                pTarget->IsVisibleForOrDetect(bot, bot->GetCamera().GetBody(), false) &&
+                /*bot->IsWithinLOSInMap(pTarget) &&*/
+                bot->IsWithinDist(pTarget, maxAggroDistance))
             {
                 if (bot->GetTeam() == HORDE)
                 {
@@ -99,19 +113,32 @@ Unit* EnemyPlayerValue::Calculate()
 
     if (!targets.empty())
     {
-        targets.sort([this](Unit* pUnit1, const Unit* pUnit2)
+        if (isMelee)
         {
-            return bot->GetDistance(pUnit1) < bot->GetDistance(pUnit2);
-        });
+            targets.sort([this](Unit* pUnit1, const Unit* pUnit2)
+                {
+                    return bot->GetDistance(pUnit1, false) < bot->GetDistance(pUnit2, false);
+                });
+        }
+        else
+        {
+            targets.sort([this](Unit* pUnit1, const Unit* pUnit2)
+                {
+                    return pUnit1->GetHealth() < pUnit2->GetHealth();
+                });
+        }
 
-        return *targets.begin();
+        for (auto enemy : targets)
+        {
+            // TODO some logic
+            return enemy;
+        }
     }
 
     // 2. Find enemy player in range.
 
     list<ObjectGuid> players = AI_VALUE(list<ObjectGuid>, "nearest enemy players");
-    float const maxAggroDistance = GetMaxAttackDistance();
-    vector<Player*> targetsList;
+    std::list<Player*> targetsList;
 
     for (const auto& gTarget : players)
     {
@@ -123,7 +150,11 @@ Unit* EnemyPlayerValue::Calculate()
         if (!pTarget)
             continue;
 
-        if (pTarget == pVictim)
+        /*if (pTarget == pVictim)
+            continue;*/
+
+        uint32 const aggroDistance = (inCannon || bot->GetHealth() > pTarget->GetHealth()) ? maxAggroDistance : 20.0f;
+        if (!bot->IsWithinDist(pTarget, aggroDistance, false))
             continue;
 
         if (bot->GetTeam() == HORDE)
@@ -138,18 +169,29 @@ Unit* EnemyPlayerValue::Calculate()
         }
 
         // TODO choose proper targets
-
-        // Aggro weak enemies from further away.
-        //uint32 const aggroDistance = (inCannon || bot->GetHealth() > pTarget->GetHealth()) ? maxAggroDistance : 20.0f;
-        if (!bot->IsWithinDist(pTarget, maxAggroDistance))
-            continue;
-
-        if (/*bot->IsWithinLOSInMap(pTarget, true) && */(inCannon || (fabs(bot->GetPositionZ() - pTarget->GetPositionZ()) < 30.0f)))
+        if (/*bot->IsWithinLOSInMap(pTarget, true) && (inCannon || */fabs(bot->GetPositionZ() - pTarget->GetPositionZ()) < 30.0f)
             targetsList.push_back(pTarget);
     }
 
     if (!targetsList.empty())
-        return targetsList[urand(0, targetsList.size() - 1)];
+    {
+        if (isMelee)
+        {
+            targetsList.sort([this](Unit* pUnit1, const Unit* pUnit2)
+                {
+                    return bot->GetDistance(pUnit1, false) < bot->GetDistance(pUnit2, false);
+                });
+        }
+        else
+        {
+            targetsList.sort([this](Unit* pUnit1, const Unit* pUnit2)
+                {
+                    return pUnit1->GetHealth() < pUnit2->GetHealth();
+                });
+        }
+
+        return *targetsList.begin();
+    }
 
     // 3. Check party attackers.
 
@@ -166,10 +208,10 @@ Unit* EnemyPlayerValue::Calculate()
                     continue;
 
                 if (Unit* pAttacker = pMember->getAttackerForHelper())
-                    if (bot->IsWithinDist(pAttacker, maxAggroDistance * 2.0f) &&
+                    if (bot->IsWithinDist(pAttacker, maxAggroDistance, false) &&
                         /*bot->IsWithinLOSInMap(pAttacker, true) &&*/
-                        pAttacker != pVictim &&
-                        pAttacker->IsVisibleForOrDetect(bot, bot->GetCamera().GetBody(), true) &&
+                        /*pAttacker != pVictim &&*/
+                        pAttacker->IsVisibleForOrDetect(bot, bot->GetCamera().GetBody(), false) &&
                         pAttacker->IsPlayer())
                         return pAttacker;
             }

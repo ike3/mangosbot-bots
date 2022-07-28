@@ -26,7 +26,7 @@ namespace ai
 
             if (distance == ATTACK_DISTANCE)
             {
-                return ChaseTo(target, 0.0f, GetFollowAngle());
+                return ChaseTo(target, 0.0f, bot->GetAngle(target));
             }
             else
             {
@@ -34,7 +34,10 @@ namespace ai
                 bool inLos = bot->IsWithinLOSInMap(target, true);
                 bool isFriend = sServerFacade.IsFriendlyTo(bot, target);
                 float chaseDist = inLos ? distance : isFriend ? distance / 2 : distance;
-                return ChaseTo(target, (chaseDist - sPlayerbotAIConfig.contactDistance) * 0.8, bot->GetAngle(target));
+                float coeff = 0.8f;
+                if (!isFriend)
+                    coeff = 1.0f;
+                return ChaseTo(target, (chaseDist - sPlayerbotAIConfig.contactDistance) * coeff, bot->GetAngle(target));
             }
         }
         virtual bool isUseful()

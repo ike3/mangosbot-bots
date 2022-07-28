@@ -50,7 +50,7 @@ void TankWarriorStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "enemy out of melee",
-        NextAction::array(0, new NextAction("heroic throw", ACTION_MOVE + 11), new NextAction("charge", ACTION_MOVE + 10), NULL)));
+        NextAction::array(0, new NextAction("heroic throw", ACTION_MOVE + 12), new NextAction("charge", ACTION_MOVE + 11), NULL)));
 
     triggers.push_back(new TriggerNode(
         "intercept and rage",
@@ -72,7 +72,7 @@ void TankWarriorStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "defensive stance",
-        NextAction::array(0, new NextAction("defensive stance", ACTION_HIGH + 5), NULL)));
+        NextAction::array(0, new NextAction("defensive stance", ACTION_MOVE + 11), NULL)));
 
     triggers.push_back(new TriggerNode(
         "commanding shout",
@@ -104,7 +104,7 @@ void TankWarriorStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "lose aggro",
-        NextAction::array(0, new NextAction("heroic throw taunt", ACTION_INTERRUPT + 1), NULL)));
+        NextAction::array(0, new NextAction("heroic throw taunt", ACTION_INTERRUPT + 10), NULL)));
 
     triggers.push_back(new TriggerNode(
         "taunt on snare target",
@@ -120,10 +120,10 @@ void TankWarriorStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 
 	triggers.push_back(new TriggerNode(
         "medium aoe",
-        NextAction::array(0, new NextAction("battle shout taunt", ACTION_HIGH + 1), NULL)));
+        NextAction::array(0, new NextAction("battle shout taunt", ACTION_NORMAL + 1), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "high aoe",
+        "medium aoe",
         NextAction::array(0, new NextAction("challenging shout", ACTION_HIGH + 3), NULL)));
 
 	triggers.push_back(new TriggerNode(
@@ -152,7 +152,7 @@ void TankWarriorStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "rend",
-        NextAction::array(0, new NextAction("rend", ACTION_NORMAL + 1), NULL)));
+        NextAction::array(0, new NextAction("rend", ACTION_HIGH + 1), NULL)));
 
     triggers.push_back(new TriggerNode(
         "protect party member",
@@ -164,5 +164,5 @@ void TankWarriorStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "light aoe",
-        NextAction::array(0, new NextAction("oil of immolation", ACTION_INTERRUPT + 8), NULL)));
+        NextAction::array(0, new NextAction("oil of immolation", ACTION_HIGH + 8), NULL)));
 }

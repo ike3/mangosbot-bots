@@ -6,6 +6,17 @@ namespace ai
     DEFLECT_TRIGGER(FireWardTrigger, "fire ward");
     DEFLECT_TRIGGER(FrostWardTrigger, "frost ward");
 
+    class BlinkTrigger : public Trigger
+    {
+    public:
+        BlinkTrigger(PlayerbotAI* ai) : Trigger(ai, "blink") {}
+        virtual bool IsActive()
+        {
+            return bot->HasAuraType(SPELL_AURA_MOD_ROOT) ||
+                bot->HasAuraType(SPELL_AURA_MOD_STUN);
+        }
+    };
+
     class ArcaneIntellectOnPartyTrigger : public BuffOnPartyTrigger {
     public:
         ArcaneIntellectOnPartyTrigger(PlayerbotAI* ai) : BuffOnPartyTrigger(ai, "arcane intellect", 2) {}

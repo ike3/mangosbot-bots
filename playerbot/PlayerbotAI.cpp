@@ -5,6 +5,7 @@
 
 #include "AiFactory.h"
 
+#include "MotionGenerators/MovementGenerator.h"
 #include "GridNotifiers.h"
 #include "GridNotifiersImpl.h"
 #include "CellImpl.h"
@@ -201,7 +202,10 @@ void PlayerbotAI::UpdateAI(uint32 elapsed, bool minimal)
     if (nextAICheckDelay > elapsed)
         nextAICheckDelay -= elapsed;
     else
+    {
         nextAICheckDelay = 0;
+        isWaiting = false;
+    }
 
     // cancel logout in combat
     if (bot->IsStunnedByLogout() || bot->GetSession()->isLogingOut())
@@ -215,7 +219,14 @@ void PlayerbotAI::UpdateAI(uint32 elapsed, bool minimal)
     }
 
     // Leontiesh - fix movement desync
-    if (bot->IsMoving())
+    bool botMoving = false;
+    if (!bot->IsStopped())
+        botMoving = true;
+    if (!bot->GetMotionMaster()->empty())
+        if (MovementGenerator* movgen = bot->GetMotionMaster()->top())
+            botMoving = true;
+
+    if (botMoving)
     {
         isMoving = true;
 
@@ -233,9 +244,10 @@ void PlayerbotAI::UpdateAI(uint32 elapsed, bool minimal)
     }
 
     // wake up if in combat
+    bool isCasting = bot->IsNonMeleeSpellCasted(true);
     if (sServerFacade.IsInCombat(bot))
     {
-        if (!inCombat)
+        if (!inCombat && !isCasting && !isWaiting)
         {
             nextAICheckDelay = 0;
             combatStart = time(0);
@@ -250,7 +262,7 @@ void PlayerbotAI::UpdateAI(uint32 elapsed, bool minimal)
     }
     else
     {
-        if (inCombat)
+        if (inCombat && !isCasting && !isWaiting)
             nextAICheckDelay = 0;
 
         inCombat = false;
@@ -419,6 +431,13 @@ void PlayerbotAI::HandleTeleportAck()
 
 	if (bot->IsBeingTeleportedNear())
 	{
+        if (!bot->GetMotionMaster()->empty())
+            if (MovementGenerator* movgen = bot->GetMotionMaster()->top())
+                movgen->Interrupt(*bot);
+
+       /* WorldLocation dest = bot->GetTeleportDest();
+        bot->Relocate(dest.coord_x, dest.coord_y, dest.coord_z, dest.orientation);*/
+
 		WorldPacket p = WorldPacket(MSG_MOVE_TELEPORT_ACK, 8 + 4 + 4);
 #ifdef MANGOSBOT_TWO
         p << bot->GetObjectGuid().WriteAsPacked();
@@ -430,7 +449,7 @@ void PlayerbotAI::HandleTeleportAck()
         bot->GetSession()->HandleMoveTeleportAckOpcode(p);
 
         // add delay to simulate teleport delay
-        SetNextCheckDelay(urand(1000, 3000));
+        SetNextCheckDelay(urand(1000, 2000));
 	}
 	else if (bot->IsBeingTeleportedFar())
 	{
@@ -441,24 +460,12 @@ void PlayerbotAI::HandleTeleportAck()
 	}
 
     Reset();
-    //bot->SendHeartBeat();
 }
 
 void PlayerbotAI::Reset(bool full)
 {
     if (bot->IsTaxiFlying())
         return;
-
-    WorldSession* botWorldSessionPtr = bot->GetSession();
-    bool logout = botWorldSessionPtr->ShouldLogOut(time(nullptr));
-
-    // cancel logout
-    if (!logout && (bot->IsStunnedByLogout() || bot->GetSession()->isLogingOut()))
-    {
-        WorldPacket p;
-        bot->GetSession()->HandleLogoutCancelOpcode(p);
-        TellMaster(BOT_TEXT("logout_cancel"));
-    }
 
     currentEngine = engines[BOT_STATE_NON_COMBAT];
     nextAICheckDelay = 0;
@@ -484,11 +491,24 @@ void PlayerbotAI::Reset(bool full)
         aiObjectContext->GetValue<TravelTarget* >("travel target")->Get()->setTarget(sTravelMgr.nullTravelDestination, sTravelMgr.nullWorldPosition, true);
         aiObjectContext->GetValue<TravelTarget* >("travel target")->Get()->setStatus(TRAVEL_STATUS_EXPIRED);
         aiObjectContext->GetValue<TravelTarget* >("travel target")->Get()->setExpireIn(1000);
+
+        InterruptSpell();
+
+        bot->GetMotionMaster()->Clear();
+
+        WorldSession* botWorldSessionPtr = bot->GetSession();
+        bool logout = botWorldSessionPtr->ShouldLogOut(time(nullptr));
+
+        // cancel logout
+        if (!logout && (bot->IsStunnedByLogout() || bot->GetSession()->isLogingOut()))
+        {
+            WorldPacket p;
+            bot->GetSession()->HandleLogoutCancelOpcode(p);
+            TellMaster(BOT_TEXT("logout_cancel"));
+        }
     }
     
     aiObjectContext->GetValue<set<ObjectGuid>&>("ignore rpg target")->Get().clear();
-
-    bot->GetMotionMaster()->Clear();
 
     if (bot->IsTaxiFlying())
     {
@@ -497,8 +517,6 @@ void PlayerbotAI::Reset(bool full)
 #endif
         bot->OnTaxiFlightEject(true);
     }
-
-    InterruptSpell();
 
     if (full)
     {
@@ -663,13 +681,14 @@ void PlayerbotAI::HandleCommand(uint32 type, const string& text, Player& fromPla
     else if (filtered.size() > 5 && filtered.substr(0, 5) == "wait ")
     {
         std::string remaining = filtered.substr(filtered.find(" ") + 1);
-        uint32 delay = atof(remaining.c_str());
-        if (delay > 20)
+        uint32 delay = atof(remaining.c_str()) * IN_MILLISECONDS;
+        if (delay > 20000)
         {
             TellMaster("Max wait time is 20 seconds!");
             return;
         }
         IncreaseNextCheckDelay(delay);
+        isWaiting = true;
         TellError("Waiting for " + remaining + " seconds!");
         return;
     }
@@ -854,7 +873,7 @@ void PlayerbotAI::HandleBotOutgoingPacket(const WorldPacket& packet)
                 if (bot->InBattleGround() && !(isMentioned || (msgtype != CHAT_MSG_CHANNEL && !isRandomBot)))
                     return;
 
-                if (HasRealPlayerMaster())
+                if (HasRealPlayerMaster() && guid1 != GetMaster()->GetObjectGuid())
                     return;
 
                 if (isRandomBot && urand(0, 20))
@@ -1201,6 +1220,10 @@ void PlayerbotAI::DoNextAction(bool min)
                 ai->TellMaster(BOT_TEXT("hello"));
         }
     }
+
+    // fix bots in BG not having proper strats
+    if (bot->InBattleGround() && !HasStrategy("battleground", BOT_STATE_NON_COMBAT))
+        ResetStrategies();
 
     if (master && master->IsInWorld())
 	{       
@@ -1931,7 +1954,7 @@ bool PlayerbotAI::CanCastSpell(uint32 spellid, Unit* target, uint8 effectMask, b
     if (!spellid)
         return false;
 
-    if (bot->hasUnitState(UNIT_STAT_CAN_NOT_REACT_OR_LOST_CONTROL))
+    if (bot->hasUnitState(UNIT_STAT_CAN_NOT_REACT_OR_LOST_CONTROL) && !(spellid == 7744 || spellid == 11958 || spellid == 642 || spellid == 1020 || spellid == 1953))
         return false;
 
     if (!target)
@@ -2293,7 +2316,12 @@ bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target, Item* itemTarget)
         }
     }
 
-    if (sServerFacade.isMoving(bot) && (spell->GetCastTime() || (IsChanneledSpell(pSpellInfo) && GetSpellDuration(pSpellInfo) > 0)))
+    bool isMoving = false;
+    if (!bot->GetMotionMaster()->empty())
+        if (MovementGenerator* movgen = bot->GetMotionMaster()->top())
+            isMoving = true;
+
+    if ((sServerFacade.isMoving(bot) || isMoving) && ((spell->GetCastTime() || (IsChanneledSpell(pSpellInfo)) && GetSpellDuration(pSpellInfo) > 0)))
     {
         StopMoving();
         SetNextCheckDelay(sPlayerbotAIConfig.globalCoolDown);
@@ -2390,7 +2418,12 @@ bool PlayerbotAI::CastSpell(uint32 spellId, float x, float y, float z, Item* ite
 
     ObjectGuid oldSel = bot->GetSelectionGuid();
 
-    if (!sServerFacade.isMoving(bot)) bot->SetFacingTo(bot->GetAngleAt(bot->GetPositionX(), bot->GetPositionY(), x, y));
+    bool isMoving = false;
+    if (!bot->GetMotionMaster()->empty())
+        if (MovementGenerator* movgen = bot->GetMotionMaster()->top())
+            isMoving = true;
+
+    if (!sServerFacade.isMoving(bot) || isMoving) bot->SetFacingTo(bot->GetAngleAt(bot->GetPositionX(), bot->GetPositionY(), x, y));
 
     if (failWithDelay)
     {
@@ -2787,6 +2820,10 @@ void PlayerbotAI::WaitForSpellCast(Spell *spell)
     }
 
     castTime = ceil(castTime);
+
+    // fix hunter Feign Death delay
+    if (pSpellInfo->Id == 5384)
+        castTime = 1000.0f;
 
     uint32 globalCooldown = CalculateGlobalCooldown(pSpellInfo->Id);
     if (castTime < globalCooldown)
@@ -4034,12 +4071,19 @@ void PlayerbotAI::ImbueItem(Item* item, uint32 targetFlag, ObjectGuid targetGUID
 #endif
 }
 
-void PlayerbotAI::EnchantItemT(uint32 spellid, uint8 slot)
+void PlayerbotAI::EnchantItemT(uint32 spellid, uint8 slot, Item* item)
 {
-   Item* pItem = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, slot);
+    Item* pItem = nullptr;
+    if (item)
+        pItem = item;
+    else
+        pItem = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, slot);
 
    if (!pItem)
     return;
+
+   if (pItem->GetSlot() != slot)
+       return;
 
 #ifdef CMANGOS
    if (pItem->GetOwner() == nullptr)
@@ -4132,6 +4176,10 @@ void PlayerbotAI::StopMoving()
 {
     if (bot->IsTaxiFlying())
         return;
+
+    if (!bot->GetMotionMaster()->empty())
+        if (MovementGenerator* movgen = bot->GetMotionMaster()->top())
+            movgen->Interrupt(*bot);
 
     // remove movement flags, checked in bot->IsMoving()
     if (bot->IsFalling())

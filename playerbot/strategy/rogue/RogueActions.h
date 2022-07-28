@@ -7,6 +7,8 @@
 
 namespace ai
 {
+    BUFF_ACTION(CastColdBloodAction, "cold blood");
+
 	class CastEvasionAction : public CastBuffSpellAction
 	{
 	public:
@@ -34,7 +36,7 @@ namespace ai
         {
             if (ai->CastSpell("stealth", bot))
             {
-                ai->ChangeStrategy("-dps,+stealthed", BOT_STATE_COMBAT);
+                ai->ChangeStrategy("-dps,-combat,-assassin,+stealthed", BOT_STATE_COMBAT);
             }
             return true;
         }
@@ -45,7 +47,7 @@ namespace ai
         UnstealthAction(PlayerbotAI* ai) : Action(ai, "unstealth") {}
         virtual bool Execute(Event event) {
             ai->RemoveAura("stealth");
-            ai->ChangeStrategy("+dps,-stealthed", BOT_STATE_COMBAT);
+            ai->ResetStrategies();
             return true;
         }
     };
@@ -57,11 +59,12 @@ namespace ai
         virtual bool Execute(Event event) {
             if (ai->HasAura("stealth", bot))
             {
-                ai->ChangeStrategy("-dps,+stealthed", BOT_STATE_COMBAT);
+                ai->ChangeStrategy("-dps,-combat,-assassin,+stealthed", BOT_STATE_COMBAT);
             }
             else
             {
-                ai->ChangeStrategy("+dps,-stealthed", BOT_STATE_COMBAT);
+                ai->ResetStrategies();
+                //ai->ChangeStrategy("+dps,-stealthed", BOT_STATE_COMBAT);
             }
             return true;
         }
@@ -133,4 +136,14 @@ namespace ai
         CastKickOnEnemyHealerAction(PlayerbotAI* ai) : CastSpellOnEnemyHealerAction(ai, "kick") {}
     };
 
+    class CastTricksOfTheTradeOnPartyAction : public BuffOnPartyAction {
+    public:
+        CastTricksOfTheTradeOnPartyAction(PlayerbotAI* ai) : BuffOnPartyAction(ai, "tricks of the trade") {}
+    };
+
+    class CastCloakOfShadowsAction : public CastCureSpellAction
+    {
+    public:
+        CastCloakOfShadowsAction(PlayerbotAI* ai) : CastCureSpellAction(ai, "cloak of shadows") {}
+    };
 }

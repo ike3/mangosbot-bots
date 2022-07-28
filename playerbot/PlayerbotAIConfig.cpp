@@ -107,14 +107,14 @@ bool PlayerbotAIConfig::Initialize()
     lowMana = config.GetIntDefault("AiPlayerbot.LowMana", 15);
     mediumMana = config.GetIntDefault("AiPlayerbot.MediumMana", 40);
 
-    randomGearMaxLevel = config.GetIntDefault("AiPlayerbot.RandomGearMaxLevel", 100);
+    randomGearMaxLevel = config.GetIntDefault("AiPlayerbot.RandomGearMaxLevel", 500);
     randomGearMaxDiff = config.GetIntDefault("AiPlayerbot.RandomGearMaxDiff", 5);
     randomGearProgression = config.GetBoolDefault("AiPlayerbot.RandomGearProgression", true);
     randomGearLoweringChance = config.GetFloatDefault("AiPlayerbot.RandomGearLoweringChance", 0.15f);
     randomBotMaxLevelChance = config.GetFloatDefault("AiPlayerbot.RandomBotMaxLevelChance", 0.15f);
     randomBotRpgChance = config.GetFloatDefault("AiPlayerbot.RandomBotRpgChance", 0.35f);
 
-    iterationsPerTick = config.GetIntDefault("AiPlayerbot.IterationsPerTick", 10);
+    iterationsPerTick = config.GetIntDefault("AiPlayerbot.IterationsPerTick", 100);
 
     allowGuildBots = config.GetBoolDefault("AiPlayerbot.AllowGuildBots", true);
 
@@ -141,8 +141,8 @@ bool PlayerbotAIConfig::Initialize()
     randomBotCountChangeMaxInterval = config.GetIntDefault("AiPlayerbot.RandomBotCountChangeMaxInterval", 2 * 3600);
     minRandomBotInWorldTime = config.GetIntDefault("AiPlayerbot.MinRandomBotInWorldTime", 1 * 1800);
     maxRandomBotInWorldTime = config.GetIntDefault("AiPlayerbot.MaxRandomBotInWorldTime", 6 * 3600);
-    minRandomBotRandomizeTime = config.GetIntDefault("AiPlayerbot.MinRandomBotRandomizeTime", 1800);
-    maxRandomBotRandomizeTime = config.GetIntDefault("AiPlayerbot.MaxRandomRandomizeTime", 2 * 3600);
+    minRandomBotRandomizeTime = config.GetIntDefault("AiPlayerbot.MinRandomBotRandomizeTime", 3600);
+    maxRandomBotRandomizeTime = config.GetIntDefault("AiPlayerbot.MaxRandomRandomizeTime", 6 * 3600);
     minRandomBotChangeStrategyTime = config.GetIntDefault("AiPlayerbot.MinRandomBotChangeStrategyTime", 1800);
     maxRandomBotChangeStrategyTime = config.GetIntDefault("AiPlayerbot.MaxRandomBotChangeStrategyTime", 2 * 3600);
     minRandomBotReviveTime = config.GetIntDefault("AiPlayerbot.MinRandomBotReviveTime", 60);

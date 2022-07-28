@@ -21,7 +21,7 @@ namespace ai
     class GuildInviteAction : public GuidManageAction {
     public:
         GuildInviteAction(PlayerbotAI* ai, string name = "guild invite", uint16 opcode = CMSG_GUILD_INVITE) : GuidManageAction(ai, name, opcode) {}
-        virtual bool isUseful() { return bot->GetGuildId() && sGuildMgr.GetGuildById(bot->GetGuildId())->HasRankRight(bot->GetRank(), GR_RIGHT_INVITE); }
+        virtual bool isUseful() { return !ai->HasRealPlayerMaster() && bot->GetGuildId() && sGuildMgr.GetGuildById(bot->GetGuildId())->HasRankRight(bot->GetRank(), GR_RIGHT_INVITE); }
     protected:
         virtual void SendPacket(WorldPacket data) { bot->GetSession()->HandleGuildInviteOpcode(data); };
         virtual bool PlayerIsValid(Player* member) { return !member->GetGuildId(); };

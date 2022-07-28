@@ -28,6 +28,9 @@ namespace ai
                 bot->UninviteFromGroup();
                 return false;
             }
+            
+            if (bot->isAFK())
+                bot->ToggleAFK();
 
             WorldPacket p;
             uint32 roles_mask = 0;

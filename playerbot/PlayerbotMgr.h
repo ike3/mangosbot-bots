@@ -33,7 +33,7 @@ public:
     void UpdateSessions(uint32 elapsed);
 
     void LogoutAllBots();
-    void OnBotLogin(Player * const bot);
+    void OnBotLogin(Player* bot);
 
     list<string> HandlePlayerbotCommand(char const* args, Player* master = NULL);
     string ProcessBotCommand(string cmd, ObjectGuid guid, ObjectGuid masterguid, bool admin, uint32 masterAccountId, uint32 masterGuildId);

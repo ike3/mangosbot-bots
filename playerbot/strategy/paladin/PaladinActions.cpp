@@ -34,7 +34,8 @@ Unit* CastBlessingOnPartyAction::GetTarget()
     altBlessings.push_back("blessing of might");
     altBlessings.push_back("blessing of wisdom");
     altBlessings.push_back("blessing of kings");
-    altBlessings.push_back("blessing of salvation");
+    if (!bot->InBattleGround())
+        altBlessings.push_back("blessing of salvation");
     altBlessings.push_back("blessing of light");
 
     if (AI_VALUE2(uint32, "spell id", m_name))
@@ -59,6 +60,8 @@ Unit* CastBlessingOnPartyAction::GetTarget()
         for (GroupReference* ref = group->GetFirstMember(); ref; ref = ref->next())
         {
             if (!ref->getSource() || bot->GetMapId() != ref->getSource()->GetMapId()) continue;
+
+            if (ai->HasMyAura("blessing of freedom", ref->getSource())) continue;
 
             if (ref->getSource() != bot && sServerFacade.GetDistance2d(bot, ref->getSource()) < 25.0f)
             {
@@ -156,7 +159,8 @@ bool CastBlessingOnPartyAction::Execute(Event event)
     altBlessings.push_back("blessing of might");
     altBlessings.push_back("blessing of wisdom");
     altBlessings.push_back("blessing of kings");
-    altBlessings.push_back("blessing of salvation");
+    if (!bot->InBattleGround())
+        altBlessings.push_back("blessing of salvation");
     altBlessings.push_back("blessing of light");
 
     if (AI_VALUE2(uint32, "spell id", mainBlessing))

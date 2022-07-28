@@ -1067,9 +1067,9 @@ void RandomPlayerbotMgr::CheckPlayers()
         //    continue;
 
         if (player->GetLevel() > playersLevel)
-            playersLevel = player->GetLevel() + 3;
+            playersLevel = player->GetLevel();
     }
-    sLog.outBasic("Max player level is %d, max bot level set to %d", playersLevel - 3, playersLevel);
+    sLog.outBasic("Max player level is %d, max bot level set to %d", playersLevel, playersLevel);
     return;
 }
 
@@ -1136,6 +1136,7 @@ bool RandomPlayerbotMgr::AddRandomBot(uint32 bot)
 bool RandomPlayerbotMgr::ProcessBot(uint32 bot)
 {
     Player* player = GetPlayerBot(bot);
+
     PlayerbotAI* ai = player ? player->GetPlayerbotAI() : NULL;
 
     uint32 isValid = GetEventValue(bot, "add");
@@ -1169,6 +1170,9 @@ bool RandomPlayerbotMgr::ProcessBot(uint32 bot)
         return true;
     }
 
+    if (!player || !player->IsInWorld() || player->IsBeingTeleported() || player->GetSession()->isLogingOut())
+        return false;
+
     // Hotfix System
     /*if (player && !sServerFacade.UnitIsDead(player))
     {
@@ -1188,7 +1192,7 @@ bool RandomPlayerbotMgr::ProcessBot(uint32 bot)
         return false;
 
     uint32 update = GetEventValue(bot, "update");
-    if (!update && !sPlayerbotAIConfig.disableRandomLevels)
+    if (player && player->IsInWorld() && !update && !sPlayerbotAIConfig.disableRandomLevels)
     {
         bool update = true;
         if (ai)
@@ -1209,18 +1213,6 @@ bool RandomPlayerbotMgr::ProcessBot(uint32 bot)
         uint32 randomTime = urand(sPlayerbotAIConfig.minRandomBotReviveTime, sPlayerbotAIConfig.maxRandomBotReviveTime * 5);
         SetEventValue(bot, "update", 1, randomTime);
         return true;
-    }
-
-    if (!sPlayerbotAIConfig.disableRandomLevels)
-    {
-        uint32 enchantEquip = GetEventValue(bot, "enchant_equip");
-        if (!enchantEquip && player->GetLevel() >= sPlayerbotAIConfig.minEnchantingBotLevel)
-        {
-            sLog.outDetail("Bot #%d %s:%d <%s>: equipment enchanted", bot, player->GetTeam() == ALLIANCE ? "A" : "H", player->GetLevel(), player->GetName());
-            PlayerbotFactory factory(player, player->GetLevel());
-            factory.EnchantEquipment(player);
-            SetEventValue(bot, "enchant_equip", 1, sPlayerbotAIConfig.maxRandomBotRandomizeTime);
-        }
     }
 
     uint32 logout = GetEventValue(bot, "logout");
@@ -1251,6 +1243,9 @@ bool RandomPlayerbotMgr::ProcessBot(uint32 bot)
 
 bool RandomPlayerbotMgr::ProcessBot(Player* player)
 {
+    if (!player || !player->IsInWorld() || player->IsBeingTeleported() || player->GetSession()->isLogingOut())
+        return false;
+
     uint32 bot = player->GetGUIDLow();
 
     if (player->InBattleGround())
@@ -1699,7 +1694,7 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot)
 
 void RandomPlayerbotMgr::Randomize(Player* bot)
 {
-    if (bot->InBattleGround())
+    if (!bot || !bot->IsInWorld() || bot->IsBeingTeleported() || bot->GetSession()->isLogingOut())
         return;
 
     bool initialRandom = false;
@@ -1717,11 +1712,21 @@ void RandomPlayerbotMgr::Randomize(Player* bot)
     }
     else
     {
+        // schedule randomise
+        uint32 randomTime = urand(sPlayerbotAIConfig.minRandomBotRandomizeTime, sPlayerbotAIConfig.maxRandomBotRandomizeTime);
+        SetEventValue(bot->GetGUIDLow(), "randomize", 1, randomTime);
+
+        uint32 lastLevel = GetValue(bot, "level");
+        uint32 level = bot->GetLevel();
+        if (lastLevel == level)
+            return;
+        // todo fix upgrade
+
         UpdateGearSpells(bot);
         sLog.outBasic("Bot #%d %s:%d <%s>: gear upgraded", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->GetLevel(), bot->GetName());
     }
 
-    SetValue(bot, "version", MANGOSBOT_VERSION);
+    //SetValue(bot, "version", MANGOSBOT_VERSION);
 }
 
 void RandomPlayerbotMgr::UpdateGearSpells(Player* bot)
@@ -1734,11 +1739,19 @@ void RandomPlayerbotMgr::UpdateGearSpells(Player* bot)
 
     uint32 lastLevel = GetValue(bot, "level");
     uint32 level = bot->GetLevel();
-    PlayerbotFactory factory(bot, min(maxLevel, level));
-    factory.Randomize(true);
+    if (lastLevel == level)
+        return;
 
-    // schedule enchantments
-    SetEventValue(bot->GetGUIDLow(), "enchant_equip", 1, 10);
+    PlayerbotFactory factory(bot, level);
+    // TODO fix upgrade
+    factory.Randomize(false);
+
+    if (lastLevel != level)
+        SetValue(bot, "level", level);
+
+    // schedule randomise
+    uint32 randomTime = urand(sPlayerbotAIConfig.minRandomBotRandomizeTime, sPlayerbotAIConfig.maxRandomBotRandomizeTime);
+    SetEventValue(bot->GetGUIDLow(), "randomize", 1, randomTime);
 
     if (pmo) pmo->finish();
 }
@@ -1776,13 +1789,11 @@ void RandomPlayerbotMgr::RandomizeFirst(Player* bot)
     // schedule randomise
     uint32 randomTime = urand(sPlayerbotAIConfig.minRandomBotRandomizeTime, sPlayerbotAIConfig.maxRandomBotRandomizeTime);
     SetEventValue(bot->GetGUIDLow(), "randomize", 1, randomTime);
-    // schedule enchantments
-    SetEventValue(bot->GetGUIDLow(), "enchant_equip", 1, 10);
 
-    // teleport to a random inn for bot level
-    bot->GetPlayerbotAI()->Reset(true);
+    bool hasPlayer = bot->GetPlayerbotAI()->HasRealPlayerMaster();
+    bot->GetPlayerbotAI()->Reset(!hasPlayer);
 
-    if (bot->GetGroup())
+    if (bot->GetGroup() && !hasPlayer)
         bot->RemoveFromGroup();
 
 	if (pmo) pmo->finish();
@@ -2030,7 +2041,7 @@ string RandomPlayerbotMgr::GetData(uint32 bot, string type)
 
 void RandomPlayerbotMgr::SetValue(uint32 bot, string type, uint32 value, string data)
 {
-    SetEventValue(bot, type, value, sPlayerbotAIConfig.maxRandomBotInWorldTime, data);
+    SetEventValue(bot, type, value, 10*24*3600, data);
 }
 
 void RandomPlayerbotMgr::SetValue(Player* bot, string type, uint32 value, string data)

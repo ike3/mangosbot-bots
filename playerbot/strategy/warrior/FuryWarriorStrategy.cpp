@@ -46,7 +46,7 @@ void FuryWarriorStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "berserker stance",
-        NextAction::array(0, new NextAction("berserker stance", ACTION_HIGH + 9), NULL)));
+        NextAction::array(0, new NextAction("berserker stance", ACTION_INTERRUPT + 9), NULL)));
 
     triggers.push_back(new TriggerNode(
         "battle shout",

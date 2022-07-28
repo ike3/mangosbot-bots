@@ -86,7 +86,7 @@ namespace ai
 #endif
 
             if (bot->InBattleGround())
-                return !bot->GetCorpse();
+                return !bot->GetCorpse() || !bot->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_GHOST);
 
             if (bot->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_GHOST))
                 return false;

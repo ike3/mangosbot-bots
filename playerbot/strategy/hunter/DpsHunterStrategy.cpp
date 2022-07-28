@@ -84,7 +84,7 @@ void DpsHunterStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "concussive shot on snare target",
-        NextAction::array(0, new NextAction("concussive shot", 20.0f), NULL)));
+        NextAction::array(0, new NextAction("concussive shot", 25.0f), NULL)));
 
     /*triggers.push_back(new TriggerNode(
         "has aggro",
@@ -95,11 +95,11 @@ void DpsAoeHunterStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
         "light aoe",
-        NextAction::array(0, new NextAction("multi-shot", 20.0f), NULL)));
+        NextAction::array(0, new NextAction("multi-shot", ACTION_HIGH), NULL)));
 
 	triggers.push_back(new TriggerNode(
 		"medium aoe",
-		NextAction::array(0, new NextAction("volley", 20.0f), NULL)));
+		NextAction::array(0, new NextAction("volley", 10.0f), NULL)));
 
 	triggers.push_back(new TriggerNode(
 		"serpent sting on attacker",

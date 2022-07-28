@@ -144,9 +144,11 @@ namespace ai
                 creators["repentance on enemy healer"] = &TriggerFactoryInternal::repentance_on_enemy_healer;
                 creators["repentance on snare target"] = &TriggerFactoryInternal::repentance_on_snare_target;
                 creators["repentance interrupt"] = &TriggerFactoryInternal::repentance_interrupt;
+                creators["hammer of justice on enemy"] = &TriggerFactoryInternal::hammer_on_enemy;
             }
 
         private:
+            static Trigger* hammer_on_enemy(PlayerbotAI* ai) { return new HammerOfJusticeOnEnemyTrigger(ai); }
             static Trigger* turn_undead(PlayerbotAI* ai) { return new TurnUndeadTrigger(ai); }
             static Trigger* divine_favor(PlayerbotAI* ai) { return new DivineFavorTrigger(ai); }
             static Trigger* holy_shield(PlayerbotAI* ai) { return new HolyShieldTrigger(ai); }
@@ -272,9 +274,13 @@ namespace ai
                 creators["sanctity aura"] = &AiObjectContextInternal::sanctity_aura;
                 creators["holy shock"] = &AiObjectContextInternal::holy_shock;
                 creators["holy shock on party"] = &AiObjectContextInternal::holy_shock_on_party;
+                creators["blessing of freedom"] = &AiObjectContextInternal::blessing_of_freedom;
+                creators["avenging wrath"] = &AiObjectContextInternal::avenging_wrath;
             }
 
         private:
+            static Action* avenging_wrath(PlayerbotAI* ai) { return new CastAvengingWrathAction(ai); }
+            static Action* blessing_of_freedom(PlayerbotAI* ai) { return new CastBlessingOfFreedomAction(ai); }
             static Action* blessing_of_protection_on_party(PlayerbotAI* ai) { return new CastBlessingOfProtectionProtectAction(ai); }
             static Action* turn_undead(PlayerbotAI* ai) { return new CastTurnUndeadAction(ai); }
             static Action* divine_favor(PlayerbotAI* ai) { return new CastDivineFavorAction(ai); }

@@ -23,17 +23,17 @@ void InventoryAction::IterateItems(IterateItemsVisitor* visitor, IterateItemsMas
 void InventoryAction::IterateItemsInBags(IterateItemsVisitor* visitor)
 {
     for(int i = INVENTORY_SLOT_ITEM_START; i < INVENTORY_SLOT_ITEM_END; ++i)
-        if (Item *pItem = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, i))
+        if (Item* pItem = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, i))
             if (!visitor->Visit(pItem))
                 return;
 
     for(int i = KEYRING_SLOT_START; i < KEYRING_SLOT_END; ++i)
-        if (Item *pItem = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, i))
+        if (Item* pItem = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, i))
             if (!visitor->Visit(pItem))
                 return;
 
     for(int i = INVENTORY_SLOT_BAG_START; i < INVENTORY_SLOT_BAG_END; ++i)
-        if (Bag *pBag = (Bag*)bot->GetItemByPos(INVENTORY_SLOT_BAG_0, i))
+        if (Bag* pBag = (Bag*)bot->GetItemByPos(INVENTORY_SLOT_BAG_0, i))
             for(uint32 j = 0; j < pBag->GetBagSize(); ++j)
                 if (Item* pItem = pBag->GetItemByPos(j))
                     if (!visitor->Visit(pItem))
@@ -44,7 +44,7 @@ void InventoryAction::IterateItemsInEquip(IterateItemsVisitor* visitor)
 {
     for (uint8 slot = EQUIPMENT_SLOT_START; slot < EQUIPMENT_SLOT_END; slot++)
     {
-        Item* const pItem = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, slot);
+        Item* pItem = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, slot);
         if(!pItem)
             continue;
 
@@ -57,7 +57,7 @@ void InventoryAction::IterateItemsInBank(IterateItemsVisitor* visitor)
 {
     for (uint8 slot = BANK_SLOT_ITEM_START; slot < BANK_SLOT_ITEM_END; slot++)
     {
-        Item* const pItem = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, slot);
+        Item* pItem = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, slot);
         if(!pItem)
             continue;
 

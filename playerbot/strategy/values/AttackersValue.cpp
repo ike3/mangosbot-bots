@@ -127,6 +127,9 @@ bool AttackersValue::IsPossibleTarget(Unit *attacker, Player *bot, float range)
     bool inCannon = ai->IsInVehicle(false, true);
 
     bool enemy = ai->GetAiObjectContext()->GetValue<Unit*>("enemy player target")->Get();
+    bool duel = false;
+    if (attacker && bot->duel && bot->duel->opponent && attacker->GetObjectGuid() == bot->duel->opponent->GetObjectGuid())
+        duel = true;
 
     return attacker &&
         attacker->IsInWorld() &&
@@ -147,7 +150,7 @@ bool AttackersValue::IsPossibleTarget(Unit *attacker, Player *bot, float range)
         //sServerFacade.IsCharmed(attacker) ||
         sServerFacade.IsFeared(attacker)) && !rti) &&
         //!sServerFacade.IsInRoots(attacker) &&
-        !sServerFacade.IsFriendlyTo(attacker, bot) &&
+        (!sServerFacade.IsFriendlyTo(attacker, bot) || duel) &&
         bot->IsWithinDistInMap(attacker, range) &&
         !attacker->HasAuraType(SPELL_AURA_SPIRIT_OF_REDEMPTION) &&
         !(attacker->GetObjectGuid().IsPet() && enemy) &&
