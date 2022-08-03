@@ -48,7 +48,11 @@ bool NearestEnemyPlayersValue::AcceptUnit(Unit* unit)
     return (enemy &&
         enemy->IsWithinDist(bot, EnemyPlayerValue::GetMaxAttackDistance(bot), false) &&
         enemy->GetMapId() == bot->GetMapId() &&
+#ifdef MANGOSBOT_ZERO
         ai->IsOpposing(enemy) &&
+#else
+        (ai->IsOpposing(enemy) || (bot->InArena() && enemy->InArena() && bot->GetBGTeam() != enemy->GetBGTeam())) &&
+#endif
         enemy->IsPvP() &&
         !enemy->IsPolymorphed() &&
         !ai->HasAura("sap", enemy) &&
