@@ -11,6 +11,9 @@ using namespace ai;
 bool InvalidTargetValue::Calculate()
 {
     Unit* target = AI_VALUE(Unit*, qualifier);
+    if (!target || !target->IsInWorld() || target->GetMapId() != bot->GetMapId())
+        return true;
+
     Unit* duel = AI_VALUE(Unit*, "duel target");
     if (duel && duel == target)
         return false;

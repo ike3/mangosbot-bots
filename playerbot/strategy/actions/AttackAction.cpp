@@ -12,7 +12,7 @@ bool AttackAction::Execute(Event event)
 {
     Unit* target = GetTarget();
 
-    if (!target)
+    if (!target || !target->IsInWorld() || target->GetMapId() != bot->GetMapId())
         return false;
 
     Unit* victim = bot->GetVictim();
