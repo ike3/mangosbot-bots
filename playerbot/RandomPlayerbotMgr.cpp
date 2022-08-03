@@ -1833,7 +1833,7 @@ void RandomPlayerbotMgr::Refresh(Player* bot)
     {
         bot->ResurrectPlayer(1.0f);
         bot->SpawnCorpseBones();
-        bot->GetPlayerbotAI()->ResetStrategies(false);
+        bot->GetPlayerbotAI()->ResetStrategies();
     }
 
     if (sPlayerbotAIConfig.disableRandomLevels)
