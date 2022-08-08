@@ -354,9 +354,14 @@ void PlayerbotHolder::OnBotLogin(Player * const bot)
 #endif
     }
     // join standard channels
+    int32 locale = sConfig.GetIntDefault("DBC.Locale", 0 /*LocaleConstant::LOCALE_enUS*/); // bot->GetSession()->GetSessionDbcLocale();
+    // -- In case we're using auto detect on config file
+    if (locale == 255)
+        locale = static_cast<int32>(LocaleConstant::LOCALE_enUS);
+    
     AreaTableEntry const* current_zone = GetAreaEntryByAreaID(sTerrainMgr.GetAreaId(bot->GetMapId(), bot->GetPositionX(), bot->GetPositionY(), bot->GetPositionZ()));
     ChannelMgr* cMgr = channelMgr(bot->GetTeam());
-    std::string current_zone_name = current_zone ? current_zone->area_name[0] : "";
+    std::string current_zone_name = current_zone ? current_zone->area_name[locale] : "";
 
     if (current_zone && cMgr)
     {
@@ -379,9 +384,8 @@ void PlayerbotHolder::OnBotLogin(Player * const bot)
             Channel* new_channel = nullptr;
             if (isLfg)
             {
-                string lfgChannelName = channel->pattern[0];
 #ifndef MANGOSBOT_ZERO
-                new_channel = cMgr->GetJoinChannel("LookingForGroup", channel->ChannelID);
+                new_channel = cMgr->GetJoinChannel(channel->pattern[locale], channel->ChannelID);
 #else
                 new_channel = cMgr->GetJoinChannel("LookingForGroup");
 #endif
@@ -389,7 +393,7 @@ void PlayerbotHolder::OnBotLogin(Player * const bot)
             else
             {
                 char new_channel_name_buf[100];
-                snprintf(new_channel_name_buf, 100, channel->pattern[0], current_zone_name.c_str());
+                snprintf(new_channel_name_buf, 100, channel->pattern[locale], current_zone_name.c_str());
 #ifndef MANGOSBOT_ZERO
                 new_channel = cMgr->GetJoinChannel(new_channel_name_buf, channel->ChannelID);
 #else

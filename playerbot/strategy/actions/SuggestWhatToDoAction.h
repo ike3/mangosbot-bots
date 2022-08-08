@@ -27,6 +27,7 @@ namespace ai
     private:
         static map<string, int> instances;
         static map<string, int> factions;
+        int32 _locale;
     };
 
     class SuggestTradeAction : public SuggestWhatToDoAction
