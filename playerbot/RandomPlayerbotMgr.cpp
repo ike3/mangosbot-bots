@@ -359,10 +359,12 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed, bool minimal)
             CheckBgQueue();
     }
 
-    uint32 updateBots = sPlayerbotAIConfig.randomBotsPerInterval * onlineBotFocus / 100;
+    uint32 updateBots = std::max(uint32(1), sPlayerbotAIConfig.randomBotsPerInterval * onlineBotFocus / 100);
 
     uint32 maxNewBots = onlineBotCount < maxAllowedBotCount ? maxAllowedBotCount - onlineBotCount : 0;
-    uint32 loginBots = std::min(sPlayerbotAIConfig.randomBotsPerInterval - updateBots, maxNewBots);
+    int32 loginBotsTemp = sPlayerbotAIConfig.randomBotsPerInterval - updateBots;
+    uint32 loginBots = uint32(loginBotsTemp < 0 ? uint32(1) : uint32(loginBotsTemp));
+    loginBots = std::min(loginBots, maxNewBots);
 
     if(!availableBots.empty())
     {
@@ -1739,8 +1741,8 @@ void RandomPlayerbotMgr::UpdateGearSpells(Player* bot)
 
     uint32 lastLevel = GetValue(bot, "level");
     uint32 level = bot->GetLevel();
-    if (lastLevel == level)
-        return;
+    //if (lastLevel == level)
+    //    return;
 
     PlayerbotFactory factory(bot, level);
     // TODO fix upgrade
@@ -1767,7 +1769,7 @@ void RandomPlayerbotMgr::RandomizeFirst(Player* bot)
         maxLevel = max(sPlayerbotAIConfig.randomBotMinLevel, min(playersLevel, sWorld.getConfig(CONFIG_UINT32_MAX_PLAYER_LEVEL)));
 
 	PerformanceMonitorOperation *pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "RandomizeFirst");
-    uint32 level = urand(max(bot->GetLevel(), sPlayerbotAIConfig.randomBotMinLevel), maxLevel);
+    uint32 level = urand(sPlayerbotAIConfig.randomBotMinLevel, maxLevel);
 
 #ifdef MANGOSBOT_TWO
     if (bot->getClass() == CLASS_DEATH_KNIGHT)
@@ -2041,7 +2043,7 @@ string RandomPlayerbotMgr::GetData(uint32 bot, string type)
 
 void RandomPlayerbotMgr::SetValue(uint32 bot, string type, uint32 value, string data)
 {
-    SetEventValue(bot, type, value, 10*24*3600, data);
+    SetEventValue(bot, type, value, 15*24*3600, data);
 }
 
 void RandomPlayerbotMgr::SetValue(Player* bot, string type, uint32 value, string data)
