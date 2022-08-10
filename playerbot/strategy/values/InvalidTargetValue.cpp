@@ -18,8 +18,11 @@ bool InvalidTargetValue::Calculate()
     if (duel && duel == target)
         return false;
 
-    if (!target && !bot->GetSelectionGuid())
-        return true;
+    if (qualifier == "current target")
+    {
+        if (target->GetObjectGuid() != bot->GetSelectionGuid())
+            return true;
+    }
 
     bool validTarget = AttackersValue::IsValidTarget(target, bot);
     return !validTarget;
