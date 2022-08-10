@@ -65,7 +65,7 @@ bool NearestEnemyPlayersValue::AcceptUnit(Unit* unit)
         //!enemy->HasStealthAura() &&
         //!enemy->HasInvisibilityAura() &&
         enemy->IsVisibleForOrDetect(bot, bot->GetCamera().GetBody(), false) &&
-        !(enemy->HasAuraType(SPELL_AURA_SPIRIT_OF_REDEMPTION))
+        !enemy->HasAuraType(SPELL_AURA_SPIRIT_OF_REDEMPTION)
         );
 }
 
@@ -206,7 +206,7 @@ Unit* EnemyPlayerValue::Calculate()
         {
             if (Unit* pMember = itr->getSource())
             {
-                if (pMember == bot)
+                if (pMember == bot || pMember->GetMapId() != bot->GetMapId())
                     continue;
 
                 if (sServerFacade.GetDistance2d(bot, pMember) > 30.0f)
