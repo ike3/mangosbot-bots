@@ -2962,40 +2962,8 @@ void PlayerbotFactory::InitArenaTeam()
     if (!sPlayerbotAIConfig.IsInRandomAccountList(bot->GetSession()->GetAccountId()))
         return;
 
-    if (sPlayerbotAIConfig.randomBotArenaTeams.empty())
+    if (sPlayerbotAIConfig.randomBotArenaTeams.size() < sPlayerbotAIConfig.randomBotArenaTeamCount)
         RandomPlayerbotFactory::CreateRandomArenaTeams();
-
-    vector<uint32> arenateams;
-    for (list<uint32>::iterator i = sPlayerbotAIConfig.randomBotArenaTeams.begin(); i != sPlayerbotAIConfig.randomBotArenaTeams.end(); ++i)
-        arenateams.push_back(*i);
-
-    if (arenateams.empty())
-    {
-        sLog.outError("No random arena team available");
-        return;
-    }
-
-    int index = urand(0, arenateams.size() - 1);
-    uint32 arenateamID = arenateams[index];
-    ArenaTeam* arenateam = sObjectMgr.GetArenaTeamById(arenateamID);
-    if (!arenateam)
-    {
-        sLog.outError("Invalid arena team %u", arenateamID);
-        return;
-    }
-
-    if (arenateam->GetMembersSize() < ((uint32)arenateam->GetType()) && bot->GetLevel() >= 70)
-    {
-        ObjectGuid capt = arenateam->GetCaptainGuid();
-        Player* botcaptain = sObjectMgr.GetPlayer(capt);
-
-        if (botcaptain && botcaptain->GetTeam() == bot->GetTeam()) //need?
-        {
-            arenateam->AddMember(bot->GetObjectGuid());
-            arenateam->SaveToDB();
-        }
-    }
-    //bot->SaveToDB();
 }
 #endif
 
