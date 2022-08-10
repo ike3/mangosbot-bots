@@ -182,7 +182,7 @@ ItemUsage ItemUsageValue::QueryItemUsageForEquip(ItemPrototype const* itemProto)
 
     bool shouldEquip = false;
 
-    uint32 statWeight = sRandomItemMgr.GetLiveStatWeight(bot, itemProto->ItemId);
+    uint32 statWeight = sRandomItemMgr.GetLiveStatWeight(bot, itemProto->ItemId, specId);
     if (statWeight)
         shouldEquip = true;
 
@@ -204,7 +204,7 @@ ItemUsage ItemUsageValue::QueryItemUsageForEquip(ItemPrototype const* itemProto)
 
     if (oldItem)
     {
-        uint32 oldStatWeight = sRandomItemMgr.GetLiveStatWeight(bot, oldItemProto->ItemId);
+        uint32 oldStatWeight = sRandomItemMgr.GetLiveStatWeight(bot, oldItemProto->ItemId, specId);
         if (statWeight || oldStatWeight)
         {
             shouldEquip = statWeight >= oldStatWeight;
