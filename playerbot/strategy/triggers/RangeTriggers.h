@@ -138,6 +138,22 @@ namespace ai
         }
     };
 
+    class EnemyInRangeTrigger : public Trigger {
+    public:
+        EnemyInRangeTrigger(PlayerbotAI* ai, string name, float distance) : Trigger(ai, name)
+        {
+            this->distance = distance;
+        }
+        virtual bool IsActive()
+        {
+            Unit* target = AI_VALUE(Unit*, "current target");
+            return target &&
+                sServerFacade.IsDistanceLessOrEqualThan(AI_VALUE2(float, "distance", "current target"), distance);
+        }
+    protected:
+        float distance;
+    };
+
     class OutOfRangeTrigger : public Trigger {
     public:
         OutOfRangeTrigger(PlayerbotAI* ai, string name, float distance) : Trigger(ai, name)
