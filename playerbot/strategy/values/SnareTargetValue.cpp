@@ -11,6 +11,14 @@ Unit* SnareTargetValue::Calculate()
 {
     string spell = qualifier;
 
+    Unit* enemy = AI_VALUE(Unit*, "enemy player target");
+    if (enemy)
+    {
+        Player* plr = dynamic_cast<Player*>(enemy);
+        if (plr && !plr->IsStopped())
+            return enemy;
+    }
+
     list<ObjectGuid> attackers = ai->GetAiObjectContext()->GetValue<list<ObjectGuid> >("attackers")->Get();
     Unit* target = ai->GetAiObjectContext()->GetValue<Unit*>("current target")->Get();
     for (list<ObjectGuid>::iterator i = attackers.begin(); i != attackers.end(); ++i)
@@ -21,6 +29,26 @@ Unit* SnareTargetValue::Calculate()
 
         if (sServerFacade.GetDistance2d(bot, unit) > ai->GetRange("spell"))
             continue;
+
+        // case real player or bot not moving
+        if (unit->IsPlayer() && unit->GetMotionMaster()->GetCurrentMovementGeneratorType() == IDLE_MOTION_TYPE)
+        {
+            if (Unit* victim = unit->GetVictim())
+            {
+                // check if need to snare
+                bool shouldSnare = true;
+
+                // do not slow down if bot is melee and mob/bot attack each other
+                if (victim == bot || victim->IsPlayer())
+                    shouldSnare = true;
+
+                if (unit->HasAuraType(SPELL_AURA_MOD_ROOT) || unit->HasAuraType(SPELL_AURA_MOD_STUN))
+                    shouldSnare = false;
+
+                if (victim && shouldSnare)
+                    return unit;
+            }
+        }
 
         Unit* chaseTarget;
         switch (unit->GetMotionMaster()->GetCurrentMovementGeneratorType())
@@ -42,12 +70,11 @@ Unit* SnareTargetValue::Calculate()
             if (!sServerFacade.isMoving(unit))
                 shouldSnare = false;
 
-            if (unit->HasAuraType(SPELL_AURA_MOD_ROOT))
+            if (unit->HasAuraType(SPELL_AURA_MOD_ROOT) || unit->HasAuraType(SPELL_AURA_MOD_STUN))
                 shouldSnare = false;
 
-            if (chaseTargetPlayer && shouldSnare && !ai->IsTank(chaseTargetPlayer)) {
+            if (chaseTargetPlayer && shouldSnare && !ai->IsTank(chaseTargetPlayer))
                 return unit;
-            }
         }
     }
 
