@@ -38,16 +38,16 @@ namespace ai
                 if (target->IsPlayer())
                 {
                     if (!isVictim)
-                        coeff = 0.4f;
+                        coeff = 0.7f;
                     else
-                        coeff = 0.8f;
+                        coeff = 1.0f;
                 }
                 else
                 {
                     if (!isVictim)
-                        coeff = 0.3f;
+                        coeff = 0.4f;
                     else
-                        coeff = 0.5f;
+                        coeff = 0.6f;
                 }
 
                 if (isRaid)
@@ -92,16 +92,16 @@ namespace ai
             if (target->IsPlayer())
             {
                 if (!isVictim)
-                    coeff = 0.4f;
+                    coeff = 0.7f;
                 else
-                    coeff = 0.8f;
+                    coeff = 1.0f;
             }
             else
             {
                 if (!isVictim)
-                    coeff = 0.3f;
+                    coeff = 0.4f;
                 else
-                    coeff = 0.5f;
+                    coeff = 0.6f;
             }
 
             if (isRaid)
