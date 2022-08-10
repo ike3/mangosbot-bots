@@ -56,6 +56,7 @@ bool NearestEnemyPlayersValue::AcceptUnit(Unit* unit)
         enemy->IsPvP() &&
         !enemy->IsPolymorphed() &&
         !ai->HasAura("sap", enemy) &&
+        !ai->HasAura("gouge", enemy) &&
         !sServerFacade.IsFeared(enemy) &&
         !sPlayerbotAIConfig.IsInPvpProhibitedZone(sServerFacade.GetAreaId(enemy)) &&
         !enemy->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_1) &&

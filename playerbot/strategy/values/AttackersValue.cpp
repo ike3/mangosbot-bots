@@ -150,6 +150,7 @@ bool AttackersValue::IsPossibleTarget(Unit *attacker, Player *bot, float range)
         attacker->IsVisibleForOrDetect(bot, bot->GetCamera().GetBody(), true) &&
 #ifdef CMANGOS
         !(attacker->IsStunned() && ai->HasAura("shackle undead", attacker)) &&
+        !ai->HasAura("gouge", attacker) &&
 #endif
 #ifdef MANGOS
         //!attacker->hasUnitState(UNIT_STAT_STUNNED) &&
