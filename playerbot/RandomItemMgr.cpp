@@ -185,6 +185,9 @@ RandomItemMgr::RandomItemMgr()
     weightRatingLink["critstrkrtng"] = CR_CRIT_MELEE;
     weightRatingLink["hitrtng"] = CR_HIT_MELEE;
     weightRatingLink["hastertng"] = CR_HASTE_MELEE;
+    weightRatingLink["spellcritstrkrtng"] = CR_CRIT_SPELL;
+    weightRatingLink["spellhastertng"] = CR_HASTE_SPELL;
+    weightRatingLink["spellhitrtng"] = CR_HIT_SPELL;
     //weightRatingLink["armorpenrtng"] = CR_ARMOR_PENETRATION;
 
     weightRatingLink["defrtng"] = CR_DEFENSE_SKILL;
@@ -728,7 +731,7 @@ bool RandomItemMgr::ShouldEquipWeaponForSpec(uint8 playerclass, uint8 spec, Item
             mh_weapons = { ITEM_SUBCLASS_WEAPON_DAGGER };
             oh_weapons = { ITEM_SUBCLASS_WEAPON_DAGGER };
         }
-        if (m_weightScales[spec].info.name == "combat")
+        else if (m_weightScales[spec].info.name == "combat")
         {
             mh_weapons = { ITEM_SUBCLASS_WEAPON_SWORD, ITEM_SUBCLASS_WEAPON_MACE };
             oh_weapons = { ITEM_SUBCLASS_WEAPON_SWORD, ITEM_SUBCLASS_WEAPON_MACE };
