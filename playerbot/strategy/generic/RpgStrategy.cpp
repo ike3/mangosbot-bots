@@ -22,10 +22,12 @@ RpgStrategy::RpgStrategy(PlayerbotAI* ai) : Strategy(ai)
 {
 }
 
+/*
 NextAction** RpgStrategy::getDefaultActions()
 {
     return NextAction::array(0, new NextAction("rpg", 1.1f), NULL);
 }
+*/
 
 void RpgStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 {
@@ -36,6 +38,10 @@ void RpgStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
     triggers.push_back(new TriggerNode(
         "far from rpg target",
         NextAction::array(0, new NextAction("move to rpg target", 5.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "near rpg target",
+        NextAction::array(0, new NextAction("rpg", 1.1f), NULL)));
 
     //Sub actions
     triggers.push_back(new TriggerNode(
@@ -69,6 +75,10 @@ void RpgStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
     triggers.push_back(new TriggerNode(
         "rpg end quest",
         NextAction::array(0, new NextAction("rpg end quest", 1.090f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "rpg repeat quest",
+        NextAction::array(0, new NextAction("rpg start quest", 1.030f), new NextAction("rpg end quest", 1.030f), NULL)));
 
     triggers.push_back(new TriggerNode(
         "rpg buy",

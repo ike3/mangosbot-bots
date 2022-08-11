@@ -42,7 +42,7 @@ bool TradeStatusAction::Execute(Event event)
     uint32 status;
     p >> status;
 
-    if (status == TRADE_STATUS_TRADE_ACCEPT)
+    if (status == TRADE_STATUS_TRADE_ACCEPT || (TRADE_STATUS_BACK_TO_TRADE && trader->GetTradeData() && trader->GetTradeData()->IsAccepted()))
     {
         WorldPacket p;
         uint32 status = 0;

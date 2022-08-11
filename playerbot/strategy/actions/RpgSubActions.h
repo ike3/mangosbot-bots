@@ -15,14 +15,16 @@ namespace ai
         void OnExecute(string nextAction = "rpg") { if (ai->HasRealPlayerMaster() && nextAction == "rpg") nextAction = "rpg cancel"; SET_AI_VALUE(string, "next rpg action", nextAction); };
         void BeforeExecute();
         void AfterExecute(bool doDelay = true,  bool waitForGroup = false, string nextAction = "rpg");
+        void OnCancel() { resetFacing(guidP()); if (bot->GetTradeData()) bot->TradeCancel(true); };
 
         virtual GuidPosition guidP() { return AI_VALUE(GuidPosition, "rpg target"); }
         virtual ObjectGuid guid() { return (ObjectGuid)guidP(); }        
         virtual bool InRange() { return guidP() ? (guidP().sqDistance2d(bot) < INTERACTION_DISTANCE * INTERACTION_DISTANCE) : false; }
+        void setDelay(bool waitForGroup);
     private:
         void setFacingTo(GuidPosition guidPosition);
         void setFacing(GuidPosition guidPosition);
-        void setDelay(bool waitForGroup);
+        void resetFacing(GuidPosition guidPosition);
     };
 
     class RpgEnabled
@@ -54,7 +56,7 @@ namespace ai
     public:
         RpgStayAction(PlayerbotAI* ai, string name = "rpg stay") : RpgSubAction(ai, name) {}
 
-        virtual bool isUseful() { return rpg->InRange() && !ai->HasRealPlayerMaster(); }
+        //virtual bool isUseful() { return rpg->InRange() && !ai->HasRealPlayerMaster(); }
 
         virtual bool Execute(Event event) { if (bot->GetPlayerMenu()) bot->GetPlayerMenu()->CloseGossip(); rpg->AfterExecute();  return true; };
     };   
@@ -64,7 +66,7 @@ namespace ai
     public:
         RpgWorkAction(PlayerbotAI* ai, string name = "rpg work") : RpgSubAction(ai, name ) {}
 
-        virtual bool isUseful() { return rpg->InRange() && !ai->HasRealPlayerMaster(); }
+        //virtual bool isUseful() { return rpg->InRange() && !ai->HasRealPlayerMaster(); }
 
         virtual bool Execute(Event event) { bot->HandleEmoteCommand(EMOTE_STATE_USESTANDING); rpg->AfterExecute(); return true; };
     };
@@ -74,7 +76,7 @@ namespace ai
     public:
         RpgEmoteAction(PlayerbotAI* ai, string name = "rpg emote") : RpgSubAction(ai, name) {}
 
-        virtual bool isUseful() { Unit* unit = rpg->guidP().GetUnit(); if (unit && unit->GetName() == "chicken") return rpg->InRange(); return rpg->InRange() && !ai->HasRealPlayerMaster(); }
+        //virtual bool isUseful() { return rpg->InRange() && !ai->HasRealPlayerMaster(); }
 
         virtual bool Execute(Event event);
     };
@@ -84,7 +86,7 @@ namespace ai
     public:
         RpgCancelAction(PlayerbotAI* ai, string name = "rpg cancel") : RpgSubAction(ai, name) {}
 
-        virtual bool Execute(Event event) { RESET_AI_VALUE(GuidPosition,"rpg target"); rpg->OnExecute(""); return true; };
+        virtual bool Execute(Event event) { rpg->OnCancel();  AI_VALUE(set<ObjectGuid>&, "ignore rpg target").insert(AI_VALUE(GuidPosition, "rpg target")); RESET_AI_VALUE(GuidPosition, "rpg target"); rpg->OnExecute(""); return true; };
     };
 
     class RpgTaxiAction : public RpgSubAction
@@ -162,6 +164,7 @@ namespace ai
 
     private:
         virtual string ActionName() { return "trainer"; }
+        virtual Event ActionEvent(Event event) { return Event("rpg action",rpg->guidP()); }
     };
 
     class RpgHealAction : public RpgSubAction
@@ -204,8 +207,9 @@ namespace ai
     public:
         RpgUseAction(PlayerbotAI* ai, string name = "rpg use") : RpgSubAction(ai, name) {}
 
+        virtual bool Execute(Event event) { rpg->BeforeExecute();  return ai->DoSpecificAction(ActionName(), ActionEvent(event), true); rpg->setDelay(true); }
     private:
-        virtual string ActionName() { return "use"; }
+        virtual string ActionName() { if (rpg->guidP().IsGameObject() && rpg->guidP().GetGameObject()->GetGoType() == GAMEOBJECT_TYPE_CHEST) return "add all loot";  return "use"; }
         virtual Event ActionEvent(Event event) { return Event("rpg action", chat->formatWorldobject(rpg->guidP().GetWorldObject())); }
     };
 
@@ -235,6 +239,7 @@ namespace ai
     public:
         RpgTradeUsefulAction(PlayerbotAI* ai, string name = "rpg trade useful") : RpgSubAction(ai, name) {}
 
+        bool IsTradingItem(uint32 entry);
         list<Item*> CanGiveItems(GuidPosition guidPosition);
 
         virtual bool Execute(Event event);

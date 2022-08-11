@@ -182,10 +182,22 @@ namespace ai
         {
             uint32 dialogStatus = AI_VALUE2(uint32, "dialog status", getQualifier());
 #ifdef MANGOSBOT_ZERO  
-            return dialogStatus == DIALOG_STATUS_REWARD2 || dialogStatus == DIALOG_STATUS_REWARD_REP;
+            return dialogStatus == DIALOG_STATUS_REWARD2;
 #else
-            return dialogStatus == DIALOG_STATUS_REWARD2 || dialogStatus == DIALOG_STATUS_REWARD || dialogStatus == DIALOG_STATUS_REWARD_REP;
+            return dialogStatus == DIALOG_STATUS_REWARD2 || dialogStatus == DIALOG_STATUS_REWARD;
 #endif  
+        };
+    };
+
+    //Repeatable in quest to npc
+    class CanRepeatQuestValue : public BoolCalculatedValue, public Qualified
+    {
+    public:
+        CanRepeatQuestValue(PlayerbotAI* ai) : BoolCalculatedValue(ai, "can repeat quest npc") {}
+
+        virtual bool Calculate()
+        {
+            return AI_VALUE2(uint32, "dialog status", getQualifier()) == DIALOG_STATUS_REWARD_REP;
         };
     };
 }

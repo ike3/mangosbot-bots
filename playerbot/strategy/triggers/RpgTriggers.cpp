@@ -24,7 +24,17 @@ bool RpgTaxiTrigger::IsActive()
     if (!bot->m_taxi.IsTaximaskNodeKnown(node))
         return false;
 
-    return true;
+    vector<uint32> nodes;
+    for (uint32 i = 0; i < sTaxiPathStore.GetNumRows(); ++i)
+    {
+        TaxiPathEntry const* entry = sTaxiPathStore.LookupEntry(i);
+        if (entry && entry->from == node && (bot->m_taxi.IsTaximaskNodeKnown(entry->to) || bot->isTaxiCheater()))
+        {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 bool RpgDiscoverTrigger::IsActive()
@@ -52,6 +62,13 @@ bool RpgStartQuestTrigger::IsActive()
     if (!guidP.IsCreature() && !guidP.IsGameObject())
         return false;
 
+    if (guidP.IsUnit())
+    {
+        Unit* unit = guidP.GetUnit();
+        if (unit && !unit->HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_QUESTGIVER))
+            return false;
+    }
+
     if (AI_VALUE(bool, "can fight equal"))
     {
         if (AI_VALUE2(bool, "can accept quest npc", guidP.GetEntry()))
@@ -78,6 +95,20 @@ bool RpgEndQuestTrigger::IsActive()
 
     return false;
 }
+
+bool RpgRepeatQuestTrigger::IsActive()
+{
+    GuidPosition guidP(getGuidP());
+
+    if (!guidP.IsCreature() && !guidP.IsGameObject())
+        return false;
+
+    if (AI_VALUE2(bool, "can repeat quest npc", guidP.GetEntry()))
+        return true;
+
+    return false;
+}
+
 
 bool RpgBuyTrigger::IsActive()
 {
@@ -292,6 +323,9 @@ bool RpgBuyPetitionTrigger::IsActive()
 
 bool RpgUseTrigger::IsActive()
 {
+    if (ai->HasRealPlayerMaster())
+        return false;
+
     GuidPosition guidP(getGuidP());
 
     if (!guidP.IsGameObject())
@@ -389,6 +423,9 @@ bool RpgTradeUsefulTrigger::IsActive()
 
     if (!urand(0, 20))
         isFriend = true;
+
+    if (player->GetTrader() == bot && bot->GetTrader() == player)
+        return true;
 
     if (!isFriend)
         return false;

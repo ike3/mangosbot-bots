@@ -246,6 +246,7 @@ namespace ai
             creators["can accept quest npc"] = &ValueContext::can_accept_quest_npc;
             creators["can accept quest low level npc"] = &ValueContext::can_accept_quest_low_level_npc;
             creators["can turn in quest npc"] = &ValueContext::can_turn_in_quest_npc;
+            creators["can repeat quest npc"] = &ValueContext::can_repeat_quest_npc;
             
             creators["money needed for"] = &ValueContext::money_needed_for;
             creators["total money needed for"] = &ValueContext::total_money_needed_for;
@@ -439,6 +440,7 @@ namespace ai
         static UntypedValue* can_accept_quest_npc(PlayerbotAI* ai) { return new CanAcceptQuestValue(ai); }
         static UntypedValue* can_accept_quest_low_level_npc(PlayerbotAI* ai) { return new CanAcceptQuestLowLevelValue(ai); }
         static UntypedValue* can_turn_in_quest_npc(PlayerbotAI* ai) { return new CanTurnInQuestValue(ai); }
+        static UntypedValue* can_repeat_quest_npc(PlayerbotAI* ai) { return new CanRepeatQuestValue(ai); }
 
         static UntypedValue* money_needed_for(PlayerbotAI* ai) { return new MoneyNeededForValue(ai); }
         static UntypedValue* total_money_needed_for(PlayerbotAI* ai) { return new TotalMoneyNeededForValue(ai); }

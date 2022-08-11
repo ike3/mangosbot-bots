@@ -4,6 +4,7 @@
 #include "../../ServerFacade.h"
 #include "../values/Formations.h"
 #include "EmoteAction.h"
+#include "RpgSubActions.h"
 
 using namespace ai;
 
@@ -32,7 +33,7 @@ bool RpgAction::Execute(Event event)
 
 bool RpgAction::isUseful()
 {
-    return AI_VALUE(GuidPosition, "rpg target");
+    return (AI_VALUE(string, "next rpg action").empty() || AI_VALUE(string, "next rpg action") == "rpg") && AI_VALUE(GuidPosition, "rpg target");
 }
 
 bool RpgAction::SetNextRpgAction()
@@ -73,7 +74,7 @@ bool RpgAction::SetNextRpgAction()
 
                 Action* action = ai->GetAiObjectContext()->GetAction(nextAction->getName());
 
-                if (!action->isPossible() || !action->isUseful())
+                if (!dynamic_cast<RpgEnabled*>(action) || !action->isPossible() || !action->isUseful())
                     continue;
 
                 actions.push_back(action);
@@ -85,6 +86,27 @@ bool RpgAction::SetNextRpgAction()
 
     if (actions.empty())
         return false;
+
+    if (ai->HasStrategy("debug rpg", BOT_STATE_NON_COMBAT))
+    {
+        vector<pair<Action*, uint32>> sortedActions;
+        
+        for (int i = 0; i < actions.size(); i++)
+            sortedActions.push_back(make_pair(actions[i], relevances[i]));
+
+        std::sort(sortedActions.begin(), sortedActions.end(), [](pair<Action*, uint32>i, pair<Action*, uint32> j) {return i.second > j.second; });
+
+        ai->TellMasterNoFacing("------" + chat->formatWorldobject(AI_VALUE(GuidPosition, "rpg target").GetWorldObject()) + "------");
+
+        for (auto action : sortedActions)
+        {
+            ostringstream out;
+
+            out << " " << action.first->getName() << " " << action.second;
+
+            ai->TellMasterNoFacing(out);
+        }
+    }
 
     std::mt19937 gen(time(0));
 
@@ -98,6 +120,17 @@ bool RpgAction::SetNextRpgAction()
         delete trigger;
     }
     triggerNodes.clear();
+
+    if ((ai->HasStrategy("debug", BOT_STATE_NON_COMBAT) || ai->HasStrategy("debug rpg", BOT_STATE_NON_COMBAT)))
+    {
+        ostringstream out;
+        out << "do: ";
+        out << chat->formatWorldobject(AI_VALUE(GuidPosition, "rpg target").GetWorldObject());
+
+        out << " " << action->getName();
+
+        ai->TellMasterNoFacing(out);
+    }
 
     SET_AI_VALUE(string, "next rpg action", action->getName());
 

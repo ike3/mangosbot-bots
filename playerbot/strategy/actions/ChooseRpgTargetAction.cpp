@@ -7,6 +7,7 @@
 #include "../values/BudgetValues.h"
 #include "GuildCreateActions.h"
 #include "../values/Formations.h"
+#include "RpgSubActions.h"
 
 using namespace ai;
 
@@ -72,8 +73,26 @@ float ChooseRpgTargetAction::getMaxRelevance(GuidPosition guidP)
             if (!trigger->IsActive())
                 continue;
 
-            maxRelevance = triggerNode->getFirstRelevance();  
-            rgpActionReason[guidP] = triggerNode->getName();
+            NextAction** nextActions = triggerNode->getHandlers();
+
+            bool isRpg = false;
+
+            for (int32 i = 0; i < NextAction::size(nextActions); i++)
+            {
+                NextAction* nextAction = nextActions[i];
+
+                Action* action = ai->GetAiObjectContext()->GetAction(nextAction->getName());
+
+                if (dynamic_cast<RpgEnabled*>(action))
+                    isRpg = true;
+            }
+            NextAction::destroy(nextActions);
+
+            if (isRpg)
+            {
+                maxRelevance = triggerNode->getFirstRelevance();
+                rgpActionReason[guidP] = triggerNode->getName();
+            }
         }
     }
 
@@ -204,6 +223,27 @@ bool ChooseRpgTargetAction::Execute(Event event)
         return false;
     }
 
+    if (ai->HasStrategy("debug rpg", BOT_STATE_NON_COMBAT))
+    {
+        vector<pair<ObjectGuid, uint32>> sortedTargets(targets.begin(), targets.end());
+
+        std::sort(sortedTargets.begin(), sortedTargets.end(), [](pair<ObjectGuid, uint32>i, pair<ObjectGuid, uint32> j) {return i.second > j.second; });
+
+        ai->TellMasterNoFacing("------" + to_string(targets.size()) + "------");
+
+        for (auto target : sortedTargets)
+        {
+            GuidPosition guidP(target.first);
+
+            ostringstream out;
+            out << chat->formatWorldobject(guidP.GetWorldObject());
+
+            out << " " << rgpActionReason[guidP] << " " << target.second;
+
+            ai->TellMasterNoFacing(out);
+        }
+    }
+
     vector<GuidPosition> guidps;
     vector<int> relevances;
 
@@ -225,7 +265,7 @@ bool ChooseRpgTargetAction::Execute(Event event)
         return false;
     }
 
-    if (ai->HasStrategy("debug", BOT_STATE_NON_COMBAT) && guidP.GetWorldObject())
+    if ((ai->HasStrategy("debug", BOT_STATE_NON_COMBAT) || ai->HasStrategy("debug rpg", BOT_STATE_NON_COMBAT)) && guidP.GetWorldObject())
     {
         ostringstream out;
         out << "found: ";

@@ -38,7 +38,7 @@ void RpgHelper::AfterExecute(bool doDelay, bool waitForGroup, string nextAction)
 
 void RpgHelper::setFacingTo(GuidPosition guidPosition)
 {
-    bot->SetFacingTo(guidPosition.getAngleTo(bot)+ M_PI_F);
+    sServerFacade.SetFacingTo(bot, guidPosition.GetWorldObject());
 }
 
 void RpgHelper::setFacing(GuidPosition guidPosition)
@@ -49,9 +49,21 @@ void RpgHelper::setFacing(GuidPosition guidPosition)
     if (guidPosition.IsPlayer())
         return;
 
-    //Unit* unit = guidPosition.GetUnit();
+    Unit* unit = guidPosition.GetUnit();
+    sServerFacade.SetFacingTo(unit,bot);   
+}
 
-   // unit->SetFacingTo(unit->GetAngle(bot));
+void RpgHelper::resetFacing(GuidPosition guidPosition)
+{
+    if (!guidPosition.IsCreature())
+        return;
+
+    Creature* unit = guidPosition.GetCreature();
+
+    CreatureData* data = guidPosition.GetCreatureData();
+
+    if (data)
+        unit->SetFacingTo(data->orientation);
 }
 
 void RpgHelper::setDelay(bool waitForGroup)
@@ -64,12 +76,21 @@ void RpgHelper::setDelay(bool waitForGroup)
 
 bool RpgEmoteAction::Execute(Event event)
 {
+    rpg->BeforeExecute();
+
     Unit* unit = rpg->guidP().GetUnit();
 
     uint32 type;
 
-    if (unit && unit->GetName() == "chicken" && !urand(0, 2))
-        type = EMOTE_ONESHOT_CHICKEN;
+    if (unit && unit->GetEntry() == 620)
+    {
+        type = TEXTEMOTE_CHICKEN;
+        WorldPacket data(SMSG_TEXT_EMOTE);
+        data << type;
+        data << 1;
+        data << rpg->guidP();
+        bot->GetSession()->HandleTextEmoteOpcode(data);
+    }
     else
         type = TalkAction::GetRandomEmote(rpg->guidP().GetUnit());
 
@@ -79,10 +100,10 @@ bool RpgEmoteAction::Execute(Event event)
 
     bot->HandleEmoteCommand(type);
 
-    if (type != EMOTE_ONESHOT_CHICKEN)
+    if (type != TEXTEMOTE_CHICKEN)
         rpg->AfterExecute();
-    else
-        rpg->AfterExecute(true,false, "rpg start quest");
+    else if(unit && !bot->GetNPCIfCanInteractWith(rpg->guidP(), UNIT_NPC_FLAG_QUESTGIVER) && AI_VALUE(TravelTarget*, "travel target")->getEntry() == 620)
+        rpg->AfterExecute(true,false, "rpg emote");
 
     return true;
 }
@@ -182,6 +203,24 @@ bool RpgHealAction::Execute(Event event)
     return retVal;
 }
 
+bool RpgTradeUsefulAction::IsTradingItem(uint32 entry)
+{
+    TradeData* trade = bot->GetTradeData();
+
+    if (!trade)
+        return false;
+
+    for (uint8 i = 0; i < TRADE_SLOT_TRADED_COUNT; i++)
+    {
+        Item* tradeItem = trade->GetItem(TradeSlots(i));
+
+        if (tradeItem && tradeItem->GetEntry() == entry)
+            return true;;
+    }
+
+    return false;
+}
+
 list<Item*> RpgTradeUsefulAction::CanGiveItems(GuidPosition guidPosition)
 {
     Player* player = guidPosition.GetPlayer();
@@ -203,8 +242,20 @@ list<Item*> RpgTradeUsefulAction::CanGiveItems(GuidPosition guidPosition)
             if (!item->CanBeTraded())
                 continue;
 
-            if (bot->GetTradeData() && bot->GetTradeData()->HasItem(item->GetObjectGuid()))
-                continue;
+            TradeData* trade = bot->GetTradeData();
+
+            if (trade)
+            {
+
+                if (trade->HasItem(item->GetObjectGuid())) //This specific item isn't being traded.
+                    continue;
+
+                if (IsTradingItem(item->GetEntry())) //A simular item isn't being traded.
+                    continue;
+
+                if (std::any_of(giveItems.begin(), giveItems.end(), [item](Item* i) {return i->GetEntry() == item->GetEntry(); })) //We didn't already add a simular item to this list.
+                    continue;
+            }
 
             ItemUsage otherUsage = PAI_VALUE2(ItemUsage, "item usage", item->GetEntry());
 
@@ -238,18 +289,20 @@ bool RpgTradeUsefulAction::Execute(Event event)
     param << " ";
     param << chat->formatItem(item->GetProto());
 
-    bool hasTraded = ai->DoSpecificAction("trade", Event("rpg action", param.str().c_str()), true);
+    bool isTrading = ai->DoSpecificAction("trade", Event("rpg action", param.str().c_str()), true);
 
-    if (hasTraded || bot->GetTradeData())
+    isTrading = isTrading || bot->GetTradeData();
+
+    if (isTrading)
     {
-        if (bot->GetTradeData() && bot->GetTradeData()->HasItem(item->GetObjectGuid()))
+        if (IsTradingItem(item->GetEntry())) //Did we manage to add the item to the trade?
         {
             if (bot->GetGroup() && bot->GetGroup()->IsMember(guidP) && ai->HasRealPlayerMaster())
-                ai->TellMasterNoFacing("You can use this " + chat->formatItem(item->GetProto()) + " better than me, " + guidP.GetPlayer()->GetName()/*chat->formatWorldobject(guidP.GetPlayer())*/ + ".");
+                ai->TellMasterNoFacing("You can use this " + chat->formatItem(item->GetProto()) + " better than me, " + player->GetName()/*chat->formatWorldobject(guidP.GetPlayer())*/ + ".");
             else
-                bot->Say("You can use this " + chat->formatItem(item->GetProto()) + " better than me, " + player->GetName()/*chat->formatWorldobject(player)*/ + ".", (bot->GetTeam() == ALLIANCE ? LANG_COMMON : LANG_ORCISH));
+                bot->Say("You can use this " + chat->formatItem(item->GetProto()) + " better than me, " + player->GetName() + ".", (bot->GetTeam() == ALLIANCE ? LANG_COMMON : LANG_ORCISH));
 
-            if (!urand(0, 4) || items.size() < 2)
+            if (!urand(0, 4) || items.size() < 2) //Complete the trade if we have no more items to trade.
             {
                 //bot->Say("End trade with" + chat->formatWorldobject(player), (bot->GetTeam() == ALLIANCE ? LANG_COMMON : LANG_ORCISH));
                 WorldPacket p;
@@ -262,10 +315,12 @@ bool RpgTradeUsefulAction::Execute(Event event)
             //bot->Say("Start trade with" + chat->formatWorldobject(player), (bot->GetTeam() == ALLIANCE ? LANG_COMMON : LANG_ORCISH));
 
         ai->SetNextCheckDelay(sPlayerbotAIConfig.rpgDelay);
-        return true;
     }
 
-    return false;
+
+    rpg->AfterExecute(isTrading, true, isTrading ? "rpg trade useful" : "rpg");
+
+    return isTrading;
 }
 
 bool RpgDuelAction::isUseful()
