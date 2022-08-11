@@ -14,7 +14,7 @@ namespace ai
             this->spell = spell;
         }
 
-		virtual string GetTargetName() { return "current target"; };
+		virtual string GetTargetName() { return "current target"; }
         virtual bool Execute(Event event);
         virtual bool isPossible();
 		virtual bool isUseful();
@@ -54,11 +54,7 @@ namespace ai
     {
     public:
         CastMeleeSpellAction(PlayerbotAI* ai, string spell) : CastSpellAction(ai, spell) {
-			range = ATTACK_DISTANCE;
-
-            Unit* target = AI_VALUE(Unit*, "current target");
-            if (target)
-                range = max(ATTACK_DISTANCE, bot->GetCombinedCombatReach(target, true));
+			this->range = ATTACK_DISTANCE;
 		}
     };
 
