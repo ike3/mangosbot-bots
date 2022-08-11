@@ -1434,7 +1434,11 @@ void PlayerbotFactory::InitEquipment(bool incremental)
 
                         Item* pItem = bot->EquipNewItem(eDest, newItemId, true);
                         if (pItem)
+                        {
+                            EnchantItem(pItem);
+                            AddGems(pItem);
                             found = true;
+                        }
                     }
                     if (found)
                     {
@@ -1640,19 +1644,7 @@ void PlayerbotFactory::EnchantItem(Item* item)
 
     int tab = AiFactory::GetPlayerSpecTab(bot);
     uint32 tempId = uint32((uint32)bot->getClass() * (uint32)10);
-    switch (bot->getClass())
-    {
-    case CLASS_WARRIOR:
-    case CLASS_DRUID:
-    case CLASS_SHAMAN:
-    case CLASS_PALADIN:
-    case CLASS_HUNTER:
-        tempId += (uint32)tab;
-        break;
-    default:
-        break;
-    }
-    ApplyEnchantTemplate(tempId, item);
+    ApplyEnchantTemplate(tempId += (uint32)tab, item);
 }
 
 void PlayerbotFactory::AddGems(Item* item)
