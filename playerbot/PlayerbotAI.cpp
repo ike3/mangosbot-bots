@@ -2292,6 +2292,26 @@ bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target, Item* itemTarget)
         targets.setUnitTarget(target);
     }
 
+    if (spellId == 1953) // simulate blink coordinates
+    {
+        targets.setUnitTarget(nullptr);
+        float angle = bot->GetOrientation();
+        float distance = 20.0f;
+        float fx = bot->GetPositionX() + cos(angle) * distance;
+        float fy = bot->GetPositionY() + sin(angle) * distance;
+        float fz = bot->GetPositionZ();
+
+        float ox, oy, oz;
+        bot->GetPosition(ox, oy, oz);
+//#ifdef MANGOSBOT_TWO
+//        bot->GetMap()->GetHitPosition(ox, oy, oz + max_height, fx, fy, fz, bot->GetPhaseMask(), -0.5f);
+//#else
+//        bot->GetMap()->GetHitPosition(ox, oy, oz + 2.0f, fx, fy, fz, -0.5f);
+//#endif
+        bot->UpdateAllowedPositionZ(fx, fy, fz);
+        targets.setDestination(fx, fy, fz);
+    }
+
     if (pSpellInfo->Effect[0] == SPELL_EFFECT_OPEN_LOCK ||
         pSpellInfo->Effect[0] == SPELL_EFFECT_SKINNING)
     {
