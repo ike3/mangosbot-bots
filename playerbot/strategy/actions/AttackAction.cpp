@@ -123,6 +123,10 @@ bool AttackAction::Attack(Unit* target)
     bool attacked = bot->Attack(target, !ai->IsRanged(bot));
     ai->ChangeEngine(BOT_STATE_COMBAT);
 
+    // disable auto attack in stealth
+    if (ai->HasAura("stealth", bot) || ai->HasAura("prowl", bot))
+        bot->MeleeAttackStop(target);
+
     return attacked;
 }
 
