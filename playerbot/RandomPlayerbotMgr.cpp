@@ -1177,33 +1177,6 @@ void RandomPlayerbotMgr::CheckLfgQueue()
     return;
 }
 
-Item* RandomPlayerbotMgr::CreateItem(uint32 item, uint32 count, Player const* player, uint32 randomPropertyId)
-{
-    if (count < 1)
-        return nullptr;                                        // don't create item at zero count
-
-    if (ItemPrototype const* pProto = ObjectMgr::GetItemPrototype(item))
-    {
-        if (count > pProto->GetMaxStackSize())
-            count = pProto->GetMaxStackSize();
-
-        MANGOS_ASSERT(count != 0 && "pProto->Stackable == 0 but checked at loading already");
-
-        Item* pItem = NewItemOrBag(pProto);
-        if (pItem->Create(sObjectMgr.GenerateItemLowGuid(), item, player))
-        {
-            pItem->SetCount(count);
-            if (uint32 randId = randomPropertyId ? randomPropertyId : Item::GenerateItemRandomPropertyId(item))
-                pItem->SetItemRandomProperties(randId);
-
-            return pItem;
-        }
-        delete pItem;
-    }
-    return nullptr;
-}
-
-
 void RandomPlayerbotMgr::CheckPlayers()
 {
     if (!PlayersCheckTimer || time(NULL) > (PlayersCheckTimer + 60))
