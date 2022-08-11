@@ -139,6 +139,8 @@ namespace ai
 	};
 
     BUFF_ACTION(CastFreezingTrapAction, "freezing trap");
+    BUFF_ACTION(CastFrostTrapAction, "frost trap");
+    BUFF_ACTION(CastExplosiveTrapAction, "explosive trap");
 
     class CastWingClipAction : public CastMeleeSpellAction
     {

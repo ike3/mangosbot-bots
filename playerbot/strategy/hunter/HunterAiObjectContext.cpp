@@ -175,9 +175,13 @@ namespace ai
                 creators["scare beast"] = &AiObjectContextInternal::scare_beast;
                 creators["scare beast on cc"] = &AiObjectContextInternal::scare_beast_on_cc;
                 creators["remove feign death"] = &AiObjectContextInternal::remove_feign_death;
+                creators["frost trap"] = &AiObjectContextInternal::frost_trap;
+                creators["explosive trap"] = &AiObjectContextInternal::explosive_trap;
             }
 
         private:
+            static Action* explosive_trap(PlayerbotAI* ai) { return new CastExplosiveTrapAction(ai); }
+            static Action* frost_trap(PlayerbotAI* ai) { return new CastFrostTrapAction(ai); }
             static Action* scare_beast(PlayerbotAI* ai) { return new CastScareBeastAction(ai); }
             static Action* scare_beast_on_cc(PlayerbotAI* ai) { return new CastScareBeastCcAction(ai); }
             static Action* bestial_wrath(PlayerbotAI* ai) { return new CastBestialWrathAction(ai); }
