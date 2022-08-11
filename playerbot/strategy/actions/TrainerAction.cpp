@@ -120,13 +120,20 @@ bool TrainerAction::Execute(Event event)
     string text = event.getParam();
 
     Player* master = GetMaster();
+    Creature* creature;
 
-    Creature* creature = ai->GetCreature(bot->GetSelectionGuid());
-    if (AI_VALUE(GuidPosition, "rpg target") != bot->GetSelectionGuid())
+    if (event.getSource() == "rpg action")
+    {
+        ObjectGuid guid = event.getObject();
+        creature = ai->GetCreature(guid);
+    }
+    else
+    {
         if (master)
             creature = ai->GetCreature(master->GetSelectionGuid());
         else
             return false;
+    }
 
 #ifdef MANGOS
     if (!creature || !creature->IsTrainer())
