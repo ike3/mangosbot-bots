@@ -3092,8 +3092,6 @@ bool PlayerbotAI::AllowActive(ActivityType activityType)
         if (!GetMaster()->GetPlayerbotAI() || GetMaster()->GetPlayerbotAI()->IsRealPlayer())
             return true;
 
-    uint32 maxDiff = sWorld.GetMaxDiff();
-
     Group* group = bot->GetGroup();
     if (group)
     {
@@ -3178,38 +3176,31 @@ bool PlayerbotAI::AllowActive(ActivityType activityType)
     if (sPlayerbotAIConfig.botActiveAlone >= 100)
         return true;
 
-    if (maxDiff > 1000)
-        return false;
+    float mod = sRandomPlayerbotMgr.getActivityMod();
 
-    uint32 mod = 100;
+    if (mod < 0.01)
+       return false;
 
-    // if has real players - slow down continents without player
-    if (maxDiff > 100)
-        mod = 50;
-
-    if (maxDiff > 150)
-        mod = 25;
-
-    if (maxDiff > 200)
-        mod = 10;
-
-    if (maxDiff > 250)
+    //If has real players - slow down continents without player
+    //Unlike before we don't simply return false here when diff grows to large or a big number of bots will enable/disable at once.
+    //Instead we give bots not in active continents/area's a smaller chance to be active.
+    if (!sRandomPlayerbotMgr.GetPlayers().empty() && mod < 1.0)
     {
         if (bot->GetMap() && !bot->GetMap()->HasRealPlayers() && bot->GetMap()->IsContinent())
-            return false;
+            mod *= 0.25;
         else if (bot->GetMap() && bot->GetMap()->IsContinent())
         {
             ContinentArea currentArea = sMapMgr.GetContinentInstanceId(bot->GetMapId(), bot->GetPositionX(), bot->GetPositionY());
             if (currentArea == MAP_NO_AREA)
-                return false;
+                mod *= 0.25;
             else if (!bot->GetMap()->HasActiveAreas(currentArea))
-                return false;
+                mod *= 0.5;
         }
     }
 
-    uint32 ActivityNumber = GetFixedBotNumer(BotTypeNumber::ACTIVITY_TYPE_NUMBER, 100, sPlayerbotAIConfig.botActiveAlone * static_cast<float>(mod) / 100 * 0.01f);
+    uint32 ActivityNumber = GetFixedBotNumer(BotTypeNumber::ACTIVITY_TYPE_NUMBER, 100, sPlayerbotAIConfig.botActiveAlone * mod * 0.01f); //The last number if the amount it cycles per min. Currently set to 1% of the active bots.
 
-    return ActivityNumber <= (sPlayerbotAIConfig.botActiveAlone * mod) / 100;           //The given percentage of bots should be active and rotate 1% of those active bots each minute.
+    return ActivityNumber <= (sPlayerbotAIConfig.botActiveAlone * mod);           //The given percentage of bots should be active and rotate 1% of those active bots each minute.
 }
 
 bool PlayerbotAI::AllowActivity(ActivityType activityType, bool checkNow)

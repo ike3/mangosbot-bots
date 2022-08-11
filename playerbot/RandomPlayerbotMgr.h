@@ -31,6 +31,51 @@ public:
 
 class PerformanceMonitorOperation;
 
+//https://gist.github.com/bradley219/5373998
+
+class botPIDImpl;
+class botPID
+{
+public:
+    // Kp -  proportional gain
+    // Ki -  Integral gain
+    // Kd -  derivative gain
+    // dt -  loop interval time
+    // max - maximum value of manipulated variable
+    // min - minimum value of manipulated variable
+    botPID(double dt, double max, double min, double Kp, double Kd, double Ki);
+    void adjust(double Kp, double Kd, double Ki);
+
+    //To understand the values chosen below it's good to remember that 
+    //-The goal (dif) is 100.
+    //-Activity percentage scales the 'active alone bots' by a perencatage between 100% and 0%
+    //-The activity mod starts at 100% and can be lowered and increased by the controller.
+    //
+    //The controller has a dt of 0.1 because each tick should take 0.1 seconds
+    //The controller has max = 100 and min = -100 which means it can raise or lower the activity by 100% in one tick.
+    //The proportional gian is set to 0.01 which means at a 200 diff (which is 100 dif above goal) it will lower the activity by 1% each tick.
+    //The integral gain is set to 0.01 which means at 110 diff (which is 10 diff above goal) it will start lowering the activity by 1% each tick after 100 ticks if this increase persists.
+    //The derivative gain is set to 0.01 which means if the diff was 200 last tick and 190 now (which decreasing at a speed of 10 per tick) it will increase the activity mod by 1% each tick (dampening the speed)
+    //These 3 gains are summed to result in a total increase or decrease.
+    //
+    //For example the diff was stable at 100 for a while but jumped to 200 (because of player login) then dropped to 190.
+    //The activity mod was 100%
+    //The (internal) error will be -90 and the delta is 10.
+    //Integral will be -90*0.01*0.1 = -0.09%
+    //Proportional is -90*0.01= = -0.9% 
+    //Derivative is 10*0.01/0.1= 1% per tick. 
+    //The sum is +0.01% which means the activity actually stays at 100% bececause the diff was already moving the right direction.
+
+    //Now next tick diff is still 190.
+    //This means derivative drops to 0, the integral doubles to -0.18% so the activity will be lowered 1.08% this tick.
+    
+    double calculate(double setpoint, double pv);
+    ~botPID();
+
+private:
+    botPIDImpl* pimpl;
+};
+
 class RandomPlayerbotMgr : public PlayerbotHolder
 {
     public:
@@ -45,9 +90,9 @@ class RandomPlayerbotMgr : public PlayerbotHolder
         void LogPlayerLocation();
 
         virtual void UpdateAIInternal(uint32 elapsed, bool minimal = false);
-
 	public:
         uint32 activeBots = 0;
+
         static bool HandlePlayerbotConsoleCommand(ChatHandler* handler, char const* args);
         bool IsRandomBot(Player* bot);
         bool IsRandomBot(uint32 bot);
@@ -102,15 +147,22 @@ class RandomPlayerbotMgr : public PlayerbotHolder
         void CheckBgQueue();
         void CheckLfgQueue();
         void CheckPlayers();
+        Item* CreateItem(uint32 item, uint32 count, Player const* player, uint32 randomPropertyId);
 
         bool AddRandomBot(uint32 bot);
 
         map<Team, map<BattleGroundTypeId, list<uint32> > > getBattleMastersCache() { return BattleMastersCache; }
 
+        float getActivityMod() { return activityMod; }
+        float getActivityPercentage() { return activityMod * 100.0f; }
+        void setActivityPercentage(float percentage) { activityMod = percentage / 100.0f; }
+
 	protected:
 	    virtual void OnBotLoginInternal(Player * const bot);
 
     private:
+        botPID pid = botPID(1, 100, -100, 0.0001, 0.001, 0.0001);
+        float activityMod = 1;
         uint32 GetEventValue(uint32 bot, string event);
         string GetEventData(uint32 bot, string event);
         uint32 SetEventValue(uint32 bot, string event, uint32 value, uint32 validIn, string data = "");

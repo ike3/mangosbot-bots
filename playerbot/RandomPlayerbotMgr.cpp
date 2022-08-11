@@ -149,6 +149,101 @@ void activateCheckPlayersThread()
 #endif
 }
 
+class botPIDImpl
+{
+public:
+    botPIDImpl(double dt, double max, double min, double Kp, double Kd, double Ki);
+    ~botPIDImpl();
+    double calculate(double setpoint, double pv);
+    void adjust(double Kp, double Kd, double Ki) {_Kp = Kp;_Kd = Kd;_Ki = Ki;}
+
+private:
+    double _dt;
+    double _max;
+    double _min;
+    double _Kp;
+    double _Kd;
+    double _Ki;
+    double _pre_error;
+    double _integral;
+};
+
+
+botPID::botPID(double dt, double max, double min, double Kp, double Kd, double Ki)
+{
+    pimpl = new botPIDImpl(dt, max, min, Kp, Kd, Ki);
+}
+void botPID::adjust(double Kp, double Kd, double Ki)
+{
+    pimpl->adjust(Kp, Kd, Ki);
+}
+double botPID::calculate(double setpoint, double pv)
+{
+    return pimpl->calculate(setpoint, pv);
+}
+botPID::~botPID()
+{
+    delete pimpl;
+}
+
+
+/**
+ * Implementation
+ */
+botPIDImpl::botPIDImpl(double dt, double max, double min, double Kp, double Kd, double Ki) :
+    _dt(dt),
+    _max(max),
+    _min(min),
+    _Kp(Kp),
+    _Kd(Kd),
+    _Ki(Ki),
+    _pre_error(0),
+    _integral(0)
+{
+}
+
+double botPIDImpl::calculate(double setpoint, double pv)
+{
+
+    // Calculate error
+    double error = setpoint - pv;
+
+    // Proportional term
+    double Pout = _Kp * error;
+
+    // Integral term
+    _integral += error * _dt;
+    double Iout = _Ki * _integral;
+
+    // Derivative term
+    double derivative = (error - _pre_error) / _dt;
+    double Dout = _Kd * derivative;
+
+    // Calculate total output
+    double output = Pout + Iout + Dout;
+
+    // Restrict to max/min
+    if (output > _max)
+        output = _max;
+    else if (output < _min)
+        output = _min;
+
+    //Reset the integral when the error crossses 0 to prevent integrator windup.
+    if ((error > 0) != (_pre_error > 0))
+        _integral = 0;
+
+    // Save error to previous error
+    _pre_error = error;
+
+    return output;
+}
+
+botPIDImpl::~botPIDImpl()
+{
+}
+
+
+
 RandomPlayerbotMgr::RandomPlayerbotMgr() : PlayerbotHolder(), processTicks(0), loginProgressBar(NULL)
 {
     if (sPlayerbotAIConfig.enabled || sPlayerbotAIConfig.randomBotAutologin)
@@ -304,6 +399,8 @@ void RandomPlayerbotMgr::LogPlayerLocation()
 
 }
 
+
+
 void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed, bool minimal)
 {
     if (totalPmo)
@@ -313,6 +410,35 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed, bool minimal)
 
     if (!sPlayerbotAIConfig.randomBotAutologin || !sPlayerbotAIConfig.enabled)
         return;
+  
+    float activityPercentage = getActivityPercentage();
+    //    % increase/decrease           wanted diff, current diff
+    float activityPercentageMod = pid.calculate(sRandomPlayerbotMgr.GetPlayers().empty() ? 200 : 100, sWorld.GetAverageDiff());
+
+    activityPercentage += activityPercentageMod;
+    activityPercentage = std::max(0.0f, std::min(100.0f, activityPercentage));
+    setActivityPercentage(activityPercentage);
+
+    sLog.outBasic("Avg Diff: %u. Activity: % 7.3f %% (% 7.3f %%) bots active: %d", sWorld.GetAverageDiff(), activityPercentage, activityPercentageMod, activeBots);
+
+    if (sPlayerbotAIConfig.hasLog("activity_pid.csv"))
+    {
+        WorldPosition dummy;
+
+        ostringstream out;
+        out << sPlayerbotAIConfig.GetTimestampStr() << "+00,";
+        out << std::fixed << std::setprecision(2);
+
+        dummy.printWKT(out);
+
+        out << sWorld.GetAverageDiff() << ",";
+        out << activityPercentage << ",";
+        out << activityPercentageMod << ",";
+        out << activeBots << ",";
+        out << playerBots.size();
+
+        sPlayerbotAIConfig.log("activity_pid.csv", out.str().c_str());
+    }
 
     uint32 maxAllowedBotCount = GetEventValue(0, "bot_count");
     if (!maxAllowedBotCount || ((uint32)maxAllowedBotCount < sPlayerbotAIConfig.minRandomBots || (uint32)maxAllowedBotCount > sPlayerbotAIConfig.maxRandomBots))
@@ -363,6 +489,10 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed, bool minimal)
 
     uint32 maxNewBots = onlineBotCount < maxAllowedBotCount ? maxAllowedBotCount - onlineBotCount : 0;
     uint32 loginBots = std::min(sPlayerbotAIConfig.randomBotsPerInterval - updateBots, maxNewBots);
+
+   //More options to scale based on activity. Currently disabled.
+   //updateBots *= getActivityMod();
+   //loginBots *= getActivityMod();
 
     if(!availableBots.empty())
     {
@@ -1044,6 +1174,33 @@ void RandomPlayerbotMgr::CheckLfgQueue()
         sLog.outBasic("LFG Queue check finished. No real players in queue.");
     return;
 }
+
+Item* RandomPlayerbotMgr::CreateItem(uint32 item, uint32 count, Player const* player, uint32 randomPropertyId)
+{
+    if (count < 1)
+        return nullptr;                                        // don't create item at zero count
+
+    if (ItemPrototype const* pProto = ObjectMgr::GetItemPrototype(item))
+    {
+        if (count > pProto->GetMaxStackSize())
+            count = pProto->GetMaxStackSize();
+
+        MANGOS_ASSERT(count != 0 && "pProto->Stackable == 0 but checked at loading already");
+
+        Item* pItem = NewItemOrBag(pProto);
+        if (pItem->Create(sObjectMgr.GenerateItemLowGuid(), item, player))
+        {
+            pItem->SetCount(count);
+            if (uint32 randId = randomPropertyId ? randomPropertyId : Item::GenerateItemRandomPropertyId(item))
+                pItem->SetItemRandomProperties(randId);
+
+            return pItem;
+        }
+        delete pItem;
+    }
+    return nullptr;
+}
+
 
 void RandomPlayerbotMgr::CheckPlayers()
 {
@@ -2089,6 +2246,13 @@ bool RandomPlayerbotMgr::HandlePlayerbotConsoleCommand(ChatHandler* handler, cha
     {
         sRandomPlayerbotMgr.UpdateAIInternal(0);
         return true;
+    }
+
+    if (cmd.find("pid ") != std::string::npos)
+    {
+        string pids = cmd.substr(4);
+        vector<string> pid = Qualified::getMultiQualifiers(pids);
+        sRandomPlayerbotMgr.pid.adjust(stof(pid[0]), stof(pid[1]), stof(pid[2]));
     }
 
     map<string, ConsoleCommandHandler> handlers;
