@@ -22,31 +22,21 @@ namespace ai
         public:
             StrategyFactoryInternal()
             {
-                creators["dps"] = &rogue::StrategyFactoryInternal::dps;
                 creators["nc"] = &rogue::StrategyFactoryInternal::nc;
                 creators["pull"] = &rogue::StrategyFactoryInternal::pull;
                 creators["aoe"] = &rogue::StrategyFactoryInternal::aoe;
                 creators["boost"] = &rogue::StrategyFactoryInternal::boost;
-                creators["stealthed"] = &rogue::StrategyFactoryInternal::stealthed;
                 creators["stealth"] = &rogue::StrategyFactoryInternal::stealth;
                 creators["cc"] = &rogue::StrategyFactoryInternal::cc;
-                creators["combat"] = &rogue::StrategyFactoryInternal::combat;
-                creators["assassin"] = &rogue::StrategyFactoryInternal::assassination;
-                creators["subtlety"] = &rogue::StrategyFactoryInternal::subtlety;
             }
 
         private:
             static Strategy* boost(PlayerbotAI* ai) { return new RogueBoostStrategy(ai); }
             static Strategy* aoe(PlayerbotAI* ai) { return new RogueAoeStrategy(ai); }
-            static Strategy* dps(PlayerbotAI* ai) { return new DpsRogueStrategy(ai); }
             static Strategy* nc(PlayerbotAI* ai) { return new GenericRogueNonCombatStrategy(ai); }
             static Strategy* pull(PlayerbotAI* ai) { return new PullStrategy(ai, "shoot"); }
-            static Strategy* stealthed(PlayerbotAI* ai) { return new StealthedRogueStrategy(ai); }
             static Strategy* stealth(PlayerbotAI* ai) { return new StealthStrategy(ai); }
             static Strategy* cc(PlayerbotAI* ai) { return new RogueCcStrategy(ai); }
-            static Strategy* combat(PlayerbotAI* ai) { return new CombatRogueStrategy(ai); }
-            static Strategy* assassination(PlayerbotAI* ai) { return new AssassinationRogueStrategy(ai); }
-            static Strategy* subtlety(PlayerbotAI* ai) { return new CombatRogueStrategy(ai); }
         };
 
         class RogueStrategyFactoryInternal : public NamedObjectContext<Strategy>
@@ -58,6 +48,7 @@ namespace ai
                 creators["combat"] = &rogue::RogueStrategyFactoryInternal::combat;
                 creators["subtlety"] = &rogue::RogueStrategyFactoryInternal::subtlety;
                 creators["assassin"] = &rogue::RogueStrategyFactoryInternal::assassination;
+                creators["stealthed"] = &rogue::RogueStrategyFactoryInternal::stealthed;
             }
 
         private:
@@ -65,6 +56,7 @@ namespace ai
             static Strategy* combat(PlayerbotAI* ai) { return new CombatRogueStrategy(ai); }
             static Strategy* subtlety(PlayerbotAI* ai) { return new CombatRogueStrategy(ai); }
             static Strategy* assassination(PlayerbotAI* ai) { return new AssassinationRogueStrategy(ai); }
+            static Strategy* stealthed(PlayerbotAI* ai) { return new StealthedRogueStrategy(ai); }
         };
     };
 };

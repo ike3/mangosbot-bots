@@ -12,7 +12,7 @@ namespace ai
 
     public:
         virtual void InitTriggers(std::list<TriggerNode*>& triggers);
-        virtual string getName() { return "generic"; }
+        virtual string getName() { return "rogue"; }
     };
 
     class DpsRogueStrategy : public GenericRogueStrategy
@@ -88,7 +88,7 @@ namespace ai
     class RogueCcStrategy : public Strategy
     {
     public:
-        RogueCcStrategy(PlayerbotAI* ai) : Strategy(ai) {}
+        RogueCcStrategy(PlayerbotAI* ai);
 
     public:
         virtual void InitTriggers(std::list<TriggerNode*> &triggers);

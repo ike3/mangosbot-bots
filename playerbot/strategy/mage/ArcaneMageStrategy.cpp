@@ -60,5 +60,14 @@ void ArcaneMageStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         "missile barrage",
         NextAction::array(0, new NextAction("arcane missiles", 15.0f), NULL)));
 
+    triggers.push_back(new TriggerNode(
+        "mana shield",
+        NextAction::array(0, new NextAction("mana shield", 20.0f), NULL)));
 }
 
+void ArcaneMageAoeStrategy::InitTriggers(std::list<TriggerNode*>& triggers)
+{
+    triggers.push_back(new TriggerNode(
+        "enemy too close for spell",
+        NextAction::array(0, new NextAction("arcane explosion", 60.0f), NULL)));
+}

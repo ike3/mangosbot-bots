@@ -62,6 +62,10 @@ void GenericHunterStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         "enemy is close",
         NextAction::array(0, new NextAction("wing clip", ACTION_HIGH), NULL)));
 
+    triggers.push_back(new TriggerNode(
+        "enemy is close",
+        NextAction::array(0, new NextAction("freezing trap", ACTION_HIGH + 3), NULL)));
+
     /*triggers.push_back(new TriggerNode(
         "enemy is close",
         NextAction::array(0, new NextAction("freezing trap", ACTION_HIGH + 5), NULL)));*/
@@ -76,7 +80,7 @@ void GenericHunterStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "hunters pet low health",
-        NextAction::array(0, new NextAction("mend pet", ACTION_HIGH + 2), NULL)));
+        NextAction::array(0, new NextAction("mend pet", ACTION_HIGH), NULL)));
 
     triggers.push_back(new TriggerNode(
         "switch to melee",
@@ -89,6 +93,14 @@ void GenericHunterStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
     triggers.push_back(new TriggerNode(
         "no ammo",
         NextAction::array(0, new NextAction("switch to melee", ACTION_HIGH + 1), new NextAction("say::no ammo", ACTION_HIGH), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "light aoe",
+        NextAction::array(0, new NextAction("frost trap", ACTION_HIGH + 1), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "medium aoe",
+        NextAction::array(0, new NextAction("explosive trap", ACTION_HIGH + 2), NULL)));
 }
 
 NextAction** HunterBoostStrategy::getDefaultActions()

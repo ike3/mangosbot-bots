@@ -19,6 +19,7 @@ namespace ai
     {
     public:
         CastScorchAction(PlayerbotAI* ai) : CastSpellAction(ai, "scorch") {}
+        virtual bool isUseful() { return GetTarget() && !ai->HasAura("fire vulnerability", GetTarget(), true); }
     };
 
     class CastFireBlastAction : public CastSpellAction
@@ -151,6 +152,9 @@ namespace ai
 		CastIceBlockAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "ice block") {}
 	};
 
+    BUFF_ACTION(CastIceBarrierAction, "ice barrier");
+    BUFF_ACTION(CastManaShieldAction, "mana shield");
+
     class CastMoltenArmorAction : public CastBuffSpellAction
     {
     public:
@@ -203,6 +207,10 @@ namespace ai
 	{
 	public:
 	    CastBlastWaveAction(PlayerbotAI* ai) : CastSpellAction(ai, "blast wave") {}
+        virtual bool isUseful()
+        {
+            return sServerFacade.IsDistanceLessOrEqualThan(AI_VALUE2(float, "distance", GetTargetName()), 10.0f);
+        }
 	};
 
 	class CastInvisibilityAction : public CastBuffSpellAction
@@ -235,4 +243,6 @@ namespace ai
     public:
         CastPresenceOfMindAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "presence of mind") {}
     };
+
+    SPELL_ACTION_U(CastArcaneExplosionAction, "arcane explosion", sServerFacade.IsDistanceLessOrEqualThan(AI_VALUE2(float, "distance", GetTargetName()), 10.0f));
 }

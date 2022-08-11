@@ -138,4 +138,8 @@ void DpsPaladinStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
     triggers.push_back(new TriggerNode(
         "light aoe",
         NextAction::array(0, new NextAction("avenging wrath", ACTION_HIGH + 9), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "enemy out of melee",
+        NextAction::array(0, new NextAction("adamantite grenade", ACTION_HIGH), NULL)));
 }

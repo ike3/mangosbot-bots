@@ -131,6 +131,15 @@ bool AttackersValue::IsPossibleTarget(Unit *attacker, Player *bot, float range)
     if (attacker && bot->duel && bot->duel->opponent && attacker->GetObjectGuid() == bot->duel->opponent->GetObjectGuid())
         duel = true;
 
+#ifndef MANGOSBOT_ZERO
+    Player* arenaEnemy = dynamic_cast<Player*>(attacker);
+    if (arenaEnemy)
+    {
+        if (arenaEnemy->InArena() && bot->InArena() && arenaEnemy->GetBGTeam() != bot->GetBGTeam())
+            duel = true;
+    }
+#endif
+
     return attacker &&
         attacker->IsInWorld() &&
         attacker->GetMapId() == bot->GetMapId() &&
@@ -141,6 +150,7 @@ bool AttackersValue::IsPossibleTarget(Unit *attacker, Player *bot, float range)
         attacker->IsVisibleForOrDetect(bot, bot->GetCamera().GetBody(), true) &&
 #ifdef CMANGOS
         !(attacker->IsStunned() && ai->HasAura("shackle undead", attacker)) &&
+        !ai->HasAura("gouge", attacker) &&
 #endif
 #ifdef MANGOS
         //!attacker->hasUnitState(UNIT_STAT_STUNNED) &&

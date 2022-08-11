@@ -29,6 +29,10 @@ namespace ai
         virtual string GetTargetName() { return "self target"; }
         virtual bool isUseful()
         {
+            bool hasStealth = ai->HasAura("stealth", bot);
+            if (hasStealth)
+                return false;
+
             // do not use with WSG flag
             return !ai->HasAura(23333, bot) && !ai->HasAura(23335, bot) && !ai->HasAura(34976, bot);
         }
@@ -36,7 +40,8 @@ namespace ai
         {
             if (ai->CastSpell("stealth", bot))
             {
-                ai->ChangeStrategy("-dps,-combat,-assassin,+stealthed", BOT_STATE_COMBAT);
+                ai->ChangeStrategy("+stealthed", BOT_STATE_COMBAT);
+                bot->InterruptSpell(CURRENT_MELEE_SPELL);
             }
             return true;
         }
@@ -57,11 +62,13 @@ namespace ai
         CheckStealthAction(PlayerbotAI* ai) : Action(ai, "check stealth") {}
         virtual bool isPossible() { return true; }
         virtual bool Execute(Event event) {
-            if (ai->HasAura("stealth", bot))
+            bool hasStealth = ai->HasAura("stealth", bot);
+            if (hasStealth)
             {
-                ai->ChangeStrategy("-dps,-combat,-assassin,+stealthed", BOT_STATE_COMBAT);
+                if (!ai->HasStrategy("stealthed", BOT_STATE_COMBAT))
+                    ai->ChangeStrategy("+stealthed", BOT_STATE_COMBAT);
             }
-            else
+            else if (!hasStealth)
             {
                 ai->ResetStrategies();
                 //ai->ChangeStrategy("+dps,-stealthed", BOT_STATE_COMBAT);

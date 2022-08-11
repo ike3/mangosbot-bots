@@ -167,6 +167,7 @@ namespace ai
             creators["goblin sapper"] = &ActionContext::goblin_sapper;
             creators["oil of immolation"] = &ActionContext::oil_of_immolation;
             creators["dark rune"] = &ActionContext::dark_rune;
+            creators["adamantite grenade"] = &ActionContext::adamantite_grenade;
 
             // BG Tactics
             creators["bg tactics"] = &ActionContext::bg_tactics;
@@ -363,6 +364,7 @@ namespace ai
         static Action* goblin_sapper(PlayerbotAI* ai) { return new CastGoblinSappersAction(ai); }
         static Action* oil_of_immolation(PlayerbotAI* ai) { return new CastOilOfImmolationAction(ai); }
         static Action* dark_rune(PlayerbotAI* ai) { return new DarkRuneAction(ai); }
+        static Action* adamantite_grenade(PlayerbotAI* ai) { return new UseAdamantiteGrenadeAction(ai); }
         
         // BG Tactics
         static Action* bg_tactics(PlayerbotAI* ai) { return new BGTactics(ai); }

@@ -11,6 +11,10 @@ using namespace ai;
 
 bool EnemyPlayerNear::IsActive()
 {
+    Unit* current = AI_VALUE(Unit*, "current target");
+    if (current)
+        return current != AI_VALUE(Unit*, "enemy player target");
+
     return AI_VALUE(Unit*, "enemy player target");
 }
 

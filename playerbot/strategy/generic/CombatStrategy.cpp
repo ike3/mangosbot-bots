@@ -70,13 +70,9 @@ float AvoidAoeStrategyMultiplier::GetValue(Action* action)
     else if (spellId && pSpellInfo->Targets & TARGET_FLAG_SOURCE_LOCATION)
         return 1.0f;
 
-    uint32 castTime = GetSpellCastTime(pSpellInfo
-#ifdef CMANGOS
-        , bot
-#endif
-    );
+    uint32 CastingTime = !IsChanneledSpell(pSpellInfo) ? GetSpellCastTime(pSpellInfo, bot) : GetSpellDuration(pSpellInfo);
 
-    if (AI_VALUE2(bool, "has area debuff", "self target") && spellId && castTime > 0)
+    if (AI_VALUE2(bool, "has area debuff", "self target") && spellId && CastingTime > 0)
     {
         return 0.0f;
     }

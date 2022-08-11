@@ -311,6 +311,33 @@ bool UseItemAction::UseItem(Item* item, ObjectGuid goGuid, Item* itemTarget, Uni
        }
    }
 
+   if (unitTarget)
+   {
+       uint32 spellid = 0;
+       for (int i = 0; i < MAX_ITEM_PROTO_SPELLS; ++i)
+       {
+           if (item->GetProto()->Spells[i].SpellTrigger == ITEM_SPELLTRIGGER_ON_USE)
+           {
+               spellid = item->GetProto()->Spells[i].SpellId;
+               break;
+           }
+       }
+
+       if (SpellEntry const* spellInfo = sSpellTemplate.LookupEntry<SpellEntry>(spellid))
+       {
+           if (spellInfo->Targets & TARGET_FLAG_DEST_LOCATION)
+           {
+               targetFlag = TARGET_FLAG_DEST_LOCATION;
+               Position pos = unitTarget->GetPosition();
+               SpellCastTargets targets;
+               targets.setDestination(pos.x, pos.y, pos.z);
+               packet << targetFlag;
+               targets.write(packet);
+               targetSelected = true;
+           }
+       }
+   }
+
    if (uint32 questid = item->GetProto()->StartQuest)
    {
       Quest const* qInfo = sObjectMgr.GetQuestTemplate(questid);

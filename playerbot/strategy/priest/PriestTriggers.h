@@ -74,8 +74,7 @@ namespace ai
 #ifdef CMANGOS
             bot->IsInGroup((Player*)GetTarget()) &&
 #endif
-            ai->GetBuffedCount((Player*)GetTarget(), "prayer of fortitude") < 4 &&
-            !ai->GetBuffedCount((Player*)GetTarget(), "power word: fortitude")
+            (ai->GetBuffedCount((Player*)GetTarget(), "prayer of fortitude") + ai->GetBuffedCount((Player*)GetTarget(), "power word: fortitude")) < 4;
             ; }
     };
 

@@ -116,12 +116,16 @@ void GenericMageStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("reach spell", ACTION_MOVE + 9), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "enemy is close",
-        NextAction::array(0, new NextAction("frost nova", 50.0f), NULL)));
+        "enemy ten yards",
+        NextAction::array(0, new NextAction("frost nova", 61.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
         "counterspell on enemy healer",
         NextAction::array(0, new NextAction("counterspell on enemy healer", 40.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "counterspell",
+        NextAction::array(0, new NextAction("counterspell", 40.0f), NULL)));
 
 	triggers.push_back(new TriggerNode(
 		"critical health",
@@ -137,19 +141,23 @@ void GenericMageStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "low mana",
-        NextAction::array(0, new NextAction("evocation", ACTION_EMERGENCY + 5), NULL)));
+        NextAction::array(0, new NextAction("evocation", ACTION_HIGH - 1), NULL)));
 
     triggers.push_back(new TriggerNode(
         "fire ward",
-        NextAction::array(0, new NextAction("fire ward", ACTION_EMERGENCY), NULL)));
+        NextAction::array(0, new NextAction("fire ward", ACTION_HIGH), NULL)));
 
     triggers.push_back(new TriggerNode(
         "frost ward",
-        NextAction::array(0, new NextAction("frost ward", ACTION_EMERGENCY), NULL)));
+        NextAction::array(0, new NextAction("frost ward", ACTION_HIGH), NULL)));
 
     triggers.push_back(new TriggerNode(
         "blink",
         NextAction::array(0, new NextAction("blink", 60.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "target critical health",
+        NextAction::array(0, new NextAction("fire blast", ACTION_HIGH + 10), NULL)));
 }
 
 MageCureStrategy::MageCureStrategy(PlayerbotAI* ai) : Strategy(ai)

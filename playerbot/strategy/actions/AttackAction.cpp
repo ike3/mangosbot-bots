@@ -12,7 +12,7 @@ bool AttackAction::Execute(Event event)
 {
     Unit* target = GetTarget();
 
-    if (!target)
+    if (!target || !target->IsInWorld() || target->GetMapId() != bot->GetMapId())
         return false;
 
     Unit* victim = bot->GetVictim();
@@ -122,6 +122,10 @@ bool AttackAction::Attack(Unit* target)
 
     bool attacked = bot->Attack(target, !ai->IsRanged(bot));
     ai->ChangeEngine(BOT_STATE_COMBAT);
+
+    // disable auto attack in stealth
+    if (ai->HasAura("stealth", bot) || ai->HasAura("prowl", bot))
+        bot->MeleeAttackStop(target);
 
     return attacked;
 }

@@ -48,10 +48,15 @@ bool NearestEnemyPlayersValue::AcceptUnit(Unit* unit)
     return (enemy &&
         enemy->IsWithinDist(bot, EnemyPlayerValue::GetMaxAttackDistance(bot), false) &&
         enemy->GetMapId() == bot->GetMapId() &&
+#ifdef MANGOSBOT_ZERO
         ai->IsOpposing(enemy) &&
+#else
+        (ai->IsOpposing(enemy) || (bot->InArena() && enemy->InArena() && bot->GetBGTeam() != enemy->GetBGTeam())) &&
+#endif
         enemy->IsPvP() &&
         !enemy->IsPolymorphed() &&
         !ai->HasAura("sap", enemy) &&
+        !ai->HasAura("gouge", enemy) &&
         !sServerFacade.IsFeared(enemy) &&
         !sPlayerbotAIConfig.IsInPvpProhibitedZone(sServerFacade.GetAreaId(enemy)) &&
         !enemy->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_1) &&
@@ -60,7 +65,7 @@ bool NearestEnemyPlayersValue::AcceptUnit(Unit* unit)
         //!enemy->HasStealthAura() &&
         //!enemy->HasInvisibilityAura() &&
         enemy->IsVisibleForOrDetect(bot, bot->GetCamera().GetBody(), false) &&
-        !(enemy->HasAuraType(SPELL_AURA_SPIRIT_OF_REDEMPTION))
+        !enemy->HasAuraType(SPELL_AURA_SPIRIT_OF_REDEMPTION)
         );
 }
 
@@ -201,7 +206,7 @@ Unit* EnemyPlayerValue::Calculate()
         {
             if (Unit* pMember = itr->getSource())
             {
-                if (pMember == bot)
+                if (pMember == bot || pMember->GetMapId() != bot->GetMapId())
                     continue;
 
                 if (sServerFacade.GetDistance2d(bot, pMember) > 30.0f)
