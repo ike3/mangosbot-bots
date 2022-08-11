@@ -3306,7 +3306,7 @@ bool BGTactics::selectObjective(bool reset)
             {
                 // copy of alliance tactics
                 uint32 role = context->GetValue<uint32>("bg role")->Get();
-                bool defender = role < 4;
+                bool defender = role < 2;
 
                 // pick 3 objectives
                 std::vector<GameObject*> objectives;
@@ -3317,23 +3317,33 @@ bool BGTactics::selectObjective(bool reset)
 
                     for (const auto& objective : AB_AttackObjectives)
                     {
-                        if (bg->IsActiveEvent(objective.first, BG_AB_NODE_STATUS_NEUTRAL) || ((!defender || !objectives.size()) && bg->IsActiveEvent(objective.first, BG_AB_NODE_STATUS_ALLY_OCCUPIED)) || ((defender || !objectives.size()) && bg->IsActiveEvent(objective.first, BG_AB_NODE_STATUS_ALLY_CONTESTED)))
+                        if ((!defender && (bg->IsActiveEvent(objective.first, BG_AB_NODE_STATUS_NEUTRAL) || bg->IsActiveEvent(objective.first, BG_AB_NODE_STATUS_ALLY_OCCUPIED) || bg->IsActiveEvent(objective.first, BG_AB_NODE_STATUS_ALLY_CONTESTED))) ||
+                            (defender && (bg->IsActiveEvent(objective.first, BG_AB_NODE_STATUS_HORDE_CONTESTED) || bg->IsActiveEvent(objective.first, BG_AB_NODE_STATUS_HORDE_OCCUPIED))))
                         {
                             if (GameObject* pGO = bot->GetMap()->GetGameObject(bg->GetSingleGameObjectGuid(objective.first, BG_AB_NODE_STATUS_NEUTRAL)))
                             {
                                 float const distance = sqrt(bot->GetDistance(pGO));
-                                if (attackObjectiveDistance > distance)
-                                {
-                                    // do not pick if already in list
-                                    vector<GameObject*>::iterator f = find(objectives.begin(), objectives.end(), pGO);
-                                    if (f != objectives.end())
-                                        continue;
+                                // do not pick if already in list
+                                vector<GameObject*>::iterator f = find(objectives.begin(), objectives.end(), pGO);
+                                if (f != objectives.end())
+                                    continue;
 
-                                    objectives.push_back(pGO);
-                                    attackObjectiveDistance = distance;
-                                    //ostringstream out; out << "Possible Attack Point #" << objective.first;
-                                    //bot->Say(out.str(), LANG_UNIVERSAL);
-                                }
+                                objectives.push_back(pGO);
+                                attackObjectiveDistance = distance;
+                                //ostringstream out; out << "Possible Attack Point #" << objective.first;
+                                //bot->Say(out.str(), LANG_UNIVERSAL);
+                                //if (attackObjectiveDistance > distance)
+                                //{
+                                //    // do not pick if already in list
+                                //    vector<GameObject*>::iterator f = find(objectives.begin(), objectives.end(), pGO);
+                                //    if (f != objectives.end())
+                                //        continue;
+
+                                //    objectives.push_back(pGO);
+                                //    attackObjectiveDistance = distance;
+                                //    //ostringstream out; out << "Possible Attack Point #" << objective.first;
+                                //    //bot->Say(out.str(), LANG_UNIVERSAL);
+                                //}
                             }
                         }
                     }
@@ -3348,7 +3358,7 @@ bool BGTactics::selectObjective(bool reset)
         else // ALLIANCE
         {
             uint32 role = context->GetValue<uint32>("bg role")->Get();
-            bool defender = role < 4;
+            bool defender = role < 3;
 
             // pick 3 objectives
             std::vector<GameObject*> objectives;
@@ -3359,24 +3369,35 @@ bool BGTactics::selectObjective(bool reset)
 
                 for (const auto& objective : AB_AttackObjectives)
                 {
-                    if (bg->IsActiveEvent(objective.first, BG_AB_NODE_STATUS_NEUTRAL) || ((!defender || !objectives.size()) && bg->IsActiveEvent(objective.first, BG_AB_NODE_STATUS_HORDE_OCCUPIED)) || ((defender || !objectives.size()) && bg->IsActiveEvent(objective.first, BG_AB_NODE_STATUS_HORDE_CONTESTED)))
+                    if ((!defender && (bg->IsActiveEvent(objective.first, BG_AB_NODE_STATUS_NEUTRAL) || bg->IsActiveEvent(objective.first, BG_AB_NODE_STATUS_HORDE_OCCUPIED) || bg->IsActiveEvent(objective.first, BG_AB_NODE_STATUS_HORDE_CONTESTED))) ||
+                        (defender && (bg->IsActiveEvent(objective.first, BG_AB_NODE_STATUS_ALLY_CONTESTED) || bg->IsActiveEvent(objective.first, BG_AB_NODE_STATUS_ALLY_OCCUPIED))))
                     {
                         if (GameObject* pGO = bot->GetMap()->GetGameObject(bg->GetSingleGameObjectGuid(objective.first, BG_AB_NODE_STATUS_NEUTRAL)))
                         {
                             float const distance = sqrt(bot->GetDistance(pGO));
-                            if (attackObjectiveDistance > distance)
-                            {
-                                // do not pick if already in list
-                                vector<GameObject*>::iterator f = find(objectives.begin(), objectives.end(), pGO);
-                                if (f != objectives.end())
-                                    continue;
+                            // do not pick if already in list
+                            vector<GameObject*>::iterator f = find(objectives.begin(), objectives.end(), pGO);
+                            if (f != objectives.end())
+                                continue;
 
-                                objectives.push_back(pGO);
-                                //pAttackObjectiveObject = pGO;
-                                attackObjectiveDistance = distance;
-                                //ostringstream out; out << "Possible Attack Point #" << objective.first;
-                                //bot->Say(out.str(), LANG_UNIVERSAL);
-                            }
+                            objectives.push_back(pGO);
+                            //pAttackObjectiveObject = pGO;
+                            attackObjectiveDistance = distance;
+                            //ostringstream out; out << "Possible Attack Point #" << objective.first;
+                            //bot->Say(out.str(), LANG_UNIVERSAL);
+                            //if (attackObjectiveDistance > distance)
+                            //{
+                            //    // do not pick if already in list
+                            //    vector<GameObject*>::iterator f = find(objectives.begin(), objectives.end(), pGO);
+                            //    if (f != objectives.end())
+                            //        continue;
+
+                            //    objectives.push_back(pGO);
+                            //    //pAttackObjectiveObject = pGO;
+                            //    attackObjectiveDistance = distance;
+                            //    //ostringstream out; out << "Possible Attack Point #" << objective.first;
+                            //    //bot->Say(out.str(), LANG_UNIVERSAL);
+                            //}
                         }
                     }
                 }
@@ -4594,6 +4615,8 @@ bool BGTactics::atFlag(std::vector<BattleBotPath*> const& vPaths, std::vector<ui
             //ai->SetNextCheckDelay(10000);
 
             // cast banner spell
+            ai->StopMoving();
+
             SpellEntry const *spellInfo = sServerFacade.LookupSpellInfo(SPELL_CAPTURE_BANNER);
             if (!spellInfo)
                 return false;
@@ -4673,6 +4696,8 @@ bool BGTactics::atFlag(std::vector<BattleBotPath*> const& vPaths, std::vector<ui
                     SpellEntry const* spellInfo = sServerFacade.LookupSpellInfo(SPELL_CAPTURE_BANNER);
                     if (!spellInfo)
                         return false;
+
+                    ai->StopMoving();
 
                     Spell* spell = new Spell(bot, spellInfo, false);
                     spell->m_targets.setGOTarget(go);
