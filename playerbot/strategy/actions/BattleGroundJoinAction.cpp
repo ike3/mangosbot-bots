@@ -347,7 +347,7 @@ bool BGJoinAction::shouldJoinBg(BattleGroundQueueTypeId queueTypeId, BattleGroun
         return false;
 
 #ifndef MANGOSBOT_ZERO
-    if (!hasPlayers && isArena && (!noLag || urand(0, 10) || type != ARENA_TYPE_2v2))
+    if (!hasPlayers && isArena && (!noLag || /*urand(0, 10) ||*/ type != ARENA_TYPE_2v2))
         return false;
 #endif
 
@@ -773,7 +773,7 @@ bool FreeBGJoinAction::shouldJoinBg(BattleGroundQueueTypeId queueTypeId, BattleG
         return false;
 
 #ifndef MANGOSBOT_ZERO
-    if (!hasPlayers && isArena && (!noLag || urand(0, 10) || type != ARENA_TYPE_2v2))
+    if (!hasPlayers && isArena && (!noLag || !urand(0, 2)))
         return false;
 #endif
 
