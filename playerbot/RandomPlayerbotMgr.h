@@ -147,6 +147,7 @@ class RandomPlayerbotMgr : public PlayerbotHolder
         void CheckBgQueue();
         void CheckLfgQueue();
         void CheckPlayers();
+        static Item* CreateTempItem(uint32 item, uint32 count, Player const* player, uint32 randomPropertyId = 0);
 
         bool AddRandomBot(uint32 bot);
 

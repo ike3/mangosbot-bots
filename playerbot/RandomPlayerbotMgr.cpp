@@ -417,9 +417,7 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed, bool minimal)
 
     activityPercentage += activityPercentageMod;
     activityPercentage = std::max(0.0f, std::min(100.0f, activityPercentage));
-    setActivityPercentage(activityPercentage);
-
-    sLog.outBasic("Avg Diff: %u. Activity: % 7.3f %% (% 7.3f %%) bots active: %d", sWorld.GetAverageDiff(), activityPercentage, activityPercentageMod, activeBots);
+    setActivityPercentage(activityPercentage);    
 
     if (sPlayerbotAIConfig.hasLog("activity_pid.csv"))
     {
@@ -1176,6 +1174,33 @@ void RandomPlayerbotMgr::CheckLfgQueue()
         sLog.outBasic("LFG Queue check finished. No real players in queue.");
     return;
 }
+
+Item* RandomPlayerbotMgr::CreateTempItem(uint32 item, uint32 count, Player const* player, uint32 randomPropertyId)
+{
+    if (count < 1)
+        return nullptr;                                        // don't create item at zero count
+
+    if (ItemPrototype const* pProto = ObjectMgr::GetItemPrototype(item))
+    {
+        if (count > pProto->GetMaxStackSize())
+            count = pProto->GetMaxStackSize();
+
+        MANGOS_ASSERT(count != 0 && "pProto->Stackable == 0 but checked at loading already");
+
+        Item* pItem = NewItemOrBag(pProto);
+        if (pItem->Create(0, item, player))
+        {
+            pItem->SetCount(count);
+            if (uint32 randId = randomPropertyId ? randomPropertyId : Item::GenerateItemRandomPropertyId(item))
+                pItem->SetItemRandomProperties(randId);
+
+            return pItem;
+        }
+        delete pItem;
+    }
+    return nullptr;
+}
+
 
 void RandomPlayerbotMgr::CheckPlayers()
 {
