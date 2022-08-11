@@ -30,10 +30,11 @@ namespace ai
             }
             else
             {
+                float distanceToTarget = sServerFacade.GetDistance2d(bot, target);
                 combatReach = bot->GetCombinedCombatReach(target, false);
                 bool inLos = bot->IsWithinLOSInMap(target, true);
                 bool isFriend = sServerFacade.IsFriendlyTo(bot, target);
-                float chaseDist = inLos ? distance : isFriend ? distance / 2 : distance;
+                float chaseDist = inLos ? distance : isFriend ? std::min(distanceToTarget * 0.9f, distance) : distance;
                 float coeff = 0.8f;
                 if (!isFriend)
                     coeff = 1.0f;
