@@ -171,14 +171,17 @@ namespace ai
        virtual bool Execute(Event event)
        {
            uint32 goblinSapper = 10646;
+           if (bot->GetLevel() >= 68)
+               goblinSapper = 23827;
+
            bool added = bot->HasItemCount(goblinSapper, 1);
            if (!added)
-               added = bot->StoreNewItemInBestSlots(goblinSapper, 10);
+               added = bot->StoreNewItemInInventorySlot(goblinSapper, 10);
 
            if (!added)
                return false;
 
-           list<Item*> items = AI_VALUE2(list<Item*>, "inventory items", "goblin sapper charge");
+           list<Item*> items = AI_VALUE2(list<Item*>, "inventory items", goblinSapper == 10646 ? "goblin sapper charge" : "super sapper charge");
            list<Item*>::iterator i = items.begin();
            Item* item = *i;
 
@@ -204,7 +207,7 @@ namespace ai
            uint32 oil = 8956;
            bool added = bot->HasItemCount(oil, 1);
            if (!added)
-               added = bot->StoreNewItemInBestSlots(oil, 1);
+               added = bot->StoreNewItemInInventorySlot(oil, 1);
 
            if (!added)
                return false;
@@ -239,7 +242,7 @@ namespace ai
            uint32 grenade = 23737;
            bool added = bot->HasItemCount(grenade, 1);
            if (!added)
-               added = bot->StoreNewItemInBestSlots(grenade, 1);
+               added = bot->StoreNewItemInInventorySlot(grenade, 1);
 
            if (!added)
                return false;
@@ -273,7 +276,7 @@ namespace ai
            uint32 rune = 20520;
            bool added = bot->HasItemCount(rune, 1);
            if (!added)
-               added = bot->StoreNewItemInBestSlots(rune, 20);
+               added = bot->StoreNewItemInInventorySlot(rune, 20);
 
            if (!added)
                return false;
