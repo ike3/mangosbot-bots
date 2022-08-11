@@ -24,8 +24,6 @@ void MeleeCombatStrategy::InitTriggers(list<TriggerNode*> &triggers)
 
 void SetBehindCombatStrategy::InitTriggers(list<TriggerNode*> &triggers)
 {
-    CombatStrategy::InitTriggers(triggers);
-
     triggers.push_back(new TriggerNode(
         "not behind target",
         NextAction::array(0, new NextAction("set behind", 59.0f), NULL)));
