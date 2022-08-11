@@ -29,6 +29,7 @@ namespace ai
                 creators["pull"] = &mage::StrategyFactoryInternal::pull;
                 creators["fire aoe"] = &mage::StrategyFactoryInternal::fire_aoe;
                 creators["frost aoe"] = &mage::StrategyFactoryInternal::frost_aoe;
+                creators["arcane aoe"] = &mage::StrategyFactoryInternal::arcane_aoe;
                 creators["cure"] = &mage::StrategyFactoryInternal::cure;
                 creators["buff"] = &mage::StrategyFactoryInternal::buff;
                 creators["boost"] = &mage::StrategyFactoryInternal::boost;
@@ -40,6 +41,7 @@ namespace ai
             static Strategy* pull(PlayerbotAI* ai) { return new PullStrategy(ai, "shoot"); }
             static Strategy* fire_aoe(PlayerbotAI* ai) { return new FireMageAoeStrategy(ai); }
             static Strategy* frost_aoe(PlayerbotAI* ai) { return new FrostMageAoeStrategy(ai); }
+            static Strategy* arcane_aoe(PlayerbotAI* ai) { return new ArcaneMageAoeStrategy(ai); }
             static Strategy* cure(PlayerbotAI* ai) { return new MageCureStrategy(ai); }
             static Strategy* buff(PlayerbotAI* ai) { return new MageBuffStrategy(ai); }
             static Strategy* boost(PlayerbotAI* ai) { return new MageBoostStrategy(ai); }
@@ -112,10 +114,12 @@ namespace ai
                 creators["fire ward"] = &TriggerFactoryInternal::fire_ward;
                 creators["frost ward"] = &TriggerFactoryInternal::frost_ward;
                 creators["blink"] = &TriggerFactoryInternal::blink;
+                creators["mana shield"] = &TriggerFactoryInternal::mana_shield;
 
             }
 
         private:
+            static Trigger* mana_shield(PlayerbotAI* ai) { return new ManaShieldTrigger(ai); }
             static Trigger* blink(PlayerbotAI* ai) { return new BlinkTrigger(ai); }
             static Trigger* frost_ward(PlayerbotAI* ai) { return new FrostWardTrigger(ai); }
             static Trigger* fire_ward(PlayerbotAI* ai) { return new FireWardTrigger(ai); }
@@ -194,9 +198,15 @@ namespace ai
                 creators["fire ward"] = &AiObjectContextInternal::fire_ward;
                 creators["frost ward"] = &AiObjectContextInternal::frost_ward;
                 creators["blink"] = &AiObjectContextInternal::blink;
+                creators["ice barrier"] = &AiObjectContextInternal::ice_barrier;
+                creators["mana shield"] = &AiObjectContextInternal::mana_shield;
+                creators["arcane explosion"] = &AiObjectContextInternal::arcane_explosion;
             }
 
         private:
+            static Action* arcane_explosion(PlayerbotAI* ai) { return new CastArcaneExplosionAction(ai); }
+            static Action* mana_shield(PlayerbotAI* ai) { return new CastManaShieldAction(ai); }
+            static Action* ice_barrier(PlayerbotAI* ai) { return new CastIceBarrierAction(ai); }
             static Action* blink(PlayerbotAI* ai) { return new CastBlinkAction(ai); }
             static Action* frost_ward(PlayerbotAI* ai) { return new CastFrostWardAction(ai); }
             static Action* fire_ward(PlayerbotAI* ai) { return new CastFireWardAction(ai); }

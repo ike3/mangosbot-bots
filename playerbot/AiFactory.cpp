@@ -209,11 +209,11 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
             break;
         case CLASS_MAGE:
             if (tab == 0)
-                engine->addStrategies("arcane", "threat", NULL);
+                engine->addStrategies("arcane", "arcane aoe", "threat", NULL);
             else if (tab == 1)
                 engine->addStrategies("fire", "fire aoe", "threat", NULL);
             else
-                engine->addStrategies("frost", "frost aoe", "threat", "dps aoe", NULL);
+                engine->addStrategies("frost", "frost aoe", "threat", NULL);
 
             engine->addStrategies("dps", "dps assist", "flee", "cure", "ranged", "cc", NULL);
             break;

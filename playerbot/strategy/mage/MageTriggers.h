@@ -9,7 +9,7 @@ namespace ai
     class BlinkTrigger : public Trigger
     {
     public:
-        BlinkTrigger(PlayerbotAI* ai) : Trigger(ai, "blink") {}
+        BlinkTrigger(PlayerbotAI* ai) : Trigger(ai, "blink", 2) {}
         virtual bool IsActive()
         {
             return bot->HasAuraType(SPELL_AURA_MOD_ROOT) ||
@@ -49,7 +49,7 @@ namespace ai
 
     class PyroblastTrigger : public DebuffTrigger {
     public:
-        PyroblastTrigger(PlayerbotAI* ai) : DebuffTrigger(ai, "pyroblast") {}
+        PyroblastTrigger(PlayerbotAI* ai) : DebuffTrigger(ai, "pyroblast", 10) {}
     };
 
     class HotStreakTrigger : public HasAuraTrigger {
@@ -125,5 +125,12 @@ namespace ai
     {
     public:
         PresenceOfMindTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "presence of mind") {}
+    };
+
+    class ManaShieldTrigger : public BuffTrigger
+    {
+    public:
+        ManaShieldTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "mana shield", 5) {}
+        virtual bool IsActive();
     };
 }
