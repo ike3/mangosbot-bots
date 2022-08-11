@@ -117,6 +117,10 @@ void GenericRogueStrategy::InitTriggers(std::list<TriggerNode*>& triggers)
         NextAction::array(0, new NextAction("sprint", ACTION_HIGH + 10), NULL)));
 
     triggers.push_back(new TriggerNode(
+        "enemy out of melee",
+        NextAction::array(0, new NextAction("adamantite grenade", ACTION_HIGH), NULL)));
+
+    triggers.push_back(new TriggerNode(
         "cloak of shadows",
         NextAction::array(0, new NextAction("cloak of shadows", ACTION_INTERRUPT + 5), NULL)));
 

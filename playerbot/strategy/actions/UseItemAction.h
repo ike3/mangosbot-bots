@@ -220,6 +220,41 @@ namespace ai
        }
    };
 
+   // oil of immolation
+   class UseAdamantiteGrenadeAction : public UseItemAction
+   {
+   public:
+       UseAdamantiteGrenadeAction(PlayerbotAI* ai) : UseItemAction(ai, "adamantite grenade") {}
+       virtual bool isPossible() { return true; }
+       virtual bool isUseful()
+       {
+           return bot->GetLevel() >= 60 && bot->GetSkillValue(202) >= 325;
+       }
+       virtual bool Execute(Event event)
+       {
+           Unit* target = AI_VALUE(Unit*, "current target");
+           if (!target)
+               return false;
+
+           uint32 grenade = 23737;
+           bool added = bot->HasItemCount(grenade, 1);
+           if (!added)
+               added = bot->StoreNewItemInBestSlots(grenade, 1);
+
+           if (!added)
+               return false;
+
+           list<Item*> items = AI_VALUE2(list<Item*>, "inventory items", "adamantite grenade");
+           list<Item*>::iterator i = items.begin();
+           Item* item = *i;
+
+           if (!item)
+               return false;
+
+           return UseItem(item, ObjectGuid(), nullptr, target);
+       }
+   };
+
    // dark rune
    class DarkRuneAction : public UseItemAction
    {
