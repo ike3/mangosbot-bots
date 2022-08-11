@@ -149,6 +149,20 @@ bool Engine::DoNextAction(Unit* unit, int depth, bool minimal)
 
             if (!action)
             {
+                if (ai->HasStrategy("debug action", BOT_STATE_NON_COMBAT))
+                {
+                    ostringstream out;
+                    out << "try: ";
+                    out << actionNode->getName();
+                    out << " unknown (";
+
+                    out << relevance << ")";
+
+                    if (!event.getSource().empty())
+                        out << " [" << event.getSource() << "]";
+
+                    ai->TellMasterNoFacing(out);
+                }
                 LogAction("A:%s - UNKNOWN", actionNode->getName().c_str());
             }
             else if (action->isUseful())
