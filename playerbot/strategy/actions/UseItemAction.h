@@ -131,7 +131,7 @@ namespace ai
    public:
        UseHearthStone(PlayerbotAI* ai) : UseItemAction(ai, "hearthstone", true) {}
 
-       bool isUseful() { return !bot->InBattleGround(); }
+       bool isUseful() { return !bot->InBattleGround() && sServerFacade.IsSpellReady(bot, 8690); }
        
        virtual bool Execute(Event event);
    };
