@@ -156,6 +156,7 @@ public:
     ~botPIDImpl();
     double calculate(double setpoint, double pv);
     void adjust(double Kp, double Kd, double Ki) {_Kp = Kp;_Kd = Kd;_Ki = Ki;}
+    void reset() { _integral = 0; }
 
 private:
     double _dt;
@@ -176,6 +177,10 @@ botPID::botPID(double dt, double max, double min, double Kp, double Kd, double K
 void botPID::adjust(double Kp, double Kd, double Ki)
 {
     pimpl->adjust(Kp, Kd, Ki);
+}
+void botPID::reset()
+{
+    pimpl->reset();
 }
 double botPID::calculate(double setpoint, double pv)
 {
@@ -229,8 +234,8 @@ double botPIDImpl::calculate(double setpoint, double pv)
         output = _min;
 
     //Reset the integral when the error crossses 0 to prevent integrator windup.
-    if ((error > 0) != (_pre_error > 0))
-        _integral = 0;
+    //if ((error > 0) != (_pre_error > 0))
+    //    _integral = 0;
 
     // Save error to previous error
     _pre_error = error;
@@ -412,11 +417,17 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed, bool minimal)
         return;
   
     float activityPercentage = getActivityPercentage();
-    //    % increase/decrease           wanted diff, current diff
-    float activityPercentageMod = pid.calculate(sRandomPlayerbotMgr.GetPlayers().empty() ? 200 : 100, sWorld.GetAverageDiff());
+
+    if (activityPercentage >= 100.0f || activityPercentage <= 0.0f) pid.reset(); //Stop integer buildup during max/min activity
+
+    //    % increase/decrease                   wanted diff                                         , current diff
+    float activityPercentageMod = pid.calculate(sRandomPlayerbotMgr.GetPlayers().empty() ? 200 : 100, sWorld.GetCurrentDiff());
 
     activityPercentage += activityPercentageMod;
+
+    //Cap the percentage between 0 and 100.
     activityPercentage = std::max(0.0f, std::min(100.0f, activityPercentage));
+
     setActivityPercentage(activityPercentage);    
 
     if (sPlayerbotAIConfig.hasLog("activity_pid.csv"))
@@ -429,7 +440,9 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed, bool minimal)
 
         dummy.printWKT(out);
 
+        out << sWorld.GetCurrentDiff() << ",";
         out << sWorld.GetAverageDiff() << ",";
+        out << sWorld.GetMaxDiff() << ",";
         out << activityPercentage << ",";
         out << activityPercentageMod << ",";
         out << activeBots << ",";
