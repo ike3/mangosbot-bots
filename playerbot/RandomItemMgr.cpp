@@ -1352,6 +1352,24 @@ void RandomItemMgr::BuildItemInfoCache()
                 if (slot == EQUIPMENT_SLOT_BODY && statW <= 0)
                     statW = 1;
 
+                // warriors only plate >= 40 lvl
+                if (proto->SubClass == ITEM_SUBCLASS_ARMOR_MAIL && cacheInfo->minLevel >= 40 && clazz == CLASS_WARRIOR)
+                    statW = 0;
+
+                // paladin tank/dps only plate >= 40 lvl
+                if (proto->SubClass == ITEM_SUBCLASS_ARMOR_MAIL && cacheInfo->minLevel >= 40 && clazz == CLASS_PALADIN && spec != 4)
+                    statW = 0;
+
+                // some trinkets have no stats
+                if (cacheInfo->slot == EQUIPMENT_SLOT_TRINKET1 ||
+                    cacheInfo->slot == EQUIPMENT_SLOT_TRINKET2)
+                {
+                    if (statW == 0 && proto->AllowableClass == uint32(clazz) && proto->Spells[0].SpellId)
+                    {
+                        statW = (uint32)(proto->Quality + proto->ItemLevel);
+                    }
+                }
+
                 // set stat weight = 1 for items that can be equipped but have no proper stats
                 //statWeight.weight = statW;
                 // save item statWeight into ItemCache

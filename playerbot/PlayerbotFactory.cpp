@@ -1045,7 +1045,7 @@ bool PlayerbotFactory::CanEquipItem(ItemPrototype const* proto, uint32 desiredQu
 void PlayerbotFactory::InitEquipment(bool incremental)
 {
     bool isRandomBot = sRandomPlayerbotMgr.IsRandomBot(bot) && bot->GetPlayerbotAI() && !bot->GetPlayerbotAI()->HasRealPlayerMaster() && !bot->GetPlayerbotAI()->IsInRealGuild();
-    if (isRandomBot && !incremental)
+    if (isRandomBot || !incremental)
     {
         DestroyItemsVisitor visitor(bot);
         IterateItems(&visitor, ITERATE_ITEMS_IN_EQUIP);
@@ -1300,7 +1300,7 @@ void PlayerbotFactory::InitEquipment(bool incremental)
                     }
 
                     // add one hand weapons for casters
-                    if ((specId == 4 || (bot->getClass() == CLASS_DRUID || bot->getClass() == CLASS_PRIEST || bot->getClass() == CLASS_MAGE || bot->getClass() == CLASS_WARLOCK || bot->getClass() == CLASS_ROGUE || bot->getClass() == CLASS_SHAMAN)) && slot == EQUIPMENT_SLOT_MAINHAND)
+                    if ((specId == 4 || (bot->getClass() == CLASS_DRUID || bot->getClass() == CLASS_PRIEST || bot->getClass() == CLASS_MAGE || bot->getClass() == CLASS_WARLOCK || (specId == 20 || specId == 22))) && slot == EQUIPMENT_SLOT_MAINHAND)
                     {
                         vector<uint32> oneHanded = sRandomItemMgr.Query(level, bot->getClass(), uint8(specId), EQUIPMENT_SLOT_OFFHAND, q);
                         if (oneHanded.size())
@@ -2189,6 +2189,80 @@ void PlayerbotFactory::InitAvailableSpells()
     if (bot->getClass() == CLASS_PALADIN && !bot->HasSpell(20271)) // judgement missing
         bot->learnSpell(20271, false);
 #endif
+
+    // add polumorph pig/turtle
+    if (bot->getClass() == CLASS_MAGE && bot->GetLevel() >= 60)
+    {
+        bot->learnSpell(28271, false);
+        bot->learnSpell(28272, false);
+    }
+
+    // add inferno
+    if (bot->getClass() == CLASS_WARLOCK && !bot->HasSpell(1122) && bot->GetLevel() >= 50)
+        bot->learnSpell(1122, false);
+
+#ifdef MANGOSBOT_ZERO
+    // add book spells
+    if (bot->GetLevel() == 60)
+    {
+        vector<uint32> bookSpells;
+        switch (bot->getClass())
+        {
+        case CLASS_WARRIOR:
+            bookSpells.push_back(25289);
+            bookSpells.push_back(25288);
+            bookSpells.push_back(25958);
+            break;
+        case CLASS_PALADIN:
+            bookSpells.push_back(25291);
+            bookSpells.push_back(25290);
+            bookSpells.push_back(25292);
+            break;
+        case CLASS_HUNTER:
+            bookSpells.push_back(25296);
+            bookSpells.push_back(25294);
+            bookSpells.push_back(25295);
+            break;
+        case CLASS_ROGUE:
+            bookSpells.push_back(25300);
+            bookSpells.push_back(25302);
+            bookSpells.push_back(31016);
+            break;
+        case CLASS_PRIEST:
+            bookSpells.push_back(25314);
+            bookSpells.push_back(25315);
+            bookSpells.push_back(25316);
+            bookSpells.push_back(21564);
+            break;
+        case CLASS_SHAMAN:
+            bookSpells.push_back(29228);
+            bookSpells.push_back(25359);
+            bookSpells.push_back(25357);
+            bookSpells.push_back(25361);
+            break;
+        case CLASS_WARLOCK:
+            bookSpells.push_back(25311);
+            bookSpells.push_back(25309);
+            bookSpells.push_back(25307);
+            bookSpells.push_back(28610);
+            break;
+        case CLASS_DRUID:
+            bookSpells.push_back(31018);
+            bookSpells.push_back(25297);
+            bookSpells.push_back(25299);
+            bookSpells.push_back(25298);
+            bookSpells.push_back(21850);
+            break;
+        }
+
+        for (auto spellId : bookSpells)
+        {
+            if (!bot->HasSpell(spellId))
+                bot->learnSpell(spellId, false);
+        }
+    }
+
+#endif
 }
 
 
@@ -2617,6 +2691,8 @@ void PlayerbotFactory::InitReagents()
         regCount = 10;
         if (bot->GetLevel() > 9)
             items = { 6265 };
+        if (bot->GetLevel() > 49)
+            items = { 6265, 5565 };
         break;
     case CLASS_PRIEST:
         regCount = 3;
@@ -2842,7 +2918,7 @@ void PlayerbotFactory::InitGuild()
     if (bot->GetGuildId())
         return;
 
-    if (sPlayerbotAIConfig.randomBotGuilds.empty())
+    if (sPlayerbotAIConfig.randomBotGuilds.size() < sPlayerbotAIConfig.randomBotGuildCount)
         RandomPlayerbotFactory::CreateRandomGuilds();
 
     vector<uint32> guilds;
@@ -2870,12 +2946,17 @@ void PlayerbotFactory::InitGuild()
     Guild* guild = sGuildMgr.GetGuildById(guildId);
     if (!guild)
     {
-        sLog.outError("Invalid guild %u", guildId);
+        sLog.outError("Can't join random guild, ID: %u", guildId);
         return;
     }
 
-    if (guild->GetMemberSize() < urand(10, 15))
-        guild->AddMember(bot->GetObjectGuid(), urand(GR_OFFICER, GR_INITIATE));
+    uint32 num = atoi(guild->GetGINFO().c_str());
+    if ((num && guild->GetMemberSize() < num) || (!num && guild->GetMemberSize() < urand(10, 15)))
+    {
+        uint32 rankId = urand(GR_OFFICER, GR_INITIATE);
+        guild->AddMember(bot->GetObjectGuid(), rankId);
+        sLog.outBasic("Bot #%d %s:%d <%s>: Guild <%s> R: %s", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->GetLevel(), bot->GetName(), guild->GetName().c_str(), guild->GetRankName(rankId));
+    }
 
     // add guild tabard
     if (bot->GetGuildId() && bot->GetLevel() > 9 && urand(0, 4) && !bot->HasItemCount(5976, 1))
