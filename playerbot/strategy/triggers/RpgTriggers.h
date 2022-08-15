@@ -167,6 +167,8 @@ namespace ai
     public:
         RpgTradeUsefulTrigger(PlayerbotAI* ai, string name = "rpg trade useful") : RpgTrigger(ai, name) {}
         virtual bool IsActive();
+    private:
+        virtual bool isFriend(Player* player); //Move to value later.
     };
 
     class RpgDuelTrigger : public RpgTrigger

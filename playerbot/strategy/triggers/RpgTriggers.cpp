@@ -400,6 +400,24 @@ bool RpgCraftTrigger::IsActive()
     return true;
 }
 
+bool RpgTradeUsefulTrigger::isFriend(Player* player)
+{
+    if (ai->IsAlt() && GetMaster() == player)
+        return true;
+
+    if (player->GetPlayerbotAI() && player->GetPlayerbotAI()->GetMaster() == bot && player->GetPlayerbotAI()->IsAlt())
+        return true;
+
+    if (player->GetGuildId() == bot->GetGuildId())
+        return true;
+
+    if (bot->GetGroup() == player->GetGroup() && !urand(0, 5))
+        return true;
+
+    if (!urand(0, 20))
+        return true;
+}
+
 bool RpgTradeUsefulTrigger::IsActive()
 {
     GuidPosition guidP(getGuidP());
@@ -413,26 +431,16 @@ bool RpgTradeUsefulTrigger::IsActive()
     if (!player)
         return false;
 
-    //More code/ai-value here to see if bot is friendly enough.
-    bool isFriend = false;
-    if (player->GetGuildId() != bot->GetGuildId())
-        isFriend = true;
-
-    if (bot->GetGroup() == player->GetGroup() && !urand(0, 5))
-        isFriend = true;
-
-    if (!urand(0, 20))
-        isFriend = true;
-
-    if (player->GetTrader() == bot && bot->GetTrader() == player)
+    if (player->GetTrader() == bot && bot->GetTrader() == player) //Continue trading please.
         return true;
 
-    if (!isFriend)
+    if (!isFriend(player))
         return false;
 
     if (!player->IsWithinLOSInMap(bot))
         return false;
 
+    //Trading with someone else
     if (player->GetTrader() && player->GetTrader() != bot)
         return false;
 
