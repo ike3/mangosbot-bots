@@ -408,7 +408,7 @@ bool RpgTradeUsefulTrigger::isFriend(Player* player)
     if (player->GetPlayerbotAI() && player->GetPlayerbotAI()->GetMaster() == bot && player->GetPlayerbotAI()->IsAlt())
         return true;
 
-    if (player->GetGuildId() == bot->GetGuildId())
+    if (player->GetGuildId() && player->GetGuildId() == bot->GetGuildId())
         return true;
 
     if (bot->GetGroup() == player->GetGroup() && !urand(0, 5))
