@@ -15,7 +15,7 @@ Unit* SnareTargetValue::Calculate()
     if (enemy)
     {
         Player* plr = dynamic_cast<Player*>(enemy);
-        if (plr && !plr->IsStopped())
+        if (plr && !(plr->HasAuraType(SPELL_AURA_MOD_ROOT) || plr->HasAuraType(SPELL_AURA_MOD_STUN)) && (!plr->IsStopped() || plr->IsNonMeleeSpellCasted(false) || (plr->GetVictim() && plr->GetVictim()->GetObjectGuid() == bot->GetObjectGuid())))
             return enemy;
     }
 
