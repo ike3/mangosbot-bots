@@ -100,7 +100,7 @@ void DpsPaladinStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("judgement", ACTION_HIGH + 10), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "enemy is close",
+        "enemy five yards",
         NextAction::array(0, new NextAction("consecration", ACTION_INTERRUPT), NULL)));
 
     triggers.push_back(new TriggerNode(

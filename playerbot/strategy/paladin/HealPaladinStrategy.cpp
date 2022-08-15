@@ -40,7 +40,7 @@ void HealPaladinStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("seal of light", ACTION_HIGH), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "enemy is close",
+        "enemy ten yards",
         NextAction::array(0, new NextAction("judgement of light", ACTION_HIGH + 10), NULL)));
 
     triggers.push_back(new TriggerNode(
