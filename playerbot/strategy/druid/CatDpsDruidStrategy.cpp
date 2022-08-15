@@ -146,7 +146,7 @@ void CatDpsDruidStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "enemy out of melee",
-        NextAction::array(0, new NextAction("prowl", ACTION_EMERGENCY), NULL)));
+        NextAction::array(0, new NextAction("prowl", ACTION_EMERGENCY - 1), NULL)));
 
     triggers.push_back(new TriggerNode(
         "enemy out of melee",
@@ -154,7 +154,7 @@ void CatDpsDruidStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "player has flag",
-        NextAction::array(0, new NextAction("dash", ACTION_HIGH + 5), NULL)));
+        NextAction::array(0, new NextAction("dash", ACTION_EMERGENCY + 1), NULL)));
 
     triggers.push_back(new TriggerNode(
         "enemy flagcarrier near",

@@ -97,6 +97,7 @@ namespace ai
                 creators["inner focus"] = &TriggerFactoryInternal::inner_focus;
                 creators["shadow protection"] = &TriggerFactoryInternal::shadow_protection;
                 creators["shadow protection on party"] = &TriggerFactoryInternal::shadow_protection_on_party;
+                creators["prayer of shadow protection on party"] = &TriggerFactoryInternal::prayer_of_shadow_protection_on_party;
                 creators["prayer of fortitude on party"] = &TriggerFactoryInternal::prayer_of_fortitude_on_party;
                 creators["prayer of spirit on party"] = &TriggerFactoryInternal::prayer_of_spirit_on_party;
                 creators["shackle undead"] = &TriggerFactoryInternal::shackle_undead;
@@ -147,6 +148,7 @@ namespace ai
             static Trigger* shackle_undead(PlayerbotAI* ai) { return new ShackleUndeadTrigger(ai); }
             static Trigger* prayer_of_fortitude_on_party(PlayerbotAI* ai) { return new PrayerOfFortitudeTrigger(ai); }
             static Trigger* prayer_of_spirit_on_party(PlayerbotAI* ai) { return new PrayerOfSpiritTrigger(ai); }
+            static Trigger* prayer_of_shadow_protection_on_party(PlayerbotAI* ai) { return new PrayerOfShadowProtectionTrigger(ai); }
         };
     };
 };
@@ -213,6 +215,7 @@ namespace ai
                 creators["shackle undead"] = &AiObjectContextInternal::shackle_undead;
                 creators["prayer of fortitude on party"] = &AiObjectContextInternal::prayer_of_fortitude_on_party;
                 creators["prayer of spirit on party"] = &AiObjectContextInternal::prayer_of_spirit_on_party;
+                creators["prayer of shadow protection on party"] = &AiObjectContextInternal::prayer_of_shadow_protection_on_party;
                 creators["silence"] = &AiObjectContextInternal::silence;
                 creators["silence on enemy healer"] = &AiObjectContextInternal::silence_on_enemy_healer;
                 creators["mana burn"] = &AiObjectContextInternal::mana_burn;
@@ -268,6 +271,7 @@ namespace ai
             static Action* mana_burn(PlayerbotAI* ai) { return new CastManaBurnAction(ai); }
             static Action* silence_on_enemy_healer(PlayerbotAI* ai) { return new CastSilenceOnEnemyHealerAction(ai); }
             static Action* silence(PlayerbotAI* ai) { return new CastSilenceAction(ai); }
+            static Action* prayer_of_shadow_protection_on_party(PlayerbotAI* ai) { return new CastPrayerOfShadowProtectionAction(ai); }
             static Action* prayer_of_spirit_on_party(PlayerbotAI* ai) { return new CastPrayerOfSpiritOnPartyAction(ai); }
             static Action* prayer_of_fortitude_on_party(PlayerbotAI* ai) { return new CastPrayerOfFortitudeOnPartyAction(ai); }
             static Action* shackle_undead(PlayerbotAI* ai) { return new CastShackleUndeadAction(ai); }

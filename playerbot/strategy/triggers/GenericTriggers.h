@@ -404,7 +404,7 @@ namespace ai
     class SnareTargetTrigger : public DebuffTrigger
     {
     public:
-        SnareTargetTrigger(PlayerbotAI* ai, string spell) : DebuffTrigger(ai, spell) {}
+        SnareTargetTrigger(PlayerbotAI* ai, string spell, int interval = 1) : DebuffTrigger(ai, spell, interval) {}
     public:
         virtual Value<Unit*>* GetTargetValue();
         virtual string getName() { return spell + " on snare target"; }

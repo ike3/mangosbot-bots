@@ -20,10 +20,10 @@ namespace ai
 		CastExposeArmorAction(PlayerbotAI* ai) : CastMeleeSpellAction(ai, "expose armor") {} 
 	};
 
-	class CastRuptureAction : public CastMeleeSpellAction 
+	class CastRuptureAction : public CastDebuffSpellAction 
 	{ 
 	public: 
-		CastRuptureAction(PlayerbotAI* ai) : CastMeleeSpellAction(ai, "rupture") {} 
+		CastRuptureAction(PlayerbotAI* ai) : CastDebuffSpellAction(ai, "rupture") {}
 	};
 	
 	class CastKidneyShotAction : public CastMeleeSpellAction 

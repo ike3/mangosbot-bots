@@ -17,3 +17,8 @@ bool SpellstoneTrigger::IsActive()
 {
     return BuffTrigger::IsActive() && AI_VALUE2(uint32, "item count", getName()) > 0;
 }
+
+bool InfernoTrigger::IsActive()
+{
+	return AI_VALUE(uint8, "attacker count") > 1 && bot->HasSpell(1122) && bot->HasItemCount(5565, 1) && !urand(0, 2);
+}

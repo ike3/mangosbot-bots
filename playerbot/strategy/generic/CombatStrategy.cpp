@@ -33,7 +33,7 @@ void CombatStrategy::InitTriggers(list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "often",
-        NextAction::array(0, new NextAction("use trinket", ACTION_HIGH + 9), NULL)));
+        NextAction::array(0, new NextAction("use trinket", 50.0f), NULL)));
 }
 
 AvoidAoeStrategy::AvoidAoeStrategy(PlayerbotAI* ai) : Strategy(ai)

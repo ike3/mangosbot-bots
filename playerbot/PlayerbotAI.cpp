@@ -279,6 +279,30 @@ void PlayerbotAI::UpdateAI(uint32 elapsed, bool minimal)
         StopMoving();
     }
 
+    Unit* currentTarget = aiObjectContext->GetValue<Unit*>("current target")->Get();
+    // disable auto attack in stealth
+    if ((inCombat || currentTarget || currentEngine == engines[BOT_STATE_COMBAT]) && !(bot->hasUnitState(UNIT_STAT_MELEE_ATTACKING) || !bot->GetCurrentSpell(CURRENT_AUTOREPEAT_SPELL)) && !(HasAura("stealth", bot) || HasAura("prowl", bot) || HasAura("vanish", bot)))
+    {
+        bot->addUnitState(UNIT_STAT_MELEE_ATTACKING);
+        if (currentTarget)
+        {
+            //Reset();
+            //bot->Attack(bot->GetVictim(), !IsRanged(bot));
+            bot->CastSpell(currentTarget, IsRanged(bot) ? 75 : 6603, TRIGGERED_OLD_TRIGGERED);
+            bot->SendMeleeAttackStart(currentTarget);
+            //bot->SendForcedObjectUpdate();
+        }
+    }
+
+    if (((!inCombat && !currentTarget || (HasAura("stealth", bot) || HasAura("vanish", bot) || HasAura("prowl", bot)))) && (bot->hasUnitState(UNIT_STAT_MELEE_ATTACKING)))
+    {
+        bot->clearUnitState(UNIT_STAT_MELEE_ATTACKING);
+        bot->InterruptSpell(CURRENT_MELEE_SPELL);
+        if (currentTarget)
+            bot->SendMeleeAttackStop(currentTarget);
+        //bot->SendForcedObjectUpdate();
+    }
+
     // cheat options
     if (bot->IsAlive() && ((uint32)GetCheat() > 0 || (uint32)sPlayerbotAIConfig.botCheatMask > 0))
     {
@@ -2281,7 +2305,10 @@ bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target, Item* itemTarget)
     else if (pSpellInfo->Targets & TARGET_FLAG_DEST_LOCATION)
     {
         WorldLocation aoe = aiObjectContext->GetValue<WorldLocation>("aoe position")->Get();
-        targets.setDestination(aoe.coord_x, aoe.coord_y, aoe.coord_z);
+        if (aoe.coord_x != 0)
+            targets.setDestination(aoe.coord_x, aoe.coord_y, aoe.coord_z);
+        else if (target && target->GetObjectGuid() != bot->GetObjectGuid())
+            targets.setDestination(target->GetPositionX(), target->GetPositionY(), target->GetPositionZ());
     }
     else if (pSpellInfo->Targets & TARGET_FLAG_SOURCE_LOCATION)
     {
@@ -2340,6 +2367,9 @@ bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target, Item* itemTarget)
     if (!bot->GetMotionMaster()->empty())
         if (bot->GetMotionMaster()->top()->GetMovementGeneratorType() != IDLE_MOTION_TYPE)
             isMoving = true;
+
+    if (!bot->IsStopped())
+        isMoving = true;
 
     if (isMoving && ((spell->GetCastTime() || (IsChanneledSpell(pSpellInfo)) && GetSpellDuration(pSpellInfo) > 0)))
     {
@@ -2442,6 +2472,9 @@ bool PlayerbotAI::CastSpell(uint32 spellId, float x, float y, float z, Item* ite
     if (!bot->GetMotionMaster()->empty())
         if (bot->GetMotionMaster()->top()->GetMovementGeneratorType() != IDLE_MOTION_TYPE)
             isMoving = true;
+
+    if (!bot->IsStopped())
+        isMoving = true;
 
     if (!sServerFacade.isMoving(bot) || isMoving) bot->SetFacingTo(bot->GetAngleAt(bot->GetPositionX(), bot->GetPositionY(), x, y));
 
@@ -2831,7 +2864,7 @@ void PlayerbotAI::WaitForSpellCast(Spell *spell)
 {
     const SpellEntry* const pSpellInfo = spell->m_spellInfo;
 
-    float castTime = spell->GetCastTime();
+    int32 castTime = spell->GetCastTime();
 	if (IsChanneledSpell(pSpellInfo))
     {
         int32 duration = GetSpellDuration(pSpellInfo);
@@ -2848,6 +2881,10 @@ void PlayerbotAI::WaitForSpellCast(Spell *spell)
     uint32 globalCooldown = CalculateGlobalCooldown(pSpellInfo->Id);
     if (castTime < globalCooldown)
         castTime = globalCooldown;
+
+    // fix cannibalize
+    if (pSpellInfo->Id == 20577)
+        castTime = 10000;
 
     SetNextCheckDelay(castTime + sPlayerbotAIConfig.reactDelay);
 }

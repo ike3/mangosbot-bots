@@ -31,11 +31,12 @@ bool ImbueWithPoisonAction::Execute(Event event)
 
       // Search and apply poison to weapons
       // Mainhand ...
-      Item * poison, *weapon;
+      Item* poison = nullptr;
+      Item* weapon = nullptr;;
       weapon = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND);
       if (weapon && weapon->GetEnchantmentId(TEMP_ENCHANTMENT_SLOT) == 0)
       {
-         poison = ai->FindConsumable(INSTANT_POISON_DISPLAYID);
+          poison = ai->FindConsumable(INSTANT_POISON_DISPLAYID);
          if (!poison)
             poison = ai->FindConsumable(DEADLY_POISON_DISPLAYID);
          if (!poison)
@@ -44,13 +45,31 @@ bool ImbueWithPoisonAction::Execute(Event event)
          {
             ai->ImbueItem(poison, EQUIPMENT_SLOT_MAINHAND);
             ai->SetNextCheckDelay(5);
+            return true;
          }
       }
       //... and offhand
       weapon = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_OFFHAND);
       if (weapon && weapon->GetEnchantmentId(TEMP_ENCHANTMENT_SLOT) == 0)
       {
-         poison = ai->FindConsumable(DEADLY_POISON_DISPLAYID);
+          if (bot->InBattleGround())
+          {
+              std::string poisonName = urand(0, 1) ? "crippling poison" : "mind-numbing poison";
+              list<Item*> items = AI_VALUE2(list<Item*>, "inventory items", poisonName);
+              if (items.size())
+              {
+                  list<Item*>::iterator i = items.begin();
+                  Item* item = *i;
+                  if (item)
+                  {
+                      ai->ImbueItem(item, EQUIPMENT_SLOT_OFFHAND);
+                      ai->SetNextCheckDelay(5);
+                      return true;
+                  }
+              }
+          }
+
+          poison = ai->FindConsumable(DEADLY_POISON_DISPLAYID);
          if (!poison)
             poison = ai->FindConsumable(WOUND_POISON_DISPLAYID);
          if (!poison)

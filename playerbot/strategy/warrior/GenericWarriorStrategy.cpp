@@ -74,14 +74,14 @@ void WarrirorAoeStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("sweeping strikes", ACTION_NORMAL + 3), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "light aoe",
+        "medium aoe",
         NextAction::array(0, new NextAction("bladestorm", ACTION_NORMAL + 3), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "light aoe",
+        "medium aoe",
         NextAction::array(0, new NextAction("whirlwind", ACTION_HIGH + 2), NULL)));
 
-    triggers.push_back(new TriggerNode(
+    /*triggers.push_back(new TriggerNode(
         "high rage available",
-        NextAction::array(0, new NextAction("whirlwind", ACTION_HIGH + 9), NULL)));
+        NextAction::array(0, new NextAction("whirlwind", ACTION_HIGH + 9), NULL)));*/
 }

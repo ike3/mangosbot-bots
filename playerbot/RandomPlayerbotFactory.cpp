@@ -555,32 +555,57 @@ void RandomPlayerbotFactory::CreateRandomBots()
 void RandomPlayerbotFactory::CreateRandomGuilds()
 {
     vector<uint32> randomBots;
+    map<uint32, vector<uint32>> charAccGuids;
 
-    QueryResult* results = PlayerbotDatabase.PQuery(
-            "select `bot` from ai_playerbot_random_bots where event = 'add'");
+    QueryResult* charAccounts = CharacterDatabase.PQuery(
+        "select `account`, `guid` from `characters`");
 
-    if (results)
+    if (charAccounts)
     {
         do
         {
-            Field* fields = results->Fetch();
-            uint32 bot = fields[0].GetUInt32();
-            randomBots.push_back(bot);
-        } while (results->NextRow());
-        delete results;
+            Field* fields = charAccounts->Fetch();
+            uint32 accId = fields[0].GetUInt32();
+            uint32 guid = fields[1].GetUInt32();
+            charAccGuids[accId].push_back(guid);
+        } while (charAccounts->NextRow());
+        delete charAccounts;
     }
 
-    if (sPlayerbotAIConfig.deleteRandomBotGuilds)
+    if (charAccGuids.empty())
+        return;
+
+    for (auto charAcc : sPlayerbotAIConfig.randomBotAccounts)
+    {
+        if (!charAccGuids[charAcc].empty())
+            for (auto charGuid : charAccGuids[charAcc])
+                randomBots.push_back(charGuid);
+    }
+
+    if (randomBots.empty())
+        return;
+
+    if (sPlayerbotAIConfig.deleteRandomBotGuilds && !sRandomPlayerbotMgr.guildsDeleted)
     {
         sLog.outString("Deleting random bot guilds...");
+        uint32 counter = 0;
         for (vector<uint32>::iterator i = randomBots.begin(); i != randomBots.end(); ++i)
         {
             ObjectGuid leader(HIGHGUID_PLAYER, *i);
             Guild* guild = sGuildMgr.GetGuildByLeader(leader);
-            if (guild) guild->Disband();
+            if (guild)
+            {
+                guild->Disband();
+                counter++;
+            }
         }
-        sLog.outString("Random bot guilds deleted");
+        sLog.outString("%d Random bot guilds deleted", counter);
+
+        sRandomPlayerbotMgr.guildsDeleted = true;
     }
+
+    if (!sPlayerbotAIConfig.randomBotGuildCount)
+        return;
 
     uint32 guildNumber = 0;
     vector<ObjectGuid> availableLeaders;
@@ -590,42 +615,51 @@ void RandomPlayerbotFactory::CreateRandomGuilds()
         Guild* guild = sGuildMgr.GetGuildByLeader(leader);
         if (guild)
         {
-            ++guildNumber;
-            sPlayerbotAIConfig.randomBotGuilds.push_back(guild->GetId());
+            if (find(sPlayerbotAIConfig.randomBotGuilds.begin(), sPlayerbotAIConfig.randomBotGuilds.end(), guild->GetId()) == sPlayerbotAIConfig.randomBotGuilds.end())
+            {
+                ++guildNumber;
+                sPlayerbotAIConfig.randomBotGuilds.push_back(guild->GetId());
+            }
         }
         else
         {
             Player* player = sObjectMgr.GetPlayer(leader);
-            if (player && !player->GetGuildId())
+            if (player && !player->GetGuildId() && player->GetLevel() >= 10)
                 availableLeaders.push_back(leader);
         }
     }
 
-    for (; guildNumber < sPlayerbotAIConfig.randomBotGuildCount; ++guildNumber)
+    if (availableLeaders.empty())
     {
+        sLog.outError("No leaders for random guilds available");
+        return;
+    }
+
+    uint32 attempts = 0;
+    uint32 maxNewGuilds = sPlayerbotAIConfig.randomBotGuildCount - sPlayerbotAIConfig.randomBotGuilds.size();
+    bool newGuilds = false;
+    for (; guildNumber < maxNewGuilds; ++guildNumber)
+    {
+        attempts++;
+        if (attempts > std::min(uint32(5), sPlayerbotAIConfig.randomBotGuildCount))
+            break;
+        if (sPlayerbotAIConfig.randomBotGuilds.size() >= sPlayerbotAIConfig.randomBotGuildCount)
+            break;
+
         string guildName = CreateRandomGuildName();
         if (guildName.empty())
             continue;
 
-        if (availableLeaders.empty())
-        {
-            sLog.outError("No leaders for random guilds available");
-			continue;
-        }
-
         int index = urand(0, availableLeaders.size() - 1);
         ObjectGuid leader = availableLeaders[index];
         Player* player = sObjectMgr.GetPlayer(leader);
-        if (!player)
-        {
-            sLog.outError("Cannot find player for leader %s", player->GetName());
-			continue;
-        }
+        if (!player || player->GetGuildId())
+            continue;
 
         Guild* guild = new Guild();
         if (!guild->Create(player, guildName))
         {
-            sLog.outError("Error creating guild %s", guildName.c_str());
+            sLog.outError("Error creating random guild %s", guildName.c_str());
 			continue;
         }
 
@@ -639,11 +673,15 @@ void RandomPlayerbotFactory::CreateRandomGuilds()
         br = urand(0, 7);
         st = urand(0, 180);
         guild->SetEmblem(st, cl, br, bc, bg);
+        guild->SetGINFO(std::to_string(urand(10, 30)));
 
         sPlayerbotAIConfig.randomBotGuilds.push_back(guild->GetId());
+        sLog.outBasic("Random Guild <%s>, GM: %s", guildName.c_str(), player->GetName());
+        newGuilds = true;
     }
 
-    sLog.outString("%d random bot guilds available", guildNumber);
+    if (newGuilds)
+        sLog.outString("Total Random Guilds: %d", sPlayerbotAIConfig.randomBotGuilds.size());
 }
 
 string RandomPlayerbotFactory::CreateRandomGuildName()

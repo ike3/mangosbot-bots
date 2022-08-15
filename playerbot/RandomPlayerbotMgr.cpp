@@ -276,6 +276,8 @@ RandomPlayerbotMgr::RandomPlayerbotMgr() : PlayerbotHolder(), processTicks(0), l
         BgCheckTimer = 0;
         LfgCheckTimer = 0;
         PlayersCheckTimer = 0;
+        guildsDeleted = false;
+        arenaTeamsDeleted = false;
 
 #ifndef MANGOSBOT_ZERO
         // load random bot team members

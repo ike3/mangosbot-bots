@@ -231,15 +231,29 @@ namespace ai
        virtual bool isPossible() { return true; }
        virtual bool isUseful()
        {
-           return bot->GetLevel() >= 60 && bot->GetSkillValue(202) >= 325;
+           return false; bot->GetLevel() >= 52 && bot->IsSpellReady(19769);/* && bot->GetSkillValue(202) >= 260*/;
        }
        virtual bool Execute(Event event)
        {
+           uint32 spellId = 19769;
+           if (SpellEntry const* spellInfo = sSpellTemplate.LookupEntry<SpellEntry>(spellId))
+           {
+               bool casted = ai->CastSpell(19769, GetTarget());
+               if (casted)
+               {
+                   bot->AddCooldown(*spellInfo, nullptr, false, 60000);
+                   return true;
+               }
+           }
+
+           return false;
+           // test
            Unit* target = AI_VALUE(Unit*, "current target");
            if (!target)
                return false;
 
-           uint32 grenade = 23737;
+           uint32 skillValue = bot->GetSkillValue(202);
+           uint32 grenade = skillValue > 325 ? 23737: 15993;
            bool added = bot->HasItemCount(grenade, 1);
            if (!added)
                added = bot->StoreNewItemInInventorySlot(grenade, 1);
@@ -247,7 +261,7 @@ namespace ai
            if (!added)
                return false;
 
-           list<Item*> items = AI_VALUE2(list<Item*>, "inventory items", "adamantite grenade");
+           list<Item*> items = AI_VALUE2(list<Item*>, "inventory items", skillValue > 325 ? "adamantite grenade" : "thorium grenade");
            list<Item*>::iterator i = items.begin();
            Item* item = *i;
 

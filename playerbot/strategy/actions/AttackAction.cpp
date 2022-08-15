@@ -108,7 +108,7 @@ bool AttackAction::Attack(Unit* target)
         if (creatureAI)
         {
 #ifdef CMANGOS
-            creatureAI->SetReactState(REACT_PASSIVE);
+            creatureAI->SetReactState(REACT_DEFENSIVE);
 #endif
 #ifdef MANGOS
             pet->GetCharmInfo()->SetCommandState(COMMAND_ATTACK);
@@ -122,10 +122,6 @@ bool AttackAction::Attack(Unit* target)
 
     bool attacked = bot->Attack(target, !ai->IsRanged(bot));
     ai->ChangeEngine(BOT_STATE_COMBAT);
-
-    // disable auto attack in stealth
-    if (ai->HasAura("stealth", bot) || ai->HasAura("prowl", bot))
-        bot->MeleeAttackStop(target);
 
     return attacked;
 }

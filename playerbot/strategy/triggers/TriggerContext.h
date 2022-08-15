@@ -86,7 +86,7 @@ namespace ai
             creators["enemy is close"] = &TriggerContext::enemy_is_close;
             creators["party member to heal out of spell range"] = &TriggerContext::party_member_to_heal_out_of_spell_range;
             creators["enemy ten yards"] = &TriggerContext::enemy_ten_yards;
-            creators["enemy fiveyards"] = &TriggerContext::enemy_five_yards;
+            creators["enemy five yards"] = &TriggerContext::enemy_five_yards;
 
             creators["combo points available"] = &TriggerContext::ComboPointsAvailable;
 

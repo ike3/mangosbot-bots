@@ -106,11 +106,11 @@ void TankPaladinStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("hammer of wrath", ACTION_CRITICAL_HEAL), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "light aoe",
+        "very often",
         NextAction::array(0, new NextAction("goblin sapper", ACTION_HIGH + 8), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "light aoe",
+        "very often",
         NextAction::array(0, new NextAction("oil of immolation", ACTION_HIGH + 9), NULL)));
 
     triggers.push_back(new TriggerNode(

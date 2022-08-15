@@ -103,6 +103,14 @@ Unit* CcTargetValue::Calculate()
 
         if (ai->HasMyAura(qualifier, add))
             return NULL;
+
+        if (qualifier == "polymorph")
+        {
+            if (ai->HasMyAura("polymorph: pig", add))
+                return NULL;
+            if (ai->HasMyAura("polymorph: turtle", add))
+                return NULL;
+        }
     }
 
     FindTargetForCcStrategy strategy(ai, qualifier);

@@ -99,13 +99,13 @@ void PriestShadowResistanceStrategy::InitTriggers(std::list<TriggerNode*> &trigg
 
     triggers.push_back(new TriggerNode(
         "shadow protection",
-        NextAction::array(0, new NextAction("shadow protection", 12.0f), NULL)));
+        NextAction::array(0, new NextAction("shadow protection", 14.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
         "shadow protection on party",
-        NextAction::array(0, new NextAction("shadow protection on party", 11.0f), NULL)));
+        NextAction::array(0, new NextAction("shadow protection on party", 12.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "shadow protection on party",
-        NextAction::array(0, new NextAction("shadow protection on party", 10.0f), NULL)));
+        "prayer of shadow protection on party",
+        NextAction::array(0, new NextAction("prayer of shadow protection on party", 13.0f), NULL)));
 }

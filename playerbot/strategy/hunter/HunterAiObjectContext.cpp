@@ -75,6 +75,7 @@ namespace ai
             {
                 creators["aspect of the viper"] = &TriggerFactoryInternal::aspect_of_the_viper;
                 creators["black arrow"] = &TriggerFactoryInternal::black_arrow;
+                creators["black arrow on snare target"] = &TriggerFactoryInternal::black_arrow_snare;
                 creators["no stings"] = &TriggerFactoryInternal::NoStings;
                 creators["hunters pet dead"] = &TriggerFactoryInternal::hunters_pet_dead;
                 creators["hunters pet low health"] = &TriggerFactoryInternal::hunters_pet_low_health;
@@ -96,9 +97,28 @@ namespace ai
                 creators["switch to melee"] = &TriggerFactoryInternal::switch_to_melee;
                 creators["switch to ranged"] = &TriggerFactoryInternal::switch_to_ranged;
                 creators["feign death"] = &TriggerFactoryInternal::feign_death;
+                creators["scatter shot on snare target"] = &TriggerFactoryInternal::scatter_shot;
+                creators["multi shot"] = &TriggerFactoryInternal::multi_shot;
+                creators["intimidation on snare target"] = &TriggerFactoryInternal::intimidation;
+                creators["counterattack"] = &TriggerFactoryInternal::counterattack;
+                creators["wyvern sting"] = &TriggerFactoryInternal::wyvern_sting;
+                creators["mongoose bite"] = &TriggerFactoryInternal::mongoose_bite;
+                creators["viper sting"] = &TriggerFactoryInternal::viper_sting;
+                creators["aimed shot"] = &TriggerFactoryInternal::aimed_shot;
+                creators["bestial wrath"] = &TriggerFactoryInternal::bestial_wrath;
             }
 
         private:
+            static Trigger* bestial_wrath(PlayerbotAI* ai) { return new BestialWrathBoostTrigger(ai); }
+            static Trigger* aimed_shot(PlayerbotAI* ai) { return new AimedShotTrigger(ai); }
+            static Trigger* viper_sting(PlayerbotAI* ai) { return new ViperStingTrigger(ai); }
+            static Trigger* black_arrow_snare(PlayerbotAI* ai) { return new BlackArrowSnareTrigger(ai); }
+            static Trigger* mongoose_bite(PlayerbotAI* ai) { return new MongooseBiteCastTrigger(ai); }
+            static Trigger* wyvern_sting(PlayerbotAI* ai) { return new WybernStingSnareTrigger(ai); }
+            static Trigger* counterattack(PlayerbotAI* ai) { return new CounterattackCanCastTrigger(ai); }
+            static Trigger* intimidation(PlayerbotAI* ai) { return new IntimidationSnareTrigger(ai); }
+            static Trigger* multi_shot(PlayerbotAI* ai) { return new MultishotCanCastTrigger(ai); }
+            static Trigger* scatter_shot(PlayerbotAI* ai) { return new ScatterShotSnareTrigger(ai); }
             static Trigger* scare_beast(PlayerbotAI* ai) { return new ScareBeastTrigger(ai); }
             static Trigger* concussive_shot_on_snare_target(PlayerbotAI* ai) { return new ConsussiveShotSnareTrigger(ai); }
             static Trigger* pet_not_happy(PlayerbotAI* ai) { return new HunterPetNotHappy(ai); }
@@ -145,7 +165,7 @@ namespace ai
                 creators["arcane shot"] = &AiObjectContextInternal::arcane_shot;
                 creators["concussive shot"] = &AiObjectContextInternal::concussive_shot;
                 creators["distracting shot"] = &AiObjectContextInternal::distracting_shot;
-                creators["multi-shot"] = &AiObjectContextInternal::multi_shot;
+                creators["multi shot"] = &AiObjectContextInternal::multi_shot;
                 creators["volley"] = &AiObjectContextInternal::volley;
                 creators["serpent sting"] = &AiObjectContextInternal::serpent_sting;
                 creators["serpent sting on attacker"] = &AiObjectContextInternal::serpent_sting_on_attacker;
@@ -166,6 +186,7 @@ namespace ai
                 creators["aspect of the viper"] = &AiObjectContextInternal::aspect_of_the_viper;
                 creators["aspect of the pack"] = &AiObjectContextInternal::aspect_of_the_pack;
                 creators["aspect of the cheetah"] = &AiObjectContextInternal::aspect_of_the_cheetah;
+                creators["remove aspect of the cheetah"] = &AiObjectContextInternal::remove_aspect_of_the_cheetah;
                 creators["trueshot aura"] = &AiObjectContextInternal::trueshot_aura;
                 creators["feign death"] = &AiObjectContextInternal::feign_death;
                 creators["wing clip"] = &AiObjectContextInternal::wing_clip;
@@ -177,9 +198,23 @@ namespace ai
                 creators["remove feign death"] = &AiObjectContextInternal::remove_feign_death;
                 creators["frost trap"] = &AiObjectContextInternal::frost_trap;
                 creators["explosive trap"] = &AiObjectContextInternal::explosive_trap;
+                creators["scatter shot"] = &AiObjectContextInternal::scatter_shot;
+                creators["intimidation"] = &AiObjectContextInternal::intimidation;
+                creators["deterrence"] = &AiObjectContextInternal::deterrence;
+                creators["counterattack"] = &AiObjectContextInternal::counterattack;
+                creators["wyvern sting"] = &AiObjectContextInternal::wyvern_sting;
+                creators["mongoose bite"] = &AiObjectContextInternal::mongoose_bite;
+                creators["black arrow on snare target"] = &AiObjectContextInternal::black_arrow_snare;
             }
 
         private:
+            static Action* black_arrow_snare(PlayerbotAI* ai) { return new CastBlackArrowSnareAction(ai); }
+            static Action* mongoose_bite(PlayerbotAI* ai) { return new MongooseBiteAction(ai); }
+            static Action* wyvern_sting(PlayerbotAI* ai) { return new WyvernStingSnareAction(ai); }
+            static Action* counterattack(PlayerbotAI* ai) { return new CastCounterattackAction(ai); }
+            static Action* deterrence(PlayerbotAI* ai) { return new DeterrenceAction(ai); }
+            static Action* intimidation(PlayerbotAI* ai) { return new IntimidationAction(ai); }
+            static Action* scatter_shot(PlayerbotAI* ai) { return new CastScatterShotAction(ai); }
             static Action* explosive_trap(PlayerbotAI* ai) { return new CastExplosiveTrapAction(ai); }
             static Action* frost_trap(PlayerbotAI* ai) { return new CastFrostTrapAction(ai); }
             static Action* scare_beast(PlayerbotAI* ai) { return new CastScareBeastAction(ai); }
@@ -199,7 +234,6 @@ namespace ai
             static Action* volley(PlayerbotAI* ai) { return new CastVolleyAction(ai); }
             static Action* serpent_sting(PlayerbotAI* ai) { return new CastSerpentStingAction(ai); }
             static Action* serpent_sting_on_attacker(PlayerbotAI* ai) { return new CastSerpentStingOnAttackerAction(ai); }
-            static Action* wyvern_sting(PlayerbotAI* ai) { return new CastWyvernStingAction(ai); }
             static Action* viper_sting(PlayerbotAI* ai) { return new CastViperStingAction(ai); }
             static Action* scorpid_sting(PlayerbotAI* ai) { return new CastScorpidStingAction(ai); }
             static Action* hunters_mark(PlayerbotAI* ai) { return new CastHuntersMarkAction(ai); }
@@ -215,6 +249,7 @@ namespace ai
             static Action* aspect_of_the_viper(PlayerbotAI* ai) { return new CastAspectOfTheViperAction(ai); }
             static Action* aspect_of_the_pack(PlayerbotAI* ai) { return new CastAspectOfThePackAction(ai); }
             static Action* aspect_of_the_cheetah(PlayerbotAI* ai) { return new CastAspectOfTheCheetahAction(ai); }
+            static Action* remove_aspect_of_the_cheetah(PlayerbotAI* ai) { return new RemoveBuffAction(ai, "aspect of the cheetah"); }
             static Action* wing_clip(PlayerbotAI* ai) { return new CastWingClipAction(ai); }
             static Action* raptor_strike(PlayerbotAI* ai) { return new CastRaptorStrikeAction(ai); }
             static Action* remove_feign_death(PlayerbotAI* ai) { return new RemoveFeignDeathAction(ai); }

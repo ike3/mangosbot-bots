@@ -201,9 +201,11 @@ namespace ai
                 creators["ice barrier"] = &AiObjectContextInternal::ice_barrier;
                 creators["mana shield"] = &AiObjectContextInternal::mana_shield;
                 creators["arcane explosion"] = &AiObjectContextInternal::arcane_explosion;
+                creators["cone of cold"] = &AiObjectContextInternal::cone_of_cold;
             }
 
         private:
+            static Action* cone_of_cold(PlayerbotAI* ai) { return new CastConeOfColdAction(ai); }
             static Action* arcane_explosion(PlayerbotAI* ai) { return new CastArcaneExplosionAction(ai); }
             static Action* mana_shield(PlayerbotAI* ai) { return new CastManaShieldAction(ai); }
             static Action* ice_barrier(PlayerbotAI* ai) { return new CastIceBarrierAction(ai); }

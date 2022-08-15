@@ -21,6 +21,10 @@ namespace ai
     DEBUFF_TRIGGER(CorruptionTrigger, "corruption");
     DEBUFF_TRIGGER(SiphonLifeTrigger, "siphon life");
 
+    INTERRUPT_TRIGGER(DeathCoilInterruptTrigger, "death coil");
+    INTERRUPT_HEALER_TRIGGER(DeathCoilInterruptTHealerTrigger, "death coil");
+    SNARE_TRIGGER(DeathCoilSnareTrigger, "death coil");
+
     class CorruptionOnAttackerTrigger : public DebuffOnAttackerTrigger
     {
     public:
@@ -95,6 +99,13 @@ namespace ai
     {
     public:
         AmplifyCurseTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "amplify curse") {}
+    };
+
+    class InfernoTrigger : public BuffTrigger
+    {
+    public:
+        InfernoTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "inferno", 10) {}
+        virtual bool IsActive();
     };
 
 }

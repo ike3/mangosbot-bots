@@ -54,7 +54,7 @@ namespace ai
         private:
             static Strategy* dps(PlayerbotAI* ai) { return new DpsRogueStrategy(ai); }
             static Strategy* combat(PlayerbotAI* ai) { return new CombatRogueStrategy(ai); }
-            static Strategy* subtlety(PlayerbotAI* ai) { return new CombatRogueStrategy(ai); }
+            static Strategy* subtlety(PlayerbotAI* ai) { return new SubtletyRogueStrategy(ai); }
             static Strategy* assassination(PlayerbotAI* ai) { return new AssassinationRogueStrategy(ai); }
             static Strategy* stealthed(PlayerbotAI* ai) { return new StealthedRogueStrategy(ai); }
         };
@@ -89,6 +89,7 @@ namespace ai
                 creators["4 combo"] = &TriggerFactoryInternal::combo3;
 
                 creators["sinister strike"] = &TriggerFactoryInternal::sinister_strike;
+                creators["hemorrhage"] = &TriggerFactoryInternal::hemorrhage;
                 creators["killing spree"] = &TriggerFactoryInternal::killing_spree;
                 creators["eviscerate"] = &TriggerFactoryInternal::eviscerate;
                 creators["blade flurry"] = &TriggerFactoryInternal::blade_flurry;
@@ -118,6 +119,7 @@ namespace ai
             static Trigger* combo4(PlayerbotAI* ai) { return new ComboPointsAvailableTrigger(ai, 4); }
 
             static Trigger* sinister_strike(PlayerbotAI* ai) { return new SpellCanBeCastTrigger(ai, "sinister strike"); }
+            static Trigger* hemorrhage(PlayerbotAI* ai) { return new SpellCanBeCastTrigger(ai, "hemorrhage"); }
             static Trigger* killing_spree(PlayerbotAI* ai) { return new RogueBoostBuffTrigger(ai, "killing spree"); }
             static Trigger* eviscerate(PlayerbotAI* ai) { return new EviscerateTrigger(ai); }
             static Trigger* blade_flurry(PlayerbotAI* ai) { return new RogueBoostBuffTrigger(ai, "blade flurry"); }
@@ -143,6 +145,8 @@ namespace ai
                 creators["riposte"] = &AiObjectContextInternal::riposte;
                 creators["mutilate"] = &AiObjectContextInternal::mutilate;
                 creators["sinister strike"] = &AiObjectContextInternal::sinister_strike;
+                creators["hemorrhage"] = &AiObjectContextInternal::hemorrhage;
+                creators["ghostly strike"] = &AiObjectContextInternal::ghostly_strike;
                 creators["gouge"] = &AiObjectContextInternal::gouge;
                 creators["kidney shot"] = &AiObjectContextInternal::kidney_shot;
                 creators["rupture"] = &AiObjectContextInternal::rupture;
@@ -172,9 +176,11 @@ namespace ai
                 creators["cloak of shadows"] = &AiObjectContextInternal::cloak_of_shadows;
                 //creators["fan of knives"] = &AiObjectContextInternal::fan_of_knives;
                 creators["cold blood"] = &AiObjectContextInternal::cold_blood;
+                creators["preparation"] = &AiObjectContextInternal::preparation;
             }
 
         private:
+            static Action* preparation(PlayerbotAI* ai) { return new CastPreparationAction(ai); }
             static Action* cold_blood(PlayerbotAI* ai) { return new CastColdBloodAction(ai); }
             static Action* check_stealth(PlayerbotAI* ai) { return new CheckStealthAction(ai); }
             static Action* sap(PlayerbotAI* ai) { return new CastSapAction(ai); }
@@ -190,6 +196,8 @@ namespace ai
             static Action* riposte(PlayerbotAI* ai) { return new CastRiposteAction(ai); }
             static Action* mutilate(PlayerbotAI* ai) { return new CastMutilateAction(ai); }
             static Action* sinister_strike(PlayerbotAI* ai) { return new CastSinisterStrikeAction(ai); }
+            static Action* hemorrhage(PlayerbotAI* ai) { return new CastHemorrhageAction(ai); }
+            static Action* ghostly_strike(PlayerbotAI* ai) { return new CastGhostlyStrikeAction(ai); }
             static Action* gouge(PlayerbotAI* ai) { return new CastGougeAction(ai); }
             static Action* kidney_shot(PlayerbotAI* ai) { return new CastKidneyShotAction(ai); }
             static Action* rupture(PlayerbotAI* ai) { return new CastRuptureAction(ai); }
