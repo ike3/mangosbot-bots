@@ -308,6 +308,7 @@ void PlayerbotFactory::Refresh()
     InitFood();
     InitPotions();
     InitReagents();
+    AddConsumables();
     bot->SaveToDB();
 }
 
@@ -395,70 +396,89 @@ void PlayerbotFactory::AddConsumables()
        case CLASS_ROGUE:
       {
          if (level >= 20 && level < 28) {
-            StoreItem(CONSUM_ID_INSTANT_POISON, 5);
+            StoreItem(CONSUM_ID_INSTANT_POISON, 20);
+            StoreItem(CONSUM_ID_CRIPPLING_POISON, 20);
          }
          if (level >= 28 && level < 30) {
-            StoreItem(CONSUM_ID_INSTANT_POISON_II, 5);
+            StoreItem(CONSUM_ID_INSTANT_POISON_II, 20);
+            StoreItem(CONSUM_ID_CRIPPLING_POISON, 20);
+            StoreItem(CONSUM_ID_MIND_POISON, 20);
          }
          if (level >= 30 && level < 36) {
-            StoreItem(CONSUM_ID_DEADLY_POISON, 5);
-            StoreItem(CONSUM_ID_INSTANT_POISON_II, 5);
+            StoreItem(CONSUM_ID_DEADLY_POISON, 20);
+            StoreItem(CONSUM_ID_INSTANT_POISON_II, 20);
+            StoreItem(CONSUM_ID_CRIPPLING_POISON, 20);
+            StoreItem(CONSUM_ID_MIND_POISON, 20);
          }
          if (level >= 36 && level < 38) {
-             StoreItem(CONSUM_ID_DEADLY_POISON, 5);
-             StoreItem(CONSUM_ID_INSTANT_POISON_III, 5);
+             StoreItem(CONSUM_ID_DEADLY_POISON, 20);
+             StoreItem(CONSUM_ID_INSTANT_POISON_III, 20);
+             StoreItem(CONSUM_ID_CRIPPLING_POISON, 20);
+             StoreItem(CONSUM_ID_MIND_POISON, 20);
          }
          if (level >= 38 && level < 44) {
-             StoreItem(CONSUM_ID_DEADLY_POISON_II, 5);
-             StoreItem(CONSUM_ID_INSTANT_POISON_III, 5);
+             StoreItem(CONSUM_ID_DEADLY_POISON_II, 20);
+             StoreItem(CONSUM_ID_INSTANT_POISON_III, 20);
+             StoreItem(CONSUM_ID_CRIPPLING_POISON, 20);
+             StoreItem(CONSUM_ID_MIND_POISON_II, 20);
          }
          if (level >= 44 && level < 46) {
-             StoreItem(CONSUM_ID_DEADLY_POISON_II, 5);
-            StoreItem(CONSUM_ID_INSTANT_POISON_IV, 5);
+             StoreItem(CONSUM_ID_DEADLY_POISON_II, 20);
+            StoreItem(CONSUM_ID_INSTANT_POISON_IV, 20);
+            StoreItem(CONSUM_ID_CRIPPLING_POISON, 20);
+            StoreItem(CONSUM_ID_MIND_POISON_II, 20);
          }
          if (level >= 46 && level < 52) {
-             StoreItem(CONSUM_ID_DEADLY_POISON_III, 5);
-             StoreItem(CONSUM_ID_INSTANT_POISON_IV, 5);
+             StoreItem(CONSUM_ID_DEADLY_POISON_III, 20);
+             StoreItem(CONSUM_ID_INSTANT_POISON_IV, 20);
+             StoreItem(CONSUM_ID_CRIPPLING_POISON, 20);
+             StoreItem(CONSUM_ID_MIND_POISON_II, 20);
          }
          if (level >= 52 && level < 54) {
-             StoreItem(CONSUM_ID_DEADLY_POISON_III, 5);
-            StoreItem(CONSUM_ID_INSTANT_POISON_V, 5);
+             StoreItem(CONSUM_ID_DEADLY_POISON_III, 20);
+            StoreItem(CONSUM_ID_INSTANT_POISON_V, 20);
+            StoreItem(CONSUM_ID_CRIPPLING_POISON_II, 20);
+            StoreItem(CONSUM_ID_MIND_POISON_III, 20);
          }
          if (level >= 54 && level < 60) {
-             StoreItem(CONSUM_ID_DEADLY_POISON_IV, 5);
-             StoreItem(CONSUM_ID_INSTANT_POISON_V, 5);
+             StoreItem(CONSUM_ID_DEADLY_POISON_IV, 20);
+             StoreItem(CONSUM_ID_INSTANT_POISON_V, 20);
+             StoreItem(CONSUM_ID_CRIPPLING_POISON_II, 20);
+             StoreItem(CONSUM_ID_MIND_POISON_III, 20);
          }
          if (level >= 60 && level < 62) {
-            StoreItem(CONSUM_ID_DEADLY_POISON_V, 5);
-            StoreItem(CONSUM_ID_INSTANT_POISON_VI, 5);
+            StoreItem(CONSUM_ID_DEADLY_POISON_V, 20);
+            StoreItem(CONSUM_ID_INSTANT_POISON_VI, 20);
+            StoreItem(CONSUM_ID_CRIPPLING_POISON_II, 20);
+            StoreItem(CONSUM_ID_MIND_POISON_III, 20);
          }
          if (level >= 62 && level < 68) {
-            StoreItem(CONSUM_ID_DEADLY_POISON_VI, 5);
-            StoreItem(CONSUM_ID_INSTANT_POISON_VI, 5);
+            StoreItem(CONSUM_ID_DEADLY_POISON_VI, 20);
+            StoreItem(CONSUM_ID_INSTANT_POISON_VI, 20);
          }
          if (level >= 68 && level < 70) {
-             StoreItem(CONSUM_ID_DEADLY_POISON_VI, 5);
-            StoreItem(CONSUM_ID_INSTANT_POISON_VII, 5);
+             StoreItem(CONSUM_ID_DEADLY_POISON_VI, 20);
+            StoreItem(CONSUM_ID_INSTANT_POISON_VII, 20);
          }
          if (level >= 70 && level < 73) {
-             StoreItem(CONSUM_ID_DEADLY_POISON_VII, 5);
-             StoreItem(CONSUM_ID_INSTANT_POISON_VII, 5);
+             StoreItem(CONSUM_ID_DEADLY_POISON_VII, 20);
+             StoreItem(CONSUM_ID_INSTANT_POISON_VII, 20);
          }
          if (level >= 73 && level < 76) {
-             StoreItem(CONSUM_ID_DEADLY_POISON_VII, 5);
-             StoreItem(CONSUM_ID_INSTANT_POISON_VIII, 5);
+             StoreItem(CONSUM_ID_DEADLY_POISON_VII, 20);
+             StoreItem(CONSUM_ID_INSTANT_POISON_VIII, 20);
          }
          if (level >= 76 && level < 79) {
-             StoreItem(CONSUM_ID_DEADLY_POISON_VIII, 5);
-             StoreItem(CONSUM_ID_INSTANT_POISON_VIII, 5);
+             StoreItem(CONSUM_ID_DEADLY_POISON_VIII, 20);
+             StoreItem(CONSUM_ID_INSTANT_POISON_VIII, 20);
          }
          if (level >= 79 && level < 80) {
-             StoreItem(CONSUM_ID_DEADLY_POISON_VIII, 5);
-             StoreItem(CONSUM_ID_INSTANT_POISON_IX, 5);
+             StoreItem(CONSUM_ID_DEADLY_POISON_VIII, 20);
+             StoreItem(CONSUM_ID_INSTANT_POISON_IX, 20);
          }
-         if (level = 80) {
-             StoreItem(CONSUM_ID_DEADLY_POISON_IX, 5);
-             StoreItem(CONSUM_ID_INSTANT_POISON_IX, 5);
+         if (level == 80) {
+             StoreItem(CONSUM_ID_DEADLY_POISON_IX, 20);
+             StoreItem(CONSUM_ID_INSTANT_POISON_IX, 20);
          }
          break;
       }
