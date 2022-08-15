@@ -87,11 +87,17 @@ namespace ai
                 creators["amplify curse"] = &TriggerFactoryInternal::amplify_curse;
                 creators["siphon life"] = &TriggerFactoryInternal::siphon_life;
                 creators["siphon life on attacker"] = &TriggerFactoryInternal::siphon_life_on_attacker;
-
-
+                creators["death coil interrupt"] = &TriggerFactoryInternal::death_coil_interrupt;
+                creators["death coil on enemy healer"] = &TriggerFactoryInternal::death_coil_enemy_healer;
+                creators["death coil on snare target"] = &TriggerFactoryInternal::death_coil_snare_target;
+                creators["inferno"] = &TriggerFactoryInternal::inferno;
             }
 
         private:
+            static Trigger* inferno(PlayerbotAI* ai) { return new InfernoTrigger(ai); }
+            static Trigger* death_coil_snare_target(PlayerbotAI* ai) { return new DeathCoilSnareTrigger(ai); }
+            static Trigger* death_coil_enemy_healer(PlayerbotAI* ai) { return new DeathCoilInterruptTHealerTrigger(ai); }
+            static Trigger* death_coil_interrupt(PlayerbotAI* ai) { return new DeathCoilInterruptTrigger(ai); }
             static Trigger* amplify_curse(PlayerbotAI* ai) { return new AmplifyCurseTrigger(ai); }
             static Trigger* shadow_trance(PlayerbotAI* ai) { return new ShadowTranceTrigger(ai); }
             static Trigger* demon_armor(PlayerbotAI* ai) { return new DemonArmorTrigger(ai); }
@@ -134,8 +140,10 @@ namespace ai
                 creators["spellstone"] = &AiObjectContextInternal::spellstone;
                 creators["summon voidwalker"] = &AiObjectContextInternal::summon_voidwalker;
                 creators["summon succubus"] = &AiObjectContextInternal::summon_succubus;
+                creators["summon felhunter"] = &AiObjectContextInternal::summon_felhunter;
                 creators["summon imp"] = &AiObjectContextInternal::summon_imp;
                 creators["summon felguard"] = &AiObjectContextInternal::summon_felguard;
+                creators["summon inferno"] = &AiObjectContextInternal::inferno;
                 creators["immolate"] = &AiObjectContextInternal::immolate;
                 creators["corruption"] = &AiObjectContextInternal::corruption;
                 creators["corruption on attacker"] = &AiObjectContextInternal::corruption_on_attacker;
@@ -158,10 +166,22 @@ namespace ai
                 creators["incinirate"] = &AiObjectContextInternal::incinirate;
                 creators["conflagrate"] = &AiObjectContextInternal::conflagrate;
                 creators["amplify curse"] = &AiObjectContextInternal::amplify_curse;
+                creators["shadowburn"] = &AiObjectContextInternal::shadowburn;
+                creators["death coil"] = &AiObjectContextInternal::death_coil;
+                creators["death coil on enemy healer"] = &AiObjectContextInternal::death_coil_healer;
+                creators["death coil on snare target"] = &AiObjectContextInternal::death_coil_snare;
+                creators["dark pact"] = &AiObjectContextInternal::dark_pact;
+                creators["howl of terror"] = &AiObjectContextInternal::howl_pf_terror;
             }
 
         private:
+            static Action* howl_pf_terror(PlayerbotAI* ai) { return new CastHowlOfTerrorAction(ai); }
+            static Action* dark_pact(PlayerbotAI* ai) { return new CastDarkPactAction(ai); }
+            static Action* death_coil_snare(PlayerbotAI* ai) { return new CastDeathCoilSnareAction(ai); }
+            static Action* death_coil_healer(PlayerbotAI* ai) { return new CastDeathCoilOnHealerAction(ai); }
+            static Action* death_coil(PlayerbotAI* ai) { return new CastDeathCoilAction(ai); }
             static Action* amplify_curse(PlayerbotAI* ai) { return new CastAmplifyCurseAction(ai); }
+            static Action* shadowburn(PlayerbotAI* ai) { return new CastShadowburnAction(ai); }
             static Action* conflagrate(PlayerbotAI* ai) { return new CastConflagrateAction(ai); }
             static Action* incinirate(PlayerbotAI* ai) { return new CastIncinirateAction(ai); }
             static Action* fear_on_cc(PlayerbotAI* ai) { return new CastFearOnCcAction(ai); }
@@ -169,6 +189,7 @@ namespace ai
             static Action* immolate(PlayerbotAI* ai) { return new CastImmolateAction(ai); }
             static Action* summon_imp(PlayerbotAI* ai) { return new CastSummonImpAction(ai); }
             static Action* summon_succubus(PlayerbotAI* ai) { return new CastSummonSuccubusAction(ai); }
+            static Action* summon_felhunter(PlayerbotAI * ai) { return new CastSummonFelhunterAction(ai); }
             static Action* fel_armor(PlayerbotAI* ai) { return new CastFelArmorAction(ai); }
             static Action* demon_armor(PlayerbotAI* ai) { return new CastDemonArmorAction(ai); }
             static Action* demon_skin(PlayerbotAI* ai) { return new CastDemonSkinAction(ai); }
@@ -178,6 +199,7 @@ namespace ai
             static Action* spellstone(PlayerbotAI* ai) { return new UseSpellItemAction(ai, "spellstone", true); }
             static Action* summon_voidwalker(PlayerbotAI* ai) { return new CastSummonVoidwalkerAction(ai); }
             static Action* summon_felguard(PlayerbotAI* ai) { return new CastSummonFelguardAction(ai); }
+            static Action* inferno(PlayerbotAI* ai) { return new CastSummonInfernoAction(ai); }
             static Action* corruption(PlayerbotAI* ai) { return new CastCorruptionAction(ai); }
             static Action* corruption_on_attacker(PlayerbotAI* ai) { return new CastCorruptionOnAttackerAction(ai); }
             static Action* siphon_life(PlayerbotAI* ai) { return new CastSiphonLifeAction(ai); }
