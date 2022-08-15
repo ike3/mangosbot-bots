@@ -2864,7 +2864,7 @@ void PlayerbotAI::WaitForSpellCast(Spell *spell)
 {
     const SpellEntry* const pSpellInfo = spell->m_spellInfo;
 
-    float castTime = spell->GetCastTime();
+    int32 castTime = spell->GetCastTime();
 	if (IsChanneledSpell(pSpellInfo))
     {
         int32 duration = GetSpellDuration(pSpellInfo);
@@ -2881,6 +2881,10 @@ void PlayerbotAI::WaitForSpellCast(Spell *spell)
     uint32 globalCooldown = CalculateGlobalCooldown(pSpellInfo->Id);
     if (castTime < globalCooldown)
         castTime = globalCooldown;
+
+    // fix cannibalize
+    if (pSpellInfo->Id == 20577)
+        castTime = 10000;
 
     SetNextCheckDelay(castTime + sPlayerbotAIConfig.reactDelay);
 }
