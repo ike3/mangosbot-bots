@@ -1068,8 +1068,10 @@ bool MovementAction::ChaseTo(WorldObject* obj, float distance, float angle)
     bot->GetMotionMaster()->Clear();
     bot->GetMotionMaster()->MoveChase((Unit*)obj, distance, angle);
     // if failed to move
-    if (bot->GetMotionMaster()->GetCurrentMovementGeneratorType() != CHASE_MOTION_TYPE)
-        return false; // return MoveNear(obj, distance);
+    //if (bot->GetMotionMaster()->GetCurrentMovementGeneratorType() != CHASE_MOTION_TYPE)
+       // return false; // return MoveNear(obj, distance);
+    if (bot->IsStopped())
+        return MoveNear(obj, distance);
 
     //WaitForReach(sServerFacade.GetDistance2d(bot, obj));
     return true;
@@ -1274,8 +1276,13 @@ bool MovementAction::Flee(Unit *target)
                 return false;
         }
     }
+    bool fullDistance = false;
+    if (target->IsPlayer())
+        fullDistance = true;
+    if (WorldPosition(bot).isOverworld())
+        fullDistance = true;
 
-    FleeManager manager(bot, ai->GetRange("flee"), bot->GetAngle(target) + M_PI);
+    FleeManager manager(bot, fullDistance ? (ai->GetRange("flee") * 2) : ai->GetRange("flee"), bot->GetAngle(target) + M_PI);
 
     if (!manager.isUseful())
         return false;

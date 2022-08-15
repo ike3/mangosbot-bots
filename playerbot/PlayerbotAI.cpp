@@ -2368,6 +2368,9 @@ bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target, Item* itemTarget)
         if (bot->GetMotionMaster()->top()->GetMovementGeneratorType() != IDLE_MOTION_TYPE)
             isMoving = true;
 
+    if (!bot->IsStopped())
+        isMoving = true;
+
     if (isMoving && ((spell->GetCastTime() || (IsChanneledSpell(pSpellInfo)) && GetSpellDuration(pSpellInfo) > 0)))
     {
         StopMoving();
@@ -2469,6 +2472,9 @@ bool PlayerbotAI::CastSpell(uint32 spellId, float x, float y, float z, Item* ite
     if (!bot->GetMotionMaster()->empty())
         if (bot->GetMotionMaster()->top()->GetMovementGeneratorType() != IDLE_MOTION_TYPE)
             isMoving = true;
+
+    if (!bot->IsStopped())
+        isMoving = true;
 
     if (!sServerFacade.isMoving(bot) || isMoving) bot->SetFacingTo(bot->GetAngleAt(bot->GetPositionX(), bot->GetPositionY(), x, y));
 
