@@ -36,7 +36,7 @@ void GenericPriestStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("fade", 55.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "enemy is close",
+        "enemy five yards",
         NextAction::array(0, new NextAction("psychic scream", 50.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
@@ -56,7 +56,7 @@ void GenericPriestStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("desperate prayer", ACTION_EMERGENCY), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "enemy is close",
+        "enemy five yards",
         NextAction::array(0, new NextAction("elune's grace", ACTION_EMERGENCY), NULL)));
 
     triggers.push_back(new TriggerNode(
