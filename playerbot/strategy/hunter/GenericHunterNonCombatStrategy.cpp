@@ -54,17 +54,25 @@ void GenericHunterNonCombatStrategy::InitTriggers(std::list<TriggerNode*> &trigg
         "low ammo",
         NextAction::array(0, new NextAction("say::low ammo", ACTION_NORMAL), NULL)));
 
-    triggers.push_back(new TriggerNode(
+    /*triggers.push_back(new TriggerNode(
         "no ammo",
         NextAction::array(0, new NextAction("switch to melee", ACTION_NORMAL + 1), new NextAction("say::no ammo", ACTION_NORMAL), NULL)));
 
     triggers.push_back(new TriggerNode(
         "has ammo",
-        NextAction::array(0, new NextAction("switch to ranged", ACTION_NORMAL), NULL)));
+        NextAction::array(0, new NextAction("switch to ranged", ACTION_NORMAL), NULL)));*/
 
     triggers.push_back(new TriggerNode(
         "feign death",
         NextAction::array(0, new NextAction("remove feign death", ACTION_INTERRUPT + 1), new NextAction("freezing trap", ACTION_INTERRUPT), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "player has flag",
+        NextAction::array(0, new NextAction("aspect of the cheetah", ACTION_EMERGENCY + 1), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "has attackers",
+        NextAction::array(0, new NextAction("remove aspect of the cheetah", ACTION_EMERGENCY + 1), NULL)));
 }
 
 void HunterPetStrategy::InitTriggers(std::list<TriggerNode*> &triggers)

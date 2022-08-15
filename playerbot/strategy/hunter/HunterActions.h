@@ -33,6 +33,8 @@ namespace ai
         CastConcussiveShotAction(PlayerbotAI* ai) : CastSnareSpellAction(ai, "concussive shot") {}
     };
 
+    SNARE_ACTION(CastScatterShotAction, "scatter shot");
+
     BEGIN_RANGED_SPELL_ACTION(CastDistractingShotAction, "distracting shot")
     END_SPELL_ACTION()
 
@@ -44,9 +46,6 @@ namespace ai
 
     BEGIN_RANGED_SPELL_ACTION(CastSerpentStingAction, "serpent sting")
     virtual bool isUseful();
-    END_SPELL_ACTION()
-
-    BEGIN_RANGED_SPELL_ACTION(CastWyvernStingAction, "wyvern sting")
     END_SPELL_ACTION()
 
     BEGIN_RANGED_SPELL_ACTION(CastViperStingAction, "viper sting")
@@ -141,7 +140,8 @@ namespace ai
     BUFF_ACTION(CastFreezingTrapAction, "freezing trap");
     BUFF_ACTION(CastFrostTrapAction, "frost trap");
     BUFF_ACTION(CastExplosiveTrapAction, "explosive trap");
-
+    SNARE_ACTION(CastBlackArrowSnareAction, "black arrow");
+;
     class CastWingClipAction : public CastMeleeSpellAction
     {
     public:
@@ -198,4 +198,10 @@ namespace ai
         virtual Value<Unit*>* GetTargetValue();
         virtual bool Execute(Event event);
     };
+
+    BUFF_ACTION(IntimidationAction, "intimidation");
+    BUFF_ACTION(DeterrenceAction, "deterrence");
+    MELEE_ACTION(CastCounterattackAction, "counterattack");
+    SNARE_ACTION(WyvernStingSnareAction, "wyvern sting");
+    MELEE_ACTION(MongooseBiteAction, "mongoose bite");
 }
