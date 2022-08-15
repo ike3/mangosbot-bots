@@ -45,6 +45,15 @@ namespace ai
         virtual string getName() { return "combat"; }
     };
 
+    class SubtletyRogueStrategy : public GenericRogueStrategy
+    {
+    public:
+        SubtletyRogueStrategy(PlayerbotAI* ai);
+
+    public:
+        virtual void InitTriggers(std::list<TriggerNode*>& triggers);
+        virtual string getName() { return "subtlety"; }
+    };
 
     class StealthedRogueStrategy : public Strategy
     {

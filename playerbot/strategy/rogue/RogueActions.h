@@ -8,6 +8,7 @@
 namespace ai
 {
     BUFF_ACTION(CastColdBloodAction, "cold blood");
+    BUFF_ACTION_U(CastPreparationAction, "preparation", !bot->IsSpellReady(14177) || !bot->IsSpellReady(2983) || !bot->IsSpellReady(2094));
 
 	class CastEvasionAction : public CastBuffSpellAction
 	{
