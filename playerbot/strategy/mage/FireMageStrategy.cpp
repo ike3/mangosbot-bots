@@ -16,7 +16,7 @@ void FireMageStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "enemy ten yards",
-        NextAction::array(0, new NextAction("blast wave", 61.0f), NULL)));
+        NextAction::array(0, new NextAction("blast wave", 62.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
         "pyroblast",
@@ -36,7 +36,7 @@ void FireMageStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "enemy too close for spell",
-        NextAction::array(0, new NextAction("dragon's breath", 70.0f), NULL)));
+        NextAction::array(0, new NextAction("dragon's breath", 61.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
         "mana shield",
