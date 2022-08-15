@@ -276,7 +276,7 @@ bool PetitionTurnInAction::Execute(Event event)
 
 bool BuyTabardAction::Execute(Event event)
 {
-    bool canBuy = ai->DoSpecificAction("buy", Event("buy tabard", "Hitem:5976:"));
+    bool canBuy = ai->DoSpecificAction("buy", Event("buy tabard", "Hitem:5976:"),true);
 
     if (canBuy && AI_VALUE2(uint32, "item count", chat->formatQItem(5976)))
         return true;

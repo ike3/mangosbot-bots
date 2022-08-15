@@ -311,8 +311,8 @@ bool RpgTradeUsefulAction::Execute(Event event)
                 bot->GetSession()->HandleAcceptTradeOpcode(p);
             }
         }
-        else
-            //bot->Say("Start trade with" + chat->formatWorldobject(player), (bot->GetTeam() == ALLIANCE ? LANG_COMMON : LANG_ORCISH));
+        //else
+        //   bot->Say("Start trade with" + chat->formatWorldobject(player), (bot->GetTeam() == ALLIANCE ? LANG_COMMON : LANG_ORCISH));
 
         ai->SetNextCheckDelay(sPlayerbotAIConfig.rpgDelay);
     }

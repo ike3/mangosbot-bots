@@ -849,6 +849,11 @@ bool QuestRelationTravelDestination::isActive(Player* bot) {
             return false;
         //if (questTemplate->XPValue(bot) == 0)
         //    return false;
+
+        if (getPoints().front()->getMapId() != bot->GetMapId()) //CanTakeQuest will check required conditions which will fail on a different map.
+            if (questTemplate->GetRequiredCondition())          //So we skip this quest for now.
+                return false;
+            
         if (!bot->GetMap()->IsContinent() || !bot->CanTakeQuest(questTemplate, false))
             return false;
 

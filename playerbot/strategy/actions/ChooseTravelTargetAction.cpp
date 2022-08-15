@@ -698,12 +698,11 @@ bool ChooseTravelTargetAction::SetNpcFlagTarget(TravelTarget* target, vector<NPC
         TravelDestinations.push_back(d);
     }
 
-    if (SetBestTarget(target, TravelDestinations))
-    {
-        target->setForced(true);
-    }
+    SetBestTarget(target, TravelDestinations);
 
-    return false;
+    target->setForced(true);
+
+    return true; //Flag targets are always inactive for now.
 }
 
 bool ChooseTravelTargetAction::SetNullTarget(TravelTarget* target)
