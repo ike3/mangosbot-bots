@@ -104,6 +104,8 @@ namespace ai
     public:
         RpgDiscoverAction(PlayerbotAI* ai, string name = "rpg discover") : RpgTaxiAction(ai,name) {}
 
+        virtual bool isUseful() { return rpg->InRange(); }
+
         virtual bool Execute(Event event);
     };
 
