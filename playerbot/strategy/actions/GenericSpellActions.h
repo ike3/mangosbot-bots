@@ -293,7 +293,7 @@ namespace ai
     //cc breakers
 
     BUFF_ACTION(CastWillOfTheForsakenAction, "will of the forsaken");
-    BUFF_ACTION(CastEscapeArtistAction, "escape artist");
+    BUFF_ACTION_U(CastEscapeArtistAction, "escape artist", !ai->HasAura("stealth", AI_VALUE(Unit*, "self target")));
 #ifdef MANGOSBOT_TWO
     SPELL_ACTION(CastEveryManforHimselfAction, "every man for himself");
 #endif
