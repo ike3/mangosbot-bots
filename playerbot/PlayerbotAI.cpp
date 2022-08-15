@@ -2305,7 +2305,10 @@ bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target, Item* itemTarget)
     else if (pSpellInfo->Targets & TARGET_FLAG_DEST_LOCATION)
     {
         WorldLocation aoe = aiObjectContext->GetValue<WorldLocation>("aoe position")->Get();
-        targets.setDestination(aoe.coord_x, aoe.coord_y, aoe.coord_z);
+        if (aoe.coord_x != 0)
+            targets.setDestination(aoe.coord_x, aoe.coord_y, aoe.coord_z);
+        else if (target && target->GetObjectGuid() != bot->GetObjectGuid())
+            targets.setDestination(target->GetPositionX(), target->GetPositionY(), target->GetPositionZ());
     }
     else if (pSpellInfo->Targets & TARGET_FLAG_SOURCE_LOCATION)
     {
