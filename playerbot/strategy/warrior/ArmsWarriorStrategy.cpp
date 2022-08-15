@@ -43,7 +43,7 @@ void ArmsWarriorStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "enemy out of melee",
-        NextAction::array(0, new NextAction("charge", ACTION_MOVE + 9), NULL)));
+        NextAction::array(0, new NextAction("charge", 60.f), NULL)));
 
     triggers.push_back(new TriggerNode(
         "battle stance",
