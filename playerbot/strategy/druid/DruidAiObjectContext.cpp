@@ -94,12 +94,14 @@ namespace ai
                 creators["rake"] = &TriggerFactoryInternal::rake;
                 creators["mark of the wild"] = &TriggerFactoryInternal::mark_of_the_wild;
                 creators["mark of the wild on party"] = &TriggerFactoryInternal::mark_of_the_wild_on_party;
+                creators["gift of the wild on party"] = &TriggerFactoryInternal::gift_of_the_wild_on_party;
                 creators["cure poison"] = &TriggerFactoryInternal::cure_poison;
                 creators["party member cure poison"] = &TriggerFactoryInternal::party_member_cure_poison;
                 creators["remove curse"] = &TriggerFactoryInternal::remove_curse;
                 creators["party member remove curse"] = &TriggerFactoryInternal::party_member_remove_curse;
                 creators["entangling roots"] = &TriggerFactoryInternal::entangling_roots;
                 creators["entangling roots kite"] = &TriggerFactoryInternal::entangling_roots_kite;
+                creators["entangling roots snare"] = &TriggerFactoryInternal::entangling_roots_snare;
                 creators["hibernate"] = &TriggerFactoryInternal::hibernate;
                 creators["bear form"] = &TriggerFactoryInternal::bear_form;
                 creators["cat form"] = &TriggerFactoryInternal::cat_form;
@@ -128,12 +130,14 @@ namespace ai
             static Trigger* rake(PlayerbotAI* ai) { return new RakeTrigger(ai); }
             static Trigger* mark_of_the_wild(PlayerbotAI* ai) { return new MarkOfTheWildTrigger(ai); }
             static Trigger* mark_of_the_wild_on_party(PlayerbotAI* ai) { return new MarkOfTheWildOnPartyTrigger(ai); }
+            static Trigger* gift_of_the_wild_on_party(PlayerbotAI* ai) { return new GiftOfTheWildTrigger(ai); }
             static Trigger* cure_poison(PlayerbotAI* ai) { return new CurePoisonTrigger(ai); }
             static Trigger* party_member_cure_poison(PlayerbotAI* ai) { return new PartyMemberCurePoisonTrigger(ai); }
             static Trigger* remove_curse(PlayerbotAI* ai) { return new RemoveCurseTrigger(ai); }
             static Trigger* party_member_remove_curse(PlayerbotAI* ai) { return new RemoveCurseOnPartyTrigger(ai); }
             static Trigger* entangling_roots(PlayerbotAI* ai) { return new EntanglingRootsTrigger(ai); }
             static Trigger* entangling_roots_kite(PlayerbotAI* ai) { return new EntanglingRootsKiteTrigger(ai); }
+            static Trigger* entangling_roots_snare(PlayerbotAI* ai) { return new EntanglingRootsSnareTrigger(ai); }
             static Trigger* hibernate(PlayerbotAI* ai) { return new HibernateTrigger(ai); }
             static Trigger* bear_form(PlayerbotAI* ai) { return new BearFormTrigger(ai); }
             static Trigger* cat_form(PlayerbotAI* ai) { return new CatFormTrigger(ai); }
@@ -177,6 +181,7 @@ namespace ai
                 creators["hibernate"] = &AiObjectContextInternal::hibernate;
                 creators["entangling roots"] = &AiObjectContextInternal::entangling_roots;
                 creators["entangling roots on cc"] = &AiObjectContextInternal::entangling_roots_on_cc;
+                creators["entangling roots on snare"] = &AiObjectContextInternal::entangling_roots_on_snare;
                 creators["hibernate"] = &AiObjectContextInternal::hibernate;
                 creators["hibernate on cc"] = &AiObjectContextInternal::hibernate_on_cc;
                 creators["wrath"] = &AiObjectContextInternal::wrath;
@@ -205,6 +210,7 @@ namespace ai
                 creators["tiger's fury"] = &AiObjectContextInternal::tigers_fury;
                 creators["mark of the wild"] = &AiObjectContextInternal::mark_of_the_wild;
                 creators["mark of the wild on party"] = &AiObjectContextInternal::mark_of_the_wild_on_party;
+                creators["gift of the wild on party"] = &AiObjectContextInternal::gift_of_the_wild_on_party;
                 creators["regrowth"] = &AiObjectContextInternal::regrowth;
                 creators["rejuvenation"] = &AiObjectContextInternal::rejuvenation;
                 creators["healing touch"] = &AiObjectContextInternal::healing_touch;
@@ -259,6 +265,7 @@ namespace ai
             static Action* hibernate(PlayerbotAI* ai) { return new CastHibernateAction(ai); }
             static Action* entangling_roots(PlayerbotAI* ai) { return new CastEntanglingRootsAction(ai); }
             static Action* entangling_roots_on_cc(PlayerbotAI* ai) { return new CastEntanglingRootsCcAction(ai); }
+            static Action* entangling_roots_on_snare(PlayerbotAI* ai) { return new CastEntanglingRootsSnareAction(ai); }
             static Action* hibernate_on_cc(PlayerbotAI* ai) { return new CastHibernateCcAction(ai); }
             static Action* wrath(PlayerbotAI* ai) { return new CastWrathAction(ai); }
             static Action* starfall(PlayerbotAI* ai) { return new CastStarfallAction(ai); }
@@ -286,6 +293,7 @@ namespace ai
             static Action* tigers_fury(PlayerbotAI* ai) { return new CastTigersFuryAction(ai); }
             static Action* mark_of_the_wild(PlayerbotAI* ai) { return new CastMarkOfTheWildAction(ai); }
             static Action* mark_of_the_wild_on_party(PlayerbotAI* ai) { return new CastMarkOfTheWildOnPartyAction(ai); }
+            static Action* gift_of_the_wild_on_party(PlayerbotAI* ai) { return new CastGiftOfTheWildOnPartyAction(ai); }
             static Action* regrowth(PlayerbotAI* ai) { return new CastRegrowthAction(ai); }
             static Action* rejuvenation(PlayerbotAI* ai) { return new CastRejuvenationAction(ai); }
             static Action* healing_touch(PlayerbotAI* ai) { return new CastHealingTouchAction(ai); }

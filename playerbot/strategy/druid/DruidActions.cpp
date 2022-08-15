@@ -10,16 +10,6 @@ bool CastCasterFormAction::Execute(Event event)
     return true;
 }
 
-Value<Unit*>* CastEntanglingRootsCcAction::GetTargetValue()
-{
-    return context->GetValue<Unit*>("cc target", "entangling roots");
-}
-
-bool CastEntanglingRootsCcAction::Execute(Event event)
-{
-    return ai->CastSpell("entangling roots", GetTarget());
-}
-
 Value<Unit*>* CastHibernateCcAction::GetTargetValue()
 {
     return context->GetValue<Unit*>("cc target", "hibernate");

@@ -118,7 +118,7 @@ void GenericDruidStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "low mana",
-        NextAction::array(0, new NextAction("innervate", ACTION_EMERGENCY + 5), NULL)));
+        NextAction::array(0, new NextAction("innervate", ACTION_HIGH + 5), NULL)));
 
     triggers.push_back(new TriggerNode(
         "player has flag",
