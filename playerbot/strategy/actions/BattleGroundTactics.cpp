@@ -2600,6 +2600,14 @@ bool BGTactics::Execute(Event event)
     if (bg->GetStatus() == STATUS_WAIT_LEAVE)
         return false;
 
+#ifndef MANGOSBOT_ZERO
+    if (bg->IsArena())
+    {
+        ai->ResetStrategies();
+        return false;
+    }
+#endif
+
     // disable buffin during BG to save mana
     if (bg->GetStatus() == STATUS_IN_PROGRESS)
         ai->ChangeStrategy("-buff", BOT_STATE_NON_COMBAT);
