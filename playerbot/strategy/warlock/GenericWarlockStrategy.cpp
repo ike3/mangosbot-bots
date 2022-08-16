@@ -72,6 +72,14 @@ void GenericWarlockStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         "death coil on snare target",
         NextAction::array(0, new NextAction("death coil on snare target", 61.0f), NULL)));
 
+    triggers.push_back(new TriggerNode(
+        "shadowfury interrupt",
+        NextAction::array(0, new NextAction("shadowfury", ACTION_INTERRUPT + 4), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "shadowfury on snare target",
+        NextAction::array(0, new NextAction("shadowfury on snare target", 62.0f), NULL)));
+
 	triggers.push_back(new TriggerNode(
 		"target critical health",
 		NextAction::array(0, new NextAction("drain soul", 30.0f), NULL)));
@@ -95,6 +103,10 @@ void GenericWarlockStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
     triggers.push_back(new TriggerNode(
         "inferno",
         NextAction::array(0, new NextAction("inferno", 50.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "medium threat",
+        NextAction::array(0, new NextAction("soul shatter", 55.0f), NULL)));
 }
 
 void WarlockBoostStrategy::InitTriggers(std::list<TriggerNode*> &triggers)

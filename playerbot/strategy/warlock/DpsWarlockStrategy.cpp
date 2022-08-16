@@ -32,7 +32,7 @@ DpsWarlockStrategy::DpsWarlockStrategy(PlayerbotAI* ai) : GenericWarlockStrategy
 
 NextAction** DpsWarlockStrategy::getDefaultActions()
 {
-    return NextAction::array(0, new NextAction("incinirate", 10.0f), new NextAction("shadow bolt", 10.0f), NULL);
+    return NextAction::array(0, new NextAction("incinerate", 10.0f), new NextAction("shadow bolt", 10.0f), NULL);
 }
 
 void DpsWarlockStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
@@ -67,13 +67,21 @@ void DpsWarlockDebuffStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
         "corruption",
-        NextAction::array(0, new NextAction("corruption", 22.0f), NULL)));
+        NextAction::array(0, new NextAction("seed of corruption", 21.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "corruption",
+        NextAction::array(0, new NextAction("corruption", 21.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
         "curse of agony",
-        NextAction::array(0, new NextAction("curse of agony", 21.0f), NULL)));
+        NextAction::array(0, new NextAction("curse of agony", 22.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
         "siphon life",
         NextAction::array(0, new NextAction("siphon life", 23.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "unstable affliction",
+        NextAction::array(0, new NextAction("unstable affliction", 25.0f), NULL)));
 }

@@ -40,6 +40,7 @@ namespace ai
 
 	SPELL_ACTION(CastShadowburnAction, "shadowburn");
 	BUFF_ACTION(CastDarkPactAction, "dark pact");
+	BUFF_ACTION(CastSoulShatterAction, "soul shatter");
 
 	class CastDrainManaAction : public CastSpellAction
 	{
@@ -162,6 +163,9 @@ namespace ai
         CastShadowfuryAction(PlayerbotAI* ai) : CastSpellAction(ai, "shadowfury") {}
     };
 
+	SNARE_ACTION(CastShadowfurySnareAction, "shadowfury");
+	DEBUFF_ACTION(CastUnstableAfflictionAction, "unstable affliction");
+
     class CastImmolateAction : public CastDebuffSpellAction
     {
     public:
@@ -174,10 +178,10 @@ namespace ai
         CastConflagrateAction(PlayerbotAI* ai) : CastSpellAction(ai, "conflagrate") {}
     };
 
-    class CastIncinirateAction : public CastSpellAction
+    class CastIncinerateAction : public CastSpellAction
     {
     public:
-        CastIncinirateAction(PlayerbotAI* ai) : CastSpellAction(ai, "incinirate") {}
+        CastIncinerateAction(PlayerbotAI* ai) : CastSpellAction(ai, "incinerate") {}
     };
 
     class CastFearAction : public CastDebuffSpellAction
