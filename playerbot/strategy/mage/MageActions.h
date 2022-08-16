@@ -8,6 +8,7 @@ namespace ai
     BUFF_ACTION(CastFireWardAction, "fire ward");
     BUFF_ACTION(CastFrostWardAction, "frost ward");
     BUFF_ACTION(CastBlinkAction, "blink");
+    SPELL_ACTION(CastIceLanceAction, "ice lance");
 
     class CastFireballAction : public CastSpellAction
     {
@@ -249,4 +250,5 @@ namespace ai
 
     SPELL_ACTION_U(CastArcaneExplosionAction, "arcane explosion", sServerFacade.IsDistanceLessOrEqualThan(AI_VALUE2(float, "distance", GetTargetName()), 10.0f));
     SPELL_ACTION(CastConeOfColdAction, "cone of cold");
+    BUFF_ACTION(CastSummonWaterElementalAction, "summon water elemental");
 }
