@@ -1065,8 +1065,10 @@ bool MovementAction::ChaseTo(WorldObject* obj, float distance, float angle)
         ai->InterruptSpell();
     }
 
+#ifndef MANGOSBOT_ZERO
     if (bot->InArena())
         return MoveNear(obj, std::max(ATTACK_DISTANCE, distance));
+#endif
 
     bot->GetMotionMaster()->Clear();
     bot->GetMotionMaster()->MoveChase((Unit*)obj, distance, angle);
