@@ -279,30 +279,6 @@ void PlayerbotAI::UpdateAI(uint32 elapsed, bool minimal)
         StopMoving();
     }
 
-    Unit* currentTarget = aiObjectContext->GetValue<Unit*>("current target")->Get();
-    // disable auto attack in stealth
-    if ((inCombat || currentTarget || currentEngine == engines[BOT_STATE_COMBAT]) && !(bot->hasUnitState(UNIT_STAT_MELEE_ATTACKING) || !bot->GetCurrentSpell(CURRENT_AUTOREPEAT_SPELL)) && !(HasAura("stealth", bot) || HasAura("prowl", bot) || HasAura("vanish", bot)))
-    {
-        bot->addUnitState(UNIT_STAT_MELEE_ATTACKING);
-        if (currentTarget)
-        {
-            //Reset();
-            //bot->Attack(bot->GetVictim(), !IsRanged(bot));
-            bot->CastSpell(currentTarget, IsRanged(bot) ? 75 : 6603, TRIGGERED_OLD_TRIGGERED);
-            bot->SendMeleeAttackStart(currentTarget);
-            //bot->SendForcedObjectUpdate();
-        }
-    }
-
-    if (((!inCombat && !currentTarget || (HasAura("stealth", bot) || HasAura("vanish", bot) || HasAura("prowl", bot)))) && (bot->hasUnitState(UNIT_STAT_MELEE_ATTACKING)))
-    {
-        bot->clearUnitState(UNIT_STAT_MELEE_ATTACKING);
-        bot->InterruptSpell(CURRENT_MELEE_SPELL);
-        if (currentTarget)
-            bot->SendMeleeAttackStop(currentTarget);
-        //bot->SendForcedObjectUpdate();
-    }
-
     // cheat options
     if (bot->IsAlive() && ((uint32)GetCheat() > 0 || (uint32)sPlayerbotAIConfig.botCheatMask > 0))
     {
