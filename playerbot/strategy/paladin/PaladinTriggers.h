@@ -160,4 +160,5 @@ namespace ai
     };
 
     DEBUFF_TRIGGER(AvengerShieldTrigger, "avenger's shield");
+    BOOST_TRIGGER(DivineIlluminationBoostTrigger, "divine illumination");
 }
