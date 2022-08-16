@@ -13,13 +13,13 @@ public:
     {
         creators["aimed shot"] = &aimed_shot;
         creators["chimera shot"] = &chimera_shot;
+        creators["steady shot"] = &steady_shot;
         creators["explosive shot"] = &explosive_shot;
-        creators["concussive shot"] = &concussive_shot;
         creators["viper sting"] = &viper_sting;
         creators["black arrow"] = &black_arrow;
     }
 private:
-    ACTION_NODE_A(black_arrow, "black arrow", "arcane shot");
+    ACTION_NODE_A(black_arrow, "black arrow", "concussive shot");
     static ActionNode* viper_sting(PlayerbotAI* ai)
     {
         return new ActionNode ("viper sting",
@@ -38,9 +38,10 @@ private:
     {
         return new ActionNode ("chimera shot",
             /*P*/ NULL,
-            /*A*/ NextAction::array(0, new NextAction("arcane shot", 10.0f), NULL),
+            /*A*/ NextAction::array(0, new NextAction("steady shot", 10.0f), NULL),
             /*C*/ NULL);
     }
+    ACTION_NODE_A(steady_shot, "steady shot", "arcane shot");
     static ActionNode* explosive_shot(PlayerbotAI* ai)
     {
         return new ActionNode ("explosive shot",
@@ -48,14 +49,6 @@ private:
             /*A*/ NextAction::array(0, new NextAction("aimed shot"), NULL),
             /*C*/ NULL);
     }
-    static ActionNode* concussive_shot(PlayerbotAI* ai)
-    {
-        return new ActionNode ("concussive shot",
-            /*P*/ NULL,
-            /*A*/ NULL,
-            /*C*/ NULL);
-    }
-
 };
 
 DpsHunterStrategy::DpsHunterStrategy(PlayerbotAI* ai) : GenericHunterStrategy(ai)
@@ -82,9 +75,9 @@ void DpsHunterStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("black arrow", 15.0f), NULL)));
 #endif
 
-    triggers.push_back(new TriggerNode(
+    /*triggers.push_back(new TriggerNode(
         "very often",
-        NextAction::array(0, new NextAction("auto shot", 65.0f), NULL)));
+        NextAction::array(0, new NextAction("auto shot", 65.0f), NULL)));*/
 
     triggers.push_back(new TriggerNode(
         "black arrow on snare target",
@@ -108,7 +101,7 @@ void DpsHunterStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "concussive shot on snare target",
-        NextAction::array(0, new NextAction("concussive shot", 61.0f), NULL)));
+        NextAction::array(0, new NextAction("concussive shot", 62.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
         "scatter shot on snare target",
@@ -129,6 +122,14 @@ void DpsHunterStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
     triggers.push_back(new TriggerNode(
         "intimidation on snare target",
         NextAction::array(0, new NextAction("intimidation", 25.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "silencing shot interrupt",
+        NextAction::array(0, new NextAction("silencing shot", ACTION_INTERRUPT), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "silencing shot on enemy healer",
+        NextAction::array(0, new NextAction("silencing shot on enemy healer", ACTION_INTERRUPT), NULL)));
 
     /*triggers.push_back(new TriggerNode(
         "has aggro",

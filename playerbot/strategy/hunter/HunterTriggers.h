@@ -153,6 +153,9 @@ namespace ai
     CAN_CAST_TRIGGER(MongooseBiteCastTrigger, "mongoose bite");
     BOOST_TRIGGER(BestialWrathBoostTrigger, "bestial wrath");
 
+    INTERRUPT_TRIGGER(SilencingShotInterruptTrigger, "silencing shot");
+    INTERRUPT_HEALER_TRIGGER(SilencingShotInterruptHealerTrigger, "silencing shot");
+
     class ViperStingTrigger : public DebuffTrigger
     {
     public:
