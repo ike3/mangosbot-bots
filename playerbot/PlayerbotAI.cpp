@@ -1222,8 +1222,13 @@ void PlayerbotAI::DoNextAction(bool min)
     }
 
     // fix bots in BG not having proper strats
+#ifdef MANGOSBOT_ZERO
     if (bot->InBattleGround() && !HasStrategy("battleground", BOT_STATE_NON_COMBAT))
         ResetStrategies();
+#else
+    if ((bot->InBattleGround() && !bot->InArena() && !HasStrategy("battleground", BOT_STATE_NON_COMBAT)) || (bot->InArena() && !HasStrategy("arena", BOT_STATE_NON_COMBAT)))
+        ResetStrategies();
+#endif
 
     if (master && master->IsInWorld())
 	{       
