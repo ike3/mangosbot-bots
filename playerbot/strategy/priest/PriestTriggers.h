@@ -86,7 +86,7 @@ namespace ai
 #ifdef CMANGOS
             bot->IsInGroup((Player*)GetTarget()) &&
 #endif
-            (ai->GetBuffedCount((Player*)GetTarget(), "prayer of fortitude") + ai->GetBuffedCount((Player*)GetTarget(), "power word: fortitude")) < uint32(bot->GetGroup()->GetMembersCount() * 0.75f);
+            (ai->GetBuffedCount((Player*)GetTarget(), "prayer of fortitude") + ai->GetBuffedCount((Player*)GetTarget(), "power word: fortitude")) < 4;
             ; }
     };
 
@@ -103,7 +103,7 @@ namespace ai
             bot->IsInGroup((Player*)GetTarget()) &&
 #endif
             //ai->GetManaPercent() > 50 &&
-            (ai->GetBuffedCount((Player*)GetTarget(), "prayer of spirit") + ai->GetBuffedCount((Player*)GetTarget(), "divine spirit")) < uint32(bot->GetGroup()->GetMembersCount() * 0.75f);
+            (ai->GetBuffedCount((Player*)GetTarget(), "prayer of spirit") + ai->GetBuffedCount((Player*)GetTarget(), "divine spirit")) < std::max(uint32(5), 4;
             ; }
     };
 
@@ -120,7 +120,7 @@ namespace ai
 #ifdef CMANGOS
                 bot->IsInGroup((Player*)GetTarget()) &&
 #endif
-                (ai->GetBuffedCount((Player*)GetTarget(), "prayer of shadow protection") + ai->GetBuffedCount((Player*)GetTarget(), "shadow protection")) < uint32(bot->GetGroup()->GetMembersCount() * 0.75f);
+                (ai->GetBuffedCount((Player*)GetTarget(), "prayer of shadow protection") + ai->GetBuffedCount((Player*)GetTarget(), "shadow protection")) < 4;
             ;
         }
     };

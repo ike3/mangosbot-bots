@@ -30,7 +30,7 @@ namespace ai {
 #ifdef CMANGOS
                 bot->IsInGroup((Player*)GetTarget()) &&
 #endif
-                (ai->GetBuffedCount((Player*)GetTarget(), "gift of the wild") + ai->GetBuffedCount((Player*)GetTarget(), "mark of the wild")) < uint32(bot->GetGroup()->GetMembersCount() * 0.75f);
+                (ai->GetBuffedCount((Player*)GetTarget(), "gift of the wild") + ai->GetBuffedCount((Player*)GetTarget(), "mark of the wild")) < 4;
             ;
         }
     };
