@@ -1065,6 +1065,9 @@ bool MovementAction::ChaseTo(WorldObject* obj, float distance, float angle)
         ai->InterruptSpell();
     }
 
+    if (bot->InArena())
+        return MoveNear(obj, std::max(ATTACK_DISTANCE, distance));
+
     bot->GetMotionMaster()->Clear();
     bot->GetMotionMaster()->MoveChase((Unit*)obj, distance, angle);
     // if failed to move
