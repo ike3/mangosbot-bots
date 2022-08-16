@@ -146,9 +146,6 @@ bool RpgRepairTrigger::IsActive()
     if (!guidP.HasNpcFlag(UNIT_NPC_FLAG_REPAIR))
         return false;
 
-    if (AI_VALUE2_LAZY(bool, "group or", "should sell,can sell,following party,near leader"))
-        return true;
-
     if (AI_VALUE2_LAZY(bool, "group or", "should repair,can repair,following party,near leader"))
         return true;
 
@@ -416,6 +413,8 @@ bool RpgTradeUsefulTrigger::isFriend(Player* player)
 
     if (!urand(0, 20))
         return true;
+
+    return false;
 }
 
 bool RpgTradeUsefulTrigger::IsActive()
