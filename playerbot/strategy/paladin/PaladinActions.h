@@ -55,6 +55,8 @@ namespace ai
 	BUFF_ACTION(CastRighteousFuryAction, "righteous fury");
 	BUFF_ACTION(CastAvengingWrathAction, "avenging wrath");
 
+	BUFF_ACTION(CastDivineIlluminationAction, "divine illumination");
+
 	class CastDivineStormAction : public CastBuffSpellAction
 	{
 	public:

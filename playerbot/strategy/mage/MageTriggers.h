@@ -85,6 +85,8 @@ namespace ai
         IcyVeinsTrigger(PlayerbotAI* ai) : BoostTrigger(ai, "icy veins") {}
     };
 
+    BOOST_TRIGGER(WaterElementalBoostTrigger, "summon water elemental");
+
     class PolymorphTrigger : public HasCcTargetTrigger
     {
     public:
@@ -133,4 +135,6 @@ namespace ai
         ManaShieldTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "mana shield", 5) {}
         virtual bool IsActive();
     };
+
+    DEBUFF_TRIGGER_A(IceLanceTrigger, "ice lance");
 }

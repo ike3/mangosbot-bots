@@ -58,4 +58,6 @@ namespace ai
 			return CastComboAction::isUseful() && GetTarget() && (GetTarget()->getClass() == CLASS_WARRIOR || GetTarget()->getClass() == CLASS_ROGUE);
 		}
 	};
+
+	SPELL_ACTION(CastPremeditationAction, "premeditation");
 }

@@ -10,6 +10,18 @@ namespace ai
     BUFF_ACTION(CastColdBloodAction, "cold blood");
     BUFF_ACTION_U(CastPreparationAction, "preparation", !bot->IsSpellReady(14177) || !bot->IsSpellReady(2983) || !bot->IsSpellReady(2094));
 
+    class CastShadowstepAction : public CastSpellAction {
+    public:
+        CastShadowstepAction(PlayerbotAI* ai) : CastSpellAction(ai, "shadowstep") {}
+        virtual bool isPossible() { return true; }
+        virtual bool isUseful() {
+            return bot->HasSpell(36554) && bot->IsSpellReady(36554);
+        }
+        virtual bool Execute(Event event) {
+            return bot->CastSpell(GetTarget(), 36554, TRIGGERED_OLD_TRIGGERED);
+        }
+    };
+
 	class CastEvasionAction : public CastBuffSpellAction
 	{
 	public:

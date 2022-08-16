@@ -91,9 +91,15 @@ namespace ai
                 creators["death coil on enemy healer"] = &TriggerFactoryInternal::death_coil_enemy_healer;
                 creators["death coil on snare target"] = &TriggerFactoryInternal::death_coil_snare_target;
                 creators["inferno"] = &TriggerFactoryInternal::inferno;
+                creators["shadowfury interrupt"] = &TriggerFactoryInternal::shadowfury_interrupt;
+                creators["shadowfury on snare target"] = &TriggerFactoryInternal::shadowfury_snare;
+                creators["unstable affliction"] = &TriggerFactoryInternal::unstable_affliction;
             }
 
         private:
+            static Trigger* unstable_affliction(PlayerbotAI* ai) { return new UnstableAfflictionTrigger(ai); }
+            static Trigger* shadowfury_snare(PlayerbotAI* ai) { return new ShadowfurySnareTrigger(ai); }
+            static Trigger* shadowfury_interrupt(PlayerbotAI* ai) { return new ShadowfuryInterruptTrigger(ai); }
             static Trigger* inferno(PlayerbotAI* ai) { return new InfernoTrigger(ai); }
             static Trigger* death_coil_snare_target(PlayerbotAI* ai) { return new DeathCoilSnareTrigger(ai); }
             static Trigger* death_coil_enemy_healer(PlayerbotAI* ai) { return new DeathCoilInterruptTHealerTrigger(ai); }
@@ -115,7 +121,6 @@ namespace ai
             static Trigger* backlash(PlayerbotAI* ai) { return new BacklashTrigger(ai); }
             static Trigger* fear(PlayerbotAI* ai) { return new FearTrigger(ai); }
             static Trigger* immolate(PlayerbotAI* ai) { return new ImmolateTrigger(ai); }
-
         };
     };
 };
@@ -160,10 +165,11 @@ namespace ai
                 creators["seed of corruption"] = &AiObjectContextInternal::seed_of_corruption;
                 creators["rain of fire"] = &AiObjectContextInternal::rain_of_fire;
                 creators["shadowfury"] = &AiObjectContextInternal::shadowfury;
+                creators["shadowfury on snare target"] = &AiObjectContextInternal::shadowfury_snare;
                 creators["life tap"] = &AiObjectContextInternal::life_tap;
                 creators["fear"] = &AiObjectContextInternal::fear;
                 creators["fear on cc"] = &AiObjectContextInternal::fear_on_cc;
-                creators["incinirate"] = &AiObjectContextInternal::incinirate;
+                creators["incinerate"] = &AiObjectContextInternal::incinerate;
                 creators["conflagrate"] = &AiObjectContextInternal::conflagrate;
                 creators["amplify curse"] = &AiObjectContextInternal::amplify_curse;
                 creators["shadowburn"] = &AiObjectContextInternal::shadowburn;
@@ -171,11 +177,15 @@ namespace ai
                 creators["death coil on enemy healer"] = &AiObjectContextInternal::death_coil_healer;
                 creators["death coil on snare target"] = &AiObjectContextInternal::death_coil_snare;
                 creators["dark pact"] = &AiObjectContextInternal::dark_pact;
-                creators["howl of terror"] = &AiObjectContextInternal::howl_pf_terror;
+                creators["howl of terror"] = &AiObjectContextInternal::howl_of_terror;
+                creators["unstable affliction"] = &AiObjectContextInternal::unstable_affliction;
+                creators["soul shatter"] = &AiObjectContextInternal::soul_shatter;
             }
 
         private:
-            static Action* howl_pf_terror(PlayerbotAI* ai) { return new CastHowlOfTerrorAction(ai); }
+            static Action* soul_shatter(PlayerbotAI* ai) { return new CastSoulShatterAction(ai); }
+            static Action* unstable_affliction(PlayerbotAI* ai) { return new CastUnstableAfflictionAction(ai); }
+            static Action* howl_of_terror(PlayerbotAI* ai) { return new CastHowlOfTerrorAction(ai); }
             static Action* dark_pact(PlayerbotAI* ai) { return new CastDarkPactAction(ai); }
             static Action* death_coil_snare(PlayerbotAI* ai) { return new CastDeathCoilSnareAction(ai); }
             static Action* death_coil_healer(PlayerbotAI* ai) { return new CastDeathCoilOnHealerAction(ai); }
@@ -183,7 +193,7 @@ namespace ai
             static Action* amplify_curse(PlayerbotAI* ai) { return new CastAmplifyCurseAction(ai); }
             static Action* shadowburn(PlayerbotAI* ai) { return new CastShadowburnAction(ai); }
             static Action* conflagrate(PlayerbotAI* ai) { return new CastConflagrateAction(ai); }
-            static Action* incinirate(PlayerbotAI* ai) { return new CastIncinirateAction(ai); }
+            static Action* incinerate(PlayerbotAI* ai) { return new CastIncinerateAction(ai); }
             static Action* fear_on_cc(PlayerbotAI* ai) { return new CastFearOnCcAction(ai); }
             static Action* fear(PlayerbotAI* ai) { return new CastFearAction(ai); }
             static Action* immolate(PlayerbotAI* ai) { return new CastImmolateAction(ai); }
@@ -215,6 +225,7 @@ namespace ai
             static Action* seed_of_corruption(PlayerbotAI* ai) { return new CastSeedOfCorruptionAction(ai); }
             static Action* rain_of_fire(PlayerbotAI* ai) { return new CastRainOfFireAction(ai); }
             static Action* shadowfury(PlayerbotAI* ai) { return new CastShadowfuryAction(ai); }
+            static Action* shadowfury_snare(PlayerbotAI* ai) { return new CastShadowfurySnareAction(ai); }
             static Action* life_tap(PlayerbotAI* ai) { return new CastLifeTapAction(ai); }
 
         };

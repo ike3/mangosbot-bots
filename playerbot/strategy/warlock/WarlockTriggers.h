@@ -18,12 +18,15 @@ namespace ai
     };
 
     DEBUFF_TRIGGER(CurseOfAgonyTrigger, "curse of agony");
-    DEBUFF_TRIGGER(CorruptionTrigger, "corruption");
+    DEBUFF_TRIGGER_A(CorruptionTrigger, "corruption");
     DEBUFF_TRIGGER(SiphonLifeTrigger, "siphon life");
+    DEBUFF_TRIGGER(UnstableAfflictionTrigger, "unstable affliction");
 
     INTERRUPT_TRIGGER(DeathCoilInterruptTrigger, "death coil");
     INTERRUPT_HEALER_TRIGGER(DeathCoilInterruptTHealerTrigger, "death coil");
     SNARE_TRIGGER(DeathCoilSnareTrigger, "death coil");
+    SNARE_TRIGGER(ShadowfurySnareTrigger, "shadowfury");
+    INTERRUPT_TRIGGER(ShadowfuryInterruptTrigger, "shadowfury");
 
     class CorruptionOnAttackerTrigger : public DebuffOnAttackerTrigger
     {

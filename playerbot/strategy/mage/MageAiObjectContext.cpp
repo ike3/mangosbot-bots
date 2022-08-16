@@ -115,10 +115,13 @@ namespace ai
                 creators["frost ward"] = &TriggerFactoryInternal::frost_ward;
                 creators["blink"] = &TriggerFactoryInternal::blink;
                 creators["mana shield"] = &TriggerFactoryInternal::mana_shield;
-
+                creators["summon water elemental"] = &TriggerFactoryInternal::summon_water_elemental;
+                creators["ice lance"] = &TriggerFactoryInternal::ice_lance;
             }
 
         private:
+            static Trigger* ice_lance(PlayerbotAI* ai) { return new IceLanceTrigger(ai); }
+            static Trigger* summon_water_elemental(PlayerbotAI* ai) { return new WaterElementalBoostTrigger(ai); }
             static Trigger* mana_shield(PlayerbotAI* ai) { return new ManaShieldTrigger(ai); }
             static Trigger* blink(PlayerbotAI* ai) { return new BlinkTrigger(ai); }
             static Trigger* frost_ward(PlayerbotAI* ai) { return new FrostWardTrigger(ai); }
@@ -202,9 +205,13 @@ namespace ai
                 creators["mana shield"] = &AiObjectContextInternal::mana_shield;
                 creators["arcane explosion"] = &AiObjectContextInternal::arcane_explosion;
                 creators["cone of cold"] = &AiObjectContextInternal::cone_of_cold;
+                creators["summon water elemental"] = &AiObjectContextInternal::summon_water_elemental;
+                creators["ice lance"] = &AiObjectContextInternal::ice_lance;
             }
 
         private:
+            static Action* ice_lance(PlayerbotAI* ai) { return new CastIceLanceAction(ai); }
+            static Action* summon_water_elemental(PlayerbotAI* ai) { return new CastSummonWaterElementalAction(ai); }
             static Action* cone_of_cold(PlayerbotAI* ai) { return new CastConeOfColdAction(ai); }
             static Action* arcane_explosion(PlayerbotAI* ai) { return new CastArcaneExplosionAction(ai); }
             static Action* mana_shield(PlayerbotAI* ai) { return new CastManaShieldAction(ai); }

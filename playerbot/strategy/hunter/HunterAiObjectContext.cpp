@@ -106,9 +106,13 @@ namespace ai
                 creators["viper sting"] = &TriggerFactoryInternal::viper_sting;
                 creators["aimed shot"] = &TriggerFactoryInternal::aimed_shot;
                 creators["bestial wrath"] = &TriggerFactoryInternal::bestial_wrath;
+                creators["silencing shot interrupt"] = &TriggerFactoryInternal::silencing_shot_interrupt;
+                creators["silencing shot on enemy healer"] = &TriggerFactoryInternal::silencing_shot_interrupt_healer;
             }
 
         private:
+            static Trigger* silencing_shot_interrupt_healer(PlayerbotAI* ai) { return new SilencingShotInterruptHealerTrigger(ai); }
+            static Trigger* silencing_shot_interrupt(PlayerbotAI* ai) { return new SilencingShotInterruptTrigger(ai); }
             static Trigger* bestial_wrath(PlayerbotAI* ai) { return new BestialWrathBoostTrigger(ai); }
             static Trigger* aimed_shot(PlayerbotAI* ai) { return new AimedShotTrigger(ai); }
             static Trigger* viper_sting(PlayerbotAI* ai) { return new ViperStingTrigger(ai); }
@@ -205,9 +209,16 @@ namespace ai
                 creators["wyvern sting"] = &AiObjectContextInternal::wyvern_sting;
                 creators["mongoose bite"] = &AiObjectContextInternal::mongoose_bite;
                 creators["black arrow on snare target"] = &AiObjectContextInternal::black_arrow_snare;
+                creators["silencing shot"] = &AiObjectContextInternal::silencing_shot;
+                creators["silencing shot on enemy healer"] = &AiObjectContextInternal::silencing_shot_healer;
+                creators["readiness"] = &AiObjectContextInternal::readiness;
+                creators["steady shot"] = &AiObjectContextInternal::steady_shot;
             }
 
         private:
+            static Action* steady_shot(PlayerbotAI* ai) { return new CastSteadyShotAction(ai); }
+            static Action* silencing_shot_healer(PlayerbotAI* ai) { return new CastSilencingShotOnHealerAction(ai); }
+            static Action* silencing_shot(PlayerbotAI* ai) { return new CastSilencingShotAction(ai); }
             static Action* black_arrow_snare(PlayerbotAI* ai) { return new CastBlackArrowSnareAction(ai); }
             static Action* mongoose_bite(PlayerbotAI* ai) { return new MongooseBiteAction(ai); }
             static Action* wyvern_sting(PlayerbotAI* ai) { return new WyvernStingSnareAction(ai); }

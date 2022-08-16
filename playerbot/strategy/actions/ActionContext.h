@@ -181,6 +181,9 @@ namespace ai
             creators["attack enemy flag carrier"] = &ActionContext::attack_enemy_fc;
             creators["bg check flag"] = &ActionContext::bg_check_flag;
 
+            // lightwell
+            creators["use lightwell"] = &ActionContext::use_lightwell;
+
             // Vehicles
             creators["enter vehicle"] = &ActionContext::enter_vehicle;
             creators["leave vehicle"] = &ActionContext::leave_vehicle;
@@ -377,6 +380,9 @@ namespace ai
         static Action* attack_enemy_fc(PlayerbotAI* ai) { return new AttackEnemyFlagCarrierAction(ai); }
         static Action* bg_use_buff(PlayerbotAI* ai) { return new BGTactics(ai, "use buff"); }
         static Action* bg_check_flag(PlayerbotAI* ai) { return new BGTactics(ai, "check flag"); }   
+
+        // lightwell
+        static Action* use_lightwell(PlayerbotAI* ai) { return new UseLightwellAction(ai); }
 
         // Vehicles
         static Action* enter_vehicle(PlayerbotAI* ai) { return new EnterVehicleAction(ai); }

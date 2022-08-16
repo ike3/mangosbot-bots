@@ -33,6 +33,8 @@ namespace ai
         CastConcussiveShotAction(PlayerbotAI* ai) : CastSnareSpellAction(ai, "concussive shot") {}
     };
 
+    SPELL_ACTION(CastSteadyShotAction, "steady shot");
+
     SNARE_ACTION(CastScatterShotAction, "scatter shot");
 
     BEGIN_RANGED_SPELL_ACTION(CastDistractingShotAction, "distracting shot")
@@ -125,12 +127,6 @@ namespace ai
 		CastRapidFireAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "rapid fire") {}
 	};
 
-	class CastReadinessAction : public CastBuffSpellAction
-	{
-	public:
-		CastReadinessAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "readiness") {}
-	};
-
 	class CastBlackArrow : public CastDebuffSpellAction
 	{
 	public:
@@ -141,6 +137,9 @@ namespace ai
     BUFF_ACTION(CastFrostTrapAction, "frost trap");
     BUFF_ACTION(CastExplosiveTrapAction, "explosive trap");
     SNARE_ACTION(CastBlackArrowSnareAction, "black arrow");
+    SPELL_ACTION(CastSilencingShotAction, "silencing shot");
+    ENEMY_HEALER_ACTION(CastSilencingShotOnHealerAction, "silencing shot");
+    BUFF_ACTION(CastReadinessAction, "readiness");
 ;
     class CastWingClipAction : public CastMeleeSpellAction
     {
