@@ -123,6 +123,16 @@ namespace ai
             // do not use with WSG flag or EYE flag
             return !ai->HasAura(23333, bot) && !ai->HasAura(23335, bot) && !ai->HasAura(34976, bot);
         }
+        virtual bool Execute(Event event)
+        {
+            if (ai->CastSpell("vanish", bot))
+            {
+                ai->ChangeStrategy("+stealthed", BOT_STATE_COMBAT);
+                bot->InterruptSpell(CURRENT_MELEE_SPELL);
+                return true;
+            }
+            return false;
+        }
 	};
 
 	class CastBlindAction : public CastDebuffSpellAction
