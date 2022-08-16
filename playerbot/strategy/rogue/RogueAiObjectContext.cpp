@@ -177,9 +177,13 @@ namespace ai
                 //creators["fan of knives"] = &AiObjectContextInternal::fan_of_knives;
                 creators["cold blood"] = &AiObjectContextInternal::cold_blood;
                 creators["preparation"] = &AiObjectContextInternal::preparation;
+                creators["premeditation"] = &AiObjectContextInternal::premeditation;
+                creators["shadowstep"] = &AiObjectContextInternal::shadowstep;
             }
 
         private:
+            static Action* shadowstep(PlayerbotAI* ai) { return new CastShadowstepAction(ai); }
+            static Action* premeditation(PlayerbotAI* ai) { return new CastPremeditationAction(ai); }
             static Action* preparation(PlayerbotAI* ai) { return new CastPreparationAction(ai); }
             static Action* cold_blood(PlayerbotAI* ai) { return new CastColdBloodAction(ai); }
             static Action* check_stealth(PlayerbotAI* ai) { return new CheckStealthAction(ai); }

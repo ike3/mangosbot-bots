@@ -19,8 +19,10 @@ public:
         creators["kidney shot"] = &kidney_shot;
         creators["slice and dice"] = &slice_and_dice;
         creators["eviscerate"] = &eviscerate;
-        //creators["backstab"] = &backstab;
+        creators["backstab"] = &backstab;
         creators["ambush"] = &ambush;
+        creators["hemorrhage back"] = &hemorrhage_back;
+        creators["hemorrhage front"] = &hemorrhage_front;
     }
 private:
     static ActionNode* riposte(PlayerbotAI* ai)
@@ -33,8 +35,10 @@ private:
     ACTION_NODE_A(mutilate_front, "mutilate", "sinister strike");
     ACTION_NODE_A(mutilate_back, "mutilate", "backstab");
     ACTION_NODE_A(mutilate, "mutilate", "backstab");
-    //ACTION_NODE_A(backstab, "backstab", "sinister strike");
+    ACTION_NODE_A(backstab, "backstab", "melee");
     ACTION_NODE_A(sinister_strike, "sinister strike", "melee");
+    ACTION_NODE_A(hemorrhage_back, "hemorrhage", "backstab");
+    ACTION_NODE_A(hemorrhage_front, "hemorrhage", "sinister strike");
     static ActionNode* kick(PlayerbotAI* ai)
     {
         return new ActionNode("kick",
@@ -182,11 +186,11 @@ void AssassinationRogueStrategy::InitTriggers(std::list<TriggerNode*>& triggers)
 
     triggers.push_back(new TriggerNode(
         "behind target",
-        NextAction::array(0, new NextAction("mutilate back", ACTION_HIGH + 2), NULL)));
+        NextAction::array(0, new NextAction("mutilate back", ACTION_HIGH + 4), NULL)));
 
     triggers.push_back(new TriggerNode(
         "not behind target",
-        NextAction::array(0, new NextAction("mutilate front", ACTION_HIGH + 2), NULL)));
+        NextAction::array(0, new NextAction("mutilate front", ACTION_HIGH + 4), NULL)));
 }
 
 // Combat
@@ -237,8 +241,16 @@ void SubtletyRogueStrategy::InitTriggers(std::list<TriggerNode*>& triggers)
     GenericRogueStrategy::InitTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
+        "behind target",
+        NextAction::array(0, new NextAction("hemorrhage back", ACTION_HIGH + 4), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "not behind target",
+        NextAction::array(0, new NextAction("hemorrhage front", ACTION_HIGH + 4), NULL)));
+
+    /*triggers.push_back(new TriggerNode(
         "hemorrhage",
-        NextAction::array(0, new NextAction("hemorrhage", ACTION_NORMAL + 4), NULL)));
+        NextAction::array(0, new NextAction("hemorrhage or backstab", ACTION_NORMAL + 4), NULL)));*/
 
     triggers.push_back(new TriggerNode(
         "very often",
@@ -259,6 +271,14 @@ void SubtletyRogueStrategy::InitTriggers(std::list<TriggerNode*>& triggers)
     triggers.push_back(new TriggerNode(
         "random",
         NextAction::array(0, new NextAction("preparation", ACTION_HIGH + 1), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "very often",
+        NextAction::array(0, new NextAction("premeditation", ACTION_HIGH + 1), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "enemy out of melee",
+        NextAction::array(0, new NextAction("shadowstep", 62.0f), NULL)));
 }
 
 class StealthedRogueStrategyActionNodeFactory : public NamedObjectFactory<ActionNode>
@@ -297,7 +317,7 @@ void StealthedRogueStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
         "behind target",
-        NextAction::array(0, new NextAction("ambush", ACTION_HIGH + 2), NULL)));
+        NextAction::array(0, new NextAction("ambush", ACTION_HIGH + 3), NULL)));
 
     triggers.push_back(new TriggerNode(
         "not behind target",
@@ -313,7 +333,7 @@ void StealthedRogueStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "enemy flagcarrier near",
-        NextAction::array(0, new NextAction("sprint", 81.0f), NULL)));
+        NextAction::array(0, new NextAction("sprint", 81.0f), new NextAction("unstealth", 80.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
         "unstealth",
@@ -330,6 +350,10 @@ void StealthedRogueStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
     triggers.push_back(new TriggerNode(
         "sprint",
         NextAction::array(0, new NextAction("sprint", ACTION_HIGH + 10), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "enemy out of melee",
+        NextAction::array(0, new NextAction("shadowstep", 62.0f), NULL)));
 }
 
 void StealthStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
