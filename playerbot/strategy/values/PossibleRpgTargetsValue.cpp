@@ -54,6 +54,11 @@ void PossibleRpgTargetsValue::FindUnits(list<Unit*> &targets)
 
 bool PossibleRpgTargetsValue::AcceptUnit(Unit* unit)
 {
+    TravelTarget* travelTarget = context->GetValue<TravelTarget*>("travel target")->Get();
+
+    if (travelTarget->getDestination() && travelTarget->getDestination()->getEntry() == unit->GetEntry())
+        return true;
+
     if (sServerFacade.IsHostileTo(unit, bot) || dynamic_cast<Player*>(unit))
         return false;
 
@@ -67,11 +72,6 @@ bool PossibleRpgTargetsValue::AcceptUnit(Unit* unit)
     {
 		if (unit->HasFlag(UNIT_NPC_FLAGS, *i)) return true;
     }
-
-    TravelTarget* travelTarget = context->GetValue<TravelTarget*>("travel target")->Get();
-
-    if (travelTarget->getDestination() && travelTarget->getDestination()->getEntry() == unit->GetEntry())
-        return true;
 
     if (urand(1, 100) < 25 && sServerFacade.IsFriendlyTo(unit, bot))
         return true;
