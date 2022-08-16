@@ -103,7 +103,7 @@ namespace ai
             bot->IsInGroup((Player*)GetTarget()) &&
 #endif
             //ai->GetManaPercent() > 50 &&
-            (ai->GetBuffedCount((Player*)GetTarget(), "prayer of spirit") + ai->GetBuffedCount((Player*)GetTarget(), "divine spirit")) < std::max(uint32(5), 4;
+            (ai->GetBuffedCount((Player*)GetTarget(), "prayer of spirit") + ai->GetBuffedCount((Player*)GetTarget(), "divine spirit")) < 4;
             ; }
     };
 
