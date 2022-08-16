@@ -38,7 +38,10 @@ void RpgHelper::AfterExecute(bool doDelay, bool waitForGroup, string nextAction)
 
 void RpgHelper::setFacingTo(GuidPosition guidPosition)
 {
-    sServerFacade.SetFacingTo(bot, guidPosition.GetWorldObject());
+    //sServerFacade.SetFacingTo(bot, guidPosition.GetWorldObject());
+    MotionMaster& mm = *bot->GetMotionMaster();
+    bot->SetFacingTo(bot->GetAngle(guidPosition.GetWorldObject()));
+    bot->m_movementInfo.RemoveMovementFlag(MovementFlags(MOVEFLAG_SPLINE_ENABLED | MOVEFLAG_FORWARD));
 }
 
 void RpgHelper::setFacing(GuidPosition guidPosition)
@@ -50,7 +53,11 @@ void RpgHelper::setFacing(GuidPosition guidPosition)
         return;
 
     Unit* unit = guidPosition.GetUnit();
-    sServerFacade.SetFacingTo(unit,bot);   
+    //sServerFacade.SetFacingTo(unit,bot);   
+
+    MotionMaster& mm = *unit->GetMotionMaster();
+    unit->SetFacingTo(unit->GetAngle(bot));
+    unit->m_movementInfo.RemoveMovementFlag(MovementFlags(MOVEFLAG_SPLINE_ENABLED | MOVEFLAG_FORWARD));
 }
 
 void RpgHelper::resetFacing(GuidPosition guidPosition)
@@ -289,9 +296,17 @@ bool RpgTradeUsefulAction::Execute(Event event)
     param << " ";
     param << chat->formatItem(item->GetProto());
 
-    bool isTrading = ai->DoSpecificAction("trade", Event("rpg action", param.str().c_str()), true);
+    if (ai->IsRealPlayer() && !bot->GetTradeData()) //Start the trade from the other side to open the window
+    {
+        WorldPacket packet(CMSG_INITIATE_TRADE);
+        packet << bot->GetObjectGuid();
+        player->GetSession()->HandleInitiateTradeOpcode(packet);
+    }
 
-    isTrading = isTrading || bot->GetTradeData();
+    if (!IsTradingItem(item->GetEntry()))
+        ai->DoSpecificAction("trade", Event("rpg action", param.str().c_str()), true);
+
+    bool isTrading = bot->GetTradeData();
 
     if (isTrading)
     {
@@ -316,7 +331,6 @@ bool RpgTradeUsefulAction::Execute(Event event)
 
         ai->SetNextCheckDelay(sPlayerbotAIConfig.rpgDelay);
     }
-
 
     rpg->AfterExecute(isTrading, true, isTrading ? "rpg trade useful" : "rpg");
 

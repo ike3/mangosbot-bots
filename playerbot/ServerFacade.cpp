@@ -69,7 +69,7 @@ void ServerFacade::SetFacingTo(Unit* unit, float angle, bool force)
         unit->SetOrientation(angle);
         unit->SendHeartBeat();
     }
-    unit->m_movementInfo.RemoveMovementFlag(MovementFlags(MOVEFLAG_SPLINE_ENABLED | MOVEFLAG_FORWARD));
+    //unit->m_movementInfo.RemoveMovementFlag(MovementFlags(MOVEFLAG_SPLINE_ENABLED | MOVEFLAG_FORWARD));
 }
 
 bool ServerFacade::IsFriendlyTo(Unit* bot, Unit* to)
