@@ -26,6 +26,6 @@ void TotemsShamanStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("strength of earth totem", 18.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "flametongue totem",
-        NextAction::array(0, new NextAction("flametongue totem", 17.0f), NULL)));
+        "searing totem",
+        NextAction::array(0, new NextAction("searing totem", 17.0f), NULL)));
 }
