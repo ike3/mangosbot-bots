@@ -24,7 +24,7 @@ namespace ai
         UseLightwellAction(PlayerbotAI* ai) : MovementAction(ai, "lightwell") {}
         virtual bool isUseful()
         {
-            return (bot->getClass() == CLASS_PRIEST || bot->GetGroup()) && bot->GetHealthPercent() < sPlayerbotAIConfig.almostFullHealth && !ai->HasAura("lightwell renew", bot);
+            return (bot->getClass() == CLASS_PRIEST || bot->GetGroup()) && bot->GetHealthPercent() < sPlayerbotAIConfig.mediumHealth && !ai->HasAura("lightwell renew", bot);
         }
         virtual ActionThreatType getThreatType() { return ACTION_THREAT_NONE; }
         virtual bool Execute(Event event)
