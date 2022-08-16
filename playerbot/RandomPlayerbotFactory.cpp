@@ -732,7 +732,7 @@ void RandomPlayerbotFactory::CreateRandomArenaTeams()
         delete results;
     }
 
-    if (sPlayerbotAIConfig.deleteRandomBotArenaTeams)
+    if (sPlayerbotAIConfig.deleteRandomBotArenaTeams && !sRandomPlayerbotMgr.arenaTeamsDeleted)
     {
         sLog.outString("Deleting random bot arena teams...");
         for (vector<uint32>::iterator i = randomBots.begin(); i != randomBots.end(); ++i)
@@ -744,6 +744,8 @@ void RandomPlayerbotFactory::CreateRandomArenaTeams()
                 arenateam->Disband(NULL);
         }
         sLog.outString("Random bot arena teams deleted");
+
+        sRandomPlayerbotMgr.arenaTeamsDeleted = true;
     }
 
     int arenaTeamNumber = 0;
