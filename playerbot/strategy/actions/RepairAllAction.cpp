@@ -76,7 +76,7 @@ bool RepairAllAction::Execute(Event event)
 
         context->GetValue<uint32>("death count")->Set(0);
 
-        return true;
+        return durability < 100 && AI_VALUE(uint8, "durability") > durability;
     }
 
     ai->TellError("Cannot find any npc to repair at");
