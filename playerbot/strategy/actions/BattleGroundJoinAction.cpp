@@ -177,11 +177,11 @@ bool BGJoinAction::gatherArenaTeam(ArenaType type)
             if (!sPlayerbotAIConfig.IsInRandomAccountList(member->GetSession()->GetAccountId()))
                 continue;
 
-            if (member->IsInCombat())
-                continue;
-
             if (member->GetObjectGuid() == bot->GetObjectGuid())
                 continue;
+
+            if (member->IsInCombat())
+                member->CombatStop(true);
 
             if (member->GetGroup() && member->GetGroup() != leaderGroup)
                 member->GetGroup()->RemoveMember(member->GetObjectGuid(), 0);
@@ -261,7 +261,8 @@ bool BGJoinAction::gatherArenaTeam(ArenaType type)
 
         member->GetPlayerbotAI()->Reset(true);
 
-        member->TeleportTo(bot->GetMapId(), bot->GetPositionX(), bot->GetPositionY(), bot->GetPositionZ(), 0);
+        if (!member->IsWithinDistInMap(bot, sPlayerbotAIConfig.sightDistance, false))
+            member->TeleportTo(bot->GetMapId(), bot->GetPositionX(), bot->GetPositionY(), bot->GetPositionZ(), 0);
 
         sLog.outDetail("Bot #%d <%s>: Member of <%s>", member->GetGUIDLow(), member->GetName(), arenateam->GetName().c_str());
     }
@@ -325,13 +326,23 @@ bool BGJoinAction::shouldJoinBg(BattleGroundQueueTypeId queueTypeId, BattleGroun
 
     bool isArena = false;
     bool isRated = false;
+    bool hasTeam = false;
     bool isTeamLead = false;
-    bool noLag = sWorld.GetMaxDiff() < 100;
+    bool noLag = sWorld.GetMaxDiff() < 200;
 
 #ifndef MANGOSBOT_ZERO
     ArenaType type = sServerFacade.BgArenaType(queueTypeId);
     if (type != ARENA_TYPE_NONE)
         isArena = true;
+
+    for (uint8 i = 0; i < MAX_ARENA_SLOT; ++i)
+    {
+        if (uint32 a_id = bot->GetArenaTeamId(i))
+        {
+            hasTeam = true;
+            break;
+        }
+    }
 
     isTeamLead = sObjectMgr.GetArenaTeamByCaptain(bot->GetObjectGuid());
 #endif
@@ -343,11 +354,14 @@ bool BGJoinAction::shouldJoinBg(BattleGroundQueueTypeId queueTypeId, BattleGroun
     if (!hasPlayers && !isArena && queueTypeId != BATTLEGROUND_QUEUE_WS)
         return false;
 
-    if (!hasPlayers && (!noLag || urand(0, 10)))
+    if (!hasPlayers && !noLag)
         return false;
 
 #ifndef MANGOSBOT_ZERO
-    if (!hasPlayers && isArena && (!noLag || /*urand(0, 10) ||*/ type != ARENA_TYPE_2v2))
+    if (!hasPlayers && isArena && !hasTeam)
+        return false;
+
+    if (!hasPlayers && !isArena && hasTeam)
         return false;
 #endif
 
@@ -756,12 +770,22 @@ bool FreeBGJoinAction::shouldJoinBg(BattleGroundQueueTypeId queueTypeId, BattleG
 
     bool isArena = false;
     bool isRated = false;
-    bool noLag = sWorld.GetMaxDiff() < 100;
+    bool hasTeam = false;
+    bool noLag = sWorld.GetMaxDiff() < 200;
 
 #ifndef MANGOSBOT_ZERO
     ArenaType type = sServerFacade.BgArenaType(queueTypeId);
     if (type != ARENA_TYPE_NONE)
         isArena = true;
+
+    for (uint8 i = 0; i < MAX_ARENA_SLOT; ++i)
+    {
+        if (uint32 a_id = bot->GetArenaTeamId(i))
+        {
+            hasTeam = true;
+            break;
+        }
+    }
 #endif
 
     bool hasPlayers = (sRandomPlayerbotMgr.BgPlayers[queueTypeId][bracketId][0] + sRandomPlayerbotMgr.BgPlayers[queueTypeId][bracketId][1]) > 0;
@@ -769,11 +793,14 @@ bool FreeBGJoinAction::shouldJoinBg(BattleGroundQueueTypeId queueTypeId, BattleG
     if (!hasPlayers && !isArena && queueTypeId != BATTLEGROUND_QUEUE_WS)
         return false;
 
-    if (!hasPlayers && !noLag)
+    if (!hasPlayers && !noLag && !(isArena && hasTeam))
         return false;
 
 #ifndef MANGOSBOT_ZERO
-    if (!hasPlayers && isArena && (!noLag || !urand(0, 2)))
+    if (!hasPlayers && isArena && !hasTeam)
+        return false;
+
+    if (!hasPlayers && !isArena && hasTeam)
         return false;
 #endif
 
