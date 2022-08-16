@@ -55,6 +55,10 @@ void ShadowPriestStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
     triggers.push_back(new TriggerNode(
         "low mana",
         NextAction::array(0, new NextAction("mana burn", ACTION_HIGH), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "target critical health",
+        NextAction::array(0, new NextAction("shadow word: death", ACTION_INTERRUPT + 1), NULL)));
 }
 
 void ShadowPriestAoeStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
