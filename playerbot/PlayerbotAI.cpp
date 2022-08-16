@@ -3239,20 +3239,24 @@ bool PlayerbotAI::AllowActive(ActivityType activityType)
        return false;
 
     //If has real players - slow down continents without player
-    //Unlike before we don't simply return false here when diff grows to large or a big number of bots will enable/disable at once.
-    //Instead we give bots not in active continents/area's a smaller chance to be active.
-    if (!sRandomPlayerbotMgr.GetPlayers().empty() && mod < 1.0)
+    //This means we first disable bots in a different continent/area.
+    if (!sRandomPlayerbotMgr.GetPlayers().empty() && mod < 1.0f)
     {
+        mod *= 4.0f; 
+
         if (bot->GetMap() && !bot->GetMap()->HasRealPlayers() && bot->GetMap()->IsContinent())
-            mod *= 0.25;
+            mod *= 0.25f;
         else if (bot->GetMap() && bot->GetMap()->IsContinent())
         {
             ContinentArea currentArea = sMapMgr.GetContinentInstanceId(bot->GetMapId(), bot->GetPositionX(), bot->GetPositionY());
             if (currentArea == MAP_NO_AREA)
-                mod *= 0.25;
+                mod *= 0.25f;
             else if (!bot->GetMap()->HasActiveAreas(currentArea))
-                mod *= 0.5;
+                mod *= 0.5f;
         }
+
+        if (mod > 1.0f)
+            mod = 1.0f;
     }
 
     uint32 ActivityNumber = GetFixedBotNumer(BotTypeNumber::ACTIVITY_TYPE_NUMBER, 100, sPlayerbotAIConfig.botActiveAlone * mod * 0.01f); //The last number if the amount it cycles per min. Currently set to 1% of the active bots.
