@@ -1071,7 +1071,7 @@ bool MovementAction::ChaseTo(WorldObject* obj, float distance, float angle)
     //if (bot->GetMotionMaster()->GetCurrentMovementGeneratorType() != CHASE_MOTION_TYPE)
        // return false; // return MoveNear(obj, distance);
     if (bot->IsStopped())
-        return MoveNear(obj, distance);
+        return MoveNear(obj, std::max(ATTACK_DISTANCE, distance));
 
     //WaitForReach(sServerFacade.GetDistance2d(bot, obj));
     return true;
