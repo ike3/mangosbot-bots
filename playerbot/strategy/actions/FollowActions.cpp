@@ -37,10 +37,18 @@ bool FollowAction::isUseful()
     string target = formation->GetTargetName();
 
     Unit* fTarget = NULL;
-    if(!target.empty())
+    if (!target.empty())
         fTarget = AI_VALUE(Unit*, target);
     else
         fTarget = AI_VALUE(Unit*, "master target");
+
+    if (fTarget->IsPlayer())
+    {
+        GuidPosition guidP(fTarget);
+        Player* fPlayer = guidP.GetPlayer();
+        if (fPlayer->GetPlayerbotAI() && AI_VALUE(GuidPosition, "rpg target") && bot->IsMoving())
+            return false;
+    }
 
     if (fTarget)
     {
