@@ -591,7 +591,7 @@ void AiFactory::AddDefaultNonCombatStrategies(Player* player, PlayerbotAI* const
         nonCombatEngine->removeStrategy("rpg maintenance");
         nonCombatEngine->removeStrategy("rpg guild");
         nonCombatEngine->removeStrategy("rpg bg");
-        nonCombatEngine->addStrategy("rpg player");
+        nonCombatEngine->removeStrategy("rpg player");
 
         nonCombatEngine->removeStrategy("grind");
 
