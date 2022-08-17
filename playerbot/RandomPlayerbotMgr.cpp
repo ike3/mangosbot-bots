@@ -229,13 +229,15 @@ double botPIDImpl::calculate(double setpoint, double pv)
 
     // Restrict to max/min
     if (output > _max)
+    {
         output = _max;
+        _integral -= error * _dt; //Stop integral buildup at max
+    }
     else if (output < _min)
+    {
         output = _min;
-
-    //Reset the integral when the error crossses 0 to prevent integrator windup.
-    //if ((error > 0) != (_pre_error > 0))
-    //    _integral = 0;
+        _integral -= error * _dt; //Stop integral buildup at min
+    }
 
     // Save error to previous error
     _pre_error = error;
