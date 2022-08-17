@@ -42,7 +42,7 @@ bool FollowAction::isUseful()
     else
         fTarget = AI_VALUE(Unit*, "master target");
 
-    if (fTarget->IsPlayer())
+    if (fTarget && fTarget->IsPlayer())
     {
         GuidPosition guidP(fTarget);
         Player* fPlayer = guidP.GetPlayer();
