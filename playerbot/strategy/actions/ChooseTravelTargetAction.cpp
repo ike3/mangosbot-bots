@@ -31,6 +31,7 @@ bool ChooseTravelTargetAction::Execute(Event event)
 //
 //Eventually we want to rewrite this to be more intelligent.
 void ChooseTravelTargetAction::getNewTarget(TravelTarget* newTarget, TravelTarget* oldTarget)
+
 {
     bool foundTarget = false;
 
@@ -98,7 +99,7 @@ void ChooseTravelTargetAction::getNewTarget(TravelTarget* newTarget, TravelTarge
         foundTarget = SetQuestTarget(newTarget, true, true, true);    //Do any nearby                                              
 
     //Explore a nearby unexplored area.
-    if (!foundTarget && ai->HasStrategy("explore", BOT_STATE_NON_COMBAT))  //Explore a unexplored sub-zone.
+    if (!foundTarget && ai->HasStrategy("explore", BOT_STATE_NON_COMBAT) && urand(1, 100) > 90)  //10% chance Explore a unexplored sub-zone.
         foundTarget = SetExploreTarget(newTarget);
 
     //Just hang with an npc
@@ -108,6 +109,9 @@ void ChooseTravelTargetAction::getNewTarget(TravelTarget* newTarget, TravelTarge
         if(foundTarget)
             newTarget->setForced(true);
     }
+
+    if(!foundTarget)
+        foundTarget = SetGrindTarget(newTarget);
 
     if (!foundTarget)
         SetNullTarget(newTarget);                                           //Idle a bit.
@@ -611,7 +615,7 @@ bool ChooseTravelTargetAction::SetBossTarget(TravelTarget* target)
 bool ChooseTravelTargetAction::SetExploreTarget(TravelTarget* target)
 {
     //Find exploration loctions (middle of a sub-zone).
-    vector<TravelDestination*> TravelDestinations = sTravelMgr.getExploreTravelDestinations(bot, true, true);
+    vector<TravelDestination*> TravelDestinations = sTravelMgr.getExploreTravelDestinations(bot, true, false);
 
     return SetBestTarget(target, TravelDestinations);
 }
