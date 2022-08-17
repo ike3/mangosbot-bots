@@ -10,7 +10,7 @@ namespace ai
         AcceptAllQuestsAction(PlayerbotAI* ai, string name = "accept all quests") : QuestAction(ai, name) {}
 
     protected:
-        virtual void ProcessQuest(Quest const* quest, WorldObject* questGiver);
+        virtual bool ProcessQuest(Quest const* quest, WorldObject* questGiver);
     };
 
     class AcceptQuestAction : public AcceptAllQuestsAction {

@@ -6,8 +6,10 @@
 
 using namespace ai;
 
-void TalkToQuestGiverAction::ProcessQuest(Quest const* quest, WorldObject* questGiver)
+bool TalkToQuestGiverAction::ProcessQuest(Quest const* quest, WorldObject* questGiver)
 {
+    bool isCompleted = false;
+
     std::ostringstream out; out << "Quest ";
 
     QuestStatus status = bot->GetQuestStatus(quest->GetQuestId());
@@ -20,7 +22,7 @@ void TalkToQuestGiverAction::ProcessQuest(Quest const* quest, WorldObject* quest
         {
             QuestStatus masterStatus = master->GetQuestStatus(quest->GetQuestId());
             if (masterStatus == QUEST_STATUS_INCOMPLETE || masterStatus == QUEST_STATUS_FAILED)
-                CompleteQuest(master, quest->GetQuestId());
+                isCompleted |= CompleteQuest(master, quest->GetQuestId());
         }
     }
 
@@ -28,7 +30,7 @@ void TalkToQuestGiverAction::ProcessQuest(Quest const* quest, WorldObject* quest
     {        
         if (master && master->GetQuestStatus(quest->GetQuestId()) == QUEST_STATUS_COMPLETE && (status == QUEST_STATUS_INCOMPLETE || status == QUEST_STATUS_FAILED))
         {
-            CompleteQuest(bot, quest->GetQuestId());
+            isCompleted |= CompleteQuest(bot, quest->GetQuestId());
             status = bot->GetQuestStatus(quest->GetQuestId());
         }
     }    
@@ -55,6 +57,8 @@ void TalkToQuestGiverAction::ProcessQuest(Quest const* quest, WorldObject* quest
 
     out << ": " << chat->formatQuest(quest);
     ai->TellMaster(out);
+
+    return isCompleted;
 }
 
 void TalkToQuestGiverAction::TurnInQuest(Quest const* quest, WorldObject* questGiver, ostringstream& out) 

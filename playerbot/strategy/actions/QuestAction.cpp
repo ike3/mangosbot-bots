@@ -156,6 +156,8 @@ bool QuestAction::ProcessQuests(WorldObject* questGiver)
     bot->PrepareQuestMenu(guid);
     QuestMenu& questMenu = bot->GetPlayerMenu()->GetQuestMenu();
 
+    bool hasAccept = false;
+
     for (uint32 i = 0; i < questMenu.MenuItemCount(); ++i)
     {
         QuestMenuItem const& menuItem = questMenu.GetItem(i);
@@ -164,10 +166,10 @@ bool QuestAction::ProcessQuests(WorldObject* questGiver)
         if (!quest)
             continue;
 
-        ProcessQuest(quest, questGiver);
+        hasAccept |= ProcessQuest(quest, questGiver);
     }
 
-    return true;
+    return hasAccept;
 }
 
 bool QuestAction::AcceptQuest(Quest const* quest, uint64 questGiver)

@@ -4,10 +4,15 @@
 
 using namespace ai;
 
-void AcceptAllQuestsAction::ProcessQuest(Quest const* quest, WorldObject* questGiver)
+bool AcceptAllQuestsAction::ProcessQuest(Quest const* quest, WorldObject* questGiver)
 {
-    AcceptQuest(quest, questGiver->GetObjectGuid());
-    bot->PlayDistanceSound(620);
+    if (AcceptQuest(quest, questGiver->GetObjectGuid()))
+    {
+        bot->PlayDistanceSound(620);
+        return true;
+    }
+
+    return false;
 }
 
 bool AcceptQuestAction::Execute(Event event)
@@ -25,6 +30,8 @@ bool AcceptQuestAction::Execute(Event event)
     PlayerbotChatHandler ch(master);
     quest = ch.extractQuestId(text);
 
+    bool hasAccept = false;
+
     if (event.getPacket().empty())
     {
         list<ObjectGuid> npcs = AI_VALUE(list<ObjectGuid>, "nearest npcs");
@@ -37,7 +44,7 @@ bool AcceptQuestAction::Execute(Event event)
                 break;
             }
             if (unit && text == "*" && sqrt(bot->GetDistance(unit)) <= INTERACTION_DISTANCE)
-                QuestAction::ProcessQuests(unit);
+                hasAccept |= QuestAction::ProcessQuests(unit);
         }
         list<ObjectGuid> gos = AI_VALUE(list<ObjectGuid>, "nearest game objects");
         for (list<ObjectGuid>::iterator i = gos.begin(); i != gos.end(); i++)
@@ -49,7 +56,7 @@ bool AcceptQuestAction::Execute(Event event)
                 break;
             }
             if (go && text == "*" && sqrt(bot->GetDistance(go)) <= INTERACTION_DISTANCE)
-                QuestAction::ProcessQuests(go);
+                hasAccept |= QuestAction::ProcessQuests(go);
         }
     }
     else
@@ -66,7 +73,7 @@ bool AcceptQuestAction::Execute(Event event)
     if (!qInfo)
         return false;
 
-    bool hasAccept = AcceptQuest(qInfo, guid);
+    hasAccept |= AcceptQuest(qInfo, guid);
 
     if (hasAccept)
         sTravelMgr.logEvent(ai, "AcceptQuestAction", qInfo->GetTitle(), to_string(qInfo->GetQuestId()));
