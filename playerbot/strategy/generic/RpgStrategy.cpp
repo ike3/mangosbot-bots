@@ -13,7 +13,7 @@ float RpgActionMultiplier::GetValue(Action* action)
     string name = action->getName();
 
     if (!nextAction.empty() && dynamic_cast<RpgEnabled*>(action) && name != nextAction)
-        return 0.0f;
+        return 0.1f;
 
     return 1.0f;
 }
@@ -61,13 +61,21 @@ void RpgStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("rpg cancel", 1.001f), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "rpg taxi",
-        NextAction::array(0, new NextAction("rpg taxi", 1.005f), NULL)));
+        "rpg heal",
+        NextAction::array(0, new NextAction("rpg heal", 1.025f), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "rpg discover",
-        NextAction::array(0, new NextAction("rpg discover", 1.110f), NULL)));
+        "rpg use",
+        NextAction::array(0, new NextAction("rpg use", 1.001f), NULL)));
+}
 
+void RpgStrategy::InitMultipliers(std::list<Multiplier*>& multipliers)
+{
+    multipliers.push_back(new RpgActionMultiplier(ai));
+}
+
+void RpgQuestStrategy::InitTriggers(std::list<TriggerNode*>& triggers)
+{
     triggers.push_back(new TriggerNode(
         "rpg start quest",
         NextAction::array(0, new NextAction("rpg start quest", 1.080f), NULL)));
@@ -79,7 +87,10 @@ void RpgStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
     triggers.push_back(new TriggerNode(
         "rpg repeat quest",
         NextAction::array(0, new NextAction("rpg start quest", 1.030f), new NextAction("rpg end quest", 1.030f), NULL)));
+}
 
+void RpgVendorStrategy::InitTriggers(std::list<TriggerNode*>& triggers)
+{
     triggers.push_back(new TriggerNode(
         "rpg buy",
         NextAction::array(0, new NextAction("rpg buy", 1.030f), NULL)));
@@ -87,7 +98,25 @@ void RpgStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
     triggers.push_back(new TriggerNode(
         "rpg sell",
         NextAction::array(0, new NextAction("rpg sell", 1.100f), NULL)));
+}
 
+void RpgExploreStrategy::InitTriggers(std::list<TriggerNode*>& triggers)
+{
+    triggers.push_back(new TriggerNode(
+        "rpg taxi",
+        NextAction::array(0, new NextAction("rpg taxi", 1.005f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "rpg discover",
+        NextAction::array(0, new NextAction("rpg discover", 1.110f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "rpg home bind",
+        NextAction::array(0, new NextAction("rpg home bind", 1.060f), NULL)));
+}
+
+void RpgMaintenanceStrategy::InitTriggers(std::list<TriggerNode*>& triggers)
+{
     triggers.push_back(new TriggerNode(
         "rpg repair",
         NextAction::array(0, new NextAction("rpg repair", 1.095f), NULL)));
@@ -95,35 +124,24 @@ void RpgStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
     triggers.push_back(new TriggerNode(
         "rpg train",
         NextAction::array(0, new NextAction("rpg train", 1.080f), NULL)));
+}
 
-    triggers.push_back(new TriggerNode(
-        "rpg heal",
-        NextAction::array(0, new NextAction("rpg heal", 1.025f), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "rpg home bind",
-        NextAction::array(0, new NextAction("rpg home bind", 1.060f), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "rpg queue bg",
-        NextAction::array(0, new NextAction("rpg queue bg", 1.085f), NULL)));
-
+void RpgGuildStrategy::InitTriggers(std::list<TriggerNode*>& triggers)
+{
     triggers.push_back(new TriggerNode(
         "rpg buy petition",
         NextAction::array(0, new NextAction("rpg buy petition", 1.040f), NULL)));
+}
 
+void RpgBgStrategy::InitTriggers(std::list<TriggerNode*>& triggers)
+{
     triggers.push_back(new TriggerNode(
-        "rpg use",
-        NextAction::array(0, new NextAction("rpg use", 1.001f), NULL)));
+        "rpg queue bg",
+        NextAction::array(0, new NextAction("rpg queue bg", 1.085f), NULL)));
+}
 
-    /*triggers.push_back(new TriggerNode(
-        "rpg spell",
-        NextAction::array(0, new NextAction("rpg spell", 1.001f), NULL)));*/
-
-    /*triggers.push_back(new TriggerNode(
-        "rpg craft",
-        NextAction::array(0, new NextAction("rpg craft", 1.001f), NULL)));*/
-
+void RpgPlayerStrategy::InitTriggers(std::list<TriggerNode*>& triggers)
+{
     triggers.push_back(new TriggerNode(
         "rpg trade useful",
         NextAction::array(0, new NextAction("rpg trade useful", 1.030f), NULL)));
@@ -133,8 +151,13 @@ void RpgStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("rpg duel", 1.010f), NULL)));
 }
 
-void RpgStrategy::InitMultipliers(std::list<Multiplier*>& multipliers)
+void RpgCraftStrategy::InitTriggers(std::list<TriggerNode*>& triggers)
 {
-    multipliers.push_back(new RpgActionMultiplier(ai));
-}
+    triggers.push_back(new TriggerNode(
+        "rpg spell",
+        NextAction::array(0, new NextAction("rpg spell", 1.001f), NULL)));
 
+    triggers.push_back(new TriggerNode(
+        "rpg craft",
+        NextAction::array(0, new NextAction("rpg craft", 1.001f), NULL)));
+}

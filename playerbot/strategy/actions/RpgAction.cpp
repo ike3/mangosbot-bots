@@ -38,50 +38,68 @@ bool RpgAction::isUseful()
 
 bool RpgAction::SetNextRpgAction()
 {
-    Strategy* rpgStrategy = ai->GetAiObjectContext()->GetStrategy("rpg");
+    Strategy* rpgStrategy; 
+    
+    
 
     vector<Action*> actions;
     vector<uint32> relevances;
     list<TriggerNode*> triggerNodes;
-    rpgStrategy->InitTriggers(triggerNodes);
 
-    for (auto& triggerNode : triggerNodes)
+    for (auto& strategy : ai->GetAiObjectContext()->GetSupportedStrategies())
     {
-        Trigger* trigger = context->GetTrigger(triggerNode->getName());
+        if (strategy.find("rpg") == std::string::npos)
+            continue;
 
-        if (trigger)
+        rpgStrategy = ai->GetAiObjectContext()->GetStrategy(strategy);
+
+        rpgStrategy->InitTriggers(triggerNodes);
+
+        for (auto& triggerNode : triggerNodes)
         {
+            Trigger* trigger = context->GetTrigger(triggerNode->getName());
 
-            triggerNode->setTrigger(trigger);
-
-            NextAction** nextActions = triggerNode->getHandlers();
-
-            Trigger* trigger = triggerNode->getTrigger();
-
-            bool isChecked = false;
-
-            for (int32 i = 0; i < NextAction::size(nextActions); i++)
+            if (trigger)
             {
-                NextAction* nextAction = nextActions[i];
 
-                if (nextAction->getRelevance() > 2.0f)
-                    continue;
+                triggerNode->setTrigger(trigger);
 
-                if (!isChecked && !trigger->IsActive())
-                    break;
+                NextAction** nextActions = triggerNode->getHandlers();
 
-                isChecked = true;
+                Trigger* trigger = triggerNode->getTrigger();
 
-                Action* action = ai->GetAiObjectContext()->GetAction(nextAction->getName());
+                bool isChecked = false;
 
-                if (!dynamic_cast<RpgEnabled*>(action) || !action->isPossible() || !action->isUseful())
-                    continue;
+                for (int32 i = 0; i < NextAction::size(nextActions); i++)
+                {
+                    NextAction* nextAction = nextActions[i];
 
-                actions.push_back(action);
-                relevances.push_back((nextAction->getRelevance() - 1) * 1000);
+                    if (nextAction->getRelevance() > 2.0f)
+                        continue;
+
+                    if (!isChecked && !trigger->IsActive())
+                        break;
+
+                    isChecked = true;
+
+                    Action* action = ai->GetAiObjectContext()->GetAction(nextAction->getName());
+
+                    if (!dynamic_cast<RpgEnabled*>(action) || !action->isPossible() || !action->isUseful())
+                        continue;
+
+                    actions.push_back(action);
+                    relevances.push_back((nextAction->getRelevance() - 1) * 1000);
+                }
+                NextAction::destroy(nextActions);
             }
-            NextAction::destroy(nextActions);
         }
+
+        for (list<TriggerNode*>::iterator i = triggerNodes.begin(); i != triggerNodes.end(); i++)
+        {
+            TriggerNode* trigger = *i;
+            delete trigger;
+        }
+        triggerNodes.clear();
     }
 
     if (actions.empty())
@@ -113,13 +131,6 @@ bool RpgAction::SetNextRpgAction()
     sTravelMgr.weighted_shuffle(actions.begin(), actions.end(), relevances.begin(), relevances.end(), gen);
 
     Action* action = actions.front();
-
-    for (list<TriggerNode*>::iterator i = triggerNodes.begin(); i != triggerNodes.end(); i++)
-    {
-        TriggerNode* trigger = *i;
-        delete trigger;
-    }
-    triggerNodes.clear();
 
     if ((ai->HasStrategy("debug", BOT_STATE_NON_COMBAT) || ai->HasStrategy("debug rpg", BOT_STATE_NON_COMBAT)))
     {

@@ -75,6 +75,14 @@ namespace ai
             creators["reveal"] = &StrategyContext::reveal;
             creators["collision"] = &StrategyContext::collision;
             creators["rpg"] = &StrategyContext::rpg;
+            creators["rpg quest"] = &StrategyContext::rpg_quest;
+            creators["rpg vendor"] = &StrategyContext::rpg_vendor;
+            creators["rpg explore"] = &StrategyContext::rpg_explore;
+            creators["rpg maintenance"] = &StrategyContext::rpg_maintenance;
+            creators["rpg guild"] = &StrategyContext::rpg_guild;
+            creators["rpg bg"] = &StrategyContext::rpg_bg;
+            creators["rpg player"] = &StrategyContext::rpg_player;
+            creators["rpg craft"] = &StrategyContext::rpg_craft;
 			creators["travel"] = &StrategyContext::travel;
             creators["explore"] = &StrategyContext::explore;
             creators["map"] = &StrategyContext::map;
@@ -148,6 +156,14 @@ namespace ai
         static Strategy* reveal(PlayerbotAI* ai) { return new RevealStrategy(ai); }
         static Strategy* collision(PlayerbotAI* ai) { return new CollisionStrategy(ai); }
         static Strategy* rpg(PlayerbotAI* ai) { return new RpgStrategy(ai); }
+        static Strategy* rpg_quest(PlayerbotAI* ai) { return new RpgQuestStrategy(ai); }
+        static Strategy* rpg_vendor(PlayerbotAI* ai) { return new RpgVendorStrategy(ai); }
+        static Strategy* rpg_explore(PlayerbotAI* ai) { return new RpgExploreStrategy(ai); }
+        static Strategy* rpg_maintenance(PlayerbotAI* ai) { return new RpgMaintenanceStrategy(ai); }
+        static Strategy* rpg_guild(PlayerbotAI* ai) { return new RpgGuildStrategy(ai); }
+        static Strategy* rpg_bg(PlayerbotAI* ai) { return new RpgBgStrategy(ai); }
+        static Strategy* rpg_player(PlayerbotAI* ai) { return new RpgPlayerStrategy(ai); }
+        static Strategy* rpg_craft(PlayerbotAI* ai) { return new RpgCraftStrategy(ai); }
 		static Strategy* travel(PlayerbotAI* ai) { return new TravelStrategy(ai); }
         static Strategy* explore(PlayerbotAI* ai) { return new ExploreStrategy(ai); }
         static Strategy* map(PlayerbotAI* ai) { return new MapStrategy(ai); }

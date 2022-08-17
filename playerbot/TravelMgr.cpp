@@ -843,6 +843,10 @@ string QuestTravelDestination::getTitle() {
 }
 
 bool QuestRelationTravelDestination::isActive(Player* bot) {
+    PlayerbotAI* ai = bot->GetPlayerbotAI();
+    if(!ai->HasStrategy("rpg quest", BOT_STATE_NON_COMBAT))
+        return false;
+
     if (relation == 0)
     {
         if (questTemplate->GetQuestLevel() >= bot->GetLevel() + (uint32)5)
@@ -857,7 +861,6 @@ bool QuestRelationTravelDestination::isActive(Player* bot) {
         if (!bot->GetMap()->IsContinent() || !bot->CanTakeQuest(questTemplate, false))
             return false;
 
-        PlayerbotAI* ai = bot->GetPlayerbotAI();
         AiObjectContext* context = ai->GetAiObjectContext();
 
         uint32 dialogStatus = sTravelMgr.getDialogStatus(bot, entry, questTemplate);
@@ -925,10 +928,13 @@ string QuestRelationTravelDestination::getTitle() {
 }
 
 bool QuestObjectiveTravelDestination::isActive(Player* bot) {
+    PlayerbotAI* ai = bot->GetPlayerbotAI();
+    if (!ai->HasStrategy("rpg quest", BOT_STATE_NON_COMBAT))
+        return false;
+
     if (questTemplate->GetQuestLevel() > bot->GetLevel() + (uint32)1)
         return false;
 
-    PlayerbotAI* ai = bot->GetPlayerbotAI();
     AiObjectContext* context = ai->GetAiObjectContext();
     if (questTemplate->GetQuestLevel() + 5 > (int)bot->GetLevel() && !AI_VALUE(bool, "can fight equal"))
         return false;
@@ -1069,8 +1075,10 @@ bool GrindTravelDestination::isActive(Player* bot)
 {
     PlayerbotAI* ai = bot->GetPlayerbotAI();
     AiObjectContext* context = ai->GetAiObjectContext();
+
+    WorldPosition botPos(bot);
     
-    if (!AI_VALUE(bool, "should get money"))
+    if (!AI_VALUE(bool, "should get money") && !isOut(&botPos) && !urand(0,10)) 
         return false;
 
     if (AI_VALUE(bool, "should sell"))

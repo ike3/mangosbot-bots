@@ -50,61 +50,70 @@ float ChooseRpgTargetAction::getMaxRelevance(GuidPosition guidP)
     GuidPosition currentRpgTarget = AI_VALUE(GuidPosition, "rpg target");
     SET_AI_VALUE(GuidPosition, "rpg target", guidP);
 
-    Strategy* rpgStrategy = ai->GetAiObjectContext()->GetStrategy("rpg");
+    Strategy* rpgStrategy;
 
     list<TriggerNode*> triggerNodes;
-    rpgStrategy->InitTriggers(triggerNodes);
 
     float maxRelevance = 0.0f;
 
-    for (auto& triggerNode : triggerNodes)
+    for (auto& strategy : ai->GetAiObjectContext()->GetSupportedStrategies())
     {
-        Trigger* trigger = context->GetTrigger(triggerNode->getName());
+        if (strategy.find("rpg") == std::string::npos)
+            continue;
 
-        if (trigger)
+        rpgStrategy = ai->GetAiObjectContext()->GetStrategy(strategy);
+
+        rpgStrategy->InitTriggers(triggerNodes);
+
+        for (auto& triggerNode : triggerNodes)
         {
-            triggerNode->setTrigger(trigger);
+            Trigger* trigger = context->GetTrigger(triggerNode->getName());
 
-            if (triggerNode->getFirstRelevance() < maxRelevance || triggerNode->getFirstRelevance() > 2.0f)
-                continue;
-
-            Trigger* trigger = triggerNode->getTrigger();
-
-            if (!trigger->IsActive())
-                continue;
-
-            NextAction** nextActions = triggerNode->getHandlers();
-
-            bool isRpg = false;
-
-            for (int32 i = 0; i < NextAction::size(nextActions); i++)
+            if (trigger)
             {
-                NextAction* nextAction = nextActions[i];
+                triggerNode->setTrigger(trigger);
 
-                Action* action = ai->GetAiObjectContext()->GetAction(nextAction->getName());
+                if (triggerNode->getFirstRelevance() < maxRelevance || triggerNode->getFirstRelevance() > 2.0f)
+                    continue;
 
-                if (dynamic_cast<RpgEnabled*>(action))
-                    isRpg = true;
-            }
-            NextAction::destroy(nextActions);
+                Trigger* trigger = triggerNode->getTrigger();
 
-            if (isRpg)
-            {
-                maxRelevance = triggerNode->getFirstRelevance();
-                rgpActionReason[guidP] = triggerNode->getName();
+                if (!trigger->IsActive())
+                    continue;
+
+                NextAction** nextActions = triggerNode->getHandlers();
+
+                bool isRpg = false;
+
+                for (int32 i = 0; i < NextAction::size(nextActions); i++)
+                {
+                    NextAction* nextAction = nextActions[i];
+
+                    Action* action = ai->GetAiObjectContext()->GetAction(nextAction->getName());
+
+                    if (dynamic_cast<RpgEnabled*>(action))
+                        isRpg = true;
+                }
+                NextAction::destroy(nextActions);
+
+                if (isRpg)
+                {
+                    maxRelevance = triggerNode->getFirstRelevance();
+                    rgpActionReason[guidP] = triggerNode->getName();
+                }
             }
         }
+
+        for (list<TriggerNode*>::iterator i = triggerNodes.begin(); i != triggerNodes.end(); i++)
+        {
+            TriggerNode* trigger = *i;
+            delete trigger;
+        }
+
+        triggerNodes.clear();
     }
 
     SET_AI_VALUE(GuidPosition,"rpg target", currentRpgTarget);
-
-    for (list<TriggerNode*>::iterator i = triggerNodes.begin(); i != triggerNodes.end(); i++)
-    {
-        TriggerNode* trigger = *i;
-        delete trigger;
-    }
-    
-    triggerNodes.clear();
 
     if (!maxRelevance)
         return 0.0;

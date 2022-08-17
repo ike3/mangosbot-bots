@@ -46,7 +46,7 @@ namespace ai
     {
     public:
         CanRepairValue(PlayerbotAI* ai) : BoolCalculatedValue(ai, "can repair",2) {}
-        virtual bool Calculate() { return AI_VALUE(uint8, "durability") < 100 && AI_VALUE(uint32, "repair cost") < AI_VALUE2(uint32, "free money for", (uint32)NeedMoneyFor::repair); };
+        virtual bool Calculate() { return  ai->HasStrategy("rpg maintenance", BOT_STATE_NON_COMBAT) && AI_VALUE(uint8, "durability") < 100 && AI_VALUE(uint32, "repair cost") < AI_VALUE2(uint32, "free money for", (uint32)NeedMoneyFor::repair); };
     };
 
     class ShouldSellValue : public BoolCalculatedValue
@@ -60,7 +60,7 @@ namespace ai
     {
     public:
         CanSellValue(PlayerbotAI* ai) : BoolCalculatedValue(ai, "can sell",2) {}
-        virtual bool Calculate() { return (AI_VALUE2(uint32, "item count", "usage " + to_string(ITEM_USAGE_VENDOR)) + AI_VALUE2(uint32, "item count", "usage " + to_string(ITEM_USAGE_AH))) > 1; };
+        virtual bool Calculate() { return ai->HasStrategy("rpg vendor", BOT_STATE_NON_COMBAT) && (AI_VALUE2(uint32, "item count", "usage " + to_string(ITEM_USAGE_VENDOR)) + AI_VALUE2(uint32, "item count", "usage " + to_string(ITEM_USAGE_AH))) > 1; };
     };
 
     class CanFightEqualValue: public BoolCalculatedValue
