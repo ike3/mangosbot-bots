@@ -14,15 +14,19 @@ namespace ai
             if (ai->HasActivePlayerMaster())
                 return false;
 
+
             if (ai->GetGroupMaster() && !ai->GetGroupMaster()->GetPlayerbotAI())
                 return false;
 
+            LogCalculatedValue<WorldPosition>* posVal = dynamic_cast<LogCalculatedValue<WorldPosition>*>(context->GetUntypedValue("current position"));
+
             if (!ai->AllowActivity(ALL_ACTIVITY))
+            {
+                posVal->Reset();
                 return false;
+            }
 
             WorldPosition botPos(bot);
-
-            LogCalculatedValue<WorldPosition>* posVal = dynamic_cast<LogCalculatedValue<WorldPosition>*>(context->GetUntypedValue("current position"));
 
             if (posVal->LastChangeDelay() > 5 * MINUTE)
             {
@@ -69,8 +73,15 @@ namespace ai
             if (ai->GetGroupMaster() && !ai->GetGroupMaster()->GetPlayerbotAI())
                 return false;
 
+            LogCalculatedValue<WorldPosition>* posVal = dynamic_cast<LogCalculatedValue<WorldPosition>*>(context->GetUntypedValue("current position"));
+            MemoryCalculatedValue<uint32>* expVal = dynamic_cast<MemoryCalculatedValue<uint32>*>(context->GetUntypedValue("experience"));
+
             if (!ai->AllowActivity(ALL_ACTIVITY))
+            {
+                posVal->Reset();
+                expVal->Reset();
                 return false;
+            }
 
             WorldPosition botPos(bot);
 
@@ -108,16 +119,12 @@ namespace ai
             }
 #endif
 
-            LogCalculatedValue<WorldPosition>* posVal = dynamic_cast<LogCalculatedValue<WorldPosition>*>(context->GetUntypedValue("current position"));
-
             if (posVal->LastChangeDelay() > 10 * MINUTE)
             {
                 //sLog.outBasic("Bot #%d %s:%d <%s> was in the same position for %d seconds", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName(), posVal->LastChangeDelay());
 
                 return true;
             }
-
-            MemoryCalculatedValue<uint32>* expVal = dynamic_cast<MemoryCalculatedValue<uint32>*>(context->GetUntypedValue("experience"));
 
             if (expVal->LastChangeDelay() < 15 * MINUTE)
                 return false;
