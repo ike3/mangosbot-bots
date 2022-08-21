@@ -83,6 +83,10 @@ bool GuildManageNearbyAction::Execute(Event event)
         if (!player || bot == player)
             continue;
 
+        if (player->isDND())
+            continue;
+
+
         if(player->GetGuildId()) //Promote or demote nearby members based on chance.
         {          
             MemberSlot* member = guild->GetMemberSlot(player->GetObjectGuid());

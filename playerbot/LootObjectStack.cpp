@@ -221,16 +221,31 @@ bool LootObject::IsLootPossible(Player* bot)
     if (reqItem && !bot->HasItemCount(reqItem, 1))
         return false;
 
-    Creature* creature = ai->GetCreature(guid);
-    if (creature && sServerFacade.GetDeathState(creature) == CORPSE)
+    if (guid.IsCreature())
     {
-        if (creature->m_loot && skillId != SKILL_SKINNING)
-            if (!creature->m_loot->CanLoot(bot))
-                return false;
+        Creature* creature = ai->GetCreature(guid);
+        if (creature && sServerFacade.GetDeathState(creature) == CORPSE)
+        {
+            if (creature->m_loot && skillId != SKILL_SKINNING)
+                if (!creature->m_loot->CanLoot(bot))
+                    return false;
+        }
     }
 
     if (skillId == SKILL_NONE)
+    {
+        if (guid.IsGameObject())
+        {
+            GameObject* go = ai->GetGameObject(guid);
+            if (go)
+            {
+                if (sObjectMgr.IsGameObjectForQuests(guid.GetEntry())) //If object has quest loot bot needs the quest.
+                    if (!go->ActivateToQuest(bot))
+                        return false;
+            }
+        }
         return true;
+    }
 
     if (skillId == SKILL_FISHING)
         return false;

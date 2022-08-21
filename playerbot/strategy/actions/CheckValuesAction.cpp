@@ -7,6 +7,7 @@
 
 #include "../../TravelMgr.h"
 #include "../../TravelNode.h"
+#include "../values/LastMovementValue.h"
 using namespace ai;
 
 CheckValuesAction::CheckValuesAction(PlayerbotAI* ai) : Action(ai, "check values")
@@ -18,6 +19,11 @@ bool CheckValuesAction::Execute(Event event)
     if (ai->HasStrategy("debug move", BOT_STATE_NON_COMBAT))
     {
         ai->Ping(bot->GetPositionX()-7.5, bot->GetPositionY()+7.5);
+
+        LastMovement& lastMove = *context->GetValue<LastMovement&>("last movement");
+
+        if(lastMove.lastMoveShort)
+            ai->Ping(lastMove.lastMoveShort.getX() - 7.5, lastMove.lastMoveShort.getY() + 7.5);
     }
 
     if (ai->HasStrategy("map", BOT_STATE_NON_COMBAT) || ai->HasStrategy("map full", BOT_STATE_NON_COMBAT))
