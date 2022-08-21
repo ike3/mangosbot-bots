@@ -1177,14 +1177,14 @@ void PlayerbotFactory::InitEquipment(bool incremental)
 #ifdef MANGOSBOT_ZERO
                     quality = urand(ITEM_QUALITY_UNCOMMON, ITEM_QUALITY_RARE);
                 else if (level < 70)
-                    quality = urand(ITEM_QUALITY_UNCOMMON, ITEM_QUALITY_EPIC);
+                    quality = urand(ITEM_QUALITY_RARE, ITEM_QUALITY_EPIC);
 #endif
 #ifdef MANGOSBOT_ONE
                     quality = urand(ITEM_QUALITY_UNCOMMON, ITEM_QUALITY_RARE);
                 else if (level < 70)
                     quality = urand(ITEM_QUALITY_UNCOMMON, ITEM_QUALITY_RARE);
                 else if (level < 80)
-                    quality = urand(ITEM_QUALITY_UNCOMMON, ITEM_QUALITY_EPIC);
+                    quality = urand(ITEM_QUALITY_RARE, ITEM_QUALITY_EPIC);
 #endif
 #ifdef MANGOSBOT_TWO
                 quality = urand(ITEM_QUALITY_UNCOMMON, ITEM_QUALITY_RARE);
@@ -1193,7 +1193,7 @@ void PlayerbotFactory::InitEquipment(bool incremental)
                 else if (level < 80)
                     quality = urand(ITEM_QUALITY_UNCOMMON, ITEM_QUALITY_RARE);
                 else
-                    quality = urand(ITEM_QUALITY_UNCOMMON, ITEM_QUALITY_EPIC);
+                    quality = urand(ITEM_QUALITY_RARE, ITEM_QUALITY_EPIC);
 #endif
             }
             else
@@ -1455,6 +1455,7 @@ void PlayerbotFactory::InitEquipment(bool incremental)
                         Item* pItem = bot->EquipNewItem(eDest, newItemId, true);
                         if (pItem)
                         {
+                            pItem->SetOwnerGuid(bot->GetObjectGuid());
                             EnchantItem(pItem);
                             AddGems(pItem);
                             found = true;

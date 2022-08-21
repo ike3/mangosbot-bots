@@ -319,9 +319,9 @@ void RandomPlayerbotFactory::CreateRandomBots()
             sLog.outString("Deleting all random bot characters...");
 
 #ifdef MANGOSBOT_TWO
-        BarGoLink bar(sPlayerbotAIConfig.randomBotAccountCount * 10);
+        BarGoLink bar(delFriends ? uint32(sPlayerbotAIConfig.randomBotAccountCount) : uint32(sPlayerbotAIConfig.randomBotAccountCount * 10));
 #else
-        BarGoLink bar(sPlayerbotAIConfig.randomBotAccountCount * 9);
+        BarGoLink bar(delFriends ? uint32(sPlayerbotAIConfig.randomBotAccountCount) : uint32(sPlayerbotAIConfig.randomBotAccountCount * 9));
 #endif
 
         // load list of friends

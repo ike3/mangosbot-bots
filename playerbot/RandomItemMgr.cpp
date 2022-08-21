@@ -526,6 +526,7 @@ bool RandomItemMgr::ShouldEquipArmorForSpec(uint8 playerclass, uint8 spec, ItemP
             return false;
 
         resultArmorSubClass = { ITEM_SUBCLASS_ARMOR_SIGIL, ITEM_SUBCLASS_ARMOR_PLATE };
+        break;
     }
 #endif
     case CLASS_PALADIN:
@@ -810,6 +811,14 @@ bool RandomItemMgr::ShouldEquipWeaponForSpec(uint8 playerclass, uint8 spec, Item
         }
         break;
     }
+#ifdef MANGOSBOT_TWO
+    case CLASS_DEATH_KNIGHT:
+    {
+        mh_weapons = { ITEM_SUBCLASS_WEAPON_SWORD, ITEM_SUBCLASS_WEAPON_SWORD2, ITEM_SUBCLASS_WEAPON_AXE, ITEM_SUBCLASS_WEAPON_AXE2, ITEM_SUBCLASS_WEAPON_MACE, ITEM_SUBCLASS_WEAPON_MACE2 };
+        r_weapons = { ITEM_SUBCLASS_ARMOR_SIGIL };
+        break;
+    }
+#endif
     }
 
     if (slot_mh == EQUIPMENT_SLOT_MAINHAND)
@@ -896,6 +905,17 @@ bool RandomItemMgr::CanEquipWeapon(uint8 clazz, ItemPrototype const* proto)
                 proto->SubClass != ITEM_SUBCLASS_WEAPON_THROWN)
             return false;
         break;
+#ifdef MANGOSBOT_TWO
+    case CLASS_DEATH_KNIGHT:
+        if (proto->SubClass != ITEM_SUBCLASS_WEAPON_MACE2 &&
+            proto->SubClass != ITEM_SUBCLASS_WEAPON_SWORD2 &&
+            proto->SubClass != ITEM_SUBCLASS_WEAPON_MACE &&
+            proto->SubClass != ITEM_SUBCLASS_WEAPON_SWORD &&
+            proto->SubClass != ITEM_SUBCLASS_WEAPON_AXE &&
+            proto->SubClass != ITEM_SUBCLASS_WEAPON_AXE2)
+            return false;
+        break;
+#endif
     }
 
     return true;
@@ -1078,6 +1098,9 @@ void RandomItemMgr::BuildItemInfoCache()
 
         // skip random enchant items
         if (proto->RandomProperty)
+            continue;
+
+        if (proto->RandomSuffix)
             continue;
 
 #ifdef MANGOSBOT_TWO
@@ -1431,10 +1454,10 @@ uint32 RandomItemMgr::CalculateStatWeight(uint8 playerclass, uint8 spec, ItemPro
     bool isSpellDamageItem = false;
     bool hasInt = false;
 #ifdef MANGOSBOT_TWO
-    bool noCaster = (Classes)playerclass == CLASS_WARRIOR || (Classes)playerclass == CLASS_ROGUE || (Classes)playerclass == CLASS_DEATH_KNIGHT || (Classes)playerclass == CLASS_HUNTER;
+    bool noCaster = (Classes)playerclass == CLASS_WARRIOR || (Classes)playerclass == CLASS_ROGUE || (Classes)playerclass == CLASS_DEATH_KNIGHT || (Classes)playerclass == CLASS_HUNTER || spec == 30 || spec == 32 || spec == 21 || spec == 6;
     bool hasMana = !((Classes)playerclass == CLASS_WARRIOR || (Classes)playerclass == CLASS_ROGUE || (Classes)playerclass == CLASS_DEATH_KNIGHT);
 
-    if (proto->SubClass == ITEM_SUBCLASS_ARMOR_LIBRAM || proto->SubClass == ITEM_SUBCLASS_ARMOR_IDOL || proto->SubClass == ITEM_SUBCLASS_ARMOR_TOTEM || proto->SubClass == ITEM_SUBCLASS_ARMOR_SIGIL)
+    if (!proto->IsWeapon() && (proto->SubClass == ITEM_SUBCLASS_ARMOR_LIBRAM || proto->SubClass == ITEM_SUBCLASS_ARMOR_IDOL || proto->SubClass == ITEM_SUBCLASS_ARMOR_TOTEM || proto->SubClass == ITEM_SUBCLASS_ARMOR_SIGIL))
         return (uint32)(proto->Quality + proto->ItemLevel);
 #else
     bool noCaster = (Classes)playerclass == CLASS_WARRIOR || (Classes)playerclass == CLASS_ROGUE || (Classes)playerclass == CLASS_HUNTER || spec == 30 || spec == 32 || spec == 21 || spec == 6;
@@ -1475,6 +1498,15 @@ uint32 RandomItemMgr::CalculateStatWeight(uint8 playerclass, uint8 spec, ItemPro
 
                 if (modd == ITEM_MOD_CRIT_MELEE_RATING || modd == ITEM_MOD_CRIT_RATING)
                     isDpsItem = true;
+
+#ifdef MANGOSBOT_TWO
+                if (modd == ITEM_MOD_SPELL_POWER)
+                {
+                    isCasterItem = true;
+                    isHealingItem = true;
+                    isSpellDamageItem = true;
+                }
+#endif
 #endif
 
                 break;
@@ -1567,19 +1599,38 @@ uint32 RandomItemMgr::CalculateStatWeight(uint8 playerclass, uint8 spec, ItemPro
                 // SPELL_AURA_MOD_DAMAGE_DONE
                 if (spellproto->EffectApplyAuraName[j] == SPELL_AURA_MOD_DAMAGE_DONE)
                 {
-                    spellDamage = spellproto->EffectBasePoints[j] + 1;
-                }
-                // spell healing
-                // SPELL_AURA_MOD_HEALING_DONE
-                if (spellproto->EffectApplyAuraName[j] == SPELL_AURA_MOD_HEALING_DONE)
-                {
-                    spellHealing = spellproto->EffectBasePoints[j] + 1;
-                }
-                // check spell power
-                if (spellDamage && spellDamage == spellHealing)
-                {
+                    isSpellDamageItem = true;
                     isCasterItem = true;
-                    spellPower += CalculateSingleStatWeight(playerclass, spec, "splpwr", spellDamage);
+                    spellDamage = spellproto->EffectBasePoints[j] + 1;
+
+                    if (spellproto->EffectMiscValue[j] == SPELL_SCHOOL_MASK_MAGIC)
+                    {
+                        isHealingItem = true;
+                        spellPower += CalculateSingleStatWeight(playerclass, spec, "splpwr", spellDamage);
+                    }
+                    else
+                    {
+                        uint32 specialDamage = 0;
+                        if ((spellproto->EffectMiscValue[j] & SPELL_SCHOOL_MASK_ARCANE) != 0)
+                            specialDamage += CalculateSingleStatWeight(playerclass, spec, "arcsplpwr", spellDamage);
+
+                        if ((spellproto->EffectMiscValue[j] & SPELL_SCHOOL_MASK_FROST) != 0)
+                            specialDamage += CalculateSingleStatWeight(playerclass, spec, "frosplpwr", spellDamage);
+
+                        if ((spellproto->EffectMiscValue[j] & SPELL_SCHOOL_MASK_FIRE) != 0)
+                            specialDamage += CalculateSingleStatWeight(playerclass, spec, "firsplpwr", spellDamage);
+
+                        if ((spellproto->EffectMiscValue[j] & SPELL_SCHOOL_MASK_SHADOW) != 0)
+                            specialDamage += CalculateSingleStatWeight(playerclass, spec, "shasplpwr", spellDamage);
+
+                        if ((spellproto->EffectMiscValue[j] & SPELL_SCHOOL_MASK_NATURE) != 0)
+                            specialDamage += CalculateSingleStatWeight(playerclass, spec, "natsplpwr", spellDamage);
+
+                        if (!specialDamage && isSpellDamageItem)
+                            return 0;
+
+                        spellPower += specialDamage;
+                    }
                 }
 #else
                 // spell damage
@@ -1614,6 +1665,8 @@ uint32 RandomItemMgr::CalculateStatWeight(uint8 playerclass, uint8 spec, ItemPro
 
                         if (!specialDamage && isSpellDamageItem)
                             return 0;
+
+                        spellPower += specialDamage;
                     }
                 }
                 // spell healing
@@ -1818,12 +1871,16 @@ uint32 RandomItemMgr::CalculateStatWeight(uint8 playerclass, uint8 spec, ItemPro
         isHealingItem = true;
     }
 #endif
-
+#ifdef MANGOSBOT_TWO
+    if (spellHeal || spellPower)
+        specType |= ITEM_SPEC_SPELL_HEALING | ITEM_SPEC_SPELL_DAMAGE;
+#else
     if (spellHeal > spellPower || isHealingItem)
         specType |= ITEM_SPEC_SPELL_HEALING;
 
     if (spellPower >= spellHeal)
         specType |= ITEM_SPEC_SPELL_DAMAGE;
+#endif
 
     if (isTankItem && (noCaster || !hasMana || !spellHeal || (!isHealingItem && !isSpellDamageItem)))
         specType |= ITEM_SPEC_TANK;
@@ -1846,6 +1903,18 @@ uint32 RandomItemMgr::CalculateStatWeight(uint8 playerclass, uint8 spec, ItemPro
     if (proto->RequiredLevel > 60 && isDpsItem && (spec == 30 || spec == 3 || spec == 5))
         return 0;
 #endif
+#ifdef MANGOSBOT_TWO
+    // retribution should not use items with spell power in 61+
+    if ((spec == 6 || spec == 21) && (isSpellDamageItem || spellDamage || spellHealing || spellHeal))
+        return 0;
+
+    // filter tanking items (dodge, defense, parry, block) from dps classes
+    if (proto->RequiredLevel > 60 && isTankItem && !(spec == 30 || spec == 3 || spec == 5 || spec == 18))
+        return 0;
+
+    if (proto->RequiredLevel > 60 && isDpsItem && (spec == 30 || spec == 3 || spec == 5 || spec == 18))
+        return 0;
+#endif
 
     // limit speed for tank weapons
     if (spec == 3 && proto->IsWeapon() && proto->Delay > 2300)
@@ -1866,11 +1935,13 @@ uint32 RandomItemMgr::CalculateStatWeight(uint8 playerclass, uint8 spec, ItemPro
         if (!hasMana && noCaster && (spellPower > attackPower || spellHeal > attackPower))
             return 0;
 
+#ifndef MANGOSBOT_TWO
         if ((spec != 6 && spec != 21) && !spellPower && !spellHeal && isSpellDamageItem)
             return 0;
 
         if (/*(spec != 6 && spec != 21) && */!spellHeal && isHealingItem && !isSpellDamageItem)
             return 0;
+#endif
 
         if ((spec != 6 && spec != 21) && !noCaster && isSpellDamageItem && !spellPower)
             return 0;
@@ -2101,7 +2172,11 @@ std::string RandomItemMgr::GetPlayerSpecName(Player* player)
         if (tab == 0)
             specName = "blooddps";
         else if (tab == 1)
-            specName = "frostdps";
+        {
+            specName = "frosttank";
+            if (urand(0, 100) > 50)
+                specName = "frostdps";
+        }
         else if (tab == 2)
             specName = "unholydps";
         break;
@@ -2493,7 +2568,7 @@ uint32 RandomItemMgr::GetLiveStatWeight(Player* player, uint32 itemId, uint32 sp
     // skip quest items
     if (info->source == ITEM_SOURCE_QUEST && info->sourceId)
     {
-        if (player->GetQuestRewardStatus(info->sourceId) != QUEST_STATUS_COMPLETE)
+        if (!player->GetQuestRewardStatus(info->sourceId))
             return 0;
     }
 
