@@ -1100,8 +1100,10 @@ void RandomItemMgr::BuildItemInfoCache()
         if (proto->RandomProperty)
             continue;
 
+#ifndef MANGOSBOT_ZERO
         if (proto->RandomSuffix)
             continue;
+#endif
 
 #ifdef MANGOSBOT_TWO
         // skip heirloom items
