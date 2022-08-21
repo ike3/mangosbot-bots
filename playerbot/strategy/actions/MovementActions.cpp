@@ -1445,7 +1445,7 @@ bool SetBehindTargetAction::Execute(Event event)
         z = target->GetPositionZ();
         bot->UpdateGroundPositionZ(x, y, z);
 
-        return MoveTo(bot->GetMapId(), x, y, z);
+        return MoveTo(bot->GetMapId(), x, y, z, false, true);
     }
 
     return true;
