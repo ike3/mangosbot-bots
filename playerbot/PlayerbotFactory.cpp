@@ -1045,7 +1045,7 @@ bool PlayerbotFactory::CanEquipItem(ItemPrototype const* proto, uint32 desiredQu
 void PlayerbotFactory::InitEquipment(bool incremental)
 {
     bool isRandomBot = sRandomPlayerbotMgr.IsRandomBot(bot) && bot->GetPlayerbotAI() && !bot->GetPlayerbotAI()->HasRealPlayerMaster() && !bot->GetPlayerbotAI()->IsInRealGuild();
-    if (isRandomBot || !incremental)
+    if (!incremental)
     {
         DestroyItemsVisitor visitor(bot);
         IterateItems(&visitor, ITERATE_ITEMS_IN_EQUIP);
