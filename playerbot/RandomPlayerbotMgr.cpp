@@ -1886,15 +1886,6 @@ void RandomPlayerbotMgr::Randomize(Player* bot)
     }
     else
     {
-        // schedule randomise
-        uint32 randomTime = urand(sPlayerbotAIConfig.minRandomBotRandomizeTime, sPlayerbotAIConfig.maxRandomBotRandomizeTime);
-        SetEventValue(bot->GetGUIDLow(), "randomize", 1, randomTime);
-
-        uint32 lastLevel = GetValue(bot, "level");
-        uint32 level = bot->GetLevel();
-        if (lastLevel == level)
-            return;
-        // todo fix upgrade
 
         UpdateGearSpells(bot);
         sLog.outBasic("Bot #%d %s:%d <%s>: gear upgraded", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->GetLevel(), bot->GetName());
@@ -1913,12 +1904,8 @@ void RandomPlayerbotMgr::UpdateGearSpells(Player* bot)
 
     uint32 lastLevel = GetValue(bot, "level");
     uint32 level = bot->GetLevel();
-    //if (lastLevel == level)
-    //    return;
-
     PlayerbotFactory factory(bot, level);
-    // TODO fix upgrade
-    factory.Randomize(false);
+    factory.Randomize(true);
 
     if (lastLevel != level)
         SetValue(bot, "level", level);
@@ -1941,18 +1928,28 @@ void RandomPlayerbotMgr::RandomizeFirst(Player* bot)
         maxLevel = max(sPlayerbotAIConfig.randomBotMinLevel, min(playersLevel, sWorld.getConfig(CONFIG_UINT32_MAX_PLAYER_LEVEL)));
 
 	PerformanceMonitorOperation *pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "RandomizeFirst");
-    uint32 level = urand(sPlayerbotAIConfig.randomBotMinLevel, maxLevel);
+    uint32 level = urand(std::max(uint32(5), sPlayerbotAIConfig.randomBotMinLevel), maxLevel);
 
 #ifdef MANGOSBOT_TWO
     if (bot->getClass() == CLASS_DEATH_KNIGHT)
-        level = urand(max(bot->GetLevel(), sWorld.getConfig(CONFIG_UINT32_START_HEROIC_PLAYER_LEVEL))), max(sWorld.getConfig(CONFIG_UINT32_START_HEROIC_PLAYER_LEVEL), maxLevel));
+        level = urand(max(bot->GetLevel(), sWorld.getConfig(CONFIG_UINT32_START_HEROIC_PLAYER_LEVEL)), max(sWorld.getConfig(CONFIG_UINT32_START_HEROIC_PLAYER_LEVEL), maxLevel));
 #endif
 
-    if (urand(0, 100) < 100 * sPlayerbotAIConfig.randomBotMaxLevelChance)
+    if (urand(0, 100) < 100 * sPlayerbotAIConfig.randomBotMaxLevelChance && level < maxLevel)
         level = maxLevel;
 
 #ifndef MANGOSBOT_ZERO
     if (sWorldState.GetExpansion() == EXPANSION_NONE && level > 60)
+        level = 60;
+#endif
+
+#ifdef MANGOSBOT_TWO
+    // do not allow level down death knights
+    if (bot->getClass() == CLASS_DEATH_KNIGHT && level < sWorld.getConfig(CONFIG_UINT32_START_HEROIC_PLAYER_LEVEL))
+        return;
+
+    // only randomise death knights to min lvl 60
+    if (bot->getClass() == CLASS_DEATH_KNIGHT && level < 60)
         level = 60;
 #endif
 

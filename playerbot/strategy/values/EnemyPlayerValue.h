@@ -48,7 +48,7 @@ namespace ai
 
                 if (bgType == BATTLEGROUND_IC)
                 {
-                    if (ai->IsInVehicle(false, true))
+                    if (bot->GetPlayerbotAI()->IsInVehicle(false, true))
                         return 120.0f;
                 }
             }

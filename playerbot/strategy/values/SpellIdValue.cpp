@@ -203,6 +203,9 @@ uint32 VehicleSpellIdValue::Calculate()
     for (uint32 x = 0; x < CREATURE_MAX_SPELLS; ++x)
     {
         CharmSpellEntry* cspell = creature->GetCharmInfo()->GetCharmSpell(x);
+        if (!cspell)
+            continue;
+
         uint32 spellId = cspell->GetAction();
 
         if (spellId == 2)

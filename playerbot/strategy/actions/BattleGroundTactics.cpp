@@ -5013,9 +5013,6 @@ bool ArenaTactics::Execute(Event event)
         return false;
     }
 
-    if (bot->IsMoving())
-        return false;
-
     BattleGround *bg = bot->GetBattleGround();
     if (!bg)
         return false;
