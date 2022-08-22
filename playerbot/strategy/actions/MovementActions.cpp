@@ -454,6 +454,55 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
         movePosition = movePath.getNextPoint(startPosition, maxDist, pathType, entry);
     }
 
+    if (!bot->IsInCombat() && !bot->IsDead()) //Stop the path when we might get aggro.
+    {
+        list<ObjectGuid> targets = AI_VALUE_LAZY(list<ObjectGuid>, "all targets");
+
+        if (!targets.empty() && movePosition)
+        {
+            PathFinder path(mover);
+            path.calculate(movePosition.getX(), movePosition.getY(), movePosition.getZ(), false);
+            PathType type = path.getPathType();
+            PointsArray& points = path.getPath();
+            bool foundAggro = false;
+
+            for (auto p : points)
+            {
+                WorldPosition point(startPosition.getMapId(), p.x, p.y, p.z, startPosition.getO());
+                for (auto target : targets)
+                {
+                    if (!target.IsCreature())
+                        continue;
+
+                    Unit* unit = ai->GetUnit(target);
+                    if (!unit)
+                        continue;
+
+                    float range = unit->GetAttackDistance(bot);
+
+                    if (WorldPosition(unit).sqDistance(point) > range * range)
+                        continue;
+
+                    if (!unit->CanAttackOnSight(bot))
+                        continue;
+
+                    if (!unit->IsWithinLOSInMap(bot))
+                        continue;
+
+                    if (ai->HasStrategy("debug move", BOT_STATE_NON_COMBAT))
+                        ai->TellMasterNoFacing("Found " + chat->formatWorldobject(unit) + " stopping early.");
+
+                    movePosition = point;
+                    foundAggro = true;
+                    break;
+                }
+                if (foundAggro)
+                    break;
+            }
+        }
+    }
+
+
     if (movePosition == WorldPosition()) {
         movePath.clear();
         AI_VALUE(LastMovement&, "last movement").setPath(movePath);
