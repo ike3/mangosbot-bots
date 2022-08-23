@@ -39,9 +39,9 @@ void RpgStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         "far from rpg target",
         NextAction::array(0, new NextAction("move to rpg target", 5.0f), NULL)));
 
-    triggers.push_back(new TriggerNode(
-        "near rpg target",
-        NextAction::array(0, new NextAction("rpg", 1.1f), NULL)));
+    //triggers.push_back(new TriggerNode(
+    //    "near rpg target",
+    //    NextAction::array(0, new NextAction("rpg", 1.1f), NULL)));
 
     //Sub actions
     triggers.push_back(new TriggerNode(

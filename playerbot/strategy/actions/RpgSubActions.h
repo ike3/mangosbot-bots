@@ -12,7 +12,6 @@ namespace ai
     public:
         RpgHelper(PlayerbotAI* ai) : AiObject(ai) {}
 
-        void OnExecute(string nextAction = "rpg") { if (ai->HasRealPlayerMaster() && nextAction == "rpg") nextAction = "rpg cancel"; SET_AI_VALUE(string, "next rpg action", nextAction); };
         void BeforeExecute();
         void AfterExecute(bool doDelay = true,  bool waitForGroup = false, string nextAction = "rpg");
         void OnCancel() { resetFacing(guidP()); if (bot->GetTradeData()) bot->TradeCancel(true); };
@@ -45,7 +44,7 @@ namespace ai
         //Short range can we do the action now?
         virtual bool isUseful() { return rpg->InRange(); }
 
-        virtual bool Execute(Event event) { bool doAction = ai->DoSpecificAction(ActionName(), ActionEvent(event), true); rpg->AfterExecute(doAction, true); return doAction; }
+        virtual bool Execute(Event event) { rpg->BeforeExecute();  bool doAction = ai->DoSpecificAction(ActionName(), ActionEvent(event), true); rpg->AfterExecute(doAction, true); return doAction; }
     protected:
         virtual string ActionName() { return "none"; }
         virtual Event ActionEvent(Event event) { return event; }
@@ -58,7 +57,7 @@ namespace ai
 
         //virtual bool isUseful() { return rpg->InRange() && !ai->HasRealPlayerMaster(); }
 
-        virtual bool Execute(Event event) { if (bot->GetPlayerMenu()) bot->GetPlayerMenu()->CloseGossip(); rpg->AfterExecute();  return true; };
+        virtual bool Execute(Event event) { rpg->BeforeExecute(); if (bot->GetPlayerMenu()) bot->GetPlayerMenu()->CloseGossip(); rpg->AfterExecute();  return true; };
     };   
 
     class RpgWorkAction : public RpgSubAction
@@ -68,7 +67,7 @@ namespace ai
 
         //virtual bool isUseful() { return rpg->InRange() && !ai->HasRealPlayerMaster(); }
 
-        virtual bool Execute(Event event) { bot->HandleEmoteCommand(EMOTE_STATE_USESTANDING); rpg->AfterExecute(); return true; };
+        virtual bool Execute(Event event) { rpg->BeforeExecute(); bot->HandleEmoteCommand(EMOTE_STATE_USESTANDING); rpg->AfterExecute(); return true; };
     };
 
     class RpgEmoteAction : public RpgSubAction
@@ -86,7 +85,7 @@ namespace ai
     public:
         RpgCancelAction(PlayerbotAI* ai, string name = "rpg cancel") : RpgSubAction(ai, name) {}
 
-        virtual bool Execute(Event event) { rpg->OnCancel();  AI_VALUE(set<ObjectGuid>&, "ignore rpg target").insert(AI_VALUE(GuidPosition, "rpg target")); RESET_AI_VALUE(GuidPosition, "rpg target"); rpg->OnExecute(""); return true; };
+        virtual bool Execute(Event event) { rpg->OnCancel();  AI_VALUE(set<ObjectGuid>&, "ignore rpg target").insert(AI_VALUE(GuidPosition, "rpg target")); RESET_AI_VALUE(GuidPosition, "rpg target"); rpg->AfterExecute(""); return true; };
     };
 
     class RpgTaxiAction : public RpgSubAction
@@ -123,7 +122,6 @@ namespace ai
     {
     public:
         RpgEndQuestAction(PlayerbotAI* ai, string name = "rpg end quest") : RpgSubAction(ai, name) {}
-        virtual bool Execute(Event event) { bool doAction = ai->DoSpecificAction(ActionName(), ActionEvent(event), true); rpg->AfterExecute(doAction, true, "rpg start quest"); return doAction; }
 
     private:
         virtual string ActionName() { return "talk to quest giver"; }
@@ -209,7 +207,7 @@ namespace ai
     public:
         RpgUseAction(PlayerbotAI* ai, string name = "rpg use") : RpgSubAction(ai, name) {}
 
-        virtual bool Execute(Event event) { rpg->BeforeExecute();  return ai->DoSpecificAction(ActionName(), ActionEvent(event), true); rpg->setDelay(true); }
+        virtual bool Execute(Event event) { rpg->BeforeExecute();  return ai->DoSpecificAction(ActionName(), ActionEvent(event), true); rpg->AfterExecute(true); }
     private:
         virtual string ActionName() { if (rpg->guidP().IsGameObject() && rpg->guidP().GetGameObject()->GetGoType() == GAMEOBJECT_TYPE_CHEST) return "add all loot";  return "use"; }
         virtual Event ActionEvent(Event event) { return Event("rpg action", chat->formatWorldobject(rpg->guidP().GetWorldObject())); }

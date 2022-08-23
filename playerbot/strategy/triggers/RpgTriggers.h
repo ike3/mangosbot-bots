@@ -14,7 +14,7 @@ namespace ai
     class HasRpgTargetTrigger : public NoRpgTargetTrigger
     {
     public:
-        HasRpgTargetTrigger(PlayerbotAI* ai, string name = "has rpg target", int checkInterval = 1) : NoRpgTargetTrigger(ai, name, checkInterval) {}
+        HasRpgTargetTrigger(PlayerbotAI* ai, string name = "has rpg target", int checkInterval = 2) : NoRpgTargetTrigger(ai, name, checkInterval) {}
 
         virtual bool IsActive() { return !NoRpgTargetTrigger::IsActive() && AI_VALUE(string, "next rpg action") != "choose rpg target"; }; //Ingore rpg targets that only have the cancel action available.
     };

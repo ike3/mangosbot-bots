@@ -15,25 +15,22 @@ using namespace ai;
 
 void RpgHelper::BeforeExecute()
 {
-    OnExecute();
-
     bot->SetSelectionGuid(guidP());
 
     setFacingTo(guidP());
+
+    setFacing(guidP());
 }
 
 void RpgHelper::AfterExecute(bool doDelay, bool waitForGroup, string nextAction)
 {
-    OnExecute(nextAction);
-
-    bot->SetSelectionGuid(guidP());
-
-    setFacingTo(guidP());
+    if (ai->HasRealPlayerMaster() && nextAction == "rpg") 
+        nextAction = "rpg cancel"; 
+    
+    SET_AI_VALUE(string, "next rpg action", nextAction);
 
     if(doDelay)
         setDelay(waitForGroup);
-
-    setFacing(guidP());
 }
 
 void RpgHelper::setFacingTo(GuidPosition guidPosition)
@@ -117,6 +114,8 @@ bool RpgEmoteAction::Execute(Event event)
 
 bool RpgTaxiAction::Execute(Event event)
 {
+    rpg->BeforeExecute();
+
     GuidPosition guidP = rpg->guidP();
 
     WorldPacket emptyPacket;
@@ -173,6 +172,8 @@ bool RpgTaxiAction::Execute(Event event)
 
 bool RpgDiscoverAction::Execute(Event event)
 {
+    rpg->BeforeExecute();
+
     GuidPosition guidP = rpg->guidP();
 
     uint32 node = sObjectMgr.GetNearestTaxiNode(guidP.getX(), guidP.getY(), guidP.getZ(), guidP.getMapId(), bot->GetTeam());
@@ -185,12 +186,16 @@ bool RpgDiscoverAction::Execute(Event event)
     if (!flightMaster)
         return false;
 
+    rpg->AfterExecute(true, true);
+
     return bot->GetSession()->SendLearnNewTaxiNode(flightMaster);    
 }
 
 bool RpgHealAction::Execute(Event event)
 {
     bool retVal = false;
+
+    rpg->BeforeExecute();
     
     switch (bot->getClass())
     {
@@ -207,6 +212,9 @@ bool RpgHealAction::Execute(Event event)
         retVal=ai->DoSpecificAction("healing wave on party", Event(), true);
         break;
     }
+
+    rpg->AfterExecute(true, false);
+
     return retVal;
 }
 
@@ -276,6 +284,8 @@ list<Item*> RpgTradeUsefulAction::CanGiveItems(GuidPosition guidPosition)
 
 bool RpgTradeUsefulAction::Execute(Event event)
 {
+    rpg->BeforeExecute();
+
     GuidPosition guidP = AI_VALUE(GuidPosition, "rpg target");
 
     Player* player = guidP.GetPlayer();
