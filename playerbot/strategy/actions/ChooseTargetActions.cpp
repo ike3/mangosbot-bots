@@ -13,12 +13,15 @@ bool AttackAnythingAction::isUseful() {
     if (!AI_VALUE(bool, "can move around"))
         return false;
 
-    if (context->GetValue<TravelTarget*>("travel target")->Get()->isTraveling() && ChooseRpgTargetAction::isFollowValid(bot, *context->GetValue<TravelTarget*>("travel target")->Get()->getPosition())) //Bot is traveling
-        return false;
-
     Unit* target = GetTarget();
 
     if (!target)
+        return false;
+
+    if(!target->IsPlayer() && bot->isInFront(target,target->GetAttackDistance(bot)*1.5f, M_PI_F*0.5f) && target->CanAttackOnSight(bot) && target->GetLevel() < bot->GetLevel() + 3.0) //Attack before being attacked.
+        return true;
+
+    if (context->GetValue<TravelTarget*>("travel target")->Get()->isTraveling() && ChooseRpgTargetAction::isFollowValid(bot, *context->GetValue<TravelTarget*>("travel target")->Get()->getPosition())) //Bot is traveling
         return false;
 
     string name = string(target->GetName());
