@@ -67,7 +67,7 @@ namespace ai
         virtual string GetTargetName() { return "self target"; }
         void MakeVerbose() { verbose = true; }
 
-        void setRelevance(uint32 relevance1) { relevance = relevance1; };
+        void setRelevance(float relevance1) { relevance = relevance1; };
         virtual float getRelevance() { return relevance; }
     protected:
         bool verbose;
