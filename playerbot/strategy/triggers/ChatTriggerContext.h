@@ -98,6 +98,7 @@ namespace ai
             creators["give leader"] = &ChatTriggerContext::give_leader;
             creators["cheat"] = &ChatTriggerContext::cheat;
             creators["rtsc"] = &ChatTriggerContext::rtsc;
+            creators["ah"] = &ChatTriggerContext::ah;
             creators["ginvite"] = &ChatTriggerContext::ginvite;
             creators["guild promote"] = &ChatTriggerContext::guild_promote;
             creators["guild demote"] = &ChatTriggerContext::guild_demote;
@@ -190,6 +191,7 @@ namespace ai
         static Trigger* cheat(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "cheat"); }
         static Trigger* rtsc(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "rtsc"); }
         static Trigger* ginvite(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "ginvite"); }
+        static Trigger* ah(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "ah"); }
         static Trigger* guild_promote(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "guild promote"); }
         static Trigger* guild_demote(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "guild demote"); }
         static Trigger* guild_remove(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "guild remove"); }
