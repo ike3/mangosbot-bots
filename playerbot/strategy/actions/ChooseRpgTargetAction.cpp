@@ -61,6 +61,9 @@ float ChooseRpgTargetAction::getMaxRelevance(GuidPosition guidP)
         if (strategy.find("rpg") == std::string::npos)
             continue;
 
+        if (!ai->HasStrategy(strategy, BOT_STATE_NON_COMBAT))
+            continue;
+
         rpgStrategy = ai->GetAiObjectContext()->GetStrategy(strategy);
 
         rpgStrategy->InitTriggers(triggerNodes);
