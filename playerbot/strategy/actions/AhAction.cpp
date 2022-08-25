@@ -1,7 +1,7 @@
 #include "botpch.h"
 #include "../../playerbot.h"
 #include "AhAction.h"
-
+#include "../../../ahbot/AhBot.h"
 #include "../values/ItemCountValue.h"
 
 using namespace std;
@@ -27,6 +27,23 @@ bool AhAction::Execute(Event event)
 
 bool AhAction::Execute(string text, Unit* auctioneer)
 {
+    if (text == "vendor")
+    {
+        list<Item*> items = AI_VALUE2(list<Item*>, "inventory items", "usage " + to_string(ITEM_USAGE_AH));
+        
+        bool postedItem = false;
+
+        for (auto item : items)
+        {
+            ItemPrototype const* proto = item->GetProto();
+            uint32 price = item->GetCount() * auctionbot.GetSellPrice(proto);
+
+            postedItem |= PostItem(item, price, auctioneer);
+        }
+
+        return postedItem;
+    }
+
     int pos = text.find(" ");
     if (pos == string::npos) return false;
 
@@ -39,6 +56,11 @@ bool AhAction::Execute(string text, Unit* auctioneer)
 
     Item* item = *found.begin();
 
+    return PostItem(item, price, auctioneer);
+}
+
+bool AhAction::PostItem(Item* item, uint32 price, Unit* auctioneer)
+{
     WorldPacket packet;
     packet << auctioneer->GetObjectGuid();
     packet << item->GetObjectGuid();

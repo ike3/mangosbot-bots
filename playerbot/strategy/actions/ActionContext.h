@@ -209,6 +209,8 @@ namespace ai
             creators["rpg end quest"] = &ActionContext::rpg_end_quest;
             creators["rpg buy"] = &ActionContext::rpg_buy;
             creators["rpg sell"] = &ActionContext::rpg_sell;
+            creators["rpg ah sell"] = &ActionContext::rpg_ah_sell;
+            creators["rpg get mail"] = &ActionContext::rpg_get_mail;
             creators["rpg repair"] = &ActionContext::rpg_repair;
             creators["rpg train"] = &ActionContext::rpg_train;
             creators["rpg heal"] = &ActionContext::rpg_heal;
@@ -409,6 +411,8 @@ namespace ai
         static Action* rpg_end_quest(PlayerbotAI* ai) { return new RpgEndQuestAction(ai); }
         static Action* rpg_buy(PlayerbotAI* ai) { return new RpgBuyAction(ai); }
         static Action* rpg_sell(PlayerbotAI* ai) { return new RpgSellAction(ai); }
+        static Action* rpg_ah_sell(PlayerbotAI* ai) { return new RpgAHSellAction(ai); }
+        static Action* rpg_get_mail(PlayerbotAI* ai) { return new RpgGetMailAction(ai); }
         static Action* rpg_repair(PlayerbotAI* ai) { return new RpgRepairAction(ai); }
         static Action* rpg_train(PlayerbotAI* ai) { return new RpgTrainAction(ai); }
         static Action* rpg_heal(PlayerbotAI* ai) { return new RpgHealAction(ai); }

@@ -277,8 +277,8 @@ namespace ai
         GuidPosition() : ObjectGuid(), WorldPosition() {}
         GuidPosition(ObjectGuid guid) { ObjectGuid::Set(guid); WorldPosition::set(guid); };
         GuidPosition(ObjectGuid guid, WorldPosition pos) : ObjectGuid(guid), WorldPosition(pos) {};
-        template<class T>
-        GuidPosition(ObjectGuid guid, T) : ObjectGuid(guid) : WorldPosition(T) {};
+        //template<class T>
+        //GuidPosition(ObjectGuid guid, T) : ObjectGuid(guid) {WorldPosition::set(WorldPosition(T))};
         GuidPosition(CreatureDataPair const* dataPair) : ObjectGuid(HIGHGUID_UNIT, dataPair->second.id, dataPair->first), WorldPosition(dataPair) {};
         GuidPosition(GameObjectDataPair const* dataPair) : ObjectGuid(HIGHGUID_GAMEOBJECT, dataPair->second.id, dataPair->first), WorldPosition(dataPair) {};
         GuidPosition(WorldObject* wo) : WorldPosition(wo) { ObjectGuid::Set(wo->GetObjectGuid()); };
@@ -296,6 +296,7 @@ namespace ai
         Player* GetPlayer();
 
         bool HasNpcFlag(NPCFlags flag) { return IsCreature() && GetCreatureTemplate()->NpcFlags & flag; }
+        bool isGoType(GameobjectTypes type) { return IsGameObject() && GetGameObjectInfo()->type == type; }
 
         bool isDead(); //For loaded grids check if the unit/object is unloaded/dead.
 
@@ -384,11 +385,13 @@ namespace ai
         bool isFull(bool ignoreFull = false);
 
         virtual string getName() { return "TravelDestination"; }
-        virtual int32 getEntry() { return NULL; }
+        virtual int32 getEntry() { return 0; }
         virtual string getTitle() { return "generic travel destination"; }
 
-        WorldPosition* nearestPoint(WorldPosition* pos);
+        WorldPosition* nearestPoint(WorldPosition* pos) {return nearestPoint(*pos);};
+        WorldPosition* nearestPoint(WorldPosition pos);
         float distanceTo(WorldPosition* pos) { return nearestPoint(pos)->distance(pos); }
+        float distanceTo(WorldPosition pos) { return nearestPoint(pos)->distance(pos); }
         bool onMap(WorldPosition* pos) {return nearestPoint(pos)->getMapId() == pos->getMapId();}
         virtual bool isIn(WorldPosition* pos, float radius = 0) { return onMap(pos) && distanceTo(pos) <= (radius? radius : radiusMin); }
         virtual bool isOut(WorldPosition* pos, float radius = 0) { return !onMap(pos) || distanceTo(pos) > (radius? radius : radiusMax); }
@@ -440,7 +443,7 @@ namespace ai
         virtual bool isActive(Player* bot) { return bot->IsActiveQuest(questId); }
         
         virtual string getName() { return "QuestTravelDestination"; }
-        virtual int32 getEntry() { return NULL; }
+        virtual int32 getEntry() { return 0; }
         virtual string getTitle();
     protected:
         uint32 questId;

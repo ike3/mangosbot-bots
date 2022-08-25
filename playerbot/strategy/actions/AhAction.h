@@ -13,6 +13,7 @@ namespace ai
 
     private:
         bool Execute(string text, Unit* auctioneer);
+        bool PostItem(Item* item, uint32 price, Unit* auctioneer);
     };
 
 }

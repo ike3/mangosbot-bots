@@ -195,7 +195,7 @@ ReadMailProcessor ReadMailProcessor::instance;
 bool MailAction::Execute(Event event)
 {
     Player* master = GetMaster();
-    if (!master)
+    if (!master && event.getSource() != "rpg action")
         return false;
 
     if (!MailProcessor::FindMailbox(ai))

@@ -794,7 +794,7 @@ vector<WorldPosition*> TravelDestination::getPoints(bool ignoreFull) {
     return retVec;
 }
 
-WorldPosition* TravelDestination::nearestPoint(WorldPosition* pos) {
+WorldPosition* TravelDestination::nearestPoint(WorldPosition pos) {
     return *std::min_element(points.begin(), points.end(), [pos](WorldPosition* i, WorldPosition* j) {return i->distance(pos) < j->distance(pos); });
 }
 
@@ -2023,6 +2023,7 @@ void TravelMgr::LoadQuestTravelTable()
     sPlayerbotAIConfig.openLog("travel_map.csv", "w");
     sPlayerbotAIConfig.openLog("quest_map.csv", "w");
     sPlayerbotAIConfig.openLog("activity_pid.csv", "w");
+    sPlayerbotAIConfig.openLog("deaths.csv", "w");
 
 #ifdef IKE_PATHFINDER
     bool mmapAvoidMobMod = true;
@@ -2552,6 +2553,11 @@ void TravelMgr::LoadQuestTravelTable()
 
             pos.printWKT(out);
 
+            if(points.begin()->getArea())
+                out << to_string(points.begin()->getArea()->area_level);
+            else
+                out << to_string(-1);
+
             out << "\n";
             
             out << "\"area\"" << ",";
@@ -2560,6 +2566,11 @@ void TravelMgr::LoadQuestTravelTable()
             out << points.begin()->getAreaName(true, true) << ",";
 
             point.printWKT(points, out, 0);
+
+            if (points.begin()->getArea())
+                out << to_string(points.begin()->getArea()->area_level);
+            else
+                out << to_string(-1);
 
             sPlayerbotAIConfig.log("zones.csv", out.str().c_str());
         }

@@ -181,6 +181,8 @@ namespace ai
             creators["rpg repeat quest"] = &TriggerContext::rpg_repeat_quest;
             creators["rpg buy"] = &TriggerContext::rpg_buy;
             creators["rpg sell"] = &TriggerContext::rpg_sell;
+            creators["rpg ah sell"] = &TriggerContext::rpg_ah_sell;
+            creators["rpg get mail"] = &TriggerContext::rpg_get_mail;
             creators["rpg repair"] = &TriggerContext::rpg_repair;
             creators["rpg train"] = &TriggerContext::rpg_train;
             creators["rpg heal"] = &TriggerContext::rpg_heal;
@@ -350,6 +352,8 @@ namespace ai
         static Trigger* rpg_repeat_quest(PlayerbotAI* ai) { return new RpgRepeatQuestTrigger(ai); }
         static Trigger* rpg_buy(PlayerbotAI* ai) { return new RpgBuyTrigger(ai); }
         static Trigger* rpg_sell(PlayerbotAI* ai) { return new RpgSellTrigger(ai); }
+        static Trigger* rpg_ah_sell(PlayerbotAI* ai) { return new RpgAHSellTrigger(ai); }
+        static Trigger* rpg_get_mail(PlayerbotAI* ai) { return new RpgGetMailTrigger(ai); }
         static Trigger* rpg_repair(PlayerbotAI* ai) { return new RpgRepairTrigger(ai); }
         static Trigger* rpg_train(PlayerbotAI* ai) { return new RpgTrainTrigger(ai); }
         static Trigger* rpg_heal(PlayerbotAI* ai) { return new RpgHealTrigger(ai); }

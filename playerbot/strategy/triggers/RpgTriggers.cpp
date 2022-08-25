@@ -139,6 +139,32 @@ bool RpgSellTrigger::IsActive()
     return true;
 }
 
+bool RpgAHSellTrigger::IsActive()
+{
+    GuidPosition guidP(getGuidP());
+
+    if (!guidP.HasNpcFlag(UNIT_NPC_FLAG_AUCTIONEER))
+        return false;
+
+    if (!AI_VALUE(bool, "can ah sell"))
+        return false;
+
+    return true;
+}
+
+bool RpgGetMailTrigger::IsActive()
+{
+    GuidPosition guidP(getGuidP());
+
+    if (!guidP.isGoType(GAMEOBJECT_TYPE_MAILBOX))
+        return false;
+
+    if (!bot->GetMailSize())
+        return false;
+
+    return true;
+}
+
 bool RpgRepairTrigger::IsActive()
 {
     GuidPosition guidP(getGuidP());
