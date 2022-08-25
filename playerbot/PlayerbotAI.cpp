@@ -1046,6 +1046,8 @@ void PlayerbotAI::ChangeEngine(BotState type)
     }
 }
 
+#include <iomanip>
+
 void PlayerbotAI::DoNextAction(bool min)
 {
     if (!bot->IsInWorld() || bot->IsBeingTeleported() || (GetMaster() && GetMaster()->IsBeingTeleported()))
@@ -1071,6 +1073,65 @@ void PlayerbotAI::DoNextAction(bool min)
         {
             uint32 dCount = aiObjectContext->GetValue<uint32>("death count")->Get();
             aiObjectContext->GetValue<uint32>("death count")->Set(++dCount);
+
+            if (sPlayerbotAIConfig.hasLog("deaths.csv"))
+            {                
+                WorldPosition botPos(bot);
+
+                ostringstream out;
+                out << sPlayerbotAIConfig.GetTimestampStr() << "+00,";
+                out << bot->GetName() << ",";
+                out << std::fixed << std::setprecision(2);
+
+                out << to_string(bot->getRace()) << ",";
+                out << to_string(bot->getClass()) << ",";
+                float subLevel = ((float)bot->GetLevel() + ((float)bot->GetUInt32Value(PLAYER_XP) / (float)bot->GetUInt32Value(PLAYER_NEXT_LEVEL_XP)));
+
+                out << subLevel << ",";
+
+                botPos.printWKT(out);
+
+                AiObjectContext* context = GetAiObjectContext();
+
+                Unit* ctarget = AI_VALUE(Unit*, "current target");
+
+                if (ctarget)
+                {
+                    out << "\"" << ctarget->GetName() << "\"," << ctarget->GetLevel() << "," << ctarget->GetHealthPercent() << ",";
+                }
+                else
+                    out << "\"none\",0,100,";
+
+                list<ObjectGuid> targets = AI_VALUE_LAZY(list<ObjectGuid>, "all targets");
+
+                out << "\"";
+
+                uint32 adds = 0;
+
+                for (auto target : targets)
+                {
+                    if (!target.IsCreature())
+                        continue;
+
+                    Unit* unit = GetUnit(target);
+                    if (!unit)
+                        continue;
+
+                    if (unit->GetVictim() != bot)
+                        continue;
+
+                    if (unit == ctarget)
+                        continue;
+
+                    out << unit->GetName() << "(" << unit->GetLevel() << ")";
+
+                    adds++;
+                }
+
+                out << "\"," << to_string(adds);
+
+                sPlayerbotAIConfig.log("deaths.csv", out.str().c_str());
+            }
         }
 
         aiObjectContext->GetValue<Unit*>("current target")->Set(NULL);
