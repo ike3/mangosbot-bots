@@ -990,8 +990,8 @@ string QuestObjectiveTravelDestination::getTitle() {
 
     out << "objective " << objective;
 
-    if (itemId)
-        out << " loot " << ChatHelper::formatItem(sObjectMgr.GetItemPrototype(itemId), 0, 0) << " from";
+    if (GetQuestTemplate()->ReqItemCount[objective] > 0)
+        out << " loot " << ChatHelper::formatItem(sObjectMgr.GetItemPrototype(GetQuestTemplate()->ReqItemId[objective]), 0, 0) << " from";
     else
         out << " to kill";
 

@@ -471,8 +471,8 @@ namespace ai
     class QuestObjectiveTravelDestination : public QuestTravelDestination
     {
     public:
-        QuestObjectiveTravelDestination(uint32 quest_id1, uint32 entry1, uint32 objective1, float radiusMin1, float radiusMax1, uint32 itemId1 = 0) : QuestTravelDestination(quest_id1, radiusMin1, radiusMax1) {
-            objective = objective1; entry = entry1; itemId = itemId1;
+        QuestObjectiveTravelDestination(uint32 quest_id1, uint32 entry1, uint32 objective1, float radiusMin1, float radiusMax1) : QuestTravelDestination(quest_id1, radiusMin1, radiusMax1) {
+            objective = objective1; entry = entry1;
         }
 
         bool isCreature() { return GetQuestTemplate()->ReqCreatureOrGOId[objective] > 0; }
@@ -497,7 +497,6 @@ namespace ai
     private:
         uint32 objective;
         int32 entry;
-        uint32 itemId = 0;
     };
 
     //A location with rpg target(s) based on race and level
