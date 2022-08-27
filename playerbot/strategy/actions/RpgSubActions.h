@@ -158,6 +158,16 @@ namespace ai
         virtual Event ActionEvent(Event event) { return Event("rpg action", "vendor"); }
     };
 
+    class RpgAHBuyAction : public RpgSubAction
+    {
+    public:
+        RpgAHBuyAction(PlayerbotAI* ai, string name = "rpg ah buy") : RpgSubAction(ai, name) {}
+
+    private:
+        virtual string ActionName() { return "ah bid"; }
+        virtual Event ActionEvent(Event event) { return Event("rpg action", "vendor"); }
+    };
+
     class RpgGetMailAction : public RpgSubAction
     {
     public:

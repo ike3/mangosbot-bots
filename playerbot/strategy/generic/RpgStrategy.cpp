@@ -100,6 +100,10 @@ void RpgVendorStrategy::InitTriggers(std::list<TriggerNode*>& triggers)
         NextAction::array(0, new NextAction("rpg ah sell", 1.110f), NULL)));
 
     triggers.push_back(new TriggerNode(
+        "rpg ah buy",
+        NextAction::array(0, new NextAction("rpg ah buy", 1.035f), NULL)));
+
+    triggers.push_back(new TriggerNode(
         "rpg get mail",
         NextAction::array(0, new NextAction("rpg get mail", 1.070f), NULL)));
 

@@ -117,10 +117,10 @@ bool RpgBuyTrigger::IsActive()
     if (!guidP.HasNpcFlag(UNIT_NPC_FLAG_VENDOR))
         return false;
 
-    if (AI_VALUE(uint8, "durability") > 50)
+    if (AI_VALUE(uint8, "durability") < 50)
         return false;
 
-    if (!AI_VALUE(bool, "can sell")) //Need better condition.
+    if (AI_VALUE(bool, "can sell")) //Need better condition.
         return false;
 
     return true;
@@ -152,6 +152,25 @@ bool RpgAHSellTrigger::IsActive()
     return true;
 }
 
+bool RpgAHBuyTrigger::IsActive()
+{
+    GuidPosition guidP(getGuidP());
+
+    if (!guidP.HasNpcFlag(UNIT_NPC_FLAG_AUCTIONEER))
+        return false;
+
+    if (AI_VALUE(uint8, "durability") < 50)
+        return false;
+
+    if (AI_VALUE(bool, "can ah sell")) //Need better condition.
+        return false;
+
+    if (AI_VALUE2(uint32, "free money for", (uint32)NeedMoneyFor::ammo) == 0)
+        return false;
+
+    return true;
+}
+
 bool RpgGetMailTrigger::IsActive()
 {
     GuidPosition guidP(getGuidP());
@@ -161,6 +180,9 @@ bool RpgGetMailTrigger::IsActive()
 
     if (!bot->GetMailSize())
         return false;
+
+    WorldPacket p;
+    bot->GetSession()->HandleQueryNextMailTime(p);
 
     return true;
 }

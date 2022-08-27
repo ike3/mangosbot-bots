@@ -103,6 +103,13 @@ namespace ai
         virtual bool IsActive();
     };
 
+    class RpgAHBuyTrigger : public RpgTrigger
+    {
+    public:
+        RpgAHBuyTrigger(PlayerbotAI* ai, string name = "rpg ah buy") : RpgTrigger(ai, name) {}
+        virtual bool IsActive();
+    };
+
     class RpgGetMailTrigger : public RpgTrigger
     {
     public:
