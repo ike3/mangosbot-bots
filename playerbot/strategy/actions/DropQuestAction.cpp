@@ -89,7 +89,21 @@ bool CleanQuestLogAction::Execute(Event event)
 
 void CleanQuestLogAction::DropQuestType(uint8 &numQuest, uint8 wantNum, bool isGreen, bool hasProgress, bool isComplete)
 {
+    vector<uint8> slots;
+
     for (uint8 slot = 0; slot < MAX_QUEST_LOG_SIZE; ++slot)
+        slots.push_back(slot);
+
+
+    if (wantNum < 100)
+    {
+        std::random_device rd;
+        std::mt19937 g(rd());
+
+        std::shuffle(slots.begin(), slots.end(), g);
+    }
+
+    for (uint8 slot : slots)
     {
         uint32 questId = bot->GetQuestSlotQuestId(slot);
 
