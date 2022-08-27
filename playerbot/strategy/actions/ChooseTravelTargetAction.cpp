@@ -373,11 +373,11 @@ vector<WorldPosition*> ChooseTravelTargetAction::getLogicalPoints(vector<WorldPo
     int32 botLevel = (int)bot->GetLevel();
 
     if (AI_VALUE(bool, "can fight boss"))
-        botLevel += 10;
-    else if (AI_VALUE(bool, "can fight elite"))
         botLevel += 5;
-    else if (AI_VALUE(bool, "can fight equal"))
+    else if (AI_VALUE(bool, "can fight elite"))
         botLevel += 2;
+    else if (!AI_VALUE(bool, "can fight equal"))
+        botLevel -= 2;
 
 
     auto it = travelPoints.begin();
