@@ -1784,12 +1784,25 @@ bool PlayerbotAI::TellMasterNoFacing(string text, PlayerbotSecurityLevel securit
 
         Player* master = GetMaster();
 
-        if ((!master || (master->GetPlayerbotAI() && !master->GetPlayerbotAI()->IsRealPlayer())) && (sPlayerbotAIConfig.randomBotSayWithoutMaster || HasStrategy("debug", BOT_STATE_NON_COMBAT)))
+        if (bot->GetGroup() && (!master || master->GetPlayerbotAI() && !master->GetPlayerbotAI()->IsRealPlayer()))
+        {
+            Group* group = bot->GetGroup();
+            for (GroupReference* ref = group->GetFirstMember(); ref; ref = ref->next())
+            {
+                if (ref->getSource()->GetPlayerbotAI() && !ref->getSource()->GetPlayerbotAI()->IsRealPlayer())
+                    continue;
+
+                master = ref->getSource();
+                break;
+            }
+        }
+
+        if (!master && (sPlayerbotAIConfig.randomBotSayWithoutMaster || HasStrategy("debug", BOT_STATE_NON_COMBAT)))
         {
             bot->Say(text, (bot->GetTeam() == ALLIANCE ? LANG_COMMON : LANG_ORCISH));
             return true;
         }
-        else if (master && GetGroupMaster() != master && bot->GetGroup()->IsMember(master->GetObjectGuid()))
+        else if (master && bot->GetGroup() && bot->GetGroup()->IsMember(master->GetObjectGuid()))
         {
             WorldPacket data;
             ChatHandler::BuildChatPacket(data,
@@ -1812,6 +1825,7 @@ bool PlayerbotAI::TellMasterNoFacing(string text, PlayerbotSecurityLevel securit
 
             return true;
         }
+
 
         if (!IsTellAllowed(securityLevel))
             return false;
