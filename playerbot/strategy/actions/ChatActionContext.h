@@ -157,6 +157,7 @@ namespace ai
             creators["cheat"] = &ChatActionContext::cheat;
             creators["rtsc"] = &ChatActionContext::rtsc;
             creators["ah"] = &ChatActionContext::ah;
+            creators["ah bid"] = &ChatActionContext::ah_bid;
 
             creators["ginvite"] = &ChatActionContext::ginvite;
             creators["guild promote"] = &ChatActionContext::guild_promote;
@@ -249,6 +250,7 @@ namespace ai
         static Action* cheat(PlayerbotAI* ai) { return new CheatAction(ai); }
         static Action* rtsc(PlayerbotAI* ai) { return new RTSCAction(ai); }
         static Action* ah(PlayerbotAI* ai) { return new AhAction(ai); }
+        static Action* ah_bid(PlayerbotAI* ai) { return new AhBidAction(ai); }
 
         static Action* ginvite(PlayerbotAI* ai) { return new GuildInviteAction(ai); }
         static Action* guild_promote(PlayerbotAI* ai) { return new GuildPromoteAction(ai); }
