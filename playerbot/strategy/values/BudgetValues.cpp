@@ -190,6 +190,9 @@ uint32 MoneyNeededForValue::Calculate()
     case NeedMoneyFor::tradeskill:
         moneyWanted = (level * level * level); //Or level^3 (10s @ lvl10, 3g @ lvl30, 20g @ lvl60, 50g @ lvl80): Todo replace (Should be buyable reagents that combined allow crafting of usefull items)
         break;
+    case NeedMoneyFor::ah:
+        moneyWanted = 0; //We don't save any money for deposits 
+        break;
     }
 
 	return moneyWanted;

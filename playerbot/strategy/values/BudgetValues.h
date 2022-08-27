@@ -13,7 +13,8 @@ namespace ai
         gear = 6,
         guild = 7,
         tradeskill = 8,
-        anything = 9
+        ah = 9,
+        anything = 10
     };
 
     class MaxGearRepairCostValue : public Uint32CalculatedValue
@@ -53,7 +54,7 @@ namespace ai
         TotalMoneyNeededForValue(PlayerbotAI* ai) : Uint32CalculatedValue(ai, "total money needed for", 60) {}
         virtual uint32 Calculate();
     private:
-        vector<NeedMoneyFor> saveMoneyFor = { NeedMoneyFor::repair,NeedMoneyFor::ammo, NeedMoneyFor::guild, NeedMoneyFor::spells, NeedMoneyFor::travel };
+        vector<NeedMoneyFor> saveMoneyFor = { NeedMoneyFor::repair,NeedMoneyFor::ammo, NeedMoneyFor::ah, NeedMoneyFor::guild, NeedMoneyFor::spells, NeedMoneyFor::travel };
     };
 
     class FreeMoneyForValue : public Uint32CalculatedValue, public Qualified
