@@ -135,7 +135,7 @@ ItemUsage ItemUsageValue::Calculate()
 
     //Need to add something like free bagspace or item value.
     if (proto->SellPrice > 0)
-        if (proto->Quality > ITEM_QUALITY_NORMAL)
+        if (auctionbot.GetSellPrice(proto) > ((int32)proto->SellPrice) * 1.5f) //Put an item on AH if the (predicted) sell price is 50% above the vendor price.
             return ITEM_USAGE_AH;
         else
             return ITEM_USAGE_VENDOR;
