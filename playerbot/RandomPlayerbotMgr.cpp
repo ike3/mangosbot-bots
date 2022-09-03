@@ -1587,6 +1587,79 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot, vector<WorldLocation> &locs
             }), tlocs.end());
         }*/
     }
+    // filter starter zones
+    tlocs.erase(std::remove_if(tlocs.begin(), tlocs.end(), [bot](WorldPosition l)
+    {
+        uint32 mapId = l.getMapId();
+        uint32 zoneId, areaId;
+        sTerrainMgr.GetZoneAndAreaId(zoneId, areaId, mapId, l.coord_x, l.coord_y, l.coord_z);
+        AreaTableEntry const* area = GetAreaEntryByAreaID(areaId);
+        if (zoneId && zoneId != areaId)
+        {
+            AreaTableEntry const* zone = GetAreaEntryByAreaID(zoneId);
+            if (!zone)
+                return true;
+
+            bool isEnemyZone = false;
+            switch (zone->team)
+            {
+            case AREATEAM_ALLY:
+                isEnemyZone = bot->GetTeam() != ALLIANCE;
+                break;
+            case AREATEAM_HORDE:
+                isEnemyZone = bot->GetTeam() != HORDE;
+                break;
+            default:
+                isEnemyZone = false;
+                break;
+            }
+            if (isEnemyZone && bot->GetLevel() < 21)
+                return true;
+
+            // filter other races zones
+            if (bot->GetLevel() < 30)
+            {
+                if ((zoneId == 12 || zoneId == 40) && bot->getRace() != RACE_HUMAN)
+                    return true;
+                if ((zoneId == 1 || zoneId == 38) && bot->getRace() != RACE_DWARF)
+                    return true;
+                if ((zoneId == 85 || zoneId == 130) && bot->getRace() != RACE_UNDEAD)
+                    return true;
+                if ((zoneId == 141 || zoneId == 148) && bot->getRace() != RACE_NIGHTELF)
+                    return true;
+                if ((zoneId == 14 || zoneId == 17) && !(bot->getRace() == RACE_ORC || bot->getRace() == RACE_TROLL))
+                    return true;
+                if ((zoneId == 215) && bot->getRace() != RACE_TAUREN)
+                    return true;
+#ifndef MANGOSBOT_ZERO
+                if ((zoneId == 3524 || zoneId == 3525) && bot->getRace() != RACE_DRAENEI)
+                    return true;
+                if ((zoneId == 3430 || zoneId == 3433) && bot->getRace() != RACE_BLOODELF)
+                    return true;
+#endif
+            }
+        }
+
+        if (!area)
+            return true;
+
+        bool isEnemyZone = false;
+        switch (area->team)
+        {
+        case AREATEAM_ALLY:
+            isEnemyZone = bot->GetTeam() != ALLIANCE;
+            break;
+        case AREATEAM_HORDE:
+            isEnemyZone = bot->GetTeam() != HORDE;
+            break;
+        default:
+            isEnemyZone = false;
+            break;
+        }
+        return isEnemyZone && bot->GetLevel() < 21;
+
+    }), tlocs.end());
+
     if (tlocs.empty())
     {
         /*if (activeOnly)
@@ -1644,29 +1717,6 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot, vector<WorldLocation> &locs
             if (sWorldState.GetExpansion() == EXPANSION_NONE && (loc.mapid == 571 || (loc.mapid == 530 && area->team != 2 && area->team != 4)))
                 continue;
 #endif
-            if (area->team)
-            {
-                bool isEnemyZone = false;
-                switch (area->team)
-                {
-                case AREATEAM_ALLY:
-                    isEnemyZone = bot->GetTeam() != ALLIANCE && (sWorld.IsPvPRealm() || area->flags & AREA_FLAG_CAPITAL);
-                    break;
-                case AREATEAM_HORDE:
-                    isEnemyZone = bot->GetTeam() != HORDE && (sWorld.IsPvPRealm() || area->flags & AREA_FLAG_CAPITAL);
-                    break;
-                default:                                            // 6 in fact
-                    isEnemyZone = false;
-                    break;
-                }
-                if (isEnemyZone)
-                    continue;
-            }
-            // Do not teleport to enemy zones if level is low
-            if (area->team == 4 && bot->GetTeam() == ALLIANCE && bot->GetLevel() < 40)
-                continue;
-            if (area->team == 2 && bot->GetTeam() == HORDE && bot->GetLevel() < 40)
-                continue;
 
 #ifdef MANGOSBOT_TWO
             float ground = map->GetHeight(bot->GetPhaseMask(), x, y, z + 0.5f);
@@ -2271,7 +2321,7 @@ bool RandomPlayerbotMgr::HandlePlayerbotConsoleCommand(ChatHandler* handler, cha
 
     map<string, ConsoleCommandHandler> handlers;
     handlers["init"] = &RandomPlayerbotMgr::RandomizeFirst;
-    handlers["upgrade"] = handlers["upgrade"] = &RandomPlayerbotMgr::UpdateGearSpells;
+    handlers["upgrade"] = &RandomPlayerbotMgr::UpdateGearSpells;
     handlers["refresh"] = &RandomPlayerbotMgr::Refresh;
     handlers["teleport"] = &RandomPlayerbotMgr::RandomTeleportForLevel;
     handlers["rpg"] = &RandomPlayerbotMgr::RandomTeleportForRpg;
