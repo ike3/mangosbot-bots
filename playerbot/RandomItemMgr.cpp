@@ -2570,8 +2570,15 @@ uint32 RandomItemMgr::GetLiveStatWeight(Player* player, uint32 itemId, uint32 sp
     // skip quest items
     if (info->source == ITEM_SOURCE_QUEST && info->sourceId)
     {
-        if (!player->GetQuestRewardStatus(info->sourceId))
-            return 0;
+        Quest const* quest = sObjectMgr.GetQuestTemplate(info->sourceId);
+        if (quest)
+        {
+            // only class quests player could do
+            if (!player->SatisfyQuestClass(quest, false) || !player->SatisfyQuestRace(quest, false) || !player->SatisfyQuestLevel(quest, false))
+                return 0;
+        }
+        /*if (!player->GetQuestRewardStatus(info->sourceId))
+            return 0;*/
     }
 
     // skip pvp items
