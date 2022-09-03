@@ -175,11 +175,11 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
     if (noPath)
         generatePath = false;
 
-    if (generatePath)
+    /*if (generatePath)
     {
         z += CONTACT_DISTANCE;
         mover->UpdateAllowedPositionZ(x, y, z);
-    }
+    }*/
 
     if (!isVehicle && !IsMovingAllowed() && sServerFacade.UnitIsDead(bot))
     {
@@ -538,7 +538,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
     {
         if (mover == bot)
             ai->StopMoving();
-        else
+        else if (mover)
             mover->InterruptMoving(true);
         mm.Clear();
     }
@@ -877,7 +877,7 @@ void MovementAction::UpdateMovementState()
 
             if (!bot->CanReachWithMeleeAttack(pTarget))
             {
-                if (!bot->IsMoving() && bot->IsWithinDist(pTarget, 10.0f))
+                if (bot->IsStopped() && bot->IsWithinDist(pTarget, 10.0f))
                 {
                     // Cheating to prevent getting stuck because of bad mmaps.
                     float angle = bot->GetAngle(pTarget);
@@ -1023,14 +1023,16 @@ bool MovementAction::ChaseTo(WorldObject* obj, float distance, float angle)
         return false;
     }
 
-    /*if (bot->GetMotionMaster()->GetCurrentMovementGeneratorType() == CHASE_MOTION_TYPE)
+    if (bot->GetMotionMaster()->GetCurrentMovementGeneratorType() == CHASE_MOTION_TYPE && !bot->IsStopped())
     {
-        if (Unit* pTarget = bot->GetMotionMaster()->GetCurrent()->GetCurrentTarget())
+        return false;
+
+        /*if (Unit* pTarget = bot->GetMotionMaster()->GetCurrent()->GetCurrentTarget())
         {
-            if (distance == 0.0f && bot->IsMoving())
+            if (distance == 0.0f && !bot->IsStopped())
                 return true;
-        }
-    }*/
+        }*/
+    }
 
     if (!obj || obj == bot || bot->GetMapId() != obj->GetMapId())
         return false;
@@ -1045,8 +1047,9 @@ bool MovementAction::ChaseTo(WorldObject* obj, float distance, float angle)
             return false;
 
         //vehicle->GetMotionMaster()->Clear();
-        vehicle->GetMotionMaster()->MoveChase((Unit*)obj, 30.0f, angle);
-        return true;
+        return MoveNear(obj, 30.0f);
+        //vehicle->GetMotionMaster()->MoveChase((Unit*)obj, 30.0f, angle);
+        //return true;
     }
 #endif
 
@@ -1072,13 +1075,12 @@ bool MovementAction::ChaseTo(WorldObject* obj, float distance, float angle)
 
     bot->GetMotionMaster()->Clear();
     bot->GetMotionMaster()->MoveChase((Unit*)obj, distance, angle);
-    // if failed to move
-    //if (bot->GetMotionMaster()->GetCurrentMovementGeneratorType() != CHASE_MOTION_TYPE)
-       // return false; // return MoveNear(obj, distance);
-    if (bot->IsStopped())
-        return MoveNear(obj, std::max(ATTACK_DISTANCE, distance));
 
-    //WaitForReach(sServerFacade.GetDistance2d(bot, obj));
+    float dist = sServerFacade.GetDistance2d(bot, obj);
+    float distDiff = dist > distance ? dist - distance : 0.f;
+    if ((dist > 10.0f && distance != 0.f) || !obj->IsPlayer())
+        WaitForReach(distDiff);
+
     return true;
 }
 
@@ -1144,12 +1146,14 @@ bool MovementAction::Flee(Unit *target)
         if (group)
         {
             Unit* fleeTarget = nullptr;
-            float fleeDistance = sPlayerbotAIConfig.sightDistance;
+            float fleeDistance = 40.0f;
 
             for (GroupReference *gref = group->GetFirstMember(); gref; gref = gref->next())
             {
                 Player* player = gref->getSource();
                 if (!player || player == bot || !sServerFacade.IsAlive(player) || bot->GetMapId() != player->GetMapId()) continue;
+                if (sServerFacade.GetDistance2d(bot, player) > 40.0f)
+                    continue;
 
                 bool hasAoe = false;
                 if (PlayerbotAI* botAi = player->GetPlayerbotAI())
@@ -1203,6 +1207,8 @@ bool MovementAction::Flee(Unit *target)
             {
                 Player* player = gref->getSource();
                 if (!player || player == bot || !sServerFacade.IsAlive(player) || bot->GetMapId() != player->GetMapId()) continue;
+                if (sServerFacade.GetDistance2d(bot, player) > 40.0f)
+                    continue;
 
                 bool hasAoe = false;
                 if (PlayerbotAI* botAi = player->GetPlayerbotAI())
@@ -1445,7 +1451,7 @@ bool SetBehindTargetAction::Execute(Event event)
         z = target->GetPositionZ();
         bot->UpdateGroundPositionZ(x, y, z);
 
-        return MoveTo(bot->GetMapId(), x, y, z, false, true);
+        return MoveTo(bot->GetMapId(), x, y, z);
     }
 
     return true;
