@@ -256,7 +256,6 @@ void PlayerbotFactory::Randomize(bool incremental)
         if (pmo) pmo->finish();
     }
 
-    pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Guilds & ArenaTeams");
     if (isRandomBot)
     {
         pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Guilds & ArenaTeams");
@@ -1238,6 +1237,9 @@ void PlayerbotFactory::InitEquipment(bool incremental)
 
                 if (!ids.empty()) ahbot::Shuffle(ids);
 
+                Item* oldItem = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, slot);
+                ItemPrototype const* oldProto = oldItem ? oldItem->GetProto() : nullptr;
+
                 for (uint32 index = 0; index < ids.size(); ++index)
                 {
                     uint32 newItemId = ids[index];
@@ -1256,9 +1258,6 @@ void PlayerbotFactory::InitEquipment(bool incremental)
 
                     if (proto->ItemLevel > sPlayerbotAIConfig.randomGearMaxLevel)
                         continue;
-
-                    Item* oldItem = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, slot);
-                    ItemPrototype const* oldProto = oldItem ? oldItem->GetProto() : nullptr;
 
                     if (oldItem && oldProto->ItemId == newItemId)
                         continue;
@@ -1338,6 +1337,10 @@ void PlayerbotFactory::InitEquipment(bool incremental)
                 else
                     if (!ids.empty()) ahbot::Shuffle(ids);
 
+                Item* oldItem = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, slot);
+                ItemPrototype const* oldProto = oldItem ? oldItem->GetProto() : nullptr;
+                uint32 oldStatValue = oldItem ? sRandomItemMgr.GetStatWeight(oldProto->ItemId, specId) : 0;
+
                 for (uint32 index = 0; index < ids.size(); ++index)
                 {
                     uint32 newItemId = ids[index];
@@ -1415,26 +1418,22 @@ void PlayerbotFactory::InitEquipment(bool incremental)
                     if (proto->Quality < ITEM_QUALITY_LEGENDARY && ((int)bot->GetLevel() - (int)sRandomItemMgr.GetMinLevelFromCache(newItemId) > delta))
                         continue;
 
-                    Item* oldItem = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, slot);
-                    ItemPrototype const* oldProto = oldItem ? oldItem->GetProto() : nullptr;
-
                     if (oldItem && oldProto->ItemId == newItemId)
                         continue;
 
                     // chance to get legendary
-                    if (proto->Quality == ITEM_QUALITY_LEGENDARY && urand(0, 100) > uint32(100 * 0.5f))
+                    if (proto->Quality == ITEM_QUALITY_LEGENDARY && urand(0, 100) > 20)
                         continue;
 
                     // chance to not replace legendary
                     if (incremental && oldItem && oldProto->Quality == ITEM_QUALITY_LEGENDARY && urand(0, 100) > uint32(100 * 0.5f))
                         continue;
 
-                    uint32 oldStatValue = oldItem ? sRandomItemMgr.GetStatWeight(oldProto->ItemId, specId) : 0;
                     uint32 newStatValue = sRandomItemMgr.GetLiveStatWeight(bot, newItemId, specId);
                     if (newStatValue <= 0)
                         continue;
 
-                    if (incremental && oldItem && oldStatValue > newStatValue && oldStatValue > 1)
+                    if (incremental && oldItem && oldStatValue >= newStatValue && oldStatValue > 1)
                         continue;
 
                     // replace grey items right away
