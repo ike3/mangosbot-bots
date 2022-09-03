@@ -2583,6 +2583,50 @@ bool BGTactics::wsgPaths()
     return false;
 }
 
+// eots jump logic
+bool BGTactics::eotsJump()
+{
+    BattleGround* bg = bot->GetBattleGround();
+    if (!bg)
+        return false;
+
+    uint32 role = context->GetValue<uint32>("bg role")->Get();
+
+    bool atAllyIsle = bot->GetPositionX() > 2496.f && bot->GetPositionZ() > 1250.0f;
+    bool atHordeIsle = bot->GetPositionX() < 1834.0f && bot->GetPositionZ() > 1250.0f;
+
+    if (bot->GetTeam() == ALLIANCE)
+    {
+        if (atAllyIsle) // move to island end
+            return urand(0, 1) ? MoveTo(bg->GetMapId(), 2492.0f, 1597.0f + frand(-2, +2), 1255.0f) : MoveTo(bg->GetMapId(), 2495.0f, 1604.0f + frand(-2, +2), 1256.0f);
+        if (bot->GetPositionX() < 2500.f && bot->GetPositionZ() > 1245.0f) // jump on first island
+            return role < 7 ? MoveTo(bg->GetMapId(), 2484.0f, 1607.0f + frand(-2, +2), 1238.0f, false, false, true) : MoveTo(bg->GetMapId(), 2474.0f, 1602.0f + frand(-2, +2), 1240.0f, false, false, true);
+        if (bot->GetPositionX() > 2470.f && bot->GetPositionZ() > 1230.0f) // jump on ground
+        {
+            if (bot->GetPositionX() > 2480.f)
+                return MoveTo(bg->GetMapId(), 2486.0f, 1624.0f + frand(-2, +2), 1226.0f, false, false, true);
+            else
+                return MoveTo(bg->GetMapId(), 2458.0f, 1601.0f + frand(-2, +2), 1207.0f, false, false, true);
+        }
+    }
+    else
+    {
+        if (atHordeIsle) // move to island end
+            return urand(0, 1) ? MoveTo(bg->GetMapId(), 1835.0f, 1544.0f + frand(-2, +2), 1255.0f) : MoveTo(bg->GetMapId(), 1835.0f, 1534.0f + frand(-2, +2), 1254.0f);
+        if (bot->GetPositionX() > 1830.f && bot->GetPositionZ() > 1250.0f) // jump on first island
+            return role < 7 ? MoveTo(bg->GetMapId(), 1853.0f, 1530.0f + frand(-2, +2), 1239.0f, false, false, true) : MoveTo(bg->GetMapId(), 1854.0f, 1542.0f + frand(-2, +2), 1241.0f, false, false, true);
+        if (bot->GetPositionX() < 1859.f && bot->GetPositionZ() > 1230.0f) // jump on ground
+        {
+            if (bot->GetPositionY() > 1535.f)
+                return MoveTo(bg->GetMapId(), 1867.0f, 1533.0f + frand(-2, +2), 1210.0f, false, false, true);
+            else
+                return MoveTo(bg->GetMapId(), 1848.0f, 1512.0f + frand(-2, +2), 1225.0f, false, false, true);
+        }
+    }
+
+    return false;
+}
+
 
 //
 // actual bg tactics below
@@ -4240,6 +4284,13 @@ bool BGTactics::selectObjectiveWp(std::vector<BattleBotPath*> const& vPaths)
     // use Rym's waypoints for WSG
     if (bgType == BATTLEGROUND_WS/* && (bot->HasAura(BG_WS_SPELL_WARSONG_FLAG) || bot->HasAura(BG_WS_SPELL_SILVERWING_FLAG))*/)
         return wsgPaths();
+
+#ifndef MANGOSBOT_ZERO
+    // Eye of the Storm jump
+    if (bgType == BATTLEGROUND_EY)
+        if (eotsJump())
+            return true;
+#endif
 
     BattleBotPath* pClosestPath = nullptr;
     uint32 closestPoint = 0;

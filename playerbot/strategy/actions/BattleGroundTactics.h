@@ -55,6 +55,7 @@ private:
     bool startNewPathFree(std::vector<BattleBotPath*> const& vPaths);
     bool resetObjective();
     bool wsgPaths();
+    bool eotsJump();
     bool atFlag(std::vector<BattleBotPath*> const& vPaths, std::vector<uint32> const& vFlagIds);
     bool flagTaken();
     bool teamFlagTaken();
