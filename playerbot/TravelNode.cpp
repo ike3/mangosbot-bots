@@ -1220,7 +1220,7 @@ TravelNodeRoute TravelNodeMap::getRoute(TravelNode* start, TravelNode* goal, Pla
 
                 childNode = &m_stubs.insert(make_pair(portNode, TravelNodeStub(portNode))).first->second;
 
-                childNode->m_g = 10 * MINUTE;
+                childNode->m_g = std::min((uint32)0, (10- AI_VALUE(uint32, "death count")) * MINUTE);
                 childNode->m_h = childNode->dataNode->fDist(goal) / botSpeed;
                 childNode->m_f = childNode->m_g + childNode->m_h;
                 //childNode->parent = startStub;

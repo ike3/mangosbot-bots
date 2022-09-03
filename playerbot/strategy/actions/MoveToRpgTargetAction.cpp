@@ -184,7 +184,14 @@ bool MoveToRpgTargetAction::isUseful()
     WorldObject* wo = guidP.GetWorldObject();
 
     if (!wo)
-        return false;
+    {
+        RESET_AI_VALUE(GuidPosition, "rpg target");
+
+        if (ai->HasStrategy("debug rpg", BOT_STATE_NON_COMBAT))
+        {
+            ai->TellMasterNoFacing("Target could not be found. Drop rpg target");
+        }
+    }
 
 #ifndef MANGOSBOT_ZERO
     if (bot->IsMovingIgnoreFlying())

@@ -215,4 +215,6 @@ ChatCommandHandlerStrategy::ChatCommandHandlerStrategy(PlayerbotAI* ai) : PassTr
     supported.push_back("guild leave");
     supported.push_back("guild leader");
     supported.push_back("rtsc");
+    supported.push_back("ah");
+    supported.push_back("ah bid");
 }

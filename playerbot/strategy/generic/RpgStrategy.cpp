@@ -39,9 +39,9 @@ void RpgStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         "far from rpg target",
         NextAction::array(0, new NextAction("move to rpg target", 5.0f), NULL)));
 
-    triggers.push_back(new TriggerNode(
-        "near rpg target",
-        NextAction::array(0, new NextAction("rpg", 1.1f), NULL)));
+    //triggers.push_back(new TriggerNode(
+    //    "near rpg target",
+    //    NextAction::array(0, new NextAction("rpg", 1.1f), NULL)));
 
     //Sub actions
     triggers.push_back(new TriggerNode(
@@ -94,6 +94,18 @@ void RpgVendorStrategy::InitTriggers(std::list<TriggerNode*>& triggers)
     triggers.push_back(new TriggerNode(
         "rpg buy",
         NextAction::array(0, new NextAction("rpg buy", 1.030f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "rpg ah sell",
+        NextAction::array(0, new NextAction("rpg ah sell", 1.110f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "rpg ah buy",
+        NextAction::array(0, new NextAction("rpg ah buy", 1.035f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "rpg get mail",
+        NextAction::array(0, new NextAction("rpg get mail", 1.070f), NULL)));
 
     triggers.push_back(new TriggerNode(
         "rpg sell",

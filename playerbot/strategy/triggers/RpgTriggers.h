@@ -14,7 +14,7 @@ namespace ai
     class HasRpgTargetTrigger : public NoRpgTargetTrigger
     {
     public:
-        HasRpgTargetTrigger(PlayerbotAI* ai, string name = "has rpg target", int checkInterval = 1) : NoRpgTargetTrigger(ai, name, checkInterval) {}
+        HasRpgTargetTrigger(PlayerbotAI* ai, string name = "has rpg target", int checkInterval = 2) : NoRpgTargetTrigger(ai, name, checkInterval) {}
 
         virtual bool IsActive() { return !NoRpgTargetTrigger::IsActive() && AI_VALUE(string, "next rpg action") != "choose rpg target"; }; //Ingore rpg targets that only have the cancel action available.
     };
@@ -93,6 +93,27 @@ namespace ai
     {
     public:
         RpgSellTrigger(PlayerbotAI* ai, string name = "rpg sell") : RpgTrigger(ai, name) {}
+        virtual bool IsActive();
+    };
+
+    class RpgAHSellTrigger : public RpgTrigger
+    {
+    public:
+        RpgAHSellTrigger(PlayerbotAI* ai, string name = "rpg ah sell") : RpgTrigger(ai, name) {}
+        virtual bool IsActive();
+    };
+
+    class RpgAHBuyTrigger : public RpgTrigger
+    {
+    public:
+        RpgAHBuyTrigger(PlayerbotAI* ai, string name = "rpg ah buy") : RpgTrigger(ai, name) {}
+        virtual bool IsActive();
+    };
+
+    class RpgGetMailTrigger : public RpgTrigger
+    {
+    public:
+        RpgGetMailTrigger(PlayerbotAI* ai, string name = "rpg get mail") : RpgTrigger(ai, name) {}
         virtual bool IsActive();
     };
 

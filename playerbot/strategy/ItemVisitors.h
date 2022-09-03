@@ -483,10 +483,10 @@ namespace ai
         SkillType skill;
     };
 
-    class FindItemUsageVisitor : public FindUsableItemVisitor
+    class FindItemUsageVisitor : public FindItemVisitor
     {
     public:
-        FindItemUsageVisitor(Player* bot, ItemUsage usage = ITEM_USAGE_NONE) : FindUsableItemVisitor(bot), usage(usage) { context = bot->GetPlayerbotAI()->GetAiObjectContext();};
+        FindItemUsageVisitor(Player* bot, ItemUsage usage = ITEM_USAGE_NONE) : FindItemVisitor(), bot(bot), usage(usage) { context = bot->GetPlayerbotAI()->GetAiObjectContext();};
 
         virtual bool Accept(const ItemPrototype* proto)
         {
@@ -496,6 +496,7 @@ namespace ai
             return false;
         }
     private:
+        Player* bot;
         AiObjectContext* context;
         ItemUsage usage;
     };

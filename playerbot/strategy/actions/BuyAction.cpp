@@ -103,10 +103,12 @@ bool BuyAction::Execute(Event event)
                     if (AI_VALUE2(uint32, "free money for", uint32(needMoneyFor)) < price)
                         break;
 
-                    if (!BuyItem(tItems, vendorguid, proto))
+                    result |= BuyItem(tItems, vendorguid, proto);
 #ifndef MANGOSBOT_ZERO
-                        if(!BuyItem(vItems, vendorguid, proto))
+                    if(!result)
+                        result |= BuyItem(vItems, vendorguid, proto);
 #endif
+                    if(!result)
                         break;    
 
                     if (usage == ITEM_USAGE_REPLACE || usage == ITEM_USAGE_EQUIP) //Equip upgrades and stop buying this time.
@@ -149,7 +151,7 @@ bool BuyAction::Execute(Event event)
         return false;
     }
 
-    return true;
+    return result;
 }
 
 bool BuyAction::BuyItem(VendorItemData const* tItems, ObjectGuid vendorguid, const ItemPrototype* proto)

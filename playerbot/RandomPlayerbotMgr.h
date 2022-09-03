@@ -137,6 +137,7 @@ class RandomPlayerbotMgr : public PlayerbotHolder
 
         bool arenaTeamsDeleted, guildsDeleted = false;
 
+        std::mutex m_ahActionMutex;
 	protected:
 	    virtual void OnBotLoginInternal(Player * const bot);
 

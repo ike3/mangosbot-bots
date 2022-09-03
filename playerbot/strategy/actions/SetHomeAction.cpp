@@ -29,6 +29,7 @@ bool SetHomeAction::Execute(Event event)
                 Creature* creature = ai->GetCreature(selection);                   
                 bot->GetSession()->SendBindPoint(creature);
                 ai->TellMaster("This inn is my new home");
+                RESET_AI_VALUE(WorldPosition, "home bind");
                 return true;
             }
             else
@@ -36,6 +37,7 @@ bool SetHomeAction::Execute(Event event)
                 Creature* creature = ai->GetCreature(selection);
                 bot->GetSession()->SendBindPoint(creature);
                 ai->TellMaster("This inn is my new home");
+                RESET_AI_VALUE(WorldPosition, "home bind");
                 return true;
             }
         }
@@ -50,6 +52,7 @@ bool SetHomeAction::Execute(Event event)
 
         bot->GetSession()->SendBindPoint(unit);
         ai->TellMaster("This inn is my new home");
+        RESET_AI_VALUE(WorldPosition, "home bind");
         return true;
     }
 

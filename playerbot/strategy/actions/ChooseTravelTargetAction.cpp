@@ -41,6 +41,8 @@ void ChooseTravelTargetAction::getNewTarget(TravelTarget* newTarget, TravelTarge
     if (!foundTarget && urand(1, 100) > 10)                                  //90% chance
         if (AI_VALUE2(bool, "group or", "should sell,can sell,following party,near leader") || AI_VALUE2(bool, "group or", "should repair,can repair,following party,near leader"))
             foundTarget = SetRpgTarget(newTarget);                           //Go to town to sell items or repair
+        else if (AI_VALUE2(bool, "group or", "should sell,can ah sell,following party,near leader"))
+            foundTarget = SetNpcFlagTarget(newTarget, { UNIT_NPC_FLAG_AUCTIONEER });
 
     //Rpg in city
     if (!foundTarget && urand(1, 100) > 90 && bot->GetLevel() > 5)           //10% chance
@@ -368,18 +370,34 @@ vector<WorldPosition*> ChooseTravelTargetAction::getLogicalPoints(vector<WorldPo
 
     WorldPosition botLocation(bot);
 
+    int32 botLevel = (int)bot->GetLevel();
+
+    if (AI_VALUE(bool, "can fight boss"))
+        botLevel += 5;
+    else if (AI_VALUE(bool, "can fight elite"))
+        botLevel += 2;
+    else if (!AI_VALUE(bool, "can fight equal"))
+        botLevel -= 2;
+
+
     auto it = travelPoints.begin();
 
     //Loop over all points
     while (it != travelPoints.end())
     {
+        AreaTableEntry const* area = (*it)->getArea();
+
+        if (area && area->area_level && botLevel < area->area_level)
+        {
+            ++it;
+            continue;
+        }
+
         float distance = (*it)->distance(&botLocation);
 
         //Select the minimal distance to work with.
         if (distance < minDistance)
-        {
             minDistance = distance;
-        }
 
         //Increase the minimal distance to a multiplication of sightdistance.
         for (float distanceBracket : distancesBrackets)
@@ -408,10 +426,6 @@ vector<WorldPosition*> ChooseTravelTargetAction::getLogicalPoints(vector<WorldPo
 //Sets the target to the best destination.
 bool ChooseTravelTargetAction::SetBestTarget(TravelTarget* target, vector<TravelDestination*>& TravelDestinations)
 {
-    ostringstream out;
-
-    out << bot->GetName() << " has got " << TravelDestinations.size() << ", targets totaling ";
-
     if (TravelDestinations.empty())
         return false;
 
@@ -432,8 +446,6 @@ bool ChooseTravelTargetAction::SetBestTarget(TravelTarget* target, vector<Travel
     minDist = botLocation.distance(botLocation.closest(travelPoints));
     maxDist = botLocation.distance(botLocation.furtest(travelPoints));
 
-    out << travelPoints.size() << " points, between " << minDist << " and " << maxDist << " unsorted and";
-
     if (travelPoints.empty()) //No targets or no points.
         return false;
 
@@ -445,10 +457,8 @@ bool ChooseTravelTargetAction::SetBestTarget(TravelTarget* target, vector<Travel
 
     travelPoints = getLogicalPoints(travelPoints);
 
-    minDist = botLocation.distance(botLocation.closest(travelPoints));
-    maxDist = botLocation.distance(botLocation.furtest(travelPoints));
-
-    out << travelPoints.size() << " between " << minDist << " and " << maxDist << " sorted.";
+    if (travelPoints.empty())
+        return false;
 
     travelPoints = sTravelMgr.getNextPoint(&botLocation, travelPoints); //Pick a good point.
 
@@ -461,11 +471,7 @@ bool ChooseTravelTargetAction::SetBestTarget(TravelTarget* target, vector<Travel
             break;
         }
 
-    out << " Picked " << travelPoints.front()->distance(botLocation) << ".";
-
     target->setTarget(TravelDestinations.front(), travelPoints.front());
-
-    sPlayerbotAIConfig.log("travel_search.txt", out.str().c_str());
 
     return target->isActive();
 }
