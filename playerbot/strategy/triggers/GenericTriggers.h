@@ -135,7 +135,7 @@ namespace ai
     class AttackerCountTrigger : public Trigger
     {
     public:
-        AttackerCountTrigger(PlayerbotAI* ai, int amount, float distance = sPlayerbotAIConfig.sightDistance) : Trigger(ai)
+        AttackerCountTrigger(PlayerbotAI* ai, int amount, float distance = sPlayerbotAIConfig.sightDistance) : Trigger(ai, "attacker count", 2)
         {
             this->amount = amount;
             this->distance = distance;
@@ -303,7 +303,7 @@ namespace ai
     class DebuffTrigger : public BuffTrigger
     {
     public:
-        DebuffTrigger(PlayerbotAI* ai, string spell, int checkInterval = 1, bool checkIsOwner = false) : BuffTrigger(ai, spell, checkInterval, checkIsOwner) {
+        DebuffTrigger(PlayerbotAI* ai, string spell, int checkInterval = 2, bool checkIsOwner = false) : BuffTrigger(ai, spell, checkInterval, checkIsOwner) {
 			checkInterval = 1;
 		}
     public:
@@ -323,7 +323,7 @@ namespace ai
 	class BoostTrigger : public BuffTrigger
 	{
 	public:
-		BoostTrigger(PlayerbotAI* ai, string spell, float balance = 50) : BuffTrigger(ai, spell, 1)
+		BoostTrigger(PlayerbotAI* ai, string spell, float balance = 50) : BuffTrigger(ai, spell, 3)
 		{
 			this->balance = balance;
 		}
@@ -404,7 +404,7 @@ namespace ai
     class SnareTargetTrigger : public DebuffTrigger
     {
     public:
-        SnareTargetTrigger(PlayerbotAI* ai, string spell, int interval = 1) : DebuffTrigger(ai, spell, interval) {}
+        SnareTargetTrigger(PlayerbotAI* ai, string spell, int interval = 3) : DebuffTrigger(ai, spell, interval) {}
     public:
         virtual Value<Unit*>* GetTargetValue();
         virtual string getName() { return spell + " on snare target"; }
