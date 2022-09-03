@@ -53,6 +53,12 @@ public:
     static list<uint32> specialQuestIds;
     void InitSkills();
     static void EnchantEquipment(Player* bot);
+    void EquipGear() { return InitEquipment(false); }
+    void UpgradeGear() { return InitEquipment(true); }
+    void AddReagents() { return InitReagents(); }
+    void AddPotions() { return InitPotions(); }
+    void AddConsumes() { return AddConsumables(); }
+    void AddFood() { return InitFood(); }
 
 private:
     void Prepare();

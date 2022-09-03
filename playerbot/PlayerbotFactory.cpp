@@ -105,13 +105,13 @@ void PlayerbotFactory::Prepare()
         bot->ResurrectPlayer(1.0f, false);
 
     bot->CombatStop(true);
-    if (sPlayerbotAIConfig.disableRandomLevels)
+    /*if (sPlayerbotAIConfig.disableRandomLevels)
     {
         if (bot->GetLevel() < sPlayerbotAIConfig.randombotStartingLevel)
         {
             bot->SetLevel(sPlayerbotAIConfig.randombotStartingLevel);
         }
-    }
+    }*/
 
     if (!sPlayerbotAIConfig.disableRandomLevels)
     {
@@ -138,7 +138,7 @@ void PlayerbotFactory::Randomize(bool incremental)
     {
         return;
     }
-
+    bool isRealRandomBot = sRandomPlayerbotMgr.IsRandomBot(bot);
     bool isRandomBot = sRandomPlayerbotMgr.IsRandomBot(bot) && bot->GetPlayerbotAI() && !bot->GetPlayerbotAI()->HasRealPlayerMaster() && !bot->GetPlayerbotAI()->IsInRealGuild();
 
     sLog.outDetail("Resetting player...");
@@ -159,35 +159,6 @@ void PlayerbotFactory::Randomize(bool incremental)
     InitBags();
     if (pmo) pmo->finish();
 
-    /*pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Immersive");
-    sLog.outDetail("Initializing immersive...");
-    InitImmersive();
-    if (pmo) pmo->finish();*/
-
-	if (!incremental && sPlayerbotAIConfig.randomBotPreQuests && isRandomBot) {
-		sLog.outDetail("Initializing quests...");
-		pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Quests");
-        InitQuests(classQuestIds);
-        InitQuests(specialQuestIds);
-        bot->learnQuestRewardedSpells();
-		// quest rewards boost bot level, so reduce back
-		if (sPlayerbotAIConfig.disableRandomLevels)
-		{
-			if (bot->GetLevel() < sPlayerbotAIConfig.randombotStartingLevel)
-			{
-				bot->SetLevel(sPlayerbotAIConfig.randombotStartingLevel);
-			}
-		}
-		if (!sPlayerbotAIConfig.disableRandomLevels)
-		{
-			bot->SetLevel(level);
-		}
-        ClearInventory();
-        bot->SetUInt32Value(PLAYER_XP, 0);
-        CancelAuras();
-        if (pmo) pmo->finish();
-    }
-
     pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Spells1");
     sLog.outDetail("Initializing spells (step 1)...");
     InitAvailableSpells();
@@ -205,7 +176,7 @@ void PlayerbotFactory::Randomize(bool incremental)
     //sRandomPlayerbotMgr.SetValue(bot->GetGUIDLow(), "specNo", 0);
     ai->DoSpecificAction("auto talents");
 
-    if (!incremental)
+    if (!incremental && isRandomBot)
         sPlayerbotDbStore.Reset(ai);
 
     ai->ResetStrategies(incremental); // fix wrong stored strategy
@@ -217,10 +188,13 @@ void PlayerbotFactory::Randomize(bool incremental)
     InitSpecialSpells();
     if (pmo) pmo->finish();
 
-    pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Mounts");
-    sLog.outDetail("Initializing mounts...");
-    InitMounts();
-    if (pmo) pmo->finish();
+    if (isRealRandomBot)
+    {
+        pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Mounts");
+        sLog.outDetail("Initializing mounts...");
+        InitMounts();
+        if (pmo) pmo->finish();
+    }
 
     pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Skills2");
     sLog.outDetail("Initializing skills (step 2)...");
@@ -234,48 +208,66 @@ void PlayerbotFactory::Randomize(bool incremental)
         sLog.outDetail("Initializing enchant templates...");
         LoadEnchantContainer();
     }
+
     InitEquipment(incremental);
     if (pmo) pmo->finish();
 
-    pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Ammo");
-    sLog.outDetail("Initializing ammo...");
-    InitAmmo();
-    if (pmo) pmo->finish();
+    if (isRandomBot)
+    {
+        pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Ammo");
+        sLog.outDetail("Initializing ammo...");
+        InitAmmo();
+        if (pmo) pmo->finish();
 
-    pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Food");
-    sLog.outDetail("Initializing food...");
-    InitFood();
-    if (pmo) pmo->finish();
+        pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Food");
+        sLog.outDetail("Initializing food...");
+        InitFood();
+        if (pmo) pmo->finish();
 
-    pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Potions");
-    sLog.outDetail("Initializing potions...");
-    InitPotions();
-    if (pmo) pmo->finish();
+        pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Potions");
+        sLog.outDetail("Initializing potions...");
+        InitPotions();
+        if (pmo) pmo->finish();
 
-    pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Reagents");
-    sLog.outDetail("Initializing reagents...");
-    InitReagents();
-    if (pmo) pmo->finish();
+        pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Reagents");
+        sLog.outDetail("Initializing reagents...");
+        InitReagents();
+        if (pmo) pmo->finish();
+    }
 
-	pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_EqSets");
-    sLog.outDetail("Initializing second equipment set...");
-    InitSecondEquipmentSet();
-    if (pmo) pmo->finish();
+    if (!incremental)
+    {
+        pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Consumables");
+        sLog.outDetail("Initializing consumables...");
+        AddConsumables();
+        if (pmo) pmo->finish();
+    }
 
-    pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Inventory");
-    sLog.outDetail("Initializing inventory...");
-    InitInventory();
-    AddConsumables();
-    if (pmo) pmo->finish();
+    if (!incremental && isRandomBot)
+    {
+        /*pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_EqSets");
+        sLog.outDetail("Initializing second equipment set...");
+        InitSecondEquipmentSet();
+        if (pmo) pmo->finish();*/
+
+        pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Inventory");
+        sLog.outDetail("Initializing inventory...");
+        InitInventory();
+        if (pmo) pmo->finish();
+    }
 
     pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Guilds & ArenaTeams");
-    sLog.outDetail("Initializing guilds & ArenaTeams");
-    InitGuild();
+    if (isRandomBot)
+    {
+        pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Guilds & ArenaTeams");
+        sLog.outDetail("Initializing guilds & ArenaTeams");
+        InitGuild();
 #ifndef MANGOSBOT_ZERO
-    if (bot->GetLevel() >= 70)
-        InitArenaTeam();
+        if (bot->GetLevel() >= 70)
+            InitArenaTeam();
 #endif
-    if (pmo) pmo->finish();
+        if (pmo) pmo->finish();
+    }
 
 	if (bot->GetLevel() >= 10) {
 		pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Pet");
@@ -284,14 +276,17 @@ void PlayerbotFactory::Randomize(bool incremental)
 		if (pmo) pmo->finish();
 	}
 
-    if (incremental)
+    if (isRandomBot)
     {
-        uint32 money = bot->GetMoney();
-        bot->SetMoney(money + 1000 * urand(1, level * 5));
-    }
-    else
-    {
-        bot->SetMoney(10000 * urand(1, level * 5));
+        if (incremental)
+        {
+            uint32 money = bot->GetMoney();
+            bot->SetMoney(money + 1000 * urand(1, level * 5));
+        }
+        else
+        {
+            bot->SetMoney(10000 * urand(1, level * 5));
+        }
     }
 
     pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Save");
@@ -303,7 +298,7 @@ void PlayerbotFactory::Randomize(bool incremental)
 
 void PlayerbotFactory::Refresh()
 {
-    Prepare();
+    //Prepare();
     InitAmmo();
     InitFood();
     InitPotions();
@@ -396,89 +391,89 @@ void PlayerbotFactory::AddConsumables()
        case CLASS_ROGUE:
       {
          if (level >= 20 && level < 28) {
-            StoreItem(CONSUM_ID_INSTANT_POISON, 20);
-            StoreItem(CONSUM_ID_CRIPPLING_POISON, 20);
+            StoreItem(CONSUM_ID_INSTANT_POISON, 5);
+            StoreItem(CONSUM_ID_CRIPPLING_POISON, 5);
          }
          if (level >= 28 && level < 30) {
-            StoreItem(CONSUM_ID_INSTANT_POISON_II, 20);
-            StoreItem(CONSUM_ID_CRIPPLING_POISON, 20);
-            StoreItem(CONSUM_ID_MIND_POISON, 20);
+            StoreItem(CONSUM_ID_INSTANT_POISON_II, 5);
+            StoreItem(CONSUM_ID_CRIPPLING_POISON, 5);
+            StoreItem(CONSUM_ID_MIND_POISON, 5);
          }
          if (level >= 30 && level < 36) {
-            StoreItem(CONSUM_ID_DEADLY_POISON, 20);
-            StoreItem(CONSUM_ID_INSTANT_POISON_II, 20);
-            StoreItem(CONSUM_ID_CRIPPLING_POISON, 20);
-            StoreItem(CONSUM_ID_MIND_POISON, 20);
+            StoreItem(CONSUM_ID_DEADLY_POISON, 5);
+            StoreItem(CONSUM_ID_INSTANT_POISON_II, 5);
+            StoreItem(CONSUM_ID_CRIPPLING_POISON, 5);
+            StoreItem(CONSUM_ID_MIND_POISON, 5);
          }
          if (level >= 36 && level < 38) {
-             StoreItem(CONSUM_ID_DEADLY_POISON, 20);
-             StoreItem(CONSUM_ID_INSTANT_POISON_III, 20);
-             StoreItem(CONSUM_ID_CRIPPLING_POISON, 20);
-             StoreItem(CONSUM_ID_MIND_POISON, 20);
+             StoreItem(CONSUM_ID_DEADLY_POISON, 5);
+             StoreItem(CONSUM_ID_INSTANT_POISON_III, 5);
+             StoreItem(CONSUM_ID_CRIPPLING_POISON, 5);
+             StoreItem(CONSUM_ID_MIND_POISON, 5);
          }
          if (level >= 38 && level < 44) {
-             StoreItem(CONSUM_ID_DEADLY_POISON_II, 20);
-             StoreItem(CONSUM_ID_INSTANT_POISON_III, 20);
-             StoreItem(CONSUM_ID_CRIPPLING_POISON, 20);
-             StoreItem(CONSUM_ID_MIND_POISON_II, 20);
+             StoreItem(CONSUM_ID_DEADLY_POISON_II, 5);
+             StoreItem(CONSUM_ID_INSTANT_POISON_III, 5);
+             StoreItem(CONSUM_ID_CRIPPLING_POISON, 5);
+             StoreItem(CONSUM_ID_MIND_POISON_II, 5);
          }
          if (level >= 44 && level < 46) {
-             StoreItem(CONSUM_ID_DEADLY_POISON_II, 20);
-            StoreItem(CONSUM_ID_INSTANT_POISON_IV, 20);
-            StoreItem(CONSUM_ID_CRIPPLING_POISON, 20);
-            StoreItem(CONSUM_ID_MIND_POISON_II, 20);
+             StoreItem(CONSUM_ID_DEADLY_POISON_II, 5);
+            StoreItem(CONSUM_ID_INSTANT_POISON_IV, 5);
+            StoreItem(CONSUM_ID_CRIPPLING_POISON, 5);
+            StoreItem(CONSUM_ID_MIND_POISON_II, 5);
          }
          if (level >= 46 && level < 52) {
-             StoreItem(CONSUM_ID_DEADLY_POISON_III, 20);
-             StoreItem(CONSUM_ID_INSTANT_POISON_IV, 20);
-             StoreItem(CONSUM_ID_CRIPPLING_POISON, 20);
-             StoreItem(CONSUM_ID_MIND_POISON_II, 20);
+             StoreItem(CONSUM_ID_DEADLY_POISON_III, 5);
+             StoreItem(CONSUM_ID_INSTANT_POISON_IV, 5);
+             StoreItem(CONSUM_ID_CRIPPLING_POISON, 5);
+             StoreItem(CONSUM_ID_MIND_POISON_II, 5);
          }
          if (level >= 52 && level < 54) {
-             StoreItem(CONSUM_ID_DEADLY_POISON_III, 20);
-            StoreItem(CONSUM_ID_INSTANT_POISON_V, 20);
-            StoreItem(CONSUM_ID_CRIPPLING_POISON_II, 20);
-            StoreItem(CONSUM_ID_MIND_POISON_III, 20);
+             StoreItem(CONSUM_ID_DEADLY_POISON_III, 5);
+            StoreItem(CONSUM_ID_INSTANT_POISON_V, 5);
+            StoreItem(CONSUM_ID_CRIPPLING_POISON_II, 5);
+            StoreItem(CONSUM_ID_MIND_POISON_III, 5);
          }
          if (level >= 54 && level < 60) {
-             StoreItem(CONSUM_ID_DEADLY_POISON_IV, 20);
-             StoreItem(CONSUM_ID_INSTANT_POISON_V, 20);
-             StoreItem(CONSUM_ID_CRIPPLING_POISON_II, 20);
-             StoreItem(CONSUM_ID_MIND_POISON_III, 20);
+             StoreItem(CONSUM_ID_DEADLY_POISON_IV, 5);
+             StoreItem(CONSUM_ID_INSTANT_POISON_V, 5);
+             StoreItem(CONSUM_ID_CRIPPLING_POISON_II, 5);
+             StoreItem(CONSUM_ID_MIND_POISON_III, 5);
          }
          if (level >= 60 && level < 62) {
-            StoreItem(CONSUM_ID_DEADLY_POISON_V, 20);
-            StoreItem(CONSUM_ID_INSTANT_POISON_VI, 20);
-            StoreItem(CONSUM_ID_CRIPPLING_POISON_II, 20);
-            StoreItem(CONSUM_ID_MIND_POISON_III, 20);
+            StoreItem(CONSUM_ID_DEADLY_POISON_V, 5);
+            StoreItem(CONSUM_ID_INSTANT_POISON_VI, 5);
+            StoreItem(CONSUM_ID_CRIPPLING_POISON_II, 5);
+            StoreItem(CONSUM_ID_MIND_POISON_III, 5);
          }
          if (level >= 62 && level < 68) {
-            StoreItem(CONSUM_ID_DEADLY_POISON_VI, 20);
-            StoreItem(CONSUM_ID_INSTANT_POISON_VI, 20);
+            StoreItem(CONSUM_ID_DEADLY_POISON_VI, 5);
+            StoreItem(CONSUM_ID_INSTANT_POISON_VI, 5);
          }
          if (level >= 68 && level < 70) {
-             StoreItem(CONSUM_ID_DEADLY_POISON_VI, 20);
-            StoreItem(CONSUM_ID_INSTANT_POISON_VII, 20);
+             StoreItem(CONSUM_ID_DEADLY_POISON_VI, 5);
+            StoreItem(CONSUM_ID_INSTANT_POISON_VII, 5);
          }
          if (level >= 70 && level < 73) {
-             StoreItem(CONSUM_ID_DEADLY_POISON_VII, 20);
-             StoreItem(CONSUM_ID_INSTANT_POISON_VII, 20);
+             StoreItem(CONSUM_ID_DEADLY_POISON_VII, 5);
+             StoreItem(CONSUM_ID_INSTANT_POISON_VII, 5);
          }
          if (level >= 73 && level < 76) {
-             StoreItem(CONSUM_ID_DEADLY_POISON_VII, 20);
-             StoreItem(CONSUM_ID_INSTANT_POISON_VIII, 20);
+             StoreItem(CONSUM_ID_DEADLY_POISON_VII, 5);
+             StoreItem(CONSUM_ID_INSTANT_POISON_VIII, 5);
          }
          if (level >= 76 && level < 79) {
-             StoreItem(CONSUM_ID_DEADLY_POISON_VIII, 20);
-             StoreItem(CONSUM_ID_INSTANT_POISON_VIII, 20);
+             StoreItem(CONSUM_ID_DEADLY_POISON_VIII, 5);
+             StoreItem(CONSUM_ID_INSTANT_POISON_VIII, 5);
          }
          if (level >= 79 && level < 80) {
-             StoreItem(CONSUM_ID_DEADLY_POISON_VIII, 20);
-             StoreItem(CONSUM_ID_INSTANT_POISON_IX, 20);
+             StoreItem(CONSUM_ID_DEADLY_POISON_VIII, 5);
+             StoreItem(CONSUM_ID_INSTANT_POISON_IX, 5);
          }
          if (level == 80) {
-             StoreItem(CONSUM_ID_DEADLY_POISON_IX, 20);
-             StoreItem(CONSUM_ID_INSTANT_POISON_IX, 20);
+             StoreItem(CONSUM_ID_DEADLY_POISON_IX, 5);
+             StoreItem(CONSUM_ID_INSTANT_POISON_IX, 5);
          }
          break;
       }
@@ -2081,110 +2076,7 @@ void PlayerbotFactory::SetRandomSkill(uint16 id)
 void PlayerbotFactory::InitAvailableSpells()
 {
     bot->learnDefaultSpells();
-
-    for (uint32 id = 0; id < sCreatureStorage.GetMaxEntry(); ++id)
-    {
-        CreatureInfo const* co = sCreatureStorage.LookupEntry<CreatureInfo>(id);
-        if (!co)
-            continue;
-
-        if (co->TrainerType != TRAINER_TYPE_TRADESKILLS && co->TrainerType != TRAINER_TYPE_CLASS)
-            continue;
-
-        if (co->TrainerType == TRAINER_TYPE_CLASS && co->TrainerClass != bot->getClass())
-            continue;
-
-        uint32 trainerId = co->TrainerTemplateId;
-        if (!trainerId)
-            trainerId = co->Entry;
-
-        TrainerSpellData const* trainer_spells = sObjectMgr.GetNpcTrainerTemplateSpells(trainerId);
-        if (!trainer_spells)
-            trainer_spells = sObjectMgr.GetNpcTrainerSpells(trainerId);
-
-        if (!trainer_spells)
-            continue;
-
-        for (TrainerSpellMap::const_iterator itr = trainer_spells->spellList.begin(); itr != trainer_spells->spellList.end(); ++itr)
-        {
-            TrainerSpell const* tSpell = &itr->second;
-
-            if (!tSpell)
-                continue;
-
-            uint32 reqLevel = 0;
-
-#ifdef CMANGOS
-            //if (!tSpell->learnedSpell && !bot->IsSpellFitByClassAndRace(tSpell->learnedSpell, &reqLevel))
-            //    continue;
-#endif
-
-            reqLevel = tSpell->isProvidedReqLevel ? tSpell->reqLevel : std::max(reqLevel, tSpell->reqLevel);
-            TrainerSpellState state = bot->GetTrainerSpellState(tSpell, reqLevel);
-            if (state != TRAINER_SPELL_GREEN)
-                continue;
-
-            SpellEntry const* proto = sServerFacade.LookupSpellInfo(tSpell->spell);
-            if (!proto)
-                continue;
-
-            if (co->TrainerType == TRAINER_TYPE_TRADESKILLS)
-            {
-                SpellEntry const* spell = sServerFacade.LookupSpellInfo(tSpell->spell);
-                if (spell)
-                {
-                    string SpellName = spell->SpellName[0];
-                    if (spell->Effect[EFFECT_INDEX_1] == SPELL_EFFECT_SKILL_STEP)
-                    {
-                        uint32 skill = spell->EffectMiscValue[EFFECT_INDEX_1];
-
-                        if (skill && !bot->HasSkill(skill))
-                        {
-                            SkillLineEntry const* pSkill = sSkillLineStore.LookupEntry(skill);
-                            if (pSkill)
-                            {
-                                if (SpellName.find("Apprentice") != string::npos && pSkill->categoryId == SKILL_CATEGORY_PROFESSION || pSkill->categoryId == SKILL_CATEGORY_SECONDARY)
-                                    continue;
-                            }
-                        }
-                    }
-                }
-            }
-
-#ifdef CMANGOS
-            if (tSpell->learnedSpell)
-            {
-                bool learned = false;
-                for (int j = 0; j < 3; ++j)
-                {
-                    if (proto->Effect[j] == SPELL_EFFECT_LEARN_SPELL)
-                    {
-                        uint32 learnedSpell = proto->EffectTriggerSpell[j];
-                        bot->learnSpell(learnedSpell, false);
-                        learned = true;
-                    }
-                }
-                if (!learned) bot->learnSpell(tSpell->learnedSpell, false);
-            }
-            else
-                ai->CastSpell(tSpell->spell, bot);
-#endif
-
-#ifdef MANGOS
-            bool learned = false;
-            for (int j = 0; j < 3; ++j)
-            {
-                if (proto->Effect[j] == SPELL_EFFECT_LEARN_SPELL)
-                {
-                    uint32 learnedSpell = proto->EffectTriggerSpell[j];
-                    bot->learnSpell(learnedSpell, false);
-                    learned = true;
-                }
-            }
-            if (!learned) bot->learnSpell(tSpell->spell, false);
-#endif
-        }
-    }
+    bot->learnClassLevelSpells();
 
 #ifndef MANGOSBOT_TWO
     if (bot->getClass() == CLASS_PALADIN && !bot->HasSpell(20271)) // judgement missing
@@ -2262,7 +2154,6 @@ void PlayerbotFactory::InitAvailableSpells()
                 bot->learnSpell(spellId, false);
         }
     }
-
 #endif
 }
 
@@ -2775,8 +2666,8 @@ void PlayerbotFactory::CancelAuras()
 
 void PlayerbotFactory::InitInventory()
 {
-    InitInventoryTrade();
-    InitInventoryEquip();
+    //InitInventoryTrade();
+    //InitInventoryEquip();
     InitInventorySkill();
 }
 

@@ -457,6 +457,59 @@ string PlayerbotHolder::ProcessBotCommand(string cmd, ObjectGuid guid, ObjectGui
         Player* master = bot->GetPlayerbotAI()->GetMaster();
         if (master)
         {
+            if (cmd == "gear" || cmd == "equip")
+            {
+                PlayerbotFactory factory(bot, bot->GetLevel());
+                factory.EquipGear();
+                return "random gear equipped";
+            }
+            if (cmd == "equip=upgrade" || cmd == "gear=upgrade" || cmd == "upgrade")
+            {
+                PlayerbotFactory factory(bot, master->GetLevel(), ITEM_QUALITY_NORMAL);
+                factory.UpgradeGear();
+                return "gear upgraded";
+            }
+            if (cmd == "train" || cmd == "learn")
+            {
+                bot->learnClassLevelSpells();
+                return "class level spells learned";
+            }
+            if (cmd == "food" || cmd == "drink")
+            {
+                PlayerbotFactory factory(bot, master->GetLevel(), ITEM_QUALITY_NORMAL);
+                factory.AddFood();
+                return "food added";
+            }
+            if (cmd == "potions" || cmd == "pots")
+            {
+                PlayerbotFactory factory(bot, master->GetLevel(), ITEM_QUALITY_NORMAL);
+                factory.AddPotions();
+                return "potions added";
+            }
+            if (cmd == "consumes" || cmd == "consumables" || cmd == "consums")
+            {
+                PlayerbotFactory factory(bot, master->GetLevel(), ITEM_QUALITY_NORMAL);
+                factory.AddConsumes();
+                return "consumables added";
+            }
+            if (cmd == "regs" || cmd == "reg" || cmd == "reagents")
+            {
+                PlayerbotFactory factory(bot, master->GetLevel(), ITEM_QUALITY_NORMAL);
+                factory.AddReagents();
+                return "reagents added";
+            }
+            if (cmd == "prepare" || cmd == "prep" || cmd == "refresh")
+            {
+                PlayerbotFactory factory(bot, master->GetLevel(), ITEM_QUALITY_NORMAL);
+                factory.Refresh();
+                return "consumes/regs added";
+            }
+            if (cmd == "init")
+            {
+                PlayerbotFactory factory(bot, master->GetLevel(), ITEM_QUALITY_NORMAL);
+                factory.Randomize(true);
+                return "ok";
+            }
             if (cmd == "init=white" || cmd == "init=common")
             {
                 PlayerbotFactory factory(bot, master->GetLevel(), ITEM_QUALITY_NORMAL);
