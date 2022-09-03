@@ -2773,7 +2773,7 @@ bool PlayerbotAI::CastVehicleSpell(uint32 spellId, Unit* target)
     spell->SpellStart(&targets);
 #endif
 
-    if (canControl && sServerFacade.isMoving(vehicle) && spell->GetCastTime())
+    if (canControl && !vehicle->IsStopped() && spell->GetCastTime())
     {
         vehicle->StopMoving();
         SetNextCheckDelay(sPlayerbotAIConfig.globalCoolDown);
@@ -4213,6 +4213,9 @@ void PlayerbotAI::StopMoving()
     if (!bot->GetMotionMaster()->empty())
         if (MovementGenerator* movgen = bot->GetMotionMaster()->top())
             movgen->Interrupt(*bot);
+
+    if (IsInVehicle())
+        return;
 
     // remove movement flags, checked in bot->IsMoving()
     if (bot->IsFalling())

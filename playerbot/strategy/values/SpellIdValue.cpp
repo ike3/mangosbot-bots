@@ -198,15 +198,11 @@ uint32 VehicleSpellIdValue::Calculate()
 
     int loc = bot->GetSession()->GetSessionDbcLocale();
 
-    Creature* creature = static_cast<Creature*>(vehicle);
-
+    //Creature* creature = static_cast<Creature*>(vehicle);
+    std::vector<uint32> spells = vehicle->GetCharmSpells();
     for (uint32 x = 0; x < CREATURE_MAX_SPELLS; ++x)
     {
-        CharmSpellEntry* cspell = creature->GetCharmInfo()->GetCharmSpell(x);
-        if (!cspell)
-            continue;
-
-        uint32 spellId = cspell->GetAction();
+        uint32 spellId = spells[x];
 
         if (spellId == 2)
             continue;
