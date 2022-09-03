@@ -152,6 +152,7 @@ uint32 SpellIdValue::Calculate()
         for (set<uint32>::reverse_iterator i = spellIds.rbegin(); i != spellIds.rend(); ++i)
         {
             if (!highestSpellId) highestSpellId = *i;
+            if (sSpellMgr.IsSpellHigherRankOfSpell(*i, highestSpellId)) highestSpellId = *i;
             if (saveMana == rank) return *i;
             lowestSpellId = *i;
             rank++;
