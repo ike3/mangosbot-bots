@@ -31,6 +31,9 @@ namespace ai
             else
             {
                 float distanceToTarget = sServerFacade.GetDistance2d(bot, target);
+                if (distanceToTarget > sPlayerbotAIConfig.sightDistance)
+                    return false;
+
                 combatReach = bot->GetCombinedCombatReach(target, false);
                 bool inLos = bot->IsWithinLOSInMap(target, true);
                 bool isFriend = sServerFacade.IsFriendlyTo(bot, target);
@@ -38,6 +41,9 @@ namespace ai
                 float coeff = 0.8f;
                 if (!isFriend)
                     coeff = 1.0f;
+                if (inLos || isFriend)
+                    return MoveNear(target, chaseDist);
+
                 return ChaseTo(target, (chaseDist - sPlayerbotAIConfig.contactDistance) * coeff, bot->GetAngle(target));
             }
         }
