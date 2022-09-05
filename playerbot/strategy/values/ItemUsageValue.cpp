@@ -7,6 +7,8 @@
 #include "../../RandomItemMgr.h"
 #include "../../ServerFacade.h"
 
+#include "AuctionHouseBot/AuctionHouseBot.h"
+
 using namespace ai;
 
 ItemUsage ItemUsageValue::Calculate()
@@ -135,10 +137,13 @@ ItemUsage ItemUsageValue::Calculate()
 
     //Need to add something like free bagspace or item value.
     if (proto->SellPrice > 0)
-        if (auctionbot.GetSellPrice(proto) > ((int32)proto->SellPrice) * 1.5f) //Put an item on AH if the (predicted) sell price is 50% above the vendor price.
+    {
+        AuctionHouseBotItemData itemInfo = sAuctionHouseBot.GetItemData(proto->ItemId);
+        if (itemInfo.Value > ((int32)proto->SellPrice) * 1.5f)
             return ITEM_USAGE_AH;
         else
             return ITEM_USAGE_VENDOR;
+    }
 
     return ITEM_USAGE_NONE;
 }
