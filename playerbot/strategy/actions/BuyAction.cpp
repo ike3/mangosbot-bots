@@ -139,7 +139,7 @@ bool BuyAction::Execute(Event event)
                 if (!result)
                 {
                     ostringstream out; out << "Nobody sells " << ChatHelper::formatItem(proto) << " nearby";
-                    ai->TellMaster(out.str());
+                    ai->TellMaster(out.str(), PLAYERBOT_SECURITY_ALLOW_ALL, false);
                 }
             }
         }
@@ -185,7 +185,7 @@ bool BuyAction::BuyItem(VendorItemData const* tItems, ObjectGuid vendorguid, con
             if (oldCount < AI_VALUE2(uint32, "item count", proto->Name1)) //BuyItem Always returns false (unless unique) so we have to check the item counts.
             {
                 ostringstream out; out << "Buying " << ChatHelper::formatItem(proto);
-                ai->TellMaster(out.str());
+                ai->TellMaster(out.str(), PLAYERBOT_SECURITY_ALLOW_ALL, false);
                 return true;
             }
  

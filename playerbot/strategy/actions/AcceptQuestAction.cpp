@@ -137,7 +137,7 @@ bool AcceptQuestShareAction::Execute(Event event)
             );
         }
 
-        ai->TellMaster(BOT_TEXT("quest_accept"));
+        ai->TellMaster(BOT_TEXT("quest_accept"), PLAYERBOT_SECURITY_ALLOW_ALL, false);
         return true;
     }
 

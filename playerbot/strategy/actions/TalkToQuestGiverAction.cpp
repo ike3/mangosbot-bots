@@ -56,7 +56,7 @@ bool TalkToQuestGiverAction::ProcessQuest(Quest const* quest, WorldObject* quest
     }
 
     out << ": " << chat->formatQuest(quest);
-    ai->TellMaster(out);
+    ai->TellMaster(out, PLAYERBOT_SECURITY_ALLOW_ALL, false);
 
     return isCompleted;
 }
@@ -143,7 +143,6 @@ ItemIds TalkToQuestGiverAction::BestRewards(Quest const* quest)
 void TalkToQuestGiverAction::RewardMultipleItem(Quest const* quest, WorldObject* questGiver, ostringstream& out)
 {
     set<uint32> bestIds;
-    Item* newItem;
 
     ostringstream outid;
     if (!ai->IsAlt() || sPlayerbotAIConfig.autoPickReward == "yes")
@@ -190,7 +189,7 @@ void TalkToQuestGiverAction::AskToSelectReward(Quest const* quest, ostringstream
             msg << chat->formatItem(item);
         }
     }
-    ai->TellMaster(msg);
+    ai->TellMaster(msg, PLAYERBOT_SECURITY_ALLOW_ALL, false);
 
     out << "Reward pending";
 }

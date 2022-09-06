@@ -44,7 +44,7 @@ bool QueryItemUsageAction::Execute(Event event)
         if (!item)
             return false;
 
-        ai->TellMaster(QueryItem(item, count, GetCount(item)));
+        ai->TellMaster(QueryItem(item, count, GetCount(item)), PLAYERBOT_SECURITY_ALLOW_ALL, false);
 
         if (sPlayerbotAIConfig.hasLog("bot_events.csv"))
         {
@@ -91,7 +91,7 @@ bool QueryItemUsageAction::Execute(Event event)
         ItemPrototype const *item = sItemStorage.LookupEntry<ItemPrototype>(*i);
         if (!item) continue;
 
-        ai->TellMaster(QueryItem(item, 0, GetCount(item)));
+        ai->TellMaster(QueryItem(item, 0, GetCount(item)), PLAYERBOT_SECURITY_ALLOW_ALL, false);
     }
     return true;
 }

@@ -434,7 +434,7 @@ bool StoreLootAction::Execute(Event event)
 
         ostringstream out; out << "Looting " << chat->formatItem(proto);
 
-        ai->TellMasterNoFacing(out.str());
+        ai->TellMasterNoFacing(out.str(), PLAYERBOT_SECURITY_ALLOW_ALL, false);
 
         sTravelMgr.logEvent(ai, "StoreLootAction", proto->Name1, to_string(proto->ItemId));      
 

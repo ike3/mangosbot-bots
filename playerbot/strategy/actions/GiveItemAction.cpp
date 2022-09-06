@@ -43,7 +43,7 @@ bool GiveItemAction::Execute(Event event)
 
             ostringstream out;
             out << "Got " << chat->formatItem(item->GetProto(), item->GetCount()) << " from " << bot->GetName();
-            receiverAi->TellMasterNoFacing(out.str());
+            receiverAi->TellMasterNoFacing(out.str(), PLAYERBOT_SECURITY_ALLOW_ALL, false);
         }
         else
         {

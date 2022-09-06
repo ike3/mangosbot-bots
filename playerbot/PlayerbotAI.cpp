@@ -1775,7 +1775,7 @@ WorldObject* PlayerbotAI::GetWorldObject(ObjectGuid guid)
     return map->GetWorldObject(guid);
 }
 
-bool PlayerbotAI::TellMasterNoFacing(string text, PlayerbotSecurityLevel securityLevel)
+bool PlayerbotAI::TellMasterNoFacing(string text, PlayerbotSecurityLevel securityLevel, bool isPrivate)
 {
     time_t lastSaid = whispers[text];
     if (!lastSaid || (time(0) - lastSaid) >= sPlayerbotAIConfig.repeatDelay / 1000)
@@ -1796,13 +1796,13 @@ bool PlayerbotAI::TellMasterNoFacing(string text, PlayerbotSecurityLevel securit
                 break;
             }
         }
-
+        
         if (!master && (sPlayerbotAIConfig.randomBotSayWithoutMaster || HasStrategy("debug", BOT_STATE_NON_COMBAT)))
         {
             bot->Say(text, (bot->GetTeam() == ALLIANCE ? LANG_COMMON : LANG_ORCISH));
             return true;
         }
-        else if (master && bot->GetGroup() && bot->GetGroup()->IsMember(master->GetObjectGuid()))
+        else if ((!isPrivate || master != GetMaster()) && master && bot->GetGroup() && bot->GetGroup()->IsMember(master->GetObjectGuid()))
         {
             WorldPacket data;
             ChatHandler::BuildChatPacket(data,
@@ -1877,9 +1877,9 @@ bool PlayerbotAI::IsTellAllowed(PlayerbotSecurityLevel securityLevel)
     return true;
 }
 
-bool PlayerbotAI::TellMaster(string text, PlayerbotSecurityLevel securityLevel)
+bool PlayerbotAI::TellMaster(string text, PlayerbotSecurityLevel securityLevel, bool isPrivate)
 {
-    if (!TellMasterNoFacing(text, securityLevel))
+    if (!TellMasterNoFacing(text, securityLevel, isPrivate))
         return false;
 
     if (master && !sServerFacade.isMoving(bot) && !sServerFacade.IsInCombat(bot) && bot->GetMapId() == master->GetMapId() && !bot->IsTaxiFlying() && !bot->IsFlying())

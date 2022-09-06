@@ -20,7 +20,7 @@ bool ReviveFromCorpseAction::Execute(Event event)
         {
             if (!ai->HasStrategy("follow", BOT_STATE_NON_COMBAT))
             {
-                ai->TellMasterNoFacing("Welcome back!");
+                ai->TellMasterNoFacing("Welcome back!", PLAYERBOT_SECURITY_ALLOW_ALL, false);
                 ai->ChangeStrategy("+follow,-stay", BOT_STATE_NON_COMBAT);
                 return true;
             }
@@ -289,7 +289,7 @@ bool SpiritHealerAction::Execute(Event event)
                 bot->SaveToDB();
                 context->GetValue<Unit*>("current target")->Set(NULL);
                 bot->SetSelectionGuid(ObjectGuid());
-                ai->TellMaster(BOT_TEXT("hello"));
+                ai->TellMaster(BOT_TEXT("hello"), PLAYERBOT_SECURITY_ALLOW_ALL, false);
 
                 if (dCount > 20)
                     context->GetValue<uint32>("death count")->Set(0);

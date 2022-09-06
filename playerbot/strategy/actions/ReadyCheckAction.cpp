@@ -197,7 +197,7 @@ bool ReadyCheckAction::ReadyCheck()
         out << formatPercent("Water", water, 100.0 * water / 20);
     }
 
-    ai->TellMaster(out);
+    ai->TellMaster(out, PLAYERBOT_SECURITY_ALLOW_ALL, false);
 
     WorldPacket packet(MSG_RAID_READY_CHECK);
     packet << uint8(1);

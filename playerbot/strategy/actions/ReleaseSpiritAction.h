@@ -17,22 +17,22 @@ namespace ai
         {
             if (sServerFacade.IsAlive(bot))
             {
-                ai->TellMasterNoFacing("I am not dead, will wait here");
+                ai->TellMasterNoFacing("I am not dead, will wait here", PLAYERBOT_SECURITY_ALLOW_ALL, false);
                 ai->ChangeStrategy("-follow,+stay", BOT_STATE_NON_COMBAT);
                 return false;
             }
 
             if (bot->GetCorpse() && bot->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_GHOST))
             {
-                ai->TellMasterNoFacing("I am already a spirit");
+                ai->TellMasterNoFacing("I am already a spirit", PLAYERBOT_SECURITY_ALLOW_ALL, false);
                 return false;
             }
 
             WorldPacket& p = event.getPacket();
             if (!p.empty() && p.GetOpcode() == CMSG_REPOP_REQUEST)
-                ai->TellMasterNoFacing("Releasing...");
+                ai->TellMasterNoFacing("Releasing...", PLAYERBOT_SECURITY_ALLOW_ALL, false);
             else
-                ai->TellMasterNoFacing("Meet me at the graveyard");
+                ai->TellMasterNoFacing("Meet me at the graveyard", PLAYERBOT_SECURITY_ALLOW_ALL, false);
 
             sLog.outDetail("Bot #%d %s:%d <%s> released", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->GetLevel(), bot->GetName());
 

@@ -29,7 +29,7 @@ bool ShareQuestAction::Execute(Event event)
             WorldPacket p;
             p << entry;
             bot->GetSession()->HandlePushQuestToParty(p);
-            ai->TellMaster("Quest shared");
+            ai->TellMaster("Quest shared", PLAYERBOT_SECURITY_ALLOW_ALL, false);
             return true;
         }
     }

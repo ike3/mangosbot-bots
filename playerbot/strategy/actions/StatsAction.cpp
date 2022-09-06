@@ -23,7 +23,7 @@ bool StatsAction::Execute(Event event)
         ListXP(out);
     }
 
-    ai->TellMaster(out);
+    ai->TellMaster(out, PLAYERBOT_SECURITY_ALLOW_ALL, false);
     return true;
 }
 

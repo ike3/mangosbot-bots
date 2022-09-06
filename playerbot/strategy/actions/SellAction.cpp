@@ -121,7 +121,7 @@ void SellAction::Sell(Item* item)
 
         out << "Selling " << chat->formatItem(item->GetProto());
         bot->PlayDistanceSound(120);
-        ai->TellMaster(out);
+        ai->TellMaster(out, PLAYERBOT_SECURITY_ALLOW_ALL, false);
         break;
     }
 }

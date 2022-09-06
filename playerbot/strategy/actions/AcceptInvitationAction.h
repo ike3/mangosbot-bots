@@ -46,7 +46,7 @@ namespace ai
             ai->ChangeStrategy("+follow,-lfg,-bg", BOT_STATE_NON_COMBAT);
             ai->Reset();
 
-            ai->TellMaster(BOT_TEXT("hello"));
+            ai->TellMaster(BOT_TEXT("hello"), PLAYERBOT_SECURITY_ALLOW_ALL, false);
 
             sTravelMgr.logEvent(ai, "AcceptInvitationAction", grp->GetLeaderName(), to_string(grp->GetMembersCount()));
 
