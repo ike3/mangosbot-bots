@@ -135,6 +135,10 @@ ItemUsage ItemUsageValue::Calculate()
             }
         }
 
+    //Do not sell/ah epic or above.
+    if (proto->Quality >= ITEM_QUALITY_EPIC)
+        return ITEM_USAGE_KEEP;
+
     //Need to add something like free bagspace or item value.
     if (proto->SellPrice > 0)
     {
