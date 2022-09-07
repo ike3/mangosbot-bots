@@ -616,6 +616,8 @@ list<string> PlayerbotHolder::HandlePlayerbotCommand(char const* args, Player* m
         return messages;
     }
 
+    string command = args;
+
     char *cmd = strtok ((char*)args, " ");
     char *charname = strtok (NULL, " ");
     if (!cmd)
@@ -665,6 +667,38 @@ list<string> PlayerbotHolder::HandlePlayerbotCommand(char const* args, Player* m
         }
        return messages;
      }
+
+    if (command.find("debug ") != std::string::npos)
+    {
+        bool hasBot = false;
+        PlayerbotAI* ai = master->GetPlayerbotAI();
+        if (ai)
+            hasBot = true;
+        else
+        {
+            ai = new PlayerbotAI(master);
+            master->SetPlayerbotAI(ai);
+            ai->SetMaster(master);
+            ai->ResetStrategies();
+        }
+
+        command = command.substr(6);
+
+        if(ai->DoSpecificAction("cdebug", Event(".bot",command), true))
+            messages.push_back("debug failed");
+
+        if (!hasBot)
+        {
+            if (master->GetPlayerbotAI()) {
+                {
+                    delete master->GetPlayerbotAI();
+                }
+                master->SetPlayerbotAI(0);
+            }
+        }
+
+        return messages;
+    }
 
     if (!charname)
     {
