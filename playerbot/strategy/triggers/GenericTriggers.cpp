@@ -67,7 +67,8 @@ bool OutNumberedTrigger::IsActive()
         return false;
 
     int32 botLevel = bot->GetLevel();
-    uint32 friendPower = 200, foePower = 0;
+    float healthMod = bot->GetHealthPercent() / 100.0f;
+    uint32 friendPower = 100 + 100 * healthMod, foePower = 0;
     for (auto &attacker : ai->GetAiObjectContext()->GetValue<list<ObjectGuid> >("attackers")->Get())
     {
         Creature* creature = ai->GetCreature(attacker);
@@ -76,8 +77,10 @@ bool OutNumberedTrigger::IsActive()
 
         int32 dLevel = creature->GetLevel() - botLevel;
 
+        healthMod = creature->GetHealthPercent() / 100.0f;
+
         if(dLevel > -10)
-            foePower = std::max(100 + 10 * dLevel, dLevel * 200);
+            foePower += std::max(100 + 10 * dLevel, dLevel * 200) * healthMod;
     }
 
     if (!foePower)
@@ -92,8 +95,10 @@ bool OutNumberedTrigger::IsActive()
 
         int32 dLevel = player->GetLevel() - botLevel;
 
+        healthMod = player->GetHealthPercent() / 100.0f;
+
         if (dLevel > -10 && sServerFacade.GetDistance2d(bot, player) < 10.0f)
-            friendPower += std::max(200 + 20 * dLevel, dLevel * 200);
+            friendPower += std::max(200 + 20 * dLevel, dLevel * 200)* healthMod;
     }
 
     return friendPower < foePower;
