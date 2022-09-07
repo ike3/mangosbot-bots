@@ -41,7 +41,7 @@ void ChooseTravelTargetAction::getNewTarget(TravelTarget* newTarget, TravelTarge
     if (!foundTarget && urand(1, 100) > 10)                                  //90% chance
         if (AI_VALUE2(bool, "group or", "should sell,can sell,following party,near leader") || AI_VALUE2(bool, "group or", "should repair,can repair,following party,near leader"))
             foundTarget = SetRpgTarget(newTarget);                           //Go to town to sell items or repair
-        else if (AI_VALUE2(bool, "group or", "should sell,can ah sell,following party,near leader"))
+        else if (AI_VALUE2(bool, "group or", "should sell,can ah sell,following party,near leader") && bot->GetLevel() > 5)
             foundTarget = SetNpcFlagTarget(newTarget, { UNIT_NPC_FLAG_AUCTIONEER });
 
     //Rpg in city
@@ -66,7 +66,7 @@ void ChooseTravelTargetAction::getNewTarget(TravelTarget* newTarget, TravelTarge
                 target->setForced(true);
 
                 ostringstream out; out << "Traveling to " << dest->getTitle();
-                ai->TellMasterNoFacing(out.str());
+                ai->TellMasterNoFacing(out.str(),PLAYERBOT_SECURITY_ALLOW_ALL, false);
                 foundTarget = true;
             }
         }
@@ -291,7 +291,7 @@ void ChooseTravelTargetAction::ReportTravelTarget(TravelTarget* newTarget, Trave
     if (out.str().empty())
         return;
 
-    ai->TellMaster(out);
+    ai->TellMasterNoFacing(out,PLAYERBOT_SECURITY_ALLOW_ALL, false);
 
     string message = out.str().c_str();
 
@@ -379,15 +379,17 @@ vector<WorldPosition*> ChooseTravelTargetAction::getLogicalPoints(vector<WorldPo
     else if (!AI_VALUE(bool, "can fight equal"))
         botLevel -= 2;
 
+    if (botLevel < 6)
+        botLevel = 6;
 
     auto it = travelPoints.begin();
 
     //Loop over all points
     while (it != travelPoints.end())
     {
-        AreaTableEntry const* area = (*it)->getArea();
+        int32 areaLevel = (*it)->getAreaLevel();
 
-        if (area && area->area_level && botLevel < area->area_level)
+        if (!areaLevel || botLevel < areaLevel)
         {
             ++it;
             continue;

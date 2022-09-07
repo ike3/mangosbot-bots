@@ -177,6 +177,7 @@ namespace ai
         uint16 getAreaFlag() { return sTerrainMgr.GetAreaFlag(getMapId(), getX(), getY(), getZ()); };
         AreaTableEntry const* getArea();
         string getAreaName(bool fullName = true, bool zoneName = false);
+        int32 getAreaLevel();
 
         vector<WorldPosition> fromPointsArray(std::vector<G3D::Vector3> path);
 
@@ -738,6 +739,9 @@ namespace ai
 
         void logEvent(PlayerbotAI* ai, string eventName, string info1 = "", string info2 = "");
         void logEvent(PlayerbotAI* ai, string eventName, ObjectGuid guid, string info2);
+
+        int32 getAreaLevel(uint32 area_id);
+        void loadAreaLevels();
     //protected:
         void logQuestError(uint32 errorNr, Quest* quest, uint32 objective = 0, uint32 unitId = 0, uint32 itemId = 0);
 
@@ -751,6 +755,8 @@ namespace ai
         std::unordered_map<uint32, ExploreTravelDestination*> exploreLocs;
         std::unordered_map<uint32, QuestContainer*> quests;
         std::unordered_map<uint64, WorldPosition> pointsMap;
+
+        std::unordered_map<uint32, int32> areaLevels;
 
         vector<tuple<uint32, int, int>> badVmap, badMmap;
 

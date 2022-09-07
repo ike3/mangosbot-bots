@@ -302,6 +302,14 @@ string WorldPosition::getAreaName(bool fullName, bool zoneName)
     return areaName;
 }
 
+int32 WorldPosition::getAreaLevel()
+{
+    if(getArea())
+        return sTravelMgr.getAreaLevel(getArea()->ID);
+
+    return 0;
+}
+
 std::set<Transport*> WorldPosition::getTransports(uint32 entry)
 {
     /*
@@ -1480,6 +1488,143 @@ void TravelMgr::logEvent(PlayerbotAI* ai, string eventName, ObjectGuid guid, str
     logEvent(ai, eventName, info1, info2);
 };
 
+
+int32 TravelMgr::getAreaLevel(uint32 area_id)
+{
+    auto lev = areaLevels.find(area_id);
+
+    if (lev != areaLevels.end())
+        return lev->second;
+
+    AreaTableEntry const* area = GetAreaEntryByAreaID(area_id);
+
+    if (!area)
+    {
+        areaLevels[area_id] = -2;
+        return -2;
+    }
+
+    //Get exploration level
+    if (area->area_level) 
+    {
+        areaLevels[area_id] = area->area_level;
+        return area->area_level;
+    }
+
+
+    int32 level = 0;
+    uint32 cnt = 0;
+
+    //Get sub-area's
+    for (uint32 i = 0; i <= sAreaStore.GetNumRows(); i++)
+    {
+        AreaTableEntry const* subArea = GetAreaEntryByAreaID(i);
+
+        if (!subArea || subArea->zone != area->ID)
+            continue;
+
+        int32 subLevel = getAreaLevel(subArea->ID);
+
+        if (!subLevel)
+            continue;
+
+        level += subLevel;
+
+        cnt++;
+    }
+
+    if (cnt)
+    {
+        areaLevels[area_id] = std::max(uint32(1), level / cnt);
+        return areaLevels[area_id];
+    }
+
+    //Get units avarage
+    FactionTemplateEntry const* humanFaction = sFactionTemplateStore.LookupEntry(1);
+    FactionTemplateEntry const* orcFaction = sFactionTemplateStore.LookupEntry(2);
+
+    for (auto& creaturePair : WorldPosition().getCreaturesNear())
+    {
+        if (WorldPosition(creaturePair).getArea() != area)
+            continue;
+
+        CreatureData const cData = creaturePair->second;
+        CreatureInfo const* cInfo = ObjectMgr::GetCreatureTemplate(cData.id);
+
+        FactionTemplateEntry const* factionEntry = sFactionTemplateStore.LookupEntry(cInfo->Faction);
+        ReputationRank reactionHum = PlayerbotAI::GetFactionReaction(humanFaction, factionEntry);
+        ReputationRank reactionOrc = PlayerbotAI::GetFactionReaction(orcFaction, factionEntry);
+
+        if (reactionHum >= REP_NEUTRAL || reactionOrc >= REP_NEUTRAL)
+            continue;
+
+        level += cInfo->MaxLevel;
+        cnt++;
+    }
+
+    if (cnt)
+    {
+        areaLevels[area_id] = std::max(uint32(1),level / cnt);
+        return areaLevels[area_id];
+    }
+
+    //Use parent zone value.
+    if (area->zone)
+    {
+        areaLevels[area_id] = 0; //Set a temporary value so it wont be counted.
+        level = getAreaLevel(area->zone);
+        areaLevels[area_id] = level;        
+        return areaLevels[area_id];
+    }
+
+    areaLevels[area_id] = -1;
+
+    return areaLevels[area_id];
+}
+
+void TravelMgr::loadAreaLevels()
+{
+    if (!areaLevels.empty())
+        return;
+
+    PlayerbotDatabase.PExecute("CREATE TABLE IF NOT EXISTS `ai_playerbot_zone_level` (`id` bigint(20) NOT NULL ,`level` bigint(20) NOT NULL,PRIMARY KEY(`id`))");
+
+    string query = "SELECT id, level FROM ai_playerbot_zone_level";
+
+    {
+        QueryResult* result = PlayerbotDatabase.PQuery(query.c_str());
+
+        if (result)
+        {
+            BarGoLink bar(result->GetRowCount());
+            do
+            {
+                Field* fields = result->Fetch();
+                bar.step();
+
+                areaLevels[fields[0].GetUInt32()] = fields[1].GetInt32();
+            } while (result->NextRow());
+
+            delete result;
+
+            sLog.outString(">> Loaded " SIZEFMTD " area levels.", areaLevels.size());
+        }
+        else
+        {
+            sLog.outString();
+            sLog.outErrorDb(">> Reloading area levels.");
+
+            for (uint32 i = 0; i <= sAreaStore.GetNumRows(); i++)
+            {
+                int32 level = sTravelMgr.getAreaLevel(i);
+
+                PlayerbotDatabase.PExecute("INSERT INTO `ai_playerbot_zone_level` (`id`, `level`) VALUES ('%d', '%d')"
+                    , i, level);
+            }
+        }
+    }
+}
+
 void TravelMgr::logQuestError(uint32 errorNr, Quest* quest, uint32 objective, uint32 unitId, uint32 itemId)
 {
     bool logQuestErrors = false; //For debugging.
@@ -1642,6 +1787,10 @@ void TravelMgr::LoadQuestTravelTable()
     //struct loot { uint32 type; uint32 entry;  uint32 item; } t_loot;
     //vector<loot> loots;
 
+    sLog.outString("Loading area levels.");
+    loadAreaLevels();
+
+
     ObjectMgr::QuestMap const& questMap = sObjectMgr.GetQuestTemplates();
     vector<uint32> questIds;
 
@@ -1650,9 +1799,9 @@ void TravelMgr::LoadQuestTravelTable()
     for (auto& quest : questMap)
         questIds.push_back(quest.first);
 
-    sort(questIds.begin(), questIds.end());
+    std::sort(questIds.begin(), questIds.end());
 
-    sLog.outErrorDb("Loading units locations.");
+    sLog.outString("Loading units locations.");
     for (auto& creaturePair : WorldPosition().getCreaturesNear())
     {
         t_unit.type = 0;
@@ -1674,7 +1823,7 @@ void TravelMgr::LoadQuestTravelTable()
         unit.c = entryCount[unit.entry];
     }
 
-    sLog.outErrorDb("Loading game object locations.");
+    sLog.outString("Loading game object locations.");
     for (auto& goPair : WorldPosition().getGameObjectsNear())
     {
         t_unit.type = 1;
@@ -1797,7 +1946,7 @@ void TravelMgr::LoadQuestTravelTable()
     }
     */
 
-    sLog.outErrorDb("Loading quest data.");
+    sLog.outString("Loading quest data.");
 
     bool loadQuestData = true;
 
@@ -1880,7 +2029,7 @@ void TravelMgr::LoadQuestTravelTable()
         }
     }
 
-    sLog.outErrorDb("Loading Rpg, Grind and Boss locations.");
+    sLog.outString("Loading Rpg, Grind and Boss locations.");
 
     WorldPosition point;
 
@@ -1962,7 +2111,7 @@ void TravelMgr::LoadQuestTravelTable()
         }
     }
 
-    sLog.outErrorDb("Loading Explore locations.");
+    sLog.outString("Loading Explore locations.");
 
     //Explore points
     for (auto& u : units)
@@ -2554,7 +2703,7 @@ void TravelMgr::LoadQuestTravelTable()
             pos.printWKT(out);
 
             if(points.begin()->getArea())
-                out << to_string(points.begin()->getArea()->area_level);
+                out << to_string(points.begin()->getAreaLevel());
             else
                 out << to_string(-1);
 
@@ -2568,7 +2717,7 @@ void TravelMgr::LoadQuestTravelTable()
             point.printWKT(points, out, 0);
 
             if (points.begin()->getArea())
-                out << to_string(points.begin()->getArea()->area_level);
+                out << to_string(points.begin()->getAreaLevel());
             else
                 out << to_string(-1);
 
