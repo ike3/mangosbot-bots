@@ -148,7 +148,7 @@ bool AhBidAction::Execute(string text, Unit* auctioneer)
 
         for (uint32 i = 0; i < checkNumAuctions; i++)
         {
-            auto curAuction = std::next(std::begin(map), urand(0, map.size()));
+            auto curAuction = std::next(std::begin(map), urand(0, map.size()-1));
 
             auction = curAuction->second;
 
