@@ -255,8 +255,8 @@ AreaTableEntry const* WorldPosition::getArea()
 {
     uint16 areaFlag = getAreaFlag();
 
-    if(!areaFlag)
-        return NULL;
+    //if(!areaFlag)
+    //    return NULL;
 
     return GetAreaEntryByAreaFlagAndMap(areaFlag, getMapId());
 }
@@ -857,7 +857,7 @@ bool QuestRelationTravelDestination::isActive(Player* bot) {
 
     if (relation == 0)
     {
-        if (questTemplate->GetQuestLevel() >= bot->GetLevel() + (uint32)5)
+        if ((int32)questTemplate->GetQuestLevel() >= (int32)bot->GetLevel() + (int32)5)
             return false;
         //if (questTemplate->XPValue(bot) == 0)
         //    return false;
@@ -940,7 +940,7 @@ bool QuestObjectiveTravelDestination::isActive(Player* bot) {
     if (!ai->HasStrategy("rpg quest", BOT_STATE_NON_COMBAT))
         return false;
 
-    if (questTemplate->GetQuestLevel() > bot->GetLevel() + (uint32)1)
+    if ((int32)questTemplate->GetQuestLevel() > (int32)bot->GetLevel() + (int32)1)
         return false;
 
     AiObjectContext* context = ai->GetAiObjectContext();
@@ -1550,6 +1550,9 @@ int32 TravelMgr::getAreaLevel(uint32 area_id)
 
         CreatureData const cData = creaturePair->second;
         CreatureInfo const* cInfo = ObjectMgr::GetCreatureTemplate(cData.id);
+
+        if (!cInfo)
+            continue;
 
         FactionTemplateEntry const* factionEntry = sFactionTemplateStore.LookupEntry(cInfo->Faction);
         ReputationRank reactionHum = PlayerbotAI::GetFactionReaction(humanFaction, factionEntry);
