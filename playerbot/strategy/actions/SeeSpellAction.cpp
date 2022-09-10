@@ -44,10 +44,20 @@ bool SeeSpellAction::Execute(Event event)
 {
     WorldPacket p(event.getPacket()); // 
     uint32 spellId;
+    uint8  cast_count, cast_flags;
     Player* master = ai->GetMaster();
 
     p.rpos(0);
     p >> spellId;
+
+
+#ifdef MANGOSBOT_ONE
+    p >> cast_count;
+#endif
+#ifdef MANGOSBOT_TWO
+    p >> cast_count;
+    p >> cast_flags;     
+#endif
 
     if (!master)
         return false;
@@ -62,11 +72,7 @@ bool SeeSpellAction::Execute(Event event)
 
     SpellCastTargets targets;
 
-#ifdef BUILD_PLAYERBOT
-    recvPacket >> targets.ReadForCaster(mover);
-#else
     p >> targets.ReadForCaster(ai->GetMaster());
-#endif
 
     WorldPosition spellPosition(master->GetMapId(), targets.m_destPos);
     SET_AI_VALUE(WorldPosition, "see spell location", spellPosition);
