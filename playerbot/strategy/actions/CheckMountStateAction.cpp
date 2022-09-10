@@ -45,7 +45,7 @@ bool CheckMountStateAction::Execute(Event event)
     }
 
     Player* master = GetMaster();
-    if (master != nullptr && !bot->InBattleGround())
+    if (master != nullptr && master != bot && !bot->InBattleGround())
     {
         if (!bot->GetGroup() || bot->GetGroup()->GetLeaderGuid() != master->GetObjectGuid())
             return false;
