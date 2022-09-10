@@ -144,9 +144,14 @@ ItemUsage ItemUsageValue::Calculate()
     {
         AuctionHouseBotItemData itemInfo = sAuctionHouseBot.GetItemData(proto->ItemId);
         if (itemInfo.Value > ((int32)proto->SellPrice) * 1.5f)
-            return ITEM_USAGE_AH;
-        else
-            return ITEM_USAGE_VENDOR;
+        {
+            Item* item = CurrentItem(proto);
+
+            if(!item || !item->IsSoulBound())
+                return ITEM_USAGE_AH;
+        }
+        
+        return ITEM_USAGE_VENDOR;
     }
 
     return ITEM_USAGE_NONE;
