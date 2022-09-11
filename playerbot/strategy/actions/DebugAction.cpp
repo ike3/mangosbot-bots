@@ -82,10 +82,39 @@ bool DebugAction::Execute(Event event)
 
         GuidPosition guidP = ai->GetMaster()->GetSelectionGuid();
 
-        if (!guidP || !guidP.GetWorldObject())
+        if (text.size() > 4)
+        {
+            string link = text.substr(4);
+
+            if (!link.empty())
+            {
+                list<int32> entries = chat->parseWorldEntries(link);
+                if (!entries.empty())
+                {
+
+                    int32 entry = entries.front();
+
+                    for (auto cre : WorldPosition(bot).getCreaturesNear(0.0f, entry))
+                    {
+                        guidP = GuidPosition(cre);
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (!guidP)
             return false;
 
-        out << chat->formatWorldobject(guidP.GetWorldObject()) << " (e:" << guidP.GetEntry() << ",level:" << guidP.GetUnit()->GetLevel() << ") ";
+        if (guidP.GetWorldObject())
+            out << chat->formatWorldobject(guidP.GetWorldObject());
+        
+        out << " (e:" << guidP.GetEntry();
+        
+        if (guidP.GetUnit())
+            out << ",level:" << guidP.GetUnit()->GetLevel();
+            
+        out << ") ";
 
         guidP.printWKT(out);
 
@@ -107,6 +136,10 @@ bool DebugAction::Execute(Event event)
         if (event_id)
             out << " event:" << event_id << sGameEventMgr.IsActiveEvent(event_id) ? " active" : " inactive";
 
+        uint16 topPoolId = sPoolMgr.IsPartOfTopPool<Creature>(guidP.GetCounter());
+
+        if (event_id)
+            out << " pool:" << topPoolId << sGameEventMgr.GetGameEventId<Pool>(topPoolId) ? " event" : " nonevent";
 
         ai->TellMasterNoFacing(out);
 
@@ -157,7 +190,8 @@ bool DebugAction::Execute(Event event)
         reaction[REP_REVERED] = "REP_REVERED";
         reaction[REP_EXALTED] = "REP_EXALTED";
         
-        ai->TellMasterNoFacing(reaction[guidP.GetUnit()->GetReactionTo(bot)]);
+        if(guidP.GetUnit())
+            ai->TellMasterNoFacing(reaction[guidP.GetUnit()->GetReactionTo(bot)]);
 
         return true;
     }
