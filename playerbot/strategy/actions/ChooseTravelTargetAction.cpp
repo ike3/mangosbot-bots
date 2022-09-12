@@ -387,9 +387,19 @@ vector<WorldPosition*> ChooseTravelTargetAction::getLogicalPoints(vector<WorldPo
     //Loop over all points
     while (it != travelPoints.end())
     {
-        int32 areaLevel = (*it)->getAreaLevel();
+        WorldPosition* pos = (*it);
+
+        int32 areaLevel = pos->getAreaLevel();
 
         if (!areaLevel || botLevel < areaLevel)
+        {
+            ++it;
+            continue;
+        }
+
+        GuidPosition* guidP = dynamic_cast<GuidPosition*>(pos);
+
+        if (guidP && guidP->IsEventUnspawned())
         {
             ++it;
             continue;

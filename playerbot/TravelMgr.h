@@ -74,7 +74,7 @@ namespace ai
         float getZ() { return coord_z; }
         float getO() { return orientation; }
         G3D::Vector3 getVector3();
-        string print();
+        virtual string print();
         string to_string() {stringstream out; out << mapid; out << coord_x; out << coord_y; out << coord_z;  out << orientation; return out.str();};
 
         void printWKT(vector<WorldPosition> points, ostringstream& out, uint32 dim = 0, bool loop = false);
@@ -278,6 +278,7 @@ namespace ai
         GuidPosition() : ObjectGuid(), WorldPosition() {}
         GuidPosition(ObjectGuid guid) { ObjectGuid::Set(guid); WorldPosition::set(guid); };
         GuidPosition(ObjectGuid guid, WorldPosition pos) : ObjectGuid(guid), WorldPosition(pos) {};
+        GuidPosition(uint64 const& guid, WorldPosition const& pos) : ObjectGuid(guid), WorldPosition(pos) {};
         //template<class T>
         //GuidPosition(ObjectGuid guid, T) : ObjectGuid(guid) {WorldPosition::set(WorldPosition(T))};
         GuidPosition(CreatureDataPair const* dataPair) : ObjectGuid(HIGHGUID_UNIT, dataPair->second.id, dataPair->first), WorldPosition(dataPair) {};
@@ -301,6 +302,11 @@ namespace ai
 
         bool isDead(); //For loaded grids check if the unit/object is unloaded/dead.
 
+        uint16 IsPartOfAPool();
+        uint16 GetGameEventId();
+        bool IsEventUnspawned();
+
+        virtual string print();
 
         operator bool() const { return  WorldPosition(*this) && !IsEmpty(); }
         bool operator== (ObjectGuid const& guid) const { return GetRawValue() == guid.GetRawValue(); }
@@ -754,7 +760,7 @@ namespace ai
 
         std::unordered_map<uint32, ExploreTravelDestination*> exploreLocs;
         std::unordered_map<uint32, QuestContainer*> quests;
-        std::unordered_map<uint64, WorldPosition> pointsMap;
+        std::unordered_map<uint64, GuidPosition> pointsMap;
 
         std::unordered_map<uint32, int32> areaLevels;
 

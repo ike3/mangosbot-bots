@@ -15,11 +15,13 @@
 #include "VMapFactory.h"
 #include "MoveMap.h"
 #include "Transports.h"
-#include <playerbot/strategy/StrategyContext.h>
+#include "strategy/StrategyContext.h"
 
 #include "strategy/values/SharedValueContext.h"
 
 #include "Grids/CellImpl.h"
+
+#include "GameEvents/GameEventMgr.h"
 
 using namespace ai;
 using namespace MaNGOS;
@@ -786,6 +788,56 @@ bool GuidPosition::isDead()
         return false;
 
     return true;
+}
+
+uint16 GuidPosition::IsPartOfAPool()
+{
+    if (IsCreature())
+        return sPoolMgr.IsPartOfAPool<Creature>(GetCounter());
+    if (IsGameObject())
+        return sPoolMgr.IsPartOfAPool<GameObject>(GetCounter());
+
+    return 0;
+}
+
+uint16 GuidPosition::GetGameEventId()
+{
+    if (uint16 pool_id = IsPartOfAPool())
+    {
+        uint16 top_pool_id = sPoolMgr.IsPartOfTopPool<Pool>(pool_id);
+
+        if (int16 event_id = sGameEventMgr.GetGameEventId<Pool>(top_pool_id))
+            return event_id;
+    }
+
+    if (IsCreature())
+        return sGameEventMgr.GetGameEventId<Creature>(GetCounter());
+    if (IsGameObject())
+        return sGameEventMgr.GetGameEventId<GameObject>(GetCounter());
+
+    return 0;
+}
+
+bool GuidPosition::IsEventUnspawned()
+{
+    if (int16 event_id = GetGameEventId())
+        if (!sGameEventMgr.IsActiveEvent(event_id))
+            return true;
+    
+    return false;
+}
+
+string GuidPosition::print()
+{
+    ostringstream out;
+    out << this;
+    out << mapid << std::fixed << std::setprecision(2);
+    out << ';' << coord_x;
+    out << ';' << coord_y;
+    out << ';' << coord_z;
+    out << ';' << orientation;
+
+    return out.str();
 }
 
 vector<WorldPosition*> TravelDestination::getPoints(bool ignoreFull) {
@@ -1762,37 +1814,11 @@ void TravelMgr::LoadQuestTravelTable()
     // Clearing store (for reloading case)
     Clear();
 
-    /* remove this
-    questGuidMap cQuestMap = GAI_VALUE(questGuidMap,"quest objects");
-
-    for (auto cQuest : cQuestMap)
-    {
-        sLog.outErrorDb("[Quest id: %d]", cQuest.first);
-
-        for (auto cObj : cQuest.second)
-        {
-            sLog.outErrorDb(" [Objective type: %d]", cObj.first);
-
-            for (auto cCre : cObj.second)
-            {
-                sLog.outErrorDb(" %s %d", cCre.GetTypeName(), cCre.GetEntry());
-            }
-        }
-    }
-    */
-
     struct unit { uint64 guid; uint32 type; uint32 entry; uint32 map; float  x; float  y; float  z;  float  o; uint32 c; } t_unit;
     vector<unit> units;
 
-    //struct relation { uint32 type; uint32 role;  uint32 entry; uint32 questId; } t_rel;
-    //vector<relation> relations;
-
-    //struct loot { uint32 type; uint32 entry;  uint32 item; } t_loot;
-    //vector<loot> loots;
-
     sLog.outString("Loading area levels.");
     loadAreaLevels();
-
 
     ObjectMgr::QuestMap const& questMap = sObjectMgr.GetQuestTemplates();
     vector<uint32> questIds;
@@ -1840,114 +1866,7 @@ void TravelMgr::LoadQuestTravelTable()
         t_unit.c = 1;
 
         units.push_back(t_unit);
-    }
-
-    /*
-    //                     0    1  2   3          4          5          6           7     8
-    string query = "SELECT 0,guid,id,map,position_x,position_y,position_z,orientation, (select count(*) from creature k where c.id = k.id) FROM creature c UNION ALL SELECT 1,guid,id,map,position_x,position_y,position_z,orientation, (select count(*) from gameobject h where h.id = g.id)  FROM gameobject g";
-
-    QueryResult* result = WorldDatabase.PQuery(query.c_str());
-
-    if (result)
-    {
-        BarGoLink bar(result->GetRowCount());
-        do
-        {
-            Field* fields = result->Fetch();
-            bar.step();
-
-            t_unit.type = fields[0].GetUInt32();
-            t_unit.guid = fields[1].GetUInt32();
-            t_unit.entry = fields[2].GetUInt32();
-            t_unit.map = fields[3].GetUInt32();
-            t_unit.x = fields[4].GetFloat();
-            t_unit.y = fields[5].GetFloat();
-            t_unit.z = fields[6].GetFloat();
-            t_unit.o = fields[7].GetFloat();
-            t_unit.c = fields[8].GetUInt32();
-
-            units.push_back(t_unit);
-
-        } while (result->NextRow());
-
-        delete result;
-
-        sLog.outString(">> Loaded " SIZEFMTD " units locations.", units.size());
-    }
-    else
-    {
-        sLog.outString();
-        sLog.outErrorDb(">> Error loading units locations.");
-    }
-
-#ifdef MANGOS
-    query = "SELECT actor, role, entry, quest FROM quest_relations qr";
-#endif
-#ifdef CMANGOS
-    query = "SELECT 0, 0, id, quest FROM creature_questrelation UNION ALL SELECT 0, 1, id, quest FROM creature_involvedrelation UNION ALL SELECT 1, 0, id, quest FROM gameobject_questrelation UNION ALL SELECT 1, 1, id, quest FROM gameobject_involvedrelation";
-#endif
-
-    result = WorldDatabase.PQuery(query.c_str());
-
-    if (result)
-    {
-        BarGoLink bar(result->GetRowCount());
-
-        do
-        {
-            Field* fields = result->Fetch();
-            bar.step();
-
-            t_rel.type = fields[0].GetUInt32();
-            t_rel.role = fields[1].GetUInt32();
-            t_rel.entry = fields[2].GetUInt32();
-            t_rel.questId = fields[3].GetUInt32();
-
-            relations.push_back(t_rel);
-
-        } while (result->NextRow());
-
-        delete result;
-
-        sLog.outString(">> Loaded " SIZEFMTD " relations.", relations.size());
-    }
-    else
-    {
-        sLog.outString();
-        sLog.outErrorDb(">> Error loading relations.");
-    }
-
-    query = "SELECT 0, ct.entry, item FROM creature_template ct JOIN creature_loot_template clt ON (ct.lootid = clt.entry) UNION ALL SELECT 0, entry, item FROM npc_vendor UNION ALL SELECT 1, gt.entry, item FROM gameobject_template gt JOIN gameobject_loot_template glt ON (gt.TYPE = 3 AND gt.DATA1 = glt.entry)";
-
-    result = WorldDatabase.PQuery(query.c_str());
-
-    if (result)
-    {
-        BarGoLink bar(result->GetRowCount());
-
-        do
-        {
-            Field* fields = result->Fetch();
-            bar.step();
-
-            t_loot.type = fields[0].GetUInt32();
-            t_loot.entry = fields[1].GetUInt32();
-            t_loot.item = fields[2].GetUInt32();
-
-            loots.push_back(t_loot);
-
-        } while (result->NextRow());
-
-        delete result;
-
-        sLog.outString(">> Loaded " SIZEFMTD " loot lists.", loots.size());
-    }
-    else
-    {
-        sLog.outString();
-        sLog.outErrorDb(">> Error loading loot lists.");
-    }
-    */
+    } 
 
     sLog.outString("Loading quest data.");
 
@@ -2011,8 +1930,7 @@ void TravelMgr::LoadQuestTravelTable()
 
                     for (auto& guidP : e.second)
                     {
-                        WorldPosition point = guidP;
-                        pointsMap.insert(make_pair(guidP.GetRawValue(), point));
+                        pointsMap.insert(make_pair(guidP.GetRawValue(), guidP));
 
                         for (auto tLoc : locs)
                         {
@@ -2034,7 +1952,7 @@ void TravelMgr::LoadQuestTravelTable()
 
     sLog.outString("Loading Rpg, Grind and Boss locations.");
 
-    WorldPosition point;
+    GuidPosition point;
 
     //Rpg locations
     for (auto& u : units)
@@ -2070,7 +1988,7 @@ void TravelMgr::LoadQuestTravelTable()
         allowedNpcFlags.push_back(UNIT_NPC_FLAG_VENDOR);
         allowedNpcFlags.push_back(UNIT_NPC_FLAG_REPAIR);
 
-        point = WorldPosition(u.map, u.x, u.y, u.z, u.o);
+        point = GuidPosition(u.guid, WorldPosition(u.map, u.x, u.y, u.z, u.o));
 
         for (vector<uint32>::iterator i = allowedNpcFlags.begin(); i != allowedNpcFlags.end(); ++i)
         {
@@ -2094,7 +2012,7 @@ void TravelMgr::LoadQuestTravelTable()
             gLoc->setExpireDelay(5 * 60 * 1000);
             gLoc->setMaxVisitors(100, 0);
 
-            point = WorldPosition(u.map, u.x, u.y, u.z, u.o);
+            point = GuidPosition(u.guid, WorldPosition(u.map, u.x, u.y, u.z, u.o));
             pointsMap.insert_or_assign(u.guid, point);
             gLoc->addPoint(&pointsMap.find(u.guid)->second);
             grindMobs.push_back(gLoc);
@@ -2121,7 +2039,7 @@ void TravelMgr::LoadQuestTravelTable()
     {
         ExploreTravelDestination* loc;
 
-        WorldPosition point = WorldPosition(u.map, u.x, u.y, u.z, u.o);
+        GuidPosition point = GuidPosition(u.guid, WorldPosition(u.map, u.x, u.y, u.z, u.o));
         AreaTableEntry const* area = point.getArea();
 
         if (!area)
