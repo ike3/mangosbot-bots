@@ -315,6 +315,9 @@ namespace ai
         bool HasNpcFlag(NPCFlags flag) { return IsCreature() && GetCreatureTemplate()->NpcFlags & flag; }
         bool isGoType(GameobjectTypes type) { return IsGameObject() && GetGameObjectInfo()->type == type; }
 
+        bool IsFriendlyTo(Unit* unit);
+        bool IsHostileTo(Unit* unit);
+
         bool isDead(); //For loaded grids check if the unit/object is unloaded/dead.
 
         uint16 IsPartOfAPool();

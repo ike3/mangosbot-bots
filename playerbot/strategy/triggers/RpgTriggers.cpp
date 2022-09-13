@@ -63,6 +63,9 @@ bool RpgStartQuestTrigger::IsActive()
     if (!guidP.IsCreature() && !guidP.IsGameObject())
         return false;
 
+    if (guidP.IsHostileTo(bot))
+        return false;
+
     if (guidP.IsUnit())
     {
         Unit* unit = guidP.GetUnit();
@@ -91,6 +94,9 @@ bool RpgEndQuestTrigger::IsActive()
     if (!guidP.IsCreature() && !guidP.IsGameObject())
         return false;
 
+    if (guidP.IsHostileTo(bot))
+        return false;
+
     if (AI_VALUE2(bool, "can turn in quest npc", guidP.GetEntry()))
         return true;
 
@@ -102,6 +108,9 @@ bool RpgRepeatQuestTrigger::IsActive()
     GuidPosition guidP(getGuidP());
 
     if (!guidP.IsCreature() && !guidP.IsGameObject())
+        return false;
+
+    if (guidP.IsHostileTo(bot))
         return false;
 
     if (AI_VALUE2(bool, "can repeat quest npc", guidP.GetEntry()))
@@ -116,6 +125,9 @@ bool RpgBuyTrigger::IsActive()
     GuidPosition guidP(getGuidP());
 
     if (!guidP.HasNpcFlag(UNIT_NPC_FLAG_VENDOR))
+        return false;
+
+    if (guidP.IsHostileTo(bot))
         return false;
 
     if (AI_VALUE(uint8, "durability") < 50)
@@ -134,6 +146,9 @@ bool RpgSellTrigger::IsActive()
     if (!guidP.HasNpcFlag(UNIT_NPC_FLAG_VENDOR))
         return false;
 
+    if (guidP.IsHostileTo(bot))
+        return false;
+
     if (!AI_VALUE(bool, "can sell"))
         return false;
 
@@ -147,6 +162,9 @@ bool RpgAHSellTrigger::IsActive()
     if (!guidP.HasNpcFlag(UNIT_NPC_FLAG_AUCTIONEER))
         return false;
 
+    if (guidP.IsHostileTo(bot))
+        return false;
+
     if (!AI_VALUE(bool, "can ah sell"))
         return false;
 
@@ -158,6 +176,9 @@ bool RpgAHBuyTrigger::IsActive()
     GuidPosition guidP(getGuidP());
 
     if (!guidP.HasNpcFlag(UNIT_NPC_FLAG_AUCTIONEER))
+        return false;
+
+    if (guidP.IsHostileTo(bot))
         return false;
 
     if (AI_VALUE(uint8, "durability") < 50)
@@ -200,6 +221,9 @@ bool RpgRepairTrigger::IsActive()
     GuidPosition guidP(getGuidP());
 
     if (!guidP.HasNpcFlag(UNIT_NPC_FLAG_REPAIR))
+        return false;
+
+    if (guidP.IsHostileTo(bot))
         return false;
 
     if (AI_VALUE2_LAZY(bool, "group or", "should repair,can repair,following party,near leader"))
@@ -255,6 +279,9 @@ bool RpgTrainTrigger::IsActive()
     GuidPosition guidP(getGuidP());
 
     if (!guidP.HasNpcFlag(UNIT_NPC_FLAG_TRAINER))
+        return false;
+
+    if (guidP.IsHostileTo(bot))
         return false;
 
     CreatureInfo const* cInfo = guidP.GetCreatureTemplate();
@@ -338,6 +365,9 @@ bool RpgHomeBindTrigger::IsActive()
     if (!guidP.HasNpcFlag(UNIT_NPC_FLAG_INNKEEPER))
         return false;
 
+    if (guidP.IsHostileTo(bot))
+        return false;
+
     if (AI_VALUE(WorldPosition, "home bind").distance(bot) < 500.0f)
         return false;
 
@@ -355,6 +385,9 @@ bool RpgQueueBGTrigger::IsActive()
     if (!guidP.IsCreature())
         return false;
 
+    if (guidP.IsHostileTo(bot))
+        return false;
+
     if (AI_VALUE(BattleGroundTypeId, "rpg bg type") == BATTLEGROUND_TYPE_NONE)
         return false;
 
@@ -366,6 +399,9 @@ bool RpgBuyPetitionTrigger::IsActive()
     GuidPosition guidP(getGuidP());
 
     if (!guidP.HasNpcFlag(UNIT_NPC_FLAG_PETITIONER))
+        return false;
+
+    if (guidP.IsHostileTo(bot))
         return false;
 
     if (!BuyPetitionAction::canBuyPetition(bot))

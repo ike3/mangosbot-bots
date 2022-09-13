@@ -988,8 +988,7 @@ bool QuestRelationTravelDestination::isActive(Player* bot) {
     {
         FactionTemplateEntry const* factionEntry = sFactionTemplateStore.LookupEntry(cInfo->Faction);
         ReputationRank reaction = ai->getReaction(factionEntry);
-
-        return reaction > REP_NEUTRAL;
+        return reaction >= REP_NEUTRAL;
     }
 
     return true;
