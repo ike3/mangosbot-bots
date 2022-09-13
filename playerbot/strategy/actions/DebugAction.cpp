@@ -134,12 +134,12 @@ bool DebugAction::Execute(Event event)
         uint16 event_id = sGameEventMgr.GetGameEventId<Creature>(guidP.GetCounter());
 
         if (event_id)
-            out << " event:" << event_id << sGameEventMgr.IsActiveEvent(event_id) ? " active" : " inactive";
+            out << " event:" << event_id << (sGameEventMgr.IsActiveEvent(event_id) ? " active" : " inactive");
 
         uint16 topPoolId = sPoolMgr.IsPartOfTopPool<Creature>(guidP.GetCounter());
 
-        if (event_id)
-            out << " pool:" << topPoolId << sGameEventMgr.GetGameEventId<Pool>(topPoolId) ? " event" : " nonevent";
+        if (topPoolId)
+            out << " pool:" << topPoolId << (sGameEventMgr.GetGameEventId<Pool>(topPoolId) ? " event" : " nonevent");
 
         ai->TellMasterNoFacing(out);
 

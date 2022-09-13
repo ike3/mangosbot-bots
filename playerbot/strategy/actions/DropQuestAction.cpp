@@ -97,10 +97,7 @@ void CleanQuestLogAction::DropQuestType(uint8 &numQuest, uint8 wantNum, bool isG
 
     if (wantNum < 100)
     {
-        std::random_device rd;
-        std::mt19937 g(rd());
-
-        std::shuffle(slots.begin(), slots.end(), g);
+        std::shuffle(slots.begin(), slots.end(), *GetRandomGenerator());
     }
 
     for (uint8 slot : slots)
