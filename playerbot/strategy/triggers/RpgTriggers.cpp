@@ -1,5 +1,6 @@
 #pragma once
 #include "botpch.h"
+#include "Mail.h"
 #include "../../playerbot.h"
 #include "RpgTriggers.h"
 #include "../../PlayerbotAIConfig.h"
@@ -178,13 +179,20 @@ bool RpgGetMailTrigger::IsActive()
     if (!guidP.isGoType(GAMEOBJECT_TYPE_MAILBOX))
         return false;
 
-    if (!bot->GetMailSize())
-        return false;
+    time_t cur_time = time(0);
 
-    WorldPacket p;
-    bot->GetSession()->HandleQueryNextMailTime(p);
+    for (PlayerMails::iterator itr = bot->GetMailBegin(); itr != bot->GetMailEnd(); ++itr)
+    {
+        if ((*itr)->state == MAIL_STATE_DELETED || cur_time < (*itr)->deliver_time)
+            continue;
 
-    return true;
+        if ((*itr)->has_items || (*itr)->money)
+        {
+            return true;
+        }        
+    }
+
+    return false;
 }
 
 bool RpgRepairTrigger::IsActive()
