@@ -68,6 +68,9 @@ namespace ai
         WorldPosition& operator+=(const WorldPosition& p1) { coord_x += p1.coord_x; coord_y += p1.coord_y; coord_z += p1.coord_z; return *this; }
         WorldPosition& operator-=(const WorldPosition& p1) { coord_x -= p1.coord_x; coord_y -= p1.coord_y; coord_z -= p1.coord_z; return *this; }
 
+        WorldPosition& operator*=(const float& s) { coord_x *= s; coord_y *= s; coord_z *= s; return *this; }
+        WorldPosition& operator/=(const float& s) { coord_x /= s; coord_y /= s; coord_z /= s; return *this; }
+
         uint32 getMapId() { return mapid; }
         float getX() { return coord_x; }
         float getY() { return coord_y; }
@@ -89,6 +92,8 @@ namespace ai
         WorldPosition relPoint(WorldPosition* center) { return WorldPosition(mapid, coord_x - center->coord_x, coord_y - center->coord_y, coord_z - center->coord_z, orientation); }
         WorldPosition offset(WorldPosition* center) { return WorldPosition(mapid, coord_x + center->coord_x, coord_y + center->coord_y, coord_z + center->coord_z, orientation); }
         float size() { return sqrt(pow(coord_x, 2.0) + pow(coord_y, 2.0) + pow(coord_z, 2.0)); }
+
+        WorldPosition limit(WorldPosition center, float maxDistance) {WorldPosition pos(*this); pos -= center; pos /= pos.size(); pos *= maxDistance; pos += center; return pos;}
 
         //Slow distance function using possible map transfers.
         float distance(WorldPosition* center);
@@ -143,11 +148,21 @@ namespace ai
         Map* getMap() { return sMapMgr.FindMap(mapid, getMapEntry()->Instanceable() ? getInstanceId() : 0); }
         const TerrainInfo* getTerrain() { return getMap() ? getMap()->GetTerrain() : NULL; }
 
+#ifdef MANGOSBOT_TWO
+        bool IsInLineOfSight(WorldPosition pos, float heightMod = 0.5f) { return mapid == pos.mapid && getMap() && getMap()->IsInLineOfSight(coord_x, coord_y, coord_z + heightMod, pos.coord_x, pos.coord_y, pos.coord_z + heightMod, bot->GetPhaseMask(), true); }
+#else
+        bool IsInLineOfSight(WorldPosition pos, float heightMod = 0.5f) { return mapid == pos.mapid && getMap() && getMap()->IsInLineOfSight(coord_x, coord_y, coord_z + heightMod, pos.coord_x, pos.coord_y, pos.coord_z + heightMod, true); }
+#endif
+
+        bool isOutside() { WorldPosition high(*this); high.setZ(getZ() + 500.0f); return IsInLineOfSight(high); }
+
 #if defined(MANGOSBOT_TWO) || MAX_EXPANSION == 2
         const float getHeight() { return getMap()->GetHeight(0, getX(), getY(), getZ()); }
 #else
         const float getHeight() { return getMap()->GetHeight(getX(), getY(), getZ()); }
 #endif
+
+        const float currentHeight() { return getZ() - getHeight(); }
 
         std::set<Transport*> getTransports(uint32 entry = 0);
 
@@ -464,6 +479,8 @@ namespace ai
         QuestRelationTravelDestination(uint32 quest_id1, uint32 entry1, uint32 relation1, float radiusMin1, float radiusMax1) :QuestTravelDestination(quest_id1, radiusMin1, radiusMax1) { entry = entry1; relation = relation1; }
 
         virtual bool isActive(Player* bot);
+
+        virtual CreatureInfo const* getCreatureInfo() { return entry > 0 ? ObjectMgr::GetCreatureTemplate(entry) : nullptr; }
 
         virtual string getName() { return "QuestRelationTravelDestination"; }
         virtual int32 getEntry() { return entry; }

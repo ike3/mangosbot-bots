@@ -773,6 +773,16 @@ Player* GuidPosition::GetPlayer()
     return nullptr;
 }
 
+bool GuidPosition::IsFriendlyTo(Unit* unit)
+{
+    return IsCreature() ? (PlayerbotAI::GetFactionReaction(unit->GetFactionTemplateEntry(), sFactionTemplateStore.LookupEntry(GetCreatureTemplate()->Faction)) > REP_NEUTRAL) : true;
+}
+
+bool GuidPosition::IsHostileTo(Unit* unit)
+{
+    return IsCreature() ? (PlayerbotAI::GetFactionReaction(unit->GetFactionTemplateEntry(), sFactionTemplateStore.LookupEntry(GetCreatureTemplate()->Faction)) < REP_NEUTRAL) : false;
+}
+
 bool GuidPosition::isDead()
 {
     if (!getMap())
@@ -970,6 +980,16 @@ bool QuestRelationTravelDestination::isActive(Player* bot) {
             if (!this->nearestPoint(&WorldPosition(bot))->isOverworld())
                 return false;
         }
+    }
+
+    CreatureInfo const* cInfo = this->getCreatureInfo();
+
+    if (cInfo)
+    {
+        FactionTemplateEntry const* factionEntry = sFactionTemplateStore.LookupEntry(cInfo->Faction);
+        ReputationRank reaction = ai->getReaction(factionEntry);
+
+        return reaction > REP_NEUTRAL;
     }
 
     return true;
