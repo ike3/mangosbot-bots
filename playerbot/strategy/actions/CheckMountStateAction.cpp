@@ -100,7 +100,7 @@ bool CheckMountStateAction::Execute(Event event)
         return Mount();
     }
 
-    if (!bot->InBattleGround())
+    if (!bot->InBattleGround() && !bot->IsMounted())
     {
         GuidPosition unit = AI_VALUE(GuidPosition, "rpg target");
         if (unit)
@@ -111,12 +111,15 @@ bool CheckMountStateAction::Execute(Event event)
 
         if (((!AI_VALUE(list<ObjectGuid>, "possible rpg targets").empty()) && noattackers && !dps && !enemy) && urand(0, 100) > 50)
             return Mount();
+
+        if (AI_VALUE(TravelTarget*, "travel target")->isTraveling() && AI_VALUE(TravelTarget*, "travel target")->distance(bot) > sPlayerbotAIConfig.farDistance && !dps && !enemy)
+            return Mount();
     }
 
     if (!bot->IsMounted() && !attackdistance && (fartarget || chasedistance))
         return Mount();
 
-    if (!bot->IsFlying() && attackdistance && bot->IsMounted() && (enemy || dps || (!noattackers && sServerFacade.IsInCombat(bot))))
+    if ((!bot->IsFlying() || WorldPosition(bot).currentHeight() < 10.0f)  && attackdistance && bot->IsMounted() && (enemy || dps || (!noattackers && sServerFacade.IsInCombat(bot))))
     {
         WorldPacket emptyPacket;
         bot->GetSession()->HandleCancelMountAuraOpcode(emptyPacket);
@@ -231,6 +234,7 @@ bool CheckMountStateAction::Mount()
     if (sServerFacade.isMoving(bot))
     {
         ai->StopMoving();
+        return true;
     }
 
     Player* master = GetMaster();
@@ -372,8 +376,89 @@ bool CheckMountStateAction::Mount()
 
 #ifndef MANGOSBOT_TWO
     list<Item*> items = AI_VALUE2(list<Item*>, "inventory items", "mount");
-    if (!items.empty()) return UseItemAuto(*items.begin());
+
+    vector<Item*> mounts(items.begin(), items.end());
+    std::shuffle(mounts.begin(), mounts.end(), *GetRandomGenerator());
+
+    Item* bestMount;
+    uint32 bestMountSpeed = 0;
+
+    if(bot->GetMapId() == 530 || bot->GetMapId() == 571)
+        for (auto mount : mounts)
+        {
+            if (bot->CanUseItem(mount) != EQUIP_ERR_OK)
+                continue;
+
+            uint32 mountSpeed = MountSpeed(mount->GetProto(), true);
+
+            if (mountSpeed < bestMountSpeed)
+                continue;
+
+            bestMount = mount;
+            bestMountSpeed = mountSpeed;
+        }
+
+    if(!bestMount)
+        for (auto mount : mounts)
+        {
+            if (bot->CanUseItem(mount) != EQUIP_ERR_OK)
+                continue;
+
+            uint32 mountSpeed = MountSpeed(mount->GetProto(), false);
+
+            if (mountSpeed < bestMountSpeed)
+                continue;
+
+            bestMount = mount;
+            bestMountSpeed = mountSpeed;
+        }
+
+    if (bestMountSpeed)
+    {
+        bool didUse = UseItemAuto(bestMount);
+
+        if (didUse)
+        {
+            ai->SetNextCheckDelay(3 * IN_MILLISECONDS);
+            return true;
+        }
+    }
 #endif
 
     return false;
+}
+
+uint32 CheckMountStateAction::MountSpeed(const ItemPrototype* proto, const bool isFlying)
+{
+    bool isMount = false;
+    uint32 effect = isFlying ? SPELL_AURA_MOD_FLIGHT_SPEED_MOUNTED : SPELL_AURA_MOD_INCREASE_MOUNTED_SPEED;
+
+    for (int j = 0; j < MAX_ITEM_PROTO_SPELLS; j++)
+    {
+        const SpellEntry* const spellInfo = sServerFacade.LookupSpellInfo(proto->Spells[j].SpellId);
+        if (!spellInfo)
+            return false;
+
+        for (int i = 0; i < 3; i++)
+        {
+            if (spellInfo->EffectApplyAuraName[i] == SPELL_AURA_MOUNTED)
+            {
+                isMount = true;
+                break;
+            }
+        }
+
+        if (isMount)
+        {
+            for (int i = 0; i < 3; i++)
+            {
+                if (spellInfo->EffectApplyAuraName[i] == effect)
+                {
+                    return spellInfo->EffectBasePoints[i];
+                }
+            }
+        }
+    }
+
+    return 0;
 }

@@ -17,6 +17,8 @@ namespace ai
 
     //private:
         bool Mount();
+
+        static uint32 MountSpeed(const ItemPrototype* proto, const bool isFlying = false);
     };
 
 }
