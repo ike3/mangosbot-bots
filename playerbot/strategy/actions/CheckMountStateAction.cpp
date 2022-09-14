@@ -109,10 +109,10 @@ bool CheckMountStateAction::Execute(Event event)
                 return Mount();
         }
 
-        if (((!AI_VALUE(list<ObjectGuid>, "possible rpg targets").empty()) && noattackers && !dps && !enemy) && urand(0, 100) > 50)
+        if (!AI_VALUE(TravelTarget*, "travel target")->isTraveling() && ((!AI_VALUE(list<ObjectGuid>, "possible rpg targets").empty()) && noattackers && !dps && !enemy) && urand(0, 100) > 50)
             return Mount();
 
-        if (AI_VALUE(TravelTarget*, "travel target")->isTraveling() && AI_VALUE(TravelTarget*, "travel target")->distance(bot) > sPlayerbotAIConfig.farDistance && !dps && !enemy)
+        if (AI_VALUE(TravelTarget*, "travel target")->isTraveling() && AI_VALUE(TravelTarget*, "travel target")->distance(bot) > sPlayerbotAIConfig.farDistance && !enemy && AI_VALUE(bool, "can move around"))
             return Mount();
     }
 
@@ -380,7 +380,7 @@ bool CheckMountStateAction::Mount()
     vector<Item*> mounts(items.begin(), items.end());
     std::shuffle(mounts.begin(), mounts.end(), *GetRandomGenerator());
 
-    Item* bestMount;
+    Item* bestMount = nullptr;
     uint32 bestMountSpeed = 0;
 
     if(bot->GetMapId() == 530 || bot->GetMapId() == 571)
