@@ -735,7 +735,7 @@ vector<GameObjectDataPair const*> WorldPosition::getGameObjectsNear(float radius
     return worker.GetResult();
 }
 
-Creature* GuidPosition::GetCreature()
+Creature* GuidPosition::GetCreature() const
 {
     if (!*this)
         return nullptr;
@@ -743,7 +743,7 @@ Creature* GuidPosition::GetCreature()
     return getMap()->GetAnyTypeCreature(*this);
 }
 
-Unit* GuidPosition::GetUnit()
+Unit* GuidPosition::GetUnit() const
 {
     if (!*this)
         return nullptr;
@@ -762,7 +762,7 @@ GameObject* GuidPosition::GetGameObject()
     return getMap()->GetGameObject(*this);
 }
 
-Player* GuidPosition::GetPlayer()
+Player* GuidPosition::GetPlayer() const
 {
     if (!*this)
         return nullptr;
@@ -773,14 +773,42 @@ Player* GuidPosition::GetPlayer()
     return nullptr;
 }
 
-bool GuidPosition::IsFriendlyTo(Unit* unit)
+const FactionTemplateEntry* GuidPosition::GetFactionTemplateEntry() const
 {
-    return IsCreature() ? (PlayerbotAI::GetFactionReaction(unit->GetFactionTemplateEntry(), sFactionTemplateStore.LookupEntry(GetCreatureTemplate()->Faction)) > REP_NEUTRAL) : true;
+    if (IsPlayer() && GetPlayer())
+        return GetPlayer()->GetFactionTemplateEntry();
+    if (IsCreature() && IsCreature())
+        return sFactionTemplateStore.LookupEntry(GetCreatureTemplate()->Faction);
+
+    return nullptr;
 }
 
-bool GuidPosition::IsHostileTo(Unit* unit)
+const ReputationRank GuidPosition::GetReactionTo(const GuidPosition& other)
 {
-    return IsCreature() ? (PlayerbotAI::GetFactionReaction(unit->GetFactionTemplateEntry(), sFactionTemplateStore.LookupEntry(GetCreatureTemplate()->Faction)) < REP_NEUTRAL) : false;
+    if(other.IsUnit() && other.GetUnit())
+        if (other.GetUnit()->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PLAYER_CONTROLLED))
+        {
+            if (const Player* unitPlayer = other.GetUnit()->GetControllingPlayer())
+            {
+                if (unitPlayer->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_CONTESTED_PVP) && GetFactionTemplateEntry()->IsContestedGuardFaction())
+                    return REP_HOSTILE;
+
+                if (const ReputationRank* rank = unitPlayer->GetReputationMgr().GetForcedRankIfAny(GetFactionTemplateEntry()))
+                    return (*rank);
+
+                if (!other.GetUnit()->HasFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_IGNORE_REPUTATION))
+                {
+                    const FactionEntry* thisFactionEntry = sFactionStore.LookupEntry<FactionEntry>(GetFactionTemplateEntry()->faction);
+                    if (thisFactionEntry && thisFactionEntry->HasReputation())
+                    {
+                        const ReputationMgr& reputationMgr = unitPlayer->GetReputationMgr();
+                        return reputationMgr.GetRank(thisFactionEntry);
+                    }
+                }
+            }
+        }
+
+    return PlayerbotAI::GetFactionReaction(GetFactionTemplateEntry(), other.GetFactionTemplateEntry());
 }
 
 bool GuidPosition::isDead()
@@ -981,14 +1009,10 @@ bool QuestRelationTravelDestination::isActive(Player* bot) {
                 return false;
         }
     }
-
-    CreatureInfo const* cInfo = this->getCreatureInfo();
-
-    if (cInfo)
-    {
-        FactionTemplateEntry const* factionEntry = sFactionTemplateStore.LookupEntry(cInfo->Faction);
-        ReputationRank reaction = ai->getReaction(factionEntry);
-        return reaction >= REP_NEUTRAL;
+    
+    if (entry > 0)
+    {     
+        return !GuidPosition(HIGHGUID_UNIT, entry).IsHostileTo(bot);
     }
 
     return true;
@@ -1061,6 +1085,11 @@ bool QuestObjectiveTravelDestination::isActive(Player* bot) {
         }
     }
 
+    if (entry > 0)
+    {
+        return !GuidPosition(HIGHGUID_UNIT, entry).IsHostileTo(bot);
+    }
+
     return true;
 }
 
@@ -1112,10 +1141,7 @@ bool RpgTravelDestination::isActive(Player* bot)
         }
     }
 
-    FactionTemplateEntry const* factionEntry = sFactionTemplateStore.LookupEntry(cInfo->Faction);
-    ReputationRank reaction = ai->getReaction(factionEntry);
-
-    return reaction > REP_NEUTRAL;
+    return !GuidPosition(HIGHGUID_UNIT, entry).IsHostileTo(bot);
 }
 
 string RpgTravelDestination::getTitle() {
@@ -1144,11 +1170,6 @@ bool ExploreTravelDestination::isActive(Player* bot)
 
     return !(currFields & val);    
 }
-
-//string ExploreTravelDestination::getTitle()
-//{
-//    return points[0]->getAreaName();
-//};
 
 bool GrindTravelDestination::isActive(Player* bot)
 {
@@ -1187,10 +1208,7 @@ bool GrindTravelDestination::isActive(Player* bot)
     if (cInfo->Rank > CREATURE_ELITE_NORMAL && !AI_VALUE(bool, "can fight elite"))
         return false;
 
-    FactionTemplateEntry const* factionEntry = sFactionTemplateStore.LookupEntry(cInfo->Faction);
-    ReputationRank reaction = ai->getReaction(factionEntry);
-
-    return reaction < REP_NEUTRAL;
+    return GuidPosition(bot).IsHostileTo(GuidPosition(HIGHGUID_UNIT, entry));
 }
 
 string GrindTravelDestination::getTitle() {
@@ -1233,10 +1251,7 @@ bool BossTravelDestination::isActive(Player* bot)
     if ((int32)cInfo->MaxLevel > bot->GetLevel() + 3)
         return false;
 
-    FactionTemplateEntry const* factionEntry = sFactionTemplateStore.LookupEntry(cInfo->Faction);
-    ReputationRank reaction = ai->getReaction(factionEntry);
-
-    if (reaction >= REP_NEUTRAL)
+    if (!GuidPosition(bot).IsHostileTo(GuidPosition(HIGHGUID_UNIT, entry)))
         return false;
 
     WorldPosition botPos(bot);

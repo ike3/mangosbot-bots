@@ -71,11 +71,11 @@ namespace ai
         WorldPosition& operator*=(const float& s) { coord_x *= s; coord_y *= s; coord_z *= s; return *this; }
         WorldPosition& operator/=(const float& s) { coord_x /= s; coord_y /= s; coord_z /= s; return *this; }
 
-        uint32 getMapId() { return mapid; }
-        float getX() { return coord_x; }
-        float getY() { return coord_y; }
-        float getZ() { return coord_z; }
-        float getO() { return orientation; }
+        uint32 getMapId() const { return mapid; }
+        float getX() const { return coord_x; }
+        float getY() const { return coord_y; }
+        float getZ() const { return coord_z; }
+        float getO() const { return orientation; }
         G3D::Vector3 getVector3();
         virtual string print();
         string to_string() {stringstream out; out << mapid; out << coord_x; out << coord_y; out << coord_z;  out << orientation; return out.str();};
@@ -143,9 +143,9 @@ namespace ai
         bool isInside(WorldPosition* p1, WorldPosition* p2, WorldPosition* p3);
 
         //Map functions. Player independent.
-        const MapEntry* getMapEntry() { return sMapStore.LookupEntry(mapid); };
-        uint32 getInstanceId() { for (auto& map : sMapMgr.Maps()) { if (map.second->GetId() == getMapId()) return map.second->GetInstanceId(); }; return 0; }
-        Map* getMap() { return sMapMgr.FindMap(mapid, getMapEntry()->Instanceable() ? getInstanceId() : 0); }
+        const MapEntry* getMapEntry() const { return sMapStore.LookupEntry(mapid); };
+        uint32 getInstanceId() const { for (auto& map : sMapMgr.Maps()) { if (map.second->GetId() == getMapId()) return map.second->GetInstanceId(); }; return 0; }
+        Map* getMap() const { return sMapMgr.FindMap(mapid, getMapEntry()->Instanceable() ? getInstanceId() : 0); }
         const TerrainInfo* getTerrain() { return getMap() ? getMap()->GetTerrain() : NULL; }
 
 #ifdef MANGOSBOT_TWO
@@ -299,24 +299,27 @@ namespace ai
         GuidPosition(CreatureDataPair const* dataPair) : ObjectGuid(HIGHGUID_UNIT, dataPair->second.id, dataPair->first), WorldPosition(dataPair) {};
         GuidPosition(GameObjectDataPair const* dataPair) : ObjectGuid(HIGHGUID_GAMEOBJECT, dataPair->second.id, dataPair->first), WorldPosition(dataPair) {};
         GuidPosition(WorldObject* wo) : WorldPosition(wo) { ObjectGuid::Set(wo->GetObjectGuid()); };
+        GuidPosition(HighGuid hi, uint32 entry, uint32 counter = 1, WorldPosition pos = WorldPosition()) : ObjectGuid(hi, entry, counter), WorldPosition(pos) {};
         //GuidPosition(const GuidPosition& guidp) {this->Set(guidp);  this->setLocation(((WorldPosition)guidp).getLocation()); };
 
         CreatureData* GetCreatureData() { return IsCreature() ? sObjectMgr.GetCreatureData(GetCounter()) : nullptr; }
-        CreatureInfo const* GetCreatureTemplate() {return IsCreature() ? sObjectMgr.GetCreatureTemplate(GetEntry()) : nullptr; };
+        CreatureInfo const* GetCreatureTemplate()const {return IsCreature() ? sObjectMgr.GetCreatureTemplate(GetEntry()) : nullptr; };
 
         GameObjectInfo const* GetGameObjectInfo() { return IsGameObject() ? sObjectMgr.GetGameObjectInfo(GetEntry()) : nullptr; };
 
         WorldObject* GetWorldObject() { return getMap() ? getMap()->GetWorldObject(*this) : nullptr;}
-        Creature* GetCreature();
-        Unit* GetUnit();
+        Creature* GetCreature() const;
+        Unit* GetUnit() const;
         GameObject* GetGameObject();
-        Player* GetPlayer();
+        Player* GetPlayer() const;
 
         bool HasNpcFlag(NPCFlags flag) { return IsCreature() && GetCreatureTemplate()->NpcFlags & flag; }
         bool isGoType(GameobjectTypes type) { return IsGameObject() && GetGameObjectInfo()->type == type; }
 
-        bool IsFriendlyTo(Unit* unit);
-        bool IsHostileTo(Unit* unit);
+        const FactionTemplateEntry* GetFactionTemplateEntry() const;
+        const ReputationRank GetReactionTo(const GuidPosition& other);
+        bool IsFriendlyTo(const GuidPosition& other) { return (GetFactionTemplateEntry() && other.GetFactionTemplateEntry()) ? (GetReactionTo(other) > REP_NEUTRAL) : false; }
+        bool IsHostileTo(const GuidPosition& other) { return (GetFactionTemplateEntry() && other.GetFactionTemplateEntry()) ? (GetReactionTo(other) < REP_NEUTRAL) : false; }
 
         bool isDead(); //For loaded grids check if the unit/object is unloaded/dead.
 
