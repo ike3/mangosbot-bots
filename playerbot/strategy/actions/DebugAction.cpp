@@ -190,8 +190,24 @@ bool DebugAction::Execute(Event event)
         reaction[REP_REVERED] = "REP_REVERED";
         reaction[REP_EXALTED] = "REP_EXALTED";
         
-        if(guidP.GetUnit())
-            ai->TellMasterNoFacing(reaction[guidP.GetUnit()->GetReactionTo(bot)]);
+        if (guidP.GetUnit())
+        {
+            ostringstream out;
+            out << "unit to bot:" << reaction[guidP.GetUnit()->GetReactionTo(bot)];
+
+            Unit* ubot = bot;
+            out << " bot to unit:" << reaction[ubot->GetReactionTo(guidP.GetUnit())];
+
+            out << " npc to bot:" << reaction[guidP.GetReactionTo(bot)];
+            out << " bot to npc:" << reaction[GuidPosition(bot).GetReactionTo(guidP)];
+
+            if (GuidPosition(HIGHGUID_UNIT, guidP.GetEntry()).IsHostileTo(bot))
+                out << "[hostile]";
+            if (GuidPosition(HIGHGUID_UNIT, guidP.GetEntry()).IsFriendlyTo(bot))
+                out << "[friendly]";
+
+            ai->TellMasterNoFacing(out);
+        }
 
         return true;
     }

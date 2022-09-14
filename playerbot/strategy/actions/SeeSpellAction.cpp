@@ -87,6 +87,9 @@ bool SeeSpellAction::Execute(Event event)
 
         ostringstream out;
 
+        if (spellPosition.isOutside())
+            out << "[outside]";
+
         out << " area = ";
 
         out << path.getArea(bot->GetMapId(), x, y, z);
