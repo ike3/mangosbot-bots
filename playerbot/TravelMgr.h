@@ -93,8 +93,6 @@ namespace ai
         WorldPosition offset(WorldPosition* center) { return WorldPosition(mapid, coord_x + center->coord_x, coord_y + center->coord_y, coord_z + center->coord_z, orientation); }
         float size() { return sqrt(pow(coord_x, 2.0) + pow(coord_y, 2.0) + pow(coord_z, 2.0)); }
 
-        WorldPosition limit(WorldPosition center, float maxDistance) { WorldPosition pos(*this); if (pos == center) return pos; pos -= center; pos /= pos.size(); pos *= maxDistance; pos += center; return pos; }
-
         //Slow distance function using possible map transfers.
         float distance(WorldPosition* center);
         float distance(WorldPosition center) { return distance(&center); };
@@ -135,6 +133,7 @@ namespace ai
         float getAngleTo(WorldPosition endPos) { float ang = atan2(endPos.getY() - getY(), endPos.getX() - getX()); return (ang >= 0) ? ang : 2 * M_PI_F + ang; };
         float getAngleBetween(WorldPosition dir1, WorldPosition dir2) { return abs(getAngleTo(dir1) - getAngleTo(dir2)); };
 
+        WorldPosition limit(WorldPosition center, float maxDistance) { WorldPosition pos(*this); pos -= center; float size = pos.size(); if (size > maxDistance) { pos /= pos.size(); pos *= maxDistance; pos += center; } return pos; }
 
         WorldPosition lastInRange(vector<WorldPosition> list, float minDist = -1, float maxDist = -1);
         WorldPosition firstOutRange(vector<WorldPosition> list, float minDist = -1, float maxDist = -1);

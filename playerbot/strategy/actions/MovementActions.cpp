@@ -150,7 +150,7 @@ bool MovementAction::FlyDirect(WorldPosition &startPosition, WorldPosition &endP
         vector<WorldPosition> path;
         if (movePath.empty()) //Make a path starting at the end backwards to see if we can walk to some better place.
         {
-            path = startPosition.getPathTo(endPosition, bot);
+            path = endPosition.getPathTo(startPosition, bot);
             std::reverse(path.begin(), path.end());
         }
         else
