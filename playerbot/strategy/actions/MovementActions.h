@@ -2,19 +2,18 @@
 
 #include "../Action.h"
 #include "../../PlayerbotAIConfig.h"
+#include "../../TravelNode.h"
 
 namespace ai
 {
     class MovementAction : public Action {
     public:
-        MovementAction(PlayerbotAI* ai, string name) : Action(ai, name)
-        {
-            bot = ai->GetBot();
-        }
+        MovementAction(PlayerbotAI* ai, string name) : Action(ai, name) {}
 
     protected:
         bool ChaseTo(WorldObject *obj, float distance = 0.0f, float angle = 0.0f);
         bool MoveNear(uint32 mapId, float x, float y, float z, float distance = sPlayerbotAIConfig.contactDistance);
+        bool FlyDirect(WorldPosition &startPosition,  WorldPosition &endPosition , WorldPosition& movePosition, TravelPath movePath, bool idle);
         bool MoveTo(uint32 mapId, float x, float y, float z, bool idle = false, bool react = false, bool noPath = false);
         bool MoveTo(Unit* target, float distance = 0.0f);
         bool MoveNear(WorldObject* target, float distance = sPlayerbotAIConfig.contactDistance);

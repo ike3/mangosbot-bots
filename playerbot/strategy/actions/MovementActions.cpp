@@ -12,7 +12,6 @@
 #include "../values/Stances.h"
 #include "MotionGenerators/TargetedMovementGenerator.h"
 #include "../../TravelMgr.h"
-#include "../../TravelNode.h"
 #include "Entities/Transports.h"
 #ifdef MANGOSBOT_TWO
 #include "Entities/Vehicle.h"
@@ -128,6 +127,136 @@ bool MovementAction::MoveToLOS(WorldObject* target, bool ranged)
     return false;
 }
 
+bool MovementAction::FlyDirect(WorldPosition &startPosition, WorldPosition &endPosition, WorldPosition& movePosition, TravelPath movePath, bool idle)
+{
+    //Fly directly.
+
+    if (!bot->IsFreeFlying())
+        return false;
+
+    if (!startPosition.isOutside())
+        return false;
+
+    float totalDistance = startPosition.distance(endPosition);    //Total distance to where we want to go
+    float maxDist = sPlayerbotAIConfig.reactDistance;           //Maxium distance a bot can move in one single action.
+
+    if (totalDistance < maxDist && !bot->IsFlying())
+        return false;
+
+    movePosition = endPosition;
+
+    if (movePosition.getMapId() != startPosition.getMapId() || !movePosition.isOutside()) //We can not fly to the end directly.
+    {
+        vector<WorldPosition> path;
+        if (movePath.empty()) //Make a path starting at the end backwards to see if we can walk to some better place.
+        {
+            path = startPosition.getPathTo(endPosition, bot);
+            std::reverse(path.begin(), path.end());
+        }
+        else
+            path = movePath.getPointPath();
+
+        if (path.empty())
+            return false;
+
+
+        for (auto& p = path.end(); p-- != path.begin(); ) //Find the furtest point where we can fly to directly.
+            if (p->getMapId() == startPosition.getMapId() && p->isOutside())
+            {
+                movePosition = *p;
+                break;
+            }
+    }
+
+    if (movePosition.getMapId() != startPosition.getMapId() || !movePosition.isOutside())
+        return false;
+
+    uint32 flyHeight = 0;
+    float originalZ = endPosition.getZ();
+    bool detailedMove = ai->AllowActivity(DETAILED_MOVE_ACTIVITY);
+
+    //Crop the distance we can travel to maxDist;
+    if (totalDistance > maxDist)
+    {
+        flyHeight = std::min(100.0f, totalDistance / 10.0f);
+
+        movePosition = movePosition.limit(startPosition, maxDist);
+
+        if (!bot->IsFlying())
+        {
+            WorldPacket data(SMSG_SPLINE_MOVE_SET_FLYING, 9);
+            data << bot->GetPackGUID();
+            bot->SendMessageToSet(data, true);
+
+            if (!bot->m_movementInfo.HasMovementFlag(MOVEFLAG_FLYING))
+                bot->m_movementInfo.AddMovementFlag(MOVEFLAG_FLYING);
+#ifdef MANGOSBOT_ONE
+            if (!bot->m_movementInfo.HasMovementFlag(MOVEFLAG_FLYING2))
+                bot->m_movementInfo.AddMovementFlag(MOVEFLAG_FLYING2);
+#endif
+            if (!bot->m_movementInfo.HasMovementFlag(MOVEFLAG_LEVITATING))
+                bot->m_movementInfo.AddMovementFlag(MOVEFLAG_LEVITATING);
+        }
+    }
+    else
+    {
+        bool needLand = false;
+
+        if (const TerrainInfo* terrain = bot->GetTerrain())
+        {
+            float height = terrain->GetHeightStatic(bot->GetPositionX(), bot->GetPositionY(), bot->GetPositionZ());
+            float ground = terrain->GetWaterOrGroundLevel(bot->GetPositionX(), bot->GetPositionY(), bot->GetPositionZ(), height);
+            if (bot->GetPositionZ() > originalZ && (bot->GetPositionZ() - originalZ < 5.0f) && (fabs(originalZ - ground) < 5.0f))
+                needLand = true;
+        }
+        if (needLand)
+        {
+            WorldPacket data(SMSG_SPLINE_MOVE_UNSET_FLYING, 9);
+            data << bot->GetPackGUID();
+            bot->SendMessageToSet(data, true);
+
+            if (bot->m_movementInfo.HasMovementFlag(MOVEFLAG_FLYING))
+                bot->m_movementInfo.RemoveMovementFlag(MOVEFLAG_FLYING);
+#ifdef MANGOSBOT_ONE
+            if (bot->m_movementInfo.HasMovementFlag(MOVEFLAG_FLYING2))
+                bot->m_movementInfo.RemoveMovementFlag(MOVEFLAG_FLYING2);
+#endif
+            if (bot->m_movementInfo.HasMovementFlag(MOVEFLAG_LEVITATING))
+                bot->m_movementInfo.RemoveMovementFlag(MOVEFLAG_LEVITATING);
+        }
+    }
+
+    for (uint32 modZ = 0; modZ < maxDist / 5.0f; modZ++)
+    {
+        if (movePosition.currentHeight() > flyHeight && startPosition.IsInLineOfSight(movePosition))
+            break;
+
+        movePosition.setZ(movePosition.getZ() + 5.0f);
+
+        if (movePosition.distance(startPosition) > maxDist)
+            movePosition = movePosition.limit(startPosition, maxDist);
+    }
+
+    if (totalDistance > maxDist && !detailedMove && !ai->HasPlayerNearby(&movePosition)) //Why walk if you can fly?
+    {
+        time_t now = time(0);
+
+        AI_VALUE(LastMovement&, "last movement").nextTeleport = now + (time_t)MoveDelay(startPosition.distance(movePosition));
+
+        return bot->TeleportTo(movePosition.getMapId(), movePosition.getX(), movePosition.getY(), movePosition.getZ(), startPosition.getAngleTo(movePosition));
+    }
+
+    MotionMaster& mm = *bot->GetMotionMaster();
+    mm.MovePoint(movePosition.getMapId(), Position(movePosition.getX(), movePosition.getY(), movePosition.getZ(), 0.f), bot->IsFlying() ? FORCED_MOVEMENT_FLIGHT : FORCED_MOVEMENT_RUN, bot->IsFlying() ? bot->GetSpeed(MOVE_FLIGHT) : 0.f, bot->IsFlying());
+
+    AI_VALUE(LastMovement&, "last movement").setShort(startPosition, movePosition);
+
+    if (!idle)
+        ClearIdleState();
+
+    return true;
+}
+
 bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, bool react, bool noPath)
 {
     UpdateMovementState();
@@ -175,23 +304,13 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
     if (noPath)
         generatePath = false;
 
-    /*if (generatePath)
-    {
-        z += CONTACT_DISTANCE;
-        mover->UpdateAllowedPositionZ(x, y, z);
-    }*/
-
     if (!isVehicle && !IsMovingAllowed() && sServerFacade.UnitIsDead(bot))
     {
-        //bot->StopMoving();
         return false;
     }
 
     if (!isVehicle && bot->IsMoving() && !IsMovingAllowed())
     {
-        //if (!bot->IsTaxiFlying())
-        //    bot->StopMoving();
-
         return false;
     }
 
@@ -199,11 +318,11 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
 
     WorldPosition startPosition = WorldPosition(bot);             //Current location of the bot
     WorldPosition endPosition = WorldPosition(mapId, x, y, z, 0); //The requested end location
-    WorldPosition movePosition;                                   //The actual end location
+    WorldPosition movePosition;
 
     float totalDistance = startPosition.distance(endPosition);    //Total distance to where we want to go
     float maxDistChange = totalDistance * 0.1;                    //Maximum change between previous destination before needing a recalulation
-
+    TravelPath movePath;
 
     if (totalDistance < minDist)
     {
@@ -216,99 +335,13 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
         return false;
     }
 
-    TravelPath movePath;
     bool isWalking = false;
+
+    if (FlyDirect(startPosition, endPosition, movePosition, lastMove.lastPath, idle)) //Try flying in a straight line to target.
+        return true;
 
     if (lastMove.lastMoveShort.distance(endPosition) < maxDistChange && startPosition.distance(lastMove.lastMoveShort) < maxDist) //The last short movement was to the same place we want to move now.
         movePosition = endPosition;
-    else if (bot->IsFreeFlying() && (totalDistance > maxDist || bot->IsFlying()) && endPosition.mapid == startPosition.mapid && startPosition.isOutside() && endPosition.isOutside())
-    {
-        //Fly directly.
-        movePosition = endPosition;
-
-        uint32 flyHeight = 0;
-
-        //Crop the distance we can travel to maxDist;
-        if (totalDistance > maxDist)
-        {
-            flyHeight = std::min(100.0f, totalDistance/10.0f);
-
-            movePosition = movePosition.limit(startPosition, maxDist);
-
-            if (!bot->IsFlying())
-            {
-                WorldPacket data(SMSG_SPLINE_MOVE_SET_FLYING, 9);
-                data << bot->GetPackGUID();
-                bot->SendMessageToSet(data, true);
-
-                if (!bot->m_movementInfo.HasMovementFlag(MOVEFLAG_FLYING))
-                    bot->m_movementInfo.AddMovementFlag(MOVEFLAG_FLYING);
-#ifdef MANGOSBOT_ONE
-                if (!bot->m_movementInfo.HasMovementFlag(MOVEFLAG_FLYING2))
-                    bot->m_movementInfo.AddMovementFlag(MOVEFLAG_FLYING2);
-#endif
-                if (!bot->m_movementInfo.HasMovementFlag(MOVEFLAG_LEVITATING))
-                    bot->m_movementInfo.AddMovementFlag(MOVEFLAG_LEVITATING);
-            }
-        }
-        else
-        {
-            bool needLand = false;
-
-            if (const TerrainInfo* terrain = bot->GetTerrain())
-            {
-                float height = terrain->GetHeightStatic(bot->GetPositionX(), bot->GetPositionY(), bot->GetPositionZ());
-                float ground = terrain->GetWaterOrGroundLevel(bot->GetPositionX(), bot->GetPositionY(), bot->GetPositionZ(), height);
-                if (bot->GetPositionZ() > originalZ && (bot->GetPositionZ() - originalZ < 5.0f) && (fabs(originalZ - ground) < 5.0f))
-                    needLand = true;
-            }
-            if (needLand)
-            {
-                WorldPacket data(SMSG_SPLINE_MOVE_UNSET_FLYING, 9);
-                data << bot->GetPackGUID();
-                bot->SendMessageToSet(data, true);
-
-                if (bot->m_movementInfo.HasMovementFlag(MOVEFLAG_FLYING))
-                    bot->m_movementInfo.RemoveMovementFlag(MOVEFLAG_FLYING);
-#ifdef MANGOSBOT_ONE
-                if (bot->m_movementInfo.HasMovementFlag(MOVEFLAG_FLYING2))
-                    bot->m_movementInfo.RemoveMovementFlag(MOVEFLAG_FLYING2);
-#endif
-                if (bot->m_movementInfo.HasMovementFlag(MOVEFLAG_LEVITATING))
-                    bot->m_movementInfo.RemoveMovementFlag(MOVEFLAG_LEVITATING);
-            }
-        }
-        
-        for (uint32 modZ = 0; modZ < maxDist/5.0f; modZ++)
-        {
-            if (movePosition.currentHeight() > flyHeight && startPosition.IsInLineOfSight(movePosition))
-                break;
-
-            movePosition.setZ(movePosition.getZ() + 5.0f);
-
-            if (movePosition.distance(startPosition) > maxDist)
-                movePosition = movePosition.limit(startPosition, maxDist);
-        }
-
-        if (totalDistance > maxDist && !detailedMove && !ai->HasPlayerNearby(&movePosition)) //Why walk if you can fly?
-        {
-            time_t now = time(0);
-
-            AI_VALUE(LastMovement&, "last movement").nextTeleport = now + (time_t)MoveDelay(startPosition.distance(movePosition));
-
-            return bot->TeleportTo(movePosition.getMapId(), movePosition.getX(), movePosition.getY(), movePosition.getZ(), startPosition.getAngleTo(movePosition));
-        }
-
-        MotionMaster& mm = *mover->GetMotionMaster();
-        mm.MovePoint(movePosition.getMapId(), Position(movePosition.getX(), movePosition.getY(), movePosition.getZ(), 0.f), bot->IsFlying() ? FORCED_MOVEMENT_FLIGHT : FORCED_MOVEMENT_RUN, bot->IsFlying() ? bot->GetSpeed(MOVE_FLIGHT) : 0.f, bot->IsFlying());
-
-        AI_VALUE(LastMovement&, "last movement").setShort(startPosition, movePosition);
-
-        if (!idle)
-            ClearIdleState();
-
-        return true;
-    }
     else if (!lastMove.lastPath.empty() && lastMove.lastPath.getBack().distance(endPosition) < maxDistChange) //The last long movement was to the same place we want to move now.
     {
         movePath = lastMove.lastPath;

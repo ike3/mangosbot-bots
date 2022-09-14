@@ -93,7 +93,7 @@ namespace ai
         WorldPosition offset(WorldPosition* center) { return WorldPosition(mapid, coord_x + center->coord_x, coord_y + center->coord_y, coord_z + center->coord_z, orientation); }
         float size() { return sqrt(pow(coord_x, 2.0) + pow(coord_y, 2.0) + pow(coord_z, 2.0)); }
 
-        WorldPosition limit(WorldPosition center, float maxDistance) {WorldPosition pos(*this); pos -= center; pos /= pos.size(); pos *= maxDistance; pos += center; return pos;}
+        WorldPosition limit(WorldPosition center, float maxDistance) { WorldPosition pos(*this); if (pos == center) return pos; pos -= center; pos /= pos.size(); pos *= maxDistance; pos += center; return pos; }
 
         //Slow distance function using possible map transfers.
         float distance(WorldPosition* center);
@@ -149,7 +149,7 @@ namespace ai
         const TerrainInfo* getTerrain() { return getMap() ? getMap()->GetTerrain() : NULL; }
 
 #ifdef MANGOSBOT_TWO
-        bool IsInLineOfSight(WorldPosition pos, float heightMod = 0.5f) { return mapid == pos.mapid && getMap() && getMap()->IsInLineOfSight(coord_x, coord_y, coord_z + heightMod, pos.coord_x, pos.coord_y, pos.coord_z + heightMod, bot->GetPhaseMask(), true); }
+        bool IsInLineOfSight(WorldPosition pos, float heightMod = 0.5f) { return mapid == pos.mapid && getMap() && getMap()->IsInLineOfSight(coord_x, coord_y, coord_z + heightMod, pos.coord_x, pos.coord_y, pos.coord_z + heightMod, 0, true); }
 #else
         bool IsInLineOfSight(WorldPosition pos, float heightMod = 0.5f) { return mapid == pos.mapid && getMap() && getMap()->IsInLineOfSight(coord_x, coord_y, coord_z + heightMod, pos.coord_x, pos.coord_y, pos.coord_z + heightMod, true); }
 #endif
@@ -159,7 +159,7 @@ namespace ai
 #if defined(MANGOSBOT_TWO) || MAX_EXPANSION == 2
         const float getHeight() { return getMap()->GetHeight(0, getX(), getY(), getZ()); }
 #else
-        const float getHeight() { return getMap()->GetHeight(getX(), getY(), getZ()); }
+        const float getHeight() { return getMap() ? getMap()->GetHeight(getX(), getY(), getZ()) : getZ(); }
 #endif
 
         const float currentHeight() { return getZ() - getHeight(); }
