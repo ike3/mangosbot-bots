@@ -802,7 +802,11 @@ const ReputationRank GuidPosition::GetReactionTo(const GuidPosition& other)
 #else
                 if (!other.GetUnit()->HasFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_IGNORE_REPUTATION))
                 {
+#ifdef MANGOSBOT_TWO
+                    const FactionEntry* thisFactionEntry = sFactionStore.LookupEntry(GetFactionTemplateEntry()->faction);
+#else
                     const FactionEntry* thisFactionEntry = sFactionStore.LookupEntry<FactionEntry>(GetFactionTemplateEntry()->faction);
+#endif
                     if (thisFactionEntry && thisFactionEntry->HasReputation())
                     {
                         const ReputationMgr& reputationMgr = unitPlayer->GetReputationMgr();
