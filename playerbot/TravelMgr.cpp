@@ -796,6 +796,10 @@ const ReputationRank GuidPosition::GetReactionTo(const GuidPosition& other)
                 if (const ReputationRank* rank = unitPlayer->GetReputationMgr().GetForcedRankIfAny(GetFactionTemplateEntry()))
                     return (*rank);
 
+#ifdef MANGOSBOT_ZERO
+                const FactionEntry* unitFactionEntry = sFactionStore.LookupEntry(GetFactionTemplateEntry()->faction);
+                return unitPlayer->GetReputationMgr().IsAtWar(unitFactionEntry) ? REP_HOSTILE : REP_FRIENDLY;
+#else
                 if (!other.GetUnit()->HasFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_IGNORE_REPUTATION))
                 {
                     const FactionEntry* thisFactionEntry = sFactionStore.LookupEntry<FactionEntry>(GetFactionTemplateEntry()->faction);
@@ -805,9 +809,10 @@ const ReputationRank GuidPosition::GetReactionTo(const GuidPosition& other)
                         return reputationMgr.GetRank(thisFactionEntry);
                     }
                 }
+#endif
             }
         }
-
+  
     return PlayerbotAI::GetFactionReaction(GetFactionTemplateEntry(), other.GetFactionTemplateEntry());
 }
 

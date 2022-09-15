@@ -130,7 +130,9 @@ bool MovementAction::MoveToLOS(WorldObject* target, bool ranged)
 bool MovementAction::FlyDirect(WorldPosition &startPosition, WorldPosition &endPosition, WorldPosition& movePosition, TravelPath movePath, bool idle)
 {
     //Fly directly.
-
+#ifdef MANGOSBOT_ZERO
+    return false;
+#else
     if (!bot->IsFreeFlying())
         return false;
 
@@ -255,6 +257,7 @@ bool MovementAction::FlyDirect(WorldPosition &startPosition, WorldPosition &endP
         ClearIdleState();
 
     return true;
+#endif
 }
 
 bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, bool react, bool noPath)

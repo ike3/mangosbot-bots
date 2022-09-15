@@ -383,6 +383,7 @@ bool CheckMountStateAction::Mount()
     Item* bestMount = nullptr;
     uint32 bestMountSpeed = 0;
 
+#ifndef MANGOSBOT_ZERO
     if(bot->GetMapId() == 530 || bot->GetMapId() == 571)
         for (auto mount : mounts)
         {
@@ -397,7 +398,7 @@ bool CheckMountStateAction::Mount()
             bestMount = mount;
             bestMountSpeed = mountSpeed;
         }
-
+#endif
     if(!bestMount)
         for (auto mount : mounts)
         {
@@ -431,7 +432,11 @@ bool CheckMountStateAction::Mount()
 uint32 CheckMountStateAction::MountSpeed(const ItemPrototype* proto, const bool isFlying)
 {
     bool isMount = false;
+#ifdef MANGOSBOT_ZERO
+    uint32 effect = SPELL_AURA_MOD_INCREASE_MOUNTED_SPEED;
+#else
     uint32 effect = isFlying ? SPELL_AURA_MOD_FLIGHT_SPEED_MOUNTED : SPELL_AURA_MOD_INCREASE_MOUNTED_SPEED;
+#endif
 
     for (int j = 0; j < MAX_ITEM_PROTO_SPELLS; j++)
     {
