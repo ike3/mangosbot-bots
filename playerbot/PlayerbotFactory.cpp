@@ -298,6 +298,9 @@ void PlayerbotFactory::Randomize(bool incremental)
 void PlayerbotFactory::Refresh()
 {
     //Prepare();
+    if (!ai->HasCheat(BotCheatMask::supply))
+        return;
+
     InitAmmo();
     InitFood();
     InitPotions();
