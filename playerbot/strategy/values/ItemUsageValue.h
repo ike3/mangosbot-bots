@@ -37,12 +37,12 @@ namespace ai
         bool IsItemNeededForSkill(ItemPrototype const* proto);
         bool IsItemUsefulForSkill(ItemPrototype const * proto);
         bool IsItemNeededForUsefullSpell(ItemPrototype const* proto, bool checkAllReagents = false);
-        bool HasItemsNeededForSpell(uint32 spellId, ItemPrototype const* proto);
         Item* CurrentItem(ItemPrototype const* proto);
         float CurrentStacks(ItemPrototype const* proto);
         float BetterStacks(ItemPrototype const* proto, string usageType = "");
 
     public:
+        static bool HasItemsNeededForSpell(uint32 spellId, ItemPrototype const* proto, Player* bot);
         static vector<uint32> SpellsUsingItem(uint32 itemId, Player* bot);
         static bool SpellGivesSkillUp(uint32 spellId, Player* bot);
 

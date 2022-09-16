@@ -7,6 +7,7 @@
 #include "../actions/GuildCreateActions.h"
 #include "SocialMgr.h"
 #include "../../ServerFacade.h"
+#include <playerbot/strategy/actions/ListSpellsAction.cpp>
 
 using namespace ai;
 
@@ -486,7 +487,19 @@ bool RpgCraftTrigger::IsActive()
     if (!guidP.GetWorldObject())
         return false;
 
-    return true;
+    //Need to go ai value "can craft item"
+    list<Item*> items = AI_VALUE2(list<Item*>, "inventory items", "usage " + to_string(ITEM_USAGE_SKILL));
+
+    for (auto& item : items)
+    {
+        vector<uint32> spells = ItemUsageValue::SpellsUsingItem(item->GetProto()->ItemId, bot);
+
+        for (auto& spell : spells)
+            if (ItemUsageValue::HasItemsNeededForSpell(spell, item->GetProto(), bot))
+                return true;
+    }
+
+    return false;
 }
 
 bool RpgTradeUsefulTrigger::isFriend(Player* player)

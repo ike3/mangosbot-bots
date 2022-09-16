@@ -447,7 +447,7 @@ bool ItemUsageValue::IsItemUsefulForSkill(ItemPrototype const* proto)
 }
 
 bool ItemUsageValue::IsItemNeededForUsefullSpell(ItemPrototype const* proto, bool checkAllReagents)
-{
+{    
     for (auto spellId : SpellsUsingItem(proto->ItemId, bot))
     {
         const SpellEntry* pSpellInfo = sServerFacade.LookupSpellInfo(spellId);
@@ -455,7 +455,7 @@ bool ItemUsageValue::IsItemNeededForUsefullSpell(ItemPrototype const* proto, boo
         if (!pSpellInfo)
             continue;
 
-        if (checkAllReagents && !HasItemsNeededForSpell(spellId, proto))
+        if (checkAllReagents && !HasItemsNeededForSpell(spellId, proto, bot))
             continue;
 
         if (SpellGivesSkillUp(spellId, bot))
@@ -477,7 +477,7 @@ bool ItemUsageValue::IsItemNeededForUsefullSpell(ItemPrototype const* proto, boo
     return false;
 }
 
-bool ItemUsageValue::HasItemsNeededForSpell(uint32 spellId, ItemPrototype const* proto)
+bool ItemUsageValue::HasItemsNeededForSpell(uint32 spellId, ItemPrototype const* proto, Player* player)
 {
     const SpellEntry* pSpellInfo = sServerFacade.LookupSpellInfo(spellId);
 
@@ -492,7 +492,7 @@ bool ItemUsageValue::HasItemsNeededForSpell(uint32 spellId, ItemPrototype const*
 
             const ItemPrototype* reqProto = sObjectMgr.GetItemPrototype(pSpellInfo->Reagent[i]);
 
-            uint32 count = AI_VALUE2(uint32, "item count", reqProto->Name1);
+            uint32 count = PAI_VALUE2(uint32, "item count", reqProto->Name1);
 
             if (count < pSpellInfo->ReagentCount[i])
                 return false;
