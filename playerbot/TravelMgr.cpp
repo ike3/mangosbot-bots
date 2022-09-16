@@ -976,6 +976,9 @@ bool QuestRelationTravelDestination::isActive(Player* bot) {
         {
             if (dialogStatus != DIALOG_STATUS_AVAILABLE)
                 return false;
+
+            if (AI_VALUE(uint8, "free quest log slots") < 10)
+                return false;
         }
         else
         {
@@ -984,6 +987,9 @@ bool QuestRelationTravelDestination::isActive(Player* bot) {
 #else
             if (dialogStatus != DIALOG_STATUS_LOW_LEVEL_AVAILABLE)
 #endif
+                return false;
+
+            if (AI_VALUE(uint8, "free quest log slots") < 10)
                 return false;
         }
 

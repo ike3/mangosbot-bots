@@ -292,7 +292,7 @@ uint32 ItemUsageValue::GetSmallestBagSize()
 {
     int8 curSlot = 0;
     uint32 curSlots = 0;
-    for (uint8 bag = INVENTORY_SLOT_BAG_START + 1; bag < INVENTORY_SLOT_BAG_END; ++bag)
+    for (uint8 bag = INVENTORY_SLOT_BAG_START; bag < INVENTORY_SLOT_BAG_END; ++bag)
     {
         const Bag* const pBag = (Bag*)bot->GetItemByPos(INVENTORY_SLOT_BAG_0, bag);
         if (pBag)

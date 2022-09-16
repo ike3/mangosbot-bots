@@ -259,7 +259,10 @@ namespace ai
             creators["can repair"] = &ValueContext::can_repair;
             creators["should sell"] = &ValueContext::should_sell;
             creators["can sell"] = &ValueContext::can_sell;
+            creators["can buy"] = &ValueContext::can_buy;
             creators["can ah sell"] = &ValueContext::can_ah_sell;
+            creators["can ah buy"] = &ValueContext::can_ah_buy;
+            creators["can get mail"] = &ValueContext::can_get_mail;
             creators["can fight equal"] = &ValueContext::can_fight_equal;
             creators["can fight elite"] = &ValueContext::can_fight_elite;
             creators["can fight boss"] = &ValueContext::can_fight_boss;
@@ -454,7 +457,10 @@ namespace ai
         static UntypedValue* can_repair(PlayerbotAI* ai) { return new CanRepairValue(ai); }
         static UntypedValue* should_sell(PlayerbotAI* ai) { return new ShouldSellValue(ai); }
         static UntypedValue* can_sell(PlayerbotAI* ai) { return new CanSellValue(ai); }
+        static UntypedValue* can_buy(PlayerbotAI* ai) { return new CanBuyValue(ai); }
         static UntypedValue* can_ah_sell(PlayerbotAI* ai) { return new CanAHSellValue(ai); }
+        static UntypedValue* can_ah_buy(PlayerbotAI* ai) { return new CanAHBuyValue(ai); }
+        static UntypedValue* can_get_mail(PlayerbotAI* ai) { return new CanGetMailValue(ai); }
         static UntypedValue* can_fight_equal(PlayerbotAI* ai) { return new CanFightEqualValue(ai); }
         static UntypedValue* can_fight_elite(PlayerbotAI* ai) { return new CanFightEliteValue(ai); }
         static UntypedValue* can_fight_boss(PlayerbotAI* ai) { return new CanFightBossValue(ai); }

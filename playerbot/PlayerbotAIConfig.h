@@ -15,7 +15,8 @@ enum class BotCheatMask : uint32
     health = 4,
     mana = 8,
     power = 16,
-    maxMask = 32
+    supply = 32,
+    maxMask = 64
 };
 
 class PlayerbotAIConfig
