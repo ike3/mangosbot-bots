@@ -5,6 +5,7 @@
 #include "../values/ItemCountValue.h"
 #include "../../RandomItemMgr.h"
 #include "../values/BudgetValues.h"
+#include <AuctionHouseBot/AuctionHouseBot.h>
 
 using namespace std;
 using namespace ai;
@@ -67,7 +68,15 @@ bool AhAction::Execute(string text, Unit* auctioneer)
 
             ItemPrototype const* proto = item->GetProto();
 
-            uint32 price = item->GetCount() * auctionbot.GetSellPrice(proto);
+            uint32 price = auctionbot.GetSellPrice(proto);
+
+            if (!price)
+                price = sAuctionHouseBot.GetItemData(proto->ItemId).Value;
+
+            if (!price)
+                price = proto->SellPrice * 1.5;
+
+            price *= item->GetCount();
 
             postedItem |= PostItem(item, price, auctioneer, time);
 
@@ -129,6 +138,9 @@ bool AhBidAction::Execute(string text, Unit* auctioneer)
         return false;
 
     AuctionHouseObject::AuctionEntryMap const& map = auctionHouse->GetAuctions();
+
+    if (map.empty())
+        return false;
 
     AuctionEntry* auction = nullptr;
 
