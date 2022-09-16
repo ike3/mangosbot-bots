@@ -60,6 +60,9 @@ bool RpgStartQuestTrigger::IsActive()
 {
     GuidPosition guidP(getGuidP());
 
+    if (AI_VALUE(uint8, "free quest log slots") == 0)
+        return false;
+
     if (!guidP.IsCreature() && !guidP.IsGameObject())
         return false;
 
@@ -106,6 +109,9 @@ bool RpgEndQuestTrigger::IsActive()
 bool RpgRepeatQuestTrigger::IsActive()
 {
     GuidPosition guidP(getGuidP());
+
+    if (AI_VALUE(uint8, "free quest log slots") < 10)
+        return false;
 
     if (!guidP.IsCreature() && !guidP.IsGameObject())
         return false;
