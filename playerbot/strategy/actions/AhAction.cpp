@@ -148,6 +148,12 @@ bool AhBidAction::Execute(string text, Unit* auctioneer)
 
     if (text == "vendor")
     {
+        uint32 count, totalcount;
+        auctionHouse->BuildListBidderItems(WorldPacket(), bot, 9999, count, totalcount);
+
+        if (totalcount > 10) //Already have 10 bids, stop.
+            return false;
+
         unordered_map <ItemUsage, int32> freeMoney;
 
         freeMoney[ITEM_USAGE_EQUIP] = freeMoney[ITEM_USAGE_REPLACE] = freeMoney[ITEM_USAGE_BAD_EQUIP] = AI_VALUE2(uint32, "free money for", (uint32)NeedMoneyFor::gear);
@@ -225,9 +231,12 @@ bool AhBidAction::Execute(string text, Unit* auctioneer)
                 else
                 continue;
 
-            bidItems |= BidItem(auction, price, auctioneer);
+            bidItems = BidItem(auction, price, auctioneer);
+                
+            if (bidItems)
+                totalcount++;
 
-            if (!urand(0, 5))
+            if (!urand(0, 5) || totalcount > 10)
                 break;
 
             freeMoney[ITEM_USAGE_EQUIP] = freeMoney[ITEM_USAGE_REPLACE] = freeMoney[ITEM_USAGE_BAD_EQUIP] = AI_VALUE2(uint32, "free money for", (uint32)NeedMoneyFor::gear);
