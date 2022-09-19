@@ -129,6 +129,7 @@ bool ChooseRpgTargetAction::Execute(Event event)
     TravelTarget* travelTarget = AI_VALUE(TravelTarget*, "travel target");
 
     unordered_map<ObjectGuid, uint32> targets;
+    vector<ObjectGuid> targetList;
 
     list<ObjectGuid> possibleTargets = AI_VALUE(list<ObjectGuid>, "possible rpg targets");
     list<ObjectGuid> possibleObjects = bot->GetMap()->IsDungeon() ? AI_VALUE(list<ObjectGuid>, "nearest game objects") : AI_VALUE(list<ObjectGuid>, "nearest game objects no los"); // skip not in LOS objects in dungeons
@@ -162,8 +163,19 @@ bool ChooseRpgTargetAction::Execute(Event event)
     rgpActionReason.clear();
 
     for (auto& target : targets)
+        targetList.push_back(target.first);
+
+    std::shuffle(targetList.begin(), targetList.end(), *GetRandomGenerator());
+
+    //Update tradeskill items so we can use lazy in trigger check.
+    if(ai->HasStrategy("rpg craft", BOT_STATE_NON_COMBAT))
+        AI_VALUE2(list<Item*>, "inventory items", "usage " + to_string(ITEM_USAGE_SKILL));
+
+    uint16 checked = 0;
+
+    for (auto& guid :targetList)
     {
-        GuidPosition guidP(target.first);
+        GuidPosition guidP(guid);
 
         if (!guidP)
             continue;
@@ -209,10 +221,15 @@ bool ChooseRpgTargetAction::Execute(Event event)
         float relevance = getMaxRelevance(guidP);
 
         if (!hasGoodRelevance || relevance > 1)
-            target.second = relevance;
+            targets[guidP] = relevance;
 
-        if (target.second > 1)
+        if (targets[guidP] > 1)
             hasGoodRelevance = true;
+
+        checked++;
+
+        if (checked > 50) //Some limit on stuff to check.
+            break;
     }
 
     SET_AI_VALUE(string, "next rpg action", "");

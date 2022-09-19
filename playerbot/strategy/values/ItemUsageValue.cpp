@@ -477,8 +477,12 @@ bool ItemUsageValue::IsItemNeededForUsefullSpell(ItemPrototype const* proto, boo
     return false;
 }
 
-bool ItemUsageValue::HasItemsNeededForSpell(uint32 spellId, ItemPrototype const* proto, Player* player)
+bool ItemUsageValue::HasItemsNeededForSpell(uint32 spellId, ItemPrototype const* proto, Player* bot)
 {
+    PlayerbotAI* ai = bot->GetPlayerbotAI();
+
+    AiObjectContext* context = ai->GetAiObjectContext();
+
     const SpellEntry* pSpellInfo = sServerFacade.LookupSpellInfo(spellId);
 
     if (!pSpellInfo)
@@ -492,7 +496,7 @@ bool ItemUsageValue::HasItemsNeededForSpell(uint32 spellId, ItemPrototype const*
 
             const ItemPrototype* reqProto = sObjectMgr.GetItemPrototype(pSpellInfo->Reagent[i]);
 
-            uint32 count = PAI_VALUE2(uint32, "item count", reqProto->Name1);
+            uint32 count = AI_VALUE2(uint32, "item count", reqProto->Name1);
 
             if (count < pSpellInfo->ReagentCount[i])
                 return false;

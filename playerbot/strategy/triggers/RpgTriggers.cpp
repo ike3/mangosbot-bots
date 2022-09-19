@@ -7,7 +7,6 @@
 #include "../actions/GuildCreateActions.h"
 #include "SocialMgr.h"
 #include "../../ServerFacade.h"
-#include <playerbot/strategy/actions/ListSpellsAction.cpp>
 
 using namespace ai;
 
@@ -475,7 +474,7 @@ bool RpgCraftTrigger::IsActive()
         return false;
 
     //Need to go ai value "can craft item"
-    list<Item*> items = AI_VALUE2(list<Item*>, "inventory items", "usage " + to_string(ITEM_USAGE_SKILL));
+    list<Item*> items = AI_VALUE2_LAZY(list<Item*>, "inventory items", "usage " + to_string(ITEM_USAGE_SKILL));
 
     for (auto& item : items)
     {
