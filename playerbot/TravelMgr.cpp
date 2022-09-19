@@ -1079,7 +1079,7 @@ bool QuestObjectiveTravelDestination::isActive(Player* bot) {
         return false;
 
     //Do not try to do dungeon/elite quests in instances without a group.
-    if ((questTemplate->GetType() == QUEST_TYPE_ELITE || questTemplate->GetType() == QUEST_TYPE_DUNGEON) && !AI_VALUE(bool, "can fight boss"))
+    if ((questTemplate->GetType() == QUEST_TYPE_ELITE || questTemplate->GetType() == QUEST_TYPE_DUNGEON || questTemplate->GetType() == QUEST_TYPE_RAID) && !AI_VALUE(bool, "can fight boss"))
     {
         if (!this->nearestPoint(&WorldPosition(bot))->isOverworld())
             return false;
@@ -1129,8 +1129,10 @@ string QuestObjectiveTravelDestination::getTitle() {
 
     if (GetQuestTemplate()->ReqItemCount[objective] > 0)
         out << " loot " << ChatHelper::formatItem(sObjectMgr.GetItemPrototype(GetQuestTemplate()->ReqItemId[objective]), 0, 0) << " from";
-    else
+    else if (entry > 0)
         out << " to kill";
+    else
+        out << " to use";
 
     out << " " << ChatHelper::formatWorldEntry(entry);
     return out.str();
