@@ -1,6 +1,7 @@
 #include "../../botpch.h"
 #include "../playerbot.h"
 #include <stdarg.h>
+#include <iomanip>
 
 #include "Engine.h"
 #include "../PlayerbotAIConfig.h"
@@ -156,6 +157,7 @@ bool Engine::DoNextAction(Unit* unit, int depth, bool minimal)
                     out << actionNode->getName();
                     out << " unknown (";
 
+                    out << std::fixed << std::setprecision(3);
                     out << relevance << ")";
 
                     if (!event.getSource().empty())
@@ -218,6 +220,7 @@ bool Engine::DoNextAction(Unit* unit, int depth, bool minimal)
                         out << action->getName();
                         out << " impossible (";
 
+                        out << std::fixed << std::setprecision(3);
                         out << action->getRelevance() << ")";
 
                         if (!event.getSource().empty())
@@ -238,6 +241,7 @@ bool Engine::DoNextAction(Unit* unit, int depth, bool minimal)
                     out << action->getName();
                     out << " useless (";
 
+                    out << std::fixed << std::setprecision(3);
                     out << action->getRelevance() << ")";
 
                     if (!event.getSource().empty())
@@ -582,6 +586,7 @@ bool Engine::ListenAndExecute(Action* action, Event event)
         else
             out << " 0 (";
 
+        out << std::fixed << std::setprecision(3);
         out << action->getRelevance() << ")";
 
         if(!event.getSource().empty())
