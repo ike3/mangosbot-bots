@@ -1078,6 +1078,20 @@ bool QuestObjectiveTravelDestination::isActive(Player* bot) {
     if (questTemplate->GetType() == QUEST_TYPE_ELITE && !AI_VALUE(bool, "can fight elite"))
         return false;
 
+    //Do not try to do dungeon/elite quests in instances without a group.
+    if ((questTemplate->GetType() == QUEST_TYPE_ELITE || questTemplate->GetType() == QUEST_TYPE_DUNGEON) && !AI_VALUE(bool, "can fight boss"))
+    {
+        if (!this->nearestPoint(&WorldPosition(bot))->isOverworld())
+            return false;
+    }
+
+    //Do not try to do pvp quests in bg's (no way to travel there). 
+    if (questTemplate->GetType() == QUEST_TYPE_PVP)
+    {
+        if (!this->nearestPoint(&WorldPosition(bot))->isOverworld())
+            return false;
+    }
+
     if (!sTravelMgr.getObjectiveStatus(bot, questTemplate, objective))
         return false;
 
