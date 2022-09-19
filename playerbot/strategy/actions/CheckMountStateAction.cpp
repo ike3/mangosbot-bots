@@ -105,7 +105,7 @@ bool CheckMountStateAction::Execute(Event event)
         GuidPosition unit = AI_VALUE(GuidPosition, "rpg target");
         if (unit)
         {
-            if (sServerFacade.IsDistanceGreaterThan(AI_VALUE2(float, "distance", "rpg target"), sPlayerbotAIConfig.farDistance) && noattackers && !dps && !enemy)
+            if (sServerFacade.IsDistanceGreaterThan(AI_VALUE2(float, "distance", "rpg target"), sPlayerbotAIConfig.sightDistance) && noattackers && !dps && !enemy)
                 return Mount();
         }
 
@@ -120,6 +120,13 @@ bool CheckMountStateAction::Execute(Event event)
         return Mount();
 
     if ((!bot->IsFlying() || WorldPosition(bot).currentHeight() < 10.0f)  && attackdistance && bot->IsMounted() && (enemy || dps || (!noattackers && sServerFacade.IsInCombat(bot))))
+    {
+        WorldPacket emptyPacket;
+        bot->GetSession()->HandleCancelMountAuraOpcode(emptyPacket);
+        return true;
+    }
+
+    if ((!bot->IsFlying() || WorldPosition(bot).currentHeight() < 10.0f) && bot->IsMounted() && (AI_VALUE(TravelTarget*, "travel target")->isWorking() || sServerFacade.IsDistanceLessThan(AI_VALUE2(float, "distance", "rpg target"), sPlayerbotAIConfig.farDistance)))
     {
         WorldPacket emptyPacket;
         bot->GetSession()->HandleCancelMountAuraOpcode(emptyPacket);
