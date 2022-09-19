@@ -1360,7 +1360,7 @@ TravelNodeRoute TravelNodeMap::getRoute(WorldPosition startPos, WorldPosition en
         }
     }
 
-    if (bot && sServerFacade.IsSpellReady(bot, 8690))
+    if (bot && sServerFacade.IsSpellReady(bot, 8690) && (!bot->IsFlying() || WorldPosition(bot).currentHeight() > 10.0f))
     {
         startPath.clear();
         TravelNode* botNode = new TravelNode(startPos, "Bot Pos", false);

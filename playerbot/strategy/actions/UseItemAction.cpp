@@ -512,6 +512,16 @@ bool UseHearthStone::Execute(Event event)
     {
         ai->StopMoving();
     }
+    if (bot->IsMounted())
+    {
+        if (bot->IsFlying() && WorldPosition(bot).currentHeight() > 10.0f)
+            return false;
+
+        WorldPacket emptyPacket;
+        bot->GetSession()->HandleCancelMountAuraOpcode(emptyPacket);
+    }
+
+
     bool used = UseItemAction::Execute(event);
 
     if (used)
