@@ -361,6 +361,8 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
                 {
                     if (lastMove.future.valid())
                     {
+                        if(lastMove.future.wait_for(0s) != future_status::ready)
+                            return true; //we have no path. Wait until it is ready.
                         movePath = lastMove.future.get();
                     }
                     else
