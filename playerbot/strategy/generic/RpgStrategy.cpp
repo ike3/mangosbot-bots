@@ -12,8 +12,11 @@ float RpgActionMultiplier::GetValue(Action* action)
     string nextAction = AI_VALUE(string, "next rpg action");
     string name = action->getName();
 
-    if (!nextAction.empty() && dynamic_cast<RpgEnabled*>(action) && name != nextAction)
-        return 0.1f;
+    if (dynamic_cast<RpgEnabled*>(action))
+        if (!nextAction.empty() && name != nextAction)
+            return 0.1f;
+        else
+            return frand(0.2f, 1.0f);
 
     return 1.0f;
 }
