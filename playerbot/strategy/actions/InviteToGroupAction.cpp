@@ -131,21 +131,19 @@ namespace ai
             if (player->isDND())
                 continue;
 
-            PlayerbotAI* botAi = player->GetPlayerbotAI();
+            PlayerbotAI* playerAi = player->GetPlayerbotAI();
 
-            if (botAi)
+            if (playerAi)
             {
-                if (botAi->GetGrouperType() == GrouperType::SOLO && !botAi->HasRealPlayerMaster()) //Do not invite solo players. 
+                if (playerAi->GetGrouperType() == GrouperType::SOLO && !playerAi->HasRealPlayerMaster()) //Do not invite solo players. 
                     continue;
 
-                if (botAi->HasActivePlayerMaster()) //Do not invite alts of active players. 
+                if (playerAi->HasActivePlayerMaster()) //Do not invite alts of active players. 
                     continue;
 
-                if (player->GetLevel() > bot->GetLevel() + 5) //Only invite higher levels that need money so they can grind money and help out.
+                if (player->GetLevel() > bot->GetLevel() + 5) //Invite higher levels that need money so they can grind money and help out.
                 {
-                    AiObjectContext* botContext = botAi->GetAiObjectContext();
-
-                    if (!botContext->GetValue<bool>("should get money")->Get())
+                    if (!PAI_VALUE(bool,"should get money"))
                         continue;
                 }
             }
@@ -155,10 +153,10 @@ namespace ai
                     return false;
             }
 
-            if (abs(int32(player->GetLevel() - bot->GetLevel())) > 4)
+            if (bot->GetLevel() > player->GetLevel() + 5) //Do not invite members that too low level or risk dragging them to deadly places.
                 continue;
 
-            if (!botAi && sServerFacade.GetDistance2d(bot, player) > sPlayerbotAIConfig.sightDistance)
+            if (!playerAi && sServerFacade.GetDistance2d(bot, player) > sPlayerbotAIConfig.sightDistance)
                 continue;
 
             return Invite(player);
