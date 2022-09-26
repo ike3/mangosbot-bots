@@ -1208,7 +1208,7 @@ Item* RandomPlayerbotMgr::CreateTempItem(uint32 item, uint32 count, Player const
         if (pItem->Create(0, item, player))
         {
             pItem->SetCount(count);
-            if (uint32 randId = randomPropertyId ? randomPropertyId : Item::GenerateItemRandomPropertyId(item))
+            if (int32 randId = randomPropertyId ? randomPropertyId : Item::GenerateItemRandomPropertyId(item))
                 pItem->SetItemRandomProperties(randId);
 
             return pItem;
