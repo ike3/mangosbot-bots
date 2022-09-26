@@ -372,9 +372,11 @@ vector<WorldPosition*> ChooseTravelTargetAction::getLogicalPoints(vector<WorldPo
 
     int32 botLevel = (int)bot->GetLevel();
 
+    bool canFightElite = AI_VALUE(bool, "can fight elite");
+
     if (AI_VALUE(bool, "can fight boss"))
         botLevel += 5;
-    else if (AI_VALUE(bool, "can fight elite"))
+    else if (canFightElite)
         botLevel += 2;
     else if (!AI_VALUE(bool, "can fight equal"))
         botLevel -= 2;
@@ -390,6 +392,9 @@ vector<WorldPosition*> ChooseTravelTargetAction::getLogicalPoints(vector<WorldPo
         WorldPosition* pos = (*it);
 
         int32 areaLevel = pos->getAreaLevel();
+
+        if (!pos->isOverworld() && !canFightElite)
+            areaLevel += 10;
 
         if (!areaLevel || botLevel < areaLevel)
         {
