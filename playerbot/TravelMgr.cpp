@@ -1421,6 +1421,9 @@ bool TravelTarget::isTraveling() {
     if (m_status != TRAVEL_STATUS_TRAVEL)
         return false;
 
+    if (bot->GetGroup() && !bot->GetGroup()->IsLeader(bot->GetObjectGuid()))
+        return false;
+
     if (!tDestination->isActive(bot) && !forced) //Target has become invalid. Stop.
     {
         setStatus(TRAVEL_STATUS_COOLDOWN);

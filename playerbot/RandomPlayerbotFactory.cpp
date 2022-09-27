@@ -269,6 +269,22 @@ string RandomPlayerbotFactory::CreateRandomBotName(uint8 gender)
     return bname;
 }
 
+inline string GetNamePostFix(int32 nr)
+{
+    string ret;
+
+    string str("abcdefghijklmnopqrstuvwxyz");
+
+    while (nr >= 0)
+    {
+        int32 let = nr % 26;
+        ret = str[let] + ret;
+        nr /= 26;
+        nr--;
+    }
+
+    return ret;
+}
 
 void RandomPlayerbotFactory::CreateRandomBots()
 {
@@ -342,8 +358,6 @@ void RandomPlayerbotFactory::CreateRandomBots()
             }
         }
 
-        vector<std::future<void>> dels;
-
         QueryResult* results = LoginDatabase.PQuery("SELECT id FROM account where username like '%s%%'", sPlayerbotAIConfig.randomBotAccountPrefix.c_str());
         if (results)
         {
@@ -391,19 +405,11 @@ void RandomPlayerbotFactory::CreateRandomBots()
                 {
                     bar.step();
                     sAccountMgr.DeleteAccount(accId);
-                    //dels.push_back(std::async([accId] {sAccountMgr.DeleteAccount(accId); }));
                 }
 
             } while (results->NextRow());
 			delete results;
         }
-
-        /*bargolink bar4(dels .size());
-        for (uint32 i=0;i<dels.size();i++)
-        {
-            bar4.step();
-            dels[i].wait();
-        }*/
 
         PlayerbotDatabase.Execute("DELETE FROM ai_playerbot_random_bots");
         sLog.outString("Random bot characters deleted");
@@ -474,15 +480,57 @@ void RandomPlayerbotFactory::CreateRandomBots()
         return;
     }
 
+    unordered_map<string, bool> used;
+
     do
     {
         Field* fields = result->Fetch();
         uint8 gender = fields[0].GetUInt8();
         string bname = fields[1].GetString();
         names[gender].push_back(bname);
+        used[bname] = true;
     } while (result->NextRow());
 
     delete result;
+
+    sLog.outError("Not of names for random bots, generating new ones.");
+
+    for (uint8 gender = 0; gender < 2; gender++)
+    {
+        int32 postItt = 0;
+
+        vector<string> newNames;
+
+        uint32 namesNeeded = totalCharCount - names[gender].size();
+
+        BarGoLink bar(namesNeeded);
+
+        while(namesNeeded)
+        {
+            string post = GetNamePostFix(postItt);
+
+            for (auto name : names[gender])
+            {
+                if (name.size() + post.size() > 12)
+                    continue;
+
+                string newName = name + post;
+                if (used.find(newName) != used.end())
+                    continue;
+
+                used[newName] = true;
+                newNames.push_back(newName);
+                namesNeeded--;
+                bar.step();
+                if (!namesNeeded)
+                    break;
+            }
+
+            postItt++;
+        }
+
+        names[gender].insert(names[gender].end(), newNames.begin(), newNames.end());
+    }
 
 	sLog.outString("Creating random bot characters...");
 	BarGoLink bar1(totalCharCount);
@@ -542,7 +590,7 @@ void RandomPlayerbotFactory::CreateRandomBots()
         account_creations.push_back(std::async([player] {player->SaveToDB(); }));
     }
 
-    for (uint32 i = 0; i < account_creations.size(); i++)
+    for (uint32 i = 0; i < sObjectAccessor.GetPlayers().size(); i++)
     {
         bar2.step();
         account_creations[i].wait();
