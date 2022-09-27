@@ -489,6 +489,9 @@ void PlayerbotAI::Reset(bool full)
     LastSpellCast & lastSpell = aiObjectContext->GetValue<LastSpellCast& >("last spell cast")->Get();
     lastSpell.Reset();
 
+    if (bot->GetTradeData())
+        bot->TradeCancel(true);
+
     if (full)
     {
         aiObjectContext->GetValue<LastMovement& >("last movement")->Get().Set(NULL);
