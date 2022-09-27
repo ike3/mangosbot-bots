@@ -112,6 +112,13 @@ PlayerbotAI::PlayerbotAI(Player* bot) :
     engines[BOT_STATE_COMBAT] = AiFactory::createCombatEngine(bot, this, aiObjectContext);
     engines[BOT_STATE_NON_COMBAT] = AiFactory::createNonCombatEngine(bot, this, aiObjectContext);
     engines[BOT_STATE_DEAD] = AiFactory::createDeadEngine(bot, this, aiObjectContext);
+
+    for (uint8 e = 0; e < BOT_STATE_MAX; e++)
+    {
+        engines[e]->initMode = false;
+        engines[e]->Init();
+    }
+
     currentEngine = engines[BOT_STATE_NON_COMBAT];
     currentState = BOT_STATE_NON_COMBAT;
 
@@ -1583,13 +1590,24 @@ bool PlayerbotAI::HasStrategy(string name, BotState type)
 
 void PlayerbotAI::ResetStrategies(bool load)
 {
-    for (int i = 0 ; i < BOT_STATE_MAX; i++)
+
+    for (int i = 0; i < BOT_STATE_MAX; i++)
+    {
+        engines[i]->initMode = true;
         engines[i]->removeAllStrategies();
+    }
 
     AiFactory::AddDefaultCombatStrategies(bot, this, engines[BOT_STATE_COMBAT]);
     AiFactory::AddDefaultNonCombatStrategies(bot, this, engines[BOT_STATE_NON_COMBAT]);
     AiFactory::AddDefaultDeadStrategies(bot, this, engines[BOT_STATE_DEAD]);
     if (load) sPlayerbotDbStore.Load(this);
+
+    for (int i = 0; i < BOT_STATE_MAX; i++)
+    {
+        engines[i]->initMode = false;
+        engines[i]->Init();
+    }
+
 }
 
 bool PlayerbotAI::IsRanged(Player* player)

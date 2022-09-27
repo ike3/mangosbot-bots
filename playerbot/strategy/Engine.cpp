@@ -398,7 +398,8 @@ void Engine::addStrategy(string name)
         LogAction("S:+%s", strategy->getName().c_str());
         strategies[strategy->getName()] = strategy;
     }
-    Init();
+    if(!initMode)
+        Init();
 }
 
 void Engine::addStrategies(string first, ...)
