@@ -35,6 +35,12 @@ namespace ai
         virtual bool Execute(Event event);
         virtual bool isUseful()
         {
+            if (!ai->HasStrategy("travel", BOT_STATE_NON_COMBAT))
+                return false;
+
+            if (!ChooseTravelTargetAction::isUseful())
+                return false;
+
             bool inCity = false;
             AreaTableEntry const* areaEntry = GetAreaEntryByAreaID(sServerFacade.GetAreaId(bot));
             if (areaEntry)
@@ -56,6 +62,12 @@ namespace ai
         virtual bool Execute(Event event);
         virtual bool isUseful()
         {
+            if (!ai->HasStrategy("travel", BOT_STATE_NON_COMBAT))
+                return false;
+
+            if (!ChooseTravelTargetAction::isUseful())
+                return false;
+
             bool inCity = false;
             AreaTableEntry const* areaEntry = GetAreaEntryByAreaID(sServerFacade.GetAreaId(bot));
             if (areaEntry)
@@ -66,6 +78,7 @@ namespace ai
                 if (areaEntry && areaEntry->flags & AREA_FLAG_CAPITAL)
                     inCity = true;
             }
+
             return inCity && bot->GetGuildId() && !AI_VALUE2(uint32, "item count", chat->formatQItem(5976)) && AI_VALUE2(uint32, "free money for", uint32(NeedMoneyFor::guild)) >= 10000 && !context->GetValue<TravelTarget*>("travel target")->Get()->isTraveling();
         };
     };
