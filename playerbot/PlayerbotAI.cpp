@@ -1824,10 +1824,11 @@ bool PlayerbotAI::TellMasterNoFacing(string text, PlayerbotSecurityLevel securit
             return true;
         }
         else if ((!isPrivate || master != GetMaster()) && master && bot->GetGroup() && bot->GetGroup()->IsMember(master->GetObjectGuid()))
-        {
+        {            
+
             WorldPacket data;
             ChatHandler::BuildChatPacket(data,
-                CHAT_MSG_PARTY,
+                bot->GetGroup()->IsRaidGroup() ? CHAT_MSG_RAID : CHAT_MSG_PARTY,
                 text.c_str(),
                 LANG_UNIVERSAL,
                 CHAT_TAG_NONE, bot->GetObjectGuid(), bot->GetName());
