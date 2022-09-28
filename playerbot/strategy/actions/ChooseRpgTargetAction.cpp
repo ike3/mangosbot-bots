@@ -384,7 +384,7 @@ bool ChooseRpgTargetAction::isFollowValid(Player* bot, WorldPosition pos)
             return true;
     }
 
-    if ((inDungeon || !master->GetRestType()) && (realMaster == master) && distance > 5.0f)
+    if ((inDungeon || master->IsInCombat()) && (realMaster == master) && distance > 5.0f)
         return false;
 
     float maxDist = formation->GetMaxDistance();
