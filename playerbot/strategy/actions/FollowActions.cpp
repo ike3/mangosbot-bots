@@ -47,7 +47,7 @@ bool FollowAction::isUseful()
 
     if (fTarget && fTarget->IsPlayer())
     {
-        if (AI_VALUE(GuidPosition, "rpg target") && bot->IsMoving() && ChooseRpgTargetAction::isFollowValid(bot, AI_VALUE(GuidPosition, "rpg target")))
+        if (AI_VALUE(GuidPosition, "rpg target") && ChooseRpgTargetAction::isFollowValid(bot, AI_VALUE(GuidPosition, "rpg target")))
             return false;
     }
 
