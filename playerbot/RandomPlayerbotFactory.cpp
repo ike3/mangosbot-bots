@@ -493,13 +493,14 @@ void RandomPlayerbotFactory::CreateRandomBots()
 
     delete result;
 
-    sLog.outError("Not of names for random bots, generating new ones.");
-
     for (uint8 gender = 0; gender < 2; gender++)
     {
         int32 postItt = 0;
 
         vector<string> newNames;
+
+        if (totalCharCount < names[gender].size())
+            continue;
 
         uint32 namesNeeded = totalCharCount - names[gender].size();
 
