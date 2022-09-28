@@ -387,10 +387,17 @@ bool ChooseRpgTargetAction::isFollowValid(Player* bot, WorldPosition pos)
     if ((inDungeon || !master->GetRestType()) && (realMaster == master) && distance > 5.0f)
         return false;
 
-    if (!master->IsMoving() && distance < 25.0f)
-        return true;
+    float maxDist = formation->GetMaxDistance();
 
-    if (distance < formation->GetMaxDistance())
+    uint32 lastMasterMove = MEM_AI_VALUE(WorldPosition, "master position")->LastChangeDelay();
+
+    if (lastMasterMove > 30.0f) //After 30 seconds increase the range by 1y each second.
+        maxDist += (lastMasterMove - 30);
+
+    if (maxDist > sPlayerbotAIConfig.reactDistance)
+        maxDist = sPlayerbotAIConfig.reactDistance;
+
+    if (distance < maxDist)
         return true;
 
     return false;

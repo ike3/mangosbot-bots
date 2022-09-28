@@ -193,12 +193,13 @@ bool MoveToRpgTargetAction::isUseful()
         }
     }
 
+    if(MEM_AI_VALUE(WorldPosition, "current position")->LastChangeDelay() < 60)
 #ifndef MANGOSBOT_ZERO
-    if (bot->IsMovingIgnoreFlying())
-        return false;
+        if (bot->IsMovingIgnoreFlying())
+            return false;
 #else
-    if (bot->IsMoving())
-        return false;
+        if (bot->IsMoving())
+            return false;
 #endif
 
     TravelTarget* travelTarget = AI_VALUE(TravelTarget*, "travel target");
