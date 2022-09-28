@@ -97,8 +97,8 @@ namespace ai
     public:
         MemoryCalculatedValue(PlayerbotAI* ai, string name = "value", int checkInterval = 1) : CalculatedValue<T>(ai, name,checkInterval) { lastChangeTime = time(0); }
         virtual bool EqualToLast(T value) = 0;
-        virtual bool CanCheckChange() { return time(0) - lastChangeTime < minChangeInterval || EqualToLast(value); }
-        virtual bool UpdateChange() { if (CanCheckChange()) return false; lastChangeTime = time(0); lastValue = value; return true; }
+        virtual bool CanCheckChange() { return time(0) - lastChangeTime > minChangeInterval && !EqualToLast(value); }
+        virtual bool UpdateChange() { if (!CanCheckChange()) return false; lastChangeTime = time(0); lastValue = value; return true; }
 
         virtual void Set(T value) { CalculatedValue<T>::Set(value); UpdateChange(); }
         virtual T Get() {value = CalculatedValue<T>::Get(); UpdateChange(); return value;}
@@ -109,7 +109,7 @@ namespace ai
         virtual void Reset() { CalculatedValue::Reset(); lastChangeTime = time(0); }
     protected:
         T lastValue;
-        uint32 minChangeInterval = 0;
+        uint32 minChangeInterval = 0; //Change will not be checked untill this interval has passed.
         time_t lastChangeTime;
     };
 
@@ -124,7 +124,7 @@ namespace ai
         virtual void Reset() { MemoryCalculatedValue::Reset(); valueLog.clear(); }
     protected:
         list<pair<T, time_t>> valueLog;
-        uint8 logLength = 10;
+        uint8 logLength = 10; //Maxium number of values recorded.
     };    
 
     class Uint8CalculatedValue : public CalculatedValue<uint8>
