@@ -490,7 +490,7 @@ namespace ai
 
         virtual bool Accept(const ItemPrototype* proto)
         {
-            if (AI_VALUE2(ItemUsage, "item usage", proto->ItemId) == usage)
+            if (AI_VALUE2_LAZY(ItemUsage, "item usage", proto->ItemId) == usage)
                 return true;
 
             return false;
