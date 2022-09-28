@@ -108,22 +108,22 @@ WorldPosition::WorldPosition(vector<WorldPosition> list, WorldPositionConst conT
     }    
 }
 
-float WorldPosition::distance(WorldPosition* center)
+float WorldPosition::distance(WorldPosition* to)
 {
-    if(mapid == center->getMapId())
-        return relPoint(center).size(); 
+    if(mapid == to->getMapId())
+        return relPoint(to).size();
 
     //this -> mapTransfer | mapTransfer -> center
-    return sTravelMgr.mapTransDistance(*this, *center);
+    return sTravelMgr.mapTransDistance(*this, *to);
 };
 
-float WorldPosition::fDist(WorldPosition* center)
+float WorldPosition::fDist(WorldPosition* to)
 {
-    if (mapid == center->getMapId())
-        return sqrt(sqDistance2d(center));
+    if (mapid == to->getMapId())
+        return sqrt(sqDistance2d(to));
 
     //this -> mapTransfer | mapTransfer -> center
-    return sTravelMgr.fastMapTransDistance(*this, *center);
+    return sTravelMgr.fastMapTransDistance(*this, *to);
 };
 
 //When moving from this along list return last point that falls within range.
@@ -205,6 +205,31 @@ bool WorldPosition::isInside(WorldPosition* p1, WorldPosition* p2, WorldPosition
 
     return !(has_neg && has_pos);
 }
+
+void WorldPosition::distancePartition(vector<float> distanceLimits, WorldPosition* to, vector<vector<WorldPosition*>>& partitions)
+{
+    float dist = distance(to);
+
+    for (uint8 l = 0; l < distanceLimits.size(); l++)
+        if (dist <= distanceLimits[l])
+            partitions[l].push_back(to);
+}
+
+vector<vector<WorldPosition*>> WorldPosition::distancePartition(vector<float> distanceLimits, vector<WorldPosition*> points)
+{
+    vector<vector<WorldPosition*>> partitions;
+
+    for (auto lim : distanceLimits)
+        partitions.push_back({});
+
+    for (auto& point : points)
+    {
+        distancePartition(distanceLimits, point, partitions);
+    }
+
+    return partitions;
+}
+
 
 G3D::Vector3 WorldPosition::getVector3() 
 {
@@ -1422,7 +1447,11 @@ bool TravelTarget::isTraveling() {
         return false;
 
     if (bot->GetGroup() && !bot->GetGroup()->IsLeader(bot->GetObjectGuid()))
-        return false;
+        if (ai->HasStrategy("follow", BOT_STATE_NON_COMBAT) || ai->HasStrategy("stay", BOT_STATE_NON_COMBAT))
+        {
+            setStatus(TRAVEL_STATUS_COOLDOWN);
+            return false;
+        }
 
     if (!tDestination->isActive(bot) && !forced) //Target has become invalid. Stop.
     {

@@ -122,8 +122,8 @@ void ChooseTravelTargetAction::getNewTarget(TravelTarget* newTarget, TravelTarge
 void ChooseTravelTargetAction::setNewTarget(TravelTarget* newTarget, TravelTarget* oldTarget)
 {
     //Tell the master where we are going.
-    if (!bot->GetGroup() || (ai->GetGroupMaster() == bot))
-        ReportTravelTarget(newTarget, oldTarget);
+    //if (!bot->GetGroup() || (ai->GetGroupMaster() == bot))
+    ReportTravelTarget(newTarget, oldTarget);
 
     //If we are heading to a creature/npc clear it from the ignore list. 
     if (oldTarget && oldTarget == newTarget && newTarget->getEntry())
@@ -363,10 +363,12 @@ vector<WorldPosition*> ChooseTravelTargetAction::getLogicalPoints(vector<WorldPo
 {
     vector<WorldPosition*> retvec;
 
-    vector<float> distancesBrackets = { 1,4,10,20,50,100,10000 }; //Multiplications of sightdistance.
+    static vector<float> distanceLimits = { sPlayerbotAIConfig.sightDistance, 4 * sPlayerbotAIConfig.sightDistance, 10 * sPlayerbotAIConfig.sightDistance, 20 * sPlayerbotAIConfig.sightDistance, 50 * sPlayerbotAIConfig.sightDistance, 100 * sPlayerbotAIConfig.sightDistance, 10000 * sPlayerbotAIConfig.sightDistance };
 
-    float minDistance = 10000 * sPlayerbotAIConfig.sightDistance;
-    float lastMinDistance = 10000* sPlayerbotAIConfig.sightDistance;
+    vector<vector<WorldPosition*>> partitions;
+
+    for (uint8 l = 0; l < distanceLimits.size(); l++)
+        partitions.push_back({});
 
     WorldPosition botLocation(bot);
 
@@ -384,60 +386,34 @@ vector<WorldPosition*> ChooseTravelTargetAction::getLogicalPoints(vector<WorldPo
     if (botLevel < 6)
         botLevel = 6;
 
-    auto it = travelPoints.begin();
-
     //Loop over all points
-    while (it != travelPoints.end())
+    for (auto pos : travelPoints)
     {
-        WorldPosition* pos = (*it);
-
         int32 areaLevel = pos->getAreaLevel();
 
         if (!pos->isOverworld() && !canFightElite)
             areaLevel += 10;
 
-        if (!areaLevel || botLevel < areaLevel)
-        {
-            ++it;
+        if (!areaLevel || botLevel < areaLevel) //Skip points that are in a area that is too high level.
             continue;
-        }
 
         GuidPosition* guidP = dynamic_cast<GuidPosition*>(pos);
 
-        if (guidP && guidP->IsEventUnspawned())
-        {
-            ++it;
+        if (guidP && guidP->IsEventUnspawned()) //Skip points that are not spawned due to events.
             continue;
-        }
 
-        float distance = (*it)->distance(&botLocation);
-
-        //Select the minimal distance to work with.
-        if (distance < minDistance)
-            minDistance = distance;
-
-        //Increase the minimal distance to a multiplication of sightdistance.
-        for (float distanceBracket : distancesBrackets)
-            if (minDistance <= sPlayerbotAIConfig.sightDistance * distanceBracket)
-            {
-                minDistance = sPlayerbotAIConfig.sightDistance * distanceBracket;
-                break;
-            }
-
-        //Clear all previous added points if the bracket decreased.
-        if (minDistance < lastMinDistance)
-            retvec.clear();
-
-        //Add the point if it falls within current bracket.
-        if (distance <= minDistance)
-            retvec.push_back(*it);
-
-        lastMinDistance = minDistance;
-
-        ++it;
+        botLocation.distancePartition(distanceLimits, pos, partitions); //Partition point in correct distance bracket.
     }
-    
-    return retvec;
+
+    for (uint8 l = 0; l < distanceLimits.size(); l++)
+    {
+        if (partitions[l].empty() || !urand(0, 10)) //Return the first non-empty bracket with 10% chance to skip a higher bracket.
+            continue;
+
+        return partitions[l];
+    }
+
+    return partitions.back();
 }
 
 //Sets the target to the best destination.
@@ -795,7 +771,8 @@ bool ChooseTravelTargetAction::isUseful()
         return false;
 
     if (bot->GetGroup() && !bot->GetGroup()->IsLeader(bot->GetObjectGuid()))
-        return false;
+        if (ai->HasStrategy("follow", BOT_STATE_NON_COMBAT) || ai->HasStrategy("stay", BOT_STATE_NON_COMBAT))
+            return false;
 
     return !context->GetValue<TravelTarget *>("travel target")->Get()->isActive() 
         && !context->GetValue<LootObject>("loot target")->Get().IsLootPossible(bot)

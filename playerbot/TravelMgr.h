@@ -94,11 +94,11 @@ namespace ai
         float size() { return sqrt(pow(coord_x, 2.0) + pow(coord_y, 2.0) + pow(coord_z, 2.0)); }
 
         //Slow distance function using possible map transfers.
-        float distance(WorldPosition* center);
-        float distance(WorldPosition center) { return distance(&center); };
+        float distance(WorldPosition* to);
+        float distance(WorldPosition to) { return distance(&to); };
 
-        float fDist(WorldPosition* center);
-        float fDist(WorldPosition center) { return fDist(&center); };
+        float fDist(WorldPosition* to);
+        float fDist(WorldPosition to) { return fDist(&to); };
 
         //Returns the closest point from the list.
         WorldPosition* closest(vector<WorldPosition*> list) { return *std::min_element(list.begin(), list.end(), [this](WorldPosition* i, WorldPosition* j) {return this->distance(i) < this->distance(j); }); }
@@ -119,16 +119,16 @@ namespace ai
 
 
         //Quick square distance in 2d plane.
-        float sqDistance2d(WorldPosition center) { return (getX() - center.getX()) * (getX() - center.getX()) + (getY() - center.getY()) * (getY() - center.getY()); };
-        float sqDistance2d(WorldPosition* center) { return (getX() - center->getX()) * (getX() - center->getX()) + (getY() - center->getY()) * (getY() - center->getY()); };
+        float sqDistance2d(WorldPosition to) { return (getX() - to.getX()) * (getX() - to.getX()) + (getY() - to.getY()) * (getY() - to.getY()); };
+        float sqDistance2d(WorldPosition* to) { return (getX() - to->getX()) * (getX() - to->getX()) + (getY() - to->getY()) * (getY() - to->getY()); };
 
         //Quick square distance calculation without map check. Used for getting the minimum distant points.
-        float sqDistance(WorldPosition center) { return (getX() - center.getX()) * (getX() - center.getX()) + (getY() - center.getY()) * (getY() - center.getY()) + (getZ() - center.getZ()) * (getZ() - center.getZ()); };
-        float sqDistance(WorldPosition* center) { return (getX() - center->getX()) * (getX() - center->getX()) + (getY() - center->getY()) * (getY() - center->getY()) + (getZ() - center->getZ()) * (getZ() - center->getZ()); };
+        float sqDistance(WorldPosition to) { return (getX() - to.getX()) * (getX() - to.getX()) + (getY() - to.getY()) * (getY() - to.getY()) + (getZ() - to.getZ()) * (getZ() - to.getZ()); };
+        float sqDistance(WorldPosition* to) { return (getX() - to->getX()) * (getX() - to->getX()) + (getY() - to->getY()) * (getY() - to->getY()) + (getZ() - to->getZ()) * (getZ() - to->getZ()); };
 
         //Returns the closest point of the list. Fast but only works for the same map.
-        WorldPosition* closestSq(vector<WorldPosition*> list) { return *std::min_element(list.begin(), list.end(), [this](WorldPosition* i, WorldPosition* j) {return this->sqDistance(i) < this->sqDistance(j); }); }
-        WorldPosition closestSq(vector<WorldPosition> list) { return *std::min_element(list.begin(), list.end(), [this](WorldPosition i, WorldPosition j) {return this->sqDistance(i) < this->sqDistance(j); }); }
+        WorldPosition* closestSq(vector<WorldPosition*> list) { return *std::min_element(list.begin(), list.end(), [this](WorldPosition* i, WorldPosition* j) {return sqDistance(i) < sqDistance(j); }); }
+        WorldPosition closestSq(vector<WorldPosition> list) { return *std::min_element(list.begin(), list.end(), [this](WorldPosition i, WorldPosition j) {return sqDistance(i) < sqDistance(j); }); }
 
         float getAngleTo(WorldPosition endPos) { float ang = atan2(endPos.getY() - getY(), endPos.getX() - getX()); return (ang >= 0) ? ang : 2 * M_PI_F + ang; };
         float getAngleBetween(WorldPosition dir1, WorldPosition dir2) { return abs(getAngleTo(dir1) - getAngleTo(dir2)); };
@@ -140,6 +140,9 @@ namespace ai
 
         float mSign(WorldPosition* p1, WorldPosition* p2) { return(getX() - p2->getX()) * (p1->getY() - p2->getY()) - (p1->getX() - p2->getX()) * (getY() - p2->getY()); }
         bool isInside(WorldPosition* p1, WorldPosition* p2, WorldPosition* p3);
+
+        void distancePartition(vector<float> distanceLimits, WorldPosition* to, vector<vector<WorldPosition*>>& partition);
+        vector<vector<WorldPosition*>> distancePartition(vector<float> distanceLimits, vector<WorldPosition*> points);
 
         //Map functions. Player independent.
         const MapEntry* getMapEntry() const { return sMapStore.LookupEntry(mapid); };
