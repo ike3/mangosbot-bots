@@ -1,7 +1,7 @@
 #include "botpch.h"
 #include "../../playerbot.h"
 #include "StatsAction.h"
-
+#include "../../RandomItemMgr.h"
 
 using namespace ai;
 
@@ -23,6 +23,9 @@ bool StatsAction::Execute(Event event)
         ListXP(out);
     }
 
+    out << ", ";
+    ListPower(out);
+
     ai->TellMaster(out, PLAYERBOT_SECURITY_ALLOW_ALL, false);
     return true;
 }
@@ -30,6 +33,47 @@ bool StatsAction::Execute(Event event)
 void StatsAction::ListGold(ostringstream &out)
 {
     out << chat->formatMoney(bot->GetMoney());
+}
+
+void StatsAction::ListPower(ostringstream& out)
+{
+    uint32 totalPower = 0;
+
+    vector<uint32> qualityCount = { 0,0,0,0,0,0,0 };
+
+    for (int i = EQUIPMENT_SLOT_START; i < EQUIPMENT_SLOT_END; ++i)
+    {
+        if (i == EQUIPMENT_SLOT_BODY || i == EQUIPMENT_SLOT_TABARD)
+            continue;
+
+        uint16 pos = ((INVENTORY_SLOT_BAG_0 << 8) | i);
+        Item* item = bot->GetItemByPos(pos);
+        if (!item)
+        {
+            qualityCount[0]++;
+            continue;
+        }
+
+        uint32 power = sRandomItemMgr.GetLiveStatWeight(bot, item->GetEntry());
+        totalPower += power;
+
+        if (power)
+        {
+            ItemPrototype const* proto = item->GetProto();
+            qualityCount[proto->Quality]++;
+
+        }
+    }
+
+    uint32 mostQuality = 0;
+    for (int i = 1; i < qualityCount.size(); ++i)
+        if (qualityCount[mostQuality] < qualityCount[i])
+            mostQuality = i;
+
+    char color[32];
+    sprintf(color, "%x", ItemQualityColors[mostQuality]);
+
+    out << "|h|c" << color << "|h" << to_string(totalPower) << "|h|cffffffff|h Pwr";
 }
 
 void StatsAction::ListBagSlots(ostringstream &out)

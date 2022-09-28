@@ -14,6 +14,7 @@ namespace ai
         void ListXP(ostringstream &out);
         void ListRepairCost(ostringstream &out);
         void ListGold(ostringstream &out);
+        void ListPower(ostringstream& out);
         uint32 EstRepair(uint16 pos);
         double RepairPercent(uint16 pos);
 
