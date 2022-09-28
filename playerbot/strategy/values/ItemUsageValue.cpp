@@ -165,16 +165,25 @@ ItemUsage ItemUsageValue::QueryItemUsageForEquip(ItemPrototype const* itemProto)
     if (itemProto->InventoryType == INVTYPE_NON_EQUIP)
         return ITEM_USAGE_NONE;
 
-    Item* pItem = RandomPlayerbotMgr::CreateTempItem(itemProto->ItemId, 1, bot);
-    if (!pItem)
-        return ITEM_USAGE_NONE;
-
-    uint32 specId = sRandomItemMgr.GetPlayerSpecId(bot);
-
     uint16 dest;
-    InventoryResult result = bot->CanEquipItem(NULL_SLOT, dest, pItem, true, false);
-    pItem->RemoveFromUpdateQueueOf(bot);
-    delete pItem;
+
+    list<Item*> items = AI_VALUE2(list<Item*>, "inventory items", chat->formatItem(itemProto));
+
+    InventoryResult result;
+    if (!items.empty())
+    {
+        result = bot->CanEquipItem(NULL_SLOT, dest, items.front(), true, false);
+    }
+    else
+    {
+        Item* pItem = RandomPlayerbotMgr::CreateTempItem(itemProto->ItemId, 1, bot);
+        if (!pItem)
+            return ITEM_USAGE_NONE;
+
+        result = bot->CanEquipItem(NULL_SLOT, dest, pItem, true, false);
+        pItem->RemoveFromUpdateQueueOf(bot);
+        delete pItem;
+    }
 
     if (result != EQUIP_ERR_OK)
         return ITEM_USAGE_NONE;
@@ -195,6 +204,8 @@ ItemUsage ItemUsageValue::QueryItemUsageForEquip(ItemPrototype const* itemProto)
     }
 
     bool shouldEquip = false;
+
+    uint32 specId = sRandomItemMgr.GetPlayerSpecId(bot);
 
     uint32 statWeight = sRandomItemMgr.GetLiveStatWeight(bot, itemProto->ItemId, specId);
     if (statWeight)
