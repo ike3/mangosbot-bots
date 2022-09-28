@@ -22,6 +22,7 @@ namespace ai
         string QueryItemPrice(ItemPrototype const *item);
         string QueryQuestItem(uint32 itemId, const Quest *questTemplate, const QuestStatusData *questStatus);
         string QueryQuestItem(uint32 itemId);
+        string QueryItemPower(uint32 itemId);
 
     private:
         ostringstream out;
