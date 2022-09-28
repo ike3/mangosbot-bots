@@ -1,9 +1,12 @@
+#pragma once
+
 #include "botpch.h"
 #include "../../playerbot.h"
 #include "FollowActions.h"
 #include "../../PlayerbotAIConfig.h"
 #include "../../ServerFacade.h"
 #include "../values/Formations.h"
+#include "ChooseRpgTargetAction.h"
 
 using namespace ai;
 
@@ -44,9 +47,7 @@ bool FollowAction::isUseful()
 
     if (fTarget && fTarget->IsPlayer())
     {
-        GuidPosition guidP(fTarget);
-        Player* fPlayer = guidP.GetPlayer();
-        if (fPlayer->GetPlayerbotAI() && AI_VALUE(GuidPosition, "rpg target") && bot->IsMoving())
+        if (AI_VALUE(GuidPosition, "rpg target") && bot->IsMoving() && ChooseRpgTargetAction::isFollowValid(bot, AI_VALUE(GuidPosition, "rpg target")))
             return false;
     }
 
@@ -139,6 +140,12 @@ bool FleeToMasterAction::isUseful()
     
     if (!CanDeadFollow(fTarget))
         return false;
+
+    if (fTarget && fTarget->IsPlayer())
+    {
+        if (AI_VALUE(GuidPosition, "rpg target") && ChooseRpgTargetAction::isFollowValid(bot, AI_VALUE(GuidPosition, "rpg target")))
+            return false;
+    }
 
     return true;
 }
