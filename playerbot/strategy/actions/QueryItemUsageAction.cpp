@@ -4,6 +4,7 @@
 #include "../../../ahbot/AhBot.h"
 #include "../values/ItemUsageValue.h"
 #include "../../RandomPlayerbotMgr.h"
+#include "../../RandomItemMgr.h"
 
 
 using namespace ai;
@@ -121,6 +122,7 @@ string QueryItemUsageAction::QueryItem(ItemPrototype const *item, uint32 count, 
 #endif
     string quest = QueryQuestItem(item->ItemId);
     string price = QueryItemPrice(item);
+    string power = QueryItemPower(item->ItemId);
 #ifdef CMANGOS
     if (usage.empty())
 #endif
@@ -134,6 +136,8 @@ string QueryItemUsageAction::QueryItem(ItemPrototype const *item, uint32 count, 
         out << ", " << quest;
     if (!price.empty())
         out << ", " << price;
+    if (!power.empty())
+        out << ", " << power;
     return out.str();
 }
 #ifdef CMANGOS
@@ -255,3 +259,23 @@ string QueryItemUsageAction::QueryQuestItem(uint32 itemId, const Quest *questTem
     return "";
 }
 
+string QueryItemUsageAction::QueryItemPower(uint32 itemId)
+{
+    uint32 power = sRandomItemMgr.GetLiveStatWeight(bot, itemId);
+
+    ItemPrototype const* proto = ObjectMgr::GetItemPrototype(itemId);
+
+    if (power)
+        if (proto)
+        {
+            ostringstream out;
+            char color[32];
+            sprintf(color, "%x", ItemQualityColors[proto->Quality]);
+            out << "power: |h|c" << color << "|h" << to_string(power) << "|h|cffffffff";
+            return out.str().c_str();
+        }
+        else
+            return "power: " + to_string(power);
+
+    return "";
+}
