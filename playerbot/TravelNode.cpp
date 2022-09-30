@@ -2163,6 +2163,10 @@ void TravelNodeMap::generateAll()
     if (hasToFullGen)
         generateNodes();
 
+    sLog.outString("-Calculating coverage"); //This prevents crashes when bots from multiple maps try to calculate this on the fly.
+    for (auto& node : getNodes())
+        node->hasLinkTo(node);
+
     sLog.outString("-Calculating mapoffset");
     calcMapOffset();
 
