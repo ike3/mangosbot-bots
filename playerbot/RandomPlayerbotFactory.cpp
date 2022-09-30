@@ -334,11 +334,6 @@ void RandomPlayerbotFactory::CreateRandomBots()
         else
             sLog.outString("Deleting all random bot characters...");
 
-#ifdef MANGOSBOT_TWO
-        BarGoLink bar(delFriends ? uint32(sPlayerbotAIConfig.randomBotAccountCount) : uint32(sPlayerbotAIConfig.randomBotAccountCount * 10));
-#else
-        BarGoLink bar(delFriends ? uint32(sPlayerbotAIConfig.randomBotAccountCount) : uint32(sPlayerbotAIConfig.randomBotAccountCount * 9));
-#endif
 
         // load list of friends
         if (!delFriends)
@@ -361,6 +356,8 @@ void RandomPlayerbotFactory::CreateRandomBots()
         QueryResult* results = LoginDatabase.PQuery("SELECT id FROM account where username like '%s%%'", sPlayerbotAIConfig.randomBotAccountPrefix.c_str());
         if (results)
         {
+            BarGoLink bar(results->GetRowCount());
+
             do
             {
                 Field* fields = results->Fetch();
@@ -394,12 +391,13 @@ void RandomPlayerbotFactory::CreateRandomBots()
                             }
 
                             Player::DeleteFromDB(guid, accId, false, true);       // no need to update realm characters
-                            bar.step();
+                            //dels.push_back(std::async([guid, accId] {Player::DeleteFromDB(guid, accId, false, true); }));
 
                         } while (result->NextRow());
 
                         delete result;
                     }
+                    bar.step();
                 }
                 else
                 {
@@ -408,7 +406,7 @@ void RandomPlayerbotFactory::CreateRandomBots()
                 }
 
             } while (results->NextRow());
-			delete results;
+            delete results;
         }
 
         PlayerbotDatabase.Execute("DELETE FROM ai_playerbot_random_bots");
