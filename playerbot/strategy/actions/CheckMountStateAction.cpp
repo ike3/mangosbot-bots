@@ -119,7 +119,7 @@ bool CheckMountStateAction::Execute(Event event)
     if (!bot->IsMounted() && !attackdistance && (fartarget || chasedistance))
         return Mount();
 
-    if ((!bot->IsFlying() || WorldPosition(bot).currentHeight() < 10.0f)  && attackdistance && bot->IsMounted() && (enemy || dps || (!noattackers && sServerFacade.IsInCombat(bot))))
+    if ((!bot->IsFlying() || WorldPosition(bot).currentHeight() < 10.0f)  && attackdistance && bot->IsMounted() && (enemy || (dps && !AI_VALUE(TravelTarget*, "travel target")->isTraveling()) || (!noattackers && sServerFacade.IsInCombat(bot))))
     {
         WorldPacket emptyPacket;
         bot->GetSession()->HandleCancelMountAuraOpcode(emptyPacket);
