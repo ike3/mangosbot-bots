@@ -173,10 +173,11 @@ bool TradeStatusAction::CheckTrade()
 
         if (isGettingItem)
         {
+            string name = trader->GetName();
             if (bot->GetGroup() && bot->GetGroup()->IsMember(bot->GetTrader()->GetObjectGuid()) && ai->HasRealPlayerMaster())
-                ai->TellMasterNoFacing("Thank you " + chat->formatWorldobject(bot->GetTrader()));
+                ai->TellMasterNoFacing("Thank you " + name + ".", PLAYERBOT_SECURITY_ALLOW_ALL, false);
             else
-                bot->Say("Thank you " + chat->formatWorldobject(bot->GetTrader()), (bot->GetTeam() == ALLIANCE ? LANG_COMMON : LANG_ORCISH));
+                bot->Say("Thank you " + name + ".", (bot->GetTeam() == ALLIANCE ? LANG_COMMON : LANG_ORCISH));
         }
         return isGettingItem;
     }
