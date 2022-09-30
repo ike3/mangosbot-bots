@@ -370,7 +370,7 @@ vector<WorldPosition*> ChooseTravelTargetAction::getLogicalPoints(vector<WorldPo
     for (uint8 l = 0; l < distanceLimits.size(); l++)
         partitions.push_back({});
 
-    WorldPosition botLocation(bot);
+    WorldPosition centerLocation;
 
     int32 botLevel = (int)bot->GetLevel();
 
@@ -385,6 +385,11 @@ vector<WorldPosition*> ChooseTravelTargetAction::getLogicalPoints(vector<WorldPo
 
     if (botLevel < 6)
         botLevel = 6;
+
+    if (ai->GetMaster())
+        centerLocation = WorldPosition(ai->GetMaster());
+    else
+        centerLocation = WorldPosition(bot);
 
     //Loop over all points
     for (auto pos : travelPoints)
@@ -402,7 +407,7 @@ vector<WorldPosition*> ChooseTravelTargetAction::getLogicalPoints(vector<WorldPo
         if (guidP && guidP->IsEventUnspawned()) //Skip points that are not spawned due to events.
             continue;
 
-        botLocation.distancePartition(distanceLimits, pos, partitions); //Partition point in correct distance bracket.
+        centerLocation.distancePartition(distanceLimits, pos, partitions); //Partition point in correct distance bracket.
     }
 
     for (uint8 l = 0; l < distanceLimits.size(); l++)
@@ -433,11 +438,6 @@ bool ChooseTravelTargetAction::SetBestTarget(TravelTarget* target, vector<Travel
         if (!points.empty())
             travelPoints.insert(travelPoints.end(), points.begin(), points.end());
     }
-
-    float minDist, maxDist;
-
-    minDist = botLocation.distance(botLocation.closest(travelPoints));
-    maxDist = botLocation.distance(botLocation.furtest(travelPoints));
 
     if (travelPoints.empty()) //No targets or no points.
         return false;
@@ -556,7 +556,7 @@ bool ChooseTravelTargetAction::SetQuestTarget(TravelTarget* target, bool newQues
     vector<TravelDestination*> TravelDestinations;
 
     if (newQuests)
-        TravelDestinations = sTravelMgr.getQuestTravelDestinations(bot, -1, true, false, 400 + bot->GetLevel() * 10);
+        TravelDestinations = sTravelMgr.getQuestTravelDestinations(bot, -1, true, false, 400 + bot->GetLevel() * 10); //Prefer new quests near the player at lower levels.
 
     if (activeQuests || completedQuests)
     {
@@ -606,7 +606,7 @@ bool ChooseTravelTargetAction::SetGrindTarget(TravelTarget* target)
 bool ChooseTravelTargetAction::SetBossTarget(TravelTarget* target)
 {
     //Find boss mobs.
-    vector<TravelDestination*> TravelDestinations = sTravelMgr.getBossTravelDestinations(bot, false);
+    vector<TravelDestination*> TravelDestinations = sTravelMgr.getBossTravelDestinations(bot, true);
 
     return SetBestTarget(target, TravelDestinations);
 }
