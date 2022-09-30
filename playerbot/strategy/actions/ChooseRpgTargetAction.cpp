@@ -371,9 +371,6 @@ bool ChooseRpgTargetAction::isFollowValid(Player* bot, WorldPosition pos)
     if (!ai->HasStrategy("follow", BOT_STATE_NON_COMBAT))
         return true;
 
-    if (sqrt(bot->GetDistance(master)) > sPlayerbotAIConfig.rpgDistance * 2)
-        return false;
-
     Formation* formation = AI_VALUE(Formation*, "formation");
     float distance = sqrt(master->GetDistance2d(pos.getX(), pos.getY(), DIST_CALC_NONE));
 
