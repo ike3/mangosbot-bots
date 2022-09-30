@@ -133,7 +133,7 @@ bool CastCustomSpellAction::Execute(Event event)
             ai->HandleCommand(CHAT_MSG_WHISPER, cmd.str(), *master);
             msg << "|cffffff00(x" << (castCount - 1) << " left)|r";
         }
-        ai->TellMasterNoFacing(msg.str());
+        ai->TellMasterNoFacing(msg.str(), PLAYERBOT_SECURITY_ALLOW_ALL, false);
     }
     else
     {
@@ -262,14 +262,27 @@ bool DisEnchantRandomItemAction::Execute(Event event)
 
     items.reverse();
 
+    if (bot->IsMoving())
+    {
+        ai->StopMoving();
+    }
+    if (bot->IsMounted())
+    {
+        return false;
+    }
+
     for (auto& item: items)
     {
         // don't touch rare+ items if with real player/guild
         if ((ai->HasRealPlayerMaster() || ai->IsInRealGuild()) && item->GetProto()->Quality > ITEM_QUALITY_UNCOMMON)
             return false;
 
-        if(CastCustomSpellAction::Execute(Event("disenchant random item", "13262 "+ chat->formatQItem(item->GetEntry()))))
-            return true;
+        bool used = CastCustomSpellAction::Execute(Event("disenchant random item", "13262 " + chat->formatQItem(item->GetEntry())));
+
+        if (used)
+            ai->SetNextCheckDelay(3.0 * IN_MILLISECONDS);
+
+        return used;
     }
 
     return false;
