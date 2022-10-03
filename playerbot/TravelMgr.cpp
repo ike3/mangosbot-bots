@@ -1319,7 +1319,11 @@ bool BossTravelDestination::isActive(Player* bot)
     {
         if (bot->GetGroup()->IsRaidGroup())
         {
+#ifdef MANGOSBOT_ZERO
             if (points.front()->getMap() && points.front()->getMap()->IsNoRaid())
+#else
+            if (points.front()->getMap() && points.front()->getMap()->IsNonRaidDungeon())
+#endif
                 return false;
         }
         else if (points.front()->getMap() && points.front()->getMap()->IsRaid())
