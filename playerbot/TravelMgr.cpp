@@ -475,14 +475,14 @@ vector<WorldPosition> WorldPosition::frommGridPair(mGridPair gridPair)
     return retVec;
 }
 
-void WorldPosition::loadMapAndVMap(uint32 mapId, int x, int y)
+void WorldPosition::loadMapAndVMap(uint32 mapId, uint32 instanceId, int x, int y)
 {
     string fileName = "load_map_grid.csv";
 
     if (isOverworld() && false || false)
     {
 #ifdef MANGOSBOT_TWO
-        if (!MMAP::MMapFactory::createOrGetMMapManager()->IsMMapTileLoaded(mapId, 0, x, y))
+        if (!MMAP::MMapFactory::createOrGetMMapManager()->IsMMapTileLoaded(mapId, instanceId, x, y))
 #else
         if (!MMAP::MMapFactory::createOrGetMMapManager()->IsMMapIsLoaded(mapId, x, y))
 #endif
@@ -499,7 +499,7 @@ void WorldPosition::loadMapAndVMap(uint32 mapId, int x, int y)
         int py = (float)(32 - y) * SIZE_OF_GRIDS;
 
 #ifdef MANGOSBOT_TWO
-        if (!MMAP::MMapFactory::createOrGetMMapManager()->IsMMapTileLoaded(mapId, 0, x, y))
+        if (!MMAP::MMapFactory::createOrGetMMapManager()->IsMMapTileLoaded(mapId, instanceId, x, y))
 #else
         if (!MMAP::MMapFactory::createOrGetMMapManager()->IsMMapIsLoaded(mapId, x, y))
 #endif
@@ -546,14 +546,14 @@ void WorldPosition::loadMapAndVMap(uint32 mapId, int x, int y)
             }
 
 #ifdef MANGOSBOT_TWO
-        if (!MMAP::MMapFactory::createOrGetMMapManager()->IsMMapTileLoaded(mapId, 0, x, y) && !sTravelMgr.isBadMmap(mapId, x, y))
+        if (!MMAP::MMapFactory::createOrGetMMapManager()->IsMMapTileLoaded(mapId, instanceId, x, y) && !sTravelMgr.isBadMmap(mapId, x, y))
 #else
         if (!MMAP::MMapFactory::createOrGetMMapManager()->IsMMapIsLoaded(mapId, x, y) && !sTravelMgr.isBadMmap(mapId, x, y))
 #endif
         {
             // load navmesh
 #ifdef MANGOSBOT_TWO
-            if (!MMAP::MMapFactory::createOrGetMMapManager()->loadMap(mapId, 0, x, y, 0))
+            if (!MMAP::MMapFactory::createOrGetMMapManager()->loadMap(mapId, instanceId, x, y, 0))
 #else
             if (!MMAP::MMapFactory::createOrGetMMapManager()->loadMap(mapId, x, y))
 #endif
@@ -571,11 +571,11 @@ void WorldPosition::loadMapAndVMap(uint32 mapId, int x, int y)
     }
 }
 
-void WorldPosition::loadMapAndVMaps(WorldPosition secondPos)
+void WorldPosition::loadMapAndVMaps(WorldPosition secondPos, uint32 instanceId)
 {
     for (auto& grid : getmGridPairs(secondPos))
     {
-        loadMapAndVMap(getMapId(), grid.first, grid.second);
+        loadMapAndVMap(getMapId(), instanceId, grid.first, grid.second);
     }
 }
 
@@ -591,8 +591,11 @@ vector<WorldPosition> WorldPosition::fromPointsArray(std::vector<G3D::Vector3> p
 //A single pathfinding attempt from one position to another. Returns pathfinding status and path.
 vector<WorldPosition> WorldPosition::getPathStepFrom(WorldPosition startPos, Unit* bot)
 {
+    std::hash<std::thread::id> hasher;
+    uint32 instanceId = bot ? bot->GetInstanceId() : hasher(std::this_thread::get_id());
     //Load mmaps and vmaps between the two points.
-    loadMapAndVMaps(startPos);
+
+    loadMapAndVMaps(startPos, instanceId);
 
     PointsArray points;
     PathType type;
@@ -615,8 +618,7 @@ vector<WorldPosition> WorldPosition::getPathStepFrom(WorldPosition startPos, Uni
     else
 #ifdef IKE_PATHFINDER
     {
-        std::hash<std::thread::id> hasher;
-        PathFinder path(getMapId(), hasher(std::this_thread::get_id()));
+        PathFinder path(getMapId(), instanceId);
 
         path.setAreaCost(9, 10.0f);
         path.setAreaCost(12, 5.0f);
@@ -1895,7 +1897,7 @@ void TravelMgr::SetMobAvoidArea()
         if (!point.getTerrain())
             continue;
 
-        point.loadMapAndVMap();
+        point.loadMapAndVMap(0);
 
         path.setArea(point.getMapId(), point.getX(), point.getY(), point.getZ(), 12, 50.0f);
         path.setArea(point.getMapId(), point.getX(), point.getY(), point.getZ(), 13, 20.0f);

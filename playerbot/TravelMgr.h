@@ -182,9 +182,9 @@ namespace ai
         vector<mGridPair> getmGridPairs(WorldPosition secondPos);
         vector<WorldPosition> frommGridPair(mGridPair gridPair);
 
-        void loadMapAndVMap(uint32 mapId, int x, int y);
-        void loadMapAndVMap() {loadMapAndVMap(getMapId(), getmGridPair().first, getmGridPair().second); }
-        void loadMapAndVMaps(WorldPosition secondPos);
+        void loadMapAndVMap(uint32 mapId, uint32 instanceId, int x, int y);
+        void loadMapAndVMap(uint32 instanceId) {loadMapAndVMap(getMapId(), instanceId, getmGridPair().first, getmGridPair().second); }
+        void loadMapAndVMaps(WorldPosition secondPos, uint32 instanceId);
 
         //Display functions
         WorldPosition getDisplayLocation();
@@ -656,6 +656,7 @@ namespace ai
         void setExpireIn(uint32 expireMs) { statusTime = getExpiredTime() + expireMs; }
         void incRetry(bool isMove) { if (isMove) moveRetryCount++; else extendRetryCount++; }
         void setRetry(bool isMove, uint32 newCount = 0) { if (isMove) moveRetryCount = newCount; else extendRetryCount = newCount; }
+        void setGroupCopy(bool isGroupCopy = true) { groupCopy = isGroupCopy; }
         void setForced(bool forced1) { forced = forced1; }
         void setRadius(float radius1) { radius = radius1; }
 
