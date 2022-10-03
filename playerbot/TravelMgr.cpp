@@ -1082,6 +1082,9 @@ bool QuestObjectiveTravelDestination::isActive(Player* bot) {
     if (questTemplate->GetQuestLevel() + 5 > (int)bot->GetLevel() && !AI_VALUE(bool, "can fight equal"))
         return false;
 
+    if ((bot->GetGroup() && bot->GetGroup()->IsRaidGroup()) != (questTemplate->GetType() == QUEST_TYPE_RAID))
+        return false;
+
     //Check mob level
     if (getEntry() > 0)
     {
@@ -1310,6 +1313,17 @@ bool BossTravelDestination::isActive(Player* bot)
     if (!GuidPosition(bot).IsHostileTo(GuidPosition(HIGHGUID_UNIT, entry)))
         return false;
 
+    if (bot->GetGroup())
+    {
+        if (bot->GetGroup()->IsRaidGroup())
+        {
+            if (points.front()->getMap() && points.front()->getMap()->IsNoRaid())
+                return false;
+        }
+        else if (points.front()->getMap() && points.front()->getMap()->IsRaid())
+            return false;
+
+    }
     WorldPosition botPos(bot);
 
     if (!isOut(&botPos))
