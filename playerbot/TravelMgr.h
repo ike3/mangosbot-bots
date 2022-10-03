@@ -656,6 +656,7 @@ namespace ai
         void setExpireIn(uint32 expireMs) { statusTime = getExpiredTime() + expireMs; }
         void incRetry(bool isMove) { if (isMove) moveRetryCount++; else extendRetryCount++; }
         void setRetry(bool isMove, uint32 newCount = 0) { if (isMove) moveRetryCount = newCount; else extendRetryCount = newCount; }
+        void setGroupCopy(bool isCopy = true) { groupCopy = isCopy; }
         void setForced(bool forced1) { forced = forced1; }
         void setRadius(float radius1) { radius = radius1; }
 
@@ -682,7 +683,6 @@ namespace ai
         TravelStatus getStatus() { return m_status; }
 
         TravelState getTravelState();
-
 
         bool isGroupCopy() { return groupCopy; }
         bool isForced() { return forced; }
