@@ -270,7 +270,6 @@ namespace ai
         RpgTradeUsefulAction(PlayerbotAI* ai, string name = "rpg trade useful") : RpgSubAction(ai, name) {}
 
         bool IsTradingItem(uint32 entry);
-        list<Item*> CanGiveItems(GuidPosition guidPosition);
 
         virtual bool Execute(Event event);
     };

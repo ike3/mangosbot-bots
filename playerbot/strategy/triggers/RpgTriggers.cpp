@@ -537,7 +537,7 @@ bool RpgTradeUsefulTrigger::IsActive()
     if (bot->GetTrader() && bot->GetTrader() != player)
         return false;
 
-    if (AI_VALUE(list<Item*>, "items useful to give").empty())
+    if (AI_VALUE_LAZY(list<Item*>, "items useful to give").empty())
         return false;
 
     return true;
