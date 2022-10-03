@@ -524,7 +524,12 @@ bool ChooseTravelTargetAction::SetGroupTarget(TravelTarget* target)
         activePoints.push_back(groupTarget->getPosition());
     }
 
-    return SetBestTarget(target, activeDestinations);
+    bool hasTarget = SetBestTarget(target, activeDestinations);
+
+    if (hasTarget)
+        target->setGroupCopy();
+
+    return hasTarget;
 }
 
 bool ChooseTravelTargetAction::SetCurrentTarget(TravelTarget* target, TravelTarget* oldTarget)

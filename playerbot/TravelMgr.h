@@ -684,7 +684,6 @@ namespace ai
 
         TravelState getTravelState();
 
-
         bool isGroupCopy() { return groupCopy; }
         bool isForced() { return forced; }
     protected:
