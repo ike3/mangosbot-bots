@@ -189,7 +189,7 @@ bool CheckMountStateAction::isUseful()
     // Only mount if BG starts in less than 30 sec
     if (bot->InBattleGround())
     {
-        BattleGround *bg = bot->GetBattleGround();
+        BattleGround* bg = bot->GetBattleGround();
         if (bg && bg->GetStatus() == STATUS_WAIT_JOIN)
         {
             if (bg->GetStartDelayTime() > BG_START_DELAY_30S)
@@ -198,6 +198,136 @@ bool CheckMountStateAction::isUseful()
     }
 
     return true;
+}
+
+uint32 CheckMountStateAction::MountSpeed(const SpellEntry* const spellInfo, const bool canFly)
+{
+    bool isMount = false;
+
+#ifdef MANGOSBOT_ZERO
+    uint32 effect = SPELL_AURA_MOD_INCREASE_MOUNTED_SPEED;
+#else
+    uint32 effect = canFly ? SPELL_AURA_MOD_FLIGHT_SPEED_MOUNTED : SPELL_AURA_MOD_INCREASE_MOUNTED_SPEED; //If we can fly only look at flight speed. Normal mounts then don't get any speed.
+#endif
+
+    if (!spellInfo)
+        return 0;
+
+    for (int i = 0; i < 3; i++)
+    {
+        if (spellInfo->EffectApplyAuraName[i] == SPELL_AURA_MOUNTED)
+        {
+            isMount = true;
+            break;
+        }
+    }
+
+    if (isMount)
+    {
+        for (int i = 0; i < 3; i++)
+        {
+            if (spellInfo->EffectApplyAuraName[i] == effect)
+            {
+                return spellInfo->EffectBasePoints[i];
+            }
+        }
+    }
+
+    return 0;
+}
+
+vector<uint32> CheckMountStateAction::GetBestMountSpells(const bool canFly)
+{
+    uint32 bestMountSpeed = 1;
+    vector<uint32> spells;
+    for (PlayerSpellMap::iterator itr = bot->GetSpellMap().begin(); itr != bot->GetSpellMap().end(); ++itr)
+    {
+        uint32 spellId = itr->first;
+        if (itr->second.state == PLAYERSPELL_REMOVED || itr->second.disabled || IsPassiveSpell(spellId))
+            continue;
+
+        const SpellEntry* spellInfo = sServerFacade.LookupSpellInfo(spellId);
+        uint32 mountSpeed = MountSpeed(spellInfo, canFly);
+
+        if (mountSpeed < bestMountSpeed)
+            continue;
+
+        if (mountSpeed > bestMountSpeed)
+            spells.clear();
+
+        spells.push_back(spellId);
+    }
+
+    return spells;
+}
+
+
+
+uint32 CheckMountStateAction::MountSpeed(const ItemPrototype* proto, const bool canFly)
+{
+    uint32 speed = 0;
+    for (int j = 0; j < MAX_ITEM_PROTO_SPELLS; j++)
+    {
+        const SpellEntry* const spellInfo = sServerFacade.LookupSpellInfo(proto->Spells[j].SpellId);
+        speed = MountSpeed(spellInfo, canFly);
+
+        if (speed)
+            return speed;
+    }
+
+    return 0;
+}
+
+vector<Item*> CheckMountStateAction::GetBestMounts(const bool canFly)
+{
+    list<Item*> items = AI_VALUE2(list<Item*>, "inventory items", "mount");
+
+    uint32 bestMountSpeed = 1;
+    vector<Item*> mounts;
+
+    for (auto& item : items)
+    {
+        uint32 mountSpeed = MountSpeed(item->GetProto(), canFly);
+
+        if (mountSpeed < bestMountSpeed)
+            continue;
+
+        if (mountSpeed > bestMountSpeed)
+            mounts.clear();
+
+        mounts.push_back(item);
+    }
+
+    return mounts;
+}
+
+bool CheckMountStateAction::MountWithBestMount(const bool canFly)
+{
+    vector<uint32> mountSpells = GetBestMountSpells(canFly);
+    vector<Item*> mounts = GetBestMounts(canFly);
+
+    if (mountSpells.empty() && mounts.empty())
+        return false;
+
+    if (mounts.empty() || MountSpeed(sServerFacade.LookupSpellInfo(mountSpells.front()), canFly) > MountSpeed(mounts.front()->GetProto(), canFly))
+    {
+        uint32 spellId = mountSpells[urand(0, mountSpells.size() - 1)];
+        return ai->CastSpell(spellId, bot);
+    }
+    else
+    {
+        Item* mount = mounts[urand(0, mounts.size() - 1)];
+
+        bool didUse = UseItemAuto(mount);
+
+        if (didUse)
+        {
+            ai->SetNextCheckDelay(3 * IN_MILLISECONDS);
+            return true;
+        }
+    }
+
+    return false;
 }
 
 bool CheckMountStateAction::Mount()
@@ -247,8 +377,21 @@ bool CheckMountStateAction::Mount()
     Player* master = GetMaster();
     ai->RemoveShapeshift();
 
+    bool didMount = false;
+
+    if (bot->GetMapId() == 530 || bot->GetMapId() == 571)
+        didMount = MountWithBestMount(true);
+
+    if (!didMount)
+        didMount = MountWithBestMount();
+
+    return didMount;
+
+
+    //BELOW HERE IS OLD STUFF
+
     int32 masterSpeed = 59;
-    const SpellEntry *masterSpell = NULL;
+    const SpellEntry* masterSpell = NULL;
 
     if (master && master->GetAurasByType(SPELL_AURA_MOUNTED).size() > 0 && !bot->InBattleGround())
     {
@@ -289,9 +432,9 @@ bool CheckMountStateAction::Mount()
     if (bot->GetPureSkillValue(SKILL_RIDING) <= 75 && bot->GetLevel() < 60)
 #endif
 #ifdef CMANGOS
-    if (bot->GetSkillValuePure(SKILL_RIDING) <= 75 && bot->GetLevel() < secondmount)
+        if (bot->GetSkillValuePure(SKILL_RIDING) <= 75 && bot->GetLevel() < secondmount)
 #endif
-        masterSpeed = 59;
+            masterSpeed = 59;
 
     if (bot->InBattleGround() && masterSpeed > 99)
         masterSpeed = 99;
@@ -376,7 +519,7 @@ bool CheckMountStateAction::Mount()
         if (index >= ids.size())
             continue;
 
-        MotionMaster &mm = *bot->GetMotionMaster();
+        MotionMaster& mm = *bot->GetMotionMaster();
         ai->CastSpell(ids[index], bot);
         return true;
     }
@@ -391,7 +534,7 @@ bool CheckMountStateAction::Mount()
     uint32 bestMountSpeed = 0;
 
 #ifndef MANGOSBOT_ZERO
-    if(bot->GetMapId() == 530 || bot->GetMapId() == 571)
+    if (bot->GetMapId() == 530 || bot->GetMapId() == 571)
         for (auto mount : mounts)
         {
             if (bot->CanUseItem(mount) != EQUIP_ERR_OK)
@@ -406,7 +549,7 @@ bool CheckMountStateAction::Mount()
             bestMountSpeed = mountSpeed;
         }
 #endif
-    if(!bestMount)
+    if (!bestMount)
         for (auto mount : mounts)
         {
             if (bot->CanUseItem(mount) != EQUIP_ERR_OK)
@@ -434,43 +577,4 @@ bool CheckMountStateAction::Mount()
 #endif
 
     return false;
-}
-
-uint32 CheckMountStateAction::MountSpeed(const ItemPrototype* proto, const bool isFlying)
-{
-    bool isMount = false;
-#ifdef MANGOSBOT_ZERO
-    uint32 effect = SPELL_AURA_MOD_INCREASE_MOUNTED_SPEED;
-#else
-    uint32 effect = isFlying ? SPELL_AURA_MOD_FLIGHT_SPEED_MOUNTED : SPELL_AURA_MOD_INCREASE_MOUNTED_SPEED;
-#endif
-
-    for (int j = 0; j < MAX_ITEM_PROTO_SPELLS; j++)
-    {
-        const SpellEntry* const spellInfo = sServerFacade.LookupSpellInfo(proto->Spells[j].SpellId);
-        if (!spellInfo)
-            return false;
-
-        for (int i = 0; i < 3; i++)
-        {
-            if (spellInfo->EffectApplyAuraName[i] == SPELL_AURA_MOUNTED)
-            {
-                isMount = true;
-                break;
-            }
-        }
-
-        if (isMount)
-        {
-            for (int i = 0; i < 3; i++)
-            {
-                if (spellInfo->EffectApplyAuraName[i] == effect)
-                {
-                    return spellInfo->EffectBasePoints[i];
-                }
-            }
-        }
-    }
-
-    return 0;
 }
