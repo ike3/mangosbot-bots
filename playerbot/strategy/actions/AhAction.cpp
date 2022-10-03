@@ -42,8 +42,7 @@ bool AhAction::Execute(string text, Unit* auctioneer)
     uint32 time;
 #ifdef MANGOSBOT_ZERO
     time = 8 * HOUR / MINUTE;
-#endif
-#ifdef MANGOSBOT_ONE
+#else
     time = 12 * HOUR / MINUTE;
 #endif
 
@@ -108,7 +107,13 @@ bool AhAction::PostItem(Item* item, uint32 price, Unit* auctioneer, uint32 time)
 
     WorldPacket packet;
     packet << auctioneer->GetObjectGuid();
+#ifdef MANGOSBOT_TWO
+    packet << (uint32)1;
+#endif
     packet << itemGuid;
+#ifdef MANGOSBOT_TWO
+    packet << item->GetCount();
+#endif
     packet << price * 95 / 100;
     packet << price;
     packet << time;
