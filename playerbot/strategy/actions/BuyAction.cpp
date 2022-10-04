@@ -111,7 +111,7 @@ bool BuyAction::Execute(Event event)
                     if(!result)
                         break;    
 
-                    if (usage == ITEM_USAGE_REPLACE || usage == ITEM_USAGE_EQUIP) //Equip upgrades and stop buying this time.
+                    if (usage == ITEM_USAGE_REPLACE || usage == ITEM_USAGE_EQUIP || usage == ITEM_USAGE_BAD_EQUIP) //Equip upgrades and stop buying this time.
                     {
                         ai->DoSpecificAction("equip upgrades");
                         break;
