@@ -67,13 +67,7 @@ bool AhAction::Execute(string text, Unit* auctioneer)
 
             ItemPrototype const* proto = item->GetProto();
 
-            uint32 price = auctionbot.GetSellPrice(proto);
-
-            if (!price)
-                price = sAuctionHouseBot.GetItemData(proto->ItemId).Value;
-
-            if (!price)
-                price = proto->SellPrice * 1.5;
+            uint32 price = GetSellPrice(proto);
 
             price *= item->GetCount();
 
@@ -104,6 +98,8 @@ bool AhAction::Execute(string text, Unit* auctioneer)
 bool AhAction::PostItem(Item* item, uint32 price, Unit* auctioneer, uint32 time)
 {
     ObjectGuid itemGuid = item->GetObjectGuid();
+    ItemPrototype const* proto = item->GetProto();
+    uint32 cnt = item->GetCount();
 
     WorldPacket packet;
     packet << auctioneer->GetObjectGuid();
@@ -112,7 +108,7 @@ bool AhAction::PostItem(Item* item, uint32 price, Unit* auctioneer, uint32 time)
 #endif
     packet << itemGuid;
 #ifdef MANGOSBOT_TWO
-    packet << item->GetCount();
+    packet << cnt;
 #endif
     packet << price * 95 / 100;
     packet << price;
@@ -124,9 +120,22 @@ bool AhAction::PostItem(Item* item, uint32 price, Unit* auctioneer, uint32 time)
         return false;
 
     ostringstream out;
-    out << "Posting " << ChatHelper::formatItem(item->GetProto(), item->GetCount()) << " for " << ChatHelper::formatMoney(price) << " to the AH";
+    out << "Posting " << ChatHelper::formatItem(proto, cnt) << " for " << ChatHelper::formatMoney(price) << " to the AH";
     ai->TellMasterNoFacing(out.str(), PLAYERBOT_SECURITY_ALLOW_ALL, false);
     return true;
+}
+
+uint32 AhAction::GetSellPrice(ItemPrototype const* proto)
+{
+    uint32 price = sAuctionHouseBot.GetItemData(proto->ItemId).Value;
+
+    if (!price)
+        price = auctionbot.GetSellPrice(proto);
+
+    if (!price)
+        price = proto->SellPrice * 1.5;
+
+    return price;
 }
 
 
@@ -153,7 +162,7 @@ bool AhBidAction::Execute(string text, Unit* auctioneer)
 
     if (text == "vendor")
     {
-        uint32 count, totalcount;
+        uint32 count, totalcount = 0;
         auctionHouse->BuildListBidderItems(WorldPacket(), bot, 9999, count, totalcount);
 
         if (totalcount > 10) //Already have 10 bids, stop.
@@ -198,7 +207,7 @@ bool AhBidAction::Execute(string text, Unit* auctioneer)
                 power = sRandomItemMgr.GetLiveStatWeight(bot, auction->itemTemplate);
                 break;
             case ITEM_USAGE_AH:
-                if (cost >= auctionbot.GetSellPrice(sObjectMgr.GetItemPrototype(auction->itemTemplate)))
+                if (cost >= GetSellPrice(sObjectMgr.GetItemPrototype(auction->itemTemplate)))
                     continue;
                 power = 1000;
                 break;

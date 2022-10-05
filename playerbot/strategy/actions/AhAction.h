@@ -14,6 +14,8 @@ namespace ai
     private:
         virtual bool Execute(string text, Unit* auctioneer);
         bool PostItem(Item* item, uint32 price, Unit* auctioneer, uint32 time);
+    protected:
+        uint32 GetSellPrice(ItemPrototype const* proto);
     };
 
 
