@@ -129,6 +129,9 @@ bool OpenLootAction::DoLoot(LootObject& lootObject)
     if (!spellId)
         return false;
 
+    if (!lootObject.IsLootPossible(bot)) //Clear loot if bot can't loot it.
+        return true;
+
     return ai->CastSpell(spellId, bot);
 }
 
