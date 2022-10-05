@@ -117,12 +117,13 @@ bool MoveToTravelTargetAction::isUseful()
     if (bot->IsTaxiFlying())
         return false;
 
+    if (MEM_AI_VALUE(WorldPosition, "current position")->LastChangeDelay() < 10)
 #ifndef MANGOSBOT_ZERO
-    if (bot->IsMovingIgnoreFlying())
-        return false;
+        if (bot->IsMovingIgnoreFlying())
+            return false;
 #else
-    if (bot->IsMoving())
-        return false;
+        if (bot->IsMoving())
+            return false;
 #endif
 
     if (!AI_VALUE(bool, "can move around"))
