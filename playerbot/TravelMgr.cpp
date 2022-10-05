@@ -1891,9 +1891,13 @@ void TravelMgr::SetMobAvoidArea()
     FactionTemplateEntry const* humanFaction = sFactionTemplateStore.LookupEntry(1);
     FactionTemplateEntry const* orcFaction = sFactionTemplateStore.LookupEntry(2);
 
-    for (auto& creaturePair : WorldPosition().getCreaturesNear())
-    {
+    vector<CreatureDataPair const*> creatures = WorldPosition().getCreaturesNear();
 
+    BarGoLink bar(creatures.size());
+
+    for (auto& creaturePair : creatures)
+    {
+        bar.step();
         CreatureData const cData = creaturePair->second;
         CreatureInfo const* cInfo = ObjectMgr::GetCreatureTemplate(cData.id);
 
@@ -1920,7 +1924,6 @@ void TravelMgr::SetMobAvoidArea()
         path.setArea(point.getMapId(), point.getX(), point.getY(), point.getZ(), 12, 50.0f);
         path.setArea(point.getMapId(), point.getX(), point.getY(), point.getZ(), 13, 20.0f);
     }
-    sLog.outString("end mob avoidance maps");
 }
 
 void TravelMgr::LoadQuestTravelTable()
@@ -3398,7 +3401,7 @@ bool TravelMgr::getObjectiveStatus(Player* bot, Quest const* pQuest, uint32 obje
     return false;
 }
 
-vector<TravelDestination*> TravelMgr::getQuestTravelDestinations(Player* bot, uint32 questId, bool ignoreFull, bool ignoreInactive, float maxDistance, bool ignoreObjectives)
+vector<TravelDestination*> TravelMgr::getQuestTravelDestinations(Player* bot, int32 questId, bool ignoreFull, bool ignoreInactive, float maxDistance, bool ignoreObjectives)
 {
     WorldPosition botLocation(bot);
 
