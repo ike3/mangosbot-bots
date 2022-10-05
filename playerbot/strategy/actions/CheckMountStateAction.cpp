@@ -222,6 +222,20 @@ uint32 CheckMountStateAction::MountSpeed(const SpellEntry* const spellInfo, cons
         }
     }
 
+#ifndef MANGOSBOT_ZERO
+    //This part stops bots from mounting flying mounts when they can't fly. This should be tweaked if bots ever are able to normally ride flying mounts in the old-world.
+    if(isMount && !canFly)
+    {
+        for (int i = 0; i < 3; i++)
+        {
+            if (spellInfo->EffectApplyAuraName[i] == SPELL_AURA_MOD_FLIGHT_SPEED_MOUNTED)
+            {
+                return 0;
+            }
+        }
+    }
+#endif
+
     if (isMount)
     {
         for (int i = 0; i < 3; i++)
@@ -260,8 +274,6 @@ vector<uint32> CheckMountStateAction::GetBestMountSpells(const bool canFly)
 
     return spells;
 }
-
-
 
 uint32 CheckMountStateAction::MountSpeed(const ItemPrototype* proto, const bool canFly)
 {
