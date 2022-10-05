@@ -139,6 +139,9 @@ bool RpgBuyTrigger::IsActive()
     if (!AI_VALUE(bool, "can buy"))
         return false;
 
+    if (!AI_VALUE2(bool, "vendor has useful item", guidP.GetEntry()))
+        return false;
+
     return true;
 }
 
@@ -168,6 +171,9 @@ bool RpgAHSellTrigger::IsActive()
     if (guidP.IsHostileTo(bot))
         return false;
 
+    if (GuidPosition(bot).IsHostileTo(guidP))
+        return false;
+
     if (!AI_VALUE(bool, "can ah sell"))
         return false;
 
@@ -182,6 +188,9 @@ bool RpgAHBuyTrigger::IsActive()
         return false;
 
     if (guidP.IsHostileTo(bot))
+        return false;
+
+    if (GuidPosition(bot).IsHostileTo(guidP))
         return false;
 
     if (!AI_VALUE(bool, "can ah buy"))
@@ -481,8 +490,25 @@ bool RpgCraftTrigger::IsActive()
         vector<uint32> spells = ItemUsageValue::SpellsUsingItem(item->GetProto()->ItemId, bot);
 
         for (auto& spell : spells)
+        {
+            const SpellEntry* pSpellInfo = sServerFacade.LookupSpellInfo(spell);
+
+            if (pSpellInfo->RequiresSpellFocus)
+            {
+                if (!guidP.IsGameObject())
+                    return false;
+
+                if (guidP.GetGameObjectInfo()->type != GAMEOBJECT_TYPE_SPELL_FOCUS)
+                    return false;
+
+                if (guidP.GetGameObjectInfo()->spellFocus.focusId != pSpellInfo->RequiresSpellFocus)
+                    return false;
+            }           
+
             if (ItemUsageValue::HasItemsNeededForSpell(spell, item->GetProto(), bot))
                 return true;
+        }
+
     }
 
     return false;

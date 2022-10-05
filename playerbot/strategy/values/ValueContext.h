@@ -80,6 +80,7 @@
 #include "TradeValues.h"
 #include "RpgValues.h"
 #include "RTSCValues.h"
+#include "VendorValues.h"
 
 namespace ai
 {
@@ -267,6 +268,8 @@ namespace ai
             creators["can fight equal"] = &ValueContext::can_fight_equal;
             creators["can fight elite"] = &ValueContext::can_fight_elite;
             creators["can fight boss"] = &ValueContext::can_fight_boss;
+
+            creators["vendor has useful item"] = &ValueContext::vendor_has_useful_item;
 
             creators["group members"] = &ValueContext::group_members;
             creators["following party"] = &ValueContext::following_party;
@@ -466,6 +469,8 @@ namespace ai
         static UntypedValue* can_fight_equal(PlayerbotAI* ai) { return new CanFightEqualValue(ai); }
         static UntypedValue* can_fight_elite(PlayerbotAI* ai) { return new CanFightEliteValue(ai); }
         static UntypedValue* can_fight_boss(PlayerbotAI* ai) { return new CanFightBossValue(ai); }
+
+        static UntypedValue* vendor_has_useful_item(PlayerbotAI* ai) { return new VendorHasUsefulItemValue(ai); }
 
         static UntypedValue* group_members(PlayerbotAI* ai) { return new GroupMembersValue(ai); }
         static UntypedValue* following_party(PlayerbotAI* ai) { return new IsFollowingPartyValue(ai); }

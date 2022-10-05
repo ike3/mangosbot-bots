@@ -48,6 +48,10 @@ void RpgStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 
     //Sub actions
     triggers.push_back(new TriggerNode(
+        "rpg wander",
+        NextAction::array(0, new NextAction("rpg cancel", 1.001f), NULL)));
+
+    triggers.push_back(new TriggerNode(
         "rpg",
         NextAction::array(0, new NextAction("rpg stay", 1.001f), NULL)));
 

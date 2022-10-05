@@ -174,6 +174,7 @@ namespace ai
             creators["leave large guild"] = &TriggerContext::leave_large_guild;
 
             creators["rpg"] = &TriggerContext::rpg;
+            creators["rpg wander"] = &TriggerContext::rpg_wander;
             creators["rpg taxi"] = &TriggerContext::rpg_taxi;
             creators["rpg discover"] = &TriggerContext::rpg_discover;
             creators["rpg start quest"] = &TriggerContext::rpg_start_quest;
@@ -346,6 +347,7 @@ namespace ai
         static Trigger* leave_large_guild(PlayerbotAI* ai) { return new LeaveLargeGuildTrigger(ai); }
 
         static Trigger* rpg(PlayerbotAI* ai) { return new RpgTrigger(ai); }
+        static Trigger* rpg_wander(PlayerbotAI* ai) { return new RpgWanderTrigger(ai); }
         static Trigger* rpg_taxi(PlayerbotAI* ai) { return new RpgTaxiTrigger(ai); }
         static Trigger* rpg_discover(PlayerbotAI* ai) { return new RpgDiscoverTrigger(ai); }
         static Trigger* rpg_start_quest(PlayerbotAI* ai) { return new RpgStartQuestTrigger(ai); }
