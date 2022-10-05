@@ -272,6 +272,9 @@ bool ChooseRpgTargetAction::Execute(Event event)
         {
             GuidPosition guidP(target.first);
 
+            if (!guidP.GetWorldObject())
+                continue;
+
             ostringstream out;
             out << chat->formatWorldobject(guidP.GetWorldObject());
 
