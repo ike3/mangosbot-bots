@@ -87,6 +87,19 @@ bool MoveToRpgTargetAction::Execute(Event event)
         return false;
     }
 
+    if (guidP.IsGameObject() && guidP.sqDistance2d(bot) < INTERACTION_DISTANCE * INTERACTION_DISTANCE  && !urand(0, 5))
+    {
+        AI_VALUE(set<ObjectGuid>&, "ignore rpg target").insert(AI_VALUE(GuidPosition, "rpg target"));
+
+        RESET_AI_VALUE(GuidPosition, "rpg target");
+
+        if (ai->HasStrategy("debug rpg", BOT_STATE_NON_COMBAT))
+        {
+            ai->TellMasterNoFacing("Under/above object drop rpg target");
+        }
+        return false;
+    }
+
     if (!urand(0, 50))
     {
         AI_VALUE(set<ObjectGuid>&, "ignore rpg target").insert(AI_VALUE(GuidPosition, "rpg target"));
