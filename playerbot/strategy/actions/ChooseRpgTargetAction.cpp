@@ -228,7 +228,7 @@ bool ChooseRpgTargetAction::Execute(Event event)
 
         checked++;
 
-        if (checked > 50) //Some limit on stuff to check.
+        if (checked >= 50) //Some limit on stuff to check.
             break;
     }
 
@@ -246,6 +246,12 @@ bool ChooseRpgTargetAction::Execute(Event event)
 
     if (targets.empty())
     {
+        if (ai->HasStrategy("debug rpg", BOT_STATE_NON_COMBAT))
+        {
+            ostringstream out;
+            out << "found: no targets, " << checked << " checked.";
+            ai->TellMasterNoFacing(out);
+        }
         sLog.outDetail("%s can't choose RPG target: all %zu are not available", bot->GetName(), possibleTargets.size());
         RESET_AI_VALUE(set<ObjectGuid>&,"ignore rpg target");
         RESET_AI_VALUE(GuidPosition, "rpg target");
@@ -260,6 +266,8 @@ bool ChooseRpgTargetAction::Execute(Event event)
 
         ai->TellMasterNoFacing("------" + to_string(targets.size()) + "------");
 
+        uint32 checked = 0;
+
         for (auto target : sortedTargets)
         {
             GuidPosition guidP(target.first);
@@ -270,6 +278,16 @@ bool ChooseRpgTargetAction::Execute(Event event)
             out << " " << rgpActionReason[guidP] << " " << target.second;
 
             ai->TellMasterNoFacing(out);
+
+            checked++;
+
+            if (checked >= 10)
+            {
+                ostringstream out;
+                out << "and " << (sortedTargets.size()-checked) << " more...";
+                ai->TellMasterNoFacing(out);
+                break;
+            }
         }
     }
 
