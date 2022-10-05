@@ -654,7 +654,8 @@ namespace ai
         void setTarget(TravelDestination* tDestination1, WorldPosition* wPosition1, bool groupCopy1 = false);
         void setStatus(TravelStatus status);
         void setExpireIn(uint32 expireMs) { statusTime = getExpiredTime() + expireMs; }
-        void incRetry(bool isMove) { if (isMove) moveRetryCount++; else extendRetryCount++; }
+        void incRetry(bool isMove) { if (isMove) moveRetryCount+=2; else extendRetryCount+=2; }
+        void decRetry(bool isMove) { if (isMove && moveRetryCount > 0) moveRetryCount--; else if (extendRetryCount > 0) extendRetryCount--; }
         void setRetry(bool isMove, uint32 newCount = 0) { if (isMove) moveRetryCount = newCount; else extendRetryCount = newCount; }
         void setGroupCopy(bool isGroupCopy = true) { groupCopy = isGroupCopy; }
         void setForced(bool forced1) { forced = forced1; }
@@ -679,7 +680,7 @@ namespace ai
         bool isActive();   
         bool isWorking();
         bool isPreparing();
-        bool isMaxRetry(bool isMove) { return isMove ? (moveRetryCount > 5) : (extendRetryCount > 5); }
+        bool isMaxRetry(bool isMove) { return isMove ? (moveRetryCount > 10) : (extendRetryCount > 5); }
         TravelStatus getStatus() { return m_status; }
 
         TravelState getTravelState();
