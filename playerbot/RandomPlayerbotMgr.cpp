@@ -555,6 +555,28 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed, bool minimal)
     {
         LogPlayerLocation();
     }
+    else if(sPlayerbotAIConfig.hasLog("activity_pid.csv"))
+    {
+        activeBots = 0;
+
+        if (sPlayerbotAIConfig.randomBotAutologin)
+            for (auto i : GetAllBots())
+            {
+                Player* bot = i.second;
+                if (bot->GetPlayerbotAI())
+                    if (bot->GetPlayerbotAI()->AllowActivity(ALL_ACTIVITY))
+                        activeBots++;
+            }
+        for (auto i : GetPlayers())
+        {
+            Player* bot = i;
+            if (!bot)
+                continue;           
+            if (i->GetPlayerbotAI())
+                if (bot->GetPlayerbotAI()->AllowActivity(ALL_ACTIVITY))
+                    activeBots++;
+        }
+    }
 }
 
 uint32 RandomPlayerbotMgr::AddRandomBots()
