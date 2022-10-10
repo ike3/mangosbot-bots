@@ -1320,7 +1320,7 @@ bool BossTravelDestination::isActive(Player* bot)
     {
         if (bot->GetGroup()->IsRaidGroup())
         {
-#ifdef MANGOSBOT_ZERO
+#ifndef MANGOSBOT_TWO
             if (points.front()->getMap() && points.front()->getMap()->IsNoRaid())
 #else
             if (points.front()->getMap() && points.front()->getMap()->IsNonRaidDungeon())
