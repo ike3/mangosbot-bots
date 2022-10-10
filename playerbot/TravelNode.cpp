@@ -927,7 +927,7 @@ TravelPath TravelNodeRoute::buildPath(vector<WorldPosition> pathToStart, vector<
 {
     TravelPath travelPath;
 
-
+    Unit* botForPath = sPlayerbotAIConfig.tweakValue ? NULL : bot;
 
     if (!pathToStart.empty()) //From start position to start of path.
         travelPath.addPath(pathToStart, NODE_PREPATH);
@@ -944,10 +944,10 @@ TravelPath TravelNodeRoute::buildPath(vector<WorldPosition> pathToStart, vector<
             if (!nodePath || !nodePath->getComplete()) //Build the path to the next node if it doesn't exist.
             {
                 if (!prevNode->isTransport())
-                    nodePath = prevNode->buildPath(node, NULL);
+                    nodePath = prevNode->buildPath(node, botForPath);
                 else //For transports we have no proper path since the node is in air/water. Instead we build a reverse path and follow that.
                 {
-                    node->buildPath(prevNode, NULL); //Reverse build to get proper path.
+                    node->buildPath(prevNode, botForPath); //Reverse build to get proper path.
                     nodePath = prevNode->getPathTo(node);
                 }
             }
@@ -956,7 +956,7 @@ TravelPath TravelNodeRoute::buildPath(vector<WorldPosition> pathToStart, vector<
 
             if (!nodePath || !nodePath->getComplete()) //It looks like we can't properly path to our node. Make a temporary reverse path and see if that works instead.
             {
-                returnNodePath = *node->buildPath(prevNode, NULL); //Build reverse path and save it to a temporary variable.
+                returnNodePath = *node->buildPath(prevNode, botForPath); //Build reverse path and save it to a temporary variable.
                 vector<WorldPosition> path = returnNodePath.getPath();
                 reverse(path.begin(), path.end()); //Reverse the path 
                 returnNodePath.setPath(path);
