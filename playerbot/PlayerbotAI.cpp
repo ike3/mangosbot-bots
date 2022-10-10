@@ -3330,11 +3330,14 @@ bool PlayerbotAI::AllowActive(ActivityType activityType)
             {
                 ContinentArea currentArea = sMapMgr.GetContinentInstanceId(bot->GetMapId(), bot->GetPositionX(), bot->GetPositionY());
                 if (currentArea == MAP_NO_AREA)
-                    priorityType = 7;
+                    priorityType = 8;
                 else if (!bot->GetMap()->HasActiveAreas(currentArea))
-                    priorityType = 6;
+                    priorityType = 7;
             }
         }
+
+    if (!priorityType)
+        priorityType = 6;
 
     float maxPriorityType = 8;
 
@@ -3347,9 +3350,7 @@ bool PlayerbotAI::AllowActive(ActivityType activityType)
 
     float priorityMod = (float)1-(priorityBracket - mod); //Scale the bots active by how much the current mod is below the priority bracket.
 
-    mod *= priorityMod;
-
-    uint32 activePerc = (priorityType > 5 ? sPlayerbotAIConfig.botActiveAlone : 100) * mod;
+    uint32 activePerc = (priorityType > 5 ? sPlayerbotAIConfig.botActiveAlone : 100) * priorityMod;
 
     uint32 ActivityNumber = GetFixedBotNumer(BotTypeNumber::ACTIVITY_TYPE_NUMBER, 100, activePerc * 0.01f); //The last number if the amount it cycles per min. Currently set to 1% of the active bots.
 
