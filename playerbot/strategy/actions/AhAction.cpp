@@ -207,7 +207,7 @@ bool AhBidAction::Execute(string text, Unit* auctioneer)
                 power = sRandomItemMgr.GetLiveStatWeight(bot, auction->itemTemplate);
                 break;
             case ITEM_USAGE_AH:
-                if (cost >= GetSellPrice(sObjectMgr.GetItemPrototype(auction->itemTemplate)))
+                if (cost >= (int32)GetSellPrice(sObjectMgr.GetItemPrototype(auction->itemTemplate)))
                     continue;
                 power = 1000;
                 break;

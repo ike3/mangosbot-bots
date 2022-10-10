@@ -483,11 +483,11 @@ bool RpgCraftTrigger::IsActive()
         return false;
 
     //Need to go ai value "can craft item"
-    list<Item*> items = AI_VALUE2_LAZY(list<Item*>, "inventory items", "usage " + to_string(ITEM_USAGE_SKILL));
+    list<uint32> itemIds = AI_VALUE2_LAZY(list<uint32>, "inventory item ids", "usage " + to_string(ITEM_USAGE_SKILL));
 
-    for (auto& item : items)
+    for (auto& itemId : itemIds)
     {
-        vector<uint32> spells = ItemUsageValue::SpellsUsingItem(item->GetProto()->ItemId, bot);
+        vector<uint32> spells = ItemUsageValue::SpellsUsingItem(itemId, bot);
 
         for (auto& spell : spells)
         {
@@ -505,7 +505,7 @@ bool RpgCraftTrigger::IsActive()
                     return false;
             }           
 
-            if (ItemUsageValue::HasItemsNeededForSpell(spell, item->GetProto(), bot))
+            if (ItemUsageValue::HasItemsNeededForSpell(spell, ObjectMgr::GetItemPrototype(itemId), bot))
                 return true;
         }
 

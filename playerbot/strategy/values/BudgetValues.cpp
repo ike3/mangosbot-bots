@@ -88,62 +88,6 @@ uint32 RepairCostValue::Calculate()
     return TotalCost;
 }
 
-uint32 TrainCostValue::Calculate()
-{
-    uint32 TotalCost = 0;
-
-    set<uint32> spells;
-
-    for (uint32 id = 0; id < sCreatureStorage.GetMaxEntry(); ++id)
-    {
-        CreatureInfo const* co = sCreatureStorage.LookupEntry<CreatureInfo>(id);
-        if (!co)
-            continue;
-
-        if (co->TrainerType != TRAINER_TYPE_CLASS && co->TrainerType != TRAINER_TYPE_TRADESKILLS)
-            continue;
-
-        if (co->TrainerType == TRAINER_TYPE_CLASS && co->TrainerClass != bot->getClass())
-            continue;
-
-        uint32 trainerId = co->TrainerTemplateId;
-        if (!trainerId)
-            trainerId = co->Entry;
-
-        TrainerSpellData const* trainer_spells = sObjectMgr.GetNpcTrainerTemplateSpells(trainerId);
-        if (!trainer_spells)
-            trainer_spells = sObjectMgr.GetNpcTrainerSpells(trainerId);
-
-        if (!trainer_spells)
-            continue;
-
-        for (TrainerSpellMap::const_iterator itr = trainer_spells->spellList.begin(); itr != trainer_spells->spellList.end(); ++itr)
-        {
-            TrainerSpell const* tSpell = &itr->second;
-
-            if (!tSpell)
-                continue;
-
-            uint32 reqLevel = 0;
-
-            reqLevel = tSpell->isProvidedReqLevel ? tSpell->reqLevel : std::max(reqLevel, tSpell->reqLevel);
-            TrainerSpellState state = bot->GetTrainerSpellState(tSpell, reqLevel);
-            if (state != TRAINER_SPELL_GREEN)
-                continue;
-
-            if (co->TrainerType == TRAINER_TYPE_TRADESKILLS)
-                continue;
-
-            if (spells.find(tSpell->spell) != spells.end())
-                continue;
-
-            TotalCost += tSpell->spellCost;
-            spells.insert(tSpell->spell);
-        }
-    }
-    return TotalCost;
-}
-
 uint32 MoneyNeededForValue::Calculate()
 {
 	NeedMoneyFor needMoneyFor = NeedMoneyFor(stoi(getQualifier()));

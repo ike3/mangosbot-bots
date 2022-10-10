@@ -78,13 +78,13 @@ bool SmartDestroyItemAction::Execute(Event event)
     for (auto& usage : bestToDestroy)
     {
 
-        list<Item*> items = AI_VALUE2(list<Item*>, "inventory items", "usage " + to_string(usage));
+        list<uint32> items = AI_VALUE2(list<uint32>, "inventory item ids", "usage " + to_string(usage));
 
         items.reverse();
 
         for (auto& item : items)
         {
-            FindItemByIdVisitor visitor(item->GetProto()->ItemId);
+            FindItemByIdVisitor visitor(item);
             DestroyItem(&visitor);
 
             bagSpace = AI_VALUE(uint8, "bag space");

@@ -81,6 +81,7 @@
 #include "RpgValues.h"
 #include "RTSCValues.h"
 #include "VendorValues.h"
+#include "TrainerValues.h"
 
 namespace ai
 {
@@ -165,6 +166,7 @@ namespace ai
 
             creators["item count"] = &ValueContext::item_count;
             creators["inventory items"] = &ValueContext::inventory_item;
+            creators["inventory item ids"] = &ValueContext::inventory_item_ids;
             creators["trinkets on use"] = &ValueContext::trinkets_on_use;
 
             creators["spell id"] = &ValueContext::spell_id;
@@ -293,6 +295,8 @@ namespace ai
             creators["RTSC next spell action"] = &ValueContext::RTSC_next_spell_action;
             creators["RTSC saved location"] = &ValueContext::RTSC_saved_location;
 
+            creators["trainable class spells"] = &ValueContext::trainable_class_spells;
+
             creators["has area debuff"] = &ValueContext::has_area_debuff;
         }
 
@@ -340,6 +344,7 @@ namespace ai
         static UntypedValue* spell_id(PlayerbotAI* ai) { return new SpellIdValue(ai); }
         static UntypedValue* vehicle_spell_id(PlayerbotAI* ai) { return new VehicleSpellIdValue(ai); }
         static UntypedValue* inventory_item(PlayerbotAI* ai) { return new InventoryItemValue(ai); }
+        static UntypedValue* inventory_item_ids(PlayerbotAI* ai) { return new InventoryItemIdValue(ai); }
         static UntypedValue* trinkets_on_use(PlayerbotAI* ai) { return new EquipedUsableTrinketValue(ai); }
         static UntypedValue* item_count(PlayerbotAI* ai) { return new ItemCountValue(ai); }
         static UntypedValue* behind(PlayerbotAI* ai) { return new IsBehindValue(ai); }
@@ -493,6 +498,8 @@ namespace ai
         static UntypedValue* RTSC_selected(PlayerbotAI* ai) { return new RTSCSelectedValue(ai); }
         static UntypedValue* RTSC_next_spell_action(PlayerbotAI* ai) { return new RTSCNextSpellActionValue(ai); }
         static UntypedValue* RTSC_saved_location(PlayerbotAI* ai) { return new RTSCSavedLocationValue(ai); }
+
+        static UntypedValue* trainable_class_spells(PlayerbotAI* ai) { return new TrainableClassSpells(ai); }
 
         static UntypedValue* has_area_debuff(PlayerbotAI* ai) { return new HasAreaDebuffValue(ai); }
     };

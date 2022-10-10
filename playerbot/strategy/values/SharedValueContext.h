@@ -2,6 +2,7 @@
 
 #include "PvpValues.h"
 #include "QuestValues.h"
+#include "TrainerValues.h"
 
 namespace ai
 {
@@ -21,6 +22,8 @@ namespace ai
 
             creators["quest guidp map"] = &SharedValueContext::quest_guidp_map;
             creators["quest givers"] = &SharedValueContext::quest_givers;
+
+            creators["trainable spell map"] = &SharedValueContext::trainable_spell_map;
         }
 
 
@@ -36,6 +39,8 @@ namespace ai
 
         static UntypedValue* quest_guidp_map(PlayerbotAI* ai) { return new QuestGuidpMapValue(ai); }
         static UntypedValue* quest_givers(PlayerbotAI* ai) { return new QuestGiversValue(ai); }
+
+        static UntypedValue* trainable_spell_map(PlayerbotAI* ai) { return new TrainableSpellMapValue(ai); }
 
     //Global acess functions
     public:

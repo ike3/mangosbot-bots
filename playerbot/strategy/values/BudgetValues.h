@@ -33,14 +33,6 @@ namespace ai
         virtual uint32 Calculate();
     };
 
-    class TrainCostValue : public Uint32CalculatedValue
-    {
-    public:
-        TrainCostValue(PlayerbotAI* ai) : Uint32CalculatedValue(ai, "train cost", 60) {}
-
-        virtual uint32 Calculate();
-    };
-
     class MoneyNeededForValue : public Uint32CalculatedValue, public Qualified
     {
     public:

@@ -258,7 +258,7 @@ bool CastRandomSpellAction::castSpell(uint32 spellId, WorldObject* wo)
 
 bool DisEnchantRandomItemAction::Execute(Event event)
 {
-    list<Item*> items = AI_VALUE2(list<Item*>, "inventory items", "usage " + to_string(ITEM_USAGE_DISENCHANT));
+    list<uint32> items = AI_VALUE2(list<uint32>, "inventory item ids", "usage " + to_string(ITEM_USAGE_DISENCHANT));
 
     items.reverse();
 
@@ -274,10 +274,10 @@ bool DisEnchantRandomItemAction::Execute(Event event)
     for (auto& item: items)
     {
         // don't touch rare+ items if with real player/guild
-        if ((ai->HasRealPlayerMaster() || ai->IsInRealGuild()) && item->GetProto()->Quality > ITEM_QUALITY_UNCOMMON)
+        if ((ai->HasRealPlayerMaster() || ai->IsInRealGuild()) && ObjectMgr::GetItemPrototype(item)->Quality > ITEM_QUALITY_UNCOMMON)
             return false;
 
-        bool used = CastCustomSpellAction::Execute(Event("disenchant random item", "13262 " + chat->formatQItem(item->GetEntry())));
+        bool used = CastCustomSpellAction::Execute(Event("disenchant random item", "13262 " + chat->formatQItem(item)));
 
         if (used)
             ai->SetNextCheckDelay(3.0 * IN_MILLISECONDS);
