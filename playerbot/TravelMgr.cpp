@@ -23,6 +23,7 @@
 
 #include "GameEvents/GameEventMgr.h"
 
+
 using namespace ai;
 using namespace MaNGOS;
 
@@ -1239,7 +1240,7 @@ bool GrindTravelDestination::isActive(Player* bot)
 
     WorldPosition botPos(bot);
     
-    if (!AI_VALUE(bool, "should get money") && !isOut(&botPos) && !urand(0,10)) 
+    if (!urand(0, 10) && !AI_VALUE(bool, "should get money") && !isOut(&botPos))
         return false;
 
     if (AI_VALUE(bool, "should sell"))
@@ -1766,34 +1767,43 @@ void TravelMgr::loadAreaLevels()
     {
         QueryResult* result = PlayerbotDatabase.PQuery(query.c_str());
 
+        vector<uint32> loadedAreas;
+
         if (result)
         {
-            BarGoLink bar(result->GetRowCount());
+            BarGoLink bar(result->GetRowCount());            
+
             do
             {
                 Field* fields = result->Fetch();
                 bar.step();
 
                 areaLevels[fields[0].GetUInt32()] = fields[1].GetInt32();
+
+                loadedAreas.push_back(fields[0].GetUInt32());
             } while (result->NextRow());
 
             delete result;
 
             sLog.outString(">> Loaded " SIZEFMTD " area levels.", areaLevels.size());
         }
-        else
+
+        BarGoLink bar(sAreaStore.GetNumRows());
+        for (uint32 i = 0; i < sAreaStore.GetNumRows(); ++i)    // areaflag numbered from 0
         {
-            sLog.outString();
-            sLog.outErrorDb(">> Reloading area levels.");
-
-            for (uint32 i = 0; i <= sAreaStore.GetNumRows(); i++)
+            bar.step();
+            if (AreaTableEntry const* area = sAreaStore.LookupEntry(i))
             {
-                int32 level = sTravelMgr.getAreaLevel(i);
+                if (std::find(loadedAreas.begin(), loadedAreas.end(), area->ID) == loadedAreas.end())
+                {
+                    int32 level = sTravelMgr.getAreaLevel(area->ID);
 
-                PlayerbotDatabase.PExecute("INSERT INTO `ai_playerbot_zone_level` (`id`, `level`) VALUES ('%d', '%d')"
-                    , i, level);
+                    PlayerbotDatabase.PExecute("INSERT INTO `ai_playerbot_zone_level` (`id`, `level`) VALUES ('%d', '%d')", area->ID, level);
+                }
             }
         }
+        if(areaLevels.size() > loadedAreas.size())
+            sLog.outString(">> Generated " SIZEFMTD " areas.", areaLevels.size()- loadedAreas.size());
     }
 }
 
@@ -1936,6 +1946,12 @@ void TravelMgr::LoadQuestTravelTable()
 
     struct unit { uint64 guid; uint32 type; uint32 entry; uint32 map; float  x; float  y; float  z;  float  o; uint32 c; } t_unit;
     vector<unit> units;
+
+    sLog.outString("Loading trainable spells.");
+    if (GAI_VALUE(trainableSpellMap, "trainable spell map").empty())
+    {
+
+    }
 
     sLog.outString("Loading area levels.");
     loadAreaLevels();
@@ -3532,15 +3548,17 @@ vector<TravelDestination*> TravelMgr::getGrindTravelDestinations(Player* bot, bo
 
     vector<TravelDestination*> retTravelLocations;
 
+    uint32 checked = 0;
+
     for (auto& dest : grindMobs)
     {
+        if (maxDistance > 0 && dest->distanceTo(&botLocation) > maxDistance)
+            continue;
+
         if (!ignoreInactive && !dest->isActive(bot))
             continue;
 
         if (dest->isFull(ignoreFull))
-            continue;
-
-        if (maxDistance > 0 && dest->distanceTo(&botLocation) > maxDistance)
             continue;
 
         // ignore PvP Halls for now
@@ -3549,6 +3567,9 @@ vector<TravelDestination*> TravelMgr::getGrindTravelDestinations(Player* bot, bo
                 continue;
 
         retTravelLocations.push_back(dest);
+
+        if (checked++ > 50)
+            break;
     }
 
     return retTravelLocations;
