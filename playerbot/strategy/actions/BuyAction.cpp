@@ -77,31 +77,16 @@ bool BuyAction::Execute(Event event)
 
                     NeedMoneyFor needMoneyFor = NeedMoneyFor::none;
 
-                    switch (usage)
-                    {
-                    case ITEM_USAGE_REPLACE:
-                    case ITEM_USAGE_EQUIP:
-                        needMoneyFor = NeedMoneyFor::gear;
-                        break;
-                    case ITEM_USAGE_AMMO:
-                        needMoneyFor = NeedMoneyFor::ammo;
-                        break;
-                    case ITEM_USAGE_QUEST:
-                        needMoneyFor = NeedMoneyFor::anything;
-                        break;
-                    case ITEM_USAGE_USE:
-                        needMoneyFor = NeedMoneyFor::consumables;
-                        break;
-                    case ITEM_USAGE_SKILL:
-                        needMoneyFor = NeedMoneyFor::tradeskill;
-                        break;
-                    }
+                    unordered_map <ItemUsage, uint32> freeMoney;
 
-                    if (needMoneyFor == NeedMoneyFor::none)
-                        break;
+                    freeMoney[ITEM_USAGE_EQUIP] = freeMoney[ITEM_USAGE_REPLACE] = AI_VALUE2(uint32, "free money for", (uint32)NeedMoneyFor::gear);
+                    freeMoney[ITEM_USAGE_USE] = AI_VALUE2(uint32, "free money for", (uint32)NeedMoneyFor::consumables);
+                    freeMoney[ITEM_USAGE_SKILL] = freeMoney[ITEM_USAGE_DISENCHANT] = AI_VALUE2(uint32, "free money for", (uint32)NeedMoneyFor::tradeskill);
+                    freeMoney[ITEM_USAGE_AMMO] = AI_VALUE2(uint32, "free money for", (uint32)NeedMoneyFor::ammo);
+                    freeMoney[ITEM_USAGE_QUEST] = AI_VALUE2(uint32, "free money for", (uint32)NeedMoneyFor::anything);
 
-                    if (AI_VALUE2(uint32, "free money for", uint32(needMoneyFor)) < price)
-                        break;
+                    if (freeMoney.find(usage) == freeMoney.end() || price > freeMoney[usage])
+                        continue;
 
                     result |= BuyItem(tItems, vendorguid, proto);
 #ifndef MANGOSBOT_ZERO
