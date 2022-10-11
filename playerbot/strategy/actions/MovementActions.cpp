@@ -139,7 +139,8 @@ bool MovementAction::FlyDirect(WorldPosition &startPosition, WorldPosition &endP
     if (!startPosition.isOutside())
         return false;
 
-    float totalDistance = startPosition.distance(endPosition);    //Total distance to where we want to go
+    float totalDistance = startPosition.distance(endPosition);  //Total distance to where we want to go
+    float minDist = sPlayerbotAIConfig.targetPosRecalcDistance; //Minium distance a bot should move.
     float maxDist = sPlayerbotAIConfig.reactDistance;           //Maxium distance a bot can move in one single action.
 
     if (totalDistance < maxDist && !bot->IsFlying())
@@ -166,12 +167,24 @@ bool MovementAction::FlyDirect(WorldPosition &startPosition, WorldPosition &endP
             if (p->getMapId() == startPosition.getMapId() && p->isOutside())
             {
                 movePosition = *p;
+                totalDistance = startPosition.distance(movePosition);
                 break;
             }
     }
 
     if (movePosition.getMapId() != startPosition.getMapId() || !movePosition.isOutside())
         return false;
+
+    if (movePosition.distance(startPosition) < minDist)
+    {
+        movePath.clear();
+        AI_VALUE(LastMovement&, "last movement").setPath(movePath);
+
+        if (movePosition.currentHeight() < minDist)
+            return false;
+        else
+            movePosition.setZ(movePosition.getHeight());
+    }
 
     uint32 flyHeight = 0;
     float originalZ = endPosition.getZ();
