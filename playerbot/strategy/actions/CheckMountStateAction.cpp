@@ -392,7 +392,12 @@ bool CheckMountStateAction::Mount()
     bool didMount = false;
 
     if (bot->GetMapId() == 530 || bot->GetMapId() == 571)
-        didMount = MountWithBestMount(true);
+    {
+        uint32 zone, area;
+        bot->GetZoneAndAreaId(zone, area);
+        if (bot->CanStartFlyInArea(bot->GetMapId(), zone, area, false))
+            didMount = MountWithBestMount(true);
+    }
 
     if (!didMount)
         didMount = MountWithBestMount();
