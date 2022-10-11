@@ -48,7 +48,9 @@ bool SeeSpellAction::Execute(Event event)
     Player* master = ai->GetMaster();
 
     p.rpos(0);
+#ifndef MANGOSBOT_TWO
     p >> spellId;
+#endif
 
 
 #ifdef MANGOSBOT_ONE
@@ -56,6 +58,7 @@ bool SeeSpellAction::Execute(Event event)
 #endif
 #ifdef MANGOSBOT_TWO
     p >> cast_count;
+    p >> spellId;
     p >> cast_flags;     
 #endif
 
