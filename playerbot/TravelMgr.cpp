@@ -1002,11 +1002,31 @@ bool QuestRelationTravelDestination::isActive(Player* bot) {
 
         if (AI_VALUE(bool, "can fight equal"))
         {
-            if (dialogStatus != DIALOG_STATUS_AVAILABLE)
+            if (AI_VALUE(uint8, "free quest log slots") < 5)
                 return false;
 
-            if (AI_VALUE(uint8, "free quest log slots") < 10)
-                return false;
+            if (dialogStatus != DIALOG_STATUS_AVAILABLE)
+            {
+#ifndef MANGOSBOT_TWO
+                if (dialogStatus != DIALOG_STATUS_CHAT)
+#else
+                if (dialogStatus != DIALOG_STATUS_LOW_LEVEL_AVAILABLE)
+#endif
+                {
+                    bool hasGoodReward = false;
+                    for (uint8 i = 0; i < questTemplate->GetRewChoiceItemsCount(); ++i)
+                    {
+                        ItemUsage usage = AI_VALUE2_LAZY(ItemUsage, "item usage", questTemplate->RewChoiceItemId[i]);
+                        if (usage == ITEM_USAGE_EQUIP || usage == ITEM_USAGE_REPLACE)
+                        {
+                            hasGoodReward = true;
+                            break;
+                        }
+                    }
+                    if (!hasGoodReward)
+                        return false;
+                }
+            }
         }
         else
         {
@@ -1145,10 +1165,10 @@ bool QuestObjectiveTravelDestination::isActive(Player* bot) {
         }
     }
 
-    if (entry > 0)
-    {
-        return !GuidPosition(HIGHGUID_UNIT, entry).IsHostileTo(bot);
-    }
+    //if (entry > 0)
+    //{
+    //    return GuidPosition(HIGHGUID_UNIT, entry).IsHostileTo(bot);
+    //}
 
     return true;
 }

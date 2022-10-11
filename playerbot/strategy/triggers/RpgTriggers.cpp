@@ -80,6 +80,12 @@ bool RpgStartQuestTrigger::IsActive()
     {
         if (AI_VALUE2(bool, "can accept quest npc", guidP.GetEntry()))
             return true;
+
+        if (!AI_VALUE2(bool, "can accept quest low level npc", guidP.GetEntry()) )
+            return false;
+
+        if (guidP.GetEntry() == AI_VALUE(TravelTarget*, "travel target")->getEntry())
+            return true;
     }
     else
     {
