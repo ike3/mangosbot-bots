@@ -772,7 +772,7 @@ void PlayerbotAI::HandleBotOutgoingPacket(const WorldPacket& packet)
         {
             p.rpos(0);
             uint8 msgtype, chatTag;
-            uint32 lang, textLen, nameLen, unused;
+            uint32 lang, textLen, unused;
             ObjectGuid guid1, guid2;
             std::string name, chanName, message;
             p >> msgtype >> lang;
@@ -2957,7 +2957,7 @@ void PlayerbotAI::WaitForSpellCast(Spell *spell)
         castTime = 1000.0f;
 
     uint32 globalCooldown = CalculateGlobalCooldown(pSpellInfo->Id);
-    if (castTime < globalCooldown)
+    if (castTime < (int32)globalCooldown)
         castTime = globalCooldown;
 
     // fix cannibalize
@@ -3217,6 +3217,83 @@ enum ActivityType
 
 */
 
+//Returns the lower and upper bracket for bots to be active.
+//Ie. 10,20 means all bots in this bracket will be inactive below 10% activityMod, all bots in this bracket will be active above 20% activityMod and scale between those values.
+pair<uint32, uint32> PlayerbotAI::GetPriorityBracket(bool& shouldDetailMove)
+{
+    if (sServerFacade.IsInCombat(bot))
+        return { 0,10 };
+
+    if (bot->InBattleGroundQueue()) //In bg queue. Speed up bg queue/join.
+        return { 0,20 };
+
+    bool isLFG = false;
+#ifdef MANGOSBOT_TWO
+    /*if (group)
+    {
+    if (sLFGMgr.GetQueueInfo(group->GetObjectGuid()))
+    {
+    isLFG = true;
+    }
+    }
+    if (sLFGMgr.GetQueueInfo(bot->GetObjectGuid()))
+    {
+    isLFG = true;
+    }*/
+#endif
+
+    if (isLFG)
+        return { 0,30 };
+
+    if (HasPlayerNearby(300.0f)) //Player is near. Always active.
+        return { 0,40 };
+
+    // friends always active
+    for (auto& player : sRandomPlayerbotMgr.GetPlayers())
+    {
+        if (!player || !player->IsInWorld())
+            continue;
+
+        if (player->GetSocial()->HasFriend(bot->GetObjectGuid()))
+            return { 0,50 };
+    }
+
+    // real guild always active if member+
+    if (IsInRealGuild())
+        return { 0,50 };
+
+    //Bots don't need to move using pathfinder.
+    shouldDetailMove = false;
+
+    //All exceptions are now done. 
+    //Below is code to have a specified % of bots active at all times.
+    //The default is 10%. With 0.1% of all bots going active or inactive each minute.
+    if (sPlayerbotAIConfig.botActiveAlone <= 0)
+        return { 100,100 };
+
+    if (sPlayerbotAIConfig.botActiveAlone >= 100)
+        return { 0,0 };
+
+    //If has real players - slow down continents without player
+    //This means we first disable bots in a different continent/area.
+    if (!sRandomPlayerbotMgr.GetPlayers().empty())
+    {
+        if (bot->GetMap() && !bot->GetMap()->HasRealPlayers() && bot->GetMap()->IsContinent())
+            return { 80,100 };
+        else if (bot->GetMap() && bot->GetMap()->IsContinent())
+        {
+            ContinentArea currentArea = sMapMgr.GetContinentInstanceId(bot->GetMapId(), bot->GetPositionX(), bot->GetPositionY());
+            if (currentArea == MAP_NO_AREA)
+                return { 80, 100 };
+            else if (!bot->GetMap()->HasActiveAreas(currentArea))
+                return { 70,100 };
+        }
+    }
+
+
+    return { 50,100 };
+}
+
 bool PlayerbotAI::AllowActive(ActivityType activityType)
 {
     //General exceptions
@@ -3242,115 +3319,33 @@ bool PlayerbotAI::AllowActive(ActivityType activityType)
 
             if (!member->GetPlayerbotAI() || (member->GetPlayerbotAI() && member->GetPlayerbotAI()->HasRealPlayerMaster()))
                 return true;
-
-            /*if (group->IsLeader(member->GetObjectGuid()))
-                if (!member->GetPlayerbotAI()->AllowActivity(PARTY_ACTIVITY))
-                    return false;*/
         }
     }
 
     if (!WorldPosition(bot).isOverworld()) // bg, raid, dungeon
         return true;
 
-    if (activityType != OUT_OF_PARTY_ACTIVITY && activityType != PACKET_ACTIVITY) //Is in combat. Defend yourself.
-        if (sServerFacade.IsInCombat(bot))
-            return true;
+    if (HasPlayerNearby(sPlayerbotAIConfig.sightDistance)) //Player is near. Always active.
+        return true;
 
     //END ALWAYS ACTIVE
 
-    uint8 priorityType = 0;
+    bool shouldDetailMove = true;
+    pair<uint8, uint8> priorityBracket = GetPriorityBracket(shouldDetailMove);
 
-    if (bot->InBattleGroundQueue()) //In bg queue. Speed up bg queue/join.
-        priorityType = 1;
+    if (activityType == DETAILED_MOVE_ACTIVITY && !shouldDetailMove)
+        return false;   
     
-    if (!priorityType)
-    {
-        bool isLFG = false;
-#ifdef MANGOSBOT_TWO
-        /*if (group)
-        {
-            if (sLFGMgr.GetQueueInfo(group->GetObjectGuid()))
-            {
-                isLFG = true;
-            }
-        }
-        if (sLFGMgr.GetQueueInfo(bot->GetObjectGuid()))
-        {
-            isLFG = true;
-        }*/
-#endif
+    float activityPercentage = sRandomPlayerbotMgr.getActivityPercentage(); //Activity between 0 and 100.
 
-        if (isLFG)
-            priorityType = 2;
-    }
-
-    if(!priorityType)    
-        if (HasPlayerNearby(300.0f)) //Player is near. Always active.
-            priorityType = 3;
-
-    // friends always active
-    if (!priorityType)
-    for (auto& player : sRandomPlayerbotMgr.GetPlayers())
-    {
-        if (!player || !player->IsInWorld())
-            continue;
-
-        if (player->GetSocial()->HasFriend(bot->GetObjectGuid()))
-            priorityType = 4;
-    }
-
-    // real guild always active if member+
-    if (!priorityType)
-        if (IsInRealGuild())
-            priorityType = 5;
-
-    //Bots don't need to move using pathfinder.
-    if (!priorityType)
-        if (activityType == DETAILED_MOVE_ACTIVITY)
-            return false;
-
-    //All exceptions are now done. 
-    //Below is code to have a specified % of bots active at all times.
-    //The default is 10%. With 0.1% of all bots going active or inactive each minute.
-    if (!priorityType)
-        if (sPlayerbotAIConfig.botActiveAlone <= 0)
-            return false;
-
-    if (sPlayerbotAIConfig.botActiveAlone >= 100)
+    if (priorityBracket.first >= activityPercentage)
+        return false;
+    if (priorityBracket.second <= activityPercentage)
         return true;
 
-    //If has real players - slow down continents without player
-    //This means we first disable bots in a different continent/area.
-    if (!priorityType)
-        if (!sRandomPlayerbotMgr.GetPlayers().empty())
-        {
-            if (bot->GetMap() && !bot->GetMap()->HasRealPlayers() && bot->GetMap()->IsContinent())
-                priorityType = 8;
-            else if (bot->GetMap() && bot->GetMap()->IsContinent())
-            {
-                ContinentArea currentArea = sMapMgr.GetContinentInstanceId(bot->GetMapId(), bot->GetPositionX(), bot->GetPositionY());
-                if (currentArea == MAP_NO_AREA)
-                    priorityType = 8;
-                else if (!bot->GetMap()->HasActiveAreas(currentArea))
-                    priorityType = 7;
-            }
-        }
+    float activePerc = (activityPercentage - priorityBracket.first) / (priorityBracket.second - priorityBracket.first);
 
-    if (!priorityType)
-        priorityType = 6;
-
-    float maxPriorityType = 8;
-
-    float mod = sRandomPlayerbotMgr.getActivityMod(); //Activity between 0 and 1.
-
-    float priorityBracket = priorityType / maxPriorityType; //0.125 for 1, 1 for 8 
-
-    if (mod > priorityBracket) //Enable all bots above the current priority mod bracket.
-        return true;
-
-    float priorityMod = (float)1-(priorityBracket - mod); //Scale the bots active by how much the current mod is below the priority bracket.
-
-    uint32 activePerc = (priorityType > 5 ? sPlayerbotAIConfig.botActiveAlone : 100) * priorityMod;
+    activePerc *= (priorityBracket.second == 100) ? sPlayerbotAIConfig.botActiveAlone : 100;
 
     uint32 ActivityNumber = GetFixedBotNumer(BotTypeNumber::ACTIVITY_TYPE_NUMBER, 100, activePerc * 0.01f); //The last number if the amount it cycles per min. Currently set to 1% of the active bots.
 
