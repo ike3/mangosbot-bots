@@ -424,8 +424,8 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed, bool minimal)
 
     if (activityPercentage >= 100.0f || activityPercentage <= 0.0f) pid.reset(); //Stop integer buildup during max/min activity
 
-    //    % increase/decrease                   wanted diff                                         , current diff
-    float activityPercentageMod = pid.calculate(sRandomPlayerbotMgr.GetPlayers().empty() ? 200 : 100, sWorld.GetCurrentDiff());
+    //    % increase/decrease                   wanted diff                                         , avg diff
+    float activityPercentageMod = pid.calculate(sRandomPlayerbotMgr.GetPlayers().empty() ? 200 : 100, sWorld.GetAverageDiff());
 
     activityPercentage += activityPercentageMod;
 
