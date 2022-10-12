@@ -1748,7 +1748,7 @@ int32 TravelMgr::getAreaLevel(uint32 area_id)
         ReputationRank reactionHum = PlayerbotAI::GetFactionReaction(humanFaction, factionEntry);
         ReputationRank reactionOrc = PlayerbotAI::GetFactionReaction(orcFaction, factionEntry);
 
-        if (reactionHum >= REP_NEUTRAL || reactionOrc >= REP_NEUTRAL)
+        if (reactionHum > REP_NEUTRAL || reactionOrc > REP_NEUTRAL)
             continue;
 
         level += cInfo->MaxLevel;
