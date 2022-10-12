@@ -395,7 +395,9 @@ bool CheckMountStateAction::Mount()
     {
         uint32 zone, area;
         bot->GetZoneAndAreaId(zone, area);
+#ifdef MANGOSBOT_TWO
         if (bot->CanStartFlyInArea(bot->GetMapId(), zone, area, false))
+#endif
             didMount = MountWithBestMount(true);
     }
 
