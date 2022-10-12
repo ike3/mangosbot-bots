@@ -117,6 +117,13 @@ bool MoveToRpgTargetAction::Execute(Event event)
     float y = wo->GetPositionY();
     float z = wo->GetPositionZ();
     float mapId = wo->GetMapId();
+
+    if (ai->HasStrategy("debug move", BOT_STATE_NON_COMBAT))
+    {
+        string name = chat->formatWorldobject(wo);
+
+        ai->Poi(x, y, name);
+    }
 	
 	if (sPlayerbotAIConfig.RandombotsWalkingRPG)
         if (!bot->GetTerrain()->IsOutdoors(bot->GetPositionX(), bot->GetPositionY(), bot->GetPositionZ()))

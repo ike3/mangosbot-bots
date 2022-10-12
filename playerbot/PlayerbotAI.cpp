@@ -3900,6 +3900,22 @@ void PlayerbotAI::Ping(float x, float y)
     }
 }
 
+void PlayerbotAI::Poi(float x, float y, string icon_name, Player* player, uint32 flags, uint32 icon, uint32 icon_data)
+{
+    if (!player)
+        player = master;
+
+    WorldPacket data(SMSG_GOSSIP_POI, (4 + 4 + 4 + 4 + 4 + 10)); // guess size
+    data << flags;
+    data << x;
+    data << y;
+    data << icon;
+    data << icon_data;
+    data << icon_name;
+
+    sServerFacade.SendPacket(player, data);
+}
+
 //Find Poison ...Natsukawa
 Item* PlayerbotAI::FindPoison() const
 {

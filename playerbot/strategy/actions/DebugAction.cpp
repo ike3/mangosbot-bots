@@ -70,6 +70,38 @@ bool DebugAction::Execute(Event event)
 
         return true;
     }
+    else if (text.find("poi ") != std::string::npos)
+    {        
+        WorldPosition botPos = WorldPosition(bot);
+
+        WorldPosition poiPoint = botPos;
+        string name = "bot";
+
+        vector<string> args = Qualified::getMultiQualifiers(text.substr(4));
+        TravelDestination* dest = ChooseTravelTargetAction::FindDestination(bot, args[0]);
+
+        if (dest)
+        {
+            vector <WorldPosition*> points = dest->nextPoint(&botPos, true);
+
+            if (!points.empty())
+            {
+                poiPoint = *points.front();
+                name = dest->getTitle();
+            }
+        }
+
+        if (args.size() == 1)
+            args.push_back("99");
+        if (args.size() == 2)
+            args.push_back("7");
+        if (args.size() == 3)
+            args.push_back("0");
+
+        ai->Poi(poiPoint.coord_x, poiPoint.coord_y, name, nullptr, stoi(args[1]), stoi(args[2]), stoi(args[3]));
+
+        return true;
+    }
     else if (text.find("printmap") != std::string::npos)
     {
         sTravelNodeMap.printMap();
