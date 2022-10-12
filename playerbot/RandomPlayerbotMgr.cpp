@@ -1938,6 +1938,19 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot)
     Refresh(bot);
 }
 
+void RandomPlayerbotMgr::InstaRandomize(Player* bot)
+{
+    if (GetValue(bot, "init"))
+        return;
+
+    SetValue(bot, "init", 1);
+
+    sRandomPlayerbotMgr.Randomize(bot);
+
+    if(bot->GetLevel() > CONFIG_UINT32_START_PLAYER_LEVEL)
+        sRandomPlayerbotMgr.RandomTeleportForLevel(bot, false);
+}
+
 void RandomPlayerbotMgr::Randomize(Player* bot)
 {
     if (!bot || !bot->IsInWorld() || bot->IsBeingTeleported() || bot->GetSession()->isLogingOut())
@@ -2000,7 +2013,7 @@ void RandomPlayerbotMgr::RandomizeFirst(Player* bot)
         maxLevel = max(sPlayerbotAIConfig.randomBotMinLevel, min(playersLevel, sWorld.getConfig(CONFIG_UINT32_MAX_PLAYER_LEVEL)));
 
 	PerformanceMonitorOperation *pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "RandomizeFirst");
-    uint32 level = urand(std::max(uint32(5), sPlayerbotAIConfig.randomBotMinLevel), maxLevel);
+    uint32 level = urand(std::max(uint32(sWorld.getConfig(CONFIG_UINT32_START_PLAYER_LEVEL)), sPlayerbotAIConfig.randomBotMinLevel), maxLevel);
 
 #ifdef MANGOSBOT_TWO
     if (bot->getClass() == CLASS_DEATH_KNIGHT)
@@ -2024,6 +2037,9 @@ void RandomPlayerbotMgr::RandomizeFirst(Player* bot)
     if (bot->getClass() == CLASS_DEATH_KNIGHT && level < 60)
         level = 60;
 #endif
+
+    if (level == CONFIG_UINT32_START_PLAYER_LEVEL)
+        return;
 
     SetValue(bot, "level", level);
     PlayerbotFactory factory(bot, level);
@@ -2225,7 +2241,7 @@ uint32 RandomPlayerbotMgr::GetEventValue(uint32 bot, string event)
         }
     }*/
 
-    if ((time(0) - e.lastChangeTime) >= e.validIn && event != "specNo" && event != "specLink")
+    if ((time(0) - e.lastChangeTime) >= e.validIn && event != "specNo" && event != "specLink" && event != "init")
         e.value = 0;
 
     return e.value;

@@ -103,6 +103,7 @@ public:
     bool randomBotShowHelmet;
     bool randomBotShowCloak;
     bool disableRandomLevels;
+    bool instantRandomize;
     bool gearscorecheck;
 	bool randomBotPreQuests;
     uint32 playerbotsXPrate;

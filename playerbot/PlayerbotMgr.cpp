@@ -410,6 +410,11 @@ void PlayerbotHolder::OnBotLogin(Player * const bot)
                 new_channel->Join(bot, "");
         }
     }
+
+    if (sPlayerbotAIConfig.instantRandomize && !sPlayerbotAIConfig.disableRandomLevels && sRandomPlayerbotMgr.IsRandomBot(bot))
+    {
+        sRandomPlayerbotMgr.InstaRandomize(bot);
+    }
 }
 
 string PlayerbotHolder::ProcessBotCommand(string cmd, ObjectGuid guid, ObjectGuid masterguid, bool admin, uint32 masterAccountId, uint32 masterGuildId)
