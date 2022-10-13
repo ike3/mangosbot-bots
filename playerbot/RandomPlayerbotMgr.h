@@ -144,7 +144,7 @@ class RandomPlayerbotMgr : public PlayerbotHolder
 
     private:
         //.rndbot pid 0.001, 0.001, 0.0001
-        botPID pid = botPID(1, 1, -1, 0.0001, 0.0001, 0.001);
+        botPID pid = botPID(1, 50, -50, 0.001, 0.001, 0.01);
         float activityMod = 0.25;
         uint32 GetEventValue(uint32 bot, string event);
         string GetEventData(uint32 bot, string event);

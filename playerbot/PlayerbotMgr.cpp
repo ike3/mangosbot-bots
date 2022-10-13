@@ -411,7 +411,7 @@ void PlayerbotHolder::OnBotLogin(Player * const bot)
         }
     }
 
-    if (sPlayerbotAIConfig.instantRandomize && !sPlayerbotAIConfig.disableRandomLevels && sRandomPlayerbotMgr.IsRandomBot(bot))
+    if (sPlayerbotAIConfig.instantRandomize && !sPlayerbotAIConfig.disableRandomLevels && sRandomPlayerbotMgr.IsRandomBot(bot) && !bot->GetTotalPlayedTime())
     {
         sRandomPlayerbotMgr.InstaRandomize(bot);
     }

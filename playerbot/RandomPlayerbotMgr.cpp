@@ -427,7 +427,7 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed, bool minimal)
     //    % increase/decrease                   wanted diff                                         , avg diff
     float activityPercentageMod = pid.calculate(sRandomPlayerbotMgr.GetPlayers().empty() ? 200 : 100, sWorld.GetAverageDiff());
 
-    activityPercentage += activityPercentageMod;
+    activityPercentage = activityPercentageMod + 50;
 
     //Cap the percentage between 0 and 100.
     activityPercentage = std::max(0.0f, std::min(100.0f, activityPercentage));
@@ -1940,11 +1940,6 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot)
 
 void RandomPlayerbotMgr::InstaRandomize(Player* bot)
 {
-    if (GetValue(bot, "init"))
-        return;
-
-    SetValue(bot, "init", 1);
-
     sRandomPlayerbotMgr.Randomize(bot);
 
     if(bot->GetLevel() > CONFIG_UINT32_START_PLAYER_LEVEL)
