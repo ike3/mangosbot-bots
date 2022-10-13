@@ -3325,7 +3325,7 @@ bool PlayerbotAI::AllowActive(ActivityType activityType)
     if (!WorldPosition(bot).isOverworld()) // bg, raid, dungeon
         return true;
 
-    if (HasPlayerNearby(sPlayerbotAIConfig.sightDistance)) //Player is near. Always active.
+    if (HasPlayerNearby(250.0f)) //Player is near. Always active.
         return true;
 
     //END ALWAYS ACTIVE
