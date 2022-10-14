@@ -152,10 +152,10 @@ void activateCheckPlayersThread()
 class botPIDImpl
 {
 public:
-    botPIDImpl(double dt, double max, double min, double Kp, double Kd, double Ki);
+    botPIDImpl(double dt, double max, double min, double Kp, double Ki, double Kd);
     ~botPIDImpl();
     double calculate(double setpoint, double pv);
-    void adjust(double Kp, double Kd, double Ki) {_Kp = Kp;_Kd = Kd;_Ki = Ki;}
+    void adjust(double Kp, double Ki, double Kd) { _Kp = Kp; _Ki = Ki; _Kd = Kd; }
     void reset() { _integral = 0; }
 
 private:
@@ -163,20 +163,20 @@ private:
     double _max;
     double _min;
     double _Kp;
-    double _Kd;
     double _Ki;
+    double _Kd;
     double _pre_error;
     double _integral;
 };
 
 
-botPID::botPID(double dt, double max, double min, double Kp, double Kd, double Ki)
+botPID::botPID(double dt, double max, double min, double Kp, double Ki, double Kd)
 {
-    pimpl = new botPIDImpl(dt, max, min, Kp, Kd, Ki);
+    pimpl = new botPIDImpl(dt, max, min, Kp, Ki, Kd);
 }
-void botPID::adjust(double Kp, double Kd, double Ki)
+void botPID::adjust(double Kp, double Ki, double Kd)
 {
-    pimpl->adjust(Kp, Kd, Ki);
+    pimpl->adjust(Kp, Ki, Kd);
 }
 void botPID::reset()
 {
@@ -195,13 +195,13 @@ botPID::~botPID()
 /**
  * Implementation
  */
-botPIDImpl::botPIDImpl(double dt, double max, double min, double Kp, double Kd, double Ki) :
+botPIDImpl::botPIDImpl(double dt, double max, double min, double Kp, double Ki, double Kd) :
     _dt(dt),
     _max(max),
     _min(min),
     _Kp(Kp),
-    _Kd(Kd),
     _Ki(Ki),
+    _Kd(Kd),
     _pre_error(0),
     _integral(0)
 {
@@ -275,6 +275,10 @@ RandomPlayerbotMgr::RandomPlayerbotMgr() : PlayerbotHolder(), processTicks(0), l
             }
         }
 
+        //1) Proportional: Amount activity is adjusted based on diff being above or below wanted diff. (100 wanted diff & 0.1 p = 150 diff = -5% activity)
+        //2) Integral: Same as proportional but builds up each tick. (100 wanted diff & 0.01 i = 150 diff = -0.5% activity each tick)
+        //3) Derative: Based on speed of diff. (+5 diff last tick & 0.05 d = -0.25% activity)
+        pid.adjust(0.3, 0.001, 0.1);
         BgCheckTimer = 0;
         LfgCheckTimer = 0;
         PlayersCheckTimer = 0;
@@ -422,10 +426,10 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed, bool minimal)
   
     float activityPercentage = getActivityPercentage();
 
-    if (activityPercentage >= 100.0f || activityPercentage <= 0.0f) pid.reset(); //Stop integer buildup during max/min activity
+    //if (activityPercentage >= 100.0f || activityPercentage <= 0.0f) pid.reset(); //Stop integer buildup during max/min activity
 
     //    % increase/decrease                   wanted diff                                         , avg diff
-    float activityPercentageMod = pid.calculate(sRandomPlayerbotMgr.GetPlayers().empty() ? 200 : 100, sWorld.GetAverageDiff());
+    float activityPercentageMod = pid.calculate(sRandomPlayerbotMgr.GetPlayers().empty() ? sPlayerbotAIConfig.diffEmpty : sPlayerbotAIConfig.diffWithPlayer, sWorld.GetAverageDiff());
 
     activityPercentage = activityPercentageMod + 50;
 
@@ -2349,7 +2353,35 @@ bool RandomPlayerbotMgr::HandlePlayerbotConsoleCommand(ChatHandler* handler, cha
     {
         string pids = cmd.substr(4);
         vector<string> pid = Qualified::getMultiQualifiers(pids);
+
+        if (pid.size() == 0)
+            pid.push_back("0");
+        if (pid.size() == 1)
+            pid.push_back("0");
+        if (pid.size() == 2)
+            pid.push_back("0");
         sRandomPlayerbotMgr.pid.adjust(stof(pid[0]), stof(pid[1]), stof(pid[2]));
+
+        sLog.outString("Pid set to p:%f i:%f d:%f", stof(pid[0]), stof(pid[1]), stof(pid[2]));
+
+        return true;
+    }
+
+
+    if (cmd.find("diff ") != std::string::npos)
+    {
+        string diffs = cmd.substr(4);
+        vector<string> diff = Qualified::getMultiQualifiers(diffs);
+        if (diff.size() == 0)
+            diff.push_back("100");
+        if (diff.size() == 1)
+            diff.push_back(diff[0]);
+        sPlayerbotAIConfig.diffWithPlayer = stoi(diff[0]);
+        sPlayerbotAIConfig.diffEmpty = stoi(diff[1]);
+
+        sLog.outString("Diff set to %d (player), %d (empty)", stoi(diff[0]), stoi(diff[1]));
+
+        return true;
     }
 
     map<string, ConsoleCommandHandler> handlers;

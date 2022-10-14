@@ -43,8 +43,8 @@ public:
     // dt -  loop interval time
     // max - maximum value of manipulated variable
     // min - minimum value of manipulated variable
-    botPID(double dt, double max, double min, double Kp, double Kd, double Ki);
-    void adjust(double Kp, double Kd, double Ki);
+    botPID(double dt, double max, double min, double Kp, double Ki, double Kd);
+    void adjust(double Kp, double Ki, double Kd);
     void reset();
    
     double calculate(double setpoint, double pv);
@@ -143,8 +143,8 @@ class RandomPlayerbotMgr : public PlayerbotHolder
 	    virtual void OnBotLoginInternal(Player * const bot);
 
     private:
-        //.rndbot pid 0.001, 0.001, 0.0001
-        botPID pid = botPID(1, 50, -50, 0.001, 0.001, 0.01);
+        //pid values are set in constructor
+        botPID pid = botPID(1, 50, -50, 0, 0, 0);
         float activityMod = 0.25;
         uint32 GetEventValue(uint32 bot, string event);
         string GetEventData(uint32 bot, string event);

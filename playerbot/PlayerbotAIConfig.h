@@ -108,6 +108,8 @@ public:
 	bool randomBotPreQuests;
     uint32 playerbotsXPrate;
     uint32 botActiveAlone;
+    uint32 diffWithPlayer;
+    uint32 diffEmpty;
     uint32 minEnchantingBotLevel;
     uint32 randombotStartingLevel;
     bool randomBotSayWithoutMaster;

@@ -306,7 +306,9 @@ bool PlayerbotAIConfig::Initialize()
     instantRandomize = config.GetBoolDefault("AiPlayerbot.InstantRandomize", false);
     randomBotRandomPassword = config.GetBoolDefault("AiPlayerbot.RandomBotRandomPassword", true);
     playerbotsXPrate = config.GetIntDefault("AiPlayerbot.KillXPRate", 1);
-    botActiveAlone = config.GetIntDefault("AiPlayerbot.botActiveAlone", 10); //hidden config
+    botActiveAlone = config.GetIntDefault("AiPlayerbot.botActiveAlone", 10);
+    diffWithPlayer = config.GetIntDefault("AiPlayerbot.DiffWithPlayer", 100);
+    diffEmpty = config.GetIntDefault("AiPlayerbot.DiffEmpty", 200);
     RandombotsWalkingRPG = config.GetBoolDefault("AiPlayerbot.RandombotsWalkingRPG", false);
     RandombotsWalkingRPGInDoors = config.GetBoolDefault("AiPlayerbot.RandombotsWalkingRPG.InDoors", false);
     minEnchantingBotLevel = config.GetIntDefault("AiPlayerbot.minEnchantingBotLevel", 60);
