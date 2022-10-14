@@ -156,8 +156,13 @@ bool FindCorpseAction::Execute(Event event)
     }
     else
     {
+#ifndef MANGOSBOT_ZERO
+        if (bot->IsMovingIgnoreFlying())
+            moved = true;
+#else
         if (bot->IsMoving())
             moved = true;
+#endif
         else
         {
             if (deadTime < 10 * MINUTE && dCount < 5) //Look for corpse up to 30 minutes.
