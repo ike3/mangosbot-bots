@@ -1091,9 +1091,15 @@ bool BGStatusAction::Execute(Event event)
 #ifdef CMANGOS
 #ifdef MANGOSBOT_TWO
     BattleGround* bg = sBattleGroundMgr.GetBattleGroundTemplate(_bgTypeId);
+    if (!bg)
+        return false;
+
+    mapId = bg->GetMapId();
     PvPDifficultyEntry const* pvpDiff = GetBattlegroundBracketByLevel(mapId, bot->GetLevel());
-    if (pvpDiff)
-        bracketId = pvpDiff->GetBracketId();
+    if (!pvpDiff)
+        return false;
+
+    bracketId = pvpDiff->GetBracketId();
 
 #else
     bracketId = bot->GetBattleGroundBracketIdFromLevel(_bgTypeId);
