@@ -321,7 +321,7 @@ bool CheckMountStateAction::MountWithBestMount(const bool canFly)
     if (mountSpells.empty() && mounts.empty())
         return false;
 
-    if (mounts.empty() || MountSpeed(sServerFacade.LookupSpellInfo(mountSpells.front()), canFly) > MountSpeed(mounts.front()->GetProto(), canFly))
+    if (mounts.empty() || (!mountSpells.empty() && MountSpeed(sServerFacade.LookupSpellInfo(mountSpells.front()), canFly) > MountSpeed(mounts.front()->GetProto(), canFly)))
     {
         uint32 spellId = mountSpells[urand(0, mountSpells.size() - 1)];
         return ai->CastSpell(spellId, bot);

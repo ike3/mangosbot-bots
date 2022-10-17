@@ -43,13 +43,13 @@ void ChooseTravelTargetAction::getNewTarget(TravelTarget* newTarget, TravelTarge
         {
             PerformanceMonitorOperation* pmo = sPerformanceMonitor.start(PERF_MON_VALUE, "SetRpgTarget1", &context->performanceStack);
             foundTarget = SetRpgTarget(newTarget);                           //Go to town to sell items or repair
-            pmo->finish();
+            if(pmo) pmo->finish();
         }
         else if (AI_VALUE2(bool, "group or", "should sell,can ah sell,following party,near leader") && bot->GetLevel() > 5)
         {
             PerformanceMonitorOperation* pmo = sPerformanceMonitor.start(PERF_MON_VALUE, "SetNpcFlagTarget1", &context->performanceStack);
             foundTarget = SetNpcFlagTarget(newTarget, { UNIT_NPC_FLAG_AUCTIONEER });
-            pmo->finish();
+            if(pmo) pmo->finish();
         }
 
     //Rpg in city
@@ -57,7 +57,7 @@ void ChooseTravelTargetAction::getNewTarget(TravelTarget* newTarget, TravelTarge
     {
         PerformanceMonitorOperation* pmo = sPerformanceMonitor.start(PERF_MON_VALUE, "SetNpcFlagTarget2", &context->performanceStack);
         foundTarget = SetNpcFlagTarget(newTarget, { UNIT_NPC_FLAG_BANKER,UNIT_NPC_FLAG_BATTLEMASTER,UNIT_NPC_FLAG_AUCTIONEER });
-        pmo->finish();
+        if(pmo) pmo->finish();
     }
 
     // PvP activities
@@ -92,21 +92,21 @@ void ChooseTravelTargetAction::getNewTarget(TravelTarget* newTarget, TravelTarge
             {
                 PerformanceMonitorOperation* pmo = sPerformanceMonitor.start(PERF_MON_VALUE, "SetQuestTarget1", &context->performanceStack);
                 foundTarget = SetQuestTarget(newTarget, false, true, true);           //Turn in quests for money.
-                pmo->finish();
+                if(pmo) pmo->finish();
             }
 
             if (!foundTarget)
             {
                 PerformanceMonitorOperation* pmo = sPerformanceMonitor.start(PERF_MON_VALUE, "SetQuestTarget2", &context->performanceStack);
                 foundTarget = SetQuestTarget(newTarget, true, false, false);      //Find new (low) level quests
-                pmo->finish();
+                if(pmo) pmo->finish();
             }
         }
         else
         {
             PerformanceMonitorOperation* pmo = sPerformanceMonitor.start(PERF_MON_VALUE, "SetGrindTarget1", &context->performanceStack);
             foundTarget = SetGrindTarget(newTarget);                               //Go grind mobs for money    
-            pmo->finish();
+            if(pmo) pmo->finish();
         }
     }
 
@@ -116,7 +116,7 @@ void ChooseTravelTargetAction::getNewTarget(TravelTarget* newTarget, TravelTarge
     {
         PerformanceMonitorOperation* pmo = sPerformanceMonitor.start(PERF_MON_VALUE, "SetCurrentTarget", &context->performanceStack);
         foundTarget = SetCurrentTarget(newTarget, oldTarget);             //Extend current target.
-        pmo->finish();
+        if(pmo) pmo->finish();
     }
 
     //Dungeon in group.
@@ -125,7 +125,7 @@ void ChooseTravelTargetAction::getNewTarget(TravelTarget* newTarget, TravelTarge
         {
             PerformanceMonitorOperation* pmo = sPerformanceMonitor.start(PERF_MON_VALUE, "SetBossTarget", &context->performanceStack);
             foundTarget = SetBossTarget(newTarget);                         //Go fight a (dungeon boss)
-            pmo->finish();
+            if(pmo) pmo->finish();
         }
 
     //Do quests (start, do, end)
@@ -133,7 +133,7 @@ void ChooseTravelTargetAction::getNewTarget(TravelTarget* newTarget, TravelTarge
     {
         PerformanceMonitorOperation* pmo = sPerformanceMonitor.start(PERF_MON_VALUE, "SetQuestTarget", &context->performanceStack);
         foundTarget = SetQuestTarget(newTarget, true, true, true);    //Do any nearby           
-        pmo->finish();
+        if(pmo) pmo->finish();
     }
 
     //Explore a nearby unexplored area.
@@ -141,7 +141,7 @@ void ChooseTravelTargetAction::getNewTarget(TravelTarget* newTarget, TravelTarge
     {
         PerformanceMonitorOperation* pmo = sPerformanceMonitor.start(PERF_MON_VALUE, "SetExploreTarget", &context->performanceStack);
         foundTarget = SetExploreTarget(newTarget);
-        pmo->finish();
+        if(pmo) pmo->finish();
     }
 
     //Just hang with an npc
@@ -152,7 +152,7 @@ void ChooseTravelTargetAction::getNewTarget(TravelTarget* newTarget, TravelTarge
             foundTarget = SetRpgTarget(newTarget);
             if (foundTarget)
                 newTarget->setForced(true);
-            pmo->finish();
+            if(pmo) pmo->finish();
         }
     }
 
@@ -160,7 +160,7 @@ void ChooseTravelTargetAction::getNewTarget(TravelTarget* newTarget, TravelTarge
     {
         PerformanceMonitorOperation* pmo = sPerformanceMonitor.start(PERF_MON_VALUE, "SetGrindTarget2", &context->performanceStack);
         foundTarget = SetGrindTarget(newTarget);
-        pmo->finish();
+        if(pmo) pmo->finish();
     }
 
     if (!foundTarget)
@@ -443,7 +443,7 @@ vector<WorldPosition*> ChooseTravelTargetAction::getLogicalPoints(vector<WorldPo
     PerformanceMonitorOperation* pmo1 = sPerformanceMonitor.start(PERF_MON_VALUE, "Shuffle", &context->performanceStack);
     if(travelPoints.size() > 50)
         std::shuffle(travelPoints.begin(), travelPoints.end(), *GetRandomGenerator());
-    pmo1->finish();
+    if(pmo1) pmo1->finish();
 
     uint8 checked = 0;
 
@@ -452,7 +452,7 @@ vector<WorldPosition*> ChooseTravelTargetAction::getLogicalPoints(vector<WorldPo
     {
         PerformanceMonitorOperation* pmo1 = sPerformanceMonitor.start(PERF_MON_VALUE, "AreaLevel", &context->performanceStack);
         int32 areaLevel = pos->getAreaLevel();
-        pmo1->finish();
+        if (pmo1) pmo1->finish();
 
         if (!pos->isOverworld() && !canFightElite)
             areaLevel += 10;
@@ -465,20 +465,20 @@ vector<WorldPosition*> ChooseTravelTargetAction::getLogicalPoints(vector<WorldPo
         PerformanceMonitorOperation* pmo2 = sPerformanceMonitor.start(PERF_MON_VALUE, "IsEventUnspawned", &context->performanceStack);
         if (guidP && guidP->IsEventUnspawned()) //Skip points that are not spawned due to events.
         {
-            pmo2->finish();
+            if(pmo2) pmo2->finish();
             continue;
         }
-        pmo2->finish();
+        if (pmo2) pmo2->finish();
 
         PerformanceMonitorOperation* pmo3 = sPerformanceMonitor.start(PERF_MON_VALUE, "distancePartition", &context->performanceStack);
         centerLocation.distancePartition(distanceLimits, pos, partitions); //Partition point in correct distance bracket.
-        pmo3->finish();
+        if (pmo3) pmo3->finish();
 
         if (checked++ > 50)
             break;
     }
 
-    pmo->finish();
+    if(pmo) pmo->finish();
 
     for (uint8 l = 0; l < distanceLimits.size(); l++)
     {
@@ -646,7 +646,7 @@ bool ChooseTravelTargetAction::SetQuestTarget(TravelTarget* target, bool newQues
     {
         PerformanceMonitorOperation* pmo = sPerformanceMonitor.start(PERF_MON_VALUE, "getQuestTravelDestinations1", &context->performanceStack);
         TravelDestinations = sTravelMgr.getQuestTravelDestinations(bot, -1, true, false, 400 + bot->GetLevel() * 10); //Prefer new quests near the player at lower levels.
-        pmo->finish();
+        if(pmo) pmo->finish();
     }
 
     if (ai->HasStrategy("debug travel", BOT_STATE_NON_COMBAT))
@@ -674,7 +674,7 @@ bool ChooseTravelTargetAction::SetQuestTarget(TravelTarget* target, bool newQues
             //Find quest takers or objectives
             PerformanceMonitorOperation* pmo = sPerformanceMonitor.start(PERF_MON_VALUE, "getQuestTravelDestinations2", &context->performanceStack);
             vector<TravelDestination*> questDestinations = sTravelMgr.getQuestTravelDestinations(bot, questId, true, false,0);
-            pmo->finish();
+            if(pmo) pmo->finish();
 
             TravelDestinations.insert(TravelDestinations.end(), questDestinations.begin(), questDestinations.end());
         }
