@@ -47,10 +47,11 @@ enum class TravelNodePathType : uint8
 {
     none = 0,
     walk = 1,
-    portal = 2,
+    areaTrigger = 2,
     transport = 3,
     flightPath = 4,
-    teleportSpell = 5
+    teleportSpell = 5,
+    staticPortal = 6
 };
 
     //A connection between two nodes. 
@@ -159,7 +160,7 @@ enum class TravelNodePathType : uint8
         bool isLinked() { return linked; }
         bool isTransport() { for (auto link : *getLinks()) if (link.second->getPathType() == TravelNodePathType::transport) return true; return false; }
         uint32 getTransportId() { for (auto link : *getLinks()) if (link.second->getPathType() == TravelNodePathType::transport) return link.second->getPathObject(); return false; }
-        bool isPortal() { for (auto link : *getLinks()) if (link.second->getPathType() == TravelNodePathType::portal) return true; return false; }
+        bool isPortal() { for (auto link : *getLinks()) if (link.second->getPathType() == TravelNodePathType::areaTrigger || link.second->getPathType() == TravelNodePathType::staticPortal) return true; return false; }
 
         //WorldLocation shortcuts
         uint32 getMapId() { return point.getMapId(); }
@@ -255,10 +256,11 @@ enum class TravelNodePathType : uint8
         NODE_PREPATH = 0,
         NODE_PATH = 1,
         NODE_NODE = 2,
-        NODE_PORTAL = 3,
+        NODE_AREA_TRIGGER = 3,
         NODE_TRANSPORT = 4,
         NODE_FLIGHTPATH = 5,
-        NODE_TELEPORT = 6
+        NODE_TELEPORT = 6,
+        NODE_STATIC_PORTAL = 7
     };
 
     struct PathNodePoint
@@ -382,6 +384,7 @@ enum class TravelNodePathType : uint8
         void generateNodes();
         void generateTransportNodes();
         void generateZoneMeanNodes();
+        void generatePortalNodes();
 
         void generateWalkPaths();        
         void removeLowNodes();

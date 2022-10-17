@@ -451,9 +451,63 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
         uint32 entry;
         movePosition = movePath.getNextPoint(startPosition, maxDist, pathType, entry);
 
-        if (pathType == TravelNodePathType::portal)// && !ai->isRealPlayer())
+        if (pathType == TravelNodePathType::staticPortal && entry)// && !ai->isRealPlayer())
         {
+            //Log bot movement
+            if (sPlayerbotAIConfig.hasLog("bot_movement.csv"))
+            {
+                WorldPosition telePos;
+                if (entry)
+                {
+                    AreaTrigger const* at = sObjectMgr.GetAreaTrigger(entry);
+                    if (at)
+                        telePos = WorldPosition(at->target_mapId, at->target_X, at->target_Y, at->target_Z, at->target_Orientation);
+                }
+                else
+                    telePos = movePosition;
 
+                ostringstream out;
+                out << sPlayerbotAIConfig.GetTimestampStr() << "+00,";
+                out << bot->GetName() << ",";
+                if (telePos && telePos != movePosition)
+                    startPosition.printWKT({ startPosition, movePosition, telePos }, out, 1);
+                else
+                    startPosition.printWKT({ startPosition, movePosition }, out, 1);
+
+                out << to_string(bot->getRace()) << ",";
+                out << to_string(bot->getClass()) << ",";
+                float subLevel = ((float)bot->GetLevel() + ((float)bot->GetUInt32Value(PLAYER_XP) / (float)bot->GetUInt32Value(PLAYER_NEXT_LEVEL_XP)));
+                out << subLevel << ",";
+                out << (entry ? -1 : entry);
+
+                sPlayerbotAIConfig.log("bot_movement.csv", out.str().c_str());
+            }
+
+            GameObjectInfo const* goInfo = sGOStorage.LookupEntry<GameObjectInfo>(entry);
+            if (!goInfo || goInfo->type != GAMEOBJECT_TYPE_SPELLCASTER)
+                return false;
+
+            uint32 spellId = goInfo->spellcaster.spellId;
+            const SpellEntry* const pSpellInfo = sServerFacade.LookupSpellInfo(spellId);
+            if (pSpellInfo->Effect[0] != SPELL_EFFECT_TELEPORT_UNITS && pSpellInfo->Effect[1] != SPELL_EFFECT_TELEPORT_UNITS && pSpellInfo->Effect[2] != SPELL_EFFECT_TELEPORT_UNITS)
+                return false;
+
+            Spell* spell = new Spell(bot, pSpellInfo, false);
+            SpellCastTargets targets;
+            targets.setUnitTarget(bot);
+#ifdef MANGOS
+            spell->prepare(&targets, NULL);
+#endif
+#ifdef CMANGOS
+            spell->SpellStart(&targets, NULL);
+#endif
+            SpellCastResult castResult = spell->cast(true);
+
+            return castResult == SPELL_CAST_OK;
+        }
+
+        if (pathType == TravelNodePathType::areaTrigger)// && !ai->isRealPlayer())
+        {
             //Log bot movement
             if (sPlayerbotAIConfig.hasLog("bot_movement.csv"))
             {

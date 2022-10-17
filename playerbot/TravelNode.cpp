@@ -102,7 +102,7 @@ float TravelNodePath::getCost(Player* bot, uint32 cGold)
     if (bot)
     {
         //Check if we can use this area trigger.
-        if (getPathType() == TravelNodePathType::portal && pathObject)
+        if (getPathType() == TravelNodePathType::areaTrigger && pathObject)
         {
             uint32 triggerId = getPathObject();
             AreaTriggerEntry const* atEntry = sAreaTriggerStore.LookupEntry(pathObject);
@@ -114,6 +114,22 @@ float TravelNodePath::getCost(Player* bot, uint32 cGold)
                     if (at && at->conditionId && !sObjectMgr.IsConditionSatisfied(at->conditionId, bot, map, nullptr, CONDITION_FROM_AREATRIGGER_TELEPORT))
                         return -1;
             }
+        }
+
+        if (getPathType() == TravelNodePathType::staticPortal && pathObject)
+        {
+            uint32 goEntry = getPathObject();
+
+            auto data = sGOStorage.LookupEntry<GameObjectInfo>(goEntry);
+
+            if (!data)
+                return -1;
+
+            FactionTemplateEntry const* factionEntry = sFactionTemplateStore.LookupEntry(data->faction);
+
+            if(factionEntry)
+                if (PlayerbotAI::GetFactionReaction(factionEntry, bot->GetFactionTemplateEntry()) < REP_NEUTRAL)
+                    return -1;
         }
 
         if (getPathType() == TravelNodePathType::flightPath && pathObject)
@@ -649,14 +665,16 @@ void TravelNode::print(bool printFailed)
                 pathType = 0;
             else if (path->getPathType() == TravelNodePathType::transport)
                 pathType = 2;
-            else if (path->getPathType() == TravelNodePathType::portal && getMapId() == endNode->getMapId())
+            else if (path->getPathType() == TravelNodePathType::areaTrigger && getMapId() == endNode->getMapId())
                 pathType = 3;
-            else if (path->getPathType() == TravelNodePathType::portal)
+            else if (path->getPathType() == TravelNodePathType::areaTrigger)
                 pathType = 4;
             else if (path->getPathType() == TravelNodePathType::flightPath)
                 pathType = 5;
             else if (!path->getComplete())
                 pathType = 6;
+            else if (path->getPathType() == TravelNodePathType::staticPortal)
+                pathType = 7;
 
             out << pathType << ",";
             out << std::fixed << std::setprecision(2);
@@ -766,7 +784,13 @@ bool TravelPath::shouldMoveToNextPoint(WorldPosition startPos, vector<PathNodePo
         return false;
 
     //We are moving to a area trigger node and want to move to the next teleport node.
-    if (p->type == NODE_PORTAL && nextP->type == NODE_PORTAL && p->entry == nextP->entry)
+    if (p->type == NODE_AREA_TRIGGER && nextP->type == NODE_AREA_TRIGGER && p->entry == nextP->entry)
+    {
+        return false; //Move to teleport and activate area trigger.
+    }
+
+    //We are moving to a area trigger node and want to move to the next teleport node.
+    if (p->type == NODE_STATIC_PORTAL && nextP->type == NODE_STATIC_PORTAL && p->entry == nextP->entry)
     {
         return false; //Move to teleport and activate area trigger.
     }
@@ -851,9 +875,17 @@ WorldPosition TravelPath::getNextPoint(WorldPosition startPos, float maxDist, Tr
     }
 
     //We are moving towards a teleport. Move to portal an activate area trigger
-    if (startP->type == NODE_PORTAL)
+    if (startP->type == NODE_AREA_TRIGGER)
     {
-        pathType = TravelNodePathType::portal;
+        pathType = TravelNodePathType::areaTrigger;
+        entry = startP->entry;
+        return startP->point;
+    }
+
+    //We are moving towards a static portal. Move to portal and use it.
+    if (startP->type == NODE_STATIC_PORTAL && startPos.distance(startP->point) < INTERACTION_DISTANCE)
+    {
+        pathType = TravelNodePathType::staticPortal;
         entry = startP->entry;
         return startP->point;
     }
@@ -881,7 +913,7 @@ WorldPosition TravelPath::getNextPoint(WorldPosition startPos, float maxDist, Tr
         {
             if (p->type != NODE_TRANSPORT)
             {
-                pathType = TravelNodePathType::portal;
+                pathType = TravelNodePathType::areaTrigger;
                 entry = 0;
                 return p->point;
             }
@@ -970,10 +1002,15 @@ TravelPath TravelNodeRoute::buildPath(vector<WorldPosition> pathToStart, vector<
                 continue;
             }
 
-            if (nodePath->getPathType() == TravelNodePathType::portal) //Teleport to next node.
+            if (nodePath->getPathType() == TravelNodePathType::areaTrigger) //Teleport to next node.
             {
-                travelPath.addPoint(*prevNode->getPosition(), NODE_PORTAL, nodePath->getPathObject()); //Entry point
-                travelPath.addPoint(*node->getPosition(), NODE_PORTAL, nodePath->getPathObject());     //Exit point
+                travelPath.addPoint(*prevNode->getPosition(), NODE_AREA_TRIGGER, nodePath->getPathObject()); //Entry point
+                travelPath.addPoint(*node->getPosition(), NODE_AREA_TRIGGER, nodePath->getPathObject());     //Exit point
+            }
+            if (nodePath->getPathType() == TravelNodePathType::staticPortal) //Teleport to next node.
+            {
+                travelPath.addPoint(*prevNode->getPosition(), NODE_STATIC_PORTAL, nodePath->getPathObject()); //Entry point
+                travelPath.addPoint(*node->getPosition(), NODE_STATIC_PORTAL, nodePath->getPathObject());     //Exit point
             }
             else if (nodePath->getPathType() == TravelNodePathType::transport) //Move onto transport
             {
@@ -997,7 +1034,7 @@ TravelPath TravelNodeRoute::buildPath(vector<WorldPosition> pathToStart, vector<
                 if (path.size() > 1 && node != nodes.back()) //Remove the last point since that will also be the start of the next path.
                     path.pop_back();
 
-                if (path.size() > 1 && prevNode->isPortal() && nodePath->getPathType() != TravelNodePathType::portal) //Do not move to the area trigger if we don't plan to take the portal.
+                if (path.size() > 1 && prevNode->isPortal() && nodePath->getPathType() != TravelNodePathType::areaTrigger) //Do not move to the area trigger if we don't plan to take the portal.
                     path.erase(path.begin());
 
                 if (path.size() > 1 && prevNode->isTransport() && nodePath->getPathType() != TravelNodePathType::transport) //Do not move to the transport if we aren't going to take it.
@@ -1740,10 +1777,46 @@ void TravelNodeMap::generateAreaTriggerNodes()
         //Portal link from area trigger to area trigger destination.
         if (outNode && inNode)
         {
-            TravelNodePath travelPath(0.1f, 3.0f, (uint8)TravelNodePathType::portal, i, true);
+            TravelNodePath travelPath(0.1f, 3.0f, (uint8)TravelNodePathType::areaTrigger, i, true);
             travelPath.setPath({ *inNode->getPosition(), *outNode->getPosition() });
             inNode->setPathTo(outNode, travelPath);
         }
+    }
+}
+
+void TravelNodeMap::generatePortalNodes()
+{
+    for (auto goData : WorldPosition().getGameObjectsNear(0, 0))
+    {
+        GuidPosition go(goData);
+
+        auto data = sGOStorage.LookupEntry<GameObjectInfo>(go.GetEntry());
+
+        if (!data)
+            continue;
+
+        if (data->type != GAMEOBJECT_TYPE_SPELLCASTER)
+            continue;
+
+        const SpellEntry* pSpellInfo = sServerFacade.LookupSpellInfo(data->spellcaster.spellId);
+
+        if (pSpellInfo->Effect[0] != SPELL_EFFECT_TELEPORT_UNITS && pSpellInfo->Effect[1] != SPELL_EFFECT_TELEPORT_UNITS && pSpellInfo->Effect[2] != SPELL_EFFECT_TELEPORT_UNITS)
+            continue;
+
+        SpellTargetPosition const* pos = sSpellMgr.GetSpellTargetPosition(pSpellInfo->Id);
+
+        if (!pos)
+            continue;
+
+        WorldPosition inPos(go);
+        WorldPosition outPos(pos);
+
+        TravelNode* inNode = sTravelNodeMap.addNode(inPos, data->name, true, true);
+        TravelNode* outNode = sTravelNodeMap.addNode(outPos, data->name, true, true);
+
+        TravelNodePath travelPath(0.1f, 3.0f, (uint8)TravelNodePathType::staticPortal, go.GetEntry(), true);
+        travelPath.setPath({ *inNode->getPosition(), *outNode->getPosition() });
+        inNode->setPathTo(outNode, travelPath); 
     }
 }
 
@@ -1968,6 +2041,8 @@ void TravelNodeMap::generateNodes()
     generateTransportNodes();
     sLog.outString("-Generating zone mean nodes");
     generateZoneMeanNodes();
+    sLog.outString("-Generating static portal nodes");
+    generatePortalNodes();
 }
 
 void TravelNodeMap::generateWalkPaths()
@@ -2123,6 +2198,8 @@ void TravelNodeMap::calculatePathCosts()
 {   
     BarGoLink bar(sTravelNodeMap.getNodes().size());
 
+    vector<std::future<void>> calculations;
+
     for (auto& startNode : sTravelNodeMap.getNodes())
     {
         bar.step();
@@ -2137,8 +2214,17 @@ void TravelNodeMap::calculatePathCosts()
             if (nodePath->getCalculated())
                 continue;
 
-            nodePath->calculateCost();
+            //nodePath->calculateCost();
+
+            calculations.push_back(std::async([nodePath] {nodePath->calculateCost(); }));
         }
+    }
+
+    BarGoLink bar2(calculations.size());
+    for (uint32 i = 0; i < calculations.size(); i++)
+    {
+        bar2.step();
+        calculations[i].wait();
     }
 
     sLog.outString(">> Calculated pathcost for " SIZEFMTD " nodes.", sTravelNodeMap.getNodes().size());
