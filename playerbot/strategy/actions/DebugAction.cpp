@@ -70,6 +70,10 @@ bool DebugAction::Execute(Event event)
 
         return true;
     }
+    else if (text.find("do ") != std::string::npos)
+    {
+        return ai->DoSpecificAction(text.substr(3), Event(), true);
+    }
     else if (text.find("poi ") != std::string::npos)
     {        
         WorldPosition botPos = WorldPosition(bot);
