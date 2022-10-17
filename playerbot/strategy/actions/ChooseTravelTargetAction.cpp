@@ -465,7 +465,7 @@ vector<WorldPosition*> ChooseTravelTargetAction::getLogicalPoints(vector<WorldPo
         PerformanceMonitorOperation* pmo2 = sPerformanceMonitor.start(PERF_MON_VALUE, "IsEventUnspawned", &context->performanceStack);
         if (guidP && guidP->IsEventUnspawned()) //Skip points that are not spawned due to events.
         {
-            pmo2->finish();
+            if(pmo2) pmo2->finish();
             continue;
         }
         if (pmo2) pmo2->finish();
