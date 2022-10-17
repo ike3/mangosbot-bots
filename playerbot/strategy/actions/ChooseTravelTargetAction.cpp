@@ -443,7 +443,7 @@ vector<WorldPosition*> ChooseTravelTargetAction::getLogicalPoints(vector<WorldPo
     PerformanceMonitorOperation* pmo1 = sPerformanceMonitor.start(PERF_MON_VALUE, "Shuffle", &context->performanceStack);
     if(travelPoints.size() > 50)
         std::shuffle(travelPoints.begin(), travelPoints.end(), *GetRandomGenerator());
-    pmo1->finish();
+    if(pmo1) pmo1->finish();
 
     uint8 checked = 0;
 
@@ -452,7 +452,7 @@ vector<WorldPosition*> ChooseTravelTargetAction::getLogicalPoints(vector<WorldPo
     {
         PerformanceMonitorOperation* pmo1 = sPerformanceMonitor.start(PERF_MON_VALUE, "AreaLevel", &context->performanceStack);
         int32 areaLevel = pos->getAreaLevel();
-        pmo1->finish();
+        if (pmo1) pmo1->finish();
 
         if (!pos->isOverworld() && !canFightElite)
             areaLevel += 10;
@@ -468,11 +468,11 @@ vector<WorldPosition*> ChooseTravelTargetAction::getLogicalPoints(vector<WorldPo
             pmo2->finish();
             continue;
         }
-        pmo2->finish();
+        if (pmo2) pmo2->finish();
 
         PerformanceMonitorOperation* pmo3 = sPerformanceMonitor.start(PERF_MON_VALUE, "distancePartition", &context->performanceStack);
         centerLocation.distancePartition(distanceLimits, pos, partitions); //Partition point in correct distance bracket.
-        pmo3->finish();
+        if (pmo3) pmo3->finish();
 
         if (checked++ > 50)
             break;
