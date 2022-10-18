@@ -492,6 +492,15 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
             if (pSpellInfo->Effect[0] != SPELL_EFFECT_TELEPORT_UNITS && pSpellInfo->Effect[1] != SPELL_EFFECT_TELEPORT_UNITS && pSpellInfo->Effect[2] != SPELL_EFFECT_TELEPORT_UNITS)
                 return false;
 
+            if (bot->IsMounted())
+            {
+                if (bot->IsFlying() && WorldPosition(bot).currentHeight() > 10.0f)
+                    return false;
+
+                WorldPacket emptyPacket;
+                bot->GetSession()->HandleCancelMountAuraOpcode(emptyPacket);
+            }
+
             Spell* spell = new Spell(bot, pSpellInfo, false);
             SpellCastTargets targets;
             targets.setUnitTarget(bot);
