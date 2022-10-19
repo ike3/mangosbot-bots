@@ -206,6 +206,7 @@ enum class TravelNodePathType : uint8
 
         //Checks if it is even possible to route to this node.
         bool hasRouteTo(TravelNode* node) { if (routes.empty()) for (auto mNode : getNodeMap()) routes[mNode] = true; return routes.find(node) != routes.end(); };
+        void clearRoutes() { routes.clear(); }
 
         void print(bool printFailed = true);
     protected:
@@ -377,6 +378,7 @@ enum class TravelNodePathType : uint8
         void manageNodes(Unit* bot, bool mapFull = false);
 
         void setHasToGen() { hasToGen = true; }
+        bool gethasToGen() { return hasToGen || hasToFullGen; }
       
         void generateNpcNodes();
         void generateStartNodes();
@@ -386,9 +388,11 @@ enum class TravelNodePathType : uint8
         void generateZoneMeanNodes();
         void generatePortalNodes();
 
-        void generateWalkPaths();        
+        void generateWalkPaths();      
+        void generateWalkPathMap(uint32 mapId);
         void removeLowNodes();
         void removeUselessPaths();
+        void removeUselessPathMap(uint32 mapId);
         void calculatePathCosts();
         void generateTaxiPaths();
         void generatePaths();

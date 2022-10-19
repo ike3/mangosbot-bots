@@ -391,14 +391,19 @@ bool TravelNode::isUselessLink(TravelNode* farNode)
         return false;
 
     float farLength;
+    TravelNodePath* farPath = nullptr;
     if (hasLinkTo(farNode))
-        farLength = getPathTo(farNode)->getDistance();
+    {
+        farPath = getPathTo(farNode);
+        farLength = farPath->getDistance();
+    }
     else
         farLength = getDistance(farNode);
 
     for (auto& link : *getLinks())
     {
         TravelNode* nearNode = link.first;
+        WorldPosition* nearPos = nearNode->getPosition();
         float nearLength = link.second->getDistance();
 
         if (farNode == nearNode)
@@ -413,6 +418,10 @@ bool TravelNode::isUselessLink(TravelNode* farNode)
             if (nearLength + nearNode->linkDistanceTo(farNode) < farLength * 1.1)
                 return true;
 
+            //Does the path come across the nearby node.
+            if (farPath)
+                if (nearPos->closestSq(farPath->getPath()).distance(nearPos) < INTERACTION_DISTANCE)
+                    return true;
         }
         else
         {
@@ -2048,7 +2057,6 @@ void TravelNodeMap::generateNodes()
 void TravelNodeMap::generateWalkPaths()
 {
     //Pathfinder
-    BarGoLink bar(sTravelNodeMap.getNodes().size());
     vector<WorldPosition> ppath;
 
     map<uint32, bool> nodeMaps;
@@ -2058,35 +2066,49 @@ void TravelNodeMap::generateWalkPaths()
         nodeMaps[startNode->getMapId()] = true;
     }
 
+    vector<std::future<void>> calculations;
 
+    BarGoLink bar(nodeMaps.size());
     for (auto& map : nodeMaps)
     {
-        for (auto& startNode : sTravelNodeMap.getNodes(WorldPosition(map.first,1,1)))
-        {
-            bar.step();
+        uint32 mapId = map.first;
+        calculations.push_back(std::async([this,mapId] { generateWalkPathMap(mapId); }));
+        bar.step();
+    }
 
-            if (startNode->isLinked())
-                continue;
-
-            for (auto& endNode : sTravelNodeMap.getNodes(*startNode->getPosition(), 2000.0f))
-            {
-                if (startNode == endNode)
-                    continue;
-
-                if (startNode->hasCompletePathTo(endNode))
-                    continue;
-
-                if (startNode->getMapId() != endNode->getMapId())
-                    continue;
-
-                startNode->buildPath(endNode, NULL, false);
-            }
-
-            startNode->setLinked(true);
-        }
+    BarGoLink bar2(calculations.size());
+    for (uint32 i = 0; i < calculations.size(); i++)
+    {
+        calculations[i].wait();
+        bar2.step();
     }
 
     sLog.outString(">> Generated paths for " SIZEFMTD " nodes.", sTravelNodeMap.getNodes().size());
+}
+
+void TravelNodeMap::generateWalkPathMap(uint32 mapId)
+{
+    for (auto& startNode : sTravelNodeMap.getNodes(WorldPosition(mapId, 1, 1)))
+    {
+        if (startNode->isLinked())
+            continue;
+
+        for (auto& endNode : sTravelNodeMap.getNodes(*startNode->getPosition(), 2000.0f))
+        {
+            if (startNode == endNode)
+                continue;
+
+            if (startNode->hasCompletePathTo(endNode))
+                continue;
+
+            if (startNode->getMapId() != endNode->getMapId())
+                continue;                                 
+
+            startNode->buildPath(endNode, nullptr, false);
+        }
+
+        startNode->setLinked(true);
+    }
 }
 
 void TravelNodeMap::generateTaxiPaths()
@@ -2165,8 +2187,38 @@ void TravelNodeMap::removeLowNodes()
 
 void TravelNodeMap::removeUselessPaths()
 {
-    //Clean up node links
+    //Pathfinder
+    vector<WorldPosition> ppath;
+
+    map<uint32, bool> nodeMaps;
+
     for (auto& startNode : sTravelNodeMap.getNodes())
+    {
+        nodeMaps[startNode->getMapId()] = true;
+    }
+
+    vector<std::future<void>> calculations;
+
+    BarGoLink bar(nodeMaps.size());
+    for (auto& map : nodeMaps)
+    {
+        uint32 mapId = map.first;
+        calculations.push_back(std::async([this, mapId] { removeUselessPathMap(mapId); }));
+        bar.step();
+    }
+
+    BarGoLink bar2(calculations.size());
+    for (uint32 i = 0; i < calculations.size(); i++)
+    {
+        calculations[i].wait();
+        bar2.step();
+    }
+}
+
+void TravelNodeMap::removeUselessPathMap(uint32 mapId)
+{
+    //Clean up node links
+    for (auto& startNode : sTravelNodeMap.getNodes(WorldPosition(mapId, 1, 1)))
     {
         for (auto& path : *startNode->getPaths())
             if (path.second.getComplete() && startNode->hasLinkTo(path.first))
@@ -2177,10 +2229,15 @@ void TravelNodeMap::removeUselessPaths()
     {
         uint32 rem = 0;
         //Clean up node links
-        for (auto& startNode : sTravelNodeMap.getNodes())
+        for (auto& startNode : sTravelNodeMap.getNodes(WorldPosition(mapId, 1, 1)))
         {
             if (startNode->cropUselessLinks())
                 rem++;
+        }
+
+        for (auto& startNode : sTravelNodeMap.getNodes(WorldPosition(mapId, 1, 1)))
+        {
+            startNode->clearRoutes();
         }
 
         if (!rem)
@@ -2190,7 +2247,7 @@ void TravelNodeMap::removeUselessPaths()
 
         it++;
 
-        sLog.outString("Iteration %d, removed %d", it, rem);
+        sLog.outDetail("MapId %d Iteration %d, removed %d", mapId, it, rem);
     }
 }
 
@@ -2227,7 +2284,7 @@ void TravelNodeMap::calculatePathCosts()
         calculations[i].wait();
     }
 
-    sLog.outString(">> Calculated pathcost for " SIZEFMTD " nodes.", sTravelNodeMap.getNodes().size());
+    sLog.outString(">> Calculated path cost for " SIZEFMTD " nodes.", sTravelNodeMap.getNodes().size());
 }
 
 void TravelNodeMap::generatePaths()
@@ -2238,6 +2295,9 @@ void TravelNodeMap::generatePaths()
     removeLowNodes();
     sLog.outString("-Removing useless paths");
     removeUselessPaths();
+
+    printMap();
+
     sLog.outString("-Calculating path costs");
     calculatePathCosts();
     sLog.outString("-Generating taxi paths");
@@ -2248,10 +2308,6 @@ void TravelNodeMap::generateAll()
 {
     if (hasToFullGen)
         generateNodes();
-
-    sLog.outString("-Calculating coverage"); //This prevents crashes when bots from multiple maps try to calculate this on the fly.
-    for (auto& node : getNodes())
-        node->hasLinkTo(node);
 
     sLog.outString("-Calculating mapoffset");
     calcMapOffset();
@@ -2266,6 +2322,10 @@ void TravelNodeMap::generateAll()
         hasToFullGen = false;
         hasToSave = true;
     }
+
+    sLog.outString("-Calculating coverage"); //This prevents crashes when bots from multiple maps try to calculate this on the fly.
+    for (auto& node : getNodes())
+        node->getNodeMap(node);
 }
 
 void TravelNodeMap::printMap()
@@ -2493,6 +2553,7 @@ void TravelNodeMap::loadNodeStore()
             hasToFullGen = true;
             sLog.outString();
             sLog.outErrorDb(">> Error loading travelNodes.");
+            return;
         }
     }
 
