@@ -713,8 +713,8 @@ namespace ai
         TravelMgr() {};
         void Clear();
 
-        static void SetMobAvoidArea();
-        static void SetMobAvoidAreaMap(uint32 mapId);
+        void SetMobAvoidArea();
+        void SetMobAvoidAreaMap(uint32 mapId);
 
         void LoadQuestTravelTable();
 

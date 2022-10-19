@@ -593,7 +593,11 @@ vector<WorldPosition> WorldPosition::fromPointsArray(std::vector<G3D::Vector3> p
 vector<WorldPosition> WorldPosition::getPathStepFrom(WorldPosition startPos, Unit* bot)
 {
     std::hash<std::thread::id> hasher;
-    uint32 instanceId = bot ? bot->GetInstanceId() : hasher(std::this_thread::get_id());
+    uint32 instanceId;
+    if (sTravelNodeMap.gethasToGen())
+        instanceId = 0;
+    else
+        instanceId = bot ?  bot->GetInstanceId() : hasher(std::this_thread::get_id());
     //Load mmaps and vmaps between the two points.
 
     loadMapAndVMaps(startPos, instanceId);
@@ -606,7 +610,7 @@ vector<WorldPosition> WorldPosition::getPathStepFrom(WorldPosition startPos, Uni
         PathFinder path(bot);
 
 #ifdef IKE_PATHFINDER
-        path.setAreaCost(9, 10.0f);  //Water
+        path.setAreaCost(NAV_AREA_WATER, 10.0f);  //Water
         path.setAreaCost(12, 5.0f);  //Mob proximity
         path.setAreaCost(13, 20.0f); //Mob agro
 #endif
@@ -621,7 +625,7 @@ vector<WorldPosition> WorldPosition::getPathStepFrom(WorldPosition startPos, Uni
     {
         PathFinder path(getMapId(), instanceId);
 
-        path.setAreaCost(9, 10.0f);
+        path.setAreaCost(NAV_AREA_WATER, 10.0f);
         path.setAreaCost(12, 5.0f);
         path.setAreaCost(13, 20.0f);
 
@@ -1914,20 +1918,44 @@ void TravelMgr::logQuestError(uint32 errorNr, Quest* quest, uint32 objective, ui
     }
 }
 
-void TravelMgr::SetMobAvoidArea() 
+void TravelMgr::SetMobAvoidArea()
 {
     sLog.outString("start mob avoidance maps");
+
+    vector<std::future<void>> calculations;
+
+    BarGoLink bar(sMapStore.GetNumRows());
+
+    for (uint32 i = 0; i < sMapStore.GetNumRows(); ++i)
+    {
+        if (!sMapStore.LookupEntry(i))
+            continue;
+        
+        uint32 mapId = sMapStore.LookupEntry(i)->MapID;
+        calculations.push_back(std::async([this, mapId] { SetMobAvoidAreaMap(mapId); }));
+        bar.step();
+    }
+
+    BarGoLink bar2(calculations.size());
+    for (uint32 i = 0; i < calculations.size(); i++)
+    {
+        calculations[i].wait();
+        bar2.step();
+    }
+
+    sLog.outString(">> Modified navmap areas for %d maps.", sMapStore.GetNumRows());
+}
+
+void TravelMgr::SetMobAvoidAreaMap(uint32 mapId) 
+{
     PathFinder path;
     FactionTemplateEntry const* humanFaction = sFactionTemplateStore.LookupEntry(1);
     FactionTemplateEntry const* orcFaction = sFactionTemplateStore.LookupEntry(2);
 
-    vector<CreatureDataPair const*> creatures = WorldPosition().getCreaturesNear();
-
-    BarGoLink bar(creatures.size());
+    vector<CreatureDataPair const*> creatures = WorldPosition(mapId, 1,1).getCreaturesNear();
 
     for (auto& creaturePair : creatures)
     {
-        bar.step();
         CreatureData const cData = creaturePair->second;
         CreatureInfo const* cInfo = ObjectMgr::GetCreatureTemplate(cData.id);
 
