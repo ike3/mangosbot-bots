@@ -80,7 +80,7 @@ bool SeeSpellAction::Execute(Event event)
     WorldPosition spellPosition(master->GetMapId(), targets.m_destPos);
     SET_AI_VALUE(WorldPosition, "see spell location", spellPosition);
 
-    if (ai->HasStrategy("debug", BOT_STATE_NON_COMBAT))
+    if (ai->HasStrategy("debug", BOT_STATE_NON_COMBAT) || ai->HasStrategy("debug move", BOT_STATE_NON_COMBAT))
     {
         PathFinder path(bot);
 
