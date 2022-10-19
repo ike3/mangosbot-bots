@@ -353,7 +353,7 @@ void TravelNode::removeLinkTo(TravelNode* node, bool removePaths) {
     }
 }
 
-vector<TravelNode*> TravelNode::getNodeMap(bool importantOnly, vector<TravelNode*> ignoreNodes)
+vector<TravelNode*> TravelNode::getNodeMap(bool importantOnly, vector<TravelNode*> ignoreNodes, bool mapOnly)
 {
     vector<TravelNode*> openList;
     vector<TravelNode*> closeList;
@@ -374,11 +374,17 @@ vector<TravelNode*> TravelNode::getNodeMap(bool importantOnly, vector<TravelNode
         for (auto& nextPath : *currentNode->getLinks())
         {
             TravelNode* nextNode = nextPath.first;
-            if (std::find(openList.begin(), openList.end(), nextNode) == openList.end())
-            {
-                if (ignoreNodes.empty() || std::find(ignoreNodes.begin(), ignoreNodes.end(), nextNode) == ignoreNodes.end())
-                    openList.push_back(nextNode);
-            }
+
+            if (mapOnly && nextNode->getMapId() != getMapId())
+                continue;
+
+            if (std::find(openList.begin(), openList.end(), nextNode) != openList.end())
+                continue;
+
+            if (!ignoreNodes.empty() && std::find(ignoreNodes.begin(), ignoreNodes.end(), nextNode) != ignoreNodes.end())
+                continue;
+
+            openList.push_back(nextNode);
         }
     }
 
@@ -425,6 +431,9 @@ bool TravelNode::isUselessLink(TravelNode* farNode)
         }
         else
         {
+            if (!nearNode->hasRouteTo(farNode, true))
+                continue;
+
             TravelNodeRoute route = sTravelNodeMap.getRoute(nearNode, farNode, nullptr);
 
             if (route.isEmpty())

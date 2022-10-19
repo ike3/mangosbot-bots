@@ -202,10 +202,10 @@ enum class TravelNodePathType : uint8
         bool cropUselessLinks();
 
         //Returns all nodes that can be reached from this node.
-        vector<TravelNode*> getNodeMap(bool importantOnly = false, vector<TravelNode*> ignoreNodes = {});
+        vector<TravelNode*> getNodeMap(bool importantOnly = false, vector<TravelNode*> ignoreNodes = {}, bool mapOnly = false);
 
         //Checks if it is even possible to route to this node.
-        bool hasRouteTo(TravelNode* node) { if (routes.empty()) for (auto mNode : getNodeMap()) routes[mNode] = true; return routes.find(node) != routes.end(); };
+        bool hasRouteTo(TravelNode* node, bool mapOnly = false) { if (routes.empty()) for (auto mNode : getNodeMap(mapOnly)) routes[mNode] = true; return routes.find(node) != routes.end(); };
         void clearRoutes() { routes.clear(); }
 
         void print(bool printFailed = true);
