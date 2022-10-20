@@ -102,7 +102,13 @@ bool FleeToMasterAction::Execute(Event event)
     WorldPosition bosPos(bot);
     float distance = bosPos.fDist(targetPos);
 
-    if (distance < sPlayerbotAIConfig.reactDistance * 3)
+    if (distance > sPlayerbotAIConfig.reactDistance && bot->IsInCombat())
+    {
+        if (!urand(0, 5))
+            ai->TellMaster("I'm heading to your location but I'm in combat", PLAYERBOT_SECURITY_ALLOW_ALL, false);
+            //ai->TellMaster(BOT_TEXT("wait_travel_combat"), PLAYERBOT_SECURITY_ALLOW_ALL, false);
+    }
+    else if (distance < sPlayerbotAIConfig.reactDistance * 3)
     {
         if (!urand(0, 5))
             ai->TellMaster(BOT_TEXT("wait_travel_close"), PLAYERBOT_SECURITY_ALLOW_ALL, false);
