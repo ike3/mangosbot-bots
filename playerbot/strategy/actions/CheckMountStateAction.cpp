@@ -18,6 +18,8 @@ bool CheckMountStateAction::Execute(Event event)
         noattackers = false;
     bool fartarget = (enemy && sServerFacade.IsDistanceGreaterThan(AI_VALUE2(float, "distance", "enemy player target"), 40.0f)) ||
         (dps && sServerFacade.IsDistanceGreaterThan(AI_VALUE2(float, "distance", "dps target"), 50.0f));
+
+    bool canFly = CanFly();
     bool attackdistance = false;
     bool chasedistance = false;
     float attack_distance = 35.0f;
@@ -50,13 +52,13 @@ bool CheckMountStateAction::Execute(Event event)
         if (!bot->GetGroup() || bot->GetGroup()->GetLeaderGuid() != master->GetObjectGuid())
             return false;
 
-        bool farFromMaster = sServerFacade.GetDistance2d(bot, master) > sPlayerbotAIConfig.sightDistance;
+        bool farFromMaster = bot->GetMapId() != master->GetMapId() ||  sServerFacade.GetDistance2d(bot, master) > sPlayerbotAIConfig.sightDistance;
         if (master->IsMounted() && !bot->IsMounted() && noattackers)
         {
             return Mount();
         }
 
-        if (!bot->IsMounted() && (chasedistance || (farFromMaster && ai->HasStrategy("follow", BOT_STATE_NON_COMBAT))) && !bot->IsInCombat() && !dps)
+        if (!bot->IsMounted() && (chasedistance || (farFromMaster && ai->HasStrategy("follow", BOT_STATE_NON_COMBAT))) && !bot->IsInCombat() && (!dps || canFly))
             return Mount();
 
         if (!bot->IsFlying() && ((!farFromMaster && !master->IsMounted()) || attackdistance) && bot->IsMounted())
@@ -196,6 +198,24 @@ bool CheckMountStateAction::isUseful()
                 return false;
         }
     }
+
+    return true;
+}
+
+bool CheckMountStateAction::CanFly()
+{
+    if (bot->GetMapId() != 530 && bot->GetMapId() != 571)
+        return false;
+
+#ifdef MANGOSBOT_TWO
+    uint32 zone, area;
+    bot->GetZoneAndAreaId(zone, area);
+    if (!bot->CanStartFlyInArea(bot->GetMapId(), zone, area, false))
+        return false;
+#endif
+
+    if (GetBestMountSpells(true).empty() && GetBestMounts(true).empty())
+        return false;
 
     return true;
 }
@@ -391,14 +411,9 @@ bool CheckMountStateAction::Mount()
 
     bool didMount = false;
 
-    if (bot->GetMapId() == 530 || bot->GetMapId() == 571)
+    if (CanFly())
     {
-        uint32 zone, area;
-        bot->GetZoneAndAreaId(zone, area);
-#ifdef MANGOSBOT_TWO
-        if (bot->CanStartFlyInArea(bot->GetMapId(), zone, area, false))
-#endif
-            didMount = MountWithBestMount(true);
+       didMount = MountWithBestMount(true);
     }
 
     if (!didMount)

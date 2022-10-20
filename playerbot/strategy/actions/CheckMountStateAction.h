@@ -15,6 +15,7 @@ namespace ai
         virtual bool isPossible() { return true; }
         virtual bool isUseful();
 
+        virtual bool CanFly();
     private:
         static uint32 MountSpeed(const SpellEntry* const spellInfo, const bool canFly = false);
         vector<uint32> GetBestMountSpells(const bool canFly);
