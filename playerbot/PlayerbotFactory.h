@@ -80,6 +80,7 @@ private:
     void InitTalents(uint32 specNo);
     void InitQuests(list<uint32>& questMap);
     void InitPet();
+    void InitTaxiNodes();
     void ClearInventory();
     void ClearAllItems();
     void ResetQuests();

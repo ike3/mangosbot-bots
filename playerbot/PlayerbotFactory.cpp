@@ -288,6 +288,14 @@ void PlayerbotFactory::Randomize(bool incremental)
         }
     }
 
+    if (isRandomBot)
+    {
+        pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_TaxiNodes");
+        sLog.outDetail("Initializing taxi...");
+        InitTaxiNodes();
+        if (pmo) pmo->finish();
+    }
+
     pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Save");
     sLog.outDetail("Saving to DB...");
     bot->SaveToDB();
@@ -2339,7 +2347,7 @@ void PlayerbotFactory::InitAmmo()
 
     if (count < maxCount)
     {
-        for (int i = 0; i < maxCount - count; i++)
+        for (uint32 i = 0; i < maxCount - count; i++)
         {
             Item* newItem = bot->StoreNewItemInInventorySlot(entry, 200);
         }
@@ -2617,7 +2625,7 @@ void PlayerbotFactory::InitReagents()
 
         QueryItemCountVisitor visitor(*i);
         IterateItems(&visitor);
-        if (visitor.GetCount() > maxCount) continue;
+        if ((uint32)visitor.GetCount() > maxCount) continue;
 
         uint32 randCount = urand(maxCount / 2, maxCount * regCount);
 
@@ -2659,7 +2667,6 @@ void PlayerbotFactory::InitReagents()
         }
     }
 }
-
 
 void PlayerbotFactory::CancelAuras()
 {
@@ -3174,4 +3181,44 @@ void PlayerbotFactory::InitGems() //WIP
         }
     }
 #endif
+}
+
+void PlayerbotFactory::InitTaxiNodes()
+{
+    uint32 startMap = bot->GetMapId();
+
+    if (startMap == 530) //BE=EK, DREA=KAL
+        startMap = bot->GetTeam() == ALLIANCE ? 1 : 0;
+
+    for (uint32 i = 1; i < sTaxiNodesStore.GetNumRows(); ++i)
+    {
+        TaxiNodesEntry const* taxiNode = sTaxiNodesStore.LookupEntry(i);
+
+        if (!taxiNode)
+            continue;
+
+        if (!taxiNode->MountCreatureID[bot->GetTeam() == ALLIANCE ? 1 : 0]) //Don't learn nodes from other team.
+            continue;
+
+        WorldPosition taxiPosition(taxiNode);
+
+        if (!taxiPosition.isOverworld())
+            continue;
+
+        if (taxiNode->map_id == 571 && bot->GetLevel() < 66) //Don't learn nodes in northrend before level 66.
+            continue;
+
+        if (taxiNode->map_id == 530 && bot->GetLevel() < 58) //Don't learn nodes in outland before level 58.
+            continue;
+
+        uint32 taxiLevel = taxiPosition.getAreaLevel();
+
+        if (taxiLevel > bot->GetLevel() && urand(0, 20)) //Limit nodes in high level area's.
+            continue;
+
+        if (taxiNode->map_id != startMap && taxiLevel + 20 > bot->GetLevel() && urand(0, 4)) //Limit nodes on other map.
+            continue;
+
+        bot->m_taxi.SetTaximaskNode(i);
+    }
 }
