@@ -583,6 +583,23 @@ bool DebugAction::Execute(Event event)
     }
     return true;
     }
+    else if (text.find("taxi") != std::string::npos)
+    {
+        for (uint32 i = 1; i < sTaxiNodesStore.GetNumRows(); ++i)
+        {
+            if (!bot->m_taxi.IsTaximaskNodeKnown(i))
+                continue;
+
+            TaxiNodesEntry const* taxiNode = sTaxiNodesStore.LookupEntry(i);
+
+            ostringstream out;
+
+            out << taxiNode->name[0];
+
+            ai->TellMasterNoFacing(out);
+        }
+    return true;
+    }
     else if (text.find("add node") != std::string::npos)
     {
         WorldPosition pos(bot);
