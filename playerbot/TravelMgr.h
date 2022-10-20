@@ -47,6 +47,7 @@ namespace ai
         WorldPosition(uint32 mapid, CellPair cell) : WorldLocation(mapid, (int32(cell.x_coord) - CENTER_GRID_CELL_ID - 0.5)* SIZE_OF_GRID_CELL + CENTER_GRID_CELL_OFFSET, (int32(cell.y_coord) - CENTER_GRID_CELL_ID - 0.5)* SIZE_OF_GRID_CELL + CENTER_GRID_CELL_OFFSET, 0, 0) {}
         WorldPosition(uint32 mapid, mGridPair grid) : WorldLocation(mapid, (32 - grid.first)* SIZE_OF_GRIDS, (32 - grid.second)* SIZE_OF_GRIDS, 0, 0) {}
         WorldPosition(SpellTargetPosition const* pos) : WorldLocation(pos->target_mapId, pos->target_X, pos->target_Y, pos->target_Z) {}
+        WorldPosition(TaxiNodesEntry const* pos) : WorldLocation(pos->map_id, pos->x, pos->y, pos->z) {}
 
         //Setters
         void set(const WorldLocation& pos) { mapid = pos.mapid; coord_x = pos.coord_x; coord_y = pos.coord_y; coord_z = pos.coord_z; orientation = pos.orientation; }
@@ -192,7 +193,8 @@ namespace ai
         float getDisplayX() { return getDisplayLocation().getY() * -1.0; }
         float getDisplayY() { return getDisplayLocation().getX(); }
 
-        uint16 getAreaFlag() { return sTerrainMgr.GetAreaFlag(getMapId(), getX(), getY(), getZ()); };
+        bool isValid() { return MaNGOS::IsValidMapCoord(getX(), getY(), getZ(), getO()); };
+        uint16 getAreaFlag() { return isValid() ? sTerrainMgr.GetAreaFlag(getMapId(), getX(), getY(), getZ()) : 0; };
         AreaTableEntry const* getArea();
         string getAreaName(bool fullName = true, bool zoneName = false);
         int32 getAreaLevel();

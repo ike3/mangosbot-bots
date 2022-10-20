@@ -262,6 +262,25 @@ bool MovementAction::FlyDirect(WorldPosition &startPosition, WorldPosition &endP
     }
 
     MotionMaster& mm = *bot->GetMotionMaster();
+
+    //Clean movement if not already moving the same way.
+    if (mm.GetCurrent()->GetMovementGeneratorType() != POINT_MOTION_TYPE)
+    {
+        ai->StopMoving();
+        mm.Clear();
+    }
+    else
+    {
+        float x, y, z;
+        mm.GetDestination(x, y, z);
+
+        if (movePosition.distance(WorldPosition(movePosition.getMapId(), x, y, z, 0)) > minDist)
+        {
+            ai->StopMoving();
+            mm.Clear();
+        }
+    }
+
     mm.MovePoint(movePosition.getMapId(), Position(movePosition.getX(), movePosition.getY(), movePosition.getZ(), 0.f), bot->IsFlying() ? FORCED_MOVEMENT_FLIGHT : FORCED_MOVEMENT_RUN, bot->IsFlying() ? bot->GetSpeed(MOVE_FLIGHT) : 0.f, bot->IsFlying());
 
     AI_VALUE(LastMovement&, "last movement").setShort(startPosition, movePosition);
@@ -488,7 +507,11 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
                 return false;
 
             uint32 spellId = goInfo->spellcaster.spellId;
-            const SpellEntry* const pSpellInfo = sServerFacade.LookupSpellInfo(spellId);
+            const SpellEntry* pSpellInfo = sServerFacade.LookupSpellInfo(spellId);
+
+            if (pSpellInfo->EffectTriggerSpell[0])
+                pSpellInfo = sServerFacade.LookupSpellInfo(pSpellInfo->EffectTriggerSpell[0]);
+
             if (pSpellInfo->Effect[0] != SPELL_EFFECT_TELEPORT_UNITS && pSpellInfo->Effect[1] != SPELL_EFFECT_TELEPORT_UNITS && pSpellInfo->Effect[2] != SPELL_EFFECT_TELEPORT_UNITS)
                 return false;
 
