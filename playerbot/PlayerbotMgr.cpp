@@ -266,6 +266,12 @@ void PlayerbotHolder::OnBotLogin(Player * const bot)
 
     Player* master = ai->GetMaster();
 
+    if (!master && sPlayerbotAIConfig.IsNonRandomBot(bot))
+    {
+        ai->SetMaster(bot);
+        master = bot;
+    }
+
     if (master)
     {
         ObjectGuid masterGuid = master->GetObjectGuid();
@@ -411,7 +417,7 @@ void PlayerbotHolder::OnBotLogin(Player * const bot)
         }
     }
 
-    if (sPlayerbotAIConfig.instantRandomize && !sPlayerbotAIConfig.disableRandomLevels && sRandomPlayerbotMgr.IsRandomBot(bot) && !bot->GetTotalPlayedTime())
+    if (sPlayerbotAIConfig.instantRandomize && !sPlayerbotAIConfig.disableRandomLevels && sRandomPlayerbotMgr.IsRandomBot(bot) && !bot->GetTotalPlayedTime() && !sPlayerbotAIConfig.IsNonRandomBot(bot))
     {
         sRandomPlayerbotMgr.InstaRandomize(bot);
     }

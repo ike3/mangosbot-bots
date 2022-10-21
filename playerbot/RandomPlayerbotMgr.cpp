@@ -555,6 +555,22 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed, bool minimal)
     }
     if (pmo) pmo->finish();
 
+    if (!sPlayerbotAIConfig.nonRandomBots.empty())
+    {
+        for (auto bot : sPlayerbotAIConfig.nonRandomBots)
+        {
+            Player* player = GetPlayerBot(bot.second);
+
+            PlayerbotAI* ai = player ? player->GetPlayerbotAI() : NULL;
+
+            if (!player)
+            {
+                sLog.outDetail("Add player %d", bot);
+                AddPlayerBot(bot.second, bot.first);
+            }
+        }
+    }
+
     if (sPlayerbotAIConfig.hasLog("player_location.csv"))
     {
         LogPlayerLocation();
@@ -2135,6 +2151,10 @@ bool RandomPlayerbotMgr::IsRandomBot(Player* bot)
     {
         if (bot->GetPlayerbotAI()->IsRealPlayer())
             return false;
+
+        if (sPlayerbotAIConfig.IsInNonRandomAccountList(bot->GetSession()->GetAccountId()))
+            if (!bot->GetPlayerbotAI()->GetMaster() || !bot->GetPlayerbotAI()->HasRealPlayerMaster())
+                return true;
     }
     if (bot)
     {

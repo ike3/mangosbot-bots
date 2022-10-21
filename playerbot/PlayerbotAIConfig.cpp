@@ -24,6 +24,7 @@ PlayerbotAIConfig::PlayerbotAIConfig()
 template <class T>
 void LoadList(string value, T &list)
 {
+    list.clear();
     vector<string> ids = split(value, ',');
     for (vector<string>::iterator i = ids.begin(); i != ids.end(); i++)
     {
@@ -40,6 +41,7 @@ void LoadList(string value, T &list)
 template <class T>
 void LoadListString(string value, T& list)
 {
+    list.clear();
     vector<string> strings = split(value, ',');
     for (vector<string>::iterator i = strings.begin(); i != strings.end(); i++)
     {
@@ -333,6 +335,19 @@ bool PlayerbotAIConfig::Initialize()
     freeFood = config.GetBoolDefault("AiPlayerbot.FreeFood", true);
 
     selfBotLevel = config.GetIntDefault("AiPlayerbot.SelfBotLevel", 1);
+    LoadListString<list<string>>(config.GetStringDefault("AiPlayerbot.ToggleAlwaysOnlineAccounts", ""), toggleAlwaysOnlineAccounts);
+    LoadListString<list<string>>(config.GetStringDefault("AiPlayerbot.ToggleAlwaysOnlineChars", ""), toggleAlwaysOnlineChars);
+
+    for (string& nm : toggleAlwaysOnlineAccounts)
+        transform(nm.begin(), nm.end(), nm.begin(), ::toupper);
+
+    for (string& nm : toggleAlwaysOnlineChars)
+    {
+        transform(nm.begin(), nm.end(), nm.begin(), ::tolower);
+        nm[0] = toupper(nm[0]);
+    }
+
+    loadNonRandomBotAccounts();
 
     targetPosRecalcDistance = config.GetFloatDefault("AiPlayerbot.TargetPosRecalcDistance", 0.1f),
     BarGoLink::SetOutputState(config.GetBoolDefault("AiPlayerbot.ShowProgressBars", false));
@@ -365,6 +380,24 @@ bool PlayerbotAIConfig::Initialize()
 bool PlayerbotAIConfig::IsInRandomAccountList(uint32 id)
 {
     return find(randomBotAccounts.begin(), randomBotAccounts.end(), id) != randomBotAccounts.end();
+}
+
+bool PlayerbotAIConfig::IsInNonRandomAccountList(uint32 id)
+{
+    for (auto bot : nonRandomBots)
+        if (bot.first == id)
+            return true;
+
+    return false;
+}
+
+bool PlayerbotAIConfig::IsNonRandomBot(Player* player)
+{
+    for (auto bot : nonRandomBots)
+        if (bot.second == player->GetGUIDLow())
+            return true;
+
+    return false;
 }
 
 bool PlayerbotAIConfig::IsInRandomQuestItemList(uint32 id)
@@ -534,6 +567,52 @@ void PlayerbotAIConfig::loadWorldBuf(Config* config, uint32 factionId1, uint32 c
     }
 }
 
+void PlayerbotAIConfig::loadNonRandomBotAccounts()
+{
+    bool allCharsOnline = (selfBotLevel > 3);
+
+    nonRandomBots.clear();
+
+    QueryResult* results = LoginDatabase.PQuery("SELECT username, id FROM account where username not like '%s%%'", randomBotAccountPrefix);
+    if (results)
+    {
+        do
+        {
+            bool accountAlwaysOnline = allCharsOnline;
+
+            Field* fields = results->Fetch();
+            string accountName = fields[0].GetString();
+            uint32 accountId = fields[1].GetUInt32();
+
+            if (std::find(toggleAlwaysOnlineAccounts.begin(), toggleAlwaysOnlineAccounts.end(), accountName) != toggleAlwaysOnlineAccounts.end())
+                accountAlwaysOnline = !accountAlwaysOnline;                       
+
+            QueryResult* result = CharacterDatabase.PQuery("SELECT name, guid FROM characters WHERE account = '%u'", accountId);
+            if (!result)
+                continue;
+
+            do
+            {
+                bool charAlwaysOnline = allCharsOnline;
+
+                Field* fields = result->Fetch();
+                string charName = fields[0].GetString();
+                uint32 guid = fields[1].GetUInt32();
+
+                if (std::find(toggleAlwaysOnlineChars.begin(), toggleAlwaysOnlineChars.end(), charName) != toggleAlwaysOnlineChars.end())
+                    charAlwaysOnline = !charAlwaysOnline;
+
+                if(charAlwaysOnline || accountAlwaysOnline)
+                    nonRandomBots.push_back(make_pair(accountId, guid));
+
+            } while (result->NextRow());
+            delete result;
+        
+
+        } while (results->NextRow());
+        delete results;
+    }
+}
 
 std::string PlayerbotAIConfig::GetTimestampStr()
 {

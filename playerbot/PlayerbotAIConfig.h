@@ -32,6 +32,8 @@ public:
 public:
     bool Initialize();
     bool IsInRandomAccountList(uint32 id);
+    bool IsInNonRandomAccountList(uint32 id);
+    bool IsNonRandomBot(Player* player);
     bool IsInRandomQuestItemList(uint32 id);
 	bool IsInPvpProhibitedZone(uint32 id);
 
@@ -54,6 +56,9 @@ public:
     std::list<uint32> randomBotAccounts;
     std::list<uint32> randomBotSpellIds;
     std::list<uint32> randomBotQuestIds;
+    std::list<std::pair<uint32, uint32>> nonRandomBots;
+    std::list<string> toggleAlwaysOnlineAccounts;
+    std::list<string> toggleAlwaysOnlineChars;
     uint32 randomBotTeleportDistance;
     uint32 randomGearMaxLevel;
     uint32 randomGearMaxDiff;
@@ -166,6 +171,7 @@ public:
     void SetValue(std::string name, std::string value);
 
     void loadWorldBuf(Config* config, uint32 factionId, uint32 classId, uint32 specId1, uint32 minLevel, uint32 maxLevel);
+    void loadNonRandomBotAccounts();
 
     std::string GetTimestampStr();
 
