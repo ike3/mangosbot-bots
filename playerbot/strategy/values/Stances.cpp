@@ -72,7 +72,7 @@ namespace ai
                 return target->GetOrientation();
 #endif
 
-            if (ai->HasStrategy("behind", BOT_STATE_COMBAT))
+            if (ai->HasStrategy("behind", BotState::BOT_STATE_COMBAT))
             {
                 Unit* target = GetTarget();
                 Group* group = bot->GetGroup();

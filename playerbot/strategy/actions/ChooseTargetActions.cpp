@@ -41,7 +41,7 @@ bool DropTargetAction::Execute(Event event)
 {
     context->GetValue<Unit*>("current target")->Set(NULL);
     bot->SetSelectionGuid(ObjectGuid());
-    ai->ChangeEngine(BOT_STATE_NON_COMBAT);
+    ai->ChangeEngine(BotState::BOT_STATE_NON_COMBAT);
     ai->InterruptSpell();
     bot->AttackStop();
     Pet* pet = bot->GetPet();

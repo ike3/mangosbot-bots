@@ -58,7 +58,7 @@ bool CheckMountStateAction::Execute(Event event)
             return Mount();
         }
 
-        if (!bot->IsMounted() && (chasedistance || (farFromMaster && ai->HasStrategy("follow", BOT_STATE_NON_COMBAT))) && !bot->IsInCombat() && (!dps || canFly))
+        if (!bot->IsMounted() && (chasedistance || (farFromMaster && ai->HasStrategy("follow", BotState::BOT_STATE_NON_COMBAT))) && !bot->IsInCombat() && (!dps || canFly))
             return Mount();
 
         if (!bot->IsFlying() && ((!farFromMaster && !master->IsMounted()) || attackdistance) && bot->IsMounted())
@@ -165,7 +165,7 @@ bool CheckMountStateAction::isUseful()
         return false;
 #endif
 
-    if (!bot->GetPlayerbotAI()->HasStrategy("mount", BOT_STATE_NON_COMBAT) && !bot->IsMounted())
+    if (!bot->GetPlayerbotAI()->HasStrategy("mount", BotState::BOT_STATE_NON_COMBAT) && !bot->IsMounted())
         return false;
 
     bool firstmount = bot->GetLevel() >=

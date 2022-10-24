@@ -277,7 +277,7 @@ bool RpgTradeUsefulAction::Execute(Event event)
         if (IsTradingItem(item->GetEntry())) //Did we manage to add the item to the trade?
         {
             if (bot->GetGroup() && bot->GetGroup()->IsMember(guidP))
-                ai->TellMasterNoFacing("You can use this " + chat->formatItem(item->GetProto()) + " better than me, " + player->GetName() + ".", PLAYERBOT_SECURITY_ALLOW_ALL, false);
+                ai->TellMasterNoFacing("You can use this " + chat->formatItem(item->GetProto()) + " better than me, " + player->GetName() + ".", PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
             else
                 bot->Say("You can use this " + chat->formatItem(item->GetProto()) + " better than me, " + player->GetName() + ".", (bot->GetTeam() == ALLIANCE ? LANG_COMMON : LANG_ORCISH));
 

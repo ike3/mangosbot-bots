@@ -22,7 +22,7 @@ bool AutoLearnSpellAction::Execute(Event event)
         out << temp;
         out.seekp(-2, out.cur);
         out << ".";
-        ai->TellMaster(out, PLAYERBOT_SECURITY_ALLOW_ALL, false);
+        ai->TellMaster(out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
     }
 
     return true;

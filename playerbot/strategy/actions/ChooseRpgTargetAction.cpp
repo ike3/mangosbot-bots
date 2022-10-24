@@ -61,7 +61,7 @@ float ChooseRpgTargetAction::getMaxRelevance(GuidPosition guidP)
         if (strategy.find("rpg") == std::string::npos)
             continue;
 
-        if (!ai->HasStrategy(strategy, BOT_STATE_NON_COMBAT))
+        if (!ai->HasStrategy(strategy, BotState::BOT_STATE_NON_COMBAT))
             continue;
 
         rpgStrategy = ai->GetAiObjectContext()->GetStrategy(strategy);
@@ -168,7 +168,7 @@ bool ChooseRpgTargetAction::Execute(Event event)
     std::shuffle(targetList.begin(), targetList.end(), *GetRandomGenerator());
 
     //Update tradeskill items so we can use lazy in trigger check.
-    if(ai->HasStrategy("rpg craft", BOT_STATE_NON_COMBAT))
+    if(ai->HasStrategy("rpg craft", BotState::BOT_STATE_NON_COMBAT))
         AI_VALUE2(list<uint32>, "inventory item ids", "usage " + to_string(ITEM_USAGE_SKILL));
 
     uint16 checked = 0;
@@ -246,7 +246,7 @@ bool ChooseRpgTargetAction::Execute(Event event)
 
     if (targets.empty())
     {
-        if (ai->HasStrategy("debug rpg", BOT_STATE_NON_COMBAT))
+        if (ai->HasStrategy("debug rpg", BotState::BOT_STATE_NON_COMBAT))
         {
             ostringstream out;
             out << "found: no targets, " << checked << " checked.";
@@ -258,7 +258,7 @@ bool ChooseRpgTargetAction::Execute(Event event)
         return false;
     }
 
-    if (ai->HasStrategy("debug rpg", BOT_STATE_NON_COMBAT))
+    if (ai->HasStrategy("debug rpg", BotState::BOT_STATE_NON_COMBAT))
     {
         vector<pair<ObjectGuid, uint32>> sortedTargets(targets.begin(), targets.end());
 
@@ -315,7 +315,7 @@ bool ChooseRpgTargetAction::Execute(Event event)
         return false;
     }
 
-    if ((ai->HasStrategy("debug", BOT_STATE_NON_COMBAT) || ai->HasStrategy("debug rpg", BOT_STATE_NON_COMBAT)) && guidP.GetWorldObject())
+    if ((ai->HasStrategy("debug", BotState::BOT_STATE_NON_COMBAT) || ai->HasStrategy("debug rpg", BotState::BOT_STATE_NON_COMBAT)) && guidP.GetWorldObject())
     {
         ostringstream out;
         out << "found: ";
@@ -389,7 +389,7 @@ bool ChooseRpgTargetAction::isFollowValid(Player* bot, WorldPosition pos)
     if (!master || bot == master)
         return true;
 
-    if (!ai->HasStrategy("follow", BOT_STATE_NON_COMBAT))
+    if (!ai->HasStrategy("follow", BotState::BOT_STATE_NON_COMBAT))
         return true;
 
     Formation* formation = AI_VALUE(Formation*, "formation");

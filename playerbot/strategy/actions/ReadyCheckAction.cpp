@@ -197,13 +197,13 @@ bool ReadyCheckAction::ReadyCheck()
         out << formatPercent("Water", water, 100.0 * water / 20);
     }
 
-    ai->TellMaster(out, PLAYERBOT_SECURITY_ALLOW_ALL, false);
+    ai->TellMaster(out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
 
     WorldPacket packet(MSG_RAID_READY_CHECK);
     packet << uint8(1);
     bot->GetSession()->HandleRaidReadyCheckOpcode(packet);
 
-    ai->ChangeStrategy("-ready check", BOT_STATE_NON_COMBAT);
+    ai->ChangeStrategy("-ready check", BotState::BOT_STATE_NON_COMBAT);
 
     return true;
 }

@@ -357,7 +357,7 @@ namespace ai
             if (ground <= INVALID_HEIGHT)
             {
                 float minDist = 0, minX = 0, minY = 0;
-                for (float angle = 0.0f; angle <= 2 * M_PI; angle += M_PI / 16.0f)
+                for (double angle = 0.0f; angle <= 2 * M_PI; angle += M_PI / 16.0f)
                 {
                     x = master->GetPositionX() + cos(angle) * range + cos(followAngle) * followRange;
                     y = master->GetPositionY() + sin(angle) * range + sin(followAngle) * followRange;

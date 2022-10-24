@@ -35,7 +35,7 @@ namespace ai
         virtual bool Execute(Event event);
         virtual bool isUseful()
         {
-            if (!ai->HasStrategy("travel", BOT_STATE_NON_COMBAT))
+            if (!ai->HasStrategy("travel", BotState::BOT_STATE_NON_COMBAT))
                 return false;
 
             if (!ChooseTravelTargetAction::isUseful())
@@ -62,7 +62,7 @@ namespace ai
         virtual bool Execute(Event event);
         virtual bool isUseful()
         {
-            if (!ai->HasStrategy("travel", BOT_STATE_NON_COMBAT))
+            if (!ai->HasStrategy("travel", BotState::BOT_STATE_NON_COMBAT))
                 return false;
 
             if (!ChooseTravelTargetAction::isUseful())

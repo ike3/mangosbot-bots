@@ -18,10 +18,10 @@ bool ReviveFromCorpseAction::Execute(Event event)
     {
         if (sServerFacade.IsDistanceLessThan(AI_VALUE2(float, "distance", "master target"), sPlayerbotAIConfig.farDistance))
         {
-            if (!ai->HasStrategy("follow", BOT_STATE_NON_COMBAT))
+            if (!ai->HasStrategy("follow", BotState::BOT_STATE_NON_COMBAT))
             {
-                ai->TellMasterNoFacing("Welcome back!", PLAYERBOT_SECURITY_ALLOW_ALL, false);
-                ai->ChangeStrategy("+follow,-stay", BOT_STATE_NON_COMBAT);
+                ai->TellMasterNoFacing("Welcome back!", PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+                ai->ChangeStrategy("+follow,-stay", BotState::BOT_STATE_NON_COMBAT);
                 return true;
             }
         }
@@ -198,7 +198,7 @@ WorldSafeLocsEntry const* SpiritHealerAction::GetGrave(bool startZone)
     if (!startZone && ClosestGrave)
         return ClosestGrave;
 
-    if (ai->HasStrategy("follow", BOT_STATE_NON_COMBAT)&& ai->GetGroupMaster() && ai->GetGroupMaster() != bot)
+    if (ai->HasStrategy("follow", BotState::BOT_STATE_NON_COMBAT)&& ai->GetGroupMaster() && ai->GetGroupMaster() != bot)
     {
         Player* master = ai->GetGroupMaster();
 
@@ -294,7 +294,7 @@ bool SpiritHealerAction::Execute(Event event)
                 bot->SaveToDB();
                 context->GetValue<Unit*>("current target")->Set(NULL);
                 bot->SetSelectionGuid(ObjectGuid());
-                ai->TellMaster(BOT_TEXT("hello"), PLAYERBOT_SECURITY_ALLOW_ALL, false);
+                ai->TellMaster(BOT_TEXT("hello"), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
 
                 if (dCount > 20)
                     context->GetValue<uint32>("death count")->Set(0);

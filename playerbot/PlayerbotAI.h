@@ -80,14 +80,13 @@ enum HealingItemDisplayId
    MAJOR_DREAMLESS_SLEEP_POTION = 37845,
 };
 
-enum BotState
+enum class BotState : uint8
 {
     BOT_STATE_COMBAT = 0,
     BOT_STATE_NON_COMBAT = 1,
-    BOT_STATE_DEAD = 2
+    BOT_STATE_DEAD = 2,
+    BOT_STATE_MAX
 };
-
-#define BOT_STATE_MAX 3
 
 enum RoguePoisonDisplayId
 {
@@ -295,11 +294,11 @@ public:
     GameObject* GetGameObject(ObjectGuid guid);
     static GameObject* GetGameObject(GameObjectDataPair const* gameObjectDataPair);
     WorldObject* GetWorldObject(ObjectGuid guid);
-    bool TellMaster(ostringstream &stream, PlayerbotSecurityLevel securityLevel = PLAYERBOT_SECURITY_ALLOW_ALL, bool isPrivate = true) { return TellMaster(stream.str(), securityLevel, isPrivate); }
-    bool TellMaster(string text, PlayerbotSecurityLevel securityLevel = PLAYERBOT_SECURITY_ALLOW_ALL, bool isPrivate = true);
-    bool TellMasterNoFacing(ostringstream& stream, PlayerbotSecurityLevel securityLevel = PLAYERBOT_SECURITY_ALLOW_ALL, bool isPrivate = true) { return TellMasterNoFacing(stream.str(), securityLevel, isPrivate); }
-    bool TellMasterNoFacing(string text, PlayerbotSecurityLevel securityLevel = PLAYERBOT_SECURITY_ALLOW_ALL, bool isPrivate = true);
-    bool TellError(string text, PlayerbotSecurityLevel securityLevel = PLAYERBOT_SECURITY_ALLOW_ALL);
+    bool TellMaster(ostringstream &stream, PlayerbotSecurityLevel securityLevel = PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, bool isPrivate = true) { return TellMaster(stream.str(), securityLevel, isPrivate); }
+    bool TellMaster(string text, PlayerbotSecurityLevel securityLevel = PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, bool isPrivate = true);
+    bool TellMasterNoFacing(ostringstream& stream, PlayerbotSecurityLevel securityLevel = PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, bool isPrivate = true) { return TellMasterNoFacing(stream.str(), securityLevel, isPrivate); }
+    bool TellMasterNoFacing(string text, PlayerbotSecurityLevel securityLevel = PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, bool isPrivate = true);
+    bool TellError(string text, PlayerbotSecurityLevel securityLevel = PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL);
     void SpellInterrupted(uint32 spellid);
     int32 CalculateGlobalCooldown(uint32 spellid);
     void InterruptSpell();
@@ -369,7 +368,7 @@ public:
 
 private:
     void _fillGearScoreData(Player *player, Item* item, std::vector<uint32>* gearScore, uint32& twoHandScore);
-    bool IsTellAllowed(PlayerbotSecurityLevel securityLevel = PLAYERBOT_SECURITY_ALLOW_ALL);
+    bool IsTellAllowed(PlayerbotSecurityLevel securityLevel = PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL);
 
 public:
 	Player* GetBot() { return bot; }
@@ -380,7 +379,7 @@ public:
 
     //Bot has a master that is a player.
     bool HasRealPlayerMaster() { return master && (!master->GetPlayerbotAI() || master->GetPlayerbotAI()->IsRealPlayer()); } 
-    //Bot has a master that is activly playing.
+    //Bot has a master that is actively playing.
     bool HasActivePlayerMaster() { return master && !master->GetPlayerbotAI(); }
 
     //Checks if the bot is summoned as alt of a player
@@ -426,7 +425,7 @@ protected:
 	uint32 accountId;
     AiObjectContext* aiObjectContext;
     Engine* currentEngine;
-    Engine* engines[BOT_STATE_MAX];
+    Engine* engines[(uint8)BotState::BOT_STATE_MAX];
     BotState currentState;
     ChatHelper chatHelper;
     queue<ChatCommandHolder> chatCommands;

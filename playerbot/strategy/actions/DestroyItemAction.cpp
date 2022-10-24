@@ -29,7 +29,7 @@ void DestroyItemAction::DestroyItem(FindItemVisitor* visitor)
 		Item* item = *i;
         ostringstream out; out << chat->formatItem(item->GetProto()) << " destroyed";
         bot->DestroyItem(item->GetBagSlot(),item->GetSlot(), true);
-        ai->TellMaster(out, PLAYERBOT_SECURITY_ALLOW_ALL, false);
+        ai->TellMaster(out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
     }
 }
 

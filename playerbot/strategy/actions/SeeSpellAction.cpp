@@ -44,23 +44,10 @@ bool SeeSpellAction::Execute(Event event)
 {
     WorldPacket p(event.getPacket()); // 
     uint32 spellId;
-    uint8  cast_count, cast_flags;
     Player* master = ai->GetMaster();
 
     p.rpos(0);
-#ifndef MANGOSBOT_TWO
     p >> spellId;
-#endif
-
-
-#ifdef MANGOSBOT_ONE
-    p >> cast_count;
-#endif
-#ifdef MANGOSBOT_TWO
-    p >> cast_count;
-    p >> spellId;
-    p >> cast_flags;     
-#endif
 
     if (!master)
         return false;
@@ -80,7 +67,7 @@ bool SeeSpellAction::Execute(Event event)
     WorldPosition spellPosition(master->GetMapId(), targets.m_destPos);
     SET_AI_VALUE(WorldPosition, "see spell location", spellPosition);
 
-    if (ai->HasStrategy("debug", BOT_STATE_NON_COMBAT) || ai->HasStrategy("debug move", BOT_STATE_NON_COMBAT))
+    if (ai->HasStrategy("debug", BotState::BOT_STATE_NON_COMBAT) || ai->HasStrategy("debug move", BotState::BOT_STATE_NON_COMBAT))
     {
         PathFinder path(bot);
 

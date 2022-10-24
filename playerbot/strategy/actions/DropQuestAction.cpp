@@ -151,7 +151,7 @@ void CleanQuestLogAction::DropQuestType(uint8 &numQuest, uint8 wantNum, bool isG
 
         numQuest--;
 
-        ai->TellMaster(BOT_TEXT("quest_remove") + chat->formatQuest(quest), PLAYERBOT_SECURITY_ALLOW_ALL, false);
+        ai->TellMaster(BOT_TEXT("quest_remove") + chat->formatQuest(quest), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
     }
 }
 

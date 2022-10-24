@@ -1475,7 +1475,7 @@ bool RandomPlayerbotMgr::ProcessBot(Player* player)
     TravelTarget* target = player->GetPlayerbotAI()->GetAiObjectContext()->GetValue<TravelTarget*>("travel target")->Get();
     if (target)
     {
-        if (target->getTravelState() == TRAVEL_STATE_IDLE)
+        if (target->getTravelState() == TravelState::TRAVEL_STATE_IDLE)
             idleBot = true;
     }
     else
@@ -2660,7 +2660,7 @@ void RandomPlayerbotMgr::PrintStats()
     }
 
     int dps = 0, heal = 0, tank = 0, active = 0, update = 0, randomize = 0, teleport = 0, changeStrategy = 0, dead = 0, combat = 0, revive = 0, taxi = 0, moving = 0, mounted = 0, afk = 0;
-    int stateCount[MAX_TRAVEL_STATE + 1] = { 0 };
+    int stateCount[(uint8)TravelState::MAX_TRAVEL_STATE + 1] = { 0 };
     vector<pair<Quest const*, int32>> questCount;
     for (PlayerBotMap::iterator i = playerBots.begin(); i != playerBots.end(); ++i)
     {
@@ -2763,7 +2763,7 @@ void RandomPlayerbotMgr::PrintStats()
         if (target)
         {
             TravelState state = target->getTravelState();
-            stateCount[state]++;
+            stateCount[(uint8)state]++;
 
             Quest const* quest;
 
@@ -2835,10 +2835,10 @@ void RandomPlayerbotMgr::PrintStats()
     sLog.outString("    AFK: %d", afk);
 
     sLog.outString("Bots questing:");
-    sLog.outString("    Picking quests: %d", stateCount[TRAVEL_STATE_TRAVEL_PICK_UP_QUEST] + stateCount[TRAVEL_STATE_WORK_PICK_UP_QUEST]);
-    sLog.outString("    Doing quests: %d", stateCount[TRAVEL_STATE_TRAVEL_DO_QUEST] + stateCount[TRAVEL_STATE_WORK_DO_QUEST]);
-    sLog.outString("    Completing quests: %d", stateCount[TRAVEL_STATE_TRAVEL_HAND_IN_QUEST] + stateCount[TRAVEL_STATE_WORK_HAND_IN_QUEST]);
-    sLog.outString("    Idling: %d", stateCount[TRAVEL_STATE_IDLE]);
+    sLog.outString("    Picking quests: %d", stateCount[(uint8)TravelState::TRAVEL_STATE_TRAVEL_PICK_UP_QUEST] + stateCount[(uint8)TravelState::TRAVEL_STATE_WORK_PICK_UP_QUEST]);
+    sLog.outString("    Doing quests: %d", stateCount[(uint8)TravelState::TRAVEL_STATE_TRAVEL_DO_QUEST] + stateCount[(uint8)TravelState::TRAVEL_STATE_WORK_DO_QUEST]);
+    sLog.outString("    Completing quests: %d", stateCount[(uint8)TravelState::TRAVEL_STATE_TRAVEL_HAND_IN_QUEST] + stateCount[(uint8)TravelState::TRAVEL_STATE_WORK_HAND_IN_QUEST]);
+    sLog.outString("    Idling: %d", stateCount[(uint8)TravelState::TRAVEL_STATE_IDLE]);
 
     /*sort(questCount.begin(), questCount.end(), [](pair<Quest const*, int32> i, pair<Quest const*, int32> j) {return i.second > j.second; });
 

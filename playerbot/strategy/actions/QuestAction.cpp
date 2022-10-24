@@ -213,13 +213,13 @@ bool QuestAction::AcceptQuest(Quest const* quest, uint64 questGiver)
             sTravelMgr.logEvent(ai, "AcceptQuestAction", quest->GetTitle(), to_string(quest->GetQuestId()));          
 
             out << "Accepted " << chat->formatQuest(quest);
-            ai->TellMaster(out, PLAYERBOT_SECURITY_ALLOW_ALL, false);
+            ai->TellMaster(out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
             return true;
         }
     }
 
     out << " " << chat->formatQuest(quest);
-    ai->TellMaster(out, PLAYERBOT_SECURITY_ALLOW_ALL, false);
+    ai->TellMaster(out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
     return false;
 }
 
@@ -237,13 +237,13 @@ bool QuestObjectiveCompletedAction::Execute(Event event)
         entry &= 0x7FFFFFFF;
         GameObjectInfo const* info = sObjectMgr.GetGameObjectInfo(entry);
         if (info)
-            ai->TellMaster(chat->formatQuestObjective(info->name, available, required), PLAYERBOT_SECURITY_ALLOW_ALL, false);
+            ai->TellMaster(chat->formatQuestObjective(info->name, available, required), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
     }
     else
     {
         CreatureInfo const* info = sObjectMgr.GetCreatureTemplate(entry);
         if (info)
-            ai->TellMaster(chat->formatQuestObjective(info->Name, available, required), PLAYERBOT_SECURITY_ALLOW_ALL, false);
+            ai->TellMaster(chat->formatQuestObjective(info->Name, available, required), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
     }
 
     Quest const* qInfo = sObjectMgr.GetQuestTemplate(questId);

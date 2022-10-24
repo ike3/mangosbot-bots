@@ -161,7 +161,7 @@ namespace ai
         CastRaptorStrikeAction(PlayerbotAI* ai) : CastMeleeSpellAction(ai, "raptor strike") {}
         virtual bool isUseful()
         {
-            return CastMeleeSpellAction::isUseful() && ai->HasStrategy("close", BOT_STATE_COMBAT);
+            return CastMeleeSpellAction::isUseful() && ai->HasStrategy("close", BotState::BOT_STATE_COMBAT);
         }
     };
 

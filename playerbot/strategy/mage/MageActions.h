@@ -72,7 +72,7 @@ namespace ai
 	{
 	public:
 		CastBlizzardAction(PlayerbotAI* ai) : CastSpellAction(ai, "blizzard") {}
-        virtual ActionThreatType getThreatType() { return ACTION_THREAT_AOE; }
+        virtual ActionThreatType getThreatType() { return ActionThreatType::ACTION_THREAT_AOE; }
         virtual bool isUseful() { return CastSpellAction::isUseful() && ai->GetCombatStartTime() && (time(0) - ai->GetCombatStartTime()) > 10; }
 	};
 

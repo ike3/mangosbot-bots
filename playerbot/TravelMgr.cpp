@@ -983,7 +983,7 @@ string QuestTravelDestination::getTitle() {
 
 bool QuestRelationTravelDestination::isActive(Player* bot) {
     PlayerbotAI* ai = bot->GetPlayerbotAI();
-    if(!ai->HasStrategy("rpg quest", BOT_STATE_NON_COMBAT))
+    if(!ai->HasStrategy("rpg quest", BotState::BOT_STATE_NON_COMBAT))
         return false;
 
     if (relation == 0)
@@ -1099,7 +1099,7 @@ string QuestRelationTravelDestination::getTitle() {
 
 bool QuestObjectiveTravelDestination::isActive(Player* bot) {
     PlayerbotAI* ai = bot->GetPlayerbotAI();
-    if (!ai->HasStrategy("rpg quest", BOT_STATE_NON_COMBAT))
+    if (!ai->HasStrategy("rpg quest", BotState::BOT_STATE_NON_COMBAT))
         return false;
 
     if ((int32)questTemplate->GetQuestLevel() > (int32)bot->GetLevel() + (int32)1)
@@ -1157,7 +1157,7 @@ bool QuestObjectiveTravelDestination::isActive(Player* bot) {
         TravelTarget* target = context->GetValue<TravelTarget*>("travel target")->Get();
 
         //Only look for the target if it is unique or if we are currently working on it.
-        if (points.size() == 1 || (target->getStatus() == TRAVEL_STATUS_WORK && target->getEntry() == getEntry()))
+        if (points.size() == 1 || (target->getStatus() == TravelStatus::TRAVEL_STATUS_WORK && target->getEntry() == getEntry()))
         {
             list<ObjectGuid> targets = AI_VALUE(list<ObjectGuid>, "possible targets");
 
@@ -1403,7 +1403,7 @@ void TravelTarget::setTarget(TravelDestination* tDestination1, WorldPosition* wP
 
     addVisitors();
 
-    setStatus(TRAVEL_STATUS_TRAVEL);
+    setStatus(TravelStatus::TRAVEL_STATUS_TRAVEL);
 }
 
 void TravelTarget::copyTarget(TravelTarget* target) {
@@ -1440,24 +1440,25 @@ void TravelTarget::setStatus(TravelStatus status) {
     startTime = WorldTimer::getMSTime();
 
     switch (m_status) {
-    case TRAVEL_STATUS_NONE:
-    case TRAVEL_STATUS_PREPARE:
-    case TRAVEL_STATUS_EXPIRED:
+    case TravelStatus::TRAVEL_STATUS_NONE:
+    case TravelStatus::TRAVEL_STATUS_PREPARE:
+    case TravelStatus::TRAVEL_STATUS_EXPIRED:
         statusTime = 1;
         break;
-    case TRAVEL_STATUS_TRAVEL:
+    case TravelStatus::TRAVEL_STATUS_TRAVEL:
         statusTime = getMaxTravelTime() * 2 + sPlayerbotAIConfig.maxWaitForMove;
         break;
-    case TRAVEL_STATUS_WORK:
+    case TravelStatus::TRAVEL_STATUS_WORK:
         statusTime = tDestination->getExpireDelay();
         break;
-    case TRAVEL_STATUS_COOLDOWN:
+    case TravelStatus::TRAVEL_STATUS_COOLDOWN:
         statusTime = tDestination->getCooldownDelay();
+    default: break;
     }
 }
 
 bool TravelTarget::isActive() {
-    if (m_status == TRAVEL_STATUS_NONE || m_status == TRAVEL_STATUS_EXPIRED || m_status == TRAVEL_STATUS_PREPARE)
+    if (m_status == TravelStatus::TRAVEL_STATUS_NONE || m_status == TravelStatus::TRAVEL_STATUS_EXPIRED || m_status == TravelStatus::TRAVEL_STATUS_PREPARE)
         return false;
 
     if (forced && isTraveling())
@@ -1465,11 +1466,11 @@ bool TravelTarget::isActive() {
 
     if ((statusTime > 0 && startTime + statusTime < WorldTimer::getMSTime()))
     {
-        setStatus(TRAVEL_STATUS_EXPIRED);
+        setStatus(TravelStatus::TRAVEL_STATUS_EXPIRED);
         return false;
     }
 
-    if (m_status == TRAVEL_STATUS_COOLDOWN)
+    if (m_status == TravelStatus::TRAVEL_STATUS_COOLDOWN)
         return true;
 
     if (isTraveling())
@@ -1480,7 +1481,7 @@ bool TravelTarget::isActive() {
 
     if (!tDestination->isActive(bot)) //Target has become invalid. Stop.
     {
-        setStatus(TRAVEL_STATUS_COOLDOWN);
+        setStatus(TravelStatus::TRAVEL_STATUS_COOLDOWN);
         return true;
     }
 
@@ -1488,19 +1489,19 @@ bool TravelTarget::isActive() {
 };
 
 bool TravelTarget::isTraveling() {
-    if (m_status != TRAVEL_STATUS_TRAVEL)
+    if (m_status != TravelStatus::TRAVEL_STATUS_TRAVEL)
         return false;
 
     if (bot->GetGroup() && !bot->GetGroup()->IsLeader(bot->GetObjectGuid()))
-        if (ai->HasStrategy("follow", BOT_STATE_NON_COMBAT) || ai->HasStrategy("stay", BOT_STATE_NON_COMBAT))
+        if (ai->HasStrategy("follow", BotState::BOT_STATE_NON_COMBAT) || ai->HasStrategy("stay", BotState::BOT_STATE_NON_COMBAT))
         {
-            setStatus(TRAVEL_STATUS_COOLDOWN);
+            setStatus(TravelStatus::TRAVEL_STATUS_COOLDOWN);
             return false;
         }
 
     if (!tDestination->isActive(bot) && !forced) //Target has become invalid. Stop.
     {
-        setStatus(TRAVEL_STATUS_COOLDOWN);
+        setStatus(TravelStatus::TRAVEL_STATUS_COOLDOWN);
         return false;
     }
 
@@ -1510,11 +1511,11 @@ bool TravelTarget::isTraveling() {
 
     if (HasArrived)
     {
-        setStatus(TRAVEL_STATUS_WORK);
+        setStatus(TravelStatus::TRAVEL_STATUS_WORK);
         return false;
     }
 
-    if (!ai->HasStrategy("travel", BOT_STATE_NON_COMBAT))
+    if (!ai->HasStrategy("travel", BotState::BOT_STATE_NON_COMBAT))
     {
         setTarget(sTravelMgr.nullTravelDestination, sTravelMgr.nullWorldPosition, true);
         return false;
@@ -1524,12 +1525,12 @@ bool TravelTarget::isTraveling() {
 }
 
 bool TravelTarget::isWorking() {
-    if (m_status != TRAVEL_STATUS_WORK)
+    if (m_status != TravelStatus::TRAVEL_STATUS_WORK)
         return false;
 
     if (!tDestination->isActive(bot)) //Target has become invalid. Stop.
     {
-        setStatus(TRAVEL_STATUS_COOLDOWN);
+        setStatus(TravelStatus::TRAVEL_STATUS_COOLDOWN);
         return false;
     }
 
@@ -1545,7 +1546,7 @@ bool TravelTarget::isWorking() {
     }
     */
 
-    if (!ai->HasStrategy("travel", BOT_STATE_NON_COMBAT))
+    if (!ai->HasStrategy("travel", BotState::BOT_STATE_NON_COMBAT))
     {
         setTarget(sTravelMgr.nullTravelDestination, sTravelMgr.nullWorldPosition, true);
         return false;
@@ -1555,7 +1556,7 @@ bool TravelTarget::isWorking() {
 }
 
 bool TravelTarget::isPreparing() {
-    if (m_status != TRAVEL_STATUS_PREPARE)
+    if (m_status != TravelStatus::TRAVEL_STATUS_PREPARE)
         return false;
 
     return true;
@@ -1563,42 +1564,42 @@ bool TravelTarget::isPreparing() {
 
 TravelState TravelTarget::getTravelState() {
     if (!tDestination || tDestination->getName() == "NullTravelDestination")
-        return TRAVEL_STATE_IDLE;
+        return TravelState::TRAVEL_STATE_IDLE;
 
     if (tDestination->getName() == "QuestRelationTravelDestination")
     {
         if (((QuestRelationTravelDestination*)tDestination)->getRelation() == 0)
         {
             if (isTraveling() || isPreparing())
-                return TRAVEL_STATE_TRAVEL_PICK_UP_QUEST;
+                return TravelState::TRAVEL_STATE_TRAVEL_PICK_UP_QUEST;
             if (isWorking())
-                return TRAVEL_STATE_WORK_PICK_UP_QUEST;
+                return TravelState::TRAVEL_STATE_WORK_PICK_UP_QUEST;
         }
         else
         {
             if (isTraveling() || isPreparing())
-                return TRAVEL_STATE_TRAVEL_HAND_IN_QUEST;
+                return TravelState::TRAVEL_STATE_TRAVEL_HAND_IN_QUEST;
             if (isWorking())
-                return TRAVEL_STATE_WORK_HAND_IN_QUEST;
+                return TravelState::TRAVEL_STATE_WORK_HAND_IN_QUEST;
         }
     }
     else if (tDestination->getName() == "QuestObjectiveTravelDestination")
     {
         if (isTraveling() || isPreparing())
-            return TRAVEL_STATE_TRAVEL_DO_QUEST;
+            return TravelState::TRAVEL_STATE_TRAVEL_DO_QUEST;
         if (isWorking())
-            return TRAVEL_STATE_WORK_DO_QUEST;
+            return TravelState::TRAVEL_STATE_WORK_DO_QUEST;
     }
     else if (tDestination->getName() == "RpgTravelDestination")
     {
-        return TRAVEL_STATE_TRAVEL_RPG;
+        return TravelState::TRAVEL_STATE_TRAVEL_RPG;
     }
     else if (tDestination->getName() == "ExploreTravelDestination")
     {
-        return TRAVEL_STATE_TRAVEL_EXPLORE;
+        return TravelState::TRAVEL_STATE_TRAVEL_EXPLORE;
     }
 
-    return TRAVEL_STATE_IDLE;
+    return TravelState::TRAVEL_STATE_IDLE;
 }
 
 void TravelMgr::Clear()
@@ -3008,16 +3009,16 @@ void TravelMgr::LoadQuestTravelTable()
                                     list<string> tstrats;
                                     set<string> strategies, sstrats;
 
-                                    tstrats = ai->GetStrategies(BOT_STATE_COMBAT);
+                                    tstrats = ai->GetStrategies(BotState::BOT_STATE_COMBAT);
                                     sstrats = con->GetSupportedStrategies();
                                     if (!sstrats.empty())
                                         strategies.insert(tstrats.begin(), tstrats.end());
 
-                                    tstrats = ai->GetStrategies(BOT_STATE_NON_COMBAT);
+                                    tstrats = ai->GetStrategies(BotState::BOT_STATE_NON_COMBAT);
                                     if (!tstrats.empty())
                                         strategies.insert(tstrats.begin(), tstrats.end());
 
-                                    tstrats = ai->GetStrategies(BOT_STATE_DEAD);
+                                    tstrats = ai->GetStrategies(BotState::BOT_STATE_DEAD);
                                     if (!tstrats.empty())
                                         strategies.insert(tstrats.begin(), tstrats.end());
 

@@ -52,9 +52,9 @@ void GuildTaskMgr::Update(Player* player, Player* guildMaster)
         return;
 
 	Guild *guild = sGuildMgr.GetGuildById(guildMaster->GetGuildId());
-    DenyReason reason = PLAYERBOT_DENY_NONE;
+    DenyReason reason = DenyReason::PLAYERBOT_DENY_NONE;
     PlayerbotSecurityLevel secLevel = guildMaster->GetPlayerbotAI()->GetSecurity()->LevelFor(player, &reason);
-    if (secLevel == PLAYERBOT_SECURITY_DENY_ALL || (secLevel == PLAYERBOT_SECURITY_TALK && reason != PLAYERBOT_DENY_FAR))
+    if (secLevel == PlayerbotSecurityLevel::PLAYERBOT_SECURITY_DENY_ALL || (secLevel == PlayerbotSecurityLevel::PLAYERBOT_SECURITY_TALK && reason != DenyReason::PLAYERBOT_DENY_FAR))
     {
         sLog.outDebug("%s / %s: skipping guild task update - not enough security level, reason = %u",
 			guild->GetName().c_str(), player->GetName(), reason);

@@ -56,7 +56,7 @@ bool TalkToQuestGiverAction::ProcessQuest(Quest const* quest, WorldObject* quest
     }
 
     out << ": " << chat->formatQuest(quest);
-    ai->TellMaster(out, PLAYERBOT_SECURITY_ALLOW_ALL, false);
+    ai->TellMaster(out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
 
     return isCompleted;
 }
@@ -189,7 +189,7 @@ void TalkToQuestGiverAction::AskToSelectReward(Quest const* quest, ostringstream
             msg << chat->formatItem(item);
         }
     }
-    ai->TellMaster(msg, PLAYERBOT_SECURITY_ALLOW_ALL, false);
+    ai->TellMaster(msg, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
 
     out << "Reward pending";
 }

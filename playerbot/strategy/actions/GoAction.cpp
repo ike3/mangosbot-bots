@@ -114,7 +114,7 @@ bool GoAction::Execute(Event event)
         else
             z = bot->GetPositionZ();
 
-        if (ai->HasStrategy("debug move", BOT_STATE_NON_COMBAT))
+        if (ai->HasStrategy("debug move", BotState::BOT_STATE_NON_COMBAT))
         {
             
             PathFinder path(bot);

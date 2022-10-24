@@ -71,7 +71,7 @@ bool RepairAllAction::Execute(Event event)
         {
             ostringstream out;
             out << "Repair: " << chat->formatMoney(totalCost) << " (" << unit->GetName() << ")";
-            ai->TellMasterNoFacing(out.str(),PLAYERBOT_SECURITY_ALLOW_ALL, false);
+            ai->TellMasterNoFacing(out.str(),PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
             bot->PlayDistanceSound(1116);
 
             sTravelMgr.logEvent(ai, "RepairAllAction", to_string(durability), to_string(totalCost));
