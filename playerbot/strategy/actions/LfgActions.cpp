@@ -193,7 +193,7 @@ bool LfgJoinAction::JoinLFG()
     uint32 needMembers = 0;
     LfgType lfgType = LFG_TYPE_NONE;
     TravelState state = TravelState::TRAVEL_STATE_IDLE;
-    TravelStatus status = TRAVEL_STATUS_NONE;
+    TravelStatus status = TravelStatus::TRAVEL_STATUS_NONE;
 
     GrouperType grouperType = ai->GetGrouperType();
 
@@ -312,7 +312,7 @@ bool LfgJoinAction::JoinLFG()
             joinedLFG = true;
         }
         // lfm for current quest zone or just current zone
-        else if (zoneLFG && (questZoneLFG || (status >= TRAVEL_STATUS_COOLDOWN || state >= TravelState::TRAVEL_STATE_TRAVEL_HAND_IN_QUEST || (state == TravelState::TRAVEL_STATE_IDLE && !urand(0, 4)))))
+        else if (zoneLFG && (questZoneLFG || (status >= TravelStatus::TRAVEL_STATUS_COOLDOWN || state >= TravelState::TRAVEL_STATE_TRAVEL_HAND_IN_QUEST || (state == TravelState::TRAVEL_STATE_IDLE && !urand(0, 4)))))
         {
             for (uint32 i = 0; i < sLFGDungeonStore.GetNumRows(); ++i)
             {
@@ -345,7 +345,7 @@ bool LfgJoinAction::JoinLFG()
             }
         }
         // lfm for random dungeon if nothing else to do
-        else if (status >= TRAVEL_STATUS_COOLDOWN || state >= TravelState::TRAVEL_STATE_TRAVEL_HAND_IN_QUEST || (state == TravelState::TRAVEL_STATE_IDLE && !urand(0, 4)))
+        else if (status >= TravelStatus::TRAVEL_STATUS_COOLDOWN || state >= TravelState::TRAVEL_STATE_TRAVEL_HAND_IN_QUEST || (state == TravelState::TRAVEL_STATE_IDLE && !urand(0, 4)))
         {
             vector<uint32> dungeons;
             for (uint32 i = 0; i < sLFGDungeonStore.GetNumRows(); ++i)
@@ -583,7 +583,7 @@ bool LfgJoinAction::JoinLFG()
             joinedLFG = true;
         }
         // lfg slot 2 for current quest zone or just current zone
-        if (zoneLFG && (questZoneLFG || (status >= TRAVEL_STATUS_COOLDOWN || state >= TravelState::TRAVEL_STATE_TRAVEL_HAND_IN_QUEST || (state == TravelState::TRAVEL_STATE_IDLE && !urand(0, 4))))) // use second lfg slot for zone lfg
+        if (zoneLFG && (questZoneLFG || (status >= TravelStatus::TRAVEL_STATUS_COOLDOWN || state >= TravelState::TRAVEL_STATE_TRAVEL_HAND_IN_QUEST || (state == TravelState::TRAVEL_STATE_IDLE && !urand(0, 4))))) // use second lfg slot for zone lfg
         {
             for (uint32 i = 0; i < sLFGDungeonStore.GetNumRows(); ++i)
             {
@@ -690,7 +690,7 @@ bool LfgJoinAction::JoinLFG()
             }
         }
         // lfg slot 3 for random dungeon if not very busy
-        else if (status >= TRAVEL_STATUS_COOLDOWN || state >= TravelState::TRAVEL_STATE_TRAVEL_HAND_IN_QUEST || (state == TravelState::TRAVEL_STATE_IDLE && !urand(0, 4)))
+        else if (status >= TravelStatus::TRAVEL_STATUS_COOLDOWN || state >= TravelState::TRAVEL_STATE_TRAVEL_HAND_IN_QUEST || (state == TravelState::TRAVEL_STATE_IDLE && !urand(0, 4)))
         {
             vector<uint32> dungeons;
             for (uint32 i = 0; i < sLFGDungeonStore.GetNumRows(); ++i)
