@@ -104,7 +104,7 @@ bool MovementAction::MoveToLOS(WorldObject* target, bool ranged)
     {
         for (auto& point : path.getPath())
         {
-            if (ai->HasStrategy("debug move", BOT_STATE_NON_COMBAT))
+            if (ai->HasStrategy("debug move", BotState::BOT_STATE_NON_COMBAT))
                 CreateWp(bot, point.x, point.y, point.z, 0.0, 2334);
 
             float distPoint = sqrt(target->GetDistance(point.x, point.y, point.z, DIST_CALC_NONE));
@@ -419,7 +419,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
                             ai->StopMoving();
                         else
                             mover->InterruptMoving(true);
-                        if (ai->HasStrategy("debug move", BOT_STATE_NON_COMBAT))
+                        if (ai->HasStrategy("debug move", BotState::BOT_STATE_NON_COMBAT))
                             ai->TellMasterNoFacing("I have no path");
                         return false;
                     }
@@ -453,7 +453,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
     if (!movePath.empty())
     {
         if (movePath.makeShortCut(startPosition, maxDist))
-            if (ai->HasStrategy("debug move", BOT_STATE_NON_COMBAT))
+            if (ai->HasStrategy("debug move", BotState::BOT_STATE_NON_COMBAT))
                 ai->TellMasterNoFacing("Found a shortcut.");
 
         if (movePath.empty())
@@ -461,7 +461,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
 
             AI_VALUE(LastMovement&, "last movement").setPath(movePath);
 
-            if (ai->HasStrategy("debug move", BOT_STATE_NON_COMBAT))
+            if (ai->HasStrategy("debug move", BotState::BOT_STATE_NON_COMBAT))
                 ai->TellMasterNoFacing("Too far from path. Rebuilding.");
             return true;
         }
@@ -648,7 +648,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
             }
         }
 
-        if (pathType == TravelNodePathType::walk && movePath.getPath().begin()->type != NODE_FLIGHTPATH)
+        if (pathType == TravelNodePathType::walk && movePath.getPath().begin()->type != PathNodeType::NODE_FLIGHTPATH)
             isWalking = true;
         //if (!isTransport && bot->GetTransport())
         //    bot->GetTransport()->RemovePassenger(bot);
@@ -661,7 +661,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
         movePath.clear();
         AI_VALUE(LastMovement&, "last movement").setPath(movePath);
 
-        if (ai->HasStrategy("debug move", BOT_STATE_NON_COMBAT))
+        if (ai->HasStrategy("debug move", BotState::BOT_STATE_NON_COMBAT))
             ai->TellMasterNoFacing("No point. Rebuilding.");
         return false;
     }
@@ -717,7 +717,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
                     if (!unit->IsWithinLOSInMap(bot))
                         continue;
 
-                    if (ai->HasStrategy("debug move", BOT_STATE_NON_COMBAT))
+                    if (ai->HasStrategy("debug move", BotState::BOT_STATE_NON_COMBAT))
                         ai->TellMasterNoFacing("Found " + chat->formatWorldobject(unit) + " stopping early.");
 
                     movePosition = point;
@@ -735,13 +735,13 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
         movePath.clear();
         AI_VALUE(LastMovement&, "last movement").setPath(movePath);
 
-        if (ai->HasStrategy("debug move", BOT_STATE_NON_COMBAT))
+        if (ai->HasStrategy("debug move", BotState::BOT_STATE_NON_COMBAT))
             ai->TellMasterNoFacing("No point. Rebuilding.");
         return false;
     }
 
     //Visual waypoints
-    if (ai->HasStrategy("debug move", BOT_STATE_NON_COMBAT))
+    if (ai->HasStrategy("debug move", BotState::BOT_STATE_NON_COMBAT))
     {
         if (!movePath.empty())
         {
@@ -1330,7 +1330,7 @@ bool MovementAction::ChaseTo(WorldObject* obj, float distance, float angle)
     }
 #endif
 
-    if (ai->HasStrategy("behind", BOT_STATE_COMBAT))
+    if (ai->HasStrategy("behind", BotState::BOT_STATE_COMBAT))
         angle = GetFollowAngle() / 3 + obj->GetOrientation() + M_PI;
 
     UpdateMovementState();
@@ -1575,7 +1575,7 @@ bool MovementAction::Flee(Unit *target)
     if (!manager.isUseful())
         return false;
 
-    if (!urand(0, 50) && ai->HasStrategy("emote", BOT_STATE_NON_COMBAT))
+    if (!urand(0, 50) && ai->HasStrategy("emote", BotState::BOT_STATE_NON_COMBAT))
     {
         vector<uint32> sounds;
         sounds.push_back(304); // guard

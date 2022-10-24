@@ -31,7 +31,7 @@ bool GuildAcceptAction::Execute(Event event)
         ai->TellError("Sorry, I am in a guild already");
         accept = false;
     }
-    else if (!ai->GetSecurity()->CheckLevelFor(PLAYERBOT_SECURITY_INVITE, false, inviter, true))
+    else if (!ai->GetSecurity()->CheckLevelFor(PlayerbotSecurityLevel::PLAYERBOT_SECURITY_INVITE, false, inviter, true))
     {
         ai->TellError("Sorry, I don't want to join your guild :(");
         accept = false;

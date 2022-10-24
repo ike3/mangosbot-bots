@@ -432,12 +432,12 @@ bool StoreLootAction::Execute(Event event)
         packet << itemindex;
         bot->GetSession()->HandleAutostoreLootItemOpcode(packet);
 
-        if (proto->Quality > ITEM_QUALITY_NORMAL && !urand(0, 50) && ai->HasStrategy("emote", BOT_STATE_NON_COMBAT)) ai->PlayEmote(TEXTEMOTE_CHEER);
-        if (proto->Quality >= ITEM_QUALITY_RARE && !urand(0, 1) && ai->HasStrategy("emote", BOT_STATE_NON_COMBAT)) ai->PlayEmote(TEXTEMOTE_CHEER);
+        if (proto->Quality > ITEM_QUALITY_NORMAL && !urand(0, 50) && ai->HasStrategy("emote", BotState::BOT_STATE_NON_COMBAT)) ai->PlayEmote(TEXTEMOTE_CHEER);
+        if (proto->Quality >= ITEM_QUALITY_RARE && !urand(0, 1) && ai->HasStrategy("emote", BotState::BOT_STATE_NON_COMBAT)) ai->PlayEmote(TEXTEMOTE_CHEER);
 
         ostringstream out; out << "Looting " << chat->formatItem(proto);
 
-        ai->TellMasterNoFacing(out.str(), PLAYERBOT_SECURITY_ALLOW_ALL, false);
+        ai->TellMasterNoFacing(out.str(), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
 
         sTravelMgr.logEvent(ai, "StoreLootAction", proto->Name1, to_string(proto->ItemId));      
 

@@ -150,7 +150,7 @@ bool Engine::DoNextAction(Unit* unit, int depth, bool minimal)
 
             if (!action)
             {
-                if (ai->HasStrategy("debug action", BOT_STATE_NON_COMBAT))
+                if (ai->HasStrategy("debug action", BotState::BOT_STATE_NON_COMBAT))
                 {
                     ostringstream out;
                     out << "try: ";
@@ -213,7 +213,7 @@ bool Engine::DoNextAction(Unit* unit, int depth, bool minimal)
                 }
                 else
                 {
-                    if (ai->HasStrategy("debug action", BOT_STATE_NON_COMBAT))
+                    if (ai->HasStrategy("debug action", BotState::BOT_STATE_NON_COMBAT))
                     {
                         ostringstream out;
                         out << "try: ";
@@ -234,7 +234,7 @@ bool Engine::DoNextAction(Unit* unit, int depth, bool minimal)
             }
             else
             {
-                if (ai->HasStrategy("debug action", BOT_STATE_NON_COMBAT))
+                if (ai->HasStrategy("debug action", BotState::BOT_STATE_NON_COMBAT))
                 {
                     ostringstream out;
                     out << "try: ";
@@ -577,7 +577,7 @@ bool Engine::ListenAndExecute(Action* action, Event event)
         actionExecuted = actionExecutionListeners.AllowExecution(action, event) ? action->Execute(event) : true;
     }
 
-    if (ai->HasStrategy("debug", BOT_STATE_NON_COMBAT))
+    if (ai->HasStrategy("debug", BotState::BOT_STATE_NON_COMBAT))
     {
         ostringstream out;
         out << "do: ";

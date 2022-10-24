@@ -341,7 +341,7 @@ bool RpgTrainTrigger::IsActive()
 
 bool RpgHealTrigger::IsActive()
 {
-    if (!ai->HasStrategy("heal", BOT_STATE_COMBAT))
+    if (!ai->HasStrategy("heal", BotState::BOT_STATE_COMBAT))
         return false;
 
     GuidPosition guidP(getGuidP());
@@ -577,7 +577,7 @@ bool RpgTradeUsefulTrigger::IsActive()
 
 bool RpgDuelTrigger::IsActive()
 {
-    if(!ai->HasStrategy("start duel", BOT_STATE_NON_COMBAT))
+    if(!ai->HasStrategy("start duel", BotState::BOT_STATE_NON_COMBAT))
         return false;
 
     // Less spammy duels

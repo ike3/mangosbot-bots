@@ -27,7 +27,7 @@ bool TeleportAction::Execute(Event event)
         ostringstream out; out << "Teleporting using " << goInfo->name;
         ai->TellMasterNoFacing(out.str());
 
-        ai->ChangeStrategy("-follow,+stay", BOT_STATE_NON_COMBAT);
+        ai->ChangeStrategy("-follow,+stay", BotState::BOT_STATE_NON_COMBAT);
 
         Spell *spell = new Spell(bot, pSpellInfo, false);
         SpellCastTargets targets;

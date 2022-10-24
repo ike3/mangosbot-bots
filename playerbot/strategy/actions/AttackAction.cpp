@@ -121,7 +121,7 @@ bool AttackAction::Attack(Unit* target)
         sServerFacade.SetFacingTo(bot, target);
 
     bool attacked = bot->Attack(target, !ai->IsRanged(bot));
-    ai->ChangeEngine(BOT_STATE_COMBAT);
+    ai->ChangeEngine(BotState::BOT_STATE_COMBAT);
 
     return attacked;
 }

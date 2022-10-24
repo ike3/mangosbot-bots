@@ -28,7 +28,7 @@ bool TradeStatusAction::Execute(Event event)
 		bot->Whisper("I'm kind of busy now", LANG_UNIVERSAL, trader->GetObjectGuid());
     }
 
-    if ((trader != master || !ai->GetSecurity()->CheckLevelFor(PLAYERBOT_SECURITY_ALLOW_ALL, true, master)) && !trader->GetPlayerbotAI())
+    if ((trader != master || !ai->GetSecurity()->CheckLevelFor(PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, true, master)) && !trader->GetPlayerbotAI())
     {
         WorldPacket p;
         uint32 status = 0;
@@ -175,7 +175,7 @@ bool TradeStatusAction::CheckTrade()
         {
             string name = trader->GetName();
             if (bot->GetGroup() && bot->GetGroup()->IsMember(bot->GetTrader()->GetObjectGuid()) && ai->HasRealPlayerMaster())
-                ai->TellMasterNoFacing("Thank you " + name + ".", PLAYERBOT_SECURITY_ALLOW_ALL, false);
+                ai->TellMasterNoFacing("Thank you " + name + ".", PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
             else
                 bot->Say("Thank you " + name + ".", (bot->GetTeam() == ALLIANCE ? LANG_COMMON : LANG_ORCISH));
         }

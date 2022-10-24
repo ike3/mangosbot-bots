@@ -58,6 +58,6 @@ void UnequipAction::UnequipItem(Item& item)
     bot->GetSession()->HandleAutoStoreBagItemOpcode(packet);
 
     ostringstream out; out << chat->formatItem(item.GetProto()) << " unequipped";
-    ai->TellMaster(out, PLAYERBOT_SECURITY_ALLOW_ALL, false);
+    ai->TellMaster(out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
 }
 

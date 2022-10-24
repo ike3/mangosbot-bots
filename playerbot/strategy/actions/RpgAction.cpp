@@ -105,7 +105,7 @@ bool RpgAction::SetNextRpgAction()
     if (actions.empty())
         return false;
 
-    if (ai->HasStrategy("debug rpg", BOT_STATE_NON_COMBAT))
+    if (ai->HasStrategy("debug rpg", BotState::BOT_STATE_NON_COMBAT))
     {
         vector<pair<Action*, uint32>> sortedActions;
         
@@ -132,7 +132,7 @@ bool RpgAction::SetNextRpgAction()
 
     Action* action = actions.front();
 
-    if ((ai->HasStrategy("debug", BOT_STATE_NON_COMBAT) || ai->HasStrategy("debug rpg", BOT_STATE_NON_COMBAT)))
+    if ((ai->HasStrategy("debug", BotState::BOT_STATE_NON_COMBAT) || ai->HasStrategy("debug rpg", BotState::BOT_STATE_NON_COMBAT)))
     {
         ostringstream out;
         out << "do: ";

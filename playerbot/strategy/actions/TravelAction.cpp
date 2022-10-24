@@ -19,7 +19,7 @@ bool TravelAction::Execute(Event event)
     if (sServerFacade.isMoving(bot))
         return false;
 
-    target->setStatus(TRAVEL_STATUS_WORK);
+    target->setStatus(TravelStatus::TRAVEL_STATUS_WORK);
 
      Unit* newTarget;
     list<Unit*> targets;
@@ -151,9 +151,9 @@ bool MoveFromDarkPortalAction::Execute(Event event)
     RESET_AI_VALUE(GuidPosition,"rpg target");
 
     if (bot->GetTeam() == ALLIANCE)
-        return MoveTo(530, -319.261f, 1027.213, 54.172638f, false, true);
+        return MoveTo(530, -319.261f, 1027.213f, 54.172638f, false, true);
     else
-        return MoveTo(530, -180.444f, 1027.947, 54.181538f, false, true);
+        return MoveTo(530, -180.444f, 1027.947f, 54.181538f, false, true);
 
     return false;
 }

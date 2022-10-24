@@ -31,7 +31,7 @@ bool MoveToTravelTargetAction::Execute(Event event)
             if (!member->IsMoving())
                 continue;
 
-            if (member->GetPlayerbotAI() && !member->GetPlayerbotAI()->HasStrategy("follow", BOT_STATE_NON_COMBAT))
+            if (member->GetPlayerbotAI() && !member->GetPlayerbotAI()->HasStrategy("follow", BotState::BOT_STATE_NON_COMBAT))
                 continue;
 
             WorldPosition memberPos(member);
@@ -59,7 +59,7 @@ bool MoveToTravelTargetAction::Execute(Event event)
 
                 out << member->GetName();
 
-                ai->TellMasterNoFacing(out, PLAYERBOT_SECURITY_ALLOW_ALL, false);
+                ai->TellMasterNoFacing(out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
             }
 
             target->setExpireIn(target->getTimeLeft() + sPlayerbotAIConfig.maxWaitForMove);
@@ -80,7 +80,7 @@ bool MoveToTravelTargetAction::Execute(Event event)
     float z = location.coord_z;
     float mapId = location.mapid;
 
-    if (ai->HasStrategy("debug move", BOT_STATE_NON_COMBAT))
+    if (ai->HasStrategy("debug move", BotState::BOT_STATE_NON_COMBAT))
     {
         WorldPosition* pos = target->getPosition();
         GuidPosition* guidP = dynamic_cast<GuidPosition*>(pos);
@@ -108,7 +108,7 @@ bool MoveToTravelTargetAction::Execute(Event event)
         target->incRetry(true);
 
         if (target->isMaxRetry(true))
-            target->setStatus(TRAVEL_STATUS_COOLDOWN);
+            target->setStatus(TravelStatus::TRAVEL_STATUS_COOLDOWN);
     }
     else
         target->decRetry(true);

@@ -123,7 +123,7 @@ bool ChangeTalentsAction::Execute(Event event)
         out << botSpec.GetTalentLink();
     }
 
-    ai->TellMaster(out, PLAYERBOT_SECURITY_ALLOW_ALL, false);
+    ai->TellMaster(out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
 
     return true;
 }
@@ -325,7 +325,7 @@ bool AutoSetTalentsAction::Execute(Event event)
 
     AutoSelectTalents(&out);
 
-    ai->TellMaster(out, PLAYERBOT_SECURITY_ALLOW_ALL, false);
+    ai->TellMaster(out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
 
     return true;
 }

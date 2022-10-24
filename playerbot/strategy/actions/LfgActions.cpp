@@ -192,7 +192,7 @@ bool LfgJoinAction::JoinLFG()
     string lfgName;
     uint32 needMembers = 0;
     LfgType lfgType = LFG_TYPE_NONE;
-    TravelState state = TRAVEL_STATE_IDLE;
+    TravelState state = TravelState::TRAVEL_STATE_IDLE;
     TravelStatus status = TRAVEL_STATUS_NONE;
 
     GrouperType grouperType = ai->GetGrouperType();
@@ -241,7 +241,7 @@ bool LfgJoinAction::JoinLFG()
         state = target->getTravelState();
         status = target->getStatus();
         // queue only if quest not completed
-        if (state < TRAVEL_STATE_TRAVEL_HAND_IN_QUEST)
+        if (state < TravelState::TRAVEL_STATE_TRAVEL_HAND_IN_QUEST)
         {
             Quest const* quest = NULL;
             if (target->getDestination())
@@ -312,7 +312,7 @@ bool LfgJoinAction::JoinLFG()
             joinedLFG = true;
         }
         // lfm for current quest zone or just current zone
-        else if (zoneLFG && (questZoneLFG || (status >= TRAVEL_STATUS_COOLDOWN || state >= TRAVEL_STATE_TRAVEL_HAND_IN_QUEST || (state == TRAVEL_STATE_IDLE && !urand(0, 4)))))
+        else if (zoneLFG && (questZoneLFG || (status >= TRAVEL_STATUS_COOLDOWN || state >= TravelState::TRAVEL_STATE_TRAVEL_HAND_IN_QUEST || (state == TravelState::TRAVEL_STATE_IDLE && !urand(0, 4)))))
         {
             for (uint32 i = 0; i < sLFGDungeonStore.GetNumRows(); ++i)
             {
@@ -345,7 +345,7 @@ bool LfgJoinAction::JoinLFG()
             }
         }
         // lfm for random dungeon if nothing else to do
-        else if (status >= TRAVEL_STATUS_COOLDOWN || state >= TRAVEL_STATE_TRAVEL_HAND_IN_QUEST || (state == TRAVEL_STATE_IDLE && !urand(0, 4)))
+        else if (status >= TRAVEL_STATUS_COOLDOWN || state >= TravelState::TRAVEL_STATE_TRAVEL_HAND_IN_QUEST || (state == TravelState::TRAVEL_STATE_IDLE && !urand(0, 4)))
         {
             vector<uint32> dungeons;
             for (uint32 i = 0; i < sLFGDungeonStore.GetNumRows(); ++i)
@@ -583,7 +583,7 @@ bool LfgJoinAction::JoinLFG()
             joinedLFG = true;
         }
         // lfg slot 2 for current quest zone or just current zone
-        if (zoneLFG && (questZoneLFG || (status >= TRAVEL_STATUS_COOLDOWN || state >= TRAVEL_STATE_TRAVEL_HAND_IN_QUEST || (state == TRAVEL_STATE_IDLE && !urand(0, 4))))) // use second lfg slot for zone lfg
+        if (zoneLFG && (questZoneLFG || (status >= TRAVEL_STATUS_COOLDOWN || state >= TravelState::TRAVEL_STATE_TRAVEL_HAND_IN_QUEST || (state == TravelState::TRAVEL_STATE_IDLE && !urand(0, 4))))) // use second lfg slot for zone lfg
         {
             for (uint32 i = 0; i < sLFGDungeonStore.GetNumRows(); ++i)
             {
@@ -690,7 +690,7 @@ bool LfgJoinAction::JoinLFG()
             }
         }
         // lfg slot 3 for random dungeon if not very busy
-        else if (status >= TRAVEL_STATUS_COOLDOWN || state >= TRAVEL_STATE_TRAVEL_HAND_IN_QUEST || (state == TRAVEL_STATE_IDLE && !urand(0, 4)))
+        else if (status >= TRAVEL_STATUS_COOLDOWN || state >= TravelState::TRAVEL_STATE_TRAVEL_HAND_IN_QUEST || (state == TravelState::TRAVEL_STATE_IDLE && !urand(0, 4)))
         {
             vector<uint32> dungeons;
             for (uint32 i = 0; i < sLFGDungeonStore.GetNumRows(); ++i)
@@ -1064,7 +1064,7 @@ bool LfgAcceptAction::Execute(Event event)
 bool LfgLeaveAction::Execute(Event event)
 {
     // Don't leave if lfg strategy enabled
-    //if (ai->HasStrategy("lfg", BOT_STATE_NON_COMBAT))
+    //if (ai->HasStrategy("lfg", BotState::BOT_STATE_NON_COMBAT))
     //    return false;
 #ifdef MANGOSBOT_ZERO
     LFGPlayerQueueInfo qInfo;
@@ -1160,7 +1160,7 @@ bool LfgJoinAction::isUseful()
 {
     if (!sPlayerbotAIConfig.randomBotJoinLfg)
     {
-        //ai->ChangeStrategy("-lfg", BOT_STATE_NON_COMBAT);
+        //ai->ChangeStrategy("-lfg", BotState::BOT_STATE_NON_COMBAT);
         return false;
     }
 
@@ -1175,7 +1175,7 @@ bool LfgJoinAction::isUseful()
 
     if (bot->GetGroup() && bot->GetGroup()->GetLeaderGuid() != bot->GetObjectGuid())
     {
-        //ai->ChangeStrategy("-lfg", BOT_STATE_NON_COMBAT);
+        //ai->ChangeStrategy("-lfg", BotState::BOT_STATE_NON_COMBAT);
         return false;
     }
 

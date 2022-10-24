@@ -94,7 +94,7 @@ bool BuyPetitionAction::canBuyPetition(Player* bot)
     if (ai->GetGrouperType() == GrouperType::SOLO)
         return false;
 
-    if (!ai->HasStrategy("guild", BOT_STATE_NON_COMBAT))
+    if (!ai->HasStrategy("guild", BotState::BOT_STATE_NON_COMBAT))
         return false;
 
     uint32 cost = 1000; //GUILD_CHARTER_COST;
