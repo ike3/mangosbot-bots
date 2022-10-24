@@ -86,7 +86,8 @@ class RandomPlayerbotMgr : public PlayerbotHolder
         void OnPlayerLogin(Player* player);
         void OnPlayerLoginError(uint32 bot);
         Player* GetRandomPlayer();
-        vector<Player*> GetPlayers() { return players; };
+        PlayerBotMap GetPlayers() { return players; };
+        Player* GetPlayer(uint32 playerGuid);
         PlayerBotMap GetAllBots() { return playerBots; };
         void PrintStats();
         double GetBuyMultiplier(Player* bot);
@@ -164,7 +165,7 @@ class RandomPlayerbotMgr : public PlayerbotHolder
         typedef void (RandomPlayerbotMgr::*ConsoleCommandHandler) (Player*);
 
     private:
-        vector<Player*> players;
+        PlayerBotMap players;
         int processTicks;
         map<uint8, vector<WorldLocation> > locsPerLevelCache;
         map<uint32, vector<WorldLocation> > rpgLocsCache;
