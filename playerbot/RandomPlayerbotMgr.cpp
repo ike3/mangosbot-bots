@@ -2615,7 +2615,10 @@ void RandomPlayerbotMgr::OnPlayerLogin(Player* player)
     if (IsRandomBot(player))
     {
         uint32 guid = player->GetGUIDLow();
-        SetEventValue(guid, "login", 0, 0);
+        if (sPlayerbotAIConfig.IsNonRandomBot(player))
+            player->TeleportTo(WorldPosition(player));
+        else
+           SetEventValue(guid, "login", 0, 0);
     }
     else
     {

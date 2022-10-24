@@ -260,7 +260,7 @@ void PlayerbotHolder::OnBotLogin(Player * const bot)
     PlayerbotAI* ai = bot->GetPlayerbotAI();
     if (!ai)
     {
-       ai = new PlayerbotAI(bot);
+        ai = new PlayerbotAI(bot);
         bot->SetPlayerbotAI(ai);
     }
 	OnBotLoginInternal(bot);
