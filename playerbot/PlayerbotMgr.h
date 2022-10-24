@@ -34,6 +34,7 @@ public:
 
     void LogoutAllBots();
     void OnBotLogin(Player* bot);
+    void MovePlayerBot(uint32 guid, PlayerbotHolder* newHolder) { auto botptr = playerBots.find(guid); if (botptr == playerBots.end()) return;  newHolder->OnBotLogin(botptr->second); playerBots.erase(guid); }
 
     list<string> HandlePlayerbotCommand(char const* args, Player* master = NULL);
     string ProcessBotCommand(string cmd, ObjectGuid guid, ObjectGuid masterguid, bool admin, uint32 masterAccountId, uint32 masterGuildId);
