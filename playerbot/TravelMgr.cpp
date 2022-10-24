@@ -596,8 +596,10 @@ vector<WorldPosition> WorldPosition::getPathStepFrom(WorldPosition startPos, Uni
     uint32 instanceId;
     if (sTravelNodeMap.gethasToGen())
         instanceId = 0;
+    else if (!bot || sPlayerbotAIConfig.tweakValue || bot->GetMapId() != startPos.getMapId())
+        instanceId = hasher(std::this_thread::get_id());
     else
-        instanceId = bot ?  bot->GetInstanceId() : hasher(std::this_thread::get_id());
+        instanceId = bot->GetInstanceId();
     //Load mmaps and vmaps between the two points.
 
     loadMapAndVMaps(startPos, instanceId);
@@ -605,7 +607,7 @@ vector<WorldPosition> WorldPosition::getPathStepFrom(WorldPosition startPos, Uni
     PointsArray points;
     PathType type;
 
-    if (bot)
+    if (bot && false)
     {
         PathFinder path(bot);
 
