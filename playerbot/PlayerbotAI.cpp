@@ -80,9 +80,9 @@ void PacketHandlingHelper::AddPacket(const WorldPacket& packet)
 
 
 PlayerbotAI::PlayerbotAI() : PlayerbotAIBase(), bot(NULL), aiObjectContext(NULL),
-    currentEngine(NULL), chatHelper(this), chatFilter(this), accountId(0), security(NULL), master(NULL), currentState(BOT_STATE_NON_COMBAT)
+    currentEngine(NULL), chatHelper(this), chatFilter(this), accountId(0), security(NULL), master(NULL), currentState(BotState::BOT_STATE_NON_COMBAT)
 {
-    for (int i = 0 ; i < BOT_STATE_MAX; i++)
+    for (uint8 i = 0 ; i < (uint8)BotState::BOT_STATE_MAX; i++)
         engines[i] = NULL;
 
     for (int i = 0; i < MAX_ACTIVITY_TYPE; i++)
@@ -109,18 +109,18 @@ PlayerbotAI::PlayerbotAI(Player* bot) :
 
     aiObjectContext = AiFactory::createAiObjectContext(bot, this);
 
-    engines[BOT_STATE_COMBAT] = AiFactory::createCombatEngine(bot, this, aiObjectContext);
-    engines[BOT_STATE_NON_COMBAT] = AiFactory::createNonCombatEngine(bot, this, aiObjectContext);
-    engines[BOT_STATE_DEAD] = AiFactory::createDeadEngine(bot, this, aiObjectContext);
+    engines[(uint8)BotState::BOT_STATE_COMBAT] = AiFactory::createCombatEngine(bot, this, aiObjectContext);
+    engines[(uint8)BotState::BOT_STATE_NON_COMBAT] = AiFactory::createNonCombatEngine(bot, this, aiObjectContext);
+    engines[(uint8)BotState::BOT_STATE_DEAD] = AiFactory::createDeadEngine(bot, this, aiObjectContext);
 
-    for (uint8 e = 0; e < BOT_STATE_MAX; e++)
+    for (uint8 e = 0; e < (uint8)BotState::BOT_STATE_MAX; e++)
     {
         engines[e]->initMode = false;
         engines[e]->Init();
     }
 
-    currentEngine = engines[BOT_STATE_NON_COMBAT];
-    currentState = BOT_STATE_NON_COMBAT;
+    currentEngine = engines[(uint8)BotState::BOT_STATE_NON_COMBAT];
+    currentState = BotState::BOT_STATE_NON_COMBAT;
 
     masterIncomingPacketHandlers.AddHandler(CMSG_GAMEOBJ_USE, "use game object");
     masterIncomingPacketHandlers.AddHandler(CMSG_AREATRIGGER, "area trigger");
@@ -194,7 +194,7 @@ PlayerbotAI::PlayerbotAI(Player* bot) :
 
 PlayerbotAI::~PlayerbotAI()
 {
-    for (int i = 0 ; i < BOT_STATE_MAX; i++)
+    for (uint8 i = 0 ; i < (uint8)BotState::BOT_STATE_MAX; i++)
     {
         if (engines[i])
             delete engines[i];
@@ -474,7 +474,7 @@ void PlayerbotAI::Reset(bool full)
     if (bot->IsTaxiFlying())
         return;
 
-    currentEngine = engines[BOT_STATE_NON_COMBAT];
+    currentEngine = engines[(uint8)BotState::BOT_STATE_NON_COMBAT];
     nextAICheckDelay = 0;
     whispers.clear();
 
@@ -499,7 +499,7 @@ void PlayerbotAI::Reset(bool full)
         aiObjectContext->GetValue<LastMovement& >("last taxi")->Get().Set(NULL);
 
         aiObjectContext->GetValue<TravelTarget* >("travel target")->Get()->setTarget(sTravelMgr.nullTravelDestination, sTravelMgr.nullWorldPosition, true);
-        aiObjectContext->GetValue<TravelTarget* >("travel target")->Get()->setStatus(TRAVEL_STATUS_EXPIRED);
+        aiObjectContext->GetValue<TravelTarget* >("travel target")->Get()->setStatus(TravelStatus::TRAVEL_STATUS_EXPIRED);
         aiObjectContext->GetValue<TravelTarget* >("travel target")->Get()->setExpireIn(1000);
 
         InterruptSpell();
@@ -530,7 +530,7 @@ void PlayerbotAI::Reset(bool full)
 
     if (full)
     {
-        for (int i = 0; i < BOT_STATE_MAX; i++)
+        for (uint8 i = 0; i < (uint8)BotState::BOT_STATE_MAX; i++)
         {
             engines[i]->Init();
         }
@@ -565,7 +565,7 @@ void PlayerbotAI::HandleCommand(uint32 type, const string& text, Player& fromPla
 {
     string filtered = text;
 
-    if (!IsAllowedCommand(filtered) && !GetSecurity()->CheckLevelFor(PLAYERBOT_SECURITY_INVITE, type != CHAT_MSG_WHISPER, &fromPlayer))
+    if (!IsAllowedCommand(filtered) && !GetSecurity()->CheckLevelFor(PlayerbotSecurityLevel::PLAYERBOT_SECURITY_INVITE, type != CHAT_MSG_WHISPER, &fromPlayer))
         return;
 
     if (type == CHAT_MSG_ADDON)
@@ -626,7 +626,7 @@ void PlayerbotAI::HandleCommand(uint32 type, const string& text, Player& fromPla
         return;
     }
 
-    if (!IsAllowedCommand(filtered) && !GetSecurity()->CheckLevelFor(PLAYERBOT_SECURITY_ALLOW_ALL, type != CHAT_MSG_WHISPER, &fromPlayer))
+    if (!IsAllowedCommand(filtered) && !GetSecurity()->CheckLevelFor(PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, type != CHAT_MSG_WHISPER, &fromPlayer))
         return;
 
     if (type == CHAT_MSG_RAID_WARNING && filtered.find(bot->GetName()) != string::npos && filtered.find("award") == string::npos)
@@ -1033,7 +1033,7 @@ void PlayerbotAI::HandleMasterOutgoingPacket(const WorldPacket& packet)
 
 void PlayerbotAI::ChangeEngine(BotState type)
 {
-    Engine* engine = engines[type];
+    Engine* engine = engines[(uint8)type];
 
     if (currentEngine != engine)
     {
@@ -1043,15 +1043,16 @@ void PlayerbotAI::ChangeEngine(BotState type)
 
         switch (type)
         {
-        case BOT_STATE_COMBAT:
+        case BotState::BOT_STATE_COMBAT:
             sLog.outDebug( "=== %s COMBAT ===", bot->GetName());
             break;
-        case BOT_STATE_NON_COMBAT:
+        case BotState::BOT_STATE_NON_COMBAT:
             sLog.outDebug( "=== %s NON-COMBAT ===", bot->GetName());
             break;
-        case BOT_STATE_DEAD:
+        case BotState::BOT_STATE_DEAD:
             sLog.outDebug( "=== %s DEAD ===", bot->GetName());
             break;
+        default: break;
         }
     }
 }
@@ -1073,7 +1074,7 @@ void PlayerbotAI::DoNextAction(bool min)
     }
 
     // change engine if just died
-    if (currentEngine != engines[BOT_STATE_DEAD] && !sServerFacade.IsAlive(bot))
+    if (currentEngine != engines[(uint8)BotState::BOT_STATE_DEAD] && !sServerFacade.IsAlive(bot))
     {
         StopMoving();
 
@@ -1149,19 +1150,19 @@ void PlayerbotAI::DoNextAction(bool min)
         aiObjectContext->GetValue<ObjectGuid>("pull target")->Set(ObjectGuid());
         aiObjectContext->GetValue<LootObject>("loot target")->Set(LootObject());
         
-        ChangeEngine(BOT_STATE_DEAD);
+        ChangeEngine(BotState::BOT_STATE_DEAD);
         return;
     }
 
-    // change engine if just ressed
-    if (currentEngine == engines[BOT_STATE_DEAD] && sServerFacade.IsAlive(bot))
+    // change engine if just resurrected
+    if (currentEngine == engines[(uint8)BotState::BOT_STATE_DEAD] && sServerFacade.IsAlive(bot))
     {
-        ChangeEngine(BOT_STATE_NON_COMBAT);
+        ChangeEngine(BotState::BOT_STATE_NON_COMBAT);
         return;
     }
 
     // if in combat but stick with old data - clear targets
-    if (currentEngine == engines[BOT_STATE_NON_COMBAT] && sServerFacade.IsInCombat(bot))
+    if (currentEngine == engines[(uint8)BotState::BOT_STATE_NON_COMBAT] && sServerFacade.IsInCombat(bot))
     {
         if (aiObjectContext->GetValue<Unit*>("current target")->Get() != NULL ||
             aiObjectContext->GetValue<ObjectGuid>("pull target")->Get() != ObjectGuid() || aiObjectContext->GetValue<Unit*>("dps target")->Get() != NULL)
@@ -1283,7 +1284,7 @@ void PlayerbotAI::DoNextAction(bool min)
             master = newMaster;
             ai->SetMaster(newMaster);
             ai->ResetStrategies();
-            ai->ChangeStrategy("+follow", BOT_STATE_NON_COMBAT);
+            ai->ChangeStrategy("+follow", BotState::BOT_STATE_NON_COMBAT);
 
             if (ai->GetMaster() == ai->GetGroupMaster())
                 ai->TellMaster(BOT_TEXT("hello_follow"));
@@ -1292,12 +1293,12 @@ void PlayerbotAI::DoNextAction(bool min)
         }
     }
 
-    // fix bots in BG not having proper strats
+    // fix bots in BG not having proper strategies
 #ifdef MANGOSBOT_ZERO
-    if (bot->InBattleGround() && !HasStrategy("battleground", BOT_STATE_NON_COMBAT))
+    if (bot->InBattleGround() && !HasStrategy("battleground", BotState::BOT_STATE_NON_COMBAT))
         ResetStrategies();
 #else
-    if ((bot->InBattleGround() && !bot->InArena() && !HasStrategy("battleground", BOT_STATE_NON_COMBAT)) || (bot->InArena() && !HasStrategy("arena", BOT_STATE_NON_COMBAT)))
+    if ((bot->InBattleGround() && !bot->InArena() && !HasStrategy("battleground", BotState::BOT_STATE_NON_COMBAT)) || (bot->InArena() && !HasStrategy("arena", BotState::BOT_STATE_NON_COMBAT)))
         ResetStrategies();
 #endif
 
@@ -1478,7 +1479,7 @@ void PlayerbotAI::ReInitCurrentEngine()
 
 void PlayerbotAI::ChangeStrategy(string names, BotState type)
 {
-    Engine* e = engines[type];
+    Engine* e = engines[(uint8)type];
     if (!e)
         return;
 
@@ -1487,7 +1488,7 @@ void PlayerbotAI::ChangeStrategy(string names, BotState type)
 
 void PlayerbotAI::ClearStrategies(BotState type)
 {
-    Engine* e = engines[type];
+    Engine* e = engines[(uint8)type];
     if (!e)
         return;
 
@@ -1496,7 +1497,7 @@ void PlayerbotAI::ClearStrategies(BotState type)
 
 list<string> PlayerbotAI::GetStrategies(BotState type)
 {
-    Engine* e = engines[type];
+    Engine* e = engines[(uint8)type];
     if (!e)
         return list<string>();
 
@@ -1505,7 +1506,7 @@ list<string> PlayerbotAI::GetStrategies(BotState type)
 
 bool PlayerbotAI::DoSpecificAction(string name, Event event, bool silent, string qualifier)
 {
-    for (int i = 0 ; i < BOT_STATE_MAX; i++)
+    for (uint8 i = 0 ; i < (uint8)BotState::BOT_STATE_MAX; i++)
     {
         ostringstream out;
         ActionResult res = engines[i]->ExecuteAction(name, event, qualifier);
@@ -1578,7 +1579,7 @@ bool PlayerbotAI::PlayEmote(uint32 emote)
 
 bool PlayerbotAI::ContainsStrategy(StrategyType type)
 {
-    for (int i = 0 ; i < BOT_STATE_MAX; i++)
+    for (uint8 i = 0 ; i < (uint8)BotState::BOT_STATE_MAX; i++)
     {
         if (engines[i]->ContainsStrategy(type))
             return true;
@@ -1588,24 +1589,24 @@ bool PlayerbotAI::ContainsStrategy(StrategyType type)
 
 bool PlayerbotAI::HasStrategy(string name, BotState type)
 {
-    return engines[type]->HasStrategy(name);
+    return engines[(uint8)type]->HasStrategy(name);
 }
 
 void PlayerbotAI::ResetStrategies(bool load)
 {
 
-    for (int i = 0; i < BOT_STATE_MAX; i++)
+    for (uint8 i = 0; i < (uint8)BotState::BOT_STATE_MAX; i++)
     {
         engines[i]->initMode = true;
         engines[i]->removeAllStrategies();
     }
 
-    AiFactory::AddDefaultCombatStrategies(bot, this, engines[BOT_STATE_COMBAT]);
-    AiFactory::AddDefaultNonCombatStrategies(bot, this, engines[BOT_STATE_NON_COMBAT]);
-    AiFactory::AddDefaultDeadStrategies(bot, this, engines[BOT_STATE_DEAD]);
+    AiFactory::AddDefaultCombatStrategies(bot, this, engines[(uint8)BotState::BOT_STATE_COMBAT]);
+    AiFactory::AddDefaultNonCombatStrategies(bot, this, engines[(uint8)BotState::BOT_STATE_NON_COMBAT]);
+    AiFactory::AddDefaultDeadStrategies(bot, this, engines[(uint8)BotState::BOT_STATE_DEAD]);
     if (load) sPlayerbotDbStore.Load(this);
 
-    for (int i = 0; i < BOT_STATE_MAX; i++)
+    for (uint8 i = 0; i < (uint8)BotState::BOT_STATE_MAX; i++)
     {
         engines[i]->initMode = false;
         engines[i]->Init();
@@ -1818,7 +1819,7 @@ bool PlayerbotAI::TellMasterNoFacing(string text, PlayerbotSecurityLevel securit
             }
         }
         
-        if (!master && (sPlayerbotAIConfig.randomBotSayWithoutMaster || HasStrategy("debug", BOT_STATE_NON_COMBAT)))
+        if (!master && (sPlayerbotAIConfig.randomBotSayWithoutMaster || HasStrategy("debug", BotState::BOT_STATE_NON_COMBAT)))
         {
             bot->Say(text, (bot->GetTeam() == ALLIANCE ? LANG_COMMON : LANG_ORCISH));
             return true;
@@ -2489,7 +2490,7 @@ bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target, Item* itemTarget)
     if (oldSel)
         bot->SetSelectionGuid(oldSel);
 
-    if (HasStrategy("debug spell", BOT_STATE_NON_COMBAT))
+    if (HasStrategy("debug spell", BotState::BOT_STATE_NON_COMBAT))
     {
         ostringstream out;
         out << "Casting " <<ChatHelper::formatSpell(pSpellInfo);
@@ -2632,7 +2633,7 @@ bool PlayerbotAI::CastSpell(uint32 spellId, float x, float y, float z, Item* ite
     if (oldSel)
         bot->SetSelectionGuid(oldSel);
 
-    if (HasStrategy("debug spell", BOT_STATE_NON_COMBAT))
+    if (HasStrategy("debug spell", BotState::BOT_STATE_NON_COMBAT))
     {
         ostringstream out;
         out << "Casting " << ChatHelper::formatSpell(pSpellInfo);
@@ -2884,7 +2885,7 @@ bool PlayerbotAI::CastVehicleSpell(uint32 spellId, Unit* target)
     //aiObjectContext->GetValue<LastSpellCast&>("last spell cast")->Get().Set(spellId, target->GetObjectGuid(), time(0));
     //aiObjectContext->GetValue<ai::PositionMap&>("position")->Get()["random"].Reset();
 
-    if (HasStrategy("debug spell", BOT_STATE_NON_COMBAT))
+    if (HasStrategy("debug spell", BotState::BOT_STATE_NON_COMBAT))
     {
         ostringstream out;
         out << "Casting Vehicle Spell" << ChatHelper::formatSpell(pSpellInfo);
@@ -3587,11 +3588,11 @@ string PlayerbotAI::HandleRemoteCommand(string command)
     {
         switch (currentState)
         {
-        case BOT_STATE_COMBAT:
+        case BotState::BOT_STATE_COMBAT:
             return "combat";
-        case BOT_STATE_DEAD:
+        case BotState::BOT_STATE_DEAD:
             return "dead";
-        case BOT_STATE_NON_COMBAT:
+        case BotState::BOT_STATE_NON_COMBAT:
             return "non-combat";
         default:
             return "unknown";
@@ -3679,20 +3680,20 @@ string PlayerbotAI::HandleRemoteCommand(string command)
             }
         }
         out << " Status =";
-        if (target->getStatus() == TRAVEL_STATUS_NONE)
+        if (target->getStatus() == TravelStatus::TRAVEL_STATUS_NONE)
             out << " none";
-        else if (target->getStatus() == TRAVEL_STATUS_PREPARE)
+        else if (target->getStatus() == TravelStatus::TRAVEL_STATUS_PREPARE)
             out << " prepare";
-        else if (target->getStatus() == TRAVEL_STATUS_TRAVEL)
+        else if (target->getStatus() == TravelStatus::TRAVEL_STATUS_TRAVEL)
             out << " travel";
-        else if (target->getStatus() == TRAVEL_STATUS_WORK)
+        else if (target->getStatus() == TravelStatus::TRAVEL_STATUS_WORK)
             out << " work";
-        else if (target->getStatus() == TRAVEL_STATUS_COOLDOWN)
+        else if (target->getStatus() == TravelStatus::TRAVEL_STATUS_COOLDOWN)
             out << " cooldown";
-        else if (target->getStatus() == TRAVEL_STATUS_EXPIRED)
+        else if (target->getStatus() == TravelStatus::TRAVEL_STATUS_EXPIRED)
             out << " expired";
 
-        if(target->getStatus() != TRAVEL_STATUS_EXPIRED)
+        if(target->getStatus() != TravelStatus::TRAVEL_STATUS_EXPIRED)
             out << " Expire in " << (target->getTimeLeft()/1000) << "s";
 
         out << " Retry " << target->getRetryCount(true) << "/" << target->getRetryCount(false);

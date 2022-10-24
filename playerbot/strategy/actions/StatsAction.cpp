@@ -26,7 +26,7 @@ bool StatsAction::Execute(Event event)
     out << ", ";
     ListPower(out);
 
-    ai->TellMaster(out, PLAYERBOT_SECURITY_ALLOW_ALL, false);
+    ai->TellMaster(out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
     return true;
 }
 

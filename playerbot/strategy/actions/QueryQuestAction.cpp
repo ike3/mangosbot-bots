@@ -8,7 +8,7 @@ using namespace ai;
 
 void QueryQuestAction::TellObjective(string name, int available, int required)
 {
-    ai->TellMaster(chat->formatQuestObjective(name, available, required), PLAYERBOT_SECURITY_ALLOW_ALL, false);
+    ai->TellMaster(chat->formatQuestObjective(name, available, required), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
 }
 
 bool QueryQuestAction::Execute(Event event)
@@ -39,12 +39,12 @@ bool QueryQuestAction::Execute(Event event)
         if (bot->GetQuestStatus(questId) == QUEST_STATUS_COMPLETE)
         {
             out << "|c0000FF00completed|r ---";
-            ai->TellMaster(out, PLAYERBOT_SECURITY_ALLOW_ALL, false);
+            ai->TellMaster(out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
         }
         else
         {
             out << "|c00FF0000not completed|r ---";
-            ai->TellMaster(out, PLAYERBOT_SECURITY_ALLOW_ALL, false);
+            ai->TellMaster(out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
             TellObjectives(questId);
         }
 
@@ -81,7 +81,7 @@ bool QueryQuestAction::Execute(Event event)
                 if (dest->isFull(bot))
                     out << " crowded";
 
-                ai->TellMaster(out, PLAYERBOT_SECURITY_ALLOW_ALL, false);
+                ai->TellMaster(out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
 
                 limit++;
             }
@@ -101,7 +101,7 @@ void QueryQuestAction::TellObjectives(uint32 questId)
     for (int i = 0; i < QUEST_OBJECTIVES_COUNT; i++)
     {
         if (!questTemplate->ObjectiveText[i].empty())
-            ai->TellMaster(questTemplate->ObjectiveText[i], PLAYERBOT_SECURITY_ALLOW_ALL, false);
+            ai->TellMaster(questTemplate->ObjectiveText[i], PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
 
         if (questTemplate->ReqItemId[i])
         {

@@ -96,7 +96,7 @@ void SuggestWhatToDoAction::instance()
     vector<string> allowedInstances;
     for (map<string, int>::iterator i = instances.begin(); i != instances.end(); ++i)
     {
-        if (bot->GetLevel() >= i->second) allowedInstances.push_back(i->first);
+        if ((int)bot->GetLevel() >= i->second) allowedInstances.push_back(i->first);
     }
 
     if (allowedInstances.empty()) return;
@@ -244,7 +244,7 @@ void SuggestWhatToDoAction::grindReputation()
 
     vector<string> allowedFactions;
     for (map<string, int>::iterator i = factions.begin(); i != factions.end(); ++i) {
-        if (bot->GetLevel() >= i->second) allowedFactions.push_back(i->first);
+        if ((int)bot->GetLevel() >= i->second) allowedFactions.push_back(i->first);
     }
 
     if (allowedFactions.empty()) return;

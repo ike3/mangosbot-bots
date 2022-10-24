@@ -8,7 +8,7 @@ using namespace ai;
 bool ChangeCombatStrategyAction::Execute(Event event)
 {
     string text = event.getParam();
-    ai->ChangeStrategy(text.empty() ? getName() : text, BOT_STATE_COMBAT);
+    ai->ChangeStrategy(text.empty() ? getName() : text, BotState::BOT_STATE_COMBAT);
     if (event.getSource() == "co")
     {
         vector<string> splitted = split(text, ',');
@@ -44,7 +44,7 @@ bool ChangeNonCombatStrategyAction::Execute(Event event)
         }
     }
 
-    ai->ChangeStrategy(text, BOT_STATE_NON_COMBAT);
+    ai->ChangeStrategy(text, BotState::BOT_STATE_NON_COMBAT);
 
     if (event.getSource() == "nc")
     {
@@ -70,6 +70,6 @@ bool ChangeNonCombatStrategyAction::Execute(Event event)
 bool ChangeDeadStrategyAction::Execute(Event event)
 {
     string text = event.getParam();
-    ai->ChangeStrategy(text, BOT_STATE_DEAD);
+    ai->ChangeStrategy(text, BotState::BOT_STATE_DEAD);
     return true;
 }

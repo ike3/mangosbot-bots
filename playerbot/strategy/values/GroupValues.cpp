@@ -29,7 +29,7 @@ bool IsFollowingPartyValue::Calculate()
     if (ai->GetGroupMaster() == bot)
         return true;
 
-    if (ai->HasStrategy("follow", BOT_STATE_NON_COMBAT))
+    if (ai->HasStrategy("follow", BotState::BOT_STATE_NON_COMBAT))
         return true;
 
     return false;
@@ -144,7 +144,7 @@ bool GroupReadyValue::Calculate()
         {
             PlayerbotAI* memberAi = member->GetPlayerbotAI();
 
-            bool isFollowing = memberAi ? memberAi->HasStrategy("follow", BOT_STATE_NON_COMBAT) : true;
+            bool isFollowing = memberAi ? memberAi->HasStrategy("follow", BotState::BOT_STATE_NON_COMBAT) : true;
 
             if (!member->IsAlive() && isFollowing)
                 return false;

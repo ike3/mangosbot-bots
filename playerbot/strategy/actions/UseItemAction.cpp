@@ -57,7 +57,7 @@ bool UseItemAction::UseGameObject(ObjectGuid guid)
 
    go->Use(bot);
    ostringstream out; out << "Using " << chat->formatGameobject(go);
-   ai->TellMasterNoFacing(out.str(), PLAYERBOT_SECURITY_ALLOW_ALL, false);
+   ai->TellMasterNoFacing(out.str(), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
    return true;
 }
 
@@ -267,7 +267,7 @@ bool UseItemAction::UseItem(Item* item, ObjectGuid goGuid, Item* itemTarget, Uni
       {
          bool fit = SocketItem(itemTarget, item) || SocketItem(itemTarget, item, true);
          if (!fit)
-            ai->TellMaster("Socket does not fit", PLAYERBOT_SECURITY_ALLOW_ALL, false);
+            ai->TellMaster("Socket does not fit", PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
          return fit;
       }
       else
@@ -349,7 +349,7 @@ bool UseItemAction::UseItem(Item* item, ObjectGuid goGuid, Item* itemTarget, Uni
          packet << uint32(0);
          bot->GetSession()->HandleQuestgiverAcceptQuestOpcode(packet);
          ostringstream out; out << "Got quest " << chat->formatQuest(qInfo);
-         ai->TellMasterNoFacing(out.str(), PLAYERBOT_SECURITY_ALLOW_ALL, false);
+         ai->TellMasterNoFacing(out.str(), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
          return true;
       }
    }
@@ -422,7 +422,7 @@ bool UseItemAction::UseItem(Item* item, ObjectGuid goGuid, Item* itemTarget, Uni
        return false;
 
    ai->SetNextCheckDelay(sPlayerbotAIConfig.globalCoolDown);
-   ai->TellMasterNoFacing(out.str(), PLAYERBOT_SECURITY_ALLOW_ALL, false);
+   ai->TellMasterNoFacing(out.str(), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
 
    bot->GetSession()->HandleUseItemOpcode(packet);
    return true;
@@ -434,7 +434,7 @@ void UseItemAction::TellConsumableUse(Item* item, string action, float percent)
     out << action << " " << chat->formatItem(item->GetProto());
     if ((int)item->GetProto()->Stackable > 1) out << "/x" << item->GetCount();
     out << " (" << round(percent) << "%)";
-    ai->TellMasterNoFacing(out.str(), PLAYERBOT_SECURITY_ALLOW_ALL, false);
+    ai->TellMasterNoFacing(out.str(), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
 }
 
 #ifndef MANGOSBOT_ZERO
@@ -488,7 +488,7 @@ bool UseItemAction::SocketItem(Item* item, Item* gem, bool replace)
    {
       ostringstream out; out << "Socketing " << chat->formatItem(item->GetProto());
       out << " with " << chat->formatItem(gem->GetProto());
-      ai->TellMaster(out, PLAYERBOT_SECURITY_ALLOW_ALL, false);
+      ai->TellMaster(out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
 
       bot->GetSession()->HandleSocketOpcode(*packet);
    }

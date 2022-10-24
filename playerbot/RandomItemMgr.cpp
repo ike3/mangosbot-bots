@@ -315,7 +315,7 @@ void RandomItemMgr::BuildRandomItemCache()
         uint32 maxLevel = sPlayerbotAIConfig.randomBotMaxLevel;
         if (maxLevel > sWorld.getConfig(CONFIG_UINT32_MAX_PLAYER_LEVEL))
             maxLevel = sWorld.getConfig(CONFIG_UINT32_MAX_PLAYER_LEVEL);
-        for (int level = 0; level < maxLevel / 10; level++)
+        for (uint32 level = 0; level < (maxLevel / 10); level++)
         {
             for (uint32 type = RANDOM_ITEM_GUILD_TASK; type <= RANDOM_ITEM_GUILD_TASK_REWARD_TRADE_RARE; type++)
             {
@@ -1994,7 +1994,7 @@ uint32 RandomItemMgr::CalculateStatWeight(uint8 playerclass, uint8 spec, ItemPro
     statWeight += socketBonus;
 
     // handle negative stats
-    if (basicStatsWeight < 0 && (abs(basicStatsWeight) >= statWeight))
+    if (basicStatsWeight < 0 && ((uint32)(abs(basicStatsWeight)) >= statWeight))
         statWeight = 0;
     else
         statWeight += basicStatsWeight;

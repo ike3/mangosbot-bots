@@ -20,7 +20,7 @@ namespace ai
             if (!inviter)
                 return false;
 
-			if (!ai->GetSecurity()->CheckLevelFor(PLAYERBOT_SECURITY_INVITE, false, inviter))
+			if (!ai->GetSecurity()->CheckLevelFor(PlayerbotSecurityLevel::PLAYERBOT_SECURITY_INVITE, false, inviter))
             {
                 WorldPacket data(SMSG_GROUP_DECLINE, 10);
                 data << bot->GetName();
@@ -43,10 +43,10 @@ namespace ai
             //    sPlayerbotDbStore.Save(ai);
             
             ai->ResetStrategies();
-            ai->ChangeStrategy("+follow,-lfg,-bg", BOT_STATE_NON_COMBAT);
+            ai->ChangeStrategy("+follow,-lfg,-bg", BotState::BOT_STATE_NON_COMBAT);
             ai->Reset();
 
-            ai->TellMaster(BOT_TEXT("hello"), PLAYERBOT_SECURITY_ALLOW_ALL, false);
+            ai->TellMaster(BOT_TEXT("hello"), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
 
             sTravelMgr.logEvent(ai, "AcceptInvitationAction", grp->GetLeaderName(), to_string(grp->GetMembersCount()));
 

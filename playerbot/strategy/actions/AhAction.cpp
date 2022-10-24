@@ -121,7 +121,7 @@ bool AhAction::PostItem(Item* item, uint32 price, Unit* auctioneer, uint32 time)
 
     ostringstream out;
     out << "Posting " << ChatHelper::formatItem(proto, cnt) << " for " << ChatHelper::formatMoney(price) << " to the AH";
-    ai->TellMasterNoFacing(out.str(), PLAYERBOT_SECURITY_ALLOW_ALL, false);
+    ai->TellMasterNoFacing(out.str(), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
     return true;
 }
 
@@ -327,7 +327,7 @@ bool AhBidAction::BidItem(AuctionEntry* auction, uint32 price, Unit* auctioneer)
         ItemPrototype const* proto = sObjectMgr.GetItemPrototype(auction->itemTemplate);
         ostringstream out;
         out << "Bidding " << ChatHelper::formatMoney(price) << " on " << ChatHelper::formatItem(proto, auction->itemCount) << " on the AH";
-        ai->TellMasterNoFacing(out.str(), PLAYERBOT_SECURITY_ALLOW_ALL, false);
+        ai->TellMasterNoFacing(out.str(), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
         return true;
     }
     return false;

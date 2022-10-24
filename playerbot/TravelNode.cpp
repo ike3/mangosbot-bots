@@ -740,7 +740,7 @@ bool TravelPath::makeShortCut(WorldPosition startPos, float maxDist)
                 newPath.clear();
             }
 
-            if (p.type != NODE_PREPATH) //Only look at the part after the first node and in the same map.
+            if (p.type != PathNodeType::NODE_PREPATH) //Only look at the part after the first node and in the same map.
             {
                 if (!firstNode)
                     firstNode = p.point;
@@ -802,40 +802,40 @@ bool TravelPath::shouldMoveToNextPoint(WorldPosition startPos, vector<PathNodePo
         return false;
 
     //We are moving to a area trigger node and want to move to the next teleport node.
-    if (p->type == NODE_AREA_TRIGGER && nextP->type == NODE_AREA_TRIGGER && p->entry == nextP->entry)
+    if (p->type == PathNodeType::NODE_AREA_TRIGGER && nextP->type == PathNodeType::NODE_AREA_TRIGGER && p->entry == nextP->entry)
     {
         return false; //Move to teleport and activate area trigger.
     }
 
     //We are moving to a area trigger node and want to move to the next teleport node.
-    if (p->type == NODE_STATIC_PORTAL && nextP->type == NODE_STATIC_PORTAL && p->entry == nextP->entry)
+    if (p->type == PathNodeType::NODE_STATIC_PORTAL && nextP->type == PathNodeType::NODE_STATIC_PORTAL && p->entry == nextP->entry)
     {
         return false; //Move to teleport and activate area trigger.
     }
 
     //We are using a hearthstone.
-    if (p->type == NODE_TELEPORT && nextP->type == NODE_TELEPORT && p->entry == nextP->entry)
+    if (p->type == PathNodeType::NODE_TELEPORT && nextP->type == PathNodeType::NODE_TELEPORT && p->entry == nextP->entry)
     {
         return false; //Move to teleport and activate area trigger.
     }
 
     //We are almost at a transport node. Move to the node before this.
-    if (nextP->type == NODE_TRANSPORT && nextP->entry && moveDist > INTERACTION_DISTANCE)
+    if (nextP->type == PathNodeType::NODE_TRANSPORT && nextP->entry && moveDist > INTERACTION_DISTANCE)
     {
         return false;
     }
 
     //We are moving to a transport node.
-    if (p->type == NODE_TRANSPORT && p->entry)
+    if (p->type == PathNodeType::NODE_TRANSPORT && p->entry)
     {
-        if (nextP->type != NODE_TRANSPORT && p != beg && std::prev(p)->type != NODE_TRANSPORT) //We are not using the transport. Skip it.
+        if (nextP->type != PathNodeType::NODE_TRANSPORT && p != beg && std::prev(p)->type != PathNodeType::NODE_TRANSPORT) //We are not using the transport. Skip it.
             return true;
 
         return false; //Teleport to exit of transport.
     }
 
     //We are moving to a flightpath and want to fly.
-    if (p->type == NODE_FLIGHTPATH && nextP->type == NODE_FLIGHTPATH)
+    if (p->type == PathNodeType::NODE_FLIGHTPATH && nextP->type == PathNodeType::NODE_FLIGHTPATH)
     {
         return false;
     }
@@ -893,7 +893,7 @@ WorldPosition TravelPath::getNextPoint(WorldPosition startPos, float maxDist, Tr
     }
 
     //We are moving towards a teleport. Move to portal an activate area trigger
-    if (startP->type == NODE_AREA_TRIGGER)
+    if (startP->type == PathNodeType::NODE_AREA_TRIGGER)
     {
         pathType = TravelNodePathType::areaTrigger;
         entry = startP->entry;
@@ -901,7 +901,7 @@ WorldPosition TravelPath::getNextPoint(WorldPosition startPos, float maxDist, Tr
     }
 
     //We are moving towards a static portal. Move to portal and use it.
-    if (startP->type == NODE_STATIC_PORTAL && startPos.distance(startP->point) < INTERACTION_DISTANCE)
+    if (startP->type == PathNodeType::NODE_STATIC_PORTAL && startPos.distance(startP->point) < INTERACTION_DISTANCE)
     {
         pathType = TravelNodePathType::staticPortal;
         entry = startP->entry;
@@ -909,7 +909,7 @@ WorldPosition TravelPath::getNextPoint(WorldPosition startPos, float maxDist, Tr
     }
 
     //We are using a hearthstone
-    if (startP->type == NODE_TELEPORT)
+    if (startP->type == PathNodeType::NODE_TELEPORT)
     {
         pathType = TravelNodePathType::teleportSpell;
         entry = startP->entry;
@@ -917,7 +917,7 @@ WorldPosition TravelPath::getNextPoint(WorldPosition startPos, float maxDist, Tr
     }
 
     //We are moving towards a flight path. Move to flight master and activate flight path.
-    if (startP->type == NODE_FLIGHTPATH && startPos.distance(startP->point) < INTERACTION_DISTANCE)
+    if (startP->type == PathNodeType::NODE_FLIGHTPATH && startPos.distance(startP->point) < INTERACTION_DISTANCE)
     {
         pathType = TravelNodePathType::flightPath;
         entry = startP->entry;
@@ -925,11 +925,11 @@ WorldPosition TravelPath::getNextPoint(WorldPosition startPos, float maxDist, Tr
     }
 
     //We are moving towards transport. Teleport to next normal point instead.
-    if (startP->type == NODE_TRANSPORT)
+    if (startP->type == PathNodeType::NODE_TRANSPORT)
     {
         for (auto p = startP + 1; p != ed; p++)
         {
-            if (p->type != NODE_TRANSPORT)
+            if (p->type != PathNodeType::NODE_TRANSPORT)
             {
                 pathType = TravelNodePathType::areaTrigger;
                 entry = 0;
@@ -980,7 +980,7 @@ TravelPath TravelNodeRoute::buildPath(vector<WorldPosition> pathToStart, vector<
     Unit* botForPath = sPlayerbotAIConfig.tweakValue ? NULL : bot;
 
     if (!pathToStart.empty()) //From start position to start of path.
-        travelPath.addPath(pathToStart, NODE_PREPATH);
+        travelPath.addPath(pathToStart, PathNodeType::NODE_PREPATH);
 
     TravelNode* prevNode = nullptr;
     for (auto& node : nodes)
@@ -1015,35 +1015,35 @@ TravelPath TravelNodeRoute::buildPath(vector<WorldPosition> pathToStart, vector<
 
             if (!nodePath || !nodePath->getComplete()) //If we can not build a path just try to move to the node.
             {
-                travelPath.addPoint(*prevNode->getPosition(), NODE_NODE);
+                travelPath.addPoint(*prevNode->getPosition(), PathNodeType::NODE_NODE);
                 prevNode = node;
                 continue;
             }
 
             if (nodePath->getPathType() == TravelNodePathType::areaTrigger) //Teleport to next node.
             {
-                travelPath.addPoint(*prevNode->getPosition(), NODE_AREA_TRIGGER, nodePath->getPathObject()); //Entry point
-                travelPath.addPoint(*node->getPosition(), NODE_AREA_TRIGGER, nodePath->getPathObject());     //Exit point
+                travelPath.addPoint(*prevNode->getPosition(), PathNodeType::NODE_AREA_TRIGGER, nodePath->getPathObject()); //Entry point
+                travelPath.addPoint(*node->getPosition(), PathNodeType::NODE_AREA_TRIGGER, nodePath->getPathObject());     //Exit point
             }
             if (nodePath->getPathType() == TravelNodePathType::staticPortal) //Teleport to next node.
             {
-                travelPath.addPoint(*prevNode->getPosition(), NODE_STATIC_PORTAL, nodePath->getPathObject()); //Entry point
-                travelPath.addPoint(*node->getPosition(), NODE_STATIC_PORTAL, nodePath->getPathObject());     //Exit point
+                travelPath.addPoint(*prevNode->getPosition(), PathNodeType::NODE_STATIC_PORTAL, nodePath->getPathObject()); //Entry point
+                travelPath.addPoint(*node->getPosition(), PathNodeType::NODE_STATIC_PORTAL, nodePath->getPathObject());     //Exit point
             }
             else if (nodePath->getPathType() == TravelNodePathType::transport) //Move onto transport
             {
-                travelPath.addPoint(*prevNode->getPosition(), NODE_TRANSPORT, nodePath->getPathObject()); //Departure point
-                travelPath.addPoint(*node->getPosition(), NODE_TRANSPORT, nodePath->getPathObject());     //Arrival point        
+                travelPath.addPoint(*prevNode->getPosition(), PathNodeType::NODE_TRANSPORT, nodePath->getPathObject()); //Departure point
+                travelPath.addPoint(*node->getPosition(), PathNodeType::NODE_TRANSPORT, nodePath->getPathObject());     //Arrival point        
             }
             else if (nodePath->getPathType() == TravelNodePathType::flightPath) //Use the flightpath
             {
-                travelPath.addPoint(*prevNode->getPosition(), NODE_FLIGHTPATH, nodePath->getPathObject()); //Departure point
-                travelPath.addPoint(*node->getPosition(), NODE_FLIGHTPATH, nodePath->getPathObject());     //Arrival point        
+                travelPath.addPoint(*prevNode->getPosition(), PathNodeType::NODE_FLIGHTPATH, nodePath->getPathObject()); //Departure point
+                travelPath.addPoint(*node->getPosition(), PathNodeType::NODE_FLIGHTPATH, nodePath->getPathObject());     //Arrival point        
             }
             else if (nodePath->getPathType() == TravelNodePathType::teleportSpell)
             {
-                travelPath.addPoint(*prevNode->getPosition(), NODE_TELEPORT, nodePath->getPathObject());
-                travelPath.addPoint(*node->getPosition(), NODE_TELEPORT, nodePath->getPathObject());
+                travelPath.addPoint(*prevNode->getPosition(), PathNodeType::NODE_TELEPORT, nodePath->getPathObject());
+                travelPath.addPoint(*node->getPosition(), PathNodeType::NODE_TELEPORT, nodePath->getPathObject());
             }
             else
             {
@@ -1058,14 +1058,14 @@ TravelPath TravelNodeRoute::buildPath(vector<WorldPosition> pathToStart, vector<
                 if (path.size() > 1 && prevNode->isTransport() && nodePath->getPathType() != TravelNodePathType::transport) //Do not move to the transport if we aren't going to take it.
                     path.erase(path.begin());
 
-                travelPath.addPath(path, NODE_PATH);
+                travelPath.addPath(path, PathNodeType::NODE_PATH);
             }
         }
         prevNode = node;
     }
 
     if (!pathToEnd.empty())
-        travelPath.addPath(pathToEnd, NODE_PATH);
+        travelPath.addPath(pathToEnd, PathNodeType::NODE_PATH);
 
     return travelPath;
 }
@@ -1465,7 +1465,7 @@ TravelPath TravelNodeMap::getFullPath(WorldPosition startPos, WorldPosition endP
 
     if (sPlayerbotAIConfig.hasLog("bot_pathfinding.csv"))
     {
-        if (ai->HasStrategy("debug move", BOT_STATE_NON_COMBAT))
+        if (ai->HasStrategy("debug move", BotState::BOT_STATE_NON_COMBAT))
         {
             sPlayerbotAIConfig.openLog("bot_pathfinding.csv", "w");
             sPlayerbotAIConfig.log("bot_pathfinding.csv", route.print().str().c_str());
@@ -1479,7 +1479,7 @@ TravelPath TravelNodeMap::getFullPath(WorldPosition startPos, WorldPosition endP
 
     if (sPlayerbotAIConfig.hasLog("bot_pathfinding.csv"))
     {
-        if (ai->HasStrategy("debug move", BOT_STATE_NON_COMBAT))
+        if (ai->HasStrategy("debug move", BotState::BOT_STATE_NON_COMBAT))
         {
             sPlayerbotAIConfig.openLog("bot_pathfinding.csv", "w");
             sPlayerbotAIConfig.log("bot_pathfinding.csv", movePath.print().str().c_str());

@@ -123,7 +123,7 @@ uint32 MoneyNeededForValue::Calculate()
         moneyWanted = (level * level * level) / 10; //Or level^3 (1s @ lvl10, 30s @ lvl30, 2g @ lvl60, 5g @ lvl80): Todo replace (Should be best food/drink x 2 stacks cost)
         break;
     case NeedMoneyFor::guild:
-        if (ai->HasStrategy("guild", BOT_STATE_NON_COMBAT))
+        if (ai->HasStrategy("guild", BotState::BOT_STATE_NON_COMBAT))
         {
             if (bot->GetGuildId() && bot->GetLevel() > 20)
                 moneyWanted = AI_VALUE2(uint32, "item count", chat->formatQItem(5976)) ? 0 : 10000; //1g (tabard)

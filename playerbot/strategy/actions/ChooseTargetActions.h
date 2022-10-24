@@ -148,18 +148,18 @@ namespace ai
                 Unit* enemy = AI_VALUE(Unit*, "enemy player target");
                 if (!enemy)
                 {
-                    ai->ChangeEngine(BOT_STATE_NON_COMBAT);
+                    ai->ChangeEngine(BotState::BOT_STATE_NON_COMBAT);
                     ai->InterruptSpell();
                     bot->AttackStop();
 
-                    if (ai->HasStrategy("dps assist", BOT_STATE_NON_COMBAT))
+                    if (ai->HasStrategy("dps assist", BotState::BOT_STATE_NON_COMBAT))
                         return ai->DoSpecificAction("dps assist", Event(), true);
-                    if (ai->HasStrategy("tank assist", BOT_STATE_NON_COMBAT))
+                    if (ai->HasStrategy("tank assist", BotState::BOT_STATE_NON_COMBAT))
                         return ai->DoSpecificAction("tank assist", Event(), true);
                 }
             }
 
-            ai->ChangeEngine(BOT_STATE_NON_COMBAT);
+            ai->ChangeEngine(BotState::BOT_STATE_NON_COMBAT);
             ai->InterruptSpell();
             bot->AttackStop();
             Pet* pet = bot->GetPet();

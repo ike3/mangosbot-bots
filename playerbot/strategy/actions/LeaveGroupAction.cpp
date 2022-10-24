@@ -16,12 +16,12 @@ namespace ai
 
         Group* group = bot->GetGroup();
 
-        /*if (!player->GetPlayerbotAI() && !ai->GetSecurity()->CheckLevelFor(PLAYERBOT_SECURITY_INVITE, false, player))
+        /*if (!player->GetPlayerbotAI() && !ai->GetSecurity()->CheckLevelFor(PlayerbotSecurityLevel::PLAYERBOT_SECURITY_INVITE, false, player))
             return false;*/
 
         bool aiMaster = (ai->GetMaster() && ai->GetMaster()->GetPlayerbotAI());
 
-        ai->TellMaster(BOT_TEXT("goodbye"), PLAYERBOT_SECURITY_TALK, false);
+        ai->TellMaster(BOT_TEXT("goodbye"), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_TALK, false);
 
         bool randomBot = sRandomPlayerbotMgr.IsRandomBot(bot);
 

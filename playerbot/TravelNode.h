@@ -252,7 +252,7 @@ enum class TravelNodePathType : uint8
     };
 
     //Route step type
-    enum PathNodeType
+    enum class PathNodeType : uint8
     {
         NODE_PREPATH = 0,
         NODE_PATH = 1,
@@ -267,7 +267,7 @@ enum class TravelNodePathType : uint8
     struct PathNodePoint
     {
         WorldPosition point;
-        PathNodeType type = NODE_PATH;
+        PathNodeType type = PathNodeType::NODE_PATH;
         uint32 entry = 0;
     };
 
@@ -277,11 +277,11 @@ enum class TravelNodePathType : uint8
     public:
         TravelPath() {};
         TravelPath(vector<PathNodePoint> fullPath1) { fullPath = fullPath1; }
-        TravelPath(vector<WorldPosition> path, PathNodeType type = NODE_PATH, uint32 entry = 0) { addPath(path, type, entry); }
+        TravelPath(vector<WorldPosition> path, PathNodeType type = PathNodeType::NODE_PATH, uint32 entry = 0) { addPath(path, type, entry); }
 
         void addPoint(PathNodePoint point) { fullPath.push_back(point); }
-        void addPoint(WorldPosition point, PathNodeType type = NODE_PATH, uint32 entry = 0) { fullPath.push_back(PathNodePoint{ point, type, entry }); }
-        void addPath(vector<WorldPosition> path, PathNodeType type = NODE_PATH, uint32 entry = 0) { for (auto& p : path) { fullPath.push_back(PathNodePoint{ p, type, entry }); }; }
+        void addPoint(WorldPosition point, PathNodeType type = PathNodeType::NODE_PATH, uint32 entry = 0) { fullPath.push_back(PathNodePoint{ point, type, entry }); }
+        void addPath(vector<WorldPosition> path, PathNodeType type = PathNodeType::NODE_PATH, uint32 entry = 0) { for (auto& p : path) { fullPath.push_back(PathNodePoint{ p, type, entry }); }; }
         void addPath(vector<PathNodePoint> newPath) { fullPath.insert(fullPath.end(), newPath.begin(), newPath.end()); }
         void clear() { fullPath.clear(); }
 
@@ -290,7 +290,7 @@ enum class TravelNodePathType : uint8
         WorldPosition getFront() {return fullPath.front().point; }
         WorldPosition getBack() { return fullPath.back().point; }
 
-        vector<WorldPosition> getPointPath() { vector<WorldPosition> retVec;  for (auto p : fullPath) retVec.push_back(p.point); return retVec; };
+        vector<WorldPosition> getPointPath() { vector<WorldPosition> retVec; for (const auto& p : fullPath) retVec.push_back(p.point); return retVec; };
 
         bool makeShortCut(WorldPosition startPos, float maxDist);
         bool TravelPath::shouldMoveToNextPoint(WorldPosition startPos, vector<PathNodePoint>::iterator beg, vector<PathNodePoint>::iterator ed, vector<PathNodePoint>::iterator p, float &moveDist, float maxDist);

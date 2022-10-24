@@ -133,7 +133,7 @@ bool CastCustomSpellAction::Execute(Event event)
             ai->HandleCommand(CHAT_MSG_WHISPER, cmd.str(), *master);
             msg << "|cffffff00(x" << (castCount - 1) << " left)|r";
         }
-        ai->TellMasterNoFacing(msg.str(), PLAYERBOT_SECURITY_ALLOW_ALL, false);
+        ai->TellMasterNoFacing(msg.str(), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
     }
     else
     {

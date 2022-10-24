@@ -377,7 +377,8 @@ bool BGJoinAction::shouldJoinBg(BattleGroundQueueTypeId queueTypeId, BattleGroun
     uint32 HCount = sRandomPlayerbotMgr.BgBots[queueTypeId][bracketId][1] + sRandomPlayerbotMgr.BgPlayers[queueTypeId][bracketId][1];
 
     uint32 BgCount = ACount + HCount;
-    uint32 SCount, RCount = 0;
+    uint32 SCount = 0;
+    uint32 RCount = 0;
 
     uint32 TeamId = bot->GetTeam() == ALLIANCE ? 0 : 1;
 
@@ -816,7 +817,8 @@ bool FreeBGJoinAction::shouldJoinBg(BattleGroundQueueTypeId queueTypeId, BattleG
     uint32 HCount = sRandomPlayerbotMgr.BgBots[queueTypeId][bracketId][1] + sRandomPlayerbotMgr.BgPlayers[queueTypeId][bracketId][1];
 
     uint32 BgCount = ACount + HCount;
-    uint32 SCount, RCount = 0;
+    uint32 SCount = 0;
+    uint32 RCount = 0;
 
     uint32 TeamId = bot->GetTeam() == ALLIANCE ? 0 : 1;
 
@@ -911,7 +913,7 @@ bool BGLeaveAction::Execute(Event event)
     if (!(bot->InBattleGroundQueue() || bot->InBattleGround()))
         return false;
 
-    //ai->ChangeStrategy("-bg", BOT_STATE_NON_COMBAT);
+    //ai->ChangeStrategy("-bg", BotState::BOT_STATE_NON_COMBAT);
 
     BattleGroundQueueTypeId queueTypeId = bot->GetBattleGroundQueueTypeId(0);
     BattleGroundTypeId _bgTypeId = sServerFacade.BgTemplateId(queueTypeId);
@@ -993,7 +995,7 @@ bool BGStatusAction::Execute(Event event)
     uint32 Time2;
     uint8 unk1;
     string _bgType;
-    uint8 isRated;
+    uint8 isRated = 0;
 
 #ifndef MANGOSBOT_ZERO
     uint64 arenatype;
@@ -1183,18 +1185,18 @@ bool BGStatusAction::Execute(Event event)
         if (IsRandomBot)
             ai->SetMaster(NULL);
 
-        ai->ChangeStrategy("-warsong", BOT_STATE_COMBAT);
-        ai->ChangeStrategy("-warsong", BOT_STATE_NON_COMBAT);
-        ai->ChangeStrategy("-arathi", BOT_STATE_COMBAT);
-        ai->ChangeStrategy("-arathi", BOT_STATE_NON_COMBAT);
-        ai->ChangeStrategy("-eye", BOT_STATE_COMBAT);
-        ai->ChangeStrategy("-eye", BOT_STATE_NON_COMBAT);
-        ai->ChangeStrategy("-isle", BOT_STATE_COMBAT);
-        ai->ChangeStrategy("-isle", BOT_STATE_NON_COMBAT);
-        ai->ChangeStrategy("-battleground", BOT_STATE_COMBAT);
-        ai->ChangeStrategy("-battleground", BOT_STATE_NON_COMBAT);
-        ai->ChangeStrategy("-arena", BOT_STATE_COMBAT);
-        ai->ChangeStrategy("-arena", BOT_STATE_NON_COMBAT);
+        ai->ChangeStrategy("-warsong", BotState::BOT_STATE_COMBAT);
+        ai->ChangeStrategy("-warsong", BotState::BOT_STATE_NON_COMBAT);
+        ai->ChangeStrategy("-arathi", BotState::BOT_STATE_COMBAT);
+        ai->ChangeStrategy("-arathi", BotState::BOT_STATE_NON_COMBAT);
+        ai->ChangeStrategy("-eye", BotState::BOT_STATE_COMBAT);
+        ai->ChangeStrategy("-eye", BotState::BOT_STATE_NON_COMBAT);
+        ai->ChangeStrategy("-isle", BotState::BOT_STATE_COMBAT);
+        ai->ChangeStrategy("-isle", BotState::BOT_STATE_NON_COMBAT);
+        ai->ChangeStrategy("-battleground", BotState::BOT_STATE_COMBAT);
+        ai->ChangeStrategy("-battleground", BotState::BOT_STATE_NON_COMBAT);
+        ai->ChangeStrategy("-arena", BotState::BOT_STATE_COMBAT);
+        ai->ChangeStrategy("-arena", BotState::BOT_STATE_NON_COMBAT);
         sLog.outBasic("Bot #%d %s:%d <%s> leaves %s - %s", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->GetLevel(), bot->GetName(), isArena ? "Arena" : "BG", _bgType);
 
         WorldPacket packet(CMSG_LEAVE_BATTLEFIELD);

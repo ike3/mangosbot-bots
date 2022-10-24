@@ -210,7 +210,7 @@ namespace ai
         bool cropPathTo(vector<WorldPosition>& path, float maxDistance = sPlayerbotAIConfig.targetPosRecalcDistance);
         bool canPathTo(WorldPosition endPos, Unit* bot) { return endPos.isPathTo(getPathTo(endPos, bot)); }
 
-        float getPathLength(vector<WorldPosition> points) { float dist; for (auto& p : points) if (&p == &points.front()) dist = 0; else dist += std::prev(&p, 1)->distance(p); return dist; }
+        float getPathLength(vector<WorldPosition> points) { float dist = 0.0f; for (auto& p : points) if (&p == &points.front()) dist = 0; else dist += std::prev(&p, 1)->distance(p); return dist; }
 
         bool GetReachableRandomPointOnGround(Player* bot, float radius, bool randomRange = true) {
 #ifndef MANGOSBOT_TWO         
@@ -615,7 +615,7 @@ namespace ai
     };
 
     //
-    enum TravelState
+    enum class TravelState : uint8
     {
         TRAVEL_STATE_IDLE = 0,
         TRAVEL_STATE_TRAVEL_PICK_UP_QUEST = 1,
@@ -629,7 +629,7 @@ namespace ai
         MAX_TRAVEL_STATE
     };
 
-    enum TravelStatus
+    enum class TravelStatus : uint8
     {
         TRAVEL_STATUS_NONE = 0,
         TRAVEL_STATUS_PREPARE = 1,
@@ -691,7 +691,7 @@ namespace ai
         bool isGroupCopy() { return groupCopy; }
         bool isForced() { return forced; }
     protected:
-        TravelStatus m_status = TRAVEL_STATUS_NONE;
+        TravelStatus m_status = TravelStatus::TRAVEL_STATUS_NONE;
 
         uint32 startTime = WorldTimer::getMSTime();
         uint32 statusTime = 0;

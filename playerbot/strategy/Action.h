@@ -39,7 +39,7 @@ namespace ai
 
     class ActionBasket;
 
-    enum ActionThreatType
+    enum class ActionThreatType : uint8
     {
         ACTION_THREAT_NONE = 0,
         ACTION_THREAT_SINGLE= 1,
@@ -59,7 +59,7 @@ namespace ai
         virtual NextAction** getPrerequisites() { return NULL; }
         virtual NextAction** getAlternatives() { return NULL; }
         virtual NextAction** getContinuers() { return NULL; }
-        virtual ActionThreatType getThreatType() { return ACTION_THREAT_NONE; }
+        virtual ActionThreatType getThreatType() { return ActionThreatType::ACTION_THREAT_NONE; }
         void Update() {}
         void Reset() {}
         virtual Unit* GetTarget();

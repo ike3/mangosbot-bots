@@ -152,16 +152,16 @@ bool EmoteActionBase::ReceiveEmote(Player* source, uint32 emote, bool verbal)
     case 325:
         if (ai->GetMaster() == source)
         {
-            ai->ChangeStrategy("-follow,+stay", BOT_STATE_NON_COMBAT);
-            ai->TellMasterNoFacing("Fine.. I'll stay right here..", PLAYERBOT_SECURITY_ALLOW_ALL, false);
+            ai->ChangeStrategy("-follow,+stay", BotState::BOT_STATE_NON_COMBAT);
+            ai->TellMasterNoFacing("Fine.. I'll stay right here..", PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
         }
         break;
     case TEXTEMOTE_BECKON:
     case 324:
         if (ai->GetMaster() == source)
         {
-            ai->ChangeStrategy("+follow", BOT_STATE_NON_COMBAT);
-            ai->TellMasterNoFacing("Wherever you go, I'll follow..", PLAYERBOT_SECURITY_ALLOW_ALL, false);
+            ai->ChangeStrategy("+follow", BotState::BOT_STATE_NON_COMBAT);
+            ai->TellMasterNoFacing("Wherever you go, I'll follow..", PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
         }
         break;
     case TEXTEMOTE_WAVE:

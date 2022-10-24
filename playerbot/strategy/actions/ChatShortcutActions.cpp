@@ -30,8 +30,8 @@ bool FollowChatShortcutAction::Execute(Event event)
         return false;
 
     ai->Reset();
-    ai->ChangeStrategy("+follow,-passive", BOT_STATE_NON_COMBAT);
-    ai->ChangeStrategy("-follow,-passive", BOT_STATE_COMBAT);
+    ai->ChangeStrategy("+follow,-passive", BotState::BOT_STATE_NON_COMBAT);
+    ai->ChangeStrategy("-follow,-passive", BotState::BOT_STATE_COMBAT);
 
     ai::PositionMap& posMap = context->GetValue<ai::PositionMap&>("position")->Get();
     ai::PositionEntry pos = posMap["return"];
@@ -88,8 +88,8 @@ bool StayChatShortcutAction::Execute(Event event)
         return false;
 
     ai->Reset();
-    ai->ChangeStrategy("+stay,-passive", BOT_STATE_NON_COMBAT);
-    ai->ChangeStrategy("-follow,-passive", BOT_STATE_COMBAT);
+    ai->ChangeStrategy("+stay,-passive", BotState::BOT_STATE_NON_COMBAT);
+    ai->ChangeStrategy("-follow,-passive", BotState::BOT_STATE_COMBAT);
 
     SetReturnPosition(bot->GetPositionX(), bot->GetPositionY(), bot->GetPositionZ());
 
@@ -104,8 +104,8 @@ bool FleeChatShortcutAction::Execute(Event event)
         return false;
 
     ai->Reset();
-    ai->ChangeStrategy("+follow,+passive", BOT_STATE_NON_COMBAT);
-    ai->ChangeStrategy("+follow,+passive", BOT_STATE_COMBAT);
+    ai->ChangeStrategy("+follow,+passive", BotState::BOT_STATE_NON_COMBAT);
+    ai->ChangeStrategy("+follow,+passive", BotState::BOT_STATE_COMBAT);
     ResetReturnPosition();
     if (bot->GetMapId() != master->GetMapId() || sServerFacade.GetDistance2d(bot, master) > sPlayerbotAIConfig.sightDistance)
     {
@@ -123,8 +123,8 @@ bool GoawayChatShortcutAction::Execute(Event event)
         return false;
 
     ai->Reset();
-    ai->ChangeStrategy("+runaway", BOT_STATE_NON_COMBAT);
-    ai->ChangeStrategy("+runaway", BOT_STATE_COMBAT);
+    ai->ChangeStrategy("+runaway", BotState::BOT_STATE_NON_COMBAT);
+    ai->ChangeStrategy("+runaway", BotState::BOT_STATE_COMBAT);
     ResetReturnPosition();
     ai->TellError("Running away");
     return true;
@@ -137,7 +137,7 @@ bool GrindChatShortcutAction::Execute(Event event)
         return false;
 
     ai->Reset();
-    ai->ChangeStrategy("+grind,-passive", BOT_STATE_NON_COMBAT);
+    ai->ChangeStrategy("+grind,-passive", BotState::BOT_STATE_NON_COMBAT);
     ResetReturnPosition();
     ai->TellError(BOT_TEXT("grinding"));
     return true;
@@ -153,8 +153,8 @@ bool TankAttackChatShortcutAction::Execute(Event event)
         return false;
 
     ai->Reset();
-    ai->ChangeStrategy("-passive", BOT_STATE_NON_COMBAT);
-    ai->ChangeStrategy("-passive", BOT_STATE_COMBAT);
+    ai->ChangeStrategy("-passive", BotState::BOT_STATE_NON_COMBAT);
+    ai->ChangeStrategy("-passive", BotState::BOT_STATE_COMBAT);
     ResetReturnPosition();
     ai->TellError(BOT_TEXT("attacking"));
     return true;
@@ -170,7 +170,7 @@ bool MaxDpsChatShortcutAction::Execute(Event event)
         return false;
 
     ai->Reset();
-    ai->ChangeStrategy("-threat,-conserve mana,-cast time,+dps debuff,+boost", BOT_STATE_COMBAT);
+    ai->ChangeStrategy("-threat,-conserve mana,-cast time,+dps debuff,+boost", BotState::BOT_STATE_COMBAT);
     ai->TellError("Max DPS!");
     return true;
 }

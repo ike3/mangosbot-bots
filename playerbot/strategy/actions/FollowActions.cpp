@@ -105,22 +105,22 @@ bool FleeToMasterAction::Execute(Event event)
     if (distance > sPlayerbotAIConfig.reactDistance && bot->IsInCombat())
     {
         if (!urand(0, 5))
-            ai->TellMaster("I'm heading to your location but I'm in combat", PLAYERBOT_SECURITY_ALLOW_ALL, false);
-            //ai->TellMaster(BOT_TEXT("wait_travel_combat"), PLAYERBOT_SECURITY_ALLOW_ALL, false);
+            ai->TellMaster("I'm heading to your location but I'm in combat", PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+            //ai->TellMaster(BOT_TEXT("wait_travel_combat"), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
     }
     else if (distance < sPlayerbotAIConfig.reactDistance * 3)
     {
         if (!urand(0, 5))
-            ai->TellMaster(BOT_TEXT("wait_travel_close"), PLAYERBOT_SECURITY_ALLOW_ALL, false);
+            ai->TellMaster(BOT_TEXT("wait_travel_close"), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
     }
     else if (distance < 1000)
     {
         if (!urand(0, 20))
-            ai->TellMaster(BOT_TEXT("wait_travel_medium"), PLAYERBOT_SECURITY_ALLOW_ALL, false);
+            ai->TellMaster(BOT_TEXT("wait_travel_medium"), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
     }
     else
         if (!urand(0, 30))
-            ai->TellMaster(BOT_TEXT("wait_travel_medium"), PLAYERBOT_SECURITY_ALLOW_ALL, false);
+            ai->TellMaster(BOT_TEXT("wait_travel_medium"), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
            
     ai->SetNextCheckDelay(3000);
     return true;
@@ -139,7 +139,7 @@ bool FleeToMasterAction::isUseful()
     if (target && ai->GetGroupMaster()->HasTarget(target->GetObjectGuid()))
         return false;
 
-    if (!ai->HasStrategy("follow", BOT_STATE_NON_COMBAT))
+    if (!ai->HasStrategy("follow", BotState::BOT_STATE_NON_COMBAT))
         return false;
 
     Unit* fTarget = AI_VALUE(Unit*, "master target");

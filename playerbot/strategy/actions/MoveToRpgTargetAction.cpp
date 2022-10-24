@@ -39,7 +39,7 @@ bool MoveToRpgTargetAction::Execute(Event event)
 
                 RESET_AI_VALUE(GuidPosition, "rpg target");
 
-                if (ai->HasStrategy("debug rpg", BOT_STATE_NON_COMBAT))
+                if (ai->HasStrategy("debug rpg", BotState::BOT_STATE_NON_COMBAT))
                 {
                     ai->TellMasterNoFacing("Rpg player target is targeting me. Drop target");
                 }
@@ -54,7 +54,7 @@ bool MoveToRpgTargetAction::Execute(Event event)
 
         RESET_AI_VALUE(GuidPosition,"rpg target");
 
-        if (ai->HasStrategy("debug rpg", BOT_STATE_NON_COMBAT))
+        if (ai->HasStrategy("debug rpg", BotState::BOT_STATE_NON_COMBAT))
         {
             ai->TellMasterNoFacing("Rpg target is moving. Random drop target.");
         }
@@ -67,7 +67,7 @@ bool MoveToRpgTargetAction::Execute(Event event)
 
         RESET_AI_VALUE(GuidPosition, "rpg target");
 
-        if (ai->HasStrategy("debug rpg", BOT_STATE_NON_COMBAT))
+        if (ai->HasStrategy("debug rpg", BotState::BOT_STATE_NON_COMBAT))
         {
             ai->TellMasterNoFacing("Rpg target is far from mater. Random drop target.");
         }
@@ -80,7 +80,7 @@ bool MoveToRpgTargetAction::Execute(Event event)
 
         RESET_AI_VALUE(GuidPosition, "rpg target");
 
-        if (ai->HasStrategy("debug rpg", BOT_STATE_NON_COMBAT))
+        if (ai->HasStrategy("debug rpg", BotState::BOT_STATE_NON_COMBAT))
         {
             ai->TellMasterNoFacing("Rpg target is beyond react distance. Drop target");
         }
@@ -93,7 +93,7 @@ bool MoveToRpgTargetAction::Execute(Event event)
 
         RESET_AI_VALUE(GuidPosition, "rpg target");
 
-        if (ai->HasStrategy("debug rpg", BOT_STATE_NON_COMBAT))
+        if (ai->HasStrategy("debug rpg", BotState::BOT_STATE_NON_COMBAT))
         {
             ai->TellMasterNoFacing("Under/above object drop rpg target");
         }
@@ -106,7 +106,7 @@ bool MoveToRpgTargetAction::Execute(Event event)
 
         RESET_AI_VALUE(GuidPosition, "rpg target");
 
-        if (ai->HasStrategy("debug rpg", BOT_STATE_NON_COMBAT))
+        if (ai->HasStrategy("debug rpg", BotState::BOT_STATE_NON_COMBAT))
         {
             ai->TellMasterNoFacing("Random drop rpg target");
         }
@@ -118,7 +118,7 @@ bool MoveToRpgTargetAction::Execute(Event event)
     float z = wo->GetPositionZ();
     float mapId = wo->GetMapId();
 
-    if (ai->HasStrategy("debug move", BOT_STATE_NON_COMBAT))
+    if (ai->HasStrategy("debug move", BotState::BOT_STATE_NON_COMBAT))
     {
         string name = chat->formatWorldobject(wo);
 
@@ -165,7 +165,7 @@ bool MoveToRpgTargetAction::Execute(Event event)
 
         RESET_AI_VALUE(GuidPosition, "rpg target");
 
-        if (ai->HasStrategy("debug rpg", BOT_STATE_NON_COMBAT))
+        if (ai->HasStrategy("debug rpg", BotState::BOT_STATE_NON_COMBAT))
         {
             ai->TellMasterNoFacing("Could not move to rpg target. Drop rpg target");
         }
@@ -173,7 +173,7 @@ bool MoveToRpgTargetAction::Execute(Event event)
         return false;
     }
 
-    if (ai->HasStrategy("debug rpg", BOT_STATE_NON_COMBAT) && guidP.GetWorldObject())
+    if (ai->HasStrategy("debug rpg", BotState::BOT_STATE_NON_COMBAT) && guidP.GetWorldObject())
     {
         if (couldMove)
         {
@@ -207,7 +207,7 @@ bool MoveToRpgTargetAction::isUseful()
     {
         RESET_AI_VALUE(GuidPosition, "rpg target");
 
-        if (ai->HasStrategy("debug rpg", BOT_STATE_NON_COMBAT))
+        if (ai->HasStrategy("debug rpg", BotState::BOT_STATE_NON_COMBAT))
         {
             ai->TellMasterNoFacing("Target could not be found. Drop rpg target");
         }

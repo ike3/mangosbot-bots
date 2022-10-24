@@ -53,7 +53,7 @@ namespace ai
         {
             if (ai->CastSpell("stealth", bot))
             {
-                ai->ChangeStrategy("+stealthed", BOT_STATE_COMBAT);
+                ai->ChangeStrategy("+stealthed", BotState::BOT_STATE_COMBAT);
                 bot->InterruptSpell(CURRENT_MELEE_SPELL);
             }
             return true;
@@ -78,13 +78,13 @@ namespace ai
             bool hasStealth = ai->HasAura("stealth", bot);
             if (hasStealth)
             {
-                if (!ai->HasStrategy("stealthed", BOT_STATE_COMBAT))
-                    ai->ChangeStrategy("+stealthed", BOT_STATE_COMBAT);
+                if (!ai->HasStrategy("stealthed", BotState::BOT_STATE_COMBAT))
+                    ai->ChangeStrategy("+stealthed", BotState::BOT_STATE_COMBAT);
             }
             else if (!hasStealth)
             {
                 ai->ResetStrategies();
-                //ai->ChangeStrategy("+dps,-stealthed", BOT_STATE_COMBAT);
+                //ai->ChangeStrategy("+dps,-stealthed", BotState::BOT_STATE_COMBAT);
             }
             return true;
         }
@@ -127,7 +127,7 @@ namespace ai
         {
             if (ai->CastSpell("vanish", bot))
             {
-                ai->ChangeStrategy("+stealthed", BOT_STATE_COMBAT);
+                ai->ChangeStrategy("+stealthed", BotState::BOT_STATE_COMBAT);
                 bot->InterruptSpell(CURRENT_MELEE_SPELL);
                 return true;
             }

@@ -8,7 +8,7 @@ using namespace ai;
 
 
 bool CanGetMailValue::Calculate() {
-    if (!ai->HasStrategy("rpg vendor", BOT_STATE_NON_COMBAT))
+    if (!ai->HasStrategy("rpg vendor", BotState::BOT_STATE_NON_COMBAT))
         return false;
 
     if (AI_VALUE(bool, "should sell"))
