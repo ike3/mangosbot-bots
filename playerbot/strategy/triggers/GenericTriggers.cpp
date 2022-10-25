@@ -60,10 +60,16 @@ bool PanicTrigger::IsActive()
 
 bool OutNumberedTrigger::IsActive()
 {
+    // Don't trigger if the bot is a dungeon or raid
     if (bot->GetMap() && (bot->GetMap()->IsDungeon() || bot->GetMap()->IsRaid()))
         return false;
 
+    // Don't trigger if the bot is in a raid group
     if (bot->GetGroup() && bot->GetGroup()->IsRaidGroup())
+        return false;
+
+    // Don't trigger if the bot is in a group with a real player
+    if (bot->GetGroup() && ai->HasRealPlayerMaster())
         return false;
 
     int32 botLevel = bot->GetLevel();
