@@ -1401,7 +1401,7 @@ bool MovementAction::Flee(Unit *target)
         ai->TellError("I am stuck while fleeing");
         return false;
     }
-    bool foundFlee = false;
+
     time_t lastFlee = AI_VALUE(LastMovement&, "last movement").lastFlee;
     time_t now = time(0);
     uint32 fleeDelay = urand(2, sPlayerbotAIConfig.returnDelay / 1000);
@@ -1413,187 +1413,175 @@ bool MovementAction::Flee(Unit *target)
             return false;
         }
     }
+    
+    const bool isHealer = ai->IsHeal(bot);
+    const bool isTank = ai->IsTank(bot);
+    const bool isDps = !isHealer && !isTank;
+    const bool isRanged = ai->IsRanged(bot);
+    const bool needHealer = !isHealer && AI_VALUE2(uint8, "health", "self target") < 50;
 
-    //HostileReference *ref = target->GetThreatManager().getCurrentVictim();
     HostileReference *ref = sServerFacade.GetThreatManager(target).getCurrentVictim();
+    const bool isTarget = ref && ref->getTarget() == bot;
 
-    if (ref && ref->getTarget() == bot) // bot is target - try to flee to tank or master
+    Unit* fleeTarget = nullptr;
+    Group* group = bot->GetGroup();
+    if (group)
     {
-        Group *group = bot->GetGroup();
-        if (group)
+        Unit* spareTarget = nullptr;
+        vector<Unit*> possibleTargets;
+        const float minFleeDistance = 5.0f;
+        const float maxFleeDistance = isTarget ? 40.0f : ai->GetRange("spell") * 1.5;
+        const float minRangedTargetDistance = ai->GetRange("spell") / 2 + sPlayerbotAIConfig.followDistance;
+
+        for (GroupReference* gref = group->GetFirstMember(); gref; gref = gref->next())
         {
-            Unit* fleeTarget = nullptr;
-            float fleeDistance = 40.0f;
+            Player* groupMember = gref->getSource();
 
-            for (GroupReference *gref = group->GetFirstMember(); gref; gref = gref->next())
+            // Ignore group member if is not alive or on a different zone
+            if (!groupMember || groupMember == bot || groupMember == master || !sServerFacade.IsAlive(groupMember) || bot->GetMapId() != groupMember->GetMapId())
+                continue;
+
+            // Don't flee to group member if too close or too far
+            float const distanceToGroupMember = sServerFacade.GetDistance2d(bot, groupMember);
+            if (distanceToGroupMember < minFleeDistance || distanceToGroupMember > maxFleeDistance)
+                continue;
+
+            if (PlayerbotAI* groupMemberBotAi = groupMember->GetPlayerbotAI())
             {
-                Player* player = gref->getSource();
-                if (!player || player == bot || !sServerFacade.IsAlive(player) || bot->GetMapId() != player->GetMapId()) continue;
-                if (sServerFacade.GetDistance2d(bot, player) > 40.0f)
+                // Ignore if the group member is affected by an aoe spell
+                if (groupMemberBotAi->GetAiObjectContext()->GetValue<bool>("has area debuff", "self target")->Get())
                     continue;
+            }
 
-                bool hasAoe = false;
-                if (PlayerbotAI* botAi = player->GetPlayerbotAI())
+            // If the bot is currently being targeted
+            if(isTarget)
+            {
+                // Try to flee to tank
+                if (ai->IsTank(groupMember))
                 {
-                    if (botAi->GetAiObjectContext()->GetValue<bool>("has area debuff", "self target")->Get())
-                        hasAoe = true;
-                }
-
-                if (hasAoe)
-                    continue;
-
-                if (ai->IsTank(player))
-                {
-                    float distanceToTank = sServerFacade.GetDistance2d(bot, player);
+                    float distanceToTank = sServerFacade.GetDistance2d(bot, groupMember);
                     float distanceToTarget = sServerFacade.GetDistance2d(bot, target);
-                    if (distanceToTank < fleeDistance)
+                    if (distanceToTank > minFleeDistance && distanceToTank < maxFleeDistance)
                     {
-                        fleeTarget = player;
-                        fleeDistance = distanceToTank;
+                        possibleTargets.push_back(groupMember);
                     }
                 }
             }
-
-            if (fleeTarget)
-                foundFlee = MoveNear(fleeTarget);
-
-            if ((!fleeTarget || !foundFlee) && master)
+            else
             {
-                foundFlee = MoveNear(master);
+                // Try to flee to healers (group healers together or approach a healer if needed)
+                if ((isHealer && ai->IsHeal(groupMember)) || needHealer)
+                {
+                    const float distanceToTarget = sServerFacade.GetDistance2d(groupMember, target);
+                    if (distanceToTarget > minRangedTargetDistance && (needHealer || groupMember->IsWithinLOSInMap(target, true)))
+                    {
+                        possibleTargets.push_back(groupMember);
+                    }
+                }
+                // Try to flee to ranged (group ranged together)
+                else if (isRanged && ai->IsRanged(groupMember))
+                {
+                    const float distanceToTarget = sServerFacade.GetDistance2d(groupMember, target);
+                    if (distanceToTarget > minRangedTargetDistance && groupMember->IsWithinLOSInMap(target, true))
+                    {
+                        possibleTargets.push_back(groupMember);
+                    }
+                }
             }
         }
-    }
-    else // bot is not targeted, try to flee dps/healers
-    {
-        bool isHealer = ai->IsHeal(bot);
-        bool isDps = !isHealer && !ai->IsTank(bot);
-        bool isTank = ai->IsTank(bot);
-        bool needHealer = !isHealer && AI_VALUE2(uint8, "health", "self target") < 50;
-        bool isRanged = ai->IsRanged(bot);
 
-        Group *group = bot->GetGroup();
-        if (group)
+        if (!possibleTargets.empty())
         {
-            Unit* fleeTarget = nullptr;
-            float fleeDistance = ai->GetRange("spell") * 1.5;
-            Unit* spareTarget = nullptr;
-            float spareDistance = ai->GetRange("spell") * 2;
-            vector<Unit*> possibleTargets;
-
-            for (GroupReference *gref = group->GetFirstMember(); gref; gref = gref->next())
-            {
-                Player* player = gref->getSource();
-                if (!player || player == bot || !sServerFacade.IsAlive(player) || bot->GetMapId() != player->GetMapId()) continue;
-                if (sServerFacade.GetDistance2d(bot, player) > 40.0f)
-                    continue;
-
-                bool hasAoe = false;
-                if (PlayerbotAI* botAi = player->GetPlayerbotAI())
-                {
-                    if (botAi->GetAiObjectContext()->GetValue<bool>("has area debuff", "self target")->Get())
-                        hasAoe = true;
-                }
-
-                if (hasAoe)
-                    continue;
-
-                if ((isHealer && ai->IsHeal(player)) || needHealer)
-                {
-                    float distanceToHealer = sServerFacade.GetDistance2d(bot, player);
-                    float distanceToTarget = sServerFacade.GetDistance2d(player, target);
-                    if (distanceToHealer < fleeDistance && distanceToTarget > (ai->GetRange("spell") / 2 + sPlayerbotAIConfig.followDistance) && (needHealer || player->IsWithinLOSInMap(target, true)))
-                    {
-                        fleeTarget = player;
-                        fleeDistance = distanceToHealer;
-                        possibleTargets.push_back(fleeTarget);
-                    }
-                }
-                else if (isRanged && ai->IsRanged(player))
-                {
-                    float distanceToRanged = sServerFacade.GetDistance2d(bot, player);
-                    float distanceToTarget = sServerFacade.GetDistance2d(player, target);
-                    if (distanceToRanged < fleeDistance && distanceToTarget > (ai->GetRange("spell") / 2 + sPlayerbotAIConfig.followDistance) && player->IsWithinLOSInMap(target, true))
-                    {
-                        fleeTarget = player;
-                        fleeDistance = distanceToRanged;
-                        possibleTargets.push_back(fleeTarget);
-                    }
-                }
-                // remember any group member in case no one else found
-                float distanceToFlee = sServerFacade.GetDistance2d(bot, player);
-                float distanceToTarget = sServerFacade.GetDistance2d(player, target);
-                if (distanceToFlee < spareDistance && distanceToTarget >(ai->GetRange("spell") / 2 + sPlayerbotAIConfig.followDistance) && player->IsWithinLOSInMap(target, true))
-                {
-                    spareTarget = player;
-                    spareDistance = distanceToFlee;
-                    possibleTargets.push_back(fleeTarget);
-                }
-            }
-
-            if (!possibleTargets.empty())
-                fleeTarget = possibleTargets[urand(0, possibleTargets.size() - 1)];
-
-            if (!fleeTarget)
-                fleeTarget = spareTarget;
-
-            if (fleeTarget)
-                foundFlee = MoveNear(fleeTarget);
-
-            if ((!fleeTarget || !foundFlee) && master && sServerFacade.IsAlive(master) && master->IsWithinLOSInMap(target, true))
-            {
-                float distanceToTarget = sServerFacade.GetDistance2d(master, target);
-                if (distanceToTarget > (ai->GetRange("spell") / 2 + sPlayerbotAIConfig.followDistance))
-                    foundFlee = MoveNear(master);
-            }
-        }
-    }
-
-    if ((foundFlee || lastFlee) && bot->GetGroup())
-    {
-        if (!lastFlee)
-        {
-            AI_VALUE(LastMovement&, "last movement").lastFlee = now;
+            fleeTarget = possibleTargets[urand(0, possibleTargets.size() - 1)];
         }
         else
         {
-            if ((now - lastFlee) > fleeDelay)
+            // If nothing was found, let's try the master
+            if (master && sServerFacade.IsAlive(master) && master->IsWithinLOSInMap(target, true))
             {
-                AI_VALUE(LastMovement&, "last movement").lastFlee = 0;
+                // Don't flee to group member if too close or too far
+                float const distanceToMaster = sServerFacade.GetDistance2d(bot, master);
+                if (distanceToMaster > minFleeDistance && distanceToMaster < maxFleeDistance)
+                {
+                    if(isRanged)
+                    {
+                        const float distanceToTarget = sServerFacade.GetDistance2d(master, target);
+                        if (distanceToTarget > minRangedTargetDistance)
+                        {
+                            fleeTarget = master;
+                        }
+                    }
+                    else
+                    {
+                        fleeTarget = master;
+                    }
+                }
             }
-            else
-                return false;
         }
     }
-    bool fullDistance = false;
-    if (target->IsPlayer())
-        fullDistance = true;
-    if (WorldPosition(bot).isOverworld())
-        fullDistance = true;
 
-    FleeManager manager(bot, fullDistance ? (ai->GetRange("flee") * 2) : ai->GetRange("flee"), bot->GetAngle(target) + M_PI);
-
-    if (!manager.isUseful())
-        return false;
-
-    if (!urand(0, 50) && ai->HasStrategy("emote", BotState::BOT_STATE_NON_COMBAT))
+    bool succeeded = false;
+    if (fleeTarget)
     {
-        vector<uint32> sounds;
-        sounds.push_back(304); // guard
-        sounds.push_back(306); // flee
-        ai->PlayEmote(sounds[urand(0, sounds.size() - 1)]);
+        succeeded = MoveNear(fleeTarget);
     }
 
-    float rx, ry, rz;
-    if (!manager.CalculateDestination(&rx, &ry, &rz))
+    // Generate a position to flee
+    if(!succeeded)
     {
-        ai->TellError("Nowhere to flee");
-        return false;
+        if (lastFlee && bot->GetGroup())
+        {
+            if (!lastFlee)
+            {
+                AI_VALUE(LastMovement&, "last movement").lastFlee = now;
+            }
+            else
+            {
+                if ((now - lastFlee) > fleeDelay)
+                {
+                    AI_VALUE(LastMovement&, "last movement").lastFlee = 0;
+                }
+                else
+                {
+                    succeeded = false;
+                }
+            }
+        }
+        bool fullDistance = false;
+        if (target->IsPlayer())
+            fullDistance = true;
+        if (WorldPosition(bot).isOverworld())
+            fullDistance = true;
+
+        FleeManager manager(bot, fullDistance ? (ai->GetRange("flee") * 2) : ai->GetRange("flee"), bot->GetAngle(target) + M_PI);
+        if (!manager.isUseful())
+        {
+            succeeded = false;
+        }
+
+        if (!urand(0, 50) && ai->HasStrategy("emote", BotState::BOT_STATE_NON_COMBAT))
+        {
+            vector<uint32> sounds;
+            sounds.push_back(304); // guard
+            sounds.push_back(306); // flee
+            ai->PlayEmote(sounds[urand(0, sounds.size() - 1)]);
+        }
+
+        float rx, ry, rz;
+        if (!manager.CalculateDestination(&rx, &ry, &rz))
+        {
+            ai->TellError("Nowhere to flee");
+            succeeded = false;
+        }
+
+        if(MoveTo(target->GetMapId(), rx, ry, rz))
+        {
+            AI_VALUE(LastMovement&, "last movement").lastFlee = time(0);
+            succeeded = true;
+        }
     }
 
-    bool result = MoveTo(target->GetMapId(), rx, ry, rz);
-    if (result)
-        AI_VALUE(LastMovement&, "last movement").lastFlee = time(0);
-    return result;
+    return succeeded;
 }
 
 void MovementAction::ClearIdleState()
