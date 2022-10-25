@@ -3157,8 +3157,9 @@ bool PlayerbotAI::HasPlayerNearby(WorldPosition* pos, float range)
 {
     float sqRange = range * range;
     bool nearPlayer = false;
-    for (auto& player : sRandomPlayerbotMgr.GetPlayers())
+    for (auto& i : sRandomPlayerbotMgr.GetPlayers())
     {
+        Player* player = i.second;
         if (!player->IsGameMaster() || player->isGMVisible())
         {
             if (player->GetMapId() != bot->GetMapId())
@@ -3186,8 +3187,9 @@ bool PlayerbotAI::HasManyPlayersNearby(uint32 trigerrValue, float range)
     float sqRange = range * range;
     uint32 found = 0;
 
-    for (auto& player : sRandomPlayerbotMgr.GetPlayers())
+    for (auto& i : sRandomPlayerbotMgr.GetPlayers())
     {
+        Player* player = i.second;
         if ((!player->IsGameMaster() || player->isGMVisible()) && sServerFacade.GetDistance2d(player, bot) < sqRange)
         {
             found++;
@@ -3250,8 +3252,9 @@ pair<uint32, uint32> PlayerbotAI::GetPriorityBracket(bool& shouldDetailMove)
         return { 0,40 };
 
     // friends always active
-    for (auto& player : sRandomPlayerbotMgr.GetPlayers())
+    for (auto& i : sRandomPlayerbotMgr.GetPlayers())
     {
+        Player* player = i.second;
         if (!player || !player->IsInWorld())
             continue;
 

@@ -257,8 +257,12 @@ Player* PlayerbotHolder::GetPlayerBot(uint32 playerGuid) const
 
 void PlayerbotHolder::OnBotLogin(Player * const bot)
 {
-	PlayerbotAI* ai = new PlayerbotAI(bot);
-	bot->SetPlayerbotAI(ai);
+    PlayerbotAI* ai = bot->GetPlayerbotAI();
+    if (!ai)
+    {
+        ai = new PlayerbotAI(bot);
+        bot->SetPlayerbotAI(ai);
+    }
 	OnBotLoginInternal(bot);
 
     playerBots[bot->GetGUIDLow()] = bot;
@@ -1005,6 +1009,9 @@ void PlayerbotMgr::HandleMasterOutgoingPacket(const WorldPacket& packet)
         if (!bot)
             continue;
 
+        if (!bot->GetPlayerbotAI())
+            continue;
+
         bot->GetPlayerbotAI()->HandleMasterOutgoingPacket(packet);
     }
 
@@ -1047,7 +1054,7 @@ void PlayerbotMgr::OnPlayerLogin(Player* player)
     sPlayerbotTextMgr.AddLocalePriority(player->GetSession()->GetSessionDbLocaleIndex());
     sLog.outBasic("Player %s logged in, localeDbc %i, localeDb %i", player->GetName(), (uint32)(player->GetSession()->GetSessionDbcLocale()), player->GetSession()->GetSessionDbLocaleIndex());
 
-    if(sPlayerbotAIConfig.selfBotLevel > 2)
+    if(sPlayerbotAIConfig.selfBotLevel > 2 || sPlayerbotAIConfig.IsNonRandomBot(player))
         HandlePlayerbotCommand("self", player);
 
     if (!sPlayerbotAIConfig.botAutologin)

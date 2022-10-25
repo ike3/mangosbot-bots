@@ -364,7 +364,7 @@ void RandomPlayerbotMgr::LogPlayerLocation()
             }
         for (auto i : GetPlayers())
         {
-            Player* bot = i;
+            Player* bot = i.second;
             if (!bot)
                 continue;
             ostringstream out;
@@ -381,7 +381,7 @@ void RandomPlayerbotMgr::LogPlayerLocation()
             out << bot->GetHealth() << ",";
             out << bot->GetPowerPercent() << ",";
             out << bot->GetMoney() << ",";
-            if (i->GetPlayerbotAI())
+            if (bot->GetPlayerbotAI())
             {
                 out << to_string(uint8(bot->GetPlayerbotAI()->GetGrouperType())) << ",";
                 out << to_string(uint8(bot->GetPlayerbotAI()->GetGuilderType())) << ",";
@@ -589,10 +589,10 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed, bool minimal)
             }
         for (auto i : GetPlayers())
         {
-            Player* bot = i;
+            Player* bot = i.second;
             if (!bot)
                 continue;           
-            if (i->GetPlayerbotAI())
+            if (bot->GetPlayerbotAI())
                 if (bot->GetPlayerbotAI()->AllowActivity(ALL_ACTIVITY))
                     activeBots++;
         }
@@ -774,9 +774,9 @@ void RandomPlayerbotMgr::CheckBgQueue()
         }
     }
 
-    for (vector<Player*>::iterator i = players.begin(); i != players.end(); ++i)
+    for (auto i : players)
     {
-        Player* player = *i;
+        Player* player = i.second;
 
         if (!player || !player->IsInWorld())
             continue;
@@ -1074,9 +1074,9 @@ void RandomPlayerbotMgr::CheckLfgQueue()
     LfgDungeons[HORDE].clear();
     LfgDungeons[ALLIANCE].clear();
 
-    for (vector<Player*>::iterator i = players.begin(); i != players.end(); ++i)
+    for (auto i : players)
     {
-        Player* player = *i;
+        Player* player = i.second;
 
         if (!player || !player->IsInWorld())
             continue;
@@ -1272,9 +1272,9 @@ void RandomPlayerbotMgr::CheckPlayers()
         playersLevel = sPlayerbotAIConfig.randombotStartingLevel;
 
 
-    for (vector<Player*>::iterator i = players.begin(); i != players.end(); ++i)
+    for (auto i : players)
     {
-        Player* player = *i;
+        Player* player = i.second;
 
         if (player->IsGameMaster())
             continue;
@@ -1352,6 +1352,9 @@ bool RandomPlayerbotMgr::AddRandomBot(uint32 bot)
 bool RandomPlayerbotMgr::ProcessBot(uint32 bot)
 {
     Player* player = GetPlayerBot(bot);
+
+    if (player && sPlayerbotAIConfig.IsNonRandomBot(player))
+        return false;
 
     PlayerbotAI* ai = player ? player->GetPlayerbotAI() : NULL;
 
@@ -1491,8 +1494,8 @@ bool RandomPlayerbotMgr::ProcessBot(Player* player)
             {
                 Guild* guild = sGuildMgr.GetGuildById(player->GetGuildId());
                 if (guild->GetLeaderGuid().GetRawValue() == player->GetObjectGuid().GetRawValue()) {
-                    for (vector<Player*>::iterator i = players.begin(); i != players.end(); ++i)
-                        sGuildTaskMgr.Update(*i, player);
+                    for (auto i : players)
+                        sGuildTaskMgr.Update(i.second, player);
                 }
 
                 uint32 accountId = sObjectMgr.GetPlayerAccountIdByGUID(guild->GetLeaderGuid());
@@ -2517,9 +2520,7 @@ void RandomPlayerbotMgr::OnPlayerLogout(Player* player)
         }
     }
 
-    vector<Player*>::iterator i = find(players.begin(), players.end(), player);
-    if (i != players.end())
-        players.erase(i);
+    players.erase(player->GetGUIDLow());
 }
 
 void RandomPlayerbotMgr::OnBotLoginInternal(Player * const bot)
@@ -2614,11 +2615,14 @@ void RandomPlayerbotMgr::OnPlayerLogin(Player* player)
     if (IsRandomBot(player))
     {
         uint32 guid = player->GetGUIDLow();
-        SetEventValue(guid, "login", 0, 0);
+        if (sPlayerbotAIConfig.IsNonRandomBot(player))
+            player->TeleportTo(WorldPosition(player));
+        else
+           SetEventValue(guid, "login", 0, 0);
     }
     else
     {
-        players.push_back(player);
+        players[player->GetGUIDLow()] = player;
         sLog.outDebug("Including non-random bot player %s into random bot update", player->GetName());
     }
 }
@@ -2636,6 +2640,12 @@ Player* RandomPlayerbotMgr::GetRandomPlayer()
 
     uint32 index = urand(0, players.size() - 1);
     return players[index];
+}
+
+Player* RandomPlayerbotMgr::GetPlayer(uint32 playerGuid)
+{
+    PlayerBotMap::const_iterator it = players.find(playerGuid);
+    return (it == players.end()) ? nullptr : it->second ? it->second : nullptr;
 }
 
 void RandomPlayerbotMgr::PrintStats()
