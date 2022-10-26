@@ -54,6 +54,8 @@ enum class TravelNodePathType : uint8
     staticPortal = 6
 };
 
+using namespace ai;
+
     //A connection between two nodes. 
     class TravelNodePath
     {
@@ -293,7 +295,7 @@ enum class TravelNodePathType : uint8
         vector<WorldPosition> getPointPath() { vector<WorldPosition> retVec; for (const auto& p : fullPath) retVec.push_back(p.point); return retVec; };
 
         bool makeShortCut(WorldPosition startPos, float maxDist);
-        bool TravelPath::shouldMoveToNextPoint(WorldPosition startPos, vector<PathNodePoint>::iterator beg, vector<PathNodePoint>::iterator ed, vector<PathNodePoint>::iterator p, float &moveDist, float maxDist);
+        bool shouldMoveToNextPoint(WorldPosition startPos, vector<PathNodePoint>::iterator beg, vector<PathNodePoint>::iterator ed, vector<PathNodePoint>::iterator p, float &moveDist, float maxDist);
         WorldPosition getNextPoint(WorldPosition startPos, float maxDist, TravelNodePathType& pathType, uint32& entry);
 
         ostringstream print();

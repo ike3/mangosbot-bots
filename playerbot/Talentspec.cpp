@@ -1,6 +1,7 @@
 #include "playerbot.h"
 #include "Talentspec.h"
 #include "ServerFacade.h"
+#include "DBCStructure.h"
 
 using namespace std::placeholders;
 

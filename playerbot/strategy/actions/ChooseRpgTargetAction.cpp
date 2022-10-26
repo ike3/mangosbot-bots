@@ -3,7 +3,7 @@
 #include "ChooseRpgTargetAction.h"
 #include "../../PlayerbotAIConfig.h"
 #include "../values/PossibleRpgTargetsValue.h"
-#include "../../Travelmgr.h"
+#include "../../TravelMgr.h"
 #include "../values/BudgetValues.h"
 #include "GuildCreateActions.h"
 #include "../values/Formations.h"

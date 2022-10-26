@@ -5,7 +5,7 @@
 #include "../../ServerFacade.h"
 #include "../values/Formations.h"
 #include "../values/PositionValue.h"
-#include "travelMgr.h"
+#include "TravelMgr.h"
 #include "MotionGenerators/PathFinder.h"
 #include "ChooseTravelTargetAction.h"
 
@@ -34,7 +34,8 @@ bool GoAction::Execute(Event event)
     
     if (param.find("travel") != string::npos && param.size()> 7)
     {
-        WorldPosition* botPos = &WorldPosition(bot);
+        WorldPosition pos = WorldPosition(bot);
+        WorldPosition* botPos = &pos;
 
         string destination = param.substr(7);
 

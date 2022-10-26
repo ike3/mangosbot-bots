@@ -1,7 +1,7 @@
 #include "botpch.h"
 #include "../../playerbot.h"
 #include "QueryQuestAction.h"
-#include "../../Travelmgr.h"
+#include "../../TravelMgr.h"
 
 
 using namespace ai;
@@ -14,8 +14,9 @@ void QueryQuestAction::TellObjective(string name, int available, int required)
 bool QueryQuestAction::Execute(Event event)
 {
     Player *bot = ai->GetBot();
-    WorldPosition* botPos = &WorldPosition(bot);
-    string text = event.getParam();
+    WorldPosition pos = WorldPosition(bot);
+    WorldPosition* botPos = &pos;
+    std::string text = event.getParam();
     bool travel = false;
 
     if (text.find("travel") != std::string::npos)

@@ -162,8 +162,8 @@ bool MovementAction::FlyDirect(WorldPosition &startPosition, WorldPosition &endP
         if (path.empty())
             return false;
 
-
-        for (auto& p = path.end(); p-- != path.begin(); ) //Find the furtest point where we can fly to directly.
+        auto pathEnd = path.end();
+        for (auto& p = pathEnd; p-- != path.begin(); ) //Find the furtest point where we can fly to directly.
             if (p->getMapId() == startPosition.getMapId() && p->isOutside())
             {
                 movePosition = *p;

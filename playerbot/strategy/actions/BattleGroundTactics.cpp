@@ -4,7 +4,7 @@
 #include "MovementActions.h"
 #include "BattleGround.h"
 #include "BattleGroundMgr.h"
-#include "BattlegroundTactics.h"
+#include "BattleGroundTactics.h"
 #ifdef MANGOSBOT_TWO
 #include "Entities/Vehicle.h"
 #endif

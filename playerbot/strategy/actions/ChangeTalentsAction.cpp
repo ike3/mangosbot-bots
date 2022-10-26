@@ -1,6 +1,6 @@
 #include "botpch.h"
 #include "../../playerbot.h"
-#include "../../talentspec.h"
+#include "../../Talentspec.h"
 #include "ChangeTalentsAction.h"
 
 using namespace ai;

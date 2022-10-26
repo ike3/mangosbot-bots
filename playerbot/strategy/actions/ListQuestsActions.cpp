@@ -1,7 +1,7 @@
 #include "botpch.h"
 #include "../../playerbot.h"
 #include "ListQuestsActions.h"
-#include "../../Travelmgr.h"
+#include "../../TravelMgr.h"
 
 
 using namespace ai;
@@ -57,7 +57,8 @@ void ListQuestsAction::ListQuests(QuestListFilter filter, QuestTravelDetail trav
 int ListQuestsAction::ListQuests(bool completed, bool silent, QuestTravelDetail travelDetail)
 {
     TravelTarget* target;
-    WorldPosition* botPos = &WorldPosition(bot);
+    WorldPosition pos = WorldPosition(bot);
+    WorldPosition* botPos = &pos;
     
     if (travelDetail != QUEST_TRAVEL_DETAIL_NONE)
         target = context->GetValue<TravelTarget*>("travel target")->Get();

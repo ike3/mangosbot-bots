@@ -1,5 +1,12 @@
 #pragma once
 
+#include "ObjectGuid.h"
+#include "WorldPacket.h"
+
+class Player;
+
+using namespace std;
+
 namespace ai
 {
     class Event

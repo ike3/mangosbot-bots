@@ -1,7 +1,7 @@
 #include "botpch.h"
 #include "../../playerbot.h"
 #include "NonCombatStrategy.h"
-#include "../value.h"
+#include "../Value.h"
 
 using namespace ai;
 
