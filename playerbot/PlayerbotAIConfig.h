@@ -2,6 +2,7 @@
 
 #include "Config.h"
 #include "Talentspec.h"
+#include "SharedDefines.h"
 
 class Player;
 class PlayerbotMgr;

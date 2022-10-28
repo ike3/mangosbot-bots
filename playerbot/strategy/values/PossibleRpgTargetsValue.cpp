@@ -7,7 +7,7 @@
 #include "GridNotifiersImpl.h"
 #include "CellImpl.h"
 #include "NearestUnitsValue.h"
-#include "../../Travelmgr.h"
+#include "../../TravelMgr.h"
 
 using namespace ai;
 using namespace MaNGOS;

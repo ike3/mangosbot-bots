@@ -1,6 +1,14 @@
 #pragma once
 
+#include "PlayerbotAI.h"
+
 class Player;
+
+namespace ai
+{
+    class AiObjectContext;
+    class Engine;
+}
 
 using namespace ai;
 

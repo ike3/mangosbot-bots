@@ -6,6 +6,9 @@
 
 namespace ai
 {
+	class ActionNode;
+	class NextAction;
+
 	enum StrategyType
 	{
 		STRATEGY_TYPE_GENERIC = 0,

@@ -969,7 +969,8 @@ bool LfgJoinAction::JoinLFG()
 
     // Set Raid Browser comment
     string _gs = to_string(bot->GetEquipGearScore());
-    sLFGMgr.JoinLfg(bot, GetRoles(), list, "Bot " + _roles + " GS:" + _gs + " for LFG");
+    string comment = "Bot " + _roles + " GS:" + _gs + " for LFG";
+    sLFGMgr.JoinLfg(bot, GetRoles(), list, comment);
 #endif
     return true;
 }

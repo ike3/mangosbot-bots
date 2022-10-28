@@ -1,5 +1,13 @@
 #pragma once
-#include "Action.h"
+
+#include "AiObject.h"
+
+class PlayerbotAI;
+
+namespace ai
+{
+    class Action;
+}
 
 namespace ai
 {

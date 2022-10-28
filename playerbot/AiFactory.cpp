@@ -1,6 +1,7 @@
 #include "../botpch.h"
 #include "playerbot.h"
 #include "AiFactory.h"
+#include "strategy/AiObjectContext.h"
 #include "strategy/Engine.h"
 
 #include "strategy/priest/PriestAiObjectContext.h"

@@ -80,7 +80,7 @@ Unit* CastBlessingOnPartyAction::GetTarget()
     //nearestGroupPlayers.insert(nearestGroupPlayers.end(), nearestPlayers.begin(), nearestPlayers.end());
     nearestPlayers = nearestGroupPlayers;
     if (nearestPlayers.empty())
-        return false;
+        return NULL;
 
     Unit* trueTarget = nullptr;
     for (auto guid : nearestPlayers)
