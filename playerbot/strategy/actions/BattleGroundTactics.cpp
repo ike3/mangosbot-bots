@@ -4682,7 +4682,7 @@ bool BGTactics::atFlag(std::vector<BattleBotPath*> const& vPaths, std::vector<ui
 
             //ostringstream out; out << "Flag is nearby, using " << go->GetName();
             //bot->Say(out.str(), LANG_UNIVERSAL);
-            //ai->SetNextCheckDelay(10000);
+            //SetDuration(10000);
 
             // cast banner spell
             ai->StopMoving();

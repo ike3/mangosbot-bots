@@ -264,8 +264,11 @@ public:
 	virtual ~PlayerbotAI();
 
     virtual void UpdateAI(uint32 elapsed, bool minimal = false);
-public:
-	virtual void UpdateAIInternal(uint32 elapsed, bool minimal = false);
+
+private:
+    void UpdateAIInternal(uint32 elapsed, bool minimal = false) override;
+
+public:	
 	string HandleRemoteCommand(string command);
     void HandleCommand(uint32 type, const string& text, Player& fromPlayer);
     void QueueChatResponse(uint8 msgtype, ObjectGuid guid1, ObjectGuid guid2, std::string message, std::string chanName, std::string name);
@@ -419,6 +422,8 @@ public:
     bool IsInRealGuild();
     time_t GetCombatStartTime() { return combatStart; }
 
+    void SetActionDuration(const Action* action, uint32 delay);
+    
 protected:
 	Player* bot;
 	Player* master;

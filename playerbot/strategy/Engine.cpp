@@ -592,6 +592,9 @@ bool Engine::ListenAndExecute(Action* action, Event& event)
         if(!event.getSource().empty())
             out << " [" << event.getSource() << "]";
 
+        if (actionExecuted)
+            out << " (duration: " << ((float)ai->GetAIInternalUpdateDelay() / IN_MILLISECONDS) << "s)";
+
         ai->TellMasterNoFacing(out);
     }
 

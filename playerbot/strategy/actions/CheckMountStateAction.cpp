@@ -349,12 +349,9 @@ bool CheckMountStateAction::MountWithBestMount(const bool canFly)
     else
     {
         Item* mount = mounts[urand(0, mounts.size() - 1)];
-
-        bool didUse = UseItemAuto(mount);
-
-        if (didUse)
+        if (UseItemAuto(mount))
         {
-            ai->SetNextCheckDelay(3 * IN_MILLISECONDS);
+            SetDuration(3000U); // 3s
             return true;
         }
     }
@@ -604,7 +601,7 @@ bool CheckMountStateAction::Mount()
 
         if (didUse)
         {
-            ai->SetNextCheckDelay(3 * IN_MILLISECONDS);
+            SetDuration(3000U); // 3s
             return true;
         }
     }

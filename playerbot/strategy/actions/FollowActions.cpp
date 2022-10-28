@@ -29,7 +29,7 @@ bool FollowAction::Execute(Event& event)
         moved = MoveTo(loc.mapid, loc.coord_x, loc.coord_y, loc.coord_z);
     }
 
-    //if (moved) ai->SetNextCheckDelay(sPlayerbotAIConfig.reactDelay);
+    //if (moved) SetDuration(sPlayerbotAIConfig.reactDelay);
     return moved;
 }
 
@@ -94,7 +94,7 @@ bool FleeToMasterAction::Execute(Event& event)
     bool canFollow = Follow(fTarget);
     if (!canFollow)
     {
-        //ai->SetNextCheckDelay(5000);
+        //SetDuration(5000);
         return false;
     }
 
@@ -122,7 +122,7 @@ bool FleeToMasterAction::Execute(Event& event)
         if (!urand(0, 30))
             ai->TellMaster(BOT_TEXT("wait_travel_medium"), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
            
-    ai->SetNextCheckDelay(3000);
+    SetDuration(3000U);
     return true;
 }
 

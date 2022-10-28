@@ -341,7 +341,7 @@ void PlayerbotHolder::OnBotLogin(Player * const bot)
     // check activity
     ai->AllowActivity(ALL_ACTIVITY, true);
     // set delay on login
-    ai->SetNextCheckDelay(urand(2000, 4000));
+    ai->SetActionDuration(nullptr, urand(2000, 4000));
 
     ai->TellMaster(BOT_TEXT("hello"));
 
@@ -929,7 +929,7 @@ PlayerbotMgr::~PlayerbotMgr()
 
 void PlayerbotMgr::UpdateAIInternal(uint32 elapsed, bool minimal)
 {
-    SetNextCheckDelay(sPlayerbotAIConfig.reactDelay);
+    SetAIInternalUpdateDelay(sPlayerbotAIConfig.reactDelay);
     CheckTellErrors(elapsed);
 }
 
