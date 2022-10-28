@@ -8,7 +8,7 @@
 
 using namespace ai;
 
-bool RpgAction::Execute(Event event)
+bool RpgAction::Execute(Event& event)
 {    
     GuidPosition guidP = AI_VALUE(GuidPosition, "rpg target");
 

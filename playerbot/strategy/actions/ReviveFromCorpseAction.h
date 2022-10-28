@@ -8,7 +8,7 @@ namespace ai
 		ReviveFromCorpseAction(PlayerbotAI* ai) : MovementAction(ai, "revive from corpse") {}
 
     public:
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
     };
 
     class FindCorpseAction : public MovementAction {
@@ -16,7 +16,7 @@ namespace ai
         FindCorpseAction(PlayerbotAI* ai) : MovementAction(ai, "find corpse") {}
 
     public:
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
         virtual bool isUseful();
     };
 
@@ -26,7 +26,7 @@ namespace ai
 
     public:
         virtual WorldSafeLocsEntry const* GetGrave(bool startZone);
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
         virtual bool isUseful();
     };
 

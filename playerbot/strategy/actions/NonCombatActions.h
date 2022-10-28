@@ -12,7 +12,7 @@ namespace ai
     public:
         DrinkAction(PlayerbotAI* ai) : UseItemAction(ai, "drink") {}
 
-        virtual bool Execute(Event event)
+        virtual bool Execute(Event& event)
         {
             if (sServerFacade.IsInCombat(bot))
                 return false;
@@ -84,7 +84,7 @@ namespace ai
     public:
         EatAction(PlayerbotAI* ai) : UseItemAction(ai, "food") {}
 
-        virtual bool Execute(Event event)
+        virtual bool Execute(Event& event)
         {
             if (sServerFacade.IsInCombat(bot))
                 return false;

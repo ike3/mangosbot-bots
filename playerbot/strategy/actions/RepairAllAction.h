@@ -8,6 +8,6 @@ namespace ai
     {
     public:
         RepairAllAction(PlayerbotAI* ai) : Action(ai, "repair") {}
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
     };
 }

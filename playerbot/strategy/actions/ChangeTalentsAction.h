@@ -11,7 +11,7 @@ namespace ai
         ChangeTalentsAction(PlayerbotAI* ai, string name = "talents") : Action(ai, name) {}
 
     public:
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
         virtual bool AutoSelectTalents(ostringstream* out);
     private:
         std::vector<TalentPath*> getPremadePaths(string findName);
@@ -24,6 +24,6 @@ namespace ai
     class AutoSetTalentsAction : public ChangeTalentsAction {
     public:
         AutoSetTalentsAction(PlayerbotAI* ai) : ChangeTalentsAction(ai, "auto talents") {}
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
     };
 }

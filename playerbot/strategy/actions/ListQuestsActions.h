@@ -20,7 +20,7 @@ namespace ai
     class ListQuestsAction : public Action {
     public:
         ListQuestsAction(PlayerbotAI* ai) : Action(ai, "quests") {}
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
 
     private:
         void ListQuests(QuestListFilter filter, QuestTravelDetail travelDetail = QUEST_TRAVEL_DETAIL_NONE);

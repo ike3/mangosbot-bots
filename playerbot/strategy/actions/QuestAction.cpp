@@ -6,7 +6,7 @@
 
 using namespace ai;
 
-bool QuestAction::Execute(Event event)
+bool QuestAction::Execute(Event& event)
 {
     ObjectGuid guid = event.getObject();
 
@@ -223,7 +223,7 @@ bool QuestAction::AcceptQuest(Quest const* quest, uint64 questGiver)
     return false;
 }
 
-bool QuestObjectiveCompletedAction::Execute(Event event)
+bool QuestObjectiveCompletedAction::Execute(Event& event)
 {
     WorldPacket p(event.getPacket());
     p.rpos(0);

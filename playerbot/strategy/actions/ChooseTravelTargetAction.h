@@ -10,7 +10,7 @@ namespace ai
     public:
         ChooseTravelTargetAction(PlayerbotAI* ai, string name = "choose travel target") : MovementAction(ai, name) {}
 
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
         virtual bool isUseful();
 
         protected:

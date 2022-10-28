@@ -17,7 +17,7 @@ namespace ai
         virtual bool isUseful() {
             return bot->HasSpell(36554) && bot->IsSpellReady(36554);
         }
-        virtual bool Execute(Event event) {
+        virtual bool Execute(Event& event) {
             return bot->CastSpell(GetTarget(), 36554, TRIGGERED_OLD_TRIGGERED);
         }
     };
@@ -49,7 +49,7 @@ namespace ai
             // do not use with WSG flag
             return !ai->HasAura(23333, bot) && !ai->HasAura(23335, bot) && !ai->HasAura(34976, bot);
         }
-        virtual bool Execute(Event event)
+        virtual bool Execute(Event& event)
         {
             if (ai->CastSpell("stealth", bot))
             {
@@ -63,7 +63,7 @@ namespace ai
     class UnstealthAction : public Action {
     public:
         UnstealthAction(PlayerbotAI* ai) : Action(ai, "unstealth") {}
-        virtual bool Execute(Event event) {
+        virtual bool Execute(Event& event) {
             ai->RemoveAura("stealth");
             ai->ResetStrategies();
             return true;
@@ -74,7 +74,7 @@ namespace ai
     public:
         CheckStealthAction(PlayerbotAI* ai) : Action(ai, "check stealth") {}
         virtual bool isPossible() { return true; }
-        virtual bool Execute(Event event) {
+        virtual bool Execute(Event& event) {
             bool hasStealth = ai->HasAura("stealth", bot);
             if (hasStealth)
             {
@@ -123,7 +123,7 @@ namespace ai
             // do not use with WSG flag or EYE flag
             return !ai->HasAura(23333, bot) && !ai->HasAura(23335, bot) && !ai->HasAura(34976, bot);
         }
-        virtual bool Execute(Event event)
+        virtual bool Execute(Event& event)
         {
             if (ai->CastSpell("vanish", bot))
             {

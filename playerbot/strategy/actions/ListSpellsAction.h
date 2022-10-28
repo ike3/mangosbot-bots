@@ -10,7 +10,7 @@ namespace ai
     public:
         ListSpellsAction(PlayerbotAI* ai, string name = "spells") : InventoryAction(ai, name) {}
 
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
 
         virtual list<pair<uint32, string> > GetSpellList(string filter = "");
     private:

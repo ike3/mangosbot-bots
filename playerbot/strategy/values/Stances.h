@@ -47,7 +47,7 @@ namespace ai
     {
     public:
         SetStanceAction(PlayerbotAI* ai) : Action(ai, "set Stance") {}
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
     };
 };
 

@@ -44,7 +44,7 @@ class BGTactics : public MovementAction
 {
 public:
     BGTactics(PlayerbotAI* ai, string name = "bg tactics") : MovementAction(ai, name) {}
-    virtual bool Execute(Event event);
+    virtual bool Execute(Event& event);
 private:
     bool moveToStart(bool force = false);
     bool selectObjective(bool reset = false);
@@ -69,7 +69,7 @@ class ArenaTactics : public MovementAction
 {
 public:
     ArenaTactics(PlayerbotAI* ai, string name = "arena tactics") : MovementAction(ai, name) {}
-    virtual bool Execute(Event event);
+    virtual bool Execute(Event& event);
 private:
     bool moveToCenter(BattleGround *bg);
 };

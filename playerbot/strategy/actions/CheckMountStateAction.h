@@ -11,7 +11,7 @@ namespace ai
     public:
         CheckMountStateAction(PlayerbotAI* ai) : UseItemAction(ai, "check mount state", true) {}
 
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
         virtual bool isPossible() { return true; }
         virtual bool isUseful();
 

@@ -12,7 +12,7 @@ namespace ai
     public:
         SwitchToMeleeAction(PlayerbotAI* ai) : ChangeCombatStrategyAction(ai, "-ranged,+close") {}
 
-        virtual bool Execute(Event event)
+        virtual bool Execute(Event& event)
         {
             //ai->TellMasterNoFacing("Switching to melee!");
             return ChangeCombatStrategyAction::Execute(event);
@@ -37,7 +37,7 @@ namespace ai
     public:
         SwitchToRangedAction(PlayerbotAI* ai) : ChangeCombatStrategyAction(ai, "-close,+ranged") {}
 
-        virtual bool Execute(Event event)
+        virtual bool Execute(Event& event)
         {
             //ai->TellMasterNoFacing("Switching to ranged!");
             return ChangeCombatStrategyAction::Execute(event);

@@ -20,7 +20,7 @@ namespace ai
         virtual ~Event() {}
 
 	public:
-        string getSource() { return source; }
+        string getSource() const { return source; }
         string getParam() { return param; }
         WorldPacket& getPacket() { return packet; }
         ObjectGuid getObject();

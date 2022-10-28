@@ -40,7 +40,7 @@ float GetAngle(const float x1, const float y1, const float x2, const float y2)
     return ang;
 }
 
-bool SeeSpellAction::Execute(Event event)
+bool SeeSpellAction::Execute(Event& event)
 {
     WorldPacket p(event.getPacket()); // 
     uint32 spellId;

@@ -5,7 +5,7 @@
 
 using namespace ai;
 
-bool DropQuestAction::Execute(Event event)
+bool DropQuestAction::Execute(Event& event)
 {
     string link = event.getParam();
     if (!GetMaster())
@@ -43,7 +43,7 @@ bool DropQuestAction::Execute(Event event)
     return true;
 }
 
-bool CleanQuestLogAction::Execute(Event event)
+bool CleanQuestLogAction::Execute(Event& event)
 {
     string link = event.getParam();
     if (ai->HasActivePlayerMaster())

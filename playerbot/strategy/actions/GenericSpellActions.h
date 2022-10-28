@@ -15,7 +15,7 @@ namespace ai
         }
 
 		virtual string GetTargetName() { return "current target"; }
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
         virtual bool isPossible();
 		virtual bool isUseful();
         virtual ActionThreatType getThreatType() { return ActionThreatType::ACTION_THREAT_SINGLE; }
@@ -252,7 +252,7 @@ namespace ai
         virtual string getName() { return "remove " + name; }
         virtual bool isUseful() { return ai->HasAura(name, AI_VALUE(Unit*, "self target")); }
         virtual bool isPossible() { return true; }
-        virtual bool Execute(Event event)
+        virtual bool Execute(Event& event)
         {
             ai->RemoveAura(name);
             return !ai->HasAura(name, bot);
@@ -329,7 +329,7 @@ namespace ai
         {
             return context->GetValue<Unit*>("cc target", getName());
         }
-        virtual bool Execute(Event event) { return ai->CastSpell(getName(), GetTarget()); }
+        virtual bool Execute(Event& event) { return ai->CastSpell(getName(), GetTarget()); }
         virtual bool isPossible() { return ai->CanCastSpell(getName(), GetTarget(), true); }
         virtual bool isUseful() { return true; }
         virtual ActionThreatType getThreatType() { return ActionThreatType::ACTION_THREAT_NONE; }
@@ -359,7 +359,7 @@ namespace ai
             range = 120.0f;
         }
         virtual string GetTargetName() { return "current target"; }
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
         virtual bool isUseful();
         virtual bool isPossible();
         virtual ActionThreatType getThreatType() { return ActionThreatType::ACTION_THREAT_NONE; }

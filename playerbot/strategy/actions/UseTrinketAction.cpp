@@ -4,7 +4,7 @@
 
 using namespace ai;
 
-bool UseTrinketAction::Execute(Event event)
+bool UseTrinketAction::Execute(Event& event)
 {
 	auto trinkets = AI_VALUE(list<Item*>, "trinkets on use");
 

@@ -9,7 +9,7 @@
 
 using namespace ai;
 
-bool XpGainAction::Execute(Event event)
+bool XpGainAction::Execute(Event& event)
 {
     context->GetValue<uint32>("death count")->Set(0);
 

@@ -5,7 +5,7 @@
 
 using namespace ai;
 
-bool RTSCAction::Execute(Event event)
+bool RTSCAction::Execute(Event& event)
 {
 	string command = event.getParam();
 

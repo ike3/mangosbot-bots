@@ -37,7 +37,7 @@ bool AttackAnythingAction::isUseful() {
 
 /*
 
-bool DropTargetAction::Execute(Event event)
+bool DropTargetAction::Execute(Event& event)
 {
     context->GetValue<Unit*>("current target")->Set(NULL);
     bot->SetSelectionGuid(ObjectGuid());

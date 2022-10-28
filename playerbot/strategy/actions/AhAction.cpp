@@ -12,7 +12,7 @@ using namespace ai;
 
 
 
-bool AhAction::Execute(Event event)
+bool AhAction::Execute(Event& event)
 {
     string text = event.getParam();
 

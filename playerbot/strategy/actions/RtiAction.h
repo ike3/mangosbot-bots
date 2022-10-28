@@ -10,7 +10,7 @@ namespace ai
         RtiAction(PlayerbotAI* ai) : Action(ai, "rti")
         {}
 
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
 
     private:
         void AppendRti(ostringstream & out, string type);
@@ -22,7 +22,7 @@ namespace ai
         MarkRtiAction(PlayerbotAI* ai) : Action(ai, "mark rti")
         {}
 
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
     };
 
 }

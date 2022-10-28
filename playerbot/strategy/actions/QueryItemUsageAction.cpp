@@ -10,7 +10,7 @@
 using namespace ai;
 
 
-bool QueryItemUsageAction::Execute(Event event)
+bool QueryItemUsageAction::Execute(Event& event)
 {
     if (!GetMaster() && !sPlayerbotAIConfig.randomBotSayWithoutMaster)
         return false;

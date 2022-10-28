@@ -10,7 +10,7 @@
 
 using namespace MaNGOS;
 
-bool UseMeetingStoneAction::Execute(Event event)
+bool UseMeetingStoneAction::Execute(Event& event)
 {
     Player* master = GetMaster();
     if (!master)
@@ -70,7 +70,7 @@ private:
 };
 
 
-bool SummonAction::Execute(Event event)
+bool SummonAction::Execute(Event& event)
 {
     Player* master = GetMaster();
     if (!master)
@@ -199,7 +199,7 @@ bool SummonAction::Teleport(Player *summoner, Player *player)
     return false;
 }
 
-bool AcceptSummonAction::Execute(Event event)
+bool AcceptSummonAction::Execute(Event& event)
 {
     WorldPacket p(event.getPacket());
     p.rpos(0);

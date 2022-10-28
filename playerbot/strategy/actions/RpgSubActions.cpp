@@ -78,7 +78,7 @@ void RpgHelper::setDelay(bool waitForGroup)
         ai->SetNextCheckDelay(sPlayerbotAIConfig.rpgDelay / 5);
 }
 
-bool RpgEmoteAction::Execute(Event event)
+bool RpgEmoteAction::Execute(Event& event)
 {
     rpg->BeforeExecute();
 
@@ -112,7 +112,7 @@ bool RpgEmoteAction::Execute(Event event)
     return true;
 }
 
-bool RpgTaxiAction::Execute(Event event)
+bool RpgTaxiAction::Execute(Event& event)
 {
     rpg->BeforeExecute();
 
@@ -170,7 +170,7 @@ bool RpgTaxiAction::Execute(Event event)
 }
 
 
-bool RpgDiscoverAction::Execute(Event event)
+bool RpgDiscoverAction::Execute(Event& event)
 {
     rpg->BeforeExecute();
 
@@ -191,7 +191,7 @@ bool RpgDiscoverAction::Execute(Event event)
     return bot->GetSession()->SendLearnNewTaxiNode(flightMaster);    
 }
 
-bool RpgHealAction::Execute(Event event)
+bool RpgHealAction::Execute(Event& event)
 {
     bool retVal = false;
 
@@ -236,7 +236,7 @@ bool RpgTradeUsefulAction::IsTradingItem(uint32 entry)
     return false;
 }
 
-bool RpgTradeUsefulAction::Execute(Event event)
+bool RpgTradeUsefulAction::Execute(Event& event)
 {
     rpg->BeforeExecute();
 
@@ -318,7 +318,7 @@ bool RpgDuelAction::isUseful()
     return true;
 }
 
-bool RpgDuelAction::Execute(Event event)
+bool RpgDuelAction::Execute(Event& event)
 {
     GuidPosition guidP = AI_VALUE(GuidPosition, "rpg target");
 
@@ -335,7 +335,7 @@ bool RpgMountAnimAction::isUseful()
     return AI_VALUE2(bool, "mounted", "self target") && !AI_VALUE2(bool, "moving", "self target");
 }
 
-bool RpgMountAnimAction::Execute(Event event)
+bool RpgMountAnimAction::Execute(Event& event)
 {
     WorldPacket p;
     bot->GetSession()->HandleMountSpecialAnimOpcode(p);

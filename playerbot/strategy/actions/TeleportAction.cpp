@@ -6,7 +6,7 @@
 
 using namespace ai;
 
-bool TeleportAction::Execute(Event event)
+bool TeleportAction::Execute(Event& event)
 {
     list<ObjectGuid> gos = *context->GetValue<list<ObjectGuid> >("nearest game objects");
     for (list<ObjectGuid>::iterator i = gos.begin(); i != gos.end(); i++)

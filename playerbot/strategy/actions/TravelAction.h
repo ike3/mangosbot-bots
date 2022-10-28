@@ -11,7 +11,7 @@ namespace ai
     public:
         TravelAction(PlayerbotAI* ai) : MovementAction(ai, "travel") {}
 
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
         virtual bool isUseful();
     };
 
@@ -19,7 +19,7 @@ namespace ai
     public:
         MoveToDarkPortalAction(PlayerbotAI* ai) : MovementAction(ai, "move to dark portal") {}
 
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
         virtual bool isUseful();
     };
 
@@ -27,7 +27,7 @@ namespace ai
     public:
         DarkPortalAzerothAction(PlayerbotAI* ai) : MovementAction(ai, "dark portal azeroth") {}
 
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
         virtual bool isUseful();
     };
 
@@ -35,7 +35,7 @@ namespace ai
     public:
         MoveFromDarkPortalAction(PlayerbotAI* ai) : MovementAction(ai, "move from dark portal") {}
 
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
     };
 
 }

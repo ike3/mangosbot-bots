@@ -10,7 +10,7 @@
 
 using namespace ai;
 
-bool LfgJoinAction::Execute(Event event)
+bool LfgJoinAction::Execute(Event& event)
 {
     return JoinLFG();
 }
@@ -974,7 +974,7 @@ bool LfgJoinAction::JoinLFG()
     return true;
 }
 
-bool LfgRoleCheckAction::Execute(Event event)
+bool LfgRoleCheckAction::Execute(Event& event)
 {
 #ifdef MANGOSBOT_TWO
     Group* group = bot->GetGroup();
@@ -996,7 +996,7 @@ bool LfgRoleCheckAction::Execute(Event event)
     return false;
 }
 
-bool LfgAcceptAction::Execute(Event event)
+bool LfgAcceptAction::Execute(Event& event)
 {
 #ifdef MANGOSBOT_TWO
     //LFGData pState = bot->GetLfgData();
@@ -1061,7 +1061,7 @@ bool LfgAcceptAction::Execute(Event event)
     return true;
 }
 
-bool LfgLeaveAction::Execute(Event event)
+bool LfgLeaveAction::Execute(Event& event)
 {
     // Don't leave if lfg strategy enabled
     //if (ai->HasStrategy("lfg", BotState::BOT_STATE_NON_COMBAT))
@@ -1138,7 +1138,7 @@ bool LfgLeaveAction::isUseful()
     return true;
 }
 
-bool LfgTeleportAction::Execute(Event event)
+bool LfgTeleportAction::Execute(Event& event)
 {
 #ifdef MANGOSBOT_TWO
     bool out = false;

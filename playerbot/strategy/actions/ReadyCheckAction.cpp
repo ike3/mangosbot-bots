@@ -139,7 +139,7 @@ public:
     }
 };
 
-bool ReadyCheckAction::Execute(Event event)
+bool ReadyCheckAction::Execute(Event& event)
 {
     WorldPacket p = event.getPacket();
     ObjectGuid player;
@@ -208,7 +208,7 @@ bool ReadyCheckAction::ReadyCheck()
     return true;
 }
 
-bool FinishReadyCheckAction::Execute(Event event)
+bool FinishReadyCheckAction::Execute(Event& event)
 {
     return ReadyCheck();
 }

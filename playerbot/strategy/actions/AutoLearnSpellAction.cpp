@@ -6,7 +6,7 @@
 
 using namespace ai;
 
-bool AutoLearnSpellAction::Execute(Event event)
+bool AutoLearnSpellAction::Execute(Event& event)
 {
     string param = event.getParam();
 

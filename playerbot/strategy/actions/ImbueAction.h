@@ -10,7 +10,7 @@ namespace ai
    {
    public:
       ImbueWithPoisonAction(PlayerbotAI* ai);
-      virtual bool Execute(Event event);
+      virtual bool Execute(Event& event);
    };
 }
 
@@ -20,7 +20,7 @@ namespace ai
    {
    public:
       ImbueWithStoneAction(PlayerbotAI* ai);
-      virtual bool Execute(Event event);
+      virtual bool Execute(Event& event);
    };
 }
 
@@ -30,7 +30,7 @@ namespace ai
    {
    public:
       ImbueWithOilAction(PlayerbotAI* ai);
-      virtual bool Execute(Event event);
+      virtual bool Execute(Event& event);
    };
 }
 
@@ -40,7 +40,7 @@ namespace ai
    {
    public:
       TryEmergencyAction(PlayerbotAI* ai);
-      virtual bool Execute(Event event);
+      virtual bool Execute(Event& event);
    };
 }
 

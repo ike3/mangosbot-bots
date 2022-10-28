@@ -26,7 +26,7 @@ static inline void ltrim(std::string& s) {
         }));
 }
 
-bool CastCustomSpellAction::Execute(Event event)
+bool CastCustomSpellAction::Execute(Event& event)
 {
     // only allow proper vehicle seats
     if (ai->IsInVehicle() && !ai->IsInVehicle(false, false, true))
@@ -145,7 +145,7 @@ bool CastCustomSpellAction::Execute(Event event)
 }
 
 
-bool CastRandomSpellAction::Execute(Event event)
+bool CastRandomSpellAction::Execute(Event& event)
 {
     list<pair<uint32, string>> spellMap = GetSpellList();
     Player* master = GetMaster();
@@ -256,7 +256,7 @@ bool CastRandomSpellAction::castSpell(uint32 spellId, WorldObject* wo)
         return ai->CastSpell(spellId, wo->GetPositionX(), wo->GetPositionY(), wo->GetPositionZ());
 }
 
-bool DisEnchantRandomItemAction::Execute(Event event)
+bool DisEnchantRandomItemAction::Execute(Event& event)
 {
     list<uint32> items = AI_VALUE2(list<uint32>, "inventory item ids", "usage " + to_string(ITEM_USAGE_DISENCHANT));
 

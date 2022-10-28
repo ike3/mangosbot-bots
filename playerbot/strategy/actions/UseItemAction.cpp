@@ -9,7 +9,7 @@
 
 using namespace ai;
 
-bool UseItemAction::Execute(Event event)
+bool UseItemAction::Execute(Event& event)
 {
    string name = event.getParam();
    if (name.empty())
@@ -506,7 +506,7 @@ bool UseSpellItemAction::isUseful()
    return AI_VALUE2(bool, "spell cast useful", getName());
 }
 
-bool UseHearthStone::Execute(Event event)
+bool UseHearthStone::Execute(Event& event)
 {
     if (bot->IsMoving())
     {
@@ -539,7 +539,7 @@ bool UseRandomRecipe::isUseful()
    return !bot->IsInCombat() && !ai->HasActivePlayerMaster() && !bot->InBattleGround();
 }
 
-bool UseRandomRecipe::Execute(Event event)
+bool UseRandomRecipe::Execute(Event& event)
 {
     list<Item*> recipes = AI_VALUE2(list<Item*>, "inventory items", "recipe");   
 
@@ -566,7 +566,7 @@ bool UseRandomQuestItem::isUseful()
     return !ai->HasActivePlayerMaster() && !bot->InBattleGround() && !bot->IsTaxiFlying();
 }
 
-bool UseRandomQuestItem::Execute(Event event)
+bool UseRandomQuestItem::Execute(Event& event)
 {
     Unit* unitTarget = nullptr;
     ObjectGuid goTarget = ObjectGuid();

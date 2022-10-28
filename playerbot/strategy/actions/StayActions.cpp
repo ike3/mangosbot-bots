@@ -44,7 +44,7 @@ bool StayActionBase::Stay()
     return true;
 }
 
-bool StayAction::Execute(Event event)
+bool StayAction::Execute(Event& event)
 {
     return Stay();
 }
@@ -54,7 +54,7 @@ bool StayAction::isUseful()
     return !AI_VALUE2(bool, "moving", "self target");
 }
 
-bool SitAction::Execute(Event event)
+bool SitAction::Execute(Event& event)
 {
     if (sServerFacade.isMoving(bot))
         return false;

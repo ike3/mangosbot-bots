@@ -5,7 +5,7 @@
 
 using namespace ai;
 
-bool ChangeCombatStrategyAction::Execute(Event event)
+bool ChangeCombatStrategyAction::Execute(Event& event)
 {
     string text = event.getParam();
     ai->ChangeStrategy(text.empty() ? getName() : text, BotState::BOT_STATE_COMBAT);
@@ -30,7 +30,7 @@ bool ChangeCombatStrategyAction::Execute(Event event)
     return true;
 }
 
-bool ChangeNonCombatStrategyAction::Execute(Event event)
+bool ChangeNonCombatStrategyAction::Execute(Event& event)
 {
     string text = event.getParam();
 
@@ -67,7 +67,7 @@ bool ChangeNonCombatStrategyAction::Execute(Event event)
     return true;
 }
 
-bool ChangeDeadStrategyAction::Execute(Event event)
+bool ChangeDeadStrategyAction::Execute(Event& event)
 {
     string text = event.getParam();
     ai->ChangeStrategy(text, BotState::BOT_STATE_DEAD);

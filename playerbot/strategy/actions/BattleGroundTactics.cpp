@@ -2632,7 +2632,7 @@ bool BGTactics::eotsJump()
 // actual bg tactics below
 //
 
-bool BGTactics::Execute(Event event)
+bool BGTactics::Execute(Event& event)
 {
     BattleGround *bg = bot->GetBattleGround();
     if (!bg)
@@ -5055,7 +5055,7 @@ bool BGTactics::IsLockedInsideKeep()
     return false;
 }
 
-bool ArenaTactics::Execute(Event event)
+bool ArenaTactics::Execute(Event& event)
 {
 #ifndef MANGOSBOT_ZERO
     if (!bot->InBattleGround())

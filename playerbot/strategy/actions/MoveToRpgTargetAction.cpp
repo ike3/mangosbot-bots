@@ -10,7 +10,7 @@
 
 using namespace ai;
 
-bool MoveToRpgTargetAction::Execute(Event event)
+bool MoveToRpgTargetAction::Execute(Event& event)
 {
     GuidPosition guidP = AI_VALUE(GuidPosition, "rpg target");
     Unit* unit = ai->GetUnit(guidP);

@@ -526,7 +526,7 @@ bool FormationValue::Load(string formation)
 }
 
 
-bool SetFormationAction::Execute(Event event)
+bool SetFormationAction::Execute(Event& event)
 {
     string formation = event.getParam();
 

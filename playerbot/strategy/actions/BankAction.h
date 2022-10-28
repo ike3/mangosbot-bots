@@ -8,7 +8,7 @@ namespace ai
     class BankAction : public InventoryAction {
     public:
         BankAction(PlayerbotAI* ai) : InventoryAction(ai, "bank") {}
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
 
     private:
         bool Execute(string text, Unit* bank);

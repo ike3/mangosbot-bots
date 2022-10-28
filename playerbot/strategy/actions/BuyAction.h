@@ -8,7 +8,7 @@ namespace ai
     class BuyAction : public InventoryAction {
     public:
         BuyAction(PlayerbotAI* ai) : InventoryAction(ai, "buy") {}
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
 
     private:
         bool BuyItem(VendorItemData const* tItems, ObjectGuid vendorguid, const ItemPrototype* proto);

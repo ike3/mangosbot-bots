@@ -55,7 +55,7 @@ namespace ai
             return AttackAction::isPossible() && GetTarget();
         }
 
-        virtual bool Execute(Event event)
+        virtual bool Execute(Event& event)
         {
             bool result = AttackAction::Execute(event);
 
@@ -121,7 +121,7 @@ namespace ai
     public:
         DropTargetAction(PlayerbotAI* ai) : Action(ai, "drop target") {}
 
-        virtual bool Execute(Event event)
+        virtual bool Execute(Event& event)
         {
             Unit* target = context->GetValue<Unit*>("current target")->Get();
 

@@ -8,7 +8,7 @@ namespace ai
     {
     public:
         CheatAction(PlayerbotAI* ai) : Action(ai, "cheat") {}
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
     private:
         static BotCheatMask GetCheatMask(string cheat);
         static string GetCheatName(BotCheatMask cheatMask);
