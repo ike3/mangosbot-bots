@@ -176,7 +176,7 @@ namespace ai
     {
     public:
         CastPolymorphAction(PlayerbotAI* ai) : CastCrowdControlSpellAction(ai, "polymorph") {}
-        virtual bool Execute(Event event)
+        virtual bool Execute(Event& event)
         {
             vector<string> polySpells;
             polySpells.push_back("polymorph");

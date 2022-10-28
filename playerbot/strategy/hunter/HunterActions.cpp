@@ -20,7 +20,7 @@ bool CastAspectOfTheCheetahAction::isUseful()
     return !AI_VALUE(uint8, "attacker count") && !ai->HasAnyAuraOf(GetTarget(), "aspect of the cheetah", "aspect of the pack", NULL);
 }
 
-bool FeedPetAction::Execute(Event event)
+bool FeedPetAction::Execute(Event& event)
 {
     Pet* pet = bot->GetPet();
     if (pet && pet->getPetType() == HUNTER_PET && pet->GetHappinessState() != HAPPY)
@@ -42,7 +42,7 @@ Value<Unit*>* CastScareBeastCcAction::GetTargetValue()
     return context->GetValue<Unit*>("cc target", "scare beast");
 }
 
-bool CastScareBeastCcAction::Execute(Event event)
+bool CastScareBeastCcAction::Execute(Event& event)
 {
     return ai->CastSpell("scare beast", GetTarget());
 }

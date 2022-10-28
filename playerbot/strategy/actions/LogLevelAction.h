@@ -7,7 +7,7 @@ namespace ai
     class LogLevelAction : public Action {
     public:
         LogLevelAction(PlayerbotAI* ai) : Action(ai, "log") {}
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
 
     public:
         static string logLevel2string(LogLevel level);

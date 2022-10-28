@@ -11,7 +11,7 @@
 using namespace ai;
 
 
-bool FollowAction::Execute(Event event)
+bool FollowAction::Execute(Event& event)
 {
     Formation* formation = AI_VALUE(Formation*, "formation");
     string target = formation->GetTargetName();
@@ -88,7 +88,7 @@ bool FollowAction::CanDeadFollow(Unit* target)
     return true;
 }
 
-bool FleeToMasterAction::Execute(Event event)
+bool FleeToMasterAction::Execute(Event& event)
 {
     Unit* fTarget = AI_VALUE(Unit*, "master target");
     bool canFollow = Follow(fTarget);

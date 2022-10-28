@@ -6,7 +6,7 @@
 
 using namespace ai;
 
-bool ReachAreaTriggerAction::Execute(Event event)
+bool ReachAreaTriggerAction::Execute(Event& event)
 {
     uint32 triggerId;
 
@@ -51,7 +51,7 @@ bool ReachAreaTriggerAction::Execute(Event event)
 
 
 
-bool AreaTriggerAction::Execute(Event event)
+bool AreaTriggerAction::Execute(Event& event)
 {
     LastMovement& movement = context->GetValue<LastMovement&>("last area trigger")->Get();
 

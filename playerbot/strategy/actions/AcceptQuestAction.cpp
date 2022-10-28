@@ -15,7 +15,7 @@ bool AcceptAllQuestsAction::ProcessQuest(Quest const* quest, WorldObject* questG
     return false;
 }
 
-bool AcceptQuestAction::Execute(Event event)
+bool AcceptQuestAction::Execute(Event& event)
 {
     Player* master = GetMaster();
 
@@ -81,7 +81,7 @@ bool AcceptQuestAction::Execute(Event event)
     return hasAccept;
 }
 
-bool AcceptQuestShareAction::Execute(Event event)
+bool AcceptQuestShareAction::Execute(Event& event)
 {
     Player* master = GetMaster();
     Player *bot = ai->GetBot();

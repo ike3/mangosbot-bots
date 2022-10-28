@@ -8,6 +8,6 @@ namespace ai
     {
     public:
         RemoveAuraAction(PlayerbotAI* ai);
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
     };
 }

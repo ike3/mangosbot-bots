@@ -6,7 +6,7 @@
 
 using namespace ai;
 
-bool SetHomeAction::Execute(Event event)
+bool SetHomeAction::Execute(Event& event)
 {
     Player* master = GetMaster();
 

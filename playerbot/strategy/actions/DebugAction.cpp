@@ -10,7 +10,7 @@
 
 using namespace ai;
 
-bool DebugAction::Execute(Event event)
+bool DebugAction::Execute(Event& event)
 {
     Player* master = GetMaster();
     if (!master)

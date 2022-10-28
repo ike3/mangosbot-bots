@@ -13,7 +13,7 @@ namespace ai
         DelayAction(PlayerbotAI* ai) : Action(ai, "delay")
         {}
 
-        virtual bool Execute(Event event)
+        virtual bool Execute(Event& event)
         {
             uint32 delay = sPlayerbotAIConfig.passiveDelay + sPlayerbotAIConfig.globalCoolDown;
 

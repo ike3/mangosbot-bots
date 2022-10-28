@@ -73,7 +73,7 @@ namespace ai {
 		}
 		virtual bool isPossible() { return true; }
 		
-		virtual bool Execute(Event event);
+		virtual bool Execute(Event& event);
 	};
 
 }

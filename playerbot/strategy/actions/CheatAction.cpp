@@ -5,7 +5,7 @@
 
 using namespace ai;
 
-bool CheatAction::Execute(Event event)
+bool CheatAction::Execute(Event& event)
 {
     string param = event.getParam();
 

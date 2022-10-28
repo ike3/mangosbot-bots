@@ -5,7 +5,7 @@
 
 using namespace ai;
 
-bool RememberTaxiAction::Execute(Event event)
+bool RememberTaxiAction::Execute(Event& event)
 {
 
 

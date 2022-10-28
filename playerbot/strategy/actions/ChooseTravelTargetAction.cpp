@@ -7,7 +7,7 @@
 
 using namespace ai;
 
-bool ChooseTravelTargetAction::Execute(Event event)
+bool ChooseTravelTargetAction::Execute(Event& event)
 {
     //Get the current travel target. This target is no longer active.
     TravelTarget * oldTarget = context->GetValue<TravelTarget *>("travel target")->Get();

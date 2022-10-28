@@ -9,7 +9,7 @@ namespace ai
     public:
         AcceptResurrectAction(PlayerbotAI* ai) : Action(ai, "accept resurrect") {}
 
-        virtual bool Execute(Event event)
+        virtual bool Execute(Event& event)
         {
             if (sServerFacade.IsAlive(bot))
                 return false;

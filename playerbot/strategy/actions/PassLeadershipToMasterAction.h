@@ -8,7 +8,7 @@ namespace ai
     public:
         PassLeadershipToMasterAction(PlayerbotAI* ai, string name = "leader", string message = "Passing leader to you!") : Action(ai, name), message(message) {}
 
-        virtual bool Execute(Event event)
+        virtual bool Execute(Event& event)
         {
             Player* master = GetMaster();
             if (master && master != bot && bot->GetGroup() && bot->GetGroup()->IsMember(master->GetObjectGuid()))

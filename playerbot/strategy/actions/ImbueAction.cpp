@@ -10,7 +10,7 @@ ImbueWithPoisonAction::ImbueWithPoisonAction(PlayerbotAI* ai) : Action(ai, "appl
 {
 }
 
-bool ImbueWithPoisonAction::Execute(Event event)
+bool ImbueWithPoisonAction::Execute(Event& event)
 {
 #ifdef CMANGOS
     if (bot->IsInCombat())
@@ -90,7 +90,7 @@ ImbueWithStoneAction::ImbueWithStoneAction(PlayerbotAI* ai) : Action(ai, "apply 
 {
 }
 
-bool ImbueWithStoneAction::Execute(Event event)
+bool ImbueWithStoneAction::Execute(Event& event)
 {
 #ifdef CMANGOS
    if (bot->IsInCombat())
@@ -144,7 +144,7 @@ ImbueWithOilAction::ImbueWithOilAction(PlayerbotAI* ai) : Action(ai, "apply oil"
 {
 }
 
-bool ImbueWithOilAction::Execute(Event event)
+bool ImbueWithOilAction::Execute(Event& event)
 {
 #ifdef CMANGOS
    if (bot->IsInCombat())
@@ -184,7 +184,7 @@ TryEmergencyAction::TryEmergencyAction(PlayerbotAI* ai) : Action(ai, "try emerge
 {
 }
 
-bool TryEmergencyAction::Execute(Event event)
+bool TryEmergencyAction::Execute(Event& event)
 {
    // Do not use consumable if bot can heal self
    if ((ai->IsHeal(bot)) && (ai->GetManaPercent() > 20))

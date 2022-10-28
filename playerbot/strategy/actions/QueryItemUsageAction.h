@@ -8,7 +8,7 @@ namespace ai
     class QueryItemUsageAction : public InventoryAction {
     public:
         QueryItemUsageAction(PlayerbotAI* ai, string name = "query item usage") : InventoryAction(ai, name) {}
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
 
     protected:
         uint32 GetCount(ItemPrototype const *item);

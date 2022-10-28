@@ -5,7 +5,7 @@
 
 using namespace ai;
 
-bool LogLevelAction::Execute(Event event)
+bool LogLevelAction::Execute(Event& event)
 {
     string param = event.getParam();
     Value<LogLevel> *value = ai->GetAiObjectContext()->GetValue<LogLevel>("log level");

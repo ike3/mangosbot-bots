@@ -14,7 +14,7 @@
 using namespace std;
 using namespace ai;
 
-bool BuyPetitionAction::Execute(Event event)
+bool BuyPetitionAction::Execute(Event& event)
 {
     list<ObjectGuid> vendors = ai->GetAiObjectContext()->GetValue<list<ObjectGuid> >("nearest npcs")->Get();
     bool vendored = false, result = false;
@@ -105,7 +105,7 @@ bool BuyPetitionAction::canBuyPetition(Player* bot)
     return true;
 }
 
-bool PetitionOfferAction::Execute(Event event)
+bool PetitionOfferAction::Execute(Event& event)
 {
     uint32 petitionEntry = 5863; //GUILD_CHARTER
     list<Item*> petitions = AI_VALUE2(list<Item*>, "inventory items", chat->formatQItem(5863));
@@ -159,7 +159,7 @@ bool PetitionOfferAction::Execute(Event event)
     return true;
 };
 
-bool PetitionOfferNearbyAction::Execute(Event event)
+bool PetitionOfferNearbyAction::Execute(Event& event)
 {
     uint32 found = 0;
 
@@ -210,7 +210,7 @@ bool PetitionOfferNearbyAction::Execute(Event event)
     return found > 0;
 };
 
-bool PetitionTurnInAction::Execute(Event event)
+bool PetitionTurnInAction::Execute(Event& event)
 {
     list<ObjectGuid> vendors = ai->GetAiObjectContext()->GetValue<list<ObjectGuid> >("nearest npcs")->Get();
     bool vendored = false, result = false;
@@ -274,7 +274,7 @@ bool PetitionTurnInAction::Execute(Event event)
 };
 
 
-bool BuyTabardAction::Execute(Event event)
+bool BuyTabardAction::Execute(Event& event)
 {
     bool canBuy = ai->DoSpecificAction("buy", Event("buy tabard", "Hitem:5976:"),true);
 

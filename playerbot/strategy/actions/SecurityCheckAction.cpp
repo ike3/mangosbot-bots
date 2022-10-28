@@ -11,7 +11,7 @@ bool SecurityCheckAction::isUseful()
     return sRandomPlayerbotMgr.IsRandomBot(bot) && ai->GetMaster() && ai->GetMaster()->GetSession()->GetSecurity() < SEC_GAMEMASTER && !ai->GetMaster()->GetPlayerbotAI();
 }
 
-bool SecurityCheckAction::Execute(Event event)
+bool SecurityCheckAction::Execute(Event& event)
 {
     Group* group = bot->GetGroup();
     if (group)

@@ -7,7 +7,7 @@
 
 using namespace ai;
 
-bool ReviveFromCorpseAction::Execute(Event event)
+bool ReviveFromCorpseAction::Execute(Event& event)
 {
     Player* master = ai->GetGroupMaster();
     Corpse* corpse = bot->GetCorpse();
@@ -62,7 +62,7 @@ bool ReviveFromCorpseAction::Execute(Event event)
     return true;
 }
 
-bool FindCorpseAction::Execute(Event event)
+bool FindCorpseAction::Execute(Event& event)
 {
     if (bot->InBattleGround())
         return false;
@@ -265,7 +265,7 @@ WorldSafeLocsEntry const* SpiritHealerAction::GetGrave(bool startZone)
     return ClosestGrave;
 }
 
-bool SpiritHealerAction::Execute(Event event)
+bool SpiritHealerAction::Execute(Event& event)
 {
     Corpse* corpse = bot->GetCorpse();
     if (!corpse)

@@ -42,7 +42,7 @@ namespace ai
 			this->distance = distance;
 		}
 
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
 
 	private:
 		float distance;
@@ -53,28 +53,28 @@ namespace ai
     public:
         FleeWithPetAction(PlayerbotAI* ai) : MovementAction(ai, "flee with pet") {}
 
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
     };
 
     class RunAwayAction : public MovementAction
     {
     public:
         RunAwayAction(PlayerbotAI* ai) : MovementAction(ai, "runaway") {}
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
     };
 
     class MoveToLootAction : public MovementAction
     {
     public:
         MoveToLootAction(PlayerbotAI* ai) : MovementAction(ai, "move to loot") {}
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
     };
 
     class MoveOutOfEnemyContactAction : public MovementAction
     {
     public:
         MoveOutOfEnemyContactAction(PlayerbotAI* ai) : MovementAction(ai, "move out of enemy contact") {}
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
         virtual bool isUseful();
     };
 
@@ -82,7 +82,7 @@ namespace ai
     {
     public:
         SetFacingTargetAction(PlayerbotAI* ai) : Action(ai, "set facing") {}
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
         virtual bool isUseful();
         virtual bool isPossible();
     };
@@ -91,7 +91,7 @@ namespace ai
     {
     public:
         SetBehindTargetAction(PlayerbotAI* ai) : MovementAction(ai, "set behind") {}
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
         virtual bool isUseful();
         virtual bool isPossible();
     };
@@ -100,7 +100,7 @@ namespace ai
     {
     public:
         MoveOutOfCollisionAction(PlayerbotAI* ai) : MovementAction(ai, "move out of collision") {}
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
         virtual bool isUseful();
     };
 
@@ -108,7 +108,7 @@ namespace ai
     {
     public:
         MoveRandomAction(PlayerbotAI* ai) : MovementAction(ai, "move random") {}
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
         virtual bool isUseful();
     };
 

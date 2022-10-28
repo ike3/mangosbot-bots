@@ -57,7 +57,7 @@ public:
 };
 
 
-bool SellAction::Execute(Event event)
+bool SellAction::Execute(Event& event)
 {
     string text = event.getParam();
 

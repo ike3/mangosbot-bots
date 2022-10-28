@@ -83,7 +83,7 @@ namespace ai
 		virtual bool isPossible() { return true; }
 		virtual bool isUseful() { return true; }
         virtual Unit* GetTarget();
-		virtual bool Execute(Event event);
+		virtual bool Execute(Event& event);
 	private:
 		string m_name;
     };
@@ -94,7 +94,7 @@ namespace ai
 		CastPaladinAuraAction(PlayerbotAI* ai, string name) : CastBuffSpellAction(ai, name), m_name(name) {}
 		virtual bool isPossible() { return true; }
 		virtual bool isUseful() { return true; }
-		virtual bool Execute(Event event);
+		virtual bool Execute(Event& event);
 	private:
 		string m_name;
 	};
@@ -103,7 +103,7 @@ namespace ai
 	{
 	public:
 		CastBlessingOfMightAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "blessing of might") {}
-		virtual bool Execute(Event event);
+		virtual bool Execute(Event& event);
 		virtual bool isUseful() { return !ai->HasMyAura("blessing of freedom", bot); }
 	};
 
@@ -111,7 +111,7 @@ namespace ai
 	{
 	public:
 		CastGreaterBlessingOfMightAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "greater blessing of might") {}
-		virtual bool Execute(Event event);
+		virtual bool Execute(Event& event);
 	};
 
     class CastBlessingOfMightOnPartyAction : public CastBlessingOnPartyAction
@@ -132,7 +132,7 @@ namespace ai
 	{
 	public:
 		CastBlessingOfWisdomAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "blessing of wisdom") {}
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
 		virtual bool isUseful() { return !ai->HasMyAura("blessing of freedom", bot); }
     };
 
@@ -140,7 +140,7 @@ namespace ai
 	{
 	public:
 		CastGreaterBlessingOfWisdomAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "greater blessing of wisdom") {}
-		virtual bool Execute(Event event);
+		virtual bool Execute(Event& event);
 	};
 
     class CastBlessingOfWisdomOnPartyAction : public CastBlessingOnPartyAction
@@ -148,7 +148,7 @@ namespace ai
 	public:
         CastBlessingOfWisdomOnPartyAction(PlayerbotAI* ai) : CastBlessingOnPartyAction(ai, "blessing of wisdom") {}
         virtual string getName() { return "blessing of wisdom on party";}
-        //virtual bool Execute(Event event);
+        //virtual bool Execute(Event& event);
 	};
 
 	class CastGreaterBlessingOfWisdomOnPartyAction : public CastBlessingOnPartyAction
@@ -156,7 +156,7 @@ namespace ai
 	public:
 		CastGreaterBlessingOfWisdomOnPartyAction(PlayerbotAI* ai) : CastBlessingOnPartyAction(ai, "greater blessing of wisdom") {}
 		virtual string getName() { return "greater blessing of wisdom on party"; }
-		//virtual bool Execute(Event event);
+		//virtual bool Execute(Event& event);
 	};
 
 	class CastBlessingOfKingsAction : public CastBuffSpellAction

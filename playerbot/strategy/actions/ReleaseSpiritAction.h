@@ -13,7 +13,7 @@ namespace ai
         ReleaseSpiritAction(PlayerbotAI* ai, string name = "release") : Action(ai, name) {}
 
     public:
-        virtual bool Execute(Event event)
+        virtual bool Execute(Event& event)
         {
             if (sServerFacade.IsAlive(bot))
             {
@@ -55,7 +55,7 @@ namespace ai
     public:
         AutoReleaseSpiritAction(PlayerbotAI* ai, string name = "auto release") : ReleaseSpiritAction(ai, name) {}
 
-        virtual bool Execute(Event event)
+        virtual bool Execute(Event& event)
         {
             sLog.outDetail("Bot #%d %s:%d <%s> auto released", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->GetLevel(), bot->GetName());
 
@@ -121,7 +121,7 @@ namespace ai
         RepopAction(PlayerbotAI* ai, string name = "repop") : SpiritHealerAction(ai, name) {}
 
     public:
-        virtual bool Execute(Event event)
+        virtual bool Execute(Event& event)
         {
             sLog.outBasic("Bot #%d %s:%d <%s> repops at graveyard", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->GetLevel(), bot->GetName());
 

@@ -6,7 +6,7 @@
 using namespace ai;
 
 
-bool OutfitAction::Execute(Event event)
+bool OutfitAction::Execute(Event& event)
 {
     string param = event.getParam();
 

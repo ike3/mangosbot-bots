@@ -14,7 +14,7 @@ namespace ai
 		{
             this->distance = distance;
         }
-        virtual bool Execute(Event event)
+        virtual bool Execute(Event& event)
 		{
             Unit* target = AI_VALUE(Unit*, GetTargetName());
             if (!target)

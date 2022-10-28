@@ -9,7 +9,7 @@ namespace ai
     {
     public:
         SayAction(PlayerbotAI* ai);
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
         virtual bool isUseful();
         virtual string getName() { return "say::" + qualifier; }
 
@@ -20,7 +20,7 @@ namespace ai
     {
     public:
         ChatReplyAction(PlayerbotAI* ai) : Action(ai, "chat message") {}
-        virtual bool Execute(Event event) { return true; }
+        virtual bool Execute(Event& event) { return true; }
         bool isUseful() { return true; }
         static void ChatReplyDo(Player* bot, uint32 type, uint32 guid1, uint32 guid2, std::string msg, std::string chanName, std::string name);
     };

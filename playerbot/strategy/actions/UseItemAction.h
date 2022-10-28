@@ -11,7 +11,7 @@ namespace ai
       UseItemAction(PlayerbotAI* ai, string name = "use", bool selfOnly = false) : Action(ai, name), selfOnly(selfOnly) {}
 
    public:
-      virtual bool Execute(Event event);
+      virtual bool Execute(Event& event);
       virtual bool isPossible();
 
    protected:
@@ -39,7 +39,7 @@ namespace ai
    public:
       UseHealingPotion(PlayerbotAI* ai) : UseItemAction(ai, "healing potion") {}
       virtual bool isUseful() { return AI_VALUE2(bool, "combat", "self target"); }
-      virtual bool Execute(Event event)
+      virtual bool Execute(Event& event)
       {
           bool isRandomBot = sRandomPlayerbotMgr.IsRandomBot(bot);
           if (/*isRandomBot && */sPlayerbotAIConfig.freeFood)
@@ -85,7 +85,7 @@ namespace ai
    public:
       UseManaPotion(PlayerbotAI* ai) : UseItemAction(ai, "mana potion") {}
       virtual bool isUseful() { return AI_VALUE2(bool, "combat", "self target"); }
-      virtual bool Execute(Event event)
+      virtual bool Execute(Event& event)
       {
           bool isRandomBot = sRandomPlayerbotMgr.IsRandomBot(bot);
           if (/*isRandomBot && */sPlayerbotAIConfig.freeFood)
@@ -133,7 +133,7 @@ namespace ai
 
        bool isUseful() { return !bot->InBattleGround() && sServerFacade.IsSpellReady(bot, 8690); }
        
-       virtual bool Execute(Event event);
+       virtual bool Execute(Event& event);
    };
 
    class UseRandomRecipe : public UseItemAction
@@ -144,7 +144,7 @@ namespace ai
        virtual bool isUseful();
        virtual bool isPossible() {return AI_VALUE2(uint32,"item count", "recipe") > 0; }
       
-       virtual bool Execute(Event event);
+       virtual bool Execute(Event& event);
    };
 
    class UseRandomQuestItem : public UseItemAction
@@ -155,7 +155,7 @@ namespace ai
        virtual bool isUseful();
        virtual bool isPossible() { return AI_VALUE2(uint32, "item count", "quest") > 0;}
 
-       virtual bool Execute(Event event);
+       virtual bool Execute(Event& event);
    };
 
    // goblin sappers
@@ -168,7 +168,7 @@ namespace ai
        {
            return bot->GetLevel() >= 50 && bot->GetHealth() > 1000;
        }
-       virtual bool Execute(Event event)
+       virtual bool Execute(Event& event)
        {
            uint32 goblinSapper = 10646;
            if (bot->GetLevel() >= 68)
@@ -202,7 +202,7 @@ namespace ai
        {
            return bot->GetLevel() >= 31 && !ai->HasAura(11350, bot);
        }
-       virtual bool Execute(Event event)
+       virtual bool Execute(Event& event)
        {
            uint32 oil = 8956;
            bool added = bot->HasItemCount(oil, 1);
@@ -233,7 +233,7 @@ namespace ai
        {
            return false; bot->GetLevel() >= 52 && bot->IsSpellReady(19769);/* && bot->GetSkillValue(202) >= 260*/;
        }
-       virtual bool Execute(Event event)
+       virtual bool Execute(Event& event)
        {
            uint32 spellId = 19769;
            if (SpellEntry const* spellInfo = sSpellTemplate.LookupEntry<SpellEntry>(spellId))
@@ -285,7 +285,7 @@ namespace ai
 
            return bot->GetLevel() == 60 && AI_VALUE2(uint8, "health", "self target") > sPlayerbotAIConfig.lowHealth;
        }
-       virtual bool Execute(Event event)
+       virtual bool Execute(Event& event)
        {
            uint32 rune = 20520;
            bool added = bot->HasItemCount(rune, 1);

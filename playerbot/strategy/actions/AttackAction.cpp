@@ -8,7 +8,7 @@
 
 using namespace ai;
 
-bool AttackAction::Execute(Event event)
+bool AttackAction::Execute(Event& event)
 {
     Unit* target = GetTarget();
 
@@ -22,7 +22,7 @@ bool AttackAction::Execute(Event event)
     return Attack(target);
 }
 
-bool AttackMyTargetAction::Execute(Event event)
+bool AttackMyTargetAction::Execute(Event& event)
 {
     Player* master = GetMaster();
     if (!master)
@@ -131,7 +131,7 @@ bool AttackDuelOpponentAction::isUseful()
     return AI_VALUE(Unit*, "duel target");
 }
 
-bool AttackDuelOpponentAction::Execute(Event event)
+bool AttackDuelOpponentAction::Execute(Event& event)
 {
     return Attack(AI_VALUE(Unit*, "duel target"));
 }

@@ -8,7 +8,7 @@ namespace ai
     class SkipSpellsListAction : public Action {
     public:
         SkipSpellsListAction(PlayerbotAI* ai) : Action(ai, "ss") {}
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
 
     private:
         SpellIds parseIds(string text);

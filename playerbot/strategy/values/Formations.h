@@ -57,7 +57,7 @@ namespace ai
     {
     public:
         SetFormationAction(PlayerbotAI* ai) : Action(ai, "set formation") {}
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
     };
 };
 

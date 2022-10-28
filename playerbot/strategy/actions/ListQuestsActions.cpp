@@ -6,7 +6,7 @@
 
 using namespace ai;
 
-bool ListQuestsAction::Execute(Event event)
+bool ListQuestsAction::Execute(Event& event)
 {
     if (event.getParam() == "completed" || event.getParam() == "co")
     {

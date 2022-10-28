@@ -7,7 +7,7 @@ namespace ai
     class ShareQuestAction : public Action {
     public:
         ShareQuestAction(PlayerbotAI* ai) : Action(ai, "share quest") {}
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
     };
 
 }

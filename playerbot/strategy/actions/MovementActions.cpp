@@ -1590,12 +1590,12 @@ void MovementAction::ClearIdleState()
     context->GetValue<ai::PositionMap&>("position")->Get()["random"].Reset();
 }
 
-bool FleeAction::Execute(Event event)
+bool FleeAction::Execute(Event& event)
 {
     return Flee(AI_VALUE(Unit*, "current target"));
 }
 
-bool FleeWithPetAction::Execute(Event event)
+bool FleeWithPetAction::Execute(Event& event)
 {
     Pet* pet = bot->GetPet();
     if (pet)
@@ -1622,12 +1622,12 @@ bool FleeWithPetAction::Execute(Event event)
     return Flee(AI_VALUE(Unit*, "current target"));
 }
 
-bool RunAwayAction::Execute(Event event)
+bool RunAwayAction::Execute(Event& event)
 {
     return Flee(AI_VALUE(Unit*, "master target"));
 }
 
-bool MoveToLootAction::Execute(Event event)
+bool MoveToLootAction::Execute(Event& event)
 {
     LootObject loot = AI_VALUE(LootObject, "loot target");
     if (!loot.IsLootPossible(bot))
@@ -1637,7 +1637,7 @@ bool MoveToLootAction::Execute(Event event)
     return MoveNear(wo, sPlayerbotAIConfig.contactDistance);
 }
 
-bool MoveOutOfEnemyContactAction::Execute(Event event)
+bool MoveOutOfEnemyContactAction::Execute(Event& event)
 {
     Unit* target = AI_VALUE(Unit*, "current target");
     if (!target)
@@ -1651,7 +1651,7 @@ bool MoveOutOfEnemyContactAction::isUseful()
     return AI_VALUE2(bool, "inside target", "current target");
 }
 
-bool SetFacingTargetAction::Execute(Event event)
+bool SetFacingTargetAction::Execute(Event& event)
 {
     Unit* target = AI_VALUE(Unit*, "current target");
     if (!target)
@@ -1683,7 +1683,7 @@ bool SetFacingTargetAction::isPossible()
     return true;
 }
 
-bool SetBehindTargetAction::Execute(Event event)
+bool SetBehindTargetAction::Execute(Event& event)
 {
     Unit* target = AI_VALUE(Unit*, "current target");
     if (!target)
@@ -1742,7 +1742,7 @@ bool SetBehindTargetAction::isPossible()
 #endif
 }
 
-bool MoveOutOfCollisionAction::Execute(Event event)
+bool MoveOutOfCollisionAction::Execute(Event& event)
 {
     float angle = M_PI * 2000 / (float)urand(1, 1000);
     float distance = sPlayerbotAIConfig.followDistance;
@@ -1761,7 +1761,7 @@ bool MoveOutOfCollisionAction::isUseful()
         ai->GetAiObjectContext()->GetValue<list<ObjectGuid> >("nearest non bot players")->Get().size() > 0;
 }
 
-bool MoveRandomAction::Execute(Event event)
+bool MoveRandomAction::Execute(Event& event)
 {
     //uint32 randnum = bot->GetGUIDLow();                            //Semi-random but fixed number for each bot.
     //uint32 cycle = floor(WorldTimer::getMSTime() / (1000*60));     //Semi-random number adds 1 each minute.

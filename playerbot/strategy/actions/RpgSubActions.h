@@ -44,7 +44,7 @@ namespace ai
         //Short range can we do the action now?
         virtual bool isUseful() { return rpg->InRange(); }
 
-        virtual bool Execute(Event event) { rpg->BeforeExecute();  bool doAction = ai->DoSpecificAction(ActionName(), ActionEvent(event), true); rpg->AfterExecute(doAction, true); return doAction; }
+        virtual bool Execute(Event& event) { rpg->BeforeExecute();  bool doAction = ai->DoSpecificAction(ActionName(), ActionEvent(event), true); rpg->AfterExecute(doAction, true); return doAction; }
     protected:
         virtual string ActionName() { return "none"; }
         virtual Event ActionEvent(Event event) { return event; }
@@ -57,7 +57,7 @@ namespace ai
 
         //virtual bool isUseful() { return rpg->InRange() && !ai->HasRealPlayerMaster(); }
 
-        virtual bool Execute(Event event) { rpg->BeforeExecute(); if (bot->GetPlayerMenu()) bot->GetPlayerMenu()->CloseGossip(); rpg->AfterExecute();  return true; };
+        virtual bool Execute(Event& event) { rpg->BeforeExecute(); if (bot->GetPlayerMenu()) bot->GetPlayerMenu()->CloseGossip(); rpg->AfterExecute();  return true; };
     };   
 
     class RpgWorkAction : public RpgSubAction
@@ -67,7 +67,7 @@ namespace ai
 
         //virtual bool isUseful() { return rpg->InRange() && !ai->HasRealPlayerMaster(); }
 
-        virtual bool Execute(Event event) { rpg->BeforeExecute(); bot->HandleEmoteCommand(EMOTE_STATE_USESTANDING); rpg->AfterExecute(); return true; };
+        virtual bool Execute(Event& event) { rpg->BeforeExecute(); bot->HandleEmoteCommand(EMOTE_STATE_USESTANDING); rpg->AfterExecute(); return true; };
     };
 
     class RpgEmoteAction : public RpgSubAction
@@ -77,7 +77,7 @@ namespace ai
 
         //virtual bool isUseful() { return rpg->InRange() && !ai->HasRealPlayerMaster(); }
 
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
     };
 
     class RpgCancelAction : public RpgSubAction
@@ -85,7 +85,7 @@ namespace ai
     public:
         RpgCancelAction(PlayerbotAI* ai, string name = "rpg cancel") : RpgSubAction(ai, name) {}
 
-        virtual bool Execute(Event event) { rpg->OnCancel();  AI_VALUE(set<ObjectGuid>&, "ignore rpg target").insert(AI_VALUE(GuidPosition, "rpg target")); RESET_AI_VALUE(GuidPosition, "rpg target"); rpg->AfterExecute(""); return true; };
+        virtual bool Execute(Event& event) { rpg->OnCancel();  AI_VALUE(set<ObjectGuid>&, "ignore rpg target").insert(AI_VALUE(GuidPosition, "rpg target")); RESET_AI_VALUE(GuidPosition, "rpg target"); rpg->AfterExecute(""); return true; };
     };
 
     class RpgTaxiAction : public RpgSubAction
@@ -95,7 +95,7 @@ namespace ai
 
         virtual bool isUseful() { return rpg->InRange() && !ai->HasRealPlayerMaster(); }
 
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
     };
 
     class RpgDiscoverAction : public RpgTaxiAction
@@ -105,7 +105,7 @@ namespace ai
 
         virtual bool isUseful() { return rpg->InRange(); }
 
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
     };
 
     class RpgStartQuestAction : public RpgSubAction
@@ -177,7 +177,7 @@ namespace ai
         virtual string ActionName() { return "mail"; }
         virtual Event ActionEvent(Event event) { return Event("rpg action", "take"); }
        
-        virtual bool Execute(Event event) { bool doAction = RpgSubAction::Execute(event); if (doAction) ai->DoSpecificAction("equip upgrades"); return doAction; }
+        virtual bool Execute(Event& event) { bool doAction = RpgSubAction::Execute(event); if (doAction) ai->DoSpecificAction("equip upgrades"); return doAction; }
     };
 
     class RpgRepairAction : public RpgSubAction
@@ -204,7 +204,7 @@ namespace ai
     public:
         RpgHealAction(PlayerbotAI* ai, string name = "rpg heal") : RpgSubAction(ai, name) {}
 
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
     };
 
     class RpgHomeBindAction : public RpgSubAction
@@ -239,7 +239,7 @@ namespace ai
     public:
         RpgUseAction(PlayerbotAI* ai, string name = "rpg use") : RpgSubAction(ai, name) {}
 
-        virtual bool Execute(Event event) { rpg->BeforeExecute();  return ai->DoSpecificAction(ActionName(), ActionEvent(event), true); rpg->AfterExecute(true); }
+        virtual bool Execute(Event& event) { rpg->BeforeExecute();  return ai->DoSpecificAction(ActionName(), ActionEvent(event), true); rpg->AfterExecute(true); }
     private:
         virtual string ActionName() { if (rpg->guidP().IsGameObject() && rpg->guidP().GetGameObject()->GetGoType() == GAMEOBJECT_TYPE_CHEST) return "add all loot";  return "use"; }
         virtual Event ActionEvent(Event event) { return Event("rpg action", chat->formatWorldobject(rpg->guidP().GetWorldObject())); }
@@ -273,7 +273,7 @@ namespace ai
 
         bool IsTradingItem(uint32 entry);
 
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
     };
 
     class RpgDuelAction : public RpgSubAction
@@ -282,7 +282,7 @@ namespace ai
         RpgDuelAction(PlayerbotAI* ai, string name = "rpg duel") : RpgSubAction(ai, name) {}
 
         virtual bool isUseful();
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
     };
 
     class RpgMountAnimAction : public Action
@@ -291,6 +291,6 @@ namespace ai
         RpgMountAnimAction(PlayerbotAI* ai, string name = "rpg mount anim") : Action(ai, name) {}
 
         virtual bool isUseful();
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
     };
 }

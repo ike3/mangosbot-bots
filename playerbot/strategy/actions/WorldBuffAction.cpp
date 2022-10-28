@@ -7,7 +7,7 @@
 
 using namespace ai;
 
-bool WorldBuffAction::Execute(Event event)
+bool WorldBuffAction::Execute(Event& event)
 {    
     string text = event.getParam();
 

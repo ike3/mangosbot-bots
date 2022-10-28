@@ -53,7 +53,7 @@ namespace ai
         virtual ~Action(void) {}
 
     public:
-        virtual bool Execute(Event event) { return true; }
+        virtual bool Execute(Event& event) { return true; }
         virtual bool isPossible() { return true; }
         virtual bool isUseful() { return true; }
         virtual NextAction** getPrerequisites() { return NULL; }
@@ -115,7 +115,7 @@ namespace ai
 	class ActionBasket
 	{
 	public:
-        ActionBasket(ActionNode* action, float relevance, bool skipPrerequisites, Event event) :
+        ActionBasket(ActionNode* action, float relevance, bool skipPrerequisites, const Event& event) :
           action(action), relevance(relevance), skipPrerequisites(skipPrerequisites), event(event) {
             created = time(0);
         }

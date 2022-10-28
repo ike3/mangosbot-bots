@@ -10,7 +10,7 @@ namespace ai
     {
     public:
         TradeStatusAction(PlayerbotAI* ai) : QueryItemUsageAction(ai, "accept trade") {}
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
 
     private:
         void BeginTrade();

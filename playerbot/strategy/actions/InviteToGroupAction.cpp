@@ -27,7 +27,7 @@ namespace ai
         return true;
     }
 
-    bool InviteNearbyToGroupAction::Execute(Event event)
+    bool InviteNearbyToGroupAction::Execute(Event& event)
     {
         list<ObjectGuid> nearGuids = ai->GetAiObjectContext()->GetValue<list<ObjectGuid> >("nearest friendly players")->Get();
         for (auto& i : nearGuids)
@@ -116,7 +116,7 @@ namespace ai
         return worker.GetResult();
     }
 
-    bool InviteGuildToGroupAction::Execute(Event event)
+    bool InviteGuildToGroupAction::Execute(Event& event)
     {
         for (auto& member : getGuildMembers())
         {

@@ -39,7 +39,7 @@
 using namespace ai;
 
 
-bool BGJoinAction::Execute(Event event)
+bool BGJoinAction::Execute(Event& event)
 {
     uint32 queueType = AI_VALUE(uint32, "bg type");
     if (!queueType) // force join to fill bg
@@ -908,7 +908,7 @@ bool FreeBGJoinAction::shouldJoinBg(BattleGroundQueueTypeId queueTypeId, BattleG
 }
 
 
-bool BGLeaveAction::Execute(Event event)
+bool BGLeaveAction::Execute(Event& event)
 {
     if (!(bot->InBattleGroundQueue() || bot->InBattleGround()))
         return false;
@@ -985,7 +985,7 @@ bool BGStatusAction::isUseful()
     return bot->InBattleGroundQueue();
 }
 
-bool BGStatusAction::Execute(Event event)
+bool BGStatusAction::Execute(Event& event)
 {
     uint32 QueueSlot;
     uint32 instanceId;
@@ -1410,7 +1410,7 @@ bool BGStatusAction::Execute(Event event)
     return true;
 }
 
-bool BGStatusCheckAction::Execute(Event event)
+bool BGStatusCheckAction::Execute(Event& event)
 {
     if (bot->IsBeingTeleported())
         return false;

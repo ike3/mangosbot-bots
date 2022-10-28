@@ -10,7 +10,7 @@ namespace ai
     public:
         ReadyCheckAction(PlayerbotAI* ai, string name = "ready check") : InventoryAction(ai, name) {}
 
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
 
     protected:
         bool ReadyCheck();
@@ -21,7 +21,7 @@ namespace ai
     public:
         FinishReadyCheckAction(PlayerbotAI* ai) : ReadyCheckAction(ai, "finish ready check") {}
 
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
     };
 
 }

@@ -13,7 +13,7 @@
 using namespace std;
 using namespace ai;
 
-bool PetitionSignAction::Execute(Event event)
+bool PetitionSignAction::Execute(Event& event)
 {
     WorldPacket p(event.getPacket());
     p.rpos(0);

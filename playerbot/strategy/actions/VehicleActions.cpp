@@ -8,7 +8,7 @@
 
 using namespace ai;
 
-bool EnterVehicleAction::Execute(Event event)
+bool EnterVehicleAction::Execute(Event& event)
 {
 #ifdef MANGOSBOT_TWO
     // do not switch vehicles yet
@@ -79,7 +79,7 @@ bool EnterVehicleAction::Execute(Event event)
 	return false;
 }
 
-bool LeaveVehicleAction::Execute(Event event)
+bool LeaveVehicleAction::Execute(Event& event)
 {
 #ifdef MANGOSBOT_TWO
     TransportInfo* transportInfo = bot->GetTransportInfo();

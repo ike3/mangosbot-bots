@@ -9,7 +9,7 @@ namespace ai
 		TrainerAction(PlayerbotAI* ai) : Action(ai, "trainer") {}
 
     public:
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
 
     private:
         typedef void (TrainerAction::*TrainerSpellAction)(uint32, TrainerSpell const*, ostringstream& msg);

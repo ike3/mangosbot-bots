@@ -11,7 +11,7 @@ namespace ai
     public:
         MoveToTravelTargetAction(PlayerbotAI* ai) : MovementAction(ai, "move to travel target") {}
 
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
         virtual bool isUseful();
     };
 

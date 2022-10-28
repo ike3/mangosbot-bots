@@ -14,7 +14,7 @@ using namespace ai;
 vector<string> split(const string& s, char delim);
 char* strstri(const char* haystack, const char* needle);
 
-bool GoAction::Execute(Event event)
+bool GoAction::Execute(Event& event)
 {
     Player* master = GetMaster();
     if (!master)

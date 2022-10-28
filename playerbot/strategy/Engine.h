@@ -12,10 +12,10 @@ namespace ai
     class ActionExecutionListener
     {
     public:
-        virtual bool Before(Action* action, Event event) = 0;
-        virtual bool AllowExecution(Action* action, Event event) = 0;
-        virtual void After(Action* action, bool executed, Event event) = 0;
-        virtual bool OverrideResult(Action* action, bool executed, Event event) = 0;
+        virtual bool Before(Action* action, const Event& event) = 0;
+        virtual bool AllowExecution(Action* action, const Event& event) = 0;
+        virtual void After(Action* action, bool executed, const Event& event) = 0;
+        virtual bool OverrideResult(Action* action, bool executed, const Event& event) = 0;
         virtual ~ActionExecutionListener() {};
     };
 
@@ -28,10 +28,10 @@ namespace ai
 
     // ActionExecutionListener
     public:
-        virtual bool Before(Action* action, Event event);
-        virtual bool AllowExecution(Action* action, Event event);
-        virtual void After(Action* action, bool executed, Event event);
-        virtual bool OverrideResult(Action* action, bool executed, Event event);
+        virtual bool Before(Action* action, const Event& event);
+        virtual bool AllowExecution(Action* action, const Event& event);
+        virtual void After(Action* action, bool executed, const Event& event);
+        virtual bool OverrideResult(Action* action, bool executed, const Event& event);
 
     public:
         void Add(ActionExecutionListener* listener)
@@ -94,14 +94,14 @@ namespace ai
 	    virtual ~Engine(void);
 
     private:
-        bool MultiplyAndPush(NextAction** actions, float forceRelevance, bool skipPrerequisites, Event event, const char* pushType);
+        bool MultiplyAndPush(NextAction** actions, float forceRelevance, bool skipPrerequisites, const Event& event, const char* pushType);
         void Reset();
         void ProcessTriggers(bool minimal);
         void PushDefaultActions();
-        void PushAgain(ActionNode* actionNode, float relevance, Event event);
+        void PushAgain(ActionNode* actionNode, float relevance, const Event& event);
         ActionNode* CreateActionNode(string name);
-        Action* InitializeAction(ActionNode* actionNode);
-        bool ListenAndExecute(Action* action, Event event);
+        virtual Action* InitializeAction(ActionNode* actionNode);
+        virtual bool ListenAndExecute(Action* action, Event& event);
 
     private:
         void LogAction(const char* format, ...);

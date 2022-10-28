@@ -9,7 +9,7 @@ namespace ai
     {
     public:
         AhAction(PlayerbotAI* ai, string name = "ah") : InventoryAction(ai, name) {}
-        virtual bool Execute(Event event);        
+        virtual bool Execute(Event& event);        
 
     private:
         virtual bool Execute(string text, Unit* auctioneer);

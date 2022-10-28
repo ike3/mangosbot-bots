@@ -27,7 +27,7 @@ namespace ai
     {
     public:
         LfgJoinAction(PlayerbotAI* ai, string name = "lfg join") : InventoryAction(ai, name) {}
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
         virtual bool isUseful();
 
     protected:
@@ -42,7 +42,7 @@ namespace ai
     {
     public:
         LfgAcceptAction(PlayerbotAI* ai) : LfgJoinAction(ai, "lfg accept") {}
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
         virtual bool isUseful() { return true; }
     };
 
@@ -50,7 +50,7 @@ namespace ai
     {
     public:
         LfgRoleCheckAction(PlayerbotAI* ai) : LfgJoinAction(ai, "lfg role check") {}
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
         virtual bool isUseful() { return true; }
     };
 
@@ -58,7 +58,7 @@ namespace ai
     {
     public:
         LfgLeaveAction(PlayerbotAI* ai) : Action(ai, "lfg leave") {}
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
         virtual bool isUseful();
     };
 
@@ -66,6 +66,6 @@ namespace ai
     {
     public:
         LfgTeleportAction(PlayerbotAI* ai) : Action(ai, "lfg teleport") {}
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
     };
 }

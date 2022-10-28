@@ -175,7 +175,7 @@ namespace ai
     {
     public:
         FeedPetAction(PlayerbotAI* ai) : Action(ai, "feed pet") {}
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
     };
 
     class CastBestialWrathAction : public CastBuffSpellAction
@@ -195,7 +195,7 @@ namespace ai
     public:
         CastScareBeastCcAction(PlayerbotAI* ai) : CastSpellAction(ai, "scare beast on cc") {}
         virtual Value<Unit*>* GetTargetValue();
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
     };
 
     BUFF_ACTION(IntimidationAction, "intimidation");

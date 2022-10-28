@@ -11,7 +11,7 @@ namespace ai
     {
     public:
         CastCustomSpellAction(PlayerbotAI* ai, string name = "cast custom spell") : InventoryAction(ai, name) {}
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
         virtual string castString(WorldObject* target) { return "cast"; }
     protected:
         bool ncCast = false;
@@ -42,7 +42,7 @@ namespace ai
             return !isTradeSkill && GetSpellRecoveryTime(pSpellInfo) < MINUTE * IN_MILLISECONDS;
         }
         virtual uint32 GetSpellPriority(const SpellEntry* pSpellInfo) { return 1; }
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
 
         virtual bool castSpell(uint32 spellId, WorldObject* wo);
     protected:
@@ -88,7 +88,7 @@ namespace ai
     public:
         DisEnchantRandomItemAction(PlayerbotAI* ai) : CastCustomSpellAction(ai, "disenchant random item")  {}
         virtual bool isUseful() { return ai->HasSkill(SKILL_ENCHANTING) && !bot->IsInCombat() && AI_VALUE2(uint32, "item count", "usage " + to_string(ITEM_USAGE_DISENCHANT)) > 0; }
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
     };
 
     class EnchantRandomItemAction : public CastRandomSpellAction

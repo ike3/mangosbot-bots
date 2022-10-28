@@ -11,7 +11,7 @@ namespace ai
         RandomBotUpdateAction(PlayerbotAI* ai) : Action(ai, "random bot update")
         {}
 
-        virtual bool Execute(Event event)
+        virtual bool Execute(Event& event)
         {
             if (!sRandomPlayerbotMgr.IsRandomBot(bot))
                 return false;

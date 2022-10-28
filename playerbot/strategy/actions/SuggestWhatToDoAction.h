@@ -8,7 +8,7 @@ namespace ai
     {
     public:
         SuggestWhatToDoAction(PlayerbotAI* ai, string name = "suggest what to do");
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
         virtual bool isUseful();
 
     protected:
@@ -34,7 +34,7 @@ namespace ai
     {
     public:
         SuggestTradeAction(PlayerbotAI* ai);
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
         virtual bool isUseful() { return true; }
     };
 }

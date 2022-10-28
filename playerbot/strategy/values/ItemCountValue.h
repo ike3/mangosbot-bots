@@ -9,7 +9,7 @@ namespace ai
     {
     public:
         InventoryItemValueBase(PlayerbotAI* ai) : InventoryAction(ai, "empty") {}
-        virtual bool Execute(Event event) { return false; }
+        virtual bool Execute(Event& event) { return false; }
 
     protected:
         list<Item*> Find(string qualifier);

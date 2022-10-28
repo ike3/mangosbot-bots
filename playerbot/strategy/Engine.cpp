@@ -16,7 +16,7 @@ Engine::Engine(PlayerbotAI* ai, AiObjectContext *factory) : PlayerbotAIAware(ai)
     testMode = false;
 }
 
-bool ActionExecutionListeners::Before(Action* action, Event event)
+bool ActionExecutionListeners::Before(Action* action, const Event& event)
 {
     bool result = true;
     for (list<ActionExecutionListener*>::iterator i = listeners.begin(); i!=listeners.end(); i++)
@@ -26,7 +26,7 @@ bool ActionExecutionListeners::Before(Action* action, Event event)
     return result;
 }
 
-void ActionExecutionListeners::After(Action* action, bool executed, Event event)
+void ActionExecutionListeners::After(Action* action, bool executed, const Event& event)
 {
     for (list<ActionExecutionListener*>::iterator i = listeners.begin(); i!=listeners.end(); i++)
     {
@@ -34,7 +34,7 @@ void ActionExecutionListeners::After(Action* action, bool executed, Event event)
     }
 }
 
-bool ActionExecutionListeners::OverrideResult(Action* action, bool executed, Event event)
+bool ActionExecutionListeners::OverrideResult(Action* action, bool executed, const Event& event)
 {
     bool result = executed;
     for (list<ActionExecutionListener*>::iterator i = listeners.begin(); i!=listeners.end(); i++)
@@ -44,7 +44,7 @@ bool ActionExecutionListeners::OverrideResult(Action* action, bool executed, Eve
     return result;
 }
 
-bool ActionExecutionListeners::AllowExecution(Action* action, Event event)
+bool ActionExecutionListeners::AllowExecution(Action* action, const Event& event)
 {
     bool result = true;
     for (list<ActionExecutionListener*>::iterator i = listeners.begin(); i!=listeners.end(); i++)
@@ -300,7 +300,7 @@ ActionNode* Engine::CreateActionNode(string name)
         /*C*/ NULL);
 }
 
-bool Engine::MultiplyAndPush(NextAction** actions, float forceRelevance, bool skipPrerequisites, Event event, const char* pushType)
+bool Engine::MultiplyAndPush(NextAction** actions, float forceRelevance, bool skipPrerequisites, const Event& event, const char* pushType)
 {
     bool pushed = false;
     if (actions)
@@ -537,7 +537,7 @@ list<string> Engine::GetStrategies()
     return result;
 }
 
-void Engine::PushAgain(ActionNode* actionNode, float relevance, Event event)
+void Engine::PushAgain(ActionNode* actionNode, float relevance, const Event& event)
 {
     NextAction** nextAction = new NextAction*[2];
     nextAction[0] = new NextAction(actionNode->getName(), relevance);
@@ -568,10 +568,9 @@ Action* Engine::InitializeAction(ActionNode* actionNode)
     return action;
 }
 
-bool Engine::ListenAndExecute(Action* action, Event event)
+bool Engine::ListenAndExecute(Action* action, Event& event)
 {
     bool actionExecuted = false;
-
     if (actionExecutionListeners.Before(action, event))
     {
         actionExecuted = actionExecutionListeners.AllowExecution(action, event) ? action->Execute(event) : true;
@@ -587,7 +586,7 @@ bool Engine::ListenAndExecute(Action* action, Event event)
         else
             out << " 0 (";
 
-        out << std::fixed << std::setprecision(3);
+        out << std::fixed << std::setprecision(2);
         out << action->getRelevance() << ")";
 
         if(!event.getSource().empty())

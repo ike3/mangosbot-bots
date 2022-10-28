@@ -5,7 +5,7 @@
 
 using namespace ai;
 
-bool ShareQuestAction::Execute(Event event)
+bool ShareQuestAction::Execute(Event& event)
 {
     string link = event.getParam();
     if (!GetMaster())

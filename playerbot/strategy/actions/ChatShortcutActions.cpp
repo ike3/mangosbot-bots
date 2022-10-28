@@ -23,7 +23,7 @@ void ReturnPositionResetAction::SetReturnPosition(float x, float y, float z)
     posMap["return"] = pos;
 }
 
-bool FollowChatShortcutAction::Execute(Event event)
+bool FollowChatShortcutAction::Execute(Event& event)
 {
     Player* master = GetMaster();
     if (!master)
@@ -81,7 +81,7 @@ bool FollowChatShortcutAction::Execute(Event event)
     return true;
 }
 
-bool StayChatShortcutAction::Execute(Event event)
+bool StayChatShortcutAction::Execute(Event& event)
 {
     Player* master = GetMaster();
     if (!master)
@@ -97,7 +97,7 @@ bool StayChatShortcutAction::Execute(Event event)
     return true;
 }
 
-bool FleeChatShortcutAction::Execute(Event event)
+bool FleeChatShortcutAction::Execute(Event& event)
 {
     Player* master = GetMaster();
     if (!master)
@@ -116,7 +116,7 @@ bool FleeChatShortcutAction::Execute(Event event)
     return true;
 }
 
-bool GoawayChatShortcutAction::Execute(Event event)
+bool GoawayChatShortcutAction::Execute(Event& event)
 {
     Player* master = GetMaster();
     if (!master)
@@ -130,7 +130,7 @@ bool GoawayChatShortcutAction::Execute(Event event)
     return true;
 }
 
-bool GrindChatShortcutAction::Execute(Event event)
+bool GrindChatShortcutAction::Execute(Event& event)
 {
     Player* master = GetMaster();
     if (!master)
@@ -143,7 +143,7 @@ bool GrindChatShortcutAction::Execute(Event event)
     return true;
 }
 
-bool TankAttackChatShortcutAction::Execute(Event event)
+bool TankAttackChatShortcutAction::Execute(Event& event)
 {
     Player* master = GetMaster();
     if (!master)
@@ -160,7 +160,7 @@ bool TankAttackChatShortcutAction::Execute(Event event)
     return true;
 }
 
-bool MaxDpsChatShortcutAction::Execute(Event event)
+bool MaxDpsChatShortcutAction::Execute(Event& event)
 {
     Player* master = GetMaster();
     if (!master)
