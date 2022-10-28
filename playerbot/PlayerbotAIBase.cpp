@@ -5,7 +5,7 @@
 using namespace ai;
 using namespace std;
 
-PlayerbotAIBase::PlayerbotAIBase() : nextAICheckDelay(0)
+PlayerbotAIBase::PlayerbotAIBase() : aiInternalUpdateDelay(0)
 {
 }
 
@@ -15,49 +15,44 @@ void PlayerbotAIBase::UpdateAIInternal(uint32 elapsed, bool minimal)
 
 void PlayerbotAIBase::UpdateAI(uint32 elapsed)
 {
-    if (nextAICheckDelay > elapsed)
-        nextAICheckDelay -= elapsed;
+    if (aiInternalUpdateDelay > elapsed)
+        aiInternalUpdateDelay -= elapsed;
     else
-        nextAICheckDelay = 0;
+        aiInternalUpdateDelay = 0;
 
-    if (!CanUpdateAI())
+    if (!CanUpdateAIInternal())
         return;
 
     UpdateAIInternal(elapsed);
-    YieldThread();
+    YieldAIInternalThread();
 }
 
-void PlayerbotAIBase::SetNextCheckDelay(const uint32 delay)
+void PlayerbotAIBase::SetAIInternalUpdateDelay(const uint32 delay)
 {
-    if (nextAICheckDelay < delay)
-        sLog.outDebug("Setting lesser delay %d -> %d", nextAICheckDelay, delay);
+    if (aiInternalUpdateDelay < delay)
+        sLog.outDebug("Setting lesser ai internal update delay %d -> %d", aiInternalUpdateDelay, delay);
 
-    nextAICheckDelay = delay;
+    aiInternalUpdateDelay = delay;
 
-    if (nextAICheckDelay > sPlayerbotAIConfig.globalCoolDown)
-        sLog.outDebug( "set next check delay: %d", nextAICheckDelay);
+    if (aiInternalUpdateDelay > sPlayerbotAIConfig.globalCoolDown)
+        sLog.outDebug( "Set ai internal update delay: %d", aiInternalUpdateDelay);
 }
 
-void PlayerbotAIBase::IncreaseNextCheckDelay(uint32 delay)
+void PlayerbotAIBase::IncreaseAIInternalUpdateDelay(uint32 delay)
 {
-    nextAICheckDelay += delay;
+    aiInternalUpdateDelay += delay;
 
-    if (nextAICheckDelay > sPlayerbotAIConfig.globalCoolDown)
-        sLog.outDebug( "increase next check delay: %d", nextAICheckDelay);
+    if (aiInternalUpdateDelay > sPlayerbotAIConfig.globalCoolDown)
+        sLog.outDebug( "Increase ai internal update delay: %d", aiInternalUpdateDelay);
 }
 
-bool PlayerbotAIBase::CanUpdateAI()
+void PlayerbotAIBase::YieldAIInternalThread(bool minimal)
 {
-    return nextAICheckDelay < 100;
+    if (aiInternalUpdateDelay < sPlayerbotAIConfig.reactDelay)
+        aiInternalUpdateDelay = minimal ? sPlayerbotAIConfig.reactDelay * 10 : sPlayerbotAIConfig.reactDelay;
 }
 
-void PlayerbotAIBase::YieldThread(bool delay)
+bool PlayerbotAIBase::IsActive() const
 {
-    if (nextAICheckDelay < sPlayerbotAIConfig.reactDelay)
-        nextAICheckDelay = delay ? sPlayerbotAIConfig.reactDelay * 10 : sPlayerbotAIConfig.reactDelay;
-}
-
-bool PlayerbotAIBase::IsActive()
-{
-    return (int)nextAICheckDelay < (int)sPlayerbotAIConfig.maxWaitForMove;
+    return (int)aiInternalUpdateDelay < (int)sPlayerbotAIConfig.maxWaitForMove;
 }

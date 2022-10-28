@@ -64,7 +64,7 @@ bool MoveToTravelTargetAction::Execute(Event& event)
 
             target->setExpireIn(target->getTimeLeft() + sPlayerbotAIConfig.maxWaitForMove);
 
-            ai->SetNextCheckDelay(sPlayerbotAIConfig.maxWaitForMove);
+            SetDuration(sPlayerbotAIConfig.maxWaitForMove);
 
             return true;
         }

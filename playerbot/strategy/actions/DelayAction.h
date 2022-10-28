@@ -15,9 +15,7 @@ namespace ai
 
         virtual bool Execute(Event& event)
         {
-            uint32 delay = sPlayerbotAIConfig.passiveDelay + sPlayerbotAIConfig.globalCoolDown;
-
-            ai->SetNextCheckDelay(delay);
+            SetDuration(sPlayerbotAIConfig.passiveDelay + sPlayerbotAIConfig.globalCoolDown);
             return true;
         }
 
@@ -26,5 +24,4 @@ namespace ai
             return !ai->AllowActivity(ALL_ACTIVITY);
         }
     };
-
 }
