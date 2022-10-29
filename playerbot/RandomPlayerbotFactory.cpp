@@ -112,6 +112,9 @@ bool RandomPlayerbotFactory::CreateRandomBot(uint8 cls)
 #ifdef MANGOSBOT_ONE
         1,
 #endif
+#ifdef MANGOSBOT_TWO
+        2,
+#endif
         0, LOCALE_enUS);
 
     Player *player = new Player(session);

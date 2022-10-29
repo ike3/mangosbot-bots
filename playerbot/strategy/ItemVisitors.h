@@ -378,6 +378,10 @@ namespace ai
                         if (spellInfo->Effect[i] == SPELL_EFFECT_SUMMON_PET)
                             return true;
 #endif
+#ifdef MANGOSBOT_TWO
+                        if (spellInfo->Effect[i] == SPELL_EFFECT_SUMMON_PET)
+                            return true;
+#endif
                     }
                 }
             }

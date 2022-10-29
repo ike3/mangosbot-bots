@@ -29,6 +29,9 @@ bool RepairAllAction::Execute(Event event)
 #ifdef MANGOSBOT_ONE
             , false
 #endif
+#ifdef MANGOSBOT_TWO
+            , false
+#endif
         );
 
         ostringstream out;

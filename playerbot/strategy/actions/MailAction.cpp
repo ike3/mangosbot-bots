@@ -109,6 +109,9 @@ public:
 #ifdef MANGOSBOT_ONE
                 packet << *i;
 #endif
+#ifdef MANGOSBOT_TWO
+                packet << *i;
+#endif
                 Item* item = bot->GetMItem(*i);
                 ostringstream out;
                 out << mail->subject << ", " << ChatHelper::formatItem(item->GetProto()) << "|cff00ff00 processed";
@@ -172,11 +175,19 @@ public:
         ostringstream out, body;
         out << "|cffffffff" << mail->subject;
         ai->TellMaster(out.str());
+#ifdef MANGOSBOT_TWO
+        if (!mail->body.empty())
+        {
+            body << "\n" << mail->body;
+            ai->TellMaster(body.str());
+        }
+#else
         if (mail->itemTextId)
         {
             body << "\n" << sObjectMgr.GetItemText(mail->itemTextId);
             ai->TellMaster(body.str());
         }
+#endif
         return true;
     }
     static ReadMailProcessor instance;
@@ -255,6 +266,9 @@ void MailProcessor::RemoveMail(Player* bot, uint32 id, ObjectGuid mailbox)
     packet << mailbox;
     packet << id;
 #ifdef MANGOSBOT_ONE
+    packet << (uint32)0; //mailTemplateId
+#endif
+#ifdef MANGOSBOT_TWO
     packet << (uint32)0; //mailTemplateId
 #endif
     bot->GetSession()->HandleMailDelete(packet);

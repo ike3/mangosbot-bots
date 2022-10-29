@@ -121,12 +121,22 @@ bool ItemUsageValue::IsItemUsefulForSkill(ItemPrototype const * proto)
             if (ai->HasSkill(SKILL_JEWELCRAFTING) && auctionbot.IsUsedBySkill(proto, SKILL_JEWELCRAFTING))
                 return true;
 #endif
+#ifdef MANGOSBOT_TWO
+            if (ai->HasSkill(SKILL_JEWELCRAFTING) && auctionbot.IsUsedBySkill(proto, SKILL_JEWELCRAFTING))
+                return true;
+            if (ai->HasSkill(SKILL_INSCRIPTION) && auctionbot.IsUsedBySkill(proto, SKILL_INSCRIPTION))
+                return true;
+#endif
             if (ai->HasSkill(SKILL_MINING) &&
                     (
                             auctionbot.IsUsedBySkill(proto, SKILL_MINING) ||
                             auctionbot.IsUsedBySkill(proto, SKILL_BLACKSMITHING) ||
 #ifdef MANGOSBOT_ONE
                             auctionbot.IsUsedBySkill(proto, SKILL_JEWELCRAFTING) ||
+#endif
+#ifdef MANGOSBOT_TWO
+                            auctionbot.IsUsedBySkill(proto, SKILL_JEWELCRAFTING) ||
+                            auctionbot.IsUsedBySkill(proto, SKILL_INSCRIPTION) ||
 #endif
                             auctionbot.IsUsedBySkill(proto, SKILL_ENGINEERING)
                     ))

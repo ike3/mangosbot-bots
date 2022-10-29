@@ -63,6 +63,12 @@ CategoryList::CategoryList()
     Add(new TradeSkill(SKILL_JEWELCRAFTING, true));
     Add(new TradeSkill(SKILL_JEWELCRAFTING, false));
 #endif
+#ifdef MANGOSBOT_TWO
+    Add(new TradeSkill(SKILL_JEWELCRAFTING, true));
+    Add(new TradeSkill(SKILL_JEWELCRAFTING, false));
+    Add(new TradeSkill(SKILL_INSCRIPTION, true));
+    Add(new TradeSkill(SKILL_INSCRIPTION, false));
+#endif
 }
 
 void CategoryList::Add(Category* category)

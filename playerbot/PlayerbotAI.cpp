@@ -189,7 +189,11 @@ void PlayerbotAI::HandleTeleportAck()
 	if (bot->IsBeingTeleportedNear())
 	{
 		WorldPacket p = WorldPacket(MSG_MOVE_TELEPORT_ACK, 8 + 4 + 4);
-        p << bot->GetObjectGuid();
+        p << bot->GetObjectGuid()
+#ifdef MANGOSBOT_TWO
+            .WriteAsPacked()
+#endif
+            ;
 		p << (uint32) 0; // supposed to be flags? not used currently
 		p << (uint32) time(0); // time - not currently used
         bot->GetSession()->HandleMoveTeleportAckOpcode(p);
@@ -381,6 +385,9 @@ void PlayerbotAI::HandleBotOutgoingPacket(const WorldPacket& packet)
 #ifdef MANGOSBOT_ONE
         p >> casterGuid.ReadAsPacked();
 #endif
+#ifdef MANGOSBOT_TWO
+        p >> casterGuid.ReadAsPacked();
+#endif
         if (casterGuid != bot->GetObjectGuid())
             return;
 
@@ -398,6 +405,9 @@ void PlayerbotAI::HandleBotOutgoingPacket(const WorldPacket& packet)
         p >> casterGuid;
 #endif
 #ifdef MANGOSBOT_ONE
+        p >> casterGuid.ReadAsPacked();
+#endif
+#ifdef MANGOSBOT_TWO
         p >> casterGuid.ReadAsPacked();
 #endif
 		if (casterGuid != bot->GetObjectGuid())
@@ -1336,6 +1346,9 @@ bool IsAlliance(uint8 race)
     return race == RACE_HUMAN || race == RACE_DWARF || race == RACE_NIGHTELF ||
             race == RACE_GNOME
 #ifdef MANGOSBOT_ONE
+            || race == RACE_DRAENEI
+#endif
+#ifdef MANGOSBOT_TWO
             || race == RACE_DRAENEI
 #endif
             ;

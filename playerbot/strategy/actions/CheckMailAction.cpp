@@ -53,10 +53,17 @@ void CheckMailAction::ProcessMail(Mail* mail, Player* owner)
 {
     if (mail->items.empty())
     {
+#ifdef MANGOSBOT_TWO
+        if (!mail->body.empty())
+        {
+            sGuildTaskMgr.CheckTaskTransfer(mail->body, owner, bot);
+        }
+#else
         if (mail->itemTextId)
         {
             sGuildTaskMgr.CheckTaskTransfer(sObjectMgr.GetItemText(mail->itemTextId), owner, bot);
         }
+#endif
         return;
     }
 

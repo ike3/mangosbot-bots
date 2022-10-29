@@ -274,6 +274,9 @@ bool StoreLootAction::Execute(Event event)
 #ifdef MANGOSBOT_ONE
 		        && lootslot_type != LOOT_SLOT_OWNER
 #endif
+#ifdef MANGOSBOT_TWO
+                && lootslot_type != LOOT_SLOT_OWNER
+#endif
             )
 			continue;
 

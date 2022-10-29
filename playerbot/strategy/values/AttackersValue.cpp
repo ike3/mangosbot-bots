@@ -89,6 +89,54 @@ void AttackersValue::RemoveNonThreating(set<Unit*>& targets)
     }
 }
 
+
+bool IsTappedByMeOrMyGroup(Player* bot, Creature* creature)
+{
+    /* Nobody tapped the monster (solo kill by another NPC) */
+    if (!creature->HasFlag(UNIT_DYNAMIC_FLAGS, UNIT_DYNFLAG_TAPPED))
+    {
+        return false;
+    }
+
+    /* If there is a loot recipient, assign it to recipient */
+    if (Player* recipient = creature->GetLootRecipient())
+    {
+        /* See if we're in a group */
+        if (Group* plr_group = recipient->GetGroup())
+        {
+            /* Recipient is in a group... but is it ours? */
+            if (Group* my_group = bot->GetGroup())
+            {
+                /* Check groups are the same */
+                if (plr_group != my_group)
+                {
+                    return false;  // Cheater, deny loot
+                }
+            }
+            else
+            {
+                return false;  // We're not in a group, probably cheater
+            }
+
+            /* We're in the looters group, so mob is tapped by us */
+            return true;
+        }
+        /* We're not in a group, check to make sure we're the recipient (prevent cheaters) */
+        else if (recipient == bot)
+        {
+            return true;
+        }
+    }
+    else
+        /* Don't know what happened to the recipient, probably disconnected
+         * Either way, it isn't us, so mark as tapped */
+         {
+             return false;
+         }
+
+    return false;
+}
+
 bool AttackersValue::IsPossibleTarget(Unit *attacker, Player *bot)
 {
     Creature *c = dynamic_cast<Creature*>(attacker);
@@ -109,8 +157,9 @@ bool AttackersValue::IsPossibleTarget(Unit *attacker, Player *bot)
         !sPlayerbotAIConfig.IsInPvpProhibitedZone(attacker->GetAreaId()) &&
         (!c || (
                 !c->IsInEvadeMode() &&
-                (!attacker->HasFlag(UNIT_DYNAMIC_FLAGS, UNIT_DYNFLAG_TAPPED) || bot->IsTappedByMeOrMyGroup(c))
-                )
+                (!attacker->HasFlag(UNIT_DYNAMIC_FLAGS, UNIT_DYNFLAG_TAPPED)
+                    || IsTappedByMeOrMyGroup(bot, c)
+                ))
         );
 }
 

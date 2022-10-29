@@ -124,6 +124,9 @@ bool ServerFacade::IsInWater(Unit *unit)
 #ifdef MANGOSBOT_ONE
             IsInWater
 #endif
+#ifdef MANGOSBOT_TWO
+            IsInWater
+#endif
             (unit->GetPositionX(), unit->GetPositionY(), unit->GetPositionZ());
 #endif
 #ifdef CMANGOS

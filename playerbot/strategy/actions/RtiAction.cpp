@@ -78,7 +78,11 @@ bool MarkRtiAction::Execute(Event event)
 
     string rti = AI_VALUE(string, "rti");
     int index = RtiTargetValue::GetRtiIndex(rti);
-    group->SetTargetIcon(index, target->GetObjectGuid());
+    group->SetTargetIcon(index, 
+#ifdef MANGOSBOT_TWO
+        bot->GetObjectGuid(),
+#endif
+        target->GetObjectGuid());
     return true;
 }
 

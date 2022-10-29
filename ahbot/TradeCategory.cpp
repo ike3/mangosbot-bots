@@ -79,6 +79,10 @@ bool TradeSkill::ContainsInternal(ItemPrototype const* proto)
 #ifdef MANGOSBOT_ONE
             (recipe->SubClass == ITEM_SUBCLASS_JEWELCRAFTING_RECIPE && skill == SKILL_JEWELCRAFTING) ||
 #endif
+#ifdef MANGOSBOT_TWO
+            (recipe->SubClass == ITEM_SUBCLASS_JEWELCRAFTING_RECIPE && skill == SKILL_JEWELCRAFTING) ||
+            (skill == SKILL_INSCRIPTION) ||
+#endif
             (recipe->SubClass == ITEM_SUBCLASS_FISHING_MANUAL && skill == SKILL_FISHING)
             ))
         {
@@ -193,6 +197,12 @@ string TradeSkill::GetName()
     case SKILL_JEWELCRAFTING:
         name = "trade.jewelcrafting"; break;
 #endif
+#ifdef MANGOSBOT_TWO
+    case SKILL_JEWELCRAFTING:
+        name = "trade.jewelcrafting"; break;
+    case SKILL_INSCRIPTION:
+        name = "trade.inscription"; break;
+#endif
     }
 
     return reagent ? name : name + ".craft";
@@ -230,6 +240,12 @@ string TradeSkill::GetLabel()
         case SKILL_JEWELCRAFTING:
             return "jewelcrafting";
     #endif
+    #ifdef MANGOSBOT_TWO
+        case SKILL_JEWELCRAFTING:
+            return "jewelcrafting";
+        case SKILL_INSCRIPTION:
+            return "inscription";
+    #endif
         }
     }
     else
@@ -261,6 +277,10 @@ string TradeSkill::GetLabel()
     #ifdef MANGOSBOT_ONE
         case SKILL_JEWELCRAFTING:
             return "jewels";
+    #endif
+    #ifdef MANGOSBOT_TWO
+        case SKILL_INSCRIPTION:
+            return "inscripts";
     #endif
         }
     }

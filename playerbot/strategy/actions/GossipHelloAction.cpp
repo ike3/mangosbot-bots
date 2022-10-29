@@ -125,6 +125,9 @@ bool GossipHelloAction::ProcessGossip(int menuToSelect)
 #ifdef MANGOSBOT_ONE
     p << menu.GetMenuId() << menuToSelect;
 #endif
+#ifdef MANGOSBOT_TWO
+    p << menu.GetMenuId() << menuToSelect;
+#endif
     p << code;
     bot->GetSession()->HandleGossipSelectOptionOpcode(p);
 

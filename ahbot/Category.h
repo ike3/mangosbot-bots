@@ -88,6 +88,10 @@ namespace ahbot
                 ||
                     proto->Class == ITEM_CLASS_GEM
 #endif
+#ifdef MANGOSBOT_TWO
+                ||
+                    proto->Class == ITEM_CLASS_GLYPH
+#endif
                 ;
         }
         virtual string GetName() { return "trade"; }

@@ -50,6 +50,9 @@ bool AhAction::Execute(string text, Unit* auctioneer)
 #ifdef MANGOSBOT_ONE
     packet << 12 * HOUR / MINUTE;
 #endif
+#ifdef MANGOSBOT_TWO
+    packet << 12 * HOUR / MINUTE;
+#endif
 
     bot->GetSession()->HandleAuctionSellItem(packet);
 
