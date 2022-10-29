@@ -19,6 +19,15 @@ struct EnchantTemplate
 
 typedef std::vector<EnchantTemplate*> EnchantContainer;
 
+struct TaxiNodeLevel
+{
+    uint32 Index;
+    uint32 MapId;
+    uint32 Level;
+};
+
+typedef std::vector<TaxiNodeLevel> TaxiNodeLevelContainer;
+
 
 //TODO: more spec/role
 /* classid+talenttree
@@ -119,6 +128,8 @@ private:
     uint32 level;
     uint32 itemQuality;
     static uint32 tradeSkills[];
+    static TaxiNodeLevelContainer overworldTaxiNodeLevelsA;
+    static TaxiNodeLevelContainer overworldTaxiNodeLevelsH;
 
 protected:
    EnchantContainer m_EnchantContainer;
