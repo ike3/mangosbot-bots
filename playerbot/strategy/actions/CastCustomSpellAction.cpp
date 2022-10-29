@@ -277,7 +277,8 @@ bool DisEnchantRandomItemAction::Execute(Event& event)
         if ((ai->HasRealPlayerMaster() || ai->IsInRealGuild()) && ObjectMgr::GetItemPrototype(item)->Quality > ITEM_QUALITY_UNCOMMON)
             return false;
 
-        const bool used = CastCustomSpellAction::Execute(Event("disenchant random item", "13262 " + chat->formatQItem(item)));
+        Event disenchantEvent = Event("disenchant random item", "13262 " + chat->formatQItem(item));
+        const bool used = CastCustomSpellAction::Execute(disenchantEvent);
         if (used)
         {
             SetDuration(3000U); // 3s
