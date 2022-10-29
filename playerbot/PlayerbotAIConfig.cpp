@@ -352,6 +352,9 @@ bool PlayerbotAIConfig::Initialize()
     targetPosRecalcDistance = config.GetFloatDefault("AiPlayerbot.TargetPosRecalcDistance", 0.1f),
     BarGoLink::SetOutputState(config.GetBoolDefault("AiPlayerbot.ShowProgressBars", false));
 
+    sLog.outString("Loading area levels.");
+    sTravelMgr.loadAreaLevels();
+
     RandomPlayerbotFactory::CreateRandomBots();
     PlayerbotFactory::Init();
     sRandomItemMgr.Init();
