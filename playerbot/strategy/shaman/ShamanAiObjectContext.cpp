@@ -3,6 +3,7 @@
 #include "ShamanActions.h"
 #include "ShamanAiObjectContext.h"
 #include "ShamanNonCombatStrategy.h"
+#include "ShamanReactionStrategy.h"
 #include "HealShamanStrategy.h"
 #include "MeleeShamanStrategy.h"
 #include "ShamanTriggers.h"
@@ -26,6 +27,7 @@ namespace ai
             StrategyFactoryInternal()
             {
                 creators["nc"] = &shaman::StrategyFactoryInternal::nc;
+                creators["react"] = &shaman::StrategyFactoryInternal::react;
                 creators["totems"] = &shaman::StrategyFactoryInternal::totems;
                 creators["melee aoe"] = &shaman::StrategyFactoryInternal::melee_aoe;
                 creators["caster aoe"] = &shaman::StrategyFactoryInternal::caster_aoe;
@@ -34,6 +36,7 @@ namespace ai
 
         private:
             static Strategy* nc(PlayerbotAI* ai) { return new ShamanNonCombatStrategy(ai); }
+            static Strategy* react(PlayerbotAI* ai) { return new ShamanReactionStrategy(ai); }
             static Strategy* totems(PlayerbotAI* ai) { return new TotemsShamanStrategy(ai); }
             static Strategy* melee_aoe(PlayerbotAI* ai) { return new MeleeAoeShamanStrategy(ai); }
             static Strategy* caster_aoe(PlayerbotAI* ai) { return new CasterAoeShamanStrategy(ai); }

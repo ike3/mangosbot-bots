@@ -2,7 +2,7 @@
 #include "playerbot.h"
 #include "AiFactory.h"
 #include "strategy/AiObjectContext.h"
-#include "strategy/Engine.h"
+#include "strategy/ReactionEngine.h"
 
 #include "strategy/priest/PriestAiObjectContext.h"
 #include "strategy/mage/MageAiObjectContext.h"
@@ -187,7 +187,7 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
 
     if (!player->InBattleGround())
     {
-        engine->addStrategies("racials", "chat", "default", "potions", /*"cast time",*/ "duel", "pvp", "avoid aoe", NULL);
+        engine->addStrategies("racials", "chat", "default", /*"cast time",*/ "duel", "pvp", NULL);
     }
 
     switch (player->getClass())
@@ -390,7 +390,7 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
             engine->addStrategy("arena");
         }
 #endif
-        engine->addStrategies("boost", "racials", "chat", "default", "aoe", "potions", "conserve mana", "cast time", "dps assist", "pvp", NULL);
+        engine->addStrategies("boost", "racials", "chat", "default", "aoe", "conserve mana", "cast time", "dps assist", "pvp", NULL);
         engine->removeStrategy("custom::say");
         engine->removeStrategy("flee");
         engine->removeStrategy("threat");
@@ -669,4 +669,15 @@ Engine* AiFactory::createDeadEngine(Player* player, PlayerbotAI* const facade, A
     Engine* deadEngine = new Engine(facade, AiObjectContext);
     AddDefaultDeadStrategies(player, facade, deadEngine);
     return deadEngine;
+}
+
+void AiFactory::AddDefaultReactionStrategies(Player* player, PlayerbotAI* const facade, ReactionEngine* reactionEngine)
+{
+    reactionEngine->addStrategies("react", "avoid aoe", "potions", NULL);
+}
+
+ReactionEngine* AiFactory::createReactionEngine(Player* player, PlayerbotAI* const facade, AiObjectContext* AiObjectContext) {
+    ReactionEngine* reactionEngine = new ReactionEngine(facade, AiObjectContext);
+    AddDefaultReactionStrategies(player, facade, reactionEngine);
+    return reactionEngine;
 }

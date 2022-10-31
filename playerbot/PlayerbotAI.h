@@ -4,7 +4,7 @@
 #include "PlayerbotMgr.h"
 #include "PlayerbotAIBase.h"
 #include "strategy/AiObjectContext.h"
-#include "strategy/Engine.h"
+#include "strategy/ReactionEngine.h"
 #include "strategy/ExternalEventHelper.h"
 #include "ChatFilter.h"
 #include "PlayerbotSecurity.h"
@@ -85,6 +85,7 @@ enum class BotState : uint8
     BOT_STATE_COMBAT = 0,
     BOT_STATE_NON_COMBAT = 1,
     BOT_STATE_DEAD = 2,
+    BOT_STATE_REACTION = 3,
     BOT_STATE_MAX
 };
 
@@ -424,12 +425,16 @@ public:
 
     void SetActionDuration(const Action* action, uint32 delay);
     
+private:
+    bool UpdateAIReaction(uint32 elapsed, bool minimal = false);
+
 protected:
 	Player* bot;
 	Player* master;
 	uint32 accountId;
     AiObjectContext* aiObjectContext;
     Engine* currentEngine;
+    ReactionEngine* reactionEngine;
     Engine* engines[(uint8)BotState::BOT_STATE_MAX];
     BotState currentState;
     ChatHelper chatHelper;

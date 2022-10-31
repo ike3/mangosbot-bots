@@ -112,6 +112,7 @@ PlayerbotAI::PlayerbotAI(Player* bot) :
     engines[(uint8)BotState::BOT_STATE_COMBAT] = AiFactory::createCombatEngine(bot, this, aiObjectContext);
     engines[(uint8)BotState::BOT_STATE_NON_COMBAT] = AiFactory::createNonCombatEngine(bot, this, aiObjectContext);
     engines[(uint8)BotState::BOT_STATE_DEAD] = AiFactory::createDeadEngine(bot, this, aiObjectContext);
+    engines[(uint8)BotState::BOT_STATE_REACTION] = reactionEngine = AiFactory::createReactionEngine(bot, this, aiObjectContext);
 
     for (uint8 e = 0; e < (uint8)BotState::BOT_STATE_MAX; e++)
     {
@@ -299,8 +300,8 @@ void PlayerbotAI::UpdateAI(uint32 elapsed, bool minimal)
             bot->SetPower(bot->GetPowerType(), bot->GetMaxPower(bot->GetPowerType()));
     }
 
-    // Only update when the internal ai can be updated
-    if(CanUpdateAIInternal())
+    // Only update the internal ai when no reaction is running and the internal ai can be updated
+    if(!UpdateAIReaction(elapsed, minimal) && CanUpdateAIInternal())
     {
         // check activity
         AllowActivity();
@@ -332,12 +333,36 @@ void PlayerbotAI::UpdateAI(uint32 elapsed, bool minimal)
     }
 }
 
+bool PlayerbotAI::UpdateAIReaction(uint32 elapsed, bool minimal)
+{
+    bool reactionFound, reactionFinished;
+    const bool reactionInProgress = reactionEngine->Update(elapsed, minimal, reactionFound, reactionFinished);
 
+    // If new reaction found force stop current actions
+    if(reactionFound)
+    {
+        InterruptSpell();
+        StopMoving();
+    }
+    // If the reaction has finished restart the previous engine
+    else if(reactionFinished)
+    {
+        ReInitCurrentEngine();
+    }
 
+    return reactionInProgress;
+}
 
 void PlayerbotAI::SetActionDuration(const Action* action, uint32 delay)
 {
-    SetAIInternalUpdateDelay(delay);
+    if (action && action->IsReaction())
+    {
+        reactionEngine->SetReactionDuration(action, delay);
+    }
+    else
+    {
+        SetAIInternalUpdateDelay(delay);
+    }
 }
 
 void PlayerbotAI::UpdateAIInternal(uint32 elapsed, bool minimal)
@@ -489,6 +514,7 @@ void PlayerbotAI::Reset(bool full)
 
     currentEngine = engines[(uint8)BotState::BOT_STATE_NON_COMBAT];
     ResetAIInternalUpdateDelay();
+    reactionEngine->Reset();
     whispers.clear();
 
     aiObjectContext->GetValue<Unit*>("old target")->Set(NULL);
@@ -1065,6 +1091,9 @@ void PlayerbotAI::ChangeEngine(BotState type)
         case BotState::BOT_STATE_DEAD:
             sLog.outDebug( "=== %s DEAD ===", bot->GetName());
             break;
+        case BotState::BOT_STATE_REACTION:
+            sLog.outDebug("=== %s REACTION ===", bot->GetName());
+            break;
         default: break;
         }
     }
@@ -1616,6 +1645,7 @@ void PlayerbotAI::ResetStrategies(bool load)
     AiFactory::AddDefaultCombatStrategies(bot, this, engines[(uint8)BotState::BOT_STATE_COMBAT]);
     AiFactory::AddDefaultNonCombatStrategies(bot, this, engines[(uint8)BotState::BOT_STATE_NON_COMBAT]);
     AiFactory::AddDefaultDeadStrategies(bot, this, engines[(uint8)BotState::BOT_STATE_DEAD]);
+    AiFactory::AddDefaultReactionStrategies(bot, this, reactionEngine);
     if (load) sPlayerbotDbStore.Load(this);
 
     for (uint8 i = 0; i < (uint8)BotState::BOT_STATE_MAX; i++)
