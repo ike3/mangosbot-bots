@@ -3633,6 +3633,7 @@ string PlayerbotAI::BotStateToString(BotState state)
         case BotState::BOT_STATE_COMBAT: return "Combat";
         case BotState::BOT_STATE_NON_COMBAT: return "Non Combat";
         case BotState::BOT_STATE_DEAD: return "Dead";
+        case BotState::BOT_STATE_REACTION: return "Reaction";
         default: return "";
     }
 }
