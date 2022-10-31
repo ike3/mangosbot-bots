@@ -270,6 +270,7 @@ private:
     void UpdateAIInternal(uint32 elapsed, bool minimal = false) override;
 
 public:	
+    static string BotStateToString(BotState state);
 	string HandleRemoteCommand(string command);
     void HandleCommand(uint32 type, const string& text, Player& fromPlayer);
     void QueueChatResponse(uint8 msgtype, ObjectGuid guid1, ObjectGuid guid2, std::string message, std::string chanName, std::string name);

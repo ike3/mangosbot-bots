@@ -203,7 +203,8 @@ bool PetitionOfferNearbyAction::Execute(Event& event)
         p << i;
         p.rpos(0);
 
-        if (PetitionOfferAction::Execute(Event("petition offer nearby", p)))
+        Event petitionOfferEvent = Event("petition offer nearby", p);
+        if (PetitionOfferAction::Execute(petitionOfferEvent))
             found++;
     }
 

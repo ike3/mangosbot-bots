@@ -73,7 +73,7 @@ namespace ai
         std::string ListStrategies();
         list<string> GetStrategies();
 		bool ContainsStrategy(StrategyType type);
-		void ChangeStrategy(string names);
+		void ChangeStrategy(string names, string engineType = "");
 		string GetLastAction() { return lastAction; }
 
     public:

@@ -294,6 +294,10 @@ bool MovementAction::FlyDirect(WorldPosition &startPosition, WorldPosition &endP
 
 bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, bool react, bool noPath)
 {
+    WorldPosition endPosition(mapId, x, y, z, 0);
+    if(!endPosition.isValid())
+        return false;
+
     UpdateMovementState();
 
     if (!IsMovingAllowed())
@@ -352,11 +356,10 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
     LastMovement& lastMove = *context->GetValue<LastMovement&>("last movement");
 
     WorldPosition startPosition = WorldPosition(bot);             //Current location of the bot
-    WorldPosition endPosition = WorldPosition(mapId, x, y, z, 0); //The requested end location
     WorldPosition movePosition;
 
     float totalDistance = startPosition.distance(endPosition);    //Total distance to where we want to go
-    float maxDistChange = totalDistance * 0.1;                    //Maximum change between previous destination before needing a recalulation
+    float maxDistChange = totalDistance * 0.1;                    //Maximum change between previous destination before needing a recalculation
     TravelPath movePath;
 
     if (totalDistance < minDist)

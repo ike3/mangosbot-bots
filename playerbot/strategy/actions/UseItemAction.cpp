@@ -552,7 +552,8 @@ bool UseRandomRecipe::Execute(Event& event)
     if (recipeName.empty())
         return false;
 
-    const bool used = UseItemAction::Execute(Event(name,recipeName));
+    Event useItemEvent = Event(name, recipeName);
+    const bool used = UseItemAction::Execute(useItemEvent);
     if (used)
     {
         SetDuration(3000U); // 3s
