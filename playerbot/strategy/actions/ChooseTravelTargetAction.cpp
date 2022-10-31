@@ -506,8 +506,13 @@ bool ChooseTravelTargetAction::SetBestTarget(TravelTarget* target, vector<Travel
     for (auto& activeTarget : TravelDestinations)
     {
         vector<WorldPosition*> points = activeTarget->getPoints(true);
-        if (!points.empty())
-            travelPoints.insert(travelPoints.end(), points.begin(), points.end());
+        for (WorldPosition* point : points)
+        {
+            if (point && point->isValid())
+            {
+                travelPoints.push_back(point);
+            }
+        }
     }
 
     if (ai->HasStrategy("debug travel", BotState::BOT_STATE_NON_COMBAT))
