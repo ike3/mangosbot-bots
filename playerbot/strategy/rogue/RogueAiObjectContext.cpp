@@ -5,6 +5,7 @@
 #include "RogueAiObjectContext.h"
 #include "DpsRogueStrategy.h"
 #include "GenericRogueNonCombatStrategy.h"
+#include "RogueReactionStrategy.h"
 #include "../generic/PullStrategy.h"
 #include "../NamedObjectContext.h"
 
@@ -23,6 +24,7 @@ namespace ai
             StrategyFactoryInternal()
             {
                 creators["nc"] = &rogue::StrategyFactoryInternal::nc;
+                creators["react"] = &rogue::StrategyFactoryInternal::react;
                 creators["pull"] = &rogue::StrategyFactoryInternal::pull;
                 creators["aoe"] = &rogue::StrategyFactoryInternal::aoe;
                 creators["boost"] = &rogue::StrategyFactoryInternal::boost;
@@ -34,6 +36,7 @@ namespace ai
             static Strategy* boost(PlayerbotAI* ai) { return new RogueBoostStrategy(ai); }
             static Strategy* aoe(PlayerbotAI* ai) { return new RogueAoeStrategy(ai); }
             static Strategy* nc(PlayerbotAI* ai) { return new GenericRogueNonCombatStrategy(ai); }
+            static Strategy* react(PlayerbotAI* ai) { return new RogueReactionStrategy(ai); }
             static Strategy* pull(PlayerbotAI* ai) { return new PullStrategy(ai, "shoot"); }
             static Strategy* stealth(PlayerbotAI* ai) { return new StealthStrategy(ai); }
             static Strategy* cc(PlayerbotAI* ai) { return new RogueCcStrategy(ai); }

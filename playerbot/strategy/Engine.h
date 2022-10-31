@@ -93,7 +93,7 @@ namespace ai
     public:
 	    virtual ~Engine(void);
 
-    private:
+    protected:
         bool MultiplyAndPush(NextAction** actions, float forceRelevance, bool skipPrerequisites, const Event& event, const char* pushType);
         void Reset();
         void ProcessTriggers(bool minimal);
@@ -115,12 +115,10 @@ namespace ai
         std::map<string, Strategy*> strategies;
         float lastRelevance;
         std::string lastAction;
+        ActionExecutionListeners actionExecutionListeners;
 
     public:
 		bool testMode;
         bool initMode = true;
-
-    private:
-        ActionExecutionListeners actionExecutionListeners;
     };
 }

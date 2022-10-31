@@ -27,4 +27,12 @@ namespace ai
     public:
         virtual bool Execute(Event& event);
     };
+
+    class ChangeReactionStrategyAction : public Action {
+    public:
+        ChangeReactionStrategyAction(PlayerbotAI* ai) : Action(ai, "react") {}
+
+    public:
+        virtual bool Execute(Event& event);
+    };
 }
