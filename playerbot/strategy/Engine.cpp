@@ -513,9 +513,8 @@ void Engine::PushDefaultActions()
 }
 
 string Engine::ListStrategies()
-{
-    string s = "Strategies: ";
-
+{   
+    string s;
     if (strategies.empty())
         return s;
 
@@ -637,7 +636,7 @@ void Engine::LogAction(const char* format, ...)
     }
 }
 
-void Engine::ChangeStrategy(string names)
+void Engine::ChangeStrategy(string names, string engineType)
 {
     vector<string> splitted = split(names, ',');
     for (vector<string>::iterator i = splitted.begin(); i != splitted.end(); i++)
@@ -645,18 +644,29 @@ void Engine::ChangeStrategy(string names)
         const char* name = i->c_str();
         switch (name[0])
         {
-        case '+':
-            addStrategy(name+1);
-            break;
-        case '-':
-            removeStrategy(name+1);
-            break;
-        case '~':
-            toggleStrategy(name+1);
-            break;
-        case '?':
-            ai->TellMaster(ListStrategies());
-            break;
+            case '+':
+            {
+                addStrategy(name+1);
+                break;
+            }
+            case '-':
+            {
+                removeStrategy(name+1);
+                break;
+            }
+            case '~':
+            {
+                toggleStrategy(name+1);
+                break;
+            }
+            case '?':
+            {
+                string engineStrategies = engineType;
+                engineStrategies.append(" Strategies: ");
+                engineStrategies.append(ListStrategies());
+                ai->TellMaster(engineStrategies);
+                break;
+            }
         }
     }
 }

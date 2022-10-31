@@ -1496,7 +1496,7 @@ void PlayerbotAI::ChangeStrategy(string names, BotState type)
     if (!e)
         return;
 
-    e->ChangeStrategy(names);
+    e->ChangeStrategy(names, BotStateToString(type));
 }
 
 void PlayerbotAI::ClearStrategies(BotState type)
@@ -3593,6 +3593,17 @@ void PlayerbotAI::_fillGearScoreData(Player *player, Item* item, std::vector<uin
             break;
         default:
             break;
+    }
+}
+
+string PlayerbotAI::BotStateToString(BotState state)
+{
+    switch (state)
+    {
+        case BotState::BOT_STATE_COMBAT: return "Combat";
+        case BotState::BOT_STATE_NON_COMBAT: return "Non Combat";
+        case BotState::BOT_STATE_DEAD: return "Dead";
+        default: return "";
     }
 }
 
