@@ -1,7 +1,7 @@
 #include "ObjectGuid.h"
 #include "botpch.h"
 #include "../../playerbot.h"
-#include "../../playerbotAI.h"
+#include "../../PlayerbotAI.h"
 #include "LfgActions.h"
 #include "../../AiFactory.h"
 //#include "../../PlayerbotAIConfig.h"
@@ -26,7 +26,7 @@
 #include "MotionGenerators/TargetedMovementGenerator.h"
 #include "BattleGround.h"
 #include "BattleGroundMgr.h"
-#include "BattlegroundJoinAction.h"
+#include "BattleGroundJoinAction.h"
 #ifndef MANGOSBOT_ZERO
 #ifdef CMANGOS
 #include "Arena/ArenaTeam.h"

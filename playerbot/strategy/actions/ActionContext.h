@@ -33,7 +33,7 @@
 #include "RpgAction.h"
 #include "TravelAction.h"
 #include "RtiAction.h"
-#include "BattlegroundTactics.h"
+#include "BattleGroundTactics.h"
 #include "CheckMountStateAction.h"
 #include "ChangeTalentsAction.h"
 #include "AutoLearnSpellAction.h"

@@ -1,7 +1,7 @@
 #pragma once
 #include "botpch.h"
 #include "../../playerbot.h"
-#include "../../talentspec.h"
+#include "../../Talentspec.h"
 #include "../Action.h"
 
 namespace ai
@@ -16,7 +16,7 @@ namespace ai
     private:
         std::vector<TalentPath*> getPremadePaths(string findName);
         std::vector<TalentPath*> getPremadePaths(TalentSpec* oldSpec);
-        TalentPath* ChangeTalentsAction::getPremadePath(int id);
+        TalentPath* getPremadePath(int id);
         void listPremadePaths(std::vector<TalentPath*> paths, ostringstream* out);
         TalentPath* PickPremadePath(std::vector<TalentPath*> paths, bool useProbability);
         TalentSpec* GetBestPremadeSpec(int spec);

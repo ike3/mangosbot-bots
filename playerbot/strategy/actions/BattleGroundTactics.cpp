@@ -4,7 +4,7 @@
 #include "MovementActions.h"
 #include "BattleGround.h"
 #include "BattleGroundMgr.h"
-#include "BattlegroundTactics.h"
+#include "BattleGroundTactics.h"
 #ifdef MANGOSBOT_TWO
 #include "Entities/Vehicle.h"
 #endif
@@ -4682,7 +4682,7 @@ bool BGTactics::atFlag(std::vector<BattleBotPath*> const& vPaths, std::vector<ui
 
             //ostringstream out; out << "Flag is nearby, using " << go->GetName();
             //bot->Say(out.str(), LANG_UNIVERSAL);
-            //ai->SetNextCheckDelay(10000);
+            //SetDuration(10000);
 
             // cast banner spell
             ai->StopMoving();

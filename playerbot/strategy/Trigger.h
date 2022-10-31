@@ -1,7 +1,15 @@
 #pragma once
-#include "Action.h"
 #include "Event.h"
-#include "../PlayerbotAIAware.h"
+#include "Value.h"
+#include "AiObject.h"
+
+class Unit;
+
+namespace ai
+{
+    class NextAction;
+    template<class T> class Value;
+}
 
 namespace ai
 {
@@ -52,10 +60,7 @@ namespace ai
             this->handlers = handlers;
             this->trigger = NULL;
         }
-        virtual ~TriggerNode()
-        {
-            NextAction::destroy(handlers);
-        }
+        virtual ~TriggerNode();
 
     public:
         Trigger* getTrigger() { return trigger; }
@@ -63,8 +68,8 @@ namespace ai
         string getName() { return name; }
 
     public:
-        NextAction** getHandlers() { return NextAction::merge(NextAction::clone(handlers), trigger->getHandlers()); }
-        float getFirstRelevance() {return handlers[0] ? handlers[0]->getRelevance() : -1; }
+        NextAction** getHandlers();
+        float getFirstRelevance();
     private:
         std::string name;
         Trigger* trigger;

@@ -476,7 +476,7 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed, bool minimal)
     if (onlineBotCount < (uint32)(sPlayerbotAIConfig.minRandomBots * 90 / 100))
         onlineBotFocus = 25;
 
-    SetNextCheckDelay(sPlayerbotAIConfig.randomBotUpdateInterval * (onlineBotFocus+25) * 10);
+    SetAIInternalUpdateDelay(sPlayerbotAIConfig.randomBotUpdateInterval * (onlineBotFocus+25) * 10);
 
     PerformanceMonitorOperation *pmo = sPerformanceMonitor.start(PERF_MON_TOTAL,
         onlineBotCount < maxAllowedBotCount ? "RandomPlayerbotMgr::Login" : "RandomPlayerbotMgr::UpdateAIInternal");

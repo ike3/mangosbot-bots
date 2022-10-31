@@ -5,7 +5,7 @@
 #include "../../PlayerbotAIConfig.h"
 #include "../../ServerFacade.h"
 #include "../values/PossibleRpgTargetsValue.h"
-#include "../../Travelmgr.h"
+#include "../../TravelMgr.h"
 #include "ChooseRpgTargetAction.h"
 
 using namespace ai;

@@ -67,7 +67,7 @@
 #include "PassLeadershipToMasterAction.h"
 #include "CheatAction.h"
 #include "GuildManagementActions.h"
-#include "RTSCAction.h"
+#include "RtscAction.h"
 
 namespace ai
 {

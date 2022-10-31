@@ -118,7 +118,7 @@ bool UseItemAction::UseItemAuto(Item* item)
     packet << targetFlag;
     packet.appendPackGUID(bot->GetObjectGuid());
 
-    ai->SetNextCheckDelay(sPlayerbotAIConfig.globalCoolDown);
+    SetDuration(sPlayerbotAIConfig.globalCoolDown);
     if (proto->Class == ITEM_CLASS_CONSUMABLE && (proto->SubClass == ITEM_SUBCLASS_FOOD || proto->SubClass == ITEM_SUBCLASS_CONSUMABLE) &&
         (isFood || isDrink))
     {
@@ -146,11 +146,13 @@ bool UseItemAction::UseItemAuto(Item* item)
             p = hp;
             TellConsumableUse(item, "Eating", p);
         }
-        if (!bot->IsInCombat() && !bot->InBattleGround())
-            ai->SetNextCheckDelay(27000.0f * (100 - p) / 100.0f);
 
-        if (!bot->IsInCombat() && bot->InBattleGround())
-            ai->SetNextCheckDelay(20000.0f * (100 - p) / 100.0f);
+        if(!bot->IsInCombat())
+        {
+            const float multiplier = bot->InBattleGround() ? 20000.0f : 27000.0f;
+            const float duration = multiplier * ((100 - p) / 100.0f);
+            SetDuration(duration);
+        }
     }
 
     bot->GetSession()->HandleUseItemOpcode(packet);
@@ -360,7 +362,7 @@ bool UseItemAction::UseItem(Item* item, ObjectGuid goGuid, Item* itemTarget, Uni
    if (sServerFacade.isMoving(bot))
    {
        ai->StopMoving();
-       ai->SetNextCheckDelay(sPlayerbotAIConfig.globalCoolDown);
+       SetDuration(sPlayerbotAIConfig.globalCoolDown);
       return false;
    }
 
@@ -421,7 +423,7 @@ bool UseItemAction::UseItem(Item* item, ObjectGuid goGuid, Item* itemTarget, Uni
    if (!spellId)
        return false;
 
-   ai->SetNextCheckDelay(sPlayerbotAIConfig.globalCoolDown);
+   SetDuration(sPlayerbotAIConfig.globalCoolDown);
    ai->TellMasterNoFacing(out.str(), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
 
    bot->GetSession()->HandleUseItemOpcode(packet);
@@ -512,6 +514,7 @@ bool UseHearthStone::Execute(Event& event)
     {
         ai->StopMoving();
     }
+
     if (bot->IsMounted())
     {
         if (bot->IsFlying() && WorldPosition(bot).currentHeight() > 10.0f)
@@ -521,14 +524,12 @@ bool UseHearthStone::Execute(Event& event)
         bot->GetSession()->HandleCancelMountAuraOpcode(emptyPacket);
     }
 
-
-    bool used = UseItemAction::Execute(event);
-
+    const bool used = UseItemAction::Execute(event);
     if (used)
     {
         RESET_AI_VALUE(bool, "combat::self target");
         RESET_AI_VALUE(WorldPosition, "current position");
-        ai->SetNextCheckDelay(10 * IN_MILLISECONDS);
+        SetDuration(10000U); // 10s
     }
 
     return used;
@@ -542,9 +543,7 @@ bool UseRandomRecipe::isUseful()
 bool UseRandomRecipe::Execute(Event& event)
 {
     list<Item*> recipes = AI_VALUE2(list<Item*>, "inventory items", "recipe");   
-
     string recipeName = "";
-
     for (auto& recipe : recipes)
     {
         recipeName = recipe->GetProto()->Name1;
@@ -553,10 +552,12 @@ bool UseRandomRecipe::Execute(Event& event)
     if (recipeName.empty())
         return false;
 
-    bool used = UseItemAction::Execute(Event(name,recipeName));
-
+    Event useItemEvent = Event(name, recipeName);
+    const bool used = UseItemAction::Execute(useItemEvent);
     if (used)
-        ai->SetNextCheckDelay(3.0 * IN_MILLISECONDS);
+    {
+        SetDuration(3000U); // 3s
+    }
 
     return used;
 }
@@ -572,14 +573,10 @@ bool UseRandomQuestItem::Execute(Event& event)
     ObjectGuid goTarget = ObjectGuid();
 
     list<Item*> questItems = AI_VALUE2(list<Item*>, "inventory items", "quest");
-
-    Item* item = nullptr;
-    uint32 delay = 0;
-
     if (questItems.empty())
         return false;
 
-
+    Item* item = nullptr;
     for (uint8 i = 0; i< 5;i++)
     {
         auto itr = questItems.begin();
@@ -650,10 +647,11 @@ bool UseRandomQuestItem::Execute(Event& event)
     if (!goTarget && !unitTarget)
         return false;
 
-    bool used = UseItem(item, goTarget, nullptr, unitTarget);
-
+    const bool used = UseItem(item, goTarget, nullptr, unitTarget);
     if (used)
-        ai->SetNextCheckDelay(delay);
+    {
+        SetDuration(sPlayerbotAIConfig.globalCoolDown);
+    }
 
     return used;
 }

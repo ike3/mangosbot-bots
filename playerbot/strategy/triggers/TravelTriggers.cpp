@@ -3,7 +3,7 @@
 #include "TravelTriggers.h"
 
 #include "../../PlayerbotAIConfig.h"
-#include "../../Travelmgr.h"
+#include "../../TravelMgr.h"
 #include "ServerFacade.h"
 using namespace ai;
 

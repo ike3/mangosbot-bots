@@ -162,8 +162,9 @@ bool AhBidAction::Execute(string text, Unit* auctioneer)
 
     if (text == "vendor")
     {
+        auto data = WorldPacket();
         uint32 count, totalcount = 0;
-        auctionHouse->BuildListBidderItems(WorldPacket(), bot, 9999, count, totalcount);
+        auctionHouse->BuildListBidderItems(data, bot, 9999, count, totalcount);
 
         if (totalcount > 10) //Already have 10 bids, stop.
             return false;

@@ -1,12 +1,13 @@
 #include "VendorValues.h"
 #include "ItemUsageValue.h"
 #include "BudgetValues.h"
+#include "../../PlayerbotAI.h"
 
 using namespace ai;
 
 bool VendorHasUsefulItemValue::Calculate()
 {
-    uint32 entry = stoi(getQualifier());
+    uint32 entry = stoi(this->getQualifier());
     static CreatureInfo const* cInfo = sObjectMgr.GetCreatureTemplate(entry);
 
     if (!cInfo)

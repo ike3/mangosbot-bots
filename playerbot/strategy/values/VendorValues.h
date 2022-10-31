@@ -1,5 +1,10 @@
 #pragma once
 
+#include "../Value.h"
+#include "../NamedObjectContext.h"
+
+class PlayerbotAI;
+
 namespace ai
 {      
     class VendorHasUsefulItemValue : public BoolCalculatedValue, public Qualified

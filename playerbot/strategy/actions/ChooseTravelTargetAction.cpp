@@ -64,7 +64,8 @@ void ChooseTravelTargetAction::getNewTarget(TravelTarget* newTarget, TravelTarge
     bool pvpActivate = false;
     if (pvpActivate && !foundTarget && urand(0, 4) && bot->GetLevel() > 50)
     {
-        WorldPosition* botPos = &WorldPosition(bot);
+        WorldPosition pos = WorldPosition(bot);
+        WorldPosition* botPos = &pos;
         TravelTarget* target = context->GetValue<TravelTarget*>("travel target")->Get();
 
         TravelDestination* dest = ChooseTravelTargetAction::FindDestination(bot, "Tarren Mill");
@@ -505,8 +506,13 @@ bool ChooseTravelTargetAction::SetBestTarget(TravelTarget* target, vector<Travel
     for (auto& activeTarget : TravelDestinations)
     {
         vector<WorldPosition*> points = activeTarget->getPoints(true);
-        if (!points.empty())
-            travelPoints.insert(travelPoints.end(), points.begin(), points.end());
+        for (WorldPosition* point : points)
+        {
+            if (point && point->isValid())
+            {
+                travelPoints.push_back(point);
+            }
+        }
     }
 
     if (ai->HasStrategy("debug travel", BotState::BOT_STATE_NON_COMBAT))
@@ -734,7 +740,8 @@ char* strstri(const char* haystack, const char* needle);
 
 bool ChooseTravelTargetAction::SetNpcFlagTarget(TravelTarget* target, vector<NPCFlags> flags, string name, vector<uint32> items)
 {
-    WorldPosition* botPos = &WorldPosition(bot);
+    WorldPosition pos = WorldPosition(bot);
+    WorldPosition* botPos = &pos;
 
     vector<TravelDestination*> TravelDestinations;
 
@@ -869,7 +876,8 @@ TravelDestination* ChooseTravelTargetAction::FindDestination(Player* bot, string
             dests.push_back(d);
     }
 
-    WorldPosition* botPos = &WorldPosition(bot);
+    WorldPosition pos = WorldPosition(bot);
+    WorldPosition* botPos = &pos;
 
     if (dests.empty())
         return nullptr;

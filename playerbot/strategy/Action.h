@@ -3,6 +3,14 @@
 #include "Value.h"
 #include "AiObject.h"
 
+class Unit;
+
+namespace ai
+{
+    class NextAction;
+    template<class T> class Value;
+}
+
 namespace ai
 {
     class NextAction
@@ -69,6 +77,10 @@ namespace ai
 
         void setRelevance(float relevance1) { relevance = relevance1; };
         virtual float getRelevance() { return relevance; }
+        
+    protected:
+        void SetDuration(uint32 delay);
+
     protected:
         bool verbose;
         float relevance = 0;

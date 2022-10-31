@@ -162,8 +162,8 @@ bool MovementAction::FlyDirect(WorldPosition &startPosition, WorldPosition &endP
         if (path.empty())
             return false;
 
-
-        for (auto& p = path.end(); p-- != path.begin(); ) //Find the furtest point where we can fly to directly.
+        auto pathEnd = path.end();
+        for (auto& p = pathEnd; p-- != path.begin(); ) //Find the furtest point where we can fly to directly.
             if (p->getMapId() == startPosition.getMapId() && p->isOutside())
             {
                 movePosition = *p;
@@ -294,6 +294,10 @@ bool MovementAction::FlyDirect(WorldPosition &startPosition, WorldPosition &endP
 
 bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, bool react, bool noPath)
 {
+    WorldPosition endPosition(mapId, x, y, z, 0);
+    if(!endPosition.isValid())
+        return false;
+
     UpdateMovementState();
 
     if (!IsMovingAllowed())
@@ -325,13 +329,13 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
         time_t now = time(0);
         if (AI_VALUE(LastMovement&, "last movement").nextTeleport > now) //We can not teleport yet. Wait.
         {
-            ai->SetNextCheckDelay((AI_VALUE(LastMovement&, "last movement").nextTeleport - now) * 1000);
+            SetDuration((AI_VALUE(LastMovement&, "last movement").nextTeleport - now) * 1000);
             return true;
         }
     }
 
-    float minDist = sPlayerbotAIConfig.targetPosRecalcDistance; //Minium distance a bot should move.
-    float maxDist = sPlayerbotAIConfig.reactDistance;           //Maxium distance a bot can move in one single action.
+    float minDist = sPlayerbotAIConfig.targetPosRecalcDistance; //Minimum distance a bot should move.
+    float maxDist = sPlayerbotAIConfig.reactDistance;           //Maximum distance a bot can move in one single action.
     float originalZ = z;                                        // save original destination height to check if bot needs to fly up
 
 
@@ -352,11 +356,10 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
     LastMovement& lastMove = *context->GetValue<LastMovement&>("last movement");
 
     WorldPosition startPosition = WorldPosition(bot);             //Current location of the bot
-    WorldPosition endPosition = WorldPosition(mapId, x, y, z, 0); //The requested end location
     WorldPosition movePosition;
 
     float totalDistance = startPosition.distance(endPosition);    //Total distance to where we want to go
-    float maxDistChange = totalDistance * 0.1;                    //Maximum change between previous destination before needing a recalulation
+    float maxDistChange = totalDistance * 0.1;                    //Maximum change between previous destination before needing a recalculation
     TravelPath movePath;
 
     if (totalDistance < minDist)
@@ -1368,20 +1371,19 @@ float MovementAction::MoveDelay(float distance)
 
 void MovementAction::WaitForReach(float distance)
 {
-    float delay = 1000.0f * MoveDelay(distance) + sPlayerbotAIConfig.reactDelay;
-
-    if (delay > sPlayerbotAIConfig.maxWaitForMove)
-        delay = sPlayerbotAIConfig.maxWaitForMove;
+    float duration = 1000.0f * MoveDelay(distance) + sPlayerbotAIConfig.reactDelay;
+    if (duration > sPlayerbotAIConfig.maxWaitForMove)
+        duration = sPlayerbotAIConfig.maxWaitForMove;
 
     /*Unit* target = *ai->GetAiObjectContext()->GetValue<Unit*>("current target");
     Unit* player = *ai->GetAiObjectContext()->GetValue<Unit*>("enemy player target");
-    if ((player || target) && delay > sPlayerbotAIConfig.globalCoolDown)
-        delay = sPlayerbotAIConfig.globalCoolDown;*/
+    if ((player || target) && duration > sPlayerbotAIConfig.globalCoolDown)
+        duration = sPlayerbotAIConfig.globalCoolDown;*/
 
-    if (delay < 0)
-        delay = 0;
+    if (duration < 0.0f)
+        duration = 0.0f;
 
-    ai->SetNextCheckDelay((uint32)(delay));
+    SetDuration(duration);
 }
 
 bool MovementAction::Flee(Unit *target)
@@ -1661,7 +1663,7 @@ bool SetFacingTargetAction::Execute(Event& event)
         return true;
 
     sServerFacade.SetFacingTo(bot, target);
-    //ai->SetNextCheckDelay(sPlayerbotAIConfig.globalCoolDown);
+    //SetDuration(sPlayerbotAIConfig.globalCoolDown);
     return true;
 }
 

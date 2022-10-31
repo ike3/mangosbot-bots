@@ -14,9 +14,9 @@
 #include "LFG/LFGMgr.h"
 #include "LFG/LFG.h"
 #endif
-#include "Battleground.h"
-#include "BattlegroundMgr.h"
-#include "BattlegroundWS.h"
+#include "BattleGround.h"
+#include "BattleGroundMgr.h"
+#include "BattleGroundWS.h"
 #include "ChooseTargetActions.h"
 #include "CheckMountStateAction.h"
 #include "G3D/Vector3.h"

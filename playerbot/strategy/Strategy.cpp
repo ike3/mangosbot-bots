@@ -2,6 +2,7 @@
 #include "../playerbot.h"
 #include "Strategy.h"
 #include "NamedObjectContext.h"
+#include "Action.h"
 
 using namespace ai;
 using namespace std;

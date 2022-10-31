@@ -37,14 +37,15 @@ bool ImbueWithPoisonAction::Execute(Event& event)
     {
         poison = ai->FindConsumable(INSTANT_POISON_DISPLAYID);
         if (!poison)
-        poison = ai->FindConsumable(DEADLY_POISON_DISPLAYID);
+            poison = ai->FindConsumable(DEADLY_POISON_DISPLAYID);
         if (!poison)
-        poison = ai->FindConsumable(WOUND_POISON_DISPLAYID);
+            poison = ai->FindConsumable(WOUND_POISON_DISPLAYID);
+
         if (poison)
         {
-        ai->ImbueItem(poison, EQUIPMENT_SLOT_MAINHAND);
-        ai->SetNextCheckDelay(5);
-        return true;
+            ai->ImbueItem(poison, EQUIPMENT_SLOT_MAINHAND);
+            SetDuration(sPlayerbotAIConfig.globalCoolDown);
+            return true;
         }
     }
 
@@ -63,7 +64,7 @@ bool ImbueWithPoisonAction::Execute(Event& event)
                 if (item)
                 {
                     ai->ImbueItem(item, EQUIPMENT_SLOT_OFFHAND);
-                    ai->SetNextCheckDelay(5);
+                    SetDuration(sPlayerbotAIConfig.globalCoolDown);
                     return true;
                 }
             }
@@ -71,14 +72,15 @@ bool ImbueWithPoisonAction::Execute(Event& event)
 
         poison = ai->FindConsumable(DEADLY_POISON_DISPLAYID);
         if (!poison)
-        poison = ai->FindConsumable(WOUND_POISON_DISPLAYID);
+            poison = ai->FindConsumable(WOUND_POISON_DISPLAYID);
         if (!poison)
-        poison = ai->FindConsumable(INSTANT_POISON_DISPLAYID);
+            poison = ai->FindConsumable(INSTANT_POISON_DISPLAYID);
+        
         if (poison)
         {
-        ai->ImbueItem(poison, EQUIPMENT_SLOT_OFFHAND);
-        ai->SetNextCheckDelay(5);
-        return true;
+            ai->ImbueItem(poison, EQUIPMENT_SLOT_OFFHAND);
+            SetDuration(sPlayerbotAIConfig.globalCoolDown);
+            return true;
         }
     }
 
@@ -119,7 +121,7 @@ bool ImbueWithStoneAction::Execute(Event& event)
       if (stone)
       {
          ai->ImbueItem(stone, EQUIPMENT_SLOT_MAINHAND);
-         ai->SetNextCheckDelay(5);
+         SetDuration(sPlayerbotAIConfig.globalCoolDown);
          return true;
       }
    }
@@ -131,7 +133,7 @@ bool ImbueWithStoneAction::Execute(Event& event)
       if (stone)
       {
          ai->ImbueItem(stone, EQUIPMENT_SLOT_OFFHAND);
-         ai->SetNextCheckDelay(5);
+         SetDuration(sPlayerbotAIConfig.globalCoolDown);
          return true;
       }
    }
@@ -172,7 +174,7 @@ bool ImbueWithOilAction::Execute(Event& event)
       if (oil)
       {
          ai->ImbueItem(oil, EQUIPMENT_SLOT_MAINHAND);
-         ai->SetNextCheckDelay(5);
+         SetDuration(sPlayerbotAIConfig.globalCoolDown);
          return true;
       }
    }
@@ -197,7 +199,7 @@ bool TryEmergencyAction::Execute(Event& event)
       if (bandage)
       {
          ai->ImbueItem(bandage, bot);
-         ai->SetNextCheckDelay(8);
+         SetDuration(sPlayerbotAIConfig.globalCoolDown);
          return true;
       }
    }

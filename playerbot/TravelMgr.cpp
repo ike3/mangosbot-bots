@@ -6,7 +6,16 @@
 #include "TravelNode.h"
 #include "PlayerbotAI.h"
 
+#include "ByteBuffer.h"
+#include "Creature.h"
+#include "GameObject.h"
+#include "Map.h"
+#include "Object.h"
 #include "ObjectMgr.h"
+#include "ObjectGuid.h"
+#include "Player.h"
+#include "Unit.h"
+#include "QuestDef.h"
 #include <numeric>
 #include <iomanip>
 
@@ -276,7 +285,8 @@ void WorldPosition::printWKT(vector<WorldPosition> points, ostringstream& out, u
 
 WorldPosition WorldPosition::getDisplayLocation() 
 { 
-    return offset(&sTravelNodeMap.getMapOffset(getMapId())); 
+    auto mapOffset = sTravelNodeMap.getMapOffset(getMapId());
+    return offset(&mapOffset);
 };
 
 AreaTableEntry const* WorldPosition::getArea()
@@ -1074,7 +1084,8 @@ bool QuestRelationTravelDestination::isActive(Player* bot) {
         //Do not try to hand-in dungeon/elite quests in instances without a group.
         if ((questTemplate->GetType() == QUEST_TYPE_ELITE || questTemplate->GetType() == QUEST_TYPE_DUNGEON) && !AI_VALUE(bool, "can fight boss"))
         {
-            if (!this->nearestPoint(&WorldPosition(bot))->isOverworld())
+            auto pos = WorldPosition(bot);
+            if (!this->nearestPoint(&pos)->isOverworld())
                 return false;
         }
     }
@@ -1125,7 +1136,8 @@ bool QuestObjectiveTravelDestination::isActive(Player* bot) {
         //Do not try to hand-in dungeon/elite quests in instances without a group.
         if (cInfo->Rank > CREATURE_ELITE_NORMAL)
         {
-            if (!this->nearestPoint(&WorldPosition(bot))->isOverworld() && !AI_VALUE(bool, "can fight boss"))
+            auto pos = WorldPosition(bot);
+            if (!this->nearestPoint(&pos)->isOverworld() && !AI_VALUE(bool, "can fight boss"))
                 return false;
             else if (!AI_VALUE(bool, "can fight elite"))
                 return false;
@@ -1138,14 +1150,16 @@ bool QuestObjectiveTravelDestination::isActive(Player* bot) {
     //Do not try to do dungeon/elite quests in instances without a group.
     if ((questTemplate->GetType() == QUEST_TYPE_ELITE || questTemplate->GetType() == QUEST_TYPE_DUNGEON || questTemplate->GetType() == QUEST_TYPE_RAID) && !AI_VALUE(bool, "can fight boss"))
     {
-        if (!this->nearestPoint(&WorldPosition(bot))->isOverworld())
+        auto pos = WorldPosition(bot);
+        if (!this->nearestPoint(&pos)->isOverworld())
             return false;
     }
 
     //Do not try to do pvp quests in bg's (no way to travel there). 
     if (questTemplate->GetType() == QUEST_TYPE_PVP)
     {
-        if (!this->nearestPoint(&WorldPosition(bot))->isOverworld())
+        auto pos = WorldPosition(bot);
+        if (!this->nearestPoint(&pos)->isOverworld())
             return false;
     }
 

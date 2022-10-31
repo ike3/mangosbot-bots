@@ -25,7 +25,7 @@
 #include "GuildAcceptAction.h"
 #include "AcceptBattleGroundInvitationAction.h"
 #include "PetitionSignAction.h"
-#include "BattlegroundJoinAction.h"
+#include "BattleGroundJoinAction.h"
 #include "SeeSpellAction.h"
 #include "ArenaTeamActions.h"
 

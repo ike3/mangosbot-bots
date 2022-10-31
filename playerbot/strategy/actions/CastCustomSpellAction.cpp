@@ -99,7 +99,7 @@ bool CastCustomSpellAction::Execute(Event& event)
     if (target != bot && !sServerFacade.IsInFront(bot, target, sPlayerbotAIConfig.sightDistance, CAST_ANGLE_IN_FRONT))
     {
         sServerFacade.SetFacingTo(bot, target);
-        ai->SetNextCheckDelay(sPlayerbotAIConfig.globalCoolDown);
+        SetDuration(sPlayerbotAIConfig.globalCoolDown);
         msg << "cast " << text;
         ai->HandleCommand(CHAT_MSG_WHISPER, msg.str(), *master);
         return true;
@@ -277,10 +277,12 @@ bool DisEnchantRandomItemAction::Execute(Event& event)
         if ((ai->HasRealPlayerMaster() || ai->IsInRealGuild()) && ObjectMgr::GetItemPrototype(item)->Quality > ITEM_QUALITY_UNCOMMON)
             return false;
 
-        bool used = CastCustomSpellAction::Execute(Event("disenchant random item", "13262 " + chat->formatQItem(item)));
-
+        Event disenchantEvent = Event("disenchant random item", "13262 " + chat->formatQItem(item));
+        const bool used = CastCustomSpellAction::Execute(disenchantEvent);
         if (used)
-            ai->SetNextCheckDelay(3.0 * IN_MILLISECONDS);
+        {
+            SetDuration(3000U); // 3s
+        }
 
         return used;
     }

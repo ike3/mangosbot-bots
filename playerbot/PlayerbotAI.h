@@ -264,8 +264,12 @@ public:
 	virtual ~PlayerbotAI();
 
     virtual void UpdateAI(uint32 elapsed, bool minimal = false);
-public:
-	virtual void UpdateAIInternal(uint32 elapsed, bool minimal = false);
+
+private:
+    void UpdateAIInternal(uint32 elapsed, bool minimal = false) override;
+
+public:	
+    static string BotStateToString(BotState state);
 	string HandleRemoteCommand(string command);
     void HandleCommand(uint32 type, const string& text, Player& fromPlayer);
     void QueueChatResponse(uint8 msgtype, ObjectGuid guid1, ObjectGuid guid2, std::string message, std::string chanName, std::string name);
@@ -308,7 +312,7 @@ public:
     bool PlaySound(uint32 emote);
     bool PlayEmote(uint32 emote);
     void Ping(float x, float y);
-    void PlayerbotAI::Poi(float x, float y, string icon_name = "This way", Player* player = nullptr, uint32 flags = 99, uint32 icon = 7 /* red flag */, uint32 icon_data = 0);
+    void Poi(float x, float y, string icon_name = "This way", Player* player = nullptr, uint32 flags = 99, uint32 icon = 7 /* red flag */, uint32 icon_data = 0);
     Item * FindPoison() const;
     Item * FindConsumable(uint32 displayId) const;
     Item * FindBandage() const;
@@ -419,6 +423,8 @@ public:
     bool IsInRealGuild();
     time_t GetCombatStartTime() { return combatStart; }
 
+    void SetActionDuration(const Action* action, uint32 delay);
+    
 protected:
 	Player* bot;
 	Player* master;
