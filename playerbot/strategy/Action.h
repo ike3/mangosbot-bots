@@ -77,6 +77,9 @@ namespace ai
 
         void setRelevance(float relevance1) { relevance = relevance1; };
         virtual float getRelevance() { return relevance; }
+
+        bool IsReaction() const { return reaction; }
+        void SetReaction(bool inReaction) { reaction = inReaction; }
         
     protected:
         void SetDuration(uint32 delay);
@@ -84,6 +87,7 @@ namespace ai
     protected:
         bool verbose;
         float relevance = 0;
+        bool reaction = false;
 	};
 
     class ActionNode

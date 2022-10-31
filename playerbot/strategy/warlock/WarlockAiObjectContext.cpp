@@ -4,6 +4,7 @@
 #include "WarlockAiObjectContext.h"
 #include "DpsWarlockStrategy.h"
 #include "GenericWarlockNonCombatStrategy.h"
+#include "WarlockReactionStrategy.h"
 #include "TankWarlockStrategy.h"
 #include "../generic/PullStrategy.h"
 #include "WarlockTriggers.h"
@@ -24,6 +25,7 @@ namespace ai
             StrategyFactoryInternal()
             {
                 creators["nc"] = &warlock::StrategyFactoryInternal::nc;
+                creators["react"] = &warlock::StrategyFactoryInternal::react;
                 creators["pull"] = &warlock::StrategyFactoryInternal::pull;
                 creators["aoe"] = &warlock::StrategyFactoryInternal::aoe;
                 creators["dps debuff"] = &warlock::StrategyFactoryInternal::dps_debuff;
@@ -35,6 +37,7 @@ namespace ai
         private:
             static Strategy* pet(PlayerbotAI* ai) { return new WarlockPetStrategy(ai); }
             static Strategy* nc(PlayerbotAI* ai) { return new GenericWarlockNonCombatStrategy(ai); }
+            static Strategy* react(PlayerbotAI* ai) { return new WarlockReactionStrategy(ai); }
             static Strategy* aoe(PlayerbotAI* ai) { return new DpsAoeWarlockStrategy(ai); }
             static Strategy* dps_debuff(PlayerbotAI* ai) { return new DpsWarlockDebuffStrategy(ai); }
             static Strategy* pull(PlayerbotAI* ai) { return new PullStrategy(ai, "shoot"); }

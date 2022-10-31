@@ -208,6 +208,9 @@ bool AcceptSummonAction::Execute(Event& event)
 
     WorldPacket response(CMSG_SUMMON_RESPONSE);
     response << summonerGuid;
+#if defined(MANGOSBOT_ONE) || defined(MANGOSBOT_TWO)
+    response << uint8(1);
+#endif
     bot->GetSession()->HandleSummonResponseOpcode(response);
     
     return true;

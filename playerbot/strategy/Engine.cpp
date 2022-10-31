@@ -564,6 +564,12 @@ Action* Engine::InitializeAction(ActionNode* actionNode)
         action = aiObjectContext->GetAction(actionNode->getName());
         actionNode->setAction(action);
     }
+
+    if (action != nullptr)
+    {
+        action->SetReaction(false);
+    }
+
     return action;
 }
 
