@@ -1558,7 +1558,7 @@ bool MovementAction::Flee(Unit *target)
         FleeManager manager(bot, fullDistance ? (ai->GetRange("flee") * 2) : ai->GetRange("flee"), bot->GetAngle(target) + M_PI);
         if (!manager.isUseful())
         {
-            succeeded = false;
+            return false;
         }
 
         if (!urand(0, 50) && ai->HasStrategy("emote", BotState::BOT_STATE_NON_COMBAT))
@@ -1573,8 +1573,9 @@ bool MovementAction::Flee(Unit *target)
         if (!manager.CalculateDestination(&rx, &ry, &rz))
         {
             ai->TellError("Nowhere to flee");
-            succeeded = false;
+            return false;
         }
+
 
         if(MoveTo(target->GetMapId(), rx, ry, rz))
         {
