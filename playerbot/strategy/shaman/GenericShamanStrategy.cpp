@@ -20,6 +20,7 @@ public:
         creators["chain heal on party"] = &chain_heal_on_party;
         creators["riptide on party"] = &riptide_on_party;
         creators["earth shock"] = &earth_shock;
+        creators["grace of air totem"] = &grace_of_air_totem;
     }
 private:
     static ActionNode* earth_shock(PlayerbotAI* ai)
@@ -90,6 +91,13 @@ private:
         return new ActionNode ("riptide on party",
             /*P*/ NULL,
             /*A*/ NextAction::array(0, new NextAction("healing wave on party"), NULL),
+            /*C*/ NULL);
+    }
+    static ActionNode* grace_of_air_totem(PlayerbotAI* ai)
+    {
+        return new ActionNode ("grace of air totem",
+            /*P*/ NULL,
+            /*A*/ NextAction::array(0, new NextAction("wrath of air totem"), NULL),
             /*C*/ NULL);
     }
 };
