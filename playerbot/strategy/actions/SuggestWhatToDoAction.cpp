@@ -15,8 +15,14 @@ using namespace ai;
 map<string, int> SuggestWhatToDoAction::instances;
 map<string, int> SuggestWhatToDoAction::factions;
 
-SuggestWhatToDoAction::SuggestWhatToDoAction(PlayerbotAI* ai, string name) : InventoryAction(ai, name)
+SuggestWhatToDoAction::SuggestWhatToDoAction(PlayerbotAI* ai, string name)
+    : InventoryAction{ ai, name }
+    , _locale{ sConfig.GetIntDefault("DBC.Locale", 0 /*LocaleConstant::LOCALE_enUS*/) }
 {
+    // -- In case we're using auto detect on config file^M
+    if (_locale == 255)
+        _locale = static_cast<int32>(LocaleConstant::LOCALE_enUS);
+
     suggestions.push_back(&SuggestWhatToDoAction::instance);
     suggestions.push_back(&SuggestWhatToDoAction::specificQuest);
     suggestions.push_back(&SuggestWhatToDoAction::grindMaterials);
@@ -24,7 +30,7 @@ SuggestWhatToDoAction::SuggestWhatToDoAction(PlayerbotAI* ai, string name) : Inv
     suggestions.push_back(&SuggestWhatToDoAction::something);
 }
 
-bool SuggestWhatToDoAction::Execute(Event event)
+bool SuggestWhatToDoAction::Execute(Event& event)
 {
     if (!sRandomPlayerbotMgr.IsRandomBot(bot) || bot->GetGroup() || bot->GetInstanceId())
         return false;
@@ -90,7 +96,7 @@ void SuggestWhatToDoAction::instance()
     vector<string> allowedInstances;
     for (map<string, int>::iterator i = instances.begin(); i != instances.end(); ++i)
     {
-        if (bot->GetLevel() >= i->second) allowedInstances.push_back(i->first);
+        if ((int)bot->GetLevel() >= i->second) allowedInstances.push_back(i->first);
     }
 
     if (allowedInstances.empty()) return;
@@ -238,7 +244,7 @@ void SuggestWhatToDoAction::grindReputation()
 
     vector<string> allowedFactions;
     for (map<string, int>::iterator i = factions.begin(); i != factions.end(); ++i) {
-        if (bot->GetLevel() >= i->second) allowedFactions.push_back(i->first);
+        if ((int)bot->GetLevel() >= i->second) allowedFactions.push_back(i->first);
     }
 
     if (allowedFactions.empty()) return;
@@ -267,8 +273,8 @@ void SuggestWhatToDoAction::something()
         return;
 
     ostringstream out;
-    //out << "|cffb04040" << entry->area_name[0] << "|r";
-    out << entry->area_name[0];
+    //out << "|cffb04040" << entry->area_name[_locale] << "|r";
+    out << entry->area_name[_locale];
     placeholders["%zone"] = out.str();
 
     spam(BOT_TEXT2("suggest_something", placeholders), urand(0, 1) ? 0x18 : 0, !urand(0, 2), !urand(0, 3));
@@ -302,12 +308,12 @@ void SuggestWhatToDoAction::spam(string msg, uint8 flags, bool worldChat, bool g
         if (channel->ChannelID == 24)
 #endif
         {
-            string chanName = channel->pattern[0];
+            string chanName = channel->pattern[_locale];
             chn = cMgr->GetChannel(chanName, bot);
         }
         else
         {
-            snprintf(channelName, 100, channel->pattern[0], current_zone->area_name[0]);
+            snprintf(channelName, 100, channel->pattern[_locale], current_zone->area_name[_locale]);
             chn = cMgr->GetChannel(channelName, bot);
         }
 
@@ -392,7 +398,7 @@ SuggestTradeAction::SuggestTradeAction(PlayerbotAI* ai) : SuggestWhatToDoAction(
 {
 }
 
-bool SuggestTradeAction::Execute(Event event)
+bool SuggestTradeAction::Execute(Event& event)
 {
     if (!sRandomPlayerbotMgr.IsRandomBot(bot) || bot->GetGroup() || bot->GetInstanceId())
         return false;

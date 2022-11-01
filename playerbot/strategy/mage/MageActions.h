@@ -7,6 +7,8 @@ namespace ai
 {
     BUFF_ACTION(CastFireWardAction, "fire ward");
     BUFF_ACTION(CastFrostWardAction, "frost ward");
+    BUFF_ACTION(CastBlinkAction, "blink");
+    SPELL_ACTION(CastIceLanceAction, "ice lance");
 
     class CastFireballAction : public CastSpellAction
     {
@@ -18,6 +20,7 @@ namespace ai
     {
     public:
         CastScorchAction(PlayerbotAI* ai) : CastSpellAction(ai, "scorch") {}
+        virtual bool isUseful() { return GetTarget() && !ai->HasAura("fire vulnerability", GetTarget(), true); }
     };
 
     class CastFireBlastAction : public CastSpellAction
@@ -57,15 +60,7 @@ namespace ai
         CastFlamestrikeAction(PlayerbotAI* ai) : CastSpellAction(ai, "flamestrike") {}
     };
 
-    class CastFrostNovaAction : public CastSpellAction
-    {
-    public:
-        CastFrostNovaAction(PlayerbotAI* ai) : CastSpellAction(ai, "frost nova") {}
-        virtual bool isUseful()
-        {
-            return sServerFacade.IsDistanceLessOrEqualThan(AI_VALUE2(float, "distance", GetTargetName()), 10.0f);
-        }
-    };
+    SPELL_ACTION_U(CastFrostNovaAction, "frost nova", sServerFacade.IsDistanceLessOrEqualThan(AI_VALUE2(float, "distance", GetTargetName()), 10.0f));
 
 	class CastFrostboltAction : public CastSpellAction
 	{
@@ -77,7 +72,7 @@ namespace ai
 	{
 	public:
 		CastBlizzardAction(PlayerbotAI* ai) : CastSpellAction(ai, "blizzard") {}
-        virtual ActionThreatType getThreatType() { return ACTION_THREAT_AOE; }
+        virtual ActionThreatType getThreatType() { return ActionThreatType::ACTION_THREAT_AOE; }
         virtual bool isUseful() { return CastSpellAction::isUseful() && ai->GetCombatStartTime() && (time(0) - ai->GetCombatStartTime()) > 10; }
 	};
 
@@ -150,6 +145,9 @@ namespace ai
 		CastIceBlockAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "ice block") {}
 	};
 
+    BUFF_ACTION(CastIceBarrierAction, "ice barrier");
+    BUFF_ACTION(CastManaShieldAction, "mana shield");
+
     class CastMoltenArmorAction : public CastBuffSpellAction
     {
     public:
@@ -178,6 +176,17 @@ namespace ai
     {
     public:
         CastPolymorphAction(PlayerbotAI* ai) : CastCrowdControlSpellAction(ai, "polymorph") {}
+        virtual bool Execute(Event& event)
+        {
+            vector<string> polySpells;
+            polySpells.push_back("polymorph");
+            if (bot->HasSpell(28271))
+                polySpells.push_back("polymorph: turtle");
+            if (bot->HasSpell(28272))
+                polySpells.push_back("polymorph: pig");
+
+            return ai->CastSpell(polySpells[urand(0, polySpells.size() - 1)], GetTarget());
+        }
     };
 
 	class CastSpellstealAction : public CastSpellAction
@@ -202,6 +211,10 @@ namespace ai
 	{
 	public:
 	    CastBlastWaveAction(PlayerbotAI* ai) : CastSpellAction(ai, "blast wave") {}
+        virtual bool isUseful()
+        {
+            return sServerFacade.IsDistanceLessOrEqualThan(AI_VALUE2(float, "distance", GetTargetName()), 10.0f);
+        }
 	};
 
 	class CastInvisibilityAction : public CastBuffSpellAction
@@ -234,4 +247,8 @@ namespace ai
     public:
         CastPresenceOfMindAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "presence of mind") {}
     };
+
+    SPELL_ACTION_U(CastArcaneExplosionAction, "arcane explosion", sServerFacade.IsDistanceLessOrEqualThan(AI_VALUE2(float, "distance", GetTargetName()), 10.0f));
+    SPELL_ACTION(CastConeOfColdAction, "cone of cold");
+    BUFF_ACTION(CastSummonWaterElementalAction, "summon water elemental");
 }

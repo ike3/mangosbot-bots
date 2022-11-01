@@ -49,7 +49,7 @@ public:
     {
         ItemUsage usage = context->GetValue<ItemUsage>("item usage", item->GetEntry())->Get();
 
-        if (usage != ITEM_USAGE_VENDOR && usage != ITEM_USAGE_AH)
+        if (usage != ITEM_USAGE_VENDOR)
             return true;
 
         return SellItemsVisitor::Visit(item);
@@ -57,7 +57,7 @@ public:
 };
 
 
-bool SellAction::Execute(Event event)
+bool SellAction::Execute(Event& event)
 {
     string text = event.getParam();
 
@@ -121,7 +121,7 @@ void SellAction::Sell(Item* item)
 
         out << "Selling " << chat->formatItem(item->GetProto());
         bot->PlayDistanceSound(120);
-        ai->TellMaster(out);
+        ai->TellMaster(out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
         break;
     }
 }

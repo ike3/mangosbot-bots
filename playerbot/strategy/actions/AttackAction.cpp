@@ -8,17 +8,21 @@
 
 using namespace ai;
 
-bool AttackAction::Execute(Event event)
+bool AttackAction::Execute(Event& event)
 {
     Unit* target = GetTarget();
 
-    if (!target)
+    if (!target || !target->IsInWorld() || target->GetMapId() != bot->GetMapId())
         return false;
+
+    Unit* victim = bot->GetVictim();
+    //if (victim && victim->IsPlayer() && victim->GetObjectGuid() == target->GetObjectGuid())
+    //    return false;
 
     return Attack(target);
 }
 
-bool AttackMyTargetAction::Execute(Event event)
+bool AttackMyTargetAction::Execute(Event& event)
 {
     Player* master = GetMaster();
     if (!master)
@@ -104,7 +108,7 @@ bool AttackAction::Attack(Unit* target)
         if (creatureAI)
         {
 #ifdef CMANGOS
-            creatureAI->SetReactState(REACT_PASSIVE);
+            creatureAI->SetReactState(REACT_DEFENSIVE);
 #endif
 #ifdef MANGOS
             pet->GetCharmInfo()->SetCommandState(COMMAND_ATTACK);
@@ -117,7 +121,7 @@ bool AttackAction::Attack(Unit* target)
         sServerFacade.SetFacingTo(bot, target);
 
     bool attacked = bot->Attack(target, !ai->IsRanged(bot));
-    ai->ChangeEngine(BOT_STATE_COMBAT);
+    ai->ChangeEngine(BotState::BOT_STATE_COMBAT);
 
     return attacked;
 }
@@ -127,7 +131,7 @@ bool AttackDuelOpponentAction::isUseful()
     return AI_VALUE(Unit*, "duel target");
 }
 
-bool AttackDuelOpponentAction::Execute(Event event)
+bool AttackDuelOpponentAction::Execute(Event& event)
 {
     return Attack(AI_VALUE(Unit*, "duel target"));
 }

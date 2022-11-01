@@ -152,6 +152,7 @@ uint32 SpellIdValue::Calculate()
         for (set<uint32>::reverse_iterator i = spellIds.rbegin(); i != spellIds.rend(); ++i)
         {
             if (!highestSpellId) highestSpellId = *i;
+            if (sSpellMgr.IsSpellHigherRankOfSpell(*i, highestSpellId)) highestSpellId = *i;
             if (saveMana == rank) return *i;
             lowestSpellId = *i;
             rank++;
@@ -198,12 +199,11 @@ uint32 VehicleSpellIdValue::Calculate()
 
     int loc = bot->GetSession()->GetSessionDbcLocale();
 
-    Creature* creature = static_cast<Creature*>(vehicle);
-
+    //Creature* creature = static_cast<Creature*>(vehicle);
+    std::vector<uint32> spells = vehicle->GetCharmSpells();
     for (uint32 x = 0; x < CREATURE_MAX_SPELLS; ++x)
     {
-        CharmSpellEntry* cspell = creature->GetCharmInfo()->GetCharmSpell(x);
-        uint32 spellId = cspell->GetAction();
+        uint32 spellId = spells[x];
 
         if (spellId == 2)
             continue;

@@ -19,7 +19,7 @@ class BGJoinAction : public Action
 {
 public:
     BGJoinAction(PlayerbotAI* ai, string name = "bg join") : Action(ai, name) {}
-    virtual bool Execute(Event event);
+    virtual bool Execute(Event& event);
     virtual bool isUseful();
     virtual bool canJoinBg(BattleGroundQueueTypeId queueTypeId, BattleGroundBracketId bracketId);
     virtual bool shouldJoinBg(BattleGroundQueueTypeId queueTypeId, BattleGroundBracketId bracketId);
@@ -43,14 +43,14 @@ class BGLeaveAction : public Action
 {
 public:
     BGLeaveAction(PlayerbotAI* ai, string name = "bg leave") : Action(ai) {}
-    virtual bool Execute(Event event);
+    virtual bool Execute(Event& event);
 };
 
 class BGStatusAction : public Action
 {
 public:
     BGStatusAction(PlayerbotAI* ai) : Action(ai, "bg status") {}
-    virtual bool Execute(Event event);
+    virtual bool Execute(Event& event);
     virtual bool isUseful();
 };
 
@@ -58,6 +58,6 @@ class BGStatusCheckAction : public Action
 {
 public:
     BGStatusCheckAction(PlayerbotAI* ai, string name = "bg status check") : Action(ai, name) {}
-    virtual bool Execute(Event event);
+    virtual bool Execute(Event& event);
     virtual bool isUseful();
 };

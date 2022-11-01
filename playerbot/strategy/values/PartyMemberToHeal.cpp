@@ -55,7 +55,8 @@ Unit* PartyMemberToHeal::Calculate()
 #ifdef CMANGOS
             target->GetHealthPercent() < 100)
 #endif
-            needHeals.push_back(target);
+            if (Check(target))
+                needHeals.push_back(target);
     }
 
     Group* group = bot->GetGroup();
@@ -131,8 +132,25 @@ bool PartyMemberToHeal::CanHealPet(Pet* pet)
 bool PartyMemberToHeal::Check(Unit* player)
 {
     bool isBg = bot->InBattleGround();
-    return player && player->GetObjectGuid() != bot->GetObjectGuid() && player->GetMapId() == bot->GetMapId() && player->IsInWorld() &&
-        sServerFacade.GetDistance2d(bot, player) < (isBg ? ai->GetRange("spell") : player->IsPlayer() && ai->IsTank((Player*)player)) ? 60.0f : 50.0f;
+
+    float maxDist = isBg ? ai->GetRange("spell") : (player->IsPlayer() && ai->IsTank((Player*)player)) ? 60.0f : 50.0f;
+
+    if (!player)
+        return false;
+
+    if (player->GetObjectGuid() == bot->GetObjectGuid())
+        return false;
+
+    if (player->GetMapId() != bot->GetMapId())
+        return false;
+
+    if (!player->IsInWorld())
+        return false;
+                                                     
+    if (sServerFacade.GetDistance2d(bot, player) > maxDist)
+        return false;
+
+    return true;
 }
 
 Unit* PartyMemberToProtect::Calculate()
@@ -163,6 +181,9 @@ Unit* PartyMemberToProtect::Calculate()
             continue;
 
         if (pVictim == bot)
+            continue;
+
+        if (sServerFacade.GetDistance2d(pVictim, bot) > 30.0f)
             continue;
 
         float attackDistance = isRanged ? 30.0f : 10.0f;

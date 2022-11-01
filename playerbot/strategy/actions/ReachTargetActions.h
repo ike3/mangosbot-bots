@@ -14,7 +14,7 @@ namespace ai
 		{
             this->distance = distance;
         }
-        virtual bool Execute(Event event)
+        virtual bool Execute(Event& event)
 		{
             Unit* target = AI_VALUE(Unit*, GetTargetName());
             if (!target)
@@ -26,15 +26,25 @@ namespace ai
 
             if (distance == ATTACK_DISTANCE)
             {
-                return ChaseTo(target, 0.0f, GetFollowAngle());
+                return ChaseTo(target, 0.0f, bot->GetAngle(target));
             }
             else
             {
+                float distanceToTarget = sServerFacade.GetDistance2d(bot, target);
+                if (distanceToTarget > sPlayerbotAIConfig.sightDistance)
+                    return false;
+
                 combatReach = bot->GetCombinedCombatReach(target, false);
                 bool inLos = bot->IsWithinLOSInMap(target, true);
                 bool isFriend = sServerFacade.IsFriendlyTo(bot, target);
-                float chaseDist = inLos ? distance : isFriend ? distance / 2 : distance;
-                return ChaseTo(target, (chaseDist - sPlayerbotAIConfig.contactDistance) * 0.8, bot->GetAngle(target));
+                float chaseDist = inLos ? distance : isFriend ? std::min(distanceToTarget * 0.9f, distance) : distance;
+                float coeff = 0.8f;
+                if (!isFriend)
+                    coeff = 1.0f;
+                if (inLos || isFriend)
+                    return MoveNear(target, chaseDist);
+
+                return ChaseTo(target, (chaseDist - sPlayerbotAIConfig.contactDistance) * coeff, bot->GetAngle(target));
             }
         }
         virtual bool isUseful()

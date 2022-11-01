@@ -8,7 +8,7 @@ using namespace ai;
 
 vector<string> split(const string &s, char delim);
 
-bool GiveItemAction::Execute(Event event)
+bool GiveItemAction::Execute(Event& event)
 {
     Unit* target = GetTarget();
     if (!target) return false;
@@ -43,7 +43,7 @@ bool GiveItemAction::Execute(Event event)
 
             ostringstream out;
             out << "Got " << chat->formatItem(item->GetProto(), item->GetCount()) << " from " << bot->GetName();
-            receiverAi->TellMasterNoFacing(out.str());
+            receiverAi->TellMasterNoFacing(out.str(), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
         }
         else
         {

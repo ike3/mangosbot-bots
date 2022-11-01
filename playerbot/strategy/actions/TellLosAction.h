@@ -7,7 +7,7 @@ namespace ai
     class TellLosAction : public Action {
     public:
         TellLosAction(PlayerbotAI* ai) : Action(ai, "los") {}
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
 
     private:
         void ListUnits(string title, list<ObjectGuid> units);

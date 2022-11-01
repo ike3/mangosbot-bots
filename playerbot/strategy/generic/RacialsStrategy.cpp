@@ -44,9 +44,9 @@ void RacialsStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         "will of the forsaken",
         NextAction::array(0, new NextAction("will of the forsaken", 71.0f), NULL)));
 
-    triggers.push_back(new TriggerNode(
+    /*triggers.push_back(new TriggerNode(
         "shadowmeld",
-        NextAction::array(0, new NextAction("shadowmeld", 71.0f), NULL)));
+        NextAction::array(0, new NextAction("shadowmeld", 71.0f), NULL)));*/
 
     triggers.push_back(new TriggerNode(
         "berserking",

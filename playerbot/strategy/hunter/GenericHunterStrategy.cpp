@@ -14,7 +14,6 @@ public:
         creators["boost"] = &rapid_fire;
         creators["aspect of the pack"] = &aspect_of_the_pack;
         creators["wing clip"] = &wing_clip;
-        creators["raptor strike"] = &raptor_strike;
         creators["freezing trap"] = &freezing_trap;
     }
 private:
@@ -39,13 +38,6 @@ private:
             /*A*/ NextAction::array(0, new NextAction("raptor strike"), NULL),
             /*C*/ NextAction::array(0, new NextAction("flee"), NULL));
     }
-    static ActionNode* raptor_strike(PlayerbotAI* ai)
-    {
-        return new ActionNode("raptor strike",
-            /*P*/ NextAction::array(0, new NextAction("melee"), NULL),
-            /*A*/ NULL,
-            /*C*/ NULL);
-    }
     ACTION_NODE_A(freezing_trap, "freezing trap", "remove feign death");
 };
 
@@ -59,8 +51,12 @@ void GenericHunterStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
     CombatStrategy::InitTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
-        "enemy is close",
-        NextAction::array(0, new NextAction("wing clip", ACTION_HIGH), NULL)));
+        "enemy five yards",
+        NextAction::array(0, new NextAction("wing clip", 61.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "enemy ten yards",
+        NextAction::array(0, new NextAction("freezing trap", 60.0f), NULL)));
 
     /*triggers.push_back(new TriggerNode(
         "enemy is close",
@@ -68,27 +64,47 @@ void GenericHunterStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "medium threat",
-        NextAction::array(0, new NextAction("feign death", 35.0f), new NextAction("shadowmeld", 34.0f), NULL)));
+        NextAction::array(0, new NextAction("feign death", ACTION_INTERRUPT + 1), new NextAction("shadowmeld", ACTION_INTERRUPT), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "enemy is close",
+        NextAction::array(0, new NextAction("feign death", 63.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
         "feign death",
-        NextAction::array(0, new NextAction("freezing trap", ACTION_INTERRUPT), NULL)));
+        NextAction::array(0, new NextAction("remove feign death", 62.0f), new NextAction("freezing trap", 61.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
         "hunters pet low health",
-        NextAction::array(0, new NextAction("mend pet", ACTION_HIGH + 2), NULL)));
+        NextAction::array(0, new NextAction("mend pet", ACTION_HIGH), NULL)));
 
-    triggers.push_back(new TriggerNode(
+    /*triggers.push_back(new TriggerNode(
         "switch to melee",
         NextAction::array(0, new NextAction("switch to melee", ACTION_HIGH + 1), NULL)));
 
     triggers.push_back(new TriggerNode(
         "switch to ranged",
-        NextAction::array(0, new NextAction("switch to ranged", ACTION_HIGH), NULL)));
+        NextAction::array(0, new NextAction("switch to ranged", ACTION_HIGH), NULL)));*/
+
+    /*triggers.push_back(new TriggerNode(
+        "no ammo",
+        NextAction::array(0, new NextAction("switch to melee", ACTION_HIGH + 1), new NextAction("say::no ammo", ACTION_HIGH), NULL)));*/
 
     triggers.push_back(new TriggerNode(
-        "no ammo",
-        NextAction::array(0, new NextAction("switch to melee", ACTION_HIGH + 1), new NextAction("say::no ammo", ACTION_HIGH), NULL)));
+        "light aoe",
+        NextAction::array(0, new NextAction("frost trap", ACTION_HIGH + 1), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "light aoe",
+        NextAction::array(0, new NextAction("explosive trap", ACTION_HIGH + 1), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "rapid fire",
+        NextAction::array(0, new NextAction("rapid fire", 16.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "bestial wrath",
+        NextAction::array(0, new NextAction("bestial wrath", 16.0f), NULL)));
 }
 
 NextAction** HunterBoostStrategy::getDefaultActions()

@@ -9,7 +9,7 @@
 using namespace std;
 using namespace ai;
 
-bool GuildBankAction::Execute(Event event)
+bool GuildBankAction::Execute(Event& event)
 {
 #ifndef MANGOSBOT_ZERO
     string text = event.getParam();

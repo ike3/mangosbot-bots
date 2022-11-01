@@ -42,4 +42,22 @@ namespace ai
     public:
         CastBackstabAction(PlayerbotAI* ai) : CastComboAction(ai, "backstab") {}
     };
+
+	class CastHemorrhageAction : public CastComboAction
+	{
+	public:
+		CastHemorrhageAction(PlayerbotAI* ai) : CastComboAction(ai, "hemorrhage") {}
+	};
+
+	class CastGhostlyStrikeAction : public CastComboAction
+	{
+	public:
+		CastGhostlyStrikeAction(PlayerbotAI* ai) : CastComboAction(ai, "ghostly strike") {}
+		virtual bool isUseful()
+		{
+			return CastComboAction::isUseful() && GetTarget() && (GetTarget()->getClass() == CLASS_WARRIOR || GetTarget()->getClass() == CLASS_ROGUE);
+		}
+	};
+
+	SPELL_ACTION(CastPremeditationAction, "premeditation");
 }

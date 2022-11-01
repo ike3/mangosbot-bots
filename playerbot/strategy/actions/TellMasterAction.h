@@ -8,7 +8,7 @@ namespace ai
     public:
         TellMasterAction(PlayerbotAI* ai, string text) : Action(ai, "tell master"), text(text) {}
 
-        virtual bool Execute(Event event)
+        virtual bool Execute(Event& event)
         {
             ai->TellMaster(text);
             return true;
@@ -22,7 +22,7 @@ namespace ai
     public:
         OutOfReactRangeAction(PlayerbotAI* ai) : MovementAction(ai, "tell out of react range") {}
 
-        virtual bool Execute(Event event)
+        virtual bool Execute(Event& event)
         {
             ai->TellMaster(BOT_TEXT("wait_travel_close"));
             return true;

@@ -9,7 +9,7 @@
 
 using namespace ai;
 
-bool UseItemAction::Execute(Event event)
+bool UseItemAction::Execute(Event& event)
 {
    string name = event.getParam();
    if (name.empty())
@@ -57,7 +57,7 @@ bool UseItemAction::UseGameObject(ObjectGuid guid)
 
    go->Use(bot);
    ostringstream out; out << "Using " << chat->formatGameobject(go);
-   ai->TellMasterNoFacing(out.str());
+   ai->TellMasterNoFacing(out.str(), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
    return true;
 }
 
@@ -118,7 +118,7 @@ bool UseItemAction::UseItemAuto(Item* item)
     packet << targetFlag;
     packet.appendPackGUID(bot->GetObjectGuid());
 
-    ai->SetNextCheckDelay(sPlayerbotAIConfig.globalCoolDown);
+    SetDuration(sPlayerbotAIConfig.globalCoolDown);
     if (proto->Class == ITEM_CLASS_CONSUMABLE && (proto->SubClass == ITEM_SUBCLASS_FOOD || proto->SubClass == ITEM_SUBCLASS_CONSUMABLE) &&
         (isFood || isDrink))
     {
@@ -146,11 +146,13 @@ bool UseItemAction::UseItemAuto(Item* item)
             p = hp;
             TellConsumableUse(item, "Eating", p);
         }
-        if (!bot->IsInCombat() && !bot->InBattleGround())
-            ai->SetNextCheckDelay(27000.0f * (100 - p) / 100.0f);
 
-        if (!bot->IsInCombat() && bot->InBattleGround())
-            ai->SetNextCheckDelay(20000.0f * (100 - p) / 100.0f);
+        if(!bot->IsInCombat())
+        {
+            const float multiplier = bot->InBattleGround() ? 20000.0f : 27000.0f;
+            const float duration = multiplier * ((100 - p) / 100.0f);
+            SetDuration(duration);
+        }
     }
 
     bot->GetSession()->HandleUseItemOpcode(packet);
@@ -267,7 +269,7 @@ bool UseItemAction::UseItem(Item* item, ObjectGuid goGuid, Item* itemTarget, Uni
       {
          bool fit = SocketItem(itemTarget, item) || SocketItem(itemTarget, item, true);
          if (!fit)
-            ai->TellMaster("Socket does not fit");
+            ai->TellMaster("Socket does not fit", PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
          return fit;
       }
       else
@@ -311,6 +313,33 @@ bool UseItemAction::UseItem(Item* item, ObjectGuid goGuid, Item* itemTarget, Uni
        }
    }
 
+   if (unitTarget)
+   {
+       uint32 spellid = 0;
+       for (int i = 0; i < MAX_ITEM_PROTO_SPELLS; ++i)
+       {
+           if (item->GetProto()->Spells[i].SpellTrigger == ITEM_SPELLTRIGGER_ON_USE)
+           {
+               spellid = item->GetProto()->Spells[i].SpellId;
+               break;
+           }
+       }
+
+       if (SpellEntry const* spellInfo = sSpellTemplate.LookupEntry<SpellEntry>(spellid))
+       {
+           if (spellInfo->Targets & TARGET_FLAG_DEST_LOCATION)
+           {
+               targetFlag = TARGET_FLAG_DEST_LOCATION;
+               Position pos = unitTarget->GetPosition();
+               SpellCastTargets targets;
+               targets.setDestination(pos.x, pos.y, pos.z);
+               packet << targetFlag;
+               targets.write(packet);
+               targetSelected = true;
+           }
+       }
+   }
+
    if (uint32 questid = item->GetProto()->StartQuest)
    {
       Quest const* qInfo = sObjectMgr.GetQuestTemplate(questid);
@@ -322,7 +351,7 @@ bool UseItemAction::UseItem(Item* item, ObjectGuid goGuid, Item* itemTarget, Uni
          packet << uint32(0);
          bot->GetSession()->HandleQuestgiverAcceptQuestOpcode(packet);
          ostringstream out; out << "Got quest " << chat->formatQuest(qInfo);
-         ai->TellMasterNoFacing(out.str());
+         ai->TellMasterNoFacing(out.str(), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
          return true;
       }
    }
@@ -333,7 +362,7 @@ bool UseItemAction::UseItem(Item* item, ObjectGuid goGuid, Item* itemTarget, Uni
    if (sServerFacade.isMoving(bot))
    {
        ai->StopMoving();
-       ai->SetNextCheckDelay(sPlayerbotAIConfig.globalCoolDown);
+       SetDuration(sPlayerbotAIConfig.globalCoolDown);
       return false;
    }
 
@@ -394,8 +423,8 @@ bool UseItemAction::UseItem(Item* item, ObjectGuid goGuid, Item* itemTarget, Uni
    if (!spellId)
        return false;
 
-   ai->SetNextCheckDelay(sPlayerbotAIConfig.globalCoolDown);
-   ai->TellMasterNoFacing(out.str());
+   SetDuration(sPlayerbotAIConfig.globalCoolDown);
+   ai->TellMasterNoFacing(out.str(), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
 
    bot->GetSession()->HandleUseItemOpcode(packet);
    return true;
@@ -407,7 +436,7 @@ void UseItemAction::TellConsumableUse(Item* item, string action, float percent)
     out << action << " " << chat->formatItem(item->GetProto());
     if ((int)item->GetProto()->Stackable > 1) out << "/x" << item->GetCount();
     out << " (" << round(percent) << "%)";
-    ai->TellMasterNoFacing(out.str());
+    ai->TellMasterNoFacing(out.str(), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
 }
 
 #ifndef MANGOSBOT_ZERO
@@ -461,7 +490,7 @@ bool UseItemAction::SocketItem(Item* item, Item* gem, bool replace)
    {
       ostringstream out; out << "Socketing " << chat->formatItem(item->GetProto());
       out << " with " << chat->formatItem(gem->GetProto());
-      ai->TellMaster(out);
+      ai->TellMaster(out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
 
       bot->GetSession()->HandleSocketOpcode(*packet);
    }
@@ -479,19 +508,28 @@ bool UseSpellItemAction::isUseful()
    return AI_VALUE2(bool, "spell cast useful", getName());
 }
 
-bool UseHearthStone::Execute(Event event)
+bool UseHearthStone::Execute(Event& event)
 {
     if (bot->IsMoving())
     {
         ai->StopMoving();
     }
-    bool used = UseItemAction::Execute(event);
 
+    if (bot->IsMounted())
+    {
+        if (bot->IsFlying() && WorldPosition(bot).currentHeight() > 10.0f)
+            return false;
+
+        WorldPacket emptyPacket;
+        bot->GetSession()->HandleCancelMountAuraOpcode(emptyPacket);
+    }
+
+    const bool used = UseItemAction::Execute(event);
     if (used)
     {
         RESET_AI_VALUE(bool, "combat::self target");
         RESET_AI_VALUE(WorldPosition, "current position");
-        ai->SetNextCheckDelay(10 * IN_MILLISECONDS);
+        SetDuration(10000U); // 10s
     }
 
     return used;
@@ -502,12 +540,10 @@ bool UseRandomRecipe::isUseful()
    return !bot->IsInCombat() && !ai->HasActivePlayerMaster() && !bot->InBattleGround();
 }
 
-bool UseRandomRecipe::Execute(Event event)
+bool UseRandomRecipe::Execute(Event& event)
 {
     list<Item*> recipes = AI_VALUE2(list<Item*>, "inventory items", "recipe");   
-
     string recipeName = "";
-
     for (auto& recipe : recipes)
     {
         recipeName = recipe->GetProto()->Name1;
@@ -516,10 +552,12 @@ bool UseRandomRecipe::Execute(Event event)
     if (recipeName.empty())
         return false;
 
-    bool used = UseItemAction::Execute(Event(name,recipeName));
-
+    Event useItemEvent = Event(name, recipeName);
+    const bool used = UseItemAction::Execute(useItemEvent);
     if (used)
-        ai->SetNextCheckDelay(3.0 * IN_MILLISECONDS);
+    {
+        SetDuration(3000U); // 3s
+    }
 
     return used;
 }
@@ -529,20 +567,16 @@ bool UseRandomQuestItem::isUseful()
     return !ai->HasActivePlayerMaster() && !bot->InBattleGround() && !bot->IsTaxiFlying();
 }
 
-bool UseRandomQuestItem::Execute(Event event)
+bool UseRandomQuestItem::Execute(Event& event)
 {
     Unit* unitTarget = nullptr;
     ObjectGuid goTarget = ObjectGuid();
 
     list<Item*> questItems = AI_VALUE2(list<Item*>, "inventory items", "quest");
-
-    Item* item = nullptr;
-    uint32 delay = 0;
-
     if (questItems.empty())
         return false;
 
-
+    Item* item = nullptr;
     for (uint8 i = 0; i< 5;i++)
     {
         auto itr = questItems.begin();
@@ -613,10 +647,11 @@ bool UseRandomQuestItem::Execute(Event event)
     if (!goTarget && !unitTarget)
         return false;
 
-    bool used = UseItem(item, goTarget, nullptr, unitTarget);
-
+    const bool used = UseItem(item, goTarget, nullptr, unitTarget);
     if (used)
-        ai->SetNextCheckDelay(delay);
+    {
+        SetDuration(sPlayerbotAIConfig.globalCoolDown);
+    }
 
     return used;
 }

@@ -81,7 +81,7 @@ void BattlegroundStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("bg move to objective", 1.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "often",
+        "random",
         NextAction::array(0, new NextAction("bg check objective", 10.0f), NULL)));
 
     /*triggers.push_back(new TriggerNode(
@@ -134,9 +134,9 @@ void IsleStrategy::InitTriggers(std::list<TriggerNode*>& triggers)
         "timer",
         NextAction::array(0, new NextAction("enter vehicle", 85.0f), NULL)));
 
-    triggers.push_back(new TriggerNode(
+    /*triggers.push_back(new TriggerNode(
         "random",
-        NextAction::array(0, new NextAction("leave vehicle", 80.0f), NULL)));
+        NextAction::array(0, new NextAction("leave vehicle", 80.0f), NULL)));*/
 
     triggers.push_back(new TriggerNode(
         "in vehicle",

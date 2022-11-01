@@ -3,6 +3,7 @@
 #include "ShamanActions.h"
 #include "ShamanAiObjectContext.h"
 #include "ShamanNonCombatStrategy.h"
+#include "ShamanReactionStrategy.h"
 #include "HealShamanStrategy.h"
 #include "MeleeShamanStrategy.h"
 #include "ShamanTriggers.h"
@@ -27,6 +28,8 @@ namespace ai
             StrategyFactoryInternal()
             {
                 creators["nc"] = &shaman::StrategyFactoryInternal::nc;
+                creators["react"] = &shaman::StrategyFactoryInternal::react;
+                creators["totems"] = &shaman::StrategyFactoryInternal::totems;
                 creators["melee aoe"] = &shaman::StrategyFactoryInternal::melee_aoe;
                 creators["caster aoe"] = &shaman::StrategyFactoryInternal::caster_aoe;
                 creators["cure"] = &shaman::StrategyFactoryInternal::cure;
@@ -34,6 +37,8 @@ namespace ai
 
         private:
             static Strategy* nc(PlayerbotAI* ai) { return new ShamanNonCombatStrategy(ai); }
+            static Strategy* react(PlayerbotAI* ai) { return new ShamanReactionStrategy(ai); }
+            static Strategy* totems(PlayerbotAI* ai) { return new TotemsShamanStrategy(ai); }
             static Strategy* melee_aoe(PlayerbotAI* ai) { return new MeleeAoeShamanStrategy(ai); }
             static Strategy* caster_aoe(PlayerbotAI* ai) { return new CasterAoeShamanStrategy(ai); }
             static Strategy* cure(PlayerbotAI* ai) { return new ShamanCureStrategy(ai); }
@@ -256,9 +261,11 @@ namespace ai
                 creators["call of the ancestors"] = &AiObjectContextInternal::call_of_the_ancestors;
                 creators["call of the spirits"] = &AiObjectContextInternal::call_of_the_spirits;
                 creators["totemic recall"] = &AiObjectContextInternal::totemic_recall;
+                creators["ghost wolf"] = &AiObjectContextInternal::ghost_wolf;
             }
 
         private:
+            static Action* ghost_wolf(PlayerbotAI* ai) { return new CastGhostWolfAction(ai); }
             static Action* heroism(PlayerbotAI* ai) { return new CastHeroismAction(ai); }
             static Action* bloodlust(PlayerbotAI* ai) { return new CastBloodlustAction(ai); }
             static Action* thunderstorm(PlayerbotAI* ai) { return new CastThunderstormAction(ai); }

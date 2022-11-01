@@ -16,7 +16,7 @@ namespace ai
             if (!target)
                 return false;
 
-            return sServerFacade.isMoving(target);
+            return !target->IsStopped();
         }
     };
 

@@ -12,7 +12,7 @@ namespace ai
     public:
         DrinkAction(PlayerbotAI* ai) : UseItemAction(ai, "drink") {}
 
-        virtual bool Execute(Event event)
+        virtual bool Execute(Event& event)
         {
             if (sServerFacade.IsInCombat(bot))
                 return false;
@@ -31,29 +31,29 @@ namespace ai
                 if (sServerFacade.isMoving(bot))
                 {
                     ai->StopMoving();
-                    ai->SetNextCheckDelay(sPlayerbotAIConfig.globalCoolDown);
+                    SetDuration(sPlayerbotAIConfig.globalCoolDown);
                     return false;
                 }
 
                 bot->addUnitState(UNIT_STAND_STATE_SIT);
                 ai->InterruptSpell();
 
-                //float hp = bot->GetHealthPercent();
-                float mp = bot->HasMana() ? bot->GetPowerPercent() : 0.f;
-                float p = mp;
-                float delay;
-
-                if (!bot->InBattleGround())
-                    delay = 27000.0f * (100 - p) / 100.0f;
-                else
-                    delay = 20000.0f * (100 - p) / 100.0f;
+                const float mpMissingPct = 100.0f - bot->GetPowerPercent();
+                const float multiplier = bot->InBattleGround() ? 20000.0f : 27000.0f;
+                const float drinkDuration = multiplier * (mpMissingPct / 100.0f);
 
                 const SpellEntry* pSpellInfo = sServerFacade.LookupSpellInfo(24355);
                 if (!pSpellInfo)
                     return false;
 
+                if (bot->IsMounted())
+                {
+                    WorldPacket emptyPacket;
+                    bot->GetSession()->HandleCancelMountAuraOpcode(emptyPacket);
+                }
+
                 ai->CastSpell(24355, bot);
-                ai->SetNextCheckDelay(delay);
+                SetDuration(drinkDuration);
                 bot->RemoveSpellCooldown(*pSpellInfo);
 
                 return true;
@@ -78,7 +78,7 @@ namespace ai
     public:
         EatAction(PlayerbotAI* ai) : UseItemAction(ai, "food") {}
 
-        virtual bool Execute(Event event)
+        virtual bool Execute(Event& event)
         {
             if (sServerFacade.IsInCombat(bot))
                 return false;
@@ -94,29 +94,29 @@ namespace ai
                 if (sServerFacade.isMoving(bot))
                 {
                     ai->StopMoving();
-                    ai->SetNextCheckDelay(sPlayerbotAIConfig.globalCoolDown);
+                    SetDuration(sPlayerbotAIConfig.globalCoolDown);
                     return false;
                 }
 
                 bot->addUnitState(UNIT_STAND_STATE_SIT);
                 ai->InterruptSpell();
 
-                float hp = bot->GetHealthPercent();
-                //float mp = bot->HasMana() ? bot->GetPowerPercent() : 0.f;
-                float p = hp;
-                float delay;
-
-                if (!bot->InBattleGround())
-                    delay = 27000.0f * (100 - p) / 100.0f;
-                else
-                    delay = 20000.0f * (100 - p) / 100.0f;
+                const float hpMissingPct = 100.0f - bot->GetPowerPercent();
+                const float multiplier = bot->InBattleGround() ? 20000.0f : 27000.0f;
+                const float eatDuration = multiplier * (hpMissingPct / 100.0f);
 
                 const SpellEntry* pSpellInfo = sServerFacade.LookupSpellInfo(24005);
                 if (!pSpellInfo)
                     return false;
 
+                if (bot->IsMounted())
+                {
+                    WorldPacket emptyPacket;
+                    bot->GetSession()->HandleCancelMountAuraOpcode(emptyPacket);
+                }
+
                 ai->CastSpell(24005, bot);
-                ai->SetNextCheckDelay(delay);
+                SetDuration(eatDuration);
                 bot->RemoveSpellCooldown(*pSpellInfo);
 
                 return true;
@@ -135,5 +135,4 @@ namespace ai
             return sPlayerbotAIConfig.freeFood || UseItemAction::isPossible();
         }
     };
-
 }

@@ -9,7 +9,7 @@ namespace ai
     public:
         RpgAction(PlayerbotAI* ai, string name = "rpg") : MovementAction(ai, name) {}
 
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
         virtual bool isUseful();
 
     protected:

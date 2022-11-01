@@ -19,7 +19,7 @@ void TellPosition(PlayerbotAI* ai, string name, ai::PositionEntry pos)
     ai->TellMaster(out);
 }
 
-bool PositionAction::Execute(Event event)
+bool PositionAction::Execute(Event& event)
 {
 	string param = event.getParam();
 	if (param.empty())
@@ -90,7 +90,7 @@ bool PositionAction::Execute(Event event)
     return false;
 }
 
-bool MoveToPositionAction::Execute(Event event)
+bool MoveToPositionAction::Execute(Event& event)
 {
 	ai::PositionEntry pos = context->GetValue<ai::PositionMap&>("position")->Get()[qualifier];
     if (!pos.isSet())
@@ -111,7 +111,7 @@ bool MoveToPositionAction::isUseful()
 }
 
 
-bool SetReturnPositionAction::Execute(Event event)
+bool SetReturnPositionAction::Execute(Event& event)
 {
     ai::PositionMap& posMap = context->GetValue<ai::PositionMap&>("position")->Get();
     ai::PositionEntry returnPos = posMap["return"];

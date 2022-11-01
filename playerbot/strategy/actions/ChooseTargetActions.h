@@ -55,7 +55,7 @@ namespace ai
             return AttackAction::isPossible() && GetTarget();
         }
 
-        virtual bool Execute(Event event)
+        virtual bool Execute(Event& event)
         {
             bool result = AttackAction::Execute(event);
 
@@ -121,7 +121,7 @@ namespace ai
     public:
         DropTargetAction(PlayerbotAI* ai) : Action(ai, "drop target") {}
 
-        virtual bool Execute(Event event)
+        virtual bool Execute(Event& event)
         {
             Unit* target = context->GetValue<Unit*>("current target")->Get();
 
@@ -145,13 +145,21 @@ namespace ai
             uint32 attackers = AI_VALUE(uint8, "attacker count");
             if (attackers > 0)
             {
-                ai->Reset();
-                //Unit* target = context->GetValue<Unit*>("dps target")->Get();
-                return true;
-                //return ai->DoSpecificAction("dps assist", Event(), true);
+                Unit* enemy = AI_VALUE(Unit*, "enemy player target");
+                if (!enemy)
+                {
+                    ai->ChangeEngine(BotState::BOT_STATE_NON_COMBAT);
+                    ai->InterruptSpell();
+                    bot->AttackStop();
+
+                    if (ai->HasStrategy("dps assist", BotState::BOT_STATE_NON_COMBAT))
+                        return ai->DoSpecificAction("dps assist", Event(), true);
+                    if (ai->HasStrategy("tank assist", BotState::BOT_STATE_NON_COMBAT))
+                        return ai->DoSpecificAction("tank assist", Event(), true);
+                }
             }
 
-            ai->ChangeEngine(BOT_STATE_NON_COMBAT);
+            ai->ChangeEngine(BotState::BOT_STATE_NON_COMBAT);
             ai->InterruptSpell();
             bot->AttackStop();
             Pet* pet = bot->GetPet();

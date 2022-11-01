@@ -1,6 +1,9 @@
 #include "botpch.h"
 #include "../../playerbot.h"
 #include "ItemCountValue.h"
+#include "Item.h"
+#include "ItemPrototype.h"
+#include "Player.h"
 
 using namespace ai;
 
@@ -52,7 +55,7 @@ list<Item*> EquipedUsableTrinketValue::Calculate()
 	if (trinkets.empty())
 		return result;
 
-	for each (Item * item in trinkets)
+	for (Item * item : trinkets)
 	{
 		ItemPrototype const* proto = item->GetProto();
 

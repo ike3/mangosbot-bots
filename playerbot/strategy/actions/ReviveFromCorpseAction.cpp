@@ -7,7 +7,7 @@
 
 using namespace ai;
 
-bool ReviveFromCorpseAction::Execute(Event event)
+bool ReviveFromCorpseAction::Execute(Event& event)
 {
     Player* master = ai->GetGroupMaster();
     Corpse* corpse = bot->GetCorpse();
@@ -18,10 +18,10 @@ bool ReviveFromCorpseAction::Execute(Event event)
     {
         if (sServerFacade.IsDistanceLessThan(AI_VALUE2(float, "distance", "master target"), sPlayerbotAIConfig.farDistance))
         {
-            if (!ai->HasStrategy("follow", BOT_STATE_NON_COMBAT))
+            if (!ai->HasStrategy("follow", BotState::BOT_STATE_NON_COMBAT))
             {
-                ai->TellMasterNoFacing("Welcome back!");
-                ai->ChangeStrategy("+follow,-stay", BOT_STATE_NON_COMBAT);
+                ai->TellMasterNoFacing("Welcome back!", PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+                ai->ChangeStrategy("+follow,-stay", BotState::BOT_STATE_NON_COMBAT);
                 return true;
             }
         }
@@ -57,10 +57,12 @@ bool ReviveFromCorpseAction::Execute(Event event)
     packet << bot->GetObjectGuid();
     bot->GetSession()->HandleReclaimCorpseOpcode(packet);
 
+    sTravelMgr.logEvent(ai, "ReviveFromCorpseAction");
+   
     return true;
 }
 
-bool FindCorpseAction::Execute(Event event)
+bool FindCorpseAction::Execute(Event& event)
 {
     if (bot->InBattleGround())
         return false;
@@ -85,7 +87,7 @@ bool FindCorpseAction::Execute(Event event)
         {
             sLog.outBasic("Bot #%d %s:%d <%s>: died too many times and was sent to an inn", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->GetLevel(), bot->GetName());
             context->GetValue<uint32>("death count")->Set(0);
-            sRandomPlayerbotMgr.RandomTeleportForRpg(bot);
+            sRandomPlayerbotMgr.RandomTeleportForRpg(bot, false);
             return true;
         }
     }
@@ -154,8 +156,13 @@ bool FindCorpseAction::Execute(Event event)
     }
     else
     {
+#ifndef MANGOSBOT_ZERO
+        if (bot->IsMovingIgnoreFlying())
+            moved = true;
+#else
         if (bot->IsMoving())
             moved = true;
+#endif
         else
         {
             if (deadTime < 10 * MINUTE && dCount < 5) //Look for corpse up to 30 minutes.
@@ -191,7 +198,7 @@ WorldSafeLocsEntry const* SpiritHealerAction::GetGrave(bool startZone)
     if (!startZone && ClosestGrave)
         return ClosestGrave;
 
-    if (ai->HasStrategy("follow", BOT_STATE_NON_COMBAT)&& ai->GetGroupMaster() && ai->GetGroupMaster() != bot)
+    if (ai->HasStrategy("follow", BotState::BOT_STATE_NON_COMBAT)&& ai->GetGroupMaster() && ai->GetGroupMaster() != bot)
     {
         Player* master = ai->GetGroupMaster();
 
@@ -258,7 +265,7 @@ WorldSafeLocsEntry const* SpiritHealerAction::GetGrave(bool startZone)
     return ClosestGrave;
 }
 
-bool SpiritHealerAction::Execute(Event event)
+bool SpiritHealerAction::Execute(Event& event)
 {
     Corpse* corpse = bot->GetCorpse();
     if (!corpse)
@@ -287,7 +294,7 @@ bool SpiritHealerAction::Execute(Event event)
                 bot->SaveToDB();
                 context->GetValue<Unit*>("current target")->Set(NULL);
                 bot->SetSelectionGuid(ObjectGuid());
-                ai->TellMaster(BOT_TEXT("hello"));
+                ai->TellMaster(BOT_TEXT("hello"), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
 
                 if (dCount > 20)
                     context->GetValue<uint32>("death count")->Set(0);

@@ -1,11 +1,11 @@
 #include "botpch.h"
 #include "../../playerbot.h"
-#include "../../talentspec.h"
+#include "../../Talentspec.h"
 #include "ChangeTalentsAction.h"
 
 using namespace ai;
 
-bool ChangeTalentsAction::Execute(Event event)
+bool ChangeTalentsAction::Execute(Event& event)
 {
     string param = event.getParam();
 
@@ -123,7 +123,7 @@ bool ChangeTalentsAction::Execute(Event event)
         out << botSpec.GetTalentLink();
     }
 
-    ai->TellMaster(out);
+    ai->TellMaster(out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
 
     return true;
 }
@@ -311,8 +311,10 @@ TalentSpec* ChangeTalentsAction::GetBestPremadeSpec(int specId)
     return &sPlayerbotAIConfig.classSpecs[bot->getClassMask()].baseSpec;
 }
 
-bool AutoSetTalentsAction::Execute(Event event)
+bool AutoSetTalentsAction::Execute(Event& event)
 {
+    sTravelMgr.logEvent(ai, "AutoSetTalentsAction", to_string(bot->m_Played_time[PLAYED_TIME_LEVEL]), to_string(bot->m_Played_time[PLAYED_TIME_TOTAL]));
+
     ostringstream out;
 
     if (sPlayerbotAIConfig.autoPickTalents == "no" && !sRandomPlayerbotMgr.IsRandomBot(bot))
@@ -323,7 +325,7 @@ bool AutoSetTalentsAction::Execute(Event event)
 
     AutoSelectTalents(&out);
 
-    ai->TellMaster(out);
+    ai->TellMaster(out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
 
     return true;
 }

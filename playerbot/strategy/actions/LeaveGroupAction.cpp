@@ -14,12 +14,14 @@ namespace ai
         if (!player)
             return false;
 
-        /*if (!player->GetPlayerbotAI() && !ai->GetSecurity()->CheckLevelFor(PLAYERBOT_SECURITY_INVITE, false, player))
+        Group* group = bot->GetGroup();
+
+        /*if (!player->GetPlayerbotAI() && !ai->GetSecurity()->CheckLevelFor(PlayerbotSecurityLevel::PLAYERBOT_SECURITY_INVITE, false, player))
             return false;*/
 
         bool aiMaster = (ai->GetMaster() && ai->GetMaster()->GetPlayerbotAI());
 
-        ai->TellMaster(BOT_TEXT("goodbye"), PLAYERBOT_SECURITY_TALK);
+        ai->TellMaster(BOT_TEXT("goodbye"), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_TALK, false);
 
         bool randomBot = sRandomPlayerbotMgr.IsRandomBot(bot);
 
@@ -31,7 +33,8 @@ namespace ai
             string member = bot->GetName();
             p << uint32(PARTY_OP_LEAVE) << member << uint32(0);
             bot->GetSession()->HandleGroupDisbandOpcode(p);
-            bot->Whisper("I left my group", LANG_UNIVERSAL, player->GetObjectGuid());
+            if (ai->GetMaster() && ai->GetMaster()->GetObjectGuid() != player->GetObjectGuid())
+                bot->Whisper("I left my group", LANG_UNIVERSAL, player->GetObjectGuid());
         }
 
         if (randomBot)
@@ -42,6 +45,9 @@ namespace ai
         if(!aiMaster)
             ai->ResetStrategies(!randomBot);
         ai->Reset();
+
+        if(group)
+            sTravelMgr.logEvent(ai, "LeaveGroupAction", group->GetLeaderName(), to_string(group->GetMembersCount()));
 
         return true;
 	}

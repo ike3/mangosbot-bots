@@ -54,7 +54,31 @@ void GenericWarlockStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "medium mana",
-        NextAction::array(0, new NextAction("life tap", ACTION_EMERGENCY + 5), NULL)));
+        NextAction::array(0, new NextAction("life tap", ACTION_HIGH + 1), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "low mana",
+        NextAction::array(0, new NextAction("dark pact", ACTION_HIGH + 1), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "death coil interrupt",
+        NextAction::array(0, new NextAction("death coil", ACTION_INTERRUPT + 3), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "death coil on enemy healer",
+        NextAction::array(0, new NextAction("death coil on enemy healer", ACTION_INTERRUPT + 1), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "death coil on snare target",
+        NextAction::array(0, new NextAction("death coil on snare target", 61.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "shadowfury interrupt",
+        NextAction::array(0, new NextAction("shadowfury", ACTION_INTERRUPT + 4), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "shadowfury on snare target",
+        NextAction::array(0, new NextAction("shadowfury on snare target", 62.0f), NULL)));
 
 	triggers.push_back(new TriggerNode(
 		"target critical health",
@@ -62,7 +86,27 @@ void GenericWarlockStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "immolate",
-        NextAction::array(0, new NextAction("immolate", 13.0f), new NextAction("conflagrate", 13.0f), NULL)));
+        NextAction::array(0, new NextAction("immolate", 13.0f), new NextAction("conflagrate", 12.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "amplify curse",
+        NextAction::array(0, new NextAction("amplify curse", 41.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "target critical health",
+        NextAction::array(0, new NextAction("shadowburn", 41.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "enemy ten yards",
+        NextAction::array(0, new NextAction("howl of terror", 61.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "inferno",
+        NextAction::array(0, new NextAction("inferno", 50.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "medium threat",
+        NextAction::array(0, new NextAction("soul shatter", 55.0f), NULL)));
 }
 
 void WarlockBoostStrategy::InitTriggers(std::list<TriggerNode*> &triggers)

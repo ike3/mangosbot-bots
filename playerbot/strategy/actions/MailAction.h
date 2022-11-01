@@ -26,7 +26,7 @@ namespace ai
     public:
         MailAction(PlayerbotAI* ai) : InventoryAction(ai, "mail") {}
 
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
 
     private:
         bool CheckMailbox();

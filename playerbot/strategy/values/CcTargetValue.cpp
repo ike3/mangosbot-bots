@@ -52,12 +52,15 @@ public:
         if (creature->HasAuraType(SPELL_AURA_PERIODIC_DAMAGE) && !(spell == "fear" || spell == "banish"))
             return;
 
-        int tankCount, dpsCount;
-        GetPlayerCount(creature, &tankCount, &dpsCount);
-        if (!tankCount || !dpsCount)
+        if (!creature->IsPlayer())
         {
-            result = creature;
-            return;
+            int tankCount, dpsCount;
+            GetPlayerCount(creature, &tankCount, &dpsCount);
+            if (!tankCount || !dpsCount)
+            {
+                result = creature;
+                return;
+            }
         }
 
         Group::MemberSlotList const& groupSlot = group->GetMemberSlots();
@@ -75,7 +78,7 @@ public:
                 minDistance = distance;
         }
 
-        if (!result || minDistance > maxDistance)
+        if ((!result && !creature->IsPlayer()) || minDistance > maxDistance)
         {
             result = creature;
             maxDistance = minDistance;
@@ -100,6 +103,14 @@ Unit* CcTargetValue::Calculate()
 
         if (ai->HasMyAura(qualifier, add))
             return NULL;
+
+        if (qualifier == "polymorph")
+        {
+            if (ai->HasMyAura("polymorph: pig", add))
+                return NULL;
+            if (ai->HasMyAura("polymorph: turtle", add))
+                return NULL;
+        }
     }
 
     FindTargetForCcStrategy strategy(ai, qualifier);

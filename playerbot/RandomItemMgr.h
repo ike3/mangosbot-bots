@@ -163,6 +163,7 @@ class RandomItemMgr
         uint32 GetRandomFood(uint32 level, uint32 category);
         uint32 GetFood(uint32 level, uint32 category);
         uint32 GetRandomTrade(uint32 level);
+        vector<uint32> GetGemsList();
         uint32 CalculateStatWeight(uint8 playerclass, uint8 spec, ItemPrototype const* proto, ItemSpecType &itSpec);
         uint32 CalculateSingleStatWeight(uint8 playerclass, uint8 spec, std::string stat, uint32 value);
         bool CanEquipArmor(uint8 clazz, uint8 spec, uint32 level, ItemPrototype const* proto);

@@ -11,7 +11,7 @@ namespace ai
       UseItemAction(PlayerbotAI* ai, string name = "use", bool selfOnly = false) : Action(ai, name), selfOnly(selfOnly) {}
 
    public:
-      virtual bool Execute(Event event);
+      virtual bool Execute(Event& event);
       virtual bool isPossible();
 
    protected:
@@ -39,7 +39,7 @@ namespace ai
    public:
       UseHealingPotion(PlayerbotAI* ai) : UseItemAction(ai, "healing potion") {}
       virtual bool isUseful() { return AI_VALUE2(bool, "combat", "self target"); }
-      virtual bool Execute(Event event)
+      virtual bool Execute(Event& event)
       {
           bool isRandomBot = sRandomPlayerbotMgr.IsRandomBot(bot);
           if (/*isRandomBot && */sPlayerbotAIConfig.freeFood)
@@ -69,7 +69,7 @@ namespace ai
                   }
               }
 
-              if (spellId && bot->IsSpellReady(spellId))
+              if (spellId && bot->IsSpellReady(spellId, proto))
               {
                   ai->CastSpell(spellId, bot);
                   return true;
@@ -85,7 +85,7 @@ namespace ai
    public:
       UseManaPotion(PlayerbotAI* ai) : UseItemAction(ai, "mana potion") {}
       virtual bool isUseful() { return AI_VALUE2(bool, "combat", "self target"); }
-      virtual bool Execute(Event event)
+      virtual bool Execute(Event& event)
       {
           bool isRandomBot = sRandomPlayerbotMgr.IsRandomBot(bot);
           if (/*isRandomBot && */sPlayerbotAIConfig.freeFood)
@@ -115,7 +115,7 @@ namespace ai
                   }
               }
 
-              if (spellId && bot->IsSpellReady(spellId))
+              if (spellId && bot->IsSpellReady(spellId, proto))
               {
                   ai->CastSpell(spellId, bot);
                   return true;
@@ -131,9 +131,9 @@ namespace ai
    public:
        UseHearthStone(PlayerbotAI* ai) : UseItemAction(ai, "hearthstone", true) {}
 
-       bool isUseful() { return !bot->InBattleGround(); }
+       bool isUseful() { return !bot->InBattleGround() && sServerFacade.IsSpellReady(bot, 8690); }
        
-       virtual bool Execute(Event event);
+       virtual bool Execute(Event& event);
    };
 
    class UseRandomRecipe : public UseItemAction
@@ -144,7 +144,7 @@ namespace ai
        virtual bool isUseful();
        virtual bool isPossible() {return AI_VALUE2(uint32,"item count", "recipe") > 0; }
       
-       virtual bool Execute(Event event);
+       virtual bool Execute(Event& event);
    };
 
    class UseRandomQuestItem : public UseItemAction
@@ -155,7 +155,7 @@ namespace ai
        virtual bool isUseful();
        virtual bool isPossible() { return AI_VALUE2(uint32, "item count", "quest") > 0;}
 
-       virtual bool Execute(Event event);
+       virtual bool Execute(Event& event);
    };
 
    // goblin sappers
@@ -168,18 +168,20 @@ namespace ai
        {
            return bot->GetLevel() >= 50 && bot->GetHealth() > 1000;
        }
-       virtual bool Execute(Event event)
+       virtual bool Execute(Event& event)
        {
            uint32 goblinSapper = 10646;
-           bool added = true;
+           if (bot->GetLevel() >= 68)
+               goblinSapper = 23827;
 
-           if (!bot->HasItemCount(goblinSapper, 1))
-               added = bot->StoreNewItemInBestSlots(goblinSapper, 10);
+           bool added = bot->HasItemCount(goblinSapper, 1);
+           if (!added)
+               added = bot->StoreNewItemInInventorySlot(goblinSapper, 10);
 
            if (!added)
                return false;
 
-           list<Item*> items = AI_VALUE2(list<Item*>, "inventory items", "goblin sapper charge");
+           list<Item*> items = AI_VALUE2(list<Item*>, "inventory items", goblinSapper == 10646 ? "goblin sapper charge" : "super sapper charge");
            list<Item*>::iterator i = items.begin();
            Item* item = *i;
 
@@ -200,13 +202,12 @@ namespace ai
        {
            return bot->GetLevel() >= 31 && !ai->HasAura(11350, bot);
        }
-       virtual bool Execute(Event event)
+       virtual bool Execute(Event& event)
        {
            uint32 oil = 8956;
-           bool added = true;
-
-           if (!bot->HasItemCount(oil, 1))
-               added = bot->StoreNewItemInBestSlots(oil, 5);
+           bool added = bot->HasItemCount(oil, 1);
+           if (!added)
+               added = bot->StoreNewItemInInventorySlot(oil, 1);
 
            if (!added)
                return false;
@@ -219,6 +220,55 @@ namespace ai
                return false;
 
            return UseItemAuto(item);
+       }
+   };
+
+   // oil of immolation
+   class UseAdamantiteGrenadeAction : public UseItemAction
+   {
+   public:
+       UseAdamantiteGrenadeAction(PlayerbotAI* ai) : UseItemAction(ai, "adamantite grenade") {}
+       virtual bool isPossible() { return true; }
+       virtual bool isUseful()
+       {
+           return false; bot->GetLevel() >= 52 && bot->IsSpellReady(19769);/* && bot->GetSkillValue(202) >= 260*/;
+       }
+       virtual bool Execute(Event& event)
+       {
+           uint32 spellId = 19769;
+           if (SpellEntry const* spellInfo = sSpellTemplate.LookupEntry<SpellEntry>(spellId))
+           {
+               bool casted = ai->CastSpell(19769, GetTarget());
+               if (casted)
+               {
+                   bot->AddCooldown(*spellInfo, nullptr, false, 60000);
+                   return true;
+               }
+           }
+
+           return false;
+           // test
+           Unit* target = AI_VALUE(Unit*, "current target");
+           if (!target)
+               return false;
+
+           uint32 skillValue = bot->GetSkillValue(202);
+           uint32 grenade = skillValue > 325 ? 23737: 15993;
+           bool added = bot->HasItemCount(grenade, 1);
+           if (!added)
+               added = bot->StoreNewItemInInventorySlot(grenade, 1);
+
+           if (!added)
+               return false;
+
+           list<Item*> items = AI_VALUE2(list<Item*>, "inventory items", skillValue > 325 ? "adamantite grenade" : "thorium grenade");
+           list<Item*>::iterator i = items.begin();
+           Item* item = *i;
+
+           if (!item)
+               return false;
+
+           return UseItem(item, ObjectGuid(), nullptr, target);
        }
    };
 
@@ -235,13 +285,12 @@ namespace ai
 
            return bot->GetLevel() == 60 && AI_VALUE2(uint8, "health", "self target") > sPlayerbotAIConfig.lowHealth;
        }
-       virtual bool Execute(Event event)
+       virtual bool Execute(Event& event)
        {
            uint32 rune = 20520;
-           bool added = true;
-
-           if (!bot->HasItemCount(rune, 1))
-               added = bot->StoreNewItemInBestSlots(rune, 20);
+           bool added = bot->HasItemCount(rune, 1);
+           if (!added)
+               added = bot->StoreNewItemInInventorySlot(rune, 20);
 
            if (!added)
                return false;

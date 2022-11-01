@@ -1,5 +1,6 @@
 #pragma once
 #include "botpch.h"
+#include "Mail.h"
 #include "../../playerbot.h"
 #include "RpgTriggers.h"
 #include "../../PlayerbotAIConfig.h"
@@ -24,7 +25,17 @@ bool RpgTaxiTrigger::IsActive()
     if (!bot->m_taxi.IsTaximaskNodeKnown(node))
         return false;
 
-    return true;
+    vector<uint32> nodes;
+    for (uint32 i = 0; i < sTaxiPathStore.GetNumRows(); ++i)
+    {
+        TaxiPathEntry const* entry = sTaxiPathStore.LookupEntry(i);
+        if (entry && entry->from == node && (bot->m_taxi.IsTaximaskNodeKnown(entry->to) || bot->isTaxiCheater()))
+        {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 bool RpgDiscoverTrigger::IsActive()
@@ -49,12 +60,31 @@ bool RpgStartQuestTrigger::IsActive()
 {
     GuidPosition guidP(getGuidP());
 
+    if (AI_VALUE(uint8, "free quest log slots") == 0)
+        return false;
+
     if (!guidP.IsCreature() && !guidP.IsGameObject())
         return false;
+
+    if (guidP.IsHostileTo(bot))
+        return false;
+
+    if (guidP.IsUnit())
+    {
+        Unit* unit = guidP.GetUnit();
+        if (unit && !unit->HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_QUESTGIVER))
+            return false;
+    }
 
     if (AI_VALUE(bool, "can fight equal"))
     {
         if (AI_VALUE2(bool, "can accept quest npc", guidP.GetEntry()))
+            return true;
+
+        if (!AI_VALUE2(bool, "can accept quest low level npc", guidP.GetEntry()) )
+            return false;
+
+        if (guidP.GetEntry() == AI_VALUE(TravelTarget*, "travel target")->getEntry())
             return true;
     }
     else
@@ -73,11 +103,34 @@ bool RpgEndQuestTrigger::IsActive()
     if (!guidP.IsCreature() && !guidP.IsGameObject())
         return false;
 
+    if (guidP.IsHostileTo(bot))
+        return false;
+
     if (AI_VALUE2(bool, "can turn in quest npc", guidP.GetEntry()))
         return true;
 
     return false;
 }
+
+bool RpgRepeatQuestTrigger::IsActive()
+{
+    GuidPosition guidP(getGuidP());
+
+    if (AI_VALUE(uint8, "free quest log slots") < 10)
+        return false;
+
+    if (!guidP.IsCreature() && !guidP.IsGameObject())
+        return false;
+
+    if (guidP.IsHostileTo(bot))
+        return false;
+
+    if (AI_VALUE2(bool, "can repeat quest npc", guidP.GetEntry()))
+        return true;
+
+    return false;
+}
+
 
 bool RpgBuyTrigger::IsActive()
 {
@@ -86,10 +139,13 @@ bool RpgBuyTrigger::IsActive()
     if (!guidP.HasNpcFlag(UNIT_NPC_FLAG_VENDOR))
         return false;
 
-    if (AI_VALUE(uint8, "durability") > 50)
+    if (guidP.IsHostileTo(bot))
         return false;
 
-    if (!AI_VALUE(bool, "can sell")) //Need better condition.
+    if (!AI_VALUE(bool, "can buy"))
+        return false;
+
+    if (!AI_VALUE2(bool, "vendor has useful item", guidP.GetEntry()))
         return false;
 
     return true;
@@ -102,7 +158,61 @@ bool RpgSellTrigger::IsActive()
     if (!guidP.HasNpcFlag(UNIT_NPC_FLAG_VENDOR))
         return false;
 
+    if (guidP.IsHostileTo(bot))
+        return false;
+
     if (!AI_VALUE(bool, "can sell"))
+        return false;
+
+    return true;
+}
+
+bool RpgAHSellTrigger::IsActive()
+{
+    GuidPosition guidP(getGuidP());
+
+    if (!guidP.HasNpcFlag(UNIT_NPC_FLAG_AUCTIONEER))
+        return false;
+
+    if (guidP.IsHostileTo(bot))
+        return false;
+
+    if (GuidPosition(bot).IsHostileTo(guidP))
+        return false;
+
+    if (!AI_VALUE(bool, "can ah sell"))
+        return false;
+
+    return true;
+}
+
+bool RpgAHBuyTrigger::IsActive()
+{
+    GuidPosition guidP(getGuidP());
+
+    if (!guidP.HasNpcFlag(UNIT_NPC_FLAG_AUCTIONEER))
+        return false;
+
+    if (guidP.IsHostileTo(bot))
+        return false;
+
+    if (GuidPosition(bot).IsHostileTo(guidP))
+        return false;
+
+    if (!AI_VALUE(bool, "can ah buy"))
+        return false;
+
+    return true;
+}
+
+bool RpgGetMailTrigger::IsActive()
+{
+    GuidPosition guidP(getGuidP());
+
+    if (!guidP.isGoType(GAMEOBJECT_TYPE_MAILBOX))
+        return false;
+
+    if (!AI_VALUE(bool, "can get mail"))
         return false;
 
     return true;
@@ -115,8 +225,8 @@ bool RpgRepairTrigger::IsActive()
     if (!guidP.HasNpcFlag(UNIT_NPC_FLAG_REPAIR))
         return false;
 
-    if (AI_VALUE2_LAZY(bool, "group or", "should sell,can sell,following party,near leader"))
-        return true;
+    if (guidP.IsHostileTo(bot))
+        return false;
 
     if (AI_VALUE2_LAZY(bool, "group or", "should repair,can repair,following party,near leader"))
         return true;
@@ -171,6 +281,9 @@ bool RpgTrainTrigger::IsActive()
     GuidPosition guidP(getGuidP());
 
     if (!guidP.HasNpcFlag(UNIT_NPC_FLAG_TRAINER))
+        return false;
+
+    if (guidP.IsHostileTo(bot))
         return false;
 
     CreatureInfo const* cInfo = guidP.GetCreatureTemplate();
@@ -228,7 +341,7 @@ bool RpgTrainTrigger::IsActive()
 
 bool RpgHealTrigger::IsActive()
 {
-    if (!ai->HasStrategy("heal", BOT_STATE_COMBAT))
+    if (!ai->HasStrategy("heal", BotState::BOT_STATE_COMBAT))
         return false;
 
     GuidPosition guidP(getGuidP());
@@ -254,6 +367,9 @@ bool RpgHomeBindTrigger::IsActive()
     if (!guidP.HasNpcFlag(UNIT_NPC_FLAG_INNKEEPER))
         return false;
 
+    if (guidP.IsHostileTo(bot))
+        return false;
+
     if (AI_VALUE(WorldPosition, "home bind").distance(bot) < 500.0f)
         return false;
 
@@ -271,6 +387,9 @@ bool RpgQueueBGTrigger::IsActive()
     if (!guidP.IsCreature())
         return false;
 
+    if (guidP.IsHostileTo(bot))
+        return false;
+
     if (AI_VALUE(BattleGroundTypeId, "rpg bg type") == BATTLEGROUND_TYPE_NONE)
         return false;
 
@@ -284,6 +403,9 @@ bool RpgBuyPetitionTrigger::IsActive()
     if (!guidP.HasNpcFlag(UNIT_NPC_FLAG_PETITIONER))
         return false;
 
+    if (guidP.IsHostileTo(bot))
+        return false;
+
     if (!BuyPetitionAction::canBuyPetition(bot))
         return false;
 
@@ -292,6 +414,9 @@ bool RpgBuyPetitionTrigger::IsActive()
 
 bool RpgUseTrigger::IsActive()
 {
+    if (ai->HasRealPlayerMaster())
+        return false;
+
     GuidPosition guidP(getGuidP());
 
     if (!guidP.IsGameObject())
@@ -363,7 +488,56 @@ bool RpgCraftTrigger::IsActive()
     if (!guidP.GetWorldObject())
         return false;
 
-    return true;
+    //Need to go ai value "can craft item"
+    list<uint32> itemIds = AI_VALUE2_LAZY(list<uint32>, "inventory item ids", "usage " + to_string(ITEM_USAGE_SKILL));
+
+    for (auto& itemId : itemIds)
+    {
+        vector<uint32> spells = ItemUsageValue::SpellsUsingItem(itemId, bot);
+
+        for (auto& spell : spells)
+        {
+            const SpellEntry* pSpellInfo = sServerFacade.LookupSpellInfo(spell);
+
+            if (pSpellInfo->RequiresSpellFocus)
+            {
+                if (!guidP.IsGameObject())
+                    return false;
+
+                if (guidP.GetGameObjectInfo()->type != GAMEOBJECT_TYPE_SPELL_FOCUS)
+                    return false;
+
+                if (guidP.GetGameObjectInfo()->spellFocus.focusId != pSpellInfo->RequiresSpellFocus)
+                    return false;
+            }           
+
+            if (ItemUsageValue::HasItemsNeededForSpell(spell, ObjectMgr::GetItemPrototype(itemId), bot))
+                return true;
+        }
+
+    }
+
+    return false;
+}
+
+bool RpgTradeUsefulTrigger::isFriend(Player* player)
+{
+    if (ai->IsAlt() && GetMaster() == player)
+        return true;
+
+    if (player->GetPlayerbotAI() && player->GetPlayerbotAI()->GetMaster() == bot && player->GetPlayerbotAI()->IsAlt())
+        return true;
+
+    if (player->GetGuildId() && player->GetGuildId() == bot->GetGuildId())
+        return true;
+
+    if (bot->GetGroup() == player->GetGroup() && !urand(0, 5))
+        return true;
+
+    if (!urand(0, 20))
+        return true;
+
+    return false;
 }
 
 bool RpgTradeUsefulTrigger::IsActive()
@@ -379,30 +553,23 @@ bool RpgTradeUsefulTrigger::IsActive()
     if (!player)
         return false;
 
-    //More code/ai-value here to see if bot is friendly enough.
-    bool isFriend = false;
-    if (player->GetGuildId() != bot->GetGuildId())
-        isFriend = true;
+    if (player->GetTrader() == bot && bot->GetTrader() == player) //Continue trading please.
+        return true;
 
-    if (bot->GetGroup() == player->GetGroup() && !urand(0, 5))
-        isFriend = true;
-
-    if (!urand(0, 20))
-        isFriend = true;
-
-    if (!isFriend)
+    if (!isFriend(player))
         return false;
 
     if (!player->IsWithinLOSInMap(bot))
         return false;
 
+    //Trading with someone else
     if (player->GetTrader() && player->GetTrader() != bot)
         return false;
 
     if (bot->GetTrader() && bot->GetTrader() != player)
         return false;
 
-    if (AI_VALUE(list<Item*>, "items useful to give").empty())
+    if (AI_VALUE_LAZY(list<Item*>, "items useful to give").empty())
         return false;
 
     return true;
@@ -410,7 +577,7 @@ bool RpgTradeUsefulTrigger::IsActive()
 
 bool RpgDuelTrigger::IsActive()
 {
-    if(!ai->HasStrategy("start duel", BOT_STATE_NON_COMBAT))
+    if(!ai->HasStrategy("start duel", BotState::BOT_STATE_NON_COMBAT))
         return false;
 
     // Less spammy duels

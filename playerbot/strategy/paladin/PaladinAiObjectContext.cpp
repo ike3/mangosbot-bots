@@ -4,6 +4,7 @@
 #include "PaladinTriggers.h"
 #include "PaladinAiObjectContext.h"
 #include "GenericPaladinNonCombatStrategy.h"
+#include "PaladinReactionStrategy.h"
 #include "TankPaladinStrategy.h"
 #include "DpsPaladinStrategy.h"
 #include "PaladinBuffStrategies.h"
@@ -24,6 +25,7 @@ namespace ai
             StrategyFactoryInternal()
             {
                 creators["nc"] = &paladin::StrategyFactoryInternal::nc;
+                creators["react"] = &paladin::StrategyFactoryInternal::react;
                 creators["cure"] = &paladin::StrategyFactoryInternal::cure;
                 creators["boost"] = &paladin::StrategyFactoryInternal::boost;
                 creators["bthreat"] = &paladin::StrategyFactoryInternal::bthreat;
@@ -33,6 +35,7 @@ namespace ai
 
         private:
             static Strategy* nc(PlayerbotAI* ai) { return new GenericPaladinNonCombatStrategy(ai); }
+            static Strategy* react(PlayerbotAI* ai) { return new PaladinReactionStrategy(ai); }
             static Strategy* cure(PlayerbotAI* ai) { return new PaladinCureStrategy(ai); }
             static Strategy* boost(PlayerbotAI* ai) { return new PaladinBoostStrategy(ai); }
             static Strategy* bthreat(PlayerbotAI* ai) { return new PaladinBuffThreatStrategy(ai); }
@@ -144,9 +147,13 @@ namespace ai
                 creators["repentance on enemy healer"] = &TriggerFactoryInternal::repentance_on_enemy_healer;
                 creators["repentance on snare target"] = &TriggerFactoryInternal::repentance_on_snare_target;
                 creators["repentance interrupt"] = &TriggerFactoryInternal::repentance_interrupt;
+                creators["hammer of justice on enemy"] = &TriggerFactoryInternal::hammer_on_enemy;
+                creators["divine illumination"] = &TriggerFactoryInternal::divine_illumination;
             }
 
         private:
+            static Trigger* divine_illumination(PlayerbotAI* ai) { return new DivineIlluminationBoostTrigger(ai); }
+            static Trigger* hammer_on_enemy(PlayerbotAI* ai) { return new HammerOfJusticeOnEnemyTrigger(ai); }
             static Trigger* turn_undead(PlayerbotAI* ai) { return new TurnUndeadTrigger(ai); }
             static Trigger* divine_favor(PlayerbotAI* ai) { return new DivineFavorTrigger(ai); }
             static Trigger* holy_shield(PlayerbotAI* ai) { return new HolyShieldTrigger(ai); }
@@ -272,9 +279,15 @@ namespace ai
                 creators["sanctity aura"] = &AiObjectContextInternal::sanctity_aura;
                 creators["holy shock"] = &AiObjectContextInternal::holy_shock;
                 creators["holy shock on party"] = &AiObjectContextInternal::holy_shock_on_party;
+                creators["blessing of freedom"] = &AiObjectContextInternal::blessing_of_freedom;
+                creators["avenging wrath"] = &AiObjectContextInternal::avenging_wrath;
+                creators["divine illumination"] = &AiObjectContextInternal::divine_illumination;
             }
 
         private:
+            static Action* divine_illumination(PlayerbotAI* ai) { return new CastDivineIlluminationAction(ai); }
+            static Action* avenging_wrath(PlayerbotAI* ai) { return new CastAvengingWrathAction(ai); }
+            static Action* blessing_of_freedom(PlayerbotAI* ai) { return new CastBlessingOfFreedomAction(ai); }
             static Action* blessing_of_protection_on_party(PlayerbotAI* ai) { return new CastBlessingOfProtectionProtectAction(ai); }
             static Action* turn_undead(PlayerbotAI* ai) { return new CastTurnUndeadAction(ai); }
             static Action* divine_favor(PlayerbotAI* ai) { return new CastDivineFavorAction(ai); }

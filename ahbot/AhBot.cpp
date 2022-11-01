@@ -41,7 +41,11 @@ bool Player::MinimalLoadFromDB( QueryResult *result, uint32 guid )
     Field *fields = result->Fetch();
 
     // overwrite possible wrong/corrupted guid
-    Object::_Create( guid, 0, HIGHGUID_PLAYER );
+#ifdef MANGOSBOT_TWO
+    Object::_Create(0, guid, 0, HIGHGUID_PLAYER );
+#else
+    Object::_Create(guid, 0, HIGHGUID_PLAYER);
+#endif
 
     m_name = fields[0].GetString();
 
@@ -927,7 +931,7 @@ void AhBot::CheckCategoryMultipliers()
             continue;
 
         tmp.insert(name);
-        if (categoryMultiplierExpireTimes[name] <= time(0) || categoryMultipliers[name] <= 0)
+        if (categoryMultiplierExpireTimes[name] <= (uint64)time(0) || categoryMultipliers[name] <= 0)
         {
             uint32 k = urand(1, 100);
             double m = 1.0;

@@ -13,28 +13,61 @@ namespace ai
             Unit* target = AI_VALUE(Unit*, "current target");
             if (target)
             {
-                if (target->GetTarget() == bot && !bot->GetGroup() && !target->IsRooted() && target->GetSpeedInMotion() > bot->GetSpeedInMotion() * 0.65)
+                // Don't move if the target is targeting you and you can't add distance between you and the target
+                if (target->GetTarget() == bot && !target->IsRooted() && target->GetSpeedInMotion() > (bot->GetSpeedInMotion() * 0.65))
+                {
                     return false;
+                }
+
+                float const combatReach = bot->GetCombinedCombatReach(target, false);
+                float const minDistance = ai->GetRange("spell") + combatReach;
+                float const targetDistance = sServerFacade.GetDistance2d(bot, target) + combatReach;
+
+                // No need to move if the target is rooted and you can shoot
+                if (target->IsRooted() && (targetDistance > minDistance))
+                {
+                    return false;
+                }
 
                 bool isBoss = false;
                 bool isRaid = false;
-                float combatReach = bot->GetCombinedCombatReach(target, false);
-                float targetDistance = sServerFacade.GetDistance2d(bot, target) + combatReach;
+                bool isVictim = target->GetVictim() && target->GetVictim()->GetObjectGuid() == bot->GetObjectGuid();
+
                 if (target->IsCreature())
                 {
                     Creature* creature = ai->GetCreature(target->GetObjectGuid());
-                        if (creature)
-                        {
-                            isBoss = creature->IsWorldBoss();
-                        }
+                    if (creature)
+                    {
+                        isBoss = creature->IsWorldBoss();
+                    }
                 }
+
                 if (bot->GetMap() && bot->GetMap()->IsRaid())
                     isRaid = true;
 
                 //if (isBoss || isRaid)
                 //    return sServerFacade.IsDistanceLessThan(targetDistance, (ai->GetRange("spell") + combatReach) / 2);
 
-                return sServerFacade.IsDistanceLessOrEqualThan(targetDistance, (ai->GetRange("spell") + combatReach) * 0.7f);
+                float coeff = 0.5f;
+                if (target->IsPlayer())
+                {
+                    if (!isVictim)
+                        coeff = 0.7f;
+                    else
+                        coeff = 1.0f;
+                }
+                else
+                {
+                    if (!isVictim)
+                        coeff = 0.4f;
+                    else
+                        coeff = 0.6f;
+                }
+
+                if (isRaid)
+                    coeff = 1.0f;
+
+                return sServerFacade.IsDistanceLessOrEqualThan(targetDistance, minDistance * coeff);
             }
             return false;
         }
@@ -46,31 +79,65 @@ namespace ai
         virtual bool IsActive()
         {
             Unit* target = AI_VALUE(Unit*, "current target");
-            if (!target)
-                return false;
-
-            if (target->GetTarget() == bot && !bot->GetGroup() && !target->IsRooted() && target->GetSpeedInMotion() > bot->GetSpeedInMotion() * 0.65)
-                return false;
-
-            bool isBoss = false;
-            bool isRaid = false;
-            float combatReach = bot->GetCombinedCombatReach(target, false);
-            float targetDistance = sServerFacade.GetDistance2d(bot, target) + combatReach;
-            if (target->IsCreature())
+            if (target)
             {
-                Creature* creature = ai->GetCreature(target->GetObjectGuid());
-                if (creature)
+                // Don't move if the target is targeting you and you can't add distance between you and the target
+                if (target->GetTarget() == bot && !target->IsRooted() && target->GetSpeedInMotion() > (bot->GetSpeedInMotion() * 0.65))
                 {
-                    isBoss = creature->IsWorldBoss();
+                    return false;
                 }
+
+                float const combatReach = bot->GetCombinedCombatReach(target, false);
+                float const minShootDistance = ai->GetRange("shoot") + combatReach;
+                float const targetDistance = sServerFacade.GetDistance2d(bot, target) + combatReach;
+
+                // No need to move if the target is rooted and you can shoot
+                if (target->IsRooted() && (targetDistance > minShootDistance))
+                {
+                    return false;
+                }
+
+                bool isBoss = false;
+                bool isRaid = false;
+                bool isVictim = target->GetVictim() && target->GetVictim()->GetObjectGuid() == bot->GetObjectGuid();
+
+                if (target->IsCreature())
+                {
+                    Creature* creature = ai->GetCreature(target->GetObjectGuid());
+                    if (creature)
+                    {
+                        isBoss = creature->IsWorldBoss();
+                    }
+                }
+
+                if (bot->GetMap() && bot->GetMap()->IsRaid())
+                    isRaid = true;
+
+                //if (isBoss || isRaid)
+                //    return sServerFacade.IsDistanceLessThan(targetDistance, (ai->GetRange("spell") + combatReach));
+
+                float coeff = 0.5f;
+                if (target->IsPlayer())
+                {
+                    if (!isVictim)
+                        coeff = 0.7f;
+                    else
+                        coeff = 1.0f;
+                }
+                else
+                {
+                    if (!isVictim)
+                        coeff = 0.4f;
+                    else
+                        coeff = 0.6f;
+                }
+
+                if (isRaid)
+                    coeff = 1.0f;
+
+                return sServerFacade.IsDistanceLessOrEqualThan(targetDistance, minShootDistance * coeff);
             }
-            if (bot->GetMap() && bot->GetMap()->IsRaid())
-                isRaid = true;
-
-            //if (isBoss || isRaid)
-            //    return sServerFacade.IsDistanceLessThan(targetDistance, ai->GetRange("shoot") + combatReach);
-
-            return sServerFacade.IsDistanceLessOrEqualThan(targetDistance, (ai->GetRange("shoot") + combatReach) * 0.7f);
+            return false;
         }
     };
 
@@ -96,6 +163,22 @@ namespace ai
             return target &&
                 sServerFacade.IsDistanceLessOrEqualThan(AI_VALUE2(float, "distance", "current target"), sPlayerbotAIConfig.tooCloseDistance);
         }
+    };
+
+    class EnemyInRangeTrigger : public Trigger {
+    public:
+        EnemyInRangeTrigger(PlayerbotAI* ai, string name, float distance) : Trigger(ai, name)
+        {
+            this->distance = distance;
+        }
+        virtual bool IsActive()
+        {
+            Unit* target = AI_VALUE(Unit*, "current target");
+            return target &&
+                sServerFacade.IsDistanceLessOrEqualThan(AI_VALUE2(float, "distance", "current target"), distance);
+        }
+    protected:
+        float distance;
     };
 
     class OutOfRangeTrigger : public Trigger {

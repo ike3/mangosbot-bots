@@ -8,7 +8,7 @@ namespace ai
     {
     public:
         SuggestWhatToDoAction(PlayerbotAI* ai, string name = "suggest what to do");
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
         virtual bool isUseful();
 
     protected:
@@ -27,13 +27,14 @@ namespace ai
     private:
         static map<string, int> instances;
         static map<string, int> factions;
+        int32 _locale;
     };
 
     class SuggestTradeAction : public SuggestWhatToDoAction
     {
     public:
         SuggestTradeAction(PlayerbotAI* ai);
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
         virtual bool isUseful() { return true; }
     };
 }

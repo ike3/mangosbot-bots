@@ -7,7 +7,7 @@
 
 using namespace ai;
 
-bool WorldBuffAction::Execute(Event event)
+bool WorldBuffAction::Execute(Event& event)
 {    
     string text = event.getParam();
 
@@ -17,11 +17,6 @@ bool WorldBuffAction::Execute(Event event)
     }
 
     return false;
-}
-
-bool WorldBuffAction::isUseful(Event event)
-{
-    return !bot->InBattleGround();
 }
 
 vector<uint32> WorldBuffAction::NeedWorldBuffs(Unit* unit)

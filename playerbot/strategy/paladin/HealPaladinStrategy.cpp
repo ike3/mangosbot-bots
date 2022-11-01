@@ -22,11 +22,6 @@ HealPaladinStrategy::HealPaladinStrategy(PlayerbotAI* ai) : GenericPaladinStrate
     actionNodeFactories.Add(new HealPaladinStrategyActionNodeFactory());
 }
 
-NextAction** HealPaladinStrategy::getDefaultActions()
-{
-    return NextAction::array(0, new NextAction("reach party member to heal", ACTION_NORMAL + 1), new NextAction("judgement", ACTION_NORMAL), NULL);
-}
-
 void HealPaladinStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 {
     GenericPaladinStrategy::InitTriggers(triggers);
@@ -40,7 +35,7 @@ void HealPaladinStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("seal of light", ACTION_HIGH), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "enemy is close",
+        "enemy ten yards",
         NextAction::array(0, new NextAction("judgement of light", ACTION_HIGH + 10), NULL)));
 
     triggers.push_back(new TriggerNode(
@@ -78,6 +73,10 @@ void HealPaladinStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
     triggers.push_back(new TriggerNode(
         "blessing",
         NextAction::array(0, new NextAction("blessing of sanctuary", ACTION_HIGH + 9), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "divine illumination",
+        NextAction::array(0, new NextAction("divine illumination", ACTION_HIGH + 5), NULL)));
 
     triggers.push_back(new TriggerNode(
         "party member to heal out of spell range",

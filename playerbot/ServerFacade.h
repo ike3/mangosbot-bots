@@ -217,7 +217,8 @@ class ServerFacade
         bool IsDistanceGreaterOrEqualThan(float dist1, float dist2);
         bool IsDistanceLessOrEqualThan(float dist1, float dist2);
 
-        void SetFacingTo(Player* bot, WorldObject* wo, bool force = false);
+        void SetFacingTo(Unit* unit, float angle, bool force = false);
+        void SetFacingTo(Unit* unit, WorldObject* wo, bool force = false) {SetFacingTo(unit, unit->GetAngle(wo), force);}
 
         bool IsFriendlyTo(Unit* bot, Unit* to);
         bool IsFriendlyTo(WorldObject* bot, Unit* to);

@@ -13,3 +13,14 @@ bool MageArmorTrigger::IsActive()
         !ai->HasAura("molten armor", target) &&
         !ai->HasAura("mage armor", target);
 }
+
+bool ManaShieldTrigger::IsActive()
+{
+    return !ai->HasAura("mana shield", bot) && AI_VALUE2(uint8, "mana", "self target") > sPlayerbotAIConfig.mediumMana;
+}
+
+bool IceLanceTrigger::IsActive()
+{
+    Unit* target = GetTarget();
+    return target && ai->HasAnyAuraOf(target, "frost nova", "frostbite", NULL);
+}

@@ -129,6 +129,27 @@ list<uint32> EntryLootListValue::Calculate()
 	return items;
 }
 
+//What is the item's loot chance?
+float LootChanceValue::Calculate()
+{
+	int32 entry = getMultiQualifier(getQualifier(), 0);
+	uint32 itemId = getMultiQualifier(getQualifier(), 1);
+
+	LootTemplateAccess const* lTemplateA;
+
+	if (entry > 0)
+		lTemplateA = DropMapValue::GetLootTemplate(ObjectGuid(HIGHGUID_UNIT, entry, uint32(1)), LOOT_CORPSE);
+	else
+		lTemplateA = DropMapValue::GetLootTemplate(ObjectGuid(HIGHGUID_GAMEOBJECT, entry, uint32(1)), LOOT_CORPSE);
+
+	if(lTemplateA)
+		for (auto item : lTemplateA->Entries)
+			if (item.itemid == itemId)
+				return item.chance;
+
+	return 0.0f;
+}
+
 itemUsageMap EntryLootUsageValue::Calculate()
 {
 	itemUsageMap items;

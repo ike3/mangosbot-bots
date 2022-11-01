@@ -2,6 +2,7 @@
 
 #include "Config.h"
 #include "Talentspec.h"
+#include "SharedDefines.h"
 
 class Player;
 class PlayerbotMgr;
@@ -15,7 +16,8 @@ enum class BotCheatMask : uint32
     health = 4,
     mana = 8,
     power = 16,
-    maxMask = 32
+    supply = 32,
+    maxMask = 64
 };
 
 class PlayerbotAIConfig
@@ -31,6 +33,8 @@ public:
 public:
     bool Initialize();
     bool IsInRandomAccountList(uint32 id);
+    bool IsInNonRandomAccountList(uint32 id);
+    bool IsNonRandomBot(Player* player);
     bool IsInRandomQuestItemList(uint32 id);
 	bool IsInPvpProhibitedZone(uint32 id);
 
@@ -53,6 +57,9 @@ public:
     std::list<uint32> randomBotAccounts;
     std::list<uint32> randomBotSpellIds;
     std::list<uint32> randomBotQuestIds;
+    std::list<std::pair<uint32, uint32>> nonRandomBots;
+    std::list<string> toggleAlwaysOnlineAccounts;
+    std::list<string> toggleAlwaysOnlineChars;
     uint32 randomBotTeleportDistance;
     uint32 randomGearMaxLevel;
     uint32 randomGearMaxDiff;
@@ -102,10 +109,13 @@ public:
     bool randomBotShowHelmet;
     bool randomBotShowCloak;
     bool disableRandomLevels;
+    bool instantRandomize;
     bool gearscorecheck;
 	bool randomBotPreQuests;
     uint32 playerbotsXPrate;
     uint32 botActiveAlone;
+    uint32 diffWithPlayer;
+    uint32 diffEmpty;
     uint32 minEnchantingBotLevel;
     uint32 randombotStartingLevel;
     bool randomBotSayWithoutMaster;
@@ -162,6 +172,7 @@ public:
     void SetValue(std::string name, std::string value);
 
     void loadWorldBuf(Config* config, uint32 factionId, uint32 classId, uint32 specId1, uint32 minLevel, uint32 maxLevel);
+    void loadNonRandomBotAccounts();
 
     std::string GetTimestampStr();
 

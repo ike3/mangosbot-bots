@@ -5,7 +5,7 @@
 #include "../../ServerFacade.h"
 #include "../values/Formations.h"
 #include "../values/PositionValue.h"
-#include "travelMgr.h"
+#include "TravelMgr.h"
 #include "MotionGenerators/PathFinder.h"
 #include "ChooseTravelTargetAction.h"
 
@@ -14,7 +14,7 @@ using namespace ai;
 vector<string> split(const string& s, char delim);
 char* strstri(const char* haystack, const char* needle);
 
-bool GoAction::Execute(Event event)
+bool GoAction::Execute(Event& event)
 {
     Player* master = GetMaster();
     if (!master)
@@ -34,7 +34,8 @@ bool GoAction::Execute(Event event)
     
     if (param.find("travel") != string::npos && param.size()> 7)
     {
-        WorldPosition* botPos = &WorldPosition(bot);
+        WorldPosition pos = WorldPosition(bot);
+        WorldPosition* botPos = &pos;
 
         string destination = param.substr(7);
 
@@ -114,7 +115,7 @@ bool GoAction::Execute(Event event)
         else
             z = bot->GetPositionZ();
 
-        if (ai->HasStrategy("debug move", BOT_STATE_NON_COMBAT))
+        if (ai->HasStrategy("debug move", BotState::BOT_STATE_NON_COMBAT))
         {
             
             PathFinder path(bot);

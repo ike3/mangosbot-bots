@@ -152,16 +152,16 @@ bool EmoteActionBase::ReceiveEmote(Player* source, uint32 emote, bool verbal)
     case 325:
         if (ai->GetMaster() == source)
         {
-            ai->ChangeStrategy("-follow,+stay", BOT_STATE_NON_COMBAT);
-            ai->TellMasterNoFacing("Fine.. I'll stay right here..");
+            ai->ChangeStrategy("-follow,+stay", BotState::BOT_STATE_NON_COMBAT);
+            ai->TellMasterNoFacing("Fine.. I'll stay right here..", PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
         }
         break;
     case TEXTEMOTE_BECKON:
     case 324:
         if (ai->GetMaster() == source)
         {
-            ai->ChangeStrategy("+follow", BOT_STATE_NON_COMBAT);
-            ai->TellMasterNoFacing("Wherever you go, I'll follow..");
+            ai->ChangeStrategy("+follow", BotState::BOT_STATE_NON_COMBAT);
+            ai->TellMasterNoFacing("Wherever you go, I'll follow..", PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
         }
         break;
     case TEXTEMOTE_WAVE:
@@ -636,7 +636,7 @@ bool EmoteActionBase::ReceiveEmote(Player* source, uint32 emote, bool verbal)
     return true;
 }
 
-bool EmoteAction::Execute(Event event)
+bool EmoteAction::Execute(Event& event)
 {
     WorldPacket p(event.getPacket());
     uint32 emote = 0;
@@ -692,7 +692,7 @@ bool EmoteAction::Execute(Event event)
         pSource = sObjectMgr.GetPlayer(source);
         if (pSource && pSource != bot && sServerFacade.GetDistance2d(bot, pSource) < sPlayerbotAIConfig.farDistance && emoteId != EMOTE_ONESHOT_NONE)
         {
-            if ((pSource->GetObjectGuid() != bot->GetObjectGuid()) && (pSource->GetSelectionGuid() == bot->GetObjectGuid() || (urand(0, 1) && sServerFacade.IsInFront(bot, pSource, 10.0f, M_PI_F))))
+            if ((pSource->GetObjectGuid() != bot->GetObjectGuid()) && (pSource->GetSelectionGuid() == bot->GetObjectGuid() || (urand(0, 1) && sServerFacade.IsInFront(pSource, bot, 10.0f, M_PI_F))))
             {
                 sLog.outDetail("Bot #%d %s:%d <%s> received SMSG_EMOTE %d from player #%d <%s>", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->GetLevel(), bot->GetName(), emoteId, pSource->GetGUIDLow(), pSource->GetName());
                 vector<uint32> types;
@@ -813,7 +813,7 @@ bool EmoteAction::isUseful()
 }
 
 
-bool TalkAction::Execute(Event event)
+bool TalkAction::Execute(Event& event)
 {
     Unit* target = ai->GetUnit(AI_VALUE(ObjectGuid, "talk target"));
     if (!target)
@@ -833,7 +833,14 @@ bool TalkAction::Execute(Event event)
             player->GetPlayerbotAI()->GetAiObjectContext()->GetValue<ObjectGuid>("talk target")->Set(bot->GetObjectGuid());
 
         context->GetValue<ObjectGuid>("talk target")->Set(target->GetObjectGuid());
-        return Emote(target, GetRandomEmote(target, true), true);
+        //return Emote(target, GetRandomEmote(target, true), true);
+        uint32 emote = GetRandomEmote(target, true);
+        WorldPacket data(SMSG_TEXT_EMOTE);
+        data << emote;
+        data << GetNumberOfEmoteVariants((TextEmotes)emote, bot->getRace(), bot->getGender());
+        data << ((target && urand(0, 1)) ? target->GetObjectGuid() : ObjectGuid());
+        bot->GetSession()->HandleTextEmoteOpcode(data);
+        return true;
     }
 
     return false;

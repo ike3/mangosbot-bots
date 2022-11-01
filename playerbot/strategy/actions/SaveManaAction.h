@@ -11,7 +11,7 @@ namespace ai
         SaveManaAction(PlayerbotAI* ai) : Action(ai, "save mana") {}
 
     public:
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
 
     private:
         string format(double value);

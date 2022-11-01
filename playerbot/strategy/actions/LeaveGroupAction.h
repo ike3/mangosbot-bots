@@ -9,7 +9,7 @@ namespace ai
     public:
         LeaveGroupAction(PlayerbotAI* ai, string name = "leave") : Action(ai, name) {}
 
-        virtual bool Execute(Event event)
+        virtual bool Execute(Event& event)
         {            
             Player* master = event.getOwner();
             return Leave(master);
@@ -22,7 +22,7 @@ namespace ai
     public:
         PartyCommandAction(PlayerbotAI* ai) : LeaveGroupAction(ai, "party command") {}
 
-        virtual bool Execute(Event event)
+        virtual bool Execute(Event& event)
         {
             WorldPacket& p = event.getPacket();
             p.rpos(0);
@@ -46,7 +46,7 @@ namespace ai
     public:
         UninviteAction(PlayerbotAI* ai) : LeaveGroupAction(ai, "uninvite") {}
 
-        virtual bool Execute(Event event)
+        virtual bool Execute(Event& event)
         {
             WorldPacket& p = event.getPacket();
 
@@ -85,7 +85,7 @@ namespace ai
     public:
         LeaveFarAwayAction(PlayerbotAI* ai) : LeaveGroupAction(ai, "leave far away") {}
 
-        virtual bool Execute(Event event)
+        virtual bool Execute(Event& event)
         {
             return Leave(nullptr);
         }

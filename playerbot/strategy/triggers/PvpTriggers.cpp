@@ -3,6 +3,7 @@
 #include "PvpTriggers.h"
 #include "ServerFacade.h"
 #include "BattleGroundWS.h"
+#include "strategy/values/PositionValue.h"
 #ifndef MANGOSBOT_ZERO
 #include "BattleGroundEY.h"
 #endif
@@ -11,6 +12,10 @@ using namespace ai;
 
 bool EnemyPlayerNear::IsActive()
 {
+    Unit* current = AI_VALUE(Unit*, "current target");
+    if (current)
+        return current != AI_VALUE(Unit*, "enemy player target");
+
     return AI_VALUE(Unit*, "enemy player target");
 }
 
@@ -111,10 +116,14 @@ bool PlayerIsInBattlegroundWithoutFlag::IsActive()
 
 bool PlayerHasFlag::IsActive()
 {
+    ai::PositionEntry pos = context->GetValue<ai::PositionMap&>("position")->Get()["bg objective"];
     if (bot->InBattleGround())
     {
         if (bot->GetBattleGroundTypeId() == BattleGroundTypeId::BATTLEGROUND_WS)
         {
+            if (pos.isSet() && sServerFacade.GetDistance2d(bot, pos.x, pos.y) < 10.0f)
+                return false;
+
             BattleGroundWS *bg = (BattleGroundWS*)ai->GetBot()->GetBattleGround();
             if (bot->GetObjectGuid() == bg->GetFlagCarrierGuid(TEAM_INDEX_ALLIANCE) || bot->GetObjectGuid() == bg->GetFlagCarrierGuid(TEAM_INDEX_HORDE))
             {

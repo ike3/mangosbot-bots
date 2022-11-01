@@ -2,7 +2,7 @@
 
 #include "../Action.h"
 #include "MovementActions.h"
-#include "../../Travelmgr.h"
+#include "../../TravelMgr.h"
 
 namespace ai
 {
@@ -10,22 +10,22 @@ namespace ai
     public:
         ChooseTravelTargetAction(PlayerbotAI* ai, string name = "choose travel target") : MovementAction(ai, name) {}
 
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
         virtual bool isUseful();
 
         protected:
 
-        void getNewTarget(TravelTarget* newTarget, TravelTarget* oldTarget);
+            void getNewTarget(TravelTarget* newTarget, TravelTarget* oldTarget);
 
         void setNewTarget(TravelTarget* newTarget, TravelTarget* oldTarget);
         void ReportTravelTarget(TravelTarget* newTarget, TravelTarget* oldTarget);
 
-        bool getBestDestination(vector<TravelDestination*>* activeDestinations, vector<WorldPosition*>* activePoints);
+        vector<WorldPosition*> getLogicalPoints(vector<WorldPosition*>& travelPoints);
+        bool SetBestTarget(TravelTarget* target, vector<TravelDestination*>& activeDestinations);
 
         bool SetGroupTarget(TravelTarget* target);
         bool SetCurrentTarget(TravelTarget* target, TravelTarget* oldTarget);
-        bool SetQuestTarget(TravelTarget* target, bool onlyCompleted = false);
-        bool SetNewQuestTarget(TravelTarget* target);
+        bool SetQuestTarget(TravelTarget* target, bool newQuests = true, bool activeQuests = true, bool completedQuests = true);
         bool SetRpgTarget(TravelTarget* target);
         bool SetGrindTarget(TravelTarget* target);
         bool SetBossTarget(TravelTarget* target);

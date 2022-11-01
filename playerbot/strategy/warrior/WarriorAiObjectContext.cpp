@@ -3,6 +3,7 @@
 #include "WarriorActions.h"
 #include "WarriorAiObjectContext.h"
 #include "GenericWarriorNonCombatStrategy.h"
+#include "WarriorReactionStrategy.h"
 #include "TankWarriorStrategy.h"
 #include "ArmsWarriorStrategy.h"
 #include "FuryWarriorStrategy.h"
@@ -25,12 +26,14 @@ namespace ai
             StrategyFactoryInternal()
             {
                 creators["nc"] = &warrior::StrategyFactoryInternal::nc;
+                creators["react"] = &warrior::StrategyFactoryInternal::react;
                 creators["pull"] = &warrior::StrategyFactoryInternal::pull;
                 creators["aoe"] = &warrior::StrategyFactoryInternal::warrior_aoe;
             }
 
         private:
             static Strategy* nc(PlayerbotAI* ai) { return new GenericWarriorNonCombatStrategy(ai); }
+            static Strategy* react(PlayerbotAI* ai) { return new WarriorReactionStrategy(ai); }
             static Strategy* warrior_aoe(PlayerbotAI* ai) { return new WarrirorAoeStrategy(ai); }
             static Strategy* pull(PlayerbotAI* ai) { return new PullStrategy(ai, "shoot"); }
         };

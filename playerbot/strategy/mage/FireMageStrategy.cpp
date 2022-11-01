@@ -15,8 +15,16 @@ void FireMageStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
     GenericMageStrategy::InitTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
+        "enemy ten yards",
+        NextAction::array(0, new NextAction("blast wave", 62.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
         "pyroblast",
         NextAction::array(0, new NextAction("pyroblast", 10.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "fireball",
+        NextAction::array(0, new NextAction("fireball", 10.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
         "hot streak",
@@ -28,7 +36,15 @@ void FireMageStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "enemy too close for spell",
-        NextAction::array(0, new NextAction("dragon's breath", 70.0f), NULL)));
+        NextAction::array(0, new NextAction("dragon's breath", 61.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "mana shield",
+        NextAction::array(0, new NextAction("mana shield", 15.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "has aggro",
+        NextAction::array(0, new NextAction("fire blast", ACTION_HIGH + 10), NULL)));
 }
 
 void FireMageAoeStrategy::InitTriggers(std::list<TriggerNode*> &triggers)

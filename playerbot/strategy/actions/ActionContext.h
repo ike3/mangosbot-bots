@@ -33,7 +33,7 @@
 #include "RpgAction.h"
 #include "TravelAction.h"
 #include "RtiAction.h"
-#include "BattlegroundTactics.h"
+#include "BattleGroundTactics.h"
 #include "CheckMountStateAction.h"
 #include "ChangeTalentsAction.h"
 #include "AutoLearnSpellAction.h"
@@ -167,6 +167,7 @@ namespace ai
             creators["goblin sapper"] = &ActionContext::goblin_sapper;
             creators["oil of immolation"] = &ActionContext::oil_of_immolation;
             creators["dark rune"] = &ActionContext::dark_rune;
+            creators["adamantite grenade"] = &ActionContext::adamantite_grenade;
 
             // BG Tactics
             creators["bg tactics"] = &ActionContext::bg_tactics;
@@ -179,6 +180,9 @@ namespace ai
             creators["bg use buff"] = &ActionContext::bg_use_buff;
             creators["attack enemy flag carrier"] = &ActionContext::attack_enemy_fc;
             creators["bg check flag"] = &ActionContext::bg_check_flag;
+
+            // lightwell
+            creators["use lightwell"] = &ActionContext::use_lightwell;
 
             // Vehicles
             creators["enter vehicle"] = &ActionContext::enter_vehicle;
@@ -205,6 +209,9 @@ namespace ai
             creators["rpg end quest"] = &ActionContext::rpg_end_quest;
             creators["rpg buy"] = &ActionContext::rpg_buy;
             creators["rpg sell"] = &ActionContext::rpg_sell;
+            creators["rpg ah sell"] = &ActionContext::rpg_ah_sell;
+            creators["rpg ah buy"] = &ActionContext::rpg_ah_buy;
+            creators["rpg get mail"] = &ActionContext::rpg_get_mail;
             creators["rpg repair"] = &ActionContext::rpg_repair;
             creators["rpg train"] = &ActionContext::rpg_train;
             creators["rpg heal"] = &ActionContext::rpg_heal;
@@ -363,6 +370,7 @@ namespace ai
         static Action* goblin_sapper(PlayerbotAI* ai) { return new CastGoblinSappersAction(ai); }
         static Action* oil_of_immolation(PlayerbotAI* ai) { return new CastOilOfImmolationAction(ai); }
         static Action* dark_rune(PlayerbotAI* ai) { return new DarkRuneAction(ai); }
+        static Action* adamantite_grenade(PlayerbotAI* ai) { return new UseAdamantiteGrenadeAction(ai); }
         
         // BG Tactics
         static Action* bg_tactics(PlayerbotAI* ai) { return new BGTactics(ai); }
@@ -375,6 +383,9 @@ namespace ai
         static Action* attack_enemy_fc(PlayerbotAI* ai) { return new AttackEnemyFlagCarrierAction(ai); }
         static Action* bg_use_buff(PlayerbotAI* ai) { return new BGTactics(ai, "use buff"); }
         static Action* bg_check_flag(PlayerbotAI* ai) { return new BGTactics(ai, "check flag"); }   
+
+        // lightwell
+        static Action* use_lightwell(PlayerbotAI* ai) { return new UseLightwellAction(ai); }
 
         // Vehicles
         static Action* enter_vehicle(PlayerbotAI* ai) { return new EnterVehicleAction(ai); }
@@ -401,6 +412,9 @@ namespace ai
         static Action* rpg_end_quest(PlayerbotAI* ai) { return new RpgEndQuestAction(ai); }
         static Action* rpg_buy(PlayerbotAI* ai) { return new RpgBuyAction(ai); }
         static Action* rpg_sell(PlayerbotAI* ai) { return new RpgSellAction(ai); }
+        static Action* rpg_ah_sell(PlayerbotAI* ai) { return new RpgAHSellAction(ai); }
+        static Action* rpg_ah_buy(PlayerbotAI* ai) { return new RpgAHBuyAction(ai); }
+        static Action* rpg_get_mail(PlayerbotAI* ai) { return new RpgGetMailAction(ai); }
         static Action* rpg_repair(PlayerbotAI* ai) { return new RpgRepairAction(ai); }
         static Action* rpg_train(PlayerbotAI* ai) { return new RpgTrainAction(ai); }
         static Action* rpg_heal(PlayerbotAI* ai) { return new RpgHealAction(ai); }

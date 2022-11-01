@@ -59,7 +59,7 @@ namespace ai {
                 ;
 
             // useful if no mount or with wsg flag
-            return !bot->IsMounted() && (!firstmount || (bot->HasAura(23333) || bot->HasAura(23335) || bot->HasAura(34976))) && !ai->HasAura("dash", bot);
+            return !bot->IsMounted() || !firstmount;
         }
     };
 
@@ -73,7 +73,7 @@ namespace ai {
 		}
 		virtual bool isPossible() { return true; }
 		
-		virtual bool Execute(Event event);
+		virtual bool Execute(Event& event);
 	};
 
 }

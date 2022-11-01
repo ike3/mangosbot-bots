@@ -11,7 +11,7 @@ namespace ai
         AutoLearnSpellAction(PlayerbotAI* ai, string name = "auto learn spell") : Action(ai, name) {}
 
     public:
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
 
     private: 
         void LearnSpells(ostringstream* out);

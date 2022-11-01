@@ -4,7 +4,7 @@
 
 using namespace ai;
 
-bool CastSpellAction::Execute(Event event)
+bool CastSpellAction::Execute(Event& event)
 {
     if (spell == "conjure food" || spell == "conjure water")
     {
@@ -79,6 +79,8 @@ bool CastSpellAction::isUseful()
         return false;
     }
 
+    bool isUsefulCast = AI_VALUE2(bool, "spell cast useful", spell);
+
     Unit* spellTarget = GetTarget();
     if (!spellTarget)
         return false;
@@ -119,7 +121,7 @@ bool CastSpellAction::isUseful()
         }
     }
 
-    return spellTarget && AI_VALUE2(bool, "spell cast useful", spell) && canReach; // bot->GetDistance(spellTarget, true, DIST_CALC_COMBAT_REACH) <= (range + sPlayerbotAIConfig.contactDistance);
+    return spellTarget && isUsefulCast && canReach; // bot->GetDistance(spellTarget, true, DIST_CALC_COMBAT_REACH) <= (range + sPlayerbotAIConfig.contactDistance);
 }
 
 bool CastAuraSpellAction::isUseful()
@@ -162,7 +164,7 @@ bool CastVehicleSpellAction::isUseful()
     return ai->IsInVehicle(false, true);
 }
 
-bool CastVehicleSpellAction::Execute(Event event)
+bool CastVehicleSpellAction::Execute(Event& event)
 {
     uint32 spellId = AI_VALUE2(uint32, "vehicle spell id", spell);
     return ai->CastVehicleSpell(spellId, GetTarget());

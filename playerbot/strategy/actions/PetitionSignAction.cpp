@@ -13,7 +13,7 @@
 using namespace std;
 using namespace ai;
 
-bool PetitionSignAction::Execute(Event event)
+bool PetitionSignAction::Execute(Event& event)
 {
     WorldPacket p(event.getPacket());
     p.rpos(0);
@@ -83,7 +83,7 @@ bool PetitionSignAction::Execute(Event event)
     if (_inviter == bot)
         return false;
 
-    if (!accept || !ai->GetSecurity()->CheckLevelFor(PLAYERBOT_SECURITY_INVITE, false, _inviter, true))
+    if (!accept || !ai->GetSecurity()->CheckLevelFor(PlayerbotSecurityLevel::PLAYERBOT_SECURITY_INVITE, false, _inviter, true))
     {
         WorldPacket data(MSG_PETITION_DECLINE);
         data << petitionGuid;

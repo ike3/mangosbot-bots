@@ -13,26 +13,26 @@ namespace ai
         ReleaseSpiritAction(PlayerbotAI* ai, string name = "release") : Action(ai, name) {}
 
     public:
-        virtual bool Execute(Event event)
+        virtual bool Execute(Event& event)
         {
             if (sServerFacade.IsAlive(bot))
             {
-                ai->TellMasterNoFacing("I am not dead, will wait here");
-                ai->ChangeStrategy("-follow,+stay", BOT_STATE_NON_COMBAT);
+                ai->TellMasterNoFacing("I am not dead, will wait here", PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+                ai->ChangeStrategy("-follow,+stay", BotState::BOT_STATE_NON_COMBAT);
                 return false;
             }
 
             if (bot->GetCorpse() && bot->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_GHOST))
             {
-                ai->TellMasterNoFacing("I am already a spirit");
+                ai->TellMasterNoFacing("I am already a spirit", PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
                 return false;
             }
 
             WorldPacket& p = event.getPacket();
             if (!p.empty() && p.GetOpcode() == CMSG_REPOP_REQUEST)
-                ai->TellMasterNoFacing("Releasing...");
+                ai->TellMasterNoFacing("Releasing...", PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
             else
-                ai->TellMasterNoFacing("Meet me at the graveyard");
+                ai->TellMasterNoFacing("Meet me at the graveyard", PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
 
             sLog.outDetail("Bot #%d %s:%d <%s> released", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->GetLevel(), bot->GetName());
 
@@ -55,7 +55,7 @@ namespace ai
     public:
         AutoReleaseSpiritAction(PlayerbotAI* ai, string name = "auto release") : ReleaseSpiritAction(ai, name) {}
 
-        virtual bool Execute(Event event)
+        virtual bool Execute(Event& event)
         {
             sLog.outDetail("Bot #%d %s:%d <%s> auto released", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->GetLevel(), bot->GetName());
 
@@ -69,6 +69,8 @@ namespace ai
                 // cast Waiting for Resurrect
                 bot->CastSpell(bot, 2584, TRIGGERED_OLD_TRIGGERED);
             }
+
+            sTravelMgr.logEvent(ai, "AutoReleaseSpiritAction");           
 
             return true;
         }
@@ -84,7 +86,7 @@ namespace ai
 #endif
 
             if (bot->InBattleGround())
-                return !bot->GetCorpse();
+                return !bot->GetCorpse() || !bot->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_GHOST);
 
             if (bot->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_GHOST))
                 return false;
@@ -119,7 +121,7 @@ namespace ai
         RepopAction(PlayerbotAI* ai, string name = "repop") : SpiritHealerAction(ai, name) {}
 
     public:
-        virtual bool Execute(Event event)
+        virtual bool Execute(Event& event)
         {
             sLog.outBasic("Bot #%d %s:%d <%s> repops at graveyard", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->GetLevel(), bot->GetName());
 

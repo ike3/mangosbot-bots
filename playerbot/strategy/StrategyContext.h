@@ -75,6 +75,14 @@ namespace ai
             creators["reveal"] = &StrategyContext::reveal;
             creators["collision"] = &StrategyContext::collision;
             creators["rpg"] = &StrategyContext::rpg;
+            creators["rpg quest"] = &StrategyContext::rpg_quest;
+            creators["rpg vendor"] = &StrategyContext::rpg_vendor;
+            creators["rpg explore"] = &StrategyContext::rpg_explore;
+            creators["rpg maintenance"] = &StrategyContext::rpg_maintenance;
+            creators["rpg guild"] = &StrategyContext::rpg_guild;
+            creators["rpg bg"] = &StrategyContext::rpg_bg;
+            creators["rpg player"] = &StrategyContext::rpg_player;
+            creators["rpg craft"] = &StrategyContext::rpg_craft;
 			creators["travel"] = &StrategyContext::travel;
             creators["explore"] = &StrategyContext::explore;
             creators["map"] = &StrategyContext::map;
@@ -96,9 +104,11 @@ namespace ai
             creators["mount"] = &StrategyContext::mount;
             creators["attack tagged"] = &StrategyContext::attack_tagged;
             creators["debug"] = &StrategyContext::debug;
+            creators["debug action"] = &StrategyContext::debug_action;
             creators["debug move"] = &StrategyContext::debug_move;
             creators["debug rpg"] = &StrategyContext::debug_rpg;
             creators["debug spell"] = &StrategyContext::debug_spell;
+            creators["debug travel"] = &StrategyContext::debug_travel;
             creators["rtsc"] = &StrategyContext::rtsc;
             creators["maintenance"] = &StrategyContext::maintenance;
             creators["group"] = &StrategyContext::group;
@@ -147,6 +157,14 @@ namespace ai
         static Strategy* reveal(PlayerbotAI* ai) { return new RevealStrategy(ai); }
         static Strategy* collision(PlayerbotAI* ai) { return new CollisionStrategy(ai); }
         static Strategy* rpg(PlayerbotAI* ai) { return new RpgStrategy(ai); }
+        static Strategy* rpg_quest(PlayerbotAI* ai) { return new RpgQuestStrategy(ai); }
+        static Strategy* rpg_vendor(PlayerbotAI* ai) { return new RpgVendorStrategy(ai); }
+        static Strategy* rpg_explore(PlayerbotAI* ai) { return new RpgExploreStrategy(ai); }
+        static Strategy* rpg_maintenance(PlayerbotAI* ai) { return new RpgMaintenanceStrategy(ai); }
+        static Strategy* rpg_guild(PlayerbotAI* ai) { return new RpgGuildStrategy(ai); }
+        static Strategy* rpg_bg(PlayerbotAI* ai) { return new RpgBgStrategy(ai); }
+        static Strategy* rpg_player(PlayerbotAI* ai) { return new RpgPlayerStrategy(ai); }
+        static Strategy* rpg_craft(PlayerbotAI* ai) { return new RpgCraftStrategy(ai); }
 		static Strategy* travel(PlayerbotAI* ai) { return new TravelStrategy(ai); }
         static Strategy* explore(PlayerbotAI* ai) { return new ExploreStrategy(ai); }
         static Strategy* map(PlayerbotAI* ai) { return new MapStrategy(ai); }
@@ -155,9 +173,11 @@ namespace ai
         static Strategy* possible_ads(PlayerbotAI* ai) { return new PossibleAdsStrategy(ai); }
         static Strategy* attack_tagged(PlayerbotAI* ai) { return new AttackTaggedStrategy(ai); }
         static Strategy* debug(PlayerbotAI* ai) { return new DebugStrategy(ai); }
+        static Strategy* debug_action(PlayerbotAI* ai) { return new DebugActionStrategy(ai); }
         static Strategy* debug_move(PlayerbotAI* ai) { return new DebugMoveStrategy(ai); }
         static Strategy* debug_rpg(PlayerbotAI* ai) { return new DebugRpgStrategy(ai); }
         static Strategy* debug_spell(PlayerbotAI* ai) { return new DebugSpellStrategy(ai); }
+        static Strategy* debug_travel(PlayerbotAI* ai) { return new DebugTravelStrategy(ai); }
         static Strategy* rtsc(PlayerbotAI* ai) { return new RTSCStrategy(ai); }
         static Strategy* maintenance(PlayerbotAI* ai) { return new MaintenanceStrategy(ai); }
         static Strategy* group(PlayerbotAI* ai) { return new GroupStrategy(ai); }

@@ -66,9 +66,19 @@ void AttackersValue::AddAttackersOf(Player* player, set<Unit*>& targets)
         return;
 
 	list<Unit*> units;
-	MaNGOS::AnyUnfriendlyUnitInObjectRangeCheck u_check(player, sPlayerbotAIConfig.sightDistance);
-    MaNGOS::UnitListSearcher<MaNGOS::AnyUnfriendlyUnitInObjectRangeCheck> searcher(units, u_check);
-    Cell::VisitAllObjects(player, searcher, sPlayerbotAIConfig.sightDistance);
+	//MaNGOS::AnyUnfriendlyUnitInObjectRangeCheck u_check(player, sPlayerbotAIConfig.sightDistance);
+    //MaNGOS::UnitListSearcher<MaNGOS::AnyUnfriendlyUnitInObjectRangeCheck> searcher(units, u_check);
+    //Cell::VisitAllObjects(player, searcher, sPlayerbotAIConfig.sightDistance);
+
+    list<ObjectGuid> unitGuids = AI_VALUE(list<ObjectGuid>, "possible targets");
+
+    for (auto unitGuid : unitGuids)
+    {
+        Unit* unit = ai->GetUnit(unitGuid);
+        if (unit)
+            units.push_back(unit);
+    }
+
 	for (list<Unit*>::iterator i = units.begin(); i != units.end(); i++)
     {
 		if (!player->GetGroup())
@@ -127,6 +137,18 @@ bool AttackersValue::IsPossibleTarget(Unit *attacker, Player *bot, float range)
     bool inCannon = ai->IsInVehicle(false, true);
 
     bool enemy = ai->GetAiObjectContext()->GetValue<Unit*>("enemy player target")->Get();
+    bool duel = false;
+    if (attacker && bot->duel && bot->duel->opponent && attacker->GetObjectGuid() == bot->duel->opponent->GetObjectGuid())
+        duel = true;
+
+#ifndef MANGOSBOT_ZERO
+    Player* arenaEnemy = dynamic_cast<Player*>(attacker);
+    if (arenaEnemy)
+    {
+        if (arenaEnemy->InArena() && bot->InArena() && arenaEnemy->GetBGTeam() != bot->GetBGTeam())
+            duel = true;
+    }
+#endif
 
     return attacker &&
         attacker->IsInWorld() &&
@@ -138,6 +160,7 @@ bool AttackersValue::IsPossibleTarget(Unit *attacker, Player *bot, float range)
         attacker->IsVisibleForOrDetect(bot, bot->GetCamera().GetBody(), true) &&
 #ifdef CMANGOS
         !(attacker->IsStunned() && ai->HasAura("shackle undead", attacker)) &&
+        !ai->HasAura("gouge", attacker) &&
 #endif
 #ifdef MANGOS
         //!attacker->hasUnitState(UNIT_STAT_STUNNED) &&
@@ -147,7 +170,7 @@ bool AttackersValue::IsPossibleTarget(Unit *attacker, Player *bot, float range)
         //sServerFacade.IsCharmed(attacker) ||
         sServerFacade.IsFeared(attacker)) && !rti) &&
         //!sServerFacade.IsInRoots(attacker) &&
-        !sServerFacade.IsFriendlyTo(attacker, bot) &&
+        (!sServerFacade.IsFriendlyTo(attacker, bot) || duel) &&
         bot->IsWithinDistInMap(attacker, range) &&
         !attacker->HasAuraType(SPELL_AURA_SPIRIT_OF_REDEMPTION) &&
         !(attacker->GetObjectGuid().IsPet() && enemy) &&
@@ -162,7 +185,7 @@ bool AttackersValue::IsPossibleTarget(Unit *attacker, Player *bot, float range)
 #endif
             (
 #ifdef CMANGOS
-                (!isMemberBotGroup && ai->HasStrategy("attack tagged", BOT_STATE_NON_COMBAT)) || leaderHasThreat ||
+                (!isMemberBotGroup && ai->HasStrategy("attack tagged", BotState::BOT_STATE_NON_COMBAT)) || leaderHasThreat ||
                 (!c->HasLootRecipient() &&
                     (!c->GetVictim() ||
                     c->GetVictim() &&

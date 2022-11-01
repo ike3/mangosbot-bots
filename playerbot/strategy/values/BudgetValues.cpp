@@ -88,62 +88,6 @@ uint32 RepairCostValue::Calculate()
     return TotalCost;
 }
 
-uint32 TrainCostValue::Calculate()
-{
-    uint32 TotalCost = 0;
-
-    set<uint32> spells;
-
-    for (uint32 id = 0; id < sCreatureStorage.GetMaxEntry(); ++id)
-    {
-        CreatureInfo const* co = sCreatureStorage.LookupEntry<CreatureInfo>(id);
-        if (!co)
-            continue;
-
-        if (co->TrainerType != TRAINER_TYPE_CLASS && co->TrainerType != TRAINER_TYPE_TRADESKILLS)
-            continue;
-
-        if (co->TrainerType == TRAINER_TYPE_CLASS && co->TrainerClass != bot->getClass())
-            continue;
-
-        uint32 trainerId = co->TrainerTemplateId;
-        if (!trainerId)
-            trainerId = co->Entry;
-
-        TrainerSpellData const* trainer_spells = sObjectMgr.GetNpcTrainerTemplateSpells(trainerId);
-        if (!trainer_spells)
-            trainer_spells = sObjectMgr.GetNpcTrainerSpells(trainerId);
-
-        if (!trainer_spells)
-            continue;
-
-        for (TrainerSpellMap::const_iterator itr = trainer_spells->spellList.begin(); itr != trainer_spells->spellList.end(); ++itr)
-        {
-            TrainerSpell const* tSpell = &itr->second;
-
-            if (!tSpell)
-                continue;
-
-            uint32 reqLevel = 0;
-
-            reqLevel = tSpell->isProvidedReqLevel ? tSpell->reqLevel : std::max(reqLevel, tSpell->reqLevel);
-            TrainerSpellState state = bot->GetTrainerSpellState(tSpell, reqLevel);
-            if (state != TRAINER_SPELL_GREEN)
-                continue;
-
-            if (co->TrainerType == TRAINER_TYPE_TRADESKILLS)
-                continue;
-
-            if (spells.find(tSpell->spell) != spells.end())
-                continue;
-
-            TotalCost += tSpell->spellCost;
-            spells.insert(tSpell->spell);
-        }
-    }
-    return TotalCost;
-}
-
 uint32 MoneyNeededForValue::Calculate()
 {
 	NeedMoneyFor needMoneyFor = NeedMoneyFor(stoi(getQualifier()));
@@ -179,16 +123,19 @@ uint32 MoneyNeededForValue::Calculate()
         moneyWanted = (level * level * level) / 10; //Or level^3 (1s @ lvl10, 30s @ lvl30, 2g @ lvl60, 5g @ lvl80): Todo replace (Should be best food/drink x 2 stacks cost)
         break;
     case NeedMoneyFor::guild:
-        if (ai->HasStrategy("guild", BOT_STATE_NON_COMBAT))
+        if (ai->HasStrategy("guild", BotState::BOT_STATE_NON_COMBAT))
         {
             if (bot->GetGuildId() && bot->GetLevel() > 20)
                 moneyWanted = AI_VALUE2(uint32, "item count", chat->formatQItem(5976)) ? 0 : 10000; //1g (tabard)
-            else
-                moneyWanted = AI_VALUE2(uint32, "item count", chat->formatQItem(5863)) ? 0 : 10000; //10s (guild charter)
+            else if (bot->GetLevel() > 10)
+                moneyWanted = AI_VALUE2(uint32, "item count", chat->formatQItem(5863)) ? 0 : 1000; //10s (guild charter)
         }
         break;
     case NeedMoneyFor::tradeskill:
         moneyWanted = (level * level * level); //Or level^3 (10s @ lvl10, 3g @ lvl30, 20g @ lvl60, 50g @ lvl80): Todo replace (Should be buyable reagents that combined allow crafting of usefull items)
+        break;
+    case NeedMoneyFor::ah:
+        moneyWanted = 0; //We don't save any money for deposits 
         break;
     }
 

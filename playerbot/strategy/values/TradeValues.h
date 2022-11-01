@@ -9,7 +9,8 @@ namespace ai
 	public:
         ItemsUsefulToGiveValue(PlayerbotAI* ai, string name = "useful to give") : CalculatedValue(ai, name) {}
 
-    public:
         list<Item*> Calculate();
+    private:
+        bool IsTradingItem(uint32 entry);
     };
 }

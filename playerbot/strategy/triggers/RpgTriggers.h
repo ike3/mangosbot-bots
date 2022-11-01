@@ -14,9 +14,9 @@ namespace ai
     class HasRpgTargetTrigger : public NoRpgTargetTrigger
     {
     public:
-        HasRpgTargetTrigger(PlayerbotAI* ai, string name = "has rpg target", int checkInterval = 1) : NoRpgTargetTrigger(ai, name, checkInterval) {}
+        HasRpgTargetTrigger(PlayerbotAI* ai, string name = "has rpg target", int checkInterval = 2) : NoRpgTargetTrigger(ai, name, checkInterval) {}
 
-        virtual bool IsActive() { return !NoRpgTargetTrigger::IsActive(); };
+        virtual bool IsActive() { return !NoRpgTargetTrigger::IsActive() && AI_VALUE(string, "next rpg action") != "choose rpg target"; }; //Ingore rpg targets that only have the cancel action available.
     };
 
     class FarFromRpgTargetTrigger : public NoRpgTargetTrigger
@@ -35,7 +35,6 @@ namespace ai
         virtual bool IsActive() { return !NoRpgTargetTrigger::IsActive() && !FarFromRpgTargetTrigger::IsActive(); };
     };
 
-
     //Sub actions:
     class RpgTrigger : public FarFromRpgTargetTrigger
     {
@@ -44,8 +43,16 @@ namespace ai
 
         GuidPosition getGuidP() { return AI_VALUE(GuidPosition, "rpg target"); }
 
-        virtual bool IsActive() { return true; };
-        virtual Event Check() { if (!NoRpgTargetTrigger::IsActive() && (AI_VALUE(string, "next rpg action") == "choose rpg target") || !FarFromRpgTargetTrigger::IsActive()) return Trigger::Check(); return Event(); };
+        virtual bool IsActive() { return !ai->HasRealPlayerMaster() || (AI_VALUE(GuidPosition, "rpg target").GetEntry() && AI_VALUE(GuidPosition, "rpg target").GetEntry() == AI_VALUE(TravelTarget*, "travel target")->getEntry()); };
+        virtual Event Check() { if (!NoRpgTargetTrigger::IsActive() && (AI_VALUE(string, "next rpg action") == "choose rpg target" || !FarFromRpgTargetTrigger::IsActive())) return Trigger::Check(); return Event(); };
+    };
+
+
+    class RpgWanderTrigger : public RpgTrigger
+    {
+    public:
+        RpgWanderTrigger(PlayerbotAI* ai, string name = "rpg wander") : RpgTrigger(ai, name) {}
+        virtual bool IsActive() { return ai->HasRealPlayerMaster(); };
     };
 
     class RpgTaxiTrigger : public RpgTrigger
@@ -76,6 +83,13 @@ namespace ai
         virtual bool IsActive();
     };
 
+    class RpgRepeatQuestTrigger : public RpgTrigger
+    {
+    public:
+        RpgRepeatQuestTrigger(PlayerbotAI* ai, string name = "rpg repeat quest") : RpgTrigger(ai, name) {}
+        virtual bool IsActive();
+    };
+
     class RpgBuyTrigger : public RpgTrigger
     {
     public:
@@ -87,6 +101,27 @@ namespace ai
     {
     public:
         RpgSellTrigger(PlayerbotAI* ai, string name = "rpg sell") : RpgTrigger(ai, name) {}
+        virtual bool IsActive();
+    };
+
+    class RpgAHSellTrigger : public RpgTrigger
+    {
+    public:
+        RpgAHSellTrigger(PlayerbotAI* ai, string name = "rpg ah sell") : RpgTrigger(ai, name) {}
+        virtual bool IsActive();
+    };
+
+    class RpgAHBuyTrigger : public RpgTrigger
+    {
+    public:
+        RpgAHBuyTrigger(PlayerbotAI* ai, string name = "rpg ah buy") : RpgTrigger(ai, name) {}
+        virtual bool IsActive();
+    };
+
+    class RpgGetMailTrigger : public RpgTrigger
+    {
+    public:
+        RpgGetMailTrigger(PlayerbotAI* ai, string name = "rpg get mail") : RpgTrigger(ai, name) {}
         virtual bool IsActive();
     };
 
@@ -161,6 +196,8 @@ namespace ai
     public:
         RpgTradeUsefulTrigger(PlayerbotAI* ai, string name = "rpg trade useful") : RpgTrigger(ai, name) {}
         virtual bool IsActive();
+    private:
+        virtual bool isFriend(Player* player); //Move to value later.
     };
 
     class RpgDuelTrigger : public RpgTrigger

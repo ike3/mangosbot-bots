@@ -9,7 +9,7 @@ namespace ai
     public:
         AcceptResurrectAction(PlayerbotAI* ai) : Action(ai, "accept resurrect") {}
 
-        virtual bool Execute(Event event)
+        virtual bool Execute(Event& event)
         {
             if (sServerFacade.IsAlive(bot))
                 return false;
@@ -24,7 +24,7 @@ namespace ai
             packet << uint8(1);                        // accept
             bot->GetSession()->HandleResurrectResponseOpcode(packet);   // queue the packet to get around race condition
 
-            ai->ChangeEngine(BOT_STATE_NON_COMBAT);
+            ai->ChangeEngine(BotState::BOT_STATE_NON_COMBAT);
             return true;
         }
     };

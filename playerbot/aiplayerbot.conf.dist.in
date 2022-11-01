@@ -518,3 +518,46 @@ AiPlayerbot.RandomBotTeleportDistance = 100
 #AiPlayerbot.CommandServerPort = 8888
 
 AiPlayerbot.PerfMonEnabled = 0
+
+
+##################################################################################
+#                                                                                #
+#                                 !!EXPERIMENTAL!!                               #
+#                                                                                #
+##################################################################################
+
+# Instant randomize: Force randombots to randomize on initial login.
+# AiPlayerbot.InstantRandomize = 0
+
+
+# Bot cheats. Same as "/w <bot> cheat (+/-/?) <cheatcode>" but only globally for all bots.
+# Values: taxi (all nodes learned), supply (auto supply items in bg), gold (free repair, vendor, ect.), health (fast regen), mana (fast regen), power (fast regen)
+# AiPlayerbot.BotCheats = taxi,supply
+
+
+# Self bot turns your current character into a bot with the command ".bot self"
+# !!DISCLAMER!! Selfbots will work and act like randombots based on their enabled strategies. Your epic mount will be sold to a vendor!
+# Self bot level. Values: 0 (disabled), 1 (Game masters only), 2 (Any player), 3 (Enabled on login), 4 (Enabled even when offline)
+# AiPlayerbot.SelfBotLevel = 1
+
+# Account/character names that are either, always online as bot (SelfBotLevel < 4) or prevented from being always online as bot (SelfBotLevel = 4) 
+# AiPlayerbot.ToggleAlwaysOnlineAccounts =
+# AiPlayerbot.ToggleAlwaysOnlineChars =
+
+
+# Allowed log files. See SPP_MAP for more information
+# https://drive.google.com/file/d/1XCEdLejlnlp1gCb_cbss52XnibIcVQ2d/view?usp=sharing
+# AiPlayerbot.AllowedLogFiles = 
+
+
+# Random password: Randombot accounts get created with a randompassword instead of equal to their account name.
+# AiPlayerbot.RandomBotRandomPassword = 1
+
+
+# Diff with/without player in server. The server will tune bot activity to reach the desired server tick speed (in ms).
+# AiPlayerbot.DiffWithPlayer = 100
+# AiPlayerbot.DiffEmpty = 200
+
+
+# Mystery config value. Currently enables async bot pathfinding. Rarely crashes the server.
+# AiPlayerbot.TweakValue = 0

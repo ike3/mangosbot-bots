@@ -150,6 +150,10 @@ void GenericShamanStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 	triggers.push_back(new TriggerNode(
 		"bloodlust",
 		NextAction::array(0, new NextAction("bloodlust", 30.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "player has flag",
+        NextAction::array(0, new NextAction("ghost wolf", ACTION_EMERGENCY + 2), NULL)));
 }
 
 void ShamanBuffDpsStrategy::InitTriggers(std::list<TriggerNode*> &triggers)

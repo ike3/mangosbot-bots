@@ -30,7 +30,7 @@ private:
     float i_range;
 };
 
-bool RevealGatheringItemAction::Execute(Event event)
+bool RevealGatheringItemAction::Execute(Event& event)
 {
     if (!bot->GetGroup())
         return false;

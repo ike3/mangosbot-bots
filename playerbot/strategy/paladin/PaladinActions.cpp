@@ -34,7 +34,8 @@ Unit* CastBlessingOnPartyAction::GetTarget()
     altBlessings.push_back("blessing of might");
     altBlessings.push_back("blessing of wisdom");
     altBlessings.push_back("blessing of kings");
-    altBlessings.push_back("blessing of salvation");
+    if (!bot->InBattleGround())
+        altBlessings.push_back("blessing of salvation");
     altBlessings.push_back("blessing of light");
 
     if (AI_VALUE2(uint32, "spell id", m_name))
@@ -60,6 +61,8 @@ Unit* CastBlessingOnPartyAction::GetTarget()
         {
             if (!ref->getSource() || bot->GetMapId() != ref->getSource()->GetMapId()) continue;
 
+            if (ai->HasMyAura("blessing of freedom", ref->getSource())) continue;
+
             if (ref->getSource() != bot && sServerFacade.GetDistance2d(bot, ref->getSource()) < 25.0f)
             {
                 if (ref->getSubGroup() != bot->GetSubGroup())
@@ -77,7 +80,7 @@ Unit* CastBlessingOnPartyAction::GetTarget()
     //nearestGroupPlayers.insert(nearestGroupPlayers.end(), nearestPlayers.begin(), nearestPlayers.end());
     nearestPlayers = nearestGroupPlayers;
     if (nearestPlayers.empty())
-        return false;
+        return NULL;
 
     Unit* trueTarget = nullptr;
     for (auto guid : nearestPlayers)
@@ -127,7 +130,7 @@ Unit* CastBlessingOnPartyAction::GetTarget()
     return NULL;
 }
 
-bool CastBlessingOnPartyAction::Execute(Event event)
+bool CastBlessingOnPartyAction::Execute(Event& event)
 {
     Unit* target = GetTarget();
     if (!target) return false;
@@ -156,7 +159,8 @@ bool CastBlessingOnPartyAction::Execute(Event event)
     altBlessings.push_back("blessing of might");
     altBlessings.push_back("blessing of wisdom");
     altBlessings.push_back("blessing of kings");
-    altBlessings.push_back("blessing of salvation");
+    if (!bot->InBattleGround())
+        altBlessings.push_back("blessing of salvation");
     altBlessings.push_back("blessing of light");
 
     if (AI_VALUE2(uint32, "spell id", mainBlessing))
@@ -193,7 +197,7 @@ bool CastBlessingOnPartyAction::Execute(Event event)
     return false;
 }
 
-bool CastPaladinAuraAction::Execute(Event event)
+bool CastPaladinAuraAction::Execute(Event& event)
 {
     std::string mainAura = m_name;
     vector<std::string> altAuras;
@@ -225,7 +229,7 @@ bool CastPaladinAuraAction::Execute(Event event)
     return false;
 }
 
-bool CastBlessingOfMightAction::Execute(Event event)
+bool CastBlessingOfMightAction::Execute(Event& event)
 {
     Unit* target = GetTarget();
     if (!target) return false;
@@ -233,7 +237,7 @@ bool CastBlessingOfMightAction::Execute(Event event)
     return ai->CastSpell(GetActualBlessingOfMight(target), target);
 }
 
-bool CastGreaterBlessingOfMightAction::Execute(Event event)
+bool CastGreaterBlessingOfMightAction::Execute(Event& event)
 {
     Unit* target = GetTarget();
     if (!target) return false;
@@ -241,7 +245,7 @@ bool CastGreaterBlessingOfMightAction::Execute(Event event)
     return ai->CastSpell(GetActualBlessingOfMight(target, true), target);
 }
 
-bool CastBlessingOfWisdomAction::Execute(Event event)
+bool CastBlessingOfWisdomAction::Execute(Event& event)
 {
     Unit* target = GetTarget();
     if (!target) return false;
@@ -249,7 +253,7 @@ bool CastBlessingOfWisdomAction::Execute(Event event)
     return ai->CastSpell(GetActualBlessingOfWisdom(target), target);
 }
 
-bool CastGreaterBlessingOfWisdomAction::Execute(Event event)
+bool CastGreaterBlessingOfWisdomAction::Execute(Event& event)
 {
     Unit* target = GetTarget();
     if (!target) return false;

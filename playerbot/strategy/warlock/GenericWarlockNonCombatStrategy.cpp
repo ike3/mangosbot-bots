@@ -15,6 +15,7 @@ public:
         creators["summon voidwalker"] = &summon_voidwalker;
         creators["summon felguard"] = &summon_felguard;
         creators["summon succubus"] = &summon_succubus;
+        creators["summon felhunter"] = &summon_felhunter;
     }
 private:
     static ActionNode* fel_armor(PlayerbotAI* ai)
@@ -42,6 +43,13 @@ private:
     {
         return new ActionNode("summon felguard",
             /*P*/ NULL,
+            /*A*/ NextAction::array(0, new NextAction("summon felhunter"), NULL),
+            /*C*/ NULL);
+    }
+    static ActionNode* summon_felhunter(PlayerbotAI* ai)
+    {
+        return new ActionNode("summon felhunter",
+            /*P*/ NULL,
             /*A*/ NextAction::array(0, new NextAction("summon succubus"), NULL),
             /*C*/ NULL);
     }
@@ -67,11 +75,11 @@ void GenericWarlockNonCombatStrategy::InitTriggers(std::list<TriggerNode*> &trig
         "demon armor",
         NextAction::array(0, new NextAction("fel armor", 21.0f), NULL)));
 
-    /*triggers.push_back(new TriggerNode(
+    triggers.push_back(new TriggerNode(
 		"no healthstone",
 		NextAction::array(0, new NextAction("create healthstone", 15.0f), NULL)));
 
-	triggers.push_back(new TriggerNode(
+	/*triggers.push_back(new TriggerNode(
 		"no firestone",
 		NextAction::array(0, new NextAction("create firestone", 14.0f), NULL)));
 
@@ -89,7 +97,7 @@ void WarlockPetStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
         "no pet",
-        NextAction::array(0, new NextAction("summon felguard", 60.0f), NULL)));
+        NextAction::array(0, new NextAction("summon felguard", 20.0f), NULL)));
     // TODO Warlock pets
 
     triggers.push_back(new TriggerNode(

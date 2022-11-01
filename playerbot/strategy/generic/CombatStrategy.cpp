@@ -9,19 +9,19 @@ void CombatStrategy::InitTriggers(list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
         "enemy out of spell",
-        NextAction::array(0, new NextAction("reach spell", ACTION_MOVE + 11), NULL)));
+        NextAction::array(0, new NextAction("reach spell", 60.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
         "invalid target",
-        NextAction::array(0, new NextAction("drop target", 101), new NextAction("attack enemy player", 100), new NextAction("dps assist", 99), NULL)));
+        NextAction::array(0, new NextAction("drop target", 89.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
         "mounted",
-        NextAction::array(0, new NextAction("check mount state", 54), NULL)));
+        NextAction::array(0, new NextAction("check mount state", 88.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
         "out of react range",
-        NextAction::array(0, new NextAction("flee to master", 55), NULL)));
+        NextAction::array(0, new NextAction("flee to master", 55.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
         "combat stuck",
@@ -33,7 +33,11 @@ void CombatStrategy::InitTriggers(list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "often",
-        NextAction::array(0, new NextAction("use trinket", ACTION_HIGH + 9), NULL)));
+        NextAction::array(0, new NextAction("use trinket", 50.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "very often",
+        NextAction::array(0, new NextAction("use lightwell", 80.0f), NULL)));
 }
 
 AvoidAoeStrategy::AvoidAoeStrategy(PlayerbotAI* ai) : Strategy(ai)
@@ -58,7 +62,7 @@ float AvoidAoeStrategyMultiplier::GetValue(Action* action)
         return 1.0f;
 
     string name = action->getName();
-    if (name == "follow" || name == "co" || name == "nc" || name == "drop target" || name == "flee")
+    if (name == "follow" || name == "co" || name == "nc" || name == "react" || name == "drop target" || name == "flee")
         return 1.0f;
 
     uint32 spellId = AI_VALUE2(uint32, "spell id", name);
@@ -70,13 +74,9 @@ float AvoidAoeStrategyMultiplier::GetValue(Action* action)
     else if (spellId && pSpellInfo->Targets & TARGET_FLAG_SOURCE_LOCATION)
         return 1.0f;
 
-    uint32 castTime = GetSpellCastTime(pSpellInfo
-#ifdef CMANGOS
-        , bot
-#endif
-    );
+    uint32 CastingTime = !IsChanneledSpell(pSpellInfo) ? GetSpellCastTime(pSpellInfo, bot) : GetSpellDuration(pSpellInfo);
 
-    if (AI_VALUE2(bool, "has area debuff", "self target") && spellId && castTime > 0)
+    if (AI_VALUE2(bool, "has area debuff", "self target") && spellId && CastingTime > 0)
     {
         return 0.0f;
     }

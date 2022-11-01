@@ -8,7 +8,7 @@ namespace ai
     class AttackersValue : public ObjectGuidListCalculatedValue
 	{
 	public:
-        AttackersValue(PlayerbotAI* ai) : ObjectGuidListCalculatedValue(ai, "attackers", 2) {}
+        AttackersValue(PlayerbotAI* ai) : ObjectGuidListCalculatedValue(ai, "attackers") {}
         list<ObjectGuid> Calculate();
 
 	private:
@@ -24,7 +24,7 @@ namespace ai
     class PossibleAddsValue : public BoolCalculatedValue
     {
     public:
-        PossibleAddsValue(PlayerbotAI* const ai, string name = "possible adds") : BoolCalculatedValue(ai, name, 2) {}
+        PossibleAddsValue(PlayerbotAI* const ai, string name = "possible adds") : BoolCalculatedValue(ai, name) {}
         virtual bool Calculate();
     };
 }

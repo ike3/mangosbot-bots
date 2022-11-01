@@ -118,15 +118,15 @@ void CatDpsDruidStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "cat form",
-        NextAction::array(0, new NextAction("cat form", ACTION_HIGH + 2), NULL)));
+        NextAction::array(0, new NextAction("cat form", 65.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
         "rake",
         NextAction::array(0, new NextAction("rake", ACTION_NORMAL + 5), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "combo points available",
-        NextAction::array(0, new NextAction("ferocious bite", ACTION_NORMAL + 9), NULL)));
+        "ferocious bite",
+        NextAction::array(0, new NextAction("ferocious bite", ACTION_HIGH + 9), NULL)));
 
     triggers.push_back(new TriggerNode(
         "medium threat",
@@ -138,27 +138,27 @@ void CatDpsDruidStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 
 	triggers.push_back(new TriggerNode(
 		"tiger's fury",
-		NextAction::array(0, new NextAction("tiger's fury", ACTION_EMERGENCY + 1), NULL)));
+		NextAction::array(0, new NextAction("tiger's fury", ACTION_HIGH + 1), NULL)));
 
     triggers.push_back(new TriggerNode(
         "behind target",
         NextAction::array(0, new NextAction("pounce", ACTION_HIGH + 1), NULL)));
 
-    /*triggers.push_back(new TriggerNode(
-        "player has no flag",
-        NextAction::array(0, new NextAction("prowl", ACTION_HIGH + 1), NULL)));
+    triggers.push_back(new TriggerNode(
+        "enemy out of melee",
+        NextAction::array(0, new NextAction("prowl", ACTION_EMERGENCY - 1), NULL)));
 
     triggers.push_back(new TriggerNode(
         "enemy out of melee",
-        NextAction::array(0, new NextAction("prowl", ACTION_INTERRUPT + 1), NULL)));*/
+        NextAction::array(0, new NextAction("dash", ACTION_HIGH + 4), NULL)));
 
     triggers.push_back(new TriggerNode(
         "player has flag",
-        NextAction::array(0, new NextAction("dash", ACTION_EMERGENCY), NULL)));
+        NextAction::array(0, new NextAction("dash", ACTION_EMERGENCY + 1), NULL)));
 
     triggers.push_back(new TriggerNode(
         "enemy flagcarrier near",
-        NextAction::array(0, new NextAction("dash", ACTION_EMERGENCY), NULL)));
+        NextAction::array(0, new NextAction("dash", 81.0f), NULL)));
 }
 
 void CatAoeDruidStrategy::InitTriggers(std::list<TriggerNode*> &triggers)

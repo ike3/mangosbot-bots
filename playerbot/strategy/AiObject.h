@@ -1,6 +1,11 @@
 #pragma once
 
+#include "PlayerbotAIAware.h"
+
+class Player;
 class PlayerbotAI;
+
+using namespace std;
 
 namespace ai
 {
@@ -205,6 +210,13 @@ class clazz : public super \
     public: \
         clazz(PlayerbotAI* ai) : HasAuraTrigger(ai, spell) {} \
         virtual bool IsActive(); \
+    }
+
+#define HAS_AURA_TRIGGER_TIME(clazz, spell, time) \
+    class clazz : public HasAuraTrigger \
+    { \
+    public: \
+        clazz(PlayerbotAI* ai) : HasAuraTrigger(ai, spell, time) {} \
     }
 
 #define SNARE_TRIGGER(clazz, spell) \

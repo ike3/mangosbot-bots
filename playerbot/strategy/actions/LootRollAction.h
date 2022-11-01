@@ -9,7 +9,7 @@ namespace ai
     class LootRollAction : public QueryItemUsageAction {
     public:
         LootRollAction(PlayerbotAI* ai, string name = "loot roll") : QueryItemUsageAction(ai, name) {}
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
 
     protected:
         virtual RollVote CalculateRollVote(ItemPrototype const *proto);
@@ -19,6 +19,6 @@ namespace ai
     public:
         MasterLootRollAction(PlayerbotAI* ai) : LootRollAction(ai, "master loot roll") {}
         virtual bool isUseful() { return !ai->HasActivePlayerMaster(); };
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
     };
 }

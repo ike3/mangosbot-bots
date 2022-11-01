@@ -95,7 +95,7 @@ namespace ai
         {
             return new ActionNode ("lay on hands on party",
                 /*P*/ NULL,
-                /*A*/ NextAction::array(0, new NextAction("flash of light"), NULL),
+                /*A*/ NextAction::array(0, new NextAction("flash of light on party"), NULL),
                 /*C*/ NULL);
         }
         static ActionNode* cleanse_poison(PlayerbotAI* ai)

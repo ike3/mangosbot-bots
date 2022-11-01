@@ -7,7 +7,7 @@
 using namespace ai;
 
 
-bool CustomStrategyEditAction::Execute(Event event)
+bool CustomStrategyEditAction::Execute(Event& event)
 {
     string text = event.getParam();
     int pos = text.find(" ");

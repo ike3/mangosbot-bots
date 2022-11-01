@@ -85,6 +85,8 @@ namespace ai
             creators["enemy too close for melee"] = &TriggerContext::enemy_too_close_for_melee;
             creators["enemy is close"] = &TriggerContext::enemy_is_close;
             creators["party member to heal out of spell range"] = &TriggerContext::party_member_to_heal_out_of_spell_range;
+            creators["enemy ten yards"] = &TriggerContext::enemy_ten_yards;
+            creators["enemy five yards"] = &TriggerContext::enemy_five_yards;
 
             creators["combo points available"] = &TriggerContext::ComboPointsAvailable;
 
@@ -172,12 +174,17 @@ namespace ai
             creators["leave large guild"] = &TriggerContext::leave_large_guild;
 
             creators["rpg"] = &TriggerContext::rpg;
+            creators["rpg wander"] = &TriggerContext::rpg_wander;
             creators["rpg taxi"] = &TriggerContext::rpg_taxi;
             creators["rpg discover"] = &TriggerContext::rpg_discover;
             creators["rpg start quest"] = &TriggerContext::rpg_start_quest;
             creators["rpg end quest"] = &TriggerContext::rpg_end_quest;
+            creators["rpg repeat quest"] = &TriggerContext::rpg_repeat_quest;
             creators["rpg buy"] = &TriggerContext::rpg_buy;
             creators["rpg sell"] = &TriggerContext::rpg_sell;
+            creators["rpg ah sell"] = &TriggerContext::rpg_ah_sell;
+            creators["rpg ah buy"] = &TriggerContext::rpg_ah_buy;
+            creators["rpg get mail"] = &TriggerContext::rpg_get_mail;
             creators["rpg repair"] = &TriggerContext::rpg_repair;
             creators["rpg train"] = &TriggerContext::rpg_train;
             creators["rpg heal"] = &TriggerContext::rpg_heal;
@@ -306,6 +313,8 @@ namespace ai
         static Trigger* enemy_too_close_for_shoot(PlayerbotAI* ai) { return new EnemyTooCloseForShootTrigger(ai); }
         static Trigger* enemy_too_close_for_melee(PlayerbotAI* ai) { return new EnemyTooCloseForMeleeTrigger(ai); }
         static Trigger* enemy_is_close(PlayerbotAI* ai) { return new EnemyIsCloseTrigger(ai); }
+        static Trigger* enemy_ten_yards(PlayerbotAI* ai) { return new EnemyInRangeTrigger(ai, "enemy ten yards", 10.0f); }
+        static Trigger* enemy_five_yards(PlayerbotAI* ai) { return new EnemyInRangeTrigger(ai, "enemy five yards", 5.0f); }
         static Trigger* party_member_to_heal_out_of_spell_range(PlayerbotAI* ai) { return new PartyMemberToHealOutOfSpellRangeTrigger(ai); }
         static Trigger* ComboPointsAvailable(PlayerbotAI* ai) { return new ComboPointsAvailableTrigger(ai); }
         static Trigger* MediumThreat(PlayerbotAI* ai) { return new MediumThreatTrigger(ai); }
@@ -338,12 +347,17 @@ namespace ai
         static Trigger* leave_large_guild(PlayerbotAI* ai) { return new LeaveLargeGuildTrigger(ai); }
 
         static Trigger* rpg(PlayerbotAI* ai) { return new RpgTrigger(ai); }
+        static Trigger* rpg_wander(PlayerbotAI* ai) { return new RpgWanderTrigger(ai); }
         static Trigger* rpg_taxi(PlayerbotAI* ai) { return new RpgTaxiTrigger(ai); }
         static Trigger* rpg_discover(PlayerbotAI* ai) { return new RpgDiscoverTrigger(ai); }
         static Trigger* rpg_start_quest(PlayerbotAI* ai) { return new RpgStartQuestTrigger(ai); }
         static Trigger* rpg_end_quest(PlayerbotAI* ai) { return new RpgEndQuestTrigger(ai); }
+        static Trigger* rpg_repeat_quest(PlayerbotAI* ai) { return new RpgRepeatQuestTrigger(ai); }
         static Trigger* rpg_buy(PlayerbotAI* ai) { return new RpgBuyTrigger(ai); }
         static Trigger* rpg_sell(PlayerbotAI* ai) { return new RpgSellTrigger(ai); }
+        static Trigger* rpg_ah_sell(PlayerbotAI* ai) { return new RpgAHSellTrigger(ai); }
+        static Trigger* rpg_ah_buy(PlayerbotAI* ai) { return new RpgAHBuyTrigger(ai); }
+        static Trigger* rpg_get_mail(PlayerbotAI* ai) { return new RpgGetMailTrigger(ai); }
         static Trigger* rpg_repair(PlayerbotAI* ai) { return new RpgRepairTrigger(ai); }
         static Trigger* rpg_train(PlayerbotAI* ai) { return new RpgTrainTrigger(ai); }
         static Trigger* rpg_heal(PlayerbotAI* ai) { return new RpgHealTrigger(ai); }

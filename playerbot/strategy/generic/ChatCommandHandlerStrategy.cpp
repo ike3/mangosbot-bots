@@ -174,6 +174,7 @@ ChatCommandHandlerStrategy::ChatCommandHandlerStrategy(PlayerbotAI* ai) : PassTr
     supported.push_back("co");
     supported.push_back("nc");
     supported.push_back("de");
+    supported.push_back("react");
     supported.push_back("trainer");
     supported.push_back("chat");
     supported.push_back("home");
@@ -215,4 +216,6 @@ ChatCommandHandlerStrategy::ChatCommandHandlerStrategy(PlayerbotAI* ai) : PassTr
     supported.push_back("guild leave");
     supported.push_back("guild leader");
     supported.push_back("rtsc");
+    supported.push_back("ah");
+    supported.push_back("ah bid");
 }

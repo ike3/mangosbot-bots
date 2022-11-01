@@ -6,6 +6,17 @@ namespace ai
     DEFLECT_TRIGGER(FireWardTrigger, "fire ward");
     DEFLECT_TRIGGER(FrostWardTrigger, "frost ward");
 
+    class BlinkTrigger : public Trigger
+    {
+    public:
+        BlinkTrigger(PlayerbotAI* ai) : Trigger(ai, "blink", 2) {}
+        virtual bool IsActive()
+        {
+            return bot->HasAuraType(SPELL_AURA_MOD_ROOT) ||
+                bot->HasAuraType(SPELL_AURA_MOD_STUN);
+        }
+    };
+
     class ArcaneIntellectOnPartyTrigger : public BuffOnPartyTrigger {
     public:
         ArcaneIntellectOnPartyTrigger(PlayerbotAI* ai) : BuffOnPartyTrigger(ai, "arcane intellect", 2) {}
@@ -38,7 +49,7 @@ namespace ai
 
     class PyroblastTrigger : public DebuffTrigger {
     public:
-        PyroblastTrigger(PlayerbotAI* ai) : DebuffTrigger(ai, "pyroblast") {}
+        PyroblastTrigger(PlayerbotAI* ai) : DebuffTrigger(ai, "pyroblast", 10) {}
     };
 
     class HotStreakTrigger : public HasAuraTrigger {
@@ -73,6 +84,8 @@ namespace ai
     public:
         IcyVeinsTrigger(PlayerbotAI* ai) : BoostTrigger(ai, "icy veins") {}
     };
+
+    BOOST_TRIGGER(WaterElementalBoostTrigger, "summon water elemental");
 
     class PolymorphTrigger : public HasCcTargetTrigger
     {
@@ -115,4 +128,13 @@ namespace ai
     public:
         PresenceOfMindTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "presence of mind") {}
     };
+
+    class ManaShieldTrigger : public BuffTrigger
+    {
+    public:
+        ManaShieldTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "mana shield", 5) {}
+        virtual bool IsActive();
+    };
+
+    DEBUFF_TRIGGER_A(IceLanceTrigger, "ice lance");
 }

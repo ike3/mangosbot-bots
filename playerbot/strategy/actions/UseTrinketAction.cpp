@@ -1,17 +1,20 @@
 #include "botpch.h"
 #include "../../playerbot.h"
 #include "UseTrinketAction.h"
+#include "Item.h"
+#include "ItemPrototype.h"
+#include "Player.h"
 
 using namespace ai;
 
-bool UseTrinketAction::Execute(Event event)
+bool UseTrinketAction::Execute(Event& event)
 {
 	auto trinkets = AI_VALUE(list<Item*>, "trinkets on use");
 
 	if (trinkets.empty())
 		return false;
 
-	for each (Item * item in trinkets)
+	for (Item * item : trinkets)
 	{
 		ItemPrototype const* proto = item->GetProto();
 

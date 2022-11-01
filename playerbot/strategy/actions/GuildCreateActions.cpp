@@ -14,7 +14,7 @@
 using namespace std;
 using namespace ai;
 
-bool BuyPetitionAction::Execute(Event event)
+bool BuyPetitionAction::Execute(Event& event)
 {
     list<ObjectGuid> vendors = ai->GetAiObjectContext()->GetValue<list<ObjectGuid> >("nearest npcs")->Get();
     bool vendored = false, result = false;
@@ -94,7 +94,7 @@ bool BuyPetitionAction::canBuyPetition(Player* bot)
     if (ai->GetGrouperType() == GrouperType::SOLO)
         return false;
 
-    if (!ai->HasStrategy("guild", BOT_STATE_NON_COMBAT))
+    if (!ai->HasStrategy("guild", BotState::BOT_STATE_NON_COMBAT))
         return false;
 
     uint32 cost = 1000; //GUILD_CHARTER_COST;
@@ -105,7 +105,7 @@ bool BuyPetitionAction::canBuyPetition(Player* bot)
     return true;
 }
 
-bool PetitionOfferAction::Execute(Event event)
+bool PetitionOfferAction::Execute(Event& event)
 {
     uint32 petitionEntry = 5863; //GUILD_CHARTER
     list<Item*> petitions = AI_VALUE2(list<Item*>, "inventory items", chat->formatQItem(5863));
@@ -159,7 +159,7 @@ bool PetitionOfferAction::Execute(Event event)
     return true;
 };
 
-bool PetitionOfferNearbyAction::Execute(Event event)
+bool PetitionOfferNearbyAction::Execute(Event& event)
 {
     uint32 found = 0;
 
@@ -203,14 +203,15 @@ bool PetitionOfferNearbyAction::Execute(Event event)
         p << i;
         p.rpos(0);
 
-        if (PetitionOfferAction::Execute(Event("petition offer nearby", p)))
+        Event petitionOfferEvent = Event("petition offer nearby", p);
+        if (PetitionOfferAction::Execute(petitionOfferEvent))
             found++;
     }
 
     return found > 0;
 };
 
-bool PetitionTurnInAction::Execute(Event event)
+bool PetitionTurnInAction::Execute(Event& event)
 {
     list<ObjectGuid> vendors = ai->GetAiObjectContext()->GetValue<list<ObjectGuid> >("nearest npcs")->Get();
     bool vendored = false, result = false;
@@ -274,9 +275,9 @@ bool PetitionTurnInAction::Execute(Event event)
 };
 
 
-bool BuyTabardAction::Execute(Event event)
+bool BuyTabardAction::Execute(Event& event)
 {
-    bool canBuy = ai->DoSpecificAction("buy", Event("buy tabard", "Hitem:5976:"));
+    bool canBuy = ai->DoSpecificAction("buy", Event("buy tabard", "Hitem:5976:"),true);
 
     if (canBuy && AI_VALUE2(uint32, "item count", chat->formatQItem(5976)))
         return true;

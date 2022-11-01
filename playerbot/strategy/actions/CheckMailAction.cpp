@@ -7,7 +7,7 @@
 #include "../../PlayerbotAIConfig.h"
 using namespace ai;
 
-bool CheckMailAction::Execute(Event event)
+bool CheckMailAction::Execute(Event& event)
 {
     WorldPacket p;
     bot->GetSession()->HandleQueryNextMailTime(p);   

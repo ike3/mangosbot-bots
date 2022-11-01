@@ -14,11 +14,11 @@ namespace ai
             this->spell = spell;
         }
 
-		virtual string GetTargetName() { return "current target"; };
-        virtual bool Execute(Event event);
+		virtual string GetTargetName() { return "current target"; }
+        virtual bool Execute(Event& event);
         virtual bool isPossible();
 		virtual bool isUseful();
-        virtual ActionThreatType getThreatType() { return ACTION_THREAT_SINGLE; }
+        virtual ActionThreatType getThreatType() { return ActionThreatType::ACTION_THREAT_SINGLE; }
 
 		/*virtual NextAction** getPrerequisites()
 		{
@@ -54,11 +54,7 @@ namespace ai
     {
     public:
         CastMeleeSpellAction(PlayerbotAI* ai, string spell) : CastSpellAction(ai, spell) {
-			range = ATTACK_DISTANCE;
-
-            Unit* target = AI_VALUE(Unit*, "current target");
-            if (target)
-                range = max(ATTACK_DISTANCE, bot->GetCombinedCombatReach(target, true));
+			this->range = ATTACK_DISTANCE;
 		}
     };
 
@@ -84,7 +80,7 @@ namespace ai
             return context->GetValue<Unit*>("attacker without aura", spell);
         }
         virtual string getName() { return spell + " on attacker"; }
-        virtual ActionThreatType getThreatType() { return ACTION_THREAT_AOE; }
+        virtual ActionThreatType getThreatType() { return ActionThreatType::ACTION_THREAT_AOE; }
     };
 
 	class CastBuffSpellAction : public CastAuraSpellAction
@@ -121,7 +117,7 @@ namespace ai
             range = ai->GetRange("spell");
         }
 		virtual string GetTargetName() { return "self target"; }
-        virtual ActionThreatType getThreatType() { return ACTION_THREAT_AOE; }
+        virtual ActionThreatType getThreatType() { return ActionThreatType::ACTION_THREAT_AOE; }
 
     protected:
         uint8 estAmount;
@@ -242,7 +238,7 @@ namespace ai
                 }
             }
         }
-        virtual ActionThreatType getThreatType() { return ACTION_THREAT_NONE; }
+        virtual ActionThreatType getThreatType() { return ActionThreatType::ACTION_THREAT_NONE; }
     };
 
     class RemoveBuffAction : public Action
@@ -254,8 +250,9 @@ namespace ai
         }
     public:
         virtual string getName() { return "remove " + name; }
-        virtual bool isUseful() { return ai->HasAura(name, bot); }
-        virtual bool Execute(Event event)
+        virtual bool isUseful() { return ai->HasAura(name, AI_VALUE(Unit*, "self target")); }
+        virtual bool isPossible() { return true; }
+        virtual bool Execute(Event& event)
         {
             ai->RemoveAura(name);
             return !ai->HasAura(name, bot);
@@ -296,7 +293,7 @@ namespace ai
     //cc breakers
 
     BUFF_ACTION(CastWillOfTheForsakenAction, "will of the forsaken");
-    BUFF_ACTION(CastEscapeArtistAction, "escape artist");
+    BUFF_ACTION_U(CastEscapeArtistAction, "escape artist", !ai->HasAura("stealth", AI_VALUE(Unit*, "self target")));
 #ifdef MANGOSBOT_TWO
     SPELL_ACTION(CastEveryManforHimselfAction, "every man for himself");
 #endif
@@ -321,7 +318,7 @@ namespace ai
             return context->GetValue<Unit*>("snare target", spell);
         }
         virtual string getName() { return spell + " on snare target"; }
-        virtual ActionThreatType getThreatType() { return ACTION_THREAT_NONE; }
+        virtual ActionThreatType getThreatType() { return ActionThreatType::ACTION_THREAT_NONE; }
     };
 
     class CastCrowdControlSpellAction : public CastBuffSpellAction
@@ -332,10 +329,10 @@ namespace ai
         {
             return context->GetValue<Unit*>("cc target", getName());
         }
-        virtual bool Execute(Event event) { return ai->CastSpell(getName(), GetTarget()); }
+        virtual bool Execute(Event& event) { return ai->CastSpell(getName(), GetTarget()); }
         virtual bool isPossible() { return ai->CanCastSpell(getName(), GetTarget(), true); }
         virtual bool isUseful() { return true; }
-        virtual ActionThreatType getThreatType() { return ACTION_THREAT_NONE; }
+        virtual ActionThreatType getThreatType() { return ActionThreatType::ACTION_THREAT_NONE; }
     };
 
     class CastProtectSpellAction : public CastSpellAction
@@ -347,7 +344,7 @@ namespace ai
         {
             return GetTarget() && !ai->HasAura(spell, GetTarget());
         }
-        virtual ActionThreatType getThreatType() { return ACTION_THREAT_NONE; }
+        virtual ActionThreatType getThreatType() { return ActionThreatType::ACTION_THREAT_NONE; }
     };
 
     //--------------------//
@@ -362,10 +359,10 @@ namespace ai
             range = 120.0f;
         }
         virtual string GetTargetName() { return "current target"; }
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
         virtual bool isUseful();
         virtual bool isPossible();
-        virtual ActionThreatType getThreatType() { return ACTION_THREAT_NONE; }
+        virtual ActionThreatType getThreatType() { return ActionThreatType::ACTION_THREAT_NONE; }
     protected:
         WorldObject* spellTarget;
     };
