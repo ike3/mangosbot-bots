@@ -19,6 +19,14 @@ void GenericPaladinNonCombatStrategy::InitTriggers(std::list<TriggerNode*> &trig
 		"party member dead",
 		NextAction::array(0, new NextAction("redemption", 30.0f), NULL)));
 
+    triggers.push_back(new TriggerNode(
+        "almost full health",
+        NextAction::array(0, new NextAction("flash of light", 23.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "party member almost full health",
+        NextAction::array(0, new NextAction("flash of light on party", 24.0f), NULL)));
+
 	 triggers.push_back(new TriggerNode(
         "medium health",
         NextAction::array(0, new NextAction("flash of light", 25.0f), NULL)));
@@ -34,30 +42,6 @@ void GenericPaladinNonCombatStrategy::InitTriggers(std::list<TriggerNode*> &trig
     triggers.push_back(new TriggerNode(
         "party member low health",
         NextAction::array(0, new NextAction("holy light on party", 40.0f), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "cleanse cure disease",
-        NextAction::array(0, new NextAction("cleanse disease", 41.0f), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "cleanse party member cure disease",
-        NextAction::array(0, new NextAction("cleanse disease on party", 40.0f), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "cleanse cure poison",
-        NextAction::array(0, new NextAction("cleanse poison", 41.0f), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "cleanse party member cure poison",
-        NextAction::array(0, new NextAction("cleanse poison on party", 40.0f), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "cleanse cure magic",
-        NextAction::array(0, new NextAction("cleanse magic", 41.0f), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "cleanse party member cure magic",
-        NextAction::array(0, new NextAction("cleanse magic on party", 40.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
        "often",

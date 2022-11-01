@@ -6,6 +6,9 @@
 
 namespace ai
 {
+	class ActionNode;
+	class NextAction;
+
 	enum StrategyType
 	{
 		STRATEGY_TYPE_GENERIC = 0,
@@ -15,7 +18,8 @@ namespace ai
 		STRATEGY_TYPE_DPS = 8,
 		STRATEGY_TYPE_HEAL = 16,
 		STRATEGY_TYPE_RANGED = 32,
-		STRATEGY_TYPE_MELEE = 64
+		STRATEGY_TYPE_MELEE = 64,
+		STRATEGY_TYPE_REACTION = 128
 	};
 
 	enum ActionPriority

@@ -12,20 +12,15 @@ bool CastSerpentStingAction::isUseful()
 
 bool CastViperStingAction::isUseful()
 {
-    return AI_VALUE2(uint8, "mana", "self target") < 50 && AI_VALUE2(uint8, "mana", "current target") >= 30;
+    return AI_VALUE2(uint8, "mana", "current target") >= 10;
 }
 
 bool CastAspectOfTheCheetahAction::isUseful()
 {
-    return !ai->HasAnyAuraOf(GetTarget(), "aspect of the cheetah", "aspect of the pack", NULL);
+    return !AI_VALUE(uint8, "attacker count") && !ai->HasAnyAuraOf(GetTarget(), "aspect of the cheetah", "aspect of the pack", NULL);
 }
 
-Value<Unit*>* CastFreezingTrap::GetTargetValue()
-{
-    return context->GetValue<Unit*>("cc target", "freezing trap");
-}
-
-bool FeedPetAction::Execute(Event event)
+bool FeedPetAction::Execute(Event& event)
 {
     Pet* pet = bot->GetPet();
     if (pet && pet->getPetType() == HUNTER_PET && pet->GetHappinessState() != HAPPY)
@@ -39,7 +34,7 @@ bool CastAutoShotAction::isUseful()
     if (ai->IsInVehicle() && !ai->IsInVehicle(false, false, true))
         return false;
 
-    return ai->HasStrategy("ranged", BOT_STATE_COMBAT) && AI_VALUE(uint32, "active spell") != AI_VALUE2(uint32, "spell id", getName());
+    return ai->HasStrategy("ranged", BotState::BOT_STATE_COMBAT) && AI_VALUE(uint32, "active spell") != AI_VALUE2(uint32, "spell id", getName());
 }
 
 Value<Unit*>* CastScareBeastCcAction::GetTargetValue()
@@ -47,7 +42,7 @@ Value<Unit*>* CastScareBeastCcAction::GetTargetValue()
     return context->GetValue<Unit*>("cc target", "scare beast");
 }
 
-bool CastScareBeastCcAction::Execute(Event event)
+bool CastScareBeastCcAction::Execute(Event& event)
 {
     return ai->CastSpell("scare beast", GetTarget());
 }

@@ -8,7 +8,7 @@ using namespace ai;
 
 list<ObjectGuid> FindMaxDensity(Player* bot)
 {
-    list<ObjectGuid> units = *bot->GetPlayerbotAI()->GetAiObjectContext()->GetValue<list<ObjectGuid> >("possible targets");
+    list<ObjectGuid> units = *bot->GetPlayerbotAI()->GetAiObjectContext()->GetValue<list<ObjectGuid> >("attackers");
     map<ObjectGuid, list<ObjectGuid> > groups;
     int maxCount = 0;
     ObjectGuid maxGroup;
@@ -75,4 +75,43 @@ WorldLocation AoePositionValue::Calculate()
 uint8 AoeCountValue::Calculate()
 {
     return FindMaxDensity(bot).size();
+}
+
+bool HasAreaDebuffValue::Calculate()
+{
+    if (!GetTarget())
+        return false;
+
+    for (uint32 auraType = SPELL_AURA_BIND_SIGHT; auraType < TOTAL_AURAS; auraType++)
+    {
+        Unit::AuraList const& auras = GetTarget()->GetAurasByType((AuraType)auraType);
+
+        if (auras.empty())
+            continue;
+
+        for (Unit::AuraList::const_iterator i = auras.begin(); i != auras.end(); i++)
+        {
+            Aura* aura = *i;
+            if (!aura)
+                continue;
+
+            SpellEntry const* proto = aura->GetSpellProto();
+
+            if (!aura->IsPositive() && aura->IsPeriodic())
+            {
+                if (proto)
+                {
+                    for (int i = 0; i < MAX_EFFECT_INDEX; i++)
+                    {
+                        SpellRadiusEntry const* radius = sSpellRadiusStore.LookupEntry(proto->EffectRadiusIndex[i]);
+
+                        if (radius)
+                            return radius->Radius > 0;
+                    }
+                }
+            }
+        }
+    }
+
+    return false;
 }

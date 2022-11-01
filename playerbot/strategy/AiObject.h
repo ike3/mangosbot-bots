@@ -1,6 +1,11 @@
 #pragma once
 
+#include "PlayerbotAIAware.h"
+
+class Player;
 class PlayerbotAI;
+
+using namespace std;
 
 namespace ai
 {
@@ -59,11 +64,33 @@ class clazz : public super \
         clazz(PlayerbotAI* ai) : BuffTrigger(ai, spell) {} \
     }
 
+#define BUFF_TRIGGER_TIME(clazz, spell, time) \
+    class clazz : public BuffTrigger \
+    { \
+    public: \
+        clazz(PlayerbotAI* ai) : BuffTrigger(ai, spell, time) {} \
+    }
+
+#define MY_BUFF_TRIGGER(clazz, spell) \
+    class clazz : public MyBuffTrigger \
+    { \
+    public: \
+        clazz(PlayerbotAI* ai) : MyBuffTrigger(ai, spell) {} \
+    }
+
 #define BUFF_TRIGGER_A(clazz, spell) \
     class clazz : public BuffTrigger \
     { \
     public: \
         clazz(PlayerbotAI* ai) : BuffTrigger(ai, spell) {} \
+        virtual bool IsActive(); \
+    }
+
+#define MY_BUFF_TRIGGER_A(clazz, spell) \
+    class clazz : public MyBuffTrigger \
+    { \
+    public: \
+        clazz(PlayerbotAI* ai) : MyBuffTrigger(ai, spell) {} \
         virtual bool IsActive(); \
     }
 
@@ -83,6 +110,13 @@ class clazz : public super \
     }
 
 #define DEBUFF_TRIGGER(clazz, spell) \
+    class clazz : public DebuffTrigger \
+    { \
+    public: \
+        clazz(PlayerbotAI* ai) : DebuffTrigger(ai, spell) {} \
+    }
+
+#define DEBUFF_ONLY_TRIGGER(clazz, spell) \
     class clazz : public DebuffTrigger \
     { \
     public: \
@@ -141,6 +175,13 @@ class clazz : public super \
         virtual bool IsActive(); \
     }
 
+#define CD_TRIGGER(clazz, spell) \
+    class clazz : public SpellNoCooldownTrigger \
+    { \
+    public: \
+        clazz(PlayerbotAI* ai) : SpellNoCooldownTrigger(ai, spell) {} \
+    }
+
 #define INTERRUPT_TRIGGER(clazz, spell) \
     class clazz : public InterruptSpellTrigger \
     { \
@@ -169,6 +210,13 @@ class clazz : public super \
     public: \
         clazz(PlayerbotAI* ai) : HasAuraTrigger(ai, spell) {} \
         virtual bool IsActive(); \
+    }
+
+#define HAS_AURA_TRIGGER_TIME(clazz, spell, time) \
+    class clazz : public HasAuraTrigger \
+    { \
+    public: \
+        clazz(PlayerbotAI* ai) : HasAuraTrigger(ai, spell, time) {} \
     }
 
 #define SNARE_TRIGGER(clazz, spell) \
@@ -293,11 +341,25 @@ class clazz : public super \
         clazz(PlayerbotAI* ai) : HealPartyMemberAction(ai, spell) {} \
     }
 
+#define HEAL_HOT_PARTY_ACTION(clazz, spell) \
+    class clazz : public HealHotPartyMemberAction \
+    { \
+    public: \
+        clazz(PlayerbotAI* ai) : HealHotPartyMemberAction(ai, spell) {} \
+    }
+
 #define AOE_HEAL_ACTION(clazz, spell) \
     class clazz : public CastAoeHealSpellAction \
     { \
     public: \
         clazz(PlayerbotAI* ai) : CastAoeHealSpellAction(ai, spell) {} \
+    }
+
+#define REMOVE_BUFF_ACTION(clazz, spell) \
+    class clazz : public RemoveBuffAction \
+    { \
+    public: \
+        clazz(PlayerbotAI* ai) : RemoveBuffAction(ai, spell) {} \
     }
 
 #define BUFF_ACTION(clazz, spell) \
@@ -491,5 +553,5 @@ static ActionNode* name(PlayerbotAI* ai) \
     return new ActionNode(spell, \
         /*P*/ NULL, \
         /*A*/ NULL, \
-        /*C*/ NextAction::array(0, new NextAction(con), NULL); \
+        /*C*/ NextAction::array(0, new NextAction(con), NULL)); \
     }

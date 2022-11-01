@@ -7,6 +7,21 @@
 
 namespace ai
 {
+    BUFF_ACTION(CastColdBloodAction, "cold blood");
+    BUFF_ACTION_U(CastPreparationAction, "preparation", !bot->IsSpellReady(14177) || !bot->IsSpellReady(2983) || !bot->IsSpellReady(2094));
+
+    class CastShadowstepAction : public CastSpellAction {
+    public:
+        CastShadowstepAction(PlayerbotAI* ai) : CastSpellAction(ai, "shadowstep") {}
+        virtual bool isPossible() { return true; }
+        virtual bool isUseful() {
+            return bot->HasSpell(36554) && bot->IsSpellReady(36554);
+        }
+        virtual bool Execute(Event& event) {
+            return bot->CastSpell(GetTarget(), 36554, TRIGGERED_OLD_TRIGGERED);
+        }
+    };
+
 	class CastEvasionAction : public CastBuffSpellAction
 	{
 	public:
@@ -27,14 +42,19 @@ namespace ai
         virtual string GetTargetName() { return "self target"; }
         virtual bool isUseful()
         {
+            bool hasStealth = ai->HasAura("stealth", bot);
+            if (hasStealth)
+                return false;
+
             // do not use with WSG flag
             return !ai->HasAura(23333, bot) && !ai->HasAura(23335, bot) && !ai->HasAura(34976, bot);
         }
-        virtual bool Execute(Event event)
+        virtual bool Execute(Event& event)
         {
             if (ai->CastSpell("stealth", bot))
             {
-                ai->ChangeStrategy("-dps,+stealthed", BOT_STATE_COMBAT);
+                ai->ChangeStrategy("+stealthed", BotState::BOT_STATE_COMBAT);
+                bot->InterruptSpell(CURRENT_MELEE_SPELL);
             }
             return true;
         }
@@ -43,9 +63,9 @@ namespace ai
     class UnstealthAction : public Action {
     public:
         UnstealthAction(PlayerbotAI* ai) : Action(ai, "unstealth") {}
-        virtual bool Execute(Event event) {
+        virtual bool Execute(Event& event) {
             ai->RemoveAura("stealth");
-            ai->ChangeStrategy("+dps,-stealthed", BOT_STATE_COMBAT);
+            ai->ResetStrategies();
             return true;
         }
     };
@@ -54,14 +74,17 @@ namespace ai
     public:
         CheckStealthAction(PlayerbotAI* ai) : Action(ai, "check stealth") {}
         virtual bool isPossible() { return true; }
-        virtual bool Execute(Event event) {
-            if (ai->HasAura("stealth", bot))
+        virtual bool Execute(Event& event) {
+            bool hasStealth = ai->HasAura("stealth", bot);
+            if (hasStealth)
             {
-                ai->ChangeStrategy("-dps,+stealthed", BOT_STATE_COMBAT);
+                if (!ai->HasStrategy("stealthed", BotState::BOT_STATE_COMBAT))
+                    ai->ChangeStrategy("+stealthed", BotState::BOT_STATE_COMBAT);
             }
-            else
+            else if (!hasStealth)
             {
-                ai->ChangeStrategy("+dps,-stealthed", BOT_STATE_COMBAT);
+                ai->ResetStrategies();
+                //ai->ChangeStrategy("+dps,-stealthed", BotState::BOT_STATE_COMBAT);
             }
             return true;
         }
@@ -100,6 +123,16 @@ namespace ai
             // do not use with WSG flag or EYE flag
             return !ai->HasAura(23333, bot) && !ai->HasAura(23335, bot) && !ai->HasAura(34976, bot);
         }
+        virtual bool Execute(Event& event)
+        {
+            if (ai->CastSpell("vanish", bot))
+            {
+                ai->ChangeStrategy("+stealthed", BotState::BOT_STATE_COMBAT);
+                bot->InterruptSpell(CURRENT_MELEE_SPELL);
+                return true;
+            }
+            return false;
+        }
 	};
 
 	class CastBlindAction : public CastDebuffSpellAction
@@ -133,4 +166,14 @@ namespace ai
         CastKickOnEnemyHealerAction(PlayerbotAI* ai) : CastSpellOnEnemyHealerAction(ai, "kick") {}
     };
 
+    class CastTricksOfTheTradeOnPartyAction : public BuffOnPartyAction {
+    public:
+        CastTricksOfTheTradeOnPartyAction(PlayerbotAI* ai) : BuffOnPartyAction(ai, "tricks of the trade") {}
+    };
+
+    class CastCloakOfShadowsAction : public CastCureSpellAction
+    {
+    public:
+        CastCloakOfShadowsAction(PlayerbotAI* ai) : CastCureSpellAction(ai, "cloak of shadows") {}
+    };
 }

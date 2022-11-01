@@ -16,7 +16,7 @@ namespace ai
         BuyTabardTrigger(PlayerbotAI* ai) :
             Trigger(ai) {}
 
-        bool IsActive() { return bot->GetGuildId() && !AI_VALUE2(uint32, "item count", chat->formatQItem(5976)); };
+        bool IsActive();
     };
 
     class LeaveLargeGuildTrigger : public Trigger {

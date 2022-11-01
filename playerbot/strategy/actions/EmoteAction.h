@@ -24,7 +24,7 @@ namespace ai
     {
     public:
         EmoteAction(PlayerbotAI* ai);
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
         bool isUseful();
     };
 
@@ -32,7 +32,7 @@ namespace ai
     {
     public:
         TalkAction(PlayerbotAI* ai) : EmoteActionBase(ai, "talk") {}
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
 
         static uint32 GetRandomEmote(Unit* unit, bool textEmote = false);
     };

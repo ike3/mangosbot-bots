@@ -57,6 +57,7 @@ namespace ai
             creators["receive emote"] = &WorldPacketTriggerContext::receive_emote;
             creators["receive text emote"] = &WorldPacketTriggerContext::receive_text_emote;
             creators["arena team invite"] = &WorldPacketTriggerContext::arena_team_invite;
+            creators["summon request"] = &WorldPacketTriggerContext::summon_request;
         }
 
     private:
@@ -107,5 +108,6 @@ namespace ai
         static Trigger* receive_emote(PlayerbotAI* ai) { return new WorldPacketTrigger(ai, "receive emote"); }
         static Trigger* receive_text_emote(PlayerbotAI* ai) { return new WorldPacketTrigger(ai, "receive text emote"); }
         static Trigger* arena_team_invite(PlayerbotAI* ai) { return new WorldPacketTrigger(ai, "arena team invite"); }
+        static Trigger* summon_request(PlayerbotAI* ai) { return new WorldPacketTrigger(ai, "summon request"); }
     };
 };

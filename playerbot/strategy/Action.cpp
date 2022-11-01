@@ -3,6 +3,7 @@
 #include <stdarg.h>
 #include "AiObjectContext.h"
 #include "Action.h"
+#include "Unit.h"
 
 using namespace ai;
 
@@ -94,4 +95,9 @@ Value<Unit*>* Action::GetTargetValue()
 Unit* Action::GetTarget()
 {
     return GetTargetValue()->Get();
+}
+
+void Action::SetDuration(uint32 delay)
+{
+    ai->SetActionDuration(this, delay);
 }

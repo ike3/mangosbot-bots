@@ -68,7 +68,7 @@ public:
         Player* master = ai->GetMaster();
         if (master)
         {
-            bool distance = bot->GetDistance(master) <= sPlayerbotAIConfig.sightDistance;
+            bool distance = sServerFacade.GetDistance2d(bot, master) <= sPlayerbotAIConfig.sightDistance;
             if (!distance)
             {
                 return false;
@@ -139,9 +139,9 @@ public:
     }
 };
 
-bool ReadyCheckAction::Execute(Event event)
+bool ReadyCheckAction::Execute(Event& event)
 {
-    WorldPacket &p = event.getPacket();
+    WorldPacket p = event.getPacket();
     ObjectGuid player;
     p.rpos(0);
     if (!p.empty())
@@ -197,19 +197,18 @@ bool ReadyCheckAction::ReadyCheck()
         out << formatPercent("Water", water, 100.0 * water / 20);
     }
 
-    ai->TellMaster(out);
+    ai->TellMaster(out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
 
     WorldPacket packet(MSG_RAID_READY_CHECK);
-    packet << bot->GetObjectGuid();
     packet << uint8(1);
     bot->GetSession()->HandleRaidReadyCheckOpcode(packet);
 
-    ai->ChangeStrategy("-ready check", BOT_STATE_NON_COMBAT);
+    ai->ChangeStrategy("-ready check", BotState::BOT_STATE_NON_COMBAT);
 
     return true;
 }
 
-bool FinishReadyCheckAction::Execute(Event event)
+bool FinishReadyCheckAction::Execute(Event& event)
 {
     return ReadyCheck();
 }

@@ -5,7 +5,17 @@
 
 namespace ai
 {
-    class DpsRogueStrategy : public CombatStrategy
+    class GenericRogueStrategy : public CombatStrategy
+    {
+    public:
+        GenericRogueStrategy(PlayerbotAI* ai);
+
+    public:
+        virtual void InitTriggers(std::list<TriggerNode*>& triggers);
+        virtual string getName() { return "rogue"; }
+    };
+
+    class DpsRogueStrategy : public GenericRogueStrategy
     {
     public:
         DpsRogueStrategy(PlayerbotAI* ai);
@@ -13,7 +23,36 @@ namespace ai
     public:
         virtual void InitTriggers(std::list<TriggerNode*> &triggers);
         virtual string getName() { return "dps"; }
-        virtual NextAction** getDefaultActions();
+    };
+
+    class AssassinationRogueStrategy : public GenericRogueStrategy
+    {
+    public:
+        AssassinationRogueStrategy(PlayerbotAI* ai);
+
+    public:
+        virtual void InitTriggers(std::list<TriggerNode*>& triggers);
+        virtual string getName() { return "assassin"; }
+    };
+
+    class CombatRogueStrategy : public GenericRogueStrategy
+    {
+    public:
+        CombatRogueStrategy(PlayerbotAI* ai);
+
+    public:
+        virtual void InitTriggers(std::list<TriggerNode*>& triggers);
+        virtual string getName() { return "combat"; }
+    };
+
+    class SubtletyRogueStrategy : public GenericRogueStrategy
+    {
+    public:
+        SubtletyRogueStrategy(PlayerbotAI* ai);
+
+    public:
+        virtual void InitTriggers(std::list<TriggerNode*>& triggers);
+        virtual string getName() { return "subtlety"; }
     };
 
     class StealthedRogueStrategy : public Strategy
@@ -24,7 +63,6 @@ namespace ai
     public:
         virtual void InitTriggers(std::list<TriggerNode*> &triggers);
         virtual string getName() { return "stealthed"; }
-        virtual NextAction** getDefaultActions();
     };
 
     class StealthStrategy : public Strategy
@@ -59,7 +97,7 @@ namespace ai
     class RogueCcStrategy : public Strategy
     {
     public:
-        RogueCcStrategy(PlayerbotAI* ai) : Strategy(ai) {}
+        RogueCcStrategy(PlayerbotAI* ai);
 
     public:
         virtual void InitTriggers(std::list<TriggerNode*> &triggers);

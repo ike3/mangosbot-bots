@@ -6,7 +6,7 @@
 
 using namespace ai;
 
-bool DestroyItemAction::Execute(Event event)
+bool DestroyItemAction::Execute(Event& event)
 {
     string text = event.getParam();
     ItemIds ids = chat->parseItems(text);
@@ -27,18 +27,39 @@ void DestroyItemAction::DestroyItem(FindItemVisitor* visitor)
 	for (list<Item*>::iterator i = items.begin(); i != items.end(); ++i)
     {
 		Item* item = *i;
-        bot->DestroyItem(item->GetBagSlot(),item->GetSlot(), true);
         ostringstream out; out << chat->formatItem(item->GetProto()) << " destroyed";
-        ai->TellMaster(out);
+        bot->DestroyItem(item->GetBagSlot(),item->GetSlot(), true);
+        ai->TellMaster(out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
     }
 }
 
-bool SmartDestroyItemAction::Execute(Event event)
+bool SmartDestroyItemAction::Execute(Event& event)
 {
     uint8 bagSpace = AI_VALUE(uint8, "bag space");
 
     if (bagSpace < 90)
         return false;
+
+    // only destoy grey items if with real player/guild
+    if (ai->HasRealPlayerMaster() || ai->IsInRealGuild())
+    {
+        set<Item*> items;
+        FindItemsToTradeByQualityVisitor visitor(ITEM_QUALITY_POOR, 5);
+        IterateItems(&visitor, ITERATE_ITEMS_IN_BAGS);
+        items.insert(visitor.GetResult().begin(), visitor.GetResult().end());
+
+        for (auto& item : items)
+        {
+            FindItemByIdVisitor visitor(item->GetProto()->ItemId);
+            DestroyItem(&visitor);
+
+            bagSpace = AI_VALUE(uint8, "bag space");
+
+            if (bagSpace < 90)
+                return true;
+        }
+        return true;
+    }
 
     vector<uint32> bestToDestroy = { ITEM_USAGE_NONE }; //First destroy anything useless.
 
@@ -57,13 +78,13 @@ bool SmartDestroyItemAction::Execute(Event event)
     for (auto& usage : bestToDestroy)
     {
 
-        list<Item*> items = AI_VALUE2(list<Item*>, "inventory items", "usage " + to_string(usage));
+        list<uint32> items = AI_VALUE2(list<uint32>, "inventory item ids", "usage " + to_string(usage));
 
         items.reverse();
 
         for (auto& item : items)
         {
-            FindItemByIdVisitor visitor(item->GetProto()->ItemId);
+            FindItemByIdVisitor visitor(item);
             DestroyItem(&visitor);
 
             bagSpace = AI_VALUE(uint8, "bag space");

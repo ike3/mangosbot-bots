@@ -53,7 +53,7 @@ Player* GuidManageAction::GetPlayer(Event event)
     return nullptr;
 }
 
-bool GuidManageAction::Execute(Event event)
+bool GuidManageAction::Execute(Event& event)
 {
     Player* player = GetPlayer(event);
 
@@ -68,7 +68,7 @@ bool GuidManageAction::Execute(Event event)
     return true;
 }
 
-bool GuildManageNearbyAction::Execute(Event event)
+bool GuildManageNearbyAction::Execute(Event& event)
 {
     uint32 found = 0;
 
@@ -83,38 +83,31 @@ bool GuildManageNearbyAction::Execute(Event event)
         if (!player || bot == player)
             continue;
 
-        if (player->GetGuildId() != bot->GetGuildId())
+        if (player->isDND())
             continue;
+
 
         if(player->GetGuildId()) //Promote or demote nearby members based on chance.
         {          
             MemberSlot* member = guild->GetMemberSlot(player->GetObjectGuid());
             uint32 dCount = AI_VALUE(uint32, "death count");
 
-            if (dCount < 2 || !urand(0, 10))
+            if (!urand(0, 30))
             {
-                if (!urand(0, 10))
-                {
-                    ai->DoSpecificAction("guild promote", Event("guild management", guid), true);
-
-                    continue;
-                }
+                ai->DoSpecificAction("guild promote", Event("guild management", guid), true);
+                continue;
             }
 
-            if (dCount > 3 || !urand(0, 10))
+            if (!urand(0, 30))
             {
-                if (!urand(0, 10))
-                {
-                    ai->DoSpecificAction("guild demote", Event("guild management", guid), true);
-
-                    continue;
-                }
+                ai->DoSpecificAction("guild demote", Event("guild management", guid), true);
+                continue;
             }
 
             continue;
         }
 
-        if (!(guild->GetRankRights(botMember->RankId) & GR_RIGHT_INVITE))
+        if ((guild->GetRankRights(botMember->RankId) & GR_RIGHT_INVITE) == 0)
             continue;
 
         if (player->GetGuildIdInvited())
@@ -141,7 +134,7 @@ bool GuildManageNearbyAction::Execute(Event event)
         if (sServerFacade.GetDistance2d(bot, player) > sPlayerbotAIConfig.sightDistance)
             continue;
         
-        if (ai->DoSpecificAction("ginvite", Event("guild management", guid)))
+        if (ai->DoSpecificAction("ginvite", Event("guild management", guid), true))
             found++;
     }
 
@@ -156,13 +149,13 @@ bool GuildManageNearbyAction::isUseful()
     Guild* guild = sGuildMgr.GetGuildById(bot->GetGuildId());
     MemberSlot* botMember = guild->GetMemberSlot(bot->GetObjectGuid());
 
-    return  guild->GetRankRights(botMember->RankId) & (GR_RIGHT_DEMOTE | GR_RIGHT_PROMOTE | GR_RIGHT_INVITE);
+    return guild->GetRankRights(botMember->RankId) & (GR_RIGHT_DEMOTE | GR_RIGHT_PROMOTE | GR_RIGHT_INVITE);
 }
 
-bool GuildLeaveAction::Execute(Event event)
+bool GuildLeaveAction::Execute(Event& event)
 {
     Player* owner = event.getOwner();
-    if (owner && !ai->GetSecurity()->CheckLevelFor(PLAYERBOT_SECURITY_INVITE, false, owner, true))
+    if (owner && !ai->GetSecurity()->CheckLevelFor(PlayerbotSecurityLevel::PLAYERBOT_SECURITY_INVITE, false, owner, true))
     {
         ai->TellError("Sorry, I am happy in my guild :)");
         return false;

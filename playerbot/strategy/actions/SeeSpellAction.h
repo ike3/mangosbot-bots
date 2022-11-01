@@ -11,7 +11,7 @@ namespace ai
     {
     public:
         SeeSpellAction(PlayerbotAI* ai, string name = "see spell") : MovementAction(ai, name) {}
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
 
         bool SelectSpell(WorldPosition& spellPosition);
         bool MoveSpell(WorldPosition& spellPosition);

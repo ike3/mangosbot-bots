@@ -15,7 +15,7 @@ using namespace MaNGOS;
 
 using namespace ai;
 
-bool AddLootAction::Execute(Event event)
+bool AddLootAction::Execute(Event& event)
 {
     ObjectGuid guid = event.getObject();
     if (!guid)
@@ -24,7 +24,7 @@ bool AddLootAction::Execute(Event event)
     return AI_VALUE(LootObjectStack*, "available loot")->Add(guid);
 }
 
-bool AddAllLootAction::Execute(Event event)
+bool AddAllLootAction::Execute(Event& event)
 {
     bool added = false;
 
@@ -51,6 +51,33 @@ bool AddAllLootAction::isUseful()
 
 bool AddAllLootAction::AddLoot(ObjectGuid guid)
 {
+    LootObject loot(bot, guid);
+
+    WorldObject* wo = loot.GetWorldObject(bot);
+    if (loot.IsEmpty() || !wo)
+        return false;
+
+    if (abs(wo->GetPositionZ() - bot->GetPositionZ()) > INTERACTION_DISTANCE)
+        return false;
+
+    if (ai->HasRealPlayerMaster())
+    {
+        bool inDungeon = false;
+        if (ai->GetMaster()->IsInWorld() &&
+            ai->GetMaster()->GetMap()->IsDungeon() &&
+            bot->GetMapId() == ai->GetMaster()->GetMapId())
+            inDungeon = true;
+
+        if (inDungeon && sServerFacade.IsDistanceGreaterThan(sServerFacade.GetDistance2d(ai->GetMaster(), wo), sPlayerbotAIConfig.lootDistance))
+            return false;
+
+        if (Group* group = bot->GetGroup())
+        {
+            if (group->GetMasterLooterGuid() && group->GetMasterLooterGuid() != bot->GetObjectGuid())
+                return false;
+        }
+    }
+
     return AI_VALUE(LootObjectStack*, "available loot")->Add(guid);
 }
 

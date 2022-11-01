@@ -22,6 +22,22 @@ void FrostMageStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
     triggers.push_back(new TriggerNode(
         "icy veins",
         NextAction::array(0, new NextAction("icy veins", 50.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "has aggro",
+        NextAction::array(0, new NextAction("ice barrier", 9.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "ice lance",
+        NextAction::array(0, new NextAction("ice lance", 61.0f), NULL)));
+
+    /*triggers.push_back(new TriggerNode(
+        "has aggro",
+        NextAction::array(0, new NextAction("fire blast", 6.0f), NULL)));*/
+
+    triggers.push_back(new TriggerNode(
+        "summon water elemental",
+        NextAction::array(0, new NextAction("summon water elemental", 10.0f), NULL)));
 }
 
 void FrostMageAoeStrategy::InitTriggers(std::list<TriggerNode*> &triggers)

@@ -4,13 +4,18 @@
 
 using namespace ai;
 
-void AcceptAllQuestsAction::ProcessQuest(Quest const* quest, WorldObject* questGiver)
+bool AcceptAllQuestsAction::ProcessQuest(Quest const* quest, WorldObject* questGiver)
 {
-    AcceptQuest(quest, questGiver->GetObjectGuid());
-    bot->PlayDistanceSound(620);
+    if (AcceptQuest(quest, questGiver->GetObjectGuid()))
+    {
+        bot->PlayDistanceSound(620);
+        return true;
+    }
+
+    return false;
 }
 
-bool AcceptQuestAction::Execute(Event event)
+bool AcceptQuestAction::Execute(Event& event)
 {
     Player* master = GetMaster();
 
@@ -25,6 +30,8 @@ bool AcceptQuestAction::Execute(Event event)
     PlayerbotChatHandler ch(master);
     quest = ch.extractQuestId(text);
 
+    bool hasAccept = false;
+
     if (event.getPacket().empty())
     {
         list<ObjectGuid> npcs = AI_VALUE(list<ObjectGuid>, "nearest npcs");
@@ -36,8 +43,8 @@ bool AcceptQuestAction::Execute(Event event)
                 guid = unit->GetObjectGuid().GetRawValue();
                 break;
             }
-            if (unit && text == "*" && bot->GetDistance(unit) <= INTERACTION_DISTANCE)
-                QuestAction::ProcessQuests(unit);
+            if (unit && text == "*" && sqrt(bot->GetDistance(unit)) <= INTERACTION_DISTANCE)
+                hasAccept |= QuestAction::ProcessQuests(unit);
         }
         list<ObjectGuid> gos = AI_VALUE(list<ObjectGuid>, "nearest game objects");
         for (list<ObjectGuid>::iterator i = gos.begin(); i != gos.end(); i++)
@@ -48,8 +55,8 @@ bool AcceptQuestAction::Execute(Event event)
                 guid = go->GetObjectGuid().GetRawValue();
                 break;
             }
-            if (go && text == "*" && bot->GetDistance(go) <= INTERACTION_DISTANCE)
-                QuestAction::ProcessQuests(go);
+            if (go && text == "*" && sqrt(bot->GetDistance(go)) <= INTERACTION_DISTANCE)
+                hasAccept |= QuestAction::ProcessQuests(go);
         }
     }
     else
@@ -66,10 +73,15 @@ bool AcceptQuestAction::Execute(Event event)
     if (!qInfo)
         return false;
 
-    return AcceptQuest(qInfo, guid);
+    hasAccept |= AcceptQuest(qInfo, guid);
+
+    if (hasAccept)
+        sTravelMgr.logEvent(ai, "AcceptQuestAction", qInfo->GetTitle(), to_string(qInfo->GetQuestId()));
+
+    return hasAccept;
 }
 
-bool AcceptQuestShareAction::Execute(Event event)
+bool AcceptQuestShareAction::Execute(Event& event)
 {
     Player* master = GetMaster();
     Player *bot = ai->GetBot();
@@ -88,7 +100,7 @@ bool AcceptQuestShareAction::Execute(Event event)
     {
         // can't take quest
         bot->SetDividerGuid( ObjectGuid() );
-        ai->TellError("I can't take this quest");
+        ai->TellError(BOT_TEXT("quest_cant_take"));
 
         return false;
     }
@@ -103,6 +115,8 @@ bool AcceptQuestShareAction::Execute(Event event)
     if( bot->CanAddQuest( qInfo, false ) )
     {
         bot->AddQuest( qInfo, master );
+
+        sTravelMgr.logEvent(ai, "AcceptQuestShareAction", qInfo->GetTitle(), to_string(qInfo->GetQuestId()));
 
         if( bot->CanCompleteQuest( quest ) )
             bot->CompleteQuest( quest );
@@ -123,7 +137,7 @@ bool AcceptQuestShareAction::Execute(Event event)
             );
         }
 
-        ai->TellMaster("Quest accepted");
+        ai->TellMaster(BOT_TEXT("quest_accept"), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
         return true;
     }
 

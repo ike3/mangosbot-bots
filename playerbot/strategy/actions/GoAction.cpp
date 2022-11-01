@@ -5,7 +5,7 @@
 #include "../../ServerFacade.h"
 #include "../values/Formations.h"
 #include "../values/PositionValue.h"
-#include "travelMgr.h"
+#include "TravelMgr.h"
 #include "MotionGenerators/PathFinder.h"
 #include "ChooseTravelTargetAction.h"
 
@@ -14,7 +14,7 @@ using namespace ai;
 vector<string> split(const string& s, char delim);
 char* strstri(const char* haystack, const char* needle);
 
-bool GoAction::Execute(Event event)
+bool GoAction::Execute(Event& event)
 {
     Player* master = GetMaster();
     if (!master)
@@ -34,7 +34,8 @@ bool GoAction::Execute(Event event)
     
     if (param.find("travel") != string::npos && param.size()> 7)
     {
-        WorldPosition* botPos = &WorldPosition(bot);
+        WorldPosition pos = WorldPosition(bot);
+        WorldPosition* botPos = &pos;
 
         string destination = param.substr(7);
 
@@ -114,7 +115,7 @@ bool GoAction::Execute(Event event)
         else
             z = bot->GetPositionZ();
 
-        if (ai->HasStrategy("debug move", BOT_STATE_NON_COMBAT))
+        if (ai->HasStrategy("debug move", BotState::BOT_STATE_NON_COMBAT))
         {
             
             PathFinder path(bot);
@@ -152,7 +153,7 @@ bool GoAction::Execute(Event event)
             ai->TellMaster(out);            
         }
 
-        if (bot->IsWithinLOS(x, y, z))
+        if (bot->IsWithinLOS(x, y, z, true))
             return MoveNear(bot->GetMapId(), x, y, z, 0);
         else
             return MoveTo(bot->GetMapId(), x, y, z, false, false);    
@@ -174,14 +175,14 @@ bool GoAction::Execute(Event event)
 
         if (sServerFacade.IsDistanceGreaterThan(sServerFacade.GetDistance2d(bot, x, y), sPlayerbotAIConfig.reactDistance))
         {
-            ai->TellMaster("It is too far away");
+            ai->TellMaster(BOT_TEXT("error_far"));
             return false;
         }
 
         const TerrainInfo* terrain = map->GetTerrain();
         if (terrain->IsUnderWater(x, y, z) || terrain->IsInWater(x, y, z))
         {
-            ai->TellError("It is under water");
+            ai->TellError(BOT_TEXT("error_water"));
             return false;
         }
 
@@ -192,7 +193,7 @@ bool GoAction::Execute(Event event)
 #endif
         if (ground <= INVALID_HEIGHT)
         {
-            ai->TellError("I can't go there");
+            ai->TellError(BOT_TEXT("error_cant_go"));
             return false;
         }
 
@@ -208,7 +209,7 @@ bool GoAction::Execute(Event event)
     {
         if (sServerFacade.IsDistanceGreaterThan(sServerFacade.GetDistance2d(bot, pos.x, pos.y), sPlayerbotAIConfig.reactDistance))
         {
-            ai->TellError("It is too far away");
+            ai->TellError(BOT_TEXT("error_far"));
             return false;
         }
 

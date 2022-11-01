@@ -10,7 +10,7 @@ namespace ai
         WhoAction(PlayerbotAI* ai) : InventoryAction(ai, "who") {}
 
     public:
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
 
     private:
         string QueryTrade(string text);

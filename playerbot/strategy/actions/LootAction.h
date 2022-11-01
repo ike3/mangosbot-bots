@@ -11,14 +11,14 @@ namespace ai
     {
     public:
         LootAction(PlayerbotAI* ai) : MovementAction(ai, "loot") {}
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
     };
 
     class OpenLootAction : public MovementAction
     {
     public:
         OpenLootAction(PlayerbotAI* ai) : MovementAction(ai, "open loot") {}
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
 
     private:
         bool DoLoot(LootObject& lootObject);
@@ -32,7 +32,7 @@ namespace ai
     {
     public:
         StoreLootAction(PlayerbotAI* ai) : InventoryAction(ai, "store loot") {}
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
         static bool IsLootAllowed(uint32 itemid, PlayerbotAI *ai);  
     };
 
@@ -40,6 +40,6 @@ namespace ai
     {
     public:
         ReleaseLootAction(PlayerbotAI* ai) : MovementAction(ai, "release loot") {}
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
     };
 }

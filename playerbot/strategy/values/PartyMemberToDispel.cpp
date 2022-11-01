@@ -18,7 +18,7 @@ public:
         if (pet && (pet->getPetType() == MINI_PET || pet->getPetType() == SUMMON_PET))
             return false;
 
-        return sServerFacade.IsAlive(unit) && ai->HasAuraToDispel(unit, dispelType);
+        return sServerFacade.IsAlive(unit) && sServerFacade.GetDistance2d(ai->GetBot(), unit) <= ai->GetRange("spell") && ai->HasAuraToDispel(unit, dispelType);
     }
 
 private:

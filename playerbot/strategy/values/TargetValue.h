@@ -42,7 +42,7 @@ namespace ai
     class TargetValue : public UnitCalculatedValue
 	{
 	public:
-        TargetValue(PlayerbotAI* ai, string name = "target") : UnitCalculatedValue(ai, name) {}
+        TargetValue(PlayerbotAI* ai, string name = "target", int checkInterval = 1) : UnitCalculatedValue(ai, name, checkInterval) {}
 
     protected:
         Unit* FindTarget(FindTargetStrategy* strategy);

@@ -11,10 +11,10 @@ namespace ai
         QuestAction(PlayerbotAI* ai, string name) : Action(ai, name) {}
 
     public:
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
 
     protected:
-        virtual void ProcessQuest(Quest const* quest, WorldObject* questGiver) = 0;        
+        virtual bool ProcessQuest(Quest const* quest, WorldObject* questGiver) = 0;        
 
     protected:
         bool CompleteQuest(Player* player, uint32 entry);
@@ -29,6 +29,6 @@ namespace ai
         QuestObjectiveCompletedAction(PlayerbotAI* ai) : Action(ai, "quest objective completed") {}
 
     public:
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
     };
 }

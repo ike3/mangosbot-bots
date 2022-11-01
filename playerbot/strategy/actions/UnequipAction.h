@@ -8,7 +8,7 @@ namespace ai
     class UnequipAction : public InventoryAction {
     public:
         UnequipAction(PlayerbotAI* ai) : InventoryAction(ai, "unequip") {}
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
 
     private:
         void UnequipItem(Item& item);

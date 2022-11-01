@@ -14,11 +14,11 @@ void GenericRogueNonCombatStrategy::InitTriggers(std::list<TriggerNode*> &trigge
 
     triggers.push_back(new TriggerNode(
         "player has flag",
-        NextAction::array(0, new NextAction("sprint", ACTION_EMERGENCY + 1), NULL)));
+        NextAction::array(0, new NextAction("sprint", ACTION_INTERRUPT + 1), NULL)));
 
     triggers.push_back(new TriggerNode(
         "enemy flagcarrier near",
-        NextAction::array(0, new NextAction("sprint", ACTION_EMERGENCY + 2), NULL)));
+        NextAction::array(0, new NextAction("sprint", ACTION_INTERRUPT + 2), NULL)));
 
     triggers.push_back(new TriggerNode(
         "unstealth",

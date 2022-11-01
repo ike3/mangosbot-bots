@@ -7,7 +7,7 @@ namespace ai
 		TaxiAction(PlayerbotAI* ai) : Action(ai, "taxi") {}
 
     public:
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
     };
 
 }

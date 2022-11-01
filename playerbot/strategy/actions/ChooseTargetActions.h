@@ -55,7 +55,7 @@ namespace ai
             return AttackAction::isPossible() && GetTarget();
         }
 
-        virtual bool Execute(Event event)
+        virtual bool Execute(Event& event)
         {
             bool result = AttackAction::Execute(event);
 
@@ -68,9 +68,7 @@ namespace ai
                     if (grindName)
                     {
                         context->GetValue<ObjectGuid>("pull target")->Set(grindTarget->GetObjectGuid());
-                        MotionMaster& mm = *bot->GetMotionMaster();
-                        bot->StopMoving();
-                        mm.Clear();
+                        ai->StopMoving();
                     }
                 }
             }
@@ -96,7 +94,7 @@ namespace ai
             if (bot->HasAura(23333) || bot->HasAura(23335) || bot->HasAura(34976))
                 return false;
 
-            return !sPlayerbotAIConfig.IsInPvpProhibitedZone(bot->GetAreaId());
+            return !sPlayerbotAIConfig.IsInPvpProhibitedZone(sServerFacade.GetAreaId(bot));
         }
     };
 
@@ -123,7 +121,7 @@ namespace ai
     public:
         DropTargetAction(PlayerbotAI* ai) : Action(ai, "drop target") {}
 
-        virtual bool Execute(Event event)
+        virtual bool Execute(Event& event)
         {
             Unit* target = context->GetValue<Unit*>("current target")->Get();
 
@@ -142,7 +140,26 @@ namespace ai
             }
             context->GetValue<Unit*>("current target")->Set(NULL);
             bot->SetSelectionGuid(ObjectGuid());
-            ai->ChangeEngine(BOT_STATE_NON_COMBAT);
+
+            // attack next target if in combat
+            uint32 attackers = AI_VALUE(uint8, "attacker count");
+            if (attackers > 0)
+            {
+                Unit* enemy = AI_VALUE(Unit*, "enemy player target");
+                if (!enemy)
+                {
+                    ai->ChangeEngine(BotState::BOT_STATE_NON_COMBAT);
+                    ai->InterruptSpell();
+                    bot->AttackStop();
+
+                    if (ai->HasStrategy("dps assist", BotState::BOT_STATE_NON_COMBAT))
+                        return ai->DoSpecificAction("dps assist", Event(), true);
+                    if (ai->HasStrategy("tank assist", BotState::BOT_STATE_NON_COMBAT))
+                        return ai->DoSpecificAction("tank assist", Event(), true);
+                }
+            }
+
+            ai->ChangeEngine(BotState::BOT_STATE_NON_COMBAT);
             ai->InterruptSpell();
             bot->AttackStop();
             Pet* pet = bot->GetPet();
@@ -166,21 +183,6 @@ namespace ai
 #endif
                     pet->AttackStop();
                 }
-            }
-            if (!urand(0, 50) && ai->HasStrategy("emote", BOT_STATE_NON_COMBAT))
-            {
-                vector<uint32> sounds;
-                if (target && sServerFacade.UnitIsDead(target))
-                {
-                    sounds.push_back(TEXTEMOTE_CHEER);
-                    sounds.push_back(TEXTEMOTE_CONGRATULATE);
-                }
-                else
-                {
-                    sounds.push_back(304); // guard
-                    sounds.push_back(325); // stay
-                }
-                if (!sounds.empty()) ai->PlayEmote(sounds[urand(0, sounds.size() - 1)]);
             }
             return true;
         }

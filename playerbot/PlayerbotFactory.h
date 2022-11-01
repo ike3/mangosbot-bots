@@ -19,6 +19,15 @@ struct EnchantTemplate
 
 typedef std::vector<EnchantTemplate*> EnchantContainer;
 
+struct TaxiNodeLevel
+{
+    uint32 Index;
+    uint32 MapId;
+    uint32 Level;
+};
+
+typedef std::vector<TaxiNodeLevel> TaxiNodeLevelContainer;
+
 
 //TODO: more spec/role
 /* classid+talenttree
@@ -52,6 +61,13 @@ public:
     static list<uint32> classQuestIds;
     static list<uint32> specialQuestIds;
     void InitSkills();
+    static void EnchantEquipment(Player* bot);
+    void EquipGear() { return InitEquipment(false); }
+    void UpgradeGear() { return InitEquipment(true); }
+    void AddReagents() { return InitReagents(); }
+    void AddPotions() { return InitPotions(); }
+    void AddConsumes() { return AddConsumables(); }
+    void AddFood() { return InitFood(); }
 
 private:
     void Prepare();
@@ -73,6 +89,7 @@ private:
     void InitTalents(uint32 specNo);
     void InitQuests(list<uint32>& questMap);
     void InitPet();
+    void InitTaxiNodes();
     void ClearInventory();
     void ClearAllItems();
     void ResetQuests();
@@ -84,10 +101,11 @@ private:
     bool CanEquipArmor(ItemPrototype const* proto);
     bool CanEquipWeapon(ItemPrototype const* proto);
     void EnchantItem(Item* item);
+    void AddGems(Item* item);
     void AddItemStats(uint32 mod, uint8 &sp, uint8 &ap, uint8 &tank);
     bool CheckItemStats(uint8 sp, uint8 ap, uint8 tank);
     void CancelAuras();
-    bool IsDesiredReplacement(Item* item);
+    bool IsDesiredReplacement(uint32 itemId);
     void InitBags();
     void InitInventory();
     void InitInventoryTrade();
@@ -101,7 +119,8 @@ private:
     static void AddPrevQuests(uint32 questId, list<uint32>& questIds);
     void LoadEnchantContainer();
     void ApplyEnchantTemplate();
-    void ApplyEnchantTemplate(uint8 spec);
+    void ApplyEnchantTemplate(uint8 spec, Item* item = nullptr);
+    void InitGems();
     EnchantContainer::const_iterator GetEnchantContainerBegin() { return m_EnchantContainer.begin(); }
     EnchantContainer::const_iterator GetEnchantContainerEnd() { return m_EnchantContainer.end(); }
 
@@ -109,6 +128,8 @@ private:
     uint32 level;
     uint32 itemQuality;
     static uint32 tradeSkills[];
+    static TaxiNodeLevelContainer overworldTaxiNodeLevelsA;
+    static TaxiNodeLevelContainer overworldTaxiNodeLevelsH;
 
 protected:
    EnchantContainer m_EnchantContainer;
@@ -160,6 +181,8 @@ enum PriorizedConsumables
    CONSUM_ID_INSTANT_POISON_V = 8927,
    CONSUM_ID_INSTANT_POISON_VI = 8928,
    CONSUM_ID_INSTANT_POISON_VII = 21927,
+   CONSUM_ID_INSTANT_POISON_VIII = 43230,
+   CONSUM_ID_INSTANT_POISON_IX = 43231,
    CONSUM_ID_DEADLY_POISON = 2892,
    CONSUM_ID_DEADLY_POISON_II = 2893,
    CONSUM_ID_DEADLY_POISON_III = 8984,
@@ -167,5 +190,12 @@ enum PriorizedConsumables
    CONSUM_ID_DEADLY_POISON_V = 20844,
    CONSUM_ID_DEADLY_POISON_VI = 22053,
    CONSUM_ID_DEADLY_POISON_VII = 22054,
+   CONSUM_ID_DEADLY_POISON_VIII = 43232,
+   CONSUM_ID_DEADLY_POISON_IX = 43233,
+   CONSUM_ID_CRIPPLING_POISON = 3775,
+   CONSUM_ID_CRIPPLING_POISON_II = 3776,
+   CONSUM_ID_MIND_POISON = 5237,
+   CONSUM_ID_MIND_POISON_II = 6951,
+   CONSUM_ID_MIND_POISON_III = 9186,
 };
-#define MAX_CONSUM_ID 28
+#define MAX_CONSUM_ID 55

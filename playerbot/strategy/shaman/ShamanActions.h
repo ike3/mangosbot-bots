@@ -4,6 +4,7 @@
 
 namespace ai
 {
+    BUFF_ACTION(CastGhostWolfAction, "ghost wolf");
     class CastLesserHealingWaveAction : public CastHealingSpellAction {
     public:
         CastLesserHealingWaveAction(PlayerbotAI* ai) : CastHealingSpellAction(ai, "lesser healing wave") {}
@@ -133,6 +134,12 @@ namespace ai
 	{
 	public:
 		CastHealingStreamTotemAction(PlayerbotAI* ai) : CastTotemAction(ai, "healing stream totem") {}
+	};
+
+	class CastWrathOfAirTotemAction : public CastTotemAction
+	{
+	public:
+		CastWrathOfAirTotemAction(PlayerbotAI* ai) : CastTotemAction(ai, "wrath of air totem") {}
 	};
 
     class CastCleansingTotemAction : public CastTotemAction
@@ -333,5 +340,29 @@ namespace ai
     public:
         CastCureDiseaseOnPartyAction(PlayerbotAI* ai) : CurePartyMemberAction(ai, "cure disease", DISPEL_DISEASE) {}
         virtual string getName() { return "cure disease on party"; }
+    };
+
+    class CastCallOfTheElements : public CastBuffSpellAction
+    {
+    public:
+        CastCallOfTheElements(PlayerbotAI* ai) : CastBuffSpellAction(ai, "call of the elements") {}
+    };
+
+    class CastCallOfTheAncestors : public CastBuffSpellAction
+    {
+    public:
+        CastCallOfTheAncestors(PlayerbotAI* ai) : CastBuffSpellAction(ai, "call of the ancestors") {}
+    };
+
+    class CastCallOfTheSpirits : public CastBuffSpellAction
+    {
+    public:
+        CastCallOfTheSpirits(PlayerbotAI* ai) : CastBuffSpellAction(ai, "call of the spirits") {}
+    };    
+
+    class CastTotemicRecall : public CastBuffSpellAction
+    {
+    public:
+        CastTotemicRecall(PlayerbotAI* ai) : CastBuffSpellAction(ai, "totemic recall") {}
     };
 }

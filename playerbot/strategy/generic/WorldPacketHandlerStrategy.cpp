@@ -22,7 +22,7 @@ void WorldPacketHandlerStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "group set leader",
-        NextAction::array(0, new NextAction("leader", relevance), NULL)));
+        NextAction::array(0, /*new NextAction("leader", relevance),*/ new NextAction("reset ai soft", relevance), NULL)));
 
     triggers.push_back(new TriggerNode(
         "not enough money",
@@ -103,14 +103,6 @@ void WorldPacketHandlerStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         "arena team invite",
         NextAction::array(0, new NextAction("arena team accept", relevance), NULL)));
 
-    /*triggers.push_back(new TriggerNode(
-        "no non bot players around",
-        NextAction::array(0, new NextAction("delay", relevance), NULL)));*/
-
-    triggers.push_back(new TriggerNode(
-        "bg status",
-        NextAction::array(0, new NextAction("bg status", relevance), NULL)));
-
     triggers.push_back(new TriggerNode(
         "xpgain",
         NextAction::array(0, new NextAction("xp gain", relevance), NULL)));
@@ -134,6 +126,10 @@ void WorldPacketHandlerStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
     triggers.push_back(new TriggerNode(
         "master loot roll",
         NextAction::array(0, new NextAction("master loot roll", relevance), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "summon request",
+        NextAction::array(0, new NextAction("accept summon", relevance), NULL)));
 }
 
 WorldPacketHandlerStrategy::WorldPacketHandlerStrategy(PlayerbotAI* ai) : PassTroughStrategy(ai)

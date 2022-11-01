@@ -11,6 +11,30 @@ namespace ai
         static list<string> spells;
     };
 
+    class ReadyToRemoveTotemsTrigger : public Trigger {
+    public:
+        ReadyToRemoveTotemsTrigger(PlayerbotAI* ai) : Trigger(ai, "ready to remove totems", 5) {}
+
+        virtual bool IsActive()
+        {
+            // Avoid removing any of the big cooldown totems.
+            return AI_VALUE(bool, "have any totem")
+                && !AI_VALUE2(bool, "has totem", "mana tide totem")
+                && !AI_VALUE2(bool, "has totem", "earth elemental totem")
+                && !AI_VALUE2(bool, "has totem", "fire elemental totem");
+        }
+    };
+
+    class TotemsAreNotSummonedTrigger : public Trigger {
+    public:
+        TotemsAreNotSummonedTrigger(PlayerbotAI* ai) : Trigger(ai, "no totems summoned", 5) {}
+
+        virtual bool IsActive()
+        {
+            return !AI_VALUE(bool, "have any totem");
+        }
+    };
+
     class TotemTrigger : public Trigger {
     public:
         TotemTrigger(PlayerbotAI* ai, string spell, int attackerCount = 0) : Trigger(ai, spell), attackerCount(attackerCount) {}

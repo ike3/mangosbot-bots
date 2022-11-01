@@ -4,10 +4,11 @@
 #include "../../ServerFacade.h"
 #include "../values/Formations.h"
 #include "EmoteAction.h"
+#include "RpgSubActions.h"
 
 using namespace ai;
 
-bool RpgAction::Execute(Event event)
+bool RpgAction::Execute(Event& event)
 {    
     GuidPosition guidP = AI_VALUE(GuidPosition, "rpg target");
 
@@ -32,59 +33,98 @@ bool RpgAction::Execute(Event event)
 
 bool RpgAction::isUseful()
 {
-    return AI_VALUE(GuidPosition, "rpg target");
+    return (AI_VALUE(string, "next rpg action").empty() || AI_VALUE(string, "next rpg action") == "rpg") && AI_VALUE(GuidPosition, "rpg target");
 }
 
 bool RpgAction::SetNextRpgAction()
 {
-    Strategy* rpgStrategy = ai->GetAiObjectContext()->GetStrategy("rpg");
+    Strategy* rpgStrategy; 
+    
+    
 
     vector<Action*> actions;
     vector<uint32> relevances;
     list<TriggerNode*> triggerNodes;
-    rpgStrategy->InitTriggers(triggerNodes);
 
-    for (auto& triggerNode : triggerNodes)
+    for (auto& strategy : ai->GetAiObjectContext()->GetSupportedStrategies())
     {
-        Trigger* trigger = context->GetTrigger(triggerNode->getName());
+        if (strategy.find("rpg") == std::string::npos)
+            continue;
 
-        if (trigger)
+        rpgStrategy = ai->GetAiObjectContext()->GetStrategy(strategy);
+
+        rpgStrategy->InitTriggers(triggerNodes);
+
+        for (auto& triggerNode : triggerNodes)
         {
+            Trigger* trigger = context->GetTrigger(triggerNode->getName());
 
-            triggerNode->setTrigger(trigger);
-
-            NextAction** nextActions = triggerNode->getHandlers();
-
-            Trigger* trigger = triggerNode->getTrigger();
-
-            bool isChecked = false;
-
-            for (int32 i = 0; i < NextAction::size(nextActions); i++)
+            if (trigger)
             {
-                NextAction* nextAction = nextActions[i];
 
-                if (nextAction->getRelevance() > 2.0f)
-                    continue;
+                triggerNode->setTrigger(trigger);
 
-                if (!isChecked && !trigger->IsActive())
-                    break;
+                NextAction** nextActions = triggerNode->getHandlers();
 
-                isChecked = true;
+                Trigger* trigger = triggerNode->getTrigger();
 
-                Action* action = ai->GetAiObjectContext()->GetAction(nextAction->getName());
+                bool isChecked = false;
 
-                if (!action->isPossible() || !action->isUseful())
-                    continue;
+                for (int32 i = 0; i < NextAction::size(nextActions); i++)
+                {
+                    NextAction* nextAction = nextActions[i];
 
-                actions.push_back(action);
-                relevances.push_back((nextAction->getRelevance() - 1) * 1000);
+                    if (nextAction->getRelevance() > 2.0f)
+                        continue;
+
+                    if (!isChecked && !trigger->IsActive())
+                        break;
+
+                    isChecked = true;
+
+                    Action* action = ai->GetAiObjectContext()->GetAction(nextAction->getName());
+
+                    if (!dynamic_cast<RpgEnabled*>(action) || !action->isPossible() || !action->isUseful())
+                        continue;
+
+                    actions.push_back(action);
+                    relevances.push_back((nextAction->getRelevance() - 1) * 1000);
+                }
+                NextAction::destroy(nextActions);
             }
-            NextAction::destroy(nextActions);
         }
+
+        for (list<TriggerNode*>::iterator i = triggerNodes.begin(); i != triggerNodes.end(); i++)
+        {
+            TriggerNode* trigger = *i;
+            delete trigger;
+        }
+        triggerNodes.clear();
     }
 
     if (actions.empty())
         return false;
+
+    if (ai->HasStrategy("debug rpg", BotState::BOT_STATE_NON_COMBAT))
+    {
+        vector<pair<Action*, uint32>> sortedActions;
+        
+        for (int i = 0; i < actions.size(); i++)
+            sortedActions.push_back(make_pair(actions[i], relevances[i]));
+
+        std::sort(sortedActions.begin(), sortedActions.end(), [](pair<Action*, uint32>i, pair<Action*, uint32> j) {return i.second > j.second; });
+
+        ai->TellMasterNoFacing("------" + chat->formatWorldobject(AI_VALUE(GuidPosition, "rpg target").GetWorldObject()) + "------");
+
+        for (auto action : sortedActions)
+        {
+            ostringstream out;
+
+            out << " " << action.first->getName() << " " << action.second;
+
+            ai->TellMasterNoFacing(out);
+        }
+    }
 
     std::mt19937 gen(time(0));
 
@@ -92,12 +132,16 @@ bool RpgAction::SetNextRpgAction()
 
     Action* action = actions.front();
 
-    for (list<TriggerNode*>::iterator i = triggerNodes.begin(); i != triggerNodes.end(); i++)
+    if ((ai->HasStrategy("debug", BotState::BOT_STATE_NON_COMBAT) || ai->HasStrategy("debug rpg", BotState::BOT_STATE_NON_COMBAT)))
     {
-        TriggerNode* trigger = *i;
-        delete trigger;
+        ostringstream out;
+        out << "do: ";
+        out << chat->formatWorldobject(AI_VALUE(GuidPosition, "rpg target").GetWorldObject());
+
+        out << " " << action->getName();
+
+        ai->TellMasterNoFacing(out);
     }
-    triggerNodes.clear();
 
     SET_AI_VALUE(string, "next rpg action", action->getName());
 

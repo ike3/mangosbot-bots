@@ -11,7 +11,7 @@ class Unit;
 class Object;
 class Item;
 
-typedef map<uint64, Player*> PlayerBotMap;
+typedef map<uint32, Player*> PlayerBotMap;
 typedef map<string, set<string> > PlayerBotErrorMap;
 
 class PlayerbotHolder : public PlayerbotAIBase
@@ -20,12 +20,12 @@ public:
     PlayerbotHolder();
     virtual ~PlayerbotHolder();
 
-    void AddPlayerBot(uint64 guid, uint32 masterAccountId);
+    void AddPlayerBot(uint32 guid, uint32 masterAccountId);
 	void HandlePlayerBotLoginCallback(QueryResult * dummy, SqlQueryHolder * holder);
 
-    void LogoutPlayerBot(uint64 guid);
-    void DisablePlayerBot(uint64 guid);
-    Player* GetPlayerBot (uint64 guid) const;
+    void LogoutPlayerBot(uint32 guid);
+    void DisablePlayerBot(uint32 guid);
+    Player* GetPlayerBot (uint32 guid) const;
     PlayerBotMap::const_iterator GetPlayerBotsBegin() const { return playerBots.begin(); }
     PlayerBotMap::const_iterator GetPlayerBotsEnd()   const { return playerBots.end();   }
 
@@ -33,7 +33,8 @@ public:
     void UpdateSessions(uint32 elapsed);
 
     void LogoutAllBots();
-    void OnBotLogin(Player * const bot);
+    void OnBotLogin(Player* bot);
+    void MovePlayerBot(uint32 guid, PlayerbotHolder* newHolder) { auto botptr = playerBots.find(guid); if (botptr == playerBots.end()) return;  newHolder->OnBotLogin(botptr->second); playerBots.erase(guid); }
 
     list<string> HandlePlayerbotCommand(char const* args, Player* master = NULL);
     string ProcessBotCommand(string cmd, ObjectGuid guid, ObjectGuid masterguid, bool admin, uint32 masterAccountId, uint32 masterGuildId);
@@ -60,7 +61,7 @@ public:
     void OnPlayerLogin(Player* player);
     void CancelLogout();
 
-    virtual void UpdateAIInternal(uint32 elapsed);
+    virtual void UpdateAIInternal(uint32 elapsed, bool minimal = false);
     void TellError(string botName, string text);
 
     Player* GetMaster() const { return master; };

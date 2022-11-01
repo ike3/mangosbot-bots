@@ -6,8 +6,10 @@
 
 using namespace ai;
 
-void TalkToQuestGiverAction::ProcessQuest(Quest const* quest, WorldObject* questGiver)
+bool TalkToQuestGiverAction::ProcessQuest(Quest const* quest, WorldObject* questGiver)
 {
+    bool isCompleted = false;
+
     std::ostringstream out; out << "Quest ";
 
     QuestStatus status = bot->GetQuestStatus(quest->GetQuestId());
@@ -20,7 +22,7 @@ void TalkToQuestGiverAction::ProcessQuest(Quest const* quest, WorldObject* quest
         {
             QuestStatus masterStatus = master->GetQuestStatus(quest->GetQuestId());
             if (masterStatus == QUEST_STATUS_INCOMPLETE || masterStatus == QUEST_STATUS_FAILED)
-                CompleteQuest(master, quest->GetQuestId());
+                isCompleted |= CompleteQuest(master, quest->GetQuestId());
         }
     }
 
@@ -28,7 +30,7 @@ void TalkToQuestGiverAction::ProcessQuest(Quest const* quest, WorldObject* quest
     {        
         if (master && master->GetQuestStatus(quest->GetQuestId()) == QUEST_STATUS_COMPLETE && (status == QUEST_STATUS_INCOMPLETE || status == QUEST_STATUS_FAILED))
         {
-            CompleteQuest(bot, quest->GetQuestId());
+            isCompleted |= CompleteQuest(bot, quest->GetQuestId());
             status = bot->GetQuestStatus(quest->GetQuestId());
         }
     }    
@@ -54,7 +56,9 @@ void TalkToQuestGiverAction::ProcessQuest(Quest const* quest, WorldObject* quest
     }
 
     out << ": " << chat->formatQuest(quest);
-    ai->TellMaster(out);
+    ai->TellMaster(out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+
+    return isCompleted;
 }
 
 void TalkToQuestGiverAction::TurnInQuest(Quest const* quest, WorldObject* questGiver, ostringstream& out) 
@@ -65,6 +69,8 @@ void TalkToQuestGiverAction::TurnInQuest(Quest const* quest, WorldObject* questG
         return;
 
     bot->PlayDistanceSound(621);
+
+    sTravelMgr.logEvent(ai, "TalkToQuestGiverAction", quest->GetTitle(), to_string(quest->GetQuestId()));
 
     if (quest->GetRewChoiceItemsCount() == 0)
         RewardNoItem(quest, questGiver, out);
@@ -137,7 +143,6 @@ ItemIds TalkToQuestGiverAction::BestRewards(Quest const* quest)
 void TalkToQuestGiverAction::RewardMultipleItem(Quest const* quest, WorldObject* questGiver, ostringstream& out)
 {
     set<uint32> bestIds;
-    Item* newItem;
 
     ostringstream outid;
     if (!ai->IsAlt() || sPlayerbotAIConfig.autoPickReward == "yes")
@@ -184,7 +189,7 @@ void TalkToQuestGiverAction::AskToSelectReward(Quest const* quest, ostringstream
             msg << chat->formatItem(item);
         }
     }
-    ai->TellMaster(msg);
+    ai->TellMaster(msg, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
 
     out << "Reward pending";
 }

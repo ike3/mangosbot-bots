@@ -4,11 +4,12 @@
 #include "PlayerbotMgr.h"
 #include "PlayerbotAIBase.h"
 #include "strategy/AiObjectContext.h"
-#include "strategy/Engine.h"
+#include "strategy/ReactionEngine.h"
 #include "strategy/ExternalEventHelper.h"
 #include "ChatFilter.h"
 #include "PlayerbotSecurity.h"
 #include "TravelMgr.h"
+#include "PlayerbotTextMgr.h"
 #include <stack>
 
 class Player;
@@ -79,18 +80,21 @@ enum HealingItemDisplayId
    MAJOR_DREAMLESS_SLEEP_POTION = 37845,
 };
 
-enum BotState
+enum class BotState : uint8
 {
     BOT_STATE_COMBAT = 0,
     BOT_STATE_NON_COMBAT = 1,
-    BOT_STATE_DEAD = 2
+    BOT_STATE_DEAD = 2,
+    BOT_STATE_REACTION = 3,
+    BOT_STATE_MAX
 };
-
-#define BOT_STATE_MAX 3
 
 enum RoguePoisonDisplayId
 {
    DEADLY_POISON_DISPLAYID = 13707,
+   CRIPPLING_POISON_DISPLAYID = 13708,
+   CRIPPLING_POISON_DISPLAYID_II = 2947,
+   MIND_POISON_DISPLAYID = 13709,
    INSTANT_POISON_DISPLAYID = 13710,
 #ifdef MANGOSBOT_ZERO
    WOUND_POISON_DISPLAYID = 13708
@@ -261,10 +265,15 @@ public:
 	virtual ~PlayerbotAI();
 
     virtual void UpdateAI(uint32 elapsed, bool minimal = false);
-public:
-	virtual void UpdateAIInternal(uint32 elapsed, bool minimal = false);
+
+private:
+    void UpdateAIInternal(uint32 elapsed, bool minimal = false) override;
+
+public:	
+    static string BotStateToString(BotState state);
 	string HandleRemoteCommand(string command);
     void HandleCommand(uint32 type, const string& text, Player& fromPlayer);
+    void QueueChatResponse(uint8 msgtype, ObjectGuid guid1, ObjectGuid guid2, std::string message, std::string chanName, std::string name);
 	void HandleBotOutgoingPacket(const WorldPacket& packet);
     void HandleMasterIncomingPacket(const WorldPacket& packet);
     void HandleMasterOutgoingPacket(const WorldPacket& packet);
@@ -290,11 +299,11 @@ public:
     GameObject* GetGameObject(ObjectGuid guid);
     static GameObject* GetGameObject(GameObjectDataPair const* gameObjectDataPair);
     WorldObject* GetWorldObject(ObjectGuid guid);
-    bool TellMaster(ostringstream &stream, PlayerbotSecurityLevel securityLevel = PLAYERBOT_SECURITY_ALLOW_ALL) { return TellMaster(stream.str(), securityLevel); }
-    bool TellMaster(string text, PlayerbotSecurityLevel securityLevel = PLAYERBOT_SECURITY_ALLOW_ALL);
-    bool TellMasterNoFacing(ostringstream& stream, PlayerbotSecurityLevel securityLevel = PLAYERBOT_SECURITY_ALLOW_ALL) { return TellMasterNoFacing(stream.str(), securityLevel); }
-    bool TellMasterNoFacing(string text, PlayerbotSecurityLevel securityLevel = PLAYERBOT_SECURITY_ALLOW_ALL);
-    bool TellError(string text, PlayerbotSecurityLevel securityLevel = PLAYERBOT_SECURITY_ALLOW_ALL);
+    bool TellMaster(ostringstream &stream, PlayerbotSecurityLevel securityLevel = PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, bool isPrivate = true) { return TellMaster(stream.str(), securityLevel, isPrivate); }
+    bool TellMaster(string text, PlayerbotSecurityLevel securityLevel = PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, bool isPrivate = true);
+    bool TellMasterNoFacing(ostringstream& stream, PlayerbotSecurityLevel securityLevel = PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, bool isPrivate = true) { return TellMasterNoFacing(stream.str(), securityLevel, isPrivate); }
+    bool TellMasterNoFacing(string text, PlayerbotSecurityLevel securityLevel = PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, bool isPrivate = true);
+    bool TellError(string text, PlayerbotSecurityLevel securityLevel = PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL);
     void SpellInterrupted(uint32 spellid);
     int32 CalculateGlobalCooldown(uint32 spellid);
     void InterruptSpell();
@@ -304,6 +313,7 @@ public:
     bool PlaySound(uint32 emote);
     bool PlayEmote(uint32 emote);
     void Ping(float x, float y);
+    void Poi(float x, float y, string icon_name = "This way", Player* player = nullptr, uint32 flags = 99, uint32 icon = 7 /* red flag */, uint32 icon_data = 0);
     Item * FindPoison() const;
     Item * FindConsumable(uint32 displayId) const;
     Item * FindBandage() const;
@@ -317,14 +327,15 @@ public:
     void ImbueItem(Item* item, uint8 targetInventorySlot);
     void ImbueItem(Item* item, Unit* target);
     void ImbueItem(Item* item);
-    void EnchantItemT(uint32 spellid, uint8 slot);
+    void EnchantItemT(uint32 spellid, uint8 slot, Item* item = nullptr);
     uint32 GetBuffedCount(Player* player, string spellname);
   
 
     virtual bool CanCastSpell(string name, Unit* target, uint8 effectMask, Item* itemTarget = NULL);
     virtual bool CastSpell(string name, Unit* target, Item* itemTarget = NULL);
-    virtual bool HasAura(string spellName, Unit* player, bool maxStack = false);
+    virtual bool HasAura(string spellName, Unit* player, bool maxStack = false, bool checkIsOwner = false, int maxAmount = -1, bool hasMyAura = false);
     virtual bool HasAnyAuraOf(Unit* player, ...);
+    virtual bool HasMyAura(string spellName, Unit* player) { return HasAura(spellName, player, false, false, -1, true); }
     uint8 GetHealthPercent(const Unit& target) const;
     uint8 GetHealthPercent() const;
     uint8 GetManaPercent(const Unit& target) const;
@@ -347,6 +358,7 @@ public:
     bool IsInVehicle(bool canControl = false, bool canCast = false, bool canAttack = false, bool canTurn = false, bool fixed = false);
 
     uint32 GetEquipGearScore(Player* player, bool withBags, bool withBank);
+    uint32 GetEquipStatsValue(Player* player);
     bool HasSkill(SkillType skill);
     bool IsAllowedCommand(string text);
     float GetRange(string type);
@@ -361,7 +373,7 @@ public:
 
 private:
     void _fillGearScoreData(Player *player, Item* item, std::vector<uint32>* gearScore, uint32& twoHandScore);
-    bool IsTellAllowed(PlayerbotSecurityLevel securityLevel = PLAYERBOT_SECURITY_ALLOW_ALL);
+    bool IsTellAllowed(PlayerbotSecurityLevel securityLevel = PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL);
 
 public:
 	Player* GetBot() { return bot; }
@@ -372,7 +384,7 @@ public:
 
     //Bot has a master that is a player.
     bool HasRealPlayerMaster() { return master && (!master->GetPlayerbotAI() || master->GetPlayerbotAI()->IsRealPlayer()); } 
-    //Bot has a master that is activly playing.
+    //Bot has a master that is actively playing.
     bool HasActivePlayerMaster() { return master && !master->GetPlayerbotAI(); }
 
     //Checks if the bot is summoned as alt of a player
@@ -388,6 +400,7 @@ public:
     bool HasPlayerNearby(WorldPosition* pos, float range = sPlayerbotAIConfig.reactDistance);
     bool HasPlayerNearby(float range = sPlayerbotAIConfig.reactDistance) { WorldPosition botPos(bot);  return HasPlayerNearby(&botPos, range); };
     bool HasManyPlayersNearby(uint32 trigerrValue = 20, float range = sPlayerbotAIConfig.sightDistance);
+    pair<uint32,uint32> GetPriorityBracket(bool& shouldDetailMove);
     bool AllowActive(ActivityType activityType);
     bool AllowActivity(ActivityType activityType = ALL_ACTIVITY, bool checkNow = false);
 
@@ -402,16 +415,32 @@ public:
     static bool IsOpposing(uint8 race1, uint8 race2);
     PlayerbotSecurity* GetSecurity() { return &security; }
 
+    Position GetJumpDestination() { return jumpDestination; }
+    void SetJumpDestination(Position pos) { jumpDestination = pos; }
+    void ResetJumpDestination() { jumpDestination = Position(); }
+
+    bool CanMove();
+    void StopMoving();
+    bool IsInRealGuild();
+    time_t GetCombatStartTime() { return combatStart; }
+
+    void SetActionDuration(const Action* action, uint32 delay);
+    
+private:
+    bool UpdateAIReaction(uint32 elapsed, bool minimal = false);
+
 protected:
 	Player* bot;
 	Player* master;
 	uint32 accountId;
     AiObjectContext* aiObjectContext;
     Engine* currentEngine;
-    Engine* engines[BOT_STATE_MAX];
+    ReactionEngine* reactionEngine;
+    Engine* engines[(uint8)BotState::BOT_STATE_MAX];
     BotState currentState;
     ChatHelper chatHelper;
     queue<ChatCommandHolder> chatCommands;
+    queue<ChatQueuedReply> chatReplies;
     PacketHandlingHelper botOutgoingPacketHandlers;
     PacketHandlingHelper masterIncomingPacketHandlers;
     PacketHandlingHelper masterOutgoingPacketHandlers;
@@ -422,7 +451,11 @@ protected:
     static set<string> unsecuredCommands;
     bool allowActive[MAX_ACTIVITY_TYPE];
     time_t allowActiveCheckTimer[MAX_ACTIVITY_TYPE];
-    bool inCombat = false;;
+    bool inCombat = false;
+    bool isMoving = false;
+    bool isWaiting = false;
+    time_t combatStart = 0;
     BotCheatMask cheatMask = BotCheatMask::none;
+    Position jumpDestination = Position();
 };
 

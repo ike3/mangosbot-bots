@@ -6,7 +6,7 @@
 
 using namespace ai;
 
-bool RepairAllAction::Execute(Event event)
+bool RepairAllAction::Execute(Event& event)
 {
     list<ObjectGuid> npcs = AI_VALUE(list<ObjectGuid>, "nearest npcs");
     for (list<ObjectGuid>::iterator i = npcs.begin(); i != npcs.end(); i++)
@@ -25,6 +25,8 @@ bool RepairAllAction::Execute(Event event)
 
         sServerFacade.SetFacingTo(bot, unit);
         float discountMod = bot->GetReputationPriceDiscount(unit);
+
+        float durability = AI_VALUE(uint8, "durability");
 
         uint32 botMoney = bot->GetMoney();
         if (ai->HasCheat(BotCheatMask::gold))
@@ -62,17 +64,22 @@ bool RepairAllAction::Execute(Event event)
             bot->SetMoney(botMoney);
         }
 
+        //Totalcost is bugged in core. For now we use this work-around.
+        totalCost = botMoney - bot->GetMoney();
+
         if (totalCost > 0)
         {
             ostringstream out;
             out << "Repair: " << chat->formatMoney(totalCost) << " (" << unit->GetName() << ")";
-            ai->TellMasterNoFacing(out.str());
+            ai->TellMasterNoFacing(out.str(),PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
             bot->PlayDistanceSound(1116);
+
+            sTravelMgr.logEvent(ai, "RepairAllAction", to_string(durability), to_string(totalCost));
         }
 
         context->GetValue<uint32>("death count")->Set(0);
 
-        return true;
+        return durability < 100 && AI_VALUE(uint8, "durability") > durability;
     }
 
     ai->TellError("Cannot find any npc to repair at");

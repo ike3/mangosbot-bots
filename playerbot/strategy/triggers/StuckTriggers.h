@@ -14,12 +14,19 @@ namespace ai
             if (ai->HasActivePlayerMaster())
                 return false;
 
-            if (!ai->AllowActivity(ALL_ACTIVITY))
+
+            if (ai->GetGroupMaster() && !ai->GetGroupMaster()->GetPlayerbotAI())
                 return false;
 
-            WorldPosition botPos(bot);
-
             LogCalculatedValue<WorldPosition>* posVal = dynamic_cast<LogCalculatedValue<WorldPosition>*>(context->GetUntypedValue("current position"));
+
+            if (!ai->AllowActivity(ALL_ACTIVITY))
+            {
+                posVal->Reset();
+                return false;
+            }
+
+            WorldPosition botPos(bot);
 
             if (posVal->LastChangeDelay() > 5 * MINUTE)
             {
@@ -63,8 +70,18 @@ namespace ai
             if (ai->HasActivePlayerMaster())
                 return false;
 
-            if (!ai->AllowActivity(ALL_ACTIVITY))
+            if (ai->GetGroupMaster() && !ai->GetGroupMaster()->GetPlayerbotAI())
                 return false;
+
+            LogCalculatedValue<WorldPosition>* posVal = dynamic_cast<LogCalculatedValue<WorldPosition>*>(context->GetUntypedValue("current position"));
+            MemoryCalculatedValue<uint32>* expVal = dynamic_cast<MemoryCalculatedValue<uint32>*>(context->GetUntypedValue("experience"));
+
+            if (!ai->AllowActivity(ALL_ACTIVITY))
+            {
+                posVal->Reset();
+                expVal->Reset();
+                return false;
+            }
 
             WorldPosition botPos(bot);
 
@@ -86,14 +103,21 @@ namespace ai
                 return true;
             }
 
+#ifdef MANGOSBOT_TWO
+            if (cell.GridX() > 0 && cell.GridY() > 0 && !MMAP::MMapFactory::createOrGetMMapManager()->IsMMapTileLoaded(botPos.getMapId(), 0, cell.GridX(), cell.GridY()) && !MMAP::MMapFactory::createOrGetMMapManager()->loadMap(botPos.getMapId(), 0, cell.GridX(), cell.GridY(), 0))
+            {
+                //sLog.outBasic("Bot #%d %s:%d <%s> was in unloaded grid %d,%d on map %d", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName(), grid.x_coord, grid.y_coord, botPos.getMapId());
+
+                return true;
+            }
+#else
             if (cell.GridX() > 0 && cell.GridY() > 0 && !MMAP::MMapFactory::createOrGetMMapManager()->IsMMapIsLoaded(botPos.getMapId(), cell.GridX(), cell.GridY()) && !MMAP::MMapFactory::createOrGetMMapManager()->loadMap(botPos.getMapId(), cell.GridX(), cell.GridY()))
             {
                 //sLog.outBasic("Bot #%d %s:%d <%s> was in unloaded grid %d,%d on map %d", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName(), grid.x_coord, grid.y_coord, botPos.getMapId());
 
                 return true;
             }
-
-            LogCalculatedValue<WorldPosition>* posVal = dynamic_cast<LogCalculatedValue<WorldPosition>*>(context->GetUntypedValue("current position"));
+#endif
 
             if (posVal->LastChangeDelay() > 10 * MINUTE)
             {
@@ -101,8 +125,6 @@ namespace ai
 
                 return true;
             }
-
-            MemoryCalculatedValue<uint32>* expVal = dynamic_cast<MemoryCalculatedValue<uint32>*>(context->GetUntypedValue("experience"));
 
             if (expVal->LastChangeDelay() < 15 * MINUTE)
                 return false;
@@ -144,6 +166,9 @@ namespace ai
             if (ai->HasActivePlayerMaster())
                 return false;
 
+            if (ai->GetGroupMaster() && !ai->GetGroupMaster()->GetPlayerbotAI())
+                return false;
+
             if (!ai->AllowActivity(ALL_ACTIVITY))
                 return false;
 
@@ -175,6 +200,9 @@ namespace ai
             if (ai->HasActivePlayerMaster())
                 return false;
 
+            if (ai->GetGroupMaster() && !ai->GetGroupMaster()->GetPlayerbotAI())
+                return false;
+
             if (!ai->AllowActivity(ALL_ACTIVITY))
                 return false;
 
@@ -187,6 +215,29 @@ namespace ai
                 //sLog.outBasic("Bot #%d %s:%d <%s> was in combat for %d seconds", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName(), posVal->LastChangeDelay());
 
                 return true;
+            }
+
+            return false;
+        }
+    };
+
+    class LeaderIsAfkTrigger : public Trigger
+    {
+    public:
+        LeaderIsAfkTrigger(PlayerbotAI* ai) : Trigger(ai, "leader is afk", 10) {}
+
+        virtual bool IsActive()
+        {
+            if (ai->HasRealPlayerMaster())
+                return false;
+
+            if (Group* group = bot->GetGroup())
+            {
+                Player* leader = sObjectMgr.GetPlayer(group->GetLeaderGuid(), true);
+                if (!leader)
+                    return false;
+
+                return leader->isAFK();
             }
 
             return false;

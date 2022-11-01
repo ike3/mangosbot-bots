@@ -15,7 +15,7 @@ bool StayActionBase::Stay()
 
     MotionMaster &mm = *bot->GetMotionMaster();
 #ifdef CMANGOS
-	if (mm.GetCurrentMovementGeneratorType() == TAXI_MOTION_TYPE || bot->IsFlying())
+	if (mm.GetCurrentMovementGeneratorType() == TAXI_MOTION_TYPE || bot->IsTaxiFlying())
 #endif
 #ifdef MANGOS
 	if (mm.GetCurrentMovementGeneratorType() == FLIGHT_MOTION_TYPE || bot->IsFlying())
@@ -37,14 +37,14 @@ bool StayActionBase::Stay()
     if (!sServerFacade.isMoving(bot))
         return false;
 
-    bot->StopMoving();
+    ai->StopMoving();
 	bot->clearUnitState(UNIT_STAT_CHASE);
 	bot->clearUnitState(UNIT_STAT_FOLLOW);
 
     return true;
 }
 
-bool StayAction::Execute(Event event)
+bool StayAction::Execute(Event& event)
 {
     return Stay();
 }
@@ -54,7 +54,7 @@ bool StayAction::isUseful()
     return !AI_VALUE2(bool, "moving", "self target");
 }
 
-bool SitAction::Execute(Event event)
+bool SitAction::Execute(Event& event)
 {
     if (sServerFacade.isMoving(bot))
         return false;

@@ -7,7 +7,7 @@ namespace ai
     class GuidManageAction : public Action {
     public:
         GuidManageAction(PlayerbotAI* ai, string name = "guild manage", uint16 opcode = CMSG_GUILD_INVITE) : Action(ai, name), opcode(opcode) {}
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
         virtual bool isUseful() { return false; }
     protected:
         virtual void SendPacket(WorldPacket data) {};
@@ -21,7 +21,7 @@ namespace ai
     class GuildInviteAction : public GuidManageAction {
     public:
         GuildInviteAction(PlayerbotAI* ai, string name = "guild invite", uint16 opcode = CMSG_GUILD_INVITE) : GuidManageAction(ai, name, opcode) {}
-        virtual bool isUseful() { return bot->GetGuildId() && sGuildMgr.GetGuildById(bot->GetGuildId())->HasRankRight(bot->GetRank(), GR_RIGHT_INVITE); }
+        virtual bool isUseful() { return !ai->HasRealPlayerMaster() && bot->GetGuildId() && sGuildMgr.GetGuildById(bot->GetGuildId())->HasRankRight(bot->GetRank(), GR_RIGHT_INVITE); }
     protected:
         virtual void SendPacket(WorldPacket data) { bot->GetSession()->HandleGuildInviteOpcode(data); };
         virtual bool PlayerIsValid(Player* member) { return !member->GetGuildId(); };
@@ -44,6 +44,15 @@ namespace ai
         virtual void SendPacket(WorldPacket data) { bot->GetSession()->HandleGuildDemoteOpcode(data); };
         virtual bool PlayerIsValid(Player* member) { return member->GetGuildId() == bot->GetGuildId() && GetRankId(bot) < GetRankId(member); };
     };
+
+    class GuildLeaderAction : public GuidManageAction {
+    public:
+        GuildLeaderAction(PlayerbotAI* ai, string name = "guild leader", uint16 opcode = CMSG_GUILD_LEADER) : GuidManageAction(ai, name, opcode) {}
+        virtual bool isUseful() { return bot->GetGuildId() && sGuildMgr.GetGuildById(bot->GetGuildId())->GetLeaderGuid() == bot->GetObjectGuid(); }
+    protected:
+        virtual void SendPacket(WorldPacket data) { bot->GetSession()->HandleGuildLeaderOpcode(data); };
+        virtual bool PlayerIsValid(Player* member) { return member->GetGuildId() == bot->GetGuildId() && GetRankId(bot) < GetRankId(member) - 1; };
+    };
     
     class GuildRemoveAction : public GuidManageAction {
     public:
@@ -57,14 +66,14 @@ namespace ai
     class GuildManageNearbyAction : public Action {
     public:
         GuildManageNearbyAction(PlayerbotAI* ai) : Action(ai, "guild manage nearby") {}
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
         virtual bool isUseful();
     };
 
     class GuildLeaveAction : public Action {
     public:
         GuildLeaveAction(PlayerbotAI* ai) : Action(ai, "guild leave") {}
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
         virtual bool isUseful() { return bot->GetGuildId(); }
     };
 }

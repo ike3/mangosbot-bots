@@ -8,6 +8,6 @@ void AttackEnemyPlayersStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
         "enemy player near",
-        NextAction::array(0, new NextAction("attack enemy player", 55.0f), NULL)));
+        NextAction::array(0, new NextAction("attack enemy player", 69.0f), NULL)));
 }
 

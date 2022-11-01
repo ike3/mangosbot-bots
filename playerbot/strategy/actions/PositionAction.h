@@ -11,7 +11,7 @@ namespace ai
         PositionAction(PlayerbotAI* ai) : Action(ai, "position")
         {}
 
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
     };
 
     class MoveToPositionAction : public MovementAction
@@ -21,7 +21,7 @@ namespace ai
             MovementAction(ai, name), qualifier(qualifier), idle(idle)
         {}
 
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
         virtual bool isUseful();
 
     protected:
@@ -41,7 +41,7 @@ namespace ai
         SetReturnPositionAction(PlayerbotAI* ai) : Action(ai, "set return position")
         {}
 
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
         virtual bool isUseful();
     };
 

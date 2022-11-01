@@ -5,12 +5,12 @@
 #include "../../PlayerbotAIConfig.h"
 #include "../../ServerFacade.h"
 #include "../values/PossibleRpgTargetsValue.h"
-#include "../../Travelmgr.h"
+#include "../../TravelMgr.h"
 #include "ChooseRpgTargetAction.h"
 
 using namespace ai;
 
-bool MoveToRpgTargetAction::Execute(Event event)
+bool MoveToRpgTargetAction::Execute(Event& event)
 {
     GuidPosition guidP = AI_VALUE(GuidPosition, "rpg target");
     Unit* unit = ai->GetUnit(guidP);
@@ -25,14 +25,6 @@ bool MoveToRpgTargetAction::Execute(Event event)
     else
         return false;
 
-    if (ai->HasStrategy("debug rpg", BOT_STATE_NON_COMBAT) && guidP.GetWorldObject())
-    {
-        ostringstream out;
-        out << "Heading to: ";
-        out << chat->formatWorldobject(guidP.GetWorldObject());
-        ai->TellMasterNoFacing(out);
-    }
-
     if (guidP.IsPlayer())
     {
         Player* player = guidP.GetPlayer();
@@ -46,19 +38,78 @@ bool MoveToRpgTargetAction::Execute(Event event)
                 AI_VALUE(set<ObjectGuid>&,"ignore rpg target").insert(AI_VALUE(GuidPosition, "rpg target"));
 
                 RESET_AI_VALUE(GuidPosition, "rpg target");
+
+                if (ai->HasStrategy("debug rpg", BotState::BOT_STATE_NON_COMBAT))
+                {
+                    ai->TellMasterNoFacing("Rpg player target is targeting me. Drop target");
+                }
                 return false;
             }
         }
     }
 
-    if ((unit && unit->IsMoving() && !urand(0, 20))
-        || !ChooseRpgTargetAction::isFollowValid(bot, wo)
-        || guidP.distance(bot) > sPlayerbotAIConfig.reactDistance * 2
-        || !urand(0, 50))
+    if ((unit && unit->IsMoving() && !urand(0, 20)))
     {
         AI_VALUE(set<ObjectGuid>&,"ignore rpg target").insert(AI_VALUE(GuidPosition, "rpg target"));
 
         RESET_AI_VALUE(GuidPosition,"rpg target");
+
+        if (ai->HasStrategy("debug rpg", BotState::BOT_STATE_NON_COMBAT))
+        {
+            ai->TellMasterNoFacing("Rpg target is moving. Random drop target.");
+        }
+        return false;
+    }
+
+    if (!ChooseRpgTargetAction::isFollowValid(bot, wo))
+    {
+        AI_VALUE(set<ObjectGuid>&, "ignore rpg target").insert(AI_VALUE(GuidPosition, "rpg target"));
+
+        RESET_AI_VALUE(GuidPosition, "rpg target");
+
+        if (ai->HasStrategy("debug rpg", BotState::BOT_STATE_NON_COMBAT))
+        {
+            ai->TellMasterNoFacing("Rpg target is far from mater. Random drop target.");
+        }
+        return false;
+    }
+
+    if (guidP.distance(bot) > sPlayerbotAIConfig.reactDistance * 2)
+    {
+        AI_VALUE(set<ObjectGuid>&, "ignore rpg target").insert(AI_VALUE(GuidPosition, "rpg target"));
+
+        RESET_AI_VALUE(GuidPosition, "rpg target");
+
+        if (ai->HasStrategy("debug rpg", BotState::BOT_STATE_NON_COMBAT))
+        {
+            ai->TellMasterNoFacing("Rpg target is beyond react distance. Drop target");
+        }
+        return false;
+    }
+
+    if (guidP.IsGameObject() && guidP.sqDistance2d(bot) < INTERACTION_DISTANCE * INTERACTION_DISTANCE  && !urand(0, 5))
+    {
+        AI_VALUE(set<ObjectGuid>&, "ignore rpg target").insert(AI_VALUE(GuidPosition, "rpg target"));
+
+        RESET_AI_VALUE(GuidPosition, "rpg target");
+
+        if (ai->HasStrategy("debug rpg", BotState::BOT_STATE_NON_COMBAT))
+        {
+            ai->TellMasterNoFacing("Under/above object drop rpg target");
+        }
+        return false;
+    }
+
+    if (!urand(0, 50))
+    {
+        AI_VALUE(set<ObjectGuid>&, "ignore rpg target").insert(AI_VALUE(GuidPosition, "rpg target"));
+
+        RESET_AI_VALUE(GuidPosition, "rpg target");
+
+        if (ai->HasStrategy("debug rpg", BotState::BOT_STATE_NON_COMBAT))
+        {
+            ai->TellMasterNoFacing("Random drop rpg target");
+        }
         return false;
     }
 
@@ -66,6 +117,13 @@ bool MoveToRpgTargetAction::Execute(Event event)
     float y = wo->GetPositionY();
     float z = wo->GetPositionZ();
     float mapId = wo->GetMapId();
+
+    if (ai->HasStrategy("debug move", BotState::BOT_STATE_NON_COMBAT))
+    {
+        string name = chat->formatWorldobject(wo);
+
+        ai->Poi(x, y, name);
+    }
 	
 	if (sPlayerbotAIConfig.RandombotsWalkingRPG)
         if (!bot->GetTerrain()->IsOutdoors(bot->GetPositionX(), bot->GetPositionY(), bot->GetPositionZ()))
@@ -74,14 +132,17 @@ bool MoveToRpgTargetAction::Execute(Event event)
     float angle;
     float distance = 1.0f;
     
-    if (bot->IsWithinLOS(x, y, z))
+    if (bot->IsWithinLOS(x, y, z, true))
     {
         if (!unit || !unit->IsMoving())
             angle = wo->GetAngle(bot) + (M_PI * irand(-25, 25) / 100.0); //Closest 45 degrees towards the target
         else
             angle = wo->GetOrientation() + (M_PI * irand(-25, 25) / 100.0); //45 degrees infront of target (leading it's movement)
 
-        distance = frand(0.5, 1);
+        if(unit)
+            distance = frand(0.5, 1);
+        else
+            distance = frand(0, 0.5);
     }
     else
         angle = 2 * M_PI * urand(0, 100) / 100.0; //A circle around the target.
@@ -93,7 +154,7 @@ bool MoveToRpgTargetAction::Execute(Event event)
 
     bool couldMove;
     
-    if (bot->IsWithinLOS(x, y, z))
+    if (bot->IsWithinLOS(x, y, z, true))
         couldMove = MoveNear(mapId, x , y, z, 0);
     else
         couldMove = MoveTo(mapId, x, y, z, false, false);
@@ -103,6 +164,31 @@ bool MoveToRpgTargetAction::Execute(Event event)
         AI_VALUE(set<ObjectGuid>&,"ignore rpg target").insert(AI_VALUE(GuidPosition, "rpg target"));
 
         RESET_AI_VALUE(GuidPosition, "rpg target");
+
+        if (ai->HasStrategy("debug rpg", BotState::BOT_STATE_NON_COMBAT))
+        {
+            ai->TellMasterNoFacing("Could not move to rpg target. Drop rpg target");
+        }
+
+        return false;
+    }
+
+    if (ai->HasStrategy("debug rpg", BotState::BOT_STATE_NON_COMBAT) && guidP.GetWorldObject())
+    {
+        if (couldMove)
+        {
+            ostringstream out;
+            out << "Heading to: ";
+            out << chat->formatWorldobject(guidP.GetWorldObject());
+            ai->TellMasterNoFacing(out);
+        }
+        else
+        {
+            ostringstream out;
+            out << "Near: ";
+            out << chat->formatWorldobject(guidP.GetWorldObject());
+            ai->TellMasterNoFacing(out);
+        }
     }
 
     return couldMove;
@@ -118,7 +204,23 @@ bool MoveToRpgTargetAction::isUseful()
     WorldObject* wo = guidP.GetWorldObject();
 
     if (!wo)
-        return false;
+    {
+        RESET_AI_VALUE(GuidPosition, "rpg target");
+
+        if (ai->HasStrategy("debug rpg", BotState::BOT_STATE_NON_COMBAT))
+        {
+            ai->TellMasterNoFacing("Target could not be found. Drop rpg target");
+        }
+    }
+
+    if(MEM_AI_VALUE(WorldPosition, "current position")->LastChangeDelay() < 60)
+#ifndef MANGOSBOT_ZERO
+        if (bot->IsMovingIgnoreFlying())
+            return false;
+#else
+        if (bot->IsMoving())
+            return false;
+#endif
 
     TravelTarget* travelTarget = AI_VALUE(TravelTarget*, "travel target");
 

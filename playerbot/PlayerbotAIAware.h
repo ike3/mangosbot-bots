@@ -1,5 +1,7 @@
 #pragma once
 
+class PlayerbotAI;
+
 namespace ai
 {
     class PlayerbotAIAware 

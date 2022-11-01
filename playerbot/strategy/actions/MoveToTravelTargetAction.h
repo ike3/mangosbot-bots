@@ -3,7 +3,7 @@
 #include "../Action.h"
 #include "MovementActions.h"
 #include "../values/LastMovementValue.h"
-#include "../../Travelmgr.h"
+#include "../../TravelMgr.h"
 
 namespace ai
 {
@@ -11,7 +11,7 @@ namespace ai
     public:
         MoveToTravelTargetAction(PlayerbotAI* ai) : MovementAction(ai, "move to travel target") {}
 
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
         virtual bool isUseful();
     };
 

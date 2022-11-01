@@ -8,7 +8,7 @@ namespace ai
     class FlagAction : public Action {
     public:
         FlagAction(PlayerbotAI* ai) : Action(ai, "flag") {}
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
 
     private:
         bool TellUsage();

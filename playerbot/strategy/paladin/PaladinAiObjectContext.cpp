@@ -4,6 +4,7 @@
 #include "PaladinTriggers.h"
 #include "PaladinAiObjectContext.h"
 #include "GenericPaladinNonCombatStrategy.h"
+#include "PaladinReactionStrategy.h"
 #include "TankPaladinStrategy.h"
 #include "DpsPaladinStrategy.h"
 #include "PaladinBuffStrategies.h"
@@ -24,18 +25,22 @@ namespace ai
             StrategyFactoryInternal()
             {
                 creators["nc"] = &paladin::StrategyFactoryInternal::nc;
+                creators["react"] = &paladin::StrategyFactoryInternal::react;
                 creators["cure"] = &paladin::StrategyFactoryInternal::cure;
                 creators["boost"] = &paladin::StrategyFactoryInternal::boost;
                 creators["bthreat"] = &paladin::StrategyFactoryInternal::bthreat;
                 creators["cc"] = &paladin::StrategyFactoryInternal::cc;
+                creators["crusader"] = &paladin::StrategyFactoryInternal::crusader;
             }
 
         private:
             static Strategy* nc(PlayerbotAI* ai) { return new GenericPaladinNonCombatStrategy(ai); }
+            static Strategy* react(PlayerbotAI* ai) { return new PaladinReactionStrategy(ai); }
             static Strategy* cure(PlayerbotAI* ai) { return new PaladinCureStrategy(ai); }
             static Strategy* boost(PlayerbotAI* ai) { return new PaladinBoostStrategy(ai); }
             static Strategy* bthreat(PlayerbotAI* ai) { return new PaladinBuffThreatStrategy(ai); }
             static Strategy* cc(PlayerbotAI* ai) { return new PaladinCcStrategy(ai); }
+            static Strategy* crusader(PlayerbotAI* ai) { return new PaladinBuffSpeedStrategy(ai); }
         };
 
         class ResistanceStrategyFactoryInternal : public NamedObjectContext<Strategy>
@@ -48,9 +53,13 @@ namespace ai
                 creators["rfire"] = &paladin::ResistanceStrategyFactoryInternal::rfire;
                 creators["baoe"] = &paladin::ResistanceStrategyFactoryInternal::baoe;
                 creators["barmor"] = &paladin::ResistanceStrategyFactoryInternal::barmor;
+                creators["bconcentration"] = &paladin::ResistanceStrategyFactoryInternal::bconcentration;
+                creators["bsanctity"] = &paladin::ResistanceStrategyFactoryInternal::bsanctity;
             }
 
         private:
+            static Strategy* bconcentration(PlayerbotAI* ai) { return new PaladinBuffConcentrationStrategy(ai); }
+            static Strategy* bsanctity(PlayerbotAI* ai) { return new PaladinBuffSanctityStrategy(ai); }
             static Strategy* rshadow(PlayerbotAI* ai) { return new PaladinShadowResistanceStrategy(ai); }
             static Strategy* rfrost(PlayerbotAI* ai) { return new PaladinFrostResistanceStrategy(ai); }
             static Strategy* rfire(PlayerbotAI* ai) { return new PaladinFireResistanceStrategy(ai); }
@@ -63,19 +72,15 @@ namespace ai
         public:
             BuffStrategyFactoryInternal() : NamedObjectContext<Strategy>(false, true)
             {
-                creators["bhealth"] = &paladin::BuffStrategyFactoryInternal::bhealth;
-                creators["bmana"] = &paladin::BuffStrategyFactoryInternal::bmana;
-                creators["bdps"] = &paladin::BuffStrategyFactoryInternal::bdps;
-                creators["bspeed"] = &paladin::BuffStrategyFactoryInternal::bspeed;
-                creators["bstats"] = &paladin::BuffStrategyFactoryInternal::bstats;
+                creators["bwisdom"] = &paladin::BuffStrategyFactoryInternal::bwisdom;
+                creators["bmight"] = &paladin::BuffStrategyFactoryInternal::bmight;
+                creators["bkings"] = &paladin::BuffStrategyFactoryInternal::bkings;
             }
 
         private:
-            static Strategy* bhealth(PlayerbotAI* ai) { return new PaladinBuffHealthStrategy(ai); }
-            static Strategy* bmana(PlayerbotAI* ai) { return new PaladinBuffManaStrategy(ai); }
-            static Strategy* bdps(PlayerbotAI* ai) { return new PaladinBuffDpsStrategy(ai); }
-            static Strategy* bspeed(PlayerbotAI* ai) { return new PaladinBuffSpeedStrategy(ai); }
-            static Strategy* bstats(PlayerbotAI* ai) { return new PaladinBuffStatsStrategy(ai); }
+            static Strategy* bwisdom(PlayerbotAI* ai) { return new PaladinBuffWisdomStrategy(ai); }
+            static Strategy* bmight(PlayerbotAI* ai) { return new PaladinBuffMightStrategy(ai); }
+            static Strategy* bkings(PlayerbotAI* ai) { return new PaladinBuffKingsStrategy(ai); }
         };
 
         class CombatStrategyFactoryInternal : public NamedObjectContext<Strategy>
@@ -107,15 +112,19 @@ namespace ai
         public:
             TriggerFactoryInternal()
             {
+                creators["judgement"] = &TriggerFactoryInternal::judgement;
                 creators["judgement of wisdom"] = &TriggerFactoryInternal::judgement_of_wisdom;
                 creators["judgement of light"] = &TriggerFactoryInternal::judgement_of_light;
                 creators["blessing"] = &TriggerFactoryInternal::blessing;
                 creators["seal"] = &TriggerFactoryInternal::seal;
                 creators["art of war"] = &TriggerFactoryInternal::art_of_war;
                 creators["blessing on party"] = &TriggerFactoryInternal::blessing_on_party;
+                creators["paladin aura"] = &TriggerFactoryInternal::paladin_aura;
                 creators["crusader aura"] = &TriggerFactoryInternal::crusader_aura;
                 creators["retribution aura"] = &TriggerFactoryInternal::retribution_aura;
                 creators["devotion aura"] = &TriggerFactoryInternal::devotion_aura;
+                creators["sanctity aura"] = &TriggerFactoryInternal::sanctity_aura;
+                creators["concentration aura"] = &TriggerFactoryInternal::concentration_aura;
                 creators["shadow resistance aura"] = &TriggerFactoryInternal::shadow_resistance_aura;
                 creators["frost resistance aura"] = &TriggerFactoryInternal::frost_resistance_aura;
                 creators["fire resistance aura"] = &TriggerFactoryInternal::fire_resistance_aura;
@@ -134,22 +143,34 @@ namespace ai
                 creators["divine favor"] = &TriggerFactoryInternal::divine_favor;
                 creators["turn undead"] = &TriggerFactoryInternal::turn_undead;
                 creators["avenger's shield"] = &TriggerFactoryInternal::avenger_shield;
+                creators["consecration"] = &TriggerFactoryInternal::consecration;
+                creators["repentance on enemy healer"] = &TriggerFactoryInternal::repentance_on_enemy_healer;
+                creators["repentance on snare target"] = &TriggerFactoryInternal::repentance_on_snare_target;
+                creators["repentance interrupt"] = &TriggerFactoryInternal::repentance_interrupt;
+                creators["hammer of justice on enemy"] = &TriggerFactoryInternal::hammer_on_enemy;
+                creators["divine illumination"] = &TriggerFactoryInternal::divine_illumination;
             }
 
         private:
+            static Trigger* divine_illumination(PlayerbotAI* ai) { return new DivineIlluminationBoostTrigger(ai); }
+            static Trigger* hammer_on_enemy(PlayerbotAI* ai) { return new HammerOfJusticeOnEnemyTrigger(ai); }
             static Trigger* turn_undead(PlayerbotAI* ai) { return new TurnUndeadTrigger(ai); }
             static Trigger* divine_favor(PlayerbotAI* ai) { return new DivineFavorTrigger(ai); }
             static Trigger* holy_shield(PlayerbotAI* ai) { return new HolyShieldTrigger(ai); }
             static Trigger* righteous_fury(PlayerbotAI* ai) { return new RighteousFuryTrigger(ai); }
+            static Trigger* judgement(PlayerbotAI* ai) { return new JudgementTrigger(ai); }
             static Trigger* judgement_of_wisdom(PlayerbotAI* ai) { return new JudgementOfWisdomTrigger(ai); }
             static Trigger* judgement_of_light(PlayerbotAI* ai) { return new JudgementOfLightTrigger(ai); }
             static Trigger* blessing(PlayerbotAI* ai) { return new BlessingTrigger(ai); }
             static Trigger* seal(PlayerbotAI* ai) { return new SealTrigger(ai); }
             static Trigger* art_of_war(PlayerbotAI* ai) { return new ArtOfWarTrigger(ai); }
             static Trigger* blessing_on_party(PlayerbotAI* ai) { return new BlessingOnPartyTrigger(ai); }
+            static Trigger* paladin_aura(PlayerbotAI* ai) { return new PaladinAuraTrigger(ai); }
             static Trigger* crusader_aura(PlayerbotAI* ai) { return new CrusaderAuraTrigger(ai); }
             static Trigger* retribution_aura(PlayerbotAI* ai) { return new RetributionAuraTrigger(ai); }
             static Trigger* devotion_aura(PlayerbotAI* ai) { return new DevotionAuraTrigger(ai); }
+            static Trigger* sanctity_aura(PlayerbotAI* ai) { return new SanctityAuraTrigger(ai); }
+            static Trigger* concentration_aura(PlayerbotAI* ai) { return new ConcentrationAuraTrigger(ai); }
             static Trigger* shadow_resistance_aura(PlayerbotAI* ai) { return new ShadowResistanceAuraTrigger(ai); }
             static Trigger* frost_resistance_aura(PlayerbotAI* ai) { return new FrostResistanceAuraTrigger(ai); }
             static Trigger* fire_resistance_aura(PlayerbotAI* ai) { return new FireResistanceAuraTrigger(ai); }
@@ -164,6 +185,10 @@ namespace ai
             static Trigger* hammer_of_justice_on_enemy_target(PlayerbotAI* ai) { return new HammerOfJusticeEnemyHealerTrigger(ai); }
             static Trigger* hammer_of_justice_on_snare_target(PlayerbotAI* ai) { return new HammerOfJusticeSnareTrigger(ai); }
             static Trigger* avenger_shield(PlayerbotAI* ai) { return new AvengerShieldTrigger(ai); }
+            static Trigger* consecration(PlayerbotAI* ai) { return new ConsecrationTrigger(ai); }
+            static Trigger* repentance_on_enemy_healer(PlayerbotAI* ai) { return new RepentanceOnHealerTrigger(ai); }
+            static Trigger* repentance_on_snare_target(PlayerbotAI* ai) { return new RepentanceSnareTrigger(ai); }
+            static Trigger* repentance_interrupt(PlayerbotAI* ai) { return new RepentanceInterruptTrigger(ai); }
         };
     };
 };
@@ -182,18 +207,26 @@ namespace ai
                 creators["seal of command"] = &AiObjectContextInternal::seal_of_command;
                 creators["seal of vengeance"] = &AiObjectContextInternal::seal_of_vengeance;
                 creators["blessing of might"] = &AiObjectContextInternal::blessing_of_might;
+                creators["greater blessing of might"] = &AiObjectContextInternal::greater_blessing_of_might;
                 creators["blessing of wisdom"] = &AiObjectContextInternal::blessing_of_wisdom;
+                creators["greater blessing of wisdom"] = &AiObjectContextInternal::greater_blessing_of_wisdom;
                 creators["blessing of kings"] = &AiObjectContextInternal::blessing_of_kings;
+                creators["greater blessing of kings"] = &AiObjectContextInternal::greater_blessing_of_kings;
                 creators["blessing of sanctuary"] = &AiObjectContextInternal::blessing_of_sanctuary;
+                creators["greater blessing of sanctuary"] = &AiObjectContextInternal::greater_blessing_of_sanctuary;
                 creators["divine storm"] = &AiObjectContextInternal::divine_storm;
                 creators["blessing of kings on party"] = &AiObjectContextInternal::blessing_of_kings_on_party;
                 creators["blessing of might on party"] = &AiObjectContextInternal::blessing_of_might_on_party;
                 creators["blessing of wisdom on party"] = &AiObjectContextInternal::blessing_of_wisdom_on_party;
+                creators["greater blessing of kings on party"] = &AiObjectContextInternal::greater_blessing_of_kings_on_party;
+                creators["greater blessing of might on party"] = &AiObjectContextInternal::greater_blessing_of_might_on_party;
+                creators["greater blessing of wisdom on party"] = &AiObjectContextInternal::greater_blessing_of_wisdom_on_party;
                 creators["redemption"] = &AiObjectContextInternal::redemption;
                 creators["crusader strike"] = &AiObjectContextInternal::crusader_strike;
                 creators["crusader aura"] = &AiObjectContextInternal::crusader_aura;
                 creators["seal of light"] = &AiObjectContextInternal::seal_of_light;
                 creators["devotion aura"] = &AiObjectContextInternal::devotion_aura;
+                creators["concentration aura"] = &AiObjectContextInternal::concentration_aura;
                 creators["holy wrath"] = &AiObjectContextInternal::holy_wrath;
                 creators["consecration"] = &AiObjectContextInternal::consecration;
                 creators["cleanse disease"] = &AiObjectContextInternal::cleanse_disease;
@@ -240,9 +273,21 @@ namespace ai
                 creators["turn undead"] = &AiObjectContextInternal::turn_undead;
                 creators["blessing of protection on party"] = &AiObjectContextInternal::blessing_of_protection_on_party;
                 creators["righteous defense"] = &AiObjectContextInternal::righteous_defense;
+                creators["repentance"] = &AiObjectContextInternal::repentance;
+                creators["repentance on snare target"] = &AiObjectContextInternal::repentance_on_snare_target;
+                creators["repentance on enemy healer"] = &AiObjectContextInternal::repentance_on_enemy_healer;
+                creators["sanctity aura"] = &AiObjectContextInternal::sanctity_aura;
+                creators["holy shock"] = &AiObjectContextInternal::holy_shock;
+                creators["holy shock on party"] = &AiObjectContextInternal::holy_shock_on_party;
+                creators["blessing of freedom"] = &AiObjectContextInternal::blessing_of_freedom;
+                creators["avenging wrath"] = &AiObjectContextInternal::avenging_wrath;
+                creators["divine illumination"] = &AiObjectContextInternal::divine_illumination;
             }
 
         private:
+            static Action* divine_illumination(PlayerbotAI* ai) { return new CastDivineIlluminationAction(ai); }
+            static Action* avenging_wrath(PlayerbotAI* ai) { return new CastAvengingWrathAction(ai); }
+            static Action* blessing_of_freedom(PlayerbotAI* ai) { return new CastBlessingOfFreedomAction(ai); }
             static Action* blessing_of_protection_on_party(PlayerbotAI* ai) { return new CastBlessingOfProtectionProtectAction(ai); }
             static Action* turn_undead(PlayerbotAI* ai) { return new CastTurnUndeadAction(ai); }
             static Action* divine_favor(PlayerbotAI* ai) { return new CastDivineFavorAction(ai); }
@@ -253,15 +298,23 @@ namespace ai
             static Action* blessing_of_might(PlayerbotAI* ai) { return new CastBlessingOfMightAction(ai); }
             static Action* blessing_of_wisdom(PlayerbotAI* ai) { return new CastBlessingOfWisdomAction(ai); }
             static Action* blessing_of_kings(PlayerbotAI* ai) { return new CastBlessingOfKingsAction(ai); }
+            static Action* greater_blessing_of_sanctuary(PlayerbotAI* ai) { return new CastGreaterBlessingOfSanctuaryAction(ai); }
+            static Action* greater_blessing_of_might(PlayerbotAI* ai) { return new CastGreaterBlessingOfMightAction(ai); }
+            static Action* greater_blessing_of_wisdom(PlayerbotAI* ai) { return new CastGreaterBlessingOfWisdomAction(ai); }
+            static Action* greater_blessing_of_kings(PlayerbotAI* ai) { return new CastGreaterBlessingOfKingsAction(ai); }
             static Action* divine_storm(PlayerbotAI* ai) { return new CastDivineStormAction(ai); }
             static Action* blessing_of_kings_on_party(PlayerbotAI* ai) { return new CastBlessingOfKingsOnPartyAction(ai); }
             static Action* blessing_of_might_on_party(PlayerbotAI* ai) { return new CastBlessingOfMightOnPartyAction(ai); }
             static Action* blessing_of_wisdom_on_party(PlayerbotAI* ai) { return new CastBlessingOfWisdomOnPartyAction(ai); }
+            static Action* greater_blessing_of_kings_on_party(PlayerbotAI* ai) { return new CastGreaterBlessingOfKingsOnPartyAction(ai); }
+            static Action* greater_blessing_of_might_on_party(PlayerbotAI* ai) { return new CastGreaterBlessingOfMightOnPartyAction(ai); }
+            static Action* greater_blessing_of_wisdom_on_party(PlayerbotAI* ai) { return new CastGreaterBlessingOfWisdomOnPartyAction(ai); }
             static Action* redemption(PlayerbotAI* ai) { return new CastRedemptionAction(ai); }
             static Action* crusader_strike(PlayerbotAI* ai) { return new CastCrusaderStrikeAction(ai); }
             static Action* crusader_aura(PlayerbotAI* ai) { return new CastCrusaderAuraAction(ai); }
             static Action* seal_of_light(PlayerbotAI* ai) { return new CastSealOfLightAction(ai); }
             static Action* devotion_aura(PlayerbotAI* ai) { return new CastDevotionAuraAction(ai); }
+            static Action* concentration_aura(PlayerbotAI* ai) { return new CastConcentrationAuraAction(ai); }
             static Action* holy_wrath(PlayerbotAI* ai) { return new CastHolyWrathAction(ai); }
             static Action* consecration(PlayerbotAI* ai) { return new CastConsecrationAction(ai); }
             static Action* cleanse_poison(PlayerbotAI* ai) { return new CastCleansePoisonAction(ai); }
@@ -304,6 +357,12 @@ namespace ai
             static Action* hammer_of_justice_on_enemy_healer(PlayerbotAI* ai) { return new CastHammerOfJusticeOnEnemyHealerAction(ai); }
             static Action* hammer_of_justice_on_snare_target(PlayerbotAI* ai) { return new CastHammerOfJusticeSnareAction(ai); }
             static Action* righteous_defense(PlayerbotAI* ai) { return new CastRighteousDefenseAction(ai); }
+            static Action* repentance(PlayerbotAI* ai) { return new CastRepentanceAction(ai); }
+            static Action* repentance_on_snare_target(PlayerbotAI* ai) { return new CastRepentanceSnareAction(ai); }
+            static Action* repentance_on_enemy_healer(PlayerbotAI* ai) { return new CastRepentanceOnHealerAction(ai); }
+            static Action* sanctity_aura(PlayerbotAI* ai) { return new CastSanctityAuraAction(ai); }
+            static Action* holy_shock(PlayerbotAI* ai) { return new CastHolyShockAction(ai); }
+            static Action* holy_shock_on_party(PlayerbotAI* ai) { return new CastHolyShockOnPartyAction(ai); }
         };
     };
 };

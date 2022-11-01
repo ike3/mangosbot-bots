@@ -10,39 +10,63 @@ class RacialsStrategyActionNodeFactory : public NamedObjectFactory<ActionNode>
 public:
     RacialsStrategyActionNodeFactory()
     {
-        creators["lifeblood"] = &lifeblood;
     }
 private:
-    static ActionNode* lifeblood(PlayerbotAI* ai)
-    {
-        return new ActionNode ("lifeblood",  
-            /*P*/ NULL,
-            /*A*/ NextAction::array(0, new NextAction("gift of the naaru"), NULL), 
-            /*C*/ NULL);
-    }
 };
 
 void RacialsStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 {
 	triggers.push_back(new TriggerNode(
 		"low health", 
-		NextAction::array(0, new NextAction("lifeblood", 71.0f), NULL)));
+		NextAction::array(0, new NextAction("gift of the naaru", 71.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
         "medium aoe",
         NextAction::array(0, new NextAction("war stomp", 71.0f), NULL)));
 
-    /*triggers.push_back(new TriggerNode(
-        "low health",
-        NextAction::array(0, new NextAction("war stomp", 71.0f), NULL)));*/
-
-    /*triggers.push_back(new TriggerNode(
-        "low mana", 
-        NextAction::array(0, new NextAction("arcane torrent", ACTION_EMERGENCY + 6), NULL)));
+    triggers.push_back(new TriggerNode(
+        "war stomp",
+        NextAction::array(0, new NextAction("war stomp", 71.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "medium mana",
-        NextAction::array(0, new NextAction("mana tap", ACTION_EMERGENCY + 6), NULL)));*/
+        "cannibalize",
+        NextAction::array(0, new NextAction("cannibalize", 71.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "perception",
+        NextAction::array(0, new NextAction("perception", 71.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "rooted",
+        NextAction::array(0, new NextAction("escape artist", 71.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "will of the forsaken",
+        NextAction::array(0, new NextAction("will of the forsaken", 71.0f), NULL)));
+
+    /*triggers.push_back(new TriggerNode(
+        "shadowmeld",
+        NextAction::array(0, new NextAction("shadowmeld", 71.0f), NULL)));*/
+
+    triggers.push_back(new TriggerNode(
+        "berserking",
+        NextAction::array(0, new NextAction("berserking", 71.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "blood fury",
+        NextAction::array(0, new NextAction("blood fury", 71.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "stoneform",
+        NextAction::array(0, new NextAction("stoneform", 71.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "mana tap",
+        NextAction::array(0, new NextAction("mana tap", 71.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "arcane torrent",
+        NextAction::array(0, new NextAction("arcane torrent", 71.0f), NULL)));
 }
 
 RacialsStrategy::RacialsStrategy(PlayerbotAI* ai) : Strategy(ai)

@@ -15,7 +15,7 @@ HelpAction::~HelpAction()
     delete chatContext;
 }
 
-bool HelpAction::Execute(Event event)
+bool HelpAction::Execute(Event& event)
 {
     TellChatCommands();
     TellStrategies();

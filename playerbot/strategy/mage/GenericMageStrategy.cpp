@@ -14,7 +14,7 @@ public:
         creators["fire blast"] = &fire_blast;
         creators["scorch"] = &scorch;
         creators["frost nova"] = &frost_nova;
-        creators["icy veins"] = &icy_veins;
+        creators["cone of cold"] = &cone_of_cold;
         creators["combustion"] = &combustion;
         creators["evocation"] = &evocation;
         creators["dragon's breath"] = &dragons_breath;
@@ -44,20 +44,8 @@ private:
             /*A*/ NextAction::array(0, new NextAction("shoot"), NULL),
             /*C*/ NULL);
     }
-    static ActionNode* frost_nova(PlayerbotAI* ai)
-    {
-        return new ActionNode("frost nova",
-            /*P*/ NULL,
-            /*A*/ NULL,
-            /*C*/ NextAction::array(0, new NextAction("flee"), NULL));
-    }
-    static ActionNode* icy_veins(PlayerbotAI* ai)
-    {
-        return new ActionNode ("icy veins",
-            /*P*/ NULL,
-            /*A*/ NULL,
-            /*C*/ NULL);
-    }
+    ACTION_NODE_A(frost_nova, "frost nova", "cone of cold");
+    ACTION_NODE_A(cone_of_cold, "cone of cold", "flee");
     static ActionNode* combustion(PlayerbotAI* ai)
     {
         return new ActionNode ("combustion",
@@ -112,16 +100,16 @@ void GenericMageStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
     CombatStrategy::InitTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
-        "enemy out of spell",
-        NextAction::array(0, new NextAction("reach spell", ACTION_MOVE + 9), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "enemy is close",
-        NextAction::array(0, new NextAction("frost nova", 50.0f), NULL)));
+        "enemy ten yards",
+        NextAction::array(0, new NextAction("frost nova", 61.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
         "counterspell on enemy healer",
         NextAction::array(0, new NextAction("counterspell on enemy healer", 40.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "counterspell",
+        NextAction::array(0, new NextAction("counterspell", 40.0f), NULL)));
 
 	triggers.push_back(new TriggerNode(
 		"critical health",
@@ -133,30 +121,43 @@ void GenericMageStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "medium threat",
-        NextAction::array(0, new NextAction("invisibility", 60.0f), NULL)));
+        NextAction::array(0, new NextAction("invisibility", 40.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
         "low mana",
-        NextAction::array(0, new NextAction("evocation", ACTION_EMERGENCY + 5), NULL)));
+        NextAction::array(0, new NextAction("evocation", ACTION_HIGH - 1), NULL)));
 
     triggers.push_back(new TriggerNode(
         "fire ward",
-        NextAction::array(0, new NextAction("fire ward", ACTION_EMERGENCY), NULL)));
+        NextAction::array(0, new NextAction("fire ward", ACTION_HIGH), NULL)));
 
     triggers.push_back(new TriggerNode(
         "frost ward",
-        NextAction::array(0, new NextAction("frost ward", ACTION_EMERGENCY), NULL)));
+        NextAction::array(0, new NextAction("frost ward", ACTION_HIGH), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "blink",
+        NextAction::array(0, new NextAction("blink", 61.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "target critical health",
+        NextAction::array(0, new NextAction("fire blast", ACTION_HIGH), NULL)));
+}
+
+MageCureStrategy::MageCureStrategy(PlayerbotAI* ai) : Strategy(ai)
+{
+    actionNodeFactories.Add(new GenericMageStrategyActionNodeFactory());
 }
 
 void MageCureStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
         "remove curse",
-        NextAction::array(0, new NextAction("remove curse", 41.0f), NULL)));
+        NextAction::array(0, new NextAction("remove curse", ACTION_DISPEL + 1), NULL)));
 
     triggers.push_back(new TriggerNode(
         "remove curse on party",
-        NextAction::array(0, new NextAction("remove curse on party", 40.0f), NULL)));
+        NextAction::array(0, new NextAction("remove curse on party", ACTION_DISPEL), NULL)));
 
 }
 

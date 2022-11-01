@@ -197,7 +197,7 @@ bool RandomPlayerbotFactory::CreateRandomBot(uint8 cls, unordered_map<uint8, vec
 	WorldSession* session = new WorldSession(accountId, NULL, SEC_PLAYER,
 
 #ifdef MANGOSBOT_TWO
-        2, 0, LOCALE_enUS, 0);
+        2, 0, LOCALE_enUS, "", 0, 0, false);
 #endif
 #ifdef MANGOSBOT_ONE
 		2, 0, LOCALE_enUS, "", 0, 0, false);
@@ -269,6 +269,22 @@ string RandomPlayerbotFactory::CreateRandomBotName(uint8 gender)
     return bname;
 }
 
+inline string GetNamePostFix(int32 nr)
+{
+    string ret;
+
+    string str("abcdefghijklmnopqrstuvwxyz");
+
+    while (nr >= 0)
+    {
+        int32 let = nr % 26;
+        ret = str[let] + ret;
+        nr /= 26;
+        nr--;
+    }
+
+    return ret;
+}
 
 void RandomPlayerbotFactory::CreateRandomBots()
 {
@@ -318,6 +334,7 @@ void RandomPlayerbotFactory::CreateRandomBots()
         else
             sLog.outString("Deleting all random bot characters...");
 
+
         // load list of friends
         if (!delFriends)
         {
@@ -336,11 +353,11 @@ void RandomPlayerbotFactory::CreateRandomBots()
             }
         }
 
-        vector<std::future<void>> dels;
-
         QueryResult* results = LoginDatabase.PQuery("SELECT id FROM account where username like '%s%%'", sPlayerbotAIConfig.randomBotAccountPrefix.c_str());
         if (results)
         {
+            BarGoLink bar(results->GetRowCount());
+
             do
             {
                 Field* fields = results->Fetch();
@@ -374,24 +391,22 @@ void RandomPlayerbotFactory::CreateRandomBots()
                             }
 
                             Player::DeleteFromDB(guid, accId, false, true);       // no need to update realm characters
+                            //dels.push_back(std::async([guid, accId] {Player::DeleteFromDB(guid, accId, false, true); }));
 
                         } while (result->NextRow());
 
                         delete result;
                     }
+                    bar.step();
                 }
                 else
-                    dels.push_back(std::async([accId] {sAccountMgr.DeleteAccount(accId); }));
+                {
+                    bar.step();
+                    sAccountMgr.DeleteAccount(accId);
+                }
 
             } while (results->NextRow());
-			delete results;
-        }
-
-        BarGoLink bar4(dels .size());
-        for (uint32 i=0;i<dels.size();i++)
-        {
-            bar4.step();
-            dels[i].wait();
+            delete results;
         }
 
         PlayerbotDatabase.Execute("DELETE FROM ai_playerbot_random_bots");
@@ -463,15 +478,58 @@ void RandomPlayerbotFactory::CreateRandomBots()
         return;
     }
 
+    unordered_map<string, bool> used;
+
     do
     {
         Field* fields = result->Fetch();
         uint8 gender = fields[0].GetUInt8();
         string bname = fields[1].GetString();
         names[gender].push_back(bname);
+        used[bname] = true;
     } while (result->NextRow());
 
     delete result;
+
+    for (uint8 gender = 0; gender < 2; gender++)
+    {
+        int32 postItt = 0;
+
+        vector<string> newNames;
+
+        if (totalCharCount < names[gender].size())
+            continue;
+
+        uint32 namesNeeded = totalCharCount - names[gender].size();
+
+        BarGoLink bar(namesNeeded);
+
+        while(namesNeeded)
+        {
+            string post = GetNamePostFix(postItt);
+
+            for (auto name : names[gender])
+            {
+                if (name.size() + post.size() > 12)
+                    continue;
+
+                string newName = name + post;
+                if (used.find(newName) != used.end())
+                    continue;
+
+                used[newName] = true;
+                newNames.push_back(newName);
+                namesNeeded--;
+                bar.step();
+                if (!namesNeeded)
+                    break;
+            }
+
+            postItt++;
+        }
+
+        names[gender].insert(names[gender].end(), newNames.begin(), newNames.end());
+    }
 
 	sLog.outString("Creating random bot characters...");
 	BarGoLink bar1(totalCharCount);
@@ -504,6 +562,10 @@ void RandomPlayerbotFactory::CreateRandomBots()
         RandomPlayerbotFactory factory(accountId);
         for (uint8 cls = CLASS_WARRIOR; cls < MAX_CLASSES - count; ++cls)
         {
+            // skip nonexistent classes
+            if (!((1 << (cls - 1)) & CLASSMASK_ALL_PLAYABLE) || !sChrClassesStore.LookupEntry(cls))
+                continue;
+
 #ifdef MANGOSBOT_TWO
             if (cls != 10)
 #else
@@ -527,7 +589,7 @@ void RandomPlayerbotFactory::CreateRandomBots()
         account_creations.push_back(std::async([player] {player->SaveToDB(); }));
     }
 
-    for (uint32 i = 0; i < account_creations.size(); i++)
+    for (uint32 i = 0; i < sObjectAccessor.GetPlayers().size(); i++)
     {
         bar2.step();
         account_creations[i].wait();
@@ -540,32 +602,57 @@ void RandomPlayerbotFactory::CreateRandomBots()
 void RandomPlayerbotFactory::CreateRandomGuilds()
 {
     vector<uint32> randomBots;
+    map<uint32, vector<uint32>> charAccGuids;
 
-    QueryResult* results = PlayerbotDatabase.PQuery(
-            "select `bot` from ai_playerbot_random_bots where event = 'add'");
+    QueryResult* charAccounts = CharacterDatabase.PQuery(
+        "select `account`, `guid` from `characters`");
 
-    if (results)
+    if (charAccounts)
     {
         do
         {
-            Field* fields = results->Fetch();
-            uint32 bot = fields[0].GetUInt32();
-            randomBots.push_back(bot);
-        } while (results->NextRow());
-        delete results;
+            Field* fields = charAccounts->Fetch();
+            uint32 accId = fields[0].GetUInt32();
+            uint32 guid = fields[1].GetUInt32();
+            charAccGuids[accId].push_back(guid);
+        } while (charAccounts->NextRow());
+        delete charAccounts;
     }
 
-    if (sPlayerbotAIConfig.deleteRandomBotGuilds)
+    if (charAccGuids.empty())
+        return;
+
+    for (auto charAcc : sPlayerbotAIConfig.randomBotAccounts)
+    {
+        if (!charAccGuids[charAcc].empty())
+            for (auto charGuid : charAccGuids[charAcc])
+                randomBots.push_back(charGuid);
+    }
+
+    if (randomBots.empty())
+        return;
+
+    if (sPlayerbotAIConfig.deleteRandomBotGuilds && !sRandomPlayerbotMgr.guildsDeleted)
     {
         sLog.outString("Deleting random bot guilds...");
+        uint32 counter = 0;
         for (vector<uint32>::iterator i = randomBots.begin(); i != randomBots.end(); ++i)
         {
             ObjectGuid leader(HIGHGUID_PLAYER, *i);
             Guild* guild = sGuildMgr.GetGuildByLeader(leader);
-            if (guild) guild->Disband();
+            if (guild)
+            {
+                guild->Disband();
+                counter++;
+            }
         }
-        sLog.outString("Random bot guilds deleted");
+        sLog.outString("%d Random bot guilds deleted", counter);
+
+        sRandomPlayerbotMgr.guildsDeleted = true;
     }
+
+    if (!sPlayerbotAIConfig.randomBotGuildCount)
+        return;
 
     uint32 guildNumber = 0;
     vector<ObjectGuid> availableLeaders;
@@ -575,42 +662,51 @@ void RandomPlayerbotFactory::CreateRandomGuilds()
         Guild* guild = sGuildMgr.GetGuildByLeader(leader);
         if (guild)
         {
-            ++guildNumber;
-            sPlayerbotAIConfig.randomBotGuilds.push_back(guild->GetId());
+            if (find(sPlayerbotAIConfig.randomBotGuilds.begin(), sPlayerbotAIConfig.randomBotGuilds.end(), guild->GetId()) == sPlayerbotAIConfig.randomBotGuilds.end())
+            {
+                ++guildNumber;
+                sPlayerbotAIConfig.randomBotGuilds.push_back(guild->GetId());
+            }
         }
         else
         {
             Player* player = sObjectMgr.GetPlayer(leader);
-            if (player && !player->GetGuildId())
+            if (player && !player->GetGuildId() && player->GetLevel() >= 10)
                 availableLeaders.push_back(leader);
         }
     }
 
-    for (; guildNumber < sPlayerbotAIConfig.randomBotGuildCount; ++guildNumber)
+    if (availableLeaders.empty())
     {
+        sLog.outError("No leaders for random guilds available");
+        return;
+    }
+
+    uint32 attempts = 0;
+    uint32 maxNewGuilds = sPlayerbotAIConfig.randomBotGuildCount - sPlayerbotAIConfig.randomBotGuilds.size();
+    bool newGuilds = false;
+    for (; guildNumber < maxNewGuilds; ++guildNumber)
+    {
+        attempts++;
+        if (attempts > std::min(uint32(5), sPlayerbotAIConfig.randomBotGuildCount))
+            break;
+        if (sPlayerbotAIConfig.randomBotGuilds.size() >= sPlayerbotAIConfig.randomBotGuildCount)
+            break;
+
         string guildName = CreateRandomGuildName();
         if (guildName.empty())
             continue;
 
-        if (availableLeaders.empty())
-        {
-            sLog.outError("No leaders for random guilds available");
-			continue;
-        }
-
         int index = urand(0, availableLeaders.size() - 1);
         ObjectGuid leader = availableLeaders[index];
         Player* player = sObjectMgr.GetPlayer(leader);
-        if (!player)
-        {
-            sLog.outError("Cannot find player for leader %s", player->GetName());
-			continue;
-        }
+        if (!player || player->GetGuildId())
+            continue;
 
         Guild* guild = new Guild();
         if (!guild->Create(player, guildName))
         {
-            sLog.outError("Error creating guild %s", guildName.c_str());
+            sLog.outError("Error creating random guild %s", guildName.c_str());
 			continue;
         }
 
@@ -624,11 +720,15 @@ void RandomPlayerbotFactory::CreateRandomGuilds()
         br = urand(0, 7);
         st = urand(0, 180);
         guild->SetEmblem(st, cl, br, bc, bg);
+        guild->SetGINFO(std::to_string(urand(10, 30)));
 
         sPlayerbotAIConfig.randomBotGuilds.push_back(guild->GetId());
+        sLog.outBasic("Random Guild <%s>, GM: %s", guildName.c_str(), player->GetName());
+        newGuilds = true;
     }
 
-    sLog.outString("%d random bot guilds available", guildNumber);
+    if (newGuilds)
+        sLog.outString("Total Random Guilds: %d", sPlayerbotAIConfig.randomBotGuilds.size());
 }
 
 string RandomPlayerbotFactory::CreateRandomGuildName()
@@ -679,7 +779,7 @@ void RandomPlayerbotFactory::CreateRandomArenaTeams()
         delete results;
     }
 
-    if (sPlayerbotAIConfig.deleteRandomBotArenaTeams)
+    if (sPlayerbotAIConfig.deleteRandomBotArenaTeams && !sRandomPlayerbotMgr.arenaTeamsDeleted)
     {
         sLog.outString("Deleting random bot arena teams...");
         for (vector<uint32>::iterator i = randomBots.begin(); i != randomBots.end(); ++i)
@@ -691,9 +791,16 @@ void RandomPlayerbotFactory::CreateRandomArenaTeams()
                 arenateam->Disband(NULL);
         }
         sLog.outString("Random bot arena teams deleted");
+
+        sRandomPlayerbotMgr.arenaTeamsDeleted = true;
     }
 
     int arenaTeamNumber = 0;
+    std::map<uint32, uint32> teamsNumber;
+    std::map<uint32, uint32> maxTeamsNumber;
+    maxTeamsNumber[ARENA_TYPE_2v2] = (uint32)(sPlayerbotAIConfig.randomBotArenaTeamCount * 0.4f);
+    maxTeamsNumber[ARENA_TYPE_3v3] = (uint32)(sPlayerbotAIConfig.randomBotArenaTeamCount * 0.3f);
+    maxTeamsNumber[ARENA_TYPE_5v5] = (uint32)(sPlayerbotAIConfig.randomBotArenaTeamCount * 0.3f);
     vector<ObjectGuid> availableCaptains;
     for (vector<uint32>::iterator i = randomBots.begin(); i != randomBots.end(); ++i)
     {
@@ -701,20 +808,52 @@ void RandomPlayerbotFactory::CreateRandomArenaTeams()
         ArenaTeam* arenateam = sObjectMgr.GetArenaTeamByCaptain(captain);
         if (arenateam)
         {
-            ++arenaTeamNumber;
+            teamsNumber[arenateam->GetType()]++;
             sPlayerbotAIConfig.randomBotArenaTeams.push_back(arenateam->GetId());
         }
-        else
-        {
-            Player* player = sObjectMgr.GetPlayer(captain);
 
-            if (!arenateam && player && player->GetLevel() >= 70)
-                availableCaptains.push_back(captain);
+        Player* player = sObjectMgr.GetPlayer(captain);
+        if (player)
+        {
+            if (player->GetLevel() < 70)
+                continue;
+
+            uint8 slot = ArenaTeam::GetSlotByType(ArenaType(ARENA_TYPE_2v2));
+            if (player->GetArenaTeamId(slot))
+                continue;
+
+            slot = ArenaTeam::GetSlotByType(ArenaType(ARENA_TYPE_3v3));
+            if (player->GetArenaTeamId(slot))
+                continue;
+
+            slot = ArenaTeam::GetSlotByType(ArenaType(ARENA_TYPE_5v5));
+            if (player->GetArenaTeamId(slot))
+                continue;
+
+            availableCaptains.push_back(captain);
         }
     }
 
+    uint32 attempts = 0;
     for (; arenaTeamNumber < sPlayerbotAIConfig.randomBotArenaTeamCount; ++arenaTeamNumber)
     {
+        if (attempts > sPlayerbotAIConfig.randomBotArenaTeamCount)
+            break;
+
+        ArenaType randomType = ARENA_TYPE_2v2;
+        switch (urand(0, 2))
+        {
+        case 0:
+            randomType = ARENA_TYPE_2v2;
+            break;
+        case 1:
+            randomType = ARENA_TYPE_3v3;
+            break;
+        case 2:
+            randomType = ARENA_TYPE_5v5;
+            break;
+        }
+
         string arenaTeamName = CreateRandomArenaTeamName();
         if (arenaTeamName.empty())
             continue;
@@ -751,19 +890,34 @@ void RandomPlayerbotFactory::CreateRandomArenaTeams()
         uint8 slot = fields[0].GetUInt32();
         delete results;
 
-        ArenaType type;
+        std::string arenaTypeName;
+        ArenaType type = ARENA_TYPE_2v2;
         switch (slot)
         {
         case 2:
             type = ARENA_TYPE_2v2;
+            arenaTypeName = "2v2";
             break;
         case 3:
             type = ARENA_TYPE_3v3;
+            arenaTypeName = "3v3";
             break;
         case 5:
             type = ARENA_TYPE_5v5;
+            arenaTypeName = "5v5";
             break;
         }
+
+        attempts++;
+
+        if (type != randomType)
+            continue;
+
+        if (teamsNumber[type] >= maxTeamsNumber[type])
+            continue;
+
+        if (player->GetArenaTeamId(ArenaTeam::GetSlotByType(type)))
+            continue;
 
         ArenaTeam* arenateam = new ArenaTeam();
         if (!arenateam->Create(player->GetObjectGuid(), type, arenaTeamName))
@@ -772,10 +926,9 @@ void RandomPlayerbotFactory::CreateRandomArenaTeams()
             continue;
         }
         arenateam->SetCaptain(player->GetObjectGuid());
-        // set random rating
-        arenateam->SetRatingForAll(urand(1500, 2700));
+        sLog.outBasic("Bot #%d %s:%d <%s>: captain of random Arena %s team - %s", player->GetGUIDLow(), player->GetTeam() == ALLIANCE ? "A" : "H", player->GetLevel(), player->GetName(), arenaTypeName, arenateam->GetName().c_str());
         // set random emblem
-        uint32 backgroundColor = urand(0xFF000000, 0xFFFFFFFF), emblemStyle = urand(0, 5), emblemColor = urand(0xFF000000, 0xFFFFFFFF), borderStyle = urand(0, 5), borderColor = urand(0xFF000000, 0xFFFFFFFF);
+        uint32 backgroundColor = urand(0xFF000000, 0xFFFFFFFF), emblemStyle = urand(0, 101), emblemColor = urand(0xFF000000, 0xFFFFFFFF), borderStyle = urand(0, 5), borderColor = urand(0xFF000000, 0xFFFFFFFF);
         arenateam->SetEmblem(backgroundColor, emblemStyle, emblemColor, borderStyle, borderColor);
         // set random kills (wip)
         //arenateam->SetStats(STAT_TYPE_GAMES_WEEK, urand(0, 30));
@@ -784,7 +937,45 @@ void RandomPlayerbotFactory::CreateRandomArenaTeams()
         //arenateam->SetStats(STAT_TYPE_WINS_SEASON, urand(arenateam->GetStats().wins_week, arenateam->GetStats().games_season));
         sObjectMgr.AddArenaTeam(arenateam);
         sPlayerbotAIConfig.randomBotArenaTeams.push_back(arenateam->GetId());
+
+        for (uint32 i = 0; i < 10; i++)
+        {
+            if (arenateam->GetMembersSize() >= type)
+                break;
+
+            int index = urand(0, availableCaptains.size() - 1);
+            ObjectGuid possibleMember = availableCaptains[index];
+            if (possibleMember == captain)
+                continue;
+
+            Player* member = sObjectMgr.GetPlayer(possibleMember);
+            if (!member)
+                continue;
+            if (member->GetArenaTeamId(arenateam->GetSlot()))
+                continue;
+            if (member->GetTeam() != player->GetTeam())
+                continue;
+
+            arenateam->AddMember(member->GetObjectGuid());
+            sLog.outBasic("Bot #%d %s:%d <%s>: added to random Arena %s team - %s", member->GetGUIDLow(), member->GetTeam() == ALLIANCE ? "A" : "H", member->GetLevel(), member->GetName(), arenaTypeName, arenateam->GetName().c_str());
+
+            /*if (player->GetArenaTeamIdFromDB(possibleMember, type))
+                continue;*/
+
+        }
+
+        if (arenateam->GetMembersSize() < type)
+        {
+            sLog.outBasic("Random Arena team %s %s: failed to get enough members, deleting...", arenaTypeName, arenateam->GetName().c_str());
+            arenateam->Disband(nullptr);
+            return;
+        }
+
+        // set random rating
+        arenateam->SetRatingForAll(urand(1500, 2700));
         arenateam->SaveToDB();
+
+        sLog.outBasic("Random Arena team %s %s: created", arenaTypeName, arenateam->GetName().c_str());
     }
 
     sLog.outString("%d random bot arena teams available", arenaTeamNumber);

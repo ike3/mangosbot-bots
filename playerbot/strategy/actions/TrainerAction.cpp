@@ -25,7 +25,21 @@ void TrainerAction::Learn(uint32 cost, TrainerSpell const* tSpell, ostringstream
 
 #ifdef CMANGOS
     if (tSpell->learnedSpell)
-        bot->learnSpell(tSpell->learnedSpell, false);
+    {
+        // old code
+        // bot->learnSpell(tSpell->learnedSpell, false);
+        bool learned = false;
+        for (int j = 0; j < 3; ++j)
+        {
+            if (proto->Effect[j] == SPELL_EFFECT_LEARN_SPELL)
+            {
+                uint32 learnedSpell = proto->EffectTriggerSpell[j];
+                bot->learnSpell(learnedSpell, false);
+                learned = true;
+            }
+        }
+        if (!learned) bot->learnSpell(tSpell->learnedSpell, false);
+    }
     else
         ai->CastSpell(tSpell->spell, bot);
 #endif
@@ -43,6 +57,8 @@ void TrainerAction::Learn(uint32 cost, TrainerSpell const* tSpell, ostringstream
     }
     if (!learned) bot->learnSpell(tSpell->spell, false);
 #endif
+
+    sTravelMgr.logEvent(ai, "TrainerAction", proto->SpellName[0], to_string(proto->Id));   
 
     msg << " - learned";
 }
@@ -93,24 +109,31 @@ void TrainerAction::Iterate(Creature* creature, TrainerSpellAction action, Spell
         if (action)
             (this->*action)(cost, tSpell, out);
 
-        ai->TellMaster(out);
+        ai->TellMaster(out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
     }
 
     TellFooter(totalCost);
 }
 
-bool TrainerAction::Execute(Event event)
+bool TrainerAction::Execute(Event& event)
 {
     string text = event.getParam();
 
     Player* master = GetMaster();
+    Creature* creature;
 
-    Creature* creature = ai->GetCreature(bot->GetSelectionGuid());
-    if (AI_VALUE(GuidPosition, "rpg target") != bot->GetSelectionGuid())
+    if (event.getSource() == "rpg action")
+    {
+        ObjectGuid guid = event.getObject();
+        creature = ai->GetCreature(guid);
+    }
+    else
+    {
         if (master)
             creature = ai->GetCreature(master->GetSelectionGuid());
         else
             return false;
+    }
 
 #ifdef MANGOS
     if (!creature || !creature->IsTrainer())
@@ -152,7 +175,7 @@ bool TrainerAction::Execute(Event event)
 void TrainerAction::TellHeader(Creature* creature)
 {
     ostringstream out; out << "--- Can learn from " << creature->GetName() << " ---";
-    ai->TellMaster(out);
+    ai->TellMaster(out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
 }
 
 void TrainerAction::TellFooter(uint32 totalCost)
@@ -160,6 +183,6 @@ void TrainerAction::TellFooter(uint32 totalCost)
     if (totalCost)
     {
         ostringstream out; out << "Total cost: " << chat->formatMoney(totalCost);
-        ai->TellMaster(out);
+        ai->TellMaster(out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
     }
 }

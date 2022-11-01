@@ -8,17 +8,21 @@
 
 using namespace ai;
 
-bool AttackAction::Execute(Event event)
+bool AttackAction::Execute(Event& event)
 {
     Unit* target = GetTarget();
 
-    if (!target)
+    if (!target || !target->IsInWorld() || target->GetMapId() != bot->GetMapId())
         return false;
+
+    Unit* victim = bot->GetVictim();
+    //if (victim && victim->IsPlayer() && victim->GetObjectGuid() == target->GetObjectGuid())
+    //    return false;
 
     return Attack(target);
 }
 
-bool AttackMyTargetAction::Execute(Event event)
+bool AttackMyTargetAction::Execute(Event& event)
 {
     Player* master = GetMaster();
     if (!master)
@@ -76,7 +80,7 @@ bool AttackAction::Attack(Unit* target)
         return false;
     }
 
-    if (bot->IsMounted() && bot->IsWithinLOSInMap(target, true) && (sServerFacade.GetDistance2d(bot, target) < 40.0f))
+    if (bot->IsMounted() && (sServerFacade.GetDistance2d(bot, target) < 40.0f))
     {
         WorldPacket emptyPacket;
         bot->GetSession()->HandleCancelMountAuraOpcode(emptyPacket);
@@ -104,7 +108,7 @@ bool AttackAction::Attack(Unit* target)
         if (creatureAI)
         {
 #ifdef CMANGOS
-            creatureAI->SetReactState(REACT_PASSIVE);
+            creatureAI->SetReactState(REACT_DEFENSIVE);
 #endif
 #ifdef MANGOS
             pet->GetCharmInfo()->SetCommandState(COMMAND_ATTACK);
@@ -113,20 +117,11 @@ bool AttackAction::Attack(Unit* target)
         }
     }
 
-    if (!urand(0, 300) && ai->HasStrategy("emote", BOT_STATE_NON_COMBAT))
-    {
-        vector<uint32> sounds;
-        sounds.push_back(TEXTEMOTE_OPENFIRE);
-        sounds.push_back(305);
-        sounds.push_back(307);
-        ai->PlayEmote(sounds[urand(0, sounds.size() - 1)]);
-    }
-
     if (IsMovingAllowed() && !sServerFacade.IsInFront(bot, target, sPlayerbotAIConfig.sightDistance, CAST_ANGLE_IN_FRONT))
         sServerFacade.SetFacingTo(bot, target);
 
     bool attacked = bot->Attack(target, !ai->IsRanged(bot));
-    ai->ChangeEngine(BOT_STATE_COMBAT);
+    ai->ChangeEngine(BotState::BOT_STATE_COMBAT);
 
     return attacked;
 }
@@ -136,7 +131,7 @@ bool AttackDuelOpponentAction::isUseful()
     return AI_VALUE(Unit*, "duel target");
 }
 
-bool AttackDuelOpponentAction::Execute(Event event)
+bool AttackDuelOpponentAction::Execute(Event& event)
 {
     return Attack(AI_VALUE(Unit*, "duel target"));
 }

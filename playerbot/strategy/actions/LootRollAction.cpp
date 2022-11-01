@@ -6,7 +6,7 @@
 
 using namespace ai;
 
-bool LootRollAction::Execute(Event event)
+bool LootRollAction::Execute(Event& event)
 {
     Player *bot = QueryItemUsageAction::ai->GetBot();
 
@@ -101,7 +101,7 @@ RollVote LootRollAction::CalculateRollVote(ItemPrototype const *proto)
     return StoreLootAction::IsLootAllowed(proto->ItemId, bot->GetPlayerbotAI()) ? needVote : ROLL_PASS;
 }
 
-bool MasterLootRollAction::Execute(Event event)
+bool MasterLootRollAction::Execute(Event& event)
 {
     Player* bot = QueryItemUsageAction::ai->GetBot();
 

@@ -5,7 +5,7 @@
 
 using namespace ai;
 
-bool CheatAction::Execute(Event event)
+bool CheatAction::Execute(Event& event)
 {
     string param = event.getParam();
 
@@ -46,6 +46,8 @@ BotCheatMask CheatAction::GetCheatMask(string cheat)
         return BotCheatMask::mana;
     if (cheat == "power")
         return BotCheatMask::power;
+    if (cheat == "supply")
+        return BotCheatMask::supply;
 
     return BotCheatMask::none;
 }
@@ -64,6 +66,8 @@ string CheatAction::GetCheatName(BotCheatMask cheatMask)
         return "mana";
     case BotCheatMask::power:
         return "power";
+    case BotCheatMask::supply:
+        return "supply";
     default: 
         return "none";
     }

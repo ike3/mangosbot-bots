@@ -10,7 +10,7 @@ namespace ai
     public:
         SendMailAction(PlayerbotAI* ai) : InventoryAction(ai, "sendmail") {}
 
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
     };
 
 }

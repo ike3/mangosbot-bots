@@ -208,12 +208,7 @@ class ServerFacade
             return bot->IsWithinLOSInMap(wo);
 #endif
 #ifdef CMANGOS
-            float x = wo->GetPositionX(), y = wo->GetPositionY(), z = wo->GetPositionZ();
-            return //bot->GetMapId() == wo->GetMapId() &&
-                (
-                    bot->IsWithinLOS(x, y, z + 0.5f, true) ||
-                    GetDistance2d(bot, wo) <= sPlayerbotAIConfig.tooCloseDistance
-                );
+            return bot->IsWithinLOSInMap(wo, true);
 #endif
         }
 
@@ -222,7 +217,8 @@ class ServerFacade
         bool IsDistanceGreaterOrEqualThan(float dist1, float dist2);
         bool IsDistanceLessOrEqualThan(float dist1, float dist2);
 
-        void SetFacingTo(Player* bot, WorldObject* wo, bool force = false);
+        void SetFacingTo(Unit* unit, float angle, bool force = false);
+        void SetFacingTo(Unit* unit, WorldObject* wo, bool force = false) {SetFacingTo(unit, unit->GetAngle(wo), force);}
 
         bool IsFriendlyTo(Unit* bot, Unit* to);
         bool IsFriendlyTo(WorldObject* bot, Unit* to);
@@ -263,6 +259,11 @@ class ServerFacade
 #ifdef CMANGOS
             return sBattleGroundMgr.m_battleGroundQueues[queueTypeId];
 #endif
+        }
+
+        uint32 GetAreaId(WorldObject* wo)
+        {
+            return sTerrainMgr.GetAreaId(wo->GetMapId(), wo->GetPositionX(), wo->GetPositionY(), wo->GetPositionZ());
         }
 };
 

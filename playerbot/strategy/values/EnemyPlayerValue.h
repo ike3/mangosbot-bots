@@ -17,8 +17,8 @@ namespace ai
     class NearestEnemyPlayersValue : public PossibleTargetsValue
     {
     public:
-        NearestEnemyPlayersValue(PlayerbotAI* ai, float range = 120.0f) :
-            PossibleTargetsValue(ai, "nearest enemy players", range) {}
+        NearestEnemyPlayersValue(PlayerbotAI* ai, float range = 60.0f) :
+            PossibleTargetsValue(ai, "nearest enemy players", range, true) {}
 
     public:
         virtual bool AcceptUnit(Unit* unit);
@@ -30,13 +30,11 @@ namespace ai
         EnemyPlayerValue(PlayerbotAI* ai, string name = "enemy player") : UnitCalculatedValue(ai, name) {}
 
         virtual Unit* Calculate();
-    private:
-        float GetMaxAttackDistance()
+        static float GetMaxAttackDistance(Player* bot)
         {
             if (!bot->GetBattleGround())
                 return 60.0f;
 
-#ifdef MANGOSBOT_TWO
             if (bot->InBattleGround())
             {
                 BattleGround* bg = bot->GetBattleGround();
@@ -44,16 +42,23 @@ namespace ai
                     return 40.0f;
 
                 BattleGroundTypeId bgType = bg->GetTypeId();
+
+#ifdef MANGOSBOT_TWO
                 if (bgType == BATTLEGROUND_RB)
                     bgType = bg->GetTypeId(true);
 
                 if (bgType == BATTLEGROUND_IC)
                 {
-                    if (ai->IsInVehicle(false, true))
+                    if (bot->GetPlayerbotAI()->IsInVehicle(false, true))
                         return 120.0f;
                 }
-            }
 #endif
+                if (bgType == BATTLEGROUND_AV)
+                {
+                    bool strifeTime = bg->GetStartTime() < (uint32)(20 * MINUTE * IN_MILLISECONDS);
+                    return strifeTime ? 40.0f : 10.0f;
+                }
+            }
 
             return 40.0f;
         }

@@ -3,10 +3,13 @@
 
 namespace ai
 {
+    // master aura trigger
+    BUFF_TRIGGER_A(PaladinAuraTrigger, "paladin aura");
     BUFF_TRIGGER(HolyShieldTrigger, "holy shield");
     BUFF_TRIGGER(RighteousFuryTrigger, "righteous fury");
 
-    BUFF_TRIGGER(RetributionAuraTrigger, "retribution aura");
+    BUFF_TRIGGER_A(RetributionAuraTrigger, "retribution aura");
+    BUFF_TRIGGER_A(SanctityAuraTrigger, "sanctity aura");
 
 	class CrusaderAuraTrigger : public BuffTrigger
 	{
@@ -22,19 +25,32 @@ namespace ai
 		virtual bool IsActive();
 	};
 
+    // judgements
+    DEBUFF_TRIGGER(JudgementTrigger, "judgement");
     DEBUFF_TRIGGER(JudgementOfLightTrigger, "judgement of light");
     DEBUFF_TRIGGER(JudgementOfWisdomTrigger, "judgement of wisdom");
+
+    DEBUFF_TRIGGER(ConsecrationTrigger, "consecration");
+
+    // repentance triggers
+    INTERRUPT_HEALER_TRIGGER(RepentanceOnHealerTrigger, "repentance on enemy healer");
+    SNARE_TRIGGER(RepentanceSnareTrigger, "repentance on snare target");
+    INTERRUPT_TRIGGER(RepentanceInterruptTrigger, "repentance");
+
+    // sanctuary for tanks
+    BUFF_TRIGGER(BlessingOfSanctuaryTrigger, "blessing of sanctuary");
 
     class BlessingOnPartyTrigger : public BuffOnPartyTrigger
     {
     public:
-        BlessingOnPartyTrigger(PlayerbotAI* ai) : BuffOnPartyTrigger(ai, "blessing of kings,blessing of might,blessing of wisdom", 2) {}
+        BlessingOnPartyTrigger(PlayerbotAI* ai) : BuffOnPartyTrigger(ai, "blessing", 2) {}
+        virtual bool IsActive();
     };
 
     class BlessingTrigger : public BuffTrigger
     {
     public:
-        BlessingTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "blessing of sanctuary", 2) {}
+        BlessingTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "blessing", 2) {}
         virtual bool IsActive();
     };
 
@@ -48,6 +64,13 @@ namespace ai
     {
     public:
         HammerOfJusticeSnareTrigger(PlayerbotAI* ai) : SnareTargetTrigger(ai, "hammer of justice") {}
+    };
+
+    class HammerOfJusticeOnEnemyTrigger : public Trigger
+    {
+    public:
+        HammerOfJusticeOnEnemyTrigger(PlayerbotAI* ai) : Trigger(ai, "hammer of justice on enemy") {}
+        virtual bool IsActive();
     };
 
     class ArtOfWarTrigger : public HasAuraTrigger
@@ -79,6 +102,8 @@ namespace ai
     public:
         DevotionAuraTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "devotion aura") {}
     };
+
+    BUFF_TRIGGER_A(ConcentrationAuraTrigger, "concentration aura");
 
     class CleanseCureDiseaseTrigger : public NeedCureTrigger
     {
@@ -135,4 +160,5 @@ namespace ai
     };
 
     DEBUFF_TRIGGER(AvengerShieldTrigger, "avenger's shield");
+    BOOST_TRIGGER(DivineIlluminationBoostTrigger, "divine illumination");
 }

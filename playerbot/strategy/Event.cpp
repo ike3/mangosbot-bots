@@ -1,5 +1,6 @@
 #include "../../botpch.h"
 #include "../playerbot.h"
+#include "Player.h"
 #include "Event.h"
 
 

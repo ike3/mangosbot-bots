@@ -65,7 +65,7 @@ namespace ai
     BUFF_ACTION(CastRampageAction, "rampage");
 
     // protection
-    MELEE_ACTION_U(CastTauntAction, "taunt", GetTarget() && !GetTarget()->HasTarget(bot->GetObjectGuid()));
+    MELEE_ACTION_U(CastTauntAction, "taunt", GetTarget() && GetTarget()->GetVictim() && GetTarget()->GetVictim() != bot);
     SNARE_ACTION(CastTauntOnSnareTargetAction, "taunt");
     BUFF_ACTION(CastBloodrageAction, "bloodrage");
     MELEE_ACTION(CastShieldBashAction, "shield bash");
@@ -89,12 +89,12 @@ namespace ai
     DEBUFF_ACTION_R(CastShockwaveAction, "shockwave", 8.0f);
     SNARE_ACTION(CastShockwaveSnareAction, "shockwave");
 
-    class CastSunderArmorAction : public CastDebuffSpellAction
+    class CastSunderArmorAction : public CastOnlyDebuffSpellAction
     {
     public:
-        CastSunderArmorAction(PlayerbotAI* ai) : CastDebuffSpellAction(ai, "sunder armor") {
+        CastSunderArmorAction(PlayerbotAI* ai) : CastOnlyDebuffSpellAction(ai, "sunder armor") {
             range = ATTACK_DISTANCE;
         }
-        virtual bool isUseful() { return CastSpellAction::isUseful(); }
+        virtual bool isUseful() { return GetTarget() && !ai->HasAura("sunder armor", GetTarget(), true); }
     };
 }

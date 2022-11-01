@@ -17,9 +17,7 @@ namespace ai
             
             float targetOrientation = target->GetOrientation();
             float orientation = bot->GetOrientation();
-            float distance = bot->GetDistance(target);
-
-            return distance <= ATTACK_DISTANCE && abs(targetOrientation - orientation) < M_PI / 2;
+            return bot->CanReachWithMeleeAttack(target) && abs(targetOrientation - orientation) < M_PI / 2;
         }
     };
 }

@@ -40,20 +40,33 @@ float GetAngle(const float x1, const float y1, const float x2, const float y2)
     return ang;
 }
 
-bool SeeSpellAction::Execute(Event event)
+bool SeeSpellAction::Execute(Event& event)
 {
     WorldPacket p(event.getPacket()); // 
     uint32 spellId;
     Player* master = ai->GetMaster();
 
     p.rpos(0);
+#ifndef MANGOSBOT_TWO
     p >> spellId;
+#endif
+
+#ifdef MANGOSBOT_ONE
+    uint8  cast_count, cast_flags;
+    p >> cast_count;
+#endif
+#ifdef MANGOSBOT_TWO
+    uint8  cast_count, cast_flags;
+    p >> cast_count;
+    p >> spellId;
+    p >> cast_flags;
+#endif
 
     if (!master)
         return false;
 
-    //if (!ai->HasStrategy("RTSC", ai->GetState()))
-    //    return false;
+    if (!ai->HasStrategy("RTSC", ai->GetState()))
+        return false;
 
     if (spellId != RTSC_MOVE_SPELL)
         return false;
@@ -62,14 +75,46 @@ bool SeeSpellAction::Execute(Event event)
 
     SpellCastTargets targets;
 
-#ifdef BUILD_PLAYERBOT
-    recvPacket >> targets.ReadForCaster(mover);
-#else
     p >> targets.ReadForCaster(ai->GetMaster());
-#endif
 
     WorldPosition spellPosition(master->GetMapId(), targets.m_destPos);
     SET_AI_VALUE(WorldPosition, "see spell location", spellPosition);
+
+    if (ai->HasStrategy("debug", BotState::BOT_STATE_NON_COMBAT) || ai->HasStrategy("debug move", BotState::BOT_STATE_NON_COMBAT))
+    {
+        PathFinder path(bot);
+
+        float x = spellPosition.getX();
+        float y = spellPosition.getY();
+        float z = spellPosition.getZ();
+
+        ostringstream out;
+
+        if (spellPosition.isOutside())
+            out << "[outside]";
+
+        out << " area = ";
+
+        out << path.getArea(bot->GetMapId(), x, y, z);
+
+        unsigned short flags = path.getFlags(bot->GetMapId(), x, y, z);
+
+        out << " flags = " << flags;
+
+        if (flags & NAV_GROUND)
+            out << ", ground";
+        if (flags & NAV_EMPTY)
+            out << ", empty";
+        if (flags & NAV_GROUND_STEEP)
+            out << ", slope";
+        if (flags & NAV_WATER)
+            out << ", water";
+        if (flags & NAV_MAGMA_SLIME)
+            out << ", magma slime";
+
+        ai->TellMaster(out);
+    }
+
 
     bool selected = AI_VALUE(bool, "RTSC selected");
     bool inRange = spellPosition.distance(bot) <= 10;

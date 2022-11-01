@@ -1,6 +1,9 @@
 #pragma once
 #include "Category.h"
 
+struct ItemPrototype;
+struct SpellEntry;
+
 using namespace std;
 
 namespace ahbot

@@ -29,27 +29,32 @@ void Queue::Push(ActionBasket *action)
     }
 }
 
-ActionNode* Queue::Pop()
+ActionNode* Queue::Pop(ActionBasket* action)
 {
-	float max = -1;
-	ActionBasket* selection = NULL;
-	for (std::list<ActionBasket*>::iterator iter = actions.begin(); iter != actions.end(); iter++)
-	{
-		ActionBasket* basket = *iter;
-		if (basket->getRelevance() > max)
-		{
-			max = basket->getRelevance();
-			selection = basket;
-		}
-	}
-	if (selection != NULL)
-	{
-		ActionNode* action = selection->getAction();
-		actions.remove(selection);
-		delete selection;
-		return action;
-	}
-	return NULL;
+    ActionBasket* selection = action;
+    if (selection == nullptr)
+    {
+        float max = -1;
+        for (std::list<ActionBasket*>::iterator iter = actions.begin(); iter != actions.end(); iter++)
+        {
+            ActionBasket* basket = *iter;
+            if (basket->getRelevance() > max)
+            {
+                max = basket->getRelevance();
+                selection = basket;
+            }
+        }
+    }
+
+    if (selection != nullptr)
+    {
+        ActionNode* action = selection->getAction();
+        actions.remove(selection);
+        delete selection;
+        return action;
+    }
+
+    return nullptr;
 }
 
 ActionBasket* Queue::Peek()

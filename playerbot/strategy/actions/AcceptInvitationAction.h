@@ -8,7 +8,7 @@ namespace ai
     public:
         AcceptInvitationAction(PlayerbotAI* ai) : Action(ai, "accept invitation") {}
 
-        virtual bool Execute(Event event)
+        virtual bool Execute(Event& event)
         {
             Player* master = GetMaster();
 
@@ -20,7 +20,7 @@ namespace ai
             if (!inviter)
                 return false;
 
-			if (!ai->GetSecurity()->CheckLevelFor(PLAYERBOT_SECURITY_INVITE, false, inviter))
+			if (!ai->GetSecurity()->CheckLevelFor(PlayerbotSecurityLevel::PLAYERBOT_SECURITY_INVITE, false, inviter))
             {
                 WorldPacket data(SMSG_GROUP_DECLINE, 10);
                 data << bot->GetName();
@@ -28,6 +28,9 @@ namespace ai
                 bot->UninviteFromGroup();
                 return false;
             }
+            
+            if (bot->isAFK())
+                bot->ToggleAFK();
 
             WorldPacket p;
             uint32 roles_mask = 0;
@@ -40,10 +43,13 @@ namespace ai
             //    sPlayerbotDbStore.Save(ai);
             
             ai->ResetStrategies();
-            ai->ChangeStrategy("+follow,-lfg,-bg", BOT_STATE_NON_COMBAT);
+            ai->ChangeStrategy("+follow,-lfg,-bg", BotState::BOT_STATE_NON_COMBAT);
             ai->Reset();
 
-            ai->TellMaster("Hello");
+            ai->TellMaster(BOT_TEXT("hello"), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+
+            sTravelMgr.logEvent(ai, "AcceptInvitationAction", grp->GetLeaderName(), to_string(grp->GetMembersCount()));
+
             return true;
         }
     };

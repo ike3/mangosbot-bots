@@ -2,6 +2,8 @@
 #include "../playerbot.h"
 #include "Trigger.h"
 #include "Action.h"
+#include "Unit.h"
+#include "Value.h"
 
 using namespace ai;
 
@@ -24,4 +26,19 @@ Value<Unit*>* Trigger::GetTargetValue()
 Unit* Trigger::GetTarget()
 {
     return GetTargetValue()->Get();
+}
+
+TriggerNode::~TriggerNode()
+{
+	NextAction::destroy(handlers);
+}
+
+NextAction** TriggerNode::getHandlers()
+{
+	return NextAction::merge(NextAction::clone(handlers), trigger->getHandlers());
+}
+
+float TriggerNode::getFirstRelevance()
+{
+	return handlers[0] ? handlers[0]->getRelevance() : -1;
 }

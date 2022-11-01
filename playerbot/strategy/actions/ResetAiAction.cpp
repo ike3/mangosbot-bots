@@ -5,10 +5,13 @@
 
 using namespace ai;
 
-bool ResetAiAction::Execute(Event event)
+bool ResetAiAction::Execute(Event& event)
 {
-    sPlayerbotDbStore.Reset(ai);
-    ai->ResetStrategies(false);
-    ai->TellMaster("AI was reset to defaults");
+    if (fullReset)
+    {
+        sPlayerbotDbStore.Reset(ai);
+        ai->TellError("AI was reset to defaults");
+    }
+    ai->ResetStrategies(!fullReset);
     return true;
 }

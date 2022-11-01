@@ -10,7 +10,7 @@ namespace ai
         WtsAction(PlayerbotAI* ai) : InventoryAction(ai, "wts") {}
 
     public:
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
     };
 
 }

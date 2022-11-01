@@ -34,10 +34,21 @@ enum ItemSource
     ITEM_SOURCE_PVP
 };
 
+enum ItemSpecType
+{
+    ITEM_SPEC_NONE = 0x0,
+    ITEM_SPEC_SPELL_DAMAGE = 0x01,
+    ITEM_SPEC_SPELL_HEALING = 0x02,
+    ITEM_SPEC_ATTACK = 0x04,
+    ITEM_SPEC_TANK = 0x08,
+    ITEM_SPEC_CASTER = 0x10,
+};
+
 struct WeightScaleInfo
 {
     uint32 id;
     string name;
+    uint8 classId;
 };
 
 struct WeightScaleStat
@@ -46,32 +57,32 @@ struct WeightScaleStat
     uint32 weight;
 };
 
-struct StatWeight
-{
-    uint32 id;
-    uint32 weight;
-};
-
 struct ItemInfoEntry
 {
-    ItemInfoEntry() : minLevel(0), source(0), sourceId(0), team(0), repRank(0), repFaction(0), quality(0), slot(0), itemId(0)
+    ItemInfoEntry() : minLevel(0), itemLevel(0), source(0), sourceId(0), team(0), repRank(0), repFaction(0), reqSkill(0), reqSkillRank(0), pvpRank(0), quality(0), slot(0), itemId(0)
     {
         for (int i = 1; i <= MAX_STAT_SCALES; ++i)
         {
             weights[i] = 0;
         }
+        itemSpec = ITEM_SPEC_NONE;
     }
 
     map<uint32, uint32> weights;
     uint32 minLevel;
+    uint32 itemLevel;
     uint32 source;
     uint32 sourceId;
     uint32 team;
     uint32 repRank;
     uint32 repFaction;
+    uint32 reqSkill;
+    uint32 reqSkillRank;
+    uint32 pvpRank;
     uint32 quality;
     uint32 slot;
     uint32 itemId;
+    ItemSpecType itemSpec;
 };
 
 typedef vector<WeightScaleStat> WeightScaleStats;
@@ -100,14 +111,15 @@ class BotEquipKey
 public:
     uint32 level;
     uint8 clazz;
+    uint8 spec;
     uint8 slot;
     uint32 quality;
     uint64 key;
 
 public:
-    BotEquipKey() : level(0), clazz(0), slot(0), quality(0), key(GetKey()) {}
-    BotEquipKey(uint32 level, uint8 clazz, uint8 slot, uint32 quality) : level(level), clazz(clazz), slot(slot), quality(quality), key(GetKey()) {}
-    BotEquipKey(BotEquipKey const& other)  : level(other.level), clazz(other.clazz), slot(other.slot), quality(other.quality), key(GetKey()) {}
+    BotEquipKey() : level(0), clazz(0), spec(0), slot(0), quality(0), key(GetKey()) {}
+    BotEquipKey(uint32 level, uint8 clazz, uint8 spec, uint8 slot, uint32 quality) : level(level), clazz(clazz), spec(spec), slot(slot), quality(quality), key(GetKey()) {}
+    BotEquipKey(BotEquipKey const& other)  : level(other.level), clazz(other.clazz), spec(other.spec), slot(other.slot), quality(other.quality), key(GetKey()) {}
 
 private:
     uint64 GetKey();
@@ -137,28 +149,33 @@ class RandomItemMgr
         void InitAfterAhBot();
         static bool HandleConsoleCommand(ChatHandler* handler, char const* args);
         RandomItemList Query(uint32 level, RandomItemType type, RandomItemPredicate* predicate);
-        RandomItemList Query(uint32 level, uint8 clazz, uint8 slot, uint32 quality);
+        RandomItemList Query(uint32 level, uint8 clazz, uint8 specId, uint8 slot, uint32 quality);
         uint32 GetUpgrade(Player* player, std::string spec, uint8 slot, uint32 quality, uint32 itemId);
-        vector<uint32> GetUpgradeList(Player* player, std::string spec, uint8 slot, uint32 quality, uint32 itemId, uint32 amount = 1);
+        vector<uint32> GetUpgradeList(Player* player, uint32 specId, uint8 slot, uint32 quality, uint32 itemId, uint32 amount = 1);
         bool HasStatWeight(uint32 itemId);
         uint32 GetMinLevelFromCache(uint32 itemId);
         uint32 GetStatWeight(Player* player, uint32 itemId);
-        uint32 GetLiveStatWeight(Player* player, uint32 itemId);
+        uint32 GetLiveStatWeight(Player* player, uint32 itemId, uint32 specId = 0);
+        uint32 GetStatWeight(uint32 itemId, uint32 specId);
         uint32 GetRandomItem(uint32 level, RandomItemType type, RandomItemPredicate* predicate = NULL);
         uint32 GetAmmo(uint32 level, uint32 subClass);
         uint32 GetRandomPotion(uint32 level, uint32 effect);
         uint32 GetRandomFood(uint32 level, uint32 category);
         uint32 GetFood(uint32 level, uint32 category);
         uint32 GetRandomTrade(uint32 level);
-        uint32 CalculateStatWeight(uint8 playerclass, uint8 spec, ItemPrototype const* proto);
+        vector<uint32> GetGemsList();
+        uint32 CalculateStatWeight(uint8 playerclass, uint8 spec, ItemPrototype const* proto, ItemSpecType &itSpec);
         uint32 CalculateSingleStatWeight(uint8 playerclass, uint8 spec, std::string stat, uint32 value);
-        bool CanEquipArmor(uint8 clazz, uint32 level, ItemPrototype const* proto);
+        bool CanEquipArmor(uint8 clazz, uint8 spec, uint32 level, ItemPrototype const* proto);
         bool ShouldEquipArmorForSpec(uint8 playerclass, uint8 spec, ItemPrototype const* proto);
         bool CanEquipWeapon(uint8 clazz, ItemPrototype const* proto);
         bool ShouldEquipWeaponForSpec(uint8 playerclass, uint8 spec, ItemPrototype const* proto);
+        bool CheckItemSpec(uint8 spec, ItemSpecType itSpec);
         float GetItemRarity(uint32 itemId);
         uint32 GetQuestIdForItem(uint32 itemId);
         vector<uint32> GetQuestIdsForItem(uint32 itemId);
+        std::string GetPlayerSpecName(Player* player);
+        uint32 GetPlayerSpecId(Player* player);
 
     private:
         void BuildRandomItemCache();
@@ -184,7 +201,7 @@ class RandomItemMgr
         map<uint32, map<uint32, vector<uint32> > > foodCache;
         map<uint32, vector<uint32> > tradeCache;
         map<uint32, float> rarityCache;
-        map<uint32, WeightScale> m_weightScales[MAX_CLASSES];
+        map<uint32, WeightScale> m_weightScales;
         map<string, uint32 > weightStatLink;
         map<string, uint32 > weightRatingLink;
         map<uint32, ItemInfoEntry*> itemInfoCache;

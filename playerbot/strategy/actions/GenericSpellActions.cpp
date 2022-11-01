@@ -4,7 +4,7 @@
 
 using namespace ai;
 
-bool CastSpellAction::Execute(Event event)
+bool CastSpellAction::Execute(Event& event)
 {
     if (spell == "conjure food" || spell == "conjure water")
     {
@@ -79,6 +79,8 @@ bool CastSpellAction::isUseful()
         return false;
     }
 
+    bool isUsefulCast = AI_VALUE2(bool, "spell cast useful", spell);
+
     Unit* spellTarget = GetTarget();
     if (!spellTarget)
         return false;
@@ -86,16 +88,45 @@ bool CastSpellAction::isUseful()
     if (!spellTarget->IsInWorld() || spellTarget->GetMapId() != bot->GetMapId())
         return false;
 
-    float combatReach = bot->GetCombinedCombatReach(spellTarget, true);
-    if (ai->IsRanged(bot))
-        combatReach = bot->GetCombinedCombatReach(spellTarget, false);
+    bool canReach = false;
 
-    return spellTarget && AI_VALUE2(bool, "spell cast useful", spell) && sServerFacade.GetDistance2d(bot, spellTarget) <= (range + combatReach);
+    if (spellTarget == bot)
+        canReach = true;
+    else
+    {
+        float dist = bot->GetDistance(spellTarget, true, ai->IsRanged(bot) ? DIST_CALC_COMBAT_REACH : DIST_CALC_COMBAT_REACH_WITH_MELEE);
+        if (range == ATTACK_DISTANCE) // melee action
+        {
+            canReach = bot->CanReachWithMeleeAttack(spellTarget);
+        }
+        else // range check
+        {
+            canReach = dist <= (range + sPlayerbotAIConfig.contactDistance);
+
+            uint32 spellId = AI_VALUE2(uint32, "spell id", spell);
+            if (!spellId)
+                return true; // there can be known alternatives
+
+            const SpellEntry* pSpellInfo = sServerFacade.LookupSpellInfo(spellId);
+            if (!pSpellInfo)
+                return true; // there can be known alternatives
+
+            if (range != ATTACK_DISTANCE && pSpellInfo->rangeIndex != SPELL_RANGE_IDX_COMBAT && pSpellInfo->rangeIndex != SPELL_RANGE_IDX_SELF_ONLY && pSpellInfo->rangeIndex != SPELL_RANGE_IDX_ANYWHERE)
+            {
+                SpellRangeEntry const* srange = sSpellRangeStore.LookupEntry(pSpellInfo->rangeIndex);
+                float max_range = GetSpellMaxRange(srange);
+                float min_range = GetSpellMinRange(srange);
+                canReach = dist < max_range && dist >= min_range;
+            }
+        }
+    }
+
+    return spellTarget && isUsefulCast && canReach; // bot->GetDistance(spellTarget, true, DIST_CALC_COMBAT_REACH) <= (range + sPlayerbotAIConfig.contactDistance);
 }
 
 bool CastAuraSpellAction::isUseful()
 {
-    return GetTarget() && (GetTarget() != nullptr) && (GetTarget() != NULL) && CastSpellAction::isUseful() && !ai->HasAura(spell, GetTarget(), true);
+    return GetTarget() && (GetTarget() != nullptr) && (GetTarget() != NULL) && CastSpellAction::isUseful() && !ai->HasAura(spell, GetTarget(), false, isOwner);
 }
 
 bool CastEnchantItemAction::isPossible()
@@ -105,11 +136,6 @@ bool CastEnchantItemAction::isPossible()
 
     uint32 spellId = AI_VALUE2(uint32, "spell id", spell);
     return spellId && AI_VALUE2(Item*, "item for spell", spellId);
-}
-
-bool CastHealingSpellAction::isUseful()
-{
-    return CastAuraSpellAction::isUseful();
 }
 
 bool CastAoeHealSpellAction::isUseful()
@@ -138,7 +164,7 @@ bool CastVehicleSpellAction::isUseful()
     return ai->IsInVehicle(false, true);
 }
 
-bool CastVehicleSpellAction::Execute(Event event)
+bool CastVehicleSpellAction::Execute(Event& event)
 {
     uint32 spellId = AI_VALUE2(uint32, "vehicle spell id", spell);
     return ai->CastVehicleSpell(spellId, GetTarget());

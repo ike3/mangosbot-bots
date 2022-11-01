@@ -2,6 +2,7 @@
 
 #include "../Action.h"
 #include "../../ServerFacade.h"
+#include "../../RandomItemMgr.h"
 
 namespace ai
 {
@@ -10,7 +11,7 @@ namespace ai
       UseItemAction(PlayerbotAI* ai, string name = "use", bool selfOnly = false) : Action(ai, name), selfOnly(selfOnly) {}
 
    public:
-      virtual bool Execute(Event event);
+      virtual bool Execute(Event& event);
       virtual bool isPossible();
 
    protected:
@@ -38,6 +39,45 @@ namespace ai
    public:
       UseHealingPotion(PlayerbotAI* ai) : UseItemAction(ai, "healing potion") {}
       virtual bool isUseful() { return AI_VALUE2(bool, "combat", "self target"); }
+      virtual bool Execute(Event& event)
+      {
+          bool isRandomBot = sRandomPlayerbotMgr.IsRandomBot(bot);
+          if (/*isRandomBot && */sPlayerbotAIConfig.freeFood)
+          {
+              if (bot->IsNonMeleeSpellCasted(true))
+                  return false;
+
+              uint32 itemId = sRandomItemMgr.GetRandomPotion(bot->GetLevel(), SPELL_EFFECT_HEAL);
+              if (!itemId)
+              {
+                  return false;
+              }
+
+              ItemPrototype const* proto = sObjectMgr.GetItemPrototype(itemId);
+              if (!proto)
+                  return false;
+
+              uint32 spellId = 0;
+              for (uint8 i = 0; i < MAX_ITEM_PROTO_SPELLS; ++i)
+              {
+                  if (proto->Spells[i].SpellTrigger != ITEM_SPELLTRIGGER_ON_USE)
+                      continue;
+
+                  if (proto->Spells[i].SpellId > 0)
+                  {
+                      spellId = proto->Spells[i].SpellId;
+                  }
+              }
+
+              if (spellId && bot->IsSpellReady(spellId, proto))
+              {
+                  ai->CastSpell(spellId, bot);
+                  return true;
+              }
+          }
+
+          return UseItemAction::Execute(event);
+      }
    };
 
    class UseManaPotion : public UseItemAction
@@ -45,6 +85,45 @@ namespace ai
    public:
       UseManaPotion(PlayerbotAI* ai) : UseItemAction(ai, "mana potion") {}
       virtual bool isUseful() { return AI_VALUE2(bool, "combat", "self target"); }
+      virtual bool Execute(Event& event)
+      {
+          bool isRandomBot = sRandomPlayerbotMgr.IsRandomBot(bot);
+          if (/*isRandomBot && */sPlayerbotAIConfig.freeFood)
+          {
+              if (bot->IsNonMeleeSpellCasted(true))
+                  return false;
+
+              uint32 itemId = sRandomItemMgr.GetRandomPotion(bot->GetLevel(), SPELL_EFFECT_ENERGIZE);
+              if (!itemId)
+              {
+                  return false;
+              }
+
+              ItemPrototype const* proto = sObjectMgr.GetItemPrototype(itemId);
+              if (!proto)
+                  return false;
+
+              uint32 spellId = 0;
+              for (uint8 i = 0; i < MAX_ITEM_PROTO_SPELLS; ++i)
+              {
+                  if (proto->Spells[i].SpellTrigger != ITEM_SPELLTRIGGER_ON_USE)
+                      continue;
+
+                  if (proto->Spells[i].SpellId > 0)
+                  {
+                      spellId = proto->Spells[i].SpellId;
+                  }
+              }
+
+              if (spellId && bot->IsSpellReady(spellId, proto))
+              {
+                  ai->CastSpell(spellId, bot);
+                  return true;
+              }
+          }
+
+          return UseItemAction::Execute(event);
+      }
    };
 
    class UseHearthStone : public UseItemAction
@@ -52,9 +131,9 @@ namespace ai
    public:
        UseHearthStone(PlayerbotAI* ai) : UseItemAction(ai, "hearthstone", true) {}
 
-       bool isUseful() { return !bot->InBattleGround(); }
+       bool isUseful() { return !bot->InBattleGround() && sServerFacade.IsSpellReady(bot, 8690); }
        
-       virtual bool Execute(Event event);
+       virtual bool Execute(Event& event);
    };
 
    class UseRandomRecipe : public UseItemAction
@@ -65,7 +144,7 @@ namespace ai
        virtual bool isUseful();
        virtual bool isPossible() {return AI_VALUE2(uint32,"item count", "recipe") > 0; }
       
-       virtual bool Execute(Event event);
+       virtual bool Execute(Event& event);
    };
 
    class UseRandomQuestItem : public UseItemAction
@@ -76,6 +155,154 @@ namespace ai
        virtual bool isUseful();
        virtual bool isPossible() { return AI_VALUE2(uint32, "item count", "quest") > 0;}
 
-       virtual bool Execute(Event event);
+       virtual bool Execute(Event& event);
+   };
+
+   // goblin sappers
+   class CastGoblinSappersAction : public UseItemAction
+   {
+   public:
+       CastGoblinSappersAction(PlayerbotAI* ai) : UseItemAction(ai, "goblin sapper") {}
+       virtual bool isPossible() { return true; }
+       virtual bool isUseful()
+       {
+           return bot->GetLevel() >= 50 && bot->GetHealth() > 1000;
+       }
+       virtual bool Execute(Event& event)
+       {
+           uint32 goblinSapper = 10646;
+           if (bot->GetLevel() >= 68)
+               goblinSapper = 23827;
+
+           bool added = bot->HasItemCount(goblinSapper, 1);
+           if (!added)
+               added = bot->StoreNewItemInInventorySlot(goblinSapper, 10);
+
+           if (!added)
+               return false;
+
+           list<Item*> items = AI_VALUE2(list<Item*>, "inventory items", goblinSapper == 10646 ? "goblin sapper charge" : "super sapper charge");
+           list<Item*>::iterator i = items.begin();
+           Item* item = *i;
+
+           if (!item)
+               return false;
+
+           return UseItemAuto(item);
+       }
+   };
+
+   // oil of immolation
+   class CastOilOfImmolationAction : public UseItemAction
+   {
+   public:
+       CastOilOfImmolationAction(PlayerbotAI* ai) : UseItemAction(ai, "oil of immolation") {}
+       virtual bool isPossible() { return true; }
+       virtual bool isUseful()
+       {
+           return bot->GetLevel() >= 31 && !ai->HasAura(11350, bot);
+       }
+       virtual bool Execute(Event& event)
+       {
+           uint32 oil = 8956;
+           bool added = bot->HasItemCount(oil, 1);
+           if (!added)
+               added = bot->StoreNewItemInInventorySlot(oil, 1);
+
+           if (!added)
+               return false;
+
+           list<Item*> items = AI_VALUE2(list<Item*>, "inventory items", "oil of immolation");
+           list<Item*>::iterator i = items.begin();
+           Item* item = *i;
+
+           if (!item)
+               return false;
+
+           return UseItemAuto(item);
+       }
+   };
+
+   // oil of immolation
+   class UseAdamantiteGrenadeAction : public UseItemAction
+   {
+   public:
+       UseAdamantiteGrenadeAction(PlayerbotAI* ai) : UseItemAction(ai, "adamantite grenade") {}
+       virtual bool isPossible() { return true; }
+       virtual bool isUseful()
+       {
+           return false; bot->GetLevel() >= 52 && bot->IsSpellReady(19769);/* && bot->GetSkillValue(202) >= 260*/;
+       }
+       virtual bool Execute(Event& event)
+       {
+           uint32 spellId = 19769;
+           if (SpellEntry const* spellInfo = sSpellTemplate.LookupEntry<SpellEntry>(spellId))
+           {
+               bool casted = ai->CastSpell(19769, GetTarget());
+               if (casted)
+               {
+                   bot->AddCooldown(*spellInfo, nullptr, false, 60000);
+                   return true;
+               }
+           }
+
+           return false;
+           // test
+           Unit* target = AI_VALUE(Unit*, "current target");
+           if (!target)
+               return false;
+
+           uint32 skillValue = bot->GetSkillValue(202);
+           uint32 grenade = skillValue > 325 ? 23737: 15993;
+           bool added = bot->HasItemCount(grenade, 1);
+           if (!added)
+               added = bot->StoreNewItemInInventorySlot(grenade, 1);
+
+           if (!added)
+               return false;
+
+           list<Item*> items = AI_VALUE2(list<Item*>, "inventory items", skillValue > 325 ? "adamantite grenade" : "thorium grenade");
+           list<Item*>::iterator i = items.begin();
+           Item* item = *i;
+
+           if (!item)
+               return false;
+
+           return UseItem(item, ObjectGuid(), nullptr, target);
+       }
+   };
+
+   // dark rune
+   class DarkRuneAction : public UseItemAction
+   {
+   public:
+       DarkRuneAction(PlayerbotAI* ai) : UseItemAction(ai, "dark rune") {}
+       virtual bool isPossible() { return true; }
+       virtual bool isUseful()
+       {
+           if (bot->getClass() == CLASS_MAGE) // mage should use mana gem, shares cd with dark rune
+               return false;
+
+           return bot->GetLevel() == 60 && AI_VALUE2(uint8, "health", "self target") > sPlayerbotAIConfig.lowHealth;
+       }
+       virtual bool Execute(Event& event)
+       {
+           uint32 rune = 20520;
+           bool added = bot->HasItemCount(rune, 1);
+           if (!added)
+               added = bot->StoreNewItemInInventorySlot(rune, 20);
+
+           if (!added)
+               return false;
+
+           list<Item*> items = AI_VALUE2(list<Item*>, "inventory items", "dark rune");
+           list<Item*>::iterator i = items.begin();
+           Item* item = *i;
+
+           if (!item)
+               return false;
+
+           return UseItemAuto(item);
+       }
    };
 }

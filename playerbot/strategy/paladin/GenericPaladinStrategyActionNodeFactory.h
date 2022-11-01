@@ -7,15 +7,11 @@ namespace ai
     public:
         GenericPaladinStrategyActionNodeFactory()
         {
-            creators["seal of light"] = &seal_of_light;
             creators["cleanse poison"] = &cleanse_poison;
             creators["cleanse disease"] = &cleanse_disease;
             creators["cleanse magic"] = &cleanse_magic;
             creators["cleanse poison on party"] = &cleanse_poison_on_party;
             creators["cleanse disease on party"] = &cleanse_disease_on_party;
-            creators["seal of wisdom"] = &seal_of_wisdom;
-            creators["seal of justice"] = &seal_of_justice;
-            creators["hand of reckoning"] = &hand_of_reckoning;
             creators["judgement of wisdom"] = &judgement_of_wisdom;
             creators["divine shield"] = &divine_shield;
             creators["flash of light"] = &flash_of_light;
@@ -30,8 +26,22 @@ namespace ai
             creators["blessing of kings on party"] = &blessing_of_kings_on_party;
             creators["blessing of wisdom on party"] = &blessing_of_wisdom_on_party;
             creators["blessing of sanctuary"] = &blessing_of_sanctuary;
+            creators["greater blessing of might"] = &greater_blessing_of_might;
+            creators["greater blessing of kings"] = &greater_blessing_of_kings;
+            creators["greater blessing of wisdom"] = &greater_blessing_of_wisdom;
+            creators["greater blessing of sanctuary"] = &greater_blessing_of_sanctuary;
+            creators["greater blessing of might on party"] = &greater_blessing_of_might_on_party;
+            creators["greater blessing of kings on party"] = &greater_blessing_of_kings_on_party;
+            creators["greater blessing of wisdom on party"] = &greater_blessing_of_wisdom_on_party;
         }
     private:
+        ACTION_NODE_A(greater_blessing_of_might, "greater blessing of might", "blessing of might");
+        ACTION_NODE_A(greater_blessing_of_kings, "greater blessing of kings", "blessing of kings");
+        ACTION_NODE_A(greater_blessing_of_wisdom, "greater blessing of wisdom", "blessing of wisdom");
+        ACTION_NODE_A(greater_blessing_of_sanctuary, "greater blessing of sanctuary", "blessing of sanctuary");
+        ACTION_NODE_A(greater_blessing_of_might_on_party, "greater blessing of might on party", "blessing of might on party");
+        ACTION_NODE_A(greater_blessing_of_kings_on_party, "greater blessing of kings on party", "blessing of kings on party");
+        ACTION_NODE_A(greater_blessing_of_wisdom_on_party, "greater blessing of wisdom on party", "blessing of wisdom on party");
         static ActionNode* blessing_of_sanctuary(PlayerbotAI* ai)
         {
             return new ActionNode ("blessing of sanctuary",
@@ -85,14 +95,7 @@ namespace ai
         {
             return new ActionNode ("lay on hands on party",
                 /*P*/ NULL,
-                /*A*/ NextAction::array(0, new NextAction("flash of light"), NULL),
-                /*C*/ NULL);
-        }
-        static ActionNode* seal_of_light(PlayerbotAI* ai)
-        {
-            return new ActionNode ("seal of light",
-                /*P*/ NULL,
-                /*A*/ NextAction::array(0, new NextAction("seal of justice"), NULL),
+                /*A*/ NextAction::array(0, new NextAction("flash of light on party"), NULL),
                 /*C*/ NULL);
         }
         static ActionNode* cleanse_poison(PlayerbotAI* ai)
@@ -128,27 +131,6 @@ namespace ai
             return new ActionNode ("cleanse disease on party",
                 /*P*/ NULL,
                 /*A*/ NextAction::array(0, new NextAction("purify disease on party"), NULL),
-                /*C*/ NULL);
-        }
-        static ActionNode* seal_of_wisdom(PlayerbotAI* ai)
-        {
-            return new ActionNode ("seal of wisdom",
-                /*P*/ NULL,
-                /*A*/ NextAction::array(0, new NextAction("seal of justice"), NULL),
-                /*C*/ NULL);
-        }
-        static ActionNode* seal_of_justice(PlayerbotAI* ai)
-        {
-            return new ActionNode ("seal of justice",
-                /*P*/ NULL,
-                /*A*/ NextAction::array(0, new NextAction("seal of righteousness"), NULL),
-                /*C*/ NULL);
-        }
-        static ActionNode* hand_of_reckoning(PlayerbotAI* ai)
-        {
-            return new ActionNode ("hand of reckoning",
-                /*P*/ NULL,
-                /*A*/ NextAction::array(0, new NextAction("judgement of justice"), NULL),
                 /*C*/ NULL);
         }
         static ActionNode* judgement_of_wisdom(PlayerbotAI* ai)

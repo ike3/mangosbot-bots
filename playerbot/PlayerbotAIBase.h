@@ -12,14 +12,19 @@ public:
 	PlayerbotAIBase();
 
 public:
-	bool CanUpdateAI();
-	void SetNextCheckDelay(const uint32 delay);
-    void IncreaseNextCheckDelay(uint32 delay);
-	void YieldThread(bool delay = false);
+    bool IsActive() const;
     virtual void UpdateAI(uint32 elapsed);
-    virtual void UpdateAIInternal(uint32 elapsed, bool minimal = false) = 0;
-    bool IsActive();
+    
+    uint32 GetAIInternalUpdateDelay() const { return aiInternalUpdateDelay; }
 
 protected:
-	uint32 nextAICheckDelay;
+    virtual void UpdateAIInternal(uint32 elapsed, bool minimal = false);
+    bool CanUpdateAIInternal() const { return aiInternalUpdateDelay < 100U; }
+    void SetAIInternalUpdateDelay(const uint32 delay);
+    void ResetAIInternalUpdateDelay() { aiInternalUpdateDelay = 0U; }
+    void IncreaseAIInternalUpdateDelay(uint32 delay);
+    void YieldAIInternalThread(bool minimal = false);
+    
+protected:
+	uint32 aiInternalUpdateDelay;
 };

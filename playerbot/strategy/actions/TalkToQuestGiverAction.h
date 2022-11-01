@@ -10,7 +10,7 @@ namespace ai
         TalkToQuestGiverAction(PlayerbotAI* ai) : QuestAction(ai, "talk to quest giver") {}
 
     protected:
-        virtual void ProcessQuest(Quest const* quest, WorldObject* questGiver);
+        virtual bool ProcessQuest(Quest const* quest, WorldObject* questGiver);
 
     private:        
         void TurnInQuest(Quest const* quest, WorldObject* questGiver, ostringstream& out);

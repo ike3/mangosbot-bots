@@ -1,19 +1,15 @@
 #include "botpch.h"
 #include "../../playerbot.h"
 #include "NonCombatStrategy.h"
-#include "../value.h"
+#include "../Value.h"
 
 using namespace ai;
 
 void NonCombatStrategy::InitTriggers(std::list<TriggerNode*>& triggers)
 {
     triggers.push_back(new TriggerNode(
-        "timer",
+        "very often",
         NextAction::array(0, new NextAction("check mount state", 1.0f), new NextAction("check values", 1.0f), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "often",
-        NextAction::array(0, new NextAction("leader", 2.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
         "near dark portal",
@@ -31,9 +27,13 @@ void NonCombatStrategy::InitTriggers(std::list<TriggerNode*>& triggers)
         "need world buff",
         NextAction::array(0, new NextAction("world buff", 1.0f), NULL)));
 
-    triggers.push_back(new TriggerNode(
+    /*triggers.push_back(new TriggerNode(
         "vehicle near",
-        NextAction::array(0, new NextAction("enter vehicle", 10.0f), NULL)));
+        NextAction::array(0, new NextAction("enter vehicle", 10.0f), NULL)));*/
+
+    /*triggers.push_back(new TriggerNode(
+        "very often",
+        NextAction::array(0, new NextAction("use lightwell", 80.0f), NULL)));*/
 }
 
 void CollisionStrategy::InitTriggers(std::list<TriggerNode*> &triggers)

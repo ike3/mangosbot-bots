@@ -2,20 +2,37 @@
 #include "../triggers/GenericTriggers.h"
 
 namespace ai {
-    class MarkOfTheWildOnPartyTrigger : public BuffOnPartyTrigger
-    {
-    public:
-        MarkOfTheWildOnPartyTrigger(PlayerbotAI* ai) : BuffOnPartyTrigger(ai, "mark of the wild", 2) {}
 
-        virtual bool IsActive() { return BuffOnPartyTrigger::IsActive() && !ai->HasAura("gift of the wild", GetTarget()); }
+    class MarkOfTheWildOnPartyTrigger : public BuffOnPartyTrigger {
+    public:
+        MarkOfTheWildOnPartyTrigger(PlayerbotAI* ai) : BuffOnPartyTrigger(ai, "mark of the wild", 4) {}
+
+        virtual bool IsActive() { return BuffOnPartyTrigger::IsActive() && !ai->HasAura("mark of the wild", GetTarget()) && !ai->HasAura("gift of the wild", GetTarget()); }
     };
 
-    class MarkOfTheWildTrigger : public BuffTrigger
-    {
+    class MarkOfTheWildTrigger : public BuffTrigger {
     public:
-        MarkOfTheWildTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "mark of the wild", 2) {}
+        MarkOfTheWildTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "mark of the wild", 4) {}
 
-        virtual bool IsActive() { return BuffTrigger::IsActive() && !ai->HasAura("gift of the wild", GetTarget()); }
+        virtual bool IsActive() { return BuffTrigger::IsActive() && !ai->HasAura("mark of the wild", GetTarget()) && !ai->HasAura("gift of the wild", GetTarget()); }
+    };
+
+    class GiftOfTheWildTrigger : public BuffOnPartyTrigger {
+    public:
+        GiftOfTheWildTrigger(PlayerbotAI* ai) : BuffOnPartyTrigger(ai, "gift of the wild", 3) {}
+
+        virtual bool IsActive() {
+            return bot->GetGroup() && BuffOnPartyTrigger::IsActive() &&
+                !ai->HasAura("gift of the wild", GetTarget()) &&
+#ifdef MANGOS
+                (ai->GetBot()->IsInSameGroupWith((Player*)GetTarget()) || ai->GetBot()->IsInSameRaidWith((Player*)GetTarget())) &&
+#endif
+#ifdef CMANGOS
+                bot->IsInGroup((Player*)GetTarget()) &&
+#endif
+                (ai->GetBuffedCount((Player*)GetTarget(), "gift of the wild") + ai->GetBuffedCount((Player*)GetTarget(), "mark of the wild")) < 4;
+            ;
+        }
     };
 
     class ThornsOnPartyTrigger : public BuffOnPartyTrigger
@@ -23,7 +40,11 @@ namespace ai {
     public:
         ThornsOnPartyTrigger(PlayerbotAI* ai) : BuffOnPartyTrigger(ai, "thorns", 2) {}
 
-        virtual bool IsActive() { return BuffOnPartyTrigger::IsActive() && !ai->HasAura("thorns", GetTarget()); }
+        virtual bool IsActive()
+        {
+            Unit* target = GetTarget();
+            return BuffOnPartyTrigger::IsActive() && (!target->IsPlayer() || !ai->IsRanged((Player*)target));
+        }
     };
 
     class ThornsTrigger : public BuffTrigger
@@ -104,6 +125,12 @@ namespace ai {
         virtual bool IsActive() { return DebuffTrigger::IsActive() && AI_VALUE(uint8, "attacker count") < 3 && !GetTarget()->HasMana(); }
     };
 
+    class EntanglingRootsSnareTrigger : public SnareTargetTrigger
+    {
+    public:
+        EntanglingRootsSnareTrigger(PlayerbotAI* ai) : SnareTargetTrigger(ai, "entangling roots", 5) {}
+    };
+
     class HibernateTrigger : public HasCcTargetTrigger
     {
     public:
@@ -121,6 +148,9 @@ namespace ai {
     public:
         PartyMemberCurePoisonTrigger(PlayerbotAI* ai) : PartyMemberNeedCureTrigger(ai, "cure poison", DISPEL_POISON) {}
     };
+
+    CURE_TRIGGER(RemoveCurseTrigger, "remove curse", DISPEL_CURSE);
+    CURE_PARTY_TRIGGER(RemoveCurseOnPartyTrigger, "remove curse", DISPEL_CURSE);
 
     class BearFormTrigger : public BuffTrigger
     {

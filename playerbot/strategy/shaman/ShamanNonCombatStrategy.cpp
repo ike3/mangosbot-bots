@@ -56,6 +56,16 @@ void ShamanNonCombatStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
     triggers.push_back(new TriggerNode(
         "party member cure disease",
         NextAction::array(0, new NextAction("cure disease on party", 30.0f), NULL)));
+
+#ifdef MANGOSBOT_TWO            
+    triggers.push_back(new TriggerNode(
+        "totemic recall",
+        NextAction::array(0, new NextAction("totemic recall", 15.0f), NULL)));        
+#endif
+
+    triggers.push_back(new TriggerNode(
+        "player has flag",
+        NextAction::array(0, new NextAction("ghost wolf", ACTION_EMERGENCY + 2), NULL)));
 }
 
 void ShamanNonCombatStrategy::InitMultipliers(std::list<Multiplier*> &multipliers)

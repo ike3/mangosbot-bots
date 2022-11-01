@@ -5,7 +5,7 @@
 
 using namespace ai;
 
-bool TellLosAction::Execute(Event event)
+bool TellLosAction::Execute(Event& event)
 {
     string param = event.getParam();
 

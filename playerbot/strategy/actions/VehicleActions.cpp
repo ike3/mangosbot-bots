@@ -8,7 +8,7 @@
 
 using namespace ai;
 
-bool EnterVehicleAction::Execute(Event event)
+bool EnterVehicleAction::Execute(Event& event)
 {
 #ifdef MANGOSBOT_TWO
     // do not switch vehicles yet
@@ -21,30 +21,46 @@ bool EnterVehicleAction::Execute(Event event)
     {
         Unit* vehicle = ai->GetUnit(*i);
         if (!vehicle)
-            return false;
+            continue;
 
         if (!vehicle->IsFriend(bot))
-            return false;
+        {
+            ostringstream out; out << "Vehicle is not friendy!";
+            bot->Say(out.str(), LANG_UNIVERSAL);
+            continue;
+        }
 
         if (!vehicle->GetVehicleInfo()->CanBoard(bot))
-            return false;
+        {
+            ostringstream out; out << "Can't enter Vehicle!";
+            bot->Say(out.str(), LANG_UNIVERSAL);
+            continue;
+        }
 
-        if (fabs(bot->GetPositionZ() - vehicle->GetPositionZ()) < 20.0f)
+        //if (fabs(bot->GetPositionZ() - vehicle->GetPositionZ()) < 20.0f)
+        //    continue;
 
         //if (sServerFacade.GetDistance2d(bot, vehicle) > 100.0f)
         //    continue;
 
         if (sServerFacade.GetDistance2d(bot, vehicle) > 10.0f)
-            return MoveTo(vehicle, INTERACTION_DISTANCE);
+            return MoveTo(vehicle, INTERACTION_DISTANCE - 1.0f);
 
         uint8 seat = 0;
         vehicle->GetVehicleInfo()->Board(bot, seat);
+
+        ostringstream out; out << "Entering Vehicle!";
+        bot->Say(out.str(), LANG_UNIVERSAL);
+        continue;
+
+        //bot->CastSpell(vehicle, SPELL_RIDE_VEHICLE_HARDCODED, TRIGGERED_OLD_TRIGGERED);
 
         TransportInfo* transportCheck = bot->GetTransportInfo();
         if (!transportCheck || !transportCheck->IsOnVehicle())
             return false;
         else
         {
+            seat = transportCheck->GetTransportSeat();
             // dismount because bots can enter vehicle on mount
             WorldPacket emptyPacket;
             bot->GetSession()->HandleCancelMountAuraOpcode(emptyPacket);
@@ -63,7 +79,7 @@ bool EnterVehicleAction::Execute(Event event)
 	return false;
 }
 
-bool LeaveVehicleAction::Execute(Event event)
+bool LeaveVehicleAction::Execute(Event& event)
 {
 #ifdef MANGOSBOT_TWO
     TransportInfo* transportInfo = bot->GetTransportInfo();
@@ -76,13 +92,13 @@ bool LeaveVehicleAction::Execute(Event event)
     if (!seat || !seat->HasFlag(SEAT_FLAG_CAN_EXIT))
         return false;
 
-    WorldPacket p;
-    bot->GetSession()->HandleRequestVehicleExit(p);
+    //WorldPacket p;
+    //bot->GetSession()->HandleRequestVehicleExit(p);
 
-    veh->UnBoard(bot, false);
+    if (veh)
+        veh->UnBoard(bot, false);
 
     bot->GetCamera().ResetView();
-
     bot->SetCharm(nullptr);
 
     return true;

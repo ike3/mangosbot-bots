@@ -10,11 +10,7 @@ void DeadStrategy::InitTriggers(std::list<TriggerNode*>& triggers)
     PassTroughStrategy::InitTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
-        "often",
-        NextAction::array(0, new NextAction("auto release", relevance), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "bg active",
+        "very often",
         NextAction::array(0, new NextAction("auto release", relevance), NULL)));
 
     triggers.push_back(new TriggerNode(

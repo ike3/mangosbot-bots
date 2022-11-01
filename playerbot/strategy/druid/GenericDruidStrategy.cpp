@@ -54,14 +54,14 @@ private:
     {
         return new ActionNode ("abolish poison",
             /*P*/ NULL,
-            /*A*/ NULL,
+            /*A*/ NextAction::array(0, new NextAction("cure poison"), NULL),
             /*C*/ NULL);
     }
     static ActionNode* abolish_poison_on_party(PlayerbotAI* ai)
     {
         return new ActionNode ("abolish poison on party",
             /*P*/ NULL,
-            /*A*/ NULL,
+            /*A*/ NextAction::array(0, new NextAction("cure poison on party"), NULL),
             /*C*/ NULL);
     }
     static ActionNode* rebirth(PlayerbotAI* ai)
@@ -104,15 +104,13 @@ void GenericDruidStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         "party member low health",
         NextAction::array(0, new NextAction("regrowth on party", ACTION_MEDIUM_HEAL + 1), NULL)));
 
-
     triggers.push_back(new TriggerNode(
         "critical health",
-        NextAction::array(0, new NextAction("regrowth", ACTION_CRITICAL_HEAL + 2), new NextAction("healing touch", ACTION_CRITICAL_HEAL + 2), NULL)));
+        NextAction::array(0, new NextAction("regrowth", ACTION_CRITICAL_HEAL + 2), new NextAction("healing touch", ACTION_CRITICAL_HEAL + 1), NULL)));
 
     triggers.push_back(new TriggerNode(
         "party member critical health",
-        NextAction::array(0,  new NextAction("regrowth on party", ACTION_CRITICAL_HEAL + 1), new NextAction("healing touch on party", ACTION_CRITICAL_HEAL + 1), NULL)));
-
+        NextAction::array(0,  new NextAction("regrowth on party", ACTION_CRITICAL_HEAL + 2), new NextAction("healing touch on party", ACTION_CRITICAL_HEAL + 1), NULL)));
 
 	triggers.push_back(new TriggerNode(
 		"party member dead",
@@ -120,7 +118,11 @@ void GenericDruidStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "low mana",
-        NextAction::array(0, new NextAction("innervate", ACTION_EMERGENCY + 5), NULL)));
+        NextAction::array(0, new NextAction("innervate", ACTION_HIGH + 5), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "player has flag",
+        NextAction::array(0, new NextAction("travel form", ACTION_EMERGENCY + 2), NULL)));
 }
 
 void DruidCureStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
@@ -132,6 +134,14 @@ void DruidCureStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
     triggers.push_back(new TriggerNode(
         "party member cure poison",
         NextAction::array(0, new NextAction("abolish poison on party", ACTION_DISPEL + 1), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "remove curse",
+        NextAction::array(0, new NextAction("remove curse", ACTION_MEDIUM_HEAL + 4), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "party member remove curse",
+        NextAction::array(0, new NextAction("remove curse on party", ACTION_MEDIUM_HEAL + 3), NULL)));
 }
 
 void DruidBoostStrategy::InitTriggers(std::list<TriggerNode*> &triggers)

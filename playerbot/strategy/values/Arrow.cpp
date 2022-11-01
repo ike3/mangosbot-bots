@@ -18,6 +18,9 @@ WorldLocation ArrowFormation::GetLocationInternal()
     float offset = 0;
 
     Player* master = ai->GetMaster();
+    if (!master)
+        return Formation::NullLocation;
+
     float orientation = master->GetOrientation();
     MultiLineUnitPlacer placer(orientation);
 

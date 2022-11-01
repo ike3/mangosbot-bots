@@ -2,6 +2,7 @@
 
 #include "PvpValues.h"
 #include "QuestValues.h"
+#include "TrainerValues.h"
 
 namespace ai
 {
@@ -15,11 +16,14 @@ namespace ai
             creators["drop map"] = &SharedValueContext::drop_map;
             creators["item drop list"] = &SharedValueContext::item_drop_list;
             creators["entry loot list"] = &SharedValueContext::entry_loot_list;
+            creators["loot chance"] = &SharedValueContext::loot_chance;
 
             creators["entry quest relation"] = &SharedValueContext::entry_quest_relation;
 
             creators["quest guidp map"] = &SharedValueContext::quest_guidp_map;
             creators["quest givers"] = &SharedValueContext::quest_givers;
+
+            creators["trainable spell map"] = &SharedValueContext::trainable_spell_map;
         }
 
 
@@ -29,11 +33,14 @@ namespace ai
         static UntypedValue* drop_map(PlayerbotAI* ai) { return new DropMapValue(ai); }
         static UntypedValue* item_drop_list(PlayerbotAI* ai) { return new ItemDropListValue(ai); }
         static UntypedValue* entry_loot_list(PlayerbotAI* ai) { return new EntryLootListValue(ai); }
+        static UntypedValue* loot_chance(PlayerbotAI* ai) { return new LootChanceValue(ai); }
 
         static UntypedValue* entry_quest_relation(PlayerbotAI* ai) { return new EntryQuestRelationMapValue(ai); }        
 
         static UntypedValue* quest_guidp_map(PlayerbotAI* ai) { return new QuestGuidpMapValue(ai); }
         static UntypedValue* quest_givers(PlayerbotAI* ai) { return new QuestGiversValue(ai); }
+
+        static UntypedValue* trainable_spell_map(PlayerbotAI* ai) { return new TrainableSpellMapValue(ai); }
 
     //Global acess functions
     public:

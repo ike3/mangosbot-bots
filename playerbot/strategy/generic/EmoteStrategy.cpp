@@ -9,15 +9,15 @@ using namespace ai;
 void EmoteStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
-        "seldom",
+        "random",
         NextAction::array(0, new NextAction("emote", 1.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "seldom",
+        "often",
         NextAction::array(0, new NextAction("suggest what to do", 1.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "seldom",
+        "often",
         NextAction::array(0, new NextAction("suggest trade", 1.0f), NULL)));
 
     if (sPlayerbotAIConfig.enableGreet)
@@ -38,4 +38,8 @@ void EmoteStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
     triggers.push_back(new TriggerNode(
         "receive emote",
         NextAction::array(0, new NextAction("emote", 10.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "random",
+        NextAction::array(0, new NextAction("rpg mount anim", 1.0f), NULL)));
 }

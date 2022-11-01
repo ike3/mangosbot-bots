@@ -83,7 +83,7 @@ void BuffAction::TellHeader(uint32 subClass)
 }
 
 
-bool BuffAction::Execute(Event event)
+bool BuffAction::Execute(Event& event)
 {
     string text = event.getParam();
 

@@ -6,7 +6,7 @@
 
 using namespace ai;
 
-bool SetHomeAction::Execute(Event event)
+bool SetHomeAction::Execute(Event& event)
 {
     Player* master = GetMaster();
 
@@ -28,14 +28,16 @@ bool SetHomeAction::Execute(Event event)
             {
                 Creature* creature = ai->GetCreature(selection);                   
                 bot->GetSession()->SendBindPoint(creature);
-                ai->TellMaster("This inn is my new home");
+                ai->TellMaster("This inn is my new home", PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+                RESET_AI_VALUE(WorldPosition, "home bind");
                 return true;
             }
             else
             {
                 Creature* creature = ai->GetCreature(selection);
                 bot->GetSession()->SendBindPoint(creature);
-                ai->TellMaster("This inn is my new home");
+                ai->TellMaster("This inn is my new home", PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+                RESET_AI_VALUE(WorldPosition, "home bind");
                 return true;
             }
         }
@@ -49,7 +51,8 @@ bool SetHomeAction::Execute(Event event)
             continue;
 
         bot->GetSession()->SendBindPoint(unit);
-        ai->TellMaster("This inn is my new home");
+        ai->TellMaster("This inn is my new home", PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+        RESET_AI_VALUE(WorldPosition, "home bind");
         return true;
     }
 

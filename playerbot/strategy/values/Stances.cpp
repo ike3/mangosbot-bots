@@ -35,7 +35,7 @@ WorldLocation Stance::GetNearLocation(float angle, float distance)
          y = target->GetPositionY()+ sin(angle) * distance,
          z = target->GetPositionZ();
 
-    if (bot->IsWithinLOS(x, y, z))
+    if (bot->IsWithinLOS(x, y, z + bot->GetCollisionHeight(), true))
         return WorldLocation(bot->GetMapId(), x, y, z);
 
     return Formation::NullLocation;
@@ -72,7 +72,7 @@ namespace ai
                 return target->GetOrientation();
 #endif
 
-            if (ai->HasStrategy("behind", BOT_STATE_COMBAT))
+            if (ai->HasStrategy("behind", BotState::BOT_STATE_COMBAT))
             {
                 Unit* target = GetTarget();
                 Group* group = bot->GetGroup();
@@ -211,7 +211,7 @@ bool StanceValue::Load(string name)
 }
 
 
-bool SetStanceAction::Execute(Event event)
+bool SetStanceAction::Execute(Event& event)
 {
     string stance = event.getParam();
 

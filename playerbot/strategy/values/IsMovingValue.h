@@ -16,7 +16,7 @@ namespace ai
             if (!target)
                 return false;
 
-            return sServerFacade.isMoving(target);
+            return !target->IsStopped();
         }
     };
 
@@ -32,7 +32,7 @@ namespace ai
             if (!target)
                 return false;
 
-            return sServerFacade.IsUnderwater(target) || target->IsInWater();
+            return sServerFacade.IsUnderwater(target) || target->IsInSwimmableWater();
         }
     };
 }

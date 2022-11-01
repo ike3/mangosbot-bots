@@ -31,6 +31,29 @@ public:
 
 class PerformanceMonitorOperation;
 
+//https://gist.github.com/bradley219/5373998
+
+class botPIDImpl;
+class botPID
+{
+public:
+    // Kp -  proportional gain
+    // Ki -  Integral gain
+    // Kd -  derivative gain
+    // dt -  loop interval time
+    // max - maximum value of manipulated variable
+    // min - minimum value of manipulated variable
+    botPID(double dt, double max, double min, double Kp, double Ki, double Kd);
+    void adjust(double Kp, double Ki, double Kd);
+    void reset();
+   
+    double calculate(double setpoint, double pv);
+    ~botPID();
+
+private:
+    botPIDImpl* pimpl;
+};
+
 class RandomPlayerbotMgr : public PlayerbotHolder
 {
     public:
@@ -45,24 +68,26 @@ class RandomPlayerbotMgr : public PlayerbotHolder
         void LogPlayerLocation();
 
         virtual void UpdateAIInternal(uint32 elapsed, bool minimal = false);
-
 	public:
         uint32 activeBots = 0;
+
         static bool HandlePlayerbotConsoleCommand(ChatHandler* handler, char const* args);
         bool IsRandomBot(Player* bot);
         bool IsRandomBot(uint32 bot);
+        void InstaRandomize(Player* bot);
         void Randomize(Player* bot);
         void RandomizeFirst(Player* bot);
-        void IncreaseLevel(Player* bot);
+        void UpdateGearSpells(Player* bot);
         void ScheduleTeleport(uint32 bot, uint32 time = 0);
         void ScheduleChangeStrategy(uint32 bot, uint32 time = 0);
-        void HandleCommand(uint32 type, const string& text, Player& fromPlayer);
+        void HandleCommand(uint32 type, const string& text, Player& fromPlayer, string channelName = "", Team team = TEAM_BOTH_ALLOWED);
         string HandleRemoteCommand(string request);
         void OnPlayerLogout(Player* player);
         void OnPlayerLogin(Player* player);
         void OnPlayerLoginError(uint32 bot);
         Player* GetRandomPlayer();
-        vector<Player*> GetPlayers() { return players; };
+        PlayerBotMap GetPlayers() { return players; };
+        Player* GetPlayer(uint32 playerGuid);
         PlayerBotMap GetAllBots() { return playerBots; };
         void PrintStats();
         double GetBuyMultiplier(Player* bot);
@@ -71,12 +96,15 @@ class RandomPlayerbotMgr : public PlayerbotHolder
         void SetTradeDiscount(Player* bot, Player* master, uint32 value);
         uint32 GetTradeDiscount(Player* bot, Player* master);
         void Refresh(Player* bot);
-        void RandomTeleportForLevel(Player* bot);
-        void RandomTeleportForRpg(Player* bot);
+        void RandomTeleportForLevel(Player* bot, bool activeOnly);
+        void RandomTeleportForLevel(Player* bot) { return RandomTeleportForLevel(bot, true); }
+        void RandomTeleportForRpg(Player* bot, bool activeOnly);
+        void RandomTeleportForRpg(Player* bot) { return RandomTeleportForRpg(bot, true); }
         int GetMaxAllowedBotCount();
         bool ProcessBot(Player* player);
         void Revive(Player* player);
         void ChangeStrategy(Player* player);
+        void ChangeStrategyOnce(Player* player);
         uint32 GetValue(Player* bot, string type);
         uint32 GetValue(uint32 bot, string type);
         string GetData(uint32 bot, string type);
@@ -99,13 +127,26 @@ class RandomPlayerbotMgr : public PlayerbotHolder
         void CheckBgQueue();
         void CheckLfgQueue();
         void CheckPlayers();
+        static Item* CreateTempItem(uint32 item, uint32 count, Player const* player, uint32 randomPropertyId = 0);
+
+        bool AddRandomBot(uint32 bot);
 
         map<Team, map<BattleGroundTypeId, list<uint32> > > getBattleMastersCache() { return BattleMastersCache; }
 
+        float getActivityMod() { return activityMod; }
+        float getActivityPercentage() { return activityMod * 100.0f; }
+        void setActivityPercentage(float percentage) { activityMod = percentage / 100.0f; }
+
+        bool arenaTeamsDeleted, guildsDeleted = false;
+
+        std::mutex m_ahActionMutex;
 	protected:
 	    virtual void OnBotLoginInternal(Player * const bot);
 
     private:
+        //pid values are set in constructor
+        botPID pid = botPID(1, 50, -50, 0, 0, 0);
+        float activityMod = 0.25;
         uint32 GetEventValue(uint32 bot, string event);
         string GetEventData(uint32 bot, string event);
         uint32 SetEventValue(uint32 bot, string event, uint32 value, uint32 validIn, string data = "");
@@ -118,13 +159,13 @@ class RandomPlayerbotMgr : public PlayerbotHolder
         bool ProcessBot(uint32 bot);
         void ScheduleRandomize(uint32 bot, uint32 time);
         void RandomTeleport(Player* bot);
-        void RandomTeleport(Player* bot, vector<WorldLocation> &locs, bool hearth = false);
+        void RandomTeleport(Player* bot, vector<WorldLocation> &locs, bool hearth = false, bool activeOnly = false);
         uint32 GetZoneLevel(uint16 mapId, float teleX, float teleY, float teleZ);
         void PrepareTeleportCache();
         typedef void (RandomPlayerbotMgr::*ConsoleCommandHandler) (Player*);
 
     private:
-        vector<Player*> players;
+        PlayerBotMap players;
         int processTicks;
         map<uint8, vector<WorldLocation> > locsPerLevelCache;
         map<uint32, vector<WorldLocation> > rpgLocsCache;
@@ -133,6 +174,7 @@ class RandomPlayerbotMgr : public PlayerbotHolder
         map<uint32, map<string, CachedEvent> > eventCache;
         BarGoLink* loginProgressBar;
         list<uint32> currentBots;
+        list<uint32> arenaTeamMembers;
         uint32 bgBotsCount;
         uint32 playersLevel = sPlayerbotAIConfig.randombotStartingLevel;
         PerformanceMonitorOperation* totalPmo;

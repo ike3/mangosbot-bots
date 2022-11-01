@@ -16,7 +16,7 @@ inline int strcmpi(const char* s1, const char* s2)
 }
 #endif
 
-bool WhoAction::Execute(Event event)
+bool WhoAction::Execute(Event& event)
 {
     Player* owner = event.getOwner();
     if (!owner)
@@ -38,7 +38,7 @@ bool WhoAction::Execute(Event event)
 
     if (!out.str().empty())
     {
-        if (AreaTableEntry const* areaEntry = GetAreaEntryByAreaID(bot->GetAreaId()))
+        if (AreaTableEntry const* areaEntry = GetAreaEntryByAreaID(sServerFacade.GetAreaId(bot)))
         {
             out << ", (|cffb04040" << areaEntry->area_name[0] << "|r)";
         }

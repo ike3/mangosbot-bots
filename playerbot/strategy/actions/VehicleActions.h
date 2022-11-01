@@ -11,7 +11,7 @@ namespace ai
     {
     public:
         EnterVehicleAction(PlayerbotAI* ai, string name = "enter vehicle") : MovementAction(ai, name) {}
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
         //virtual bool isUseful();
     };
 
@@ -19,7 +19,7 @@ namespace ai
     {
     public:
         LeaveVehicleAction(PlayerbotAI* ai, string name = "leave vehicle") : MovementAction(ai, name) {}
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
         //virtual bool isUseful();
     };
 }

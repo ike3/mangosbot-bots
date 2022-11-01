@@ -17,8 +17,6 @@ namespace ai
     BUFF_TRIGGER_A(ShadowformTrigger, "shadowform");
     BUFF_TRIGGER(PowerInfusionTrigger, "power infusion");
     BUFF_TRIGGER(InnerFocusTrigger, "inner focus");
-    BUFF_TRIGGER(ShadowProtectionTrigger, "shadow protection");
-    BUFF_PARTY_TRIGGER(ShadowProtectionOnPartyTrigger, "shadow protection");
     CC_TRIGGER(ShackleUndeadTrigger, "shackle undead");
     INTERRUPT_TRIGGER(SilenceTrigger, "silence");
     INTERRUPT_HEALER_TRIGGER(SilenceEnemyHealerTrigger, "silence");
@@ -59,14 +57,28 @@ namespace ai
     public:
         DivineSpiritTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "divine spirit", 4) {}
 
-        virtual bool IsActive() { return BuffTrigger::IsActive() && !ai->HasAura("divine spirit", GetTarget()) && !ai->HasAura("prayer of spirit", GetTarget()); }
+        virtual bool IsActive() { return BuffTrigger::IsActive() && !ai->HasAura("divine spirit", GetTarget()) && !ai->HasAura("prayer of shadow protection", GetTarget()); }
+    };
+
+    class ShadowProtectionOnPartyTrigger : public BuffOnPartyTrigger {
+    public:
+        ShadowProtectionOnPartyTrigger(PlayerbotAI* ai) : BuffOnPartyTrigger(ai, "shadow protection", 4) {}
+
+        virtual bool IsActive() { return BuffOnPartyTrigger::IsActive() && !ai->HasAura("shadow protection", GetTarget()) && !ai->HasAura("prayer of shadow protection", GetTarget()); }
+    };
+
+    class ShadowProtectionTrigger : public BuffTrigger {
+    public:
+        ShadowProtectionTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "shadow protection", 4) {}
+
+        virtual bool IsActive() { return BuffTrigger::IsActive() && !ai->HasAura("shadow protection", GetTarget()) && !ai->HasAura("prayer of spirit", GetTarget()); }
     };
 
     class PrayerOfFortitudeTrigger : public BuffOnPartyTrigger {
     public:
         PrayerOfFortitudeTrigger(PlayerbotAI* ai) : BuffOnPartyTrigger(ai, "prayer of fortitude", 3) {}
 
-        virtual bool IsActive() { return BuffOnPartyTrigger::IsActive() &&
+        virtual bool IsActive() { return bot->GetGroup() && BuffOnPartyTrigger::IsActive() &&
             !ai->HasAura("prayer of fortitude", GetTarget()) &&
 #ifdef MANGOS
             (ai->GetBot()->IsInSameGroupWith((Player*)GetTarget()) || ai->GetBot()->IsInSameRaidWith((Player*)GetTarget())) &&
@@ -74,8 +86,7 @@ namespace ai
 #ifdef CMANGOS
             bot->IsInGroup((Player*)GetTarget()) &&
 #endif
-            ai->GetBuffedCount((Player*)GetTarget(), "prayer of fortitude") < 4 &&
-            !ai->GetBuffedCount((Player*)GetTarget(), "power word: fortitude")
+            (ai->GetBuffedCount((Player*)GetTarget(), "prayer of fortitude") + ai->GetBuffedCount((Player*)GetTarget(), "power word: fortitude")) < 4;
             ; }
     };
 
@@ -83,7 +94,7 @@ namespace ai
     public:
         PrayerOfSpiritTrigger(PlayerbotAI* ai) : BuffOnPartyTrigger(ai, "prayer of spirit", 3) {}
 
-        virtual bool IsActive() { return BuffOnPartyTrigger::IsActive() &&
+        virtual bool IsActive() { return bot->GetGroup() && BuffOnPartyTrigger::IsActive() &&
             !ai->HasAura("prayer of spirit", GetTarget()) &&
 #ifdef MANGOS
             (ai->GetBot()->IsInSameGroupWith((Player*)GetTarget()) || ai->GetBot()->IsInSameRaidWith((Player*)GetTarget())) &&
@@ -92,9 +103,26 @@ namespace ai
             bot->IsInGroup((Player*)GetTarget()) &&
 #endif
             //ai->GetManaPercent() > 50 &&
-            ai->GetBuffedCount((Player*)GetTarget(), "prayer of spirit") < 4 &&
-            !ai->GetBuffedCount((Player*)GetTarget(), "divine spirit")
+            (ai->GetBuffedCount((Player*)GetTarget(), "prayer of spirit") + ai->GetBuffedCount((Player*)GetTarget(), "divine spirit")) < 4;
             ; }
+    };
+
+    class PrayerOfShadowProtectionTrigger : public BuffOnPartyTrigger {
+    public:
+        PrayerOfShadowProtectionTrigger(PlayerbotAI* ai) : BuffOnPartyTrigger(ai, "prayer of shadow protection", 3) {}
+
+        virtual bool IsActive() {
+            return bot->GetGroup() && BuffOnPartyTrigger::IsActive() &&
+                !ai->HasAura("prayer of shadow protection", GetTarget()) &&
+#ifdef MANGOS
+                (ai->GetBot()->IsInSameGroupWith((Player*)GetTarget()) || ai->GetBot()->IsInSameRaidWith((Player*)GetTarget())) &&
+#endif
+#ifdef CMANGOS
+                bot->IsInGroup((Player*)GetTarget()) &&
+#endif
+                (ai->GetBuffedCount((Player*)GetTarget(), "prayer of shadow protection") + ai->GetBuffedCount((Player*)GetTarget(), "shadow protection")) < 4;
+            ;
+        }
     };
 
     class BindingHealTrigger : public PartyMemberLowHealthTrigger {
