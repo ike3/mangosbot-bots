@@ -2018,9 +2018,6 @@ void TravelMgr::LoadQuestTravelTable()
 
     }
 
-    sLog.outString("Loading area levels.");
-    loadAreaLevels();
-
     ObjectMgr::QuestMap const& questMap = sObjectMgr.GetQuestTemplates();
     vector<uint32> questIds;
 

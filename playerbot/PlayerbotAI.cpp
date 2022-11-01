@@ -326,7 +326,7 @@ void PlayerbotAI::UpdateAI(uint32 elapsed, bool minimal)
         if (!inCombat)
             min = true;
 
-        if (HasRealPlayerMaster())
+        if (bot && HasRealPlayerMaster())
             min = false;
 
         YieldAIInternalThread(min);
