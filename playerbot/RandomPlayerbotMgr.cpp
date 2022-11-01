@@ -1965,7 +1965,7 @@ void RandomPlayerbotMgr::InstaRandomize(Player* bot)
 {
     sRandomPlayerbotMgr.Randomize(bot);
 
-    if(bot->GetLevel() > CONFIG_UINT32_START_PLAYER_LEVEL)
+    if(bot->GetLevel() > sWorld.getConfig(CONFIG_UINT32_START_PLAYER_LEVEL))
         sRandomPlayerbotMgr.RandomTeleportForLevel(bot, false);
 }
 
