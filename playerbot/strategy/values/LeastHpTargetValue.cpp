@@ -18,6 +18,10 @@ public:
 public:
     virtual void CheckAttacker(Unit* attacker, ThreatManager* threatManager)
     {
+        // do not use this logic for pvp
+        if (attacker->IsPlayer())
+            return;
+
         Player* bot = ai->GetBot();
         if (IsCcTarget(attacker)) return;
 
