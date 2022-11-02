@@ -258,12 +258,17 @@ namespace ai
     class OutOfReactRangeTrigger : public FarFromMasterTrigger
     {
     public:
-        OutOfReactRangeTrigger(PlayerbotAI* ai) : FarFromMasterTrigger(ai, "out of react range", 50.0f, 5) {}
+        OutOfReactRangeTrigger(PlayerbotAI* ai,string name = "out of react range", float distance = 50.0f, int checkInterval = 5) : FarFromMasterTrigger(ai, name, distance,checkInterval) {}
     };
 
-    class NotNearMasterTrigger : public FarFromMasterTrigger
+    class NotNearMasterTrigger : public OutOfReactRangeTrigger
     {
     public:
-        NotNearMasterTrigger(PlayerbotAI* ai) : FarFromMasterTrigger(ai, "not near master", 5.0f, 2) {}
+        NotNearMasterTrigger(PlayerbotAI* ai) : OutOfReactRangeTrigger(ai, "not near master", 5.0f, 2) {}
+
+        virtual bool IsActive()
+        {
+            return FarFromMasterTrigger::IsActive() && !OutOfReactRangeTrigger::IsActive();
+        }
     };
 }
