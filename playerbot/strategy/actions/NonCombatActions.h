@@ -59,6 +59,9 @@ namespace ai
                 }
 
                 ai->CastSpell(24355, bot);
+                if (AI_VALUE2(uint8, "health", "self target") < sPlayerbotAIConfig.mediumHealth)
+                    bot->CastSpell(bot, 24005, TRIGGERED_OLD_TRIGGERED);
+
                 ai->SetNextCheckDelay(delay);
                 bot->RemoveSpellCooldown(*pSpellInfo);
 
@@ -128,6 +131,9 @@ namespace ai
                 }
 
                 ai->CastSpell(24005, bot);
+                if (AI_VALUE2(uint8, "mana", "self target") < 85)
+                    bot->CastSpell(bot, 24355, TRIGGERED_OLD_TRIGGERED);
+
                 ai->SetNextCheckDelay(delay);
                 bot->RemoveSpellCooldown(*pSpellInfo);
 
