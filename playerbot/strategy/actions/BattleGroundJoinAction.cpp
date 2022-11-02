@@ -993,20 +993,24 @@ bool BGStatusAction::Execute(Event& event)
     uint32 statusid;
     uint32 Time1;
     uint32 Time2;
-    uint8 unk1;
     string _bgType;
     uint8 isRated = 0;
 
 #ifndef MANGOSBOT_ZERO
-    uint64 arenatype;
+    //uint64 arenatype;
     uint64 arenaByte;
     uint8 arenaTeam;
+    //uint64 x1f90;
+    //uint64 bgTypeId;
+    //uint32 battleId;
+#else
+    uint8 unk1;
+#endif
+
+#ifdef MANGOSBOT_TWO
     uint64 unk0;
-    uint64 x1f90;
     uint8 minlevel;
     uint8 maxlevel;
-    uint64 bgTypeId;
-    uint32 battleId;
 #endif
 
     WorldPacket p(event.getPacket());
