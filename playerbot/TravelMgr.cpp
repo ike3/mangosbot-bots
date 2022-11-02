@@ -36,17 +36,17 @@
 using namespace ai;
 using namespace MaNGOS;
 
-WorldPosition::WorldPosition(GuidPosition guid)
+WorldPosition::WorldPosition(const GuidPosition& guidP)
 {
-    if (guid.mapid !=0 || guid.coord_x != 0 || guid.coord_y != 0 || guid.coord_z !=0) {
-        set(WorldPosition(guid.mapid, guid.coord_x, guid.coord_y, guid.coord_z, guid.orientation));
+    if (guidP.mapid !=0 || guidP.coord_x != 0 || guidP.coord_y != 0 || guidP.coord_z !=0) {
+        set(WorldPosition(guidP.mapid, guidP.coord_x, guidP.coord_y, guidP.coord_z, guidP.orientation));
         return;
     }
 
-    set(ObjectGuid(guid));
+    set(ObjectGuid(guidP));
  }
 
-void WorldPosition::set(ObjectGuid guid)
+void WorldPosition::set(const ObjectGuid& guid)
 {
     switch (guid.GetHigh())
     {
@@ -82,7 +82,7 @@ void WorldPosition::set(ObjectGuid guid)
 
 }
 
-WorldPosition::WorldPosition(vector<WorldPosition*> list, WorldPositionConst conType)
+WorldPosition::WorldPosition(const vector<WorldPosition*>& list, const WorldPositionConst conType)
 {
     uint32 size = list.size();
     if (size == 0)
@@ -100,7 +100,7 @@ WorldPosition::WorldPosition(vector<WorldPosition*> list, WorldPositionConst con
     }
 }
 
-WorldPosition::WorldPosition(vector<WorldPosition> list, WorldPositionConst conType)
+WorldPosition::WorldPosition(const vector<WorldPosition>& list, const WorldPositionConst conType)
 {    
     uint32 size = list.size();
     if (size == 0)
@@ -118,7 +118,7 @@ WorldPosition::WorldPosition(vector<WorldPosition> list, WorldPositionConst conT
     }    
 }
 
-float WorldPosition::distance(const WorldPosition& to)
+float WorldPosition::distance(const WorldPosition& to) const
 {
     if(mapid == to.getMapId())
         return relPoint(to).size();
@@ -127,7 +127,7 @@ float WorldPosition::distance(const WorldPosition& to)
     return sTravelMgr.mapTransDistance(*this, to);
 };
 
-float WorldPosition::fDist(const WorldPosition& to)
+float WorldPosition::fDist(const WorldPosition& to) const
 {
     if (mapid == to.getMapId())
         return sqrt(sqDistance2d(to));
@@ -138,7 +138,7 @@ float WorldPosition::fDist(const WorldPosition& to)
 
 //When moving from this along list return last point that falls within range.
 //Distance is move distance along path.
-WorldPosition WorldPosition::lastInRange(vector<WorldPosition> list, float minDist, float maxDist)
+WorldPosition WorldPosition::lastInRange(const vector<WorldPosition>& list, const float minDist, const float maxDist) const
 {
     WorldPosition rPoint;
 
@@ -179,7 +179,7 @@ WorldPosition WorldPosition::lastInRange(vector<WorldPosition> list, float minDi
 };
 
 //Todo: remove or adjust to above standard.
-WorldPosition WorldPosition::firstOutRange(vector<WorldPosition> list, float minDist, float maxDist)
+WorldPosition WorldPosition::firstOutRange(const vector<WorldPosition>& list, const float minDist, const float maxDist) const
 {
     WorldPosition rPoint;
 
@@ -198,7 +198,7 @@ WorldPosition WorldPosition::firstOutRange(vector<WorldPosition> list, float min
 }
 
 //Returns true if (on the x-y plane) the position is inside the three points.
-bool WorldPosition::isInside(WorldPosition* p1, WorldPosition* p2, WorldPosition* p3)
+bool WorldPosition::isInside(const WorldPosition* p1, const WorldPosition* p2, const WorldPosition* p3) const
 {
     if (getMapId() != p1->getMapId() != p2->getMapId() != p3->getMapId())
         return false;
@@ -216,7 +216,7 @@ bool WorldPosition::isInside(WorldPosition* p1, WorldPosition* p2, WorldPosition
     return !(has_neg && has_pos);
 }
 
-void WorldPosition::distancePartition(vector<float> distanceLimits, WorldPosition* to, vector<vector<WorldPosition*>>& partitions)
+void WorldPosition::distancePartition(const vector<float>& distanceLimits, WorldPosition* to, vector<vector<WorldPosition*>>& partitions) const
 {
     float dist = distance(*to);
 
@@ -225,7 +225,7 @@ void WorldPosition::distancePartition(vector<float> distanceLimits, WorldPositio
             partitions[l].push_back(to);
 }
 
-vector<vector<WorldPosition*>> WorldPosition::distancePartition(vector<float> distanceLimits, vector<WorldPosition*> points)
+vector<vector<WorldPosition*>> WorldPosition::distancePartition(const vector<float>& distanceLimits, vector<WorldPosition*> points) const
 {
     vector<vector<WorldPosition*>> partitions;
 
@@ -246,7 +246,7 @@ G3D::Vector3 WorldPosition::getVector3() const
     return G3D::Vector3(coord_x, coord_y, coord_z); 
 }
 
-string WorldPosition::print()
+string WorldPosition::print() const
 {
     ostringstream out;
     out << mapid << std::fixed << std::setprecision(2);
@@ -258,7 +258,7 @@ string WorldPosition::print()
     return out.str();
 }
 
-void WorldPosition::printWKT(vector<WorldPosition> points, ostringstream& out, uint32 dim, bool loop) const
+void WorldPosition::printWKT(const vector<WorldPosition>& points, ostringstream& out, const uint32 dim, const bool loop) const
 {
     switch (dim) {
     case 0:
@@ -283,13 +283,13 @@ void WorldPosition::printWKT(vector<WorldPosition> points, ostringstream& out, u
     out << (dim == 2 ? "))\"," : ")\",");
 }
 
-WorldPosition WorldPosition::getDisplayLocation() 
+WorldPosition WorldPosition::getDisplayLocation() const
 { 
     WorldPosition mapOffset = sTravelNodeMap.getMapOffset(getMapId());
     return offset(mapOffset);
 };
 
-AreaTableEntry const* WorldPosition::getArea()
+AreaTableEntry const* WorldPosition::getArea() const
 {
     uint16 areaFlag = getAreaFlag();
 
@@ -299,7 +299,7 @@ AreaTableEntry const* WorldPosition::getArea()
     return GetAreaEntryByAreaFlagAndMap(areaFlag, getMapId());
 }
 
-string WorldPosition::getAreaName(bool fullName, bool zoneName)
+string WorldPosition::getAreaName(const bool fullName, const bool zoneName) const
 {    
     if (!isOverworld())
     {
@@ -340,7 +340,7 @@ string WorldPosition::getAreaName(bool fullName, bool zoneName)
     return areaName;
 }
 
-int32 WorldPosition::getAreaLevel()
+int32 WorldPosition::getAreaLevel() const
 {
     if(getArea())
         return sTravelMgr.getAreaLevel(getArea()->ID);
@@ -368,7 +368,7 @@ std::set<Transport*> WorldPosition::getTransports(uint32 entry)
     return transports;
 }
 
-std::vector<GridPair> WorldPosition::getGridPairs(WorldPosition secondPos)
+std::vector<GridPair> WorldPosition::getGridPairs(const WorldPosition& secondPos) const
 {
     std::vector<GridPair> retVec;
 
@@ -394,7 +394,7 @@ std::vector<GridPair> WorldPosition::getGridPairs(WorldPosition secondPos)
     return retVec;
 }
 
-vector<WorldPosition> WorldPosition::fromGridPair(GridPair gridPair)
+vector<WorldPosition> WorldPosition::fromGridPair(const GridPair& gridPair) const
 {
     vector<WorldPosition> retVec;
     GridPair g;
@@ -414,7 +414,7 @@ vector<WorldPosition> WorldPosition::fromGridPair(GridPair gridPair)
     return retVec;
 }
 
-vector<WorldPosition> WorldPosition::fromCellPair(CellPair cellPair)
+vector<WorldPosition> WorldPosition::fromCellPair(const CellPair& cellPair) const
 {
     vector<WorldPosition> retVec;
     CellPair p;
@@ -433,14 +433,14 @@ vector<WorldPosition> WorldPosition::fromCellPair(CellPair cellPair)
     return retVec;
 }
 
-vector<WorldPosition> WorldPosition::gridFromCellPair(CellPair cellPair)
+vector<WorldPosition> WorldPosition::gridFromCellPair(const CellPair& cellPair) const
 {    
     Cell c(cellPair);
 
     return fromGridPair(GridPair(c.GridX(), c.GridY()));
 }
 
-vector<pair<int,int>> WorldPosition::getmGridPairs(WorldPosition secondPos)
+vector<pair<int,int>> WorldPosition::getmGridPairs(const WorldPosition& secondPos) const
 {
     std::vector<mGridPair> retVec;
 
@@ -466,7 +466,7 @@ vector<pair<int,int>> WorldPosition::getmGridPairs(WorldPosition secondPos)
     return retVec;
 }
 
-vector<WorldPosition> WorldPosition::frommGridPair(mGridPair gridPair)
+vector<WorldPosition> WorldPosition::frommGridPair(const mGridPair& gridPair) const
 {
     vector<WorldPosition> retVec;
     mGridPair g;
@@ -486,7 +486,7 @@ vector<WorldPosition> WorldPosition::frommGridPair(mGridPair gridPair)
     return retVec;
 }
 
-void WorldPosition::loadMapAndVMap(uint32 mapId, uint32 instanceId, int x, int y)
+void WorldPosition::loadMapAndVMap(uint32 mapId, uint32 instanceId, int x, int y) const
 {
     string fileName = "load_map_grid.csv";
 
@@ -582,7 +582,7 @@ void WorldPosition::loadMapAndVMap(uint32 mapId, uint32 instanceId, int x, int y
     }
 }
 
-void WorldPosition::loadMapAndVMaps(WorldPosition secondPos, uint32 instanceId)
+void WorldPosition::loadMapAndVMaps(const WorldPosition& secondPos, uint32 instanceId) const
 {
     for (auto& grid : getmGridPairs(secondPos))
     {
@@ -590,7 +590,7 @@ void WorldPosition::loadMapAndVMaps(WorldPosition secondPos, uint32 instanceId)
     }
 }
 
-vector<WorldPosition> WorldPosition::fromPointsArray(std::vector<G3D::Vector3> path)
+vector<WorldPosition> WorldPosition::fromPointsArray(const std::vector<G3D::Vector3>& path) const
 {
     vector<WorldPosition> retVec;
     for (auto p : path)
@@ -600,7 +600,7 @@ vector<WorldPosition> WorldPosition::fromPointsArray(std::vector<G3D::Vector3> p
 }
 
 //A single pathfinding attempt from one position to another. Returns pathfinding status and path.
-vector<WorldPosition> WorldPosition::getPathStepFrom(WorldPosition startPos, Unit* bot)
+vector<WorldPosition> WorldPosition::getPathStepFrom(const WorldPosition& startPos, const Unit* bot) const
 {
     std::hash<std::thread::id> hasher;
     uint32 instanceId;
@@ -674,7 +674,7 @@ vector<WorldPosition> WorldPosition::getPathStepFrom(WorldPosition startPos, Uni
 
 }
 
-bool WorldPosition::cropPathTo(vector<WorldPosition>& path, float maxDistance)
+bool WorldPosition::cropPathTo(vector<WorldPosition>& path, const float maxDistance) const
 {
     if (path.empty())
         return false;
@@ -692,7 +692,7 @@ bool WorldPosition::cropPathTo(vector<WorldPosition>& path, float maxDistance)
 }
 
 //A sequential series of pathfinding attempts. Returns the complete path and if the patfinder eventually found a way to the destination.
-vector<WorldPosition> WorldPosition::getPathFromPath(vector<WorldPosition> startPath, Unit* bot, uint8 maxAttempt)
+vector<WorldPosition> WorldPosition::getPathFromPath(const vector<WorldPosition>& startPath, const Unit* bot, uint8 maxAttempt) const
 {
     //We start at the end of the last path.
     WorldPosition currentPos = startPath.back();
@@ -727,16 +727,30 @@ vector<WorldPosition> WorldPosition::getPathFromPath(vector<WorldPosition> start
     return fullPath;
 }
 
-uint32 WorldPosition::getUnitsNear(list<ObjectGuid>& units, float radius)
+uint32 WorldPosition::getUnitsNear(const list<ObjectGuid>& units, const float radius) const
 {
-    units.remove_if([this, radius](ObjectGuid guid) {return this->sqDistance(WorldPosition(guid)) > radius * radius; });
+    uint32 count = 0;
+    for (auto guid : units)
+        if (sqDistance(WorldPosition(guid)) <= radius * radius)
+            count++;
 
-    return units.size();
+    return count;
 };
 
-uint32 WorldPosition::getUnitsAggro(list<ObjectGuid>& units, Player* bot)
+uint32 WorldPosition::getUnitsAggro(const list<ObjectGuid>& units, const Player* bot) const
 {
-    units.remove_if([this, bot](ObjectGuid guid) {Unit* unit = GuidPosition(guid).GetUnit(); if (!unit) return true; return this->sqDistance(WorldPosition(guid)) > unit->GetAttackDistance(bot) * unit->GetAttackDistance(bot); });
+    uint32 count = 0;
+    for (auto guid : units)
+    {
+        Unit* unit = GuidPosition(guid).GetUnit(); 
+        
+        if (!unit) continue; 
+        
+        if (this->sqDistance(WorldPosition(guid)) > unit->GetAttackDistance(bot) * unit->GetAttackDistance(bot))
+            continue;
+
+        count++;
+    }
 
     return units.size();
 };
@@ -765,14 +779,14 @@ bool FindPointGameObjectData::operator()(GameObjectDataPair const& dataPair)
     return false;
 }
 
-vector<CreatureDataPair const*> WorldPosition::getCreaturesNear(float radius, uint32 entry)
+vector<CreatureDataPair const*> WorldPosition::getCreaturesNear(const float radius, const uint32 entry) const
 {
     FindPointCreatureData worker(*this, radius, entry);
     sObjectMgr.DoCreatureData(worker);
     return worker.GetResult();
 }
 
-vector<GameObjectDataPair const*> WorldPosition::getGameObjectsNear(float radius, uint32 entry)
+vector<GameObjectDataPair const*> WorldPosition::getGameObjectsNear(const float radius, const uint32 entry) const
 {
     FindPointGameObjectData worker(*this, radius, entry);
     sObjectMgr.DoGOData(worker);
