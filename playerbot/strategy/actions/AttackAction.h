@@ -15,6 +15,7 @@ namespace ai
 
     protected:
         bool Attack(Unit* target);
+        bool IsTargetValid(Unit* target);
     };
 
     class AttackMyTargetAction : public AttackAction

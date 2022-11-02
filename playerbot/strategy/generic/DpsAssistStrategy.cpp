@@ -17,6 +17,3 @@ void DpsAoeStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         "not dps aoe target active",
         NextAction::array(0, new NextAction("dps aoe", 60.0f), NULL)));
 }
-
-
-
