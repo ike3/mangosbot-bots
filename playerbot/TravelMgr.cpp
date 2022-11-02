@@ -1078,8 +1078,8 @@ bool QuestRelationTravelDestination::isActive(Player* bot) {
         //Do not try to hand-in dungeon/elite quests in instances without a group.
         if ((questTemplate->GetType() == QUEST_TYPE_ELITE || questTemplate->GetType() == QUEST_TYPE_DUNGEON) && !AI_VALUE(bool, "can fight boss"))
         {
-            auto pos = WorldPosition(bot);
-            if (!this->nearestPoint(&pos)->isOverworld())
+            WorldPosition pos(bot);
+            if (!this->nearestPoint(pos)->isOverworld())
                 return false;
         }
     }
@@ -1130,8 +1130,8 @@ bool QuestObjectiveTravelDestination::isActive(Player* bot) {
         //Do not try to hand-in dungeon/elite quests in instances without a group.
         if (cInfo->Rank > CREATURE_ELITE_NORMAL)
         {
-            auto pos = WorldPosition(bot);
-            if (!this->nearestPoint(&pos)->isOverworld() && !AI_VALUE(bool, "can fight boss"))
+            WorldPosition pos(bot);
+            if (!this->nearestPoint(pos)->isOverworld() && !AI_VALUE(bool, "can fight boss"))
                 return false;
             else if (!AI_VALUE(bool, "can fight elite"))
                 return false;
@@ -1144,16 +1144,16 @@ bool QuestObjectiveTravelDestination::isActive(Player* bot) {
     //Do not try to do dungeon/elite quests in instances without a group.
     if ((questTemplate->GetType() == QUEST_TYPE_ELITE || questTemplate->GetType() == QUEST_TYPE_DUNGEON || questTemplate->GetType() == QUEST_TYPE_RAID) && !AI_VALUE(bool, "can fight boss"))
     {
-        auto pos = WorldPosition(bot);
-        if (!this->nearestPoint(&pos)->isOverworld())
+        WorldPosition pos(bot);
+        if (!this->nearestPoint(pos)->isOverworld())
             return false;
     }
 
     //Do not try to do pvp quests in bg's (no way to travel there). 
     if (questTemplate->GetType() == QUEST_TYPE_PVP)
     {
-        auto pos = WorldPosition(bot);
-        if (!this->nearestPoint(&pos)->isOverworld())
+        WorldPosition pos(bot);
+        if (!this->nearestPoint(pos)->isOverworld())
             return false;
     }
 
@@ -1162,7 +1162,7 @@ bool QuestObjectiveTravelDestination::isActive(Player* bot) {
 
     WorldPosition botPos(bot);
 
-    if (getEntry() > 0 && !isOut(&botPos))
+    if (getEntry() > 0 && !isOut(botPos))
     {
         TravelTarget* target = context->GetValue<TravelTarget*>("travel target")->Get();
 
@@ -1274,7 +1274,7 @@ bool GrindTravelDestination::isActive(Player* bot)
 
     WorldPosition botPos(bot);
     
-    if (!urand(0, 10) && !AI_VALUE(bool, "should get money") && !isOut(&botPos))
+    if (!urand(0, 10) && !AI_VALUE(bool, "should get money") && !isOut(botPos))
         return false;
 
     if (AI_VALUE(bool, "should sell"))
@@ -1367,7 +1367,7 @@ bool BossTravelDestination::isActive(Player* bot)
     }
     WorldPosition botPos(bot);
 
-    if (!isOut(&botPos))
+    if (!isOut(botPos))
     {
         list<ObjectGuid> targets = AI_VALUE(list<ObjectGuid>, "possible targets");
 
@@ -1489,7 +1489,7 @@ bool TravelTarget::isTraveling() {
 
     WorldPosition pos(bot);
 
-    bool HasArrived = tDestination->isIn(&pos, radius);
+    bool HasArrived = tDestination->isIn(pos, radius);
 
     if (HasArrived)
     {
@@ -1517,16 +1517,6 @@ bool TravelTarget::isWorking() {
     }
 
     WorldPosition pos(bot);
-
-    /*
-    bool HasLeft = tDestination->isOut(&pos);
-
-    if (HasLeft)
-    {
-        setStatus(TRAVEL_STATUS_TRAVEL);
-        return false;
-    }
-    */
 
     if (!ai->HasStrategy("travel", BotState::BOT_STATE_NON_COMBAT))
     {
