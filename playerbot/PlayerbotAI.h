@@ -8,7 +8,6 @@
 #include "strategy/ExternalEventHelper.h"
 #include "ChatFilter.h"
 #include "PlayerbotSecurity.h"
-#include "TravelMgr.h"
 #include "PlayerbotTextMgr.h"
 #include <stack>
 
@@ -37,6 +36,7 @@ public:
 namespace ai
 {
     class WorldPosition;
+    class GuidPosition;
 
 	class MinValueCalculator {
 	public:

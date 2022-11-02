@@ -1,7 +1,7 @@
 #pragma once
 
 #include <shared_mutex>
-
+#include "TravelMgr.h"
 
 //THEORY
 // 

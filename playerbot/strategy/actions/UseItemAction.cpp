@@ -6,6 +6,7 @@
 #include "DBCStore.h"
 #include "../../ServerFacade.h"
 #include "../values/ItemUsageValue.h"
+#include "../../TravelMgr.h"
 
 using namespace ai;
 

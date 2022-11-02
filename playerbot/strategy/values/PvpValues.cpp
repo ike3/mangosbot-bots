@@ -6,6 +6,7 @@
 #ifndef MANGOSBOT_ZERO
 #include "BattleGroundEY.h"
 #endif
+#include "../../TravelMgr.h"
 
 using namespace ai;
 

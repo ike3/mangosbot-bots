@@ -2,6 +2,7 @@
 
 #include "../Action.h"
 #include "InventoryAction.h"
+#include "../../TravelMgr.h"
 
 namespace ai
 {
