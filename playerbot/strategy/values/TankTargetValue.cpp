@@ -19,6 +19,9 @@ public:
         Player* bot = ai->GetBot();
         if (IsCcTarget(creature)) return;
 
+        if (!AttackersValue::IsValidTarget(creature, bot))
+            return;
+
         float threat = threatManager->getThreat(bot);
         if (!result || (minThreat - threat) > 0.1f)
         {
@@ -34,6 +37,9 @@ protected:
 
 Unit* TankTargetValue::Calculate()
 {
+    Unit* rti = RtiTargetValue::Calculate();
+    if (rti) return rti;
+
     FindTargetForTankStrategy strategy(ai);
     return FindTarget(&strategy);
 }
