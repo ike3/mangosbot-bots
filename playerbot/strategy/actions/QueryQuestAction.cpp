@@ -14,8 +14,7 @@ void QueryQuestAction::TellObjective(string name, int available, int required)
 bool QueryQuestAction::Execute(Event& event)
 {
     Player *bot = ai->GetBot();
-    WorldPosition pos = WorldPosition(bot);
-    WorldPosition* botPos = &pos;
+    WorldPosition botPos(bot);
     std::string text = event.getParam();
     bool travel = false;
 

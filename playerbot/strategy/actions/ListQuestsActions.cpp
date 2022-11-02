@@ -57,8 +57,7 @@ void ListQuestsAction::ListQuests(QuestListFilter filter, QuestTravelDetail trav
 int ListQuestsAction::ListQuests(bool completed, bool silent, QuestTravelDetail travelDetail)
 {
     TravelTarget* target;
-    WorldPosition pos = WorldPosition(bot);
-    WorldPosition* botPos = &pos;
+    WorldPosition botPos(bot);
     
     if (travelDetail != QUEST_TRAVEL_DETAIL_NONE)
         target = context->GetValue<TravelTarget*>("travel target")->Get();

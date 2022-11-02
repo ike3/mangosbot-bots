@@ -1,6 +1,5 @@
 #pragma once
 
-#include "TravelMgr.h"
 #include <shared_mutex>
 
 
@@ -56,6 +55,10 @@ enum class TravelNodePathType : uint8
 
 using namespace ai;
 
+namespace ai
+{
+    class WorldPosition;
+
     //A connection between two nodes. 
     class TravelNodePath
     {
@@ -65,7 +68,9 @@ using namespace ai;
 
         //Constructor
         TravelNodePath(float distance = 0.1f, float extraCost = 0, uint8 pathType = (uint8)TravelNodePathType::walk, uint64 pathObject = 0, bool calculated = false, vector<uint8> maxLevelCreature = { 0,0,0 }, float swimDistance = 0)
-            : distance(distance), extraCost(extraCost), pathType(TravelNodePathType(pathType)), pathObject(pathObject), calculated(calculated), maxLevelCreature(maxLevelCreature), swimDistance(swimDistance) {if (pathType != (uint8)TravelNodePathType::walk) complete = true;};
+            : distance(distance), extraCost(extraCost), pathType(TravelNodePathType(pathType)), pathObject(pathObject), calculated(calculated), maxLevelCreature(maxLevelCreature), swimDistance(swimDistance) {
+            if (pathType != (uint8)TravelNodePathType::walk) complete = true;
+        };
 
         TravelNodePath(TravelNodePath* basePath) {
             complete = basePath->complete; path = basePath->path; extraCost = basePath->extraCost; calculated = basePath->calculated; distance = basePath->distance; maxLevelCreature = basePath->maxLevelCreature; swimDistance = basePath->swimDistance; pathType = basePath->pathType; pathObject = basePath->pathObject;
@@ -80,9 +85,9 @@ using namespace ai;
 
         float getDistance() { return distance; }
         float getSwimDistance() { return swimDistance; }
-        float getExtraCost(){ return extraCost; }
-        vector<uint8> getMaxLevelCreature(){ return  maxLevelCreature; }
-        
+        float getExtraCost() { return extraCost; }
+        vector<uint8> getMaxLevelCreature() { return  maxLevelCreature; }
+
         void setCalculated(bool calculated1 = true) { calculated = calculated1; }
         bool getCalculated() { return calculated; }
 
@@ -147,7 +152,7 @@ using namespace ai;
         //Constructors
         TravelNode() {};
         TravelNode(WorldPosition point1, string nodeName1 = "Travel Node", bool important1 = false) { nodeName = nodeName1; point = point1; important = important1; }
-        TravelNode(TravelNode* baseNode) { nodeName = baseNode->nodeName; point = baseNode->point; important = baseNode->important;}
+        TravelNode(TravelNode* baseNode) { nodeName = baseNode->nodeName; point = baseNode->point; important = baseNode->important; }
 
         //Setters
         void setLinked(bool linked1) { linked = linked1; }
@@ -171,9 +176,9 @@ using namespace ai;
         float getZ() { return point.getZ(); }
         float getO() { return point.getO(); }
         float getDistance(WorldPosition pos) { return point.distance(pos); }
-        float getDistance(TravelNode* node) { return point.distance(node->getPosition()); }
+        float getDistance(TravelNode* node) { return point.distance(*node->getPosition()); }
         float fDist(WorldPosition pos) { return point.fDist(pos); }
-        float fDist(TravelNode* node) { return point.fDist(node->getPosition()); }
+        float fDist(TravelNode* node) { return point.fDist(*node->getPosition()); }
 
         TravelNodePath* setPathTo(TravelNode* node, TravelNodePath path = TravelNodePath(), bool isLink = true) { if (this != node) { paths[node] = path; if (isLink) links[node] = &paths[node]; return  &paths[node]; } else return nullptr; }
         bool hasPathTo(TravelNode* node) { return paths.find(node) != paths.end(); }
@@ -244,7 +249,7 @@ using namespace ai;
 
         void SetPortal(TravelNode* baseNode, TravelNode* endNode, uint32 portalSpell)
         {
-            nodeName = baseNode->getName(); 
+            nodeName = baseNode->getName();
             point = *baseNode->getPosition();
             paths.clear();
             links.clear();
@@ -289,13 +294,13 @@ using namespace ai;
 
         bool empty() { return fullPath.empty(); }
         vector<PathNodePoint> getPath() { return fullPath; }
-        WorldPosition getFront() {return fullPath.front().point; }
+        WorldPosition getFront() { return fullPath.front().point; }
         WorldPosition getBack() { return fullPath.back().point; }
 
         vector<WorldPosition> getPointPath() { vector<WorldPosition> retVec; for (const auto& p : fullPath) retVec.push_back(p.point); return retVec; };
 
         bool makeShortCut(WorldPosition startPos, float maxDist);
-        bool shouldMoveToNextPoint(WorldPosition startPos, vector<PathNodePoint>::iterator beg, vector<PathNodePoint>::iterator ed, vector<PathNodePoint>::iterator p, float &moveDist, float maxDist);
+        bool shouldMoveToNextPoint(WorldPosition startPos, vector<PathNodePoint>::iterator beg, vector<PathNodePoint>::iterator ed, vector<PathNodePoint>::iterator p, float& moveDist, float maxDist);
         WorldPosition getNextPoint(WorldPosition startPos, float maxDist, TravelNodePathType& pathType, uint32& entry);
 
         ostringstream print();
@@ -308,7 +313,7 @@ using namespace ai;
     {
     public:
         TravelNodeRoute() {}
-        TravelNodeRoute(vector<TravelNode*> nodes1, TravelNode* tempNode = nullptr) { nodes = nodes1; if(tempNode) addTempNode(tempNode); }
+        TravelNodeRoute(vector<TravelNode*> nodes1, TravelNode* tempNode = nullptr) { nodes = nodes1; if (tempNode) addTempNode(tempNode); }
 
         bool isEmpty() { return nodes.empty(); }
 
@@ -320,7 +325,7 @@ using namespace ai;
 
         void addTempNode(TravelNode* node) { tempNodes.push_back(node); }
         void cleanTempNodes() { for (auto node : tempNodes) delete node; }
-       
+
         TravelPath buildPath(vector<WorldPosition> pathToStart = {}, vector<WorldPosition> pathToEnd = {}, Unit* bot = nullptr);
 
         ostringstream print();
@@ -329,12 +334,12 @@ using namespace ai;
         vector<TravelNode*> nodes;
         vector<TravelNode*> tempNodes;
     };
-   
+
     //A node container to aid A* calculations with nodes.
     class TravelNodeStub
     {
     public:
-        TravelNodeStub(TravelNode* dataNode1) { dataNode = dataNode1; }        
+        TravelNodeStub(TravelNode* dataNode1) { dataNode = dataNode1; }
 
         TravelNode* dataNode;
         float m_f = 0.0, m_g = 0.0, m_h = 0.0;
@@ -362,10 +367,10 @@ using namespace ai;
         //Find nearest node.
         TravelNode* getNode(TravelNode* sameNode) { for (auto& node : m_nodes) { if (node->getName() == sameNode->getName() && node->getPosition() == sameNode->getPosition()) return node; } return nullptr; }
         TravelNode* getNode(WorldPosition pos, vector<WorldPosition>& ppath, Unit* bot = nullptr, float range = -1);
-        TravelNode* getNode(WorldPosition pos, Unit* bot = nullptr, float range = -1) {vector<WorldPosition> ppath; return getNode(pos, ppath, bot, range);}
+        TravelNode* getNode(WorldPosition pos, Unit* bot = nullptr, float range = -1) { vector<WorldPosition> ppath; return getNode(pos, ppath, bot, range); }
 
         //Get Random Node
-        TravelNode* getRandomNode(WorldPosition pos) {vector<TravelNode*> rNodes = getNodes(pos); if (rNodes.empty()) return nullptr; return  rNodes[urand(0, rNodes.size() - 1)]; }
+        TravelNode* getRandomNode(WorldPosition pos) { vector<TravelNode*> rNodes = getNodes(pos); if (rNodes.empty()) return nullptr; return  rNodes[urand(0, rNodes.size() - 1)]; }
 
         //Finds the best nodePath between two nodes
         TravelNodeRoute getRoute(TravelNode* start, TravelNode* goal, Player* bot = nullptr);
@@ -381,7 +386,7 @@ using namespace ai;
 
         void setHasToGen() { hasToGen = true; }
         bool gethasToGen() { return hasToGen || hasToFullGen; }
-      
+
         void generateNpcNodes();
         void generateStartNodes();
         void generateAreaTriggerNodes();
@@ -390,7 +395,7 @@ using namespace ai;
         void generateZoneMeanNodes();
         void generatePortalNodes();
 
-        void generateWalkPaths();      
+        void generateWalkPaths();
         void generateWalkPathMap(uint32 mapId);
         void removeLowNodes();
         void removeUselessPaths();
@@ -402,7 +407,7 @@ using namespace ai;
         void generateAll();
 
         void printMap();
-        
+
         void printNodeStore();
         void saveNodeStore();
         void loadNodeStore();
@@ -412,7 +417,7 @@ using namespace ai;
         TravelNode* addRandomExtNode(TravelNode* startNode);
 
         void calcMapOffset();
-        WorldPosition getMapOffset(uint32 mapId);        
+        WorldPosition getMapOffset(uint32 mapId);
 
         std::shared_timed_mutex m_nMapMtx;
     private:
@@ -424,6 +429,6 @@ using namespace ai;
         bool hasToGen = false;
         bool hasToFullGen = false;
     };
-  
+}
 
 #define sTravelNodeMap MaNGOS::Singleton<TravelNodeMap>::Instance()

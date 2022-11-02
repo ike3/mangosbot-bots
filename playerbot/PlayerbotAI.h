@@ -36,6 +36,8 @@ public:
 
 namespace ai
 {
+    class WorldPosition;
+
 	class MinValueCalculator {
 	public:
 		MinValueCalculator(float def = 0.0f) {
@@ -398,7 +400,7 @@ public:
     GrouperType GetGrouperType();
     GuilderType GetGuilderType();
     bool HasPlayerNearby(WorldPosition* pos, float range = sPlayerbotAIConfig.reactDistance);
-    bool HasPlayerNearby(float range = sPlayerbotAIConfig.reactDistance) { WorldPosition botPos(bot);  return HasPlayerNearby(&botPos, range); };
+    bool HasPlayerNearby(float range = sPlayerbotAIConfig.reactDistance);
     bool HasManyPlayersNearby(uint32 trigerrValue = 20, float range = sPlayerbotAIConfig.sightDistance);
     pair<uint32,uint32> GetPriorityBracket(bool& shouldDetailMove);
     bool AllowActive(ActivityType activityType);

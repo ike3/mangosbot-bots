@@ -118,22 +118,22 @@ WorldPosition::WorldPosition(vector<WorldPosition> list, WorldPositionConst conT
     }    
 }
 
-float WorldPosition::distance(WorldPosition* to)
+float WorldPosition::distance(const WorldPosition& to)
 {
-    if(mapid == to->getMapId())
+    if(mapid == to.getMapId())
         return relPoint(to).size();
 
     //this -> mapTransfer | mapTransfer -> center
-    return sTravelMgr.mapTransDistance(*this, *to);
+    return sTravelMgr.mapTransDistance(*this, to);
 };
 
-float WorldPosition::fDist(WorldPosition* to)
+float WorldPosition::fDist(const WorldPosition& to)
 {
-    if (mapid == to->getMapId())
+    if (mapid == to.getMapId())
         return sqrt(sqDistance2d(to));
 
     //this -> mapTransfer | mapTransfer -> center
-    return sTravelMgr.fastMapTransDistance(*this, *to);
+    return sTravelMgr.fastMapTransDistance(*this, to);
 };
 
 //When moving from this along list return last point that falls within range.
@@ -161,7 +161,7 @@ WorldPosition WorldPosition::lastInRange(vector<WorldPosition> list, float minDi
         float curDist = distance(p);
 
         if (totalDist > 0) //We have started the path. Keep counting.
-            totalDist += p.distance(std::prev(&p, 1));
+            totalDist += p.distance(*std::prev(&p, 1));
 
         if (curDist == startDist) //Start the path here.
             totalDist = startDist;
@@ -218,7 +218,7 @@ bool WorldPosition::isInside(WorldPosition* p1, WorldPosition* p2, WorldPosition
 
 void WorldPosition::distancePartition(vector<float> distanceLimits, WorldPosition* to, vector<vector<WorldPosition*>>& partitions)
 {
-    float dist = distance(to);
+    float dist = distance(*to);
 
     for (uint8 l = 0; l < distanceLimits.size(); l++)
         if (dist <= distanceLimits[l])
@@ -285,8 +285,8 @@ void WorldPosition::printWKT(vector<WorldPosition> points, ostringstream& out, u
 
 WorldPosition WorldPosition::getDisplayLocation() 
 { 
-    auto mapOffset = sTravelNodeMap.getMapOffset(getMapId());
-    return offset(&mapOffset);
+    WorldPosition mapOffset = sTravelNodeMap.getMapOffset(getMapId());
+    return offset(mapOffset);
 };
 
 AreaTableEntry const* WorldPosition::getArea()
@@ -710,7 +710,7 @@ vector<WorldPosition> WorldPosition::getPathFromPath(vector<WorldPosition> start
         subPath = getPathStepFrom(currentPos, bot);
 
         //If we could not find a path return what we have now.
-        if (subPath.empty() || currentPos.distance(&subPath.back()) < sPlayerbotAIConfig.targetPosRecalcDistance)
+        if (subPath.empty() || currentPos.distance(subPath.back()) < sPlayerbotAIConfig.targetPosRecalcDistance)
             break;
         
         //Append the path excluding the start (this should be the same as the end of the startPath)
@@ -931,18 +931,9 @@ string GuidPosition::print()
     return out.str();
 }
 
-vector<WorldPosition*> TravelDestination::getPoints(bool ignoreFull) {
-    if (ignoreFull)
-        return points;
-
-    uint32 max = maxVisitorsPerPoint;
-
-    if (max == 0)
-        return points;
-
-    vector<WorldPosition*> retVec;
-    std::copy_if(points.begin(), points.end(), std::back_inserter(retVec), [max](WorldPosition* p) { return p->getVisitors() < max; });
-    return retVec;
+vector<WorldPosition*> TravelDestination::getPoints(bool ignoreFull)
+{
+    return points;
 }
 
 WorldPosition* TravelDestination::nearestPoint(WorldPosition pos) {
@@ -953,7 +944,7 @@ vector<WorldPosition*> TravelDestination::touchingPoints(WorldPosition* pos) {
     vector<WorldPosition*> ret_points;
     for (auto& point : points)
     {
-        float dist = pos->distance(point);
+        float dist = pos->distance(*point);
         if (dist == 0)
             continue;
 
@@ -969,7 +960,7 @@ vector<WorldPosition*> TravelDestination::touchingPoints(WorldPosition* pos) {
 vector<WorldPosition*> TravelDestination::sortedPoints(WorldPosition* pos) {
     vector<WorldPosition*> ret_points = points;
 
-    std::sort(ret_points.begin(), ret_points.end(), [pos](WorldPosition* i, WorldPosition* j) {return i->distance(pos) < j->distance(pos); });
+    std::sort(ret_points.begin(), ret_points.end(), [pos](WorldPosition* i, WorldPosition* j) {return i->distance(*pos) < j->distance(*pos); });
 
     return ret_points;
 };
@@ -1432,7 +1423,6 @@ void TravelTarget::copyTarget(TravelTarget* target) {
 void TravelTarget::addVisitors() {
     if (!visitor)
     {
-        wPosition->addVisitor();
         tDestination->addVisitor();
     }
 
@@ -1444,8 +1434,6 @@ void TravelTarget::releaseVisitors() {
     {
         if (tDestination)
             tDestination->remVisitor();
-        if (wPosition)
-            wPosition->remVisitor();
     }
 
     visitor = false;
@@ -3411,7 +3399,7 @@ vector<WorldPosition*> TravelMgr::getNextPoint(WorldPosition* center, vector<Wor
 
     vector<uint32> weights;
 
-    std::transform(retVec.begin(), retVec.end(), std::back_inserter(weights), [center](WorldPosition* point) { return 200000 / (1 + point->distance(center)); });
+    std::transform(retVec.begin(), retVec.end(), std::back_inserter(weights), [center](WorldPosition* point) { return 200000 / (1 + point->distance(*center)); });
 
     std::mt19937 gen(time(0));
 

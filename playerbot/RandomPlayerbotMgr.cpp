@@ -2599,9 +2599,9 @@ void RandomPlayerbotMgr::OnPlayerLogin(Player* player)
                 FactionTemplateEntry const* factionEntry = sFactionTemplateStore.LookupEntry(cInfo->Faction);
                 ReputationRank reaction = PlayerbotAI::GetFactionReaction(player->GetFactionTemplateEntry(), factionEntry);
 
-                if (reaction > REP_NEUTRAL && dest->nearestPoint(&botPos)->mapid == player->GetMapId())
+                if (reaction > REP_NEUTRAL && dest->nearestPoint(botPos)->mapid == player->GetMapId())
                 {
-                    botPos = *dest->nearestPoint(&botPos);
+                    botPos = *dest->nearestPoint(botPos);
                     break;
                 }
             } while (true);
