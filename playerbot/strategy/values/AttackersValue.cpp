@@ -147,10 +147,11 @@ bool AttackersValue::IsPossibleTarget(Unit *attacker, Player *bot, float range)
         !attacker->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_1) &&
         !attacker->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_UNTARGETABLE) &&
         (inCannon || !attacker->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_UNINTERACTIBLE)) &&
-        attacker->IsVisibleForOrDetect(bot, bot->GetCamera().GetBody(), true) &&
+        attacker->IsVisibleForOrDetect(bot, bot->GetCamera().GetBody(), false) &&
 #ifdef CMANGOS
         !(attacker->IsStunned() && ai->HasAura("shackle undead", attacker)) &&
         !ai->HasAura("gouge", attacker) &&
+        !ai->HasAura("banish", attacker) &&
 #endif
 #ifdef MANGOS
         //!attacker->hasUnitState(UNIT_STAT_STUNNED) &&
