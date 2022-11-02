@@ -75,7 +75,7 @@ bool QueryItemUsageAction::Execute(Event& event)
                             if (!required)
                                 continue;
 
-                            sTravelMgr.logEvent(ai, "QueryItemUsageAction", questTemplate->GetTitle(), to_string((float)available / (float)required));                          
+                            sPlayerbotAIConfig.logEvent(ai, "QueryItemUsageAction", questTemplate->GetTitle(), to_string((float)available / (float)required));
                         }
                     }
                 }

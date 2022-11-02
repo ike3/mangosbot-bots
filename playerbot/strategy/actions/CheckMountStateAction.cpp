@@ -4,6 +4,7 @@
 
 #include "../../ServerFacade.h"
 #include "BattleGroundWS.h"
+#include "../../TravelMgr.h"
 
 using namespace ai;
 

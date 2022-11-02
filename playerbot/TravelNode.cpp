@@ -1,7 +1,6 @@
 #pragma once
 
 #include "TravelNode.h"
-#include "TravelMgr.h"
 
 #include <iomanip>
 #include <regex>
@@ -411,7 +410,7 @@ bool TravelNode::isUselessLink(TravelNode* farNode)
     for (auto& link : *getLinks())
     {
         TravelNode* nearNode = link.first;
-        WorldPosition* nearPos = nearNode->getPosition();
+        WorldPosition nearPos = *nearNode->getPosition();
         float nearLength = link.second->getDistance();
 
         if (farNode == nearNode)
@@ -428,7 +427,7 @@ bool TravelNode::isUselessLink(TravelNode* farNode)
 
             //Does the path come across the nearby node.
             if (farPath)
-                if (nearPos->closestSq(farPath->getPath()).distance(nearPos) < INTERACTION_DISTANCE)
+                if (nearPos.closestSq(farPath->getPath()).distance(nearPos) < INTERACTION_DISTANCE)
                     return true;
         }
         else
@@ -1894,7 +1893,7 @@ void TravelNodeMap::generateTransportNodes()
                                 ppath.push_back(pos);
                             }
 
-                            if (pos.distance(&lPos) == 0)
+                            if (pos.distance(lPos) == 0)
                             {
                                 TravelNode* node = sTravelNodeMap.addNode(pos, data->name, true, true, true, entry);
 
@@ -1935,7 +1934,7 @@ void TravelNodeMap::generateTransportNodes()
 
                                 ppath.push_back(pos);
 
-                                if (pos.distance(&lPos) == 0)
+                                if (pos.distance(lPos) == 0)
                                 {
                                     TravelNode* node = sTravelNodeMap.addNode(pos, data->name, true, true, true, entry);
                                     if (node != prevNode) {

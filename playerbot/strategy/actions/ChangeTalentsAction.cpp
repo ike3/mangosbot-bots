@@ -28,6 +28,14 @@ bool ChangeTalentsAction::Execute(Event& event)
         {
             listPremadePaths(getPremadePaths(""), &out);
         }
+        else if (param.find("reset") != string::npos)
+        {
+            out << "Reset talents and spec";
+            TalentSpec newSpec(bot, "0-0-0");
+            newSpec.ApplyTalents(bot, &out);
+            sRandomPlayerbotMgr.SetValue(bot->GetGUIDLow(), "specNo", 0);
+            sRandomPlayerbotMgr.SetValue(bot->GetGUIDLow(), "specLink", 0);
+        }
         else
         {
             bool crop = false;
@@ -251,6 +259,7 @@ bool ChangeTalentsAction::AutoSelectTalents(ostringstream* out)
     if (bot->GetFreeTalentPoints() > 0 || (!specNo && specLink.empty()))
     {
         TalentSpec oldSpec(bot);
+        int currentTree = oldSpec.highestTree();
         std::vector<TalentPath*> paths = getPremadePaths(&oldSpec);
 
         if (paths.size() == 0) //No spec like the old one found. Pick any.
@@ -258,6 +267,31 @@ bool ChangeTalentsAction::AutoSelectTalents(ostringstream* out)
             if (bot->CalculateTalentsPoints() > 0)
                 *out << "No specs like the current spec found. ";
             paths = getPremadePaths("");
+        }   
+
+        if(paths.size() > 0 && oldSpec.GetTalentPoints() > 0)
+        {
+            //Check if any spec has the same tree as the current spec.
+            bool hasSameTree = false;
+            for (auto it : paths)
+                if (it->talentSpec.back().highestTree() == currentTree)
+                {
+                    hasSameTree = true;
+                    break;
+                }
+
+            if (hasSameTree) //Remove specs that do not end up in the same tree.
+            {
+                auto it = paths.begin();
+                while (it != paths.end()) {
+                    TalentPath* path = *it;
+                    if (path->talentSpec.back().highestTree() != currentTree) {
+
+                        it = paths.erase(it);
+                    }
+                    else ++it;
+                }
+            }
         }
 
         if (paths.size() == 0)
@@ -313,7 +347,7 @@ TalentSpec* ChangeTalentsAction::GetBestPremadeSpec(int specId)
 
 bool AutoSetTalentsAction::Execute(Event& event)
 {
-    sTravelMgr.logEvent(ai, "AutoSetTalentsAction", to_string(bot->m_Played_time[PLAYED_TIME_LEVEL]), to_string(bot->m_Played_time[PLAYED_TIME_TOTAL]));
+    sPlayerbotAIConfig.logEvent(ai, "AutoSetTalentsAction", to_string(bot->m_Played_time[PLAYED_TIME_LEVEL]), to_string(bot->m_Played_time[PLAYED_TIME_TOTAL]));
 
     ostringstream out;
 

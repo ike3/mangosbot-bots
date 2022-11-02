@@ -439,7 +439,7 @@ bool StoreLootAction::Execute(Event& event)
 
         ai->TellMasterNoFacing(out.str(), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
 
-        sTravelMgr.logEvent(ai, "StoreLootAction", proto->Name1, to_string(proto->ItemId));      
+        sPlayerbotAIConfig.logEvent(ai, "StoreLootAction", proto->Name1, to_string(proto->ItemId));
 
         //ItemUsage usage = AI_VALUE2(ItemUsage, "item usage", proto->ItemId);
         //sLog.outErrorDb("Bot %s is looting %d %s for usage %d.", bot->GetName(), itemcount, proto->Name1, usage);

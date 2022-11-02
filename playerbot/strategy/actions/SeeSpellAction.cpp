@@ -52,7 +52,7 @@ bool SeeSpellAction::Execute(Event& event)
 #endif
 
 #ifdef MANGOSBOT_ONE
-    uint8  cast_count, cast_flags;
+    uint8  cast_count;
     p >> cast_count;
 #endif
 #ifdef MANGOSBOT_TWO

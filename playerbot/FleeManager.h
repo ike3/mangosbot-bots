@@ -1,5 +1,7 @@
 #pragma once
 
+#include "TravelMgr.h"
+
 using namespace std;
 
 class Player;

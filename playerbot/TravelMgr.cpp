@@ -118,22 +118,22 @@ WorldPosition::WorldPosition(vector<WorldPosition> list, WorldPositionConst conT
     }    
 }
 
-float WorldPosition::distance(WorldPosition* to)
+float WorldPosition::distance(const WorldPosition& to)
 {
-    if(mapid == to->getMapId())
+    if(mapid == to.getMapId())
         return relPoint(to).size();
 
     //this -> mapTransfer | mapTransfer -> center
-    return sTravelMgr.mapTransDistance(*this, *to);
+    return sTravelMgr.mapTransDistance(*this, to);
 };
 
-float WorldPosition::fDist(WorldPosition* to)
+float WorldPosition::fDist(const WorldPosition& to)
 {
-    if (mapid == to->getMapId())
+    if (mapid == to.getMapId())
         return sqrt(sqDistance2d(to));
 
     //this -> mapTransfer | mapTransfer -> center
-    return sTravelMgr.fastMapTransDistance(*this, *to);
+    return sTravelMgr.fastMapTransDistance(*this, to);
 };
 
 //When moving from this along list return last point that falls within range.
@@ -161,7 +161,7 @@ WorldPosition WorldPosition::lastInRange(vector<WorldPosition> list, float minDi
         float curDist = distance(p);
 
         if (totalDist > 0) //We have started the path. Keep counting.
-            totalDist += p.distance(std::prev(&p, 1));
+            totalDist += p.distance(*std::prev(&p, 1));
 
         if (curDist == startDist) //Start the path here.
             totalDist = startDist;
@@ -218,7 +218,7 @@ bool WorldPosition::isInside(WorldPosition* p1, WorldPosition* p2, WorldPosition
 
 void WorldPosition::distancePartition(vector<float> distanceLimits, WorldPosition* to, vector<vector<WorldPosition*>>& partitions)
 {
-    float dist = distance(to);
+    float dist = distance(*to);
 
     for (uint8 l = 0; l < distanceLimits.size(); l++)
         if (dist <= distanceLimits[l])
@@ -241,7 +241,7 @@ vector<vector<WorldPosition*>> WorldPosition::distancePartition(vector<float> di
 }
 
 
-G3D::Vector3 WorldPosition::getVector3() 
+G3D::Vector3 WorldPosition::getVector3() const
 {
     return G3D::Vector3(coord_x, coord_y, coord_z); 
 }
@@ -258,7 +258,7 @@ string WorldPosition::print()
     return out.str();
 }
 
-void WorldPosition::printWKT(vector<WorldPosition> points, ostringstream& out, uint32 dim, bool loop)
+void WorldPosition::printWKT(vector<WorldPosition> points, ostringstream& out, uint32 dim, bool loop) const
 {
     switch (dim) {
     case 0:
@@ -285,8 +285,8 @@ void WorldPosition::printWKT(vector<WorldPosition> points, ostringstream& out, u
 
 WorldPosition WorldPosition::getDisplayLocation() 
 { 
-    auto mapOffset = sTravelNodeMap.getMapOffset(getMapId());
-    return offset(&mapOffset);
+    WorldPosition mapOffset = sTravelNodeMap.getMapOffset(getMapId());
+    return offset(mapOffset);
 };
 
 AreaTableEntry const* WorldPosition::getArea()
@@ -710,7 +710,7 @@ vector<WorldPosition> WorldPosition::getPathFromPath(vector<WorldPosition> start
         subPath = getPathStepFrom(currentPos, bot);
 
         //If we could not find a path return what we have now.
-        if (subPath.empty() || currentPos.distance(&subPath.back()) < sPlayerbotAIConfig.targetPosRecalcDistance)
+        if (subPath.empty() || currentPos.distance(subPath.back()) < sPlayerbotAIConfig.targetPosRecalcDistance)
             break;
         
         //Append the path excluding the start (this should be the same as the end of the startPath)
@@ -931,18 +931,9 @@ string GuidPosition::print()
     return out.str();
 }
 
-vector<WorldPosition*> TravelDestination::getPoints(bool ignoreFull) {
-    if (ignoreFull)
-        return points;
-
-    uint32 max = maxVisitorsPerPoint;
-
-    if (max == 0)
-        return points;
-
-    vector<WorldPosition*> retVec;
-    std::copy_if(points.begin(), points.end(), std::back_inserter(retVec), [max](WorldPosition* p) { return p->getVisitors() < max; });
-    return retVec;
+vector<WorldPosition*> TravelDestination::getPoints(bool ignoreFull)
+{
+    return points;
 }
 
 WorldPosition* TravelDestination::nearestPoint(WorldPosition pos) {
@@ -953,7 +944,7 @@ vector<WorldPosition*> TravelDestination::touchingPoints(WorldPosition* pos) {
     vector<WorldPosition*> ret_points;
     for (auto& point : points)
     {
-        float dist = pos->distance(point);
+        float dist = pos->distance(*point);
         if (dist == 0)
             continue;
 
@@ -969,24 +960,13 @@ vector<WorldPosition*> TravelDestination::touchingPoints(WorldPosition* pos) {
 vector<WorldPosition*> TravelDestination::sortedPoints(WorldPosition* pos) {
     vector<WorldPosition*> ret_points = points;
 
-    std::sort(ret_points.begin(), ret_points.end(), [pos](WorldPosition* i, WorldPosition* j) {return i->distance(pos) < j->distance(pos); });
+    std::sort(ret_points.begin(), ret_points.end(), [pos](WorldPosition* i, WorldPosition* j) {return i->distance(*pos) < j->distance(*pos); });
 
     return ret_points;
 };
 
 vector <WorldPosition*> TravelDestination::nextPoint(WorldPosition* pos, bool ignoreFull) {
     return sTravelMgr.getNextPoint(pos, ignoreFull ? points : getPoints());
-}
-
-bool TravelDestination::isFull(bool ignoreFull) {
-    if (!ignoreFull && maxVisitors > 0 && visitors >= maxVisitors)
-        return true;
-
-    if (maxVisitorsPerPoint > 0)
-        if (getPoints(ignoreFull).empty())
-            return true;
-
-    return false;
 }
 
 string QuestTravelDestination::getTitle() {
@@ -1404,20 +1384,14 @@ TravelTarget::~TravelTarget() {
     if (!tDestination)
         return;
 
-    releaseVisitors();
-    //sTravelMgr.botTargets.erase(std::remove(sTravelMgr.botTargets.begin(), sTravelMgr.botTargets.end(), this), sTravelMgr.botTargets.end());
 }
 
 void TravelTarget::setTarget(TravelDestination* tDestination1, WorldPosition* wPosition1, bool groupCopy1) {
-    releaseVisitors();
-
     wPosition = wPosition1;
     tDestination = tDestination1;
     groupCopy = groupCopy1;
     forced = false;
     radius = 0;
-
-    addVisitors();
 
     setStatus(TravelStatus::TRAVEL_STATUS_TRAVEL);
 }
@@ -1427,28 +1401,6 @@ void TravelTarget::copyTarget(TravelTarget* target) {
     groupCopy = target->isGroupCopy();
     forced = target->forced;
     extendRetryCount = target->extendRetryCount;
-}
-
-void TravelTarget::addVisitors() {
-    if (!visitor)
-    {
-        wPosition->addVisitor();
-        tDestination->addVisitor();
-    }
-
-    visitor = true;
-}
-
-void TravelTarget::releaseVisitors() {
-    if (visitor)
-    {
-        if (tDestination)
-            tDestination->remVisitor();
-        if (wPosition)
-            wPosition->remVisitor();
-    }
-
-    visitor = false;
 }
 
 void TravelTarget::setStatus(TravelStatus status) {
@@ -1656,49 +1608,6 @@ void TravelMgr::Clear()
     quests.clear();
     pointsMap.clear();
 }
-
-void TravelMgr::logEvent(PlayerbotAI* ai, string eventName, string info1, string info2)
-{
-    if (sPlayerbotAIConfig.hasLog("bot_events.csv"))
-    {
-        Player* bot = ai->GetBot();
-
-        ostringstream out;
-        out << sPlayerbotAIConfig.GetTimestampStr() << "+00,";
-        out << bot->GetName() << ",";
-        out << eventName << ",";
-        out << std::fixed << std::setprecision(2);
-        WorldPosition(bot).printWKT(out);
-
-        out << to_string(bot->getRace()) << ",";
-        out << to_string(bot->getClass()) << ",";
-        float subLevel = ((float)bot->GetLevel() + ((float)bot->GetUInt32Value(PLAYER_XP) / (float)bot->GetUInt32Value(PLAYER_NEXT_LEVEL_XP)));
-
-        out << subLevel << ",";
-
-        out << "\""<<info1 << "\",";
-        out << "\""<<info2 << "\"";
-
-        sPlayerbotAIConfig.log("bot_events.csv", out.str().c_str());
-    }
-};
-
-
-void TravelMgr::logEvent(PlayerbotAI* ai, string eventName, ObjectGuid guid, string info2)
-{
-    string info1 = "";
-
-    Unit* victim;
-    if (guid)
-    {
-        victim = ai->GetUnit(guid);
-        if (victim)
-            info1 = victim->GetName();
-    }
-
-    logEvent(ai, eventName, info1, info2);
-};
-
 
 int32 TravelMgr::getAreaLevel(uint32 area_id)
 {
@@ -2095,7 +2004,6 @@ void TravelMgr::LoadQuestTravelTable()
                     {
                         loc = new QuestRelationTravelDestination(questId, entry, 0, sPlayerbotAIConfig.tooCloseDistance, sPlayerbotAIConfig.sightDistance);
                         loc->setExpireDelay(5 * 60 * 1000);
-                        loc->setMaxVisitors(15, 0);
                         container->questGivers.push_back(loc);
                         locs.push_back(loc);
                     }
@@ -2103,7 +2011,6 @@ void TravelMgr::LoadQuestTravelTable()
                     {
                         loc = new QuestRelationTravelDestination(questId, entry, 1, sPlayerbotAIConfig.tooCloseDistance, sPlayerbotAIConfig.sightDistance);
                         loc->setExpireDelay(5 * 60 * 1000);
-                        loc->setMaxVisitors(15, 0);
                         container->questTakers.push_back(loc);
                         locs.push_back(loc);
                     }
@@ -2121,7 +2028,6 @@ void TravelMgr::LoadQuestTravelTable()
 
                         loc = new QuestObjectiveTravelDestination(questId, entry, objective, sPlayerbotAIConfig.tooCloseDistance, sPlayerbotAIConfig.sightDistance);
                         loc->setExpireDelay(1 * 60 * 1000);
-                        loc->setMaxVisitors(100, 1);
                         container->questObjectives.push_back(loc);
                         locs.push_back(loc);
                     }
@@ -2194,8 +2100,6 @@ void TravelMgr::LoadQuestTravelTable()
             {
                 rLoc = new RpgTravelDestination(u.entry, sPlayerbotAIConfig.tooCloseDistance, sPlayerbotAIConfig.sightDistance);
                 rLoc->setExpireDelay(5 * 60 * 1000);
-                rLoc->setMaxVisitors(15, 0);
-
 
                 pointsMap.insert_or_assign(u.guid, point);
                 rLoc->addPoint(&pointsMap.find(u.guid)->second);
@@ -2208,7 +2112,6 @@ void TravelMgr::LoadQuestTravelTable()
         {
             gLoc = new GrindTravelDestination(u.entry, sPlayerbotAIConfig.tooCloseDistance, sPlayerbotAIConfig.sightDistance);
             gLoc->setExpireDelay(5 * 60 * 1000);
-            gLoc->setMaxVisitors(100, 0);
 
             point = GuidPosition(u.guid, WorldPosition(u.map, u.x, u.y, u.z, u.o));
             pointsMap.insert_or_assign(u.guid, point);
@@ -2222,7 +2125,6 @@ void TravelMgr::LoadQuestTravelTable()
 
             bLoc = new BossTravelDestination(u.entry, sPlayerbotAIConfig.tooCloseDistance, sPlayerbotAIConfig.sightDistance);
             bLoc->setExpireDelay(5 * 60 * 1000);
-            bLoc->setMaxVisitors(0, 0);
 
             pointsMap.insert_or_assign(u.guid, point);
             bLoc->addPoint(&pointsMap.find(u.guid)->second);
@@ -2258,7 +2160,6 @@ void TravelMgr::LoadQuestTravelTable()
         if (iloc == exploreLocs.end())
         {
             loc = new ExploreTravelDestination(area->ID, sPlayerbotAIConfig.tooCloseDistance, sPlayerbotAIConfig.sightDistance);
-            loc->setMaxVisitors(1000, 0);
             loc->setCooldownDelay(1000);
             loc->setExpireDelay(1000);
             loc->setTitle(area->area_name[0]);
@@ -3411,7 +3312,7 @@ vector<WorldPosition*> TravelMgr::getNextPoint(WorldPosition* center, vector<Wor
 
     vector<uint32> weights;
 
-    std::transform(retVec.begin(), retVec.end(), std::back_inserter(weights), [center](WorldPosition* point) { return 200000 / (1 + point->distance(center)); });
+    std::transform(retVec.begin(), retVec.end(), std::back_inserter(weights), [center](WorldPosition* point) { return 200000 / (1 + point->distance(*center)); });
 
     std::mt19937 gen(time(0));
 
@@ -3492,9 +3393,6 @@ vector<TravelDestination*> TravelMgr::getQuestTravelDestinations(Player* bot, in
             if (!ignoreInactive && !dest->isActive(bot))
                 continue;
 
-            if (dest->isFull(ignoreFull))
-                continue;
-
             if (maxDistance > 0 && dest->distanceTo(&botLocation) > maxDistance)
                 continue;
 
@@ -3517,9 +3415,6 @@ vector<TravelDestination*> TravelMgr::getQuestTravelDestinations(Player* bot, in
                 if (!ignoreInactive && !dest->isActive(bot))
                     continue;
 
-                if (dest->isFull(ignoreFull))
-                    continue;
-
                 if (maxDistance > 0 && dest->distanceTo(&botLocation) > maxDistance)
                     continue;
 
@@ -3535,9 +3430,6 @@ vector<TravelDestination*> TravelMgr::getQuestTravelDestinations(Player* bot, in
                 for (auto& dest : i->second->questObjectives)
                 {
                     if (!ignoreInactive && !dest->isActive(bot))
-                        continue;
-
-                    if (dest->isFull(ignoreFull))
                         continue;
 
                     if (maxDistance > 0 && dest->distanceTo(&botLocation) > maxDistance)
@@ -3560,9 +3452,6 @@ vector<TravelDestination*> TravelMgr::getRpgTravelDestinations(Player* bot, bool
     for (auto& dest : rpgNpcs)
     {
         if (!ignoreInactive && !dest->isActive(bot))
-            continue;
-
-        if (dest->isFull(ignoreFull))
             continue;
 
         if (maxDistance > 0 && dest->distanceTo(&botLocation) > maxDistance)
@@ -3588,9 +3477,6 @@ vector<TravelDestination*> TravelMgr::getExploreTravelDestinations(Player* bot, 
     for (auto& dest : exploreLocs)
     {
         if (!ignoreInactive && !dest.second->isActive(bot))
-            continue;
-
-        if (dest.second->isFull(ignoreFull))
             continue;
 
         // ignore PvP Halls for now
@@ -3620,9 +3506,6 @@ vector<TravelDestination*> TravelMgr::getGrindTravelDestinations(Player* bot, bo
         if (!ignoreInactive && !dest->isActive(bot))
             continue;
 
-        if (dest->isFull(ignoreFull))
-            continue;
-
         // ignore PvP Halls for now
         for (auto p : dest->getPoints(true))
             if (p->getMapId() == 449 || p->getMapId() == 450)
@@ -3646,9 +3529,6 @@ vector<TravelDestination*> TravelMgr::getBossTravelDestinations(Player* bot, boo
     for (auto& dest : bossMobs)
     {
         if (!ignoreInactive && !dest->isActive(bot))
-            continue;
-
-        if (dest->isFull(ignoreFull))
             continue;
 
         if (maxDistance > 0 && dest->distanceTo(&botLocation) > maxDistance)

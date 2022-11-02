@@ -74,7 +74,7 @@ bool RepairAllAction::Execute(Event& event)
             ai->TellMasterNoFacing(out.str(),PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
             bot->PlayDistanceSound(1116);
 
-            sTravelMgr.logEvent(ai, "RepairAllAction", to_string(durability), to_string(totalCost));
+            sPlayerbotAIConfig.logEvent(ai, "RepairAllAction", to_string(durability), to_string(totalCost));
         }
 
         context->GetValue<uint32>("death count")->Set(0);

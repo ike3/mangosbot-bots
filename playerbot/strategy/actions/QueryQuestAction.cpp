@@ -14,8 +14,7 @@ void QueryQuestAction::TellObjective(string name, int available, int required)
 bool QueryQuestAction::Execute(Event& event)
 {
     Player *bot = ai->GetBot();
-    WorldPosition pos = WorldPosition(bot);
-    WorldPosition* botPos = &pos;
+    WorldPosition botPos(bot);
     std::string text = event.getParam();
     bool travel = false;
 
@@ -77,10 +76,6 @@ bool QueryQuestAction::Execute(Event& event)
 
                 if (!dest->isActive(bot))
                     out << " not active";
-                if (dest->isFull(bot))
-                    out << " crowded";
-                if (dest->isFull(bot))
-                    out << " crowded";
 
                 ai->TellMaster(out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
 

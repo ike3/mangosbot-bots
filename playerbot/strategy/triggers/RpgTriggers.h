@@ -1,5 +1,6 @@
 #pragma once
 #include "../Trigger.h"
+#include "../../TravelMgr.h"
 
 namespace ai
 {

@@ -180,6 +180,9 @@ public:
     bool openLog(string fileName, char const* mode = "a");
     bool isLogOpen(string fileName) { auto it = logFiles.find(fileName); return it != logFiles.end() && it->second.second;}
     void log(string fileName, const char* str, ...);
+
+    void logEvent(PlayerbotAI* ai, string eventName, string info1 = "", string info2 = "");
+    void logEvent(PlayerbotAI* ai, string eventName, ObjectGuid guid, string info2);
 private:
     Config config;
 };

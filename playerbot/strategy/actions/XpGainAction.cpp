@@ -27,7 +27,7 @@ bool XpGainAction::Execute(Event& event)
         p >> xpgain;    // 1 given experience
         p >> type;      //1 00-kill_xp type, 01-non_kill_xp type
 
-        sTravelMgr.logEvent(ai, "XpGainAction", guid, to_string(xpgain));
+        sPlayerbotAIConfig.logEvent(ai, "XpGainAction", guid, to_string(xpgain));
     }
 
     if (!sRandomPlayerbotMgr.IsRandomBot(bot) || sPlayerbotAIConfig.playerbotsXPrate == 1)

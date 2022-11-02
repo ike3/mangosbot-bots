@@ -2,6 +2,7 @@
 #include "../../playerbot.h"
 #include "GroupValues.h"
 #include "../../ServerFacade.h"
+#include "../../TravelMgr.h"
 
 using namespace ai;
 

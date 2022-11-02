@@ -7,6 +7,7 @@
 #include "../../ServerFacade.h"
 #include "../values/Formations.h"
 #include "ChooseRpgTargetAction.h"
+#include "../../TravelMgr.h"
 
 using namespace ai;
 

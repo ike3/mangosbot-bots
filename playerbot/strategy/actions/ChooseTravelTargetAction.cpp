@@ -239,7 +239,7 @@ void ChooseTravelTargetAction::ReportTravelTarget(TravelTarget* newTarget, Trave
         else
             out << "Traveling ";
 
-        out << round(newTarget->getDestination()->distanceTo(&botLocation)) << "y";
+        out << round(newTarget->getDestination()->distanceTo(botLocation)) << "y";
 
         out << " for " << chat->formatQuest(quest);
 
@@ -258,7 +258,7 @@ void ChooseTravelTargetAction::ReportTravelTarget(TravelTarget* newTarget, Trave
         else
             out << "Traveling ";
 
-        out << round(newTarget->getDestination()->distanceTo(&botLocation)) << "y";
+        out << round(newTarget->getDestination()->distanceTo(botLocation)) << "y";
 
         out << " for ";
 
@@ -284,7 +284,7 @@ void ChooseTravelTargetAction::ReportTravelTarget(TravelTarget* newTarget, Trave
         else
             out << "Traveling ";
 
-        out << round(newTarget->getDestination()->distanceTo(&botLocation)) << "y";
+        out << round(newTarget->getDestination()->distanceTo(botLocation)) << "y";
 
         out << " for exploration";
 
@@ -303,7 +303,7 @@ void ChooseTravelTargetAction::ReportTravelTarget(TravelTarget* newTarget, Trave
         else
             out << "Traveling ";
 
-        out << round(newTarget->getDestination()->distanceTo(&botLocation)) << "y";
+        out << round(newTarget->getDestination()->distanceTo(botLocation)) << "y";
 
         out << " for grinding money";
 
@@ -322,7 +322,7 @@ void ChooseTravelTargetAction::ReportTravelTarget(TravelTarget* newTarget, Trave
         else
             out << "Traveling ";
 
-        out << round(newTarget->getDestination()->distanceTo(&botLocation)) << "y";
+        out << round(newTarget->getDestination()->distanceTo(botLocation)) << "y";
 
         out << " for good loot";
 
@@ -368,7 +368,7 @@ void ChooseTravelTargetAction::ReportTravelTarget(TravelTarget* newTarget, Trave
         if (destination->getName() == "NullTravelDestination")
             out << "0,";
         else
-            out << round(newTarget->getDestination()->distanceTo(&botPos)) << ",";
+            out << round(newTarget->getDestination()->distanceTo(botPos)) << ",";
 
         out << "1," << "\"" << destination->getTitle() << "\",\"" << message << "\"";
 
@@ -396,7 +396,7 @@ void ChooseTravelTargetAction::ReportTravelTarget(TravelTarget* newTarget, Trave
             if (destination->getName() == "NullTravelDestination")
                 out << "0,";
             else
-                out << round(newTarget->getDestination()->distanceTo(&botPos)) << ",";
+                out << round(newTarget->getDestination()->distanceTo(botPos)) << ",";
 
             out << "0," << "\"" << destination->getTitle() << "\",\""<< message << "\"";
 
@@ -876,8 +876,7 @@ TravelDestination* ChooseTravelTargetAction::FindDestination(Player* bot, string
             dests.push_back(d);
     }
 
-    WorldPosition pos = WorldPosition(bot);
-    WorldPosition* botPos = &pos;
+    WorldPosition botPos(bot);
 
     if (dests.empty())
         return nullptr;

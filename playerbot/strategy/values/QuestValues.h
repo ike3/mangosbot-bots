@@ -1,9 +1,11 @@
 #pragma once
 #include "../Value.h"
 #include "LootValues.h"
+#include "../../TravelMgr.h"
 
 namespace ai
 {          
+    class GuidPosition;
 
     class QuestObjectMgr : ObjectMgr
     {

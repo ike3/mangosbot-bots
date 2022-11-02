@@ -3245,6 +3245,12 @@ bool PlayerbotAI::HasPlayerNearby(WorldPosition* pos, float range)
     return nearPlayer;
 }
 
+bool PlayerbotAI::HasPlayerNearby(float range)
+{ 
+    WorldPosition botPos(bot);  
+    return HasPlayerNearby(&botPos, range); 
+}
+
 bool PlayerbotAI::HasManyPlayersNearby(uint32 trigerrValue, float range)
 {
     float sqRange = range * range;
@@ -3748,13 +3754,10 @@ string PlayerbotAI::HandleRemoteCommand(string command)
 
             out << ": " << target->getDestination()->getTitle();
 
-            out << " v: " << target->getDestination()->getVisitors();
-
             if (!(*target->getPosition() == WorldPosition()))
             {
                 out << "(" << target->getPosition()->getAreaName() << ")";
                 out << " distance: " << target->getPosition()->distance(bot) << "y";
-                out << " v: " << target->getPosition()->getVisitors();
             }
         }
         out << " Status =";

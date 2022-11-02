@@ -795,7 +795,7 @@ void RandomPlayerbotFactory::CreateRandomArenaTeams()
         sRandomPlayerbotMgr.arenaTeamsDeleted = true;
     }
 
-    int arenaTeamNumber = 0;
+    uint32 arenaTeamNumber = 0;
     std::map<uint32, uint32> teamsNumber;
     std::map<uint32, uint32> maxTeamsNumber;
     maxTeamsNumber[ARENA_TYPE_2v2] = (uint32)(sPlayerbotAIConfig.randomBotArenaTeamCount * 0.4f);

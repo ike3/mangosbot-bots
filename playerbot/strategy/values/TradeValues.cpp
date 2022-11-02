@@ -2,7 +2,7 @@
 #include "../../playerbot.h"
 #include "TradeValues.h"
 #include "ItemUsageValue.h"
-
+#include "../../TravelMgr.h"
 
 using namespace ai;
 
