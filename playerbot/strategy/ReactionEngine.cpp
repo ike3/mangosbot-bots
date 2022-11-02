@@ -280,7 +280,6 @@ void ReactionEngine::SetReactionDuration(const Action* action, uint32 duration)
     }
 }
 
-
 void ReactionEngine::Reset()
 {
     ongoingReaction.Reset();

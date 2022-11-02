@@ -2,6 +2,7 @@
 #include "PlayerbotMgr.h"
 #include "playerbot.h"
 #include <stdarg.h>
+#include <iomanip>
 
 #include "AiFactory.h"
 
@@ -362,6 +363,116 @@ void PlayerbotAI::SetActionDuration(const Action* action, uint32 delay)
     else
     {
         SetAIInternalUpdateDelay(delay);
+    }
+}
+
+bool PlayerbotAI::IsStateActive(BotState state) const
+{
+    return currentEngine == engines[(uint8)state];
+}
+
+void PlayerbotAI::OnCombatStarted()
+{
+    if(!IsStateActive(BotState::BOT_STATE_COMBAT))
+    {
+        ChangeEngine(BotState::BOT_STATE_COMBAT);
+    }
+}
+
+void PlayerbotAI::OnCombatEnded()
+{
+    if (!IsStateActive(BotState::BOT_STATE_NON_COMBAT))
+    {
+        ChangeEngine(BotState::BOT_STATE_NON_COMBAT);
+    }
+}
+
+void PlayerbotAI::OnDeath()
+{
+    if (!IsStateActive(BotState::BOT_STATE_DEAD) && !sServerFacade.IsAlive(bot))
+    {
+        StopMoving();
+
+        //Death Count to prevent skeleton piles
+        Player* master = GetMaster();
+        if (!HasActivePlayerMaster() && !bot->InBattleGround())
+        {
+            uint32 dCount = aiObjectContext->GetValue<uint32>("death count")->Get();
+            aiObjectContext->GetValue<uint32>("death count")->Set(++dCount);
+
+            if (sPlayerbotAIConfig.hasLog("deaths.csv"))
+            {
+                WorldPosition botPos(bot);
+
+                ostringstream out;
+                out << sPlayerbotAIConfig.GetTimestampStr() << "+00,";
+                out << bot->GetName() << ",";
+                out << std::fixed << std::setprecision(2);
+
+                out << to_string(bot->getRace()) << ",";
+                out << to_string(bot->getClass()) << ",";
+                float subLevel = ((float)bot->GetLevel() + ((float)bot->GetUInt32Value(PLAYER_XP) / (float)bot->GetUInt32Value(PLAYER_NEXT_LEVEL_XP)));
+
+                out << subLevel << ",";
+
+                botPos.printWKT(out);
+
+                AiObjectContext* context = GetAiObjectContext();
+
+                Unit* ctarget = AI_VALUE(Unit*, "current target");
+
+                if (ctarget)
+                {
+                    out << "\"" << ctarget->GetName() << "\"," << ctarget->GetLevel() << "," << ctarget->GetHealthPercent() << ",";
+                }
+                else
+                    out << "\"none\",0,100,";
+
+                list<ObjectGuid> targets = AI_VALUE_LAZY(list<ObjectGuid>, "all targets");
+
+                out << "\"";
+
+                uint32 adds = 0;
+
+                for (auto target : targets)
+                {
+                    if (!target.IsCreature())
+                        continue;
+
+                    Unit* unit = GetUnit(target);
+                    if (!unit)
+                        continue;
+
+                    if (unit->GetVictim() != bot)
+                        continue;
+
+                    if (unit == ctarget)
+                        continue;
+
+                    out << unit->GetName() << "(" << unit->GetLevel() << ")";
+
+                    adds++;
+                }
+
+                out << "\"," << to_string(adds);
+
+                sPlayerbotAIConfig.log("deaths.csv", out.str().c_str());
+            }
+        }
+
+        aiObjectContext->GetValue<Unit*>("current target")->Set(NULL);
+        aiObjectContext->GetValue<Unit*>("enemy player target")->Set(NULL);
+        aiObjectContext->GetValue<ObjectGuid>("pull target")->Set(ObjectGuid());
+        aiObjectContext->GetValue<LootObject>("loot target")->Set(LootObject());
+        ChangeEngine(BotState::BOT_STATE_DEAD);
+    }
+}
+
+void PlayerbotAI::OnResurrected()
+{
+    if (IsStateActive(BotState::BOT_STATE_DEAD) && sServerFacade.IsAlive(bot))
+    {
+        ChangeEngine(BotState::BOT_STATE_NON_COMBAT);
     }
 }
 
@@ -1099,8 +1210,6 @@ void PlayerbotAI::ChangeEngine(BotState type)
     }
 }
 
-#include <iomanip>
-
 void PlayerbotAI::DoNextAction(bool min)
 {
     if (!bot->IsInWorld() || bot->IsBeingTeleported() || (GetMaster() && GetMaster()->IsBeingTeleported()))
@@ -1115,99 +1224,12 @@ void PlayerbotAI::DoNextAction(bool min)
         return;
     }
 
-    // change engine if just died
-    if (currentEngine != engines[(uint8)BotState::BOT_STATE_DEAD] && !sServerFacade.IsAlive(bot))
-    {
-        StopMoving();
-
-        //Death Count to prevent skeleton piles
-        Player* master = GetMaster();
-        if (!HasActivePlayerMaster() && !bot->InBattleGround())
-        {
-            uint32 dCount = aiObjectContext->GetValue<uint32>("death count")->Get();
-            aiObjectContext->GetValue<uint32>("death count")->Set(++dCount);
-
-            if (sPlayerbotAIConfig.hasLog("deaths.csv"))
-            {                
-                WorldPosition botPos(bot);
-
-                ostringstream out;
-                out << sPlayerbotAIConfig.GetTimestampStr() << "+00,";
-                out << bot->GetName() << ",";
-                out << std::fixed << std::setprecision(2);
-
-                out << to_string(bot->getRace()) << ",";
-                out << to_string(bot->getClass()) << ",";
-                float subLevel = ((float)bot->GetLevel() + ((float)bot->GetUInt32Value(PLAYER_XP) / (float)bot->GetUInt32Value(PLAYER_NEXT_LEVEL_XP)));
-
-                out << subLevel << ",";
-
-                botPos.printWKT(out);
-
-                AiObjectContext* context = GetAiObjectContext();
-
-                Unit* ctarget = AI_VALUE(Unit*, "current target");
-
-                if (ctarget)
-                {
-                    out << "\"" << ctarget->GetName() << "\"," << ctarget->GetLevel() << "," << ctarget->GetHealthPercent() << ",";
-                }
-                else
-                    out << "\"none\",0,100,";
-
-                list<ObjectGuid> targets = AI_VALUE_LAZY(list<ObjectGuid>, "all targets");
-
-                out << "\"";
-
-                uint32 adds = 0;
-
-                for (auto target : targets)
-                {
-                    if (!target.IsCreature())
-                        continue;
-
-                    Unit* unit = GetUnit(target);
-                    if (!unit)
-                        continue;
-
-                    if (unit->GetVictim() != bot)
-                        continue;
-
-                    if (unit == ctarget)
-                        continue;
-
-                    out << unit->GetName() << "(" << unit->GetLevel() << ")";
-
-                    adds++;
-                }
-
-                out << "\"," << to_string(adds);
-
-                sPlayerbotAIConfig.log("deaths.csv", out.str().c_str());
-            }
-        }
-
-        aiObjectContext->GetValue<Unit*>("current target")->Set(NULL);
-        aiObjectContext->GetValue<Unit*>("enemy player target")->Set(NULL);
-        aiObjectContext->GetValue<ObjectGuid>("pull target")->Set(ObjectGuid());
-        aiObjectContext->GetValue<LootObject>("loot target")->Set(LootObject());
-        
-        ChangeEngine(BotState::BOT_STATE_DEAD);
-        return;
-    }
-
-    // change engine if just resurrected
-    if (currentEngine == engines[(uint8)BotState::BOT_STATE_DEAD] && sServerFacade.IsAlive(bot))
-    {
-        ChangeEngine(BotState::BOT_STATE_NON_COMBAT);
-        return;
-    }
-
-    // if in combat but stick with old data - clear targets
+    // if in combat but stuck with old data - clear targets
     if (currentEngine == engines[(uint8)BotState::BOT_STATE_NON_COMBAT] && sServerFacade.IsInCombat(bot))
     {
         if (aiObjectContext->GetValue<Unit*>("current target")->Get() != NULL ||
-            aiObjectContext->GetValue<ObjectGuid>("pull target")->Get() != ObjectGuid() || aiObjectContext->GetValue<Unit*>("dps target")->Get() != NULL)
+            aiObjectContext->GetValue<ObjectGuid>("pull target")->Get() != ObjectGuid() || 
+            aiObjectContext->GetValue<Unit*>("dps target")->Get() != NULL)
         {
             Reset();
         }

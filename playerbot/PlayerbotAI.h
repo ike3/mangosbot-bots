@@ -426,6 +426,13 @@ public:
     bool IsInRealGuild();
     time_t GetCombatStartTime() { return combatStart; }
 
+    bool IsStateActive(BotState state) const;
+
+    void OnCombatStarted();
+    void OnCombatEnded();
+    void OnDeath();
+    void OnResurrected();
+    
     void SetActionDuration(const Action* action, uint32 delay);
     
 private:
