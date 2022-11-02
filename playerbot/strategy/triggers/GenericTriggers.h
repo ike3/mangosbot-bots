@@ -247,7 +247,7 @@ namespace ai
     class BuffOnPartyTrigger : public BuffTrigger
     {
     public:
-        BuffOnPartyTrigger(PlayerbotAI* ai, string spell, int checkInterval = 1) : BuffTrigger(ai, spell, checkInterval) {}
+        BuffOnPartyTrigger(PlayerbotAI* ai, string spell, int checkInterval = 2) : BuffTrigger(ai, spell, checkInterval) {}
     public:
 		virtual Value<Unit*>* GetTargetValue();
 		virtual string getName() { return spell + " on party"; }
@@ -256,7 +256,7 @@ namespace ai
     class MyBuffOnPartyTrigger : public BuffOnPartyTrigger
     {
     public:
-        MyBuffOnPartyTrigger(PlayerbotAI* ai, string spell, int checkInterval = 1) : BuffOnPartyTrigger(ai, spell, checkInterval) {}
+        MyBuffOnPartyTrigger(PlayerbotAI* ai, string spell, int checkInterval = 2) : BuffOnPartyTrigger(ai, spell, checkInterval) {}
     public:
         virtual Value<Unit*>* GetTargetValue();
         virtual string getName() { return spell + " on party"; }
@@ -404,7 +404,7 @@ namespace ai
     class SnareTargetTrigger : public DebuffTrigger
     {
     public:
-        SnareTargetTrigger(PlayerbotAI* ai, string spell, int interval = 3) : DebuffTrigger(ai, spell, interval) {}
+        SnareTargetTrigger(PlayerbotAI* ai, string spell, int interval = 1) : DebuffTrigger(ai, spell, interval) {}
     public:
         virtual Value<Unit*>* GetTargetValue();
         virtual string getName() { return spell + " on snare target"; }
@@ -590,7 +590,7 @@ namespace ai
     class NotDpsTargetActiveTrigger : public Trigger
     {
     public:
-        NotDpsTargetActiveTrigger(PlayerbotAI* ai) : Trigger(ai, "not dps target active") {}
+        NotDpsTargetActiveTrigger(PlayerbotAI* ai) : Trigger(ai, "not dps target active", 2) {}
 
     public:
         virtual bool IsActive();
