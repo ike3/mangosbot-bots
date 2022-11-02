@@ -1231,7 +1231,7 @@ void PlayerbotAI::DoNextAction(bool min)
 
     Group *group = bot->GetGroup();
     // test BG master set
-    if ((!master || (master->GetPlayerbotAI() && !master->GetPlayerbotAI()->IsRealPlayer())) && group)
+    if ((!master || !HasActivePlayerMaster()) && group)
     {
         PlayerbotAI* ai = bot->GetPlayerbotAI();
 
@@ -1847,7 +1847,7 @@ bool PlayerbotAI::TellMasterNoFacing(string text, PlayerbotSecurityLevel securit
 
         Player* master = GetMaster();
 
-        if (bot->GetGroup() && (!master || master->GetPlayerbotAI() && !master->GetPlayerbotAI()->IsRealPlayer()))
+        if (bot->GetGroup() && (!master || !HasActivePlayerMaster()))
         {
             Group* group = bot->GetGroup();
             for (GroupReference* ref = group->GetFirstMember(); ref; ref = ref->next())
@@ -1860,7 +1860,7 @@ bool PlayerbotAI::TellMasterNoFacing(string text, PlayerbotSecurityLevel securit
             }
         }
         
-        if ((!master||sPlayerbotAIConfig.IsNonRandomBot(bot)) && (sPlayerbotAIConfig.randomBotSayWithoutMaster || HasStrategy("debug", BotState::BOT_STATE_NON_COMBAT)))
+        if (!master && (sPlayerbotAIConfig.randomBotSayWithoutMaster || HasStrategy("debug", BotState::BOT_STATE_NON_COMBAT)))
         {
             bot->Say(text, (bot->GetTeam() == ALLIANCE ? LANG_COMMON : LANG_ORCISH));
             return true;
@@ -3351,9 +3351,13 @@ bool PlayerbotAI::AllowActive(ActivityType activityType)
     if (activityType == PACKET_ACTIVITY)
         return true;
 
-    if (GetMaster()) //Has player master. Always active.
-        if (!GetMaster()->GetPlayerbotAI() || GetMaster()->GetPlayerbotAI()->IsRealPlayer())
-            return true;
+    //Has player master. Always active.
+    if (HasRealPlayerMaster())
+        return true;
+
+    //Always active bots
+    if (IsSelfMaster())
+        return true;
 
     Group* group = bot->GetGroup();
     if (group)
@@ -3964,6 +3968,9 @@ void PlayerbotAI::Poi(float x, float y, string icon_name, Player* player, uint32
 {
     if (!player)
         player = master;
+
+    if (!player)
+        return;
 
     WorldPacket data(SMSG_GOSSIP_POI, (4 + 4 + 4 + 4 + 4 + 10)); // guess size
     data << flags;

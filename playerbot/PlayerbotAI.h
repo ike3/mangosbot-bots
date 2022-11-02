@@ -382,7 +382,8 @@ public:
     Player* GetMaster() { return master; }
 
     //Checks if the bot is really a player. Players always have themselves as master.
-    bool IsRealPlayer() { return master ? (master == bot) : false; } 
+    bool IsRealPlayer() { return bot->GetSession()->GetRemoteAddress() != "disconnected/bot"; }
+    bool IsSelfMaster() { return master ? (master == bot) : false; }
 
     //Bot has a master that is a player.
     bool HasRealPlayerMaster() { return master && (!master->GetPlayerbotAI() || master->GetPlayerbotAI()->IsRealPlayer()); } 
