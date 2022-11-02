@@ -241,7 +241,7 @@ vector<vector<WorldPosition*>> WorldPosition::distancePartition(vector<float> di
 }
 
 
-G3D::Vector3 WorldPosition::getVector3() 
+G3D::Vector3 WorldPosition::getVector3() const
 {
     return G3D::Vector3(coord_x, coord_y, coord_z); 
 }
@@ -258,7 +258,7 @@ string WorldPosition::print()
     return out.str();
 }
 
-void WorldPosition::printWKT(vector<WorldPosition> points, ostringstream& out, uint32 dim, bool loop)
+void WorldPosition::printWKT(vector<WorldPosition> points, ostringstream& out, uint32 dim, bool loop) const
 {
     switch (dim) {
     case 0:
@@ -1608,49 +1608,6 @@ void TravelMgr::Clear()
     quests.clear();
     pointsMap.clear();
 }
-
-void TravelMgr::logEvent(PlayerbotAI* ai, string eventName, string info1, string info2)
-{
-    if (sPlayerbotAIConfig.hasLog("bot_events.csv"))
-    {
-        Player* bot = ai->GetBot();
-
-        ostringstream out;
-        out << sPlayerbotAIConfig.GetTimestampStr() << "+00,";
-        out << bot->GetName() << ",";
-        out << eventName << ",";
-        out << std::fixed << std::setprecision(2);
-        WorldPosition(bot).printWKT(out);
-
-        out << to_string(bot->getRace()) << ",";
-        out << to_string(bot->getClass()) << ",";
-        float subLevel = ((float)bot->GetLevel() + ((float)bot->GetUInt32Value(PLAYER_XP) / (float)bot->GetUInt32Value(PLAYER_NEXT_LEVEL_XP)));
-
-        out << subLevel << ",";
-
-        out << "\""<<info1 << "\",";
-        out << "\""<<info2 << "\"";
-
-        sPlayerbotAIConfig.log("bot_events.csv", out.str().c_str());
-    }
-};
-
-
-void TravelMgr::logEvent(PlayerbotAI* ai, string eventName, ObjectGuid guid, string info2)
-{
-    string info1 = "";
-
-    Unit* victim;
-    if (guid)
-    {
-        victim = ai->GetUnit(guid);
-        if (victim)
-            info1 = victim->GetName();
-    }
-
-    logEvent(ai, eventName, info1, info2);
-};
-
 
 int32 TravelMgr::getAreaLevel(uint32 area_id)
 {

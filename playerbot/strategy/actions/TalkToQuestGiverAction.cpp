@@ -70,7 +70,7 @@ void TalkToQuestGiverAction::TurnInQuest(Quest const* quest, WorldObject* questG
 
     bot->PlayDistanceSound(621);
 
-    sTravelMgr.logEvent(ai, "TalkToQuestGiverAction", quest->GetTitle(), to_string(quest->GetQuestId()));
+    sPlayerbotAIConfig.logEvent(ai, "TalkToQuestGiverAction", quest->GetTitle(), to_string(quest->GetQuestId()));
 
     if (quest->GetRewChoiceItemsCount() == 0)
         RewardNoItem(quest, questGiver, out);

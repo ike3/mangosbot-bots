@@ -82,12 +82,12 @@ namespace ai
         float getY() const { return coord_y; }
         float getZ() const { return coord_z; }
         float getO() const { return orientation; }
-        G3D::Vector3 getVector3();
+        G3D::Vector3 getVector3() const;
         virtual string print();
-        string to_string() {stringstream out; out << mapid; out << coord_x; out << coord_y; out << coord_z;  out << orientation; return out.str();};
+        string to_string() const {stringstream out; out << mapid; out << coord_x; out << coord_y; out << coord_z;  out << orientation; return out.str();};
 
-        void printWKT(vector<WorldPosition> points, ostringstream& out, uint32 dim = 0, bool loop = false);
-        void printWKT(ostringstream& out) { printWKT({ *this }, out); }
+        void printWKT(vector<WorldPosition> points, ostringstream& out, uint32 dim = 0, bool loop = false) const;
+        void printWKT(ostringstream& out) const { printWKT({ *this }, out); }
 
         bool isOverworld() { return mapid == 0 || mapid == 1 || mapid == 530 || mapid == 571; }
         bool isInWater() { return getTerrain() ? getTerrain()->IsInWater(coord_x, coord_y, coord_z) : false; };
@@ -754,9 +754,6 @@ namespace ai
 
         void printGrid(uint32 mapId, int x, int y, string type);
         void printObj(WorldObject* obj, string type);
-
-        void logEvent(PlayerbotAI* ai, string eventName, string info1 = "", string info2 = "");
-        void logEvent(PlayerbotAI* ai, string eventName, ObjectGuid guid, string info2);
 
         int32 getAreaLevel(uint32 area_id);
         void loadAreaLevels();

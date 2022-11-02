@@ -47,7 +47,7 @@ namespace ai
         ai->Reset();
 
         if(group)
-            sTravelMgr.logEvent(ai, "LeaveGroupAction", group->GetLeaderName(), to_string(group->GetMembersCount()));
+            sPlayerbotAIConfig.logEvent(ai, "LeaveGroupAction", group->GetLeaderName(), to_string(group->GetMembersCount()));
 
         return true;
 	}
