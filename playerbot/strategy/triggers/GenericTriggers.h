@@ -904,6 +904,9 @@ namespace ai
             for (auto itr : bot->GetSpellAuraHolderMap())
             {
                 SpellEntry const* spell = itr.second->GetSpellProto();
+                if (IsPositiveSpell(spell->Id))
+                    continue;
+
                 if (((1 << spell->Dispel) & disMask) || ((1 << spell->Dispel) & poisMask))
                     return true;
 
