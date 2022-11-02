@@ -88,7 +88,7 @@ namespace ai
             if (!master)
                 return WorldLocation();
 
-            float range = sPlayerbotAIConfig.followDistance;
+            float range = sPlayerbotAIConfig.followDistance + master->GetObjectBoundingRadius();
             float angle = GetFollowAngle();
             float x = master->GetPositionX() + cos(angle) * range;
             float y = master->GetPositionY() + sin(angle) * range;
@@ -98,8 +98,8 @@ namespace ai
 #else
             float ground = master->GetMap()->GetHeight(x, y, z);
 #endif
-            if (ground <= INVALID_HEIGHT)
-                return Formation::NullLocation;
+            //if (ground <= INVALID_HEIGHT)
+            //    return Formation::NullLocation;
 
             // prevent going into terrain
             float ox, oy, oz;
@@ -110,7 +110,7 @@ namespace ai
             master->GetMap()->GetHitPosition(ox, oy, oz + bot->GetCollisionHeight(), x, y, z, -0.5f);
 #endif
 
-            if (!bot->IsFlying() && !bot->IsFreeFlying())
+            if (!bot->IsFlying() && !bot->IsFreeFlying() && !bot->IsSwimming())
             {
                 z += CONTACT_DISTANCE;
                 bot->UpdateAllowedPositionZ(x, y, z);
@@ -151,8 +151,8 @@ namespace ai
 #else
             float ground = master->GetMap()->GetHeight(x, y, z);
 #endif
-            if (ground <= INVALID_HEIGHT)
-                return Formation::NullLocation;
+            //if (ground <= INVALID_HEIGHT)
+            //    return Formation::NullLocation;
 
             if (!bot->IsFlying() && !bot->IsFreeFlying())
             {
@@ -246,17 +246,15 @@ namespace ai
             float orientation = master->GetOrientation();
 
             vector<Player*> players;
-            GroupReference *gref = group->GetFirstMember();
-            while( gref )
+            for (GroupReference* gref = group->GetFirstMember(); gref; gref = gref->next())
             {
                 Player* member = gref->getSource();
+                if (!member || bot->GetMapId() != member->GetMapId()) continue;
                 if (member != master)
                     players.push_back(member);
-
-                gref = gref->next();
             }
 
-            players.insert(players.begin() + group->GetMembersCount() / 2, master);
+            players.insert(players.begin() + players.size() / 2, master);
 
             return MoveLine(players, 0.0f, x, y, z, orientation, range);
         }
@@ -285,10 +283,10 @@ namespace ai
 
             vector<Player*> tanks;
             vector<Player*> dps;
-            GroupReference *gref = group->GetFirstMember();
-            while( gref )
+            for (GroupReference* gref = group->GetFirstMember(); gref; gref = gref->next())
             {
                 Player* member = gref->getSource();
+                if (!member || bot->GetMapId() != member->GetMapId()) continue;
                 if (member != master)
                 {
                     if (ai->IsTank(member))
@@ -296,8 +294,6 @@ namespace ai
                     else
                         dps.push_back(member);
                 }
-
-                gref = gref->next();
             }
 
             if (ai->IsTank(master))
