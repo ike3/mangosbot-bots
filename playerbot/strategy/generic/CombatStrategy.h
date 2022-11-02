@@ -15,7 +15,6 @@ namespace ai
     public:
         AvoidAoeStrategy(PlayerbotAI* ai);
         virtual string getName() { return "avoid aoe"; }
-        virtual void InitMultipliers(std::list<Multiplier*>& multipliers);
         virtual void InitTriggers(std::list<TriggerNode*>& triggers);
     };
 }

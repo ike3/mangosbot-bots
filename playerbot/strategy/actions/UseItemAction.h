@@ -223,7 +223,112 @@ namespace ai
        }
    };
 
-   // oil of immolation
+   class UseBgBannerAction : public UseItemAction
+   {
+   public:
+       UseBgBannerAction(PlayerbotAI* ai) : UseItemAction(ai, "bg banner") {}
+       virtual bool isPossible() { return true; }
+       virtual bool isUseful()
+       {
+           if (!bot->InBattleGround() || bot->GetLevel() < 60 || !bot->IsInCombat())
+               return false;
+
+           list<ObjectGuid> units = *context->GetValue<list<ObjectGuid> >("nearest npcs no los");
+           for (list<ObjectGuid>::iterator i = units.begin(); i != units.end(); i++)
+           {
+               Unit* unit = ai->GetUnit(*i);
+               if (!unit)
+                   continue;
+
+               if (bot->GetTeam() == HORDE && unit->GetEntry() == 14466)
+                   return false;
+
+               if (bot->GetTeam() == ALLIANCE && unit->GetEntry() == 14465)
+                   return false;
+           }
+
+           return true;
+       }
+       virtual bool Execute(Event event)
+       {
+           uint32 banner = bot->GetTeam() == ALLIANCE ? 18606 : 18607;
+           bool added = bot->HasItemCount(banner, 1);
+           if (!added)
+               added = bot->StoreNewItemInInventorySlot(banner, 1);
+
+           if (!added)
+               return false;
+
+           list<Item*> items = AI_VALUE2(list<Item*>, "inventory items", bot->GetTeam() == ALLIANCE ? "alliance battle standard" : "horde battle standard");
+           list<Item*>::iterator i = items.begin();
+           Item* item = *i;
+
+           if (!item)
+               return false;
+
+           uint32 spellid = 0;
+           uint32 spell_index = 0;
+           for (int i = 0; i < MAX_ITEM_PROTO_SPELLS; ++i)
+           {
+               if (item->GetProto()->Spells[i].SpellTrigger == ITEM_SPELLTRIGGER_ON_USE)
+               {
+                   spellid = item->GetProto()->Spells[i].SpellId;
+                   spell_index = i;
+
+                   if (!bot->IsSpellReady(spellid, item->GetProto()))
+                       return false;
+
+                   break;
+               }
+           }
+
+           if (!spellid)
+               return false;
+
+           if (SpellEntry const* spellInfo = sSpellTemplate.LookupEntry<SpellEntry>(spellid))
+           {
+               if (!bot->IsSpellReady(spellid, item->GetProto()))
+                   return false;
+
+               SpellCastTargets targets;
+               targets.m_targetMask = TARGET_FLAG_SELF;
+               bot->CastItemUseSpell(item, targets, spell_index);
+               return true;
+           }
+           return false;
+       }
+   };
+
+   class UseBandageAction : public UseItemAction
+   {
+   public:
+       UseBandageAction(PlayerbotAI* ai) : UseItemAction(ai, "use bandage") {}
+       virtual bool isPossible() { return true; }
+       virtual bool isUseful()
+       {
+           if (!bot->InBattleGround() || bot->GetLevel() < 60 || bot->HasAura(11196))
+               return false;
+
+           if (AI_VALUE(uint8, "my attacker count") > 0 || bot->HasAuraType(SPELL_AURA_PERIODIC_DAMAGE))
+               return false;
+
+           return bot->IsSpellReady(30020);
+       }
+       virtual bool Execute(Event event)
+       {
+           if (SpellEntry const* spellInfo = sSpellTemplate.LookupEntry<SpellEntry>(30020))
+           {
+               bool casted = ai->CastSpell(30020, bot);
+               if (casted)
+               {
+                   bot->AddCooldown(*spellInfo, nullptr, false, 60000);
+                   return true;
+               }
+           }
+           return false;
+       }
+   };
+
    class UseAdamantiteGrenadeAction : public UseItemAction
    {
    public:
@@ -231,29 +336,23 @@ namespace ai
        virtual bool isPossible() { return true; }
        virtual bool isUseful()
        {
-           return false; bot->GetLevel() >= 52 && bot->IsSpellReady(19769);/* && bot->GetSkillValue(202) >= 260*/;
+           Unit* target = AI_VALUE(Unit*, "current target");
+           if (!target)
+               return false;
+
+           if (!target->IsNonMeleeSpellCasted(false) && target->IsStopped())
+               return false;
+
+           return bot->GetLevel() >= 52;
        }
        virtual bool Execute(Event event)
        {
-           uint32 spellId = 19769;
-           if (SpellEntry const* spellInfo = sSpellTemplate.LookupEntry<SpellEntry>(spellId))
-           {
-               bool casted = ai->CastSpell(19769, GetTarget());
-               if (casted)
-               {
-                   bot->AddCooldown(*spellInfo, nullptr, false, 60000);
-                   return true;
-               }
-           }
-
-           return false;
-           // test
            Unit* target = AI_VALUE(Unit*, "current target");
            if (!target)
                return false;
 
            uint32 skillValue = bot->GetSkillValue(202);
-           uint32 grenade = skillValue > 325 ? 23737: 15993;
+           uint32 grenade = bot->GetLevel() > 60 ? 23737 : 15993;
            bool added = bot->HasItemCount(grenade, 1);
            if (!added)
                added = bot->StoreNewItemInInventorySlot(grenade, 1);
@@ -261,7 +360,7 @@ namespace ai
            if (!added)
                return false;
 
-           list<Item*> items = AI_VALUE2(list<Item*>, "inventory items", skillValue > 325 ? "adamantite grenade" : "thorium grenade");
+           list<Item*> items = AI_VALUE2(list<Item*>, "inventory items", bot->GetLevel() > 60 ? "adamantite grenade" : "thorium grenade");
            list<Item*>::iterator i = items.begin();
            Item* item = *i;
 

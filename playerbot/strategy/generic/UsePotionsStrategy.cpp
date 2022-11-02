@@ -10,6 +10,7 @@ public:
     UsePotionsStrategyActionNodeFactory()
     {
         creators["healthstone"] = &healthstone;
+        creators["healing potion"] = &healing_potion;
     }
 private:
     static ActionNode* healthstone(PlayerbotAI* ai)
@@ -17,6 +18,13 @@ private:
         return new ActionNode("healthstone",
             /*P*/ NULL,
             /*A*/ NextAction::array(0, new NextAction("healing potion"), NULL),
+            /*C*/ NULL);
+    }
+    static ActionNode* healing_potion(PlayerbotAI* ai)
+    {
+        return new ActionNode("healing potion",
+            /*P*/ NULL,
+            /*A*/ NextAction::array(0, new NextAction("use bandage"), NULL),
             /*C*/ NULL);
     }
 };
@@ -28,11 +36,13 @@ UsePotionsStrategy::UsePotionsStrategy(PlayerbotAI* ai) : Strategy(ai)
 
 void UsePotionsStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 {
-    Strategy::InitTriggers(triggers);
-
     triggers.push_back(new TriggerNode(
         "critical health",
         NextAction::array(0, new NextAction("healthstone", ACTION_HIGH + 2), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "low health",
+        NextAction::array(0, new NextAction("use bandage", ACTION_HIGH + 3), NULL)));
 
     triggers.push_back(new TriggerNode(
         "low mana",
