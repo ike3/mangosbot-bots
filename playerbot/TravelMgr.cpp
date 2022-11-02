@@ -969,17 +969,6 @@ vector <WorldPosition*> TravelDestination::nextPoint(WorldPosition* pos, bool ig
     return sTravelMgr.getNextPoint(pos, ignoreFull ? points : getPoints());
 }
 
-bool TravelDestination::isFull(bool ignoreFull) {
-    if (!ignoreFull && maxVisitors > 0 && visitors >= maxVisitors)
-        return true;
-
-    if (maxVisitorsPerPoint > 0)
-        if (getPoints(ignoreFull).empty())
-            return true;
-
-    return false;
-}
-
 string QuestTravelDestination::getTitle() {
     return ChatHelper::formatQuest(questTemplate);
 }
@@ -1395,20 +1384,14 @@ TravelTarget::~TravelTarget() {
     if (!tDestination)
         return;
 
-    releaseVisitors();
-    //sTravelMgr.botTargets.erase(std::remove(sTravelMgr.botTargets.begin(), sTravelMgr.botTargets.end(), this), sTravelMgr.botTargets.end());
 }
 
 void TravelTarget::setTarget(TravelDestination* tDestination1, WorldPosition* wPosition1, bool groupCopy1) {
-    releaseVisitors();
-
     wPosition = wPosition1;
     tDestination = tDestination1;
     groupCopy = groupCopy1;
     forced = false;
     radius = 0;
-
-    addVisitors();
 
     setStatus(TravelStatus::TRAVEL_STATUS_TRAVEL);
 }
@@ -1418,25 +1401,6 @@ void TravelTarget::copyTarget(TravelTarget* target) {
     groupCopy = target->isGroupCopy();
     forced = target->forced;
     extendRetryCount = target->extendRetryCount;
-}
-
-void TravelTarget::addVisitors() {
-    if (!visitor)
-    {
-        tDestination->addVisitor();
-    }
-
-    visitor = true;
-}
-
-void TravelTarget::releaseVisitors() {
-    if (visitor)
-    {
-        if (tDestination)
-            tDestination->remVisitor();
-    }
-
-    visitor = false;
 }
 
 void TravelTarget::setStatus(TravelStatus status) {
@@ -2083,7 +2047,6 @@ void TravelMgr::LoadQuestTravelTable()
                     {
                         loc = new QuestRelationTravelDestination(questId, entry, 0, sPlayerbotAIConfig.tooCloseDistance, sPlayerbotAIConfig.sightDistance);
                         loc->setExpireDelay(5 * 60 * 1000);
-                        loc->setMaxVisitors(15, 0);
                         container->questGivers.push_back(loc);
                         locs.push_back(loc);
                     }
@@ -2091,7 +2054,6 @@ void TravelMgr::LoadQuestTravelTable()
                     {
                         loc = new QuestRelationTravelDestination(questId, entry, 1, sPlayerbotAIConfig.tooCloseDistance, sPlayerbotAIConfig.sightDistance);
                         loc->setExpireDelay(5 * 60 * 1000);
-                        loc->setMaxVisitors(15, 0);
                         container->questTakers.push_back(loc);
                         locs.push_back(loc);
                     }
@@ -2109,7 +2071,6 @@ void TravelMgr::LoadQuestTravelTable()
 
                         loc = new QuestObjectiveTravelDestination(questId, entry, objective, sPlayerbotAIConfig.tooCloseDistance, sPlayerbotAIConfig.sightDistance);
                         loc->setExpireDelay(1 * 60 * 1000);
-                        loc->setMaxVisitors(100, 1);
                         container->questObjectives.push_back(loc);
                         locs.push_back(loc);
                     }
@@ -2182,8 +2143,6 @@ void TravelMgr::LoadQuestTravelTable()
             {
                 rLoc = new RpgTravelDestination(u.entry, sPlayerbotAIConfig.tooCloseDistance, sPlayerbotAIConfig.sightDistance);
                 rLoc->setExpireDelay(5 * 60 * 1000);
-                rLoc->setMaxVisitors(15, 0);
-
 
                 pointsMap.insert_or_assign(u.guid, point);
                 rLoc->addPoint(&pointsMap.find(u.guid)->second);
@@ -2196,7 +2155,6 @@ void TravelMgr::LoadQuestTravelTable()
         {
             gLoc = new GrindTravelDestination(u.entry, sPlayerbotAIConfig.tooCloseDistance, sPlayerbotAIConfig.sightDistance);
             gLoc->setExpireDelay(5 * 60 * 1000);
-            gLoc->setMaxVisitors(100, 0);
 
             point = GuidPosition(u.guid, WorldPosition(u.map, u.x, u.y, u.z, u.o));
             pointsMap.insert_or_assign(u.guid, point);
@@ -2210,7 +2168,6 @@ void TravelMgr::LoadQuestTravelTable()
 
             bLoc = new BossTravelDestination(u.entry, sPlayerbotAIConfig.tooCloseDistance, sPlayerbotAIConfig.sightDistance);
             bLoc->setExpireDelay(5 * 60 * 1000);
-            bLoc->setMaxVisitors(0, 0);
 
             pointsMap.insert_or_assign(u.guid, point);
             bLoc->addPoint(&pointsMap.find(u.guid)->second);
@@ -2246,7 +2203,6 @@ void TravelMgr::LoadQuestTravelTable()
         if (iloc == exploreLocs.end())
         {
             loc = new ExploreTravelDestination(area->ID, sPlayerbotAIConfig.tooCloseDistance, sPlayerbotAIConfig.sightDistance);
-            loc->setMaxVisitors(1000, 0);
             loc->setCooldownDelay(1000);
             loc->setExpireDelay(1000);
             loc->setTitle(area->area_name[0]);
@@ -3480,9 +3436,6 @@ vector<TravelDestination*> TravelMgr::getQuestTravelDestinations(Player* bot, in
             if (!ignoreInactive && !dest->isActive(bot))
                 continue;
 
-            if (dest->isFull(ignoreFull))
-                continue;
-
             if (maxDistance > 0 && dest->distanceTo(&botLocation) > maxDistance)
                 continue;
 
@@ -3505,9 +3458,6 @@ vector<TravelDestination*> TravelMgr::getQuestTravelDestinations(Player* bot, in
                 if (!ignoreInactive && !dest->isActive(bot))
                     continue;
 
-                if (dest->isFull(ignoreFull))
-                    continue;
-
                 if (maxDistance > 0 && dest->distanceTo(&botLocation) > maxDistance)
                     continue;
 
@@ -3523,9 +3473,6 @@ vector<TravelDestination*> TravelMgr::getQuestTravelDestinations(Player* bot, in
                 for (auto& dest : i->second->questObjectives)
                 {
                     if (!ignoreInactive && !dest->isActive(bot))
-                        continue;
-
-                    if (dest->isFull(ignoreFull))
                         continue;
 
                     if (maxDistance > 0 && dest->distanceTo(&botLocation) > maxDistance)
@@ -3548,9 +3495,6 @@ vector<TravelDestination*> TravelMgr::getRpgTravelDestinations(Player* bot, bool
     for (auto& dest : rpgNpcs)
     {
         if (!ignoreInactive && !dest->isActive(bot))
-            continue;
-
-        if (dest->isFull(ignoreFull))
             continue;
 
         if (maxDistance > 0 && dest->distanceTo(&botLocation) > maxDistance)
@@ -3576,9 +3520,6 @@ vector<TravelDestination*> TravelMgr::getExploreTravelDestinations(Player* bot, 
     for (auto& dest : exploreLocs)
     {
         if (!ignoreInactive && !dest.second->isActive(bot))
-            continue;
-
-        if (dest.second->isFull(ignoreFull))
             continue;
 
         // ignore PvP Halls for now
@@ -3608,9 +3549,6 @@ vector<TravelDestination*> TravelMgr::getGrindTravelDestinations(Player* bot, bo
         if (!ignoreInactive && !dest->isActive(bot))
             continue;
 
-        if (dest->isFull(ignoreFull))
-            continue;
-
         // ignore PvP Halls for now
         for (auto p : dest->getPoints(true))
             if (p->getMapId() == 449 || p->getMapId() == 450)
@@ -3634,9 +3572,6 @@ vector<TravelDestination*> TravelMgr::getBossTravelDestinations(Player* bot, boo
     for (auto& dest : bossMobs)
     {
         if (!ignoreInactive && !dest->isActive(bot))
-            continue;
-
-        if (dest->isFull(ignoreFull))
             continue;
 
         if (maxDistance > 0 && dest->distanceTo(&botLocation) > maxDistance)

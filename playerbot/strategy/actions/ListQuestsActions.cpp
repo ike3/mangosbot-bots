@@ -156,8 +156,6 @@ int ListQuestsAction::ListQuests(bool completed, bool silent, QuestTravelDetail 
 
                     if (!dest->isActive(bot))
                         out << " not active";
-                    if (dest->isFull(bot))
-                        out << " crowded";
 
                     ai->TellMaster(out);
 

@@ -76,10 +76,6 @@ bool QueryQuestAction::Execute(Event& event)
 
                 if (!dest->isActive(bot))
                     out << " not active";
-                if (dest->isFull(bot))
-                    out << " crowded";
-                if (dest->isFull(bot))
-                    out << " crowded";
 
                 ai->TellMaster(out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
 

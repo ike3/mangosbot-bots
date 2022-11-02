@@ -396,19 +396,14 @@ namespace ai
         bool hasPoint(WorldPosition* pos) { return std::find(points.begin(), points.end(), pos) != points.end(); }
         void setExpireDelay(uint32 delay) { expireDelay = delay; }
         void setCooldownDelay(uint32 delay) { cooldownDelay = delay; }
-        void setMaxVisitors(uint32 maxVisitors1 = 0, uint32 maxVisitorsPerPoint1 = 0) { maxVisitors = maxVisitors1; maxVisitorsPerPoint = maxVisitorsPerPoint1; }
 
         vector<WorldPosition*> getPoints(bool ignoreFull = false);
         uint32 getExpireDelay() { return expireDelay; }
         uint32 getCooldownDelay() { return cooldownDelay; }
-        void addVisitor() { visitors++; }
-        void remVisitor() { visitors--; }
-        uint32 getVisitors() { return visitors; }
 
         virtual Quest const* GetQuestTemplate() { return NULL; }
 
         virtual bool isActive(Player* bot) { return false; }
-        bool isFull(bool ignoreFull = false);
 
         virtual string getName() { return "TravelDestination"; }
         virtual int32 getEntry() { return 0; }
@@ -431,9 +426,6 @@ namespace ai
         float radiusMin = 0;
         float radiusMax = 0;
 
-        uint32 visitors = 0;
-        uint32 maxVisitors = 0;
-        uint32 maxVisitorsPerPoint = 0;
         uint32 expireDelay = 5 * 1000;
         uint32 cooldownDelay = 60 * 1000;
     };
@@ -658,8 +650,6 @@ namespace ai
         void setRadius(float radius1) { radius = radius1; }
 
         void copyTarget(TravelTarget* target);
-        void addVisitors();
-        void releaseVisitors();
 
         float distance(Player* bot) { WorldPosition pos(bot);  return wPosition->distance(pos); };
         WorldPosition* getPosition() { return wPosition; };

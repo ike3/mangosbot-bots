@@ -3732,8 +3732,6 @@ string PlayerbotAI::HandleRemoteCommand(string command)
 
             out << ": " << target->getDestination()->getTitle();
 
-            out << " v: " << target->getDestination()->getVisitors();
-
             if (!(*target->getPosition() == WorldPosition()))
             {
                 out << "(" << target->getPosition()->getAreaName() << ")";
