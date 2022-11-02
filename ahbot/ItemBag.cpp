@@ -101,7 +101,9 @@ void ItemBag::Init(bool silent)
 
     sLog.outString("Loading/Scanning %s...", GetName().c_str());
 
+    for (int i = 0; i < CategoryList::instance.size(); i++) CategoryList::instance[i]->LoadCache();
     Load();
+    for (int i = 0; i < CategoryList::instance.size(); i++) CategoryList::instance[i]->SaveCache();
 
     for (int i = 0; i < CategoryList::instance.size(); i++)
     {

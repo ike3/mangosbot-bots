@@ -28,6 +28,8 @@ namespace ahbot
         virtual uint32 GetSkillId() { return 0; }
 
         virtual PricingStrategy* GetPricingStrategy();
+        virtual void LoadCache() {}
+        virtual void SaveCache() {}
 
     private:
         PricingStrategy *pricingStrategy;
@@ -276,6 +278,8 @@ namespace ahbot
         virtual uint32 GetStackCount(ItemPrototype const* proto) { return category->GetStackCount(proto); }
         virtual PricingStrategy* GetPricingStrategy() { return category->GetPricingStrategy(); }
         virtual uint32 GetSkillId() { return category->GetSkillId(); }
+        virtual void LoadCache() { return category->LoadCache(); }
+        virtual void SaveCache() { return category->SaveCache(); }
 
     private:
         uint32 quality;

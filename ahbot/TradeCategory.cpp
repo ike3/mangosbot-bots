@@ -279,9 +279,55 @@ string TradeSkill::GetLabel()
             return "jewels";
     #endif
     #ifdef MANGOSBOT_TWO
+        case SKILL_JEWELCRAFTING:
+            return "jewels";
         case SKILL_INSCRIPTION:
             return "inscripts";
     #endif
         }
     }
+}
+
+void TradeSkill::LoadCache()
+{
+    if (!itemCache.empty()) return;
+
+    QueryResult* results = CharacterDatabase.PQuery("select item, contains from ahbot_cache where category = '%s'",
+            GetName().c_str());
+
+    int count = 0;
+    if (results)
+    {
+        do
+        {
+            Field* fields = results->Fetch();
+            uint32 item = fields[0].GetUInt32();
+            uint32 contains = fields[1].GetUInt32();
+
+            itemCache[item] = contains;
+            count++;
+
+        } while (results->NextRow());
+        delete results;
+    }
+
+    if (count)
+    {
+        sLog.outDetail("%u cached ahbot items loaded for category %s", count, GetName().c_str());
+    } else rebuildRequired = true;
+}
+
+void TradeSkill::SaveCache()
+{
+    if (!rebuildRequired) return;
+    sLog.outBasic("Saving %u cached ahbot items for category %s", itemCache.size(), GetName().c_str());
+    for (map<uint32, bool>::iterator i = itemCache.begin(); i != itemCache.end(); ++i)
+    {
+        uint32 itemId = i->first;
+        bool contains = i->second;
+
+        CharacterDatabase.PExecute("insert into ahbot_cache (category, item, contains) values ('%s', %u, %u)",
+                GetName().c_str(), itemId, contains ? 1 : 0);
+    }
+    rebuildRequired = false;
 }

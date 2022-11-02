@@ -35,3 +35,12 @@ CREATE TABLE `ahbot_price` (
   PRIMARY KEY (`id`),
   KEY `ahbot_price_item` (`item`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `ahbot_cache` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `category` varchar(45) DEFAULT NULL,
+  `item` bigint(20) DEFAULT NULL,
+  `contains` bigint(20) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `ahbot_cache_category` (`category`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
