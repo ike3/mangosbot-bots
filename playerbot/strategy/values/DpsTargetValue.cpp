@@ -4,10 +4,10 @@
 
 using namespace ai;
 
-class FindLeastHpTargetStrategy : public FindTargetStrategy
+class FindLeastHpTargetStrategy : public FindNonCcTargetStrategy
 {
 public:
-    FindLeastHpTargetStrategy(PlayerbotAI* ai) : FindTargetStrategy(ai)
+    FindLeastHpTargetStrategy(PlayerbotAI* ai) : FindNonCcTargetStrategy(ai)
     {
         minHealth = 0;
     }
@@ -18,6 +18,8 @@ public:
         // do not use this logic for pvp
         if (attacker->IsPlayer())
             return;
+
+        if (IsCcTarget(attacker)) return;
 
         Group* group = ai->GetBot()->GetGroup();
         if (group)
