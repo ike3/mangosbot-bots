@@ -180,10 +180,7 @@ bool SeeSpellAction::MoveToSpell(WorldPosition& spellPosition, bool inFormation)
     if(inFormation)
         SetFormationOffset(spellPosition);
 
-    if (bot->IsWithinLOS(spellPosition.getX(), spellPosition.getY(), spellPosition.getZ()))
-        return MoveNear(spellPosition.getMapId(), spellPosition.getX(), spellPosition.getY(), spellPosition.getZ(), 0);
-    else
-        return MoveTo(spellPosition.getMapId(), spellPosition.getX(), spellPosition.getY(), spellPosition.getZ(), false, false);
+    return MoveTo(spellPosition.getMapId(), spellPosition.getX(), spellPosition.getY(), spellPosition.getZ(), false, false);
 }
 
 void SeeSpellAction::SetFormationOffset(WorldPosition& spellPosition)

@@ -154,10 +154,7 @@ bool MoveToRpgTargetAction::Execute(Event& event)
 
     bool couldMove;
     
-    if (bot->IsWithinLOS(x, y, z, true))
-        couldMove = MoveNear(mapId, x , y, z, 0);
-    else
-        couldMove = MoveTo(mapId, x, y, z, false, false);
+    couldMove = MoveTo(mapId, x, y, z, false, false);
 
     if (!couldMove && WorldPosition(mapId,x,y,z).distance(bot) > INTERACTION_DISTANCE)
     {
