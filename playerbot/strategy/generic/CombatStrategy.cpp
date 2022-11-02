@@ -40,22 +40,6 @@ void CombatStrategy::InitTriggers(list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("use lightwell", 80.0f), NULL)));
 }
 
-AvoidAoeStrategy::AvoidAoeStrategy(PlayerbotAI* ai) : Strategy(ai)
-{
-}
-
-
-class AvoidAoeStrategyMultiplier : public Multiplier
-{
-public:
-    AvoidAoeStrategyMultiplier(PlayerbotAI* ai) : Multiplier(ai, "run away on area debuff") {}
-
-public:
-    virtual float GetValue(Action* action);
-
-private:
-};
-
 float AvoidAoeStrategyMultiplier::GetValue(Action* action)
 {
     if (!action)
@@ -83,7 +67,6 @@ float AvoidAoeStrategyMultiplier::GetValue(Action* action)
 
     return 1.0f;
 }
-
 
 void AvoidAoeStrategy::InitTriggers(std::list<TriggerNode*>& triggers)
 {

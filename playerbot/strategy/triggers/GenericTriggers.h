@@ -982,7 +982,6 @@ namespace ai
             }
             return false;
         }
-
     };
 }
 
