@@ -361,6 +361,32 @@ void RandomPlayerbotMgr::LogPlayerLocation()
 
 
                 sPlayerbotAIConfig.log("player_location.csv", out.str().c_str());
+
+                if (sPlayerbotAIConfig.hasLog("player_paths.csv"))
+                {
+                    if(playerBotMoveLog[i.first].empty() || playerBotMoveLog[i.first].back().first != int32(WorldPosition(bot).getDisplayX()) || playerBotMoveLog[i.first].back().second != int32(WorldPosition(bot).getDisplayY()))
+                        playerBotMoveLog[i.first].push_back(make_pair(WorldPosition(bot).getDisplayX(), WorldPosition(bot).getDisplayY()));
+
+                    if (playerBotMoveLog[i.first].size() > 100)
+                    {
+                        ostringstream out;
+                        out << bot->GetName() << ",";
+                        out << std::fixed << std::setprecision(1);
+
+                        out << "\"LINESTRING(";
+
+                        for (auto& p : playerBotMoveLog[i.first])
+                            out << p.first << " " << p.second << (&p == &playerBotMoveLog[i.first].back() ? "" : ",");
+
+                        out << ")\",";
+
+                        out << bot->GetOrientation() << ",";
+                        out << to_string(bot->getRace()) << ",";
+                        out << to_string(bot->getClass());
+                        sPlayerbotAIConfig.log("player_paths.csv", out.str().c_str());
+                        playerBotMoveLog[i.first].clear();
+                    }
+                }
             }
         for (auto i : GetPlayers())
         {
@@ -401,6 +427,32 @@ void RandomPlayerbotMgr::LogPlayerLocation()
             out << (bot->IsDead() ? (bot->GetCorpse() ? "ghost" : "dead") : "alive");
 
             sPlayerbotAIConfig.log("player_location.csv", out.str().c_str());
+
+            if (sPlayerbotAIConfig.hasLog("player_paths.csv"))
+            {
+                if (playerBotMoveLog[i.first].empty() || playerBotMoveLog[i.first].back().first != int32(WorldPosition(bot).getDisplayX()) || playerBotMoveLog[i.first].back().second != int32(WorldPosition(bot).getDisplayY()))
+                    playerBotMoveLog[i.first].push_back(make_pair(WorldPosition(bot).getDisplayX(), WorldPosition(bot).getDisplayY()));
+
+                if (playerBotMoveLog[i.first].size() > 100)
+                {
+                    ostringstream out;
+                    out << bot->GetName() << ",";
+                    out << std::fixed << std::setprecision(1);
+                                        
+                    out << "\"LINESTRING(";
+   
+                    for (auto& p : playerBotMoveLog[i.first])
+                        out << p.first << " " << p.second << (&p == &playerBotMoveLog[i.first].back() ? "" : ",");
+
+                    out << ")\",";
+
+                    out << bot->GetOrientation() << ",";
+                    out << to_string(bot->getRace()) << ",";
+                    out << to_string(bot->getClass());
+                    sPlayerbotAIConfig.log("player_paths.csv", out.str().c_str());
+                    playerBotMoveLog[i.first].clear();
+                }
+            }
         }
     }
     catch (...)
@@ -2477,7 +2529,7 @@ bool RandomPlayerbotMgr::HandlePlayerbotConsoleCommand(ChatHandler* handler, cha
     return true;
 }
 
-void RandomPlayerbotMgr::HandleCommand(uint32 type, const string& text, Player& fromPlayer, string channelName, Team team)
+void RandomPlayerbotMgr::HandleCommand(uint32 type, const string& text, Player& fromPlayer, string channelName, Team team, uint32 lang)
 {
     for (PlayerBotMap::const_iterator it = GetPlayerBotsBegin(); it != GetPlayerBotsEnd(); ++it)
     {
@@ -2498,7 +2550,7 @@ void RandomPlayerbotMgr::HandleCommand(uint32 type, const string& text, Player& 
             }
         }
 
-        bot->GetPlayerbotAI()->HandleCommand(type, text, fromPlayer);
+        bot->GetPlayerbotAI()->HandleCommand(type, text, fromPlayer, lang);
     }
 }
 
