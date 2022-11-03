@@ -268,7 +268,7 @@ namespace ai
 
         virtual bool IsActive()
         {
-            return FarFromMasterTrigger::IsActive() && !OutOfReactRangeTrigger::IsActive();
+            return FarFromMasterTrigger::IsActive() && !sServerFacade.IsDistanceGreaterThan(AI_VALUE2(float, "distance", "master target"), 50.0f);
         }
     };
 }
