@@ -2080,6 +2080,9 @@ uint32 RandomPlayerbotMgr::GetZoneLevel(uint16 mapId, float teleX, float teleY, 
 
 void RandomPlayerbotMgr::Refresh(Player* bot)
 {
+    if (!bot->GetMap())
+        return;
+
     if (sServerFacade.UnitIsDead(bot))
     {
         bot->ResurrectPlayer(1.0f);
