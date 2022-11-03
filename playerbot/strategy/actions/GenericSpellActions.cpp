@@ -6,12 +6,8 @@ using namespace ai;
 
 bool CastSpellAction::Execute(Event& event)
 {
-    if (spell == "conjure food" || spell == "conjure water")
+    if (spellName == "conjure food" || spellName == "conjure water")
     {
-        //uint32 id = AI_VALUE2(uint32, "spell id", spell);
-        //if (!id)
-        //    return false;
-
         uint32 castId = 0;
 
         for (PlayerSpellMap::iterator itr = bot->GetSpellMap().begin(); itr != bot->GetSpellMap().end(); ++itr)
@@ -25,7 +21,7 @@ bool CastSpellAction::Execute(Event& event)
             string namepart = pSpellInfo->SpellName[0];
             strToLower(namepart);
 
-            if (namepart.find(spell) == string::npos)
+            if (namepart.find(spellName) == string::npos)
                 continue;
 
             if (pSpellInfo->Effect[0] != SPELL_EFFECT_CREATE_ITEM)
@@ -42,28 +38,34 @@ bool CastSpellAction::Execute(Event& event)
             if (pSpellInfo->Id > castId)
                 castId = pSpellInfo->Id;
         }
+
         return ai->CastSpell(castId, bot);
     }
 
-	return ai->CastSpell(spell, GetTarget());
+	return ai->CastSpell(spellName, GetTarget());
 }
 
 bool CastSpellAction::isPossible()
 {
     if (ai->IsInVehicle() && !ai->IsInVehicle(false, false, true))
-        return false;
-
-    if (spell == "mount" && !bot->IsMounted() && !bot->IsInCombat())
-        return true;
-    if (spell == "mount" && bot->IsInCombat())
     {
-        bot->Unmount();
         return false;
     }
 
-    Spell* currentSpell = bot->GetCurrentSpell(CURRENT_GENERIC_SPELL);
+    if (spellName == "mount")
+    {
+        if (!bot->IsMounted() && !bot->IsInCombat())
+        {
+            return true;
+        }
+        if (bot->IsInCombat())
+        {
+            bot->Unmount();
+            return false;
+        }
+    }
 
-	return ai->CanCastSpell(spell, GetTarget(), true);
+	return ai->CanCastSpell(spellName, GetTarget(), true);
 }
 
 bool CastSpellAction::isUseful()
@@ -71,15 +73,15 @@ bool CastSpellAction::isUseful()
     if (ai->IsInVehicle() && !ai->IsInVehicle(false, false, true))
         return false;
 
-    if (spell == "mount" && !bot->IsMounted() && !bot->IsInCombat())
+    if (spellName == "mount" && !bot->IsMounted() && !bot->IsInCombat())
         return true;
-    if (spell == "mount" && bot->IsInCombat())
+    if (spellName == "mount" && bot->IsInCombat())
     {
         bot->Unmount();
         return false;
     }
 
-    bool isUsefulCast = AI_VALUE2(bool, "spell cast useful", spell);
+    bool isUsefulCast = AI_VALUE2(bool, "spell cast useful", spellName);
 
     Unit* spellTarget = GetTarget();
     if (!spellTarget)
@@ -102,8 +104,6 @@ bool CastSpellAction::isUseful()
         else // range check
         {
             canReach = dist <= (range + sPlayerbotAIConfig.contactDistance);
-
-            uint32 spellId = AI_VALUE2(uint32, "spell id", spell);
             if (!spellId)
                 return true; // there can be known alternatives
 
@@ -124,9 +124,18 @@ bool CastSpellAction::isUseful()
     return spellTarget && isUsefulCast && canReach; // bot->GetDistance(spellTarget, true, DIST_CALC_COMBAT_REACH) <= (range + sPlayerbotAIConfig.contactDistance);
 }
 
+void CastSpellAction::SetSpellName(const string& name, string spellIDContextName /*= "spell id"*/)
+{
+    if (spellName != name)
+    {
+        spellName = name;
+        spellId = ai->GetAiObjectContext()->GetValue<uint32>(spellIDContextName, name)->Get();
+    }
+}
+
 bool CastAuraSpellAction::isUseful()
 {
-    return GetTarget() && (GetTarget() != nullptr) && (GetTarget() != NULL) && CastSpellAction::isUseful() && !ai->HasAura(spell, GetTarget(), false, isOwner);
+    return GetTarget() && (GetTarget() != nullptr) && (GetTarget() != NULL) && CastSpellAction::isUseful() && !ai->HasAura(GetSpellName(), GetTarget(), false, isOwner);
 }
 
 bool CastEnchantItemAction::isPossible()
@@ -134,8 +143,7 @@ bool CastEnchantItemAction::isPossible()
     if (!CastSpellAction::isPossible())
         return false;
 
-    uint32 spellId = AI_VALUE2(uint32, "spell id", spell);
-    return spellId && AI_VALUE2(Item*, "item for spell", spellId);
+    return GetSpellID() && AI_VALUE2(Item*, "item for spell", GetSpellID());
 }
 
 bool CastAoeHealSpellAction::isUseful()
@@ -150,13 +158,12 @@ Value<Unit*>* CurePartyMemberAction::GetTargetValue()
 
 Value<Unit*>* BuffOnPartyAction::GetTargetValue()
 {
-    return context->GetValue<Unit*>("party member without aura", spell);
+    return context->GetValue<Unit*>("party member without aura", GetSpellName());
 }
 
 bool CastVehicleSpellAction::isPossible()
 {
-    uint32 spellId = AI_VALUE2(uint32, "vehicle spell id", spell);
-    return ai->CanCastVehicleSpell(spellId, GetTarget());
+    return ai->CanCastVehicleSpell(GetSpellID(), GetTarget());
 }
 
 bool CastVehicleSpellAction::isUseful()
@@ -166,6 +173,96 @@ bool CastVehicleSpellAction::isUseful()
 
 bool CastVehicleSpellAction::Execute(Event& event)
 {
-    uint32 spellId = AI_VALUE2(uint32, "vehicle spell id", spell);
-    return ai->CastVehicleSpell(spellId, GetTarget());
+    return ai->CastVehicleSpell(GetSpellID(), GetTarget());
+}
+
+bool CastShootAction::isPossible()
+{
+    // Check if the bot has a ranged weapon equipped
+    UpdateWeaponInfo();
+    return rangedWeapon != nullptr;
+}
+
+bool CastShootAction::Execute(Event& event)
+{
+    bool succeeded = false;
+
+    UpdateWeaponInfo();
+    if (rangedWeapon)
+    {
+        // Prevent calling the shoot spell when already active
+        Spell* autoRepeatSpell = ai->GetBot()->GetCurrentSpell(CURRENT_AUTOREPEAT_SPELL);
+        if (autoRepeatSpell && (autoRepeatSpell->m_spellInfo->Id == GetSpellID()))
+        {
+            succeeded = true;
+        }
+        else if (CastSpellAction::Execute(event))
+        {
+            succeeded = true;
+        }
+
+        if (succeeded)
+        {
+            SetDuration(weaponDelay);
+        }
+    }
+
+    return succeeded;
+}
+
+void CastShootAction::UpdateWeaponInfo()
+{
+    // Check if we have a new ranged weapon equipped
+    const Item* equippedWeapon = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_RANGED);
+    if (equippedWeapon)
+    {
+        if (equippedWeapon != rangedWeapon)
+        {
+            string spellName = "shoot";
+            bool isRangedWeapon = false;
+
+            const ItemPrototype* itemPrototype = equippedWeapon->GetProto();
+            switch (itemPrototype->SubClass)
+            {
+                case ITEM_SUBCLASS_WEAPON_GUN:
+                {
+                    isRangedWeapon = true;
+                    spellName += " gun";
+                    break;
+                }
+                case ITEM_SUBCLASS_WEAPON_BOW:
+                {
+                    isRangedWeapon = true;
+                    spellName += " bow";
+                    break;
+                }
+                case ITEM_SUBCLASS_WEAPON_CROSSBOW:
+                {
+                    isRangedWeapon = true;
+                    spellName += " crossbow";
+                    break;
+                }
+
+                case ITEM_SUBCLASS_WEAPON_WAND:
+                {
+                    isRangedWeapon = true;
+                    break;
+                }
+
+                default: break;
+            }
+
+            // Set the new weapon parameters
+            if (isRangedWeapon)
+            {
+                SetSpellName(spellName);
+                rangedWeapon = equippedWeapon;
+                weaponDelay = itemPrototype->Delay + sPlayerbotAIConfig.globalCoolDown;
+            }
+        }
+    }
+    else
+    {
+        rangedWeapon = nullptr;
+    }
 }

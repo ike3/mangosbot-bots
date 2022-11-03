@@ -145,13 +145,10 @@ namespace ai
     {
     public:
         CastWingClipAction(PlayerbotAI* ai) : CastMeleeSpellAction(ai, "wing clip") {}
+
         virtual bool isUseful()
         {
-            return CastMeleeSpellAction::isUseful() && !ai->HasAura(spell, GetTarget());
-        }
-        virtual NextAction** getPrerequisites()
-        {
-            return NULL;
+            return CastMeleeSpellAction::isUseful() && !ai->HasAura(GetSpellName(), GetTarget());
         }
     };
 
@@ -159,6 +156,7 @@ namespace ai
     {
     public:
         CastRaptorStrikeAction(PlayerbotAI* ai) : CastMeleeSpellAction(ai, "raptor strike") {}
+
         virtual bool isUseful()
         {
             return CastMeleeSpellAction::isUseful() && ai->HasStrategy("close", BotState::BOT_STATE_COMBAT);
