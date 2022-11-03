@@ -145,6 +145,11 @@ void PlayerbotFactory::Randomize(bool incremental)
     PerformanceMonitorOperation* pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Reset");
     //ClearSkills();
     ClearSpells();
+    if (!incremental)
+    {
+        InitQuests(specialQuestIds);
+        bot->learnQuestRewardedSpells();
+    }
     if (!incremental && isRandomBot)
     {
         ClearInventory();
@@ -1823,6 +1828,7 @@ void PlayerbotFactory::InitTradeSkills()
             break;
         default:
             firstSkills.push_back(SKILL_TAILORING);
+            firstSkills.push_back(SKILL_ENGINEERING);
             secondSkills.push_back(SKILL_ENCHANTING);
         }
 

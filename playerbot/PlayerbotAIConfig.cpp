@@ -130,7 +130,7 @@ bool PlayerbotAIConfig::Initialize()
         pvpProhibitedZoneIds.insert(pvpProhibitedZoneIds.begin(), 72);
 #endif
 
-    LoadList<list<uint32> >(config.GetStringDefault("AiPlayerbot.RandomBotQuestIds", "7848,3802,5505,6502,7761"), randomBotQuestIds);
+    LoadList<list<uint32> >(config.GetStringDefault("AiPlayerbot.RandomBotQuestIds", "7848,3802,5505,6502,7761,9378"), randomBotQuestIds);
 
     botAutologin = config.GetBoolDefault("AiPlayerbot.BotAutologin", false);
     randomBotAutologin = config.GetBoolDefault("AiPlayerbot.RandomBotAutologin", true);
