@@ -598,7 +598,13 @@ bool Engine::ListenAndExecute(Action* action, Event& event)
             out << " [" << event.getSource() << "]";
 
         if (actionExecuted)
-            out << " (duration: " << ((float)ai->GetAIInternalUpdateDelay() / IN_MILLISECONDS) << "s)";
+        {
+            const uint32 actionDuration = ai->GetAIInternalUpdateDelay();
+            if (actionDuration > 0)
+            {
+                out << " (duration: " << ((float)actionDuration / IN_MILLISECONDS) << "s)";
+            }
+        }
 
         ai->TellMasterNoFacing(out);
     }
