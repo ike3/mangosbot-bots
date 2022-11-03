@@ -278,6 +278,7 @@ RandomPlayerbotMgr::RandomPlayerbotMgr() : PlayerbotHolder(), processTicks(0), l
         BgCheckTimer = 0;
         LfgCheckTimer = 0;
         PlayersCheckTimer = 0;
+        EventTimeSyncTimer = 0;
         guildsDeleted = false;
         arenaTeamsDeleted = false;
 
@@ -296,6 +297,8 @@ RandomPlayerbotMgr::RandomPlayerbotMgr() : PlayerbotHolder(), processTicks(0), l
             delete results;
         }
 #endif
+        // sync event timers
+        SyncEventTimers();
     }
 }
 
@@ -408,8 +411,6 @@ void RandomPlayerbotMgr::LogPlayerLocation()
 
 }
 
-
-
 void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed, bool minimal)
 {
     if (totalPmo)
@@ -477,7 +478,10 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed, bool minimal)
     PerformanceMonitorOperation *pmo = sPerformanceMonitor.start(PERF_MON_TOTAL,
         onlineBotCount < maxAllowedBotCount ? "RandomPlayerbotMgr::Login" : "RandomPlayerbotMgr::UpdateAIInternal");
 
-    if (availableBotCount < maxAllowedBotCount)
+    if (time(nullptr) > (EventTimeSyncTimer + 30))
+        SaveCurTime();
+
+    if (availableBotCount < maxAllowedBotCount && !sWorld.IsShutdowning())
     {
         AddRandomBots();   
     }
@@ -1218,6 +1222,24 @@ Item* RandomPlayerbotMgr::CreateTempItem(uint32 item, uint32 count, Player const
     return nullptr;
 }
 
+void RandomPlayerbotMgr::SaveCurTime()
+{
+    if (!EventTimeSyncTimer || time(NULL) > (EventTimeSyncTimer + 60))
+        EventTimeSyncTimer = time(NULL);
+
+    SetValue(uint32(0), "current_time", uint32(time(nullptr)));
+}
+
+void RandomPlayerbotMgr::SyncEventTimers()
+{
+    uint32 oldTime = GetValue(uint32(0), "current_time");
+    if (oldTime)
+    {
+        uint32 curTime = time(nullptr);
+        uint32 timeDiff = curTime - oldTime;
+        PlayerbotDatabase.PExecute("UPDATE ai_playerbot_random_bots SET time = time + %u WHERE owner = 0 and bot <> 0", timeDiff);
+    }
+}
 
 void RandomPlayerbotMgr::CheckPlayers()
 {
@@ -2203,7 +2225,7 @@ uint32 RandomPlayerbotMgr::GetEventValue(uint32 bot, string event)
         }
     }*/
 
-    if ((time(0) - e.lastChangeTime) >= e.validIn && event != "specNo" && event != "specLink")
+    if ((time(0) - e.lastChangeTime) >= e.validIn && event != "specNo" && event != "specLink" && event != "current_time")
         e.value = 0;
 
     return e.value;
