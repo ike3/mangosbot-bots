@@ -4266,25 +4266,11 @@ void PlayerbotAI::StopMoving()
     if (bot->IsTaxiFlying())
         return;
 
-    if (!bot->GetMotionMaster()->empty())
-        if (MovementGenerator* movgen = bot->GetMotionMaster()->top())
-            movgen->Interrupt(*bot);
-
     if (IsInVehicle())
         return;
 
-    // remove movement flags, checked in bot->IsMoving()
-    if (bot->IsFalling())
-#ifdef MANGOSBOT_TWO
-        bot->m_movementInfo.RemoveMovementFlag(MovementFlags(movementFlagsMask & ~(MOVEFLAG_FALLING | MOVEFLAG_FALLINGFAR)));
-#else
-        bot->m_movementInfo.RemoveMovementFlag(MovementFlags(movementFlagsMask & ~(MOVEFLAG_JUMPING | MOVEFLAG_FALLINGFAR)));
-#endif
-    else
-        bot->m_movementInfo.RemoveMovementFlag(movementFlagsMask);
     // interrupt movement as much as we can...
     bot->InterruptMoving(true);
-    bot->GetMotionMaster()->Clear();
     MovementInfo mInfo = bot->m_movementInfo;
     float x, y, z;
     bot->GetPosition(x, y, z);
