@@ -1585,8 +1585,16 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot, vector<WorldLocation> &locs
             if (!tMap->HasActiveAreas())
                 return true;
 
+            uint32 zoneId = sTerrainMgr.GetZoneId(mapId, l.coord_x, l.coord_y, l.coord_z);
+
             ContinentArea teleportArea = sMapMgr.GetContinentInstanceId(mapId, l.getX(), l.getY());
-            return !tMap->HasActiveAreas(teleportArea);
+
+            if (tMap->HasActiveAreas(teleportArea))
+                return !tMap->HasActiveZone(zoneId);
+            else
+                return true;
+
+            //return !tMap->HasActiveAreas(teleportArea);
         }), tlocs.end());
         /*if (!tlocs.empty())
         {
@@ -2884,7 +2892,7 @@ void RandomPlayerbotMgr::ChangeStrategy(Player* player)
     {
 		sLog.outBasic("Bot #%d %s:%d <%s>: sent to inn", bot, player->GetTeam() == ALLIANCE ? "A" : "H", player->GetLevel(), player->GetName());
         RandomTeleportForRpg(player, players.size());
-        ScheduleTeleport(bot, sPlayerbotAIConfig.maxRandomBotInWorldTime);
+        ScheduleTeleport(bot);
     }
 }
 
