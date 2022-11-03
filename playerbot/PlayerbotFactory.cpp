@@ -1887,6 +1887,99 @@ void PlayerbotFactory::InitTradeSkills()
         break;
     }
 #endif
+
+    // learn recipies
+    for (uint32 id = 0; id < sCreatureStorage.GetMaxEntry(); ++id)
+    {
+        CreatureInfo const* co = sCreatureStorage.LookupEntry<CreatureInfo>(id);
+        if (!co)
+            continue;
+
+        if (co->TrainerType != TRAINER_TYPE_TRADESKILLS)
+            continue;
+
+        uint32 trainerId = co->TrainerTemplateId;
+        if (!trainerId)
+            trainerId = co->Entry;
+
+        TrainerSpellData const* trainer_spells = sObjectMgr.GetNpcTrainerTemplateSpells(trainerId);
+        if (!trainer_spells)
+            trainer_spells = sObjectMgr.GetNpcTrainerSpells(trainerId);
+
+        if (!trainer_spells)
+            continue;
+
+        for (TrainerSpellMap::const_iterator itr = trainer_spells->spellList.begin(); itr != trainer_spells->spellList.end(); ++itr)
+        {
+            TrainerSpell const* tSpell = &itr->second;
+
+            if (!tSpell)
+                continue;
+
+            uint32 reqLevel = 0;
+            reqLevel = tSpell->isProvidedReqLevel ? tSpell->reqLevel : std::max(reqLevel, tSpell->reqLevel);
+            TrainerSpellState state = bot->GetTrainerSpellState(tSpell, reqLevel);
+            if (state != TRAINER_SPELL_GREEN)
+                continue;
+
+            SpellEntry const* proto = sServerFacade.LookupSpellInfo(tSpell->spell);
+            if (!proto)
+                continue;
+
+            SpellEntry const* spell = sServerFacade.LookupSpellInfo(tSpell->spell);
+            if (spell)
+            {
+                string SpellName = spell->SpellName[0];
+                if (spell->Effect[EFFECT_INDEX_1] == SPELL_EFFECT_SKILL_STEP)
+                {
+                    uint32 skill = spell->EffectMiscValue[EFFECT_INDEX_1];
+
+                    if (skill && !bot->HasSkill(skill))
+                    {
+                        SkillLineEntry const* pSkill = sSkillLineStore.LookupEntry(skill);
+                        if (pSkill)
+                        {
+                            if (SpellName.find("Apprentice") != string::npos && pSkill->categoryId == SKILL_CATEGORY_PROFESSION || pSkill->categoryId == SKILL_CATEGORY_SECONDARY)
+                                continue;
+                        }
+                    }
+                }
+            }
+
+#ifdef CMANGOS
+            if (tSpell->learnedSpell)
+            {
+                bool learned = false;
+                for (int j = 0; j < 3; ++j)
+                {
+                    if (proto->Effect[j] == SPELL_EFFECT_LEARN_SPELL)
+                    {
+                        uint32 learnedSpell = proto->EffectTriggerSpell[j];
+                        bot->learnSpell(learnedSpell, false);
+                        learned = true;
+                    }
+                }
+                if (!learned) bot->learnSpell(tSpell->learnedSpell, false);
+            }
+            else
+                ai->CastSpell(tSpell->spell, bot);
+#endif
+
+#ifdef MANGOS
+            bool learned = false;
+            for (int j = 0; j < 3; ++j)
+            {
+                if (proto->Effect[j] == SPELL_EFFECT_LEARN_SPELL)
+                {
+                    uint32 learnedSpell = proto->EffectTriggerSpell[j];
+                    bot->learnSpell(learnedSpell, false);
+                    learned = true;
+                }
+            }
+            if (!learned) bot->learnSpell(tSpell->spell, false);
+#endif
+        }
+    }
 }
 
 void PlayerbotFactory::UpdateTradeSkills()
