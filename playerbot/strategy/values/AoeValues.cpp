@@ -82,35 +82,29 @@ bool HasAreaDebuffValue::Calculate()
     if (!GetTarget())
         return false;
 
-    for (uint32 auraType = SPELL_AURA_BIND_SIGHT; auraType < TOTAL_AURAS; auraType++)
-    {
-        Unit::AuraList const& auras = GetTarget()->GetAurasByType((AuraType)auraType);
+    Unit* checkTarget = GetTarget();
+    if (!checkTarget)
+        return false;
 
-        if (auras.empty())
+    list<ObjectGuid> nearestDynObjects = *context->GetValue<list<ObjectGuid> >("nearest dynamic objects no los");
+    if (nearestDynObjects.empty())
+        return false;
+
+    for (list<ObjectGuid>::iterator i = nearestDynObjects.begin(); i != nearestDynObjects.end(); ++i)
+    {
+        DynamicObject* go = checkTarget->GetMap()->GetDynamicObject(*i);
+        if (!go)
             continue;
 
-        for (Unit::AuraList::const_iterator i = auras.begin(); i != auras.end(); i++)
-        {
-            Aura* aura = *i;
-            if (!aura)
-                continue;
+        SpellEntry const* spellProto = sSpellTemplate.LookupEntry<SpellEntry>(go->GetSpellId());
+        if (!spellProto)
+            continue;
 
-            SpellEntry const* proto = aura->GetSpellProto();
+        if (IsPositiveEffect(spellProto, go->GetEffIndex()))
+            continue;
 
-            if (!aura->IsPositive() && aura->IsPeriodic())
-            {
-                if (proto)
-                {
-                    for (int i = 0; i < MAX_EFFECT_INDEX; i++)
-                    {
-                        SpellRadiusEntry const* radius = sSpellRadiusStore.LookupEntry(proto->EffectRadiusIndex[i]);
-
-                        if (radius)
-                            return radius->Radius > 0;
-                    }
-                }
-            }
-        }
+        if (go->IsAffecting(checkTarget))
+            return true;
     }
 
     return false;
