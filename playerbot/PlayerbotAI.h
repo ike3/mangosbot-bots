@@ -274,7 +274,7 @@ private:
 public:	
     static string BotStateToString(BotState state);
 	string HandleRemoteCommand(string command);
-    void HandleCommand(uint32 type, const string& text, Player& fromPlayer);
+    void HandleCommand(uint32 type, const string& text, Player& fromPlayer, const uint32 lang = LANG_NEUTRAL);
     void QueueChatResponse(uint8 msgtype, ObjectGuid guid1, ObjectGuid guid2, std::string message, std::string chanName, std::string name);
 	void HandleBotOutgoingPacket(const WorldPacket& packet);
     void HandleMasterIncomingPacket(const WorldPacket& packet);
@@ -301,9 +301,10 @@ public:
     GameObject* GetGameObject(ObjectGuid guid);
     static GameObject* GetGameObject(GameObjectDataPair const* gameObjectDataPair);
     WorldObject* GetWorldObject(ObjectGuid guid);
+    vector<Player*> GetPlayersInGroup();
     bool TellMaster(ostringstream &stream, PlayerbotSecurityLevel securityLevel = PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, bool isPrivate = true) { return TellMaster(stream.str(), securityLevel, isPrivate); }
     bool TellMaster(string text, PlayerbotSecurityLevel securityLevel = PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, bool isPrivate = true);
-    bool TellMasterNoFacing(ostringstream& stream, PlayerbotSecurityLevel securityLevel = PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, bool isPrivate = true) { return TellMasterNoFacing(stream.str(), securityLevel, isPrivate); }
+    bool TellMasterNoFacing(ostringstream& stream, PlayerbotSecurityLevel securityLevel = PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, bool isPrivate = true) { return TellMasterNoFacing(stream.str(), securityLevel, isPrivate); }    
     bool TellMasterNoFacing(string text, PlayerbotSecurityLevel securityLevel = PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, bool isPrivate = true);
     bool TellError(string text, PlayerbotSecurityLevel securityLevel = PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL);
     void SpellInterrupted(uint32 spellid);

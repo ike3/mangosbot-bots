@@ -711,7 +711,7 @@ bool PlayerbotAI::IsAllowedCommand(string text)
     return false;
 }
 
-void PlayerbotAI::HandleCommand(uint32 type, const string& text, Player& fromPlayer)
+void PlayerbotAI::HandleCommand(uint32 type, const string& text, Player& fromPlayer, const uint32 lang)
 {
     string filtered = text;
 
@@ -1024,6 +1024,9 @@ void PlayerbotAI::HandleBotOutgoingPacket(const WorldPacket& packet)
                 sObjectMgr.GetPlayerNameByGUID(guid1, name);
                 uint32 accountId = sObjectMgr.GetPlayerAccountIdByGUID(guid1);
                 isRandomBot = sPlayerbotAIConfig.IsInRandomAccountList(accountId);
+                if(!isRandomBot)
+                    isRandomBot = sPlayerbotAIConfig.IsInNonRandomAccountList(accountId);
+
                 bool isMentioned = message.find(bot->GetName()) != std::string::npos;
 
                 // random bot speaks, chat CD
@@ -1037,6 +1040,9 @@ void PlayerbotAI::HandleBotOutgoingPacket(const WorldPacket& packet)
                     return;
 
                 if (isRandomBot && urand(0, 20))
+                    return;
+
+                if (lang == LANG_ADDON)
                     return;
 
                 if ((isRandomBot && !isPaused && (!urand(0, 30) || (!urand(0, 20) && message.find(bot->GetName()) != std::string::npos))) || (!isRandomBot && (isMentioned || !urand(0, 4))))
@@ -1860,6 +1866,28 @@ WorldObject* PlayerbotAI::GetWorldObject(ObjectGuid guid)
     return map->GetWorldObject(guid);
 }
 
+vector<Player*> PlayerbotAI::GetPlayersInGroup()
+{
+    vector<Player*> members;
+
+    Group* group = bot->GetGroup();
+
+    if (!group)
+        return members;
+
+    for (GroupReference* ref = group->GetFirstMember(); ref; ref = ref->next())
+    {
+        Player* member = ref->getSource();
+
+        if (member->GetPlayerbotAI() && !member->GetPlayerbotAI()->IsRealPlayer())
+            continue;
+
+        members.push_back(ref->getSource());
+    }   
+
+    return members;
+}
+
 bool PlayerbotAI::TellMasterNoFacing(string text, PlayerbotSecurityLevel securityLevel, bool isPrivate)
 {
     time_t lastSaid = whispers[text];
@@ -1867,68 +1895,51 @@ bool PlayerbotAI::TellMasterNoFacing(string text, PlayerbotSecurityLevel securit
     {
         whispers[text] = time(0);
 
-        Player* master = GetMaster();
+        vector<Player*> recievers;
 
-        if (bot->GetGroup() && (!master || !HasActivePlayerMaster()))
+        ChatMsg type = CHAT_MSG_SYSTEM;
+
+        if (!isPrivate && bot->GetGroup())
         {
-            Group* group = bot->GetGroup();
-            for (GroupReference* ref = group->GetFirstMember(); ref; ref = ref->next())
-            {
-                if (ref->getSource()->GetPlayerbotAI() && !ref->getSource()->GetPlayerbotAI()->IsRealPlayer())
-                    continue;
+            recievers = GetPlayersInGroup();
 
-                master = ref->getSource();
-                break;
-            }
-        }
-        
-        if (!master && (sPlayerbotAIConfig.randomBotSayWithoutMaster || HasStrategy("debug", BotState::BOT_STATE_NON_COMBAT)))
-        {
-            bot->Say(text, (bot->GetTeam() == ALLIANCE ? LANG_COMMON : LANG_ORCISH));
-            return true;
-        }
-        else if ((!isPrivate || master != GetMaster()) && master && bot->GetGroup() && bot->GetGroup()->IsMember(master->GetObjectGuid()))
-        {            
-
-            WorldPacket data;
-            ChatHandler::BuildChatPacket(data,
-                bot->GetGroup()->IsRaidGroup() ? CHAT_MSG_RAID : CHAT_MSG_PARTY,
-                text.c_str(),
-                LANG_UNIVERSAL,
-                CHAT_TAG_NONE, bot->GetObjectGuid(), bot->GetName());
-
-            Group* group = bot->GetGroup();
-            if (group)
-            {
-                for (GroupReference* ref = group->GetFirstMember(); ref; ref = ref->next())
-                {
-                    if (ref->getSource()->GetPlayerbotAI() && !ref->getSource()->GetPlayerbotAI()->IsRealPlayer())
-                        continue;
-
-                    sServerFacade.SendPacket(ref->getSource(), data);
-                }
-            }
-
-            return true;
+            if(!recievers.empty())
+                type = bot->GetGroup()->IsRaidGroup() ? CHAT_MSG_RAID : CHAT_MSG_PARTY;
         }
 
+        if (!type && HasRealPlayerMaster())
+            type = CHAT_MSG_WHISPER;
 
-        if (!IsTellAllowed(securityLevel))
-            return false;
-
-        whispers[text] = time(0);
-
-        ChatMsg type = CHAT_MSG_WHISPER;
-        if (currentChat.second - time(0) >= 1)
-            type = currentChat.first;
+        if (!type && (sPlayerbotAIConfig.randomBotSayWithoutMaster || HasStrategy("debug", BotState::BOT_STATE_NON_COMBAT)))
+            type = CHAT_MSG_SAY;
 
         WorldPacket data;
-        ChatHandler::BuildChatPacket(data,
-            type == CHAT_MSG_ADDON ? CHAT_MSG_PARTY : type,
-            text.c_str(),
-            type == CHAT_MSG_ADDON ? LANG_ADDON : LANG_UNIVERSAL,
-            CHAT_TAG_NONE, bot->GetObjectGuid(), bot->GetName());
-        sServerFacade.SendPacket(master, data);
+
+        switch (type) {
+        case CHAT_MSG_SAY:
+            bot->Say(text, (bot->GetTeam() == ALLIANCE ? LANG_COMMON : LANG_ORCISH));
+            return true;
+        case CHAT_MSG_RAID:
+        case CHAT_MSG_PARTY:
+            ChatHandler::BuildChatPacket(data, type, text.c_str(), LANG_UNIVERSAL, CHAT_TAG_NONE, bot->GetObjectGuid(), bot->GetName());
+
+            for (auto reciever : recievers)
+                sServerFacade.SendPacket(reciever, data);
+
+            return true;
+        case CHAT_MSG_WHISPER:
+            if (!IsTellAllowed(securityLevel))
+                return false;
+
+            whispers[text] = time(0);
+
+            ChatMsg type = CHAT_MSG_WHISPER;
+            if (currentChat.second - time(0) >= 1)
+                type = currentChat.first;
+
+            ChatHandler::BuildChatPacket(data, type == CHAT_MSG_ADDON ? CHAT_MSG_PARTY : type, text.c_str(), type == CHAT_MSG_ADDON ? LANG_ADDON : LANG_UNIVERSAL, CHAT_TAG_NONE, bot->GetObjectGuid(), bot->GetName());
+            sServerFacade.SendPacket(master, data);
+        }
     }
 
     return true;

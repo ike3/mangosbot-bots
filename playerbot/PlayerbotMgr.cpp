@@ -933,7 +933,7 @@ void PlayerbotMgr::UpdateAIInternal(uint32 elapsed, bool minimal)
     CheckTellErrors(elapsed);
 }
 
-void PlayerbotMgr::HandleCommand(uint32 type, const string& text)
+void PlayerbotMgr::HandleCommand(uint32 type, const string& text, uint32 lang)
 {
     Player *master = GetMaster();
     if (!master)
@@ -945,7 +945,7 @@ void PlayerbotMgr::HandleCommand(uint32 type, const string& text)
         split(commands, text, sPlayerbotAIConfig.commandSeparator.c_str());
         for (vector<string>::iterator i = commands.begin(); i != commands.end(); ++i)
         {
-            HandleCommand(type, *i);
+            HandleCommand(type, *i,lang);
         }
         return;
     }
@@ -953,14 +953,14 @@ void PlayerbotMgr::HandleCommand(uint32 type, const string& text)
     for (PlayerBotMap::const_iterator it = GetPlayerBotsBegin(); it != GetPlayerBotsEnd(); ++it)
     {
         Player* const bot = it->second;
-        bot->GetPlayerbotAI()->HandleCommand(type, text, *master);
+        bot->GetPlayerbotAI()->HandleCommand(type, text, *master, lang);
     }
 
     for (PlayerBotMap::const_iterator it = sRandomPlayerbotMgr.GetPlayerBotsBegin(); it != sRandomPlayerbotMgr.GetPlayerBotsEnd(); ++it)
     {
         Player* const bot = it->second;
         if (bot->GetPlayerbotAI()->GetMaster() == master)
-            bot->GetPlayerbotAI()->HandleCommand(type, text, *master);
+            bot->GetPlayerbotAI()->HandleCommand(type, text, *master, lang);
     }
 }
 
