@@ -2689,8 +2689,14 @@ void PlayerbotFactory::InitInventorySkill()
     }
 }
 
-Item* PlayerbotFactory::StoreItem(uint32 itemId, uint32 count)
+Item* PlayerbotFactory::StoreItem(uint32 itemId, uint32 count, bool ignoreCount)
 {
+    if (!ignoreCount)
+    {
+        if (bot->HasItemCount(itemId, count))
+            return nullptr;
+    }
+
     ItemPrototype const* proto = sObjectMgr.GetItemPrototype(itemId);
     ItemPosCountVec sDest;
     InventoryResult msg = bot->CanStoreNewItem(INVENTORY_SLOT_BAG_0, NULL_SLOT, sDest, itemId, count);
