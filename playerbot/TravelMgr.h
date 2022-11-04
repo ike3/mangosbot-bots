@@ -145,7 +145,7 @@ namespace ai
         vector<vector<WorldPosition*>> distancePartition(const vector<float>& distanceLimits, vector<WorldPosition*> points) const;
 
         //Map functions. Player independent.
-        const MapEntry* getMapEntry() const { return sMapStore.LookupEntry(mapid); };
+        const MapEntry* getMapEntry() const { return sMapStore.LookupEntry(mapid); }
         uint32 getInstanceId() const { for (auto& map : sMapMgr.Maps()) { if (map.second->GetId() == getMapId()) return map.second->GetInstanceId(); }; return 0; }
         Map* getMap() const { return sMapMgr.FindMap(mapid, getMapEntry()->Instanceable() ? getInstanceId() : 0); }
         const TerrainInfo* getTerrain() const { return getMap() ? getMap()->GetTerrain() : NULL; }
@@ -157,6 +157,7 @@ namespace ai
 #endif
 
         bool isOutside() const { WorldPosition high(*this); high.setZ(coord_z + 500.0f); return IsInLineOfSight(high); }
+        bool canFly() const;
 
 #if defined(MANGOSBOT_TWO) || MAX_EXPANSION == 2
         const float getHeight() const { return getMap()->GetHeight(0, coord_x, coord_y, coord_z); }

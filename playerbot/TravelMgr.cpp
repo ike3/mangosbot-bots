@@ -240,6 +240,30 @@ vector<vector<WorldPosition*>> WorldPosition::distancePartition(const vector<flo
     return partitions;
 }
 
+bool WorldPosition::canFly() const
+{
+#ifdef MANGOSBOT_ZERO
+    return false;
+#endif
+    if (!getTerrain())
+        return false;
+
+    uint32 zoneid, areaid;
+    getTerrain()->GetZoneAndAreaId(zoneid, areaid, getX(), getY(), getZ());
+
+#ifdef MANGOSBOT_ONE  
+    uint32 v_map = GetVirtualMapForMapAndZone(getMapId(), zoneid);
+    MapEntry const* mapEntry = sMapStore.LookupEntry(v_map);
+    if (!mapEntry || mapEntry->addon < 1 || !mapEntry->IsContinent())
+        return false;
+#endif
+#ifdef MANGOSBOT_TWO
+    if (!bot->CanStartFlyInArea(bot->GetMapId(), zoneid, areaid, false))
+        return false;
+#endif
+
+    return true;
+}
 
 G3D::Vector3 WorldPosition::getVector3() const
 {
@@ -1355,13 +1379,13 @@ bool BossTravelDestination::isActive(Player* bot)
         if (bot->GetGroup()->IsRaidGroup())
         {
 #ifndef MANGOSBOT_TWO
-            if (points.front()->getMap() && points.front()->getMap()->IsNoRaid())
+            if (points.front()->getMapEntry() && points.front()->getMapEntry()->IsNonRaidDungeon())
 #else
-            if (points.front()->getMap() && points.front()->getMap()->IsNonRaidDungeon())
+            if (points.front()->getMapEntry() && points.front()->getMapEntry()->IsNonRaidDungeon())
 #endif
                 return false;
         }
-        else if (points.front()->getMap() && points.front()->getMap()->IsRaid())
+        else if (points.front()->getMapEntry() && points.front()->getMapEntry()->IsRaid())
             return false;
 
     }
