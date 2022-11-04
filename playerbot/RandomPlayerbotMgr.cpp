@@ -2207,13 +2207,16 @@ bool RandomPlayerbotMgr::IsRandomBot(Player* bot)
         if (bot->GetPlayerbotAI()->IsRealPlayer())
             return false;
 
-        if (sPlayerbotAIConfig.IsInNonRandomAccountList(bot->GetSession()->GetAccountId()))
+        if (sPlayerbotAIConfig.IsNonRandomBot(bot))
             if (!bot->GetPlayerbotAI()->GetMaster() || !bot->GetPlayerbotAI()->HasRealPlayerMaster())
                 return true;
     }
     if (bot)
     {
         if (sPlayerbotAIConfig.IsInRandomAccountList(bot->GetSession()->GetAccountId()))
+            return true;
+
+        if (sPlayerbotAIConfig.IsNonRandomBot(bot))
             return true;
 
         return IsRandomBot(bot->GetGUIDLow());
@@ -2315,7 +2318,7 @@ uint32 RandomPlayerbotMgr::GetEventValue(uint32 bot, string event)
         }
     }*/
 
-    if ((time(0) - e.lastChangeTime) >= e.validIn && event != "specNo" && event != "specLink" && event != "init")
+    if ((time(0) - e.lastChangeTime) >= e.validIn && event != "specNo" && event != "specLink" && event != "always")
         e.value = 0;
 
     return e.value;
@@ -2668,7 +2671,7 @@ void RandomPlayerbotMgr::OnPlayerLogin(Player* player)
     {
         uint32 guid = player->GetGUIDLow();
         if (sPlayerbotAIConfig.IsNonRandomBot(player))
-            player->TeleportTo(WorldPosition(player));
+            SetEventValue(guid, "always", 1, 0);
         else
            SetEventValue(guid, "login", 0, 0);
     }

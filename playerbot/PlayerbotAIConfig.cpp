@@ -604,10 +604,15 @@ void PlayerbotAIConfig::loadNonRandomBotAccounts()
                 string charName = fields[0].GetString();
                 uint32 guid = fields[1].GetUInt32();
 
+                uint32 always = sRandomPlayerbotMgr.GetValue(guid, "always");
+
+                if (always == 2)
+                    continue;
+
                 if (std::find(toggleAlwaysOnlineChars.begin(), toggleAlwaysOnlineChars.end(), charName) != toggleAlwaysOnlineChars.end())
                     charAlwaysOnline = !charAlwaysOnline;
 
-                if(charAlwaysOnline || accountAlwaysOnline)
+                if(charAlwaysOnline || accountAlwaysOnline || always)
                     nonRandomBots.push_back(make_pair(accountId, guid));
 
             } while (result->NextRow());
