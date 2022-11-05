@@ -208,6 +208,14 @@ bool CheckMountStateAction::CanFly()
     if (bot->GetMapId() != 530 && bot->GetMapId() != 571)
         return false;
 
+#ifdef MANGOSBOT_ONE
+    uint32 zone, area;
+    bot->GetZoneAndAreaId(zone, area);
+    uint32 v_map = GetVirtualMapForMapAndZone(bot->GetMapId(), zone);
+    MapEntry const* mapEntry = sMapStore.LookupEntry(v_map);
+    if (!mapEntry || mapEntry->addon < 1 || !mapEntry->IsContinent())
+        return false;
+#endif
 #ifdef MANGOSBOT_TWO
     uint32 zone, area;
     bot->GetZoneAndAreaId(zone, area);
@@ -342,6 +350,12 @@ bool CheckMountStateAction::MountWithBestMount(const bool canFly)
     if (mountSpells.empty() && mounts.empty())
         return false;
 
+    if (sServerFacade.isMoving(bot))
+    {
+        ai->StopMoving();
+        return true;
+    }
+
     if (mounts.empty() || (!mountSpells.empty() && MountSpeed(sServerFacade.LookupSpellInfo(mountSpells.front()), canFly) > MountSpeed(mounts.front()->GetProto(), canFly)))
     {
         uint32 spellId = mountSpells[urand(0, mountSpells.size() - 1)];
@@ -397,12 +411,6 @@ bool CheckMountStateAction::Mount()
 #endif
 #endif
         ;
-
-    if (sServerFacade.isMoving(bot))
-    {
-        ai->StopMoving();
-        return true;
-    }
 
     Player* master = GetMaster();
     ai->RemoveShapeshift();

@@ -148,7 +148,7 @@ bool MovementAction::FlyDirect(WorldPosition &startPosition, WorldPosition &endP
 
     movePosition = endPosition;
 
-    if (movePosition.getMapId() != startPosition.getMapId() || !movePosition.isOutside()) //We can not fly to the end directly.
+    if (movePosition.getMapId() != startPosition.getMapId() || !movePosition.isOutside() || !movePosition.canFly()) //We can not fly to the end directly.
     {
         vector<WorldPosition> path;
         if (movePath.empty()) //Make a path starting at the end backwards to see if we can walk to some better place.
@@ -164,7 +164,7 @@ bool MovementAction::FlyDirect(WorldPosition &startPosition, WorldPosition &endP
 
         auto pathEnd = path.end();
         for (auto& p = pathEnd; p-- != path.begin(); ) //Find the furtest point where we can fly to directly.
-            if (p->getMapId() == startPosition.getMapId() && p->isOutside())
+            if (p->getMapId() == startPosition.getMapId() && p->isOutside() && p->canFly())
             {
                 movePosition = *p;
                 totalDistance = startPosition.distance(movePosition);
@@ -172,7 +172,7 @@ bool MovementAction::FlyDirect(WorldPosition &startPosition, WorldPosition &endP
             }
     }
 
-    if (movePosition.getMapId() != startPosition.getMapId() || !movePosition.isOutside())
+    if (movePosition.getMapId() != startPosition.getMapId() || !movePosition.isOutside() || !movePosition.canFly())
         return false;
 
     if (movePosition.distance(startPosition) < minDist)
