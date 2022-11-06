@@ -1731,6 +1731,10 @@ bool SetBehindTargetAction::isUseful()
     if (!target)
         return false;
 
+    // Do not move if stay strategy is set
+    if(ai->HasStrategy("stay", BotState::BOT_STATE_NON_COMBAT))
+        return false;
+
     return !bot->IsFacingTargetsBack(target);
 }
 

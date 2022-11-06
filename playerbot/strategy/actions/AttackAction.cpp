@@ -116,12 +116,6 @@ bool AttackAction::IsTargetValid(Unit* target)
         if (verbose) ai->TellError(msg.str());
         return false;
     }
-    else if (!sServerFacade.IsWithinLOSInMap(bot, target))
-    {
-        msg << " is not on my sight";
-        if (verbose) ai->TellError(msg.str());
-        return false;
-    }
     else if (sServerFacade.UnitIsDead(target))
     {
         msg << " is dead";

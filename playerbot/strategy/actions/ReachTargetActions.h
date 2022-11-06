@@ -50,8 +50,12 @@ namespace ai
 
         virtual bool isUseful()
 		{
-            // do not move while casting
+            // Do not move while casting
             if (bot->IsNonMeleeSpellCasted(true))
+                return false;
+
+            // Do not move if stay strategy is set
+            if(ai->HasStrategy("stay", BotState::BOT_STATE_NON_COMBAT))
                 return false;
 
             return true;

@@ -17,8 +17,8 @@ namespace ai
 		void RemoveNonThreating(set<Unit*>& targets);
 
     public:
-        static bool IsPossibleTarget(Unit* attacker, Player *bot, float range = sPlayerbotAIConfig.sightDistance);
-        static bool IsValidTarget(Unit* attacker, Player *bot);
+        static bool IsPossibleTarget(Unit* attacker, Player *player, float range = sPlayerbotAIConfig.sightDistance);
+        static bool IsValidTarget(Unit* attacker, Player *player);
     };
 
     class PossibleAddsValue : public BoolCalculatedValue
