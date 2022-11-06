@@ -159,6 +159,8 @@ bool DropTargetAction::Execute(Event& event)
             if (ai->HasStrategy("tank assist", BotState::BOT_STATE_NON_COMBAT))
                 return ai->DoSpecificAction("tank assist", Event(), true);
         }
+        else if (ai->HasStrategy("pvp", BotState::BOT_STATE_NON_COMBAT))
+            return ai->DoSpecificAction("attack enemy player", Event(), true);
     }
 
     ai->InterruptSpell();
