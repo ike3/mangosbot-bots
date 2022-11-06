@@ -68,7 +68,7 @@ namespace ai
                 continue;
             
             //When inviting the 5th member of the group convert to raid for future invites.
-            if (botAi->GetGrouperType() > GrouperType::LEADER_5 && !group->IsRaidGroup() && bot->GetGroup()->GetMembersCount() > 3)
+            if (group && botAi->GetGrouperType() > GrouperType::LEADER_5 && !group->IsRaidGroup() && bot->GetGroup()->GetMembersCount() > 3)
                 bot->GetGroup()->ConvertToRaid();
 
             return Invite(player);
