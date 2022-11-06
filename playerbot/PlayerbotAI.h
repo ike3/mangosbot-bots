@@ -280,7 +280,7 @@ private:
 public:	
     static string BotStateToString(BotState state);
 	string HandleRemoteCommand(string command);
-    void HandleCommand(uint32 type, const string& text, Player& fromPlayer, const uint32 lang = LANG_NEUTRAL);
+    void HandleCommand(uint32 type, const string& text, Player& fromPlayer, const uint32 lang = LANG_UNIVERSAL);
     void QueueChatResponse(uint8 msgtype, ObjectGuid guid1, ObjectGuid guid2, std::string message, std::string chanName, std::string name);
 	void HandleBotOutgoingPacket(const WorldPacket& packet);
     void HandleMasterIncomingPacket(const WorldPacket& packet);

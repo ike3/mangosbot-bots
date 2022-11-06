@@ -57,7 +57,7 @@ public:
     static bool HandlePlayerbotMgrCommand(ChatHandler* handler, char const* args);
     void HandleMasterIncomingPacket(const WorldPacket& packet);
     void HandleMasterOutgoingPacket(const WorldPacket& packet);
-    void HandleCommand(uint32 type, const string& text, uint32 lang = LANG_NEUTRAL);
+    void HandleCommand(uint32 type, const string& text, uint32 lang = LANG_UNIVERSAL);
     void OnPlayerLogin(Player* player);
     void CancelLogout();
 
