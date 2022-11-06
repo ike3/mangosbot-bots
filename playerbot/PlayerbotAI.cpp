@@ -1914,10 +1914,10 @@ bool PlayerbotAI::TellMasterNoFacing(string text, PlayerbotSecurityLevel securit
                 type = bot->GetGroup()->IsRaidGroup() ? CHAT_MSG_RAID : CHAT_MSG_PARTY;
         }
 
-        if (!type && HasRealPlayerMaster())
+        if (type == CHAT_MSG_SYSTEM && HasRealPlayerMaster())
             type = CHAT_MSG_WHISPER;
 
-        if (!type && (sPlayerbotAIConfig.randomBotSayWithoutMaster || HasStrategy("debug", BotState::BOT_STATE_NON_COMBAT)))
+        if (type == CHAT_MSG_SYSTEM && (sPlayerbotAIConfig.randomBotSayWithoutMaster || HasStrategy("debug", BotState::BOT_STATE_NON_COMBAT)))
             type = CHAT_MSG_SAY;
 
         WorldPacket data;
