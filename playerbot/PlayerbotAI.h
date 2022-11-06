@@ -425,9 +425,9 @@ public:
     bool CanMove();
     void StopMoving();
     bool IsInRealGuild();
-    time_t GetCombatStartTime() { return combatStart; }
 
     bool IsStateActive(BotState state) const;
+    time_t GetCombatStartTime() const;
 
     void OnCombatStarted();
     void OnCombatEnded();
@@ -464,7 +464,6 @@ protected:
     bool inCombat = false;
     bool isMoving = false;
     bool isWaiting = false;
-    time_t combatStart = 0;
     BotCheatMask cheatMask = BotCheatMask::none;
     Position jumpDestination = Position();
 };

@@ -79,3 +79,57 @@ void AvoidAoeStrategy::InitMultipliers(std::list<Multiplier*>& multipliers)
 {
     multipliers.push_back(new AvoidAoeStrategyMultiplier(ai));
 }
+
+void WaitForAttackStrategy::InitTriggers(std::list<TriggerNode*>& triggers)
+{
+    triggers.push_back(new TriggerNode(
+        "wait for attack safe distance",
+        NextAction::array(0, new NextAction("wait for attack keep safe distance", 60.0f), NULL)));
+
+}
+
+void WaitForAttackStrategy::InitMultipliers(std::list<Multiplier*>& multipliers)
+{
+    multipliers.push_back(new WaitForAttackMultiplier(ai));
+}
+
+bool WaitForAttackStrategy::ShouldWait(PlayerbotAI* ai)
+{
+    // Only check if the bot has the strategy enabled
+    if (ai->HasStrategy("wait for attack", BotState::BOT_STATE_COMBAT))
+    {
+        // Only check if bot is in a group with a real player
+        Player* bot = ai->GetBot();
+        if (bot->GetGroup() && ai->HasRealPlayerMaster())
+        {
+            // Tanks and healers can avoid this check
+            if (!ai->IsTank(bot) && !ai->IsHeal(bot))
+            {
+                // Check if bot is currently in combat
+                const time_t& combatStartTime = ai->GetAiObjectContext()->GetValue<time_t>("combat start time")->Get();
+                if (combatStartTime > 0)
+                {
+                    // Check the amount of time elapsed from the combat start
+                    const time_t elapsedTime = time(0) - combatStartTime;
+                    return elapsedTime < GetWaitTime();
+                }
+            }
+        }
+    }
+
+    return false;
+}
+
+float WaitForAttackMultiplier::GetValue(Action* action)
+{
+    // Allow some movement and targeting actions
+    const string& actionName = action->getName();
+    if (actionName != "wait for attack keep safe distance" && 
+        actionName != "dps assist" && 
+        actionName != "set facing")
+    {
+        return WaitForAttackStrategy::ShouldWait(ai) ? 0.0f : 1.0f;
+    }
+
+    return 1.0f;
+}

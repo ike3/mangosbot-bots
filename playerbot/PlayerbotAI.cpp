@@ -261,7 +261,6 @@ void PlayerbotAI::UpdateAI(uint32 elapsed, bool minimal)
         if (!inCombat && !isCasting && !isWaiting)
         {
             ResetAIInternalUpdateDelay();
-            combatStart = time(0);
         }
         else if (!AllowActivity())
         {
@@ -277,7 +276,6 @@ void PlayerbotAI::UpdateAI(uint32 elapsed, bool minimal)
             ResetAIInternalUpdateDelay();
 
         inCombat = false;
-        combatStart = 0;
     }
 
     // force stop if moving but should not
@@ -371,10 +369,16 @@ bool PlayerbotAI::IsStateActive(BotState state) const
     return currentEngine == engines[(uint8)state];
 }
 
+time_t PlayerbotAI::GetCombatStartTime() const
+{
+    return aiObjectContext->GetValue<time_t>("combat start time")->Get();
+}
+
 void PlayerbotAI::OnCombatStarted()
 {
     if(!IsStateActive(BotState::BOT_STATE_COMBAT))
     {
+        aiObjectContext->GetValue<time_t>("combat start time")->Set(time(0));
         ChangeEngine(BotState::BOT_STATE_COMBAT);
     }
 }
@@ -383,6 +387,7 @@ void PlayerbotAI::OnCombatEnded()
 {
     if (!IsStateActive(BotState::BOT_STATE_NON_COMBAT))
     {
+        aiObjectContext->GetValue<time_t>("combat start time")->Set(0);
         ChangeEngine(BotState::BOT_STATE_NON_COMBAT);
     }
 }
@@ -464,6 +469,7 @@ void PlayerbotAI::OnDeath()
         aiObjectContext->GetValue<Unit*>("enemy player target")->Set(NULL);
         aiObjectContext->GetValue<ObjectGuid>("pull target")->Set(ObjectGuid());
         aiObjectContext->GetValue<LootObject>("loot target")->Set(LootObject());
+        aiObjectContext->GetValue<time_t>("combat start time")->Set(0);
         ChangeEngine(BotState::BOT_STATE_DEAD);
     }
 }
@@ -634,6 +640,7 @@ void PlayerbotAI::Reset(bool full)
     aiObjectContext->GetValue<GuidPosition>("rpg target")->Set(GuidPosition());
     aiObjectContext->GetValue<LootObject>("loot target")->Set(LootObject());
     aiObjectContext->GetValue<uint32>("lfg proposal")->Set(0);
+    aiObjectContext->GetValue<time_t>("combat start time")->Set(0);
     bot->SetSelectionGuid(ObjectGuid());
 
     LastSpellCast & lastSpell = aiObjectContext->GetValue<LastSpellCast& >("last spell cast")->Get();
