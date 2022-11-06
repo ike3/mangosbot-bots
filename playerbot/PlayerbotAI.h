@@ -188,7 +188,13 @@ enum class GrouperType : uint8
     LEADER_2 = 2,
     LEADER_3 = 3,
     LEADER_4 = 4,
-    LEADER_5 = 5
+    LEADER_5 = 5,
+#ifndef MANGOSBOT_ZERO
+    RAIDER_10 = 10,
+    RAIDER_MAX = 25
+#else
+    RAIDER_MAX = 40
+#endif
 };
 
 enum class GuilderType : uint8

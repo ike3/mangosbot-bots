@@ -1933,7 +1933,6 @@ bool PlayerbotAI::TellMasterNoFacing(string text, PlayerbotSecurityLevel securit
 
             whispers[text] = time(0);
 
-            ChatMsg type = CHAT_MSG_WHISPER;
             if (currentChat.second - time(0) >= 1)
                 type = currentChat.first;
 
@@ -3179,34 +3178,33 @@ uint32 PlayerbotAI::GetFixedBotNumer(BotTypeNumber typeNumber, uint32 maxNum, fl
     return randnum;                                                //Now we have a number unique for each bot between 0 and maxNum that increases by cyclePerMin.
 }
 
-/*
-enum GrouperType
-{
-    SOLO = 0,
-    MEMBER = 1,
-    LEADER_2 = 2,
-    LEADER_3 = 3,
-    LEADER_4 = 4,
-    LEADER_5 = 5
-};
-*/
-
 GrouperType PlayerbotAI::GetGrouperType()
 {
-    uint32 grouperNumber = GetFixedBotNumer(BotTypeNumber::GROUPER_TYPE_NUMBER, 100, 0);
+    uint32 maxGroupType = sPlayerbotAIConfig.randomBotRaidNearby ? 100 : 90;
+    uint32 grouperNumber = GetFixedBotNumer(BotTypeNumber::GROUPER_TYPE_NUMBER, maxGroupType, 0);
+
+    //20% solo
+    //50% member
+    //20% leader
+    //10% raider
 
     if (grouperNumber < 20 && !HasRealPlayerMaster())
         return GrouperType::SOLO;
-    if (grouperNumber < 80)
+    if (grouperNumber < 70)
         return GrouperType::MEMBER;
-    if (grouperNumber < 85)
+    if (grouperNumber < 75)
         return GrouperType::LEADER_2;
-    if (grouperNumber < 90)
+    if (grouperNumber < 80)
         return GrouperType::LEADER_3;
-    if (grouperNumber < 95)
+    if (grouperNumber < 85)
         return GrouperType::LEADER_4;
-    
-   return GrouperType::LEADER_5;
+    if (grouperNumber <= 90)
+        return GrouperType::LEADER_5;
+#ifndef MANGOSBOT_ZERO
+    if (grouperNumber <= 95)
+        return GrouperType::RAIDER_10;
+#endif    
+   return GrouperType::RAIDER_MAX;
 }
 
 GuilderType PlayerbotAI::GetGuilderType()

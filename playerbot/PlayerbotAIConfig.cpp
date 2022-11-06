@@ -321,7 +321,8 @@ bool PlayerbotAIConfig::Initialize()
 	randomBotPreQuests = config.GetBoolDefault("AiPlayerbot.PreQuests", true);
     randomBotSayWithoutMaster = config.GetBoolDefault("AiPlayerbot.RandomBotSayWithoutMaster", false);
     randomBotGroupNearby = config.GetBoolDefault("AiPlayerbot.RandomBotGroupNearby", false);
-
+    randomBotRaidNearby = config.GetBoolDefault("AiPlayerbot.RandomBotRaidNearby", false);
+    
     //SPP automation
     autoPickReward = config.GetStringDefault("AiPlayerbot.AutoPickReward", "no");
     autoEquipUpgradeLoot = config.GetBoolDefault("AiPlayerbot.AutoEquipUpgradeLoot", false);
