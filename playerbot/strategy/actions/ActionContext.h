@@ -83,6 +83,7 @@ namespace ai
             creators["reach party member to heal"] = &ActionContext::reach_party_member_to_heal;
             creators["flee"] = &ActionContext::flee;
             creators["flee with pet"] = &ActionContext::flee_with_pet;
+            creators["wait for attack keep safe distance"] = &ActionContext::wait_for_attack_keep_safe_distance;
             creators["shoot"] = &ActionContext::shoot;
             creators["end pull"] = &ActionContext::end_pull;
             creators["healthstone"] = &ActionContext::healthstone;
@@ -286,6 +287,7 @@ namespace ai
         static Action* ReachMelee(PlayerbotAI* ai) { return new ReachMeleeAction(ai); }
         static Action* reach_party_member_to_heal(PlayerbotAI* ai) { return new ReachPartyMemberToHealAction(ai); }
         static Action* flee_with_pet(PlayerbotAI* ai) { return new FleeWithPetAction(ai); }
+        static Action* wait_for_attack_keep_safe_distance(PlayerbotAI* ai) { return new WaitForAttackKeepSafeDistanceAction(ai); }
         static Action* flee(PlayerbotAI* ai) { return new FleeAction(ai); }
         static Action* end_pull(PlayerbotAI* ai) { return new ChangeCombatStrategyAction(ai, "-pull"); }
 

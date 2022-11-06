@@ -55,6 +55,7 @@
 #include "CollisionValue.h"
 #include "CraftValue.h"
 #include "LastSpellCastTimeValue.h"
+#include "CombatStartTimeValue.h"
 #include "ManaSaveLevelValue.h"
 #include "LfgValues.h"
 #include "PvpValues.h"
@@ -300,6 +301,7 @@ namespace ai
             creators["trainable class spells"] = &ValueContext::trainable_class_spells;
 
             creators["has area debuff"] = &ValueContext::has_area_debuff;
+            creators["combat start time"] = &ValueContext::combat_start_time;
         }
 
     private:
@@ -505,5 +507,6 @@ namespace ai
         static UntypedValue* trainable_class_spells(PlayerbotAI* ai) { return new TrainableClassSpells(ai); }
 
         static UntypedValue* has_area_debuff(PlayerbotAI* ai) { return new HasAreaDebuffValue(ai); }
+        static UntypedValue* combat_start_time(PlayerbotAI* ai) { return new CombatStartTimeValue(ai); }
     };
 };
