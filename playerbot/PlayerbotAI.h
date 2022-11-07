@@ -193,6 +193,7 @@ enum class GrouperType : uint8
     RAIDER_10 = 10,
     RAIDER_MAX = 25
 #else
+    RAIDER_20 = 20,
     RAIDER_MAX = 40
 #endif
 };
