@@ -23,7 +23,7 @@ PlayerbotSecurityLevel PlayerbotSecurity::LevelFor(Player* from, DenyReason* rea
         return PlayerbotSecurityLevel::PLAYERBOT_SECURITY_DENY_ALL;
     }
 
-    if (sPlayerbotAIConfig.IsInRandomAccountList(account) || sPlayerbotAIConfig.IsInNonRandomAccountList(account))
+    if ((sPlayerbotAIConfig.IsInRandomAccountList(account) || sPlayerbotAIConfig.IsInNonRandomAccountList(account)) && !bot->GetPlayerbotAI()->IsRealPlayer())
     {
         if (bot->GetPlayerbotAI()->IsOpposing(from))
         {
