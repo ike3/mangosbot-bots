@@ -3393,8 +3393,8 @@ bool PlayerbotAI::AllowActive(ActivityType activityType)
     if (HasRealPlayerMaster())
         return true;
 
-    //Always active bots
-    if (IsSelfMaster())
+    //Self bot in a group with a bot master.
+    if (IsRealPlayer())
         return true;
 
     Group* group = bot->GetGroup();
