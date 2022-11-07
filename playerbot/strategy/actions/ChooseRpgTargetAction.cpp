@@ -395,10 +395,13 @@ bool ChooseRpgTargetAction::isFollowValid(Player* bot, WorldPosition pos)
     Formation* formation = AI_VALUE(Formation*, "formation");
     float distance = sqrt(master->GetDistance2d(pos.getX(), pos.getY(), DIST_CALC_NONE));
 
-    if (!ai->HasActivePlayerMaster() && distance < 50.0f)
+    if (!ai->HasActivePlayerMaster())
     {
         Player* player = master;
-        if(!master->IsMoving() || PAI_VALUE(WorldPosition,"last long move").distance(pos) < sPlayerbotAIConfig.reactDistance)
+        if(PAI_VALUE(WorldPosition,"last long move").distance(pos) < sPlayerbotAIConfig.reactDistance)
+            return true;
+
+        if (!master->IsMoving() && distance < 50.0f)
             return true;
     }
 
