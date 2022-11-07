@@ -13,9 +13,7 @@ using namespace MaNGOS;
 
 void PossibleTargetsValue::FindUnits(list<Unit*> &targets)
 {
-    MaNGOS::AnyUnfriendlyUnitInObjectRangeCheck u_check(bot, range);
-    MaNGOS::UnitListSearcher<MaNGOS::AnyUnfriendlyUnitInObjectRangeCheck> searcher(targets, u_check);
-    Cell::VisitAllObjects(bot, searcher, range);
+    FindPossibleTargets(bot, targets, range);
 }
 
 bool PossibleTargetsValue::AcceptUnit(Unit* unit)
@@ -31,5 +29,17 @@ bool PossibleTargetsValue::AcceptUnit(Unit* unit)
     if (!isCCtarget && bot->getClass() == CLASS_WARLOCK && ai->HasMyAura("banish", unit))
         isCCtarget = true;
 
-    return isCCtarget || AttackersValue::IsPossibleTarget(unit, bot, range);
+    return isCCtarget || PossibleTargetsValue::IsValid(bot, unit, range);
+}
+
+void PossibleTargetsValue::FindPossibleTargets(Player* player, list<Unit*>& targets, float range)
+{
+    MaNGOS::AnyUnfriendlyUnitInObjectRangeCheck u_check(player, range);
+    MaNGOS::UnitListSearcher<MaNGOS::AnyUnfriendlyUnitInObjectRangeCheck> searcher(targets, u_check);
+    Cell::VisitAllObjects(player, searcher, range);
+}
+
+bool PossibleTargetsValue::IsValid(Player* player, Unit* target, float range)
+{
+    return AttackersValue::IsPossibleTarget(target, player, range);
 }

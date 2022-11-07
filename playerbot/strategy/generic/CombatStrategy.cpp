@@ -81,7 +81,6 @@ void WaitForAttackStrategy::InitTriggers(std::list<TriggerNode*>& triggers)
     triggers.push_back(new TriggerNode(
         "wait for attack safe distance",
         NextAction::array(0, new NextAction("wait for attack keep safe distance", 60.0f), NULL)));
-
 }
 
 void WaitForAttackStrategy::InitMultipliers(std::list<Multiplier*>& multipliers)

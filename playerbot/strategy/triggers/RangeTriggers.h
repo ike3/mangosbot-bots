@@ -282,14 +282,18 @@ namespace ai
         {
             if (WaitForAttackStrategy::ShouldWait(ai))
             {
-                Unit* target = AI_VALUE(Unit*, "current target");
-                if(target)
+                // Do not move if stay strategy is set
+                if (!ai->HasStrategy("stay", BotState::BOT_STATE_NON_COMBAT))
                 {
-                    const float safeDistance = WaitForAttackStrategy::GetSafeDistance();
-                    const float safeDistanceThreshold = WaitForAttackStrategy::GetSafeDistanceThreshold();
-                    const float distanceToTarget = sServerFacade.GetDistance2d(ai->GetBot(), target);
-                    return (distanceToTarget > (safeDistance + safeDistanceThreshold)) ||
-                           (distanceToTarget < (safeDistance - safeDistanceThreshold));
+                    Unit* target = AI_VALUE(Unit*, "current target");
+                    if (target)
+                    {
+                        const float safeDistance = WaitForAttackStrategy::GetSafeDistance();
+                        const float safeDistanceThreshold = WaitForAttackStrategy::GetSafeDistanceThreshold();
+                        const float distanceToTarget = sServerFacade.GetDistance2d(ai->GetBot(), target);
+                        return (distanceToTarget > (safeDistance + safeDistanceThreshold)) ||
+                               (distanceToTarget < (safeDistance - safeDistanceThreshold));
+                    }
                 }
             }
 

@@ -180,7 +180,15 @@ bool CastShootAction::isPossible()
 {
     // Check if the bot has a ranged weapon equipped
     UpdateWeaponInfo();
-    return rangedWeapon != nullptr;
+    if (rangedWeapon == nullptr)
+        return false;
+
+    // Check if the target exist and it can be shot
+    Unit* target = GetTarget();
+    if (!target || !sServerFacade.IsWithinLOSInMap(bot, target))
+        return false;
+
+    return true;
 }
 
 bool CastShootAction::Execute(Event& event)
