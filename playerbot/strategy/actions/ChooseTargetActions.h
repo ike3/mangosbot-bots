@@ -74,10 +74,10 @@ namespace ai
         bool isUseful() override;
     };
 
-    class DropTargetAction : public Action
+    class SelectNewTargetAction : public Action
     {
     public:
-        DropTargetAction(PlayerbotAI* ai) : Action(ai, "drop target") {}
+        SelectNewTargetAction(PlayerbotAI* ai) : Action(ai, "select new target") {}
         bool Execute(Event& event) override;
     };
 }
