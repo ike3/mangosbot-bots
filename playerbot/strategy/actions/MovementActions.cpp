@@ -1809,13 +1809,20 @@ bool WaitForAttackKeepSafeDistanceAction::Execute(Event& event)
             float z = targetPosition.getZ() + 1.0f;
 
             // Check walls and obstacles around the target
+#ifndef MANGOSBOT_TWO
             map->GetHitPosition(targetPosition.getX(), targetPosition.getY(), targetPosition.getZ() + 1.0f, x, y, z, -0.5f);
-            
+#else
+            map->GetHitPosition(targetPosition.getX(), targetPosition.getY(), targetPosition.getZ() + 1.0f, x, y, z, bot->GetPhaseMask(), -0.5f);
+#endif                       
             // Reset z to original value to avoid too much difference from original point before GetHeightInRange
             z = targetPosition.getZ();
             
             // Get proper height coordinate
+#ifndef MANGOSBOT_TWO
             if (map->GetHeightInRange(x, y, z))
+#else
+            if (map->GetHeightInRange(bot->GetPhaseMask(),x, y, z))
+#endif
             {
                 // Project vector to get only positive value
                 const float ab = fabs(botPosition.getX() - x);

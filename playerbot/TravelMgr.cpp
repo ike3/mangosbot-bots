@@ -258,8 +258,17 @@ bool WorldPosition::canFly() const
         return false;
 #endif
 #ifdef MANGOSBOT_TWO
-    if (!bot->CanStartFlyInArea(bot->GetMapId(), zoneid, areaid, false))
-        return false;
+    // Disallow mounting in wintergrasp when battle is in progress
+    if (OutdoorPvP* outdoorPvP = sOutdoorPvPMgr.GetScript(zoneid))
+    {
+        if (outdoorPvP->IsBattlefield())
+            return ((Battlefield*)outdoorPvP)->GetBattlefieldStatus() != BF_STATUS_IN_PROGRESS;
+    }
+
+    // don't allow flying in Dalaran restricted areas
+    // (no other zones currently has areas with AREA_FLAG_CANNOT_FLY)
+    if (AreaTableEntry const* atEntry = GetAreaEntryByAreaID(areaid))
+        return (!(atEntry->flags & AREA_FLAG_CANNOT_FLY));
 #endif
 
     return true;
