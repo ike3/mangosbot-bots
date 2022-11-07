@@ -104,7 +104,6 @@ bool AttackAction::Attack(Unit* target)
 bool AttackAction::IsTargetValid(Unit* target)
 {
     ostringstream msg;
-    msg << target->GetName();
     if (!target)
     {
         if (verbose) ai->TellError("I have no target");
@@ -112,12 +111,14 @@ bool AttackAction::IsTargetValid(Unit* target)
     }
     else if (sServerFacade.IsFriendlyTo(bot, target))
     {
+        msg << target->GetName();
         msg << " is friendly to me";
         if (verbose) ai->TellError(msg.str());
         return false;
     }
     else if (sServerFacade.UnitIsDead(target))
     {
+        msg << target->GetName();
         msg << " is dead";
         if (verbose) ai->TellError(msg.str());
         return false;
