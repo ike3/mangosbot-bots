@@ -101,6 +101,10 @@ void ChatCommandHandlerStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("stay chat shortcut", relevance), NULL)));
 
     triggers.push_back(new TriggerNode(
+        "wait for attack time",
+        NextAction::array(0, new NextAction("wait for attack time", relevance), NULL)));
+
+    triggers.push_back(new TriggerNode(
         "flee",
         NextAction::array(0, new NextAction("flee chat shortcut", relevance), NULL)));
 

@@ -85,6 +85,7 @@
 #include "VendorValues.h"
 #include "TrainerValues.h"
 #include "CombatTargetsValue.h"
+#include "WaitForAttackTimeValue.h"
 
 namespace ai
 {
@@ -306,6 +307,7 @@ namespace ai
 
             creators["has area debuff"] = &ValueContext::has_area_debuff;
             creators["combat start time"] = &ValueContext::combat_start_time;
+            creators["wait for attack time"] = &ValueContext::wait_for_attack_time;
         }
 
     private:
@@ -515,5 +517,6 @@ namespace ai
 
         static UntypedValue* has_area_debuff(PlayerbotAI* ai) { return new HasAreaDebuffValue(ai); }
         static UntypedValue* combat_start_time(PlayerbotAI* ai) { return new CombatStartTimeValue(ai); }
+        static UntypedValue* wait_for_attack_time(PlayerbotAI* ai) { return new WaitForAttackTimeValue(ai); }
     };
 };

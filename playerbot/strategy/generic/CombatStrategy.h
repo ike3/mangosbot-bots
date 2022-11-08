@@ -35,7 +35,7 @@ namespace ai
         void InitMultipliers(std::list<Multiplier*>& multipliers) override;
 
         static bool ShouldWait(PlayerbotAI* ai);
-        static time_t GetWaitTime() { return 5; }
+        static uint8 GetWaitTime(PlayerbotAI* ai);
         static float GetSafeDistance() { return sPlayerbotAIConfig.spellDistance; }
         static float GetSafeDistanceThreshold() { return 2.5f; }
     };
