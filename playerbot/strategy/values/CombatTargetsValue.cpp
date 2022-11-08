@@ -167,7 +167,7 @@ bool CombatTargetsValue::IsValid(Unit* target, Player* player) const
 #endif
 
             // Check if the target has been requested to be attacked
-            const bool isPulling = player->GetPlayerbotAI() && (PAI_VALUE(ObjectGuid, "pull target") == target->GetGUID());
+            const bool isPulling = player->GetPlayerbotAI() && (PAI_VALUE(ObjectGuid, "pull target") == target->GetObjectGuid());
 
             // Valid if the npc target is:
             // - Not dead
