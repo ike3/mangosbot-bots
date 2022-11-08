@@ -111,11 +111,4 @@ namespace ai
         virtual bool Execute(Event& event);
         virtual bool isUseful();
     };
-
-    class WaitForAttackKeepSafeDistanceAction : public MovementAction
-    {
-    public:
-        WaitForAttackKeepSafeDistanceAction(PlayerbotAI* ai) : MovementAction(ai, "wait for attack keep safe distance") {}
-        virtual bool Execute(Event& event);
-    };
 }

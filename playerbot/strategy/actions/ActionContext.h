@@ -55,6 +55,7 @@
 #include "VehicleActions.h"
 #include "UseTrinketAction.h"
 #include "BotStateActions.h"
+#include "WaitForAttackAction.h"
 
 namespace ai
 {

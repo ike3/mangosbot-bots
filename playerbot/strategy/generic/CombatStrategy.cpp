@@ -120,7 +120,7 @@ bool WaitForAttackStrategy::ShouldWait(PlayerbotAI* ai)
                     {
                         // Check the amount of time elapsed from the combat start
                         const time_t elapsedTime = time(0) - combatStartTime;
-                        return elapsedTime < GetWaitTime();
+                        return elapsedTime < GetWaitTime(ai);
                     }
                 }
             }
@@ -128,6 +128,11 @@ bool WaitForAttackStrategy::ShouldWait(PlayerbotAI* ai)
     }
 
     return false;
+}
+
+uint8 WaitForAttackStrategy::GetWaitTime(PlayerbotAI* ai)
+{
+    return ai->GetAiObjectContext()->GetValue<uint8>("wait for attack time")->Get();
 }
 
 float WaitForAttackMultiplier::GetValue(Action* action)
