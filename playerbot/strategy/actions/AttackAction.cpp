@@ -25,19 +25,24 @@ bool AttackAction::Execute(Event& event)
 bool AttackMyTargetAction::Execute(Event& event)
 {
     Player* master = GetMaster();
-    if (!master)
-        return false;
-
-    ObjectGuid guid = master->GetSelectionGuid();
-    if (!guid)
+    if(master)
     {
-        if (verbose) ai->TellError("You have no target");
-        return false;
+        const ObjectGuid guid = master->GetSelectionGuid();
+        if (guid)
+        {
+            if (Attack(ai->GetUnit(guid)))
+            {
+                SET_AI_VALUE(ObjectGuid, "pull target", guid);
+                return true;
+            }
+        }
+        else if (verbose) 
+        {
+            ai->TellError("You have no target");
+        }
     }
 
-    bool result = Attack(ai->GetUnit(guid));
-    if (result) context->GetValue<ObjectGuid>("pull target")->Set(guid);
-    return result;
+    return false;
 }
 
 bool AttackAction::Attack(Unit* target)
@@ -65,14 +70,14 @@ bool AttackAction::Attack(Unit* target)
         ObjectGuid guid = target->GetObjectGuid();
         bot->SetSelectionGuid(target->GetObjectGuid());
 
-        Unit* oldTarget = context->GetValue<Unit*>("current target")->Get();
+        Unit* oldTarget = AI_VALUE(Unit*, "current target");
         if(oldTarget)
         {
-            context->GetValue<Unit*>("old target")->Set(oldTarget);
+            SET_AI_VALUE(Unit*, "old target", oldTarget);
         }
 
-        context->GetValue<Unit*>("current target")->Set(target);
-        context->GetValue<LootObjectStack*>("available loot")->Get()->Add(guid);
+        SET_AI_VALUE(Unit*, "current target", target);
+        AI_VALUE(LootObjectStack*, "available loot")->Add(guid);
 
         Pet* pet = bot->GetPet();
         if (pet)

@@ -86,30 +86,30 @@ bool AttackEnemyFlagCarrierAction::isUseful()
 
 bool SelectNewTargetAction::Execute(Event& event)
 {
-    Unit* target = context->GetValue<Unit*>("current target")->Get();
+    Unit* target = AI_VALUE(Unit*, "current target");
     if (target && sServerFacade.UnitIsDead(target))
     {
         // Save the dead target for later looting
         ObjectGuid guid = target->GetObjectGuid();
         if (guid)
         {
-            context->GetValue<LootObjectStack*>("available loot")->Get()->Add(guid);
+            AI_VALUE(LootObjectStack*, "available loot")->Add(guid);
         }
     }
 
     // Clear the target variables
-    ObjectGuid pullTarget = context->GetValue<ObjectGuid>("pull target")->Get();
-    list<ObjectGuid> possible = ai->GetAiObjectContext()->GetValue<list<ObjectGuid> >("possible targets no los")->Get();
+    ObjectGuid pullTarget = AI_VALUE(ObjectGuid, "pull target");
+    list<ObjectGuid> possible = AI_VALUE(list<ObjectGuid>, "possible targets no los");
     if (pullTarget && find(possible.begin(), possible.end(), pullTarget) == possible.end())
     {
-        context->GetValue<ObjectGuid>("pull target")->Set(ObjectGuid());
+        SET_AI_VALUE(ObjectGuid, "pull target", ObjectGuid());
     }
 
     // Save the old target and clear the current target
     if(target)
     {
-        context->GetValue<Unit*>("old target")->Set(target);
-        context->GetValue<Unit*>("current target")->Set(NULL);
+        SET_AI_VALUE(Unit*, "old target", target);
+        SET_AI_VALUE(Unit*, "current target", nullptr);
     }
     
     // Stop attacking
