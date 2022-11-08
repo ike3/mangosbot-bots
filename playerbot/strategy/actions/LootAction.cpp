@@ -383,33 +383,13 @@ bool StoreLootAction::Execute(Event& event)
         if (loot_type != LOOT_SKINNING && !IsLootAllowed(itemid, ai))
             continue;
 
+        if (AI_VALUE2(uint32, "stack space for item", itemid) < itemcount)
+            continue;
+
         ItemPrototype const *proto = sItemStorage.LookupEntry<ItemPrototype>(itemid);
         if (!proto)
             continue;
-
-        if (!ai->HasActivePlayerMaster() && AI_VALUE(uint8, "bag space") > 80)
-        {
-            uint32 maxStack = proto->GetMaxStackSize();
-            if (maxStack == 1)
-                continue;
-
-            list<Item*> found = parseItems(chat->formatItem(proto));
-
-            bool hasFreeStack = false;
-
-            for (auto stack : found)
-            {
-                if (stack->GetCount() + itemcount < maxStack)
-                {
-                    hasFreeStack = true;
-                    break;
-                }
-            }
-
-            if (!hasFreeStack)
-                continue;
-        }
-
+       
         Player* master = ai->GetMaster();
         if (sRandomPlayerbotMgr.IsRandomBot(bot) && master)
         {
@@ -446,6 +426,8 @@ bool StoreLootAction::Execute(Event& event)
     }
 
     AI_VALUE(LootObjectStack*, "available loot")->Remove(guid);
+    RESET_AI_VALUE(LootObject, "loot target");
+    RESET_AI_VALUE2(bool, "should loot object", to_string(guid.GetRawValue()));
 
     // release loot
     WorldPacket packet(CMSG_LOOT_RELEASE, 8);

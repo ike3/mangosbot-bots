@@ -2,9 +2,21 @@
 #include "../../playerbot.h"
 #include "SharedValueContext.h"
 #include "LootValues.h"
+#include "../../Strategy/Actions/LootAction.h"
 
 using namespace ai;
 
+vector<LootItem> LootAccess::GetLootContentFor(Player* player) const
+{
+	vector<LootItem> retvec;
+
+	for (LootItemList::const_iterator lootItemItr = m_lootItems.begin(); lootItemItr != m_lootItems.end(); ++lootItemItr)
+	{
+		retvec.push_back(**lootItemItr);
+	}
+
+	return retvec;
+}
 
 LootTemplateAccess const* DropMapValue::GetLootTemplate(ObjectGuid guid, LootType type)
 {
@@ -160,5 +172,81 @@ itemUsageMap EntryLootUsageValue::Calculate()
 	}
 
 	return items;
-};
+}
 
+//How many (stack) items can be looted while still having free space.
+uint32 StackSpaceForItem::Calculate()
+{
+	uint32 maxValue = 999;
+
+	uint32 itemId = stoi(getQualifier());
+
+	ItemPrototype const* proto = sItemStorage.LookupEntry<ItemPrototype>(itemId);
+
+	if (!proto) 
+		return maxValue;
+
+	if (ai->HasActivePlayerMaster())
+		return maxValue;
+	
+	if (AI_VALUE(uint8, "bag space") <= 80)
+		return maxValue;
+
+	uint32 maxStack = proto->GetMaxStackSize();
+	if (maxStack == 1)
+		return 0;
+
+	list<Item*> found = AI_VALUE2(list < Item*>, "inventory items", chat->formatItem(proto));
+
+	maxValue = 0;
+
+	for (auto stack : found)
+		if (maxStack - stack->GetCount() > maxValue)
+			maxValue = maxStack - stack->GetCount();
+
+	return maxValue;
+}
+
+bool ShouldLootObject::Calculate()
+{
+	uint64 guidRaw;
+	
+	GuidPosition guid(stoull(getQualifier()), WorldPosition(bot));
+
+	if (!guid)
+		return false;
+
+	WorldObject* object = guid.GetWorldObject();
+
+	if (!object)
+		return false;
+
+	if (!object->m_loot)
+		return true;
+
+	if (object->m_loot->GetGoldAmount() > 0)
+		return true;
+
+	LootAccess const* lootAccess = reinterpret_cast<LootAccess const*>(object->m_loot);
+
+	if (!lootAccess)
+		return false;
+
+	for (auto lItem : lootAccess->GetLootContentFor(bot))
+	{
+		if (!lItem.itemId)
+			continue;
+
+		uint32 canLootAmount = AI_VALUE2(uint32, "stack space for item", lItem.itemId);
+
+		if (canLootAmount < lItem.count)
+			continue;
+
+		if (lootAccess->m_lootType != LOOT_SKINNING && !StoreLootAction::IsLootAllowed(lItem.itemId, ai))
+			continue;
+
+		return true;
+	}
+
+	return false;
+}

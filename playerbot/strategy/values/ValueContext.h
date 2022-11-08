@@ -154,6 +154,8 @@ namespace ai
             creators["loot target"] = &ValueContext::loot_target;
             creators["available loot"] = &ValueContext::available_loot;
             creators["has available loot"] = &ValueContext::has_available_loot;
+            creators["stack space for item"] = &ValueContext::stack_space_for_item;
+            creators["should loot object"] = &ValueContext::should_loot_object;
             creators["always loot list"] = &ValueContext::always_loot_list;
             creators["loot strategy"] = &ValueContext::loot_strategy;
             creators["last movement"] = &ValueContext::last_movement;
@@ -363,6 +365,8 @@ namespace ai
         static UntypedValue* available_loot(PlayerbotAI* ai) { return new AvailableLootValue(ai); }
         static UntypedValue* loot_target(PlayerbotAI* ai) { return new LootTargetValue(ai); }
         static UntypedValue* has_available_loot(PlayerbotAI* ai) { return new HasAvailableLootValue(ai); }
+        static UntypedValue* stack_space_for_item(PlayerbotAI* ai) { return new StackSpaceForItem(ai); }
+        static UntypedValue* should_loot_object(PlayerbotAI* ai) { return new ShouldLootObject(ai); }
         static UntypedValue* always_loot_list(PlayerbotAI* ai) { return new AlwaysLootListValue(ai); }
         static UntypedValue* loot_strategy(PlayerbotAI* ai) { return new LootStrategyValue(ai); }
 
