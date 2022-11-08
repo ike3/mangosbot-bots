@@ -9,7 +9,7 @@ void CombatStrategy::InitTriggers(list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
         "invalid target",
-        NextAction::array(0, new NextAction("drop target", 89.0f), NULL)));
+        NextAction::array(0, new NextAction("select new target", 89.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
         "mounted",
@@ -42,7 +42,7 @@ float AvoidAoeStrategyMultiplier::GetValue(Action* action)
         return 1.0f;
 
     string name = action->getName();
-    if (name == "follow" || name == "co" || name == "nc" || name == "react" || name == "drop target" || name == "flee")
+    if (name == "follow" || name == "co" || name == "nc" || name == "react" || name == "select new target" || name == "flee")
         return 1.0f;
 
     uint32 spellId = AI_VALUE2(uint32, "spell id", name);
@@ -97,16 +97,31 @@ bool WaitForAttackStrategy::ShouldWait(PlayerbotAI* ai)
         Player* bot = ai->GetBot();
         if (bot->GetGroup() && ai->HasRealPlayerMaster())
         {
-            // Tanks and healers can avoid this check
-            if (!ai->IsTank(bot) && !ai->IsHeal(bot))
+            // Don't wait if the current target is an enemy player
+            bool enemyPlayer = false;
+            Unit* target = ai->GetAiObjectContext()->GetValue<Unit*>("current target")->Get();
+            if (target)
             {
-                // Check if bot is currently in combat
-                const time_t& combatStartTime = ai->GetAiObjectContext()->GetValue<time_t>("combat start time")->Get();
-                if (combatStartTime > 0)
+                Player* player = dynamic_cast<Player*>(target);
+                if (player)
                 {
-                    // Check the amount of time elapsed from the combat start
-                    const time_t elapsedTime = time(0) - combatStartTime;
-                    return elapsedTime < GetWaitTime();
+                    enemyPlayer = !sServerFacade.IsFriendlyTo(target, ai->GetBot());
+                }
+            }
+
+            if (!enemyPlayer)
+            {
+                // Tanks and healers can avoid this check
+                if (!ai->IsTank(bot) && !ai->IsHeal(bot))
+                {
+                    // Check if bot is currently in combat
+                    const time_t& combatStartTime = ai->GetAiObjectContext()->GetValue<time_t>("combat start time")->Get();
+                    if (combatStartTime > 0)
+                    {
+                        // Check the amount of time elapsed from the combat start
+                        const time_t elapsedTime = time(0) - combatStartTime;
+                        return elapsedTime < GetWaitTime();
+                    }
                 }
             }
         }

@@ -121,7 +121,7 @@ namespace ai
             creators["set facing"] = &ActionContext::set_facing;
             creators["set behind"] = &ActionContext::set_behind;
             creators["attack duel opponent"] = &ActionContext::attack_duel_opponent;
-            creators["drop target"] = &ActionContext::drop_target;
+            creators["select new target"] = &ActionContext::select_new_target;
             creators["check mail"] = &ActionContext::check_mail;
             creators["say"] = &ActionContext::say;
             creators["reveal gathering item"] = &ActionContext::reveal_gathering_item;
@@ -273,7 +273,7 @@ namespace ai
         static Action* try_emergency(PlayerbotAI* ai) { return new TryEmergencyAction(ai); }
         static Action* apply_stone(PlayerbotAI* ai) { return new ImbueWithStoneAction(ai); }
         static Action* check_mail(PlayerbotAI* ai) { return new CheckMailAction(ai); }
-        static Action* drop_target(PlayerbotAI* ai) { return new DropTargetAction(ai); }
+        static Action* select_new_target(PlayerbotAI* ai) { return new SelectNewTargetAction(ai); }
         static Action* attack_duel_opponent(PlayerbotAI* ai) { return new AttackDuelOpponentAction(ai); }
         static Action* guard(PlayerbotAI* ai) { return new GuardAction(ai); }
         static Action* open_loot(PlayerbotAI* ai) { return new OpenLootAction(ai); }

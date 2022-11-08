@@ -66,7 +66,10 @@ bool AttackAction::Attack(Unit* target)
         bot->SetSelectionGuid(target->GetObjectGuid());
 
         Unit* oldTarget = context->GetValue<Unit*>("current target")->Get();
-        context->GetValue<Unit*>("old target")->Set(oldTarget);
+        if(oldTarget)
+        {
+            context->GetValue<Unit*>("old target")->Set(oldTarget);
+        }
 
         context->GetValue<Unit*>("current target")->Set(target);
         context->GetValue<LootObjectStack*>("available loot")->Get()->Add(guid);
@@ -104,7 +107,6 @@ bool AttackAction::Attack(Unit* target)
 bool AttackAction::IsTargetValid(Unit* target)
 {
     ostringstream msg;
-    msg << target->GetName();
     if (!target)
     {
         if (verbose) ai->TellError("I have no target");
@@ -112,12 +114,14 @@ bool AttackAction::IsTargetValid(Unit* target)
     }
     else if (sServerFacade.IsFriendlyTo(bot, target))
     {
+        msg << target->GetName();
         msg << " is friendly to me";
         if (verbose) ai->TellError(msg.str());
         return false;
     }
     else if (sServerFacade.UnitIsDead(target))
     {
+        msg << target->GetName();
         msg << " is dead";
         if (verbose) ai->TellError(msg.str());
         return false;

@@ -84,6 +84,7 @@
 #include "RTSCValues.h"
 #include "VendorValues.h"
 #include "TrainerValues.h"
+#include "CombatTargetsValue.h"
 
 namespace ai
 {
@@ -195,6 +196,7 @@ namespace ai
 
             creators["balance"] = &ValueContext::balance;
             creators["attackers"] = &ValueContext::attackers;
+            creators["combat targets"] = &ValueContext::combat_targets;
             creators["invalid target"] = &ValueContext::invalid_target;
             creators["mana save level"] = &ValueContext::mana_save_level;
             creators["combat"] = &ValueContext::combat;
@@ -332,6 +334,7 @@ namespace ai
         static UntypedValue* invalid_target(PlayerbotAI* ai) { return new InvalidTargetValue(ai); }
         static UntypedValue* balance(PlayerbotAI* ai) { return new BalancePercentValue(ai); }
         static UntypedValue* attackers(PlayerbotAI* ai) { return new AttackersValue(ai); }
+        static UntypedValue* combat_targets(PlayerbotAI* ai) { return new CombatTargetsValue(ai); }
 
         static UntypedValue* position(PlayerbotAI* ai) { return new PositionValue(ai); }
         static UntypedValue* current_position(PlayerbotAI* ai) { return new CurrentPositionValue(ai); }

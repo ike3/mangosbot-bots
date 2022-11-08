@@ -3207,7 +3207,10 @@ GrouperType PlayerbotAI::GetGrouperType()
         return GrouperType::LEADER_4;
     if (grouperNumber <= 90)
         return GrouperType::LEADER_5;
-#ifndef MANGOSBOT_ZERO
+#ifdef MANGOSBOT_ZERO
+    if (grouperNumber <= 95)
+        return GrouperType::RAIDER_20;
+#else
     if (grouperNumber <= 95)
         return GrouperType::RAIDER_10;
 #endif    
@@ -3393,8 +3396,8 @@ bool PlayerbotAI::AllowActive(ActivityType activityType)
     if (HasRealPlayerMaster())
         return true;
 
-    //Always active bots
-    if (IsSelfMaster())
+    //Self bot in a group with a bot master.
+    if (IsRealPlayer())
         return true;
 
     Group* group = bot->GetGroup();
