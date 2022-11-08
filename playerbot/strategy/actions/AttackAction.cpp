@@ -66,7 +66,10 @@ bool AttackAction::Attack(Unit* target)
         bot->SetSelectionGuid(target->GetObjectGuid());
 
         Unit* oldTarget = context->GetValue<Unit*>("current target")->Get();
-        context->GetValue<Unit*>("old target")->Set(oldTarget);
+        if(oldTarget)
+        {
+            context->GetValue<Unit*>("old target")->Set(oldTarget);
+        }
 
         context->GetValue<Unit*>("current target")->Set(target);
         context->GetValue<LootObjectStack*>("available loot")->Get()->Add(guid);
