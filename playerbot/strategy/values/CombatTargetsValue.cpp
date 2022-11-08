@@ -67,20 +67,26 @@ void CombatTargetsValue::AddTargetsOf(Player* player, set<Unit*>& targets)
             units.push_back(attacker);
         }
 
-        // If the player is a bot try to retrieve the current and previous targets
+        // If the player is a bot try to retrieve the pull, current and previous targets
         PlayerbotAI* bot = player->GetPlayerbotAI();
         if(bot)
         {
-            Unit* currentTarget = bot->GetAiObjectContext()->GetValue<Unit*>("current target")->Get();
+            Unit* currentTarget = PAI_VALUE(Unit*, "current target");
             if(currentTarget)
             {
                 units.push_back(currentTarget);
             }
 
-            Unit* oldTarget = bot->GetAiObjectContext()->GetValue<Unit*>("old target")->Get();
+            Unit* oldTarget = PAI_VALUE(Unit*, "old target");
             if (oldTarget)
             {
                 units.push_back(oldTarget);
+            }
+
+            Unit* pullTarget = bot->GetUnit(PAI_VALUE(ObjectGuid, "pull target"));
+            if (pullTarget)
+            {
+                units.push_back(pullTarget);
             }
         }
 
@@ -160,17 +166,20 @@ bool CombatTargetsValue::IsValid(Unit* target, Player* player) const
             const bool isInEvadeMode = creature && creature->GetCombatManager().IsInEvadeMode();
 #endif
 
+            // Check if the target has been requested to be attacked
+            const bool isPulling = player->GetPlayerbotAI() && (PAI_VALUE(ObjectGuid, "pull target") == target->GetGUID());
+
             // Valid if the npc target is:
             // - Not dead
             // - Not friendly
-            // - In combat with the player
+            // - In combat with the player or the player is pulling the target
             // - Visible
             // - Is attackable
             // - Is player pet not in PvP Prohibited zone
             // - Not in evade mode
             return !isDead && 
                    !isFriendly && 
-                   inCombatWithPlayer && 
+                   (inCombatWithPlayer || isPulling) && 
                    isVisible && 
                    isAttackable && 
                    (!isPlayerPet || (isPlayerPet && !inPvPProhibitedZone)) &&

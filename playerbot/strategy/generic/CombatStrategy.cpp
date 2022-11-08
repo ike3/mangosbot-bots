@@ -94,8 +94,8 @@ bool WaitForAttackStrategy::ShouldWait(PlayerbotAI* ai)
     if (ai->HasStrategy("wait for attack", BotState::BOT_STATE_COMBAT))
     {
         // Only check if bot is in a group with a real player
-        Player* bot = ai->GetBot();
-        if (bot->GetGroup() && ai->HasRealPlayerMaster())
+        Player* player = ai->GetBot();
+        if (player->GetGroup() && ai->HasRealPlayerMaster())
         {
             // Don't wait if the current target is an enemy player
             bool enemyPlayer = false;
@@ -105,17 +105,17 @@ bool WaitForAttackStrategy::ShouldWait(PlayerbotAI* ai)
                 Player* player = dynamic_cast<Player*>(target);
                 if (player)
                 {
-                    enemyPlayer = !sServerFacade.IsFriendlyTo(target, ai->GetBot());
+                    enemyPlayer = !sServerFacade.IsFriendlyTo(target, player);
                 }
             }
 
             if (!enemyPlayer)
             {
                 // Tanks and healers can avoid this check
-                if (!ai->IsTank(bot) && !ai->IsHeal(bot))
+                if (!ai->IsTank(player) && !ai->IsHeal(player))
                 {
                     // Check if bot is currently in combat
-                    const time_t& combatStartTime = ai->GetAiObjectContext()->GetValue<time_t>("combat start time")->Get();
+                    const time_t combatStartTime = PAI_VALUE(time_t, "combat start time");
                     if (combatStartTime > 0)
                     {
                         // Check the amount of time elapsed from the combat start
@@ -132,7 +132,8 @@ bool WaitForAttackStrategy::ShouldWait(PlayerbotAI* ai)
 
 uint8 WaitForAttackStrategy::GetWaitTime(PlayerbotAI* ai)
 {
-    return ai->GetAiObjectContext()->GetValue<uint8>("wait for attack time")->Get();
+    Player* player = ai->GetBot();
+    return PAI_VALUE(uint8, "wait for attack time");
 }
 
 float WaitForAttackMultiplier::GetValue(Action* action)
