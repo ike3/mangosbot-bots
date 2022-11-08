@@ -80,7 +80,7 @@ bool UseItemAction::UseItem(Item* item, ObjectGuid goGuid, Item* itemTarget)
 
     uint8 bagIndex = item->GetBagSlot();
     uint8 slot = item->GetSlot();
-    uint8 spell_index = 0;
+    uint8 spell_count = 0;
     uint8 cast_count = 1;
     uint64 item_guid = item->GetObjectGuid().GetRawValue();
     uint32 glyphIndex = 0;
@@ -96,12 +96,15 @@ bool UseItemAction::UseItem(Item* item, ObjectGuid goGuid, Item* itemTarget)
 #endif
 
     WorldPacket packet(CMSG_USE_ITEM);
-    packet << bagIndex << slot << spell_index;
+#ifdef MANGOSBOT_ZERO
+    packet << bagIndex << slot << spell_count;
+#endif
 #ifdef MANGOSBOT_ONE
-    packet << cast_count << item_guid;
+    packet bagIndex << slot << spell_count << cast_count << item_guid;
 #endif
 #ifdef MANGOSBOT_TWO
-    packet << cast_count << item_guid;
+    uint32 spell_id = 0;
+    packet << bagIndex << slot << cast_count << spell_id << item_guid << glyphIndex << unk_flags;
 #endif
 
     bool targetSelected = false;
@@ -240,10 +243,6 @@ bool UseItemAction::UseItem(Item* item, ObjectGuid goGuid, Item* itemTarget)
         targetSelected = true;
         out << " on self";
     }
-
-#ifdef MANGOSBOT_TWO
-    packet << glyphIndex << unk_flags;
-#endif
 
     ItemPrototype const* proto = item->GetProto();
     bool isDrink = proto->Spells[0].SpellCategory == 59;
