@@ -5,7 +5,7 @@
 
 bool CombatStartTrigger::IsActive()
 {
-    if (!ai->IsStateActive(BotState::BOT_STATE_COMBAT))
+    if (!ai->IsStateActive(BotState::BOT_STATE_COMBAT) && !ai->IsStateActive(BotState::BOT_STATE_DEAD))
     {
         // Check if any member of the group (near this bot) is getting attacked
         // NOTE: The validity of the attackers and the group members get checked in AttackersValue::Calculate()
