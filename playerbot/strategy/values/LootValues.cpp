@@ -209,8 +209,6 @@ uint32 StackSpaceForItem::Calculate()
 
 bool ShouldLootObject::Calculate()
 {
-	uint64 guidRaw;
-	
 	GuidPosition guid(stoull(getQualifier()), WorldPosition(bot));
 
 	if (!guid)
