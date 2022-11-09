@@ -2,7 +2,7 @@
 #include "../../playerbot.h"
 #include "SharedValueContext.h"
 #include "LootValues.h"
-#include "../../Strategy/Actions/LootAction.h"
+#include "../actions/LootAction.h"
 
 using namespace ai;
 
