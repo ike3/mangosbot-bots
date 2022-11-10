@@ -74,7 +74,7 @@ bool BuyAction::BuyItem(VendorItemData const* tItems, ObjectGuid vendorguid, con
         if (tItems->GetItem(slot)->item == itemId)
         {
 #ifdef MANGOSBOT_TWO
-            bot->BuyItemFromVendorSlot(vendorguid, 0, itemId, 1, NULL_BAG, NULL_SLOT);
+            bot->BuyItemFromVendorSlot(vendorguid, slot, itemId, 1, NULL_BAG, NULL_SLOT);
 #else
             bot->BuyItemFromVendor(vendorguid, itemId, 1, NULL_BAG, NULL_SLOT);
 #endif
