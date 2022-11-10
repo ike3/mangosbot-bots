@@ -155,7 +155,9 @@ bool CombatTargetsValue::IsValid(Unit* target, Player* player) const
         else
         {
             // Check if the npc target is in combat with the player
-            const bool inCombatWithPlayer = target->getThreatManager().getThreat(player) > 0.0f;
+            const bool inCombatWithPlayer = (target->getThreatManager().getThreat(player) > 0.0f) ||
+                                            (target->GetVictim() && (target->GetVictim() == player));
+
             const bool isPlayerPet = target->GetObjectGuid().IsPet();
 
             const Creature* creature = dynamic_cast<Creature*>(target);
