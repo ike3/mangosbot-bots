@@ -293,7 +293,7 @@ bool MovementAction::FlyDirect(WorldPosition &startPosition, WorldPosition &endP
 #endif
 }
 
-bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, bool react, bool noPath)
+bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, bool react, bool noPath, bool ignoreEnemyTargets)
 {
     WorldPosition endPosition(mapId, x, y, z, 0);
     if(!endPosition.isValid())
@@ -683,7 +683,8 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
         movePosition = movePath.getNextPoint(startPosition, maxDist, pathType, entry);
     }
 
-    if (!bot->IsInCombat() && !bot->IsDead()) //Stop the path when we might get aggro.
+    //Stop the path when we might get aggro.
+    if (!bot->IsInCombat() && !bot->IsDead() && !ignoreEnemyTargets) 
     {
         list<ObjectGuid> targets = AI_VALUE_LAZY(list<ObjectGuid>, "all targets");
 

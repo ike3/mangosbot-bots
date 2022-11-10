@@ -77,6 +77,10 @@ namespace ai
 
 		virtual bool isUseful()
 		{
+            // Do not move if stay strategy is set
+            if (ai->HasStrategy("stay", BotState::BOT_STATE_NON_COMBAT))
+                return false;
+
 			return sServerFacade.IsDistanceGreaterThan(AI_VALUE2(float, "distance", "current target"), (distance + sPlayerbotAIConfig.contactDistance));
 		}
 
