@@ -8,7 +8,7 @@
 
 using namespace ai;
 
-bool AttackAction::Execute(Event event)
+bool AttackAction::Execute(Event& event)
 {
     Unit* target = GetTarget();
 
@@ -22,7 +22,7 @@ bool AttackAction::Execute(Event event)
     return Attack(target);
 }
 
-bool AttackMyTargetAction::Execute(Event event)
+bool AttackMyTargetAction::Execute(Event& event)
 {
     Player* master = GetMaster();
     if (!master)
@@ -54,76 +54,82 @@ bool AttackAction::Attack(Unit* target)
         return false;
     }
 
+    if(IsTargetValid(target))
+    {
+        if (bot->IsMounted() && (sServerFacade.GetDistance2d(bot, target) < 40.0f))
+        {
+            WorldPacket emptyPacket;
+            bot->GetSession()->HandleCancelMountAuraOpcode(emptyPacket);
+        }
+
+        ObjectGuid guid = target->GetObjectGuid();
+        bot->SetSelectionGuid(target->GetObjectGuid());
+
+        Unit* oldTarget = context->GetValue<Unit*>("current target")->Get();
+        context->GetValue<Unit*>("old target")->Set(oldTarget);
+
+        context->GetValue<Unit*>("current target")->Set(target);
+        context->GetValue<LootObjectStack*>("available loot")->Get()->Add(guid);
+
+        Pet* pet = bot->GetPet();
+        if (pet)
+        {
+    #ifdef MANGOS
+            CreatureAI* creatureAI = ((Creature*)pet)->AI();
+    #endif
+    #ifdef CMANGOS
+            UnitAI* creatureAI = ((Creature*)pet)->AI();
+    #endif
+            if (creatureAI)
+            {
+    #ifdef CMANGOS
+                creatureAI->SetReactState(REACT_DEFENSIVE);
+    #endif
+    #ifdef MANGOS
+                pet->GetCharmInfo()->SetCommandState(COMMAND_ATTACK);
+    #endif
+                creatureAI->AttackStart(target);
+            }
+        }
+
+        if (IsMovingAllowed() && !sServerFacade.IsInFront(bot, target, sPlayerbotAIConfig.sightDistance, CAST_ANGLE_IN_FRONT))
+            sServerFacade.SetFacingTo(bot, target);
+
+        return bot->Attack(target, !ai->IsRanged(bot));
+    }
+
+    return false;
+}
+
+bool AttackAction::IsTargetValid(Unit* target)
+{
+    ostringstream msg;
+    msg << target->GetName();
     if (!target)
     {
         if (verbose) ai->TellError("I have no target");
         return false;
     }
-
-    ostringstream msg;
-    msg << target->GetName();
-    if (sServerFacade.IsFriendlyTo(bot, target))
+    else if (sServerFacade.IsFriendlyTo(bot, target))
     {
         msg << " is friendly to me";
         if (verbose) ai->TellError(msg.str());
         return false;
     }
-    if (!sServerFacade.IsWithinLOSInMap(bot, target))
+    else if (!sServerFacade.IsWithinLOSInMap(bot, target))
     {
         msg << " is not on my sight";
         if (verbose) ai->TellError(msg.str());
+        return false;
     }
-    if (sServerFacade.UnitIsDead(target))
+    else if (sServerFacade.UnitIsDead(target))
     {
         msg << " is dead";
         if (verbose) ai->TellError(msg.str());
         return false;
     }
 
-    if (bot->IsMounted() && (sServerFacade.GetDistance2d(bot, target) < 40.0f))
-    {
-        WorldPacket emptyPacket;
-        bot->GetSession()->HandleCancelMountAuraOpcode(emptyPacket);
-    }
-
-    ObjectGuid guid = target->GetObjectGuid();
-    bot->SetSelectionGuid(target->GetObjectGuid());
-
-    Unit* oldTarget = context->GetValue<Unit*>("current target")->Get();
-    context->GetValue<Unit*>("old target")->Set(oldTarget);
-
-    context->GetValue<Unit*>("current target")->Set(target);
-    context->GetValue<LootObjectStack*>("available loot")->Get()->Add(guid);
-
-    Pet* pet = bot->GetPet();
-    if (pet)
-    {
-#ifdef MANGOS
-        CreatureAI*
-#endif
-#ifdef CMANGOS
-        UnitAI*
-#endif
-            creatureAI = ((Creature*)pet)->AI();
-        if (creatureAI)
-        {
-#ifdef CMANGOS
-            creatureAI->SetReactState(REACT_DEFENSIVE);
-#endif
-#ifdef MANGOS
-            pet->GetCharmInfo()->SetCommandState(COMMAND_ATTACK);
-#endif
-            creatureAI->AttackStart(target);
-        }
-    }
-
-    if (IsMovingAllowed() && !sServerFacade.IsInFront(bot, target, sPlayerbotAIConfig.sightDistance, CAST_ANGLE_IN_FRONT))
-        sServerFacade.SetFacingTo(bot, target);
-
-    bool attacked = bot->Attack(target, !ai->IsRanged(bot));
-    ai->ChangeEngine(BOT_STATE_COMBAT);
-
-    return attacked;
+    return true;
 }
 
 bool AttackDuelOpponentAction::isUseful()
@@ -131,7 +137,7 @@ bool AttackDuelOpponentAction::isUseful()
     return AI_VALUE(Unit*, "duel target");
 }
 
-bool AttackDuelOpponentAction::Execute(Event event)
+bool AttackDuelOpponentAction::Execute(Event& event)
 {
     return Attack(AI_VALUE(Unit*, "duel target"));
 }

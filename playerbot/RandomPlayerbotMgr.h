@@ -43,8 +43,8 @@ public:
     // dt -  loop interval time
     // max - maximum value of manipulated variable
     // min - minimum value of manipulated variable
-    botPID(double dt, double max, double min, double Kp, double Kd, double Ki);
-    void adjust(double Kp, double Kd, double Ki);
+    botPID(double dt, double max, double min, double Kp, double Ki, double Kd);
+    void adjust(double Kp, double Ki, double Kd);
     void reset();
    
     double calculate(double setpoint, double pv);
@@ -74,6 +74,7 @@ class RandomPlayerbotMgr : public PlayerbotHolder
         static bool HandlePlayerbotConsoleCommand(ChatHandler* handler, char const* args);
         bool IsRandomBot(Player* bot);
         bool IsRandomBot(uint32 bot);
+        void InstaRandomize(Player* bot);
         void Randomize(Player* bot);
         void RandomizeFirst(Player* bot);
         void UpdateGearSpells(Player* bot);
@@ -85,7 +86,8 @@ class RandomPlayerbotMgr : public PlayerbotHolder
         void OnPlayerLogin(Player* player);
         void OnPlayerLoginError(uint32 bot);
         Player* GetRandomPlayer();
-        vector<Player*> GetPlayers() { return players; };
+        PlayerBotMap GetPlayers() { return players; };
+        Player* GetPlayer(uint32 playerGuid);
         PlayerBotMap GetAllBots() { return playerBots; };
         void PrintStats();
         double GetBuyMultiplier(Player* bot);
@@ -144,9 +146,9 @@ class RandomPlayerbotMgr : public PlayerbotHolder
 	    virtual void OnBotLoginInternal(Player * const bot);
 
     private:
-        //.rndbot pid 0.001, 0.001, 0.0001
-        botPID pid = botPID(1, 0.1, -0.1, 0.001, 0.001, 0.01);
-        float activityMod = 0.0;
+        //pid values are set in constructor
+        botPID pid = botPID(1, 50, -50, 0, 0, 0);
+        float activityMod = 0.25;
         uint32 GetEventValue(uint32 bot, string event);
         string GetEventData(uint32 bot, string event);
         uint32 SetEventValue(uint32 bot, string event, uint32 value, uint32 validIn, string data = "");
@@ -166,7 +168,7 @@ class RandomPlayerbotMgr : public PlayerbotHolder
         typedef void (RandomPlayerbotMgr::*ConsoleCommandHandler) (Player*);
 
     private:
-        vector<Player*> players;
+        PlayerBotMap players;
         int processTicks;
         map<uint8, vector<WorldLocation> > locsPerLevelCache;
         map<uint32, vector<WorldLocation> > rpgLocsCache;

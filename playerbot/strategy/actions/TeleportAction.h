@@ -10,7 +10,7 @@ namespace ai
 		TeleportAction(PlayerbotAI* ai) : Action(ai, "teleport") {}
 
     public:
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
     };
 
 }

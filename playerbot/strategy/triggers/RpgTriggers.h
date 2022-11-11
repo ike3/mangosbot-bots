@@ -1,5 +1,6 @@
 #pragma once
 #include "../Trigger.h"
+#include "../../TravelMgr.h"
 
 namespace ai
 {
@@ -45,6 +46,14 @@ namespace ai
 
         virtual bool IsActive() { return !ai->HasRealPlayerMaster() || (AI_VALUE(GuidPosition, "rpg target").GetEntry() && AI_VALUE(GuidPosition, "rpg target").GetEntry() == AI_VALUE(TravelTarget*, "travel target")->getEntry()); };
         virtual Event Check() { if (!NoRpgTargetTrigger::IsActive() && (AI_VALUE(string, "next rpg action") == "choose rpg target" || !FarFromRpgTargetTrigger::IsActive())) return Trigger::Check(); return Event(); };
+    };
+
+
+    class RpgWanderTrigger : public RpgTrigger
+    {
+    public:
+        RpgWanderTrigger(PlayerbotAI* ai, string name = "rpg wander") : RpgTrigger(ai, name) {}
+        virtual bool IsActive() { return ai->HasRealPlayerMaster(); };
     };
 
     class RpgTaxiTrigger : public RpgTrigger

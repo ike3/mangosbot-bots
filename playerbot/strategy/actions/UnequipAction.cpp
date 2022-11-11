@@ -8,7 +8,7 @@ using namespace ai;
 
 vector<string> split(const string &s, char delim);
 
-bool UnequipAction::Execute(Event event)
+bool UnequipAction::Execute(Event& event)
 {
     string text = event.getParam();
 
@@ -58,6 +58,6 @@ void UnequipAction::UnequipItem(Item& item)
     bot->GetSession()->HandleAutoStoreBagItemOpcode(packet);
 
     ostringstream out; out << chat->formatItem(item.GetProto()) << " unequipped";
-    ai->TellMaster(out);
+    ai->TellMaster(out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
 }
 

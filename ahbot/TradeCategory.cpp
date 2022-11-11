@@ -4,6 +4,8 @@
 #include "PricingStrategy.h"
 #include "ServerFacade.h"
 #include "SQLStorages.h"
+#include "DBCStructure.h"
+#include "ItemPrototype.h"
 #ifdef CMANGOS
 #include "Globals/ObjectMgr.h"
 #include "SpellEffectDefines.h"

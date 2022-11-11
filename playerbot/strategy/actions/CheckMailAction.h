@@ -9,7 +9,7 @@ namespace ai
     {
     public:
         CheckMailAction(PlayerbotAI* ai) : Action(ai, "check mail") {}
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
         virtual bool isUseful();
 
     private:

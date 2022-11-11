@@ -8,7 +8,7 @@
 
 using namespace ai;
 
-bool TellTargetAction::Execute(Event event)
+bool TellTargetAction::Execute(Event& event)
 {
     Unit* target = context->GetValue<Unit*>("current target")->Get();
     if (target)
@@ -22,7 +22,7 @@ bool TellTargetAction::Execute(Event event)
     return true;
 }
 
-bool TellAttackersAction::Execute(Event event)
+bool TellAttackersAction::Execute(Event& event)
 {
     ai->TellMaster("--- Attackers ---");
 

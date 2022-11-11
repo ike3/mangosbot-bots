@@ -20,7 +20,7 @@ bool CastAspectOfTheCheetahAction::isUseful()
     return !AI_VALUE(uint8, "attacker count") && !ai->HasAnyAuraOf(GetTarget(), "aspect of the cheetah", "aspect of the pack", NULL);
 }
 
-bool FeedPetAction::Execute(Event event)
+bool FeedPetAction::Execute(Event& event)
 {
     Pet* pet = bot->GetPet();
     if (pet && pet->getPetType() == HUNTER_PET && pet->GetHappinessState() != HAPPY)
@@ -34,7 +34,7 @@ bool CastAutoShotAction::isUseful()
     if (ai->IsInVehicle() && !ai->IsInVehicle(false, false, true))
         return false;
 
-    return ai->HasStrategy("ranged", BOT_STATE_COMBAT) && AI_VALUE(uint32, "active spell") != AI_VALUE2(uint32, "spell id", getName());
+    return ai->HasStrategy("ranged", BotState::BOT_STATE_COMBAT) && AI_VALUE(uint32, "active spell") != AI_VALUE2(uint32, "spell id", getName());
 }
 
 Value<Unit*>* CastScareBeastCcAction::GetTargetValue()
@@ -42,7 +42,7 @@ Value<Unit*>* CastScareBeastCcAction::GetTargetValue()
     return context->GetValue<Unit*>("cc target", "scare beast");
 }
 
-bool CastScareBeastCcAction::Execute(Event event)
+bool CastScareBeastCcAction::Execute(Event& event)
 {
     return ai->CastSpell("scare beast", GetTarget());
 }

@@ -1,5 +1,6 @@
 #pragma once
 #include "../Value.h"
+#include "../../TravelMgr.h"
 
 namespace ai
 {
@@ -10,7 +11,7 @@ namespace ai
 
         virtual bool EqualToLast(WorldPosition value) { return value == lastValue; };
 
-        WorldPosition Calculate() { return value; }
+        WorldPosition Calculate() { return this->value; }
     };
 
     class RTSCSelectedValue : public ManualSetValue<bool>

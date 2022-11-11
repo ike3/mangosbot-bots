@@ -1,5 +1,12 @@
 #pragma once
 
+#include "ObjectGuid.h"
+#include "WorldPacket.h"
+
+class Player;
+
+using namespace std;
+
 namespace ai
 {
     class Event
@@ -20,7 +27,7 @@ namespace ai
         virtual ~Event() {}
 
 	public:
-        string getSource() { return source; }
+        string getSource() const { return source; }
         string getParam() { return param; }
         WorldPacket& getPacket() { return packet; }
         ObjectGuid getObject();

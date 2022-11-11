@@ -18,7 +18,7 @@
 
 using namespace ai;
 
-bool LootAction::Execute(Event event)
+bool LootAction::Execute(Event& event)
 {
     if (!AI_VALUE(bool, "has available loot"))
         return false;
@@ -54,7 +54,7 @@ enum ProfessionSpells
     TAILORING                    = 3908
 };
 
-bool OpenLootAction::Execute(Event event)
+bool OpenLootAction::Execute(Event& event)
 {
     LootObject lootObject = AI_VALUE(LootObject, "loot target");
     bool result = DoLoot(lootObject);
@@ -84,7 +84,7 @@ bool OpenLootAction::DoLoot(LootObject& lootObject)
         WorldPacket packet(CMSG_LOOT, 8);
         packet << lootObject.guid;
         bot->GetSession()->HandleLootOpcode(packet);
-        ai->SetNextCheckDelay(sPlayerbotAIConfig.lootDelay);
+        SetDuration(sPlayerbotAIConfig.lootDelay);
         return true;
     }
 
@@ -128,6 +128,9 @@ bool OpenLootAction::DoLoot(LootObject& lootObject)
     uint32 spellId = GetOpeningSpell(lootObject);
     if (!spellId)
         return false;
+
+    if (!lootObject.IsLootPossible(bot)) //Clear loot if bot can't loot it.
+        return true;
 
     return ai->CastSpell(spellId, bot);
 }
@@ -328,7 +331,7 @@ bool StoreLootAction::AuctionItem(int32 itemId)
 }
 */
 
-bool StoreLootAction::Execute(Event event)
+bool StoreLootAction::Execute(Event& event)
 {
     WorldPacket p(event.getPacket()); // (8+1+4+1+1+4+4+4+4+4+1)
     ObjectGuid guid;
@@ -429,14 +432,14 @@ bool StoreLootAction::Execute(Event event)
         packet << itemindex;
         bot->GetSession()->HandleAutostoreLootItemOpcode(packet);
 
-        if (proto->Quality > ITEM_QUALITY_NORMAL && !urand(0, 50) && ai->HasStrategy("emote", BOT_STATE_NON_COMBAT)) ai->PlayEmote(TEXTEMOTE_CHEER);
-        if (proto->Quality >= ITEM_QUALITY_RARE && !urand(0, 1) && ai->HasStrategy("emote", BOT_STATE_NON_COMBAT)) ai->PlayEmote(TEXTEMOTE_CHEER);
+        if (proto->Quality > ITEM_QUALITY_NORMAL && !urand(0, 50) && ai->HasStrategy("emote", BotState::BOT_STATE_NON_COMBAT)) ai->PlayEmote(TEXTEMOTE_CHEER);
+        if (proto->Quality >= ITEM_QUALITY_RARE && !urand(0, 1) && ai->HasStrategy("emote", BotState::BOT_STATE_NON_COMBAT)) ai->PlayEmote(TEXTEMOTE_CHEER);
 
         ostringstream out; out << "Looting " << chat->formatItem(proto);
 
-        ai->TellMasterNoFacing(out.str());
+        ai->TellMasterNoFacing(out.str(), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
 
-        sTravelMgr.logEvent(ai, "StoreLootAction", proto->Name1, to_string(proto->ItemId));      
+        sPlayerbotAIConfig.logEvent(ai, "StoreLootAction", proto->Name1, to_string(proto->ItemId));
 
         //ItemUsage usage = AI_VALUE2(ItemUsage, "item usage", proto->ItemId);
         //sLog.outErrorDb("Bot %s is looting %d %s for usage %d.", bot->GetName(), itemcount, proto->Name1, usage);
@@ -509,7 +512,7 @@ bool StoreLootAction::IsLootAllowed(uint32 itemid, PlayerbotAI *ai)
     return canLoot;
 }
 
-bool ReleaseLootAction::Execute(Event event)
+bool ReleaseLootAction::Execute(Event& event)
 {
     list<ObjectGuid> gos = context->GetValue<list<ObjectGuid> >("nearest game objects")->Get();
     for (list<ObjectGuid>::iterator i = gos.begin(); i != gos.end(); i++)

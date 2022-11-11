@@ -12,14 +12,14 @@
 using namespace ai;
 using namespace MaNGOS;
 
-bool TravelAction::Execute(Event event)
+bool TravelAction::Execute(Event& event)
 {    
     TravelTarget * target = AI_VALUE(TravelTarget *, "travel target");
     
     if (sServerFacade.isMoving(bot))
         return false;
 
-    target->setStatus(TRAVEL_STATUS_WORK);
+    target->setStatus(TravelStatus::TRAVEL_STATUS_WORK);
 
      Unit* newTarget;
     list<Unit*> targets;
@@ -62,7 +62,7 @@ bool TravelAction::isUseful()
     return false && AI_VALUE(TravelTarget *,"travel target")->isActive() && (!AI_VALUE(GuidPosition,"rpg target") || !AI_VALUE(ObjectGuid,"pull target"));
 }
 
-bool MoveToDarkPortalAction::Execute(Event event)
+bool MoveToDarkPortalAction::Execute(Event& event)
 {
     if (bot->GetGroup())
         if (bot->GetGroup()->GetLeaderGuid() != bot->GetObjectGuid() && !bot->GetPlayerbotAI()->GetGroupMaster()->GetPlayerbotAI())
@@ -124,7 +124,7 @@ bool MoveToDarkPortalAction::isUseful()
     return false;
 }
 
-bool DarkPortalAzerothAction::Execute(Event event)
+bool DarkPortalAzerothAction::Execute(Event& event)
 {
 #ifndef MANGOSBOT_ZERO
     if (sWorldState.GetExpansion() == EXPANSION_TBC && bot->GetLevel() > 57)
@@ -146,14 +146,14 @@ bool DarkPortalAzerothAction::isUseful()
     return false;
 }
 
-bool MoveFromDarkPortalAction::Execute(Event event)
+bool MoveFromDarkPortalAction::Execute(Event& event)
 {
     RESET_AI_VALUE(GuidPosition,"rpg target");
 
     if (bot->GetTeam() == ALLIANCE)
-        return MoveTo(530, -319.261f, 1027.213, 54.172638f, false, true);
+        return MoveTo(530, -319.261f, 1027.213f, 54.172638f, false, true);
     else
-        return MoveTo(530, -180.444f, 1027.947, 54.181538f, false, true);
+        return MoveTo(530, -180.444f, 1027.947f, 54.181538f, false, true);
 
     return false;
 }

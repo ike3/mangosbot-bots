@@ -1,6 +1,7 @@
 #include "playerbot.h"
 #include "Talentspec.h"
 #include "ServerFacade.h"
+#include "DBCStructure.h"
 
 using namespace std::placeholders;
 
@@ -29,7 +30,7 @@ bool TalentSpec::CheckTalentLink(string link, ostringstream* out) {
     return true;
 }
 
-int TalentSpec::LeveltoPoints(uint32 level) const
+uint32 TalentSpec::LeveltoPoints(uint32 level) const
 {
     uint32 talentPointsForLevel = level < 10 ? 0 : level - 9;
     return uint32(talentPointsForLevel * sWorld.getConfig(CONFIG_FLOAT_RATE_TALENT));
@@ -65,7 +66,7 @@ bool TalentSpec::CheckTalents(int level, ostringstream* out)
                 if (dep.talentInfo->TalentID == entry.talentInfo->DependsOn)
                 {
                     spellInfodep = sServerFacade.LookupSpellInfo(dep.talentInfo->RankID[0]);
-                    if (dep.rank >= entry.talentInfo->DependsOnRank)
+                    if (dep.rank >= (int)entry.talentInfo->DependsOnRank)
                         found = true;
                 }
             if (!found)
@@ -84,7 +85,7 @@ bool TalentSpec::CheckTalents(int level, ostringstream* out)
 
         for (auto& entry : talentTree)
         {
-            if (entry.rank > 0 && entry.talentInfo->Row * 5 > points)
+            if (entry.rank > 0 && (int)(entry.talentInfo->Row * 5) > points)
             {
                 SpellEntry const* spellInfo = sServerFacade.LookupSpellInfo(entry.talentInfo->RankID[0]);
                 *out << "spec is is invalid. Talent " << spellInfo->SpellName[0] << " is selected with only " << points << " in row below it.";
@@ -383,8 +384,8 @@ void TalentSpec::CropTalents(uint32 level)
 
     for (auto& entry : talents)
     {
-        if (points + entry.rank > LeveltoPoints(level))
-            entry.rank = max(0, LeveltoPoints(level) - points);
+        if (points + entry.rank > (int)LeveltoPoints(level))
+            entry.rank = max(0, (int)(LeveltoPoints(level) - points));
         points += entry.rank;
     }
 
@@ -418,7 +419,7 @@ bool TalentSpec::isEarlierVersionOf(TalentSpec& newSpec)
 }
 
 
-//Modifies current talents towards new talents up to a maxium of points.
+//Modifies current talents towards new talents up to a maximum of points.
 void TalentSpec::ShiftTalents(TalentSpec* currentSpec, uint32 level)
 {    
 

@@ -57,7 +57,7 @@ public:
 };
 
 
-bool SellAction::Execute(Event event)
+bool SellAction::Execute(Event& event)
 {
     string text = event.getParam();
 
@@ -121,7 +121,7 @@ void SellAction::Sell(Item* item)
 
         out << "Selling " << chat->formatItem(item->GetProto());
         bot->PlayDistanceSound(120);
-        ai->TellMaster(out);
+        ai->TellMaster(out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
         break;
     }
 }

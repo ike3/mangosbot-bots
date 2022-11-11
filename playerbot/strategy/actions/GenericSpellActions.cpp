@@ -4,7 +4,7 @@
 
 using namespace ai;
 
-bool CastSpellAction::Execute(Event event)
+bool CastSpellAction::Execute(Event& event)
 {
     if (spell == "conjure food" || spell == "conjure water")
     {
@@ -164,7 +164,7 @@ bool CastVehicleSpellAction::isUseful()
     return ai->IsInVehicle(false, true);
 }
 
-bool CastVehicleSpellAction::Execute(Event event)
+bool CastVehicleSpellAction::Execute(Event& event)
 {
     uint32 spellId = AI_VALUE2(uint32, "vehicle spell id", spell);
     return ai->CastVehicleSpell(spellId, GetTarget());

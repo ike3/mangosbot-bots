@@ -108,6 +108,7 @@ namespace ai
             creators["debug move"] = &StrategyContext::debug_move;
             creators["debug rpg"] = &StrategyContext::debug_rpg;
             creators["debug spell"] = &StrategyContext::debug_spell;
+            creators["debug travel"] = &StrategyContext::debug_travel;
             creators["rtsc"] = &StrategyContext::rtsc;
             creators["maintenance"] = &StrategyContext::maintenance;
             creators["group"] = &StrategyContext::group;
@@ -176,6 +177,7 @@ namespace ai
         static Strategy* debug_move(PlayerbotAI* ai) { return new DebugMoveStrategy(ai); }
         static Strategy* debug_rpg(PlayerbotAI* ai) { return new DebugRpgStrategy(ai); }
         static Strategy* debug_spell(PlayerbotAI* ai) { return new DebugSpellStrategy(ai); }
+        static Strategy* debug_travel(PlayerbotAI* ai) { return new DebugTravelStrategy(ai); }
         static Strategy* rtsc(PlayerbotAI* ai) { return new RTSCStrategy(ai); }
         static Strategy* maintenance(PlayerbotAI* ai) { return new MaintenanceStrategy(ai); }
         static Strategy* group(PlayerbotAI* ai) { return new GroupStrategy(ai); }

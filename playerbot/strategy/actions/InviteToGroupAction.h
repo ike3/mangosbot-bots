@@ -9,7 +9,7 @@ namespace ai
     public:
         InviteToGroupAction(PlayerbotAI* ai, string name = "invite") : Action(ai, name) {}
 
-        virtual bool Execute(Event event)
+        virtual bool Execute(Event& event)
         {
             Player* master = event.getOwner();
             return Invite(master);
@@ -24,7 +24,7 @@ namespace ai
     public:
         InviteNearbyToGroupAction(PlayerbotAI* ai, string name = "invite nearby") : InviteToGroupAction(ai, name) {}
 
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
         virtual bool isUseful();
     };
 
@@ -45,7 +45,7 @@ namespace ai
     public:
         InviteGuildToGroupAction(PlayerbotAI* ai, string name = "invite guild") : InviteNearbyToGroupAction(ai, name) {}
 
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
         virtual bool isUseful() { return bot->GetGuildId() && InviteNearbyToGroupAction::isUseful(); };
     private:
         vector<Player*> getGuildMembers();

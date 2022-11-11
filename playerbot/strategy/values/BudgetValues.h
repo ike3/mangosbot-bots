@@ -1,5 +1,8 @@
 #pragma once
 
+#include "../Value.h"
+#include "../NamedObjectContext.h"
+
 namespace ai
 {
     enum class NeedMoneyFor : uint32
@@ -30,14 +33,6 @@ namespace ai
     public:
         RepairCostValue(PlayerbotAI* ai) : Uint32CalculatedValue(ai, "repair cost",60) {}
         
-        virtual uint32 Calculate();
-    };
-
-    class TrainCostValue : public Uint32CalculatedValue
-    {
-    public:
-        TrainCostValue(PlayerbotAI* ai) : Uint32CalculatedValue(ai, "train cost", 60) {}
-
         virtual uint32 Calculate();
     };
 

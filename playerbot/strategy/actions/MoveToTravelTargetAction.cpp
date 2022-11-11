@@ -9,7 +9,7 @@
 
 using namespace ai;
 
-bool MoveToTravelTargetAction::Execute(Event event)
+bool MoveToTravelTargetAction::Execute(Event& event)
 {
     TravelTarget* target = AI_VALUE(TravelTarget*, "travel target");
 
@@ -31,7 +31,7 @@ bool MoveToTravelTargetAction::Execute(Event event)
             if (!member->IsMoving())
                 continue;
 
-            if (member->GetPlayerbotAI() && !member->GetPlayerbotAI()->HasStrategy("follow", BOT_STATE_NON_COMBAT))
+            if (member->GetPlayerbotAI() && !member->GetPlayerbotAI()->HasStrategy("follow", BotState::BOT_STATE_NON_COMBAT))
                 continue;
 
             WorldPosition memberPos(member);
@@ -59,12 +59,12 @@ bool MoveToTravelTargetAction::Execute(Event event)
 
                 out << member->GetName();
 
-                ai->TellMasterNoFacing(out);
+                ai->TellMasterNoFacing(out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
             }
 
             target->setExpireIn(target->getTimeLeft() + sPlayerbotAIConfig.maxWaitForMove);
 
-            ai->SetNextCheckDelay(sPlayerbotAIConfig.maxWaitForMove);
+            SetDuration(sPlayerbotAIConfig.maxWaitForMove);
 
             return true;
         }
@@ -75,17 +75,20 @@ bool MoveToTravelTargetAction::Execute(Event event)
     //Evenly distribute around the target.
     float angle = 2 * M_PI * urand(0, 100) / 100.0;
 
-    if (target->getMaxTravelTime() > target->getTimeLeft()) //The bot is late. Speed it up.
-    {
-        //distance = sPlayerbotAIConfig.fleeDistance;
-        //angle = bot->GetAngle(location.coord_x, location.coord_y);
-        //location = botLocation.getLocation();
-    }
-
     float x = location.coord_x;
     float y = location.coord_y;
     float z = location.coord_z;
     float mapId = location.mapid;
+
+    if (ai->HasStrategy("debug move", BotState::BOT_STATE_NON_COMBAT))
+    {
+        WorldPosition* pos = target->getPosition();
+        GuidPosition* guidP = dynamic_cast<GuidPosition*>(pos);
+
+        string name = (guidP && guidP->GetWorldObject()) ? chat->formatWorldobject(guidP->GetWorldObject()) : "travel target";
+        
+        ai->Poi(x, y, name);
+    }
 
     //Move between 0.5 and 1.0 times the maxDistance.
     float mod = urand(50, 100)/100.0;   
@@ -95,20 +98,17 @@ bool MoveToTravelTargetAction::Execute(Event event)
 
     bool canMove = false;
 
-    if (WorldPosition(bot).fDist(location) < sPlayerbotAIConfig.reactDistance && bot->IsWithinLOS(x, y, z, true))
-        canMove = MoveNear(mapId, x, y, z, 0);
-    else
-        canMove = MoveTo(mapId, x, y, z, false, false);
+    canMove = MoveTo(mapId, x, y, z, false, false);
 
-    if (!canMove && !target->isForced())
+    if (!canMove)
     {
         target->incRetry(true);
 
         if (target->isMaxRetry(true))
-            target->setStatus(TRAVEL_STATUS_COOLDOWN);
+            target->setStatus(TravelStatus::TRAVEL_STATUS_COOLDOWN);
     }
     else
-        target->setRetry(true);
+        target->decRetry(true);
      
     return canMove;
 }
@@ -124,12 +124,13 @@ bool MoveToTravelTargetAction::isUseful()
     if (bot->IsTaxiFlying())
         return false;
 
+    if (MEM_AI_VALUE(WorldPosition, "current position")->LastChangeDelay() < 10)
 #ifndef MANGOSBOT_ZERO
-    if (bot->IsMovingIgnoreFlying())
-        return false;
+        if (bot->IsMovingIgnoreFlying())
+            return false;
 #else
-    if (bot->IsMoving())
-        return false;
+        if (bot->IsMoving())
+            return false;
 #endif
 
     if (!AI_VALUE(bool, "can move around"))

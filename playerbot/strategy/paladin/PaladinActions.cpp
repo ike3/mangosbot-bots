@@ -80,7 +80,7 @@ Unit* CastBlessingOnPartyAction::GetTarget()
     //nearestGroupPlayers.insert(nearestGroupPlayers.end(), nearestPlayers.begin(), nearestPlayers.end());
     nearestPlayers = nearestGroupPlayers;
     if (nearestPlayers.empty())
-        return false;
+        return NULL;
 
     Unit* trueTarget = nullptr;
     for (auto guid : nearestPlayers)
@@ -130,7 +130,7 @@ Unit* CastBlessingOnPartyAction::GetTarget()
     return NULL;
 }
 
-bool CastBlessingOnPartyAction::Execute(Event event)
+bool CastBlessingOnPartyAction::Execute(Event& event)
 {
     Unit* target = GetTarget();
     if (!target) return false;
@@ -197,7 +197,7 @@ bool CastBlessingOnPartyAction::Execute(Event event)
     return false;
 }
 
-bool CastPaladinAuraAction::Execute(Event event)
+bool CastPaladinAuraAction::Execute(Event& event)
 {
     std::string mainAura = m_name;
     vector<std::string> altAuras;
@@ -229,7 +229,7 @@ bool CastPaladinAuraAction::Execute(Event event)
     return false;
 }
 
-bool CastBlessingOfMightAction::Execute(Event event)
+bool CastBlessingOfMightAction::Execute(Event& event)
 {
     Unit* target = GetTarget();
     if (!target) return false;
@@ -237,7 +237,7 @@ bool CastBlessingOfMightAction::Execute(Event event)
     return ai->CastSpell(GetActualBlessingOfMight(target), target);
 }
 
-bool CastGreaterBlessingOfMightAction::Execute(Event event)
+bool CastGreaterBlessingOfMightAction::Execute(Event& event)
 {
     Unit* target = GetTarget();
     if (!target) return false;
@@ -245,7 +245,7 @@ bool CastGreaterBlessingOfMightAction::Execute(Event event)
     return ai->CastSpell(GetActualBlessingOfMight(target, true), target);
 }
 
-bool CastBlessingOfWisdomAction::Execute(Event event)
+bool CastBlessingOfWisdomAction::Execute(Event& event)
 {
     Unit* target = GetTarget();
     if (!target) return false;
@@ -253,7 +253,7 @@ bool CastBlessingOfWisdomAction::Execute(Event event)
     return ai->CastSpell(GetActualBlessingOfWisdom(target), target);
 }
 
-bool CastGreaterBlessingOfWisdomAction::Execute(Event event)
+bool CastGreaterBlessingOfWisdomAction::Execute(Event& event)
 {
     Unit* target = GetTarget();
     if (!target) return false;

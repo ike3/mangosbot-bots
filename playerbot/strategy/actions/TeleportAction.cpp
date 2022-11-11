@@ -6,7 +6,7 @@
 
 using namespace ai;
 
-bool TeleportAction::Execute(Event event)
+bool TeleportAction::Execute(Event& event)
 {
     list<ObjectGuid> gos = *context->GetValue<list<ObjectGuid> >("nearest game objects");
     for (list<ObjectGuid>::iterator i = gos.begin(); i != gos.end(); i++)
@@ -27,7 +27,7 @@ bool TeleportAction::Execute(Event event)
         ostringstream out; out << "Teleporting using " << goInfo->name;
         ai->TellMasterNoFacing(out.str());
 
-        ai->ChangeStrategy("-follow,+stay", BOT_STATE_NON_COMBAT);
+        ai->ChangeStrategy("-follow,+stay", BotState::BOT_STATE_NON_COMBAT);
 
         Spell *spell = new Spell(bot, pSpellInfo, false);
         SpellCastTargets targets;

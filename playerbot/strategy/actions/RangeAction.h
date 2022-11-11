@@ -10,7 +10,7 @@ namespace ai
         RangeAction(PlayerbotAI* ai) : Action(ai, "range")
         {}
 
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
 
     private:
         void PrintRange(string type);

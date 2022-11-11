@@ -14,6 +14,7 @@
 #include "RandomPlayerbotFactory.h"
 #include "ServerFacade.h"
 #include "AiFactory.h"
+#include "TravelMgr.h"
 #ifndef MANGOSBOT_ZERO
     #ifdef CMANGOS
         #include "Arena/ArenaTeam.h"
@@ -51,6 +52,9 @@ uint32 PlayerbotFactory::tradeSkills[] =
 list<uint32> PlayerbotFactory::classQuestIds;
 list<uint32> PlayerbotFactory::specialQuestIds;
 
+TaxiNodeLevelContainer PlayerbotFactory::overworldTaxiNodeLevelsA;
+TaxiNodeLevelContainer PlayerbotFactory::overworldTaxiNodeLevelsH;
+
 void PlayerbotFactory::Init()
 {
 	if (sPlayerbotAIConfig.randomBotPreQuests) {
@@ -75,6 +79,31 @@ void PlayerbotFactory::Init()
             specialQuestIds.push_back(questId);
         }
 	}
+
+    for (uint32 i = 1; i < sTaxiNodesStore.GetNumRows(); ++i)
+    {
+        TaxiNodesEntry const* taxiNode = sTaxiNodesStore.LookupEntry(i);
+
+        if (!taxiNode)
+            continue;
+
+        WorldPosition taxiPosition(taxiNode);
+
+        if (!taxiPosition.isOverworld())
+            continue;
+
+        TaxiNodeLevel taxiNodeLevel = TaxiNodeLevel();
+
+        taxiNodeLevel.Index = i;
+        taxiNodeLevel.MapId = taxiNode->map_id;
+        taxiNodeLevel.Level = taxiPosition.getAreaLevel();
+
+        if (taxiNode->MountCreatureID[0])
+            overworldTaxiNodeLevelsH.push_back(taxiNodeLevel);
+
+        if (taxiNode->MountCreatureID[1])
+            overworldTaxiNodeLevelsA.push_back(taxiNodeLevel);
+    }
 }
 
 void PlayerbotFactory::Prepare()
@@ -293,6 +322,14 @@ void PlayerbotFactory::Randomize(bool incremental)
         }
     }
 
+    if (isRandomBot)
+    {
+        pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_TaxiNodes");
+        sLog.outDetail("Initializing taxi...");
+        InitTaxiNodes();
+        if (pmo) pmo->finish();
+    }
+
     pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Save");
     sLog.outDetail("Saving to DB...");
     bot->SaveToDB();
@@ -303,6 +340,9 @@ void PlayerbotFactory::Randomize(bool incremental)
 void PlayerbotFactory::Refresh()
 {
     //Prepare();
+    if (!ai->HasCheat(BotCheatMask::supply))
+        return;
+
     InitAmmo();
     InitFood();
     InitPotions();
@@ -2435,7 +2475,7 @@ void PlayerbotFactory::InitAmmo()
 
     if (count < maxCount)
     {
-        for (int i = 0; i < maxCount - count; i++)
+        for (uint32 i = 0; i < maxCount - count; i++)
         {
             Item* newItem = bot->StoreNewItemInInventorySlot(entry, 200);
         }
@@ -2713,7 +2753,7 @@ void PlayerbotFactory::InitReagents()
 
         QueryItemCountVisitor visitor(*i);
         IterateItems(&visitor);
-        if (visitor.GetCount() > maxCount) continue;
+        if ((uint32)visitor.GetCount() > maxCount) continue;
 
         uint32 randCount = urand(maxCount / 2, maxCount * regCount);
 
@@ -2755,7 +2795,6 @@ void PlayerbotFactory::InitReagents()
         }
     }
 }
-
 
 void PlayerbotFactory::CancelAuras()
 {
@@ -3276,4 +3315,33 @@ void PlayerbotFactory::InitGems() //WIP
         }
     }
 #endif
+}
+
+void PlayerbotFactory::InitTaxiNodes()
+{
+    uint32 startMap = bot->GetMapId();
+
+    if (startMap == 530) //BE=EK, DREA=KAL
+        startMap = bot->GetTeam() == ALLIANCE ? 1 : 0;
+
+    TaxiNodeLevelContainer const& overworldTaxiNodeLevels = bot->GetTeam() == ALLIANCE ? overworldTaxiNodeLevelsA : overworldTaxiNodeLevelsH;
+
+    for (TaxiNodeLevelContainer::const_iterator itr = overworldTaxiNodeLevels.begin(); itr != overworldTaxiNodeLevels.end(); ++itr)
+    {
+        TaxiNodeLevel const& taxiNodeLevel = *itr;
+
+        if (taxiNodeLevel.MapId == 571 && bot->GetLevel() < 66) //Don't learn nodes in northrend before level 66.
+            continue;
+
+        if (taxiNodeLevel.MapId == 530 && bot->GetLevel() < 58) //Don't learn nodes in outland before level 58.
+            continue;
+
+        if (taxiNodeLevel.Level > bot->GetLevel() && urand(0, 20)) //Limit nodes in high level area's.
+            continue;
+
+        if (taxiNodeLevel.MapId != startMap && taxiNodeLevel.Level + 20 > bot->GetLevel() && urand(0, 4)) //Limit nodes on other map.
+            continue;
+
+        bot->m_taxi.SetTaximaskNode(taxiNodeLevel.Index);
+    }
 }

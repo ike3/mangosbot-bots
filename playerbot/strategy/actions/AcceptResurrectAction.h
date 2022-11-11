@@ -9,23 +9,23 @@ namespace ai
     public:
         AcceptResurrectAction(PlayerbotAI* ai) : Action(ai, "accept resurrect") {}
 
-        virtual bool Execute(Event event)
+        virtual bool Execute(Event& event)
         {
-            if (sServerFacade.IsAlive(bot))
-                return false;
+            if (!sServerFacade.IsAlive(bot))
+            {
+                WorldPacket p(event.getPacket());
+                p.rpos(0);
+                ObjectGuid guid;
+                p >> guid;
 
-            WorldPacket p(event.getPacket());
-            p.rpos(0);
-            ObjectGuid guid;
-            p >> guid;
+                WorldPacket packet(CMSG_RESURRECT_RESPONSE, 8+1);
+                packet << guid;
+                packet << uint8(1);                                       // accept
+                bot->GetSession()->HandleResurrectResponseOpcode(packet); // queue the packet to get around race condition
+                return true;
+            }
 
-            WorldPacket packet(CMSG_RESURRECT_RESPONSE, 8+1);
-            packet << guid;
-            packet << uint8(1);                        // accept
-            bot->GetSession()->HandleResurrectResponseOpcode(packet);   // queue the packet to get around race condition
-
-            ai->ChangeEngine(BOT_STATE_NON_COMBAT);
-            return true;
+            return false;
         }
     };
 

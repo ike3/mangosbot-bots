@@ -44,29 +44,13 @@ void CombatStrategy::InitTriggers(list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("adamantite grenade", 61.0f), NULL)));
 }
 
-AvoidAoeStrategy::AvoidAoeStrategy(PlayerbotAI* ai) : Strategy(ai)
-{
-}
-
-
-class AvoidAoeStrategyMultiplier : public Multiplier
-{
-public:
-    AvoidAoeStrategyMultiplier(PlayerbotAI* ai) : Multiplier(ai, "run away on area debuff") {}
-
-public:
-    virtual float GetValue(Action* action);
-
-private:
-};
-
 float AvoidAoeStrategyMultiplier::GetValue(Action* action)
 {
     if (!action)
         return 1.0f;
 
     string name = action->getName();
-    if (name == "follow" || name == "co" || name == "nc" || name == "drop target" || name == "flee")
+    if (name == "follow" || name == "co" || name == "nc" || name == "react" || name == "drop target" || name == "flee")
         return 1.0f;
 
     uint32 spellId = AI_VALUE2(uint32, "spell id", name);
@@ -87,7 +71,6 @@ float AvoidAoeStrategyMultiplier::GetValue(Action* action)
 
     return 1.0f;
 }
-
 
 void AvoidAoeStrategy::InitTriggers(std::list<TriggerNode*>& triggers)
 {

@@ -26,8 +26,8 @@ namespace ai
         {
             return (bot->getClass() == CLASS_PRIEST || bot->GetGroup()) && bot->GetHealthPercent() < sPlayerbotAIConfig.mediumHealth && !ai->HasAura("lightwell renew", bot);
         }
-        virtual ActionThreatType getThreatType() { return ACTION_THREAT_NONE; }
-        virtual bool Execute(Event event)
+        virtual ActionThreatType getThreatType() { return ActionThreatType::ACTION_THREAT_NONE; }
+        virtual bool Execute(Event& event)
         {
             list<ObjectGuid> closeObjects = AI_VALUE(list<ObjectGuid>, "nearest game objects no los");
             if (closeObjects.empty())

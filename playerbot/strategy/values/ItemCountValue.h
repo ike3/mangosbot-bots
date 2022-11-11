@@ -9,7 +9,7 @@ namespace ai
     {
     public:
         InventoryItemValueBase(PlayerbotAI* ai) : InventoryAction(ai, "empty") {}
-        virtual bool Execute(Event event) { return false; }
+        virtual bool Execute(Event& event) { return false; }
 
     protected:
         list<Item*> Find(string qualifier);
@@ -31,6 +31,14 @@ namespace ai
 
     public:
         virtual list<Item*> Calculate();
+    };
+
+    class InventoryItemIdValue : public CalculatedValue<list<uint32> >, public Qualified
+    {
+    public:
+        InventoryItemIdValue(PlayerbotAI* ai, string name = "inventory item ids") : CalculatedValue<list<uint32> >(ai, name) {}
+    public:
+        virtual list<uint32> Calculate() {list<uint32> retVal;  for (auto& item : AI_VALUE2(list<Item*>, "inventory items", getQualifier())) { ItemPrototype const* proto = item->GetProto();  retVal.push_back(proto->ItemId);} return retVal;};
     };
 
     class EquipedUsableTrinketValue : public CalculatedValue<list<Item*> >, public Qualified, InventoryItemValueBase

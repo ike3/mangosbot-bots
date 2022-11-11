@@ -7,7 +7,7 @@ namespace ai
     class GuidManageAction : public Action {
     public:
         GuidManageAction(PlayerbotAI* ai, string name = "guild manage", uint16 opcode = CMSG_GUILD_INVITE) : Action(ai, name), opcode(opcode) {}
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
         virtual bool isUseful() { return false; }
     protected:
         virtual void SendPacket(WorldPacket data) {};
@@ -66,14 +66,14 @@ namespace ai
     class GuildManageNearbyAction : public Action {
     public:
         GuildManageNearbyAction(PlayerbotAI* ai) : Action(ai, "guild manage nearby") {}
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
         virtual bool isUseful();
     };
 
     class GuildLeaveAction : public Action {
     public:
         GuildLeaveAction(PlayerbotAI* ai) : Action(ai, "guild leave") {}
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
         virtual bool isUseful() { return bot->GetGuildId(); }
     };
 }

@@ -5,14 +5,16 @@
 #include <playerbot/TravelNode.h>
 #include "ChooseTravelTargetAction.h"
 #include "strategy/values/SharedValueContext.h"
+#include "../../LootObjectStack.h"
+#include "../../../game/GameEvents/GameEventMgr.h"
 
 using namespace ai;
 
-bool DebugAction::Execute(Event event)
+bool DebugAction::Execute(Event& event)
 {
     Player* master = GetMaster();
     if (!master)
-        return false;
+        master = bot;
 
     string text = event.getParam();
     if (text == "scan")
@@ -51,10 +53,198 @@ bool DebugAction::Execute(Event event)
         }
         return i == 0;
     }
+    else if (text.find("test") != std::string::npos)
+    {
+        auto selection = bot->GetSelectionGuid();
+
+        if (!selection)
+            return false;
+
+        Unit* unit = ai->GetUnit(bot->GetSelectionGuid());
+
+        if (!unit)
+            return false;
+
+        sServerFacade.SetFacingTo(bot, unit);
+        sServerFacade.SetFacingTo(unit, bot);
+
+        return true;
+    }
+    else if (text.find("do ") != std::string::npos)
+    {
+        return ai->DoSpecificAction(text.substr(3), Event(), true);
+    }
+    else if (text.find("poi ") != std::string::npos)
+    {        
+        WorldPosition botPos = WorldPosition(bot);
+
+        WorldPosition poiPoint = botPos;
+        string name = "bot";
+
+        vector<string> args = Qualified::getMultiQualifiers(text.substr(4));
+        TravelDestination* dest = ChooseTravelTargetAction::FindDestination(bot, args[0]);
+
+        if (dest)
+        {
+            vector <WorldPosition*> points = dest->nextPoint(&botPos, true);
+
+            if (!points.empty())
+            {
+                poiPoint = *points.front();
+                name = dest->getTitle();
+            }
+        }
+
+        if (args.size() == 1)
+            args.push_back("99");
+        if (args.size() == 2)
+            args.push_back("7");
+        if (args.size() == 3)
+            args.push_back("0");
+
+        ai->Poi(poiPoint.coord_x, poiPoint.coord_y, name, nullptr, stoi(args[1]), stoi(args[2]), stoi(args[3]));
+
+        return true;
+    }
     else if (text.find("printmap") != std::string::npos)
     {
         sTravelNodeMap.printMap();
         sTravelNodeMap.printNodeStore();
+        return true;
+    }
+    else if (text.find("npc") != std::string::npos)
+    {
+        ostringstream out;
+
+        GuidPosition guidP = ai->GetMaster()->GetSelectionGuid();
+
+        if (text.size() > 4)
+        {
+            string link = text.substr(4);
+
+            if (!link.empty())
+            {
+                list<int32> entries = chat->parseWorldEntries(link);
+                if (!entries.empty())
+                {
+
+                    int32 entry = entries.front();
+
+                    for (auto cre : WorldPosition(bot).getCreaturesNear(0.0f, entry))
+                    {
+                        guidP = GuidPosition(cre);
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (!guidP)
+            return false;
+
+        if (guidP.GetWorldObject())
+            out << chat->formatWorldobject(guidP.GetWorldObject());
+        
+        out << " (e:" << guidP.GetEntry();
+        
+        if (guidP.GetUnit())
+            out << ",level:" << guidP.GetUnit()->GetLevel();
+            
+        out << ") ";
+
+        guidP.printWKT(out);
+
+        out << "[a:" << guidP.getArea()->area_name[0]; 
+
+        if (guidP.getArea() && guidP.getAreaLevel())
+            out << " level: " << guidP.getAreaLevel();
+        if (guidP.getArea()->zone && GetAreaEntryByAreaID(guidP.getArea()->zone))
+        {
+            out << " z:" << GetAreaEntryByAreaID(guidP.getArea()->zone)->area_name[0];
+            if (sTravelMgr.getAreaLevel(guidP.getArea()->zone))
+                out << " level: " << sTravelMgr.getAreaLevel(guidP.getArea()->zone);
+        }
+
+        out << "] ";
+
+        uint16 event_id = sGameEventMgr.GetGameEventId<Creature>(guidP.GetCounter());
+
+        if (event_id)
+            out << " event:" << event_id << (sGameEventMgr.IsActiveEvent(event_id) ? " active" : " inactive");
+
+        uint16 topPoolId = sPoolMgr.IsPartOfTopPool<Creature>(guidP.GetCounter());
+
+        if (topPoolId)
+            out << " pool:" << topPoolId << (sGameEventMgr.GetGameEventId<Pool>(topPoolId) ? " event" : " nonevent");
+
+        ai->TellMasterNoFacing(out);
+
+
+        if (guidP.HasNpcFlag(UNIT_NPC_FLAG_GOSSIP))
+            ai->TellMasterNoFacing("UNIT_NPC_FLAG_GOSSIP");
+        if (guidP.HasNpcFlag(UNIT_NPC_FLAG_QUESTGIVER))
+            ai->TellMasterNoFacing("UNIT_NPC_FLAG_QUESTGIVER");
+        if (guidP.HasNpcFlag(UNIT_NPC_FLAG_VENDOR))
+            ai->TellMasterNoFacing("UNIT_NPC_FLAG_VENDOR");
+        if (guidP.HasNpcFlag(UNIT_NPC_FLAG_FLIGHTMASTER))
+            ai->TellMasterNoFacing("UNIT_NPC_FLAG_FLIGHTMASTER");
+        if (guidP.HasNpcFlag(UNIT_NPC_FLAG_TRAINER))
+            ai->TellMasterNoFacing("UNIT_NPC_FLAG_TRAINER");
+        if (guidP.HasNpcFlag(UNIT_NPC_FLAG_SPIRITHEALER))
+            ai->TellMasterNoFacing("UNIT_NPC_FLAG_SPIRITHEALER");
+        if (guidP.HasNpcFlag(UNIT_NPC_FLAG_SPIRITGUIDE))
+            ai->TellMasterNoFacing("UNIT_NPC_FLAG_SPIRITGUIDE");
+        if (guidP.HasNpcFlag(UNIT_NPC_FLAG_INNKEEPER))
+            ai->TellMasterNoFacing("UNIT_NPC_FLAG_INNKEEPER");
+        if (guidP.HasNpcFlag(UNIT_NPC_FLAG_BANKER))
+            ai->TellMasterNoFacing("UNIT_NPC_FLAG_BANKER");
+        if (guidP.HasNpcFlag(UNIT_NPC_FLAG_PETITIONER))
+            ai->TellMasterNoFacing("UNIT_NPC_FLAG_PETITIONER");
+        if (guidP.HasNpcFlag(UNIT_NPC_FLAG_TABARDDESIGNER))
+            ai->TellMasterNoFacing("UNIT_NPC_FLAG_TABARDDESIGNER");
+        if (guidP.HasNpcFlag(UNIT_NPC_FLAG_BATTLEMASTER))
+            ai->TellMasterNoFacing("UNIT_NPC_FLAG_BATTLEMASTER");
+        if (guidP.HasNpcFlag(UNIT_NPC_FLAG_AUCTIONEER))
+            ai->TellMasterNoFacing("UNIT_NPC_FLAG_AUCTIONEER");
+        if (guidP.HasNpcFlag(UNIT_NPC_FLAG_STABLEMASTER))
+            ai->TellMasterNoFacing("UNIT_NPC_FLAG_STABLEMASTER");
+        if (guidP.HasNpcFlag(UNIT_NPC_FLAG_REPAIR))
+            ai->TellMasterNoFacing("UNIT_NPC_FLAG_REPAIR");
+#ifdef MANGOSBOT_ZERO
+        if (guidP.HasNpcFlag(UNIT_NPC_FLAG_OUTDOORPVP))
+            ai->TellMasterNoFacing("UNIT_NPC_FLAG_OUTDOORPVP");
+#endif
+
+        unordered_map<ReputationRank, string> reaction;
+
+        reaction[REP_HATED] = "REP_HATED";
+        reaction[REP_HOSTILE] = "REP_HOSTILE";
+        reaction[REP_UNFRIENDLY] = "REP_UNFRIENDLY";
+        reaction[REP_NEUTRAL] = "REP_NEUTRAL";
+        reaction[REP_FRIENDLY] = "REP_FRIENDLY";
+        reaction[REP_HONORED] = "REP_HONORED";
+        reaction[REP_REVERED] = "REP_REVERED";
+        reaction[REP_EXALTED] = "REP_EXALTED";
+        
+        if (guidP.GetUnit())
+        {
+            ostringstream out;
+            out << "unit to bot:" << reaction[guidP.GetUnit()->GetReactionTo(bot)];
+
+            Unit* ubot = bot;
+            out << " bot to unit:" << reaction[ubot->GetReactionTo(guidP.GetUnit())];
+
+            out << " npc to bot:" << reaction[guidP.GetReactionTo(bot)];
+            out << " bot to npc:" << reaction[GuidPosition(bot).GetReactionTo(guidP)];
+
+            if (GuidPosition(HIGHGUID_UNIT, guidP.GetEntry()).IsHostileTo(bot))
+                out << "[hostile]";
+            if (GuidPosition(HIGHGUID_UNIT, guidP.GetEntry()).IsFriendlyTo(bot))
+                out << "[friendly]";
+
+            ai->TellMasterNoFacing(out);
+        }
+
         return true;
     }
     else if (text.find("travel ") != std::string::npos)
@@ -93,6 +283,7 @@ bool DebugAction::Execute(Event event)
     }
     else if (text.find("quest ") != std::string::npos)
     {
+        WorldPosition botPos(bot);
         uint32 questId = stoi(text.substr(6));
 
         Quest const* quest = sObjectMgr.GetQuestTemplate(questId);
@@ -113,30 +304,92 @@ bool DebugAction::Execute(Event event)
 
         uint32 i = 0;
 
-        for (auto g : cont->questGivers)
+        vector<QuestTravelDestination*> dests = cont->questGivers;
+
+        std::sort(dests.begin(), dests.end(), [botPos](QuestTravelDestination* i, QuestTravelDestination* j) {return i->distanceTo(botPos) < j->distanceTo(botPos); });
+
+
+        for (auto g : dests)
         {
-            if(i<10)
-                ai->TellMasterNoFacing(g->getTitle());
+            ostringstream out;
+
+            if (g->isActive(bot))
+                out << "(ACTIVE)";
+
+            out << g->getTitle().c_str();
+
+            out << " (" << g->distanceTo(botPos) << "y)";
+
+            ai->TellMasterNoFacing(out);
+
+            if (i >= 10)
+                break;
 
             i++;
         }
 
-        i = 0;
-
-        for (auto g : cont->questTakers)
+        for (uint32 o = 0; o < 4; o++)
         {
-            if (i < 10)
-                ai->TellMasterNoFacing(g->getTitle());
+            i = 0;
 
-            i++;
+            dests.clear();
+
+            for (auto g : cont->questObjectives)
+            {
+                QuestObjectiveTravelDestination* d = (QuestObjectiveTravelDestination*)g;
+                if (d->getObjective() == o)
+                    dests.push_back(g);
+            }
+
+            std::sort(dests.begin(), dests.end(), [botPos](QuestTravelDestination* i, QuestTravelDestination* j) {return i->distanceTo(botPos) < j->distanceTo(botPos); });
+
+            for (auto g : dests)
+            {
+                ostringstream out;
+
+                if (g->isActive(bot))
+                    out << "(ACTIVE)";
+
+                out << g->getTitle().c_str();
+
+                QuestObjectiveTravelDestination* d = (QuestObjectiveTravelDestination*)g;
+
+                if (d->getEntry())
+                    out << "[" << ObjectMgr::GetCreatureTemplate(d->getEntry())->MaxLevel << "]";
+
+                out << " (" << g->distanceTo(botPos) << "y)";
+
+                ai->TellMasterNoFacing(out);
+
+                if (i >= 5)
+                    break;
+
+                i++;
+            }
         }
 
         i = 0;
 
-        for (auto g : cont->questObjectives)
+       dests = cont->questGivers;
+
+        std::sort(dests.begin(), dests.end(), [botPos](QuestTravelDestination* i, QuestTravelDestination* j) {return i->distanceTo(botPos) < j->distanceTo(botPos); });
+
+
+        for (auto g : dests)
         {
-            if (i < 10)
-                ai->TellMasterNoFacing(g->getTitle());
+            ostringstream out;
+
+            if (g->isActive(bot))
+                out << "(ACTIVE)";
+
+            out << g->getTitle().c_str();
+
+            out << " (" << g->distanceTo(botPos) << "y)";
+
+            ai->TellMasterNoFacing(out);
+
+            if (i >= 10)
+                break;
 
             i++;
         }
@@ -208,8 +461,9 @@ bool DebugAction::Execute(Event event)
     }
     else if (text.find("loot ") != std::string::npos)
     {
-        ostringstream out;
-        for (auto itemId : chat->parseItems(text.substr(5)))
+        std::string textSubstr;
+        std::ostringstream out;
+        for (auto itemId : chat->parseItems(textSubstr = text.substr(5)))
         {
             list<int32> entries = GAI_VALUE2(list<int32>, "item drop list", itemId);
 
@@ -226,7 +480,8 @@ bool DebugAction::Execute(Event event)
 
             for (auto entry : entries)
             {
-                string qualifier = Qualified::MultiQualify({ to_string(entry) , to_string(itemId) });
+                std::vector<std::string> qualifiers = { to_string(entry), to_string(itemId) };
+                std::string qualifier = Qualified::MultiQualify(qualifiers);
                 float chance = GAI_VALUE2(float, "loot chance", qualifier);
                 if(chance > 0)
                     chances.push_back(make_pair(entry, chance));
@@ -246,10 +501,53 @@ bool DebugAction::Execute(Event event)
         }
         return true;
     }
+    else if (text.find("loot") != std::string::npos)
+    {
+    bool doAction = ai->DoSpecificAction("add all loot", Event(), true);
+
+    if (doAction)
+        ai->TellMasterNoFacing("Added new loot");
+    else
+        ai->TellMasterNoFacing("No new loot");
+
+    LootObjectStack* loots = AI_VALUE(LootObjectStack*, "available loot");
+
+    for (int i = 0; i < 2000; i++)
+    {
+        LootObject loot = loots->GetLoot();
+
+        if (loot.IsEmpty())
+            break;
+
+        WorldObject* wo = ai->GetWorldObject(loot.guid);
+
+        if (wo)
+            ai->TellMasterNoFacing(chat->formatWorldobject(wo) + " " + (loot.IsLootPossible(bot) ? "can loot" : "can not loot"));
+        else
+            ai->TellMasterNoFacing(to_string(loot.guid) + " " + (loot.IsLootPossible(bot) ? "can loot" : "can not loot") + " " + to_string(loot.guid.GetEntry()));
+
+        if (loot.guid.IsGameObject())
+        {
+            GameObject* go = ai->GetGameObject(loot.guid);
+
+            if (go->ActivateToQuest(bot))
+                ai->TellMasterNoFacing(to_string(go->GetGoType()) + " for quest");
+            else
+                ai->TellMasterNoFacing(to_string(go->GetGoType()));
+        }
+
+        loots->Remove(loot.guid);
+    }
+
+    ai->DoSpecificAction("add all loot", Event(), true);
+
+    return true;
+    }
     else if (text.find("drops ") != std::string::npos)
     {
-    ostringstream out;
-    for (auto entry : chat->parseWorldEntries(text.substr(6)))
+    std::string textSubstr;
+    std::ostringstream out;
+    for (auto entry : chat->parseWorldEntries(textSubstr = text.substr(6)))
     {
         list<uint32> itemIds = GAI_VALUE2(list<uint32>, "entry loot list", entry);
 
@@ -266,7 +564,8 @@ bool DebugAction::Execute(Event event)
 
         for (auto itemId : itemIds)
         {
-            string qualifier = Qualified::MultiQualify({ to_string(entry) , to_string(itemId) });
+            std::vector<std::string> qualifiers = { to_string(entry) , to_string(itemId) };
+            std::string qualifier = Qualified::MultiQualify(qualifiers);
             float chance = GAI_VALUE2(float, "loot chance", qualifier);
             if (chance > 0 && sObjectMgr.GetItemPrototype(itemId))
             {
@@ -286,6 +585,23 @@ bool DebugAction::Execute(Event event)
             out.clear();
         }
     }
+    return true;
+    }
+    else if (text.find("taxi") != std::string::npos)
+    {
+        for (uint32 i = 1; i < sTaxiNodesStore.GetNumRows(); ++i)
+        {
+            if (!bot->m_taxi.IsTaximaskNodeKnown(i))
+                continue;
+
+            TaxiNodesEntry const* taxiNode = sTaxiNodesStore.LookupEntry(i);
+
+            ostringstream out;
+
+            out << taxiNode->name[0];
+
+            ai->TellMasterNoFacing(out);
+        }
     return true;
     }
     else if (text.find("add node") != std::string::npos)

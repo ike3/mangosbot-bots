@@ -2,7 +2,7 @@
 
 #include "../Action.h"
 #include "MovementActions.h"
-#include "../../Travelmgr.h"
+#include "../../TravelMgr.h"
 
 namespace ai
 {
@@ -10,7 +10,7 @@ namespace ai
     public:
         ChooseTravelTargetAction(PlayerbotAI* ai, string name = "choose travel target") : MovementAction(ai, name) {}
 
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
         virtual bool isUseful();
 
         protected:

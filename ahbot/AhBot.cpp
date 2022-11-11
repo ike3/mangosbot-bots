@@ -931,7 +931,7 @@ void AhBot::CheckCategoryMultipliers()
             continue;
 
         tmp.insert(name);
-        if (categoryMultiplierExpireTimes[name] <= time(0) || categoryMultipliers[name] <= 0)
+        if (categoryMultiplierExpireTimes[name] <= (uint64)time(0) || categoryMultipliers[name] <= 0)
         {
             uint32 k = urand(1, 100);
             double m = 1.0;

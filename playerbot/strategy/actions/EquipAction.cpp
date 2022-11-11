@@ -7,7 +7,7 @@
 
 using namespace ai;
 
-bool EquipAction::Execute(Event event)
+bool EquipAction::Execute(Event& event)
 {
     string text = event.getParam();
     ItemIds ids = chat->parseItems(text);
@@ -43,7 +43,7 @@ uint8 EquipAction::GetSmallestBagSlot()
         {
             if (curBag > 0 && curSlots < pBag->GetBagSize())
                 continue;
-             
+            
             curBag = bag;
             curSlots = pBag->GetBagSize();
         }
@@ -74,6 +74,14 @@ void EquipAction::EquipItem(Item& item)
             if (newBagSlot > 0)
             {
                 uint16 src = ((bagIndex << 8) | slot);
+
+                if (newBagSlot == item.GetBagSlot()) //The new bag is in the slots of the old bag. Move it to the pack first.
+                {
+                    uint16 dst = ((INVENTORY_SLOT_BAG_0 << 8) | INVENTORY_SLOT_ITEM_START);
+                    bot->SwapItem(src, dst);
+                    src = dst;
+                }
+
                 uint16 dst = ((INVENTORY_SLOT_BAG_0 << 8) | newBagSlot);
                 bot->SwapItem(src, dst);
                 equipedBag = true;
@@ -88,14 +96,14 @@ void EquipAction::EquipItem(Item& item)
         }
     }
 
-    sTravelMgr.logEvent(ai, "EquipAction", item.GetProto()->Name1, to_string(item.GetProto()->ItemId));
+    sPlayerbotAIConfig.logEvent(ai, "EquipAction", item.GetProto()->Name1, to_string(item.GetProto()->ItemId));
 
     ostringstream out; out << "equipping " << chat->formatItem(item.GetProto());
-    ai->TellMaster(out);
+    ai->TellMaster(out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
 }
 
 
-bool EquipUpgradesAction::Execute(Event event)
+bool EquipUpgradesAction::Execute(Event& event)
 {
     if (!sPlayerbotAIConfig.autoEquipUpgradeLoot && !sRandomPlayerbotMgr.IsRandomBot(bot))
         return false;

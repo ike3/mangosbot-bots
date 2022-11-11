@@ -40,14 +40,27 @@ float GetAngle(const float x1, const float y1, const float x2, const float y2)
     return ang;
 }
 
-bool SeeSpellAction::Execute(Event event)
+bool SeeSpellAction::Execute(Event& event)
 {
     WorldPacket p(event.getPacket()); // 
     uint32 spellId;
     Player* master = ai->GetMaster();
 
     p.rpos(0);
+#ifndef MANGOSBOT_TWO
     p >> spellId;
+#endif
+
+#ifdef MANGOSBOT_ONE
+    uint8  cast_count;
+    p >> cast_count;
+#endif
+#ifdef MANGOSBOT_TWO
+    uint8  cast_count, cast_flags;
+    p >> cast_count;
+    p >> spellId;
+    p >> cast_flags;
+#endif
 
     if (!master)
         return false;
@@ -62,16 +75,12 @@ bool SeeSpellAction::Execute(Event event)
 
     SpellCastTargets targets;
 
-#ifdef BUILD_PLAYERBOT
-    recvPacket >> targets.ReadForCaster(mover);
-#else
     p >> targets.ReadForCaster(ai->GetMaster());
-#endif
 
     WorldPosition spellPosition(master->GetMapId(), targets.m_destPos);
     SET_AI_VALUE(WorldPosition, "see spell location", spellPosition);
 
-    if (ai->HasStrategy("debug", BOT_STATE_NON_COMBAT))
+    if (ai->HasStrategy("debug", BotState::BOT_STATE_NON_COMBAT) || ai->HasStrategy("debug move", BotState::BOT_STATE_NON_COMBAT))
     {
         PathFinder path(bot);
 
@@ -80,6 +89,9 @@ bool SeeSpellAction::Execute(Event event)
         float z = spellPosition.getZ();
 
         ostringstream out;
+
+        if (spellPosition.isOutside())
+            out << "[outside]";
 
         out << " area = ";
 
@@ -168,10 +180,7 @@ bool SeeSpellAction::MoveToSpell(WorldPosition& spellPosition, bool inFormation)
     if(inFormation)
         SetFormationOffset(spellPosition);
 
-    if (bot->IsWithinLOS(spellPosition.getX(), spellPosition.getY(), spellPosition.getZ()))
-        return MoveNear(spellPosition.getMapId(), spellPosition.getX(), spellPosition.getY(), spellPosition.getZ(), 0);
-    else
-        return MoveTo(spellPosition.getMapId(), spellPosition.getX(), spellPosition.getY(), spellPosition.getZ(), false, false);
+    return MoveTo(spellPosition.getMapId(), spellPosition.getX(), spellPosition.getY(), spellPosition.getZ(), false, false);
 }
 
 void SeeSpellAction::SetFormationOffset(WorldPosition& spellPosition)

@@ -10,7 +10,7 @@ namespace ai
     class OutfitAction : public EquipAction {
     public:
         OutfitAction(PlayerbotAI* ai) : EquipAction(ai, "outfit") {}
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
 
     private:
 

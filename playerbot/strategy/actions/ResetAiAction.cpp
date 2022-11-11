@@ -5,7 +5,7 @@
 
 using namespace ai;
 
-bool ResetAiAction::Execute(Event event)
+bool ResetAiAction::Execute(Event& event)
 {
     if (fullReset)
     {

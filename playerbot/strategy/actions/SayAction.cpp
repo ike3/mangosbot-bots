@@ -12,7 +12,7 @@ SayAction::SayAction(PlayerbotAI* ai) : Action(ai, "say"), Qualified()
 {
 }
 
-bool SayAction::Execute(Event event)
+bool SayAction::Execute(Event& event)
 {
     string text = "";
     map<string, string> placeholders;

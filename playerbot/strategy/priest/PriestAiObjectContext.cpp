@@ -3,6 +3,7 @@
 #include "PriestActions.h"
 #include "PriestAiObjectContext.h"
 #include "PriestNonCombatStrategy.h"
+#include "PriestReactionStrategy.h"
 #include "ShadowPriestStrategy.h"
 #include "../generic/PullStrategy.h"
 #include "PriestTriggers.h"
@@ -24,6 +25,7 @@ namespace ai
             StrategyFactoryInternal()
             {
                 creators["nc"] = &priest::StrategyFactoryInternal::nc;
+                creators["react"] = &priest::StrategyFactoryInternal::react;
                 creators["pull"] = &priest::StrategyFactoryInternal::pull;
                 creators["aoe"] = &priest::StrategyFactoryInternal::shadow_aoe;
                 creators["shadow aoe"] = &priest::StrategyFactoryInternal::shadow_aoe;
@@ -42,6 +44,7 @@ namespace ai
             static Strategy* boost(PlayerbotAI* ai) { return new PriestBoostStrategy(ai); }
             static Strategy* buff(PlayerbotAI* ai) { return new PriestBuffStrategy(ai); }
             static Strategy* nc(PlayerbotAI* ai) { return new PriestNonCombatStrategy(ai); }
+            static Strategy* react(PlayerbotAI* ai) { return new PriestReactionStrategy(ai); }
             static Strategy* shadow_aoe(PlayerbotAI* ai) { return new ShadowPriestAoeStrategy(ai); }
             static Strategy* pull(PlayerbotAI* ai) { return new PullStrategy(ai, "shoot"); }
             static Strategy* shadow_debuff(PlayerbotAI* ai) { return new ShadowPriestDebuffStrategy(ai); }

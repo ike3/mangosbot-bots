@@ -6,7 +6,7 @@
 
 using namespace ai;
 
-bool AutoLearnSpellAction::Execute(Event event)
+bool AutoLearnSpellAction::Execute(Event& event)
 {
     string param = event.getParam();
 
@@ -22,7 +22,7 @@ bool AutoLearnSpellAction::Execute(Event event)
         out << temp;
         out.seekp(-2, out.cur);
         out << ".";
-        ai->TellMaster(out);
+        ai->TellMaster(out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
     }
 
     return true;

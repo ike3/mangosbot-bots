@@ -26,7 +26,7 @@ static inline void ltrim(std::string& s) {
         }));
 }
 
-bool CastCustomSpellAction::Execute(Event event)
+bool CastCustomSpellAction::Execute(Event& event)
 {
     // only allow proper vehicle seats
     if (ai->IsInVehicle() && !ai->IsInVehicle(false, false, true))
@@ -99,7 +99,7 @@ bool CastCustomSpellAction::Execute(Event event)
     if (target != bot && !sServerFacade.IsInFront(bot, target, sPlayerbotAIConfig.sightDistance, CAST_ANGLE_IN_FRONT))
     {
         sServerFacade.SetFacingTo(bot, target);
-        ai->SetNextCheckDelay(sPlayerbotAIConfig.globalCoolDown);
+        SetDuration(sPlayerbotAIConfig.globalCoolDown);
         msg << "cast " << text;
         ai->HandleCommand(CHAT_MSG_WHISPER, msg.str(), *master);
         return true;
@@ -133,7 +133,7 @@ bool CastCustomSpellAction::Execute(Event event)
             ai->HandleCommand(CHAT_MSG_WHISPER, cmd.str(), *master);
             msg << "|cffffff00(x" << (castCount - 1) << " left)|r";
         }
-        ai->TellMasterNoFacing(msg.str());
+        ai->TellMasterNoFacing(msg.str(), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
     }
     else
     {
@@ -145,7 +145,7 @@ bool CastCustomSpellAction::Execute(Event event)
 }
 
 
-bool CastRandomSpellAction::Execute(Event event)
+bool CastRandomSpellAction::Execute(Event& event)
 {
     list<pair<uint32, string>> spellMap = GetSpellList();
     Player* master = GetMaster();
@@ -256,20 +256,35 @@ bool CastRandomSpellAction::castSpell(uint32 spellId, WorldObject* wo)
         return ai->CastSpell(spellId, wo->GetPositionX(), wo->GetPositionY(), wo->GetPositionZ());
 }
 
-bool DisEnchantRandomItemAction::Execute(Event event)
+bool DisEnchantRandomItemAction::Execute(Event& event)
 {
-    list<Item*> items = AI_VALUE2(list<Item*>, "inventory items", "usage " + to_string(ITEM_USAGE_DISENCHANT));
+    list<uint32> items = AI_VALUE2(list<uint32>, "inventory item ids", "usage " + to_string(ITEM_USAGE_DISENCHANT));
 
     items.reverse();
+
+    if (bot->IsMoving())
+    {
+        ai->StopMoving();
+    }
+    if (bot->IsMounted())
+    {
+        return false;
+    }
 
     for (auto& item: items)
     {
         // don't touch rare+ items if with real player/guild
-        if ((ai->HasRealPlayerMaster() || ai->IsInRealGuild()) && item->GetProto()->Quality > ITEM_QUALITY_UNCOMMON)
+        if ((ai->HasRealPlayerMaster() || ai->IsInRealGuild()) && ObjectMgr::GetItemPrototype(item)->Quality > ITEM_QUALITY_UNCOMMON)
             return false;
 
-        if(CastCustomSpellAction::Execute(Event("disenchant random item", "13262 "+ chat->formatQItem(item->GetEntry()))))
-            return true;
+        Event disenchantEvent = Event("disenchant random item", "13262 " + chat->formatQItem(item));
+        const bool used = CastCustomSpellAction::Execute(disenchantEvent);
+        if (used)
+        {
+            SetDuration(3000U); // 3s
+        }
+
+        return used;
     }
 
     return false;

@@ -10,7 +10,7 @@ namespace ai
     public:
         ChooseRpgTargetAction(PlayerbotAI* ai, string name = "choose rpg target") : Action(ai, name) {}
 
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
         virtual bool isUseful();
 
         static bool isFollowValid(Player* bot, WorldObject* target);
@@ -26,7 +26,7 @@ namespace ai
     public:
         ClearRpgTargetAction(PlayerbotAI* ai) : ChooseRpgTargetAction(ai, "clear rpg target") {}
 
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
         virtual bool isUseful();
     };
 

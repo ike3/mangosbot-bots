@@ -16,12 +16,12 @@ namespace ai
     class AcceptQuestAction : public AcceptAllQuestsAction {
     public:
         AcceptQuestAction(PlayerbotAI* ai) : AcceptAllQuestsAction(ai, "accept quest") {}
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
     };
 
     class AcceptQuestShareAction : public Action {
     public:
         AcceptQuestShareAction(PlayerbotAI* ai) : Action(ai, "accept quest share") {}
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
     };
 }

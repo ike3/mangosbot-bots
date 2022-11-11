@@ -150,18 +150,31 @@ bool FleeManager::CalculateDestination(float* rx, float* ry, float* rz)
 
 bool FleeManager::isUseful()
 {
-    list<ObjectGuid> units = *bot->GetPlayerbotAI()->GetAiObjectContext()->GetValue<list<ObjectGuid> >("possible targets no los");
-    for (list<ObjectGuid>::iterator i = units.begin(); i != units.end(); ++i)
+    // It the bot is a victim of an aoe attack it should move no matter the target attack distance
+    bool const inAoe = bot->GetPlayerbotAI()->GetAiObjectContext()->GetValue<bool>("has area debuff", "self target")->Get();
+    if (!inAoe)
     {
-        Unit* unit = bot->GetPlayerbotAI()->GetUnit(*i);
-        if (!unit)
-            continue;
+        list<ObjectGuid> units = *bot->GetPlayerbotAI()->GetAiObjectContext()->GetValue<list<ObjectGuid> >("possible targets no los");
+        for (list<ObjectGuid>::iterator i = units.begin(); i != units.end(); ++i)
+        {
+            Unit* unit = bot->GetPlayerbotAI()->GetUnit(*i);
+            if (unit)
+            {
+                float const distanceSquared = startPosition.sqDistance(WorldPosition(unit));
+                float attackDistanceSquared = unit->GetAttackDistance(bot);
+                attackDistanceSquared *= attackDistanceSquared;
+                if (distanceSquared < attackDistanceSquared)
+                {
+                    return true;
+                }
 
-        if (startPosition.sqDistance(WorldPosition(unit)) < unit->GetAttackDistance(bot) * unit->GetAttackDistance(bot))
-            return true;
+                //float d = sServerFacade.GetDistance2d(unit, bot);
+                //if (sServerFacade.IsDistanceLessThan(d, sPlayerbotAIConfig.aggroDistance)) return true;
+            }
+        }
 
-        //float d = sServerFacade.GetDistance2d(unit, bot);
-        //if (sServerFacade.IsDistanceLessThan(d, sPlayerbotAIConfig.aggroDistance)) return true;
+        return false;
     }
-    return false;
+
+    return true;
 }

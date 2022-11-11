@@ -67,7 +67,7 @@
 #include "PassLeadershipToMasterAction.h"
 #include "CheatAction.h"
 #include "GuildManagementActions.h"
-#include "RTSCAction.h"
+#include "RtscAction.h"
 
 namespace ai
 {
@@ -110,6 +110,7 @@ namespace ai
             creators["co"] = &ChatActionContext::co;
             creators["nc"] = &ChatActionContext::nc;
             creators["de"] = &ChatActionContext::dead;
+            creators["react"] = &ChatActionContext::react;
             creators["trainer"] = &ChatActionContext::trainer;
             creators["attack my target"] = &ChatActionContext::attack_my_target;
             creators["chat"] = &ChatActionContext::chat;
@@ -211,6 +212,7 @@ namespace ai
         static Action* co(PlayerbotAI* ai) { return new ChangeCombatStrategyAction(ai); }
         static Action* nc(PlayerbotAI* ai) { return new ChangeNonCombatStrategyAction(ai); }
         static Action* dead(PlayerbotAI* ai) { return new ChangeDeadStrategyAction(ai); }
+        static Action* react(PlayerbotAI* ai) { return new ChangeReactionStrategyAction(ai); }
         static Action* spells(PlayerbotAI* ai) { return new ListSpellsAction(ai); }
         static Action* talents(PlayerbotAI* ai) { return new ChangeTalentsAction(ai); }
 

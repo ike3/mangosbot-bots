@@ -21,10 +21,10 @@ void PlayerbotDbStore::Load(PlayerbotAI *ai)
     QueryResult* results = PlayerbotDatabase.PQuery("SELECT `key`,`value` FROM `ai_playerbot_db_store` WHERE `guid` = '%lu'", guid);
     if (results)
     {
-        ai->ClearStrategies(BOT_STATE_COMBAT);
-        ai->ClearStrategies(BOT_STATE_NON_COMBAT);
-        ai->ChangeStrategy("+chat", BOT_STATE_COMBAT);
-        ai->ChangeStrategy("+chat", BOT_STATE_NON_COMBAT);
+        ai->ClearStrategies(BotState::BOT_STATE_COMBAT);
+        ai->ClearStrategies(BotState::BOT_STATE_NON_COMBAT);
+        ai->ChangeStrategy("+chat", BotState::BOT_STATE_COMBAT);
+        ai->ChangeStrategy("+chat", BotState::BOT_STATE_NON_COMBAT);
 
         list<string> values;
         do
@@ -33,9 +33,10 @@ void PlayerbotDbStore::Load(PlayerbotAI *ai)
             string key = fields[0].GetString();
             string value = fields[1].GetString();
             if (key == "value") values.push_back(value);
-            else if (key == "co") ai->ChangeStrategy(value, BOT_STATE_COMBAT);
-            else if (key == "nc") ai->ChangeStrategy(value, BOT_STATE_NON_COMBAT);
-            else if (key == "dead") ai->ChangeStrategy(value, BOT_STATE_DEAD);
+            else if (key == "co") ai->ChangeStrategy(value, BotState::BOT_STATE_COMBAT);
+            else if (key == "nc") ai->ChangeStrategy(value, BotState::BOT_STATE_NON_COMBAT);
+            else if (key == "dead") ai->ChangeStrategy(value, BotState::BOT_STATE_DEAD);
+            else if (key == "react") ai->ChangeStrategy(value, BotState::BOT_STATE_REACTION);
         } while (results->NextRow());
 
         ai->GetAiObjectContext()->Load(values);
@@ -56,9 +57,10 @@ void PlayerbotDbStore::Save(PlayerbotAI *ai)
         SaveValue(guid, "value", *i);
     }
 
-    SaveValue(guid, "co", FormatStrategies("co", ai->GetStrategies(BOT_STATE_COMBAT)));
-    SaveValue(guid, "nc", FormatStrategies("nc", ai->GetStrategies(BOT_STATE_NON_COMBAT)));
-    SaveValue(guid, "dead", FormatStrategies("dead", ai->GetStrategies(BOT_STATE_DEAD)));
+    SaveValue(guid, "co", FormatStrategies("co", ai->GetStrategies(BotState::BOT_STATE_COMBAT)));
+    SaveValue(guid, "nc", FormatStrategies("nc", ai->GetStrategies(BotState::BOT_STATE_NON_COMBAT)));
+    SaveValue(guid, "dead", FormatStrategies("dead", ai->GetStrategies(BotState::BOT_STATE_DEAD)));
+    SaveValue(guid, "react", FormatStrategies("react", ai->GetStrategies(BotState::BOT_STATE_REACTION)));
 }
 
 string PlayerbotDbStore::FormatStrategies(string type, list<string> strategies)

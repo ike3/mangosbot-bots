@@ -53,7 +53,7 @@ Player* GuidManageAction::GetPlayer(Event event)
     return nullptr;
 }
 
-bool GuidManageAction::Execute(Event event)
+bool GuidManageAction::Execute(Event& event)
 {
     Player* player = GetPlayer(event);
 
@@ -68,7 +68,7 @@ bool GuidManageAction::Execute(Event event)
     return true;
 }
 
-bool GuildManageNearbyAction::Execute(Event event)
+bool GuildManageNearbyAction::Execute(Event& event)
 {
     uint32 found = 0;
 
@@ -152,10 +152,10 @@ bool GuildManageNearbyAction::isUseful()
     return guild->GetRankRights(botMember->RankId) & (GR_RIGHT_DEMOTE | GR_RIGHT_PROMOTE | GR_RIGHT_INVITE);
 }
 
-bool GuildLeaveAction::Execute(Event event)
+bool GuildLeaveAction::Execute(Event& event)
 {
     Player* owner = event.getOwner();
-    if (owner && !ai->GetSecurity()->CheckLevelFor(PLAYERBOT_SECURITY_INVITE, false, owner, true))
+    if (owner && !ai->GetSecurity()->CheckLevelFor(PlayerbotSecurityLevel::PLAYERBOT_SECURITY_INVITE, false, owner, true))
     {
         ai->TellError("Sorry, I am happy in my guild :)");
         return false;

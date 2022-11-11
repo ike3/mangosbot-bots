@@ -135,14 +135,23 @@ ItemUsage ItemUsageValue::Calculate()
             }
         }
 
+    //Do not sell/ah epic or above.
+    if (proto->Quality >= ITEM_QUALITY_EPIC && !sRandomPlayerbotMgr.IsRandomBot(bot))
+        return ITEM_USAGE_KEEP;
+
     //Need to add something like free bagspace or item value.
     if (proto->SellPrice > 0)
     {
         AuctionHouseBotItemData itemInfo = sAuctionHouseBot.GetItemData(proto->ItemId);
         if (itemInfo.Value > ((int32)proto->SellPrice) * 1.5f)
-            return ITEM_USAGE_AH;
-        else
-            return ITEM_USAGE_VENDOR;
+        {
+            Item* item = CurrentItem(proto);
+
+            if(!item || !item->IsSoulBound())
+                return ITEM_USAGE_AH;
+        }
+        
+        return ITEM_USAGE_VENDOR;
     }
 
     return ITEM_USAGE_NONE;
@@ -156,16 +165,25 @@ ItemUsage ItemUsageValue::QueryItemUsageForEquip(ItemPrototype const* itemProto)
     if (itemProto->InventoryType == INVTYPE_NON_EQUIP)
         return ITEM_USAGE_NONE;
 
-    Item* pItem = RandomPlayerbotMgr::CreateTempItem(itemProto->ItemId, 1, bot);
-    if (!pItem)
-        return ITEM_USAGE_NONE;
-
-    uint32 specId = sRandomItemMgr.GetPlayerSpecId(bot);
-
     uint16 dest;
-    InventoryResult result = bot->CanEquipItem(NULL_SLOT, dest, pItem, true, false);
-    pItem->RemoveFromUpdateQueueOf(bot);
-    delete pItem;
+
+    list<Item*> items = AI_VALUE2(list<Item*>, "inventory items", chat->formatItem(itemProto));
+
+    InventoryResult result;
+    if (!items.empty())
+    {
+        result = bot->CanEquipItem(NULL_SLOT, dest, items.front(), true, false);
+    }
+    else
+    {
+        Item* pItem = RandomPlayerbotMgr::CreateTempItem(itemProto->ItemId, 1, bot);
+        if (!pItem)
+            return ITEM_USAGE_NONE;
+
+        result = bot->CanEquipItem(NULL_SLOT, dest, pItem, true, false);
+        pItem->RemoveFromUpdateQueueOf(bot);
+        delete pItem;
+    }
 
     if (result != EQUIP_ERR_OK)
         return ITEM_USAGE_NONE;
@@ -186,6 +204,8 @@ ItemUsage ItemUsageValue::QueryItemUsageForEquip(ItemPrototype const* itemProto)
     }
 
     bool shouldEquip = false;
+
+    uint32 specId = sRandomItemMgr.GetPlayerSpecId(bot);
 
     uint32 statWeight = sRandomItemMgr.GetLiveStatWeight(bot, itemProto->ItemId, specId);
     if (statWeight)
@@ -283,7 +303,7 @@ uint32 ItemUsageValue::GetSmallestBagSize()
 {
     int8 curSlot = 0;
     uint32 curSlots = 0;
-    for (uint8 bag = INVENTORY_SLOT_BAG_START + 1; bag < INVENTORY_SLOT_BAG_END; ++bag)
+    for (uint8 bag = INVENTORY_SLOT_BAG_START; bag < INVENTORY_SLOT_BAG_END; ++bag)
     {
         const Bag* const pBag = (Bag*)bot->GetItemByPos(INVENTORY_SLOT_BAG_0, bag);
         if (pBag)
@@ -438,7 +458,7 @@ bool ItemUsageValue::IsItemUsefulForSkill(ItemPrototype const* proto)
 }
 
 bool ItemUsageValue::IsItemNeededForUsefullSpell(ItemPrototype const* proto, bool checkAllReagents)
-{
+{    
     for (auto spellId : SpellsUsingItem(proto->ItemId, bot))
     {
         const SpellEntry* pSpellInfo = sServerFacade.LookupSpellInfo(spellId);
@@ -446,7 +466,7 @@ bool ItemUsageValue::IsItemNeededForUsefullSpell(ItemPrototype const* proto, boo
         if (!pSpellInfo)
             continue;
 
-        if (checkAllReagents && !HasItemsNeededForSpell(spellId, proto))
+        if (checkAllReagents && !HasItemsNeededForSpell(spellId, proto, bot))
             continue;
 
         if (SpellGivesSkillUp(spellId, bot))
@@ -468,8 +488,12 @@ bool ItemUsageValue::IsItemNeededForUsefullSpell(ItemPrototype const* proto, boo
     return false;
 }
 
-bool ItemUsageValue::HasItemsNeededForSpell(uint32 spellId, ItemPrototype const* proto)
+bool ItemUsageValue::HasItemsNeededForSpell(uint32 spellId, ItemPrototype const* proto, Player* bot)
 {
+    PlayerbotAI* ai = bot->GetPlayerbotAI();
+
+    AiObjectContext* context = ai->GetAiObjectContext();
+
     const SpellEntry* pSpellInfo = sServerFacade.LookupSpellInfo(spellId);
 
     if (!pSpellInfo)

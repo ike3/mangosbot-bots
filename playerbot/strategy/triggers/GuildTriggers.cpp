@@ -4,7 +4,7 @@
 #include "GuildTriggers.h"
 #include "ServerFacade.h"
 #include "../values/BudgetValues.h"
-
+#include "../../TravelMgr.h"
 
 using namespace ai;
 

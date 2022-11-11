@@ -6,7 +6,7 @@
 
 using namespace ai;
 
-bool RepairAllAction::Execute(Event event)
+bool RepairAllAction::Execute(Event& event)
 {
     list<ObjectGuid> npcs = AI_VALUE(list<ObjectGuid>, "nearest npcs");
     for (list<ObjectGuid>::iterator i = npcs.begin(); i != npcs.end(); i++)
@@ -64,14 +64,17 @@ bool RepairAllAction::Execute(Event event)
             bot->SetMoney(botMoney);
         }
 
+        //Totalcost is bugged in core. For now we use this work-around.
+        totalCost = botMoney - bot->GetMoney();
+
         if (totalCost > 0)
         {
             ostringstream out;
             out << "Repair: " << chat->formatMoney(totalCost) << " (" << unit->GetName() << ")";
-            ai->TellMasterNoFacing(out.str());
+            ai->TellMasterNoFacing(out.str(),PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
             bot->PlayDistanceSound(1116);
 
-            sTravelMgr.logEvent(ai, "RepairAllAction", to_string(durability), to_string(totalCost));
+            sPlayerbotAIConfig.logEvent(ai, "RepairAllAction", to_string(durability), to_string(totalCost));
         }
 
         context->GetValue<uint32>("death count")->Set(0);

@@ -41,6 +41,7 @@
 #include "LastSpellCastValue.h"
 #include "ChatValue.h"
 #include "HasTotemValue.h"
+#include "HaveAnyTotemValue.h"
 #include "LeastHpTargetValue.h"
 #include "AoeHealValues.h"
 #include "AoeValues.h"
@@ -80,6 +81,8 @@
 #include "TradeValues.h"
 #include "RpgValues.h"
 #include "RTSCValues.h"
+#include "VendorValues.h"
+#include "TrainerValues.h"
 
 namespace ai
 {
@@ -167,6 +170,7 @@ namespace ai
 
             creators["item count"] = &ValueContext::item_count;
             creators["inventory items"] = &ValueContext::inventory_item;
+            creators["inventory item ids"] = &ValueContext::inventory_item_ids;
             creators["trinkets on use"] = &ValueContext::trinkets_on_use;
 
             creators["spell id"] = &ValueContext::spell_id;
@@ -177,6 +181,7 @@ namespace ai
             creators["last spell cast time"] = &ValueContext::last_spell_cast_time;
             creators["chat"] = &ValueContext::chat;
             creators["has totem"] = &ValueContext::has_totem;
+            creators["have any totem"] = &ValueContext::have_any_totem;
 
             creators["aoe heal"] = &ValueContext::aoe_heal;
 
@@ -184,6 +189,7 @@ namespace ai
             creators["rti"] = &ValueContext::rti;
             creators["position"] = &ValueContext::position;
             creators["current position"] = &ValueContext::current_position;
+            creators["master position"] = &ValueContext::master_position;
             creators["custom position"] = &ValueContext::custom_position;
             creators["threat"] = &ValueContext::threat;
 
@@ -262,10 +268,15 @@ namespace ai
             creators["can repair"] = &ValueContext::can_repair;
             creators["should sell"] = &ValueContext::should_sell;
             creators["can sell"] = &ValueContext::can_sell;
+            creators["can buy"] = &ValueContext::can_buy;
             creators["can ah sell"] = &ValueContext::can_ah_sell;
+            creators["can ah buy"] = &ValueContext::can_ah_buy;
+            creators["can get mail"] = &ValueContext::can_get_mail;
             creators["can fight equal"] = &ValueContext::can_fight_equal;
             creators["can fight elite"] = &ValueContext::can_fight_elite;
             creators["can fight boss"] = &ValueContext::can_fight_boss;
+
+            creators["vendor has useful item"] = &ValueContext::vendor_has_useful_item;
 
             creators["group members"] = &ValueContext::group_members;
             creators["following party"] = &ValueContext::following_party;
@@ -288,6 +299,8 @@ namespace ai
             creators["RTSC selected"] = &ValueContext::RTSC_selected;
             creators["RTSC next spell action"] = &ValueContext::RTSC_next_spell_action;
             creators["RTSC saved location"] = &ValueContext::RTSC_saved_location;
+
+            creators["trainable class spells"] = &ValueContext::trainable_class_spells;
 
             creators["has area debuff"] = &ValueContext::has_area_debuff;
         }
@@ -321,6 +334,7 @@ namespace ai
 
         static UntypedValue* position(PlayerbotAI* ai) { return new PositionValue(ai); }
         static UntypedValue* current_position(PlayerbotAI* ai) { return new CurrentPositionValue(ai); }
+        static UntypedValue* master_position(PlayerbotAI* ai) { return new MasterPositionValue(ai); }
         static UntypedValue* custom_position(PlayerbotAI* ai) { return new CustomPositionValue(ai); }
         static UntypedValue* rti(PlayerbotAI* ai) { return new RtiValue(ai); }
         static UntypedValue* rti_cc(PlayerbotAI* ai) { return new RtiCcValue(ai); }
@@ -335,6 +349,7 @@ namespace ai
         static UntypedValue* spell_id(PlayerbotAI* ai) { return new SpellIdValue(ai); }
         static UntypedValue* vehicle_spell_id(PlayerbotAI* ai) { return new VehicleSpellIdValue(ai); }
         static UntypedValue* inventory_item(PlayerbotAI* ai) { return new InventoryItemValue(ai); }
+        static UntypedValue* inventory_item_ids(PlayerbotAI* ai) { return new InventoryItemIdValue(ai); }
         static UntypedValue* trinkets_on_use(PlayerbotAI* ai) { return new EquipedUsableTrinketValue(ai); }
         static UntypedValue* item_count(PlayerbotAI* ai) { return new ItemCountValue(ai); }
         static UntypedValue* behind(PlayerbotAI* ai) { return new IsBehindValue(ai); }
@@ -409,6 +424,7 @@ namespace ai
         static UntypedValue* rti_cc_target(PlayerbotAI* ai) { return new RtiCcTargetValue(ai); }
         static UntypedValue* duel_target(PlayerbotAI* ai) { return new DuelTargetValue(ai); }
         static UntypedValue* has_totem(PlayerbotAI* ai) { return new HasTotemValue(ai); }
+        static UntypedValue* have_any_totem(PlayerbotAI* ai) { return new HaveAnyTotemValue(ai); }
         static UntypedValue* threat(PlayerbotAI* ai) { return new ThreatValue(ai); }
         static UntypedValue* combat(PlayerbotAI* ai) { return new IsInCombatValue(ai); }
         static UntypedValue* lfg_proposal(PlayerbotAI* ai) { return new LfgProposalValue(ai); }
@@ -460,10 +476,15 @@ namespace ai
         static UntypedValue* can_repair(PlayerbotAI* ai) { return new CanRepairValue(ai); }
         static UntypedValue* should_sell(PlayerbotAI* ai) { return new ShouldSellValue(ai); }
         static UntypedValue* can_sell(PlayerbotAI* ai) { return new CanSellValue(ai); }
+        static UntypedValue* can_buy(PlayerbotAI* ai) { return new CanBuyValue(ai); }
         static UntypedValue* can_ah_sell(PlayerbotAI* ai) { return new CanAHSellValue(ai); }
+        static UntypedValue* can_ah_buy(PlayerbotAI* ai) { return new CanAHBuyValue(ai); }
+        static UntypedValue* can_get_mail(PlayerbotAI* ai) { return new CanGetMailValue(ai); }
         static UntypedValue* can_fight_equal(PlayerbotAI* ai) { return new CanFightEqualValue(ai); }
         static UntypedValue* can_fight_elite(PlayerbotAI* ai) { return new CanFightEliteValue(ai); }
         static UntypedValue* can_fight_boss(PlayerbotAI* ai) { return new CanFightBossValue(ai); }
+
+        static UntypedValue* vendor_has_useful_item(PlayerbotAI* ai) { return new VendorHasUsefulItemValue(ai); }
 
         static UntypedValue* group_members(PlayerbotAI* ai) { return new GroupMembersValue(ai); }
         static UntypedValue* following_party(PlayerbotAI* ai) { return new IsFollowingPartyValue(ai); }
@@ -486,6 +507,8 @@ namespace ai
         static UntypedValue* RTSC_selected(PlayerbotAI* ai) { return new RTSCSelectedValue(ai); }
         static UntypedValue* RTSC_next_spell_action(PlayerbotAI* ai) { return new RTSCNextSpellActionValue(ai); }
         static UntypedValue* RTSC_saved_location(PlayerbotAI* ai) { return new RTSCSavedLocationValue(ai); }
+
+        static UntypedValue* trainable_class_spells(PlayerbotAI* ai) { return new TrainableClassSpells(ai); }
 
         static UntypedValue* has_area_debuff(PlayerbotAI* ai) { return new HasAreaDebuffValue(ai); }
     };

@@ -8,7 +8,7 @@ namespace ai
     class SetCraftAction : public Action {
     public:
         SetCraftAction(PlayerbotAI* ai) : Action(ai, "craft") {}
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
 
     public:
         static uint32 GetCraftFee(CraftData&);

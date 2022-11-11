@@ -15,7 +15,7 @@ bool AcceptAllQuestsAction::ProcessQuest(Quest const* quest, WorldObject* questG
     return false;
 }
 
-bool AcceptQuestAction::Execute(Event event)
+bool AcceptQuestAction::Execute(Event& event)
 {
     Player* master = GetMaster();
 
@@ -76,12 +76,12 @@ bool AcceptQuestAction::Execute(Event event)
     hasAccept |= AcceptQuest(qInfo, guid);
 
     if (hasAccept)
-        sTravelMgr.logEvent(ai, "AcceptQuestAction", qInfo->GetTitle(), to_string(qInfo->GetQuestId()));
+        sPlayerbotAIConfig.logEvent(ai, "AcceptQuestAction", qInfo->GetTitle(), to_string(qInfo->GetQuestId()));
 
     return hasAccept;
 }
 
-bool AcceptQuestShareAction::Execute(Event event)
+bool AcceptQuestShareAction::Execute(Event& event)
 {
     Player* master = GetMaster();
     Player *bot = ai->GetBot();
@@ -116,7 +116,7 @@ bool AcceptQuestShareAction::Execute(Event event)
     {
         bot->AddQuest( qInfo, master );
 
-        sTravelMgr.logEvent(ai, "AcceptQuestShareAction", qInfo->GetTitle(), to_string(qInfo->GetQuestId()));
+        sPlayerbotAIConfig.logEvent(ai, "AcceptQuestShareAction", qInfo->GetTitle(), to_string(qInfo->GetQuestId()));
 
         if( bot->CanCompleteQuest( quest ) )
             bot->CompleteQuest( quest );
@@ -137,7 +137,7 @@ bool AcceptQuestShareAction::Execute(Event event)
             );
         }
 
-        ai->TellMaster(BOT_TEXT("quest_accept"));
+        ai->TellMaster(BOT_TEXT("quest_accept"), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
         return true;
     }
 

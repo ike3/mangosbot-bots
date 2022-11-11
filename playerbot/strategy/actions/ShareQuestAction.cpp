@@ -5,7 +5,7 @@
 
 using namespace ai;
 
-bool ShareQuestAction::Execute(Event event)
+bool ShareQuestAction::Execute(Event& event)
 {
     string link = event.getParam();
     if (!GetMaster())
@@ -29,7 +29,7 @@ bool ShareQuestAction::Execute(Event event)
             WorldPacket p;
             p << entry;
             bot->GetSession()->HandlePushQuestToParty(p);
-            ai->TellMaster("Quest shared");
+            ai->TellMaster("Quest shared", PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
             return true;
         }
     }

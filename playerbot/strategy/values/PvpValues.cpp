@@ -6,6 +6,7 @@
 #ifndef MANGOSBOT_ZERO
 #include "BattleGroundEY.h"
 #endif
+#include "../../TravelMgr.h"
 
 using namespace ai;
 
@@ -111,6 +112,14 @@ CreatureDataPair const* BgMasterValue::NearestBm(bool allowDead)
 BattleGroundTypeId RpgBgTypeValue::Calculate()
 {
     GuidPosition guidPosition = AI_VALUE(GuidPosition, "rpg target");
+
+    // check Deserter debuff
+    if (!bot->CanJoinToBattleground())
+        return BATTLEGROUND_TYPE_NONE;
+
+    // check if has free queue slots
+    if (!bot->HasFreeBattleGroundQueueId())
+        return BATTLEGROUND_TYPE_NONE;
 
     if(guidPosition)
         for (uint32 i = 1; i < MAX_BATTLEGROUND_QUEUE_TYPES; i++)

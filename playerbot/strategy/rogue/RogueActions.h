@@ -17,7 +17,7 @@ namespace ai
         virtual bool isUseful() {
             return bot->HasSpell(36554) && bot->IsSpellReady(36554);
         }
-        virtual bool Execute(Event event) {
+        virtual bool Execute(Event& event) {
             return bot->CastSpell(GetTarget(), 36554, TRIGGERED_OLD_TRIGGERED);
         }
     };
@@ -49,11 +49,11 @@ namespace ai
             // do not use with WSG flag
             return !ai->HasAura(23333, bot) && !ai->HasAura(23335, bot) && !ai->HasAura(34976, bot);
         }
-        virtual bool Execute(Event event)
+        virtual bool Execute(Event& event)
         {
             if (ai->CastSpell("stealth", bot))
             {
-                ai->ChangeStrategy("+stealthed", BOT_STATE_COMBAT);
+                ai->ChangeStrategy("+stealthed", BotState::BOT_STATE_COMBAT);
                 bot->InterruptSpell(CURRENT_MELEE_SPELL);
             }
             return true;
@@ -63,7 +63,7 @@ namespace ai
     class UnstealthAction : public Action {
     public:
         UnstealthAction(PlayerbotAI* ai) : Action(ai, "unstealth") {}
-        virtual bool Execute(Event event) {
+        virtual bool Execute(Event& event) {
             ai->RemoveAura("stealth");
             ai->ResetStrategies();
             return true;
@@ -74,17 +74,17 @@ namespace ai
     public:
         CheckStealthAction(PlayerbotAI* ai) : Action(ai, "check stealth") {}
         virtual bool isPossible() { return true; }
-        virtual bool Execute(Event event) {
+        virtual bool Execute(Event& event) {
             bool hasStealth = ai->HasAura("stealth", bot);
             if (hasStealth)
             {
-                if (!ai->HasStrategy("stealthed", BOT_STATE_COMBAT))
-                    ai->ChangeStrategy("+stealthed", BOT_STATE_COMBAT);
+                if (!ai->HasStrategy("stealthed", BotState::BOT_STATE_COMBAT))
+                    ai->ChangeStrategy("+stealthed", BotState::BOT_STATE_COMBAT);
             }
             else if (!hasStealth)
             {
                 ai->ResetStrategies();
-                //ai->ChangeStrategy("+dps,-stealthed", BOT_STATE_COMBAT);
+                //ai->ChangeStrategy("+dps,-stealthed", BotState::BOT_STATE_COMBAT);
             }
             return true;
         }
@@ -123,11 +123,11 @@ namespace ai
             // do not use with WSG flag or EYE flag
             return !ai->HasAura(23333, bot) && !ai->HasAura(23335, bot) && !ai->HasAura(34976, bot);
         }
-        virtual bool Execute(Event event)
+        virtual bool Execute(Event& event)
         {
             if (ai->CastSpell("vanish", bot))
             {
-                ai->ChangeStrategy("+stealthed", BOT_STATE_COMBAT);
+                ai->ChangeStrategy("+stealthed", BotState::BOT_STATE_COMBAT);
                 bot->InterruptSpell(CURRENT_MELEE_SPELL);
                 return true;
             }

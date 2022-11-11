@@ -12,7 +12,7 @@ bool FlagAction::TellUsage()
     return false;
 }
 
-bool FlagAction::Execute(Event event)
+bool FlagAction::Execute(Event& event)
 {
     string cmd = event.getParam();
     vector<string> ss = split(cmd, ' ');

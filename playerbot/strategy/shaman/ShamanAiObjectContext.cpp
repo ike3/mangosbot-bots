@@ -3,16 +3,18 @@
 #include "ShamanActions.h"
 #include "ShamanAiObjectContext.h"
 #include "ShamanNonCombatStrategy.h"
+#include "ShamanReactionStrategy.h"
 #include "HealShamanStrategy.h"
 #include "MeleeShamanStrategy.h"
 #include "ShamanTriggers.h"
 #include "../NamedObjectContext.h"
+#include "ShamanTotemBarAncestorsStrategy.h"
+#include "ShamanTotemBarElementsStrategy.h"
+#include "ShamanTotemBarSpiritsStrategy.h"
 #include "TotemsShamanStrategy.h"
 #include "CasterShamanStrategy.h"
 
 using namespace ai;
-
-
 
 namespace ai
 {
@@ -26,6 +28,7 @@ namespace ai
             StrategyFactoryInternal()
             {
                 creators["nc"] = &shaman::StrategyFactoryInternal::nc;
+                creators["react"] = &shaman::StrategyFactoryInternal::react;
                 creators["totems"] = &shaman::StrategyFactoryInternal::totems;
                 creators["melee aoe"] = &shaman::StrategyFactoryInternal::melee_aoe;
                 creators["caster aoe"] = &shaman::StrategyFactoryInternal::caster_aoe;
@@ -34,10 +37,33 @@ namespace ai
 
         private:
             static Strategy* nc(PlayerbotAI* ai) { return new ShamanNonCombatStrategy(ai); }
+            static Strategy* react(PlayerbotAI* ai) { return new ShamanReactionStrategy(ai); }
             static Strategy* totems(PlayerbotAI* ai) { return new TotemsShamanStrategy(ai); }
             static Strategy* melee_aoe(PlayerbotAI* ai) { return new MeleeAoeShamanStrategy(ai); }
             static Strategy* caster_aoe(PlayerbotAI* ai) { return new CasterAoeShamanStrategy(ai); }
             static Strategy* cure(PlayerbotAI* ai) { return new ShamanCureStrategy(ai); }
+        };
+
+        class TotemStrategyFactoryInternal : public NamedObjectContext<Strategy>
+        {
+        public:
+            TotemStrategyFactoryInternal() : NamedObjectContext<Strategy>(false, true)
+            {
+                creators["totems"] = &shaman::TotemStrategyFactoryInternal::totems;
+#ifdef MANGOSBOT_TWO
+                creators["totembar elements"] = &shaman::TotemStrategyFactoryInternal::totem_bar_elements;
+                creators["totembar ancestors"] = &shaman::TotemStrategyFactoryInternal::totem_bar_ancestors;
+                creators["totembar spirits"] = &shaman::TotemStrategyFactoryInternal::totem_bar_spirits;
+#endif
+            }
+
+        private:
+            static Strategy* totems(PlayerbotAI* ai) { return new TotemsShamanStrategy(ai); }
+#ifdef MANGOSBOT_TWO            
+            static Strategy* totem_bar_elements(PlayerbotAI* ai) { return new ShamanTotemBarElementsStrategy(ai); }
+            static Strategy* totem_bar_ancestors(PlayerbotAI* ai) { return new ShamanTotemBarAncestorsStrategy(ai); }
+            static Strategy* totem_bar_spirits(PlayerbotAI* ai) { return new ShamanTotemBarSpiritsStrategy(ai); }
+#endif
         };
 
         class BuffStrategyFactoryInternal : public NamedObjectContext<Strategy>
@@ -116,6 +142,12 @@ namespace ai
                 creators["party member cure poison"] = &TriggerFactoryInternal::party_member_cure_poison;
                 creators["cure disease"] = &TriggerFactoryInternal::cure_disease;
                 creators["party member cure disease"] = &TriggerFactoryInternal::party_member_cure_disease;
+#ifdef MANGOSBOT_TWO
+                creators["call of the elements"] = &TriggerFactoryInternal::call_of_the_elements;
+                creators["call of the ancestors"] = &TriggerFactoryInternal::call_of_the_ancestors;
+                creators["call of the spirits"] = &TriggerFactoryInternal::call_of_the_spirits;
+                creators["totemic recall"] = &TriggerFactoryInternal::totemic_recall;
+#endif
             }
 
         private:
@@ -151,10 +183,14 @@ namespace ai
             static Trigger* party_member_cure_poison(PlayerbotAI* ai) { return new PartyMemberCurePoisonTrigger(ai); }
             static Trigger* cure_disease(PlayerbotAI* ai) { return new CureDiseaseTrigger(ai); }
             static Trigger* party_member_cure_disease(PlayerbotAI* ai) { return new PartyMemberCureDiseaseTrigger(ai); }
+            static Trigger* call_of_the_elements(PlayerbotAI* ai) { return new TotemsAreNotSummonedTrigger(ai); }
+            static Trigger* call_of_the_ancestors(PlayerbotAI* ai) { return new TotemsAreNotSummonedTrigger(ai); }
+            static Trigger* call_of_the_spirits(PlayerbotAI* ai) { return new TotemsAreNotSummonedTrigger(ai); }
+            static Trigger* totemic_recall(PlayerbotAI* ai) { return new ReadyToRemoveTotemsTrigger(ai); }
+
         };
     };
 };
-
 
 namespace ai
 {
@@ -179,6 +215,7 @@ namespace ai
                 creators["mana tide totem"] = &AiObjectContextInternal::mana_tide_totem;
                 creators["earthbind totem"] = &AiObjectContextInternal::earthbind_totem;
                 creators["healing stream totem"] = &AiObjectContextInternal::healing_stream_totem;
+                creators["wrath of air totem"] = &AiObjectContextInternal::wrath_of_air_totem;
                 creators["wind shear"] = &AiObjectContextInternal::wind_shear;
                 creators["wind shear on enemy healer"] = &AiObjectContextInternal::wind_shear_on_enemy_healer;
                 creators["rockbiter weapon"] = &AiObjectContextInternal::rockbiter_weapon;
@@ -220,6 +257,10 @@ namespace ai
                 creators["cure disease on party"] = &AiObjectContextInternal::cure_disease_on_party;
                 creators["cure poison"] = &AiObjectContextInternal::cure_poison;
                 creators["cure poison on party"] = &AiObjectContextInternal::cure_poison_on_party;
+                creators["call of the elements"] = &AiObjectContextInternal::call_of_the_elements;
+                creators["call of the ancestors"] = &AiObjectContextInternal::call_of_the_ancestors;
+                creators["call of the spirits"] = &AiObjectContextInternal::call_of_the_spirits;
+                creators["totemic recall"] = &AiObjectContextInternal::totemic_recall;
                 creators["ghost wolf"] = &AiObjectContextInternal::ghost_wolf;
             }
 
@@ -254,6 +295,7 @@ namespace ai
             static Action* mana_tide_totem(PlayerbotAI* ai) { return new CastManaTideTotemAction(ai); }
             static Action* earthbind_totem(PlayerbotAI* ai) { return new CastEarthbindTotemAction(ai); }
             static Action* healing_stream_totem(PlayerbotAI* ai) { return new CastHealingStreamTotemAction(ai); }
+            static Action* wrath_of_air_totem(PlayerbotAI* ai) { return new CastWrathOfAirTotemAction(ai); }
             static Action* wind_shear(PlayerbotAI* ai) { return new CastWindShearAction(ai); }
             static Action* rockbiter_weapon(PlayerbotAI* ai) { return new CastRockbiterWeaponAction(ai); }
             static Action* flametongue_weapon(PlayerbotAI* ai) { return new CastFlametongueWeaponAction(ai); }
@@ -278,17 +320,20 @@ namespace ai
             static Action* cure_poison_on_party(PlayerbotAI* ai) { return new CastCurePoisonOnPartyAction(ai); }
             static Action* cure_disease(PlayerbotAI* ai) { return new CastCureDiseaseAction(ai); }
             static Action* cure_disease_on_party(PlayerbotAI* ai) { return new CastCureDiseaseOnPartyAction(ai); }
+            static Action* call_of_the_elements(PlayerbotAI* ai) { return new CastCallOfTheElements(ai); }
+            static Action* call_of_the_ancestors(PlayerbotAI* ai) { return new CastCallOfTheAncestors(ai); }
+            static Action* call_of_the_spirits(PlayerbotAI* ai) { return new CastCallOfTheSpirits(ai); }
+            static Action* totemic_recall(PlayerbotAI* ai) { return new CastTotemicRecall(ai); }
         };
     };
 };
-
-
 
 ShamanAiObjectContext::ShamanAiObjectContext(PlayerbotAI* ai) : AiObjectContext(ai)
 {
     strategyContexts.Add(new ai::shaman::StrategyFactoryInternal());
     strategyContexts.Add(new ai::shaman::CombatStrategyFactoryInternal());
     strategyContexts.Add(new ai::shaman::BuffStrategyFactoryInternal());
+    strategyContexts.Add(new ai::shaman::TotemStrategyFactoryInternal());
     actionContexts.Add(new ai::shaman::AiObjectContextInternal());
     triggerContexts.Add(new ai::shaman::TriggerFactoryInternal());
 }

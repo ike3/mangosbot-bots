@@ -4,12 +4,13 @@
 #include "../../../ahbot/AhBot.h"
 #include "../values/ItemUsageValue.h"
 #include "../../RandomPlayerbotMgr.h"
+#include "../../RandomItemMgr.h"
 
 
 using namespace ai;
 
 
-bool QueryItemUsageAction::Execute(Event event)
+bool QueryItemUsageAction::Execute(Event& event)
 {
     if (!GetMaster() && !sPlayerbotAIConfig.randomBotSayWithoutMaster)
         return false;
@@ -24,8 +25,8 @@ bool QueryItemUsageAction::Execute(Event event)
         if (guid != bot->GetObjectGuid())
             return false;
 
-        uint32 received, created, isShowChatMessage, notUsed, itemId,
-            suffixFactor, itemRandomPropertyId, count, invCount;
+        uint32 received, created, isShowChatMessage, notUsed, itemId,suffixFactor, itemRandomPropertyId, count;
+        //uint32 invCount;
         uint8 bagSlot;
 
         data >> received;                               // 0=looted, 1=from npc
@@ -44,7 +45,7 @@ bool QueryItemUsageAction::Execute(Event event)
         if (!item)
             return false;
 
-        ai->TellMaster(QueryItem(item, count, GetCount(item)));
+        ai->TellMaster(QueryItem(item, count, GetCount(item)), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
 
         if (sPlayerbotAIConfig.hasLog("bot_events.csv"))
         {
@@ -74,7 +75,7 @@ bool QueryItemUsageAction::Execute(Event event)
                             if (!required)
                                 continue;
 
-                            sTravelMgr.logEvent(ai, "QueryItemUsageAction", questTemplate->GetTitle(), to_string((float)available / (float)required));                          
+                            sPlayerbotAIConfig.logEvent(ai, "QueryItemUsageAction", questTemplate->GetTitle(), to_string((float)available / (float)required));
                         }
                     }
                 }
@@ -91,7 +92,7 @@ bool QueryItemUsageAction::Execute(Event event)
         ItemPrototype const *item = sItemStorage.LookupEntry<ItemPrototype>(*i);
         if (!item) continue;
 
-        ai->TellMaster(QueryItem(item, 0, GetCount(item)));
+        ai->TellMaster(QueryItem(item, 0, GetCount(item)), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
     }
     return true;
 }
@@ -121,6 +122,7 @@ string QueryItemUsageAction::QueryItem(ItemPrototype const *item, uint32 count, 
 #endif
     string quest = QueryQuestItem(item->ItemId);
     string price = QueryItemPrice(item);
+    string power = QueryItemPower(item->ItemId);
 #ifdef CMANGOS
     if (usage.empty())
 #endif
@@ -134,6 +136,8 @@ string QueryItemUsageAction::QueryItem(ItemPrototype const *item, uint32 count, 
         out << ", " << quest;
     if (!price.empty())
         out << ", " << price;
+    if (!power.empty())
+        out << ", " << power;
     return out.str();
 }
 #ifdef CMANGOS
@@ -192,9 +196,11 @@ string QueryItemUsageAction::QueryItemPrice(ItemPrototype const *item)
         for (list<Item*>::iterator i = items.begin(); i != items.end(); ++i)
         {
             Item* sell = *i;
-            sellPrice = sell->GetCount() * auctionbot.GetSellPrice(sell->GetProto()) * sRandomPlayerbotMgr.GetSellMultiplier(bot);
-            msg << "Sell: " << chat->formatMoney(sellPrice);
+            sellPrice += sell->GetCount() * auctionbot.GetSellPrice(sell->GetProto()) * sRandomPlayerbotMgr.GetSellMultiplier(bot);
         }
+
+        if(sellPrice)
+            msg << "Sell: " << chat->formatMoney(sellPrice);
     }
 
     ostringstream out; out << item->ItemId;
@@ -255,3 +261,23 @@ string QueryItemUsageAction::QueryQuestItem(uint32 itemId, const Quest *questTem
     return "";
 }
 
+string QueryItemUsageAction::QueryItemPower(uint32 itemId)
+{
+    uint32 power = sRandomItemMgr.GetLiveStatWeight(bot, itemId);
+
+    ItemPrototype const* proto = ObjectMgr::GetItemPrototype(itemId);
+
+    if (power)
+        if (proto)
+        {
+            ostringstream out;
+            char color[32];
+            sprintf(color, "%x", ItemQualityColors[proto->Quality]);
+            out << "power: |h|c" << color << "|h" << to_string(power) << "|h|cffffffff";
+            return out.str().c_str();
+        }
+        else
+            return "power: " + to_string(power);
+
+    return "";
+}

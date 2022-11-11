@@ -11,10 +11,11 @@ namespace ai
 		AttackAction(PlayerbotAI* ai, string name) : MovementAction(ai, name) {}
 
     public:
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
 
     protected:
         bool Attack(Unit* target);
+        bool IsTargetValid(Unit* target);
     };
 
     class AttackMyTargetAction : public AttackAction
@@ -23,7 +24,7 @@ namespace ai
         AttackMyTargetAction(PlayerbotAI* ai, string name = "attack my target") : AttackAction(ai, name) {}
 
     public:
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
     };
 
     class AttackDuelOpponentAction : public AttackAction
@@ -32,7 +33,7 @@ namespace ai
         AttackDuelOpponentAction(PlayerbotAI* ai, string name = "attack duel opponent") : AttackAction(ai, name) {}
 
     public:
-        virtual bool Execute(Event event);
+        virtual bool Execute(Event& event);
         virtual bool isUseful();
     };
 }

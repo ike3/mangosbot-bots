@@ -12,6 +12,8 @@
 #include "TravelMgr.h"
 
 #include <iostream>
+#include <numeric>
+#include <iomanip>
 
 using namespace std;
 
@@ -24,6 +26,7 @@ PlayerbotAIConfig::PlayerbotAIConfig()
 template <class T>
 void LoadList(string value, T &list)
 {
+    list.clear();
     vector<string> ids = split(value, ',');
     for (vector<string>::iterator i = ids.begin(); i != ids.end(); i++)
     {
@@ -40,6 +43,7 @@ void LoadList(string value, T &list)
 template <class T>
 void LoadListString(string value, T& list)
 {
+    list.clear();
     vector<string> strings = split(value, ',');
     for (vector<string>::iterator i = strings.begin(); i != strings.end(); i++)
     {
@@ -238,7 +242,7 @@ bool PlayerbotAIConfig::Initialize()
     }
 
     botCheats.clear();
-    LoadListString<list<string>>(config.GetStringDefault("AiPlayerbot.BotCheats", "taxi"), botCheats);
+    LoadListString<list<string>>(config.GetStringDefault("AiPlayerbot.BotCheats", "taxi,supply"), botCheats);
 
     botCheatMask = 0;
 
@@ -252,6 +256,8 @@ bool PlayerbotAIConfig::Initialize()
         botCheatMask |= (uint32)BotCheatMask::mana;
     if (std::find(botCheats.begin(), botCheats.end(), "power") != botCheats.end())
         botCheatMask |= (uint32)BotCheatMask::power;
+    if (std::find(botCheats.begin(), botCheats.end(), "supply") != botCheats.end())
+        botCheatMask |= (uint32)BotCheatMask::supply;
 
 
     LoadListString<list<string>>(config.GetStringDefault("AiPlayerbot.AllowedLogFiles", ""), allowedLogFiles);
@@ -301,9 +307,12 @@ bool PlayerbotAIConfig::Initialize()
 	//SPP switches
     enableGreet = config.GetBoolDefault("AiPlayerbot.EnableGreet", false);
 	disableRandomLevels = config.GetBoolDefault("AiPlayerbot.DisableRandomLevels", false);
+    instantRandomize = config.GetBoolDefault("AiPlayerbot.InstantRandomize", false);
     randomBotRandomPassword = config.GetBoolDefault("AiPlayerbot.RandomBotRandomPassword", true);
     playerbotsXPrate = config.GetIntDefault("AiPlayerbot.KillXPRate", 1);
-    botActiveAlone = config.GetIntDefault("AiPlayerbot.botActiveAlone", 10); //hidden config
+    botActiveAlone = config.GetIntDefault("AiPlayerbot.botActiveAlone", 10);
+    diffWithPlayer = config.GetIntDefault("AiPlayerbot.DiffWithPlayer", 100);
+    diffEmpty = config.GetIntDefault("AiPlayerbot.DiffEmpty", 200);
     RandombotsWalkingRPG = config.GetBoolDefault("AiPlayerbot.RandombotsWalkingRPG", false);
     RandombotsWalkingRPGInDoors = config.GetBoolDefault("AiPlayerbot.RandombotsWalkingRPG.InDoors", false);
     minEnchantingBotLevel = config.GetIntDefault("AiPlayerbot.minEnchantingBotLevel", 60);
@@ -328,9 +337,25 @@ bool PlayerbotAIConfig::Initialize()
     freeFood = config.GetBoolDefault("AiPlayerbot.FreeFood", true);
 
     selfBotLevel = config.GetIntDefault("AiPlayerbot.SelfBotLevel", 1);
+    LoadListString<list<string>>(config.GetStringDefault("AiPlayerbot.ToggleAlwaysOnlineAccounts", ""), toggleAlwaysOnlineAccounts);
+    LoadListString<list<string>>(config.GetStringDefault("AiPlayerbot.ToggleAlwaysOnlineChars", ""), toggleAlwaysOnlineChars);
+
+    for (string& nm : toggleAlwaysOnlineAccounts)
+        transform(nm.begin(), nm.end(), nm.begin(), ::toupper);
+
+    for (string& nm : toggleAlwaysOnlineChars)
+    {
+        transform(nm.begin(), nm.end(), nm.begin(), ::tolower);
+        nm[0] = toupper(nm[0]);
+    }
+
+    loadNonRandomBotAccounts();
 
     targetPosRecalcDistance = config.GetFloatDefault("AiPlayerbot.TargetPosRecalcDistance", 0.1f),
     BarGoLink::SetOutputState(config.GetBoolDefault("AiPlayerbot.ShowProgressBars", false));
+
+    sLog.outString("Loading area levels.");
+    sTravelMgr.loadAreaLevels();
 
     RandomPlayerbotFactory::CreateRandomBots();
     PlayerbotFactory::Init();
@@ -360,6 +385,24 @@ bool PlayerbotAIConfig::Initialize()
 bool PlayerbotAIConfig::IsInRandomAccountList(uint32 id)
 {
     return find(randomBotAccounts.begin(), randomBotAccounts.end(), id) != randomBotAccounts.end();
+}
+
+bool PlayerbotAIConfig::IsInNonRandomAccountList(uint32 id)
+{
+    for (auto bot : nonRandomBots)
+        if (bot.first == id)
+            return true;
+
+    return false;
+}
+
+bool PlayerbotAIConfig::IsNonRandomBot(Player* player)
+{
+    for (auto bot : nonRandomBots)
+        if (bot.second == player->GetGUIDLow())
+            return true;
+
+    return false;
 }
 
 bool PlayerbotAIConfig::IsInRandomQuestItemList(uint32 id)
@@ -529,6 +572,52 @@ void PlayerbotAIConfig::loadWorldBuf(Config* config, uint32 factionId1, uint32 c
     }
 }
 
+void PlayerbotAIConfig::loadNonRandomBotAccounts()
+{
+    bool allCharsOnline = (selfBotLevel > 3);
+
+    nonRandomBots.clear();
+
+    QueryResult* results = LoginDatabase.PQuery("SELECT username, id FROM account where username not like '%s%%'", randomBotAccountPrefix);
+    if (results)
+    {
+        do
+        {
+            bool accountAlwaysOnline = allCharsOnline;
+
+            Field* fields = results->Fetch();
+            string accountName = fields[0].GetString();
+            uint32 accountId = fields[1].GetUInt32();
+
+            if (std::find(toggleAlwaysOnlineAccounts.begin(), toggleAlwaysOnlineAccounts.end(), accountName) != toggleAlwaysOnlineAccounts.end())
+                accountAlwaysOnline = !accountAlwaysOnline;                       
+
+            QueryResult* result = CharacterDatabase.PQuery("SELECT name, guid FROM characters WHERE account = '%u'", accountId);
+            if (!result)
+                continue;
+
+            do
+            {
+                bool charAlwaysOnline = allCharsOnline;
+
+                Field* fields = result->Fetch();
+                string charName = fields[0].GetString();
+                uint32 guid = fields[1].GetUInt32();
+
+                if (std::find(toggleAlwaysOnlineChars.begin(), toggleAlwaysOnlineChars.end(), charName) != toggleAlwaysOnlineChars.end())
+                    charAlwaysOnline = !charAlwaysOnline;
+
+                if(charAlwaysOnline || accountAlwaysOnline)
+                    nonRandomBots.push_back(make_pair(accountId, guid));
+
+            } while (result->NextRow());
+            delete result;
+        
+
+        } while (results->NextRow());
+        delete results;
+    }
+}
 
 std::string PlayerbotAIConfig::GetTimestampStr()
 {
@@ -602,3 +691,44 @@ void PlayerbotAIConfig::log(string fileName, const char* str, ...)
 
     fflush(stdout);
 }
+
+void PlayerbotAIConfig::logEvent(PlayerbotAI* ai, string eventName, string info1, string info2)
+{
+    if (hasLog("bot_events.csv"))
+    {
+        Player* bot = ai->GetBot();
+
+        ostringstream out;
+        out << sPlayerbotAIConfig.GetTimestampStr() << "+00,";
+        out << bot->GetName() << ",";
+        out << eventName << ",";
+        out << std::fixed << std::setprecision(2);
+        WorldPosition(bot).printWKT(out);
+
+        out << to_string(bot->getRace()) << ",";
+        out << to_string(bot->getClass()) << ",";
+        float subLevel = ((float)bot->GetLevel() + ((float)bot->GetUInt32Value(PLAYER_XP) / (float)bot->GetUInt32Value(PLAYER_NEXT_LEVEL_XP)));
+
+        out << subLevel << ",";
+
+        out << "\"" << info1 << "\",";
+        out << "\"" << info2 << "\"";
+
+        log("bot_events.csv", out.str().c_str());
+    }
+};
+
+void PlayerbotAIConfig::logEvent(PlayerbotAI* ai, string eventName, ObjectGuid guid, string info2)
+{
+    string info1 = "";
+
+    Unit* victim;
+    if (guid)
+    {
+        victim = ai->GetUnit(guid);
+        if (victim)
+            info1 = victim->GetName();
+    }
+
+    logEvent(ai, eventName, info1, info2);
+};

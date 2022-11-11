@@ -5,7 +5,7 @@
 
 using namespace ai;
 
-bool DropQuestAction::Execute(Event event)
+bool DropQuestAction::Execute(Event& event)
 {
     string link = event.getParam();
     if (!GetMaster())
@@ -43,7 +43,7 @@ bool DropQuestAction::Execute(Event event)
     return true;
 }
 
-bool CleanQuestLogAction::Execute(Event event)
+bool CleanQuestLogAction::Execute(Event& event)
 {
     string link = event.getParam();
     if (ai->HasActivePlayerMaster())
@@ -97,10 +97,7 @@ void CleanQuestLogAction::DropQuestType(uint8 &numQuest, uint8 wantNum, bool isG
 
     if (wantNum < 100)
     {
-        std::random_device rd;
-        std::mt19937 g(rd());
-
-        std::shuffle(slots.begin(), slots.end(), g);
+        std::shuffle(slots.begin(), slots.end(), *GetRandomGenerator());
     }
 
     for (uint8 slot : slots)
@@ -154,7 +151,7 @@ void CleanQuestLogAction::DropQuestType(uint8 &numQuest, uint8 wantNum, bool isG
 
         numQuest--;
 
-        ai->TellMaster(BOT_TEXT("quest_remove") + chat->formatQuest(quest));
+        ai->TellMaster(BOT_TEXT("quest_remove") + chat->formatQuest(quest), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
     }
 }
 

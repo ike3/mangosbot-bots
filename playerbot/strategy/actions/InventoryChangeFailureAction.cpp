@@ -7,7 +7,7 @@ using namespace ai;
 
 map<InventoryResult, string> InventoryChangeFailureAction::messages;
 
-bool InventoryChangeFailureAction::Execute(Event event)
+bool InventoryChangeFailureAction::Execute(Event& event)
 {
     if (!ai->GetMaster())
         return false;

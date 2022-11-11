@@ -5,7 +5,7 @@
 
 using namespace ai;
 
-bool TellReputationAction::Execute(Event event)
+bool TellReputationAction::Execute(Event& event)
 {
     Player* master = GetMaster();
     if (!master)

@@ -202,8 +202,8 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/src/game/Weather
     ${CMAKE_SOURCE_DIR}/src/game/World
     ${CMAKE_SOURCE_DIR}/src/game/WorldHandlers
-    ${CMAKE_SOURCE_DIR}/src/game/movement
-    ${CMAKE_SOURCE_DIR}/src/game/vmap
+    ${CMAKE_SOURCE_DIR}/src/game/Movement
+    ${CMAKE_SOURCE_DIR}/src/game/Vmap
     ${CMAKE_SOURCE_DIR}/src/shared
     ${CMAKE_SOURCE_DIR}/src/shared/Auth
     ${CMAKE_SOURCE_DIR}/src/shared/Config

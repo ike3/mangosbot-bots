@@ -6,7 +6,7 @@
 
 using namespace ai;
 
-bool SaveManaAction::Execute(Event event)
+bool SaveManaAction::Execute(Event& event)
 {
     string text = event.getParam();
     double value = AI_VALUE(double, "mana save level");

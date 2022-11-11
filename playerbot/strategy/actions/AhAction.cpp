@@ -5,13 +5,14 @@
 #include "../values/ItemCountValue.h"
 #include "../../RandomItemMgr.h"
 #include "../values/BudgetValues.h"
+#include <AuctionHouseBot/AuctionHouseBot.h>
 
 using namespace std;
 using namespace ai;
 
 
 
-bool AhAction::Execute(Event event)
+bool AhAction::Execute(Event& event)
 {
     string text = event.getParam();
 
@@ -41,8 +42,7 @@ bool AhAction::Execute(string text, Unit* auctioneer)
     uint32 time;
 #ifdef MANGOSBOT_ZERO
     time = 8 * HOUR / MINUTE;
-#endif
-#ifdef MANGOSBOT_ONE
+#else
     time = 12 * HOUR / MINUTE;
 #endif
 
@@ -67,7 +67,9 @@ bool AhAction::Execute(string text, Unit* auctioneer)
 
             ItemPrototype const* proto = item->GetProto();
 
-            uint32 price = item->GetCount() * auctionbot.GetSellPrice(proto);
+            uint32 price = GetSellPrice(proto);
+
+            price *= item->GetCount();
 
             postedItem |= PostItem(item, price, auctioneer, time);
 
@@ -96,10 +98,18 @@ bool AhAction::Execute(string text, Unit* auctioneer)
 bool AhAction::PostItem(Item* item, uint32 price, Unit* auctioneer, uint32 time)
 {
     ObjectGuid itemGuid = item->GetObjectGuid();
+    ItemPrototype const* proto = item->GetProto();
+    uint32 cnt = item->GetCount();
 
     WorldPacket packet;
     packet << auctioneer->GetObjectGuid();
+#ifdef MANGOSBOT_TWO
+    packet << (uint32)1;
+#endif
     packet << itemGuid;
+#ifdef MANGOSBOT_TWO
+    packet << cnt;
+#endif
     packet << price * 95 / 100;
     packet << price;
     packet << time;
@@ -110,9 +120,22 @@ bool AhAction::PostItem(Item* item, uint32 price, Unit* auctioneer, uint32 time)
         return false;
 
     ostringstream out;
-    out << "Posting " << ChatHelper::formatItem(item->GetProto(), item->GetCount()) << " for " << ChatHelper::formatMoney(price) << " to the AH";
-    ai->TellMasterNoFacing(out.str());
+    out << "Posting " << ChatHelper::formatItem(proto, cnt) << " for " << ChatHelper::formatMoney(price) << " to the AH";
+    ai->TellMasterNoFacing(out.str(), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
     return true;
+}
+
+uint32 AhAction::GetSellPrice(ItemPrototype const* proto)
+{
+    uint32 price = sAuctionHouseBot.GetItemData(proto->ItemId).Value;
+
+    if (!price)
+        price = auctionbot.GetSellPrice(proto);
+
+    if (!price)
+        price = proto->SellPrice * 1.5;
+
+    return price;
 }
 
 
@@ -130,12 +153,22 @@ bool AhBidAction::Execute(string text, Unit* auctioneer)
 
     AuctionHouseObject::AuctionEntryMap const& map = auctionHouse->GetAuctions();
 
+    if (map.empty())
+        return false;
+
     AuctionEntry* auction = nullptr;
 
     vector<pair<AuctionEntry*, uint32>> auctionPowers;
 
     if (text == "vendor")
     {
+        auto data = WorldPacket();
+        uint32 count, totalcount = 0;
+        auctionHouse->BuildListBidderItems(data, bot, 9999, count, totalcount);
+
+        if (totalcount > 10) //Already have 10 bids, stop.
+            return false;
+
         unordered_map <ItemUsage, int32> freeMoney;
 
         freeMoney[ITEM_USAGE_EQUIP] = freeMoney[ITEM_USAGE_REPLACE] = freeMoney[ITEM_USAGE_BAD_EQUIP] = AI_VALUE2(uint32, "free money for", (uint32)NeedMoneyFor::gear);
@@ -148,7 +181,7 @@ bool AhBidAction::Execute(string text, Unit* auctioneer)
 
         for (uint32 i = 0; i < checkNumAuctions; i++)
         {
-            auto curAuction = std::next(std::begin(map), urand(0, map.size()));
+            auto curAuction = std::next(std::begin(map), urand(0, map.size()-1));
 
             auction = curAuction->second;
 
@@ -175,7 +208,7 @@ bool AhBidAction::Execute(string text, Unit* auctioneer)
                 power = sRandomItemMgr.GetLiveStatWeight(bot, auction->itemTemplate);
                 break;
             case ITEM_USAGE_AH:
-                if (cost >= auctionbot.GetSellPrice(sObjectMgr.GetItemPrototype(auction->itemTemplate)))
+                if (cost >= (int32)GetSellPrice(sObjectMgr.GetItemPrototype(auction->itemTemplate)))
                     continue;
                 power = 1000;
                 break;
@@ -213,9 +246,12 @@ bool AhBidAction::Execute(string text, Unit* auctioneer)
                 else
                 continue;
 
-            bidItems |= BidItem(auction, price, auctioneer);
+            bidItems = BidItem(auction, price, auctioneer);
+                
+            if (bidItems)
+                totalcount++;
 
-            if (!urand(0, 5))
+            if (!urand(0, 5) || totalcount > 10)
                 break;
 
             freeMoney[ITEM_USAGE_EQUIP] = freeMoney[ITEM_USAGE_REPLACE] = freeMoney[ITEM_USAGE_BAD_EQUIP] = AI_VALUE2(uint32, "free money for", (uint32)NeedMoneyFor::gear);
@@ -292,7 +328,7 @@ bool AhBidAction::BidItem(AuctionEntry* auction, uint32 price, Unit* auctioneer)
         ItemPrototype const* proto = sObjectMgr.GetItemPrototype(auction->itemTemplate);
         ostringstream out;
         out << "Bidding " << ChatHelper::formatMoney(price) << " on " << ChatHelper::formatItem(proto, auction->itemCount) << " on the AH";
-        ai->TellMasterNoFacing(out.str());
+        ai->TellMasterNoFacing(out.str(), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
         return true;
     }
     return false;

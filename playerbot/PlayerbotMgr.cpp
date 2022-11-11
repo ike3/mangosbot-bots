@@ -251,13 +251,23 @@ Player* PlayerbotHolder::GetPlayerBot(uint32 playerGuid) const
 
 void PlayerbotHolder::OnBotLogin(Player * const bot)
 {
-	PlayerbotAI* ai = new PlayerbotAI(bot);
-	bot->SetPlayerbotAI(ai);
+    PlayerbotAI* ai = bot->GetPlayerbotAI();
+    if (!ai)
+    {
+        ai = new PlayerbotAI(bot);
+        bot->SetPlayerbotAI(ai);
+    }
 	OnBotLoginInternal(bot);
 
     playerBots[bot->GetGUIDLow()] = bot;
 
     Player* master = ai->GetMaster();
+
+    if (!master && sPlayerbotAIConfig.IsNonRandomBot(bot))
+    {
+        ai->SetMaster(bot);
+        master = bot;
+    }
 
     if (master)
     {
@@ -324,7 +334,7 @@ void PlayerbotHolder::OnBotLogin(Player * const bot)
     // check activity
     ai->AllowActivity(ALL_ACTIVITY, true);
     // set delay on login
-    ai->SetNextCheckDelay(urand(2000, 4000));
+    ai->SetActionDuration(nullptr, urand(2000, 4000));
 
     ai->TellMaster(BOT_TEXT("hello"));
 
@@ -402,6 +412,11 @@ void PlayerbotHolder::OnBotLogin(Player * const bot)
             if (new_channel)
                 new_channel->Join(bot, "");
         }
+    }
+
+    if (sPlayerbotAIConfig.instantRandomize && !sPlayerbotAIConfig.disableRandomLevels && sRandomPlayerbotMgr.IsRandomBot(bot) && !bot->GetTotalPlayedTime() && !sPlayerbotAIConfig.IsNonRandomBot(bot))
+    {
+        sRandomPlayerbotMgr.InstaRandomize(bot);
     }
 }
 
@@ -609,6 +624,8 @@ list<string> PlayerbotHolder::HandlePlayerbotCommand(char const* args, Player* m
         return messages;
     }
 
+    string command = args;
+
     char *cmd = strtok ((char*)args, " ");
     char *charname = strtok (NULL, " ");
     if (!cmd)
@@ -658,6 +675,38 @@ list<string> PlayerbotHolder::HandlePlayerbotCommand(char const* args, Player* m
         }
        return messages;
      }
+
+    if (command.find("debug ") != std::string::npos)
+    {
+        bool hasBot = false;
+        PlayerbotAI* ai = master->GetPlayerbotAI();
+        if (ai)
+            hasBot = true;
+        else
+        {
+            ai = new PlayerbotAI(master);
+            master->SetPlayerbotAI(ai);
+            ai->SetMaster(master);
+            ai->ResetStrategies();
+        }
+
+        command = command.substr(6);
+
+        if(ai->DoSpecificAction("cdebug", Event(".bot",command), true))
+            messages.push_back("debug failed");
+
+        if (!hasBot)
+        {
+            if (master->GetPlayerbotAI()) {
+                {
+                    delete master->GetPlayerbotAI();
+                }
+                master->SetPlayerbotAI(0);
+            }
+        }
+
+        return messages;
+    }
 
     if (!charname)
     {
@@ -873,7 +922,7 @@ PlayerbotMgr::~PlayerbotMgr()
 
 void PlayerbotMgr::UpdateAIInternal(uint32 elapsed, bool minimal)
 {
-    SetNextCheckDelay(sPlayerbotAIConfig.reactDelay);
+    SetAIInternalUpdateDelay(sPlayerbotAIConfig.reactDelay);
     CheckTellErrors(elapsed);
 }
 
@@ -953,6 +1002,9 @@ void PlayerbotMgr::HandleMasterOutgoingPacket(const WorldPacket& packet)
         if (!bot)
             continue;
 
+        if (!bot->GetPlayerbotAI())
+            continue;
+
         bot->GetPlayerbotAI()->HandleMasterOutgoingPacket(packet);
     }
 
@@ -995,7 +1047,7 @@ void PlayerbotMgr::OnPlayerLogin(Player* player)
     sPlayerbotTextMgr.AddLocalePriority(player->GetSession()->GetSessionDbLocaleIndex());
     sLog.outBasic("Player %s logged in, localeDbc %i, localeDb %i", player->GetName(), (uint32)(player->GetSession()->GetSessionDbcLocale()), player->GetSession()->GetSessionDbLocaleIndex());
 
-    if(sPlayerbotAIConfig.selfBotLevel > 2)
+    if(sPlayerbotAIConfig.selfBotLevel > 2 || sPlayerbotAIConfig.IsNonRandomBot(player))
         HandlePlayerbotCommand("self", player);
 
     if (!sPlayerbotAIConfig.botAutologin)

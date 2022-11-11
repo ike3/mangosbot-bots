@@ -4,7 +4,7 @@
 #include "MovementActions.h"
 #include "BattleGround.h"
 #include "BattleGroundMgr.h"
-#include "BattlegroundTactics.h"
+#include "BattleGroundTactics.h"
 #ifdef MANGOSBOT_TWO
 #include "Entities/Vehicle.h"
 #endif
@@ -2632,7 +2632,7 @@ bool BGTactics::eotsJump()
 // actual bg tactics below
 //
 
-bool BGTactics::Execute(Event event)
+bool BGTactics::Execute(Event& event)
 {
     BattleGround *bg = bot->GetBattleGround();
     if (!bg)
@@ -2654,7 +2654,7 @@ bool BGTactics::Execute(Event event)
 
     // disable buffin during BG to save mana
     if (bg->GetStatus() == STATUS_IN_PROGRESS)
-        ai->ChangeStrategy("-buff", BOT_STATE_NON_COMBAT);
+        ai->ChangeStrategy("-buff", BotState::BOT_STATE_NON_COMBAT);
 
     std::vector<BattleBotPath*> const* vPaths;
     std::vector<uint32> const* vFlagIds;
@@ -2956,7 +2956,7 @@ bool BGTactics::selectObjective(bool reset)
             }
 
             uint32 role = context->GetValue<uint32>("bg role")->Get();
-            bool supporter = role < ((!endBoss && strifeTime) ? 4 : 2); // first bunker strike team
+            bool supporter = role < (uint32)((!endBoss && strifeTime) ? 4 : 2); // first bunker strike team
 
             // Only go to Snowfall Graveyard if already close to it.
             if (!BgObjective && supporter && (bg->IsActiveEvent(BG_AV_NODES_SNOWFALL_GRAVE, BG_AV_NODE_STATUS_ALLY_CONTESTED) || bg->IsActiveEvent(BG_AV_NODES_SNOWFALL_GRAVE, BG_AV_NODE_STATUS_ALLY_OCCUPIED) || bg->IsActiveEvent(BG_AV_NODES_SNOWFALL_GRAVE, BG_AV_NODE_STATUS_NEUTRAL_OCCUPIED)))
@@ -3098,7 +3098,7 @@ bool BGTactics::selectObjective(bool reset)
             }
 
             uint32 role = context->GetValue<uint32>("bg role")->Get();
-            bool supporter = role < ((!endBoss && strifeTime) ? 4 : 2);
+            bool supporter = role < (uint32)((!endBoss && strifeTime) ? 4 : 2);
 
             // Only go to Snowfall Graveyard if already close to it.
             if (!BgObjective && supporter && (bg->IsActiveEvent(BG_AV_NODES_SNOWFALL_GRAVE, BG_AV_NODE_STATUS_HORDE_CONTESTED) || bg->IsActiveEvent(BG_AV_NODES_SNOWFALL_GRAVE, BG_AV_NODE_STATUS_HORDE_OCCUPIED) || bg->IsActiveEvent(BG_AV_NODES_SNOWFALL_GRAVE, BG_AV_NODE_STATUS_NEUTRAL_OCCUPIED)))
@@ -4682,7 +4682,7 @@ bool BGTactics::atFlag(std::vector<BattleBotPath*> const& vPaths, std::vector<ui
 
             //ostringstream out; out << "Flag is nearby, using " << go->GetName();
             //bot->Say(out.str(), LANG_UNIVERSAL);
-            //ai->SetNextCheckDelay(10000);
+            //SetDuration(10000);
 
             // cast banner spell
             ai->StopMoving();
@@ -5055,14 +5055,14 @@ bool BGTactics::IsLockedInsideKeep()
     return false;
 }
 
-bool ArenaTactics::Execute(Event event)
+bool ArenaTactics::Execute(Event& event)
 {
 #ifndef MANGOSBOT_ZERO
     if (!bot->InBattleGround())
     {
         bool IsRandomBot = sRandomPlayerbotMgr.IsRandomBot(bot->GetGUIDLow());
-        ai->ChangeStrategy("-arena", BOT_STATE_COMBAT);
-        ai->ChangeStrategy("-arena", BOT_STATE_NON_COMBAT);
+        ai->ChangeStrategy("-arena", BotState::BOT_STATE_COMBAT);
+        ai->ChangeStrategy("-arena", BotState::BOT_STATE_NON_COMBAT);
         ai->ResetStrategies(!IsRandomBot);
         return false;
     }
@@ -5083,11 +5083,11 @@ bool ArenaTactics::Execute(Event event)
     if (bg->GetStartDelayTime() > 0)
         return false;
 
-    if (ai->HasStrategy("collision", BOT_STATE_NON_COMBAT))
-        ai->ChangeStrategy("-collision", BOT_STATE_NON_COMBAT);
+    if (ai->HasStrategy("collision", BotState::BOT_STATE_NON_COMBAT))
+        ai->ChangeStrategy("-collision", BotState::BOT_STATE_NON_COMBAT);
 
-    if (ai->HasStrategy("buff", BOT_STATE_NON_COMBAT))
-        ai->ChangeStrategy("-buff", BOT_STATE_NON_COMBAT);
+    if (ai->HasStrategy("buff", BotState::BOT_STATE_NON_COMBAT))
+        ai->ChangeStrategy("-buff", BotState::BOT_STATE_NON_COMBAT);
 #ifdef MANGOS
     if (sBattleGroundMgr.IsArenaType(bg->GetTypeID()))
 #endif

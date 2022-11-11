@@ -84,7 +84,7 @@ void LootObject::Refresh(Player* bot, ObjectGuid guid)
 #ifdef CMANGOS
         && !go->IsInUse() 
 #endif
-        && go->GetGoState() == GO_STATE_READY)
+        && (go->GetGoState() == GO_STATE_READY || go->GetGoState() == GO_STATE_ACTIVE))
     {
         bool isQuestItemOnly = false;
 

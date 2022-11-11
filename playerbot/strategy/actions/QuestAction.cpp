@@ -6,7 +6,7 @@
 
 using namespace ai;
 
-bool QuestAction::Execute(Event event)
+bool QuestAction::Execute(Event& event)
 {
     ObjectGuid guid = event.getObject();
 
@@ -210,20 +210,20 @@ bool QuestAction::AcceptQuest(Quest const* quest, uint64 questGiver)
         if (bot->GetQuestStatus(questId) != QUEST_STATUS_NONE && bot->GetQuestStatus(questId) != QUEST_STATUS_AVAILABLE)
         {
 
-            sTravelMgr.logEvent(ai, "AcceptQuestAction", quest->GetTitle(), to_string(quest->GetQuestId()));          
+            sPlayerbotAIConfig.logEvent(ai, "AcceptQuestAction", quest->GetTitle(), to_string(quest->GetQuestId()));
 
             out << "Accepted " << chat->formatQuest(quest);
-            ai->TellMaster(out);
+            ai->TellMaster(out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
             return true;
         }
     }
 
     out << " " << chat->formatQuest(quest);
-    ai->TellMaster(out);
+    ai->TellMaster(out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
     return false;
 }
 
-bool QuestObjectiveCompletedAction::Execute(Event event)
+bool QuestObjectiveCompletedAction::Execute(Event& event)
 {
     WorldPacket p(event.getPacket());
     p.rpos(0);
@@ -237,18 +237,18 @@ bool QuestObjectiveCompletedAction::Execute(Event event)
         entry &= 0x7FFFFFFF;
         GameObjectInfo const* info = sObjectMgr.GetGameObjectInfo(entry);
         if (info)
-            ai->TellMaster(chat->formatQuestObjective(info->name, available, required));
+            ai->TellMaster(chat->formatQuestObjective(info->name, available, required), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
     }
     else
     {
         CreatureInfo const* info = sObjectMgr.GetCreatureTemplate(entry);
         if (info)
-            ai->TellMaster(chat->formatQuestObjective(info->Name, available, required));
+            ai->TellMaster(chat->formatQuestObjective(info->Name, available, required), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
     }
 
     Quest const* qInfo = sObjectMgr.GetQuestTemplate(questId);
 
-    sTravelMgr.logEvent(ai, "QuestObjectiveCompletedAction", qInfo->GetTitle(), to_string((float)available / (float)required));   
+    sPlayerbotAIConfig.logEvent(ai, "QuestObjectiveCompletedAction", qInfo->GetTitle(), to_string((float)available / (float)required));
 
     return false;
 }

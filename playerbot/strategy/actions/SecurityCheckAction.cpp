@@ -11,7 +11,7 @@ bool SecurityCheckAction::isUseful()
     return sRandomPlayerbotMgr.IsRandomBot(bot) && ai->GetMaster() && ai->GetMaster()->GetSession()->GetSecurity() < SEC_GAMEMASTER && !ai->GetMaster()->GetPlayerbotAI();
 }
 
-bool SecurityCheckAction::Execute(Event event)
+bool SecurityCheckAction::Execute(Event& event)
 {
     Group* group = bot->GetGroup();
     if (group)
@@ -23,8 +23,8 @@ bool SecurityCheckAction::Execute(Event event)
             if ((ai->GetGroupMaster()->GetSession()->GetSecurity() == SEC_PLAYER) && (!bot->GetGuildId() || bot->GetGuildId() != ai->GetGroupMaster()->GetGuildId()))
             {
                 ai->TellError("I will play with this loot type only if I'm in your guild :/");
-                ai->ChangeStrategy("+passive,+stay", BOT_STATE_NON_COMBAT);
-                ai->ChangeStrategy("+passive,+stay", BOT_STATE_COMBAT);
+                ai->ChangeStrategy("+passive,+stay", BotState::BOT_STATE_NON_COMBAT);
+                ai->ChangeStrategy("+passive,+stay", BotState::BOT_STATE_COMBAT);
             }
             return true;
         }

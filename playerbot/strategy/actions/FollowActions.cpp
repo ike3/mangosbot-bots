@@ -1,14 +1,18 @@
+#pragma once
+
 #include "botpch.h"
 #include "../../playerbot.h"
 #include "FollowActions.h"
 #include "../../PlayerbotAIConfig.h"
 #include "../../ServerFacade.h"
 #include "../values/Formations.h"
+#include "ChooseRpgTargetAction.h"
+#include "../../TravelMgr.h"
 
 using namespace ai;
 
 
-bool FollowAction::Execute(Event event)
+bool FollowAction::Execute(Event& event)
 {
     Formation* formation = AI_VALUE(Formation*, "formation");
     string target = formation->GetTargetName();
@@ -26,7 +30,7 @@ bool FollowAction::Execute(Event event)
         moved = MoveTo(loc.mapid, loc.coord_x, loc.coord_y, loc.coord_z);
     }
 
-    //if (moved) ai->SetNextCheckDelay(sPlayerbotAIConfig.reactDelay);
+    //if (moved) SetDuration(sPlayerbotAIConfig.reactDelay);
     return moved;
 }
 
@@ -44,9 +48,7 @@ bool FollowAction::isUseful()
 
     if (fTarget && fTarget->IsPlayer())
     {
-        GuidPosition guidP(fTarget);
-        Player* fPlayer = guidP.GetPlayer();
-        if (fPlayer && fPlayer->GetPlayerbotAI() && AI_VALUE(GuidPosition, "rpg target") && bot->IsMoving())
+        if (AI_VALUE(GuidPosition, "rpg target") && ChooseRpgTargetAction::isFollowValid(bot, AI_VALUE(GuidPosition, "rpg target")))
             return false;
     }
 
@@ -87,13 +89,13 @@ bool FollowAction::CanDeadFollow(Unit* target)
     return true;
 }
 
-bool FleeToMasterAction::Execute(Event event)
+bool FleeToMasterAction::Execute(Event& event)
 {
     Unit* fTarget = AI_VALUE(Unit*, "master target");
     bool canFollow = Follow(fTarget);
     if (!canFollow)
     {
-        //ai->SetNextCheckDelay(5000);
+        //SetDuration(5000);
         return false;
     }
 
@@ -101,21 +103,27 @@ bool FleeToMasterAction::Execute(Event event)
     WorldPosition bosPos(bot);
     float distance = bosPos.fDist(targetPos);
 
-    if (distance < sPlayerbotAIConfig.reactDistance * 3)
+    if (distance > sPlayerbotAIConfig.reactDistance && bot->IsInCombat())
     {
         if (!urand(0, 5))
-            ai->TellMaster(BOT_TEXT("wait_travel_close"));
+            ai->TellMaster("I'm heading to your location but I'm in combat", PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+            //ai->TellMaster(BOT_TEXT("wait_travel_combat"), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+    }
+    else if (distance < sPlayerbotAIConfig.reactDistance * 3)
+    {
+        if (!urand(0, 5))
+            ai->TellMaster(BOT_TEXT("wait_travel_close"), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
     }
     else if (distance < 1000)
     {
         if (!urand(0, 20))
-            ai->TellMaster(BOT_TEXT("wait_travel_medium"));
+            ai->TellMaster(BOT_TEXT("wait_travel_medium"), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
     }
     else
         if (!urand(0, 30))
-            ai->TellMaster(BOT_TEXT("wait_travel_medium"));
+            ai->TellMaster(BOT_TEXT("wait_travel_medium"), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
            
-    ai->SetNextCheckDelay(3000);
+    SetDuration(3000U);
     return true;
 }
 
@@ -132,13 +140,19 @@ bool FleeToMasterAction::isUseful()
     if (target && ai->GetGroupMaster()->HasTarget(target->GetObjectGuid()))
         return false;
 
-    if (!ai->HasStrategy("follow", BOT_STATE_NON_COMBAT))
+    if (!ai->HasStrategy("follow", BotState::BOT_STATE_NON_COMBAT))
         return false;
 
     Unit* fTarget = AI_VALUE(Unit*, "master target");
     
     if (!CanDeadFollow(fTarget))
         return false;
+
+    if (fTarget && fTarget->IsPlayer())
+    {
+        if (AI_VALUE(GuidPosition, "rpg target") && ChooseRpgTargetAction::isFollowValid(bot, AI_VALUE(GuidPosition, "rpg target")))
+            return false;
+    }
 
     return true;
 }

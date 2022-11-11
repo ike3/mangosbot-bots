@@ -1,5 +1,10 @@
 #pragma once
+
+#include "Player.h"
 //#include "playerbot.h"
+
+struct TalentEntry;
+struct TalentTabEntry;
 
 class TalentSpec {
     public:
@@ -45,7 +50,7 @@ class TalentSpec {
         int highestTree();
         string formatSpec(Player* bot);
     protected:
-        int LeveltoPoints(uint32 level) const;
+        uint32 LeveltoPoints(uint32 level) const;
         uint32 PointstoLevel(int points) const;
         void GetTalents(uint32 classMask);
         void SortTalents(std::vector<TalentListEntry>& talents, int sortBy);

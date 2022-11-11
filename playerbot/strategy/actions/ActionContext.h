@@ -33,7 +33,7 @@
 #include "RpgAction.h"
 #include "TravelAction.h"
 #include "RtiAction.h"
-#include "BattlegroundTactics.h"
+#include "BattleGroundTactics.h"
 #include "CheckMountStateAction.h"
 #include "ChangeTalentsAction.h"
 #include "AutoLearnSpellAction.h"
@@ -54,7 +54,7 @@
 #include "RpgSubActions.h"
 #include "VehicleActions.h"
 #include "UseTrinketAction.h"
-
+#include "BotStateActions.h"
 
 namespace ai
 {
@@ -226,6 +226,11 @@ namespace ai
             creators["rpg trade useful"] = &ActionContext::rpg_trade_useful;
             creators["rpg duel"] = &ActionContext::rpg_duel;
             creators["rpg mount anim"] = &ActionContext::rpg_mount_anim;
+
+            // Bot States
+            creators["set combat state"] = &ActionContext::set_combat_state;
+            creators["set non combat state"] = &ActionContext::set_non_combat_state;
+            creators["set dead state"] = &ActionContext::set_dead_state;
 
             //racials
             creators["war stomp"] = &ActionContext::war_stomp;
@@ -431,5 +436,10 @@ namespace ai
         static Action* rpg_trade_useful(PlayerbotAI* ai) { return new RpgTradeUsefulAction(ai); }
         static Action* rpg_duel(PlayerbotAI* ai) { return new RpgDuelAction(ai); }
         static Action* rpg_mount_anim(PlayerbotAI* ai) { return new RpgMountAnimAction(ai); }
+
+        // Bot States
+        static Action* set_combat_state(PlayerbotAI* ai) { return new SetCombatStateAction(ai); }
+        static Action* set_non_combat_state(PlayerbotAI* ai) { return new SetNonCombatStateAction(ai); }
+        static Action* set_dead_state(PlayerbotAI* ai) { return new SetDeadStateAction(ai); }
     };
 };

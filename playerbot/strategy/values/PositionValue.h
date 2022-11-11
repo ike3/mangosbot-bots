@@ -1,5 +1,6 @@
 #pragma once
 #include "../Value.h"
+#include "../../TravelMgr.h"
 
 namespace ai
 {
@@ -39,6 +40,15 @@ namespace ai
 
         virtual WorldPosition Calculate() {return WorldPosition(bot);};
     };  
+
+    class MasterPositionValue : public MemoryCalculatedValue<WorldPosition>
+    {
+    public:
+        MasterPositionValue(PlayerbotAI* ai, string name = "master position", uint32 checkInterval = 1) : MemoryCalculatedValue<WorldPosition>(ai, name, checkInterval) { minChangeInterval = 1; };
+        virtual bool EqualToLast(WorldPosition value) { return value.fDist(lastValue) < sPlayerbotAIConfig.lootDistance; }
+
+        virtual WorldPosition Calculate() { Player* master = GetMaster();  if (master) return WorldPosition(master); return WorldPosition(); };
+    };
 
     class CustomPositionValue : public ManualSetValue<WorldPosition>, public Qualified
     {

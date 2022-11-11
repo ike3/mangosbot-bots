@@ -11,7 +11,7 @@ public:
     ~Queue(void) {}
 public:
 	void Push(ActionBasket *action);
-	ActionNode* Pop();
+	ActionNode* Pop(ActionBasket* action = nullptr);
     ActionBasket* Peek();
 	int Size();
 	void RemoveExpired();

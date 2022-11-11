@@ -6,7 +6,7 @@
 
 using namespace ai;
 
-bool RtiAction::Execute(Event event)
+bool RtiAction::Execute(Event& event)
 {
     string text = event.getParam();
     string type = "rti";
@@ -45,7 +45,7 @@ void RtiAction::AppendRti(ostringstream & out, string type)
 
 }
 
-bool MarkRtiAction::Execute(Event event)
+bool MarkRtiAction::Execute(Event& event)
 {
     Group *group = bot->GetGroup();
     if (!group) return false;

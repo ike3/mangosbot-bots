@@ -152,10 +152,10 @@ void activateCheckPlayersThread()
 class botPIDImpl
 {
 public:
-    botPIDImpl(double dt, double max, double min, double Kp, double Kd, double Ki);
+    botPIDImpl(double dt, double max, double min, double Kp, double Ki, double Kd);
     ~botPIDImpl();
     double calculate(double setpoint, double pv);
-    void adjust(double Kp, double Kd, double Ki) {_Kp = Kp;_Kd = Kd;_Ki = Ki;}
+    void adjust(double Kp, double Ki, double Kd) { _Kp = Kp; _Ki = Ki; _Kd = Kd; }
     void reset() { _integral = 0; }
 
 private:
@@ -163,20 +163,20 @@ private:
     double _max;
     double _min;
     double _Kp;
-    double _Kd;
     double _Ki;
+    double _Kd;
     double _pre_error;
     double _integral;
 };
 
 
-botPID::botPID(double dt, double max, double min, double Kp, double Kd, double Ki)
+botPID::botPID(double dt, double max, double min, double Kp, double Ki, double Kd)
 {
-    pimpl = new botPIDImpl(dt, max, min, Kp, Kd, Ki);
+    pimpl = new botPIDImpl(dt, max, min, Kp, Ki, Kd);
 }
-void botPID::adjust(double Kp, double Kd, double Ki)
+void botPID::adjust(double Kp, double Ki, double Kd)
 {
-    pimpl->adjust(Kp, Kd, Ki);
+    pimpl->adjust(Kp, Ki, Kd);
 }
 void botPID::reset()
 {
@@ -195,13 +195,13 @@ botPID::~botPID()
 /**
  * Implementation
  */
-botPIDImpl::botPIDImpl(double dt, double max, double min, double Kp, double Kd, double Ki) :
+botPIDImpl::botPIDImpl(double dt, double max, double min, double Kp, double Ki, double Kd) :
     _dt(dt),
     _max(max),
     _min(min),
     _Kp(Kp),
-    _Kd(Kd),
     _Ki(Ki),
+    _Kd(Kd),
     _pre_error(0),
     _integral(0)
 {
@@ -275,6 +275,10 @@ RandomPlayerbotMgr::RandomPlayerbotMgr() : PlayerbotHolder(), processTicks(0), l
             }
         }
 
+        //1) Proportional: Amount activity is adjusted based on diff being above or below wanted diff. (100 wanted diff & 0.1 p = 150 diff = -5% activity)
+        //2) Integral: Same as proportional but builds up each tick. (100 wanted diff & 0.01 i = 150 diff = -0.5% activity each tick)
+        //3) Derative: Based on speed of diff. (+5 diff last tick & 0.05 d = -0.25% activity)
+        pid.adjust(0.05, 0.001, 0.05);
         BgCheckTimer = 0;
         LfgCheckTimer = 0;
         PlayersCheckTimer = 0;
@@ -363,7 +367,7 @@ void RandomPlayerbotMgr::LogPlayerLocation()
             }
         for (auto i : GetPlayers())
         {
-            Player* bot = i;
+            Player* bot = i.second;
             if (!bot)
                 continue;
             ostringstream out;
@@ -380,7 +384,7 @@ void RandomPlayerbotMgr::LogPlayerLocation()
             out << bot->GetHealth() << ",";
             out << bot->GetPowerPercent() << ",";
             out << bot->GetMoney() << ",";
-            if (i->GetPlayerbotAI())
+            if (bot->GetPlayerbotAI())
             {
                 out << to_string(uint8(bot->GetPlayerbotAI()->GetGrouperType())) << ",";
                 out << to_string(uint8(bot->GetPlayerbotAI()->GetGuilderType())) << ",";
@@ -423,12 +427,12 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed, bool minimal)
   
     float activityPercentage = getActivityPercentage();
 
-    if (activityPercentage >= 100.0f || activityPercentage <= 0.0f) pid.reset(); //Stop integer buildup during max/min activity
+    //if (activityPercentage >= 100.0f || activityPercentage <= 0.0f) pid.reset(); //Stop integer buildup during max/min activity
 
-    //    % increase/decrease                   wanted diff                                         , current diff
-    float activityPercentageMod = pid.calculate(sRandomPlayerbotMgr.GetPlayers().empty() ? 200 : 100, sWorld.GetCurrentDiff());
+    //    % increase/decrease                   wanted diff                                         , avg diff
+    float activityPercentageMod = pid.calculate(sRandomPlayerbotMgr.GetPlayers().empty() ? sPlayerbotAIConfig.diffEmpty : sPlayerbotAIConfig.diffWithPlayer, sWorld.GetAverageDiff());
 
-    activityPercentage += activityPercentageMod;
+    activityPercentage = activityPercentageMod + 50;
 
     //Cap the percentage between 0 and 100.
     activityPercentage = std::max(0.0f, std::min(100.0f, activityPercentage));
@@ -473,7 +477,7 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed, bool minimal)
     if (onlineBotCount < (uint32)(sPlayerbotAIConfig.minRandomBots * 90 / 100))
         onlineBotFocus = 25;
 
-    SetNextCheckDelay(sPlayerbotAIConfig.randomBotUpdateInterval * (onlineBotFocus+25) * 10);
+    SetAIInternalUpdateDelay(sPlayerbotAIConfig.randomBotUpdateInterval * (onlineBotFocus+25) * 10);
 
     PerformanceMonitorOperation *pmo = sPerformanceMonitor.start(PERF_MON_TOTAL,
         onlineBotCount < maxAllowedBotCount ? "RandomPlayerbotMgr::Login" : "RandomPlayerbotMgr::UpdateAIInternal");
@@ -555,9 +559,47 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed, bool minimal)
     }
     if (pmo) pmo->finish();
 
+    if (!sPlayerbotAIConfig.nonRandomBots.empty())
+    {
+        for (auto bot : sPlayerbotAIConfig.nonRandomBots)
+        {
+            Player* player = GetPlayerBot(bot.second);
+
+            PlayerbotAI* ai = player ? player->GetPlayerbotAI() : NULL;
+
+            if (!player)
+            {
+                sLog.outDetail("Add player %d", bot);
+                AddPlayerBot(bot.second, bot.first);
+            }
+        }
+    }
+
     if (sPlayerbotAIConfig.hasLog("player_location.csv"))
     {
         LogPlayerLocation();
+    }
+    else if(sPlayerbotAIConfig.hasLog("activity_pid.csv"))
+    {
+        activeBots = 0;
+
+        if (sPlayerbotAIConfig.randomBotAutologin)
+            for (auto i : GetAllBots())
+            {
+                Player* bot = i.second;
+                if (bot->GetPlayerbotAI())
+                    if (bot->GetPlayerbotAI()->AllowActivity(ALL_ACTIVITY))
+                        activeBots++;
+            }
+        for (auto i : GetPlayers())
+        {
+            Player* bot = i.second;
+            if (!bot)
+                continue;           
+            if (bot->GetPlayerbotAI())
+                if (bot->GetPlayerbotAI()->AllowActivity(ALL_ACTIVITY))
+                    activeBots++;
+        }
     }
 }
 
@@ -736,9 +778,9 @@ void RandomPlayerbotMgr::CheckBgQueue()
         }
     }
 
-    for (vector<Player*>::iterator i = players.begin(); i != players.end(); ++i)
+    for (auto i : players)
     {
-        Player* player = *i;
+        Player* player = i.second;
 
         if (!player || !player->IsInWorld())
             continue;
@@ -1036,9 +1078,9 @@ void RandomPlayerbotMgr::CheckLfgQueue()
     LfgDungeons[HORDE].clear();
     LfgDungeons[ALLIANCE].clear();
 
-    for (vector<Player*>::iterator i = players.begin(); i != players.end(); ++i)
+    for (auto i : players)
     {
-        Player* player = *i;
+        Player* player = i.second;
 
         if (!player || !player->IsInWorld())
             continue;
@@ -1212,7 +1254,7 @@ Item* RandomPlayerbotMgr::CreateTempItem(uint32 item, uint32 count, Player const
         if (pItem->Create(0, item, player))
         {
             pItem->SetCount(count);
-            if (uint32 randId = randomPropertyId ? randomPropertyId : Item::GenerateItemRandomPropertyId(item))
+            if (int32 randId = randomPropertyId ? randomPropertyId : Item::GenerateItemRandomPropertyId(item))
                 pItem->SetItemRandomProperties(randId);
 
             return pItem;
@@ -1252,9 +1294,9 @@ void RandomPlayerbotMgr::CheckPlayers()
         playersLevel = sPlayerbotAIConfig.randombotStartingLevel;
 
 
-    for (vector<Player*>::iterator i = players.begin(); i != players.end(); ++i)
+    for (auto i : players)
     {
-        Player* player = *i;
+        Player* player = i.second;
 
         if (player->IsGameMaster())
             continue;
@@ -1332,6 +1374,9 @@ bool RandomPlayerbotMgr::AddRandomBot(uint32 bot)
 bool RandomPlayerbotMgr::ProcessBot(uint32 bot)
 {
     Player* player = GetPlayerBot(bot);
+
+    if (player && sPlayerbotAIConfig.IsNonRandomBot(player))
+        return false;
 
     PlayerbotAI* ai = player ? player->GetPlayerbotAI() : NULL;
 
@@ -1455,7 +1500,7 @@ bool RandomPlayerbotMgr::ProcessBot(Player* player)
     TravelTarget* target = player->GetPlayerbotAI()->GetAiObjectContext()->GetValue<TravelTarget*>("travel target")->Get();
     if (target)
     {
-        if (target->getTravelState() == TRAVEL_STATE_IDLE)
+        if (target->getTravelState() == TravelState::TRAVEL_STATE_IDLE)
             idleBot = true;
     }
     else
@@ -1471,8 +1516,8 @@ bool RandomPlayerbotMgr::ProcessBot(Player* player)
             {
                 Guild* guild = sGuildMgr.GetGuildById(player->GetGuildId());
                 if (guild->GetLeaderGuid().GetRawValue() == player->GetObjectGuid().GetRawValue()) {
-                    for (vector<Player*>::iterator i = players.begin(); i != players.end(); ++i)
-                        sGuildTaskMgr.Update(*i, player);
+                    for (auto i : players)
+                        sGuildTaskMgr.Update(i.second, player);
                 }
 
                 uint32 accountId = sObjectMgr.GetPlayerAccountIdByGUID(guild->GetLeaderGuid());
@@ -1946,6 +1991,14 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot)
     Refresh(bot);
 }
 
+void RandomPlayerbotMgr::InstaRandomize(Player* bot)
+{
+    sRandomPlayerbotMgr.Randomize(bot);
+
+    if(bot->GetLevel() > sWorld.getConfig(CONFIG_UINT32_START_PLAYER_LEVEL))
+        sRandomPlayerbotMgr.RandomTeleportForLevel(bot, false);
+}
+
 void RandomPlayerbotMgr::Randomize(Player* bot)
 {
     if (!bot || !bot->IsInWorld() || bot->IsBeingTeleported() || bot->GetSession()->isLogingOut())
@@ -2008,7 +2061,7 @@ void RandomPlayerbotMgr::RandomizeFirst(Player* bot)
         maxLevel = max(sPlayerbotAIConfig.randomBotMinLevel, min(playersLevel, sWorld.getConfig(CONFIG_UINT32_MAX_PLAYER_LEVEL)));
 
 	PerformanceMonitorOperation *pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "RandomizeFirst");
-    uint32 level = urand(std::max(uint32(5), sPlayerbotAIConfig.randomBotMinLevel), maxLevel);
+    uint32 level = urand(std::max(uint32(sWorld.getConfig(CONFIG_UINT32_START_PLAYER_LEVEL)), sPlayerbotAIConfig.randomBotMinLevel), maxLevel);
 
 #ifdef MANGOSBOT_TWO
     if (bot->getClass() == CLASS_DEATH_KNIGHT)
@@ -2032,6 +2085,9 @@ void RandomPlayerbotMgr::RandomizeFirst(Player* bot)
     if (bot->getClass() == CLASS_DEATH_KNIGHT && level < 60)
         level = 60;
 #endif
+
+    if (level == CONFIG_UINT32_START_PLAYER_LEVEL)
+        return;
 
     SetValue(bot, "level", level);
     PlayerbotFactory factory(bot, level);
@@ -2131,6 +2187,10 @@ bool RandomPlayerbotMgr::IsRandomBot(Player* bot)
     {
         if (bot->GetPlayerbotAI()->IsRealPlayer())
             return false;
+
+        if (sPlayerbotAIConfig.IsInNonRandomAccountList(bot->GetSession()->GetAccountId()))
+            if (!bot->GetPlayerbotAI()->GetMaster() || !bot->GetPlayerbotAI()->HasRealPlayerMaster())
+                return true;
     }
     if (bot)
     {
@@ -2236,7 +2296,7 @@ uint32 RandomPlayerbotMgr::GetEventValue(uint32 bot, string event)
         }
     }*/
 
-    if ((time(0) - e.lastChangeTime) >= e.validIn && event != "specNo" && event != "specLink" && event != "current_time")
+    if ((time(0) - e.lastChangeTime) >= e.validIn && event != "specNo" && event != "specLink" && event != "init" && event != "current_time")
         e.value = 0;
 
     return e.value;
@@ -2349,7 +2409,35 @@ bool RandomPlayerbotMgr::HandlePlayerbotConsoleCommand(ChatHandler* handler, cha
     {
         string pids = cmd.substr(4);
         vector<string> pid = Qualified::getMultiQualifiers(pids);
+
+        if (pid.size() == 0)
+            pid.push_back("0");
+        if (pid.size() == 1)
+            pid.push_back("0");
+        if (pid.size() == 2)
+            pid.push_back("0");
         sRandomPlayerbotMgr.pid.adjust(stof(pid[0]), stof(pid[1]), stof(pid[2]));
+
+        sLog.outString("Pid set to p:%f i:%f d:%f", stof(pid[0]), stof(pid[1]), stof(pid[2]));
+
+        return true;
+    }
+
+
+    if (cmd.find("diff ") != std::string::npos)
+    {
+        string diffs = cmd.substr(4);
+        vector<string> diff = Qualified::getMultiQualifiers(diffs);
+        if (diff.size() == 0)
+            diff.push_back("100");
+        if (diff.size() == 1)
+            diff.push_back(diff[0]);
+        sPlayerbotAIConfig.diffWithPlayer = stoi(diff[0]);
+        sPlayerbotAIConfig.diffEmpty = stoi(diff[1]);
+
+        sLog.outString("Diff set to %d (player), %d (empty)", stoi(diff[0]), stoi(diff[1]));
+
+        return true;
     }
 
     map<string, ConsoleCommandHandler> handlers;
@@ -2465,9 +2553,7 @@ void RandomPlayerbotMgr::OnPlayerLogout(Player* player)
         }
     }
 
-    vector<Player*>::iterator i = find(players.begin(), players.end(), player);
-    if (i != players.end())
-        players.erase(i);
+    players.erase(player->GetGUIDLow());
 }
 
 void RandomPlayerbotMgr::OnBotLoginInternal(Player * const bot)
@@ -2546,9 +2632,9 @@ void RandomPlayerbotMgr::OnPlayerLogin(Player* player)
                 FactionTemplateEntry const* factionEntry = sFactionTemplateStore.LookupEntry(cInfo->Faction);
                 ReputationRank reaction = PlayerbotAI::GetFactionReaction(player->GetFactionTemplateEntry(), factionEntry);
 
-                if (reaction > REP_NEUTRAL && dest->nearestPoint(&botPos)->mapid == player->GetMapId())
+                if (reaction > REP_NEUTRAL && dest->nearestPoint(botPos)->mapid == player->GetMapId())
                 {
-                    botPos = *dest->nearestPoint(&botPos);
+                    botPos = *dest->nearestPoint(botPos);
                     break;
                 }
             } while (true);
@@ -2562,11 +2648,14 @@ void RandomPlayerbotMgr::OnPlayerLogin(Player* player)
     if (IsRandomBot(player))
     {
         uint32 guid = player->GetGUIDLow();
-        SetEventValue(guid, "login", 0, 0);
+        if (sPlayerbotAIConfig.IsNonRandomBot(player))
+            player->TeleportTo(WorldPosition(player));
+        else
+           SetEventValue(guid, "login", 0, 0);
     }
     else
     {
-        players.push_back(player);
+        players[player->GetGUIDLow()] = player;
         sLog.outDebug("Including non-random bot player %s into random bot update", player->GetName());
     }
 }
@@ -2584,6 +2673,12 @@ Player* RandomPlayerbotMgr::GetRandomPlayer()
 
     uint32 index = urand(0, players.size() - 1);
     return players[index];
+}
+
+Player* RandomPlayerbotMgr::GetPlayer(uint32 playerGuid)
+{
+    PlayerBotMap::const_iterator it = players.find(playerGuid);
+    return (it == players.end()) ? nullptr : it->second ? it->second : nullptr;
 }
 
 void RandomPlayerbotMgr::PrintStats()
@@ -2608,7 +2703,7 @@ void RandomPlayerbotMgr::PrintStats()
     }
 
     int dps = 0, heal = 0, tank = 0, active = 0, update = 0, randomize = 0, teleport = 0, changeStrategy = 0, dead = 0, combat = 0, revive = 0, taxi = 0, moving = 0, mounted = 0, afk = 0;
-    int stateCount[MAX_TRAVEL_STATE + 1] = { 0 };
+    int stateCount[(uint8)TravelState::MAX_TRAVEL_STATE + 1] = { 0 };
     vector<pair<Quest const*, int32>> questCount;
     for (PlayerBotMap::iterator i = playerBots.begin(); i != playerBots.end(); ++i)
     {
@@ -2711,7 +2806,7 @@ void RandomPlayerbotMgr::PrintStats()
         if (target)
         {
             TravelState state = target->getTravelState();
-            stateCount[state]++;
+            stateCount[(uint8)state]++;
 
             Quest const* quest;
 
@@ -2783,10 +2878,10 @@ void RandomPlayerbotMgr::PrintStats()
     sLog.outString("    AFK: %d", afk);
 
     sLog.outString("Bots questing:");
-    sLog.outString("    Picking quests: %d", stateCount[TRAVEL_STATE_TRAVEL_PICK_UP_QUEST] + stateCount[TRAVEL_STATE_WORK_PICK_UP_QUEST]);
-    sLog.outString("    Doing quests: %d", stateCount[TRAVEL_STATE_TRAVEL_DO_QUEST] + stateCount[TRAVEL_STATE_WORK_DO_QUEST]);
-    sLog.outString("    Completing quests: %d", stateCount[TRAVEL_STATE_TRAVEL_HAND_IN_QUEST] + stateCount[TRAVEL_STATE_WORK_HAND_IN_QUEST]);
-    sLog.outString("    Idling: %d", stateCount[TRAVEL_STATE_IDLE]);
+    sLog.outString("    Picking quests: %d", stateCount[(uint8)TravelState::TRAVEL_STATE_TRAVEL_PICK_UP_QUEST] + stateCount[(uint8)TravelState::TRAVEL_STATE_WORK_PICK_UP_QUEST]);
+    sLog.outString("    Doing quests: %d", stateCount[(uint8)TravelState::TRAVEL_STATE_TRAVEL_DO_QUEST] + stateCount[(uint8)TravelState::TRAVEL_STATE_WORK_DO_QUEST]);
+    sLog.outString("    Completing quests: %d", stateCount[(uint8)TravelState::TRAVEL_STATE_TRAVEL_HAND_IN_QUEST] + stateCount[(uint8)TravelState::TRAVEL_STATE_WORK_HAND_IN_QUEST]);
+    sLog.outString("    Idling: %d", stateCount[(uint8)TravelState::TRAVEL_STATE_IDLE]);
 
     /*sort(questCount.begin(), questCount.end(), [](pair<Quest const*, int32> i, pair<Quest const*, int32> j) {return i.second > j.second; });
 

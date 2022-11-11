@@ -73,12 +73,12 @@ void RpgHelper::resetFacing(GuidPosition guidPosition)
 void RpgHelper::setDelay(bool waitForGroup)
 {
     if (!ai->HasRealPlayerMaster() || (waitForGroup && ai->GetGroupMaster() == bot && bot->GetGroup()))
-        ai->SetNextCheckDelay(sPlayerbotAIConfig.rpgDelay);
+        ai->SetActionDuration(nullptr, sPlayerbotAIConfig.rpgDelay);
     else
-        ai->SetNextCheckDelay(sPlayerbotAIConfig.rpgDelay / 5);
+        ai->SetActionDuration(nullptr, sPlayerbotAIConfig.rpgDelay / 5);
 }
 
-bool RpgEmoteAction::Execute(Event event)
+bool RpgEmoteAction::Execute(Event& event)
 {
     rpg->BeforeExecute();
 
@@ -112,7 +112,7 @@ bool RpgEmoteAction::Execute(Event event)
     return true;
 }
 
-bool RpgTaxiAction::Execute(Event event)
+bool RpgTaxiAction::Execute(Event& event)
 {
     rpg->BeforeExecute();
 
@@ -170,7 +170,7 @@ bool RpgTaxiAction::Execute(Event event)
 }
 
 
-bool RpgDiscoverAction::Execute(Event event)
+bool RpgDiscoverAction::Execute(Event& event)
 {
     rpg->BeforeExecute();
 
@@ -191,7 +191,7 @@ bool RpgDiscoverAction::Execute(Event event)
     return bot->GetSession()->SendLearnNewTaxiNode(flightMaster);    
 }
 
-bool RpgHealAction::Execute(Event event)
+bool RpgHealAction::Execute(Event& event)
 {
     bool retVal = false;
 
@@ -236,53 +236,7 @@ bool RpgTradeUsefulAction::IsTradingItem(uint32 entry)
     return false;
 }
 
-list<Item*> RpgTradeUsefulAction::CanGiveItems(GuidPosition guidPosition)
-{
-    Player* player = guidPosition.GetPlayer();
-
-    list<Item*> giveItems;
-
-    if (ai->HasActivePlayerMaster() || !player->GetPlayerbotAI())
-        return giveItems;
-
-    list<ItemUsage> myUsages = { ITEM_USAGE_NONE , ITEM_USAGE_VENDOR, ITEM_USAGE_AH, ITEM_USAGE_DISENCHANT };
-
-    for (auto& myUsage : myUsages)
-    {
-        list<Item*> myItems = AI_VALUE2(list<Item*>, "inventory items", "usage " + to_string(myUsage));
-        myItems.reverse();
-
-        for (auto& item : myItems)
-        {
-            if (!item->CanBeTraded())
-                continue;
-
-            TradeData* trade = bot->GetTradeData();
-
-            if (trade)
-            {
-
-                if (trade->HasItem(item->GetObjectGuid())) //This specific item isn't being traded.
-                    continue;
-
-                if (IsTradingItem(item->GetEntry())) //A simular item isn't being traded.
-                    continue;
-
-                if (std::any_of(giveItems.begin(), giveItems.end(), [item](Item* i) {return i->GetEntry() == item->GetEntry(); })) //We didn't already add a simular item to this list.
-                    continue;
-            }
-
-            ItemUsage otherUsage = PAI_VALUE2(ItemUsage, "item usage", item->GetEntry());
-
-            if (std::find(myUsages.begin(), myUsages.end(), otherUsage) == myUsages.end())
-                giveItems.push_back(item);
-        }
-    }
-
-    return giveItems;
-}
-
-bool RpgTradeUsefulAction::Execute(Event event)
+bool RpgTradeUsefulAction::Execute(Event& event)
 {
     rpg->BeforeExecute();
 
@@ -293,7 +247,7 @@ bool RpgTradeUsefulAction::Execute(Event event)
     if (!player)
         return false;
 
-    list<Item*> items = CanGiveItems(guidP);
+    list<Item*> items = AI_VALUE(list<Item*>, "items useful to give");
 
     if (items.empty())
         return false;
@@ -322,8 +276,8 @@ bool RpgTradeUsefulAction::Execute(Event event)
     {
         if (IsTradingItem(item->GetEntry())) //Did we manage to add the item to the trade?
         {
-            if (bot->GetGroup() && bot->GetGroup()->IsMember(guidP) && ai->HasRealPlayerMaster())
-                ai->TellMasterNoFacing("You can use this " + chat->formatItem(item->GetProto()) + " better than me, " + player->GetName()/*chat->formatWorldobject(guidP.GetPlayer())*/ + ".");
+            if (bot->GetGroup() && bot->GetGroup()->IsMember(guidP))
+                ai->TellMasterNoFacing("You can use this " + chat->formatItem(item->GetProto()) + " better than me, " + player->GetName() + ".", PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
             else
                 bot->Say("You can use this " + chat->formatItem(item->GetProto()) + " better than me, " + player->GetName() + ".", (bot->GetTeam() == ALLIANCE ? LANG_COMMON : LANG_ORCISH));
 
@@ -339,7 +293,7 @@ bool RpgTradeUsefulAction::Execute(Event event)
         //else
         //   bot->Say("Start trade with" + chat->formatWorldobject(player), (bot->GetTeam() == ALLIANCE ? LANG_COMMON : LANG_ORCISH));
 
-        ai->SetNextCheckDelay(sPlayerbotAIConfig.rpgDelay);
+        ai->SetActionDuration(nullptr, sPlayerbotAIConfig.rpgDelay);
     }
 
     rpg->AfterExecute(isTrading, true, isTrading ? "rpg trade useful" : "rpg");
@@ -364,7 +318,7 @@ bool RpgDuelAction::isUseful()
     return true;
 }
 
-bool RpgDuelAction::Execute(Event event)
+bool RpgDuelAction::Execute(Event& event)
 {
     GuidPosition guidP = AI_VALUE(GuidPosition, "rpg target");
 
@@ -381,7 +335,7 @@ bool RpgMountAnimAction::isUseful()
     return AI_VALUE2(bool, "mounted", "self target") && !AI_VALUE2(bool, "moving", "self target");
 }
 
-bool RpgMountAnimAction::Execute(Event event)
+bool RpgMountAnimAction::Execute(Event& event)
 {
     WorldPacket p;
     bot->GetSession()->HandleMountSpecialAnimOpcode(p);

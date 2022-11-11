@@ -13,7 +13,7 @@
 using namespace std;
 using namespace ai;
 
-bool ArenaTeamAcceptAction::Execute(Event event)
+bool ArenaTeamAcceptAction::Execute(Event& event)
 {
 #ifndef MANGOSBOT_ZERO
     WorldPacket p(event.getPacket());
