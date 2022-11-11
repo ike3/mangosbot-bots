@@ -103,7 +103,7 @@ bool CheckMountStateAction::Execute(Event& event)
         return Mount();
     }
 
-    if (!bot->InBattleGround() && !bot->IsMounted())
+    if (!bot->InBattleGround() && !bot->IsMounted() && !ai->IsStateActive(BotState::BOT_STATE_COMBAT))
     {
         GuidPosition unit = AI_VALUE(GuidPosition, "rpg target");
         if (unit)
