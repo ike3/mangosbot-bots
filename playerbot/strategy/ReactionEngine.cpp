@@ -286,3 +286,10 @@ void ReactionEngine::Reset()
     incomingReaction.Reset();
     aiReactionUpdateDelay = 0U;
 }
+
+bool ReactionEngine::CanUpdateAIReaction() const
+{
+    return (aiReactionUpdateDelay < 100U) && 
+           !ai->GetBot()->IsBeingTeleported() && 
+           ai->GetBot()->IsInWorld();
+}
