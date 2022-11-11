@@ -10,47 +10,52 @@ namespace ai
     class ReachTargetAction : public MovementAction
     {
     public:
-        ReachTargetAction(PlayerbotAI* ai, string name, float distance) : MovementAction(ai, name)
-		{
-            this->distance = distance;
-        }
+        ReachTargetAction(PlayerbotAI* ai, string name, float distance) : MovementAction(ai, name), distance(distance) {}
+
         virtual bool Execute(Event& event)
 		{
             Unit* target = AI_VALUE(Unit*, GetTargetName());
-            if (!target)
-                return false;
-
-            UpdateMovementState();
-
-            float combatReach = bot->GetCombinedCombatReach(target, true);
-
-            if (distance == ATTACK_DISTANCE)
+            if (target)
             {
-                return ChaseTo(target, 0.0f, bot->GetAngle(target));
-            }
-            else
-            {
-                float distanceToTarget = sServerFacade.GetDistance2d(bot, target);
-                if (distanceToTarget > sPlayerbotAIConfig.sightDistance)
-                    return false;
+                UpdateMovementState();
 
-                combatReach = bot->GetCombinedCombatReach(target, false);
-                bool inLos = bot->IsWithinLOSInMap(target, true);
-                bool isFriend = sServerFacade.IsFriendlyTo(bot, target);
-                float chaseDist = inLos ? distance : isFriend ? std::min(distanceToTarget * 0.9f, distance) : distance;
-                float coeff = 0.8f;
-                if (!isFriend)
-                    coeff = 1.0f;
-                if (inLos || isFriend)
-                    return MoveNear(target, chaseDist);
+                // Ignore movement if too far
+                const float distanceToTarget = sServerFacade.GetDistance2d(bot, target);
+                if (distanceToTarget <= sPlayerbotAIConfig.sightDistance)
+                {
+                    float chaseDist = distance;
+                    const bool inLos = bot->IsWithinLOSInMap(target, true);
+                    const bool isFriend = sServerFacade.IsFriendlyTo(bot, target);
 
-                return ChaseTo(target, (chaseDist - sPlayerbotAIConfig.contactDistance) * coeff, bot->GetAngle(target));
+                    if (distance > 0.0f)
+                    {
+                        const float coeff = isFriend ? 0.8f : 1.0f;
+                        chaseDist = inLos ? distance : (isFriend ? std::min(distanceToTarget * 0.9f, distance) : distance);
+                        chaseDist = (chaseDist - sPlayerbotAIConfig.contactDistance) * coeff;
+                    }
+
+                    if (inLos && isFriend && (distance <= sPlayerbotAIConfig.followDistance))
+                    {
+                        return MoveNear(target, chaseDist);
+                    }
+                    else
+                    {
+                        return ChaseTo(target, chaseDist, bot->GetAngle(target));
+                    }
+                }
             }
+
+            return false;
         }
+
         virtual bool isUseful()
 		{
-            // do not move while casting
+            // Do not move while casting
             if (bot->IsNonMeleeSpellCasted(true))
+                return false;
+
+            // Do not move if stay strategy is set
+            if(ai->HasStrategy("stay", BotState::BOT_STATE_NON_COMBAT))
                 return false;
 
             return true;
@@ -58,6 +63,7 @@ namespace ai
             //Unit* target = AI_VALUE(Unit*, GetTargetName());
             //return target && (!bot->IsWithinDistInMap(target, distance) || (bot->IsWithinDistInMap(target, distance) && !bot->IsWithinLOSInMap(target, true)));
         }
+
         virtual string GetTargetName() { return "current target"; }
 
     protected:
@@ -67,12 +73,14 @@ namespace ai
     class CastReachTargetSpellAction : public CastSpellAction
     {
     public:
-        CastReachTargetSpellAction(PlayerbotAI* ai, string spell, float distance) : CastSpellAction(ai, spell)
-		{
-            this->distance = distance;
-        }
+        CastReachTargetSpellAction(PlayerbotAI* ai, string spell, float distance) : CastSpellAction(ai, spell), distance(distance) {}
+
 		virtual bool isUseful()
 		{
+            // Do not move if stay strategy is set
+            if (ai->HasStrategy("stay", BotState::BOT_STATE_NON_COMBAT))
+                return false;
+
 			return sServerFacade.IsDistanceGreaterThan(AI_VALUE2(float, "distance", "current target"), (distance + sPlayerbotAIConfig.contactDistance));
 		}
 
@@ -83,7 +91,7 @@ namespace ai
     class ReachMeleeAction : public ReachTargetAction
 	{
     public:
-        ReachMeleeAction(PlayerbotAI* ai) : ReachTargetAction(ai, "reach melee", ATTACK_DISTANCE) {}
+        ReachMeleeAction(PlayerbotAI* ai) : ReachTargetAction(ai, "reach melee", 0.0f) {}
     };
 
     class ReachSpellAction : public ReachTargetAction

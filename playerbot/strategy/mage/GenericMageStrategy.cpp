@@ -44,8 +44,20 @@ private:
             /*A*/ NextAction::array(0, new NextAction("shoot"), NULL),
             /*C*/ NULL);
     }
-    ACTION_NODE_A(frost_nova, "frost nova", "cone of cold");
-    ACTION_NODE_A(cone_of_cold, "cone of cold", "flee");
+    static ActionNode* frost_nova(PlayerbotAI* ai)
+    {
+        return new ActionNode("frost nova",
+            /*P*/ NULL,
+            /*A*/ NextAction::array(0, new NextAction("cone of cold"), NULL),
+            /*C*/ NULL);
+    }
+    static ActionNode* cone_of_cold(PlayerbotAI* ai)
+    {
+        return new ActionNode("cone of cold",
+            /*P*/ NULL,
+            /*A*/ NULL,
+            /*C*/ NULL);
+    }
     static ActionNode* combustion(PlayerbotAI* ai)
     {
         return new ActionNode ("combustion",
@@ -98,6 +110,10 @@ GenericMageStrategy::GenericMageStrategy(PlayerbotAI* ai) : CombatStrategy(ai)
 void GenericMageStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 {
     CombatStrategy::InitTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "enemy out of spell",
+        NextAction::array(0, new NextAction("reach spell", 60.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
         "enemy ten yards",

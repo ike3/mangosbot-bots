@@ -31,7 +31,13 @@ namespace ai
     public:
         WaitForAttackStrategy(PlayerbotAI* ai) : Strategy(ai) {}
         string getName() override { return "wait for attack"; }
+        void InitTriggers(std::list<TriggerNode*>& triggers) override;
         void InitMultipliers(std::list<Multiplier*>& multipliers) override;
+
+        static bool ShouldWait(PlayerbotAI* ai);
+        static uint8 GetWaitTime(PlayerbotAI* ai);
+        static float GetSafeDistance() { return sPlayerbotAIConfig.spellDistance; }
+        static float GetSafeDistanceThreshold() { return 2.5f; }
     };
 
     class WaitForAttackMultiplier : public Multiplier

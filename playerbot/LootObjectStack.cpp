@@ -232,6 +232,11 @@ bool LootObject::IsLootPossible(Player* bot)
         }
     }
 
+    AiObjectContext* context = ai->GetAiObjectContext();
+
+    if (!AI_VALUE2_LAZY(bool, "should loot object", to_string(guid.GetRawValue())))
+        return false;
+
     if (skillId == SKILL_NONE)
     {
         if (guid.IsGameObject())

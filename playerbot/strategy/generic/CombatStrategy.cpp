@@ -8,12 +8,8 @@ using namespace ai;
 void CombatStrategy::InitTriggers(list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
-        "enemy out of spell",
-        NextAction::array(0, new NextAction("reach spell", 60.0f), NULL)));
-
-    triggers.push_back(new TriggerNode(
         "invalid target",
-        NextAction::array(0, new NextAction("drop target", 89.0f), NULL)));
+        NextAction::array(0, new NextAction("select new target", 89.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
         "mounted",
@@ -50,7 +46,7 @@ float AvoidAoeStrategyMultiplier::GetValue(Action* action)
         return 1.0f;
 
     string name = action->getName();
-    if (name == "follow" || name == "co" || name == "nc" || name == "react" || name == "drop target" || name == "flee")
+    if (name == "follow" || name == "co" || name == "nc" || name == "react" || name == "select new target" || name == "flee")
         return 1.0f;
 
     uint32 spellId = AI_VALUE2(uint32, "spell id", name);
@@ -82,4 +78,78 @@ void AvoidAoeStrategy::InitTriggers(std::list<TriggerNode*>& triggers)
 void AvoidAoeStrategy::InitMultipliers(std::list<Multiplier*>& multipliers)
 {
     multipliers.push_back(new AvoidAoeStrategyMultiplier(ai));
+}
+
+void WaitForAttackStrategy::InitTriggers(std::list<TriggerNode*>& triggers)
+{
+    triggers.push_back(new TriggerNode(
+        "wait for attack safe distance",
+        NextAction::array(0, new NextAction("wait for attack keep safe distance", 60.0f), NULL)));
+}
+
+void WaitForAttackStrategy::InitMultipliers(std::list<Multiplier*>& multipliers)
+{
+    multipliers.push_back(new WaitForAttackMultiplier(ai));
+}
+
+bool WaitForAttackStrategy::ShouldWait(PlayerbotAI* ai)
+{
+    // Only check if the bot has the strategy enabled
+    if (ai->HasStrategy("wait for attack", BotState::BOT_STATE_COMBAT))
+    {
+        // Only check if bot is in a group with a real player
+        Player* player = ai->GetBot();
+        if (player->GetGroup() && ai->HasRealPlayerMaster())
+        {
+            // Don't wait if the current target is an enemy player
+            bool enemyPlayer = false;
+            Unit* target = ai->GetAiObjectContext()->GetValue<Unit*>("current target")->Get();
+            if (target)
+            {
+                Player* player = dynamic_cast<Player*>(target);
+                if (player)
+                {
+                    enemyPlayer = !sServerFacade.IsFriendlyTo(target, player);
+                }
+            }
+
+            if (!enemyPlayer)
+            {
+                // Tanks and healers can avoid this check
+                if (!ai->IsTank(player) && !ai->IsHeal(player))
+                {
+                    // Check if bot is currently in combat
+                    const time_t combatStartTime = PAI_VALUE(time_t, "combat start time");
+                    if (combatStartTime > 0)
+                    {
+                        // Check the amount of time elapsed from the combat start
+                        const time_t elapsedTime = time(0) - combatStartTime;
+                        return elapsedTime < GetWaitTime(ai);
+                    }
+                }
+            }
+        }
+    }
+
+    return false;
+}
+
+uint8 WaitForAttackStrategy::GetWaitTime(PlayerbotAI* ai)
+{
+    Player* player = ai->GetBot();
+    return PAI_VALUE(uint8, "wait for attack time");
+}
+
+float WaitForAttackMultiplier::GetValue(Action* action)
+{
+    // Allow some movement and targeting actions
+    const string& actionName = action->getName();
+    if (actionName != "wait for attack keep safe distance" && 
+        actionName != "dps assist" && 
+        actionName != "set facing")
+    {
+        return WaitForAttackStrategy::ShouldWait(ai) ? 0.0f : 1.0f;
+    }
+
+    return 1.0f;
 }

@@ -1,4 +1,4 @@
-##########################################
+8##########################################
 # MANGOS Ai Playerbot Configuration file #
 ##########################################
 
@@ -114,8 +114,9 @@ AiPlayerbot.GearScoreCheck = 0
 # Quest that will be completed and rewarded to all random bots
 AiPlayerbot.RandomBotQuestIds = 7848,3802,5505,6502,7761
 
-# Randombots will group with nearby bots to do shared quests
+# Randombots will group/form raids with nearby bots to do shared quests
 AiPlayerbot.RandomBotGroupNearby = 1
+#AiPlayerbot.RandomBotRaidNearby = 0
 
 # Bots without a master will say their lines
 # AiPlayerbot.RandomBotSayWithoutMaster = 0

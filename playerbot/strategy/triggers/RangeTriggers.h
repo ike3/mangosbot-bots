@@ -2,6 +2,7 @@
 #include "../Trigger.h"
 #include "../../PlayerbotAIConfig.h"
 #include "../../ServerFacade.h"
+#include "../generic/CombatStrategy.h"
 
 namespace ai
 {
@@ -268,7 +269,40 @@ namespace ai
 
         virtual bool IsActive()
         {
-            return FarFromMasterTrigger::IsActive() && !OutOfReactRangeTrigger::IsActive();
+            return FarFromMasterTrigger::IsActive() && !sServerFacade.IsDistanceGreaterThan(AI_VALUE2(float, "distance", "master target"), 50.0f);
+        }
+    };
+
+    class WaitForAttackSafeDistanceTrigger : public Trigger
+    {
+    public:
+        WaitForAttackSafeDistanceTrigger(PlayerbotAI* ai, string name = "wait for attack safe distance") : Trigger(ai, name) {}
+
+        virtual bool IsActive()
+        {
+            if (WaitForAttackStrategy::ShouldWait(ai))
+            {
+                // Do not move if stay strategy is set
+                if (!ai->HasStrategy("stay", BotState::BOT_STATE_NON_COMBAT))
+                {
+                    // Do not move if currently being targeted
+                    const bool isBeingTargeted = !bot->getAttackers().empty();
+                    if (!isBeingTargeted)
+                    {
+                        Unit* target = AI_VALUE(Unit*, "current target");
+                        if (target)
+                        {
+                            const float safeDistance = WaitForAttackStrategy::GetSafeDistance();
+                            const float safeDistanceThreshold = WaitForAttackStrategy::GetSafeDistanceThreshold();
+                            const float distanceToTarget = sServerFacade.GetDistance2d(bot, target);
+                            return (distanceToTarget > (safeDistance + safeDistanceThreshold)) ||
+                                   (distanceToTarget < (safeDistance - safeDistanceThreshold));
+                        }
+                    }
+                }
+            }
+
+            return false;
         }
     };
 }

@@ -188,7 +188,14 @@ enum class GrouperType : uint8
     LEADER_2 = 2,
     LEADER_3 = 3,
     LEADER_4 = 4,
-    LEADER_5 = 5
+    LEADER_5 = 5,
+#ifndef MANGOSBOT_ZERO
+    RAIDER_10 = 10,
+    RAIDER_MAX = 25
+#else
+    RAIDER_20 = 20,
+    RAIDER_MAX = 40
+#endif
 };
 
 enum class GuilderType : uint8
@@ -274,7 +281,7 @@ private:
 public:	
     static string BotStateToString(BotState state);
 	string HandleRemoteCommand(string command);
-    void HandleCommand(uint32 type, const string& text, Player& fromPlayer);
+    void HandleCommand(uint32 type, const string& text, Player& fromPlayer, const uint32 lang = LANG_UNIVERSAL);
     void QueueChatResponse(uint8 msgtype, ObjectGuid guid1, ObjectGuid guid2, std::string message, std::string chanName, std::string name);
 	void HandleBotOutgoingPacket(const WorldPacket& packet);
     void HandleMasterIncomingPacket(const WorldPacket& packet);
@@ -301,9 +308,10 @@ public:
     GameObject* GetGameObject(ObjectGuid guid);
     static GameObject* GetGameObject(GameObjectDataPair const* gameObjectDataPair);
     WorldObject* GetWorldObject(ObjectGuid guid);
+    vector<Player*> GetPlayersInGroup();
     bool TellMaster(ostringstream &stream, PlayerbotSecurityLevel securityLevel = PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, bool isPrivate = true) { return TellMaster(stream.str(), securityLevel, isPrivate); }
     bool TellMaster(string text, PlayerbotSecurityLevel securityLevel = PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, bool isPrivate = true);
-    bool TellMasterNoFacing(ostringstream& stream, PlayerbotSecurityLevel securityLevel = PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, bool isPrivate = true) { return TellMasterNoFacing(stream.str(), securityLevel, isPrivate); }
+    bool TellMasterNoFacing(ostringstream& stream, PlayerbotSecurityLevel securityLevel = PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, bool isPrivate = true) { return TellMasterNoFacing(stream.str(), securityLevel, isPrivate); }    
     bool TellMasterNoFacing(string text, PlayerbotSecurityLevel securityLevel = PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, bool isPrivate = true);
     bool TellError(string text, PlayerbotSecurityLevel securityLevel = PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL);
     void SpellInterrupted(uint32 spellid);
@@ -425,9 +433,9 @@ public:
     bool CanMove();
     void StopMoving();
     bool IsInRealGuild();
-    time_t GetCombatStartTime() { return combatStart; }
 
     bool IsStateActive(BotState state) const;
+    time_t GetCombatStartTime() const;
 
     void OnCombatStarted();
     void OnCombatEnded();
@@ -464,7 +472,6 @@ protected:
     bool inCombat = false;
     bool isMoving = false;
     bool isWaiting = false;
-    time_t combatStart = 0;
     BotCheatMask cheatMask = BotCheatMask::none;
     Position jumpDestination = Position();
 };

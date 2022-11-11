@@ -8,6 +8,7 @@
 #include "../values/Formations.h"
 #include "ChooseRpgTargetAction.h"
 #include "../../TravelMgr.h"
+#include "../../LootObjectStack.h"
 
 using namespace ai;
 
@@ -153,6 +154,10 @@ bool FleeToMasterAction::isUseful()
         if (AI_VALUE(GuidPosition, "rpg target") && ChooseRpgTargetAction::isFollowValid(bot, AI_VALUE(GuidPosition, "rpg target")))
             return false;
     }
+
+    LootObject loot = AI_VALUE(LootObject, "loot target");
+    if (loot.IsLootPossible(bot))
+        return false;
 
     return true;
 }

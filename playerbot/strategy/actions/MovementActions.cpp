@@ -16,6 +16,7 @@
 #ifdef MANGOSBOT_TWO
 #include "Entities/Vehicle.h"
 #endif
+#include "../generic/CombatStrategy.h"
 
 using namespace ai;
 
@@ -148,7 +149,7 @@ bool MovementAction::FlyDirect(WorldPosition &startPosition, WorldPosition &endP
 
     movePosition = endPosition;
 
-    if (movePosition.getMapId() != startPosition.getMapId() || !movePosition.isOutside()) //We can not fly to the end directly.
+    if (movePosition.getMapId() != startPosition.getMapId() || !movePosition.isOutside() || !movePosition.canFly()) //We can not fly to the end directly.
     {
         vector<WorldPosition> path;
         if (movePath.empty()) //Make a path starting at the end backwards to see if we can walk to some better place.
@@ -164,7 +165,7 @@ bool MovementAction::FlyDirect(WorldPosition &startPosition, WorldPosition &endP
 
         auto pathEnd = path.end();
         for (auto& p = pathEnd; p-- != path.begin(); ) //Find the furtest point where we can fly to directly.
-            if (p->getMapId() == startPosition.getMapId() && p->isOutside())
+            if (p->getMapId() == startPosition.getMapId() && p->isOutside() && p->canFly())
             {
                 movePosition = *p;
                 totalDistance = startPosition.distance(movePosition);
@@ -172,7 +173,7 @@ bool MovementAction::FlyDirect(WorldPosition &startPosition, WorldPosition &endP
             }
     }
 
-    if (movePosition.getMapId() != startPosition.getMapId() || !movePosition.isOutside())
+    if (movePosition.getMapId() != startPosition.getMapId() || !movePosition.isOutside() || !movePosition.canFly())
         return false;
 
     if (movePosition.distance(startPosition) < minDist)
@@ -292,7 +293,7 @@ bool MovementAction::FlyDirect(WorldPosition &startPosition, WorldPosition &endP
 #endif
 }
 
-bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, bool react, bool noPath)
+bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, bool react, bool noPath, bool ignoreEnemyTargets)
 {
     WorldPosition endPosition(mapId, x, y, z, 0);
     if(!endPosition.isValid())
@@ -682,7 +683,8 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
         movePosition = movePath.getNextPoint(startPosition, maxDist, pathType, entry);
     }
 
-    if (!bot->IsInCombat() && !bot->IsDead()) //Stop the path when we might get aggro.
+    //Stop the path when we might get aggro.
+    if (!bot->IsInCombat() && !bot->IsDead() && !ignoreEnemyTargets) 
     {
         list<ObjectGuid> targets = AI_VALUE_LAZY(list<ObjectGuid>, "all targets");
 
@@ -1576,7 +1578,6 @@ bool MovementAction::Flee(Unit *target)
             return false;
         }
 
-
         if(MoveTo(target->GetMapId(), rx, ry, rz))
         {
             AI_VALUE(LastMovement&, "last movement").lastFlee = time(0);
@@ -1729,6 +1730,10 @@ bool SetBehindTargetAction::isUseful()
 {
     Unit* target = AI_VALUE(Unit*, "current target");
     if (!target)
+        return false;
+
+    // Do not move if stay strategy is set
+    if(ai->HasStrategy("stay", BotState::BOT_STATE_NON_COMBAT))
         return false;
 
     return !bot->IsFacingTargetsBack(target);

@@ -8,10 +8,11 @@ namespace ai
     class CastSpellAction : public Action
     {
     public:
-        CastSpellAction(PlayerbotAI* ai, string spell) : Action(ai, spell),
-            range(ai->GetRange("spell"))
+        CastSpellAction(PlayerbotAI* ai, string spell) 
+        : Action(ai, spell)
+        , range(ai->GetRange("spell"))
         {
-            this->spell = spell;
+            SetSpellName(spell);
         }
 
 		virtual string GetTargetName() { return "current target"; }
@@ -33,8 +34,16 @@ namespace ai
 		}*/
 
     protected:
-        string spell;
+        const uint32& GetSpellID() const { return spellId; }
+        const string& GetSpellName() const { return spellName; }
+        void SetSpellName(const string& name, string spellIDContextName = "spell id");
+
+    protected:
 		float range;
+
+    private:
+        string spellName;
+        uint32 spellId;
     };
 
 	//---------------------------------------------------------------------------------------------------------------------
@@ -77,9 +86,9 @@ namespace ai
         CastDebuffSpellOnAttackerAction(PlayerbotAI* ai, string spell, bool isOwner = true) : CastAuraSpellAction(ai, spell, isOwner) {}
         Value<Unit*>* GetTargetValue()
         {
-            return context->GetValue<Unit*>("attacker without aura", spell);
+            return context->GetValue<Unit*>("attacker without aura", GetSpellName());
         }
-        virtual string getName() { return spell + " on attacker"; }
+        virtual string getName() { return GetSpellName() + " on attacker"; }
         virtual ActionThreatType getThreatType() { return ActionThreatType::ACTION_THREAT_AOE; }
     };
 
@@ -171,7 +180,7 @@ namespace ai
         HealHotPartyMemberAction(PlayerbotAI* ai, string spell) : HealPartyMemberAction(ai, spell) {}
         virtual bool isUseful()
         {
-            return HealPartyMemberAction::isUseful() && GetTarget() && !ai->HasAura(spell, GetTarget());
+            return HealPartyMemberAction::isUseful() && GetTarget() && !ai->HasAura(GetSpellName(), GetTarget());
         }
     };
 
@@ -217,28 +226,17 @@ namespace ai
     class CastShootAction : public CastSpellAction
     {
     public:
-        CastShootAction(PlayerbotAI* ai) : CastSpellAction(ai, "shoot")
-        {
-            Item* const pItem = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_RANGED);
-            if (pItem)
-            {
-                spell = "shoot";
+        CastShootAction(PlayerbotAI* ai) : CastSpellAction(ai, "shoot"), rangedWeapon(nullptr), weaponDelay(0) {}
+        ActionThreatType getThreatType() override { return ActionThreatType::ACTION_THREAT_NONE; }
+        bool Execute(Event& event) override;
+        bool isPossible() override;
 
-                switch (pItem->GetProto()->SubClass)
-                {
-                case ITEM_SUBCLASS_WEAPON_GUN:
-                    spell += " gun";
-                    break;
-                case ITEM_SUBCLASS_WEAPON_BOW:
-                    spell += " bow";
-                    break;
-                case ITEM_SUBCLASS_WEAPON_CROSSBOW:
-                    spell += " crossbow";
-                    break;
-                }
-            }
-        }
-        virtual ActionThreatType getThreatType() { return ActionThreatType::ACTION_THREAT_NONE; }
+    private:
+        void UpdateWeaponInfo();
+
+    private:
+        const Item* rangedWeapon;
+        uint32 weaponDelay;
     };
 
     class RemoveBuffAction : public Action
@@ -304,9 +302,9 @@ namespace ai
         CastSpellOnEnemyHealerAction(PlayerbotAI* ai, string spell) : CastSpellAction(ai, spell) {}
         Value<Unit*>* GetTargetValue()
         {
-            return context->GetValue<Unit*>("enemy healer target", spell);
+            return context->GetValue<Unit*>("enemy healer target", GetSpellName());
         }
-        virtual string getName() { return spell + " on enemy healer"; }
+        virtual string getName() { return GetSpellName() + " on enemy healer"; }
     };
 
     class CastSnareSpellAction : public CastDebuffSpellAction
@@ -315,9 +313,9 @@ namespace ai
         CastSnareSpellAction(PlayerbotAI* ai, string spell) : CastDebuffSpellAction(ai, spell) {}
         Value<Unit*>* GetTargetValue()
         {
-            return context->GetValue<Unit*>("snare target", spell);
+            return context->GetValue<Unit*>("snare target", GetSpellName());
         }
-        virtual string getName() { return spell + " on snare target"; }
+        virtual string getName() { return GetSpellName() + " on snare target"; }
         virtual ActionThreatType getThreatType() { return ActionThreatType::ACTION_THREAT_NONE; }
     };
 
@@ -342,7 +340,7 @@ namespace ai
         virtual string GetTargetName() { return "party member to protect"; }
         virtual bool isUseful()
         {
-            return GetTarget() && !ai->HasAura(spell, GetTarget());
+            return GetTarget() && !ai->HasAura(GetSpellName(), GetTarget());
         }
         virtual ActionThreatType getThreatType() { return ActionThreatType::ACTION_THREAT_NONE; }
     };
@@ -357,12 +355,15 @@ namespace ai
         CastVehicleSpellAction(PlayerbotAI* ai, string spell) : CastSpellAction(ai, spell)
         {
             range = 120.0f;
+            SetSpellName(spell, "vehicle spell id");
         }
+
         virtual string GetTargetName() { return "current target"; }
         virtual bool Execute(Event& event);
         virtual bool isUseful();
         virtual bool isPossible();
         virtual ActionThreatType getThreatType() { return ActionThreatType::ACTION_THREAT_NONE; }
+
     protected:
         WorldObject* spellTarget;
     };

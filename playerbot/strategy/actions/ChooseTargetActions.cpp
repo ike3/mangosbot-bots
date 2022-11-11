@@ -84,85 +84,40 @@ bool AttackEnemyFlagCarrierAction::isUseful()
     return target && sServerFacade.IsDistanceLessOrEqualThan(sServerFacade.GetDistance2d(bot, target), 75.0f) && (bot->HasAura(23333) || bot->HasAura(23335) || bot->HasAura(34976));
 }
 
-/*
-bool DropTargetAction::Execute(Event& event)
+bool SelectNewTargetAction::Execute(Event& event)
 {
-    context->GetValue<Unit*>("current target")->Set(NULL);
-    bot->SetSelectionGuid(ObjectGuid());
-    ai->ChangeEngine(BotState::BOT_STATE_NON_COMBAT);
-    ai->InterruptSpell();
-    bot->AttackStop();
-    Pet* pet = bot->GetPet();
-    if (pet)
-    {
-#ifdef MANGOS
-        CreatureAI*
-#endif
-#ifdef CMANGOS
-        UnitAI*
-#endif
-        creatureAI = ((Creature*)pet)->AI();
-        if (creatureAI)
-        {
-#ifdef CMANGOS
-            creatureAI->SetReactState(REACT_PASSIVE);
-#endif
-#ifdef MANGOS
-            pet->GetCharmInfo()->SetReactState(REACT_PASSIVE);
-#endif
-            pet->AttackStop();
-        }
-    }
-    if (!urand(0, 200))
-    {
-        vector<uint32> sounds;
-        sounds.push_back(TEXTEMOTE_CHEER);
-        sounds.push_back(TEXTEMOTE_CONGRATULATE);
-        ai->PlaySound(sounds[urand(0, sounds.size() - 1)]);
-    }
-    return true;
-}
-*/
-
-bool DropTargetAction::Execute(Event& event)
-{
-    Unit* target = context->GetValue<Unit*>("current target")->Get();
+    Unit* target = AI_VALUE(Unit*, "current target");
     if (target && sServerFacade.UnitIsDead(target))
     {
+        // Save the dead target for later looting
         ObjectGuid guid = target->GetObjectGuid();
         if (guid)
-            context->GetValue<LootObjectStack*>("available loot")->Get()->Add(guid);
-    }
-
-    ObjectGuid pullTarget = context->GetValue<ObjectGuid>("pull target")->Get();
-    list<ObjectGuid> possible = ai->GetAiObjectContext()->GetValue<list<ObjectGuid> >("possible targets no los")->Get();
-    if (pullTarget && find(possible.begin(), possible.end(), pullTarget) == possible.end())
-    {
-        context->GetValue<ObjectGuid>("pull target")->Set(ObjectGuid());
-    }
-
-    context->GetValue<Unit*>("current target")->Set(NULL);
-    bot->SetSelectionGuid(ObjectGuid());
-
-    // attack next target if in combat
-    uint32 attackers = AI_VALUE(uint8, "attacker count");
-    if (attackers > 0)
-    {
-        Unit* enemy = AI_VALUE(Unit*, "enemy player target");
-        if (!enemy)
         {
-            ai->InterruptSpell();
-            bot->AttackStop();
-
-            if (ai->HasStrategy("dps assist", BotState::BOT_STATE_NON_COMBAT))
-                return ai->DoSpecificAction("dps assist", Event(), true);
-            if (ai->HasStrategy("tank assist", BotState::BOT_STATE_NON_COMBAT))
-                return ai->DoSpecificAction("tank assist", Event(), true);
+            AI_VALUE(LootObjectStack*, "available loot")->Add(guid);
         }
     }
 
+    // Clear the target variables
+    ObjectGuid pullTarget = AI_VALUE(ObjectGuid, "pull target");
+    list<ObjectGuid> possible = AI_VALUE(list<ObjectGuid>, "possible targets no los");
+    if (pullTarget && find(possible.begin(), possible.end(), pullTarget) == possible.end())
+    {
+        SET_AI_VALUE(ObjectGuid, "pull target", ObjectGuid());
+    }
+
+    // Save the old target and clear the current target
+    if(target)
+    {
+        SET_AI_VALUE(Unit*, "old target", target);
+        SET_AI_VALUE(Unit*, "current target", nullptr);
+    }
+    
+    // Stop attacking
+    bot->SetSelectionGuid(ObjectGuid());
     ai->InterruptSpell();
     bot->AttackStop();
+
+    // Stop pet attacking
     Pet* pet = bot->GetPet();
     if (pet)
     {
@@ -184,5 +139,31 @@ bool DropTargetAction::Execute(Event& event)
             pet->AttackStop();
         }
     }
-    return true;
+
+    // Check if there is any enemy targets available to attack
+    if (!AI_VALUE(list<ObjectGuid>, "combat targets").empty())
+    {
+        // Check if there is an enemy player nearby
+        Unit* enemyPlayer = AI_VALUE(Unit*, "enemy player target");
+        if (enemyPlayer && 
+           (ai->HasStrategy("pvp", BotState::BOT_STATE_NON_COMBAT) ||
+            ai->HasStrategy("duel", BotState::BOT_STATE_NON_COMBAT)))
+        {
+            return ai->DoSpecificAction("attack enemy player", event, true);
+        }
+        else
+        {
+            // Let the dps/tank assist pick a target to attack
+            if (ai->HasStrategy("dps assist", BotState::BOT_STATE_NON_COMBAT))
+            {
+                return ai->DoSpecificAction("dps assist", event, true);
+            }
+            else if (ai->HasStrategy("tank assist", BotState::BOT_STATE_NON_COMBAT))
+            {
+                return ai->DoSpecificAction("tank assist", event, true);
+            }
+        }
+    }
+
+    return false;
 }

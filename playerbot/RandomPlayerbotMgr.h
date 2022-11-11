@@ -80,7 +80,7 @@ class RandomPlayerbotMgr : public PlayerbotHolder
         void UpdateGearSpells(Player* bot);
         void ScheduleTeleport(uint32 bot, uint32 time = 0);
         void ScheduleChangeStrategy(uint32 bot, uint32 time = 0);
-        void HandleCommand(uint32 type, const string& text, Player& fromPlayer, string channelName = "", Team team = TEAM_BOTH_ALLOWED);
+        void HandleCommand(uint32 type, const string& text, Player& fromPlayer, string channelName = "", Team team = TEAM_BOTH_ALLOWED, uint32 lang = LANG_UNIVERSAL);
         string HandleRemoteCommand(string request);
         void OnPlayerLogout(Player* player);
         void OnPlayerLogin(Player* player);
@@ -181,6 +181,8 @@ class RandomPlayerbotMgr : public PlayerbotHolder
         uint32 bgBotsCount;
         uint32 playersLevel = sPlayerbotAIConfig.randombotStartingLevel;
         PerformanceMonitorOperation* totalPmo;
+
+        std::unordered_map<uint32, std::vector<std::pair<int32,int32>>> playerBotMoveLog;
 };
 
 #define sRandomPlayerbotMgr RandomPlayerbotMgr::instance()

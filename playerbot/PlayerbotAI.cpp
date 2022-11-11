@@ -261,7 +261,6 @@ void PlayerbotAI::UpdateAI(uint32 elapsed, bool minimal)
         if (!inCombat && !isCasting && !isWaiting)
         {
             ResetAIInternalUpdateDelay();
-            combatStart = time(0);
         }
         else if (!AllowActivity())
         {
@@ -277,7 +276,6 @@ void PlayerbotAI::UpdateAI(uint32 elapsed, bool minimal)
             ResetAIInternalUpdateDelay();
 
         inCombat = false;
-        combatStart = 0;
     }
 
     // force stop if moving but should not
@@ -371,10 +369,16 @@ bool PlayerbotAI::IsStateActive(BotState state) const
     return currentEngine == engines[(uint8)state];
 }
 
+time_t PlayerbotAI::GetCombatStartTime() const
+{
+    return aiObjectContext->GetValue<time_t>("combat start time")->Get();
+}
+
 void PlayerbotAI::OnCombatStarted()
 {
     if(!IsStateActive(BotState::BOT_STATE_COMBAT))
     {
+        aiObjectContext->GetValue<time_t>("combat start time")->Set(time(0));
         ChangeEngine(BotState::BOT_STATE_COMBAT);
     }
 }
@@ -383,6 +387,7 @@ void PlayerbotAI::OnCombatEnded()
 {
     if (!IsStateActive(BotState::BOT_STATE_NON_COMBAT))
     {
+        aiObjectContext->GetValue<time_t>("combat start time")->Set(0);
         ChangeEngine(BotState::BOT_STATE_NON_COMBAT);
     }
 }
@@ -464,6 +469,7 @@ void PlayerbotAI::OnDeath()
         aiObjectContext->GetValue<Unit*>("enemy player target")->Set(NULL);
         aiObjectContext->GetValue<ObjectGuid>("pull target")->Set(ObjectGuid());
         aiObjectContext->GetValue<LootObject>("loot target")->Set(LootObject());
+        aiObjectContext->GetValue<time_t>("combat start time")->Set(0);
         ChangeEngine(BotState::BOT_STATE_DEAD);
     }
 }
@@ -634,6 +640,7 @@ void PlayerbotAI::Reset(bool full)
     aiObjectContext->GetValue<GuidPosition>("rpg target")->Set(GuidPosition());
     aiObjectContext->GetValue<LootObject>("loot target")->Set(LootObject());
     aiObjectContext->GetValue<uint32>("lfg proposal")->Set(0);
+    aiObjectContext->GetValue<time_t>("combat start time")->Set(0);
     bot->SetSelectionGuid(ObjectGuid());
 
     LastSpellCast & lastSpell = aiObjectContext->GetValue<LastSpellCast& >("last spell cast")->Get();
@@ -711,7 +718,7 @@ bool PlayerbotAI::IsAllowedCommand(string text)
     return false;
 }
 
-void PlayerbotAI::HandleCommand(uint32 type, const string& text, Player& fromPlayer)
+void PlayerbotAI::HandleCommand(uint32 type, const string& text, Player& fromPlayer, const uint32 lang)
 {
     string filtered = text;
 
@@ -838,7 +845,7 @@ void PlayerbotAI::HandleCommand(uint32 type, const string& text, Player& fromPla
             bot->GetSession()->HandleLogoutCancelOpcode(p);
         }
     }
-    else if (filtered.size() > 5 && filtered.substr(0, 5) == "wait ")
+    else if ((filtered.size() > 5) && (filtered.substr(0, 5) == "wait ") && (filtered.find("wait for attack") == std::string::npos))
     {
         std::string remaining = filtered.substr(filtered.find(" ") + 1);
         uint32 delay = atof(remaining.c_str()) * IN_MILLISECONDS;
@@ -1024,6 +1031,9 @@ void PlayerbotAI::HandleBotOutgoingPacket(const WorldPacket& packet)
                 sObjectMgr.GetPlayerNameByGUID(guid1, name);
                 uint32 accountId = sObjectMgr.GetPlayerAccountIdByGUID(guid1);
                 isRandomBot = sPlayerbotAIConfig.IsInRandomAccountList(accountId);
+                if(!isRandomBot)
+                    isRandomBot = sPlayerbotAIConfig.IsInNonRandomAccountList(accountId);
+
                 bool isMentioned = message.find(bot->GetName()) != std::string::npos;
 
                 // random bot speaks, chat CD
@@ -1037,6 +1047,9 @@ void PlayerbotAI::HandleBotOutgoingPacket(const WorldPacket& packet)
                     return;
 
                 if (isRandomBot && urand(0, 20))
+                    return;
+
+                if (lang == LANG_ADDON)
                     return;
 
                 if ((isRandomBot && !isPaused && (!urand(0, 30) || (!urand(0, 20) && message.find(bot->GetName()) != std::string::npos))) || (!isRandomBot && (isMentioned || !urand(0, 4))))
@@ -1844,6 +1857,28 @@ WorldObject* PlayerbotAI::GetWorldObject(ObjectGuid guid)
     return map->GetWorldObject(guid);
 }
 
+vector<Player*> PlayerbotAI::GetPlayersInGroup()
+{
+    vector<Player*> members;
+
+    Group* group = bot->GetGroup();
+
+    if (!group)
+        return members;
+
+    for (GroupReference* ref = group->GetFirstMember(); ref; ref = ref->next())
+    {
+        Player* member = ref->getSource();
+
+        if (member->GetPlayerbotAI() && !member->GetPlayerbotAI()->IsRealPlayer())
+            continue;
+
+        members.push_back(ref->getSource());
+    }   
+
+    return members;
+}
+
 bool PlayerbotAI::TellMasterNoFacing(string text, PlayerbotSecurityLevel securityLevel, bool isPrivate)
 {
     time_t lastSaid = whispers[text];
@@ -1851,68 +1886,50 @@ bool PlayerbotAI::TellMasterNoFacing(string text, PlayerbotSecurityLevel securit
     {
         whispers[text] = time(0);
 
-        Player* master = GetMaster();
+        vector<Player*> recievers;
 
-        if (bot->GetGroup() && (!master || !HasActivePlayerMaster()))
+        ChatMsg type = CHAT_MSG_SYSTEM;
+
+        if (!isPrivate && bot->GetGroup())
         {
-            Group* group = bot->GetGroup();
-            for (GroupReference* ref = group->GetFirstMember(); ref; ref = ref->next())
-            {
-                if (ref->getSource()->GetPlayerbotAI() && !ref->getSource()->GetPlayerbotAI()->IsRealPlayer())
-                    continue;
+            recievers = GetPlayersInGroup();
 
-                master = ref->getSource();
-                break;
-            }
-        }
-        
-        if (!master && (sPlayerbotAIConfig.randomBotSayWithoutMaster || HasStrategy("debug", BotState::BOT_STATE_NON_COMBAT)))
-        {
-            bot->Say(text, (bot->GetTeam() == ALLIANCE ? LANG_COMMON : LANG_ORCISH));
-            return true;
-        }
-        else if ((!isPrivate || master != GetMaster()) && master && bot->GetGroup() && bot->GetGroup()->IsMember(master->GetObjectGuid()))
-        {            
-
-            WorldPacket data;
-            ChatHandler::BuildChatPacket(data,
-                bot->GetGroup()->IsRaidGroup() ? CHAT_MSG_RAID : CHAT_MSG_PARTY,
-                text.c_str(),
-                LANG_UNIVERSAL,
-                CHAT_TAG_NONE, bot->GetObjectGuid(), bot->GetName());
-
-            Group* group = bot->GetGroup();
-            if (group)
-            {
-                for (GroupReference* ref = group->GetFirstMember(); ref; ref = ref->next())
-                {
-                    if (ref->getSource()->GetPlayerbotAI() && !ref->getSource()->GetPlayerbotAI()->IsRealPlayer())
-                        continue;
-
-                    sServerFacade.SendPacket(ref->getSource(), data);
-                }
-            }
-
-            return true;
+            if(!recievers.empty())
+                type = bot->GetGroup()->IsRaidGroup() ? CHAT_MSG_RAID : CHAT_MSG_PARTY;
         }
 
+        if (type == CHAT_MSG_SYSTEM && HasRealPlayerMaster())
+            type = CHAT_MSG_WHISPER;
 
-        if (!IsTellAllowed(securityLevel))
-            return false;
-
-        whispers[text] = time(0);
-
-        ChatMsg type = CHAT_MSG_WHISPER;
-        if (currentChat.second - time(0) >= 1)
-            type = currentChat.first;
+        if (type == CHAT_MSG_SYSTEM && (sPlayerbotAIConfig.randomBotSayWithoutMaster || HasStrategy("debug", BotState::BOT_STATE_NON_COMBAT)))
+            type = CHAT_MSG_SAY;
 
         WorldPacket data;
-        ChatHandler::BuildChatPacket(data,
-            type == CHAT_MSG_ADDON ? CHAT_MSG_PARTY : type,
-            text.c_str(),
-            type == CHAT_MSG_ADDON ? LANG_ADDON : LANG_UNIVERSAL,
-            CHAT_TAG_NONE, bot->GetObjectGuid(), bot->GetName());
-        sServerFacade.SendPacket(master, data);
+
+        switch (type) {
+        case CHAT_MSG_SAY:
+            bot->Say(text, (bot->GetTeam() == ALLIANCE ? LANG_COMMON : LANG_ORCISH));
+            return true;
+        case CHAT_MSG_RAID:
+        case CHAT_MSG_PARTY:
+            ChatHandler::BuildChatPacket(data, type, text.c_str(), LANG_UNIVERSAL, CHAT_TAG_NONE, bot->GetObjectGuid(), bot->GetName());
+
+            for (auto reciever : recievers)
+                sServerFacade.SendPacket(reciever, data);
+
+            return true;
+        case CHAT_MSG_WHISPER:
+            if (!IsTellAllowed(securityLevel))
+                return false;
+
+            whispers[text] = time(0);
+
+            if (currentChat.second - time(0) >= 1)
+                type = currentChat.first;
+
+            ChatHandler::BuildChatPacket(data, type == CHAT_MSG_ADDON ? CHAT_MSG_PARTY : type, text.c_str(), type == CHAT_MSG_ADDON ? LANG_ADDON : LANG_UNIVERSAL, CHAT_TAG_NONE, bot->GetObjectGuid(), bot->GetName());
+            sServerFacade.SendPacket(master, data);
+        }
     }
 
     return true;
@@ -3149,34 +3166,36 @@ uint32 PlayerbotAI::GetFixedBotNumer(BotTypeNumber typeNumber, uint32 maxNum, fl
     return randnum;                                                //Now we have a number unique for each bot between 0 and maxNum that increases by cyclePerMin.
 }
 
-/*
-enum GrouperType
-{
-    SOLO = 0,
-    MEMBER = 1,
-    LEADER_2 = 2,
-    LEADER_3 = 3,
-    LEADER_4 = 4,
-    LEADER_5 = 5
-};
-*/
-
 GrouperType PlayerbotAI::GetGrouperType()
 {
-    uint32 grouperNumber = GetFixedBotNumer(BotTypeNumber::GROUPER_TYPE_NUMBER, 100, 0);
+    uint32 maxGroupType = sPlayerbotAIConfig.randomBotRaidNearby ? 100 : 90;
+    uint32 grouperNumber = GetFixedBotNumer(BotTypeNumber::GROUPER_TYPE_NUMBER, maxGroupType, 0);
+
+    //20% solo
+    //50% member
+    //20% leader
+    //10% raider
 
     if (grouperNumber < 20 && !HasRealPlayerMaster())
         return GrouperType::SOLO;
-    if (grouperNumber < 80)
+    if (grouperNumber < 70)
         return GrouperType::MEMBER;
-    if (grouperNumber < 85)
+    if (grouperNumber < 75)
         return GrouperType::LEADER_2;
-    if (grouperNumber < 90)
+    if (grouperNumber < 80)
         return GrouperType::LEADER_3;
-    if (grouperNumber < 95)
+    if (grouperNumber < 85)
         return GrouperType::LEADER_4;
-    
-   return GrouperType::LEADER_5;
+    if (grouperNumber <= 90)
+        return GrouperType::LEADER_5;
+#ifdef MANGOSBOT_ZERO
+    if (grouperNumber <= 95)
+        return GrouperType::RAIDER_20;
+#else
+    if (grouperNumber <= 95)
+        return GrouperType::RAIDER_10;
+#endif    
+   return GrouperType::RAIDER_MAX;
 }
 
 GuilderType PlayerbotAI::GetGuilderType()
@@ -3358,8 +3377,8 @@ bool PlayerbotAI::AllowActive(ActivityType activityType)
     if (HasRealPlayerMaster())
         return true;
 
-    //Always active bots
-    if (IsSelfMaster())
+    //Self bot in a group with a bot master.
+    if (IsRealPlayer())
         return true;
 
     Group* group = bot->GetGroup();

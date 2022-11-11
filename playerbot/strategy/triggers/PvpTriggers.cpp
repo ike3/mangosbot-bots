@@ -12,11 +12,12 @@ using namespace ai;
 
 bool EnemyPlayerNear::IsActive()
 {
-    Unit* current = AI_VALUE(Unit*, "current target");
-    if (current)
-        return current != AI_VALUE(Unit*, "enemy player target");
+    Unit* currentTarget = AI_VALUE(Unit*, "current target");
+    Unit* newTarget = AI_VALUE(Unit*, "enemy player target");
+    if (currentTarget && newTarget)
+        return currentTarget != newTarget;
 
-    return AI_VALUE(Unit*, "enemy player target");
+    return newTarget;
 }
 
 bool PlayerHasNoFlag::IsActive()

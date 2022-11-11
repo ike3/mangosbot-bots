@@ -115,6 +115,7 @@ namespace ai
             creators["guild"] = &StrategyContext::guild;
             creators["grind"] = &StrategyContext::grind;
             creators["avoid aoe"] = &StrategyContext::avoid_aoe;
+            creators["wait for attack"] = &StrategyContext::wait_for_attack;
         }
 
     private:
@@ -184,6 +185,7 @@ namespace ai
         static Strategy* guild (PlayerbotAI* ai) { return new GuildStrategy(ai); }
         static Strategy* grind(PlayerbotAI* ai) { return new GrindingStrategy(ai); }
         static Strategy* avoid_aoe(PlayerbotAI* ai) { return new AvoidAoeStrategy(ai); }
+        static Strategy* wait_for_attack(PlayerbotAI* ai) { return new WaitForAttackStrategy(ai); }
     };
 
     class MovementStrategyContext : public NamedObjectContext<Strategy>

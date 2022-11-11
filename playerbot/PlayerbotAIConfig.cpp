@@ -321,7 +321,8 @@ bool PlayerbotAIConfig::Initialize()
 	randomBotPreQuests = config.GetBoolDefault("AiPlayerbot.PreQuests", true);
     randomBotSayWithoutMaster = config.GetBoolDefault("AiPlayerbot.RandomBotSayWithoutMaster", false);
     randomBotGroupNearby = config.GetBoolDefault("AiPlayerbot.RandomBotGroupNearby", false);
-
+    randomBotRaidNearby = config.GetBoolDefault("AiPlayerbot.RandomBotRaidNearby", false);
+    
     //SPP automation
     autoPickReward = config.GetStringDefault("AiPlayerbot.AutoPickReward", "no");
     autoEquipUpgradeLoot = config.GetBoolDefault("AiPlayerbot.AutoEquipUpgradeLoot", false);
@@ -604,10 +605,15 @@ void PlayerbotAIConfig::loadNonRandomBotAccounts()
                 string charName = fields[0].GetString();
                 uint32 guid = fields[1].GetUInt32();
 
+                uint32 always = sRandomPlayerbotMgr.GetValue(guid, "always");
+
+                if (always == 2)
+                    continue;
+
                 if (std::find(toggleAlwaysOnlineChars.begin(), toggleAlwaysOnlineChars.end(), charName) != toggleAlwaysOnlineChars.end())
                     charAlwaysOnline = !charAlwaysOnline;
 
-                if(charAlwaysOnline || accountAlwaysOnline)
+                if(charAlwaysOnline || accountAlwaysOnline || always)
                     nonRandomBots.push_back(make_pair(accountId, guid));
 
             } while (result->NextRow());
@@ -707,7 +713,7 @@ void PlayerbotAIConfig::logEvent(PlayerbotAI* ai, string eventName, string info1
 
         out << to_string(bot->getRace()) << ",";
         out << to_string(bot->getClass()) << ",";
-        float subLevel = ((float)bot->GetLevel() + ((float)bot->GetUInt32Value(PLAYER_XP) / (float)bot->GetUInt32Value(PLAYER_NEXT_LEVEL_XP)));
+        float subLevel = ((float)bot->GetLevel() + (bot->GetUInt32Value(PLAYER_NEXT_LEVEL_XP) ? ((float)bot->GetUInt32Value(PLAYER_XP) / (float)bot->GetUInt32Value(PLAYER_NEXT_LEVEL_XP)) : 0));
 
         out << subLevel << ",";
 

@@ -657,6 +657,86 @@ list<string> PlayerbotHolder::HandlePlayerbotCommand(char const* args, Player* m
         return messages;
     }
 
+    if (!strcmp(cmd, "always"))
+    {
+        if (sPlayerbotAIConfig.selfBotLevel == 0)
+        {
+            messages.push_back("Self-bot is disabled");
+            return messages;
+        }
+        else if (sPlayerbotAIConfig.selfBotLevel == 1 && master->GetSession()->GetSecurity() < SEC_GAMEMASTER)
+        {
+            messages.push_back("You do not have permission to enable player ai");
+            return messages;
+        }
+        else if (sPlayerbotAIConfig.selfBotLevel == 2 && master->GetSession()->GetSecurity() < SEC_GAMEMASTER)
+        {
+            messages.push_back("Player ai is only available while online");
+            return messages;
+        }
+
+        ObjectGuid guid;
+        uint32 accountId;
+        string alwaysName;
+
+        if (!charname)
+        {
+            guid = master->GetObjectGuid(); 
+            accountId = master->GetSession()->GetAccountId();
+            alwaysName = master->GetName();
+        }
+        else
+        {
+            guid = sObjectMgr.GetPlayerGuidByName(charname);
+            if (!guid)
+            {
+                messages.push_back("character not found");
+                return messages;
+            }
+
+            accountId = sObjectMgr.GetPlayerAccountIdByGUID(guid);
+
+            if (accountId != master->GetSession()->GetAccountId() && master->GetSession()->GetSecurity() < SEC_GAMEMASTER)
+            {
+                messages.push_back("Player ai can not be forced for characters from a different account.");
+                return messages;
+            }
+
+            alwaysName = charname;
+        }
+
+        uint32 always = sRandomPlayerbotMgr.GetValue(guid.GetCounter(), "always");
+
+        if (!always || always == 2)
+        {
+            sRandomPlayerbotMgr.SetValue(guid.GetCounter(), "always", 1);
+            messages.push_back("Enable offline player ai for " + alwaysName);
+            sPlayerbotAIConfig.nonRandomBots.push_back(make_pair(accountId, guid.GetCounter()));
+        }
+        else
+        {
+            sRandomPlayerbotMgr.SetValue(guid.GetCounter(), "always", 2);
+            messages.push_back("Disable offline player ai for " + alwaysName);
+
+            if (guid != master->GetObjectGuid())
+            {
+                Player* bot = sRandomPlayerbotMgr.GetPlayerBot(guid);
+
+                if (bot && bot->GetPlayerbotAI() && !bot->GetPlayerbotAI()->GetMaster() && sPlayerbotAIConfig.IsNonRandomBot(bot))
+                {
+                    sRandomPlayerbotMgr.LogoutPlayerBot(guid);
+                }
+            }
+
+            auto it = remove_if(sPlayerbotAIConfig.nonRandomBots.begin(), sPlayerbotAIConfig.nonRandomBots.end(), [guid](std::pair<uint32, uint32> i) {return i.second == guid.GetCounter(); });
+
+            if (it != sPlayerbotAIConfig.nonRandomBots.end())
+                sPlayerbotAIConfig.nonRandomBots.erase(it, sPlayerbotAIConfig.nonRandomBots.end());
+        }
+        
+        return messages;
+    }
+
     if (!strcmp(cmd, "self"))
     {
         if (master->GetPlayerbotAI())
@@ -926,7 +1006,7 @@ void PlayerbotMgr::UpdateAIInternal(uint32 elapsed, bool minimal)
     CheckTellErrors(elapsed);
 }
 
-void PlayerbotMgr::HandleCommand(uint32 type, const string& text)
+void PlayerbotMgr::HandleCommand(uint32 type, const string& text, uint32 lang)
 {
     Player *master = GetMaster();
     if (!master)
@@ -938,7 +1018,7 @@ void PlayerbotMgr::HandleCommand(uint32 type, const string& text)
         split(commands, text, sPlayerbotAIConfig.commandSeparator.c_str());
         for (vector<string>::iterator i = commands.begin(); i != commands.end(); ++i)
         {
-            HandleCommand(type, *i);
+            HandleCommand(type, *i,lang);
         }
         return;
     }
@@ -946,14 +1026,14 @@ void PlayerbotMgr::HandleCommand(uint32 type, const string& text)
     for (PlayerBotMap::const_iterator it = GetPlayerBotsBegin(); it != GetPlayerBotsEnd(); ++it)
     {
         Player* const bot = it->second;
-        bot->GetPlayerbotAI()->HandleCommand(type, text, *master);
+        bot->GetPlayerbotAI()->HandleCommand(type, text, *master, lang);
     }
 
     for (PlayerBotMap::const_iterator it = sRandomPlayerbotMgr.GetPlayerBotsBegin(); it != sRandomPlayerbotMgr.GetPlayerBotsEnd(); ++it)
     {
         Player* const bot = it->second;
         if (bot->GetPlayerbotAI()->GetMaster() == master)
-            bot->GetPlayerbotAI()->HandleCommand(type, text, *master);
+            bot->GetPlayerbotAI()->HandleCommand(type, text, *master, lang);
     }
 }
 

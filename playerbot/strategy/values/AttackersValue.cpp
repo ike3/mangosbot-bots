@@ -1,6 +1,7 @@
 #include "botpch.h"
 #include "../../playerbot.h"
 #include "AttackersValue.h"
+#include "PossibleTargetsValue.h"
 
 #include "../../ServerFacade.h"
 #include "GridNotifiers.h"
@@ -66,34 +67,23 @@ void AttackersValue::AddAttackersOf(Player* player, set<Unit*>& targets)
         return;
 
 	list<Unit*> units;
-	//MaNGOS::AnyUnfriendlyUnitInObjectRangeCheck u_check(player, sPlayerbotAIConfig.sightDistance);
-    //MaNGOS::UnitListSearcher<MaNGOS::AnyUnfriendlyUnitInObjectRangeCheck> searcher(units, u_check);
-    //Cell::VisitAllObjects(player, searcher, sPlayerbotAIConfig.sightDistance);
-
-    list<ObjectGuid> unitGuids = AI_VALUE(list<ObjectGuid>, "possible targets");
-
-    for (auto unitGuid : unitGuids)
-    {
-        Unit* unit = ai->GetUnit(unitGuid);
-        if (unit)
-            units.push_back(unit);
-    }
-
+    PossibleTargetsValue::FindPossibleTargets(player, units, sPlayerbotAIConfig.sightDistance);
 	for (list<Unit*>::iterator i = units.begin(); i != units.end(); i++)
     {
-		if (!player->GetGroup())
-		{
-			Unit* unit = *i;
+        Unit* unit = *i;
+        if (PossibleTargetsValue::IsValid(player, unit, sPlayerbotAIConfig.sightDistance))
+        {
+            if (!player->GetGroup())
+            {
 #ifdef CMANGOS
-			if (!unit->getThreatManager().getThreat(player) && (!unit->getThreatManager().getCurrentVictim() || unit->getThreatManager().getCurrentVictim()->getTarget() != player))
+                if (!unit->getThreatManager().getThreat(player) && (!unit->getThreatManager().getCurrentVictim() || unit->getThreatManager().getCurrentVictim()->getTarget() != player))
 #endif
 #ifdef MANGOS
-			if (!unit->GetThreatManager().getThreat(player))
+                if (!unit->GetThreatManager().getThreat(player))
 #endif
-				continue;
-		}
-        {
-            Unit* unit = *i;
+                    continue;
+            }
+
             targets.insert(unit);
             unit->CallForAllControlledUnits(AddGuardiansHelper(units), CONTROLLED_PET | CONTROLLED_GUARDIANS | CONTROLLED_CHARM | CONTROLLED_MINIPET | CONTROLLED_TOTEMS);
         }
@@ -116,65 +106,101 @@ void AttackersValue::RemoveNonThreating(set<Unit*>& targets)
     }
 }
 
-bool AttackersValue::IsPossibleTarget(Unit *attacker, Player *bot, float range)
+bool AttackersValue::IsPossibleTarget(Unit *attacker, Player *player, float range)
 {
+    if(!attacker)
+        return false;
+
     Creature *c = dynamic_cast<Creature*>(attacker);
+    Group* group = player->GetGroup();
+    Player* master = nullptr;
 
     bool rti = false;
-    if (attacker && bot->GetGroup())
-        rti = bot->GetGroup()->GetTargetIcon(7) == attacker->GetObjectGuid();
-
-    PlayerbotAI* ai = bot->GetPlayerbotAI();
-    
     bool leaderHasThreat = false;
-    if (attacker && bot->GetGroup() && ai->GetMaster())
-        leaderHasThreat = attacker->getThreatManager().getThreat(ai->GetMaster());
-
     bool isMemberBotGroup = false;
-    if (bot->GetGroup() && ai->GetMaster() && ai->GetMaster()->GetPlayerbotAI() && !ai->GetMaster()->GetPlayerbotAI()->IsRealPlayer())
-        isMemberBotGroup = true;
+    bool inVehicle = false;
+    bool hasEnemyPlayerTarget = false;
+    bool inDuel = false;
+    bool canSeeAttacker = false;
+    bool hasShackleUndeadAura = false;
+    bool hasAttackTaggedStrategy = false;
+    bool isSapped = false;
+    bool isGouged = false;
+    bool isStunned = false;
+    bool isPolymorphed = false;
+    bool isFeared = false;
+    bool isFriendly = false;
+    bool isDead = false;
+    bool isBanished = false;
 
-    bool inCannon = ai->IsInVehicle(false, true);
+    // If the player is a bot
+    PlayerbotAI* bot = player->GetPlayerbotAI();
+    if(bot)
+    {
+        master = bot->GetMaster();
+        if (master)
+        {
+            if(group)
+            {
+                leaderHasThreat = attacker->getThreatManager().getThreat(master);
 
-    bool enemy = ai->GetAiObjectContext()->GetValue<Unit*>("enemy player target")->Get();
-    bool duel = false;
-    if (attacker && bot->duel && bot->duel->opponent && attacker->GetObjectGuid() == bot->duel->opponent->GetObjectGuid())
-        duel = true;
+                // If the master is a bot
+                if (master->GetPlayerbotAI() && !master->GetPlayerbotAI()->IsRealPlayer())
+                    isMemberBotGroup = true;
+            }
+        }
+
+        inVehicle = bot->IsInVehicle(false, true);
+        hasEnemyPlayerTarget = bot->GetAiObjectContext()->GetValue<Unit*>("enemy player target")->Get();
+        hasAttackTaggedStrategy = bot->HasStrategy("attack tagged", BotState::BOT_STATE_NON_COMBAT);
+        isSapped = bot->HasAura("sap", attacker);
+        isGouged = bot->HasAura("gouge", attacker);
+        hasShackleUndeadAura = bot->HasAura("shackle undead", attacker);
+    }
+
+    isStunned = attacker->IsStunned();
+    isPolymorphed = attacker->IsPolymorphed();
+    isFeared = sServerFacade.IsFeared(attacker);
+    isDead = sServerFacade.UnitIsDead(attacker);
+    isBanished = ai->HasAura("banish", attacker);
+    isFriendly = sServerFacade.IsFriendlyTo(attacker, player);
+    inDuel = player->duel && player->duel->opponent && (attacker->GetObjectGuid() == player->duel->opponent->GetObjectGuid());
+    canSeeAttacker = attacker->IsVisibleForOrDetect(player, player->GetCamera().GetBody(), true);
+    rti = group && (group->GetTargetIcon(7) == attacker->GetObjectGuid());
 
 #ifndef MANGOSBOT_ZERO
     Player* arenaEnemy = dynamic_cast<Player*>(attacker);
     if (arenaEnemy)
     {
-        if (arenaEnemy->InArena() && bot->InArena() && arenaEnemy->GetBGTeam() != bot->GetBGTeam())
-            duel = true;
+        if (arenaEnemy->InArena() && player->InArena() && (arenaEnemy->GetBGTeam() != player->GetBGTeam()))
+            inDuel = true;
     }
 #endif
 
-    return attacker &&
-        attacker->IsInWorld() &&
-        attacker->GetMapId() == bot->GetMapId() &&
-        !sServerFacade.UnitIsDead(attacker) &&
+    return attacker->IsInWorld() &&
+        (attacker->GetMapId() == player->GetMapId()) &&
+        !isDead &&
         !attacker->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_1) &&
         !attacker->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_UNTARGETABLE) &&
-        (inCannon || !attacker->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_UNINTERACTIBLE)) &&
-        attacker->IsVisibleForOrDetect(bot, bot->GetCamera().GetBody(), false) &&
+        (inVehicle || !attacker->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_UNINTERACTIBLE)) &&
+        canSeeAttacker &&
 #ifdef CMANGOS
-        !(attacker->IsStunned() && ai->HasAura("shackle undead", attacker)) &&
-        !ai->HasAura("gouge", attacker) &&
-        !ai->HasAura("banish", attacker) &&
+        !(isStunned && hasShackleUndeadAura) &&
+        !isGouged &&
+        !isBanished &&
 #endif
 #ifdef MANGOS
         //!attacker->hasUnitState(UNIT_STAT_STUNNED) &&
 #endif
-        !((attacker->IsPolymorphed() ||
-        bot->GetPlayerbotAI()->HasAura("sap", attacker) ||
+        !((isPolymorphed ||
+        isSapped ||
         //sServerFacade.IsCharmed(attacker) ||
-        sServerFacade.IsFeared(attacker)) && !rti) &&
+        isFeared) && !rti) &&
         //!sServerFacade.IsInRoots(attacker) &&
-        (!sServerFacade.IsFriendlyTo(attacker, bot) || duel) &&
-        bot->IsWithinDistInMap(attacker, range) &&
+        (!isFriendly || inDuel) &&
+        player->IsWithinDistInMap(attacker, range) &&
         !attacker->HasAuraType(SPELL_AURA_SPIRIT_OF_REDEMPTION) &&
-        !(attacker->GetObjectGuid().IsPet() && enemy) &&
+        !(attacker->GetObjectGuid().IsPet() && hasEnemyPlayerTarget) &&
         !(attacker->GetCreatureType() == CREATURE_TYPE_CRITTER && !attacker->IsInCombat()) &&
         !(sPlayerbotAIConfig.IsInPvpProhibitedZone(sServerFacade.GetAreaId(attacker)) && (attacker->GetObjectGuid().IsPlayer() || attacker->GetObjectGuid().IsPet())) &&
         (!c || (
@@ -186,29 +212,28 @@ bool AttackersValue::IsPossibleTarget(Unit *attacker, Player *bot, float range)
 #endif
             (
 #ifdef CMANGOS
-                (!isMemberBotGroup && ai->HasStrategy("attack tagged", BotState::BOT_STATE_NON_COMBAT)) || leaderHasThreat ||
+                (!isMemberBotGroup && hasAttackTaggedStrategy) || leaderHasThreat ||
                 (!c->HasLootRecipient() &&
                     (!c->GetVictim() ||
                     c->GetVictim() &&
-                    ((bot->IsInGroup(c->GetVictim())) ||
-                        (ai->GetMaster() &&
-                            c->GetVictim() == ai->GetMaster())))) ||
-                c->IsTappedBy(bot)
+                    ((player->IsInGroup(c->GetVictim())) ||
+                        (master && c->GetVictim() == master)))) ||
+                c->IsTappedBy(player)
 #endif
 #ifndef MANGOSBOT_TWO
 #ifdef MANGOS
-                !attacker->HasFlag(UNIT_DYNAMIC_FLAGS, UNIT_DYNFLAG_TAPPED) || bot->IsTappedByMeOrMyGroup(c)
+                !attacker->HasFlag(UNIT_DYNAMIC_FLAGS, UNIT_DYNFLAG_TAPPED) || player->IsTappedByMeOrMyGroup(c)
 #endif
 #endif
                 )
             )
-            );
+        );
 }
 
 bool AttackersValue::IsValidTarget(Unit *attacker, Player *bot)
 {
     return  IsPossibleTarget(attacker, bot) &&
-        (sServerFacade.GetThreatManager(attacker).getCurrentVictim() ||
+            (sServerFacade.GetThreatManager(attacker).getCurrentVictim() ||
             attacker->GetGuidValue(UNIT_FIELD_TARGET) || attacker->GetObjectGuid().IsPlayer() ||
             attacker->GetObjectGuid() == bot->GetPlayerbotAI()->GetAiObjectContext()->GetValue<ObjectGuid>("pull target")->Get());
 }

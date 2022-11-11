@@ -55,6 +55,7 @@
 #include "CollisionValue.h"
 #include "CraftValue.h"
 #include "LastSpellCastTimeValue.h"
+#include "CombatStartTimeValue.h"
 #include "ManaSaveLevelValue.h"
 #include "LfgValues.h"
 #include "PvpValues.h"
@@ -83,6 +84,8 @@
 #include "RTSCValues.h"
 #include "VendorValues.h"
 #include "TrainerValues.h"
+#include "CombatTargetsValue.h"
+#include "WaitForAttackTimeValue.h"
 
 namespace ai
 {
@@ -156,6 +159,8 @@ namespace ai
             creators["loot target"] = &ValueContext::loot_target;
             creators["available loot"] = &ValueContext::available_loot;
             creators["has available loot"] = &ValueContext::has_available_loot;
+            creators["stack space for item"] = &ValueContext::stack_space_for_item;
+            creators["should loot object"] = &ValueContext::should_loot_object;
             creators["always loot list"] = &ValueContext::always_loot_list;
             creators["loot strategy"] = &ValueContext::loot_strategy;
             creators["last movement"] = &ValueContext::last_movement;
@@ -195,6 +200,7 @@ namespace ai
 
             creators["balance"] = &ValueContext::balance;
             creators["attackers"] = &ValueContext::attackers;
+            creators["combat targets"] = &ValueContext::combat_targets;
             creators["invalid target"] = &ValueContext::invalid_target;
             creators["mana save level"] = &ValueContext::mana_save_level;
             creators["combat"] = &ValueContext::combat;
@@ -303,6 +309,8 @@ namespace ai
             creators["trainable class spells"] = &ValueContext::trainable_class_spells;
 
             creators["has area debuff"] = &ValueContext::has_area_debuff;
+            creators["combat start time"] = &ValueContext::combat_start_time;
+            creators["wait for attack time"] = &ValueContext::wait_for_attack_time;
         }
 
     private:
@@ -331,6 +339,7 @@ namespace ai
         static UntypedValue* invalid_target(PlayerbotAI* ai) { return new InvalidTargetValue(ai); }
         static UntypedValue* balance(PlayerbotAI* ai) { return new BalancePercentValue(ai); }
         static UntypedValue* attackers(PlayerbotAI* ai) { return new AttackersValue(ai); }
+        static UntypedValue* combat_targets(PlayerbotAI* ai) { return new CombatTargetsValue(ai); }
 
         static UntypedValue* position(PlayerbotAI* ai) { return new PositionValue(ai); }
         static UntypedValue* current_position(PlayerbotAI* ai) { return new CurrentPositionValue(ai); }
@@ -364,6 +373,8 @@ namespace ai
         static UntypedValue* available_loot(PlayerbotAI* ai) { return new AvailableLootValue(ai); }
         static UntypedValue* loot_target(PlayerbotAI* ai) { return new LootTargetValue(ai); }
         static UntypedValue* has_available_loot(PlayerbotAI* ai) { return new HasAvailableLootValue(ai); }
+        static UntypedValue* stack_space_for_item(PlayerbotAI* ai) { return new StackSpaceForItem(ai); }
+        static UntypedValue* should_loot_object(PlayerbotAI* ai) { return new ShouldLootObject(ai); }
         static UntypedValue* always_loot_list(PlayerbotAI* ai) { return new AlwaysLootListValue(ai); }
         static UntypedValue* loot_strategy(PlayerbotAI* ai) { return new LootStrategyValue(ai); }
 
@@ -511,5 +522,7 @@ namespace ai
         static UntypedValue* trainable_class_spells(PlayerbotAI* ai) { return new TrainableClassSpells(ai); }
 
         static UntypedValue* has_area_debuff(PlayerbotAI* ai) { return new HasAreaDebuffValue(ai); }
+        static UntypedValue* combat_start_time(PlayerbotAI* ai) { return new CombatStartTimeValue(ai); }
+        static UntypedValue* wait_for_attack_time(PlayerbotAI* ai) { return new WaitForAttackTimeValue(ai); }
     };
 };

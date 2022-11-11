@@ -64,12 +64,12 @@ namespace ai
 
         virtual bool isUseful()
         {
-            return UseItemAction::isUseful() && AI_VALUE2(uint8, "mana", "self target") < 85;
+            return UseItemAction::isUseful() && bot->HasMana() && (AI_VALUE2(uint8, "mana", "self target") < 85);
         }
 
         virtual bool isPossible()
         {
-            return sPlayerbotAIConfig.freeFood || UseItemAction::isPossible();
+            return !sServerFacade.IsInCombat(bot) && (sPlayerbotAIConfig.freeFood || UseItemAction::isPossible());
         }
     };
 
@@ -127,12 +127,12 @@ namespace ai
 
         virtual bool isUseful()
         {
-            return UseItemAction::isUseful() && AI_VALUE2(uint8, "health", "self target") < sPlayerbotAIConfig.lowHealth;
+            return UseItemAction::isUseful() && (AI_VALUE2(uint8, "health", "self target") < sPlayerbotAIConfig.lowHealth);
         }
 
         virtual bool isPossible()
         {
-            return sPlayerbotAIConfig.freeFood || UseItemAction::isPossible();
+            return !sServerFacade.IsInCombat(bot) && (sPlayerbotAIConfig.freeFood || UseItemAction::isPossible());
         }
     };
 }

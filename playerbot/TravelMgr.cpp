@@ -240,6 +240,39 @@ vector<vector<WorldPosition*>> WorldPosition::distancePartition(const vector<flo
     return partitions;
 }
 
+bool WorldPosition::canFly() const
+{
+#ifdef MANGOSBOT_ZERO
+    return false;
+#endif
+    if (!getTerrain())
+        return false;
+
+    uint32 zoneid, areaid;
+    getTerrain()->GetZoneAndAreaId(zoneid, areaid, getX(), getY(), getZ());
+
+#ifdef MANGOSBOT_ONE  
+    uint32 v_map = GetVirtualMapForMapAndZone(getMapId(), zoneid);
+    MapEntry const* mapEntry = sMapStore.LookupEntry(v_map);
+    if (!mapEntry || mapEntry->addon < 1 || !mapEntry->IsContinent())
+        return false;
+#endif
+#ifdef MANGOSBOT_TWO
+    // Disallow mounting in wintergrasp when battle is in progress
+    if (OutdoorPvP* outdoorPvP = sOutdoorPvPMgr.GetScript(zoneid))
+    {
+        if (outdoorPvP->IsBattlefield())
+            return ((Battlefield*)outdoorPvP)->GetBattlefieldStatus() != BF_STATUS_IN_PROGRESS;
+    }
+
+    // don't allow flying in Dalaran restricted areas
+    // (no other zones currently has areas with AREA_FLAG_CANNOT_FLY)
+    if (AreaTableEntry const* atEntry = GetAreaEntryByAreaID(areaid))
+        return (!(atEntry->flags & AREA_FLAG_CANNOT_FLY));
+#endif
+
+    return true;
+}
 
 G3D::Vector3 WorldPosition::getVector3() const
 {
@@ -1355,13 +1388,13 @@ bool BossTravelDestination::isActive(Player* bot)
         if (bot->GetGroup()->IsRaidGroup())
         {
 #ifndef MANGOSBOT_TWO
-            if (points.front()->getMap() && points.front()->getMap()->IsNoRaid())
+            if (points.front()->getMapEntry() && points.front()->getMapEntry()->IsNonRaidDungeon())
 #else
-            if (points.front()->getMap() && points.front()->getMap()->IsNonRaidDungeon())
+            if (points.front()->getMapEntry() && points.front()->getMapEntry()->IsNonRaidDungeon())
 #endif
                 return false;
         }
-        else if (points.front()->getMap() && points.front()->getMap()->IsRaid())
+        else if (points.front()->getMapEntry() && points.front()->getMapEntry()->IsRaid())
             return false;
 
     }
@@ -2197,6 +2230,7 @@ void TravelMgr::LoadQuestTravelTable()
     sPlayerbotAIConfig.openLog("quest_map.csv", "w");
     sPlayerbotAIConfig.openLog("activity_pid.csv", "w");
     sPlayerbotAIConfig.openLog("deaths.csv", "w");
+    sPlayerbotAIConfig.openLog("player_paths.csv", "w");
 
 #ifdef IKE_PATHFINDER
     bool mmapAvoidMobMod = true;
