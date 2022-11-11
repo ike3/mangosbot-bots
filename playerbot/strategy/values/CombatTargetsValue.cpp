@@ -83,10 +83,14 @@ void CombatTargetsValue::AddTargetsOf(Player* player, set<Unit*>& targets)
                 units.push_back(oldTarget);
             }
 
-            Unit* pullTarget = bot->GetUnit(PAI_VALUE(ObjectGuid, "pull target"));
-            if (pullTarget)
+            // Only consider the owner bot's pull target
+            if(ai->GetBot() == player)
             {
-                units.push_back(pullTarget);
+                Unit* pullTarget = bot->GetUnit(PAI_VALUE(ObjectGuid, "pull target"));
+                if (pullTarget)
+                {
+                    units.push_back(pullTarget);
+                }
             }
         }
 
