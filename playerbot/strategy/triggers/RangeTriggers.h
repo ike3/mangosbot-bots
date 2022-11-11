@@ -66,7 +66,7 @@ namespace ai
                 }
 
                 if (isRaid)
-                    coeff = 1.0f;
+                    coeff = 0.5f;
 
                 return sServerFacade.IsDistanceLessOrEqualThan(targetDistance, minDistance * coeff);
             }
