@@ -25,6 +25,7 @@ namespace ai
 
     public:
         virtual bool Execute(Event& event);
+        virtual bool isUseful();
     };
 
     class AttackDuelOpponentAction : public AttackAction

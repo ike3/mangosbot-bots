@@ -45,6 +45,14 @@ bool AttackMyTargetAction::Execute(Event& event)
     return false;
 }
 
+bool AttackMyTargetAction::isUseful()
+{
+    if (ai->ContainsStrategy(STRATEGY_TYPE_HEAL))
+        return false;
+
+    return true;
+}
+
 bool AttackAction::Attack(Unit* target)
 {
     MotionMaster &mm = *bot->GetMotionMaster();
