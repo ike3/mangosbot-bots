@@ -1174,7 +1174,11 @@ bool LfgJoinAction::isUseful()
     if (ai->HasRealPlayerMaster())
         return false;
 
+#ifdef MANGOSBOT_ZERO
+    if (bot->GetGroup())
+#else
     if (bot->GetGroup() && bot->GetGroup()->GetLeaderGuid() != bot->GetObjectGuid())
+#endif
     {
         //ai->ChangeStrategy("-lfg", BotState::BOT_STATE_NON_COMBAT);
         return false;

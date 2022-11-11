@@ -174,6 +174,11 @@ void PlayerbotFactory::Randomize(bool incremental)
     PerformanceMonitorOperation* pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Reset");
     //ClearSkills();
     ClearSpells();
+    if (!incremental)
+    {
+        InitQuests(specialQuestIds);
+        bot->learnQuestRewardedSpells();
+    }
     if (!incremental && isRandomBot)
     {
         ClearInventory();
@@ -1277,9 +1282,6 @@ void PlayerbotFactory::InitEquipment(bool incremental)
 
                 if (!ids.empty()) ahbot::Shuffle(ids);
 
-                Item* oldItem = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, slot);
-                ItemPrototype const* oldProto = oldItem ? oldItem->GetProto() : nullptr;
-
                 for (uint32 index = 0; index < ids.size(); ++index)
                 {
                     uint32 newItemId = ids[index];
@@ -1298,6 +1300,9 @@ void PlayerbotFactory::InitEquipment(bool incremental)
 
                     if (proto->ItemLevel > sPlayerbotAIConfig.randomGearMaxLevel)
                         continue;
+
+                    Item* oldItem = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, slot);
+                    ItemPrototype const* oldProto = oldItem ? oldItem->GetProto() : nullptr;
 
                     if (oldItem && oldProto->ItemId == newItemId)
                         continue;
@@ -1377,10 +1382,6 @@ void PlayerbotFactory::InitEquipment(bool incremental)
                 else
                     if (!ids.empty()) ahbot::Shuffle(ids);
 
-                Item* oldItem = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, slot);
-                ItemPrototype const* oldProto = oldItem ? oldItem->GetProto() : nullptr;
-                uint32 oldStatValue = oldItem ? sRandomItemMgr.GetStatWeight(oldProto->ItemId, specId) : 0;
-
                 for (uint32 index = 0; index < ids.size(); ++index)
                 {
                     uint32 newItemId = ids[index];
@@ -1457,6 +1458,10 @@ void PlayerbotFactory::InitEquipment(bool incremental)
                     int delta = sPlayerbotAIConfig.randomGearMaxDiff + (80 - bot->GetLevel()) / 10;
                     if (proto->Quality < ITEM_QUALITY_LEGENDARY && ((int)bot->GetLevel() - (int)sRandomItemMgr.GetMinLevelFromCache(newItemId) > delta))
                         continue;
+
+                    Item* oldItem = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, slot);
+                    ItemPrototype const* oldProto = oldItem ? oldItem->GetProto() : nullptr;
+                    uint32 oldStatValue = oldItem ? sRandomItemMgr.GetStatWeight(oldProto->ItemId, specId) : 0;
 
                     if (oldItem && oldProto->ItemId == newItemId)
                         continue;
@@ -1863,6 +1868,7 @@ void PlayerbotFactory::InitTradeSkills()
             break;
         default:
             firstSkills.push_back(SKILL_TAILORING);
+            firstSkills.push_back(SKILL_ENGINEERING);
             secondSkills.push_back(SKILL_ENCHANTING);
         }
 
@@ -1927,6 +1933,99 @@ void PlayerbotFactory::InitTradeSkills()
         break;
     }
 #endif
+
+    // learn recipies
+    for (uint32 id = 0; id < sCreatureStorage.GetMaxEntry(); ++id)
+    {
+        CreatureInfo const* co = sCreatureStorage.LookupEntry<CreatureInfo>(id);
+        if (!co)
+            continue;
+
+        if (co->TrainerType != TRAINER_TYPE_TRADESKILLS)
+            continue;
+
+        uint32 trainerId = co->TrainerTemplateId;
+        if (!trainerId)
+            trainerId = co->Entry;
+
+        TrainerSpellData const* trainer_spells = sObjectMgr.GetNpcTrainerTemplateSpells(trainerId);
+        if (!trainer_spells)
+            trainer_spells = sObjectMgr.GetNpcTrainerSpells(trainerId);
+
+        if (!trainer_spells)
+            continue;
+
+        for (TrainerSpellMap::const_iterator itr = trainer_spells->spellList.begin(); itr != trainer_spells->spellList.end(); ++itr)
+        {
+            TrainerSpell const* tSpell = &itr->second;
+
+            if (!tSpell)
+                continue;
+
+            uint32 reqLevel = 0;
+            reqLevel = tSpell->isProvidedReqLevel ? tSpell->reqLevel : std::max(reqLevel, tSpell->reqLevel);
+            TrainerSpellState state = bot->GetTrainerSpellState(tSpell, reqLevel);
+            if (state != TRAINER_SPELL_GREEN)
+                continue;
+
+            SpellEntry const* proto = sServerFacade.LookupSpellInfo(tSpell->spell);
+            if (!proto)
+                continue;
+
+            SpellEntry const* spell = sServerFacade.LookupSpellInfo(tSpell->spell);
+            if (spell)
+            {
+                string SpellName = spell->SpellName[0];
+                if (spell->Effect[EFFECT_INDEX_1] == SPELL_EFFECT_SKILL_STEP)
+                {
+                    uint32 skill = spell->EffectMiscValue[EFFECT_INDEX_1];
+
+                    if (skill && !bot->HasSkill(skill))
+                    {
+                        SkillLineEntry const* pSkill = sSkillLineStore.LookupEntry(skill);
+                        if (pSkill)
+                        {
+                            if (SpellName.find("Apprentice") != string::npos && pSkill->categoryId == SKILL_CATEGORY_PROFESSION || pSkill->categoryId == SKILL_CATEGORY_SECONDARY)
+                                continue;
+                        }
+                    }
+                }
+            }
+
+#ifdef CMANGOS
+            if (tSpell->learnedSpell)
+            {
+                bool learned = false;
+                for (int j = 0; j < 3; ++j)
+                {
+                    if (proto->Effect[j] == SPELL_EFFECT_LEARN_SPELL)
+                    {
+                        uint32 learnedSpell = proto->EffectTriggerSpell[j];
+                        bot->learnSpell(learnedSpell, false);
+                        learned = true;
+                    }
+                }
+                if (!learned) bot->learnSpell(tSpell->learnedSpell, false);
+            }
+            else
+                ai->CastSpell(tSpell->spell, bot);
+#endif
+
+#ifdef MANGOS
+            bool learned = false;
+            for (int j = 0; j < 3; ++j)
+            {
+                if (proto->Effect[j] == SPELL_EFFECT_LEARN_SPELL)
+                {
+                    uint32 learnedSpell = proto->EffectTriggerSpell[j];
+                    bot->learnSpell(learnedSpell, false);
+                    learned = true;
+                }
+            }
+            if (!learned) bot->learnSpell(tSpell->spell, false);
+#endif
+        }
+    }
 }
 
 void PlayerbotFactory::UpdateTradeSkills()
@@ -2728,8 +2827,14 @@ void PlayerbotFactory::InitInventorySkill()
     }
 }
 
-Item* PlayerbotFactory::StoreItem(uint32 itemId, uint32 count)
+Item* PlayerbotFactory::StoreItem(uint32 itemId, uint32 count, bool ignoreCount)
 {
+    if (!ignoreCount)
+    {
+        if (bot->HasItemCount(itemId, count))
+            return nullptr;
+    }
+
     ItemPrototype const* proto = sObjectMgr.GetItemPrototype(itemId);
     ItemPosCountVec sDest;
     InventoryResult msg = bot->CanStoreNewItem(INVENTORY_SLOT_BAG_0, NULL_SLOT, sDest, itemId, count);

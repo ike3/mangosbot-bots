@@ -34,6 +34,10 @@ void CombatStrategy::InitTriggers(list<TriggerNode*> &triggers)
     triggers.push_back(new TriggerNode(
         "very often",
         NextAction::array(0, new NextAction("use lightwell", 80.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "very often",
+        NextAction::array(0, new NextAction("adamantite grenade", 61.0f), NULL)));
 }
 
 float AvoidAoeStrategyMultiplier::GetValue(Action* action)

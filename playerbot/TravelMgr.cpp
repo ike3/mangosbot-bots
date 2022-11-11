@@ -2444,6 +2444,33 @@ void TravelMgr::LoadQuestTravelTable()
             sPlayerbotAIConfig.log("vmangoslines.csv", out.str().c_str());
             
             mapId = 1;
+
+            static float const teldrassilSouthLimit[] = {
+            7916.0f,   3475.0f,
+            7916.0f,   1000.0f,
+            8283.0f,   -501.0f,
+            8804.0f,   -1098.0f
+            };
+
+            pos.clear();
+
+            size = my_sizeof(teldrassilSouthLimit) / my_sizeof(teldrassilSouthLimit[0]);
+
+            for (int32 i = 0; i < size - 1; i = i + 2)
+            {
+                if (teldrassilSouthLimit[i] == 0)
+                    break;
+                pos.push_back(WorldPosition(mapId, teldrassilSouthLimit[i], teldrassilSouthLimit[i + 1], 0));
+            }
+
+            out.str("");
+            out.clear();
+
+            out << "teldrassilSouthLimit" << ",";
+            WorldPosition().printWKT(pos, out, 1);
+            out << std::fixed;
+
+            sPlayerbotAIConfig.log("vmangoslines.csv", out.str().c_str());
        
             static float const northMiddleLimit[] = {
                   -2280.00f,  4054.00f,

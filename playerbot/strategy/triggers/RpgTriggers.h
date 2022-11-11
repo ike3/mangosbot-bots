@@ -7,7 +7,7 @@ namespace ai
     class NoRpgTargetTrigger : public Trigger
     {
     public:
-        NoRpgTargetTrigger(PlayerbotAI* ai, string name = "no rpg target", int checkInterval = 1) : Trigger(ai, name, checkInterval) {}
+        NoRpgTargetTrigger(PlayerbotAI* ai, string name = "no rpg target", int checkInterval = 10) : Trigger(ai, name, checkInterval) {}
 
         virtual bool IsActive() { return !AI_VALUE(GuidPosition, "rpg target"); };
     };

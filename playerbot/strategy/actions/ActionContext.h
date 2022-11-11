@@ -170,6 +170,8 @@ namespace ai
             creators["oil of immolation"] = &ActionContext::oil_of_immolation;
             creators["dark rune"] = &ActionContext::dark_rune;
             creators["adamantite grenade"] = &ActionContext::adamantite_grenade;
+            creators["bg banner"] = &ActionContext::bg_banner;
+            creators["use bandage"] = &ActionContext::use_bandage;
 
             // BG Tactics
             creators["bg tactics"] = &ActionContext::bg_tactics;
@@ -379,6 +381,8 @@ namespace ai
         static Action* oil_of_immolation(PlayerbotAI* ai) { return new CastOilOfImmolationAction(ai); }
         static Action* dark_rune(PlayerbotAI* ai) { return new DarkRuneAction(ai); }
         static Action* adamantite_grenade(PlayerbotAI* ai) { return new UseAdamantiteGrenadeAction(ai); }
+        static Action* bg_banner(PlayerbotAI* ai) { return new UseBgBannerAction(ai); }
+        static Action* use_bandage(PlayerbotAI* ai) { return new UseBandageAction(ai); }
         
         // BG Tactics
         static Action* bg_tactics(PlayerbotAI* ai) { return new BGTactics(ai); }

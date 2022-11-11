@@ -111,7 +111,55 @@ namespace ai
     class PurgeTrigger : public TargetAuraDispelTrigger
     {
     public:
-        PurgeTrigger(PlayerbotAI* ai) : TargetAuraDispelTrigger(ai, "purge", DISPEL_MAGIC) {}
+        PurgeTrigger(PlayerbotAI* ai) : TargetAuraDispelTrigger(ai, "purge", DISPEL_MAGIC, 3) {}
+        virtual bool IsActive()
+        {
+            Unit* target = AI_VALUE(Unit*, "current target");
+            if (!target)
+                return false;
+
+            if (sServerFacade.IsFriendlyTo(bot, target))
+                return false;
+
+            for (uint32 type = SPELL_AURA_NONE; type < TOTAL_AURAS; ++type)
+            {
+                Unit::AuraList const& auras = target->GetAurasByType((AuraType)type);
+                for (Unit::AuraList::const_iterator itr = auras.begin(); itr != auras.end(); ++itr)
+                {
+                    const Aura* aura = *itr;
+                    const SpellEntry* entry = aura->GetSpellProto();
+                    uint32 spellId = entry->Id;
+                    if (!IsPositiveSpell(spellId));
+                        continue;
+
+                    vector<uint32> ignoreSpells;
+                    ignoreSpells.push_back(17627);
+                    ignoreSpells.push_back(24382);
+                    ignoreSpells.push_back(22888);
+                    ignoreSpells.push_back(24425);
+                    ignoreSpells.push_back(16609);
+                    ignoreSpells.push_back(22818);
+                    ignoreSpells.push_back(22820);
+                    ignoreSpells.push_back(15366);
+                    ignoreSpells.push_back(15852);
+                    ignoreSpells.push_back(22817);
+                    ignoreSpells.push_back(17538);
+                    ignoreSpells.push_back(11405);
+                    ignoreSpells.push_back(7396);
+                    ignoreSpells.push_back(17539);
+
+                    if (find(ignoreSpells.begin(), ignoreSpells.end(), spellId) != ignoreSpells.end())
+                        continue;
+
+                    /*if (sPlayerbotAIConfig.dispelAuraDuration && aura->GetAuraDuration() && aura->GetAuraDuration() < (int32)sPlayerbotAIConfig.dispelAuraDuration)
+                        return false;*/
+
+                    if (ai->canDispel(entry, DISPEL_MAGIC))
+                        return true;
+                }
+            }
+            return false;
+        }
     };
 
     class WaterWalkingTrigger : public BuffTrigger {

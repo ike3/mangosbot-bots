@@ -282,6 +282,7 @@ RandomPlayerbotMgr::RandomPlayerbotMgr() : PlayerbotHolder(), processTicks(0), l
         BgCheckTimer = 0;
         LfgCheckTimer = 0;
         PlayersCheckTimer = 0;
+        EventTimeSyncTimer = 0;
         guildsDeleted = false;
         arenaTeamsDeleted = false;
 
@@ -300,6 +301,8 @@ RandomPlayerbotMgr::RandomPlayerbotMgr() : PlayerbotHolder(), processTicks(0), l
             delete results;
         }
 #endif
+        // sync event timers
+        SyncEventTimers();
     }
 }
 
@@ -464,8 +467,6 @@ void RandomPlayerbotMgr::LogPlayerLocation()
 
 }
 
-
-
 void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed, bool minimal)
 {
     if (totalPmo)
@@ -533,7 +534,10 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed, bool minimal)
     PerformanceMonitorOperation *pmo = sPerformanceMonitor.start(PERF_MON_TOTAL,
         onlineBotCount < maxAllowedBotCount ? "RandomPlayerbotMgr::Login" : "RandomPlayerbotMgr::UpdateAIInternal");
 
-    if (availableBotCount < maxAllowedBotCount)
+    if (time(nullptr) > (EventTimeSyncTimer + 30))
+        SaveCurTime();
+
+    if (availableBotCount < maxAllowedBotCount && !sWorld.IsShutdowning())
     {
         AddRandomBots();   
     }
@@ -1312,6 +1316,24 @@ Item* RandomPlayerbotMgr::CreateTempItem(uint32 item, uint32 count, Player const
     return nullptr;
 }
 
+void RandomPlayerbotMgr::SaveCurTime()
+{
+    if (!EventTimeSyncTimer || time(NULL) > (EventTimeSyncTimer + 60))
+        EventTimeSyncTimer = time(NULL);
+
+    SetValue(uint32(0), "current_time", uint32(time(nullptr)));
+}
+
+void RandomPlayerbotMgr::SyncEventTimers()
+{
+    uint32 oldTime = GetValue(uint32(0), "current_time");
+    if (oldTime)
+    {
+        uint32 curTime = time(nullptr);
+        uint32 timeDiff = curTime - oldTime;
+        PlayerbotDatabase.PExecute("UPDATE ai_playerbot_random_bots SET time = time + %u WHERE owner = 0 and bot <> 0", timeDiff);
+    }
+}
 
 void RandomPlayerbotMgr::CheckPlayers()
 {
@@ -1660,8 +1682,16 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot, vector<WorldLocation> &locs
             if (!tMap->HasActiveAreas())
                 return true;
 
+            uint32 zoneId = sTerrainMgr.GetZoneId(mapId, l.coord_x, l.coord_y, l.coord_z);
+
             ContinentArea teleportArea = sMapMgr.GetContinentInstanceId(mapId, l.getX(), l.getY());
-            return !tMap->HasActiveAreas(teleportArea);
+
+            if (tMap->HasActiveAreas(teleportArea))
+                return !tMap->HasActiveZone(zoneId);
+            else
+                return true;
+
+            //return !tMap->HasActiveAreas(teleportArea);
         }), tlocs.end());
         /*if (!tlocs.empty())
         {
@@ -2158,6 +2188,9 @@ uint32 RandomPlayerbotMgr::GetZoneLevel(uint16 mapId, float teleX, float teleY, 
 
 void RandomPlayerbotMgr::Refresh(Player* bot)
 {
+    if (!bot->GetMap())
+        return;
+
     if (sServerFacade.UnitIsDead(bot))
     {
         bot->ResurrectPlayer(1.0f);
@@ -2318,7 +2351,7 @@ uint32 RandomPlayerbotMgr::GetEventValue(uint32 bot, string event)
         }
     }*/
 
-    if ((time(0) - e.lastChangeTime) >= e.validIn && event != "specNo" && event != "specLink" && event != "always")
+    if ((time(0) - e.lastChangeTime) >= e.validIn && event != "specNo" && event != "specLink" && event != "init" && event != "current_time" && event != "always")
         e.value = 0;
 
     return e.value;
@@ -3012,7 +3045,7 @@ void RandomPlayerbotMgr::ChangeStrategy(Player* player)
     {
 		sLog.outBasic("Bot #%d %s:%d <%s>: sent to inn", bot, player->GetTeam() == ALLIANCE ? "A" : "H", player->GetLevel(), player->GetName());
         RandomTeleportForRpg(player, players.size());
-        ScheduleTeleport(bot, sPlayerbotAIConfig.maxRandomBotInWorldTime);
+        ScheduleTeleport(bot);
     }
 }
 

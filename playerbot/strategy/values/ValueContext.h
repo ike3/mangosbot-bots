@@ -100,8 +100,11 @@ namespace ai
             creators["skip spells list"] = &ValueContext::skip_spells_list_value;
             creators["nearest game objects"] = &ValueContext::nearest_game_objects;
             creators["nearest game objects no los"] = &ValueContext::nearest_game_objects_no_los;
+            creators["nearest dynamic objects"] = &ValueContext::nearest_dynamic_objects;
+            creators["nearest dynamic objects no los"] = &ValueContext::nearest_dynamic_objects_no_los;
             creators["closest game objects"] = &ValueContext::closest_game_objects;
             creators["nearest npcs"] = &ValueContext::nearest_npcs;
+            creators["nearest npcs no los"] = &ValueContext::nearest_npcs_no_los;
             creators["nearest vehicles"] = &ValueContext::nearest_vehicles;
             creators["nearest friendly players"] = &ValueContext::nearest_friendly_players;
             creators["closest friendly players"] = &ValueContext::closest_friendly_players;
@@ -390,9 +393,12 @@ namespace ai
         static UntypedValue* has_mana(PlayerbotAI* ai) { return new HasManaValue(ai); }
         static UntypedValue* nearest_game_objects(PlayerbotAI* ai) { return new NearestGameObjects(ai); }
         static UntypedValue* nearest_game_objects_no_los(PlayerbotAI* ai) { return new NearestGameObjects(ai, sPlayerbotAIConfig.sightDistance, true); }
+        static UntypedValue* nearest_dynamic_objects(PlayerbotAI* ai) { return new NearestDynamicObjects(ai); }
+        static UntypedValue* nearest_dynamic_objects_no_los(PlayerbotAI* ai) { return new NearestDynamicObjects(ai, sPlayerbotAIConfig.sightDistance, true); }
         static UntypedValue* closest_game_objects(PlayerbotAI* ai) { return new NearestGameObjects(ai, INTERACTION_DISTANCE); }
         static UntypedValue* log_level(PlayerbotAI* ai) { return new LogLevelValue(ai); }
         static UntypedValue* nearest_npcs(PlayerbotAI* ai) { return new NearestNpcsValue(ai); }
+        static UntypedValue* nearest_npcs_no_los(PlayerbotAI* ai) { return new NearestNpcsValue(ai, sPlayerbotAIConfig.sightDistance, true); }
         static UntypedValue* nearest_vehicles(PlayerbotAI* ai) { return new NearestVehiclesValue(ai); }
         static UntypedValue* nearest_friendly_players(PlayerbotAI* ai) { return new NearestFriendlyPlayersValue(ai); }
         static UntypedValue* closest_friendly_players(PlayerbotAI* ai) { return new NearestFriendlyPlayersValue(ai, INTERACTION_DISTANCE); }

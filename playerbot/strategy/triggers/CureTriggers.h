@@ -7,7 +7,7 @@ namespace ai
 
     class NeedCureTrigger : public SpellTrigger {
     public:
-        NeedCureTrigger(PlayerbotAI* ai, string spell, uint32 dispelType) : SpellTrigger(ai, spell, 5)
+        NeedCureTrigger(PlayerbotAI* ai, string spell, uint32 dispelType, int checkInterval = 3) : SpellTrigger(ai, spell, checkInterval)
   	    {
 			this->dispelType = dispelType;
         }
@@ -20,8 +20,8 @@ namespace ai
 
     class TargetAuraDispelTrigger : public NeedCureTrigger {
     public:
-        TargetAuraDispelTrigger(PlayerbotAI* ai, string spell, uint32 dispelType) :
-			NeedCureTrigger(ai, spell, dispelType) {}
+        TargetAuraDispelTrigger(PlayerbotAI* ai, string spell, uint32 dispelType, int checkInterval = 3) :
+			NeedCureTrigger(ai, spell, dispelType, checkInterval) {}
 		virtual string GetTargetName() { return "current target"; }
     };
 

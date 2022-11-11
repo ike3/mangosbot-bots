@@ -188,6 +188,7 @@ bool AttackersValue::IsPossibleTarget(Unit *attacker, Player *player, float rang
     bool hasAttackTaggedStrategy = false;
     bool isFriendly = false;
     bool isDead = false;
+    bool isBanished = false;
 
     // If the player is a bot
     PlayerbotAI* bot = player->GetPlayerbotAI();

@@ -176,9 +176,7 @@ void PlayerbotHolder::LogoutPlayerBot(uint32 guid)
                 if (!bot)
                 {
                     playerBots.erase(guid);
-                    //delete botWorldSessionPtr;
-                    botWorldSessionPtr->SetOffline(); // let server delete it
-    
+                    delete botWorldSessionPtr;    
                     if (target)
                         delete target;
                 }
@@ -186,10 +184,8 @@ void PlayerbotHolder::LogoutPlayerBot(uint32 guid)
             }
             else
             {
-                playerBots.erase(guid);    // deletes bot player ptr inside this WorldSession PlayerBotMap
-                botWorldSessionPtr->SetOffline(); // let server delete it
-                botWorldSessionPtr->LogoutRequest(time_t(time(nullptr) - 1000), true, true);
-                botWorldSessionPtr->LogoutPlayer();
+                playerBots.erase(guid);     // deletes bot player ptr inside this WorldSession PlayerBotMap
+                delete botWorldSessionPtr;  // finally delete the bot's WorldSession
                 if (target)
                     delete target;
             }
@@ -200,14 +196,12 @@ void PlayerbotHolder::LogoutPlayerBot(uint32 guid)
             ai->TellMaster(BOT_TEXT("goodbye"));
             playerBots.erase(guid);    // deletes bot player ptr inside this WorldSession PlayerBotMap
 #ifdef CMANGOS
-            botWorldSessionPtr->SetOffline(); // let server delete it
-            botWorldSessionPtr->LogoutRequest(time_t(time(nullptr) - 100), true, true);
             botWorldSessionPtr->LogoutPlayer(); // this will delete the bot Player object and PlayerbotAI object
 #endif
 #ifdef MANGOS
             //botWorldSessionPtr->LogoutPlayer(true); // this will delete the bot Player object and PlayerbotAI object
 #endif
-            //delete botWorldSessionPtr;  // finally delete the bot's WorldSession
+            delete botWorldSessionPtr;  // finally delete the bot's WorldSession
         }
     }
 }
@@ -266,7 +260,6 @@ void PlayerbotHolder::OnBotLogin(Player * const bot)
 	OnBotLoginInternal(bot);
 
     playerBots[bot->GetGUIDLow()] = bot;
-
 
     Player* master = ai->GetMaster();
 

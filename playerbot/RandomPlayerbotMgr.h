@@ -127,6 +127,8 @@ class RandomPlayerbotMgr : public PlayerbotHolder
         void CheckBgQueue();
         void CheckLfgQueue();
         void CheckPlayers();
+        void SaveCurTime();
+        void SyncEventTimers();
         static Item* CreateTempItem(uint32 item, uint32 count, Player const* player, uint32 randomPropertyId = 0);
 
         bool AddRandomBot(uint32 bot);
@@ -155,6 +157,7 @@ class RandomPlayerbotMgr : public PlayerbotHolder
         time_t BgCheckTimer;
         time_t LfgCheckTimer;
         time_t PlayersCheckTimer;
+        time_t EventTimeSyncTimer;
         uint32 AddRandomBots();
         bool ProcessBot(uint32 bot);
         void ScheduleRandomize(uint32 bot, uint32 time);

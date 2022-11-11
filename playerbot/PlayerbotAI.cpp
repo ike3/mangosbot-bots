@@ -1713,41 +1713,25 @@ bool PlayerbotAI::IsRanged(Player* player)
 
 bool PlayerbotAI::IsTank(Player* player)
 {
+    BotRoles botRoles = AiFactory::GetPlayerRoles(player);
+
     PlayerbotAI* botAi = player->GetPlayerbotAI();
     if (botAi)
-        return botAi->ContainsStrategy(STRATEGY_TYPE_TANK);
+        return botAi->ContainsStrategy(STRATEGY_TYPE_TANK) || (botRoles & BOT_ROLE_TANK);
 
-    switch (player->getClass())
-    {
-    case CLASS_PALADIN:
-    case CLASS_WARRIOR:
-#ifdef MANGOSBOT_TWO
-    case CLASS_DEATH_KNIGHT:
-#endif
-        return true;
-    case CLASS_DRUID:
-        return HasAnyAuraOf(player, "bear form", "dire bear form", NULL);
-    }
-    return false;
+    return (botRoles & BOT_ROLE_TANK) != 0;
 }
 
 bool PlayerbotAI::IsHeal(Player* player)
 {
+    BotRoles botRoles = AiFactory::GetPlayerRoles(player);
+
     PlayerbotAI* botAi = player->GetPlayerbotAI();
     if (botAi)
-        return botAi->ContainsStrategy(STRATEGY_TYPE_HEAL);
+        return botAi->ContainsStrategy(STRATEGY_TYPE_HEAL) || (botRoles & BOT_ROLE_HEALER);
 
-    switch (player->getClass())
-    {
-    case CLASS_PRIEST:
-        return true;
-    case CLASS_DRUID:
-        return HasAnyAuraOf(player, "tree of life form", NULL);
-    }
-    return false;
+    return (botRoles & BOT_ROLE_HEALER) != 0;
 }
-
-
 
 namespace MaNGOS
 {
@@ -2505,9 +2489,6 @@ bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target, Item* itemTarget)
         GameObject* go = GetGameObject(loot.guid);
         if (go && sServerFacade.isSpawned(go))
         {
-            WorldPacket packetgouse(CMSG_GAMEOBJ_USE, 8);
-            packetgouse << loot.guid;
-            bot->GetSession()->HandleGameObjectUseOpcode(packetgouse);
             targets.setGOTarget(go);
             faceTo = go;
         }
@@ -4441,25 +4422,11 @@ void PlayerbotAI::StopMoving()
     if (bot->IsTaxiFlying())
         return;
 
-    if (!bot->GetMotionMaster()->empty())
-        if (MovementGenerator* movgen = bot->GetMotionMaster()->top())
-            movgen->Interrupt(*bot);
-
     if (IsInVehicle())
         return;
 
-    // remove movement flags, checked in bot->IsMoving()
-    if (bot->IsFalling())
-#ifdef MANGOSBOT_TWO
-        bot->m_movementInfo.RemoveMovementFlag(MovementFlags(movementFlagsMask & ~(MOVEFLAG_FALLING | MOVEFLAG_FALLINGFAR)));
-#else
-        bot->m_movementInfo.RemoveMovementFlag(MovementFlags(movementFlagsMask & ~(MOVEFLAG_JUMPING | MOVEFLAG_FALLINGFAR)));
-#endif
-    else
-        bot->m_movementInfo.RemoveMovementFlag(movementFlagsMask);
     // interrupt movement as much as we can...
     bot->InterruptMoving(true);
-    bot->GetMotionMaster()->Clear();
     MovementInfo mInfo = bot->m_movementInfo;
     float x, y, z;
     bot->GetPosition(x, y, z);

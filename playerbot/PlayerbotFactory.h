@@ -111,7 +111,7 @@ private:
     void InitInventoryTrade();
     void InitInventoryEquip();
     void InitInventorySkill();
-    Item* StoreItem(uint32 itemId, uint32 count);
+    Item* StoreItem(uint32 itemId, uint32 count, bool ignoreCount = false);
     void InitGuild();
     void InitArenaTeam();
     void InitImmersive();

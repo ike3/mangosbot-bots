@@ -6,7 +6,7 @@ namespace ai
     class NoTravelTargetTrigger : public Trigger
     {
     public:
-        NoTravelTargetTrigger(PlayerbotAI* ai) : Trigger(ai, "no travel target") {}
+        NoTravelTargetTrigger(PlayerbotAI* ai) : Trigger(ai, "no travel target", 10) {}
 
         virtual bool IsActive();
     };
