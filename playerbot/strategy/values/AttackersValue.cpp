@@ -106,6 +106,69 @@ void AttackersValue::RemoveNonThreating(set<Unit*>& targets)
     }
 }
 
+bool AttackersValue::HasIgnoreCCRti(Unit* attacker, Player* player)
+{
+    Group* group = player->GetGroup();
+
+    if (group && (group->GetTargetIcon(7) == attacker->GetObjectGuid()))
+        return true;
+
+    return false;
+}
+
+bool AttackersValue::HasBreakableCC(Unit* attacker, Player* player)
+{
+    if (attacker->IsPolymorphed())
+        return true;
+
+    if (sServerFacade.IsFrozen(attacker))
+        return true;
+
+    PlayerbotAI* ai = player->GetPlayerbotAI();
+    if (ai)
+    {
+        if (ai->HasAura("sap", attacker))
+            return true;
+
+        if (ai->HasAura("gouge", attacker))
+            return true;
+
+        if (ai->HasAura("shackle undead", attacker))
+            return true;
+    }
+
+    return false;
+}
+
+bool AttackersValue::HasUnBreakableCC(Unit* attacker, Player* player)
+{
+    if (attacker->IsStunned())
+        return true;
+
+#ifdef MANGOS
+    if (attacker->hasUnitState(UNIT_STAT_STUNNED))
+        return true;
+#endif
+
+    if (sServerFacade.IsFeared(attacker) )
+        return true;
+
+    if (sServerFacade.IsInRoots(attacker))
+        return true;
+
+    if(sServerFacade.IsCharmed(attacker) && attacker->IsInTeam(player, true))
+        return true;
+
+    PlayerbotAI* ai = player->GetPlayerbotAI();
+    if (ai)
+    {
+        if (ai->HasAura("banish", attacker))
+            return true;
+    }
+
+    return false;
+}
+
 bool AttackersValue::IsPossibleTarget(Unit *attacker, Player *player, float range)
 {
     if(!attacker)
@@ -115,20 +178,14 @@ bool AttackersValue::IsPossibleTarget(Unit *attacker, Player *player, float rang
     Group* group = player->GetGroup();
     Player* master = nullptr;
 
-    bool rti = false;
+    bool hasCC = false;
     bool leaderHasThreat = false;
     bool isMemberBotGroup = false;
     bool inVehicle = false;
     bool hasEnemyPlayerTarget = false;
     bool inDuel = false;
     bool canSeeAttacker = false;
-    bool hasShackleUndeadAura = false;
     bool hasAttackTaggedStrategy = false;
-    bool isSapped = false;
-    bool isGouged = false;
-    bool isStunned = false;
-    bool isPolymorphed = false;
-    bool isFeared = false;
     bool isFriendly = false;
     bool isDead = false;
 
@@ -151,20 +208,15 @@ bool AttackersValue::IsPossibleTarget(Unit *attacker, Player *player, float rang
 
         inVehicle = bot->IsInVehicle(false, true);
         hasEnemyPlayerTarget = bot->GetAiObjectContext()->GetValue<Unit*>("enemy player target")->Get();
-        hasAttackTaggedStrategy = bot->HasStrategy("attack tagged", BotState::BOT_STATE_NON_COMBAT);
-        isSapped = bot->HasAura("sap", attacker);
-        isGouged = bot->HasAura("gouge", attacker);
-        hasShackleUndeadAura = bot->HasAura("shackle undead", attacker);
+        hasAttackTaggedStrategy = bot->HasStrategy("attack tagged", BotState::BOT_STATE_NON_COMBAT);        
     }
 
-    isStunned = attacker->IsStunned();
-    isPolymorphed = attacker->IsPolymorphed();
-    isFeared = sServerFacade.IsFeared(attacker);
+
     isDead = sServerFacade.UnitIsDead(attacker);
     isFriendly = sServerFacade.IsFriendlyTo(attacker, player);
     inDuel = player->duel && player->duel->opponent && (attacker->GetObjectGuid() == player->duel->opponent->GetObjectGuid());
     canSeeAttacker = attacker->IsVisibleForOrDetect(player, player->GetCamera().GetBody(), true);
-    rti = group && (group->GetTargetIcon(7) == attacker->GetObjectGuid());
+    hasCC = !HasIgnoreCCRti(attacker, player) && HasBreakableCC(attacker, player) || HasUnBreakableCC(attacker, player);
 
 #ifndef MANGOSBOT_ZERO
     Player* arenaEnemy = dynamic_cast<Player*>(attacker);
@@ -181,19 +233,7 @@ bool AttackersValue::IsPossibleTarget(Unit *attacker, Player *player, float rang
         !attacker->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_1) &&
         !attacker->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_UNTARGETABLE) &&
         (inVehicle || !attacker->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_UNINTERACTIBLE)) &&
-        canSeeAttacker &&
-#ifdef CMANGOS
-        !(isStunned && hasShackleUndeadAura) &&
-        !isGouged &&
-#endif
-#ifdef MANGOS
-        //!attacker->hasUnitState(UNIT_STAT_STUNNED) &&
-#endif
-        !((isPolymorphed ||
-        isSapped ||
-        //sServerFacade.IsCharmed(attacker) ||
-        isFeared) && !rti) &&
-        //!sServerFacade.IsInRoots(attacker) &&
+        canSeeAttacker && !hasCC &&
         (!isFriendly || inDuel) &&
         player->IsWithinDistInMap(attacker, range) &&
         !attacker->HasAuraType(SPELL_AURA_SPIRIT_OF_REDEMPTION) &&

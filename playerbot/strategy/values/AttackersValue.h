@@ -17,6 +17,9 @@ namespace ai
 		void RemoveNonThreating(set<Unit*>& targets);
 
     public:
+        static bool HasIgnoreCCRti(Unit* attacker, Player* player);
+        static bool HasBreakableCC(Unit* attacker, Player* player);
+        static bool HasUnBreakableCC(Unit* attacker, Player* player);
         static bool IsPossibleTarget(Unit* attacker, Player *player, float range = sPlayerbotAIConfig.sightDistance);
         static bool IsValidTarget(Unit* attacker, Player *player);
     };
