@@ -785,7 +785,7 @@ uint32 WorldPosition::getUnitsAggro(const list<ObjectGuid>& units, const Player*
         count++;
     }
 
-    return units.size();
+    return count;
 };
 
 
