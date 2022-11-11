@@ -27,6 +27,9 @@ bool AttackAnythingAction::isUseful()
     if (!target)
         return false;
 
+    if (ai->ContainsStrategy(STRATEGY_TYPE_HEAL))
+        return false;
+
     if(!target->IsPlayer() && bot->isInFront(target,target->GetAttackDistance(bot)*1.5f, M_PI_F*0.5f) && target->CanAttackOnSight(bot) && target->GetLevel() < bot->GetLevel() + 3.0) //Attack before being attacked.
         return true;
 
