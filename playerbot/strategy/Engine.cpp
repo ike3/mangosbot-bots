@@ -145,6 +145,8 @@ bool Engine::DoNextAction(Unit* unit, int depth, bool minimal)
             ActionNode* actionNode = queue.Pop();
             Action* action = InitializeAction(actionNode);
 
+            PerformanceMonitorOperation* pmo1 = sPerformanceMonitor.start(PERF_MON_ACTION, event.getSource(), &aiObjectContext->performanceStack);
+
             if(action)
                 action->setRelevance(relevance);
 
@@ -167,47 +169,82 @@ bool Engine::DoNextAction(Unit* unit, int depth, bool minimal)
                 }
                 LogAction("A:%s - UNKNOWN", actionNode->getName().c_str());
             }
-            else if (action->isUseful())
+            else
             {
-                for (list<Multiplier*>::iterator i = multipliers.begin(); i!= multipliers.end(); i++)
-                {
-                    Multiplier* multiplier = *i;
-                    relevance *= multiplier->GetValue(action);
-                    action->setRelevance(relevance);
-                    if (!relevance)
-                    {
-                        LogAction("Multiplier %s made action %s useless", multiplier->getName().c_str(), action->getName().c_str());
-                        break;
-                    }
-                }
+                PerformanceMonitorOperation* pmo2 = sPerformanceMonitor.start(PERF_MON_ACTION, action->getName() + " (usefull)", &aiObjectContext->performanceStack);
+                bool isUsefull = action->isUseful();
+                if (pmo2) pmo2->finish();
 
-                if (action->isPossible() && relevance)
+                if (isUsefull)
                 {
-                    if (!skipPrerequisites)
+                    for (list<Multiplier*>::iterator i = multipliers.begin(); i != multipliers.end(); i++)
                     {
-                        LogAction("A:%s - PREREQ", action->getName().c_str());
-                        if (MultiplyAndPush(actionNode->getPrerequisites(), relevance + 0.02, false, event, "prereq"))
+                        Multiplier* multiplier = *i;
+                        relevance *= multiplier->GetValue(action);
+                        action->setRelevance(relevance);
+                        if (!relevance)
                         {
-                            PushAgain(actionNode, relevance + 0.01, event);
-                            continue;
+                            LogAction("Multiplier %s made action %s useless", multiplier->getName().c_str(), action->getName().c_str());
+                            break;
                         }
                     }
 
-                    PerformanceMonitorOperation *pmo = sPerformanceMonitor.start(PERF_MON_ACTION, action->getName(), &aiObjectContext->performanceStack);
-                    actionExecuted = ListenAndExecute(action, event);
-                    if (pmo) pmo->finish();
+                    PerformanceMonitorOperation* pmo3 = sPerformanceMonitor.start(PERF_MON_ACTION, action->getName() + " (possible)", &aiObjectContext->performanceStack);
+                    bool isPossible = action->isPossible();
+                    if (pmo3) pmo3->finish();
 
-                    if (actionExecuted)
+                    if (action->isPossible() && relevance)
                     {
-                        LogAction("A:%s - OK", action->getName().c_str());
-                        MultiplyAndPush(actionNode->getContinuers(), 0, false, event, "cont");
-                        lastRelevance = relevance;
-                        delete actionNode;
-                        break;
+                    
+                        if (!skipPrerequisites)
+                        {
+                            LogAction("A:%s - PREREQ", action->getName().c_str());
+                            if (MultiplyAndPush(actionNode->getPrerequisites(), relevance + 0.02, false, event, "prereq"))
+                            {
+                                PushAgain(actionNode, relevance + 0.01, event);
+
+                                if (pmo1) pmo1->finish();
+                                continue;
+                            }
+                        }
+
+                        PerformanceMonitorOperation* pmo4 = sPerformanceMonitor.start(PERF_MON_ACTION, action->getName() + " (execute)", &aiObjectContext->performanceStack);
+                        actionExecuted = ListenAndExecute(action, event);
+                        if (pmo4) pmo4->finish();
+
+                        if (actionExecuted)
+                        {
+                            LogAction("A:%s - OK", action->getName().c_str());
+                            MultiplyAndPush(actionNode->getContinuers(), 0, false, event, "cont");
+                            lastRelevance = relevance;
+                            delete actionNode;
+                            if (pmo1) pmo1->finish();
+                            break;
+                        }
+                        else
+                        {
+                            LogAction("A:%s - FAILED", action->getName().c_str());
+                            MultiplyAndPush(actionNode->getAlternatives(), relevance + 0.03, false, event, "alt");
+                        }
                     }
                     else
                     {
-                        LogAction("A:%s - FAILED", action->getName().c_str());
+                        if (ai->HasStrategy("debug action", BotState::BOT_STATE_NON_COMBAT))
+                        {
+                            ostringstream out;
+                            out << "try: ";
+                            out << action->getName();
+                            out << " impossible (";
+
+                            out << std::fixed << std::setprecision(3);
+                            out << action->getRelevance() << ")";
+
+                            if (!event.getSource().empty())
+                                out << " [" << event.getSource() << "]";
+
+                            ai->TellMasterNoFacing(out);
+                        }
+                        LogAction("A:%s - IMPOSSIBLE", action->getName().c_str());
                         MultiplyAndPush(actionNode->getAlternatives(), relevance + 0.03, false, event, "alt");
                     }
                 }
@@ -218,7 +255,7 @@ bool Engine::DoNextAction(Unit* unit, int depth, bool minimal)
                         ostringstream out;
                         out << "try: ";
                         out << action->getName();
-                        out << " impossible (";
+                        out << " useless (";
 
                         out << std::fixed << std::setprecision(3);
                         out << action->getRelevance() << ")";
@@ -228,31 +265,13 @@ bool Engine::DoNextAction(Unit* unit, int depth, bool minimal)
 
                         ai->TellMasterNoFacing(out);
                     }
-                    LogAction("A:%s - IMPOSSIBLE", action->getName().c_str());
-                    MultiplyAndPush(actionNode->getAlternatives(), relevance + 0.03, false, event, "alt");
+                    lastRelevance = relevance;
+                    LogAction("A:%s - USELESS", action->getName().c_str());
                 }
-            }
-            else
-            {
-                if (ai->HasStrategy("debug action", BotState::BOT_STATE_NON_COMBAT))
-                {
-                    ostringstream out;
-                    out << "try: ";
-                    out << action->getName();
-                    out << " useless (";
-
-                    out << std::fixed << std::setprecision(3);
-                    out << action->getRelevance() << ")";
-
-                    if (!event.getSource().empty())
-                        out << " [" << event.getSource() << "]";
-
-                    ai->TellMasterNoFacing(out);
-                }
-                lastRelevance = relevance;
-                LogAction("A:%s - USELESS", action->getName().c_str());
             }
             delete actionNode;
+
+            if (pmo1) pmo1->finish();
         }
     }
     while (basket && ++iterations <= iterationsPerTick);
