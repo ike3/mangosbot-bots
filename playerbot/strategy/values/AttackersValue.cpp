@@ -240,7 +240,7 @@ bool AttackersValue::IsPossibleTarget(Unit *attacker, Player *player, float rang
     isFriendly = sServerFacade.IsFriendlyTo(attacker, player);
     inDuel = player->duel && player->duel->opponent && (attacker->GetObjectGuid() == player->duel->opponent->GetObjectGuid());
     canSeeAttacker = attacker->IsVisibleForOrDetect(player, player->GetCamera().GetBody(), true);
-    hasCC = !ignoreCC && !HasIgnoreCCRti(attacker, player) && HasBreakableCC(attacker, player) || HasUnBreakableCC(attacker, player);
+    hasCC = !ignoreCC && !HasIgnoreCCRti(attacker, player) && (HasBreakableCC(attacker, player) || HasUnBreakableCC(attacker, player));
 
 #ifndef MANGOSBOT_ZERO
     Player* arenaEnemy = dynamic_cast<Player*>(attacker);
