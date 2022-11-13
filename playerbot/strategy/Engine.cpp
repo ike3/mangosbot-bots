@@ -144,8 +144,8 @@ bool Engine::DoNextAction(Unit* unit, int depth, bool minimal)
             // NOTE: queue.Pop() deletes basket
             ActionNode* actionNode = queue.Pop();
             Action* action = InitializeAction(actionNode);
-
-            PerformanceMonitorOperation* pmo1 = sPerformanceMonitor.start(PERF_MON_ACTION, event.getSource(), &aiObjectContext->performanceStack);
+            
+            PerformanceMonitorOperation* pmo1 = sPerformanceMonitor.start(PERF_MON_ACTION, (event.getSource().empty() ? event.getSource() : (action ? action->getName(): "unknown")), &aiObjectContext->performanceStack);
 
             if(action)
                 action->setRelevance(relevance);
