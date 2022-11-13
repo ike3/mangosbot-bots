@@ -289,12 +289,15 @@ public:
 	void HandleTeleportAck();
     void ChangeEngine(BotState type);
     void DoNextAction(bool minimal = false);
+    bool CanDoSpecificAction(string name, string qualifier = "", bool isPossible = true, bool isUseful = true);
     virtual bool DoSpecificAction(string name, Event event = Event(), bool silent = false, string qualifier = "");
     void ChangeStrategy(string name, BotState type);
     void ClearStrategies(BotState type);
     list<string> GetStrategies(BotState type);
     bool ContainsStrategy(StrategyType type);
     bool HasStrategy(string name, BotState type);
+    template<class T>
+    T* GetStrategy(string name, BotState type);
     BotState GetState() { return currentState; };
     void ResetStrategies(bool load = true);
     void ReInitCurrentEngine();
@@ -476,3 +479,8 @@ protected:
     Position jumpDestination = Position();
 };
 
+template<typename T>
+T* PlayerbotAI::GetStrategy(string name, BotState type)
+{
+    return  dynamic_cast<T*>(engines[(uint8)type]->GetStrategy(name));
+}
