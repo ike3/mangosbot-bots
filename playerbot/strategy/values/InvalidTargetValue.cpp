@@ -25,5 +25,13 @@ bool InvalidTargetValue::Calculate()
     }
 
     bool validTarget = AttackersValue::IsValidTarget(target, bot);
+
+    if (!validTarget)
+    {
+        list<ObjectGuid> attackers = AI_VALUE(list<ObjectGuid>, "attackers");
+        if (std::find(attackers.begin(), attackers.end(), target->GetObjectGuid()) != attackers.end())
+            return false;
+    }
+
     return !validTarget;
 }
