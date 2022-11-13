@@ -3,6 +3,8 @@
 #include "../../ServerFacade.h"
 #include "BotStateTriggers.h"
 
+using namespace ai;
+
 bool CombatStartTrigger::IsActive()
 {
     if (!ai->IsStateActive(BotState::BOT_STATE_COMBAT) && !ai->IsStateActive(BotState::BOT_STATE_DEAD))
@@ -33,7 +35,7 @@ bool DeathTrigger::IsActive()
     return !ai->IsStateActive(BotState::BOT_STATE_DEAD) && !sServerFacade.IsAlive(bot);
 }
 
-bool ai::ResurrectTrigger::IsActive()
+bool ResurrectTrigger::IsActive()
 {
     return ai->IsStateActive(BotState::BOT_STATE_DEAD) && sServerFacade.IsAlive(bot);
 }

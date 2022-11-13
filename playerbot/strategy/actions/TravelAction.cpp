@@ -47,7 +47,7 @@ bool TravelAction::Execute(Event& event)
             continue;
 
         if (sServerFacade.IsHostileTo(bot, newTarget))
-            SET_AI_VALUE(ObjectGuid,"pull target",newTarget->GetObjectGuid());
+            SET_AI_VALUE(ObjectGuid,"attack target", newTarget->GetObjectGuid());
         else
             SET_AI_VALUE(GuidPosition,"rpg target",GuidPosition(newTarget));
 
@@ -59,7 +59,7 @@ bool TravelAction::Execute(Event& event)
 
 bool TravelAction::isUseful()
 {
-    return false && AI_VALUE(TravelTarget *,"travel target")->isActive() && (!AI_VALUE(GuidPosition,"rpg target") || !AI_VALUE(ObjectGuid,"pull target"));
+    return false && AI_VALUE(TravelTarget *,"travel target")->isActive() && (!AI_VALUE(GuidPosition,"rpg target") || !AI_VALUE(ObjectGuid,"attack target"));
 }
 
 bool MoveToDarkPortalAction::Execute(Event& event)

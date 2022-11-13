@@ -467,7 +467,7 @@ void PlayerbotAI::OnDeath()
 
         aiObjectContext->GetValue<Unit*>("current target")->Set(NULL);
         aiObjectContext->GetValue<Unit*>("enemy player target")->Set(NULL);
-        aiObjectContext->GetValue<ObjectGuid>("pull target")->Set(ObjectGuid());
+        aiObjectContext->GetValue<ObjectGuid>("attack target")->Set(ObjectGuid());
         aiObjectContext->GetValue<LootObject>("loot target")->Set(LootObject());
         aiObjectContext->GetValue<time_t>("combat start time")->Set(0);
         ChangeEngine(BotState::BOT_STATE_DEAD);
@@ -636,7 +636,7 @@ void PlayerbotAI::Reset(bool full)
 
     aiObjectContext->GetValue<Unit*>("old target")->Set(NULL);
     aiObjectContext->GetValue<Unit*>("current target")->Set(NULL);
-    aiObjectContext->GetValue<ObjectGuid>("pull target")->Set(ObjectGuid());
+    aiObjectContext->GetValue<ObjectGuid>("attack target")->Set(ObjectGuid());
     aiObjectContext->GetValue<GuidPosition>("rpg target")->Set(GuidPosition());
     aiObjectContext->GetValue<LootObject>("loot target")->Set(LootObject());
     aiObjectContext->GetValue<uint32>("lfg proposal")->Set(0);
@@ -1241,7 +1241,7 @@ void PlayerbotAI::DoNextAction(bool min)
     if (currentEngine == engines[(uint8)BotState::BOT_STATE_NON_COMBAT] && sServerFacade.IsInCombat(bot))
     {
         if (aiObjectContext->GetValue<Unit*>("current target")->Get() != NULL ||
-            aiObjectContext->GetValue<ObjectGuid>("pull target")->Get() != ObjectGuid() || 
+            aiObjectContext->GetValue<ObjectGuid>("attack target")->Get() != ObjectGuid() || 
             aiObjectContext->GetValue<Unit*>("dps target")->Get() != NULL)
         {
             Reset();

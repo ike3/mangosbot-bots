@@ -361,7 +361,7 @@ bool NoPossibleTargetsTrigger::IsActive()
 
 bool PossibleAddsTrigger::IsActive()
 {
-    return AI_VALUE(bool, "possible adds") && !AI_VALUE(ObjectGuid, "pull target");
+    return AI_VALUE(bool, "possible adds") && !AI_VALUE(ObjectGuid, "attack target");
 }
 
 bool NotDpsTargetActiveTrigger::IsActive()

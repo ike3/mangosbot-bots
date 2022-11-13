@@ -86,10 +86,10 @@ void CombatTargetsValue::AddTargetsOf(Player* player, set<Unit*>& targets)
             // Only consider the owner bot's pull target
             if(ai->GetBot() == player)
             {
-                Unit* pullTarget = bot->GetUnit(PAI_VALUE(ObjectGuid, "pull target"));
-                if (pullTarget)
+                Unit* attackTarget = bot->GetUnit(PAI_VALUE(ObjectGuid, "attack target"));
+                if (attackTarget)
                 {
-                    units.push_back(pullTarget);
+                    units.push_back(attackTarget);
                 }
             }
         }
@@ -173,7 +173,7 @@ bool CombatTargetsValue::IsValid(Unit* target, Player* player) const
 #endif
 
             // Check if the target has been requested to be attacked
-            const bool isPulling = player->GetPlayerbotAI() && (PAI_VALUE(ObjectGuid, "pull target") == target->GetObjectGuid());
+            const bool isPulling = player->GetPlayerbotAI() && (PAI_VALUE(ObjectGuid, "attack target") == target->GetObjectGuid());
 
             // Valid if the npc target is:
             // - Not dead

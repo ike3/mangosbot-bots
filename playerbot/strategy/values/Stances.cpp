@@ -12,8 +12,8 @@ Unit* Stance::GetTarget()
     Unit *target = AI_VALUE(Unit*, GetTargetName());
     if (target) return target;
 
-    ObjectGuid pullTarget = context->GetValue<ObjectGuid>("pull target")->Get();
-    if (pullTarget) ai->GetUnit(pullTarget);
+    ObjectGuid attackTarget = context->GetValue<ObjectGuid>("attack target")->Get();
+    if (attackTarget) ai->GetUnit(attackTarget);
 
     return NULL;
 }

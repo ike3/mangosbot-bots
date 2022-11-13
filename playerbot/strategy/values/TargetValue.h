@@ -92,9 +92,9 @@ namespace ai
         TalkTargetValue(PlayerbotAI* ai, string name = "talk target") : ManualSetValue<ObjectGuid>(ai, ObjectGuid(), name) {}
     };
 
-    class PullTargetValue : public ManualSetValue<ObjectGuid>
+    class AttackTargetValue : public ManualSetValue<ObjectGuid>
     {
     public:
-        PullTargetValue(PlayerbotAI* ai, string name = "pull target") : ManualSetValue<ObjectGuid>(ai, ObjectGuid(), name) {}
+        AttackTargetValue(PlayerbotAI* ai, string name = "attack target") : ManualSetValue<ObjectGuid>(ai, ObjectGuid(), name) {}
     };
 }

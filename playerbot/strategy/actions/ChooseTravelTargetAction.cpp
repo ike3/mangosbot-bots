@@ -199,9 +199,9 @@ void ChooseTravelTargetAction::setNewTarget(TravelTarget* newTarget, TravelTarge
     else if (oldTarget->isForced()) //Make sure travel goes into cooldown after getting to the destination.
         oldTarget->setExpireIn(HOUR * IN_MILLISECONDS);
 
-    //Clear rpg and pull/grind target. We want to travel, not hang around some more.
+    //Clear rpg and attack/grind target. We want to travel, not hang around some more.
     RESET_AI_VALUE(GuidPosition,"rpg target");
-    RESET_AI_VALUE(ObjectGuid,"pull target");
+    RESET_AI_VALUE(ObjectGuid,"attack target");
 };
 
 //Tell the master what travel target we are moving towards.

@@ -63,7 +63,7 @@ bool ai::AttackAnythingAction::Execute(Event& event)
             const char* grindName = grindTarget->GetName();
             if (grindName)
             {
-                context->GetValue<ObjectGuid>("pull target")->Set(grindTarget->GetObjectGuid());
+                context->GetValue<ObjectGuid>("attack target")->Set(grindTarget->GetObjectGuid());
                 ai->StopMoving();
             }
         }
@@ -101,11 +101,11 @@ bool SelectNewTargetAction::Execute(Event& event)
     }
 
     // Clear the target variables
-    ObjectGuid pullTarget = AI_VALUE(ObjectGuid, "pull target");
+    ObjectGuid attackTarget = AI_VALUE(ObjectGuid, "attack target");
     list<ObjectGuid> possible = AI_VALUE(list<ObjectGuid>, "possible targets no los");
-    if (pullTarget && find(possible.begin(), possible.end(), pullTarget) == possible.end())
+    if (attackTarget && find(possible.begin(), possible.end(), attackTarget) == possible.end())
     {
-        SET_AI_VALUE(ObjectGuid, "pull target", ObjectGuid());
+        SET_AI_VALUE(ObjectGuid, "attack target", ObjectGuid());
     }
 
     // Save the old target and clear the current target

@@ -32,7 +32,7 @@ bool AttackMyTargetAction::Execute(Event& event)
         {
             if (Attack(ai->GetUnit(guid)))
             {
-                SET_AI_VALUE(ObjectGuid, "pull target", guid);
+                SET_AI_VALUE(ObjectGuid, "attack target", guid);
                 return true;
             }
         }
