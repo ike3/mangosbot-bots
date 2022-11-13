@@ -5,6 +5,7 @@
 
 namespace ai
 {
+    // List of hostile and friendly targets in a range around the bot
     class PossibleTargetsValue : public NearestUnitsValue
 	{
 	public:

@@ -1,13 +1,13 @@
 #include "botpch.h"
 #include "../../playerbot.h"
-#include "CombatTargetsValue.h"
+#include "AttackersValue.h"
 #include "PossibleTargetsValue.h"
 #include "EnemyPlayerValue.h"
 
 using namespace ai;
 using namespace MaNGOS;
 
-list<ObjectGuid> CombatTargetsValue::Calculate()
+list<ObjectGuid> AttackersValue::Calculate()
 {
     list<ObjectGuid> result;
     if (ai->AllowActivity(ALL_ACTIVITY))
@@ -34,7 +34,7 @@ list<ObjectGuid> CombatTargetsValue::Calculate()
 	return result;
 }
 
-void CombatTargetsValue::AddTargetsOf(Group* group, set<Unit*>& targets)
+void AttackersValue::AddTargetsOf(Group* group, set<Unit*>& targets)
 {
     Group::MemberSlotList const& groupSlot = group->GetMemberSlots();
     for (Group::member_citerator itr = groupSlot.begin(); itr != groupSlot.end(); itr++)
@@ -51,7 +51,7 @@ void CombatTargetsValue::AddTargetsOf(Group* group, set<Unit*>& targets)
     }
 }
 
-void CombatTargetsValue::AddTargetsOf(Player* player, set<Unit*>& targets)
+void AttackersValue::AddTargetsOf(Player* player, set<Unit*>& targets)
 {
     // If the player is available
     if (player && player->IsInWorld() && !player->IsBeingTeleported())
@@ -91,6 +91,12 @@ void CombatTargetsValue::AddTargetsOf(Player* player, set<Unit*>& targets)
                 {
                     units.push_back(attackTarget);
                 }
+
+                Unit* pullTarget = bot->GetUnit(PAI_VALUE(ObjectGuid, "pull target"));
+                if (pullTarget)
+                {
+                    units.push_back(pullTarget);
+                }
             }
         }
 
@@ -109,7 +115,7 @@ void CombatTargetsValue::AddTargetsOf(Player* player, set<Unit*>& targets)
     }
 }
 
-bool CombatTargetsValue::IsValid(Unit* target, Player* player) const
+bool AttackersValue::IsValid(Unit* target, Player* player) const
 {
     // If the target is available
     if (target && target->IsInWorld() && (target->GetMapId() == player->GetMapId()))
@@ -173,7 +179,9 @@ bool CombatTargetsValue::IsValid(Unit* target, Player* player) const
 #endif
 
             // Check if the target has been requested to be attacked
-            const bool isPulling = player->GetPlayerbotAI() && (PAI_VALUE(ObjectGuid, "attack target") == target->GetObjectGuid());
+            const bool isPulling = player->GetPlayerbotAI() && 
+                                   ((PAI_VALUE(ObjectGuid, "attack target") == target->GetObjectGuid()) ||
+                                    (PAI_VALUE(ObjectGuid, "pull target") == target->GetObjectGuid()));
 
             // Valid if the npc target is:
             // - Not dead

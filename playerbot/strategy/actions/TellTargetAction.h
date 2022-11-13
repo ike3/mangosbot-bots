@@ -11,6 +11,13 @@ namespace ai
         virtual bool Execute(Event& event);
     };
 
+    class TellAttackersAction : public Action
+    {
+    public:
+        TellAttackersAction(PlayerbotAI* ai) : Action(ai, "tell attackers") {}
+        virtual bool Execute(Event& event);
+    };
+
     class TellPossibleAttackTargetsAction : public Action
     {
     public:

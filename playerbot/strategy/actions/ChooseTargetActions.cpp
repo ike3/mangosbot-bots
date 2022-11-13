@@ -144,7 +144,7 @@ bool SelectNewTargetAction::Execute(Event& event)
     }
 
     // Check if there is any enemy targets available to attack
-    if (!AI_VALUE(list<ObjectGuid>, "combat targets").empty())
+    if (!AI_VALUE(list<ObjectGuid>, "attackers").empty())
     {
         // Check if there is an enemy player nearby
         Unit* enemyPlayer = AI_VALUE(Unit*, "enemy player target");

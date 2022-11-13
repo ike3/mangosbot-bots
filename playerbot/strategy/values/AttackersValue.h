@@ -4,7 +4,8 @@
 
 namespace ai
 {
-    class CombatTargetsValue : public ObjectGuidListCalculatedValue
+    // List of hostile targets that are in combat with the bot (or bot group)
+    class AttackersValue : public ObjectGuidListCalculatedValue
 	{
         struct AddGuardiansHelper
         {
@@ -18,7 +19,7 @@ namespace ai
         };
 
 	public:
-        CombatTargetsValue(PlayerbotAI* ai) : ObjectGuidListCalculatedValue(ai, "combat targets") {}
+        AttackersValue(PlayerbotAI* ai) : ObjectGuidListCalculatedValue(ai, "attackers") {}
         list<ObjectGuid> Calculate();
 
 	private:

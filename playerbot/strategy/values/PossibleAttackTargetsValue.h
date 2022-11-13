@@ -5,7 +5,7 @@
 
 namespace ai
 {
-    // List of targets that are in combat with the bot (or bot group) and can be attacked (is reachable, not cc'ed, etc...)
+    // List of hostile targets that are in combat with the bot (or bot group) and can be attacked (is reachable, not cc'ed, etc...)
     class PossibleAttackTargetsValue : public ObjectGuidListCalculatedValue
 	{
 	public:

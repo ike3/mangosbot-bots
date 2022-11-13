@@ -16,7 +16,7 @@ list<ObjectGuid> PossibleAttackTargetsValue::Calculate()
     list<ObjectGuid> result;
     if (ai->AllowActivity(ALL_ACTIVITY))
     {
-        result = AI_VALUE(list<ObjectGuid>, "combat targets");
+        result = AI_VALUE(list<ObjectGuid>, "attackers");
         RemoveNonThreating(result);
 
         // Add the duel opponent
