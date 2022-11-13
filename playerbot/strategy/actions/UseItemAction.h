@@ -294,7 +294,11 @@ namespace ai
                targets.m_targetMask = TARGET_FLAG_SELF;
 #ifdef MANGOSBOT_ZERO
                bot->CastItemUseSpell(item, targets, spell_index);
-#else
+#endif
+#ifdef MANGOSBOT_ONE
+               bot->CastItemUseSpell(item, targets, 1, spell_index);
+#endif
+#ifdef MANGOSBOT_TWO
                bot->CastItemUseSpell(item, targets, 1, 0, spellid);
 #endif
                return true;
