@@ -211,7 +211,6 @@ bool AttackersValue::IsPossibleTarget(Unit *attacker, Player *player, float rang
     bool hasAttackTaggedStrategy = false;
     bool isFriendly = false;
     bool isDead = false;
-    bool isBanished = false;
 
     // If the player is a bot
     PlayerbotAI* bot = player->GetPlayerbotAI();
@@ -293,10 +292,11 @@ bool AttackersValue::IsPossibleTarget(Unit *attacker, Player *player, float rang
 
 bool AttackersValue::IsValidTarget(Unit *attacker, Player *bot, bool ignoreCC)
 {
-    return  IsPossibleTarget(attacker, bot, ignoreCC) &&
+    return  IsPossibleTarget(attacker, bot, sPlayerbotAIConfig.sightDistance, ignoreCC) &&
             (sServerFacade.GetThreatManager(attacker).getCurrentVictim() ||
             attacker->GetGuidValue(UNIT_FIELD_TARGET) || attacker->GetObjectGuid().IsPlayer() ||
-            attacker->GetObjectGuid() == bot->GetPlayerbotAI()->GetAiObjectContext()->GetValue<ObjectGuid>("attack target")->Get());
+            attacker->GetObjectGuid() == bot->GetPlayerbotAI()->GetAiObjectContext()->GetValue<ObjectGuid>("attack target")->Get()
+                || (!HasIgnoreCCRti(attacker, bot) && (HasBreakableCC(attacker, bot) || HasUnBreakableCC(attacker, bot))));
 }
 
 bool PossibleAddsValue::Calculate()
