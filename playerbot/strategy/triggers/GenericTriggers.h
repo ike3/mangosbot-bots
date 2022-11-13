@@ -974,7 +974,7 @@ namespace ai
         PerceptionTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "perception") {}
         virtual bool IsActive()
         {
-            for (auto& attacker : ai->GetAiObjectContext()->GetValue<list<ObjectGuid> >("attackers")->Get())
+            for (auto& attacker : ai->GetAiObjectContext()->GetValue<list<ObjectGuid>>("possible attack targets")->Get())
             {
                 Unit* enemy = ai->GetUnit(attacker);
                 if (!enemy)

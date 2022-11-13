@@ -142,7 +142,7 @@ namespace ai
             creators["who"] = &ChatActionContext::who;
             creators["save mana"] = &ChatActionContext::save_mana;
             creators["max dps chat shortcut"] = &ChatActionContext::max_dps_chat_shortcut;
-            creators["tell attackers"] = &ChatActionContext::tell_attackers;
+            creators["tell possible attack targets"] = &ChatActionContext::tell_possible_attack_targets;
             creators["formation"] = &ChatActionContext::formation;
             creators["stance"] = &ChatActionContext::stance;
             creators["sendmail"] = &ChatActionContext::sendmail;
@@ -183,7 +183,7 @@ namespace ai
         static Action* sendmail(PlayerbotAI* ai) { return new SendMailAction(ai); }
         static Action* formation(PlayerbotAI* ai) { return new SetFormationAction(ai); }
         static Action* stance(PlayerbotAI* ai) { return new SetStanceAction(ai); }
-        static Action* tell_attackers(PlayerbotAI* ai) { return new TellAttackersAction(ai); }
+        static Action* tell_possible_attack_targets(PlayerbotAI* ai) { return new TellPossibleAttackTargetsAction(ai); }
         static Action* max_dps_chat_shortcut(PlayerbotAI* ai) { return new MaxDpsChatShortcutAction(ai); }
         static Action* save_mana(PlayerbotAI* ai) { return new SaveManaAction(ai); }
         static Action* who(PlayerbotAI* ai) { return new WhoAction(ai); }

@@ -1,7 +1,7 @@
 #include "botpch.h"
 #include "../../playerbot.h"
 #include "PossibleTargetsValue.h"
-#include "AttackersValue.h"
+#include "PossibleAttackTargetsValue.h"
 
 #include "../../ServerFacade.h"
 #include "GridNotifiers.h"
@@ -41,7 +41,5 @@ void PossibleTargetsValue::FindPossibleTargets(Player* player, list<Unit*>& targ
 
 bool PossibleTargetsValue::IsValid(Player* player, Unit* target, float range)
 {
-    bool isPossible = AttackersValue::IsPossibleTarget(target, player, range, true);
-
-    return isPossible;
+    return PossibleAttackTargetsValue::IsPossibleTarget(target, player, range, true);
 }

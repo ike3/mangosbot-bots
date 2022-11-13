@@ -24,7 +24,7 @@
 #include "PartyMemberToDispel.h"
 #include "StatsValues.h"
 #include "AttackerCountValues.h"
-#include "AttackersValue.h"
+#include "PossibleAttackTargetsValue.h"
 #include "AvailableLootValue.h"
 #include "AlwaysLootListValue.h"
 #include "LootStrategyValue.h"
@@ -199,7 +199,7 @@ namespace ai
             creators["threat"] = &ValueContext::threat;
 
             creators["balance"] = &ValueContext::balance;
-            creators["attackers"] = &ValueContext::attackers;
+            creators["possible attack targets"] = &ValueContext::possible_attack_targets;
             creators["combat targets"] = &ValueContext::combat_targets;
             creators["invalid target"] = &ValueContext::invalid_target;
             creators["mana save level"] = &ValueContext::mana_save_level;
@@ -338,7 +338,7 @@ namespace ai
         static UntypedValue* mana_save_level(PlayerbotAI* ai) { return new ManaSaveLevelValue(ai); }
         static UntypedValue* invalid_target(PlayerbotAI* ai) { return new InvalidTargetValue(ai); }
         static UntypedValue* balance(PlayerbotAI* ai) { return new BalancePercentValue(ai); }
-        static UntypedValue* attackers(PlayerbotAI* ai) { return new AttackersValue(ai); }
+        static UntypedValue* possible_attack_targets(PlayerbotAI* ai) { return new PossibleAttackTargetsValue(ai); }
         static UntypedValue* combat_targets(PlayerbotAI* ai) { return new CombatTargetsValue(ai); }
 
         static UntypedValue* position(PlayerbotAI* ai) { return new PositionValue(ai); }

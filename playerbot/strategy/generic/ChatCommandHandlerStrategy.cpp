@@ -145,15 +145,13 @@ void ChatCommandHandlerStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("max dps chat shortcut", relevance), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "attackers",
-        NextAction::array(0, new NextAction("tell attackers", relevance), NULL)));
+        "possible attack targets",
+        NextAction::array(0, new NextAction("tell possible attack targets", relevance), NULL)));
 
     triggers.push_back(new TriggerNode(
         "ready",
         NextAction::array(0, new NextAction("ready check", relevance), NULL)));
 }
-
-
 
 ChatCommandHandlerStrategy::ChatCommandHandlerStrategy(PlayerbotAI* ai) : PassTroughStrategy(ai)
 {

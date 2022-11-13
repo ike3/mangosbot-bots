@@ -80,7 +80,7 @@ namespace ai
             creators["who"] = &ChatTriggerContext::who;
             creators["save mana"] = &ChatTriggerContext::save_mana;
             creators["max dps"] = &ChatTriggerContext::max_dps;
-            creators["attackers"] = &ChatTriggerContext::attackers;
+            creators["possible attack targets"] = &ChatTriggerContext::possible_attack_targets;
             creators["formation"] = &ChatTriggerContext::formation;
             creators["stance"] = &ChatTriggerContext::stance;
             creators["sendmail"] = &ChatTriggerContext::sendmail;
@@ -126,7 +126,7 @@ namespace ai
         static Trigger* sendmail(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "sendmail"); }
         static Trigger* formation(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "formation"); }
         static Trigger* stance(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "stance"); }
-        static Trigger* attackers(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "attackers"); }
+        static Trigger* possible_attack_targets(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "possible attack targets"); }
         static Trigger* max_dps(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "max dps"); }
         static Trigger* save_mana(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "save mana"); }
         static Trigger* who(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "who"); }

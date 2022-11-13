@@ -22,11 +22,11 @@ bool TellTargetAction::Execute(Event& event)
     return true;
 }
 
-bool TellAttackersAction::Execute(Event& event)
+bool TellPossibleAttackTargetsAction::Execute(Event& event)
 {
-    ai->TellMaster("--- Attackers ---");
+    ai->TellMaster("--- Attack Targets ---");
 
-    list<ObjectGuid> attackers = context->GetValue<list<ObjectGuid> >("attackers")->Get();
+    list<ObjectGuid> attackers = context->GetValue<list<ObjectGuid>>("possible attack targets")->Get();
     for (list<ObjectGuid>::iterator i = attackers.begin(); i != attackers.end(); i++)
     {
         Unit* unit = ai->GetUnit(*i);
