@@ -44,7 +44,7 @@ namespace ai
         bool StartReaction();
         void StopReaction();
 
-        bool CanUpdateAIReaction() const { return aiReactionUpdateDelay < 100U; }
+        bool CanUpdateAIReaction() const;
 
         Action* InitializeAction(ActionNode* actionNode) override;
         bool ListenAndExecute(Action* action, Event& event) override;

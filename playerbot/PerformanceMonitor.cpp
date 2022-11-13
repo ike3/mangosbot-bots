@@ -237,6 +237,7 @@ bool ChatHandler::HandlePerfMonCommand(char* args)
     if (!strcmp(args, "reset"))
     {
         sPerformanceMonitor.Reset();
+        sLog.outString("Performance monitor reset");
         return true;
     }
 
@@ -251,6 +252,16 @@ bool ChatHandler::HandlePerfMonCommand(char* args)
         sPerformanceMonitor.PrintStats(false,true);
         return true;
     }
+
+    if (!strcmp(args, "toggle"))
+    {
+        sPlayerbotAIConfig.perfMonEnabled = !sPlayerbotAIConfig.perfMonEnabled;
+        if(sPlayerbotAIConfig.perfMonEnabled)
+            sLog.outString("Performance monitor enabled");
+        else
+            sLog.outString("Performance monitor disabled");
+        return true;
+    }   
 
     sPerformanceMonitor.PrintStats();
     return true;

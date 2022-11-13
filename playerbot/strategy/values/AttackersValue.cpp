@@ -92,18 +92,41 @@ void AttackersValue::AddAttackersOf(Player* player, set<Unit*>& targets)
 
 void AttackersValue::RemoveNonThreating(set<Unit*>& targets)
 {
+    set<Unit*> breakableCC;
+    set<Unit*> unBreakableCC;
+
     for(set<Unit *>::iterator tIter = targets.begin(); tIter != targets.end();)
     {
         Unit* unit = *tIter;
-        if (!IsValidTarget(unit, bot))
+        if (!IsValidTarget(unit, bot, true))
         {
             set<Unit *>::iterator tIter2 = tIter;
+            ++tIter;
+            targets.erase(tIter2);
+        }
+        else if (!HasIgnoreCCRti(unit, bot) && HasBreakableCC(unit, bot))
+        {
+            breakableCC.insert(unit);
+            set<Unit*>::iterator tIter2 = tIter;
+            ++tIter;
+            targets.erase(tIter2);
+        }
+        else if (!HasIgnoreCCRti(unit, bot) && HasUnBreakableCC(unit, bot))
+        {
+            unBreakableCC.insert(unit);
+            set<Unit*>::iterator tIter2 = tIter;
             ++tIter;
             targets.erase(tIter2);
         }
         else
             ++tIter;
     }
+
+    if (targets.empty()) //And check if group is ok mana/health wise
+        if (!unBreakableCC.empty())
+            targets = unBreakableCC;
+        else if(!breakableCC.empty())
+            targets = breakableCC;
 }
 
 bool AttackersValue::HasIgnoreCCRti(Unit* attacker, Player* player)
@@ -169,7 +192,7 @@ bool AttackersValue::HasUnBreakableCC(Unit* attacker, Player* player)
     return false;
 }
 
-bool AttackersValue::IsPossibleTarget(Unit *attacker, Player *player, float range)
+bool AttackersValue::IsPossibleTarget(Unit *attacker, Player *player, float range, bool ignoreCC)
 {
     if(!attacker)
         return false;
@@ -217,7 +240,7 @@ bool AttackersValue::IsPossibleTarget(Unit *attacker, Player *player, float rang
     isFriendly = sServerFacade.IsFriendlyTo(attacker, player);
     inDuel = player->duel && player->duel->opponent && (attacker->GetObjectGuid() == player->duel->opponent->GetObjectGuid());
     canSeeAttacker = attacker->IsVisibleForOrDetect(player, player->GetCamera().GetBody(), true);
-    hasCC = !HasIgnoreCCRti(attacker, player) && HasBreakableCC(attacker, player) || HasUnBreakableCC(attacker, player);
+    hasCC = !ignoreCC && !HasIgnoreCCRti(attacker, player) && (HasBreakableCC(attacker, player) || HasUnBreakableCC(attacker, player));
 
 #ifndef MANGOSBOT_ZERO
     Player* arenaEnemy = dynamic_cast<Player*>(attacker);
@@ -268,9 +291,9 @@ bool AttackersValue::IsPossibleTarget(Unit *attacker, Player *player, float rang
         );
 }
 
-bool AttackersValue::IsValidTarget(Unit *attacker, Player *bot)
+bool AttackersValue::IsValidTarget(Unit *attacker, Player *bot, bool ignoreCC)
 {
-    return  IsPossibleTarget(attacker, bot) &&
+    return  IsPossibleTarget(attacker, bot, ignoreCC) &&
             (sServerFacade.GetThreatManager(attacker).getCurrentVictim() ||
             attacker->GetGuidValue(UNIT_FIELD_TARGET) || attacker->GetObjectGuid().IsPlayer() ||
             attacker->GetObjectGuid() == bot->GetPlayerbotAI()->GetAiObjectContext()->GetValue<ObjectGuid>("pull target")->Get());
