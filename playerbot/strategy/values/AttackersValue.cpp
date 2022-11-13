@@ -293,7 +293,7 @@ bool AttackersValue::IsPossibleTarget(Unit *attacker, Player *player, float rang
 
 bool AttackersValue::IsValidTarget(Unit *attacker, Player *bot, bool ignoreCC)
 {
-    return  IsPossibleTarget(attacker, bot, ignoreCC) &&
+    return  IsPossibleTarget(attacker, bot, sPlayerbotAIConfig.sightDistance, ignoreCC) &&
             (sServerFacade.GetThreatManager(attacker).getCurrentVictim() ||
             attacker->GetGuidValue(UNIT_FIELD_TARGET) || attacker->GetObjectGuid().IsPlayer() ||
             attacker->GetObjectGuid() == bot->GetPlayerbotAI()->GetAiObjectContext()->GetValue<ObjectGuid>("attack target")->Get());
