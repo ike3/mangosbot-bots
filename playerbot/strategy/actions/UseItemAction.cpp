@@ -348,8 +348,12 @@ bool UseItemAction::UseItem(Item* item, ObjectGuid goGuid, Item* itemTarget, Uni
                    return false;
                }
                delete spell;
-
+#ifdef MANGOSBOT_ZERO
                bot->CastItemUseSpell(item, targets, spell_index);
+#else
+               bot->CastItemUseSpell(item, targets, 1, 0, spellid);
+#endif
+
                return true;
            }
        }
