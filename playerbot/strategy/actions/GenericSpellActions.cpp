@@ -65,7 +65,9 @@ bool CastSpellAction::isPossible()
         }
     }
 
-	return ai->CanCastSpell(spellName, GetTarget(), true);
+    // Check if the ignore range flag gas been set
+    bool ignoreRange = !qualifier.empty() ? Qualified::getMultiQualifierInt(qualifier, 1, ":") : false;
+	return ai->CanCastSpell(spellName, GetTarget(), true, nullptr, ignoreRange);
 }
 
 bool CastSpellAction::isUseful()
@@ -133,6 +135,19 @@ void CastSpellAction::SetSpellName(const string& name, string spellIDContextName
     }
 }
 
+string CastSpellAction::GetTargetName()
+{
+    string targetName = "current target";
+
+    // Check if the target name has been overridden
+    if (!qualifier.empty())
+    {
+        targetName = Qualified::getMultiQualifierStr(qualifier, 0, ":");
+    }
+
+    return targetName;
+}
+
 bool CastAuraSpellAction::isUseful()
 {
     return GetTarget() && (GetTarget() != nullptr) && (GetTarget() != NULL) && CastSpellAction::isUseful() && !ai->HasAura(GetSpellName(), GetTarget(), false, isOwner);
@@ -186,7 +201,7 @@ bool CastShootAction::isPossible()
         Unit* target = GetTarget();
         if (target && sServerFacade.IsWithinLOSInMap(bot, target))
         {
-            return true;
+            return CastSpellAction::isPossible();
         }
     }
 

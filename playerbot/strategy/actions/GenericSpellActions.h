@@ -5,7 +5,7 @@
 
 namespace ai
 {
-    class CastSpellAction : public Action
+    class CastSpellAction : public Action, public Qualified
     {
     public:
         CastSpellAction(PlayerbotAI* ai, string spell) 
@@ -15,7 +15,7 @@ namespace ai
             SetSpellName(spell);
         }
 
-		virtual string GetTargetName() { return "current target"; }
+		virtual string GetTargetName();
         virtual bool Execute(Event& event);
         virtual bool isPossible();
 		virtual bool isUseful();
