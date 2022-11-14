@@ -2467,7 +2467,7 @@ bool RandomPlayerbotMgr::HandlePlayerbotConsoleCommand(ChatHandler* handler, cha
     if (cmd.find("pid ") != std::string::npos)
     {
         string pids = cmd.substr(4);
-        vector<string> pid = Qualified::getMultiQualifiers(pids);
+        vector<string> pid = Qualified::getMultiQualifiers(pids, " ");
 
         if (pid.size() == 0)
             pid.push_back("0");
@@ -2486,7 +2486,7 @@ bool RandomPlayerbotMgr::HandlePlayerbotConsoleCommand(ChatHandler* handler, cha
     if (cmd.find("diff ") != std::string::npos)
     {
         string diffs = cmd.substr(4);
-        vector<string> diff = Qualified::getMultiQualifiers(diffs);
+        vector<string> diff = Qualified::getMultiQualifiers(diffs, " ");
         if (diff.size() == 0)
             diff.push_back("100");
         if (diff.size() == 1)

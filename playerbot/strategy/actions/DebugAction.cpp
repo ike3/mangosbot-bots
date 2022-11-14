@@ -81,7 +81,7 @@ bool DebugAction::Execute(Event& event)
         WorldPosition poiPoint = botPos;
         string name = "bot";
 
-        vector<string> args = Qualified::getMultiQualifiers(text.substr(4));
+        vector<string> args = Qualified::getMultiQualifiers(text.substr(4), " ");
         TravelDestination* dest = ChooseTravelTargetAction::FindDestination(bot, args[0]);
 
         if (dest)
@@ -481,7 +481,7 @@ bool DebugAction::Execute(Event& event)
             for (auto entry : entries)
             {
                 std::vector<std::string> qualifiers = { to_string(entry), to_string(itemId) };
-                std::string qualifier = Qualified::MultiQualify(qualifiers);
+                std::string qualifier = Qualified::MultiQualify(qualifiers, " ");
                 float chance = GAI_VALUE2(float, "loot chance", qualifier);
                 if(chance > 0)
                     chances.push_back(make_pair(entry, chance));
@@ -565,7 +565,7 @@ bool DebugAction::Execute(Event& event)
         for (auto itemId : itemIds)
         {
             std::vector<std::string> qualifiers = { to_string(entry) , to_string(itemId) };
-            std::string qualifier = Qualified::MultiQualify(qualifiers);
+            std::string qualifier = Qualified::MultiQualify(qualifiers, " ");
             float chance = GAI_VALUE2(float, "loot chance", qualifier);
             if (chance > 0 && sObjectMgr.GetItemPrototype(itemId))
             {
