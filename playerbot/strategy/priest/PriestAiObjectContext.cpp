@@ -46,7 +46,7 @@ namespace ai
             static Strategy* nc(PlayerbotAI* ai) { return new PriestNonCombatStrategy(ai); }
             static Strategy* react(PlayerbotAI* ai) { return new PriestReactionStrategy(ai); }
             static Strategy* shadow_aoe(PlayerbotAI* ai) { return new ShadowPriestAoeStrategy(ai); }
-            static Strategy* pull(PlayerbotAI* ai) { return new PullStrategy(ai, "shoot"); }
+            static Strategy* pull(PlayerbotAI* ai) { return new PullStrategy(ai, "shoot", ai->GetRange("shoot")); }
             static Strategy* shadow_debuff(PlayerbotAI* ai) { return new ShadowPriestDebuffStrategy(ai); }
             static Strategy* cure(PlayerbotAI* ai) { return new PriestCureStrategy(ai); }
         };

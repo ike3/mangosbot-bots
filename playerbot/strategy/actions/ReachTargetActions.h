@@ -4,6 +4,7 @@
 #include "MovementActions.h"
 #include "../../PlayerbotAIConfig.h"
 #include "../../ServerFacade.h"
+#include "../generic/PullStrategy.h"
 
 namespace ai
 {
@@ -14,7 +15,7 @@ namespace ai
 
         virtual bool Execute(Event& event)
 		{
-            Unit* target = AI_VALUE(Unit*, GetTargetName());
+            Unit* target = GetTarget();
             if (target)
             {
                 UpdateMovementState();
@@ -98,6 +99,21 @@ namespace ai
 	{
     public:
         ReachSpellAction(PlayerbotAI* ai) : ReachTargetAction(ai, "reach spell", ai->GetRange("spell")) {}
+    };
+
+    class ReachPullAction : public ReachTargetAction
+    {
+    public:
+        ReachPullAction(PlayerbotAI* ai) : ReachTargetAction(ai, "reach pull", 0.0f)
+        {
+            PullStrategy* strategy = PullStrategy::Get(ai);
+            if (strategy)
+            {
+                distance = strategy->GetRange();
+            }
+        }
+
+        string GetTargetName() override { return "pull target"; }
     };
 
     class ReachPartyMemberToHealAction : public ReachTargetAction

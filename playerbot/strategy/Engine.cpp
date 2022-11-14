@@ -193,9 +193,8 @@ bool Engine::DoNextAction(Unit* unit, int depth, bool minimal)
                     bool isPossible = action->isPossible();
                     if (pmo3) pmo3->finish();
 
-                    if (action->isPossible() && relevance)
+                    if (isPossible && relevance)
                     {
-                    
                         if (!skipPrerequisites)
                         {
                             LogAction("A:%s - PREREQ", action->getName().c_str());

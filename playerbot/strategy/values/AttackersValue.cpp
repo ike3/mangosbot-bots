@@ -92,7 +92,7 @@ void AttackersValue::AddTargetsOf(Player* player, set<Unit*>& targets)
                     units.push_back(attackTarget);
                 }
 
-                Unit* pullTarget = bot->GetUnit(PAI_VALUE(ObjectGuid, "pull target"));
+                Unit* pullTarget = PAI_VALUE(Unit*, "pull target");
                 if (pullTarget)
                 {
                     units.push_back(pullTarget);
@@ -181,7 +181,7 @@ bool AttackersValue::IsValid(Unit* target, Player* player) const
             // Check if the target has been requested to be attacked
             const bool isPulling = player->GetPlayerbotAI() && 
                                    ((PAI_VALUE(ObjectGuid, "attack target") == target->GetObjectGuid()) ||
-                                    (PAI_VALUE(ObjectGuid, "pull target") == target->GetObjectGuid()));
+                                    (PAI_VALUE(Unit*, "pull target") == target));
 
             // Valid if the npc target is:
             // - Not dead

@@ -11,6 +11,7 @@
 #include "DruidTriggers.h"
 #include "HealDruidStrategy.h"
 #include "MeleeDruidStrategy.h"
+#include "../generic/PullStrategy.h"
 
 using namespace ai;
 
@@ -36,6 +37,7 @@ namespace ai
                 creators["buff"] = &druid::StrategyFactoryInternal::buff;
                 creators["boost"] = &druid::StrategyFactoryInternal::boost;
                 creators["cc"] = &druid::StrategyFactoryInternal::cc;
+                creators["pull"] = &druid::StrategyFactoryInternal::pull;
             }
 
         private:
@@ -49,6 +51,7 @@ namespace ai
             static Strategy* buff(PlayerbotAI* ai) { return new GenericDruidBuffStrategy(ai); }
             static Strategy* boost(PlayerbotAI* ai) { return new DruidBoostStrategy(ai); }
             static Strategy* cc(PlayerbotAI* ai) { return new DruidCcStrategy(ai); }
+            static Strategy* pull(PlayerbotAI* ai) { return new PullStrategy(ai, "faerie fire", ai->GetRange("spell")); }
         };
 
         class DruidStrategyFactoryInternal : public NamedObjectContext<Strategy>

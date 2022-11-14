@@ -36,7 +36,7 @@ namespace ai
         private:
             static Strategy* nc(PlayerbotAI* ai) { return new GenericDKNonCombatStrategy(ai); }
 			static Strategy* react(PlayerbotAI* ai) { return new DKReactionStrategy(ai); }
-            static Strategy* pull(PlayerbotAI* ai) { return new PullStrategy(ai, "icy touch"); }
+            static Strategy* pull(PlayerbotAI* ai) { return new PullStrategy(ai, "icy touch", ai->GetRange("spell")); }
 			static Strategy* frost_aoe(PlayerbotAI* ai) { return new FrostDKAoeStrategy(ai); }
 			static Strategy* unholy_aoe(PlayerbotAI* ai) { return new UnholyDKAoeStrategy(ai); }
         };

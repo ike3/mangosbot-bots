@@ -233,6 +233,7 @@ namespace ai
             creators["travel target"] = &ValueContext::travel_target;
             creators["talk target"] = &ValueContext::talk_target;
             creators["attack target"] = &ValueContext::attack_target;
+            creators["pull target"] = &ValueContext::pull_target;
             creators["group"] = &ValueContext::group;
             creators["range"] = &ValueContext::range;
             creators["inside target"] = &ValueContext::inside_target;
@@ -461,6 +462,7 @@ namespace ai
         static UntypedValue* travel_target(PlayerbotAI* ai) { return new TravelTargetValue(ai); }
         static UntypedValue* talk_target(PlayerbotAI* ai) { return new TalkTargetValue(ai); }
         static UntypedValue* attack_target(PlayerbotAI* ai) { return new AttackTargetValue(ai); }
+        static UntypedValue* pull_target(PlayerbotAI* ai) { return new PullTargetValue(ai); }
         static UntypedValue* death_count(PlayerbotAI* ai) { return new DeathCountValue(ai); }
 
         static UntypedValue* last_long_move(PlayerbotAI* ai) { return new LastLongMoveValue(ai); }

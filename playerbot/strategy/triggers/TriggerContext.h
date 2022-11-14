@@ -13,6 +13,7 @@
 #include "GuildTriggers.h"
 #include "StuckTriggers.h"
 #include "BotStateTriggers.h"
+#include "PullTriggers.h"
 
 namespace ai
 {
@@ -72,6 +73,9 @@ namespace ai
             creators["death"] = &TriggerContext::death;
             creators["resurrect"] = &TriggerContext::resurrect;
 
+            creators["pull start"] = &TriggerContext::pull_start;
+            creators["pull end"] = &TriggerContext::pull_end;
+
             creators["tank assist"] = &TriggerContext::TankAssist;
             creators["lose aggro"] = &TriggerContext::LoseAggro;
             creators["has aggro"] = &TriggerContext::HasAggro;
@@ -81,7 +85,6 @@ namespace ai
             creators["high aoe"] = &TriggerContext::HighAoe;
 
             creators["has area debuff"] = &TriggerContext::HasAreaDebuff;
-
 
             creators["enemy out of melee"] = &TriggerContext::EnemyOutOfMelee;
             creators["enemy out of spell"] = &TriggerContext::EnemyOutOfSpell;
@@ -312,6 +315,8 @@ namespace ai
         static Trigger* combat_end(PlayerbotAI* ai) { return new CombatEndTrigger(ai); }
         static Trigger* death(PlayerbotAI* ai) { return new DeathTrigger(ai); }
         static Trigger* resurrect(PlayerbotAI* ai) { return new ResurrectTrigger(ai); }
+        static Trigger* pull_start(PlayerbotAI* ai) { return new PullStartTrigger(ai); }
+        static Trigger* pull_end(PlayerbotAI* ai) { return new PullEndTrigger(ai); }
         static Trigger* enemy_player_near(PlayerbotAI* ai) { return new EnemyPlayerNear(ai); }
         static Trigger* Random(PlayerbotAI* ai) { return new RandomTrigger(ai, "random", 20); }
         static Trigger* seldom(PlayerbotAI* ai) { return new RandomTrigger(ai, "seldom", 300); }

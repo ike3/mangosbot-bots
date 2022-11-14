@@ -220,7 +220,7 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
             break;
         case CLASS_WARRIOR:
             if (tab == 2)
-                engine->addStrategies("tank", "tank assist", "aoe", "close", "mark rti", NULL);
+                engine->addStrategies("tank", "tank assist", "pull", "aoe", "close", "mark rti", NULL);
             else if (player->GetLevel() < 30 || tab == 0)
                 engine->addStrategies("arms", "aoe", "dps assist", "threat", "close", "behind", NULL);
             else
@@ -265,7 +265,7 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
             else
             {
                 engine->removeStrategy("ranged");
-                engine->addStrategies("bear", "tank assist", "flee", "close", "behind", NULL);
+                engine->addStrategies("bear", "tank assist", "pull", "flee", "close", "behind", NULL);
             }
             break;
         case CLASS_HUNTER:
