@@ -1584,6 +1584,19 @@ list<string> PlayerbotAI::GetStrategies(BotState type)
     return e->GetStrategies();
 }
 
+bool PlayerbotAI::CanDoSpecificAction(string name, string qualifier, bool isPossible, bool isUseful)
+{
+    for (uint8 i = 0; i < (uint8)BotState::BOT_STATE_MAX; i++)
+    {
+        if(engines[i]->CanExecuteAction(name, qualifier, isPossible, isUseful))
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 bool PlayerbotAI::DoSpecificAction(string name, Event event, bool silent, string qualifier)
 {
     for (uint8 i = 0 ; i < (uint8)BotState::BOT_STATE_MAX; i++)

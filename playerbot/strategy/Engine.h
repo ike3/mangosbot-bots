@@ -68,6 +68,7 @@ namespace ai
 		void addStrategies(string first, ...);
         bool removeStrategy(string name);
         bool HasStrategy(string name);
+        Strategy* GetStrategy(string name) const;
         void removeAllStrategies();
         void toggleStrategy(string name);
         std::string ListStrategies();
@@ -78,7 +79,8 @@ namespace ai
 
     public:
 	    virtual bool DoNextAction(Unit*, int depth = 0, bool minimal = false);
-	    ActionResult ExecuteAction(string name, Event event = Event(), string qualifier = "");
+	    ActionResult ExecuteAction(string name, Event& event, string qualifier = "");
+        bool CanExecuteAction(string name, string qualifier = "", bool isPossible = true, bool isUseful = true);
 
     public:
         void AddActionExecutionListener(ActionExecutionListener* listener)

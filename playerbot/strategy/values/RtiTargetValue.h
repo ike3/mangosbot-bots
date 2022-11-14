@@ -44,7 +44,7 @@ namespace ai
             if (!guid)
                 return NULL;
 
-            list<ObjectGuid> attackers = context->GetValue<list<ObjectGuid> >("attackers")->Get();
+            list<ObjectGuid> attackers = context->GetValue<list<ObjectGuid>>("possible attack targets")->Get();
             if (find(attackers.begin(), attackers.end(), guid) == attackers.end()) return NULL;
 
             Unit* unit = ai->GetUnit(ObjectGuid(guid));

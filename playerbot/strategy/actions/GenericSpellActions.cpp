@@ -178,17 +178,19 @@ bool CastVehicleSpellAction::Execute(Event& event)
 
 bool CastShootAction::isPossible()
 {
-    // Check if the bot has a ranged weapon equipped
+    // Check if the bot has a ranged weapon equipped and has ammo
     UpdateWeaponInfo();
-    if (rangedWeapon == nullptr)
-        return false;
+    if (rangedWeapon && !needsAmmo)
+    {
+        // Check if the target exist and it can be shot
+        Unit* target = GetTarget();
+        if (target && sServerFacade.IsWithinLOSInMap(bot, target))
+        {
+            return true;
+        }
+    }
 
-    // Check if the target exist and it can be shot
-    Unit* target = GetTarget();
-    if (!target || !sServerFacade.IsWithinLOSInMap(bot, target))
-        return false;
-
-    return true;
+    return false;
 }
 
 bool CastShootAction::Execute(Event& event)
@@ -196,7 +198,7 @@ bool CastShootAction::Execute(Event& event)
     bool succeeded = false;
 
     UpdateWeaponInfo();
-    if (rangedWeapon)
+    if (rangedWeapon && !needsAmmo)
     {
         // Prevent calling the shoot spell when already active
         Spell* autoRepeatSpell = ai->GetBot()->GetCurrentSpell(CURRENT_AUTOREPEAT_SPELL);
@@ -268,6 +270,9 @@ void CastShootAction::UpdateWeaponInfo()
                 weaponDelay = itemPrototype->Delay + sPlayerbotAIConfig.globalCoolDown;
             }
         }
+
+        // Check the ammunition
+        needsAmmo = (GetSpellName() != "shoot") ? (AI_VALUE2(uint32, "item count", "ammo") <= 0) : false;
     }
     else
     {
