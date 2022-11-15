@@ -80,8 +80,20 @@ bool PullStartAction::Execute(Event& event)
     PullStrategy* strategy = PullStrategy::Get(ai);
     if (strategy)
     {
-        result = ai->DoSpecificAction("reach pull", event);
-        strategy->OnPullStarted();
+        Unit* target = strategy->GetTarget();
+        if (target)
+        {
+            result = true;
+
+            // Check if we are not on pull range
+            const float distanceToTarget = target->GetDistance(bot);
+            if (distanceToTarget > strategy->GetRange())
+            {
+                result = ai->DoSpecificAction("reach pull", event);
+            }
+
+            strategy->OnPullStarted();
+        }
     }
 
     return result;
