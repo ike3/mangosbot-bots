@@ -10,68 +10,50 @@ using namespace ai;
 bool PullMyTargetAction::Execute(Event& event)
 {
     Player* master = GetMaster();
-    if (master)
+    Unit* target;
+
+    if (event.getSource() == "attack anything")
     {
-        Unit* target = ai->GetUnit(master->GetSelectionGuid());
-        if (target)
-        {
-            PullStrategy* strategy = PullStrategy::Get(ai);
-            if (strategy)
-            {
-                strategy->RequestPull(target);
-                return true;
-            }
-        }
+        ObjectGuid guid = event.getObject();
+        target = ai->GetCreature(guid);
+    }
+    else if (Player* master = GetMaster())
+    {
+        target = ai->GetUnit(master->GetSelectionGuid());
     }
 
-    return false;
-}
-
-bool PullMyTargetAction::isPossible()
-{
-    Player* master = GetMaster();
-    if (master)
+    if (!target)
     {
-        PullStrategy* strategy = PullStrategy::Get(ai);
-        if (strategy)
-        {
-            Unit* target = ai->GetUnit(master->GetSelectionGuid());
-            if (target)
-            {
-                const float maxPullDistance = sPlayerbotAIConfig.reactDistance * 3;
-                const float distanceToPullTarget = target->GetDistance(ai->GetBot());
-                if (distanceToPullTarget <= maxPullDistance)
-                {
-                    if (PossibleTargetsValue::IsValid(bot, target, maxPullDistance))
-                    {
-                        if (strategy->CanDoPullAction(target))
-                        {
-                            return true;
-                        }
-                        else
-                        {
-                            ostringstream out; out << "Can't perform pull action '" << strategy->GetActionName() << "'";
-                            ai->TellError(out.str());
-                        }
-                    }
-                    else
-                    {
-                        ai->TellError("The target can't be pulled");
-                    }
-                }
-                else
-                {
-                    ai->TellError("The target is too far away");
-                }
-            }
-            else
-            {
-                ai->TellError("You have no target");
-            }
-        }
+        ai->TellError("You have no target");
+        return false;
     }
 
-    return false;
+    const float maxPullDistance = sPlayerbotAIConfig.reactDistance * 3;
+    const float distanceToPullTarget = target->GetDistance(ai->GetBot());
+    if (distanceToPullTarget > maxPullDistance)
+    {
+        ai->TellError("The target is too far away");
+        return false;
+    }
+
+    if (!PossibleTargetsValue::IsValid(bot, target, maxPullDistance))
+    {
+        ai->TellError("The target can't be pulled");
+    }
+
+    PullStrategy* strategy = PullStrategy::Get(ai);
+    if (!strategy)
+        return false;
+
+    if (!strategy->CanDoPullAction(target))
+    {
+        ostringstream out; out << "Can't perform pull action '" << strategy->GetActionName() << "'";
+        ai->TellError(out.str());
+        return false;
+    }
+
+    strategy->RequestPull(target);
+    return true;
 }
 
 bool PullStartAction::Execute(Event& event)

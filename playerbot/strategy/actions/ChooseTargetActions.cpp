@@ -63,6 +63,15 @@ bool ai::AttackAnythingAction::Execute(Event& event)
             const char* grindName = grindTarget->GetName();
             if (grindName)
             {
+                if (ai->HasStrategy("pull", BotState::BOT_STATE_COMBAT))
+                {
+                    Event pullEvent("attack anything", grindTarget->GetObjectGuid());
+                    bool doAction = ai->DoSpecificAction("pull my target", pullEvent, true);
+                    
+                    if (doAction)
+                        return true;
+                }
+
                 context->GetValue<ObjectGuid>("attack target")->Set(grindTarget->GetObjectGuid());
                 ai->StopMoving();
             }

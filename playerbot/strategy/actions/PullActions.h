@@ -11,7 +11,6 @@ namespace ai
 
     public:
         bool Execute(Event& event) override;
-        bool isPossible() override;
     };
 
     class PullStartAction : public Action
