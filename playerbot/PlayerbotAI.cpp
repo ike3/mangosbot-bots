@@ -3383,6 +3383,9 @@ ActivePiorityType PlayerbotAI::GetPriorityType()
         }
     }
 
+    if (bot->IsBeingTeleported()) //Allow activity while teleportation.
+        return ActivePiorityType::IN_INSTANCE;
+
     if (!WorldPosition(bot).isOverworld()) 
         return ActivePiorityType::IN_INSTANCE;
 
