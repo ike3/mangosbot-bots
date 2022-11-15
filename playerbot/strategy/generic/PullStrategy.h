@@ -8,7 +8,7 @@ namespace ai
     class PullStrategy : public Strategy
     {
     public:
-        PullStrategy(PlayerbotAI* ai, string pullAction, float pullRange);
+        PullStrategy(PlayerbotAI* ai, string pullAction);
 
     public:
         void InitTriggers(std::list<TriggerNode*> &triggers) override;
@@ -17,36 +17,39 @@ namespace ai
 
         static PullStrategy* Get(PlayerbotAI* ai);
         static uint8 GetMaxPullTime() { return 15; }
+        const time_t& GetPullStartTime() const { return pullStartTime; }
+        
+        bool CanDoPullAction(Unit* target);
 
         Unit* GetTarget() const;
-        void SetTarget(Unit* target);
+        bool HasTarget() const { return GetTarget() != nullptr; }
 
-        bool CanPull(Unit* target) const;
-        bool IsPulling() const { return GetTarget() != nullptr; }
-
-        string GetAction() const;
+        string GetActionName() const;
         float GetRange() const { return range; }
 
-        bool HasPullStarted() const { return started; }
-        void OnPullStart() { started = true; }
-        void OnPullEnd() { started = false; }
+        void RequestPull(Unit* target);
+        bool IsPullPendingToStart() const { return pendingToStart; }
+        bool HasPullStarted() const { return pullStartTime > 0; }
+        void OnPullStarted();
+        void OnPullEnded();
 
     private:
-        string action;
+        void SetTarget(Unit* target);
+
+    private:
         float range;
-        bool started;
+        string actionName;
+        bool pendingToStart;
+        time_t pullStartTime;
     };
 
     class PullMultiplier : public Multiplier
     {
     public:
-        PullMultiplier(PlayerbotAI* ai, string pullAction) : Multiplier(ai, "pull"), pullAction(pullAction) {}
+        PullMultiplier(PlayerbotAI* ai) : Multiplier(ai, "pull") {}
 
     public:
         float GetValue(Action* action) override;
-
-    private:
-        string pullAction;
     };
 
     class PossibleAdsStrategy : public Strategy
