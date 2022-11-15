@@ -187,14 +187,10 @@ bool ReactionEngine::Update(uint32 elapsed, bool minimal, bool& reactionFound, b
             }
             else
             {
-                // Bots with minimal configuration should not react
-                if (!minimal)
+                // Look for an available reaction
+                if (FindReaction())
                 {
-                    // Look for an available reaction
-                    if (FindReaction())
-                    {
-                        reactionFound = true;
-                    }
+                    reactionFound = true;
                 }
             }
         }
