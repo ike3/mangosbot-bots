@@ -9,9 +9,13 @@ using namespace ai;
 
 bool PullMyTargetAction::Execute(Event& event)
 {
-    Player* master = GetMaster();
-    Unit* target;
+    PullStrategy* strategy = PullStrategy::Get(ai);
+    if (!strategy)
+    {
+        return false;
+    }
 
+    Unit* target = nullptr;
     if (event.getSource() == "attack anything")
     {
         ObjectGuid guid = event.getObject();
@@ -39,11 +43,8 @@ bool PullMyTargetAction::Execute(Event& event)
     if (!PossibleTargetsValue::IsValid(bot, target, maxPullDistance))
     {
         ai->TellError("The target can't be pulled");
-    }
-
-    PullStrategy* strategy = PullStrategy::Get(ai);
-    if (!strategy)
         return false;
+    }
 
     if (!strategy->CanDoPullAction(target))
     {
