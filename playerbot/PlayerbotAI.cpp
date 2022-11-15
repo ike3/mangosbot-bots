@@ -3462,6 +3462,7 @@ pair<uint32, uint32> PlayerbotAI::GetPriorityBracket(ActivePiorityType type)
     {
     case ActivePiorityType::HAS_REAL_PLAYER_MASTER:
     case ActivePiorityType::IS_REAL_PLAYER:
+    case ActivePiorityType::IN_GROUP_WITH_REAL_PLAYER:
     case ActivePiorityType::IN_INSTANCE:
     case ActivePiorityType::VISIBLE_FOR_PLAYER:
         return { 0,0 };
@@ -3501,6 +3502,7 @@ bool PlayerbotAI::AllowActive(ActivityType activityType)
         {
         case ActivePiorityType::HAS_REAL_PLAYER_MASTER:
         case ActivePiorityType::IS_REAL_PLAYER:
+        case ActivePiorityType::IN_GROUP_WITH_REAL_PLAYER:
         case ActivePiorityType::IN_INSTANCE:
         case ActivePiorityType::VISIBLE_FOR_PLAYER:
         case ActivePiorityType::IN_COMBAT:
@@ -3526,6 +3528,7 @@ bool PlayerbotAI::AllowActive(ActivityType activityType)
         {
         case ActivePiorityType::HAS_REAL_PLAYER_MASTER:
         case ActivePiorityType::IS_REAL_PLAYER:
+        case ActivePiorityType::IN_GROUP_WITH_REAL_PLAYER:
         case ActivePiorityType::IN_INSTANCE:
         case ActivePiorityType::VISIBLE_FOR_PLAYER:
         case ActivePiorityType::IS_ALWAYS_ACTIVE:
