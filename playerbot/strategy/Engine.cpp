@@ -144,8 +144,12 @@ bool Engine::DoNextAction(Unit* unit, int depth, bool minimal)
             // NOTE: queue.Pop() deletes basket
             ActionNode* actionNode = queue.Pop();
             Action* action = InitializeAction(actionNode);
+
+            string actionName = (action ? action->getName() : "unknown");
+            if (!event.getSource().empty())
+                actionName += " <" + event.getSource() + ">";
             
-            PerformanceMonitorOperation* pmo1 = sPerformanceMonitor.start(PERF_MON_ACTION, (event.getSource().empty() ? event.getSource() : (action ? action->getName(): "unknown")), &aiObjectContext->performanceStack);
+            PerformanceMonitorOperation* pmo1 = sPerformanceMonitor.start(PERF_MON_ACTION, actionName, &aiObjectContext->performanceStack);
 
             if(action)
                 action->setRelevance(relevance);
@@ -171,7 +175,7 @@ bool Engine::DoNextAction(Unit* unit, int depth, bool minimal)
             }
             else
             {
-                PerformanceMonitorOperation* pmo2 = sPerformanceMonitor.start(PERF_MON_ACTION, action->getName() + " (usefull)", &aiObjectContext->performanceStack);
+                PerformanceMonitorOperation* pmo2 = sPerformanceMonitor.start(PERF_MON_ACTION, "isUsefull", &aiObjectContext->performanceStack);
                 bool isUsefull = action->isUseful();
                 if (pmo2) pmo2->finish();
 
@@ -189,7 +193,7 @@ bool Engine::DoNextAction(Unit* unit, int depth, bool minimal)
                         }
                     }
 
-                    PerformanceMonitorOperation* pmo3 = sPerformanceMonitor.start(PERF_MON_ACTION, action->getName() + " (possible)", &aiObjectContext->performanceStack);
+                    PerformanceMonitorOperation* pmo3 = sPerformanceMonitor.start(PERF_MON_ACTION, "isPossible", &aiObjectContext->performanceStack);
                     bool isPossible = action->isPossible();
                     if (pmo3) pmo3->finish();
 
@@ -207,7 +211,7 @@ bool Engine::DoNextAction(Unit* unit, int depth, bool minimal)
                             }
                         }
 
-                        PerformanceMonitorOperation* pmo4 = sPerformanceMonitor.start(PERF_MON_ACTION, action->getName() + " (execute)", &aiObjectContext->performanceStack);
+                        PerformanceMonitorOperation* pmo4 = sPerformanceMonitor.start(PERF_MON_ACTION, "Execute", &aiObjectContext->performanceStack);
                         actionExecuted = ListenAndExecute(action, event);
                         if (pmo4) pmo4->finish();
 
