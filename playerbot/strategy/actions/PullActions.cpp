@@ -38,7 +38,7 @@ bool PullMyTargetAction::isPossible()
             Unit* target = ai->GetUnit(master->GetSelectionGuid());
             if (target)
             {
-                const float maxPullDistance = sPlayerbotAIConfig.sightDistance;
+                const float maxPullDistance = sPlayerbotAIConfig.reactDistance * 3;
                 const float distanceToPullTarget = target->GetDistance(ai->GetBot());
                 if (distanceToPullTarget <= maxPullDistance)
                 {
