@@ -1676,15 +1676,27 @@ bool PlayerbotAI::ContainsStrategy(StrategyType type)
 {
     for (uint8 i = 0 ; i < (uint8)BotState::BOT_STATE_MAX; i++)
     {
-        if (engines[i]->ContainsStrategy(type))
-            return true;
+        if(engines[i])
+        {
+            if (engines[i]->ContainsStrategy(type))
+            {
+                return true;
+            }
+        }
     }
+
     return false;
 }
 
 bool PlayerbotAI::HasStrategy(string name, BotState type)
 {
-    return engines[(uint8)type]->HasStrategy(name);
+    const uint8 typeIndex = (uint8)type;
+    if (engines[typeIndex])
+    {
+        return engines[typeIndex]->HasStrategy(name);
+    }
+
+    return false;
 }
 
 void PlayerbotAI::ResetStrategies(bool load)
@@ -2126,6 +2138,35 @@ bool PlayerbotAI::HasAnyAuraOf(Unit* player, ...)
     while (cur);
 
     va_end(vl);
+    return false;
+}
+
+bool PlayerbotAI::GetSpellRange(string name, float* maxRange, float* minRange)
+{
+    const uint32 spellId = aiObjectContext->GetValue<uint32>("spell id", name)->Get();
+    if(spellId)
+    {
+        const SpellEntry* spellInfo = sServerFacade.LookupSpellInfo(spellId);
+        if (spellInfo)
+        {
+            const SpellRangeEntry* spellRangeEntry = sServerFacade.LookupSpellRangeEntry(spellInfo->rangeIndex);
+            if(spellRangeEntry)
+            {
+                if(maxRange)
+                {
+                    *maxRange = spellRangeEntry->maxRange;
+                }
+
+                if(minRange)
+                {
+                    *minRange = spellRangeEntry->minRange;
+                }
+
+                return true;
+            }
+        }
+    }
+
     return false;
 }
 

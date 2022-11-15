@@ -192,6 +192,11 @@ class ServerFacade
 #endif
         }
 
+        SpellRangeEntry const* LookupSpellRangeEntry(uint32 rangeIndex)
+        {
+            return sSpellRangeStore.LookupEntry(rangeIndex);
+        }
+
         uint32 GetSpellInfoRows()
         {
 #ifdef MANGOS
