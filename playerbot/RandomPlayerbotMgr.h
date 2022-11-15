@@ -180,7 +180,6 @@ class RandomPlayerbotMgr : public PlayerbotHolder
         list<uint32> arenaTeamMembers;
         uint32 bgBotsCount;
         uint32 playersLevel = sPlayerbotAIConfig.randombotStartingLevel;
-        PerformanceMonitorOperation* totalPmo;
 
         std::unordered_map<uint32, std::vector<std::pair<int32,int32>>> playerBotMoveLog;
 };

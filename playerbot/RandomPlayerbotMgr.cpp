@@ -469,11 +469,6 @@ void RandomPlayerbotMgr::LogPlayerLocation()
 
 void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed, bool minimal)
 {
-    if (totalPmo)
-        totalPmo->finish();
-
-    totalPmo = sPerformanceMonitor.start(PERF_MON_TOTAL, "RandomPlayerbotMgr::FullTick");
-
     if (!sPlayerbotAIConfig.randomBotAutologin || !sPlayerbotAIConfig.enabled)
         return;
   
@@ -564,7 +559,7 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed, bool minimal)
 
     uint32 maxNewBots = onlineBotCount < maxAllowedBotCount ? maxAllowedBotCount - onlineBotCount : 0;
     int32 loginBotsTemp = sPlayerbotAIConfig.randomBotsPerInterval - updateBots;
-    uint32 loginBots = uint32(loginBotsTemp < 0 ? uint32(1) : uint32(loginBotsTemp));
+    uint32 loginBots = uint32(loginBotsTemp < 0 ? uint32(1) : uint32(loginBotsTemp)) * sPlayerbotAIConfig.randomBotsLoginSpeed;
     loginBots = std::min(loginBots, maxNewBots);
 
    //More options to scale based on activity. Currently disabled.
