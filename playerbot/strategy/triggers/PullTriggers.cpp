@@ -9,20 +9,20 @@ using namespace ai;
 bool PullStartTrigger::IsActive()
 {
     const PullStrategy* strategy = PullStrategy::Get(ai);
-    return strategy && strategy->IsPulling() && !strategy->HasPullStarted();
+    return strategy && strategy->IsPullPendingToStart();
 }
 
 bool PullEndTrigger::IsActive()
 {
     const PullStrategy* strategy = PullStrategy::Get(ai);
-    if (strategy && strategy->IsPulling() && strategy->HasPullStarted())
+    if (strategy && strategy->HasPullStarted())
     {
         Unit* target = strategy->GetTarget();
         if (target)
         {
             // Check if the pull is taking too long
-            const time_t secondsSinceCombatStarted = time(0) - ai->GetCombatStartTime();
-            if (secondsSinceCombatStarted >= strategy->GetMaxPullTime())
+            const time_t secondsSincePullStarted = time(0) - strategy->GetPullStartTime();
+            if (secondsSincePullStarted >= strategy->GetMaxPullTime())
             {
                 return true;
             }

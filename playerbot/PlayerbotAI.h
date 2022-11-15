@@ -365,7 +365,7 @@ public:
     void EnchantItemT(uint32 spellid, uint8 slot, Item* item = nullptr);
     uint32 GetBuffedCount(Player* player, string spellname);
   
-
+    bool GetSpellRange(string name, float* maxRange, float* minRange = nullptr);
     virtual bool CanCastSpell(string name, Unit* target, uint8 effectMask, Item* itemTarget = NULL, bool ignoreRange = false);
     virtual bool CastSpell(string name, Unit* target, Item* itemTarget = NULL);
     virtual bool HasAura(string spellName, Unit* player, bool maxStack = false, bool checkIsOwner = false, int maxAmount = -1, bool hasMyAura = false);

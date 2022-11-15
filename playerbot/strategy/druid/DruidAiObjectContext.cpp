@@ -51,7 +51,7 @@ namespace ai
             static Strategy* buff(PlayerbotAI* ai) { return new GenericDruidBuffStrategy(ai); }
             static Strategy* boost(PlayerbotAI* ai) { return new DruidBoostStrategy(ai); }
             static Strategy* cc(PlayerbotAI* ai) { return new DruidCcStrategy(ai); }
-            static Strategy* pull(PlayerbotAI* ai) { return new PullStrategy(ai, "faerie fire", ai->GetRange("spell")); }
+            static Strategy* pull(PlayerbotAI* ai) { return new PullStrategy(ai, "faerie fire"); }
         };
 
         class DruidStrategyFactoryInternal : public NamedObjectContext<Strategy>

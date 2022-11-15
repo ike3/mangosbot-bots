@@ -37,7 +37,7 @@ namespace ai
             static Strategy* aoe(PlayerbotAI* ai) { return new RogueAoeStrategy(ai); }
             static Strategy* nc(PlayerbotAI* ai) { return new GenericRogueNonCombatStrategy(ai); }
             static Strategy* react(PlayerbotAI* ai) { return new RogueReactionStrategy(ai); }
-            static Strategy* pull(PlayerbotAI* ai) { return new PullStrategy(ai, "shoot", ai->GetRange("shoot")); }
+            static Strategy* pull(PlayerbotAI* ai) { return new PullStrategy(ai, "shoot"); }
             static Strategy* stealth(PlayerbotAI* ai) { return new StealthStrategy(ai); }
             static Strategy* cc(PlayerbotAI* ai) { return new RogueCcStrategy(ai); }
         };
