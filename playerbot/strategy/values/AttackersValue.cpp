@@ -178,10 +178,13 @@ bool AttackersValue::IsValid(Unit* target, Player* player) const
             const bool isInEvadeMode = creature && creature->GetCombatManager().IsInEvadeMode();
 #endif
 
-            // Check if the target has been requested to be attacked
-            const bool isPulling = player->GetPlayerbotAI() && 
-                                   ((PAI_VALUE(ObjectGuid, "attack target") == target->GetObjectGuid()) ||
-                                    (PAI_VALUE(Unit*, "pull target") == target));
+            // Check if the target has been requested to be attacked (only consider the owner bot's attack/pull targets)
+            bool isPulling = false;
+            if (ai->GetBot() == player)
+            {
+                isPulling = (PAI_VALUE(ObjectGuid, "attack target") == target->GetObjectGuid()) ||
+                            (PAI_VALUE(Unit*, "pull target") == target);
+            }
 
             // Valid if the npc target is:
             // - Not dead
