@@ -148,7 +148,7 @@ bool AttackersValue::IsFriendly(Unit* target, Player* player)
             }
 #ifndef MANGOSBOT_ZERO
             // If the target is in an arena with the player and is not on the same team
-            else if (targetPlayer->InArena() && player->InArena() && (targetPlayer->GetBGTeam() != player->GetBGTeam())
+            else if (targetPlayer->InArena() && player->InArena() && (targetPlayer->GetBGTeam() != player->GetBGTeam()))
             {
                 friendly = false;
             }
