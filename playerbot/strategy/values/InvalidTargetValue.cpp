@@ -24,7 +24,7 @@ bool InvalidTargetValue::Calculate()
             return true;
     }
 
-    const bool validTarget = PossibleAttackTargetsValue::IsValidTarget(target, bot);
+    const bool validTarget = PossibleAttackTargetsValue::IsValid(target, bot);
     if (!validTarget)
     {
         list<ObjectGuid> attackers = AI_VALUE(list<ObjectGuid>, "possible attack targets");

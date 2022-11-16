@@ -16,11 +16,14 @@ namespace ai
 		void RemoveNonThreating(list<ObjectGuid>& targets);
 
     public:
-        static bool HasIgnoreCCRti(Unit* attacker, Player* player);
-        static bool HasBreakableCC(Unit* attacker, Player* player);
-        static bool HasUnBreakableCC(Unit* attacker, Player* player);
-        static bool IsPossibleTarget(Unit* attacker, Player *player, float range = sPlayerbotAIConfig.sightDistance, bool ignoreCC = false);
-        static bool IsValidTarget(Unit* attacker, Player* player, bool ignoreCC = false);
+        static bool HasIgnoreCCRti(Unit* target, Player* player);
+        static bool HasBreakableCC(Unit* target, Player* player);
+        static bool HasUnBreakableCC(Unit* target, Player* player);
+        static bool IsPossibleTarget(Unit* target, Player *player, float range = sPlayerbotAIConfig.sightDistance, bool ignoreCC = false);
+        static bool IsValid(Unit* target, Player* player, bool ignoreCC = false);
+
+    private:
+        static bool IsTapped(Unit* target, Player* player);
     };
 
     class PossibleAddsValue : public BoolCalculatedValue

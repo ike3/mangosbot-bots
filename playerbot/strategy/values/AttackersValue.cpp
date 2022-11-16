@@ -163,7 +163,8 @@ bool AttackersValue::IsAttackable(Unit* target, Player* player, bool inVehicle)
 {
     return !target->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_1) &&
            !target->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_UNTARGETABLE) &&
-           (inVehicle || !target->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_UNINTERACTIBLE));
+           (inVehicle || !target->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_UNINTERACTIBLE)) &&
+           !target->HasAuraType(SPELL_AURA_SPIRIT_OF_REDEMPTION);
 }
 
 bool AttackersValue::InCombat(Unit* target, Player* player, bool checkPullTargets)

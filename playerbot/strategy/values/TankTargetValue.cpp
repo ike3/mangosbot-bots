@@ -19,7 +19,7 @@ public:
         Player* player = ai->GetBot();
         if (IsCcTarget(creature)) return;
 
-        if (!PossibleAttackTargetsValue::IsValidTarget(creature, player))
+        if (!PossibleAttackTargetsValue::IsValid(creature, player))
         {
             list<ObjectGuid> attackers = PAI_VALUE(list<ObjectGuid>, "possible attack targets");
             if (std::find(attackers.begin(), attackers.end(), creature->GetObjectGuid()) == attackers.end())
