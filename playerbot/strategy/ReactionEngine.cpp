@@ -285,7 +285,9 @@ void ReactionEngine::Reset()
 
 bool ReactionEngine::CanUpdateAIReaction() const
 {
+    Player* bot = ai->GetBot();
     return (aiReactionUpdateDelay < 100U) && 
-           !ai->GetBot()->IsBeingTeleported() && 
-           ai->GetBot()->IsInWorld();
+            bot->IsInWorld() &&
+           !bot->IsBeingTeleported() &&
+           !bot->IsTaxiFlying();
 }
