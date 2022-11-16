@@ -27,5 +27,9 @@ namespace ai
         void AddTargetsOf(Player* player, set<Unit*>& targets);
         float GetRange() const { return sPlayerbotAIConfig.sightDistance; }
         bool IsValid(Unit* target, Player* player) const;
+
+        static bool IsFriendly(Unit* target, Player* player);
+        static bool IsAttackable(Unit* target, Player* player, bool inVehicle = false);
+        static bool InCombat(Unit* target, Player* player, bool checkPullTargets = true);
     };
 }
