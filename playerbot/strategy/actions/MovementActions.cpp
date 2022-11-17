@@ -501,7 +501,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
                 out << to_string(bot->getClass()) << ",";
                 float subLevel = ((float)bot->GetLevel() + ((float)bot->GetUInt32Value(PLAYER_XP) / (float)bot->GetUInt32Value(PLAYER_NEXT_LEVEL_XP)));
                 out << subLevel << ",";
-                out << (entry ? -1 : entry);
+                out << (entry ? entry : -1);
 
                 sPlayerbotAIConfig.log("bot_movement.csv", out.str().c_str());
             }
@@ -569,7 +569,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
                 out << to_string(bot->getClass()) << ",";
                 float subLevel = ((float)bot->GetLevel() + ((float)bot->GetUInt32Value(PLAYER_XP) / (float)bot->GetUInt32Value(PLAYER_NEXT_LEVEL_XP)));
                 out << subLevel << ",";
-                out << (entry ? -1 : entry);
+                out << (entry ? entry : -1);
 
                 sPlayerbotAIConfig.log("bot_movement.csv", out.str().c_str());
             }
