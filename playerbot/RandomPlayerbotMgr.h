@@ -182,6 +182,7 @@ class RandomPlayerbotMgr : public PlayerbotHolder
         uint32 playersLevel = sPlayerbotAIConfig.randombotStartingLevel;
 
         std::unordered_map<uint32, std::vector<std::pair<int32,int32>>> playerBotMoveLog;
+        list<float> avgLevel, avgGold, avgGearscore;
 };
 
 #define sRandomPlayerbotMgr RandomPlayerbotMgr::instance()
