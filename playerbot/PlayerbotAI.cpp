@@ -238,7 +238,7 @@ void PlayerbotAI::UpdateAI(uint32 elapsed, bool minimal)
         if (MovementGenerator* movgen = bot->GetMotionMaster()->top())
             botMoving = true;
 
-    if (botMoving)
+    if (botMoving && !bot->IsBeingTeleported() && bot->IsInWorld())
     {
         isMoving = true;
 
