@@ -7,6 +7,7 @@
 #include "GridNotifiers.h"
 #include "GridNotifiersImpl.h"
 #include "CellImpl.h"
+#include "AttackersValue.h"
 
 using namespace ai;
 using namespace MaNGOS;
@@ -34,7 +35,7 @@ void PossibleAttackTargetsValue::RemoveNonThreating(list<ObjectGuid>& targets)
     for(list<ObjectGuid>::iterator tIter = targets.begin(); tIter != targets.end();)
     {
         Unit* target = ai->GetUnit(*tIter);
-        if (!IsValid(target, bot, true))
+        if (!IsValid(target, bot, sPlayerbotAIConfig.sightDistance, true, false))
         {
             list<ObjectGuid>::iterator tIter2 = tIter;
             ++tIter;
@@ -176,14 +177,20 @@ bool PossibleAttackTargetsValue::IsTapped(Unit* target, Player* player)
     return false;
 }
 
-bool PossibleAttackTargetsValue::IsValid(Unit* target, Player* bot, bool ignoreCC)
+bool PossibleAttackTargetsValue::IsValid(Unit* target, Player* player, float range, bool ignoreCC, bool checkAttackerValid)
 {
-    return  IsPossibleTarget(target, bot, sPlayerbotAIConfig.sightDistance, ignoreCC) &&
+    // Check for the valid attackers value
+    if (checkAttackerValid && !AttackersValue::IsValid(target, player))
+    {
+        return false;
+    }
+
+    return IsPossibleTarget(target, player, range, ignoreCC) &&
                 (sServerFacade.GetThreatManager(target).getCurrentVictim() ||
                 target->GetGuidValue(UNIT_FIELD_TARGET) ||
                 target->GetObjectGuid().IsPlayer() ||
-                (target->GetObjectGuid() == bot->GetPlayerbotAI()->GetAiObjectContext()->GetValue<ObjectGuid>("attack target")->Get()) ||
-                (!HasIgnoreCCRti(target, bot) && (HasBreakableCC(target, bot) || HasUnBreakableCC(target, bot))));
+                (player->GetPlayerbotAI() && (target->GetObjectGuid() == PAI_VALUE(ObjectGuid, "attack target"))) ||
+                (!HasIgnoreCCRti(target, player) && (HasBreakableCC(target, player) || HasUnBreakableCC(target, player))));
 }
 
 bool PossibleAttackTargetsValue::IsPossibleTarget(Unit* target, Player* player, float range, bool ignoreCC)
@@ -212,16 +219,21 @@ bool PossibleAttackTargetsValue::IsPossibleTarget(Unit* target, Player* player, 
         }
     }
 
-    // If the target is a critter (and is not in combat)
-    if ((target->GetCreatureType() == CREATURE_TYPE_CRITTER) && !target->IsInCombat())
+    // If the target is a NPC
+    Player* enemyPlayer = dynamic_cast<Player*>(target);
+    if (!enemyPlayer)
     {
-        return false;
-    }
+        // If the target is a critter (and is not in combat)
+        if ((target->GetCreatureType() == CREATURE_TYPE_CRITTER) && !target->IsInCombat())
+        {
+            return false;
+        }
 
-    // If the target is not tapped (the player doesn't have the loot rights (gray name))
-    if(!IsTapped(target, player))
-    {
-        return false;
+        // If the target is not tapped (the player doesn't have the loot rights (gray name))
+        if (!IsTapped(target, player))
+        {
+            return false;
+        }
     }
 
     return true;

@@ -22,11 +22,13 @@ namespace ai
         AttackersValue(PlayerbotAI* ai) : ObjectGuidListCalculatedValue(ai, "attackers") {}
         list<ObjectGuid> Calculate();
 
+        static bool IsValid(Unit* target, Player* player);
+
 	private:
         void AddTargetsOf(Group* group, set<Unit*>& targets);
         void AddTargetsOf(Player* player, set<Unit*>& targets);
         float GetRange() const { return sPlayerbotAIConfig.sightDistance; }
-        bool IsValid(Unit* target, Player* player) const;
+        bool IsPossibleTarget(Unit* target, Player* player) const;
 
         static bool IsFriendly(Unit* target, Player* player);
         static bool IsAttackable(Unit* target, Player* player, bool inVehicle = false);

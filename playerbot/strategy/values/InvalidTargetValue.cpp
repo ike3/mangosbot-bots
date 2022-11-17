@@ -12,16 +12,22 @@ bool InvalidTargetValue::Calculate()
 {
     Unit* target = AI_VALUE(Unit*, qualifier);
     if (!target || !target->IsInWorld() || target->GetMapId() != bot->GetMapId())
+    {
         return true;
+    }
 
-    Unit* duel = AI_VALUE(Unit*, "duel target");
-    if (duel && duel == target)
+    Unit* duelTarget = AI_VALUE(Unit*, "duel target");
+    if (duelTarget && duelTarget == target)
+    {
         return false;
+    }
 
     if (qualifier == "current target")
     {
         if (target->GetObjectGuid() != bot->GetSelectionGuid())
+        {
             return true;
+        }
     }
 
     const bool validTarget = PossibleAttackTargetsValue::IsValid(target, bot);
@@ -29,7 +35,9 @@ bool InvalidTargetValue::Calculate()
     {
         list<ObjectGuid> attackers = AI_VALUE(list<ObjectGuid>, "possible attack targets");
         if (std::find(attackers.begin(), attackers.end(), target->GetObjectGuid()) != attackers.end())
+        {
             return false;
+        }
     }
 
     return !validTarget;

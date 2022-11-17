@@ -12,17 +12,15 @@ namespace ai
         PossibleAttackTargetsValue(PlayerbotAI* ai) : ObjectGuidListCalculatedValue(ai, "possible attack targets") {}
         list<ObjectGuid> Calculate();
 
+        static bool IsValid(Unit* target, Player* player, float range = sPlayerbotAIConfig.sightDistance, bool ignoreCC = false, bool checkAttackerValid = true);
+
 	private:
 		void RemoveNonThreating(list<ObjectGuid>& targets);
 
-    public:
+        static bool IsPossibleTarget(Unit* target, Player *player, float range, bool ignoreCC);
         static bool HasIgnoreCCRti(Unit* target, Player* player);
         static bool HasBreakableCC(Unit* target, Player* player);
         static bool HasUnBreakableCC(Unit* target, Player* player);
-        static bool IsPossibleTarget(Unit* target, Player *player, float range = sPlayerbotAIConfig.sightDistance, bool ignoreCC = false);
-        static bool IsValid(Unit* target, Player* player, bool ignoreCC = false);
-
-    private:
         static bool IsTapped(Unit* target, Player* player);
     };
 

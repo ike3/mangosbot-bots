@@ -41,5 +41,5 @@ void PossibleTargetsValue::FindPossibleTargets(Player* player, list<Unit*>& targ
 
 bool PossibleTargetsValue::IsValid(Player* player, Unit* target, float range)
 {
-    return PossibleAttackTargetsValue::IsPossibleTarget(target, player, range, true);
+    return PossibleAttackTargetsValue::IsValid(target, player, range, true);
 }
