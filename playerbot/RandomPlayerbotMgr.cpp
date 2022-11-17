@@ -488,13 +488,8 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed, bool minimal)
 
     if (sPlayerbotAIConfig.hasLog("activity_pid.csv"))
     {
-        WorldPosition dummy;
-
         ostringstream out;
-        out << sPlayerbotAIConfig.GetTimestampStr() << "+00,";
-        out << std::fixed << std::setprecision(2);
-
-        dummy.printWKT(out);
+        out << sWorld.GetCurrentMSTime() << ", ";
 
         out << sWorld.GetCurrentDiff() << ",";
         out << sWorld.GetAverageDiff() << ",";
@@ -502,7 +497,54 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed, bool minimal)
         out << activityPercentage << ",";
         out << activityPercentageMod << ",";
         out << activeBots << ",";
-        out << playerBots.size();
+        out << playerBots.size() << ",";
+
+        float level = 0, gold = 0, gearscore = 0;
+
+        if (sPlayerbotAIConfig.randomBotAutologin)
+            for (auto i : GetAllBots())
+            {
+                Player* bot = i.second;
+                if (!bot)
+                    continue;
+
+                level += ((float)bot->GetLevel() + (bot->GetUInt32Value(PLAYER_NEXT_LEVEL_XP) ? ((float)bot->GetUInt32Value(PLAYER_XP) / (float)bot->GetUInt32Value(PLAYER_NEXT_LEVEL_XP)) : 0));
+                gold += bot->GetMoney() / 10000;
+                gearscore += bot->GetPlayerbotAI()->GetEquipGearScore(bot, false, false);
+            }    
+
+        out << std::fixed << std::setprecision(2);
+        if (playerBots.size())
+        {
+            avgLevel.push_back(level / playerBots.size());
+            avgGold.push_back(gold / playerBots.size());
+            avgGearscore.push_back(gearscore / playerBots.size());
+        }
+
+        float deltaLevel =0, deltaGold = 0 , deltaGearscore = 0;
+
+        for(auto i = avgLevel.begin(), p = avgLevel.end(); i != avgLevel.end(); p = i, ++i)
+            if(p != avgLevel.end())
+                deltaLevel += *i - *p;
+
+        for (auto i = avgGold.begin(), p = avgGold.end(); i != avgGold.end(); p = i, ++i)
+            if (p != avgGold.end())
+                deltaGold += *i - *p;
+
+        for (auto i = avgGearscore.begin(), p = avgGearscore.end(); i != avgGearscore.end(); p = i, ++i)
+            if (p != avgGearscore.end())
+                deltaGearscore += *i - *p;
+
+        out << deltaLevel/ avgLevel.size() * 12 * 60 << ",";
+        out << deltaGold / avgGold.size() * 12 * 60 << ",";
+        out << deltaGearscore / avgGearscore.size() * 12 * 60;
+
+        if (avgLevel.size() > 60)
+        {
+            avgLevel.pop_front();
+            avgGold.pop_front();
+            avgGearscore.pop_front();
+        }
 
         sPlayerbotAIConfig.log("activity_pid.csv", out.str().c_str());
     }

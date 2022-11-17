@@ -2232,6 +2232,25 @@ void TravelMgr::LoadQuestTravelTable()
     sPlayerbotAIConfig.openLog("deaths.csv", "w");
     sPlayerbotAIConfig.openLog("player_paths.csv", "w");
 
+    if (sPlayerbotAIConfig.hasLog("activity_pid.csv"))
+    {
+        ostringstream out;
+        out << "Timestamp,";
+
+        out << "sWorld.GetCurrentDiff(),";
+        out << "sWorld.GetAverageDiff(),";
+        out << "sWorld.GetMaxDiff(),";
+        out << "activityPercentage,";
+        out << "activityPercentageMod,";
+        out << "activeBots,";
+        out << "playerBots.size(),";
+        out << "avarageLevel,";
+        out << "avarageGold,";
+        out << "avarageGearScore";
+
+        sPlayerbotAIConfig.log("activity_pid.csv", out.str().c_str());
+    }
+
 #ifdef IKE_PATHFINDER
     bool mmapAvoidMobMod = true;
 
