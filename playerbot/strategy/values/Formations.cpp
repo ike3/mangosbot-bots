@@ -85,7 +85,7 @@ namespace ai
         virtual WorldLocation GetLocationInternal()
         {
             Player* master = ai->GetGroupMaster();
-            if (!master)
+            if (!master || master->IsBeingTeleported())
                 return WorldLocation();
 
             float range = sPlayerbotAIConfig.followDistance + master->GetObjectBoundingRadius();
