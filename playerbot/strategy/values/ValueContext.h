@@ -86,6 +86,7 @@
 #include "TrainerValues.h"
 #include "AttackersValue.h"
 #include "WaitForAttackTimeValue.h"
+#include "LastPotionUsedTimeValue.h"
 
 namespace ai
 {
@@ -184,6 +185,7 @@ namespace ai
             creators["spell cast useful"] = &ValueContext::spell_cast_useful;
             creators["last spell cast"] = &ValueContext::last_spell_cast;
             creators["last spell cast time"] = &ValueContext::last_spell_cast_time;
+            creators["last potion used time"] = &ValueContext::last_potion_used_time;
             creators["chat"] = &ValueContext::chat;
             creators["has totem"] = &ValueContext::has_totem;
             creators["have any totem"] = &ValueContext::have_any_totem;
@@ -354,6 +356,7 @@ namespace ai
         static UntypedValue* chat(PlayerbotAI* ai) { return new ChatValue(ai); }
         static UntypedValue* last_spell_cast(PlayerbotAI* ai) { return new LastSpellCastValue(ai); }
         static UntypedValue* last_spell_cast_time(PlayerbotAI* ai) { return new LastSpellCastTimeValue(ai); }
+        static UntypedValue* last_potion_used_time(PlayerbotAI* ai) { return new LastPotionUsedTimeValue(ai); }
         static UntypedValue* spell_cast_useful(PlayerbotAI* ai) { return new SpellCastUsefulValue(ai); }
         static UntypedValue* item_for_spell(PlayerbotAI* ai) { return new ItemForSpellValue(ai); }
         static UntypedValue* spell_id(PlayerbotAI* ai) { return new SpellIdValue(ai); }
