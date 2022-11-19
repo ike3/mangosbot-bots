@@ -182,7 +182,11 @@ class RandomPlayerbotMgr : public PlayerbotHolder
         uint32 playersLevel = sPlayerbotAIConfig.randombotStartingLevel;
 
         std::unordered_map<uint32, std::vector<std::pair<int32,int32>>> playerBotMoveLog;
-        list<float> avgLevel, avgGold, avgGearscore;
+        typedef std::unordered_map <uint32, list<float>> botPerformanceMetric;
+        std::unordered_map<string, botPerformanceMetric> botPerformanceMetrics;
+
+        void PushMetric(botPerformanceMetric& metric, const uint32 bot, const float value, const uint32 maxNum = 60) const;
+        float GetMetricDelta(botPerformanceMetric& metric) const;
 };
 
 #define sRandomPlayerbotMgr RandomPlayerbotMgr::instance()

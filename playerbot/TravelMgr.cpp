@@ -2244,7 +2244,24 @@ void TravelMgr::LoadQuestTravelTable()
         out << "activityPercentageMod,";
         out << "activeBots,";
         out << "playerBots.size(),";
-        out << "avarageLevel,";
+        out << "avarageLevel1-9,";
+        out << "avarageLevel10-19,";
+        out << "avarageLevel20-29,";
+        out << "avarageLevel30-39,";
+        out << "avarageLevel40-49,";
+        out << "avarageLevel50-59,";
+#ifdef MANGOSBOT_ZERO
+        out << "avarageLevel60,";
+#else
+        out << "avarageLevel60-69,";
+#ifdef MANGOSBOT_ONE
+        out << "avarageLevel70,";
+#else
+        out << "avarageLevel70-79,";
+        out << "avarageLevel80,";
+#endif
+#endif
+
         out << "avarageGold,";
         out << "avarageGearScore";
 

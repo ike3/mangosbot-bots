@@ -508,43 +508,27 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed, bool minimal)
                 if (!bot)
                     continue;
 
-                level += ((float)bot->GetLevel() + (bot->GetUInt32Value(PLAYER_NEXT_LEVEL_XP) ? ((float)bot->GetUInt32Value(PLAYER_XP) / (float)bot->GetUInt32Value(PLAYER_NEXT_LEVEL_XP)) : 0));
-                gold += bot->GetMoney() / 10000;
-                gearscore += bot->GetPlayerbotAI()->GetEquipGearScore(bot, false, false);
+                if (!bot->GetPlayerbotAI()->AllowActivity())
+                    continue;
+
+                string bracket = "level:" + to_string(bot->GetLevel() / 10);
+
+                float level = ((float)bot->GetLevel() + (bot->GetUInt32Value(PLAYER_NEXT_LEVEL_XP) ? ((float)bot->GetUInt32Value(PLAYER_XP) / (float)bot->GetUInt32Value(PLAYER_NEXT_LEVEL_XP)) : 0));
+                float gold = bot->GetMoney() / 10000;
+                float gearscore = bot->GetPlayerbotAI()->GetEquipGearScore(bot, false, false);
+
+                PushMetric(botPerformanceMetrics[bracket], i.first, level);
+                PushMetric(botPerformanceMetrics["gold"], i.first, gold);
+                PushMetric(botPerformanceMetrics["gearscore"], i.first, gearscore);
             }    
 
-        out << std::fixed << std::setprecision(2);
-        if (playerBots.size())
-        {
-            avgLevel.push_back(level / playerBots.size());
-            avgGold.push_back(gold / playerBots.size());
-            avgGearscore.push_back(gearscore / playerBots.size());
-        }
+        out << std::fixed << std::setprecision(4);
+                
+        for (uint8 i = 0; i < (DEFAULT_MAX_LEVEL / 10) + 1; i++)
+            out << GetMetricDelta(botPerformanceMetrics["level:" + to_string(i)]) * 12 * 60 << ",";
 
-        float deltaLevel =0, deltaGold = 0 , deltaGearscore = 0;
-
-        for(auto i = avgLevel.begin(), p = avgLevel.end(); i != avgLevel.end(); p = i, ++i)
-            if(p != avgLevel.end())
-                deltaLevel += *i - *p;
-
-        for (auto i = avgGold.begin(), p = avgGold.end(); i != avgGold.end(); p = i, ++i)
-            if (p != avgGold.end())
-                deltaGold += *i - *p;
-
-        for (auto i = avgGearscore.begin(), p = avgGearscore.end(); i != avgGearscore.end(); p = i, ++i)
-            if (p != avgGearscore.end())
-                deltaGearscore += *i - *p;
-
-        out << deltaLevel/ avgLevel.size() * 12 * 60 << ",";
-        out << deltaGold / avgGold.size() * 12 * 60 << ",";
-        out << deltaGearscore / avgGearscore.size() * 12 * 60;
-
-        if (avgLevel.size() > 60)
-        {
-            avgLevel.pop_front();
-            avgGold.pop_front();
-            avgGearscore.pop_front();
-        }
+        out << GetMetricDelta(botPerformanceMetrics["gold"]) * 12 * 60 << ",";
+        out << GetMetricDelta(botPerformanceMetrics["gearscore"]) * 12 * 60;
 
         sPlayerbotAIConfig.log("activity_pid.csv", out.str().c_str());
     }
@@ -3276,4 +3260,30 @@ void RandomPlayerbotMgr::Hotfix(Player* bot, uint32 version)
     SetValue(bot, "version", MANGOSBOT_VERSION);
     sLog.outBasic("Bot %d hotfix v%d applied",
         bot->GetGUIDLow(), MANGOSBOT_VERSION);
+}
+
+typedef std::unordered_map <uint32, list<float>> botPerformanceMetric;
+std::unordered_map<string, botPerformanceMetric> botPerformanceMetrics;
+
+void RandomPlayerbotMgr::PushMetric(botPerformanceMetric& metric, const uint32 bot, const float value, uint32 maxNum) const
+{
+    metric[bot].push_back(value);
+
+    if (metric[bot].size() > maxNum)
+        metric[bot].pop_front();
+}
+
+float RandomPlayerbotMgr::GetMetricDelta(botPerformanceMetric& metric) const
+{
+    float deltaMetric = 0;
+    for (auto& botMetric : metric)
+    {
+        if (botMetric.second.size() > 1)
+            deltaMetric += (botMetric.second.back() - botMetric.second.front()) / botMetric.second.size();
+    }
+
+    if (metric.empty())
+        return 0;
+
+    return deltaMetric / metric.size();
 }
