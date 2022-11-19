@@ -300,7 +300,7 @@ void PlayerbotAI::UpdateAI(uint32 elapsed, bool minimal)
             bot->SetPower(bot->GetPowerType(), bot->GetMaxPower(bot->GetPowerType()));
     }
 
-    bool doMinimalReaction = minimal || (!AllowActivity(REACT_ACTIVITY) && !CanUpdateAIInternal());
+    bool doMinimalReaction = minimal || !AllowActivity(REACT_ACTIVITY);
 
     // Only update the internal ai when no reaction is running and the internal ai can be updated
     if(!UpdateAIReaction(elapsed, doMinimalReaction) && CanUpdateAIInternal())
@@ -2000,7 +2000,7 @@ bool PlayerbotAI::TellMaster(string text, PlayerbotSecurityLevel securityLevel, 
     if (!TellMasterNoFacing(text, securityLevel, isPrivate))
         return false;
 
-    if (master && !sServerFacade.isMoving(bot) && !sServerFacade.IsInCombat(bot) && bot->GetMapId() == master->GetMapId() && !bot->IsTaxiFlying() && !bot->IsFlying())
+    if (master && !master->IsBeingTeleported() && !sServerFacade.isMoving(bot) && !sServerFacade.IsInCombat(bot) && bot->GetMapId() == master->GetMapId() && !bot->IsTaxiFlying() && !bot->IsFlying())
     {
         if (!sServerFacade.IsInFront(bot, master, sPlayerbotAIConfig.sightDistance, EMOTE_ANGLE_IN_FRONT))
             sServerFacade.SetFacingTo(bot, master);
