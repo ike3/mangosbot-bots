@@ -1442,7 +1442,7 @@ bool MovementAction::Flee(Unit *target)
             Player* groupMember = gref->getSource();
 
             // Ignore group member if is not alive or on a different zone
-            if (!groupMember || groupMember == bot || groupMember == master || !sServerFacade.IsAlive(groupMember) || bot->GetMapId() != groupMember->GetMapId())
+            if (!groupMember || groupMember->IsBeingTeleported() || groupMember == bot || groupMember == master || !sServerFacade.IsAlive(groupMember) || bot->GetMapId() != groupMember->GetMapId())
                 continue;
 
             // Don't flee to group member if too close or too far
