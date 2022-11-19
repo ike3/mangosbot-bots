@@ -22,7 +22,7 @@ namespace ai
         AttackersValue(PlayerbotAI* ai) : ObjectGuidListCalculatedValue(ai, "attackers") {}
         list<ObjectGuid> Calculate();
 
-        static bool IsValid(Unit* target, Player* player);
+        static bool IsValid(Unit* target, Player* player, bool checkInCombat = true);
 
 	private:
         void AddTargetsOf(Group* group, set<Unit*>& targets, bool getOne = false);

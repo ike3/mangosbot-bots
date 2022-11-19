@@ -281,7 +281,7 @@ bool AttackersValue::IsPossibleTarget(Unit* target, Player* player) const
     return false;
 }
 
-bool AttackersValue::IsValid(Unit* target, Player* player)
+bool AttackersValue::IsValid(Unit* target, Player* player, bool checkInCombat)
 {
     // If the target is available
     if (target && target->IsInWorld() && (target->GetMapId() == player->GetMapId()))
@@ -335,7 +335,7 @@ bool AttackersValue::IsValid(Unit* target, Player* player)
         else
         {
             // If the target is not fighting the player (and if the owner bot is not pulling the target)
-            if (!AttackersValue::InCombat(target, player))
+            if (checkInCombat && !AttackersValue::InCombat(target, player))
             {
                 return false;
             }

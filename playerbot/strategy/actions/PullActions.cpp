@@ -1,7 +1,7 @@
 #include "botpch.h"
 #include "../../playerbot.h"
 #include "../generic/PullStrategy.h"
-#include "../values/PossibleTargetsValue.h"
+#include "../values/AttackersValue.h"
 #include "PlayerbotAIConfig.h"
 #include "PullActions.h"
 
@@ -40,7 +40,7 @@ bool PullMyTargetAction::Execute(Event& event)
         return false;
     }
 
-    if (!PossibleTargetsValue::IsValid(bot, target, maxPullDistance))
+    if (!AttackersValue::IsValid(target, bot, false))
     {
         ai->TellError("The target can't be pulled");
         return false;
