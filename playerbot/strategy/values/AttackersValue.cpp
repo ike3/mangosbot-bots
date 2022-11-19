@@ -9,6 +9,8 @@ using namespace MaNGOS;
 
 list<ObjectGuid> AttackersValue::Calculate()
 {
+    bool getOne = getQualifier().empty();
+
     list<ObjectGuid> result;
     if (ai->AllowActivity(ALL_ACTIVITY))
     {
@@ -17,13 +19,16 @@ list<ObjectGuid> AttackersValue::Calculate()
             set<Unit*> targets;
 
             // Add the targets of the bot
-            AddTargetsOf(bot, targets);
+            AddTargetsOf(bot, targets, getOne);
 
-            // Add the targets of the members of the group
-            Group* group = bot->GetGroup();
-            if (group)
+            if (targets.empty() || !getOne)
             {
-                AddTargetsOf(group, targets);
+                // Add the targets of the members of the group
+                Group* group = bot->GetGroup();
+                if (group)
+                {
+                    AddTargetsOf(group, targets, getOne);
+                }
             }
 
             // Convert the targets to guids
@@ -37,7 +42,7 @@ list<ObjectGuid> AttackersValue::Calculate()
 	return result;
 }
 
-void AttackersValue::AddTargetsOf(Group* group, set<Unit*>& targets)
+void AttackersValue::AddTargetsOf(Group* group, set<Unit*>& targets, bool getOne)
 {
     Group::MemberSlotList const& groupSlot = group->GetMemberSlots();
     for (Group::member_citerator itr = groupSlot.begin(); itr != groupSlot.end(); itr++)
@@ -51,20 +56,31 @@ void AttackersValue::AddTargetsOf(Group* group, set<Unit*>& targets)
            (member->GetMapId() == bot->GetMapId()) && 
            (sServerFacade.GetDistance2d(bot, member) <= GetRange()))
         {
-            AddTargetsOf(member, targets);
+            AddTargetsOf(member, targets, getOne);
+
+            if (getOne && !targets.empty())
+                return;
         }
     }
 }
 
-void AttackersValue::AddTargetsOf(Player* player, set<Unit*>& targets)
+void AttackersValue::AddTargetsOf(Player* player, set<Unit*>& targets, bool getOne)
 {
     // If the player is available
     if (player)
     {
         list<Unit*> units;
 
-        // Get all the units around the player
-        PossibleTargetsValue::FindPossibleTargets(player, units, GetRange());
+        PlayerbotAI* playerBot = player->GetPlayerbotAI();
+
+        if (playerBot)
+        {
+            for (auto guid : PAI_VALUE(list<ObjectGuid>, "possible targets"))
+                if (Unit* unit = ai->GetUnit(guid))
+                    units.push_back(unit);
+        }
+        else  // Get all the units around the player
+            PossibleTargetsValue::FindPossibleTargets(player, units, GetRange());
 
         // Get the current attackers of the player
         for (Unit* attacker : player->getAttackers())
@@ -79,7 +95,6 @@ void AttackersValue::AddTargetsOf(Player* player, set<Unit*>& targets)
         }
 
         // If the player is a bot try to retrieve the pull, current and previous targets
-        PlayerbotAI* playerBot = player->GetPlayerbotAI();
         if(playerBot)
         {
             Unit* currentTarget = PAI_VALUE(Unit*, "current target");
@@ -124,6 +139,9 @@ void AttackersValue::AddTargetsOf(Player* player, set<Unit*>& targets)
 
                     // Add the target's pet/guardian too
                     unit->CallForAllControlledUnits(AddGuardiansHelper(units), CONTROLLED_PET | CONTROLLED_GUARDIANS | CONTROLLED_CHARM | CONTROLLED_MINIPET | CONTROLLED_TOTEMS);
+
+                    if (getOne)
+                        return;
                 }
             }
         }

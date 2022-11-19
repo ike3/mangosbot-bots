@@ -5,7 +5,7 @@
 namespace ai
 {
     // List of hostile targets that are in combat with the bot (or bot group)
-    class AttackersValue : public ObjectGuidListCalculatedValue
+    class AttackersValue : public ObjectGuidListCalculatedValue, public Qualified
 	{
         struct AddGuardiansHelper
         {
@@ -25,8 +25,8 @@ namespace ai
         static bool IsValid(Unit* target, Player* player);
 
 	private:
-        void AddTargetsOf(Group* group, set<Unit*>& targets);
-        void AddTargetsOf(Player* player, set<Unit*>& targets);
+        void AddTargetsOf(Group* group, set<Unit*>& targets, bool getOne = false);
+        void AddTargetsOf(Player* player, set<Unit*>& targets, bool getOne = false);
         float GetRange() const { return sPlayerbotAIConfig.sightDistance; }
         bool IsPossibleTarget(Unit* target, Player* player) const;
 
