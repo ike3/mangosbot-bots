@@ -64,7 +64,7 @@ void GenericHunterNonCombatStrategy::InitTriggers(std::list<TriggerNode*> &trigg
 
     triggers.push_back(new TriggerNode(
         "feign death",
-        NextAction::array(0, new NextAction("remove feign death", ACTION_INTERRUPT + 1), new NextAction("freezing trap", ACTION_INTERRUPT), NULL)));
+        NextAction::array(0, new NextAction("remove feign death", 91.f), new NextAction("freezing trap", 90.f), NULL)));
 
     triggers.push_back(new TriggerNode(
         "player has flag",
