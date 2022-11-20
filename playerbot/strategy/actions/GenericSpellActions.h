@@ -5,7 +5,7 @@
 
 namespace ai
 {
-    class CastSpellAction : public Action
+    class CastSpellAction : public Action, public Qualified
     {
     public:
         CastSpellAction(PlayerbotAI* ai, string spell) 
@@ -15,7 +15,7 @@ namespace ai
             SetSpellName(spell);
         }
 
-		virtual string GetTargetName() { return "current target"; }
+		virtual string GetTargetName();
         virtual bool Execute(Event& event);
         virtual bool isPossible();
 		virtual bool isUseful();
@@ -226,7 +226,7 @@ namespace ai
     class CastShootAction : public CastSpellAction
     {
     public:
-        CastShootAction(PlayerbotAI* ai) : CastSpellAction(ai, "shoot"), rangedWeapon(nullptr), weaponDelay(0) {}
+        CastShootAction(PlayerbotAI* ai) : CastSpellAction(ai, "shoot"), rangedWeapon(nullptr), weaponDelay(0), needsAmmo(false) {}
         ActionThreatType getThreatType() override { return ActionThreatType::ACTION_THREAT_NONE; }
         bool Execute(Event& event) override;
         bool isPossible() override;
@@ -237,6 +237,7 @@ namespace ai
     private:
         const Item* rangedWeapon;
         uint32 weaponDelay;
+        bool needsAmmo;
     };
 
     class RemoveBuffAction : public Action

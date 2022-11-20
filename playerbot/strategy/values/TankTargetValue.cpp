@@ -1,7 +1,7 @@
 #include "botpch.h"
 #include "../../playerbot.h"
 #include "TankTargetValue.h"
-#include "AttackersValue.h"
+#include "PossibleAttackTargetsValue.h"
 
 using namespace ai;
 
@@ -19,14 +19,12 @@ public:
         Player* player = ai->GetBot();
         if (IsCcTarget(creature)) return;
 
-        if (!AttackersValue::IsValidTarget(creature, player))
+        if (!PossibleAttackTargetsValue::IsValid(creature, player))
         {
-            list<ObjectGuid> attackers = PAI_VALUE(list<ObjectGuid>, "attackers");
+            list<ObjectGuid> attackers = PAI_VALUE(list<ObjectGuid>, "possible attack targets");
             if (std::find(attackers.begin(), attackers.end(), creature->GetObjectGuid()) == attackers.end())
                 return;
         }
-
-         
 
         float threat = threatManager->getThreat(player);
         if (!result || (minThreat - threat) > 0.1f)

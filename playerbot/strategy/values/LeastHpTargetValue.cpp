@@ -1,7 +1,6 @@
 #include "botpch.h"
 #include "../../playerbot.h"
 #include "LeastHpTargetValue.h"
-#include "AttackersValue.h"
 #include "TargetValue.h"
 
 using namespace ai;

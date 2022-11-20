@@ -180,9 +180,13 @@ class RandomPlayerbotMgr : public PlayerbotHolder
         list<uint32> arenaTeamMembers;
         uint32 bgBotsCount;
         uint32 playersLevel = sPlayerbotAIConfig.randombotStartingLevel;
-        PerformanceMonitorOperation* totalPmo;
 
         std::unordered_map<uint32, std::vector<std::pair<int32,int32>>> playerBotMoveLog;
+        typedef std::unordered_map <uint32, list<float>> botPerformanceMetric;
+        std::unordered_map<string, botPerformanceMetric> botPerformanceMetrics;
+
+        void PushMetric(botPerformanceMetric& metric, const uint32 bot, const float value, const uint32 maxNum = 60) const;
+        float GetMetricDelta(botPerformanceMetric& metric) const;
 };
 
 #define sRandomPlayerbotMgr RandomPlayerbotMgr::instance()

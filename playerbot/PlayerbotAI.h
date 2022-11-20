@@ -208,6 +208,27 @@ enum class GuilderType : uint8
     HUGE = 250
 };
 
+enum class ActivePiorityType : uint8
+{
+    IS_REAL_PLAYER = 0,
+    HAS_REAL_PLAYER_MASTER = 1,
+    IN_GROUP_WITH_REAL_PLAYER = 2,
+    IN_INSTANCE = 3,
+    VISIBLE_FOR_PLAYER = 4,
+    IS_ALWAYS_ACTIVE = 5,
+    IN_COMBAT = 6,
+    IN_BG_QUEUE = 7,
+    IN_LFG = 8,
+    NEARBY_PLAYER = 9,
+    PLAYER_FRIEND = 10,
+    PLAYER_GUILD = 11,
+    IN_ACTIVE_AREA = 12,
+    IN_ACTIVE_MAP = 13,
+    IN_INACTIVE_MAP = 14,
+    IN_EMPTY_SERVER = 15,
+    MAX_TYPE
+};
+
 enum ActivityType
 {
     GRIND_ACTIVITY = 1,
@@ -217,8 +238,9 @@ enum ActivityType
     PACKET_ACTIVITY = 5,
     DETAILED_MOVE_ACTIVITY = 6,
     PARTY_ACTIVITY = 7,
-    ALL_ACTIVITY = 8,
-    MAX_ACTIVITY_TYPE
+    REACT_ACTIVITY = 8,
+    ALL_ACTIVITY = 9,
+    MAX_ACTIVITY_TYPE 
 };
 
 enum BotRoles
@@ -289,12 +311,15 @@ public:
 	void HandleTeleportAck();
     void ChangeEngine(BotState type);
     void DoNextAction(bool minimal = false);
+    bool CanDoSpecificAction(string name, string qualifier = "", bool isPossible = true, bool isUseful = true);
     virtual bool DoSpecificAction(string name, Event event = Event(), bool silent = false, string qualifier = "");
     void ChangeStrategy(string name, BotState type);
     void ClearStrategies(BotState type);
     list<string> GetStrategies(BotState type);
     bool ContainsStrategy(StrategyType type);
     bool HasStrategy(string name, BotState type);
+    template<class T>
+    T* GetStrategy(string name, BotState type);
     BotState GetState() { return currentState; };
     void ResetStrategies(bool load = true);
     void ReInitCurrentEngine();
@@ -340,8 +365,8 @@ public:
     void EnchantItemT(uint32 spellid, uint8 slot, Item* item = nullptr);
     uint32 GetBuffedCount(Player* player, string spellname);
   
-
-    virtual bool CanCastSpell(string name, Unit* target, uint8 effectMask, Item* itemTarget = NULL);
+    bool GetSpellRange(string name, float* maxRange, float* minRange = nullptr);
+    virtual bool CanCastSpell(string name, Unit* target, uint8 effectMask, Item* itemTarget = NULL, bool ignoreRange = false);
     virtual bool CastSpell(string name, Unit* target, Item* itemTarget = NULL);
     virtual bool HasAura(string spellName, Unit* player, bool maxStack = false, bool checkIsOwner = false, int maxAmount = -1, bool hasMyAura = false);
     virtual bool HasAnyAuraOf(Unit* player, ...);
@@ -353,9 +378,9 @@ public:
 
     virtual bool IsInterruptableSpellCasting(Unit* player, string spell, uint8 effectMask);
     virtual bool HasAuraToDispel(Unit* player, uint32 dispelType);
-    bool CanCastSpell(uint32 spellid, Unit* target, uint8 effectMask, bool checkHasSpell = true, Item* itemTarget = NULL);
-    bool CanCastSpell(uint32 spellid, GameObject* goTarget, uint8 effectMask, bool checkHasSpell = true);
-    bool CanCastSpell(uint32 spellid, float x, float y, float z, uint8 effectMask, bool checkHasSpell = true, Item* itemTarget = NULL);
+    bool CanCastSpell(uint32 spellid, Unit* target, uint8 effectMask, bool checkHasSpell = true, Item* itemTarget = NULL, bool ignoreRange = false);
+    bool CanCastSpell(uint32 spellid, GameObject* goTarget, uint8 effectMask, bool checkHasSpell = true, bool ignoreRange = false);
+    bool CanCastSpell(uint32 spellid, float x, float y, float z, uint8 effectMask, bool checkHasSpell = true, Item* itemTarget = NULL, bool ignoreRange = false);
 
     bool HasAura(uint32 spellId, const Unit* player);
     bool CastSpell(uint32 spellId, Unit* target, Item* itemTarget = NULL);
@@ -411,7 +436,9 @@ public:
     bool HasPlayerNearby(WorldPosition* pos, float range = sPlayerbotAIConfig.reactDistance);
     bool HasPlayerNearby(float range = sPlayerbotAIConfig.reactDistance);
     bool HasManyPlayersNearby(uint32 trigerrValue = 20, float range = sPlayerbotAIConfig.sightDistance);
-    pair<uint32,uint32> GetPriorityBracket(bool& shouldDetailMove);
+
+    ActivePiorityType GetPriorityType();
+    pair<uint32,uint32> GetPriorityBracket(ActivePiorityType type);
     bool AllowActive(ActivityType activityType);
     bool AllowActivity(ActivityType activityType = ALL_ACTIVITY, bool checkNow = false);
 
@@ -476,3 +503,8 @@ protected:
     Position jumpDestination = Position();
 };
 
+template<typename T>
+T* PlayerbotAI::GetStrategy(string name, BotState type)
+{
+    return  dynamic_cast<T*>(engines[(uint8)type]->GetStrategy(name));
+}

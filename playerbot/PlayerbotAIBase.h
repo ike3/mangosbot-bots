@@ -3,6 +3,7 @@
 class Player;
 class PlayerbotMgr;
 class ChatHandler;
+class PerformanceMonitorOperation;
 
 using namespace std;
 
@@ -27,4 +28,5 @@ protected:
     
 protected:
 	uint32 aiInternalUpdateDelay;
+    PerformanceMonitorOperation* totalPmo = nullptr;
 };

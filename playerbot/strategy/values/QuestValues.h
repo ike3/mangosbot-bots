@@ -146,7 +146,7 @@ namespace ai
     public:
         DialogStatusQuestValue(PlayerbotAI* ai) : DialogStatusValue(ai, "dialog status quest") {}
 
-        virtual uint32 Calculate() { return getDialogStatus(bot, getMultiQualifier(getQualifier(), 0), getMultiQualifier(getQualifier(), 1)); }
+        virtual uint32 Calculate() { return getDialogStatus(bot, getMultiQualifierInt(getQualifier(), 0, " "), getMultiQualifierInt(getQualifier(), 1, " ")); }
     };
 
     //Can accept quest from npc

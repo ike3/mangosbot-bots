@@ -49,6 +49,7 @@ namespace ai
             creators["react"] = &ChatTriggerContext::react;
             creators["trainer"] = &ChatTriggerContext::trainer;
             creators["attack"] = &ChatTriggerContext::attack;
+            creators["pull"] = &ChatTriggerContext::pull;
             creators["chat"] = &ChatTriggerContext::chat;
             creators["accept"] = &ChatTriggerContext::accept;
             creators["home"] = &ChatTriggerContext::home;
@@ -80,6 +81,7 @@ namespace ai
             creators["who"] = &ChatTriggerContext::who;
             creators["save mana"] = &ChatTriggerContext::save_mana;
             creators["max dps"] = &ChatTriggerContext::max_dps;
+            creators["possible attack targets"] = &ChatTriggerContext::possible_attack_targets;
             creators["attackers"] = &ChatTriggerContext::attackers;
             creators["formation"] = &ChatTriggerContext::formation;
             creators["stance"] = &ChatTriggerContext::stance;
@@ -126,6 +128,7 @@ namespace ai
         static Trigger* sendmail(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "sendmail"); }
         static Trigger* formation(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "formation"); }
         static Trigger* stance(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "stance"); }
+        static Trigger* possible_attack_targets(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "possible attack targets"); }
         static Trigger* attackers(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "attackers"); }
         static Trigger* max_dps(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "max dps"); }
         static Trigger* save_mana(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "save mana"); }
@@ -156,6 +159,7 @@ namespace ai
         static Trigger* accept(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "accept"); }
         static Trigger* chat(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "chat"); }
         static Trigger* attack(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "attack"); }
+        static Trigger* pull(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "pull"); }
         static Trigger* trainer(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "trainer"); }
         static Trigger* co(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "co"); }
         static Trigger* nc(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "nc"); }

@@ -11,7 +11,7 @@ using namespace ai;
 
 Unit* TargetValue::FindTarget(FindTargetStrategy* strategy)
 {
-    list<ObjectGuid> attackers = ai->GetAiObjectContext()->GetValue<list<ObjectGuid> >("attackers")->Get();
+    list<ObjectGuid> attackers = ai->GetAiObjectContext()->GetValue<list<ObjectGuid>>("possible attack targets")->Get();
     for (list<ObjectGuid>::iterator i = attackers.begin(); i != attackers.end(); ++i)
     {
         Unit* unit = ai->GetUnit(*i);
@@ -106,7 +106,6 @@ WorldPosition LastLongMoveValue::Calculate()
     return lastMove.lastPath.getBack();
 }
 
-
 WorldPosition HomeBindValue::Calculate()
 {
     float x, y, z;
@@ -115,4 +114,18 @@ WorldPosition HomeBindValue::Calculate()
     return WorldPosition(mapId, x, y, z, 0.0);
 }
 
+void PullTargetValue::Set(Unit* unit)
+{
+    guid = unit ? unit->GetObjectGuid() : ObjectGuid();
+}
 
+Unit* PullTargetValue::Get()
+{
+    Unit* unit = nullptr;
+    if (!guid.IsEmpty())
+    {
+        unit = sObjectAccessor.GetUnit(*bot, guid);
+    }
+    
+    return unit;
+}

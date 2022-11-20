@@ -144,9 +144,13 @@ float WaitForAttackMultiplier::GetValue(Action* action)
 {
     // Allow some movement and targeting actions
     const string& actionName = action->getName();
-    if (actionName != "wait for attack keep safe distance" && 
-        actionName != "dps assist" && 
-        actionName != "set facing")
+    if ((actionName != "wait for attack keep safe distance") && 
+        (actionName != "dps assist") && 
+        (actionName != "set facing") &&
+        (actionName != "pull my target") &&
+        (actionName != "pull start") &&
+        (actionName != "pull action") &&
+        (actionName != "pull end"))
     {
         return WaitForAttackStrategy::ShouldWait(ai) ? 0.0f : 1.0f;
     }

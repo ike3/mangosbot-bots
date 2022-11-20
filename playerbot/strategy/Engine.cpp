@@ -144,8 +144,12 @@ bool Engine::DoNextAction(Unit* unit, int depth, bool minimal)
             // NOTE: queue.Pop() deletes basket
             ActionNode* actionNode = queue.Pop();
             Action* action = InitializeAction(actionNode);
+
+            string actionName = (action ? action->getName() : "unknown");
+            if (!event.getSource().empty())
+                actionName += " <" + event.getSource() + ">";
             
-            PerformanceMonitorOperation* pmo1 = sPerformanceMonitor.start(PERF_MON_ACTION, (event.getSource().empty() ? event.getSource() : (action ? action->getName(): "unknown")), &aiObjectContext->performanceStack);
+            PerformanceMonitorOperation* pmo1 = sPerformanceMonitor.start(PERF_MON_ACTION, actionName, &aiObjectContext->performanceStack);
 
             if(action)
                 action->setRelevance(relevance);
@@ -171,7 +175,7 @@ bool Engine::DoNextAction(Unit* unit, int depth, bool minimal)
             }
             else
             {
-                PerformanceMonitorOperation* pmo2 = sPerformanceMonitor.start(PERF_MON_ACTION, action->getName() + " (usefull)", &aiObjectContext->performanceStack);
+                PerformanceMonitorOperation* pmo2 = sPerformanceMonitor.start(PERF_MON_ACTION, "isUsefull", &aiObjectContext->performanceStack);
                 bool isUsefull = action->isUseful();
                 if (pmo2) pmo2->finish();
 
@@ -189,13 +193,12 @@ bool Engine::DoNextAction(Unit* unit, int depth, bool minimal)
                         }
                     }
 
-                    PerformanceMonitorOperation* pmo3 = sPerformanceMonitor.start(PERF_MON_ACTION, action->getName() + " (possible)", &aiObjectContext->performanceStack);
+                    PerformanceMonitorOperation* pmo3 = sPerformanceMonitor.start(PERF_MON_ACTION, "isPossible", &aiObjectContext->performanceStack);
                     bool isPossible = action->isPossible();
                     if (pmo3) pmo3->finish();
 
-                    if (action->isPossible() && relevance)
+                    if (isPossible && relevance)
                     {
-                    
                         if (!skipPrerequisites)
                         {
                             LogAction("A:%s - PREREQ", action->getName().c_str());
@@ -208,7 +211,7 @@ bool Engine::DoNextAction(Unit* unit, int depth, bool minimal)
                             }
                         }
 
-                        PerformanceMonitorOperation* pmo4 = sPerformanceMonitor.start(PERF_MON_ACTION, action->getName() + " (execute)", &aiObjectContext->performanceStack);
+                        PerformanceMonitorOperation* pmo4 = sPerformanceMonitor.start(PERF_MON_ACTION, "Execute", &aiObjectContext->performanceStack);
                         actionExecuted = ListenAndExecute(action, event);
                         if (pmo4) pmo4->finish();
 
@@ -359,48 +362,83 @@ bool Engine::MultiplyAndPush(NextAction** actions, float forceRelevance, bool sk
     return pushed;
 }
 
-ActionResult Engine::ExecuteAction(string name, Event event, string qualifier)
+ActionResult Engine::ExecuteAction(string name, Event& event, string qualifier)
 {
-	bool result = false;
-
-    ActionNode *actionNode = CreateActionNode(name);
-    if (!actionNode)
-        return ACTION_RESULT_UNKNOWN;
-
-    Action* action = InitializeAction(actionNode);
-    if (!action)
+    ActionResult actionResult = ACTION_RESULT_UNKNOWN;
+    ActionNode* actionNode = CreateActionNode(name);
+    if (actionNode)
     {
+        Action* action = InitializeAction(actionNode);
+        if (action)
+        {
+            if (!qualifier.empty())
+            {
+                Qualified* qualified = dynamic_cast<Qualified*>(action);
+                if (qualified)
+                {
+                    qualified->Qualify(qualifier);
+                }
+            }
+
+            if (action->isPossible())
+            {
+                if (action->isUseful())
+                {
+                    action->MakeVerbose();
+                    bool executionResult = ListenAndExecute(action, event);
+                    MultiplyAndPush(action->getContinuers(), 0.0f, false, event, "default");
+                    actionResult = executionResult ? ACTION_RESULT_OK : ACTION_RESULT_FAILED;
+                }
+                else
+                {
+                    actionResult = ACTION_RESULT_USELESS;
+                }
+            }
+            else
+            {
+                actionResult = ACTION_RESULT_IMPOSSIBLE;
+            }
+        }
+
         delete actionNode;
-        return ACTION_RESULT_UNKNOWN;
     }
 
+    return actionResult;
+}
 
-
-    if (!qualifier.empty())
+bool Engine::CanExecuteAction(string name, string qualifier, bool isPossible, bool isUseful)
+{
+    bool result = true;
+    ActionNode* actionNode = CreateActionNode(name);
+    if (actionNode)
     {
-        Qualified* q = dynamic_cast<Qualified*>(action);
+        Action* action = InitializeAction(actionNode);
+        if (action)
+        {
+            if (!qualifier.empty())
+            {
+                Qualified* qualified = dynamic_cast<Qualified*>(action);
+                if (qualified)
+                {
+                    qualified->Qualify(qualifier);
+                }
+            }
 
-        if (q)
-            q->Qualify(qualifier);
-    }
+            if (isPossible)
+            {
+                result &= action->isPossible();
+            }
 
-    if (!action->isPossible())
-    {
+            if (isUseful)
+            {
+                result &= action->isUseful();
+            }
+        }
+
         delete actionNode;
-        return ACTION_RESULT_IMPOSSIBLE;
     }
 
-    if (!action->isUseful())
-    {
-        delete actionNode;
-        return ACTION_RESULT_USELESS;
-    }
-
-    action->MakeVerbose();
-    result = ListenAndExecute(action, event);
-    MultiplyAndPush(action->getContinuers(), 0.0f, false, event, "default");
-    delete actionNode;
-	return result ? ACTION_RESULT_OK : ACTION_RESULT_FAILED;
+    return result;
 }
 
 void Engine::addStrategy(string name)
@@ -469,6 +507,17 @@ bool Engine::HasStrategy(string name)
     return strategies.find(name) != strategies.end();
 }
 
+Strategy* Engine::GetStrategy(string name) const
+{
+    auto i = strategies.find(name);
+    if (i != strategies.end())
+    {
+        return i->second;
+    }
+
+    return nullptr;
+}
+
 void Engine::ProcessTriggers(bool minimal)
 {
     map<Trigger*, Event> fires;
@@ -507,7 +556,7 @@ void Engine::ProcessTriggers(bool minimal)
     {
         TriggerNode* node = *i;
         Trigger* trigger = node->getTrigger();
-        Event event = fires[trigger];
+        Event& event = fires[trigger];
         if (!event)
             continue;
 

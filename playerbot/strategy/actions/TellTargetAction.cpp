@@ -26,7 +26,40 @@ bool TellAttackersAction::Execute(Event& event)
 {
     ai->TellMaster("--- Attackers ---");
 
-    list<ObjectGuid> attackers = context->GetValue<list<ObjectGuid> >("attackers")->Get();
+    list<ObjectGuid> attackers = context->GetValue<list<ObjectGuid>>("attackers")->Get();
+    for (list<ObjectGuid>::iterator i = attackers.begin(); i != attackers.end(); i++)
+    {
+        Unit* unit = ai->GetUnit(*i);
+        if (!unit || !sServerFacade.IsAlive(unit))
+            continue;
+
+        ai->TellMaster(unit->GetName());
+    }
+
+    ai->TellMaster("--- Threat ---");
+    HostileReference* ref = sServerFacade.GetHostileRefManager(bot).getFirst();
+    if (!ref)
+        return true;
+
+    while (ref)
+    {
+        ThreatManager* threatManager = ref->getSource();
+        Unit* unit = threatManager->getOwner();
+        float threat = ref->getThreat();
+
+        ostringstream out; out << unit->GetName() << " (" << threat << ")";
+        ai->TellMaster(out);
+
+        ref = ref->next();
+    }
+    return true;
+}
+
+bool TellPossibleAttackTargetsAction::Execute(Event& event)
+{
+    ai->TellMaster("--- Attack Targets ---");
+
+    list<ObjectGuid> attackers = context->GetValue<list<ObjectGuid>>("possible attack targets")->Get();
     for (list<ObjectGuid>::iterator i = attackers.begin(); i != attackers.end(); i++)
     {
         Unit* unit = ai->GetUnit(*i);

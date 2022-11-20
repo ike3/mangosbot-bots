@@ -144,8 +144,8 @@ list<uint32> EntryLootListValue::Calculate()
 //What is the item's loot chance?
 float LootChanceValue::Calculate()
 {
-	int32 entry = getMultiQualifier(getQualifier(), 0);
-	uint32 itemId = getMultiQualifier(getQualifier(), 1);
+	int32 entry = getMultiQualifierInt(getQualifier(), 0, " ");
+	uint32 itemId = getMultiQualifierInt(getQualifier(), 1, " ");
 
 	LootTemplateAccess const* lTemplateA;
 

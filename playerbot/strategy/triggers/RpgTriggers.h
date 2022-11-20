@@ -53,7 +53,7 @@ namespace ai
     {
     public:
         RpgWanderTrigger(PlayerbotAI* ai, string name = "rpg wander") : RpgTrigger(ai, name) {}
-        virtual bool IsActive() { return ai->HasRealPlayerMaster(); };
+        virtual bool IsActive() { return ai->HasRealPlayerMaster() && (!bot->GetGroup() || !getGuidP().GetPlayer() || !bot->GetGroup()->IsMember(getGuidP())); };
     };
 
     class RpgTaxiTrigger : public RpgTrigger

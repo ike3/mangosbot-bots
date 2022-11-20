@@ -1,5 +1,7 @@
 #pragma once
 #include <cstdarg>
+#include <string>
+#include <iosfwd>
 
 namespace ai
 {
@@ -16,9 +18,35 @@ namespace ai
         virtual void Qualify(string qualifier) { this->qualifier = qualifier; }
         string getQualifier() { return qualifier; }
 
-        static string MultiQualify(vector<string> qualifiers) { ostringstream out; for (auto& qualifier : qualifiers) out << qualifier << (&qualifier != &qualifiers.back() ? " " : ""); return out.str();}
-        static vector<string> getMultiQualifiers(string qualifier1) { istringstream iss(qualifier1);   return { istream_iterator<string>{iss}, istream_iterator<string>{} }; }
-        static int32 getMultiQualifier(string qualifier1, uint32 pos) { return stoi(getMultiQualifiers(qualifier1)[pos]); }
+        static string MultiQualify(vector<string> qualifiers, string separator)
+        { 
+            ostringstream out; 
+            for (auto& qualifier : qualifiers)
+            {
+                out << qualifier << (&qualifier != &qualifiers.back() ? separator : "");
+            }
+                
+            return out.str();
+        }
+
+        static vector<string> getMultiQualifiers(string qualifier1, string separator)
+        { 
+            vector<string> result;
+
+            size_t last = 0; 
+            size_t next = 0; 
+            while ((next = qualifier1.find(separator, last)) != string::npos)
+            { 
+                result.push_back(qualifier1.substr(last, next - last));
+                last = next + 1;
+            } 
+
+            result.push_back(qualifier1.substr(last));
+            return result;
+        }
+        
+        static int32 getMultiQualifierInt(string qualifier1, uint32 pos, string separator) { return stoi(getMultiQualifiers(qualifier1, separator)[pos]); }
+        static string getMultiQualifierStr(string qualifier1, uint32 pos, string separator) { return getMultiQualifiers(qualifier1, separator)[pos]; }
     protected:
         string qualifier;
     };

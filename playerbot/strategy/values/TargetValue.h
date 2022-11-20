@@ -97,4 +97,15 @@ namespace ai
     public:
         AttackTargetValue(PlayerbotAI* ai, string name = "attack target") : ManualSetValue<ObjectGuid>(ai, ObjectGuid(), name) {}
     };
+
+    class PullTargetValue : public UnitManualSetValue
+    {
+    public:
+        PullTargetValue(PlayerbotAI* ai, string name = "pull target") : UnitManualSetValue(ai, NULL, name) {}
+        void Set(Unit* unit) override;
+        Unit* Get() override;
+
+    private:
+        ObjectGuid guid;
+    };
 }

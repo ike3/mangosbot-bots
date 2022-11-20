@@ -2,327 +2,363 @@
 #include "../../playerbot.h"
 #include "AttackersValue.h"
 #include "PossibleTargetsValue.h"
-
-#include "../../ServerFacade.h"
-#include "GridNotifiers.h"
-#include "GridNotifiersImpl.h"
-#include "CellImpl.h"
+#include "EnemyPlayerValue.h"
 
 using namespace ai;
 using namespace MaNGOS;
 
 list<ObjectGuid> AttackersValue::Calculate()
 {
-    set<Unit*> targets;
+    bool getOne = getQualifier().empty();
 
     list<ObjectGuid> result;
+    if (ai->AllowActivity(ALL_ACTIVITY))
+    {
+        if(bot->IsInWorld() && !bot->IsBeingTeleported())
+        {
+            set<Unit*> targets;
 
-    if (!ai->AllowActivity(ALL_ACTIVITY))
-        return result;
+            // Add the targets of the bot
+            AddTargetsOf(bot, targets, getOne);
 
-    AddAttackersOf(bot, targets);
+            if (targets.empty() || !getOne)
+            {
+                // Add the targets of the members of the group
+                Group* group = bot->GetGroup();
+                if (group)
+                {
+                    AddTargetsOf(group, targets, getOne);
+                }
+            }
 
-    Group* group = bot->GetGroup();
-    if (group)
-        AddAttackersOf(group, targets);
-
-    RemoveNonThreating(targets);
-    
-	for (set<Unit*>::iterator i = targets.begin(); i != targets.end(); i++)
-		result.push_back((*i)->GetObjectGuid());
-
-    if (bot->duel && bot->duel->opponent)
-        result.push_back(bot->duel->opponent->GetObjectGuid());
+            // Convert the targets to guids
+            for (Unit* target : targets)
+            {
+                result.push_back(target->GetObjectGuid());
+            }
+        }
+    }
 
 	return result;
 }
 
-void AttackersValue::AddAttackersOf(Group* group, set<Unit*>& targets)
+void AttackersValue::AddTargetsOf(Group* group, set<Unit*>& targets, bool getOne)
 {
     Group::MemberSlotList const& groupSlot = group->GetMemberSlots();
     for (Group::member_citerator itr = groupSlot.begin(); itr != groupSlot.end(); itr++)
     {
-        Player *member = sObjectMgr.GetPlayer(itr->guid);
-        if (!member || !sServerFacade.IsAlive(member) || member == bot || member->GetMapId() != bot->GetMapId() || sServerFacade.GetDistance2d(bot, member) > sPlayerbotAIConfig.sightDistance)
-            continue;
+        // Only add group member targets that are alive and near the player
+        Player* member = sObjectMgr.GetPlayer(itr->guid);
+        if (member && (member != bot) &&
+           sServerFacade.IsAlive(member) &&
+           member->IsInWorld() &&
+           !member->IsBeingTeleported() &&
+           (member->GetMapId() == bot->GetMapId()) && 
+           (sServerFacade.GetDistance2d(bot, member) <= GetRange()))
+        {
+            AddTargetsOf(member, targets, getOne);
 
-        AddAttackersOf(member, targets);
+            if (getOne && !targets.empty())
+                return;
+        }
     }
 }
 
-struct AddGuardiansHelper
+void AttackersValue::AddTargetsOf(Player* player, set<Unit*>& targets, bool getOne)
 {
-    explicit AddGuardiansHelper(list<Unit*> &units) : units(units) {}
-    void operator()(Unit* target) const
+    // If the player is available
+    if (player)
     {
-        units.push_back(target);
-    }
+        list<Unit*> units;
 
-    list<Unit*> &units;
-};
+        PlayerbotAI* playerBot = player->GetPlayerbotAI();
 
-void AttackersValue::AddAttackersOf(Player* player, set<Unit*>& targets)
-{
-    if (!player || !player->IsInWorld() || player->IsBeingTeleported())
-        return;
-
-	list<Unit*> units;
-    PossibleTargetsValue::FindPossibleTargets(player, units, sPlayerbotAIConfig.sightDistance);
-	for (list<Unit*>::iterator i = units.begin(); i != units.end(); i++)
-    {
-        Unit* unit = *i;
-        if (PossibleTargetsValue::IsValid(player, unit, sPlayerbotAIConfig.sightDistance))
+        if (playerBot)
         {
-            if (!player->GetGroup())
+            for (auto guid : PAI_VALUE(list<ObjectGuid>, "possible targets"))
+                if (Unit* unit = ai->GetUnit(guid))
+                    units.push_back(unit);
+        }
+        else  // Get all the units around the player
+            PossibleTargetsValue::FindPossibleTargets(player, units, GetRange());
+
+        // Get the current attackers of the player
+        for (Unit* attacker : player->getAttackers())
+        {
+            units.push_back(attacker);
+        }
+
+        // Add the duel opponent
+        if (bot->duel && bot->duel->opponent)
+        {
+            units.push_back(bot->duel->opponent);
+        }
+
+        // If the player is a bot try to retrieve the pull, current and previous targets
+        if(playerBot)
+        {
+            Unit* currentTarget = PAI_VALUE(Unit*, "current target");
+            if(currentTarget)
             {
-#ifdef CMANGOS
-                if (!unit->getThreatManager().getThreat(player) && (!unit->getThreatManager().getCurrentVictim() || unit->getThreatManager().getCurrentVictim()->getTarget() != player))
-#endif
-#ifdef MANGOS
-                if (!unit->GetThreatManager().getThreat(player))
-#endif
-                    continue;
+                units.push_back(currentTarget);
             }
 
-            targets.insert(unit);
-            unit->CallForAllControlledUnits(AddGuardiansHelper(units), CONTROLLED_PET | CONTROLLED_GUARDIANS | CONTROLLED_CHARM | CONTROLLED_MINIPET | CONTROLLED_TOTEMS);
-        }
-    }
-}
-
-void AttackersValue::RemoveNonThreating(set<Unit*>& targets)
-{
-    set<Unit*> breakableCC;
-    set<Unit*> unBreakableCC;
-
-    for(set<Unit *>::iterator tIter = targets.begin(); tIter != targets.end();)
-    {
-        Unit* unit = *tIter;
-        if (!IsValidTarget(unit, bot, true))
-        {
-            set<Unit *>::iterator tIter2 = tIter;
-            ++tIter;
-            targets.erase(tIter2);
-        }
-        else if (!HasIgnoreCCRti(unit, bot) && HasBreakableCC(unit, bot))
-        {
-            breakableCC.insert(unit);
-            set<Unit*>::iterator tIter2 = tIter;
-            ++tIter;
-            targets.erase(tIter2);
-        }
-        else if (!HasIgnoreCCRti(unit, bot) && HasUnBreakableCC(unit, bot))
-        {
-            unBreakableCC.insert(unit);
-            set<Unit*>::iterator tIter2 = tIter;
-            ++tIter;
-            targets.erase(tIter2);
-        }
-        else
-            ++tIter;
-    }
-
-    if (targets.empty()) //And check if group is ok mana/health wise
-        if (!unBreakableCC.empty())
-            targets = unBreakableCC;
-        else if(!breakableCC.empty())
-            targets = breakableCC;
-}
-
-bool AttackersValue::HasIgnoreCCRti(Unit* attacker, Player* player)
-{
-    Group* group = player->GetGroup();
-
-    if (group && (group->GetTargetIcon(7) == attacker->GetObjectGuid()))
-        return true;
-
-    return false;
-}
-
-bool AttackersValue::HasBreakableCC(Unit* attacker, Player* player)
-{
-    if (attacker->IsPolymorphed())
-        return true;
-
-    if (sServerFacade.IsFrozen(attacker))
-        return true;
-
-    PlayerbotAI* ai = player->GetPlayerbotAI();
-    if (ai)
-    {
-        if (ai->HasAura("sap", attacker))
-            return true;
-
-        if (ai->HasAura("gouge", attacker))
-            return true;
-
-        if (ai->HasAura("shackle undead", attacker))
-            return true;
-    }
-
-    return false;
-}
-
-bool AttackersValue::HasUnBreakableCC(Unit* attacker, Player* player)
-{
-    if (attacker->IsStunned())
-        return true;
-
-#ifdef MANGOS
-    if (attacker->hasUnitState(UNIT_STAT_STUNNED))
-        return true;
-#endif
-
-    if (sServerFacade.IsFeared(attacker) )
-        return true;
-
-    if (sServerFacade.IsInRoots(attacker))
-        return true;
-
-    if(sServerFacade.IsCharmed(attacker) && attacker->IsInTeam(player, true))
-        return true;
-
-    PlayerbotAI* ai = player->GetPlayerbotAI();
-    if (ai)
-    {
-        if (ai->HasAura("banish", attacker))
-            return true;
-    }
-
-    return false;
-}
-
-bool AttackersValue::IsPossibleTarget(Unit *attacker, Player *player, float range, bool ignoreCC)
-{
-    if(!attacker)
-        return false;
-
-    Creature *c = dynamic_cast<Creature*>(attacker);
-    Group* group = player->GetGroup();
-    Player* master = nullptr;
-
-    bool hasCC = false;
-    bool leaderHasThreat = false;
-    bool isMemberBotGroup = false;
-    bool inVehicle = false;
-    bool hasEnemyPlayerTarget = false;
-    bool inDuel = false;
-    bool canSeeAttacker = false;
-    bool hasAttackTaggedStrategy = false;
-    bool isFriendly = false;
-    bool isDead = false;
-
-    // If the player is a bot
-    PlayerbotAI* bot = player->GetPlayerbotAI();
-    if(bot)
-    {
-        master = bot->GetMaster();
-        if (master)
-        {
-            if(group)
+            Unit* oldTarget = PAI_VALUE(Unit*, "old target");
+            if (oldTarget)
             {
-                leaderHasThreat = attacker->getThreatManager().getThreat(master);
+                units.push_back(oldTarget);
+            }
 
-                // If the master is a bot
-                if (master->GetPlayerbotAI() && !master->GetPlayerbotAI()->IsRealPlayer())
-                    isMemberBotGroup = true;
+            // Only consider the owner bot pull target
+            if(bot == player)
+            {
+                Unit* attackTarget = playerBot->GetUnit(PAI_VALUE(ObjectGuid, "attack target"));
+                if (attackTarget)
+                {
+                    units.push_back(attackTarget);
+                }
+
+                Unit* pullTarget = PAI_VALUE(Unit*, "pull target");
+                if (pullTarget)
+                {
+                    units.push_back(pullTarget);
+                }
             }
         }
 
-        inVehicle = bot->IsInVehicle(false, true);
-        hasEnemyPlayerTarget = bot->GetAiObjectContext()->GetValue<Unit*>("enemy player target")->Get();
-        hasAttackTaggedStrategy = bot->HasStrategy("attack tagged", BotState::BOT_STATE_NON_COMBAT);        
+        // Filter the units that are valid
+        for (Unit* unit : units)
+        {
+            // Prevent checking a target that has already been checked
+            if(targets.find(unit) == targets.end())
+            {
+                if (IsPossibleTarget(unit, player))
+                {
+                    // Add the target to the list of combat targets
+                    targets.insert(unit);
+
+                    // Add the target's pet/guardian too
+                    unit->CallForAllControlledUnits(AddGuardiansHelper(units), CONTROLLED_PET | CONTROLLED_GUARDIANS | CONTROLLED_CHARM | CONTROLLED_MINIPET | CONTROLLED_TOTEMS);
+
+                    if (getOne)
+                        return;
+                }
+            }
+        }
     }
+}
 
+bool AttackersValue::IsFriendly(Unit* target, Player* player)
+{
+    bool friendly = false;
+    if (sServerFacade.IsFriendlyTo(target, player))
+    {
+        friendly = true;
 
-    isDead = sServerFacade.UnitIsDead(attacker);
-    isFriendly = sServerFacade.IsFriendlyTo(attacker, player);
-    inDuel = player->duel && player->duel->opponent && (attacker->GetObjectGuid() == player->duel->opponent->GetObjectGuid());
-    canSeeAttacker = attacker->IsVisibleForOrDetect(player, player->GetCamera().GetBody(), true);
-    hasCC = !ignoreCC && !HasIgnoreCCRti(attacker, player) && (HasBreakableCC(attacker, player) || HasUnBreakableCC(attacker, player));
-
+        // Check if the target is another player in a duel/arena
+        Player* targetPlayer = dynamic_cast<Player*>(target);
+        if (targetPlayer)
+        {
+            // If the target is in a duel with the player
+            if (player->duel && player->duel->opponent && (targetPlayer->GetObjectGuid() == player->duel->opponent->GetObjectGuid()))
+            {
+                friendly = false;
+            }
 #ifndef MANGOSBOT_ZERO
-    Player* arenaEnemy = dynamic_cast<Player*>(attacker);
-    if (arenaEnemy)
-    {
-        if (arenaEnemy->InArena() && player->InArena() && (arenaEnemy->GetBGTeam() != player->GetBGTeam()))
-            inDuel = true;
-    }
-#endif
-
-    return attacker->IsInWorld() &&
-        (attacker->GetMapId() == player->GetMapId()) &&
-        !isDead &&
-        !attacker->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_1) &&
-        !attacker->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_UNTARGETABLE) &&
-        (inVehicle || !attacker->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_UNINTERACTIBLE)) &&
-        canSeeAttacker && !hasCC &&
-        (!isFriendly || inDuel) &&
-        player->IsWithinDistInMap(attacker, range) &&
-        !attacker->HasAuraType(SPELL_AURA_SPIRIT_OF_REDEMPTION) &&
-        !(attacker->GetObjectGuid().IsPet() && hasEnemyPlayerTarget) &&
-        !(attacker->GetCreatureType() == CREATURE_TYPE_CRITTER && !attacker->IsInCombat()) &&
-        !(sPlayerbotAIConfig.IsInPvpProhibitedZone(sServerFacade.GetAreaId(attacker)) && (attacker->GetObjectGuid().IsPlayer() || attacker->GetObjectGuid().IsPet())) &&
-        (!c || (
-#ifdef MANGOS
-            !c->IsInEvadeMode() &&
-#endif
-#ifdef CMANGOS
-            !c->GetCombatManager().IsInEvadeMode() &&
-#endif
-            (
-#ifdef CMANGOS
-                (!isMemberBotGroup && hasAttackTaggedStrategy) || leaderHasThreat ||
-                (!c->HasLootRecipient() &&
-                    (!c->GetVictim() ||
-                    c->GetVictim() &&
-                    ((player->IsInGroup(c->GetVictim())) ||
-                        (master && c->GetVictim() == master)))) ||
-                c->IsTappedBy(player)
-#endif
-#ifndef MANGOSBOT_TWO
-#ifdef MANGOS
-                !attacker->HasFlag(UNIT_DYNAMIC_FLAGS, UNIT_DYNFLAG_TAPPED) || player->IsTappedByMeOrMyGroup(c)
-#endif
-#endif
-                )
-            )
-        );
-}
-
-bool AttackersValue::IsValidTarget(Unit *attacker, Player *bot, bool ignoreCC)
-{
-    return  IsPossibleTarget(attacker, bot, sPlayerbotAIConfig.sightDistance, ignoreCC) &&
-            (sServerFacade.GetThreatManager(attacker).getCurrentVictim() ||
-            attacker->GetGuidValue(UNIT_FIELD_TARGET) || attacker->GetObjectGuid().IsPlayer() ||
-            attacker->GetObjectGuid() == bot->GetPlayerbotAI()->GetAiObjectContext()->GetValue<ObjectGuid>("attack target")->Get()
-                || (!HasIgnoreCCRti(attacker, bot) && (HasBreakableCC(attacker, bot) || HasUnBreakableCC(attacker, bot))));
-}
-
-bool PossibleAddsValue::Calculate()
-{
-    PlayerbotAI *ai = bot->GetPlayerbotAI();
-    list<ObjectGuid> possible = ai->GetAiObjectContext()->GetValue<list<ObjectGuid> >("possible targets no los")->Get();
-    list<ObjectGuid> attackers = ai->GetAiObjectContext()->GetValue<list<ObjectGuid> >("attackers")->Get();
-
-    for (list<ObjectGuid>::iterator i = possible.begin(); i != possible.end(); ++i)
-    {
-        ObjectGuid guid = *i;
-        if (find(attackers.begin(), attackers.end(), guid) != attackers.end()) continue;
-
-        Unit* add = ai->GetUnit(guid);
-        if (add && !add->GetGuidValue(UNIT_FIELD_TARGET) && !sServerFacade.GetThreatManager(add).getCurrentVictim() && sServerFacade.IsHostileTo(add, bot))
-        {
-            for (list<ObjectGuid>::iterator j = attackers.begin(); j != attackers.end(); ++j)
+            // If the target is in an arena with the player and is not on the same team
+            else if (targetPlayer->InArena() && player->InArena() && (targetPlayer->GetBGTeam() != player->GetBGTeam()))
             {
-                Unit* attacker = ai->GetUnit(*j);
-                if (!attacker) continue;
-
-                float dist = sServerFacade.GetDistance2d(attacker, add);
-                if (sServerFacade.IsDistanceLessOrEqualThan(dist, sPlayerbotAIConfig.aoeRadius * 1.5f)) continue;
-                if (sServerFacade.IsDistanceLessOrEqualThan(dist, sPlayerbotAIConfig.aggroDistance)) return true;
+                friendly = false;
             }
+#endif
         }
     }
+
+    return friendly;
+}
+
+bool AttackersValue::IsAttackable(Unit* target, Player* player, bool inVehicle)
+{
+    return !target->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_1) &&
+           !target->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_UNTARGETABLE) &&
+           (inVehicle || !target->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_UNINTERACTIBLE)) &&
+           !target->HasAuraType(SPELL_AURA_SPIRIT_OF_REDEMPTION);
+}
+
+bool AttackersValue::InCombat(Unit* target, Player* player, bool checkPullTargets)
+{
+    bool inCombat = (target->getThreatManager().getThreat(player) > 0.0f) ||
+                    (target->GetVictim() && (target->GetVictim() == player));
+
+    if(!inCombat && checkPullTargets && player->GetPlayerbotAI())
+    {
+        inCombat = (PAI_VALUE(ObjectGuid, "attack target") == target->GetObjectGuid()) ||
+                   (PAI_VALUE(Unit*, "pull target") == target);
+    }
+
+    return inCombat;
+}
+
+bool AttackersValue::IsPossibleTarget(Unit* target, Player* player) const
+{
+    // If the target is available
+    if (target && target->IsInWorld() && (target->GetMapId() == player->GetMapId()))
+    {
+        // If the target is dead
+        if(sServerFacade.UnitIsDead(target))
+        {
+            return false;
+        }
+
+        // If the target is friendly (to the owner bot)
+        if(IsFriendly(target, bot))
+        {
+            return false;
+        }
+
+        // If the target can't be attacked (by the owner bot)
+        const bool inVehicle = player->GetPlayerbotAI() && player->GetPlayerbotAI()->IsInVehicle();
+        if(!IsAttackable(target, bot, inVehicle))
+        {
+            return false;
+        }
+
+        // If the target is not visible (to the owner bot)
+        if (!target->IsVisibleForOrDetect(bot, bot->GetCamera().GetBody(), true))
+        {
+            return false;
+        }
+
+        // This will be used on both enemy player and npc checks
+        const bool inPvPProhibitedZone = sPlayerbotAIConfig.IsInPvpProhibitedZone(sServerFacade.GetAreaId(target));
+
+        // If the target is a player
+        Player* enemyPlayer = dynamic_cast<Player*>(target);
+        if (enemyPlayer)
+        {
+            // If the enemy player is in a PVP Prohibited zone
+            if (inPvPProhibitedZone)
+            {
+                return false;
+            }
+
+            // If the enemy player is not within PvP distance (from the owner bot)
+            const uint32 pvpDistance = (inVehicle || bot->GetHealth() > enemyPlayer->GetHealth()) ? EnemyPlayerValue::GetMaxAttackDistance(bot) : 20.0f;
+            if (!bot->IsWithinDist(enemyPlayer, pvpDistance, false))
+            {
+                return false;
+            }
+        }
+        // If the target is a NPC
+        else
+        {
+            // If the target is not fighting the player (and if the owner bot is not pulling the target)
+            if (!InCombat(target, player, (bot == player)))
+            {
+                return false;
+            }
+
+            // If the target is a player's pet and in a PvP prohibited zone
+            if (target->GetObjectGuid().IsPet() && inPvPProhibitedZone)
+            {
+                return false;
+            }
+
+            // If the target is evading
+            const Creature* creature = dynamic_cast<Creature*>(target);
+            if(creature)
+            {
+                if(creature->GetCombatManager().IsInEvadeMode())
+                {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    return false;
+}
+
+bool AttackersValue::IsValid(Unit* target, Player* player, bool checkInCombat)
+{
+    // If the target is available
+    if (target && target->IsInWorld() && (target->GetMapId() == player->GetMapId()))
+    {
+        // If the target is dead
+        if (sServerFacade.UnitIsDead(target))
+        {
+            return false;
+        }
+
+        // If the target is friendly
+        if (AttackersValue::IsFriendly(target, player))
+        {
+            return false;
+        }
+
+        // If the target can't be attacked
+        const bool inVehicle = player->GetPlayerbotAI() && player->GetPlayerbotAI()->IsInVehicle();
+        if (!AttackersValue::IsAttackable(target, player, inVehicle))
+        {
+            return false;
+        }
+
+        // If the target is not visible (to the owner bot)
+        if (!target->IsVisibleForOrDetect(player, player->GetCamera().GetBody(), true))
+        {
+            return false;
+        }
+
+        // This will be used on both enemy player and npc checks
+        const bool inPvPProhibitedZone = sPlayerbotAIConfig.IsInPvpProhibitedZone(sServerFacade.GetAreaId(target));
+
+        // If the target is a player
+        Player* enemyPlayer = dynamic_cast<Player*>(target);
+        if (enemyPlayer)
+        {
+            // If the enemy player is in a PVP Prohibited zone
+            if (inPvPProhibitedZone)
+            {
+                return false;
+            }
+
+            // If the enemy player is not within PvP distance (from the owner bot)
+            const uint32 pvpDistance = (inVehicle || player->GetHealth() > enemyPlayer->GetHealth()) ? EnemyPlayerValue::GetMaxAttackDistance(player) : 20.0f;
+            if (!player->IsWithinDist(enemyPlayer, pvpDistance, false))
+            {
+                return false;
+            }
+        }
+        // If the target is a NPC
+        else
+        {
+            // If the target is not fighting the player (and if the owner bot is not pulling the target)
+            if (checkInCombat && !AttackersValue::InCombat(target, player))
+            {
+                return false;
+            }
+
+            // If the target is a player's pet and in a PvP prohibited zone
+            if (target->GetObjectGuid().IsPet() && inPvPProhibitedZone)
+            {
+                return false;
+            }
+
+            // If the target is evading
+            const Creature* creature = dynamic_cast<Creature*>(target);
+            if (creature)
+            {
+                if (creature->GetCombatManager().IsInEvadeMode())
+                {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
     return false;
 }

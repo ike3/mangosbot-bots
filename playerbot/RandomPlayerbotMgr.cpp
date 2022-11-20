@@ -469,11 +469,6 @@ void RandomPlayerbotMgr::LogPlayerLocation()
 
 void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed, bool minimal)
 {
-    if (totalPmo)
-        totalPmo->finish();
-
-    totalPmo = sPerformanceMonitor.start(PERF_MON_TOTAL, "RandomPlayerbotMgr::FullTick");
-
     if (!sPlayerbotAIConfig.randomBotAutologin || !sPlayerbotAIConfig.enabled)
         return;
   
@@ -493,13 +488,8 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed, bool minimal)
 
     if (sPlayerbotAIConfig.hasLog("activity_pid.csv"))
     {
-        WorldPosition dummy;
-
         ostringstream out;
-        out << sPlayerbotAIConfig.GetTimestampStr() << "+00,";
-        out << std::fixed << std::setprecision(2);
-
-        dummy.printWKT(out);
+        out << sWorld.GetCurrentMSTime() << ", ";
 
         out << sWorld.GetCurrentDiff() << ",";
         out << sWorld.GetAverageDiff() << ",";
@@ -507,7 +497,38 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed, bool minimal)
         out << activityPercentage << ",";
         out << activityPercentageMod << ",";
         out << activeBots << ",";
-        out << playerBots.size();
+        out << playerBots.size() << ",";
+
+        float level = 0, gold = 0, gearscore = 0;
+
+        if (sPlayerbotAIConfig.randomBotAutologin)
+            for (auto i : GetAllBots())
+            {
+                Player* bot = i.second;
+                if (!bot)
+                    continue;
+
+                if (!bot->GetPlayerbotAI()->AllowActivity())
+                    continue;
+
+                string bracket = "level:" + to_string(bot->GetLevel() / 10);
+
+                float level = ((float)bot->GetLevel() + (bot->GetUInt32Value(PLAYER_NEXT_LEVEL_XP) ? ((float)bot->GetUInt32Value(PLAYER_XP) / (float)bot->GetUInt32Value(PLAYER_NEXT_LEVEL_XP)) : 0));
+                float gold = bot->GetMoney() / 10000;
+                float gearscore = bot->GetPlayerbotAI()->GetEquipGearScore(bot, false, false);
+
+                PushMetric(botPerformanceMetrics[bracket], i.first, level);
+                PushMetric(botPerformanceMetrics["gold"], i.first, gold);
+                PushMetric(botPerformanceMetrics["gearscore"], i.first, gearscore);
+            }    
+
+        out << std::fixed << std::setprecision(4);
+                
+        for (uint8 i = 0; i < (DEFAULT_MAX_LEVEL / 10) + 1; i++)
+            out << GetMetricDelta(botPerformanceMetrics["level:" + to_string(i)]) * 12 * 60 << ",";
+
+        out << GetMetricDelta(botPerformanceMetrics["gold"]) * 12 * 60 << ",";
+        out << GetMetricDelta(botPerformanceMetrics["gearscore"]) * 12 * 60;
 
         sPlayerbotAIConfig.log("activity_pid.csv", out.str().c_str());
     }
@@ -564,7 +585,7 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed, bool minimal)
 
     uint32 maxNewBots = onlineBotCount < maxAllowedBotCount ? maxAllowedBotCount - onlineBotCount : 0;
     int32 loginBotsTemp = sPlayerbotAIConfig.randomBotsPerInterval - updateBots;
-    uint32 loginBots = uint32(loginBotsTemp < 0 ? uint32(1) : uint32(loginBotsTemp));
+    uint32 loginBots = uint32(loginBotsTemp < 0 ? uint32(1) : uint32(loginBotsTemp)) * sPlayerbotAIConfig.randomBotsLoginSpeed;
     loginBots = std::min(loginBots, maxNewBots);
 
    //More options to scale based on activity. Currently disabled.
@@ -2467,7 +2488,7 @@ bool RandomPlayerbotMgr::HandlePlayerbotConsoleCommand(ChatHandler* handler, cha
     if (cmd.find("pid ") != std::string::npos)
     {
         string pids = cmd.substr(4);
-        vector<string> pid = Qualified::getMultiQualifiers(pids);
+        vector<string> pid = Qualified::getMultiQualifiers(pids, " ");
 
         if (pid.size() == 0)
             pid.push_back("0");
@@ -2486,7 +2507,7 @@ bool RandomPlayerbotMgr::HandlePlayerbotConsoleCommand(ChatHandler* handler, cha
     if (cmd.find("diff ") != std::string::npos)
     {
         string diffs = cmd.substr(4);
-        vector<string> diff = Qualified::getMultiQualifiers(diffs);
+        vector<string> diff = Qualified::getMultiQualifiers(diffs, " ");
         if (diff.size() == 0)
             diff.push_back("100");
         if (diff.size() == 1)
@@ -3239,4 +3260,30 @@ void RandomPlayerbotMgr::Hotfix(Player* bot, uint32 version)
     SetValue(bot, "version", MANGOSBOT_VERSION);
     sLog.outBasic("Bot %d hotfix v%d applied",
         bot->GetGUIDLow(), MANGOSBOT_VERSION);
+}
+
+typedef std::unordered_map <uint32, list<float>> botPerformanceMetric;
+std::unordered_map<string, botPerformanceMetric> botPerformanceMetrics;
+
+void RandomPlayerbotMgr::PushMetric(botPerformanceMetric& metric, const uint32 bot, const float value, uint32 maxNum) const
+{
+    metric[bot].push_back(value);
+
+    if (metric[bot].size() > maxNum)
+        metric[bot].pop_front();
+}
+
+float RandomPlayerbotMgr::GetMetricDelta(botPerformanceMetric& metric) const
+{
+    float deltaMetric = 0;
+    for (auto& botMetric : metric)
+    {
+        if (botMetric.second.size() > 1)
+            deltaMetric += (botMetric.second.back() - botMetric.second.front()) / botMetric.second.size();
+    }
+
+    if (metric.empty())
+        return 0;
+
+    return deltaMetric / metric.size();
 }

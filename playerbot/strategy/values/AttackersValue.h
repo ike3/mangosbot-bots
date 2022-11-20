@@ -1,33 +1,37 @@
 #pragma once
 #include "../Value.h"
-#include "TargetValue.h"
-#include "NearestUnitsValue.h"
+#include "../../PlayerbotAIConfig.h"
 
 namespace ai
 {
-    class AttackersValue : public ObjectGuidListCalculatedValue
+    // List of hostile targets that are in combat with the bot (or bot group)
+    class AttackersValue : public ObjectGuidListCalculatedValue, public Qualified
 	{
+        struct AddGuardiansHelper
+        {
+            explicit AddGuardiansHelper(list<Unit*>& units) : units(units) {}
+            void operator()(Unit* target) const
+            {
+                units.push_back(target);
+            }
+
+            list<Unit*>& units;
+        };
+
 	public:
         AttackersValue(PlayerbotAI* ai) : ObjectGuidListCalculatedValue(ai, "attackers") {}
         list<ObjectGuid> Calculate();
 
+        static bool IsValid(Unit* target, Player* player, bool checkInCombat = true);
+
 	private:
-        void AddAttackersOf(Group* group, set<Unit*>& targets);
-        void AddAttackersOf(Player* player, set<Unit*>& targets);
-		void RemoveNonThreating(set<Unit*>& targets);
+        void AddTargetsOf(Group* group, set<Unit*>& targets, bool getOne = false);
+        void AddTargetsOf(Player* player, set<Unit*>& targets, bool getOne = false);
+        float GetRange() const { return sPlayerbotAIConfig.sightDistance; }
+        bool IsPossibleTarget(Unit* target, Player* player) const;
 
-    public:
-        static bool HasIgnoreCCRti(Unit* attacker, Player* player);
-        static bool HasBreakableCC(Unit* attacker, Player* player);
-        static bool HasUnBreakableCC(Unit* attacker, Player* player);
-        static bool IsPossibleTarget(Unit* attacker, Player *player, float range = sPlayerbotAIConfig.sightDistance, bool ignoreCC = false);
-        static bool IsValidTarget(Unit* attacker, Player* player, bool ignoreCC = false);
-    };
-
-    class PossibleAddsValue : public BoolCalculatedValue
-    {
-    public:
-        PossibleAddsValue(PlayerbotAI* const ai, string name = "possible adds") : BoolCalculatedValue(ai, name) {}
-        virtual bool Calculate();
+        static bool IsFriendly(Unit* target, Player* player);
+        static bool IsAttackable(Unit* target, Player* player, bool inVehicle = false);
+        static bool InCombat(Unit* target, Player* player, bool checkPullTargets = true);
     };
 }

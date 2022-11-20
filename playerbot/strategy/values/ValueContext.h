@@ -24,7 +24,7 @@
 #include "PartyMemberToDispel.h"
 #include "StatsValues.h"
 #include "AttackerCountValues.h"
-#include "AttackersValue.h"
+#include "PossibleAttackTargetsValue.h"
 #include "AvailableLootValue.h"
 #include "AlwaysLootListValue.h"
 #include "LootStrategyValue.h"
@@ -84,8 +84,9 @@
 #include "RTSCValues.h"
 #include "VendorValues.h"
 #include "TrainerValues.h"
-#include "CombatTargetsValue.h"
+#include "AttackersValue.h"
 #include "WaitForAttackTimeValue.h"
+#include "LastPotionUsedTimeValue.h"
 
 namespace ai
 {
@@ -184,6 +185,7 @@ namespace ai
             creators["spell cast useful"] = &ValueContext::spell_cast_useful;
             creators["last spell cast"] = &ValueContext::last_spell_cast;
             creators["last spell cast time"] = &ValueContext::last_spell_cast_time;
+            creators["last potion used time"] = &ValueContext::last_potion_used_time;
             creators["chat"] = &ValueContext::chat;
             creators["has totem"] = &ValueContext::has_totem;
             creators["have any totem"] = &ValueContext::have_any_totem;
@@ -199,8 +201,8 @@ namespace ai
             creators["threat"] = &ValueContext::threat;
 
             creators["balance"] = &ValueContext::balance;
+            creators["possible attack targets"] = &ValueContext::possible_attack_targets;
             creators["attackers"] = &ValueContext::attackers;
-            creators["combat targets"] = &ValueContext::combat_targets;
             creators["invalid target"] = &ValueContext::invalid_target;
             creators["mana save level"] = &ValueContext::mana_save_level;
             creators["combat"] = &ValueContext::combat;
@@ -233,6 +235,7 @@ namespace ai
             creators["travel target"] = &ValueContext::travel_target;
             creators["talk target"] = &ValueContext::talk_target;
             creators["attack target"] = &ValueContext::attack_target;
+            creators["pull target"] = &ValueContext::pull_target;
             creators["group"] = &ValueContext::group;
             creators["range"] = &ValueContext::range;
             creators["inside target"] = &ValueContext::inside_target;
@@ -338,8 +341,8 @@ namespace ai
         static UntypedValue* mana_save_level(PlayerbotAI* ai) { return new ManaSaveLevelValue(ai); }
         static UntypedValue* invalid_target(PlayerbotAI* ai) { return new InvalidTargetValue(ai); }
         static UntypedValue* balance(PlayerbotAI* ai) { return new BalancePercentValue(ai); }
+        static UntypedValue* possible_attack_targets(PlayerbotAI* ai) { return new PossibleAttackTargetsValue(ai); }
         static UntypedValue* attackers(PlayerbotAI* ai) { return new AttackersValue(ai); }
-        static UntypedValue* combat_targets(PlayerbotAI* ai) { return new CombatTargetsValue(ai); }
 
         static UntypedValue* position(PlayerbotAI* ai) { return new PositionValue(ai); }
         static UntypedValue* current_position(PlayerbotAI* ai) { return new CurrentPositionValue(ai); }
@@ -353,6 +356,7 @@ namespace ai
         static UntypedValue* chat(PlayerbotAI* ai) { return new ChatValue(ai); }
         static UntypedValue* last_spell_cast(PlayerbotAI* ai) { return new LastSpellCastValue(ai); }
         static UntypedValue* last_spell_cast_time(PlayerbotAI* ai) { return new LastSpellCastTimeValue(ai); }
+        static UntypedValue* last_potion_used_time(PlayerbotAI* ai) { return new LastPotionUsedTimeValue(ai); }
         static UntypedValue* spell_cast_useful(PlayerbotAI* ai) { return new SpellCastUsefulValue(ai); }
         static UntypedValue* item_for_spell(PlayerbotAI* ai) { return new ItemForSpellValue(ai); }
         static UntypedValue* spell_id(PlayerbotAI* ai) { return new SpellIdValue(ai); }
@@ -461,6 +465,7 @@ namespace ai
         static UntypedValue* travel_target(PlayerbotAI* ai) { return new TravelTargetValue(ai); }
         static UntypedValue* talk_target(PlayerbotAI* ai) { return new TalkTargetValue(ai); }
         static UntypedValue* attack_target(PlayerbotAI* ai) { return new AttackTargetValue(ai); }
+        static UntypedValue* pull_target(PlayerbotAI* ai) { return new PullTargetValue(ai); }
         static UntypedValue* death_count(PlayerbotAI* ai) { return new DeathCountValue(ai); }
 
         static UntypedValue* last_long_move(PlayerbotAI* ai) { return new LastLongMoveValue(ai); }

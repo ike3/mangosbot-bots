@@ -75,7 +75,7 @@ bool OutNumberedTrigger::IsActive()
     int32 botLevel = bot->GetLevel();
     float healthMod = bot->GetHealthPercent() / 100.0f;
     uint32 friendPower = 100 + 100 * healthMod, foePower = 0;
-    for (auto &attacker : ai->GetAiObjectContext()->GetValue<list<ObjectGuid> >("attackers")->Get())
+    for (auto &attacker : ai->GetAiObjectContext()->GetValue<list<ObjectGuid>>("possible attack targets")->Get())
     {
         Creature* creature = ai->GetCreature(attacker);
         if (!creature)

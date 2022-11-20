@@ -23,8 +23,8 @@ struct PerformanceData
 
 enum PerformanceMetric
 {
-    PERF_MON_TRIGGER,
     PERF_MON_VALUE,
+    PERF_MON_TRIGGER,
     PERF_MON_ACTION,
     PERF_MON_RNDBOT,
     PERF_MON_TOTAL

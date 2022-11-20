@@ -578,6 +578,8 @@ AiPlayerbot.PerfMonEnabled = 0
 # Instant randomize: Force randombots to randomize on initial login.
 # AiPlayerbot.InstantRandomize = 0
 
+# Randombot login speed: Speeds up randombot logins without changing the randombot update interval.
+# AiPlayerbot.RandomBotsLoginSpeed = 1.0
 
 # Bot cheats. Same as "/w <bot> cheat (+/-/?) <cheatcode>" but only globally for all bots.
 # Values: taxi (all nodes learned), supply (auto supply items in bg), gold (free repair, vendor, ect.), health (fast regen), mana (fast regen), power (fast regen)

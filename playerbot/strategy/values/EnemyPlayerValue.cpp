@@ -29,9 +29,9 @@ bool NearestEnemyPlayersValue::AcceptUnit(Unit* unit)
         !enemy->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_1) &&
         !enemy->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_UNTARGETABLE) &&
         ((inCannon || !enemy->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_UNINTERACTIBLE))) &&
-        !enemy->HasStealthAura() &&
-        !enemy->HasInvisibilityAura() &&
-        enemy->IsVisibleForOrDetect(bot, bot->GetCamera().GetBody(), false) &&
+        //!enemy->HasStealthAura() &&
+        //!enemy->HasInvisibilityAura() &&
+        enemy->IsVisibleForOrDetect(bot, bot->GetCamera().GetBody(), true) &&
         !enemy->HasAuraType(SPELL_AURA_SPIRIT_OF_REDEMPTION)
         );
 }
