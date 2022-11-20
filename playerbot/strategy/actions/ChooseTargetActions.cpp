@@ -74,10 +74,6 @@ bool ai::AttackAnythingAction::Execute(Event& event)
 
 bool AttackEnemyPlayerAction::isUseful()
 {
-    // if carry flag, do not start fight
-    if (bot->HasAura(23333) || bot->HasAura(23335) || bot->HasAura(34976))
-        return false;
-
     return !sPlayerbotAIConfig.IsInPvpProhibitedZone(sServerFacade.GetAreaId(bot));
 }
 
