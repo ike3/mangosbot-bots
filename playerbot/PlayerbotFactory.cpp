@@ -174,17 +174,18 @@ void PlayerbotFactory::Randomize(bool incremental)
     PerformanceMonitorOperation* pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Reset");
     //ClearSkills();
     ClearSpells();
-    if (!incremental)
-    {
-        InitQuests(specialQuestIds);
-        bot->learnQuestRewardedSpells();
-    }
+
     if (!incremental && isRandomBot)
     {
         ClearInventory();
         ResetQuests();
         bot->resetTalents(true);
         CancelAuras();
+    }
+    if (!incremental)
+    {
+        InitQuests(specialQuestIds);
+        bot->learnQuestRewardedSpells();
     }
     if (pmo) pmo->finish();
 
