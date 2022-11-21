@@ -198,6 +198,8 @@ namespace ai
             creators["current position"] = &ValueContext::current_position;
             creators["master position"] = &ValueContext::master_position;
             creators["custom position"] = &ValueContext::custom_position;
+            creators["my threat"] = &ValueContext::my_threat;
+            creators["tank threat"] = &ValueContext::tank_threat;
             creators["threat"] = &ValueContext::threat;
 
             creators["balance"] = &ValueContext::balance;
@@ -440,6 +442,8 @@ namespace ai
         static UntypedValue* duel_target(PlayerbotAI* ai) { return new DuelTargetValue(ai); }
         static UntypedValue* has_totem(PlayerbotAI* ai) { return new HasTotemValue(ai); }
         static UntypedValue* have_any_totem(PlayerbotAI* ai) { return new HaveAnyTotemValue(ai); }
+        static UntypedValue* my_threat(PlayerbotAI* ai) { return new MyThreatValue(ai); }
+        static UntypedValue* tank_threat(PlayerbotAI* ai) { return new TankThreatValue(ai); }
         static UntypedValue* threat(PlayerbotAI* ai) { return new ThreatValue(ai); }
         static UntypedValue* combat(PlayerbotAI* ai) { return new IsInCombatValue(ai); }
         static UntypedValue* lfg_proposal(PlayerbotAI* ai) { return new LfgProposalValue(ai); }
