@@ -473,6 +473,7 @@ public:
     
 private:
     bool UpdateAIReaction(uint32 elapsed, bool minimal = false);
+    void UpdateFaceTarget(uint32 elapsed, bool minimal);
 
 protected:
 	Player* bot;
@@ -501,6 +502,7 @@ protected:
     bool isWaiting = false;
     BotCheatMask cheatMask = BotCheatMask::none;
     Position jumpDestination = Position();
+    uint32 faceTargetUpdateDelay;
 };
 
 template<typename T>
