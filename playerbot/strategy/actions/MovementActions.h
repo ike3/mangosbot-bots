@@ -6,7 +6,8 @@
 
 namespace ai
 {
-    class MovementAction : public Action {
+    class MovementAction : public Action 
+    {
     public:
         MovementAction(PlayerbotAI* ai, string name) : Action(ai, name) {}
 
@@ -37,12 +38,10 @@ namespace ai
     class FleeAction : public MovementAction
     {
     public:
-        FleeAction(PlayerbotAI* ai, float distance = sPlayerbotAIConfig.spellDistance) : MovementAction(ai, "flee")
-        {
-			this->distance = distance;
-		}
+        FleeAction(PlayerbotAI* ai, float distance = sPlayerbotAIConfig.spellDistance) : MovementAction(ai, "flee"), distance(distance) {}
 
         virtual bool Execute(Event& event);
+        virtual bool isPossible();
 
 	private:
 		float distance;

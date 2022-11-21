@@ -1599,6 +1599,15 @@ bool FleeAction::Execute(Event& event)
     return Flee(AI_VALUE(Unit*, "current target"));
 }
 
+bool FleeAction::isPossible()
+{
+    // Do not move if stay strategy is set
+    if (ai->HasStrategy("stay", BotState::BOT_STATE_NON_COMBAT))
+        return false;
+
+    return true;
+}
+
 bool FleeWithPetAction::Execute(Event& event)
 {
     Pet* pet = bot->GetPet();
