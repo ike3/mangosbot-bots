@@ -71,6 +71,7 @@ namespace ai
             creators["cast"] = &ChatTriggerContext::cast;
             creators["castnc"] = &ChatTriggerContext::castnc;
             creators["invite"] = &ChatTriggerContext::invite;
+            creators["join"] = &ChatTriggerContext::join;
             creators["spell"] = &ChatTriggerContext::spell;
             creators["rti"] = &ChatTriggerContext::rti;
             creators["revive"] = &ChatTriggerContext::revive;
@@ -105,6 +106,7 @@ namespace ai
             creators["ah"] = &ChatTriggerContext::ah;
             creators["ah bid"] = &ChatTriggerContext::ah_bid;
             creators["ginvite"] = &ChatTriggerContext::ginvite;
+            creators["gjoin"] = &ChatTriggerContext::gjoin;
             creators["guild promote"] = &ChatTriggerContext::guild_promote;
             creators["guild demote"] = &ChatTriggerContext::guild_demote;
             creators["guild remove"] = &ChatTriggerContext::guild_remove;
@@ -140,6 +142,7 @@ namespace ai
         static Trigger* revive(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "revive"); }
         static Trigger* rti(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "rti"); }
         static Trigger* invite(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "invite"); }
+        static Trigger* join(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "join"); }
         static Trigger* cast(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "cast"); }
         static Trigger* castnc(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "castnc"); }
         static Trigger* talk(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "talk"); }
@@ -200,6 +203,7 @@ namespace ai
         static Trigger* cheat(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "cheat"); }
         static Trigger* rtsc(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "rtsc"); }
         static Trigger* ginvite(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "ginvite"); }
+        static Trigger* gjoin(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "gjoin"); }
         static Trigger* ah(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "ah"); }
         static Trigger* ah_bid(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "ah bid"); }
         static Trigger* guild_promote(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "guild promote"); }

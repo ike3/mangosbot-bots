@@ -60,10 +60,9 @@ bool GuidManageAction::Execute(Event& event)
     if (!player || !PlayerIsValid(player) || player == bot)
         return false;
 
-    WorldPacket data(Opcodes(opcode), 8);
-    data << player->GetName();
+    WorldPacket data = GetPacket(player);
 
-    SendPacket(data);
+    SendPacket(data, event);
 
     return true;
 }

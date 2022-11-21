@@ -12,12 +12,23 @@ namespace ai
         virtual bool Execute(Event& event)
         {
             Player* master = event.getOwner();
-            return Invite(master);
+            return Invite(bot, master);
         }
 
-        virtual bool Invite(Player* player);
+        virtual bool Invite(Player* inviter, Player* player);
     };
 
+    class JoinGroupAction : public InviteToGroupAction
+    {
+    public:
+        JoinGroupAction(PlayerbotAI* ai, string name = "join") : InviteToGroupAction(ai, name) {}
+
+        virtual bool Execute(Event& event)
+        {
+            Player* master = event.getOwner();
+            return Invite(master, bot);
+        }
+    };
 
     class InviteNearbyToGroupAction : public InviteToGroupAction
     {
