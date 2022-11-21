@@ -381,9 +381,9 @@ ActionResult Engine::ExecuteAction(string name, Event& event, string qualifier)
                 }
             }
 
-            if (action->isPossible())
+            if (action->isUseful())
             {
-                if (action->isUseful())
+                if (action->isPossible())
                 {
                     action->MakeVerbose();
                     bool executionResult = ListenAndExecute(action, event);
@@ -392,12 +392,12 @@ ActionResult Engine::ExecuteAction(string name, Event& event, string qualifier)
                 }
                 else
                 {
-                    actionResult = ACTION_RESULT_USELESS;
+                    actionResult = ACTION_RESULT_IMPOSSIBLE;
                 }
             }
             else
             {
-                actionResult = ACTION_RESULT_IMPOSSIBLE;
+                actionResult = ACTION_RESULT_USELESS;
             }
 
             if (qualified)
