@@ -371,9 +371,10 @@ ActionResult Engine::ExecuteAction(string name, Event& event, string qualifier)
         Action* action = InitializeAction(actionNode);
         if (action)
         {
+            Qualified* qualified = nullptr;
             if (!qualifier.empty())
             {
-                Qualified* qualified = dynamic_cast<Qualified*>(action);
+                qualified = dynamic_cast<Qualified*>(action);
                 if (qualified)
                 {
                     qualified->Qualify(qualifier);
@@ -398,6 +399,11 @@ ActionResult Engine::ExecuteAction(string name, Event& event, string qualifier)
             {
                 actionResult = ACTION_RESULT_IMPOSSIBLE;
             }
+
+            if (qualified)
+            {
+                qualified->Reset();
+            }
         }
 
         delete actionNode;
@@ -415,9 +421,10 @@ bool Engine::CanExecuteAction(string name, string qualifier, bool isPossible, bo
         Action* action = InitializeAction(actionNode);
         if (action)
         {
+            Qualified* qualified = nullptr;
             if (!qualifier.empty())
             {
-                Qualified* qualified = dynamic_cast<Qualified*>(action);
+                qualified = dynamic_cast<Qualified*>(action);
                 if (qualified)
                 {
                     qualified->Qualify(qualifier);
@@ -432,6 +439,11 @@ bool Engine::CanExecuteAction(string name, string qualifier, bool isPossible, bo
             if (isUseful)
             {
                 result &= action->isUseful();
+            }
+
+            if (qualified)
+            {
+                qualified->Reset();
             }
         }
 

@@ -17,6 +17,7 @@ namespace ai
         virtual void Qualify(int32 qualifier) { ostringstream out; out << qualifier; this->qualifier = out.str(); }
         virtual void Qualify(string qualifier) { this->qualifier = qualifier; }
         string getQualifier() { return qualifier; }
+        void Reset() { qualifier.clear(); }
 
         static string MultiQualify(vector<string> qualifiers, string separator)
         { 
@@ -47,6 +48,7 @@ namespace ai
         
         static int32 getMultiQualifierInt(string qualifier1, uint32 pos, string separator) { return stoi(getMultiQualifiers(qualifier1, separator)[pos]); }
         static string getMultiQualifierStr(string qualifier1, uint32 pos, string separator) { return getMultiQualifiers(qualifier1, separator)[pos]; }
+    
     protected:
         string qualifier;
     };
