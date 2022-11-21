@@ -367,13 +367,8 @@ void PlayerbotAI::UpdateFaceTarget(uint32 elapsed, bool minimal)
         // Only update the target facing when in combat
         if (IsStateActive(BotState::BOT_STATE_COMBAT))
         {
-            // Check if the bot is currently moving
-            const bool isMoving = !bot->IsStopped() ||
-                                  (!bot->GetMotionMaster()->empty() &&
-                                  (bot->GetMotionMaster()->top()->GetMovementGeneratorType() != IDLE_MOTION_TYPE));
-
-            // Don't update facing if moving
-            if (!isMoving)
+            // Don't update facing if bot is moving
+            if (bot->IsStopped())
             {
                 AiObjectContext* context = GetAiObjectContext();
                 if (!AI_VALUE2(bool, "facing", "current target"))
@@ -2613,15 +2608,9 @@ bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target, Item* itemTarget)
         }
     }
 
-    bool isMoving = false;
-    if (!bot->GetMotionMaster()->empty())
-        if (bot->GetMotionMaster()->top()->GetMovementGeneratorType() != IDLE_MOTION_TYPE)
-            isMoving = true;
-
-    if (!bot->IsStopped())
-        isMoving = true;
-
-    if (isMoving && ((spell->GetCastTime() || (IsChanneledSpell(pSpellInfo)) && GetSpellDuration(pSpellInfo) > 0)))
+    // Fail the cast if the bot is moving and the spell is a casting/channeled spell
+    const bool isMoving = !bot->IsStopped();
+    if (isMoving && ((GetSpellCastTime(pSpellInfo, bot, spell) > 0) || (IsChanneledSpell(pSpellInfo) && (GetSpellDuration(pSpellInfo) > 0))))
     {
         StopMoving();
         SetAIInternalUpdateDelay(sPlayerbotAIConfig.globalCoolDown);
@@ -2630,12 +2619,7 @@ bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target, Item* itemTarget)
         return false;
     }
 
-#ifdef MANGOS
-    spell->prepare(&targets);
-#endif
-#ifdef CMANGOS
     SpellCastResult spellSuccess = spell->SpellStart(&targets);
-#endif
 
     if (pSpellInfo->Effect[0] == SPELL_EFFECT_OPEN_LOCK ||
         pSpellInfo->Effect[0] == SPELL_EFFECT_SKINNING)
