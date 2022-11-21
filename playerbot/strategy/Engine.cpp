@@ -689,6 +689,20 @@ bool Engine::ListenAndExecute(Action* action, Event& event)
         ai->TellMasterNoFacing(out);
     }
 
+    if (ai->HasStrategy("debug threat", BotState::BOT_STATE_NON_COMBAT))
+    {
+        ostringstream out;
+        AiObjectContext* context = ai->GetAiObjectContext();
+
+        float currentThreat = AI_VALUE2(float, "my threat", "current target");
+        float tankThreat = AI_VALUE2(float, "tank threat", "current target");
+        float relThreat = AI_VALUE2(uint8, "threat", "current target");
+
+        out << "threat: " << currentThreat << "/" << tankThreat << ": " << relThreat;
+
+        ai->TellMasterNoFacing(out);
+    }
+
     actionExecuted = actionExecutionListeners.OverrideResult(action, actionExecuted, event);
     actionExecutionListeners.After(action, actionExecuted, event);
     return actionExecuted;
