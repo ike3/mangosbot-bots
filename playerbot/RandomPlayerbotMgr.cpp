@@ -278,7 +278,7 @@ RandomPlayerbotMgr::RandomPlayerbotMgr() : PlayerbotHolder(), processTicks(0), l
         //1) Proportional: Amount activity is adjusted based on diff being above or below wanted diff. (100 wanted diff & 0.1 p = 150 diff = -5% activity)
         //2) Integral: Same as proportional but builds up each tick. (100 wanted diff & 0.01 i = 150 diff = -0.5% activity each tick)
         //3) Derative: Based on speed of diff. (+5 diff last tick & 0.05 d = -0.25% activity)
-        pid.adjust(0.05,0.01,0.05);
+        pid.adjust(0.05,0.01,0.2);
         BgCheckTimer = 0;
         LfgCheckTimer = 0;
         PlayersCheckTimer = 0;
@@ -2506,7 +2506,7 @@ bool RandomPlayerbotMgr::HandlePlayerbotConsoleCommand(ChatHandler* handler, cha
 
     if (cmd.find("diff ") != std::string::npos)
     {
-        string diffs = cmd.substr(4);
+        string diffs = cmd.substr(5);
         vector<string> diff = Qualified::getMultiQualifiers(diffs, " ");
         if (diff.size() == 0)
             diff.push_back("100");
