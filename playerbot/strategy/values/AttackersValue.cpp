@@ -254,11 +254,15 @@ bool AttackersValue::IsPossibleTarget(Unit* target, Player* player) const
                 return false;
             }
 
-            // If the enemy player is not within PvP distance (from the owner bot)
-            const uint32 pvpDistance = (inVehicle || bot->GetHealth() > enemyPlayer->GetHealth()) ? EnemyPlayerValue::GetMaxAttackDistance(bot) : 20.0f;
-            if (!bot->IsWithinDist(enemyPlayer, pvpDistance, false))
+            // Don't check distance on duel opponents
+            if(player->duel && (player->duel->opponent != target))
             {
-                return false;
+                // If the enemy player is not within PvP distance (from the owner bot)
+                const uint32 pvpDistance = (inVehicle || bot->GetHealth() > enemyPlayer->GetHealth()) ? EnemyPlayerValue::GetMaxAttackDistance(bot) : 20.0f;
+                if (!bot->IsWithinDist(enemyPlayer, pvpDistance, false))
+                {
+                    return false;
+                }
             }
         }
         // If the target is a NPC
