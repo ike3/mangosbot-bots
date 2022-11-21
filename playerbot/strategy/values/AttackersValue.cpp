@@ -187,8 +187,20 @@ bool AttackersValue::IsAttackable(Unit* target, Player* player, bool inVehicle)
 
 bool AttackersValue::InCombat(Unit* target, Player* player, bool checkPullTargets)
 {
+    // Check if the the target is attacking the player
     bool inCombat = (target->getThreatManager().getThreat(player) > 0.0f) ||
                     (target->GetVictim() && (target->GetVictim() == player));
+
+    // Check if the target is attacking the player's pet
+    if(!inCombat)
+    {
+        Pet* pet = player->GetPet();
+        if (pet)
+        {
+            inCombat = (target->getThreatManager().getThreat(pet) > 0.0f) ||
+                       (target->GetVictim() && (target->GetVictim() == pet));
+        }
+    }
 
     if(!inCombat && checkPullTargets && player->GetPlayerbotAI())
     {
