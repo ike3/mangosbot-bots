@@ -133,6 +133,7 @@ namespace ai
             creators["cast custom spell"] = &ChatActionContext::cast_custom_spell;
             creators["cast custom nc spell"] = &ChatActionContext::cast_custom_nc_spell;
             creators["invite"] = &ChatActionContext::invite;
+            creators["join"] = &ChatActionContext::join;
             creators["spell"] = &ChatActionContext::spell;
             creators["rti"] = &ChatActionContext::rti;
             creators["spirit healer"] = &ChatActionContext::spirit_healer;
@@ -164,6 +165,7 @@ namespace ai
             creators["wait for attack time"] = &ChatActionContext::wait_for_attack_time;
 
             creators["ginvite"] = &ChatActionContext::ginvite;
+            creators["gjoin"] = &ChatActionContext::gjoin;
             creators["guild promote"] = &ChatActionContext::guild_promote;
             creators["guild demote"] = &ChatActionContext::guild_demote;
             creators["guild remove"] = &ChatActionContext::guild_remove;
@@ -195,6 +197,7 @@ namespace ai
         static Action* spirit_healer(PlayerbotAI* ai) { return new SpiritHealerAction(ai); }
         static Action* rti(PlayerbotAI* ai) { return new RtiAction(ai); }
         static Action* invite(PlayerbotAI* ai) { return new InviteToGroupAction(ai); }
+        static Action* join(PlayerbotAI* ai) { return new JoinGroupAction(ai); }
         static Action* spell(PlayerbotAI* ai) { return new TellSpellAction(ai); }
         static Action* cast_custom_spell(PlayerbotAI* ai) { return new CastCustomSpellAction(ai); }
         static Action* cast_custom_nc_spell(PlayerbotAI* ai) { return new CastCustomNcSpellAction(ai); }        
@@ -260,6 +263,7 @@ namespace ai
         static Action* wait_for_attack_time(PlayerbotAI* ai) { return new WaitForAttackSetTimeAction(ai); }
 
         static Action* ginvite(PlayerbotAI* ai) { return new GuildInviteAction(ai); }
+        static Action* gjoin(PlayerbotAI* ai) { return new GuildJoinAction(ai); }
         static Action* guild_promote(PlayerbotAI* ai) { return new GuildPromoteAction(ai); }
         static Action* guild_demote(PlayerbotAI* ai) { return new GuildDemoteAction(ai); }
         static Action* guild_remove(PlayerbotAI* ai) { return new GuildRemoveAction(ai); }

@@ -68,6 +68,17 @@ bool PullStartAction::Execute(Event& event)
         {
             result = true;
 
+            // Set the pet on passive mode during the pull
+            Pet* pet = bot->GetPet();
+            if (pet)
+            {
+                UnitAI* creatureAI = ((Creature*)pet)->AI();
+                if (creatureAI)
+                {
+                    creatureAI->SetReactState(REACT_PASSIVE);
+                }
+            }
+
             // Check if we are not on pull range
             const float distanceToTarget = target->GetDistance(bot);
             if (distanceToTarget > strategy->GetRange())
@@ -119,6 +130,17 @@ bool PullEndAction::Execute(Event& event)
     PullStrategy* strategy = PullStrategy::Get(ai);
     if (strategy)
     {
+        // Reset the pet to defensive mode
+        Pet* pet = bot->GetPet();
+        if (pet)
+        {
+            UnitAI* creatureAI = ((Creature*)pet)->AI();
+            if (creatureAI)
+            {
+                creatureAI->SetReactState(REACT_DEFENSIVE);
+            }
+        }
+
         strategy->OnPullEnded();
         return true;
     }

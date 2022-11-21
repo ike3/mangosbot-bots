@@ -94,6 +94,23 @@ bool UseItemAction::UseItemAuto(Item* item)
         }
     }
 
+    //Temporary fix for starting quests:
+    if (uint32 questid = item->GetProto()->StartQuest)
+    {
+        Quest const* qInfo = sObjectMgr.GetQuestTemplate(questid);
+        if (qInfo)
+        {
+            WorldPacket packet(CMSG_QUESTGIVER_ACCEPT_QUEST, 8 + 4 + 4);
+            packet << item_guid;
+            packet << questid;
+            packet << uint32(0);
+            bot->GetSession()->HandleQuestgiverAcceptQuestOpcode(packet);
+            ostringstream out; out << "Got quest " << chat->formatQuest(qInfo);
+            ai->TellMasterNoFacing(out.str(), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+            return true;
+        }
+    }
+
 #ifdef MANGOSBOT_ZERO
     WorldPacket packet(CMSG_USE_ITEM);
     packet << bagIndex << slot << spell_index;

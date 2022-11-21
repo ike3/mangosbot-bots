@@ -371,18 +371,19 @@ ActionResult Engine::ExecuteAction(string name, Event& event, string qualifier)
         Action* action = InitializeAction(actionNode);
         if (action)
         {
+            Qualified* qualified = nullptr;
             if (!qualifier.empty())
             {
-                Qualified* qualified = dynamic_cast<Qualified*>(action);
+                qualified = dynamic_cast<Qualified*>(action);
                 if (qualified)
                 {
                     qualified->Qualify(qualifier);
                 }
             }
 
-            if (action->isPossible())
+            if (action->isUseful())
             {
-                if (action->isUseful())
+                if (action->isPossible())
                 {
                     action->MakeVerbose();
                     bool executionResult = ListenAndExecute(action, event);
@@ -391,12 +392,17 @@ ActionResult Engine::ExecuteAction(string name, Event& event, string qualifier)
                 }
                 else
                 {
-                    actionResult = ACTION_RESULT_USELESS;
+                    actionResult = ACTION_RESULT_IMPOSSIBLE;
                 }
             }
             else
             {
-                actionResult = ACTION_RESULT_IMPOSSIBLE;
+                actionResult = ACTION_RESULT_USELESS;
+            }
+
+            if (qualified)
+            {
+                qualified->Reset();
             }
         }
 
@@ -415,9 +421,10 @@ bool Engine::CanExecuteAction(string name, string qualifier, bool isPossible, bo
         Action* action = InitializeAction(actionNode);
         if (action)
         {
+            Qualified* qualified = nullptr;
             if (!qualifier.empty())
             {
-                Qualified* qualified = dynamic_cast<Qualified*>(action);
+                qualified = dynamic_cast<Qualified*>(action);
                 if (qualified)
                 {
                     qualified->Qualify(qualifier);
@@ -432,6 +439,11 @@ bool Engine::CanExecuteAction(string name, string qualifier, bool isPossible, bo
             if (isUseful)
             {
                 result &= action->isUseful();
+            }
+
+            if (qualified)
+            {
+                qualified->Reset();
             }
         }
 
@@ -673,6 +685,20 @@ bool Engine::ListenAndExecute(Action* action, Event& event)
                 out << " (duration: " << ((float)actionDuration / IN_MILLISECONDS) << "s)";
             }
         }
+
+        ai->TellMasterNoFacing(out);
+    }
+
+    if (ai->HasStrategy("debug threat", BotState::BOT_STATE_NON_COMBAT))
+    {
+        ostringstream out;
+        AiObjectContext* context = ai->GetAiObjectContext();
+
+        float currentThreat = AI_VALUE2(float, "my threat", "current target");
+        float tankThreat = AI_VALUE2(float, "tank threat", "current target");
+        float relThreat = AI_VALUE2(uint8, "threat", "current target");
+
+        out << "threat: " << currentThreat << "/" << tankThreat << ": " << relThreat;
 
         ai->TellMasterNoFacing(out);
     }

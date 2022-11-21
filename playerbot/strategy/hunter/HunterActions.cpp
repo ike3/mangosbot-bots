@@ -7,12 +7,12 @@ using namespace ai;
 
 bool CastSerpentStingAction::isUseful()
 {
-    return AI_VALUE2(uint8, "health", "current target") > 50;
+    return AI_VALUE2(uint8, "health", GetTargetName()) > 50;
 }
 
 bool CastViperStingAction::isUseful()
 {
-    return AI_VALUE2(uint8, "mana", "current target") >= 10;
+    return AI_VALUE2(uint8, "mana", GetTargetName()) >= 10;
 }
 
 bool CastAspectOfTheCheetahAction::isUseful()

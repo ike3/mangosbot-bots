@@ -46,7 +46,7 @@ namespace ai
         virtual T Get()
         {
             time_t now = time(0);
-            if (!lastCheckTime || checkInterval < 2 || now - lastCheckTime >= checkInterval / 2)
+            if (!lastCheckTime || (checkInterval < 2 && (now - lastCheckTime > 0.1)) || now - lastCheckTime >= checkInterval / 2)
             {
                 lastCheckTime = now;
 
@@ -105,8 +105,12 @@ namespace ai
         virtual void Set(T value) { CalculatedValue<T>::Set(value); UpdateChange(); }
         virtual T Get() { this->value = CalculatedValue<T>::Get(); UpdateChange(); return this->value;}
 
-        time_t LastChangeOn() {Get(); UpdateChange(); return lastChangeTime;}
+        time_t LastChangeOn() {Get(); return lastChangeTime;}
         uint32 LastChangeDelay() { return time(0) - LastChangeOn(); }
+        T GetLastValue() { return lastValue; }
+        time_t GetLastTime() { return lastChangeTime; }
+
+        T GetDelta() { T lVal = lastValue; time_t lTime = lastChangeTime; if (lastChangeTime == time(0)) return Get(); return (Get() - lVal) / (time(0) - lTime); }
 
         virtual void Reset() { CalculatedValue<T>::Reset(); lastChangeTime = time(0); }
     protected:

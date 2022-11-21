@@ -39,7 +39,7 @@ namespace ai
             static Strategy* dps(PlayerbotAI* ai) { return new DpsHunterStrategy(ai); }
             static Strategy* nc(PlayerbotAI* ai) { return new GenericHunterNonCombatStrategy(ai); }
             static Strategy* react(PlayerbotAI* ai) { return new HunterReactionStrategy(ai); }
-            static Strategy* pull(PlayerbotAI* ai) { return new PullStrategy(ai, "auto shot"); }
+            static Strategy* pull(PlayerbotAI* ai) { return new PullStrategy(ai, "serpent sting"); }
             static Strategy* dps_debuff(PlayerbotAI* ai) { return new DpsHunterDebuffStrategy(ai); }
             static Strategy* boost(PlayerbotAI* ai) { return new HunterBoostStrategy(ai); }
             static Strategy* pet(PlayerbotAI* ai) { return new HunterPetStrategy(ai); }

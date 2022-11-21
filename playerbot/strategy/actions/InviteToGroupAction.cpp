@@ -10,7 +10,7 @@ using namespace ai;
 
 namespace ai
 {
-    bool InviteToGroupAction::Invite(Player* player)
+    bool InviteToGroupAction::Invite(Player* inviter, Player* player)
     {
         if (!player)
             return false;
@@ -22,7 +22,7 @@ namespace ai
         uint32 roles_mask = 0;
         p << player->GetName();
         p << roles_mask;
-        bot->GetSession()->HandleGroupInviteOpcode(p);
+        inviter->GetSession()->HandleGroupInviteOpcode(p);
 
         return true;
     }
@@ -71,7 +71,7 @@ namespace ai
             if (group && botAi->GetGrouperType() > GrouperType::LEADER_5 && !group->IsRaidGroup() && bot->GetGroup()->GetMembersCount() > 3)
                 bot->GetGroup()->ConvertToRaid();
 
-            return Invite(player);
+            return Invite(bot, player);
         }
 
         return false;
@@ -165,7 +165,7 @@ namespace ai
             if (!playerAi && sServerFacade.GetDistance2d(bot, player) > sPlayerbotAIConfig.sightDistance)
                 continue;
 
-            return Invite(player);
+            return Invite(bot, player);
         }
 
         return false;

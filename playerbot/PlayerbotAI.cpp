@@ -81,7 +81,7 @@ void PacketHandlingHelper::AddPacket(const WorldPacket& packet)
 
 
 PlayerbotAI::PlayerbotAI() : PlayerbotAIBase(), bot(NULL), aiObjectContext(NULL),
-    currentEngine(NULL), chatHelper(this), chatFilter(this), accountId(0), security(NULL), master(NULL), currentState(BotState::BOT_STATE_NON_COMBAT)
+    currentEngine(NULL), chatHelper(this), chatFilter(this), accountId(0), security(NULL), master(NULL), currentState(BotState::BOT_STATE_NON_COMBAT), faceTargetUpdateDelay(0)
 {
     for (uint8 i = 0 ; i < (uint8)BotState::BOT_STATE_MAX; i++)
         engines[i] = NULL;
@@ -94,7 +94,7 @@ PlayerbotAI::PlayerbotAI() : PlayerbotAIBase(), bot(NULL), aiObjectContext(NULL)
 }
 
 PlayerbotAI::PlayerbotAI(Player* bot) :
-    PlayerbotAIBase(), chatHelper(this), chatFilter(this), security(bot), master(NULL)
+    PlayerbotAIBase(), chatHelper(this), chatFilter(this), security(bot), master(NULL), faceTargetUpdateDelay(0)
 {
 	this->bot = bot;    
     if (!bot->isTaxiCheater() && HasCheat(BotCheatMask::taxi))
@@ -300,6 +300,9 @@ void PlayerbotAI::UpdateAI(uint32 elapsed, bool minimal)
             bot->SetPower(bot->GetPowerType(), bot->GetMaxPower(bot->GetPowerType()));
     }
 
+    // Update facing
+    UpdateFaceTarget(elapsed, minimal);
+
     bool doMinimalReaction = minimal || !AllowActivity(REACT_ACTIVITY);
 
     // Only update the internal ai when no reaction is running and the internal ai can be updated
@@ -354,6 +357,42 @@ bool PlayerbotAI::UpdateAIReaction(uint32 elapsed, bool minimal)
     }
 
     return reactionInProgress;
+}
+
+void PlayerbotAI::UpdateFaceTarget(uint32 elapsed, bool minimal)
+{
+    faceTargetUpdateDelay = faceTargetUpdateDelay > elapsed ? faceTargetUpdateDelay - elapsed : 0U;
+    if (faceTargetUpdateDelay <= 0U)
+    {
+        // Only update the target facing when in combat
+        if (IsStateActive(BotState::BOT_STATE_COMBAT))
+        {
+            // Don't update facing if bot is moving
+            if (bot->IsStopped())
+            {
+                AiObjectContext* context = GetAiObjectContext();
+                if (!AI_VALUE2(bool, "facing", "current target"))
+                {
+                    if (!sServerFacade.UnitIsDead(bot) &&
+                        !sServerFacade.IsFrozen(bot) &&
+                        !sServerFacade.IsCharmed(bot) &&
+                        !bot->IsPolymorphed() &&
+                        !bot->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_GHOST) &&
+                        !bot->IsBeingTeleported() &&
+                        !bot->HasAuraType(SPELL_AURA_MOD_CONFUSE) &&
+                        !bot->HasAuraType(SPELL_AURA_MOD_STUN) &&
+                        !bot->IsTaxiFlying() &&
+                        !bot->hasUnitState(UNIT_STAT_CAN_NOT_REACT_OR_LOST_CONTROL))
+                    {
+                        Unit* target = AI_VALUE(Unit*, "current target");
+                        sServerFacade.SetFacingTo(bot, target);
+                    }
+                }
+            }
+        }
+
+        faceTargetUpdateDelay = minimal ? sPlayerbotAIConfig.reactDelay * 10 : sPlayerbotAIConfig.reactDelay * 5;
+    }
 }
 
 void PlayerbotAI::SetActionDuration(const Action* action, uint32 delay)
@@ -2569,15 +2608,9 @@ bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target, Item* itemTarget)
         }
     }
 
-    bool isMoving = false;
-    if (!bot->GetMotionMaster()->empty())
-        if (bot->GetMotionMaster()->top()->GetMovementGeneratorType() != IDLE_MOTION_TYPE)
-            isMoving = true;
-
-    if (!bot->IsStopped())
-        isMoving = true;
-
-    if (isMoving && ((spell->GetCastTime() || (IsChanneledSpell(pSpellInfo)) && GetSpellDuration(pSpellInfo) > 0)))
+    // Fail the cast if the bot is moving and the spell is a casting/channeled spell
+    const bool isMoving = !bot->IsStopped();
+    if (isMoving && ((GetSpellCastTime(pSpellInfo, bot, spell) > 0) || (IsChanneledSpell(pSpellInfo) && (GetSpellDuration(pSpellInfo) > 0))))
     {
         StopMoving();
         SetAIInternalUpdateDelay(sPlayerbotAIConfig.globalCoolDown);
@@ -2586,12 +2619,7 @@ bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target, Item* itemTarget)
         return false;
     }
 
-#ifdef MANGOS
-    spell->prepare(&targets);
-#endif
-#ifdef CMANGOS
     SpellCastResult spellSuccess = spell->SpellStart(&targets);
-#endif
 
     if (pSpellInfo->Effect[0] == SPELL_EFFECT_OPEN_LOCK ||
         pSpellInfo->Effect[0] == SPELL_EFFECT_SKINNING)

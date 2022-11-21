@@ -46,4 +46,12 @@ namespace ai
         virtual int GetType() { return STRATEGY_TYPE_NONCOMBAT; }
         virtual string getName() { return "debug travel"; }
     };
+
+    class DebugThreatStrategy : public Strategy
+    {
+    public:
+        DebugThreatStrategy(PlayerbotAI* ai) : Strategy(ai) {}
+        virtual int GetType() { return STRATEGY_TYPE_NONCOMBAT; }
+        virtual string getName() { return "debug threat"; }
+    };
 }

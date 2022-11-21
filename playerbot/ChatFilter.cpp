@@ -264,6 +264,25 @@ public:
             if (sg >= from && sg <= to)
                 return ChatFilter::Filter(message);
         }
+        if (message.find("@leader") == 0)
+        {
+            if (!bot->GetGroup())
+                return message;
+
+            if(bot->GetGroup()->IsLeader(bot->GetObjectGuid()))
+                return ChatFilter::Filter(message);
+        }
+        if (message.find("@raidleader") == 0)
+        {
+            if (!bot->GetGroup())
+                return message;
+
+            if (!bot->GetGroup()->IsRaidGroup())
+                return message;
+
+            if (bot->GetGroup()->IsLeader(bot->GetObjectGuid()))
+                return ChatFilter::Filter(message);
+        }
 
         return message;
     }

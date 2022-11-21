@@ -350,7 +350,7 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
         }
 
         // remove threat for now
-        engine->removeStrategy("threat");
+        //engine->removeStrategy("threat");
 
         engine->ChangeStrategy(sPlayerbotAIConfig.randomBotCombatStrategies);
     }

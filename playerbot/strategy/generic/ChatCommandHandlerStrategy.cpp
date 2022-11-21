@@ -196,6 +196,7 @@ ChatCommandHandlerStrategy::ChatCommandHandlerStrategy(PlayerbotAI* ai) : PassTr
     supported.push_back("gb");
     supported.push_back("bank");
     supported.push_back("invite");
+    supported.push_back("join");
     supported.push_back("spell");
     supported.push_back("rti");
     supported.push_back("position");
@@ -220,6 +221,7 @@ ChatCommandHandlerStrategy::ChatCommandHandlerStrategy(PlayerbotAI* ai) : PassTr
     supported.push_back("give leader");
     supported.push_back("cheat");
     supported.push_back("ginvite");
+    supported.push_back("gjoin");
     supported.push_back("guild promote");
     supported.push_back("guild demote");
     supported.push_back("guild remove");

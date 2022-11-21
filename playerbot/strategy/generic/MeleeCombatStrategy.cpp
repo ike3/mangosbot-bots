@@ -10,10 +10,6 @@ void MeleeCombatStrategy::InitTriggers(list<TriggerNode*> &triggers)
     CombatStrategy::InitTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
-        "not facing target",
-        NextAction::array(0, new NextAction("set facing", 59.0f), NULL)));
-
-    triggers.push_back(new TriggerNode(
         "enemy out of melee",
         NextAction::array(0, new NextAction("reach melee", 60.0f), NULL)));
 
