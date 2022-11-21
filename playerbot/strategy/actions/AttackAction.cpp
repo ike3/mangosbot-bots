@@ -5,21 +5,25 @@
 #include "CreatureAI.h"
 #include "../../LootObjectStack.h"
 #include "../../ServerFacade.h"
+#include "../generic/CombatStrategy.h"
 
 using namespace ai;
 
 bool AttackAction::Execute(Event& event)
 {
     Unit* target = GetTarget();
+    if (target && target->IsInWorld() && target->GetMapId() == bot->GetMapId())
+    {
+        //Unit* victim = bot->GetVictim();
+        //if (victim && victim->IsPlayer() && victim->GetObjectGuid() == target->GetObjectGuid())
+        //{
+        //    return false;
+        //}
 
-    if (!target || !target->IsInWorld() || target->GetMapId() != bot->GetMapId())
-        return false;
+        return Attack(target);
+    }
 
-    Unit* victim = bot->GetVictim();
-    //if (victim && victim->IsPlayer() && victim->GetObjectGuid() == target->GetObjectGuid())
-    //    return false;
-
-    return Attack(target);
+    return false;
 }
 
 bool AttackMyTargetAction::Execute(Event& event)
@@ -87,31 +91,31 @@ bool AttackAction::Attack(Unit* target)
         SET_AI_VALUE(Unit*, "current target", target);
         AI_VALUE(LootObjectStack*, "available loot")->Add(guid);
 
+        const bool isWaitingForAttack = WaitForAttackStrategy::ShouldWait(ai);
+
         Pet* pet = bot->GetPet();
         if (pet)
         {
-    #ifdef MANGOS
-            CreatureAI* creatureAI = ((Creature*)pet)->AI();
-    #endif
-    #ifdef CMANGOS
             UnitAI* creatureAI = ((Creature*)pet)->AI();
-    #endif
             if (creatureAI)
             {
-    #ifdef CMANGOS
                 creatureAI->SetReactState(REACT_DEFENSIVE);
-    #endif
-    #ifdef MANGOS
-                pet->GetCharmInfo()->SetCommandState(COMMAND_ATTACK);
-    #endif
-                creatureAI->AttackStart(target);
+
+                // Don't send the pet to attack if the bot is waiting for attack
+                if (!isWaitingForAttack)
+                {
+                    creatureAI->AttackStart(target);
+                }
             }
         }
 
         if (IsMovingAllowed() && !sServerFacade.IsInFront(bot, target, sPlayerbotAIConfig.sightDistance, CAST_ANGLE_IN_FRONT))
+        {
             sServerFacade.SetFacingTo(bot, target);
+        }
 
-        return bot->Attack(target, !ai->IsRanged(bot));
+        // Don't attack target if it is waiting for attack
+        return isWaitingForAttack ? true : bot->Attack(target, !ai->IsRanged(bot));
     }
 
     return false;
