@@ -170,14 +170,12 @@ jobs:
           severity: info
           username: ${{env.CORE_TYPE}}-${{env.EXPENSION_NAME}}
           description: |
-            **${{env.CORE_TYPE}}-${{env.EXPENSION_NAME}} Windows build successful!**
+            **Windows release successful!**
           details: |
             **Core branch:** ${{env.CORE_BRANCH}}
             **Bots branch:** ${{env.GIT_BRANCH}}
-            **Last Commit:** [${{github.repository}}/${{env.GIT_SHORT_SHA}}](${{github.server_url}}/${{ github.repository }}/commit/${{github.sha}})
-            **Build log:** [actions/runs/${{github.run_id}}](${{github.server_url}}/${{github.repository}}/actions/runs/${{github.run_id}})
-            __**Windows prebuilt Binaries**__
-            - (${{github.server_url}}/${{ github.repository }}/releases/download/classic/${{env.ALL_ARCH_NAME}})
+            [**Last Commit**](${{github.server_url}}/${{ github.repository }}/commit/${{github.sha}}) - [**Build Log**](${{github.server_url}}/${{github.repository}}/actions/runs/${{github.run_id}})
+            [**Windows prebuilt Binaries**](${{github.server_url}}/${{ github.repository }}/releases/download/classic/${{env.ALL_ARCH_NAME}})
           footer: Build Success
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK_BUILD }}
           avatarUrl: https://github.githubassets.com/favicons/favicon-success.png
@@ -208,12 +206,11 @@ jobs:
           severity: error
           username: ${{env.CORE_TYPE}}-${{env.EXPENSION_NAME}}
           description: |
-            **${{env.CORE_TYPE}}-${{env.EXPENSION_NAME}} Windows build failed!**
+            **Windows release falied!**
           details: |
             **Core branch:** ${{env.CORE_BRANCH}}
             **Bots branch:** ${{env.GIT_BRANCH}}
-            **Last Commit:** [${{github.repository}}/${{env.GIT_SHORT_SHA}}](${{github.server_url}}/${{ github.repository }}/commit/${{github.sha}})
-            **Build log:** [actions/runs/${{github.run_id}}](${{github.server_url}}/${{github.repository}}/actions/runs/${{github.run_id}})
+            [**Last Commit**](${{github.server_url}}/${{ github.repository }}/commit/${{github.sha}}) - [**Build Log**](${{github.server_url}}/${{github.repository}}/actions/runs/${{github.run_id}})
           footer: Build Failure
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK_BUILD }}
           avatarUrl: https://github.githubassets.com/favicons/favicon-failure.png
