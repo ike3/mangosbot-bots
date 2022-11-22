@@ -163,7 +163,7 @@ bool MyAttackerCountTrigger::IsActive()
 
 bool AoeTrigger::IsActive()
 {
-    return AI_VALUE2(bool, "combat", "self target") && AI_VALUE(uint8, "aoe count") >= amount && AI_VALUE(uint8, "attacker count") >= amount;
+    return AI_VALUE2(bool, "combat", "self target") && AI_VALUE(uint8, "aoe count") >= amount && AI_VALUE(uint8, "attackers count") >= amount;
 }
 
 bool DebuffTrigger::IsActive()
@@ -308,7 +308,7 @@ bool HasNoAuraTrigger::IsActive()
 
 bool TankAssistTrigger::IsActive()
 {
-    if (!AI_VALUE(uint8, "attacker count"))
+    if (!AI_VALUE(bool, "has attackers"))
         return false;
 
     Unit* currentTarget = AI_VALUE(Unit*, "current target");

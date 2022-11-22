@@ -151,9 +151,12 @@ namespace ai
             creators["pet dead"] = &ValueContext::pet_dead;
             creators["pet happy"] = &ValueContext::pet_happy;
             creators["has mana"] = &ValueContext::has_mana;
-            creators["attacker count"] = &ValueContext::attacker_count;
+            creators["attackers count"] = &ValueContext::attackers_count;
+            creators["possible attack targets count"] = &ValueContext::possible_attack_targets_count;
             creators["my attacker count"] = &ValueContext::my_attacker_count;
             creators["has aggro"] = &ValueContext::has_aggro;
+            creators["has attackers"] = &ValueContext::has_attackers;
+            creators["has possible attack targets"] = &ValueContext::has_possible_attack_targets;
             creators["mounted"] = &ValueContext::mounted;
 
             creators["can loot"] = &ValueContext::can_loot;
@@ -384,9 +387,12 @@ namespace ai
         static UntypedValue* always_loot_list(PlayerbotAI* ai) { return new AlwaysLootListValue(ai); }
         static UntypedValue* loot_strategy(PlayerbotAI* ai) { return new LootStrategyValue(ai); }
 
-        static UntypedValue* attacker_count(PlayerbotAI* ai) { return new AttackerCountValue(ai); }
+        static UntypedValue* attackers_count(PlayerbotAI* ai) { return new AttackersCountValue(ai); }
+        static UntypedValue* possible_attack_targets_count(PlayerbotAI* ai) { return new PossibleAttackTargetsCountValue(ai); }
         static UntypedValue* my_attacker_count(PlayerbotAI* ai) { return new MyAttackerCountValue(ai); }
         static UntypedValue* has_aggro(PlayerbotAI* ai) { return new HasAggroValue(ai); }
+        static UntypedValue* has_attackers(PlayerbotAI* ai) { return new HasAttackersValue(ai); }
+        static UntypedValue* has_possible_attack_targets(PlayerbotAI* ai) { return new HasPossibleAttackTargetsValue(ai); }
         static UntypedValue* mounted(PlayerbotAI* ai) { return new IsMountedValue(ai); }
         static UntypedValue* health(PlayerbotAI* ai) { return new HealthValue(ai); }
         static UntypedValue* rage(PlayerbotAI* ai) { return new RageValue(ai); }

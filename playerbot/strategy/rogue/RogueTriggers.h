@@ -103,13 +103,13 @@ namespace ai
                 return false;
 
             return ai->HasAura("stealth", bot) &&
-                !AI_VALUE(uint8, "attacker count") &&
+                !AI_VALUE(bool, "has attackers") &&
                 !AI_VALUE(Unit*, "enemy player target") &&
                 (AI_VALUE2(bool, "moving", "self target") &&
                 ((ai->GetMaster() &&
                     sServerFacade.IsDistanceGreaterThan(AI_VALUE2(float, "distance", "master target"), 10.0f) &&
                     AI_VALUE2(bool, "moving", "master target")) ||
-                    !AI_VALUE(uint8, "attacker count")));
+                    !AI_VALUE(bool, "has attackers")));
         }
     };
 

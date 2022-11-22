@@ -3,18 +3,32 @@
 
 namespace ai
 {
-
-    class AttackerCountValue : public Uint8CalculatedValue, public Qualified
+    class AttackersCountValue : public Uint8CalculatedValue, public Qualified
     {
     public:
-        AttackerCountValue(PlayerbotAI* ai, string name = "attackers count") : Uint8CalculatedValue(ai, name, 3) {}
-
-        Unit* GetTarget()
-        {
-            AiObjectContext* ctx = AiObject::context;
-            return ctx->GetValue<Unit*>(qualifier)->Get();
-        }
+        AttackersCountValue(PlayerbotAI* ai, string name = "attackers count") : Uint8CalculatedValue(ai, name, 3) {}
         virtual uint8 Calculate();
+    };
+
+    class PossibleAttackTargetsCountValue : public Uint8CalculatedValue, public Qualified
+    {
+    public:
+        PossibleAttackTargetsCountValue(PlayerbotAI* ai, string name = "possible attack targets count") : Uint8CalculatedValue(ai, name, 3) {}
+        virtual uint8 Calculate();
+    };
+
+    class HasAttackersValue : public BoolCalculatedValue, public Qualified
+    {
+    public:
+        HasAttackersValue(PlayerbotAI* ai, string name = "has attackers") : BoolCalculatedValue(ai, name, 3) {}
+        virtual bool Calculate();
+    };
+
+    class HasPossibleAttackTargetsValue : public BoolCalculatedValue, public Qualified
+    {
+    public:
+        HasPossibleAttackTargetsValue(PlayerbotAI* ai, string name = "has possible attack targets") : BoolCalculatedValue(ai, name, 3) {}
+        virtual bool Calculate();
     };
 
     class MyAttackerCountValue : public Uint8CalculatedValue, public Qualified

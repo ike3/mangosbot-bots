@@ -12,7 +12,7 @@ uint64 extractGuid(WorldPacket& packet);
 
 bool CheckMountStateAction::Execute(Event& event)
 {
-    bool noattackers = AI_VALUE2(bool, "combat", "self target") ? (AI_VALUE(uint8, "attacker count") > 0 ? false : true) : true;
+    bool noattackers = AI_VALUE2(bool, "combat", "self target") ? AI_VALUE(bool, "has attackers") : true;
     bool enemy = AI_VALUE(Unit*, "enemy player target");
     bool dps = (AI_VALUE(Unit*, "dps target") || AI_VALUE(Unit*, "grind target"));
     if (enemy || dps)

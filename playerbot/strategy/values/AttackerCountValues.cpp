@@ -19,7 +19,7 @@ bool HasAggroValue::Calculate()
 
     HostileReference *ref = sServerFacade.GetHostileRefManager(bot).getFirst();
     if (!ref)
-        return true; // simulate as target is not atacking anybody yet
+        return true; // simulate as target is not attacking anybody yet
 
     while( ref )
     {
@@ -50,24 +50,24 @@ bool HasAggroValue::Calculate()
     return false;
 }
 
-uint8 AttackerCountValue::Calculate()
+uint8 AttackersCountValue::Calculate()
 {
-    int count = 0;
-    float range = sPlayerbotAIConfig.sightDistance;
+    return context->GetValue<list<ObjectGuid>>("attackers")->Get().size();
+}
 
-    list<ObjectGuid> attackers = context->GetValue<list<ObjectGuid>>("possible attack targets")->Get();
-    for (list<ObjectGuid>::iterator i = attackers.begin(); i != attackers.end(); i++)
-    {
-        Unit* unit = ai->GetUnit(*i);
-        if (!unit || !sServerFacade.IsAlive(unit))
-            continue;
+uint8 PossibleAttackTargetsCountValue::Calculate()
+{
+    return context->GetValue<list<ObjectGuid>>("possible attack targets")->Get().size();
+}
 
-        float distance = sServerFacade.GetDistance2d(bot, unit);
-        if (distance <= range)
-            count++;
-    }
+bool HasAttackersValue::Calculate()
+{
+    return !context->GetValue<list<ObjectGuid>>("attackers", 1)->Get().empty();
+}
 
-    return count;
+bool HasPossibleAttackTargetsValue::Calculate()
+{
+    return !context->GetValue<list<ObjectGuid>>("possible attack targets", 1)->Get().empty();
 }
 
 uint8 BalancePercentValue::Calculate()
@@ -139,4 +139,3 @@ uint8 BalancePercentValue::Calculate()
     float percent = playerLevel * 100 / attackerLevel;
     return percent <= 200 ? (uint8)percent : 200;
 }
-
