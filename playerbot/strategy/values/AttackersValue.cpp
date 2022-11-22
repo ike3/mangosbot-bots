@@ -164,23 +164,18 @@ bool AttackersValue::IsFriendly(Unit* target, Player* player)
     {
         friendly = true;
 
+#ifndef MANGOSBOT_ZERO
         // Check if the target is another player in a duel/arena
         Player* targetPlayer = dynamic_cast<Player*>(target);
         if (targetPlayer)
         {
-            // If the target is in a duel with the player
-            if (player->duel && player->duel->opponent && (targetPlayer->GetObjectGuid() == player->duel->opponent->GetObjectGuid()))
-            {
-                friendly = false;
-            }
-#ifndef MANGOSBOT_ZERO
             // If the target is in an arena with the player and is not on the same team
             else if (targetPlayer->InArena() && player->InArena() && (targetPlayer->GetBGTeam() != player->GetBGTeam()))
             {
                 friendly = false;
             }
-#endif
         }
+#endif
     }
 
     return friendly;
