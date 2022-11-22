@@ -1,0 +1,216 @@
+name: CMaNGOS TBC Windows Release
+
+# use manual run
+on: [workflow_dispatch]
+
+# use schedule
+#on:
+#  schedule:
+#    # every day at 6am
+#    - cron:  '0 6 * * *'
+
+env:
+  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
+  CORE_TYPE: "cmangos"
+  BUILD_TYPE: RelWithDebInfo
+  REPO_DIR : ${{github.workspace}}
+  BUILD_DIR: ${{github.workspace}}/bin/builddir
+  BOOST_TOOLSET: "msvc"
+  BOOST_VERSION: "1.79.0.beta1"
+  BOOST_INSTALL_DIR: "${{github.workspace}}/bin"
+
+jobs:
+  build:
+    runs-on: windows-2022
+    permissions:
+      contents: read
+
+    strategy:
+      matrix:
+       include:
+          #- OPTIONAL_DEFINES: ""
+          #  TYPE: "default"
+
+          - OPTIONAL_DEFINES: "-DBUILD_EXTRACTORS=ON -DBUILD_IKE3_BOTS=ON -DBUILD_AHBOT=ON -DBUILD_GIT_ID=ON"
+            TYPE: "with-all"
+
+          #- OPTIONAL_DEFINES: "-DBUILD_PLAYERBOT=ON -DBUILD_AHBOT=ON"
+          #  TYPE: "with-playerbot-ahbot"
+
+          #- OPTIONAL_DEFINES: "-DBUILD_PLAYERBOT=ON"
+          #  TYPE: "with-playerbot"
+
+          #- OPTIONAL_DEFINES: "-DBUILD_AHBOT=ON"
+          #  TYPE: "with-ahbot"
+
+    steps:
+      - name: Checkout CMaNGOS TBC
+        uses: actions/checkout@v2
+        with:
+          ref: ike3-bots
+          repository: celguar/mangos-tbc
+          fetch-depth: 2
+          path: ${{env.REPO_DIR}}
+          # submodules: recursive
+          
+      - name: Checkout Bots
+        uses: actions/checkout@v2
+        with:
+          ref: master
+          fetch-depth: 2
+          path: "${{env.REPO_DIR}}/src/Modules/Bots"
+          # submodules: recursive
+
+      - uses: FranzDiebold/github-env-vars-action@v2
+      - name: Create Build Environment
+        run: |
+          echo "ARCHIVE_FILENAME=cmangos-tbc.zip" >> $env:GITHUB_ENV
+          cmake -E make_directory ${{ env.BUILD_DIR }}
+      # install dependencies
+      - name: Cache Windows boost
+        uses: actions/cache@v2
+        id: cache-boost
+        with:
+          path: "${{env.BOOST_INSTALL_DIR}}/boost"
+          key: ${{ runner.os }}-${{env.CORE_TYPE}}
+
+      - if: steps.cache-boost.outputs.cache-hit != 'true'
+        name: Install boost
+        uses: MarkusJx/install-boost@v2.3.0
+        id: install-boost
+        with:
+          # REQUIRED: Specify the required boost version
+          # A list of supported versions can be found here:
+          # https://github.com/actions/boost-versions/blob/main/versions-manifest.json
+          boost_version: ${{env.BOOST_VERSION}}
+          # OPTIONAL: Specify a toolset on windows
+          toolset: ${{env.BOOST_TOOLSET}}
+          # OPTIONAL: Specify a custon install location
+          boost_install_dir: ${{env.BOOST_INSTALL_DIR}}
+          platform_version: 2022
+          # NOTE: If a boost version matching all requirements cannot be found,
+          # this build step will fail
+
+      - name: Configure
+        env:
+          BOOST_ROOT: "${{env.BOOST_INSTALL_DIR}}/boost/boost"
+        run: cmake ${{matrix.OPTIONAL_DEFINES}} -B ${{env.BUILD_DIR}} -S ${{env.REPO_DIR}}
+
+      - name: Build
+        env:
+          MAKEFLAGS: "-j8"
+        run: cmake --build ${{env.BUILD_DIR}} --config ${{env.BUILD_TYPE}}
+
+      - name: Archive files
+        run: |
+          cd bin
+          7z a -tzip ${{env.ARCHIVE_FILENAME}} "x64_${{env.BUILD_TYPE}}/*"
+      - name: Archive this artefact
+        uses: actions/upload-artifact@v2
+        with:
+          name: snapshot-${{matrix.TYPE}}
+          path: "bin/${{env.ARCHIVE_FILENAME}}"
+
+  upload:
+    runs-on: windows-2022
+    permissions:
+      contents: write  # for marvinpinto/action-automatic-releases to generate pre-release
+    needs: build
+
+    steps:
+      #- name: Download artifact snapshot-default
+      #  uses: actions/download-artifact@v1
+      #  with:
+      #    name: snapshot-default
+      #    path: all_snapshots
+      - name: Download artifact snapshot-with-all
+        uses: actions/download-artifact@v1
+        with:
+          name: snapshot-with-all
+          path: all_snapshots
+
+      - name: Get current date
+        id: date
+        run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
+
+      - name: Upload snapshot
+        uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: "tbc"
+          prerelease: false
+          title: "CMaNGOS TBC Build (${{ steps.date.outputs.date }})"
+          files: all_snapshots
+
+  notify-success:
+    name: Discord release successfully notification
+    runs-on: ubuntu-20.04
+    permissions:
+      contents: none
+    needs:
+      - upload
+
+    steps:
+      - name: Set environmental variables
+        run: |
+          echo "GIT_BRANCH=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
+          shortSHA=`echo ${GITHUB_SHA} | cut -c1-8`
+          echo "GIT_SHORT_SHA=${shortSHA}" >> $GITHUB_ENV
+          projectNames="CMaNGOS TBC with ike3 bots"
+          coreType="cmangos"
+          expension="tbc"
+          coreBranch="ike3-bots"
+          echo "CORE_TYPE=${coreType}" >> $GITHUB_ENV
+          echo "EXPENSION_NAME=${expension}" >> $GITHUB_ENV
+          echo "CORE_BRANCH=${coreBranch}" >> $GITHUB_ENV
+          echo "ALL_ARCH_NAME=${coreType}-${expension}.zip" >> $GITHUB_ENV
+      - name: Notify
+        uses: rjstone/discord-webhook-notify@v1.0.4
+        with:
+          severity: info
+          username: ${{env.CORE_TYPE}}-${{env.EXPENSION_NAME}}
+          description: |
+            **Windows release successful!**
+          details: |
+            **Core branch:** ${{env.CORE_BRANCH}}
+            **Bots branch:** ${{env.GIT_BRANCH}}
+            [**Last Commit**](${{github.server_url}}/${{ github.repository }}/commit/${{github.sha}}) - [**Build Log**](${{github.server_url}}/${{github.repository}}/actions/runs/${{github.run_id}})
+            [**Windows prebuilt Binaries**](${{github.server_url}}/${{ github.repository }}/releases/download/${{env.EXPENSION_NAME}}/${{env.ALL_ARCH_NAME}})
+          footer: Build Success
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK_BUILD }}
+          avatarUrl: https://github.githubassets.com/favicons/favicon-success.png
+
+  notify:
+    name: Discord Notification
+    runs-on: ubuntu-20.04
+    permissions:
+      contents: none
+    needs: # make sure the notification is sent AFTER the jobs you want included have completed
+      - build
+    if: failure()
+
+    steps:
+      - name: Env
+        run: |
+          echo "GIT_BRANCH=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
+          echo "GIT_SHORT_SHA=`echo ${GITHUB_SHA} | cut -c1-8`" >> $GITHUB_ENV
+          coreType="cmangos"
+          expension="tbc"
+          coreBranch="ike3-bots"
+          echo "CORE_TYPE=${coreType}" >> $GITHUB_ENV
+          echo "EXPENSION_NAME=${expension}" >> $GITHUB_ENV
+          echo "CORE_BRANCH=${coreBranch}" >> $GITHUB_ENV
+      - name: Notify
+        uses: rjstone/discord-webhook-notify@v1.0.4
+        with:
+          severity: error
+          username: ${{env.CORE_TYPE}}-${{env.EXPENSION_NAME}}
+          description: |
+            **Windows release falied!**
+          details: |
+            **Core branch:** ${{env.CORE_BRANCH}}
+            **Bots branch:** ${{env.GIT_BRANCH}}
+            [**Last Commit**](${{github.server_url}}/${{ github.repository }}/commit/${{github.sha}}) - [**Build Log**](${{github.server_url}}/${{github.repository}}/actions/runs/${{github.run_id}})
+          footer: Build Failure
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK_BUILD }}
+          avatarUrl: https://github.githubassets.com/favicons/favicon-failure.png
