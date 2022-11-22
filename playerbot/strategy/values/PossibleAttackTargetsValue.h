@@ -6,7 +6,7 @@
 namespace ai
 {
     // List of hostile targets that are in combat with the bot (or bot group) and can be attacked (is reachable, not cc'ed, etc...)
-    class PossibleAttackTargetsValue : public ObjectGuidListCalculatedValue
+    class PossibleAttackTargetsValue : public ObjectGuidListCalculatedValue, public Qualified
 	{
 	public:
         PossibleAttackTargetsValue(PlayerbotAI* ai) : ObjectGuidListCalculatedValue(ai, "possible attack targets") {}

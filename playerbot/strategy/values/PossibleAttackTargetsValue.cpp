@@ -19,7 +19,7 @@ list<ObjectGuid> PossibleAttackTargetsValue::Calculate()
     {
         if (bot->IsInWorld() && !bot->IsBeingTeleported())
         {
-            result = AI_VALUE(list<ObjectGuid>, "attackers");
+            result = AI_VALUE2(list<ObjectGuid>, "attackers", getQualifier());
             RemoveNonThreating(result);
         }
     }
