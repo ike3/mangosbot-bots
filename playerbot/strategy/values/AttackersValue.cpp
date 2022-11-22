@@ -80,16 +80,26 @@ void AttackersValue::AddTargetsOf(Player* player, set<Unit*>& targets, bool getO
     {
         list<Unit*> units;
 
+        // Get all the units around the player
         PlayerbotAI* playerBot = player->GetPlayerbotAI();
-
         if (playerBot)
         {
-            for (auto guid : PAI_VALUE(list<ObjectGuid>, "possible targets"))
+            const string ignoreLos = std::to_string(true);
+            const string range = std::to_string((int32)GetRange());
+            const string ignoreValidate = std::to_string(true);
+            const vector<string> qualifiers = { ignoreLos, range, ignoreValidate };
+            for (auto guid : PAI_VALUE2(list<ObjectGuid>, "possible targets", Qualified::MultiQualify(qualifiers, ":")))
+            {
                 if (Unit* unit = ai->GetUnit(guid))
+                {
                     units.push_back(unit);
+                }
+            }
         }
-        else  // Get all the units around the player
+        else
+        {
             PossibleTargetsValue::FindPossibleTargets(player, units, GetRange());
+        }
 
         // Get the current attackers of the player
         for (Unit* attacker : player->getAttackers())

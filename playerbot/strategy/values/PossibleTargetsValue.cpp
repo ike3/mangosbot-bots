@@ -11,6 +11,36 @@
 using namespace ai;
 using namespace MaNGOS;
 
+list<ObjectGuid> PossibleTargetsValue::Calculate()
+{
+    // Check if the target name has been overridden
+    bool shouldIgnoreLos = ignoreLos;
+    float rangeCheck = range;
+    bool shouldIgnoreValidate = false;
+    if (!qualifier.empty())
+    {
+        shouldIgnoreLos = Qualified::getMultiQualifierInt(qualifier, 0, ":");
+        rangeCheck = Qualified::getMultiQualifierInt(qualifier, 1, ":");
+        shouldIgnoreValidate = Qualified::getMultiQualifierInt(qualifier, 2, ":");
+    }
+
+    list<Unit*> targets;
+    FindPossibleTargets(bot, targets, rangeCheck);
+
+    list<ObjectGuid> results;
+    for (list<Unit*>::iterator i = targets.begin(); i != targets.end(); ++i)
+    {
+        Unit* unit = *i;
+        if ((shouldIgnoreLos || sServerFacade.IsWithinLOSInMap(bot, unit)) && 
+            (shouldIgnoreValidate || AcceptUnit(unit)))
+        {
+            results.push_back(unit->GetObjectGuid());
+        }
+    }
+
+    return results;
+}
+
 void PossibleTargetsValue::FindUnits(list<Unit*> &targets)
 {
     FindPossibleTargets(bot, targets, range);
