@@ -20,8 +20,7 @@ namespace ai
        virtual bool Execute(Event& event);
 
    private:
-       void GeneratePointsAroundTarget(Unit* target, float angleIncrement, float radius, std::vector<WorldPosition>& outPoints);
-       const WorldPosition* GetBestPoint(Unit* target, float safeDistance, const std::vector<WorldPosition>& points) const;
+       const WorldPosition GetBestPoint(Unit* target, float minDistance, float maxDistance) const;
        bool IsEnemyClose(const WorldPosition& point, const std::list<ObjectGuid>& enemies) const;
    };
 }
