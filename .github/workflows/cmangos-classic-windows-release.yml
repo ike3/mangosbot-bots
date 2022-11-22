@@ -27,8 +27,8 @@ jobs:
     strategy:
       matrix:
        include:
-          - OPTIONAL_DEFINES: ""
-            TYPE: "default"
+          #- OPTIONAL_DEFINES: ""
+          #  TYPE: "default"
 
           - OPTIONAL_DEFINES: "-DBUILD_EXTRACTORS=ON -DBUILD_IKE3_BOTS=ON -DBUILD_AHBOT=ON -DBUILD_RECASTDEMOMOD=ON -DBUILD_GIT_ID=ON"
             TYPE: "with-all"
@@ -171,7 +171,7 @@ jobs:
             __**Winodws prebuild Binaries**__
             - [All options on](${{github.server_url}}/${{ github.repository }}/releases/download/latest/${{env.ALL_ARCH_NAME}})
           footer: By CMaNGOS team!
-          webhookUrl: ${{ secrets.DISCORD_WEBHOOK_RELEASE }}
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK_BUILD }}
           avatarUrl: https://github.githubassets.com/images/modules/logos_page/Octocat.png
 
   notify:
@@ -202,5 +202,5 @@ jobs:
             - **Commit:** [${{github.repository}}/${{env.GIT_SHORT_SHA}}](${{github.server_url}}/${{ github.repository }}/commit/${{github.sha}})
             - **Build log:** [actions/runs/${{github.run_id}}](${{github.server_url}}/${{github.repository}}/actions/runs/${{github.run_id}})
           footer: CMaNGOS police called!
-          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK_BUILD }}
           avatarUrl: https://github.githubassets.com/images/modules/logos_page/Octocat.png
