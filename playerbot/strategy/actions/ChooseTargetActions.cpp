@@ -133,47 +133,36 @@ bool SelectNewTargetAction::Execute(Event& event)
     Pet* pet = bot->GetPet();
     if (pet)
     {
-#ifdef MANGOS
-        CreatureAI* creatureAI = ((Creature*)pet)->AI();
-#endif
-#ifdef CMANGOS
         UnitAI* creatureAI = ((Creature*)pet)->AI();
-#endif
         if (creatureAI)
         {
-#ifdef CMANGOS
             creatureAI->SetReactState(REACT_PASSIVE);
-#endif
-#ifdef MANGOS
-            pet->GetCharmInfo()->SetReactState(REACT_PASSIVE);
-            pet->GetCharmInfo()->SetCommandState(COMMAND_FOLLOW);
-#endif
             pet->AttackStop();
         }
     }
 
     // Check if there is any enemy targets available to attack
-    if (!AI_VALUE(list<ObjectGuid>, "attackers").empty())
+    if (AI_VALUE(bool, "has attackers"))
     {
-        // Check if there is an enemy player nearby
-        Unit* enemyPlayer = AI_VALUE(Unit*, "enemy player target");
-        if (enemyPlayer && 
-           (ai->HasStrategy("pvp", BotState::BOT_STATE_NON_COMBAT) ||
-            ai->HasStrategy("duel", BotState::BOT_STATE_NON_COMBAT)))
+        if (ai->HasStrategy("pvp", BotState::BOT_STATE_COMBAT) ||
+            ai->HasStrategy("duel", BotState::BOT_STATE_COMBAT))
         {
-            return ai->DoSpecificAction("attack enemy player", event, true);
+            // Check if there is an enemy player nearby
+            Unit* enemyPlayer = AI_VALUE(Unit*, "enemy player target");
+            if (enemyPlayer)
+            {
+                return ai->DoSpecificAction("attack enemy player", event, true);
+            }
         }
-        else
+
+        // Let the dps/tank assist pick a target to attack
+        if (ai->HasStrategy("dps assist", BotState::BOT_STATE_NON_COMBAT))
         {
-            // Let the dps/tank assist pick a target to attack
-            if (ai->HasStrategy("dps assist", BotState::BOT_STATE_NON_COMBAT))
-            {
-                return ai->DoSpecificAction("dps assist", event, true);
-            }
-            else if (ai->HasStrategy("tank assist", BotState::BOT_STATE_NON_COMBAT))
-            {
-                return ai->DoSpecificAction("tank assist", event, true);
-            }
+            return ai->DoSpecificAction("dps assist", event, true);
+        }
+        else if (ai->HasStrategy("tank assist", BotState::BOT_STATE_NON_COMBAT))
+        {
+            return ai->DoSpecificAction("tank assist", event, true);
         }
     }
 
