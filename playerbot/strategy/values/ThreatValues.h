@@ -3,11 +3,11 @@
 
 namespace ai
 {
-    class MyThreatValue : public MemoryCalculatedValue<float>, public Qualified
+    class MyThreatValue : public LogCalculatedValue<float>, public Qualified
     {
     public:
-        MyThreatValue(PlayerbotAI* ai, string name = "my threat") : MemoryCalculatedValue(ai, name) {}
-        virtual bool EqualToLast(float value) { return value != lastValue; }
+        MyThreatValue(PlayerbotAI* ai, string name = "my threat") : LogCalculatedValue(ai, name) { minChangeInterval = 0.5; }
+        virtual bool EqualToLast(float value) { return value == lastValue; }
     public:
         virtual float Calculate();
     };
