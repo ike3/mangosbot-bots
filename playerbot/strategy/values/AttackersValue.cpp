@@ -9,8 +9,6 @@ using namespace MaNGOS;
 
 list<ObjectGuid> AttackersValue::Calculate()
 {
-    bool getOne = getQualifier().empty();
-
     list<ObjectGuid> result;
     if (ai->AllowActivity(ALL_ACTIVITY))
     {
@@ -18,9 +16,17 @@ list<ObjectGuid> AttackersValue::Calculate()
         {
             set<Unit*> targets;
 
+            // Check if we only need one attacker
+            bool getOne = false;
+            if(!qualifier.empty())
+            {
+                getOne = stoi(qualifier);
+            }
+
             // Add the targets of the bot
             AddTargetsOf(bot, targets, getOne);
 
+            // Don't check for group member targets if we only need one
             if (targets.empty() || !getOne)
             {
                 // Add the targets of the members of the group
@@ -58,8 +64,11 @@ void AttackersValue::AddTargetsOf(Group* group, set<Unit*>& targets, bool getOne
         {
             AddTargetsOf(member, targets, getOne);
 
+            // Finish early if we only need one target
             if (getOne && !targets.empty())
-                return;
+            {
+                break;
+            }
         }
     }
 }
