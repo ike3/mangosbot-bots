@@ -22,8 +22,8 @@ namespace ai
 
                 // Ignore movement if too far
                 const float distanceToTarget = sServerFacade.GetDistance2d(bot, target);
-                if (distanceToTarget <= sPlayerbotAIConfig.sightDistance)
-                {
+                //if (distanceToTarget <= sPlayerbotAIConfig.sightDistance)
+                //{
                     float chaseDist = distance;
                     const bool inLos = bot->IsWithinLOSInMap(target, true);
                     const bool isFriend = sServerFacade.IsFriendlyTo(bot, target);
@@ -43,7 +43,7 @@ namespace ai
                     {
                         return ChaseTo(target, chaseDist, bot->GetAngle(target));
                     }
-                }
+                //}
             }
 
             return false;
