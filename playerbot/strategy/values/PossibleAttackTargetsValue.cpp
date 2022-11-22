@@ -19,8 +19,26 @@ list<ObjectGuid> PossibleAttackTargetsValue::Calculate()
     {
         if (bot->IsInWorld() && !bot->IsBeingTeleported())
         {
-            result = AI_VALUE2(list<ObjectGuid>, "attackers", getQualifier());
-            RemoveNonThreating(result);
+            // Check if we only need one possible attack target
+            bool getOne = false;
+            if (!qualifier.empty())
+            {
+                getOne = stoi(qualifier);
+            }
+
+            if (getOne)
+            {
+                // Try to get one possible attack target
+                result = AI_VALUE2(list<ObjectGuid>, "attackers", 1);
+                RemoveNonThreating(result);
+            }
+
+            // If the one possible attack target failed, retry
+            if (result.empty())
+            {
+                result = AI_VALUE(list<ObjectGuid>, "attackers");
+                RemoveNonThreating(result);
+            }
         }
     }
 
