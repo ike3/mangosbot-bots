@@ -11,6 +11,7 @@ on: [workflow_dispatch]
 
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
+  CORE_TYPE: "cmangos"
   BUILD_TYPE: RelWithDebInfo
   REPO_DIR : ${{github.workspace}}
   BUILD_DIR: ${{github.workspace}}/bin/builddir
@@ -30,7 +31,7 @@ jobs:
           #- OPTIONAL_DEFINES: ""
           #  TYPE: "default"
 
-          - OPTIONAL_DEFINES: "-DBUILD_EXTRACTORS=ON -DBUILD_IKE3_BOTS=ON -DBUILD_AHBOT=ON -DBUILD_RECASTDEMOMOD=ON -DBUILD_GIT_ID=ON"
+          - OPTIONAL_DEFINES: "-DBUILD_EXTRACTORS=ON -DBUILD_IKE3_BOTS=ON -DBUILD_AHBOT=ON -DBUILD_GIT_ID=ON"
             TYPE: "with-all"
 
           #- OPTIONAL_DEFINES: "-DBUILD_PLAYERBOT=ON -DBUILD_AHBOT=ON"
@@ -63,7 +64,7 @@ jobs:
       - uses: FranzDiebold/github-env-vars-action@v2
       - name: Create Build Environment
         run: |
-          echo "ARCHIVE_FILENAME=$env:CI_REPOSITORY_NAME-${{matrix.TYPE}}-$env:CI_SHA_SHORT.zip" >> $env:GITHUB_ENV
+          echo "ARCHIVE_FILENAME=cmangos-classic.zip" >> $env:GITHUB_ENV
           cmake -E make_directory ${{ env.BUILD_DIR }}
       # install dependencies
       - name: Cache Windows boost
@@ -71,7 +72,7 @@ jobs:
         id: cache-boost
         with:
           path: "${{env.BOOST_INSTALL_DIR}}/boost"
-          key: ${{ runner.os }}-${{ hashFiles('.github/workflows/cmangos-classic-windows-release.yml') }}
+          key: ${{ runner.os }}-${{env.CORE_TYPE}}
 
       - if: steps.cache-boost.outputs.cache-hit != 'true'
         name: Install boost
@@ -103,7 +104,7 @@ jobs:
       - name: Archive files
         run: |
           cd bin
-          7z a -tzip ${{env.ARCHIVE_FILENAME}} "x64_${{env.BUILD_TYPE}}"
+          7z a -tzip ${{env.ARCHIVE_FILENAME}} "x64_${{env.BUILD_TYPE}}/*"
       - name: Archive this artefact
         uses: actions/upload-artifact@v2
         with:
@@ -136,9 +137,9 @@ jobs:
         uses: "marvinpinto/action-automatic-releases@latest"
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          automatic_release_tag: "latest"
+          automatic_release_tag: "classic"
           prerelease: false
-          title: "Development Build(${{ steps.date.outputs.date }})"
+          title: "CMaNGOS Classic Build (${{ steps.date.outputs.date }})"
           files: all_snapshots
 
   notify-success:
@@ -156,23 +157,30 @@ jobs:
           shortSHA=`echo ${GITHUB_SHA} | cut -c1-8`
           echo "GIT_SHORT_SHA=${shortSHA}" >> $GITHUB_ENV
           projectNames="CMaNGOS Classic with ike3 bots"
+          coreType="cmangos"
           expension="classic"
+          coreBranch="ike3-bots"
+          echo "CORE_TYPE=${coreType}" >> $GITHUB_ENV
           echo "EXPENSION_NAME=${expension}" >> $GITHUB_ENV
-          echo "ALL_ARCH_NAME=${projectNames}-with-all-${shortSHA}.zip" >> $GITHUB_ENV
+          echo "CORE_BRANCH=${coreBranch}" >> $GITHUB_ENV
+          echo "ALL_ARCH_NAME=${coreType}-${expension}.zip" >> $GITHUB_ENV
       - name: Notify
         uses: rjstone/discord-webhook-notify@v1.0.4
         with:
           severity: info
-          username: ${{env.EXPENSION_NAME}}-core
+          username: ${{env.CORE_TYPE}}-${{env.EXPENSION_NAME}}
           description: |
-            **${{env.EXPENSION_NAME}} prebuilt have just been released**
+            **${{env.CORE_TYPE}}-${{env.EXPENSION_NAME}} Windows build successful!**
           details: |
-            **Branch:** ${{env.GIT_BRANCH}}
-            __**Winodws prebuild Binaries**__
-            - [All options on](${{github.server_url}}/${{ github.repository }}/releases/download/latest/${{env.ALL_ARCH_NAME}})
-          footer: By CMaNGOS team!
+            **Core branch:** ${{env.CORE_BRANCH}}
+            **Bots branch:** ${{env.GIT_BRANCH}}
+            **Last Commit:** [${{github.repository}}/${{env.GIT_SHORT_SHA}}](${{github.server_url}}/${{ github.repository }}/commit/${{github.sha}})
+            **Build log:** [actions/runs/${{github.run_id}}](${{github.server_url}}/${{github.repository}}/actions/runs/${{github.run_id}})
+            __**Windows prebuilt Binaries**__
+            - (${{github.server_url}}/${{ github.repository }}/releases/download/classic/${{env.ALL_ARCH_NAME}})
+          footer: Build Success
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK_BUILD }}
-          avatarUrl: https://github.githubassets.com/images/modules/logos_page/Octocat.png
+          avatarUrl: https://github.githubassets.com/favicons/favicon-success.png
 
   notify:
     name: Discord Notification
@@ -188,19 +196,24 @@ jobs:
         run: |
           echo "GIT_BRANCH=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
           echo "GIT_SHORT_SHA=`echo ${GITHUB_SHA} | cut -c1-8`" >> $GITHUB_ENV
+          coreType="cmangos"
+          expension="classic"
+          coreBranch="ike3-bots"
+          echo "CORE_TYPE=${coreType}" >> $GITHUB_ENV
+          echo "EXPENSION_NAME=${expension}" >> $GITHUB_ENV
+          echo "CORE_BRANCH=${coreBranch}" >> $GITHUB_ENV
       - name: Notify
         uses: rjstone/discord-webhook-notify@v1.0.4
         with:
           severity: error
-          username: ${{env.EXPENSION_NAME}}-core
+          username: ${{env.CORE_TYPE}}-${{env.EXPENSION_NAME}}
           description: |
-            **Windows buid failed**
+            **${{env.CORE_TYPE}}-${{env.EXPENSION_NAME}} Windows build failed!**
           details: |
-            - **Branch:** ${{env.GIT_BRANCH}}
-            - **Pusher:** ${{github.event.pusher.name}}
-            - **Author:** ${{github.event.head_commit.author.name}}
-            - **Commit:** [${{github.repository}}/${{env.GIT_SHORT_SHA}}](${{github.server_url}}/${{ github.repository }}/commit/${{github.sha}})
-            - **Build log:** [actions/runs/${{github.run_id}}](${{github.server_url}}/${{github.repository}}/actions/runs/${{github.run_id}})
-          footer: CMaNGOS police called!
+            **Core branch:** ${{env.CORE_BRANCH}}
+            **Bots branch:** ${{env.GIT_BRANCH}}
+            **Last Commit:** [${{github.repository}}/${{env.GIT_SHORT_SHA}}](${{github.server_url}}/${{ github.repository }}/commit/${{github.sha}})
+            **Build log:** [actions/runs/${{github.run_id}}](${{github.server_url}}/${{github.repository}}/actions/runs/${{github.run_id}})
+          footer: Build Failure
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK_BUILD }}
-          avatarUrl: https://github.githubassets.com/images/modules/logos_page/Octocat.png
+          avatarUrl: https://github.githubassets.com/favicons/favicon-failure.png
