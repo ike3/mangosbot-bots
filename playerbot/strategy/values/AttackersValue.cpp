@@ -9,7 +9,7 @@ using namespace MaNGOS;
 
 list<ObjectGuid> AttackersValue::Calculate()
 {
-    bool getOne = getQualifier().empty();
+    bool getOne = getQualifier().size();
 
     list<ObjectGuid> result;
     if (ai->AllowActivity(ALL_ACTIVITY))
