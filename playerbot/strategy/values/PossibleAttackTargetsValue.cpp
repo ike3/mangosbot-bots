@@ -8,6 +8,7 @@
 #include "GridNotifiersImpl.h"
 #include "CellImpl.h"
 #include "AttackersValue.h"
+#include "EnemyPlayerValue.h"
 
 using namespace ai;
 using namespace MaNGOS;
@@ -213,48 +214,41 @@ bool PossibleAttackTargetsValue::IsValid(Unit* target, Player* player, float ran
 
 bool PossibleAttackTargetsValue::IsPossibleTarget(Unit* target, Player* player, float range, bool ignoreCC)
 {
-    // If the target is in an attackable distance
-    if(!player->IsWithinDistInMap(target, range))
+    if(target)
     {
-        return false;
-    }
-
-    // If the target is CC'ed
-    if(!ignoreCC && !HasIgnoreCCRti(target, player) && (HasBreakableCC(target, player) || HasUnBreakableCC(target, player)))
-    {
-        return false;
-    }
-
-    // If the player is a bot
-    PlayerbotAI* playerBot = player->GetPlayerbotAI();
-    if (playerBot)
-    {
-        // If the target is a pet and we have an enemy player nearby
-        const bool hasEnemyPlayerTarget = PAI_VALUE(Unit*, "enemy player target");
-        if(target->GetObjectGuid().IsPet() && hasEnemyPlayerTarget)
-        {
-            return false;
-        }
-    }
-
-    // If the target is a NPC
-    Player* enemyPlayer = dynamic_cast<Player*>(target);
-    if (!enemyPlayer)
-    {
-        // If the target is a critter (and is not in combat)
-        if ((target->GetCreatureType() == CREATURE_TYPE_CRITTER) && !target->IsInCombat())
+        // If the target is in an attackable distance
+        if(!player->IsWithinDistInMap(target, range))
         {
             return false;
         }
 
-        // If the target is not tapped (the player doesn't have the loot rights (gray name))
-        if (!IsTapped(target, player))
+        // If the target is CC'ed
+        if(!ignoreCC && !HasIgnoreCCRti(target, player) && (HasBreakableCC(target, player) || HasUnBreakableCC(target, player)))
         {
             return false;
         }
+
+        // If the target is a NPC
+        Player* enemyPlayer = dynamic_cast<Player*>(target);
+        if (!enemyPlayer)
+        {
+            // If the target is a critter (and is not in combat)
+            if ((target->GetCreatureType() == CREATURE_TYPE_CRITTER) && !target->IsInCombat())
+            {
+                return false;
+            }
+
+            // If the target is not tapped (the player doesn't have the loot rights (gray name))
+            if (!IsTapped(target, player))
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 
-    return true;
+    return false;
 }
 
 bool PossibleAddsValue::Calculate()

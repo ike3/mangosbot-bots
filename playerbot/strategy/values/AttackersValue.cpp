@@ -108,7 +108,7 @@ void AttackersValue::AddTargetsOf(Player* player, set<Unit*>& targets, bool getO
         }
 
         // Add the duel opponent
-        if (bot->duel && bot->duel->opponent)
+        if (bot == player && bot->duel && bot->duel->opponent)
         {
             units.push_back(bot->duel->opponent);
         }
@@ -160,7 +160,9 @@ void AttackersValue::AddTargetsOf(Player* player, set<Unit*>& targets, bool getO
                     unit->CallForAllControlledUnits(AddGuardiansHelper(units), CONTROLLED_PET | CONTROLLED_GUARDIANS | CONTROLLED_CHARM | CONTROLLED_MINIPET | CONTROLLED_TOTEMS);
 
                     if (getOne)
-                        return;
+                    {
+                        break;
+                    }
                 }
             }
         }
@@ -262,6 +264,12 @@ bool AttackersValue::IsPossibleTarget(Unit* target, Player* player) const
         Player* enemyPlayer = dynamic_cast<Player*>(target);
         if (enemyPlayer)
         {
+            // Don't consider enemy players if pvp strategy is not set
+            if (!ai->HasStrategy("pvp", BotState::BOT_STATE_COMBAT))
+            {
+                return false;
+            }
+
             // If the enemy player is in a PVP Prohibited zone
             if (inPvPProhibitedZone)
             {
@@ -271,9 +279,8 @@ bool AttackersValue::IsPossibleTarget(Unit* target, Player* player) const
             // Don't check distance on duel opponents
             if(player->duel && (player->duel->opponent != target))
             {
-                // If the enemy player is not within PvP distance (from the owner bot)
-                const uint32 pvpDistance = (inVehicle || bot->GetHealth() > enemyPlayer->GetHealth()) ? EnemyPlayerValue::GetMaxAttackDistance(bot) : 20.0f;
-                if (!bot->IsWithinDist(enemyPlayer, pvpDistance, false))
+                // If the enemy player is not within sight distance (from the owner bot)
+                if (!bot->IsWithinDist(enemyPlayer, GetRange(), false))
                 {
                     return false;
                 }
@@ -348,15 +355,20 @@ bool AttackersValue::IsValid(Unit* target, Player* player, bool checkInCombat)
         Player* enemyPlayer = dynamic_cast<Player*>(target);
         if (enemyPlayer)
         {
+            // Don't consider enemy players if pvp strategy is not set
+            if (player->GetPlayerbotAI() && !player->GetPlayerbotAI()->HasStrategy("pvp", BotState::BOT_STATE_COMBAT))
+            {
+                return false;
+            }
+
             // If the enemy player is in a PVP Prohibited zone
             if (inPvPProhibitedZone)
             {
                 return false;
             }
 
-            // If the enemy player is not within PvP distance (from the owner bot)
-            const uint32 pvpDistance = (inVehicle || player->GetHealth() > enemyPlayer->GetHealth()) ? EnemyPlayerValue::GetMaxAttackDistance(player) : 20.0f;
-            if (!player->IsWithinDist(enemyPlayer, pvpDistance, false))
+            // If the enemy player is not within sight distance
+            if (!player->IsWithinDist(enemyPlayer, GetRange(), false))
             {
                 return false;
             }

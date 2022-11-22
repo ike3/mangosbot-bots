@@ -366,31 +366,62 @@ bool PossibleAddsTrigger::IsActive()
 
 bool NotDpsTargetActiveTrigger::IsActive()
 {
-    Unit* dps = AI_VALUE(Unit*, "dps target");
     Unit* target = AI_VALUE(Unit*, "current target");
-    Unit* enemy = AI_VALUE(Unit*, "enemy player target");
-    
-    // do not switch if enemy target
-    if (target && target == enemy && sServerFacade.IsAlive(target))
-        return false;
+    if (target)
+    {
+        if (target->IsPlayer())
+        {
+            return false;
+        }
 
-    if (target && target->IsPlayer())
-        return false;
+        if(sServerFacade.IsAlive(target))
+        {
+            // do not switch if enemy target
+            Unit* enemy = AI_VALUE(Unit*, "enemy player target");
+            if (enemy)
+            {
+                return target != enemy;
+            }
 
-    return dps && target != dps;
+            Unit* dps = AI_VALUE(Unit*, "dps target");
+            if (dps)
+            {
+                return target != dps;
+            }
+        }
+    }
+
+    return false;
 }
 
 bool NotDpsAoeTargetActiveTrigger::IsActive()
 {
-    Unit* dps = AI_VALUE(Unit*, "dps aoe target");
     Unit* target = AI_VALUE(Unit*, "current target");
-    Unit* enemy = AI_VALUE(Unit*, "enemy player target");
+    if (target)
+    {
+        if (target->IsPlayer())
+        {
+            return false;
+        }
 
-    // do not switch if enemy target
-    if (target && target == enemy && sServerFacade.IsAlive(target))
-        return false;
+        if (sServerFacade.IsAlive(target))
+        {
+            // do not switch if enemy target
+            Unit* enemy = AI_VALUE(Unit*, "enemy player target");
+            if (enemy)
+            {
+                return target != enemy;
+            }
 
-    return dps && target != dps;
+            Unit* dps = AI_VALUE(Unit*, "dps aoe target");
+            if (dps)
+            {
+                return target != dps;
+            }
+        }
+    }
+
+    return false;
 }
 
 bool IsSwimmingTrigger::IsActive()

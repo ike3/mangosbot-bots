@@ -506,7 +506,6 @@ void AiFactory::AddDefaultNonCombatStrategies(Player* player, PlayerbotAI* const
             if (!urand(0, 3))
                 nonCombatEngine->addStrategy("attack tagged");
 
-            nonCombatEngine->addStrategy("pvp");
             nonCombatEngine->addStrategy("collision");
             nonCombatEngine->addStrategy("grind");            
             nonCombatEngine->addStrategy("group");
@@ -541,7 +540,6 @@ void AiFactory::AddDefaultNonCombatStrategies(Player* player, PlayerbotAI* const
                 {
                     if (master->GetPlayerbotAI() || sRandomPlayerbotMgr.IsRandomBot(player))
                     {
-                        nonCombatEngine->addStrategy("pvp");
                         nonCombatEngine->addStrategy("collision");
                         nonCombatEngine->addStrategy("grind");
                         nonCombatEngine->addStrategy("group");
@@ -582,7 +580,7 @@ void AiFactory::AddDefaultNonCombatStrategies(Player* player, PlayerbotAI* const
     if (player->InBattleGround())
     {
         nonCombatEngine->addStrategies("racials", "nc", "chat",
-            "default", "buff", "food", "mount", "pvp", "collision", "dps assist", "attack tagged", "emote", NULL);
+            "default", "buff", "food", "mount", "collision", "dps assist", "attack tagged", "emote", NULL);
         nonCombatEngine->removeStrategy("custom::say");
         nonCombatEngine->removeStrategy("travel");
         nonCombatEngine->removeStrategy("rpg");

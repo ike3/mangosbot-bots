@@ -109,7 +109,6 @@ namespace ai
             creators["nearest vehicles"] = &ValueContext::nearest_vehicles;
             creators["nearest friendly players"] = &ValueContext::nearest_friendly_players;
             creators["closest friendly players"] = &ValueContext::closest_friendly_players;
-            creators["nearest enemy players"] = &ValueContext::nearest_enemy_players;
             creators["possible targets"] = &ValueContext::possible_targets;
             creators["possible targets no los"] = &ValueContext::possible_targets_no_los;
             creators["possible adds"] = &ValueContext::possible_adds;
@@ -414,7 +413,6 @@ namespace ai
         static UntypedValue* nearest_vehicles(PlayerbotAI* ai) { return new NearestVehiclesValue(ai); }
         static UntypedValue* nearest_friendly_players(PlayerbotAI* ai) { return new NearestFriendlyPlayersValue(ai); }
         static UntypedValue* closest_friendly_players(PlayerbotAI* ai) { return new NearestFriendlyPlayersValue(ai, INTERACTION_DISTANCE); }
-        static UntypedValue* nearest_enemy_players(PlayerbotAI* ai) { return new NearestEnemyPlayersValue(ai); }
         static UntypedValue* nearest_corpses(PlayerbotAI* ai) { return new NearestCorpsesValue(ai); }
         static UntypedValue* possible_rpg_targets(PlayerbotAI* ai) { return new PossibleRpgTargetsValue(ai); }
         static UntypedValue* possible_targets(PlayerbotAI* ai) { return new PossibleTargetsValue(ai); }
