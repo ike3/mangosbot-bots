@@ -41,7 +41,7 @@ namespace ai
 
         virtual bool IsActive()
 		{
-            return AI_VALUE(uint8, "attacker count") >= attackerCount && !AI_VALUE2(bool, "has totem", name);
+            return AI_VALUE(uint8, "attackers count") >= attackerCount && !AI_VALUE2(bool, "has totem", name);
         }
 
     protected:
@@ -64,7 +64,7 @@ namespace ai
         ManaSpringTotemTrigger(PlayerbotAI* ai) : TotemTrigger(ai, "mana spring totem") {}
         virtual bool IsActive()
         {
-            return AI_VALUE(uint8, "attacker count") >= attackerCount &&
+            return AI_VALUE(uint8, "attackers count") >= attackerCount &&
                     !AI_VALUE2(bool, "has totem", "mana tide totem") &&
                     !AI_VALUE2(bool, "has totem", name);
         }

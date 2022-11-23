@@ -6,7 +6,7 @@
 namespace ai
 {
     // List of hostile targets that are in combat with the bot (or bot group) and can be attacked (is reachable, not cc'ed, etc...)
-    class PossibleAttackTargetsValue : public ObjectGuidListCalculatedValue
+    class PossibleAttackTargetsValue : public ObjectGuidListCalculatedValue, public Qualified
 	{
 	public:
         PossibleAttackTargetsValue(PlayerbotAI* ai) : ObjectGuidListCalculatedValue(ai, "possible attack targets") {}
@@ -15,7 +15,7 @@ namespace ai
         static bool IsValid(Unit* target, Player* player, float range = sPlayerbotAIConfig.sightDistance, bool ignoreCC = false, bool checkAttackerValid = true);
 
 	private:
-		void RemoveNonThreating(list<ObjectGuid>& targets);
+		void RemoveNonThreating(list<ObjectGuid>& targets, bool getOne);
 
         static bool IsPossibleTarget(Unit* target, Player *player, float range, bool ignoreCC);
         static bool HasIgnoreCCRti(Unit* target, Player* player);

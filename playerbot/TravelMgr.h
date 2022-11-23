@@ -66,8 +66,8 @@ namespace ai
         void setZ(const float z) { coord_z = z; }
         void setO(const float o) {orientation = o;}
 
-        //Getters
-        operator bool() const { return  mapid != 0 || coord_x != 0 || coord_y != 0 || coord_z != 0; }
+        //Operators
+        operator bool() const { return  coord_x != 0 || coord_y != 0 || coord_z != 0; }
         bool operator==(const WorldPosition& p1) const { return mapid == p1.mapid && coord_x == p1.coord_x && coord_y == p1.coord_y && coord_z == p1.coord_z && orientation == p1.orientation; }
         bool operator!=(const WorldPosition& p1) const { return mapid != p1.mapid || coord_x != p1.coord_x || coord_y != p1.coord_y || coord_z != p1.coord_z || orientation != p1.orientation; }
         
@@ -77,6 +77,15 @@ namespace ai
         WorldPosition& operator*=(const float s) { coord_x *= s; coord_y *= s; coord_z *= s; return *this; }
         WorldPosition& operator/=(const float s) { coord_x /= s; coord_y /= s; coord_z /= s; return *this; }
 
+        WorldPosition operator+(const WorldPosition& p1) const { WorldPosition p(*this); p += p1; return p; }
+        WorldPosition operator-(const WorldPosition& p1) const { WorldPosition p(*this); p -= p1; return p; }
+
+        WorldPosition operator*(const float s) const { WorldPosition p(*this); p *= s; return p; }
+        WorldPosition operator/(const float s) const { WorldPosition p(*this); p /= s; return p; }
+
+        float operator*(const WorldPosition& p1) const { return (coord_x * coord_x) + (coord_y * coord_y) + (coord_z * coord_z); }
+
+        //Getters
         uint32 getMapId() const { return mapid; }
         float getX() const { return coord_x; }
         float getY() const { return coord_y; }

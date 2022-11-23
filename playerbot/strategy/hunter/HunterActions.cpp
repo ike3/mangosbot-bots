@@ -17,7 +17,7 @@ bool CastViperStingAction::isUseful()
 
 bool CastAspectOfTheCheetahAction::isUseful()
 {
-    return !AI_VALUE(uint8, "attacker count") && !ai->HasAnyAuraOf(GetTarget(), "aspect of the cheetah", "aspect of the pack", NULL);
+    return !AI_VALUE(bool, "has attackers") && !ai->HasAnyAuraOf(GetTarget(), "aspect of the cheetah", "aspect of the pack", NULL);
 }
 
 bool FeedPetAction::Execute(Event& event)

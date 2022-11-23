@@ -8,6 +8,7 @@
 #include "GridNotifiersImpl.h"
 #include "CellImpl.h"
 #include "AttackersValue.h"
+#include "EnemyPlayerValue.h"
 
 using namespace ai;
 using namespace MaNGOS;
@@ -19,15 +20,33 @@ list<ObjectGuid> PossibleAttackTargetsValue::Calculate()
     {
         if (bot->IsInWorld() && !bot->IsBeingTeleported())
         {
-            result = AI_VALUE(list<ObjectGuid>, "attackers");
-            RemoveNonThreating(result);
+            // Check if we only need one possible attack target
+            bool getOne = false;
+            if (!qualifier.empty())
+            {
+                getOne = stoi(qualifier);
+            }
+
+            if (getOne)
+            {
+                // Try to get one possible attack target
+                result = AI_VALUE2(list<ObjectGuid>, "attackers", 1);
+                RemoveNonThreating(result, getOne);
+            }
+
+            // If the one possible attack target failed, retry with multiple attackers
+            if (result.empty())
+            {
+                result = AI_VALUE(list<ObjectGuid>, "attackers");
+                RemoveNonThreating(result, getOne);
+            }
         }
     }
 
 	return result;
 }
 
-void PossibleAttackTargetsValue::RemoveNonThreating(list<ObjectGuid>& targets)
+void PossibleAttackTargetsValue::RemoveNonThreating(list<ObjectGuid>& targets, bool getOne)
 {
     list<ObjectGuid> breakableCC;
     list<ObjectGuid> unBreakableCC;
@@ -57,7 +76,17 @@ void PossibleAttackTargetsValue::RemoveNonThreating(list<ObjectGuid>& targets)
         }
         else
         {
-            ++tIter;
+            if (getOne)
+            {
+                // If the target is valid return it straight away
+                list<ObjectGuid> result = { *tIter };
+                targets = result;
+                break;
+            }
+            else
+            {
+                ++tIter;
+            }
         }
     }
 
@@ -195,48 +224,41 @@ bool PossibleAttackTargetsValue::IsValid(Unit* target, Player* player, float ran
 
 bool PossibleAttackTargetsValue::IsPossibleTarget(Unit* target, Player* player, float range, bool ignoreCC)
 {
-    // If the target is in an attackable distance
-    if(!player->IsWithinDistInMap(target, range))
+    if(target)
     {
-        return false;
-    }
-
-    // If the target is CC'ed
-    if(!ignoreCC && !HasIgnoreCCRti(target, player) && (HasBreakableCC(target, player) || HasUnBreakableCC(target, player)))
-    {
-        return false;
-    }
-
-    // If the player is a bot
-    PlayerbotAI* playerBot = player->GetPlayerbotAI();
-    if (playerBot)
-    {
-        // If the target is a pet and we have an enemy player nearby
-        const bool hasEnemyPlayerTarget = PAI_VALUE(Unit*, "enemy player target");
-        if(target->GetObjectGuid().IsPet() && hasEnemyPlayerTarget)
-        {
-            return false;
-        }
-    }
-
-    // If the target is a NPC
-    Player* enemyPlayer = dynamic_cast<Player*>(target);
-    if (!enemyPlayer)
-    {
-        // If the target is a critter (and is not in combat)
-        if ((target->GetCreatureType() == CREATURE_TYPE_CRITTER) && !target->IsInCombat())
+        // If the target is in an attackable distance
+        if(!player->IsWithinDistInMap(target, range))
         {
             return false;
         }
 
-        // If the target is not tapped (the player doesn't have the loot rights (gray name))
-        if (!IsTapped(target, player))
+        // If the target is CC'ed
+        if(!ignoreCC && !HasIgnoreCCRti(target, player) && (HasBreakableCC(target, player) || HasUnBreakableCC(target, player)))
         {
             return false;
         }
+
+        // If the target is a NPC
+        Player* enemyPlayer = dynamic_cast<Player*>(target);
+        if (!enemyPlayer)
+        {
+            // If the target is a critter (and is not in combat)
+            if ((target->GetCreatureType() == CREATURE_TYPE_CRITTER) && !target->IsInCombat())
+            {
+                return false;
+            }
+
+            // If the target is not tapped (the player doesn't have the loot rights (gray name))
+            if (!IsTapped(target, player))
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 
-    return true;
+    return false;
 }
 
 bool PossibleAddsValue::Calculate()

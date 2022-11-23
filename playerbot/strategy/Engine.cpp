@@ -694,11 +694,13 @@ bool Engine::ListenAndExecute(Action* action, Event& event)
         ostringstream out;
         AiObjectContext* context = ai->GetAiObjectContext();
 
+        float deltaThreat = LOG_AI_VALUE(float, "my threat::current target")->GetDelta(5.0f);
+
         float currentThreat = AI_VALUE2(float, "my threat", "current target");
         float tankThreat = AI_VALUE2(float, "tank threat", "current target");
         float relThreat = AI_VALUE2(uint8, "threat", "current target");
 
-        out << "threat: " << currentThreat << "/" << tankThreat << ": " << relThreat;
+        out << "threat: " << int32(currentThreat)<< "+" << int32(deltaThreat) << " / " << int32(tankThreat) << " ||| " << relThreat;
 
         ai->TellMasterNoFacing(out);
     }

@@ -109,7 +109,6 @@ namespace ai
             creators["nearest vehicles"] = &ValueContext::nearest_vehicles;
             creators["nearest friendly players"] = &ValueContext::nearest_friendly_players;
             creators["closest friendly players"] = &ValueContext::closest_friendly_players;
-            creators["nearest enemy players"] = &ValueContext::nearest_enemy_players;
             creators["possible targets"] = &ValueContext::possible_targets;
             creators["possible targets no los"] = &ValueContext::possible_targets_no_los;
             creators["possible adds"] = &ValueContext::possible_adds;
@@ -132,6 +131,8 @@ namespace ai
             creators["dps aoe target"] = &ValueContext::dps_aoe_target;
             creators["least hp target"] = &ValueContext::least_hp_target;
             creators["enemy player target"] = &ValueContext::enemy_player_target;
+            creators["enemy player targets"] = &ValueContext::enemy_player_targets;
+            creators["has enemy player targets"] = &ValueContext::has_enemy_player_targets;
             creators["cc target"] = &ValueContext::cc_target;
             creators["current cc target"] = &ValueContext::current_cc_target;
             creators["pet target"] = &ValueContext::pet_target;
@@ -151,9 +152,12 @@ namespace ai
             creators["pet dead"] = &ValueContext::pet_dead;
             creators["pet happy"] = &ValueContext::pet_happy;
             creators["has mana"] = &ValueContext::has_mana;
-            creators["attacker count"] = &ValueContext::attacker_count;
+            creators["attackers count"] = &ValueContext::attackers_count;
+            creators["possible attack targets count"] = &ValueContext::possible_attack_targets_count;
             creators["my attacker count"] = &ValueContext::my_attacker_count;
             creators["has aggro"] = &ValueContext::has_aggro;
+            creators["has attackers"] = &ValueContext::has_attackers;
+            creators["has possible attack targets"] = &ValueContext::has_possible_attack_targets;
             creators["mounted"] = &ValueContext::mounted;
 
             creators["can loot"] = &ValueContext::can_loot;
@@ -384,9 +388,12 @@ namespace ai
         static UntypedValue* always_loot_list(PlayerbotAI* ai) { return new AlwaysLootListValue(ai); }
         static UntypedValue* loot_strategy(PlayerbotAI* ai) { return new LootStrategyValue(ai); }
 
-        static UntypedValue* attacker_count(PlayerbotAI* ai) { return new AttackerCountValue(ai); }
+        static UntypedValue* attackers_count(PlayerbotAI* ai) { return new AttackersCountValue(ai); }
+        static UntypedValue* possible_attack_targets_count(PlayerbotAI* ai) { return new PossibleAttackTargetsCountValue(ai); }
         static UntypedValue* my_attacker_count(PlayerbotAI* ai) { return new MyAttackerCountValue(ai); }
         static UntypedValue* has_aggro(PlayerbotAI* ai) { return new HasAggroValue(ai); }
+        static UntypedValue* has_attackers(PlayerbotAI* ai) { return new HasAttackersValue(ai); }
+        static UntypedValue* has_possible_attack_targets(PlayerbotAI* ai) { return new HasPossibleAttackTargetsValue(ai); }
         static UntypedValue* mounted(PlayerbotAI* ai) { return new IsMountedValue(ai); }
         static UntypedValue* health(PlayerbotAI* ai) { return new HealthValue(ai); }
         static UntypedValue* rage(PlayerbotAI* ai) { return new RageValue(ai); }
@@ -408,7 +415,6 @@ namespace ai
         static UntypedValue* nearest_vehicles(PlayerbotAI* ai) { return new NearestVehiclesValue(ai); }
         static UntypedValue* nearest_friendly_players(PlayerbotAI* ai) { return new NearestFriendlyPlayersValue(ai); }
         static UntypedValue* closest_friendly_players(PlayerbotAI* ai) { return new NearestFriendlyPlayersValue(ai, INTERACTION_DISTANCE); }
-        static UntypedValue* nearest_enemy_players(PlayerbotAI* ai) { return new NearestEnemyPlayersValue(ai); }
         static UntypedValue* nearest_corpses(PlayerbotAI* ai) { return new NearestCorpsesValue(ai); }
         static UntypedValue* possible_rpg_targets(PlayerbotAI* ai) { return new PossibleRpgTargetsValue(ai); }
         static UntypedValue* possible_targets(PlayerbotAI* ai) { return new PossibleTargetsValue(ai); }
@@ -433,6 +439,8 @@ namespace ai
         static UntypedValue* dps_aoe_target(PlayerbotAI* ai) { return new DpsAoeTargetValue(ai); }
         static UntypedValue* least_hp_target(PlayerbotAI* ai) { return new LeastHpTargetValue(ai); }
         static UntypedValue* enemy_player_target(PlayerbotAI* ai) { return new EnemyPlayerValue(ai); }
+        static UntypedValue* enemy_player_targets(PlayerbotAI* ai) { return new EnemyPlayersValue(ai); }
+        static UntypedValue* has_enemy_player_targets(PlayerbotAI* ai) { return new HasEnemyPlayersValue(ai); }
         static UntypedValue* cc_target(PlayerbotAI* ai) { return new CcTargetValue(ai); }
         static UntypedValue* current_cc_target(PlayerbotAI* ai) { return new CurrentCcTargetValue(ai); }
         static UntypedValue* pet_target(PlayerbotAI* ai) { return new PetTargetValue(ai); }

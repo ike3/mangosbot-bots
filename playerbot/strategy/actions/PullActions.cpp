@@ -83,6 +83,8 @@ bool PullStartAction::Execute(Event& event)
             const float distanceToTarget = target->GetDistance(bot);
             if (distanceToTarget > strategy->GetRange())
             {
+                SET_AI_VALUE(Unit*, "current target", target);
+
                 result = ai->DoSpecificAction("reach pull", event);
             }
 

@@ -45,6 +45,9 @@ namespace ai
             if (player->isDND())
                 continue;
 
+            if (player->IsBeingTeleported())
+                continue;
+
             PlayerbotAI* botAi = player->GetPlayerbotAI();
 
             if (botAi)
@@ -135,6 +138,9 @@ namespace ai
                 continue;
 
             if (player->isDND())
+                continue;
+
+            if (player->IsBeingTeleported())
                 continue;
 
             PlayerbotAI* playerAi = player->GetPlayerbotAI();

@@ -135,7 +135,7 @@ namespace ai
     class AttackerCountTrigger : public Trigger
     {
     public:
-        AttackerCountTrigger(PlayerbotAI* ai, int amount, float distance = sPlayerbotAIConfig.sightDistance) : Trigger(ai, "attacker count", 2)
+        AttackerCountTrigger(PlayerbotAI* ai, int amount, float distance = sPlayerbotAIConfig.sightDistance) : Trigger(ai, "attackers count", 2)
         {
             this->amount = amount;
             this->distance = distance;
@@ -143,9 +143,9 @@ namespace ai
     public:
         virtual bool IsActive()
 		{
-            return AI_VALUE(uint8, "attacker count") >= amount;
+            return AI_VALUE(uint8, "attackers count") >= amount;
         }
-        virtual string getName() { return "attacker count"; }
+        virtual string getName() { return "attackers count"; }
 
     protected:
         int amount;

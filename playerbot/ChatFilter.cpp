@@ -237,10 +237,10 @@ private:
     map<string, uint8> classNames;
 };
 
-class SubGroupChatFilter : public ChatFilter
+class GroupChatFilter : public ChatFilter
 {
 public:
-    SubGroupChatFilter(PlayerbotAI* ai) : ChatFilter(ai) {}
+    GroupChatFilter(PlayerbotAI* ai) : ChatFilter(ai) {}
 
     virtual string Filter(string message)
     {
@@ -248,7 +248,7 @@ public:
 
         if (message.find("@group") == 0)
         {
-            string pnum = message.substr(6, message.find(" "));
+            string pnum = message.substr(6, message.find(" ")-6);
             int from = atoi(pnum.c_str());
             int to = from;
             if (pnum.find("-") != string::npos)
@@ -263,6 +263,13 @@ public:
             int sg = (int)bot->GetSubGroup() + 1;
             if (sg >= from && sg <= to)
                 return ChatFilter::Filter(message);
+        }
+        if (message.find("@nogroup") == 0)
+        {
+            if (bot->GetGroup())
+                return message;
+
+            return ChatFilter::Filter(message);
         }
         if (message.find("@leader") == 0)
         {
@@ -288,6 +295,128 @@ public:
     }
 };
 
+class GuildChatFilter : public ChatFilter
+{
+public:
+    GuildChatFilter(PlayerbotAI* ai) : ChatFilter(ai) {}
+
+    virtual string Filter(string message)
+    {
+        Player* bot = ai->GetBot();
+
+        if (message.find("@guild=") == 0)
+        {
+            if (!bot->GetGuildId())
+                return message;
+
+            string pguild = message.substr(7, message.find(" ")-7);
+
+            if (!pguild.empty())
+            {
+                Guild* guild = sGuildMgr.GetGuildById(bot->GetGuildId());
+                string guildName = guild->GetName();
+
+                if (pguild.find(guildName) != 0)
+                    return message;
+            }
+
+            return ChatFilter::Filter(message);
+        }
+        if (message.find("@guild") == 0)
+        {
+            if (!bot->GetGuildId())
+                return message;
+
+            string pguild = message.substr(6, message.find(" "));
+            
+            if (!pguild.empty())
+            {
+                Guild* guild = sGuildMgr.GetGuildById(bot->GetGuildId());
+                string guildName = guild->GetName();
+
+                if (pguild.find(guildName) == 0)
+                    return message;
+            }
+
+            return ChatFilter::Filter(message);
+        }
+        if (message.find("@noguild") == 0)
+        {
+            if (bot->GetGuildId())
+                return message;
+
+            return ChatFilter::Filter(message);
+        }
+        if (message.find("@gleader") == 0)
+        {
+            if (!bot->GetGuildId())
+                return message;
+
+            Guild* guild = sGuildMgr.GetGuildById(bot->GetGuildId());
+            if (guild->GetLeaderGuid() != bot->GetObjectGuid())
+                return message;
+
+            return ChatFilter::Filter(message);
+        }
+        if (message.find("@grank=") == 0)
+        {
+            if (!bot->GetGuildId())
+                return message;
+
+            string rank = message.substr(7, message.find(" ")-7);
+
+            if (!rank.empty())
+            {
+                Guild* guild = sGuildMgr.GetGuildById(bot->GetGuildId());
+                string rankName = guild->GetRankName(guild->GetRank(bot->GetObjectGuid()));
+
+                if (rank.find(rankName) != 0)
+                    return message;
+            }
+
+            return ChatFilter::Filter(message);
+        }
+
+        return message;
+    }
+};
+
+class StateChatFilter : public ChatFilter
+{
+public:
+    StateChatFilter(PlayerbotAI* ai) : ChatFilter(ai) {}
+
+    virtual string Filter(string message)
+    {
+        Player* bot = ai->GetBot();
+        AiObjectContext* context = bot->GetPlayerbotAI()->GetAiObjectContext();
+
+        if (message.find("@needrepair") == 0)
+        {
+            if (AI_VALUE(uint8, "durability") > 20)
+                return message;
+          
+            return ChatFilter::Filter(message);
+        }
+        if (message.find("@outside") == 0)
+        {
+            if (!WorldPosition(bot).isOverworld())
+                return message;
+
+            return ChatFilter::Filter(message);
+        }
+        if (message.find("@inside") == 0)
+        {
+            if (WorldPosition(bot).isOverworld())
+                return message;
+
+            return ChatFilter::Filter(message);
+        }        
+
+        return message;
+    }
+};
+
 CompositeChatFilter::CompositeChatFilter(PlayerbotAI* ai) : ChatFilter(ai)
 {
     filters.push_back(new StrategyChatFilter(ai));
@@ -295,7 +424,9 @@ CompositeChatFilter::CompositeChatFilter(PlayerbotAI* ai) : ChatFilter(ai)
     filters.push_back(new RtiChatFilter(ai));
     filters.push_back(new CombatTypeChatFilter(ai));
     filters.push_back(new LevelChatFilter(ai));
-    filters.push_back(new SubGroupChatFilter(ai));
+    filters.push_back(new GroupChatFilter(ai));
+    filters.push_back(new GuildChatFilter(ai));
+    filters.push_back(new StateChatFilter(ai));
 }
 
 CompositeChatFilter::~CompositeChatFilter()

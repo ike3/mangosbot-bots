@@ -6,189 +6,181 @@
 using namespace ai;
 using namespace std;
 
-bool NearestEnemyPlayersValue::AcceptUnit(Unit* unit)
+list<ObjectGuid> EnemyPlayersValue::Calculate()
 {
-    Player* enemy = dynamic_cast<Player*>(unit);
+    list<ObjectGuid> result;
+    if (ai->AllowActivity(ALL_ACTIVITY))
+    {
+        if (bot->IsInWorld() && !bot->IsBeingTeleported())
+        {
+            // Check if we only need one attacker
+            bool getOne = false;
+            if (!qualifier.empty())
+            {
+                getOne = stoi(qualifier);
+            }
 
-    bool inCannon = ai->IsInVehicle(false, true);
+            if (getOne)
+            {
+                // Try to get one enemy target
+                result = AI_VALUE2(list<ObjectGuid>, "possible attack targets", 1);
+                ApplyFilter(result, getOne);
+            }
 
-    return (enemy &&
-        enemy->IsWithinDist(bot, EnemyPlayerValue::GetMaxAttackDistance(bot), false) &&
-        enemy->GetMapId() == bot->GetMapId() &&
-#ifdef MANGOSBOT_ZERO
-        ai->IsOpposing(enemy) &&
-#else
-        (ai->IsOpposing(enemy) || (bot->InArena() && enemy->InArena() && bot->GetBGTeam() != enemy->GetBGTeam())) &&
-#endif
-        enemy->IsPvP() &&
-        !enemy->IsPolymorphed() &&
-        !ai->HasAura("sap", enemy) &&
-        !ai->HasAura("gouge", enemy) &&
-        !sServerFacade.IsFeared(enemy) &&
-        !sPlayerbotAIConfig.IsInPvpProhibitedZone(sServerFacade.GetAreaId(enemy)) &&
-        !enemy->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_1) &&
-        !enemy->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_UNTARGETABLE) &&
-        ((inCannon || !enemy->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_UNINTERACTIBLE))) &&
-        //!enemy->HasStealthAura() &&
-        //!enemy->HasInvisibilityAura() &&
-        enemy->IsVisibleForOrDetect(bot, bot->GetCamera().GetBody(), true) &&
-        !enemy->HasAuraType(SPELL_AURA_SPIRIT_OF_REDEMPTION)
-        );
+            // If the one enemy player failed, retry with multiple possible attack targets
+            if (result.empty())
+            {
+                result = AI_VALUE(list<ObjectGuid>, "possible attack targets");
+                ApplyFilter(result, getOne);
+            }
+        }
+    }
+
+    return result;
+}
+
+bool EnemyPlayersValue::IsValid(Unit* target, Player* player)
+{
+    if (target)
+    {
+        // If the target is a player
+        Player* enemyPlayer = dynamic_cast<Player*>(target);
+        if (enemyPlayer)
+        {
+            // If the target is friendly to the player
+            if (sServerFacade.IsFriendlyTo(target, player))
+            {
+                return false;
+            }
+
+            /*
+            // Check if too far away (Do we need this?)
+            const float maxPvPDistance = GetMaxAttackDistance(player);
+            const bool inCannon = player->GetPlayerbotAI() && player->GetPlayerbotAI()->IsInVehicle(false, true);
+            uint32 const pvpDistance = (inCannon || player->GetHealth() > enemyPlayer->GetHealth()) ? maxPvPDistance : 20.0f;
+            if (!player->IsWithinDist(enemyPlayer, pvpDistance, false))
+            {
+                return false;
+            }
+            */
+
+            return true;
+        }
+    }
+
+    return false;
+}
+
+void EnemyPlayersValue::ApplyFilter(list<ObjectGuid>& targets, bool getOne)
+{
+    list<ObjectGuid> filteredTargets;
+    for (const ObjectGuid& targetGuid : targets)
+    {
+        Unit* target = ai->GetUnit(targetGuid);
+        if (IsValid(target, bot))
+        {
+            filteredTargets.push_back(target->GetObjectGuid());
+
+            if (getOne)
+            {
+                break;
+            }
+        }
+    }
+
+    targets = filteredTargets;
+}
+
+bool HasEnemyPlayersValue::Calculate()
+{
+    return !context->GetValue<list<ObjectGuid>>("enemy player targets", 1)->Get().empty();
 }
 
 Unit* EnemyPlayerValue::Calculate()
 {
-    // from VMaNGOS
-
-    Unit* duel = AI_VALUE(Unit*, "duel target");
-    if (duel)
-        return duel;
-
-    bool inCannon = ai->IsInVehicle(false, true);
-    float const maxAggroDistance = GetMaxAttackDistance(bot);
-    Unit* pVictim = bot->GetVictim();
-    bool isMelee = !ai->IsRanged(bot);
-
-    // chance to not change target
-    /*if (pVictim && pVictim->IsPlayer() && bot->IsWithinDist(pVictim, maxAggroDistance)&&)*/
-
-    // 1. Check units we are currently in combat with.
-    std::list<Unit*> targets;
-    HostileReference* pReference = bot->getHostileRefManager().getFirst();
-    while (pReference)
+    // Prioritize the duel opponent
+    if(bot->duel && bot->duel->opponent && !sServerFacade.IsFriendlyTo(bot->duel->opponent, bot))
     {
-        ThreatManager* threatManager = pReference->getSource();
-        if (Unit* pTarget = threatManager->getOwner())
-        {
-            if (/*pTarget != pVictim &&*/
-                pTarget->IsPlayer() &&
-                pTarget->IsVisibleForOrDetect(bot, bot->GetCamera().GetBody(), false) &&
-                /*bot->IsWithinLOSInMap(pTarget) &&*/
-                bot->IsWithinDist(pTarget, maxAggroDistance))
-            {
-                if (bot->GetTeam() == HORDE)
-                {
-                    if (pTarget->HasAura(23333))
-                        return pTarget;
-                }
-                else
-                {
-                    if (pTarget->HasAura(23335))
-                        return pTarget;
-                }
+        return bot->duel->opponent;
+    }
 
-                targets.push_back(pTarget);
+    Unit* bestEnemyPlayer = nullptr;
+    float bestEnemyPlayerDistance = 999999999.0f;
+    uint32 bestEnemyPlayerHealth = 99999999;
+
+    const bool isMelee = !ai->IsRanged(bot);
+
+    list<ObjectGuid> enemyPlayers = AI_VALUE(list<ObjectGuid>, "enemy player targets");
+    for (const ObjectGuid& targetGuid : enemyPlayers)
+    {
+        Unit* target = ai->GetUnit(targetGuid);
+        if(target)
+        {
+            // Prioritize an enemy player if it has a battleground flag
+            if ((bot->GetTeam() == HORDE && target->HasAura(23333)) ||
+                (bot->GetTeam() == ALLIANCE && target->HasAura(23335)))
+            {
+                bestEnemyPlayer = target;
+                break;
             }
-        }
-        pReference = pReference->next();
-    }
 
-    if (!targets.empty())
-    {
-        if (isMelee)
-        {
-            targets.sort([this](Unit* pUnit1, const Unit* pUnit2)
-                {
-                    return bot->GetDistance(pUnit1, false) < bot->GetDistance(pUnit2, false);
-                });
-        }
-        else
-        {
-            targets.sort([this](Unit* pUnit1, const Unit* pUnit2)
-                {
-                    return pUnit1->GetHealth() < pUnit2->GetHealth();
-                });
-        }
-
-        for (auto enemy : targets)
-        {
-            // TODO some logic
-            return enemy;
-        }
-    }
-
-    // 2. Find enemy player in range.
-
-    list<ObjectGuid> players = AI_VALUE(list<ObjectGuid>, "nearest enemy players");
-    std::list<Player*> targetsList;
-
-    for (const auto& gTarget : players)
-    {
-        Unit* pUnit = ai->GetUnit(gTarget);
-        if (!pUnit)
-            continue;
-
-        Player* pTarget = dynamic_cast<Player*>(pUnit);
-        if (!pTarget)
-            continue;
-
-        /*if (pTarget == pVictim)
-            continue;*/
-
-        uint32 const aggroDistance = (inCannon || bot->GetHealth() > pTarget->GetHealth()) ? maxAggroDistance : 20.0f;
-        if (!bot->IsWithinDist(pTarget, aggroDistance, false))
-            continue;
-
-        if (bot->GetTeam() == HORDE)
-        {
-            if (pTarget->HasAura(23333))
-                return pTarget;
-        }
-        else
-        {
-            if (pTarget->HasAura(23335))
-                return pTarget;
-        }
-
-        // TODO choose proper targets
-        if (/*bot->IsWithinLOSInMap(pTarget, true) && (inCannon || */fabs(bot->GetPositionZ() - pTarget->GetPositionZ()) < 30.0f)
-            targetsList.push_back(pTarget);
-    }
-
-    if (!targetsList.empty())
-    {
-        if (isMelee)
-        {
-            targetsList.sort([this](Unit* pUnit1, const Unit* pUnit2)
-                {
-                    return bot->GetDistance(pUnit1, false) < bot->GetDistance(pUnit2, false);
-                });
-        }
-        else
-        {
-            targetsList.sort([this](Unit* pUnit1, const Unit* pUnit2)
-                {
-                    return pUnit1->GetHealth() < pUnit2->GetHealth();
-                });
-        }
-
-        return *targetsList.begin();
-    }
-
-    // 3. Check party attackers.
-
-    if (Group* pGroup = bot->GetGroup())
-    {
-        for (GroupReference* itr = pGroup->GetFirstMember(); itr != nullptr; itr = itr->next())
-        {
-            if (Unit* pMember = itr->getSource())
+            if (isMelee)
             {
-                if (pMember == bot || pMember->GetMapId() != bot->GetMapId())
-                    continue;
-
-                if (sServerFacade.GetDistance2d(bot, pMember) > 30.0f)
-                    continue;
-
-                if (Unit* pAttacker = pMember->getAttackerForHelper())
-                    if (bot->IsWithinDist(pAttacker, maxAggroDistance, false) &&
-                        /*bot->IsWithinLOSInMap(pAttacker, true) &&*/
-                        /*pAttacker != pVictim &&*/
-                        pAttacker->IsVisibleForOrDetect(bot, bot->GetCamera().GetBody(), false) &&
-                        pAttacker->IsPlayer())
-                        return pAttacker;
+                // Score best enemy player based on lowest distance
+                const float distanceToEnemyPlayer = target->GetDistance(bot, false);
+                if (distanceToEnemyPlayer < bestEnemyPlayerDistance)
+                {
+                    bestEnemyPlayerDistance = distanceToEnemyPlayer;
+                    bestEnemyPlayer = target;
+                }
+            }
+            else
+            {
+                // Score best enemy player based on lowest health
+                const uint32 enemyPlayerHealth = target->GetHealth();
+                if (enemyPlayerHealth < bestEnemyPlayerHealth)
+                {
+                    bestEnemyPlayerHealth = enemyPlayerHealth;
+                    bestEnemyPlayer = target;
+                }
             }
         }
     }
 
-    return nullptr;
+    return bestEnemyPlayer;
 }
+
+/*
+float EnemyPlayerValue::GetMaxAttackDistance(Player* bot)
+{
+    if (!bot->GetBattleGround())
+        return 60.0f;
+
+    if (bot->InBattleGround())
+    {
+        BattleGround* bg = bot->GetBattleGround();
+        if (!bg)
+            return 40.0f;
+
+        BattleGroundTypeId bgType = bg->GetTypeId();
+
+#ifdef MANGOSBOT_TWO
+        if (bgType == BATTLEGROUND_RB)
+            bgType = bg->GetTypeId(true);
+
+        if (bgType == BATTLEGROUND_IC)
+        {
+            if (bot->GetPlayerbotAI()->IsInVehicle(false, true))
+                return 120.0f;
+        }
+#endif
+        if (bgType == BATTLEGROUND_AV)
+        {
+            bool strifeTime = bg->GetStartTime() < (uint32)(20 * MINUTE * IN_MILLISECONDS);
+            return strifeTime ? 40.0f : 10.0f;
+        }
+    }
+
+    return 40.0f;
+}
+*/

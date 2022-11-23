@@ -163,7 +163,7 @@ bool MyAttackerCountTrigger::IsActive()
 
 bool AoeTrigger::IsActive()
 {
-    return AI_VALUE2(bool, "combat", "self target") && AI_VALUE(uint8, "aoe count") >= amount && AI_VALUE(uint8, "attacker count") >= amount;
+    return AI_VALUE2(bool, "combat", "self target") && AI_VALUE(uint8, "aoe count") >= amount && AI_VALUE(uint8, "attackers count") >= amount;
 }
 
 bool DebuffTrigger::IsActive()
@@ -238,7 +238,7 @@ string TwoTriggers::getName()
 
 bool BoostTrigger::IsActive()
 {
-	return BuffTrigger::IsActive() && AI_VALUE(uint8, "balance") <= balance;
+	return ai->IsStateActive(BotState::BOT_STATE_COMBAT) && BuffTrigger::IsActive() && AI_VALUE(uint8, "balance") <= balance;
 }
 
 bool ItemCountTrigger::IsActive()
@@ -308,7 +308,7 @@ bool HasNoAuraTrigger::IsActive()
 
 bool TankAssistTrigger::IsActive()
 {
-    if (!AI_VALUE(uint8, "attacker count"))
+    if (!AI_VALUE(bool, "has attackers"))
         return false;
 
     Unit* currentTarget = AI_VALUE(Unit*, "current target");
@@ -366,31 +366,62 @@ bool PossibleAddsTrigger::IsActive()
 
 bool NotDpsTargetActiveTrigger::IsActive()
 {
-    Unit* dps = AI_VALUE(Unit*, "dps target");
     Unit* target = AI_VALUE(Unit*, "current target");
-    Unit* enemy = AI_VALUE(Unit*, "enemy player target");
-    
-    // do not switch if enemy target
-    if (target && target == enemy && sServerFacade.IsAlive(target))
-        return false;
+    if (target)
+    {
+        if (target->IsPlayer())
+        {
+            return false;
+        }
 
-    if (target && target->IsPlayer())
-        return false;
+        if(sServerFacade.IsAlive(target))
+        {
+            // do not switch if enemy target
+            Unit* enemy = AI_VALUE(Unit*, "enemy player target");
+            if (enemy)
+            {
+                return target != enemy;
+            }
 
-    return dps && target != dps;
+            Unit* dps = AI_VALUE(Unit*, "dps target");
+            if (dps)
+            {
+                return target != dps;
+            }
+        }
+    }
+
+    return false;
 }
 
 bool NotDpsAoeTargetActiveTrigger::IsActive()
 {
-    Unit* dps = AI_VALUE(Unit*, "dps aoe target");
     Unit* target = AI_VALUE(Unit*, "current target");
-    Unit* enemy = AI_VALUE(Unit*, "enemy player target");
+    if (target)
+    {
+        if (target->IsPlayer())
+        {
+            return false;
+        }
 
-    // do not switch if enemy target
-    if (target && target == enemy && sServerFacade.IsAlive(target))
-        return false;
+        if (sServerFacade.IsAlive(target))
+        {
+            // do not switch if enemy target
+            Unit* enemy = AI_VALUE(Unit*, "enemy player target");
+            if (enemy)
+            {
+                return target != enemy;
+            }
 
-    return dps && target != dps;
+            Unit* dps = AI_VALUE(Unit*, "dps aoe target");
+            if (dps)
+            {
+                return target != dps;
+            }
+        }
+    }
+
+    return false;
 }
 
 bool IsSwimmingTrigger::IsActive()

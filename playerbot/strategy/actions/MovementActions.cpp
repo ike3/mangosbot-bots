@@ -1750,13 +1750,24 @@ bool SetBehindTargetAction::isUseful()
 
 bool SetBehindTargetAction::isPossible()
 {
+    // Check if the target is targeting the bot
     Unit* target = AI_VALUE(Unit*, "current target");
-#ifdef MANGOS
-    return target && !(target->getVictim() && target->getVictim()->GetObjectGuid() == bot->GetObjectGuid());
-#endif
-#ifdef CMANGOS
-    return target && !(target->GetVictim() && target->GetVictim()->GetObjectGuid() == bot->GetObjectGuid());
-#endif
+    if (target)
+    {
+        // If the target is a player
+        Player* playerTarget = dynamic_cast<Player*>(target);
+        if(playerTarget)
+        {
+            return bot->GetObjectGuid() != playerTarget->GetSelectionGuid();
+        }
+        // If the target is a NPC
+        else 
+        {
+            return !(target->GetVictim() && (target->GetVictim()->GetObjectGuid() == bot->GetObjectGuid()));
+        }
+    }
+
+    return false;
 }
 
 bool MoveOutOfCollisionAction::Execute(Event& event)

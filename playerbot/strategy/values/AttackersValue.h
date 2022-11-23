@@ -27,7 +27,7 @@ namespace ai
 	private:
         void AddTargetsOf(Group* group, set<Unit*>& targets, bool getOne = false);
         void AddTargetsOf(Player* player, set<Unit*>& targets, bool getOne = false);
-        float GetRange() const { return sPlayerbotAIConfig.sightDistance; }
+        static float GetRange() { return sPlayerbotAIConfig.sightDistance; }
         bool IsPossibleTarget(Unit* target, Player* player) const;
 
         static bool IsFriendly(Unit* target, Player* player);

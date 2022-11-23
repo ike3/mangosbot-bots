@@ -12,7 +12,7 @@ namespace ai
             ObjectGuidListCalculatedValue(ai, name, 2), range(range), ignoreLos(ignoreLos) {}
 
 	public:
-        list<ObjectGuid> Calculate()
+        virtual list<ObjectGuid> Calculate()
         {
             list<Unit*> targets;
             FindUnits(targets);
