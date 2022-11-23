@@ -5,6 +5,26 @@
 
 namespace ai
 {
+    // List of enemy player targets that are near the bot (or bot group)
+    class EnemyPlayersValue : public ObjectGuidListCalculatedValue, public Qualified
+    {
+    public:
+        EnemyPlayersValue(PlayerbotAI* ai) : ObjectGuidListCalculatedValue(ai, "enemy players") {}
+        list<ObjectGuid> Calculate();
+
+        static bool IsValid(Unit* target, Player* player);
+
+    private:
+        void ApplyFilter(list<ObjectGuid>& targets, bool getOne);
+    };
+
+    class HasEnemyPlayersValue : public BoolCalculatedValue, public Qualified
+    {
+    public:
+        HasEnemyPlayersValue(PlayerbotAI* ai, string name = "has enemy players") : BoolCalculatedValue(ai, name, 3) {}
+        virtual bool Calculate();
+    };
+
     class EnemyPlayerValue : public UnitCalculatedValue
     {
     public:

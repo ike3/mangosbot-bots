@@ -148,8 +148,7 @@ bool SelectNewTargetAction::Execute(Event& event)
             ai->HasStrategy("duel", BotState::BOT_STATE_COMBAT))
         {
             // Check if there is an enemy player nearby
-            Unit* enemyPlayer = AI_VALUE(Unit*, "enemy player target");
-            if (enemyPlayer)
+            if (AI_VALUE(bool, "has enemy player targets"))
             {
                 return ai->DoSpecificAction("attack enemy player", event, true);
             }

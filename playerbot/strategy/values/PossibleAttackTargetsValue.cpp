@@ -31,14 +31,14 @@ list<ObjectGuid> PossibleAttackTargetsValue::Calculate()
             {
                 // Try to get one possible attack target
                 result = AI_VALUE2(list<ObjectGuid>, "attackers", 1);
-                RemoveNonThreating(result);
+                RemoveNonThreating(result, getOne);
             }
 
-            // If the one possible attack target failed, retry
+            // If the one possible attack target failed, retry with multiple attackers
             if (result.empty())
             {
                 result = AI_VALUE(list<ObjectGuid>, "attackers");
-                RemoveNonThreating(result);
+                RemoveNonThreating(result, getOne);
             }
         }
     }
@@ -46,7 +46,7 @@ list<ObjectGuid> PossibleAttackTargetsValue::Calculate()
 	return result;
 }
 
-void PossibleAttackTargetsValue::RemoveNonThreating(list<ObjectGuid>& targets)
+void PossibleAttackTargetsValue::RemoveNonThreating(list<ObjectGuid>& targets, bool getOne)
 {
     list<ObjectGuid> breakableCC;
     list<ObjectGuid> unBreakableCC;
@@ -76,7 +76,17 @@ void PossibleAttackTargetsValue::RemoveNonThreating(list<ObjectGuid>& targets)
         }
         else
         {
-            ++tIter;
+            if (getOne)
+            {
+                // If the target is valid return it straight away
+                list<ObjectGuid> result = { *tIter };
+                targets = result;
+                break;
+            }
+            else
+            {
+                ++tIter;
+            }
         }
     }
 

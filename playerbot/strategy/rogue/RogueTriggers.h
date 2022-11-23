@@ -104,7 +104,7 @@ namespace ai
 
             return ai->HasAura("stealth", bot) &&
                 !AI_VALUE(bool, "has attackers") &&
-                !AI_VALUE(Unit*, "enemy player target") &&
+                !AI_VALUE(bool, "has enemy player targets") &&
                 (AI_VALUE2(bool, "moving", "self target") &&
                 ((ai->GetMaster() &&
                     sServerFacade.IsDistanceGreaterThan(AI_VALUE2(float, "distance", "master target"), 10.0f) &&

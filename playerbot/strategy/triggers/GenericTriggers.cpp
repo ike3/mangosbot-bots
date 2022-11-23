@@ -238,7 +238,7 @@ string TwoTriggers::getName()
 
 bool BoostTrigger::IsActive()
 {
-	return BuffTrigger::IsActive() && AI_VALUE(uint8, "balance") <= balance;
+	return ai->IsStateActive(BotState::BOT_STATE_COMBAT) && BuffTrigger::IsActive() && AI_VALUE(uint8, "balance") <= balance;
 }
 
 bool ItemCountTrigger::IsActive()

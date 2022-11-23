@@ -15,7 +15,7 @@ namespace ai
         static bool IsValid(Unit* target, Player* player, float range = sPlayerbotAIConfig.sightDistance, bool ignoreCC = false, bool checkAttackerValid = true);
 
 	private:
-		void RemoveNonThreating(list<ObjectGuid>& targets);
+		void RemoveNonThreating(list<ObjectGuid>& targets, bool getOne);
 
         static bool IsPossibleTarget(Unit* target, Player *player, float range, bool ignoreCC);
         static bool HasIgnoreCCRti(Unit* target, Player* player);

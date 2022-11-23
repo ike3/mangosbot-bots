@@ -6,6 +6,96 @@
 using namespace ai;
 using namespace std;
 
+list<ObjectGuid> EnemyPlayersValue::Calculate()
+{
+    list<ObjectGuid> result;
+    if (ai->AllowActivity(ALL_ACTIVITY))
+    {
+        if (bot->IsInWorld() && !bot->IsBeingTeleported())
+        {
+            // Check if we only need one attacker
+            bool getOne = false;
+            if (!qualifier.empty())
+            {
+                getOne = stoi(qualifier);
+            }
+
+            if (getOne)
+            {
+                // Try to get one enemy target
+                result = AI_VALUE2(list<ObjectGuid>, "possible attack targets", 1);
+                ApplyFilter(result, getOne);
+            }
+
+            // If the one enemy player failed, retry with multiple possible attack targets
+            if (result.empty())
+            {
+                result = AI_VALUE(list<ObjectGuid>, "possible attack targets");
+                ApplyFilter(result, getOne);
+            }
+        }
+    }
+
+    return result;
+}
+
+bool EnemyPlayersValue::IsValid(Unit* target, Player* player)
+{
+    if (target)
+    {
+        // If the target is a player
+        Player* enemyPlayer = dynamic_cast<Player*>(target);
+        if (enemyPlayer)
+        {
+            // If the target is friendly to the player
+            if (sServerFacade.IsFriendlyTo(target, player))
+            {
+                return false;
+            }
+
+            /*
+            // Check if too far away (Do we need this?)
+            const float maxPvPDistance = GetMaxAttackDistance(player);
+            const bool inCannon = player->GetPlayerbotAI() && player->GetPlayerbotAI()->IsInVehicle(false, true);
+            uint32 const pvpDistance = (inCannon || player->GetHealth() > enemyPlayer->GetHealth()) ? maxPvPDistance : 20.0f;
+            if (!player->IsWithinDist(enemyPlayer, pvpDistance, false))
+            {
+                return false;
+            }
+            */
+
+            return true;
+        }
+    }
+
+    return false;
+}
+
+void EnemyPlayersValue::ApplyFilter(list<ObjectGuid>& targets, bool getOne)
+{
+    list<ObjectGuid> filteredTargets;
+    for (const ObjectGuid& targetGuid : targets)
+    {
+        Unit* target = ai->GetUnit(targetGuid);
+        if (IsValid(target, bot))
+        {
+            filteredTargets.push_back(target->GetObjectGuid());
+
+            if (getOne)
+            {
+                break;
+            }
+        }
+    }
+
+    targets = filteredTargets;
+}
+
+bool HasEnemyPlayersValue::Calculate()
+{
+    return !context->GetValue<list<ObjectGuid>>("enemy player targets", 1)->Get().empty();
+}
+
 Unit* EnemyPlayerValue::Calculate()
 {
     // Prioritize the duel opponent
@@ -18,55 +108,40 @@ Unit* EnemyPlayerValue::Calculate()
     float bestEnemyPlayerDistance = 999999999.0f;
     uint32 bestEnemyPlayerHealth = 99999999;
 
-    //const float maxPvPDistance = GetMaxAttackDistance(bot);
-    //const bool inCannon = ai->IsInVehicle(false, true);
     const bool isMelee = !ai->IsRanged(bot);
 
-    list<ObjectGuid> possibleAttackTargets = AI_VALUE(list<ObjectGuid>, "possible attack targets");
-    for (const ObjectGuid& targetGuid : possibleAttackTargets)
+    list<ObjectGuid> enemyPlayers = AI_VALUE(list<ObjectGuid>, "enemy player targets");
+    for (const ObjectGuid& targetGuid : enemyPlayers)
     {
         Unit* target = ai->GetUnit(targetGuid);
         if(target)
         {
-            Player* enemyPlayer = dynamic_cast<Player*>(target);
-            if (enemyPlayer)
+            // Prioritize an enemy player if it has a battleground flag
+            if ((bot->GetTeam() == HORDE && target->HasAura(23333)) ||
+                (bot->GetTeam() == ALLIANCE && target->HasAura(23335)))
             {
-                /*
-                // Check if too far away (Do we need this?)
-                uint32 const pvpDistance = (inCannon || bot->GetHealth() > enemyPlayer->GetHealth()) ? maxPvPDistance : 20.0f;
-                if (!bot->IsWithinDist(enemyPlayer, pvpDistance, false))
-                {
-                    continue;
-                }
-                */
+                bestEnemyPlayer = target;
+                break;
+            }
 
-                // Prioritize an enemy player if it has a battleground flag
-                if ((bot->GetTeam() == HORDE && enemyPlayer->HasAura(23333)) || 
-                    (bot->GetTeam() == ALLIANCE && enemyPlayer->HasAura(23335)))
+            if (isMelee)
+            {
+                // Score best enemy player based on lowest distance
+                const float distanceToEnemyPlayer = target->GetDistance(bot, false);
+                if (distanceToEnemyPlayer < bestEnemyPlayerDistance)
                 {
-                    bestEnemyPlayer = enemyPlayer;
-                    break;
+                    bestEnemyPlayerDistance = distanceToEnemyPlayer;
+                    bestEnemyPlayer = target;
                 }
-
-                if (isMelee)
+            }
+            else
+            {
+                // Score best enemy player based on lowest health
+                const uint32 enemyPlayerHealth = target->GetHealth();
+                if (enemyPlayerHealth < bestEnemyPlayerHealth)
                 {
-                    // Score best enemy player based on lowest distance
-                    const float distanceToEnemyPlayer = enemyPlayer->GetDistance(bot, false);
-                    if (distanceToEnemyPlayer < bestEnemyPlayerDistance)
-                    {
-                        bestEnemyPlayerDistance = distanceToEnemyPlayer;
-                        bestEnemyPlayer = enemyPlayer;
-                    }
-                }
-                else
-                {
-                    // Score best enemy player based on lowest health
-                    const uint32 enemyPlayerHealth = enemyPlayer->GetHealth();
-                    if (enemyPlayerHealth < bestEnemyPlayerHealth)
-                    {
-                        bestEnemyPlayerHealth = enemyPlayerHealth;
-                        bestEnemyPlayer = enemyPlayer;
-                    }
+                    bestEnemyPlayerHealth = enemyPlayerHealth;
+                    bestEnemyPlayer = target;
                 }
             }
         }
