@@ -42,10 +42,15 @@ bool WaitForAttackSetTimeAction::Execute(Event& event)
 bool WaitForAttackKeepSafeDistanceAction::Execute(Event& event)
 {
     Unit* target = AI_VALUE(Unit*, "current target");
+
+    if (!target->IsStopped() && target->GetTarget() && target->GetTarget()->IsStopped())
+        target = target->GetTarget();
+
+
     if (target && target->IsAlive())
     {
         const float safeDistance = std::max(float(target->GetAttackDistance(bot) + ATTACK_DISTANCE), WaitForAttackStrategy::GetSafeDistance());
-        const float safeDistanceThreshold =WaitForAttackStrategy::GetSafeDistanceThreshold();
+        const float safeDistanceThreshold = WaitForAttackStrategy::GetSafeDistanceThreshold();
 
         // Find the best point around the target.
         const WorldPosition bestPoint = GetBestPoint(target, (safeDistance - safeDistanceThreshold), safeDistance);
@@ -70,6 +75,15 @@ const ai::WorldPosition WaitForAttackKeepSafeDistanceAction::GetBestPoint(Unit* 
     const float distance = frand(minDistance, maxDistance);
     const std::list<ObjectGuid> enemies = AI_VALUE(std::list<ObjectGuid>, "possible targets no los");
 
+    if (ai->HasStrategy("debug move", BotState::BOT_STATE_COMBAT))
+    {
+        for (uint32 dist = 0; dist < distance; dist++)
+        {
+            WorldPosition point = targetPosition + WorldPosition(0, dist * cos(startAngle), dist * sin(startAngle), 1.0f);
+            Creature* wpCreature = bot->SummonCreature(1, point.getX(), point.getY(), point.getZ(), 0.0f, TEMPSPAWN_TIMED_DESPAWN, 1000.0f + dist * 100.0f);
+        }
+    }
+
     for (float tryAngle = 0.0f; tryAngle < M_PI_F; tryAngle += radiansIncrement)
     {
         for (int8 tryDir = -1; tryAngle && tryDir < 1; tryDir += 2)
@@ -77,14 +91,13 @@ const ai::WorldPosition WaitForAttackKeepSafeDistanceAction::GetBestPoint(Unit* 
             float pointAngle = startAngle;
             pointAngle += tryAngle * startDir * tryDir;
 
-            WorldPosition point = targetPosition;
-            point += WorldPosition(0, distance * cos(pointAngle), distance * sin(pointAngle), 1.0f);
+            WorldPosition point = targetPosition + WorldPosition(0, distance * cos(pointAngle), distance * sin(pointAngle), 1.0f);
 
             point.setZ(point.getHeight());
 
             if (ai->HasStrategy("debug move", BotState::BOT_STATE_COMBAT))
             {
-                Creature* wpCreature = bot->SummonCreature(1, point.getX(), point.getY(), point.getZ(), 0.0f, TEMPSPAWN_TIMED_DESPAWN, 5000.0f);
+                Creature* wpCreature = bot->SummonCreature(1, point.getX(), point.getY(), point.getZ(), 0.0f, TEMPSPAWN_TIMED_DESPAWN, 5000.0f + tryAngle * 1000.0f);
             }
 
             // Check if the target is visible from the point
@@ -95,9 +108,13 @@ const ai::WorldPosition WaitForAttackKeepSafeDistanceAction::GetBestPoint(Unit* 
             if (IsEnemyClose(point, enemies))
                 continue;
 
+            // Check if the bot can move to this point.
+            if (!botPosition.canPathTo(point,bot))
+                continue;
+
             if (ai->HasStrategy("debug move", BotState::BOT_STATE_COMBAT))
             {
-                Creature* wpCreature = bot->SummonCreature(15631, point.getX(), point.getY(), point.getZ(), 0.0f, TEMPSPAWN_TIMED_DESPAWN, 5000.0f);
+                Creature* wpCreature = bot->SummonCreature(15631, point.getX(), point.getY(), point.getZ(), 0.0f, TEMPSPAWN_TIMED_DESPAWN, 5000.0f + tryAngle * 1000.0f);
             }
 
             return point;
