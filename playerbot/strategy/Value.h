@@ -125,6 +125,8 @@ namespace ai
         LogCalculatedValue(PlayerbotAI* ai, string name = "value", int checkInterval = 1) : MemoryCalculatedValue<T>(ai, name, checkInterval) {};
         virtual bool UpdateChange() { if (MemoryCalculatedValue<T>::UpdateChange()) return false; valueLog.push_back(make_pair(this->value, time(0))); if (valueLog.size() > logLength) valueLog.pop_front(); return true; }
 
+        virtual T Get() { return MemoryCalculatedValue<T>::Get(); }
+
         list<pair<T, time_t>> ValueLog() { return valueLog; }
 
         pair<T, time_t> GetLogOn(time_t t) { auto log = std::find_if(valueLog.rbegin(), valueLog.rend(), [t](std::pair<T, time_t> p) {return p.second < t; }); if (log == valueLog.rend()) return valueLog.front(); return *log; }

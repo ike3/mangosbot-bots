@@ -182,7 +182,7 @@ bool AttackersValue::IsFriendly(Unit* target, Player* player)
         if (targetPlayer)
         {
             // If the target is in an arena with the player and is not on the same team
-            else if (targetPlayer->InArena() && player->InArena() && (targetPlayer->GetBGTeam() != player->GetBGTeam()))
+            if (targetPlayer->InArena() && player->InArena() && (targetPlayer->GetBGTeam() != player->GetBGTeam()))
             {
                 friendly = false;
             }
