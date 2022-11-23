@@ -119,8 +119,22 @@ ItemUsage ItemUsageValue::Calculate()
 
                 if (proto->SubClass == subClass)
                 {
+                    uint32 currentAmmoId = bot->GetUInt32Value(PLAYER_AMMO_ID);
+                    const ItemPrototype* currentAmmoproto = nullptr;
+                    if(currentAmmoId) 
+                        currentAmmoproto = sObjectMgr.GetItemPrototype(itemId);
+
                     float ammo = BetterStacks(proto, "ammo");
                     float needAmmo = (bot->getClass() == CLASS_HUNTER) ? 8 : 2;
+
+                    if (ammo < 0) //No current better ammo.
+                    {
+                        if (!currentAmmoId)
+                            return ITEM_USAGE_EQUIP;
+
+                        if(currentAmmoproto->ItemLevel > proto->ItemLevel)
+                            return ITEM_USAGE_REPLACE;
+                    }
 
                     if (ammo < needAmmo) //We already have enough of the current ammo.
                     {
