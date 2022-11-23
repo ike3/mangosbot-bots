@@ -12,12 +12,24 @@ using namespace ai;
 
 bool EnemyPlayerNear::IsActive()
 {
-    Unit* currentTarget = AI_VALUE(Unit*, "current target");
-    Unit* newTarget = AI_VALUE(Unit*, "enemy player target");
-    if (currentTarget && newTarget)
-        return currentTarget != newTarget;
+    // Check if we have any enemy players to attack
+    if(AI_VALUE(bool, "has enemy player targets"))
+    {
+        Unit* currentTarget = AI_VALUE(Unit*, "current target");
+        if (currentTarget)
+        {
+            // Check if we have a better enemy player to attack
+            Player* currentPlayerTarget = dynamic_cast<Player*>(currentTarget);
+            if(currentPlayerTarget)
+            {
+                return currentPlayerTarget != AI_VALUE(Unit*, "enemy player target");
+            }
+        }
 
-    return newTarget;
+        return true;
+    }
+
+    return false;
 }
 
 bool PlayerHasNoFlag::IsActive()
