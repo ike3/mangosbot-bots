@@ -21,7 +21,7 @@
 
 #include "PathFinder.h"
 #include "PlayerbotAI.h"
-#include "VMapFactory.h"
+#include "vmap/VMapFactory.h"
 #include "MoveMap.h"
 #include "Transports.h"
 #include "strategy/StrategyContext.h"
