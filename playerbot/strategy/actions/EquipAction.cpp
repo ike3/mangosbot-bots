@@ -67,7 +67,7 @@ void EquipAction::EquipItem(Item& item)
     else
     {
         bool equipedBag = false;
-        if (item.GetProto()->Class == ITEM_CLASS_CONTAINER)
+        if (item.GetProto()->Class == ITEM_CLASS_CONTAINER || item.GetProto()->Class == ITEM_CLASS_QUIVER)
         {
             Bag* pBag = (Bag*)&item;
             uint8 newBagSlot = GetSmallestBagSlot();
