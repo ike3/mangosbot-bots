@@ -25,8 +25,8 @@ namespace ai
         static bool IsValid(Unit* target, Player* player, bool checkInCombat = true);
 
 	private:
-        void AddTargetsOf(Group* group, set<Unit*>& targets, bool getOne = false);
-        void AddTargetsOf(Player* player, set<Unit*>& targets, bool getOne = false);
+        void AddTargetsOf(Group* group, set<Unit*>& targets, set<ObjectGuid>& invalidTargets, bool getOne = false);
+        void AddTargetsOf(Player* player, set<Unit*>& targets, set<ObjectGuid>& invalidTargets, bool getOne = false);
         static float GetRange() { return sPlayerbotAIConfig.sightDistance; }
         bool IsPossibleTarget(Unit* target, Player* player) const;
 

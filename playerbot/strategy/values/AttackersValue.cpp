@@ -23,8 +23,10 @@ list<ObjectGuid> AttackersValue::Calculate()
                 getOne = stoi(qualifier);
             }
 
+            set<ObjectGuid> invalidTargets;
+
             // Add the targets of the bot
-            AddTargetsOf(bot, targets, getOne);
+            AddTargetsOf(bot, targets, invalidTargets, getOne);
 
             // Don't check for group member targets if we only need one
             if (targets.empty() || !getOne)
@@ -33,7 +35,7 @@ list<ObjectGuid> AttackersValue::Calculate()
                 Group* group = bot->GetGroup();
                 if (group)
                 {
-                    AddTargetsOf(group, targets, getOne);
+                    AddTargetsOf(group, targets, invalidTargets, getOne);
                 }
             }
 
@@ -48,7 +50,7 @@ list<ObjectGuid> AttackersValue::Calculate()
 	return result;
 }
 
-void AttackersValue::AddTargetsOf(Group* group, set<Unit*>& targets, bool getOne)
+void AttackersValue::AddTargetsOf(Group* group, set<Unit*>& targets, set<ObjectGuid>& invalidTargets, bool getOne)
 {
     Group::MemberSlotList const& groupSlot = group->GetMemberSlots();
     for (Group::member_citerator itr = groupSlot.begin(); itr != groupSlot.end(); itr++)
@@ -62,7 +64,7 @@ void AttackersValue::AddTargetsOf(Group* group, set<Unit*>& targets, bool getOne
            (member->GetMapId() == bot->GetMapId()) && 
            (sServerFacade.GetDistance2d(bot, member) <= GetRange()))
         {
-            AddTargetsOf(member, targets, getOne);
+            AddTargetsOf(member, targets, invalidTargets, getOne);
 
             // Finish early if we only need one target
             if (getOne && !targets.empty())
@@ -73,7 +75,7 @@ void AttackersValue::AddTargetsOf(Group* group, set<Unit*>& targets, bool getOne
     }
 }
 
-void AttackersValue::AddTargetsOf(Player* player, set<Unit*>& targets, bool getOne)
+void AttackersValue::AddTargetsOf(Player* player, set<Unit*>& targets, set<ObjectGuid>& invalidTargets, bool getOne)
 {
     // If the player is available
     if (player)
@@ -148,20 +150,28 @@ void AttackersValue::AddTargetsOf(Player* player, set<Unit*>& targets, bool getO
         // Filter the units that are valid
         for (Unit* unit : units)
         {
-            // Prevent checking a target that has already been checked
-            if(targets.find(unit) == targets.end())
+            // Prevent checking a target that has already been validated
+            if((targets.find(unit) == targets.end()))
             {
-                if (IsPossibleTarget(unit, player))
+                // Prevent checking a target that has already been invalidated
+                if(InCombat(unit, player) || (invalidTargets.find(unit->GetObjectGuid()) == invalidTargets.end()))
                 {
-                    // Add the target to the list of combat targets
-                    targets.insert(unit);
-
-                    // Add the target's pet/guardian too
-                    unit->CallForAllControlledUnits(AddGuardiansHelper(units), CONTROLLED_PET | CONTROLLED_GUARDIANS | CONTROLLED_CHARM | CONTROLLED_MINIPET | CONTROLLED_TOTEMS);
-
-                    if (getOne)
+                    if (IsPossibleTarget(unit, player))
                     {
-                        break;
+                        // Add the target to the list of combat targets
+                        targets.insert(unit);
+
+                        // Add the target's pet/guardian too
+                        unit->CallForAllControlledUnits(AddGuardiansHelper(units), CONTROLLED_PET | CONTROLLED_GUARDIANS | CONTROLLED_CHARM | CONTROLLED_MINIPET | CONTROLLED_TOTEMS);
+
+                        if (getOne)
+                        {
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        invalidTargets.insert(unit->GetObjectGuid());
                     }
                 }
             }
