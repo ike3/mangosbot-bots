@@ -156,7 +156,7 @@ void AttackersValue::AddTargetsOf(Player* player, set<Unit*>& targets, set<Objec
                 // Prevent checking a target that has already been invalidated
                 if(InCombat(unit, player) || (invalidTargets.find(unit->GetObjectGuid()) == invalidTargets.end()))
                 {
-                    if (IsPossibleTarget(unit, player))
+                    if (IsValid(unit, player, bot))
                     {
                         // Add the target to the list of combat targets
                         targets.insert(unit);
@@ -203,8 +203,9 @@ bool AttackersValue::IsFriendly(Unit* target, Player* player)
     return friendly;
 }
 
-bool AttackersValue::IsAttackable(Unit* target, Player* player, bool inVehicle)
+bool AttackersValue::IsAttackable(Unit* target, Player* player)
 {
+    const bool inVehicle = player->GetPlayerbotAI() && player->GetPlayerbotAI()->IsInVehicle();
     return !target->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_1) &&
            !target->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_UNTARGETABLE) &&
            (inVehicle || !target->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_UNINTERACTIBLE)) &&
@@ -237,32 +238,33 @@ bool AttackersValue::InCombat(Unit* target, Player* player, bool checkPullTarget
     return inCombat;
 }
 
-bool AttackersValue::IsPossibleTarget(Unit* target, Player* player) const
+bool AttackersValue::IsValid(Unit* target, Player* player, Player* owner, bool checkInCombat)
 {
     // If the target is available
     if (target && target->IsInWorld() && (target->GetMapId() == player->GetMapId()))
     {
+        Player* playerToCheckAgainst = owner != nullptr ? owner : player;
+
         // If the target is dead
-        if(sServerFacade.UnitIsDead(target))
+        if (sServerFacade.UnitIsDead(target))
         {
             return false;
         }
 
-        // If the target is friendly (to the owner bot)
-        if(IsFriendly(target, bot))
+        // If the target is friendly
+        if (IsFriendly(target, (owner != nullptr ? owner : player)))
         {
             return false;
         }
 
-        // If the target can't be attacked (by the owner bot)
-        const bool inVehicle = player->GetPlayerbotAI() && player->GetPlayerbotAI()->IsInVehicle();
-        if(!IsAttackable(target, bot, inVehicle))
+        // If the target can't be attacked
+        if (!IsAttackable(target, playerToCheckAgainst))
         {
             return false;
         }
 
         // If the target is not visible (to the owner bot)
-        if (!target->IsVisibleForOrDetect(bot, bot->GetCamera().GetBody(), true))
+        if (!target->IsVisibleForOrDetect(playerToCheckAgainst, playerToCheckAgainst->GetCamera().GetBody(), true))
         {
             return false;
         }
@@ -275,7 +277,7 @@ bool AttackersValue::IsPossibleTarget(Unit* target, Player* player) const
         if (enemyPlayer)
         {
             // Don't consider enemy players if pvp strategy is not set
-            if (!ai->HasStrategy("pvp", BotState::BOT_STATE_COMBAT))
+            if (playerToCheckAgainst->GetPlayerbotAI() && !playerToCheckAgainst->GetPlayerbotAI()->HasStrategy("pvp", BotState::BOT_STATE_COMBAT))
             {
                 return false;
             }
@@ -287,10 +289,10 @@ bool AttackersValue::IsPossibleTarget(Unit* target, Player* player) const
             }
 
             // Don't check distance on duel opponents
-            if(player->duel && (player->duel->opponent != target))
+            if (player->duel && (player->duel->opponent != target))
             {
-                // If the enemy player is not within sight distance (from the owner bot)
-                if (!bot->IsWithinDist(enemyPlayer, GetRange(), false))
+                // If the enemy player is not within sight distance
+                if (!enemyPlayer->IsWithinDist(playerToCheckAgainst, GetRange(), false))
                 {
                     return false;
                 }
@@ -300,94 +302,7 @@ bool AttackersValue::IsPossibleTarget(Unit* target, Player* player) const
         else
         {
             // If the target is not fighting the player (and if the owner bot is not pulling the target)
-            if (!InCombat(target, player, (bot == player)))
-            {
-                return false;
-            }
-
-            // If the target is a player's pet and in a PvP prohibited zone
-            if (target->GetObjectGuid().IsPet() && inPvPProhibitedZone)
-            {
-                return false;
-            }
-
-            // If the target is evading
-            const Creature* creature = dynamic_cast<Creature*>(target);
-            if(creature)
-            {
-                if(creature->GetCombatManager().IsInEvadeMode())
-                {
-                    return false;
-                }
-            }
-        }
-
-        return true;
-    }
-
-    return false;
-}
-
-bool AttackersValue::IsValid(Unit* target, Player* player, bool checkInCombat)
-{
-    // If the target is available
-    if (target && target->IsInWorld() && (target->GetMapId() == player->GetMapId()))
-    {
-        // If the target is dead
-        if (sServerFacade.UnitIsDead(target))
-        {
-            return false;
-        }
-
-        // If the target is friendly
-        if (AttackersValue::IsFriendly(target, player))
-        {
-            return false;
-        }
-
-        // If the target can't be attacked
-        const bool inVehicle = player->GetPlayerbotAI() && player->GetPlayerbotAI()->IsInVehicle();
-        if (!AttackersValue::IsAttackable(target, player, inVehicle))
-        {
-            return false;
-        }
-
-        // If the target is not visible (to the owner bot)
-        if (!target->IsVisibleForOrDetect(player, player->GetCamera().GetBody(), true))
-        {
-            return false;
-        }
-
-        // This will be used on both enemy player and npc checks
-        const bool inPvPProhibitedZone = sPlayerbotAIConfig.IsInPvpProhibitedZone(sServerFacade.GetAreaId(target));
-
-        // If the target is a player
-        Player* enemyPlayer = dynamic_cast<Player*>(target);
-        if (enemyPlayer)
-        {
-            // Don't consider enemy players if pvp strategy is not set
-            if (player->GetPlayerbotAI() && !player->GetPlayerbotAI()->HasStrategy("pvp", BotState::BOT_STATE_COMBAT))
-            {
-                return false;
-            }
-
-            // If the enemy player is in a PVP Prohibited zone
-            if (inPvPProhibitedZone)
-            {
-                return false;
-            }
-
-            // If the enemy player is not within sight distance
-            if (!player->IsWithinDist(enemyPlayer, GetRange(), false))
-            {
-                return false;
-            }
-        }
-        // If the target is a NPC
-        else
-        {
-            // If the target is not fighting the player (and if the owner bot is not pulling the target)
-            if (checkInCombat && !AttackersValue::InCombat(target, player))
+            if (checkInCombat && !InCombat(target, player, (player == owner)))
             {
                 return false;
             }

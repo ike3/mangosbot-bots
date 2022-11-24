@@ -40,7 +40,7 @@ bool PullMyTargetAction::Execute(Event& event)
         return false;
     }
 
-    if (!AttackersValue::IsValid(target, bot, false))
+    if (!AttackersValue::IsValid(target, bot, nullptr, false))
     {
         ai->TellError("The target can't be pulled");
         return false;
