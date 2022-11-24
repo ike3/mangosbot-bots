@@ -41,7 +41,7 @@ bool Player::MinimalLoadFromDB( QueryResult *result, uint32 guid )
     Field *fields = result->Fetch();
 
     // overwrite possible wrong/corrupted guid
-#ifdef MANGOSBOT_TWO
+#ifndef MANGOSBOT_ZERO
     Object::_Create(0, guid, 0, HIGHGUID_PLAYER );
 #else
     Object::_Create(guid, 0, HIGHGUID_PLAYER);

@@ -485,7 +485,9 @@ string PlayerbotHolder::ProcessBotCommand(string cmd, ObjectGuid guid, ObjectGui
             }
             if (cmd == "train" || cmd == "learn")
             {
+#ifndef MANGOSBOT_ONE
                 bot->learnClassLevelSpells();
+#endif
                 return "class level spells learned";
             }
             if (cmd == "food" || cmd == "drink")

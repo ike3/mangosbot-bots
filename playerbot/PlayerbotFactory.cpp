@@ -2215,7 +2215,9 @@ void PlayerbotFactory::SetRandomSkill(uint16 id)
 void PlayerbotFactory::InitAvailableSpells()
 {
     bot->learnDefaultSpells();
+#ifndef MANGOSBOT_ONE
     bot->learnClassLevelSpells();
+#endif
 
 #ifndef MANGOSBOT_TWO
     if (bot->getClass() == CLASS_PALADIN && !bot->HasSpell(20271)) // judgement missing
