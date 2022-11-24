@@ -13,15 +13,12 @@ using namespace MaNGOS;
 
 list<ObjectGuid> PossibleTargetsValue::Calculate()
 {
-    // Check if the target name has been overridden
-    bool shouldIgnoreLos = ignoreLos;
     float rangeCheck = range;
     bool shouldIgnoreValidate = false;
     if (!qualifier.empty())
     {
-        shouldIgnoreLos = Qualified::getMultiQualifierInt(qualifier, 0, ":");
-        rangeCheck = Qualified::getMultiQualifierInt(qualifier, 1, ":");
-        shouldIgnoreValidate = Qualified::getMultiQualifierInt(qualifier, 2, ":");
+        rangeCheck = Qualified::getMultiQualifierInt(qualifier, 0, ":");
+        shouldIgnoreValidate = Qualified::getMultiQualifierInt(qualifier, 1, ":");
     }
 
     list<Unit*> targets;
@@ -31,8 +28,7 @@ list<ObjectGuid> PossibleTargetsValue::Calculate()
     for (list<Unit*>::iterator i = targets.begin(); i != targets.end(); ++i)
     {
         Unit* unit = *i;
-        if ((shouldIgnoreLos || sServerFacade.IsWithinLOSInMap(bot, unit)) && 
-            (shouldIgnoreValidate || AcceptUnit(unit)))
+        if (shouldIgnoreValidate || AcceptUnit(unit))
         {
             results.push_back(unit->GetObjectGuid());
         }
@@ -48,18 +44,7 @@ void PossibleTargetsValue::FindUnits(list<Unit*> &targets)
 
 bool PossibleTargetsValue::AcceptUnit(Unit* unit)
 {
-    // check for CC-ed targets
-    bool isCCtarget = false;
-    if (bot->getClass() == CLASS_MAGE && ai->HasMyAura("polymorph", unit))
-        isCCtarget = true;
-    if (bot->getClass() == CLASS_ROGUE && ai->HasMyAura("sap", unit))
-        isCCtarget = true;
-    if (!isCCtarget && bot->getClass() == CLASS_WARLOCK && ai->HasMyAura("fear", unit))
-        isCCtarget = true;
-    if (!isCCtarget && bot->getClass() == CLASS_WARLOCK && ai->HasMyAura("banish", unit))
-        isCCtarget = true;
-
-    return isCCtarget || PossibleTargetsValue::IsValid(bot, unit, range);
+    return IsValid(unit, bot, ignoreLos);
 }
 
 void PossibleTargetsValue::FindPossibleTargets(Player* player, list<Unit*>& targets, float range)
@@ -69,7 +54,70 @@ void PossibleTargetsValue::FindPossibleTargets(Player* player, list<Unit*>& targ
     Cell::VisitAllObjects(player, searcher, range);
 }
 
-bool PossibleTargetsValue::IsValid(Player* player, Unit* target, float range)
+bool PossibleTargetsValue::IsFriendly(Unit* target, Player* player)
 {
-    return PossibleAttackTargetsValue::IsValid(target, player, range, true);
+    bool friendly = false;
+    if (sServerFacade.IsFriendlyTo(target, player))
+    {
+        friendly = true;
+
+#ifndef MANGOSBOT_ZERO
+        // Check if the target is another player in a duel/arena
+        Player* targetPlayer = dynamic_cast<Player*>(target);
+        if (targetPlayer)
+        {
+            // If the target is in an arena with the player and is not on the same team
+            if (targetPlayer->InArena() && player->InArena() && (targetPlayer->GetBGTeam() != player->GetBGTeam()))
+            {
+                friendly = false;
+            }
+        }
+#endif
+    }
+
+    return friendly;
+}
+
+bool PossibleTargetsValue::IsAttackable(Unit* target, Player* player)
+{
+    const bool inVehicle = player->GetPlayerbotAI() && player->GetPlayerbotAI()->IsInVehicle();
+    return !target->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_1) &&
+           !target->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_UNTARGETABLE) &&
+           (inVehicle || !target->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_UNINTERACTIBLE)) &&
+           !target->HasAuraType(SPELL_AURA_SPIRIT_OF_REDEMPTION);
+}
+
+bool PossibleTargetsValue::IsValid(Unit* target, Player* player, bool ignoreLos)
+{
+    // If the target is available
+    if (target && target->IsInWorld() && (target->GetMapId() == player->GetMapId()))
+    {
+        // If the target is dead
+        if (sServerFacade.UnitIsDead(target))
+        {
+            return false;
+        }
+
+        // If the target is friendly
+        if (IsFriendly(target, player))
+        {
+            return false;
+        }
+
+        // If the target can't be attacked
+        if (!IsAttackable(target, player))
+        {
+            return false;
+        }
+
+        // If the target is not visible (to the owner bot)
+        if (!ignoreLos && !target->IsVisibleForOrDetect(player, player->GetCamera().GetBody(), true))
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    return false;
 }

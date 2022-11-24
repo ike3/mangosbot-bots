@@ -5,7 +5,7 @@
 
 namespace ai
 {
-    // List of hostile and friendly targets in a range around the bot
+    // List of hostile and neutral targets in a range around the bot
     class PossibleTargetsValue : public NearestUnitsValue, public Qualified
 	{
 	public:
@@ -13,14 +13,15 @@ namespace ai
           NearestUnitsValue(ai, name, range, ignoreLos) {}
 
         list<ObjectGuid> Calculate() override;
-
-    public:
-        static void FindPossibleTargets(Player* player, list<Unit*>& targets, float range);
-        static bool IsValid(Player* player, Unit* target, float range);
+        static bool IsValid(Unit* target, Player* player, bool ignoreLos = false);
 
     protected:
         virtual void FindUnits(list<Unit*> &targets);
         virtual bool AcceptUnit(Unit* unit);
+
+        static void FindPossibleTargets(Player* player, list<Unit*>& targets, float range);
+        static bool IsFriendly(Unit* target, Player* player);
+        static bool IsAttackable(Unit* target, Player* player);
 	};
 
     class AllTargetsValue : public PossibleTargetsValue
