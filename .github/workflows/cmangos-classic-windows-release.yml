@@ -16,7 +16,7 @@ env:
   REPO_DIR : ${{github.workspace}}
   BUILD_DIR: ${{github.workspace}}/bin/builddir
   BOOST_TOOLSET: "msvc"
-  BOOST_VERSION: "1.79.0.beta1"
+  BOOST_VERSION: "1.78.0"
   BOOST_INSTALL_DIR: "${{github.workspace}}/bin"
 
 jobs:
@@ -49,7 +49,6 @@ jobs:
         with:
           ref: ike3-bots
           repository: celguar/mangos-classic
-          fetch-depth: 2
           path: ${{env.REPO_DIR}}
           # submodules: recursive
           
@@ -57,9 +56,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           ref: master
-          fetch-depth: 2
-          path: "${{env.REPO_DIR}}/src/Modules/Bots"
-          # submodules: recursive
+          path: "${{env.REPO_DIR}}/src/modules/Bots"
 
       - uses: FranzDiebold/github-env-vars-action@v2
       - name: Create Build Environment
@@ -72,7 +69,7 @@ jobs:
         id: cache-boost
         with:
           path: "${{env.BOOST_INSTALL_DIR}}/boost"
-          key: ${{ runner.os }}-${{env.CORE_TYPE}}
+          key: ${{ runner.os }}-boost
 
       - if: steps.cache-boost.outputs.cache-hit != 'true'
         name: Install boost
@@ -132,15 +129,39 @@ jobs:
       - name: Get current date
         id: date
         run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
-
-      - name: Upload snapshot
-        uses: "marvinpinto/action-automatic-releases@latest"
+        
+      - name: Get previous date
+        id: dateold
+        run: echo "::set-output name=date::$(date --date='1 day ago' +'%Y-%m-%d')"
+        
+      - name: Generate changelog
+        uses: heinrichreimer/github-changelog-generator-action@v2.3
+        id: changelog
         with:
-          repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          automatic_release_tag: "classic"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          sinceTag: "classic-${{ steps.dateold.outputs.date }}"
+          dueTag: "classic-${{ steps.date.outputs.date }}"
+          
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          body: ${{ steps.changelog.outputs.changelog }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           prerelease: false
-          title: "CMaNGOS Classic Build (${{ steps.date.outputs.date }})"
+          generate_release_notes: false
+          draft: false
+          name: "Classic Build (${{ steps.date.outputs.date }})"
+          tag_name: "classic-${{ steps.date.outputs.date }}"
           files: all_snapshots
+
+      #- name: Upload snapshot
+      #  uses: "marvinpinto/action-automatic-releases@latest"
+      #  with:
+      #    repo_token: "${{ secrets.GITHUB_TOKEN }}"
+      #    automatic_release_tag: "classic-${{ steps.date.outputs.date }}"
+      #    prerelease: false
+      #    title: "CMaNGOS Classic Build (${{ steps.date.outputs.date }})"
+      #    files: all_snapshots
 
   notify-success:
     name: Discord release successfully notification
@@ -151,6 +172,14 @@ jobs:
       - upload
 
     steps:
+      - name: Get current date
+        id: date
+        run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
+        
+      - name: Get previous date
+        id: dateold
+        run: echo "::set-output name=date::$(date --date='1 day ago' +'%Y-%m-%d')"
+          
       - name: Set environmental variables
         run: |
           echo "GIT_BRANCH=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
@@ -164,19 +193,20 @@ jobs:
           echo "EXPENSION_NAME=${expension}" >> $GITHUB_ENV
           echo "CORE_BRANCH=${coreBranch}" >> $GITHUB_ENV
           echo "ALL_ARCH_NAME=${coreType}-${expension}.zip" >> $GITHUB_ENV
+          
       - name: Notify
         uses: rjstone/discord-webhook-notify@v1.0.4
         with:
           severity: info
           username: ${{env.CORE_TYPE}}-${{env.EXPENSION_NAME}}
           description: |
-            **Windows release successful!**
+            **Windows release success!**
           details: |
             **Core branch:** ${{env.CORE_BRANCH}}
             **Bots branch:** ${{env.GIT_BRANCH}}
-            [**Last Commit**](${{github.server_url}}/${{ github.repository }}/commit/${{github.sha}}) - [**Build Log**](${{github.server_url}}/${{github.repository}}/actions/runs/${{github.run_id}})
-            [**Windows prebuilt Binaries**](${{github.server_url}}/${{ github.repository }}/releases/download/classic/${{env.ALL_ARCH_NAME}})
-          footer: Build Success
+            [**Changelog**](${{github.server_url}}/${{ github.repository }}/releases/tag/${{env.CORE_TYPE}}-${{ steps.date.outputs.date }}) - [**Commits**](${{github.server_url}}/${{ github.repository }}/compare/${{env.CORE_TYPE}}-${{ steps.dateold.outputs.date }}...${{env.CORE_TYPE}}-${{ steps.date.outputs.date }}) - [**Build Log**](${{github.server_url}}/${{github.repository}}/actions/runs/${{github.run_id}})
+            [**Download Windows Binaries**](${{github.server_url}}/${{ github.repository }}/releases/download/${{env.CORE_TYPE}}-${{ steps.date.outputs.date }}/${{env.ALL_ARCH_NAME}})
+          footer: Build success
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK_BUILD }}
           avatarUrl: https://github.githubassets.com/favicons/favicon-success.png
 
@@ -190,6 +220,14 @@ jobs:
     if: failure()
 
     steps:
+      - name: Get current date
+        id: date
+        run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
+        
+      - name: Get previous date
+        id: dateold
+        run: echo "::set-output name=date::$(date --date='1 day ago' +'%Y-%m-%d')"
+        
       - name: Env
         run: |
           echo "GIT_BRANCH=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
@@ -200,17 +238,18 @@ jobs:
           echo "CORE_TYPE=${coreType}" >> $GITHUB_ENV
           echo "EXPENSION_NAME=${expension}" >> $GITHUB_ENV
           echo "CORE_BRANCH=${coreBranch}" >> $GITHUB_ENV
+          
       - name: Notify
         uses: rjstone/discord-webhook-notify@v1.0.4
         with:
           severity: error
           username: ${{env.CORE_TYPE}}-${{env.EXPENSION_NAME}}
           description: |
-            **Windows release falied!**
+            **Windows release fail!**
           details: |
             **Core branch:** ${{env.CORE_BRANCH}}
             **Bots branch:** ${{env.GIT_BRANCH}}
-            [**Last Commit**](${{github.server_url}}/${{ github.repository }}/commit/${{github.sha}}) - [**Build Log**](${{github.server_url}}/${{github.repository}}/actions/runs/${{github.run_id}})
-          footer: Build Failure
+            [**Last Commit**](${{github.server_url}}/${{ github.repository }}/commit/${{github.sha}}) - [All Commits](${{github.server_url}}/${{ github.repository }}/commits/${{env.GIT_BRANCH}}) - [**Build Log**](${{github.server_url}}/${{github.repository}}/actions/runs/${{github.run_id}})
+          footer: Build fail
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK_BUILD }}
           avatarUrl: https://github.githubassets.com/favicons/favicon-failure.png
