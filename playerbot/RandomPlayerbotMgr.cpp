@@ -1708,11 +1708,7 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot, vector<WorldLocation> &locs
             ContinentArea teleportArea = sMapMgr.GetContinentInstanceId(mapId, l.getX(), l.getY());
 
             if (tMap->HasActiveAreas(teleportArea))
-#ifdef MANGOSBOT_ZERO
                 return !tMap->HasActiveZone(zoneId);
-#else
-                return false;
-#endif 
             else
                 return true;
 
