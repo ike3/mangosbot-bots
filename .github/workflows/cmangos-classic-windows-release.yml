@@ -138,8 +138,6 @@ jobs:
         id: changelog
         uses: mikepenz/release-changelog-builder-action@v3
         with:
-          owner: "celguar"
-          repo: "mangosbot-bots"
           fromTag: "c.${{ steps.dateold.outputs.date }}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
