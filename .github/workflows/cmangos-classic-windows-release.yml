@@ -128,42 +128,21 @@ jobs:
 
       - name: Get current date
         id: date
-        run: echo "::set-output name=date::$(date +'%Y.%m.%d')"
+        run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
         
       - name: Get previous date
         id: dateold
-        run: echo "::set-output name=date::$(date --date='1 day ago' +'%Y.%m.%d')"
-        
-      - name: Checkout Bots
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 50
-        
-      - name: Build Changelog
-        id: changelog
-        uses: mikepenz/release-changelog-builder-action@v3
-        with:
-          fromTag: "c.${{ steps.dateold.outputs.date }}"
-          configurationJson: |
-            {
-              "sort": "ASC",
-              "tag_resolver": {
-                  "method": "sort"
-              }
-            }
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: echo "::set-output name=date::$(date --date='1 day ago' +'%Y-%m-%d')"
           
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
-          body: ${{ steps.changelog.outputs.changelog }}
           token: ${{ secrets.GITHUB_TOKEN }}
           prerelease: false
-          generate_release_notes: false
+          generate_release_notes: true
           draft: false
           name: "Classic Build (${{ steps.date.outputs.date }})"
-          tag_name: "c.${{ steps.date.outputs.date }}"
+          tag_name: "classic-${{ steps.date.outputs.date }}"
           files: all_snapshots
 
       #- name: Upload snapshot
@@ -216,7 +195,7 @@ jobs:
           details: |
             **Core branch:** ${{env.CORE_BRANCH}}
             **Bots branch:** ${{env.GIT_BRANCH}}
-            [**Changelog**](${{github.server_url}}/${{ github.repository }}/releases/tag/${{env.CORE_TYPE}}-${{ steps.date.outputs.date }}) - [**Commits**](${{github.server_url}}/${{ github.repository }}/compare/${{env.CORE_TYPE}}-${{ steps.dateold.outputs.date }}...${{env.CORE_TYPE}}-${{ steps.date.outputs.date }}) - [**Build Log**](${{github.server_url}}/${{github.repository}}/actions/runs/${{github.run_id}})
+            [**Changelog**](${{github.server_url}}/${{ github.repository }}/commits/${{env.CORE_TYPE}}-${{ steps.date.outputs.date }}) - [**Build Log**](${{github.server_url}}/${{github.repository}}/actions/runs/${{github.run_id}})
             [**Download Windows Binaries**](${{github.server_url}}/${{ github.repository }}/releases/download/${{env.CORE_TYPE}}-${{ steps.date.outputs.date }}/${{env.ALL_ARCH_NAME}})
           footer: Build success
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK_BUILD }}
