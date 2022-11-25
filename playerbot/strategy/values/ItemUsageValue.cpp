@@ -243,12 +243,19 @@ ItemUsage ItemUsageValue::QueryItemUsageForEquip(ItemPrototype const* itemProto)
 
     if (oldItem)
     {
+        if (AI_VALUE2(bool, "force equip", oldItemProto->ItemId)) //Current equip is forced. Do not unequip.
+            return ITEM_USAGE_NONE;
+
         uint32 oldStatWeight = sRandomItemMgr.GetLiveStatWeight(bot, oldItemProto->ItemId, specId);
         if (statWeight || oldStatWeight)
         {
             shouldEquip = statWeight >= oldStatWeight;
         }
     }
+
+    if (AI_VALUE2(bool, "force equip", itemProto->ItemId)) //New item is forced. Always equip it.
+        return ITEM_USAGE_EQUIP;
+
 
     //Bigger quiver
     if (itemProto->Class == ITEM_CLASS_QUIVER)

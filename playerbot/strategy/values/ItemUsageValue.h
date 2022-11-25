@@ -49,4 +49,13 @@ namespace ai
 
         static string GetConsumableType(ItemPrototype const* proto, bool hasMana);
 	};
+
+    class ForceEquipValue : public ManualSetValue<bool>, public Qualified
+    {
+    public:
+        ForceEquipValue(PlayerbotAI* ai, string name = "force equip") : ManualSetValue<bool>(ai, false, name) {}
+
+        virtual string Save() { return value ? "1" : "?"; }
+        virtual bool Load(string force) { if (!force.empty()) value = true; return !force.empty(); }
+    };
 }

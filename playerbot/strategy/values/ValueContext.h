@@ -223,6 +223,7 @@ namespace ai
             creators["formation"] = &ValueContext::formation;
             creators["stance"] = &ValueContext::stance;
             creators["item usage"] = &ValueContext::item_usage;
+            creators["force equip"] = &ValueContext::force_equip;
             creators["speed"] = &ValueContext::speed;
             creators["last said"] = &ValueContext::last_said;
             creators["last emote"] = &ValueContext::last_emote;
@@ -342,6 +343,7 @@ namespace ai
         static UntypedValue* already_seen_players(PlayerbotAI* ai) { return new AlreadySeenPlayersValue(ai); }
         static UntypedValue* new_player_nearby(PlayerbotAI* ai) { return new NewPlayerNearbyValue(ai); }
         static UntypedValue* item_usage(PlayerbotAI* ai) { return new ItemUsageValue(ai); }
+        static UntypedValue* force_equip(PlayerbotAI* ai) { return new ForceEquipValue(ai); }
         static UntypedValue* formation(PlayerbotAI* ai) { return new FormationValue(ai); }
         static UntypedValue* stance(PlayerbotAI* ai) { return new StanceValue(ai); }
         static UntypedValue* mana_save_level(PlayerbotAI* ai) { return new ManaSaveLevelValue(ai); }

@@ -11,16 +11,19 @@ bool EquipAction::Execute(Event& event)
 {
     string text = event.getParam();
     ItemIds ids = chat->parseItems(text);
-    EquipItems(ids);
+    EquipItems(ids, true);
     return true;
 }
 
-void EquipAction::EquipItems(ItemIds ids)
+void EquipAction::EquipItems(ItemIds ids, bool force)
 {
     for (ItemIds::iterator i =ids.begin(); i != ids.end(); i++)
     {
+        if (force)
+            SET_AI_VALUE2(bool, "force equip", *i, true);
+
         FindItemByIdVisitor visitor(*i);
-        EquipItem(&visitor);
+        EquipItem(&visitor);        
     }
 }
 

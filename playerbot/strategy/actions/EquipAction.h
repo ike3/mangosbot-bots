@@ -9,7 +9,7 @@ namespace ai
     public:
         EquipAction(PlayerbotAI* ai, string name = "equip") : InventoryAction(ai, name) {}
         virtual bool Execute(Event& event);
-        void EquipItems(ItemIds ids);
+        void EquipItems(ItemIds ids, bool force = false);
 
     private:
         void EquipItem(FindItemVisitor* visitor);
