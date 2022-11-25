@@ -134,11 +134,26 @@ jobs:
         id: dateold
         run: echo "::set-output name=date::$(date --date='1 day ago' +'%Y.%m.%d')"
         
+      - name: Checkout Bots
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 50
+        
       - name: Build Changelog
         id: changelog
         uses: mikepenz/release-changelog-builder-action@v3
         with:
           fromTag: "c.${{ steps.dateold.outputs.date }}"
+          configurationJson: |
+            {
+              "sort": "ASC",
+              "template": "${{CHANGELOG}}",
+              "pr_template": "- ${{TITLE}}\n   - PR: #${{NUMBER}}",
+              "empty_template": "- no changes"
+              "tag_resolver": {
+                  "method": "sort"
+              }
+            }
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           
