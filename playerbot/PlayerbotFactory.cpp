@@ -597,7 +597,6 @@ void PlayerbotFactory::InitPet()
 #endif
             pet->SetPower(POWER_HAPPINESS, HAPPINESS_LEVEL_SIZE * 2);
             pet->GetCharmInfo()->SetPetNumber(sObjectMgr.GeneratePetNumber(), true);
-            pet->AIM_Initialize();
 #ifdef CMANGOS
             pet->GetMap()->Add((Creature*)pet);
             pet->AIM_Initialize();
