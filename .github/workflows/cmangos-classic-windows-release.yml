@@ -138,14 +138,14 @@ jobs:
         uses: actions/checkout@v2
         with:
           ref: master
-          path: "."
+          path: ${{env.REPO_DIR}}
         
       - name: Generate changelog
-        uses: gandarez/changelog-action@v1.2.0
+        uses: celguar/changelog-action@v1.2.0
         id: changelog
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          repo_dir: "bots-repo"
+          repo_dir: ${{env.REPO_DIR}}
           current_tag: "classic-${{ steps.date.outputs.date }}"
           previous_tag: "classic-${{ steps.dateold.outputs.date }}"
           
