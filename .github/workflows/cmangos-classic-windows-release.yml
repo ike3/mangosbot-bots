@@ -135,7 +135,7 @@ jobs:
         run: echo "::set-output name=date::$(date --date='1 day ago' +'%Y-%m-%d')"
         
       - name: Generate changelog
-        uses: gandarez/changelog-action@latest
+        uses: gandarez/changelog-action@v1.2.0
         id: changelog
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
