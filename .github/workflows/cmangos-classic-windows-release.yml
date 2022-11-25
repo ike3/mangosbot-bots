@@ -135,12 +135,12 @@ jobs:
         run: echo "::set-output name=date::$(date --date='1 day ago' +'%Y-%m-%d')"
         
       - name: Generate changelog
-        uses: heinrichreimer/github-changelog-generator-action@v2.3
+        uses: gandarez/changelog-action@v{latest}
         id: changelog
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          sinceTag: "classic-${{ steps.dateold.outputs.date }}"
-          dueTag: "classic-${{ steps.date.outputs.date }}"
+          current_tag: "classic-${{ steps.date.outputs.date }}"
+          previous_tag: "classic-${{ steps.dateold.outputs.date }}"
           
       - name: Release
         uses: softprops/action-gh-release@v1
