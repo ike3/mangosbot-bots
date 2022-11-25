@@ -9,7 +9,7 @@ namespace ai
     class PossibleAttackTargetsValue : public ObjectGuidListCalculatedValue, public Qualified
 	{
 	public:
-        PossibleAttackTargetsValue(PlayerbotAI* ai) : ObjectGuidListCalculatedValue(ai, "possible attack targets") {}
+        PossibleAttackTargetsValue(PlayerbotAI* ai) : ObjectGuidListCalculatedValue(ai, "possible attack targets", 2) {}
         list<ObjectGuid> Calculate();
 
         static bool IsValid(Unit* target, Player* player, float range = sPlayerbotAIConfig.sightDistance, bool ignoreCC = false, bool checkAttackerValid = true);
