@@ -3577,6 +3577,9 @@ bool PlayerbotAI::AllowActive(ActivityType activityType)
    
     float activityPercentage = sRandomPlayerbotMgr.getActivityPercentage(); //Activity between 0 and 100.
 
+    if (!priorityBracket.second) //No scaling
+        return true;
+
     if (priorityBracket.first >= activityPercentage)
         return false;
     if (priorityBracket.second <= activityPercentage)
