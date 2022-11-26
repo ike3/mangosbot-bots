@@ -141,7 +141,7 @@ jobs:
         uses: "marvinpinto/action-automatic-releases@latest"
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          automatic_release_tag: "release-${{ steps.date.outputs.date }}"
+          automatic_release_tag: "r-${{ steps.date.outputs.date }}"
           prerelease: false
           title: "Windows Build (${{ steps.date.outputs.date }})"
           files: all_snapshots
@@ -183,8 +183,8 @@ jobs:
           details: |
             **Core branch:** ${{env.CORE_BRANCH}}
             **Bots branch:** ${{env.GIT_BRANCH}}
-            [**Changelog**](${{github.server_url}}/${{ github.repository }}/commits/release-${{ steps.date.outputs.date }}) - [**Build Log**](${{github.server_url}}/${{github.repository}}/actions/runs/${{github.run_id}})
-            [**Download Windows Binaries**](${{github.server_url}}/${{ github.repository }}/releases/download/release-${{ steps.date.outputs.date }}/${{env.ALL_ARCH_NAME}})
+            [**Changelog**](${{github.server_url}}/${{ github.repository }}/commits/r-${{ steps.date.outputs.date }}) - [**Build Log**](${{github.server_url}}/${{github.repository}}/actions/runs/${{github.run_id}})
+            [**Download Windows Binaries**](${{github.server_url}}/${{ github.repository }}/releases/download/r-${{ steps.date.outputs.date }}/${{env.ALL_ARCH_NAME}})
           footer: Build success
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK_BUILD }}
           avatarUrl: https://github.githubassets.com/favicons/favicon-success.png
