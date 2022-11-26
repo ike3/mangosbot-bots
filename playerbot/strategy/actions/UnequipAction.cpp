@@ -30,10 +30,10 @@ bool UnequipAction::Execute(Event& event)
     {
         for (ItemIds::iterator i =ids.begin(); i != ids.end(); i++)
         {
-            RESET_AI_VALUE2(bool, "force equip", *i);
-
             FindItemByIdVisitor visitor(*i);
             UnequipItem(&visitor);
+
+            RESET_AI_VALUE2(bool, "force equip", *i);
         }
     }
 
@@ -60,6 +60,10 @@ void UnequipAction::UnequipItem(Item& item)
     bot->GetSession()->HandleAutoStoreBagItemOpcode(packet);
 
     ostringstream out; out << chat->formatItem(item.GetProto()) << " unequipped";
+
+    if (AI_VALUE2(bool, "force equip", item.GetProto()->ItemId))
+        out << " (This item can now be automatically replaced)";
+
     ai->TellMaster(out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
 }
 
