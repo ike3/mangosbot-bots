@@ -179,11 +179,11 @@ jobs:
           severity: info
           username: ${{env.CORE_TYPE}}-${{env.EXPENSION_NAME}}
           description: |
-            **Windows release success!**
+            **CMaNGOS Classic Released!**
           details: |
             **Core branch:** ${{env.CORE_BRANCH}}
             **Bots branch:** ${{env.GIT_BRANCH}}
-            [**Changelog**](${{github.server_url}}/${{ github.repository }}/commits/r-${{ steps.date.outputs.date }}) - [**Build Log**](${{github.server_url}}/${{github.repository}}/actions/runs/${{github.run_id}})
+            [**Changelog**](${{github.server_url}}/${{ github.repository }}/commits/r-${{ steps.date.outputs.date }}) - [**All Releases**](${{github.server_url}}/${{ github.repository }}/tags) - [**Build Log**](${{github.server_url}}/${{github.repository}}/actions/runs/${{github.run_id}})
             [**Download Windows Binaries**](${{github.server_url}}/${{ github.repository }}/releases/download/r-${{ steps.date.outputs.date }}/${{env.ALL_ARCH_NAME}})
           footer: Build success
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK_BUILD }}
