@@ -134,6 +134,7 @@ jobs:
       - name: Upload binaries to release
         uses: svenstaro/upload-release-action@v2
         with:
+          release_name: "Windows Build (${{ steps.date.outputs.date }})"
           tag: "r-${{ steps.date.outputs.date }}" 
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: all_snapshots/cmangos-tbc.zip
