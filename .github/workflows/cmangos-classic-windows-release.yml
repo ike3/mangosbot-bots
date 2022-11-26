@@ -102,6 +102,7 @@ jobs:
         run: |
           cd bin
           7z a -tzip ${{env.ARCHIVE_FILENAME}} "x64_${{env.BUILD_TYPE}}/*"
+          
       - name: Archive this artefact
         uses: actions/upload-artifact@v2
         with:
@@ -120,7 +121,7 @@ jobs:
       #  with:
       #    name: snapshot-default
       #    path: all_snapshots
-      - name: Download artifact snapshot-with-all
+      - name: Download artifact
         uses: actions/download-artifact@v1
         with:
           name: snapshot-with-all
@@ -130,29 +131,20 @@ jobs:
         id: date
         run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
         
-      - name: Get previous date
-        id: dateold
-        run: echo "::set-output name=date::$(date --date='1 day ago' +'%Y-%m-%d')"
-          
-      - name: Release
-        uses: softprops/action-gh-release@v1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          prerelease: false
-          generate_release_notes: true
-          draft: false
-          name: "Classic Build (${{ steps.date.outputs.date }})"
-          tag_name: "classic-${{ steps.date.outputs.date }}"
-          files: all_snapshots
-
-      #- name: Upload snapshot
-      #  uses: "marvinpinto/action-automatic-releases@latest"
+      #- name: Upload binaries to release
+      #  uses: svenstaro/upload-release-action@v2
       #  with:
-      #    repo_token: "${{ secrets.GITHUB_TOKEN }}"
-      #    automatic_release_tag: "classic-${{ steps.date.outputs.date }}"
-      #    prerelease: false
-      #    title: "CMaNGOS Classic Build (${{ steps.date.outputs.date }})"
-      #    files: all_snapshots
+      #    repo_token: ${{ secrets.GITHUB_TOKEN }}
+      #    file: all_snapshots/cmangos-classic.zip
+
+      - name: Upload release
+        uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: "release-${{ steps.date.outputs.date }}"
+          prerelease: false
+          title: "Windows Build (${{ steps.date.outputs.date }})"
+          files: all_snapshots
 
   notify-success:
     name: Discord release successfully notification
@@ -166,10 +158,6 @@ jobs:
       - name: Get current date
         id: date
         run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
-        
-      - name: Get previous date
-        id: dateold
-        run: echo "::set-output name=date::$(date --date='1 day ago' +'%Y-%m-%d')"
           
       - name: Set environmental variables
         run: |
@@ -195,8 +183,8 @@ jobs:
           details: |
             **Core branch:** ${{env.CORE_BRANCH}}
             **Bots branch:** ${{env.GIT_BRANCH}}
-            [**Changelog**](${{github.server_url}}/${{ github.repository }}/commits/${{env.CORE_TYPE}}-${{ steps.date.outputs.date }}) - [**Build Log**](${{github.server_url}}/${{github.repository}}/actions/runs/${{github.run_id}})
-            [**Download Windows Binaries**](${{github.server_url}}/${{ github.repository }}/releases/download/${{env.CORE_TYPE}}-${{ steps.date.outputs.date }}/${{env.ALL_ARCH_NAME}})
+            [**Changelog**](${{github.server_url}}/${{ github.repository }}/commits/release-${{ steps.date.outputs.date }}) - [**Build Log**](${{github.server_url}}/${{github.repository}}/actions/runs/${{github.run_id}})
+            [**Download Windows Binaries**](${{github.server_url}}/${{ github.repository }}/releases/download/release-${{ steps.date.outputs.date }}/${{env.ALL_ARCH_NAME}})
           footer: Build success
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK_BUILD }}
           avatarUrl: https://github.githubassets.com/favicons/favicon-success.png
@@ -214,10 +202,6 @@ jobs:
       - name: Get current date
         id: date
         run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
-        
-      - name: Get previous date
-        id: dateold
-        run: echo "::set-output name=date::$(date --date='1 day ago' +'%Y-%m-%d')"
         
       - name: Env
         run: |
@@ -240,7 +224,7 @@ jobs:
           details: |
             **Core branch:** ${{env.CORE_BRANCH}}
             **Bots branch:** ${{env.GIT_BRANCH}}
-            [**Last Commit**](${{github.server_url}}/${{ github.repository }}/commit/${{github.sha}}) - [All Commits](${{github.server_url}}/${{ github.repository }}/commits/${{env.GIT_BRANCH}}) - [**Build Log**](${{github.server_url}}/${{github.repository}}/actions/runs/${{github.run_id}})
+            [**Last commits**](${{github.server_url}}/${{ github.repository }}/commits/${{env.GIT_BRANCH}}) - [**Build Log**](${{github.server_url}}/${{github.repository}}/actions/runs/${{github.run_id}})
           footer: Build fail
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK_BUILD }}
           avatarUrl: https://github.githubassets.com/favicons/favicon-failure.png
