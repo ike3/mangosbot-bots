@@ -151,7 +151,7 @@ jobs:
         uses: rjstone/discord-webhook-notify@v1.0.4
         with:
           severity: info
-          username: ${{env.CORE_TYPE}}-${{env.EXPENSION_NAME}}
+          username: ${{env.CORE_TYPE}}-${{env.CORE_EXPANSION}}
           description: |
             **WotLK Dev Build ${{ steps.date.outputs.date }}!**
           details: |
@@ -179,7 +179,7 @@ jobs:
         uses: rjstone/discord-webhook-notify@v1.0.4
         with:
           severity: error
-          username: ${{env.CORE_TYPE}}-${{env.EXPENSION_NAME}}
+          username: ${{env.CORE_TYPE}}-${{env.CORE_EXPANSION}}
           description: |
             **WotLK Dev Build failed!**
           details: |
