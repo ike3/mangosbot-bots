@@ -32,6 +32,12 @@ namespace ai
             if (!ChatHelper::parseable(command))
                 return false;
 
+            if (command.find("Hvalue:help") != string::npos)
+            {
+                HandleCommand("help", command, owner);
+                return true;
+            }
+
             HandleCommand("c", command, owner);
             HandleCommand("t", command, owner);
             return true;

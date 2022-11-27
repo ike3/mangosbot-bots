@@ -2,6 +2,7 @@
 #include "../../playerbot.h"
 #include "HelpAction.h"
 #include "ChatActionContext.h"
+#include "PlayerbotHelpMgr.h"
 
 using namespace ai;
 
@@ -17,8 +18,31 @@ HelpAction::~HelpAction()
 
 bool HelpAction::Execute(Event& event)
 {
-    TellChatCommands();
-    TellStrategies();
+    string param = event.getParam();
+    string helpTopic = ChatHelper::parseHelpTopic(param);
+
+    if (helpTopic.empty())
+        helpTopic = "help:main";
+
+
+    ostringstream out;
+    string helpTekst = sPlayerbotHelpMgr.GetBotText(helpTopic);
+
+    if (!helpTekst.empty())
+    {
+        vector<string> lines = Qualified::getMultiQualifiers(helpTekst, "\n");
+
+        for (auto& line : lines)
+        {
+            ai->TellMasterNoFacing(line, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, true);
+        }
+
+        return true;
+
+
+        TellChatCommands();
+        TellStrategies();
+    }
     return true;
 }
 

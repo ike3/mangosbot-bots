@@ -525,6 +525,32 @@ string ChatHelper::formatQuestObjective(string name, int available, int required
     return out.str();
 }
 
+string ChatHelper::formatHelpTopic(string topicCode, string topicName)
+{
+    ostringstream out;
+    out << "|c0000FFFF|Hvalue:help:" << topicCode << "|h[" << topicName << "]|h|r";
+
+    return out.str();
+}
+
+string ChatHelper::parseHelpTopic(string& text) {
+    string retString;
+
+    std::string pattern = "Hvalue:help:";
+
+    int pos = text.find(pattern, 0);
+    if (pos == -1)
+        return retString;
+
+    pos += pattern.size();
+
+    int endPos = text.find('|', pos);
+    if (endPos == -1)
+        return retString;
+
+    retString = text.substr(pos, endPos - pos);
+    return retString;
+}
 
 uint32 ChatHelper::parseItemQuality(string text)
 {

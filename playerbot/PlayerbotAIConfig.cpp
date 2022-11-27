@@ -8,6 +8,7 @@
 #include "PlayerbotFactory.h"
 #include "RandomItemMgr.h"
 #include "World/WorldState.h"
+#include "PlayerbotHelpMgr.h"
 
 #include "TravelMgr.h"
 
@@ -366,6 +367,7 @@ bool PlayerbotAIConfig::Initialize()
     sRandomItemMgr.InitAfterAhBot();
     sPlayerbotTextMgr.LoadBotTexts();
     sPlayerbotTextMgr.LoadBotTextChance();
+    sPlayerbotHelpMgr.LoadBotHelpTexts();
 
     if (sPlayerbotAIConfig.autoDoQuests)
     {

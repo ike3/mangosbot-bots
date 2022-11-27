@@ -15,33 +15,45 @@ namespace ai
     public:
         static string formatMoney(uint32 copper);
         static uint32 parseMoney(string& text);
-        static ItemIds parseItems(string& text);
-        uint32 parseSpell(string& text);
+
         static string formatQuest(Quest const* quest);
+
         static string formatItem(ItemPrototype const * proto, int count = 0, int total = 0);
         static string formatQItem(uint32 itemId);
+        static ItemIds parseItems(string& text);
+        static uint32 parseItemQuality(string text);
+        static bool parseItemClass(string text, uint32* itemClass, uint32* itemSubClass);
+        static uint32 parseSlot(string text);
+
         static string formatSpell(SpellEntry const *sInfo);
+        uint32 parseSpell(string& text);
+
         static string formatGameobject(GameObject* go);
-        static string formatWorldobject(WorldObject* wo);
-        static string formatWorldEntry(int32 entry);
-        static string formatQuestObjective(string name, int available, int required);
         static list<ObjectGuid> parseGameobjects(string& text);
+
+        static string formatWorldobject(WorldObject* wo);
+
+        static string formatWorldEntry(int32 entry);
         static list<int32> parseWorldEntries(string& text);
 
-        static ChatMsg parseChat(string& text);
+        static string formatQuestObjective(string name, int available, int required);
+
+        static string formatHelpTopic(string topicCode, string topicName);
+        static string parseHelpTopic(string& text);
+
         static string formatChat(ChatMsg chat);
+        static ChatMsg parseChat(string& text);
 
         static string formatClass(Player* player, int spec);
         static string formatClass(uint8 cls);
-        static string formatRace(uint8 race);
-        static string formatSkill(uint32 skill);
-        static string formatBoolean(bool flag);
 
-        static uint32 parseItemQuality(string text);
-        static bool parseItemClass(string text, uint32 *itemClass, uint32 *itemSubClass);
-        static uint32 parseSlot(string text);
+        static string formatRace(uint8 race);
+
+        static string formatSkill(uint32 skill);
         uint32 parseSkill(string& text);
 
+        static string formatBoolean(bool flag);       
+       
         static bool parseable(string text);
 
         void eraseAllSubStr(std::string& mainStr, const std::string& toErase);
