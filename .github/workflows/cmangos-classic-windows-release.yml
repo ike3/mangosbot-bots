@@ -157,7 +157,7 @@ jobs:
           description: |
             **Classic Dev Build ${{ steps.date.outputs.date }}!**
           details: |
-            [**Changelog**](${{github.server_url}}/${{ github.repository }}/compare/r-${{ steps.dateprev.outputs.date }}.../r-${{ steps.date.outputs.date }}) - [**All Releases**](${{github.server_url}}/${{ github.repository }}/tags) - [**Build Log**](${{github.server_url}}/${{github.repository}}/actions/runs/${{github.run_id}})
+            [**Changelog**](${{github.server_url}}/${{ github.repository }}/compare/r-${{ steps.dateprev.outputs.date }}...r-${{ steps.date.outputs.date }}) - [**All Releases**](${{github.server_url}}/${{ github.repository }}/tags) - [**Build Log**](${{github.server_url}}/${{github.repository}}/actions/runs/${{github.run_id}})
             [**Download Windows Binaries**](${{github.server_url}}/${{ github.repository }}/releases/download/r-${{ steps.date.outputs.date }}/${{env.ARCHIVE_FILENAME}})
           footer: Build success
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK_BUILD }}
