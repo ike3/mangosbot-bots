@@ -12,12 +12,17 @@ on: [workflow_dispatch]
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
   CORE_TYPE: "cmangos"
+  CORE_EXPANSION: "tbc"
+  CORE_BRANCH: "ike3-bots"
+  BOTS_BRANCH: "master"
   BUILD_TYPE: RelWithDebInfo
+  BUILD_OPTIONS: "-DBUILD_EXTRACTORS=ON -DBUILD_IKE3_BOTS=ON -DBUILD_AHBOT=ON -DBUILD_GIT_ID=ON"
   REPO_DIR : ${{github.workspace}}
   BUILD_DIR: ${{github.workspace}}/bin/builddir
   BOOST_TOOLSET: "msvc"
   BOOST_VERSION: "1.78.0"
   BOOST_INSTALL_DIR: "${{github.workspace}}/bin"
+  ARCHIVE_FILENAME: "cmangos-tbc.zip"
 
 jobs:
   build:
@@ -25,29 +30,11 @@ jobs:
     permissions:
       contents: read
 
-    strategy:
-      matrix:
-       include:
-          #- OPTIONAL_DEFINES: ""
-          #  TYPE: "default"
-
-          - OPTIONAL_DEFINES: "-DBUILD_EXTRACTORS=ON -DBUILD_IKE3_BOTS=ON -DBUILD_AHBOT=ON -DBUILD_GIT_ID=ON"
-            TYPE: "with-all"
-
-          #- OPTIONAL_DEFINES: "-DBUILD_PLAYERBOT=ON -DBUILD_AHBOT=ON"
-          #  TYPE: "with-playerbot-ahbot"
-
-          #- OPTIONAL_DEFINES: "-DBUILD_PLAYERBOT=ON"
-          #  TYPE: "with-playerbot"
-
-          #- OPTIONAL_DEFINES: "-DBUILD_AHBOT=ON"
-          #  TYPE: "with-ahbot"
-
     steps:
       - name: Checkout CMaNGOS TBC
         uses: actions/checkout@v2
         with:
-          ref: ike3-bots
+          ref: ${{env.CORE_BRANCH}}
           repository: celguar/mangos-tbc
           path: ${{env.REPO_DIR}}
           # submodules: recursive
@@ -55,13 +42,12 @@ jobs:
       - name: Checkout Bots
         uses: actions/checkout@v2
         with:
-          ref: master
+          ref: ${{env.BOTS_BRANCH}}
           path: "${{env.REPO_DIR}}/src/modules/Bots"
 
       - uses: FranzDiebold/github-env-vars-action@v2
       - name: Create Build Environment
         run: |
-          echo "ARCHIVE_FILENAME=cmangos-tbc.zip" >> $env:GITHUB_ENV
           cmake -E make_directory ${{ env.BUILD_DIR }}
       # install dependencies
       - name: Cache Windows boost
@@ -91,7 +77,7 @@ jobs:
       - name: Configure
         env:
           BOOST_ROOT: "${{env.BOOST_INSTALL_DIR}}/boost/boost"
-        run: cmake ${{matrix.OPTIONAL_DEFINES}} -B ${{env.BUILD_DIR}} -S ${{env.REPO_DIR}}
+        run: cmake ${{env.BUILD_OPTIONS}} -B ${{env.BUILD_DIR}} -S ${{env.REPO_DIR}}
 
       - name: Build
         env:
@@ -101,12 +87,12 @@ jobs:
       - name: Archive files
         run: |
           cd bin
-          7z a -tzip ${{env.ARCHIVE_FILENAME}} "x64_${{env.BUILD_TYPE}}/*"
+          7z a -tzip ${{env.ARCHIVE_FILENAME}} "x64_${{env.BUILD_TYPE}}\*"
           
       - name: Archive this artefact
         uses: actions/upload-artifact@v2
         with:
-          name: snapshot-tbc
+          name: snapshot-${{env.CORE_EXPANSION}}
           path: "bin/${{env.ARCHIVE_FILENAME}}"
 
   upload:
@@ -124,7 +110,7 @@ jobs:
       - name: Download artifact
         uses: actions/download-artifact@v1
         with:
-          name: snapshot-tbc
+          name: snapshot-${{env.CORE_EXPANSION}}
           path: all_snapshots
 
       - name: Get current date
@@ -137,7 +123,7 @@ jobs:
           release_name: "Windows Build (${{ steps.date.outputs.date }})"
           tag: "r-${{ steps.date.outputs.date }}" 
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: all_snapshots/cmangos-tbc.zip
+          file: all_snapshots/${{env.ARCHIVE_FILENAME}}
 
       #- name: Upload release
       #  uses: "marvinpinto/action-automatic-releases@latest"
@@ -161,32 +147,16 @@ jobs:
         id: date
         run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
           
-      - name: Set environmental variables
-        run: |
-          echo "GIT_BRANCH=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
-          shortSHA=`echo ${GITHUB_SHA} | cut -c1-8`
-          echo "GIT_SHORT_SHA=${shortSHA}" >> $GITHUB_ENV
-          projectNames="CMaNGOS TBC with ike3 bots"
-          coreType="cmangos"
-          expension="tbc"
-          coreBranch="ike3-bots"
-          echo "CORE_TYPE=${coreType}" >> $GITHUB_ENV
-          echo "EXPENSION_NAME=${expension}" >> $GITHUB_ENV
-          echo "CORE_BRANCH=${coreBranch}" >> $GITHUB_ENV
-          echo "ALL_ARCH_NAME=${coreType}-${expension}.zip" >> $GITHUB_ENV
-          
       - name: Notify
         uses: rjstone/discord-webhook-notify@v1.0.4
         with:
           severity: info
-          username: ${{env.CORE_TYPE}}-${{env.EXPENSION_NAME}}
+          username: ${{env.CORE_TYPE}}-${{env.CORE_EXPANSION}}
           description: |
-            **CMaNGOS TBC Released!**
+            **TBC Dev Build ${{ steps.date.outputs.date }}!**
           details: |
-            **Core branch:** ${{env.CORE_BRANCH}}
-            **Bots branch:** ${{env.GIT_BRANCH}}
             [**Changelog**](${{github.server_url}}/${{ github.repository }}/commits/r-${{ steps.date.outputs.date }}) - [**All Releases**](${{github.server_url}}/${{ github.repository }}/tags) - [**Build Log**](${{github.server_url}}/${{github.repository}}/actions/runs/${{github.run_id}})
-            [**Download Windows Binaries**](${{github.server_url}}/${{ github.repository }}/releases/download/r-${{ steps.date.outputs.date }}/${{env.ALL_ARCH_NAME}})
+            [**Download Windows Binaries**](${{github.server_url}}/${{ github.repository }}/releases/download/r-${{ steps.date.outputs.date }}/${{env.ARCHIVE_FILENAME}})
           footer: Build success
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK_BUILD }}
           avatarUrl: https://github.githubassets.com/favicons/favicon-success.png
@@ -204,29 +174,16 @@ jobs:
       - name: Get current date
         id: date
         run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
-        
-      - name: Env
-        run: |
-          echo "GIT_BRANCH=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
-          echo "GIT_SHORT_SHA=`echo ${GITHUB_SHA} | cut -c1-8`" >> $GITHUB_ENV
-          coreType="cmangos"
-          expension="tbc"
-          coreBranch="ike3-bots"
-          echo "CORE_TYPE=${coreType}" >> $GITHUB_ENV
-          echo "EXPENSION_NAME=${expension}" >> $GITHUB_ENV
-          echo "CORE_BRANCH=${coreBranch}" >> $GITHUB_ENV
           
       - name: Notify
         uses: rjstone/discord-webhook-notify@v1.0.4
         with:
           severity: error
-          username: ${{env.CORE_TYPE}}-${{env.EXPENSION_NAME}}
+          username: ${{env.CORE_TYPE}}-${{env.CORE_EXPANSION}}
           description: |
-            **CMaNGOS TBC Release failed!**
+            **TBC Dev Build failed!**
           details: |
-            **Core branch:** ${{env.CORE_BRANCH}}
-            **Bots branch:** ${{env.GIT_BRANCH}}
-            [**Last commits**](${{github.server_url}}/${{ github.repository }}/commits/${{env.GIT_BRANCH}}) - [**Build Log**](${{github.server_url}}/${{github.repository}}/actions/runs/${{github.run_id}})
+            [**Last commits**](${{github.server_url}}/${{ github.repository }}/commits/${{env.BOTS_BRANCH}}) - [**Build Log**](${{github.server_url}}/${{github.repository}}/actions/runs/${{github.run_id}})
           footer: Build fail
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK_BUILD }}
           avatarUrl: https://github.githubassets.com/favicons/favicon-failure.png
