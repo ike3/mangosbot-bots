@@ -2209,7 +2209,7 @@ uint32 RandomPlayerbotMgr::GetZoneLevel(uint16 mapId, float teleX, float teleY, 
 
 void RandomPlayerbotMgr::Refresh(Player* bot)
 {
-    if (bot->IsBeingTeleported() || !bot->GetMap())
+    if (bot->IsBeingTeleportedFar() || !bot->GetMap())
         return;
 
     if (sServerFacade.UnitIsDead(bot))
