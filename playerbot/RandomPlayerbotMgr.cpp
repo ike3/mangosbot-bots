@@ -2597,6 +2597,9 @@ void RandomPlayerbotMgr::HandleCommand(uint32 type, const string& text, Player& 
         if (team != TEAM_BOTH_ALLOWED && bot->GetTeam() != team)
             continue;
 
+        if (type == CHAT_MSG_GUILD && bot->GetGuildId() != fromPlayer.GetGuildId())
+            continue;
+
         if (!channelName.empty())
         {
             if (ChannelMgr* cMgr = channelMgr(bot->GetTeam()))
