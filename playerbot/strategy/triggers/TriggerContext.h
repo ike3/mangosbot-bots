@@ -24,6 +24,7 @@ namespace ai
         {
             creators["return"] = &TriggerContext::_return;
             creators["sit"] = &TriggerContext::sit;
+            creators["return to stay position"] = &TriggerContext::return_to_stay_position;
             creators["collision"] = &TriggerContext::collision;
 
             creators["timer"] = &TriggerContext::Timer;
@@ -252,6 +253,7 @@ namespace ai
         static Trigger* give_water(PlayerbotAI* ai) { return new GiveWaterTrigger(ai); }
         static Trigger* no_rti(PlayerbotAI* ai) { return new NoRtiTrigger(ai); }
         static Trigger* _return(PlayerbotAI* ai) { return new ReturnTrigger(ai); }
+        static Trigger* return_to_stay_position(PlayerbotAI* ai) { return new ReturnToStayPositionTrigger(ai); }
         static Trigger* sit(PlayerbotAI* ai) { return new SitTrigger(ai); }
         static Trigger* far_from_rpg_target(PlayerbotAI* ai) { return new FarFromRpgTargetTrigger(ai); }
         static Trigger* near_rpg_target(PlayerbotAI* ai) { return new NearRpgTargetTrigger(ai); }

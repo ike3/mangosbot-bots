@@ -52,6 +52,9 @@ namespace ai
         void Update() {}
         void Reset() {}
 
+		virtual void OnStrategyAdded() {}
+		virtual void OnStrategyRemoved() {}
+
     protected:
         NamedObjectFactoryList<ActionNode> actionNodeFactories;
     };

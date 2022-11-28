@@ -30,8 +30,8 @@ bool FollowChatShortcutAction::Execute(Event& event)
         return false;
 
     ai->Reset();
-    ai->ChangeStrategy("+follow,-passive", BotState::BOT_STATE_NON_COMBAT);
-    ai->ChangeStrategy("-follow,-passive", BotState::BOT_STATE_COMBAT);
+    ai->ChangeStrategy("+follow,-passive,-stay", BotState::BOT_STATE_NON_COMBAT);
+    ai->ChangeStrategy("+follow,-passive,-stay", BotState::BOT_STATE_COMBAT);
 
     ai::PositionMap& posMap = context->GetValue<ai::PositionMap&>("position")->Get();
     ai::PositionEntry pos = posMap["return"];
@@ -88,8 +88,8 @@ bool StayChatShortcutAction::Execute(Event& event)
         return false;
 
     ai->Reset();
-    ai->ChangeStrategy("+stay,-passive", BotState::BOT_STATE_NON_COMBAT);
-    ai->ChangeStrategy("-follow,-passive", BotState::BOT_STATE_COMBAT);
+    ai->ChangeStrategy("+stay,-follow,-passive", BotState::BOT_STATE_NON_COMBAT);
+    ai->ChangeStrategy("+stay,-follow,-passive", BotState::BOT_STATE_COMBAT);
 
     SetReturnPosition(bot->GetPositionX(), bot->GetPositionY(), bot->GetPositionZ());
 

@@ -3,6 +3,7 @@
 #include "GenericTriggers.h"
 #include "../../LootObjectStack.h"
 #include "../../PlayerbotAIConfig.h"
+#include "../values/PositionValue.h"
 
 using namespace ai;
 
@@ -494,4 +495,16 @@ bool IsFallingFarTrigger::IsActive()
 bool HasAreaDebuffTrigger::IsActive()
 {
     return AI_VALUE2(bool, "has area debuff", "self target");
+}
+
+bool ReturnToStayPositionTrigger::IsActive()
+{
+    PositionEntry stayPosition = context->GetValue<ai::PositionMap&>("position")->Get()["stay position"];
+    if (stayPosition.isSet())
+    {
+        const float distance = bot->GetDistance(stayPosition.x, stayPosition.y, stayPosition.z);
+        return distance > sPlayerbotAIConfig.followDistance;
+    }
+
+    return false;
 }

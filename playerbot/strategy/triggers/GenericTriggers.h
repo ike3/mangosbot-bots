@@ -735,6 +735,14 @@ namespace ai
         ReturnTrigger(PlayerbotAI* ai) : StayTimeTrigger(ai, sPlayerbotAIConfig.returnDelay, "return") {}
     };
 
+    class ReturnToStayPositionTrigger : public Trigger
+    {
+    public:
+        ReturnToStayPositionTrigger(PlayerbotAI* ai) : Trigger(ai, "return to stay position", 2) {}
+
+        virtual bool IsActive();
+    };
+
     class GiveItemTrigger : public Trigger
     {
     public:
