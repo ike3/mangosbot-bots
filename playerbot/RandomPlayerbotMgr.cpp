@@ -2209,7 +2209,7 @@ uint32 RandomPlayerbotMgr::GetZoneLevel(uint16 mapId, float teleX, float teleY, 
 
 void RandomPlayerbotMgr::Refresh(Player* bot)
 {
-    if (!bot->GetMap())
+    if (bot->IsBeingTeleported() || !bot->GetMap())
         return;
 
     if (sServerFacade.UnitIsDead(bot))
@@ -2595,6 +2595,9 @@ void RandomPlayerbotMgr::HandleCommand(uint32 type, const string& text, Player& 
             continue;
 
         if (team != TEAM_BOTH_ALLOWED && bot->GetTeam() != team)
+            continue;
+
+        if (type == CHAT_MSG_GUILD && bot->GetGuildId() != fromPlayer.GetGuildId())
             continue;
 
         if (!channelName.empty())
