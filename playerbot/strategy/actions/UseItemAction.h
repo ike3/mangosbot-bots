@@ -114,6 +114,9 @@ namespace ai
             {
                 // Update the last potion used timestamp
                 SET_AI_VALUE(time_t, "last potion used time", time(0));
+
+                // Set the duration of the action
+                SetDuration(sPlayerbotAIConfig.globalCoolDown);
             }
 
             return result; 
