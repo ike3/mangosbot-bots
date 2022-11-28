@@ -81,6 +81,9 @@ bool OpenLootAction::DoLoot(LootObject& lootObject)
 #endif
             )
     {        
+        if (!lootObject.IsLootPossible(bot)) //Clear loot if bot can't loot it.
+            return true;
+
         WorldPacket packet(CMSG_LOOT, 8);
         packet << lootObject.guid;
         bot->GetSession()->HandleLootOpcode(packet);
