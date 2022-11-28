@@ -53,4 +53,11 @@ namespace ai
         virtual bool isUseful();
     };
 
+    class ReturnToStayPositionAction : public MoveToPositionAction
+    {
+    public:
+        ReturnToStayPositionAction(PlayerbotAI* ai) : MoveToPositionAction(ai, "move to position", "stay position") {}
+
+        virtual bool isPossible();
+    };
 }

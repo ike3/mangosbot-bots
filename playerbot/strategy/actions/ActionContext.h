@@ -123,6 +123,7 @@ namespace ai
             creators["move to loot"] = &ActionContext::move_to_loot;
             creators["open loot"] = &ActionContext::open_loot;
             creators["guard"] = &ActionContext::guard;
+            creators["return to stay position"] = &ActionContext::return_to_stay_position;
             creators["move out of enemy contact"] = &ActionContext::move_out_of_enemy_contact;
             creators["set facing"] = &ActionContext::set_facing;
             creators["set behind"] = &ActionContext::set_behind;
@@ -284,6 +285,7 @@ namespace ai
         static Action* select_new_target(PlayerbotAI* ai) { return new SelectNewTargetAction(ai); }
         static Action* attack_duel_opponent(PlayerbotAI* ai) { return new AttackDuelOpponentAction(ai); }
         static Action* guard(PlayerbotAI* ai) { return new GuardAction(ai); }
+        static Action* return_to_stay_position(PlayerbotAI* ai) { return new ReturnToStayPositionAction(ai); }
         static Action* open_loot(PlayerbotAI* ai) { return new OpenLootAction(ai); }
         static Action* move_to_loot(PlayerbotAI* ai) { return new MoveToLootAction(ai); }
         static Action* _return(PlayerbotAI* ai) { return new ReturnAction(ai); }

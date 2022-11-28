@@ -466,6 +466,7 @@ void Engine::addStrategy(string name)
 
         LogAction("S:+%s", strategy->getName().c_str());
         strategies[strategy->getName()] = strategy;
+        strategy->OnStrategyAdded();
     }
     if(!initMode)
         Init();
@@ -497,6 +498,7 @@ bool Engine::removeStrategy(string name)
         return false;
 
     LogAction("S:-%s", name.c_str());
+    i->second->OnStrategyRemoved();
     strategies.erase(i);
     Init();
     return true;

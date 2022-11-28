@@ -1,5 +1,6 @@
 #include "botpch.h"
 #include "../../playerbot.h"
+#include "../values/PositionValue.h"
 #include "StayStrategy.h"
 
 using namespace ai;
@@ -7,6 +8,38 @@ using namespace ai;
 NextAction** StayStrategy::getDefaultActions()
 {
     return NextAction::array(0, new NextAction("stay", 1.0f), NULL);
+}
+
+void StayStrategy::InitTriggers(std::list<TriggerNode*>& triggers)
+{
+    triggers.push_back(new TriggerNode(
+        "return to stay position",
+        NextAction::array(0, new NextAction("return to stay position", 1.5f), NULL)));
+}
+
+void StayStrategy::OnStrategyAdded()
+{
+    // Set the stay position to current position
+    AiObjectContext* context = ai->GetAiObjectContext();
+    
+    Player* bot = ai->GetBot();
+    PositionEntry stayPosition = AI_VALUE(PositionMap&, "position")["stay position"];
+    stayPosition.Set(bot->GetPositionX(), bot->GetPositionY(), bot->GetPositionZ(), bot->GetMapId());
+
+    PositionMap& posMap = AI_VALUE(PositionMap&, "position");
+    posMap["stay position"] = stayPosition;
+}
+
+void StayStrategy::OnStrategyRemoved()
+{
+    // Remove the saved stay position
+    AiObjectContext* context = ai->GetAiObjectContext();
+    PositionEntry stayPosition = AI_VALUE(PositionMap&, "position")["stay position"];
+    if (stayPosition.isSet())
+    {
+        PositionMap& posMap = AI_VALUE(PositionMap&, "position");
+        posMap.erase("stay position");
+    }
 }
 
 void SitStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
