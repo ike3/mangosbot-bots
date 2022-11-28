@@ -104,24 +104,30 @@ bool FleeToMasterAction::Execute(Event& event)
     WorldPosition bosPos(bot);
     float distance = bosPos.fDist(targetPos);
 
+
+    uint32 scale = 5;
+    if (bot->GetGroup() && bot->GetGroup()->GetMembersCount() > 5)
+        scale = bot->GetGroup()->GetMembersCount();
+        
+
     if (distance > sPlayerbotAIConfig.reactDistance && bot->IsInCombat())
     {
-        if (!urand(0, 5))
+        if (!urand(0, scale))
             ai->TellMasterNoFacing("I'm heading to your location but I'm in combat", PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
             //ai->TellMaster(BOT_TEXT("wait_travel_combat"), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
     }
     else if (distance < sPlayerbotAIConfig.reactDistance * 3)
     {
-        if (!urand(0, 5))
+        if (!urand(0, scale))
             ai->TellMasterNoFacing(BOT_TEXT("wait_travel_close"), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
     }
     else if (distance < 1000)
     {
-        if (!urand(0, 20))
+        if (!urand(0, scale*4))
             ai->TellMasterNoFacing(BOT_TEXT("wait_travel_medium"), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
     }
     else
-        if (!urand(0, 30))
+        if (!urand(0, scale*6))
             ai->TellMasterNoFacing(BOT_TEXT("wait_travel_medium"), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
            
     SetDuration(3000U);
