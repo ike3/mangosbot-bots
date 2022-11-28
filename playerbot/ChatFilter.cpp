@@ -279,7 +279,21 @@ public:
             if(bot->GetGroup()->IsLeader(bot->GetObjectGuid()))
                 return ChatFilter::Filter(message);
         }
-        if (message.find("@raidleader") == 0)
+        if (message.find("@raid") == 0)
+        {
+            if (!bot->GetGroup() || !bot->GetGroup()->IsRaidGroup())
+                return message;
+
+            return ChatFilter::Filter(message);
+        }
+        if (message.find("@noraid") == 0)
+        {
+            if (bot->GetGroup() && bot->GetGroup()->IsRaidGroup())
+                return message;
+
+            return ChatFilter::Filter(message);
+        }
+        if (message.find("@rleader") == 0)
         {
             if (!bot->GetGroup())
                 return message;
