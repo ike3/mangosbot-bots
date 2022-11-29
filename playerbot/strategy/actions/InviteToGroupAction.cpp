@@ -18,6 +18,10 @@ namespace ai
         if (!player->GetPlayerbotAI() && !ai->GetSecurity()->CheckLevelFor(PlayerbotSecurityLevel::PLAYERBOT_SECURITY_INVITE, true, player))
             return false;
 
+        if (Group* group = inviter->GetGroup())
+            if (!group->IsRaidGroup() && group->GetMembersCount() > 4)
+                group->ConvertToRaid();
+
         WorldPacket p;
         uint32 roles_mask = 0;
         p << player->GetName();
@@ -25,6 +29,22 @@ namespace ai
         inviter->GetSession()->HandleGroupInviteOpcode(p);
 
         return true;
+    }
+
+    bool JoinGroupAction::Execute(Event& event)
+    {
+        Player* master = event.getOwner();
+
+        Group* group = master->GetGroup();
+
+        if (group && group->IsFull())
+            return false;
+
+        if (!group || (bot->GetGroup() && bot->GetGroup() != group))
+            if (!ai->DoSpecificAction("leave", event, true))
+                return false;
+
+        return Invite(master, bot);
     }
 
     bool InviteNearbyToGroupAction::Execute(Event& event)
@@ -72,7 +92,7 @@ namespace ai
             
             //When inviting the 5th member of the group convert to raid for future invites.
             if (group && botAi->GetGrouperType() > GrouperType::LEADER_5 && !group->IsRaidGroup() && bot->GetGroup()->GetMembersCount() > 3)
-                bot->GetGroup()->ConvertToRaid();
+                group->ConvertToRaid();
 
             return Invite(bot, player);
         }
@@ -97,7 +117,7 @@ namespace ai
 
         if (group)
         {
-            if (group->IsFull())
+            if (group->IsRaidGroup() && group->IsFull())
                 return false;
 
             if (ai->GetGroupMaster() != bot)

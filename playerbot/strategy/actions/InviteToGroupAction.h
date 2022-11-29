@@ -23,11 +23,8 @@ namespace ai
     public:
         JoinGroupAction(PlayerbotAI* ai, string name = "join") : InviteToGroupAction(ai, name) {}
 
-        virtual bool Execute(Event& event)
-        {
-            Player* master = event.getOwner();
-            return Invite(master, bot);
-        }
+        virtual bool Execute(Event& event);
+        virtual bool isUsefull() { return !bot->IsBeingTeleported(); }
     };
 
     class InviteNearbyToGroupAction : public InviteToGroupAction
