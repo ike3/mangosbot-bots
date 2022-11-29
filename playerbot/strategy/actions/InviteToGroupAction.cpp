@@ -19,8 +19,11 @@ namespace ai
             return false;
 
         if (Group* group = inviter->GetGroup())
-            if (!group->IsRaidGroup() && group->GetMembersCount() > 4)
-                group->ConvertToRaid();
+        {
+            if(player->GetPlayerbotAI() && !player->GetPlayerbotAI()->IsRealPlayer())
+                if (!group->IsRaidGroup() && group->GetMembersCount() > 4)
+                    group->ConvertToRaid();
+        }
 
         WorldPacket p;
         uint32 roles_mask = 0;
