@@ -261,6 +261,7 @@ public:
 private:
     map<uint16, string> handlers;
     stack<WorldPacket> queue;
+    std::mutex m_botPacketMutex;
 };
 
 class ChatCommandHolder

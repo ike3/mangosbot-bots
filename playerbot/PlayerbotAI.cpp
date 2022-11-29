@@ -63,11 +63,16 @@ void PacketHandlingHelper::AddHandler(uint16 opcode, string handler)
 
 void PacketHandlingHelper::Handle(ExternalEventHelper &helper)
 {
+    if (!m_botPacketMutex.try_lock()) //Packets do not have to be handled now. Handle them later.
+        return;
+
     while (!queue.empty())
     {
         helper.HandlePacket(handlers, queue.top());
         queue.pop();
     }
+
+    m_botPacketMutex.unlock();
 }
 
 void PacketHandlingHelper::AddPacket(const WorldPacket& packet)
@@ -75,8 +80,12 @@ void PacketHandlingHelper::AddPacket(const WorldPacket& packet)
     if (packet.empty() && packet.GetOpcode() != MSG_RAID_READY_CHECK)
         return;
 
+    m_botPacketMutex.lock(); //We are going to add packets. Stop any new handling and add them.
+
 	if (handlers.find(packet.GetOpcode()) != handlers.end())
         queue.push(WorldPacket(packet));
+
+    m_botPacketMutex.unlock();
 }
 
 
