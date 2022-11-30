@@ -220,7 +220,7 @@ bool AhBidAction::Execute(string text, Unit* auctioneer)
             }
 
             power *= 1000;
-            power /= cost;
+            power /= (cost+1);
 
             auctionPowers.push_back(make_pair(auction, power));
         }
