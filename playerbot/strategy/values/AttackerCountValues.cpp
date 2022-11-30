@@ -14,36 +14,44 @@ uint8 MyAttackerCountValue::Calculate()
 bool HasAggroValue::Calculate()
 {
     Unit* target = GetTarget();
-    if (!target)
-        return true;
 
-    HostileReference *ref = sServerFacade.GetHostileRefManager(bot).getFirst();
-    if (!ref)
-        return true; // simulate as target is not attacking anybody yet
-
-    while( ref )
+    // Player targets don't have aggro
+    if (target && !target->IsPlayer())
     {
-        ThreatManager *threatManager = ref->getSource();
-        Unit *attacker = threatManager->getOwner();
-#ifdef CMANGOS
-        Unit *victim = attacker->GetVictim();
-#endif
-#ifdef MANGOS
-        Unit *victim = attacker->getVictim();
-#endif
-        if (victim == bot && target == attacker)
-            return true;
-        ref = ref->next();
-    }
-
-    ref = sServerFacade.GetThreatManager(target).getCurrentVictim();
-    if (ref)
-    {
-        Unit* victim = ref->getTarget();
-        if (victim)
+        HostileReference* ref = sServerFacade.GetHostileRefManager(bot).getFirst();
+        if (ref)
         {
-            Player* pl = dynamic_cast<Player*>(victim);
-            if (pl && ai->IsTank(pl)) return true;
+            while (ref)
+            {
+                ThreatManager* threatManager = ref->getSource();
+                Unit* attacker = threatManager->getOwner();
+                Unit* victim = attacker->GetVictim();
+
+                if ((victim == bot) && (target == attacker))
+                {
+                    return true;
+                }
+                else
+                {
+                    ref = ref->next();
+                }
+            }
+
+            ref = sServerFacade.GetThreatManager(target).getCurrentVictim();
+            if (ref)
+            {
+                Unit* victim = ref->getTarget();
+                return victim && (victim == bot);
+
+                /*
+                // What is the purpose of this?
+                if (victim)
+                {
+                    Player* pl = dynamic_cast<Player*>(victim);
+                    if (pl && ai->IsTank(pl)) return true;
+                }
+                */
+            }
         }
     }
 
