@@ -150,7 +150,8 @@ bool ReturnAction::isUseful()
 
 bool ReturnToStayPositionAction::isPossible()
 {
-    PositionEntry stayPosition = context->GetValue<ai::PositionMap&>("position")->Get()["stay position"];
+    PositionMap& posMap = AI_VALUE(PositionMap&, "position");
+    PositionEntry stayPosition = posMap["stay position"];
     if (stayPosition.isSet())
     {
         const float distance = bot->GetDistance(stayPosition.x, stayPosition.y, stayPosition.z);
@@ -160,7 +161,6 @@ bool ReturnToStayPositionAction::isPossible()
             
             // Set the stay position to current position
             stayPosition.Set(bot->GetPositionX(), bot->GetPositionY(), bot->GetPositionZ(), bot->GetMapId());
-            PositionMap& posMap = AI_VALUE(PositionMap&, "position");
             posMap["stay position"] = stayPosition;
         }
 

@@ -58,6 +58,9 @@
 #include "WaitForAttackAction.h"
 #include "PullActions.h"
 
+#include "OnyxiasLairDungeonActions.h"
+#include "MoltenCoreDungeonActions.h"
+
 namespace ai
 {
     class ActionContext : public NamedObjectContext<Action>
@@ -258,6 +261,20 @@ namespace ai
 #ifdef MANGOSBOT_TWO
             creators["every_man_for_himself"] = &ActionContext::every_man_for_himself;
 #endif    
+
+            // Dungeon Actions
+            creators["enable onyxia's lair strategy"] = &ActionContext::onyxias_lair_enable_strategy;
+            creators["disable onyxia's lair strategy"] = &ActionContext::onyxias_lair_disable_strategy;
+            creators["enable molten core strategy"] = &ActionContext::molten_core_enable_strategy;
+            creators["disable molten core strategy"] = &ActionContext::molten_core_disable_strategy;
+
+            // Dungeon Boss Actions
+            creators["enable onyxia fight strategy"] = &ActionContext::onyxia_enable_fight_strategy;
+            creators["disable onyxia fight strategy"] = &ActionContext::onyxia_disable_fight_strategy;
+
+            creators["enable magmadar fight strategy"] = &ActionContext::magmadar_enable_fight_strategy;
+            creators["disable magmadar fight strategy"] = &ActionContext::magmadar_disable_fight_strategy;
+            creators["move away from magmadar lava bomb"] = &ActionContext::magmadar_move_away_from_lava_bomb;
         }
 
     private:
@@ -455,5 +472,19 @@ namespace ai
         static Action* set_combat_state(PlayerbotAI* ai) { return new SetCombatStateAction(ai); }
         static Action* set_non_combat_state(PlayerbotAI* ai) { return new SetNonCombatStateAction(ai); }
         static Action* set_dead_state(PlayerbotAI* ai) { return new SetDeadStateAction(ai); }
+
+        // Dungeon Actions
+        static Action* onyxias_lair_enable_strategy(PlayerbotAI* ai) { return new OnyxiasLairEnableDungeonStrategyAction(ai); }
+        static Action* onyxias_lair_disable_strategy(PlayerbotAI* ai) { return new OnyxiasLairDisableDungeonStrategyAction(ai); }
+        static Action* molten_core_enable_strategy(PlayerbotAI* ai) { return new MoltenCoreEnableDungeonStrategyAction(ai); }
+        static Action* molten_core_disable_strategy(PlayerbotAI* ai) { return new MoltenCoreDisableDungeonStrategyAction(ai); }
+
+        // Dungeon Boss Actions
+        static Action* onyxia_enable_fight_strategy(PlayerbotAI* ai) { return new OnyxiaEnableFightStrategyAction(ai); }
+        static Action* onyxia_disable_fight_strategy(PlayerbotAI* ai) { return new OnyxiaDisableFightStrategyAction(ai); }
+
+        static Action* magmadar_enable_fight_strategy(PlayerbotAI* ai) { return new MagmadarEnableFightStrategyAction(ai); }
+        static Action* magmadar_disable_fight_strategy(PlayerbotAI* ai) { return new MagmadarDisableFightStrategyAction(ai); }
+        static Action* magmadar_move_away_from_lava_bomb(PlayerbotAI* ai) { return new MagmadarMoveAwayFromLavaBombAction(ai); }
     };
 };

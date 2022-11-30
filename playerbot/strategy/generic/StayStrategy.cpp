@@ -23,10 +23,10 @@ void StayStrategy::OnStrategyAdded()
     AiObjectContext* context = ai->GetAiObjectContext();
     
     Player* bot = ai->GetBot();
-    PositionEntry stayPosition = AI_VALUE(PositionMap&, "position")["stay position"];
-    stayPosition.Set(bot->GetPositionX(), bot->GetPositionY(), bot->GetPositionZ(), bot->GetMapId());
-
     PositionMap& posMap = AI_VALUE(PositionMap&, "position");
+    PositionEntry stayPosition = posMap["stay position"];
+
+    stayPosition.Set(bot->GetPositionX(), bot->GetPositionY(), bot->GetPositionZ(), bot->GetMapId());
     posMap["stay position"] = stayPosition;
 }
 
@@ -34,10 +34,10 @@ void StayStrategy::OnStrategyRemoved()
 {
     // Remove the saved stay position
     AiObjectContext* context = ai->GetAiObjectContext();
-    PositionEntry stayPosition = AI_VALUE(PositionMap&, "position")["stay position"];
+    PositionMap& posMap = AI_VALUE(PositionMap&, "position");
+    PositionEntry stayPosition = posMap["stay position"];
     if (stayPosition.isSet())
     {
-        PositionMap& posMap = AI_VALUE(PositionMap&, "position");
         posMap.erase("stay position");
     }
 }

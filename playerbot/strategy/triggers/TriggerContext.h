@@ -3,7 +3,7 @@
 #include "HealthTriggers.h"
 #include "GenericTriggers.h"
 #include "LootTriggers.h"
-#include "../triggers/GenericTriggers.h"
+#include "GenericTriggers.h"
 #include "LfgTriggers.h"
 #include "PvpTriggers.h"
 #include "RpgTriggers.h"
@@ -14,6 +14,8 @@
 #include "StuckTriggers.h"
 #include "BotStateTriggers.h"
 #include "PullTriggers.h"
+#include "OnyxiasLairDungeonTriggers.h"
+#include "MoltenCoreDungeonTriggers.h"
 
 namespace ai
 {
@@ -219,6 +221,20 @@ namespace ai
             creators["arcane torrent"] = &TriggerContext::arcane_torrent;
             creators["war stomp"] = &TriggerContext::war_stomp;
             creators["perception"] = &TriggerContext::cannibalize;
+
+            // Dungeon Triggers
+            creators["enter onyxia's lair"] = &TriggerContext::onyxias_lair_enter;
+            creators["leave onyxia's lair"] = &TriggerContext::onyxias_lair_leave;
+            creators["enter molten core"] = &TriggerContext::molten_core_enter;
+            creators["leave molten core"] = &TriggerContext::molten_core_leave;
+
+            // Dungeon Boss Triggers
+            creators["start onyxia fight"] = &TriggerContext::onyxia_start_fight;
+            creators["end onyxia fight"] = &TriggerContext::onyxia_end_fight;
+
+            creators["start magmadar fight"] = &TriggerContext::magmadar_start_fight;
+            creators["end magmadar fight"] = &TriggerContext::magmadar_end_fight;
+            creators["magmadar lava bomb"] = &TriggerContext::magmadar_lava_bomb;
         }
 
     private:
@@ -387,5 +403,19 @@ namespace ai
         static Trigger* rpg_craft(PlayerbotAI* ai) { return new RpgCraftTrigger(ai); }
         static Trigger* rpg_trade_useful(PlayerbotAI* ai) { return new RpgTradeUsefulTrigger(ai); }
         static Trigger* rpg_duel(PlayerbotAI* ai) { return new RpgDuelTrigger(ai); }
+
+        // Dungeon Triggers
+        static Trigger* onyxias_lair_enter(PlayerbotAI* ai) { return new OnyxiasLairEnterDungeonTrigger(ai); }
+        static Trigger* onyxias_lair_leave(PlayerbotAI* ai) { return new OnyxiasLairLeaveDungeonTrigger(ai); }
+        static Trigger* molten_core_enter(PlayerbotAI* ai) { return new MoltenCoreEnterDungeonTrigger(ai); }
+        static Trigger* molten_core_leave(PlayerbotAI* ai) { return new MoltenCoreLeaveDungeonTrigger(ai); }
+
+        // Dungeon Boss Triggers
+        static Trigger* onyxia_start_fight(PlayerbotAI* ai) { return new OnyxiaStartFightTrigger(ai); }
+        static Trigger* onyxia_end_fight(PlayerbotAI* ai) { return new OnyxiaEndFightTrigger(ai); }
+        
+        static Trigger* magmadar_start_fight(PlayerbotAI* ai) { return new MagmadarStartFightTrigger(ai); }
+        static Trigger* magmadar_end_fight(PlayerbotAI* ai) { return new MagmadarEndFightTrigger(ai); }
+        static Trigger* magmadar_lava_bomb(PlayerbotAI* ai) { return new MagmadarLavaBombTrigger(ai); }
     };
 };

@@ -42,6 +42,10 @@
 #include "generic/GroupStrategy.h"
 #include "generic/GuildStrategy.h"
 
+#include "generic/DungeonStrategy.h"
+#include "generic/OnyxiasLairDungeonStrategies.h"
+#include "generic/MoltenCoreDungeonStrategies.h"
+
 namespace ai
 {
     class StrategyContext : public NamedObjectContext<Strategy>
@@ -117,6 +121,15 @@ namespace ai
             creators["grind"] = &StrategyContext::grind;
             creators["avoid aoe"] = &StrategyContext::avoid_aoe;
             creators["wait for attack"] = &StrategyContext::wait_for_attack;
+
+            // Dungeon Strategies
+            creators["dungeon"] = &StrategyContext::dungeon;
+            creators["onyxia's lair"] = &StrategyContext::onyxias_lair;
+            creators["molten core"] = &StrategyContext::molten_core;
+
+            // Dungeon Boss Strategies
+            creators["onyxia"] = &StrategyContext::onyxia;
+            creators["magmadar"] = &StrategyContext::magmadar;
         }
 
     private:
@@ -188,6 +201,15 @@ namespace ai
         static Strategy* grind(PlayerbotAI* ai) { return new GrindingStrategy(ai); }
         static Strategy* avoid_aoe(PlayerbotAI* ai) { return new AvoidAoeStrategy(ai); }
         static Strategy* wait_for_attack(PlayerbotAI* ai) { return new WaitForAttackStrategy(ai); }
+
+        // Dungeon Strategies
+        static Strategy* dungeon(PlayerbotAI* ai) { return new DungeonStrategy(ai); }
+        static Strategy* onyxias_lair(PlayerbotAI* ai) { return new OnyxiasLairDungeonStrategy(ai); }
+        static Strategy* molten_core(PlayerbotAI* ai) { return new MoltenCoreDungeonStrategy(ai); }
+
+        // Dungeon Boss Strategy
+        static Strategy* onyxia(PlayerbotAI* ai) { return new OnyxiaFightStrategy(ai); }
+        static Strategy* magmadar(PlayerbotAI* ai) { return new MagmadarFightStrategy(ai); }
     };
 
     class MovementStrategyContext : public NamedObjectContext<Strategy>
