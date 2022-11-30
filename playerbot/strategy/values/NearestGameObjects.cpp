@@ -28,6 +28,25 @@ private:
     float i_range;
 };
 
+class GameObjectsInObjectRangeCheck
+{
+public:
+    GameObjectsInObjectRangeCheck(WorldObject const* obj, float range, uint32 gameObjectID) : i_obj(obj), i_range(range), i_gameObjectID(gameObjectID) {}
+    WorldObject const& GetFocusObject() const { return *i_obj; }
+    bool operator()(GameObject* u)
+    {
+        if (u && i_obj->IsWithinDistInMap(u, i_range) && sServerFacade.isSpawned(u) && u->GetGOInfo() && u->GetEntry() == i_gameObjectID)
+            return true;
+
+        return false;
+    }
+
+private:
+    WorldObject const* i_obj;
+    float i_range;
+    uint32 i_gameObjectID;
+};
+
 class AnyDynamicObjectInObjectRangeCheck
 {
 public:
@@ -50,9 +69,19 @@ list<ObjectGuid> NearestGameObjects::Calculate()
 {
     list<GameObject*> targets;
 
-    AnyGameObjectInObjectRangeCheck u_check(bot, range);
-    GameObjectListSearcher<AnyGameObjectInObjectRangeCheck> searcher(targets, u_check);
-    Cell::VisitAllObjects((const WorldObject*)bot, searcher, range);
+    if (!qualifier.empty())
+    {
+        uint32 gameObjectID = stoi(qualifier);
+        GameObjectsInObjectRangeCheck u_check(bot, range, gameObjectID);
+        GameObjectListSearcher<GameObjectsInObjectRangeCheck> searcher(targets, u_check);
+        Cell::VisitAllObjects((const WorldObject*)bot, searcher, range);
+    }
+    else
+    {
+        AnyGameObjectInObjectRangeCheck u_check(bot, range);
+        GameObjectListSearcher<AnyGameObjectInObjectRangeCheck> searcher(targets, u_check);
+        Cell::VisitAllObjects((const WorldObject*)bot, searcher, range);
+    }
 
     list<ObjectGuid> result;
     for(list<GameObject*>::iterator tIter = targets.begin(); tIter != targets.end(); ++tIter)
