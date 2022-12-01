@@ -35,7 +35,7 @@ namespace ai
         virtual bool isUseful() { return !bot->GetGuildId(); }
     protected:
         virtual WorldPacket GetPacket(Player* player) { WorldPacket data(Opcodes(opcode), 8); data << bot->GetName(); return data; }
-        virtual void SendPacket(WorldPacket data, Event event) { GetPlayer(event)->GetSession()->HandleGuildInviteOpcode(data); };
+        virtual void SendPacket(WorldPacket data, Event event) { if(GetPlayer(event)) GetPlayer(event)->GetSession()->HandleGuildInviteOpcode(data); };
         virtual bool PlayerIsValid(Player* member) { return !bot->GetGuildId() && member->GetGuildId() && sGuildMgr.GetGuildById(member->GetGuildId())->HasRankRight(member->GetRank(), GR_RIGHT_INVITE); };
     };
 
