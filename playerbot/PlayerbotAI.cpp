@@ -92,7 +92,7 @@ void PacketHandlingHelper::AddPacket(const WorldPacket& packet)
 PlayerbotAI::PlayerbotAI() : PlayerbotAIBase(), bot(NULL), aiObjectContext(NULL),
     currentEngine(NULL), chatHelper(this), chatFilter(this), accountId(0), security(NULL), master(NULL), currentState(BotState::BOT_STATE_NON_COMBAT), faceTargetUpdateDelay(0)
 {
-    for (uint8 i = 0 ; i < (uint8)BotState::BOT_STATE_MAX; i++)
+    for (uint8 i = 0 ; i < (uint8)BotState::BOT_STATE_ALL; i++)
         engines[i] = NULL;
 
     for (int i = 0; i < MAX_ACTIVITY_TYPE; i++)
@@ -124,7 +124,7 @@ PlayerbotAI::PlayerbotAI(Player* bot) :
     engines[(uint8)BotState::BOT_STATE_DEAD] = AiFactory::createDeadEngine(bot, this, aiObjectContext);
     engines[(uint8)BotState::BOT_STATE_REACTION] = reactionEngine = AiFactory::createReactionEngine(bot, this, aiObjectContext);
 
-    for (uint8 e = 0; e < (uint8)BotState::BOT_STATE_MAX; e++)
+    for (uint8 e = 0; e < (uint8)BotState::BOT_STATE_ALL; e++)
     {
         engines[e]->initMode = false;
         engines[e]->Init();
@@ -205,7 +205,7 @@ PlayerbotAI::PlayerbotAI(Player* bot) :
 
 PlayerbotAI::~PlayerbotAI()
 {
-    for (uint8 i = 0 ; i < (uint8)BotState::BOT_STATE_MAX; i++)
+    for (uint8 i = 0 ; i < (uint8)BotState::BOT_STATE_ALL; i++)
     {
         if (engines[i])
             delete engines[i];
@@ -741,7 +741,7 @@ void PlayerbotAI::Reset(bool full)
 
     if (full)
     {
-        for (uint8 i = 0; i < (uint8)BotState::BOT_STATE_MAX; i++)
+        for (uint8 i = 0; i < (uint8)BotState::BOT_STATE_ALL; i++)
         {
             engines[i]->Init();
         }
@@ -1610,34 +1610,68 @@ void PlayerbotAI::ReInitCurrentEngine()
 
 void PlayerbotAI::ChangeStrategy(string names, BotState type)
 {
-    Engine* e = engines[(uint8)type];
-    if (!e)
-        return;
-
-    e->ChangeStrategy(names, BotStateToString(type));
+    if(type == BotState::BOT_STATE_ALL)
+    {
+        for (uint8 i = 0; i < (uint8)BotState::BOT_STATE_ALL; i++)
+        {
+            Engine* engine = engines[i];
+            if (engine)
+            {
+                engine->ChangeStrategy(names, BotStateToString(BotState(i)));
+            }
+        }
+    }
+    else
+    {
+        Engine* engine = engines[(uint8)type];
+        if (engine)
+        {
+            engine->ChangeStrategy(names, BotStateToString(type));
+        }
+    }
 }
 
 void PlayerbotAI::ClearStrategies(BotState type)
 {
-    Engine* e = engines[(uint8)type];
-    if (!e)
-        return;
-
-    e->removeAllStrategies();
+    if (type == BotState::BOT_STATE_ALL)
+    {
+        for (uint8 i = 0; i < (uint8)BotState::BOT_STATE_ALL; i++)
+        {
+            Engine* engine = engines[i];
+            if (engine)
+            {
+                engine->removeAllStrategies();
+            }
+        }
+    }
+    else
+    {
+        Engine* engine = engines[(uint8)type];
+        if (engine)
+        {
+            engine->removeAllStrategies();
+        }
+    }
 }
 
 list<string> PlayerbotAI::GetStrategies(BotState type)
 {
-    Engine* e = engines[(uint8)type];
-    if (!e)
-        return list<string>();
+    // Can't get all strategies for all engines
+    if (type != BotState::BOT_STATE_ALL)
+    {
+        Engine* engine = engines[(uint8)type];
+        if (engine)
+        {
+            return engine->GetStrategies();
+        }
+    }
 
-    return e->GetStrategies();
+    return list<string>();
 }
 
 bool PlayerbotAI::CanDoSpecificAction(string name, string qualifier, bool isPossible, bool isUseful)
 {
-    for (uint8 i = 0; i < (uint8)BotState::BOT_STATE_MAX; i++)
+    for (uint8 i = 0; i < (uint8)BotState::BOT_STATE_ALL; i++)
     {
         if(engines[i]->CanExecuteAction(name, qualifier, isPossible, isUseful))
         {
@@ -1650,7 +1684,7 @@ bool PlayerbotAI::CanDoSpecificAction(string name, string qualifier, bool isPoss
 
 bool PlayerbotAI::DoSpecificAction(string name, Event event, bool silent, string qualifier)
 {
-    for (uint8 i = 0 ; i < (uint8)BotState::BOT_STATE_MAX; i++)
+    for (uint8 i = 0 ; i < (uint8)BotState::BOT_STATE_ALL; i++)
     {
         ostringstream out;
         ActionResult res = engines[i]->ExecuteAction(name, event, qualifier);
@@ -1723,7 +1757,7 @@ bool PlayerbotAI::PlayEmote(uint32 emote)
 
 bool PlayerbotAI::ContainsStrategy(StrategyType type)
 {
-    for (uint8 i = 0 ; i < (uint8)BotState::BOT_STATE_MAX; i++)
+    for (uint8 i = 0 ; i < (uint8)BotState::BOT_STATE_ALL; i++)
     {
         if(engines[i])
         {
@@ -1739,10 +1773,14 @@ bool PlayerbotAI::ContainsStrategy(StrategyType type)
 
 bool PlayerbotAI::HasStrategy(string name, BotState type)
 {
-    const uint8 typeIndex = (uint8)type;
-    if (engines[typeIndex])
+    // Can't check the strategy for all engines at once
+    if(type != BotState::BOT_STATE_ALL)
     {
-        return engines[typeIndex]->HasStrategy(name);
+        const uint8 typeIndex = (uint8)type;
+        if (engines[typeIndex])
+        {
+            return engines[typeIndex]->HasStrategy(name);
+        }
     }
 
     return false;
@@ -1750,7 +1788,7 @@ bool PlayerbotAI::HasStrategy(string name, BotState type)
 
 void PlayerbotAI::ResetStrategies(bool load)
 {
-    for (uint8 i = 0; i < (uint8)BotState::BOT_STATE_MAX; i++)
+    for (uint8 i = 0; i < (uint8)BotState::BOT_STATE_ALL; i++)
     {
         engines[i]->initMode = true;
         engines[i]->removeAllStrategies();
@@ -1762,7 +1800,7 @@ void PlayerbotAI::ResetStrategies(bool load)
     AiFactory::AddDefaultReactionStrategies(bot, this, reactionEngine);
     if (load) sPlayerbotDbStore.Load(this);
 
-    for (uint8 i = 0; i < (uint8)BotState::BOT_STATE_MAX; i++)
+    for (uint8 i = 0; i < (uint8)BotState::BOT_STATE_ALL; i++)
     {
         engines[i]->initMode = false;
         engines[i]->Init();

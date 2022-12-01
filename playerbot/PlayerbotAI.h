@@ -9,6 +9,7 @@
 #include "ChatFilter.h"
 #include "PlayerbotSecurity.h"
 #include "PlayerbotTextMgr.h"
+#include "BotState.h"
 #include <stack>
 
 class Player;
@@ -80,15 +81,6 @@ enum HealingItemDisplayId
    CRYSTAL_HEALING_POTION = 47132,
    FEL_REGENERATION_POTION = 37864,
    MAJOR_DREAMLESS_SLEEP_POTION = 37845,
-};
-
-enum class BotState : uint8
-{
-    BOT_STATE_COMBAT = 0,
-    BOT_STATE_NON_COMBAT = 1,
-    BOT_STATE_DEAD = 2,
-    BOT_STATE_REACTION = 3,
-    BOT_STATE_MAX
 };
 
 enum RoguePoisonDisplayId
@@ -483,7 +475,7 @@ protected:
     AiObjectContext* aiObjectContext;
     Engine* currentEngine;
     ReactionEngine* reactionEngine;
-    Engine* engines[(uint8)BotState::BOT_STATE_MAX];
+    Engine* engines[(uint8)BotState::BOT_STATE_ALL];
     BotState currentState;
     ChatHelper chatHelper;
     queue<ChatCommandHolder> chatCommands;

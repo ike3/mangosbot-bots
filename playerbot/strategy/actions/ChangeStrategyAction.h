@@ -4,7 +4,8 @@
 
 namespace ai
 {
-	class ChangeCombatStrategyAction : public Action {
+	class ChangeCombatStrategyAction : public Action 
+    {
 	public:
 		ChangeCombatStrategyAction(PlayerbotAI* ai, string name = "co") : Action(ai, name) {}
 
@@ -12,7 +13,8 @@ namespace ai
         virtual bool Execute(Event& event);
     };
 
-    class ChangeNonCombatStrategyAction : public Action {
+    class ChangeNonCombatStrategyAction : public Action 
+    {
     public:
         ChangeNonCombatStrategyAction(PlayerbotAI* ai) : Action(ai, "nc") {}
 
@@ -20,7 +22,8 @@ namespace ai
         virtual bool Execute(Event& event);
     };
 
-    class ChangeDeadStrategyAction : public Action {
+    class ChangeDeadStrategyAction : public Action 
+    {
     public:
         ChangeDeadStrategyAction(PlayerbotAI* ai) : Action(ai, "de") {}
 
@@ -28,11 +31,24 @@ namespace ai
         virtual bool Execute(Event& event);
     };
 
-    class ChangeReactionStrategyAction : public Action {
+    class ChangeReactionStrategyAction : public Action 
+    {
     public:
         ChangeReactionStrategyAction(PlayerbotAI* ai) : Action(ai, "react") {}
 
     public:
         virtual bool Execute(Event& event);
+    };
+
+    class ChangeAllStrategyAction : public Action 
+    {
+    public:
+        ChangeAllStrategyAction(PlayerbotAI* ai, string name = "change strategy from all", string strategy = "") : Action(ai, name), strategy(strategy) {}
+
+    public:
+        virtual bool Execute(Event& event);
+
+    private:
+        string strategy;
     };
 }
