@@ -23,7 +23,7 @@ Important: to enable ike3 bots you need to check it in cmake ( BUILD_IKE3_BOTS â
   a)  Go to "src/modules/Bots/sql"
   b)  Apply .sql files from "characters" folder to characters database
   c)  Apply .sql files from "world" folder to world database
-  d)  Create a new database named "%expansion%playerbots", e.g. "classicplayerbots" for classic
-  e)  Apply .sql files from "playerbot" folder to this new DB
+  d)  Apply .sql files from "playerbot" folder to playerbots database (classicplayerbots for classic, etc)
+  **IMPORTANT**: playebot folder has several .sql files that have `vanilla`, `tbc` or `wotlk` in their names. You should **apply only ONE** of them, corresponding to expansion you use.
 
 After you complete all steps above you can check bots config and start your server. It'll take some time for the first time, as gear/characters for bots will be generated at first launch. Have fun! ðŸ¥³
