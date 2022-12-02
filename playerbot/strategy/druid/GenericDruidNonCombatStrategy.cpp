@@ -59,9 +59,9 @@ GenericDruidNonCombatStrategy::GenericDruidNonCombatStrategy(PlayerbotAI* ai) : 
     actionNodeFactories.Add(new GenericDruidNonCombatStrategyActionNodeFactory());
 }
 
-void GenericDruidNonCombatStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void GenericDruidNonCombatStrategy::InitNonCombatTriggers(std::list<TriggerNode*> &triggers)
 {
-    NonCombatStrategy::InitTriggers(triggers);
+    NonCombatStrategy::InitNonCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
         "mark of the wild",
@@ -97,9 +97,9 @@ GenericDruidBuffStrategy::GenericDruidBuffStrategy(PlayerbotAI* ai) : NonCombatS
     actionNodeFactories.Add(new GenericDruidNonCombatStrategyActionNodeFactory());
 }
 
-void GenericDruidBuffStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void GenericDruidBuffStrategy::InitNonCombatTriggers(std::list<TriggerNode*> &triggers)
 {
-    NonCombatStrategy::InitTriggers(triggers);
+    NonCombatStrategy::InitNonCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
         "mark of the wild on party",

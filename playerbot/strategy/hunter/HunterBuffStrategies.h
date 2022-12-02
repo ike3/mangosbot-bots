@@ -1,47 +1,49 @@
 #pragma once
-
-#include "GenericHunterStrategy.h"
-#include "../generic/NonCombatStrategy.h"
+#include "../Strategy.h"
 
 namespace ai
 {
-    class HunterBuffSpeedStrategy : public NonCombatStrategy
+    class HunterBuffSpeedStrategy : public Strategy
     {
     public:
-        HunterBuffSpeedStrategy(PlayerbotAI* ai) : NonCombatStrategy(ai) {}
-        virtual string getName() { return "bspeed"; }
+        HunterBuffSpeedStrategy(PlayerbotAI* ai) : Strategy(ai) {}
+        string getName() override { return "bspeed"; }
 
-    public:
-        virtual void InitTriggers(std::list<TriggerNode*> &triggers);
+    private:
+        void InitNonCombatTriggers(std::list<TriggerNode*> &triggers) override;
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
     };
 
-    class HunterBuffManaStrategy : public NonCombatStrategy
+    class HunterBuffManaStrategy : public Strategy
     {
     public:
-        HunterBuffManaStrategy(PlayerbotAI* ai) : NonCombatStrategy(ai) {}
-        virtual string getName() { return "bmana"; }
+        HunterBuffManaStrategy(PlayerbotAI* ai) : Strategy(ai) {}
+        string getName() override { return "bmana"; }
 
-    public:
-        virtual void InitTriggers(std::list<TriggerNode*> &triggers);
+    private:
+        void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
     };
 
-	class HunterBuffDpsStrategy : public NonCombatStrategy
+	class HunterBuffDpsStrategy : public Strategy
 	{
 	public:
-		HunterBuffDpsStrategy(PlayerbotAI* ai) : NonCombatStrategy(ai) {}
-		virtual string getName() { return "bdps"; }
+		HunterBuffDpsStrategy(PlayerbotAI* ai) : Strategy(ai) {}
+		string getName() override { return "bdps"; }
 
-	public:
-		virtual void InitTriggers(std::list<TriggerNode*> &triggers);
+    private:
+        void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
 	};
 
-	class HunterNatureResistanceStrategy : public NonCombatStrategy
+	class HunterNatureResistanceStrategy : public Strategy
 	{
 	public:
-		HunterNatureResistanceStrategy(PlayerbotAI* ai) : NonCombatStrategy(ai) {}
-		virtual string getName() { return "rnature"; }
+		HunterNatureResistanceStrategy(PlayerbotAI* ai) : Strategy(ai) {}
+		string getName() override { return "rnature"; }
 
-	public:
-		virtual void InitTriggers(std::list<TriggerNode*> &triggers);
+    private:
+        void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
 	};
 }

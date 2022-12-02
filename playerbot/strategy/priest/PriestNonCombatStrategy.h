@@ -9,29 +9,29 @@ namespace ai
     {
     public:
         PriestNonCombatStrategy(PlayerbotAI* ai);
+        string getName() override { return "nc"; }
 
-    public:
-        virtual void InitTriggers(std::list<TriggerNode*> &triggers);
-        virtual string getName() { return "nc"; }
+    private:
+        void InitNonCombatTriggers(std::list<TriggerNode*> &triggers) override;
     };
 
     class PriestBuffStrategy : public NonCombatStrategy
     {
     public:
         PriestBuffStrategy(PlayerbotAI* ai) : NonCombatStrategy(ai) {}
+        string getName() override { return "buff"; }
 
-    public:
-        virtual void InitTriggers(std::list<TriggerNode*> &triggers);
-        virtual string getName() { return "buff"; }
+    private:
+        void InitNonCombatTriggers(std::list<TriggerNode*> &triggers) override;
     };
 
     class PriestShadowResistanceStrategy : public NonCombatStrategy
     {
     public:
         PriestShadowResistanceStrategy(PlayerbotAI* ai) : NonCombatStrategy(ai) {}
+        string getName() override { return "rshadow"; }
 
-    public:
-        virtual void InitTriggers(std::list<TriggerNode*> &triggers);
-        virtual string getName() { return "rshadow"; }
+    private:
+        void InitNonCombatTriggers(std::list<TriggerNode*> &triggers) override;
     };
 }

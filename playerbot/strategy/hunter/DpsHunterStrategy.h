@@ -9,31 +9,30 @@ namespace ai
     {
     public:
         DpsHunterStrategy(PlayerbotAI* ai);
+        virtual string getName() override { return "dps"; }
 
-    public:
-        virtual void InitTriggers(std::list<TriggerNode*> &triggers);
-        virtual string getName() { return "dps"; }
-        virtual NextAction** getDefaultActions();
-
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*> &triggers) override;
+        NextAction** GetDefaultCombatActions() override;
     };
 
     class DpsAoeHunterStrategy : public CombatStrategy
     {
     public:
         DpsAoeHunterStrategy(PlayerbotAI* ai) : CombatStrategy(ai) {}
+        string getName() override { return "aoe"; }
 
-    public:
-        virtual void InitTriggers(std::list<TriggerNode*> &triggers);
-        virtual string getName() { return "aoe"; }
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*> &triggers) override;
     };
 
     class DpsHunterDebuffStrategy : public CombatStrategy
     {
     public:
         DpsHunterDebuffStrategy(PlayerbotAI* ai) : CombatStrategy(ai) {}
+        string getName() override { return "dps debuff"; }
 
-    public:
-        virtual void InitTriggers(std::list<TriggerNode*> &triggers);
-        virtual string getName() { return "dps debuff"; }
+    private:
+        virtual void InitCombatTriggers(std::list<TriggerNode*> &triggers);
     };
 }

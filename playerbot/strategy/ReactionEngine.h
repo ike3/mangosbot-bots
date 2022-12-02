@@ -30,7 +30,7 @@ namespace ai
     class ReactionEngine : public Engine
     {
     public:
-        ReactionEngine(PlayerbotAI* ai, AiObjectContext* factory);
+        ReactionEngine(PlayerbotAI* ai, AiObjectContext* factory, BotState engineState);
 
         void Reset();
         bool Update(uint32 elapsed, bool minimal, bool& reactionFound, bool& reactionFinished);

@@ -4,8 +4,7 @@
 
 using namespace ai;
 
-
-void TellTargetStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void TellTargetStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
         "target changed",

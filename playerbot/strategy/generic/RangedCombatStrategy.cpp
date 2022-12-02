@@ -4,10 +4,9 @@
 
 using namespace ai;
 
-
-void RangedCombatStrategy::InitTriggers(list<TriggerNode*> &triggers)
+void RangedCombatStrategy::InitCombatTriggers(list<TriggerNode*> &triggers)
 {
-    CombatStrategy::InitTriggers(triggers);
+    CombatStrategy::InitCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
         "enemy too close for spell",

@@ -1,5 +1,4 @@
 #pragma once
-
 #include "FeralDruidStrategy.h"
 
 namespace ai
@@ -8,11 +7,11 @@ namespace ai
     {
     public:
         BearTankDruidStrategy(PlayerbotAI* ai);
+        string getName() override { return "bear"; }
+        int GetType() override { return STRATEGY_TYPE_TANK | STRATEGY_TYPE_MELEE; }
 
-    public:
-        virtual void InitTriggers(std::list<TriggerNode*> &triggers);
-        virtual string getName() { return "bear"; }
-        virtual NextAction** getDefaultActions();
-		virtual int GetType() { return STRATEGY_TYPE_TANK | STRATEGY_TYPE_MELEE; }
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*> &triggers) override;
+        NextAction** GetDefaultCombatActions() override;
     };
 }

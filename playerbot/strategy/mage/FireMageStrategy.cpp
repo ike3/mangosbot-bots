@@ -5,14 +5,14 @@
 
 using namespace ai;
 
-NextAction** FireMageStrategy::getDefaultActions()
+NextAction** FireMageStrategy::GetDefaultCombatActions()
 {
     return NextAction::array(0, new NextAction("scorch", 7.0f), new NextAction("fireball", 6.0f), new NextAction("fire blast", 5.0f), NULL);
 }
 
-void FireMageStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void FireMageStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
 {
-    GenericMageStrategy::InitTriggers(triggers);
+    GenericMageStrategy::InitCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
         "enemy ten yards",
@@ -47,7 +47,7 @@ void FireMageStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("fire blast", ACTION_HIGH + 10), NULL)));
 }
 
-void FireMageAoeStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void FireMageAoeStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
         "medium aoe",

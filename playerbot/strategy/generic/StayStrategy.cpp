@@ -5,19 +5,29 @@
 
 using namespace ai;
 
-NextAction** StayStrategy::getDefaultActions()
+NextAction** StayStrategy::GetDefaultNonCombatActions()
 {
     return NextAction::array(0, new NextAction("stay", 1.0f), NULL);
 }
 
-void StayStrategy::InitTriggers(std::list<TriggerNode*>& triggers)
+ai::NextAction** StayStrategy::GetDefaultCombatActions()
+{
+    return GetDefaultNonCombatActions();
+}
+
+void StayStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     triggers.push_back(new TriggerNode(
         "return to stay position",
         NextAction::array(0, new NextAction("return to stay position", 1.5f), NULL)));
 }
 
-void StayStrategy::OnStrategyAdded()
+void StayStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    InitNonCombatTriggers(triggers);
+}
+
+void StayStrategy::OnStrategyAdded(BotState state)
 {
     // Set the stay position to current position
     AiObjectContext* context = ai->GetAiObjectContext();
@@ -30,7 +40,7 @@ void StayStrategy::OnStrategyAdded()
     posMap["stay position"] = stayPosition;
 }
 
-void StayStrategy::OnStrategyRemoved()
+void StayStrategy::OnStrategyRemoved(BotState state)
 {
     // Remove the saved stay position
     AiObjectContext* context = ai->GetAiObjectContext();
@@ -42,7 +52,7 @@ void StayStrategy::OnStrategyRemoved()
     }
 }
 
-void SitStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void SitStrategy::InitNonCombatTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
         "sit",

@@ -107,9 +107,9 @@ GenericMageStrategy::GenericMageStrategy(PlayerbotAI* ai) : CombatStrategy(ai)
     actionNodeFactories.Add(new GenericMageStrategyActionNodeFactory());
 }
 
-void GenericMageStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void GenericMageStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
 {
-    CombatStrategy::InitTriggers(triggers);
+    CombatStrategy::InitCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
         "enemy out of spell",
@@ -165,7 +165,7 @@ MageCureStrategy::MageCureStrategy(PlayerbotAI* ai) : Strategy(ai)
     actionNodeFactories.Add(new GenericMageStrategyActionNodeFactory());
 }
 
-void MageCureStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void MageCureStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
         "remove curse",
@@ -174,10 +174,14 @@ void MageCureStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
     triggers.push_back(new TriggerNode(
         "remove curse on party",
         NextAction::array(0, new NextAction("remove curse on party", ACTION_DISPEL), NULL)));
-
 }
 
-void MageBoostStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void MageCureStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    InitCombatTriggers(triggers);
+}
+
+void MageBoostStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
         "arcane power",
@@ -186,10 +190,9 @@ void MageBoostStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
     triggers.push_back(new TriggerNode(
         "presence of mind",
         NextAction::array(0, new NextAction("presence of mind", 42.0f), NULL)));
-
 }
 
-void MageCcStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void MageCcStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
         "polymorph",

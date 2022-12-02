@@ -8,6 +8,9 @@ namespace ai
     public:
         DungeonStrategy(PlayerbotAI* ai) : Strategy(ai) {}
         string getName() override { return "dungeon"; }
-        void InitTriggers(std::list<TriggerNode*>& triggers) override;
+
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
     };
 }

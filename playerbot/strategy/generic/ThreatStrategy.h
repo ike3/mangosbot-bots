@@ -1,4 +1,6 @@
 #pragma once
+#include "../Multiplier.h"
+#include "../Strategy.h"
 
 namespace ai
 {
@@ -8,18 +10,16 @@ namespace ai
         ThreatMultiplier(PlayerbotAI* ai) : Multiplier(ai, "threat") {}
 
     public:
-        virtual float GetValue(Action* action);
+        float GetValue(Action* action) override;
     };
 
     class ThreatStrategy : public Strategy
     {
     public:
         ThreatStrategy(PlayerbotAI* ai) : Strategy(ai) {}
+        string getName() override { return "threat"; }
 
-    public:
-        virtual void InitMultipliers(std::list<Multiplier*> &multipliers);
-        virtual string getName() { return "threat"; }
+    private:
+        void InitCombatMultipliers(std::list<Multiplier*> &multipliers) override;
     };
-
-
 }

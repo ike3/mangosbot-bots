@@ -4,23 +4,9 @@
 
 using namespace ai;
 
-class GenericHunterReactionStrategyActionNodeFactory : public NamedObjectFactory<ActionNode>
+void HunterReactionStrategy::InitReactionTriggers(std::list<TriggerNode*> &triggers)
 {
-public:
-    GenericHunterReactionStrategyActionNodeFactory()
-    {
-
-    }
-};
-
-HunterReactionStrategy::HunterReactionStrategy(PlayerbotAI* ai) : ReactionStrategy(ai)
-{
-    actionNodeFactories.Add(new GenericHunterReactionStrategyActionNodeFactory());
-}
-
-void HunterReactionStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
-{
-    ReactionStrategy::InitTriggers(triggers);
+    ReactionStrategy::InitReactionTriggers(triggers);
 
     // Add class specific reactions here
     // ...

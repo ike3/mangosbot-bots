@@ -1,5 +1,4 @@
 #pragma once
-
 #include "../generic/NonCombatStrategy.h"
 
 namespace ai
@@ -8,19 +7,19 @@ namespace ai
     {
     public:
         GenericDruidNonCombatStrategy(PlayerbotAI* ai);
-        virtual string getName() { return "nc"; }
+        string getName() override { return "nc"; }
 
-    public:
-        virtual void InitTriggers(std::list<TriggerNode*> &triggers);
+    private:
+        void InitNonCombatTriggers(std::list<TriggerNode*> &triggers) override;
     };
 
     class GenericDruidBuffStrategy : public NonCombatStrategy
     {
     public:
         GenericDruidBuffStrategy(PlayerbotAI* ai);
-        virtual string getName() { return "buff"; }
+        string getName() override { return "buff"; }
 
-    public:
-        virtual void InitTriggers(std::list<TriggerNode*> &triggers);
+    private:
+        void InitNonCombatTriggers(std::list<TriggerNode*> &triggers) override;
     };
 }

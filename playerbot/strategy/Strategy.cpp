@@ -116,3 +116,90 @@ ActionNode* Strategy::GetAction(string name)
     return actionNodeFactories.GetObject(name, ai);
 }
 
+void Strategy::InitTriggers(std::list<TriggerNode*>& triggers, BotState state)
+{
+    switch (state)
+    {
+        case BotState::BOT_STATE_COMBAT:
+        {
+            InitCombatTriggers(triggers);
+            break;
+        }
+
+        case BotState::BOT_STATE_NON_COMBAT:
+        {
+            InitNonCombatTriggers(triggers);
+            break;
+        }
+
+        case BotState::BOT_STATE_DEAD:
+        {
+            InitDeadTriggers(triggers);
+            break;
+        }
+
+        case BotState::BOT_STATE_REACTION:
+        {
+            InitReactionTriggers(triggers);
+            break;
+        }
+    }
+}
+
+void Strategy::InitMultipliers(std::list<Multiplier*>& multipliers, BotState state)
+{
+    switch (state)
+    {
+        case BotState::BOT_STATE_COMBAT:
+        {
+            InitCombatMultipliers(multipliers);
+            break;
+        }
+
+        case BotState::BOT_STATE_NON_COMBAT:
+        {
+            InitNonCombatMultipliers(multipliers);
+            break;
+        }
+
+        case BotState::BOT_STATE_DEAD:
+        {
+            InitDeadMultipliers(multipliers);
+            break;
+        }
+
+        case BotState::BOT_STATE_REACTION:
+        {
+            InitReactionMultipliers(multipliers);
+            break;
+        }
+    }
+}
+
+ai::NextAction** Strategy::getDefaultActions(BotState state)
+{
+    switch (state)
+    {
+        case BotState::BOT_STATE_COMBAT:
+        {
+            return GetDefaultCombatActions();
+        }
+
+        case BotState::BOT_STATE_NON_COMBAT:
+        {
+            return GetDefaultNonCombatActions();
+        }
+
+        case BotState::BOT_STATE_DEAD:
+        {
+            return GetDefaultDeadActions();
+        }
+
+        case BotState::BOT_STATE_REACTION:
+        {
+            return GetDefaultReactionActions();
+        }
+    }
+
+    return nullptr;
+}

@@ -31,14 +31,14 @@ FuryWarriorStrategy::FuryWarriorStrategy(PlayerbotAI* ai) : GenericWarriorStrate
     actionNodeFactories.Add(new FuryWarriorStrategyActionNodeFactory());
 }
 
-NextAction** FuryWarriorStrategy::getDefaultActions()
+NextAction** FuryWarriorStrategy::GetDefaultCombatActions()
 {
     return NextAction::array(0, new NextAction("melee", ACTION_NORMAL), NULL);
 }
 
-void FuryWarriorStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void FuryWarriorStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
 {
-    GenericWarriorStrategy::InitTriggers(triggers);
+    GenericWarriorStrategy::InitCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
         "enemy out of melee",

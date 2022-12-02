@@ -6,8 +6,10 @@ namespace ai
     {
     public:
         CombatStrategy(PlayerbotAI* ai) : Strategy(ai) {}
-        virtual void InitTriggers(std::list<TriggerNode*> &triggers) override;
         virtual int GetType() override { return STRATEGY_TYPE_COMBAT; }
+
+    protected:
+        virtual void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
     };
 
     class AvoidAoeStrategy : public Strategy
@@ -15,8 +17,12 @@ namespace ai
     public:
         AvoidAoeStrategy(PlayerbotAI* ai) : Strategy(ai) {}
         string getName() override { return "avoid aoe"; }
-        void InitMultipliers(std::list<Multiplier*>& multipliers) override;
-        void InitTriggers(std::list<TriggerNode*>& triggers) override;
+
+    private:
+        void InitCombatMultipliers(std::list<Multiplier*>& multipliers) override;
+        void InitReactionMultipliers(std::list<Multiplier*>& multipliers) override;
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        void InitReactionTriggers(std::list<TriggerNode*>& triggers) override;
     };
 
     class AvoidAoeStrategyMultiplier : public Multiplier
@@ -31,13 +37,15 @@ namespace ai
     public:
         WaitForAttackStrategy(PlayerbotAI* ai) : Strategy(ai) {}
         string getName() override { return "wait for attack"; }
-        void InitTriggers(std::list<TriggerNode*>& triggers) override;
-        void InitMultipliers(std::list<Multiplier*>& multipliers) override;
 
         static bool ShouldWait(PlayerbotAI* ai);
         static uint8 GetWaitTime(PlayerbotAI* ai);
         static float GetSafeDistance() { return sPlayerbotAIConfig.spellDistance; }
         static float GetSafeDistanceThreshold() { return 2.5f; }
+
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        void InitCombatMultipliers(std::list<Multiplier*>& multipliers) override;
     };
 
     class WaitForAttackMultiplier : public Multiplier

@@ -8,7 +8,9 @@ namespace ai
     public:
         OnyxiasLairDungeonStrategy(PlayerbotAI* ai) : Strategy(ai) {}
         string getName() override { return "onyxia's lair"; }
-        void InitTriggers(std::list<TriggerNode*>& triggers) override;
+
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
     };
 
     class OnyxiaFightStrategy : public Strategy
@@ -16,6 +18,11 @@ namespace ai
     public:
         OnyxiaFightStrategy(PlayerbotAI* ai) : Strategy(ai) {}
         string getName() override { return "onyxia"; }
-        void InitTriggers(std::list<TriggerNode*>& triggers) override;
+
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        void InitDeadTriggers(std::list<TriggerNode*>& triggers) override;
+        void InitReactionTriggers(std::list<TriggerNode*>& triggers) override;
     };
 }

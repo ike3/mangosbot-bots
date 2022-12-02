@@ -4,9 +4,9 @@
 
 using namespace ai;
 
-void DuelStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void DuelStrategy::InitNonCombatTriggers(std::list<TriggerNode*> &triggers)
 {
-    PassTroughStrategy::InitTriggers(triggers);
+    PassTroughStrategy::InitNonCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
         "duel requested",
@@ -17,16 +17,7 @@ void DuelStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("attack duel opponent", 70.0f), NULL)));
 }
 
-
-
-DuelStrategy::DuelStrategy(PlayerbotAI* ai) : PassTroughStrategy(ai)
+void DuelStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-}
-
-void StartDuelStrategy::InitTriggers(std::list<TriggerNode*>& triggers)
-{
-}
-
-StartDuelStrategy::StartDuelStrategy(PlayerbotAI* ai) : Strategy(ai)
-{
+    InitNonCombatTriggers(triggers);
 }

@@ -67,9 +67,9 @@ GenericWarlockNonCombatStrategy::GenericWarlockNonCombatStrategy(PlayerbotAI* ai
     actionNodeFactories.Add(new GenericWarlockNonCombatStrategyActionNodeFactory());
 }
 
-void GenericWarlockNonCombatStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void GenericWarlockNonCombatStrategy::InitNonCombatTriggers(std::list<TriggerNode*> &triggers)
 {
-    NonCombatStrategy::InitTriggers(triggers);
+    NonCombatStrategy::InitNonCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
         "demon armor",
@@ -93,7 +93,7 @@ void GenericWarlockNonCombatStrategy::InitTriggers(std::list<TriggerNode*> &trig
     // TODO Fix Spellstone / Firestone
 }
 
-void WarlockPetStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void WarlockPetStrategy::InitNonCombatTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
         "no pet",
@@ -103,4 +103,9 @@ void WarlockPetStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
     triggers.push_back(new TriggerNode(
        "often",
        NextAction::array(0, new NextAction("apply oil", 1.0f), NULL)));
+}
+
+void WarlockPetStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    InitNonCombatTriggers(triggers);
 }

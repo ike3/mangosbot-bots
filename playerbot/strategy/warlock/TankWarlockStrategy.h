@@ -8,10 +8,9 @@ namespace ai
     {
     public:
         TankWarlockStrategy(PlayerbotAI* ai);
-        virtual string getName() { return "tank"; }
+        string getName() override { return "tank"; }
 
-    public:
-        virtual void InitTriggers(std::list<TriggerNode*> &triggers);
-        virtual NextAction** getDefaultActions();
+    private:
+        NextAction** GetDefaultCombatActions() override;
     };
 }

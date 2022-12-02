@@ -59,19 +59,19 @@ namespace ai
     {
     public:
         GenericWarriorStrategy(PlayerbotAI* ai);
+        virtual string getName() override { return "warrior"; }
 
-    public:
-        virtual void InitTriggers(std::list<TriggerNode*> &triggers);
-        virtual string getName() { return "warrior"; }
+    protected:
+        virtual void InitCombatTriggers(std::list<TriggerNode*> &triggers) override;
     };
 
     class WarrirorAoeStrategy : public CombatStrategy
     {
     public:
         WarrirorAoeStrategy(PlayerbotAI* ai);
+        string getName() override { return "aoe"; }
 
-    public:
-        virtual void InitTriggers(std::list<TriggerNode*> &triggers);
-        virtual string getName() { return "aoe"; }
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*> &triggers) override;
     };
 }

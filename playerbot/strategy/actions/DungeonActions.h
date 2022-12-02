@@ -3,17 +3,6 @@
 
 namespace ai
 {
-    class ChangeDungeonStrategyAction : public Action
-    {
-    public:
-        ChangeDungeonStrategyAction(PlayerbotAI* ai, string name, string strategy, bool addStrategy = true) : Action(ai, name), strategy(strategy), addStrategy(addStrategy) {}
-        bool Execute(Event& event) override;
-
-    private:
-        string strategy;
-        bool addStrategy;
-    };
-
     class MoveAwayFromGameObject : public MovementAction
     {
     public:

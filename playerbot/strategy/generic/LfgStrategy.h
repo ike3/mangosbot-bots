@@ -6,9 +6,13 @@ namespace ai
     class LfgStrategy : public PassTroughStrategy
     {
     public:
-        LfgStrategy(PlayerbotAI* ai);
-		virtual int GetType() { return STRATEGY_TYPE_NONCOMBAT; }
-        virtual void InitTriggers(std::list<TriggerNode*> &triggers);
-        virtual string getName() { return "lfg"; }
+        LfgStrategy(PlayerbotAI* ai) : PassTroughStrategy(ai) {}
+		int GetType() override { return STRATEGY_TYPE_NONCOMBAT; }
+        string getName() override { return "lfg"; }
+
+    private:
+        void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override {}
+        void InitDeadTriggers(std::list<TriggerNode*>& triggers) override {}
     };
 }

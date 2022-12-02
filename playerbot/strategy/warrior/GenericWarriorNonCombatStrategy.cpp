@@ -1,13 +1,12 @@
 #include "botpch.h"
 #include "../../playerbot.h"
-#include "WarriorMultipliers.h"
 #include "GenericWarriorNonCombatStrategy.h"
 
 using namespace ai;
 
-void GenericWarriorNonCombatStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void GenericWarriorNonCombatStrategy::InitNonCombatTriggers(std::list<TriggerNode*> &triggers)
 {
-   NonCombatStrategy::InitTriggers(triggers);
+   NonCombatStrategy::InitNonCombatTriggers(triggers);
 
    triggers.push_back(new TriggerNode(
       "often",

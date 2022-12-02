@@ -9,7 +9,7 @@ MeleeDruidStrategy::MeleeDruidStrategy(PlayerbotAI* ai) : CombatStrategy(ai)
 {
 }
 
-NextAction** MeleeDruidStrategy::getDefaultActions()
+NextAction** MeleeDruidStrategy::GetDefaultCombatActions()
 {
     return NextAction::array(0,
             new NextAction("faerie fire", ACTION_NORMAL + 1),
@@ -17,11 +17,11 @@ NextAction** MeleeDruidStrategy::getDefaultActions()
             NULL);
 }
 
-void MeleeDruidStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void MeleeDruidStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
 {
+    CombatStrategy::InitCombatTriggers(triggers);
+
     triggers.push_back(new TriggerNode(
         "omen of clarity",
         NextAction::array(0, new NextAction("omen of clarity", ACTION_HIGH + 9), NULL)));
-
-    CombatStrategy::InitTriggers(triggers);
 }

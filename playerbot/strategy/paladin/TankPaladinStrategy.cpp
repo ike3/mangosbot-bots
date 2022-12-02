@@ -32,14 +32,14 @@ TankPaladinStrategy::TankPaladinStrategy(PlayerbotAI* ai) : GenericPaladinStrate
     actionNodeFactories.Add(new TankPaladinStrategyActionNodeFactory());
 }
 
-NextAction** TankPaladinStrategy::getDefaultActions()
+NextAction** TankPaladinStrategy::GetDefaultCombatActions()
 {
     return NextAction::array(0, new NextAction("melee", ACTION_NORMAL), NULL);
 }
 
-void TankPaladinStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void TankPaladinStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
 {
-    GenericPaladinStrategy::InitTriggers(triggers);
+    GenericPaladinStrategy::InitCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
         "seal",

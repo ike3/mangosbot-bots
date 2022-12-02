@@ -8,18 +8,21 @@ namespace ai
     {
     public:
         MeleeCombatStrategy(PlayerbotAI* ai) : CombatStrategy(ai) {}
-        virtual void InitTriggers(std::list<TriggerNode*> &triggers);
-        virtual int GetType() { return STRATEGY_TYPE_COMBAT | STRATEGY_TYPE_MELEE; }
-        virtual string getName() { return "close"; }
+        
+        virtual int GetType() override { return STRATEGY_TYPE_COMBAT | STRATEGY_TYPE_MELEE; }
+        virtual string getName() override { return "close"; }
+
+    protected:
+        virtual void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
     };
 
     class SetBehindCombatStrategy : public CombatStrategy
     {
     public:
         SetBehindCombatStrategy(PlayerbotAI* ai) : CombatStrategy(ai) {}
-        virtual void InitTriggers(std::list<TriggerNode*> &triggers);
-        virtual string getName() { return "behind"; }
+        string getName() override { return "behind"; }
+
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*> &triggers) override;
     };
-
-
 }

@@ -1,5 +1,4 @@
 #pragma once
-
 #include "GenericWarriorStrategy.h"
 
 namespace ai
@@ -8,11 +7,11 @@ namespace ai
     {
     public:
         ArmsWarriorStrategy(PlayerbotAI* ai);
+        string getName() override { return "arms"; }
+        int GetType() override { return STRATEGY_TYPE_COMBAT | STRATEGY_TYPE_DPS | STRATEGY_TYPE_MELEE; }
 
-    public:
-        virtual void InitTriggers(std::list<TriggerNode*> &triggers);
-        virtual string getName() { return "arms"; }
-        virtual NextAction** getDefaultActions();
-        virtual int GetType() { return STRATEGY_TYPE_COMBAT | STRATEGY_TYPE_DPS | STRATEGY_TYPE_MELEE; }
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*> &triggers) override;
+        NextAction** GetDefaultCombatActions() override;
     };
 }

@@ -7,10 +7,10 @@ namespace ai
     {
     public:
         RangedCombatStrategy(PlayerbotAI* ai) : CombatStrategy(ai) {}
-        virtual void InitTriggers(std::list<TriggerNode*> &triggers);
-        virtual int GetType() { return STRATEGY_TYPE_COMBAT | STRATEGY_TYPE_RANGED; }
-        virtual string getName() { return "ranged"; }
+        int GetType() override { return STRATEGY_TYPE_COMBAT | STRATEGY_TYPE_RANGED; }
+        string getName() override { return "ranged"; }
+
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
     };
-
-
 }

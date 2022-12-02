@@ -4,23 +4,9 @@
 
 using namespace ai;
 
-class GenericMageReactionStrategyActionNodeFactory : public NamedObjectFactory<ActionNode>
+void MageReactionStrategy::InitReactionTriggers(std::list<TriggerNode*> &triggers)
 {
-public:
-    GenericMageReactionStrategyActionNodeFactory()
-    {
-
-    }
-};
-
-MageReactionStrategy::MageReactionStrategy(PlayerbotAI* ai) : ReactionStrategy(ai)
-{
-    actionNodeFactories.Add(new GenericMageReactionStrategyActionNodeFactory());
-}
-
-void MageReactionStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
-{
-    ReactionStrategy::InitTriggers(triggers);
+    ReactionStrategy::InitReactionTriggers(triggers);
 
     // Add class specific reactions here
     // ...

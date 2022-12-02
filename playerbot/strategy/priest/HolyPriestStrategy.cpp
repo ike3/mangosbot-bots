@@ -30,14 +30,14 @@ HolyPriestStrategy::HolyPriestStrategy(PlayerbotAI* ai) : HealPriestStrategy(ai)
     actionNodeFactories.Add(new HolyPriestStrategyActionNodeFactory());
 }
 
-NextAction** HolyPriestStrategy::getDefaultActions()
+NextAction** HolyPriestStrategy::GetDefaultCombatActions()
 {
     return NextAction::array(0, new NextAction("smite", 10.0f), new NextAction("mana burn", 9.0f), new NextAction("starshards", 8.0f), NULL);
 }
 
-void HolyPriestStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void HolyPriestStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
 {
-    HealPriestStrategy::InitTriggers(triggers);
+    HealPriestStrategy::InitCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
         "enemy out of spell",

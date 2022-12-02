@@ -4,7 +4,7 @@
 
 using namespace ai;
 
-void LfgStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void LfgStrategy::InitNonCombatTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
         "random",
@@ -17,8 +17,4 @@ void LfgStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
     triggers.push_back(new TriggerNode(
         "unknown dungeon",
         NextAction::array(0, new NextAction("give leader in dungeon", relevance), NULL)));
-}
-
-LfgStrategy::LfgStrategy(PlayerbotAI* ai) : PassTroughStrategy(ai)
-{
 }

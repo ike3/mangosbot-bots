@@ -9,39 +9,40 @@ namespace ai
     {
     public:
         GenericMageStrategy(PlayerbotAI* ai);
-        virtual string getName() { return "mage"; }
+        virtual string getName() override { return "mage"; }
 
-    public:
-        virtual void InitTriggers(std::list<TriggerNode*> &triggers);
+    protected:
+        virtual void InitCombatTriggers(std::list<TriggerNode*> &triggers) override;
     };
 
     class MageCureStrategy : public Strategy
     {
     public:
         MageCureStrategy(PlayerbotAI* ai);
+        string getName() override { return "cure"; }
 
-    public:
-        virtual void InitTriggers(std::list<TriggerNode*> &triggers);
-        virtual string getName() { return "cure"; }
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*> &triggers) override;
+        void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
     };
 
     class MageBoostStrategy : public Strategy
     {
     public:
         MageBoostStrategy(PlayerbotAI* ai) : Strategy(ai) {}
+        string getName() override { return "boost"; }
 
-    public:
-        virtual void InitTriggers(std::list<TriggerNode*> &triggers);
-        virtual string getName() { return "boost"; }
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*> &triggers) override;
     };
 
     class MageCcStrategy : public Strategy
     {
     public:
         MageCcStrategy(PlayerbotAI* ai) : Strategy(ai) {}
+        string getName() { return "cc"; }
 
-    public:
-        virtual void InitTriggers(std::list<TriggerNode*> &triggers);
-        virtual string getName() { return "cc"; }
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*> &triggers) override;
     };
 }

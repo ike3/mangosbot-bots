@@ -4,17 +4,7 @@
 
 using namespace ai;
 
-
-class RacialsStrategyActionNodeFactory : public NamedObjectFactory<ActionNode>
-{
-public:
-    RacialsStrategyActionNodeFactory()
-    {
-    }
-private:
-};
-
-void RacialsStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void RacialsStrategy::InitNonCombatTriggers(std::list<TriggerNode*> &triggers)
 {
 	triggers.push_back(new TriggerNode(
 		"low health", 
@@ -69,7 +59,7 @@ void RacialsStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("arcane torrent", 71.0f), NULL)));
 }
 
-RacialsStrategy::RacialsStrategy(PlayerbotAI* ai) : Strategy(ai)
+void RacialsStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-    actionNodeFactories.Add(new RacialsStrategyActionNodeFactory());
+    InitNonCombatTriggers(triggers);
 }

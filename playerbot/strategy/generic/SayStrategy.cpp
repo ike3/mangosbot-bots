@@ -4,8 +4,7 @@
 
 using namespace ai;
 
-
-void SayStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void SayStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
         "critical health",

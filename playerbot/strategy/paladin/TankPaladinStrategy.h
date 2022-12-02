@@ -8,11 +8,11 @@ namespace ai
     {
     public:
         TankPaladinStrategy(PlayerbotAI* ai);
+        string getName() override { return "tank"; }
+        int GetType() override { return STRATEGY_TYPE_TANK | STRATEGY_TYPE_MELEE; }
 
-    public:
-        virtual void InitTriggers(std::list<TriggerNode*> &triggers);
-        virtual string getName() { return "tank"; }
-        virtual NextAction** getDefaultActions();
-		virtual int GetType() { return STRATEGY_TYPE_TANK | STRATEGY_TYPE_MELEE; }
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*> &triggers) override;
+        NextAction** GetDefaultCombatActions() override;
     };
 }

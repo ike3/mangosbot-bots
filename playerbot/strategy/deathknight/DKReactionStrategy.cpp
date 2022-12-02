@@ -4,23 +4,9 @@
 
 using namespace ai;
 
-class GenericDKReactionStrategyActionNodeFactory : public NamedObjectFactory<ActionNode>
+void DKReactionStrategy::InitReactionTriggers(std::list<TriggerNode*> &triggers)
 {
-public:
-    GenericDKReactionStrategyActionNodeFactory()
-    {
-
-    }
-};
-
-DKReactionStrategy::DKReactionStrategy(PlayerbotAI* ai) : ReactionStrategy(ai)
-{
-    actionNodeFactories.Add(new GenericDKReactionStrategyActionNodeFactory());
-}
-
-void DKReactionStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
-{
-    ReactionStrategy::InitTriggers(triggers);
+    ReactionStrategy::InitReactionTriggers(triggers);
 
     // Add class specific reactions here
     // ...

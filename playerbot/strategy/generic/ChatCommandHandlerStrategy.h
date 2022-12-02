@@ -7,9 +7,11 @@ namespace ai
     {
     public:
         ChatCommandHandlerStrategy(PlayerbotAI* ai);
+        string getName() override { return "chat"; }
 
-    public:
-        virtual void InitTriggers(std::list<TriggerNode*> &triggers);
-        virtual string getName() { return "chat"; }
+    private:
+        void InitNonCombatTriggers(std::list<TriggerNode*> &triggers) override;
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        void InitDeadTriggers(std::list<TriggerNode*>& triggers) override;
     };
 }

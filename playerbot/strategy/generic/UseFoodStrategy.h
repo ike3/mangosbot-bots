@@ -6,9 +6,9 @@ namespace ai
     {
     public:
         UseFoodStrategy(PlayerbotAI* ai) : Strategy(ai) {}
+        string getName() override { return "food"; }
 
-    public:
-        virtual void InitTriggers(std::list<TriggerNode*> &triggers);
-        virtual string getName() { return "food"; }
+    private:
+        void InitNonCombatTriggers(std::list<TriggerNode*> &triggers) override;
     };
 }

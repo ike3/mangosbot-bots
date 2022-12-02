@@ -4,8 +4,7 @@
 
 using namespace ai;
 
-
-void RunawayStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void RunawayStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
         "enemy too close for spell",

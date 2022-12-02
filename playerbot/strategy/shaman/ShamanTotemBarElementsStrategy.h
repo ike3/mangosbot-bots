@@ -1,5 +1,4 @@
 #pragma once
-
 #include "GenericShamanStrategy.h"
 
 namespace ai
@@ -7,10 +6,10 @@ namespace ai
     class ShamanTotemBarElementsStrategy : public GenericShamanStrategy
     {
     public:
-        ShamanTotemBarElementsStrategy(PlayerbotAI* ai);
+        ShamanTotemBarElementsStrategy(PlayerbotAI* ai) : GenericShamanStrategy(ai) {}
+        string getName() { return "totembar elements"; }
 
-    public:
-        virtual void InitTriggers(std::list<TriggerNode*> &triggers);
-        virtual string getName() { return "totembar elements"; }
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*> &triggers);
     };
 }

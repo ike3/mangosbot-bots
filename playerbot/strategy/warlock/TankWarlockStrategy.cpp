@@ -44,12 +44,7 @@ TankWarlockStrategy::TankWarlockStrategy(PlayerbotAI* ai) : GenericWarlockStrate
     actionNodeFactories.Add(new GenericWarlockStrategyActionNodeFactory());
 }
 
-NextAction** TankWarlockStrategy::getDefaultActions()
+NextAction** TankWarlockStrategy::GetDefaultCombatActions()
 {
     return NextAction::array(0, new NextAction("shoot", 10.0f), NULL);
-}
-
-void TankWarlockStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
-{
-    GenericWarlockStrategy::InitTriggers(triggers);
 }

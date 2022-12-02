@@ -43,14 +43,14 @@ ArcaneMageStrategy::ArcaneMageStrategy(PlayerbotAI* ai) : GenericMageStrategy(ai
     actionNodeFactories.Add(new ArcaneMageStrategyActionNodeFactory());
 }
 
-NextAction** ArcaneMageStrategy::getDefaultActions()
+NextAction** ArcaneMageStrategy::GetDefaultCombatActions()
 {
     return NextAction::array(0, new NextAction("arcane barrage", 10.0f), NULL);
 }
 
-void ArcaneMageStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void ArcaneMageStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
 {
-    GenericMageStrategy::InitTriggers(triggers);
+    GenericMageStrategy::InitCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
         "arcane blast",
@@ -65,7 +65,7 @@ void ArcaneMageStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("mana shield", 20.0f), NULL)));
 }
 
-void ArcaneMageAoeStrategy::InitTriggers(std::list<TriggerNode*>& triggers)
+void ArcaneMageAoeStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     triggers.push_back(new TriggerNode(
         "enemy too close for spell",

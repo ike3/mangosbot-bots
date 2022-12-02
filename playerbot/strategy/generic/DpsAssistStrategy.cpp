@@ -4,14 +4,14 @@
 
 using namespace ai;
 
-void DpsAssistStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void DpsAssistStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
         "not dps target active",
         NextAction::array(0, new NextAction("dps assist", 60.0f), NULL)));
 }
 
-void DpsAoeStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void DpsAoeStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
         "not dps aoe target active",

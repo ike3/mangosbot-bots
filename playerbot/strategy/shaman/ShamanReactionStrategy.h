@@ -1,5 +1,4 @@
 #pragma once
-
 #include "../generic/ReactionStrategy.h"
 
 namespace ai
@@ -7,10 +6,10 @@ namespace ai
     class ShamanReactionStrategy : public ReactionStrategy
     {
     public:
-        ShamanReactionStrategy(PlayerbotAI* ai);
-        virtual string getName() { return "react"; }
+        ShamanReactionStrategy(PlayerbotAI* ai) : ReactionStrategy(ai) {}
+        string getName() override { return "react"; }
 
-    public:
-        virtual void InitTriggers(std::list<TriggerNode*> &triggers);
+    private:
+        virtual void InitReactionTriggers(std::list<TriggerNode*> &triggers) override;
     };
 }

@@ -1,8 +1,9 @@
 #pragma once
+#include "../Multiplier.h"
+#include "../Strategy.h"
 
 namespace ai
 {
-
     class CastTimeMultiplier : public Multiplier
     {
     public:
@@ -16,11 +17,9 @@ namespace ai
     {
     public:
         CastTimeStrategy(PlayerbotAI* ai) : Strategy(ai) {}
+        string getName() override { return "cast time"; }
 
-    public:
-        virtual void InitMultipliers(std::list<Multiplier*> &multipliers);
-        virtual string getName() { return "cast time"; }
+    private:
+        void InitCombatMultipliers(std::list<Multiplier*> &multipliers) override;
     };
-
-
 }

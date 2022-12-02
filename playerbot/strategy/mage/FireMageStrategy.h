@@ -9,20 +9,20 @@ namespace ai
     {
     public:
         FireMageStrategy(PlayerbotAI* ai) : GenericMageStrategy(ai) {}
+        string getName() override { return "fire"; }
 
-    public:
-        virtual void InitTriggers(std::list<TriggerNode*> &triggers);
-        virtual string getName() { return "fire"; }
-        virtual NextAction** getDefaultActions();
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*> &triggers) override;
+        NextAction** GetDefaultCombatActions() override;
     };
 
     class FireMageAoeStrategy : public CombatStrategy
     {
     public:
         FireMageAoeStrategy(PlayerbotAI* ai) : CombatStrategy(ai) {}
+        string getName() override { return "fire aoe"; }
 
-    public:
-        virtual void InitTriggers(std::list<TriggerNode*> &triggers);
-        virtual string getName() { return "fire aoe"; }
+    private:
+        virtual void InitCombatTriggers(std::list<TriggerNode*> &triggers) override;
     };
 }

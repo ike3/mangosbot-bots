@@ -1,15 +1,15 @@
 #pragma once
+#include "../Strategy.h"
 
 namespace ai
 {
     class KiteStrategy : public Strategy
     {
     public:
-        KiteStrategy(PlayerbotAI* ai);
-        virtual string getName() { return "kite"; }
+        KiteStrategy(PlayerbotAI* ai) : Strategy(ai) {}
+        string getName() override { return "kite"; }
     
-    public:
-        virtual void InitTriggers(std::list<TriggerNode*> &triggers);
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*> &triggers) override;
     };
-
 }

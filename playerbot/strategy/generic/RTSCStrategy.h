@@ -1,15 +1,12 @@
 #pragma once
+#include "../Strategy.h"
 
 namespace ai
 {
     class RTSCStrategy : public Strategy
     {
     public:
-        RTSCStrategy(PlayerbotAI* ai);
-        virtual string getName() { return "RTSC"; }
-
-    public:
-        virtual void InitTriggers(std::list<TriggerNode*> &triggers);
+        RTSCStrategy(PlayerbotAI* ai) : Strategy(ai) {}
+        string getName() override { return "RTSC"; }
     };
-
 }

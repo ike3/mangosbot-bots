@@ -38,9 +38,9 @@ GenericHunterNonCombatStrategy::GenericHunterNonCombatStrategy(PlayerbotAI* ai) 
     actionNodeFactories.Add(new GenericHunterNonCombatStrategyActionNodeFactory());
 }
 
-void GenericHunterNonCombatStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void GenericHunterNonCombatStrategy::InitNonCombatTriggers(std::list<TriggerNode*> &triggers)
 {
-    NonCombatStrategy::InitTriggers(triggers);
+    NonCombatStrategy::InitNonCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
         "trueshot aura",
@@ -75,7 +75,7 @@ void GenericHunterNonCombatStrategy::InitTriggers(std::list<TriggerNode*> &trigg
         NextAction::array(0, new NextAction("remove aspect of the cheetah", ACTION_EMERGENCY + 1), NULL)));
 }
 
-void HunterPetStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void HunterPetStrategy::InitNonCombatTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
         "no pet",

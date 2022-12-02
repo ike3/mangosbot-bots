@@ -3,14 +3,6 @@
 
 using namespace ai;
 
-bool ChangeDungeonStrategyAction::Execute(Event& event)
-{
-    string strategyName = (addStrategy ? "+" : "-") + strategy;
-    ai->ChangeStrategy(strategyName, BotState::BOT_STATE_COMBAT);
-    ai->ChangeStrategy(strategyName, BotState::BOT_STATE_NON_COMBAT);
-    return true;
-}
-
 bool MoveAwayFromGameObject::Execute(Event& event)
 {
     // This has a maximum range equal to the sight distance on config file (default 60 yards)

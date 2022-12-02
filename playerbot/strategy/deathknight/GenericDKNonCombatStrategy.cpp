@@ -35,9 +35,9 @@ GenericDKNonCombatStrategy::GenericDKNonCombatStrategy(PlayerbotAI* ai) : NonCom
     actionNodeFactories.Add(new GenericDKNonCombatStrategyActionNodeFactory());
 }
 
-void GenericDKNonCombatStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void GenericDKNonCombatStrategy::InitNonCombatTriggers(std::list<TriggerNode*> &triggers)
 {
-    NonCombatStrategy::InitTriggers(triggers);
+    NonCombatStrategy::InitNonCombatTriggers(triggers);
 
 	triggers.push_back(new TriggerNode(
 		"raise dead",
@@ -50,13 +50,16 @@ void GenericDKNonCombatStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 	triggers.push_back(new TriggerNode(
 		"bone shield",
 		NextAction::array(0, new NextAction("bone shield", 21.0f), NULL)));
-
 }
 
-
-void DKBuffDpsStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void DKBuffDpsStrategy::InitNonCombatTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
         "improved icy talons",
         NextAction::array(0, new NextAction("improved icy talons", 19.0f), NULL)));
+}
+
+void DKBuffDpsStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    InitNonCombatTriggers(triggers);
 }

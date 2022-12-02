@@ -107,14 +107,14 @@ CatDpsDruidStrategy::CatDpsDruidStrategy(PlayerbotAI* ai) : FeralDruidStrategy(a
     actionNodeFactories.Add(new CatDpsDruidStrategyActionNodeFactory());
 }
 
-NextAction** CatDpsDruidStrategy::getDefaultActions()
+NextAction** CatDpsDruidStrategy::GetDefaultCombatActions()
 {
     return NextAction::array(0, new NextAction("mangle (cat)", ACTION_NORMAL + 1), NULL);
 }
 
-void CatDpsDruidStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void CatDpsDruidStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
 {
-    FeralDruidStrategy::InitTriggers(triggers);
+    FeralDruidStrategy::InitCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
         "cat form",
@@ -161,10 +161,9 @@ void CatDpsDruidStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("dash", 81.0f), NULL)));
 }
 
-void CatAoeDruidStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void CatAoeDruidStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
         "medium aoe",
         NextAction::array(0, new NextAction("swipe (cat)", ACTION_HIGH + 2), NULL)));
 }
-

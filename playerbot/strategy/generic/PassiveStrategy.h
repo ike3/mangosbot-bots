@@ -1,4 +1,5 @@
 #pragma once
+#include "../Strategy.h"
 
 namespace ai
 {
@@ -6,11 +7,10 @@ namespace ai
     {
     public:
         PassiveStrategy(PlayerbotAI* ai) : Strategy(ai) {}
+        string getName() { return "passive"; }
 
-    public:
-        virtual void InitMultipliers(std::list<Multiplier*> &multipliers);
-        virtual string getName() { return "passive"; }
+    private:
+        void InitNonCombatMultipliers(std::list<Multiplier*> &multipliers) override;
+        void InitCombatMultipliers(std::list<Multiplier*>& multipliers) override;
     };
-
-
 }

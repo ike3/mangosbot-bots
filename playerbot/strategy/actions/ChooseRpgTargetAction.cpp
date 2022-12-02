@@ -66,7 +66,7 @@ float ChooseRpgTargetAction::getMaxRelevance(GuidPosition guidP)
 
         rpgStrategy = ai->GetAiObjectContext()->GetStrategy(strategy);
 
-        rpgStrategy->InitTriggers(triggerNodes);
+        rpgStrategy->InitTriggers(triggerNodes, BotState::BOT_STATE_NON_COMBAT);
 
         for (auto& triggerNode : triggerNodes)
         {

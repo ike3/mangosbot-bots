@@ -84,7 +84,7 @@ PullStrategy::PullStrategy(PlayerbotAI* ai, string pullAction)
     }
 }
 
-void PullStrategy::InitTriggers(std::list<TriggerNode*>& triggers)
+void PullStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     triggers.push_back(new TriggerNode(
         "pull start",
@@ -95,9 +95,19 @@ void PullStrategy::InitTriggers(std::list<TriggerNode*>& triggers)
         NextAction::array(0, new NextAction("pull end", 60), NULL)));
 }
 
-void PullStrategy::InitMultipliers(std::list<Multiplier*>& multipliers)
+void PullStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    InitCombatTriggers(triggers);
+}
+
+void PullStrategy::InitCombatMultipliers(std::list<Multiplier*>& multipliers)
 {
     multipliers.push_back(new PullMultiplier(ai));
+}
+
+void PullStrategy::InitNonCombatMultipliers(std::list<Multiplier*>& multipliers)
+{
+    InitCombatMultipliers(multipliers);
 }
 
 PullStrategy* PullStrategy::Get(PlayerbotAI* ai)
@@ -197,7 +207,7 @@ float PullMultiplier::GetValue(Action* action)
     return 1.0f;
 }
 
-void PossibleAdsStrategy::InitTriggers(std::list<TriggerNode*>& triggers)
+void PossibleAdsStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     triggers.push_back(new TriggerNode(
         "possible ads",

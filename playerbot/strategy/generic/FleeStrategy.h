@@ -1,4 +1,5 @@
 #pragma once
+#include "../Strategy.h"
 
 namespace ai
 {
@@ -6,16 +7,19 @@ namespace ai
     {
     public:
         FleeStrategy(PlayerbotAI* ai) : Strategy(ai) {}
-        virtual void InitTriggers(std::list<TriggerNode*> &triggers);
-        virtual string getName() { return "flee"; };
+        string getName() override { return "flee"; };
+
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*> &triggers) override;
     };
 
     class FleeFromAddsStrategy : public Strategy
     {
     public:
         FleeFromAddsStrategy(PlayerbotAI* ai) : Strategy(ai) {}
-        virtual void InitTriggers(std::list<TriggerNode*> &triggers);
-        virtual string getName() { return "flee from adds"; };
-    };
+        string getName() override { return "flee from adds"; };
 
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*> &triggers) override;
+    };
 }

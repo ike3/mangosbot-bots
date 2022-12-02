@@ -5,7 +5,7 @@
 
 using namespace ai;
 
-void NonCombatStrategy::InitTriggers(std::list<TriggerNode*>& triggers)
+void NonCombatStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     triggers.push_back(new TriggerNode(
         "very often",
@@ -36,14 +36,14 @@ void NonCombatStrategy::InitTriggers(std::list<TriggerNode*>& triggers)
         NextAction::array(0, new NextAction("use lightwell", 80.0f), NULL)));*/
 }
 
-void CollisionStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void CollisionStrategy::InitNonCombatTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
         "collision",
         NextAction::array(0, new NextAction("move out of collision", 2.0f), NULL)));
 }
 
-void MountStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void MountStrategy::InitNonCombatTriggers(std::list<TriggerNode*> &triggers)
 {
     /*triggers.push_back(new TriggerNode(
         "no possible targets",

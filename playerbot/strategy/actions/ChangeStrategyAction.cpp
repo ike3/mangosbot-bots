@@ -96,7 +96,7 @@ bool ChangeAllStrategyAction::Execute(Event& event)
         }
     }
 
-    ai->ChangeStrategy(text, BotState::BOT_STATE_ALL);
+    ai->ChangeStrategy(strategyName, BotState::BOT_STATE_ALL);
 
     if (event.getSource() == "nc" || event.getSource() == "co")
     {

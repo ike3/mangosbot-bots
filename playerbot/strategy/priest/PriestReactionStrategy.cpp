@@ -4,23 +4,9 @@
 
 using namespace ai;
 
-class GenericPriestReactionStrategyActionNodeFactory : public NamedObjectFactory<ActionNode>
+void PriestReactionStrategy::InitReactionTriggers(std::list<TriggerNode*> &triggers)
 {
-public:
-    GenericPriestReactionStrategyActionNodeFactory()
-    {
-
-    }
-};
-
-PriestReactionStrategy::PriestReactionStrategy(PlayerbotAI* ai) : ReactionStrategy(ai)
-{
-    actionNodeFactories.Add(new GenericPriestReactionStrategyActionNodeFactory());
-}
-
-void PriestReactionStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
-{
-    ReactionStrategy::InitTriggers(triggers);
+    ReactionStrategy::InitReactionTriggers(triggers);
 
     // Add class specific reactions here
     // ...

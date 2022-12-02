@@ -29,8 +29,8 @@ bool Reaction::Update(uint32 elapsed)
     return !IsActive();
 }
 
-ReactionEngine::ReactionEngine(PlayerbotAI* ai, AiObjectContext* factory) 
-: Engine(ai, factory)
+ReactionEngine::ReactionEngine(PlayerbotAI* ai, AiObjectContext* factory, BotState engineState) 
+: Engine(ai, factory, engineState)
 , aiReactionUpdateDelay(0U)
 {
     

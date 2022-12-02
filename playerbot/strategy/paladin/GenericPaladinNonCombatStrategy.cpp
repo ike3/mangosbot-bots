@@ -11,9 +11,9 @@ GenericPaladinNonCombatStrategy::GenericPaladinNonCombatStrategy(PlayerbotAI* ai
     actionNodeFactories.Add(new GenericPaladinStrategyActionNodeFactory());
 }
 
-void GenericPaladinNonCombatStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void GenericPaladinNonCombatStrategy::InitNonCombatTriggers(std::list<TriggerNode*> &triggers)
 {
-    NonCombatStrategy::InitTriggers(triggers);
+    NonCombatStrategy::InitNonCombatTriggers(triggers);
 
 	triggers.push_back(new TriggerNode(
 		"party member dead",

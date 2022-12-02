@@ -43,9 +43,9 @@ GenericMageNonCombatStrategy::GenericMageNonCombatStrategy(PlayerbotAI* ai) : No
     actionNodeFactories.Add(new GenericMageNonCombatStrategyActionNodeFactory());
 }
 
-void GenericMageNonCombatStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void GenericMageNonCombatStrategy::InitNonCombatTriggers(std::list<TriggerNode*> &triggers)
 {
-    NonCombatStrategy::InitTriggers(triggers);
+    NonCombatStrategy::InitNonCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
         "arcane intellect",
@@ -64,21 +64,31 @@ void GenericMageNonCombatStrategy::InitTriggers(std::list<TriggerNode*> &trigger
       NextAction::array(0, new NextAction("apply oil", 1.0f), NULL)));
 }
 
-void MageBuffManaStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void MageBuffManaStrategy::InitNonCombatTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
         "mage armor",
         NextAction::array(0, new NextAction("mage armor", 19.0f), NULL)));
 }
 
-void MageBuffDpsStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void MageBuffManaStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    InitNonCombatTriggers(triggers);
+}
+
+void MageBuffDpsStrategy::InitNonCombatTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
         "mage armor",
         NextAction::array(0, new NextAction("molten armor", 19.0f), NULL)));
 }
 
-void MageBuffStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void MageBuffDpsStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    InitNonCombatTriggers(triggers);
+}
+
+void MageBuffStrategy::InitNonCombatTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
         "arcane intellect on party",
@@ -92,4 +102,3 @@ void MageBuffStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         "give food",
         NextAction::array(0, new NextAction("give food", 13.0f), NULL)));
 }
-

@@ -9,11 +9,9 @@ namespace ai
     {
     public:
         ShamanNonCombatStrategy(PlayerbotAI* ai) : NonCombatStrategy(ai) {}
+        string getName() override { return "nc"; }
 
-    public:
-        virtual void InitTriggers(std::list<TriggerNode*> &triggers);
-        virtual void InitMultipliers(std::list<Multiplier*> &multipliers);
-        virtual string getName() { return "nc"; }
-
+    private:
+        void InitNonCombatTriggers(std::list<TriggerNode*> &triggers) override;
     };
 }

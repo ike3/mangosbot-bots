@@ -1,6 +1,4 @@
 #pragma once
-
-#include "../Strategy.h"
 #include "../generic/CombatStrategy.h"
 
 namespace ai
@@ -11,31 +9,30 @@ namespace ai
     {
     public:
         GenericHunterStrategy(PlayerbotAI* ai);
+        virtual string getName() override { return "hunter"; }
 
-    public:
-        virtual void InitTriggers(std::list<TriggerNode*> &triggers);
-        virtual string getName() { return "hunter"; }
+    protected:
+        virtual void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
     };
 
     class HunterBoostStrategy : public Strategy
     {
     public:
         HunterBoostStrategy(PlayerbotAI* ai) : Strategy(ai) {}
-        virtual string getName() { return "boost"; }
-        virtual NextAction** getDefaultActions();
+        string getName() override { return "boost"; }
 
-    public:
-        virtual void InitTriggers(std::list<TriggerNode*> &triggers);
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*> &triggers) override;
+        NextAction** GetDefaultCombatActions() override;
     };
 
     class HunterCcStrategy : public Strategy
     {
     public:
         HunterCcStrategy(PlayerbotAI* ai) : Strategy(ai) {}
+        string getName() override { return "cc"; }
 
-    public:
-        virtual void InitTriggers(std::list<TriggerNode*> &triggers);
-        virtual string getName() { return "cc"; }
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*> &triggers) override;
     };
 }
-

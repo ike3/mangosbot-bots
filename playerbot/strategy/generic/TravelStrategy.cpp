@@ -4,16 +4,12 @@
 
 using namespace ai;
 
-TravelStrategy::TravelStrategy(PlayerbotAI* ai) : Strategy(ai)
-{
-}
-
-NextAction** TravelStrategy::getDefaultActions()
+NextAction** TravelStrategy::GetDefaultNonCombatActions()
 {
     return NextAction::array(0, new NextAction("travel", 1.0f), NULL);
 }
 
-void TravelStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void TravelStrategy::InitNonCombatTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
         //"random",

@@ -22,9 +22,9 @@ HealPaladinStrategy::HealPaladinStrategy(PlayerbotAI* ai) : GenericPaladinStrate
     actionNodeFactories.Add(new HealPaladinStrategyActionNodeFactory());
 }
 
-void HealPaladinStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void HealPaladinStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
 {
-    GenericPaladinStrategy::InitTriggers(triggers);
+    GenericPaladinStrategy::InitCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
         "paladin aura",

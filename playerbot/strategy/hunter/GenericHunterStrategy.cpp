@@ -46,9 +46,9 @@ GenericHunterStrategy::GenericHunterStrategy(PlayerbotAI* ai) : CombatStrategy(a
     actionNodeFactories.Add(new GenericHunterStrategyActionNodeFactory());
 }
 
-void GenericHunterStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void GenericHunterStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
 {
-    CombatStrategy::InitTriggers(triggers);
+    CombatStrategy::InitCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
         "enemy out of spell",
@@ -111,19 +111,19 @@ void GenericHunterStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("bestial wrath", 16.0f), NULL)));
 }
 
-NextAction** HunterBoostStrategy::getDefaultActions()
+NextAction** HunterBoostStrategy::GetDefaultCombatActions()
 {
     return NextAction::array(0, new NextAction("bestial wrath", 15.0f), NULL);
 }
 
-void HunterBoostStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void HunterBoostStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
         "rapid fire",
         NextAction::array(0, new NextAction("rapid fire", 16.0f), NULL)));
 }
 
-void HunterCcStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void HunterCcStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
         "scare beast",

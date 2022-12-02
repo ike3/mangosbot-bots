@@ -92,9 +92,9 @@ GenericDruidStrategy::GenericDruidStrategy(PlayerbotAI* ai) : CombatStrategy(ai)
     actionNodeFactories.Add(new GenericDruidStrategyActionNodeFactory());
 }
 
-void GenericDruidStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void GenericDruidStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
 {
-    CombatStrategy::InitTriggers(triggers);
+    CombatStrategy::InitCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
         "low health",
@@ -125,7 +125,7 @@ void GenericDruidStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("travel form", ACTION_EMERGENCY + 2), NULL)));
 }
 
-void DruidCureStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void DruidCureStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
         "cure poison",
@@ -144,14 +144,19 @@ void DruidCureStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("remove curse on party", ACTION_MEDIUM_HEAL + 3), NULL)));
 }
 
-void DruidBoostStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void DruidCureStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    InitCombatTriggers(triggers);
+}
+
+void DruidBoostStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
         "nature's swiftness",
         NextAction::array(0, new NextAction("nature's swiftness", ACTION_HIGH + 9), NULL)));
 }
 
-void DruidCcStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void DruidCcStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
         "entangling roots",

@@ -142,9 +142,9 @@ GenericDKStrategy::GenericDKStrategy(PlayerbotAI* ai) : MeleeCombatStrategy(ai)
     actionNodeFactories.Add(new GenericDKStrategyActionNodeFactory());
 }
 
-void GenericDKStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void GenericDKStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
 {
-	MeleeCombatStrategy::InitTriggers(triggers);
+	MeleeCombatStrategy::InitCombatTriggers(triggers);
 
 	triggers.push_back(new TriggerNode(
 		"high aoe",
@@ -179,7 +179,6 @@ void GenericDKStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         "mind freeze on enemy healer",
         NextAction::array(0, new NextAction("mind freeze on enemy healer", ACTION_HIGH + 1), NULL)));
 
-	
 	triggers.push_back(new TriggerNode(
 		"enemy out of melee",
 		NextAction::array(0, new NextAction("icy touch", ACTION_NORMAL + 9),
@@ -190,7 +189,6 @@ void GenericDKStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 		"low health",
 		NextAction::array(0, new NextAction("icebound fortitude", ACTION_HIGH + 5),
 			new NextAction("rune tap", ACTION_HIGH + 4), NULL)));
-
 
 	triggers.push_back(new TriggerNode(
 		"medium health",
@@ -234,6 +232,4 @@ void GenericDKStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 			new NextAction("pestilence", ACTION_NORMAL + 4),
 			new NextAction("hearth strike", ACTION_NORMAL + 3),
 			new NextAction("blood boil", ACTION_NORMAL + 3), NULL)));
-
-
 }

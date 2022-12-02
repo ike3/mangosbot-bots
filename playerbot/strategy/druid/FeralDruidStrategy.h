@@ -1,5 +1,4 @@
 #pragma once
-
 #include "GenericDruidStrategy.h"
 #include "DruidAiObjectContext.h"
 
@@ -64,12 +63,11 @@ namespace ai
 
     class FeralDruidStrategy : public GenericDruidStrategy
     {
-    protected:
-        FeralDruidStrategy(PlayerbotAI* ai);
-
     public:
-        virtual void InitTriggers(std::list<TriggerNode*> &triggers);
-        virtual int GetType() { return STRATEGY_TYPE_COMBAT | STRATEGY_TYPE_MELEE; }
-    };
+        FeralDruidStrategy(PlayerbotAI* ai);
+        virtual int GetType() override { return STRATEGY_TYPE_COMBAT | STRATEGY_TYPE_MELEE; }
 
+    protected:
+        virtual void InitCombatTriggers(std::list<TriggerNode*> &triggers) override;
+    };
 }

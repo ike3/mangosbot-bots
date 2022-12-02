@@ -1,7 +1,5 @@
 #pragma once
-
 #include "../generic/CombatStrategy.h"
-#include "GenericDruidStrategy.h"
 
 namespace ai
 {
@@ -9,11 +7,10 @@ namespace ai
     {
     public:
         MeleeDruidStrategy(PlayerbotAI* ai);
+        string getName() override { return "melee"; }
 
-    public:
-        virtual void InitTriggers(std::list<TriggerNode*> &triggers);
-        virtual string getName() { return "melee"; }
-        virtual NextAction** getDefaultActions();
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*> &triggers) override;
+        NextAction** GetDefaultCombatActions() override;
     };
-
 }

@@ -1,5 +1,4 @@
 #pragma once
-
 #include "../Strategy.h"
 #include "../Multiplier.h"
 
@@ -11,8 +10,6 @@ namespace ai
         PullStrategy(PlayerbotAI* ai, string pullAction);
 
     public:
-        void InitTriggers(std::list<TriggerNode*> &triggers) override;
-        void InitMultipliers(std::list<Multiplier*> &multipliers) override;
         string getName() override { return "pull"; }
 
         static PullStrategy* Get(PlayerbotAI* ai);
@@ -36,6 +33,11 @@ namespace ai
     private:
         void SetTarget(Unit* target);
 
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        void InitCombatMultipliers(std::list<Multiplier*>& multipliers) override;
+        void InitNonCombatMultipliers(std::list<Multiplier*>& multipliers) override;
+
     private:
         float range;
         string actionName;
@@ -56,9 +58,9 @@ namespace ai
     {
     public:
         PossibleAdsStrategy(PlayerbotAI* ai) : Strategy(ai) {}
+        string getName() override { return "ads"; }
 
-    public:
-        virtual void InitTriggers(std::list<TriggerNode*> &triggers);
-        virtual string getName() { return "ads"; }
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*> &triggers) override;
     };
 }

@@ -1,5 +1,4 @@
 #pragma once
-
 #include "../Strategy.h"
 #include "../generic/CombatStrategy.h"
 
@@ -10,38 +9,38 @@ namespace ai
     public:
         GenericPriestStrategy(PlayerbotAI* ai);
 
-    public:
-        virtual void InitTriggers(std::list<TriggerNode*> &triggers);
-
+    protected:
+        virtual void InitCombatTriggers(std::list<TriggerNode*> &triggers) override;
     };
 
     class PriestCureStrategy : public Strategy
     {
     public:
         PriestCureStrategy(PlayerbotAI* ai);
+        string getName() override { return "cure"; }
 
-    public:
-        virtual void InitTriggers(std::list<TriggerNode*> &triggers);
-        virtual string getName() { return "cure"; }
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*> &triggers) override;
+        void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
     };
 
     class PriestBoostStrategy : public Strategy
     {
     public:
         PriestBoostStrategy(PlayerbotAI* ai) : Strategy(ai) {}
+        string getName() override { return "boost"; }
 
-    public:
-        virtual void InitTriggers(std::list<TriggerNode*> &triggers);
-        virtual string getName() { return "boost"; }
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*> &triggers) override;
     };
 
     class PriestCcStrategy : public Strategy
     {
     public:
         PriestCcStrategy(PlayerbotAI* ai) : Strategy(ai) {}
+        string getName() override { return "cc"; }
 
-    public:
-        virtual void InitTriggers(std::list<TriggerNode*> &triggers);
-        virtual string getName() { return "cc"; }
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*> &triggers) override;
     };
 }

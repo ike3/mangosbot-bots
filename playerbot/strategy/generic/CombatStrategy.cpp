@@ -5,7 +5,7 @@
 
 using namespace ai;
 
-void CombatStrategy::InitTriggers(list<TriggerNode*> &triggers)
+void CombatStrategy::InitCombatTriggers(list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
         "invalid target",
@@ -68,26 +68,36 @@ float AvoidAoeStrategyMultiplier::GetValue(Action* action)
     return 1.0f;
 }
 
-void AvoidAoeStrategy::InitTriggers(std::list<TriggerNode*>& triggers)
+void AvoidAoeStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     triggers.push_back(new TriggerNode(
         "has area debuff",
         NextAction::array(0, new NextAction("flee", ACTION_EMERGENCY + 5), NULL)));
 }
 
-void AvoidAoeStrategy::InitMultipliers(std::list<Multiplier*>& multipliers)
+void AvoidAoeStrategy::InitReactionTriggers(std::list<TriggerNode*>& triggers)
+{
+    InitCombatTriggers(triggers);
+}
+
+void AvoidAoeStrategy::InitCombatMultipliers(std::list<Multiplier*>& multipliers)
 {
     multipliers.push_back(new AvoidAoeStrategyMultiplier(ai));
 }
 
-void WaitForAttackStrategy::InitTriggers(std::list<TriggerNode*>& triggers)
+void AvoidAoeStrategy::InitReactionMultipliers(std::list<Multiplier*>& multipliers)
+{
+    InitCombatMultipliers(multipliers);
+}
+
+void WaitForAttackStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     triggers.push_back(new TriggerNode(
         "wait for attack safe distance",
         NextAction::array(0, new NextAction("wait for attack keep safe distance", 60.0f), NULL)));
 }
 
-void WaitForAttackStrategy::InitMultipliers(std::list<Multiplier*>& multipliers)
+void WaitForAttackStrategy::InitCombatMultipliers(std::list<Multiplier*>& multipliers)
 {
     multipliers.push_back(new WaitForAttackMultiplier(ai));
 }

@@ -11,9 +11,9 @@ PriestNonCombatStrategy::PriestNonCombatStrategy(PlayerbotAI* ai) : NonCombatStr
     actionNodeFactories.Add(new PriestNonCombatStrategyActionNodeFactory());
 }
 
-void PriestNonCombatStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void PriestNonCombatStrategy::InitNonCombatTriggers(std::list<TriggerNode*> &triggers)
 {
-    NonCombatStrategy::InitTriggers(triggers);
+    NonCombatStrategy::InitNonCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
         "power word: fortitude",
@@ -60,9 +60,9 @@ void PriestNonCombatStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
        NextAction::array(0, new NextAction("apply oil", 1.0f), NULL)));
 }
 
-void PriestBuffStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void PriestBuffStrategy::InitNonCombatTriggers(std::list<TriggerNode*> &triggers)
 {
-    NonCombatStrategy::InitTriggers(triggers);
+    NonCombatStrategy::InitNonCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
         "prayer of fortitude on party",
@@ -93,9 +93,9 @@ void PriestBuffStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("shadowguard", 10.0f), NULL)));
 }
 
-void PriestShadowResistanceStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void PriestShadowResistanceStrategy::InitNonCombatTriggers(std::list<TriggerNode*> &triggers)
 {
-    NonCombatStrategy::InitTriggers(triggers);
+    NonCombatStrategy::InitNonCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
         "shadow protection",

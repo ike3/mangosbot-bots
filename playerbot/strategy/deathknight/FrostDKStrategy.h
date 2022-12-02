@@ -1,7 +1,5 @@
 #pragma once
-
 #include "GenericDKStrategy.h"
-#include "../generic/CombatStrategy.h"
 
 namespace ai
 {
@@ -9,21 +7,21 @@ namespace ai
     {
     public:
         FrostDKStrategy(PlayerbotAI* ai);
+        string getName() override { return "frost"; }
+        int GetType() override { return STRATEGY_TYPE_COMBAT | STRATEGY_TYPE_DPS | STRATEGY_TYPE_MELEE; }
 
-    public:
-        virtual void InitTriggers(std::list<TriggerNode*> &triggers);
-        virtual string getName() { return "frost"; }
-        virtual NextAction** getDefaultActions();
-		virtual int GetType() { return STRATEGY_TYPE_COMBAT | STRATEGY_TYPE_DPS | STRATEGY_TYPE_MELEE; }
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*> &triggers) override;
+        NextAction** GetDefaultCombatActions() override;
     };
 
     class FrostDKAoeStrategy : public CombatStrategy
     {
     public:
         FrostDKAoeStrategy(PlayerbotAI* ai) : CombatStrategy(ai) {}
+        string getName() override { return "frost aoe"; }
 
-    public:
-        virtual void InitTriggers(std::list<TriggerNode*> &triggers);
-        virtual string getName() { return "frost aoe"; }
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*> &triggers) override;
     };
 }

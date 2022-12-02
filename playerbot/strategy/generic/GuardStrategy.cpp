@@ -4,13 +4,7 @@
 
 using namespace ai;
 
-
-NextAction** GuardStrategy::getDefaultActions()
+NextAction** GuardStrategy::GetDefaultNonCombatActions()
 {
     return NextAction::array(0, new NextAction("guard", 4.0f), NULL);
 }
-
-void GuardStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
-{
-}
-

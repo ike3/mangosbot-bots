@@ -61,7 +61,7 @@ BloodDKStrategy::BloodDKStrategy(PlayerbotAI* ai) : GenericDKStrategy(ai)
     actionNodeFactories.Add(new BloodDKStrategyActionNodeFactory());
 }
 
-NextAction** BloodDKStrategy::getDefaultActions()
+NextAction** BloodDKStrategy::GetDefaultCombatActions()
 {
 	return NextAction::array(0,
         new NextAction("melee", ACTION_NORMAL + 2),
@@ -70,31 +70,26 @@ NextAction** BloodDKStrategy::getDefaultActions()
 		new NextAction("rune strike", ACTION_NORMAL + 3), NULL);
 }
 
-void BloodDKStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void BloodDKStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
 {
-    GenericDKStrategy::InitTriggers(triggers);
+    GenericDKStrategy::InitCombatTriggers(triggers);
 
-triggers.push_back(new TriggerNode(
-	"rune strike",
-	NextAction::array(0, new NextAction("rune strike", ACTION_NORMAL + 3), NULL)));
+    triggers.push_back(new TriggerNode(
+        "rune strike",
+        NextAction::array(0, new NextAction("rune strike", ACTION_NORMAL + 3), NULL)));
 
-triggers.push_back(new TriggerNode(
-	"blood tap",
-	NextAction::array(0, new NextAction("blood tap", ACTION_HIGH + 5), NULL)));
+    triggers.push_back(new TriggerNode(
+        "blood tap",
+        NextAction::array(0, new NextAction("blood tap", ACTION_HIGH + 5), NULL)));
 
+    triggers.push_back(new TriggerNode(
+        "lose aggro",
+        NextAction::array(0, new NextAction("dark command", ACTION_HIGH + 3), NULL)));
 
-triggers.push_back(new TriggerNode(
-	"lose aggro",
-	NextAction::array(0, new NextAction("dark command", ACTION_HIGH + 3), NULL)));
-
-
-triggers.push_back(new TriggerNode(
-	"low health",
-	NextAction::array(0,
-		new NextAction("blood tap", ACTION_HIGH + 5),
-		new NextAction("vampiric blood", ACTION_HIGH + 3),
-		new NextAction("death strike", ACTION_HIGH + 4), NULL)));
-
-
-
+    triggers.push_back(new TriggerNode(
+        "low health",
+        NextAction::array(0,
+            new NextAction("blood tap", ACTION_HIGH + 5),
+            new NextAction("vampiric blood", ACTION_HIGH + 3),
+            new NextAction("death strike", ACTION_HIGH + 4), NULL)));
 }

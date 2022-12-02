@@ -6,10 +6,12 @@ namespace ai
     class DeadStrategy : public PassTroughStrategy
     {
     public:
-        DeadStrategy(PlayerbotAI* ai);
+        DeadStrategy(PlayerbotAI* ai) : PassTroughStrategy(ai) {}
+        string getName() override { return "dead"; }
 
-    public:
-        virtual void InitTriggers(std::list<TriggerNode*> &triggers);
-        virtual string getName() { return "dead"; }
+    private:
+        void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override {}
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override {}
+        void InitDeadTriggers(std::list<TriggerNode*> &triggers) override;
     };
 }

@@ -5,14 +5,10 @@
 
 using namespace ai;
 
-TotemsShamanStrategy::TotemsShamanStrategy(PlayerbotAI* ai) : GenericShamanStrategy(ai)
+void TotemsShamanStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
 {
-    
-}
+    GenericShamanStrategy::InitCombatTriggers(triggers);
 
-void TotemsShamanStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
-{
-    GenericShamanStrategy::InitTriggers(triggers);
     triggers.push_back(new TriggerNode(
         "windfury totem",
         NextAction::array(0, new NextAction("windfury totem", 16.0f), NULL)));

@@ -9,19 +9,18 @@ QuestStrategy::QuestStrategy(PlayerbotAI* ai) : PassTroughStrategy(ai)
     supported.push_back("accept quest");
 }
 
-void QuestStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void QuestStrategy::InitNonCombatTriggers(std::list<TriggerNode*> &triggers)
 {
-    PassTroughStrategy::InitTriggers(triggers);
+    PassTroughStrategy::InitNonCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
         "quest share",
         NextAction::array(0, new NextAction("accept quest share", relevance), NULL)));
 }
 
-
-void DefaultQuestStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void DefaultQuestStrategy::InitNonCombatTriggers(std::list<TriggerNode*> &triggers)
 {
-    QuestStrategy::InitTriggers(triggers);
+    QuestStrategy::InitNonCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
         "use game object",
@@ -38,15 +37,9 @@ void DefaultQuestStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("talk to quest giver", relevance), NULL)));
 }
 
-DefaultQuestStrategy::DefaultQuestStrategy(PlayerbotAI* ai) : QuestStrategy(ai)
+void AcceptAllQuestsStrategy::InitNonCombatTriggers(std::list<TriggerNode*> &triggers)
 {
-}
-
-
-
-void AcceptAllQuestsStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
-{
-    QuestStrategy::InitTriggers(triggers);
+    QuestStrategy::InitNonCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
         "use game object",
@@ -62,8 +55,4 @@ void AcceptAllQuestsStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         "complete quest",
         NextAction::array(0, 
             new NextAction("talk to quest giver", relevance), new NextAction("accept all quests", relevance), NULL)));
-}
-
-AcceptAllQuestsStrategy::AcceptAllQuestsStrategy(PlayerbotAI* ai) : QuestStrategy(ai)
-{
 }

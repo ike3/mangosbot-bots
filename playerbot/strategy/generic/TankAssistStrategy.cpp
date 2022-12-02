@@ -4,7 +4,7 @@
 
 using namespace ai;
 
-void TankAssistStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void TankAssistStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
         "tank assist",

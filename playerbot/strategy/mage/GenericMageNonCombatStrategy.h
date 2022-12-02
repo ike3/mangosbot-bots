@@ -1,6 +1,4 @@
 #pragma once
-
-#include "GenericMageStrategy.h"
 #include "../generic/NonCombatStrategy.h"
 
 namespace ai
@@ -9,39 +7,41 @@ namespace ai
     {
     public:
         GenericMageNonCombatStrategy(PlayerbotAI* ai);
-        virtual string getName() { return "nc"; }
+        string getName() override { return "nc"; }
 
-    public:
-        virtual void InitTriggers(std::list<TriggerNode*> &triggers);
+    private:
+        void InitNonCombatTriggers(std::list<TriggerNode*> &triggers) override;
     };
 
     class MageBuffManaStrategy : public Strategy
     {
     public:
         MageBuffManaStrategy(PlayerbotAI* ai) : Strategy(ai) {}
+        string getName() override { return "bmana"; }
 
-    public:
-        virtual void InitTriggers(std::list<TriggerNode*> &triggers);
-        virtual string getName() { return "bmana"; }
+    private:
+        void InitNonCombatTriggers(std::list<TriggerNode*> &triggers) override;
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
     };
 
     class MageBuffDpsStrategy : public Strategy
     {
     public:
         MageBuffDpsStrategy(PlayerbotAI* ai) : Strategy(ai) {}
+        string getName() override { return "bdps"; }
 
-    public:
-        virtual void InitTriggers(std::list<TriggerNode*> &triggers);
-        virtual string getName() { return "bdps"; }
+    private:
+        void InitNonCombatTriggers(std::list<TriggerNode*> &triggers) override;
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
     };
 
     class MageBuffStrategy : public Strategy
     {
     public:
         MageBuffStrategy(PlayerbotAI* ai) : Strategy(ai) {}
+        string getName() override { return "buff"; }
 
-    public:
-        virtual void InitTriggers(std::list<TriggerNode*> &triggers);
-        virtual string getName() { return "buff"; }
+    private:
+        void InitNonCombatTriggers(std::list<TriggerNode*> &triggers) override;
     };
 }

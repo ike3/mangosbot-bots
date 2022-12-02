@@ -4,7 +4,7 @@
 
 using namespace ai;
 
-void FollowMasterStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void FollowMasterStrategy::InitNonCombatTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
         "out of react range",
@@ -13,4 +13,9 @@ void FollowMasterStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
     triggers.push_back(new TriggerNode(
         "not near master",
         NextAction::array(0, new NextAction("follow", 1.0f), NULL)));
+}
+
+void FollowMasterStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
+{
+    InitNonCombatTriggers(triggers);
 }

@@ -4,13 +4,7 @@
 
 using namespace ai;
 
-
-NextAction** MaintenanceStrategy::getDefaultActions()
-{
-    return NULL;
-}
-
-void MaintenanceStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void MaintenanceStrategy::InitNonCombatTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
         "random",
@@ -44,4 +38,3 @@ void MaintenanceStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         "move long stuck",
         NextAction::array(0, new NextAction("hearthstone", 0.9f), new NextAction("repop", 0.8f), NULL)));
 }
-

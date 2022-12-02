@@ -62,28 +62,30 @@ public:
 		}
 };
 
-	FrostDKStrategy::FrostDKStrategy(PlayerbotAI* ai) : GenericDKStrategy(ai)
-	{
-	actionNodeFactories.Add(new FrostDKStrategyActionNodeFactory());
-	}
-
-
-	NextAction** FrostDKStrategy::getDefaultActions()
-	{
-    return NextAction::array(0, new NextAction("melee", ACTION_NORMAL), new NextAction("frost strike", ACTION_NORMAL + 5),
-		new NextAction("obliterate", ACTION_NORMAL + 4), NULL);
-	}
-
-void FrostDKStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+FrostDKStrategy::FrostDKStrategy(PlayerbotAI* ai) : GenericDKStrategy(ai)
 {
-    GenericDKStrategy::InitTriggers(triggers);
+	actionNodeFactories.Add(new FrostDKStrategyActionNodeFactory());
+}
+
+
+NextAction** FrostDKStrategy::GetDefaultCombatActions()
+{
+	return NextAction::array(0, 
+			new NextAction("melee", ACTION_NORMAL), 
+			new NextAction("frost strike", ACTION_NORMAL + 5),
+			new NextAction("obliterate", ACTION_NORMAL + 4), NULL);
+}
+
+void FrostDKStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
+{
+    GenericDKStrategy::InitCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
         "empower weapon",
         NextAction::array(0, new NextAction("empower weapon", ACTION_NORMAL + 4), NULL)));
 }
 
-void FrostDKAoeStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void FrostDKAoeStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
 {
 	triggers.push_back(new TriggerNode(
 		"light aoe",

@@ -1,27 +1,27 @@
-#include "../generic/NonCombatStrategy.h"
 #pragma once
+#include "../Strategy.h"
 
 namespace ai
 {
-    class DpsAssistStrategy : public NonCombatStrategy
+    class DpsAssistStrategy : public Strategy
     {
     public:
-        DpsAssistStrategy(PlayerbotAI* ai) : NonCombatStrategy(ai) {}
-        virtual string getName() { return "dps assist"; }
-		virtual int GetType() { return STRATEGY_TYPE_DPS; }
+        DpsAssistStrategy(PlayerbotAI* ai) : Strategy(ai) {}
+        string getName() override { return "dps assist"; }
+		int GetType() override { return STRATEGY_TYPE_DPS; }
 
-    public:
-        virtual void InitTriggers(std::list<TriggerNode*> &triggers);
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
     };
 
-    class DpsAoeStrategy : public NonCombatStrategy
+    class DpsAoeStrategy : public Strategy
     {
     public:
-        DpsAoeStrategy(PlayerbotAI* ai) : NonCombatStrategy(ai) {}
-        virtual string getName() { return "dps aoe"; }
-        virtual int GetType() { return STRATEGY_TYPE_DPS; }
+        DpsAoeStrategy(PlayerbotAI* ai) : Strategy(ai) {}
+        string getName() override { return "dps aoe"; }
+        int GetType() override { return STRATEGY_TYPE_DPS; }
 
-    public:
-        virtual void InitTriggers(std::list<TriggerNode*> &triggers);
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*> &triggers) override;
     };
 }

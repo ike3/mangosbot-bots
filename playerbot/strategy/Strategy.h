@@ -3,6 +3,7 @@
 #include "Multiplier.h"
 #include "Trigger.h"
 #include "NamedObjectContext.h"
+#include "BotState.h"
 
 namespace ai
 {
@@ -43,20 +44,36 @@ namespace ai
         virtual ~Strategy() {}
 
     public:
-        virtual NextAction** getDefaultActions() { return NULL; }
-        virtual void InitTriggers(std::list<TriggerNode*> &triggers) {}
-        virtual void InitMultipliers(std::list<Multiplier*> &multipliers) {}
-        virtual string getName() = 0;
+        void InitTriggers(std::list<TriggerNode*> &triggers, BotState state);
+        void InitMultipliers(std::list<Multiplier*> &multipliers, BotState state);
+
+		virtual NextAction** getDefaultActions(BotState state);
 		virtual int GetType() { return STRATEGY_TYPE_GENERIC; }
         virtual ActionNode* GetAction(string name);
+		virtual string getName() = 0;
         void Update() {}
         void Reset() {}
 
-		virtual void OnStrategyAdded() {}
-		virtual void OnStrategyRemoved() {}
+		virtual void OnStrategyAdded(BotState state) {}
+		virtual void OnStrategyRemoved(BotState state) {}
+
+	protected:
+		virtual NextAction** GetDefaultCombatActions() { return nullptr; }
+		virtual NextAction** GetDefaultNonCombatActions() { return nullptr; }
+		virtual NextAction** GetDefaultDeadActions() { return nullptr; }
+		virtual NextAction** GetDefaultReactionActions() { return nullptr; }
+
+		virtual void InitCombatTriggers(std::list<TriggerNode*>& triggers) {}
+		virtual void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) {}
+		virtual void InitDeadTriggers(std::list<TriggerNode*>& triggers) {}
+		virtual void InitReactionTriggers(std::list<TriggerNode*>& triggers) {}
+
+        virtual void InitCombatMultipliers(std::list<Multiplier*>& multipliers) {}
+        virtual void InitNonCombatMultipliers(std::list<Multiplier*>& multipliers) {}
+        virtual void InitDeadMultipliers(std::list<Multiplier*>& multipliers) {}
+        virtual void InitReactionMultipliers(std::list<Multiplier*>& multipliers) {}
 
     protected:
         NamedObjectFactoryList<ActionNode> actionNodeFactories;
     };
-
 }

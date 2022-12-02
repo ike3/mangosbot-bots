@@ -1,5 +1,4 @@
 #pragma once
-
 #include "GenericMageStrategy.h"
 
 namespace ai
@@ -8,20 +7,20 @@ namespace ai
     {
     public:
         ArcaneMageStrategy(PlayerbotAI* ai);
+        string getName() override { return "arcane"; }
 
-    public:
-        virtual void InitTriggers(std::list<TriggerNode*> &triggers);
-        virtual string getName() { return "arcane"; }
-        virtual NextAction** getDefaultActions();
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*> &triggers) override;
+        NextAction** GetDefaultCombatActions() override;
     };
 
     class ArcaneMageAoeStrategy : public CombatStrategy
     {
     public:
         ArcaneMageAoeStrategy(PlayerbotAI* ai) : CombatStrategy(ai) {}
+        string getName() override { return "arcane aoe"; }
 
     public:
-        virtual void InitTriggers(std::list<TriggerNode*>& triggers);
-        virtual string getName() { return "arcane aoe"; }
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
     };
 }

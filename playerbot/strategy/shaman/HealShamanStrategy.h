@@ -1,5 +1,4 @@
 #pragma once
-
 #include "GenericShamanStrategy.h"
 
 namespace ai
@@ -8,10 +7,10 @@ namespace ai
     {
     public:
         HealShamanStrategy(PlayerbotAI* ai);
+        string getName() override { return "heal"; }
+        int GetType() override { return STRATEGY_TYPE_HEAL; }
 
-    public:
-        virtual void InitTriggers(std::list<TriggerNode*> &triggers);
-        virtual string getName() { return "heal"; }
-		virtual int GetType() { return STRATEGY_TYPE_HEAL; }
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*> &triggers) override;
     };
 }

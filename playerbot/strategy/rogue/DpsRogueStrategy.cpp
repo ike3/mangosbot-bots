@@ -69,9 +69,9 @@ GenericRogueStrategy::GenericRogueStrategy(PlayerbotAI* ai) : CombatStrategy(ai)
     actionNodeFactories.Add(new DpsRogueStrategyActionNodeFactory());
 }
 
-void GenericRogueStrategy::InitTriggers(std::list<TriggerNode*>& triggers)
+void GenericRogueStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-    CombatStrategy::InitTriggers(triggers);
+    CombatStrategy::InitCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
         "medium threat",
@@ -134,13 +134,9 @@ void GenericRogueStrategy::InitTriggers(std::list<TriggerNode*>& triggers)
         NextAction::array(0, new NextAction("tricks of the trade on tank", ACTION_HIGH), NULL)));*/
 }
 
-DpsRogueStrategy::DpsRogueStrategy(PlayerbotAI* ai) : GenericRogueStrategy(ai)
+void DpsRogueStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-}
-
-void DpsRogueStrategy::InitTriggers(std::list<TriggerNode*>& triggers)
-{
-    GenericRogueStrategy::InitTriggers(triggers);
+    GenericRogueStrategy::InitCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
         "slice and dice",
@@ -159,14 +155,9 @@ void DpsRogueStrategy::InitTriggers(std::list<TriggerNode*>& triggers)
         NextAction::array(0, new NextAction("sinister strike", ACTION_NORMAL + 5), NULL)));
 }
 
-// Assassination
-AssassinationRogueStrategy::AssassinationRogueStrategy(PlayerbotAI* ai) : GenericRogueStrategy(ai)
+void AssassinationRogueStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-}
-
-void AssassinationRogueStrategy::InitTriggers(std::list<TriggerNode*>& triggers)
-{
-    GenericRogueStrategy::InitTriggers(triggers);
+    GenericRogueStrategy::InitCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
         "3 combo",
@@ -193,14 +184,9 @@ void AssassinationRogueStrategy::InitTriggers(std::list<TriggerNode*>& triggers)
         NextAction::array(0, new NextAction("mutilate front", ACTION_HIGH + 4), NULL)));
 }
 
-// Combat
-CombatRogueStrategy::CombatRogueStrategy(PlayerbotAI* ai) : GenericRogueStrategy(ai)
+void CombatRogueStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-}
-
-void CombatRogueStrategy::InitTriggers(std::list<TriggerNode*>& triggers)
-{
-    GenericRogueStrategy::InitTriggers(triggers);
+    GenericRogueStrategy::InitCombatTriggers(triggers);
 
     //triggers.push_back(new TriggerNode(
     //    "blade flurry with killing spree",
@@ -231,14 +217,9 @@ void CombatRogueStrategy::InitTriggers(std::list<TriggerNode*>& triggers)
         NextAction::array(0, new NextAction("riposte", ACTION_HIGH + 5), NULL)));
 }
 
-// Subtlety
-SubtletyRogueStrategy::SubtletyRogueStrategy(PlayerbotAI* ai) : GenericRogueStrategy(ai)
+void SubtletyRogueStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-}
-
-void SubtletyRogueStrategy::InitTriggers(std::list<TriggerNode*>& triggers)
-{
-    GenericRogueStrategy::InitTriggers(triggers);
+    GenericRogueStrategy::InitCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
         "behind target",
@@ -313,7 +294,7 @@ StealthedRogueStrategy::StealthedRogueStrategy(PlayerbotAI* ai) : Strategy(ai)
     actionNodeFactories.Add(new StealthedRogueStrategyActionNodeFactory());
 }
 
-void StealthedRogueStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void StealthedRogueStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
         "behind target",
@@ -356,21 +337,21 @@ void StealthedRogueStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("shadowstep", 62.0f), NULL)));
 }
 
-void StealthStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void StealthStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
         "stealth",
         NextAction::array(0, new NextAction("stealth", ACTION_EMERGENCY), NULL)));
 }
 
-void RogueAoeStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void RogueAoeStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
         "light aoe",
         NextAction::array(0, new NextAction("blade flurry", ACTION_HIGH), NULL)));
 }
 
-void RogueBoostStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void RogueBoostStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
         "adrenaline rush",
@@ -397,7 +378,7 @@ RogueCcStrategy::RogueCcStrategy(PlayerbotAI* ai) : Strategy(ai)
     actionNodeFactories.Add(new RogueCcStrategyActionNodeFactory());
 }
 
-void RogueCcStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void RogueCcStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
         "sap",

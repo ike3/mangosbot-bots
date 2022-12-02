@@ -8,7 +8,9 @@ namespace ai
     public:
         MoltenCoreDungeonStrategy(PlayerbotAI* ai) : Strategy(ai) {}
         string getName() override { return "molten core"; }
-        void InitTriggers(std::list<TriggerNode*>& triggers) override;
+
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
     };
 
     class MagmadarFightStrategy : public Strategy
@@ -16,6 +18,11 @@ namespace ai
     public:
         MagmadarFightStrategy(PlayerbotAI* ai) : Strategy(ai) {}
         string getName() override { return "magmadar"; }
-        void InitTriggers(std::list<TriggerNode*>& triggers) override;
+
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        void InitDeadTriggers(std::list<TriggerNode*>& triggers) override;
+        void InitReactionTriggers(std::list<TriggerNode*>& triggers) override;
     };
 }

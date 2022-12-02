@@ -39,9 +39,6 @@ bool RpgAction::isUseful()
 bool RpgAction::SetNextRpgAction()
 {
     Strategy* rpgStrategy; 
-    
-    
-
     vector<Action*> actions;
     vector<uint32> relevances;
     list<TriggerNode*> triggerNodes;
@@ -53,7 +50,7 @@ bool RpgAction::SetNextRpgAction()
 
         rpgStrategy = ai->GetAiObjectContext()->GetStrategy(strategy);
 
-        rpgStrategy->InitTriggers(triggerNodes);
+        rpgStrategy->InitTriggers(triggerNodes, BotState::BOT_STATE_NON_COMBAT);
 
         for (auto& triggerNode : triggerNodes)
         {

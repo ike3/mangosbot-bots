@@ -93,14 +93,14 @@ CasterDruidStrategy::CasterDruidStrategy(PlayerbotAI* ai) : GenericDruidStrategy
     actionNodeFactories.Add(new ShapeshiftDruidStrategyActionNodeFactory());
 }
 
-NextAction** CasterDruidStrategy::getDefaultActions()
+NextAction** CasterDruidStrategy::GetDefaultCombatActions()
 {
     return NextAction::array(0, new NextAction("starfire", ACTION_NORMAL + 2), new NextAction("wrath", ACTION_NORMAL + 1), NULL);
 }
 
-void CasterDruidStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void CasterDruidStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
 {
-    GenericDruidStrategy::InitTriggers(triggers);
+    GenericDruidStrategy::InitCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
         "enemy out of spell",
@@ -151,14 +151,14 @@ void CasterDruidStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("entangling roots on snare", ACTION_HIGH + 5), NULL)));
 }
 
-void CasterDruidAoeStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void CasterDruidAoeStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
 {
 	triggers.push_back(new TriggerNode(
 		"high aoe",
 		NextAction::array(0, new NextAction("starfall", ACTION_HIGH + 1), NULL)));
 }
 
-void CasterDruidDebuffStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void CasterDruidDebuffStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
         "faerie fire",

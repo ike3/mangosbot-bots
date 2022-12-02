@@ -41,24 +41,20 @@ bool LeaveDungeonTrigger::IsActive()
 
 bool StartBossFightTrigger::IsActive()
 {
-    // Don't trigger if not in combat
-    if (ai->IsStateActive(BotState::BOT_STATE_COMBAT))
+    // Don't trigger if strategy already set
+    if (!ai->HasStrategy(bossStrategy, BotState::BOT_STATE_COMBAT))
     {
-        // Don't trigger if strategy already set
-        if (!ai->HasStrategy(bossStrategy, BotState::BOT_STATE_COMBAT))
+        // If the bot is ready
+        if (bot->IsInWorld() && !bot->IsBeingTeleported())
         {
-            // If the bot is ready
-            if (bot->IsInWorld() && !bot->IsBeingTeleported())
+            AiObjectContext* context = ai->GetAiObjectContext();
+            const list<ObjectGuid> attackers = AI_VALUE(list<ObjectGuid>, "attackers");
+            for (const ObjectGuid& attackerGuid : attackers)
             {
-                AiObjectContext* context = ai->GetAiObjectContext();
-                const list<ObjectGuid> attackers = AI_VALUE(list<ObjectGuid>, "attackers");
-                for (const ObjectGuid& attackerGuid : attackers)
+                Unit* attacker = ai->GetUnit(attackerGuid);
+                if (attacker->GetEntry() == bossID)
                 {
-                    Unit* attacker = ai->GetUnit(attackerGuid);
-                    if (attacker->GetEntry() == bossID)
-                    {
-                        return true;
-                    }
+                    return true;
                 }
             }
         }
@@ -73,7 +69,7 @@ bool EndBossFightTrigger::IsActive()
     if (ai->HasStrategy(bossStrategy, BotState::BOT_STATE_COMBAT))
     {
         // We consider the fight is over if not in combat
-        return ai->IsStateActive(BotState::BOT_STATE_NON_COMBAT);
+        return !ai->IsStateActive(BotState::BOT_STATE_COMBAT);
     }
 
     return false;

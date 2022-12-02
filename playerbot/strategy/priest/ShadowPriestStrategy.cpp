@@ -11,14 +11,14 @@ ShadowPriestStrategy::ShadowPriestStrategy(PlayerbotAI* ai) : GenericPriestStrat
     actionNodeFactories.Add(new ShadowPriestStrategyActionNodeFactory());
 }
 
-NextAction** ShadowPriestStrategy::getDefaultActions()
+NextAction** ShadowPriestStrategy::GetDefaultCombatActions()
 {
     return NextAction::array(0, new NextAction("mind blast", 10.0f), new NextAction("mana burn", 9.0f), new NextAction("starshards", 8.0f), new NextAction("shoot", 7.0f), NULL);
 }
 
-void ShadowPriestStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void ShadowPriestStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
 {
-    GenericPriestStrategy::InitTriggers(triggers);
+    GenericPriestStrategy::InitCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
         "enemy out of spell",
@@ -61,14 +61,14 @@ void ShadowPriestStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("shadow word: death", ACTION_INTERRUPT + 1), NULL)));
 }
 
-void ShadowPriestAoeStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void ShadowPriestAoeStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
         "shadow word: pain on attacker",
         NextAction::array(0, new NextAction("shadow word: pain on attacker", 11.0f), NULL)));
 }
 
-void ShadowPriestDebuffStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void ShadowPriestDebuffStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
         "devouring plague",

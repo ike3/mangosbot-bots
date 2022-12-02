@@ -5,9 +5,9 @@
 
 using namespace ai;
 
-void ShamanNonCombatStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void ShamanNonCombatStrategy::InitNonCombatTriggers(std::list<TriggerNode*> &triggers)
 {
-    NonCombatStrategy::InitTriggers(triggers);
+    NonCombatStrategy::InitNonCombatTriggers(triggers);
 
 	triggers.push_back(new TriggerNode(
 		"party member dead",
@@ -67,9 +67,3 @@ void ShamanNonCombatStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         "player has flag",
         NextAction::array(0, new NextAction("ghost wolf", ACTION_EMERGENCY + 2), NULL)));
 }
-
-void ShamanNonCombatStrategy::InitMultipliers(std::list<Multiplier*> &multipliers)
-{
-    NonCombatStrategy::InitMultipliers(multipliers);
-}
-

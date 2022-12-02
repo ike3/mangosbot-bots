@@ -122,7 +122,7 @@ BearTankDruidStrategy::BearTankDruidStrategy(PlayerbotAI* ai) : FeralDruidStrate
     actionNodeFactories.Add(new BearTankDruidStrategyActionNodeFactory());
 }
 
-NextAction** BearTankDruidStrategy::getDefaultActions()
+NextAction** BearTankDruidStrategy::GetDefaultCombatActions()
 {
     return NextAction::array(0,
             new NextAction("lacerate", ACTION_NORMAL + 4),
@@ -133,9 +133,9 @@ NextAction** BearTankDruidStrategy::getDefaultActions()
             NULL);
 }
 
-void BearTankDruidStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void BearTankDruidStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
 {
-    FeralDruidStrategy::InitTriggers(triggers);
+    FeralDruidStrategy::InitCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
         "thorns",
@@ -168,5 +168,4 @@ void BearTankDruidStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
     triggers.push_back(new TriggerNode(
         "bash on enemy healer",
         NextAction::array(0, new NextAction("bash on enemy healer", ACTION_INTERRUPT + 1), NULL)));
-
 }

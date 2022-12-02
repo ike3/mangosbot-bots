@@ -1,5 +1,5 @@
-#include "../generic/NonCombatStrategy.h"
 #pragma once
+#include "NonCombatStrategy.h"
 
 namespace ai
 {
@@ -7,10 +7,9 @@ namespace ai
     {
     public:
         ReturnStrategy(PlayerbotAI* ai) : NonCombatStrategy(ai) {}
-        virtual string getName() { return "return"; }
+        string getName() override { return "return"; }
 
-    public:
-        virtual void InitTriggers(std::list<TriggerNode*> &triggers);
+    private:
+        virtual void InitNonCombatTriggers(std::list<TriggerNode*> &triggers) override;
     };
-
 }

@@ -1,7 +1,5 @@
 #pragma once
-
 #include "GenericWarlockStrategy.h"
-#include "../generic/CombatStrategy.h"
 
 namespace ai
 {
@@ -9,31 +7,30 @@ namespace ai
     {
     public:
         DpsWarlockStrategy(PlayerbotAI* ai);
-        virtual string getName() { return "dps"; }
+        string getName() override { return "dps"; }
 
-    public:
-        virtual void InitTriggers(std::list<TriggerNode*> &triggers);
-        virtual NextAction** getDefaultActions();
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*> &triggers) override;
+        NextAction** GetDefaultCombatActions() override;
     };
 
     class DpsAoeWarlockStrategy : public CombatStrategy
     {
     public:
         DpsAoeWarlockStrategy(PlayerbotAI* ai) : CombatStrategy(ai) {}
+        string getName() override { return "aoe"; }
 
-    public:
-        virtual void InitTriggers(std::list<TriggerNode*> &triggers);
-        virtual string getName() { return "aoe"; }
+    private:
+        virtual void InitCombatTriggers(std::list<TriggerNode*> &triggers) override;
     };
 
     class DpsWarlockDebuffStrategy : public CombatStrategy
     {
     public:
         DpsWarlockDebuffStrategy(PlayerbotAI* ai) : CombatStrategy(ai) {}
+        string getName() override { return "dps debuff"; }
 
-    public:
-        virtual void InitTriggers(std::list<TriggerNode*> &triggers);
-        virtual string getName() { return "dps debuff"; }
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*> &triggers) override;
     };
-
 }

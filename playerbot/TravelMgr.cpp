@@ -2893,8 +2893,8 @@ void TravelMgr::LoadQuestTravelTable()
         }
     }
 
+    /*
     bool printStrategyMap = false;
-
     if (printStrategyMap && sPlayerbotAIConfig.hasLog("strategy.csv"))
     {
         static map<uint8, string> classes;
@@ -3228,8 +3228,9 @@ void TravelMgr::LoadQuestTravelTable()
             sPlayerbotAIConfig.log("strategy.csv", out.str().c_str());
         }
     }
-    /*
+    */
 
+    /*
     sPlayerbotAIConfig.openLog(7, "w");
 
     //Zone area map REMOVE!

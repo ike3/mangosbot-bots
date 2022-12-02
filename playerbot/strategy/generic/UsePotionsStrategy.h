@@ -1,4 +1,5 @@
 #pragma once
+#include "../Strategy.h"
 
 namespace ai
 {
@@ -6,10 +7,10 @@ namespace ai
     {
     public:
         UsePotionsStrategy(PlayerbotAI* ai);
+        string getName() override { return "potions"; }
 
-    public:
-        virtual void InitTriggers(std::list<TriggerNode*> &triggers);
-        virtual string getName() { return "potions"; }
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*> &triggers) override;
+        void InitReactionTriggers(std::list<TriggerNode*>& triggers) override;
     };
-
 }

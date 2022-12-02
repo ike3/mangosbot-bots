@@ -6,7 +6,9 @@ namespace ai
     {
     public:
         ReactionStrategy(PlayerbotAI* ai) : Strategy(ai) {}
-        virtual void InitTriggers(std::list<TriggerNode*> &triggers);
-        virtual int GetType() { return STRATEGY_TYPE_REACTION; }
+        virtual int GetType() override { return STRATEGY_TYPE_REACTION; }
+
+    protected:
+        virtual void InitReactionTriggers(std::list<TriggerNode*>& triggers) override;
     };
 }

@@ -4,9 +4,24 @@
 
 using namespace ai;
 
-void WorldPacketHandlerStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+WorldPacketHandlerStrategy::WorldPacketHandlerStrategy(PlayerbotAI* ai) : PassTroughStrategy(ai)
 {
-    PassTroughStrategy::InitTriggers(triggers);
+    supported.push_back("loot roll");
+    supported.push_back("check mount state");
+    supported.push_back("quest objective completed");
+    supported.push_back("party command");
+    supported.push_back("ready check");
+    supported.push_back("uninvite");
+    supported.push_back("lfg role check");
+    supported.push_back("lfg teleport");
+    supported.push_back("random bot update");
+    supported.push_back("inventory change failure");
+    supported.push_back("bg status");
+}
+
+void WorldPacketHandlerStrategy::InitNonCombatTriggers(std::list<TriggerNode*> &triggers)
+{
+    PassTroughStrategy::InitNonCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
         "group invite",
@@ -132,25 +147,29 @@ void WorldPacketHandlerStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("accept summon", relevance), NULL)));
 }
 
-WorldPacketHandlerStrategy::WorldPacketHandlerStrategy(PlayerbotAI* ai) : PassTroughStrategy(ai)
+void WorldPacketHandlerStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-    supported.push_back("loot roll");
-    supported.push_back("check mount state");
-    supported.push_back("quest objective completed");
-    supported.push_back("party command");
-    supported.push_back("ready check");
-    supported.push_back("uninvite");
-    supported.push_back("lfg role check");
-    supported.push_back("lfg teleport");
-    supported.push_back("random bot update");
-    supported.push_back("inventory change failure");
-    supported.push_back("bg status");
+    InitNonCombatTriggers(triggers);
 }
 
+void WorldPacketHandlerStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
+{
+    InitNonCombatTriggers(triggers);
+}
 
-void ReadyCheckStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void ReadyCheckStrategy::InitNonCombatTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
         "timer",
         NextAction::array(0, new NextAction("ready check", relevance), NULL)));
+}
+
+void ReadyCheckStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    InitNonCombatTriggers(triggers);
+}
+
+void ReadyCheckStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
+{
+    InitNonCombatTriggers(triggers);
 }

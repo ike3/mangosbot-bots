@@ -4,11 +4,7 @@
 
 using namespace ai;
 
-KiteStrategy::KiteStrategy(PlayerbotAI* ai) : Strategy(ai)
-{
-}
-
-void KiteStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void KiteStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
         "has aggro",

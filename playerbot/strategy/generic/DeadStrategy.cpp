@@ -5,9 +5,9 @@
 
 using namespace ai;
 
-void DeadStrategy::InitTriggers(std::list<TriggerNode*>& triggers)
+void DeadStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
 {
-    PassTroughStrategy::InitTriggers(triggers);
+    PassTroughStrategy::InitDeadTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
         "very often",
@@ -32,9 +32,4 @@ void DeadStrategy::InitTriggers(std::list<TriggerNode*>& triggers)
     triggers.push_back(new TriggerNode(
         "location stuck",
         NextAction::array(0, new NextAction("repop", relevance+1), NULL)));
-
-}
-
-DeadStrategy::DeadStrategy(PlayerbotAI* ai) : PassTroughStrategy(ai)
-{
 }

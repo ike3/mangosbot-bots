@@ -11,9 +11,9 @@ HealPriestStrategy::HealPriestStrategy(PlayerbotAI* ai) : GenericPriestStrategy(
     actionNodeFactories.Add(new GenericPriestStrategyActionNodeFactory());
 }
 
-void HealPriestStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void HealPriestStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
 {
-    GenericPriestStrategy::InitTriggers(triggers);
+    GenericPriestStrategy::InitCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
         "almost full health",

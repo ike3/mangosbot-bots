@@ -11,9 +11,9 @@ GenericPriestStrategy::GenericPriestStrategy(PlayerbotAI* ai) : CombatStrategy(a
     actionNodeFactories.Add(new GenericPriestStrategyActionNodeFactory());
 }
 
-void GenericPriestStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void GenericPriestStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
 {
-    CombatStrategy::InitTriggers(triggers);
+    CombatStrategy::InitCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
         "medium health",
@@ -77,7 +77,7 @@ PriestCureStrategy::PriestCureStrategy(PlayerbotAI* ai) : Strategy(ai)
     actionNodeFactories.Add(new CurePriestStrategyActionNodeFactory());
 }
 
-void PriestCureStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void PriestCureStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
         "dispel magic",
@@ -96,7 +96,12 @@ void PriestCureStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("abolish disease on party", 50.0f), NULL)));
 }
 
-void PriestBoostStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void PriestCureStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    InitCombatTriggers(triggers);
+}
+
+void PriestBoostStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
         "inner focus",
@@ -111,7 +116,7 @@ void PriestBoostStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("shadowfiend", 20.0f), NULL)));
 }
 
-void PriestCcStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void PriestCcStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
         "shackle undead",

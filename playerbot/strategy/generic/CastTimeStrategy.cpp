@@ -28,11 +28,7 @@ float CastTimeMultiplier::GetValue(Action* action)
         else if (spellId && pSpellInfo->Targets & TARGET_FLAG_SOURCE_LOCATION)
             return 1.0f;
 
-        uint32 castTime = GetSpellCastTime(pSpellInfo
-#ifdef CMANGOS
-                , bot
-#endif
-        );
+        uint32 castTime = GetSpellCastTime(pSpellInfo, bot);
         if (spellId && castTime >= 3000)
             return 0.0f;
 
@@ -46,8 +42,7 @@ float CastTimeMultiplier::GetValue(Action* action)
     return 1.0f;
 }
 
-
-void CastTimeStrategy::InitMultipliers(std::list<Multiplier*> &multipliers)
+void CastTimeStrategy::InitCombatMultipliers(std::list<Multiplier*> &multipliers)
 {
     multipliers.push_back(new CastTimeMultiplier(ai));
 }

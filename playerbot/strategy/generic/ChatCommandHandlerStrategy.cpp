@@ -22,9 +22,81 @@ private:
     }
 };
 
-void ChatCommandHandlerStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+ChatCommandHandlerStrategy::ChatCommandHandlerStrategy(PlayerbotAI* ai) : PassTroughStrategy(ai)
 {
-    PassTroughStrategy::InitTriggers(triggers);
+    actionNodeFactories.Add(new ChatCommandActionNodeFactoryInternal());
+
+    supported.push_back("quests");
+    supported.push_back("stats");
+    supported.push_back("leave");
+    supported.push_back("reputation");
+    supported.push_back("log");
+    supported.push_back("los");
+    supported.push_back("drop");
+    supported.push_back("share");
+    supported.push_back("ll");
+    supported.push_back("ss");
+    supported.push_back("release");
+    supported.push_back("teleport");
+    supported.push_back("taxi");
+    supported.push_back("repair");
+    supported.push_back("talents");
+    supported.push_back("spells");
+    supported.push_back("co");
+    supported.push_back("nc");
+    supported.push_back("de");
+    supported.push_back("react");
+    supported.push_back("all");
+    supported.push_back("trainer");
+    supported.push_back("chat");
+    supported.push_back("home");
+    supported.push_back("destroy");
+    supported.push_back("reset ai");
+    supported.push_back("emote");
+    supported.push_back("buff");
+    supported.push_back("help");
+    supported.push_back("gb");
+    supported.push_back("bank");
+    supported.push_back("invite");
+    supported.push_back("join");
+    supported.push_back("spell");
+    supported.push_back("rti");
+    supported.push_back("position");
+    supported.push_back("summon");
+    supported.push_back("who");
+    supported.push_back("save mana");
+    supported.push_back("formation");
+    supported.push_back("stance");
+    supported.push_back("sendmail");
+    supported.push_back("mail");
+    supported.push_back("outfit");
+    supported.push_back("go");
+    supported.push_back("debug");
+    supported.push_back("cdebug");
+    supported.push_back("cs");
+    supported.push_back("wts");
+    supported.push_back("hire");
+    supported.push_back("craft");
+    supported.push_back("flag");
+    supported.push_back("range");
+    supported.push_back("ra");
+    supported.push_back("give leader");
+    supported.push_back("cheat");
+    supported.push_back("ginvite");
+    supported.push_back("gjoin");
+    supported.push_back("guild promote");
+    supported.push_back("guild demote");
+    supported.push_back("guild remove");
+    supported.push_back("guild leave");
+    supported.push_back("guild leader");
+    supported.push_back("rtsc");
+    supported.push_back("ah");
+    supported.push_back("ah bid");
+}
+
+void ChatCommandHandlerStrategy::InitNonCombatTriggers(std::list<TriggerNode*> &triggers)
+{
+    PassTroughStrategy::InitNonCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
         "rep",
@@ -161,74 +233,12 @@ void ChatCommandHandlerStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("ready check", relevance), NULL)));
 }
 
-ChatCommandHandlerStrategy::ChatCommandHandlerStrategy(PlayerbotAI* ai) : PassTroughStrategy(ai)
+void ChatCommandHandlerStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-    actionNodeFactories.Add(new ChatCommandActionNodeFactoryInternal());
+    InitNonCombatTriggers(triggers);
+}
 
-    supported.push_back("quests");
-    supported.push_back("stats");
-    supported.push_back("leave");
-    supported.push_back("reputation");
-    supported.push_back("log");
-    supported.push_back("los");
-    supported.push_back("drop");
-    supported.push_back("share");
-    supported.push_back("ll");
-    supported.push_back("ss");
-    supported.push_back("release");
-    supported.push_back("teleport");
-    supported.push_back("taxi");
-    supported.push_back("repair");
-    supported.push_back("talents");
-    supported.push_back("spells");
-    supported.push_back("co");
-    supported.push_back("nc");
-    supported.push_back("de");
-    supported.push_back("react");
-    supported.push_back("all");
-    supported.push_back("trainer");
-    supported.push_back("chat");
-    supported.push_back("home");
-    supported.push_back("destroy");
-    supported.push_back("reset ai");
-    supported.push_back("emote");
-    supported.push_back("buff");
-    supported.push_back("help");
-    supported.push_back("gb");
-    supported.push_back("bank");
-    supported.push_back("invite");
-    supported.push_back("join");
-    supported.push_back("spell");
-    supported.push_back("rti");
-    supported.push_back("position");
-    supported.push_back("summon");
-    supported.push_back("who");
-    supported.push_back("save mana");
-    supported.push_back("formation");
-    supported.push_back("stance");
-    supported.push_back("sendmail");
-    supported.push_back("mail");
-    supported.push_back("outfit");
-    supported.push_back("go");
-    supported.push_back("debug");
-    supported.push_back("cdebug");
-    supported.push_back("cs");
-    supported.push_back("wts");
-    supported.push_back("hire");
-    supported.push_back("craft");
-    supported.push_back("flag");
-    supported.push_back("range");
-    supported.push_back("ra");
-    supported.push_back("give leader");
-    supported.push_back("cheat");
-    supported.push_back("ginvite");
-    supported.push_back("gjoin");
-    supported.push_back("guild promote");
-    supported.push_back("guild demote");
-    supported.push_back("guild remove");
-    supported.push_back("guild leave");
-    supported.push_back("guild leader");
-    supported.push_back("rtsc");
-    supported.push_back("ah");
-    supported.push_back("ah bid");
+void ChatCommandHandlerStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
+{
+    InitNonCombatTriggers(triggers);
 }

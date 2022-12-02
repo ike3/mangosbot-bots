@@ -34,7 +34,7 @@ UsePotionsStrategy::UsePotionsStrategy(PlayerbotAI* ai) : Strategy(ai)
     actionNodeFactories.Add(new UsePotionsStrategyActionNodeFactory());
 }
 
-void UsePotionsStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void UsePotionsStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
         "critical health",
@@ -51,4 +51,9 @@ void UsePotionsStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
     triggers.push_back(new TriggerNode(
         "low mana",
         NextAction::array(0, new NextAction("dark rune", ACTION_HIGH), NULL)));
+}
+
+void UsePotionsStrategy::InitReactionTriggers(std::list<TriggerNode*>& triggers)
+{
+    InitCombatTriggers(triggers);
 }

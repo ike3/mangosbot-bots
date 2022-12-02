@@ -6,20 +6,19 @@ namespace ai
     class DuelStrategy : public PassTroughStrategy
     {
     public:
-        DuelStrategy(PlayerbotAI* ai);
+        DuelStrategy(PlayerbotAI* ai) : PassTroughStrategy(ai) {}
+        string getName() override { return "duel"; }
 
-    public:
-        virtual void InitTriggers(std::list<TriggerNode*> &triggers);
-        virtual string getName() { return "duel"; }
+    private:
+        void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        void InitCombatTriggers(std::list<TriggerNode*> &triggers) override;
+        void InitDeadTriggers(std::list<TriggerNode*>& triggers) override {}
     };
 
     class StartDuelStrategy : public Strategy
     {
     public:
-        StartDuelStrategy(PlayerbotAI* ai);
-
-    public:
-        virtual void InitTriggers(std::list<TriggerNode*>& triggers);
-        virtual string getName() { return "start duel"; }
+        StartDuelStrategy(PlayerbotAI* ai) : Strategy(ai) {}
+        string getName() override { return "start duel"; }
     };
 }

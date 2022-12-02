@@ -8,11 +8,11 @@ namespace ai
     {
     public:
         HolyPriestStrategy(PlayerbotAI* ai);
+        string getName() override { return "holy"; }
+        int GetType() override { return STRATEGY_TYPE_DPS | STRATEGY_TYPE_RANGED; }
 
-    public:
-        virtual NextAction** getDefaultActions();
-        virtual void InitTriggers(std::list<TriggerNode*> &triggers);
-        virtual string getName() { return "holy"; }
-        virtual int GetType() { return STRATEGY_TYPE_DPS|STRATEGY_TYPE_RANGED; }
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*> &triggers) override;
+        NextAction** GetDefaultCombatActions() override;
     };
 }

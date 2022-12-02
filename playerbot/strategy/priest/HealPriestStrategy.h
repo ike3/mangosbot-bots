@@ -8,10 +8,10 @@ namespace ai
     {
     public:
         HealPriestStrategy(PlayerbotAI* ai);
+        virtual string getName() override { return "heal"; }
+		virtual int GetType() override { return STRATEGY_TYPE_HEAL; }
 
-    public:
-        virtual void InitTriggers(std::list<TriggerNode*> &triggers);
-        virtual string getName() { return "heal"; }
-		virtual int GetType() { return STRATEGY_TYPE_HEAL; }
+    protected:
+        virtual void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
     };
 }

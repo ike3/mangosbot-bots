@@ -5,9 +5,12 @@
 
 using namespace ai;
 
-
-void PassiveStrategy::InitMultipliers(std::list<Multiplier*> &multipliers)
+void PassiveStrategy::InitNonCombatMultipliers(std::list<Multiplier*> &multipliers)
 {
     multipliers.push_back(new PassiveMultiplier(ai));
 }
 
+void PassiveStrategy::InitCombatMultipliers(std::list<Multiplier*>& multipliers)
+{
+    InitNonCombatMultipliers(multipliers);
+}

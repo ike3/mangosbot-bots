@@ -10,7 +10,7 @@
 using namespace ai;
 using namespace std;
 
-Engine::Engine(PlayerbotAI* ai, AiObjectContext *factory) : PlayerbotAIAware(ai), aiObjectContext(factory)
+Engine::Engine(PlayerbotAI* ai, AiObjectContext *factory, BotState state) : PlayerbotAIAware(ai), aiObjectContext(factory), state(state)
 {
     lastRelevance = 0.0f;
     testMode = false;
@@ -103,10 +103,9 @@ void Engine::Init()
     for (map<string, Strategy*>::iterator i = strategies.begin(); i != strategies.end(); i++)
     {
         Strategy* strategy = i->second;
-        strategy->InitMultipliers(multipliers);
-        strategy->InitTriggers(triggers);
-        Event emptyEvent;
-        MultiplyAndPush(strategy->getDefaultActions(), 0.0f, false, emptyEvent, "default");
+        strategy->InitMultipliers(multipliers, state);
+        strategy->InitTriggers(triggers, state);
+        MultiplyAndPush(strategy->getDefaultActions(state), 0.0f, false, Event(), "default");
     }
 
 	if (testMode)
@@ -468,7 +467,7 @@ void Engine::addStrategy(string name)
 
         LogAction("S:+%s", strategy->getName().c_str());
         strategies[strategy->getName()] = strategy;
-        strategy->OnStrategyAdded();
+        strategy->OnStrategyAdded(state);
     }
 
     if(!initMode)
@@ -503,7 +502,7 @@ bool Engine::removeStrategy(string name, bool init)
         return false;
 
     LogAction("S:-%s", name.c_str());
-    i->second->OnStrategyRemoved();
+    i->second->OnStrategyRemoved(state);
     strategies.erase(i);
 
     if (init)
@@ -599,8 +598,7 @@ void Engine::PushDefaultActions()
     for (map<string, Strategy*>::iterator i = strategies.begin(); i != strategies.end(); i++)
     {
         Strategy* strategy = i->second;
-        Event emptyEvent;
-        MultiplyAndPush(strategy->getDefaultActions(), 0.0f, false, emptyEvent, "default");
+        MultiplyAndPush(strategy->getDefaultActions(state), 0.0f, false, Event(), "default");
     }
 }
 

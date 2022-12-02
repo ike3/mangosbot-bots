@@ -4,10 +4,9 @@
 
 using namespace ai;
 
-void MarkRtiStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void MarkRtiStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
         "no rti target",
         NextAction::array(0, new NextAction("mark rti", ACTION_NORMAL), NULL)));
 }
-

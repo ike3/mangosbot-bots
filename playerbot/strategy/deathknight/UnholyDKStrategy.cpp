@@ -28,9 +28,8 @@ public:
 		//creators["ghoul frenzy"] = &ghoul_frenzy;
 		creators["corpse explosion"] = &corpse_explosion;
 	}
+
 private:
-	
-	
 	static ActionNode* death_strike(PlayerbotAI* ai)
 	{
 		return new ActionNode("death strike",
@@ -54,15 +53,14 @@ private:
 	}
 };
 
-
-	NextAction** UnholyDKStrategy::getDefaultActions()
-	{
-    return NextAction::array(0, new NextAction("melee", ACTION_NORMAL), new NextAction("scourge strike" , ACTION_NORMAL + 3), NULL);
-	}
-
-void UnholyDKStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+NextAction** UnholyDKStrategy::GetDefaultCombatActions()
 {
-    GenericDKStrategy::InitTriggers(triggers);
+	return NextAction::array(0, new NextAction("melee", ACTION_NORMAL), new NextAction("scourge strike" , ACTION_NORMAL + 3), NULL);
+}
+
+void UnholyDKStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
+{
+    GenericDKStrategy::InitCombatTriggers(triggers);
 
 	triggers.push_back(new TriggerNode(
 		"often",
@@ -73,8 +71,7 @@ void UnholyDKStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
 		NextAction::array(0, new NextAction("death pact", ACTION_EMERGENCY + 1), NULL)));
 }
 
-
-void UnholyDKAoeStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void UnholyDKAoeStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
 {
 	triggers.push_back(new TriggerNode(
 		"loot available",
@@ -85,4 +82,3 @@ void UnholyDKAoeStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("death and decay", ACTION_NORMAL + 3),
 			new NextAction("corpse explosion", ACTION_NORMAL + 3), NULL)));
 }
-

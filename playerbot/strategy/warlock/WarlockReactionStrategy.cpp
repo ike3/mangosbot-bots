@@ -4,23 +4,9 @@
 
 using namespace ai;
 
-class GenericWarlockReactionStrategyActionNodeFactory : public NamedObjectFactory<ActionNode>
+void WarlockReactionStrategy::InitReactionTriggers(std::list<TriggerNode*> &triggers)
 {
-public:
-    GenericWarlockReactionStrategyActionNodeFactory()
-    {
-
-    }
-};
-
-WarlockReactionStrategy::WarlockReactionStrategy(PlayerbotAI* ai) : ReactionStrategy(ai)
-{
-    actionNodeFactories.Add(new GenericWarlockReactionStrategyActionNodeFactory());
-}
-
-void WarlockReactionStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
-{
-    ReactionStrategy::InitTriggers(triggers);
+    ReactionStrategy::InitReactionTriggers(triggers);
 
     // Add class specific reactions here
     // ...

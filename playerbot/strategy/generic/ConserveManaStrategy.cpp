@@ -86,8 +86,7 @@ float SaveManaMultiplier::GetValue(Action* action)
     return 1.0f;
 }
 
-
-void ConserveManaStrategy::InitMultipliers(std::list<Multiplier*> &multipliers)
+void ConserveManaStrategy::InitCombatMultipliers(std::list<Multiplier*> &multipliers)
 {
     multipliers.push_back(new ConserveManaMultiplier(ai));
 }

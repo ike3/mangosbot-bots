@@ -27,14 +27,14 @@ CasterShamanStrategy::CasterShamanStrategy(PlayerbotAI* ai) : GenericShamanStrat
     actionNodeFactories.Add(new CasterShamanStrategyActionNodeFactory());
 }
 
-NextAction** CasterShamanStrategy::getDefaultActions()
+NextAction** CasterShamanStrategy::GetDefaultCombatActions()
 {
     return NextAction::array(0, new NextAction("lightning bolt", 10.0f), NULL);
 }
 
-void CasterShamanStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void CasterShamanStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
 {
-    GenericShamanStrategy::InitTriggers(triggers);
+    GenericShamanStrategy::InitCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
         "enemy out of spell",
@@ -49,7 +49,7 @@ void CasterShamanStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("frost shock", 21.0f), NULL)));
 }
 
-void CasterAoeShamanStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void CasterAoeShamanStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
         "light aoe",

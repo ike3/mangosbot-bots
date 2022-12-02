@@ -32,14 +32,14 @@ ArmsWarriorStrategy::ArmsWarriorStrategy(PlayerbotAI* ai) : GenericWarriorStrate
     //actionNodeFactories.Add(new WarriorStanceRequirementActionNodeFactory());
 }
 
-NextAction** ArmsWarriorStrategy::getDefaultActions()
+NextAction** ArmsWarriorStrategy::GetDefaultCombatActions()
 {
     return NextAction::array(0, new NextAction("melee", ACTION_NORMAL), NULL);
 }
 
-void ArmsWarriorStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void ArmsWarriorStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
 {
-    GenericWarriorStrategy::InitTriggers(triggers);
+    GenericWarriorStrategy::InitCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
         "enemy out of melee",

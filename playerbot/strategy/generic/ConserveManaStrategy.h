@@ -1,4 +1,6 @@
 #pragma once
+#include "../Multiplier.h"
+#include "../Strategy.h"
 
 namespace ai
 {
@@ -24,9 +26,9 @@ namespace ai
     {
     public:
         ConserveManaStrategy(PlayerbotAI* ai) : Strategy(ai) {}
+        string getName() override { return "conserve mana"; }
 
-    public:
-        virtual void InitMultipliers(std::list<Multiplier*> &multipliers);
-        virtual string getName() { return "conserve mana"; }
+    private:
+        void InitCombatMultipliers(std::list<Multiplier*> &multipliers) override;
     };
 }

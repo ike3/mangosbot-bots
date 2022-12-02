@@ -43,14 +43,14 @@ MeleeShamanStrategy::MeleeShamanStrategy(PlayerbotAI* ai) : GenericShamanStrateg
     actionNodeFactories.Add(new MeleeShamanStrategyActionNodeFactory());
 }
 
-NextAction** MeleeShamanStrategy::getDefaultActions()
+NextAction** MeleeShamanStrategy::GetDefaultCombatActions()
 {
     return NextAction::array(0, new NextAction("stormstrike", ACTION_HIGH), NULL);
 }
 
-void MeleeShamanStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void MeleeShamanStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
 {
-    GenericShamanStrategy::InitTriggers(triggers);
+    GenericShamanStrategy::InitCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
         "shaman weapon",
@@ -73,7 +73,7 @@ void MeleeShamanStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("frost shock", 21.0f), NULL)));
 }
 
-void MeleeAoeShamanStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void MeleeAoeShamanStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
         "magma totem",

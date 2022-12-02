@@ -11,9 +11,9 @@ GenericPaladinStrategy::GenericPaladinStrategy(PlayerbotAI* ai) : CombatStrategy
     actionNodeFactories.Add(new GenericPaladinStrategyActionNodeFactory());
 }
 
-void GenericPaladinStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void GenericPaladinStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
 {
-    CombatStrategy::InitTriggers(triggers);
+    CombatStrategy::InitCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
         "low health",
@@ -48,7 +48,7 @@ void GenericPaladinStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("blessing of freedom", 71.0f), NULL)));
 }
 
-void PaladinCureStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void PaladinCureStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
         "cleanse cure disease",
@@ -75,14 +75,19 @@ void PaladinCureStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("cleanse magic on party", ACTION_MEDIUM_HEAL + 1), NULL)));
 }
 
-void PaladinBoostStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void PaladinCureStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    InitCombatTriggers(triggers);
+}
+
+void PaladinBoostStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
         "divine favor",
         NextAction::array(0, new NextAction("divine favor", ACTION_HIGH + 1), NULL)));
 }
 
-void PaladinCcStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void PaladinCcStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
         "turn undead",

@@ -19,9 +19,9 @@ HealDruidStrategy::HealDruidStrategy(PlayerbotAI* ai) : GenericDruidStrategy(ai)
     actionNodeFactories.Add(new HealDruidStrategyActionNodeFactory());
 }
 
-void HealDruidStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void HealDruidStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
 {
-    GenericDruidStrategy::InitTriggers(triggers);
+    GenericDruidStrategy::InitCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
         "tree form",

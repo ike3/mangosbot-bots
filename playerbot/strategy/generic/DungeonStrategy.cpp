@@ -4,21 +4,33 @@
 
 using namespace ai;
 
-void DungeonStrategy::InitTriggers(std::list<TriggerNode*>& triggers)
+void DungeonStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
+    // Add this combat triggers in case the bot gets summoned into the dungeon and goes straight into combat
     triggers.push_back(new TriggerNode(
         "enter onyxia's lair",
-        NextAction::array(0, new NextAction("enable onyxia's lair strategy", 1.5f), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "leave onyxia's lair",
-        NextAction::array(0, new NextAction("disable onyxia's lair strategy", 1.5f), NULL)));
+        NextAction::array(0, new NextAction("enable onyxia's lair strategy", 100.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
         "enter molten core",
-        NextAction::array(0, new NextAction("enable molten core strategy", 1.5f), NULL)));
+        NextAction::array(0, new NextAction("enable molten core strategy", 100.0f), NULL)));
+}
+
+void DungeonStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    triggers.push_back(new TriggerNode(
+        "enter onyxia's lair",
+        NextAction::array(0, new NextAction("enable onyxia's lair strategy", 100.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "leave onyxia's lair",
+        NextAction::array(0, new NextAction("disable onyxia's lair strategy", 100.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "enter molten core",
+        NextAction::array(0, new NextAction("enable molten core strategy", 100.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
         "leave molten core",
-        NextAction::array(0, new NextAction("disable molten core strategy", 1.5f), NULL)));
+        NextAction::array(0, new NextAction("disable molten core strategy", 100.0f), NULL)));
 }

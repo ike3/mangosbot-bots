@@ -19,7 +19,6 @@
 #include "RandomPlayerbotMgr.h"
 #include "BattleGroundMgr.h"
 
-
 AiObjectContext* AiFactory::createAiObjectContext(Player* player, PlayerbotAI* ai)
 {
     switch (player->getClass())
@@ -408,7 +407,7 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
 }
 
 Engine* AiFactory::createCombatEngine(Player* player, PlayerbotAI* const facade, AiObjectContext* AiObjectContext) {
-	Engine* engine = new Engine(facade, AiObjectContext);
+	Engine* engine = new Engine(facade, AiObjectContext, BotState::BOT_STATE_COMBAT);
     AddDefaultCombatStrategies(player, facade, engine);
     return engine;
 }
@@ -648,7 +647,7 @@ void AiFactory::AddDefaultNonCombatStrategies(Player* player, PlayerbotAI* const
 }
 
 Engine* AiFactory::createNonCombatEngine(Player* player, PlayerbotAI* const facade, AiObjectContext* AiObjectContext) {
-	Engine* nonCombatEngine = new Engine(facade, AiObjectContext);
+	Engine* nonCombatEngine = new Engine(facade, AiObjectContext, BotState::BOT_STATE_NON_COMBAT);
 
     AddDefaultNonCombatStrategies(player, facade, nonCombatEngine);
 	return nonCombatEngine;
@@ -664,7 +663,7 @@ void AiFactory::AddDefaultDeadStrategies(Player* player, PlayerbotAI* const faca
 }
 
 Engine* AiFactory::createDeadEngine(Player* player, PlayerbotAI* const facade, AiObjectContext* AiObjectContext) {
-    Engine* deadEngine = new Engine(facade, AiObjectContext);
+    Engine* deadEngine = new Engine(facade, AiObjectContext, BotState::BOT_STATE_DEAD);
     AddDefaultDeadStrategies(player, facade, deadEngine);
     return deadEngine;
 }
@@ -675,7 +674,7 @@ void AiFactory::AddDefaultReactionStrategies(Player* player, PlayerbotAI* const 
 }
 
 ReactionEngine* AiFactory::createReactionEngine(Player* player, PlayerbotAI* const facade, AiObjectContext* AiObjectContext) {
-    ReactionEngine* reactionEngine = new ReactionEngine(facade, AiObjectContext);
+    ReactionEngine* reactionEngine = new ReactionEngine(facade, AiObjectContext, BotState::BOT_STATE_REACTION);
     AddDefaultReactionStrategies(player, facade, reactionEngine);
     return reactionEngine;
 }

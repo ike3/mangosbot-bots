@@ -1,30 +1,31 @@
 #pragma once
 #include "DungeonActions.h"
+#include "ChangeStrategyAction.h"
 
 namespace ai
 {
-    class MoltenCoreEnableDungeonStrategyAction : public ChangeDungeonStrategyAction
+    class MoltenCoreEnableDungeonStrategyAction : public ChangeAllStrategyAction
     {
     public:
-        MoltenCoreEnableDungeonStrategyAction(PlayerbotAI* ai) : ChangeDungeonStrategyAction(ai, "enable molten core strategy", "molten core", true) {}
+        MoltenCoreEnableDungeonStrategyAction(PlayerbotAI* ai) : ChangeAllStrategyAction(ai, "enable molten core strategy", "+molten core") {}
     };
 
-    class MoltenCoreDisableDungeonStrategyAction : public ChangeDungeonStrategyAction
+    class MoltenCoreDisableDungeonStrategyAction : public ChangeAllStrategyAction
     {
     public:
-        MoltenCoreDisableDungeonStrategyAction(PlayerbotAI* ai) : ChangeDungeonStrategyAction(ai, "disable molten core strategy", "molten core", false) {}
+        MoltenCoreDisableDungeonStrategyAction(PlayerbotAI* ai) : ChangeAllStrategyAction(ai, "disable molten core strategy", "-molten core") {}
     };
 
-    class MagmadarEnableFightStrategyAction : public ChangeDungeonStrategyAction
+    class MagmadarEnableFightStrategyAction : public ChangeAllStrategyAction
     {
     public:
-        MagmadarEnableFightStrategyAction(PlayerbotAI* ai) : ChangeDungeonStrategyAction(ai, "enable magmadar fight strategy", "magmadar", true) {}
+        MagmadarEnableFightStrategyAction(PlayerbotAI* ai) : ChangeAllStrategyAction(ai, "enable magmadar fight strategy", "+magmadar") {}
     };
 
-    class MagmadarDisableFightStrategyAction : public ChangeDungeonStrategyAction
+    class MagmadarDisableFightStrategyAction : public ChangeAllStrategyAction
     {
     public:
-        MagmadarDisableFightStrategyAction(PlayerbotAI* ai) : ChangeDungeonStrategyAction(ai, "disable magmadar fight strategy", "magmadar", false) {}
+        MagmadarDisableFightStrategyAction(PlayerbotAI* ai) : ChangeAllStrategyAction(ai, "disable magmadar fight strategy", "-magmadar") {}
     };
 
     class MagmadarMoveAwayFromLavaBombAction : public MoveAwayFromGameObject

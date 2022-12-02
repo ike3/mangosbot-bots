@@ -10,14 +10,14 @@ FrostMageStrategy::FrostMageStrategy(PlayerbotAI* ai) : GenericMageStrategy(ai)
 {
 }
 
-NextAction** FrostMageStrategy::getDefaultActions()
+NextAction** FrostMageStrategy::GetDefaultCombatActions()
 {
     return NextAction::array(0, new NextAction("frostbolt", 7.0f), NULL);
 }
 
-void FrostMageStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void FrostMageStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
 {
-    GenericMageStrategy::InitTriggers(triggers);
+    GenericMageStrategy::InitCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
         "icy veins",
@@ -40,7 +40,7 @@ void FrostMageStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("summon water elemental", 10.0f), NULL)));
 }
 
-void FrostMageAoeStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void FrostMageAoeStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
 {
 	triggers.push_back(new TriggerNode(
 		"medium aoe",

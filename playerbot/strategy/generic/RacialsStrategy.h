@@ -1,15 +1,16 @@
 #pragma once
+#include "../Strategy.h"
 
 namespace ai
 {
     class RacialsStrategy : public Strategy
     {
     public:
-        RacialsStrategy(PlayerbotAI* ai);
-        virtual string getName() { return "racials"; }
+        RacialsStrategy(PlayerbotAI* ai) : Strategy(ai) {}
+        string getName() override { return "racials"; }
     
-    public:
-        virtual void InitTriggers(std::list<TriggerNode*> &triggers);
+    private:
+        void InitNonCombatTriggers(std::list<TriggerNode*> &triggers) override;
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
     };
-
 }

@@ -75,9 +75,9 @@ FeralDruidStrategy::FeralDruidStrategy(PlayerbotAI* ai) : GenericDruidStrategy(a
     actionNodeFactories.Add(new ShapeshiftDruidStrategyActionNodeFactory());
 }
 
-void FeralDruidStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void FeralDruidStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
 {
-    GenericDruidStrategy::InitTriggers(triggers);
+    GenericDruidStrategy::InitCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
         "enemy too close for melee",

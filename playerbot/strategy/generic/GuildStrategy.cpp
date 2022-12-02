@@ -4,7 +4,7 @@
 
 using namespace ai;
 
-void GuildStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void GuildStrategy::InitNonCombatTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
         "random",
@@ -26,4 +26,3 @@ void GuildStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         "leave large guild",
         NextAction::array(0, new NextAction("guild leave", 4.0f), NULL)));
 }
-

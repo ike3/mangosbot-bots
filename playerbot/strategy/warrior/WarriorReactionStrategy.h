@@ -7,10 +7,10 @@ namespace ai
     class WarriorReactionStrategy : public ReactionStrategy
     {
     public:
-        WarriorReactionStrategy(PlayerbotAI* ai);
-        virtual string getName() { return "react"; }
+        WarriorReactionStrategy(PlayerbotAI* ai) : ReactionStrategy(ai) {}
+        string getName() override { return "react"; }
 
-    public:
-        virtual void InitTriggers(std::list<TriggerNode*> &triggers);
+    private:
+        void InitReactionTriggers(std::list<TriggerNode*> &triggers) override;
     };
 }

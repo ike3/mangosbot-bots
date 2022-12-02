@@ -1,15 +1,15 @@
-#include "../generic/NonCombatStrategy.h"
 #pragma once
+#include "../Strategy.h"
 
 namespace ai
 {
-    class RunawayStrategy : public NonCombatStrategy
-       {
-       public:
-           RunawayStrategy(PlayerbotAI* ai) : NonCombatStrategy(ai) {}
-           virtual string getName() { return "runaway"; }
-           virtual void InitTriggers(std::list<TriggerNode*> &triggers);
-       };
+    class RunawayStrategy : public Strategy
+    {
+    public:
+        RunawayStrategy(PlayerbotAI* ai) : Strategy(ai) {}
+        string getName() override { return "runaway"; }
 
-
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*> &triggers) override;
+    };
 }

@@ -7,33 +7,39 @@ namespace ai
     {
     public:
         NonCombatStrategy(PlayerbotAI* ai) : Strategy(ai) {}
-		virtual int GetType() { return STRATEGY_TYPE_NONCOMBAT; }
-        virtual void InitTriggers(std::list<TriggerNode*> &triggers);
+		virtual int GetType() override { return STRATEGY_TYPE_NONCOMBAT; }
+
+    protected:
+        virtual void InitNonCombatTriggers(std::list<TriggerNode*> &triggers) override;
     };
 
     class CollisionStrategy : public Strategy
     {
     public:
         CollisionStrategy(PlayerbotAI* ai) : Strategy(ai) {}
-		virtual int GetType() { return STRATEGY_TYPE_NONCOMBAT; }
-        virtual void InitTriggers(std::list<TriggerNode*> &triggers);
-        virtual string getName() { return "collision"; }
+		int GetType() override { return STRATEGY_TYPE_NONCOMBAT; }
+        string getName() override { return "collision"; }
+
+    private:
+        void InitNonCombatTriggers(std::list<TriggerNode*> &triggers) override;
     };
 
     class MountStrategy : public Strategy
     {
     public:
         MountStrategy(PlayerbotAI* ai) : Strategy(ai) {};
-        virtual int GetType() { return STRATEGY_TYPE_NONCOMBAT; }
-        virtual void InitTriggers(std::list<TriggerNode*> &triggers);
-        virtual string getName() { return "mount"; }
+        int GetType() override { return STRATEGY_TYPE_NONCOMBAT; }
+        string getName() override { return "mount"; }
+
+    private:
+        void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
     };
 
     class AttackTaggedStrategy : public Strategy
     {
     public:
         AttackTaggedStrategy(PlayerbotAI* ai) : Strategy(ai) {}
-        virtual int GetType() { return STRATEGY_TYPE_NONCOMBAT; }
-        virtual string getName() { return "attack tagged"; }
+        int GetType() override { return STRATEGY_TYPE_NONCOMBAT; }
+        string getName() override { return "attack tagged"; }
     };
 }

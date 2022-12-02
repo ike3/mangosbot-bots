@@ -1,5 +1,5 @@
-#include "../generic/NonCombatStrategy.h"
 #pragma once
+#include "NonCombatStrategy.h"
 
 namespace ai
 {
@@ -7,19 +7,25 @@ namespace ai
     {
     public:
         StayStrategy(PlayerbotAI* ai) : Strategy(ai) {}
-        virtual string getName() { return "stay"; }
-        virtual void InitTriggers(std::list<TriggerNode*>& triggers);
-        virtual NextAction** getDefaultActions();
+        string getName() override { return "stay"; }
 
-        void OnStrategyAdded() override;
-        void OnStrategyRemoved() override;
+    private:
+        void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        NextAction** GetDefaultNonCombatActions() override;
+        NextAction** GetDefaultCombatActions() override;
+
+        void OnStrategyAdded(BotState state) override;
+        void OnStrategyRemoved(BotState state) override;
     };
 
     class SitStrategy : public NonCombatStrategy
     {
     public:
         SitStrategy(PlayerbotAI* ai) : NonCombatStrategy(ai) {}
-        virtual string getName() { return "sit"; }
-        virtual void InitTriggers(std::list<TriggerNode*> &triggers);
+        string getName() override { return "sit"; }
+
+    private:
+        void InitNonCombatTriggers(std::list<TriggerNode*> &triggers) override;
     };
 }

@@ -1,6 +1,4 @@
 #pragma once
-
-#include "../Strategy.h"
 #include "../generic/MeleeCombatStrategy.h"
 
 namespace ai
@@ -9,10 +7,9 @@ namespace ai
     {
     public:
         GenericDKStrategy(PlayerbotAI* ai);
-        virtual string getName() { return "DK"; }
+        virtual string getName() override { return "DK"; }
 
-    public:
-        virtual void InitTriggers(std::list<TriggerNode*> &triggers);
+    protected:
+        virtual void InitCombatTriggers(std::list<TriggerNode*> &triggers) override;
     };
-
 }

@@ -35,14 +35,14 @@ GenericWarlockStrategy::GenericWarlockStrategy(PlayerbotAI* ai) : CombatStrategy
     actionNodeFactories.Add(new GenericWarlockStrategyActionNodeFactory());
 }
 
-NextAction** GenericWarlockStrategy::getDefaultActions()
+NextAction** GenericWarlockStrategy::GetDefaultCombatActions()
 {
     return NextAction::array(0, new NextAction("shoot", 10.0f), NULL);
 }
 
-void GenericWarlockStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void GenericWarlockStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
 {
-    CombatStrategy::InitTriggers(triggers);
+    CombatStrategy::InitCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
         "enemy out of spell",
@@ -113,14 +113,14 @@ void GenericWarlockStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("soul shatter", 55.0f), NULL)));
 }
 
-void WarlockBoostStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void WarlockBoostStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
         "amplify curse",
         NextAction::array(0, new NextAction("amplify curse", 41.0f), NULL)));
 }
 
-void WarlockCcStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+void WarlockCcStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
         "banish",

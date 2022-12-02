@@ -8,31 +8,31 @@ namespace ai
     {
     public:
         ShadowPriestStrategy(PlayerbotAI* ai);
+        string getName() override { return "shadow"; }
+        int GetType() override { return STRATEGY_TYPE_DPS | STRATEGY_TYPE_RANGED; }
 
-    public:
-        virtual NextAction** getDefaultActions();
-        virtual void InitTriggers(std::list<TriggerNode*> &triggers);
-        virtual string getName() { return "shadow"; }
-        virtual int GetType() { return STRATEGY_TYPE_DPS|STRATEGY_TYPE_RANGED; }
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*> &triggers) override;
+        NextAction** GetDefaultCombatActions() override;
     };
 
     class ShadowPriestAoeStrategy : public CombatStrategy
     {
     public:
         ShadowPriestAoeStrategy(PlayerbotAI* ai) : CombatStrategy(ai) {}
+        string getName() override { return "shadow aoe"; }
 
-    public:
-        virtual void InitTriggers(std::list<TriggerNode*> &triggers);
-        virtual string getName() { return "shadow aoe"; }
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*> &triggers) override;
     };
 
     class ShadowPriestDebuffStrategy : public CombatStrategy
     {
     public:
         ShadowPriestDebuffStrategy(PlayerbotAI* ai) : CombatStrategy(ai) {}
+        string getName() override { return "shadow debuff"; }
 
-    public:
-        virtual void InitTriggers(std::list<TriggerNode*> &triggers);
-        virtual string getName() { return "shadow debuff"; }
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*> &triggers) override;
     };
 }
