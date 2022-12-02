@@ -66,7 +66,7 @@ namespace ai
 	    void Init();
         void addStrategy(string name);
 		void addStrategies(string first, ...);
-        bool removeStrategy(string name);
+        bool removeStrategy(string name, bool init = true);
         bool HasStrategy(string name);
         Strategy* GetStrategy(string name) const;
         void removeAllStrategies();

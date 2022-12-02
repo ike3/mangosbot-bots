@@ -455,21 +455,26 @@ bool Engine::CanExecuteAction(string name, string qualifier, bool isPossible, bo
 
 void Engine::addStrategy(string name)
 {
-    removeStrategy(name);
+    removeStrategy(name, initMode);
 
     Strategy* strategy = aiObjectContext->GetStrategy(name);
     if (strategy)
     {
         set<string> siblings = aiObjectContext->GetSiblingStrategy(name);
         for (set<string>::iterator i = siblings.begin(); i != siblings.end(); i++)
-            removeStrategy(*i);
+        {
+            removeStrategy(*i, initMode);
+        }
 
         LogAction("S:+%s", strategy->getName().c_str());
         strategies[strategy->getName()] = strategy;
         strategy->OnStrategyAdded();
     }
+
     if(!initMode)
+    {
         Init();
+    }
 }
 
 void Engine::addStrategies(string first, ...)
@@ -491,7 +496,7 @@ void Engine::addStrategies(string first, ...)
 	va_end(vl);
 }
 
-bool Engine::removeStrategy(string name)
+bool Engine::removeStrategy(string name, bool init)
 {
     map<string, Strategy*>::iterator i = strategies.find(name);
     if (i == strategies.end())
@@ -500,7 +505,12 @@ bool Engine::removeStrategy(string name)
     LogAction("S:-%s", name.c_str());
     i->second->OnStrategyRemoved();
     strategies.erase(i);
-    Init();
+
+    if (init)
+    {
+        Init();
+    }
+    
     return true;
 }
 
