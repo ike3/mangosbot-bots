@@ -35,6 +35,18 @@ public:
         if (heal && !ai->IsHeal(bot))
             return "";
 
+        bool tank = message.find("@notank") == 0;
+        if (tank && ai->IsTank(bot))
+            return "";
+
+        bool dps = message.find("@nodps") == 0;
+        if (dps && !ai->IsTank(bot) && !ai->IsHeal(bot))
+            return "";
+
+        bool heal = message.find("@noheal") == 0;
+        if (heal && ai->IsHeal(bot))
+            return "";
+
         bool ranged = message.find("@ranged") == 0;
         if (ranged && !ai->IsRanged(bot))
             return "";
