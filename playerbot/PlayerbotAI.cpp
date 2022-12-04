@@ -2230,6 +2230,7 @@ bool PlayerbotAI::HasAnyAuraOf(Unit* player, ...)
 
 bool PlayerbotAI::GetSpellRange(string name, float* maxRange, float* minRange)
 {
+    // Copied from Spell::GetMinMaxRange
     const uint32 spellId = aiObjectContext->GetValue<uint32>("spell id", name)->Get();
     if(spellId)
     {
@@ -2239,14 +2240,46 @@ bool PlayerbotAI::GetSpellRange(string name, float* maxRange, float* minRange)
             const SpellRangeEntry* spellRangeEntry = sServerFacade.LookupSpellRangeEntry(spellInfo->rangeIndex);
             if(spellRangeEntry)
             {
+                float spellMinRange = 0.0f, spellMaxRange = 0.0f, rangeMod = 0.0f;
+                if (spellRangeEntry->Flags & SPELL_RANGE_FLAG_MELEE)
+                {
+                    rangeMod = bot->GetCombinedCombatReach(bot, true, 0.f);
+                }
+                else
+                {
+                    float meleeRange = 0.0f;
+                    if (spellRangeEntry->Flags & SPELL_RANGE_FLAG_RANGED)
+                    {
+                        meleeRange = bot->GetCombinedCombatReach(bot, true, 0.f);
+                    }
+
+                    spellMinRange = spellRangeEntry->minRange + meleeRange;
+                    spellMaxRange = spellRangeEntry->maxRange;
+                }
+
+                if (spellInfo->HasAttribute(SPELL_ATTR_USES_RANGED_SLOT))
+                {
+                    if (Item* rangedWeapon = bot->GetWeaponForAttack(RANGED_ATTACK))
+                    {
+                        spellMaxRange *= rangedWeapon->GetProto()->RangedModRange * 0.01f;
+                    }
+                }
+
+                if (Player* modOwner = bot->GetSpellModOwner())
+                {
+                    modOwner->ApplySpellMod(spellInfo->Id, SPELLMOD_RANGE, spellMaxRange);
+                }
+
+                spellMaxRange += rangeMod;
+
                 if(maxRange)
                 {
-                    *maxRange = spellRangeEntry->maxRange;
+                    *maxRange = spellMaxRange;
                 }
 
                 if(minRange)
                 {
-                    *minRange = spellRangeEntry->minRange;
+                    *minRange = spellMinRange;
                 }
 
                 return true;
