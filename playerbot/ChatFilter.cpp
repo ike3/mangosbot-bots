@@ -57,16 +57,16 @@ public:
         if (heal && !ai->IsHeal(bot))
             return "";
 
-        bool tank = message.find("@notank") == 0;
-        if (tank && ai->IsTank(bot))
+        bool notank = message.find("@notank") == 0;
+        if (notank && ai->IsTank(bot))
             return "";
 
-        bool dps = message.find("@nodps") == 0;
-        if (dps && !ai->IsTank(bot) && !ai->IsHeal(bot))
+        bool nodps = message.find("@nodps") == 0;
+        if (nodps && !ai->IsTank(bot) && !ai->IsHeal(bot))
             return "";
 
-        bool heal = message.find("@noheal") == 0;
-        if (heal && ai->IsHeal(bot))
+        bool noheal = message.find("@noheal") == 0;
+        if (noheal && ai->IsHeal(bot))
             return "";
 
         bool ranged = message.find("@ranged") == 0;
