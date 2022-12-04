@@ -19,6 +19,28 @@ class StrategyChatFilter : public ChatFilter
 public:
     StrategyChatFilter(PlayerbotAI* ai) : ChatFilter(ai) {}
 
+#ifndef GenerateBotHelp
+    virtual string GetHelpName() {
+        return "strategy";
+    }
+    virtual unordered_map<string,string> GetFilterExamples() 
+    {
+        unordered_map<string, string> retMap;
+        retMap["@tank"] = "All bots that have a tank spec.";
+        retMap["@dps"] = "All bots that do not have a tank or healing spec.";
+        retMap["@heal"] = "All bots that have a healing spec.";
+        retMap["@notank"] = "All bots that do not have a tank spec.";
+        retMap["@nodps"] = "All bots that have a tank or healing spec.";
+        retMap["@noheal"] = "All bots that do not have a healing spec.";
+        retMap["@ranged"] = "All bots that use ranged attacks.";
+        retMap["@melee"] = "All bots that use melee attacks.";
+        return retMap;
+    }
+    virtual string GetHelpDescription() {
+        return "This filter selects bots with a specific role or weapon range.";
+    }
+#endif
+
     virtual string Filter(string message)
     {
         Player* bot = ai->GetBot();
@@ -67,6 +89,22 @@ class LevelChatFilter : public ChatFilter
 public:
     LevelChatFilter(PlayerbotAI* ai) : ChatFilter(ai) {}
 
+#ifndef GenerateBotHelp
+    virtual string GetHelpName() {
+        return "level";
+    }
+    virtual unordered_map<string, string> GetFilterExamples()
+    {
+        unordered_map<string, string> retMap;
+        retMap["@60"] = "All bots that are level 60.";
+        retMap["@10-20"] = "All bots ranging from level 10 to 20.";
+        return retMap;
+    }
+    virtual string GetHelpDescription() {
+        return "This filter selects bots based on level.";
+    }
+#endif
+
     virtual string Filter(string message)
     {
         Player* bot = ai->GetBot();
@@ -97,6 +135,22 @@ class CombatTypeChatFilter : public ChatFilter
 {
 public:
     CombatTypeChatFilter(PlayerbotAI* ai) : ChatFilter(ai) {}
+
+#ifndef GenerateBotHelp
+    virtual string GetHelpName() {
+        return "combat";
+    }
+    virtual unordered_map<string, string> GetFilterExamples()
+    {
+        unordered_map<string, string> retMap;
+        retMap["@ranged"] = "All bots that use ranged attacks.";
+        retMap["@melee"] = "All bots that use melee attacks.";
+        return retMap;
+    }
+    virtual string GetHelpDescription() {
+        return "This filter selects bots with a specific weapon range.";
+    }
+#endif
 
     virtual string Filter(string message)
     {
@@ -148,6 +202,22 @@ public:
 class RtiChatFilter : public ChatFilter
 {
 public:
+#ifndef GenerateBotHelp
+    virtual string GetHelpName() {
+        return "rti";
+    }
+    virtual unordered_map<string, string> GetFilterExamples()
+    {
+        unordered_map<string, string> retMap;
+        retMap["@star"] = "All bots that are marked with or are targeing something marked with star.";
+        retMap["@circle"] = "All bots that are marked with or are targeing something marked with star.";
+        return retMap;
+    }
+    virtual string GetHelpDescription() {
+        return "This filter selects bots that are marked with or are targeting sonething marked with a raid target icon.";
+    }
+#endif
+
     RtiChatFilter(PlayerbotAI* ai) : ChatFilter(ai)
     {
         rtis.push_back("@star");
@@ -222,6 +292,22 @@ public:
         classNames["@warrior"] = CLASS_WARRIOR;
     }
 
+#ifndef GenerateBotHelp
+    virtual string GetHelpName() {
+        return "class";
+    }
+    virtual unordered_map<string, string> GetFilterExamples()
+    {
+        unordered_map<string, string> retMap;
+        retMap["@rogue"] = "All rogue bots.";
+        retMap["@warlock"] = "All warlock bots.";
+        return retMap;
+    }
+    virtual string GetHelpDescription() {
+        return "This filter selects bots have a certain class.";
+    }
+#endif
+
     virtual string Filter(string message)
     {
         Player* bot = ai->GetBot();
@@ -253,6 +339,28 @@ class GroupChatFilter : public ChatFilter
 {
 public:
     GroupChatFilter(PlayerbotAI* ai) : ChatFilter(ai) {}
+
+#ifndef GenerateBotHelp
+    virtual string GetHelpName() {
+        return "group";
+    }
+    virtual unordered_map<string, string> GetFilterExamples()
+    {
+        unordered_map<string, string> retMap;
+        retMap["@group"] = "All bots in a group.";
+        retMap["@group2"] = "All bots in group 2.";
+        retMap["@group4-6"] = "All bots in group 4 to 6.";
+        retMap["@nogroup"] = "All bots that are not grouped.";
+        retMap["@leader"] = "All bots that are leader of their group.";
+        retMap["@raid"] = "All bots that are in a raid group.";
+        retMap["@noraid"] = "All bots that are not in a raid group.";
+        retMap["@rleader"] = "All bots that are leader of a raid group.";
+        return retMap;
+    }
+    virtual string GetHelpDescription() {
+        return "This filter selects bots based on their group.";
+    }
+#endif
 
     virtual string Filter(string message)
     {
@@ -325,6 +433,25 @@ class GuildChatFilter : public ChatFilter
 {
 public:
     GuildChatFilter(PlayerbotAI* ai) : ChatFilter(ai) {}
+
+#ifndef GenerateBotHelp
+    virtual string GetHelpName() {
+        return "guild";
+    }
+    virtual unordered_map<string, string> GetFilterExamples()
+    {
+        unordered_map<string, string> retMap;
+        retMap["@guild"] = "All bots in a guild.";
+        retMap["@guild=raiders"] = "All bots in guild raiders.";
+        retMap["@noguild"] = "All bots not in a guild.";
+        retMap["@gleader"] = "All bots that are a guild leader.";
+        retMap["@grank=Initiate"] = "All bots that have rank Initiate in their guild.";
+        return retMap;
+    }
+    virtual string GetHelpDescription() {
+        return "This filter selects bots based on their guild.";
+    }
+#endif
 
     virtual string Filter(string message)
     {
@@ -411,6 +538,23 @@ class StateChatFilter : public ChatFilter
 {
 public:
     StateChatFilter(PlayerbotAI* ai) : ChatFilter(ai) {}
+
+#ifndef GenerateBotHelp
+    virtual string GetHelpName() {
+        return "state";
+    }
+    virtual unordered_map<string, string> GetFilterExamples()
+    {
+        unordered_map<string, string> retMap;
+        retMap["@needrepair"] = "All bots that have durability below 20%.";
+        retMap["@outside"] = "All bots that are outside of an instance.";
+        retMap["@inside"] = "All bots that are inside an instance.";
+        return retMap;
+    }
+    virtual string GetHelpDescription() {
+        return "This filter selects bots based on their state.";
+    }
+#endif
 
     virtual string Filter(string message)
     {

@@ -525,18 +525,17 @@ string ChatHelper::formatQuestObjective(string name, int available, int required
     return out.str();
 }
 
-string ChatHelper::formatHelpTopic(string topicCode, string topicName)
+string ChatHelper::formatValue(string type, string topicCode, string topicName, string color)
 {
     ostringstream out;
-    out << "|c0000FFFF|Hvalue:help:" << topicCode << "|h[" << topicName << "]|h|r";
-
+    out << "|c"<< color << "|Hvalue:" << type << ":" << topicCode << "|h[" << topicName << "]|h|r";
     return out.str();
 }
 
-string ChatHelper::parseHelpTopic(string& text) {
+string ChatHelper::parseValue(string type, string& text) {
     string retString;
 
-    std::string pattern = "Hvalue:help:";
+    std::string pattern = "Hvalue:" + type + ":";
 
     int pos = text.find(pattern, 0);
     if (pos == -1)
@@ -604,6 +603,7 @@ uint32 ChatHelper::parseSlot(string text)
 bool ChatHelper::parseable(string text)
 {
     return text.find("|H") != string::npos ||
+        text.find("[h:") != string::npos ||
             text == "questitem" ||
             text == "ammo" ||
             substrContainsInMap<uint32>(text, consumableSubClasses) ||

@@ -10,7 +10,16 @@ namespace ai
 
         bool ParseChatCommand(string command, Player* owner = NULL)
         {
-            if (HandleCommand(command, "", owner))
+            string linkCommand = ChatHelper::parseValue("command", command);
+            bool forceCommand = false;
+
+            if (!linkCommand.empty())
+            {
+                command = linkCommand;
+                forceCommand = true;
+            }
+
+            if (HandleCommand(command, "", owner, forceCommand))
                 return true;
 
             size_t i = string::npos;
@@ -25,14 +34,14 @@ namespace ai
 
                 i = found - 1;
 
-                if (HandleCommand(name, param, owner))
+                if (HandleCommand(name, param, owner, forceCommand))
                     return true;
             }
 
             if (!ChatHelper::parseable(command))
                 return false;
 
-            if (command.find("Hvalue:help") != string::npos)
+            if (command.find("Hvalue:help") != string::npos || command.find("[h:") != string::npos)
             {
                 HandleCommand("help", command, owner);
                 return true;
@@ -58,13 +67,16 @@ namespace ai
             trigger->ExternalEvent(p, owner);
         }
 
-        bool HandleCommand(string name, string param, Player* owner = NULL)
+        bool HandleCommand(string name, string param, Player* owner = NULL, bool forceCommand = false)
         {
             Trigger* trigger = aiObjectContext->GetTrigger(name);
             if (!trigger)
                 return false;
 
-            trigger->ExternalEvent(param, owner);
+            if(!forceCommand)
+                trigger->ExternalEvent(param, owner);
+            else
+                trigger->ExternalEventForce(param, owner);
             return true;
         }
 

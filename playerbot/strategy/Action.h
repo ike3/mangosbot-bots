@@ -80,7 +80,13 @@ namespace ai
 
         bool IsReaction() const { return reaction; }
         void SetReaction(bool inReaction) { reaction = inReaction; }
-        
+
+#ifndef GenerateBotHelp
+        virtual string GetHelpName() { return "dummy"; } //Must equal iternal name
+        virtual string GetHelpDescription() { return "This is an action."; }
+        virtual vector<string> GetUsedActions() { return {}; }
+        virtual vector<string> GetUsedValues() { return {}; }
+#endif        
     protected:
         void SetDuration(uint32 delay);
 

@@ -69,6 +69,9 @@ PullStrategy::PullStrategy(PlayerbotAI* ai, string pullAction)
 {
     actionNodeFactories.Add(new PullStrategyActionNodeFactory());
 
+    if (!ai->GetBot())
+        return;
+
     // Try to get the correct spell name
     string spellName = GetSpellName(ai, pullAction);
 

@@ -25,6 +25,13 @@ namespace ai
     public:
         FarFromRpgTargetTrigger(PlayerbotAI* ai, string name = "far from rpg target", int checkInterval = 1) : NoRpgTargetTrigger(ai, name, checkInterval) {}
 
+#ifndef GenerateBotHelp
+        virtual string GetHelpName() { return "far from rpg target"; } //Must equal iternal name
+        virtual string GetHelpDescription() { return "This trigger activates [h:strategy|no rpg target] is not active and is 5y away from it's current [h:value|rpg target].";}
+        virtual vector<string> GetUsedTriggers() { return { "no rpg target" }; }
+        virtual vector<string> GetUsedValues() { return {"distance", "rpg target"}; }
+#endif
+
         virtual bool IsActive() { return !NoRpgTargetTrigger::IsActive() && AI_VALUE2(float, "distance", "rpg target") > INTERACTION_DISTANCE; };
     };
 

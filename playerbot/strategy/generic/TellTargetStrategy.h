@@ -7,8 +7,7 @@ namespace ai
     {
     public:
         TellTargetStrategy(PlayerbotAI* ai) : Strategy(ai) {}
-        string getName() override { return "TellTarget"; }
-
+        string getName() override { return "tell target"; }
     private:
         void InitCombatTriggers(std::list<TriggerNode*> &triggers) override;
     };
