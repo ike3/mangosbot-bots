@@ -46,8 +46,17 @@ namespace ai
             return result;
         }
         
-        static int32 getMultiQualifierInt(string qualifier1, uint32 pos, string separator) { return stoi(getMultiQualifiers(qualifier1, separator)[pos]); }
-        static string getMultiQualifierStr(string qualifier1, uint32 pos, string separator) { return getMultiQualifiers(qualifier1, separator)[pos]; }
+        static int32 getMultiQualifierInt(string qualifier1, uint32 pos, string separator)
+        { 
+            vector<string> qualifiers = getMultiQualifiers(qualifier1, separator);
+            return (qualifiers.size() > pos) ? stoi(qualifiers[pos]) : 0;
+        }
+
+        static string getMultiQualifierStr(string qualifier1, uint32 pos, string separator)
+        { 
+            vector<string> qualifiers = getMultiQualifiers(qualifier1, separator);
+            return (qualifiers.size() > pos) ? qualifiers[pos] : "";
+        }
     
     protected:
         string qualifier;
