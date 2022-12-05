@@ -11,17 +11,14 @@ bool EquipAction::Execute(Event& event)
 {
     string text = event.getParam();
     ItemIds ids = chat->parseItems(text);
-    EquipItems(ids, true);
+    EquipItems(ids);
     return true;
 }
 
-void EquipAction::EquipItems(ItemIds ids, bool force)
+void EquipAction::EquipItems(ItemIds ids)
 {
     for (ItemIds::iterator i =ids.begin(); i != ids.end(); i++)
     {
-        if (force)
-            SET_AI_VALUE2(bool, "force equip", *i, true);
-
         FindItemByIdVisitor visitor(*i);
         EquipItem(&visitor);        
     }
@@ -102,9 +99,6 @@ void EquipAction::EquipItem(Item& item)
     sPlayerbotAIConfig.logEvent(ai, "EquipAction", item.GetProto()->Name1, to_string(item.GetProto()->ItemId));
 
     ostringstream out; out << "equipping " << chat->formatItem(item.GetProto());
-
-    if (AI_VALUE2(bool, "force equip", item.GetProto()->ItemId))
-        out << " (This item can no longer be automatically replaced)";
 
     ai->TellMaster(out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
 }
