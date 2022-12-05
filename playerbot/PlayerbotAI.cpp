@@ -1223,19 +1223,14 @@ int32 PlayerbotAI::CalculateGlobalCooldown(uint32 spellid)
     if (!spellid)
         return 0;
 
-#ifdef MANGOS
-    if (bot->HasSpellCooldown(spellid))
-        return sPlayerbotAIConfig.globalCoolDown;
+    int32 globalCooldown = 0;
+    SpellEntry const* spellEntry = sSpellTemplate.LookupEntry<SpellEntry>(spellid);
+    if (spellEntry)
+    {
+        globalCooldown = spellEntry->StartRecoveryTime;
+    }
 
-    return sPlayerbotAIConfig.reactDelay;
-#endif
-
-#ifdef CMANGOS
-    if (!bot->IsSpellReady(spellid))
-        return sPlayerbotAIConfig.globalCoolDown;
-
-    return sPlayerbotAIConfig.reactDelay;
-#endif
+    return globalCooldown > 0 ? globalCooldown : sPlayerbotAIConfig.reactDelay;
 }
 
 void PlayerbotAI::HandleMasterIncomingPacket(const WorldPacket& packet)
