@@ -175,7 +175,7 @@ bool AhBidAction::Execute(string text, Unit* auctioneer)
         freeMoney[ITEM_USAGE_USE] = AI_VALUE2(uint32, "free money for", (uint32)NeedMoneyFor::consumables);
         freeMoney[ITEM_USAGE_SKILL] = freeMoney[ITEM_USAGE_DISENCHANT] = AI_VALUE2(uint32, "free money for", (uint32)NeedMoneyFor::tradeskill);
         freeMoney[ITEM_USAGE_AMMO] = AI_VALUE2(uint32, "free money for", (uint32)NeedMoneyFor::ammo);
-        freeMoney[ITEM_USAGE_QUEST] = freeMoney[ITEM_USAGE_AH] = freeMoney[ITEM_USAGE_VENDOR] = AI_VALUE2(uint32, "free money for", (uint32)NeedMoneyFor::anything);
+        freeMoney[ITEM_USAGE_QUEST] = freeMoney[ITEM_USAGE_AH] = freeMoney[ITEM_USAGE_VENDOR] = freeMoney[ITEM_USAGE_FORCE] = AI_VALUE2(uint32, "free money for", (uint32)NeedMoneyFor::anything);
 
         uint32 checkNumAuctions = urand(50, 250);
 
@@ -215,6 +215,9 @@ bool AhBidAction::Execute(string text, Unit* auctioneer)
             case ITEM_USAGE_VENDOR:
                 if (cost >= (int32)sObjectMgr.GetItemPrototype(auction->itemTemplate)->SellPrice)
                     continue;
+                power = 1000;
+                break;
+            case ITEM_USAGE_FORCE:
                 power = 1000;
                 break;
             }

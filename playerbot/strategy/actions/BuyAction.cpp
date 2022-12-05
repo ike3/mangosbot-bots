@@ -84,6 +84,7 @@ bool BuyAction::Execute(Event& event)
                     freeMoney[ITEM_USAGE_SKILL] = freeMoney[ITEM_USAGE_DISENCHANT] = AI_VALUE2(uint32, "free money for", (uint32)NeedMoneyFor::tradeskill);
                     freeMoney[ITEM_USAGE_AMMO] = AI_VALUE2(uint32, "free money for", (uint32)NeedMoneyFor::ammo);
                     freeMoney[ITEM_USAGE_QUEST] = AI_VALUE2(uint32, "free money for", (uint32)NeedMoneyFor::anything);
+                    freeMoney[ITEM_USAGE_FORCE] = AI_VALUE2(uint32, "free money for", (uint32)NeedMoneyFor::anything);
 
                     if (freeMoney.find(usage) == freeMoney.end() || price > freeMoney[usage])
                         continue;

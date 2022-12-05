@@ -3,13 +3,11 @@
 #include "LootAction.h"
 
 #include "AhBotConfig.h"
-//#include "PricingStrategy.cpp"
 
 #include "../../LootObjectStack.h"
 #include "../../PlayerbotAIConfig.h"
 #include "../../../ahbot/AhBot.h"
 #include "../../RandomPlayerbotMgr.h"
-#include "../values/ItemUsageValue.h"
 #include "../../GuildTaskMgr.h"
 #include "../../ServerFacade.h"
 #include "../values/LootStrategyValue.h"
@@ -233,107 +231,6 @@ bool OpenLootAction::CanOpenLock(uint32 skillId, uint32 reqSkillValue)
     return skillValue >= reqSkillValue || !reqSkillValue;
 }
 
-/*
-uint32 StoreLootAction::RoundPrice(double price)
-{
-    if (price < 100) {
-        return (uint32)price;
-    }
-
-    if (price < 10000) {
-        return (uint32)(price / 100.0) * 100;
-    }
-
-    if (price < 100000) {
-        return (uint32)(price / 1000.0) * 1000;
-    }
-
-    return (uint32)(price / 10000.0) * 10000;
-}
-
-bool StoreLootAction::AuctionItem(int32 itemId)
-{
-    ItemPrototype const* proto = sItemStorage.LookupEntry<ItemPrototype>(itemId);
-    if (!proto)
-        return false;
-
-    if (!proto ||
-        proto->Bonding == BIND_WHEN_PICKED_UP ||
-        proto->Bonding == BIND_QUEST_ITEM)
-        return false;
-
-    Item* oldItem = bot->GetItemByEntry(itemId);
-    if (!oldItem)
-        return false;
-
-#ifdef TRINITY
-    AuctionHouseEntry const* ahEntry = AuctionHouseMgr::GetAuctionHouseEntry(unit->GetFaction());
-#elif AZEROTHCORE
-    AuctionHouseEntry const* ahEntry = AuctionHouseMgr::GetAuctionHouseEntry(unit->getFaction());
-#else
-    AuctionHouseEntry const* ahEntry = AuctionHouseMgr::GetAuctionHouseEntry(bot);
-#endif    
-
-    if (!ahEntry)
-        return false;
-
-    AuctionHouseObject* auctionHouse = sAuctionMgr.GetAuctionsMap(ahEntry);  
-
-    uint32 price = oldItem->GetCount() * proto->BuyPrice * sRandomPlayerbotMgr.GetBuyMultiplier(bot);
-
-    uint32 stackCount = urand(1, proto->GetMaxStackSize());
-    if (!price || !stackCount)
-        return false;
-
-    if (!stackCount)
-        stackCount = 1;
-
-    if (urand(0, 100) <= sAhBotConfig.underPriceProbability * 100)
-        price = price * 100 / urand(100, 200);
-
-    uint32 bidPrice = RoundPrice(stackCount * price);
-    uint32 buyoutPrice = RoundPrice(stackCount * urand(price, 4 * price / 3));
-
-    Item* item = Item::CreateItem(proto->ItemId, stackCount);
-    if (!item)
-        return false;
-
-    uint32 auction_time = uint32(urand(8, 24) * HOUR * sWorld.getConfig(CONFIG_FLOAT_RATE_AUCTION_TIME));
-    
-    AuctionEntry* auctionEntry = new AuctionEntry;
-    auctionEntry->Id = sObjectMgr.GenerateAuctionID();
-    auctionEntry->itemGuidLow = item->GetObjectGuid().GetCounter();
-    auctionEntry->itemTemplate = item->GetEntry();
-    auctionEntry->itemCount = item->GetCount();
-    auctionEntry->itemRandomPropertyId = item->GetItemRandomPropertyId();
-    auctionEntry->owner = bot->GetGUIDLow();
-    auctionEntry->startbid = bidPrice;
-    auctionEntry->bidder = 0;
-    auctionEntry->bid = 0;
-    auctionEntry->buyout = buyoutPrice;
-    auctionEntry->expireTime = time(nullptr) + auction_time;
-    //auctionEntry->moneyDeliveryTime = 0;
-    auctionEntry->deposit = 0;
-    auctionEntry->auctionHouseEntry = ahEntry;
-
-    auctionHouse->AddAuction(auctionEntry);
-
-    sAuctionMgr.AddAItem(item);
-
-    item->SaveToDB();
-    auctionEntry->SaveToDB();
-
-    sLog.outErrorDb("AhBot %s added %d of %s to auction %d for %d..%d", bot->GetName(), stackCount, proto->Name1,1, bidPrice, buyoutPrice);
-
-    if (oldItem->GetCount() > stackCount)
-        oldItem->SetCount(oldItem->GetCount() - stackCount);
-    else
-        bot->RemoveItem(item->GetBagSlot(), item->GetSlot(), true);
-
-    return true;
-}
-*/
-
 bool StoreLootAction::Execute(Event& event)
 {
     WorldPacket p(event.getPacket()); // (8+1+4+1+1+4+4+4+4+4+1)
@@ -423,9 +320,6 @@ bool StoreLootAction::Execute(Event& event)
         ai->TellMasterNoFacing(out.str(), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
 
         sPlayerbotAIConfig.logEvent(ai, "StoreLootAction", proto->Name1, to_string(proto->ItemId));
-
-        //ItemUsage usage = AI_VALUE2(ItemUsage, "item usage", proto->ItemId);
-        //sLog.outErrorDb("Bot %s is looting %d %s for usage %d.", bot->GetName(), itemcount, proto->Name1, usage);
     }
 
     AI_VALUE(LootObjectStack*, "available loot")->Remove(guid);

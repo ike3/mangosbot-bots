@@ -97,6 +97,9 @@ RollVote LootRollAction::CalculateRollVote(ItemPrototype const *proto)
     case ITEM_USAGE_VENDOR:
         needVote = ROLL_GREED;
         break;
+    case ITEM_USAGE_FORCE:
+        needVote = (AI_VALUE2(ForceItemUsage, "force item usage", proto->ItemId) == ForceItemUsage::FORCE_USAGE_NEED) ? ROLL_NEED : ROLL_GREED;
+        break;
     }
     return StoreLootAction::IsLootAllowed(proto->ItemId, bot->GetPlayerbotAI()) ? needVote : ROLL_PASS;
 }
