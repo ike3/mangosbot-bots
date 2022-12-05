@@ -1712,13 +1712,16 @@ uint32 RandomItemMgr::CalculateStatWeight(uint8 playerclass, uint8 spec, ItemPro
                     hasAP = true;
                     isAttackItem = true;
                     bool isFeral = false;
-#ifdef MANGOSBOT_ONE
                     string SpellName = spellproto->SpellName[0];
                     if (SpellName.find("Attack Power - Feral") != string::npos)
                         isFeral = true;
-#endif
+#ifdef MANGOSBOT_ZERO
+                    if (isFeral && (playerclass != CLASS_DRUID && playerclass != CLASS_WARRIOR && playerclass != CLASS_PALADIN && proto->IsWeapon()))
+                        return 0;
+#else
                     if (isFeral && playerclass != CLASS_DRUID)
                         return 0;
+#endif
 
                     attackPower += CalculateSingleStatWeight(playerclass, spec, isFeral ? "feratkpwr" : "atkpwr", spellproto->EffectBasePoints[j] + 1);
                 }
@@ -1727,6 +1730,10 @@ uint32 RandomItemMgr::CalculateStatWeight(uint8 playerclass, uint8 spec, ItemPro
                 // SPELL_AURA_MOD_RANGED_ATTACK_POWER
                 if (!hasAP && spellproto->EffectApplyAuraName[j] == SPELL_AURA_MOD_RANGED_ATTACK_POWER)
                 {
+                    // filter non ranged classes
+                    if (playerclass == CLASS_SHAMAN || (!proto->IsRangedWeapon() && playerclass != CLASS_HUNTER))
+                        return 0;
+
                     hasAP = true;
                     isAttackItem = true;
                     attackPower += CalculateSingleStatWeight(playerclass, spec, "atkpwr", spellproto->EffectBasePoints[j] + 1);
@@ -1945,7 +1952,7 @@ uint32 RandomItemMgr::CalculateStatWeight(uint8 playerclass, uint8 spec, ItemPro
             return 0;
 #endif
 
-        if ((spec != 6 && spec != 21) && !noCaster && isSpellDamageItem && !spellPower)
+        if ((spec != 6 && spec != 21) && !noCaster && isSpellDamageItem && !spellPower && !(spellDamage && spellHealing && proto->IsWeapon() && proto->InventoryType == INVTYPE_WEAPONMAINHAND))
             return 0;
 
         bool playerCaster = false;
