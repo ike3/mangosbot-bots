@@ -8,7 +8,7 @@ namespace ai
     public:
         AttackEnemyPlayersStrategy(PlayerbotAI* ai) : Strategy(ai) {}
         string getName() override { return "pvp"; }
-#ifndef GenerateBotHelp
+#ifdef GenerateBotHelp
         virtual string GetHelpName() { return "pvp"; } //Must equal iternal name
         virtual string GetHelpDescription() {
             return "This strategy detect nearby enemy players and makes the bot attack them.";

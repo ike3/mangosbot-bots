@@ -11,7 +11,7 @@ namespace ai
         virtual string Filter(string message);
 		virtual ~ChatFilter() {}
 
-#ifndef GenerateBotHelp
+#ifdef GenerateBotHelp
         virtual string GetHelpName() { return "dummy"; }
         virtual unordered_map<string, string> GetFilterExamples() {return {};}
         virtual string GetHelpDescription() { return ""; }
@@ -24,7 +24,7 @@ namespace ai
         CompositeChatFilter(PlayerbotAI* ai);
         virtual ~CompositeChatFilter();
         string Filter(string message);
-#ifndef GenerateBotHelp
+#ifdef GenerateBotHelp
         virtual list<ChatFilter*> GetFilters() { return filters;}
 #endif
     private:

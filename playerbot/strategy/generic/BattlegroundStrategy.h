@@ -9,7 +9,7 @@ namespace ai
         BGStrategy(PlayerbotAI* ai) : PassTroughStrategy(ai) {}
         int GetType() override { return STRATEGY_TYPE_NONCOMBAT; }
         string getName() override { return "bg"; }
-#ifndef GenerateBotHelp
+#ifdef GenerateBotHelp
         virtual string GetHelpName() { return "bg"; } //Must equal iternal name
         virtual string GetHelpDescription() {
             return "This strategy will make bots queue up for battle grounds remotely and join them when they get an invite.";
@@ -28,7 +28,7 @@ namespace ai
         BattlegroundStrategy(PlayerbotAI* ai) : Strategy(ai) {};
         int GetType() override { return STRATEGY_TYPE_NONCOMBAT; }
         string getName() override { return "battleground"; }
-#ifndef GenerateBotHelp
+#ifdef GenerateBotHelp
         virtual string GetHelpName() { return "battleground"; } //Must equal iternal name
         virtual string GetHelpDescription() {
             return "This strategy gives bots basic behavior inside battle grounds like checking and moving to objectives and getting ready at the start gates.";
@@ -45,7 +45,7 @@ namespace ai
         WarsongStrategy(PlayerbotAI* ai) : Strategy(ai) {};
         int GetType() override { return STRATEGY_TYPE_GENERIC; }
         string getName() override { return "warsong"; }
-#ifndef GenerateBotHelp
+#ifdef GenerateBotHelp
         virtual string GetHelpName() { return "warsong"; } //Must equal iternal name
         virtual string GetHelpDescription() {
             return "This strategy controls the behavior during a warsong gluch battleground like capturing/retaking flags and picking up buffs.";
@@ -63,7 +63,7 @@ namespace ai
         AlteracStrategy(PlayerbotAI* ai) : Strategy(ai) {};
         int GetType() override { return STRATEGY_TYPE_GENERIC; }
         string getName() override { return "alterac"; }
-#ifndef GenerateBotHelp
+#ifdef GenerateBotHelp
         virtual string GetHelpName() { return "alterac"; } //Must equal iternal name
         virtual string GetHelpDescription() {
             return "This strategy controls the behavior during an alertac valley battleground.";
@@ -81,7 +81,7 @@ namespace ai
         ArathiStrategy(PlayerbotAI* ai) : Strategy(ai) {};
         int GetType() override { return STRATEGY_TYPE_GENERIC; }
         string getName() override { return "arathi"; }
-#ifndef GenerateBotHelp
+#ifdef GenerateBotHelp
         virtual string GetHelpName() { return "arathi"; } //Must equal iternal name
         virtual string GetHelpDescription() {
             return "This strategy controls the behavior during an arathi basin battleground.";
@@ -99,7 +99,7 @@ namespace ai
         EyeStrategy(PlayerbotAI* ai) : Strategy(ai) {};
         int GetType() override { return STRATEGY_TYPE_GENERIC; }
         string getName() { return "eye"; }
-#ifndef GenerateBotHelp
+#ifdef GenerateBotHelp
         virtual string GetHelpName() { return "eye"; } //Must equal iternal name
         virtual string GetHelpDescription() {
             return "This strategy controls the behavior during an eye of the storm basin battleground.";
@@ -117,7 +117,7 @@ namespace ai
         IsleStrategy(PlayerbotAI* ai) : Strategy(ai) {};
         int GetType() override { return STRATEGY_TYPE_GENERIC; }
         string getName() override { return "isle"; }
-#ifndef GenerateBotHelp
+#ifdef GenerateBotHelp
         virtual string GetHelpName() { return "isle"; } //Must equal iternal name
         virtual string GetHelpDescription() {
             return "This strategy controls the behavior during an isle of conquest battleground.";
@@ -135,7 +135,7 @@ namespace ai
         ArenaStrategy(PlayerbotAI* ai) : Strategy(ai) {};
         int GetType() override { return STRATEGY_TYPE_GENERIC; }
         string getName() override { return "arena"; }
-#ifndef GenerateBotHelp
+#ifdef GenerateBotHelp
         virtual string GetHelpName() { return "arena"; } //Must equal iternal name
         virtual string GetHelpDescription() {
             return "This strategy controls the behavior arena fight.";

@@ -16,7 +16,7 @@ namespace ai
     public:
         AvoidAoeStrategy(PlayerbotAI* ai) : Strategy(ai) {}
         string getName() override { return "avoid aoe"; }
-#ifndef GenerateBotHelp
+#ifdef GenerateBotHelp
         virtual string GetHelpName() { return "avoid aoe"; } //Must equal iternal name
         virtual string GetHelpDescription() {
             return "This strategy will make bots move away when they are in aoe.";
@@ -48,7 +48,7 @@ namespace ai
         static float GetSafeDistance() { return sPlayerbotAIConfig.spellDistance; }
         static float GetSafeDistanceThreshold() { return 2.5f; }
 
-#ifndef GenerateBotHelp
+#ifdef GenerateBotHelp
         virtual string GetHelpName() { return "wait for attack"; } //Must equal iternal name
         virtual string GetHelpDescription() {
             return "This strategy will make bots wait a specified time before attacking.";

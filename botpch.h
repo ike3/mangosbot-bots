@@ -14,3 +14,7 @@
 #include "ScriptMgr.h"
 
 #include "playerbot.h"
+
+#ifndef GenerateBotHelp
+//#define GenerateBotHelp //Enable only for help generation
+#endif

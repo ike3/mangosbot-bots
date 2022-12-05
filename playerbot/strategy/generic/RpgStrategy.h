@@ -18,7 +18,7 @@ namespace ai
     public:
         RpgStrategy(PlayerbotAI* ai) : Strategy(ai) {}
         virtual string getName() override { return "rpg"; }
-#ifndef GenerateBotHelp
+#ifdef GenerateBotHelp
         virtual string GetHelpName() { return "rpg"; } //Must equal iternal name
         virtual string GetHelpDescription() {
             return "This strategy makes bot move between npcs to automatically do various interaction.\n"

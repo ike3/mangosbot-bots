@@ -19,7 +19,7 @@ class StrategyChatFilter : public ChatFilter
 public:
     StrategyChatFilter(PlayerbotAI* ai) : ChatFilter(ai) {}
 
-#ifndef GenerateBotHelp
+#ifdef GenerateBotHelp
     virtual string GetHelpName() {
         return "strategy";
     }
@@ -89,7 +89,7 @@ class LevelChatFilter : public ChatFilter
 public:
     LevelChatFilter(PlayerbotAI* ai) : ChatFilter(ai) {}
 
-#ifndef GenerateBotHelp
+#ifdef GenerateBotHelp
     virtual string GetHelpName() {
         return "level";
     }
@@ -136,7 +136,7 @@ class CombatTypeChatFilter : public ChatFilter
 public:
     CombatTypeChatFilter(PlayerbotAI* ai) : ChatFilter(ai) {}
 
-#ifndef GenerateBotHelp
+#ifdef GenerateBotHelp
     virtual string GetHelpName() {
         return "combat";
     }
@@ -202,7 +202,7 @@ public:
 class RtiChatFilter : public ChatFilter
 {
 public:
-#ifndef GenerateBotHelp
+#ifdef GenerateBotHelp
     virtual string GetHelpName() {
         return "rti";
     }
@@ -292,7 +292,7 @@ public:
         classNames["@warrior"] = CLASS_WARRIOR;
     }
 
-#ifndef GenerateBotHelp
+#ifdef GenerateBotHelp
     virtual string GetHelpName() {
         return "class";
     }
@@ -340,7 +340,7 @@ class GroupChatFilter : public ChatFilter
 public:
     GroupChatFilter(PlayerbotAI* ai) : ChatFilter(ai) {}
 
-#ifndef GenerateBotHelp
+#ifdef GenerateBotHelp
     virtual string GetHelpName() {
         return "group";
     }
@@ -434,7 +434,7 @@ class GuildChatFilter : public ChatFilter
 public:
     GuildChatFilter(PlayerbotAI* ai) : ChatFilter(ai) {}
 
-#ifndef GenerateBotHelp
+#ifdef GenerateBotHelp
     virtual string GetHelpName() {
         return "guild";
     }
@@ -539,7 +539,7 @@ class StateChatFilter : public ChatFilter
 public:
     StateChatFilter(PlayerbotAI* ai) : ChatFilter(ai) {}
 
-#ifndef GenerateBotHelp
+#ifdef GenerateBotHelp
     virtual string GetHelpName() {
         return "state";
     }

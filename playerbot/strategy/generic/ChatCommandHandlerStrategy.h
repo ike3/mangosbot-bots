@@ -8,7 +8,7 @@ namespace ai
     public:
         ChatCommandHandlerStrategy(PlayerbotAI* ai);
         string getName() override { return "chat"; }
-#ifndef GenerateBotHelp
+#ifdef GenerateBotHelp
         virtual string GetHelpName() { return "chat"; } //Must equal iternal name
         virtual string GetHelpDescription() {
             return "This strategy will make bots respond to various chat commands.";

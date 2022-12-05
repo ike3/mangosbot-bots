@@ -13,7 +13,7 @@ namespace ai
         virtual bool Execute(Event& event);
         virtual bool isUseful();
 
-#ifndef GenerateBotHelp
+#ifdef GenerateBotHelp
         virtual string GetHelpName() { return "move to rpg target"; } //Must equal iternal name
         virtual string GetHelpDescription()
         {

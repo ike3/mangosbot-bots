@@ -9,7 +9,7 @@ namespace ai
         DuelStrategy(PlayerbotAI* ai) : PassTroughStrategy(ai) {}
         string getName() override { return "duel"; }
 
-#ifndef GenerateBotHelp
+#ifdef GenerateBotHelp
         virtual string GetHelpName() { return "duel"; } //Must equal iternal name
         virtual string GetHelpDescription() {
             return "This strategy will allow bots to accept duels and attack their duel target.";
@@ -28,7 +28,7 @@ namespace ai
         StartDuelStrategy(PlayerbotAI* ai) : Strategy(ai) {}
         string getName() override { return "start duel"; }
 
-#ifndef GenerateBotHelp
+#ifdef GenerateBotHelp
         virtual string GetHelpName() { return "start duel"; } //Must equal iternal name
         virtual string GetHelpDescription() {
             return "This strategy will allow bots to start duels with other bots if they are the current [h:value|rpg target].";

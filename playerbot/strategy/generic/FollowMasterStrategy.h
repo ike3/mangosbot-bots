@@ -9,7 +9,7 @@ namespace ai
         FollowMasterStrategy(PlayerbotAI* ai) : Strategy(ai) {}
         int GetType() override { return STRATEGY_TYPE_NONCOMBAT; }
         string getName() override { return "follow"; }
-#ifndef GenerateBotHelp
+#ifdef GenerateBotHelp
         virtual string GetHelpName() { return "follow"; } //Must equal iternal name
         virtual string GetHelpDescription() {
             return "This strategy will make the bot stay near the master";

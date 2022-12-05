@@ -8,7 +8,7 @@ namespace ai
     public:
         FleeStrategy(PlayerbotAI* ai) : Strategy(ai) {}
         string getName() override { return "flee"; };
-#ifndef GenerateBotHelp
+#ifdef GenerateBotHelp
         virtual string GetHelpName() { return "flee"; } //Must equal iternal name
         virtual string GetHelpDescription() {
             return "This strategy will make the bot flee when it is in danger.";
@@ -24,7 +24,7 @@ namespace ai
     public:
         FleeFromAddsStrategy(PlayerbotAI* ai) : Strategy(ai) {}
         string getName() override { return "flee from adds"; };
-#ifndef GenerateBotHelp
+#ifdef GenerateBotHelp
         virtual string GetHelpName() { return "flee from adds"; } //Must equal iternal name
         virtual string GetHelpDescription() {
             return "This a position strategy that will make the bot try to avoid adds the prevent aggro.";

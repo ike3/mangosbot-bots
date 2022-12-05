@@ -19,7 +19,7 @@ namespace ai
         virtual string Save() { return "?"; }
         virtual bool Load(string value) { return false; }
 
-#ifndef GenerateBotHelp
+#ifdef GenerateBotHelp
         virtual string GetHelpName() { return "dummy"; } //Must equal iternal name
         virtual string GetHelpTypeName() { return ""; }
         virtual string GetHelpDescription() { return "This is a value."; }

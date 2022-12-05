@@ -9,7 +9,7 @@ namespace ai
         DungeonStrategy(PlayerbotAI* ai) : Strategy(ai) {}
         string getName() override { return "dungeon"; }
 
-#ifndef GenerateBotHelp
+#ifdef GenerateBotHelp
         virtual string GetHelpName() { return "dungeon"; } //Must equal iternal name
         virtual string GetHelpDescription() {
             return "This strategy will enable and disable various dungeon and raid specific strategies as the bot enters and leaves.";

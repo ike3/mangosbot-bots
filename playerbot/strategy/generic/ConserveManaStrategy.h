@@ -28,7 +28,7 @@ namespace ai
         ConserveManaStrategy(PlayerbotAI* ai) : Strategy(ai) {}
         string getName() override { return "conserve mana"; }
 
-#ifndef GenerateBotHelp
+#ifdef GenerateBotHelp
         virtual string GetHelpName() { return "conserve mana"; } //Must equal iternal name
         virtual string GetHelpDescription() {
             return "This strategy will make bots wait longer between casting the same spell twice.\n"

@@ -6,10 +6,6 @@
 
 #define BOT_HELP(name) sPlayerbotHelpMgr.GetBotText(name)
 
-#ifndef GenerateBotHelp
-//#define GenerateBotHelp //Enable only for help generation
-#endif
-
 using namespace std;
 
 struct BotHelpEntry

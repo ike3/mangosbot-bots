@@ -9,7 +9,7 @@ namespace ai
         virtual int GetType() { return STRATEGY_TYPE_NONCOMBAT; }
         virtual string getName() { return "debug"; }
 
-#ifndef GenerateBotHelp
+#ifdef GenerateBotHelp
         virtual string GetHelpName() { return "debug"; } //Must equal iternal name
         virtual string GetHelpDescription() {
             return "This strategy will make the bot give chat feedback on the current actions (relevance) [triggers] it is trying to do.";
@@ -24,7 +24,7 @@ namespace ai
         virtual int GetType() { return STRATEGY_TYPE_NONCOMBAT; }
         virtual string getName() { return "debug action"; }
 
-#ifndef GenerateBotHelp
+#ifdef GenerateBotHelp
         virtual string GetHelpName() { return "debug action"; } //Must equal iternal name
         virtual string GetHelpDescription() {
             return "This strategy will make the bot give chat feedback on the current actions the bot is considering to do but are impossible or not usefull.";
@@ -38,7 +38,7 @@ namespace ai
         DebugMoveStrategy(PlayerbotAI* ai) : Strategy(ai) {}
         virtual int GetType() { return STRATEGY_TYPE_NONCOMBAT; }
         virtual string getName() { return "debug move"; }
-#ifndef GenerateBotHelp
+#ifdef GenerateBotHelp
         virtual string GetHelpName() { return "debug move"; } //Must equal iternal name
         virtual string GetHelpDescription() {
             return "This strategy will make the bot give chat and visual feedback for it's current movement actions.";
@@ -52,7 +52,7 @@ namespace ai
         DebugRpgStrategy(PlayerbotAI* ai) : Strategy(ai) {}
         virtual int GetType() { return STRATEGY_TYPE_NONCOMBAT; }
         virtual string getName() { return "debug rpg"; }
-#ifndef GenerateBotHelp
+#ifdef GenerateBotHelp
         virtual string GetHelpName() { return "debug rpg"; } //Must equal iternal name
         virtual string GetHelpDescription() {
             return "This strategy will make the bot give chat feedback on rpg target selection during [h:action|choose rpg target] and  [h:action|move to rpg target].";
@@ -67,7 +67,7 @@ namespace ai
         DebugSpellStrategy(PlayerbotAI* ai) : Strategy(ai) {}
         virtual int GetType() { return STRATEGY_TYPE_NONCOMBAT; }
         virtual string getName() { return "debug spell"; }
-#ifndef GenerateBotHelp
+#ifdef GenerateBotHelp
         virtual string GetHelpName() { return "debug spell"; } //Must equal iternal name
         virtual string GetHelpDescription() {
             return "This strategy will make the bot give chat feedback on the current spell it is casting.";
@@ -82,7 +82,7 @@ namespace ai
         DebugTravelStrategy(PlayerbotAI* ai) : Strategy(ai) {}
         virtual int GetType() { return STRATEGY_TYPE_NONCOMBAT; }
         virtual string getName() { return "debug travel"; }
-#ifndef GenerateBotHelp
+#ifdef GenerateBotHelp
         virtual string GetHelpName() { return "debug travel"; } //Must equal iternal name
         virtual string GetHelpDescription() {
             return "This strategy will make the bot give chat feedback on the locations it is considering during [h:action|choose travel target].";
@@ -97,7 +97,7 @@ namespace ai
         DebugThreatStrategy(PlayerbotAI* ai) : Strategy(ai) {}
         virtual int GetType() { return STRATEGY_TYPE_NONCOMBAT; }
         virtual string getName() { return "debug threat"; }
-#ifndef GenerateBotHelp
+#ifdef GenerateBotHelp
         virtual string GetHelpName() { return "debug threat"; } //Must equal iternal name
         virtual string GetHelpDescription() {
             return "This strategy will make the bot give chat (noncombat) or visual (combat) feedback on it's current [h:value:threat|threat value].";

@@ -18,7 +18,7 @@ namespace ai
     public:
         CastTimeStrategy(PlayerbotAI* ai) : Strategy(ai) {}
         string getName() override { return "cast time"; }
-#ifndef GenerateBotHelp
+#ifdef GenerateBotHelp
         virtual string GetHelpName() { return "cast time"; } //Must equal iternal name
         virtual string GetHelpDescription() {
             return "This strategy will make bots less likely to cast long casttime spells when the target is at critical health.";
