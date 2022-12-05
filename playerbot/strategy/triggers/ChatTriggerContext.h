@@ -35,6 +35,7 @@ namespace ai
             creators["inv"] = &ChatTriggerContext::item_count;
             creators["e"] = &ChatTriggerContext::equip;
             creators["equip"] = &ChatTriggerContext::equip;
+            creators["keep"] = &ChatTriggerContext::keep;
             creators["ue"] = &ChatTriggerContext::uneqip;
             creators["s"] = &ChatTriggerContext::sell;
             creators["b"] = &ChatTriggerContext::buy;
@@ -173,6 +174,7 @@ namespace ai
         static Trigger* spells(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "spells"); }
         static Trigger* talents(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "talents"); }
         static Trigger* equip(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "e"); }
+        static Trigger* keep(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "keep"); }
         static Trigger* uneqip(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "ue"); }
         static Trigger* sell(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "s"); }
         static Trigger* buy(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "b"); }

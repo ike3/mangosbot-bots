@@ -92,6 +92,7 @@ ChatCommandHandlerStrategy::ChatCommandHandlerStrategy(PlayerbotAI* ai) : PassTr
     supported.push_back("rtsc");
     supported.push_back("ah");
     supported.push_back("ah bid");
+    supported.push_back("keep");
 }
 
 void ChatCommandHandlerStrategy::InitNonCombatTriggers(std::list<TriggerNode*> &triggers)
