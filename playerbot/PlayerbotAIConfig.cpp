@@ -352,7 +352,7 @@ bool PlayerbotAIConfig::Initialize()
         nm[0] = toupper(nm[0]);
     }
 
-    loadNonRandomBotAccounts();
+    loadFreeAltBotAccounts();
 
     targetPosRecalcDistance = config.GetFloatDefault("AiPlayerbot.TargetPosRecalcDistance", 0.1f),
     BarGoLink::SetOutputState(config.GetBoolDefault("AiPlayerbot.ShowProgressBars", false));
@@ -391,19 +391,10 @@ bool PlayerbotAIConfig::IsInRandomAccountList(uint32 id)
     return find(randomBotAccounts.begin(), randomBotAccounts.end(), id) != randomBotAccounts.end();
 }
 
-bool PlayerbotAIConfig::IsInNonRandomAccountList(uint32 id)
+bool PlayerbotAIConfig::IsFreeAltBot(uint32 guid)
 {
-    for (auto bot : nonRandomBots)
-        if (bot.first == id)
-            return true;
-
-    return false;
-}
-
-bool PlayerbotAIConfig::IsNonRandomBot(Player* player)
-{
-    for (auto bot : nonRandomBots)
-        if (bot.second == player->GetGUIDLow())
+    for (auto bot : freeAltBots)
+        if (bot.second == guid)
             return true;
 
     return false;
@@ -576,11 +567,11 @@ void PlayerbotAIConfig::loadWorldBuf(Config* config, uint32 factionId1, uint32 c
     }
 }
 
-void PlayerbotAIConfig::loadNonRandomBotAccounts()
+void PlayerbotAIConfig::loadFreeAltBotAccounts()
 {
     bool allCharsOnline = (selfBotLevel > 3);
 
-    nonRandomBots.clear();
+    freeAltBots.clear();
 
     QueryResult* results = LoginDatabase.PQuery("SELECT username, id FROM account where username not like '%s%%'", randomBotAccountPrefix);
     if (results)
@@ -617,7 +608,7 @@ void PlayerbotAIConfig::loadNonRandomBotAccounts()
                     charAlwaysOnline = !charAlwaysOnline;
 
                 if(charAlwaysOnline || accountAlwaysOnline || always)
-                    nonRandomBots.push_back(make_pair(accountId, guid));
+                    freeAltBots.push_back(make_pair(accountId, guid));
 
             } while (result->NextRow());
             delete result;

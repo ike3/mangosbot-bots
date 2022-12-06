@@ -1087,32 +1087,32 @@ void PlayerbotAI::HandleBotOutgoingPacket(const WorldPacket& packet)
                 time_t lastChat = GetAiObjectContext()->GetValue<time_t>("last said", "chat")->Get();
                 bool isPaused = time(0) < lastChat;
                 bool shouldReply = false;
-                bool isRandomBot = false;
+                bool isFreeBot = false;
                 sObjectMgr.GetPlayerNameByGUID(guid1, name);
                 uint32 accountId = sObjectMgr.GetPlayerAccountIdByGUID(guid1);
-                isRandomBot = sPlayerbotAIConfig.IsInRandomAccountList(accountId);
-                if(!isRandomBot)
-                    isRandomBot = sPlayerbotAIConfig.IsInNonRandomAccountList(accountId);
+                isFreeBot = sPlayerbotAIConfig.IsInRandomAccountList(accountId);
+                if(!isFreeBot)
+                    isFreeBot = sPlayerbotAIConfig.IsFreeAltBot(guid1);
 
                 bool isMentioned = message.find(bot->GetName()) != std::string::npos;
 
                 // random bot speaks, chat CD
-                if (isRandomBot && isPaused)
+                if (isFreeBot && isPaused)
                     return;
                 // BG: react only if mentioned or if not channel and real player spoke
-                if (bot->InBattleGround() && !(isMentioned || (msgtype != CHAT_MSG_CHANNEL && !isRandomBot)))
+                if (bot->InBattleGround() && !(isMentioned || (msgtype != CHAT_MSG_CHANNEL && !isFreeBot)))
                     return;
 
                 if (HasRealPlayerMaster() && guid1 != GetMaster()->GetObjectGuid())
                     return;
 
-                if (isRandomBot && urand(0, 20))
+                if (isFreeBot && urand(0, 20))
                     return;
 
                 if (lang == LANG_ADDON)
                     return;
 
-                if ((isRandomBot && !isPaused && (!urand(0, 30) || (!urand(0, 20) && message.find(bot->GetName()) != std::string::npos))) || (!isRandomBot && (isMentioned || !urand(0, 4))))
+                if ((isFreeBot && !isPaused && (!urand(0, 30) || (!urand(0, 20) && message.find(bot->GetName()) != std::string::npos))) || (!isFreeBot && (isMentioned || !urand(0, 4))))
                 {
                     QueueChatResponse(msgtype, guid1, ObjectGuid(), message, chanName, name);
                     GetAiObjectContext()->GetValue<time_t>("last said", "chat")->Set(time(0) + urand(5, 25));
@@ -3474,7 +3474,7 @@ ActivePiorityType PlayerbotAI::GetPriorityType()
     if (HasPlayerNearby(450.0f)) 
         return ActivePiorityType::NEARBY_PLAYER;
 
-    if (sPlayerbotAIConfig.IsNonRandomBot(bot))
+    if (sPlayerbotAIConfig.IsFreeAltBot(bot))
         return ActivePiorityType::IS_ALWAYS_ACTIVE;
 
     if (bot->InBattleGroundQueue()) 

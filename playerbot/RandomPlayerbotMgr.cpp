@@ -632,9 +632,9 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed, bool minimal)
     }
     if (pmo) pmo->finish();
 
-    if (!sPlayerbotAIConfig.nonRandomBots.empty())
+    if (!sPlayerbotAIConfig.freeAltBots.empty())
     {
-        for (auto bot : sPlayerbotAIConfig.nonRandomBots)
+        for (auto bot : sPlayerbotAIConfig.freeAltBots)
         {
             Player* player = GetPlayerBot(bot.second);
 
@@ -1448,7 +1448,7 @@ bool RandomPlayerbotMgr::ProcessBot(uint32 bot)
 {
     Player* player = GetPlayerBot(bot);
 
-    if (player && sPlayerbotAIConfig.IsNonRandomBot(player))
+    if (player && sPlayerbotAIConfig.IsFreeAltBot(player))
         return false;
 
     PlayerbotAI* ai = player ? player->GetPlayerbotAI() : NULL;
@@ -2260,17 +2260,10 @@ bool RandomPlayerbotMgr::IsRandomBot(Player* bot)
     {
         if (bot->GetPlayerbotAI()->IsRealPlayer())
             return false;
-
-        if (sPlayerbotAIConfig.IsNonRandomBot(bot))
-            if (!bot->GetPlayerbotAI()->GetMaster() || !bot->GetPlayerbotAI()->HasRealPlayerMaster())
-                return true;
     }
     if (bot)
     {
         if (sPlayerbotAIConfig.IsInRandomAccountList(bot->GetSession()->GetAccountId()))
-            return true;
-
-        if (sPlayerbotAIConfig.IsNonRandomBot(bot))
             return true;
 
         return IsRandomBot(bot->GetGUIDLow());
@@ -2727,7 +2720,7 @@ void RandomPlayerbotMgr::OnPlayerLogin(Player* player)
     if (IsRandomBot(player))
     {
         uint32 guid = player->GetGUIDLow();
-        if (sPlayerbotAIConfig.IsNonRandomBot(player))
+        if (sPlayerbotAIConfig.IsFreeAltBot(player))
             SetEventValue(guid, "always", 1, 0);
         else
            SetEventValue(guid, "login", 0, 0);

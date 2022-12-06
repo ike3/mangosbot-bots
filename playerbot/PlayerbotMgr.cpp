@@ -263,7 +263,7 @@ void PlayerbotHolder::OnBotLogin(Player * const bot)
 
     Player* master = ai->GetMaster();
 
-    if (!master && sPlayerbotAIConfig.IsNonRandomBot(bot))
+    if (!master && sPlayerbotAIConfig.IsFreeAltBot(bot))
     {
         ai->SetMaster(bot);
         master = bot;
@@ -414,7 +414,7 @@ void PlayerbotHolder::OnBotLogin(Player * const bot)
         }
     }
 
-    if (sPlayerbotAIConfig.instantRandomize && !sPlayerbotAIConfig.disableRandomLevels && sRandomPlayerbotMgr.IsRandomBot(bot) && !bot->GetTotalPlayedTime() && !sPlayerbotAIConfig.IsNonRandomBot(bot))
+    if (sPlayerbotAIConfig.instantRandomize && !sPlayerbotAIConfig.disableRandomLevels && sRandomPlayerbotMgr.IsRandomBot(bot) && !bot->GetTotalPlayedTime() && !sPlayerbotAIConfig.IsFreeAltBot(bot))
     {
         sRandomPlayerbotMgr.InstaRandomize(bot);
     }
@@ -713,7 +713,7 @@ list<string> PlayerbotHolder::HandlePlayerbotCommand(char const* args, Player* m
         {
             sRandomPlayerbotMgr.SetValue(guid.GetCounter(), "always", 1);
             messages.push_back("Enable offline player ai for " + alwaysName);
-            sPlayerbotAIConfig.nonRandomBots.push_back(make_pair(accountId, guid.GetCounter()));
+            sPlayerbotAIConfig.freeAltBots.push_back(make_pair(accountId, guid.GetCounter()));
         }
         else
         {
@@ -724,16 +724,16 @@ list<string> PlayerbotHolder::HandlePlayerbotCommand(char const* args, Player* m
             {
                 Player* bot = sRandomPlayerbotMgr.GetPlayerBot(guid);
 
-                if (bot && bot->GetPlayerbotAI() && !bot->GetPlayerbotAI()->GetMaster() && sPlayerbotAIConfig.IsNonRandomBot(bot))
+                if (bot && bot->GetPlayerbotAI() && !bot->GetPlayerbotAI()->GetMaster() && sPlayerbotAIConfig.IsFreeAltBot(bot))
                 {
                     sRandomPlayerbotMgr.LogoutPlayerBot(guid);
                 }
             }
 
-            auto it = remove_if(sPlayerbotAIConfig.nonRandomBots.begin(), sPlayerbotAIConfig.nonRandomBots.end(), [guid](std::pair<uint32, uint32> i) {return i.second == guid.GetCounter(); });
+            auto it = remove_if(sPlayerbotAIConfig.freeAltBots.begin(), sPlayerbotAIConfig.freeAltBots.end(), [guid](std::pair<uint32, uint32> i) {return i.second == guid.GetCounter(); });
 
-            if (it != sPlayerbotAIConfig.nonRandomBots.end())
-                sPlayerbotAIConfig.nonRandomBots.erase(it, sPlayerbotAIConfig.nonRandomBots.end());
+            if (it != sPlayerbotAIConfig.freeAltBots.end())
+                sPlayerbotAIConfig.freeAltBots.erase(it, sPlayerbotAIConfig.freeAltBots.end());
         }
         
         return messages;
@@ -1129,7 +1129,7 @@ void PlayerbotMgr::OnPlayerLogin(Player* player)
     sPlayerbotTextMgr.AddLocalePriority(player->GetSession()->GetSessionDbLocaleIndex());
     sLog.outBasic("Player %s logged in, localeDbc %i, localeDb %i", player->GetName(), (uint32)(player->GetSession()->GetSessionDbcLocale()), player->GetSession()->GetSessionDbLocaleIndex());
 
-    if(sPlayerbotAIConfig.selfBotLevel > 2 || sPlayerbotAIConfig.IsNonRandomBot(player))
+    if(sPlayerbotAIConfig.selfBotLevel > 2 || sPlayerbotAIConfig.IsFreeAltBot(player))
         HandlePlayerbotCommand("self", player);
 
     if (!sPlayerbotAIConfig.botAutologin)
