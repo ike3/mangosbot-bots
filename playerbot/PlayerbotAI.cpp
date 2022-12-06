@@ -1452,7 +1452,7 @@ void PlayerbotAI::DoNextAction(bool min)
         else if (aiInternalUpdateDelay < 1000)
             bot->SetStandState(UNIT_STAND_STATE_STAND);
 
-        if (!group && sRandomPlayerbotMgr.IsRandomBot(bot))
+        if (!group && sRandomPlayerbotMgr.IsFreeBot(bot))
         {
             bot->GetPlayerbotAI()->SetMaster(nullptr);
         }
@@ -2079,7 +2079,7 @@ bool PlayerbotAI::IsTellAllowed(PlayerbotSecurityLevel securityLevel)
     if (!GetSecurity()->CheckLevelFor(securityLevel, true, master))
         return false;
 
-    if (sPlayerbotAIConfig.whisperDistance && !bot->GetGroup() && sRandomPlayerbotMgr.IsRandomBot(bot) &&
+    if (sPlayerbotAIConfig.whisperDistance && !bot->GetGroup() && sRandomPlayerbotMgr.IsFreeBot(bot) &&
             master->GetSession()->GetSecurity() < SEC_GAMEMASTER &&
             (bot->GetMapId() != master->GetMapId() || sServerFacade.GetDistance2d(bot, master) > sPlayerbotAIConfig.whisperDistance))
         return false;

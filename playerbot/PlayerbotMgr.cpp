@@ -339,7 +339,7 @@ void PlayerbotHolder::OnBotLogin(Player * const bot)
     ai->TellMaster(BOT_TEXT("hello"));
 
     // bots join World chat if not solo oriented
-    if (bot->GetLevel() >= 10 && sRandomPlayerbotMgr.IsRandomBot(bot) && bot->GetPlayerbotAI() && bot->GetPlayerbotAI()->GetGrouperType() != GrouperType::SOLO)
+    if (bot->GetLevel() >= 10 && sRandomPlayerbotMgr.IsFreeBot(bot) && bot->GetPlayerbotAI() && bot->GetPlayerbotAI()->GetGrouperType() != GrouperType::SOLO)
     {
         // TODO make action/config
         // Make the bot join the world channel for chat
@@ -414,7 +414,7 @@ void PlayerbotHolder::OnBotLogin(Player * const bot)
         }
     }
 
-    if (sPlayerbotAIConfig.instantRandomize && !sPlayerbotAIConfig.disableRandomLevels && sRandomPlayerbotMgr.IsRandomBot(bot) && !bot->GetTotalPlayedTime() && !sPlayerbotAIConfig.IsFreeAltBot(bot))
+    if (sPlayerbotAIConfig.instantRandomize && !sPlayerbotAIConfig.disableRandomLevels && sRandomPlayerbotMgr.IsRandomBot(bot) && !bot->GetTotalPlayedTime())
     {
         sRandomPlayerbotMgr.InstaRandomize(bot);
     }
@@ -969,7 +969,7 @@ string PlayerbotHolder::ListBots(Player* master)
         for (Group::member_citerator itr = groupSlot.begin(); itr != groupSlot.end(); itr++)
         {
             Player *member = sObjectMgr.GetPlayer(itr->guid);
-            if (member && sRandomPlayerbotMgr.IsRandomBot(member))
+            if (member && sRandomPlayerbotMgr.IsFreeBot(member))
             {
                 string name = member->GetName();
 

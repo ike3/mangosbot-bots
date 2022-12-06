@@ -28,7 +28,7 @@ bool WhoAction::Execute(Event& event)
     {
         out << QuerySkill(text);
 
-        if (sRandomPlayerbotMgr.IsRandomBot(bot))
+        if (sRandomPlayerbotMgr.IsFreeBot(bot))
             out << QueryTrade(text);
     }
     else

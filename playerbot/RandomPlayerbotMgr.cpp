@@ -993,7 +993,7 @@ void RandomPlayerbotMgr::CheckBgQueue()
         if (!bot->InBattleGroundQueue())
             continue;
 
-        if (!IsRandomBot(bot))
+        if (!IsFreeBot(bot))
             continue;
 
         if (bot->InBattleGround() && bot->GetBattleGround()->GetStatus() == STATUS_WAIT_LEAVE)
@@ -2717,7 +2717,7 @@ void RandomPlayerbotMgr::OnPlayerLogin(Player* player)
         
     }
 
-    if (IsRandomBot(player))
+    if (IsFreeBot(player))
     {
         uint32 guid = player->GetGUIDLow();
         if (sPlayerbotAIConfig.IsFreeAltBot(player))

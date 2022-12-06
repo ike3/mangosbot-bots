@@ -51,7 +51,7 @@ namespace ai
             if (timeSinceLastPotion > cooldown)
             {
                 // If free food is enabled, no need to check for the item in the inventory
-                if (/*sRandomPlayerbotMgr.IsRandomBot(bot) && */sPlayerbotAIConfig.freeFood)
+                if (sPlayerbotAIConfig.freeFood)
                 {
                     return true;
                 }
@@ -67,7 +67,7 @@ namespace ai
         bool Execute(Event& event) override
         {
             bool result = false;
-            if (/*sRandomPlayerbotMgr.IsRandomBot(bot) && */sPlayerbotAIConfig.freeFood)
+            if (sPlayerbotAIConfig.freeFood)
             {
                 if (bot->IsNonMeleeSpellCasted(true))
                 {

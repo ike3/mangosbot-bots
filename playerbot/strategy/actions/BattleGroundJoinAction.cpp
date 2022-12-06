@@ -939,7 +939,7 @@ bool BGLeaveAction::Execute(Event& event)
         leave << uint8(0) << uint8(0) << uint32(0) << uint16(0);
         bot->GetSession()->HandleLeaveBattlefieldOpcode(leave);
 
-        if (IsRandomBot)
+        if (sRandomPlayerbotMgr.IsFreeBot(bot))
             ai->SetMaster(NULL);
 
         ai->ResetStrategies(!IsRandomBot);
@@ -970,7 +970,7 @@ bool BGLeaveAction::Execute(Event& event)
 #ifdef CMANGOS
     bot->GetSession()->HandleBattlefieldPortOpcode(packet);
 #endif
-    if (IsRandomBot)
+    if (sRandomPlayerbotMgr.IsFreeBot(bot))
         ai->SetMaster(NULL);
 
     ai->ResetStrategies(!IsRandomBot);
@@ -1192,7 +1192,7 @@ bool BGStatusAction::Execute(Event& event)
         }
 
         // remove warsong strategy
-        if (IsRandomBot)
+        if (sRandomPlayerbotMgr.IsFreeBot(bot))
             ai->SetMaster(NULL);
 
         ai->ChangeStrategy("-warsong", BotState::BOT_STATE_COMBAT);

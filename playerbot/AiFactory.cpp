@@ -303,7 +303,7 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
 #endif
     }
 
-	if (facade->IsRealPlayer() || sRandomPlayerbotMgr.IsRandomBot(player))
+	if (facade->IsRealPlayer() || sRandomPlayerbotMgr.IsFreeBot(player))
 	{
         if (!player->GetGroup())
         {
@@ -656,7 +656,7 @@ Engine* AiFactory::createNonCombatEngine(Player* player, PlayerbotAI* const faca
 void AiFactory::AddDefaultDeadStrategies(Player* player, PlayerbotAI* const facade, Engine* deadEngine)
 {
     deadEngine->addStrategies("dead", "stay", "chat", "default", "follow", NULL);
-    if (sRandomPlayerbotMgr.IsRandomBot(player) && !player->GetGroup())
+    if (sRandomPlayerbotMgr.IsFreeBot(player) && !player->GetGroup())
     {
         deadEngine->removeStrategy("follow");
     }

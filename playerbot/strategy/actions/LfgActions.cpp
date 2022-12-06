@@ -1196,7 +1196,7 @@ bool LfgJoinAction::isUseful()
     if (bot->IsDead())
         return false;
 
-    if (!sRandomPlayerbotMgr.IsRandomBot(bot))
+    if (!sRandomPlayerbotMgr.IsFreeBot(bot))
         return false;
 
     Map* map = bot->GetMap();

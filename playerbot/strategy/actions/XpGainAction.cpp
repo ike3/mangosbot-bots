@@ -30,7 +30,7 @@ bool XpGainAction::Execute(Event& event)
         sPlayerbotAIConfig.logEvent(ai, "XpGainAction", guid, to_string(xpgain));
     }
 
-    if (!sRandomPlayerbotMgr.IsRandomBot(bot) || sPlayerbotAIConfig.playerbotsXPrate == 1)
+    if (!sRandomPlayerbotMgr.IsFreeBot(bot) || sPlayerbotAIConfig.playerbotsXPrate == 1)
         return false;
 
     WorldPacket p(event.getPacket()); // (8+4+1+4+8)
