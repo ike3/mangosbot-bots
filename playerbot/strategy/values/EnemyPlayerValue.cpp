@@ -105,43 +105,54 @@ Unit* EnemyPlayerValue::Calculate()
     }
 
     Unit* bestEnemyPlayer = nullptr;
-    float bestEnemyPlayerDistance = 999999999.0f;
-    uint32 bestEnemyPlayerHealth = 99999999;
-
-    const bool isMelee = !ai->IsRanged(bot);
-
     list<ObjectGuid> enemyPlayers = AI_VALUE(list<ObjectGuid>, "enemy player targets");
-    for (const ObjectGuid& targetGuid : enemyPlayers)
+    if (!enemyPlayers.empty())
     {
-        Unit* target = ai->GetUnit(targetGuid);
-        if(target)
+        const bool isMelee = !ai->IsRanged(bot);
+        uint32 bestEnemyPlayerHealth = std::numeric_limits<uint32>::max();
+        float bestEnemyPlayerDistance = std::numeric_limits<float>::max();
+      
+        // Use the first enemy player as a base
+        Unit* firstTarget = ai->GetUnit(enemyPlayers.front());
+        if (firstTarget)
         {
-            // Prioritize an enemy player if it has a battleground flag
-            if ((bot->GetTeam() == HORDE && target->HasAura(23333)) ||
-                (bot->GetTeam() == ALLIANCE && target->HasAura(23335)))
-            {
-                bestEnemyPlayer = target;
-                break;
-            }
+            bestEnemyPlayerDistance = firstTarget->GetDistance(bot, false);
+            bestEnemyPlayerHealth = firstTarget->GetHealth();
+            bestEnemyPlayer = firstTarget;
+        }
 
-            if (isMelee)
+        for (const ObjectGuid& targetGuid : enemyPlayers)
+        {
+            Unit* target = ai->GetUnit(targetGuid);
+            if (target)
             {
-                // Score best enemy player based on lowest distance
-                const float distanceToEnemyPlayer = target->GetDistance(bot, false);
-                if (distanceToEnemyPlayer < bestEnemyPlayerDistance)
+                // Prioritize an enemy player if it has a battleground flag
+                if ((bot->GetTeam() == HORDE && target->HasAura(23333)) ||
+                    (bot->GetTeam() == ALLIANCE && target->HasAura(23335)))
                 {
-                    bestEnemyPlayerDistance = distanceToEnemyPlayer;
                     bestEnemyPlayer = target;
+                    break;
                 }
-            }
-            else
-            {
-                // Score best enemy player based on lowest health
-                const uint32 enemyPlayerHealth = target->GetHealth();
-                if (enemyPlayerHealth < bestEnemyPlayerHealth)
+
+                if (isMelee)
                 {
-                    bestEnemyPlayerHealth = enemyPlayerHealth;
-                    bestEnemyPlayer = target;
+                    // Score best enemy player based on lowest distance
+                    const float distanceToEnemyPlayer = target->GetDistance(bot, false);
+                    if (distanceToEnemyPlayer < bestEnemyPlayerDistance)
+                    {
+                        bestEnemyPlayerDistance = distanceToEnemyPlayer;
+                        bestEnemyPlayer = target;
+                    }
+                }
+                else
+                {
+                    // Score best enemy player based on lowest health
+                    const uint32 enemyPlayerHealth = target->GetHealth();
+                    if (enemyPlayerHealth < bestEnemyPlayerHealth)
+                    {
+                        bestEnemyPlayerHealth = enemyPlayerHealth;
+                        bestEnemyPlayer = target;
+                    }
                 }
             }
         }
