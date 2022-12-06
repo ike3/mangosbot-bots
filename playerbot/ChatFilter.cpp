@@ -77,7 +77,7 @@ public:
         if (melee && ai->IsRanged(bot))
             return "";
 
-        if (tank || dps || heal || ranged || melee)
+        if (tank || dps || heal || ranged || melee || noheal || nodps || nodps)
             return ChatFilter::Filter(message);
 
         return message;
