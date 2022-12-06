@@ -60,6 +60,9 @@ namespace ai
             if (!player)
                 continue;
 
+            if (!player->GetMapId() != bot->GetMapId())
+                continue;
+
             if (player->GetGroup())
                 continue;
 
