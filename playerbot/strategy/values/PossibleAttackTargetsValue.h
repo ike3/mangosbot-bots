@@ -14,13 +14,14 @@ namespace ai
 
         static bool IsValid(Unit* target, Player* player, float range = sPlayerbotAIConfig.sightDistance, bool ignoreCC = false, bool checkAttackerValid = true);
 
+        static bool HasBreakableCC(Unit* target, Player* player);
+        static bool HasUnBreakableCC(Unit* target, Player* player);
+
 	private:
 		void RemoveNonThreating(list<ObjectGuid>& targets, bool getOne);
 
         static bool IsPossibleTarget(Unit* target, Player *player, float range, bool ignoreCC);
         static bool HasIgnoreCCRti(Unit* target, Player* player);
-        static bool HasBreakableCC(Unit* target, Player* player);
-        static bool HasUnBreakableCC(Unit* target, Player* player);
         static bool IsTapped(Unit* target, Player* player);
     };
 

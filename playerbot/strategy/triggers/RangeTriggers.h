@@ -3,19 +3,24 @@
 #include "../../PlayerbotAIConfig.h"
 #include "../../ServerFacade.h"
 #include "../generic/CombatStrategy.h"
+#include "../values/PossibleAttackTargetsValue.h"
 
 namespace ai
 {
-    class EnemyTooCloseForSpellTrigger : public Trigger {
+    class EnemyTooCloseForSpellTrigger : public Trigger 
+    {
     public:
         EnemyTooCloseForSpellTrigger(PlayerbotAI* ai) : Trigger(ai, "enemy too close for spell") {}
+        
         virtual bool IsActive()
         {
             Unit* target = AI_VALUE(Unit*, "current target");
             if (target)
             {
+                const bool canMove = !PossibleAttackTargetsValue::HasBreakableCC(target, bot) && !PossibleAttackTargetsValue::HasUnBreakableCC(target, bot);
+
                 // Don't move if the target is targeting you and you can't add distance between you and the target
-                if (target->GetTarget() == bot && !target->IsRooted() && target->GetSpeedInMotion() > (bot->GetSpeedInMotion() * 0.65))
+                if (target->GetTarget() == bot && canMove && target->GetSpeedInMotion() > (bot->GetSpeedInMotion() * 0.65))
                 {
                     return false;
                 }
@@ -25,7 +30,7 @@ namespace ai
                 float const targetDistance = sServerFacade.GetDistance2d(bot, target) + combatReach;
 
                 // No need to move if the target is rooted and you can shoot
-                if (target->IsRooted() && (targetDistance > minDistance))
+                if (!canMove && (targetDistance > minDistance))
                 {
                     return false;
                 }
@@ -74,9 +79,11 @@ namespace ai
         }
     };
 
-    class EnemyTooCloseForShootTrigger : public Trigger {
+    class EnemyTooCloseForShootTrigger : public Trigger 
+    {
     public:
         EnemyTooCloseForShootTrigger(PlayerbotAI* ai) : Trigger(ai, "enemy too close for shoot") {}
+        
         virtual bool IsActive()
         {
             Unit* target = AI_VALUE(Unit*, "current target");
@@ -138,13 +145,16 @@ namespace ai
 
                 return sServerFacade.IsDistanceLessOrEqualThan(targetDistance, minShootDistance * coeff);
             }
+
             return false;
         }
     };
 
-    class EnemyTooCloseForMeleeTrigger : public Trigger {
+    class EnemyTooCloseForMeleeTrigger : public Trigger 
+    {
     public:
         EnemyTooCloseForMeleeTrigger(PlayerbotAI* ai) : Trigger(ai, "enemy too close for melee", 3) {}
+        
         virtual bool IsActive()
         {
             Unit* target = AI_VALUE(Unit*, "current target");
@@ -155,9 +165,11 @@ namespace ai
         }
     };
 
-    class EnemyIsCloseTrigger : public Trigger {
+    class EnemyIsCloseTrigger : public Trigger 
+    {
     public:
         EnemyIsCloseTrigger(PlayerbotAI* ai) : Trigger(ai, "enemy is close") {}
+        
         virtual bool IsActive()
         {
             Unit* target = AI_VALUE(Unit*, "current target");
@@ -166,34 +178,40 @@ namespace ai
         }
     };
 
-    class EnemyInRangeTrigger : public Trigger {
+    class EnemyInRangeTrigger : public Trigger 
+    {
     public:
         EnemyInRangeTrigger(PlayerbotAI* ai, string name, float distance) : Trigger(ai, name)
         {
             this->distance = distance;
         }
+        
         virtual bool IsActive()
         {
             Unit* target = AI_VALUE(Unit*, "current target");
             return target &&
                 sServerFacade.IsDistanceLessOrEqualThan(AI_VALUE2(float, "distance", "current target"), distance);
         }
+
     protected:
         float distance;
     };
 
-    class OutOfRangeTrigger : public Trigger {
+    class OutOfRangeTrigger : public Trigger 
+    {
     public:
         OutOfRangeTrigger(PlayerbotAI* ai, string name, float distance) : Trigger(ai, name)
         {
             this->distance = distance;
         }
+
         virtual bool IsActive()
         {
             Unit* target = AI_VALUE(Unit*, GetTargetName());
             return target &&
                 sServerFacade.IsDistanceGreaterThan(AI_VALUE2(float, "distance", GetTargetName()), distance);
         }
+
         virtual string GetTargetName() { return "current target"; }
 
     protected:
@@ -204,6 +222,7 @@ namespace ai
     {
     public:
         EnemyOutOfMeleeTrigger(PlayerbotAI* ai) : OutOfRangeTrigger(ai, "enemy out of melee range", sPlayerbotAIConfig.meleeDistance) {}
+        
         virtual bool IsActive()
         {
             Unit* target = AI_VALUE(Unit*, GetTargetName());
@@ -218,6 +237,7 @@ namespace ai
     {
     public:
         EnemyOutOfSpellRangeTrigger(PlayerbotAI* ai) : OutOfRangeTrigger(ai, "enemy out of spell range", ai->GetRange("spell")) {}
+        
         virtual bool IsActive()
         {
             Unit* target = AI_VALUE(Unit*, GetTargetName());
@@ -233,6 +253,7 @@ namespace ai
     public:
         PartyMemberToHealOutOfSpellRangeTrigger(PlayerbotAI* ai) : OutOfRangeTrigger(ai, "party member to heal out of spell range", ai->GetRange("heal")) {}
         virtual string GetTargetName() { return "party member to heal"; }
+        
         virtual bool IsActive()
         {
             Unit* target = AI_VALUE(Unit*, GetTargetName());
@@ -243,7 +264,8 @@ namespace ai
         }
     };
 
-    class FarFromMasterTrigger : public Trigger {
+    class FarFromMasterTrigger : public Trigger 
+    {
     public:
         FarFromMasterTrigger(PlayerbotAI* ai, string name = "far from master", float distance = 12.0f, int checkInterval = 50) : Trigger(ai, name, checkInterval), distance(distance) {}
 
