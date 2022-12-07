@@ -371,6 +371,8 @@ public:
 
     virtual bool IsInterruptableSpellCasting(Unit* player, string spell, uint8 effectMask);
     virtual bool HasAuraToDispel(Unit* player, uint32 dispelType);
+    bool HasSpell(string name) const;
+    bool HasSpell(uint32 spellid) const;
     bool CanCastSpell(uint32 spellid, Unit* target, uint8 effectMask, bool checkHasSpell = true, Item* itemTarget = NULL, bool ignoreRange = false);
     bool CanCastSpell(uint32 spellid, GameObject* goTarget, uint8 effectMask, bool checkHasSpell = true, bool ignoreRange = false);
     bool CanCastSpell(uint32 spellid, float x, float y, float z, uint8 effectMask, bool checkHasSpell = true, Item* itemTarget = NULL, bool ignoreRange = false);

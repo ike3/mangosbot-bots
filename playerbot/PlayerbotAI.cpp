@@ -2285,6 +2285,26 @@ bool PlayerbotAI::GetSpellRange(string name, float* maxRange, float* minRange)
     return false;
 }
 
+bool PlayerbotAI::HasSpell(string name) const
+{
+    return HasSpell(aiObjectContext->GetValue<uint32>("spell id", name)->Get());
+}
+
+bool PlayerbotAI::HasSpell(uint32 spellid) const
+{
+    Pet* pet = bot->GetPet();
+    if (pet && pet->HasSpell(spellid))
+    {
+        return true;
+    }
+    else if (bot->HasSpell(spellid))
+    {
+        return true;
+    }
+
+    return false;
+}
+
 bool PlayerbotAI::CanCastSpell(string name, Unit* target, uint8 effectMask, Item* itemTarget, bool ignoreRange)
 {
     return CanCastSpell(aiObjectContext->GetValue<uint32>("spell id", name)->Get(), target, 0, true, itemTarget, ignoreRange);
@@ -2301,21 +2321,15 @@ bool PlayerbotAI::CanCastSpell(uint32 spellid, Unit* target, uint8 effectMask, b
     if (!target)
         target = bot;
 
+    if (checkHasSpell && !HasSpell(spellid))
+        return false;
+
     Pet* pet = bot->GetPet();
     if (pet && pet->HasSpell(spellid))
         return true;
 
-    if (checkHasSpell && !bot->HasSpell(spellid))
-        return false;
-
-#ifdef MANGOS
-    if (bot->HasSpellCooldown(spellid))
-        return false;
-#endif
-#ifdef CMANGOS
     if (!bot->IsSpellReady(spellid))
         return false;
-#endif
 
 	SpellEntry const *spellInfo = sServerFacade.LookupSpellInfo(spellid);
 	if (!spellInfo)
