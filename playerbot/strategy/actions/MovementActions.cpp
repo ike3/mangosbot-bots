@@ -849,9 +849,10 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
 
     // walk if master walks and is close
     bool masterWalking = false;
-    if (ai->GetMaster())
+    Unit* master = ai->GetMaster();
+    if (master && sServerFacade.IsFriendlyTo(bot, master))
     {
-        if (ai->GetMaster()->m_movementInfo.HasMovementFlag(MOVEFLAG_WALK_MODE) && sServerFacade.GetDistance2d(bot, ai->GetMaster()) < 20.0f)
+        if (master->m_movementInfo.HasMovementFlag(MOVEFLAG_WALK_MODE) && sServerFacade.GetDistance2d(bot, master) < 20.0f)
             masterWalking = true;
     }
     bot->SendHeartBeat();

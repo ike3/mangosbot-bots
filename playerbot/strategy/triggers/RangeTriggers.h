@@ -271,7 +271,13 @@ namespace ai
 
         virtual bool IsActive()
         {
-            return sServerFacade.IsDistanceGreaterThan(AI_VALUE2(float, "distance", "master target"), distance);
+            Unit* master = AI_VALUE(Unit*, "master target");
+            if (master && sServerFacade.IsFriendlyTo(bot, master))
+            {
+                return sServerFacade.IsDistanceGreaterThan(AI_VALUE2(float, "distance", "master target"), distance);
+            }
+
+            return false;
         }
 
     private:
@@ -281,7 +287,7 @@ namespace ai
     class OutOfReactRangeTrigger : public FarFromMasterTrigger
     {
     public:
-        OutOfReactRangeTrigger(PlayerbotAI* ai,string name = "out of react range", float distance = 50.0f, int checkInterval = 5) : FarFromMasterTrigger(ai, name, distance,checkInterval) {}
+        OutOfReactRangeTrigger(PlayerbotAI* ai,string name = "out of react range", float distance = 50.0f, int checkInterval = 5) : FarFromMasterTrigger(ai, name, distance, checkInterval) {}
     };
 
     class NotNearMasterTrigger : public OutOfReactRangeTrigger
