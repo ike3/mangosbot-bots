@@ -116,7 +116,6 @@ void Engine::Init()
 	}
 }
 
-
 bool Engine::DoNextAction(Unit* unit, int depth, bool minimal)
 {
     LogAction("--- AI Tick ---");
@@ -192,24 +191,24 @@ bool Engine::DoNextAction(Unit* unit, int depth, bool minimal)
                         }
                     }
 
+                    if (!skipPrerequisites)
+                    {
+                        LogAction("A:%s - PREREQ", action->getName().c_str());
+                        if (MultiplyAndPush(actionNode->getPrerequisites(), relevance + 0.02, false, event, "prereq"))
+                        {
+                            PushAgain(actionNode, relevance + 0.01, event);
+
+                            if (pmo1) pmo1->finish();
+                            continue;
+                        }
+                    }
+
                     PerformanceMonitorOperation* pmo3 = sPerformanceMonitor.start(PERF_MON_ACTION, "isPossible", &aiObjectContext->performanceStack);
                     bool isPossible = action->isPossible();
                     if (pmo3) pmo3->finish();
 
                     if (isPossible && relevance)
                     {
-                        if (!skipPrerequisites)
-                        {
-                            LogAction("A:%s - PREREQ", action->getName().c_str());
-                            if (MultiplyAndPush(actionNode->getPrerequisites(), relevance + 0.02, false, event, "prereq"))
-                            {
-                                PushAgain(actionNode, relevance + 0.01, event);
-
-                                if (pmo1) pmo1->finish();
-                                continue;
-                            }
-                        }
-
                         PerformanceMonitorOperation* pmo4 = sPerformanceMonitor.start(PERF_MON_ACTION, "Execute", &aiObjectContext->performanceStack);
                         actionExecuted = ListenAndExecute(action, event);
                         if (pmo4) pmo4->finish();
@@ -655,7 +654,7 @@ Action* Engine::InitializeAction(ActionNode* actionNode)
         actionNode->setAction(action);
     }
 
-    if (action != nullptr)
+    if (action)
     {
         action->SetReaction(false);
     }

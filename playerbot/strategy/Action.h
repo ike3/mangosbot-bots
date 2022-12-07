@@ -28,8 +28,8 @@ namespace ai
         }
 
     public:
-        string getName() { return name; }
-        float getRelevance() {return relevance;}
+        string getName() const { return name; }
+        float getRelevance() const { return relevance; }
 
     public:
         static int size(NextAction** actions);
@@ -90,6 +90,8 @@ namespace ai
         bool reaction = false;
 	};
 
+    //---------------------------------------------------------------------------------------------------------------------
+
     class ActionNode
     {
     public:
@@ -101,6 +103,7 @@ namespace ai
             this->alternatives = alternatives;
             this->continuers = continuers;
         }
+
         virtual ~ActionNode()
         {
             NextAction::destroy(prerequisites);
@@ -151,10 +154,6 @@ namespace ai
         Event event;
         time_t created;
 	};
-
-    //---------------------------------------------------------------------------------------------------------------------
-
-
 }
 
 #define AI_VALUE(type, name) context->GetValue<type>(name)->Get()

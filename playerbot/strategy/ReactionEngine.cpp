@@ -253,7 +253,7 @@ ai::Action* ReactionEngine::InitializeAction(ActionNode* actionNode)
         actionNode->setAction(action);
     }
 
-    if (action != nullptr)
+    if (action)
     {
         action->SetReaction(true);
     }
