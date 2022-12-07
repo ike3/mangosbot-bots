@@ -377,6 +377,7 @@ namespace ai
     public:
         SetTotemBars(PlayerbotAI* ai) : Action(ai, "setup shaman totembar")
         {
+#ifdef MANGOSBOT_TWO
             //This sets the totems in the proper actions bars (the totem bars)
             //Fire totems
             uint32 totem_of_wrath_id = AI_VALUE2(uint32, "spell id", "totem of wrath");
@@ -418,6 +419,7 @@ namespace ai
                 bot->addActionButton(bot->GetActiveSpec(), ACTION_BUTTON_SHAMAN_TOTEMS_BAR + 6, wrath_of_air_totem_id, ACTION_BUTTON_SPELL);
             if (mana_spring_totem_id)
                 bot->addActionButton(bot->GetActiveSpec(), ACTION_BUTTON_SHAMAN_TOTEMS_BAR + 7, mana_spring_totem_id, ACTION_BUTTON_SPELL);
+#endif
         }
     };
 }
