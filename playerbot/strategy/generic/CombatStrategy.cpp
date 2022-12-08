@@ -16,10 +16,6 @@ void CombatStrategy::InitCombatTriggers(list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("check mount state", 88.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "out of react range",
-        NextAction::array(0, new NextAction("flee to master", 55.0f), NULL)));
-
-    triggers.push_back(new TriggerNode(
         "combat stuck",
         NextAction::array(0, new NextAction("reset", 1.0f), NULL)));
 

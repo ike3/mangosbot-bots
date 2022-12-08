@@ -15,6 +15,11 @@ void FollowMasterStrategy::InitNonCombatTriggers(std::list<TriggerNode*> &trigge
         NextAction::array(0, new NextAction("follow", 1.0f), NULL)));
 }
 
+void FollowMasterStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    InitNonCombatTriggers(triggers);
+}
+
 void FollowMasterStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
 {
     InitNonCombatTriggers(triggers);
