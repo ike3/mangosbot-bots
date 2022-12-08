@@ -30,6 +30,8 @@ namespace ai
         bool Flee(Unit *target);
         void ClearIdleState();
         void UpdateMovementState();
+
+        bool isPossible() override;
         
         void CreateWp(Player* wpOwner, float x, float y, float z, float o, uint32 entry, bool important = false);
         float GetAngle(const float x1, const float y1, const float x2, const float y2);
@@ -39,9 +41,7 @@ namespace ai
     {
     public:
         FleeAction(PlayerbotAI* ai, float distance = sPlayerbotAIConfig.spellDistance) : MovementAction(ai, "flee"), distance(distance) {}
-
         virtual bool Execute(Event& event);
-        virtual bool isPossible();
 
 	private:
 		float distance;
@@ -51,7 +51,6 @@ namespace ai
     {
     public:
         FleeWithPetAction(PlayerbotAI* ai) : MovementAction(ai, "flee with pet") {}
-
         virtual bool Execute(Event& event);
     };
 

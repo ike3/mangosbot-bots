@@ -35,6 +35,15 @@ void MovementAction::CreateWp(Player* wpOwner, float x, float y, float z, float 
         wpCreature->SetObjectScale(0.5f);
 }
 
+bool MovementAction::isPossible()
+{
+    // Do not move if stay strategy is set
+    if (ai->HasStrategy("stay", BotState::BOT_STATE_NON_COMBAT))
+        return false;
+
+    return true;
+}
+
 bool MovementAction::MoveNear(uint32 mapId, float x, float y, float z, float distance)
 {
     float angle = GetFollowAngle();
@@ -1600,15 +1609,6 @@ bool FleeAction::Execute(Event& event)
     return Flee(AI_VALUE(Unit*, "current target"));
 }
 
-bool FleeAction::isPossible()
-{
-    // Do not move if stay strategy is set
-    if (ai->HasStrategy("stay", BotState::BOT_STATE_NON_COMBAT))
-        return false;
-
-    return true;
-}
-
 bool FleeWithPetAction::Execute(Event& event)
 {
     Pet* pet = bot->GetPet();
@@ -1751,20 +1751,23 @@ bool SetBehindTargetAction::isUseful()
 
 bool SetBehindTargetAction::isPossible()
 {
-    // Check if the target is targeting the bot
-    Unit* target = AI_VALUE(Unit*, "current target");
-    if (target)
+    if(MovementAction::isPossible())
     {
-        // If the target is a player
-        Player* playerTarget = dynamic_cast<Player*>(target);
-        if(playerTarget)
+        // Check if the target is targeting the bot
+        Unit* target = AI_VALUE(Unit*, "current target");
+        if (target)
         {
-            return bot->GetObjectGuid() != playerTarget->GetSelectionGuid();
-        }
-        // If the target is a NPC
-        else 
-        {
-            return !(target->GetVictim() && (target->GetVictim()->GetObjectGuid() == bot->GetObjectGuid()));
+            // If the target is a player
+            Player* playerTarget = dynamic_cast<Player*>(target);
+            if(playerTarget)
+            {
+                return bot->GetObjectGuid() != playerTarget->GetSelectionGuid();
+            }
+            // If the target is a NPC
+            else 
+            {
+                return !(target->GetVictim() && (target->GetVictim()->GetObjectGuid() == bot->GetObjectGuid()));
+            }
         }
     }
 
