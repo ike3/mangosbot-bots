@@ -39,7 +39,7 @@ namespace ai
             while ((next = qualifier1.find(separator, last)) != string::npos)
             { 
                 result.push_back(qualifier1.substr(last, next - last));
-                last = next + 1;
+                last = next + separator.length();
             } 
 
             result.push_back(qualifier1.substr(last));
