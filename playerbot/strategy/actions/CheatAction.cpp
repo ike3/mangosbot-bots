@@ -46,8 +46,8 @@ BotCheatMask CheatAction::GetCheatMask(string cheat)
         return BotCheatMask::mana;
     if (cheat == "power")
         return BotCheatMask::power;
-    if (cheat == "supply")
-        return BotCheatMask::supply;
+    if (cheat == "item")
+        return BotCheatMask::item;
 
     return BotCheatMask::none;
 }
@@ -66,8 +66,8 @@ string CheatAction::GetCheatName(BotCheatMask cheatMask)
         return "mana";
     case BotCheatMask::power:
         return "power";
-    case BotCheatMask::supply:
-        return "supply";
+    case BotCheatMask::item:
+        return "item";
     default: 
         return "none";
     }
