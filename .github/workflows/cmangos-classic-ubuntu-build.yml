@@ -53,7 +53,7 @@ jobs:
       - name: Checkout Core
         uses: actions/checkout@v2
         with:
-          repository: celguar/mangosbot-bots
+          repository: celguar/mangos-classic
           ref: ${{env.CORE_BRANCH}}
           path: ${{env.REPO_DIR}}
           
