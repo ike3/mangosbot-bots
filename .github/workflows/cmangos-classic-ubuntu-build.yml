@@ -1,4 +1,4 @@
-name: Ubuntu Build
+name: CMaNGOS Classic Ubuntu Build
 
 # use manual run
 on: [workflow_dispatch]
