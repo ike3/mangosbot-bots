@@ -430,11 +430,16 @@ string PlayerbotHolder::ProcessBotCommand(string cmd, ObjectGuid guid, ObjectGui
     bool isRandomAccount = sPlayerbotAIConfig.IsInRandomAccountList(botAccount);
     bool isMasterAccount = (masterAccountId == botAccount);
 
-    if (!isRandomAccount && !isMasterAccount && !admin && masterguid)
+    if (!isRandomAccount && (!isMasterAccount && !admin && masterguid))
     {
         Player* master = sObjectMgr.GetPlayer(masterguid);
         if (master && (!sPlayerbotAIConfig.allowGuildBots || !masterGuildId || (masterGuildId && master->GetGuildIdFromDB(guid) != masterGuildId)))
             return "not in your guild or account";
+    }
+
+    if (!isRandomAccount && this == &sRandomPlayerbotMgr)
+    {
+        return "Can not control alt-bots with this command.";
     }
 
     if (cmd == "add" || cmd == "login")
