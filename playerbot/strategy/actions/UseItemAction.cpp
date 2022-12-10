@@ -630,7 +630,11 @@ bool UseItemIdAction::CastItemSpell(uint32 itemId, Unit* target)
             continue;
 
         // wrong triggering type
+#ifdef MANGOSBOT_ZERO
         if (spellData.SpellTrigger != ITEM_SPELLTRIGGER_ON_USE && spellData.SpellTrigger != ITEM_SPELLTRIGGER_ON_NO_DELAY_USE)
+#else
+        if (spellData.SpellTrigger != ITEM_SPELLTRIGGER_ON_USE)
+#endif
             continue;
 
         SpellEntry const* spellInfo = sSpellTemplate.LookupEntry<SpellEntry>(spellData.SpellId);
