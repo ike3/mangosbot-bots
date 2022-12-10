@@ -83,6 +83,6 @@ namespace ai
         virtual vector<string> GetUsedValues() { return {}; }
 #endif 
         virtual string Save() { return (uint8)value ? to_string((uint8)value) : "?"; }
-        virtual bool Load(string force) { if (!force.empty()) value = ForceItemUsage(value); return !force.empty(); }
+        virtual bool Load(string force) { if (!force.empty()) value = ForceItemUsage(stoi(force)); return !force.empty(); }
     };
 }
