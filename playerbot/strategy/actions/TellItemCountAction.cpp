@@ -8,6 +8,10 @@ using namespace ai;
 bool TellItemCountAction::Execute(Event& event)
 {
     string text = event.getParam();
+
+    if (text.find("@") == 0)
+        return false;
+
     list<Item*> found = parseItems(text);
     map<uint32, uint32> itemMap;
     map<uint32, bool> soulbound;
