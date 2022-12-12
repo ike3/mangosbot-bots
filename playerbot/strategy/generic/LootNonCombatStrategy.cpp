@@ -44,9 +44,19 @@ void RollStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
         NextAction::array(0, new NextAction("auto loot roll", 100.0f), NULL)));
 }
 
+void RollStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    RollStrategy::InitNonCombatTriggers(triggers);
+}
+
 void DelayedRollStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     triggers.push_back(new TriggerNode(
         "loot roll",
         NextAction::array(0, new NextAction("loot roll", 100.0f), NULL)));
+}
+
+void DelayedRollStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    DelayedRollStrategy::InitNonCombatTriggers(triggers);
 }

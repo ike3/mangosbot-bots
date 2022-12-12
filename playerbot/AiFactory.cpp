@@ -305,6 +305,8 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
 
 	if (facade->IsRealPlayer() || sRandomPlayerbotMgr.IsFreeBot(player))
 	{
+        engine->addStrategy("roll");
+
         if (!player->GetGroup())
         {
             engine->addStrategy("flee");

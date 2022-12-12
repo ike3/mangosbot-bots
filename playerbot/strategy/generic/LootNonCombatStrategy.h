@@ -65,6 +65,7 @@ namespace ai
 #endif
     private:
         void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
     };
 
     class DelayedRollStrategy : public Strategy
@@ -81,5 +82,6 @@ namespace ai
 #endif
     private:
         void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
     };
 }
