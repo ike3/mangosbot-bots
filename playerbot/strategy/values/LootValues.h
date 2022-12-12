@@ -65,7 +65,7 @@ namespace ai
 
         virtual DropMap* Calculate();
 #ifdef GenerateBotHelp
-        virtual string GetHelpName() { return "drop map", ; } //Must equal iternal name
+        virtual string GetHelpName() { return "drop map"; } //Must equal iternal name
         virtual string GetHelpTypeName() { return "loot"; }
         virtual string GetHelpDescription()
         {
@@ -83,7 +83,7 @@ namespace ai
 
         virtual list<int32> Calculate();
 #ifdef GenerateBotHelp
-        virtual string GetHelpName() { return "item drop list", ; } //Must equal iternal name
+        virtual string GetHelpName() { return "item drop list"; } //Must equal iternal name
         virtual string GetHelpTypeName() { return "loot"; }
         virtual string GetHelpDescription()
         {
@@ -101,7 +101,7 @@ namespace ai
 
         virtual list<uint32> Calculate();
 #ifdef GenerateBotHelp
-        virtual string GetHelpName() { return "entry loot list", ; } //Must equal iternal name
+        virtual string GetHelpName() { return "entry loot list"; } //Must equal iternal name
         virtual string GetHelpTypeName() { return "loot"; }
         virtual string GetHelpDescription()
         {
@@ -118,7 +118,7 @@ namespace ai
 
         virtual float Calculate();
 #ifdef GenerateBotHelp
-        virtual string GetHelpName() { return "loot chance", ; } //Must equal iternal name
+        virtual string GetHelpName() { return "loot chance"; } //Must equal iternal name
         virtual string GetHelpTypeName() { return "loot"; }
         virtual string GetHelpDescription()
         {
@@ -137,7 +137,7 @@ namespace ai
 
         virtual itemUsageMap Calculate();
 #ifdef GenerateBotHelp
-        virtual string GetHelpName() { return "entry loot usage", ; } //Must equal iternal name
+        virtual string GetHelpName() { return "entry loot usage" ; } //Must equal iternal name
         virtual string GetHelpTypeName() { return "loot"; }
         virtual string GetHelpDescription()
         {
