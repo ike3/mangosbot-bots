@@ -2320,8 +2320,6 @@ bool PlayerbotAI::CanCastSpell(uint32 spellid, Unit* target, uint8 effectMask, b
             }
         }
 
-        if (target->IsImmuneToSpell(spellInfo, false, GetSpellSchoolMask(spellInfo)))
-            return false;
         if (!damage)
         {
             for (int32 i = EFFECT_INDEX_0; i <= EFFECT_INDEX_2; i++)
