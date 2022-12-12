@@ -44,11 +44,11 @@ bool HelpAction::Execute(Event& event)
         }
 
         return true;
-
-
-        TellChatCommands();
-        TellStrategies();
     }
+
+    TellChatCommands();
+    TellStrategies();
+
     return true;
 }
 
