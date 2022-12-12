@@ -31,6 +31,6 @@ namespace ai
         EnemyPlayerValue(PlayerbotAI* ai, string name = "enemy player") : UnitCalculatedValue(ai, name) {}
         virtual Unit* Calculate();
 
-        //static float GetMaxAttackDistance(Player* bot);
+        static float GetMaxAttackDistance(Player* bot);
     };
 }

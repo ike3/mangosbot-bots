@@ -150,7 +150,7 @@ Unit* EnemyPlayerValue::Calculate()
     return bestEnemyPlayer;
 }
 
-/*
+
 float EnemyPlayerValue::GetMaxAttackDistance(Player* bot)
 {
     if (!bot->GetBattleGround())
@@ -183,4 +183,3 @@ float EnemyPlayerValue::GetMaxAttackDistance(Player* bot)
 
     return 40.0f;
 }
-*/
