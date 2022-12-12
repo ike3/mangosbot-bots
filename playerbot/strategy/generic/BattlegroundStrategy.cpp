@@ -23,7 +23,7 @@ void BattlegroundStrategy::InitNonCombatTriggers(std::list<TriggerNode*> &trigge
 
     triggers.push_back(new TriggerNode(
         "bg active",
-        NextAction::array(0, new NextAction("bg move to objective", 1.0f), NULL)));
+        NextAction::array(0, new NextAction("check mount state", 2.0f), new NextAction("bg move to objective", 1.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
         "random",
@@ -69,7 +69,7 @@ void WarsongStrategy::InitNonCombatTriggers(std::list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("bg move to objective", 90.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "often",
+        "very often",
         NextAction::array(0, new NextAction("bg banner", 10.0f), NULL)));
 }
 
@@ -81,7 +81,7 @@ void WarsongStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 void AlteracStrategy::InitNonCombatTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
-        "often",
+        "very often",
         NextAction::array(0, new NextAction("bg banner", 10.0f), NULL)));
 }
 
@@ -109,7 +109,7 @@ void ArathiStrategy::InitNonCombatTriggers(std::list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("bg use buff", 30.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "often",
+        "very often",
         NextAction::array(0, new NextAction("bg banner", 10.0f), NULL)));
 }
 
