@@ -435,7 +435,7 @@ AiPlayerbot.FleeingEnabled = 1
 #AiPlayerbot.RandomBotCombatStrategies = +dps,+dps assist,-threat
 #AiPlayerbot.RandomBotNonCombatStrategies = +grind,+loot,+rpg,+custom::say
 #AiPlayerbot.CombatStrategies = +custom::say
-#AiPlayerbot.NonCombatStrategies = +custom::say,+return
+#AiPlayerbot.NonCombatStrategies = +custom::say,+return,+delayed roll
 
 
 # How often tasks are changed

@@ -11,6 +11,7 @@
 #include "QueryItemUsageAction.h"
 #include "LootStrategyAction.h"
 #include "AddLootAction.h"
+#include "LootRollAction.h"
 #include "ReleaseSpiritAction.h"
 #include "TeleportAction.h"
 #include "TaxiAction.h"
@@ -93,6 +94,7 @@ namespace ai
             creators["ll"] = &ChatActionContext::ll;
             creators["ss"] = &ChatActionContext::ss;
             creators["add all loot"] = &ChatActionContext::add_all_loot;
+            creators["roll"] = &ChatActionContext::roll;
             creators["release"] = &ChatActionContext::release;
             creators["repop"] = &ChatActionContext::repop;
             creators["teleport"] = &ChatActionContext::teleport;
@@ -257,6 +259,7 @@ namespace ai
         static Action* ll(PlayerbotAI* ai) { return new LootStrategyAction(ai); }
         static Action* ss(PlayerbotAI* ai) { return new SkipSpellsListAction(ai); }
         static Action* add_all_loot(PlayerbotAI* ai) { return new AddAllLootAction(ai); }
+        static Action* roll(PlayerbotAI* ai) { return new RollAction(ai); }
         static Action* reset_ai(PlayerbotAI* ai) { return new ResetAiAction(ai, true); }
         static Action* reset_ai_soft(PlayerbotAI* ai) { return new ResetAiAction(ai, false); }
         static Action* gossip_hello(PlayerbotAI* ai) { return new GossipHelloAction(ai); }

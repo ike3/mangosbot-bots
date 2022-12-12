@@ -56,6 +56,8 @@ namespace ai
             creators["racials"] = &StrategyContext::racials;
             creators["loot"] = &StrategyContext::loot;
             creators["gather"] = &StrategyContext::gather;
+            creators["roll"] = &StrategyContext::roll;
+            creators["delayed roll"] = &StrategyContext::delayed_roll;
             creators["emote"] = &StrategyContext::emote;
             creators["passive"] = &StrategyContext::passive;
             creators["conserve mana"] = &StrategyContext::conserve_mana;
@@ -158,6 +160,8 @@ namespace ai
         static Strategy* racials(PlayerbotAI* ai) { return new RacialsStrategy(ai); }
         static Strategy* loot(PlayerbotAI* ai) { return new LootNonCombatStrategy(ai); }
         static Strategy* gather(PlayerbotAI* ai) { return new GatherStrategy(ai); }
+        static Strategy* roll(PlayerbotAI* ai) { return new RollStrategy(ai); }
+        static Strategy* delayed_roll(PlayerbotAI* ai) { return new DelayedRollStrategy(ai); }
         static Strategy* emote(PlayerbotAI* ai) { return new EmoteStrategy(ai); }
         static Strategy* passive(PlayerbotAI* ai) { return new PassiveStrategy(ai); }
         static Strategy* conserve_mana(PlayerbotAI* ai) { return new ConserveManaStrategy(ai); }

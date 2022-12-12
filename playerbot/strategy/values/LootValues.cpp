@@ -248,3 +248,85 @@ bool ShouldLootObject::Calculate()
 
 	return false;
 }
+
+void ActiveRolls::CleanUp(Player* bot, LootRollMap& rollMap, ObjectGuid guid, uint32 slot)
+{
+	for (auto& roll = rollMap.begin(); roll != rollMap.end();)
+	{
+		if (guid && roll->first != guid)
+		{
+			++roll;
+			continue;
+		}
+
+		if (slot && roll->second != slot)
+		{
+			++roll;
+			continue;
+		}
+
+		Loot* loot = sLootMgr.GetLoot(bot, roll->first);
+		if (!loot)
+		{
+			roll = rollMap.erase(roll);
+			continue;
+		}
+
+		GroupLootRoll* lootRoll = loot->GetRollForSlot(roll->second);
+		if (!lootRoll)
+		{
+			roll = rollMap.erase(roll);
+			continue;
+		}
+
+		if(guid)
+		{
+			roll = rollMap.erase(roll);
+			continue;
+		}
+
+		++roll;
+	}
+}
+
+string ActiveRolls::Format()
+{
+	ostringstream out;
+
+	for (auto& roll : value)
+	{
+		WorldObject* wo = ai->GetWorldObject(roll.first);
+
+		if (wo)
+			out << wo->GetName();
+		else
+			out << roll.first;
+
+		string itemLink;
+
+		Loot* loot = sLootMgr.GetLoot(bot, roll.first);
+		if (loot)
+		{
+			LootItem* item = loot->GetLootItemInSlot(roll.second);
+
+			if (item)
+			{
+				const ItemPrototype* proto = sItemStorage.LookupEntry<ItemPrototype>(item->itemId);
+
+				if (proto)
+				{
+					itemLink = ChatHelper::formatItem(proto);
+				}
+			}
+		}
+
+		if (itemLink.empty())
+			out << roll.second;
+		else
+			out << itemLink;
+
+		out << ",";
+	}
+
+	return out.str().c_str();
+}

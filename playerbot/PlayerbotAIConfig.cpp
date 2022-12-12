@@ -176,7 +176,7 @@ bool PlayerbotAIConfig::Initialize()
     randomBotCombatStrategies = config.GetStringDefault("AiPlayerbot.RandomBotCombatStrategies", "-threat,+custom::say");
     randomBotNonCombatStrategies = config.GetStringDefault("AiPlayerbot.RandomBotNonCombatStrategies", "+custom::say");
     combatStrategies = config.GetStringDefault("AiPlayerbot.CombatStrategies", "");
-    nonCombatStrategies = config.GetStringDefault("AiPlayerbot.NonCombatStrategies", "+return");
+    nonCombatStrategies = config.GetStringDefault("AiPlayerbot.NonCombatStrategies", "+return,+delayed roll");
 
     commandPrefix = config.GetStringDefault("AiPlayerbot.CommandPrefix", "");
     commandSeparator = config.GetStringDefault("AiPlayerbot.CommandSeparator", "\\\\");

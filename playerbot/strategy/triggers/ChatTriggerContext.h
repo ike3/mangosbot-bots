@@ -17,6 +17,7 @@ namespace ai
             creators["log"] = &ChatTriggerContext::log;
             creators["los"] = &ChatTriggerContext::los;
             creators["drop"] = &ChatTriggerContext::drop;
+            creators["roll"] = &ChatTriggerContext::roll;
             creators["share"] = &ChatTriggerContext::share;
             creators["q"] = &ChatTriggerContext::q;
             creators["ll"] = &ChatTriggerContext::ll;
@@ -191,6 +192,7 @@ namespace ai
         static Trigger* ll(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "ll"); }
         static Trigger* ss(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "ss"); }
         static Trigger* drop(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "drop"); }
+        static Trigger* roll(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "roll"); }
         static Trigger* share(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "share"); }
         static Trigger* quests(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "quests"); }
         static Trigger* stats(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "stats"); }

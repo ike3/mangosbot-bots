@@ -168,6 +168,7 @@ namespace ai
             creators["should loot object"] = &ValueContext::should_loot_object;
             creators["always loot list"] = &ValueContext::always_loot_list;
             creators["loot strategy"] = &ValueContext::loot_strategy;
+            creators["active rolls"] = &ValueContext::active_rolls;
             creators["last movement"] = &ValueContext::last_movement;
             creators["stay time"] = &ValueContext::stay_time;
             creators["last taxi"] = &ValueContext::last_movement;
@@ -389,6 +390,8 @@ namespace ai
         static UntypedValue* should_loot_object(PlayerbotAI* ai) { return new ShouldLootObject(ai); }
         static UntypedValue* always_loot_list(PlayerbotAI* ai) { return new AlwaysLootListValue(ai); }
         static UntypedValue* loot_strategy(PlayerbotAI* ai) { return new LootStrategyValue(ai); }
+        static UntypedValue* active_rolls(PlayerbotAI* ai) { return new ActiveRolls(ai); }
+        
 
         static UntypedValue* attackers_count(PlayerbotAI* ai) { return new AttackersCountValue(ai); }
         static UntypedValue* possible_attack_targets_count(PlayerbotAI* ai) { return new PossibleAttackTargetsCountValue(ai); }

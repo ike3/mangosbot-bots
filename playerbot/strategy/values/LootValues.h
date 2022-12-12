@@ -64,6 +64,15 @@ namespace ai
         static LootTemplateAccess const* GetLootTemplate(ObjectGuid guid, LootType type = LOOT_CORPSE);
 
         virtual DropMap* Calculate();
+#ifdef GenerateBotHelp
+        virtual string GetHelpName() { return "drop map", ; } //Must equal iternal name
+        virtual string GetHelpTypeName() { return "loot"; }
+        virtual string GetHelpDescription()
+        {
+            return "This value returns all creatures and game objects and the items they drop.";
+        }
+        virtual vector<string> GetUsedValues() { return {  }; }
+#endif 
     };
 
     //Returns the entries that drop a specific item
@@ -73,6 +82,15 @@ namespace ai
         ItemDropListValue(PlayerbotAI* ai) : SingleCalculatedValue(ai, "item drop list") {}
 
         virtual list<int32> Calculate();
+#ifdef GenerateBotHelp
+        virtual string GetHelpName() { return "item drop list", ; } //Must equal iternal name
+        virtual string GetHelpTypeName() { return "loot"; }
+        virtual string GetHelpDescription()
+        {
+            return "This value returns all creatures or game objects that drop a specific item.";
+        }
+        virtual vector<string> GetUsedValues() { return { "drop map" }; }
+#endif 
     };
 
     //Returns the items a specific entry can drop
@@ -82,6 +100,15 @@ namespace ai
         EntryLootListValue(PlayerbotAI* ai) : SingleCalculatedValue(ai, "entry loot list") {}
 
         virtual list<uint32> Calculate();
+#ifdef GenerateBotHelp
+        virtual string GetHelpName() { return "entry loot list", ; } //Must equal iternal name
+        virtual string GetHelpTypeName() { return "loot"; }
+        virtual string GetHelpDescription()
+        {
+            return "This value returns all the items dropped by a specific creature or game object.";
+        }
+        virtual vector<string> GetUsedValues() { return { }; }
+#endif 
     };
 
     class LootChanceValue : public SingleCalculatedValue<float>, public Qualified
@@ -90,6 +117,15 @@ namespace ai
         LootChanceValue(PlayerbotAI* ai) : SingleCalculatedValue(ai, "loot chance") {}
 
         virtual float Calculate();
+#ifdef GenerateBotHelp
+        virtual string GetHelpName() { return "loot chance", ; } //Must equal iternal name
+        virtual string GetHelpTypeName() { return "loot"; }
+        virtual string GetHelpDescription()
+        {
+            return "This value returns the chance a specific creature or game object will drop a certain item.";
+        }
+        virtual vector<string> GetUsedValues() { return { }; }
+#endif 
     };
 
     typedef unordered_map<ItemUsage, vector<uint32>> itemUsageMap;
@@ -100,6 +136,15 @@ namespace ai
         EntryLootUsageValue(PlayerbotAI* ai) : CalculatedValue(ai, "entry loot usage",2) {}
 
         virtual itemUsageMap Calculate();
+#ifdef GenerateBotHelp
+        virtual string GetHelpName() { return "entry loot usage", ; } //Must equal iternal name
+        virtual string GetHelpTypeName() { return "loot"; }
+        virtual string GetHelpDescription()
+        {
+            return "This value returns all the items a creature or game object drops and if the bot thinks this item is usefull somehow.";
+        }
+        virtual vector<string> GetUsedValues() { return { "entry loot list", "item usage" }; }
+#endif 
     };
 
     class HasUpgradeValue : public BoolCalculatedValue, public Qualified
@@ -108,6 +153,15 @@ namespace ai
         HasUpgradeValue(PlayerbotAI* ai) : BoolCalculatedValue(ai, "has upgrade", 2) {}
 
         virtual bool Calculate() { itemUsageMap uMap = AI_VALUE2(itemUsageMap, "entry loot usage", getQualifier()); return uMap.find(ITEM_USAGE_EQUIP) != uMap.end() || uMap.find(ITEM_USAGE_REPLACE) != uMap.end(); };
+#ifdef GenerateBotHelp
+        virtual string GetHelpName() { return "has upgrade"; } //Must equal iternal name
+        virtual string GetHelpTypeName() { return "loot"; }
+        virtual string GetHelpDescription()
+        {
+            return "This value checks if a specific creature or game object drops an item that is an equipment upgrade for the bot.";
+        }
+        virtual vector<string> GetUsedValues() { return { "entry loot usage" }; }
+#endif 
     };
 
 
@@ -118,6 +172,16 @@ namespace ai
         StackSpaceForItem(PlayerbotAI* ai) : Uint32CalculatedValue(ai, "stack space for item", 2) {}
 
         virtual uint32 Calculate();
+#ifdef GenerateBotHelp
+        virtual string GetHelpName() { return "stack space for item"; } //Must equal iternal name
+        virtual string GetHelpTypeName() { return "item"; }
+        virtual string GetHelpDescription()
+        {
+            return "This value returns the number of items of a specific type it can store.\n"
+                "Without a player bots are limited to 80% bag space and will only have space for items in exsisting stacks";
+        }
+        virtual vector<string> GetUsedValues() { return { "bag space" , "inventory items" }; }
+#endif 
     };
 
     class ShouldLootObject : public BoolCalculatedValue, public Qualified
@@ -126,6 +190,38 @@ namespace ai
         ShouldLootObject(PlayerbotAI* ai) : BoolCalculatedValue(ai, "should loot object") {}
 
         virtual bool Calculate();
+#ifdef GenerateBotHelp
+        virtual string GetHelpName() { return "should loot object"; } //Must equal iternal name
+        virtual string GetHelpTypeName() { return "loot"; }
+        virtual string GetHelpDescription()
+        {
+            return "This value checks if an lootable object might hold something the bot can loot.\n"
+                "It returns true if the object has unkown loot, gold or an item it is allowed to loot and can store in an empty space or a stack of simular items.";
+        }
+        virtual vector<string> GetUsedValues() { return { "stack space for item" }; }
+#endif 
+    };
+
+    typedef unordered_multimap<ObjectGuid, uint32> LootRollMap;
+
+    class ActiveRolls : public ManualSetValue<LootRollMap>
+    {
+    public:
+        ActiveRolls(PlayerbotAI* ai) : ManualSetValue(ai, {}, "active rolls") {}
+
+        static void CleanUp(Player* bot, LootRollMap& value, ObjectGuid guid = ObjectGuid(), uint32 slot = 0);
+
+        virtual string Format();
+#ifdef GenerateBotHelp
+        virtual string GetHelpName() { return "active rolls"; } //Must equal iternal name
+        virtual string GetHelpTypeName() { return "loot"; }
+        virtual string GetHelpDescription()
+        {
+            return "This value contains the active rolls a bot has.\n"
+                "This value is filled and emptied when bots see and do rolls.";
+        }
+        virtual vector<string> GetUsedValues() { return { }; }
+#endif 
     };
 }
 
