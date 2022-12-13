@@ -79,15 +79,6 @@ bool PullStartAction::Execute(Event& event)
                 }
             }
 
-            // Check if we are not on pull range
-            const float distanceToTarget = target->GetDistance(bot);
-            if (distanceToTarget > strategy->GetRange())
-            {
-                SET_AI_VALUE(Unit*, "current target", target);
-
-                result = ai->DoSpecificAction("reach pull", event);
-            }
-
             strategy->OnPullStarted();
         }
     }
@@ -111,10 +102,7 @@ bool PullAction::Execute(Event& event)
                 ai->StopMoving();
 
                 // Execute the pull action
-                const string targetNameQualifier = "pull target";
-                const string ignoreRangeQualifier = std::to_string(false);
-                const vector<string> qualifiers = { targetNameQualifier, ignoreRangeQualifier };
-                return ai->DoSpecificAction(strategy->GetActionName(), event, false, Qualified::MultiQualify(qualifiers, ":"));
+                return CastSpellAction::Execute(event);
             }
             else
             {
@@ -125,6 +113,27 @@ bool PullAction::Execute(Event& event)
     }
 
     return false;
+}
+
+PullAction::PullAction(PlayerbotAI* ai, string name)
+: CastSpellAction(ai, name)
+{
+    // Get the pull action spell name from the strategy
+    PullStrategy* strategy = PullStrategy::Get(ai);
+    if (strategy)
+    {
+        string spellName = strategy->GetActionName();
+        if (!spellName.empty())
+        {
+            SetSpellName(spellName);
+
+            float spellRange;
+            if (ai->GetSpellRange(spellName, &spellRange))
+            {
+                range = spellRange;
+            }
+        }
+    }
 }
 
 bool PullEndAction::Execute(Event& event)

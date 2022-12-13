@@ -383,21 +383,29 @@ void PlayerbotAI::UpdateFaceTarget(uint32 elapsed, bool minimal)
             if (bot->IsStopped())
             {
                 AiObjectContext* context = GetAiObjectContext();
-                if (!AI_VALUE2(bool, "facing", "current target"))
+                Unit* target = AI_VALUE(Unit*, "current target");
+                if(target)
                 {
-                    if (!sServerFacade.UnitIsDead(bot) &&
-                        !sServerFacade.IsFrozen(bot) &&
-                        !sServerFacade.IsCharmed(bot) &&
-                        !bot->IsPolymorphed() &&
-                        !bot->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_GHOST) &&
-                        !bot->IsBeingTeleported() &&
-                        !bot->HasAuraType(SPELL_AURA_MOD_CONFUSE) &&
-                        !bot->HasAuraType(SPELL_AURA_MOD_STUN) &&
-                        !bot->IsTaxiFlying() &&
-                        !bot->hasUnitState(UNIT_STAT_CAN_NOT_REACT_OR_LOST_CONTROL))
+                    // Do not update the facing while pulling
+                    Unit* pullTarget = AI_VALUE(Unit*, "pull target");
+                    if (pullTarget == nullptr)
                     {
-                        Unit* target = AI_VALUE(Unit*, "current target");
-                        sServerFacade.SetFacingTo(bot, target);
+                        if (!AI_VALUE2(bool, "facing", "current target"))
+                        {
+                            if (!sServerFacade.UnitIsDead(bot) &&
+                                !sServerFacade.IsFrozen(bot) &&
+                                !sServerFacade.IsCharmed(bot) &&
+                                !bot->IsPolymorphed() &&
+                                !bot->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_GHOST) &&
+                                !bot->IsBeingTeleported() &&
+                                !bot->HasAuraType(SPELL_AURA_MOD_CONFUSE) &&
+                                !bot->HasAuraType(SPELL_AURA_MOD_STUN) &&
+                                !bot->IsTaxiFlying() &&
+                                !bot->hasUnitState(UNIT_STAT_CAN_NOT_REACT_OR_LOST_CONTROL))
+                            {
+                                sServerFacade.SetFacingTo(bot, target);
+                            }
+                        }
                     }
                 }
             }

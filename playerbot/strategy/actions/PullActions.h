@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../Action.h"
+#include "GenericSpellActions.h"
 
 namespace ai
 {
@@ -8,8 +8,6 @@ namespace ai
     {
     public:
         PullMyTargetAction(PlayerbotAI* ai, string name = "pull my target") : Action(ai, name) {}
-
-    public:
         bool Execute(Event& event) override;
     };
 
@@ -17,26 +15,24 @@ namespace ai
     {
     public:
         PullStartAction(PlayerbotAI* ai, string name = "pull start") : Action(ai, name) {}
-
-    public:
         bool Execute(Event& event) override;
     };
 
-    class PullAction : public Action
+    class PullAction : public CastSpellAction
     {
     public:
-        PullAction(PlayerbotAI* ai, string name = "pull action") : Action(ai, name) {}
-
-    public:
+        PullAction(PlayerbotAI* ai, string name = "pull action");
         bool Execute(Event& event) override;
+
+    private:
+        string GetTargetName() override { return "pull target"; }
+        string GetReachActionName() override { return "reach pull"; }
     };
 
     class PullEndAction : public Action
     {
     public:
         PullEndAction(PlayerbotAI* ai, string name = "pull end") : Action(ai, name) {}
-
-    public:
         bool Execute(Event& event) override;
     };
 }

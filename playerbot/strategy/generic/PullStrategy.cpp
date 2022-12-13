@@ -10,11 +10,11 @@ class PullStrategyActionNodeFactory : public NamedObjectFactory<ActionNode>
 public:
     PullStrategyActionNodeFactory()
     {
-        creators["pull sequence"] = &pull_sequence;
+        creators["pull start"] = &pull_start;
     }
 
 private:
-    static ActionNode* pull_sequence(PlayerbotAI* ai)
+    static ActionNode* pull_start(PlayerbotAI* ai)
     {
         return new ActionNode("pull start",
             /*P*/ NULL,
@@ -36,23 +36,23 @@ string GetSpellName(PlayerbotAI* ai, const string& actionName)
             {
                 switch (itemPrototype->SubClass)
                 {
-                case ITEM_SUBCLASS_WEAPON_GUN:
-                {
-                    spellName += " gun";
-                    break;
-                }
-                case ITEM_SUBCLASS_WEAPON_BOW:
-                {
-                    spellName += " bow";
-                    break;
-                }
-                case ITEM_SUBCLASS_WEAPON_CROSSBOW:
-                {
-                    spellName += " crossbow";
-                    break;
-                }
+                    case ITEM_SUBCLASS_WEAPON_GUN:
+                    {
+                        spellName += " gun";
+                        break;
+                    }
+                    case ITEM_SUBCLASS_WEAPON_BOW:
+                    {
+                        spellName += " bow";
+                        break;
+                    }
+                    case ITEM_SUBCLASS_WEAPON_CROSSBOW:
+                    {
+                        spellName += " crossbow";
+                        break;
+                    }
 
-                default: break;
+                    default: break;
                 }
             }
         }
@@ -82,13 +82,15 @@ PullStrategy::PullStrategy(PlayerbotAI* ai, string pullAction)
         // Set the default range if the range was not found
         range = (actionName == "shoot") ? ai->GetRange("shoot") : ai->GetRange("spell");
     }
+
+    actionName = spellName;
 }
 
 void PullStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     triggers.push_back(new TriggerNode(
         "pull start",
-        NextAction::array(0, new NextAction("pull sequence", 60), NULL)));
+        NextAction::array(0, new NextAction("pull start", 60), new NextAction("pull action", 60), NULL)));
 
     triggers.push_back(new TriggerNode(
         "pull end",
@@ -139,10 +141,7 @@ bool PullStrategy::CanDoPullAction(Unit* target)
         Unit* previousTarget = GetTarget();
         SetTarget(target);
 
-        const string targetNameQualifier = "pull target";
-        const string ignoreRangeQualifier = std::to_string(true);
-        const vector<string> qualifiers = { targetNameQualifier, ignoreRangeQualifier };
-        canPull = ai->CanDoSpecificAction(pullAction, Qualified::MultiQualify(qualifiers, ":"), true, false);
+        canPull = ai->CanDoSpecificAction("pull action", true, false);
 
         // Restore the previous pull target
         SetTarget(previousTarget);
@@ -194,6 +193,7 @@ float PullMultiplier::GetValue(Action* action)
     if (strategy && strategy->HasTarget())
     {
         if ((action->getName() == "pull my target") ||
+            (action->getName() == "reach pull") ||
             (action->getName() == "pull start") ||
             (action->getName() == "pull action") ||
             (action->getName() == "pull end"))
