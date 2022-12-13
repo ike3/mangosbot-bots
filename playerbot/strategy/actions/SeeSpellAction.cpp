@@ -2,6 +2,7 @@
 #include "../../playerbot.h"
 #include "SeeSpellAction.h"
 #include "../values/Formations.h"
+#include "../values/PositionValue.h"
 #include "../../ServerFacade.h"
 #include "MovementGenerator.h"
 #ifdef MANGOS
@@ -179,6 +180,15 @@ bool SeeSpellAction::MoveToSpell(WorldPosition& spellPosition, bool inFormation)
 {
     if(inFormation)
         SetFormationOffset(spellPosition);
+
+    if (ai->HasStrategy("stay", BotState::BOT_STATE_COMBAT))
+    {
+        PositionMap& posMap = AI_VALUE(PositionMap&, "position");
+        PositionEntry stayPosition = posMap["stay position"];
+
+        stayPosition.Set(spellPosition.getX(), spellPosition.getY(), spellPosition.getZ(), spellPosition.getMapId());
+        posMap["stay position"] = stayPosition;
+    }
 
     return MoveTo(spellPosition.getMapId(), spellPosition.getX(), spellPosition.getY(), spellPosition.getZ(), false, false);
 }

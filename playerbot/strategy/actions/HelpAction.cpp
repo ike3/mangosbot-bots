@@ -19,7 +19,13 @@ HelpAction::~HelpAction()
 bool HelpAction::Execute(Event& event)
 {
     string param = event.getParam();
-    string helpTopic = ChatHelper::parseHelpTopic(param);
+    string helpTopic;
+    if(param.find("Hvalue:help") != string::npos)
+        helpTopic = ChatHelper::parseValue("help",param);
+    else if (param.find("[h:") != string::npos)
+    {
+        helpTopic = param.substr(3,param.size()-4);
+    }
 
     if (helpTopic.empty())
         helpTopic = "help:main";
@@ -34,15 +40,15 @@ bool HelpAction::Execute(Event& event)
 
         for (auto& line : lines)
         {
-            ai->TellMasterNoFacing(line, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, true);
+            ai->TellMasterNoFacing(line, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, true, false);
         }
 
         return true;
-
-
-        TellChatCommands();
-        TellStrategies();
     }
+
+    TellChatCommands();
+    TellStrategies();
+
     return true;
 }
 

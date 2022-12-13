@@ -33,7 +33,7 @@ list<ObjectGuid> AttackersValue::Calculate()
             {
                 // Add the targets of the members of the group
                 Group* group = bot->GetGroup();
-                if (group)
+                if (group && !bot->InBattleGround())
                 {
                     AddTargetsOf(group, targets, invalidTargets, getOne);
                 }
@@ -233,7 +233,7 @@ bool AttackersValue::IsValid(Unit* target, Player* player, Player* owner, bool c
         if (player->duel && (player->duel->opponent != target))
         {
             // If the enemy player is not within sight distance
-            if (!enemyPlayer->IsWithinDist(playerToCheckAgainst, GetRange(), false))
+            if (!enemyPlayer->IsWithinDist(playerToCheckAgainst, EnemyPlayerValue::GetMaxAttackDistance(playerToCheckAgainst), false))
             {
                 return false;
             }
@@ -259,6 +259,15 @@ bool AttackersValue::IsValid(Unit* target, Player* player, Player* owner, bool c
         if (creature)
         {
             if (creature->GetCombatManager().IsInEvadeMode())
+            {
+                return false;
+            }
+        }
+
+        Unit* unit = dynamic_cast<Unit*>(target);
+        if (unit)
+        {
+            if (unit->AI() && unit->AI()->IsPreventingDeath())
             {
                 return false;
             }

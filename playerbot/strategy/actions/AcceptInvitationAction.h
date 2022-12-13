@@ -37,7 +37,7 @@ namespace ai
             p << roles_mask;
             bot->GetSession()->HandleGroupAcceptOpcode(p);
 
-            if (sRandomPlayerbotMgr.IsRandomBot(bot))
+            if (sRandomPlayerbotMgr.IsFreeBot(bot))
                 ai->SetMaster(inviter);
             //else
             //    sPlayerbotDbStore.Save(ai);

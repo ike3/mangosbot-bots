@@ -38,12 +38,13 @@ namespace ai
 
         static string formatQuestObjective(string name, int available, int required);
 
-        static string formatHelpTopic(string topicCode, string topicName);
-        static string parseHelpTopic(string& text);
+        static string formatValue(string type, string code, string name, string color = "0000FFFF");
+        static string parseValue(string type, string& text);
 
         static string formatChat(ChatMsg chat);
         static ChatMsg parseChat(string& text);
 
+        static string specName(Player* player);
         static string formatClass(Player* player, int spec);
         static string formatClass(uint8 cls);
 

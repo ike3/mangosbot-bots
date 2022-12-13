@@ -18,6 +18,13 @@ namespace ai
         virtual string Format() { return "?"; }
         virtual string Save() { return "?"; }
         virtual bool Load(string value) { return false; }
+
+#ifdef GenerateBotHelp
+        virtual string GetHelpName() { return "dummy"; } //Must equal iternal name
+        virtual string GetHelpTypeName() { return ""; }
+        virtual string GetHelpDescription() { return "This is a value."; }
+        virtual vector<string> GetUsedValues() { return {}; }
+#endif 
     };
 
     template<class T>

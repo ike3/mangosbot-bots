@@ -6,7 +6,7 @@ namespace ai
 {
     class ChatCommandTrigger : public Trigger {
     public:
-        ChatCommandTrigger(PlayerbotAI* ai, string command) : Trigger(ai, command), triggered(false) {}
+        ChatCommandTrigger(PlayerbotAI* ai, string command) : Trigger(ai, command) {}
 
         virtual void ExternalEvent(string param, Player* owner = NULL)
         {
@@ -27,10 +27,5 @@ namespace ai
         {
             triggered = false;
         }
-
-   private:
-        string param;
-        bool triggered;
-        Player* owner;
     };
 }

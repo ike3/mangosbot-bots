@@ -56,9 +56,19 @@ namespace ai
             return strategyContexts.supports();
         }
 
+        set<string> GetSupportedTriggers()
+        {
+            return triggerContexts.supports();
+        }
+
         set<string> GetSupportedActions()
         {
             return actionContexts.supports();
+        }
+
+        set<string> GetSupportedValues ()
+        {
+            return valueContexts.supports();
         }
 
         string FormatValues(string findName = "");

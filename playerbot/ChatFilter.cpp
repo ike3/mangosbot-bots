@@ -2,6 +2,8 @@
 #include "playerbot.h"
 #include "ChatFilter.h"
 #include "strategy/values/RtiTargetValue.h"
+#include "strategy/values/ItemUsageValue.h"
+#include "ChatHelper.h"
 
 using namespace ai;
 using namespace std;
@@ -14,10 +16,161 @@ string ChatFilter::Filter(string message)
     return message.substr(message.find(" ") + 1);
 }
 
+
 class StrategyChatFilter : public ChatFilter
 {
 public:
     StrategyChatFilter(PlayerbotAI* ai) : ChatFilter(ai) {}
+
+#ifdef GenerateBotHelp
+    virtual string GetHelpName() {
+        return "strategy";
+    }
+    virtual unordered_map<string, string> GetFilterExamples()
+    {
+        unordered_map<string, string> retMap;
+        retMap["@nc=rpg"] = "All bots that have rpg strategy enabled in noncombat state.";
+        retMap["@nonc=travel"] = "All bots that do not have travel strategy enabled in noncombat state.";
+        retMap["@co=melee"] = "All bots that have melee strategy enabled in combat state.";
+        retMap["@react=<>"] = "All bots that have <> strategy enabled in reaction state.";
+        retMap["@dead=<>"] = "All bots that have <> strategy enabled in dead state.";
+        return retMap;
+    }
+    virtual string GetHelpDescription() {
+        return "This filter selects bots based on their strategies.";
+    }
+#endif
+
+    virtual string Filter(string message)
+    {
+        Player* bot = ai->GetBot();
+
+        if (message.find("@nc=") == 0)
+        {
+            string strat = message.substr(message.find("=")+1, message.find(" ") - (message.find("=")+1));
+
+            if (!strat.empty())
+            {             
+                if (ai->HasStrategy(strat,BotState::BOT_STATE_NON_COMBAT))
+                    return ChatFilter::Filter(message);
+            }
+            return message;            
+        }
+        if (message.find("@nonc=") == 0)
+        {
+            string strat = message.substr(message.find("=") + 1, message.find(" ") - (message.find("=") + 1));
+
+            if (!strat.empty())
+            {
+                if (!ai->HasStrategy(strat, BotState::BOT_STATE_NON_COMBAT))
+                    return ChatFilter::Filter(message);
+            }
+
+            return message;
+        }
+        if (message.find("@co=") == 0)
+        {
+            string strat = message.substr(message.find("=") + 1, message.find(" ") - (message.find("=") + 1));
+
+            if (!strat.empty())
+            {
+                if (ai->HasStrategy(strat, BotState::BOT_STATE_COMBAT))
+                    return ChatFilter::Filter(message);
+            }
+
+            return message;
+        }
+        if (message.find("@noco=") == 0)
+        {
+            string strat = message.substr(message.find("=") + 1, message.find(" ") - (message.find("=") + 1));
+
+            if (!strat.empty())
+            {
+                if (!ai->HasStrategy(strat, BotState::BOT_STATE_NON_COMBAT))
+                    return ChatFilter::Filter(message);
+            }
+
+            return message;
+        }
+        if (message.find("@react=") == 0)
+        {
+            string strat = message.substr(message.find("=") + 1, message.find(" ") - (message.find("=") + 1));
+
+            if (!strat.empty())
+            {
+                if (ai->HasStrategy(strat, BotState::BOT_STATE_REACTION))
+                    return ChatFilter::Filter(message);
+            }
+
+            return message;
+        }
+        if (message.find("@noreact=") == 0)
+        {
+            string strat = message.substr(message.find("=") + 1, message.find(" ") - (message.find("=") + 1));
+
+            if (!strat.empty())
+            {
+                if (!ai->HasStrategy(strat, BotState::BOT_STATE_REACTION))
+                    return ChatFilter::Filter(message);
+            }
+
+            return message;
+        }
+        if (message.find("@dead=") == 0)
+        {
+            string strat = message.substr(message.find("=") + 1, message.find(" ") - (message.find("=") + 1));
+
+            if (!strat.empty())
+            {
+                if (ai->HasStrategy(strat, BotState::BOT_STATE_DEAD))
+                    return ChatFilter::Filter(message);
+            }
+
+            return message;
+        }
+        if (message.find("@nodead=") == 0)
+        {
+            string strat = message.substr(message.find("=") + 1, message.find(" ") - (message.find("=") + 1));
+
+            if (!strat.empty())
+            {
+                if (!ai->HasStrategy(strat, BotState::BOT_STATE_DEAD))
+                    return ChatFilter::Filter(message);
+            }
+
+            return message;
+        }
+
+        return message;
+    }
+};
+
+class RoleChatFilter : public ChatFilter
+{
+public:
+    RoleChatFilter(PlayerbotAI* ai) : ChatFilter(ai) {}
+
+#ifdef GenerateBotHelp
+    virtual string GetHelpName() {
+        return "role";
+    }
+    virtual unordered_map<string,string> GetFilterExamples() 
+    {
+        unordered_map<string, string> retMap;
+        retMap["@tank"] = "All bots that have a tank spec.";
+        retMap["@dps"] = "All bots that do not have a tank or healing spec.";
+        retMap["@heal"] = "All bots that have a healing spec.";
+        retMap["@notank"] = "All bots that do not have a tank spec.";
+        retMap["@nodps"] = "All bots that have a tank or healing spec.";
+        retMap["@noheal"] = "All bots that do not have a healing spec.";
+        retMap["@ranged"] = "All bots that use ranged attacks.";
+        retMap["@melee"] = "All bots that use melee attacks.";
+        return retMap;
+    }
+    virtual string GetHelpDescription() {
+        return "This filter selects bots with a specific role or weapon range.";
+    }
+#endif
 
     virtual string Filter(string message)
     {
@@ -35,6 +188,18 @@ public:
         if (heal && !ai->IsHeal(bot))
             return "";
 
+        bool notank = message.find("@notank") == 0;
+        if (notank && ai->IsTank(bot))
+            return "";
+
+        bool nodps = message.find("@nodps") == 0;
+        if (nodps && !ai->IsTank(bot) && !ai->IsHeal(bot))
+            return "";
+
+        bool noheal = message.find("@noheal") == 0;
+        if (noheal && ai->IsHeal(bot))
+            return "";
+
         bool ranged = message.find("@ranged") == 0;
         if (ranged && !ai->IsRanged(bot))
             return "";
@@ -43,7 +208,7 @@ public:
         if (melee && ai->IsRanged(bot))
             return "";
 
-        if (tank || dps || heal || ranged || melee)
+        if (tank || dps || heal || ranged || melee || noheal || nodps || nodps)
             return ChatFilter::Filter(message);
 
         return message;
@@ -54,6 +219,22 @@ class LevelChatFilter : public ChatFilter
 {
 public:
     LevelChatFilter(PlayerbotAI* ai) : ChatFilter(ai) {}
+
+#ifdef GenerateBotHelp
+    virtual string GetHelpName() {
+        return "level";
+    }
+    virtual unordered_map<string, string> GetFilterExamples()
+    {
+        unordered_map<string, string> retMap;
+        retMap["@60"] = "All bots that are level 60.";
+        retMap["@10-20"] = "All bots ranging from level 10 to 20.";
+        return retMap;
+    }
+    virtual string GetHelpDescription() {
+        return "This filter selects bots based on level.";
+    }
+#endif
 
     virtual string Filter(string message)
     {
@@ -85,6 +266,22 @@ class CombatTypeChatFilter : public ChatFilter
 {
 public:
     CombatTypeChatFilter(PlayerbotAI* ai) : ChatFilter(ai) {}
+
+#ifdef GenerateBotHelp
+    virtual string GetHelpName() {
+        return "combat";
+    }
+    virtual unordered_map<string, string> GetFilterExamples()
+    {
+        unordered_map<string, string> retMap;
+        retMap["@ranged"] = "All bots that use ranged attacks.";
+        retMap["@melee"] = "All bots that use melee attacks.";
+        return retMap;
+    }
+    virtual string GetHelpDescription() {
+        return "This filter selects bots with a specific weapon range.";
+    }
+#endif
 
     virtual string Filter(string message)
     {
@@ -136,6 +333,22 @@ public:
 class RtiChatFilter : public ChatFilter
 {
 public:
+#ifdef GenerateBotHelp
+    virtual string GetHelpName() {
+        return "rti";
+    }
+    virtual unordered_map<string, string> GetFilterExamples()
+    {
+        unordered_map<string, string> retMap;
+        retMap["@star"] = "All bots that are marked with or are targeing something marked with star.";
+        retMap["@circle"] = "All bots that are marked with or are targeing something marked with star.";
+        return retMap;
+    }
+    virtual string GetHelpDescription() {
+        return "This filter selects bots that are marked with or are targeting sonething marked with a raid target icon.";
+    }
+#endif
+
     RtiChatFilter(PlayerbotAI* ai) : ChatFilter(ai)
     {
         rtis.push_back("@star");
@@ -210,6 +423,22 @@ public:
         classNames["@warrior"] = CLASS_WARRIOR;
     }
 
+#ifdef GenerateBotHelp
+    virtual string GetHelpName() {
+        return "class";
+    }
+    virtual unordered_map<string, string> GetFilterExamples()
+    {
+        unordered_map<string, string> retMap;
+        retMap["@rogue"] = "All rogue bots.";
+        retMap["@warlock"] = "All warlock bots.";
+        return retMap;
+    }
+    virtual string GetHelpDescription() {
+        return "This filter selects bots have a certain class.";
+    }
+#endif
+
     virtual string Filter(string message)
     {
         Player* bot = ai->GetBot();
@@ -241,6 +470,28 @@ class GroupChatFilter : public ChatFilter
 {
 public:
     GroupChatFilter(PlayerbotAI* ai) : ChatFilter(ai) {}
+
+#ifdef GenerateBotHelp
+    virtual string GetHelpName() {
+        return "group";
+    }
+    virtual unordered_map<string, string> GetFilterExamples()
+    {
+        unordered_map<string, string> retMap;
+        retMap["@group"] = "All bots in a group.";
+        retMap["@group2"] = "All bots in group 2.";
+        retMap["@group4-6"] = "All bots in group 4 to 6.";
+        retMap["@nogroup"] = "All bots that are not grouped.";
+        retMap["@leader"] = "All bots that are leader of their group.";
+        retMap["@raid"] = "All bots that are in a raid group.";
+        retMap["@noraid"] = "All bots that are not in a raid group.";
+        retMap["@rleader"] = "All bots that are leader of a raid group.";
+        return retMap;
+    }
+    virtual string GetHelpDescription() {
+        return "This filter selects bots based on their group.";
+    }
+#endif
 
     virtual string Filter(string message)
     {
@@ -313,6 +564,25 @@ class GuildChatFilter : public ChatFilter
 {
 public:
     GuildChatFilter(PlayerbotAI* ai) : ChatFilter(ai) {}
+
+#ifdef GenerateBotHelp
+    virtual string GetHelpName() {
+        return "guild";
+    }
+    virtual unordered_map<string, string> GetFilterExamples()
+    {
+        unordered_map<string, string> retMap;
+        retMap["@guild"] = "All bots in a guild.";
+        retMap["@guild=raiders"] = "All bots in guild raiders.";
+        retMap["@noguild"] = "All bots not in a guild.";
+        retMap["@gleader"] = "All bots that are a guild leader.";
+        retMap["@grank=Initiate"] = "All bots that have rank Initiate in their guild.";
+        return retMap;
+    }
+    virtual string GetHelpDescription() {
+        return "This filter selects bots based on their guild.";
+    }
+#endif
 
     virtual string Filter(string message)
     {
@@ -400,6 +670,23 @@ class StateChatFilter : public ChatFilter
 public:
     StateChatFilter(PlayerbotAI* ai) : ChatFilter(ai) {}
 
+#ifdef GenerateBotHelp
+    virtual string GetHelpName() {
+        return "state";
+    }
+    virtual unordered_map<string, string> GetFilterExamples()
+    {
+        unordered_map<string, string> retMap;
+        retMap["@needrepair"] = "All bots that have durability below 20%.";
+        retMap["@outside"] = "All bots that are outside of an instance.";
+        retMap["@inside"] = "All bots that are inside an instance.";
+        return retMap;
+    }
+    virtual string GetHelpDescription() {
+        return "This filter selects bots based on their state.";
+    }
+#endif
+
     virtual string Filter(string message)
     {
         Player* bot = ai->GetBot();
@@ -431,9 +718,173 @@ public:
     }
 };
 
+class UsageChatFilter : public ChatFilter
+{
+public:
+    UsageChatFilter(PlayerbotAI * ai) : ChatFilter(ai) {}
+
+#ifdef GenerateBotHelp
+    virtual string GetHelpName() {
+        return "usage";
+    }
+    virtual unordered_map<string, string> GetFilterExamples()
+    {
+        unordered_map<string, string> retMap;
+        retMap["@use=[itemlink]"] = "All bots that have some use for this item.";
+        retMap["@sell=[itemlink]"] = "All bots that will vendor or AH this item.";
+        retMap["@need=[itemlink]"] = "All bots that will roll need on this item.";
+        retMap["@greed=[itemlink]"] = "All bots that will roll greed on this item.";        
+        return retMap;
+    }
+    virtual string GetHelpDescription() {
+        return "This filter selects bots based on the use they have for a specific item.";
+    }
+#endif
+
+    string FilterLink(string message)
+    {
+        if (message.find("@") == string::npos)
+            return message;
+
+        return message.substr(message.find("|r ") + 3);
+    }
+
+    virtual string Filter(string message)
+    {
+        Player* bot = ai->GetBot();
+
+        AiObjectContext* context = ai->GetAiObjectContext();
+
+        if (message.find("@use=") == 0)
+        {
+            string item = message.substr(message.find("=") + 1, message.find("|r ") - (message.find("=") + 3));
+
+            if (item.empty())
+                return message;
+
+            ItemIds ids = ChatHelper::parseItems(item);
+
+            if(ids.empty())
+                return message;
+
+            ItemUsage usage = AI_VALUE2(ItemUsage, "item usage", *ids.begin());
+
+            if (usage != ITEM_USAGE_NONE && usage != ITEM_USAGE_AH && usage != ITEM_USAGE_VENDOR)
+            {
+                return FilterLink(message);
+            }
+
+            return message;
+        }
+        if (message.find("@sell=") == 0)
+        {
+            string item = message.substr(message.find("=") + 1, message.find("|r ") - (message.find("=") + 3));
+
+            if (item.empty())
+                return message;
+
+            ItemIds ids = ChatHelper::parseItems(item);
+
+            if (ids.empty())
+                return message;
+
+            ItemUsage usage = AI_VALUE2(ItemUsage, "item usage", *ids.begin());
+
+            if (usage == ITEM_USAGE_AH || usage == ITEM_USAGE_VENDOR)
+            {
+                return FilterLink(message);
+            }
+
+            return message;
+        }
+        if (message.find("@need=") == 0)
+        {
+            string item = message.substr(message.find("=") + 1, message.find("|r ") - (message.find("=") + 3));
+
+            if (item.empty())
+                return message;
+
+            ItemIds ids = ChatHelper::parseItems(item);
+
+            if (ids.empty())
+                return message;
+
+            ItemUsage usage = AI_VALUE2(ItemUsage, "item usage", *ids.begin());
+
+            if (usage == ITEM_USAGE_EQUIP || usage == ITEM_USAGE_REPLACE || usage == ITEM_USAGE_GUILD_TASK || usage == ITEM_USAGE_BAD_EQUIP || (usage == ITEM_USAGE_FORCE && AI_VALUE2(ForceItemUsage, "force item usage", *ids.begin()) == ForceItemUsage::FORCE_USAGE_NEED))
+            {
+                return FilterLink(message);
+            }
+
+            return message;
+        }
+        if (message.find("@greed=") == 0)
+        {
+            string item = message.substr(message.find("=") + 1, message.find("|r ") - (message.find("=") + 3));
+
+            if (item.empty())
+                return message;
+
+            ItemIds ids = ChatHelper::parseItems(item);
+
+            if (ids.empty())
+                return message;
+
+            ItemUsage usage = AI_VALUE2(ItemUsage, "item usage", *ids.begin());
+
+            if (usage == ITEM_USAGE_SKILL || usage == ITEM_USAGE_USE || usage == ITEM_USAGE_DISENCHANT || usage == ITEM_USAGE_AH || usage == ITEM_USAGE_VENDOR || (usage == ITEM_USAGE_FORCE && AI_VALUE2(ForceItemUsage, "force item usage", *ids.begin()) == ForceItemUsage::FORCE_USAGE_GREED))
+            {
+                return FilterLink(message);
+            }
+
+            return message;
+        }
+       
+        return message;
+    }
+};
+
+class TalentSpecChatFilter : public ChatFilter
+{
+public:
+    TalentSpecChatFilter(PlayerbotAI* ai) : ChatFilter(ai) {}
+
+#ifdef GenerateBotHelp
+    virtual string GetHelpName() {
+        return "talent spec";
+    }
+    virtual unordered_map<string, string> GetFilterExamples()
+    {
+        unordered_map<string, string> retMap;
+        retMap["@frost"] = "All bots that have frost spec.";
+        retMap["@holy"] = "All bots that have holy spec.";
+        return retMap;
+    }
+    virtual string GetHelpDescription() {
+        return "This filter selects bots based on their primary talent specialisation.";
+    }
+#endif
+
+    virtual string Filter(string message)
+    {
+        Player* bot = ai->GetBot();
+
+        AiObjectContext* context = ai->GetAiObjectContext();
+        string filter = "@" + ChatHelper::specName(bot);
+
+        if (message.find(filter) == 0)
+        {
+            return ChatFilter::Filter(message);
+        }
+        
+        return message;
+    }
+};
+
 CompositeChatFilter::CompositeChatFilter(PlayerbotAI* ai) : ChatFilter(ai)
 {
     filters.push_back(new StrategyChatFilter(ai));
+    filters.push_back(new RoleChatFilter(ai));
     filters.push_back(new ClassChatFilter(ai));
     filters.push_back(new RtiChatFilter(ai));
     filters.push_back(new CombatTypeChatFilter(ai));
@@ -441,6 +892,8 @@ CompositeChatFilter::CompositeChatFilter(PlayerbotAI* ai) : ChatFilter(ai)
     filters.push_back(new GroupChatFilter(ai));
     filters.push_back(new GuildChatFilter(ai));
     filters.push_back(new StateChatFilter(ai));
+    filters.push_back(new UsageChatFilter(ai));
+    filters.push_back(new TalentSpecChatFilter(ai));
 }
 
 CompositeChatFilter::~CompositeChatFilter()

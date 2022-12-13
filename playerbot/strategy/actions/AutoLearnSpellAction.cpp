@@ -31,10 +31,10 @@ bool AutoLearnSpellAction::Execute(Event& event)
 
 void AutoLearnSpellAction::LearnSpells(ostringstream* out)
 {
-    if (sPlayerbotAIConfig.autoLearnTrainerSpells)// || (!ai->GetMaster() && sRandomPlayerbotMgr.IsRandomBot(bot)))    
+    if (sPlayerbotAIConfig.autoLearnTrainerSpells)
         LearnTrainerSpells(out);
 
-    if (sPlayerbotAIConfig.autoLearnQuestSpells)// || (!ai->GetMaster() && sRandomPlayerbotMgr.IsRandomBot(bot)))
+    if (sPlayerbotAIConfig.autoLearnQuestSpells)
         LearnQuestSpells(out);
 }
 

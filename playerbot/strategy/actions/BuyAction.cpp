@@ -67,6 +67,7 @@ bool BuyAction::Execute(Event& event)
             {
                 for (uint32 i=0; i<10; i++) //Buy 10 times or until no longer usefull/possible
                 {
+                    RESET_AI_VALUE2(ItemUsage, "item usage", tItem->item);
                     ItemUsage usage = AI_VALUE2(ItemUsage, "item usage", tItem->item);
                     ItemPrototype const* proto = sObjectMgr.GetItemPrototype(tItem->item);
 
@@ -79,13 +80,19 @@ bool BuyAction::Execute(Event& event)
 
                     unordered_map <ItemUsage, uint32> freeMoney;
 
-                    freeMoney[ITEM_USAGE_EQUIP] = freeMoney[ITEM_USAGE_REPLACE] = AI_VALUE2(uint32, "free money for", (uint32)NeedMoneyFor::gear);
-                    freeMoney[ITEM_USAGE_USE] = AI_VALUE2(uint32, "free money for", (uint32)NeedMoneyFor::consumables);
-                    freeMoney[ITEM_USAGE_SKILL] = freeMoney[ITEM_USAGE_DISENCHANT] = AI_VALUE2(uint32, "free money for", (uint32)NeedMoneyFor::tradeskill);
-                    freeMoney[ITEM_USAGE_AMMO] = AI_VALUE2(uint32, "free money for", (uint32)NeedMoneyFor::ammo);
-                    freeMoney[ITEM_USAGE_QUEST] = AI_VALUE2(uint32, "free money for", (uint32)NeedMoneyFor::anything);
+                    freeMoney[ITEM_USAGE_EQUIP] = freeMoney[ITEM_USAGE_REPLACE] = (uint32)NeedMoneyFor::gear;
+                    freeMoney[ITEM_USAGE_USE] = (uint32)NeedMoneyFor::consumables;
+                    freeMoney[ITEM_USAGE_SKILL] = (uint32)NeedMoneyFor::tradeskill;
+                    freeMoney[ITEM_USAGE_AMMO] =  (uint32)NeedMoneyFor::ammo;
+                    freeMoney[ITEM_USAGE_QUEST] = freeMoney[ITEM_USAGE_FORCE] = (uint32)NeedMoneyFor::anything;
 
-                    if (freeMoney.find(usage) == freeMoney.end() || price > freeMoney[usage])
+                    if (freeMoney.find(usage) == freeMoney.end())
+                        continue;
+
+                    RESET_AI_VALUE2(uint32, "free money for", freeMoney[usage]);
+                    uint32 money = AI_VALUE2(uint32, "free money for", freeMoney[usage]);
+
+                    if (price > money)
                         continue;
 
                     result |= BuyItem(tItems, vendorguid, proto);

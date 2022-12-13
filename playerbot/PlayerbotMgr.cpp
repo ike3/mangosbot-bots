@@ -263,7 +263,7 @@ void PlayerbotHolder::OnBotLogin(Player * const bot)
 
     Player* master = ai->GetMaster();
 
-    if (!master && sPlayerbotAIConfig.IsNonRandomBot(bot))
+    if (!master && sPlayerbotAIConfig.IsFreeAltBot(bot))
     {
         ai->SetMaster(bot);
         master = bot;
@@ -339,7 +339,7 @@ void PlayerbotHolder::OnBotLogin(Player * const bot)
     ai->TellMaster(BOT_TEXT("hello"));
 
     // bots join World chat if not solo oriented
-    if (bot->GetLevel() >= 10 && sRandomPlayerbotMgr.IsRandomBot(bot) && bot->GetPlayerbotAI() && bot->GetPlayerbotAI()->GetGrouperType() != GrouperType::SOLO)
+    if (bot->GetLevel() >= 10 && sRandomPlayerbotMgr.IsFreeBot(bot) && bot->GetPlayerbotAI() && bot->GetPlayerbotAI()->GetGrouperType() != GrouperType::SOLO)
     {
         // TODO make action/config
         // Make the bot join the world channel for chat
@@ -414,7 +414,7 @@ void PlayerbotHolder::OnBotLogin(Player * const bot)
         }
     }
 
-    if (sPlayerbotAIConfig.instantRandomize && !sPlayerbotAIConfig.disableRandomLevels && sRandomPlayerbotMgr.IsRandomBot(bot) && !bot->GetTotalPlayedTime() && !sPlayerbotAIConfig.IsNonRandomBot(bot))
+    if (sPlayerbotAIConfig.instantRandomize && !sPlayerbotAIConfig.disableRandomLevels && sRandomPlayerbotMgr.IsRandomBot(bot) && !bot->GetTotalPlayedTime())
     {
         sRandomPlayerbotMgr.InstaRandomize(bot);
     }
@@ -430,11 +430,16 @@ string PlayerbotHolder::ProcessBotCommand(string cmd, ObjectGuid guid, ObjectGui
     bool isRandomAccount = sPlayerbotAIConfig.IsInRandomAccountList(botAccount);
     bool isMasterAccount = (masterAccountId == botAccount);
 
-    if (!isRandomAccount && !isMasterAccount && !admin && masterguid)
+    if (!isRandomAccount && (!isMasterAccount && !admin && masterguid))
     {
         Player* master = sObjectMgr.GetPlayer(masterguid);
         if (master && (!sPlayerbotAIConfig.allowGuildBots || !masterGuildId || (masterGuildId && master->GetGuildIdFromDB(guid) != masterGuildId)))
             return "not in your guild or account";
+    }
+
+    if (!isRandomAccount && this == &sRandomPlayerbotMgr)
+    {
+        return "Can not control alt-bots with this command.";
     }
 
     if (cmd == "add" || cmd == "login")
@@ -713,7 +718,7 @@ list<string> PlayerbotHolder::HandlePlayerbotCommand(char const* args, Player* m
         {
             sRandomPlayerbotMgr.SetValue(guid.GetCounter(), "always", 1);
             messages.push_back("Enable offline player ai for " + alwaysName);
-            sPlayerbotAIConfig.nonRandomBots.push_back(make_pair(accountId, guid.GetCounter()));
+            sPlayerbotAIConfig.freeAltBots.push_back(make_pair(accountId, guid.GetCounter()));
         }
         else
         {
@@ -724,16 +729,16 @@ list<string> PlayerbotHolder::HandlePlayerbotCommand(char const* args, Player* m
             {
                 Player* bot = sRandomPlayerbotMgr.GetPlayerBot(guid);
 
-                if (bot && bot->GetPlayerbotAI() && !bot->GetPlayerbotAI()->GetMaster() && sPlayerbotAIConfig.IsNonRandomBot(bot))
+                if (bot && bot->GetPlayerbotAI() && !bot->GetPlayerbotAI()->GetMaster() && sPlayerbotAIConfig.IsFreeAltBot(bot))
                 {
                     sRandomPlayerbotMgr.LogoutPlayerBot(guid);
                 }
             }
 
-            auto it = remove_if(sPlayerbotAIConfig.nonRandomBots.begin(), sPlayerbotAIConfig.nonRandomBots.end(), [guid](std::pair<uint32, uint32> i) {return i.second == guid.GetCounter(); });
+            auto it = remove_if(sPlayerbotAIConfig.freeAltBots.begin(), sPlayerbotAIConfig.freeAltBots.end(), [guid](std::pair<uint32, uint32> i) {return i.second == guid.GetCounter(); });
 
-            if (it != sPlayerbotAIConfig.nonRandomBots.end())
-                sPlayerbotAIConfig.nonRandomBots.erase(it, sPlayerbotAIConfig.nonRandomBots.end());
+            if (it != sPlayerbotAIConfig.freeAltBots.end())
+                sPlayerbotAIConfig.freeAltBots.erase(it, sPlayerbotAIConfig.freeAltBots.end());
         }
         
         return messages;
@@ -969,7 +974,7 @@ string PlayerbotHolder::ListBots(Player* master)
         for (Group::member_citerator itr = groupSlot.begin(); itr != groupSlot.end(); itr++)
         {
             Player *member = sObjectMgr.GetPlayer(itr->guid);
-            if (member && sRandomPlayerbotMgr.IsRandomBot(member))
+            if (member && sRandomPlayerbotMgr.IsFreeBot(member))
             {
                 string name = member->GetName();
 
@@ -1129,7 +1134,7 @@ void PlayerbotMgr::OnPlayerLogin(Player* player)
     sPlayerbotTextMgr.AddLocalePriority(player->GetSession()->GetSessionDbLocaleIndex());
     sLog.outBasic("Player %s logged in, localeDbc %i, localeDb %i", player->GetName(), (uint32)(player->GetSession()->GetSessionDbcLocale()), player->GetSession()->GetSessionDbLocaleIndex());
 
-    if(sPlayerbotAIConfig.selfBotLevel > 2 || sPlayerbotAIConfig.IsNonRandomBot(player))
+    if(sPlayerbotAIConfig.selfBotLevel > 2 || sPlayerbotAIConfig.IsFreeAltBot(player))
         HandlePlayerbotCommand("self", player);
 
     if (!sPlayerbotAIConfig.botAutologin)

@@ -23,9 +23,9 @@ namespace ai
 
         ai->TellMaster(BOT_TEXT("goodbye"), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_TALK, false);
 
-        bool randomBot = sRandomPlayerbotMgr.IsRandomBot(bot);
+        bool freeBot = sRandomPlayerbotMgr.IsFreeBot(bot);
 
-        bool shouldStay = randomBot && bot->GetGroup() && player == bot;
+        bool shouldStay = freeBot && bot->GetGroup() && player == bot;
 
         if (!shouldStay)
         {
@@ -37,13 +37,13 @@ namespace ai
                 bot->Whisper("I left my group", LANG_UNIVERSAL, player->GetObjectGuid());
         }
 
-        if (randomBot)
+        if (freeBot)
         {
             bot->GetPlayerbotAI()->SetMaster(NULL);
         }        
 
         if(!aiMaster)
-            ai->ResetStrategies(!randomBot);
+            ai->ResetStrategies(!sRandomPlayerbotMgr.IsRandomBot(bot));
         ai->Reset();
 
         if(group)

@@ -11,6 +11,7 @@
 #include "QueryItemUsageAction.h"
 #include "LootStrategyAction.h"
 #include "AddLootAction.h"
+#include "LootRollAction.h"
 #include "ReleaseSpiritAction.h"
 #include "TeleportAction.h"
 #include "TaxiAction.h"
@@ -22,6 +23,7 @@
 #include "SellAction.h"
 #include "UnequipAction.h"
 #include "EquipAction.h"
+#include "KeepItemAction.h"
 #include "TradeAction.h"
 #include "ChangeTalentsAction.h"
 #include "ListSpellsAction.h"
@@ -92,6 +94,7 @@ namespace ai
             creators["ll"] = &ChatActionContext::ll;
             creators["ss"] = &ChatActionContext::ss;
             creators["add all loot"] = &ChatActionContext::add_all_loot;
+            creators["roll"] = &ChatActionContext::roll;
             creators["release"] = &ChatActionContext::release;
             creators["repop"] = &ChatActionContext::repop;
             creators["teleport"] = &ChatActionContext::teleport;
@@ -102,6 +105,7 @@ namespace ai
             creators["equip"] = &ChatActionContext::equip;
             creators["equip upgrades"] = &ChatActionContext::equip_upgrades;
             creators["unequip"] = &ChatActionContext::unequip;
+            creators["keep"] = &ChatActionContext::keep;
             creators["sell"] = &ChatActionContext::sell;
             creators["buy"] = &ChatActionContext::buy;
             creators["reward"] = &ChatActionContext::reward;
@@ -228,6 +232,7 @@ namespace ai
         static Action* equip(PlayerbotAI* ai) { return new EquipAction(ai); }
         static Action* equip_upgrades(PlayerbotAI* ai) { return new EquipUpgradesAction(ai); }
         static Action* unequip(PlayerbotAI* ai) { return new UnequipAction(ai); }
+        static Action* keep(PlayerbotAI* ai) { return new KeepItemAction(ai); }
         static Action* sell(PlayerbotAI* ai) { return new SellAction(ai); }
         static Action* buy(PlayerbotAI* ai) { return new BuyAction(ai); }
         static Action* reward(PlayerbotAI* ai) { return new RewardAction(ai); }
@@ -254,6 +259,7 @@ namespace ai
         static Action* ll(PlayerbotAI* ai) { return new LootStrategyAction(ai); }
         static Action* ss(PlayerbotAI* ai) { return new SkipSpellsListAction(ai); }
         static Action* add_all_loot(PlayerbotAI* ai) { return new AddAllLootAction(ai); }
+        static Action* roll(PlayerbotAI* ai) { return new RollAction(ai); }
         static Action* reset_ai(PlayerbotAI* ai) { return new ResetAiAction(ai, true); }
         static Action* reset_ai_soft(PlayerbotAI* ai) { return new ResetAiAction(ai, false); }
         static Action* gossip_hello(PlayerbotAI* ai) { return new GossipHelloAction(ai); }

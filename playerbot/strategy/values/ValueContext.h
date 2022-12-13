@@ -168,6 +168,7 @@ namespace ai
             creators["should loot object"] = &ValueContext::should_loot_object;
             creators["always loot list"] = &ValueContext::always_loot_list;
             creators["loot strategy"] = &ValueContext::loot_strategy;
+            creators["active rolls"] = &ValueContext::active_rolls;
             creators["last movement"] = &ValueContext::last_movement;
             creators["stay time"] = &ValueContext::stay_time;
             creators["last taxi"] = &ValueContext::last_movement;
@@ -223,7 +224,7 @@ namespace ai
             creators["formation"] = &ValueContext::formation;
             creators["stance"] = &ValueContext::stance;
             creators["item usage"] = &ValueContext::item_usage;
-            creators["force equip"] = &ValueContext::force_equip;
+            creators["force item usage"] = &ValueContext::force_item_usage;
             creators["speed"] = &ValueContext::speed;
             creators["last said"] = &ValueContext::last_said;
             creators["last emote"] = &ValueContext::last_emote;
@@ -343,7 +344,7 @@ namespace ai
         static UntypedValue* already_seen_players(PlayerbotAI* ai) { return new AlreadySeenPlayersValue(ai); }
         static UntypedValue* new_player_nearby(PlayerbotAI* ai) { return new NewPlayerNearbyValue(ai); }
         static UntypedValue* item_usage(PlayerbotAI* ai) { return new ItemUsageValue(ai); }
-        static UntypedValue* force_equip(PlayerbotAI* ai) { return new ForceEquipValue(ai); }
+        static UntypedValue* force_item_usage(PlayerbotAI* ai) { return new ForceItemUsageValue(ai); }
         static UntypedValue* formation(PlayerbotAI* ai) { return new FormationValue(ai); }
         static UntypedValue* stance(PlayerbotAI* ai) { return new StanceValue(ai); }
         static UntypedValue* mana_save_level(PlayerbotAI* ai) { return new ManaSaveLevelValue(ai); }
@@ -389,6 +390,8 @@ namespace ai
         static UntypedValue* should_loot_object(PlayerbotAI* ai) { return new ShouldLootObject(ai); }
         static UntypedValue* always_loot_list(PlayerbotAI* ai) { return new AlwaysLootListValue(ai); }
         static UntypedValue* loot_strategy(PlayerbotAI* ai) { return new LootStrategyValue(ai); }
+        static UntypedValue* active_rolls(PlayerbotAI* ai) { return new ActiveRolls(ai); }
+        
 
         static UntypedValue* attackers_count(PlayerbotAI* ai) { return new AttackersCountValue(ai); }
         static UntypedValue* possible_attack_targets_count(PlayerbotAI* ai) { return new PossibleAttackTargetsCountValue(ai); }

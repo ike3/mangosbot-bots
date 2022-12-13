@@ -179,7 +179,7 @@ PlayerbotAI::PlayerbotAI(Player* bot) :
     botOutgoingPacketHandlers.AddHandler(SMSG_LOG_XPGAIN, "xpgain");
     botOutgoingPacketHandlers.AddHandler(SMSG_TEXT_EMOTE, "receive text emote");
     botOutgoingPacketHandlers.AddHandler(SMSG_EMOTE, "receive emote");
-    botOutgoingPacketHandlers.AddHandler(SMSG_LOOT_START_ROLL, "master loot roll");
+    botOutgoingPacketHandlers.AddHandler(SMSG_LOOT_START_ROLL, "loot start roll");
     botOutgoingPacketHandlers.AddHandler(SMSG_SUMMON_REQUEST, "summon request");
     botOutgoingPacketHandlers.AddHandler(MSG_RAID_READY_CHECK, "ready check");
 
@@ -863,6 +863,12 @@ void PlayerbotAI::HandleCommand(uint32 type, const string& text, Player& fromPla
         std::string action = filtered.substr(filtered.find(" ") + 1);
         DoSpecificAction(action);
     }
+    if (ChatHelper::parseValue("command", filtered).substr(0, 3) == "do ")
+    {
+        std::string action = ChatHelper::parseValue("command", filtered);
+        action = action.substr(3);
+        DoSpecificAction(action);
+    }
     else if (type != CHAT_MSG_WHISPER && filtered.size() > 6 && filtered.substr(0, 6) == "queue ")
     {
         std::string remaining = filtered.substr(filtered.find(" ") + 1);
@@ -1092,32 +1098,32 @@ void PlayerbotAI::HandleBotOutgoingPacket(const WorldPacket& packet)
                 time_t lastChat = GetAiObjectContext()->GetValue<time_t>("last said", "chat")->Get();
                 bool isPaused = time(0) < lastChat;
                 bool shouldReply = false;
-                bool isRandomBot = false;
+                bool isFreeBot = false;
                 sObjectMgr.GetPlayerNameByGUID(guid1, name);
                 uint32 accountId = sObjectMgr.GetPlayerAccountIdByGUID(guid1);
-                isRandomBot = sPlayerbotAIConfig.IsInRandomAccountList(accountId);
-                if(!isRandomBot)
-                    isRandomBot = sPlayerbotAIConfig.IsInNonRandomAccountList(accountId);
+                isFreeBot = sPlayerbotAIConfig.IsInRandomAccountList(accountId);
+                if(!isFreeBot)
+                    isFreeBot = sPlayerbotAIConfig.IsFreeAltBot(guid1);
 
                 bool isMentioned = message.find(bot->GetName()) != std::string::npos;
 
                 // random bot speaks, chat CD
-                if (isRandomBot && isPaused)
+                if (isFreeBot && isPaused)
                     return;
                 // BG: react only if mentioned or if not channel and real player spoke
-                if (bot->InBattleGround() && !(isMentioned || (msgtype != CHAT_MSG_CHANNEL && !isRandomBot)))
+                if (bot->InBattleGround() && !(isMentioned || (msgtype != CHAT_MSG_CHANNEL && !isFreeBot)))
                     return;
 
                 if (HasRealPlayerMaster() && guid1 != GetMaster()->GetObjectGuid())
                     return;
 
-                if (isRandomBot && urand(0, 20))
+                if (isFreeBot && urand(0, 20))
                     return;
 
                 if (lang == LANG_ADDON)
                     return;
 
-                if ((isRandomBot && !isPaused && (!urand(0, 30) || (!urand(0, 20) && message.find(bot->GetName()) != std::string::npos))) || (!isRandomBot && (isMentioned || !urand(0, 4))))
+                if ((isFreeBot && !isPaused && (!urand(0, 30) || (!urand(0, 20) && message.find(bot->GetName()) != std::string::npos))) || (!isFreeBot && (isMentioned || !urand(0, 4))))
                 {
                     QueueChatResponse(msgtype, guid1, ObjectGuid(), message, chanName, name);
                     GetAiObjectContext()->GetValue<time_t>("last said", "chat")->Set(time(0) + urand(5, 25));
@@ -1452,7 +1458,7 @@ void PlayerbotAI::DoNextAction(bool min)
         else if (aiInternalUpdateDelay < 1000)
             bot->SetStandState(UNIT_STAND_STATE_STAND);
 
-        if (!group && sRandomPlayerbotMgr.IsRandomBot(bot))
+        if (!group && sRandomPlayerbotMgr.IsFreeBot(bot))
         {
             bot->GetPlayerbotAI()->SetMaster(nullptr);
         }
@@ -2040,10 +2046,10 @@ vector<Player*> PlayerbotAI::GetPlayersInGroup()
     return members;
 }
 
-bool PlayerbotAI::TellMasterNoFacing(string text, PlayerbotSecurityLevel securityLevel, bool isPrivate)
+bool PlayerbotAI::TellMasterNoFacing(string text, PlayerbotSecurityLevel securityLevel, bool isPrivate, bool noRepeat)
 {
     time_t lastSaid = whispers[text];
-    if (!lastSaid || (time(0) - lastSaid) >= sPlayerbotAIConfig.repeatDelay / 1000)
+    if (!noRepeat || !lastSaid || (time(0) - lastSaid) >= sPlayerbotAIConfig.repeatDelay / 1000)
     {
         whispers[text] = time(0);
 
@@ -2117,7 +2123,7 @@ bool PlayerbotAI::IsTellAllowed(PlayerbotSecurityLevel securityLevel)
     if (!GetSecurity()->CheckLevelFor(securityLevel, true, master))
         return false;
 
-    if (sPlayerbotAIConfig.whisperDistance && !bot->GetGroup() && sRandomPlayerbotMgr.IsRandomBot(bot) &&
+    if (sPlayerbotAIConfig.whisperDistance && !bot->GetGroup() && sRandomPlayerbotMgr.IsFreeBot(bot) &&
             master->GetSession()->GetSecurity() < SEC_GAMEMASTER &&
             (bot->GetMapId() != master->GetMapId() || sServerFacade.GetDistance2d(bot, master) > sPlayerbotAIConfig.whisperDistance))
         return false;
@@ -2405,8 +2411,6 @@ bool PlayerbotAI::CanCastSpell(uint32 spellid, Unit* target, uint8 effectMask, b
             }
         }
 
-        if (target->IsImmuneToSpell(spellInfo, false, GetSpellSchoolMask(spellInfo)))
-            return false;
         if (!damage)
         {
             for (int32 i = EFFECT_INDEX_0; i <= EFFECT_INDEX_2; i++)
@@ -3559,7 +3563,7 @@ ActivePiorityType PlayerbotAI::GetPriorityType()
     if (HasPlayerNearby(450.0f)) 
         return ActivePiorityType::NEARBY_PLAYER;
 
-    if (sPlayerbotAIConfig.IsNonRandomBot(bot))
+    if (sPlayerbotAIConfig.IsFreeAltBot(bot))
         return ActivePiorityType::IS_ALWAYS_ACTIVE;
 
     if (bot->InBattleGroundQueue()) 

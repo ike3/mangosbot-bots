@@ -43,7 +43,12 @@ namespace ai
 	{
 	public:
         TargetValue(PlayerbotAI* ai, string name = "target", int checkInterval = 1) : UnitCalculatedValue(ai, name, checkInterval) {}
-
+#ifdef GenerateBotHelp
+        virtual string GetHelpName() { return "target"; } //Must equal iternal name
+        virtual string GetHelpTypeName() { return "target"; }
+        virtual string GetHelpDescription() { return "This value contains a [h:object|unit] which is the best target based on the current target strategy."; }
+        virtual vector<string> GetUsedValues() { return { "possible attack targets" }; }
+#endif 
     protected:
         Unit* FindTarget(FindTargetStrategy* strategy);
     };
@@ -52,6 +57,12 @@ namespace ai
     {
     public:
         RpgTargetValue(PlayerbotAI* ai, string name = "rpg target") : ManualSetValue<GuidPosition>(ai, GuidPosition(), name) {}
+#ifdef GenerateBotHelp
+        virtual string GetHelpName() { return "rpg target"; } //Must equal iternal name
+        virtual string GetHelpTypeName() { return "rpg"; }
+        virtual string GetHelpDescription() { return "This value contains the [h:object|objectGuid] of a [h:object|unit] or [h:object|gameObject] to move to and rpg with.\nThis value is manually set."; }
+        virtual vector<string> GetUsedValues() { return {}; }
+#endif 
     };
 
     class TravelTargetValue : public ManualSetValue<TravelTarget *>

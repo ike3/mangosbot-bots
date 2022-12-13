@@ -20,8 +20,8 @@ namespace ai
             creators["complete quest"] = &WorldPacketTriggerContext::complete_quest;
             creators["accept quest"] = &WorldPacketTriggerContext::accept_quest;
             creators["quest share"] = &WorldPacketTriggerContext::quest_share;
+            creators["loot start roll"] = &WorldPacketTriggerContext::loot_start_roll;
             creators["loot roll"] = &WorldPacketTriggerContext::loot_roll;
-            creators["master loot roll"] = &WorldPacketTriggerContext::master_loot_roll;
             creators["resurrect request"] = &WorldPacketTriggerContext::resurrect_request;
             creators["area trigger"] = &WorldPacketTriggerContext::area_trigger;
             creators["within area trigger"] = &WorldPacketTriggerContext::within_area_trigger;
@@ -97,8 +97,8 @@ namespace ai
         static Trigger* complete_quest(PlayerbotAI* ai) { return new WorldPacketTrigger(ai, "complete quest"); }
         static Trigger* accept_quest(PlayerbotAI* ai) { return new WorldPacketTrigger(ai, "accept quest"); }
         static Trigger* quest_share(PlayerbotAI* ai) { return new WorldPacketTrigger(ai, "quest share"); }
+        static Trigger* loot_start_roll(PlayerbotAI* ai) { return new WorldPacketTrigger(ai, "loot start roll"); }
         static Trigger* loot_roll(PlayerbotAI* ai) { return new WorldPacketTrigger(ai, "loot roll"); }
-        static Trigger* master_loot_roll(PlayerbotAI* ai) { return new WorldPacketTrigger(ai, "master loot roll"); }
         static Trigger* taxi(PlayerbotAI* ai) { return new WorldPacketTrigger(ai, "activate taxi"); }
         static Trigger* levelup(PlayerbotAI* ai) { return new WorldPacketTrigger(ai, "levelup"); }
         static Trigger* xpgain(PlayerbotAI* ai) { return new WorldPacketTrigger(ai, "xpgain"); }

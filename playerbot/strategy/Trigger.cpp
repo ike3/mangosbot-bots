@@ -9,6 +9,9 @@ using namespace ai;
 
 Event Trigger::Check()
 {
+	if (triggered)
+		return Event(getName(), param, owner);
+
 	if (IsActive())
 	{
 		Event event(getName());

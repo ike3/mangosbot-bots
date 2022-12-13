@@ -153,16 +153,29 @@ ItemUsage ItemUsageValue::Calculate()
     if (proto->Quality >= ITEM_QUALITY_EPIC && !sRandomPlayerbotMgr.IsRandomBot(bot))
         return ITEM_USAGE_KEEP;
 
+    ForceItemUsage forceUsage = AI_VALUE2(ForceItemUsage, "force item usage", proto->ItemId);
+
+    if (forceUsage == ForceItemUsage::FORCE_USAGE_GREED || forceUsage == ForceItemUsage::FORCE_USAGE_NEED)
+        return ITEM_USAGE_FORCE;
+
+    if(forceUsage == ForceItemUsage::FORCE_USAGE_KEEP || forceUsage == ForceItemUsage::FORCE_USAGE_EQUIP)
+        return ITEM_USAGE_KEEP;
+
     //Need to add something like free bagspace or item value.
     if (proto->SellPrice > 0)
     {
         AuctionHouseBotItemData itemInfo = sAuctionHouseBot.GetItemData(proto->ItemId);
         if (itemInfo.Value > ((int32)proto->SellPrice) * 1.5f)
         {
-            Item* item = CurrentItem(proto);
-
-            if(!item || !item->IsSoulBound())
+            if(proto->Bonding == NO_BIND)
                 return ITEM_USAGE_AH;
+
+            if (proto->Bonding == BIND_WHEN_EQUIPPED)
+            {
+                Item* item = CurrentItem(proto);
+                if (!item || !item->IsSoulBound())
+                    return ITEM_USAGE_AH;
+            }
         }
         
         return ITEM_USAGE_VENDOR;
@@ -243,8 +256,8 @@ ItemUsage ItemUsageValue::QueryItemUsageForEquip(ItemPrototype const* itemProto)
 
     if (oldItem)
     {
-        if (AI_VALUE2(bool, "force equip", oldItemProto->ItemId)) //Current equip is forced. Do not unequip.
-            if(AI_VALUE2(bool, "force equip", itemProto->ItemId))
+        if (AI_VALUE2(ForceItemUsage, "force item usage", oldItemProto->ItemId) == ForceItemUsage::FORCE_USAGE_EQUIP) //Current equip is forced. Do not unequip.
+            if(AI_VALUE2(ForceItemUsage, "force item usage", itemProto->ItemId) == ForceItemUsage::FORCE_USAGE_EQUIP)
                 return ITEM_USAGE_KEEP;
             else
                 return ITEM_USAGE_NONE;
@@ -256,9 +269,8 @@ ItemUsage ItemUsageValue::QueryItemUsageForEquip(ItemPrototype const* itemProto)
         }
     }
 
-    if (AI_VALUE2(bool, "force equip", itemProto->ItemId)) //New item is forced. Always equip it.
+    if (AI_VALUE2(ForceItemUsage, "force item usage", itemProto->ItemId) == ForceItemUsage::FORCE_USAGE_EQUIP) //New item is forced. Always equip it.
         return ITEM_USAGE_EQUIP;
-
 
     //Bigger quiver
     if (itemProto->Class == ITEM_CLASS_QUIVER)

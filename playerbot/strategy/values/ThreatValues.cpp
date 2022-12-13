@@ -107,6 +107,9 @@ uint8 ThreatValue::Calculate(Unit* target)
     if (target->IsFriend(bot))
         target = target->GetTarget();
 
+    if (!target)
+        return 0;
+
     if (target->GetObjectGuid().IsPlayer())
         return 0;
 

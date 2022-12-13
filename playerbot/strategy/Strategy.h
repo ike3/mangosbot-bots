@@ -56,7 +56,11 @@ namespace ai
 
 		virtual void OnStrategyAdded(BotState state) {}
 		virtual void OnStrategyRemoved(BotState state) {}
-
+#ifdef GenerateBotHelp
+		virtual string GetHelpName() { return "dummy"; } //Must equal iternal name
+		virtual string GetHelpDescription() { return "This is a strategy."; }
+		virtual vector<string> GetRelatedStrategies() { return {}; }
+#endif
 	protected:
 		virtual NextAction** GetDefaultCombatActions() { return nullptr; }
 		virtual NextAction** GetDefaultNonCombatActions() { return nullptr; }
@@ -68,10 +72,10 @@ namespace ai
 		virtual void InitDeadTriggers(std::list<TriggerNode*>& triggers) {}
 		virtual void InitReactionTriggers(std::list<TriggerNode*>& triggers) {}
 
-        virtual void InitCombatMultipliers(std::list<Multiplier*>& multipliers) {}
-        virtual void InitNonCombatMultipliers(std::list<Multiplier*>& multipliers) {}
-        virtual void InitDeadMultipliers(std::list<Multiplier*>& multipliers) {}
-        virtual void InitReactionMultipliers(std::list<Multiplier*>& multipliers) {}
+		virtual void InitCombatMultipliers(std::list<Multiplier*>& multipliers) {}
+		virtual void InitNonCombatMultipliers(std::list<Multiplier*>& multipliers) {}
+		virtual void InitDeadMultipliers(std::list<Multiplier*>& multipliers) {}
+		virtual void InitReactionMultipliers(std::list<Multiplier*>& multipliers) {}
 
     protected:
         NamedObjectFactoryList<ActionNode> actionNodeFactories;

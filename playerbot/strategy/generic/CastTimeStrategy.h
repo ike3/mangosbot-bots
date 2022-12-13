@@ -18,8 +18,13 @@ namespace ai
     public:
         CastTimeStrategy(PlayerbotAI* ai) : Strategy(ai) {}
         string getName() override { return "cast time"; }
-
-    private:
-        void InitCombatMultipliers(std::list<Multiplier*> &multipliers) override;
+#ifdef GenerateBotHelp
+        virtual string GetHelpName() { return "cast time"; } //Must equal iternal name
+        virtual string GetHelpDescription() {
+            return "This strategy will make bots less likely to cast long casttime spells when the target is at critical health.";
+        }
+        virtual vector<string> GetRelatedStrategies() { return { }; }
+#endif
+        void InitCombatMultipliers(std::list<Multiplier*>& multipliers);
     };
 }

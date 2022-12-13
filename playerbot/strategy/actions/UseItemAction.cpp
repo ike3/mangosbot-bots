@@ -46,6 +46,11 @@ bool UseItemAction::Execute(Event& event)
     return false;
 }
 
+bool UseItemAction::isPossible()
+{
+    return getName() == "use" || AI_VALUE2(uint32, "item count", getName()) > 0;
+}
+
 bool UseItemAction::UseGameObject(ObjectGuid guid)
 {
     GameObject* go = ai->GetGameObject(guid);
@@ -538,9 +543,128 @@ bool UseItemAction::SocketItem(Item* item, Item* gem, bool replace)
 }
 #endif
 
-bool UseItemAction::isPossible()
+bool UseItemIdAction::Execute(Event& event)
 {
-   return getName() == "use" || AI_VALUE2(uint32, "item count", getName()) > 0;
+    return CastItemSpell(GetItemId(), GetTarget());
+}
+
+bool UseItemIdAction::isPossible()
+{
+    if (uint32 itemId = GetItemId())
+    {
+        if (HasSpellCooldown(itemId))
+            return false;
+
+        if (!bot->HasItemCount(itemId, 1) && !ai->HasCheat(BotCheatMask::item))
+            return false;
+    }
+
+    return true;
+}
+
+bool UseItemIdAction::HasSpellCooldown(const uint32 itemId)
+{
+    ItemPrototype const* proto = sObjectMgr.GetItemPrototype(itemId);
+
+    if (!proto)
+        return false;
+
+    uint32 spellId = 0;
+    for (uint8 i = 0; i < MAX_ITEM_PROTO_SPELLS; ++i)
+    {
+        if (proto->Spells[i].SpellTrigger != ITEM_SPELLTRIGGER_ON_USE)
+        {
+            continue;
+        }
+
+        if (proto->Spells[i].SpellId > 0)
+        {
+            if (!sServerFacade.IsSpellReady(bot, proto->Spells[i].SpellId))
+                return true;
+
+            if (!sServerFacade.IsSpellReady(bot, proto->Spells[i].SpellId, itemId))
+                return true;
+        }
+    }
+
+    return false;
+}
+
+bool UseItemIdAction::CastItemSpell(uint32 itemId, Unit* target)
+{
+    ItemPrototype const* proto = sObjectMgr.GetItemPrototype(itemId);
+
+    if (!proto)
+        return false;
+
+    Item* item = nullptr;
+
+    if (!ai->HasCheat(BotCheatMask::item)) //If bot has no item cheat it needs an item to cast.
+    {
+        list<Item*> items = AI_VALUE2(list<Item*>, "inventory items", chat->formatQItem(itemId));
+
+        if (items.empty())
+            return false;
+
+        item = items.front();
+    }
+
+    SpellCastTargets targets;
+    if (target)
+    {
+        targets.setUnitTarget(target);
+        targets.setDestination(target->GetPositionX(), target->GetPositionY(), target->GetPositionZ());
+    }
+    else
+        targets.m_targetMask = TARGET_FLAG_SELF;
+        
+    // use triggered flag only for items with many spell casts and for not first cast
+    int count = 0;
+
+    for (int i = 0; i < MAX_ITEM_PROTO_SPELLS; ++i)
+    {
+        _Spell const& spellData = proto->Spells[i];
+
+        // no spell
+        if (!spellData.SpellId)
+            continue;
+
+        // wrong triggering type
+#ifdef MANGOSBOT_ZERO
+        if (spellData.SpellTrigger != ITEM_SPELLTRIGGER_ON_USE && spellData.SpellTrigger != ITEM_SPELLTRIGGER_ON_NO_DELAY_USE)
+#else
+        if (spellData.SpellTrigger != ITEM_SPELLTRIGGER_ON_USE)
+#endif
+            continue;
+
+        SpellEntry const* spellInfo = sSpellTemplate.LookupEntry<SpellEntry>(spellData.SpellId);
+        if (!spellInfo)
+        {
+            sLog.outError("Player::CastItemUseSpell: Item (Entry: %u) in have wrong spell id %u, ignoring", proto->ItemId, spellData.SpellId);
+            continue;
+        }
+
+        Spell* spell = new Spell(bot, spellInfo, (count > 0) ? TRIGGERED_OLD_TRIGGERED : TRIGGERED_NONE);
+
+        if (item)
+        {
+            spell->SetCastItem(item);
+            item->SetUsedInSpell(true);
+        }
+
+        spell->m_clientCast = true;
+
+        bool result = (spell->SpellStart(&targets) == SPELL_CAST_OK);
+
+        if (!result)
+            return false;
+
+        bot->AddCooldown(*spellInfo, proto, false);
+
+        ++count;
+    }
+
+    return count;
 }
 
 bool UseSpellItemAction::isUseful()

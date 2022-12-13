@@ -74,6 +74,8 @@ class RandomPlayerbotMgr : public PlayerbotHolder
         static bool HandlePlayerbotConsoleCommand(ChatHandler* handler, char const* args);
         bool IsRandomBot(Player* bot);
         bool IsRandomBot(uint32 bot);
+        bool IsFreeBot(Player* bot) { return IsRandomBot(bot) || sPlayerbotAIConfig.IsFreeAltBot(bot); }
+        bool IsFreeBot(uint32 bot) { return IsRandomBot(bot) || sPlayerbotAIConfig.IsFreeAltBot(bot); }
         void InstaRandomize(Player* bot);
         void Randomize(Player* bot);
         void RandomizeFirst(Player* bot);

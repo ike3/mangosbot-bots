@@ -73,7 +73,7 @@ bool AddAllLootAction::AddLoot(ObjectGuid guid)
 
         if (Group* group = bot->GetGroup())
         {
-            if (group->GetMasterLooterGuid() && group->GetMasterLooterGuid() != bot->GetObjectGuid())
+            if (group->GetLootMethod() == LootMethod::MASTER_LOOT && group->GetMasterLooterGuid() && group->GetMasterLooterGuid() != bot->GetObjectGuid())
                 return false;
         }
     }

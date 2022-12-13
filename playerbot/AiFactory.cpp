@@ -152,27 +152,41 @@ BotRoles AiFactory::GetPlayerRoles(Player* player)
                 role = BOT_ROLE_DPS;
             break;
         case CLASS_WARRIOR:
-            if (tab == 2)
+            if (tab == 2 || player->HasAura(71)) //Defensive stance
                 role = BOT_ROLE_TANK;
             else
                 role = BOT_ROLE_DPS;
             break;
         case CLASS_PALADIN:
-            if (tab == 0)
-                role = BOT_ROLE_HEALER;
-            else if (tab == 1)
+            if (tab == 1 || player->HasAura(25780)) //Righteous fury
                 role = BOT_ROLE_TANK;
+            else if (tab == 0)
+                role = BOT_ROLE_HEALER;            
             else if (tab == 2)
                 role = BOT_ROLE_DPS;
             break;
         case CLASS_DRUID:
-            if (tab == 0)
+            if (player->HasAura(5487) || player->HasAura(9634)) //Bear form, Dire bear form
+                role = BOT_ROLE_TANK;
+            else if (tab == 1)
                 role = BOT_ROLE_DPS;
             else if (tab == 1)
                 role = (BotRoles)(BOT_ROLE_TANK | BOT_ROLE_DPS);
             else if (tab == 2)
                 role = BOT_ROLE_HEALER;
             break;
+#ifdef MANGOSBOT_TWO
+        case CLASS_DEATHKNIGHT:
+            if (player->HasAura(48263)) //Frost presence
+                role = BOT_ROLE_TANK;
+            else if (tab == 0)
+                role = BOT_ROLE_TANK ;
+            else if (tab == 1)
+                role = (BotRoles)(BOT_ROLE_TANK | BOT_ROLE_DPS);
+            else if (tab == 2)
+                role = BOT_ROLE_DPS;
+            break;
+#endif
         default:
             role = BOT_ROLE_DPS;
             break;
@@ -303,8 +317,10 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
 #endif
     }
 
-	if (facade->IsRealPlayer() || sRandomPlayerbotMgr.IsRandomBot(player))
+	if (facade->IsRealPlayer() || sRandomPlayerbotMgr.IsFreeBot(player))
 	{
+        engine->addStrategy("roll");
+
         if (!player->GetGroup())
         {
             engine->addStrategy("flee");
@@ -492,6 +508,8 @@ void AiFactory::AddDefaultNonCombatStrategies(Player* player, PlayerbotAI* const
     {   
         Player* master = facade->GetMaster();
 
+        nonCombatEngine->addStrategy("roll");
+
         // let 25% of free bots start duels.
         if (!urand(0, 3))
             nonCombatEngine->addStrategy("start duel");
@@ -656,7 +674,7 @@ Engine* AiFactory::createNonCombatEngine(Player* player, PlayerbotAI* const faca
 void AiFactory::AddDefaultDeadStrategies(Player* player, PlayerbotAI* const facade, Engine* deadEngine)
 {
     deadEngine->addStrategies("dead", "stay", "chat", "default", "follow", NULL);
-    if (sRandomPlayerbotMgr.IsRandomBot(player) && !player->GetGroup())
+    if (sRandomPlayerbotMgr.IsFreeBot(player) && !player->GetGroup())
     {
         deadEngine->removeStrategy("follow");
     }

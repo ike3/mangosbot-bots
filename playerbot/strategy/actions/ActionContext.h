@@ -6,6 +6,7 @@
 #include "AddLootAction.h"
 #include "LootAction.h"
 #include "AddLootAction.h"
+#include "LootRollAction.h"
 #include "StayActions.h"
 #include "FollowActions.h"
 #include "ChangeStrategyAction.h"
@@ -105,6 +106,7 @@ namespace ai
             creators["add gathering loot"] = &ActionContext::add_gathering_loot;
             creators["add all loot"] = &ActionContext::add_all_loot;
             creators["release loot"] = &ActionContext::release_loot;
+            creators["auto loot roll"] = &ActionContext::auto_loot_roll;
             creators["shoot"] = &ActionContext::shoot;
             creators["follow"] = &ActionContext::follow;
             creators["flee to master"] = &ActionContext::flee_to_master;
@@ -358,6 +360,7 @@ namespace ai
         static Action* add_all_loot(PlayerbotAI* ai) { return new AddAllLootAction(ai); }
         static Action* loot(PlayerbotAI* ai) { return new LootAction(ai); }
         static Action* release_loot(PlayerbotAI* ai) { return new ReleaseLootAction(ai); }
+        static Action* auto_loot_roll(PlayerbotAI* ai) { return new AutoLootRollAction(ai); }
         static Action* dps_assist(PlayerbotAI* ai) { return new DpsAssistAction(ai); }
         static Action* dps_aoe(PlayerbotAI* ai) { return new DpsAoeAction(ai); }
         static Action* attack_rti_target(PlayerbotAI* ai) { return new AttackRtiTargetAction(ai); }
