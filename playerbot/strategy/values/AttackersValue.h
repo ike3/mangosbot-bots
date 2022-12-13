@@ -23,7 +23,16 @@ namespace ai
         list<ObjectGuid> Calculate();
 
         static bool IsValid(Unit* target, Player* player, Player* owner = nullptr, bool checkInCombat = true, bool validatePossibleTarget = true);
-
+        virtual string Format();
+#ifdef GenerateBotHelp
+        virtual string GetHelpName() { return "attackers"; } //Must equal iternal name
+        virtual string GetHelpTypeName() { return "combat"; }
+        virtual string GetHelpDescription()
+        {
+            return "This value contains all the units attacking the player, it's group or those the player or group is attacking.";
+        }
+        virtual vector<string> GetUsedValues() { return {"possible targets", "current target" , "attack target" ,  "pull target" }; }
+#endif 
 	private:
         void AddTargetsOf(Group* group, set<Unit*>& targets, set<ObjectGuid>& invalidTargets, bool getOne = false);
         void AddTargetsOf(Player* player, set<Unit*>& targets, set<ObjectGuid>& invalidTargets, bool getOne = false);

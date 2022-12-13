@@ -264,15 +264,32 @@ bool AttackersValue::IsValid(Unit* target, Player* player, Player* owner, bool c
             }
         }
 
-        Unit* unit = dynamic_cast<Unit*>(target);
-        if (unit)
+        if (target->AI() && target->AI()->IsPreventingDeath())
         {
-            if (unit->AI() && unit->AI()->IsPreventingDeath())
-            {
-                return false;
-            }
+            return false;
         }
     }
 
     return true;
 }
+
+string AttackersValue::Format()
+{
+    ostringstream out;
+
+    for (auto& target : value)
+    {
+        if(target != value.front())
+        out << ",";
+
+        WorldObject* wo = ai->GetWorldObject(target);
+
+        if (wo)
+            out << wo->GetName();
+        else
+            out << target;      
+    }
+
+    return out.str().c_str();
+}
+
