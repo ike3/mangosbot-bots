@@ -3,6 +3,7 @@
 #include "ChatFilter.h"
 #include "strategy/values/RtiTargetValue.h"
 #include "strategy/values/ItemUsageValue.h"
+#include "ChatHelper.h"
 
 using namespace ai;
 using namespace std;
@@ -732,7 +733,7 @@ public:
         retMap["@use=[itemlink]"] = "All bots that have some use for this item.";
         retMap["@sell=[itemlink]"] = "All bots that will vendor or AH this item.";
         retMap["@need=[itemlink]"] = "All bots that will roll need on this item.";
-        retMap["@greedt=[itemlink]"] = "All bots that will roll greed on this item.";        
+        retMap["@greed=[itemlink]"] = "All bots that will roll greed on this item.";        
         return retMap;
     }
     virtual string GetHelpDescription() {
@@ -843,6 +844,42 @@ public:
     }
 };
 
+class TalentSpecChatFilter : public ChatFilter
+{
+public:
+    TalentSpecChatFilter(PlayerbotAI* ai) : ChatFilter(ai) {}
+
+#ifdef GenerateBotHelp
+    virtual string GetHelpName() {
+        return "talent spec";
+    }
+    virtual unordered_map<string, string> GetFilterExamples()
+    {
+        unordered_map<string, string> retMap;
+        retMap["@frost"] = "All bots that have frost spec.";
+        retMap["@holy"] = "All bots that have holy spec.";
+        return retMap;
+    }
+    virtual string GetHelpDescription() {
+        return "This filter selects bots based on their primary talent specialisation.";
+    }
+#endif
+
+    virtual string Filter(string message)
+    {
+        Player* bot = ai->GetBot();
+
+        AiObjectContext* context = ai->GetAiObjectContext();
+        string filter = "@" + ChatHelper::specName(bot);
+
+        if (message.find(filter) == 0)
+        {
+            return ChatFilter::Filter(message);
+        }
+        
+        return message;
+    }
+};
 
 CompositeChatFilter::CompositeChatFilter(PlayerbotAI* ai) : ChatFilter(ai)
 {
@@ -856,6 +893,7 @@ CompositeChatFilter::CompositeChatFilter(PlayerbotAI* ai) : ChatFilter(ai)
     filters.push_back(new GuildChatFilter(ai));
     filters.push_back(new StateChatFilter(ai));
     filters.push_back(new UsageChatFilter(ai));
+    filters.push_back(new TalentSpecChatFilter(ai));
 }
 
 CompositeChatFilter::~CompositeChatFilter()

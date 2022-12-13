@@ -615,6 +615,11 @@ bool ChatHelper::parseable(string text)
             parseMoney(text) > 0;
 }
 
+string ChatHelper::specName(Player* player)
+{
+    return specs[player->getClass()][AiFactory::GetPlayerSpecTab(player)]; 
+}
+
 string ChatHelper::formatClass(Player* player, int spec)
 {
     uint8 cls = player->getClass();
