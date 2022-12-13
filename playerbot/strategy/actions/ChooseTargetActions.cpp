@@ -36,11 +36,6 @@ bool AttackAnythingAction::isUseful()
     if (context->GetValue<TravelTarget*>("travel target")->Get()->isTraveling() && ChooseRpgTargetAction::isFollowValid(bot, *context->GetValue<TravelTarget*>("travel target")->Get()->getPosition())) //Bot is traveling
         return false;
 
-    string name = string(target->GetName());
-
-    if (!name.empty() && name.find("Dummy") != std::string::npos) //Target is not a target dummy
-        return false;
-
     if(!ChooseRpgTargetAction::isFollowValid(bot, target)) //Do not grind mobs far away from master.
         return false;
 

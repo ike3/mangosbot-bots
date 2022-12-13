@@ -263,6 +263,15 @@ bool AttackersValue::IsValid(Unit* target, Player* player, Player* owner, bool c
                 return false;
             }
         }
+
+        Unit* unit = dynamic_cast<Unit*>(target);
+        if (unit)
+        {
+            if (unit->AI() && unit->AI()->IsPreventingDeath())
+            {
+                return false;
+            }
+        }
     }
 
     return true;
