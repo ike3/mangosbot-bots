@@ -10,7 +10,8 @@ namespace ai
     BUFF_ACTION(CastColdBloodAction, "cold blood");
     BUFF_ACTION_U(CastPreparationAction, "preparation", !bot->IsSpellReady(14177) || !bot->IsSpellReady(2983) || !bot->IsSpellReady(2094));
 
-    class CastShadowstepAction : public CastSpellAction {
+    class CastShadowstepAction : public CastSpellAction 
+    {
     public:
         CastShadowstepAction(PlayerbotAI* ai) : CastSpellAction(ai, "shadowstep") {}
         virtual bool isPossible() { return true; }
@@ -60,7 +61,8 @@ namespace ai
         }
     };
 
-    class UnstealthAction : public Action {
+    class UnstealthAction : public Action 
+    {
     public:
         UnstealthAction(PlayerbotAI* ai) : Action(ai, "unstealth") {}
         virtual bool Execute(Event& event) {
@@ -70,7 +72,8 @@ namespace ai
         }
     };
 
-    class CheckStealthAction : public Action {
+    class CheckStealthAction : public Action 
+    {
     public:
         CheckStealthAction(PlayerbotAI* ai) : Action(ai, "check stealth") {}
         virtual bool isPossible() { return true; }
@@ -90,10 +93,10 @@ namespace ai
         }
     };
 
-	class CastKickAction : public CastSpellAction
+	class CastKickAction : public CastMeleeSpellAction
 	{
 	public:
-		CastKickAction(PlayerbotAI* ai) : CastSpellAction(ai, "kick") {}
+		CastKickAction(PlayerbotAI* ai) : CastMeleeSpellAction(ai, "kick") {}
 	};
 
 	class CastFeintAction : public CastBuffSpellAction
@@ -135,12 +138,7 @@ namespace ai
         }
 	};
 
-	class CastBlindAction : public CastDebuffSpellAction
-	{
-	public:
-		CastBlindAction(PlayerbotAI* ai) : CastDebuffSpellAction(ai, "blind") {}
-	};
-
+    MELEE_DEBUFF_ACTION_R(CastBlindAction, "blind", 10.0f);
 
 	class CastBladeFlurryAction : public CastBuffSpellAction
 	{
@@ -163,10 +161,17 @@ namespace ai
     class CastKickOnEnemyHealerAction : public CastSpellOnEnemyHealerAction
     {
     public:
-        CastKickOnEnemyHealerAction(PlayerbotAI* ai) : CastSpellOnEnemyHealerAction(ai, "kick") {}
+        CastKickOnEnemyHealerAction(PlayerbotAI* ai) : CastSpellOnEnemyHealerAction(ai, "kick")
+        {
+            range = ATTACK_DISTANCE;
+        }
+
+    private:
+        string GetReachActionName() override { return "reach melee"; }
     };
 
-    class CastTricksOfTheTradeOnPartyAction : public BuffOnPartyAction {
+    class CastTricksOfTheTradeOnPartyAction : public BuffOnPartyAction 
+    {
     public:
         CastTricksOfTheTradeOnPartyAction(PlayerbotAI* ai) : BuffOnPartyAction(ai, "tricks of the trade") {}
     };

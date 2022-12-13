@@ -264,16 +264,16 @@ namespace ai
         virtual string getName() { return "cleanse spirit disease on party"; }
     };
 
-    class CastFlameShockAction : public CastDebuffSpellAction
+    class CastFlameShockAction : public CastRangedDebuffSpellAction
     {
     public:
-        CastFlameShockAction(PlayerbotAI* ai) : CastDebuffSpellAction(ai, "flame shock") {}
+        CastFlameShockAction(PlayerbotAI* ai) : CastRangedDebuffSpellAction(ai, "flame shock") {}
     };
 
-    class CastEarthShockAction : public CastDebuffSpellAction
+    class CastEarthShockAction : public CastRangedDebuffSpellAction
     {
     public:
-        CastEarthShockAction(PlayerbotAI* ai) : CastDebuffSpellAction(ai, "earth shock") {}
+        CastEarthShockAction(PlayerbotAI* ai) : CastRangedDebuffSpellAction(ai, "earth shock") {}
     };
 
     class CastFrostShockAction : public CastSnareSpellAction

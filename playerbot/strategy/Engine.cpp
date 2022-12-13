@@ -307,17 +307,23 @@ bool Engine::DoNextAction(Unit* unit, int depth, bool minimal)
 
 ActionNode* Engine::CreateActionNode(string name)
 {
+    ActionNode* actionNode = nullptr;
     for (map<string, Strategy*>::iterator i = strategies.begin(); i != strategies.end(); i++)
     {
         Strategy* strategy = i->second;
-        ActionNode* node = strategy->GetAction(name);
-        if (node)
-            return node;
+        actionNode = strategy->GetAction(name);
+        if (actionNode)
+        {
+            break;
+        }
     }
-    return new ActionNode (name,
-        /*P*/ NULL,
-        /*A*/ NULL,
-        /*C*/ NULL);
+
+    if (!actionNode)
+    {
+        actionNode = new ActionNode(name);
+    }
+
+    return actionNode;
 }
 
 bool Engine::MultiplyAndPush(NextAction** actions, float forceRelevance, bool skipPrerequisites, const Event& event, const char* pushType)
@@ -360,7 +366,7 @@ bool Engine::MultiplyAndPush(NextAction** actions, float forceRelevance, bool sk
     return pushed;
 }
 
-ActionResult Engine::ExecuteAction(string name, Event& event, string qualifier)
+ActionResult Engine::ExecuteAction(string name, Event& event)
 {
     ActionResult actionResult = ACTION_RESULT_UNKNOWN;
     ActionNode* actionNode = CreateActionNode(name);
@@ -369,16 +375,6 @@ ActionResult Engine::ExecuteAction(string name, Event& event, string qualifier)
         Action* action = InitializeAction(actionNode);
         if (action)
         {
-            Qualified* qualified = nullptr;
-            if (!qualifier.empty())
-            {
-                qualified = dynamic_cast<Qualified*>(action);
-                if (qualified)
-                {
-                    qualified->Qualify(qualifier);
-                }
-            }
-
             if (action->isUseful())
             {
                 if (action->isPossible())
@@ -397,11 +393,6 @@ ActionResult Engine::ExecuteAction(string name, Event& event, string qualifier)
             {
                 actionResult = ACTION_RESULT_USELESS;
             }
-
-            if (qualified)
-            {
-                qualified->Reset();
-            }
         }
 
         delete actionNode;
@@ -410,7 +401,7 @@ ActionResult Engine::ExecuteAction(string name, Event& event, string qualifier)
     return actionResult;
 }
 
-bool Engine::CanExecuteAction(string name, string qualifier, bool isPossible, bool isUseful)
+bool Engine::CanExecuteAction(string name, bool isUseful, bool isPossible)
 {
     bool result = true;
     ActionNode* actionNode = CreateActionNode(name);
@@ -419,29 +410,14 @@ bool Engine::CanExecuteAction(string name, string qualifier, bool isPossible, bo
         Action* action = InitializeAction(actionNode);
         if (action)
         {
-            Qualified* qualified = nullptr;
-            if (!qualifier.empty())
-            {
-                qualified = dynamic_cast<Qualified*>(action);
-                if (qualified)
-                {
-                    qualified->Qualify(qualifier);
-                }
-            }
-
-            if (isPossible)
-            {
-                result &= action->isPossible();
-            }
-
             if (isUseful)
             {
                 result &= action->isUseful();
             }
 
-            if (qualified)
+            if (isPossible)
             {
-                qualified->Reset();
+                result &= action->isPossible();
             }
         }
 

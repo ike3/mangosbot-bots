@@ -79,10 +79,6 @@ void HealPaladinStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("divine illumination", ACTION_HIGH + 5), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "party member to heal out of spell range",
-        NextAction::array(0, new NextAction("reach party member to heal", ACTION_EMERGENCY + 3), NULL)));
-
-    triggers.push_back(new TriggerNode(
         "blessing",
         NextAction::array(0, new NextAction("blessing of wisdom", ACTION_HIGH + 9), NULL)));
 }

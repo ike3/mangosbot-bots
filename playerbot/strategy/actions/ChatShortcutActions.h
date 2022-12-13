@@ -19,6 +19,7 @@ namespace ai
     public:
         FollowChatShortcutAction(PlayerbotAI* ai) : MovementAction(ai, "follow chat shortcut") {}
         virtual bool Execute(Event& event);
+        virtual bool isPossible() { return true; }
     };
 
     class StayChatShortcutAction : public ReturnPositionResetAction
@@ -62,5 +63,4 @@ namespace ai
         MaxDpsChatShortcutAction(PlayerbotAI* ai) : Action(ai, "max dps chat shortcut") {}
         virtual bool Execute(Event& event);
     };
-
 }

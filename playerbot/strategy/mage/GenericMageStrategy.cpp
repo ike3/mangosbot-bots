@@ -112,10 +112,6 @@ void GenericMageStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
     CombatStrategy::InitCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
-        "enemy out of spell",
-        NextAction::array(0, new NextAction("reach spell", 60.0f), NULL)));
-
-    triggers.push_back(new TriggerNode(
         "enemy ten yards",
         NextAction::array(0, new NextAction("frost nova", 61.0f), NULL)));
 

@@ -46,8 +46,4 @@ void HealDruidStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
     triggers.push_back(new TriggerNode(
         "medium aoe heal",
         NextAction::array(0, new NextAction("tranquility", ACTION_MEDIUM_HEAL + 3), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "party member to heal out of spell range",
-        NextAction::array(0, new NextAction("reach party member to heal", ACTION_EMERGENCY + 1), NULL)));
 }

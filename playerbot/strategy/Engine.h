@@ -80,8 +80,8 @@ namespace ai
 
     public:
 	    virtual bool DoNextAction(Unit*, int depth = 0, bool minimal = false);
-	    ActionResult ExecuteAction(string name, Event& event, string qualifier = "");
-        bool CanExecuteAction(string name, string qualifier = "", bool isPossible = true, bool isUseful = true);
+	    ActionResult ExecuteAction(string name, Event& event);
+        bool CanExecuteAction(string name, bool isUseful = true, bool isPossible = true);
 
     public:
         void AddActionExecutionListener(ActionExecutionListener* listener)

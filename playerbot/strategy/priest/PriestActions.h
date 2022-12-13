@@ -61,14 +61,14 @@ namespace ai
     CURE_ACTION(CastAbolishDiseaseAction, "abolish disease");
     CURE_PARTY_ACTION(CastAbolishDiseaseOnPartyAction, "abolish disease", DISPEL_DISEASE);
 
-    DEBUFF_ACTION(CastHolyFireAction, "holy fire");
+    RANGED_DEBUFF_ACTION(CastHolyFireAction, "holy fire");
 
     // shadow
-    DEBUFF_ACTION(CastPowerWordPainAction, "shadow word: pain");
-    DEBUFF_ENEMY_ACTION(CastPowerWordPainOnAttackerAction, "shadow word: pain");
+    RANGED_DEBUFF_ACTION(CastPowerWordPainAction, "shadow word: pain");
+    RANGED_DEBUFF_ENEMY_ACTION(CastPowerWordPainOnAttackerAction, "shadow word: pain");
     SPELL_ACTION(CastMindBlastAction, "mind blast");
     SPELL_ACTION(CastPsychicScreamAction, "psychic scream");
-    DEBUFF_ACTION(CastMindSootheAction, "mind soothe");
+    RANGED_DEBUFF_ACTION(CastMindSootheAction, "mind soothe");
     BUFF_ACTION_U(CastFadeAction, "fade", bot->GetGroup());
     BUFF_ACTION(CastShadowProtectionAction, "shadow protection");
     BUFF_PARTY_ACTION(CastShadowProtectionOnPartyAction, "shadow protection");
@@ -79,17 +79,17 @@ namespace ai
 
     // shadow talents
     SPELL_ACTION(CastMindFlayAction, "mind flay");
-    DEBUFF_ACTION(CastVampiricEmbraceAction, "vampiric embrace");
+    RANGED_DEBUFF_ACTION(CastVampiricEmbraceAction, "vampiric embrace");
     BUFF_ACTION(CastShadowformAction, "shadowform");
     SPELL_ACTION(CastSilenceAction, "silence");
     ENEMY_HEALER_ACTION(CastSilenceOnEnemyHealerAction, "silence");
     // shadow talents 2.4.3
-    DEBUFF_ACTION(CastVampiricTouchAction, "vampiric touch");
+    RANGED_DEBUFF_ACTION(CastVampiricTouchAction, "vampiric touch");
 
     // racials
-    DEBUFF_ACTION(CastDevouringPlagueAction, "devouring plague");
+    RANGED_DEBUFF_ACTION(CastDevouringPlagueAction, "devouring plague");
     BUFF_ACTION(CastTouchOfWeaknessAction, "touch of weakness");
-    DEBUFF_ACTION(CastHexOfWeaknessAction, "hex of weakness");
+    RANGED_DEBUFF_ACTION(CastHexOfWeaknessAction, "hex of weakness");
     BUFF_ACTION(CastShadowguardAction, "shadowguard");
     HEAL_ACTION(CastDesperatePrayerAction, "desperate prayer");
     BUFF_ACTION(CastFearWardAction, "fear ward");
@@ -101,12 +101,14 @@ namespace ai
     SPELL_ACTION(CastConsumeMagicAction, "consume magic");
     SNARE_ACTION(CastChastiseAction, "chastise");
 
-    class CastRemoveShadowformAction : public Action {
+    class CastRemoveShadowformAction : public Action 
+    {
     public:
         CastRemoveShadowformAction(PlayerbotAI* ai) : Action(ai, "remove shadowform") {}
         virtual bool isUseful() { return ai->HasAura("shadowform", AI_VALUE(Unit*, "self target")); }
         virtual bool isPossible() { return true; }
-        virtual bool Execute(Event& event) {
+        virtual bool Execute(Event& event) 
+        {
             ai->RemoveAura("shadowform");
             return true;
         }

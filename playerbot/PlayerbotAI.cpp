@@ -109,6 +109,9 @@ PlayerbotAI::PlayerbotAI(Player* bot) :
     if (!bot->isTaxiCheater() && HasCheat(BotCheatMask::taxi))
         bot->SetTaxiCheater(true);
 
+    for (uint8 i = 0; i < (uint8)BotState::BOT_STATE_ALL; i++)
+        engines[i] = NULL;
+
     for (int i = 0; i < MAX_ACTIVITY_TYPE; i++)
     {
         allowActiveCheckTimer[i] = time(nullptr);
@@ -1664,65 +1667,103 @@ list<string> PlayerbotAI::GetStrategies(BotState type)
     return list<string>();
 }
 
-bool PlayerbotAI::CanDoSpecificAction(string name, string qualifier, bool isPossible, bool isUseful)
+bool PlayerbotAI::CanDoSpecificAction(string name, bool isUseful, bool isPossible)
 {
     for (uint8 i = 0; i < (uint8)BotState::BOT_STATE_ALL; i++)
     {
-        if(engines[i]->CanExecuteAction(name, qualifier, isPossible, isUseful))
+        Engine* engine = engines[i];
+        if(engine)
         {
-            return true;
+            if(engine->CanExecuteAction(name, isUseful, isPossible))
+            {
+                return true;
+            }
         }
     }
 
     return false;
 }
 
-bool PlayerbotAI::DoSpecificAction(string name, Event event, bool silent, string qualifier)
+bool PlayerbotAI::DoSpecificAction(string name, Event event, bool silent)
 {
     for (uint8 i = 0 ; i < (uint8)BotState::BOT_STATE_ALL; i++)
     {
-        ostringstream out;
-        ActionResult res = engines[i]->ExecuteAction(name, event, qualifier);
-        switch (res)
+        Engine* engine = engines[i];
+        if(engine)
         {
-        case ACTION_RESULT_UNKNOWN:
-            continue;
-        case ACTION_RESULT_OK:
-            if (!silent)
+            ActionResult res = engine->ExecuteAction(name, event);
+            switch (res)
             {
-                PlaySound(TEXTEMOTE_NOD);
+                case ACTION_RESULT_OK:
+                {
+                    if (!silent)
+                    {
+                        PlaySound(TEXTEMOTE_NOD);
+                    }
+
+                    return true;
+                }
+
+                case ACTION_RESULT_IMPOSSIBLE:
+                {
+                    if (!silent)
+                    {
+                        ostringstream out;
+                        out << name << ": impossible";
+                        TellError(out.str());
+                        PlaySound(TEXTEMOTE_NO);
+                    }
+
+                    return false;
+                }
+
+                case ACTION_RESULT_USELESS:
+                {
+                    if (!silent)
+                    {
+                        ostringstream out;
+                        out << name << ": useless";
+                        TellError(out.str());
+                        PlaySound(TEXTEMOTE_NO);
+                    }
+
+                    return false;
+                }
+
+                case ACTION_RESULT_FAILED:
+                {
+                    if (!silent)
+                    {
+                        ostringstream out;
+                        out << name << ": failed";
+                        TellError(out.str());
+                    }
+
+                    return false;
+                }
+
+                default:
+                {
+                    if (!silent)
+                    {
+                        ostringstream out;
+                        out << name << ": unknown action";
+                        TellError(out.str());
+                    }
+
+                    return false;
+                }
             }
-            return true;
-        case ACTION_RESULT_IMPOSSIBLE:
-            out << name << ": impossible";
-            if (!silent)
-            {
-                TellError(out.str());
-                PlaySound(TEXTEMOTE_NO);
-            }
-            return false;
-        case ACTION_RESULT_USELESS:
-            out << name << ": useless";
-            if (!silent)
-            {
-                TellError(out.str());
-                PlaySound(TEXTEMOTE_NO);
-            }
-            return false;
-        case ACTION_RESULT_FAILED:
-            if (!silent)
-            {
-                out << name << ": failed";
-                TellError(out.str());
-            }
-            return false;
         }
-    }
-    if (!silent)
-    {
-        ostringstream out;
-        out << name << ": unknown action";
-        TellError(out.str());
+        else
+        {
+            if (!silent)
+            {
+                ostringstream out;
+                out << name << ": engine not ready";
+                TellError(out.str());
+            }
+        }
     }
 
     return false;

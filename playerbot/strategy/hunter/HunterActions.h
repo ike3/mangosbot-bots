@@ -4,7 +4,7 @@
 
 namespace ai
 {
-    BEGIN_RANGED_SPELL_ACTION(CastHuntersMarkAction, "hunter's mark")
+    BEGIN_RANGED_DEBUFF_ACTION(CastHuntersMarkAction, "hunter's mark")
     END_SPELL_ACTION()
 
     class CastAutoShotAction : public CastSpellAction
@@ -20,22 +20,19 @@ namespace ai
     BEGIN_RANGED_SPELL_ACTION(CastExplosiveShotAction, "explosive shot")
     END_SPELL_ACTION()
 
-
     BEGIN_RANGED_SPELL_ACTION(CastAimedShotAction, "aimed shot")
     END_SPELL_ACTION()
 
     BEGIN_RANGED_SPELL_ACTION(CastChimeraShotAction, "chimera shot")
     END_SPELL_ACTION()
 
-    class CastConcussiveShotAction : public CastSnareSpellAction
-    {
-    public:
-        CastConcussiveShotAction(PlayerbotAI* ai) : CastSnareSpellAction(ai, "concussive shot") {}
-    };
+    BEGIN_RANGED_DEBUFF_ACTION(CastConcussiveShotAction, "concussive shot")
+    END_SPELL_ACTION()
 
     SPELL_ACTION(CastSteadyShotAction, "steady shot");
 
-    SNARE_ACTION(CastScatterShotAction, "scatter shot");
+    BEGIN_RANGED_DEBUFF_ACTION(CastScatterShotAction, "scatter shot")
+    END_SPELL_ACTION()
 
     BEGIN_RANGED_SPELL_ACTION(CastDistractingShotAction, "distracting shot")
     END_SPELL_ACTION()
@@ -46,11 +43,11 @@ namespace ai
 	BEGIN_RANGED_SPELL_ACTION(CastVolleyAction, "volley")
 	END_SPELL_ACTION()
 
-    BEGIN_RANGED_SPELL_ACTION(CastSerpentStingAction, "serpent sting")
+    BEGIN_RANGED_DEBUFF_ACTION(CastSerpentStingAction, "serpent sting")
     virtual bool isUseful();
     END_SPELL_ACTION()
 
-    BEGIN_RANGED_SPELL_ACTION(CastViperStingAction, "viper sting")
+    BEGIN_RANGED_DEBUFF_ACTION(CastViperStingAction, "viper sting")
     virtual bool isUseful();
     END_SPELL_ACTION()
 
@@ -127,10 +124,10 @@ namespace ai
 		CastRapidFireAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "rapid fire") {}
 	};
 
-	class CastBlackArrow : public CastDebuffSpellAction
+	class CastBlackArrow : public CastRangedDebuffSpellAction
 	{
 	public:
-		CastBlackArrow(PlayerbotAI* ai) : CastDebuffSpellAction(ai, "black arrow") {}
+		CastBlackArrow(PlayerbotAI* ai) : CastRangedDebuffSpellAction(ai, "black arrow") {}
 	};
 
     BUFF_ACTION(CastFreezingTrapAction, "freezing trap");
@@ -163,10 +160,16 @@ namespace ai
         }
     };
 
-    class CastSerpentStingOnAttackerAction : public CastDebuffSpellOnAttackerAction
+    class CastSerpentStingOnAttackerAction : public CastRangedDebuffSpellOnAttackerAction
     {
     public:
-        CastSerpentStingOnAttackerAction(PlayerbotAI* ai) : CastDebuffSpellOnAttackerAction(ai, "serpent sting") {}
+        CastSerpentStingOnAttackerAction(PlayerbotAI* ai) : CastRangedDebuffSpellOnAttackerAction(ai, "serpent sting") {}
+    };
+
+    class CastViperStingOnAttackerAction : public CastRangedDebuffSpellOnAttackerAction
+    {
+    public:
+        CastViperStingOnAttackerAction(PlayerbotAI* ai) : CastRangedDebuffSpellOnAttackerAction(ai, "viper sting") {}
     };
 
     class FeedPetAction : public Action

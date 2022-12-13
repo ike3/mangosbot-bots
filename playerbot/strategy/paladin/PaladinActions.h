@@ -18,19 +18,20 @@ namespace ai
 	BUFF_ACTION(CastSealOfCommandAction, "seal of command");
 	BUFF_ACTION(CastSealOfVengeanceAction, "seal of vengeance");
 
-	class CastJudgementAction : public CastDebuffSpellAction
+	class CastJudgementAction : public CastMeleeDebuffSpellAction
 	{
 	public:
-		CastJudgementAction(PlayerbotAI* ai) : CastDebuffSpellAction(ai, "judgement") { range = 10.0f; }
-		virtual bool isUseful() {
+		CastJudgementAction(PlayerbotAI* ai) : CastMeleeDebuffSpellAction(ai, "judgement") { range = 10.0f; }
+		virtual bool isUseful() 
+		{
 			return ai->HasAnyAuraOf(bot, "seal of justice", "seal of command", "seal of vengeance", "seal of blood", "seal of righteousness", "seal of light", "seal of wisdom", NULL);
 		}
 	};
 
 	// judgements
-	DEBUFF_ACTION_R(CastJudgementOfLightAction, "judgement of light", 10.0f);
-	DEBUFF_ACTION_R(CastJudgementOfWisdomAction, "judgement of wisdom", 10.0f);
-	DEBUFF_ACTION_R(CastJudgementOfJusticeAction, "judgement of justice", 10.0f);
+	MELEE_DEBUFF_ACTION_R(CastJudgementOfLightAction, "judgement of light", 10.0f);
+	MELEE_DEBUFF_ACTION_R(CastJudgementOfWisdomAction, "judgement of wisdom", 10.0f);
+	MELEE_DEBUFF_ACTION_R(CastJudgementOfJusticeAction, "judgement of justice", 10.0f);
 
 	SPELL_ACTION(CastHolyShockAction, "holy shock");
 	HEAL_PARTY_ACTION(CastHolyShockOnPartyAction, "holy shock");
@@ -40,10 +41,10 @@ namespace ai
 
 	// repentance
 	SNARE_ACTION(CastRepentanceSnareAction, "repentance");
-	DEBUFF_ACTION(CastRepentanceAction, "repentance");
+	RANGED_DEBUFF_ACTION(CastRepentanceAction, "repentance");
 	ENEMY_HEALER_ACTION(CastRepentanceOnHealerAction, "repentance");
 
-	//hamme of wrath
+	//hammer of wrath
 	SPELL_ACTION(CastHammerOfWrathAction, "hammer of wrath");
 
 	// buffs
@@ -84,6 +85,7 @@ namespace ai
 		virtual bool isUseful() { return true; }
         virtual Unit* GetTarget();
 		virtual bool Execute(Event& event);
+
 	private:
 		string m_name;
     };
@@ -95,6 +97,7 @@ namespace ai
 		virtual bool isPossible() { return true; }
 		virtual bool isUseful() { return true; }
 		virtual bool Execute(Event& event);
+
 	private:
 		string m_name;
 	};
@@ -259,7 +262,6 @@ namespace ai
     {
     public:
         CastDivineProtectionOnPartyAction(PlayerbotAI* ai) : HealPartyMemberAction(ai, "divine protection") {}
-
         virtual string getName() { return "divine protection on party"; }
     };
 
@@ -303,7 +305,6 @@ namespace ai
     {
     public:
         CastPurifyPoisonOnPartyAction(PlayerbotAI* ai) : CurePartyMemberAction(ai, "purify", DISPEL_POISON) {}
-
         virtual string getName() { return "purify poison on party"; }
     };
 
@@ -311,7 +312,6 @@ namespace ai
 	{
 	public:
 		CastPurifyDiseaseOnPartyAction(PlayerbotAI* ai) : CurePartyMemberAction(ai, "purify", DISPEL_DISEASE) {}
-
 		virtual string getName() { return "purify disease on party"; }
 	};
 
@@ -349,7 +349,6 @@ namespace ai
     {
     public:
         CastCleansePoisonOnPartyAction(PlayerbotAI* ai) : CurePartyMemberAction(ai, "cleanse", DISPEL_POISON) {}
-
         virtual string getName() { return "cleanse poison on party"; }
     };
 
@@ -357,7 +356,6 @@ namespace ai
 	{
 	public:
 		CastCleanseDiseaseOnPartyAction(PlayerbotAI* ai) : CurePartyMemberAction(ai, "cleanse", DISPEL_DISEASE) {}
-
 		virtual string getName() { return "cleanse disease on party"; }
 	};
 
@@ -365,7 +363,6 @@ namespace ai
 	{
 	public:
 		CastCleanseMagicOnPartyAction(PlayerbotAI* ai) : CurePartyMemberAction(ai, "cleanse", DISPEL_MAGIC) {}
-
 		virtual string getName() { return "cleanse magic on party"; }
 	};
 

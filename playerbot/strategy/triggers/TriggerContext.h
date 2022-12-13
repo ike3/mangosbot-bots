@@ -96,6 +96,7 @@ namespace ai
             creators["enemy too close for melee"] = &TriggerContext::enemy_too_close_for_melee;
             creators["enemy is close"] = &TriggerContext::enemy_is_close;
             creators["party member to heal out of spell range"] = &TriggerContext::party_member_to_heal_out_of_spell_range;
+            creators["enemy fifteen yards"] = &TriggerContext::enemy_fifteen_yards;
             creators["enemy ten yards"] = &TriggerContext::enemy_ten_yards;
             creators["enemy five yards"] = &TriggerContext::enemy_five_yards;
             creators["wait for attack safe distance"] = &TriggerContext::wait_for_attack_safe_distance;
@@ -346,6 +347,7 @@ namespace ai
         static Trigger* enemy_too_close_for_shoot(PlayerbotAI* ai) { return new EnemyTooCloseForShootTrigger(ai); }
         static Trigger* enemy_too_close_for_melee(PlayerbotAI* ai) { return new EnemyTooCloseForMeleeTrigger(ai); }
         static Trigger* enemy_is_close(PlayerbotAI* ai) { return new EnemyIsCloseTrigger(ai); }
+        static Trigger* enemy_fifteen_yards(PlayerbotAI* ai) { return new EnemyInRangeTrigger(ai, "enemy fifteen yards", 15.0f); }
         static Trigger* enemy_ten_yards(PlayerbotAI* ai) { return new EnemyInRangeTrigger(ai, "enemy ten yards", 10.0f); }
         static Trigger* enemy_five_yards(PlayerbotAI* ai) { return new EnemyInRangeTrigger(ai, "enemy five yards", 5.0f); }
         static Trigger* party_member_to_heal_out_of_spell_range(PlayerbotAI* ai) { return new PartyMemberToHealOutOfSpellRangeTrigger(ai); }

@@ -304,8 +304,8 @@ public:
 	void HandleTeleportAck();
     void ChangeEngine(BotState type);
     void DoNextAction(bool minimal = false);
-    bool CanDoSpecificAction(string name, string qualifier = "", bool isPossible = true, bool isUseful = true);
-    virtual bool DoSpecificAction(string name, Event event = Event(), bool silent = false, string qualifier = "");
+    bool CanDoSpecificAction(string name, bool isUseful = true, bool isPossible = true);
+    virtual bool DoSpecificAction(string name, Event event = Event(), bool silent = false);
     void ChangeStrategy(string name, BotState type);
     void ClearStrategies(BotState type);
     list<string> GetStrategies(BotState type);

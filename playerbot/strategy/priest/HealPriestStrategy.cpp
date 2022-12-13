@@ -46,8 +46,4 @@ void HealPriestStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
     triggers.push_back(new TriggerNode(
         "low mana",
         NextAction::array(0, new NextAction("shadowfiend", ACTION_HIGH), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "party member to heal out of spell range",
-        NextAction::array(0, new NextAction("reach party member to heal", ACTION_CRITICAL_HEAL), NULL)));
 }

@@ -21,10 +21,6 @@ void ShadowPriestStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
     GenericPriestStrategy::InitCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
-        "enemy out of spell",
-        NextAction::array(0, new NextAction("reach spell", ACTION_MOVE + 9), NULL)));
-
-    triggers.push_back(new TriggerNode(
         "shadowform",
         NextAction::array(0, new NextAction("shadowform", ACTION_HIGH), NULL)));
 

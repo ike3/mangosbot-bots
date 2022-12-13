@@ -8,7 +8,8 @@ namespace ai
 	ENEMY_HEALER_ACTION(CastDeathCoilOnHealerAction, "death coil");
 	SPELL_ACTION(CastDeathCoilAction, "death coil");
 	
-	class CastDemonSkinAction : public CastBuffSpellAction {
+	class CastDemonSkinAction : public CastBuffSpellAction 
+	{
 	public:
 		CastDemonSkinAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "demon skin") {}
 	};
@@ -54,34 +55,34 @@ namespace ai
 		CastDrainLifeAction(PlayerbotAI* ai) : CastSpellAction(ai, "drain life") {}
 	};
 
-	class CastCurseOfAgonyAction : public CastDebuffSpellAction
+	class CastCurseOfAgonyAction : public CastRangedDebuffSpellAction
 	{
 	public:
-		CastCurseOfAgonyAction(PlayerbotAI* ai) : CastDebuffSpellAction(ai, "curse of agony") {}
+		CastCurseOfAgonyAction(PlayerbotAI* ai) : CastRangedDebuffSpellAction(ai, "curse of agony") {}
 	};
 
-	class CastCurseOfWeaknessAction : public CastDebuffSpellAction
+	class CastCurseOfWeaknessAction : public CastRangedDebuffSpellAction
 	{
 	public:
-		CastCurseOfWeaknessAction(PlayerbotAI* ai) : CastDebuffSpellAction(ai, "curse of weakness") {}
+		CastCurseOfWeaknessAction(PlayerbotAI* ai) : CastRangedDebuffSpellAction(ai, "curse of weakness") {}
 	};
 
-	class CastCorruptionAction : public CastDebuffSpellAction
+	class CastCorruptionAction : public CastRangedDebuffSpellAction
 	{
 	public:
-		CastCorruptionAction(PlayerbotAI* ai) : CastDebuffSpellAction(ai, "corruption") {}
+		CastCorruptionAction(PlayerbotAI* ai) : CastRangedDebuffSpellAction(ai, "corruption") {}
 	};
 
-	class CastCorruptionOnAttackerAction : public CastDebuffSpellOnAttackerAction
+	class CastCorruptionOnAttackerAction : public CastRangedDebuffSpellOnAttackerAction
 	{
 	public:
-	    CastCorruptionOnAttackerAction(PlayerbotAI* ai) : CastDebuffSpellOnAttackerAction(ai, "corruption") {}
+	    CastCorruptionOnAttackerAction(PlayerbotAI* ai) : CastRangedDebuffSpellOnAttackerAction(ai, "corruption") {}
 	};
 
-    class CastCurseOfAgonyOnAttackerAction : public CastDebuffSpellOnAttackerAction
+    class CastCurseOfAgonyOnAttackerAction : public CastRangedDebuffSpellOnAttackerAction
     {
     public:
-        CastCurseOfAgonyOnAttackerAction(PlayerbotAI* ai) : CastDebuffSpellOnAttackerAction(ai, "curse of agony") {}
+        CastCurseOfAgonyOnAttackerAction(PlayerbotAI* ai) : CastRangedDebuffSpellOnAttackerAction(ai, "curse of agony") {}
     };
 
 	class CastSummonVoidwalkerAction : public CastBuffSpellAction
@@ -145,10 +146,10 @@ namespace ai
         CastBanishAction(PlayerbotAI* ai) : CastCrowdControlSpellAction(ai, "banish") {}
     };
 
-    class CastSeedOfCorruptionAction : public CastDebuffSpellAction
+    class CastSeedOfCorruptionAction : public CastRangedDebuffSpellAction
     {
     public:
-        CastSeedOfCorruptionAction(PlayerbotAI* ai) : CastDebuffSpellAction(ai, "seed of corruption") {}
+        CastSeedOfCorruptionAction(PlayerbotAI* ai) : CastRangedDebuffSpellAction(ai, "seed of corruption") {}
     };
 
     class CastRainOfFireAction : public CastSpellAction
@@ -164,12 +165,12 @@ namespace ai
     };
 
 	SNARE_ACTION(CastShadowfurySnareAction, "shadowfury");
-	DEBUFF_ACTION(CastUnstableAfflictionAction, "unstable affliction");
+	RANGED_DEBUFF_ACTION(CastUnstableAfflictionAction, "unstable affliction");
 
-    class CastImmolateAction : public CastDebuffSpellAction
+    class CastImmolateAction : public CastRangedDebuffSpellAction
     {
     public:
-        CastImmolateAction(PlayerbotAI* ai) : CastDebuffSpellAction(ai, "immolate") {}
+        CastImmolateAction(PlayerbotAI* ai) : CastRangedDebuffSpellAction(ai, "immolate") {}
     };
 
     class CastConflagrateAction : public CastSpellAction
@@ -184,10 +185,10 @@ namespace ai
         CastIncinerateAction(PlayerbotAI* ai) : CastSpellAction(ai, "incinerate") {}
     };
 
-    class CastFearAction : public CastDebuffSpellAction
+    class CastFearAction : public CastRangedDebuffSpellAction
     {
     public:
-        CastFearAction(PlayerbotAI* ai) : CastDebuffSpellAction(ai, "fear") {}
+        CastFearAction(PlayerbotAI* ai) : CastRangedDebuffSpellAction(ai, "fear") {}
     };
 
     class CastFearOnCcAction : public CastCrowdControlSpellAction
@@ -210,17 +211,21 @@ namespace ai
         CastAmplifyCurseAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "amplify curse") {}
     };
 
-    class CastSiphonLifeAction : public CastDebuffSpellAction
+    class CastSiphonLifeAction : public CastRangedDebuffSpellAction
     {
     public:
-        CastSiphonLifeAction(PlayerbotAI* ai) : CastDebuffSpellAction(ai, "siphon life") {}
+        CastSiphonLifeAction(PlayerbotAI* ai) : CastRangedDebuffSpellAction(ai, "siphon life") {}
     };
 
-    class CastSiphonLifeOnAttackerAction : public CastDebuffSpellOnAttackerAction
+    class CastSiphonLifeOnAttackerAction : public CastRangedDebuffSpellOnAttackerAction
     {
     public:
-        CastSiphonLifeOnAttackerAction(PlayerbotAI* ai) : CastDebuffSpellOnAttackerAction(ai, "siphon life") {}
+        CastSiphonLifeOnAttackerAction(PlayerbotAI* ai) : CastRangedDebuffSpellOnAttackerAction(ai, "siphon life") {}
     };
 
-	SPELL_ACTION(CastHowlOfTerrorAction, "howl of terror");
+    class CastHowlOfTerrorAction : public CastMeleeAoeSpellAction
+    {
+    public:
+		CastHowlOfTerrorAction(PlayerbotAI* ai) : CastMeleeAoeSpellAction(ai, "howl of terror", 10.0f) {}
+    };
 }

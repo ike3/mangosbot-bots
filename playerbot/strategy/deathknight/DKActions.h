@@ -71,58 +71,58 @@ namespace ai
 	CastRuneStrikeAction(PlayerbotAI* ai) : CastMeleeSpellAction(ai, "rune strike") {}
 	};
 	//debuff
-	BEGIN_DEBUFF_ACTION(CastPestilenceAction, "pestilence")
-		END_SPELL_ACTION()
+	BEGIN_MELEE_DEBUFF_ACTION(CastPestilenceAction, "pestilence")
+	END_SPELL_ACTION()
 
 	//debuff
-	BEGIN_DEBUFF_ACTION(CastHowlingBlastAction, "howling blast")
+	BEGIN_RANGED_DEBUFF_ACTION(CastHowlingBlastAction, "howling blast")
 	END_SPELL_ACTION()
 
 	//debuff it
-	BEGIN_DEBUFF_ACTION(CastIcyTouchAction, "icy touch")
+	BEGIN_RANGED_DEBUFF_ACTION(CastIcyTouchAction, "icy touch")
 	END_SPELL_ACTION()
 
 
-		class CastIcyTouchOnAttackerAction : public CastDebuffSpellOnAttackerAction
+	class CastIcyTouchOnAttackerAction : public CastRangedDebuffSpellOnAttackerAction
 	{
 	public:
-		CastIcyTouchOnAttackerAction(PlayerbotAI* ai) : CastDebuffSpellOnAttackerAction(ai, "icy touch") {}
+		CastIcyTouchOnAttackerAction(PlayerbotAI* ai) : CastRangedDebuffSpellOnAttackerAction(ai, "icy touch") {}
 	};
 
 	//debuff ps
-	BEGIN_DEBUFF_ACTION(CastPlagueStrikeAction, "plague strike")
+	BEGIN_MELEE_DEBUFF_ACTION(CastPlagueStrikeAction, "plague strike")
 	END_SPELL_ACTION()
 
 
-		class CastPlagueStrikeOnAttackerAction : public CastDebuffSpellOnAttackerAction
+	class CastPlagueStrikeOnAttackerAction : public CastMeleeDebuffSpellOnAttackerAction
 	{
 	public:
-		CastPlagueStrikeOnAttackerAction(PlayerbotAI* ai) : CastDebuffSpellOnAttackerAction(ai, "plague strike") {}
+		CastPlagueStrikeOnAttackerAction(PlayerbotAI* ai) : CastMeleeDebuffSpellOnAttackerAction(ai, "plague strike") {}
 	};
 
 	//debuff
-	BEGIN_DEBUFF_ACTION(CastMarkOfBloodAction, "mark of blood")
+	BEGIN_RANGED_DEBUFF_ACTION(CastMarkOfBloodAction, "mark of blood")
 	END_SPELL_ACTION()
 
-		class CastMarkOfBloodOnAttackerAction : public CastDebuffSpellOnAttackerAction
+	class CastMarkOfBloodOnAttackerAction : public CastRangedDebuffSpellOnAttackerAction
 	{
 	public:
-		CastMarkOfBloodOnAttackerAction(PlayerbotAI* ai) : CastDebuffSpellOnAttackerAction(ai, "mark of blood") {}
+		CastMarkOfBloodOnAttackerAction(PlayerbotAI* ai) : CastRangedDebuffSpellOnAttackerAction(ai, "mark of blood") {}
 	};
 
-		class CastUnholyBlightAction : public CastBuffSpellAction
+	class CastUnholyBlightAction : public CastBuffSpellAction
 	{
 	public:
 		CastUnholyBlightAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "unholy blight") {}
 	};
 
-		class CastSummonGargoyleAction : public CastBuffSpellAction
+	class CastSummonGargoyleAction : public CastBuffSpellAction
 	{
 	public:
 		CastSummonGargoyleAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "summon gargoyle") {}
 	};
 
-		class CastGhoulFrenzyAction : public CastBuffSpellAction
+	class CastGhoulFrenzyAction : public CastBuffSpellAction
 	{
 	public:
 		CastGhoulFrenzyAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "ghoul frenzy") {}

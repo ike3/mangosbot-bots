@@ -13,6 +13,7 @@ namespace ai
 
     protected:
         virtual void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        NextAction** GetDefaultCombatActions() override;
     };
 
     class HunterBoostStrategy : public Strategy
@@ -23,7 +24,6 @@ namespace ai
 
     private:
         void InitCombatTriggers(std::list<TriggerNode*> &triggers) override;
-        NextAction** GetDefaultCombatActions() override;
     };
 
     class HunterCcStrategy : public Strategy

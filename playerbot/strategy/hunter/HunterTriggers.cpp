@@ -31,4 +31,42 @@ bool HunterPetNotHappy::IsActive()
     return !AI_VALUE(bool, "pet happy") && !AI_VALUE2(bool, "mounted", "self target");
 }
 
+bool ViperStingOnAttackerTrigger::IsActive()
+{
+    Unit* target = GetTarget();
+    if (target)
+    {
+        const bool noStings = !ai->HasAura("serpent sting", target) &&
+                              !ai->HasAura("scorpid sting", target) &&
+                              !ai->HasAura("viper sting", target);
+        if (noStings)
+        {
+            if (target->GetPower(POWER_MANA) >= 10)
+            {
+                return DebuffOnAttackerTrigger::IsActive();
+            }
+        }
+    }
 
+    return false;
+}
+
+bool SerpentStingOnAttackerTrigger::IsActive()
+{
+    Unit* target = GetTarget();
+    if (target)
+    {
+        const bool noStings = !ai->HasAura("serpent sting", target) &&
+                              !ai->HasAura("scorpid sting", target) &&
+                              !ai->HasAura("viper sting", target);
+        if (noStings)
+        {
+            if (target->GetPower(POWER_MANA) < 10)
+            {
+                return DebuffOnAttackerTrigger::IsActive();
+            }
+        }
+    }
+
+    return false;
+}

@@ -4,6 +4,19 @@
 
 using namespace ai;
 
+CastSpellAction::CastSpellAction(PlayerbotAI* ai, string spell)
+: Action(ai, spell)
+, range(ai->GetRange("spell"))
+{
+    SetSpellName(spell);
+
+    float spellRange;
+    if (ai->GetSpellRange(spell, &spellRange))
+    {
+        range = spellRange;
+    }
+}
+
 bool CastSpellAction::Execute(Event& event)
 {
     if (spellName == "conjure food" || spellName == "conjure water")
@@ -47,11 +60,6 @@ bool CastSpellAction::Execute(Event& event)
 
 bool CastSpellAction::isPossible()
 {
-    if (ai->IsInVehicle() && !ai->IsInVehicle(false, false, true))
-    {
-        return false;
-    }
-
     if (spellName == "mount")
     {
         if (!bot->IsMounted() && !bot->IsInCombat())
@@ -65,9 +73,50 @@ bool CastSpellAction::isPossible()
         }
     }
 
-    // Check if the ignore range flag gas been set
-    bool ignoreRange = !qualifier.empty() ? Qualified::getMultiQualifierInt(qualifier, 1, ":") : false;
-	return ai->CanCastSpell(spellName, GetTarget(), true, nullptr, ignoreRange);
+    Unit* spellTarget = GetTarget();
+    if (!spellTarget)
+        return false;
+
+    bool canReach = false;
+    if (spellTarget == bot)
+    {
+        canReach = true;
+    }
+    else
+    {
+        float dist = bot->GetDistance(spellTarget, true, ai->IsRanged(bot) ? DIST_CALC_COMBAT_REACH : DIST_CALC_COMBAT_REACH_WITH_MELEE);
+        if (range == ATTACK_DISTANCE) 
+        {
+            canReach = bot->CanReachWithMeleeAttack(spellTarget);
+        }
+        else 
+        {
+            canReach = dist <= (range + sPlayerbotAIConfig.contactDistance);
+            if (!spellId)
+                return false;
+
+            const SpellEntry* pSpellInfo = sServerFacade.LookupSpellInfo(spellId);
+            if (!pSpellInfo)
+                return false;
+
+            if (range != ATTACK_DISTANCE && pSpellInfo->rangeIndex != SPELL_RANGE_IDX_COMBAT && pSpellInfo->rangeIndex != SPELL_RANGE_IDX_SELF_ONLY && pSpellInfo->rangeIndex != SPELL_RANGE_IDX_ANYWHERE)
+            {
+                float max_range, min_range;
+                if (ai->GetSpellRange(GetSpellName(), &max_range, &min_range))
+                {
+                    canReach = dist < max_range && dist >= min_range;
+                }
+            }
+        }
+    }
+
+    if(!canReach)
+    {
+        return false;
+    }
+    
+    // Check if the spell can be casted
+	return ai->CanCastSpell(spellName, GetTarget(), true);
 }
 
 bool CastSpellAction::isUseful()
@@ -75,15 +124,8 @@ bool CastSpellAction::isUseful()
     if (ai->IsInVehicle() && !ai->IsInVehicle(false, false, true))
         return false;
 
-    if (spellName == "mount" && !bot->IsMounted() && !bot->IsInCombat())
-        return true;
-    if (spellName == "mount" && bot->IsInCombat())
-    {
-        bot->Unmount();
+    if(!AI_VALUE2(bool, "spell cast useful", spellName))
         return false;
-    }
-
-    bool isUsefulCast = AI_VALUE2(bool, "spell cast useful", spellName);
 
     Unit* spellTarget = GetTarget();
     if (!spellTarget)
@@ -92,38 +134,36 @@ bool CastSpellAction::isUseful()
     if (!spellTarget->IsInWorld() || spellTarget->GetMapId() != bot->GetMapId())
         return false;
 
-    bool canReach = false;
+    return true;
+}
 
-    if (spellTarget == bot)
-        canReach = true;
-    else
+NextAction** CastSpellAction::getPrerequisites()
+{
+    // Set the reach action as the cast spell prerequisite when needed
+    string reachAction = GetReachActionName();
+    if (!reachAction.empty())
     {
-        float dist = bot->GetDistance(spellTarget, true, ai->IsRanged(bot) ? DIST_CALC_COMBAT_REACH : DIST_CALC_COMBAT_REACH_WITH_MELEE);
-        if (range == ATTACK_DISTANCE) // melee action
-        {
-            canReach = bot->CanReachWithMeleeAttack(spellTarget);
-        }
-        else // range check
-        {
-            canReach = dist <= (range + sPlayerbotAIConfig.contactDistance);
-            if (!spellId)
-                return true; // there can be known alternatives
+        const string targetName = GetTargetName();
 
-            const SpellEntry* pSpellInfo = sServerFacade.LookupSpellInfo(spellId);
-            if (!pSpellInfo)
-                return true; // there can be known alternatives
+        // No need for a reach action when target is self
+        if (targetName != "self target")
+        {
+            const string spellName = GetSpellName();
+            const string targetQualifier = GetTargetQualifier();
 
-            if (range != ATTACK_DISTANCE && pSpellInfo->rangeIndex != SPELL_RANGE_IDX_COMBAT && pSpellInfo->rangeIndex != SPELL_RANGE_IDX_SELF_ONLY && pSpellInfo->rangeIndex != SPELL_RANGE_IDX_ANYWHERE)
+            // Generate the reach action with qualifiers
+            vector<string> qualifiers = { spellName, targetName };
+            if (!targetQualifier.empty())
             {
-                SpellRangeEntry const* srange = sSpellRangeStore.LookupEntry(pSpellInfo->rangeIndex);
-                float max_range = GetSpellMaxRange(srange);
-                float min_range = GetSpellMinRange(srange);
-                canReach = dist < max_range && dist >= min_range;
+                qualifiers.push_back(targetQualifier);
             }
+
+            const string qualifiersStr = Qualified::MultiQualify(qualifiers, "::");
+            return NextAction::merge(NextAction::array(0, new NextAction(reachAction + "::" + qualifiersStr), NULL), Action::getPrerequisites());
         }
     }
 
-    return spellTarget && isUsefulCast && canReach; // bot->GetDistance(spellTarget, true, DIST_CALC_COMBAT_REACH) <= (range + sPlayerbotAIConfig.contactDistance);
+    return nullptr;
 }
 
 void CastSpellAction::SetSpellName(const string& name, string spellIDContextName /*= "spell id"*/)
@@ -135,22 +175,21 @@ void CastSpellAction::SetSpellName(const string& name, string spellIDContextName
     }
 }
 
-string CastSpellAction::GetTargetName()
+Unit* CastSpellAction::GetTarget()
 {
-    string targetName = "current target";
-
-    // Check if the target name has been overridden
-    if (!qualifier.empty())
-    {
-        targetName = Qualified::getMultiQualifierStr(qualifier, 0, ":");
-    }
-
-    return targetName;
+    string targetName = GetTargetName();
+    string targetNameQualifier = GetTargetQualifier();
+    return targetNameQualifier.empty() ? AI_VALUE(Unit*, targetName) : AI_VALUE2(Unit*, targetName, targetNameQualifier);
 }
 
 bool CastAuraSpellAction::isUseful()
 {
-    return GetTarget() && (GetTarget() != nullptr) && (GetTarget() != NULL) && CastSpellAction::isUseful() && !ai->HasAura(GetSpellName(), GetTarget(), false, isOwner);
+    return CastSpellAction::isUseful() && !ai->HasAura(GetSpellName(), GetTarget(), false, isOwner);
+}
+
+bool CastMeleeAoeSpellAction::isUseful()
+{
+    return CastSpellAction::isUseful() && sServerFacade.IsDistanceLessOrEqualThan(AI_VALUE2(float, "distance", GetTargetName()), radius);
 }
 
 bool CastEnchantItemAction::isPossible()
@@ -166,14 +205,9 @@ bool CastAoeHealSpellAction::isUseful()
     return CastSpellAction::isUseful();
 }
 
-Value<Unit*>* CurePartyMemberAction::GetTargetValue()
+bool HealHotPartyMemberAction::isUseful()
 {
-    return context->GetValue<Unit*>("party member to dispel", dispelType);
-}
-
-Value<Unit*>* BuffOnPartyAction::GetTargetValue()
-{
-    return context->GetValue<Unit*>("party member without aura", GetSpellName());
+    return HealPartyMemberAction::isUseful() && !ai->HasAura(GetSpellName(), GetTarget());
 }
 
 bool CastVehicleSpellAction::isPossible()
@@ -293,4 +327,15 @@ void CastShootAction::UpdateWeaponInfo()
     {
         rangedWeapon = nullptr;
     }
+}
+
+bool RemoveBuffAction::isUseful()
+{
+    return ai->HasAura(name, bot);
+}
+
+bool RemoveBuffAction::Execute(Event& event)
+{
+    ai->RemoveAura(name);
+    return !ai->HasAura(name, bot);
 }

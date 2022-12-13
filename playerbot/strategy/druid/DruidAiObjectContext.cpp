@@ -117,9 +117,12 @@ namespace ai
                 creators["bash on enemy healer"] = &TriggerFactoryInternal::bash_on_enemy_healer;
                 creators["nature's swiftness"] = &TriggerFactoryInternal::natures_swiftness;
                 creators["ferocious bite"] = &TriggerFactoryInternal::ferocious_bite;
+                creators["claw"] = &TriggerFactoryInternal::claw;
+                creators["rip"] = &TriggerFactoryInternal::rip;
             }
 
         private:
+            static Trigger* rip(PlayerbotAI* ai) { return new RipTrigger(ai, 3); }
             static Trigger* ferocious_bite(PlayerbotAI* ai) { return new ComboPointsAvailableTrigger(ai, 3); }
             static Trigger* natures_swiftness(PlayerbotAI* ai) { return new NaturesSwiftnessTrigger(ai); }
             static Trigger* eclipse_solar(PlayerbotAI* ai) { return new EclipseSolarTrigger(ai); }
@@ -134,6 +137,7 @@ namespace ai
             static Trigger* natures_grasp(PlayerbotAI* ai) { return new NaturesGraspTrigger(ai); }
             static Trigger* tigers_fury(PlayerbotAI* ai) { return new TigersFuryTrigger(ai); }
             static Trigger* rake(PlayerbotAI* ai) { return new RakeTrigger(ai); }
+            static Trigger* claw(PlayerbotAI* ai) { return new SpellCanBeCastTrigger(ai, "claw"); }
             static Trigger* mark_of_the_wild(PlayerbotAI* ai) { return new MarkOfTheWildTrigger(ai); }
             static Trigger* mark_of_the_wild_on_party(PlayerbotAI* ai) { return new MarkOfTheWildOnPartyTrigger(ai); }
             static Trigger* gift_of_the_wild_on_party(PlayerbotAI* ai) { return new GiftOfTheWildTrigger(ai); }

@@ -133,7 +133,7 @@ bool PartyMemberToHeal::Check(Unit* player)
 {
     bool isBg = bot->InBattleGround();
 
-    float maxDist = isBg ? ai->GetRange("spell") : (player->IsPlayer() && ai->IsTank((Player*)player)) ? 60.0f : 50.0f;
+    float maxDist = isBg ? sPlayerbotAIConfig.sightDistance : sPlayerbotAIConfig.sightDistance * 2.0f;
 
     if (!player)
         return false;

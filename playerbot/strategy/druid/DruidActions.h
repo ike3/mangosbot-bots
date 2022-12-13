@@ -7,33 +7,34 @@
 
 namespace ai
 {
-	class CastFaerieFireAction : public CastDebuffSpellAction
+	class CastFaerieFireAction : public CastRangedDebuffSpellAction
 	{
 	public:
-		CastFaerieFireAction(PlayerbotAI* ai) : CastDebuffSpellAction(ai, "faerie fire") {}
+		CastFaerieFireAction(PlayerbotAI* ai) : CastRangedDebuffSpellAction(ai, "faerie fire") {}
 	};
 
-    class CastFaerieFireFeralAction : public CastDebuffSpellAction
+    class CastFaerieFireFeralAction : public CastRangedDebuffSpellAction
     {
     public:
-        CastFaerieFireFeralAction(PlayerbotAI* ai) : CastDebuffSpellAction(ai, "faerie fire (feral)") {}
+        CastFaerieFireFeralAction(PlayerbotAI* ai) : CastRangedDebuffSpellAction(ai, "faerie fire (feral)") {}
     };
 
-	class CastRejuvenationAction : public CastHealingSpellAction {
+	class CastRejuvenationAction : public CastHealingSpellAction 
+	{
 	public:
 		CastRejuvenationAction(PlayerbotAI* ai) : CastHealingSpellAction(ai, "rejuvenation") {}
 	};
 
-	class CastRegrowthAction : public CastHealingSpellAction {
+	class CastRegrowthAction : public CastHealingSpellAction 
+	{
 	public:
 		CastRegrowthAction(PlayerbotAI* ai) : CastHealingSpellAction(ai, "regrowth") {}
-
 	};
 
-    class CastHealingTouchAction : public CastHealingSpellAction {
+    class CastHealingTouchAction : public CastHealingSpellAction 
+	{
     public:
         CastHealingTouchAction(PlayerbotAI* ai) : CastHealingSpellAction(ai, "healing touch") {}
-
     };
 
     class CastRejuvenationOnPartyAction : public HealPartyMemberAction
@@ -59,7 +60,8 @@ namespace ai
 	public:
 		CastReviveAction(PlayerbotAI* ai) : ResurrectPartyMemberAction(ai, "revive") {}
 
-		virtual NextAction** getPrerequisites() {
+		virtual NextAction** getPrerequisites() 
+		{
 			return NextAction::merge( NextAction::array(0, new NextAction("caster form"), NULL), ResurrectPartyMemberAction::getPrerequisites());
 		}
 	};
@@ -69,7 +71,8 @@ namespace ai
 	public:
 		CastRebirthAction(PlayerbotAI* ai) : ResurrectPartyMemberAction(ai, "rebirth") {}
 
-		virtual NextAction** getPrerequisites() {
+		virtual NextAction** getPrerequisites() 
+		{
 			return NextAction::merge( NextAction::array(0, new NextAction("caster form"), NULL), ResurrectPartyMemberAction::getPrerequisites());
 		}
 	};
@@ -78,22 +81,26 @@ namespace ai
 	BUFF_PARTY_ACTION(CastMarkOfTheWildOnPartyAction, "mark of the wild");
 	BUFF_PARTY_ACTION(CastGiftOfTheWildOnPartyAction, "gift of the wild");
 
-	class CastSurvivalInstinctsAction : public CastBuffSpellAction {
+	class CastSurvivalInstinctsAction : public CastBuffSpellAction 
+	{
 	public:
 		CastSurvivalInstinctsAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "survival instincts") {}
 	};
 
-	class CastThornsAction : public CastBuffSpellAction {
+	class CastThornsAction : public CastBuffSpellAction 
+	{
 	public:
 		CastThornsAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "thorns") {}
 	};
 
-    class CastThornsOnPartyAction : public BuffOnPartyAction {
+    class CastThornsOnPartyAction : public BuffOnPartyAction 
+	{
     public:
         CastThornsOnPartyAction(PlayerbotAI* ai) : BuffOnPartyAction(ai, "thorns") {}
     };
 
-	class CastOmenOfClarityAction : public CastBuffSpellAction {
+	class CastOmenOfClarityAction : public CastBuffSpellAction 
+	{
 	public:
 	    CastOmenOfClarityAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "omen of clarity") {}
 	};
@@ -116,16 +123,16 @@ namespace ai
 	    CastHurricaneAction(PlayerbotAI* ai) : CastSpellAction(ai, "hurricane") {}
 	};
 
-	class CastMoonfireAction : public CastDebuffSpellAction
+	class CastMoonfireAction : public CastRangedDebuffSpellAction
 	{
 	public:
-		CastMoonfireAction(PlayerbotAI* ai) : CastDebuffSpellAction(ai, "moonfire") {}
+		CastMoonfireAction(PlayerbotAI* ai) : CastRangedDebuffSpellAction(ai, "moonfire") {}
 	};
 
-	class CastInsectSwarmAction : public CastDebuffSpellAction
+	class CastInsectSwarmAction : public CastRangedDebuffSpellAction
 	{
 	public:
-		CastInsectSwarmAction(PlayerbotAI* ai) : CastDebuffSpellAction(ai, "insect swarm") {}
+		CastInsectSwarmAction(PlayerbotAI* ai) : CastRangedDebuffSpellAction(ai, "insect swarm") {}
 	};
 
 	class CastStarfireAction : public CastSpellAction
@@ -205,7 +212,6 @@ namespace ai
     {
     public:
         CastInnervateAction(PlayerbotAI* ai) : CastSpellAction(ai, "innervate") {}
-
         virtual string GetTargetName() { return "self target"; }
     };
 

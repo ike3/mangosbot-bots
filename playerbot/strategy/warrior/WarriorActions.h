@@ -11,18 +11,18 @@ namespace ai
     // shouts
     BUFF_ACTION(CastBattleShoutAction, "battle shout");
     MELEE_ACTION_U(CastBattleShoutTauntAction, "battle shout", CastSpellAction::isUseful()); // useful to rebuff
-    DEBUFF_ACTION_R(CastDemoralizingShoutAction, "demoralizing shout", 8.0f); // low range debuff
+    MELEE_DEBUFF_ACTION_R(CastDemoralizingShoutAction, "demoralizing shout", 8.0f); // low range debuff
     MELEE_ACTION(CastChallengingShoutAction, "challenging shout");
-    DEBUFF_ACTION_R(CastIntimidatingShoutAction, "intimidating shout", 8.0f);
+    MELEE_DEBUFF_ACTION_R(CastIntimidatingShoutAction, "intimidating shout", 8.0f);
     // shouts 2.4.3
     BUFF_ACTION(CastCommandingShoutAction, "commanding shout");
 
     // arms
     MELEE_ACTION(CastHeroicStrikeAction, "heroic strike");
     REACH_ACTION(CastChargeAction, "charge", 8.0f);
-    DEBUFF_ACTION(CastRendAction, "rend");
-    DEBUFF_ENEMY_ACTION(CastRendOnAttackerAction, "rend");
-    DEBUFF_ACTION_R(CastThunderClapAction, "thunder clap", 8.0f);
+    MELEE_DEBUFF_ACTION(CastRendAction, "rend");
+    MELEE_DEBUFF_ENEMY_ACTION(CastRendOnAttackerAction, "rend");
+    MELEE_DEBUFF_ACTION_R(CastThunderClapAction, "thunder clap", 8.0f);
     SNARE_ACTION(CastThunderClapSnareAction, "thunder clap");
     SNARE_ACTION(CastHamstringAction, "hamstring");
     MELEE_ACTION(CastOverpowerAction, "overpower");
@@ -31,7 +31,7 @@ namespace ai
     // arms 3.3.5
     SPELL_ACTION(CastHeroicThrowAction, "heroic throw");
     SNARE_ACTION(CastHeroicThrowSnareAction, "heroic throw");
-    DEBUFF_ACTION(CastShatteringThrowAction, "shattering throw");
+    RANGED_DEBUFF_ACTION(CastShatteringThrowAction, "shattering throw");
     
     // arms talents
     MELEE_ACTION(CastMortalStrikeAction, "mortal strike");
@@ -60,7 +60,7 @@ namespace ai
     // fury talents
     BUFF_ACTION(CastDeathWishAction, "death wish");
     MELEE_ACTION(CastBloodthirstAction, "bloodthirst");
-    DEBUFF_ACTION_R(CastPiercingHowlAction, "piercing howl", 8.0f);
+    MELEE_DEBUFF_ACTION_R(CastPiercingHowlAction, "piercing howl", 8.0f);
     // fury talents 2.4.3
     BUFF_ACTION(CastRampageAction, "rampage");
 
@@ -72,8 +72,8 @@ namespace ai
     ENEMY_HEALER_ACTION(CastShieldBashOnEnemyHealerAction, "shield bash");
     MELEE_ACTION(CastRevengeAction, "revenge");
     BUFF_ACTION(CastShieldBlockAction, "shield block");
-    DEBUFF_ACTION_U(CastDisarmAction, "disarm", GetTarget() && GetTarget()->IsPlayer() ? !ai->IsRanged((Player*)GetTarget()) : CastDebuffSpellAction::isUseful());
-    DEBUFF_ENEMY_ACTION(CastDisarmOnAttackerAction, "disarm");
+    MELEE_DEBUFF_ACTION_U(CastDisarmAction, "disarm", GetTarget() && GetTarget()->IsPlayer() ? !ai->IsRanged((Player*)GetTarget()) : CastMeleeDebuffSpellAction::isUseful());
+    MELEE_DEBUFF_ENEMY_ACTION(CastDisarmOnAttackerAction, "disarm");
     BUFF_ACTION(CastShieldWallAction, "shield wall");
     // protection 2.4.3
     PROTECT_ACTION(CastInterveneAction, "intervene");
@@ -86,15 +86,17 @@ namespace ai
     // protection talents 2.4.3
     MELEE_ACTION(CastDevastateAction, "devastate");
     // protection talents 3.3.5
-    DEBUFF_ACTION_R(CastShockwaveAction, "shockwave", 8.0f);
+    MELEE_DEBUFF_ACTION_R(CastShockwaveAction, "shockwave", 8.0f);
     SNARE_ACTION(CastShockwaveSnareAction, "shockwave");
 
-    class CastSunderArmorAction : public CastOnlyDebuffSpellAction
+    class CastSunderArmorAction : public CastMeleeDebuffSpellAction
     {
     public:
-        CastSunderArmorAction(PlayerbotAI* ai) : CastOnlyDebuffSpellAction(ai, "sunder armor") {
+        CastSunderArmorAction(PlayerbotAI* ai) : CastMeleeDebuffSpellAction(ai, "sunder armor")
+        {
             range = ATTACK_DISTANCE;
         }
+
         virtual bool isUseful() { return GetTarget() && !ai->HasAura("sunder armor", GetTarget(), true); }
     };
 }

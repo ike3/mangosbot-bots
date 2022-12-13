@@ -5,11 +5,6 @@
 
 using namespace ai;
 
-
-FrostMageStrategy::FrostMageStrategy(PlayerbotAI* ai) : GenericMageStrategy(ai)
-{
-}
-
 NextAction** FrostMageStrategy::GetDefaultCombatActions()
 {
     return NextAction::array(0, new NextAction("frostbolt", 7.0f), NULL);
@@ -31,9 +26,9 @@ void FrostMageStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
         "ice lance",
         NextAction::array(0, new NextAction("ice lance", 61.0f), NULL)));
 
-    /*triggers.push_back(new TriggerNode(
+    triggers.push_back(new TriggerNode(
         "has aggro",
-        NextAction::array(0, new NextAction("fire blast", 6.0f), NULL)));*/
+        NextAction::array(0, new NextAction("fire blast", 6.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
         "summon water elemental",

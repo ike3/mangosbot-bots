@@ -32,10 +32,10 @@ namespace ai {
 		CastSwipeAction(PlayerbotAI* ai) : CastMeleeSpellAction(ai, "swipe") {}
 	};
 
-	class CastDemoralizingRoarAction : public CastDebuffSpellAction
+	class CastDemoralizingRoarAction : public CastMeleeDebuffSpellAction
 	{
 	public:
-		CastDemoralizingRoarAction(PlayerbotAI* ai) : CastDebuffSpellAction(ai, "demoralizing roar") {}
+		CastDemoralizingRoarAction(PlayerbotAI* ai) : CastMeleeDebuffSpellAction(ai, "demoralizing roar") {}
 	};
 
 	class CastMangleBearAction : public CastMeleeSpellAction

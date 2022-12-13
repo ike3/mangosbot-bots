@@ -11,7 +11,6 @@
 
 using namespace ai;
 
-
 namespace ai
 {
     namespace hunter
@@ -66,7 +65,6 @@ namespace ai
     };
 };
 
-
 namespace ai
 {
     namespace hunter
@@ -93,6 +91,7 @@ namespace ai
                 creators["aspect of the viper"] = &TriggerFactoryInternal::aspect_of_the_viper;
                 creators["trueshot aura"] = &TriggerFactoryInternal::trueshot_aura;
                 creators["serpent sting on attacker"] = &TriggerFactoryInternal::serpent_sting_on_attacker;
+                creators["viper sting on attacker"] = &TriggerFactoryInternal::viper_sting_on_attacker;
                 creators["pet not happy"] = &TriggerFactoryInternal::pet_not_happy;
                 creators["concussive shot on snare target"] = &TriggerFactoryInternal::concussive_shot_on_snare_target;
                 creators["scare beast"] = &TriggerFactoryInternal::scare_beast;
@@ -132,6 +131,7 @@ namespace ai
             static Trigger* concussive_shot_on_snare_target(PlayerbotAI* ai) { return new ConsussiveShotSnareTrigger(ai); }
             static Trigger* pet_not_happy(PlayerbotAI* ai) { return new HunterPetNotHappy(ai); }
             static Trigger* serpent_sting_on_attacker(PlayerbotAI* ai) { return new SerpentStingOnAttackerTrigger(ai); }
+            static Trigger* viper_sting_on_attacker(PlayerbotAI* ai) { return new ViperStingOnAttackerTrigger(ai); }
             static Trigger* trueshot_aura(PlayerbotAI* ai) { return new TrueshotAuraTrigger(ai); }
             static Trigger* aspect_of_the_viper(PlayerbotAI* ai) { return new HunterAspectOfTheViperTrigger(ai); }
             static Trigger* black_arrow(PlayerbotAI* ai) { return new BlackArrowTrigger(ai); }
@@ -153,8 +153,6 @@ namespace ai
         };
     };
 };
-
-
 
 namespace ai
 {
@@ -178,6 +176,7 @@ namespace ai
                 creators["volley"] = &AiObjectContextInternal::volley;
                 creators["serpent sting"] = &AiObjectContextInternal::serpent_sting;
                 creators["serpent sting on attacker"] = &AiObjectContextInternal::serpent_sting_on_attacker;
+                creators["viper sting on attacker"] = &AiObjectContextInternal::viper_sting_on_attacker;
                 creators["wyvern sting"] = &AiObjectContextInternal::wyvern_sting;
                 creators["viper sting"] = &AiObjectContextInternal::viper_sting;
                 creators["scorpid sting"] = &AiObjectContextInternal::scorpid_sting;
@@ -250,6 +249,7 @@ namespace ai
             static Action* volley(PlayerbotAI* ai) { return new CastVolleyAction(ai); }
             static Action* serpent_sting(PlayerbotAI* ai) { return new CastSerpentStingAction(ai); }
             static Action* serpent_sting_on_attacker(PlayerbotAI* ai) { return new CastSerpentStingOnAttackerAction(ai); }
+            static Action* viper_sting_on_attacker(PlayerbotAI* ai) { return new CastViperStingOnAttackerAction(ai); }
             static Action* viper_sting(PlayerbotAI* ai) { return new CastViperStingAction(ai); }
             static Action* scorpid_sting(PlayerbotAI* ai) { return new CastScorpidStingAction(ai); }
             static Action* hunters_mark(PlayerbotAI* ai) { return new CastHuntersMarkAction(ai); }

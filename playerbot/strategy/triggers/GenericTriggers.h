@@ -70,17 +70,19 @@ namespace ai
 	class ComboPointsAvailableTrigger : public StatAvailable
 	{
 	public:
-	    ComboPointsAvailableTrigger(PlayerbotAI* ai, int amount = 5) : StatAvailable(ai, amount, "combo points available") {}
+	    ComboPointsAvailableTrigger(PlayerbotAI* ai, uint8 amount = 5) : StatAvailable(ai, amount, "combo points available") {}
 		virtual bool IsActive();
 	};
 
-	class LoseAggroTrigger : public Trigger {
+	class LoseAggroTrigger : public Trigger 
+    {
 	public:
 		LoseAggroTrigger(PlayerbotAI* ai) : Trigger(ai, "lose aggro") {}
 		virtual bool IsActive();
 	};
 
-	class HasAggroTrigger : public Trigger {
+	class HasAggroTrigger : public Trigger 
+    {
 	public:
 	    HasAggroTrigger(PlayerbotAI* ai) : Trigger(ai, "have aggro") {}
 		virtual bool IsActive();
@@ -260,6 +262,25 @@ namespace ai
     public:
         virtual Value<Unit*>* GetTargetValue();
         virtual string getName() { return spell + " on party"; }
+    };
+
+    class NoBuffAndComboPointsAvailableTrigger : public BuffTrigger
+    {
+    public:
+        NoBuffAndComboPointsAvailableTrigger(PlayerbotAI* ai, string spell, uint8 comboPoints, bool checkIsOwner = true, int checkInterval = 1) : BuffTrigger(ai, spell, checkInterval, checkIsOwner), comboPoints(comboPoints) {}
+        virtual string GetTargetName() { return "self target"; }
+        virtual string GetComboPointsTargetName() { return "current target"; }
+        virtual bool IsActive();
+
+    private:
+        uint8 comboPoints;
+    };
+
+    class NoDebuffAndComboPointsAvailableTrigger : public NoBuffAndComboPointsAvailableTrigger
+    {
+    public:
+        NoDebuffAndComboPointsAvailableTrigger(PlayerbotAI* ai, string spell, uint8 comboPoints, bool checkIsOwner = true, int checkInterval = 1) : NoBuffAndComboPointsAvailableTrigger(ai, spell, comboPoints, checkIsOwner, checkIsOwner) {}
+        virtual string GetTargetName() { return "current target"; }
     };
 
     class ProtectPartyMemberTrigger : public Trigger
@@ -455,12 +476,14 @@ namespace ai
 	public:
 		NoPetTrigger(PlayerbotAI* ai) : Trigger(ai, "no pet", 30) {}
 
-		virtual bool IsActive() {
+		virtual bool IsActive() 
+        {
 			return !AI_VALUE(Unit*, "pet target") && !AI_VALUE2(bool, "mounted", "self target");
 		}
 	};
 
-	class ItemCountTrigger : public Trigger {
+	class ItemCountTrigger : public Trigger 
+    {
 	public:
 		ItemCountTrigger(PlayerbotAI* ai, string item, int count, int interval = 30) : Trigger(ai, item, interval) {
 			this->item = item;
@@ -490,7 +513,8 @@ namespace ai
 
 	};
 
-    class HasNoAuraTrigger : public Trigger {
+    class HasNoAuraTrigger : public Trigger 
+    {
     public:
         HasNoAuraTrigger(PlayerbotAI* ai, string spell) : Trigger(ai, spell) {}
 
@@ -576,7 +600,6 @@ namespace ai
 	public:
 		virtual bool IsActive();
 	};
-
 
     class NoPossibleTargetsTrigger : public Trigger
     {

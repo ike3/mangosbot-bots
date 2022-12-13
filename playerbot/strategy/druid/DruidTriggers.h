@@ -3,33 +3,32 @@
 
 namespace ai {
 
-    class MarkOfTheWildOnPartyTrigger : public BuffOnPartyTrigger {
+    class MarkOfTheWildOnPartyTrigger : public BuffOnPartyTrigger 
+    {
     public:
         MarkOfTheWildOnPartyTrigger(PlayerbotAI* ai) : BuffOnPartyTrigger(ai, "mark of the wild", 4) {}
 
         virtual bool IsActive() { return BuffOnPartyTrigger::IsActive() && !ai->HasAura("mark of the wild", GetTarget()) && !ai->HasAura("gift of the wild", GetTarget()); }
     };
 
-    class MarkOfTheWildTrigger : public BuffTrigger {
+    class MarkOfTheWildTrigger : public BuffTrigger 
+    {
     public:
         MarkOfTheWildTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "mark of the wild", 4) {}
 
         virtual bool IsActive() { return BuffTrigger::IsActive() && !ai->HasAura("mark of the wild", GetTarget()) && !ai->HasAura("gift of the wild", GetTarget()); }
     };
 
-    class GiftOfTheWildTrigger : public BuffOnPartyTrigger {
+    class GiftOfTheWildTrigger : public BuffOnPartyTrigger 
+    {
     public:
         GiftOfTheWildTrigger(PlayerbotAI* ai) : BuffOnPartyTrigger(ai, "gift of the wild", 3) {}
 
-        virtual bool IsActive() {
+        virtual bool IsActive() 
+        {
             return bot->GetGroup() && BuffOnPartyTrigger::IsActive() &&
                 !ai->HasAura("gift of the wild", GetTarget()) &&
-#ifdef MANGOS
-                (ai->GetBot()->IsInSameGroupWith((Player*)GetTarget()) || ai->GetBot()->IsInSameRaidWith((Player*)GetTarget())) &&
-#endif
-#ifdef CMANGOS
                 bot->IsInGroup((Player*)GetTarget()) &&
-#endif
                 (ai->GetBuffedCount((Player*)GetTarget(), "gift of the wild") + ai->GetBuffedCount((Player*)GetTarget(), "mark of the wild")) < 4;
             ;
         }
@@ -65,6 +64,12 @@ namespace ai {
     {
     public:
         RakeTrigger(PlayerbotAI* ai) : DebuffTrigger(ai, "rake") {}
+    };
+
+    class RipTrigger : public NoDebuffAndComboPointsAvailableTrigger
+    {
+    public:
+        RipTrigger(PlayerbotAI* ai, uint8 comboPoints = 3) : NoDebuffAndComboPointsAvailableTrigger(ai, "rake", comboPoints) {}
     };
 
     class InsectSwarmTrigger : public DebuffTrigger

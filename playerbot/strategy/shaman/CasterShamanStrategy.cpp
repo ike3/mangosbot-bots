@@ -37,10 +37,6 @@ void CasterShamanStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
     GenericShamanStrategy::InitCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
-        "enemy out of spell",
-        NextAction::array(0, new NextAction("reach spell", ACTION_NORMAL + 9), NULL)));
-
-    triggers.push_back(new TriggerNode(
         "shock",
         NextAction::array(0, new NextAction("earth shock", 20.0f), NULL)));
 

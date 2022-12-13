@@ -301,7 +301,7 @@ class clazz : public super \
     { \
     public: \
         clazz(PlayerbotAI* ai) : CastMeleeSpellAction(ai, spell) {} \
-        virtual bool isUseful() { return useful; } \
+        virtual bool isUseful() override { return useful; } \
     }
 
 #define SPELL_ACTION(clazz, spell) \
@@ -316,7 +316,7 @@ class clazz : public super \
     { \
     public: \
         clazz(PlayerbotAI* ai) : CastSpellAction(ai, spell) {} \
-        virtual bool isUseful() { return useful; } \
+        virtual bool isUseful() override { return useful; } \
     }
 
 #define HEAL_ACTION(clazz, spell) \
@@ -331,7 +331,7 @@ class clazz : public super \
     { \
     public: \
         clazz(PlayerbotAI* ai) : CastHealingSpellAction(ai, spell) {} \
-        virtual bool isUseful() { return useful; } \
+        virtual bool isUseful() override { return useful; } \
     }
 
 #define HEAL_PARTY_ACTION(clazz, spell) \
@@ -374,7 +374,7 @@ class clazz : public super \
     { \
     public: \
         clazz(PlayerbotAI* ai) : CastBuffSpellAction(ai, spell) {} \
-        virtual bool isUseful() { return useful; } \
+        virtual bool isUseful() override { return useful; } \
     }
 
 #define BUFF_PARTY_ACTION(clazz, spell) \
@@ -405,35 +405,66 @@ class clazz : public super \
         clazz(PlayerbotAI* ai) : ResurrectPartyMemberAction(ai, spell) {} \
     }
 
-#define DEBUFF_ACTION(clazz, spell) \
-    class clazz : public CastDebuffSpellAction \
+#define MELEE_DEBUFF_ACTION(clazz, spell) \
+    class clazz : public CastMeleeDebuffSpellAction \
     { \
     public: \
-        clazz(PlayerbotAI* ai) : CastDebuffSpellAction(ai, spell) {} \
+        clazz(PlayerbotAI* ai) : CastMeleeDebuffSpellAction(ai, spell) {} \
     }
 
-#define DEBUFF_ACTION_U(clazz, spell, useful) \
-    class clazz : public CastDebuffSpellAction \
+#define RANGED_DEBUFF_ACTION(clazz, spell) \
+    class clazz : public CastRangedDebuffSpellAction \
     { \
     public: \
-        clazz(PlayerbotAI* ai) : CastDebuffSpellAction(ai, spell) {} \
-        virtual bool isUseful() { return useful; } \
+        clazz(PlayerbotAI* ai) : CastRangedDebuffSpellAction(ai, spell) {} \
     }
 
-#define DEBUFF_ACTION_R(clazz, spell, distance) \
-    class clazz : public CastDebuffSpellAction \
+#define MELEE_DEBUFF_ACTION_U(clazz, spell, useful) \
+    class clazz : public CastMeleeDebuffSpellAction \
     { \
     public: \
-        clazz(PlayerbotAI* ai) : CastDebuffSpellAction(ai, spell) { \
+        clazz(PlayerbotAI* ai) : CastMeleeDebuffSpellAction(ai, spell) {} \
+        virtual bool isUseful() override { return useful; } \
+    }
+
+#define RANGED_DEBUFF_ACTION_U(clazz, spell, useful) \
+    class clazz : public CastRangedDebuffSpellAction \
+    { \
+    public: \
+        clazz(PlayerbotAI* ai) : CastRangedDebuffSpellAction(ai, spell) {} \
+        virtual bool isUseful() override { return useful; } \
+    }
+
+#define MELEE_DEBUFF_ACTION_R(clazz, spell, distance) \
+    class clazz : public CastMeleeDebuffSpellAction \
+    { \
+    public: \
+        clazz(PlayerbotAI* ai) : CastMeleeDebuffSpellAction(ai, spell) { \
             range = distance; \
         } \
     }
 
-#define DEBUFF_ENEMY_ACTION(clazz, spell) \
-    class clazz : public CastDebuffSpellOnAttackerAction \
+#define RANGED_DEBUFF_ACTION_R(clazz, spell, distance) \
+    class clazz : public CastRangedDebuffSpellAction \
     { \
     public: \
-        clazz(PlayerbotAI* ai) : CastDebuffSpellOnAttackerAction(ai, spell) {} \
+        clazz(PlayerbotAI* ai) : CastRangedDebuffSpellAction(ai, spell) { \
+            range = distance; \
+        } \
+    }
+
+#define MELEE_DEBUFF_ENEMY_ACTION(clazz, spell) \
+    class clazz : public CastMeleeDebuffSpellOnAttackerAction \
+    { \
+    public: \
+        clazz(PlayerbotAI* ai) : CastMeleeDebuffSpellOnAttackerAction(ai, spell) {} \
+    }
+
+#define RANGED_DEBUFF_ENEMY_ACTION(clazz, spell) \
+    class clazz : public CastRangedDebuffSpellOnAttackerAction \
+    { \
+    public: \
+        clazz(PlayerbotAI* ai) : CastRangedDebuffSpellOnAttackerAction(ai, spell) {} \
     }
 
 #define REACH_ACTION(clazz, spell, range) \
@@ -448,7 +479,7 @@ class clazz : public super \
     { \
     public: \
         clazz(PlayerbotAI* ai) : CastReachTargetSpellAction(ai, spell, range) {} \
-        virtual bool isUseful() { return useful; } \
+        virtual bool isUseful() override { return useful; } \
     }
 
 #define ENEMY_HEALER_ACTION(clazz, spell) \
@@ -493,11 +524,17 @@ class clazz : public CastSpellAction \
 #define END_SPELL_ACTION() \
     };
 
-#define BEGIN_DEBUFF_ACTION(clazz, name) \
-class clazz : public CastDebuffSpellAction \
+#define BEGIN_MELEE_DEBUFF_ACTION(clazz, name) \
+class clazz : public CastMeleeDebuffSpellAction \
         { \
         public: \
-        clazz(PlayerbotAI* ai) : CastDebuffSpellAction(ai, name) {} \
+        clazz(PlayerbotAI* ai) : CastMeleeDebuffSpellAction(ai, name) {} \
+
+#define BEGIN_RANGED_DEBUFF_ACTION(clazz, name) \
+class clazz : public CastRangedDebuffSpellAction \
+        { \
+        public: \
+        clazz(PlayerbotAI* ai) : CastRangedDebuffSpellAction(ai, name) {} \
 
 #define BEGIN_RANGED_SPELL_ACTION(clazz, name) \
 class clazz : public CastSpellAction \

@@ -75,6 +75,14 @@ FeralDruidStrategy::FeralDruidStrategy(PlayerbotAI* ai) : GenericDruidStrategy(a
     actionNodeFactories.Add(new ShapeshiftDruidStrategyActionNodeFactory());
 }
 
+NextAction** FeralDruidStrategy::GetDefaultCombatActions()
+{
+    return NextAction::array(0,
+        new NextAction("faerie fire", ACTION_NORMAL + 1),
+        new NextAction("melee", ACTION_NORMAL),
+        NULL);
+}
+
 void FeralDruidStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
 {
     GenericDruidStrategy::InitCombatTriggers(triggers);
@@ -91,4 +99,3 @@ void FeralDruidStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
         "omen of clarity",
         NextAction::array(0, new NextAction("omen of clarity", ACTION_HIGH + 6), NULL)));
 }
-

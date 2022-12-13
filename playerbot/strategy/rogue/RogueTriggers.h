@@ -11,35 +11,29 @@ namespace ai
 
     CAN_CAST_TRIGGER_A(RiposteCastTrigger, "riposte");
 
-    class SliceAndDiceTrigger : public BuffTrigger
+    class SliceAndDiceTrigger : public NoBuffAndComboPointsAvailableTrigger
     {
     public:
-        SliceAndDiceTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "slice and dice") {}
-        virtual bool IsActive();
+        SliceAndDiceTrigger(PlayerbotAI* ai, uint8 comboPoints = 3) : NoBuffAndComboPointsAvailableTrigger(ai, "slice and dice", comboPoints) {}
     };
 
     class RogueBoostBuffTrigger : public BoostTrigger
     {
     public:
         RogueBoostBuffTrigger(PlayerbotAI* ai, string spellName) : BoostTrigger(ai, spellName, 200.0f) {}
-        virtual bool IsPossible()
-        {
-            return !ai->HasAura("stealth", bot);
-        }
+        virtual bool IsPossible() { return !ai->HasAura("stealth", bot); }
     };
 
-    class RuptureTrigger : public DebuffTrigger
+    class RuptureTrigger : public NoDebuffAndComboPointsAvailableTrigger
     {
     public:
-        RuptureTrigger(PlayerbotAI* ai) : DebuffTrigger(ai, "rupture") {}
-        virtual bool IsActive();
+        RuptureTrigger(PlayerbotAI* ai, uint8 comboPoints = 4) : NoDebuffAndComboPointsAvailableTrigger(ai, "rupture", comboPoints) {}
     };
 
-    class EviscerateTrigger : public SpellTrigger
+    class EviscerateTrigger : public ComboPointsAvailableTrigger
     {
     public:
-        EviscerateTrigger(PlayerbotAI* ai) : SpellTrigger(ai, "eviscerate") {}
-        virtual bool IsActive();
+        EviscerateTrigger(PlayerbotAI* ai, uint8 comboPoints = 4) : ComboPointsAvailableTrigger(ai, comboPoints) {}
     };
 
     class CloakOfShadowsTrigger : public NeedCureTrigger
@@ -66,10 +60,10 @@ namespace ai
         }
     };*/
 
-    class ExposeArmorTrigger : public DebuffTrigger
+    class ExposeArmorTrigger : public NoDebuffAndComboPointsAvailableTrigger
     {
     public:
-        ExposeArmorTrigger(PlayerbotAI* ai) : DebuffTrigger(ai, "expose armor") {}
+        ExposeArmorTrigger(PlayerbotAI* ai, uint8 comboPoints = 3) : NoDebuffAndComboPointsAvailableTrigger(ai, "expose armor", comboPoints) {}
     };
 
     class KickInterruptEnemyHealerSpellTrigger : public InterruptEnemyHealerTrigger
@@ -113,7 +107,8 @@ namespace ai
         }
     };
 
-    class StealthTrigger : public Trigger {
+    class StealthTrigger : public Trigger 
+    {
     public:
         StealthTrigger(PlayerbotAI* ai) : Trigger(ai, "stealth") {}
         virtual bool IsActive()
@@ -131,20 +126,11 @@ namespace ai
             if (!target)
                 return false;
 
-#ifdef MANGOS
-            if (target && target->getVictim())
-                distance -= 10;
-
-            if (sServerFacade.isMoving(target) && target->getVictim())
-                distance -= 10;
-#endif
-#ifdef CMANGOS
             if (target && target->GetVictim())
                 distance -= 10;
 
             if (sServerFacade.isMoving(target) && target->GetVictim())
                 distance -= 10;
-#endif
 
             if (bot->InBattleGround())
                 distance += 20;

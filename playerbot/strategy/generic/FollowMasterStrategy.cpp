@@ -17,7 +17,9 @@ void FollowMasterStrategy::InitNonCombatTriggers(std::list<TriggerNode*> &trigge
 
 void FollowMasterStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-    InitNonCombatTriggers(triggers);
+    triggers.push_back(new TriggerNode(
+        "out of react range",
+        NextAction::array(0, new NextAction("check mount state", ACTION_HIGH), new NextAction("flee to master", ACTION_HIGH), NULL)));
 }
 
 void FollowMasterStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)

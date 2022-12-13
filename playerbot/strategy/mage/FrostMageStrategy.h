@@ -8,7 +8,7 @@ namespace ai
     class FrostMageStrategy : public GenericMageStrategy
     {
     public:
-        FrostMageStrategy(PlayerbotAI* ai);
+        FrostMageStrategy(PlayerbotAI* ai) : GenericMageStrategy(ai) {}
         string getName() override { return "frost"; }
 
     private:

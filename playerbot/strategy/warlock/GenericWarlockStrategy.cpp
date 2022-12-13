@@ -45,10 +45,6 @@ void GenericWarlockStrategy::InitCombatTriggers(std::list<TriggerNode*> &trigger
     CombatStrategy::InitCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
-        "enemy out of spell",
-        NextAction::array(0, new NextAction("reach spell", 60.0f), NULL)));
-
-    triggers.push_back(new TriggerNode(
         "shadow trance",
         NextAction::array(0, new NextAction("shadow bolt", 20.0f), NULL)));
 

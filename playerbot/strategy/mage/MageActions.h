@@ -60,7 +60,11 @@ namespace ai
         CastFlamestrikeAction(PlayerbotAI* ai) : CastSpellAction(ai, "flamestrike") {}
     };
 
-    SPELL_ACTION_U(CastFrostNovaAction, "frost nova", sServerFacade.IsDistanceLessOrEqualThan(AI_VALUE2(float, "distance", GetTargetName()), 10.0f));
+    class CastFrostNovaAction : public CastMeleeAoeSpellAction
+    {
+    public:
+        CastFrostNovaAction(PlayerbotAI* ai) : CastMeleeAoeSpellAction(ai, "frost nova", 10.0f) {}
+    };
 
 	class CastFrostboltAction : public CastSpellAction
 	{
@@ -195,27 +199,23 @@ namespace ai
 		CastSpellstealAction(PlayerbotAI* ai) : CastSpellAction(ai, "spellsteal") {}
 	};
 
-	class CastLivingBombAction : public CastDebuffSpellAction
+	class CastLivingBombAction : public CastRangedDebuffSpellAction
 	{
 	public:
-	    CastLivingBombAction(PlayerbotAI* ai) : CastDebuffSpellAction(ai, "living bomb") {}
+	    CastLivingBombAction(PlayerbotAI* ai) : CastRangedDebuffSpellAction(ai, "living bomb") {}
 	};
 
-	class CastDragonsBreathAction : public CastSpellAction
+	class CastDragonsBreathAction : public CastMeleeAoeSpellAction
 	{
 	public:
-	    CastDragonsBreathAction(PlayerbotAI* ai) : CastSpellAction(ai, "dragon's breath") {}
+	    CastDragonsBreathAction(PlayerbotAI* ai) : CastMeleeAoeSpellAction(ai, "dragon's breath", 10.0f) {}
 	};
 
-	class CastBlastWaveAction : public CastSpellAction
-	{
-	public:
-	    CastBlastWaveAction(PlayerbotAI* ai) : CastSpellAction(ai, "blast wave") {}
-        virtual bool isUseful()
-        {
-            return sServerFacade.IsDistanceLessOrEqualThan(AI_VALUE2(float, "distance", GetTargetName()), 10.0f);
-        }
-	};
+    class CastBlastWaveAction : public CastMeleeAoeSpellAction
+    {
+    public:
+        CastBlastWaveAction(PlayerbotAI* ai) : CastMeleeAoeSpellAction(ai, "blast wave", 10.0f) {}
+    };
 
 	class CastInvisibilityAction : public CastBuffSpellAction
 	{
@@ -248,7 +248,17 @@ namespace ai
         CastPresenceOfMindAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "presence of mind") {}
     };
 
-    SPELL_ACTION_U(CastArcaneExplosionAction, "arcane explosion", sServerFacade.IsDistanceLessOrEqualThan(AI_VALUE2(float, "distance", GetTargetName()), 10.0f));
-    SPELL_ACTION(CastConeOfColdAction, "cone of cold");
+    class CastArcaneExplosionAction : public CastMeleeAoeSpellAction
+    {
+    public:
+        CastArcaneExplosionAction(PlayerbotAI* ai) : CastMeleeAoeSpellAction(ai, "arcane explosion", 10.0f) {}
+    };
+
+    class CastConeOfColdAction : public CastMeleeAoeSpellAction
+    {
+    public:
+        CastConeOfColdAction(PlayerbotAI* ai) : CastMeleeAoeSpellAction(ai, "cone of cold", 10.0f) {}
+    };
+    
     BUFF_ACTION(CastSummonWaterElementalAction, "summon water elemental");
 }

@@ -4,7 +4,7 @@
 
 namespace ai
 {
-    HAS_AURA_TRIGGER_TIME(FeignDeathTrigger, "feign death", 5);
+    HAS_AURA_TRIGGER_TIME(FeignDeathTrigger, "feign death", 2.5f);
     BEGIN_TRIGGER(HunterNoStingsActiveTrigger, Trigger)
     END_TRIGGER()
 
@@ -28,6 +28,7 @@ namespace ai
     {
     public:
         HunterAspectOfTheViperTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "aspect of the viper") {}
+        
         virtual bool IsActive()
         {
             return SpellTrigger::IsActive() && !ai->HasAura(spell, GetTarget());
@@ -38,7 +39,9 @@ namespace ai
     {
     public:
         HunterAspectOfThePackTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "aspect of the pack") {}
-        virtual bool IsActive() {
+        
+        virtual bool IsActive() 
+        {
 			return BuffTrigger::IsActive() && !ai->HasAura("aspect of the cheetah", GetTarget());
         };
     };
@@ -85,6 +88,14 @@ namespace ai
     {
     public:
         SerpentStingOnAttackerTrigger(PlayerbotAI* ai) : DebuffOnAttackerTrigger(ai, "serpent sting") {}
+        virtual bool IsActive();
+    };
+
+    class ViperStingOnAttackerTrigger : public DebuffOnAttackerTrigger
+    {
+    public:
+        ViperStingOnAttackerTrigger(PlayerbotAI* ai) : DebuffOnAttackerTrigger(ai, "viper sting") {}
+        virtual bool IsActive();
     };
 
     BEGIN_TRIGGER(HunterPetNotHappy, Trigger)
@@ -124,9 +135,11 @@ namespace ai
         virtual bool IsActive() { return !AmmoCountTrigger::IsActive(); }
     };
 
-    class SwitchToRangedTrigger : public Trigger {
+    class SwitchToRangedTrigger : public Trigger 
+    {
     public:
         SwitchToRangedTrigger(PlayerbotAI* ai) : Trigger(ai, "switch to ranged", 1) {}
+
         virtual bool IsActive()
         {
             Unit* target = AI_VALUE(Unit*, "current target");
@@ -135,9 +148,11 @@ namespace ai
         }
     };
 
-    class SwitchToMeleeTrigger : public Trigger {
+    class SwitchToMeleeTrigger : public Trigger 
+    {
     public:
         SwitchToMeleeTrigger(PlayerbotAI* ai) : Trigger(ai, "switch to melee", 1) {}
+
         virtual bool IsActive()
         {
             Unit* target = AI_VALUE(Unit*, "current target");
@@ -160,9 +175,10 @@ namespace ai
     {
     public:
         ViperStingTrigger(PlayerbotAI* ai) : DebuffTrigger(ai, "viper sting") {}
+
         virtual bool IsActive()
         {
-            return DebuffTrigger::IsActive() && GetTarget() && GetTarget()->IsPlayer() && AI_VALUE2(uint8, "mana", "current target") >= 10;
+            return DebuffTrigger::IsActive() && AI_VALUE2(uint8, "mana", "current target") >= 10;
         }
     };
 
@@ -171,6 +187,7 @@ namespace ai
     public:
         AimedShotTrigger(PlayerbotAI* ai) : Trigger(ai, "aimed shot", 2) {}
         virtual string GetTargetName() { return "current target"; }
+
         virtual bool IsActive()
         {
             if (!bot->HasSpell(19434) || !bot->IsSpellReady(19434))

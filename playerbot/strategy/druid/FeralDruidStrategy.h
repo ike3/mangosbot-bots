@@ -69,5 +69,6 @@ namespace ai
 
     protected:
         virtual void InitCombatTriggers(std::list<TriggerNode*> &triggers) override;
+        virtual NextAction** GetDefaultCombatActions() override;
     };
 }

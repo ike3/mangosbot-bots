@@ -69,6 +69,11 @@ GenericRogueStrategy::GenericRogueStrategy(PlayerbotAI* ai) : CombatStrategy(ai)
     actionNodeFactories.Add(new DpsRogueStrategyActionNodeFactory());
 }
 
+NextAction** GenericRogueStrategy::GetDefaultCombatActions()
+{
+    return NextAction::array(0, new NextAction("melee", ACTION_NORMAL), NULL);
+}
+
 void GenericRogueStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     CombatStrategy::InitCombatTriggers(triggers);

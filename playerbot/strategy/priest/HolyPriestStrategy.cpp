@@ -40,10 +40,6 @@ void HolyPriestStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
     HealPriestStrategy::InitCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
-        "enemy out of spell",
-        NextAction::array(0, new NextAction("reach spell", 60.0f), NULL)));
-
-    triggers.push_back(new TriggerNode(
         "holy fire",
         NextAction::array(0, new NextAction("holy fire", ACTION_NORMAL + 9), NULL)));
 

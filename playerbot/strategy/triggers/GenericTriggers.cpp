@@ -508,3 +508,13 @@ bool ReturnToStayPositionTrigger::IsActive()
 
     return false;
 }
+
+bool NoBuffAndComboPointsAvailableTrigger::IsActive()
+{
+    if (BuffTrigger::IsActive())
+    {
+        return AI_VALUE2(uint8, "combo", GetComboPointsTargetName()) >= comboPoints;
+    }
+
+    return false;
+}

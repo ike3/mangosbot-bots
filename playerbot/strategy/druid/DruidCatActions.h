@@ -26,40 +26,44 @@ namespace ai {
 		CastTigersFuryAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "tiger's fury") {}
 	};
 
-	class CastRakeAction : public CastDebuffSpellAction
+	class CastRakeAction : public CastMeleeDebuffSpellAction
 	{
 	public:
-		CastRakeAction(PlayerbotAI* ai) : CastDebuffSpellAction(ai, "rake") {}
+		CastRakeAction(PlayerbotAI* ai) : CastMeleeDebuffSpellAction(ai, "rake") {}
 	};
 
-
-	class CastClawAction : public CastMeleeSpellAction {
+	class CastClawAction : public CastMeleeSpellAction 
+	{
 	public:
 		CastClawAction(PlayerbotAI* ai) : CastMeleeSpellAction(ai, "claw") {}
 	};
 
-	class CastMangleCatAction : public CastMeleeSpellAction {
+	class CastMangleCatAction : public CastMeleeSpellAction 
+	{
 	public:
 		CastMangleCatAction(PlayerbotAI* ai) : CastMeleeSpellAction(ai, "mangle (cat)") {}
 	};
 
-	class CastSwipeCatAction : public CastMeleeSpellAction {
+	class CastSwipeCatAction : public CastMeleeSpellAction 
+	{
 	public:
 		CastSwipeCatAction(PlayerbotAI* ai) : CastMeleeSpellAction(ai, "swipe (cat)") {}
 	};
 
-	class CastFerociousBiteAction : public CastMeleeSpellAction {
+	class CastFerociousBiteAction : public CastMeleeSpellAction 
+	{
 	public:
 		CastFerociousBiteAction(PlayerbotAI* ai) : CastMeleeSpellAction(ai, "ferocious bite") {}
 	};
 
-
-	class CastRipAction : public CastMeleeSpellAction {
+	class CastRipAction : public CastMeleeSpellAction 
+	{
 	public:
 		CastRipAction(PlayerbotAI* ai) : CastMeleeSpellAction(ai, "rip") {}
 	};
 
-    class CastShredAction : public CastMeleeSpellAction {
+    class CastShredAction : public CastMeleeSpellAction 
+	{
     public:
         CastShredAction(PlayerbotAI* ai) : CastMeleeSpellAction(ai, "shred") {}
     };
@@ -76,12 +80,14 @@ namespace ai {
         CastDashAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "dash") {}
     };
 
-    class CastRavageAction : public CastMeleeSpellAction {
+    class CastRavageAction : public CastMeleeSpellAction 
+	{
     public:
         CastRavageAction(PlayerbotAI* ai) : CastMeleeSpellAction(ai, "ravage") {}
     };
 
-    class CastPounceAction : public CastMeleeSpellAction {
+    class CastPounceAction : public CastMeleeSpellAction 
+	{
     public:
         CastPounceAction(PlayerbotAI* ai) : CastMeleeSpellAction(ai, "pounce") {}
     };
