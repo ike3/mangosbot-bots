@@ -152,27 +152,41 @@ BotRoles AiFactory::GetPlayerRoles(Player* player)
                 role = BOT_ROLE_DPS;
             break;
         case CLASS_WARRIOR:
-            if (tab == 2)
+            if (tab == 2 || player->HasAura(71)) //Defensive stance
                 role = BOT_ROLE_TANK;
             else
                 role = BOT_ROLE_DPS;
             break;
         case CLASS_PALADIN:
-            if (tab == 0)
-                role = BOT_ROLE_HEALER;
-            else if (tab == 1)
+            if (tab == 1 || player->HasAura(25780)) //Righteous fury
                 role = BOT_ROLE_TANK;
+            else if (tab == 0)
+                role = BOT_ROLE_HEALER;            
             else if (tab == 2)
                 role = BOT_ROLE_DPS;
             break;
         case CLASS_DRUID:
-            if (tab == 0)
+            if (player->HasAura(5487) || player->HasAura(9634)) //Bear form, Dire bear form
+                role = BOT_ROLE_TANK;
+            else if (tab == 1)
                 role = BOT_ROLE_DPS;
             else if (tab == 1)
                 role = (BotRoles)(BOT_ROLE_TANK | BOT_ROLE_DPS);
             else if (tab == 2)
                 role = BOT_ROLE_HEALER;
             break;
+#ifdef MANGOSBOT_TWO
+        case CLASS_DEATHKNIGHT:
+            if (player->HasAura(48263)) //Frost presence
+                role = BOT_ROLE_TANK;
+            else if (tab == 0)
+                role = BOT_ROLE_TANK ;
+            else if (tab == 1)
+                role = (BotRoles)(BOT_ROLE_TANK | BOT_ROLE_DPS);
+            else if (tab == 2)
+                role = BOT_ROLE_DPS;
+            break;
+#endif
         default:
             role = BOT_ROLE_DPS;
             break;
