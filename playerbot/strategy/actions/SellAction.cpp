@@ -47,7 +47,9 @@ public:
 
     virtual bool Visit(Item* item)
     {
-        ItemUsage usage = context->GetValue<ItemUsage>("item usage", item->GetEntry())->Get();
+        RESET_AI_VALUE2(ItemUsage, "item usage", item->GetEntry()); //Recheck if we still want to sell this.
+
+        ItemUsage usage = AI_VALUE2(ItemUsage, "item usage", item->GetEntry());
 
         if (usage != ITEM_USAGE_VENDOR)
             return true;

@@ -58,14 +58,19 @@ bool AhAction::Execute(string text, Unit* auctioneer)
 
         for (auto item : items)
         {
+            ItemPrototype const* proto = item->GetProto();
+
+            RESET_AI_VALUE2(ItemUsage, "item usage", proto->ItemId);
+            if(AI_VALUE2(ItemUsage, "item usage", proto->ItemId) != ITEM_USAGE_AH)
+                continue;
+
             uint32 deposit = AuctionHouseMgr::GetAuctionDeposit(auctionHouseEntry, time, item);
 
+            RESET_AI_VALUE2(uint32, "free money for", (uint32)NeedMoneyFor::ah);
             uint32 freeMoney = AI_VALUE2(uint32, "free money for", (uint32)NeedMoneyFor::ah);
 
             if (deposit > freeMoney)
                 return false;
-
-            ItemPrototype const* proto = item->GetProto();
 
             uint32 price = GetSellPrice(proto);
 
@@ -171,11 +176,11 @@ bool AhBidAction::Execute(string text, Unit* auctioneer)
 
         unordered_map <ItemUsage, int32> freeMoney;
 
-        freeMoney[ITEM_USAGE_EQUIP] = freeMoney[ITEM_USAGE_REPLACE] = freeMoney[ITEM_USAGE_BAD_EQUIP] = AI_VALUE2(uint32, "free money for", (uint32)NeedMoneyFor::gear);
-        freeMoney[ITEM_USAGE_USE] = AI_VALUE2(uint32, "free money for", (uint32)NeedMoneyFor::consumables);
-        freeMoney[ITEM_USAGE_SKILL] = freeMoney[ITEM_USAGE_DISENCHANT] = AI_VALUE2(uint32, "free money for", (uint32)NeedMoneyFor::tradeskill);
-        freeMoney[ITEM_USAGE_AMMO] = AI_VALUE2(uint32, "free money for", (uint32)NeedMoneyFor::ammo);
-        freeMoney[ITEM_USAGE_QUEST] = freeMoney[ITEM_USAGE_AH] = freeMoney[ITEM_USAGE_VENDOR] = freeMoney[ITEM_USAGE_FORCE] = AI_VALUE2(uint32, "free money for", (uint32)NeedMoneyFor::anything);
+        freeMoney[ITEM_USAGE_EQUIP] = freeMoney[ITEM_USAGE_REPLACE] = freeMoney[ITEM_USAGE_BAD_EQUIP] = (uint32)NeedMoneyFor::gear;
+        freeMoney[ITEM_USAGE_USE] = (uint32)NeedMoneyFor::consumables;
+        freeMoney[ITEM_USAGE_SKILL] = freeMoney[ITEM_USAGE_DISENCHANT] =(uint32)NeedMoneyFor::tradeskill;
+        freeMoney[ITEM_USAGE_AMMO] = (uint32)NeedMoneyFor::ammo;
+        freeMoney[ITEM_USAGE_QUEST] = freeMoney[ITEM_USAGE_AH] = freeMoney[ITEM_USAGE_VENDOR] = freeMoney[ITEM_USAGE_FORCE] = (uint32)NeedMoneyFor::anything;
 
         uint32 checkNumAuctions = urand(50, 250);
 
@@ -195,7 +200,7 @@ bool AhBidAction::Execute(string text, Unit* auctioneer)
 
             ItemUsage usage = AI_VALUE2(ItemUsage, "item usage", auction->itemTemplate);
 
-            if (freeMoney.find(usage) == freeMoney.end() || cost > freeMoney[usage])
+            if (freeMoney.find(usage) == freeMoney.end() || cost > AI_VALUE2(uint32, "free money for", freeMoney[usage]))
                 continue;
 
             uint32 power = 1;
@@ -243,7 +248,7 @@ bool AhBidAction::Execute(string text, Unit* auctioneer)
 
             int32 price = std::min(auction->buyout, uint32(std::max(auction->bid, auction->startbid) * frand(1.05f, 1.25f)));
 
-            if (freeMoney.find(usage) == freeMoney.end() || price > freeMoney[usage])
+            if (freeMoney.find(usage) == freeMoney.end() || price > AI_VALUE2(uint32, "free money for", freeMoney[usage]))
                 if (!urand(0, 5))
                     break;
                 else
@@ -257,11 +262,7 @@ bool AhBidAction::Execute(string text, Unit* auctioneer)
             if (!urand(0, 5) || totalcount > 10)
                 break;
 
-            freeMoney[ITEM_USAGE_EQUIP] = freeMoney[ITEM_USAGE_REPLACE] = freeMoney[ITEM_USAGE_BAD_EQUIP] = AI_VALUE2(uint32, "free money for", (uint32)NeedMoneyFor::gear);
-            freeMoney[ITEM_USAGE_USE] = AI_VALUE2(uint32, "free money for", (uint32)NeedMoneyFor::consumables);
-            freeMoney[ITEM_USAGE_SKILL] = freeMoney[ITEM_USAGE_DISENCHANT] = AI_VALUE2(uint32, "free money for", (uint32)NeedMoneyFor::tradeskill);
-            freeMoney[ITEM_USAGE_AMMO] = AI_VALUE2(uint32, "free money for", (uint32)NeedMoneyFor::ammo);
-            freeMoney[ITEM_USAGE_QUEST] = freeMoney[ITEM_USAGE_AH] = freeMoney[ITEM_USAGE_VENDOR] = AI_VALUE2(uint32, "free money for", (uint32)NeedMoneyFor::anything);
+            RESET_AI_VALUE2(uint32, "free money for", freeMoney[usage]);
         }
 
         return bidItems;
@@ -312,7 +313,7 @@ bool AhBidAction::Execute(string text, Unit* auctioneer)
 
     uint32 cost = std::min(auction->buyout, uint32(std::max(auction->bid, auction->startbid) * frand(1.05f, 1.25f)));
 
-    return BidItem(auction, price, auctioneer);
+    return BidItem(auction, cost, auctioneer);
 }
 
 bool AhBidAction::BidItem(AuctionEntry* auction, uint32 price, Unit* auctioneer)
