@@ -161,7 +161,7 @@ namespace ai
 
         virtual bool IsActive()
         {
-            if (!bot->IsInCombat())
+            if (ai->GetState() != BotState::BOT_STATE_COMBAT)
                 return false;
 
             if (ai->HasActivePlayerMaster())
@@ -195,7 +195,7 @@ namespace ai
 
         virtual bool IsActive()
         {
-            if (!bot->IsInCombat())
+            if (ai->GetState() != BotState::BOT_STATE_COMBAT)
                 return false;
 
             if (ai->HasActivePlayerMaster())
