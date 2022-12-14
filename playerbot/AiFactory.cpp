@@ -176,7 +176,7 @@ BotRoles AiFactory::GetPlayerRoles(Player* player)
                 role = BOT_ROLE_HEALER;
             break;
 #ifdef MANGOSBOT_TWO
-        case CLASS_DEATHKNIGHT:
+        case CLASS_DEATH_KNIGHT:
             if (player->HasAura(48263)) //Frost presence
                 role = BOT_ROLE_TANK;
             else if (tab == 0)
