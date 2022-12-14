@@ -14,6 +14,13 @@ namespace ai
         NextAction** GetDefaultNonCombatActions() override;
     };
 
+    class TravelOnceStrategy : public TravelStrategy
+    {
+    public:
+        TravelOnceStrategy(PlayerbotAI* ai) : TravelStrategy(ai) {}
+        string getName() override { return "travel once"; }
+    };
+
     class ExploreStrategy : public Strategy
     {
     public:

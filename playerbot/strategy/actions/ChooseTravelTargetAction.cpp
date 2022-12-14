@@ -31,7 +31,6 @@ bool ChooseTravelTargetAction::Execute(Event& event)
 //
 //Eventually we want to rewrite this to be more intelligent.
 void ChooseTravelTargetAction::getNewTarget(TravelTarget* newTarget, TravelTarget* oldTarget)
-
 {
     bool foundTarget = false;
 
@@ -170,9 +169,12 @@ void ChooseTravelTargetAction::getNewTarget(TravelTarget* newTarget, TravelTarge
 
 void ChooseTravelTargetAction::setNewTarget(TravelTarget* newTarget, TravelTarget* oldTarget)
 {
-    //Tell the master where we are going.
-    //if (!bot->GetGroup() || (ai->GetGroupMaster() == bot))
     ReportTravelTarget(newTarget, oldTarget);
+
+    if(oldTarget->isForced() && oldTarget->getDestination() != newTarget->getDestination())
+        if (ai->HasStrategy("travel once", BotState::BOT_STATE_NON_COMBAT))
+            ai->ChangeStrategy("-travel once", BotState::BOT_STATE_NON_COMBAT);
+
 
     //If we are heading to a creature/npc clear it from the ignore list. 
     if (oldTarget && oldTarget == newTarget && newTarget->getEntry())
