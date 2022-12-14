@@ -86,21 +86,21 @@ bool ReactionEngine::FindReaction()
                                 }
                             }
 
+                            // Process prerequisites
+                            if (!skipReactionPrerequisites)
+                            {
+                                // Add the prerequisites to the queue with a slight higher relevance than this action to be processed in the next iteration
+                                if (MultiplyAndPush(reactionNode->getPrerequisites(), reactionRelevance + 0.02, false, reactionEvent, "prereq"))
+                                {
+                                    // Add this reaction to the queue again to be processed after the prerequisite
+                                    PushAgain(reactionNode, reactionRelevance + 0.01, reactionEvent);
+                                    continue;
+                                }
+                            }
+
                             // Check if the reaction is possible
                             if ((reactionRelevance > 0.0f) && reaction->isPossible())
                             {
-                                // Process prerequisites
-                                if (!skipReactionPrerequisites)
-                                {
-                                    // Add the prerequisites to the queue with a slight higher relevance than this action to be processed in the next iteration
-                                    if (MultiplyAndPush(reactionNode->getPrerequisites(), reactionRelevance + 0.02, false, reactionEvent, "prereq"))
-                                    {
-                                        // Add this reaction to the queue again to be processed after the prerequisite
-                                        PushAgain(reactionNode, reactionRelevance + 0.01, reactionEvent);
-                                        continue;
-                                    }
-                                }
-
                                 // Reaction found
                                 incomingReaction.SetAction(reaction);
                                 incomingReaction.SetEvent(reactionEvent);
@@ -290,4 +290,19 @@ bool ReactionEngine::CanUpdateAIReaction() const
             bot->IsInWorld() &&
            !bot->IsBeingTeleported() &&
            !bot->IsTaxiFlying();
+}
+
+const Reaction* ReactionEngine::GetReaction() const
+{
+    const Reaction* reaction = nullptr;
+    if (ongoingReaction.IsValid())
+    {
+        reaction = &ongoingReaction;
+    }
+    else if (incomingReaction.IsValid())
+    {
+        reaction = &incomingReaction;
+    }
+
+    return reaction;
 }

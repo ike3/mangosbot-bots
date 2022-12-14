@@ -12,8 +12,11 @@ namespace ai
         UseItemAction(PlayerbotAI* ai, string name = "use", bool selfOnly = false) : Action(ai, name), selfOnly(selfOnly) {}
 
     public:
-        virtual bool Execute(Event& event);
-        virtual bool isPossible();
+        virtual bool Execute(Event& event) override;
+        virtual bool isPossible() override;
+
+        // Used when this action is executed as a reaction
+        bool ShouldReactionInterruptCast() const override { return true; }
 
     protected:
         bool UseItemAuto(Item* item);
@@ -33,12 +36,12 @@ namespace ai
     public:
         UseItemIdAction(PlayerbotAI* ai, string name, bool selfOnly = false) : UseItemAction(ai, name, selfOnly) {}
     public:
-        virtual bool Execute(Event& event);
-        virtual bool isPossible();
+        virtual bool Execute(Event& event) override;
+        virtual bool isPossible() override;
 
     protected:
         virtual uint32 GetItemId() { return  0; }
-        virtual Unit* GetTarget() { return nullptr; }
+        virtual Unit* GetTarget() override { return nullptr; }
         bool HasSpellCooldown(const uint32 itemId);
         bool CastItemSpell(uint32 itemId, Unit* target);
         virtual uint32 getDuration() { return sPlayerbotAIConfig.globalCoolDown; };
@@ -48,21 +51,15 @@ namespace ai
     {
     public:
         UseTargetedItemIdAction(PlayerbotAI* ai, string name, bool selfOnly = false) : UseItemIdAction(ai, name, selfOnly) {}
-
-        virtual Unit* GetTarget()
-        {
-            return Action::GetTarget();
-        };
-
-        virtual uint32 GetItemId() { return  0; }
+        virtual Unit* GetTarget() override { return Action::GetTarget(); }
+        virtual uint32 GetItemId() override { return  0; }
     };
 
     class UseSpellItemAction : public UseItemAction 
     {
     public:
         UseSpellItemAction(PlayerbotAI* ai, string name, bool selfOnly = false) : UseItemAction(ai, name, selfOnly) {}
-    public:
-        virtual bool isUseful();
+        virtual bool isUseful() override;
     };
 
     class UsePotionAction : public UseItemIdAction
@@ -72,10 +69,9 @@ namespace ai
 
         bool isUseful() override { return AI_VALUE2(bool, "combat", "self target"); }
 
-        virtual uint32 GetItemId() 
+        virtual uint32 GetItemId() override
         {
             list<Item*> items = AI_VALUE2(list<Item*>, "inventory items", getName());
-
             if (items.empty())
             {
                 return sRandomItemMgr.GetRandomPotion(bot->GetLevel(), effect);
@@ -83,6 +79,7 @@ namespace ai
 
             return items.front()->GetProto()->ItemId;
         }
+
     private:
         SpellEffects effect;
     };
@@ -104,9 +101,12 @@ namespace ai
     public:
         UseHearthStone(PlayerbotAI* ai) : UseItemAction(ai, "hearthstone", true) {}
 
-        bool isUseful() { return !bot->InBattleGround() && sServerFacade.IsSpellReady(bot, 8690); }
-       
-        virtual bool Execute(Event& event);
+        virtual bool Execute(Event& event) override;
+
+        bool isUseful() override { return !bot->InBattleGround() && sServerFacade.IsSpellReady(bot, 8690); }
+    
+        // Used when this action is executed as a reaction
+        bool ShouldReactionInterruptMovement() const override { return true; }
     };
 
     class UseRandomRecipe : public UseItemAction
@@ -114,10 +114,13 @@ namespace ai
     public:
         UseRandomRecipe(PlayerbotAI* ai) : UseItemAction(ai, "random recipe", true) {}
 
-        virtual bool isUseful();
-        virtual bool isPossible() {return AI_VALUE2(uint32,"item count", "recipe") > 0; }
+        virtual bool isUseful() override;
+        virtual bool isPossible() override {return AI_VALUE2(uint32,"item count", "recipe") > 0; }
       
-        virtual bool Execute(Event& event);
+        virtual bool Execute(Event& event) override;
+
+        // Used when this action is executed as a reaction
+        bool ShouldReactionInterruptMovement() const override { return true; }
     };
 
     class UseRandomQuestItem : public UseItemAction
@@ -125,10 +128,13 @@ namespace ai
     public:
         UseRandomQuestItem(PlayerbotAI* ai) : UseItemAction(ai, "random quest item", true) {}
 
-        virtual bool isUseful();
-        virtual bool isPossible() { return AI_VALUE2(uint32, "item count", "quest") > 0;}
+        virtual bool isUseful() override;
+        virtual bool isPossible() override { return AI_VALUE2(uint32, "item count", "quest") > 0;}
 
-        virtual bool Execute(Event& event);
+        virtual bool Execute(Event& event) override;
+
+        // Used when this action is executed as a reaction
+        bool ShouldReactionInterruptMovement() const override { return true; }
     };
 
     // goblin sappers
@@ -136,9 +142,9 @@ namespace ai
     {
     public:
         CastGoblinSappersAction(PlayerbotAI* ai) : UseItemIdAction(ai, "goblin sapper") {}
-        virtual bool isUseful() { return bot->GetSkillValue(202) >= 205 && bot->GetHealth() > 1000; }
+        virtual bool isUseful() override { return bot->GetSkillValue(202) >= 205 && bot->GetHealth() > 1000; }
 
-        virtual uint32 GetItemId() 
+        virtual uint32 GetItemId() override
         { 
 #ifndef MANGOSBOT_ZERO
             if (bot->InArena())
@@ -153,7 +159,7 @@ namespace ai
     {
     public:
         CastOilOfImmolationAction(PlayerbotAI* ai) : UseItemIdAction(ai, "oil of immolation") {}
-        virtual bool isUseful()
+        virtual bool isUseful() override
         {
 #ifndef MANGOSBOT_ZERO
             if (bot->InArena())
@@ -162,7 +168,7 @@ namespace ai
             return bot->GetLevel() >= 31 && !ai->HasAura(11350, bot);
         }
 
-        virtual uint32 GetItemId() { return 8956; }
+        virtual uint32 GetItemId() override { return 8956; }
     };
 
     class UseBgBannerAction : public UseItemIdAction
@@ -170,7 +176,7 @@ namespace ai
     public:
         UseBgBannerAction(PlayerbotAI* ai) : UseItemIdAction(ai, "bg banner") {}
 
-        virtual bool isUseful()
+        virtual bool isUseful() override
         {
             if (!bot->InBattleGround() || bot->GetLevel() < 60 || !bot->IsInCombat())
                 return false;
@@ -192,10 +198,13 @@ namespace ai
             return true;
         }
 
-        virtual uint32 GetItemId()
+        virtual uint32 GetItemId() override
         {
             return bot->GetTeam() == ALLIANCE ? 18606 : 18607;
         }
+
+        // Used when this action is executed as a reaction
+        bool ShouldReactionInterruptMovement() const override { return true; }
     };
 
     class UseBandageAction : public UseTargetedItemIdAction
@@ -203,7 +212,7 @@ namespace ai
     public:
         UseBandageAction(PlayerbotAI* ai) : UseTargetedItemIdAction(ai, "use bandage") {}
 
-        virtual bool isUseful()
+        virtual bool isUseful() override
         {
             if (bot->HasAura(11196))
                 return false;
@@ -217,9 +226,9 @@ namespace ai
             return true;
         }
 
-        virtual string GetTargetName() { return "self target"; }
+        virtual string GetTargetName() override { return "self target"; }
 
-        virtual uint32 GetItemId()
+        virtual uint32 GetItemId() override
         {
             if (bot->GetSkillValue(129) >= 225)
                 return 14530;
@@ -242,6 +251,9 @@ namespace ai
             return 1251;
         }
 
+        // Used when this action is executed as a reaction
+        bool ShouldReactionInterruptMovement() const override { return true; }
+
         virtual uint32 getDuration() { return 8000; };
     };
 
@@ -250,9 +262,9 @@ namespace ai
     public:
         UseAdamantiteGrenadeAction(PlayerbotAI* ai) : UseTargetedItemIdAction(ai, "adamantite grenade") {}
 
-        virtual string GetTargetName() { return "current target"; }
+        virtual string GetTargetName() override { return "current target"; }
 
-        virtual bool isUseful()
+        virtual bool isUseful() override
         {
 #ifndef MANGOSBOT_ZERO
             if (bot->InArena())
@@ -288,7 +300,7 @@ namespace ai
     public:
         DarkRuneAction(PlayerbotAI* ai) : UseItemIdAction(ai, "dark rune") {}
 
-        virtual bool isUseful()
+        virtual bool isUseful() override
         {
 #ifndef MANGOSBOT_ZERO
             if (bot->InArena())
@@ -301,6 +313,6 @@ namespace ai
             return AI_VALUE2(uint8, "health", "self target") > 1000;
         }
 
-        virtual uint32 GetItemId() { return 20520; }
+        virtual uint32 GetItemId() override { return 20520; }
     };
 }

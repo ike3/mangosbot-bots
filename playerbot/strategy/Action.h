@@ -81,8 +81,12 @@ namespace ai
         bool IsReaction() const { return reaction; }
         void SetReaction(bool inReaction) { reaction = inReaction; }
 
+        // Used when this action is executed as a reaction
+        virtual bool ShouldReactionInterruptCast() const { return false; }
+        virtual bool ShouldReactionInterruptMovement() const { return false; }
+
 #ifdef GenerateBotHelp
-        virtual string GetHelpName() { return "dummy"; } //Must equal iternal name
+        virtual string GetHelpName() { return "dummy"; } //Must equal internal name
         virtual string GetHelpDescription() { return "This is an action."; }
         virtual vector<string> GetUsedActions() { return {}; }
         virtual vector<string> GetUsedValues() { return {}; }

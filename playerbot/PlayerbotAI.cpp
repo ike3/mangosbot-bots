@@ -356,16 +356,22 @@ bool PlayerbotAI::UpdateAIReaction(uint32 elapsed, bool minimal)
     const bool reactionInProgress = reactionEngine->Update(elapsed, minimal, reactionFound, reactionFinished);
     if (pmo) pmo->finish();
 
-    // If new reaction found force stop current actions
     if(reactionFound)
     {
-        InterruptSpell();
-        StopMoving();
-    }
-    // If the reaction has finished restart the previous engine
-    else if(reactionFinished)
-    {
-        ReInitCurrentEngine();
+        // If new reaction found force stop current actions (if required)
+        const Reaction* reaction = reactionEngine->GetReaction();
+        if(reaction)
+        {
+            if(reaction->ShouldInterruptCast())
+            {
+                InterruptSpell();
+            }
+
+            if (reaction->ShouldInterruptMovement())
+            {
+                StopMoving();
+            }
+        }
     }
 
     return reactionInProgress;
@@ -2750,10 +2756,6 @@ bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target, Item* itemTarget)
     if (isMoving && ((GetSpellCastTime(pSpellInfo, bot, spell) > 0) || (IsChanneledSpell(pSpellInfo) && (GetSpellDuration(pSpellInfo) > 0))))
     {
         StopMoving();
-        SetAIInternalUpdateDelay(sPlayerbotAIConfig.globalCoolDown);
-        spell->cancel();
-        //delete spell;
-        return false;
     }
 
     SpellCastResult spellSuccess = spell->SpellStart(&targets);

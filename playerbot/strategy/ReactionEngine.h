@@ -19,7 +19,9 @@ namespace ai
         Event& GetEvent() { return event; }
         
         uint32 GetDuration() const { return duration; }
-        void SetDuration(uint32 inDuration) { duration = inDuration;}
+        void SetDuration(uint32 inDuration) { duration = inDuration; }
+        bool ShouldInterruptCast() const { return action ? action->ShouldReactionInterruptCast() : false; }
+        bool ShouldInterruptMovement() const { return action ? action->ShouldReactionInterruptMovement() : false; }
 
     private:
         Event event;
@@ -36,8 +38,8 @@ namespace ai
         bool Update(uint32 elapsed, bool minimal, bool& reactionFound, bool& reactionFinished);
         bool IsReacting() const { return ongoingReaction.IsValid(); }
         bool HasIncomingReaction() const { return incomingReaction.IsValid(); }
-        uint32 GetReactionDuration() const { return ongoingReaction.GetDuration(); }
         void SetReactionDuration(const Action* action, uint32 duration);
+        const Reaction* GetReaction() const;
 
     private:
         bool FindReaction();
