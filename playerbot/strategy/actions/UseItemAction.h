@@ -77,7 +77,7 @@ namespace ai
                 return sRandomItemMgr.GetRandomPotion(bot->GetLevel(), effect);
             }
 
-            return 0;
+            return items.front()->GetProto()->ItemId;
         }
 
     private:
@@ -231,7 +231,7 @@ namespace ai
         virtual uint32 GetItemId() override
         {
             if (bot->GetSkillValue(129) >= 225)
-                return 1530;
+                return 14530;
             if (bot->GetSkillValue(129) >= 200)
                 return 14529;
             if (bot->GetSkillValue(129) >= 175)
