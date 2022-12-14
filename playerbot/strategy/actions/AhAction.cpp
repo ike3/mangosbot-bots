@@ -196,7 +196,7 @@ bool AhBidAction::Execute(string text, Unit* auctioneer)
             if (auction->owner == bot->GetGUIDLow())
                 continue;
 
-            int32 cost = std::min(auction->buyout, uint32(std::max(auction->bid, auction->startbid) * frand(1.05f, 1.25f)));
+            uint32 cost = std::min(auction->buyout, uint32(std::max(auction->bid, auction->startbid) * frand(1.05f, 1.25f)));
 
             ItemUsage usage = AI_VALUE2(ItemUsage, "item usage", auction->itemTemplate);
 
@@ -246,7 +246,7 @@ bool AhBidAction::Execute(string text, Unit* auctioneer)
 
             ItemUsage usage = AI_VALUE2(ItemUsage, "item usage", auction->itemTemplate);
 
-            int32 price = std::min(auction->buyout, uint32(std::max(auction->bid, auction->startbid) * frand(1.05f, 1.25f)));
+            uint32 price = std::min(auction->buyout, uint32(std::max(auction->bid, auction->startbid) * frand(1.05f, 1.25f)));
 
             if (freeMoney.find(usage) == freeMoney.end() || price > AI_VALUE2(uint32, "free money for", freeMoney[usage]))
                 if (!urand(0, 5))
