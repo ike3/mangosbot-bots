@@ -544,8 +544,14 @@ bool UseItemAction::SocketItem(Item* item, Item* gem, bool replace)
 #endif
 
 bool UseItemIdAction::Execute(Event& event)
-{
-    return CastItemSpell(GetItemId(), GetTarget());
+{    
+    if(CastItemSpell(GetItemId(), GetTarget()))
+    {
+        SetDuration(getDuration());
+        return true;
+    }
+
+    return false;
 }
 
 bool UseItemIdAction::isPossible()
@@ -661,6 +667,7 @@ bool UseItemIdAction::CastItemSpell(uint32 itemId, Unit* target)
         if (!result)
             return false;
 
+        bot->RemoveSpellCooldown(*spellInfo, false);
         bot->AddCooldown(*spellInfo, proto, false);
 
         ++count;

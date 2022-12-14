@@ -44,6 +44,7 @@ namespace ai
         virtual Unit* GetTarget() override { return nullptr; }
         bool HasSpellCooldown(const uint32 itemId);
         bool CastItemSpell(uint32 itemId, Unit* target);
+        virtual uint32 getDuration() { return sPlayerbotAIConfig.globalCoolDown; };
     };
 
     class UseTargetedItemIdAction : public UseItemIdAction
@@ -252,6 +253,8 @@ namespace ai
 
         // Used when this action is executed as a reaction
         bool ShouldReactionInterruptMovement() const override { return true; }
+
+        virtual uint32 getDuration() { return 8000; };
     };
 
     class UseAdamantiteGrenadeAction : public UseTargetedItemIdAction
