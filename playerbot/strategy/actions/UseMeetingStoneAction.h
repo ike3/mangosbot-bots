@@ -1,6 +1,4 @@
 #pragma once
-
-#include "../Action.h"
 #include "MovementActions.h"
 
 namespace ai
@@ -9,7 +7,7 @@ namespace ai
     {
     public:
         SummonAction(PlayerbotAI* ai, string name = "summon") : MovementAction(ai, name) {}
-
+        bool isPossible() override { return true; }
         virtual bool Execute(Event& event);
 
     protected:
@@ -22,7 +20,6 @@ namespace ai
     {
     public:
         UseMeetingStoneAction(PlayerbotAI* ai) : SummonAction(ai, "use meeting stone") {}
-
         virtual bool Execute(Event& event);
     };
 
@@ -30,7 +27,6 @@ namespace ai
     {
     public:
         AcceptSummonAction(PlayerbotAI* ai) : Action(ai, "accept summon") {}
-
         virtual bool Execute(Event& event);
     };
 }
