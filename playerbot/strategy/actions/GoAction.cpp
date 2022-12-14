@@ -55,6 +55,9 @@ bool GoAction::Execute(Event& event)
             ostringstream out; out << "Traveling to " << dest->getTitle();
             ai->TellMasterNoFacing(out.str());
 
+            if(!ai->HasStrategy("travel", BotState::BOT_STATE_NON_COMBAT))
+                ai->ChangeStrategy("+travel once", BotState::BOT_STATE_NON_COMBAT);
+
             return true;
         }
         else

@@ -13,8 +13,9 @@ namespace ai
         SeeSpellAction(PlayerbotAI* ai, string name = "see spell") : MovementAction(ai, name) {}
         virtual bool Execute(Event& event);
 
+        virtual bool isPossible() {return true;};
+
         bool SelectSpell(WorldPosition& spellPosition);
-        bool MoveSpell(WorldPosition& spellPosition);
 
         virtual bool MoveToSpell(WorldPosition& spellPosition, bool inFormation = true);
         void SetFormationOffset(WorldPosition& spellPosition);

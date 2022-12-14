@@ -90,6 +90,7 @@ namespace ai
             creators["rpg player"] = &StrategyContext::rpg_player;
             creators["rpg craft"] = &StrategyContext::rpg_craft;
 			creators["travel"] = &StrategyContext::travel;
+            creators["travel once"] = &StrategyContext::travel_once;
             creators["explore"] = &StrategyContext::explore;
             creators["map"] = &StrategyContext::map;
             creators["map full"] = &StrategyContext::map_full;
@@ -185,6 +186,7 @@ namespace ai
         static Strategy* rpg_player(PlayerbotAI* ai) { return new RpgPlayerStrategy(ai); }
         static Strategy* rpg_craft(PlayerbotAI* ai) { return new RpgCraftStrategy(ai); }
 		static Strategy* travel(PlayerbotAI* ai) { return new TravelStrategy(ai); }
+        static Strategy* travel_once(PlayerbotAI* ai) { return new TravelOnceStrategy(ai); }
         static Strategy* explore(PlayerbotAI* ai) { return new ExploreStrategy(ai); }
         static Strategy* map(PlayerbotAI* ai) { return new MapStrategy(ai); }
         static Strategy* map_full(PlayerbotAI* ai) { return new MapFullStrategy(ai); }
