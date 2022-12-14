@@ -555,16 +555,51 @@ bool UseItemIdAction::Execute(Event& event)
 
 bool UseItemIdAction::isPossible()
 {
-    if (uint32 itemId = GetItemId())
-    {
-        if (HasSpellCooldown(itemId))
-            return false;
+    uint32 itemId = GetItemId();
 
-        if (!bot->HasItemCount(itemId, 1) && !ai->HasCheat(BotCheatMask::item))
-            return false;
+    if (!itemId)
+        return false;
+
+    ItemPrototype const* proto = sObjectMgr.GetItemPrototype(itemId);
+
+    if (!proto)
+        return false;
+
+    if (HasSpellCooldown(itemId))
+        return false;
+
+    if (!bot->HasItemCount(itemId, 1) && !ai->HasCheat(BotCheatMask::item))
+        return false;
+
+    uint32 spellCount = 0;
+
+    for (int i = 0; i < MAX_ITEM_PROTO_SPELLS; ++i)
+    {
+        _Spell const& spellData = proto->Spells[i];
+
+        // no spell
+        if (!spellData.SpellId)
+            continue;
+
+        // wrong triggering type
+#ifdef MANGOSBOT_ZERO
+        if (spellData.SpellTrigger != ITEM_SPELLTRIGGER_ON_USE && spellData.SpellTrigger != ITEM_SPELLTRIGGER_ON_NO_DELAY_USE)
+#else
+        if (spellData.SpellTrigger != ITEM_SPELLTRIGGER_ON_USE)
+#endif
+            continue;
+
+        SpellEntry const* spellInfo = sSpellTemplate.LookupEntry<SpellEntry>(spellData.SpellId);
+        if (!spellInfo)
+        {
+            continue;
+        }
+
+        spellCount++;
+
     }
 
-    return true;
+    return spellCount;
 }
 
 bool UseItemIdAction::HasSpellCooldown(const uint32 itemId)
@@ -645,7 +680,6 @@ bool UseItemIdAction::CastItemSpell(uint32 itemId, Unit* target)
         SpellEntry const* spellInfo = sSpellTemplate.LookupEntry<SpellEntry>(spellData.SpellId);
         if (!spellInfo)
         {
-            sLog.outError("Player::CastItemUseSpell: Item (Entry: %u) in have wrong spell id %u, ignoring", proto->ItemId, spellData.SpellId);
             continue;
         }
 
