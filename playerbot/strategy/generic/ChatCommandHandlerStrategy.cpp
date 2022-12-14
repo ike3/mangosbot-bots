@@ -96,7 +96,7 @@ ChatCommandHandlerStrategy::ChatCommandHandlerStrategy(PlayerbotAI* ai) : PassTr
     supported.push_back("keep");
 }
 
-void ChatCommandHandlerStrategy::InitNonCombatTriggers(std::list<TriggerNode*> &triggers)
+void ChatCommandHandlerStrategy::InitReactionTriggers(std::list<TriggerNode*> &triggers)
 {
     PassTroughStrategy::InitNonCombatTriggers(triggers);
 
@@ -112,7 +112,9 @@ void ChatCommandHandlerStrategy::InitNonCombatTriggers(std::list<TriggerNode*> &
 
     triggers.push_back(new TriggerNode(
         "add all loot",
-        NextAction::array(0, new NextAction("add all loot", relevance), new NextAction("loot", relevance), NULL)));
+        NextAction::array(0, 
+            new NextAction("add all loot", relevance), 
+            new NextAction("loot", relevance), NULL)));
 
     triggers.push_back(new TriggerNode(
         "u",
@@ -233,14 +235,4 @@ void ChatCommandHandlerStrategy::InitNonCombatTriggers(std::list<TriggerNode*> &
     triggers.push_back(new TriggerNode(
         "ready",
         NextAction::array(0, new NextAction("ready check", relevance), NULL)));
-}
-
-void ChatCommandHandlerStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
-{
-    InitNonCombatTriggers(triggers);
-}
-
-void ChatCommandHandlerStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
-{
-    InitNonCombatTriggers(triggers);
 }
