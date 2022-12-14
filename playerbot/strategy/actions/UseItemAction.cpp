@@ -557,9 +557,11 @@ bool UseItemIdAction::isPossible()
 
         if (!bot->HasItemCount(itemId, 1) && !ai->HasCheat(BotCheatMask::item))
             return false;
+
+        return true;
     }
 
-    return true;
+    return false;
 }
 
 bool UseItemIdAction::HasSpellCooldown(const uint32 itemId)
