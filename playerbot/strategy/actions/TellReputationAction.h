@@ -1,16 +1,14 @@
 #pragma once
-
-#include "../Action.h"
+#include "GenericActions.h"
 
 namespace ai
 {
-    class TellReputationAction : public Action {
+    class TellReputationAction : public ChatCommandAction
+    {
     public:
-        TellReputationAction(PlayerbotAI* ai) : Action(ai, "reputation") {}
-        virtual bool Execute(Event& event);
+        TellReputationAction(PlayerbotAI* ai) : ChatCommandAction(ai, "reputation") {}
 
     private:
-
+        bool ExecuteCommand(Event& event) override;
     };
-
 }

@@ -10,7 +10,7 @@
 
 using namespace ai;
 
-bool UseItemAction::Execute(Event& event)
+bool UseItemAction::ExecuteCommand(Event& event)
 {
    string name = event.getParam();
    if (name.empty())
@@ -543,7 +543,7 @@ bool UseItemAction::SocketItem(Item* item, Item* gem, bool replace)
 }
 #endif
 
-bool UseItemIdAction::Execute(Event& event)
+bool UseItemIdAction::ExecuteCommand(Event& event)
 {    
     if(CastItemSpell(GetItemId(), GetTarget()))
     {
@@ -713,7 +713,7 @@ bool UseSpellItemAction::isUseful()
    return AI_VALUE2(bool, "spell cast useful", getName());
 }
 
-bool UseHearthStone::Execute(Event& event)
+bool UseHearthStoneAction::ExecuteCommand(Event& event)
 {
     if (bot->IsMoving())
     {
@@ -729,23 +729,22 @@ bool UseHearthStone::Execute(Event& event)
         bot->GetSession()->HandleCancelMountAuraOpcode(emptyPacket);
     }
 
-    const bool used = UseItemAction::Execute(event);
+    const bool used = UseItemAction::ExecuteCommand(event);
     if (used)
     {
         RESET_AI_VALUE(bool, "combat::self target");
         RESET_AI_VALUE(WorldPosition, "current position");
-        SetDuration(10000U); // 10s
     }
 
     return used;
 }
 
-bool UseRandomRecipe::isUseful()
+bool UseRandomRecipeAction::isUseful()
 {
    return !bot->IsInCombat() && !ai->HasActivePlayerMaster() && !bot->InBattleGround();
 }
 
-bool UseRandomRecipe::Execute(Event& event)
+bool UseRandomRecipeAction::ExecuteCommand(Event& event)
 {
     list<Item*> recipes = AI_VALUE2(list<Item*>, "inventory items", "recipe");   
     string recipeName = "";
@@ -757,22 +756,15 @@ bool UseRandomRecipe::Execute(Event& event)
     if (recipeName.empty())
         return false;
 
-    Event useItemEvent = Event(name, recipeName);
-    const bool used = UseItemAction::Execute(useItemEvent);
-    if (used)
-    {
-        SetDuration(3000U); // 3s
-    }
-
-    return used;
+    return UseItemAction::ExecuteCommand(Event(name, recipeName));
 }
 
-bool UseRandomQuestItem::isUseful()
+bool UseRandomQuestItemAction::isUseful()
 {
     return !ai->HasActivePlayerMaster() && !bot->InBattleGround() && !bot->IsTaxiFlying();
 }
 
-bool UseRandomQuestItem::Execute(Event& event)
+bool UseRandomQuestItemAction::ExecuteCommand(Event& event)
 {
     Unit* unitTarget = nullptr;
     ObjectGuid goTarget = ObjectGuid();

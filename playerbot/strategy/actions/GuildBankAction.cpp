@@ -9,7 +9,7 @@
 using namespace std;
 using namespace ai;
 
-bool GuildBankAction::Execute(Event& event)
+bool GuildBankAction::ExecuteCommand(Event& event)
 {
 #ifndef MANGOSBOT_ZERO
     string text = event.getParam();
@@ -29,7 +29,7 @@ bool GuildBankAction::Execute(Event& event)
         if (!go || !bot->GetGameObjectIfCanInteractWith(go->GetObjectGuid(), GAMEOBJECT_TYPE_GUILD_BANK))
             continue;
 
-        return Execute(text, go);
+        return ExecuteCommand(text, go);
     }
 
     ai->TellMaster(BOT_TEXT("error_gbank_found"));
@@ -39,7 +39,7 @@ bool GuildBankAction::Execute(Event& event)
 #endif
 }
 
-bool GuildBankAction::Execute(string text, GameObject* bank)
+bool GuildBankAction::ExecuteCommand(string text, GameObject* bank)
 {
     bool result = true;
 

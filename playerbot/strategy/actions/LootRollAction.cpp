@@ -6,7 +6,7 @@
 
 using namespace ai;
 
-bool LootStartRollAction::Execute(Event& event)
+bool LootStartRollAction::ExecuteCommand(Event& event)
 {
     WorldPacket p(event.getPacket()); //WorldPacket packet for CMSG_LOOT_ROLL, (8+4+1)
     ObjectGuid creatureGuid;
@@ -45,7 +45,7 @@ bool LootStartRollAction::Execute(Event& event)
     return false;
 }
 
-bool RollAction::Execute(Event& event)
+bool RollAction::ExecuteCommand(Event& event)
 {      
     string text = event.getParam();
 
@@ -178,7 +178,7 @@ bool RollAction::RollOnItemInSlot(RollVote vote, ObjectGuid lootGuid, uint32 slo
     return didRoll;
 }
 
-bool LootRollAction::Execute(Event& event)
+bool LootRollAction::ExecuteCommand(Event& event)
 {
     Player* bot = QueryItemUsageAction::ai->GetBot();
 
@@ -201,7 +201,7 @@ bool LootRollAction::Execute(Event& event)
     return RollOnItemInSlot(vote, guid, slot);
 }
 
-bool AutoLootRollAction::Execute(Event& event)
+bool AutoLootRollAction::ExecuteCommand(Event& event)
 {
     LootRollMap lootRolls = AI_VALUE(LootRollMap, "active rolls");
 

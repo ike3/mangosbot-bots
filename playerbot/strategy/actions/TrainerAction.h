@@ -1,15 +1,13 @@
 #pragma once
-
-#include "../Action.h"
+#include "GenericActions.h"
 
 namespace ai
 {
-	class TrainerAction : public Action {
+	class TrainerAction : public ChatCommandAction
+    {
 	public:
-		TrainerAction(PlayerbotAI* ai) : Action(ai, "trainer") {}
-
-    public:
-        virtual bool Execute(Event& event);
+		TrainerAction(PlayerbotAI* ai) : ChatCommandAction(ai, "trainer") {}
+        virtual bool ExecuteCommand(Event& event) override;
 
     private:
         typedef void (TrainerAction::*TrainerSpellAction)(uint32, TrainerSpell const*, ostringstream& msg);
@@ -18,5 +16,4 @@ namespace ai
         void TellHeader(Creature* creature);
         void TellFooter(uint32 totalCost);
     };
-
 }

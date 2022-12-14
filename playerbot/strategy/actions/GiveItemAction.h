@@ -9,7 +9,7 @@ namespace ai
     {
     public:
         GiveItemAction(PlayerbotAI* ai, string name, string item) : InventoryAction(ai, name), item(item) {}
-        virtual bool Execute(Event& event);
+        virtual bool ExecuteCommand(Event& event) override;
         virtual bool isUseful() { return GetTarget() && AI_VALUE2(uint8, "mana", "self target") > sPlayerbotAIConfig.lowMana; }
         virtual Unit* GetTarget();
 
@@ -48,5 +48,4 @@ namespace ai
             return !isRandomBot || (isRandomBot && !sPlayerbotAIConfig.freeFood);
         }
     };
-
 }

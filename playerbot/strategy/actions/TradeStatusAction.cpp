@@ -14,9 +14,7 @@
 
 using namespace ai;
 
-
-
-bool TradeStatusAction::Execute(Event& event)
+bool TradeStatusAction::ExecuteCommand(Event& event)
 {
     Player* trader = bot->GetTrader();
     Player* master = GetMaster();

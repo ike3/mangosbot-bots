@@ -6,7 +6,7 @@
 
 using namespace ai;
 
-bool TaxiAction::Execute(Event& event)
+bool TaxiAction::ExecuteCommand(Event& event)
 {
     ai->RemoveShapeshift();
 

@@ -3,11 +3,11 @@
 #include "LootStrategyAction.h"
 #include "../values/LootStrategyValue.h"
 #include "LootAction.h"
+#include "PlayerbotAIAware.h"
 
 using namespace ai;
 
-
-bool LootStrategyAction::Execute(Event& event)
+bool LootStrategyAction::ExecuteCommand(Event& event)
 {
     string strategy = event.getParam();
 

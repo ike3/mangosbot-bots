@@ -6,7 +6,7 @@
 
 using namespace ai;
 
-bool TradeAction::Execute(Event& event)
+bool TradeAction::ExecuteCommand(Event& event)
 {
     string text = event.getParam();
 

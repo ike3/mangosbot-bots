@@ -1,26 +1,20 @@
 #pragma once
-
-#include "../Action.h"
 #include "MovementActions.h"
+#include "GenericActions.h"
 
 namespace ai
 {
-    class PositionAction : public Action
+    class PositionAction : public ChatCommandAction
     {
     public:
-        PositionAction(PlayerbotAI* ai) : Action(ai, "position")
-        {}
-
-        virtual bool Execute(Event& event);
+        PositionAction(PlayerbotAI* ai) : ChatCommandAction(ai, "position") {}
+        virtual bool ExecuteCommand(Event& event) override;
     };
 
     class MoveToPositionAction : public MovementAction
     {
     public:
-        MoveToPositionAction(PlayerbotAI* ai, string name, string qualifier, bool idle = false) :
-            MovementAction(ai, name), qualifier(qualifier), idle(idle)
-        {}
-
+        MoveToPositionAction(PlayerbotAI* ai, string name, string qualifier, bool idle = false) : MovementAction(ai, name), qualifier(qualifier), idle(idle) {}
         virtual bool Execute(Event& event);
         virtual bool isUseful();
 
@@ -38,9 +32,7 @@ namespace ai
     class SetReturnPositionAction : public Action
     {
     public:
-        SetReturnPositionAction(PlayerbotAI* ai) : Action(ai, "set return position")
-        {}
-
+        SetReturnPositionAction(PlayerbotAI* ai) : Action(ai, "set return position") {}
         virtual bool Execute(Event& event);
         virtual bool isUseful();
     };
@@ -49,7 +41,6 @@ namespace ai
     {
     public:
         ReturnAction(PlayerbotAI* ai) : MoveToPositionAction(ai, "return", "return", true) {}
-
         virtual bool isUseful();
     };
 
@@ -57,7 +48,6 @@ namespace ai
     {
     public:
         ReturnToStayPositionAction(PlayerbotAI* ai) : MoveToPositionAction(ai, "move to position", "stay position") {}
-
         virtual bool isPossible();
     };
 }

@@ -1,14 +1,14 @@
 #pragma once
-
-#include "../Action.h"
+#include "GenericActions.h"
 
 namespace ai
 {
-    class CheatAction : public Action
+    class CheatAction : public ChatCommandAction
     {
     public:
-        CheatAction(PlayerbotAI* ai) : Action(ai, "cheat") {}
-        virtual bool Execute(Event& event);
+        CheatAction(PlayerbotAI* ai) : ChatCommandAction(ai, "cheat") {}
+        virtual bool ExecuteCommand(Event& event) override;
+
     private:
         static BotCheatMask GetCheatMask(string cheat);
         static string GetCheatName(BotCheatMask cheatMask);

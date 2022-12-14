@@ -1,6 +1,4 @@
 #pragma once
-
-#include "../Action.h"
 #include "InventoryAction.h"
 
 namespace ai
@@ -9,10 +7,10 @@ namespace ai
     {
     public:
         AhAction(PlayerbotAI* ai, string name = "ah") : InventoryAction(ai, name) {}
-        virtual bool Execute(Event& event);        
+        virtual bool ExecuteCommand(Event& event) override;
 
     private:
-        virtual bool Execute(string text, Unit* auctioneer);
+        virtual bool ExecuteCommand(string text, Unit* auctioneer);
         bool PostItem(Item* item, uint32 price, Unit* auctioneer, uint32 time);
 #ifdef GenerateBotHelp
         virtual string GetHelpName() { return "ah"; } //Must equal iternal name
@@ -50,7 +48,7 @@ namespace ai
         virtual vector<string> GetUsedValues() { return { "nearest npcs", "item usage", "free money for" }; }
 #endif 
     private:
-        virtual bool Execute(string text, Unit* auctioneer);
+        virtual bool ExecuteCommand(string text, Unit* auctioneer);
         bool BidItem(AuctionEntry* auction, uint32 price, Unit* auctioneer);
     };
 }

@@ -6,7 +6,7 @@
 
 using namespace ai;
 
-bool RepairAllAction::Execute(Event& event)
+bool RepairAllAction::ExecuteCommand(Event& event)
 {
     list<ObjectGuid> npcs = AI_VALUE(list<ObjectGuid>, "nearest npcs");
     for (list<ObjectGuid>::iterator i = npcs.begin(); i != npcs.end(); i++)

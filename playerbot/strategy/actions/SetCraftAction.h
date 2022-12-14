@@ -1,16 +1,14 @@
 #pragma once
-
-#include "../Action.h"
 #include "../values/CraftValue.h"
+#include "GenericActions.h"
 
 namespace ai
 {
-    class SetCraftAction : public Action {
+    class SetCraftAction : public ChatCommandAction
+    {
     public:
-        SetCraftAction(PlayerbotAI* ai) : Action(ai, "craft") {}
-        virtual bool Execute(Event& event);
-
-    public:
+        SetCraftAction(PlayerbotAI* ai) : ChatCommandAction(ai, "craft") {}
+        virtual bool ExecuteCommand(Event& event) override;
         static uint32 GetCraftFee(CraftData&);
 
     private:
@@ -18,7 +16,5 @@ namespace ai
 
     private:
         static map<uint32, SkillLineAbilityEntry const*> skillSpells;
-
     };
-
 }

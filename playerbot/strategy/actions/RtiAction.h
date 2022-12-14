@@ -1,16 +1,13 @@
 #pragma once
-
-#include "../Action.h"
+#include "GenericActions.h"
 
 namespace ai
 {
-    class RtiAction : public Action
+    class RtiAction : public ChatCommandAction
     {
     public:
-        RtiAction(PlayerbotAI* ai) : Action(ai, "rti")
-        {}
-
-        virtual bool Execute(Event& event);
+        RtiAction(PlayerbotAI* ai) : ChatCommandAction(ai, "rti") {}
+        virtual bool ExecuteCommand(Event& event) override;
 
     private:
         void AppendRti(ostringstream & out, string type);
@@ -19,10 +16,7 @@ namespace ai
     class MarkRtiAction : public Action
     {
     public:
-        MarkRtiAction(PlayerbotAI* ai) : Action(ai, "mark rti")
-        {}
-
+        MarkRtiAction(PlayerbotAI* ai) : Action(ai, "mark rti") {}
         virtual bool Execute(Event& event);
     };
-
 }

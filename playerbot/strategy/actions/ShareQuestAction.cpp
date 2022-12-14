@@ -2,10 +2,9 @@
 #include "../../playerbot.h"
 #include "ShareQuestAction.h"
 
-
 using namespace ai;
 
-bool ShareQuestAction::Execute(Event& event)
+bool ShareQuestAction::ExecuteCommand(Event& event)
 {
     string link = event.getParam();
     if (!GetMaster())

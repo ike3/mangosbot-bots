@@ -6,7 +6,7 @@
 
 using namespace ai;
 
-bool GossipHelloAction::Execute(Event& event)
+bool GossipHelloAction::ExecuteCommand(Event& event)
 {
 	ObjectGuid guid;
 

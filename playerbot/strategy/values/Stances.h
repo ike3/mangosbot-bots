@@ -43,11 +43,11 @@ namespace ai
         virtual bool Load(string value);
     };
 
-    class SetStanceAction : public Action
+    class SetStanceAction : public ChatCommandAction
     {
     public:
-        SetStanceAction(PlayerbotAI* ai) : Action(ai, "set Stance") {}
-        virtual bool Execute(Event& event);
+        SetStanceAction(PlayerbotAI* ai) : ChatCommandAction(ai, "set Stance") {}
+        virtual bool ExecuteCommand(Event& event) override;
     };
 };
 

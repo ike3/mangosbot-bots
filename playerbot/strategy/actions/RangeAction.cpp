@@ -5,7 +5,7 @@
 
 using namespace ai;
 
-bool RangeAction::Execute(Event& event)
+bool RangeAction::ExecuteCommand(Event& event)
 {
     string param = event.getParam();
     if (param == "?")

@@ -5,10 +5,9 @@
 #include "../../ServerFacade.h"
 #include "ThreatManager.h"
 
-
 using namespace ai;
 
-bool TellTargetAction::Execute(Event& event)
+bool TellTargetAction::ExecuteCommand(Event& event)
 {
     Unit* target = context->GetValue<Unit*>("current target")->Get();
     if (target)
@@ -22,7 +21,7 @@ bool TellTargetAction::Execute(Event& event)
     return true;
 }
 
-bool TellAttackersAction::Execute(Event& event)
+bool TellAttackersAction::ExecuteCommand(Event& event)
 {
     ai->TellMaster("--- Attackers ---");
 
@@ -55,7 +54,7 @@ bool TellAttackersAction::Execute(Event& event)
     return true;
 }
 
-bool TellPossibleAttackTargetsAction::Execute(Event& event)
+bool TellPossibleAttackTargetsAction::ExecuteCommand(Event& event)
 {
     ai->TellMaster("--- Attack Targets ---");
 

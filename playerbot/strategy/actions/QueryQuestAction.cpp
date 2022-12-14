@@ -3,7 +3,6 @@
 #include "QueryQuestAction.h"
 #include "../../TravelMgr.h"
 
-
 using namespace ai;
 
 void QueryQuestAction::TellObjective(string name, int available, int required)
@@ -11,7 +10,7 @@ void QueryQuestAction::TellObjective(string name, int available, int required)
     ai->TellMaster(chat->formatQuestObjective(name, available, required), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
 }
 
-bool QueryQuestAction::Execute(Event& event)
+bool QueryQuestAction::ExecuteCommand(Event& event)
 {
     Player *bot = ai->GetBot();
     WorldPosition botPos(bot);

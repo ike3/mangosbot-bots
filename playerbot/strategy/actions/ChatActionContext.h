@@ -278,6 +278,4 @@ namespace ai
         static Action* guild_leave(PlayerbotAI* ai) { return new GuildLeaveAction(ai); }
         static Action* guild_leader(PlayerbotAI* ai) { return new GuildLeaderAction(ai); }
     };
-
-
 };

@@ -1,14 +1,13 @@
 #pragma once
-
-#include "../Action.h"
 #include "InventoryAction.h"
 
 namespace ai
 {
-    class KeepItemAction : public InventoryAction {
+    class KeepItemAction : public InventoryAction 
+    {
     public:
         KeepItemAction(PlayerbotAI* ai, string name = "keep") : InventoryAction(ai, name) {}
-        virtual bool Execute(Event& event);
+        virtual bool ExecuteCommand(Event& event) override;
 
         unordered_map<ForceItemUsage, string> keepName = {
         {ForceItemUsage::FORCE_USAGE_NONE, "do not keep"},

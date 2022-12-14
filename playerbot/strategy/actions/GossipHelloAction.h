@@ -1,18 +1,17 @@
 #pragma once
-
-#include "../Action.h"
+#include "GenericActions.h"
 
 namespace ai
 {
-    class GossipHelloAction : public Action {
+    class GossipHelloAction : public ChatCommandAction
+    {
     public:
-        GossipHelloAction(PlayerbotAI* ai) : Action(ai, "gossip hello") {}
-        virtual bool Execute(Event& event);
+        GossipHelloAction(PlayerbotAI* ai) : ChatCommandAction(ai, "gossip hello") {}
+        virtual bool ExecuteCommand(Event& event) override;
 
     private:
         void TellGossipMenus();
         bool ProcessGossip(int menuToSelect);
         void TellGossipText(uint32 textId);
     };
-
 }

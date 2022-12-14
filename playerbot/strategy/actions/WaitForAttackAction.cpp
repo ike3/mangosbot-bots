@@ -5,7 +5,7 @@
 
 using namespace ai;
 
-bool WaitForAttackSetTimeAction::Execute(Event& event)
+bool WaitForAttackSetTimeAction::ExecuteCommand(Event& event)
 {
     string newTimeStr = event.getParam();
     if (!newTimeStr.empty())

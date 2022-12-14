@@ -6,7 +6,7 @@
 
 using namespace ai;
 
-HelpAction::HelpAction(PlayerbotAI* ai) : Action(ai, "help")
+HelpAction::HelpAction(PlayerbotAI* ai) : ChatCommandAction(ai, "help")
 {
     chatContext = new ChatActionContext();
 }
@@ -16,20 +16,23 @@ HelpAction::~HelpAction()
     delete chatContext;
 }
 
-bool HelpAction::Execute(Event& event)
+bool HelpAction::ExecuteCommand(Event& event)
 {
     string param = event.getParam();
     string helpTopic;
     if(param.find("Hvalue:help") != string::npos)
+    {
         helpTopic = ChatHelper::parseValue("help",param);
+    }
     else if (param.find("[h:") != string::npos)
     {
         helpTopic = param.substr(3,param.size()-4);
     }
 
     if (helpTopic.empty())
+    {
         helpTopic = "help:main";
-
+    }
 
     ostringstream out;
     string helpTekst = sPlayerbotHelpMgr.GetBotText(helpTopic);

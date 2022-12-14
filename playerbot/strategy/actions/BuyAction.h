@@ -1,14 +1,13 @@
 #pragma once
-
-#include "../Action.h"
 #include "InventoryAction.h"
 
 namespace ai
 {
-    class BuyAction : public InventoryAction {
+    class BuyAction : public InventoryAction 
+    {
     public:
         BuyAction(PlayerbotAI* ai) : InventoryAction(ai, "buy") {}
-        virtual bool Execute(Event& event);
+        virtual bool ExecuteCommand(Event& event) override;
 
     private:
         bool BuyItem(VendorItemData const* tItems, ObjectGuid vendorguid, const ItemPrototype* proto);

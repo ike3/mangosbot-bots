@@ -1,13 +1,12 @@
 #pragma once
-
-#include "../Action.h"
+#include "GenericActions.h"
 
 namespace ai
 {
-    class ShareQuestAction : public Action {
+    class ShareQuestAction : public ChatCommandAction
+    {
     public:
-        ShareQuestAction(PlayerbotAI* ai) : Action(ai, "share quest") {}
-        virtual bool Execute(Event& event);
+        ShareQuestAction(PlayerbotAI* ai) : ChatCommandAction(ai, "share quest") {}
+        virtual bool ExecuteCommand(Event& event) override;
     };
-
 }

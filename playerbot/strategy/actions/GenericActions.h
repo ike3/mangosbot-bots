@@ -74,4 +74,15 @@ namespace ai
             return false;
         }
     };
+
+    class ChatCommandAction : public Action
+    {
+    public:
+        ChatCommandAction(PlayerbotAI* ai, string name) : Action(ai, name) {}
+        bool Execute(Event& event) override final;
+
+    protected:
+        virtual bool ExecuteCommand(Event& event) = 0;
+        virtual uint32 getDuration() const { return sPlayerbotAIConfig.globalCoolDown; }
+    };
 }

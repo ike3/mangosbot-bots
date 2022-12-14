@@ -1,27 +1,26 @@
 #pragma once
-
-#include "../Action.h"
+#include "GenericActions.h"
 
 namespace ai
 {
-    class TellTargetAction : public Action
+    class TellTargetAction : public ChatCommandAction
     {
     public:
-        TellTargetAction(PlayerbotAI* ai) : Action(ai, "tell target") {}
-        virtual bool Execute(Event& event);
+        TellTargetAction(PlayerbotAI* ai) : ChatCommandAction(ai, "tell target") {}
+        virtual bool ExecuteCommand(Event& event) override;
     };
 
-    class TellAttackersAction : public Action
+    class TellAttackersAction : public ChatCommandAction
     {
     public:
-        TellAttackersAction(PlayerbotAI* ai) : Action(ai, "tell attackers") {}
-        virtual bool Execute(Event& event);
+        TellAttackersAction(PlayerbotAI* ai) : ChatCommandAction(ai, "tell attackers") {}
+        virtual bool ExecuteCommand(Event& event) override;
     };
 
-    class TellPossibleAttackTargetsAction : public Action
+    class TellPossibleAttackTargetsAction : public ChatCommandAction
     {
     public:
-        TellPossibleAttackTargetsAction(PlayerbotAI* ai) : Action(ai, "tell possible attack targets") {}
-        virtual bool Execute(Event& event);
+        TellPossibleAttackTargetsAction(PlayerbotAI* ai) : ChatCommandAction(ai, "tell possible attack targets") {}
+        virtual bool ExecuteCommand(Event& event) override;
     };
 }

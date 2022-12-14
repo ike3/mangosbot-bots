@@ -1,52 +1,41 @@
 #pragma once
-
-#include "../Action.h"
+#include "GenericActions.h"
 
 namespace ai
 {
-	class ChangeCombatStrategyAction : public Action 
+	class ChangeCombatStrategyAction : public ChatCommandAction
     {
 	public:
-		ChangeCombatStrategyAction(PlayerbotAI* ai, string name = "co") : Action(ai, name) {}
-
-    public:
-        virtual bool Execute(Event& event);
+		ChangeCombatStrategyAction(PlayerbotAI* ai, string name = "co") : ChatCommandAction(ai, name) {}
+        virtual bool ExecuteCommand(Event& event) override;
     };
 
-    class ChangeNonCombatStrategyAction : public Action 
+    class ChangeNonCombatStrategyAction : public ChatCommandAction
     {
     public:
-        ChangeNonCombatStrategyAction(PlayerbotAI* ai) : Action(ai, "nc") {}
-
-    public:
-        virtual bool Execute(Event& event);
+        ChangeNonCombatStrategyAction(PlayerbotAI* ai) : ChatCommandAction(ai, "nc") {}
+        virtual bool ExecuteCommand(Event& event) override;
     };
 
-    class ChangeDeadStrategyAction : public Action 
+    class ChangeDeadStrategyAction : public ChatCommandAction
     {
     public:
-        ChangeDeadStrategyAction(PlayerbotAI* ai) : Action(ai, "de") {}
-
-    public:
-        virtual bool Execute(Event& event);
+        ChangeDeadStrategyAction(PlayerbotAI* ai) : ChatCommandAction(ai, "de") {}
+        virtual bool ExecuteCommand(Event& event) override;
     };
 
-    class ChangeReactionStrategyAction : public Action 
+    class ChangeReactionStrategyAction : public ChatCommandAction
     {
     public:
-        ChangeReactionStrategyAction(PlayerbotAI* ai) : Action(ai, "react") {}
-
-    public:
-        virtual bool Execute(Event& event);
+        ChangeReactionStrategyAction(PlayerbotAI* ai) : ChatCommandAction(ai, "react") {}
+        virtual bool ExecuteCommand(Event& event) override;
     };
 
-    class ChangeAllStrategyAction : public Action 
+    class ChangeAllStrategyAction : public ChatCommandAction
     {
     public:
-        ChangeAllStrategyAction(PlayerbotAI* ai, string name = "change strategy from all", string strategy = "") : Action(ai, name), strategy(strategy) {}
-
-    public:
-        virtual bool Execute(Event& event);
+        ChangeAllStrategyAction(PlayerbotAI* ai, string name = "change strategy from all", string strategy = "") : ChatCommandAction(ai, name), strategy(strategy) {}
+        virtual bool ExecuteCommand(Event& event) override;
 
     private:
         string strategy;

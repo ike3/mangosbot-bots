@@ -1,32 +1,35 @@
 #pragma once
-
-#include "../Action.h"
+#include "GenericActions.h"
 
 namespace ai
 {
-    class AddLootAction : public Action {
+    class AddLootAction : public ChatCommandAction
+    {
     public:
-        AddLootAction(PlayerbotAI* ai) : Action(ai, "add loot") {}
-        virtual bool Execute(Event& event);
+        AddLootAction(PlayerbotAI* ai) : ChatCommandAction(ai, "add loot") {}
         virtual bool isUseful();
+
+    private:
+        bool ExecuteCommand(Event& event) override;
     };
 
-    class AddAllLootAction : public Action {
+    class AddAllLootAction : public ChatCommandAction
+    {
     public:
-        AddAllLootAction(PlayerbotAI* ai, string name = "add all loot") : Action(ai, name) {}
-        virtual bool Execute(Event& event);
+        AddAllLootAction(PlayerbotAI* ai, string name = "add all loot") : ChatCommandAction(ai, name) {}
         virtual bool isUseful();
 
     protected:
         virtual bool AddLoot(ObjectGuid guid);
+        virtual bool ExecuteCommand(Event& event) override;
     };
 
-    class AddGatheringLootAction : public AddAllLootAction {
+    class AddGatheringLootAction : public AddAllLootAction
+    {
     public:
         AddGatheringLootAction(PlayerbotAI* ai) : AddAllLootAction(ai, "add gathering loot") {}
 
-    protected:
-        virtual bool AddLoot(ObjectGuid guid);
+    private:
+        bool AddLoot(ObjectGuid guid) override;
     };
-
 }

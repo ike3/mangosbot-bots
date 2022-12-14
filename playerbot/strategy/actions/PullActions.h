@@ -1,14 +1,16 @@
 #pragma once
-
 #include "GenericSpellActions.h"
+#include "GenericActions.h"
 
 namespace ai
 {
-    class PullMyTargetAction : public Action
+    class PullMyTargetAction : public ChatCommandAction
     {
     public:
-        PullMyTargetAction(PlayerbotAI* ai, string name = "pull my target") : Action(ai, name) {}
-        bool Execute(Event& event) override;
+        PullMyTargetAction(PlayerbotAI* ai, string name = "pull my target") : ChatCommandAction(ai, name) {}
+    
+    private:
+        bool ExecuteCommand(Event& event) override;
     };
 
     class PullStartAction : public Action

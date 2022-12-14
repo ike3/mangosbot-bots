@@ -3,11 +3,9 @@
 #include "CustomStrategyEditAction.h"
 #include "../CustomStrategy.h"
 
-
 using namespace ai;
 
-
-bool CustomStrategyEditAction::Execute(Event& event)
+bool CustomStrategyEditAction::ExecuteCommand(Event& event)
 {
     string text = event.getParam();
     int pos = text.find(" ");

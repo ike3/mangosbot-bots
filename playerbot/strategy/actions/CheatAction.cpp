@@ -2,10 +2,9 @@
 #include "../../playerbot.h"
 #include "CheatAction.h"
 
-
 using namespace ai;
 
-bool CheatAction::Execute(Event& event)
+bool CheatAction::ExecuteCommand(Event& event)
 {
     string param = event.getParam();
 

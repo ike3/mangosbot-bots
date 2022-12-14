@@ -27,7 +27,7 @@ namespace ai
     {
     public:
         LfgJoinAction(PlayerbotAI* ai, string name = "lfg join") : InventoryAction(ai, name) {}
-        virtual bool Execute(Event& event);
+        virtual bool ExecuteCommand(Event& event) override;
         virtual bool isUseful();
 
     protected:
@@ -42,7 +42,7 @@ namespace ai
     {
     public:
         LfgAcceptAction(PlayerbotAI* ai) : LfgJoinAction(ai, "lfg accept") {}
-        virtual bool Execute(Event& event);
+        virtual bool ExecuteCommand(Event& event) override;
         virtual bool isUseful() { return true; }
     };
 
@@ -50,7 +50,7 @@ namespace ai
     {
     public:
         LfgRoleCheckAction(PlayerbotAI* ai) : LfgJoinAction(ai, "lfg role check") {}
-        virtual bool Execute(Event& event);
+        virtual bool ExecuteCommand(Event& event) override;
         virtual bool isUseful() { return true; }
     };
 

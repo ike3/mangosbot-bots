@@ -5,8 +5,7 @@
 
 using namespace ai;
 
-
-bool OutfitAction::Execute(Event& event)
+bool OutfitAction::ExecuteCommand(Event& event)
 {
     string param = event.getParam();
 

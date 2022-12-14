@@ -1,11 +1,8 @@
 #pragma once
-
-#include "../Action.h"
 #include "InventoryAction.h"
 
 namespace ai
 {
-
     class MailProcessor
     {
     public:
@@ -25,8 +22,7 @@ namespace ai
     {
     public:
         MailAction(PlayerbotAI* ai) : InventoryAction(ai, "mail") {}
-
-        virtual bool Execute(Event& event);
+        virtual bool ExecuteCommand(Event& event) override;
 
     private:
         bool CheckMailbox();

@@ -6,7 +6,7 @@
 
 using namespace ai;
 
-bool RewardAction::Execute(Event& event)
+bool RewardAction::ExecuteCommand(Event& event)
 {
     string link = event.getParam();
 

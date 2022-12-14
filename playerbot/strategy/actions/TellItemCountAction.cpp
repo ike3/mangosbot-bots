@@ -5,7 +5,7 @@
 
 using namespace ai;
 
-bool TellItemCountAction::Execute(Event& event)
+bool TellItemCountAction::ExecuteCommand(Event& event)
 {
     string text = event.getParam();
 

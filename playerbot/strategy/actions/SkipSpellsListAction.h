@@ -1,17 +1,16 @@
 #pragma once
-
-#include "../Action.h"
 #include "../../LootObjectStack.h"
+#include "GenericActions.h"
 
 namespace ai
 {
-    class SkipSpellsListAction : public Action {
+    class SkipSpellsListAction : public ChatCommandAction
+    {
     public:
-        SkipSpellsListAction(PlayerbotAI* ai) : Action(ai, "ss") {}
-        virtual bool Execute(Event& event);
+        SkipSpellsListAction(PlayerbotAI* ai) : ChatCommandAction(ai, "ss") {}
+        virtual bool ExecuteCommand(Event& event) override;
 
     private:
         SpellIds parseIds(string text);
     };
-
 }

@@ -26,7 +26,7 @@ static inline void ltrim(std::string& s) {
         }));
 }
 
-bool CastCustomSpellAction::Execute(Event& event)
+bool CastCustomSpellAction::ExecuteCommand(Event& event)
 {
     // only allow proper vehicle seats
     if (ai->IsInVehicle() && !ai->IsInVehicle(false, false, true))
@@ -145,7 +145,7 @@ bool CastCustomSpellAction::Execute(Event& event)
 }
 
 
-bool CastRandomSpellAction::Execute(Event& event)
+bool CastRandomSpellAction::ExecuteCommand(Event& event)
 {
     list<pair<uint32, string>> spellMap = GetSpellList();
     Player* master = GetMaster();
@@ -249,14 +249,13 @@ bool CastRandomSpellAction::Execute(Event& event)
 
 bool CastRandomSpellAction::castSpell(uint32 spellId, WorldObject* wo)
 {
-
     if (wo->GetObjectGuid().IsUnit())
         return ai->CastSpell(spellId, (Unit*)(wo));
     else
         return ai->CastSpell(spellId, wo->GetPositionX(), wo->GetPositionY(), wo->GetPositionZ());
 }
 
-bool DisEnchantRandomItemAction::Execute(Event& event)
+bool DisEnchantRandomItemAction::ExecuteCommand(Event& event)
 {
     list<uint32> items = AI_VALUE2(list<uint32>, "inventory item ids", "usage " + to_string(ITEM_USAGE_DISENCHANT));
 
@@ -278,7 +277,7 @@ bool DisEnchantRandomItemAction::Execute(Event& event)
             return false;
 
         Event disenchantEvent = Event("disenchant random item", "13262 " + chat->formatQItem(item));
-        const bool used = CastCustomSpellAction::Execute(disenchantEvent);
+        const bool used = CastCustomSpellAction::ExecuteCommand(disenchantEvent);
         if (used)
         {
             SetDuration(3000U); // 3s
