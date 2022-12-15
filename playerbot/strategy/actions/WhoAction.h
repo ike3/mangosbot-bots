@@ -1,12 +1,12 @@
 #pragma once
-#include "InventoryAction.h"
+#include "GenericActions.h"
 
 namespace ai
 {
-    class WhoAction : public InventoryAction 
+    class WhoAction : public ChatCommandAction 
     {
     public:
-        WhoAction(PlayerbotAI* ai) : InventoryAction(ai, "who") {}
+        WhoAction(PlayerbotAI* ai) : ChatCommandAction(ai, "who") {}
         virtual bool ExecuteCommand(Event& event) override;
 
     private:
@@ -14,5 +14,4 @@ namespace ai
         string QuerySkill(string text);
         string QuerySpec(string text);
     };
-
 }

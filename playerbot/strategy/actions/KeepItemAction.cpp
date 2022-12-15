@@ -30,7 +30,7 @@ bool KeepItemAction::ExecuteCommand(Event& event)
     if (text == "all")
     {
         FindNamedItemVisitor visitor(bot, "");
-        IterateItems(&visitor, ITERATE_ALL_ITEMS);
+        ai->InventoryIterateItems(&visitor, ITERATE_ALL_ITEMS);
 
         list<Item*> items = visitor.GetResult();
 
@@ -40,7 +40,7 @@ bool KeepItemAction::ExecuteCommand(Event& event)
     else if (text == "equip")
     {
         FindNamedItemVisitor visitor(bot, "");
-        IterateItems(&visitor, ITERATE_ITEMS_IN_EQUIP);
+        ai->InventoryIterateItems(&visitor, ITERATE_ITEMS_IN_EQUIP);
 
         list<Item*> items = visitor.GetResult();
 
@@ -50,7 +50,7 @@ bool KeepItemAction::ExecuteCommand(Event& event)
 
     if (ids.empty())
     {
-        list<Item*> items = parseItems(text);
+        list<Item*> items = ai->InventoryParseItems(text);
 
         for (auto& item : items)
                 ids.insert(item->GetProto()->ItemId);
@@ -76,7 +76,6 @@ bool KeepItemAction::ExecuteCommand(Event& event)
     {
         for (auto& id : ids)
         {
-
             const ItemPrototype* proto = sObjectMgr.GetItemPrototype(id);
 
             if (!proto)

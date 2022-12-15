@@ -8,6 +8,7 @@
 #include "GuildCreateActions.h"
 #include "../values/Formations.h"
 #include "RpgSubActions.h"
+#include "../values/ItemUsageValue.h"
 
 using namespace ai;
 

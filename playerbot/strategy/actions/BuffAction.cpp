@@ -88,7 +88,7 @@ bool BuffAction::ExecuteCommand(Event& event)
     string text = event.getParam();
 
     FindBuffVisitor visitor(bot);
-    IterateItems(&visitor);
+    ai->InventoryIterateItems(&visitor);
 
     uint32 oldSubClass = -1;
     for (map<uint32, list<Item*> >::iterator i = visitor.items.begin(); i != visitor.items.end(); ++i)

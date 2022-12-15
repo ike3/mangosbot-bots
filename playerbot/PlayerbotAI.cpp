@@ -34,6 +34,7 @@
 #include "Social/SocialMgr.h"
 #include "PlayerbotTextMgr.h"
 #include "RandomItemMgr.h"
+#include "strategy/ItemVisitors.h"
 #ifdef MANGOSBOT_TWO
 #include "Entities/Vehicle.h"
 #endif
@@ -4262,6 +4263,379 @@ bool PlayerbotAI::AddAura(Unit* unit, uint32 spellId)
         delete holder;
 
     return true;
+}
+
+void PlayerbotAI::InventoryIterateItems(IterateItemsVisitor* visitor, IterateItemsMask mask)
+{
+    if (mask & ITERATE_ITEMS_IN_BAGS)
+        InventoryIterateItemsInBags(visitor);
+
+    if (mask & ITERATE_ITEMS_IN_EQUIP)
+        InventoryIterateItemsInEquip(visitor);
+
+    if (mask == ITERATE_ITEMS_IN_BANK)
+        InventoryIterateItemsInBank(visitor);
+}
+
+void PlayerbotAI::InventoryIterateItemsInBags(IterateItemsVisitor* visitor)
+{
+    for (int i = INVENTORY_SLOT_ITEM_START; i < INVENTORY_SLOT_ITEM_END; ++i)
+        if (Item* pItem = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, i))
+            if (!visitor->Visit(pItem))
+                return;
+
+    for (int i = KEYRING_SLOT_START; i < KEYRING_SLOT_END; ++i)
+        if (Item* pItem = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, i))
+            if (!visitor->Visit(pItem))
+                return;
+
+    for (int i = INVENTORY_SLOT_BAG_START; i < INVENTORY_SLOT_BAG_END; ++i)
+        if (Bag* pBag = (Bag*)bot->GetItemByPos(INVENTORY_SLOT_BAG_0, i))
+            for (uint32 j = 0; j < pBag->GetBagSize(); ++j)
+                if (Item* pItem = pBag->GetItemByPos(j))
+                    if (!visitor->Visit(pItem))
+                        return;
+}
+
+void PlayerbotAI::InventoryIterateItemsInEquip(IterateItemsVisitor* visitor)
+{
+    for (uint8 slot = EQUIPMENT_SLOT_START; slot < EQUIPMENT_SLOT_END; slot++)
+    {
+        Item* pItem = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, slot);
+        if (!pItem)
+            continue;
+
+        if (!visitor->Visit(pItem))
+            return;
+    }
+}
+
+void PlayerbotAI::InventoryIterateItemsInBank(IterateItemsVisitor* visitor)
+{
+    for (uint8 slot = BANK_SLOT_ITEM_START; slot < BANK_SLOT_ITEM_END; slot++)
+    {
+        Item* pItem = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, slot);
+        if (!pItem)
+            continue;
+
+        if (!visitor->Visit(pItem))
+            return;
+    }
+
+    for (int i = BANK_SLOT_BAG_START; i < BANK_SLOT_BAG_END; ++i)
+    {
+        if (Bag* pBag = (Bag*)bot->GetItemByPos(INVENTORY_SLOT_BAG_0, i))
+        {
+            if (pBag)
+            {
+                for (uint32 j = 0; j < pBag->GetBagSize(); ++j)
+                {
+                    if (Item* pItem = pBag->GetItemByPos(j))
+                    {
+                        if (!pItem)
+                            continue;
+
+                        if (!visitor->Visit(pItem))
+                            return;
+                    }
+                }
+            }
+        }
+    }
+
+}
+
+bool compare_items(const ItemPrototype* proto1, const ItemPrototype* proto2)
+{
+    if (proto1->Class != proto2->Class)
+        return proto1->Class > proto2->Class;
+
+    if (proto1->SubClass != proto2->SubClass)
+        return proto1->SubClass < proto2->SubClass;
+
+    if (proto1->Quality != proto2->Quality)
+        return proto1->Quality < proto2->Quality;
+
+    if (proto1->ItemLevel != proto2->ItemLevel)
+        return proto1->ItemLevel > proto2->ItemLevel;
+
+    return false;
+}
+
+bool compare_items_by_level(const Item* item1, const Item* item2)
+{
+    return compare_items(item1->GetProto(), item2->GetProto());
+}
+
+void PlayerbotAI::InventoryTellItems(map<uint32, int> itemMap, map<uint32, bool> soulbound)
+{
+    list<ItemPrototype const*> items;
+    for (map<uint32, int>::iterator i = itemMap.begin(); i != itemMap.end(); i++)
+    {
+        items.push_back(sObjectMgr.GetItemPrototype(i->first));
+    }
+
+    items.sort(compare_items);
+
+    uint32 oldClass = -1;
+    for (list<ItemPrototype const*>::iterator i = items.begin(); i != items.end(); i++)
+    {
+        ItemPrototype const* proto = *i;
+
+        if (proto->Class != oldClass)
+        {
+            oldClass = proto->Class;
+            switch (proto->Class)
+            {
+            case ITEM_CLASS_CONSUMABLE:
+                TellMaster("--- consumable ---");
+                break;
+            case ITEM_CLASS_CONTAINER:
+                TellMaster("--- container ---");
+                break;
+            case ITEM_CLASS_WEAPON:
+                TellMaster("--- weapon ---");
+                break;
+            case ITEM_CLASS_ARMOR:
+                TellMaster("--- armor ---");
+                break;
+            case ITEM_CLASS_REAGENT:
+                TellMaster("--- reagent ---");
+                break;
+            case ITEM_CLASS_PROJECTILE:
+                TellMaster("--- projectile ---");
+                break;
+            case ITEM_CLASS_TRADE_GOODS:
+                TellMaster("--- trade goods ---");
+                break;
+            case ITEM_CLASS_RECIPE:
+                TellMaster("--- recipe ---");
+                break;
+            case ITEM_CLASS_QUIVER:
+                TellMaster("--- quiver ---");
+                break;
+            case ITEM_CLASS_QUEST:
+                TellMaster("--- quest items ---");
+                break;
+            case ITEM_CLASS_KEY:
+                TellMaster("--- keys ---");
+                break;
+            case ITEM_CLASS_MISC:
+                TellMaster("--- other ---");
+                break;
+            }
+        }
+
+        InventoryTellItem(proto, itemMap[proto->ItemId], soulbound[proto->ItemId]);
+    }
+}
+
+void PlayerbotAI::InventoryTellItem(ItemPrototype const* proto, int count, bool soulbound)
+{
+    ostringstream out;
+    out << GetChatHelper()->formatItem(proto, count);
+    if (soulbound)
+        out << " (soulbound)";
+    TellMaster(out.str());
+}
+
+list<Item*> PlayerbotAI::InventoryParseItems(string text, IterateItemsMask mask)
+{
+    set<Item*> found;
+    size_t pos = text.find(" ");
+    int count = pos != string::npos ? atoi(text.substr(pos + 1).c_str()) : TRADE_SLOT_TRADED_COUNT;
+    if (count < 1) count = 1;
+    else if (count > TRADE_SLOT_TRADED_COUNT) count = TRADE_SLOT_TRADED_COUNT;
+
+    ItemIds ids = GetChatHelper()->parseItems(text);
+    if (!ids.empty())
+    {
+        for (ItemIds::iterator i = ids.begin(); i != ids.end(); i++)
+        {
+            FindItemByIdVisitor visitor(*i);
+            InventoryIterateItems(&visitor, mask);
+            found.insert(visitor.GetResult().begin(), visitor.GetResult().end());
+        }
+
+        list<Item*> result;
+        for (set<Item*>::iterator i = found.begin(); i != found.end(); ++i)
+            result.push_back(*i);
+
+        result.sort(compare_items_by_level);
+
+        return result;
+    }
+
+    if (text == "food" || text == "conjured food")
+    {
+        FindFoodVisitor visitor(bot, 11, (text == "conjured food"));
+        InventoryIterateItems(&visitor, ITERATE_ITEMS_IN_BAGS);
+        found.insert(visitor.GetResult().begin(), visitor.GetResult().end());
+    }
+
+    if (text == "drink" || text == "water" || text == "conjured drink" || text == "conjured water")
+    {
+        FindFoodVisitor visitor(bot, 59, (text == "conjured drink" || text == "conjured water"));
+        InventoryIterateItems(&visitor, ITERATE_ITEMS_IN_BAGS);
+        found.insert(visitor.GetResult().begin(), visitor.GetResult().end());
+    }
+
+    if (text == "mana potion")
+    {
+        FindPotionVisitor visitor(bot, SPELL_EFFECT_ENERGIZE);
+        InventoryIterateItems(&visitor, ITERATE_ITEMS_IN_BAGS);
+        found.insert(visitor.GetResult().begin(), visitor.GetResult().end());
+    }
+
+    if (text == "healing potion")
+    {
+        FindPotionVisitor visitor(bot, SPELL_EFFECT_HEAL);
+        InventoryIterateItems(&visitor, ITERATE_ITEMS_IN_BAGS);
+        found.insert(visitor.GetResult().begin(), visitor.GetResult().end());
+    }
+
+    if (text == "mount")
+    {
+        FindMountVisitor visitor(bot);
+        InventoryIterateItems(&visitor, ITERATE_ITEMS_IN_BAGS);
+        found.insert(visitor.GetResult().begin(), visitor.GetResult().end());
+    }
+
+    if (text == "pet")
+    {
+        FindPetVisitor visitor(bot);
+        InventoryIterateItems(&visitor, ITERATE_ITEMS_IN_BAGS);
+        found.insert(visitor.GetResult().begin(), visitor.GetResult().end());
+    }
+
+    if (text == "ammo")
+    {
+        Item* const pItem = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_RANGED);
+        if (pItem)
+        {
+            FindAmmoVisitor visitor(bot, pItem->GetProto()->SubClass);
+            InventoryIterateItems(&visitor, ITERATE_ITEMS_IN_BAGS);
+            found.insert(visitor.GetResult().begin(), visitor.GetResult().end());
+        }
+    }
+
+    if (text == "recipe")
+    {
+        FindRecipeVisitor visitor(bot);
+        InventoryIterateItems(&visitor, ITERATE_ITEMS_IN_BAGS);
+        found.insert(visitor.GetResult().begin(), visitor.GetResult().end());
+    }
+
+    if (text == "quest")
+    {
+        FindQuestItemVisitor visitor(bot);
+        InventoryIterateItems(&visitor, ITERATE_ITEMS_IN_BAGS);
+        found.insert(visitor.GetResult().begin(), visitor.GetResult().end());
+    }
+    if (text.find("usage ") != std::string::npos)
+    {
+        FindItemUsageVisitor visitor(bot, ItemUsage(stoi(text.substr(6))));
+        InventoryIterateItems(&visitor, ITERATE_ITEMS_IN_BAGS);
+        found.insert(visitor.GetResult().begin(), visitor.GetResult().end());
+    }
+
+    FindNamedItemVisitor visitor(bot, text);
+    InventoryIterateItems(&visitor, ITERATE_ITEMS_IN_BAGS);
+    found.insert(visitor.GetResult().begin(), visitor.GetResult().end());
+
+    uint32 quality = GetChatHelper()->parseItemQuality(text);
+    if (quality != MAX_ITEM_QUALITY)
+    {
+        FindItemsToTradeByQualityVisitor visitor(quality, count);
+        InventoryIterateItems(&visitor, mask);
+        found.insert(visitor.GetResult().begin(), visitor.GetResult().end());
+    }
+
+    uint32 itemClass = MAX_ITEM_CLASS, itemSubClass = 0;
+    if (GetChatHelper()->parseItemClass(text, &itemClass, &itemSubClass))
+    {
+        FindItemsToTradeByClassVisitor visitor(itemClass, itemSubClass, count);
+        InventoryIterateItems(&visitor, mask);
+        found.insert(visitor.GetResult().begin(), visitor.GetResult().end());
+    }
+
+    uint32 fromSlot = GetChatHelper()->parseSlot(text);
+    if (fromSlot != EQUIPMENT_SLOT_END)
+    {
+        Item* item = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, fromSlot);
+        if (item)
+            found.insert(item);
+    }
+
+    ItemIds outfit = InventoryFindOutfitItems(text);
+    if (!outfit.empty())
+    {
+        FindItemByIdsVisitor visitor(outfit);
+        InventoryIterateItems(&visitor, mask);
+        found.insert(visitor.GetResult().begin(), visitor.GetResult().end());
+    }
+
+    list<Item*> result;
+    for (set<Item*>::iterator i = found.begin(); i != found.end(); ++i)
+        result.push_back(*i);
+
+    result.sort(compare_items_by_level);
+
+    return result;
+}
+
+uint32 PlayerbotAI::InventoryGetItemCount(FindItemVisitor* visitor, IterateItemsMask mask)
+{
+    InventoryIterateItems(visitor, mask);
+    uint32 count = 0;
+    list<Item*>& items = visitor->GetResult();
+    for (list<Item*>::iterator i = items.begin(); i != items.end(); ++i)
+    {
+        Item* item = *i;
+        count += item->GetCount();
+    }
+    return count;
+}
+
+ItemIds PlayerbotAI::InventoryFindOutfitItems(string name)
+{
+    AiObjectContext* context = GetAiObjectContext();
+    list<string>& outfits = AI_VALUE(list<string>&, "outfit list");
+    for (list<string>::iterator i = outfits.begin(); i != outfits.end(); ++i)
+    {
+        string outfit = *i;
+        if (name == InventoryParseOutfitName(outfit))
+            return InventoryParseOutfitItems(outfit);
+    }
+    return set<uint32>();
+}
+
+string PlayerbotAI::InventoryParseOutfitName(string outfit)
+{
+    int pos = outfit.find("=");
+    if (pos == -1) return "";
+    return outfit.substr(0, pos);
+}
+
+ItemIds PlayerbotAI::InventoryParseOutfitItems(string text)
+{
+    ItemIds itemIds;
+
+    uint8 pos = text.find("=") + 1;
+    while (pos < text.size())
+    {
+        int endPos = text.find(',', pos);
+        if (endPos == -1)
+            endPos = text.size();
+
+        string idC = text.substr(pos, endPos - pos);
+        uint32 id = atol(idC.c_str());
+        pos = endPos + 1;
+        if (id)
+            itemIds.insert(id);
+    }
+
+    return itemIds;
 }
 
 void PlayerbotAI::Ping(float x, float y)

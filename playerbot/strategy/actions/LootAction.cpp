@@ -231,7 +231,7 @@ bool OpenLootAction::CanOpenLock(uint32 skillId, uint32 reqSkillValue)
     return skillValue >= reqSkillValue || !reqSkillValue;
 }
 
-bool StoreLootAction::ExecuteCommand(Event& event)
+bool StoreLootAction::Execute(Event& event)
 {
     WorldPacket p(event.getPacket()); // (8+1+4+1+1+4+4+4+4+4+1)
     ObjectGuid guid;

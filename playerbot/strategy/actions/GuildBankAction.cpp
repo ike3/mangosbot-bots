@@ -29,7 +29,7 @@ bool GuildBankAction::ExecuteCommand(Event& event)
         if (!go || !bot->GetGameObjectIfCanInteractWith(go->GetObjectGuid(), GAMEOBJECT_TYPE_GUILD_BANK))
             continue;
 
-        return ExecuteCommand(text, go);
+        return Execute(text, go);
     }
 
     ai->TellMaster(BOT_TEXT("error_gbank_found"));
@@ -39,11 +39,11 @@ bool GuildBankAction::ExecuteCommand(Event& event)
 #endif
 }
 
-bool GuildBankAction::ExecuteCommand(string text, GameObject* bank)
+bool GuildBankAction::Execute(string text, GameObject* bank)
 {
     bool result = true;
 
-    list<Item*> found = parseItems(text);
+    list<Item*> found = ai->InventoryParseItems(text);
     if (found.empty())
         return false;
 

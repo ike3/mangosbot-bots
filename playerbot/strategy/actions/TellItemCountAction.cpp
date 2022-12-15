@@ -12,7 +12,7 @@ bool TellItemCountAction::ExecuteCommand(Event& event)
     if (text.find("@") == 0)
         return false;
 
-    list<Item*> found = parseItems(text);
+    list<Item*> found = ai->InventoryParseItems(text);
     map<uint32, uint32> itemMap;
     map<uint32, bool> soulbound;
     for (list<Item*>::iterator i = found.begin(); i != found.end(); i++)
@@ -26,7 +26,7 @@ bool TellItemCountAction::ExecuteCommand(Event& event)
     for (map<uint32, uint32>::iterator i = itemMap.begin(); i != itemMap.end(); ++i)
     {
         ItemPrototype const* proto = sItemStorage.LookupEntry<ItemPrototype>(i->first);
-        TellItem(proto, i->second, soulbound[i->first]);
+        ai->InventoryTellItem(proto, i->second, soulbound[i->first]);
     }
 
     return true;

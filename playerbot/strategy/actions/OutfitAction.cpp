@@ -2,6 +2,7 @@
 #include "../../playerbot.h"
 #include "OutfitAction.h"
 #include "../values/OutfitListValue.h"
+#include "../ItemVisitors.h"
 
 using namespace ai;
 
@@ -18,8 +19,8 @@ bool OutfitAction::ExecuteCommand(Event& event)
     }
     else
     {
-        string name = parseOutfitName(param);
-        ItemIds items = parseOutfitItems(param);
+        string name = ai->InventoryParseOutfitName(param);
+        ItemIds items = ai->InventoryParseOutfitItems(param);
         if (!name.empty())
         {
             Save(name, items);
@@ -36,7 +37,7 @@ bool OutfitAction::ExecuteCommand(Event& event)
             return false;
 
         name = param.substr(0, space);
-        ItemIds outfit = FindOutfitItems(name);
+        ItemIds outfit = ai->InventoryFindOutfitItems(name);
         string command = param.substr(space + 1);
         if (command == "equip")
         {
@@ -119,7 +120,7 @@ void OutfitAction::Save(string name, ItemIds items)
     for (list<string>::iterator i = outfits.begin(); i != outfits.end(); ++i)
     {
         string outfit = *i;
-        if (name == parseOutfitName(outfit))
+        if (name == ai->InventoryParseOutfitName(outfit))
         {
             outfits.erase(i);
             break;
@@ -146,8 +147,8 @@ void OutfitAction::List()
     for (list<string>::iterator i = outfits.begin(); i != outfits.end(); ++i)
     {
         string outfit = *i;
-        string name = parseOutfitName(outfit);
-        ItemIds items = parseOutfitItems(outfit);
+        string name = ai->InventoryParseOutfitName(outfit);
+        ItemIds items = ai->InventoryParseOutfitItems(outfit);
 
         ostringstream out;
         out << name << ": ";
@@ -166,7 +167,7 @@ void OutfitAction::List()
 void OutfitAction::Update(string name)
 {
     ListItemsVisitor visitor;
-    IterateItems(&visitor, ITERATE_ITEMS_IN_EQUIP);
+    ai->InventoryIterateItems(&visitor, ITERATE_ITEMS_IN_EQUIP);
 
     ItemIds items;
     for (map<uint32, int>::iterator i = visitor.items.begin(); i != visitor.items.end(); ++i)

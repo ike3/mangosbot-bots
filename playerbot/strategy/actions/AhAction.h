@@ -1,12 +1,12 @@
 #pragma once
-#include "InventoryAction.h"
+#include "GenericActions.h"
 
 namespace ai
 {
-    class AhAction : public InventoryAction
+    class AhAction : public ChatCommandAction
     {
     public:
-        AhAction(PlayerbotAI* ai, string name = "ah") : InventoryAction(ai, name) {}
+        AhAction(PlayerbotAI* ai, string name = "ah") : ChatCommandAction(ai, name) {}
         virtual bool ExecuteCommand(Event& event) override;
 
     private:
@@ -16,7 +16,7 @@ namespace ai
         virtual string GetHelpName() { return "ah"; } //Must equal iternal name
         virtual string GetHelpDescription()
         {
-            return "This command will make bots auction items to a nearby auctionhouses.\n"
+            return "This command will make bots auction items to a nearby auction houses.\n"
                 "Usage: ah [itemlink] <money>\n"
                 "Example: ah vendor (post items based on item use)\n"
                 "Example: ah [itemlink] 5g\n";
@@ -28,7 +28,6 @@ namespace ai
         uint32 GetSellPrice(ItemPrototype const* proto);
     };
 
-
     class AhBidAction : public AhAction
     {
     public:
@@ -39,7 +38,7 @@ namespace ai
         virtual string GetHelpDescription()
         {
             return "This command will make bots bid on a specific item with a specific budget on a nearby auctionhouse.\n"
-                "The higest item/gold aution will be used that falls below the given budget.\n"
+                "The highest item/gold auction will be used that falls below the given budget.\n"
                 "Usage: ah bid [itemlink] <money>\n"
                 "Example: ah bid vendor (bid on items based on item use)\n"
                 "Example: ah bid [itemlink] 5g\n";

@@ -1,31 +1,20 @@
 #pragma once
 #include "../Value.h"
 #include "../ItemVisitors.h"
-#include "../actions/InventoryAction.h"
 
 namespace ai
 {
-    class InventoryItemValueBase : public InventoryAction
-    {
-    public:
-        InventoryItemValueBase(PlayerbotAI* ai) : InventoryAction(ai, "empty") {}
-        virtual bool ExecuteCommand(Event& event) override { return false; }
-
-    protected:
-        list<Item*> Find(string qualifier);
-    };
-
-    class ItemCountValue : public Uint32CalculatedValue, public Qualified, InventoryItemValueBase
+    class ItemCountValue : public Uint32CalculatedValue, public Qualified
 	{
 	public:
-        ItemCountValue(PlayerbotAI* ai, string name = "item count") : Uint32CalculatedValue(ai, name), InventoryItemValueBase(ai) {}
+        ItemCountValue(PlayerbotAI* ai, string name = "item count") : Uint32CalculatedValue(ai, name) {}
         virtual uint32 Calculate();
 	};
 
-    class InventoryItemValue : public CalculatedValue<list<Item*> >, public Qualified, InventoryItemValueBase
+    class InventoryItemValue : public CalculatedValue<list<Item*> >, public Qualified
     {
     public:
-        InventoryItemValue(PlayerbotAI* ai, string name = "inventory items") : CalculatedValue<list<Item*> >(ai, name), InventoryItemValueBase(ai) {}
+        InventoryItemValue(PlayerbotAI* ai, string name = "inventory items") : CalculatedValue<list<Item*> >(ai, name) {}
         virtual list<Item*> Calculate();
     };
 
@@ -36,10 +25,10 @@ namespace ai
         virtual list<uint32> Calculate() {list<uint32> retVal;  for (auto& item : AI_VALUE2(list<Item*>, "inventory items", getQualifier())) { ItemPrototype const* proto = item->GetProto();  retVal.push_back(proto->ItemId);} return retVal;};
     };
 
-    class EquipedUsableTrinketValue : public CalculatedValue<list<Item*> >, public Qualified, InventoryItemValueBase
+    class EquipedUsableTrinketValue : public CalculatedValue<list<Item*> >, public Qualified
     {
     public:
-        EquipedUsableTrinketValue(PlayerbotAI* ai) : CalculatedValue<list<Item*> >(ai), InventoryItemValueBase(ai) {}
+        EquipedUsableTrinketValue(PlayerbotAI* ai) : CalculatedValue<list<Item*> >(ai) {}
         virtual list<Item*> Calculate();
     };
 }

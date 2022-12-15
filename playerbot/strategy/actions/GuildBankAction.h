@@ -1,16 +1,16 @@
 #pragma once
-#include "InventoryAction.h"
+#include "GenericActions.h"
 
 namespace ai
 {
-    class GuildBankAction : public InventoryAction 
+    class GuildBankAction : public ChatCommandAction
     {
     public:
-        GuildBankAction(PlayerbotAI* ai) : InventoryAction(ai, "guild bank") {}
+        GuildBankAction(PlayerbotAI* ai) : ChatCommandAction(ai, "guild bank") {}
         virtual bool ExecuteCommand(Event& event) override;
 
     private:
-        bool ExecuteCommand(string text, GameObject* bank);
+        bool Execute(string text, GameObject* bank);
         bool MoveFromCharToBank(Item* item, GameObject* bank);
     };
 }

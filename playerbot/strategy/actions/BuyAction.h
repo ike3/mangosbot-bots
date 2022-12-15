@@ -1,12 +1,12 @@
 #pragma once
-#include "InventoryAction.h"
+#include "GenericActions.h"
 
 namespace ai
 {
-    class BuyAction : public InventoryAction 
+    class BuyAction : public ChatCommandAction
     {
     public:
-        BuyAction(PlayerbotAI* ai) : InventoryAction(ai, "buy") {}
+        BuyAction(PlayerbotAI* ai) : ChatCommandAction(ai, "buy") {}
         virtual bool ExecuteCommand(Event& event) override;
 
     private:

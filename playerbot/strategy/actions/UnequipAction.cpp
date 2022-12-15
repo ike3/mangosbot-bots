@@ -38,10 +38,9 @@ bool UnequipAction::ExecuteCommand(Event& event)
     return true;
 }
 
-
 void UnequipAction::UnequipItem(FindItemVisitor* visitor)
 {
-    IterateItems(visitor, ITERATE_ALL_ITEMS);
+    ai->InventoryIterateItems(visitor, ITERATE_ALL_ITEMS);
     list<Item*> items = visitor->GetResult();
 	if (!items.empty()) UnequipItem(**items.begin());
 }
@@ -61,4 +60,3 @@ void UnequipAction::UnequipItem(Item& item)
 
     ai->TellMaster(out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
 }
-

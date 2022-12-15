@@ -10,7 +10,7 @@
 
 using namespace ai;
 
-bool LfgJoinAction::ExecuteCommand(Event& event)
+bool LfgJoinAction::Execute(Event& event)
 {
     return JoinLFG();
 }
@@ -975,7 +975,7 @@ bool LfgJoinAction::JoinLFG()
     return true;
 }
 
-bool LfgRoleCheckAction::ExecuteCommand(Event& event)
+bool LfgRoleCheckAction::Execute(Event& event)
 {
 #ifdef MANGOSBOT_TWO
     Group* group = bot->GetGroup();
@@ -997,7 +997,7 @@ bool LfgRoleCheckAction::ExecuteCommand(Event& event)
     return false;
 }
 
-bool LfgAcceptAction::ExecuteCommand(Event& event)
+bool LfgAcceptAction::Execute(Event& event)
 {
 #ifdef MANGOSBOT_TWO
     //LFGData pState = bot->GetLfgData();

@@ -1,15 +1,15 @@
 #pragma once
-#include "InventoryAction.h"
 #include "ChooseTravelTargetAction.h"
 #include "../values/BudgetValues.h"
+#include "ServerFacade.h"
 
 namespace ai
 {
-    class BuyPetitionAction : public InventoryAction 
+    class BuyPetitionAction : public Action 
     {
     public:
-        BuyPetitionAction(PlayerbotAI* ai) : InventoryAction(ai, "buy petition") {}
-        virtual bool ExecuteCommand(Event& event) override;
+        BuyPetitionAction(PlayerbotAI* ai) : Action(ai, "buy petition") {}
+        virtual bool Execute(Event& event) override;
         virtual bool isUseful();
         static bool canBuyPetition(Player* bot);
     };

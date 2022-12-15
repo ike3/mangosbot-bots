@@ -1,18 +1,17 @@
 #pragma once
-
-#include "../Action.h"
-#include "InventoryAction.h"
 #include "ListSpellsAction.h"
 #include "../values/ItemUsageValue.h"
+#include "GenericActions.h"
 
 namespace ai
 {
-    class CastCustomSpellAction : public InventoryAction
+    class CastCustomSpellAction : public ChatCommandAction
     {
     public:
-        CastCustomSpellAction(PlayerbotAI* ai, string name = "cast custom spell") : InventoryAction(ai, name) {}
+        CastCustomSpellAction(PlayerbotAI* ai, string name = "cast custom spell") : ChatCommandAction(ai, name) {}
         virtual bool ExecuteCommand(Event& event) override;
         virtual string castString(WorldObject* target) { return "cast"; }
+        virtual uint32 getDuration() const { return 3000U; }
 
     protected:
         bool ncCast = false;
@@ -42,10 +41,12 @@ namespace ai
 
             return !isTradeSkill && GetSpellRecoveryTime(pSpellInfo) < MINUTE * IN_MILLISECONDS;
         }
+
         virtual uint32 GetSpellPriority(const SpellEntry* pSpellInfo) { return 1; }
         virtual bool ExecuteCommand(Event& event) override;
 
         virtual bool castSpell(uint32 spellId, WorldObject* wo);
+
     protected:
         bool MultiCast = false;
     };

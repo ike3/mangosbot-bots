@@ -58,7 +58,6 @@ public:
     }
 };
 
-
 bool SellAction::ExecuteCommand(Event& event)
 {
     string text = event.getParam();
@@ -66,18 +65,18 @@ bool SellAction::ExecuteCommand(Event& event)
     if (text == "gray" || text == "*")
     {
         SellGrayItemsVisitor visitor(this);
-        IterateItems(&visitor);
+        ai->InventoryIterateItems(&visitor);
         return true;
     }
 
     if (text == "vendor")
     {
         SellVendorItemsVisitor visitor(this, context);
-        IterateItems(&visitor);
+        ai->InventoryIterateItems(&visitor);
         return true;
     }
 
-    list<Item*> items = parseItems(text, ITERATE_ITEMS_IN_BAGS);
+    list<Item*> items = ai->InventoryParseItems(text, ITERATE_ITEMS_IN_BAGS);
     for (list<Item*>::iterator i = items.begin(); i != items.end(); ++i)
     {
         Sell(*i);
@@ -86,10 +85,9 @@ bool SellAction::ExecuteCommand(Event& event)
     return true;
 }
 
-
 void SellAction::Sell(FindItemVisitor* visitor)
 {
-    IterateItems(visitor);
+    ai->InventoryIterateItems(visitor);
     list<Item*> items = visitor->GetResult();
     for (list<Item*>::iterator i = items.begin(); i != items.end(); ++i)
         Sell(*i);

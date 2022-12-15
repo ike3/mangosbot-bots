@@ -1,9 +1,6 @@
 #pragma once
-
-#include "../Action.h"
 #include "../../LootObjectStack.h"
 #include "MovementActions.h"
-#include "InventoryAction.h"
 
 namespace ai
 {
@@ -28,11 +25,11 @@ namespace ai
         bool CanOpenLock(uint32 skillId, uint32 reqSkillValue);
     };
 
-    class StoreLootAction : public InventoryAction
+    class StoreLootAction : public Action
     {
     public:
-        StoreLootAction(PlayerbotAI* ai) : InventoryAction(ai, "store loot") {}
-        virtual bool ExecuteCommand(Event& event) override;
+        StoreLootAction(PlayerbotAI* ai) : Action(ai, "store loot") {}
+        virtual bool Execute(Event& event) override;
         static bool IsLootAllowed(uint32 itemid, PlayerbotAI *ai);  
     };
 

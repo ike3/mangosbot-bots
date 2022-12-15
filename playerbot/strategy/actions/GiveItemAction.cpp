@@ -8,7 +8,7 @@ using namespace ai;
 
 vector<string> split(const string &s, char delim);
 
-bool GiveItemAction::ExecuteCommand(Event& event)
+bool GiveItemAction::Execute(Event& event)
 {
     Unit* target = GetTarget();
     if (!target) return false;
@@ -24,7 +24,7 @@ bool GiveItemAction::ExecuteCommand(Event& event)
         return true;
 
     bool moved = false;
-    list<Item*> items = InventoryAction::parseItems(item, ITERATE_ITEMS_IN_BAGS);
+    list<Item*> items = ai->InventoryParseItems(item, ITERATE_ITEMS_IN_BAGS);
     for (list<Item*>::iterator j = items.begin(); j != items.end(); j++)
     {
         Item* item = *j;

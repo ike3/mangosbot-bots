@@ -1,7 +1,6 @@
 #include "botpch.h"
 #include "../../playerbot.h"
 #include "BankAction.h"
-
 #include "../values/ItemCountValue.h"
 
 using namespace std;
@@ -36,7 +35,7 @@ bool BankAction::ExecuteCommand(string text, Unit* bank)
     bool result = false;
     if (text[0] == '-')
     {
-        list<Item*> found = parseItems(text.substr(1), ITERATE_ITEMS_IN_BANK);
+        list<Item*> found = ai->InventoryParseItems(text.substr(1), ITERATE_ITEMS_IN_BANK);
         for (list<Item*>::iterator i = found.begin(); i != found.end(); i++)
         {
             Item* item = *i;
@@ -45,7 +44,7 @@ bool BankAction::ExecuteCommand(string text, Unit* bank)
     }
     else
     {
-        list<Item*> found = parseItems(text, ITERATE_ITEMS_IN_BAGS);
+        list<Item*> found = ai->InventoryParseItems(text, ITERATE_ITEMS_IN_BAGS);
         if (found.empty())
             return false;
 
@@ -130,7 +129,7 @@ void BankAction::ListItems()
                             soulbound[pItem->GetProto()->ItemId] = pItem->IsSoulBound();
                         }
 
-    TellItems(items, soulbound);
+    ai->InventoryTellItems(items, soulbound);
 }
 
 Item* BankAction::FindItemInBank(uint32 ItemId)

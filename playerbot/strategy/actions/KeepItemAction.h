@@ -1,20 +1,23 @@
 #pragma once
-#include "InventoryAction.h"
+#include "../values/ItemUsageValue.h"
+#include "GenericActions.h"
 
 namespace ai
 {
-    class KeepItemAction : public InventoryAction 
+    class KeepItemAction : public ChatCommandAction
     {
     public:
-        KeepItemAction(PlayerbotAI* ai, string name = "keep") : InventoryAction(ai, name) {}
+        KeepItemAction(PlayerbotAI* ai, string name = "keep") : ChatCommandAction(ai, name) {}
         virtual bool ExecuteCommand(Event& event) override;
 
-        unordered_map<ForceItemUsage, string> keepName = {
-        {ForceItemUsage::FORCE_USAGE_NONE, "do not keep"},
-        {ForceItemUsage::FORCE_USAGE_KEEP, "keep"},
-        {ForceItemUsage::FORCE_USAGE_EQUIP, "equip"},
-        {ForceItemUsage::FORCE_USAGE_GREED, "buy or greed"},
-        {ForceItemUsage::FORCE_USAGE_NEED, "buy or need"} };
+        unordered_map<ForceItemUsage, string> keepName = 
+        {
+            {ForceItemUsage::FORCE_USAGE_NONE, "do not keep"},
+            {ForceItemUsage::FORCE_USAGE_KEEP, "keep"},
+            {ForceItemUsage::FORCE_USAGE_EQUIP, "equip"},
+            {ForceItemUsage::FORCE_USAGE_GREED, "buy or greed"},
+            {ForceItemUsage::FORCE_USAGE_NEED, "buy or need"}
+        };
 
 #ifdef GenerateBotHelp
         virtual string GetHelpName() { return "keep"; } //Must equal iternal name
@@ -30,7 +33,7 @@ namespace ai
                 "?: list item and their forced usage.\n"
                 "none: the item will not be kept by the bot.\n"
                 "keep: the item will not be sold or destroyed.\n"
-                "equip: the item will be equiped over other items.\n"
+                "equip: the item will be equipped over other items.\n"
                 "greed: the bot will try to get more of this item and roll greed.\n"
                 "need: the bot will try to get more of this item and roll need.\n";
         }

@@ -169,7 +169,7 @@ list<pair<uint32, string> > ListSpellsAction::GetSpellList(string filter)
                     materials << chat->formatItem(proto, reagentsRequired);
 
                     FindItemByIdVisitor visitor(itemid);
-                    uint32 reagentsInInventory = InventoryAction::GetItemCount(&visitor);
+                    uint32 reagentsInInventory = ai->InventoryGetItemCount(&visitor);
                     bool buyable = (vendorItems.find(itemid) != vendorItems.end());
                     if (!buyable)
                     {

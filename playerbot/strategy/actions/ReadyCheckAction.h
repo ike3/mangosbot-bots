@@ -1,13 +1,13 @@
 #pragma once
-#include "InventoryAction.h"
+#include "../Action.h"
 
 namespace ai
 {
-    class ReadyCheckAction : public InventoryAction
+    class ReadyCheckAction : public Action
     {
     public:
-        ReadyCheckAction(PlayerbotAI* ai, string name = "ready check") : InventoryAction(ai, name) {}
-        virtual bool ExecuteCommand(Event& event) override;
+        ReadyCheckAction(PlayerbotAI* ai, string name = "ready check") : Action(ai, name) {}
+        virtual bool Execute(Event& event) override;
 
     protected:
         bool ReadyCheck();
@@ -17,6 +17,6 @@ namespace ai
     {
     public:
         FinishReadyCheckAction(PlayerbotAI* ai) : ReadyCheckAction(ai, "finish ready check") {}
-        virtual bool ExecuteCommand(Event& event) override;
+        virtual bool Execute(Event& event) override;
     };
 }

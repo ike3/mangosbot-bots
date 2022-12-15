@@ -26,7 +26,7 @@ void EquipAction::EquipItems(ItemIds ids)
 
 void EquipAction::EquipItem(FindItemVisitor* visitor)
 {
-    IterateItems(visitor);
+    ai->InventoryIterateItems(visitor);
     list<Item*> items = visitor->GetResult();
 	if (!items.empty()) EquipItem(**items.begin());
 }
@@ -103,7 +103,6 @@ void EquipAction::EquipItem(Item& item)
     ai->TellMaster(out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
 }
 
-
 bool EquipUpgradesAction::ExecuteCommand(Event& event)
 {
     if (!sPlayerbotAIConfig.autoEquipUpgradeLoot && !sRandomPlayerbotMgr.IsRandomBot(bot))
@@ -121,7 +120,7 @@ bool EquipUpgradesAction::ExecuteCommand(Event& event)
     }
 
     ListItemsVisitor visitor;
-    IterateItems(&visitor, ITERATE_ITEMS_IN_BAGS);
+    ai->InventoryIterateItems(&visitor, ITERATE_ITEMS_IN_BAGS);
 
     ItemIds items;
     for (map<uint32, int>::iterator i = visitor.items.begin(); i != visitor.items.end(); ++i)

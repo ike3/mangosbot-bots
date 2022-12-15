@@ -37,14 +37,6 @@ namespace ai
         list<Item*> result;
     };
 
-    enum IterateItemsMask
-    {
-        ITERATE_ITEMS_IN_BAGS = 1,
-        ITERATE_ITEMS_IN_EQUIP = 2,
-        ITERATE_ITEMS_IN_BANK = 4,
-        ITERATE_ALL_ITEMS = 255
-    };
-
     class FindUsableItemVisitor : public FindItemVisitor {
     public:
         FindUsableItemVisitor(Player* bot) : FindItemVisitor()

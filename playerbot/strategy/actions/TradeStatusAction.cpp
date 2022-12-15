@@ -123,10 +123,10 @@ void TradeStatusAction::BeginTrade()
         return;
 
     ListItemsVisitor visitor;
-    IterateItems(&visitor);
+    ai->InventoryIterateItems(&visitor);
 
     ai->TellMaster("=== Inventory ===");
-    TellItems(visitor.items, visitor.soulbound);
+    ai->InventoryTellItems(visitor.items, visitor.soulbound);
 
     if (sRandomPlayerbotMgr.IsRandomBot(bot))
     {

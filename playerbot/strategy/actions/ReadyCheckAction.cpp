@@ -2,12 +2,7 @@
 #include "../../playerbot.h"
 #include "ReadyCheckAction.h"
 #include "../../PlayerbotAIConfig.h"
-
-using namespace ai;
-#include "botpch.h"
-#include "../../playerbot.h"
-#include "ReadyCheckAction.h"
-#include "../../PlayerbotAIConfig.h"
+#include "ServerFacade.h"
 
 using namespace ai;
 
@@ -139,7 +134,7 @@ public:
     }
 };
 
-bool ReadyCheckAction::ExecuteCommand(Event& event)
+bool ReadyCheckAction::Execute(Event& event)
 {
     WorldPacket p = event.getPacket();
     ObjectGuid player;
@@ -208,7 +203,7 @@ bool ReadyCheckAction::ReadyCheck()
     return true;
 }
 
-bool FinishReadyCheckAction::ExecuteCommand(Event& event)
+bool FinishReadyCheckAction::Execute(Event& event)
 {
     return ReadyCheck();
 }

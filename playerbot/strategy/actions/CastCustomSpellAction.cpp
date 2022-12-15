@@ -68,7 +68,7 @@ bool CastCustomSpellAction::ExecuteCommand(Event& event)
     if (pos != string::npos)
     {
         string param = text.substr(pos + 1);
-        list<Item*> items = InventoryAction::parseItems(param, ITERATE_ITEMS_IN_BAGS);
+        list<Item*> items = ai->InventoryParseItems(param, ITERATE_ITEMS_IN_BAGS);
         if (!items.empty()) itemTarget = *items.begin();
         else
         {
@@ -143,7 +143,6 @@ bool CastCustomSpellAction::ExecuteCommand(Event& event)
 
     return result;
 }
-
 
 bool CastRandomSpellAction::ExecuteCommand(Event& event)
 {
@@ -277,13 +276,7 @@ bool DisEnchantRandomItemAction::ExecuteCommand(Event& event)
             return false;
 
         Event disenchantEvent = Event("disenchant random item", "13262 " + chat->formatQItem(item));
-        const bool used = CastCustomSpellAction::ExecuteCommand(disenchantEvent);
-        if (used)
-        {
-            SetDuration(3000U); // 3s
-        }
-
-        return used;
+        return CastCustomSpellAction::Execute(disenchantEvent);
     }
 
     return false;

@@ -7,6 +7,7 @@
 #include "../actions/GuildCreateActions.h"
 #include "SocialMgr.h"
 #include "../../ServerFacade.h"
+#include "../values/ItemUsageValue.h"
 
 using namespace ai;
 
@@ -514,7 +515,6 @@ bool RpgCraftTrigger::IsActive()
             if (ItemUsageValue::HasItemsNeededForSpell(spell, ObjectMgr::GetItemPrototype(itemId), bot))
                 return true;
         }
-
     }
 
     return false;

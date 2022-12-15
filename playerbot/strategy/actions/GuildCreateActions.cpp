@@ -10,11 +10,12 @@
 #include "ArenaTeam.h"
 #endif
 #endif
+#include "ServerFacade.h"
 
 using namespace std;
 using namespace ai;
 
-bool BuyPetitionAction::ExecuteCommand(Event& event)
+bool BuyPetitionAction::Execute(Event& event)
 {
     list<ObjectGuid> vendors = ai->GetAiObjectContext()->GetValue<list<ObjectGuid> >("nearest npcs")->Get();
     bool vendored = false, result = false;

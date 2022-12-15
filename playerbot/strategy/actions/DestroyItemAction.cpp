@@ -1,7 +1,6 @@
 #include "botpch.h"
 #include "../../playerbot.h"
 #include "DestroyItemAction.h"
-
 #include "../values/ItemCountValue.h"
 
 using namespace ai;
@@ -22,7 +21,7 @@ bool DestroyItemAction::ExecuteCommand(Event& event)
 
 void DestroyItemAction::DestroyItem(FindItemVisitor* visitor)
 {
-    IterateItems(visitor);
+    ai->InventoryIterateItems(visitor);
     list<Item*> items = visitor->GetResult();
 	for (list<Item*>::iterator i = items.begin(); i != items.end(); ++i)
     {
@@ -40,12 +39,12 @@ bool SmartDestroyItemAction::ExecuteCommand(Event& event)
     if (bagSpace < 90)
         return false;
 
-    // only destoy grey items if with real player/guild
+    // only destroy grey items if with real player/guild
     if (ai->HasRealPlayerMaster() || ai->IsInRealGuild())
     {
         set<Item*> items;
         FindItemsToTradeByQualityVisitor visitor(ITEM_QUALITY_POOR, 5);
-        IterateItems(&visitor, ITERATE_ITEMS_IN_BAGS);
+        ai->InventoryIterateItems(&visitor, ITERATE_ITEMS_IN_BAGS);
         items.insert(visitor.GetResult().begin(), visitor.GetResult().end());
 
         for (auto& item : items)

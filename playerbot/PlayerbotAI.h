@@ -11,6 +11,7 @@
 #include "PlayerbotTextMgr.h"
 #include "BotState.h"
 #include <stack>
+#include "strategy/IterateItemsMask.h"
 
 class Player;
 class PlayerbotMgr;
@@ -38,6 +39,8 @@ namespace ai
 {
     class WorldPosition;
     class GuidPosition;
+    class IterateItemsVisitor;
+    class FindItemVisitor;
 
 	class MinValueCalculator {
 	public:
@@ -400,6 +403,20 @@ public:
     bool IsFriendlyTo(uint32 faction) { return GetFactionReaction(bot->GetFactionTemplateEntry(), sFactionTemplateStore.LookupEntry(faction)) >= REP_NEUTRAL; }
     static bool AddAura(Unit* unit, uint32 spellId);
     ReputationRank getReaction(FactionTemplateEntry const* factionTemplate) { return GetFactionReaction(bot->GetFactionTemplateEntry(), factionTemplate);}
+
+    void InventoryIterateItems(IterateItemsVisitor* visitor, IterateItemsMask mask = ITERATE_ITEMS_IN_BAGS);
+    void InventoryTellItems(map<uint32, int> items, map<uint32, bool> soulbound);
+    void InventoryTellItem(ItemPrototype const* proto, int count, bool soulbound);
+    list<Item*> InventoryParseItems(string text, IterateItemsMask mask = ITERATE_ALL_ITEMS);
+    uint32 InventoryGetItemCount(FindItemVisitor* visitor, IterateItemsMask mask = ITERATE_ITEMS_IN_BAGS);
+    string InventoryParseOutfitName(string outfit);
+    ItemIds InventoryParseOutfitItems(string outfit);
+    ItemIds InventoryFindOutfitItems(string name);
+
+private:
+    void InventoryIterateItemsInBags(IterateItemsVisitor* visitor);
+    void InventoryIterateItemsInEquip(IterateItemsVisitor* visitor);
+    void InventoryIterateItemsInBank(IterateItemsVisitor* visitor);
 
 private:
     void _fillGearScoreData(Player *player, Item* item, std::vector<uint32>* gearScore, uint32& twoHandScore);

@@ -37,8 +37,8 @@ bool BuyAction::ExecuteCommand(Event& event)
         if (buyUseful)
         {
             //Items are evaluated from high-level to low level.
-            //For each item the bot checks again if an item is usefull.
-            //Bot will buy until no usefull items are left.
+            //For each item the bot checks again if an item is useful.
+            //Bot will buy until no useful items are left.
 
             VendorItemData const* tItems = pCreature->GetVendorItems();
             VendorItemData const* vItems = {};

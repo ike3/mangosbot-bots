@@ -5,6 +5,7 @@
 
 #include "../../../ahbot/AhBot.h"
 #include "../../PlayerbotAIConfig.h"
+#include "../ItemVisitors.h"
 
 using namespace ai;
 
@@ -107,7 +108,7 @@ bool SendMailAction::ExecuteCommand(Event& event)
     for (ItemIds::iterator i =ids.begin(); i != ids.end(); i++)
     {
         FindItemByIdVisitor visitor(*i);
-        IterateItems(&visitor, ITERATE_ITEMS_IN_BAGS);
+        ai->InventoryIterateItems(&visitor, ITERATE_ITEMS_IN_BAGS);
         list<Item*> items = visitor.GetResult();
         for (list<Item*>::iterator i = items.begin(); i != items.end(); ++i)
         {

@@ -1,5 +1,5 @@
 #pragma once
-#include "InventoryAction.h"
+#include "GenericActions.h"
 
 namespace ai
 {
@@ -18,10 +18,10 @@ namespace ai
     };
 
 
-    class MailAction : public InventoryAction
+    class MailAction : public ChatCommandAction
     {
     public:
-        MailAction(PlayerbotAI* ai) : InventoryAction(ai, "mail") {}
+        MailAction(PlayerbotAI* ai) : ChatCommandAction(ai, "mail") {}
         virtual bool ExecuteCommand(Event& event) override;
 
     private:

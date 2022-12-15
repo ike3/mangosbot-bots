@@ -7,6 +7,8 @@
 #include "Chat/ChannelMgr.h"
 #include "../../PlayerbotAIConfig.h"
 #include "../../PlayerbotTextMgr.h"
+#include "ServerFacade.h"
+#include "../ItemVisitors.h"
 
 using ahbot::PricingStrategy;
 
@@ -16,7 +18,7 @@ map<string, int> SuggestWhatToDoAction::instances;
 map<string, int> SuggestWhatToDoAction::factions;
 
 SuggestWhatToDoAction::SuggestWhatToDoAction(PlayerbotAI* ai, string name)
-    : InventoryAction{ ai, name }
+    : Action{ ai, name }
     , _locale{ sConfig.GetIntDefault("DBC.Locale", 0 /*LocaleConstant::LOCALE_enUS*/) }
 {
     // -- In case we're using auto detect on config file^M
@@ -30,7 +32,7 @@ SuggestWhatToDoAction::SuggestWhatToDoAction(PlayerbotAI* ai, string name)
     suggestions.push_back(&SuggestWhatToDoAction::something);
 }
 
-bool SuggestWhatToDoAction::ExecuteCommand(Event& event)
+bool SuggestWhatToDoAction::Execute(Event& event)
 {
     if (!sRandomPlayerbotMgr.IsRandomBot(bot) || bot->GetGroup() || bot->GetInstanceId())
         return false;
@@ -361,7 +363,6 @@ void SuggestWhatToDoAction::spam(string msg, uint8 flags, bool worldChat, bool g
     }
 }
 
-
 class FindTradeItemsVisitor : public IterateItemsVisitor
 {
 public:
@@ -398,7 +399,7 @@ SuggestTradeAction::SuggestTradeAction(PlayerbotAI* ai) : SuggestWhatToDoAction(
 {
 }
 
-bool SuggestTradeAction::ExecuteCommand(Event& event)
+bool SuggestTradeAction::Execute(Event& event)
 {
     if (!sRandomPlayerbotMgr.IsRandomBot(bot) || bot->GetGroup() || bot->GetInstanceId())
         return false;
@@ -419,7 +420,7 @@ bool SuggestTradeAction::ExecuteCommand(Event& event)
     while (quality-- > ITEM_QUALITY_POOR)
     {
         FindTradeItemsVisitor visitor(quality);
-        IterateItems(&visitor);
+        ai->InventoryIterateItems(&visitor);
         if (!visitor.stacks.empty())
         {
             int index = urand(0, visitor.stacks.size() - 1);

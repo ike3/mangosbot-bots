@@ -7,24 +7,23 @@
 
 using namespace ai;
 
-list<Item*> InventoryItemValueBase::Find(string qualifier)
+static list<Item*> Find(PlayerbotAI* ai, string qualifier)
 {
     list<Item*> result;
 
-    Player* bot = InventoryAction::ai->GetBot();
+    Player* bot = ai->GetBot();
 
-    list<Item*> items = InventoryAction::parseItems(qualifier);
+    list<Item*> items = ai->InventoryParseItems(qualifier);
     for (list<Item*>::iterator i = items.begin(); i != items.end(); i++)
         result.push_back(*i);
 
     return result;
 }
 
-
 uint32 ItemCountValue::Calculate()
 {
     uint32 count = 0;
-    list<Item*> items = Find(qualifier);
+    list<Item*> items = Find(ai, qualifier);
     for (list<Item*>::iterator i = items.begin(); i != items.end(); ++i)
     {
         Item* item = *i;
@@ -36,7 +35,7 @@ uint32 ItemCountValue::Calculate()
 
 list<Item*> InventoryItemValue::Calculate()
 {
-    return Find(qualifier);
+    return Find(ai, qualifier);
 }
 
 list<Item*> EquipedUsableTrinketValue::Calculate()
@@ -44,7 +43,7 @@ list<Item*> EquipedUsableTrinketValue::Calculate()
 	list<Item*> trinkets;
 	list<Item*> result;
 
-	Player* bot = InventoryAction::ai->GetBot();
+	Player* bot = ai->GetBot();
 
 	if (Item* trinket1 = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_TRINKET1))
 		trinkets.push_back(trinket1);

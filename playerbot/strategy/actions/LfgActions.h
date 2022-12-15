@@ -1,7 +1,4 @@
 #pragma once
-
-#include "../Action.h"
-#include "InventoryAction.h"
 #include "MovementActions.h"
 #include "AiFactory.h"
 #include "PlayerbotAIConfig.h"
@@ -23,11 +20,11 @@
 
 namespace ai
 {
-    class LfgJoinAction : public InventoryAction
+    class LfgJoinAction : public Action
     {
     public:
-        LfgJoinAction(PlayerbotAI* ai, string name = "lfg join") : InventoryAction(ai, name) {}
-        virtual bool ExecuteCommand(Event& event) override;
+        LfgJoinAction(PlayerbotAI* ai, string name = "lfg join") : Action(ai, name) {}
+        virtual bool Execute(Event& event) override;
         virtual bool isUseful();
 
     protected:
@@ -42,7 +39,7 @@ namespace ai
     {
     public:
         LfgAcceptAction(PlayerbotAI* ai) : LfgJoinAction(ai, "lfg accept") {}
-        virtual bool ExecuteCommand(Event& event) override;
+        virtual bool Execute(Event& event) override;
         virtual bool isUseful() { return true; }
     };
 
@@ -50,7 +47,7 @@ namespace ai
     {
     public:
         LfgRoleCheckAction(PlayerbotAI* ai) : LfgJoinAction(ai, "lfg role check") {}
-        virtual bool ExecuteCommand(Event& event) override;
+        virtual bool Execute(Event& event) override;
         virtual bool isUseful() { return true; }
     };
 

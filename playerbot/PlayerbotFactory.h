@@ -1,13 +1,10 @@
 #pragma once
 
-#include "strategy/actions/InventoryAction.h"
-
 class Player;
 class PlayerbotMgr;
 class ChatHandler;
 
 using namespace std;
-using ai::InventoryAction;
 
 struct EnchantTemplate
 {
@@ -28,7 +25,6 @@ struct TaxiNodeLevel
 
 typedef std::vector<TaxiNodeLevel> TaxiNodeLevelContainer;
 
-
 //TODO: more spec/role
 /* classid+talenttree
 enum spec : uint8 {
@@ -48,11 +44,10 @@ enum spec : uint8 {
    ROLE_CDPS = 3,
 };*/
 
-class PlayerbotFactory : public InventoryAction
+class PlayerbotFactory
 {
 public:
-    PlayerbotFactory(Player* bot, uint32 level, uint32 itemQuality = 0) :
-        level(level), itemQuality(itemQuality), InventoryAction(bot->GetPlayerbotAI(), "factory") {}
+    PlayerbotFactory(Player* bot, uint32 level, uint32 itemQuality = 0) : level(level), itemQuality(itemQuality), bot(bot), ai(bot->GetPlayerbotAI()) {}
 
     static ObjectGuid GetRandomBot();
     static void Init();
@@ -130,6 +125,8 @@ private:
     static uint32 tradeSkills[];
     static TaxiNodeLevelContainer overworldTaxiNodeLevelsA;
     static TaxiNodeLevelContainer overworldTaxiNodeLevelsH;
+    PlayerbotAI* ai;
+    Player* bot;
 
 protected:
    EnchantContainer m_EnchantContainer;

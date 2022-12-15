@@ -1,15 +1,13 @@
 #pragma once
-
 #include "../Action.h"
-#include "InventoryAction.h"
 
 namespace ai
 {
-    class GiveItemAction : public InventoryAction
+    class GiveItemAction : public Action
     {
     public:
-        GiveItemAction(PlayerbotAI* ai, string name, string item) : InventoryAction(ai, name), item(item) {}
-        virtual bool ExecuteCommand(Event& event) override;
+        GiveItemAction(PlayerbotAI* ai, string name, string item) : Action(ai, name), item(item) {}
+        virtual bool Execute(Event& event) override;
         virtual bool isUseful() { return GetTarget() && AI_VALUE2(uint8, "mana", "self target") > sPlayerbotAIConfig.lowMana; }
         virtual Unit* GetTarget();
 
