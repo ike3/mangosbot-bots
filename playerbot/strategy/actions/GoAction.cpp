@@ -31,7 +31,144 @@ bool GoAction::Execute(Event& event)
         ai->TellMaster(out.str());
         return true;
     }
-    
+
+    if (param.find("where") != string::npos)
+    {
+        ChooseTravelTargetAction* travelAction = new ChooseTravelTargetAction(ai);
+
+        TravelTarget* target = context->GetValue<TravelTarget*>("travel target")->Get();
+
+        travelAction->getNewTarget(target, target);
+
+        if (!target->getDestination() || target->getDestination()->getTitle().empty())
+        {
+            ai->TellMasterNoFacing("I have no place I want to go to");
+            return false;
+        }
+
+        string title = target->getDestination()->getTitle();
+
+        if (title.find('[') != string::npos)
+            title = title.substr(title.find("[") + 1, title.find("]") - title.find("[")-1);
+
+
+        TravelDestination* dest = ChooseTravelTargetAction::FindDestination(bot,title);
+
+        if (!dest)
+            dest = target->getDestination();
+
+        if (!dest)
+        {
+            ai->TellMasterNoFacing("I have no place I want to go to");
+            return false;
+        }
+
+        string link = ChatHelper::formatValue("command", "go to " + title,title, "FFFFFFFF");
+
+        ostringstream out; out << "I would like to travel to " << link;
+        ai->TellMasterNoFacing(out.str());
+
+        delete travelAction;
+        return true;
+    }
+    if (param.find("to") != string::npos && param.size() > 3)
+    {
+        WorldPosition botPos = WorldPosition(bot);
+
+        string destination = param.substr(3);
+
+        TravelTarget* target = context->GetValue<TravelTarget*>("travel target")->Get();
+
+        TravelDestination* dest = ChooseTravelTargetAction::FindDestination(bot, destination);
+        if (dest)
+        {
+            WorldPosition* point = dest->nearestPoint(botPos);
+
+            if (!point)
+                return false;
+
+            if (ai->HasStrategy("follow", BotState::BOT_STATE_NON_COMBAT))
+            {
+                vector<WorldPosition> beginPath, endPath;
+                TravelNodeRoute route = sTravelNodeMap.getRoute(botPos, *point, beginPath, bot);
+
+                WorldPosition poi = *point;
+                float pointAngle = botPos.getAngleTo(poi);
+
+                if (botPos.distance(poi) > 60)
+                {
+                    TravelNode* nearNode = nullptr;
+                    TravelNode* nextNode = nullptr;
+
+                    if (route.getNodes().size() > 1)
+                    {
+                        nearNode = route.getNodes().front();
+
+                        for (auto node : route.getNodes())
+                        {
+                            if (node->getPosition()->getAreaName(true, true) != botPos.getAreaName(true,true) && node != nearNode)
+                            {
+                                nextNode = node;
+                                break;
+                            }
+                        }
+                        if(nearNode == nextNode)
+                            for (auto node : route.getNodes())
+                            {
+                                if (node->getPosition()->distance(botPos) > 150 && node != nearNode)
+                                {
+                                    nextNode = node;
+                                    break;
+                                }
+                            }
+                    }
+                    else
+                        nextNode = route.getNodes().front();
+
+                    if (nearNode)
+                        ai->TellMasterNoFacing("We are now near " + nearNode->getName() + ".");
+                    
+                    ai->TellMasterNoFacing("if we want to travel to " + dest->getTitle());
+                    if (nextNode->getPosition()->getAreaName(true, true) != botPos.getAreaName(true, true))
+                        ai->TellMasterNoFacing("we should head to " + nextNode->getName() + " in " + nextNode->getPosition()->getAreaName(true, true));
+                    else
+                        ai->TellMasterNoFacing("we should head to " + nextNode->getName());
+
+                    poi = *nextNode->getPosition();
+                    pointAngle = botPos.getAngleTo(poi);
+
+                }
+                else
+                    ai->TellMasterNoFacing("We are near " + dest->getTitle());
+
+                ai->TellMaster("it is " + to_string(uint32(round(poi.distance(botPos)))) + " yards to the " + ChatHelper::formatAngle(pointAngle));
+                sServerFacade.SetFacingTo(bot, pointAngle, true);
+                bot->HandleEmoteCommand(EMOTE_ONESHOT_POINT);
+                ai->Poi(poi.getX(), poi.getY(), "this way", master);
+
+                return true;
+            }
+            else
+            {
+                target->setTarget(dest, point);
+                target->setForced(true);
+
+                ostringstream out; out << "Traveling to " << dest->getTitle();
+                ai->TellMasterNoFacing(out.str());
+
+                if (!ai->HasStrategy("travel", BotState::BOT_STATE_NON_COMBAT))
+                    ai->ChangeStrategy("+travel once", BotState::BOT_STATE_NON_COMBAT);
+            }
+            return true;
+        }
+        else
+        {
+            ai->TellMasterNoFacing("I don't know how to travel there to " + destination);
+            return true;
+        }
+
+        return true;
+    }
     if (param.find("travel") != string::npos && param.size()> 7)
     {
         WorldPosition pos = WorldPosition(bot);

@@ -13,10 +13,9 @@ namespace ai
         virtual bool Execute(Event& event);
         virtual bool isUseful();
 
-        protected:
+        void getNewTarget(TravelTarget* newTarget, TravelTarget* oldTarget);
 
-            void getNewTarget(TravelTarget* newTarget, TravelTarget* oldTarget);
-
+    protected:
         void setNewTarget(TravelTarget* newTarget, TravelTarget* oldTarget);
         void ReportTravelTarget(TravelTarget* newTarget, TravelTarget* oldTarget);
 
