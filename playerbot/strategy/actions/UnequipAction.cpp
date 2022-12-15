@@ -8,7 +8,7 @@ using namespace ai;
 
 vector<string> split(const string &s, char delim);
 
-bool UnequipAction::ExecuteCommand(Event& event)
+bool UnequipAction::Execute(Event& event)
 {
     string text = event.getParam();
 

@@ -8,6 +8,6 @@ namespace ai
     {
     public:
         LootStrategyAction(PlayerbotAI* ai) : ChatCommandAction(ai, "ll") {}
-        virtual bool ExecuteCommand(Event& event) override;
+        virtual bool Execute(Event& event) override;
     };
 }

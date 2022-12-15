@@ -4,7 +4,7 @@
 
 using namespace ai;
 
-bool ChangeChatAction::ExecuteCommand(Event& event)
+bool ChangeChatAction::Execute(Event& event)
 {
     string text = event.getParam();
     ChatMsg parsed = chat->parseChat(text);

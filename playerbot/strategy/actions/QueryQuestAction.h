@@ -9,7 +9,7 @@ namespace ai
         QueryQuestAction(PlayerbotAI* ai) : ChatCommandAction(ai, "query quest") {}
 
     private:
-        bool ExecuteCommand(Event& event) override;
+        bool Execute(Event& event) override;
         void TellObjectives(uint32 questId);
         void TellObjective(string name, int available, int required);
     };

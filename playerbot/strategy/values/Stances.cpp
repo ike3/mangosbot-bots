@@ -208,7 +208,7 @@ bool StanceValue::Load(string name)
     return true;
 }
 
-bool SetStanceAction::ExecuteCommand(Event& event)
+bool SetStanceAction::Execute(Event& event)
 {
     string stance = event.getParam();
 

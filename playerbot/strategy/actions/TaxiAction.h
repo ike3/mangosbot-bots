@@ -7,6 +7,6 @@ namespace ai
     {
 	public:
 		TaxiAction(PlayerbotAI* ai) : ChatCommandAction(ai, "taxi") {}
-        virtual bool ExecuteCommand(Event& event) override;
+        virtual bool Execute(Event& event) override;
     };
 }

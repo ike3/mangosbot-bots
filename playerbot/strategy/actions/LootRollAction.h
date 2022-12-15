@@ -9,7 +9,7 @@ namespace ai
     {
     public:
         LootStartRollAction(PlayerbotAI* ai, string name = "loot start roll") : ChatCommandAction(ai, name) {}
-        virtual bool ExecuteCommand(Event& event) override;
+        virtual bool Execute(Event& event) override;
 
 #ifdef GenerateBotHelp
         virtual string GetHelpName() { return "loot start roll"; } //Must equal iternal name
@@ -26,7 +26,7 @@ namespace ai
     {
     public:
         RollAction(PlayerbotAI* ai, string name = "roll") : QueryItemUsageAction(ai, name) {}
-        virtual bool ExecuteCommand(Event& event) override;
+        virtual bool Execute(Event& event) override;
         virtual bool isPossible();
 
 #ifdef GenerateBotHelp
@@ -56,7 +56,7 @@ namespace ai
     {
     public:
         LootRollAction(PlayerbotAI* ai, string name = "loot roll") : RollAction(ai, name) {}
-        virtual bool ExecuteCommand(Event& event) override;
+        virtual bool Execute(Event& event) override;
 
 #ifdef GenerateBotHelp
         virtual string GetHelpName() { return "delayed loot roll"; } //Must equal internal name
@@ -74,7 +74,7 @@ namespace ai
     {
     public:
         AutoLootRollAction(PlayerbotAI* ai, string name = "auto loot roll") : RollAction(ai, name) {}
-        virtual bool ExecuteCommand(Event& event) override;
+        virtual bool Execute(Event& event) override;
 
 #ifdef GenerateBotHelp
         virtual string GetHelpName() { return "auto loot roll"; } //Must equal internal name

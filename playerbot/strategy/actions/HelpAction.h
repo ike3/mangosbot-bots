@@ -8,7 +8,7 @@ namespace ai
     public:
         HelpAction(PlayerbotAI* ai);
         virtual ~HelpAction();
-        virtual bool ExecuteCommand(Event& event) override;
+        virtual bool Execute(Event& event) override;
 
     private:
         void TellChatCommands();

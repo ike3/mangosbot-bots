@@ -14,7 +14,7 @@ namespace ai
         ReleaseSpiritAction(PlayerbotAI* ai, string name = "release") : ChatCommandAction(ai, name) {}
 
     public:
-        virtual bool ExecuteCommand(Event& event) override
+        virtual bool Execute(Event& event) override
         {
             if (sServerFacade.IsAlive(bot))
             {
@@ -57,7 +57,7 @@ namespace ai
     public:
         AutoReleaseSpiritAction(PlayerbotAI* ai, string name = "auto release") : ReleaseSpiritAction(ai, name) {}
 
-        virtual bool ExecuteCommand(Event& event) override
+        virtual bool Execute(Event& event) override
         {
             sLog.outDetail("Bot #%d %s:%d <%s> auto released", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->GetLevel(), bot->GetName());
 

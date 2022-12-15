@@ -10,7 +10,7 @@ namespace ai
         virtual bool isUseful();
 
     private:
-        bool ExecuteCommand(Event& event) override;
+        bool Execute(Event& event) override;
     };
 
     class AddAllLootAction : public ChatCommandAction
@@ -21,7 +21,7 @@ namespace ai
 
     protected:
         virtual bool AddLoot(ObjectGuid guid);
-        virtual bool ExecuteCommand(Event& event) override;
+        virtual bool Execute(Event& event) override;
     };
 
     class AddGatheringLootAction : public AddAllLootAction

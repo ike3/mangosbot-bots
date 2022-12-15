@@ -7,20 +7,20 @@ namespace ai
     {
     public:
         TellTargetAction(PlayerbotAI* ai) : ChatCommandAction(ai, "tell target") {}
-        virtual bool ExecuteCommand(Event& event) override;
+        virtual bool Execute(Event& event) override;
     };
 
     class TellAttackersAction : public ChatCommandAction
     {
     public:
         TellAttackersAction(PlayerbotAI* ai) : ChatCommandAction(ai, "tell attackers") {}
-        virtual bool ExecuteCommand(Event& event) override;
+        virtual bool Execute(Event& event) override;
     };
 
     class TellPossibleAttackTargetsAction : public ChatCommandAction
     {
     public:
         TellPossibleAttackTargetsAction(PlayerbotAI* ai) : ChatCommandAction(ai, "tell possible attack targets") {}
-        virtual bool ExecuteCommand(Event& event) override;
+        virtual bool Execute(Event& event) override;
     };
 }

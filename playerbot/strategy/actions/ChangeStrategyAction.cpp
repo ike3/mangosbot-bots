@@ -5,7 +5,7 @@
 
 using namespace ai;
 
-bool ChangeCombatStrategyAction::ExecuteCommand(Event& event)
+bool ChangeCombatStrategyAction::Execute(Event& event)
 {
     string text = event.getParam();
     ai->ChangeStrategy(text.empty() ? getName() : text, BotState::BOT_STATE_COMBAT);
@@ -32,7 +32,7 @@ bool ChangeCombatStrategyAction::ExecuteCommand(Event& event)
     return true;
 }
 
-bool ChangeNonCombatStrategyAction::ExecuteCommand(Event& event)
+bool ChangeNonCombatStrategyAction::Execute(Event& event)
 {
     string text = event.getParam();
     uint32 account = sObjectMgr.GetPlayerAccountIdByGUID(bot->GetObjectGuid());
@@ -68,21 +68,21 @@ bool ChangeNonCombatStrategyAction::ExecuteCommand(Event& event)
     return true;
 }
 
-bool ChangeDeadStrategyAction::ExecuteCommand(Event& event)
+bool ChangeDeadStrategyAction::Execute(Event& event)
 {
     string text = event.getParam();
     ai->ChangeStrategy(text, BotState::BOT_STATE_DEAD);
     return true;
 }
 
-bool ChangeReactionStrategyAction::ExecuteCommand(Event& event)
+bool ChangeReactionStrategyAction::Execute(Event& event)
 {
     string text = event.getParam();
     ai->ChangeStrategy(text, BotState::BOT_STATE_REACTION);
     return true;
 }
 
-bool ChangeAllStrategyAction::ExecuteCommand(Event& event)
+bool ChangeAllStrategyAction::Execute(Event& event)
 {
     string text = event.getParam();
     string strategyName = text.empty() ? strategy : text;

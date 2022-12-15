@@ -22,7 +22,7 @@ namespace ai
     {
     public:
         MailAction(PlayerbotAI* ai) : ChatCommandAction(ai, "mail") {}
-        virtual bool ExecuteCommand(Event& event) override;
+        virtual bool Execute(Event& event) override;
 
     private:
         bool CheckMailbox();

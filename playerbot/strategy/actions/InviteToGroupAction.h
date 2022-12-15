@@ -8,7 +8,7 @@ namespace ai
     public:
         InviteToGroupAction(PlayerbotAI* ai, string name = "invite") : ChatCommandAction(ai, name) {}
 
-        virtual bool ExecuteCommand(Event& event) override
+        virtual bool Execute(Event& event) override
         {
             Player* master = event.getOwner();
             return Invite(bot, master);
@@ -21,7 +21,7 @@ namespace ai
     {
     public:
         JoinGroupAction(PlayerbotAI* ai, string name = "join") : InviteToGroupAction(ai, name) {}
-        virtual bool ExecuteCommand(Event& event) override;
+        virtual bool Execute(Event& event) override;
         virtual bool isUsefull() { return !bot->IsBeingTeleported(); }
     };
 
@@ -29,7 +29,7 @@ namespace ai
     {
     public:
         InviteNearbyToGroupAction(PlayerbotAI* ai, string name = "invite nearby") : InviteToGroupAction(ai, name) {}
-        virtual bool ExecuteCommand(Event& event) override;
+        virtual bool Execute(Event& event) override;
         virtual bool isUseful();
     };
 
@@ -49,7 +49,7 @@ namespace ai
     {
     public:
         InviteGuildToGroupAction(PlayerbotAI* ai, string name = "invite guild") : InviteNearbyToGroupAction(ai, name) {}
-        virtual bool ExecuteCommand(Event& event) override;
+        virtual bool Execute(Event& event) override;
         virtual bool isUseful() { return bot->GetGuildId() && InviteNearbyToGroupAction::isUseful(); };
 
     private:

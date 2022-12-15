@@ -7,6 +7,6 @@ namespace ai
     {
     public:
         RepairAllAction(PlayerbotAI* ai) : ChatCommandAction(ai, "repair") {}
-        virtual bool ExecuteCommand(Event& event) override;
+        virtual bool Execute(Event& event) override;
     };
 }

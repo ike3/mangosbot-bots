@@ -7,6 +7,6 @@ namespace ai
     {
     public:
         TellItemCountAction(PlayerbotAI* ai) : ChatCommandAction(ai, "c") {}
-        virtual bool ExecuteCommand(Event& event) override;
+        virtual bool Execute(Event& event) override;
     };
 }

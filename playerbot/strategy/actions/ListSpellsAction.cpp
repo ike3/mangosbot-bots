@@ -260,7 +260,7 @@ list<pair<uint32, string> > ListSpellsAction::GetSpellList(string filter)
     return spells;
 }
 
-bool ListSpellsAction::ExecuteCommand(Event& event)
+bool ListSpellsAction::Execute(Event& event)
 {
     Player* master = GetMaster();
     if (!master)

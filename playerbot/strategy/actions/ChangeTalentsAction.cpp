@@ -5,7 +5,7 @@
 
 using namespace ai;
 
-bool ChangeTalentsAction::ExecuteCommand(Event& event)
+bool ChangeTalentsAction::Execute(Event& event)
 {
     string param = event.getParam();
 
@@ -345,7 +345,7 @@ TalentSpec* ChangeTalentsAction::GetBestPremadeSpec(int specId)
     return &sPlayerbotAIConfig.classSpecs[bot->getClassMask()].baseSpec;
 }
 
-bool AutoSetTalentsAction::ExecuteCommand(Event& event)
+bool AutoSetTalentsAction::Execute(Event& event)
 {
     sPlayerbotAIConfig.logEvent(ai, "AutoSetTalentsAction", to_string(bot->m_Played_time[PLAYED_TIME_LEVEL]), to_string(bot->m_Played_time[PLAYED_TIME_TOTAL]));
 

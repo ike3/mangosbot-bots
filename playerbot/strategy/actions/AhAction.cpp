@@ -10,7 +10,7 @@
 using namespace std;
 using namespace ai;
 
-bool AhAction::ExecuteCommand(Event& event)
+bool AhAction::Execute(Event& event)
 {
     string text = event.getParam();
 

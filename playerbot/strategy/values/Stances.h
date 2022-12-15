@@ -47,7 +47,7 @@ namespace ai
     {
     public:
         SetStanceAction(PlayerbotAI* ai) : ChatCommandAction(ai, "set Stance") {}
-        virtual bool ExecuteCommand(Event& event) override;
+        virtual bool Execute(Event& event) override;
     };
 };
 

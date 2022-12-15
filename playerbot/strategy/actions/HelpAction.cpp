@@ -16,7 +16,7 @@ HelpAction::~HelpAction()
     delete chatContext;
 }
 
-bool HelpAction::ExecuteCommand(Event& event)
+bool HelpAction::Execute(Event& event)
 {
     string param = event.getParam();
     string helpTopic;

@@ -10,7 +10,7 @@
 
 using namespace ai;
 
-bool UseItemAction::ExecuteCommand(Event& event)
+bool UseItemAction::Execute(Event& event)
 {
    string name = event.getParam();
    if (name.empty())
@@ -543,7 +543,7 @@ bool UseItemAction::SocketItem(Item* item, Item* gem, bool replace)
 }
 #endif
 
-bool UseItemIdAction::ExecuteCommand(Event& event)
+bool UseItemIdAction::Execute(Event& event)
 {    
     if(CastItemSpell(GetItemId(), GetTarget()))
     {
@@ -713,7 +713,7 @@ bool UseSpellItemAction::isUseful()
    return AI_VALUE2(bool, "spell cast useful", getName());
 }
 
-bool UseHearthStoneAction::ExecuteCommand(Event& event)
+bool UseHearthStoneAction::Execute(Event& event)
 {
     if (bot->IsMoving())
     {
@@ -729,7 +729,7 @@ bool UseHearthStoneAction::ExecuteCommand(Event& event)
         bot->GetSession()->HandleCancelMountAuraOpcode(emptyPacket);
     }
 
-    const bool used = UseItemAction::ExecuteCommand(event);
+    const bool used = UseItemAction::Execute(event);
     if (used)
     {
         RESET_AI_VALUE(bool, "combat::self target");
@@ -744,7 +744,7 @@ bool UseRandomRecipeAction::isUseful()
    return !bot->IsInCombat() && !ai->HasActivePlayerMaster() && !bot->InBattleGround();
 }
 
-bool UseRandomRecipeAction::ExecuteCommand(Event& event)
+bool UseRandomRecipeAction::Execute(Event& event)
 {
     list<Item*> recipes = AI_VALUE2(list<Item*>, "inventory items", "recipe");   
     string recipeName = "";
@@ -756,7 +756,7 @@ bool UseRandomRecipeAction::ExecuteCommand(Event& event)
     if (recipeName.empty())
         return false;
 
-    return UseItemAction::ExecuteCommand(Event(name, recipeName));
+    return UseItemAction::Execute(Event(name, recipeName));
 }
 
 bool UseRandomQuestItemAction::isUseful()
@@ -764,7 +764,7 @@ bool UseRandomQuestItemAction::isUseful()
     return !ai->HasActivePlayerMaster() && !bot->InBattleGround() && !bot->IsTaxiFlying();
 }
 
-bool UseRandomQuestItemAction::ExecuteCommand(Event& event)
+bool UseRandomQuestItemAction::Execute(Event& event)
 {
     Unit* unitTarget = nullptr;
     ObjectGuid goTarget = ObjectGuid();

@@ -7,7 +7,7 @@ namespace ai
     {
     public:
         BuyAction(PlayerbotAI* ai) : ChatCommandAction(ai, "buy") {}
-        virtual bool ExecuteCommand(Event& event) override;
+        virtual bool Execute(Event& event) override;
 
     private:
         bool BuyItem(VendorItemData const* tItems, ObjectGuid vendorguid, const ItemPrototype* proto);

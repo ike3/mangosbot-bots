@@ -17,7 +17,7 @@ namespace ai
         virtual bool ShouldReactionInterruptCast() const override { return true; }
 
     protected:
-        virtual bool ExecuteCommand(Event& event) override;
+        virtual bool Execute(Event& event) override;
         bool UseItemAuto(Item* item);
         bool UseItemOnGameObject(Item* item, ObjectGuid go);
         bool UseItemOnItem(Item* item, Item* itemTarget);
@@ -37,7 +37,7 @@ namespace ai
         virtual bool isPossible() override;
 
     protected:
-        virtual bool ExecuteCommand(Event& event) override;
+        virtual bool Execute(Event& event) override;
         virtual uint32 GetItemId() { return  0; }
         virtual Unit* GetTarget() override { return nullptr; }
         bool HasSpellCooldown(const uint32 itemId);
@@ -98,7 +98,7 @@ namespace ai
     public:
         UseHearthStoneAction(PlayerbotAI* ai) : UseItemAction(ai, "hearthstone", true) {}
 
-        virtual bool ExecuteCommand(Event& event) override;
+        virtual bool Execute(Event& event) override;
 
         bool isUseful() override { return !bot->InBattleGround() && sServerFacade.IsSpellReady(bot, 8690); }
     
@@ -116,8 +116,8 @@ namespace ai
         virtual bool isUseful() override;
         virtual bool isPossible() override {return AI_VALUE2(uint32,"item count", "recipe") > 0; }
       
-        virtual bool ExecuteCommand(Event& event) override;
         virtual uint32 getDuration() const override { return 3000U; };
+        virtual bool Execute(Event& event) override;
 
         // Used when this action is executed as a reaction
         bool ShouldReactionInterruptMovement() const override { return true; }
@@ -131,7 +131,7 @@ namespace ai
         virtual bool isUseful() override;
         virtual bool isPossible() override { return AI_VALUE2(uint32, "item count", "quest") > 0;}
 
-        virtual bool ExecuteCommand(Event& event) override;
+        virtual bool Execute(Event& event) override;
 
         // Used when this action is executed as a reaction
         bool ShouldReactionInterruptMovement() const override { return true; }

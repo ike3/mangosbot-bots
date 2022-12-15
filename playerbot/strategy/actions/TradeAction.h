@@ -7,7 +7,7 @@ namespace ai
     {
     public:
         TradeAction(PlayerbotAI* ai) : ChatCommandAction(ai, "trade") {}
-        virtual bool ExecuteCommand(Event& event) override;
+        virtual bool Execute(Event& event) override;
 
     private:
         bool TradeItem(const Item& item, int8 slot);

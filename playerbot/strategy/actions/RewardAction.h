@@ -7,7 +7,7 @@ namespace ai
     {
     public:
         RewardAction(PlayerbotAI* ai) : ChatCommandAction(ai, "reward") {}
-        virtual bool ExecuteCommand(Event& event) override;
+        virtual bool Execute(Event& event) override;
 
     private:
         bool Reward(uint32 itemId, Object* pNpc);

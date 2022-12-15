@@ -9,7 +9,7 @@ namespace ai
     {
     public:
         CastCustomSpellAction(PlayerbotAI* ai, string name = "cast custom spell") : ChatCommandAction(ai, name) {}
-        virtual bool ExecuteCommand(Event& event) override;
+        virtual bool Execute(Event& event) override;
         virtual string castString(WorldObject* target) { return "cast"; }
         virtual uint32 getDuration() const { return 3000U; }
 
@@ -43,7 +43,7 @@ namespace ai
         }
 
         virtual uint32 GetSpellPriority(const SpellEntry* pSpellInfo) { return 1; }
-        virtual bool ExecuteCommand(Event& event) override;
+        virtual bool Execute(Event& event) override;
 
         virtual bool castSpell(uint32 spellId, WorldObject* wo);
 
@@ -90,7 +90,7 @@ namespace ai
     public:
         DisEnchantRandomItemAction(PlayerbotAI* ai) : CastCustomSpellAction(ai, "disenchant random item")  {}
         virtual bool isUseful() { return ai->HasSkill(SKILL_ENCHANTING) && !bot->IsInCombat() && AI_VALUE2(uint32, "item count", "usage " + to_string(ITEM_USAGE_DISENCHANT)) > 0; }
-        virtual bool ExecuteCommand(Event& event) override;
+        virtual bool Execute(Event& event) override;
     };
 
     class EnchantRandomItemAction : public CastRandomSpellAction

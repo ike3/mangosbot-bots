@@ -7,7 +7,7 @@ namespace ai
     {
     public:
         TellSpellAction(PlayerbotAI* ai) : ChatCommandAction(ai, "spell") {}
-        virtual bool ExecuteCommand(Event& event) override;
+        virtual bool Execute(Event& event) override;
     };
 
     class TellCastFailedAction : public Action 

@@ -5,7 +5,7 @@
 
 using namespace ai;
 
-bool DestroyItemAction::ExecuteCommand(Event& event)
+bool DestroyItemAction::Execute(Event& event)
 {
     string text = event.getParam();
     ItemIds ids = chat->parseItems(text);
@@ -32,7 +32,7 @@ void DestroyItemAction::DestroyItem(FindItemVisitor* visitor)
     }
 }
 
-bool SmartDestroyItemAction::ExecuteCommand(Event& event)
+bool SmartDestroyItemAction::Execute(Event& event)
 {
     uint8 bagSpace = AI_VALUE(uint8, "bag space");
 

@@ -7,7 +7,7 @@ namespace ai
     {
     public:
         GuildBankAction(PlayerbotAI* ai) : ChatCommandAction(ai, "guild bank") {}
-        virtual bool ExecuteCommand(Event& event) override;
+        virtual bool Execute(Event& event) override;
 
     private:
         bool Execute(string text, GameObject* bank);

@@ -192,7 +192,7 @@ TakeMailProcessor TakeMailProcessor::instance;
 DeleteMailProcessor DeleteMailProcessor::instance;
 ReadMailProcessor ReadMailProcessor::instance;
 
-bool MailAction::ExecuteCommand(Event& event)
+bool MailAction::Execute(Event& event)
 {
     Player* master = GetMaster();
     if (!master && event.getSource() != "rpg action")

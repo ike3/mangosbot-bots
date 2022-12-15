@@ -7,6 +7,6 @@ namespace ai
     {
     public:
         ShareQuestAction(PlayerbotAI* ai) : ChatCommandAction(ai, "share quest") {}
-        virtual bool ExecuteCommand(Event& event) override;
+        virtual bool Execute(Event& event) override;
     };
 }

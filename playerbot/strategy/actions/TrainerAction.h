@@ -7,7 +7,7 @@ namespace ai
     {
 	public:
 		TrainerAction(PlayerbotAI* ai) : ChatCommandAction(ai, "trainer") {}
-        virtual bool ExecuteCommand(Event& event) override;
+        virtual bool Execute(Event& event) override;
 
     private:
         typedef void (TrainerAction::*TrainerSpellAction)(uint32, TrainerSpell const*, ostringstream& msg);

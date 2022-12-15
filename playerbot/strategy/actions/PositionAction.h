@@ -8,7 +8,7 @@ namespace ai
     {
     public:
         PositionAction(PlayerbotAI* ai) : ChatCommandAction(ai, "position") {}
-        virtual bool ExecuteCommand(Event& event) override;
+        virtual bool Execute(Event& event) override;
     };
 
     class MoveToPositionAction : public MovementAction

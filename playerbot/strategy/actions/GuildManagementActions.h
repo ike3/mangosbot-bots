@@ -7,7 +7,7 @@ namespace ai
     {
     public:
         GuidManageAction(PlayerbotAI* ai, string name = "guild manage", uint16 opcode = CMSG_GUILD_INVITE) : ChatCommandAction(ai, name), opcode(opcode) {}
-        virtual bool ExecuteCommand(Event& event) override;
+        virtual bool Execute(Event& event) override;
         virtual bool isUseful() { return false; }
     
     protected:
@@ -92,7 +92,7 @@ namespace ai
     {
     public:
         GuildManageNearbyAction(PlayerbotAI* ai) : ChatCommandAction(ai, "guild manage nearby") {}
-        virtual bool ExecuteCommand(Event& event) override;
+        virtual bool Execute(Event& event) override;
         virtual bool isUseful();
     };
 
@@ -100,7 +100,7 @@ namespace ai
     {
     public:
         GuildLeaveAction(PlayerbotAI* ai) : ChatCommandAction(ai, "guild leave") {}
-        virtual bool ExecuteCommand(Event& event) override;
+        virtual bool Execute(Event& event) override;
         virtual bool isUseful() { return bot->GetGuildId(); }
     };
 }

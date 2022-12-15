@@ -6,7 +6,7 @@
 using namespace std;
 using namespace ai;
 
-bool BankAction::ExecuteCommand(Event& event)
+bool BankAction::Execute(Event& event)
 {
     string text = event.getParam();
 

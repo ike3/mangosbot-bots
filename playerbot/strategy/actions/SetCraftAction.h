@@ -8,7 +8,7 @@ namespace ai
     {
     public:
         SetCraftAction(PlayerbotAI* ai) : ChatCommandAction(ai, "craft") {}
-        virtual bool ExecuteCommand(Event& event) override;
+        virtual bool Execute(Event& event) override;
         static uint32 GetCraftFee(CraftData&);
 
     private:

@@ -15,7 +15,7 @@ using namespace MaNGOS;
 
 using namespace ai;
 
-bool AddLootAction::ExecuteCommand(Event& event)
+bool AddLootAction::Execute(Event& event)
 {
     ObjectGuid guid = event.getObject();
     if (!guid)
@@ -24,7 +24,7 @@ bool AddLootAction::ExecuteCommand(Event& event)
     return AI_VALUE(LootObjectStack*, "available loot")->Add(guid);
 }
 
-bool AddAllLootAction::ExecuteCommand(Event& event)
+bool AddAllLootAction::Execute(Event& event)
 {
     bool added = false;
 

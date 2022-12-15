@@ -7,7 +7,7 @@ namespace ai
     {
     public:
         GossipHelloAction(PlayerbotAI* ai) : ChatCommandAction(ai, "gossip hello") {}
-        virtual bool ExecuteCommand(Event& event) override;
+        virtual bool Execute(Event& event) override;
 
     private:
         void TellGossipMenus();

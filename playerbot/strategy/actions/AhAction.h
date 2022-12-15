@@ -7,7 +7,7 @@ namespace ai
     {
     public:
         AhAction(PlayerbotAI* ai, string name = "ah") : ChatCommandAction(ai, name) {}
-        virtual bool ExecuteCommand(Event& event) override;
+        virtual bool Execute(Event& event) override;
 
     private:
         virtual bool ExecuteCommand(string text, Unit* auctioneer);

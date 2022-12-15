@@ -7,7 +7,7 @@ namespace ai
     {
     public:
         TellLosAction(PlayerbotAI* ai) : ChatCommandAction(ai, "los") {}
-        virtual bool ExecuteCommand(Event& event) override;
+        virtual bool Execute(Event& event) override;
 
     private:
         void ListUnits(string title, list<ObjectGuid> units);

@@ -7,14 +7,14 @@ namespace ai
     {
     public:
         DropQuestAction(PlayerbotAI* ai) : ChatCommandAction(ai, "drop quest") {}
-        virtual bool ExecuteCommand(Event& event) override;
+        virtual bool Execute(Event& event) override;
     };
 
     class CleanQuestLogAction : public ChatCommandAction
     {
     public:
         CleanQuestLogAction(PlayerbotAI* ai) : ChatCommandAction(ai, "clean quest log") {}
-        virtual bool ExecuteCommand(Event& event) override;
+        virtual bool Execute(Event& event) override;
 
         virtual bool isUseful() { return ai->HasStrategy("rpg quest", BotState::BOT_STATE_NON_COMBAT); }
 

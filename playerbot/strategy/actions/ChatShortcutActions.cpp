@@ -81,7 +81,7 @@ bool FollowChatShortcutAction::Execute(Event& event)
     return true;
 }
 
-bool StayChatShortcutAction::ExecuteCommand(Event& event)
+bool StayChatShortcutAction::Execute(Event& event)
 {
     Player* master = GetMaster();
     if (!master)
@@ -97,7 +97,7 @@ bool StayChatShortcutAction::ExecuteCommand(Event& event)
     return true;
 }
 
-bool FleeChatShortcutAction::ExecuteCommand(Event& event)
+bool FleeChatShortcutAction::Execute(Event& event)
 {
     Player* master = GetMaster();
     if (!master)
@@ -116,7 +116,7 @@ bool FleeChatShortcutAction::ExecuteCommand(Event& event)
     return true;
 }
 
-bool GoawayChatShortcutAction::ExecuteCommand(Event& event)
+bool GoawayChatShortcutAction::Execute(Event& event)
 {
     Player* master = GetMaster();
     if (!master)
@@ -130,7 +130,7 @@ bool GoawayChatShortcutAction::ExecuteCommand(Event& event)
     return true;
 }
 
-bool GrindChatShortcutAction::ExecuteCommand(Event& event)
+bool GrindChatShortcutAction::Execute(Event& event)
 {
     Player* master = GetMaster();
     if (!master)
@@ -143,7 +143,7 @@ bool GrindChatShortcutAction::ExecuteCommand(Event& event)
     return true;
 }
 
-bool TankAttackChatShortcutAction::ExecuteCommand(Event& event)
+bool TankAttackChatShortcutAction::Execute(Event& event)
 {
     Player* master = GetMaster();
     if (!master)
@@ -160,7 +160,7 @@ bool TankAttackChatShortcutAction::ExecuteCommand(Event& event)
     return true;
 }
 
-bool MaxDpsChatShortcutAction::ExecuteCommand(Event& event)
+bool MaxDpsChatShortcutAction::Execute(Event& event)
 {
     Player* master = GetMaster();
     if (!master)

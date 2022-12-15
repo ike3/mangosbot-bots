@@ -12,7 +12,7 @@ namespace ai
         ChangeTalentsAction(PlayerbotAI* ai, string name = "talents") : ChatCommandAction(ai, name) {}
 
     public:
-        virtual bool ExecuteCommand(Event& event) override;
+        virtual bool Execute(Event& event) override;
         virtual bool AutoSelectTalents(ostringstream* out);
     private:
         std::vector<TalentPath*> getPremadePaths(string findName);
@@ -27,6 +27,6 @@ namespace ai
     {
     public:
         AutoSetTalentsAction(PlayerbotAI* ai) : ChangeTalentsAction(ai, "auto talents") {}
-        virtual bool ExecuteCommand(Event& event) override;
+        virtual bool Execute(Event& event) override;
     };
 }

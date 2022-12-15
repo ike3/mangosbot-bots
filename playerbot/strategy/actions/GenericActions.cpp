@@ -12,15 +12,3 @@ bool MeleeAction::isUseful()
 
     return true;
 }
-
-bool ChatCommandAction::Execute(Event& event)
-{
-    if (ExecuteCommand(event))
-    {
-        SetDuration(getDuration());
-        return true;
-    }
-
-    SetDuration(0U);
-    return false;
-}

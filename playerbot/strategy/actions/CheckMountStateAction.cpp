@@ -10,7 +10,7 @@ using namespace ai;
 
 uint64 extractGuid(WorldPacket& packet);
 
-bool CheckMountStateAction::ExecuteCommand(Event& event)
+bool CheckMountStateAction::Execute(Event& event)
 {
     bool noattackers = AI_VALUE2(bool, "combat", "self target") ? AI_VALUE(bool, "has attackers") : true;
     bool enemy = AI_VALUE(bool, "has enemy player targets");

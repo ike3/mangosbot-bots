@@ -10,7 +10,7 @@ namespace ai
         PullMyTargetAction(PlayerbotAI* ai, string name = "pull my target") : ChatCommandAction(ai, name) {}
     
     private:
-        bool ExecuteCommand(Event& event) override;
+        bool Execute(Event& event) override;
     };
 
     class PullStartAction : public Action

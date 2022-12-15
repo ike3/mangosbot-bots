@@ -9,7 +9,7 @@
 
 using namespace ai;
 
-bool SendMailAction::ExecuteCommand(Event& event)
+bool SendMailAction::Execute(Event& event)
 {
     uint32 account = sObjectMgr.GetPlayerAccountIdByGUID(bot->GetObjectGuid());
     bool randomBot = sPlayerbotAIConfig.IsInRandomAccountList(account);

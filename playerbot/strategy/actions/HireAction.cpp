@@ -4,7 +4,7 @@
 
 using namespace ai;
 
-bool HireAction::ExecuteCommand(Event& event)
+bool HireAction::Execute(Event& event)
 {
     Player* master = GetMaster();
     if (!master)

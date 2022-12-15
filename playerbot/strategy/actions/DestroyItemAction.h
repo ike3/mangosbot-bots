@@ -7,7 +7,7 @@ namespace ai
     {
     public:
         DestroyItemAction(PlayerbotAI* ai, string name = "destroy") : ChatCommandAction(ai, name) {}
-        virtual bool ExecuteCommand(Event& event) override;
+        virtual bool Execute(Event& event) override;
 
 #ifdef GenerateBotHelp
         virtual string GetHelpName() { return "destroy"; } //Must equal iternal name
@@ -28,7 +28,7 @@ namespace ai
     {
     public:
         SmartDestroyItemAction(PlayerbotAI* ai) : DestroyItemAction(ai, "smart destroy") {}
-        virtual bool ExecuteCommand(Event& event) override;
+        virtual bool Execute(Event& event) override;
         virtual bool isUseful() { return !ai->HasActivePlayerMaster(); }
 
 #ifdef GenerateBotHelp

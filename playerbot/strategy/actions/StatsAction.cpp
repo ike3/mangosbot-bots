@@ -5,7 +5,7 @@
 
 using namespace ai;
 
-bool StatsAction::ExecuteCommand(Event& event)
+bool StatsAction::Execute(Event& event)
 {
     ostringstream out;
 

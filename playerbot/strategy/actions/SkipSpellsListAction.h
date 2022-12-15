@@ -8,7 +8,7 @@ namespace ai
     {
     public:
         SkipSpellsListAction(PlayerbotAI* ai) : ChatCommandAction(ai, "ss") {}
-        virtual bool ExecuteCommand(Event& event) override;
+        virtual bool Execute(Event& event) override;
 
     private:
         SpellIds parseIds(string text);

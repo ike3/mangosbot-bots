@@ -9,7 +9,7 @@ namespace ai
         QueryItemUsageAction(PlayerbotAI* ai, string name = "query item usage") : ChatCommandAction(ai, name) {}
 
     protected:
-        virtual bool ExecuteCommand(Event& event) override;
+        virtual bool Execute(Event& event) override;
         uint32 GetCount(ItemPrototype const *item);
         string QueryItem(ItemPrototype const *item, uint32 count, uint32 total);
         string QueryItemUsage(ItemPrototype const *item);

@@ -9,6 +9,6 @@ namespace ai
         TellReputationAction(PlayerbotAI* ai) : ChatCommandAction(ai, "reputation") {}
 
     private:
-        bool ExecuteCommand(Event& event) override;
+        bool Execute(Event& event) override;
     };
 }

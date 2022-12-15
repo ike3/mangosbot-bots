@@ -10,7 +10,7 @@ void QueryQuestAction::TellObjective(string name, int available, int required)
     ai->TellMaster(chat->formatQuestObjective(name, available, required), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
 }
 
-bool QueryQuestAction::ExecuteCommand(Event& event)
+bool QueryQuestAction::Execute(Event& event)
 {
     Player *bot = ai->GetBot();
     WorldPosition botPos(bot);

@@ -7,7 +7,7 @@ namespace ai
     {
     public:
         SaveManaAction(PlayerbotAI* ai) : ChatCommandAction(ai, "save mana") {}
-        virtual bool ExecuteCommand(Event& event) override;
+        virtual bool Execute(Event& event) override;
 
     private:
         string format(double value);

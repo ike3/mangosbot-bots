@@ -10,7 +10,7 @@
 
 using namespace ai;
 
-bool BuyAction::ExecuteCommand(Event& event)
+bool BuyAction::Execute(Event& event)
 {
     bool buyUseful = false;
     ItemIds itemIds;

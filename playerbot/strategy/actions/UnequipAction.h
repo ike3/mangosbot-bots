@@ -7,7 +7,7 @@ namespace ai
     {
     public:
         UnequipAction(PlayerbotAI* ai) : ChatCommandAction(ai, "unequip") {}
-        virtual bool ExecuteCommand(Event& event) override;
+        virtual bool Execute(Event& event) override;
 
     private:
         void UnequipItem(Item& item);

@@ -7,7 +7,7 @@ namespace ai
     {
     public:
         BuffAction(PlayerbotAI* ai) : ChatCommandAction(ai, "buff") {}
-        virtual bool ExecuteCommand(Event& event);
+        virtual bool Execute(Event& event);
 
     private:
         void TellHeader(uint32 subClass);

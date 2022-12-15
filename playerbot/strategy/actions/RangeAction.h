@@ -7,7 +7,7 @@ namespace ai
     {
     public:
         RangeAction(PlayerbotAI* ai) : ChatCommandAction(ai, "range") {}
-        virtual bool ExecuteCommand(Event& event) override;
+        virtual bool Execute(Event& event) override;
 
     private:
         void PrintRange(string type);

@@ -12,7 +12,7 @@ namespace ai
     public:
         CheckMountStateAction(PlayerbotAI* ai) : UseItemAction(ai, "check mount state", true) {}
 
-        virtual bool ExecuteCommand(Event& event) override;
+        virtual bool Execute(Event& event) override;
         virtual bool isPossible() { return true; }
         virtual bool isUseful();
 

@@ -7,6 +7,6 @@ namespace ai
     {
 	public:
 		TeleportAction(PlayerbotAI* ai) : ChatCommandAction(ai, "teleport") {}
-        virtual bool ExecuteCommand(Event& event) override;
+        virtual bool Execute(Event& event) override;
     };
 }

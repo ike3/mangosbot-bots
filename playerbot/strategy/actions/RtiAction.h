@@ -7,7 +7,7 @@ namespace ai
     {
     public:
         RtiAction(PlayerbotAI* ai) : ChatCommandAction(ai, "rti") {}
-        virtual bool ExecuteCommand(Event& event) override;
+        virtual bool Execute(Event& event) override;
 
     private:
         void AppendRti(ostringstream & out, string type);

@@ -7,6 +7,6 @@ namespace ai
     {
     public:
         HireAction(PlayerbotAI* ai) : ChatCommandAction(ai, "hire") {}
-        virtual bool ExecuteCommand(Event& event) override;
+        virtual bool Execute(Event& event) override;
     };
 }

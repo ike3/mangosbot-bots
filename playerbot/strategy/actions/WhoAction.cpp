@@ -16,7 +16,7 @@ inline int strcmpi(const char* s1, const char* s2)
 }
 #endif
 
-bool WhoAction::ExecuteCommand(Event& event)
+bool WhoAction::Execute(Event& event)
 {
     Player* owner = event.getOwner();
     if (!owner)

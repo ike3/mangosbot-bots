@@ -7,7 +7,7 @@
 
 using namespace ai;
 
-bool LootStrategyAction::ExecuteCommand(Event& event)
+bool LootStrategyAction::Execute(Event& event)
 {
     string strategy = event.getParam();
 

@@ -12,7 +12,7 @@ using ahbot::PricingStrategy;
 
 using namespace ai;
 
-bool WtsAction::ExecuteCommand(Event& event)
+bool WtsAction::Execute(Event& event)
 {
     Player* owner = event.getOwner();
     if (!owner)

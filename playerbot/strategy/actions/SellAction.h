@@ -7,7 +7,7 @@ namespace ai
     {
     public:
         SellAction(PlayerbotAI* ai, string name = "sell") : ChatCommandAction(ai, name) {}
-        virtual bool ExecuteCommand(Event& event) override;
+        virtual bool Execute(Event& event) override;
 
         void Sell(FindItemVisitor* visitor);
         void Sell(Item* item);

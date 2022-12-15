@@ -8,7 +8,7 @@ namespace ai
     {
     public:
         OutfitAction(PlayerbotAI* ai) : EquipAction(ai, "outfit") {}
-        virtual bool ExecuteCommand(Event& event) override;
+        virtual bool Execute(Event& event) override;
 
     private:
         void List();

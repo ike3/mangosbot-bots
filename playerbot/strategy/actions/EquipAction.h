@@ -7,7 +7,7 @@ namespace ai
     {
     public:
         EquipAction(PlayerbotAI* ai, string name = "equip") : ChatCommandAction(ai, name) {}
-        virtual bool ExecuteCommand(Event& event) override;
+        virtual bool Execute(Event& event) override;
         void EquipItems(ItemIds ids);
 
     private:
@@ -20,6 +20,6 @@ namespace ai
     {
     public:
         EquipUpgradesAction(PlayerbotAI* ai, string name = "equip upgrades") : EquipAction(ai, name) {}
-        virtual bool ExecuteCommand(Event& event) override;
+        virtual bool Execute(Event& event) override;
     };
 }

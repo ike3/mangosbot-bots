@@ -7,7 +7,7 @@
 
 using namespace ai;
 
-bool TellTargetAction::ExecuteCommand(Event& event)
+bool TellTargetAction::Execute(Event& event)
 {
     Unit* target = context->GetValue<Unit*>("current target")->Get();
     if (target)
@@ -21,7 +21,7 @@ bool TellTargetAction::ExecuteCommand(Event& event)
     return true;
 }
 
-bool TellAttackersAction::ExecuteCommand(Event& event)
+bool TellAttackersAction::Execute(Event& event)
 {
     ai->TellMaster("--- Attackers ---");
 
@@ -54,7 +54,7 @@ bool TellAttackersAction::ExecuteCommand(Event& event)
     return true;
 }
 
-bool TellPossibleAttackTargetsAction::ExecuteCommand(Event& event)
+bool TellPossibleAttackTargetsAction::Execute(Event& event)
 {
     ai->TellMaster("--- Attack Targets ---");
 

@@ -7,7 +7,7 @@ namespace ai
     {
     public:
         StatsAction(PlayerbotAI* ai) : ChatCommandAction(ai, "stats") {}
-        virtual bool ExecuteCommand(Event& event) override;
+        virtual bool Execute(Event& event) override;
 
     private:
         void ListBagSlots(ostringstream &out);

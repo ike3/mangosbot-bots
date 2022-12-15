@@ -7,7 +7,7 @@
 
 using namespace ai;
 
-bool KeepItemAction::ExecuteCommand(Event& event)
+bool KeepItemAction::Execute(Event& event)
 {
     string text = event.getParam();
 

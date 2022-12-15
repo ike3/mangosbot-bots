@@ -7,7 +7,7 @@ namespace ai
     {
     public:
         ListSpellsAction(PlayerbotAI* ai, string name = "spells") : ChatCommandAction(ai, name) {}
-        virtual bool ExecuteCommand(Event& event) override;
+        virtual bool Execute(Event& event) override;
         virtual list<pair<uint32, string> > GetSpellList(string filter = "");
 
     private:

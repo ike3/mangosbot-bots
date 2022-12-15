@@ -20,7 +20,7 @@ namespace ai
     {
     public:
         ListQuestsAction(PlayerbotAI* ai) : ChatCommandAction(ai, "quests") {}
-        virtual bool ExecuteCommand(Event& event) override;
+        virtual bool Execute(Event& event) override;
 
     private:
         void ListQuests(QuestListFilter filter, QuestTravelDetail travelDetail = QUEST_TRAVEL_DETAIL_NONE);

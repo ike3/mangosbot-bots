@@ -7,7 +7,7 @@
 
 using namespace ai;
 
-bool EquipAction::ExecuteCommand(Event& event)
+bool EquipAction::Execute(Event& event)
 {
     string text = event.getParam();
     ItemIds ids = chat->parseItems(text);
@@ -103,7 +103,7 @@ void EquipAction::EquipItem(Item& item)
     ai->TellMaster(out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
 }
 
-bool EquipUpgradesAction::ExecuteCommand(Event& event)
+bool EquipUpgradesAction::Execute(Event& event)
 {
     if (!sPlayerbotAIConfig.autoEquipUpgradeLoot && !sRandomPlayerbotMgr.IsRandomBot(bot))
         return false;

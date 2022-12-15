@@ -7,7 +7,7 @@ namespace ai
     {
     public:
         LogLevelAction(PlayerbotAI* ai) : ChatCommandAction(ai, "log") {}
-        virtual bool ExecuteCommand(Event& event) override;
+        virtual bool Execute(Event& event) override;
 
     public:
         static string logLevel2string(LogLevel level);

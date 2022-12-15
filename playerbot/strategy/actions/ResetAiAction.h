@@ -7,7 +7,7 @@ namespace ai
     {
     public:
         ResetAiAction(PlayerbotAI* ai, bool fullReset = true) : ChatCommandAction(ai, "reset ai"), fullReset(fullReset) {}
-        virtual bool ExecuteCommand(Event& event) override;
+        virtual bool Execute(Event& event) override;
 
     protected:
         bool fullReset;

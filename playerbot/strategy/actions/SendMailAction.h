@@ -7,6 +7,6 @@ namespace ai
     {
     public:
         SendMailAction(PlayerbotAI* ai) : ChatCommandAction(ai, "sendmail") {}
-        virtual bool ExecuteCommand(Event& event) override;
+        virtual bool Execute(Event& event) override;
     };
 }

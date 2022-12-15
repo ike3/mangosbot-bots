@@ -8,7 +8,7 @@ namespace ai
    {
    public:
        WaitForAttackSetTimeAction(PlayerbotAI* ai, string name = "wait for attack time") : ChatCommandAction(ai, name) {}
-      virtual bool ExecuteCommand(Event& event) override;
+      virtual bool Execute(Event& event) override;
    };
 
    class WaitForAttackKeepSafeDistanceAction : public MovementAction

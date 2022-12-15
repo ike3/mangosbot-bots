@@ -1,6 +1,4 @@
 #pragma once
-
-#include "../Action.h"
 #include "GenericSpellActions.h"
 #include "ReachTargetActions.h"
 #include "ChooseTargetActions.h"
@@ -12,9 +10,7 @@ namespace ai
     {
     public:
         MeleeAction(PlayerbotAI* ai) : AttackAction(ai, "melee") {}
-
         virtual string GetTargetName() { return "current target"; }
-
         virtual bool isUseful();
     };
 
@@ -79,10 +75,8 @@ namespace ai
     {
     public:
         ChatCommandAction(PlayerbotAI* ai, string name) : Action(ai, name) {}
-        bool Execute(Event& event) override final;
 
     protected:
-        virtual bool ExecuteCommand(Event& event) = 0;
         virtual uint32 getDuration() const { return sPlayerbotAIConfig.globalCoolDown; }
     };
 }

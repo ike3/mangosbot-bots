@@ -7,7 +7,7 @@
 
 using namespace ai;
 
-bool SkipSpellsListAction::ExecuteCommand(Event& event)
+bool SkipSpellsListAction::Execute(Event& event)
 {
     string cmd = event.getParam();
 
