@@ -1,15 +1,15 @@
 #pragma once
-
-#include "../Action.h"
 #include "QueryItemUsageAction.h"
 #include "LootAction.h"
+#include "GenericActions.h"
 
 namespace ai
 {
-    class LootStartRollAction : public Action {
+    class LootStartRollAction : public ChatCommandAction
+    {
     public:
-        LootStartRollAction(PlayerbotAI* ai, string name = "loot start roll") : Action(ai, name) {}
-        virtual bool Execute(Event& event);
+        LootStartRollAction(PlayerbotAI* ai, string name = "loot start roll") : ChatCommandAction(ai, name) {}
+        virtual bool ExecuteCommand(Event& event) override;
 
 #ifdef GenerateBotHelp
         virtual string GetHelpName() { return "loot start roll"; } //Must equal iternal name
@@ -22,13 +22,15 @@ namespace ai
 #endif 
     };
 
-    class RollAction : public QueryItemUsageAction {
+    class RollAction : public QueryItemUsageAction 
+    {
     public:
         RollAction(PlayerbotAI* ai, string name = "roll") : QueryItemUsageAction(ai, name) {}
-        virtual bool Execute(Event& event);
+        virtual bool ExecuteCommand(Event& event) override;
         virtual bool isPossible();
+
 #ifdef GenerateBotHelp
-        virtual string GetHelpName() { return "roll"; } //Must equal iternal name
+        virtual string GetHelpName() { return "roll"; } //Must equal internal name
         virtual string GetHelpDescription()
         {
             return "This will make the bot roll a certain way on a specific item.\n"
@@ -43,38 +45,43 @@ namespace ai
         virtual vector<string> GetUsedActions() { return {}; }
         virtual vector<string> GetUsedValues() { return { "item usage", "force item usage"}; }
 #endif 
+
     protected:
         virtual ItemPrototype const* GetRollItem(ObjectGuid lootGuid, uint32 slot);
         virtual RollVote CalculateRollVote(ItemPrototype const* proto);
         virtual bool RollOnItemInSlot(RollVote type, ObjectGuid lootGuid, uint32 slot);
     };
 
-    class LootRollAction : public RollAction {
+    class LootRollAction : public RollAction 
+    {
     public:
         LootRollAction(PlayerbotAI* ai, string name = "loot roll") : RollAction(ai, name) {}
-        virtual bool Execute(Event& event);
+        virtual bool ExecuteCommand(Event& event) override;
+
 #ifdef GenerateBotHelp
-        virtual string GetHelpName() { return "delayed loot roll"; } //Must equal iternal name
+        virtual string GetHelpName() { return "delayed loot roll"; } //Must equal internal name
         virtual string GetHelpDescription()
         {
             return "This action will make the bot roll on an item the master just rolled on.\n"
-                "The type of roll will be automatically determined based on if the bot finds the item usefull.";
+                "The type of roll will be automatically determined based on if the bot finds the item useful.";
         }
         virtual vector<string> GetUsedActions() { return { "roll" }; }
         virtual vector<string> GetUsedValues() { return { "item usage", "force item usage" }; }
 #endif 
     };
 
-    class AutoLootRollAction : public RollAction {
+    class AutoLootRollAction : public RollAction 
+    {
     public:
         AutoLootRollAction(PlayerbotAI* ai, string name = "auto loot roll") : RollAction(ai, name) {}
-        virtual bool Execute(Event& event);
+        virtual bool ExecuteCommand(Event& event) override;
+
 #ifdef GenerateBotHelp
-        virtual string GetHelpName() { return "auto loot roll"; } //Must equal iternal name
+        virtual string GetHelpName() { return "auto loot roll"; } //Must equal internal name
         virtual string GetHelpDescription()
         {
             return "This action will make the bot roll on one item that it hasn't rolled for yet.\n"
-                "The type of roll will be automatically determined based on if the bot finds the item usefull.";
+                "The type of roll will be automatically determined based on if the bot finds the item useful.";
         }
         virtual vector<string> GetUsedActions() { return { "roll" }; }
         virtual vector<string> GetUsedValues() { return { "item usage", "force item usage" }; }

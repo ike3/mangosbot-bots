@@ -1,24 +1,23 @@
 #pragma once
-
-#include "../Action.h"
+#include "GenericActions.h"
 #include "../../ServerFacade.h"
 #include "../../RandomItemMgr.h"
 
 namespace ai
 {
-    class UseItemAction : public Action 
+    class UseItemAction : public ChatCommandAction 
     {
     public:
-        UseItemAction(PlayerbotAI* ai, string name = "use", bool selfOnly = false) : Action(ai, name), selfOnly(selfOnly) {}
+        UseItemAction(PlayerbotAI* ai, string name = "use", bool selfOnly = false) : ChatCommandAction(ai, name), selfOnly(selfOnly) {}
 
     public:
-        virtual bool Execute(Event& event) override;
         virtual bool isPossible() override;
 
         // Used when this action is executed as a reaction
-        bool ShouldReactionInterruptCast() const override { return true; }
+        virtual bool ShouldReactionInterruptCast() const override { return true; }
 
     protected:
+        virtual bool ExecuteCommand(Event& event) override;
         bool UseItemAuto(Item* item);
         bool UseItemOnGameObject(Item* item, ObjectGuid go);
         bool UseItemOnItem(Item* item, Item* itemTarget);
@@ -35,16 +34,14 @@ namespace ai
     {
     public:
         UseItemIdAction(PlayerbotAI* ai, string name, bool selfOnly = false) : UseItemAction(ai, name, selfOnly) {}
-    public:
-        virtual bool Execute(Event& event) override;
         virtual bool isPossible() override;
 
     protected:
+        virtual bool ExecuteCommand(Event& event) override;
         virtual uint32 GetItemId() { return  0; }
         virtual Unit* GetTarget() override { return nullptr; }
         bool HasSpellCooldown(const uint32 itemId);
         bool CastItemSpell(uint32 itemId, Unit* target);
-        virtual uint32 getDuration() { return sPlayerbotAIConfig.globalCoolDown; };
     };
 
     class UseTargetedItemIdAction : public UseItemIdAction
@@ -84,64 +81,67 @@ namespace ai
         SpellEffects effect;
     };
 
-    class UseHealingPotion : public UsePotionAction
+    class UseHealingPotionAction : public UsePotionAction
     {
     public:
-        UseHealingPotion(PlayerbotAI* ai) : UsePotionAction(ai, "healing potion", SPELL_EFFECT_HEAL) {}
+        UseHealingPotionAction(PlayerbotAI* ai) : UsePotionAction(ai, "healing potion", SPELL_EFFECT_HEAL) {}
     };
 
-    class UseManaPotion : public UsePotionAction
+    class UseManaPotionAction : public UsePotionAction
     {
     public:
-        UseManaPotion(PlayerbotAI* ai) : UsePotionAction(ai, "mana potion", SPELL_EFFECT_ENERGIZE) {}
+        UseManaPotionAction(PlayerbotAI* ai) : UsePotionAction(ai, "mana potion", SPELL_EFFECT_ENERGIZE) {}
     };
 
-    class UseHearthStone : public UseItemAction
+    class UseHearthStoneAction : public UseItemAction
     {
     public:
-        UseHearthStone(PlayerbotAI* ai) : UseItemAction(ai, "hearthstone", true) {}
+        UseHearthStoneAction(PlayerbotAI* ai) : UseItemAction(ai, "hearthstone", true) {}
 
-        virtual bool Execute(Event& event) override;
+        virtual bool ExecuteCommand(Event& event) override;
 
         bool isUseful() override { return !bot->InBattleGround() && sServerFacade.IsSpellReady(bot, 8690); }
     
         // Used when this action is executed as a reaction
         bool ShouldReactionInterruptMovement() const override { return true; }
+
+        virtual uint32 getDuration() const override { return 10000U; };
     };
 
-    class UseRandomRecipe : public UseItemAction
+    class UseRandomRecipeAction : public UseItemAction
     {
     public:
-        UseRandomRecipe(PlayerbotAI* ai) : UseItemAction(ai, "random recipe", true) {}
+        UseRandomRecipeAction(PlayerbotAI* ai) : UseItemAction(ai, "random recipe", true) {}
 
         virtual bool isUseful() override;
         virtual bool isPossible() override {return AI_VALUE2(uint32,"item count", "recipe") > 0; }
       
-        virtual bool Execute(Event& event) override;
+        virtual bool ExecuteCommand(Event& event) override;
+        virtual uint32 getDuration() const override { return 3000U; };
 
         // Used when this action is executed as a reaction
         bool ShouldReactionInterruptMovement() const override { return true; }
     };
 
-    class UseRandomQuestItem : public UseItemAction
+    class UseRandomQuestItemAction : public UseItemAction
     {
     public:
-        UseRandomQuestItem(PlayerbotAI* ai) : UseItemAction(ai, "random quest item", true) {}
+        UseRandomQuestItemAction(PlayerbotAI* ai) : UseItemAction(ai, "random quest item", true) {}
 
         virtual bool isUseful() override;
         virtual bool isPossible() override { return AI_VALUE2(uint32, "item count", "quest") > 0;}
 
-        virtual bool Execute(Event& event) override;
+        virtual bool ExecuteCommand(Event& event) override;
 
         // Used when this action is executed as a reaction
         bool ShouldReactionInterruptMovement() const override { return true; }
     };
 
     // goblin sappers
-    class CastGoblinSappersAction : public UseItemIdAction
+    class UseGoblinSapperChargeAction : public UseItemIdAction
     {
     public:
-        CastGoblinSappersAction(PlayerbotAI* ai) : UseItemIdAction(ai, "goblin sapper") {}
+        UseGoblinSapperChargeAction(PlayerbotAI* ai) : UseItemIdAction(ai, "goblin sapper") {}
         virtual bool isUseful() override { return bot->GetSkillValue(202) >= 205 && bot->GetHealth() > 1000; }
 
         virtual uint32 GetItemId() override
@@ -155,10 +155,10 @@ namespace ai
     };
 
     // oil of immolation
-    class CastOilOfImmolationAction : public UseItemIdAction
+    class UseOilOfImmolationAction : public UseItemIdAction
     {
     public:
-        CastOilOfImmolationAction(PlayerbotAI* ai) : UseItemIdAction(ai, "oil of immolation") {}
+        UseOilOfImmolationAction(PlayerbotAI* ai) : UseItemIdAction(ai, "oil of immolation") {}
         virtual bool isUseful() override
         {
 #ifndef MANGOSBOT_ZERO
@@ -254,7 +254,7 @@ namespace ai
         // Used when this action is executed as a reaction
         bool ShouldReactionInterruptMovement() const override { return true; }
 
-        virtual uint32 getDuration() { return 8000; };
+        virtual uint32 getDuration() const override { return 8000U; };
     };
 
     class UseAdamantiteGrenadeAction : public UseTargetedItemIdAction
@@ -295,10 +295,10 @@ namespace ai
     };
 
     // dark rune
-    class DarkRuneAction : public UseItemIdAction
+    class UseDarkRuneAction : public UseItemIdAction
     {
     public:
-        DarkRuneAction(PlayerbotAI* ai) : UseItemIdAction(ai, "dark rune") {}
+        UseDarkRuneAction(PlayerbotAI* ai) : UseItemIdAction(ai, "dark rune") {}
 
         virtual bool isUseful() override
         {

@@ -1,15 +1,15 @@
 #pragma once
-
-#include "../Action.h"
+#include "GenericActions.h"
 
 namespace ai
 {
-    class QueryQuestAction : public Action {
+    class QueryQuestAction : public ChatCommandAction
+    {
     public:
-        QueryQuestAction(PlayerbotAI* ai) : Action(ai, "query quest") {}
-        virtual bool Execute(Event& event);
+        QueryQuestAction(PlayerbotAI* ai) : ChatCommandAction(ai, "query quest") {}
 
     private:
+        bool ExecuteCommand(Event& event) override;
         void TellObjectives(uint32 questId);
         void TellObjective(string name, int available, int required);
     };

@@ -9,7 +9,7 @@ using namespace ai;
 
 map<uint32, SkillLineAbilityEntry const*> SetCraftAction::skillSpells;
 
-bool SetCraftAction::Execute(Event& event)
+bool SetCraftAction::ExecuteCommand(Event& event)
 {
     Player* master = GetMaster();
 

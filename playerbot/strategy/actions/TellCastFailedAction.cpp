@@ -3,7 +3,6 @@
 #include "TellCastFailedAction.h"
 #include "../../ServerFacade.h"
 
-
 using namespace ai;
 
 bool TellCastFailedAction::Execute(Event& event)
@@ -54,8 +53,7 @@ bool TellCastFailedAction::Execute(Event& event)
     return true;
 }
 
-
-bool TellSpellAction::Execute(Event& event)
+bool TellSpellAction::ExecuteCommand(Event& event)
 {
     string spell = event.getParam();
     uint32 spellId = AI_VALUE2(uint32, "spell id", spell);

@@ -1,16 +1,12 @@
 #pragma once
-
-#include "../Action.h"
-#include "MovementActions.h"
+#include "GenericActions.h"
 
 namespace ai
 {
-	class TeleportAction : public Action {
+	class TeleportAction : public ChatCommandAction
+    {
 	public:
-		TeleportAction(PlayerbotAI* ai) : Action(ai, "teleport") {}
-
-    public:
-        virtual bool Execute(Event& event);
+		TeleportAction(PlayerbotAI* ai) : ChatCommandAction(ai, "teleport") {}
+        virtual bool ExecuteCommand(Event& event) override;
     };
-
 }

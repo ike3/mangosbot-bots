@@ -19,7 +19,6 @@ bool Formation::IsNullLocation(WorldLocation const& loc)
 	return IsSameLocation(loc, Formation::NullLocation);
 }
 
-
 WorldLocation MoveAheadFormation::GetLocation()
 {
     Player* master = ai->GetGroupMaster();
@@ -470,7 +469,6 @@ string FormationValue::Save()
 
 bool FormationValue::Load(string formation)
 {
-
     if (formation == "melee")
     {
         if (value) delete value;
@@ -521,8 +519,7 @@ bool FormationValue::Load(string formation)
     return true;
 }
 
-
-bool SetFormationAction::Execute(Event& event)
+bool SetFormationAction::ExecuteCommand(Event& event)
 {
     string formation = event.getParam();
 
@@ -555,7 +552,6 @@ bool SetFormationAction::Execute(Event& event)
     ai->TellMaster(str);
     return true;
 }
-
 
 WorldLocation MoveFormation::MoveLine(vector<Player*> line, float diff, float cx, float cy, float cz, float orientation, float range)
 {

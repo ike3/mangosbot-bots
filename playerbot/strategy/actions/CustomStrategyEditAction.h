@@ -1,13 +1,13 @@
 #pragma once
-
-#include "../Action.h"
+#include "GenericActions.h"
 
 namespace ai
 {
-    class CustomStrategyEditAction : public Action {
+    class CustomStrategyEditAction : public ChatCommandAction
+    {
     public:
-        CustomStrategyEditAction(PlayerbotAI* ai) : Action(ai, "cs") {}
-        virtual bool Execute(Event& event);
+        CustomStrategyEditAction(PlayerbotAI* ai) : ChatCommandAction(ai, "cs") {}
+        virtual bool ExecuteCommand(Event& event) override;
 
     private:
         bool PrintHelp();
@@ -15,5 +15,4 @@ namespace ai
         bool Print(string name);
         bool Edit(string name, uint32 idx, string command);
     };
-
 }

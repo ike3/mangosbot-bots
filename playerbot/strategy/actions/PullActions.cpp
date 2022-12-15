@@ -7,7 +7,7 @@
 
 using namespace ai;
 
-bool PullMyTargetAction::Execute(Event& event)
+bool PullMyTargetAction::ExecuteCommand(Event& event)
 {
     PullStrategy* strategy = PullStrategy::Get(ai);
     if (!strategy)

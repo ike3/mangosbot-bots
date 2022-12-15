@@ -32,7 +32,7 @@ namespace ai
     {
     public:
         StoreLootAction(PlayerbotAI* ai) : InventoryAction(ai, "store loot") {}
-        virtual bool Execute(Event& event);
+        virtual bool ExecuteCommand(Event& event) override;
         static bool IsLootAllowed(uint32 itemid, PlayerbotAI *ai);  
     };
 

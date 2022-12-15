@@ -10,9 +10,7 @@
 using namespace std;
 using namespace ai;
 
-
-
-bool AhAction::Execute(Event& event)
+bool AhAction::ExecuteCommand(Event& event)
 {
     string text = event.getParam();
 
@@ -26,7 +24,7 @@ bool AhAction::Execute(Event& event)
         if (!sRandomPlayerbotMgr.m_ahActionMutex.try_lock()) //Another bot is using the Auction right now. Try again later.
             return false;
 
-        bool doneAuction = Execute(text, npc);
+        bool doneAuction = ExecuteCommand(text, npc);
 
         sRandomPlayerbotMgr.m_ahActionMutex.unlock();
         
@@ -37,7 +35,7 @@ bool AhAction::Execute(Event& event)
     return false;
 }
 
-bool AhAction::Execute(string text, Unit* auctioneer)
+bool AhAction::ExecuteCommand(string text, Unit* auctioneer)
 {
     uint32 time;
 #ifdef MANGOSBOT_ZERO
@@ -144,7 +142,7 @@ uint32 AhAction::GetSellPrice(ItemPrototype const* proto)
 }
 
 
-bool AhBidAction::Execute(string text, Unit* auctioneer)
+bool AhBidAction::ExecuteCommand(string text, Unit* auctioneer)
 {
     AuctionHouseEntry const* auctionHouseEntry = bot->GetSession()->GetCheckedAuctionHouseForAuctioneer(auctioneer->GetObjectGuid());
     if (!auctionHouseEntry)

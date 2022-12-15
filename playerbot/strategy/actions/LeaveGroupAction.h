@@ -1,15 +1,15 @@
 #pragma once
-
-#include "../Action.h"
 #include "../../RandomPlayerbotMgr.h"
+#include "GenericActions.h"
 
 namespace ai
 {
-    class LeaveGroupAction : public Action {
+    class LeaveGroupAction : public ChatCommandAction
+    {
     public:
-        LeaveGroupAction(PlayerbotAI* ai, string name = "leave") : Action(ai, name) {}
+        LeaveGroupAction(PlayerbotAI* ai, string name = "leave") : ChatCommandAction(ai, name) {}
 
-        virtual bool Execute(Event& event)
+        virtual bool ExecuteCommand(Event& event) override
         {            
             Player* master = event.getOwner();
             return Leave(master);
@@ -18,11 +18,12 @@ namespace ai
         virtual bool Leave(Player* player);
     };
 
-    class PartyCommandAction : public LeaveGroupAction {
+    class PartyCommandAction : public LeaveGroupAction 
+    {
     public:
         PartyCommandAction(PlayerbotAI* ai) : LeaveGroupAction(ai, "party command") {}
 
-        virtual bool Execute(Event& event)
+        virtual bool ExecuteCommand(Event& event) override
         {
             WorldPacket& p = event.getPacket();
             p.rpos(0);
@@ -42,11 +43,12 @@ namespace ai
         }
     };
 
-    class UninviteAction : public LeaveGroupAction {
+    class UninviteAction : public LeaveGroupAction 
+    {
     public:
         UninviteAction(PlayerbotAI* ai) : LeaveGroupAction(ai, "uninvite") {}
 
-        virtual bool Execute(Event& event)
+        virtual bool ExecuteCommand(Event& event) override
         {
             WorldPacket& p = event.getPacket();
 
@@ -80,12 +82,12 @@ namespace ai
         }
     };
 
-
-    class LeaveFarAwayAction : public LeaveGroupAction {
+    class LeaveFarAwayAction : public LeaveGroupAction 
+    {
     public:
         LeaveFarAwayAction(PlayerbotAI* ai) : LeaveGroupAction(ai, "leave far away") {}
 
-        virtual bool Execute(Event& event)
+        virtual bool ExecuteCommand(Event& event) override
         {
             return Leave(nullptr);
         }

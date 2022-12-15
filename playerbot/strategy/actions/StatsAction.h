@@ -1,13 +1,13 @@
 #pragma once
-
-#include "../Action.h"
+#include "GenericActions.h"
 
 namespace ai
 {
-    class StatsAction : public Action {
+    class StatsAction : public ChatCommandAction
+    {
     public:
-        StatsAction(PlayerbotAI* ai) : Action(ai, "stats") {}
-        virtual bool Execute(Event& event);
+        StatsAction(PlayerbotAI* ai) : ChatCommandAction(ai, "stats") {}
+        virtual bool ExecuteCommand(Event& event) override;
 
     private:
         void ListBagSlots(ostringstream &out);
@@ -17,7 +17,5 @@ namespace ai
         void ListPower(ostringstream& out);
         uint32 EstRepair(uint16 pos);
         double RepairPercent(uint16 pos);
-
     };
-
 }

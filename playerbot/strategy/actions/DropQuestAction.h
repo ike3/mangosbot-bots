@@ -1,19 +1,20 @@
 #pragma once
-
-#include "../Action.h"
+#include "GenericActions.h"
 
 namespace ai
 {
-    class DropQuestAction : public Action {
+    class DropQuestAction : public ChatCommandAction
+    {
     public:
-        DropQuestAction(PlayerbotAI* ai) : Action(ai, "drop quest") {}
-        virtual bool Execute(Event& event);
+        DropQuestAction(PlayerbotAI* ai) : ChatCommandAction(ai, "drop quest") {}
+        virtual bool ExecuteCommand(Event& event) override;
     };
 
-    class CleanQuestLogAction : public Action {
+    class CleanQuestLogAction : public ChatCommandAction
+    {
     public:
-        CleanQuestLogAction(PlayerbotAI* ai) : Action(ai, "clean quest log") {}
-        virtual bool Execute(Event& event);
+        CleanQuestLogAction(PlayerbotAI* ai) : ChatCommandAction(ai, "clean quest log") {}
+        virtual bool ExecuteCommand(Event& event) override;
 
         virtual bool isUseful() { return ai->HasStrategy("rpg quest", BotState::BOT_STATE_NON_COMBAT); }
 

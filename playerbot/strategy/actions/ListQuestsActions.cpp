@@ -3,10 +3,9 @@
 #include "ListQuestsActions.h"
 #include "../../TravelMgr.h"
 
-
 using namespace ai;
 
-bool ListQuestsAction::Execute(Event& event)
+bool ListQuestsAction::ExecuteCommand(Event& event)
 {
     if (event.getParam() == "completed" || event.getParam() == "co")
     {

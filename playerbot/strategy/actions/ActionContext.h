@@ -367,8 +367,8 @@ namespace ai
         static Action* tank_assist(PlayerbotAI* ai) { return new TankAssistAction(ai); }
         static Action* drink(PlayerbotAI* ai) { return new DrinkAction(ai); }
         static Action* food(PlayerbotAI* ai) { return new EatAction(ai); }
-        static Action* mana_potion(PlayerbotAI* ai) { return new UseManaPotion(ai); }
-        static Action* healing_potion(PlayerbotAI* ai) { return new UseHealingPotion(ai); }
+        static Action* mana_potion(PlayerbotAI* ai) { return new UseManaPotionAction(ai); }
+        static Action* healing_potion(PlayerbotAI* ai) { return new UseHealingPotionAction(ai); }
         static Action* healthstone(PlayerbotAI* ai) { return new UseItemAction(ai, "healthstone"); }
         static Action* move_out_of_enemy_contact(PlayerbotAI* ai) { return new MoveOutOfEnemyContactAction(ai); }
         static Action* set_facing(PlayerbotAI* ai) { return new SetFacingTargetAction(ai); }
@@ -389,11 +389,11 @@ namespace ai
         static Action* use_dark_portal_azeroth(PlayerbotAI* ai) { return new DarkPortalAzerothAction(ai); }
         static Action* move_from_dark_portal(PlayerbotAI* ai) { return new MoveFromDarkPortalAction(ai); }
         static Action* world_buff(PlayerbotAI* ai) { return new WorldBuffAction(ai); }
-        static Action* hearthstone(PlayerbotAI* ai) { return new UseHearthStone(ai); }
+        static Action* hearthstone(PlayerbotAI* ai) { return new UseHearthStoneAction(ai); }
         static Action* cast_random_spell(PlayerbotAI* ai) { return new CastRandomSpellAction(ai); }
         static Action* free_bg_join(PlayerbotAI* ai) { return new FreeBGJoinAction(ai); }
-        static Action* use_random_recipe(PlayerbotAI* ai) { return new UseRandomRecipe(ai); }
-        static Action* use_random_quest_item(PlayerbotAI* ai) { return new UseRandomQuestItem(ai); }
+        static Action* use_random_recipe(PlayerbotAI* ai) { return new UseRandomRecipeAction(ai); }
+        static Action* use_random_quest_item(PlayerbotAI* ai) { return new UseRandomQuestItemAction(ai); }
         static Action* craft_random_item(PlayerbotAI* ai) { return new CraftRandomItemAction(ai); }
         static Action* smart_destroy_item(PlayerbotAI* ai) { return new SmartDestroyItemAction(ai); }
         static Action* disenchant_random_item(PlayerbotAI* ai) { return new DisEnchantRandomItemAction(ai); }
@@ -408,9 +408,9 @@ namespace ai
         static Action* use_trinket(PlayerbotAI* ai) { return new UseTrinketAction(ai); }
 
         // item helpers
-        static Action* goblin_sapper(PlayerbotAI* ai) { return new CastGoblinSappersAction(ai); }
-        static Action* oil_of_immolation(PlayerbotAI* ai) { return new CastOilOfImmolationAction(ai); }
-        static Action* dark_rune(PlayerbotAI* ai) { return new DarkRuneAction(ai); }
+        static Action* goblin_sapper(PlayerbotAI* ai) { return new UseGoblinSapperChargeAction(ai); }
+        static Action* oil_of_immolation(PlayerbotAI* ai) { return new UseOilOfImmolationAction(ai); }
+        static Action* dark_rune(PlayerbotAI* ai) { return new UseDarkRuneAction(ai); }
         static Action* adamantite_grenade(PlayerbotAI* ai) { return new UseAdamantiteGrenadeAction(ai); }
         static Action* bg_banner(PlayerbotAI* ai) { return new UseBgBannerAction(ai); }
         static Action* use_bandage(PlayerbotAI* ai) { return new UseBandageAction(ai); }

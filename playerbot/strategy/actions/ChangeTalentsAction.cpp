@@ -5,7 +5,7 @@
 
 using namespace ai;
 
-bool ChangeTalentsAction::Execute(Event& event)
+bool ChangeTalentsAction::ExecuteCommand(Event& event)
 {
     string param = event.getParam();
 
@@ -330,7 +330,7 @@ bool ChangeTalentsAction::AutoSelectTalents(ostringstream* out)
     return (specNo == 0) ? false : true;
 }
 
-//Returns a pre-made talentspec that best suits the bots current talents. 
+//Returns a pre-made talent spec that best suits the bots current talents. 
 TalentSpec* ChangeTalentsAction::GetBestPremadeSpec(int specId)
 {
     TalentPath* path = getPremadePath(specId);
@@ -345,7 +345,7 @@ TalentSpec* ChangeTalentsAction::GetBestPremadeSpec(int specId)
     return &sPlayerbotAIConfig.classSpecs[bot->getClassMask()].baseSpec;
 }
 
-bool AutoSetTalentsAction::Execute(Event& event)
+bool AutoSetTalentsAction::ExecuteCommand(Event& event)
 {
     sPlayerbotAIConfig.logEvent(ai, "AutoSetTalentsAction", to_string(bot->m_Played_time[PLAYED_TIME_LEVEL]), to_string(bot->m_Played_time[PLAYED_TIME_TOTAL]));
 

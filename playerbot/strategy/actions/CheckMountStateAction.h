@@ -7,15 +7,17 @@
 
 namespace ai
 {
-    class CheckMountStateAction : public UseItemAction {
+    class CheckMountStateAction : public UseItemAction 
+    {
     public:
         CheckMountStateAction(PlayerbotAI* ai) : UseItemAction(ai, "check mount state", true) {}
 
-        virtual bool Execute(Event& event);
+        virtual bool ExecuteCommand(Event& event) override;
         virtual bool isPossible() { return true; }
         virtual bool isUseful();
 
         virtual bool CanFly();
+
     private:
         static uint32 MountSpeed(const SpellEntry* const spellInfo, const bool canFly = false);
         vector<uint32> GetBestMountSpells(const bool canFly);
@@ -27,5 +29,4 @@ namespace ai
 
         bool Mount();
     };
-
 }

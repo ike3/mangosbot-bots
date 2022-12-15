@@ -6,11 +6,9 @@
 #include "../../RandomPlayerbotMgr.h"
 #include "../../RandomItemMgr.h"
 
-
 using namespace ai;
 
-
-bool QueryItemUsageAction::Execute(Event& event)
+bool QueryItemUsageAction::ExecuteCommand(Event& event)
 {
     if (!GetMaster() && !sPlayerbotAIConfig.randomBotSayWithoutMaster)
         return false;

@@ -115,7 +115,7 @@ void TrainerAction::Iterate(Creature* creature, TrainerSpellAction action, Spell
     TellFooter(totalCost);
 }
 
-bool TrainerAction::Execute(Event& event)
+bool TrainerAction::ExecuteCommand(Event& event)
 {
     string text = event.getParam();
 

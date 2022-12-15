@@ -1,19 +1,15 @@
 #pragma once
-
-#include "../Action.h"
+#include "GenericActions.h"
 
 namespace ai
 {
-    class RangeAction : public Action
+    class RangeAction : public ChatCommandAction
     {
     public:
-        RangeAction(PlayerbotAI* ai) : Action(ai, "range")
-        {}
-
-        virtual bool Execute(Event& event);
+        RangeAction(PlayerbotAI* ai) : ChatCommandAction(ai, "range") {}
+        virtual bool ExecuteCommand(Event& event) override;
 
     private:
         void PrintRange(string type);
-
     };
 }

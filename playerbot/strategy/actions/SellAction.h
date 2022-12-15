@@ -1,17 +1,17 @@
 #pragma once
-
-#include "../Action.h"
 #include "InventoryAction.h"
 
 namespace ai
 {
-    class SellAction : public InventoryAction {
+    class SellAction : public InventoryAction 
+    {
     public:
         SellAction(PlayerbotAI* ai, string name = "sell") : InventoryAction(ai, name) {}
-        virtual bool Execute(Event& event);
+        virtual bool ExecuteCommand(Event& event) override;
 
         void Sell(FindItemVisitor* visitor);
         void Sell(Item* item);
+
 #ifdef GenerateBotHelp
         virtual string GetHelpName() { return "sell"; } //Must equal iternal name
         virtual string GetHelpDescription()

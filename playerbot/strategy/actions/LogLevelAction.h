@@ -1,17 +1,16 @@
 #pragma once
-
-#include "../Action.h"
+#include "GenericActions.h"
 
 namespace ai
 {
-    class LogLevelAction : public Action {
+    class LogLevelAction : public ChatCommandAction
+    {
     public:
-        LogLevelAction(PlayerbotAI* ai) : Action(ai, "log") {}
-        virtual bool Execute(Event& event);
+        LogLevelAction(PlayerbotAI* ai) : ChatCommandAction(ai, "log") {}
+        virtual bool ExecuteCommand(Event& event) override;
 
     public:
         static string logLevel2string(LogLevel level);
         static LogLevel string2logLevel(string level);
     };
-
 }

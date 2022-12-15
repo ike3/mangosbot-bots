@@ -2,10 +2,9 @@
 #include "../../playerbot.h"
 #include "DropQuestAction.h"
 
-
 using namespace ai;
 
-bool DropQuestAction::Execute(Event& event)
+bool DropQuestAction::ExecuteCommand(Event& event)
 {
     string link = event.getParam();
     if (!GetMaster())
@@ -43,7 +42,7 @@ bool DropQuestAction::Execute(Event& event)
     return true;
 }
 
-bool CleanQuestLogAction::Execute(Event& event)
+bool CleanQuestLogAction::ExecuteCommand(Event& event)
 {
     string link = event.getParam();
     if (ai->HasActivePlayerMaster())

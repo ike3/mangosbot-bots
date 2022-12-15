@@ -1,6 +1,4 @@
 #pragma once
-
-#include "../Action.h"
 #include "InventoryAction.h"
 
 namespace ai
@@ -9,8 +7,6 @@ namespace ai
     {
     public:
         SendMailAction(PlayerbotAI* ai) : InventoryAction(ai, "sendmail") {}
-
-        virtual bool Execute(Event& event);
+        virtual bool ExecuteCommand(Event& event) override;
     };
-
 }

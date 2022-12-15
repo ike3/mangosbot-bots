@@ -2,10 +2,9 @@
 #include "../../playerbot.h"
 #include "LogLevelAction.h"
 
-
 using namespace ai;
 
-bool LogLevelAction::Execute(Event& event)
+bool LogLevelAction::ExecuteCommand(Event& event)
 {
     string param = event.getParam();
     Value<LogLevel> *value = ai->GetAiObjectContext()->GetValue<LogLevel>("log level");

@@ -30,7 +30,7 @@ SuggestWhatToDoAction::SuggestWhatToDoAction(PlayerbotAI* ai, string name)
     suggestions.push_back(&SuggestWhatToDoAction::something);
 }
 
-bool SuggestWhatToDoAction::Execute(Event& event)
+bool SuggestWhatToDoAction::ExecuteCommand(Event& event)
 {
     if (!sRandomPlayerbotMgr.IsRandomBot(bot) || bot->GetGroup() || bot->GetInstanceId())
         return false;
@@ -398,7 +398,7 @@ SuggestTradeAction::SuggestTradeAction(PlayerbotAI* ai) : SuggestWhatToDoAction(
 {
 }
 
-bool SuggestTradeAction::Execute(Event& event)
+bool SuggestTradeAction::ExecuteCommand(Event& event)
 {
     if (!sRandomPlayerbotMgr.IsRandomBot(bot) || bot->GetGroup() || bot->GetInstanceId())
         return false;

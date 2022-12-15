@@ -1,14 +1,14 @@
 #pragma once
-
-#include "../Action.h"
+#include "GenericActions.h"
 
 namespace ai
 {
-    class HelpAction : public Action {
+    class HelpAction : public ChatCommandAction
+    {
     public:
         HelpAction(PlayerbotAI* ai);
         virtual ~HelpAction();
-        virtual bool Execute(Event& event);
+        virtual bool ExecuteCommand(Event& event) override;
 
     private:
         void TellChatCommands();

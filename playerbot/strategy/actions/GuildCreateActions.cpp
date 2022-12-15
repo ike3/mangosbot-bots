@@ -14,7 +14,7 @@
 using namespace std;
 using namespace ai;
 
-bool BuyPetitionAction::Execute(Event& event)
+bool BuyPetitionAction::ExecuteCommand(Event& event)
 {
     list<ObjectGuid> vendors = ai->GetAiObjectContext()->GetValue<list<ObjectGuid> >("nearest npcs")->Get();
     bool vendored = false, result = false;

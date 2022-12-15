@@ -1,14 +1,14 @@
 #pragma once
-
-#include "../Action.h"
+#include "GenericActions.h"
 
 namespace ai
 {
-    class PassLeadershipToMasterAction : public Action {
+    class PassLeadershipToMasterAction : public ChatCommandAction
+    {
     public:
-        PassLeadershipToMasterAction(PlayerbotAI* ai, string name = "leader", string message = "Passing leader to you!") : Action(ai, name), message(message) {}
+        PassLeadershipToMasterAction(PlayerbotAI* ai, string name = "leader", string message = "Passing leader to you!") : ChatCommandAction(ai, name), message(message) {}
 
-        virtual bool Execute(Event& event)
+        virtual bool ExecuteCommand(Event& event) override
         {
             Player* master = GetMaster();
             if (master && master != bot && bot->GetGroup() && bot->GetGroup()->IsMember(master->GetObjectGuid()))
@@ -41,7 +41,8 @@ namespace ai
         string message;
     };
 
-    class GiveLeaderAction : public PassLeadershipToMasterAction {
+    class GiveLeaderAction : public PassLeadershipToMasterAction 
+    {
     public:
         GiveLeaderAction(PlayerbotAI* ai, string message = "Lead the way!") : PassLeadershipToMasterAction(ai, "give leader", message) {}
 

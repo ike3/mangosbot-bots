@@ -5,7 +5,7 @@
 
 using namespace ai;
 
-bool TellReputationAction::Execute(Event& event)
+bool TellReputationAction::ExecuteCommand(Event& event)
 {
     Player* master = GetMaster();
     if (!master)
@@ -19,20 +19,12 @@ bool TellReputationAction::Execute(Event& event)
     if (!unit)
         return false;
 
-#ifdef CMANGOS
     const FactionTemplateEntry *factionTemplate = sServerFacade.GetFactionTemplateEntry(unit);
-#endif
-
-#ifdef MANGOS
-    const FactionTemplateEntry *factionTemplate = unit->getFactionTemplateEntry();
-#endif
     uint32 faction = factionTemplate->faction;
     const FactionEntry* entry = sFactionStore.LookupEntry
-#ifdef CMANGOS
     #ifdef MANGOSBOT_ONE
             <FactionEntry>
     #endif
-#endif
             (faction);
     int32 reputation = bot->GetReputationMgr().GetReputation(faction);
 

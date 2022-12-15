@@ -7,7 +7,7 @@
 
 using namespace ai;
 
-bool EquipAction::Execute(Event& event)
+bool EquipAction::ExecuteCommand(Event& event)
 {
     string text = event.getParam();
     ItemIds ids = chat->parseItems(text);
@@ -31,7 +31,7 @@ void EquipAction::EquipItem(FindItemVisitor* visitor)
 	if (!items.empty()) EquipItem(**items.begin());
 }
 
-//Return bagslot with smalest bag.
+//Return the bag slot with smallest bag
 uint8 EquipAction::GetSmallestBagSlot()
 {
     int8 curBag = 0;
@@ -104,7 +104,7 @@ void EquipAction::EquipItem(Item& item)
 }
 
 
-bool EquipUpgradesAction::Execute(Event& event)
+bool EquipUpgradesAction::ExecuteCommand(Event& event)
 {
     if (!sPlayerbotAIConfig.autoEquipUpgradeLoot && !sRandomPlayerbotMgr.IsRandomBot(bot))
         return false;

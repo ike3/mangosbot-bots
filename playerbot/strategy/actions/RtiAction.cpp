@@ -6,7 +6,7 @@
 
 using namespace ai;
 
-bool RtiAction::Execute(Event& event)
+bool RtiAction::ExecuteCommand(Event& event)
 {
     string text = event.getParam();
     string type = "rti";

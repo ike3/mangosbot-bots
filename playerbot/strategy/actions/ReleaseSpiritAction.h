@@ -8,12 +8,13 @@
 
 namespace ai
 {
-    class ReleaseSpiritAction : public Action {
+    class ReleaseSpiritAction : public ChatCommandAction
+    {
     public:
-        ReleaseSpiritAction(PlayerbotAI* ai, string name = "release") : Action(ai, name) {}
+        ReleaseSpiritAction(PlayerbotAI* ai, string name = "release") : ChatCommandAction(ai, name) {}
 
     public:
-        virtual bool Execute(Event& event)
+        virtual bool ExecuteCommand(Event& event) override
         {
             if (sServerFacade.IsAlive(bot))
             {
@@ -51,11 +52,12 @@ namespace ai
         }
     };
 
-    class AutoReleaseSpiritAction : public ReleaseSpiritAction {
+    class AutoReleaseSpiritAction : public ReleaseSpiritAction 
+    {
     public:
         AutoReleaseSpiritAction(PlayerbotAI* ai, string name = "auto release") : ReleaseSpiritAction(ai, name) {}
 
-        virtual bool Execute(Event& event)
+        virtual bool ExecuteCommand(Event& event) override
         {
             sLog.outDetail("Bot #%d %s:%d <%s> auto released", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->GetLevel(), bot->GetName());
 
@@ -116,7 +118,8 @@ namespace ai
         }
     };
 
-    class RepopAction : public SpiritHealerAction {
+    class RepopAction : public SpiritHealerAction 
+    {
     public:
         RepopAction(PlayerbotAI* ai, string name = "repop") : SpiritHealerAction(ai, name) {}
 

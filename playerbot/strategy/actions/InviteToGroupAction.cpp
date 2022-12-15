@@ -34,7 +34,7 @@ namespace ai
         return true;
     }
 
-    bool JoinGroupAction::Execute(Event& event)
+    bool JoinGroupAction::ExecuteCommand(Event& event)
     {
         Player* master = event.getOwner();
 
@@ -50,7 +50,7 @@ namespace ai
         return Invite(master, bot);
     }
 
-    bool InviteNearbyToGroupAction::Execute(Event& event)
+    bool InviteNearbyToGroupAction::ExecuteCommand(Event& event)
     {
         list<ObjectGuid> nearGuids = ai->GetAiObjectContext()->GetValue<list<ObjectGuid> >("nearest friendly players")->Get();
         for (auto& i : nearGuids)
@@ -151,7 +151,7 @@ namespace ai
         return worker.GetResult();
     }
 
-    bool InviteGuildToGroupAction::Execute(Event& event)
+    bool InviteGuildToGroupAction::ExecuteCommand(Event& event)
     {
         for (auto& member : getGuildMembers())
         {

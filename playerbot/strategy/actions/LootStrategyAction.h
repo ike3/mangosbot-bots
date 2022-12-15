@@ -1,14 +1,13 @@
 #pragma once
-
-#include "../Action.h"
 #include "../../LootObjectStack.h"
+#include "GenericActions.h"
 
 namespace ai
 {
-    class LootStrategyAction : public Action {
+    class LootStrategyAction : public ChatCommandAction
+    {
     public:
-        LootStrategyAction(PlayerbotAI* ai) : Action(ai, "ll") {}
-        virtual bool Execute(Event& event);
+        LootStrategyAction(PlayerbotAI* ai) : ChatCommandAction(ai, "ll") {}
+        virtual bool ExecuteCommand(Event& event) override;
     };
-
 }

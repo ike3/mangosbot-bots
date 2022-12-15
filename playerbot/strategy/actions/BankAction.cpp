@@ -7,7 +7,7 @@
 using namespace std;
 using namespace ai;
 
-bool BankAction::Execute(Event& event)
+bool BankAction::ExecuteCommand(Event& event)
 {
     string text = event.getParam();
 
@@ -18,14 +18,14 @@ bool BankAction::Execute(Event& event)
         if (!npc || !npc->HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_BANKER))
             continue;
 
-        return Execute(text, npc);
+        return ExecuteCommand(text, npc);
     }
 
     ai->TellError("Cannot find banker nearby");
     return false;
 }
 
-bool BankAction::Execute(string text, Unit* bank)
+bool BankAction::ExecuteCommand(string text, Unit* bank)
 {
     if (text.empty() || text == "?")
     {

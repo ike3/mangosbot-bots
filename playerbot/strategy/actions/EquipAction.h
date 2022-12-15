@@ -1,14 +1,13 @@
 #pragma once
-
-#include "../Action.h"
 #include "InventoryAction.h"
 
 namespace ai
 {
-    class EquipAction : public InventoryAction {
+    class EquipAction : public InventoryAction
+    {
     public:
         EquipAction(PlayerbotAI* ai, string name = "equip") : InventoryAction(ai, name) {}
-        virtual bool Execute(Event& event);
+        virtual bool ExecuteCommand(Event& event) override;
         void EquipItems(ItemIds ids);
 
     private:
@@ -17,11 +16,10 @@ namespace ai
         void EquipItem(Item& item);
     };
 
-    class EquipUpgradesAction : public EquipAction {
+    class EquipUpgradesAction : public EquipAction
+    {
     public:
         EquipUpgradesAction(PlayerbotAI* ai, string name = "equip upgrades") : EquipAction(ai, name) {}
-
-        virtual bool Execute(Event& event);
+        virtual bool ExecuteCommand(Event& event) override;
     };
-
 }

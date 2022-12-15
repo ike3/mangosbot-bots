@@ -19,7 +19,7 @@ void TellPosition(PlayerbotAI* ai, string name, ai::PositionEntry pos)
     ai->TellMaster(out);
 }
 
-bool PositionAction::Execute(Event& event)
+bool PositionAction::ExecuteCommand(Event& event)
 {
 	string param = event.getParam();
 	if (param.empty())

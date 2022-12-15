@@ -1,7 +1,4 @@
 #pragma once
-
-#include "../Action.h"
-#include "InventoryAction.h"
 #include "QueryItemUsageAction.h"
 
 namespace ai
@@ -10,7 +7,7 @@ namespace ai
     {
     public:
         TradeStatusAction(PlayerbotAI* ai) : QueryItemUsageAction(ai, "accept trade") {}
-        virtual bool Execute(Event& event);
+        virtual bool ExecuteCommand(Event& event) override;
 
     private:
         void BeginTrade();

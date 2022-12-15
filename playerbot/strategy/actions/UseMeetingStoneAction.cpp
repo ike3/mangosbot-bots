@@ -76,6 +76,13 @@ bool SummonAction::Execute(Event& event)
     if (!master)
         return false;
 
+    // Remove stay strategy when summoning
+    if (ai->HasStrategy("stay", BotState::BOT_STATE_NON_COMBAT))
+    {
+        ai->ChangeStrategy("+follow,-passive,-stay", BotState::BOT_STATE_NON_COMBAT);
+        ai->ChangeStrategy("+follow,-passive,-stay", BotState::BOT_STATE_COMBAT);
+    }
+
     if (master->GetSession()->GetSecurity() >= SEC_PLAYER)
         return Teleport(master, bot);
 
@@ -93,7 +100,6 @@ bool SummonAction::Execute(Event& event)
 
     return false;
 }
-
 
 bool SummonAction::SummonUsingGos(Player *summoner, Player *player)
 {

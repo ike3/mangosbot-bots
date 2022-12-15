@@ -1,16 +1,14 @@
 #pragma once
-
 #include "MovementActions.h"
+#include "GenericActions.h"
 
 namespace ai
 {
-   class WaitForAttackSetTimeAction : public Action
+   class WaitForAttackSetTimeAction : public ChatCommandAction
    {
    public:
-       WaitForAttackSetTimeAction(PlayerbotAI* ai, string name = "wait for attack time") : Action(ai, name) {}
-
-   public:
-      virtual bool Execute(Event& event);
+       WaitForAttackSetTimeAction(PlayerbotAI* ai, string name = "wait for attack time") : ChatCommandAction(ai, name) {}
+      virtual bool ExecuteCommand(Event& event) override;
    };
 
    class WaitForAttackKeepSafeDistanceAction : public MovementAction

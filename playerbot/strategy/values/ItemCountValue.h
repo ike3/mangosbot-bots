@@ -9,7 +9,7 @@ namespace ai
     {
     public:
         InventoryItemValueBase(PlayerbotAI* ai) : InventoryAction(ai, "empty") {}
-        virtual bool Execute(Event& event) { return false; }
+        virtual bool ExecuteCommand(Event& event) override { return false; }
 
     protected:
         list<Item*> Find(string qualifier);
@@ -19,8 +19,6 @@ namespace ai
 	{
 	public:
         ItemCountValue(PlayerbotAI* ai, string name = "item count") : Uint32CalculatedValue(ai, name), InventoryItemValueBase(ai) {}
-
-    public:
         virtual uint32 Calculate();
 	};
 
@@ -28,8 +26,6 @@ namespace ai
     {
     public:
         InventoryItemValue(PlayerbotAI* ai, string name = "inventory items") : CalculatedValue<list<Item*> >(ai, name), InventoryItemValueBase(ai) {}
-
-    public:
         virtual list<Item*> Calculate();
     };
 
@@ -37,7 +33,6 @@ namespace ai
     {
     public:
         InventoryItemIdValue(PlayerbotAI* ai, string name = "inventory item ids") : CalculatedValue<list<uint32> >(ai, name) {}
-    public:
         virtual list<uint32> Calculate() {list<uint32> retVal;  for (auto& item : AI_VALUE2(list<Item*>, "inventory items", getQualifier())) { ItemPrototype const* proto = item->GetProto();  retVal.push_back(proto->ItemId);} return retVal;};
     };
 
@@ -45,8 +40,6 @@ namespace ai
     {
     public:
         EquipedUsableTrinketValue(PlayerbotAI* ai) : CalculatedValue<list<Item*> >(ai), InventoryItemValueBase(ai) {}
-
-    public:
         virtual list<Item*> Calculate();
     };
 }

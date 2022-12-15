@@ -5,7 +5,7 @@
 
 using namespace ai;
 
-bool ChangeCombatStrategyAction::Execute(Event& event)
+bool ChangeCombatStrategyAction::ExecuteCommand(Event& event)
 {
     string text = event.getParam();
     ai->ChangeStrategy(text.empty() ? getName() : text, BotState::BOT_STATE_COMBAT);
@@ -27,13 +27,14 @@ bool ChangeCombatStrategyAction::Execute(Event& event)
             }
         }
     }
+
+    
     return true;
 }
 
-bool ChangeNonCombatStrategyAction::Execute(Event& event)
+bool ChangeNonCombatStrategyAction::ExecuteCommand(Event& event)
 {
     string text = event.getParam();
-
     uint32 account = sObjectMgr.GetPlayerAccountIdByGUID(bot->GetObjectGuid());
     if (sPlayerbotAIConfig.IsInRandomAccountList(account) && ai->GetMaster() && ai->GetMaster()->GetSession()->GetSecurity() < SEC_GAMEMASTER)
     {
@@ -67,21 +68,21 @@ bool ChangeNonCombatStrategyAction::Execute(Event& event)
     return true;
 }
 
-bool ChangeDeadStrategyAction::Execute(Event& event)
+bool ChangeDeadStrategyAction::ExecuteCommand(Event& event)
 {
     string text = event.getParam();
     ai->ChangeStrategy(text, BotState::BOT_STATE_DEAD);
     return true;
 }
 
-bool ChangeReactionStrategyAction::Execute(Event& event)
+bool ChangeReactionStrategyAction::ExecuteCommand(Event& event)
 {
     string text = event.getParam();
     ai->ChangeStrategy(text, BotState::BOT_STATE_REACTION);
     return true;
 }
 
-bool ChangeAllStrategyAction::Execute(Event& event)
+bool ChangeAllStrategyAction::ExecuteCommand(Event& event)
 {
     string text = event.getParam();
     string strategyName = text.empty() ? strategy : text;

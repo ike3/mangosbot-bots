@@ -1,20 +1,15 @@
 #pragma once
-
-#include "../Action.h"
-#include "InventoryAction.h"
+#include "GenericActions.h"
 
 namespace ai
 {
-    class SaveManaAction : public Action
+    class SaveManaAction : public ChatCommandAction
     {
     public:
-        SaveManaAction(PlayerbotAI* ai) : Action(ai, "save mana") {}
-
-    public:
-        virtual bool Execute(Event& event);
+        SaveManaAction(PlayerbotAI* ai) : ChatCommandAction(ai, "save mana") {}
+        virtual bool ExecuteCommand(Event& event) override;
 
     private:
         string format(double value);
     };
-
 }

@@ -1,6 +1,5 @@
 #pragma once
-
-#include "../Action.h"
+#include "GenericActions.h"
 
 namespace ai
 {
@@ -17,15 +16,14 @@ namespace ai
         QUEST_TRAVEL_DETAIL_FULL = 2
     };
 
-    class ListQuestsAction : public Action {
+    class ListQuestsAction : public ChatCommandAction
+    {
     public:
-        ListQuestsAction(PlayerbotAI* ai) : Action(ai, "quests") {}
-        virtual bool Execute(Event& event);
+        ListQuestsAction(PlayerbotAI* ai) : ChatCommandAction(ai, "quests") {}
+        virtual bool ExecuteCommand(Event& event) override;
 
     private:
         void ListQuests(QuestListFilter filter, QuestTravelDetail travelDetail = QUEST_TRAVEL_DETAIL_NONE);
         int ListQuests(bool completed, bool silent, QuestTravelDetail travelDetail);
-
     };
-
 }

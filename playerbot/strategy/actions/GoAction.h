@@ -1,15 +1,14 @@
 #pragma once
-
-#include "../Action.h"
 #include "MovementActions.h"
 
 namespace ai
 {
-	class GoAction : public MovementAction {
+	class GoAction : public MovementAction
+	{
 	public:
 		GoAction(PlayerbotAI* ai) : MovementAction(ai, "go") {}
-		virtual bool Execute(Event& event);
-		virtual bool IsPossible() { return true; }
+		virtual bool Execute(Event& event) override;
+		virtual bool IsPossible() override { return true; }
 
 #ifdef GenerateBotHelp
         virtual string GetHelpName() { return "go"; } //Must equal iternal name

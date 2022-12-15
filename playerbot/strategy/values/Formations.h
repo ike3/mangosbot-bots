@@ -1,6 +1,7 @@
 #pragma once
 #include "../Value.h"
 #include "../../PlayerbotAIConfig.h"
+#include "../actions/GenericActions.h"
 
 namespace ai
 {
@@ -53,11 +54,11 @@ namespace ai
         virtual bool Load(string value);
     };
 
-    class SetFormationAction : public Action
+    class SetFormationAction : public ChatCommandAction
     {
     public:
-        SetFormationAction(PlayerbotAI* ai) : Action(ai, "set formation") {}
-        virtual bool Execute(Event& event);
+        SetFormationAction(PlayerbotAI* ai) : ChatCommandAction(ai, "set formation") {}
+        virtual bool ExecuteCommand(Event& event) override;
     };
 };
 

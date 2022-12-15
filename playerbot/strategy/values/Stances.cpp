@@ -50,10 +50,8 @@ WorldLocation MoveStance::GetLocationInternal()
     return GetNearLocation(angle, distance);
 }
 
-
 namespace ai
 {
-
     class NearStance : public MoveStance
     {
     public:
@@ -210,8 +208,7 @@ bool StanceValue::Load(string name)
     return true;
 }
 
-
-bool SetStanceAction::Execute(Event& event)
+bool SetStanceAction::ExecuteCommand(Event& event)
 {
     string stance = event.getParam();
 

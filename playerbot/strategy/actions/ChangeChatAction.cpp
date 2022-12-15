@@ -2,11 +2,9 @@
 #include "../../playerbot.h"
 #include "ChangeChatAction.h"
 
-
 using namespace ai;
 
-
-bool ChangeChatAction::Execute(Event& event)
+bool ChangeChatAction::ExecuteCommand(Event& event)
 {
     string text = event.getParam();
     ChatMsg parsed = chat->parseChat(text);
