@@ -360,10 +360,10 @@ public:
     void ImbueItem(Item* item);
     void EnchantItemT(uint32 spellid, uint8 slot, Item* item = nullptr);
     uint32 GetBuffedCount(Player* player, string spellname);
-  
+
     bool GetSpellRange(string name, float* maxRange, float* minRange = nullptr);
-    virtual bool CanCastSpell(string name, Unit* target, uint8 effectMask, Item* itemTarget = NULL, bool ignoreRange = false);
-    virtual bool CastSpell(string name, Unit* target, Item* itemTarget = NULL);
+    uint32 GetSpellCastDuration(Spell* spell);
+
     virtual bool HasAura(string spellName, Unit* player, bool maxStack = false, bool checkIsOwner = false, int maxAmount = -1, bool hasMyAura = false);
     virtual bool HasAnyAuraOf(Unit* player, ...);
     virtual bool HasMyAura(string spellName, Unit* player) { return HasAura(spellName, player, false, false, -1, true); }
@@ -374,20 +374,24 @@ public:
 
     virtual bool IsInterruptableSpellCasting(Unit* player, string spell, uint8 effectMask);
     virtual bool HasAuraToDispel(Unit* player, uint32 dispelType);
+    bool canDispel(const SpellEntry* entry, uint32 dispelType);
+
     bool HasSpell(string name) const;
     bool HasSpell(uint32 spellid) const;
+    bool HasAura(uint32 spellId, const Unit* player);
+
+    virtual bool CanCastSpell(string name, Unit* target, uint8 effectMask, Item* itemTarget = NULL, bool ignoreRange = false);
     bool CanCastSpell(uint32 spellid, Unit* target, uint8 effectMask, bool checkHasSpell = true, Item* itemTarget = NULL, bool ignoreRange = false);
     bool CanCastSpell(uint32 spellid, GameObject* goTarget, uint8 effectMask, bool checkHasSpell = true, bool ignoreRange = false);
     bool CanCastSpell(uint32 spellid, float x, float y, float z, uint8 effectMask, bool checkHasSpell = true, Item* itemTarget = NULL, bool ignoreRange = false);
-
-    bool HasAura(uint32 spellId, const Unit* player);
-    bool CastSpell(uint32 spellId, Unit* target, Item* itemTarget = NULL);
-    bool CastSpell(uint32 spellId, float x, float y, float z, Item* itemTarget = NULL);
-    bool canDispel(const SpellEntry* entry, uint32 dispelType);
-
     bool CanCastVehicleSpell(uint32 spellid, Unit* target);
+
+    virtual bool CastSpell(string name, Unit* target, Item* itemTarget = NULL, bool waitForSpell = true, uint32* outSpellDuration = NULL);
+    bool CastSpell(uint32 spellId, Unit* target, Item* itemTarget = NULL, bool waitForSpell = true, uint32* outSpellDuration = NULL);
+    bool CastSpell(uint32 spellId, float x, float y, float z, Item* itemTarget = NULL, bool waitForSpell = true, uint32* outSpellDuration = NULL);
     bool CastVehicleSpell(uint32 spellId, Unit* target);
     bool CastVehicleSpell(uint32 spellId, float x, float y, float z);
+
     bool IsInVehicle(bool canControl = false, bool canCast = false, bool canAttack = false, bool canTurn = false, bool fixed = false);
 
     uint32 GetEquipGearScore(Player* player, bool withBags, bool withBank);
@@ -482,7 +486,8 @@ public:
     void OnDeath();
     void OnResurrected();
     
-    void SetActionDuration(const Action* action, uint32 delay);
+    void SetActionDuration(const Action* action);
+    void SetActionDuration(uint32 duration);
     
 private:
     bool UpdateAIReaction(uint32 elapsed, bool minimal = false);

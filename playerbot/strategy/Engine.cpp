@@ -644,6 +644,10 @@ bool Engine::ListenAndExecute(Action* action, Event& event)
     if (actionExecutionListeners.Before(action, event))
     {
         actionExecuted = actionExecutionListeners.AllowExecution(action, event) ? action->Execute(event) : true;
+        if (actionExecuted)
+        {
+            ai->SetActionDuration(action);
+        }
     }
 
     if (ai->HasStrategy("debug", BotState::BOT_STATE_NON_COMBAT))
@@ -664,7 +668,7 @@ bool Engine::ListenAndExecute(Action* action, Event& event)
 
         if (actionExecuted)
         {
-            const uint32 actionDuration = ai->GetAIInternalUpdateDelay();
+            const uint32 actionDuration = action->GetDuration();
             if (actionDuration > 0)
             {
                 out << " (duration: " << ((float)actionDuration / IN_MILLISECONDS) << "s)";

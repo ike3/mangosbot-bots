@@ -545,13 +545,7 @@ bool UseItemAction::SocketItem(Item* item, Item* gem, bool replace)
 
 bool UseItemIdAction::Execute(Event& event)
 {    
-    if(CastItemSpell(GetItemId(), GetTarget()))
-    {
-        SetDuration(getDuration());
-        return true;
-    }
-
-    return false;
+    return CastItemSpell(GetItemId(), GetTarget());
 }
 
 bool UseItemIdAction::isPossible()

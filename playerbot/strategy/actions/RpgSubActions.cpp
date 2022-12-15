@@ -73,9 +73,9 @@ void RpgHelper::resetFacing(GuidPosition guidPosition)
 void RpgHelper::setDelay(bool waitForGroup)
 {
     if (!ai->HasRealPlayerMaster() || (waitForGroup && ai->GetGroupMaster() == bot && bot->GetGroup()))
-        ai->SetActionDuration(nullptr, sPlayerbotAIConfig.rpgDelay);
+        ai->SetActionDuration(sPlayerbotAIConfig.rpgDelay);
     else
-        ai->SetActionDuration(nullptr, sPlayerbotAIConfig.rpgDelay / 5);
+        ai->SetActionDuration(sPlayerbotAIConfig.rpgDelay / 5);
 }
 
 bool RpgEmoteAction::Execute(Event& event)
@@ -293,7 +293,7 @@ bool RpgTradeUsefulAction::Execute(Event& event)
         //else
         //   bot->Say("Start trade with" + chat->formatWorldobject(player), (bot->GetTeam() == ALLIANCE ? LANG_COMMON : LANG_ORCISH));
 
-        ai->SetActionDuration(nullptr, sPlayerbotAIConfig.rpgDelay);
+        ai->SetActionDuration(sPlayerbotAIConfig.rpgDelay);
     }
 
     rpg->AfterExecute(isTrading, true, isTrading ? "rpg trade useful" : "rpg");

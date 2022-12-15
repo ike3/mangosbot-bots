@@ -19,10 +19,11 @@ CastSpellAction::CastSpellAction(PlayerbotAI* ai, string spell)
 
 bool CastSpellAction::Execute(Event& event)
 {
+    bool executed = false;
+    uint32 spellDuration = sPlayerbotAIConfig.globalCoolDown;
     if (spellName == "conjure food" || spellName == "conjure water")
     {
         uint32 castId = 0;
-
         for (PlayerSpellMap::iterator itr = bot->GetSpellMap().begin(); itr != bot->GetSpellMap().end(); ++itr)
         {
             uint32 spellId = itr->first;
@@ -52,10 +53,19 @@ bool CastSpellAction::Execute(Event& event)
                 castId = pSpellInfo->Id;
         }
 
-        return ai->CastSpell(castId, bot);
+        executed = ai->CastSpell(castId, bot, nullptr, false, &spellDuration);
+    }
+    else
+    {
+        executed = ai->CastSpell(spellName, GetTarget(), nullptr, false, &spellDuration);
     }
 
-	return ai->CastSpell(spellName, GetTarget());
+    if (executed)
+    {
+        SetDuration(spellDuration);
+    }
+
+    return executed;
 }
 
 bool CastSpellAction::isPossible()

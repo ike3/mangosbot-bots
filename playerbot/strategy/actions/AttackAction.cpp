@@ -36,7 +36,6 @@ bool AttackMyTargetAction::Execute(Event& event)
         {
             if (Attack(ai->GetUnit(guid)))
             {
-                SetDuration(sPlayerbotAIConfig.globalCoolDown);
                 SET_AI_VALUE(ObjectGuid, "attack target", guid);
                 return true;
             }

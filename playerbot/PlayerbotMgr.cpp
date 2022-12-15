@@ -334,7 +334,7 @@ void PlayerbotHolder::OnBotLogin(Player * const bot)
     // check activity
     ai->AllowActivity(ALL_ACTIVITY, true);
     // set delay on login
-    ai->SetActionDuration(nullptr, urand(2000, 4000));
+    ai->SetActionDuration(urand(2000, 4000));
 
     ai->TellMaster(BOT_TEXT("hello"));
 

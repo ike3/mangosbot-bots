@@ -57,7 +57,7 @@ namespace ai
     class Action : public AiNamedObject
 	{
 	public:
-        Action(PlayerbotAI* ai, string name = "action") : verbose(false), AiNamedObject(ai, name) { }
+        Action(PlayerbotAI* ai, string name = "action", uint32 duration = sPlayerbotAIConfig.reactDelay) : AiNamedObject(ai, name), verbose(false), duration(duration) {}
         virtual ~Action(void) {}
 
     public:
@@ -90,14 +90,20 @@ namespace ai
         virtual string GetHelpDescription() { return "This is an action."; }
         virtual vector<string> GetUsedActions() { return {}; }
         virtual vector<string> GetUsedValues() { return {}; }
-#endif        
+#endif
+
+        uint32 GetDuration() const { return duration; }
+
     protected:
-        void SetDuration(uint32 delay);
+        void SetDuration(uint32 inDuration) { duration = inDuration; }
 
     protected:
         bool verbose;
         float relevance = 0;
         bool reaction = false;
+
+    private:
+        uint32 duration;
 	};
 
     //---------------------------------------------------------------------------------------------------------------------

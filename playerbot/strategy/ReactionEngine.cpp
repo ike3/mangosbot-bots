@@ -11,8 +11,7 @@ void Reaction::SetAction(Action* inAction)
 {
     if (inAction)
     {
-        // Set default duration (5 seconds)
-        SetDuration(5000U);
+        SetDuration(inAction->GetDuration());
         action = inAction;
     }
 }
@@ -213,6 +212,10 @@ bool ReactionEngine::ListenAndExecute(Action* action, Event& event)
     if (actionExecutionListeners.Before(action, event))
     {
         actionExecuted = actionExecutionListeners.AllowExecution(action, event) ? action->Execute(event) : true;
+        if (actionExecuted)
+        {
+            ai->SetActionDuration(action);
+        }
     }
 
     if (ai->HasStrategy("debug", BotState::BOT_STATE_NON_COMBAT))
@@ -261,17 +264,17 @@ ai::Action* ReactionEngine::InitializeAction(ActionNode* actionNode)
     return action;
 }
 
-void ReactionEngine::SetReactionDuration(const Action* action, uint32 duration)
+void ReactionEngine::SetReactionDuration(const Action* action)
 {
     if (action && (IsReacting() || HasIncomingReaction()))
     {
         if (ongoingReaction.GetAction() == action)
         {
-            ongoingReaction.SetDuration(duration);
+            ongoingReaction.SetDuration(action->GetDuration());
         }
         else if (incomingReaction.GetAction() == action)
         {
-            incomingReaction.SetDuration(duration);
+            incomingReaction.SetDuration(action->GetDuration());
         }
     }
 }

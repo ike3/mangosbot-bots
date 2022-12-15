@@ -422,16 +422,24 @@ void PlayerbotAI::UpdateFaceTarget(uint32 elapsed, bool minimal)
     }
 }
 
-void PlayerbotAI::SetActionDuration(const Action* action, uint32 delay)
+void PlayerbotAI::SetActionDuration(const Action* action)
 {
-    if (action && action->IsReaction())
+    if (action)
     {
-        reactionEngine->SetReactionDuration(action, delay);
+        if(action->IsReaction())
+        {
+            reactionEngine->SetReactionDuration(action);
+        }
+        else
+        {
+            SetAIInternalUpdateDelay(action->GetDuration());
+        }
     }
-    else
-    {
-        SetAIInternalUpdateDelay(delay);
-    }
+}
+
+void PlayerbotAI::SetActionDuration(uint32 duration)
+{
+    SetAIInternalUpdateDelay(duration);
 }
 
 bool PlayerbotAI::IsStateActive(BotState state) const
@@ -2347,6 +2355,38 @@ bool PlayerbotAI::GetSpellRange(string name, float* maxRange, float* minRange)
     return false;
 }
 
+uint32 PlayerbotAI::GetSpellCastDuration(Spell* spell)
+{
+    uint32 spellDuration = 0;
+    if(spell)
+    {
+        const SpellEntry* const pSpellInfo = spell->m_spellInfo;
+        spellDuration = spell->GetCastTime();
+        if (IsChanneledSpell(pSpellInfo))
+        {
+            int32 duration = GetSpellDuration(pSpellInfo);
+            if (duration > 0)
+                spellDuration += duration;
+        }
+
+        spellDuration = ceil(spellDuration);
+
+        // fix hunter Feign Death delay
+        if (pSpellInfo->Id == 5384)
+            spellDuration = 1000.0f;
+
+        uint32 globalCooldown = CalculateGlobalCooldown(pSpellInfo->Id);
+        if (spellDuration < (int32)globalCooldown)
+            spellDuration = globalCooldown;
+
+        // fix cannibalize
+        if (pSpellInfo->Id == 20577)
+            spellDuration = 10000;
+    }
+
+    return spellDuration + sPlayerbotAIConfig.reactDelay;
+}
+
 bool PlayerbotAI::HasSpell(string name) const
 {
     return HasSpell(aiObjectContext->GetValue<uint32>("spell id", name)->Get());
@@ -2604,9 +2644,9 @@ uint8 PlayerbotAI::GetManaPercent() const
    return GetManaPercent(*bot);
 }
 
-bool PlayerbotAI::CastSpell(string name, Unit* target, Item* itemTarget)
+bool PlayerbotAI::CastSpell(string name, Unit* target, Item* itemTarget, bool waitForSpell, uint32* outSpellDuration)
 {
-    bool result = CastSpell(aiObjectContext->GetValue<uint32>("spell id", name)->Get(), target, itemTarget);
+    bool result = CastSpell(aiObjectContext->GetValue<uint32>("spell id", name)->Get(), target, itemTarget, waitForSpell, outSpellDuration);
     if (result)
     {
         aiObjectContext->GetValue<time_t>("last spell cast time", name)->Set(time(0));
@@ -2615,7 +2655,7 @@ bool PlayerbotAI::CastSpell(string name, Unit* target, Item* itemTarget)
     return result;
 }
 
-bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target, Item* itemTarget)
+bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target, Item* itemTarget, bool waitForSpell, uint32* outSpellDuration)
 {
     if (!spellId)
         return false;
@@ -2675,7 +2715,16 @@ bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target, Item* itemTarget)
 
     if (failWithDelay)
     {
-        SetAIInternalUpdateDelay(sPlayerbotAIConfig.globalCoolDown);
+        if(waitForSpell)
+        {
+            SetAIInternalUpdateDelay(sPlayerbotAIConfig.globalCoolDown);
+        }
+
+        if(outSpellDuration)
+        {
+            *outSpellDuration = sPlayerbotAIConfig.globalCoolDown;
+        }
+
         return false;
     }
 
@@ -2776,7 +2825,16 @@ bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target, Item* itemTarget)
     //if (spellSuccess != SPELL_CAST_OK)
     //    return false;
 
-    WaitForSpellCast(spell);
+    if(waitForSpell)
+    {
+        WaitForSpellCast(spell);
+    }
+
+    if(outSpellDuration)
+    {
+        *outSpellDuration = GetSpellCastDuration(spell);
+    }
+
     if (spell->GetCastTime() || (IsChanneledSpell(pSpellInfo) && GetSpellDuration(pSpellInfo) > 0))
         aiObjectContext->GetValue<LastSpellCast&>("last spell cast")->Get().Set(spellId, target->GetObjectGuid(), time(0));
 
@@ -2795,7 +2853,7 @@ bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target, Item* itemTarget)
     return true;
 }
 
-bool PlayerbotAI::CastSpell(uint32 spellId, float x, float y, float z, Item* itemTarget)
+bool PlayerbotAI::CastSpell(uint32 spellId, float x, float y, float z, Item* itemTarget, bool waitForSpell, uint32* outSpellDuration)
 {
     if (!spellId)
         return false;
@@ -2854,7 +2912,16 @@ bool PlayerbotAI::CastSpell(uint32 spellId, float x, float y, float z, Item* ite
 
     if (failWithDelay)
     {
-        SetAIInternalUpdateDelay(sPlayerbotAIConfig.globalCoolDown);
+        if (waitForSpell)
+        {
+            SetAIInternalUpdateDelay(sPlayerbotAIConfig.globalCoolDown);
+        }
+
+        if (outSpellDuration)
+        {
+            *outSpellDuration = sPlayerbotAIConfig.globalCoolDown;
+        }
+
         return false;
     }
 
@@ -2921,7 +2988,16 @@ bool PlayerbotAI::CastSpell(uint32 spellId, float x, float y, float z, Item* ite
         }
     }
 
-    WaitForSpellCast(spell);
+    if (waitForSpell)
+    {
+        WaitForSpellCast(spell);
+    }
+
+    if (outSpellDuration)
+    {
+        *outSpellDuration = GetSpellCastDuration(spell);
+    }
+
     aiObjectContext->GetValue<LastSpellCast&>("last spell cast")->Get().Set(spellId, bot->GetObjectGuid(), time(0));
     aiObjectContext->GetValue<ai::PositionMap&>("position")->Get()["random"].Reset();
 
@@ -3236,31 +3312,7 @@ bool PlayerbotAI::IsInVehicle(bool canControl, bool canCast, bool canAttack, boo
 
 void PlayerbotAI::WaitForSpellCast(Spell *spell)
 {
-    const SpellEntry* const pSpellInfo = spell->m_spellInfo;
-
-    int32 castTime = spell->GetCastTime();
-	if (IsChanneledSpell(pSpellInfo))
-    {
-        int32 duration = GetSpellDuration(pSpellInfo);
-        if (duration > 0)
-            castTime += duration;
-    }
-
-    castTime = ceil(castTime);
-
-    // fix hunter Feign Death delay
-    if (pSpellInfo->Id == 5384)
-        castTime = 1000.0f;
-
-    uint32 globalCooldown = CalculateGlobalCooldown(pSpellInfo->Id);
-    if (castTime < (int32)globalCooldown)
-        castTime = globalCooldown;
-
-    // fix cannibalize
-    if (pSpellInfo->Id == 20577)
-        castTime = 10000;
-
-    SetAIInternalUpdateDelay(castTime + sPlayerbotAIConfig.reactDelay);
+    SetAIInternalUpdateDelay(GetSpellCastDuration(spell));
 }
 
 void PlayerbotAI::InterruptSpell()
@@ -3278,7 +3330,6 @@ void PlayerbotAI::InterruptSpell()
         SpellInterrupted(spell->m_spellInfo->Id);
     }
 }
-
 
 void PlayerbotAI::RemoveAura(string name)
 {
@@ -3341,8 +3392,6 @@ bool PlayerbotAI::HasAuraToDispel(Unit* target, uint32 dispelType)
 	}
 	return false;
 }
-
-
 
 #ifndef WIN32
 inline int strcmpi(const char* s1, const char* s2)

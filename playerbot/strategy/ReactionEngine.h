@@ -38,7 +38,7 @@ namespace ai
         bool Update(uint32 elapsed, bool minimal, bool& reactionFound, bool& reactionFinished);
         bool IsReacting() const { return ongoingReaction.IsValid(); }
         bool HasIncomingReaction() const { return incomingReaction.IsValid(); }
-        void SetReactionDuration(const Action* action, uint32 duration);
+        void SetReactionDuration(const Action* action);
         const Reaction* GetReaction() const;
 
     private:

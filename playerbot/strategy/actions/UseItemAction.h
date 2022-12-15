@@ -8,7 +8,7 @@ namespace ai
     class UseItemAction : public ChatCommandAction 
     {
     public:
-        UseItemAction(PlayerbotAI* ai, string name = "use", bool selfOnly = false) : ChatCommandAction(ai, name), selfOnly(selfOnly) {}
+        UseItemAction(PlayerbotAI* ai, string name = "use", bool selfOnly = false, uint32 duration = sPlayerbotAIConfig.reactDelay) : ChatCommandAction(ai, name, duration), selfOnly(selfOnly) {}
 
     public:
         virtual bool isPossible() override;
@@ -33,7 +33,7 @@ namespace ai
     class UseItemIdAction : public UseItemAction
     {
     public:
-        UseItemIdAction(PlayerbotAI* ai, string name, bool selfOnly = false) : UseItemAction(ai, name, selfOnly) {}
+        UseItemIdAction(PlayerbotAI* ai, string name, bool selfOnly = false, uint32 duration = sPlayerbotAIConfig.reactDelay) : UseItemAction(ai, name, selfOnly, duration) {}
         virtual bool isPossible() override;
 
     protected:
@@ -47,7 +47,7 @@ namespace ai
     class UseTargetedItemIdAction : public UseItemIdAction
     {
     public:
-        UseTargetedItemIdAction(PlayerbotAI* ai, string name, bool selfOnly = false) : UseItemIdAction(ai, name, selfOnly) {}
+        UseTargetedItemIdAction(PlayerbotAI* ai, string name, bool selfOnly = false, uint32 duration = sPlayerbotAIConfig.reactDelay) : UseItemIdAction(ai, name, selfOnly, duration) {}
         virtual Unit* GetTarget() override { return Action::GetTarget(); }
         virtual uint32 GetItemId() override { return  0; }
     };
@@ -96,7 +96,7 @@ namespace ai
     class UseHearthStoneAction : public UseItemAction
     {
     public:
-        UseHearthStoneAction(PlayerbotAI* ai) : UseItemAction(ai, "hearthstone", true) {}
+        UseHearthStoneAction(PlayerbotAI* ai) : UseItemAction(ai, "hearthstone", true, 10000U) {}
 
         virtual bool Execute(Event& event) override;
 
@@ -104,19 +104,16 @@ namespace ai
     
         // Used when this action is executed as a reaction
         bool ShouldReactionInterruptMovement() const override { return true; }
-
-        virtual uint32 getDuration() const override { return 10000U; };
     };
 
     class UseRandomRecipeAction : public UseItemAction
     {
     public:
-        UseRandomRecipeAction(PlayerbotAI* ai) : UseItemAction(ai, "random recipe", true) {}
+        UseRandomRecipeAction(PlayerbotAI* ai) : UseItemAction(ai, "random recipe", true, 3000U) {}
 
         virtual bool isUseful() override;
         virtual bool isPossible() override {return AI_VALUE2(uint32,"item count", "recipe") > 0; }
       
-        virtual uint32 getDuration() const override { return 3000U; };
         virtual bool Execute(Event& event) override;
 
         // Used when this action is executed as a reaction
@@ -210,7 +207,7 @@ namespace ai
     class UseBandageAction : public UseTargetedItemIdAction
     {
     public:
-        UseBandageAction(PlayerbotAI* ai) : UseTargetedItemIdAction(ai, "use bandage") {}
+        UseBandageAction(PlayerbotAI* ai) : UseTargetedItemIdAction(ai, "use bandage", false, 8000U) {}
 
         virtual bool isUseful() override
         {
@@ -253,8 +250,6 @@ namespace ai
 
         // Used when this action is executed as a reaction
         bool ShouldReactionInterruptMovement() const override { return true; }
-
-        virtual uint32 getDuration() const override { return 8000U; };
     };
 
     class UseAdamantiteGrenadeAction : public UseTargetedItemIdAction

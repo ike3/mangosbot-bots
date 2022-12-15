@@ -74,9 +74,8 @@ namespace ai
     class ChatCommandAction : public Action
     {
     public:
-        ChatCommandAction(PlayerbotAI* ai, string name) : Action(ai, name) {}
+        ChatCommandAction(PlayerbotAI* ai, string name, uint32 duration = sPlayerbotAIConfig.reactDelay) : Action(ai, name, duration) {}
 
-    protected:
-        virtual uint32 getDuration() const { return sPlayerbotAIConfig.globalCoolDown; }
+        // ...
     };
 }

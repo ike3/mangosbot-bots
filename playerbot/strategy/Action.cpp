@@ -96,8 +96,3 @@ Unit* Action::GetTarget()
 {
     return GetTargetValue()->Get();
 }
-
-void Action::SetDuration(uint32 delay)
-{
-    ai->SetActionDuration(this, delay);
-}
