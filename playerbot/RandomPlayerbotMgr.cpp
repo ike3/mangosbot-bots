@@ -301,8 +301,6 @@ RandomPlayerbotMgr::RandomPlayerbotMgr() : PlayerbotHolder(), processTicks(0), l
 #endif
         // sync event timers
         SyncEventTimers();
-
-        loginMgr = new RandomPlayerbotLoginMgr();
     }
 }
 
