@@ -249,8 +249,6 @@ botPIDImpl::~botPIDImpl()
 {
 }
 
-
-
 RandomPlayerbotMgr::RandomPlayerbotMgr() : PlayerbotHolder(), processTicks(0), loginProgressBar(NULL)
 {
     if (sPlayerbotAIConfig.enabled || sPlayerbotAIConfig.randomBotAutologin)
@@ -303,6 +301,8 @@ RandomPlayerbotMgr::RandomPlayerbotMgr() : PlayerbotHolder(), processTicks(0), l
 #endif
         // sync event timers
         SyncEventTimers();
+
+        loginMgr = new RandomPlayerbotLoginMgr();
     }
 }
 
@@ -680,6 +680,11 @@ uint32 RandomPlayerbotMgr::AddRandomBots()
 {
     uint32 maxAllowedBotCount = GetEventValue(0, "bot_count");
 
+    uint32 maxLevel = sWorld.getConfig(CONFIG_UINT32_MAX_PLAYER_LEVEL);
+
+    if (sPlayerbotAIConfig.syncLevelWithPlayers)
+        maxLevel = max(sPlayerbotAIConfig.randomBotMinLevel, min(playersLevel, sWorld.getConfig(CONFIG_UINT32_MAX_PLAYER_LEVEL))) + 5;
+
     if (currentBots.size() < maxAllowedBotCount)
     {
         maxAllowedBotCount -= currentBots.size();
@@ -692,7 +697,7 @@ uint32 RandomPlayerbotMgr::AddRandomBots()
         for (list<uint32>::iterator i = sPlayerbotAIConfig.randomBotAccounts.begin(); i != sPlayerbotAIConfig.randomBotAccounts.end(); i++)
         {
             uint32 accountId = *i;
-            QueryResult* result = CharacterDatabase.PQuery("SELECT guid FROM characters WHERE account = '%u'", accountId);
+            QueryResult* result = CharacterDatabase.PQuery("SELECT guid FROM characters WHERE account = '%u' and level <= %u", accountId, maxLevel);
             if (!result)
                 continue;
 

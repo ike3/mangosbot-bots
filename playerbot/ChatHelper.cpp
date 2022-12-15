@@ -669,6 +669,15 @@ string ChatHelper::formatSkill(uint32 skill)
     return "";
 }
 
+string ChatHelper::formatAngle(float angle)
+{
+    vector<string> headings = { "north", "north west", "west", "south west", "south", "south east", "east", "north east"};
+
+    float headingAngle = angle / M_PI_F * 180;
+
+    return headings[int32(round(headingAngle / 45)) % 8];
+}
+
 string ChatHelper::formatBoolean(bool flag)
 {
     return flag ? "|cff00ff00ON|r" : "|cffffff00OFF|r";

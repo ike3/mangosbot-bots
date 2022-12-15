@@ -98,7 +98,7 @@ bool DebugAction::Execute(Event& event)
         if (args.size() == 1)
             args.push_back("99");
         if (args.size() == 2)
-            args.push_back("7");
+            args.push_back("6");
         if (args.size() == 3)
             args.push_back("0");
 

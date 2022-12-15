@@ -53,6 +53,8 @@ namespace ai
         static string formatSkill(uint32 skill);
         uint32 parseSkill(string& text);
 
+        static string formatAngle(float angle);
+
         static string formatBoolean(bool flag);       
        
         static bool parseable(string text);
