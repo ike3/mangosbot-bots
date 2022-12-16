@@ -3488,7 +3488,45 @@ vector<TravelDestination*> TravelMgr::getQuestTravelDestinations(Player* bot, in
 
     vector<TravelDestination*> retTravelLocations;
 
-    if (questId == -1)
+    if (!questId)
+    {
+        for (auto& dest : questGivers)
+        {
+            if (!ignoreInactive && !dest->isActive(bot))
+                continue;
+
+            if (maxDistance > 0 && dest->distanceTo(&botLocation) > maxDistance)
+                continue;
+
+            retTravelLocations.push_back(dest);
+        }
+        for (auto& quest : quests)
+        {
+            for (auto& dest : quest.second->questTakers)
+            {
+                if (!ignoreInactive && !dest->isActive(bot))
+                    continue;
+
+                if (maxDistance > 0 && dest->distanceTo(&botLocation) > maxDistance)
+                    continue;
+
+                retTravelLocations.push_back(dest);
+            }
+
+            if (!ignoreObjectives)
+                for (auto& dest : quest.second->questObjectives)
+                {
+                    if (!ignoreInactive && !dest->isActive(bot))
+                        continue;
+
+                    if (maxDistance > 0 && dest->distanceTo(&botLocation) > maxDistance)
+                        continue;
+
+                    retTravelLocations.push_back(dest);
+                }
+        }
+    }
+    else if (questId == -1)
     {
         for (auto& dest : questGivers)
         {
@@ -3592,7 +3630,7 @@ vector<TravelDestination*> TravelMgr::getExploreTravelDestinations(Player* bot, 
     return retTravelLocations;
 }
 
-vector<TravelDestination*> TravelMgr::getGrindTravelDestinations(Player* bot, bool ignoreFull, bool ignoreInactive, float maxDistance)
+vector<TravelDestination*> TravelMgr::getGrindTravelDestinations(Player* bot, bool ignoreFull, bool ignoreInactive, float maxDistance, uint32 maxCheck)
 {
     WorldPosition botLocation(bot);
 
@@ -3615,7 +3653,7 @@ vector<TravelDestination*> TravelMgr::getGrindTravelDestinations(Player* bot, bo
 
         retTravelLocations.push_back(dest);
 
-        if (checked++ > 50)
+        if (maxCheck && checked++ > maxCheck)
             break;
     }
 

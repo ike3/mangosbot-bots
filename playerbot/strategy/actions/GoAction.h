@@ -8,7 +8,7 @@ namespace ai
 	public:
 		GoAction(PlayerbotAI* ai) : MovementAction(ai, "go") {}
 		virtual bool Execute(Event& event) override;
-		virtual bool isPossible() override { return true; }
+        virtual bool isPossible() override { return true; }
 
 #ifdef GenerateBotHelp
         virtual string GetHelpName() { return "go"; } //Must equal iternal name
@@ -26,5 +26,16 @@ namespace ai
         virtual vector<string> GetUsedActions() { return {}; }
         virtual vector<string> GetUsedValues() { return { "travel target" ,  "nearest npcs" ,  "nearest friendly players" , "position" }; }
 #endif 
+
+    private:
+        bool TellWhereToGo(string& param) const;
+        bool LeaderAlreadyTraveling(TravelDestination* dest) const;
+        bool TellHowToGo(TravelDestination* dest) const;
+        bool TravelTo(TravelDestination* dest) const;
+        bool MoveToGo(string& param);
+        bool MoveToUnit(string& param);
+        bool MoveToGps(string& param);
+        bool MoveToMapGps(string& param);
+        bool MoveToPosition(std::string& param);
 	};
 }

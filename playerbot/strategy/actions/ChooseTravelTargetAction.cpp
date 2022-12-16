@@ -169,12 +169,14 @@ void ChooseTravelTargetAction::getNewTarget(TravelTarget* newTarget, TravelTarge
 
 void ChooseTravelTargetAction::setNewTarget(TravelTarget* newTarget, TravelTarget* oldTarget)
 {
+    if (oldTarget->isForced() && oldTarget->getStatus() == TravelStatus::TRAVEL_STATUS_COOLDOWN && ai->HasStrategy("travel once", BotState::BOT_STATE_NON_COMBAT))
+    {
+        ai->ChangeStrategy("-travel once", BotState::BOT_STATE_NON_COMBAT);
+        ai->TellMasterNoFacing("Arrived at " + oldTarget->getDestination()->getTitle());
+        return;
+    }
+
     ReportTravelTarget(newTarget, oldTarget);
-
-    if(oldTarget->isForced() && oldTarget->getDestination() != newTarget->getDestination())
-        if (ai->HasStrategy("travel once", BotState::BOT_STATE_NON_COMBAT))
-            ai->ChangeStrategy("-travel once", BotState::BOT_STATE_NON_COMBAT);
-
 
     //If we are heading to a creature/npc clear it from the ignore list. 
     if (oldTarget && oldTarget == newTarget && newTarget->getEntry())
@@ -850,6 +852,13 @@ TravelDestination* ChooseTravelTargetAction::FindDestination(Player* bot, string
 
     vector<TravelDestination*> dests;
 
+    //Quests
+    for (auto& d : sTravelMgr.getQuestTravelDestinations(bot, 0, true, true))
+    {
+        if (strstri(d->getTitle().c_str(), name.c_str()))
+            dests.push_back(d);
+    }
+
     //Zones
     for (auto& d : sTravelMgr.getExploreTravelDestinations(bot, true, true))
     {
@@ -865,7 +874,7 @@ TravelDestination* ChooseTravelTargetAction::FindDestination(Player* bot, string
     }
 
     //Mobs
-    for (auto& d : sTravelMgr.getGrindTravelDestinations(bot, true, true))
+    for (auto& d : sTravelMgr.getGrindTravelDestinations(bot, true, true,5000.0f,0))
     {
         if (strstri(d->getTitle().c_str(), name.c_str()))
             dests.push_back(d);
