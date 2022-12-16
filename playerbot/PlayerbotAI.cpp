@@ -3615,7 +3615,7 @@ ActivePiorityType PlayerbotAI::GetPriorityType()
     if (HasPlayerNearby(450.0f)) 
         return ActivePiorityType::NEARBY_PLAYER;
 
-    if (sPlayerbotAIConfig.IsFreeAltBot(bot))
+    if (sPlayerbotAIConfig.IsFreeAltBot(bot) || HasStrategy("travel once", BotState::BOT_STATE_NON_COMBAT))
         return ActivePiorityType::IS_ALWAYS_ACTIVE;
 
     if (bot->InBattleGroundQueue()) 
