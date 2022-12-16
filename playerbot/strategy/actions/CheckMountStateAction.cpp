@@ -358,7 +358,6 @@ bool CheckMountStateAction::MountWithBestMount(const bool canFly)
     if (!bot->IsStopped())
     {
         ai->StopMoving();
-        return true;
     }
 
     if (mounts.empty() || (!mountSpells.empty() && MountSpeed(sServerFacade.LookupSpellInfo(mountSpells.front()), canFly) > MountSpeed(mounts.front()->GetProto(), canFly)))
