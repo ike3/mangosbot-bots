@@ -8,7 +8,8 @@ namespace ai
     {
     public:
         ChatFilter(PlayerbotAI* ai) : PlayerbotAIAware(ai) {}
-        virtual string Filter(string message);
+        virtual string Filter(string message) { return Filter(message, ""); }
+        virtual string Filter(string message, string filter);
 		virtual ~ChatFilter() {}
 
 #ifdef GenerateBotHelp

@@ -8,12 +8,15 @@
 using namespace ai;
 using namespace std;
 
-string ChatFilter::Filter(string message)
+string ChatFilter::Filter(string message, string filter)
 {
     if (message.find("@") == string::npos)
         return message;
 
-    return message.substr(message.find(" ") + 1);
+    if(filter.empty())
+        return message.substr(message.find(" ") + 1);
+
+    return message.substr(message.find(filter) + filter.size() + 1);
 }
 
 
@@ -41,7 +44,7 @@ public:
     }
 #endif
 
-    virtual string Filter(string message)
+    virtual string Filter(string message) override
     {
         Player* bot = ai->GetBot();
 
@@ -172,7 +175,7 @@ public:
     }
 #endif
 
-    virtual string Filter(string message)
+    virtual string Filter(string message) override
     {
         Player* bot = ai->GetBot();
 
@@ -236,7 +239,7 @@ public:
     }
 #endif
 
-    virtual string Filter(string message)
+    virtual string Filter(string message) override
     {
         Player* bot = ai->GetBot();
 
@@ -283,7 +286,7 @@ public:
     }
 #endif
 
-    virtual string Filter(string message)
+    virtual string Filter(string message) override
     {
         Player* bot = ai->GetBot();
 
@@ -361,7 +364,7 @@ public:
         rtis.push_back("@skull");
     }
 
-    virtual string Filter(string message)
+    virtual string Filter(string message) override
     {
         Player* bot = ai->GetBot();
         Group *group = bot->GetGroup();
@@ -439,7 +442,7 @@ public:
     }
 #endif
 
-    virtual string Filter(string message)
+    virtual string Filter(string message) override
     {
         Player* bot = ai->GetBot();
 
@@ -493,7 +496,7 @@ public:
     }
 #endif
 
-    virtual string Filter(string message)
+    virtual string Filter(string message) override
     {
         Player* bot = ai->GetBot();
 
@@ -584,7 +587,7 @@ public:
     }
 #endif
 
-    virtual string Filter(string message)
+    virtual string Filter(string message) override
     {
         Player* bot = ai->GetBot();
 
@@ -687,7 +690,7 @@ public:
     }
 #endif
 
-    virtual string Filter(string message)
+    virtual string Filter(string message) override
     {
         Player* bot = ai->GetBot();
         AiObjectContext* context = bot->GetPlayerbotAI()->GetAiObjectContext();
@@ -749,7 +752,7 @@ public:
         return message.substr(message.find("|r ") + 3);
     }
 
-    virtual string Filter(string message)
+    virtual string Filter(string message) override
     {
         Player* bot = ai->GetBot();
 
@@ -865,7 +868,7 @@ public:
     }
 #endif
 
-    virtual string Filter(string message)
+    virtual string Filter(string message) override
     {
         Player* bot = ai->GetBot();
 
@@ -877,6 +880,124 @@ public:
             return ChatFilter::Filter(message);
         }
         
+        return message;
+    }
+};
+
+class LocationChatFilter : public ChatFilter
+{
+public:
+    LocationChatFilter(PlayerbotAI* ai) : ChatFilter(ai) {}
+
+#ifdef GenerateBotHelp
+    virtual string GetHelpName() {
+        return "location";
+    }
+    virtual unordered_map<string, string> GetFilterExamples()
+    {
+        unordered_map<string, string> retMap;
+        retMap["@azeroth"] = "All bots in azeroth overworld.";
+        retMap["@eastern kingdoms"] = "All bots in eastern kingdoms overworld.";
+        retMap["@dun morogh"] = "All bots in the dun morogh zone.";
+        return retMap;
+    }
+    virtual string GetHelpDescription() {
+        return "This filter selects bots based on map or zone name.";
+    }
+#endif
+
+    virtual string Filter(string message) override
+    {
+        if (message.find("@") == 0)
+        {
+
+            Player* bot = ai->GetBot();
+
+            AiObjectContext* context = ai->GetAiObjectContext();
+
+            Map* map = bot->GetMap();
+
+            if (map)
+            {
+                string name = map->GetMapName(), filter;
+                transform(name.begin(), name.end(), std::back_inserter(filter), tolower);               
+                filter = "@" + filter;
+
+                if (message.find(filter) == 0)
+                {
+                    return ChatFilter::Filter(message, filter);
+                }
+            }
+
+            if (bot->GetTerrain())
+            {
+                string name = WorldPosition(bot).getAreaName(true, true), filter;
+                transform(name.begin(), name.end(), std::back_inserter(filter), tolower);
+                filter = "@" + filter;
+
+                if (message.find(filter) == 0)
+                {
+                    return ChatFilter::Filter(message, filter);
+                }
+            }
+        }
+        return message;
+    }
+};
+
+class RandomChatFilter : public ChatFilter
+{
+public:
+    RandomChatFilter(PlayerbotAI* ai) : ChatFilter(ai) {}
+
+#ifdef GenerateBotHelp
+    virtual string GetHelpName() {
+        return "random";
+    }
+    virtual unordered_map<string, string> GetFilterExamples()
+    {
+        unordered_map<string, string> retMap;
+        retMap["@random"] = "50% chance the bot responds.";
+        retMap["@random=25"] = "25% chance the bot responds.";
+        retMap["@fixedrandom"] = "50% chance the bot responds. But always the same bots.";
+        retMap["@fixedrandom=25"] = "25% chance the bot responds. But always the same bots.";
+
+        return retMap;
+    }
+    virtual string GetHelpDescription() {
+        return "This filter selects random bots.";
+    }
+#endif
+
+    virtual string Filter(string message) override
+    {
+        if (message.find("@random=") == 0)
+        {
+            string num = message.substr(message.find("=") + 1, message.find(" ") - message.find("=")-1);            
+            if (urand(0, 100) < stoul(num))
+                return ChatFilter::Filter(message);
+
+            return message;
+        }
+        if (message.find("@random") == 0)
+        {
+            if (urand(0, 100) < 50)
+                return ChatFilter::Filter(message);
+        }
+        if (message.find("@fixedrandom=") == 0)
+        {
+            string num = message.substr(message.find("=") + 1, message.find(" ") - message.find("=") - 1);
+            if (ai->GetFixedBotNumer(BotTypeNumber::CHATFILTER_NUMBER) < stoul(num))
+                return ChatFilter::Filter(message);
+
+            return message;
+        }
+        if (message.find("@fixedrandom") == 0)
+        {
+            if (ai->GetFixedBotNumer(BotTypeNumber::CHATFILTER_NUMBER) < 50)
+                return ChatFilter::Filter(message);
+        }
+
         return message;
     }
 };
@@ -894,6 +1015,9 @@ CompositeChatFilter::CompositeChatFilter(PlayerbotAI* ai) : ChatFilter(ai)
     filters.push_back(new StateChatFilter(ai));
     filters.push_back(new UsageChatFilter(ai));
     filters.push_back(new TalentSpecChatFilter(ai));
+    filters.push_back(new LocationChatFilter(ai));
+    filters.push_back(new RandomChatFilter(ai));
+    
 }
 
 CompositeChatFilter::~CompositeChatFilter()
