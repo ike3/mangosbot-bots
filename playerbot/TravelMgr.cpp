@@ -1530,7 +1530,7 @@ bool TravelTarget::isTraveling() {
         return false;
     }
 
-    if (!ai->HasStrategy("travel", BotState::BOT_STATE_NON_COMBAT))
+    if (!ai->HasStrategy("travel", BotState::BOT_STATE_NON_COMBAT) && !ai->HasStrategy("travel once", BotState::BOT_STATE_NON_COMBAT))
     {
         setTarget(sTravelMgr.nullTravelDestination, sTravelMgr.nullWorldPosition, true);
         return false;
@@ -1551,7 +1551,7 @@ bool TravelTarget::isWorking() {
 
     WorldPosition pos(bot);
 
-    if (!ai->HasStrategy("travel", BotState::BOT_STATE_NON_COMBAT))
+    if (!ai->HasStrategy("travel", BotState::BOT_STATE_NON_COMBAT) && !ai->HasStrategy("travel once", BotState::BOT_STATE_NON_COMBAT))
     {
         setTarget(sTravelMgr.nullTravelDestination, sTravelMgr.nullWorldPosition, true);
         return false;
