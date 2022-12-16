@@ -292,7 +292,6 @@ bool SpiritHealerAction::Execute(Event& event)
                 PlayerbotChatHandler ch(bot);
                 bot->ResurrectPlayer(0.5f);
                 bot->SpawnCorpseBones();
-                bot->SaveToDB();
                 context->GetValue<Unit*>("current target")->Set(NULL);
                 bot->SetSelectionGuid(ObjectGuid());
                 ai->TellMaster(BOT_TEXT("hello"), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
