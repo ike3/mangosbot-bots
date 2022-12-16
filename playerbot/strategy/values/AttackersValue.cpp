@@ -264,7 +264,7 @@ bool AttackersValue::IsValid(Unit* target, Player* player, Player* owner, bool c
             }
         }
 
-        if (target->AI() && target->AI()->IsPreventingDeath())
+        if (WorldPosition(player).isOverworld() &&  target->AI() && target->AI()->IsPreventingDeath())
         {
             return false;
         }
