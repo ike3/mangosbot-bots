@@ -566,6 +566,7 @@ bool CheckMountStateAction::Mount()
 
         MotionMaster& mm = *bot->GetMotionMaster();
         ai->CastSpell(ids[index], bot);
+        SetDuration(3000U); // 3s
         return true;
     }
 
