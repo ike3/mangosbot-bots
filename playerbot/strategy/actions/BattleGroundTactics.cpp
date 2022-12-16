@@ -2783,19 +2783,6 @@ bool BGTactics::Execute(Event& event)
     {
         if (bg->GetStatus() == STATUS_WAIT_JOIN)
             return false;
-        
-        if (!bot->IsStopped())
-            return false;
-
-        switch (bot->GetMotionMaster()->GetCurrentMovementGeneratorType())
-        {
-        case IDLE_MOTION_TYPE:
-        case CHASE_MOTION_TYPE:
-        case POINT_MOTION_TYPE:
-            break;
-        default:
-            return true;
-        }
 
         if (vFlagIds)
             if (atFlag(*vPaths, *vFlagIds))
@@ -3200,7 +3187,7 @@ bool BGTactics::selectObjective(bool reset)
             }
 
             // Chance to defend.
-            if (!BgObjective && !endBoss && supporter)
+            if (!BgObjective && (!endBoss && supporter))
             {
                 std::vector<GameObject*> objectives;
                 for (const auto& objective : AV_AllianceDefendObjectives)
@@ -3225,7 +3212,7 @@ bool BGTactics::selectObjective(bool reset)
             {
                 if (Creature* mBossNeutral = bot->GetMap()->GetCreature(bg->GetSingleCreatureGuid(BG_AV_MINE_BOSSES_SOUTH, TEAM_INDEX_NEUTRAL)))
                 {
-                    if (bot->IsWithinDist(mBossNeutral, VISIBILITY_DISTANCE_GIGANTIC) && mBossNeutral->GetDeathState() != DEAD && bg->IsActiveEvent(BG_AV_MINE_BOSSES_SOUTH, TEAM_INDEX_NEUTRAL))
+                    if (bot->IsWithinDist(mBossNeutral, VISIBILITY_DISTANCE_LARGE) && mBossNeutral->GetDeathState() != DEAD && bg->IsActiveEvent(BG_AV_MINE_BOSSES_SOUTH, TEAM_INDEX_NEUTRAL))
                     {
                         BgObjective = mBossNeutral;
                         //ostringstream out; out << "Attacking Neutral Mine Boss!";
@@ -3235,7 +3222,7 @@ bool BGTactics::selectObjective(bool reset)
 
                 if (Creature* mBossHorde = bot->GetMap()->GetCreature(bg->GetSingleCreatureGuid(BG_AV_MINE_BOSSES_SOUTH, TEAM_INDEX_HORDE)))
                 {
-                    if (!BgObjective && bot->IsWithinDist(mBossHorde, VISIBILITY_DISTANCE_GIGANTIC) && mBossHorde->GetDeathState() != DEAD && bg->IsActiveEvent(BG_AV_MINE_BOSSES_SOUTH, TEAM_INDEX_HORDE))
+                    if (!BgObjective && bot->IsWithinDist(mBossHorde, VISIBILITY_DISTANCE_LARGE) && mBossHorde->GetDeathState() != DEAD && bg->IsActiveEvent(BG_AV_MINE_BOSSES_SOUTH, TEAM_INDEX_HORDE))
                     {
                         BgObjective = mBossHorde;
                         //ostringstream out; out << "Attacking Horde Mine Boss!";

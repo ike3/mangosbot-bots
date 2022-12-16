@@ -1315,17 +1315,6 @@ bool MovementAction::ChaseTo(WorldObject* obj, float distance, float angle)
         return false;
     }
 
-    if (bot->GetMotionMaster()->GetCurrentMovementGeneratorType() == CHASE_MOTION_TYPE && !bot->IsStopped())
-    {
-        return false;
-
-        /*if (Unit* pTarget = bot->GetMotionMaster()->GetCurrent()->GetCurrentTarget())
-        {
-            if (distance == 0.0f && !bot->IsStopped())
-                return true;
-        }*/
-    }
-
     if (!obj || obj == bot || bot->GetMapId() != obj->GetMapId())
         return false;
 
@@ -1354,12 +1343,6 @@ bool MovementAction::ChaseTo(WorldObject* obj, float distance, float angle)
     if (!bot->IsStandState())
         bot->SetStandState(UNIT_STAND_STATE_STAND);
 
-    if (bot->IsNonMeleeSpellCasted(true))
-    {
-        bot->CastStop();
-        ai->InterruptSpell();
-    }
-
 #ifndef MANGOSBOT_ZERO
     if (bot->InArena())
         return MoveNear(obj, std::max(ATTACK_DISTANCE, distance));
@@ -1370,8 +1353,10 @@ bool MovementAction::ChaseTo(WorldObject* obj, float distance, float angle)
 
     float dist = sServerFacade.GetDistance2d(bot, obj);
     float distDiff = dist > distance ? dist - distance : 0.f;
-    if ((dist > 10.0f && distance != 0.f) || !obj->IsPlayer())
-        WaitForReach(distDiff);
+    //if ((dist > 10.0f && distance != 0.f) || !obj->IsPlayer())
+    //    WaitForReach(distDiff);
+
+    WaitForReach(distDiff);
 
     return true;
 }

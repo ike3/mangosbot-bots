@@ -180,6 +180,6 @@ bool ServerFacade::isMoving(Unit *unit)
     return unit->m_movementInfo.HasMovementFlag(movementFlagsMask);
 #endif
 #ifdef CMANGOS
-    return unit->IsMoving();
+    return !unit->IsStopped() || (!unit->GetMotionMaster()->empty() && unit->GetMotionMaster()->GetCurrentMovementGeneratorType() != IDLE_MOTION_TYPE);
 #endif
 }

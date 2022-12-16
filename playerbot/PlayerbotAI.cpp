@@ -2970,10 +2970,6 @@ bool PlayerbotAI::CastSpell(uint32 spellId, float x, float y, float z, Item* ite
     if (sServerFacade.isMoving(bot) && spell->GetCastTime())
     {
         bot->StopMoving();
-        SetAIInternalUpdateDelay(sPlayerbotAIConfig.globalCoolDown);
-        spell->cancel();
-        //delete spell;
-        return false;
     }
 
     if (pSpellInfo->Effect[0] == SPELL_EFFECT_OPEN_LOCK ||

@@ -12,13 +12,12 @@ uint64 extractGuid(WorldPacket& packet);
 
 bool CheckMountStateAction::Execute(Event& event)
 {
-    bool noattackers = AI_VALUE2(bool, "combat", "self target") ? AI_VALUE(bool, "has attackers") : true;
-    bool enemy = AI_VALUE(bool, "has enemy player targets");
-    bool dps = (AI_VALUE(Unit*, "dps target") || AI_VALUE(Unit*, "grind target"));
-    if (enemy || dps)
-        noattackers = false;
-    bool fartarget = (enemy && sServerFacade.IsDistanceGreaterThan(AI_VALUE2(float, "distance", "enemy player target"), 40.0f)) ||
-        (dps && sServerFacade.IsDistanceGreaterThan(AI_VALUE2(float, "distance", "dps target"), 50.0f));
+    bool noattackers = !AI_VALUE(bool, "has attackers");
+    bool enemy = AI_VALUE(bool, "has enemy player targets") || AI_VALUE(Unit*, "dps target");
+    float distToTarget = AI_VALUE2(float, "distance", "current target");
+    bool targetMoving = AI_VALUE2(bool, "moving", "current target");
+    TravelTarget* travelTarget = AI_VALUE(TravelTarget*, "travel target");
+    bool fartarget = enemy && sServerFacade.IsDistanceGreaterThan(distToTarget, 40.0f);
 
     bool canFly = CanFly();
     bool attackdistance = false;
@@ -41,10 +40,10 @@ bool CheckMountStateAction::Execute(Event& event)
     if (ai->IsHeal(bot) || ai->IsRanged(bot))
         attack_distance = 40.0f;
 
-    if (dps || enemy)
+    if (enemy)
     {
-        attackdistance = (enemy || dps) && sServerFacade.IsDistanceLessThan(AI_VALUE2(float, "distance", "current target"), attack_distance);
-        chasedistance = enemy && sServerFacade.IsDistanceGreaterThan(AI_VALUE2(float, "distance", "enemy player target"), 45.0f) && AI_VALUE2(bool, "moving", "enemy player target");
+        attackdistance = sServerFacade.IsDistanceLessThan(distToTarget, attack_distance);
+        chasedistance = sServerFacade.IsDistanceGreaterThan(distToTarget, 45.0f) && targetMoving;
     }
 
     Player* master = GetMaster();
@@ -59,7 +58,7 @@ bool CheckMountStateAction::Execute(Event& event)
             return Mount();
         }
 
-        if (!bot->IsMounted() && (chasedistance || (farFromMaster && ai->HasStrategy("follow", BotState::BOT_STATE_NON_COMBAT))) && !bot->IsInCombat() && (!dps || canFly))
+        if (!bot->IsMounted() && (chasedistance || (farFromMaster && ai->HasStrategy("follow", BotState::BOT_STATE_NON_COMBAT))) && !bot->IsInCombat() && (canFly))
             return Mount();
 
         if (!bot->IsFlying() && ((!farFromMaster && !master->IsMounted()) || attackdistance) && bot->IsMounted())
@@ -108,28 +107,28 @@ bool CheckMountStateAction::Execute(Event& event)
         GuidPosition unit = AI_VALUE(GuidPosition, "rpg target");
         if (unit)
         {
-            if (sServerFacade.IsDistanceGreaterThan(AI_VALUE2(float, "distance", "rpg target"), sPlayerbotAIConfig.sightDistance) && noattackers && !dps && !enemy)
+            if (sServerFacade.IsDistanceGreaterThan(AI_VALUE2(float, "distance", "rpg target"), sPlayerbotAIConfig.sightDistance) && noattackers && !enemy)
                 return Mount();
         }
 
-        if (!AI_VALUE(TravelTarget*, "travel target")->isTraveling() && ((!AI_VALUE(list<ObjectGuid>, "possible rpg targets").empty()) && noattackers && !dps && !enemy) && urand(0, 100) > 50)
+        if (!travelTarget->isTraveling() && ((!AI_VALUE(list<ObjectGuid>, "possible rpg targets").empty()) && noattackers && !enemy) && urand(0, 100) > 50)
             return Mount();
 
-        if (AI_VALUE(TravelTarget*, "travel target")->isTraveling() && AI_VALUE(TravelTarget*, "travel target")->distance(bot) > sPlayerbotAIConfig.farDistance && !enemy && AI_VALUE(bool, "can move around"))
+        if (travelTarget->isTraveling() && travelTarget->distance(bot) > sPlayerbotAIConfig.farDistance && !enemy && AI_VALUE(bool, "can move around"))
             return Mount();
     }
 
     if (!bot->IsMounted() && !attackdistance && (fartarget || chasedistance))
         return Mount();
 
-    if ((!bot->IsFlying() || WorldPosition(bot).currentHeight() < 10.0f)  && attackdistance && bot->IsMounted() && (enemy || (dps && !AI_VALUE(TravelTarget*, "travel target")->isTraveling()) || (!noattackers && sServerFacade.IsInCombat(bot))))
+    if ((!bot->IsFlying() || WorldPosition(bot).currentHeight() < 10.0f) && attackdistance && bot->IsMounted() && (enemy || (travelTarget->isTraveling()) || (!noattackers && sServerFacade.IsInCombat(bot))))
     {
         WorldPacket emptyPacket;
         bot->GetSession()->HandleCancelMountAuraOpcode(emptyPacket);
         return true;
     }
 
-    if ((!bot->IsFlying() || WorldPosition(bot).currentHeight() < 10.0f) && bot->IsMounted() && (AI_VALUE(TravelTarget*, "travel target")->isWorking() || sServerFacade.IsDistanceLessThan(AI_VALUE2(float, "distance", "rpg target"), sPlayerbotAIConfig.farDistance)))
+    if (!bot->InBattleGround() && (!bot->IsFlying() || WorldPosition(bot).currentHeight() < 10.0f) && bot->IsMounted() && (travelTarget->isWorking() || sServerFacade.IsDistanceLessThan(AI_VALUE2(float, "distance", "rpg target"), sPlayerbotAIConfig.farDistance)))
     {
         WorldPacket emptyPacket;
         bot->GetSession()->HandleCancelMountAuraOpcode(emptyPacket);
@@ -356,10 +355,9 @@ bool CheckMountStateAction::MountWithBestMount(const bool canFly)
     if (mountSpells.empty() && mounts.empty())
         return false;
 
-    if (sServerFacade.isMoving(bot))
+    if (!bot->IsStopped())
     {
         ai->StopMoving();
-        return true;
     }
 
     if (mounts.empty() || (!mountSpells.empty() && MountSpeed(sServerFacade.LookupSpellInfo(mountSpells.front()), canFly) > MountSpeed(mounts.front()->GetProto(), canFly)))
@@ -567,6 +565,7 @@ bool CheckMountStateAction::Mount()
 
         MotionMaster& mm = *bot->GetMotionMaster();
         ai->CastSpell(ids[index], bot);
+        SetDuration(3000U); // 3s
         return true;
     }
 
