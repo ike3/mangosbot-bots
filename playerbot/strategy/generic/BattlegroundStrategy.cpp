@@ -66,7 +66,11 @@ void WarsongStrategy::InitNonCombatTriggers(std::list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "player has flag",
-        NextAction::array(0, new NextAction("bg move to objective", 90.0f), NULL)));
+        NextAction::array(0, new NextAction("bg move to objective", 80.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "player has flag",
+        NextAction::array(0, new NextAction("rocket boots", 81.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
         "very often",
@@ -142,7 +146,11 @@ void EyeStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 
     triggers.push_back(new TriggerNode(
         "player has flag",
-        NextAction::array(0, new NextAction("bg move to objective", 90.0f), NULL)));
+        NextAction::array(0, new NextAction("bg move to objective", 80.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "player has flag",
+        NextAction::array(0, new NextAction("rocket boots", 81.0f), NULL)));
 }
 
 void EyeStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)

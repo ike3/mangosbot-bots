@@ -204,6 +204,25 @@ namespace ai
         bool ShouldReactionInterruptMovement() const override { return true; }
     };
 
+    class UseRocketBootsAction : public UseItemIdAction
+    {
+    public:
+        UseRocketBootsAction(PlayerbotAI* ai) : UseItemIdAction(ai, "rocket boots") {}
+
+        virtual bool isUseful() override
+        {
+            if (ai->HasAnyAuraOf(bot, "sprint", "speed", "goblin rocket boots", "dash", NULL))
+                return false;
+
+            return true;
+        }
+
+        virtual uint32 GetItemId() override
+        {
+            return 7189;
+        }
+    };
+
     class UseBandageAction : public UseTargetedItemIdAction
     {
     public:

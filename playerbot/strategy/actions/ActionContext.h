@@ -183,6 +183,7 @@ namespace ai
             creators["adamantite grenade"] = &ActionContext::adamantite_grenade;
             creators["bg banner"] = &ActionContext::bg_banner;
             creators["use bandage"] = &ActionContext::use_bandage;
+            creators["rocket boots"] = &ActionContext::rocket_boots;
 
             // BG Tactics
             creators["bg tactics"] = &ActionContext::bg_tactics;
@@ -414,6 +415,7 @@ namespace ai
         static Action* adamantite_grenade(PlayerbotAI* ai) { return new UseAdamantiteGrenadeAction(ai); }
         static Action* bg_banner(PlayerbotAI* ai) { return new UseBgBannerAction(ai); }
         static Action* use_bandage(PlayerbotAI* ai) { return new UseBandageAction(ai); }
+        static Action* rocket_boots(PlayerbotAI* ai) { return new UseRocketBootsAction(ai); }
         
         // BG Tactics
         static Action* bg_tactics(PlayerbotAI* ai) { return new BGTactics(ai); }
