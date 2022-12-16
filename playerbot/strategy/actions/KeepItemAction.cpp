@@ -117,5 +117,7 @@ bool KeepItemAction::Execute(Event& event)
     out << " items changed to: " << keepName[usage] << " the item.";
     ai->TellMaster(out.str());
 
+    sPlayerbotDbStore.Save(ai);
+
     return true;
 }
