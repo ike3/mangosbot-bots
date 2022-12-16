@@ -242,12 +242,6 @@ bool PossibleAttackTargetsValue::IsPossibleTarget(Unit* target, Player* player, 
         Player* enemyPlayer = dynamic_cast<Player*>(target);
         if (!enemyPlayer)
         {
-            // If the target is a critter (and is not in combat)
-            if ((target->GetCreatureType() == CREATURE_TYPE_CRITTER) && !target->IsInCombat())
-            {
-                return false;
-            }
-
             // If the target is not tapped (the player doesn't have the loot rights (gray name))
             if (!IsTapped(target, player))
             {
