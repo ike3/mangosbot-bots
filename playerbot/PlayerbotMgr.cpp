@@ -124,6 +124,7 @@ void PlayerbotHolder::LogoutPlayerBot(uint32 guid)
             sPlayerbotDbStore.Save(ai);
         }
         sLog.outDebug("Bot %s logging out", bot->GetName());
+        bot->SaveToDB();
 
         WorldSession* botWorldSessionPtr = bot->GetSession();
         WorldSession* masterWorldSessionPtr = nullptr;

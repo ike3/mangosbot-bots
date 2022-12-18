@@ -350,7 +350,7 @@ void PlayerbotFactory::Refresh()
     InitPotions();
     InitReagents();
     AddConsumables();
-    //bot->SaveToDB();
+    bot->SaveToDB();
 }
 
 void PlayerbotFactory::AddConsumables()
@@ -3104,7 +3104,7 @@ void PlayerbotFactory::EnchantEquipment(Player* bot)
 #ifndef MANGOSBOT_ZERO
     factory.InitGems();
 #endif
-    //bot->SaveToDB();
+    bot->SaveToDB();
 }
 
 void PlayerbotFactory::ApplyEnchantTemplate()
