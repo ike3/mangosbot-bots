@@ -696,6 +696,9 @@ uint32 RandomPlayerbotMgr::AddRandomBots()
         {
             uint32 accountId = *i;
             QueryResult* result = CharacterDatabase.PQuery("SELECT guid FROM characters WHERE account = '%u' and level <= %u", accountId, maxLevel);
+            if (!result && sPlayerbotAIConfig.syncLevelWithPlayers)
+                result = CharacterDatabase.PQuery("SELECT guid FROM characters WHERE account = '%u'", accountId, maxLevel);
+
             if (!result)
                 continue;
 
