@@ -3,6 +3,8 @@
 
 namespace ai
 {
+    class TravelDestination;
+
 	class GoAction : public MovementAction
 	{
 	public:

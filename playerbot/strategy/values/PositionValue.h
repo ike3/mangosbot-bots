@@ -1,6 +1,5 @@
 #pragma once
 #include "../Value.h"
-#include "../../TravelMgr.h"
 
 namespace ai
 {

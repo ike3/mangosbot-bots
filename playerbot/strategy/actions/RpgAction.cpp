@@ -5,6 +5,7 @@
 #include "../values/Formations.h"
 #include "EmoteAction.h"
 #include "RpgSubActions.h"
+#include "../../TravelMgr.h"
 
 using namespace ai;
 

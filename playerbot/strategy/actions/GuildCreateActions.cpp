@@ -11,6 +11,7 @@
 #endif
 #endif
 #include "ServerFacade.h"
+#include "TravelMgr.h"
 
 using namespace std;
 using namespace ai;
@@ -275,6 +276,27 @@ bool PetitionTurnInAction::Execute(Event& event)
     return true;
 };
 
+bool PetitionTurnInAction::isUseful()
+{
+    if (!ai->HasStrategy("travel", BotState::BOT_STATE_NON_COMBAT))
+        return false;
+
+    if (!ChooseTravelTargetAction::isUseful())
+        return false;
+
+    bool inCity = false;
+    AreaTableEntry const* areaEntry = GetAreaEntryByAreaID(sServerFacade.GetAreaId(bot));
+    if (areaEntry)
+    {
+        if (areaEntry->zone)
+            areaEntry = GetAreaEntryByAreaID(areaEntry->zone);
+
+        if (areaEntry && areaEntry->flags & AREA_FLAG_CAPITAL)
+            inCity = true;
+    }
+
+    return inCity && !bot->GetGuildId() && AI_VALUE2(uint32, "item count", chat->formatQItem(5863)) && AI_VALUE(uint8, "petition signs") >= sWorld.getConfig(CONFIG_UINT32_MIN_PETITION_SIGNS) && !context->GetValue<TravelTarget*>("travel target")->Get()->isTraveling();
+};
 
 bool BuyTabardAction::Execute(Event& event)
 {
@@ -298,4 +320,26 @@ bool BuyTabardAction::Execute(Event& event)
     setNewTarget(&newTarget, oldTarget);
 
     return true;
+};
+
+bool BuyTabardAction::isUseful()
+{
+    if (!ai->HasStrategy("travel", BotState::BOT_STATE_NON_COMBAT))
+        return false;
+
+    if (!ChooseTravelTargetAction::isUseful())
+        return false;
+
+    bool inCity = false;
+    AreaTableEntry const* areaEntry = GetAreaEntryByAreaID(sServerFacade.GetAreaId(bot));
+    if (areaEntry)
+    {
+        if (areaEntry->zone)
+            areaEntry = GetAreaEntryByAreaID(areaEntry->zone);
+
+        if (areaEntry && areaEntry->flags & AREA_FLAG_CAPITAL)
+            inCity = true;
+    }
+
+    return inCity && bot->GetGuildId() && !AI_VALUE2(uint32, "item count", chat->formatQItem(5976)) && AI_VALUE2(uint32, "free money for", uint32(NeedMoneyFor::guild)) >= 10000 && !context->GetValue<TravelTarget*>("travel target")->Get()->isTraveling();
 };

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "TravelMgr.h"
+#include "WorldPosition.h"
 
 using namespace std;
 
@@ -9,6 +9,8 @@ class Player;
 namespace ai
 {
     class Engine;
+
+	
 
 	class FleePoint {
 	public:

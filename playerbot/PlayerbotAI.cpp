@@ -29,6 +29,7 @@
 #include "strategy/values/PositionValue.h"
 #include "ServerFacade.h"
 #include "TravelMgr.h"
+#include "MoveSplineInitArgs.h"
 #include "ChatHelper.h"
 #include "strategy/values/BudgetValues.h"
 #include "Social/SocialMgr.h"

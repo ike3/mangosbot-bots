@@ -6,6 +6,7 @@
 #include "../../LootObjectStack.h"
 #include "MotionGenerators/PathFinder.h"
 #include "ChooseRpgTargetAction.h"
+#include "../../TravelMgr.h"
 
 using namespace ai;
 

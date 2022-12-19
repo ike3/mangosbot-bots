@@ -8,8 +8,14 @@
 #include "SocialMgr.h"
 #include "../../ServerFacade.h"
 #include "../values/ItemUsageValue.h"
+#include "../../TravelMgr.h"
 
 using namespace ai;
+
+bool RpgTrigger::IsActive() 
+{ 
+    return !ai->HasRealPlayerMaster() || (AI_VALUE(GuidPosition, "rpg target").GetEntry() && AI_VALUE(GuidPosition, "rpg target").GetEntry() == AI_VALUE(TravelTarget*, "travel target")->getEntry()); 
+};
 
 bool RpgTaxiTrigger::IsActive()
 {

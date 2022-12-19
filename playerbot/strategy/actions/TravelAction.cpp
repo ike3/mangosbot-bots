@@ -7,6 +7,7 @@
 #include "GridNotifiersImpl.h"
 #include "CellImpl.h"
 #include "World/WorldState.h"
+#include "../../TravelMgr.h"
 
 
 using namespace ai;

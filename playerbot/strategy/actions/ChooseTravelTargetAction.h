@@ -2,10 +2,12 @@
 
 #include "../Action.h"
 #include "MovementActions.h"
-#include "../../TravelMgr.h"
 
 namespace ai
 {
+    class TravelTarget;
+    class TravelDestination;
+
     class ChooseTravelTargetAction : public MovementAction {
     public:
         ChooseTravelTargetAction(PlayerbotAI* ai, string name = "choose travel target") : MovementAction(ai, name) {}

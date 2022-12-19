@@ -3,6 +3,7 @@
 #include "../../LootObjectStack.h"
 #include "ChooseTravelTargetAction.h"
 #include "../../PlayerbotAIConfig.h"
+#include "../../TravelMgr.h"
 #include <iomanip>
 
 using namespace ai;

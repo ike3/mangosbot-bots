@@ -14,7 +14,7 @@
 #include "RandomPlayerbotFactory.h"
 #include "ServerFacade.h"
 #include "AiFactory.h"
-#include "TravelMgr.h"
+
 #ifndef MANGOSBOT_ZERO
     #ifdef CMANGOS
         #include "Arena/ArenaTeam.h"

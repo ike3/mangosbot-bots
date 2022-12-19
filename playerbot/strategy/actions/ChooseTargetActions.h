@@ -4,7 +4,6 @@
 #include "AttackAction.h"
 #include "../../ServerFacade.h"
 #include "../../playerbot.h"
-#include "../../TravelMgr.h"
 #include "../../LootObjectStack.h"
 #include "ChooseRpgTargetAction.h"
 

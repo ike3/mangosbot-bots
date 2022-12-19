@@ -1,7 +1,6 @@
 #pragma once
 #include "../Trigger.h"
 #include <MotionGenerators/MoveMap.h>
-#include "../../TravelMgr.h"
 
 namespace ai
 {

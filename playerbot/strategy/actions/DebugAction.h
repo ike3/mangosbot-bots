@@ -1,5 +1,4 @@
 #pragma once
-#include "../../TravelMgr.h"
 #include "GenericActions.h"
 
 namespace ai

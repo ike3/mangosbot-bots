@@ -1,6 +1,7 @@
 #pragma once
 
 #include "TravelNode.h"
+#include "TravelMgr.h"
 
 #include <iomanip>
 #include <regex>

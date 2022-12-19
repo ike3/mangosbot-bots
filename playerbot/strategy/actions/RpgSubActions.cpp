@@ -9,6 +9,7 @@
 #include "GossipDef.h"
 #include "GuildCreateActions.h"
 #include "SocialMgr.h"
+#include "../../TravelMgr.h"
 
 
 using namespace ai;

@@ -8,6 +8,7 @@
 #include "TravelMgr.h"
 #include "MotionGenerators/PathFinder.h"
 #include "ChooseTravelTargetAction.h"
+#include "../../TravelMgr.h"
 
 using namespace ai;
 

@@ -4,6 +4,7 @@
 #include "../../PlayerbotFactory.h"
 #include "../../PlayerbotAIConfig.h"
 #include "../../FleeManager.h"
+#include "../../TravelMgr.h"
 #include "ServerFacade.h"
 
 using namespace ai;

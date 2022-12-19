@@ -1,6 +1,5 @@
 #pragma once
 #include "../Trigger.h"
-#include "../../TravelMgr.h"
 
 namespace ai
 {
@@ -51,7 +50,7 @@ namespace ai
 
         GuidPosition getGuidP() { return AI_VALUE(GuidPosition, "rpg target"); }
 
-        virtual bool IsActive() { return !ai->HasRealPlayerMaster() || (AI_VALUE(GuidPosition, "rpg target").GetEntry() && AI_VALUE(GuidPosition, "rpg target").GetEntry() == AI_VALUE(TravelTarget*, "travel target")->getEntry()); };
+        virtual bool IsActive();
         virtual Event Check() { if (!NoRpgTargetTrigger::IsActive() && (AI_VALUE(string, "next rpg action") == "choose rpg target" || !FarFromRpgTargetTrigger::IsActive())) return Trigger::Check(); return Event(); };
     };
 

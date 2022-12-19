@@ -7,6 +7,7 @@
 #include "strategy/values/SharedValueContext.h"
 #include "../../LootObjectStack.h"
 #include "../../../game/GameEvents/GameEventMgr.h"
+#include "../../TravelMgr.h"
 
 using namespace ai;
 

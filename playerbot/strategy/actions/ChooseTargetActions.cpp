@@ -4,6 +4,7 @@
 #include "ChooseTargetActions.h"
 #include "MovementGenerator.h"
 #include "CreatureAI.h"
+#include "../../TravelMgr.h"
 
 bool DpsAssistAction::isUseful()
 {
