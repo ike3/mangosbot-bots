@@ -89,7 +89,7 @@ public:
 
             if (!strat.empty())
             {
-                if (!ai->HasStrategy(strat, BotState::BOT_STATE_NON_COMBAT))
+                if (!ai->HasStrategy(strat, BotState::BOT_STATE_COMBAT))
                     return ChatFilter::Filter(message);
             }
 
