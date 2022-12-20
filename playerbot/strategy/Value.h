@@ -6,6 +6,7 @@
 #include "ObjectMgr.h"
 #include "AiObject.h"
 #include "AiObjectContext.h"
+#include "GuidPosition.h"
 
 namespace ai
 {
@@ -199,6 +200,27 @@ namespace ai
         }
     };
 
+    class StringCalculatedValue : public CalculatedValue<string>
+    {
+    public:
+        StringCalculatedValue(PlayerbotAI* ai, string name = "value", int checkInterval = 1) :
+            CalculatedValue<string>(ai, name, checkInterval) {}
+
+        template <typename T>
+        string ToString(T val) { return to_string(val); }
+
+        template <typename T>
+        string ListToString(list<T> list) { vector<string> ret; for (auto& val : list) ret.push_back(to_string(val)); return MultiQualify(ret, ","); }
+
+        template <typename T>
+        list<T> StringToList(string str) { list<T> ret; for (auto& val : getMultiQualifiers(str)) ret.push_back(val); return ret; }
+
+        virtual string Format()
+        {
+            return this->Calculate();
+        }
+    };
+
     class UnitCalculatedValue : public CalculatedValue<Unit*>
     {
     public:
@@ -270,6 +292,26 @@ namespace ai
             ostringstream out; out << "{";
             list<ObjectGuid> guids = this->Calculate();
             for (list<ObjectGuid>::iterator i = guids.begin(); i != guids.end(); ++i)
+            {
+                ObjectGuid guid = *i;
+                out << guid.GetRawValue() << ",";
+            }
+            out << "}";
+            return out.str();
+        }
+    };
+
+    class GuidPositionListCalculatedValue : public CalculatedValue<list<GuidPosition> >
+    {
+    public:
+        GuidPositionListCalculatedValue(PlayerbotAI* ai, string name = "value", int checkInterval = 1) :
+            CalculatedValue<list<GuidPosition> >(ai, name, checkInterval) { this->lastCheckTime = time(0) - checkInterval / 2; }
+
+        virtual string Format()
+        {
+            ostringstream out; out << "{";
+            list<GuidPosition> guids = this->Calculate();
+            for (list<GuidPosition>::iterator i = guids.begin(); i != guids.end(); ++i)
             {
                 ObjectGuid guid = *i;
                 out << guid.GetRawValue() << ",";
