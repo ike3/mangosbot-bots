@@ -49,19 +49,6 @@ bool IsNearLeaderValue::Calculate()
     return sServerFacade.GetDistance2d(bot, ai->GetGroupMaster()) < sPlayerbotAIConfig.sightDistance;
 }
 
-bool BoolANDValue::Calculate()
-{
-    vector<string> values = split(getQualifier(), ',');
-
-    for (auto value : values)
-    {
-        if(!AI_VALUE(bool, value))
-            return false;
-    }
-
-    return true;
-}
-
 uint32 GroupBoolCountValue::Calculate()
 {
     uint32 count = 0;
