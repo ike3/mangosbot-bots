@@ -19,7 +19,7 @@ namespace ai
         string getQualifier() { return qualifier; }
         void Reset() { qualifier.clear(); }
 
-        static string MultiQualify(vector<string> qualifiers, string separator)
+        static string MultiQualify(vector<string> qualifiers, string separator, const string_view brackets = "{}")
         { 
             ostringstream out; 
             for (auto& qualifier : qualifiers)
@@ -27,22 +27,58 @@ namespace ai
                 out << qualifier << (&qualifier != &qualifiers.back() ? separator : "");
             }
                 
-            return out.str();
+            return brackets[0] + out.str() + brackets[1];
         }
 
-        static vector<string> getMultiQualifiers(string qualifier1, string separator)
+        static vector<string> getMultiQualifiers(string qualifier1, string separator, const string_view brackets = "{}")
         { 
             vector<string> result;
 
+            string view = qualifier1;
+
+            if(view.find(brackets[0]) == 0)
+                view = qualifier1.substr(1, qualifier1.size()-2);
+
             size_t last = 0; 
             size_t next = 0; 
-            while ((next = qualifier1.find(separator, last)) != string::npos)
-            { 
-                result.push_back(qualifier1.substr(last, next - last));
-                last = next + separator.length();
-            } 
 
-            result.push_back(qualifier1.substr(last));
+            if (view.find(brackets[0]) == string::npos)
+            {
+                while ((next = view.find(separator, last)) != string::npos)
+                {
+
+                    result.push_back((string)view.substr(last, next - last));
+                    last = next + separator.length();
+                }
+
+                result.push_back(view.substr(last));
+            }
+            else
+            {
+                int8 level = 0;
+                string sub;
+                while (next < view.size() || level < 0)
+                {
+                    if (view[next] == brackets[0])
+                        level++;
+                    else if (view[next] == brackets[1])
+                        level--;
+                    else if (!level && view.substr(next, separator.size()) == separator)
+                    {
+                        result.push_back(sub);
+                        sub.clear();
+                        next += separator.size();
+                        continue;
+                    }
+                    
+                    sub += view[next];
+
+                    next++;
+                }
+
+                result.push_back(sub);
+            }
+
             return result;
         }
         
