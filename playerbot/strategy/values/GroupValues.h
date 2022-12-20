@@ -27,14 +27,6 @@ namespace ai
         virtual bool Calculate();
     };
 
-    class BoolANDValue : public BoolCalculatedValue, public Qualified
-    {
-    public:
-        BoolANDValue(PlayerbotAI* ai) : BoolCalculatedValue(ai, "bool and") {}
-
-        virtual bool Calculate();
-    };
-
     class GroupBoolCountValue : public Uint32CalculatedValue, public Qualified
     {
     public:
