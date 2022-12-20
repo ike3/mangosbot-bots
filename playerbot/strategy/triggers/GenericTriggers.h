@@ -385,26 +385,22 @@ namespace ai
         int interval;
     };
 
-    class AndTrigger : public Trigger
+    class AndTrigger : public Trigger, public Qualified
     {
     public:
-        AndTrigger(PlayerbotAI* ai, Trigger* ls, Trigger* rs) : Trigger(ai)
-        {
-            this->ls = ls;
-            this->rs = rs;
-        }
-        virtual ~AndTrigger()
-        {
-            delete ls;
-            delete rs;
-        }
+         AndTrigger(PlayerbotAI* ai, string name = "and", int checkInterval = 1) : Trigger(ai, name, checkInterval) {}
     public:
         virtual bool IsActive();
         virtual string getName();
+    };
 
-    protected:
-        Trigger* ls;
-        Trigger* rs;
+    class OrTrigger : public Trigger, public Qualified
+    {
+    public:
+        OrTrigger(PlayerbotAI* ai, string name = "or", int checkInterval = 1) : Trigger(ai, name, checkInterval) {}
+    public:
+        virtual bool IsActive();
+        virtual string getName();
     };
 
     class TwoTriggers : public Trigger
@@ -420,6 +416,13 @@ namespace ai
     protected:
         std::string name1;
         std::string name2;
+    };
+
+    class ValueTrigger : public Trigger, public Qualified
+    {
+    public:
+        ValueTrigger(PlayerbotAI* ai, string name = "val", int checkInterval = 1) : Trigger(ai, name, checkInterval) {}
+        virtual bool IsActive() { return AI_VALUE(bool, getQualifier()); }
     };
 
     class SnareTargetTrigger : public DebuffTrigger

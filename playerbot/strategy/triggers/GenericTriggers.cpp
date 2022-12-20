@@ -205,14 +205,59 @@ bool RandomTrigger::IsActive()
 
 bool AndTrigger::IsActive()
 {
-    return ls && rs && ls->IsActive() && rs->IsActive();
+    vector<string> tnames = getMultiQualifiers(getQualifier(), ",");
+
+    for (auto tname : tnames)
+    {
+        Trigger* trigger1 = ai->GetAiObjectContext()->GetTrigger(tname);
+        if (!trigger1 || !trigger1->IsActive())
+            return false;
+    }
+
+    return true;
 }
 
 string AndTrigger::getName()
 {
-    std::string name(ls->getName());
-    name = name + " and ";
-    name = name + rs->getName();
+    string name;
+    vector<string> tnames = getMultiQualifiers(getQualifier(), ",");
+
+    for (auto tname : tnames)
+    {
+        if (!name.empty())
+            name += " and ";
+        name += tname;
+    }
+
+    return name;
+}
+
+bool OrTrigger::IsActive()
+{
+    vector<string> tnames = getMultiQualifiers(getQualifier(), ",");
+
+    for (auto tname : tnames)
+    {
+        Trigger* trigger1 = ai->GetAiObjectContext()->GetTrigger(tname);
+        if (trigger1 && trigger1->IsActive())
+            return true;
+    }
+
+    return false;
+}
+
+string OrTrigger::getName()
+{
+    string name;
+    vector<string> tnames = getMultiQualifiers(getQualifier(), ",");
+
+    for (auto tname : tnames)
+    {
+        if (!name.empty())
+            name += " or ";
+        name += tname;
+    }
+
     return name;
 }
 
