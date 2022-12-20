@@ -113,4 +113,11 @@ namespace ai
         virtual bool Execute(Event& event);
         virtual bool isUseful();
     };
+
+    class MoveToAction : public MovementAction, public Qualified
+    {
+    public:
+        MoveToAction(PlayerbotAI* ai, string name = "move to") : MovementAction(ai, "name") {}
+        virtual bool Execute(Event& event);
+    };
 }

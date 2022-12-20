@@ -1797,3 +1797,15 @@ bool MoveRandomAction::isUseful()
 {    
     return !ai->HasRealPlayerMaster() && ai->GetAiObjectContext()->GetValue<list<ObjectGuid> >("nearest friendly players")->Get().size() > urand(25, 100);
 }
+
+bool MoveToAction::Execute(Event& event)
+{
+    list<GuidPosition> guidList = AI_VALUE(list<GuidPosition>, getQualifier());
+
+    if (guidList.empty())
+        return false;
+
+    GuidPosition guid = guidList.front();
+
+    return MoveTo(guid.getMapId(), guid.getX(), guid.getY(), guid.getZ());
+}
