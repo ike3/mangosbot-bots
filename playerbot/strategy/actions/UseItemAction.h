@@ -5,6 +5,15 @@
 
 namespace ai
 {
+    class BotUseItemSpell : public Spell //This class bypasses the requirement for a bot to have a key item in their inventory when opening a lock.
+    {
+    public:
+        BotUseItemSpell(WorldObject* caster, SpellEntry const* info, uint32 triggeredFlags, ObjectGuid originalCasterGUID = ObjectGuid(), SpellEntry const* triggeredBy = nullptr) : Spell(caster, info, triggeredFlags, originalCasterGUID, triggeredBy) {};
+
+        SpellCastResult ForceSpellStart(SpellCastTargets const* targets, Aura* triggeredByAura = nullptr);
+        bool OpenLockCheck();
+    };
+
     class UseItemAction : public ChatCommandAction 
     {
     public:
@@ -30,18 +39,18 @@ namespace ai
         bool selfOnly;
     };
 
-    class UseItemIdAction : public UseItemAction
+    class UseItemIdAction : public UseItemAction, public Qualified
     {
     public:
-        UseItemIdAction(PlayerbotAI* ai, string name, bool selfOnly = false, uint32 duration = sPlayerbotAIConfig.reactDelay) : UseItemAction(ai, name, selfOnly, duration) {}
+        UseItemIdAction(PlayerbotAI* ai, string name = "use id", bool selfOnly = false, uint32 duration = sPlayerbotAIConfig.reactDelay) : UseItemAction(ai, name, selfOnly, duration) {}
         virtual bool isPossible() override;
 
     protected:
         virtual bool Execute(Event& event) override;
-        virtual uint32 GetItemId() { return  0; }
+        virtual uint32 GetItemId() { return getQualifier().empty() ? 0 : getMultiQualifierInt(getQualifier(),0, ","); }
         virtual Unit* GetTarget() override { return nullptr; }
         bool HasSpellCooldown(const uint32 itemId);
-        bool CastItemSpell(uint32 itemId, Unit* target);
+        bool CastItemSpell(uint32 itemId, Unit* target, GameObject* goTarget);
     };
 
     class UseTargetedItemIdAction : public UseItemIdAction

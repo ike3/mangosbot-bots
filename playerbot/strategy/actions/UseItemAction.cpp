@@ -10,6 +10,120 @@
 
 using namespace ai;
 
+
+SpellCastResult BotUseItemSpell::ForceSpellStart(SpellCastTargets const* targets, Aura* triggeredByAura)
+{
+    if (!m_trueCaster)
+        m_trueCaster = m_caster;
+    m_spellState = SPELL_STATE_TARGETING;
+    m_targets = *targets;
+
+    if (triggeredByAura)
+        m_triggeredByAuraSpell = triggeredByAura->GetSpellProto();
+
+    // create and add update event for this spell
+    SpellEvent* Event = new SpellEvent(this);
+    m_trueCaster->m_events.AddEvent(Event, m_trueCaster->m_events.CalculateTime(1));
+
+    SpellCastResult result = PreCastCheck();
+
+    if (result == SPELL_FAILED_BAD_TARGETS && OpenLockCheck())
+    {
+        m_IsTriggeredSpell = true;
+        m_ignoreCastTime = true;
+    }
+    else if (result != SPELL_CAST_OK)
+    {
+        SendCastResult(result);
+        finish(false);
+        return result;
+    }
+
+    Prepare();
+
+    return SPELL_CAST_OK;
+}
+
+bool BotUseItemSpell::OpenLockCheck()
+{
+    for (uint32 i = 0; i < MAX_EFFECT_INDEX; ++i)
+    {
+        // for effects of spells that have only one target
+        switch (m_spellInfo->Effect[i])
+        {
+        case SPELL_EFFECT_OPEN_LOCK_ITEM:
+        case SPELL_EFFECT_OPEN_LOCK:
+        {
+            if (m_caster->GetTypeId() != TYPEID_PLAYER) // only players can open locks, gather etc.
+                return false;
+
+            // we need a go target in case of TARGET_GAMEOBJECT (for other targets acceptable GO and items)
+            if (m_spellInfo->EffectImplicitTargetA[i] == TARGET_GAMEOBJECT)
+            {
+                if (!m_targets.getGOTarget())
+                    return false;
+            }
+
+            // get the lock entry
+            uint32 lockId;
+            if (GameObject* go = m_targets.getGOTarget())
+            {
+                // In BattleGround players can use only flags and banners
+                if (((Player*)m_caster)->InBattleGround() &&
+                    !((Player*)m_caster)->CanUseBattleGroundObject())
+                    return false;
+
+                lockId = go->GetGOInfo()->GetLockId();
+                if (!lockId)
+                    return false;
+
+                // check if its in use only when cast is finished (called from spell::cast() with strict = false)
+                if (go->IsInUse())
+                    return false;
+
+                if (go->HasFlag(GAMEOBJECT_FLAGS, GO_FLAG_IN_USE))
+                    return false;
+
+                // done in client but we need to recheck anyway
+                if (go->GetGOInfo()->CannotBeUsedUnderImmunity() && m_caster->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE))
+                    return false;
+            }
+            else if (Item* item = m_targets.getItemTarget())
+            {
+                // not own (trade?)
+                if (item->GetOwner() != m_caster)
+                    return false;
+
+                lockId = item->GetProto()->LockID;
+
+                // if already unlocked
+                if (!lockId || item->HasFlag(ITEM_FIELD_FLAGS, ITEM_DYNFLAG_UNLOCKED))
+                    return false;
+            }
+            else
+                return false;
+
+            if (!lockId)                                            // possible case for GO and maybe for items.
+                return false;
+
+            // Get LockInfo
+            LockEntry const* lockInfo = sLockStore.LookupEntry(lockId);
+
+            if (!lockInfo)
+                return false;
+
+            // check lock compatibility
+            SpellEffectIndex effIdx = SpellEffectIndex(i);
+            SpellCastResult res = CanOpenLock(effIdx, lockId, m_effectSkillInfo[effIdx].skillId, m_effectSkillInfo[effIdx].reqSkillValue, m_effectSkillInfo[effIdx].skillValue);
+            if (res == SPELL_FAILED_BAD_TARGETS)
+                return true;
+        }
+        }
+    }
+
+    return false;
+}
+
 bool UseItemAction::Execute(Event& event)
 {
    string name = event.getParam();
@@ -544,8 +658,39 @@ bool UseItemAction::SocketItem(Item* item, Item* gem, bool replace)
 #endif
 
 bool UseItemIdAction::Execute(Event& event)
-{    
-    return CastItemSpell(GetItemId(), GetTarget());
+{
+    uint32 itemId;
+    Unit* target = nullptr;
+    GameObject* go = nullptr;
+
+    if (getQualifier().empty())
+    {
+        itemId = GetItemId();
+        target = GetTarget();
+        list<ObjectGuid> gos = chat->parseGameobjects(event.getParam());
+        if (!gos.empty())
+            GameObject* go = ai->GetGameObject(*gos.begin());
+    }
+    else
+    {
+        vector<string> params = getMultiQualifiers(getQualifier(), ",");
+        itemId = stoi(params[0]);
+        if (params.size() > 1)
+        {
+            list<GuidPosition> guidPs = AI_VALUE(list<GuidPosition>, params[1]);
+            if (!guidPs.empty())
+            {
+                GuidPosition guidP = *guidPs.begin();
+                if (guidP.IsGameObject())
+                    go = guidP.GetGameObject();
+                else
+                    target = guidP.GetUnit();
+
+            }
+        }
+    }
+
+    return CastItemSpell(itemId, target, go);
 }
 
 bool UseItemIdAction::isPossible()
@@ -625,7 +770,7 @@ bool UseItemIdAction::HasSpellCooldown(const uint32 itemId)
     return false;
 }
 
-bool UseItemIdAction::CastItemSpell(uint32 itemId, Unit* target)
+bool UseItemIdAction::CastItemSpell(uint32 itemId, Unit* target, GameObject* goTarget)
 {
     ItemPrototype const* proto = sObjectMgr.GetItemPrototype(itemId);
 
@@ -649,6 +794,12 @@ bool UseItemIdAction::CastItemSpell(uint32 itemId, Unit* target)
     {
         targets.setUnitTarget(target);
         targets.setDestination(target->GetPositionX(), target->GetPositionY(), target->GetPositionZ());
+    }
+    if (goTarget)
+    {
+        targets.setGOTarget(goTarget);
+        targets.m_targetMask = TARGET_FLAG_GAMEOBJECT;
+        targets.setDestination(goTarget->GetPositionX(), goTarget->GetPositionY(), goTarget->GetPositionZ());
     }
     else
         targets.m_targetMask = TARGET_FLAG_SELF;
@@ -678,7 +829,9 @@ bool UseItemIdAction::CastItemSpell(uint32 itemId, Unit* target)
             continue;
         }
 
-        Spell* spell = new Spell(bot, spellInfo, (count > 0) ? TRIGGERED_OLD_TRIGGERED : TRIGGERED_NONE);
+        BotUseItemSpell* spell = new BotUseItemSpell(bot, spellInfo, (count > 0) ? TRIGGERED_OLD_TRIGGERED : TRIGGERED_NONE);
+
+        Item* tItem = nullptr;       
 
         if (item)
         {
@@ -688,7 +841,7 @@ bool UseItemIdAction::CastItemSpell(uint32 itemId, Unit* target)
 
         spell->m_clientCast = true;
 
-        bool result = (spell->SpellStart(&targets) == SPELL_CAST_OK);
+        bool result = (spell->ForceSpellStart(&targets) == SPELL_CAST_OK);
 
         if (!result)
             return false;
