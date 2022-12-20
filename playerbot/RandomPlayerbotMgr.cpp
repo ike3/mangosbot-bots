@@ -692,46 +692,56 @@ uint32 RandomPlayerbotMgr::AddRandomBots()
         PlayerbotDatabase.AllowAsyncTransactions();
         PlayerbotDatabase.BeginTransaction();
 
-        for (list<uint32>::iterator i = sPlayerbotAIConfig.randomBotAccounts.begin(); i != sPlayerbotAIConfig.randomBotAccounts.end(); i++)
+        for (uint32 noLevelCheck = 0; noLevelCheck < 2; noLevelCheck++)
         {
-            uint32 accountId = *i;
-            QueryResult* result = CharacterDatabase.PQuery("SELECT guid FROM characters WHERE account = '%u' and level <= %u", accountId, maxLevel);
-            if (!result && sPlayerbotAIConfig.syncLevelWithPlayers)
-                result = CharacterDatabase.PQuery("SELECT guid FROM characters WHERE account = '%u'", accountId, maxLevel);
-
-            if (!result)
-                continue;
-
-            do
+            for (list<uint32>::iterator i = sPlayerbotAIConfig.randomBotAccounts.begin(); i != sPlayerbotAIConfig.randomBotAccounts.end(); i++)
             {
-                Field* fields = result->Fetch();
-                uint32 guid = fields[0].GetUInt32();
+                uint32 accountId = *i;
 
-                if (GetEventValue(guid, "add"))
+                QueryResult* result;
+
+                if(noLevelCheck)
+                    result = CharacterDatabase.PQuery("SELECT guid FROM characters WHERE account = '%u'", accountId);
+                else
+                    result = CharacterDatabase.PQuery("SELECT guid FROM characters WHERE account = '%u' and level <= %u", accountId, maxLevel);                   
+
+                if (!result)
                     continue;
 
-                if (GetEventValue(guid, "logout"))
-                    continue;
+                do
+                {
+                    Field* fields = result->Fetch();
+                    uint32 guid = fields[0].GetUInt32();
 
-                if (GetPlayerBot(guid))
-                    continue;
+                    if (GetEventValue(guid, "add"))
+                        continue;
 
-                if (std::find(currentBots.begin(), currentBots.end(), guid) != currentBots.end())
-                    continue;
+                    if (GetEventValue(guid, "logout"))
+                        continue;
 
-                SetEventValue(guid, "add", 1, urand(sPlayerbotAIConfig.minRandomBotInWorldTime, sPlayerbotAIConfig.maxRandomBotInWorldTime));
-                SetEventValue(guid, "logout", 0, 0);
-                currentBots.push_back(guid);
+                    if (GetPlayerBot(guid))
+                        continue;
 
-                maxAllowedBotCount--;
+                    if (std::find(currentBots.begin(), currentBots.end(), guid) != currentBots.end())
+                        continue;
+
+                    SetEventValue(guid, "add", 1, urand(sPlayerbotAIConfig.minRandomBotInWorldTime, sPlayerbotAIConfig.maxRandomBotInWorldTime));
+                    SetEventValue(guid, "logout", 0, 0);
+                    currentBots.push_back(guid);
+
+                    maxAllowedBotCount--;
+
+                    if (!maxAllowedBotCount)
+                        break;
+
+                } while (result->NextRow());
+                delete result;
 
                 if (!maxAllowedBotCount)
                     break;
+            }
 
-            } while (result->NextRow());
-            delete result;
-
-            if (!maxAllowedBotCount)
+            if (!sPlayerbotAIConfig.syncLevelWithPlayers)
                 break;
         }
 
