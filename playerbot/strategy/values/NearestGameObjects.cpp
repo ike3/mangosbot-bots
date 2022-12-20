@@ -10,42 +10,21 @@
 using namespace ai;
 using namespace MaNGOS;
 
-class AnyGameObjectInObjectRangeCheck
+bool AnyGameObjectInObjectRangeCheck::operator()(GameObject* u)
 {
-public:
-    AnyGameObjectInObjectRangeCheck(WorldObject const* obj, float range) : i_obj(obj), i_range(range) {}
-    WorldObject const& GetFocusObject() const { return *i_obj; }
-    bool operator()(GameObject* u)
-    {
-        if (u && i_obj->IsWithinDistInMap(u, i_range) && sServerFacade.isSpawned(u) && u->GetGOInfo())
-            return true;
+    if (u && i_obj->IsWithinDistInMap(u, i_range) && sServerFacade.isSpawned(u) && u->GetGOInfo())
+        return true;
 
-        return false;
-    }
+    return false;
+}
 
-private:
-    WorldObject const* i_obj;
-    float i_range;
-};
-
-class GameObjectsInObjectRangeCheck
+bool GameObjectsInObjectRangeCheck::operator()(GameObject* u)
 {
-public:
-    GameObjectsInObjectRangeCheck(WorldObject const* obj, float range, uint32 gameObjectID) : i_obj(obj), i_range(range), i_gameObjectID(gameObjectID) {}
-    WorldObject const& GetFocusObject() const { return *i_obj; }
-    bool operator()(GameObject* u)
-    {
-        if (u && i_obj->IsWithinDistInMap(u, i_range) && sServerFacade.isSpawned(u) && u->GetGOInfo() && u->GetEntry() == i_gameObjectID)
-            return true;
+    if (u && i_obj->IsWithinDistInMap(u, i_range) && sServerFacade.isSpawned(u) && u->GetGOInfo() && u->GetEntry() == i_gameObjectID)
+        return true;
 
-        return false;
-    }
-
-private:
-    WorldObject const* i_obj;
-    float i_range;
-    uint32 i_gameObjectID;
-};
+    return false;
+}
 
 class AnyDynamicObjectInObjectRangeCheck
 {

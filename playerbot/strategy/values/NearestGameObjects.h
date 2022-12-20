@@ -4,6 +4,29 @@
 
 namespace ai
 {
+    class AnyGameObjectInObjectRangeCheck
+    {
+    public:
+        AnyGameObjectInObjectRangeCheck(WorldObject const* obj, float range) : i_obj(obj), i_range(range) {}
+        WorldObject const& GetFocusObject() const { return *i_obj; }
+        bool operator()(GameObject* u);
+    private:
+        WorldObject const* i_obj;
+        float i_range;
+    };
+
+    class GameObjectsInObjectRangeCheck
+    {
+    public:
+        GameObjectsInObjectRangeCheck(WorldObject const* obj, float range, uint32 gameObjectID) : i_obj(obj), i_range(range), i_gameObjectID(gameObjectID) {}
+        WorldObject const& GetFocusObject() const { return *i_obj; }
+        bool operator()(GameObject* u);
+    private:
+        WorldObject const* i_obj;
+        float i_range;
+        uint32 i_gameObjectID;
+    };
+
     class NearestGameObjects : public ObjectGuidListCalculatedValue, public Qualified
 	{
 	public:
