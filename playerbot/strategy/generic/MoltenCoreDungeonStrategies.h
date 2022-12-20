@@ -11,6 +11,7 @@ namespace ai
 
     private:
         void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
     };
 
     class MagmadarFightStrategy : public Strategy

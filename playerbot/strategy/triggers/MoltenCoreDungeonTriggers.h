@@ -1,5 +1,6 @@
 #pragma once
 #include "DungeonTriggers.h"
+#include "GenericTriggers.h"
 
 namespace ai
 {
@@ -31,5 +32,17 @@ namespace ai
     {
     public:
         MagmadarLavaBombTrigger(PlayerbotAI* ai) : CloseToGameObject(ai, "magmadar lava bomb", 177704, 2.5f) {}
+    };
+
+    class MCRuneInSightTrigger : public ValueTrigger
+    {
+    public:
+        MCRuneInSightTrigger(PlayerbotAI* ai) : ValueTrigger(ai, "mc rune in sight", 1) { qualifier = "and::{has object::go usable filter::entry filter::{gos in sight,mc runes},not::has object::entry filter::{gos close,mc runes}}";}
+    };
+
+    class MCRuneCloseTrigger : public ValueTrigger
+    {
+    public:
+        MCRuneCloseTrigger(PlayerbotAI* ai) : ValueTrigger(ai, "mc rune close", 1) { qualifier = "has object::go usable filter::entry filter::{gos close,mc runes}"; }
     };
 }

@@ -87,6 +87,9 @@
 #include "AttackersValue.h"
 #include "WaitForAttackTimeValue.h"
 #include "LastPotionUsedTimeValue.h"
+#include "OperatorValues.h"
+#include "EntryValues.h"
+#include "GuidPositionValues.h"
 
 namespace ai
 {
@@ -299,6 +302,7 @@ namespace ai
             creators["following party"] = &ValueContext::following_party;
             creators["near leader"] = &ValueContext::near_leader;
             creators["and"] = &ValueContext::and_value;
+            creators["not"] = &ValueContext::not_value;
             creators["group count"] = &ValueContext::group_count;
             creators["group and"] = &ValueContext::group_and;
             creators["group or"] = &ValueContext::group_or;
@@ -322,6 +326,15 @@ namespace ai
             creators["has area debuff"] = &ValueContext::has_area_debuff;
             creators["combat start time"] = &ValueContext::combat_start_time;
             creators["wait for attack time"] = &ValueContext::wait_for_attack_time;
+
+            creators["mc runes"] = &ValueContext::mc_runes;
+            creators["gos"] = &ValueContext::gos;
+            creators["entry filter"] = &ValueContext::entry_filter;
+            creators["range filter"] = &ValueContext::range_filter;
+            creators["go usable filter"] = &ValueContext::go_usable_filter;
+            creators["gos in sight"] = &ValueContext::gos_in_sight;
+            creators["gos close"] = &ValueContext::gos_close;
+            creators["has object"] = &ValueContext::has_object;            
         }
 
     private:
@@ -522,7 +535,8 @@ namespace ai
         static UntypedValue* group_members(PlayerbotAI* ai) { return new GroupMembersValue(ai); }
         static UntypedValue* following_party(PlayerbotAI* ai) { return new IsFollowingPartyValue(ai); }
         static UntypedValue* near_leader(PlayerbotAI* ai) { return new IsNearLeaderValue(ai); }
-        static UntypedValue* and_value(PlayerbotAI* ai) { return new BoolANDValue(ai); }
+        static UntypedValue* and_value(PlayerbotAI* ai) { return new BoolAndValue(ai); }
+        static UntypedValue* not_value(PlayerbotAI* ai) { return new NotValue(ai); }
         static UntypedValue* group_count(PlayerbotAI* ai) { return new GroupBoolCountValue(ai); }
         static UntypedValue* group_and(PlayerbotAI* ai) { return new GroupBoolANDValue(ai); }
         static UntypedValue* group_or(PlayerbotAI* ai) { return new GroupBoolORValue(ai); }
@@ -546,5 +560,15 @@ namespace ai
         static UntypedValue* has_area_debuff(PlayerbotAI* ai) { return new HasAreaDebuffValue(ai); }
         static UntypedValue* combat_start_time(PlayerbotAI* ai) { return new CombatStartTimeValue(ai); }
         static UntypedValue* wait_for_attack_time(PlayerbotAI* ai) { return new WaitForAttackTimeValue(ai); }
+
+
+        static UntypedValue* mc_runes(PlayerbotAI* ai) { return new MCRunesValue(ai); }
+        static UntypedValue* gos(PlayerbotAI* ai) { return new GameObjectsValue(ai); }
+        static UntypedValue* entry_filter(PlayerbotAI* ai) { return new EntryFilterValue(ai); }
+        static UntypedValue* range_filter(PlayerbotAI* ai) { return new RangeFilterValue(ai); }
+        static UntypedValue* go_usable_filter(PlayerbotAI* ai) { return new GoUsableFilterValue(ai); }
+        static UntypedValue* gos_in_sight(PlayerbotAI* ai) { return new GosInSightValue(ai); }
+        static UntypedValue* gos_close(PlayerbotAI* ai) { return new GoSCloseValue(ai); }
+        static UntypedValue* has_object(PlayerbotAI* ai) { return new HasObjectValue(ai); }
     };
 };

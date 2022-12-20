@@ -265,6 +265,9 @@ namespace ai
             creators["every_man_for_himself"] = &ActionContext::every_man_for_himself;
 #endif    
 
+            creators["use id"] = &ActionContext::use_id;
+            creators["move to"] = &ActionContext::move_to;
+
             // Dungeon Actions
             creators["enable onyxia's lair strategy"] = &ActionContext::onyxias_lair_enable_strategy;
             creators["disable onyxia's lair strategy"] = &ActionContext::onyxias_lair_disable_strategy;
@@ -278,6 +281,9 @@ namespace ai
             creators["enable magmadar fight strategy"] = &ActionContext::magmadar_enable_fight_strategy;
             creators["disable magmadar fight strategy"] = &ActionContext::magmadar_disable_fight_strategy;
             creators["move away from magmadar lava bomb"] = &ActionContext::magmadar_move_away_from_lava_bomb;
+
+            creators["move to mc rune"] = &ActionContext::move_to_mc_rune;
+            creators["douse mc rune"] = &ActionContext::douse_mc_rune;
         }
 
     private:
@@ -478,6 +484,9 @@ namespace ai
         static Action* set_non_combat_state(PlayerbotAI* ai) { return new SetNonCombatStateAction(ai); }
         static Action* set_dead_state(PlayerbotAI* ai) { return new SetDeadStateAction(ai); }
 
+        static Action* use_id(PlayerbotAI* ai) { return new UseItemIdAction(ai); }
+        static Action* move_to(PlayerbotAI* ai) { return new MoveToAction(ai); }
+
         // Dungeon Actions
         static Action* onyxias_lair_enable_strategy(PlayerbotAI* ai) { return new OnyxiasLairEnableDungeonStrategyAction(ai); }
         static Action* onyxias_lair_disable_strategy(PlayerbotAI* ai) { return new OnyxiasLairDisableDungeonStrategyAction(ai); }
@@ -491,5 +500,8 @@ namespace ai
         static Action* magmadar_enable_fight_strategy(PlayerbotAI* ai) { return new MagmadarEnableFightStrategyAction(ai); }
         static Action* magmadar_disable_fight_strategy(PlayerbotAI* ai) { return new MagmadarDisableFightStrategyAction(ai); }
         static Action* magmadar_move_away_from_lava_bomb(PlayerbotAI* ai) { return new MagmadarMoveAwayFromLavaBombAction(ai); }
+
+        static Action* move_to_mc_rune(PlayerbotAI* ai) { return new MoveToMCRuneAction(ai); }
+        static Action* douse_mc_rune(PlayerbotAI* ai) { return new DouseMCRuneAction(ai); }
     };
 };

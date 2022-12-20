@@ -186,6 +186,8 @@ namespace ai
             creators["buy tabard"] = &TriggerContext::buy_tabard;
             creators["leave large guild"] = &TriggerContext::leave_large_guild;
 
+            creators["val"] = &TriggerContext::val;
+
             creators["rpg"] = &TriggerContext::rpg;
             creators["rpg wander"] = &TriggerContext::rpg_wander;
             creators["rpg taxi"] = &TriggerContext::rpg_taxi;
@@ -236,6 +238,9 @@ namespace ai
             creators["start magmadar fight"] = &TriggerContext::magmadar_start_fight;
             creators["end magmadar fight"] = &TriggerContext::magmadar_end_fight;
             creators["magmadar lava bomb"] = &TriggerContext::magmadar_lava_bomb;
+
+            creators["mc rune in sight"] = &TriggerContext::mc_rune_in_sight;
+            creators["mc rune close"] = &TriggerContext::mc_rune_close;
         }
 
     private:
@@ -382,6 +387,9 @@ namespace ai
         static Trigger* buy_tabard(PlayerbotAI* ai) { return new BuyTabardTrigger(ai); }        
         static Trigger* leave_large_guild(PlayerbotAI* ai) { return new LeaveLargeGuildTrigger(ai); }
 
+        static Trigger* val(PlayerbotAI* ai) { return new ValueTrigger(ai); }
+
+
         static Trigger* rpg(PlayerbotAI* ai) { return new RpgTrigger(ai); }
         static Trigger* rpg_wander(PlayerbotAI* ai) { return new RpgWanderTrigger(ai); }
         static Trigger* rpg_taxi(PlayerbotAI* ai) { return new RpgTaxiTrigger(ai); }
@@ -419,5 +427,8 @@ namespace ai
         static Trigger* magmadar_start_fight(PlayerbotAI* ai) { return new MagmadarStartFightTrigger(ai); }
         static Trigger* magmadar_end_fight(PlayerbotAI* ai) { return new MagmadarEndFightTrigger(ai); }
         static Trigger* magmadar_lava_bomb(PlayerbotAI* ai) { return new MagmadarLavaBombTrigger(ai); }
+
+        static Trigger* mc_rune_in_sight(PlayerbotAI* ai) { return new MCRuneInSightTrigger(ai); }
+        static Trigger* mc_rune_close(PlayerbotAI* ai) { return new MCRuneCloseTrigger(ai); }
     };
 };

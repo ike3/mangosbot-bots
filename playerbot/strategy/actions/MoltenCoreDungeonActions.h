@@ -1,6 +1,7 @@
 #pragma once
 #include "DungeonActions.h"
 #include "ChangeStrategyAction.h"
+#include "UseItemAction.h"
 
 namespace ai
 {
@@ -32,5 +33,17 @@ namespace ai
     {
     public:
         MagmadarMoveAwayFromLavaBombAction(PlayerbotAI* ai) : MoveAwayFromGameObject(ai, "move away from magmadar lava bomb", 177704, 2.5f) {}
+    };
+
+    class MoveToMCRuneAction : public MoveToAction
+    {
+    public:
+        MoveToMCRuneAction(PlayerbotAI* ai) : MoveToAction(ai, "move to mc rune") { qualifier = "entry filter::{gos in sight,mc runes}"; }
+    };
+
+    class DouseMCRuneAction : public UseItemIdAction
+    {
+    public:
+        DouseMCRuneAction(PlayerbotAI* ai) : UseItemIdAction(ai, "douse mc rune") { qualifier = "{17333,entry filter::{gos close,mc runes}}"; }
     };
 }
