@@ -5,7 +5,6 @@
 #include "../PerformanceMonitor.h"
 #include "ObjectMgr.h"
 #include "AiObject.h"
-#include "AiObjectContext.h"
 #include "GuidPosition.h"
 
 namespace ai
@@ -62,7 +61,7 @@ namespace ai
                 if (context)
                     stack = &context->performanceStack;
 
-                PerformanceMonitorOperation *pmo = sPerformanceMonitor.start(PERF_MON_VALUE, getName(), stack);
+                PerformanceMonitorOperation *pmo = sPerformanceMonitor.start(PERF_MON_VALUE, getName(), this->context ? &this->context->performanceStack : nullptr);
                 value = Calculate();
                 if (pmo) pmo->finish();
             }

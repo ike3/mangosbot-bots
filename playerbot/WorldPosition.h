@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ObjectMgr.h"
+#include "SpellMgr.h"
 
 
 class ByteBuffer;
