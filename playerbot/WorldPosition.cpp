@@ -741,6 +741,15 @@ vector<WorldPosition> WorldPosition::getPathFromPath(const vector<WorldPosition>
     return fullPath;
 }
 
+bool WorldPosition::GetReachableRandomPointOnGround(const Player* bot, const float radius, const bool randomRange) 
+{
+#ifndef MANGOSBOT_TWO         
+    return getMap()->GetReachableRandomPointOnGround(coord_x, coord_y, coord_z, radius, randomRange);
+#else
+    return getMap()->GetReachableRandomPointOnGround(bot->GetPhaseMask(), coord_x, coord_y, coord_z, radius, randomRange);
+#endif
+}
+
 uint32 WorldPosition::getUnitsNear(const list<ObjectGuid>& units, const float radius) const
 {
     uint32 count = 0;

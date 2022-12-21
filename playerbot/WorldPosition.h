@@ -211,13 +211,7 @@ namespace ai
 
         float getPathLength(const vector<WorldPosition>& points) const { float dist = 0.0f; for (auto& p : points) if (&p == &points.front()) dist = 0; else dist += std::prev(&p, 1)->distance(p); return dist; }
 
-        bool GetReachableRandomPointOnGround(const Player* bot,const float radius, const bool randomRange = true) {
-#ifndef MANGOSBOT_TWO         
-            return getMap()->GetReachableRandomPointOnGround(coord_x, coord_y, coord_z, radius, randomRange);
-#else
-            return getMap()->GetReachableRandomPointOnGround(bot->GetPhaseMask(), coord_x, coord_y, coord_z, radius, randomRange);
-#endif
-        }
+        bool GetReachableRandomPointOnGround(const Player* bot, const float radius, const bool randomRange = true);
 
         uint32 getUnitsNear(const list<ObjectGuid>& units, const float radius) const;
         uint32 getUnitsAggro(const list<ObjectGuid>& units, const Player* bot) const;

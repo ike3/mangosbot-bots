@@ -26,8 +26,9 @@ bool RememberTaxiAction::Execute(Event& event)
     case CMSG_ACTIVATETAXIEXPRESS:
         {
             ObjectGuid guid;
-            uint32 node_count, totalcost;
+            uint32 node_count;
 #ifndef MANGOSBOT_TWO
+            uint32 totalcost;
             p >> guid >> totalcost >> node_count;
 #else
             p >> guid >> node_count;

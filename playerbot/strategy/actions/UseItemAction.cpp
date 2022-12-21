@@ -13,8 +13,9 @@ using namespace ai;
 
 SpellCastResult BotUseItemSpell::ForceSpellStart(SpellCastTargets const* targets, Aura* triggeredByAura)
 {
-    if (!m_trueCaster)
-        m_trueCaster = m_caster;
+    WorldObject* truecaster = GetTrueCaster();
+    if (!truecaster)
+        truecaster = m_caster;
     m_spellState = SPELL_STATE_TARGETING;
     m_targets = *targets;
 
@@ -23,7 +24,7 @@ SpellCastResult BotUseItemSpell::ForceSpellStart(SpellCastTargets const* targets
 
     // create and add update event for this spell
     SpellEvent* Event = new SpellEvent(this);
-    m_trueCaster->m_events.AddEvent(Event, m_trueCaster->m_events.CalculateTime(1));
+    truecaster->m_events.AddEvent(Event, truecaster->m_events.CalculateTime(1));
 
     SpellCastResult result = PreCastCheck();
 
@@ -51,7 +52,9 @@ bool BotUseItemSpell::OpenLockCheck()
         // for effects of spells that have only one target
         switch (m_spellInfo->Effect[i])
         {
+#ifndef MANGOSBOT_TWO
         case SPELL_EFFECT_OPEN_LOCK_ITEM:
+#endif
         case SPELL_EFFECT_OPEN_LOCK:
         {
             if (m_caster->GetTypeId() != TYPEID_PLAYER) // only players can open locks, gather etc.
