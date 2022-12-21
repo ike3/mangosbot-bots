@@ -2,7 +2,7 @@
 
 #include "ObjectMgr.h"
 #include "SpellMgr.h"
-
+#include "PlayerbotAIConfig.h"
 
 class ByteBuffer;
 

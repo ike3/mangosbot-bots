@@ -58,6 +58,7 @@ class PerformanceMonitor
 
 	public:
         PerformanceMonitorOperation* start(PerformanceMetric metric, string name, PerformanceStack* stack = nullptr);
+        PerformanceMonitorOperation* start(PerformanceMetric metric, string name, PlayerbotAI* ai);
         void PrintStats(bool perTick = false,  bool fullStack = false);
         void Reset();
 

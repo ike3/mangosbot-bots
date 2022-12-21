@@ -48,6 +48,14 @@ PerformanceMonitorOperation* PerformanceMonitor::start(PerformanceMetric metric,
 #endif
 }
 
+PerformanceMonitorOperation* PerformanceMonitor::start(PerformanceMetric metric, string name, PlayerbotAI* ai)
+{
+    if(ai->GetAiObjectContext())
+        return start(metric, name, &ai->GetAiObjectContext()->performanceStack);
+    else
+        return start(metric, name);
+}
+
 void PerformanceMonitor::PrintStats(bool perTick, bool fullStack)
 {
     if(data.empty())
