@@ -5,6 +5,8 @@
 struct TalentEntry;
 struct TalentTabEntry;
 
+using namespace std;
+
 class TalentSpec {
     public:
 #define SORT_BY_DEFAULT 0

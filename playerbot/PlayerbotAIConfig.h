@@ -4,6 +4,8 @@
 #include "Talentspec.h"
 #include "SharedDefines.h"
 
+using namespace std;
+
 class Player;
 class PlayerbotMgr;
 class ChatHandler;
