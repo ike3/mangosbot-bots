@@ -58,7 +58,11 @@ namespace ai
             {
                 lastCheckTime = now;
 
-                PerformanceMonitorOperation *pmo = sPerformanceMonitor.start(PERF_MON_VALUE, getName(), context ? &context->performanceStack : nullptr);
+                PerformanceStack* stack = nullptr;
+                if (context)
+                    stack = &context->performanceStack;
+
+                PerformanceMonitorOperation *pmo = sPerformanceMonitor.start(PERF_MON_VALUE, getName(), stack);
                 value = Calculate();
                 if (pmo) pmo->finish();
             }

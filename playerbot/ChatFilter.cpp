@@ -919,8 +919,11 @@ public:
 
             if (map)
             {
-                string name = map->GetMapName(), filter;
-                transform(name.begin(), name.end(), std::back_inserter(filter), tolower);               
+                string name = map->GetMapName();
+                string filter = name;
+
+               std::transform(filter.begin(), filter.end(), filter.begin(),[](unsigned char c) { return std::tolower(c); });
+
                 filter = "@" + filter;
 
                 if (message.find(filter) == 0)
@@ -931,8 +934,11 @@ public:
 
             if (bot->GetTerrain())
             {
-                string name = WorldPosition(bot).getAreaName(true, true), filter;
-                transform(name.begin(), name.end(), std::back_inserter(filter), tolower);
+                string name = WorldPosition(bot).getAreaName(true, true);
+                string filter = name;
+
+                std::transform(filter.begin(), filter.end(), filter.begin(),[](unsigned char c) { return std::tolower(c); });
+
                 filter = "@" + filter;
 
                 if (message.find(filter) == 0)
