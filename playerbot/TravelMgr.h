@@ -2,9 +2,12 @@
 
 #include "strategy/AiObject.h"
 #include <boost/functional/hash.hpp>
+#include "WorldPosition.h"
 
 namespace ai
 {   
+    class GuidePosition;
+
     class mapTransfer
     {
     public:

@@ -1140,7 +1140,7 @@ void RandomPlayerbotMgr::CheckBgQueue()
                 break;
             }
             sLog.outBasic("BG:%s %s: Plr (%d:%d) Bot (%d:%d) Total (A:%d H:%d)",
-                _bgType,
+                _bgType.c_str(),
                 i == 0 ? "10-19" : i == 1 ? "20-29" : i == 2 ? "30-39" : i == 3 ? "40-49" : i == 4 ? "50-59" : (i == 5 && MAX_BATTLEGROUND_BRACKETS == 6) ? "60" : (i == 5 && MAX_BATTLEGROUND_BRACKETS == 7) ? "60-69" : i == 6 ? (i == 6 && MAX_BATTLEGROUND_BRACKETS == 16) ? "70-79" : "70" : "80",
                 BgPlayers[j][i][0],
                 BgPlayers[j][i][1],
