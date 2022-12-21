@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Player.h"
-//#include "playerbot.h"
 
 struct TalentEntry;
 struct TalentTabEntry;

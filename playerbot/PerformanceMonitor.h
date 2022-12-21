@@ -1,6 +1,8 @@
 #ifndef _PerformanceMonitor_H
 #define _PerformanceMonitor_H
 
+using namespace std;
+
 #include "Common.h"
 #include "PlayerbotAIBase.h"
 #include "PlayerbotAIConfig.h"
@@ -8,8 +10,6 @@
 #include <mutex>
 #include <chrono>
 #include <ctime>
-
-using namespace std;
 
 typedef vector<string> PerformanceStack;
 
