@@ -573,7 +573,7 @@ void PlayerbotAIConfig::loadFreeAltBotAccounts()
 
     freeAltBots.clear();
 
-    QueryResult* results = LoginDatabase.PQuery("SELECT username, id FROM account where username not like '%s%%'", randomBotAccountPrefix);
+    QueryResult* results = LoginDatabase.PQuery("SELECT username, id FROM account where username not like '%s%%'", randomBotAccountPrefix.c_str());
     if (results)
     {
         do

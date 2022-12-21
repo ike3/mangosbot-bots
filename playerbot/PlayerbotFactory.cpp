@@ -2989,7 +2989,7 @@ void PlayerbotFactory::InitGuild()
     {
         uint32 rankId = urand(GR_OFFICER, GR_INITIATE);
         guild->AddMember(bot->GetObjectGuid(), rankId);
-        sLog.outBasic("Bot #%d %s:%d <%s>: Guild <%s> R: %s", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->GetLevel(), bot->GetName(), guild->GetName().c_str(), guild->GetRankName(rankId));
+        sLog.outBasic("Bot #%d %s:%d <%s>: Guild <%s> R: %s", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->GetLevel(), bot->GetName(), guild->GetName().c_str(), guild->GetRankName(rankId).c_str());
     }
 
     // add guild tabard

@@ -926,12 +926,12 @@ string PlayerbotHelpMgr::GetBotText(string name)
 {
     if (botHelpText.empty())
     {
-        sLog.outError("Can't get bot help text %s! No bots help texts loaded!", name);
+        sLog.outError("Can't get bot help text %s! No bots help texts loaded!", name.c_str());
         return "";
     }
     if (botHelpText.find(name) == botHelpText.end())
     {
-        sLog.outDetail("Can't get bot help text %s! No bots help texts for this name!", name);
+        sLog.outDetail("Can't get bot help text %s! No bots help texts for this name!", name.c_str());
         return "";
     }
 
