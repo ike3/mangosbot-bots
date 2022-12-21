@@ -1,5 +1,3 @@
-#pragma once
-
 #include "GuidPosition.h"
 #include <numeric>
 #include <iomanip>

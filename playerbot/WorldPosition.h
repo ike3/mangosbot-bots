@@ -1,5 +1,8 @@
 #pragma once
 
+#include "ObjectMgr.h"
+
+
 class ByteBuffer;
 
 namespace G3D
@@ -8,6 +11,8 @@ namespace G3D
     class Vector3;
     class Vector4;
 }
+
+using namespace std;
 
 namespace ai
 {

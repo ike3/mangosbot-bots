@@ -210,15 +210,6 @@ namespace ai
         StringCalculatedValue(PlayerbotAI* ai, string name = "value", int checkInterval = 1) :
             CalculatedValue<string>(ai, name, checkInterval) {}
 
-        template <typename T>
-        string ToString(T val) { return to_string(val); }
-
-        template <typename T>
-        string ListToString(list<T> list) { vector<string> ret; for (auto& val : list) ret.push_back(to_string(val)); return MultiQualify(ret, ","); }
-
-        template <typename T>
-        list<T> StringToList(string str) { list<T> ret; for (auto& val : getMultiQualifiers(str)) ret.push_back(val); return ret; }
-
         virtual string Format()
         {
             return this->Calculate();
