@@ -1399,7 +1399,7 @@ void RandomItemMgr::BuildItemInfoCache()
                 //statWeight.weight = statW;
                 // save item statWeight into ItemCache
                 cacheInfo->weights[spec] = statW;
-                sLog.outDetail("Item: %d, weight: %d, class: %d, spec: %s", proto->ItemId, statW, clazz, m_weightScales[spec].info.name);
+                sLog.outDetail("Item: %d, weight: %d, class: %d, spec: %s", proto->ItemId, statW, clazz, m_weightScales[spec].info.name.c_str());
             }
         }
 
@@ -2018,7 +2018,7 @@ uint32 RandomItemMgr::CalculateSingleStatWeight(uint8 playerclass, uint8 spec, s
         {
             statWeight = i->weight * value;
             if (statWeight)
-                sLog.outDetail("stat: %s, val: %d, weight: %d, total: %d, class: %d, spec: %s", stat, value, i->weight, statWeight, playerclass, m_weightScales[spec].info.name);
+                sLog.outDetail("stat: %s, val: %d, weight: %d, total: %d, class: %d, spec: %s", stat.c_str(), value, i->weight, statWeight, playerclass, m_weightScales[spec].info.name.c_str());
             return statWeight;
         }
     }

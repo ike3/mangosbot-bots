@@ -83,12 +83,12 @@ string PlayerbotTextMgr::GetBotText(string name)
 {
     if (botTexts.empty())
     {
-        sLog.outError("Can't get bot text %s! No bots texts loaded!", name);
+        sLog.outError("Can't get bot text %s! No bots texts loaded!", name.c_str());
         return "";
     }
     if (botTexts[name].empty())
     {
-        sLog.outDetail("Can't get bot text %s! No bots texts for this name!", name);
+        sLog.outDetail("Can't get bot text %s! No bots texts for this name!", name.c_str());
         return "";
     }
 
