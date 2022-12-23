@@ -113,6 +113,37 @@ bool DebugAction::Execute(Event& event)
         sTravelNodeMap.printNodeStore();
         return true;
     }
+    else if (text.find("corpse") != std::string::npos)
+    {
+
+        Corpse* corpse = bot->GetCorpse();
+
+        if (!corpse)
+        {
+            ai->TellMasterNoFacing("no corpse");
+            return true;
+        }
+
+
+        ostringstream out;
+
+        if(corpse->GetType() == CORPSE_BONES)
+            out << "CORPSE_BONES";
+
+        if (corpse->GetType() == CORPSE_RESURRECTABLE_PVE)
+            out << "CORPSE_RESURRECTABLE_PVE";
+
+        if (corpse->GetType() == CORPSE_RESURRECTABLE_PVP)
+            out << "CORPSE_RESURRECTABLE_PVP";
+
+        WorldPosition(corpse).printWKT(out);
+
+        out << "time: " << corpse->GetGhostTime();
+
+        ai->TellMasterNoFacing(out);
+
+        return true;
+    }
     else if (text.find("npc") != std::string::npos)
     {
         ostringstream out;
@@ -248,7 +279,8 @@ bool DebugAction::Execute(Event& event)
 
         return true;
     }
-    else if (text.find("go ") != std::string::npos)
+   
+ else if (text.find("go ") != std::string::npos)
     {
         ostringstream out;
 
