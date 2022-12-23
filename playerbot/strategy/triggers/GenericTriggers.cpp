@@ -548,7 +548,7 @@ bool ReturnToStayPositionTrigger::IsActive()
     if (stayPosition.isSet())
     {
         const float distance = bot->GetDistance(stayPosition.x, stayPosition.y, stayPosition.z);
-        return distance > sPlayerbotAIConfig.followDistance;
+        return distance > ai->GetRange("follow");
     }
 
     return false;

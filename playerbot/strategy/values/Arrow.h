@@ -36,10 +36,12 @@ namespace ai
     class UnitPlacer
     {
     public:
-        UnitPlacer() {}
+        UnitPlacer(float range) : range(range) {}
 
     public:
         virtual UnitPosition Place(FormationUnit *unit, uint32 index, uint32 count) = 0;
+    protected:
+        float range = 0;
     };
 
     class FormationSlot
@@ -64,7 +66,7 @@ namespace ai
     class MultiLineUnitPlacer : public UnitPlacer
     {
     public:
-        MultiLineUnitPlacer(float orientation) : UnitPlacer(), orientation(orientation) {}
+        MultiLineUnitPlacer(float orientation, float range) : UnitPlacer(range), orientation(orientation) {}
 
     public:
         virtual UnitPosition Place(FormationUnit *unit, uint32 index, uint32 count);
@@ -76,13 +78,13 @@ namespace ai
     class SingleLineUnitPlacer
     {
     public:
-        SingleLineUnitPlacer(float orientation) : orientation(orientation) {}
+        SingleLineUnitPlacer(float orientation, float range) : orientation(orientation), range(range) {}
 
     public:
         virtual UnitPosition Place(FormationUnit *unit, uint32 index, uint32 count);
 
     private:
-        float orientation;
+        float orientation, range;
     };
 
     class ArrowFormation : public MoveAheadFormation

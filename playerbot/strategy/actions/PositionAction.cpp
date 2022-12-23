@@ -107,7 +107,7 @@ bool MoveToPositionAction::isUseful()
 {
     ai::PositionEntry pos = context->GetValue<ai::PositionMap&>("position")->Get()[qualifier];
     float distance = AI_VALUE2(float, "distance", string("position_") + qualifier);
-    return pos.isSet() && distance > sPlayerbotAIConfig.followDistance && distance < sPlayerbotAIConfig.reactDistance;
+    return pos.isSet() && distance > ai->GetRange("follow") && distance < sPlayerbotAIConfig.reactDistance;
 }
 
 
@@ -119,7 +119,7 @@ bool SetReturnPositionAction::Execute(Event& event)
     if (returnPos.isSet() && !randomPos.isSet())
     {
         float angle = 2 * M_PI * urand(0, 1000) / 100.0f;
-        float dist = sPlayerbotAIConfig.followDistance * urand(0, 1000) / 1000.0f;
+        float dist = ai->GetRange("follow") * urand(0, 1000) / 1000.0f;
         float x = returnPos.x + cos(angle) * dist,
              y = returnPos.y + sin(angle) * dist,
              z = bot->GetPositionZ();
@@ -145,7 +145,7 @@ bool SetReturnPositionAction::isUseful()
 bool ReturnAction::isUseful()
 {
     ai::PositionEntry pos = context->GetValue<ai::PositionMap&>("position")->Get()[qualifier];
-    return pos.isSet() && AI_VALUE2(float, "distance", "position_random") > sPlayerbotAIConfig.followDistance;
+    return pos.isSet() && AI_VALUE2(float, "distance", "position_random") > ai->GetRange("follow");
 }
 
 bool ReturnToStayPositionAction::isPossible()

@@ -14,6 +14,11 @@ bool IsSameLocation(WorldLocation const &a, WorldLocation const &b)
 	return a.coord_x == b.coord_x && a.coord_y == b.coord_y && a.coord_z == b.coord_z && a.mapid == b.mapid;
 }
 
+float Formation::GetMaxDistance()
+{
+    return ai->GetRange("follow");
+}
+
 bool Formation::IsNullLocation(WorldLocation const& loc)
 {
 	return IsSameLocation(loc, Formation::NullLocation);
@@ -87,7 +92,7 @@ namespace ai
             if (!master || master->GetMapId() != bot->GetMapId() || master->IsBeingTeleported())
                 return WorldLocation();
 
-            float range = sPlayerbotAIConfig.followDistance + master->GetObjectBoundingRadius();
+            float range = ai->GetRange("follow") + master->GetObjectBoundingRadius();
             float angle = GetFollowAngle();
             float x = master->GetPositionX() + cos(angle) * range;
             float y = master->GetPositionY() + sin(angle) * range;
@@ -117,7 +122,7 @@ namespace ai
             return WorldLocation(master->GetMapId(), x, y, z);
         }
 
-        virtual float GetMaxDistance() { return sPlayerbotAIConfig.followDistance; }
+        virtual float GetMaxDistance() { return ai->GetRange("follow"); }
     };
 
 
@@ -131,7 +136,7 @@ namespace ai
             if (!master)
                 return WorldLocation();
 
-            float range = sPlayerbotAIConfig.followDistance;
+            float range = ai->GetRange("follow");
 			float angle = GetFollowAngle();
 
             time_t now = time(0);
@@ -161,7 +166,7 @@ namespace ai
             return WorldLocation(master->GetMapId(), x, y, z);
         }
 
-        virtual float GetMaxDistance() { return sPlayerbotAIConfig.followDistance + dr; }
+        virtual float GetMaxDistance() { return ai->GetRange("follow") + dr; }
 
     private:
         time_t lastChangeTime;
@@ -269,7 +274,7 @@ namespace ai
             if (!group)
                 return Formation::NullLocation;
 
-            float range = sPlayerbotAIConfig.followDistance;
+            float range = ai->GetRange("follow");
 
             Player* master = ai->GetGroupMaster();
             if (!master)
@@ -329,7 +334,7 @@ namespace ai
         virtual WorldLocation GetLocation()
         {
             float range = sPlayerbotAIConfig.farDistance;
-            float followRange = sPlayerbotAIConfig.followDistance;
+            float followRange = ai->GetRange("follow");
 
             Player* master = ai->GetGroupMaster();
             if (!master || master == bot)

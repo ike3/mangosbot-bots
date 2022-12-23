@@ -268,7 +268,7 @@ bool GoAction::MoveToGo(string& param)
 
             ostringstream out; out << "Moving to " << ChatHelper::formatGameobject(go);
             ai->TellMasterNoFacing(out.str());
-            return MoveNear(bot->GetMapId(), go->GetPositionX(), go->GetPositionY(), go->GetPositionZ() + 0.5f, sPlayerbotAIConfig.followDistance);
+            return MoveNear(bot->GetMapId(), go->GetPositionX(), go->GetPositionY(), go->GetPositionZ() + 0.5f, ai->GetRange("follow"));
         }
     }
     return false;
@@ -288,7 +288,7 @@ bool GoAction::MoveToUnit(string& param)
         {
             ostringstream out; out << "Moving to " << unit->GetName();
             ai->TellMasterNoFacing(out.str());
-            return MoveNear(bot->GetMapId(), unit->GetPositionX(), unit->GetPositionY(), unit->GetPositionZ() + 0.5f, sPlayerbotAIConfig.followDistance);
+            return MoveNear(bot->GetMapId(), unit->GetPositionX(), unit->GetPositionY(), unit->GetPositionZ() + 0.5f, ai->GetRange("follow"));
         }
     }
 
@@ -399,7 +399,7 @@ bool GoAction::MoveToMapGps(string& param)
         Map2ZoneCoordinates(x1, y1, bot->GetZoneId());
         ostringstream out; out << "Moving to " << x1 << "," << y1;
         ai->TellMasterNoFacing(out.str());
-        return MoveNear(bot->GetMapId(), x, y, z + 0.5f, sPlayerbotAIConfig.followDistance);
+        return MoveNear(bot->GetMapId(), x, y, z + 0.5f, ai->GetRange("follow"));
     }
     return false;
 }
@@ -417,7 +417,7 @@ bool GoAction::MoveToPosition(string& param)
 
         ostringstream out; out << "Moving to position " << param;
         ai->TellMasterNoFacing(out.str());
-        return MoveNear(bot->GetMapId(), pos.x, pos.y, pos.z + 0.5f, sPlayerbotAIConfig.followDistance);
+        return MoveNear(bot->GetMapId(), pos.x, pos.y, pos.z + 0.5f, ai->GetRange("follow"));
     }
     return false;
 }

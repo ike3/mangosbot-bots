@@ -20,7 +20,7 @@ namespace ai
         bool MoveNear(WorldObject* target, float distance = sPlayerbotAIConfig.contactDistance);
         bool MoveToLOS(WorldObject* target, bool ranged = false);
         float GetFollowAngle();
-        bool Follow(Unit* target, float distance = sPlayerbotAIConfig.followDistance);
+        bool Follow(Unit* target, float distance = 0);
         bool Follow(Unit* target, float distance, float angle);
         float MoveDelay(float distance);
         void WaitForReach(float distance);

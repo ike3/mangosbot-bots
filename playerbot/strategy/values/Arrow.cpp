@@ -16,26 +16,27 @@ WorldLocation ArrowFormation::GetLocationInternal()
     int rangedLines = 1 + ranged.Size() / 6;
     int healerLines = 1 + healers.Size() / 6;
     float offset = 0;
+    float range = ai->GetRange("follow");
 
     Player* master = ai->GetMaster();
     if (!master)
         return Formation::NullLocation;
 
     float orientation = master->GetOrientation();
-    MultiLineUnitPlacer placer(orientation);
+    MultiLineUnitPlacer placer(orientation, range);
 
     tanks.PlaceUnits(&placer);
     tanks.Move(-cos(orientation) * offset, -sin(orientation) * offset);
 
-    offset += tankLines * sPlayerbotAIConfig.followDistance;
+    offset += tankLines * range;
     melee.PlaceUnits(&placer);
     melee.Move(-cos(orientation) * offset, -sin(orientation) * offset);
 
-    offset += meleeLines * sPlayerbotAIConfig.followDistance;
+    offset += meleeLines * range;
     ranged.PlaceUnits(&placer);
     ranged.Move(-cos(orientation) * offset, -sin(orientation) * offset);
 
-    offset += rangedLines * sPlayerbotAIConfig.followDistance;
+    offset += rangedLines * range;
     healers.PlaceUnits(&placer);
     healers.Move(-cos(orientation) * offset, -sin(orientation) * offset);
 
@@ -132,23 +133,23 @@ void FormationSlot::PlaceUnits(UnitPlacer* placer)
 
 UnitPosition MultiLineUnitPlacer::Place(FormationUnit *unit, uint32 index, uint32 count)
 {
-    SingleLineUnitPlacer placer(orientation);
+    SingleLineUnitPlacer placer(orientation, range);
     if (count <= 6)
         return placer.Place(unit, index, count);
 
     int lineNo = index / 6;
     int indexInLine = index % 6;
     int lineSize = max(count - lineNo * 6, uint32(6));
-    float x = cos(orientation) * sPlayerbotAIConfig.followDistance * lineNo;
-    float y = sin(orientation) * sPlayerbotAIConfig.followDistance * lineNo;
+    float x = cos(orientation) * range * lineNo;
+    float y = sin(orientation) * range * lineNo;
     return placer.Place(unit, indexInLine, lineSize);
 }
 
 UnitPosition SingleLineUnitPlacer::Place(FormationUnit *unit, uint32 index, uint32 count)
 {
     float angle = orientation - M_PI / 2.0f;
-    float x = cos(angle) * sPlayerbotAIConfig.followDistance * ((float)index - (float)count / 2);
-    float y = sin(angle) * sPlayerbotAIConfig.followDistance * ((float)index - (float)count / 2);
+    float x = cos(angle) * range * ((float)index - (float)count / 2);
+    float y = sin(angle) * range * ((float)index - (float)count / 2);
     return UnitPosition(x, y);
 }
 

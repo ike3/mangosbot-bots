@@ -176,8 +176,8 @@ bool SummonAction::Teleport(Player *summoner, Player *player)
         for (double angle = followAngle - M_PI; angle <= followAngle + M_PI; angle += M_PI / 4)
         {
             uint32 mapId = summoner->GetMapId();
-            float x = summoner->GetPositionX() + cos(angle) * sPlayerbotAIConfig.followDistance;
-            float y = summoner->GetPositionY() + sin(angle) * sPlayerbotAIConfig.followDistance;
+            float x = summoner->GetPositionX() + cos(angle) * ai->GetRange("follow");
+            float y = summoner->GetPositionY() + sin(angle) * ai->GetRange("follow");
             float z = summoner->GetPositionZ();
             summoner->UpdateGroundPositionZ(x, y, z);
             if (!summoner->IsWithinLOS(x, y, z + bot->GetCollisionHeight(), true))

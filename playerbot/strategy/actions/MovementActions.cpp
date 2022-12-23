@@ -67,7 +67,7 @@ bool MovementAction::MoveNear(WorldObject* target, float distance)
     {
 #ifdef CMANGOS
         float dist = distance + target->GetObjectBoundingRadius();
-        target->GetNearPoint(bot, x, y, z, bot->GetObjectBoundingRadius(), min(dist, sPlayerbotAIConfig.followDistance), angle);
+        target->GetNearPoint(bot, x, y, z, bot->GetObjectBoundingRadius(), min(dist, ai->GetRange("follow")), angle);
 #endif
 #ifdef MANGOS
         float x = target->GetPositionX() + cos(angle) * distance,
@@ -1100,6 +1100,8 @@ bool MovementAction::IsMovingAllowed()
 
 bool MovementAction::Follow(Unit* target, float distance)
 {
+    if (!distance)
+        distance = ai->GetRange("follow");
     return Follow(target, distance, GetFollowAngle());
 }
 
@@ -1200,7 +1202,7 @@ bool MovementAction::Follow(Unit* target, float distance, float angle)
     if (!target)
         return false;
 
-    if (!bot->InBattleGround() && sServerFacade.IsDistanceLessOrEqualThan(sServerFacade.GetDistance2d(bot, target), sPlayerbotAIConfig.followDistance))
+    if (!bot->InBattleGround() && sServerFacade.IsDistanceLessOrEqualThan(sServerFacade.GetDistance2d(bot, target), ai->GetRange("follow")))
     {
         //ai->TellError("No need to follow");
         return false;
@@ -1263,10 +1265,10 @@ bool MovementAction::Follow(Unit* target, float distance, float angle)
         }
 
         if (!target->IsTaxiFlying())
-           return MoveTo(target, sPlayerbotAIConfig.followDistance);
+           return MoveTo(target, ai->GetRange("follow"));
     }
 
-    if (sServerFacade.IsDistanceLessOrEqualThan(sServerFacade.GetDistance2d(bot, target), sPlayerbotAIConfig.followDistance))
+    if (sServerFacade.IsDistanceLessOrEqualThan(sServerFacade.GetDistance2d(bot, target), ai->GetRange("follow")))
     {
         //ai->TellError("No need to follow");
         return false;
@@ -1430,7 +1432,7 @@ bool MovementAction::Flee(Unit *target)
         vector<Unit*> possibleTargets;
         const float minFleeDistance = 5.0f;
         const float maxFleeDistance = isTarget ? 40.0f : ai->GetRange("spell") * 1.5;
-        const float minRangedTargetDistance = ai->GetRange("spell") / 2 + sPlayerbotAIConfig.followDistance;
+        const float minRangedTargetDistance = ai->GetRange("spell") / 2 + ai->GetRange("follow");
 
         for (GroupReference* gref = group->GetFirstMember(); gref; gref = gref->next())
         {
@@ -1762,7 +1764,7 @@ bool SetBehindTargetAction::isPossible()
 bool MoveOutOfCollisionAction::Execute(Event& event)
 {
     float angle = M_PI * 2000 / (float)urand(1, 1000);
-    float distance = sPlayerbotAIConfig.followDistance;
+    float distance = ai->GetRange("follow");
     return MoveTo(bot->GetMapId(), bot->GetPositionX() + cos(angle) * distance, bot->GetPositionY() + sin(angle) * distance, bot->GetPositionZ());
 }
 

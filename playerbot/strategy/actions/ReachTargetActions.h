@@ -52,7 +52,7 @@ namespace ai
                         chaseDist = (chaseDist - sPlayerbotAIConfig.contactDistance);
                     }
 
-                    if (inLos && isFriend && (distance <= sPlayerbotAIConfig.followDistance))
+                    if (inLos && isFriend && (distance <= ai->GetRange("follow")))
                     {
                         return MoveNear(target, chaseDist);
                     }
