@@ -132,7 +132,10 @@ void PlayerbotFactory::Prepare()
     }*/
 
     if (sServerFacade.UnitIsDead(bot))
+    {
         bot->ResurrectPlayer(1.0f, false);
+        bot->SpawnCorpseBones();
+    }
 
     bot->CombatStop(true);
     /*if (sPlayerbotAIConfig.disableRandomLevels)

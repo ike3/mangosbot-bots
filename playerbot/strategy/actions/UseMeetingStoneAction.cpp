@@ -191,6 +191,7 @@ bool SummonAction::Teleport(Player *summoner, Player *player)
                 if (sServerFacade.UnitIsDead(bot) && sServerFacade.IsAlive(ai->GetMaster()))
                 {
                     bot->ResurrectPlayer(1.0f, false);
+                    bot->SpawnCorpseBones();
                     ai->TellMasterNoFacing("I live, again!");
                 }                
 
