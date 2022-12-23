@@ -248,6 +248,122 @@ bool DebugAction::Execute(Event& event)
 
         return true;
     }
+    else if (text.find("go ") != std::string::npos)
+    {
+        ostringstream out;
+
+        if (text.size() < 4)
+            return false;
+
+        GuidPosition guidP;
+
+        string link = text.substr(3);
+
+        if (!link.empty())
+        {
+            list<ObjectGuid> gos = chat->parseGameobjects(link);
+            if (!gos.empty())
+            {
+                for (auto go : gos)
+                {
+                    guidP = GuidPosition(go);
+                    break;
+                }
+            }
+        }
+
+        if (!guidP)
+            return false;
+
+        if (!guidP.IsGameObject())
+            return false;
+
+        if (guidP.GetWorldObject())
+            out << chat->formatWorldobject(guidP.GetWorldObject());
+
+        out << " (e:" << guidP.GetEntry();
+
+        if (guidP.GetUnit())
+            out << ",level:" << guidP.GetUnit()->GetLevel();
+
+        out << ") ";
+
+        guidP.printWKT(out);
+
+        ai->TellMasterNoFacing(out);
+
+        unordered_map<uint32, string>  types;
+        types[GAMEOBJECT_TYPE_DOOR] = "GAMEOBJECT_TYPE_DOOR";
+        types[GAMEOBJECT_TYPE_BUTTON] = "GAMEOBJECT_TYPE_BUTTON";
+        types[GAMEOBJECT_TYPE_QUESTGIVER] = "GAMEOBJECT_TYPE_QUESTGIVER";
+        types[GAMEOBJECT_TYPE_CHEST] = "GAMEOBJECT_TYPE_CHEST";
+        types[GAMEOBJECT_TYPE_BINDER] = "GAMEOBJECT_TYPE_BINDER";
+        types[GAMEOBJECT_TYPE_GENERIC] = "GAMEOBJECT_TYPE_GENERIC";
+        types[GAMEOBJECT_TYPE_TRAP] = "GAMEOBJECT_TYPE_TRAP";
+        types[GAMEOBJECT_TYPE_CHAIR] = "GAMEOBJECT_TYPE_CHAIR";
+        types[GAMEOBJECT_TYPE_SPELL_FOCUS] = "GAMEOBJECT_TYPE_SPELL_FOCUS";
+        types[GAMEOBJECT_TYPE_TEXT] = "GAMEOBJECT_TYPE_TEXT";
+        types[GAMEOBJECT_TYPE_GOOBER] = "GAMEOBJECT_TYPE_GOOBER";
+        types[GAMEOBJECT_TYPE_TRANSPORT] = "GAMEOBJECT_TYPE_TRANSPORT";
+        types[GAMEOBJECT_TYPE_AREADAMAGE] = "GAMEOBJECT_TYPE_AREADAMAGE";
+        types[GAMEOBJECT_TYPE_CAMERA] = "GAMEOBJECT_TYPE_CAMERA";
+        types[GAMEOBJECT_TYPE_MAP_OBJECT] = "GAMEOBJECT_TYPE_MAP_OBJECT";
+        types[GAMEOBJECT_TYPE_MO_TRANSPORT] = "GAMEOBJECT_TYPE_MO_TRANSPORT";
+        types[GAMEOBJECT_TYPE_DUEL_ARBITER] = "GAMEOBJECT_TYPE_DUEL_ARBITER";
+        types[GAMEOBJECT_TYPE_FISHINGNODE] = "GAMEOBJECT_TYPE_FISHINGNODE";
+        types[GAMEOBJECT_TYPE_SUMMONING_RITUAL] = "GAMEOBJECT_TYPE_SUMMONING_RITUAL";
+        types[GAMEOBJECT_TYPE_MAILBOX] = "GAMEOBJECT_TYPE_MAILBOX";
+        types[GAMEOBJECT_TYPE_AUCTIONHOUSE] = "GAMEOBJECT_TYPE_AUCTIONHOUSE";
+        types[GAMEOBJECT_TYPE_GUARDPOST] = "GAMEOBJECT_TYPE_GUARDPOST";
+        types[GAMEOBJECT_TYPE_SPELLCASTER] = "GAMEOBJECT_TYPE_SPELLCASTER";
+        types[GAMEOBJECT_TYPE_MEETINGSTONE] = "GAMEOBJECT_TYPE_MEETINGSTONE";
+        types[GAMEOBJECT_TYPE_FLAGSTAND] = "GAMEOBJECT_TYPE_FLAGSTAND";
+        types[GAMEOBJECT_TYPE_FISHINGHOLE] = "GAMEOBJECT_TYPE_FISHINGHOLE";
+        types[GAMEOBJECT_TYPE_FLAGDROP] = "GAMEOBJECT_TYPE_FLAGDROP";
+        types[GAMEOBJECT_TYPE_MINI_GAME] = "GAMEOBJECT_TYPE_MINI_GAME";
+        types[GAMEOBJECT_TYPE_LOTTERY_KIOSK] = "GAMEOBJECT_TYPE_LOTTERY_KIOSK";
+        types[GAMEOBJECT_TYPE_CAPTURE_POINT] = "GAMEOBJECT_TYPE_CAPTURE_POINT";
+        types[GAMEOBJECT_TYPE_AURA_GENERATOR] = "GAMEOBJECT_TYPE_AURA_GENERATOR";
+
+        ai->TellMasterNoFacing(types[guidP.GetGameObjectInfo()->type]);
+
+        if (guidP.GetGameObject())
+        {
+            GameObject* object = guidP.GetGameObject();
+
+            GOState state = object->GetGoState();
+
+            ostringstream out;
+
+            out << "state:";
+
+            if (state == GO_STATE_ACTIVE)
+                out << "GO_STATE_ACTIVE";
+            if (state == GO_STATE_READY)
+                out << "GO_STATE_READY";
+            if (state == GO_STATE_ACTIVE_ALTERNATIVE)
+                out << "GO_STATE_ACTIVE_ALTERNATIVE";
+
+            out << (object->IsInUse() ? ", in use" : ", not in use");
+
+            LootState lootState = object->GetLootState();
+
+            out << " lootState:";
+
+            if (lootState == GO_NOT_READY)
+                out << "GO_NOT_READY";
+            if (lootState == GO_READY)
+                out << "GO_READY";
+            if (lootState == GO_ACTIVATED)
+                out << "GO_ACTIVATED";
+            if (lootState == GO_JUST_DEACTIVATED)
+                out << "GO_JUST_DEACTIVATED";
+
+            ai->TellMasterNoFacing(out);
+        }
+
+        return true;
+    }
     else if (text.find("travel ") != std::string::npos)
     {
         WorldPosition botPos = WorldPosition(bot);
