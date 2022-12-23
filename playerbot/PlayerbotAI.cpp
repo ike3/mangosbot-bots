@@ -4218,6 +4218,10 @@ bool ChatHandler::HandleGuildTaskCommand(char* args)
 float PlayerbotAI::GetRange(string type)
 {
     float val = 0;
+
+    if (type == "follow" && bot->GetGroup() && bot->GetGroup()->IsRaidGroup())
+        type = "followraid";
+
     if (aiObjectContext) val = aiObjectContext->GetValue<float>("range", type)->Get();
     if (abs(val) >= 0.1f) return val;
 
@@ -4225,6 +4229,8 @@ float PlayerbotAI::GetRange(string type)
     if (type == "shoot") return sPlayerbotAIConfig.shootDistance;
     if (type == "flee") return sPlayerbotAIConfig.fleeDistance;
     if (type == "heal") return sPlayerbotAIConfig.healDistance;
+    if (type == "follow") return sPlayerbotAIConfig.followDistance;    
+    if (type == "followraid") return sPlayerbotAIConfig.raidFollowDistance;
     return 0;
 }
 
