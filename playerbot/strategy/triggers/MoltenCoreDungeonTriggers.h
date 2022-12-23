@@ -37,7 +37,14 @@ namespace ai
     class MCRuneInSightTrigger : public ValueTrigger
     {
     public:
-        MCRuneInSightTrigger(PlayerbotAI* ai) : ValueTrigger(ai, "mc rune in sight", 1) { qualifier = "and::{has object::go usable filter::entry filter::{gos in sight,mc runes},not::has object::entry filter::{gos close,mc runes}}";}
+        MCRuneInSightTrigger(PlayerbotAI* ai) : ValueTrigger(ai, "mc rune in sight", 1)
+        {
+            qualifier = "and::{"
+                "action possible::use id::17333,"
+                "has object::go usable filter::go trapped filter::entry filter::{gos in sight,mc runes},"
+                "not::has object::entry filter::{gos close,mc runes}"
+                "}";
+        }
     };
 
     class MCRuneCloseTrigger : public ValueTrigger

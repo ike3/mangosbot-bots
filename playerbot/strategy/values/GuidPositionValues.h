@@ -56,7 +56,7 @@ namespace ai
         virtual list<GuidPosition> Calculate();
 
 #ifdef GenerateBotHelp
-        virtual string GetHelpName() { return "go in use filter"; } //Must equal iternal name
+        virtual string GetHelpName() { return "go usable filter"; } //Must equal iternal name
         virtual string GetHelpTypeName() { return "entry"; }
         virtual string GetHelpDescription()
         {
@@ -66,6 +66,23 @@ namespace ai
 #endif 
     };
 
+    class GoTrappedFilterValue : public GuidPositionListCalculatedValue, public Qualified
+    {
+    public:
+        GoTrappedFilterValue(PlayerbotAI* ai, string name = "go trapped filter") : GuidPositionListCalculatedValue(ai, name, 1) {}
+
+        virtual list<GuidPosition> Calculate();
+
+#ifdef GenerateBotHelp
+        virtual string GetHelpName() { return "go trapped filter"; } //Must equal iternal name
+        virtual string GetHelpTypeName() { return "entry"; }
+        virtual string GetHelpDescription()
+        {
+            return "This value will returns only the ObjectGuids that are not trapped.";
+        }
+        virtual vector<string> GetUsedValues() { return { }; }
+#endif 
+    };
 
 
     class GosInSightValue : public GuidPositionListCalculatedValue

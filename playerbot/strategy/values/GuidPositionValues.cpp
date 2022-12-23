@@ -78,6 +78,30 @@ list<GuidPosition> GoUsableFilterValue::Calculate()
     return result;
 }
 
+list<GuidPosition> GoTrappedFilterValue::Calculate()
+{
+    list<GuidPosition> guidList = AI_VALUE(list<GuidPosition>, getQualifier());
+
+    list<GuidPosition> result;
+
+    for (auto guid : guidList)
+    {
+        if (guid.IsGameObject())
+        {
+            if (!guid.GetGameObjectInfo()->GetLinkedGameObjectEntry())
+                result.push_back(guid);
+            else
+            {
+                GameObject* go = guid.GetGameObject();
+                if (go && !go->GetLinkedTrap())
+                    result.push_back(guid);
+            }
+        }
+    }
+
+    return result;
+}
+
 
 
 

@@ -15,7 +15,11 @@ void MoltenCoreDungeonStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& t
 {
     /*
     triggers.push_back(new TriggerNode(
-        "val::and::{has object::go usable filter::entry filter::{gos in sight,mc runes},not::has object::entry filter::{gos close,mc runes}}",//,can use item id::17333",
+        "val::and::{"
+        "action possible::use id::17333,"
+        "has object::go usable filter::go trapped filter::entry filter::{gos in sight,mc runes},"
+        "not::has object::entry filter::{gos close,mc runes}"
+        "}",
         NextAction::array(0, new NextAction("move to::entry filter::{gos in sight,mc runes}", 1.0f), NULL)));
 
     triggers.push_back(new TriggerNode(

@@ -90,6 +90,7 @@
 #include "OperatorValues.h"
 #include "EntryValues.h"
 #include "GuidPositionValues.h"
+#include "EngineValues.h"
 
 namespace ai
 {
@@ -332,9 +333,12 @@ namespace ai
             creators["entry filter"] = &ValueContext::entry_filter;
             creators["range filter"] = &ValueContext::range_filter;
             creators["go usable filter"] = &ValueContext::go_usable_filter;
+            creators["go trapped filter"] = &ValueContext::go_trapped_filter;
             creators["gos in sight"] = &ValueContext::gos_in_sight;
             creators["gos close"] = &ValueContext::gos_close;
-            creators["has object"] = &ValueContext::has_object;            
+            creators["has object"] = &ValueContext::has_object;   
+
+            creators["action possible"] = &ValueContext::action_possible;
         }
 
     private:
@@ -567,8 +571,11 @@ namespace ai
         static UntypedValue* entry_filter(PlayerbotAI* ai) { return new EntryFilterValue(ai); }
         static UntypedValue* range_filter(PlayerbotAI* ai) { return new RangeFilterValue(ai); }
         static UntypedValue* go_usable_filter(PlayerbotAI* ai) { return new GoUsableFilterValue(ai); }
+        static UntypedValue* go_trapped_filter(PlayerbotAI* ai) { return new GoTrappedFilterValue(ai); }
         static UntypedValue* gos_in_sight(PlayerbotAI* ai) { return new GosInSightValue(ai); }
         static UntypedValue* gos_close(PlayerbotAI* ai) { return new GoSCloseValue(ai); }
         static UntypedValue* has_object(PlayerbotAI* ai) { return new HasObjectValue(ai); }
+
+        static UntypedValue* action_possible(PlayerbotAI* ai) { return new ActionPossibleValue(ai); }
     };
 };
