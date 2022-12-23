@@ -22,6 +22,15 @@ bool WhoAction::Execute(Event& event)
     if (!owner)
         return false;
 
+    if (!owner->IsInWorld())
+        return false;
+
+    if (owner->IsStunnedByLogout())
+        return false;
+
+    if (!sObjectMgr.GetPlayer(owner->GetObjectGuid()))
+        return false;
+
     ostringstream out;
     string text = event.getParam();
     if (!text.empty())
