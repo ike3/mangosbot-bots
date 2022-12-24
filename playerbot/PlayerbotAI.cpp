@@ -3773,7 +3773,7 @@ bool PlayerbotAI::AllowActive(ActivityType activityType)
 
     if (priorityBracket.first >= activityPercentage)
         return false;
-    if (priorityBracket.second <= activityPercentage)
+    if (priorityBracket.second <= activityPercentage && priorityBracket.second < 100)
         return true;
 
     float activePerc = (activityPercentage - priorityBracket.first) / (priorityBracket.second - priorityBracket.first);
