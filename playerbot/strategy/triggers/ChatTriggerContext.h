@@ -57,6 +57,8 @@ namespace ai
             creators["accept"] = &ChatTriggerContext::accept;
             creators["home"] = &ChatTriggerContext::home;
             creators["reset ai"] = &ChatTriggerContext::reset_ai;
+            creators["reset strats"] = &ChatTriggerContext::reset_strats;
+            creators["reset values"] = &ChatTriggerContext::reset_values;
             creators["destroy"] = &ChatTriggerContext::destroy;
             creators["emote"] = &ChatTriggerContext::emote;
             creators["buff"] = &ChatTriggerContext::buff;
@@ -203,6 +205,8 @@ namespace ai
         static Trigger* loot_all(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "add all loot"); }
         static Trigger* release(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "release"); }
         static Trigger* reset_ai(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "reset ai"); }
+        static Trigger* reset_strats(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "reset strats"); }
+        static Trigger* reset_values(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "reset values"); }
         static Trigger* spell(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "spell"); }
         static Trigger* ready_check(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "ready check"); }
         static Trigger* give_leader(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "give leader"); }

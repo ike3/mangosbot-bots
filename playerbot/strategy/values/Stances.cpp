@@ -176,6 +176,12 @@ StanceValue::StanceValue(PlayerbotAI* ai) : ManualSetValue<Stance*>(ai, new Near
 {
 }
 
+void StanceValue::Reset()
+{
+    if (value) delete value;
+    value = new NearStance(ai);
+}
+
 string StanceValue::Save()
 {
     return value ? value->getName() : "?";

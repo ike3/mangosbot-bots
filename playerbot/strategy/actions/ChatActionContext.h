@@ -123,6 +123,8 @@ namespace ai
             creators["home"] = &ChatActionContext::home;
             creators["destroy"] = &ChatActionContext::destroy;
             creators["reset ai"] = &ChatActionContext::reset_ai;
+            creators["reset strats"] = &ChatActionContext::reset_strats;
+            creators["reset values"] = &ChatActionContext::reset_values;
             creators["reset ai soft"] = &ChatActionContext::reset_ai_soft;
             creators["buff"] = &ChatActionContext::buff;
             creators["help"] = &ChatActionContext::help;
@@ -261,6 +263,8 @@ namespace ai
         static Action* add_all_loot(PlayerbotAI* ai) { return new AddAllLootAction(ai); }
         static Action* roll(PlayerbotAI* ai) { return new RollAction(ai); }
         static Action* reset_ai(PlayerbotAI* ai) { return new ResetAiAction(ai, true); }
+        static Action* reset_strats(PlayerbotAI* ai) { return new ResetStratsAction(ai); }
+        static Action* reset_values(PlayerbotAI* ai) { return new ResetValuesAction(ai); }
         static Action* reset_ai_soft(PlayerbotAI* ai) { return new ResetAiAction(ai, false); }
         static Action* gossip_hello(PlayerbotAI* ai) { return new GossipHelloAction(ai); }
         static Action* give_leader(PlayerbotAI* ai) { return new GiveLeaderAction(ai); }

@@ -467,6 +467,12 @@ FormationValue::FormationValue(PlayerbotAI* ai) : ManualSetValue<Formation*>(ai,
 {
 }
 
+void FormationValue::Reset()
+{
+    if (value) delete value;
+    value = new NearFormation(ai);
+}
+
 string FormationValue::Save()
 {
     return value ? value->getName() : "?";

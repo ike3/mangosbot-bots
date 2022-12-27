@@ -39,6 +39,7 @@ namespace ai
 	public:
         StanceValue(PlayerbotAI* ai);
         ~StanceValue() { if (value) { delete value; value = NULL; } }
+        virtual void Reset();
         virtual string Save();
         virtual bool Load(string value);
     };
