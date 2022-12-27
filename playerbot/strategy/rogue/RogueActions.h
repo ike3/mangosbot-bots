@@ -4,6 +4,7 @@
 #include "RogueComboActions.h"
 #include "RogueOpeningActions.h"
 #include "RogueFinishingActions.h"
+#include "../../AiFactory.h"
 
 namespace ai
 {
@@ -87,7 +88,24 @@ namespace ai
             else if (!hasStealth)
             {
                 ai->ResetStrategies();
-                //ai->ChangeStrategy("+dps,-stealthed", BotState::BOT_STATE_COMBAT);
+                
+                if (ai->HasStrategy("stealthed", BotState::BOT_STATE_COMBAT))
+                {
+                    if (bot->GetLevel() < 15)
+                        ai->ChangeStrategy("+dps,-stealthed", BotState::BOT_STATE_COMBAT);
+                    else
+                    {
+                        int tab = AiFactory::GetPlayerSpecTab(bot);
+                            if (tab == 0)
+                                ai->ChangeStrategy("+assassin,-stealthed", BotState::BOT_STATE_COMBAT);
+                            else if (tab == 1)
+                                ai->ChangeStrategy("+combat,-stealthed", BotState::BOT_STATE_COMBAT);
+                            else
+                                ai->ChangeStrategy("+subtlety,-stealthed", BotState::BOT_STATE_COMBAT);
+                    }
+
+                    sPlayerbotDbStore.Save(ai);
+                }
             }
             return true;
         }
