@@ -942,7 +942,7 @@ bool BGLeaveAction::Execute(Event& event)
         if (sRandomPlayerbotMgr.IsFreeBot(bot))
             ai->SetMaster(NULL);
 
-        ai->ResetStrategies(!IsRandomBot);
+        ai->ResetStrategies();
         ai->GetAiObjectContext()->GetValue<uint32>("bg type")->Set(NULL);
         ai->GetAiObjectContext()->GetValue<uint32>("bg role")->Set(NULL);
         ai->GetAiObjectContext()->GetValue<uint32>("arena type")->Set(NULL);
@@ -973,7 +973,7 @@ bool BGLeaveAction::Execute(Event& event)
     if (sRandomPlayerbotMgr.IsFreeBot(bot))
         ai->SetMaster(NULL);
 
-    ai->ResetStrategies(!IsRandomBot);
+    ai->ResetStrategies();
     ai->GetAiObjectContext()->GetValue<uint32>("bg type")->Set(NULL);
     ai->GetAiObjectContext()->GetValue<uint32>("bg role")->Set(NULL);
     ai->GetAiObjectContext()->GetValue<uint32>("arena type")->Set(NULL);
@@ -1219,7 +1219,7 @@ bool BGStatusAction::Execute(Event& event)
         packet << uint16(0);
 #endif
         bot->GetSession()->HandleLeaveBattlefieldOpcode(packet);
-        ai->ResetStrategies(!IsRandomBot);
+        ai->ResetStrategies();
         ai->GetAiObjectContext()->GetValue<uint32>("bg type")->Set(NULL);
         ai->GetAiObjectContext()->GetValue<uint32>("bg role")->Set(NULL);
         ai->GetAiObjectContext()->GetValue<uint32>("arena type")->Set(NULL);
@@ -1320,7 +1320,7 @@ bool BGStatusAction::Execute(Event& event)
 #ifdef CMANGOS
             bot->GetSession()->HandleBattlefieldPortOpcode(packet);
 #endif
-            ai->ResetStrategies(!IsRandomBot);
+            ai->ResetStrategies();
             ai->GetAiObjectContext()->GetValue<uint32>("bg type")->Set(NULL);
             ai->GetAiObjectContext()->GetValue<uint32>("bg role")->Set(NULL);
             ai->GetAiObjectContext()->GetValue<uint32>("arena type")->Set(NULL);

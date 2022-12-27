@@ -43,7 +43,7 @@ namespace ai
         }        
 
         if(!aiMaster)
-            ai->ResetStrategies(!sRandomPlayerbotMgr.IsRandomBot(bot));
+            ai->ResetStrategies();
         ai->Reset();
 
         if(group)

@@ -318,7 +318,7 @@ public:
     template<class T>
     T* GetStrategy(string name, BotState type);
     BotState GetState() { return currentState; };
-    void ResetStrategies(bool load = true);
+    void ResetStrategies(bool autoLoad = true);
     void ReInitCurrentEngine();
     void Reset(bool full = false);
     bool IsTank(Player* player);
@@ -478,6 +478,9 @@ public:
     bool CanMove();
     void StopMoving();
     bool IsInRealGuild();
+    void SetPlayerFriend(bool isFriend) {isPlayerFriend = isFriend;}
+    bool IsPlayerFriend() { return isPlayerFriend; }
+    bool HasPlayerRelation();
 
     bool IsStateActive(BotState state) const;
     time_t GetCombatStartTime() const;
@@ -522,6 +525,7 @@ protected:
     BotCheatMask cheatMask = BotCheatMask::none;
     Position jumpDestination = Position();
     uint32 faceTargetUpdateDelay;
+    bool isPlayerFriend = false;
 };
 
 template<typename T>

@@ -7,6 +7,7 @@
 #include "ServerFacade.h"
 #include "TravelMgr.h"
 #include "Chat/ChannelMgr.h"
+#include "Social/SocialMgr.h"
 
 
 class LoginQueryHolder;
@@ -313,15 +314,7 @@ void PlayerbotHolder::OnBotLogin(Player * const bot)
         }
     }
 
-    group = bot->GetGroup();
-    if (group)
-    {
-        ai->ResetStrategies();
-    }
-    else
-    {
-        ai->ResetStrategies(!sRandomPlayerbotMgr.IsRandomBot(bot));
-    }
+    ai->ResetStrategies();
 
     if (master && !master->IsTaxiFlying())
     {
@@ -414,9 +407,19 @@ void PlayerbotHolder::OnBotLogin(Player * const bot)
         }
     }
 
-    if (sPlayerbotAIConfig.instantRandomize && !sPlayerbotAIConfig.disableRandomLevels && sRandomPlayerbotMgr.IsRandomBot(bot) && !bot->GetTotalPlayedTime())
+    if (sRandomPlayerbotMgr.IsRandomBot(bot))
     {
-        sRandomPlayerbotMgr.InstaRandomize(bot);
+        uint32 lowguid = bot->GetObjectGuid().GetCounter();
+        QueryResult* result = CharacterDatabase.PQuery("SELECT 1 FROM character_social WHERE flags='%u' and friend='%d'", SOCIAL_FLAG_FRIEND, lowguid);
+        if (result)
+            bot->GetPlayerbotAI()->SetPlayerFriend(true);
+        else
+            bot->GetPlayerbotAI()->SetPlayerFriend(false);
+
+        if (sPlayerbotAIConfig.instantRandomize && !sPlayerbotAIConfig.disableRandomLevels && !bot->GetTotalPlayedTime())
+        {
+            sRandomPlayerbotMgr.InstaRandomize(bot);
+        }
     }
 }
 

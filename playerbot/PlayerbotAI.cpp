@@ -1852,7 +1852,7 @@ bool PlayerbotAI::HasStrategy(string name, BotState type)
     return false;
 }
 
-void PlayerbotAI::ResetStrategies(bool load)
+void PlayerbotAI::ResetStrategies(bool autoLoad)
 {
     for (uint8 i = 0; i < (uint8)BotState::BOT_STATE_ALL; i++)
     {
@@ -1864,7 +1864,7 @@ void PlayerbotAI::ResetStrategies(bool load)
     AiFactory::AddDefaultNonCombatStrategies(bot, this, engines[(uint8)BotState::BOT_STATE_NON_COMBAT]);
     AiFactory::AddDefaultDeadStrategies(bot, this, engines[(uint8)BotState::BOT_STATE_DEAD]);
     AiFactory::AddDefaultReactionStrategies(bot, this, reactionEngine);
-    if (load) sPlayerbotDbStore.Load(this);
+    if (autoLoad && HasPlayerRelation()) sPlayerbotDbStore.Load(this);
 
     for (uint8 i = 0; i < (uint8)BotState::BOT_STATE_ALL; i++)
     {
@@ -5189,6 +5189,30 @@ bool PlayerbotAI::IsInRealGuild()
         return false;
 
     return !sPlayerbotAIConfig.IsInRandomAccountList(leaderAccount);
+}
+
+bool PlayerbotAI::HasPlayerRelation()
+{
+    if (HasRealPlayerMaster())
+        return true;
+
+    if (IsInRealGuild())
+        return true;
+
+    if (IsPlayerFriend())
+        return true;
+
+    if (!sRandomPlayerbotMgr.IsRandomBot(bot))
+        return true;
+
+    for (auto& p : sRandomPlayerbotMgr.GetPlayers())
+        if (p.second && p.second->GetSocial()->HasFriend(bot->GetObjectGuid()))
+        {
+            SetPlayerFriend(true);
+            return true;
+        }
+
+    return false;
 }
 
 void PlayerbotAI::QueueChatResponse(uint8 msgtype, ObjectGuid guid1, ObjectGuid guid2, std::string message, std::string chanName, std::string name)

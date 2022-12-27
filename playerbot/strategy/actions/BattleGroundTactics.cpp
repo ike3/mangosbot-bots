@@ -5116,10 +5116,9 @@ bool ArenaTactics::Execute(Event& event)
 #ifndef MANGOSBOT_ZERO
     if (!bot->InBattleGround())
     {
-        bool IsRandomBot = sRandomPlayerbotMgr.IsRandomBot(bot->GetGUIDLow());
         ai->ChangeStrategy("-arena", BotState::BOT_STATE_COMBAT);
         ai->ChangeStrategy("-arena", BotState::BOT_STATE_NON_COMBAT);
-        ai->ResetStrategies(!IsRandomBot);
+        ai->ResetStrategies();
         return false;
     }
 
