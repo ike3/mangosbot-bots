@@ -91,6 +91,7 @@ Unit* CastBlessingOnPartyAction::GetTarget()
 
         bool isMelee = member->IsPlayer() ? (!ai->IsRanged((Player*)member) || !member->HasMana()) : true;
         bool isTank = member->IsPlayer() ? (ai->IsTank((Player*)member)) : false;
+        bool isWarrior = member->IsPlayer() ? ((Player*)member)->getClass() == CLASS_WARRIOR : false;
         bool hasBlessing = false; 
         bool foundMember = false;
         for (auto blessing : haveBlessings)
@@ -115,7 +116,7 @@ Unit* CastBlessingOnPartyAction::GetTarget()
             if (!member->HasMana() && blessing == "blessing of wisdom")
                 continue;
 
-            if (isTank && blessing == "blessing of salvation")
+            if ((isTank || isWarrior) && blessing == "blessing of salvation")
                 continue;
 
             if (ai->HasMyAura(blessing, member) || ai->HasMyAura("greater " + blessing, member))
@@ -139,6 +140,7 @@ bool CastBlessingOnPartyAction::Execute(Event& event)
     std::string mainGreatBlessing = "greater " + m_name;
     bool isMelee = !ai->IsRanged((Player*)target) || !target->HasMana();
     bool isTank = target->IsPlayer() ? (ai->IsTank((Player*)target)) : false;
+    bool isWarrior = target->IsPlayer() ? ((Player*)target)->getClass() == CLASS_WARRIOR : false;
 
     uint32 spellId = AI_VALUE2(uint32, "spell id", mainBlessing);
     Unit* mainTarget = AI_VALUE2(Unit*, "party member without my aura", mainBlessing);
@@ -187,7 +189,7 @@ bool CastBlessingOnPartyAction::Execute(Event& event)
         if (!target->HasMana() && blessing == "blessing of wisdom")
             continue;
 
-        if (isTank && blessing == "blessing of salvation")
+        if ((isTank || isWarrior) && blessing == "blessing of salvation")
             continue;
 
         if (!(ai->HasAura(blessing, target) || ai->HasAura("greater " + blessing, target)))
