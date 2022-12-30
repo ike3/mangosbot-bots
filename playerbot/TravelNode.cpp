@@ -1,5 +1,3 @@
-#pragma once
-
 #include "TravelNode.h"
 #include "TravelMgr.h"
 

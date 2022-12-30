@@ -1,6 +1,9 @@
 #pragma once
+#include <string>
 
 class PlayerbotAI;
+
+using namespace std;
 
 namespace ai
 {
@@ -8,7 +11,7 @@ namespace ai
     {
     public:
         PlayerbotAIAware(PlayerbotAI* const ai) : ai(ai) { }
-        virtual std::string getName() { return std::string(); }
+        virtual string getName() { return string(); }
     protected:
         PlayerbotAI* ai;
     };

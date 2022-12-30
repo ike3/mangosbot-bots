@@ -2,7 +2,7 @@
 
 #include "strategy/AiObject.h"
 #include <boost/functional/hash.hpp>
-#include "WorldPosition.h"
+#include "GuidPosition.h"
 
 namespace ai
 {   
@@ -48,7 +48,7 @@ namespace ai
         uint32 getExpireDelay() { return expireDelay; }
         uint32 getCooldownDelay() { return cooldownDelay; }
 
-        virtual Quest const* GetQuestTemplate() { return NULL; }
+        virtual Quest const* GetQuestTemplate() { return nullptr; }
 
         virtual bool isActive(Player* bot) { return false; }
 
@@ -83,7 +83,7 @@ namespace ai
     public:
         NullTravelDestination(uint32 cooldownDelay1 = 5 * 60 * 1000) : TravelDestination() { cooldownDelay = cooldownDelay1;};
 
-        virtual Quest const* GetQuestTemplate() { return NULL; }
+        virtual Quest const* GetQuestTemplate() { return nullptr; }
 
         virtual bool isActive(Player* bot) { return false; }
         
@@ -195,7 +195,7 @@ namespace ai
         virtual bool isActive(Player* bot);
 
         virtual string getName() { return "ExploreTravelDestination"; }
-        virtual int32 getEntry() { return NULL; }
+        virtual int32 getEntry() { return 0; }
         virtual string getTitle() { return title; }
         virtual void setTitle(std::string newTitle) { title = newTitle; }
         virtual uint32 getAreaId() { return areaId; }

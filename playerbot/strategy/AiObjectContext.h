@@ -91,3 +91,23 @@ namespace ai
         NamedObjectContextList<UntypedValue> valueContexts;
     };
 }
+
+
+#define AI_VALUE(type, name) context->GetValue<type>(name)->Get()
+#define AI_VALUE2(type, name, param) context->GetValue<type>(name, param)->Get()
+
+#define AI_VALUE_LAZY(type, name) context->GetValue<type>(name)->LazyGet()
+#define AI_VALUE2_LAZY(type, name, param) context->GetValue<type>(name, param)->LazyGet()
+
+#define SET_AI_VALUE(type, name, value) context->GetValue<type>(name)->Set(value)
+#define SET_AI_VALUE2(type, name, param, value) context->GetValue<type>(name, param)->Set(value)
+#define RESET_AI_VALUE(type, name) context->GetValue<type>(name)->Reset()
+#define RESET_AI_VALUE2(type, name, param) context->GetValue<type>(name, param)->Reset()
+
+#define PAI_VALUE(type, name) player->GetPlayerbotAI()->GetAiObjectContext()->GetValue<type>(name)->Get()
+#define PAI_VALUE2(type, name, param) player->GetPlayerbotAI()->GetAiObjectContext()->GetValue<type>(name, param)->Get()
+#define GAI_VALUE(type, name) sSharedValueContext.getGlobalValue<type>(name)->Get()
+#define GAI_VALUE2(type, name, param) sSharedValueContext.getGlobalValue<type>(name, param)->Get()
+
+#define MEM_AI_VALUE(type, name) dynamic_cast<MemoryCalculatedValue<type>*>(context->GetUntypedValue(name))
+#define LOG_AI_VALUE(type, name) dynamic_cast<LogCalculatedValue<type>*>(context->GetUntypedValue(name))

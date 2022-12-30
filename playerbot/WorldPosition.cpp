@@ -8,8 +8,10 @@
 #include "Map.h"
 #include "vmap/VMapFactory.h"
 #include "MoveMap.h"
+#include "World.h"
 #include "PathFinder.h"
 #include "Grids/CellImpl.h"
+#include "ObjectAccessor.h"
 
 #include <numeric>
 #include <iomanip>

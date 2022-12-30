@@ -35,6 +35,7 @@
 
 #include "TravelMgr.h"
 #include <iomanip>
+#include <float.h>
 
 using namespace ai;
 using namespace MaNGOS;

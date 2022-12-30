@@ -5081,7 +5081,7 @@ void PlayerbotAI::EnchantItemT(uint32 spellid, uint8 slot, Item* item)
    uint32 enchantid = spellInfo->EffectMiscValue[0];
    if (!enchantid)
    {
-      sLog.outError("%s: Invalid enchantid " , enchantid , " report to devs", bot->GetName());
+      sLog.outError("%u: Invalid enchantid %s %s" , enchantid , " report to devs", bot->GetName());
       return;
    }
 
