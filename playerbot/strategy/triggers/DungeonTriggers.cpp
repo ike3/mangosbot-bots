@@ -1,3 +1,5 @@
+#include "botpch.h"
+#include "../../playerbot.h"
 #include "DungeonTriggers.h"
 #include "../values/PositionValue.h"
 

@@ -670,7 +670,8 @@ bool UseItemIdAction::Execute(Event& event)
     {
         itemId = GetItemId();
         target = GetTarget();
-        list<ObjectGuid> gos = chat->parseGameobjects(event.getParam());
+        string params = event.getParam();
+        list<ObjectGuid> gos = chat->parseGameobjects(params);
         if (!gos.empty())
             GameObject* go = ai->GetGameObject(*gos.begin());
     }
@@ -906,7 +907,9 @@ bool UseRandomRecipeAction::Execute(Event& event)
     if (recipeName.empty())
         return false;
 
-    return UseItemAction::Execute(Event(name, recipeName));
+    Event rEvent = Event(name, recipeName);
+
+    return UseItemAction::Execute(rEvent);
 }
 
 bool UseRandomQuestItemAction::isUseful()

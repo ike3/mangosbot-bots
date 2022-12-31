@@ -1,5 +1,7 @@
 #include "DungeonActions.h"
 #include "../values/PositionValue.h"
+#include "../AiObjectContext.h"
+#include "../../PlayerbotAI.h"
 
 using namespace ai;
 

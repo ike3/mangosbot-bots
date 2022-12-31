@@ -2,6 +2,8 @@
 
 #include "../Value.h"
 #include "../NamedObjectContext.h"
+#include "../../../botpch.h"
+#include "../../playerbot.h"
 
 namespace ai
 {

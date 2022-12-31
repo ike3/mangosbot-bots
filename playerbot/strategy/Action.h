@@ -2,6 +2,8 @@
 #include "Event.h"
 #include "Value.h"
 #include "AiObject.h"
+#include "AiObject.h"
+#include "PlayerbotAIConfig.h"
 
 class Unit;
 

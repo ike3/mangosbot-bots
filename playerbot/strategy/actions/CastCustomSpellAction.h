@@ -32,7 +32,7 @@ namespace ai
 
         virtual bool AcceptSpell(const SpellEntry* pSpellInfo)
         {
-            bool isTradeSkill = pSpellInfo->Effect[0] == SPELL_EFFECT_CREATE_ITEM && pSpellInfo->ReagentCount > 0 &&
+            bool isTradeSkill = pSpellInfo->Effect[0] == SPELL_EFFECT_CREATE_ITEM && pSpellInfo->ReagentCount[0] > 0 &&
 #ifdef MANGOSBOT_ZERO
                 pSpellInfo->School == 0;
 #else
@@ -57,7 +57,7 @@ namespace ai
         CraftRandomItemAction(PlayerbotAI* ai) : CastRandomSpellAction(ai, "craft random item") { MultiCast = true; }
         virtual bool AcceptSpell(const SpellEntry* pSpellInfo) 
         { 
-            return pSpellInfo->Effect[0] == SPELL_EFFECT_CREATE_ITEM && pSpellInfo->ReagentCount > 0 && 
+            return pSpellInfo->Effect[0] == SPELL_EFFECT_CREATE_ITEM && pSpellInfo->ReagentCount[0] > 0 && 
 #ifdef MANGOSBOT_ZERO
             pSpellInfo->School == 0; 
 #else
@@ -101,7 +101,7 @@ namespace ai
 
         virtual bool AcceptSpell(const SpellEntry* pSpellInfo)
         {
-            return pSpellInfo->Effect[0] == SPELL_EFFECT_ENCHANT_ITEM && pSpellInfo->ReagentCount > 0;
+            return pSpellInfo->Effect[0] == SPELL_EFFECT_ENCHANT_ITEM && pSpellInfo->ReagentCount[0] > 0;
         }
 
         virtual uint32 GetSpellPriority(const SpellEntry* pSpellInfo) {

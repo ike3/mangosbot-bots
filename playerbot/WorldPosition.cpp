@@ -1,5 +1,3 @@
-#pragma once
-
 #include "WorldPosition.h"
 #include "GuidPosition.h"
 #include "TravelMgr.h"
