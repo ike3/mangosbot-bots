@@ -1340,8 +1340,6 @@ void PlayerbotFactory::InitEquipment(bool incremental)
                         if (newItems.size())
                             ids.insert(ids.begin(), newItems.begin(), newItems.end());
 
-                        uint32 properLevel = 0;
-
                         for (auto id : ids)
                         {
                             ItemPrototype const* proto = sObjectMgr.GetItemPrototype(id);
