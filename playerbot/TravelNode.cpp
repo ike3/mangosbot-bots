@@ -713,7 +713,7 @@ void TravelNode::print(bool printFailed)
 }
 
 //Attempts to move ahead of the path.
-bool TravelPath::makeShortCut(WorldPosition startPos, float maxDist)
+bool TravelPath::makeShortCut(WorldPosition startPos, float maxDist, Unit* bot)
 {
     if (getPath().empty())
         return false;
@@ -778,7 +778,7 @@ bool TravelPath::makeShortCut(WorldPosition startPos, float maxDist)
         return true;
     }
 
-    vector<WorldPosition> toPath = startPos.getPathTo(beginPos, NULL);
+    vector<WorldPosition> toPath = startPos.getPathTo(beginPos, bot);
 
     //We can not reach the new begin position. Follow the complete path.
     if (!beginPos.isPathTo(toPath))
@@ -1398,7 +1398,7 @@ TravelNodeRoute TravelNodeMap::getRoute(WorldPosition startPos, WorldPosition en
         {
             //Check if the bot can actually walk to this start position.
             newStartPath = startPath;
-            if (startNodePosition.cropPathTo(newStartPath, maxStartDistance) || startNode->getPosition()->isPathTo(newStartPath = startPos.getPathTo(startNodePosition, nullptr), maxStartDistance))
+            if (startNodePosition.cropPathTo(newStartPath, maxStartDistance) || startNode->getPosition()->isPathTo(newStartPath = startPos.getPathTo(startNodePosition, bot), maxStartDistance))
             {
                 startPath = newStartPath;
                 return route;
@@ -1445,7 +1445,7 @@ TravelPath TravelNodeMap::getFullPath(WorldPosition startPos, WorldPosition endP
     PlayerbotAI* ai = bot->GetPlayerbotAI();
     vector<WorldPosition> beginPath, endPath;
 
-    beginPath = endPos.getPathFromPath({ startPos }, nullptr, 40);
+    beginPath = endPos.getPathFromPath({ startPos }, bot, 40);
 
     if (endPos.isPathTo(beginPath))
         return TravelPath(beginPath);
@@ -1474,7 +1474,8 @@ TravelPath TravelNodeMap::getFullPath(WorldPosition startPos, WorldPosition endP
         }
     }
 
-    endPath = route.getNodes().back()->getPosition()->getPathTo(endPos, nullptr);
+    //endPath = route.getNodes().back()->getPosition()->getPathTo(endPos, bot);
+    endPath = { *route.getNodes().back()->getPosition(),endPos };
     movePath = route.buildPath(beginPath, endPath);
 
     route.cleanTempNodes();
