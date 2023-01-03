@@ -5,8 +5,6 @@
 class Player;
 class PlayerbotAI;
 
-using namespace std;
-
 namespace ai
 {
     class AiObjectContext;

@@ -1,11 +1,5 @@
 #pragma once
 
-std::vector<std::string> split(const std::string &s, char delim);
-void split(std::vector<std::string>& dest, const std::string& str, const char* delim);
-#ifndef WIN32
-int strcmpi(std::string s1, std::string s2);
-#endif
-
 #include "Spell.h"
 #include "WorldPacket.h"
 #include "LootMgr.h"
@@ -30,3 +24,9 @@ int strcmpi(std::string s1, std::string s2);
 #include "PlayerbotDbStore.h"
 
 #define MANGOSBOT_VERSION 2
+
+std::vector<std::string> split(std::string const& s, char delim);
+void split(std::vector<std::string>& dest, std::string const& str, char const* delim);
+#ifndef WIN32
+int strcmpi(std::string s1, std::string s2);
+#endif

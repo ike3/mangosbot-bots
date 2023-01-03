@@ -1274,7 +1274,10 @@ void PlayerbotFactory::InitEquipment(bool incremental)
             quality--;
         }
 
+        quality = ITEM_QUALITY_POOR;
+
         uint32 attempts = 0;
+        uint32 searchLevel = level;
         do
         {
             // pick random shirt
@@ -1329,9 +1332,31 @@ void PlayerbotFactory::InitEquipment(bool incremental)
                 vector<uint32> ids;
                 for (uint32 q = quality; q < ITEM_QUALITY_ARTIFACT; ++q)
                 {
-                    vector<uint32> newItems = sRandomItemMgr.Query(level, bot->getClass(), uint8(specId), slot, q);
-                    if (newItems.size())
-                        ids.insert(ids.begin(), newItems.begin(), newItems.end());
+                    uint32 searchLevel = level;
+                    bool hasProperLevel = false;
+                    while (!hasProperLevel && searchLevel > 0)
+                    {
+                        vector<uint32> newItems = sRandomItemMgr.Query(searchLevel, bot->getClass(), uint8(specId), slot, q);
+                        if (newItems.size())
+                            ids.insert(ids.begin(), newItems.begin(), newItems.end());
+
+                        for (auto id : ids)
+                        {
+                            ItemPrototype const* proto = sObjectMgr.GetItemPrototype(id);
+
+                            if (proto->ItemLevel > sPlayerbotAIConfig.randomGearMaxLevel)
+                                continue;
+
+                            hasProperLevel = true;
+                            break;
+                        }
+
+                        if (!hasProperLevel)
+                        {
+                            ids.clear();
+                            searchLevel--;
+                        }
+                    }
 
                     // add one hand weapons for tanks
                     if ((specId == 3 || specId == 5) && slot == EQUIPMENT_SLOT_MAINHAND)

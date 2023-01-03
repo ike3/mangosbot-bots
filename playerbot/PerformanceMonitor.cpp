@@ -150,7 +150,7 @@ void PerformanceMonitor::PrintStats(bool perTick, bool fullStack)
             }
 
             if (i->first != PERF_MON_TOTAL)
-                sLog.outString("%7.3f%% %10.3fs | %6u .. %6u (%9.4f of %10u) - %s    : %s"
+                sLog.outString("%7.3f%% %10.3fs | %6u .. %6u (%9.4d of %10u) - %s    : %s"
                     , tPerc
                     , tTime / 1000.0f
                     , tMin

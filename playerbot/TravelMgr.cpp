@@ -1,6 +1,3 @@
-#pragma once
-
-
 #include "TravelMgr.h"
 #include <numeric>
 #include <iomanip>
@@ -8,6 +5,7 @@
 #include "strategy/values/SharedValueContext.h"
 #include "PathFinder.h"
 #include "TravelNode.h"
+#include "PlayerbotAI.h"
 
 using namespace ai;
 using namespace MaNGOS;

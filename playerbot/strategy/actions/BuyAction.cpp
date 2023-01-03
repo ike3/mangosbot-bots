@@ -1,5 +1,3 @@
-#pragma once
-
 #include "botpch.h"
 #include "../../playerbot.h"
 #include "BuyAction.h"

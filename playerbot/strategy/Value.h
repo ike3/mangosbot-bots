@@ -57,7 +57,7 @@ namespace ai
             {
                 lastCheckTime = now;
 
-                PerformanceMonitorOperation *pmo = sPerformanceMonitor.start(PERF_MON_VALUE, this->getName(), this->ai);
+                PerformanceMonitorOperation *pmo = sPerformanceMonitor.start(PERF_MON_VALUE, AiNamedObject::getName(), this->ai);
                 value = Calculate();
                 if (pmo) pmo->finish();
             }
@@ -93,7 +93,7 @@ namespace ai
             {
                 this->lastCheckTime = now;
 
-                PerformanceMonitorOperation* pmo = sPerformanceMonitor.start(PERF_MON_VALUE, this->getName(), this->ai);
+                PerformanceMonitorOperation* pmo = sPerformanceMonitor.start(PERF_MON_VALUE, AiNamedObject::getName(), this->ai);
                 this->value = this->Calculate();
                 if (pmo) pmo->finish();
             }

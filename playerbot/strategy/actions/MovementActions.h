@@ -1,12 +1,13 @@
 #pragma once
 
 #include "../Action.h"
+#include "../NamedObjectContext.h"
 #include "../../PlayerbotAIConfig.h"
 #include "../../TravelNode.h"
 
 namespace ai
 {
-    class MovementAction : public Action 
+    class MovementAction : public Action
     {
     public:
         MovementAction(PlayerbotAI* ai, string name) : Action(ai, name) {}
@@ -32,7 +33,7 @@ namespace ai
         void UpdateMovementState();
 
         virtual bool isPossible() override;
-        
+
         void CreateWp(Player* wpOwner, float x, float y, float z, float o, uint32 entry, bool important = false);
         float GetAngle(const float x1, const float y1, const float x2, const float y2);
 
@@ -47,8 +48,8 @@ namespace ai
         FleeAction(PlayerbotAI* ai, float distance = sPlayerbotAIConfig.spellDistance) : MovementAction(ai, "flee"), distance(distance) {}
         virtual bool Execute(Event& event);
 
-	private:
-		float distance;
+    private:
+        float distance;
     };
 
     class FleeWithPetAction : public MovementAction

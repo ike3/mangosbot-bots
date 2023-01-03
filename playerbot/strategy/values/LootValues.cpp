@@ -251,7 +251,7 @@ bool ShouldLootObject::Calculate()
 
 void ActiveRolls::CleanUp(Player* bot, LootRollMap& rollMap, ObjectGuid guid, uint32 slot)
 {
-	for (auto& roll = rollMap.begin(); roll != rollMap.end();)
+	for (auto roll = rollMap.begin(); roll != rollMap.end();)
 	{
 		if (guid && roll->first != guid)
 		{

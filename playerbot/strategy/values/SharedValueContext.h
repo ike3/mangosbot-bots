@@ -3,6 +3,7 @@
 #include "PvpValues.h"
 #include "QuestValues.h"
 #include "TrainerValues.h"
+#include "../../PlayerbotAI.h"
 
 namespace ai
 {

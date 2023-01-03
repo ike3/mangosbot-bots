@@ -1,5 +1,8 @@
 #pragma once
+#include "botpch.h"
+#include "../../playerbot.h"
 #include "../Value.h"
+
 
 namespace ai
 {

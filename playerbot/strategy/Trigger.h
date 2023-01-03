@@ -16,9 +16,10 @@ namespace ai
     class Trigger : public AiNamedObject
 	{
 	public:
-        Trigger(PlayerbotAI* ai, string name = "trigger", int checkInterval = 1) : AiNamedObject(ai, name), triggered(false) {
+        Trigger(PlayerbotAI* ai, string name = "trigger", int checkInterval = 1) : AiNamedObject(ai, name) {
+            this->triggered = false;
 			this->checkInterval = checkInterval;
-			lastCheckTime = time(0) - rand() % checkInterval;
+            this->lastCheckTime = time(0) - rand() % checkInterval;
 		}
         virtual ~Trigger() {}
 
@@ -30,7 +31,7 @@ namespace ai
         {
             this->param = param;
             this->owner = owner;
-            triggered = true;
+            this->triggered = true;
         }
         virtual bool IsActive() { return false; }
         virtual NextAction** getHandlers() { return NULL; }
