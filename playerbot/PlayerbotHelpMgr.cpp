@@ -294,6 +294,8 @@ void PlayerbotHelpMgr::GenerateStrategyHelp()
 
         std::sort(stratLinks.begin(), stratLinks.end());
 
+        if (botHelpText["list:" + className + " strategy"].m_templateText != " strategies : \n" + makeList(stratLinks))
+            botHelpText["list:" + className + " strategy"].m_templateChanged = true;
         botHelpText["list:" + className + " strategy"].m_templateText = className + " strategies : \n" + makeList(stratLinks);
     }
 }
