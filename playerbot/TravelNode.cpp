@@ -1016,16 +1016,13 @@ TravelPath TravelNodeRoute::buildPath(vector<WorldPosition> pathToStart, vector<
             if (!nodePath || !nodePath->getComplete()) //If we can not build a path just try to move to the node.
             {
                 travelPath.addPoint(*prevNode->getPosition(), PathNodeType::NODE_NODE);
-                prevNode = node;
-                continue;
             }
-
-            if (nodePath->getPathType() == TravelNodePathType::areaTrigger) //Teleport to next node.
+            else if (nodePath->getPathType() == TravelNodePathType::areaTrigger) //Teleport to next node.
             {
                 travelPath.addPoint(*prevNode->getPosition(), PathNodeType::NODE_AREA_TRIGGER, nodePath->getPathObject()); //Entry point
                 travelPath.addPoint(*node->getPosition(), PathNodeType::NODE_AREA_TRIGGER, nodePath->getPathObject());     //Exit point
             }
-            if (nodePath->getPathType() == TravelNodePathType::staticPortal) //Teleport to next node.
+            else if (nodePath->getPathType() == TravelNodePathType::staticPortal) //Teleport to next node.
             {
                 travelPath.addPoint(*prevNode->getPosition(), PathNodeType::NODE_STATIC_PORTAL, nodePath->getPathObject()); //Entry point
                 travelPath.addPoint(*node->getPosition(), PathNodeType::NODE_STATIC_PORTAL, nodePath->getPathObject());     //Exit point
