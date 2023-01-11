@@ -110,6 +110,8 @@ bool RpgEmoteAction::Execute(Event& event)
     else if(unit && !bot->GetNPCIfCanInteractWith(rpg->guidP(), UNIT_NPC_FLAG_QUESTGIVER) && AI_VALUE(TravelTarget*, "travel target")->getEntry() == 620)
         rpg->AfterExecute(true,false, "rpg emote");
 
+    DoDelay();
+
     return true;
 }
 
@@ -167,6 +169,8 @@ bool RpgTaxiAction::Execute(Event& event)
 
     rpg->AfterExecute();
 
+    DoDelay();
+
     return true;
 }
 
@@ -188,6 +192,8 @@ bool RpgDiscoverAction::Execute(Event& event)
         return false;
 
     rpg->AfterExecute(true, true);
+
+    DoDelay();
 
     return bot->GetSession()->SendLearnNewTaxiNode(flightMaster);    
 }
@@ -215,6 +221,8 @@ bool RpgHealAction::Execute(Event& event)
     }
 
     rpg->AfterExecute(true, false);
+
+    DoDelay();
 
     return retVal;
 }
@@ -298,6 +306,8 @@ bool RpgTradeUsefulAction::Execute(Event& event)
     }
 
     rpg->AfterExecute(isTrading, true, isTrading ? "rpg trade useful" : "rpg");
+
+    DoDelay();
 
     return isTrading;
 }
