@@ -13,7 +13,7 @@ namespace ai
         virtual bool ProcessQuest(Quest const* quest, WorldObject* questGiver);
 
     private:        
-        void TurnInQuest(Quest const* quest, WorldObject* questGiver, ostringstream& out);
+        bool TurnInQuest(Quest const* quest, WorldObject* questGiver, ostringstream& out);
         void RewardNoItem(Quest const* quest, WorldObject* questGiver, ostringstream& out);
         void RewardSingleItem(Quest const* quest, WorldObject* questGiver, ostringstream& out);
         set<uint32> BestRewards(Quest const* quest);

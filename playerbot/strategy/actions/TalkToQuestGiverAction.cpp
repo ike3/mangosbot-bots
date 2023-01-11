@@ -41,7 +41,7 @@ bool TalkToQuestGiverAction::ProcessQuest(Quest const* quest, WorldObject* quest
 #ifdef MANGOS
     case QUEST_STATUS_FORCE_COMPLETE:
 #endif
-        TurnInQuest(quest, questGiver, out);
+        isCompleted |= TurnInQuest(quest, questGiver, out);
         break;
     case QUEST_STATUS_INCOMPLETE:
         out << "|cffff0000Incompleted|r";
@@ -61,12 +61,12 @@ bool TalkToQuestGiverAction::ProcessQuest(Quest const* quest, WorldObject* quest
     return isCompleted;
 }
 
-void TalkToQuestGiverAction::TurnInQuest(Quest const* quest, WorldObject* questGiver, ostringstream& out) 
+bool TalkToQuestGiverAction::TurnInQuest(Quest const* quest, WorldObject* questGiver, ostringstream& out) 
 {
     uint32 questID = quest->GetQuestId();
         
     if (bot->GetQuestRewardStatus(questID))
-        return;
+        return false;
 
     bot->PlayDistanceSound(621);
 
@@ -79,6 +79,8 @@ void TalkToQuestGiverAction::TurnInQuest(Quest const* quest, WorldObject* questG
     else {
         RewardMultipleItem(quest, questGiver, out);
     }
+
+    return true;
 }
 
 void TalkToQuestGiverAction::RewardNoItem(Quest const* quest, WorldObject* questGiver, ostringstream& out) 

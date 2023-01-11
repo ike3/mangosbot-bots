@@ -113,16 +113,16 @@ namespace ai
     {
     public:
         RpgStartQuestAction(PlayerbotAI* ai, string name = "rpg start quest") : RpgSubAction(ai, name) {}
-
+        virtual bool Execute(Event& event) { rpg->BeforeExecute();  bool doAction = ai->DoSpecificAction(ActionName(), ActionEvent(event), true); rpg->AfterExecute(doAction, true, ""); DoDelay(); return doAction; }
     private:
         virtual string ActionName() { return "accept all quests"; }
         virtual Event ActionEvent(Event event) {WorldPacket p(CMSG_QUESTGIVER_ACCEPT_QUEST); p << rpg->guid(); p.rpos(0);  return  Event("rpg action", p); }
     };
 
-    class RpgEndQuestAction : public RpgSubAction
+    class RpgEndQuestAction : public RpgStartQuestAction
     {
     public:
-        RpgEndQuestAction(PlayerbotAI* ai, string name = "rpg end quest") : RpgSubAction(ai, name) {}
+        RpgEndQuestAction(PlayerbotAI* ai, string name = "rpg end quest") : RpgStartQuestAction(ai, name) {}
 
     private:
         virtual string ActionName() { return "talk to quest giver"; }
