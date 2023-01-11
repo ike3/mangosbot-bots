@@ -2032,6 +2032,41 @@ void RandomPlayerbotMgr::PrepareTeleportCache()
 	}
 }
 
+void RandomPlayerbotMgr::PrintTeleportCache()
+{
+    sPlayerbotAIConfig.openLog("telecache.csv", "w");
+
+    for (auto l : sRandomPlayerbotMgr.locsPerLevelCache)
+    {
+        uint32 level = l.first;
+        for (auto p : l.second)
+        {
+            ostringstream out;
+            out << level << ",";
+            WorldPosition(p).printWKT(out);
+            out << "LEVEL" << ",0";
+            sPlayerbotAIConfig.log("telecache.csv", out.str().c_str());
+        }
+    }
+
+    for (auto r : sRandomPlayerbotMgr.rpgLocsCacheLevel)
+    {
+        uint32 race =  r.first;
+        for (auto l : r.second)
+        {
+            uint32 level = l.first;
+            for (auto p : l.second)
+            {
+                ostringstream out;
+                out << level << ",";
+                WorldPosition(p).printWKT(out);
+                out << "RPG" << "," << race;
+                sPlayerbotAIConfig.log("telecache.csv", out.str().c_str());
+            }
+        }
+    }
+}
+
 void RandomPlayerbotMgr::RandomTeleportForLevel(Player* bot, bool activeOnly)
 {
     if (bot->InBattleGround())

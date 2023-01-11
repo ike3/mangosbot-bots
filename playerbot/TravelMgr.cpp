@@ -1925,6 +1925,11 @@ void TravelMgr::LoadQuestTravelTable()
         }
     }
 
+    if (sPlayerbotAIConfig.hasLog("telecache.csv"))
+    {
+        sRandomPlayerbotMgr.PrintTeleportCache();
+    }
+
     /*
     bool printStrategyMap = false;
     if (printStrategyMap && sPlayerbotAIConfig.hasLog("strategy.csv"))

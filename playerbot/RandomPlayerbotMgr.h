@@ -141,6 +141,8 @@ class RandomPlayerbotMgr : public PlayerbotHolder
         float getActivityPercentage() { return activityMod * 100.0f; }
         void setActivityPercentage(float percentage) { activityMod = percentage / 100.0f; }
 
+        void PrintTeleportCache();
+
         bool arenaTeamsDeleted, guildsDeleted = false;
 
         std::mutex m_ahActionMutex;
