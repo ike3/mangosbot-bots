@@ -12,130 +12,151 @@ uint64 extractGuid(WorldPacket& packet);
 
 bool CheckMountStateAction::Execute(Event& event)
 {
-    bool noattackers = !AI_VALUE(bool, "has attackers");
-    bool enemy = AI_VALUE(bool, "has enemy player targets") || AI_VALUE(Unit*, "dps target");
-    float distToTarget = AI_VALUE2(float, "distance", "current target");
-    bool targetMoving = AI_VALUE2(bool, "moving", "current target");
+    Player* groupMaster = ai->GetGroupMaster();
+
+    bool hasAttackers = AI_VALUE(bool, "has attackers");
+    bool hasEnemy = AI_VALUE(bool, "has enemy player targets") || AI_VALUE(Unit*, "dps target");
     TravelTarget* travelTarget = AI_VALUE(TravelTarget*, "travel target");
-    bool fartarget = enemy && sServerFacade.IsDistanceGreaterThan(distToTarget, 40.0f);
 
     bool canFly = CanFly();
-    bool attackdistance = false;
-    bool chasedistance = false;
-    float attack_distance = 35.0f;
 
-    switch (bot->getClass())
+    bool farFromMaster = false;
+
+    if(groupMaster)
+        farFromMaster = bot->GetMapId() != groupMaster->GetMapId() || bot->GetDistance(groupMaster) > sPlayerbotAIConfig.sightDistance;
+
+    bool canAttackTarget = false;
+    bool shouldChaseTarget = false;
+    bool farFromTarget = false;
+
+    if (hasEnemy)
     {
-    case CLASS_WARRIOR:
-    case CLASS_PALADIN:
-        attack_distance = 10.0f;
-        break;
-    case CLASS_ROGUE:
-        attack_distance = 50.0f;
-        break;
-    }
-    /*if (enemy)
-        attack_distance /= 2;*/
-
-    if (ai->IsHeal(bot) || ai->IsRanged(bot))
-        attack_distance = 40.0f;
-
-    if (enemy)
-    {
-        attackdistance = sServerFacade.IsDistanceLessThan(distToTarget, attack_distance);
-        chasedistance = sServerFacade.IsDistanceGreaterThan(distToTarget, 45.0f) && targetMoving;
+        float distToTarget = AI_VALUE2(float, "distance", "current target");
+        canAttackTarget = sServerFacade.IsDistanceLessThan(distToTarget, GetAttackDistance());
+        shouldChaseTarget = sServerFacade.IsDistanceGreaterThan(distToTarget, 45.0f) && AI_VALUE2(bool, "moving", "current target");
+        farFromTarget = sServerFacade.IsDistanceGreaterThan(distToTarget, 40.0f);
     }
 
-    Player* master = GetMaster();
-    if (master != nullptr && master != bot && !bot->InBattleGround())
+    //Mount up in battle grounds
+    if (bot->InBattleGround())
     {
-        if (!bot->GetGroup() || bot->GetGroup()->GetLeaderGuid() != master->GetObjectGuid())
-            return false;
-
-        bool farFromMaster = bot->GetMapId() != master->GetMapId() ||  sServerFacade.GetDistance2d(bot, master) > sPlayerbotAIConfig.sightDistance;
-        if (master->IsMounted() && !bot->IsMounted() && noattackers)
+        if (!canAttackTarget)
         {
-            return Mount();
-        }
-
-        if (!bot->IsMounted() && (chasedistance || (farFromMaster && ai->HasStrategy("follow", BotState::BOT_STATE_NON_COMBAT))) && !bot->IsInCombat() && (canFly))
-            return Mount();
-
-        if (!bot->IsFlying() && ((!farFromMaster && !master->IsMounted()) || attackdistance) && bot->IsMounted())
-        {
-            WorldPacket emptyPacket;
-            bot->GetSession()->HandleCancelMountAuraOpcode(emptyPacket);
-            return true;
-        }
-        return false;
-    }
-
-    if (bot->InBattleGround() && !attackdistance && (noattackers || fartarget) && !bot->IsInCombat() && !bot->IsMounted())
-    {
-        if (bot->GetBattleGroundTypeId() == BattleGroundTypeId::BATTLEGROUND_WS)
-        {
-            BattleGroundWS *bg = (BattleGroundWS*)ai->GetBot()->GetBattleGround();
-
-            if (bot->HasAura(23333) || bot->HasAura(23335))
+            if (!hasAttackers || (farFromTarget && !bot->IsInCombat()))
             {
-                return false;
+                if (CanMountInBg())
+                {
+                    return Mount();
+                }
             }
-#ifdef MANGOSBOT_ZERO
-            //check near A Flag
-            uint32 lowguid = 90000;
-            uint32 id = 179830;
-            GameObject* AllianceflagStand = bg->GetBgMap()->GetGameObject(ObjectGuid(HIGHGUID_GAMEOBJECT, id, lowguid));
-
-            if (bot->IsWithinDistInMap(AllianceflagStand, 3.0f))
-                return false;
-
-            //check near H Flag
-            lowguid = 90001;
-            id = 179831;
-            GameObject* HordeflagStand = bg->GetBgMap()->GetGameObject(ObjectGuid(HIGHGUID_GAMEOBJECT, id, lowguid));
-
-            if (bot->IsWithinDistInMap(HordeflagStand, 3.0f))
-                return false;
-#endif
-            return Mount();
         }
+    }
+
+    //Unmounted when able to attack target
+    if (canAttackTarget)
+    {
+        return UnMount();
+    }
+
+    //No more logic needed in bg.
+    if (bot->InBattleGround())
+        return false;
+
+    //Chase to current target.
+    if (!canAttackTarget && (farFromTarget || shouldChaseTarget))
+    {
         return Mount();
     }
 
-    if (!bot->InBattleGround() && !bot->IsMounted() && !ai->IsStateActive(BotState::BOT_STATE_COMBAT))
+    //Following master and close to master that is unmounted.
+    if (ai->HasStrategy("follow", BotState::BOT_STATE_NON_COMBAT) && groupMaster && groupMaster != bot && !farFromMaster && !CurrentMountSpeed(groupMaster))
     {
-        GuidPosition unit = AI_VALUE(GuidPosition, "rpg target");
-        if (unit)
+        return UnMount();
+    }
+
+    //Doing stuff nearby.
+    if (travelTarget->isWorking())
+    {
+        return UnMount();
+    }
+
+    //Rping nearby.
+    if (AI_VALUE(GuidPosition, "rpg target") && sServerFacade.IsDistanceLessThan(AI_VALUE2(float, "distance", "rpg target"), sPlayerbotAIConfig.farDistance))
+    {
+        return UnMount();
+    }
+
+    if (ai->HasStrategy("follow", BotState::BOT_STATE_NON_COMBAT) && groupMaster)
+    {
+        //Mounting with master.
+        if (CurrentMountSpeed(groupMaster) && !hasAttackers)
         {
-            if (sServerFacade.IsDistanceGreaterThan(AI_VALUE2(float, "distance", "rpg target"), sPlayerbotAIConfig.sightDistance) && noattackers && !enemy)
-                return Mount();
+            return Mount();
         }
 
-        if (!travelTarget->isTraveling() && ((!AI_VALUE(list<ObjectGuid>, "possible rpg targets").empty()) && noattackers && !enemy) && urand(0, 100) > 50)
+        //Mounting to move to master.
+        if (farFromMaster && !bot->IsInCombat())
+        {
             return Mount();
-
-        if (travelTarget->isTraveling() && travelTarget->distance(bot) > sPlayerbotAIConfig.farDistance && !enemy && AI_VALUE(bool, "can move around"))
-            return Mount();
+        }
     }
 
-    if (!bot->IsMounted() && !attackdistance && (fartarget || chasedistance))
-        return Mount();
-
-    if ((!bot->IsFlying() || WorldPosition(bot).currentHeight() < 10.0f) && attackdistance && bot->IsMounted() && (enemy || (travelTarget->isTraveling()) || (!noattackers && sServerFacade.IsInCombat(bot))))
+    if (!ai->IsStateActive(BotState::BOT_STATE_COMBAT) && !hasEnemy)
     {
-        WorldPacket emptyPacket;
-        bot->GetSession()->HandleCancelMountAuraOpcode(emptyPacket);
-        return true;
-    }
+        if (travelTarget->isTraveling() && AI_VALUE(bool, "can move around"))
+        {
+            //Mounting to travel.
+            return Mount();
+        }
+        else if (!hasAttackers)
+        {
+            //Mounting to move to rpg target.
+            if (AI_VALUE(GuidPosition, "rpg target") && sServerFacade.IsDistanceGreaterThan(AI_VALUE2(float, "distance", "rpg target"), sPlayerbotAIConfig.sightDistance))
+            {
+                return Mount();
+            }
 
-    if (!bot->InBattleGround() && (!bot->IsFlying() || WorldPosition(bot).currentHeight() < 10.0f) && bot->IsMounted() && (travelTarget->isWorking() || sServerFacade.IsDistanceLessThan(AI_VALUE2(float, "distance", "rpg target"), sPlayerbotAIConfig.farDistance)))
-    {
-        WorldPacket emptyPacket;
-        bot->GetSession()->HandleCancelMountAuraOpcode(emptyPacket);
-        return true;
+            //Mounting in safe place.
+            if (!AI_VALUE(list<ObjectGuid>, "possible rpg targets").empty() && urand(0, 100) > 50)
+            {
+                return Mount();
+            }
+        }
     }
 
     return false;
+}
+
+bool CheckMountStateAction::CanMountInBg()
+{
+    //Do not mount with or near flag.
+    if (bot->GetBattleGroundTypeId() == BattleGroundTypeId::BATTLEGROUND_WS)
+    {
+        BattleGroundWS* bg = (BattleGroundWS*)ai->GetBot()->GetBattleGround();
+
+        if (bot->HasAura(23333) || bot->HasAura(23335))
+        {
+            return false;
+        }
+#ifdef MANGOSBOT_ZERO
+        //check near A Flag
+        uint32 lowguid = 90000;
+        uint32 id = 179830;
+        GameObject* AllianceflagStand = bg->GetBgMap()->GetGameObject(ObjectGuid(HIGHGUID_GAMEOBJECT, id, lowguid));
+
+        if (bot->IsWithinDistInMap(AllianceflagStand, 3.0f))
+            return false;
+
+        //check near H Flag
+        lowguid = 90001;
+        id = 179831;
+        GameObject* HordeflagStand = bg->GetBgMap()->GetGameObject(ObjectGuid(HIGHGUID_GAMEOBJECT, id, lowguid));
+
+        if (bot->IsWithinDistInMap(HordeflagStand, 3.0f))
+            return false;
+#endif
+    }
+    return true;
 }
 
 bool CheckMountStateAction::isUseful()
@@ -206,6 +227,25 @@ bool CheckMountStateAction::isUseful()
         return false;
 
     return true;
+}
+
+float CheckMountStateAction::GetAttackDistance()
+{
+    switch (bot->getClass())
+    {
+    case CLASS_WARRIOR:
+    case CLASS_PALADIN:
+        return 10.0f;
+    case CLASS_ROGUE:
+        return 50.0f;
+    }
+    /*if (enemy)
+    attack_distance /= 2;*/
+
+    if (ai->IsHeal(bot) || ai->IsRanged(bot))
+        return 40.0f;
+
+    return 35.0f;
 }
 
 bool CheckMountStateAction::CanFly()
@@ -301,6 +341,37 @@ uint32 CheckMountStateAction::MountSpeed(const SpellEntry* const spellInfo, cons
     return 0;
 }
 
+uint32 CheckMountStateAction::CurrentMountSpeed(const Unit* unit)
+{
+    uint32 mountSpeed = 0;
+
+    for (uint32 auraType = SPELL_AURA_BIND_SIGHT; auraType < TOTAL_AURAS; auraType++)
+    {
+        Unit::AuraList const& auras = unit->GetAurasByType((AuraType)auraType);
+
+        if (auras.empty())
+            continue;
+
+        for (Unit::AuraList::const_iterator i = auras.begin(); i != auras.end(); i++)
+        {
+            Aura* aura = *i;
+            if (!aura)
+                continue;
+
+            SpellEntry const* auraSpell = aura->GetSpellProto();
+
+            uint32 auraSpeed = std::max(MountSpeed(auraSpell, false),MountSpeed(auraSpell, true));            
+
+            if (auraSpeed < mountSpeed)
+                continue;
+
+            mountSpeed = auraSpeed;
+        }
+    }
+
+    return mountSpeed;
+}
+
 vector<uint32> CheckMountStateAction::GetBestMountSpells(const bool canFly)
 {
     uint32 bestMountSpeed = 1;
@@ -312,6 +383,7 @@ vector<uint32> CheckMountStateAction::GetBestMountSpells(const bool canFly)
             continue;
 
         const SpellEntry* spellInfo = sServerFacade.LookupSpellInfo(spellId);
+
         uint32 mountSpeed = MountSpeed(spellInfo, canFly);
 
         if (mountSpeed < bestMountSpeed)
@@ -372,15 +444,29 @@ bool CheckMountStateAction::MountWithBestMount(const bool canFly)
     if (mountSpells.empty() && mounts.empty())
         return false;
 
+    SpellEntry const* mountSpell;
+    Item* mountItem;
+
+    if (!mountSpells.empty())
+        mountSpell = sServerFacade.LookupSpellInfo(mountSpells.front());
+
+    if (!mounts.empty())
+        mountItem = mounts.front();
+
     if (!bot->IsStopped())
     {
         ai->StopMoving();
-    }
+    }  
 
-    if (mounts.empty() || (!mountSpells.empty() && MountSpeed(sServerFacade.LookupSpellInfo(mountSpells.front()), canFly) > MountSpeed(mounts.front()->GetProto(), canFly)))
+    if (mounts.empty() || (!mountSpells.empty() && MountSpeed(mountSpell, canFly) > MountSpeed(mountItem->GetProto(), canFly)))
     {
         uint32 spellId = mountSpells[urand(0, mountSpells.size() - 1)];
-        return ai->CastSpell(spellId, bot);
+        if (ai->CastSpell(spellId, bot))
+        {
+            SetDuration(GetSpellRecoveryTime(sServerFacade.LookupSpellInfo(mountSpells.front())));
+            return true;
+        }        
+        return false;
     }
     else
     {
@@ -397,41 +483,8 @@ bool CheckMountStateAction::MountWithBestMount(const bool canFly)
 
 bool CheckMountStateAction::Mount()
 {
-    uint32 secondmount =
-#ifdef MANGOSBOT_ZERO
-        60
-#else
-#ifdef MANGOSBOT_ONE
-        60
-#else
-        40
-#endif
-#endif
-        ;
-
-    uint32 thirdmount =
-#ifdef MANGOSBOT_ZERO
-        90
-#else
-#ifdef MANGOSBOT_ONE
-        68
-#else
-        60
-#endif
-#endif
-        ;
-
-    uint32 fourthmount =
-#ifdef MANGOSBOT_ZERO
-        90
-#else
-#ifdef MANGOSBOT_ONE
-        70
-#else
-        70
-#endif
-#endif
-        ;
+    if (CurrentMountSpeed(bot))
+        return false;
 
     Player* master = GetMaster();
     ai->RemoveShapeshift();
@@ -447,196 +500,22 @@ bool CheckMountStateAction::Mount()
         didMount = MountWithBestMount();
 
     return didMount;
+}
 
+bool CheckMountStateAction::UnMount()
+{
+    if (!CurrentMountSpeed(bot))
+        return false;
 
-    //BELOW HERE IS OLD STUFF
+    if (bot->IsFlying() && WorldPosition(bot).currentHeight() > 10.0f)
+        return false;
 
-    int32 masterSpeed = 59;
-    const SpellEntry* masterSpell = NULL;
-
-    if (master && master->GetAurasByType(SPELL_AURA_MOUNTED).size() > 0 && !bot->InBattleGround())
+    if (bot->IsMounted())
     {
-        Unit::AuraList const& auras = master->GetAurasByType(SPELL_AURA_MOUNTED);
-        if (auras.empty()) return false;
-
-        masterSpell = auras.front()->GetSpellProto();
-        masterSpeed = max(masterSpell->EffectBasePoints[1], masterSpell->EffectBasePoints[2]);
+        WorldPacket emptyPacket;
+        bot->GetSession()->HandleCancelMountAuraOpcode(emptyPacket);
     }
     else
-    {
-        masterSpeed = 59;
-        // use flying mounts in outland and northrend if no master
-        if (!master && (bot->GetMapId() == 530 || bot->GetMapId() == 571))
-        {
-            if (bot->GetLevel() >= fourthmount)
-                masterSpeed = 279;
-            else if (bot->GetLevel() >= thirdmount)
-                masterSpeed = 149;
-        }
-        for (PlayerSpellMap::iterator itr = bot->GetSpellMap().begin(); itr != bot->GetSpellMap().end(); ++itr)
-        {
-            uint32 spellId = itr->first;
-            const SpellEntry* spellInfo = sServerFacade.LookupSpellInfo(spellId);
-            if (!spellInfo || spellInfo->EffectApplyAuraName[0] != SPELL_AURA_MOUNTED)
-                continue;
-            if (itr->second.state == PLAYERSPELL_REMOVED || itr->second.disabled || IsPassiveSpell(spellId))
-                continue;
-            int32 effect = max(spellInfo->EffectBasePoints[1], spellInfo->EffectBasePoints[2]);
-            if (effect > masterSpeed)
-                masterSpeed = effect;
-        }
-    }
-
-    //map<int32, vector<uint32> > spells;
-    map<uint32, map<int32, vector<uint32> > > allSpells;
-#ifdef MANGOS
-    if (bot->GetPureSkillValue(SKILL_RIDING) <= 75 && bot->GetLevel() < 60)
-#endif
-#ifdef CMANGOS
-        if (bot->GetSkillValuePure(SKILL_RIDING) <= 75 && bot->GetLevel() < secondmount)
-#endif
-            masterSpeed = 59;
-
-    if (bot->InBattleGround() && masterSpeed > 99)
-        masterSpeed = 99;
-
-    bool hasSwiftMount = false;
-
-    for (PlayerSpellMap::iterator itr = bot->GetSpellMap().begin(); itr != bot->GetSpellMap().end(); ++itr)
-    {
-        uint32 spellId = itr->first;
-        if (itr->second.state == PLAYERSPELL_REMOVED || itr->second.disabled || IsPassiveSpell(spellId))
-            continue;
-
-        const SpellEntry* spellInfo = sServerFacade.LookupSpellInfo(spellId);
-        if (!spellInfo || spellInfo->EffectApplyAuraName[0] != SPELL_AURA_MOUNTED)
-            continue;
-
-        int32 effect = max(spellInfo->EffectBasePoints[1], spellInfo->EffectBasePoints[2]);
-        //if (effect < masterSpeed)
-        //    continue;
-
-        uint32 index = 0;
-#ifndef MANGOSBOT_ZERO
-        index = (spellInfo->EffectApplyAuraName[1] == SPELL_AURA_MOD_FLIGHT_SPEED_MOUNTED ||
-            spellInfo->EffectApplyAuraName[2] == SPELL_AURA_MOD_FLIGHT_SPEED_MOUNTED) ? 1 : 0;
-#endif
-
-        if (index == 0 && max(spellInfo->EffectBasePoints[1], spellInfo->EffectBasePoints[2]) > 59)
-            hasSwiftMount = true;
-
-        if (index == 1 && max(spellInfo->EffectBasePoints[1], spellInfo->EffectBasePoints[2]) > 59)
-            hasSwiftMount = true;
-
-        allSpells[index][effect].push_back(spellId);
-    }
-
-
-    int masterMountType = 0;
-#ifndef MANGOSBOT_ZERO
-    if (masterSpell != NULL)
-    {
-        masterMountType = (masterSpell->EffectApplyAuraName[1] == SPELL_AURA_MOD_FLIGHT_SPEED_MOUNTED ||
-            masterSpell->EffectApplyAuraName[2] == SPELL_AURA_MOD_FLIGHT_SPEED_MOUNTED) ? 1 : 0;
-    }
-
-    // use flying mounts in outland and northrend if no master
-    if (!master && (bot->GetMapId() == 530 || bot->GetMapId() == 571))
-    {
-        if (bot->GetLevel() >= fourthmount)
-            masterMountType = 1;
-        else if (bot->GetLevel() >= thirdmount)
-            masterMountType = 1;
-    }
-#endif
-
-
-    map<int32, vector<uint32> >& spells = allSpells[masterMountType];
-
-    if (hasSwiftMount)
-    {
-        for (auto i : spells)
-        {
-            vector<uint32> ids = i.second;
-            for (auto itr : ids)
-            {
-                const SpellEntry* spellInfo = sServerFacade.LookupSpellInfo(itr);
-                if (!spellInfo)
-                    continue;
-
-                if (masterMountType == 0 && masterSpeed > 59 && max(spellInfo->EffectBasePoints[1], spellInfo->EffectBasePoints[2]) < 99)
-                    spells[59].clear();
-
-                if (masterMountType == 1 && masterSpeed > 59 && max(spellInfo->EffectBasePoints[1], spellInfo->EffectBasePoints[2]) < 279)
-                    spells[59].clear();
-            }
-        }
-    }
-
-    for (map<int32, vector<uint32> >::iterator i = spells.begin(); i != spells.end(); ++i)
-    {
-        vector<uint32>& ids = i->second;
-        int index = urand(0, ids.size() - 1);
-        if (index >= ids.size())
-            continue;
-
-        MotionMaster& mm = *bot->GetMotionMaster();
-        ai->CastSpell(ids[index], bot);
-        SetDuration(3000U); // 3s
-        return true;
-    }
-
-#ifndef MANGOSBOT_TWO
-    list<Item*> items = AI_VALUE2(list<Item*>, "inventory items", "mount");
-
-    vector<Item*> mounts(items.begin(), items.end());
-    std::shuffle(mounts.begin(), mounts.end(), *GetRandomGenerator());
-
-    Item* bestMount = nullptr;
-    uint32 bestMountSpeed = 0;
-
-#ifndef MANGOSBOT_ZERO
-    if (bot->GetMapId() == 530 || bot->GetMapId() == 571)
-        for (auto mount : mounts)
-        {
-            if (bot->CanUseItem(mount) != EQUIP_ERR_OK)
-                continue;
-
-            uint32 mountSpeed = MountSpeed(mount->GetProto(), true);
-
-            if (mountSpeed < bestMountSpeed)
-                continue;
-
-            bestMount = mount;
-            bestMountSpeed = mountSpeed;
-        }
-#endif
-    if (!bestMount)
-        for (auto mount : mounts)
-        {
-            if (bot->CanUseItem(mount) != EQUIP_ERR_OK)
-                continue;
-
-            uint32 mountSpeed = MountSpeed(mount->GetProto(), false);
-
-            if (mountSpeed < bestMountSpeed)
-                continue;
-
-            bestMount = mount;
-            bestMountSpeed = mountSpeed;
-        }
-
-    if (bestMountSpeed)
-    {
-        bool didUse = UseItemAuto(bestMount);
-
-        if (didUse)
-        {
-            SetDuration(3000U); // 3s
-            return true;
-        }
-    }
-#endif
-
-    return false;
+        ai->RemoveShapeshift();
+    return true;
 }

@@ -3,6 +3,8 @@
 #include "StatsValues.h"
 
 #include "../../ServerFacade.h"
+#include "../actions/CheckMountStateAction.h"
+
 using namespace ai;
 
 uint8 HealthValue::Calculate()
@@ -107,7 +109,13 @@ bool IsMountedValue::Calculate()
     if (!target)
         return false;
 
-    return target->IsMounted();
+    if (target->IsMounted())
+        return true;
+
+    if (CheckMountStateAction::CurrentMountSpeed(target))
+        return true;
+
+    return false;
 }
 
 

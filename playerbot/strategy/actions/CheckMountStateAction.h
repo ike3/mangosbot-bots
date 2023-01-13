@@ -13,12 +13,16 @@ namespace ai
         CheckMountStateAction(PlayerbotAI* ai) : UseItemAction(ai, "check mount state", true) {}
 
         virtual bool Execute(Event& event) override;
+        bool CanMountInBg();
+        bool UnMount();
         virtual bool isPossible() { return true; }
         virtual bool isUseful();
 
-        virtual bool CanFly();
-
+        virtual bool CanFly();        
+        static uint32 CurrentMountSpeed(const Unit* unit);
     private:
+        float GetAttackDistance();
+
         static uint32 MountSpeed(const SpellEntry* const spellInfo, const bool canFly = false);
         vector<uint32> GetBestMountSpells(const bool canFly);
 
