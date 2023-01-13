@@ -247,6 +247,23 @@ uint32 CheckMountStateAction::MountSpeed(const SpellEntry* const spellInfo, cons
     if (!spellInfo)
         return 0;
 
+    switch (spellInfo->Id) //Aura's hard coded in spell.cpp
+    {
+    //case 783:  //travel form
+    //case 2645: //ghost wolf
+    //    if (!canFly)
+    //        return 39;
+    //    break;
+    case 33943: //flight form
+        if (canFly)
+            return 59;
+        break;
+    case 40120: //swift flight form
+        if (canFly)
+            return 279;
+        break;
+    }
+
     for (int i = 0; i < 3; i++)
     {
         if (spellInfo->EffectApplyAuraName[i] == SPELL_AURA_MOUNTED)
