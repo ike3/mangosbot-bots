@@ -202,7 +202,7 @@ bool CheckMountStateAction::isUseful()
     if (!bot->GetMap()->IsMountAllowed())
         return false;
 
-    if (GetBestMountSpells(false).empty() && GetBestMounts(false).empty() && GetBestMountSpells(true).empty() && GetBestMountSpells(true).empty())
+    if (GetBestMountSpells(false).empty() && GetBestMounts(false).empty() && GetBestMountSpells(true).empty() && GetBestMounts(true).empty())
         return false;
 
     return true;
