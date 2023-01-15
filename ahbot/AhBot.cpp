@@ -17,7 +17,7 @@
 #include "playerbot/playerbot.h"
 #include "Player.h"
 #include "Mail.h"
-#include "Util.h"
+#include "Util\Util.h"
 
 #ifdef CMANGOS
 #include <boost/thread/thread.hpp>
