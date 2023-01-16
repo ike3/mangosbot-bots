@@ -7,6 +7,7 @@
 #include "../../ServerFacade.h"
 #include "../values/ItemUsageValue.h"
 #include "../../TravelMgr.h"
+#include "CheckMountStateAction.h"
 
 using namespace ai;
 
@@ -871,14 +872,22 @@ bool UseHearthStoneAction::Execute(Event& event)
         ai->StopMoving();
     }
 
-    if (bot->IsMounted())
+    if (CheckMountStateAction::CurrentMountSpeed(bot))
     {
+
         if (bot->IsFlying() && WorldPosition(bot).currentHeight() > 10.0f)
             return false;
 
-        WorldPacket emptyPacket;
-        bot->GetSession()->HandleCancelMountAuraOpcode(emptyPacket);
+        if (bot->IsMounted())
+        {
+            WorldPacket emptyPacket;
+            bot->GetSession()->HandleCancelMountAuraOpcode(emptyPacket);
+        }
+        else
+            ai->RemoveShapeshift();
     }
+
+    ai->RemoveShapeshift();
 
     const bool used = UseItemAction::Execute(event);
     if (used)
