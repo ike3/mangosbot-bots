@@ -137,14 +137,14 @@ private:
     }
 };
 
-GenericDKStrategy::GenericDKStrategy(PlayerbotAI* ai) : MeleeCombatStrategy(ai)
+GenericDKStrategy::GenericDKStrategy(PlayerbotAI* ai) : CombatStrategy(ai)
 {
     actionNodeFactories.Add(new GenericDKStrategyActionNodeFactory());
 }
 
 void GenericDKStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
 {
-	MeleeCombatStrategy::InitCombatTriggers(triggers);
+	CombatStrategy::InitCombatTriggers(triggers);
 
 	triggers.push_back(new TriggerNode(
 		"high aoe",

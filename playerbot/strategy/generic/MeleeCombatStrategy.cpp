@@ -6,8 +6,6 @@ using namespace ai;
 
 void MeleeCombatStrategy::InitCombatTriggers(list<TriggerNode*> &triggers)
 {
-    CombatStrategy::InitCombatTriggers(triggers);
-
     triggers.push_back(new TriggerNode(
         "enemy out of melee",
         NextAction::array(0, new NextAction("reach melee", 60.0f), NULL)));

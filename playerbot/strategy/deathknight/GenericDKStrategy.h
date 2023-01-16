@@ -3,7 +3,7 @@
 
 namespace ai
 {
-    class GenericDKStrategy : public MeleeCombatStrategy
+    class GenericDKStrategy : public CombatStrategy
     {
     public:
         GenericDKStrategy(PlayerbotAI* ai);
