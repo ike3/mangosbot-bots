@@ -17,7 +17,11 @@
 #include "playerbot/playerbot.h"
 #include "Player.h"
 #include "Mail.h"
-#include "Util\Util.h"
+#ifdef MANGOSBOT_TWO
+#include "Util/Util.h"
+#else
+#include "Util.h"
+#endif
 
 #ifdef CMANGOS
 #include <boost/thread/thread.hpp>

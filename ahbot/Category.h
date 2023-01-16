@@ -4,7 +4,11 @@
 #include "PricingStrategy.h"
 #include "ItemPrototype.h"
 #include "SharedDefines.h"
-#include "Util\Util.h"
+#ifdef MANGOSBOT_TWO
+#include "Util/Util.h"
+#else
+#include "Util.h"
+#endif
 
 using namespace std;
 
