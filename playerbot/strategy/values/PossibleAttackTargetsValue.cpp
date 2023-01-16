@@ -177,6 +177,26 @@ bool PossibleAttackTargetsValue::HasUnBreakableCC(Unit* target, Player* player)
     return false;
 }
 
+string PossibleAttackTargetsValue::Format()
+{
+    ostringstream out;
+
+    for (auto& target : value)
+    {
+        if (target != value.front())
+            out << ",";
+
+        WorldObject* wo = ai->GetWorldObject(target);
+
+        if (wo)
+            out << wo->GetName();
+        else
+            out << target;
+    }
+
+    return out.str().c_str();
+}
+
 bool PossibleAttackTargetsValue::IsTapped(Unit* target, Player* player)
 {
     if (player)
