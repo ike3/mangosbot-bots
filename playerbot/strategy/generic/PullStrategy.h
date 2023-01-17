@@ -24,7 +24,7 @@ namespace ai
         string GetActionName() const;
         float GetRange() const { return range; }
 
-        void RequestPull(Unit* target);
+        void RequestPull(Unit* target, bool resetTime = true);
         bool IsPullPendingToStart() const { return pendingToStart; }
         bool HasPullStarted() const { return pullStartTime > 0; }
         void OnPullStarted();
@@ -62,5 +62,15 @@ namespace ai
 
     private:
         void InitCombatTriggers(std::list<TriggerNode*> &triggers) override;
+    };
+
+    class PullBackStrategy : public Strategy
+    {
+    public:
+        PullBackStrategy(PlayerbotAI* ai) : Strategy(ai) {}
+        string getName() override { return "pull back"; }
+
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
     };
 }

@@ -119,6 +119,7 @@ namespace ai
             creators["pull my target"] = &ActionContext::pull_my_target;
             creators["pull start"] = &ActionContext::pull_start;
             creators["pull action"] = &ActionContext::pull_action;
+            creators["return to pull position"] = &ActionContext::return_to_pull_position;
             creators["pull end"] = &ActionContext::pull_end;
             creators["emote"] = &ActionContext::emote;
             creators["talk"] = &ActionContext::talk;
@@ -356,6 +357,7 @@ namespace ai
         static Action* pull_my_target(PlayerbotAI* ai) { return new PullMyTargetAction(ai); }
         static Action* pull_start(PlayerbotAI* ai) { return new PullStartAction(ai); }
         static Action* pull_action(PlayerbotAI* ai) { return new PullAction(ai); }
+        static Action* return_to_pull_position(PlayerbotAI* ai) { return new ReturnToPullPositionAction(ai); }
         static Action* pull_end(PlayerbotAI* ai) { return new PullEndAction(ai); }
         static Action* stay(PlayerbotAI* ai) { return new StayAction(ai); }
         static Action* sit(PlayerbotAI* ai) { return new SitAction(ai); }

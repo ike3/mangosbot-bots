@@ -110,7 +110,6 @@ bool MoveToPositionAction::isUseful()
     return pos.isSet() && distance > ai->GetRange("follow") && distance < sPlayerbotAIConfig.reactDistance;
 }
 
-
 bool SetReturnPositionAction::Execute(Event& event)
 {
     ai::PositionMap& posMap = context->GetValue<ai::PositionMap&>("position")->Get();
@@ -169,3 +168,37 @@ bool ReturnToStayPositionAction::isPossible()
 
     return false;
 }
+
+bool ReturnToPullPositionAction::isPossible()
+{
+    PositionMap& posMap = AI_VALUE(PositionMap&, "position");
+    PositionEntry stayPosition = posMap["pull position"];
+    if (stayPosition.isSet())
+    {
+        PullStrategy* strategy = PullStrategy::Get(ai);
+        if (strategy && strategy->HasPullStarted())
+        {
+            Unit* target = strategy->GetTarget();
+            if (target)
+            {
+                if (target->GetTarget() == bot)
+                {
+                    const float distance = bot->GetDistance(stayPosition.x, stayPosition.y, stayPosition.z);
+                    if (distance > sPlayerbotAIConfig.reactDistance)
+                    {
+                        ai->TellError("The pull position is too far to return. I am going to pull where I am now");
+
+                        // Set the stay position to current position
+                        stayPosition.Set(bot->GetPositionX(), bot->GetPositionY(), bot->GetPositionZ(), bot->GetMapId());
+                        posMap["pull position"] = stayPosition;
+                    }
+
+                    return true;
+                }
+            }
+        }
+    }
+
+    return false;
+}
+

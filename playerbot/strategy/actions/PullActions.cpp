@@ -4,6 +4,7 @@
 #include "../values/AttackersValue.h"
 #include "PlayerbotAIConfig.h"
 #include "PullActions.h"
+#include "../values/PositionValue.h"
 
 using namespace ai;
 
@@ -53,6 +54,13 @@ bool PullMyTargetAction::Execute(Event& event)
         return false;
     }
 
+    //Set position to return to after pulling.
+    PositionMap& posMap = AI_VALUE(PositionMap&, "position");
+    PositionEntry pullPosition = posMap["pull position"];
+
+    pullPosition.Set(bot->GetPositionX(), bot->GetPositionY(), bot->GetPositionZ(), bot->GetMapId());
+    posMap["pull position"] = pullPosition;
+
     strategy->RequestPull(target);
     return true;
 }
@@ -98,16 +106,26 @@ bool PullAction::Execute(Event& event)
             const float distanceToTarget = target->GetDistance(bot);
             if (distanceToTarget <= strategy->GetRange())
             {
-                // Force stop
-                ai->StopMoving();
+                if (bot->IsMoving())
+                {
+                    // Force stop
+                    ai->StopMoving();
+                    strategy->RequestPull(target, false);
+                    return false;
+                }
 
                 // Execute the pull action
-                return CastSpellAction::Execute(event);
+                if (CastSpellAction::Execute(event))
+                {
+                    strategy->RequestPull(target); //extend pull timer to walk back.
+                }
+                else
+                    return false;
             }
             else
             {
                 // Retry the reach pull action
-                strategy->RequestPull(target);
+                strategy->RequestPull(target, false);
             }
         }
     }
@@ -150,6 +168,15 @@ bool PullEndAction::Execute(Event& event)
             {
                 creatureAI->SetReactState(REACT_DEFENSIVE);
             }
+        }
+
+        // Remove the saved stay position
+        AiObjectContext* context = ai->GetAiObjectContext();
+        PositionMap& posMap = AI_VALUE(PositionMap&, "position");
+        PositionEntry stayPosition = posMap["pull position"];
+        if (stayPosition.isSet())
+        {
+            posMap.erase("pull position");
         }
 
         strategy->OnPullEnded();

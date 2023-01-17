@@ -554,6 +554,18 @@ bool ReturnToStayPositionTrigger::IsActive()
     return false;
 }
 
+bool ReturnToPullPositionTrigger::IsActive()
+{
+    PositionEntry pullPosition = AI_VALUE(PositionMap&, "position")["pull position"];
+    if (pullPosition.isSet())
+    {
+        const float distance = bot->GetDistance(pullPosition.x, pullPosition.y, pullPosition.z);
+        return distance > ai->GetRange("follow");
+    }
+
+    return false;
+}
+
 bool NoBuffAndComboPointsAvailableTrigger::IsActive()
 {
     if (BuffTrigger::IsActive())

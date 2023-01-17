@@ -125,6 +125,7 @@ namespace ai
             creators["grind"] = &StrategyContext::grind;
             creators["avoid aoe"] = &StrategyContext::avoid_aoe;
             creators["wait for attack"] = &StrategyContext::wait_for_attack;
+            creators["pull back"] = &StrategyContext::pull_back;
 
             // Dungeon Strategies
             creators["dungeon"] = &StrategyContext::dungeon;
@@ -209,6 +210,7 @@ namespace ai
         static Strategy* grind(PlayerbotAI* ai) { return new GrindingStrategy(ai); }
         static Strategy* avoid_aoe(PlayerbotAI* ai) { return new AvoidAoeStrategy(ai); }
         static Strategy* wait_for_attack(PlayerbotAI* ai) { return new WaitForAttackStrategy(ai); }
+        static Strategy* pull_back(PlayerbotAI* ai) { return new PullBackStrategy(ai); }
 
         // Dungeon Strategies
         static Strategy* dungeon(PlayerbotAI* ai) { return new DungeonStrategy(ai); }

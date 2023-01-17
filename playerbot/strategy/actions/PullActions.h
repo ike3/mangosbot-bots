@@ -25,7 +25,7 @@ namespace ai
     public:
         PullAction(PlayerbotAI* ai, string name = "pull action");
         bool Execute(Event& event) override;
-
+        bool isPossible() override { return true; }
     private:
         string GetTargetName() override { return "pull target"; }
         string GetReachActionName() override { return "reach pull"; }

@@ -181,7 +181,6 @@ string PullStrategy::GetActionName() const
 void PullStrategy::OnPullStarted()
 {
     pendingToStart = false;
-    pullStartTime = time(0);
 }
 
 void PullStrategy::OnPullEnded()
@@ -190,10 +189,11 @@ void PullStrategy::OnPullEnded()
     SetTarget(nullptr);
 }
 
-void PullStrategy::RequestPull(Unit* target)
+void PullStrategy::RequestPull(Unit* target, bool resetTime)
 {
     SetTarget(target);
     pendingToStart = true;
+    pullStartTime = time(0);
 }
 
 float PullMultiplier::GetValue(Action* action)
@@ -205,6 +205,7 @@ float PullMultiplier::GetValue(Action* action)
             (action->getName() == "reach pull") ||
             (action->getName() == "pull start") ||
             (action->getName() == "pull action") ||
+            (action->getName() == "return to pull position") ||
             (action->getName() == "pull end"))
         {
             return 1.0f;
@@ -221,4 +222,16 @@ void PossibleAdsStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
     triggers.push_back(new TriggerNode(
         "possible ads",
         NextAction::array(0, new NextAction("flee with pet", 60), NULL)));
+}
+
+void PullBackStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    triggers.push_back(new TriggerNode(
+        "return to pull position",
+        NextAction::array(0, new NextAction("return to pull position", 65.0f), NULL)));
+}
+
+void PullBackStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    InitCombatTriggers(triggers);
 }

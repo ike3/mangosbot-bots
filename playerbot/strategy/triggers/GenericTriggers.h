@@ -769,6 +769,14 @@ namespace ai
         virtual bool IsActive();
     };
 
+    class ReturnToPullPositionTrigger : public Trigger
+    {
+    public:
+        ReturnToPullPositionTrigger(PlayerbotAI* ai) : Trigger(ai, "return to pull position", 2) {}
+
+        virtual bool IsActive();
+    };
+
     class GiveItemTrigger : public Trigger
     {
     public:

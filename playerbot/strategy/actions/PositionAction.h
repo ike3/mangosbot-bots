@@ -50,4 +50,11 @@ namespace ai
         ReturnToStayPositionAction(PlayerbotAI* ai) : MoveToPositionAction(ai, "move to position", "stay position") {}
         virtual bool isPossible();
     };
+
+    class ReturnToPullPositionAction : public MoveToPositionAction
+    {
+    public:
+        ReturnToPullPositionAction(PlayerbotAI* ai) : MoveToPositionAction(ai, "return to pull position", "pull position") {}
+        virtual bool isPossible();
+    };
 }
