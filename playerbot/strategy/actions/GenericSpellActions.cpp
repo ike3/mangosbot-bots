@@ -321,13 +321,18 @@ void CastShootAction::UpdateWeaponInfo()
 #endif
                     break;
                 }
-
                 case ITEM_SUBCLASS_WEAPON_WAND:
                 {
                     isRangedWeapon = true;
 #ifdef MANGOSBOT_ZERO
                     needsAmmo = false;
 #endif
+                    break;
+                }
+                case ITEM_SUBCLASS_WEAPON_THROWN:
+                {
+                    isRangedWeapon = true;
+                    spellName = "throw";
                     break;
                 }
 
