@@ -198,6 +198,8 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
 {
     int tab = GetPlayerSpecTab(player);
 
+    engine->addStrategies("mount", NULL);
+
     if (!player->InBattleGround())
     {
         engine->addStrategies("racials", "default", "duel", "pvp", "follow", NULL);
