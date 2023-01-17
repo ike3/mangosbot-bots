@@ -189,6 +189,15 @@ bool SeeSpellAction::MoveToSpell(WorldPosition& spellPosition, bool inFormation)
         stayPosition.Set(spellPosition.getX(), spellPosition.getY(), spellPosition.getZ(), spellPosition.getMapId());
         posMap["stay position"] = stayPosition;
     }
+    else if (ai->HasStrategy("guard", BotState::BOT_STATE_NON_COMBAT))
+    {
+        PositionMap& posMap = AI_VALUE(PositionMap&, "position");
+        PositionEntry guardPosition = posMap["guard"];
+
+        guardPosition.Set(spellPosition.getX(), spellPosition.getY(), spellPosition.getZ(), spellPosition.getMapId());
+        posMap["guard"] = guardPosition;
+    }
+
 
     return MoveTo(spellPosition.getMapId(), spellPosition.getX(), spellPosition.getY(), spellPosition.getZ(), false, false);
 }
