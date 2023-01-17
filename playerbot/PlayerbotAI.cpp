@@ -714,6 +714,10 @@ void PlayerbotAI::Reset(bool full)
     reactionEngine->Reset();
     whispers.clear();
 
+    PullStrategy* strategy = PullStrategy::Get(this);
+    if (strategy)         
+        strategy->OnPullEnded();
+
     aiObjectContext->GetValue<Unit*>("old target")->Set(NULL);
     aiObjectContext->GetValue<Unit*>("current target")->Set(NULL);
     aiObjectContext->GetValue<Unit*>("pull target")->Set(NULL);
