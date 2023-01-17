@@ -17,7 +17,7 @@ namespace ai
             if (bot->GetTradeData())
                 return false;
 
-            if (ai->HasStrategy("stay", BotState::BOT_STATE_NON_COMBAT))
+            if (ai->HasStrategy("stay", BotState::BOT_STATE_NON_COMBAT) || ai->HasStrategy("guard", BotState::BOT_STATE_NON_COMBAT))
                 return false;
 
             if (!AI_VALUE(bool, "group ready"))
