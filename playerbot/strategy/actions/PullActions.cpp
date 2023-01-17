@@ -74,7 +74,7 @@ bool PullStartAction::Execute(Event& event)
         Unit* target = strategy->GetTarget();
         if (target)
         {
-            result = true;
+            result = strategy->GetPreActionName().empty() ? true : ai->DoSpecificAction(strategy->GetPreActionName(), event, true);
 
             // Set the pet on passive mode during the pull
             Pet* pet = bot->GetPet();

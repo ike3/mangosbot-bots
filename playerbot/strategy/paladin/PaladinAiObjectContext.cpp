@@ -31,6 +31,7 @@ namespace ai
                 creators["bthreat"] = &paladin::StrategyFactoryInternal::bthreat;
                 creators["cc"] = &paladin::StrategyFactoryInternal::cc;
                 creators["crusader"] = &paladin::StrategyFactoryInternal::crusader;
+                creators["pull"] = &paladin::StrategyFactoryInternal::pull;
             }
 
         private:
@@ -41,6 +42,11 @@ namespace ai
             static Strategy* bthreat(PlayerbotAI* ai) { return new PaladinBuffThreatStrategy(ai); }
             static Strategy* cc(PlayerbotAI* ai) { return new PaladinCcStrategy(ai); }
             static Strategy* crusader(PlayerbotAI* ai) { return new PaladinBuffSpeedStrategy(ai); }
+#ifdef MANGOSBOT_TWO
+            static Strategy* pull(PlayerbotAI* ai) { return new PullStrategy(ai, "judgement of light", "seal of righteousness"); }
+#else
+            static Strategy* pull(PlayerbotAI* ai) { return new PullStrategy(ai, "judgement", "seal of righteousness"); }
+#endif
         };
 
         class ResistanceStrategyFactoryInternal : public NamedObjectContext<Strategy>

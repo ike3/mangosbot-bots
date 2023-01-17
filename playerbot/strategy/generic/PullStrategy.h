@@ -7,7 +7,7 @@ namespace ai
     class PullStrategy : public Strategy
     {
     public:
-        PullStrategy(PlayerbotAI* ai, string pullAction);
+        PullStrategy(PlayerbotAI* ai, string pullAction, string prePullAction = "");
 
     public:
         string getName() override { return "pull"; }
@@ -22,6 +22,7 @@ namespace ai
         bool HasTarget() const { return GetTarget() != nullptr; }
 
         string GetActionName() const;
+        string GetPreActionName() const { return preActionName; };
         float GetRange() const { return range; }
 
         void RequestPull(Unit* target, bool resetTime = true);
@@ -41,6 +42,7 @@ namespace ai
     private:
         float range;
         string actionName;
+        string preActionName;
         bool pendingToStart;
         time_t pullStartTime;
     };

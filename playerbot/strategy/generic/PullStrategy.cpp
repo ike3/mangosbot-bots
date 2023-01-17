@@ -67,7 +67,7 @@ string GetSpellName(PlayerbotAI* ai, const string& actionName)
     return spellName;
 }
 
-PullStrategy::PullStrategy(PlayerbotAI* ai, string pullAction)
+PullStrategy::PullStrategy(PlayerbotAI* ai, string pullAction, string prePullAction)
     : Strategy(ai)
     , actionName(pullAction)
     , pendingToStart(false)
