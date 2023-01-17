@@ -46,6 +46,9 @@ bool CheckMountStateAction::Execute(Event& event)
             {
                 if (CanMountInBg())
                 {
+                    if (ai->HasStrategy("debug mount", BotState::BOT_STATE_NON_COMBAT) && !CurrentMountSpeed(bot))
+                        ai->TellMasterNoFacing("Mount in bg. No attackers or far from target and not in combat.");
+
                     return Mount();
                 }
             }
@@ -55,6 +58,8 @@ bool CheckMountStateAction::Execute(Event& event)
     //Unmounted when able to attack target
     if (canAttackTarget)
     {
+        if (ai->HasStrategy("debug mount", BotState::BOT_STATE_NON_COMBAT) && CurrentMountSpeed(bot))
+            ai->TellMasterNoFacing("Unmount. Able to attack target.");
         return UnMount();
     }
 
@@ -65,24 +70,32 @@ bool CheckMountStateAction::Execute(Event& event)
     //Chase to current target.
     if (!canAttackTarget && (farFromTarget || shouldChaseTarget))
     {
+        if (ai->HasStrategy("debug mount", BotState::BOT_STATE_NON_COMBAT) && !CurrentMountSpeed(bot))
+            ai->TellMasterNoFacing("Mount. Unable to attack target and target is far or chasable.");
         return Mount();
     }
 
     //Following master and close to master that is unmounted.
     if (ai->HasStrategy("follow", BotState::BOT_STATE_NON_COMBAT) && groupMaster && groupMaster != bot && !farFromMaster && !CurrentMountSpeed(groupMaster))
     {
+        if (ai->HasStrategy("debug mount", BotState::BOT_STATE_NON_COMBAT) && CurrentMountSpeed(bot))
+            ai->TellMasterNoFacing("Unmount. Near umounted group master.");
         return UnMount();
     }
 
     //Doing stuff nearby.
     if (travelTarget->isWorking())
     {
+        if (ai->HasStrategy("debug mount", BotState::BOT_STATE_NON_COMBAT) && CurrentMountSpeed(bot))
+            ai->TellMasterNoFacing("Unmount. Near travel target.");
         return UnMount();
     }
 
     //Rping nearby.
     if (AI_VALUE(GuidPosition, "rpg target") && sServerFacade.IsDistanceLessThan(AI_VALUE2(float, "distance", "rpg target"), sPlayerbotAIConfig.farDistance))
     {
+        if (ai->HasStrategy("debug mount", BotState::BOT_STATE_NON_COMBAT) && CurrentMountSpeed(bot))
+            ai->TellMasterNoFacing("Unmount. Near rpg target.");
         return UnMount();
     }
 
@@ -91,21 +104,27 @@ bool CheckMountStateAction::Execute(Event& event)
         //Mounting with master.
         if (CurrentMountSpeed(groupMaster) && !hasAttackers)
         {
+            if (ai->HasStrategy("debug mount", BotState::BOT_STATE_NON_COMBAT) && !CurrentMountSpeed(bot))
+                ai->TellMasterNoFacing("Mount. Group master mounted and no attackers.");
             return Mount();
         }
 
         //Mounting to move to master.
         if (farFromMaster && !bot->IsInCombat())
         {
+            if (ai->HasStrategy("debug mount", BotState::BOT_STATE_NON_COMBAT) && !CurrentMountSpeed(bot))
+                ai->TellMasterNoFacing("Mount. Far from group master and not in combat.");
             return Mount();
         }
     }
 
     if (!ai->IsStateActive(BotState::BOT_STATE_COMBAT) && !hasEnemy)
     {
+        //Mounting to travel.
         if (travelTarget->isTraveling() && AI_VALUE(bool, "can move around"))
         {
-            //Mounting to travel.
+            if (ai->HasStrategy("debug mount", BotState::BOT_STATE_NON_COMBAT) && !CurrentMountSpeed(bot))
+                ai->TellMasterNoFacing("Mount. Traveling some place.");
             return Mount();
         }
         else if (!hasAttackers)
@@ -113,12 +132,16 @@ bool CheckMountStateAction::Execute(Event& event)
             //Mounting to move to rpg target.
             if (AI_VALUE(GuidPosition, "rpg target") && sServerFacade.IsDistanceGreaterThan(AI_VALUE2(float, "distance", "rpg target"), sPlayerbotAIConfig.sightDistance))
             {
+                if (ai->HasStrategy("debug mount", BotState::BOT_STATE_NON_COMBAT) && !CurrentMountSpeed(bot))
+                    ai->TellMasterNoFacing("Mount. Rpg target far away.");
                 return Mount();
             }
 
             //Mounting in safe place.
             if (!AI_VALUE(list<ObjectGuid>, "possible rpg targets").empty() && urand(0, 100) > 50)
             {
+                if (ai->HasStrategy("debug mount", BotState::BOT_STATE_NON_COMBAT) && !CurrentMountSpeed(bot))
+                    ai->TellMasterNoFacing("Mount. Near rpg targets.");
                 return Mount();
             }
         }
@@ -289,11 +312,11 @@ uint32 CheckMountStateAction::MountSpeed(const SpellEntry* const spellInfo, cons
 
     switch (spellInfo->Id) //Aura's hard coded in spell.cpp
     {
-    //case 783:  //travel form
-    //case 2645: //ghost wolf
-    //    if (!canFly)
-    //        return 39;
-    //    break;
+    case 783:  //travel form
+    case 2645: //ghost wolf
+        if (!canFly)
+            return 39;
+        break;
     case 33943: //flight form
         if (canFly)
             return 59;

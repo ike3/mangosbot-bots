@@ -105,4 +105,19 @@ namespace ai
         virtual vector<string> GetRelatedStrategies() { return { "debug" , "threat" }; }
 #endif
     };
+
+    class DebugMountStrategy : public Strategy
+    {
+    public:
+        DebugMountStrategy(PlayerbotAI* ai) : Strategy(ai) {}
+        virtual int GetType() { return STRATEGY_TYPE_NONCOMBAT; }
+        virtual string getName() { return "debug mount"; }
+#ifdef GenerateBotHelp
+        virtual string GetHelpName() { return "debug mount"; } //Must equal iternal name
+        virtual string GetHelpDescription() {
+            return "This strategy will make the bot give chat feedback during mount actions.";
+        }
+        virtual vector<string> GetRelatedStrategies() { return { "debug" , "threat" }; }
+#endif
+    };
 }
