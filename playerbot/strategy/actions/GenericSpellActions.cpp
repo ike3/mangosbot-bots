@@ -290,31 +290,44 @@ void CastShootAction::UpdateWeaponInfo()
             string spellName = "shoot";
             bool isRangedWeapon = false;
 
+#ifdef MANGOSBOT_ZERO
+            needsAmmo = true;
+#endif
+
             const ItemPrototype* itemPrototype = equippedWeapon->GetProto();
             switch (itemPrototype->SubClass)
             {
                 case ITEM_SUBCLASS_WEAPON_GUN:
                 {
                     isRangedWeapon = true;
+#ifdef MANGOSBOT_ZERO
                     spellName += " gun";
+#endif
                     break;
                 }
                 case ITEM_SUBCLASS_WEAPON_BOW:
                 {
                     isRangedWeapon = true;
+#ifdef MANGOSBOT_ZERO
                     spellName += " bow";
+#endif
                     break;
                 }
                 case ITEM_SUBCLASS_WEAPON_CROSSBOW:
                 {
                     isRangedWeapon = true;
+#ifdef MANGOSBOT_ZERO
                     spellName += " crossbow";
+#endif
                     break;
                 }
 
                 case ITEM_SUBCLASS_WEAPON_WAND:
                 {
                     isRangedWeapon = true;
+#ifdef MANGOSBOT_ZERO
+                    needsAmmo = false;
+#endif
                     break;
                 }
 
@@ -331,7 +344,9 @@ void CastShootAction::UpdateWeaponInfo()
         }
 
         // Check the ammunition
+#ifdef MANGOSBOT_ZERO
         needsAmmo = (GetSpellName() != "shoot") ? (AI_VALUE2(uint32, "item count", "ammo") <= 0) : false;
+#endif
     }
     else
     {

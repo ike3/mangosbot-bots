@@ -38,17 +38,23 @@ string GetSpellName(PlayerbotAI* ai, const string& actionName)
                 {
                     case ITEM_SUBCLASS_WEAPON_GUN:
                     {
+#ifdef MANGOSBOT_ZERO
                         spellName += " gun";
+#endif
                         break;
                     }
                     case ITEM_SUBCLASS_WEAPON_BOW:
                     {
+#ifdef MANGOSBOT_ZERO
                         spellName += " bow";
+#endif
                         break;
                     }
                     case ITEM_SUBCLASS_WEAPON_CROSSBOW:
                     {
+#ifdef MANGOSBOT_ZERO
                         spellName += " crossbow";
+#endif
                         break;
                     }
 
