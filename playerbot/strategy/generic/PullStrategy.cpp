@@ -99,6 +99,7 @@ PullStrategy::PullStrategy(PlayerbotAI* ai, string pullAction, string prePullAct
     }
 
     actionName = spellName;
+    preActionName = prePullAction;
 }
 
 void PullStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -174,7 +175,7 @@ string PullStrategy::GetActionName() const
     {
         if (ai->GetBot()->getClass() == CLASS_DRUID)
         {
-            if (ai->HasStrategy("bear", BotState::BOT_STATE_COMBAT) || ai->HasStrategy("cat", BotState::BOT_STATE_COMBAT))
+            if (ai->HasAnyAuraOf(ai->GetBot(), "bear form", "dire bear form", "cat form", NULL))
             {
                 pullAction = "faerie fire (feral)";
             }

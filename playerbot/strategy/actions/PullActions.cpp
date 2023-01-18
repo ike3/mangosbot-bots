@@ -113,11 +113,24 @@ bool PullAction::Execute(Event& event)
                     strategy->RequestPull(target, false);
                     return false;
                 }
+                
+                string spellName = strategy->GetActionName();
+                if (!spellName.empty())
+                {
+                    SetSpellName(spellName);
+
+                    float spellRange;
+                    if (ai->GetSpellRange(spellName, &spellRange))
+                    {
+                        range = spellRange;
+                    }
+                }
 
                 // Execute the pull action
                 if (CastSpellAction::Execute(event))
                 {
                     strategy->RequestPull(target); //extend pull timer to walk back.
+                    return true;
                 }
                 else
                     return false;
