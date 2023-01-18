@@ -146,6 +146,25 @@ bool PullAction::Execute(Event& event)
     return false;
 }
 
+bool PullAction::isPossible()
+{
+    PullStrategy* strategy = PullStrategy::Get(ai);
+    if (strategy)
+    {
+        string spellName = strategy->GetActionName();
+        Unit* target = strategy->GetTarget();
+        if (!spellName.empty() && target)
+        {
+            if (!ai->CanCastSpell(spellName, target, true, nullptr, true))
+            {
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
+
 PullAction::PullAction(PlayerbotAI* ai, string name)
 : CastSpellAction(ai, name)
 {
