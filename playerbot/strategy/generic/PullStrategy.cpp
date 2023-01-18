@@ -57,6 +57,12 @@ string GetSpellName(PlayerbotAI* ai, const string& actionName)
 #endif
                         break;
                     }
+                    case ITEM_SUBCLASS_WEAPON_THROWN:
+                    {
+                        spellName = "throw";
+
+                        break;
+                    }
 
                     default: break;
                 }
