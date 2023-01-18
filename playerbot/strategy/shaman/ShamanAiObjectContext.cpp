@@ -30,6 +30,7 @@ namespace ai
                 creators["melee aoe"] = &shaman::StrategyFactoryInternal::melee_aoe;
                 creators["caster aoe"] = &shaman::StrategyFactoryInternal::caster_aoe;
                 creators["cure"] = &shaman::StrategyFactoryInternal::cure;
+                creators["pull"] = &shaman::StrategyFactoryInternal::pull;
             }
 
         private:
@@ -39,6 +40,7 @@ namespace ai
             static Strategy* melee_aoe(PlayerbotAI* ai) { return new MeleeAoeShamanStrategy(ai); }
             static Strategy* caster_aoe(PlayerbotAI* ai) { return new CasterAoeShamanStrategy(ai); }
             static Strategy* cure(PlayerbotAI* ai) { return new ShamanCureStrategy(ai); }
+            static Strategy* pull(PlayerbotAI* ai) { return new PullStrategy(ai, "lightning bolt"); }            
         };
 
         class TotemStrategyFactoryInternal : public NamedObjectContext<Strategy>
