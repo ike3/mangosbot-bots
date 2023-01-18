@@ -218,6 +218,9 @@ float PullMultiplier::GetValue(Action* action)
             return 1.0f;
         }
 
+        if (action->getRelevance() >= 100)
+            return 0.01f;
+
         return 0.0f;
     }
 
