@@ -222,7 +222,8 @@ PlayerbotAI::~PlayerbotAI()
 
 void PlayerbotAI::UpdateAI(uint32 elapsed, bool minimal)
 {
-    PerformanceMonitorOperation* pmo = sPerformanceMonitor.start(PERF_MON_TOTAL, "PlayerbotAI::UpdateAI");
+    string mapString = WorldPosition(bot).isOverworld() ? to_string(bot->GetMapId()) : "I";
+    PerformanceMonitorOperation* pmo = sPerformanceMonitor.start(PERF_MON_TOTAL, "PlayerbotAI::UpdateAI " + mapString);
     if(aiInternalUpdateDelay > elapsed)
     {
         aiInternalUpdateDelay -= elapsed;
@@ -354,7 +355,8 @@ void PlayerbotAI::UpdateAI(uint32 elapsed, bool minimal)
 bool PlayerbotAI::UpdateAIReaction(uint32 elapsed, bool minimal)
 {
     bool reactionFound, reactionFinished;
-    PerformanceMonitorOperation* pmo = sPerformanceMonitor.start(PERF_MON_TOTAL, "PlayerbotAI::UpdateAIReaction");
+    string mapString = WorldPosition(bot).isOverworld() ? to_string(bot->GetMapId()) : "I";
+    PerformanceMonitorOperation* pmo = sPerformanceMonitor.start(PERF_MON_TOTAL, "PlayerbotAI::UpdateAIReaction " + mapString);
     const bool reactionInProgress = reactionEngine->Update(elapsed, minimal, reactionFound, reactionFinished);
     if (pmo) pmo->finish();
 
