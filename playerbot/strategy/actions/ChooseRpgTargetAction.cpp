@@ -348,6 +348,7 @@ bool ChooseRpgTargetAction::isUseful()
     if (AI_VALUE(list<ObjectGuid>, "possible rpg targets").empty())
         return false;
 
+    //Not stay, not guard, not combat, not trading and group ready.
     if (!AI_VALUE(bool, "can move around"))
         return false;
 
@@ -371,27 +372,13 @@ bool ChooseRpgTargetAction::isFollowValid(Player* bot, WorldPosition pos)
     Player* realMaster = ai->GetMaster();
     AiObjectContext* context = ai->GetAiObjectContext();
 
-    bool inDungeon = false;
-
-    if (ai->HasActivePlayerMaster())
-    {
-        if (realMaster->IsInWorld() &&
-            realMaster->GetMap()->IsDungeon() &&
-            bot->GetMapId() == realMaster->GetMapId())
-            inDungeon = true;
-
-        if (realMaster &&
-            realMaster->IsInWorld() &&
-            realMaster->GetMap()->IsDungeon() &&
-            (realMaster->GetMapId() != pos.getMapId()))
-            return false;
-    }
+    if (!ai->HasStrategy("follow", BotState::BOT_STATE_NON_COMBAT))
+        return true;
 
     if (!master || bot == master)
         return true;
 
-    if (!ai->HasStrategy("follow", BotState::BOT_STATE_NON_COMBAT))
-        return true;
+    bool inDungeon = false;
 
     Formation* formation = AI_VALUE(Formation*, "formation");
     float distance = sqrt(master->GetDistance2d(pos.getX(), pos.getY(), DIST_CALC_NONE));
@@ -399,11 +386,23 @@ bool ChooseRpgTargetAction::isFollowValid(Player* bot, WorldPosition pos)
     if (!ai->HasActivePlayerMaster())
     {
         Player* player = master;
-        if(PAI_VALUE(WorldPosition,"last long move").distance(pos) < sPlayerbotAIConfig.reactDistance)
+        if (PAI_VALUE(WorldPosition, "last long move").distance(pos) < sPlayerbotAIConfig.reactDistance)
             return true;
 
-        if (!master->IsMoving() && distance < 50.0f)
+        if (!master->IsInCombat() && distance < sPlayerbotAIConfig.reactDistance * 0.75f)
             return true;
+
+        if (distance < sPlayerbotAIConfig.reactDistance * 0.25f)
+            return true;
+
+        return false;
+    }
+
+
+    if (realMaster->IsInWorld() && realMaster->GetMap()->IsDungeon())
+    {
+        if (bot->GetMapId() == realMaster->GetMapId())
+            inDungeon = true;
     }
 
     if ((inDungeon || master->IsInCombat()) && (realMaster == master) && distance > 5.0f)
