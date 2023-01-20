@@ -74,7 +74,14 @@ bool PullStartAction::Execute(Event& event)
         Unit* target = strategy->GetTarget();
         if (target)
         {
-            result = strategy->GetPreActionName().empty() ? true : ai->DoSpecificAction(strategy->GetPreActionName(), event, true);
+            if (strategy->GetPreActionName().empty())
+                result = true;
+            else
+            {
+                result = ai->DoSpecificAction(strategy->GetPreActionName(), event, true);
+                if(result)
+                    SetDuration(ai->GetAIInternalUpdateDelay());
+            }
 
             // Set the pet on passive mode during the pull
             Pet* pet = bot->GetPet();
@@ -127,7 +134,8 @@ bool PullAction::Execute(Event& event)
                 }
 
                 // Execute the pull action
-                if (CastSpellAction::Execute(event))
+                SET_AI_VALUE(Unit*, "current target", GetTarget());
+                if (ai->DoSpecificAction(spellName, event, true))
                 {
                     strategy->RequestPull(target); //extend pull timer to walk back.
                     return true;

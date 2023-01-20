@@ -175,7 +175,7 @@ string PullStrategy::GetActionName() const
     {
         if (ai->GetBot()->getClass() == CLASS_DRUID)
         {
-            if (ai->HasAnyAuraOf(ai->GetBot(), "bear form", "dire bear form", "cat form", NULL))
+            if (ai->HasStrategy("bear", BotState::BOT_STATE_COMBAT) || ai->HasStrategy("cat", BotState::BOT_STATE_COMBAT))
             {
                 pullAction = "faerie fire (feral)";
             }
