@@ -31,21 +31,21 @@ bool PullEndTrigger::IsActive()
             {
                 float distanceToPullTarget = target->GetDistance(ai->GetBot());
 
-                if (secondsSincePullStarted > 1 && ai->HasStrategy("pull back", BotState::BOT_STATE_COMBAT))
-                {
-                    PositionMap& posMap = AI_VALUE(PositionMap&, "position");
-                    PositionEntry pullPosition = posMap["pull position"];
-                    if (pullPosition.isSet())
-                    {
-                        distanceToPullTarget = bot->GetDistance(pullPosition.x, pullPosition.y, pullPosition.z);
-                        return distanceToPullTarget <= ai->GetRange("follow");
-                    }
-                }
 
-                // Check if the pulled target has approached the bot
-                 
-                if (distanceToPullTarget <= ATTACK_DISTANCE)
+                if (distanceToPullTarget <= ATTACK_DISTANCE || target->IsNonMeleeSpellCasted(true))
                 {
+                    if (ai->HasStrategy("pull back", BotState::BOT_STATE_COMBAT))
+                    {
+                        PositionMap& posMap = AI_VALUE(PositionMap&, "position");
+                        PositionEntry pullPosition = posMap["pull position"];
+                        if (pullPosition.isSet())
+                        {
+                            distanceToPullTarget = bot->GetDistance(pullPosition.x, pullPosition.y, pullPosition.z);
+                            return distanceToPullTarget <= ai->GetRange("follow");
+                        }
+                    }
+
+                    // Check if the pulled target has approached the bot
                     return true;
                 }
             }
