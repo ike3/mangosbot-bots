@@ -107,7 +107,7 @@ bool MoveToPositionAction::isUseful()
 {
     ai::PositionEntry pos = context->GetValue<ai::PositionMap&>("position")->Get()[qualifier];
     float distance = AI_VALUE2(float, "distance", string("position_") + qualifier);
-    return pos.isSet() && distance > ai->GetRange("follow") && distance < sPlayerbotAIConfig.reactDistance;
+    return pos.isSet() && distance > ai->GetRange("follow");
 }
 
 bool SetReturnPositionAction::Execute(Event& event)
