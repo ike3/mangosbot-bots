@@ -49,7 +49,7 @@ bool PullMyTargetAction::Execute(Event& event)
 
     if (!strategy->CanDoPullAction(target))
     {
-        ostringstream out; out << "Can't perform pull action '" << strategy->GetActionName() << "'";
+        ostringstream out; out << "Can't perform pull action '" << strategy->GetPullActionName() << "'";
         ai->TellError(out.str());
         return false;
     }
@@ -101,8 +101,17 @@ bool PullStartAction::Execute(Event& event)
     return result;
 }
 
+
+PullAction::PullAction(PlayerbotAI* ai, string name)
+    : CastSpellAction(ai, name)
+{
+    InitPullAction();
+}
+
 bool PullAction::Execute(Event& event)
 {
+    InitPullAction();
+
     PullStrategy* strategy = PullStrategy::Get(ai);
     if (strategy)
     {
@@ -120,22 +129,12 @@ bool PullAction::Execute(Event& event)
                     strategy->RequestPull(target, false);
                     return false;
                 }
-                
-                string spellName = strategy->GetActionName();
-                if (!spellName.empty())
-                {
-                    SetSpellName(spellName);
 
-                    float spellRange;
-                    if (ai->GetSpellRange(spellName, &spellRange))
-                    {
-                        range = spellRange;
-                    }
-                }
+                string actionName = strategy->GetPullActionName();
 
                 // Execute the pull action
                 SET_AI_VALUE(Unit*, "current target", GetTarget());
-                if (ai->DoSpecificAction(spellName, event, true))
+                if (ai->DoSpecificAction(actionName, event, true))
                 {
                     strategy->RequestPull(target); //extend pull timer to walk back.
                     return true;
@@ -156,10 +155,12 @@ bool PullAction::Execute(Event& event)
 
 bool PullAction::isPossible()
 {
+    InitPullAction();
+
     PullStrategy* strategy = PullStrategy::Get(ai);
     if (strategy)
     {
-        string spellName = strategy->GetActionName();
+        string spellName = strategy->GetSpellName();
         Unit* target = strategy->GetTarget();
         if (!spellName.empty() && target)
         {
@@ -173,14 +174,13 @@ bool PullAction::isPossible()
     return true;
 }
 
-PullAction::PullAction(PlayerbotAI* ai, string name)
-: CastSpellAction(ai, name)
+void PullAction::InitPullAction()
 {
     // Get the pull action spell name from the strategy
     PullStrategy* strategy = PullStrategy::Get(ai);
     if (strategy)
     {
-        string spellName = strategy->GetActionName();
+        string spellName = strategy->GetSpellName();
         if (!spellName.empty())
         {
             SetSpellName(spellName);
