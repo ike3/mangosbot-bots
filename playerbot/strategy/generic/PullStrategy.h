@@ -25,7 +25,7 @@ namespace ai
         string GetSpellName() const;
         float GetRange() const;
 
-        string GetPreActionName() const { return preActionName; };
+        string GetPreActionName() const;
 
         void RequestPull(Unit* target, bool resetTime = true);
         bool IsPullPendingToStart() const { return pendingToStart; }

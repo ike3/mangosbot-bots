@@ -41,11 +41,11 @@ string PullStrategy::GetPullActionName() const
     string modPullActionName = pullActionName;
 
     // Select the faerie fire based on druid strategy
-    if (modPullActionName == "faerie fire")
+    if (ai->GetBot()->getClass() == CLASS_DRUID)
     {
-        if (ai->GetBot()->getClass() == CLASS_DRUID)
+        if (modPullActionName == "faerie fire")
         {
-            if (ai->HasStrategy("bear", BotState::BOT_STATE_COMBAT) || ai->HasStrategy("cat", BotState::BOT_STATE_COMBAT))
+            if (ai->HasSpell("faerie fire (feral)") && (ai->HasStrategy("bear", BotState::BOT_STATE_COMBAT) || ai->HasStrategy("cat", BotState::BOT_STATE_COMBAT)))
             {
                 modPullActionName = "faerie fire (feral)";
             }
@@ -121,6 +121,25 @@ float PullStrategy::GetRange() const
     }
 
     return range;
+}
+
+string PullStrategy::GetPreActionName() const
+{
+    string modPullActionName = preActionName;
+
+    // Select the faerie fire based on druid strategy
+    if (ai->GetBot()->getClass() == CLASS_DRUID)
+    {
+        if (modPullActionName == "dire bear form")
+        {
+            if (GetPullActionName() == "faerie fire")
+            {
+                modPullActionName.clear();
+            }
+        }
+    }
+
+    return modPullActionName;
 }
 
 void PullStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
