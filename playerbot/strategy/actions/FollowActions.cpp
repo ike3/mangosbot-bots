@@ -17,6 +17,7 @@ bool FollowAction::Execute(Event& event)
 {
     Formation* formation = AI_VALUE(Formation*, "formation");
     string target = formation->GetTargetName();
+
     bool moved = false;
     if (!target.empty())
     {
@@ -28,7 +29,14 @@ bool FollowAction::Execute(Event& event)
         if (Formation::IsNullLocation(loc) || loc.mapid == -1)
             return false;
 
-        moved = MoveTo(loc.mapid, loc.coord_x, loc.coord_y, loc.coord_z);
+        Player* master = ai->GetGroupMaster();
+
+        float angle = WorldPosition(master).getAngleTo(loc)-master->GetOrientation();
+        float distance = WorldPosition(master).fDist(loc);
+
+        moved = Follow(master,distance,angle);
+
+        //moved = MoveTo(loc.mapid, loc.coord_x, loc.coord_y, loc.coord_z);
     }
 
     //if (moved) SetDuration(sPlayerbotAIConfig.reactDelay);
