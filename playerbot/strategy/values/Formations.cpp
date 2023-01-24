@@ -3,6 +3,7 @@
 #include "Formations.h"
 
 #include "../../ServerFacade.h"
+#include "../values/PositionValue.h"
 #include "Arrow.h"
 
 using namespace ai;
@@ -406,6 +407,34 @@ namespace ai
             return WorldLocation(bot->GetMapId(), x, y, z);
         }
     };
+
+    class CustomFormation : public MoveAheadFormation
+    {
+    public:
+        CustomFormation(PlayerbotAI* ai) : MoveAheadFormation(ai, "custom") {}
+        virtual WorldLocation GetLocationInternal()
+        {
+            Unit* target = AI_VALUE(Unit*, "current target");
+            Player* master = ai->GetGroupMaster();
+            if (!target && target != bot)
+                target = master;
+
+            if (!target)
+                return Formation::NullLocation;
+
+            PositionMap& posMap = AI_VALUE(PositionMap&, "position");
+            PositionEntry followPosition = posMap["follow"];
+
+            if (!followPosition.isSet())
+                return Formation::NullLocation;
+
+            WorldPosition relPos(followPosition.mapId, followPosition.x, followPosition.y, followPosition.z);
+
+            relPos.rotateXY(target->GetOrientation());
+
+            return WorldPosition(target) + relPos;
+        }
+    };
 };
 
 float Formation::GetFollowAngle()
@@ -527,6 +556,11 @@ bool FormationValue::Load(string formation)
     {
         if (value) delete value;
         value = new FarFormation(ai);
+    }
+    else if (formation == "custom")
+    {
+        if (value) delete value;
+        value = new CustomFormation(ai);
     }
     else return false;
 
