@@ -170,7 +170,7 @@ bool CheckMountStateAction::Execute(Event& event)
 
             float distance = AI_VALUE2(float, "distance", "position_guard");
 
-            if (guardPosition.isSet() && distance > ai->GetRange("follow"))
+            if (guardPosition.isSet() && distance > 40.0f)
             {
                 if (ai->HasStrategy("debug mount", BotState::BOT_STATE_NON_COMBAT) && !CurrentMountSpeed(bot))
                     ai->TellMasterNoFacing("Unmount. Near umounted group master.");
