@@ -262,6 +262,22 @@ bool MovementAction::FlyDirect(WorldPosition &startPosition, WorldPosition &endP
             movePosition = movePosition.limit(startPosition, maxDist);
     }
 
+    LastMovement& lastMove = AI_VALUE(LastMovement&,"last movement");
+    if (sPlayerbotAIConfig.hasLog("bot_movement.csv") && lastMove.lastMoveShort != movePosition)
+    {
+        ostringstream out;
+        out << sPlayerbotAIConfig.GetTimestampStr() << "+00,";
+        out << bot->GetName() << ",";
+        startPosition.printWKT({ startPosition, movePosition }, out, 1);
+        out << to_string(bot->getRace()) << ",";
+        out << to_string(bot->getClass()) << ",";
+        float subLevel = ((float)bot->GetLevel() + ((float)bot->GetUInt32Value(PLAYER_XP) / (float)bot->GetUInt32Value(PLAYER_NEXT_LEVEL_XP)));
+        out << subLevel << ",";
+        out << "1";
+
+        sPlayerbotAIConfig.log("bot_movement.csv", out.str().c_str());
+    }
+
     if (totalDistance > maxDist && !detailedMove && !ai->HasPlayerNearby(&movePosition)) //Why walk if you can fly?
     {
         time_t now = time(0);
