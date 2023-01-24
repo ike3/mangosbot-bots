@@ -56,10 +56,10 @@ bool PullMyTargetAction::Execute(Event& event)
 
     //Set position to return to after pulling.
     PositionMap& posMap = AI_VALUE(PositionMap&, "position");
-    PositionEntry pullPosition = posMap["pull position"];
+    PositionEntry pullPosition = posMap["pull"];
 
     pullPosition.Set(bot->GetPositionX(), bot->GetPositionY(), bot->GetPositionZ(), bot->GetMapId());
-    posMap["pull position"] = pullPosition;
+    posMap["pull"] = pullPosition;
 
     strategy->RequestPull(target);
     return true;
@@ -210,13 +210,13 @@ bool PullEndAction::Execute(Event& event)
             }
         }
 
-        // Remove the saved stay position
+        // Remove the saved pull position
         AiObjectContext* context = ai->GetAiObjectContext();
         PositionMap& posMap = AI_VALUE(PositionMap&, "position");
-        PositionEntry stayPosition = posMap["pull position"];
+        PositionEntry stayPosition = posMap["pull"];
         if (stayPosition.isSet())
         {
-            posMap.erase("pull position");
+            posMap.erase("pull");
         }
 
         strategy->OnPullEnded();

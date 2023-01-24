@@ -150,7 +150,7 @@ bool ReturnAction::isUseful()
 bool ReturnToStayPositionAction::isPossible()
 {
     PositionMap& posMap = AI_VALUE(PositionMap&, "position");
-    PositionEntry stayPosition = posMap["stay position"];
+    PositionEntry stayPosition = posMap["stay"];
     if (stayPosition.isSet())
     {
         const float distance = bot->GetDistance(stayPosition.x, stayPosition.y, stayPosition.z);
@@ -160,7 +160,7 @@ bool ReturnToStayPositionAction::isPossible()
             
             // Set the stay position to current position
             stayPosition.Set(bot->GetPositionX(), bot->GetPositionY(), bot->GetPositionZ(), bot->GetMapId());
-            posMap["stay position"] = stayPosition;
+            posMap["stay"] = stayPosition;
         }
 
         return true;
@@ -172,7 +172,7 @@ bool ReturnToStayPositionAction::isPossible()
 bool ReturnToPullPositionAction::isPossible()
 {
     PositionMap& posMap = AI_VALUE(PositionMap&, "position");
-    PositionEntry stayPosition = posMap["pull position"];
+    PositionEntry stayPosition = posMap["pull"];
     if (stayPosition.isSet())
     {
         PullStrategy* strategy = PullStrategy::Get(ai);
@@ -190,7 +190,7 @@ bool ReturnToPullPositionAction::isPossible()
 
                         // Set the stay position to current position
                         stayPosition.Set(bot->GetPositionX(), bot->GetPositionY(), bot->GetPositionZ(), bot->GetMapId());
-                        posMap["pull position"] = stayPosition;
+                        posMap["pull"] = stayPosition;
                     }
 
                     return true;

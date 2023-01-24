@@ -37,7 +37,7 @@ bool PullEndTrigger::IsActive()
                     if (ai->HasStrategy("pull back", BotState::BOT_STATE_COMBAT))
                     {
                         PositionMap& posMap = AI_VALUE(PositionMap&, "position");
-                        PositionEntry pullPosition = posMap["pull position"];
+                        PositionEntry pullPosition = posMap["pull"];
                         if (pullPosition.isSet())
                         {
                             distanceToPullTarget = bot->GetDistance(pullPosition.x, pullPosition.y, pullPosition.z);

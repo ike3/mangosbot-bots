@@ -184,10 +184,10 @@ bool SeeSpellAction::MoveToSpell(WorldPosition& spellPosition, bool inFormation)
     if (ai->HasStrategy("stay", BotState::BOT_STATE_COMBAT))
     {
         PositionMap& posMap = AI_VALUE(PositionMap&, "position");
-        PositionEntry stayPosition = posMap["stay position"];
+        PositionEntry stayPosition = posMap["stay"];
 
         stayPosition.Set(spellPosition.getX(), spellPosition.getY(), spellPosition.getZ(), spellPosition.getMapId());
-        posMap["stay position"] = stayPosition;
+        posMap["stay"] = stayPosition;
         return true;
     }
     else if (ai->HasStrategy("guard", BotState::BOT_STATE_NON_COMBAT))
