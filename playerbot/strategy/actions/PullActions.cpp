@@ -49,17 +49,17 @@ bool PullMyTargetAction::Execute(Event& event)
 
     if (!strategy->CanDoPullAction(target))
     {
-        ostringstream out; out << "Can't perform pull action '" << strategy->GetActionName() << "'";
+        ostringstream out; out << "Can't perform pull action '" << strategy->GetPullActionName() << "'";
         ai->TellError(out.str());
         return false;
     }
 
     //Set position to return to after pulling.
     PositionMap& posMap = AI_VALUE(PositionMap&, "position");
-    PositionEntry pullPosition = posMap["pull position"];
+    PositionEntry pullPosition = posMap["pull"];
 
     pullPosition.Set(bot->GetPositionX(), bot->GetPositionY(), bot->GetPositionZ(), bot->GetMapId());
-    posMap["pull position"] = pullPosition;
+    posMap["pull"] = pullPosition;
 
     strategy->RequestPull(target);
     return true;
@@ -101,8 +101,17 @@ bool PullStartAction::Execute(Event& event)
     return result;
 }
 
+
+PullAction::PullAction(PlayerbotAI* ai, string name)
+    : CastSpellAction(ai, name)
+{
+    InitPullAction();
+}
+
 bool PullAction::Execute(Event& event)
 {
+    InitPullAction();
+
     PullStrategy* strategy = PullStrategy::Get(ai);
     if (strategy)
     {
@@ -120,22 +129,12 @@ bool PullAction::Execute(Event& event)
                     strategy->RequestPull(target, false);
                     return false;
                 }
-                
-                string spellName = strategy->GetActionName();
-                if (!spellName.empty())
-                {
-                    SetSpellName(spellName);
 
-                    float spellRange;
-                    if (ai->GetSpellRange(spellName, &spellRange))
-                    {
-                        range = spellRange;
-                    }
-                }
+                string actionName = strategy->GetPullActionName();
 
                 // Execute the pull action
                 SET_AI_VALUE(Unit*, "current target", GetTarget());
-                if (ai->DoSpecificAction(spellName, event, true))
+                if (ai->DoSpecificAction(actionName, event, true))
                 {
                     strategy->RequestPull(target); //extend pull timer to walk back.
                     return true;
@@ -156,10 +155,12 @@ bool PullAction::Execute(Event& event)
 
 bool PullAction::isPossible()
 {
+    InitPullAction();
+
     PullStrategy* strategy = PullStrategy::Get(ai);
     if (strategy)
     {
-        string spellName = strategy->GetActionName();
+        string spellName = strategy->GetSpellName();
         Unit* target = strategy->GetTarget();
         if (!spellName.empty() && target)
         {
@@ -173,14 +174,13 @@ bool PullAction::isPossible()
     return true;
 }
 
-PullAction::PullAction(PlayerbotAI* ai, string name)
-: CastSpellAction(ai, name)
+void PullAction::InitPullAction()
 {
     // Get the pull action spell name from the strategy
     PullStrategy* strategy = PullStrategy::Get(ai);
     if (strategy)
     {
-        string spellName = strategy->GetActionName();
+        string spellName = strategy->GetSpellName();
         if (!spellName.empty())
         {
             SetSpellName(spellName);
@@ -210,13 +210,13 @@ bool PullEndAction::Execute(Event& event)
             }
         }
 
-        // Remove the saved stay position
+        // Remove the saved pull position
         AiObjectContext* context = ai->GetAiObjectContext();
         PositionMap& posMap = AI_VALUE(PositionMap&, "position");
-        PositionEntry stayPosition = posMap["pull position"];
+        PositionEntry stayPosition = posMap["pull"];
         if (stayPosition.isSet())
         {
-            posMap.erase("pull position");
+            posMap.erase("pull");
         }
 
         strategy->OnPullEnded();

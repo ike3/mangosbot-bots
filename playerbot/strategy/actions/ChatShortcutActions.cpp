@@ -7,20 +7,20 @@
 
 using namespace ai;
 
-void ReturnPositionResetAction::ResetReturnPosition()
+void ReturnPositionResetAction::ResetPosition(string posName)
 {
     ai::PositionMap& posMap = context->GetValue<ai::PositionMap&>("position")->Get();
-    ai::PositionEntry pos = posMap["return"];
+    ai::PositionEntry pos = posMap[posName];
     pos.Reset();
-    posMap["return"] = pos;
+    posMap[posName] = pos;
 }
 
-void ReturnPositionResetAction::SetReturnPosition(float x, float y, float z)
+void ReturnPositionResetAction::SetPosition(WorldPosition wPos, string posName)
 {
     ai::PositionMap& posMap = context->GetValue<ai::PositionMap&>("position")->Get();
-    ai::PositionEntry pos = posMap["return"];
-    pos.Set(x, y, z, ai->GetBot()->GetMapId());
-    posMap["return"] = pos;
+    ai::PositionEntry pos = posMap[posName];
+    pos.Set(wPos);
+    posMap[posName] = pos;
 }
 
 bool FollowChatShortcutAction::Execute(Event& event)
@@ -38,10 +38,25 @@ bool FollowChatShortcutAction::Execute(Event& event)
     pos.Reset();
     posMap["return"] = pos;
 
-    if (sServerFacade.IsInCombat(bot))
+    Formation* formation = AI_VALUE(Formation*, "formation");
+
+    if (formation->getName() == "custom")
     {
-        Formation* formation = AI_VALUE(Formation*, "formation");
+
+        ai::PositionEntry pos = posMap["follow"];
+
+        WorldPosition relPos(bot);
+        relPos -= WorldPosition(ai->GetMaster());
+        relPos.rotateXY(-1 * ai->GetMaster()->GetOrientation());
+        pos.Set(relPos.getX(), relPos.getY(), relPos.getZ(), relPos.getMapId());
+
+        posMap["follow"] = pos;
+    }
+
+    if (sServerFacade.IsInCombat(bot))
+    {     
         string target = formation->GetTargetName();
+
         bool moved = false;
         if (!target.empty())
         {
@@ -53,7 +68,12 @@ bool FollowChatShortcutAction::Execute(Event& event)
             if (Formation::IsNullLocation(loc) || loc.mapid == -1)
                 return false;
 
-            moved = MoveTo(loc.mapid, loc.coord_x, loc.coord_y, loc.coord_z);
+            Player* master = ai->GetGroupMaster();
+
+            float angle = WorldPosition(master).getAngleTo(loc) - master->GetOrientation();
+            float distance = WorldPosition(master).fDist(loc);
+
+            moved = Follow(master, distance, angle);
         }
         if (moved)
         {
@@ -76,9 +96,33 @@ bool StayChatShortcutAction::Execute(Event& event)
     ai->ChangeStrategy("+stay,-follow,-passive", BotState::BOT_STATE_NON_COMBAT);
     ai->ChangeStrategy("+stay,-follow,-passive", BotState::BOT_STATE_COMBAT);
 
-    SetReturnPosition(bot->GetPositionX(), bot->GetPositionY(), bot->GetPositionZ());
+    SetPosition(bot);
+    SetPosition(bot, "stay");
+
+    MotionMaster& mm = *bot->GetMotionMaster();
+    mm.Clear();
 
     ai->TellError(BOT_TEXT("staying"));
+    return true;
+}
+
+bool GuardChatShortcutAction::Execute(Event& event)
+{
+    Player* master = GetMaster();
+    if (!master)
+        return false;
+
+    ai->Reset();
+    ai->ChangeStrategy("+guard,-follow,-passive", BotState::BOT_STATE_NON_COMBAT);
+    ai->ChangeStrategy("+guard,-follow,-passive", BotState::BOT_STATE_COMBAT);
+
+    SetPosition(bot);
+    SetPosition(bot, "guard");
+
+    MotionMaster& mm = *bot->GetMotionMaster();
+    mm.Clear();
+
+    ai->TellError(BOT_TEXT("guarding"));
     return true;
 }
 
@@ -91,7 +135,7 @@ bool FleeChatShortcutAction::Execute(Event& event)
     ai->Reset();
     ai->ChangeStrategy("+follow,+passive", BotState::BOT_STATE_NON_COMBAT);
     ai->ChangeStrategy("+follow,+passive", BotState::BOT_STATE_COMBAT);
-    ResetReturnPosition();
+    ResetPosition();
     if (bot->GetMapId() != master->GetMapId() || sServerFacade.GetDistance2d(bot, master) > sPlayerbotAIConfig.sightDistance)
     {
         ai->TellError(BOT_TEXT("fleeing_far"));
@@ -110,7 +154,7 @@ bool GoawayChatShortcutAction::Execute(Event& event)
     ai->Reset();
     ai->ChangeStrategy("+runaway", BotState::BOT_STATE_NON_COMBAT);
     ai->ChangeStrategy("+runaway", BotState::BOT_STATE_COMBAT);
-    ResetReturnPosition();
+    ResetPosition();
     ai->TellError("Running away");
     return true;
 }
@@ -123,7 +167,7 @@ bool GrindChatShortcutAction::Execute(Event& event)
 
     ai->Reset();
     ai->ChangeStrategy("+grind,-passive", BotState::BOT_STATE_NON_COMBAT);
-    ResetReturnPosition();
+    ResetPosition();
     ai->TellError(BOT_TEXT("grinding"));
     return true;
 }
@@ -140,7 +184,7 @@ bool TankAttackChatShortcutAction::Execute(Event& event)
     ai->Reset();
     ai->ChangeStrategy("-passive", BotState::BOT_STATE_NON_COMBAT);
     ai->ChangeStrategy("-passive", BotState::BOT_STATE_COMBAT);
-    ResetReturnPosition();
+    ResetPosition();
     ai->TellError(BOT_TEXT("attacking"));
     return true;
 }

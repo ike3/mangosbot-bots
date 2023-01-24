@@ -406,9 +406,6 @@ namespace ai
                 case ITEM_SUBCLASS_WEAPON_CROSSBOW:
                     subClass = ITEM_SUBCLASS_ARROW;
                     break;
-                case ITEM_SUBCLASS_WEAPON_THROWN:
-                    subClass = ITEM_SUBCLASS_THROWN;
-                    break;
                 }
 
                 if (!subClass)
@@ -417,6 +414,10 @@ namespace ai
                 if (proto->SubClass == subClass)
                     return true;
             }
+
+            if (weaponType == ITEM_SUBCLASS_WEAPON_THROWN && proto->SubClass == ITEM_SUBCLASS_WEAPON_THROWN)
+                return true;
+
             return false;
         }
     private:

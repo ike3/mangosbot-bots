@@ -23,9 +23,41 @@ private:
     }
 };
 
-string GetSpellName(PlayerbotAI* ai, const string& actionName)
+PullStrategy::PullStrategy(PlayerbotAI* ai, string pullAction, string prePullAction)
+    : Strategy(ai)
+    , pullActionName(pullAction)
+    , preActionName(prePullAction)
+    , pendingToStart(false)
+    , pullStartTime(0)
 {
-    string spellName = actionName;
+    actionNodeFactories.Add(new PullStrategyActionNodeFactory());
+
+    if (!ai->GetBot())
+        return;
+}
+
+string PullStrategy::GetPullActionName() const
+{
+    string modPullActionName = pullActionName;
+
+    // Select the faerie fire based on druid strategy
+    if (ai->GetBot()->getClass() == CLASS_DRUID)
+    {
+        if (modPullActionName == "faerie fire")
+        {
+            if (ai->HasSpell("faerie fire (feral)") && (ai->HasStrategy("bear", BotState::BOT_STATE_COMBAT) || ai->HasStrategy("cat", BotState::BOT_STATE_COMBAT)))
+            {
+                modPullActionName = "faerie fire (feral)";
+            }
+        }
+    }
+
+    return modPullActionName;
+}
+
+string PullStrategy::GetSpellName() const
+{
+    string spellName = GetPullActionName();
     if (spellName == "shoot")
     {
         const Item* equippedWeapon = ai->GetBot()->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_RANGED);
@@ -73,33 +105,41 @@ string GetSpellName(PlayerbotAI* ai, const string& actionName)
     return spellName;
 }
 
-PullStrategy::PullStrategy(PlayerbotAI* ai, string pullAction, string prePullAction)
-    : Strategy(ai)
-    , actionName(pullAction)
-    , pendingToStart(false)
-    , pullStartTime(0)
+float PullStrategy::GetRange() const
 {
-    actionNodeFactories.Add(new PullStrategyActionNodeFactory());
-
-    if (!ai->GetBot())
-        return;
-
-    // Try to get the correct spell name
-    string spellName = GetSpellName(ai, pullAction);
+    float range;
 
     // Try to get the pull action range
-    if (ai->GetSpellRange(spellName, &range))
+    if (ai->GetSpellRange(GetSpellName(), &range))
     {
         range -= CONTACT_DISTANCE;
     }
     else
     {
         // Set the default range if the range was not found
-        range = (actionName == "shoot") ? ai->GetRange("shoot") : ai->GetRange("spell");
+        range = (pullActionName == "shoot") ? ai->GetRange("shoot") : ai->GetRange("spell");
     }
 
-    actionName = spellName;
-    preActionName = prePullAction;
+    return range;
+}
+
+string PullStrategy::GetPreActionName() const
+{
+    string modPullActionName = preActionName;
+
+    // Select the faerie fire based on druid strategy
+    if (ai->GetBot()->getClass() == CLASS_DRUID)
+    {
+        if (modPullActionName == "dire bear form")
+        {
+            if (GetPullActionName() == "faerie fire")
+            {
+                modPullActionName.clear();
+            }
+        }
+    }
+
+    return modPullActionName;
 }
 
 void PullStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -149,7 +189,7 @@ bool PullStrategy::CanDoPullAction(Unit* target)
 {
     // Check if the bot can perform the pull action
     bool canPull = false;
-    const string& pullAction = GetActionName();
+    const string& pullAction = GetPullActionName();
     if (!pullAction.empty())
     {
         // Temporarily set the pull target to be used by the can do specific action method
@@ -166,24 +206,6 @@ bool PullStrategy::CanDoPullAction(Unit* target)
     return canPull;
 }
 
-string PullStrategy::GetActionName() const
-{
-    string pullAction = actionName;
-
-    // Select the faerie fire based on druid strategy
-    if (pullAction == "faerie fire")
-    {
-        if (ai->GetBot()->getClass() == CLASS_DRUID)
-        {
-            if (ai->HasStrategy("bear", BotState::BOT_STATE_COMBAT) || ai->HasStrategy("cat", BotState::BOT_STATE_COMBAT))
-            {
-                pullAction = "faerie fire (feral)";
-            }
-        }
-    }
-
-    return pullAction;
-}
 
 void PullStrategy::OnPullStarted()
 {

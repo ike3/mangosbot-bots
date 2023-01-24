@@ -66,7 +66,7 @@ bool SeeSpellAction::Execute(Event& event)
     if (!master)
         return false;
 
-    if (!ai->HasStrategy("RTSC", ai->GetState()))
+    if (!ai->HasStrategy("rtsc", ai->GetState()))
         return false;
 
     if (spellId != RTSC_MOVE_SPELL)
@@ -184,10 +184,11 @@ bool SeeSpellAction::MoveToSpell(WorldPosition& spellPosition, bool inFormation)
     if (ai->HasStrategy("stay", BotState::BOT_STATE_COMBAT))
     {
         PositionMap& posMap = AI_VALUE(PositionMap&, "position");
-        PositionEntry stayPosition = posMap["stay position"];
+        PositionEntry stayPosition = posMap["stay"];
 
         stayPosition.Set(spellPosition.getX(), spellPosition.getY(), spellPosition.getZ(), spellPosition.getMapId());
-        posMap["stay position"] = stayPosition;
+        posMap["stay"] = stayPosition;
+        return true;
     }
     else if (ai->HasStrategy("guard", BotState::BOT_STATE_NON_COMBAT))
     {
@@ -196,6 +197,24 @@ bool SeeSpellAction::MoveToSpell(WorldPosition& spellPosition, bool inFormation)
 
         guardPosition.Set(spellPosition.getX(), spellPosition.getY(), spellPosition.getZ(), spellPosition.getMapId());
         posMap["guard"] = guardPosition;
+        return true;
+    }
+    else if (ai->HasStrategy("follow", BotState::BOT_STATE_NON_COMBAT) && ai->GetMaster())
+    {
+        FormationValue* formation = (FormationValue*)context->GetValue<Formation*>("formation");
+
+        PositionMap& posMap = AI_VALUE(PositionMap&, "position");
+        PositionEntry followPosition = posMap["follow"];
+
+        spellPosition -= WorldPosition(ai->GetMaster());
+        spellPosition.rotateXY(-1 * ai->GetMaster()->GetOrientation());
+
+        followPosition.Set(spellPosition.getX(), spellPosition.getY(), spellPosition.getZ(), spellPosition.getMapId());
+        posMap["follow"] = followPosition;
+
+        formation->Load("custom");
+
+        return true;
     }
 
 
@@ -207,6 +226,9 @@ void SeeSpellAction::SetFormationOffset(WorldPosition& spellPosition)
     Player* master = ai->GetMaster();
 
     Formation* formation = AI_VALUE(Formation*, "formation");
+
+    if (formation->getName() == "custom")
+        return;
 
     WorldLocation formationLocation = formation->GetLocation();
 

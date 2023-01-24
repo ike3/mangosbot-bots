@@ -27,31 +27,6 @@ void StayStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
     InitNonCombatTriggers(triggers);
 }
 
-void StayStrategy::OnStrategyAdded(BotState state)
-{
-    // Set the stay position to current position
-    AiObjectContext* context = ai->GetAiObjectContext();
-    
-    Player* bot = ai->GetBot();
-    PositionMap& posMap = AI_VALUE(PositionMap&, "position");
-    PositionEntry stayPosition = posMap["stay position"];
-
-    stayPosition.Set(bot->GetPositionX(), bot->GetPositionY(), bot->GetPositionZ(), bot->GetMapId());
-    posMap["stay position"] = stayPosition;
-}
-
-void StayStrategy::OnStrategyRemoved(BotState state)
-{
-    // Remove the saved stay position
-    AiObjectContext* context = ai->GetAiObjectContext();
-    PositionMap& posMap = AI_VALUE(PositionMap&, "position");
-    PositionEntry stayPosition = posMap["stay position"];
-    if (stayPosition.isSet())
-    {
-        posMap.erase("stay position");
-    }
-}
-
 void SitStrategy::InitNonCombatTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(

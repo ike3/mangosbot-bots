@@ -27,6 +27,7 @@ namespace ai
         bool Execute(Event& event) override;
         bool isPossible() override;
     private:
+        void InitPullAction();
         string GetTargetName() override { return "pull target"; }
         string GetReachActionName() override { return "reach pull"; }
     };

@@ -1,7 +1,7 @@
 #include "botpch.h"
 #include "../../playerbot.h"
 #include "CheckMountStateAction.h"
-
+#include "../values/PositionValue.h"
 #include "../../ServerFacade.h"
 #include "BattleGroundWS.h"
 #include "../../TravelMgr.h"
@@ -83,6 +83,22 @@ bool CheckMountStateAction::Execute(Event& event)
         return UnMount();
     }
 
+    //Near guard position
+    if (ai->HasStrategy("guard", BotState::BOT_STATE_NON_COMBAT))
+    {
+        PositionMap& posMap = AI_VALUE(PositionMap&, "position");
+        PositionEntry guardPosition = posMap["guard"];
+
+        float distance = AI_VALUE2(float, "distance", "position_guard");
+
+        if (guardPosition.isSet() && distance < ai->GetRange("follow"))
+        {
+            if (ai->HasStrategy("debug mount", BotState::BOT_STATE_NON_COMBAT) && CurrentMountSpeed(bot))
+                ai->TellMasterNoFacing("Unmount. Near umounted group master.");
+            return UnMount();
+        }
+    }
+
     //Doing stuff nearby.
     if (travelTarget->isWorking())
     {
@@ -138,10 +154,26 @@ bool CheckMountStateAction::Execute(Event& event)
             }
 
             //Mounting in safe place.
-            if (!AI_VALUE(list<ObjectGuid>, "possible rpg targets").empty() && urand(0, 100) > 50)
+            if (!ai->HasStrategy("guard", BotState::BOT_STATE_NON_COMBAT) && !AI_VALUE(list<ObjectGuid>, "possible rpg targets").empty() && urand(0, 100) > 50)
             {
                 if (ai->HasStrategy("debug mount", BotState::BOT_STATE_NON_COMBAT) && !CurrentMountSpeed(bot))
                     ai->TellMasterNoFacing("Mount. Near rpg targets.");
+                return Mount();
+            }
+        }
+
+        //Far from guard position
+        if (ai->HasStrategy("guard", BotState::BOT_STATE_NON_COMBAT))
+        {
+            PositionMap& posMap = AI_VALUE(PositionMap&, "position");
+            PositionEntry guardPosition = posMap["guard"];
+
+            float distance = AI_VALUE2(float, "distance", "position_guard");
+
+            if (guardPosition.isSet() && distance > 40.0f)
+            {
+                if (ai->HasStrategy("debug mount", BotState::BOT_STATE_NON_COMBAT) && !CurrentMountSpeed(bot))
+                    ai->TellMasterNoFacing("Unmount. Near umounted group master.");
                 return Mount();
             }
         }

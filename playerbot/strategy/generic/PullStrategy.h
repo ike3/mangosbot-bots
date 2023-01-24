@@ -21,9 +21,11 @@ namespace ai
         Unit* GetTarget() const;
         bool HasTarget() const { return GetTarget() != nullptr; }
 
-        string GetActionName() const;
-        string GetPreActionName() const { return preActionName; };
-        float GetRange() const { return range; }
+        string GetPullActionName() const;
+        string GetSpellName() const;
+        float GetRange() const;
+
+        string GetPreActionName() const;
 
         void RequestPull(Unit* target, bool resetTime = true);
         bool IsPullPendingToStart() const { return pendingToStart; }
@@ -40,8 +42,7 @@ namespace ai
         void InitNonCombatMultipliers(std::list<Multiplier*>& multipliers) override;
 
     private:
-        float range;
-        string actionName;
+        string pullActionName; //shoot
         string preActionName;
         bool pendingToStart;
         time_t pullStartTime;

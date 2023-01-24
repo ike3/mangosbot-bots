@@ -4574,6 +4574,8 @@ list<Item*> PlayerbotAI::InventoryParseItems(string text, IterateItemsMask mask)
         {
             FindAmmoVisitor visitor(bot, pItem->GetProto()->SubClass);
             InventoryIterateItems(&visitor, ITERATE_ITEMS_IN_BAGS);
+            if(pItem->GetProto()->SubClass == ITEM_SUBCLASS_WEAPON_THROWN)
+                InventoryIterateItems(&visitor, ITERATE_ITEMS_IN_EQUIP);
             found.insert(visitor.GetResult().begin(), visitor.GetResult().end());
         }
     }

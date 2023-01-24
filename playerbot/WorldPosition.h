@@ -139,6 +139,8 @@ namespace ai
         float getAngleTo(const WorldPosition& endPos) const { float ang = atan2(endPos.coord_y - coord_y, endPos.coord_x - coord_x); return (ang >= 0) ? ang : 2 * M_PI_F + ang; };
         float getAngleBetween(const WorldPosition& dir1, const WorldPosition& dir2) const { return abs(getAngleTo(dir1) - getAngleTo(dir2)); };
 
+        void rotateXY(const float angle) { float nx = cos(angle) * coord_x - sin(angle) * coord_y, ny = sin(angle) * coord_x + cos(angle) * coord_y; coord_x = nx; coord_y = ny; }
+
         WorldPosition limit(const WorldPosition& center, const float maxDistance) { WorldPosition pos(*this); pos -= center; float size = pos.size(); if (size > maxDistance) { pos /= pos.size(); pos *= maxDistance; pos += center; } return pos; }
 
         WorldPosition lastInRange(const vector<WorldPosition>& list, const float minDist = -1, const float maxDist = -1) const;

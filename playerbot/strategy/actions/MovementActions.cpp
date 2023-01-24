@@ -1308,8 +1308,12 @@ bool MovementAction::Follow(Unit* target, float distance, float angle)
 
     if (bot->GetMotionMaster()->GetCurrentMovementGeneratorType() == FOLLOW_MOTION_TYPE)
     {
+        MovementGenerator const* gen = mm.GetCurrent();
+        FollowMovementGenerator const* fgen = dynamic_cast<FollowMovementGenerator const*>(gen);
+      
         Unit *currentTarget = sServerFacade.GetChaseTarget(bot);
-        if (currentTarget && currentTarget->GetObjectGuid() == target->GetObjectGuid()) return false;
+        if (currentTarget && currentTarget->GetObjectGuid() == target->GetObjectGuid()
+            && fgen->GetAngle() == angle && fgen->GetOffset() == distance) return false;
     }
 
     if(mm.GetCurrent()->GetMovementGeneratorType() != FOLLOW_MOTION_TYPE)

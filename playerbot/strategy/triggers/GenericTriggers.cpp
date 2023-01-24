@@ -544,7 +544,7 @@ bool HasAreaDebuffTrigger::IsActive()
 
 bool ReturnToStayPositionTrigger::IsActive()
 {
-    PositionEntry stayPosition = AI_VALUE(PositionMap&, "position")["stay position"];
+    PositionEntry stayPosition = AI_VALUE(PositionMap&, "position")["stay"];
     if (stayPosition.isSet())
     {
         const float distance = bot->GetDistance(stayPosition.x, stayPosition.y, stayPosition.z);
@@ -556,7 +556,7 @@ bool ReturnToStayPositionTrigger::IsActive()
 
 bool ReturnToPullPositionTrigger::IsActive()
 {
-    PositionEntry pullPosition = AI_VALUE(PositionMap&, "position")["pull position"];
+    PositionEntry pullPosition = AI_VALUE(PositionMap&, "position")["pull"];
     if (pullPosition.isSet())
     {
         const float distance = bot->GetDistance(pullPosition.x, pullPosition.y, pullPosition.z);

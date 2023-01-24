@@ -183,6 +183,10 @@ void ChatCommandHandlerStrategy::InitReactionTriggers(std::list<TriggerNode*> &t
         NextAction::array(0, new NextAction("stay chat shortcut", relevance), NULL)));
 
     triggers.push_back(new TriggerNode(
+        "guard",
+        NextAction::array(0, new NextAction("guard chat shortcut", relevance), NULL)));
+
+    triggers.push_back(new TriggerNode(
         "wait for attack time",
         NextAction::array(0, new NextAction("wait for attack time", relevance), NULL)));
 

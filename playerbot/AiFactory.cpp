@@ -253,7 +253,7 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
             break;
         case CLASS_PALADIN:
             if (tab == 1)
-                engine->addStrategies("tank", "tank assist", "bthreat", "cure", "close", "cc", NULL);
+                engine->addStrategies("tank", "tank assist", "pull", "pull back", "bthreat", "cure", "close", "cc", NULL);
 			else if(tab == 0)
                 engine->addStrategies("heal", "dps assist", "cure", "flee", "cc", "ranged", NULL);
             else
@@ -308,7 +308,7 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
 #ifdef MANGOSBOT_TWO
         case CLASS_DEATH_KNIGHT:
             if (tab == 0)
-                engine->addStrategies("blood", NULL);
+                engine->addStrategies("blood", "tank assist", "pull", "pull back", NULL);
             else if (tab == 1)
                 engine->addStrategies("frost", "frost aoe", "dps assist", "threat", NULL);
             else

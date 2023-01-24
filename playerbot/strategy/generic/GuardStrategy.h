@@ -17,7 +17,5 @@ namespace ai
 #endif
     private:
         NextAction** GetDefaultNonCombatActions() override;
-        void OnStrategyAdded(BotState state) override;
-        void OnStrategyRemoved(BotState state) override;
     };
 }
