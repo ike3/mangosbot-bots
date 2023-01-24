@@ -40,8 +40,11 @@ WorldLocation MoveAheadFormation::GetLocation()
 
     if (sServerFacade.isMoving(master)) {
         float ori = master->GetOrientation();
-        float x1 = x + sPlayerbotAIConfig.tooCloseDistance * cos(ori);
-        float y1 = y + sPlayerbotAIConfig.tooCloseDistance * sin(ori);
+
+        float aheadDistance = std::min(std::max(sPlayerbotAIConfig.tooCloseDistance,sqrt(WorldPosition(0, x, y, z).sqDistance2d(bot))), sPlayerbotAIConfig.sightDistance);
+
+        float x1 = x + aheadDistance * cos(ori);
+        float y1 = y + aheadDistance * sin(ori);
 #ifdef MANGOSBOT_TWO
         float ground = master->GetMap()->GetHeight(master->GetPhaseMask(), x1, y1, z);
 #else
