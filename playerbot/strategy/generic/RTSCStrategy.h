@@ -7,6 +7,6 @@ namespace ai
     {
     public:
         RTSCStrategy(PlayerbotAI* ai) : Strategy(ai) {}
-        string getName() override { return "RTSC"; }
+        string getName() override { return "rtsc"; }
     };
 }

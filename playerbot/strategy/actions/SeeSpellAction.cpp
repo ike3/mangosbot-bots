@@ -66,7 +66,7 @@ bool SeeSpellAction::Execute(Event& event)
     if (!master)
         return false;
 
-    if (!ai->HasStrategy("RTSC", ai->GetState()))
+    if (!ai->HasStrategy("rtsc", ai->GetState()))
         return false;
 
     if (spellId != RTSC_MOVE_SPELL)
