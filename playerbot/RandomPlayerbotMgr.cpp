@@ -314,6 +314,28 @@ int RandomPlayerbotMgr::GetMaxAllowedBotCount()
     return GetEventValue(0, "bot_count");
 }
 
+inline ostringstream generate_ostringstream(Unit* bot, vector<pair<int, int>>& log, bool is_sqDist_greater_200 = false) {
+    ostringstream out;
+    out << bot->GetName() << ",";
+    out << std::fixed << std::setprecision(1);
+    out << "\"LINESTRING(";
+    if (is_sqDist_greater_200) {
+        out << log.back().first << " " << log.back().second << ",";
+        out << WorldPosition(bot).getDisplayX() << " " << WorldPosition(bot).getDisplayY();
+    }
+    else {
+        for (auto& p : log) {
+            out << p.first << " " << p.second << (&p == &log.back() ? "" : ",");
+        }
+    }
+    out << ")\",";
+    out << bot->GetOrientation() << ",";
+    out << to_string(bot->getRace()) << ",";
+    out << to_string(bot->getClass()) << ",";
+    out << is_sqDist_greater_200 ? "1" : "0";
+    return out;
+}
+
 void RandomPlayerbotMgr::LogPlayerLocation()
 {
     activeBots = 0;
@@ -366,27 +388,20 @@ void RandomPlayerbotMgr::LogPlayerLocation()
 
                 if (sPlayerbotAIConfig.hasLog("player_paths.csv"))
                 {
-                    if(playerBotMoveLog[i.first].empty() || playerBotMoveLog[i.first].back().first != int32(WorldPosition(bot).getDisplayX()) || playerBotMoveLog[i.first].back().second != int32(WorldPosition(bot).getDisplayY()))
+                    float sqDist = (playerBotMoveLog[i.first].empty() ? 1 : ( pow(playerBotMoveLog[i.first].back().first - int32(WorldPosition(bot).getDisplayX()),2) + pow(playerBotMoveLog[i.first].back().second - int32(WorldPosition(bot).getDisplayY()),2)));
+                    if (sqDist <= 200 * 200) {
                         playerBotMoveLog[i.first].push_back(make_pair(WorldPosition(bot).getDisplayX(), WorldPosition(bot).getDisplayY()));
-
-                    if (playerBotMoveLog[i.first].size() > 100)
-                    {
-                        ostringstream out;
-                        out << bot->GetName() << ",";
-                        out << std::fixed << std::setprecision(1);
-
-                        out << "\"LINESTRING(";
-
-                        for (auto& p : playerBotMoveLog[i.first])
-                            out << p.first << " " << p.second << (&p == &playerBotMoveLog[i.first].back() ? "" : ",");
-
-                        out << ")\",";
-
-                        out << bot->GetOrientation() << ",";
-                        out << to_string(bot->getRace()) << ",";
-                        out << to_string(bot->getClass());
-                        sPlayerbotAIConfig.log("player_paths.csv", out.str().c_str());
+                        if (playerBotMoveLog[i.first].size() > 100) {
+                            sPlayerbotAIConfig.log("player_paths.csv", generate_ostringstream(bot, playerBotMoveLog[i.first]).str().c_str());
+                            playerBotMoveLog[i.first].clear();
+                        }
+                    }
+                    else if (sqDist >= 200 * 200) {
+                        if(playerBotMoveLog[i.first].size() > 1)
+                            sPlayerbotAIConfig.log("player_paths.csv", generate_ostringstream(bot, playerBotMoveLog[i.first]).str().c_str());
+                        sPlayerbotAIConfig.log("player_paths.csv", generate_ostringstream(bot, playerBotMoveLog[i.first], true).str().c_str());
                         playerBotMoveLog[i.first].clear();
+                        playerBotMoveLog[i.first].push_back(make_pair(WorldPosition(bot).getDisplayX(), WorldPosition(bot).getDisplayY()));
                     }
                 }
             }
@@ -432,27 +447,20 @@ void RandomPlayerbotMgr::LogPlayerLocation()
 
             if (sPlayerbotAIConfig.hasLog("player_paths.csv"))
             {
-                if (playerBotMoveLog[i.first].empty() || playerBotMoveLog[i.first].back().first != int32(WorldPosition(bot).getDisplayX()) || playerBotMoveLog[i.first].back().second != int32(WorldPosition(bot).getDisplayY()))
+                float sqDist = (playerBotMoveLog[i.first].empty() ? 1 : (pow(playerBotMoveLog[i.first].back().first - int32(WorldPosition(bot).getDisplayX()), 2) + pow(playerBotMoveLog[i.first].back().second - int32(WorldPosition(bot).getDisplayY()), 2)));
+                if (sqDist <= 200 * 200) {
                     playerBotMoveLog[i.first].push_back(make_pair(WorldPosition(bot).getDisplayX(), WorldPosition(bot).getDisplayY()));
-
-                if (playerBotMoveLog[i.first].size() > 100)
-                {
-                    ostringstream out;
-                    out << bot->GetName() << ",";
-                    out << std::fixed << std::setprecision(1);
-                                        
-                    out << "\"LINESTRING(";
-   
-                    for (auto& p : playerBotMoveLog[i.first])
-                        out << p.first << " " << p.second << (&p == &playerBotMoveLog[i.first].back() ? "" : ",");
-
-                    out << ")\",";
-
-                    out << bot->GetOrientation() << ",";
-                    out << to_string(bot->getRace()) << ",";
-                    out << to_string(bot->getClass());
-                    sPlayerbotAIConfig.log("player_paths.csv", out.str().c_str());
+                    if (playerBotMoveLog[i.first].size() > 100) {
+                        sPlayerbotAIConfig.log("player_paths.csv", generate_ostringstream(bot, playerBotMoveLog[i.first]).str().c_str());
+                        playerBotMoveLog[i.first].clear();
+                    }
+                }
+                else if (sqDist >= 200 * 200) {
+                    if (playerBotMoveLog[i.first].size() > 1)
+                        sPlayerbotAIConfig.log("player_paths.csv", generate_ostringstream(bot, playerBotMoveLog[i.first]).str().c_str());
+                    sPlayerbotAIConfig.log("player_paths.csv", generate_ostringstream(bot, playerBotMoveLog[i.first], true).str().c_str());
                     playerBotMoveLog[i.first].clear();
+                    playerBotMoveLog[i.first].push_back(make_pair(WorldPosition(bot).getDisplayX(), WorldPosition(bot).getDisplayY()));
                 }
             }
         }
