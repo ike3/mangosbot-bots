@@ -68,7 +68,6 @@ namespace ai
         UnstealthAction(PlayerbotAI* ai) : Action(ai, "unstealth") {}
         virtual bool Execute(Event& event) {
             ai->RemoveAura("stealth");
-            ai->ResetStrategies();
             return true;
         }
     };
@@ -86,9 +85,7 @@ namespace ai
                     ai->ChangeStrategy("+stealthed", BotState::BOT_STATE_COMBAT);
             }
             else if (!hasStealth)
-            {
-                ai->ResetStrategies();
-                
+            {               
                 if (ai->HasStrategy("stealthed", BotState::BOT_STATE_COMBAT))
                 {
                     if (bot->GetLevel() < 15)
