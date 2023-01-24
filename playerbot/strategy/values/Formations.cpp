@@ -411,7 +411,21 @@ namespace ai
     class CustomFormation : public MoveAheadFormation
     {
     public:
-        CustomFormation(PlayerbotAI* ai) : MoveAheadFormation(ai, "custom") {}
+        CustomFormation(PlayerbotAI* ai) : MoveAheadFormation(ai, "custom")
+        {
+            PositionMap& posMap = AI_VALUE(PositionMap&, "position");
+            PositionEntry followPosition = posMap["follow"];
+
+            if (!followPosition.isSet())
+            {
+                WorldPosition relPos(bot);
+                relPos -= WorldPosition(ai->GetMaster());
+                relPos.rotateXY(-1 * ai->GetMaster()->GetOrientation());
+
+                followPosition.Set(relPos.getX(), relPos.getY(), relPos.getZ(), relPos.getMapId());
+                posMap["follow"] = followPosition;
+            }
+        }
         virtual WorldLocation GetLocationInternal()
         {
             Unit* target = AI_VALUE(Unit*, "current target");

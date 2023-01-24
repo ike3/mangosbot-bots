@@ -35,8 +35,6 @@ bool FollowAction::Execute(Event& event)
         float distance = WorldPosition(master).fDist(loc);
 
         moved = Follow(master,distance,angle);
-
-        //moved = MoveTo(loc.mapid, loc.coord_x, loc.coord_y, loc.coord_z);
     }
 
     //if (moved) SetDuration(sPlayerbotAIConfig.reactDelay);

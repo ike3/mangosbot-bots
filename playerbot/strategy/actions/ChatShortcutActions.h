@@ -8,8 +8,8 @@ namespace ai
     {
     public:
         ReturnPositionResetAction(PlayerbotAI* ai, string name) : ChatCommandAction(ai, name) {}
-        void ResetReturnPosition();
-        void SetReturnPosition(float x, float y, float z);
+        void ResetPosition(string posName = "return");
+        void SetPosition(WorldPosition pos, string posName = "return");
     };
 
     class FollowChatShortcutAction : public MovementAction
@@ -24,6 +24,13 @@ namespace ai
     {
     public:
         StayChatShortcutAction(PlayerbotAI* ai) : ReturnPositionResetAction(ai, "stay chat shortcut") {}
+        virtual bool Execute(Event& event) override;
+    };
+
+    class GuardChatShortcutAction : public ReturnPositionResetAction
+    {
+    public:
+        GuardChatShortcutAction(PlayerbotAI* ai) : ReturnPositionResetAction(ai, "guard chat shortcut") {}
         virtual bool Execute(Event& event) override;
     };
 

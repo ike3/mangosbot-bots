@@ -9,6 +9,7 @@ namespace ai
         PositionEntry() : valueSet(false), x(0), y(0), z(0), mapId(0) {}
         PositionEntry(const PositionEntry &other) : valueSet(other.valueSet), x(other.x), y(other.y), z(other.z), mapId(other.mapId) {}
         void Set(float x, float y, float z, uint32 mapId) { this->x = x; this->y = y; this->z = z; this->mapId = mapId; this->valueSet = true; }
+        void Set(WorldPosition pos) { this->x = pos.coord_x; this->y = pos.coord_y; this->z = pos.coord_z; this->mapId = pos.mapid; this->valueSet = true; }
         void Reset() { valueSet = false; }
         bool isSet() { return valueSet; }
 
