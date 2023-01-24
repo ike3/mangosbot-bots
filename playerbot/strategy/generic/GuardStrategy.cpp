@@ -17,10 +17,10 @@ void GuardStrategy::OnStrategyAdded(BotState state)
 
     Player* bot = ai->GetBot();
     PositionMap& posMap = AI_VALUE(PositionMap&, "position");
-    PositionEntry stayPosition = posMap["guard"];
+    PositionEntry guardPosition = posMap["guard"];
 
-    stayPosition.Set(bot->GetPositionX(), bot->GetPositionY(), bot->GetPositionZ(), bot->GetMapId());
-    posMap["stay position"] = stayPosition;
+    guardPosition.Set(bot->GetPositionX(), bot->GetPositionY(), bot->GetPositionZ(), bot->GetMapId());
+    posMap["guard"] = guardPosition;
 }
 
 void GuardStrategy::OnStrategyRemoved(BotState state)
