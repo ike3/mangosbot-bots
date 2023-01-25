@@ -50,3 +50,24 @@ bool PositionValue::Load(string text)
     }
     return true;
 }
+
+PositionEntry SinglePositionValue::Calculate()
+{
+    PositionMap& posMap = AI_VALUE(PositionMap&, "position");
+    return posMap[getQualifier()];
+}
+void SinglePositionValue::Set(PositionEntry value)
+{
+    PositionMap& posMap = AI_VALUE(PositionMap&,"position");
+    PositionEntry pos = posMap[getQualifier()];
+    pos = value;
+    posMap[getQualifier()] = pos;
+}
+void SinglePositionValue::Reset() 
+{
+    PositionMap& posMap = AI_VALUE(PositionMap&, "position");
+    PositionEntry pos = posMap[getQualifier()];
+    pos.Reset();
+    posMap[getQualifier()] = pos;
+}
+

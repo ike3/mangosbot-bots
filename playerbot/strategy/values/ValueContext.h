@@ -204,6 +204,7 @@ namespace ai
             creators["rti cc"] = &ValueContext::rti_cc;
             creators["rti"] = &ValueContext::rti;
             creators["position"] = &ValueContext::position;
+            creators["pos"] = &ValueContext::pos;
             creators["current position"] = &ValueContext::current_position;
             creators["master position"] = &ValueContext::master_position;
             creators["custom position"] = &ValueContext::custom_position;
@@ -371,6 +372,7 @@ namespace ai
         static UntypedValue* attackers(PlayerbotAI* ai) { return new AttackersValue(ai); }
 
         static UntypedValue* position(PlayerbotAI* ai) { return new PositionValue(ai); }
+        static UntypedValue* pos(PlayerbotAI* ai) { return new SinglePositionValue(ai); }
         static UntypedValue* current_position(PlayerbotAI* ai) { return new CurrentPositionValue(ai); }
         static UntypedValue* master_position(PlayerbotAI* ai) { return new MasterPositionValue(ai); }
         static UntypedValue* custom_position(PlayerbotAI* ai) { return new CustomPositionValue(ai); }

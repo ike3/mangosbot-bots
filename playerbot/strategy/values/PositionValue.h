@@ -7,9 +7,12 @@ namespace ai
     {
     public:
         PositionEntry() : valueSet(false), x(0), y(0), z(0), mapId(0) {}
-        PositionEntry(const PositionEntry &other) : valueSet(other.valueSet), x(other.x), y(other.y), z(other.z), mapId(other.mapId) {}
+        PositionEntry(float x, float y, float z, uint32 mapId, bool valueSet = true) : valueSet(valueSet), x(x), y(y), z(z), mapId(mapId) {}
+        PositionEntry(const PositionEntry& other) : valueSet(other.valueSet), x(other.x), y(other.y), z(other.z), mapId(other.mapId) {}
+        PositionEntry(const WorldPosition& pos) : valueSet(pos), x(pos.coord_x), y(pos.coord_y), z(pos.coord_z), mapId(pos.mapid) {}
         void Set(float x, float y, float z, uint32 mapId) { this->x = x; this->y = y; this->z = z; this->mapId = mapId; this->valueSet = true; }
         void Set(WorldPosition pos) { this->x = pos.coord_x; this->y = pos.coord_y; this->z = pos.coord_z; this->mapId = pos.mapid; this->valueSet = true; }
+        WorldPosition Get() { return WorldPosition(mapId, x, y, z); }
         void Reset() { valueSet = false; }
         bool isSet() { return valueSet; }
 
@@ -31,6 +34,17 @@ namespace ai
 	private:
         PositionMap positions;
     };
+
+    class SinglePositionValue : public CalculatedValue<PositionEntry>, public Qualified
+    {
+    public: 
+        SinglePositionValue(PlayerbotAI* ai, string name = "pos") : CalculatedValue(ai, name) {};
+
+        virtual PositionEntry Calculate() override;
+        virtual void Set(PositionEntry value) override;
+        virtual void Reset() override;
+    };
+
     
     class CurrentPositionValue : public LogCalculatedValue<WorldPosition>
     {

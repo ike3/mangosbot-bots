@@ -8,6 +8,8 @@
 #include "GridNotifiersImpl.h"
 #include "CellImpl.h"
 
+#include "../values/PositionValue.h"
+
 using namespace MaNGOS;
 
 bool UseMeetingStoneAction::Execute(Event& event)
@@ -75,13 +77,6 @@ bool SummonAction::Execute(Event& event)
     Player* master = GetMaster();
     if (!master)
         return false;
-
-    // Remove stay strategy when summoning
-    if (ai->HasStrategy("stay", BotState::BOT_STATE_NON_COMBAT))
-    {
-        ai->ChangeStrategy("+follow,-passive,-stay", BotState::BOT_STATE_NON_COMBAT);
-        ai->ChangeStrategy("+follow,-passive,-stay", BotState::BOT_STATE_COMBAT);
-    }
 
     if (master->GetSession()->GetSecurity() >= SEC_PLAYER)
         return Teleport(master, bot);
@@ -197,6 +192,11 @@ bool SummonAction::Teleport(Player *summoner, Player *player)
 
                 player->GetMotionMaster()->Clear();
                 player->TeleportTo(mapId, x, y, z, 0);
+                if(ai->HasStrategy("stay", BotState::BOT_STATE_NON_COMBAT))
+                    SET_AI_VALUE2(PositionEntry, "pos", "stay", PositionEntry(x, y, z, mapId));
+                if (ai->HasStrategy("guard", BotState::BOT_STATE_NON_COMBAT))
+                    SET_AI_VALUE2(PositionEntry, "pos", "guard", PositionEntry(x, y, z, mapId));
+
                 return true;
             }
         }
