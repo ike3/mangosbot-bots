@@ -39,10 +39,10 @@ bool FollowChatShortcutAction::Execute(Event& event)
     posMap["return"] = pos;
 
     Formation* formation = AI_VALUE(Formation*, "formation");
+    MEM_AI_VALUE(WorldPosition, "master position")->Reset();
 
     if (formation->getName() == "custom")
     {
-
         ai::PositionEntry pos = posMap["follow"];
 
         WorldPosition relPos(bot);
@@ -98,6 +98,7 @@ bool StayChatShortcutAction::Execute(Event& event)
 
     SetPosition(bot);
     SetPosition(bot, "stay");
+    MEM_AI_VALUE(WorldPosition, "master position")->Reset();
 
     MotionMaster& mm = *bot->GetMotionMaster();
     mm.Clear();
@@ -118,6 +119,7 @@ bool GuardChatShortcutAction::Execute(Event& event)
 
     SetPosition(bot);
     SetPosition(bot, "guard");
+    MEM_AI_VALUE(WorldPosition, "master position")->Reset();
 
     MotionMaster& mm = *bot->GetMotionMaster();
     mm.Clear();
