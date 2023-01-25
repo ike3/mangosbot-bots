@@ -12,6 +12,7 @@ namespace ai
 
     public:
         virtual bool Execute(Event& event);
+        virtual bool isPossible() override { return true; }; //Override movement stay.
 
     protected:
         bool Attack(Unit* target);
