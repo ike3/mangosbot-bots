@@ -154,7 +154,7 @@ bool InvalidTargetTrigger::IsActive()
 
 bool NoTargetTrigger::IsActive()
 {
-	return !AI_VALUE(Unit*, "current target");
+	return !AI_VALUE(Unit*, "current target") || AI_VALUE2(bool, "invalid target", "current target");
 }
 
 bool MyAttackerCountTrigger::IsActive()
