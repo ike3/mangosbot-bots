@@ -22,6 +22,7 @@ namespace ai
         DpsAssistAction(PlayerbotAI* ai) : AttackAction(ai, "dps assist") {}
         string GetTargetName() override { return "dps target"; } 
         bool isUseful() override;
+        bool isPossible() override { return true; };
     };
 
     class TankAssistAction : public AttackAction
@@ -56,6 +57,7 @@ namespace ai
         AttackEnemyPlayerAction(PlayerbotAI* ai) : AttackAction(ai, "attack enemy player") {}
         string GetTargetName() override { return "enemy player target"; }
         bool isUseful() override;
+        bool isPossible() override { return true; };
     };
 
     class AttackRtiTargetAction : public AttackAction
