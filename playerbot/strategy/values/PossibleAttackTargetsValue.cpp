@@ -234,12 +234,25 @@ bool PossibleAttackTargetsValue::IsValid(Unit* target, Player* player, float ran
         return false;
     }
 
-    return IsPossibleTarget(target, player, range, ignoreCC) &&
-                (sServerFacade.GetThreatManager(target).getCurrentVictim() ||
-                target->GetGuidValue(UNIT_FIELD_TARGET) ||
-                target->GetObjectGuid().IsPlayer() ||
-                (player->GetPlayerbotAI() && (target->GetObjectGuid() == PAI_VALUE(ObjectGuid, "attack target"))) ||
-                (!HasIgnoreCCRti(target, player) && (HasBreakableCC(target, player) || HasUnBreakableCC(target, player))));
+    if (!IsPossibleTarget(target, player, range, ignoreCC))
+        return false;
+
+    if (sServerFacade.GetThreatManager(target).getCurrentVictim())
+        return true;
+
+    if (target->GetGuidValue(UNIT_FIELD_TARGET))
+        return true;
+
+    if (target->GetObjectGuid().IsPlayer())
+        return true;
+
+    if (player->GetPlayerbotAI() && (target->GetObjectGuid() == PAI_VALUE(ObjectGuid, "attack target")))
+        return true;
+
+    if(!HasIgnoreCCRti(target, player) && (HasBreakableCC(target, player) || HasUnBreakableCC(target, player)))
+        return true;
+
+    return false;
 }
 
 bool PossibleAttackTargetsValue::IsPossibleTarget(Unit* target, Player* player, float range, bool ignoreCC)

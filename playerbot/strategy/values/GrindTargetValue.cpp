@@ -4,6 +4,9 @@
 #include "../../PlayerbotAIConfig.h"
 #include "../../RandomPlayerbotMgr.h"
 #include "../../ServerFacade.h"
+#include "AttackersValue.h"
+#include "PossibleAttackTargetsValue.h"
+#include "../actions/ChooseTargetActions.h"
 
 using namespace ai;
 
@@ -38,6 +41,9 @@ Unit* GrindTargetValue::FindTargetForGrinding(int assistCount)
         if (!unit || !sServerFacade.IsAlive(unit))
             continue;
 
+        if (!bot->InBattleGround() && !ChooseRpgTargetAction::isFollowValid(bot, unit)) //Do not grind mobs far away from master.
+            continue;
+
         return unit;
     }
 
@@ -60,6 +66,9 @@ Unit* GrindTargetValue::FindTargetForGrinding(int assistCount)
         if (abs(bot->GetPositionZ() - unit->GetPositionZ()) > sPlayerbotAIConfig.spellDistance)
             continue;
 
+        if (!bot->InBattleGround() && !ChooseRpgTargetAction::isFollowValid(bot, unit)) //Do not grind mobs far away from master.
+            continue;
+
         if (!bot->InBattleGround() && GetTargetingPlayerCount(unit) > assistCount)
             continue;
 
@@ -73,11 +82,14 @@ Unit* GrindTargetValue::FindTargetForGrinding(int assistCount)
             if (urand(0, 100) < 75 || (context->GetValue<TravelTarget*>("travel target")->Get()->isWorking() && context->GetValue<TravelTarget*>("travel target")->Get()->getDestination()->getName() != "GrindTravelDestination"))
                 continue;
 
-        //if (bot->InBattleGround() && bot->GetDistance(unit) > 40.0f)
-            //continue;
-
         Creature* creature = dynamic_cast<Creature*>(unit);
         if (creature && creature->GetCreatureInfo() && creature->GetCreatureInfo()->Rank > CREATURE_ELITE_NORMAL && !AI_VALUE(bool, "can fight elite"))
+            continue;
+
+        if (!AttackersValue::IsValid(unit, bot, nullptr, false, false))
+            continue;
+
+        if (!PossibleAttackTargetsValue::IsPossibleTarget(unit, bot, sPlayerbotAIConfig.sightDistance, false))
             continue;
 
         if (group)
