@@ -9,6 +9,7 @@
 #include "../values/Formations.h"
 #include "RpgSubActions.h"
 #include "../values/ItemUsageValue.h"
+#include "../values/PositionValue.h"
 
 using namespace ai;
 
@@ -372,17 +373,24 @@ bool ChooseRpgTargetAction::isFollowValid(Player* bot, WorldPosition pos)
     Player* realMaster = ai->GetMaster();
     AiObjectContext* context = ai->GetAiObjectContext();
 
-    if (!ai->HasStrategy("follow", BotState::BOT_STATE_NON_COMBAT))
-        return true;
-
     if (!master || bot == master)
         return true;
 
-    bool inDungeon = false;
+    float distance;
 
-    Formation* formation = AI_VALUE(Formation*, "formation");
-    float distance = sqrt(master->GetDistance2d(pos.getX(), pos.getY(), DIST_CALC_NONE));
+    PositionMap& posMap = AI_VALUE(PositionMap&, "position");
+    
+    //Set distance relative to focus position.
+    if (ai->HasStrategy("follow", BotState::BOT_STATE_NON_COMBAT))
+        distance = sqrt(master->GetDistance2d(pos.getX(), pos.getY(), DIST_CALC_NONE));
+    else if (ai->HasStrategy("stay", BotState::BOT_STATE_NON_COMBAT) && posMap["stay"].isSet())
+        distance = sqrt(pos.sqDistance2d(posMap["stay"].Get()));
+    else if (ai->HasStrategy("guard", BotState::BOT_STATE_NON_COMBAT) && posMap["guard"].isSet())
+        distance = sqrt(pos.sqDistance2d(posMap["guard"].Get()));
+    else
+        return true;
 
+    //With a bot master bots have more freedom.
     if (!ai->HasActivePlayerMaster())
     {
         Player* player = master;
@@ -398,16 +406,20 @@ bool ChooseRpgTargetAction::isFollowValid(Player* bot, WorldPosition pos)
         return false;
     }
 
-
+    //Check if bot is in dungeon with master.
+    bool inDungeon = false;
     if (realMaster->IsInWorld() && realMaster->GetMap()->IsDungeon())
     {
         if (bot->GetMapId() == realMaster->GetMapId())
             inDungeon = true;
     }
 
+    //Restrict distance in combat and in dungeons.
     if ((inDungeon || master->IsInCombat()) && (realMaster == master) && distance > 5.0f)
         return false;
 
+    //Increase distance as master is standing still.
+    Formation* formation = AI_VALUE(Formation*, "formation");
     float maxDist = formation->GetMaxDistance();
 
     uint32 lastMasterMove = MEM_AI_VALUE(WorldPosition, "master position")->LastChangeDelay();
