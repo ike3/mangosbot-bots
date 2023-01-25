@@ -123,14 +123,22 @@ jobs:
       #    repo_token: ${{ secrets.GITHUB_TOKEN }}
       #    file: all_snapshots/cmangos-classic.zip
 
-      - name: Upload release
-        uses: "marvinpinto/action-automatic-releases@latest"
+      #- name: Upload release
+      #  uses: "marvinpinto/action-automatic-releases@latest"
+      #  with:
+      #    repo_token: "${{ secrets.GITHUB_TOKEN }}"
+      #    automatic_release_tag: "r-${{ steps.date.outputs.date }}"
+      #    prerelease: false
+      #    title: "Windows Build (${{ steps.date.outputs.date }})"
+      #    files: all_snapshots
+          
+      - name: Upload binaries to release
+        uses: svenstaro/upload-release-action@v2
         with:
-          repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          automatic_release_tag: "r-${{ steps.date.outputs.date }}"
-          prerelease: false
-          title: "Windows Build (${{ steps.date.outputs.date }})"
-          files: all_snapshots
+          release_name: "Windows Build (${{ steps.date.outputs.date }})"
+          tag: "r-${{ steps.date.outputs.date }}" 
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: all_snapshots/${{env.ARCHIVE_FILENAME}}
 
   notify-success:
     name: Discord release successfully notification
