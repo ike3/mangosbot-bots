@@ -94,7 +94,23 @@ bool CheckMountStateAction::Execute(Event& event)
         if (guardPosition.isSet() && distance < ai->GetRange("follow"))
         {
             if (ai->HasStrategy("debug mount", BotState::BOT_STATE_NON_COMBAT) && CurrentMountSpeed(bot))
-                ai->TellMasterNoFacing("Unmount. Near umounted group master.");
+                ai->TellMasterNoFacing("Unmount. Near umounted guard position.");
+            return UnMount();
+        }
+    }
+
+    //Near stay position
+    if (ai->HasStrategy("stay", BotState::BOT_STATE_NON_COMBAT))
+    {
+        PositionMap& posMap = AI_VALUE(PositionMap&, "position");
+        PositionEntry stayPosition = posMap["stay"];
+
+        float distance = AI_VALUE2(float, "distance", "position_stay");
+
+        if (stayPosition.isSet() && distance < ai->GetRange("follow"))
+        {
+            if (ai->HasStrategy("debug mount", BotState::BOT_STATE_NON_COMBAT) && CurrentMountSpeed(bot))
+                ai->TellMasterNoFacing("Unmount. Near stay location.");
             return UnMount();
         }
     }
