@@ -42,7 +42,7 @@ WorldLocation MoveAheadFormation::GetLocation()
     if (sServerFacade.isMoving(master)) {
         float ori = master->GetOrientation();
 
-        float aheadDistance = std::min(std::max(sPlayerbotAIConfig.tooCloseDistance,sqrt(WorldPosition(0, x, y, z).sqDistance2d(bot))), sPlayerbotAIConfig.sightDistance);
+        float aheadDistance = sPlayerbotAIConfig.tooCloseDistance;//std::min(std::max(sPlayerbotAIConfig.tooCloseDistance,sqrt(WorldPosition(0, x, y, z).sqDistance2d(bot))), sPlayerbotAIConfig.sightDistance);
 
         float x1 = x + aheadDistance * cos(ori);
         float y1 = y + aheadDistance * sin(ori);
