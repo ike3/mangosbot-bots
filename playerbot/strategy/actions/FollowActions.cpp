@@ -31,12 +31,12 @@ bool FollowAction::Execute(Event& event)
 
         Player* master = ai->GetGroupMaster();
 
-        float angle = WorldPosition(master).getAngleTo(loc)-master->GetOrientation();
-        if (angle < 0) angle += 2 * M_PI_F;
-        float distance = WorldPosition(master).fDist(loc);
+        //float angle = WorldPosition(master).getAngleTo(loc)-master->GetOrientation();
+        //if (angle < 0) angle += 2 * M_PI_F;
+        //float distance = WorldPosition(master).fDist(loc);
 
-        moved = Follow(master,distance,angle);
-        //moved = MoveTo(loc.mapid, loc.coord_x, loc.coord_y, loc.coord_z);
+        //moved = Follow(master,distance,angle);
+        moved = MoveTo(loc.mapid, loc.coord_x, loc.coord_y, loc.coord_z);
     }
 
     //if (moved) SetDuration(sPlayerbotAIConfig.reactDelay);
