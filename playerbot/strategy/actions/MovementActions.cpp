@@ -1241,7 +1241,7 @@ bool MovementAction::Follow(Unit* target, float distance, float angle)
         }
     }
 
-    if (sServerFacade.IsDistanceGreaterOrEqualThan(sServerFacade.GetDistance2d(bot, target), sPlayerbotAIConfig.sightDistance))
+    if (sServerFacade.IsDistanceGreaterOrEqualThan(sServerFacade.GetDistance2d(bot, target), sPlayerbotAIConfig.sightDistance) || (target->IsFlying() && !bot->IsFreeFlying()))
     {
         if (target->GetObjectGuid().IsPlayer())
         {
@@ -1284,6 +1284,10 @@ bool MovementAction::Follow(Unit* target, float distance, float angle)
            return MoveTo(target, ai->GetRange("follow"));
     }
 
+    //Temprorary fix until figguring out why moveFollow doesn't work for flying players but does for npcs.
+    if (bot->IsFreeFlying())
+        return MoveTo(target, ai->GetRange("follow"));
+
     if (sServerFacade.IsDistanceLessOrEqualThan(sServerFacade.GetDistance2d(bot, target), ai->GetRange("follow")))
     {
         //ai->TellError("No need to follow");
@@ -1310,23 +1314,64 @@ bool MovementAction::Follow(Unit* target, float distance, float angle)
     {
         MovementGenerator const* gen = mm.GetCurrent();
         FollowMovementGenerator const* fgen = dynamic_cast<FollowMovementGenerator const*>(gen);
-      
-        Unit *currentTarget = sServerFacade.GetChaseTarget(bot);
+
+        Unit* currentTarget = sServerFacade.GetChaseTarget(bot);
         if (currentTarget && currentTarget->GetObjectGuid() == target->GetObjectGuid()
-            && fgen->GetAngle() == angle && fgen->GetOffset() == distance) return false;
+            && fgen->GetAngle() == angle && fgen->GetOffset() == (distance - target->GetObjectBoundingRadius())) return false;
+
     }
 
-    if(mm.GetCurrent()->GetMovementGeneratorType() != FOLLOW_MOTION_TYPE)
-        mm.Clear();
+    if (bot->IsFreeFlying())
+    {
+        if (!bot->IsFlying() && target->IsFlying())
+        {
+            WorldPacket data(SMSG_SPLINE_MOVE_SET_FLYING, 9);
+            data << bot->GetPackGUID();
+            bot->SendMessageToSet(data, true);
 
-    mm.MoveFollow(target,
-#ifdef MANGOS
-            distance,
+            if (!bot->m_movementInfo.HasMovementFlag(MOVEFLAG_FLYING))
+                bot->m_movementInfo.AddMovementFlag(MOVEFLAG_FLYING);
+#ifdef MANGOSBOT_ONE
+            if (!bot->m_movementInfo.HasMovementFlag(MOVEFLAG_FLYING2))
+                bot->m_movementInfo.AddMovementFlag(MOVEFLAG_FLYING2);
 #endif
-#ifdef CMANGOS
-            distance - target->GetObjectBoundingRadius(),
+            if (!bot->m_movementInfo.HasMovementFlag(MOVEFLAG_LEVITATING))
+                bot->m_movementInfo.AddMovementFlag(MOVEFLAG_LEVITATING);
+        }
+
+        if (bot->IsFlying() && !target->IsFlying())
+        {
+            bool needLand = false;
+
+            if (const TerrainInfo* terrain = bot->GetTerrain())
+            {
+                float height = terrain->GetHeightStatic(bot->GetPositionX(), bot->GetPositionY(), bot->GetPositionZ());
+                float ground = terrain->GetWaterOrGroundLevel(bot->GetPositionX(), bot->GetPositionY(), bot->GetPositionZ(), height);
+                if (bot->GetPositionZ() < ground + 5.0f)
+                    needLand = true;
+            }
+            if (needLand)
+            {
+                WorldPacket data(SMSG_SPLINE_MOVE_UNSET_FLYING, 9);
+                data << bot->GetPackGUID();
+                bot->SendMessageToSet(data, true);
+
+                if (bot->m_movementInfo.HasMovementFlag(MOVEFLAG_FLYING))
+                    bot->m_movementInfo.RemoveMovementFlag(MOVEFLAG_FLYING);
+#ifdef MANGOSBOT_ONE
+                if (bot->m_movementInfo.HasMovementFlag(MOVEFLAG_FLYING2))
+                    bot->m_movementInfo.RemoveMovementFlag(MOVEFLAG_FLYING2);
 #endif
-            angle);
+                if (bot->m_movementInfo.HasMovementFlag(MOVEFLAG_LEVITATING))
+                    bot->m_movementInfo.RemoveMovementFlag(MOVEFLAG_LEVITATING);
+
+                if(!bot->m_movementInfo.HasMovementFlag(MOVEFLAG_FALLING))
+                    bot->m_movementInfo.RemoveMovementFlag(MOVEFLAG_FALLING);
+            }
+        }
+    }
+
+    mm.MoveFollow(target, distance - target->GetObjectBoundingRadius(), angle, true);
     return true;
 }
 
