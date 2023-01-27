@@ -1320,7 +1320,7 @@ bool MovementAction::Follow(Unit* target, float distance, float angle)
             && fgen->GetAngle() == angle && fgen->GetOffset() == (distance - target->GetObjectBoundingRadius())) return false;
 
     }
-
+#ifndef MANGOSBOT_ZERO
     if (bot->IsFreeFlying())
     {
         if (!bot->IsFlying() && target->IsFlying())
@@ -1370,6 +1370,7 @@ bool MovementAction::Follow(Unit* target, float distance, float angle)
             }
         }
     }
+#endif
 
     mm.MoveFollow(target, distance - target->GetObjectBoundingRadius(), angle, true);
     return true;
