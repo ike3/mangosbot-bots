@@ -1,5 +1,10 @@
 #pragma once
 #include "Category.h"
+#ifdef MANGOSBOT_TWO
+#include "Util/Util.h"
+#else
+#include "Util.h"
+#endif
 
 namespace ahbot
 {
