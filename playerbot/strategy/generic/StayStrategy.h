@@ -14,6 +14,7 @@ namespace ai
         void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
         NextAction** GetDefaultNonCombatActions() override;
         NextAction** GetDefaultCombatActions() override;
+        virtual void OnStrategyAdded(BotState state) override;
     };
 
     class SitStrategy : public NonCombatStrategy

@@ -15,6 +15,14 @@ ai::NextAction** StayStrategy::GetDefaultCombatActions()
     return GetDefaultNonCombatActions();
 }
 
+void StayStrategy::OnStrategyAdded(BotState state)
+{
+    if (state == ai->GetState() && ai->GetBot()->GetMotionMaster()->GetCurrentMovementGeneratorType() != IDLE_MOTION_TYPE)
+    {
+        ai->StopMoving();
+    }
+}
+
 void StayStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     triggers.push_back(new TriggerNode(
