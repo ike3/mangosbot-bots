@@ -235,6 +235,8 @@ class ServerFacade
         bool IsUnderwater(Unit *unit);
         FactionTemplateEntry const* GetFactionTemplateEntry(Unit *unit);
         Unit* GetChaseTarget(Unit* target);
+        float GetChaseAngle(Unit* target);
+        float GetChaseOffset(Unit* target);
 
         BattleGroundTypeId BgTemplateId(BattleGroundQueueTypeId queueTypeId)
         {

@@ -153,25 +153,17 @@ FactionTemplateEntry const* ServerFacade::GetFactionTemplateEntry(Unit *unit)
 
 Unit* ServerFacade::GetChaseTarget(Unit* target)
 {
-    if (target->GetTypeId() == TYPEID_PLAYER)
-    {
-#ifdef MANGOS
-        return static_cast<ChaseMovementGenerator<Player> const*>(target->GetMotionMaster()->GetCurrent())->GetTarget();
-#endif
-#ifdef CMANGOS
-        return static_cast<ChaseMovementGenerator const*>(target->GetMotionMaster()->GetCurrent())->GetCurrentTarget();
-#endif
-    }
-    else
-    {
-#ifdef MANGOS
-        return static_cast<ChaseMovementGenerator<Creature> const*>(target->GetMotionMaster()->GetCurrent())->GetTarget();
-#endif
-#ifdef CMANGOS
-        return static_cast<ChaseMovementGenerator const*>(target->GetMotionMaster()->GetCurrent())->GetCurrentTarget();
-#endif
-        return NULL;
-    }
+    return static_cast<ChaseMovementGenerator const*>(target->GetMotionMaster()->GetCurrent())->GetCurrentTarget();
+}
+
+float ServerFacade::GetChaseAngle(Unit* target)
+{
+    return static_cast<ChaseMovementGenerator const*>(target->GetMotionMaster()->GetCurrent())->GetAngle();
+}
+
+float ServerFacade::GetChaseOffset(Unit* target)
+{
+    return static_cast<ChaseMovementGenerator const*>(target->GetMotionMaster()->GetCurrent())->GetOffset();
 }
 
 bool ServerFacade::isMoving(Unit *unit)

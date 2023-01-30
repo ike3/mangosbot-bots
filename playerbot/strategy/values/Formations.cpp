@@ -25,6 +25,33 @@ bool Formation::IsNullLocation(WorldLocation const& loc)
 	return IsSameLocation(loc, Formation::NullLocation);
 }
 
+float Formation::GetAngle()
+{
+    WorldLocation loc = GetLocation();
+    if (Formation::IsNullLocation(loc) || loc.mapid == -1)
+        return 0.0f;
+
+    Player* master = ai->GetGroupMaster();
+
+    float angle = WorldPosition(master).getAngleTo(loc) - master->GetOrientation();
+    if (angle < 0) angle += 2 * M_PI_F;
+
+    return angle;
+}
+
+float Formation::GetOffset()
+{
+    WorldLocation loc = GetLocation();
+    if (Formation::IsNullLocation(loc) || loc.mapid == -1)
+        return 0.0f;
+
+    Player* master = ai->GetGroupMaster();
+
+    float distance = WorldPosition(master).fDist(loc);
+
+    return distance;
+}
+
 WorldLocation MoveAheadFormation::GetLocation()
 {
     Player* master = ai->GetGroupMaster();
@@ -77,6 +104,8 @@ namespace ai
     public:
         MeleeFormation(PlayerbotAI* ai) : FollowFormation(ai, "melee") {}
         virtual string GetTargetName() { return "master target"; }
+        virtual float GetAngle() override { return GetFollowAngle(); }
+        virtual float GetOffset() override { return ai->GetRange("follow"); }
     };
 
     class QueueFormation : public FollowFormation
@@ -84,6 +113,8 @@ namespace ai
     public:
         QueueFormation(PlayerbotAI* ai) : FollowFormation(ai, "queue") {}
         virtual string GetTargetName() { return "line target"; }
+        virtual float GetAngle() override { return M_PI_F; }
+        virtual float GetOffset() override { return ai->GetRange("follow"); }
     };
 
     class NearFormation : public MoveAheadFormation

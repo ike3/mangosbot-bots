@@ -21,7 +21,7 @@ bool FollowAction::Execute(Event& event)
     bool moved = false;
     if (!target.empty())
     {
-        moved = Follow(AI_VALUE(Unit*, target));
+        moved = Follow(AI_VALUE(Unit*, target), formation->GetOffset(), formation->GetAngle());
     }
     else
     {
@@ -31,12 +31,8 @@ bool FollowAction::Execute(Event& event)
 
         Player* master = ai->GetGroupMaster();
 
-        //float angle = WorldPosition(master).getAngleTo(loc)-master->GetOrientation();
-        //if (angle < 0) angle += 2 * M_PI_F;
-        //float distance = WorldPosition(master).fDist(loc);
-
-        //moved = Follow(master,distance,angle);
-        moved = MoveTo(loc.mapid, loc.coord_x, loc.coord_y, loc.coord_z);
+        moved = Follow(master, formation->GetOffset(), formation->GetAngle());
+        //moved = MoveTo(loc.mapid, loc.coord_x, loc.coord_y, loc.coord_z);
     }
 
     //if (moved) SetDuration(sPlayerbotAIConfig.reactDelay);
@@ -70,7 +66,7 @@ bool FollowAction::isUseful()
             return false;
 
         if (fTarget->GetGUIDLow() == bot->GetGUIDLow())
-            return false;        
+            return false;
     }
 
     if (!target.empty())
@@ -86,7 +82,13 @@ bool FollowAction::isUseful()
         distance = sServerFacade.GetDistance2d(bot, loc.coord_x, loc.coord_y);
     }
 
-    return sServerFacade.IsDistanceGreaterThan(distance, formation->GetMaxDistance());
+    if (sServerFacade.GetChaseTarget(bot) && sServerFacade.GetChaseTarget(bot)->GetObjectGuid() == fTarget->GetObjectGuid() && formation->GetAngle() == sServerFacade.GetChaseAngle(bot) && formation->GetOffset() == sServerFacade.GetChaseOffset(bot))
+        return false;
+
+    //if (!sServerFacade.IsDistanceGreaterThan(distance, formation->GetMaxDistance()))
+    //    return false;
+
+    return true;
 }
 
 bool FollowAction::CanDeadFollow(Unit* target)

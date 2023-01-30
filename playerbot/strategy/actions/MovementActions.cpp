@@ -38,7 +38,6 @@ void MovementAction::CreateWp(Player* wpOwner, float x, float y, float z, float 
 bool MovementAction::isPossible()
 {
     // Do not move if stay strategy is set
-    if (ai->HasStrategy("stay", BotState::BOT_STATE_NON_COMBAT))
         return false;
 
     return true;
@@ -1213,6 +1212,8 @@ bool MovementAction::Follow(Unit* target, float distance, float angle)
 {
     MotionMaster &mm = *bot->GetMotionMaster();
 
+    distance = distance <= target->GetObjectBoundingRadius() ? 0 : distance - target->GetObjectBoundingRadius();
+
     UpdateMovementState();
 
     if (!target)
@@ -1312,12 +1313,9 @@ bool MovementAction::Follow(Unit* target, float distance, float angle)
 
     if (bot->GetMotionMaster()->GetCurrentMovementGeneratorType() == FOLLOW_MOTION_TYPE)
     {
-        MovementGenerator const* gen = mm.GetCurrent();
-        FollowMovementGenerator const* fgen = dynamic_cast<FollowMovementGenerator const*>(gen);
-
         Unit* currentTarget = sServerFacade.GetChaseTarget(bot);
-        if (currentTarget && currentTarget->GetObjectGuid() == target->GetObjectGuid()
-            && fgen->GetAngle() == angle && fgen->GetOffset() == (distance - target->GetObjectBoundingRadius())) return false;
+        if (currentTarget && currentTarget->GetObjectGuid() == target->GetObjectGuid() && sServerFacade.GetChaseAngle(bot) == angle && sServerFacade.GetChaseOffset(bot) == distance)
+            return false;
 
     }
 #ifndef MANGOSBOT_ZERO
@@ -1372,7 +1370,7 @@ bool MovementAction::Follow(Unit* target, float distance, float angle)
     }
 #endif
 
-    mm.MoveFollow(target, distance - target->GetObjectBoundingRadius(), angle, true);
+    mm.MoveFollow(target, distance, angle, true);
     return true;
 }
 

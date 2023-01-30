@@ -13,6 +13,8 @@ namespace ai
     public:
         virtual string GetTargetName() { return ""; }
         virtual WorldLocation GetLocation() { return NullLocation; }
+        virtual float GetAngle();
+        virtual float GetOffset();
         virtual float GetMaxDistance();
         static WorldLocation NullLocation;
 		static bool IsNullLocation(WorldLocation const& loc);
