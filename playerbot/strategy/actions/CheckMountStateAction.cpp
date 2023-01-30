@@ -84,7 +84,7 @@ bool CheckMountStateAction::Execute(Event& event)
     }
 
     //Near guard position
-    if (ai->HasStrategy("guard", BotState::BOT_STATE_NON_COMBAT))
+    if (ai->HasStrategy("guard", ai->GetState()))
     {
         PositionMap& posMap = AI_VALUE(PositionMap&, "position");
         PositionEntry guardPosition = posMap["guard"];
@@ -100,7 +100,7 @@ bool CheckMountStateAction::Execute(Event& event)
     }
 
     //Near stay position
-    if (ai->HasStrategy("stay", BotState::BOT_STATE_NON_COMBAT))
+    if (ai->HasStrategy("stay", ai->GetState()))
     {
         PositionMap& posMap = AI_VALUE(PositionMap&, "position");
         PositionEntry stayPosition = posMap["stay"];
@@ -170,7 +170,7 @@ bool CheckMountStateAction::Execute(Event& event)
             }
 
             //Mounting in safe place.
-            if (!ai->HasStrategy("guard", BotState::BOT_STATE_NON_COMBAT) && !AI_VALUE(list<ObjectGuid>, "possible rpg targets").empty() && urand(0, 100) > 50)
+            if (!ai->HasStrategy("guard", ai->GetState()) && !ai->HasStrategy("stay", ai->GetState()) && !AI_VALUE(list<ObjectGuid>, "possible rpg targets").empty() && urand(0, 100) > 50)
             {
                 if (ai->HasStrategy("debug mount", BotState::BOT_STATE_NON_COMBAT) && !CurrentMountSpeed(bot))
                     ai->TellMasterNoFacing("Mount. Near rpg targets.");
@@ -179,7 +179,7 @@ bool CheckMountStateAction::Execute(Event& event)
         }
 
         //Far from guard position
-        if (ai->HasStrategy("guard", BotState::BOT_STATE_NON_COMBAT))
+        if (ai->HasStrategy("guard", ai->GetState()))
         {
             PositionMap& posMap = AI_VALUE(PositionMap&, "position");
             PositionEntry guardPosition = posMap["guard"];

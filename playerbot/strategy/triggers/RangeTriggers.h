@@ -311,7 +311,7 @@ namespace ai
             if (WaitForAttackStrategy::ShouldWait(ai))
             {
                 // Do not move if stay strategy is set
-                if (!ai->HasStrategy("stay", BotState::BOT_STATE_NON_COMBAT))
+                if (!ai->HasStrategy("stay", ai->GetState()))
                 {
                     // Do not move if currently being targeted
                     const bool isBeingTargeted = !bot->getAttackers().empty();

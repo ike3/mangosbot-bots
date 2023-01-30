@@ -102,7 +102,7 @@ bool AttackAction::Attack(Unit* target)
                 creatureAI->SetReactState(REACT_DEFENSIVE);
 
                 // Don't send the pet to attack if the bot is waiting for attack
-                if (!isWaitingForAttack && (!ai->HasStrategy("stay", BotState::BOT_STATE_NON_COMBAT) || AI_VALUE2(float, "distance", "current target") < ai->GetRange("spell")))
+                if (!isWaitingForAttack && (!ai->HasStrategy("stay", BotState::BOT_STATE_COMBAT) || AI_VALUE2(float, "distance", "current target") < ai->GetRange("spell")))
                 {
                     creatureAI->AttackStart(target);
                 }

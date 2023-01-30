@@ -38,6 +38,7 @@ void MovementAction::CreateWp(Player* wpOwner, float x, float y, float z, float 
 bool MovementAction::isPossible()
 {
     // Do not move if stay strategy is set
+    if (ai->HasStrategy("stay", ai->GetState()))
         return false;
 
     return true;
@@ -1793,7 +1794,7 @@ bool SetBehindTargetAction::isUseful()
         return false;
 
     // Do not move if stay strategy is set
-    if(ai->HasStrategy("stay", BotState::BOT_STATE_NON_COMBAT))
+    if(ai->HasStrategy("stay", ai->GetState()))
         return false;
 
     return !bot->IsFacingTargetsBack(target);

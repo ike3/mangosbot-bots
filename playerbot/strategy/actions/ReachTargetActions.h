@@ -77,7 +77,7 @@ namespace ai
                 return false;
 
             // Do not move if stay strategy is set
-            if(ai->HasStrategy("stay", BotState::BOT_STATE_NON_COMBAT))
+            if(ai->HasStrategy("stay", ai->GetState()))
                 return false;
 
             // Check if the spell for which the reach action is used for can be casted
@@ -123,7 +123,7 @@ namespace ai
 		virtual bool isUseful()
 		{
             // Do not move if stay strategy is set
-            if (ai->HasStrategy("stay", BotState::BOT_STATE_NON_COMBAT))
+            if (ai->HasStrategy("stay", ai->GetState()))
                 return false;
 
 			return sServerFacade.IsDistanceGreaterThan(AI_VALUE2(float, "distance", "current target"), (distance + sPlayerbotAIConfig.contactDistance));

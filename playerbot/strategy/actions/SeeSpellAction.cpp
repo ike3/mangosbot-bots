@@ -181,7 +181,7 @@ bool SeeSpellAction::MoveToSpell(WorldPosition& spellPosition, bool inFormation)
     if(inFormation)
         SetFormationOffset(spellPosition);
 
-    if (ai->HasStrategy("stay", BotState::BOT_STATE_COMBAT))
+    if (ai->HasStrategy("stay", ai->GetState()))
     {
         PositionMap& posMap = AI_VALUE(PositionMap&, "position");
         PositionEntry stayPosition = posMap["stay"];
@@ -190,7 +190,7 @@ bool SeeSpellAction::MoveToSpell(WorldPosition& spellPosition, bool inFormation)
         posMap["stay"] = stayPosition;
         return true;
     }
-    else if (ai->HasStrategy("guard", BotState::BOT_STATE_NON_COMBAT))
+    else if (ai->HasStrategy("guard", ai->GetState()))
     {
         PositionMap& posMap = AI_VALUE(PositionMap&, "position");
         PositionEntry guardPosition = posMap["guard"];
