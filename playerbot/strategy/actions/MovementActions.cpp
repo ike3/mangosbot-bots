@@ -305,7 +305,7 @@ bool MovementAction::FlyDirect(WorldPosition &startPosition, WorldPosition &endP
             mm.Clear();
         }
     }
-
+    mm.Clear(false, true);
     mm.MovePoint(movePosition.getMapId(), Position(movePosition.getX(), movePosition.getY(), movePosition.getZ(), 0.f), bot->IsFlying() ? FORCED_MOVEMENT_FLIGHT : FORCED_MOVEMENT_RUN, bot->IsFlying() ? bot->GetSpeed(MOVE_FLIGHT) : 0.f, bot->IsFlying());
 
     AI_VALUE(LastMovement&, "last movement").setShort(startPosition, movePosition);
@@ -827,10 +827,6 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
 
     MotionMaster& mm = *mover->GetMotionMaster();
 
-#ifdef MANGOS
-    mm.MovePoint(mapId, x, y, z, generatePath);
-#endif
-#ifdef CMANGOS
     /* Why do we do this?
     if (lastMove.lastMoveShort.distance(movePosition) < minDist)
     {
@@ -881,9 +877,11 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
     }
     bot->SendHeartBeat();
 #ifdef MANGOSBOT_ZERO
+    mm.Clear(false,true);
     mm.MovePoint(movePosition.getMapId(), movePosition.getX(), movePosition.getY(), movePosition.getZ(), masterWalking ? FORCED_MOVEMENT_WALK : FORCED_MOVEMENT_RUN, generatePath);
 #else
     if (!bot->IsFreeFlying())
+        mm.Clear(false, true);
         mm.MovePoint(movePosition.getMapId(), movePosition.getX(), movePosition.getY(), movePosition.getZ(), masterWalking ? FORCED_MOVEMENT_WALK : FORCED_MOVEMENT_RUN, generatePath);
     else
     {
@@ -974,12 +972,13 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
                     bot->m_movementInfo.RemoveMovementFlag(MOVEFLAG_LEVITATING);
             }
         }
+        mm.Clear(false, true);
         mm.MovePoint(movePosition.getMapId(), Position(movePosition.getX(), movePosition.getY(), movePosition.getZ(), 0.f), bot->IsFlying() ? FORCED_MOVEMENT_FLIGHT : FORCED_MOVEMENT_RUN, bot->IsFlying() ? bot->GetSpeed(MOVE_FLIGHT) : 0.f, bot->IsFlying());
     }
 #endif
 
     AI_VALUE(LastMovement&, "last movement").setShort(startPosition, movePosition);
-#endif
+
     if (!idle)
         ClearIdleState();
 
@@ -1414,7 +1413,7 @@ bool MovementAction::ChaseTo(WorldObject* obj, float distance, float angle)
         return MoveNear(obj, std::max(ATTACK_DISTANCE, distance));
 #endif
 
-    bot->GetMotionMaster()->Clear();
+    bot->GetMotionMaster()->Clear(false,true);
     bot->GetMotionMaster()->MoveChase((Unit*)obj, distance, angle);
 
     float dist = sServerFacade.GetDistance2d(bot, obj);

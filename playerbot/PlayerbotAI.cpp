@@ -712,6 +712,7 @@ void PlayerbotAI::Reset(bool full)
         return;
 
     currentEngine = engines[(uint8)BotState::BOT_STATE_NON_COMBAT];
+    currentState = BotState::BOT_STATE_NON_COMBAT;
     ResetAIInternalUpdateDelay();
     reactionEngine->Reset();
     whispers.clear();
@@ -748,7 +749,7 @@ void PlayerbotAI::Reset(bool full)
 
         InterruptSpell();
 
-        bot->GetMotionMaster()->Clear();
+        StopMoving();
 
         WorldSession* botWorldSessionPtr = bot->GetSession();
         bool logout = botWorldSessionPtr->ShouldLogOut(time(nullptr));
@@ -5182,6 +5183,9 @@ void PlayerbotAI::StopMoving()
 #endif
     data << mInfo;
     bot->GetSession()->HandleMovementOpcodes(data);
+
+    bot->GetMotionMaster()->Clear(false, true);
+    bot->GetMotionMaster()->MoveIdle();
 }
 
 bool PlayerbotAI::IsInRealGuild()
