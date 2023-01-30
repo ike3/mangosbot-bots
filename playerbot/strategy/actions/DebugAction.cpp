@@ -17,6 +17,10 @@ bool DebugAction::Execute(Event& event)
     if (!master)
         master = bot;
 
+    Unit* masterTarget = nullptr;
+    if (master->GetSelectionGuid())
+        masterTarget = ai->GetUnit(master->GetSelectionGuid());
+
     string text = event.getParam();
     if (text == "scan")
     {
@@ -105,6 +109,65 @@ bool DebugAction::Execute(Event& event)
 
         ai->Poi(poiPoint.coord_x, poiPoint.coord_y, name, nullptr, stoi(args[1]), stoi(args[2]), stoi(args[3]));
 
+        return true;
+    }
+    else if (text.find("motion") != std::string::npos)
+    {
+        MotionMaster* mm;
+        if (text.find("motion") == 0 || !masterTarget)
+            mm = bot->GetMotionMaster();
+        else
+            mm = masterTarget->GetMotionMaster();
+
+        MovementGeneratorType type = mm->GetCurrentMovementGeneratorType();
+
+        string sType = GetMoveTypeStr(type);
+
+        Unit* cTarget = sServerFacade.GetChaseTarget(bot);
+        float cAngle = sServerFacade.GetChaseAngle(bot);
+        float cOffset = sServerFacade.GetChaseOffset(bot);
+        string cTargetName = cTarget ? cTarget->GetName() : "none";
+
+        ai->TellMaster("current:" + sType + " ("+ cTargetName + " a:" + to_string(cAngle) + " o:" + to_string(cOffset) + ")");
+
+        if (!masterTarget)
+            masterTarget = master;
+
+        if (text.size() > 7)
+        {
+            string cmd = text.substr(7);
+
+            if (cmd == "clear")
+                mm->Clear();
+            else if (cmd == "reset")
+                mm->Clear(true);
+            else if (cmd == "clearall")
+                mm->Clear(false, true);
+            else if (cmd == "expire")
+                mm->MovementExpired();
+            else if (cmd == "flee")
+                mm->MoveFleeing(masterTarget, 10);
+            else if (cmd == "followmain")
+                mm->MoveFollow(masterTarget, 5, 0, true, true);
+            else if (cmd == "follow")
+                mm->MoveFollow(masterTarget, 5, 0);
+            else if (cmd == "dist")
+                mm->DistanceYourself(10);
+            else if (cmd == "update")
+                mm->UpdateMotion(10);
+            else if (cmd == "chase")
+                mm->MoveChase(masterTarget, 5, 0);
+            else if (cmd == "fall")
+                mm->MoveFall();
+            else if (cmd == "formation")
+            {
+                FormationSlotDataSPtr form = make_shared<FormationSlotData>(0, bot->GetObjectGuid(), nullptr, SpawnGroupFormationSlotType::SPAWN_GROUP_FORMATION_SLOT_TYPE_STATIC);
+                mm->MoveInFormation(form);
+            }
+
+            string sType = GetMoveTypeStr(type);
+            ai->TellMaster("new:" + sType);
+        }
         return true;
     }
     else if (text.find("printmap") != std::string::npos)
