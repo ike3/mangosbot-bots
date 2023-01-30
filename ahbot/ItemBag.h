@@ -1,10 +1,11 @@
 #pragma once
 #include "Category.h"
-#ifdef MANGOSBOT_TWO
+#if defined(MANGOSBOT_TWO) || MAX_EXPANSION == 2
 #include "Util/Util.h"
 #else
 #include "Util.h"
 #endif
+
 
 namespace ahbot
 {
