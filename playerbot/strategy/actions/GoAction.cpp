@@ -52,7 +52,7 @@ bool GoAction::Execute(Event& event)
         if (LeaderAlreadyTraveling(dest))
             return false;
 
-        if (ai->HasStrategy("stay", BotState::BOT_STATE_NON_COMBAT) || (ai->HasStrategy("follow", BotState::BOT_STATE_NON_COMBAT) && ai->GetMaster() && !ai->IsSelfMaster()))
+        if (ai->HasStrategy("stay", BotState::BOT_STATE_NON_COMBAT) || ai->HasStrategy("guard", BotState::BOT_STATE_NON_COMBAT) || (ai->HasStrategy("follow", BotState::BOT_STATE_NON_COMBAT) && ai->GetMaster() && !ai->IsSelfMaster()))
             return TellHowToGo(dest);
 
 
