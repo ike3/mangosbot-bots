@@ -17,12 +17,18 @@ void FollowMasterStrategy::InitNonCombatTriggers(std::list<TriggerNode*> &trigge
 
 void FollowMasterStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-    triggers.push_back(new TriggerNode(
-        "out of react range",
-        NextAction::array(0, new NextAction("check mount state", ACTION_HIGH), new NextAction("flee to master", ACTION_HIGH), NULL)));
+    FollowMasterStrategy::InitNonCombatTriggers(triggers);
 }
 
 void FollowMasterStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
 {
     InitNonCombatTriggers(triggers);
+}
+
+void FollowMasterStrategy::OnStrategyRemoved(BotState state)
+{
+    if (state == ai->GetState() && ai->GetBot()->GetMotionMaster()->GetCurrentMovementGeneratorType() == FOLLOW_MOTION_TYPE)
+    {
+        ai->StopMoving();
+    }
 }
