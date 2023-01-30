@@ -17,5 +17,6 @@ namespace ai
 #endif
     private:
         NextAction** GetDefaultNonCombatActions() override;
+        NextAction** GetDefaultCombatActions() override;
     };
 }
