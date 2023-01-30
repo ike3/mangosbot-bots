@@ -124,6 +124,7 @@ jobs:
           tag: "r-${{ steps.date.outputs.date }}" 
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: all_snapshots/${{env.ARCHIVE_FILENAME}}
+          overwrite: true
 
       #- name: Upload release
       #  uses: "marvinpinto/action-automatic-releases@latest"
