@@ -214,7 +214,7 @@ namespace ai
         CircleFormation(PlayerbotAI* ai) : MoveFormation(ai, "circle") {}
         virtual WorldLocation GetLocation()
         {
-            float range = 2.0f;
+            float range = ai->GetRange("follow");
 
             Unit* target = AI_VALUE(Unit*, "current target");
             Player* master = ai->GetGroupMaster();
@@ -223,24 +223,6 @@ namespace ai
 
             if (!target)
 				return Formation::NullLocation;
-
-            switch (bot->getClass())
-            {
-            case CLASS_HUNTER:
-            case CLASS_MAGE:
-            case CLASS_PRIEST:
-            case CLASS_WARLOCK:
-                range = ai->GetRange("flee");
-                break;
-            case CLASS_DRUID:
-                if (!ai->IsTank(bot))
-                    range = ai->GetRange("flee");
-                break;
-            case CLASS_SHAMAN:
-                if (ai->IsHeal(bot))
-                    range = ai->GetRange("flee");
-                break;
-            }
 
             float angle = GetFollowAngle();
             float x = target->GetPositionX() + cos(angle) * range;
@@ -273,7 +255,7 @@ namespace ai
             if (!group)
                 return Formation::NullLocation;
 
-            float range = 2.0f;
+            float range = ai->GetRange("follow");
 
             Player* master = ai->GetGroupMaster();
             if (!master)
