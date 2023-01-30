@@ -71,6 +71,9 @@ namespace ai
                 {
                     Formation* formation = AI_VALUE(Formation*, "formation");
                     WorldLocation loc = formation->GetLocation();
+                    if (Formation::IsNullLocation(loc))
+                        loc = WorldLocation(target->GetMapId(), target->GetPosition());
+
                     return sServerFacade.GetDistance2d(ai->GetBot(), loc.coord_x, loc.coord_y);
                 }
             }
