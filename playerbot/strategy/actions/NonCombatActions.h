@@ -28,6 +28,11 @@ namespace ai
                 bot->clearUnitState(UNIT_STAT_CHASE);
                 bot->clearUnitState(UNIT_STAT_FOLLOW);
 
+                if (ai->GetBot()->GetMotionMaster()->GetCurrentMovementGeneratorType() == FOLLOW_MOTION_TYPE)
+                {
+                    ai->StopMoving();
+                }
+
                 if (sServerFacade.isMoving(bot))
                 {
                     ai->StopMoving();
@@ -90,6 +95,11 @@ namespace ai
 
                 bot->clearUnitState(UNIT_STAT_CHASE);
                 bot->clearUnitState(UNIT_STAT_FOLLOW);
+
+                if (ai->GetBot()->GetMotionMaster()->GetCurrentMovementGeneratorType() == FOLLOW_MOTION_TYPE)
+                {
+                    ai->StopMoving();
+                }
 
                 if (sServerFacade.isMoving(bot))
                 {
