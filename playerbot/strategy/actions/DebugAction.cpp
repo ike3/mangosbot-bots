@@ -113,22 +113,37 @@ bool DebugAction::Execute(Event& event)
     }
     else if (text.find("motion") != std::string::npos)
     {
-        MotionMaster* mm;
-        if (text.find("motion") == 0 || !masterTarget)
-            mm = bot->GetMotionMaster();
-        else
-            mm = masterTarget->GetMotionMaster();
+        Unit* motionBot = bot;
+        Unit* motionTarget = masterTarget;
+
+        if (text.find("motion") != 0)
+        {
+            if (masterTarget)
+            {
+                motionBot = masterTarget;
+                motionTarget = master;
+            }
+            else
+            {
+                motionBot = master;
+                motionTarget = bot;
+            }
+        }
+
+
+        MotionMaster* mm = motionBot->GetMotionMaster();
 
         MovementGeneratorType type = mm->GetCurrentMovementGeneratorType();
 
         string sType = GetMoveTypeStr(type);
 
-        Unit* cTarget = sServerFacade.GetChaseTarget(bot);
-        float cAngle = sServerFacade.GetChaseAngle(bot);
-        float cOffset = sServerFacade.GetChaseOffset(bot);
+        Unit* cTarget = sServerFacade.GetChaseTarget(motionBot);
+        float cAngle = sServerFacade.GetChaseAngle(motionBot);
+        float cOffset = sServerFacade.GetChaseOffset(motionBot);
         string cTargetName = cTarget ? cTarget->GetName() : "none";
 
-        ai->TellMaster("current:" + sType + " ("+ cTargetName + " a:" + to_string(cAngle) + " o:" + to_string(cOffset) + ")");
+        ai->TellMaster(motionBot->GetNameStr() + " :" + sType + " (" + cTargetName + " a:" + to_string(cAngle) + " o:" + to_string(cOffset) + ")");
+
 
         if (!masterTarget)
             masterTarget = master;
@@ -146,17 +161,17 @@ bool DebugAction::Execute(Event& event)
             else if (cmd == "expire")
                 mm->MovementExpired();
             else if (cmd == "flee")
-                mm->MoveFleeing(masterTarget, 10);
+                mm->MoveFleeing(motionTarget, 10);
             else if (cmd == "followmain")
-                mm->MoveFollow(masterTarget, 5, 0, true, true);
+                mm->MoveFollow(motionTarget, 5, 0, true, true);
             else if (cmd == "follow")
-                mm->MoveFollow(masterTarget, 5, 0);
+                mm->MoveFollow(motionTarget, 5, 0);
             else if (cmd == "dist")
                 mm->DistanceYourself(10);
             else if (cmd == "update")
                 mm->UpdateMotion(10);
             else if (cmd == "chase")
-                mm->MoveChase(masterTarget, 5, 0);
+                mm->MoveChase(motionTarget, 5, 0);
             else if (cmd == "fall")
                 mm->MoveFall();
             else if (cmd == "formation")
