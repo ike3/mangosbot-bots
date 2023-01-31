@@ -373,7 +373,7 @@ bool ChooseRpgTargetAction::isFollowValid(Player* bot, WorldPosition pos)
     Player* realMaster = ai->GetMaster();
     AiObjectContext* context = ai->GetAiObjectContext();
 
-    if (!master || bot == master)
+    if (!master || bot == master || master->IsBeingTeleported())
         return true;
 
     float distance;
