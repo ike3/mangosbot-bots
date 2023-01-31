@@ -142,7 +142,9 @@ bool DebugAction::Execute(Event& event)
         float cOffset = sServerFacade.GetChaseOffset(motionBot);
         string cTargetName = cTarget ? cTarget->GetName() : "none";
 
-        ai->TellMaster(motionBot->GetNameStr() + " :" + sType + " (" + cTargetName + " a:" + to_string(cAngle) + " o:" + to_string(cOffset) + ")");
+        string motionName = motionBot->GetName();
+
+        ai->TellMaster(motionName + " :" + sType + " (" + cTargetName + " a:" + to_string(cAngle) + " o:" + to_string(cOffset) + ")");
 
 
         if (!masterTarget)
