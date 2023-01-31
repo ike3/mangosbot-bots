@@ -214,38 +214,6 @@ bool CheckMountStateAction::Execute(Event& event)
     return false;
 }
 
-bool CheckMountStateAction::CanMountInBg()
-{
-    //Do not mount with or near flag.
-    if (bot->GetBattleGroundTypeId() == BattleGroundTypeId::BATTLEGROUND_WS)
-    {
-        BattleGroundWS* bg = (BattleGroundWS*)ai->GetBot()->GetBattleGround();
-
-        if (bot->HasAura(23333) || bot->HasAura(23335))
-        {
-            return false;
-        }
-#ifdef MANGOSBOT_ZERO
-        //check near A Flag
-        uint32 lowguid = 90000;
-        uint32 id = 179830;
-        GameObject* AllianceflagStand = bg->GetBgMap()->GetGameObject(ObjectGuid(HIGHGUID_GAMEOBJECT, id, lowguid));
-
-        if (bot->IsWithinDistInMap(AllianceflagStand, 3.0f))
-            return false;
-
-        //check near H Flag
-        lowguid = 90001;
-        id = 179831;
-        GameObject* HordeflagStand = bg->GetBgMap()->GetGameObject(ObjectGuid(HIGHGUID_GAMEOBJECT, id, lowguid));
-
-        if (bot->IsWithinDistInMap(HordeflagStand, 3.0f))
-            return false;
-#endif
-    }
-    return true;
-}
-
 bool CheckMountStateAction::isUseful()
 {
     // do not use on vehicle
@@ -316,26 +284,7 @@ bool CheckMountStateAction::isUseful()
     return true;
 }
 
-float CheckMountStateAction::GetAttackDistance()
-{
-    switch (bot->getClass())
-    {
-    case CLASS_WARRIOR:
-    case CLASS_PALADIN:
-        return 10.0f;
-    case CLASS_ROGUE:
-        return 50.0f;
-    }
-    /*if (enemy)
-    attack_distance /= 2;*/
-
-    if (ai->IsHeal(bot) || ai->IsRanged(bot))
-        return 40.0f;
-
-    return 35.0f;
-}
-
-bool CheckMountStateAction::CanFly()
+bool CheckMountStateAction::CanFly() const
 {
     if (bot->GetMapId() != 530 && bot->GetMapId() != 571)
         return false;
@@ -359,6 +308,57 @@ bool CheckMountStateAction::CanFly()
         return false;
 
     return true;
+}
+
+bool CheckMountStateAction::CanMountInBg() const
+{
+    //Do not mount with or near flag.
+    if (bot->GetBattleGroundTypeId() == BattleGroundTypeId::BATTLEGROUND_WS)
+    {
+        BattleGroundWS* bg = (BattleGroundWS*)ai->GetBot()->GetBattleGround();
+
+        if (bot->HasAura(23333) || bot->HasAura(23335))
+        {
+            return false;
+        }
+#ifdef MANGOSBOT_ZERO
+        //check near A Flag
+        uint32 lowguid = 90000;
+        uint32 id = 179830;
+        GameObject* AllianceflagStand = bg->GetBgMap()->GetGameObject(ObjectGuid(HIGHGUID_GAMEOBJECT, id, lowguid));
+
+        if (bot->IsWithinDistInMap(AllianceflagStand, 3.0f))
+            return false;
+
+        //check near H Flag
+        lowguid = 90001;
+        id = 179831;
+        GameObject* HordeflagStand = bg->GetBgMap()->GetGameObject(ObjectGuid(HIGHGUID_GAMEOBJECT, id, lowguid));
+
+        if (bot->IsWithinDistInMap(HordeflagStand, 3.0f))
+            return false;
+#endif
+    }
+    return true;
+}
+
+float CheckMountStateAction::GetAttackDistance() const
+{
+    switch (bot->getClass())
+    {
+    case CLASS_WARRIOR:
+    case CLASS_PALADIN:
+        return 10.0f;
+    case CLASS_ROGUE:
+        return 50.0f;
+    }
+    /*if (enemy)
+    attack_distance /= 2;*/
+
+    if (ai->IsHeal(bot) || ai->IsRanged(bot))
+        return 40.0f;
+
+    return 35.0f;
 }
 
 uint32 CheckMountStateAction::MountSpeed(const SpellEntry* const spellInfo, const bool canFly)
@@ -428,38 +428,25 @@ uint32 CheckMountStateAction::MountSpeed(const SpellEntry* const spellInfo, cons
     return 0;
 }
 
-uint32 CheckMountStateAction::CurrentMountSpeed(const Unit* unit)
+uint32 CheckMountStateAction::MountSpeed(const ItemPrototype* proto, const bool canFly)
 {
-    uint32 mountSpeed = 0;
+    if (!proto)
+        return 0;
 
-    for (uint32 auraType = SPELL_AURA_BIND_SIGHT; auraType < TOTAL_AURAS; auraType++)
+    uint32 speed = 0;
+    for (int j = 0; j < MAX_ITEM_PROTO_SPELLS; j++)
     {
-        Unit::AuraList const& auras = unit->GetAurasByType((AuraType)auraType);
+        const SpellEntry* const spellInfo = sServerFacade.LookupSpellInfo(proto->Spells[j].SpellId);
+        speed = MountSpeed(spellInfo, canFly);
 
-        if (auras.empty())
-            continue;
-
-        for (Unit::AuraList::const_iterator i = auras.begin(); i != auras.end(); i++)
-        {
-            Aura* aura = *i;
-            if (!aura)
-                continue;
-
-            SpellEntry const* auraSpell = aura->GetSpellProto();
-
-            uint32 auraSpeed = std::max(MountSpeed(auraSpell, false),MountSpeed(auraSpell, true));            
-
-            if (auraSpeed < mountSpeed)
-                continue;
-
-            mountSpeed = auraSpeed;
-        }
+        if (speed)
+            return speed;
     }
 
-    return mountSpeed;
+    return 0;
 }
 
-vector<uint32> CheckMountStateAction::GetBestMountSpells(const bool canFly)
+vector<uint32> CheckMountStateAction::GetBestMountSpells(const bool canFly) const
 {
     uint32 bestMountSpeed = 1;
     vector<uint32> spells;
@@ -485,22 +472,7 @@ vector<uint32> CheckMountStateAction::GetBestMountSpells(const bool canFly)
     return spells;
 }
 
-uint32 CheckMountStateAction::MountSpeed(const ItemPrototype* proto, const bool canFly)
-{
-    uint32 speed = 0;
-    for (int j = 0; j < MAX_ITEM_PROTO_SPELLS; j++)
-    {
-        const SpellEntry* const spellInfo = sServerFacade.LookupSpellInfo(proto->Spells[j].SpellId);
-        speed = MountSpeed(spellInfo, canFly);
-
-        if (speed)
-            return speed;
-    }
-
-    return 0;
-}
-
-vector<Item*> CheckMountStateAction::GetBestMounts(const bool canFly)
+vector<Item*> CheckMountStateAction::GetBestMounts(const bool canFly) const
 {
     list<Item*> items = AI_VALUE2(list<Item*>, "inventory items", "mount");
 
@@ -521,6 +493,57 @@ vector<Item*> CheckMountStateAction::GetBestMounts(const bool canFly)
     }
 
     return mounts;
+}
+
+uint32 CheckMountStateAction::GetBestMountSpeed(const bool canFly) const
+{
+    vector<uint32> mountSpells = GetBestMountSpells(canFly);
+    vector<Item*> mounts = GetBestMounts(canFly);
+
+    if (mountSpells.empty() && mounts.empty())
+        return 0;
+
+    SpellEntry const* mountSpell = nullptr;
+    ItemPrototype const* mountItemProto = nullptr;
+
+    if (!mountSpells.empty())
+        mountSpell = sServerFacade.LookupSpellInfo(mountSpells.front());
+
+    if (!mounts.empty())
+        mountItemProto = mounts.front()->GetProto();
+
+    return std::max(MountSpeed(mountSpell, canFly), MountSpeed(mountItemProto, canFly));
+}
+
+uint32 CheckMountStateAction::CurrentMountSpeed(const Unit* unit)
+{
+    uint32 mountSpeed = 0;
+
+    for (uint32 auraType = SPELL_AURA_BIND_SIGHT; auraType < TOTAL_AURAS; auraType++)
+    {
+        Unit::AuraList const& auras = unit->GetAurasByType((AuraType)auraType);
+
+        if (auras.empty())
+            continue;
+
+        for (Unit::AuraList::const_iterator i = auras.begin(); i != auras.end(); i++)
+        {
+            Aura* aura = *i;
+            if (!aura)
+                continue;
+
+            SpellEntry const* auraSpell = aura->GetSpellProto();
+
+            uint32 auraSpeed = std::max(MountSpeed(auraSpell, false), MountSpeed(auraSpell, true));
+
+            if (auraSpeed < mountSpeed)
+                continue;
+
+            mountSpeed = auraSpeed;
+        }
+    }
+
+    return mountSpeed;
 }
 
 bool CheckMountStateAction::MountWithBestMount(const bool canFly)
@@ -570,8 +593,15 @@ bool CheckMountStateAction::MountWithBestMount(const bool canFly)
 
 bool CheckMountStateAction::Mount()
 {
-    if (CurrentMountSpeed(bot))
-        return false;
+    uint32 currentSpeed = CurrentMountSpeed(bot);
+
+    if (currentSpeed) //Already mounted
+    {
+        if (CurrentMountSpeed(bot) < GetBestMountSpeed(CanFly())) //Dismount to speed up.
+            return UnMount();
+        else
+            return false;
+    }
 
     Player* master = GetMaster();
     ai->RemoveShapeshift();
@@ -589,7 +619,7 @@ bool CheckMountStateAction::Mount()
     return didMount;
 }
 
-bool CheckMountStateAction::UnMount()
+bool CheckMountStateAction::UnMount() const
 {
     if (!CurrentMountSpeed(bot))
         return false;
