@@ -4,7 +4,14 @@
 #include "TravelNode.h"
 
 #include "Map.h"
-#include "vmap/VMapFactory.h"
+
+#ifdef MANGOSBOT_TWO
+    #include "Vmap/VMapFactory.h"
+#else
+    #include "vmap/VMapFactory.h"
+#endif
+
+
 #include "MoveMap.h"
 #include "World.h"
 #include "PathFinder.h"

@@ -869,13 +869,13 @@ void RandomPlayerbotFactory::CreateRandomArenaTeams()
         Player* player = sObjectMgr.GetPlayer(captain);
         if (!player)
         {
-            sLog.outError("Cannot find player for captain %d", captain);
+            sLog.outError("Cannot find player for captain %d", (uint64)captain);
             continue;
         }
 
         if (player->GetLevel() < 70)
         {
-            sLog.outError("Bot %d must be level 70 to create an arena team", captain);
+            sLog.outError("Bot %d must be level 70 to create an arena team", (uint64)captain);
             continue;
         }
 
@@ -926,7 +926,7 @@ void RandomPlayerbotFactory::CreateRandomArenaTeams()
             continue;
         }
         arenateam->SetCaptain(player->GetObjectGuid());
-        sLog.outBasic("Bot #%d %s:%d <%s>: captain of random Arena %s team - %s", player->GetGUIDLow(), player->GetTeam() == ALLIANCE ? "A" : "H", player->GetLevel(), player->GetName(), arenaTypeName, arenateam->GetName().c_str());
+        sLog.outBasic("Bot #%d %s:%d <%s>: captain of random Arena %s team - %s", player->GetGUIDLow(), player->GetTeam() == ALLIANCE ? "A" : "H", player->GetLevel(), player->GetName(), arenaTypeName.c_str(), arenateam->GetName().c_str());
         // set random emblem
         uint32 backgroundColor = urand(0xFF000000, 0xFFFFFFFF), emblemStyle = urand(0, 101), emblemColor = urand(0xFF000000, 0xFFFFFFFF), borderStyle = urand(0, 5), borderColor = urand(0xFF000000, 0xFFFFFFFF);
         arenateam->SetEmblem(backgroundColor, emblemStyle, emblemColor, borderStyle, borderColor);
@@ -957,7 +957,7 @@ void RandomPlayerbotFactory::CreateRandomArenaTeams()
                 continue;
 
             arenateam->AddMember(member->GetObjectGuid());
-            sLog.outBasic("Bot #%d %s:%d <%s>: added to random Arena %s team - %s", member->GetGUIDLow(), member->GetTeam() == ALLIANCE ? "A" : "H", member->GetLevel(), member->GetName(), arenaTypeName, arenateam->GetName().c_str());
+            sLog.outBasic("Bot #%d %s:%d <%s>: added to random Arena %s team - %s", member->GetGUIDLow(), member->GetTeam() == ALLIANCE ? "A" : "H", member->GetLevel(), member->GetName(), arenaTypeName.c_str(), arenateam->GetName().c_str());
 
             /*if (player->GetArenaTeamIdFromDB(possibleMember, type))
                 continue;*/
@@ -966,7 +966,7 @@ void RandomPlayerbotFactory::CreateRandomArenaTeams()
 
         if (arenateam->GetMembersSize() < type)
         {
-            sLog.outBasic("Random Arena team %s %s: failed to get enough members, deleting...", arenaTypeName, arenateam->GetName().c_str());
+            sLog.outBasic("Random Arena team %s %s: failed to get enough members, deleting...", arenaTypeName.c_str(), arenateam->GetName().c_str());
             arenateam->Disband(nullptr);
             return;
         }
