@@ -905,7 +905,7 @@ bool LfgJoinAction::JoinLFG()
         _roles = "DPS";
 
     //pState->SetType(LFG_TYPE_DUNGEON);
-    sLog.outBasic("Bot #%d %s:%d <%s>: queues LFG, Dungeon as %s (%s)", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->GetLevel(), bot->GetName(), _roles, many ? "several dungeons" : dungeon->name);
+    sLog.outBasic("Bot #%d %s:%d <%s>: queues LFG, Dungeon as %s (%s)", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->GetLevel(), bot->GetName(), _roles.c_str(), many ? "several dungeons" : dungeon->name.c_str());
 
     /*if (lfgState->IsSingleRole())
     {
