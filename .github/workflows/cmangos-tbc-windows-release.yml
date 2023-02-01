@@ -15,6 +15,7 @@ env:
   CORE_EXPANSION: "tbc"
   CORE_BRANCH: "ike3-bots"
   BOTS_BRANCH: "master"
+  CORE_REPO_OWNER: ${{github.repository_owner}}
   BUILD_TYPE: RelWithDebInfo
   BUILD_OPTIONS: "-DBUILD_EXTRACTORS=ON -DBUILD_IKE3_BOTS=ON -DBUILD_AHBOT=ON -DBUILD_GIT_ID=ON"
   REPO_DIR : ${{github.workspace}}
@@ -35,7 +36,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           ref: ${{env.CORE_BRANCH}}
-          repository: celguar/mangos-tbc
+          repository: ${{env.CORE_REPO_OWNER}}/mangos-tbc
           path: ${{env.REPO_DIR}}
           # submodules: recursive
           
