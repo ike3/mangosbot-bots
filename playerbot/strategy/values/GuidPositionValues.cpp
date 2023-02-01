@@ -3,6 +3,7 @@
 #include "../../TravelMgr.h"
 #include "NearestGameObjects.h"
 #include "GridNotifiers.h"
+#include "CellImpl.h"
 
 using namespace ai;
 using namespace MaNGOS;
