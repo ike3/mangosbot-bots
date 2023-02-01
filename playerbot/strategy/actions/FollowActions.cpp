@@ -82,11 +82,11 @@ bool FollowAction::isUseful()
         distance = sServerFacade.GetDistance2d(bot, loc.coord_x, loc.coord_y);
     }
 
+    if (sServerFacade.IsDistanceGreaterThan(distance, sPlayerbotAIConfig.sightDistance))
+        return true;
+
     if (sServerFacade.GetChaseTarget(bot) && sServerFacade.GetChaseTarget(bot)->GetObjectGuid() == fTarget->GetObjectGuid() && formation->GetAngle() == sServerFacade.GetChaseAngle(bot) && formation->GetOffset() == sServerFacade.GetChaseOffset(bot))
         return false;
-
-    //if (!sServerFacade.IsDistanceGreaterThan(distance, formation->GetMaxDistance()))
-    //    return false;
 
     return true;
 }

@@ -124,6 +124,7 @@ namespace ai
             creators["not facing target"] = &TriggerContext::not_facing_target;
             creators["far from master"] = &TriggerContext::far_from_master;
             creators["not near master"] = &TriggerContext::not_near_master;
+            creators["update follow"] = &TriggerContext::update_follow;
             creators["far from loot target"] = &TriggerContext::far_from_loot_target;
             creators["can loot"] = &TriggerContext::can_loot;
             creators["swimming"] = &TriggerContext::swimming;
@@ -300,6 +301,7 @@ namespace ai
         static Trigger* far_from_loot_target(PlayerbotAI* ai) { return new FarFromCurrentLootTrigger(ai); }
         static Trigger* far_from_master(PlayerbotAI* ai) { return new FarFromMasterTrigger(ai); }
         static Trigger* not_near_master(PlayerbotAI* ai) { return new NotNearMasterTrigger(ai); }
+        static Trigger* update_follow(PlayerbotAI* ai) { return new UpdateFollowTrigger(ai); }
         static Trigger* behind_target(PlayerbotAI* ai) { return new IsBehindTargetTrigger(ai); }
         static Trigger* not_behind_target(PlayerbotAI* ai) { return new IsNotBehindTargetTrigger(ai); }
         static Trigger* not_facing_target(PlayerbotAI* ai) { return new IsNotFacingTargetTrigger(ai); }

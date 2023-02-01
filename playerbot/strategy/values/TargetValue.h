@@ -119,4 +119,11 @@ namespace ai
     private:
         ObjectGuid guid;
     };
+
+    class FollowTargetValue : public UnitCalculatedValue
+    {
+    public:
+        FollowTargetValue(PlayerbotAI* ai, string name = "follow target") : UnitCalculatedValue(ai, name) {}
+        Unit* Calculate() override;
+    };
 }

@@ -1221,12 +1221,6 @@ bool MovementAction::Follow(Unit* target, float distance, float angle)
     if (!target)
         return false;
 
-    if (!bot->InBattleGround() && sServerFacade.IsDistanceLessOrEqualThan(sServerFacade.GetDistance2d(bot, target), ai->GetRange("follow")))
-    {
-        //ai->TellError("No need to follow");
-        return false;
-    }
-
     //Move to target corpse if alive.
     if (!target->IsAlive() && bot->IsAlive() && target->GetObjectGuid().IsPlayer())
     {
@@ -1291,15 +1285,6 @@ bool MovementAction::Follow(Unit* target, float distance, float angle)
     if (bot->IsFreeFlying())
         return MoveTo(target, ai->GetRange("follow"));
 
-    if (sServerFacade.IsDistanceLessOrEqualThan(sServerFacade.GetDistance2d(bot, target), ai->GetRange("follow")))
-    {
-        //ai->TellError("No need to follow");
-        return false;
-    }
-
-    if (sServerFacade.IsFriendlyTo(target, bot) && bot->IsMounted() && AI_VALUE(list<ObjectGuid>, "all targets").empty())
-        distance += angle;
-
     bot->HandleEmoteState(0);
     if (!bot->IsStandState())
         bot->SetStandState(UNIT_STAND_STATE_STAND);
@@ -1313,18 +1298,12 @@ bool MovementAction::Follow(Unit* target, float distance, float angle)
     AI_VALUE(LastMovement&, "last movement").Set(target);
     ClearIdleState();
 
-    if (bot->GetMotionMaster()->GetCurrentMovementGeneratorType() == FOLLOW_MOTION_TYPE)
-    {
-        Unit* currentTarget = sServerFacade.GetChaseTarget(bot);
-        if (currentTarget && currentTarget->GetObjectGuid() == target->GetObjectGuid() && sServerFacade.GetChaseAngle(bot) == angle && sServerFacade.GetChaseOffset(bot) == distance)
-            return false;
-
-    }
 #ifndef MANGOSBOT_ZERO
     if (bot->IsFreeFlying())
     {
         if (!bot->IsFlying() && target->IsFlying())
         {
+            //Take off
             WorldPacket data(SMSG_SPLINE_MOVE_SET_FLYING, 9);
             data << bot->GetPackGUID();
             bot->SendMessageToSet(data, true);
@@ -1341,6 +1320,7 @@ bool MovementAction::Follow(Unit* target, float distance, float angle)
 
         if (bot->IsFlying() && !target->IsFlying())
         {
+            //Land
             bool needLand = false;
 
             if (const TerrainInfo* terrain = bot->GetTerrain())
@@ -1371,6 +1351,13 @@ bool MovementAction::Follow(Unit* target, float distance, float angle)
         }
     }
 #endif
+
+    if (bot->GetMotionMaster()->GetCurrentMovementGeneratorType() == FOLLOW_MOTION_TYPE)
+    {
+        Unit* currentTarget = sServerFacade.GetChaseTarget(bot);
+        if (currentTarget && currentTarget->GetObjectGuid() == target->GetObjectGuid() && sServerFacade.GetChaseAngle(bot) == angle && sServerFacade.GetChaseOffset(bot) == distance)
+            return false;
+    }
 
     mm.MoveFollow(target, distance, angle, true);
     return true;

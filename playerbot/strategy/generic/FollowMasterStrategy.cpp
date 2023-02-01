@@ -11,7 +11,7 @@ void FollowMasterStrategy::InitNonCombatTriggers(std::list<TriggerNode*> &trigge
         NextAction::array(0, new NextAction("check mount state", ACTION_HIGH), new NextAction("flee to master", ACTION_HIGH), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "not near master",
+        "update follow",
         NextAction::array(0, new NextAction("follow", 1.0f), NULL)));
 }
 

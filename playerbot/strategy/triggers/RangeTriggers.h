@@ -4,6 +4,7 @@
 #include "../../ServerFacade.h"
 #include "../generic/CombatStrategy.h"
 #include "../values/PossibleAttackTargetsValue.h"
+#include "../values/Formations.h"
 
 namespace ai
 {
@@ -293,11 +294,41 @@ namespace ai
     class NotNearMasterTrigger : public OutOfReactRangeTrigger
     {
     public:
-        NotNearMasterTrigger(PlayerbotAI* ai) : OutOfReactRangeTrigger(ai, "not near master", 5.0f, 2) {}
+        NotNearMasterTrigger(PlayerbotAI* ai, string name = "not near master") : OutOfReactRangeTrigger(ai, name, 5.0f, 2) {}
 
         virtual bool IsActive()
         {
             return FarFromMasterTrigger::IsActive() && !sServerFacade.IsDistanceGreaterThan(AI_VALUE2(float, "distance", "master target"), sPlayerbotAIConfig.reactDistance);
+        }
+    };
+
+    class UpdateFollowTrigger : public NotNearMasterTrigger
+    {
+    public:
+        UpdateFollowTrigger(PlayerbotAI* ai) : NotNearMasterTrigger(ai, "update follow") {}
+
+        virtual bool IsActive()
+        {
+            //We are not near target. Move closer
+            if (NotNearMasterTrigger::IsActive())
+                return true;
+
+            Unit* followTarget = AI_VALUE(Unit*, "follow target");
+
+            if (!followTarget)
+                return false;
+
+            //We need to land or liftoff.
+            if (followTarget->IsFlying() != bot->IsFlying())
+                return true;
+
+            Formation* formation = AI_VALUE(Formation*, "formation");
+
+            //Already using proper formation.
+            if (sServerFacade.GetChaseTarget(bot) && sServerFacade.GetChaseTarget(bot)->GetObjectGuid() == followTarget->GetObjectGuid() && formation->GetAngle() == sServerFacade.GetChaseAngle(bot) && formation->GetOffset() == sServerFacade.GetChaseOffset(bot))
+                return false;
+
+            return true;
         }
     };
 

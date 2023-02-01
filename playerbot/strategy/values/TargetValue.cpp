@@ -6,6 +6,7 @@
 #include "RtiTargetValue.h"
 #include "Unit.h"
 #include "LastMovementValue.h"
+#include "../values/Formations.h"
 
 using namespace ai;
 
@@ -128,4 +129,16 @@ Unit* PullTargetValue::Get()
     }
     
     return unit;
+}
+
+Unit* FollowTargetValue::Calculate()
+{
+    Formation* formation = AI_VALUE(Formation*, "formation");
+    string targetName = formation->GetTargetName();
+
+    Unit* fTarget = NULL;
+    if (!targetName.empty())
+        return AI_VALUE(Unit*, targetName);
+    else
+        return AI_VALUE(Unit*, "master target");
 }
