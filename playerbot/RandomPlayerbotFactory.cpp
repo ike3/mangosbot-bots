@@ -975,7 +975,7 @@ void RandomPlayerbotFactory::CreateRandomArenaTeams()
         arenateam->SetRatingForAll(urand(1500, 2700));
         arenateam->SaveToDB();
 
-        sLog.outBasic("Random Arena team %s %s: created", arenaTypeName, arenateam->GetName().c_str());
+        sLog.outBasic("Random Arena team %s %s: created", arenaTypeName.c_str(), arenateam->GetName().c_str());
     }
 
     sLog.outString("%d random bot arena teams available", arenaTeamNumber);
