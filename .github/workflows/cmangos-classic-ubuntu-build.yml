@@ -16,6 +16,7 @@ env:
   CORE_EXPANSION: "classic"
   CORE_BRANCH: "ike3-bots"
   BOTS_BRANCH: "master"
+  CORE_REPO_OWNER: ${{github.repository_owner}}
   REPO_DIR : ${{github.workspace}}
   BUILD_DIR: ${{github.workspace}}/bin/builddir
   BOOST_PLATFORM_VERSION: "20.04"
@@ -53,7 +54,7 @@ jobs:
       - name: Checkout Core
         uses: actions/checkout@v2
         with:
-          repository: celguar/mangos-classic
+          repository: ${{env.CORE_REPO_OWNER}}/mangos-classic
           ref: ${{env.CORE_BRANCH}}
           path: ${{env.REPO_DIR}}
           
@@ -61,7 +62,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           ref: ${{env.BOTS_BRANCH}}
-          repository: celguar/mangosbot-bots
+          repository: ${{env.CORE_REPO_OWNER}}/mangosbot-bots
           path: "${{env.REPO_DIR}}/src/modules/Bots"
 
       - name: Create Build Environment
