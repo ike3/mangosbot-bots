@@ -3,6 +3,7 @@
 #include "../../TravelMgr.h"
 #include "NearestGameObjects.h"
 #include "GridNotifiers.h"
+#include "GridNotifiersImpl.h"
 #include "CellImpl.h"
 
 using namespace ai;
