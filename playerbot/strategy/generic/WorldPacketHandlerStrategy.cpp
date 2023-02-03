@@ -7,7 +7,6 @@ using namespace ai;
 WorldPacketHandlerStrategy::WorldPacketHandlerStrategy(PlayerbotAI* ai) : PassTroughStrategy(ai)
 {
     supported.push_back("loot start roll");
-    supported.push_back("check mount state");
     supported.push_back("quest objective completed");
     supported.push_back("party command");
     supported.push_back("ready check");
@@ -22,6 +21,10 @@ WorldPacketHandlerStrategy::WorldPacketHandlerStrategy(PlayerbotAI* ai) : PassTr
 void WorldPacketHandlerStrategy::InitNonCombatTriggers(std::list<TriggerNode*> &triggers)
 {
     PassTroughStrategy::InitNonCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "check mount state",
+        NextAction::array(0, new NextAction("check mount state", 2.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
         "group invite",
