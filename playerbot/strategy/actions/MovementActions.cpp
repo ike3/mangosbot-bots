@@ -1235,6 +1235,7 @@ bool MovementAction::Follow(Unit* target, float distance, float angle)
 
             if(botPos.fDist(cPos) > sPlayerbotAIConfig.spellDistance)
                 return MoveTo(cPos.getMapId(),cPos.getX(),cPos.getY(), cPos.getZ());
+            return false;
         }
     }
 
