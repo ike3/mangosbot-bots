@@ -139,7 +139,7 @@ void BearTankDruidStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers
 
     triggers.push_back(new TriggerNode(
         "thorns",
-        NextAction::array(0, new NextAction("thorns", ACTION_HIGH + 9), NULL)));
+        NextAction::array(0, new NextAction("thorns", 66.0f), NULL))); //High prio to stop going back to bear form.
 
     triggers.push_back(new TriggerNode(
         "bear form",

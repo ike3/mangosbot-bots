@@ -23,5 +23,5 @@ void MeleeDruidStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "omen of clarity",
-        NextAction::array(0, new NextAction("omen of clarity", ACTION_HIGH + 9), NULL)));
+        NextAction::array(0, new NextAction("omen of clarity", 66.0f), NULL))); //High priority to avoid druid going back to bear/cat form.
 }

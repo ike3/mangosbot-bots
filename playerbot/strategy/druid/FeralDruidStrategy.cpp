@@ -97,5 +97,5 @@ void FeralDruidStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "omen of clarity",
-        NextAction::array(0, new NextAction("omen of clarity", ACTION_HIGH + 6), NULL)));
+        NextAction::array(0, new NextAction("omen of clarity", 66.0f), NULL))); //High priority to avoid going back to cat form.
 }

@@ -20,28 +20,28 @@ private:
     static ActionNode* thorns(PlayerbotAI* ai)
     {
         return new ActionNode("thorns",
-            /*P*/ NULL, //NextAction::array(0, new NextAction("caster form"), NULL),
+            /*P*/ NextAction::array(0, new NextAction("caster form"), NULL),
             /*A*/ NULL,
             /*C*/ NULL);
     }
     static ActionNode* thorns_on_party(PlayerbotAI* ai)
     {
         return new ActionNode("thorns on party",
-            /*P*/ NULL, //NextAction::array(0, new NextAction("caster form"), NULL),
+            /*P*/ NextAction::array(0, new NextAction("caster form"), NULL),
             /*A*/ NULL,
             /*C*/ NULL);
     }
     static ActionNode* mark_of_the_wild(PlayerbotAI* ai)
     {
         return new ActionNode ("mark of the wild",
-            /*P*/ NULL, //NextAction::array(0, new NextAction("caster form"), NULL),
+            /*P*/ NextAction::array(0, new NextAction("caster form"), NULL),
             /*A*/ NULL,
             /*C*/ NULL);
     }
     static ActionNode* mark_of_the_wild_on_party(PlayerbotAI* ai)
     {
         return new ActionNode ("mark of the wild on party",
-            /*P*/ NULL, //NextAction::array(0, new NextAction("caster form"), NULL),
+            /*P*/ NextAction::array(0, new NextAction("caster form"), NULL),
             /*A*/ NULL,
             /*C*/ NULL);
     }
