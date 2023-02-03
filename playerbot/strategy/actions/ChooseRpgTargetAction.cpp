@@ -390,6 +390,19 @@ bool ChooseRpgTargetAction::isFollowValid(Player* bot, WorldPosition pos)
     else
         return true;
 
+
+    //Check if bot is in dungeon with master.
+    bool inDungeon = false;
+    if (master->IsInWorld() && master->GetMap()->IsDungeon())
+    {
+        if (bot->GetMapId() == master->GetMapId())
+            inDungeon = true;
+    }
+
+    //Restrict distance in combat and in dungeons.
+    if ((inDungeon || master->IsInCombat()) && distance > 5.0f)
+        return false;
+
     //With a bot master bots have more freedom.
     if (!ai->HasActivePlayerMaster())
     {
@@ -405,18 +418,6 @@ bool ChooseRpgTargetAction::isFollowValid(Player* bot, WorldPosition pos)
 
         return false;
     }
-
-    //Check if bot is in dungeon with master.
-    bool inDungeon = false;
-    if (realMaster->IsInWorld() && realMaster->GetMap()->IsDungeon())
-    {
-        if (bot->GetMapId() == realMaster->GetMapId())
-            inDungeon = true;
-    }
-
-    //Restrict distance in combat and in dungeons.
-    if ((inDungeon || master->IsInCombat()) && (realMaster == master) && distance > 5.0f)
-        return false;
 
     //Increase distance as master is standing still.
     Formation* formation = AI_VALUE(Formation*, "formation");
