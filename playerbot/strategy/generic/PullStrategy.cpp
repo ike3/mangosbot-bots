@@ -222,7 +222,8 @@ void PullStrategy::RequestPull(Unit* target, bool resetTime)
 {
     SetTarget(target);
     pendingToStart = true;
-    pullStartTime = time(0);
+    if(resetTime)
+        pullStartTime = time(0);
 }
 
 float PullMultiplier::GetValue(Action* action)
