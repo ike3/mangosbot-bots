@@ -100,9 +100,6 @@ bool StayChatShortcutAction::Execute(Event& event)
     SetPosition(bot, "stay");
     MEM_AI_VALUE(WorldPosition, "master position")->Reset();
 
-    MotionMaster& mm = *bot->GetMotionMaster();
-    mm.Clear();
-
     ai->TellError(BOT_TEXT("staying"));
     return true;
 }
@@ -119,12 +116,23 @@ bool GuardChatShortcutAction::Execute(Event& event)
 
     SetPosition(bot);
     SetPosition(bot, "guard");
-    MEM_AI_VALUE(WorldPosition, "master position")->Reset();
-
-    MotionMaster& mm = *bot->GetMotionMaster();
-    mm.Clear();
+    MEM_AI_VALUE(WorldPosition, "master position")->Reset();  
 
     ai->TellError(BOT_TEXT("guarding"));
+    return true;
+}
+
+bool FreeChatShortcutAction::Execute(Event& event)
+{
+    Player* master = GetMaster();
+    if (!master)
+        return false;
+
+    ai->Reset();
+    ai->ChangeStrategy("-stay,-guard,-follow,-passive", BotState::BOT_STATE_NON_COMBAT);
+    ai->ChangeStrategy("-stay,-guard,-follow,-passive", BotState::BOT_STATE_COMBAT);
+
+    ai->TellError(BOT_TEXT("free_moving"));
     return true;
 }
 

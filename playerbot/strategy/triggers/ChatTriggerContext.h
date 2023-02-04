@@ -69,6 +69,7 @@ namespace ai
             creators["follow"] = &ChatTriggerContext::follow;
             creators["stay"] = &ChatTriggerContext::stay;
             creators["guard"] = &ChatTriggerContext::guard;
+            creators["free"] = &ChatTriggerContext::free;
             creators["wait for attack time"] = &ChatTriggerContext::wait_for_attack_time;
             creators["flee"] = &ChatTriggerContext::flee;
             creators["grind"] = &ChatTriggerContext::grind;
@@ -157,6 +158,7 @@ namespace ai
         static Trigger* tank_attack(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "tank attack"); }
         static Trigger* stay(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "stay"); }
         static Trigger* guard(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "guard"); }
+        static Trigger* free(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "free"); }
         static Trigger* wait_for_attack_time(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "wait for attack time"); }
         static Trigger* follow(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "follow"); }
         static Trigger* gb(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "gb"); }

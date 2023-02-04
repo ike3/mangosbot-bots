@@ -133,6 +133,7 @@ namespace ai
             creators["follow chat shortcut"] = &ChatActionContext::follow_chat_shortcut;
             creators["stay chat shortcut"] = &ChatActionContext::stay_chat_shortcut;
             creators["guard chat shortcut"] = &ChatActionContext::guard_chat_shortcut;
+            creators["free chat shortcut"] = &ChatActionContext::free_chat_shortcut;
             creators["flee chat shortcut"] = &ChatActionContext::flee_chat_shortcut;
             creators["runaway chat shortcut"] = &ChatActionContext::runaway_chat_shortcut;
             creators["grind chat shortcut"] = &ChatActionContext::grind_chat_shortcut;
@@ -215,6 +216,7 @@ namespace ai
         static Action* runaway_chat_shortcut(PlayerbotAI* ai) { return new GoawayChatShortcutAction(ai); }
         static Action* stay_chat_shortcut(PlayerbotAI* ai) { return new StayChatShortcutAction(ai); }
         static Action* follow_chat_shortcut(PlayerbotAI* ai) { return new FollowChatShortcutAction(ai); }
+        static Action* free_chat_shortcut(PlayerbotAI* ai) { return new FreeChatShortcutAction(ai); }
         static Action* guard_chat_shortcut(PlayerbotAI* ai) { return new GuardChatShortcutAction(ai); }
         static Action* gb(PlayerbotAI* ai) { return new GuildBankAction(ai); }
         static Action* bank(PlayerbotAI* ai) { return new BankAction(ai); }

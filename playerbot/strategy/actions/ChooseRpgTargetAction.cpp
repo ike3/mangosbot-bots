@@ -379,6 +379,7 @@ bool ChooseRpgTargetAction::isFollowValid(Player* bot, WorldPosition pos)
     float distance;
 
     PositionMap& posMap = AI_VALUE(PositionMap&, "position");
+    bool freeMove = false;
     
     //Set distance relative to focus position.
     if (ai->HasStrategy("follow", BotState::BOT_STATE_NON_COMBAT))
@@ -388,7 +389,10 @@ bool ChooseRpgTargetAction::isFollowValid(Player* bot, WorldPosition pos)
     else if (ai->HasStrategy("guard", BotState::BOT_STATE_NON_COMBAT) && posMap["guard"].isSet())
         distance = sqrt(pos.sqDistance2d(posMap["guard"].Get()));
     else
-        return true;
+    {
+        distance = sqrt(pos.sqDistance2d(bot));
+        freeMove = true;
+    }
 
 
     //Check if bot is in dungeon with master.
@@ -429,7 +433,10 @@ bool ChooseRpgTargetAction::isFollowValid(Player* bot, WorldPosition pos)
         maxDist += (lastMasterMove - 30);
 
     if (maxDist > sPlayerbotAIConfig.reactDistance)
-        maxDist = sPlayerbotAIConfig.reactDistance;
+        if (freeMove)
+            return true;
+        else
+            maxDist = sPlayerbotAIConfig.reactDistance;
 
     if (distance < maxDist)
         return true;

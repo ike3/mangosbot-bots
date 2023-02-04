@@ -34,6 +34,13 @@ namespace ai
         virtual bool Execute(Event& event) override;
     };
 
+    class FreeChatShortcutAction : public ReturnPositionResetAction
+    {
+    public:
+        FreeChatShortcutAction(PlayerbotAI* ai) : ReturnPositionResetAction(ai, "free chat shortcut") {}
+        virtual bool Execute(Event& event) override;
+    };
+
     class FleeChatShortcutAction : public ReturnPositionResetAction
     {
     public:
