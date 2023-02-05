@@ -25,6 +25,13 @@ void FollowMasterStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
     InitNonCombatTriggers(triggers);
 }
 
+void FollowMasterStrategy::InitReactionTriggers(std::list<TriggerNode*>& triggers)
+{
+    triggers.push_back(new TriggerNode(
+        "stop follow",
+        NextAction::array(0, new NextAction("stop follow", 100.0f), NULL)));
+}
+
 void FollowMasterStrategy::OnStrategyRemoved(BotState state)
 {
     if (state == ai->GetState() && ai->GetBot()->GetMotionMaster()->GetCurrentMovementGeneratorType() == FOLLOW_MOTION_TYPE)

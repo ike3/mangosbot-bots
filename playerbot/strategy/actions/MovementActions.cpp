@@ -348,7 +348,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
     }
 #endif
 
-    bool detailedMove = ai->AllowActivity(DETAILED_MOVE_ACTIVITY);
+    bool detailedMove = ai->AllowActivity(DETAILED_MOVE_ACTIVITY,true);
 
     if (!detailedMove)
     {
@@ -843,7 +843,6 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
             ai->StopMoving();
         else if (mover)
             mover->InterruptMoving(true);
-        mm.Clear();
     }
     else
     {
@@ -855,7 +854,6 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
                 ai->StopMoving();
             else
                 mover->InterruptMoving(true);
-            mm.Clear();
         }
     }
 
@@ -1239,7 +1237,7 @@ bool MovementAction::Follow(Unit* target, float distance, float angle)
         }
     }
 
-    if (sServerFacade.IsDistanceGreaterOrEqualThan(sServerFacade.GetDistance2d(bot, target), sPlayerbotAIConfig.sightDistance) || (target->IsFlying() && !bot->IsFreeFlying()))
+    if (sServerFacade.IsDistanceGreaterOrEqualThan(sServerFacade.GetDistance2d(bot, target), sPlayerbotAIConfig.sightDistance) || (target->IsFlying() && !bot->IsFreeFlying()) || target->IsTaxiFlying())
     {
         if (target->GetObjectGuid().IsPlayer())
         {
@@ -1262,18 +1260,16 @@ bool MovementAction::Follow(Unit* target, float distance, float angle)
                     }
                 }
             }
-            else 
-            {
-                if (pTarget->IsTaxiFlying()) //Move to where the player is flying to.
-                {
-                    const Taxi::Map tMap = pTarget->GetTaxiPathSpline();
-                    if (!tMap.empty())
-                    {
-                        auto tEnd = tMap.back();
 
-                        if (tEnd)
-                            return MoveTo(tEnd->mapid, tEnd->x, tEnd->y, tEnd->z);
-                    }
+            if (pTarget->IsTaxiFlying()) //Move to where the player is flying to.
+            {
+                const Taxi::Map tMap = pTarget->GetTaxiPathSpline();
+                if (!tMap.empty())
+                {
+                    auto tEnd = tMap.back();
+
+                    if (tEnd)
+                        return MoveTo(tEnd->mapid, tEnd->x, tEnd->y, tEnd->z);
                 }
             }
         }

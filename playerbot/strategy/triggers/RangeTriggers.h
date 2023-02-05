@@ -294,7 +294,7 @@ namespace ai
     class NotNearMasterTrigger : public OutOfReactRangeTrigger
     {
     public:
-        NotNearMasterTrigger(PlayerbotAI* ai, string name = "not near master") : OutOfReactRangeTrigger(ai, name, 5.0f, 2) {}
+        NotNearMasterTrigger(PlayerbotAI* ai, string name = "not near master", int checkInterval = 2) : OutOfReactRangeTrigger(ai, name, 5.0f, checkInterval) {}
 
         virtual bool IsActive()
         {
@@ -305,7 +305,7 @@ namespace ai
     class UpdateFollowTrigger : public NotNearMasterTrigger
     {
     public:
-        UpdateFollowTrigger(PlayerbotAI* ai) : NotNearMasterTrigger(ai, "update follow") {}
+        UpdateFollowTrigger(PlayerbotAI* ai) : NotNearMasterTrigger(ai, "update follow", 3) {}
 
         virtual bool IsActive()
         {
@@ -319,7 +319,7 @@ namespace ai
                 return false;
 
             //We need to land or liftoff.
-            if (followTarget->IsFlying() != bot->IsFlying())
+            if (followTarget->IsFlying() != bot->IsFlying() || followTarget->IsTaxiFlying())
                 return true;
 
             Formation* formation = AI_VALUE(Formation*, "formation");
@@ -329,6 +329,29 @@ namespace ai
                 return false;
 
             return true;
+        }
+    };
+
+    class StopFollowTrigger : public Trigger
+    {
+    public:
+        StopFollowTrigger(PlayerbotAI* ai) : Trigger(ai, "stop follow", 1) {}
+
+        virtual bool IsActive()
+        {
+            if (bot->GetMotionMaster()->GetCurrentMovementGeneratorType() != FOLLOW_MOTION_TYPE)
+                return false;
+
+            Unit* followTarget = AI_VALUE(Unit*, "follow target");
+
+            if (!followTarget)
+                return true;
+
+            //We need to land or liftoff.
+            if (followTarget->IsTaxiFlying())
+                return true;
+
+            return false;
         }
     };
 
