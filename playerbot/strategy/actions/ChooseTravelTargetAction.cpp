@@ -5,6 +5,7 @@
 #include "../../PlayerbotAIConfig.h"
 #include "../../TravelMgr.h"
 #include <iomanip>
+#include "ChooseRpgTargetAction.h"
 
 using namespace ai;
 
@@ -177,7 +178,8 @@ void ChooseTravelTargetAction::setNewTarget(TravelTarget* newTarget, TravelTarge
         return;
     }
 
-    ReportTravelTarget(newTarget, oldTarget);
+    if(ChooseRpgTargetAction::isFollowValid(bot, *newTarget->getPosition()))
+        ReportTravelTarget(newTarget, oldTarget);
 
     //If we are heading to a creature/npc clear it from the ignore list. 
     if (oldTarget && oldTarget == newTarget && newTarget->getEntry())
