@@ -373,7 +373,7 @@ bool ChooseRpgTargetAction::isFollowValid(Player* bot, WorldPosition pos)
     Player* realMaster = ai->GetMaster();
     AiObjectContext* context = ai->GetAiObjectContext();
 
-    if (!master || bot == master || master->IsBeingTeleported())
+    if (!master || bot == master || master->IsBeingTeleported() || master->GetMapId() != bot->GetMapId())
         return true;
 
     float distance;
@@ -424,19 +424,28 @@ bool ChooseRpgTargetAction::isFollowValid(Player* bot, WorldPosition pos)
     }
 
     //Increase distance as master is standing still.
-    Formation* formation = AI_VALUE(Formation*, "formation");
-    float maxDist = formation->GetMaxDistance();
+    float maxDist = INTERACTION_DISTANCE;
 
-    uint32 lastMasterMove = MEM_AI_VALUE(WorldPosition, "master position")->LastChangeDelay();
+    if (freeMove || ai->HasStrategy("guard", BotState::BOT_STATE_NON_COMBAT)) //Free and guard start with a base 20y range.
+        maxDist += sPlayerbotAIConfig.lootDistance;
 
-    if (lastMasterMove > 30.0f) //After 30 seconds increase the range by 1y each second.
-        maxDist += (lastMasterMove - 30);
+    if (WorldPosition(bot).fDist(master) < sPlayerbotAIConfig.reactDistance)
+    {
+        uint32 lastMasterMove = MEM_AI_VALUE(WorldPosition, "master position")->LastChangeDelay();
 
-    if (maxDist > sPlayerbotAIConfig.reactDistance)
-        if (freeMove)
-            return true;
-        else
-            maxDist = sPlayerbotAIConfig.reactDistance;
+        if (lastMasterMove > 30.0f) //After 30 seconds increase the range by 1y each second.
+            maxDist += (lastMasterMove - 30);
+
+        if (maxDist > sPlayerbotAIConfig.reactDistance)
+            if (freeMove)
+                return true;
+            else
+                maxDist = sPlayerbotAIConfig.reactDistance;
+    }
+    else if (freeMove)
+        return true;
+    else
+        maxDist = sPlayerbotAIConfig.reactDistance;
 
     if (distance < maxDist)
         return true;
