@@ -4,6 +4,33 @@
 
 namespace ai
 {
+    class ItemQualifier
+    {
+    public:
+        ItemQualifier() { itemId = 0; randomPropertyId = 0; gem1 = 0; gem2 = 0; gem3 = 0; gem4 = 0; };
+        ItemQualifier(uint32 itemId, int32 randomPropertyId = 0, uint32 gem1 = 0, uint32 gem2 = 0, uint32 gem3 = 0, uint32 gem4 = 0) : itemId(itemId), randomPropertyId(randomPropertyId), gem1(gem1), gem2(gem2), gem3(gem3), gem4(gem4) {};
+        ItemQualifier(Item* item) { itemId = item->GetProto()->ItemId; randomPropertyId = item->GetItemRandomPropertyId(); gem1 = 0; gem2 = 0; gem3 = 0; gem4 = 0; }; //todo Gems.
+        ItemQualifier(LootItem item) { itemId = item.itemId; randomPropertyId = item.randomPropertyId; gem1 = 0; gem2 = 0; gem3 = 0; gem4 = 0; }; //todo Gems.
+        
+        ItemQualifier(string qualifier);
+        uint32 GetId() { return itemId; }
+        uint32 GetRandomPropertyId() { return randomPropertyId; }
+        uint32 GetGem1() { return gem1; }
+        uint32 GetGem2() { return gem2; }
+        uint32 GetGem3() { return gem3; }
+        uint32 GetGem4() { return gem4; }
+        string GetQualifier() { return to_string(itemId) + ":0:" + to_string(randomPropertyId) + ":0:" + to_string(gem1) + ":" + to_string(gem2) + ":" + to_string(gem3) + ":" + to_string(gem4); }
+
+        ItemPrototype const* GetProto() { ItemPrototype const* proto = sItemStorage.LookupEntry<ItemPrototype>(itemId); return proto; };
+    private:
+        uint32 itemId;
+        int32 randomPropertyId;
+        uint32 gem1;
+        uint32 gem2;
+        uint32 gem3;
+        uint32 gem4;
+    };
+
     enum ItemUsage
     {
         ITEM_USAGE_NONE = 0,
@@ -41,7 +68,7 @@ namespace ai
         virtual ItemUsage Calculate();
 
     private:
-        ItemUsage QueryItemUsageForEquip(ItemPrototype const * proto);
+        ItemUsage QueryItemUsageForEquip(ItemQualifier& itemQualifier);
 
         uint32 GetSmallestBagSize();
         bool IsItemUsefulForQuest(Player* player, ItemPrototype const* proto, bool ignoreInventory = false);

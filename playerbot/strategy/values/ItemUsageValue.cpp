@@ -11,9 +11,36 @@
 
 using namespace ai;
 
-ItemUsage ItemUsageValue::Calculate()
+ItemQualifier::ItemQualifier(string qualifier)
 {
-    uint32 itemId = atoi(qualifier.c_str());
+    vector<string> numbers = Qualified::getMultiQualifiers(qualifier, ":");
+
+    itemId = stoi(numbers[0]);
+    if (numbers.size() > 2)
+        randomPropertyId = stoi(numbers[2]);
+    else
+        randomPropertyId = 0;
+
+    if (numbers.size() > 7)
+    {
+        gem1 = stoi(numbers[4]);
+        gem2 = stoi(numbers[5]);
+        gem3 = stoi(numbers[6]);
+        gem4 = stoi(numbers[7]);
+    }
+    else
+    {
+        gem1 = 0;
+        gem2 = 0;
+        gem3 = 0;
+        gem4 = 0;
+    }
+}
+
+ItemUsage ItemUsageValue::Calculate()
+{      
+    ItemQualifier itemQualifier(qualifier);
+    uint32 itemId = itemQualifier.GetId();
     if (!itemId)
         return ITEM_USAGE_NONE;
 
@@ -83,7 +110,7 @@ ItemUsage ItemUsageValue::Calculate()
     if (bot->GetGuildId() && sGuildTaskMgr.IsGuildTaskItem(itemId, bot->GetGuildId()))
         return ITEM_USAGE_GUILD_TASK;
 
-    ItemUsage equip = QueryItemUsageForEquip(proto);
+    ItemUsage equip = QueryItemUsageForEquip(itemQualifier);
     if (equip != ITEM_USAGE_NONE)
         return equip;
 
@@ -187,8 +214,10 @@ ItemUsage ItemUsageValue::Calculate()
     return ITEM_USAGE_NONE;
 }
 
-ItemUsage ItemUsageValue::QueryItemUsageForEquip(ItemPrototype const* itemProto)
+ItemUsage ItemUsageValue::QueryItemUsageForEquip(ItemQualifier& itemQualifier)
 {
+    ItemPrototype const* itemProto = itemQualifier.GetProto();
+
     if (bot->CanUseItem(itemProto) != EQUIP_ERR_OK)
         return ITEM_USAGE_NONE;
 
@@ -198,7 +227,6 @@ ItemUsage ItemUsageValue::QueryItemUsageForEquip(ItemPrototype const* itemProto)
     uint16 dest;
 
     list<Item*> items = AI_VALUE2(list<Item*>, "inventory items", chat->formatItem(itemProto));
-
     InventoryResult result;
     if (!items.empty())
     {
@@ -237,7 +265,7 @@ ItemUsage ItemUsageValue::QueryItemUsageForEquip(ItemPrototype const* itemProto)
 
     uint32 specId = sRandomItemMgr.GetPlayerSpecId(bot);
 
-    uint32 statWeight = sRandomItemMgr.GetLiveStatWeight(bot, itemProto->ItemId, specId);
+    uint32 statWeight = sRandomItemMgr.ItemStatWeight(bot, itemQualifier);
     if (statWeight)
         shouldEquip = true;
 
@@ -249,7 +277,7 @@ ItemUsage ItemUsageValue::QueryItemUsageForEquip(ItemPrototype const* itemProto)
     Item* oldItem = bot->GetItemByPos(dest);
 
     //No item equiped
-    if (!oldItem) 
+    if (!oldItem)
         if (shouldEquip)
             return ITEM_USAGE_EQUIP;
         else
@@ -257,19 +285,16 @@ ItemUsage ItemUsageValue::QueryItemUsageForEquip(ItemPrototype const* itemProto)
 
     const ItemPrototype* oldItemProto = oldItem->GetProto();
 
-    if (oldItem)
-    {
-        if (AI_VALUE2(ForceItemUsage, "force item usage", oldItemProto->ItemId) == ForceItemUsage::FORCE_USAGE_EQUIP) //Current equip is forced. Do not unequip.
-            if(AI_VALUE2(ForceItemUsage, "force item usage", itemProto->ItemId) == ForceItemUsage::FORCE_USAGE_EQUIP)
-                return ITEM_USAGE_KEEP;
-            else
-                return ITEM_USAGE_NONE;
+    if (AI_VALUE2(ForceItemUsage, "force item usage", oldItemProto->ItemId) == ForceItemUsage::FORCE_USAGE_EQUIP) //Current equip is forced. Do not unequip.
+        if (AI_VALUE2(ForceItemUsage, "force item usage", itemProto->ItemId) == ForceItemUsage::FORCE_USAGE_EQUIP)
+            return ITEM_USAGE_KEEP;
+        else
+            return ITEM_USAGE_NONE;
 
-        uint32 oldStatWeight = sRandomItemMgr.GetLiveStatWeight(bot, oldItemProto->ItemId, specId);
-        if (statWeight || oldStatWeight)
-        {
-            shouldEquip = statWeight >= oldStatWeight;
-        }
+    uint32 oldStatWeight = sRandomItemMgr.ItemStatWeight(bot, oldItem);
+    if (statWeight || oldStatWeight)
+    {
+        shouldEquip = statWeight >= oldStatWeight;
     }
 
     if (AI_VALUE2(ForceItemUsage, "force item usage", itemProto->ItemId) == ForceItemUsage::FORCE_USAGE_EQUIP) //New item is forced. Always equip it.
@@ -283,21 +308,18 @@ ItemUsage ItemUsageValue::QueryItemUsageForEquip(ItemPrototype const* itemProto)
             ITEM_USAGE_NONE;
 
     bool existingShouldEquip = true;
-    if (oldItemProto->Class == ITEM_CLASS_WEAPON && !sRandomItemMgr.CanEquipWeapon(bot->getClass(), oldItemProto))
+    if (oldItemProto->Class == ITEM_CLASS_WEAPON && !oldStatWeight)
         existingShouldEquip = false;
-    if (oldItemProto->Class == ITEM_CLASS_ARMOR && !sRandomItemMgr.CanEquipArmor(bot->getClass(), specId, bot->GetLevel(), oldItemProto))
+    if (oldItemProto->Class == ITEM_CLASS_ARMOR && !statWeight)
         existingShouldEquip = false;
-
-    uint32 oldItemPower = sRandomItemMgr.GetLiveStatWeight(bot, oldItemProto->ItemId);
-    uint32 newItemPower = sRandomItemMgr.GetLiveStatWeight(bot, itemProto->ItemId);
 
     //Compare items based on item level, quality or itemId.
     bool isBetter = false;
-    if (newItemPower > oldItemPower)
+    if (statWeight > oldStatWeight)
         isBetter = true;
-    else if (newItemPower == oldItemPower && itemProto->Quality > oldItemProto->Quality)
+    else if (statWeight == oldStatWeight && itemProto->Quality > oldItemProto->Quality)
         isBetter = true;
-    else if (newItemPower == oldItemPower && itemProto->Quality == oldItemProto->Quality && itemProto->ItemId > oldItemProto->ItemId)
+    else if (statWeight == oldStatWeight && itemProto->Quality == oldItemProto->Quality && itemProto->ItemId > oldItemProto->ItemId)
         isBetter = true;
 
     Item* item = CurrentItem(itemProto);
