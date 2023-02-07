@@ -274,6 +274,29 @@ ItemIds ChatHelper::parseItems(string& text)
     return itemIds;
 }
 
+set<string> ChatHelper::parseItemQualifiers(string& text)
+{
+    set<string> qualifiers;
+
+    uint8 pos = 0;
+    while (true)
+    {
+        int i = text.find("Hitem:", pos);
+        if (i == -1)
+            break;
+        pos = i + 6;
+        int endPos = text.find('|', pos);
+        if (endPos == -1)
+            break;
+
+        string qualifierString = text.substr(pos, endPos - pos);
+
+        qualifiers.insert(qualifierString);
+    }
+
+    return qualifiers;
+}
+
 string ChatHelper::formatQuest(Quest const* quest)
 {
     ostringstream out;

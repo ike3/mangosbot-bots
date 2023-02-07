@@ -21,6 +21,7 @@ namespace ai
         static string formatItem(ItemPrototype const * proto, int count = 0, int total = 0);
         static string formatQItem(uint32 itemId);
         static ItemIds parseItems(string& text);
+        static set<string> parseItemQualifiers(string& text);
         static uint32 parseItemQuality(string text);
         static bool parseItemClass(string text, uint32* itemClass, uint32* itemSubClass);
         static uint32 parseSlot(string text);
