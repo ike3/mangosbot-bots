@@ -211,8 +211,7 @@ bool TradeStatusAction::CheckTrade()
         item = trader->GetTradeData()->GetItem((TradeSlots)slot);
         if (item)
         {
-            ostringstream out; out << item->GetProto()->ItemId;
-            ItemUsage usage = AI_VALUE2(ItemUsage, "item usage", out.str());
+            ItemUsage usage = AI_VALUE2(ItemUsage, "item usage", ItemQualifier(item).GetQualifier());
             if ((botMoney && !auctionbot.GetBuyPrice(item->GetProto())) || usage == ITEM_USAGE_NONE)
             {
                 ostringstream out;

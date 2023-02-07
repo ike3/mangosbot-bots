@@ -62,7 +62,7 @@ list<Item*> ItemsUsefulToGiveValue::Calculate()
                     continue;
             }
 
-            ItemUsage otherUsage = PAI_VALUE2(ItemUsage, "item usage", item->GetEntry());
+            ItemUsage otherUsage = PAI_VALUE2(ItemUsage, "item usage", ItemQualifier(item).GetQualifier());
 
             if (std::find(myUsages.begin(), myUsages.end(), otherUsage) == myUsages.end())
                 giveItems.push_back(item);
