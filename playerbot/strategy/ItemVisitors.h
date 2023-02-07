@@ -21,7 +21,7 @@ namespace ai
 
         virtual bool Visit(Item* item)
         {
-            if (!Accept(item->GetProto()))
+            if (!Accept(item->GetProto()) && !Accept(item))
                 return true;
 
             result.push_back(item);
@@ -32,6 +32,7 @@ namespace ai
 
     protected:
         virtual bool Accept(const ItemPrototype* proto) = 0;
+        virtual bool Accept(Item* item) { return false; };
 
     private:
         list<Item*> result;
@@ -484,9 +485,13 @@ namespace ai
     public:
         FindItemUsageVisitor(Player* bot, ItemUsage usage = ITEM_USAGE_NONE) : FindItemVisitor(), bot(bot), usage(usage) { context = bot->GetPlayerbotAI()->GetAiObjectContext();};
 
-        virtual bool Accept(const ItemPrototype* proto)
+        void SetUsage(ItemUsage newUsage = ITEM_USAGE_NONE) { usage = newUsage; }
+
+        virtual bool Accept(const ItemPrototype* proto) { return false; }
+
+        virtual bool Accept(Item* item)
         {
-            if (AI_VALUE2_LAZY(ItemUsage, "item usage", proto->ItemId) == usage)
+            if (AI_VALUE2_LAZY(ItemUsage, "item usage", ItemQualifier(item).GetQualifier()) == usage)
                 return true;
 
             return false;
