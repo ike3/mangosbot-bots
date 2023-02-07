@@ -39,11 +39,12 @@ bool QueryItemUsageAction::Execute(Event& event)
         data >> count;
         // data >> invCount; // [-ZERO] count of items in inventory
 
-        ItemPrototype const *item = sItemStorage.LookupEntry<ItemPrototype>(itemId);
-        if (!item)
+        ItemQualifier itemQualifier(itemId, itemRandomPropertyId);
+
+        if (!itemQualifier.GetProto())
             return false;
 
-        ai->TellMaster(QueryItem(item, count, GetCount(item)), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+        ai->TellMaster(QueryItem(itemQualifier, count, GetCount(itemQualifier)), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
 
         if (sPlayerbotAIConfig.hasLog("bot_events.csv"))
         {
@@ -84,21 +85,21 @@ bool QueryItemUsageAction::Execute(Event& event)
     }
 
     string text = event.getParam();
-    ItemIds items = chat->parseItems(text);
-    for (ItemIds::iterator i = items.begin(); i != items.end(); i++)
+    set<string> qualifiers = chat->parseItemQualifiers(text);
+    for (auto qualifier : qualifiers)
     {
-        ItemPrototype const *item = sItemStorage.LookupEntry<ItemPrototype>(*i);
-        if (!item) continue;
+        ItemQualifier itemQualifier(qualifier);
+        if (!itemQualifier.GetProto()) continue;
 
-        ai->TellMaster(QueryItem(item, 0, GetCount(item)), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+        ai->TellMaster(QueryItem(itemQualifier, 0, GetCount(itemQualifier)), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
     }
     return true;
 }
 
-uint32 QueryItemUsageAction::GetCount(ItemPrototype const *item)
+uint32 QueryItemUsageAction::GetCount(ItemQualifier& qualifier)
 {
     uint32 total = 0;
-    list<Item*> items = ai->InventoryParseItems(item->Name1);
+    list<Item*> items = ai->InventoryParseItems(qualifier.GetProto()->Name1);
     if (!items.empty())
     {
         for (list<Item*>::iterator i = items.begin(); i != items.end(); ++i)
@@ -109,18 +110,18 @@ uint32 QueryItemUsageAction::GetCount(ItemPrototype const *item)
     return total;
 }
 
-string QueryItemUsageAction::QueryItem(ItemPrototype const *item, uint32 count, uint32 total)
+string QueryItemUsageAction::QueryItem(ItemQualifier& qualifier, uint32 count, uint32 total)
 {
     ostringstream out;
 #ifdef CMANGOS
-    string usage = QueryItemUsage(item);
+    string usage = QueryItemUsage(qualifier);
 #endif
 #ifdef MANGOS
     bool usage = QueryItemUsage(item);
 #endif
-    string quest = QueryQuestItem(item->ItemId);
-    string price = QueryItemPrice(item);
-    string power = QueryItemPower(item->ItemId);
+    string quest = QueryQuestItem(qualifier.GetId());
+    string price = QueryItemPrice(qualifier);
+    string power = QueryItemPower(qualifier);
 #ifdef CMANGOS
     if (usage.empty())
 #endif
@@ -129,7 +130,7 @@ string QueryItemUsageAction::QueryItem(ItemPrototype const *item, uint32 count, 
 #endif
         usage = (quest.empty() ? "Useless" : "Quest");
 
-    out << chat->formatItem(item, count, total) << ": " << usage;
+    out << chat->formatItem(qualifier.GetProto(), count, total) << ": " << usage;
     if (!quest.empty())
         out << ", " << quest;
     if (!price.empty())
@@ -138,15 +139,10 @@ string QueryItemUsageAction::QueryItem(ItemPrototype const *item, uint32 count, 
         out << ", " << power;
     return out.str();
 }
-#ifdef CMANGOS
-string QueryItemUsageAction::QueryItemUsage(ItemPrototype const *item)
-#endif
-#ifdef MANGOS
-bool QueryItemUsageAction::QueryItemUsage(ItemPrototype const *item)
-#endif
+
+string QueryItemUsageAction::QueryItemUsage(ItemQualifier& qualifier)
 {
-    ostringstream out; out << item->ItemId;
-    ItemUsage usage = AI_VALUE2(ItemUsage, "item usage", out.str());
+    ItemUsage usage = AI_VALUE2(ItemUsage, "item usage", qualifier.GetQualifier());
     switch (usage)
     {
     case ITEM_USAGE_EQUIP:
@@ -178,16 +174,16 @@ bool QueryItemUsageAction::QueryItemUsage(ItemPrototype const *item)
     return "";
 }
 
-string QueryItemUsageAction::QueryItemPrice(ItemPrototype const *item)
+string QueryItemUsageAction::QueryItemPrice(ItemQualifier& qualifier)
 {
     if (!sRandomPlayerbotMgr.IsRandomBot(bot))
         return "";
 
-    if (item->Bonding == BIND_WHEN_PICKED_UP)
+    if (qualifier.GetProto()->Bonding == BIND_WHEN_PICKED_UP)
         return "";
 
     ostringstream msg;
-    list<Item*> items = ai->InventoryParseItems(item->Name1);
+    list<Item*> items = ai->InventoryParseItems(qualifier.GetProto()->Name1);
     int32 sellPrice = 0;
     if (!items.empty())
     {
@@ -201,12 +197,11 @@ string QueryItemUsageAction::QueryItemPrice(ItemPrototype const *item)
             msg << "Sell: " << chat->formatMoney(sellPrice);
     }
 
-    ostringstream out; out << item->ItemId;
-    ItemUsage usage = AI_VALUE2(ItemUsage, "item usage", out.str());
+    ItemUsage usage = AI_VALUE2(ItemUsage, "item usage", qualifier.GetQualifier());
     if (usage == ITEM_USAGE_NONE)
         return msg.str();
 
-    int32 buyPrice = auctionbot.GetBuyPrice(item) * sRandomPlayerbotMgr.GetBuyMultiplier(bot);
+    int32 buyPrice = auctionbot.GetBuyPrice(qualifier.GetProto()) * sRandomPlayerbotMgr.GetBuyMultiplier(bot);
     if (buyPrice)
     {
         if (sellPrice) msg << " ";
@@ -259,23 +254,20 @@ string QueryItemUsageAction::QueryQuestItem(uint32 itemId, const Quest *questTem
     return "";
 }
 
-string QueryItemUsageAction::QueryItemPower(uint32 itemId)
+string QueryItemUsageAction::QueryItemPower(ItemQualifier& qualifier)
 {
-    uint32 power = sRandomItemMgr.GetLiveStatWeight(bot, itemId);
+    uint32 power = sRandomItemMgr.ItemStatWeight(bot, qualifier);
 
-    ItemPrototype const* proto = ObjectMgr::GetItemPrototype(itemId);
+    ItemPrototype const* proto = ObjectMgr::GetItemPrototype(qualifier.GetId());
 
     if (power)
-        if (proto)
-        {
-            ostringstream out;
-            char color[32];
-            sprintf(color, "%x", ItemQualityColors[proto->Quality]);
-            out << "power: |h|c" << color << "|h" << to_string(power) << "|h|cffffffff";
-            return out.str().c_str();
-        }
-        else
-            return "power: " + to_string(power);
+    {
+        ostringstream out;
+        char color[32];
+        sprintf(color, "%x", ItemQualityColors[qualifier.GetProto()->Quality]);
+        out << "power: |h|c" << color << "|h" << to_string(power) << "|h|cffffffff";
+        return out.str().c_str();
+    }
 
     return "";
 }
