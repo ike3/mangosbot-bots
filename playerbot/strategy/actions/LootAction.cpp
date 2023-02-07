@@ -11,6 +11,7 @@
 #include "../../GuildTaskMgr.h"
 #include "../../ServerFacade.h"
 #include "../values/LootStrategyValue.h"
+#include "../values/ItemUsageValue.h"
 #include "../../ServerFacade.h"
 
 
@@ -260,6 +261,7 @@ bool StoreLootAction::Execute(Event& event)
     for (uint8 i = 0; i < items; ++i)
     {
         uint32 itemid;
+        uint32 randomPropertyId;
         uint32 itemcount;
         uint8 lootslot_type;
         uint8 itemindex;
@@ -270,7 +272,7 @@ bool StoreLootAction::Execute(Event& event)
         p >> itemcount;
         p.read_skip<uint32>();  // display id
         p.read_skip<uint32>();  // randomSuffix
-        p.read_skip<uint32>();  // randomPropertyId
+        p >> randomPropertyId;  // randomPropertyId
         p >> lootslot_type;     // 0 = can get, 1 = look only, 2 = master get
 
 		if (lootslot_type != LOOT_SLOT_NORMAL
@@ -280,7 +282,7 @@ bool StoreLootAction::Execute(Event& event)
             )
 			continue;
 
-        if (loot_type != LOOT_SKINNING && !IsLootAllowed(itemid, ai))
+        if (loot_type != LOOT_SKINNING && !IsLootAllowed(ItemQualifier(itemid, randomPropertyId), ai))
             continue;
 
         if (AI_VALUE2(uint32, "stack space for item", itemid) < itemcount)
@@ -333,21 +335,21 @@ bool StoreLootAction::Execute(Event& event)
     return true;
 }
 
-bool StoreLootAction::IsLootAllowed(uint32 itemid, PlayerbotAI *ai)
+bool StoreLootAction::IsLootAllowed(ItemQualifier& itemQualifier, PlayerbotAI *ai)
 {
     AiObjectContext *context = ai->GetAiObjectContext();
     LootStrategy* lootStrategy = AI_VALUE(LootStrategy*, "loot strategy");
 
-    ItemPrototype const* proto = sObjectMgr.GetItemPrototype(itemid);
+    ItemPrototype const* proto = sObjectMgr.GetItemPrototype(itemQualifier.GetId());
     if (!proto)
         return false;
 
     set<uint32>& lootItems = AI_VALUE(set<uint32>&, "always loot list");
-    if (lootItems.find(itemid) != lootItems.end())
+    if (lootItems.find(itemQualifier.GetId()) != lootItems.end())
         return true;
 
     uint32 max = proto->MaxCount;
-    if (max > 0 && ai->GetBot()->HasItemCount(itemid, max, true))
+    if (max > 0 && ai->GetBot()->HasItemCount(itemQualifier.GetId(), max, true))
         return false;
 
     if (proto->StartQuest)
@@ -367,7 +369,7 @@ bool StoreLootAction::IsLootAllowed(uint32 itemid, PlayerbotAI *ai)
 
         for (int i = 0; i < 4; i++)
         {
-            if (quest->ReqItemId[i] == itemid)
+            if (quest->ReqItemId[i] == itemQualifier.GetId())
             {
                 if (ai->GetMaster() && sPlayerbotAIConfig.syncQuestWithPlayer)
                     return false; //Quest is autocomplete for the bot so no item needed.
@@ -383,7 +385,7 @@ bool StoreLootAction::IsLootAllowed(uint32 itemid, PlayerbotAI *ai)
     //    proto->Class == ITEM_CLASS_QUEST)
     //{
 
-    bool canLoot = lootStrategy->CanLoot(proto, context);
+    bool canLoot = lootStrategy->CanLoot(itemQualifier, context);
 
     //if (canLoot && proto->Bonding == BIND_WHEN_PICKED_UP && ai->HasActivePlayerMaster())
     //    canLoot = sPlayerbotAIConfig.IsInRandomAccountList(sObjectMgr.GetPlayerAccountIdByGUID(ai->GetBot()->GetObjectGuid()));

@@ -30,7 +30,7 @@ namespace ai
     public:
         StoreLootAction(PlayerbotAI* ai) : Action(ai, "store loot") {}
         virtual bool Execute(Event& event) override;
-        static bool IsLootAllowed(uint32 itemid, PlayerbotAI *ai);  
+        static bool IsLootAllowed(ItemQualifier& itemQualifier, PlayerbotAI *ai);
     };
 
     class ReleaseLootAction : public MovementAction

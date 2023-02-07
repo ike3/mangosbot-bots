@@ -2,6 +2,7 @@
 #include "../../playerbot.h"
 #include "LootStrategyAction.h"
 #include "../values/LootStrategyValue.h"
+#include "../values/ItemUsageValue.h"
 #include "LootAction.h"
 #include "PlayerbotAIAware.h"
 
@@ -41,9 +42,9 @@ bool LootStrategyAction::Execute(Event& event)
     }
     else
     {
-        ItemIds items = chat->parseItems(strategy);
+        set<string> itemQualifiers = chat->parseItemQualifiers(strategy);
 
-        if (items.size() == 0)
+        if (itemQualifiers.size() == 0)
         {
             lootStrategy->Set(LootStrategyValue::instance(strategy));
             ostringstream out;
@@ -54,22 +55,21 @@ bool LootStrategyAction::Execute(Event& event)
 
         bool remove = strategy.size() > 1 && strategy.substr(0, 1) == "-";
         bool query = strategy.size() > 1 && strategy.substr(0, 1) == "?";
-        for (ItemIds::iterator i = items.begin(); i != items.end(); i++)
+        for (auto& qualifier : itemQualifiers)
         {
-            uint32 itemid = *i;
+            ItemQualifier itemQualifier(qualifier);
             if (query)
             {
-                ItemPrototype const *proto = sObjectMgr.GetItemPrototype(itemid);
-                if (proto)
+                if (itemQualifier.GetProto())
                 {
                     ostringstream out;
-                    out << (StoreLootAction::IsLootAllowed(itemid, ai) ? "|cFF000000Will loot " : "|c00FF0000Won't loot ") << ChatHelper::formatItem(proto);
+                    out << (StoreLootAction::IsLootAllowed(itemQualifier, ai) ? "|cFF000000Will loot " : "|c00FF0000Won't loot ") << ChatHelper::formatItem(itemQualifier.GetProto());
                     ai->TellMaster(out.str());
                 }
             }
             else if (remove)
             {
-                set<uint32>::iterator j = alwaysLootItems.find(itemid);
+                set<uint32>::iterator j = alwaysLootItems.find(itemQualifier.GetId());
                 if (j != alwaysLootItems.end())
                     alwaysLootItems.erase(j);
 
@@ -77,7 +77,7 @@ bool LootStrategyAction::Execute(Event& event)
             }
             else
             {
-                alwaysLootItems.insert(itemid);
+                alwaysLootItems.insert(itemQualifier.GetId());
                 ai->TellMaster("Item(s) added to always loot list");
             }
         }

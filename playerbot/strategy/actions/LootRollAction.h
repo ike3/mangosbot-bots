@@ -47,8 +47,8 @@ namespace ai
 #endif 
 
     protected:
-        virtual ItemPrototype const* GetRollItem(ObjectGuid lootGuid, uint32 slot);
-        virtual RollVote CalculateRollVote(ItemPrototype const* proto);
+        virtual ItemQualifier GetRollItem(ObjectGuid lootGuid, uint32 slot);
+        virtual RollVote CalculateRollVote(ItemQualifier& itemQualifier);
         virtual bool RollOnItemInSlot(RollVote type, ObjectGuid lootGuid, uint32 slot);
     };
 

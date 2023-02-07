@@ -84,17 +84,17 @@ bool RollAction::Execute(Event& event)
 
     for (auto roll : lootRolls)
     {
-        ItemPrototype const* proto = GetRollItem(roll.first, roll.second);
+        ItemQualifier itemQualifier = GetRollItem(roll.first, roll.second);
 
-        if (!proto)
+        if (!itemQualifier.GetId())
             continue;
 
-        if (!ids.empty() && ids.find(proto->ItemId) == ids.end())
+        if (!ids.empty() && ids.find(itemQualifier.GetId()) == ids.end())
             continue;
 
         RollVote doVote = vote;
         if (doVote == ROLL_NOT_VALID) //Auto
-            doVote = CalculateRollVote(proto);
+            doVote = CalculateRollVote(itemQualifier);
 
         rolledItems += RollOnItemInSlot(doVote, roll.first, roll.second);     
     }
@@ -107,24 +107,23 @@ bool RollAction::isPossible()
     return bot->GetGroup() && !AI_VALUE(LootRollMap, "active rolls").empty(); 
 }
 
-ItemPrototype const* RollAction::GetRollItem(ObjectGuid lootGuid, uint32 slot)
+ItemQualifier RollAction::GetRollItem(ObjectGuid lootGuid, uint32 slot)
 {
     Loot* loot = sLootMgr.GetLoot(bot, lootGuid);
     if (!loot)
-        return nullptr;
+        return ItemQualifier();
 
     LootItem* item = loot->GetLootItemInSlot(slot);
 
     if (!item)
-        return nullptr;
+        return ItemQualifier();
 
-    return sItemStorage.LookupEntry<ItemPrototype>(item->itemId);
+    return ItemQualifier(*item);
 }
 
-RollVote RollAction::CalculateRollVote(ItemPrototype const* proto)
+RollVote RollAction::CalculateRollVote(ItemQualifier& itemQualifier)
 {
-    ostringstream out; out << proto->ItemId;
-    ItemUsage usage = AI_VALUE2(ItemUsage, "item usage", out.str());
+    ItemUsage usage = AI_VALUE2(ItemUsage, "item usage", itemQualifier.GetQualifier());
 
     RollVote needVote = ROLL_PASS;
     switch (usage)
@@ -143,10 +142,10 @@ RollVote RollAction::CalculateRollVote(ItemPrototype const* proto)
         needVote = ROLL_GREED;
         break;
     case ITEM_USAGE_FORCE:
-        needVote = (AI_VALUE2(ForceItemUsage, "force item usage", proto->ItemId) == ForceItemUsage::FORCE_USAGE_NEED) ? ROLL_NEED : ROLL_GREED;
+        needVote = (AI_VALUE2(ForceItemUsage, "force item usage", itemQualifier.GetId()) == ForceItemUsage::FORCE_USAGE_NEED) ? ROLL_NEED : ROLL_GREED;
         break;
     }
-    return StoreLootAction::IsLootAllowed(proto->ItemId, bot->GetPlayerbotAI()) ? needVote : ROLL_PASS;
+    return StoreLootAction::IsLootAllowed(itemQualifier, bot->GetPlayerbotAI()) ? needVote : ROLL_PASS;
 }
 
 bool RollAction::RollOnItemInSlot(RollVote vote, ObjectGuid lootGuid, uint32 slot)
@@ -191,12 +190,12 @@ bool LootRollAction::Execute(Event& event)
     p >> slot; //number of players invited to roll
     p >> rollType; //need,greed or pass on roll
 
-    ItemPrototype const* proto = GetRollItem(guid, slot);
+    ItemQualifier itemQualifier = GetRollItem(guid, slot);
 
-    if (!proto)
+    if (!itemQualifier.GetId())
         return false;
 
-    RollVote vote = CalculateRollVote(proto);
+    RollVote vote = CalculateRollVote(itemQualifier);
 
     return RollOnItemInSlot(vote, guid, slot);
 }
@@ -209,12 +208,12 @@ bool AutoLootRollAction::Execute(Event& event)
 
     currentRoll = std::next(currentRoll, urand(0, lootRolls.size() - 1));
 
-    ItemPrototype const* proto = GetRollItem(currentRoll->first, currentRoll->second);
+    ItemQualifier itemQualifier = GetRollItem(currentRoll->first, currentRoll->second);
 
-    if (!proto)
+    if (!itemQualifier.GetId())
         return false;
 
-    RollVote vote = CalculateRollVote(proto);
+    RollVote vote = CalculateRollVote(itemQualifier);
 
     return RollOnItemInSlot(vote, currentRoll->first, currentRoll->second);
 }

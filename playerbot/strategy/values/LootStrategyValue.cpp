@@ -11,10 +11,9 @@ namespace ai
     class NormalLootStrategy : public LootStrategy
     {
     public:
-        virtual bool CanLoot(ItemPrototype const *proto, AiObjectContext *context)
+        virtual bool CanLoot(ItemQualifier& itemQualifier, AiObjectContext *context)
         {
-            ostringstream out; out << proto->ItemId;
-            ItemUsage usage = AI_VALUE2(ItemUsage, "item usage", out.str());
+            ItemUsage usage = AI_VALUE2(ItemUsage, "item usage", itemQualifier.GetQualifier());
             return usage != ITEM_USAGE_NONE;
         }
         virtual string GetName() { return "normal"; }
@@ -23,9 +22,9 @@ namespace ai
     class GrayLootStrategy : public NormalLootStrategy
     {
     public:
-        virtual bool CanLoot(ItemPrototype const *proto, AiObjectContext *context)
+        virtual bool CanLoot(ItemQualifier& itemQualifier, AiObjectContext *context)
         {
-            return NormalLootStrategy::CanLoot(proto, context) || proto->Quality == ITEM_QUALITY_POOR;
+            return NormalLootStrategy::CanLoot(itemQualifier, context) || itemQualifier.GetProto()->Quality == ITEM_QUALITY_POOR;
         }
         virtual string GetName() { return "gray"; }
     };
@@ -33,11 +32,11 @@ namespace ai
     class DisenchantLootStrategy : public NormalLootStrategy
     {
     public:
-        virtual bool CanLoot(ItemPrototype const *proto, AiObjectContext *context)
+        virtual bool CanLoot(ItemQualifier& itemQualifier, AiObjectContext *context)
         {
-            return NormalLootStrategy::CanLoot(proto, context) ||
-                    (proto->Quality >= ITEM_QUALITY_UNCOMMON && proto->Bonding != BIND_WHEN_PICKED_UP &&
-                    (proto->Class == ITEM_CLASS_ARMOR || proto->Class == ITEM_CLASS_WEAPON));
+            return NormalLootStrategy::CanLoot(itemQualifier, context) ||
+                    (itemQualifier.GetProto()->Quality >= ITEM_QUALITY_UNCOMMON && itemQualifier.GetProto()->Bonding != BIND_WHEN_PICKED_UP &&
+                    (itemQualifier.GetProto()->Class == ITEM_CLASS_ARMOR || itemQualifier.GetProto()->Class == ITEM_CLASS_WEAPON));
         }
         virtual string GetName() { return "disenchant"; }
     };
@@ -45,7 +44,7 @@ namespace ai
     class AllLootStrategy : public LootStrategy
     {
     public:
-        virtual bool CanLoot(ItemPrototype const *proto, AiObjectContext *context)
+        virtual bool CanLoot(ItemQualifier& itemQualifier, AiObjectContext *context)
         {
             return true;
         }
