@@ -765,12 +765,12 @@ public:
             if (item.empty())
                 return message;
 
-            ItemIds ids = ChatHelper::parseItems(item);
+            set<string> qualifiers = ChatHelper::parseItemQualifiers(item);
 
-            if(ids.empty())
+            if(qualifiers.empty())
                 return message;
 
-            ItemUsage usage = AI_VALUE2(ItemUsage, "item usage", *ids.begin());
+            ItemUsage usage = AI_VALUE2(ItemUsage, "item usage", ItemQualifier(*qualifiers.begin()).GetQualifier());
 
             if (usage != ITEM_USAGE_NONE && usage != ITEM_USAGE_AH && usage != ITEM_USAGE_VENDOR)
             {
@@ -786,12 +786,12 @@ public:
             if (item.empty())
                 return message;
 
-            ItemIds ids = ChatHelper::parseItems(item);
+            set<string> qualifiers = ChatHelper::parseItemQualifiers(item);
 
-            if (ids.empty())
+            if (qualifiers.empty())
                 return message;
 
-            ItemUsage usage = AI_VALUE2(ItemUsage, "item usage", *ids.begin());
+            ItemUsage usage = AI_VALUE2(ItemUsage, "item usage", ItemQualifier(*qualifiers.begin()).GetQualifier());
 
             if (usage == ITEM_USAGE_AH || usage == ITEM_USAGE_VENDOR)
             {
@@ -807,14 +807,14 @@ public:
             if (item.empty())
                 return message;
 
-            ItemIds ids = ChatHelper::parseItems(item);
+            set<string> qualifiers = ChatHelper::parseItemQualifiers(item);
 
-            if (ids.empty())
+            if (qualifiers.empty())
                 return message;
 
-            ItemUsage usage = AI_VALUE2(ItemUsage, "item usage", *ids.begin());
+            ItemUsage usage = AI_VALUE2(ItemUsage, "item usage", ItemQualifier(*qualifiers.begin()).GetQualifier());
 
-            if (usage == ITEM_USAGE_EQUIP || usage == ITEM_USAGE_REPLACE || usage == ITEM_USAGE_GUILD_TASK || usage == ITEM_USAGE_BAD_EQUIP || (usage == ITEM_USAGE_FORCE && AI_VALUE2(ForceItemUsage, "force item usage", *ids.begin()) == ForceItemUsage::FORCE_USAGE_NEED))
+            if (usage == ITEM_USAGE_EQUIP || usage == ITEM_USAGE_REPLACE || usage == ITEM_USAGE_GUILD_TASK || usage == ITEM_USAGE_BAD_EQUIP || (usage == ITEM_USAGE_FORCE && AI_VALUE2(ForceItemUsage, "force item usage", ItemQualifier(*qualifiers.begin()).GetId()) == ForceItemUsage::FORCE_USAGE_NEED))
             {
                 return FilterLink(message);
             }
@@ -828,14 +828,14 @@ public:
             if (item.empty())
                 return message;
 
-            ItemIds ids = ChatHelper::parseItems(item);
+            set<string> qualifiers = ChatHelper::parseItemQualifiers(item);
 
-            if (ids.empty())
+            if (qualifiers.empty())
                 return message;
 
-            ItemUsage usage = AI_VALUE2(ItemUsage, "item usage", *ids.begin());
+            ItemUsage usage = AI_VALUE2(ItemUsage, "item usage", ItemQualifier(*qualifiers.begin()).GetQualifier());
 
-            if (usage == ITEM_USAGE_SKILL || usage == ITEM_USAGE_USE || usage == ITEM_USAGE_DISENCHANT || usage == ITEM_USAGE_AH || usage == ITEM_USAGE_VENDOR || (usage == ITEM_USAGE_FORCE && AI_VALUE2(ForceItemUsage, "force item usage", *ids.begin()) == ForceItemUsage::FORCE_USAGE_GREED))
+            if (usage == ITEM_USAGE_SKILL || usage == ITEM_USAGE_USE || usage == ITEM_USAGE_DISENCHANT || usage == ITEM_USAGE_AH || usage == ITEM_USAGE_VENDOR || (usage == ITEM_USAGE_FORCE && AI_VALUE2(ForceItemUsage, "force item usage", ItemQualifier(*qualifiers.begin()).GetId()) == ForceItemUsage::FORCE_USAGE_GREED))
             {
                 return FilterLink(message);
             }
