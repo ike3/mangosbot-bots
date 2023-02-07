@@ -1355,7 +1355,7 @@ void PlayerbotAI::DoNextAction(bool min)
 
     Group *group = bot->GetGroup();
     // test BG master set
-    if ((!master || !HasActivePlayerMaster()) && group)
+    if ((!master || !HasActivePlayerMaster()) && group && !IsRealPlayer())
     {
         PlayerbotAI* ai = bot->GetPlayerbotAI();
 
