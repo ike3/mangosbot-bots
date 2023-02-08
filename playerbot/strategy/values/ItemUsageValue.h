@@ -7,28 +7,39 @@ namespace ai
     class ItemQualifier
     {
     public:
-        ItemQualifier() { itemId = 0; randomPropertyId = 0; gem1 = 0; gem2 = 0; gem3 = 0; gem4 = 0; };
-        ItemQualifier(uint32 itemId, int32 randomPropertyId = 0, uint32 gem1 = 0, uint32 gem2 = 0, uint32 gem3 = 0, uint32 gem4 = 0) : itemId(itemId), randomPropertyId(randomPropertyId), gem1(gem1), gem2(gem2), gem3(gem3), gem4(gem4) {};
-        ItemQualifier(Item* item) { itemId = item->GetProto()->ItemId; randomPropertyId = item->GetItemRandomPropertyId(); gem1 = 0; gem2 = 0; gem3 = 0; gem4 = 0; }; //todo Gems.
-        ItemQualifier(LootItem item) { itemId = item.itemId; randomPropertyId = item.randomPropertyId; gem1 = 0; gem2 = 0; gem3 = 0; gem4 = 0; }; //todo Gems.
-        
-        ItemQualifier(string qualifier);
+        ItemQualifier() { itemId = 0; enchantId = 0; randomPropertyId = 0; gem1 = 0; gem2 = 0; gem3 = 0; gem4 = 0; proto = nullptr; };
+        ItemQualifier(uint32 itemId, int32 randomPropertyId = 0, uint32 enchantId = 0, uint32 gem1 = 0, uint32 gem2 = 0, uint32 gem3 = 0, uint32 gem4 = 0) : itemId(itemId), randomPropertyId(randomPropertyId), enchantId(enchantId), gem1(gem1), gem2(gem2), gem3(gem3), gem4(gem4) { proto = nullptr; };
+        ItemQualifier(Item* item) { itemId = item->GetProto()->ItemId; enchantId = item->GetEnchantmentId(PERM_ENCHANTMENT_SLOT); randomPropertyId = item->GetItemRandomPropertyId(); gem1 = GemId(item, 0); gem2 = GemId(item, 1); gem3 = GemId(item, 2); gem4 = GemId(item, 3); proto = item->GetProto();};
+        ItemQualifier(LootItem item) { itemId = item.itemId; enchantId = 0; randomPropertyId = item.randomPropertyId; gem1 = 0; gem2 = 0; gem3 = 0; gem4 = 0; proto = nullptr; };
+        ItemQualifier(AuctionEntry* auction) { itemId = auction->itemTemplate; enchantId = 0; randomPropertyId = auction->itemRandomPropertyId; gem1 = 0; gem2 = 0; gem3 = 0; gem4 = 0; proto = nullptr;};
+        ItemQualifier(string qualifier, bool linkQualifier = true);
+
         uint32 GetId() { return itemId; }
-        uint32 GetRandomPropertyId() { return randomPropertyId; }
+        uint32 GetEnchantId() { return enchantId; }
+        int32 GetRandomPropertyId() { return randomPropertyId; }
         uint32 GetGem1() { return gem1; }
         uint32 GetGem2() { return gem2; }
         uint32 GetGem3() { return gem3; }
-        uint32 GetGem4() { return gem4; }
-        string GetQualifier() { return to_string(itemId) + ":0:" + to_string(randomPropertyId) + ":0:" + to_string(gem1) + ":" + to_string(gem2) + ":" + to_string(gem3) + ":" + to_string(gem4); }
+        uint32 GetGem4() { return gem4; }       
 
-        ItemPrototype const* GetProto() { ItemPrototype const* proto = sItemStorage.LookupEntry<ItemPrototype>(itemId); return proto; };
+#ifdef MANGOSBOT_ZERO
+        string GetLinkQualifier() { return to_string(itemId) + ":" + to_string(enchantID) + ":" + to_string(randomPropertyId) + ":0"; }
+#else
+        string GetLinkQualifier() { return to_string(itemId) + ":" + to_string(enchantId) + ":" + to_string(gem1) + ":" + to_string(gem2) + ":" + to_string(gem3) + ":" + to_string(gem4) + ":" + to_string(randomPropertyId) + ":0"; }
+#endif
+        string GetQualifier() { return to_string(itemId) + ((enchantId || gem1 || gem2 || gem3 || gem4 || randomPropertyId) ? ":" + to_string(enchantId) + ":" + to_string(gem1) + ":" + to_string(gem2) + ":" + to_string(gem3) + ":" + to_string(gem4) + ":" + to_string(randomPropertyId) : ""); }
+
+        ItemPrototype const* GetProto() { if (!proto) proto = sItemStorage.LookupEntry<ItemPrototype>(itemId); return proto; };
+        static uint32 GemId(Item* item, uint8 gemSlot = 0);
     private:
         uint32 itemId;
+        uint32 enchantId;
         int32 randomPropertyId;
         uint32 gem1;
         uint32 gem2;
         uint32 gem3;
         uint32 gem4;
+        ItemPrototype const* proto;
     };
 
     enum ItemUsage

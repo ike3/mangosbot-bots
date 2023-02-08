@@ -11,35 +11,61 @@
 
 using namespace ai;
 
-ItemQualifier::ItemQualifier(string qualifier)
+ItemQualifier::ItemQualifier(string qualifier, bool linkQualifier)
 {
     vector<string> numbers = Qualified::getMultiQualifiers(qualifier, ":");
 
     itemId = stoi(numbers[0]);
-    if (numbers.size() > 2)
-        randomPropertyId = stoi(numbers[2]);
-    else
-        randomPropertyId = 0;
+    enchantId = 0;
+    randomPropertyId = 0;
+    gem1 = 0;
+    gem2 = 0;
+    gem3 = 0;
+    gem4 = 0;
+    proto = nullptr;
 
-    if (numbers.size() > 7)
+#ifdef MANGOSBOT_ZERO
+    uint32 propertyPosition = linkQualifier ? 2 : 5;
+#else
+    uint32 propertyPosition = linkQualifier ? 6 : 5;
+#endif
+
+    if (numbers.size() > 1)
+        enchantId = stoi(numbers[1]);
+
+    if (numbers.size() > propertyPosition)
+        randomPropertyId = stoi(numbers[propertyPosition]);
+
+#ifndef MANGOSBOT_ZERO
+    uint8 gemPosition = linkQualifier ? 2 : 1;
+
+    if (numbers.size() > gemPosition + 3)
     {
-        gem1 = stoi(numbers[4]);
-        gem2 = stoi(numbers[5]);
-        gem3 = stoi(numbers[6]);
-        gem4 = stoi(numbers[7]);
+        gem1 = stoi(numbers[gemPosition]);
+        gem2 = stoi(numbers[gemPosition+1]);
+        gem3 = stoi(numbers[gemPosition+2]);
+        gem4 = stoi(numbers[gemPosition+3]);
     }
-    else
-    {
-        gem1 = 0;
-        gem2 = 0;
-        gem3 = 0;
-        gem4 = 0;
-    }
+#endif;
+}
+
+uint32 ItemQualifier::GemId(Item* item, uint8 gemSlot)
+{
+#ifdef MANGOSBOT_ZERO
+    return 0;
+#else
+    uint32 enchantId = item->GetEnchantmentId(EnchantmentSlot(SOCK_ENCHANTMENT_SLOT + gemSlot));
+
+    if (!enchantId)
+        return 0;
+        
+    return enchantId;
+#endif
 }
 
 ItemUsage ItemUsageValue::Calculate()
 {      
-    ItemQualifier itemQualifier(qualifier);
+    ItemQualifier itemQualifier(qualifier,false);
     uint32 itemId = itemQualifier.GetId();
     if (!itemId)
         return ITEM_USAGE_NONE;
@@ -226,7 +252,7 @@ ItemUsage ItemUsageValue::QueryItemUsageForEquip(ItemQualifier& itemQualifier)
 
     uint16 dest;
 
-    list<Item*> items = AI_VALUE2(list<Item*>, "inventory items", chat->formatItem(itemProto));
+    list<Item*> items = AI_VALUE2(list<Item*>, "inventory items", chat->formatItem(itemQualifier));
     InventoryResult result;
     if (!items.empty())
     {

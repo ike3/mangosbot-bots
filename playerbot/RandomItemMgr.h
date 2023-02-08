@@ -166,10 +166,12 @@ class RandomItemMgr
         uint32 GetRandomTrade(uint32 level);
         vector<uint32> GetGemsList();
 
-        uint32 CalculateRandomPropertyWeight(uint8 playerclass, uint8 spec, uint32 randomPropertyId);
+        uint32 CalculateEnchantWeight(uint8 playerclass, uint8 spec, uint32 enchantId);
+        uint32 CalculateRandomPropertyWeight(uint8 playerclass, uint8 spec, int32 randomPropertyId);
+        uint32 CalculateGemWeight(uint8 playerclass, uint8 spec, uint32 gemId);
+        uint32 CalculateSocketWeight(uint8 playerclass, ItemQualifier& qualifier, uint8 spec);
+
         uint32 CalculateStatWeight(uint8 playerclass, uint8 spec, ItemPrototype const* proto, ItemSpecType &itSpec);
-        uint32 ItemStatWeight(Player* player, ItemPrototype const* proto, uint32 randomPropertyId = 0, uint32 gem1 = 0, uint32 gem2 = 0, uint32 gem3 = 0, uint32 gem4 = 0);
-        uint32 ItemStatWeight(Player* player, uint32 itemId, uint32 randomPropertyId = 0, uint32 gem1 = 0, uint32 gem2 = 0, uint32 gem3 = 0, uint32 gem4 = 0);
         uint32 ItemStatWeight(Player* player, ItemQualifier& qualifier);
         uint32 ItemStatWeight(Player* player, Item* item);
 

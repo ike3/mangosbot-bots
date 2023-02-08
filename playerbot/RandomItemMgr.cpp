@@ -2015,96 +2015,198 @@ uint32 RandomItemMgr::CalculateStatWeight(uint8 playerclass, uint8 spec, ItemPro
     return statWeight;
 }
 
-uint32 RandomItemMgr::CalculateRandomPropertyWeight(uint8 playerclass, uint8 spec, uint32 randomPropertyId)
+uint32 RandomItemMgr::CalculateEnchantWeight(uint8 playerclass, uint8 spec, uint32 enchantId)
+{
+    if (!enchantId)
+        return 0;
+
+    SpellItemEnchantmentEntry const* pEnchant = sSpellItemEnchantmentStore.LookupEntry(enchantId);
+
+    if (!pEnchant)
+        return 0;
+
+    uint32 weight = 0;
+
+    for (int s = 0; s < 3; ++s)
+    {
+        switch (pEnchant->type[s])
+        {
+        case 1: //Proc //TODO add proc values?
+            break;
+        case 2: //Damage
+            if (!pEnchant->amount[s])
+                continue;
+            weight += CalculateSingleStatWeight(playerclass, spec, "mledps", pEnchant->amount[s]);
+            break;
+        case 3:
+        {
+            if (!pEnchant->spellid[s])
+                continue;
+
+            SpellEntry const* spellInfo = sSpellTemplate.LookupEntry<SpellEntry>(pEnchant->spellid[s]);
+
+            if (!spellInfo)
+                continue;
+
+            for (uint32 j = 0; j < MAX_EFFECT_INDEX; ++j)
+            {
+                if (spellInfo->Effect[j] != SPELL_EFFECT_APPLY_AURA)
+                    continue;
+                if (spellInfo->EffectApplyAuraName[j] != SPELL_AURA_MOD_STAT)
+                    continue;
+
+                uint32 stat = spellInfo->EffectMiscValue[j];
+                uint32 value = spellInfo->EffectBasePoints[j] + 1;
+
+                if (!value)
+                    continue;
+
+                if (ItemStatLink.find(stat) == ItemStatLink.end())
+                    continue;
+
+                weight += CalculateSingleStatWeight(playerclass, spec, ItemStatLink[stat], value);
+            }
+            break;
+        }
+        case 4: //Armor
+            if (!pEnchant->amount[s])
+                continue;
+            weight += CalculateSingleStatWeight(playerclass, spec, "armor", pEnchant->amount[s]);
+            break;
+        case 5: //Stat
+        {
+            for (auto& statLink : weightStatLink)
+            {
+                if (statLink.second != pEnchant->spellid[s])
+                    continue;
+
+                weight += CalculateSingleStatWeight(playerclass, spec, statLink.first, pEnchant->amount[s]);
+            }
+            break;
+        }
+        case 6: //Totem
+            break;
+        case 7: //Use Spell
+            break;
+        case 8: //Prismatic socket
+            break;
+        }
+    }
+
+    return weight;
+}
+
+
+uint32 RandomItemMgr::CalculateRandomPropertyWeight(uint8 playerclass, uint8 spec, int32 randomPropertyId)
 {
     uint32 weight = 0;
-    if (randomPropertyId > 0)
+    if (randomPropertyId)
     {
-        ItemRandomPropertiesEntry const* item_rand = sItemRandomPropertiesStore.LookupEntry(randomPropertyId);
+        ItemRandomPropertiesEntry const* item_rand = sItemRandomPropertiesStore.LookupEntry(abs(randomPropertyId));
         if (item_rand)
         {
             for (uint32 i = PROP_ENCHANTMENT_SLOT_0; i < PROP_ENCHANTMENT_SLOT_0 + 3; ++i)
             {
-                if (SpellItemEnchantmentEntry const* pEnchant = sSpellItemEnchantmentStore.LookupEntry(item_rand->enchant_id[i - PROP_ENCHANTMENT_SLOT_0]))
-                {
-                    for (int s = 0; s < 3; ++s)
-                    {
-                        switch (pEnchant->type[s])
-                        {
-                        case 1: //Proc //TODO add proc values?
-                            break;
-                        case 2: //Damage
-                            if (!pEnchant->amount[s])
-                                continue;
-                            weight += CalculateSingleStatWeight(playerclass, spec, "mledps", pEnchant->amount[s]);
-                            break;
-                        case 3:
-                        {
-                            if (!pEnchant->spellid[s])
-                                continue;
+                uint32 enchantId = item_rand->enchant_id[i - PROP_ENCHANTMENT_SLOT_0];
 
-                            SpellEntry const* spellInfo = sSpellTemplate.LookupEntry<SpellEntry>(pEnchant->spellid[s]);
-
-                            if (!spellInfo)
-                                continue;
-
-                            for (uint32 j = 0; j < MAX_EFFECT_INDEX; ++j)
-                            {
-                                if (spellInfo->Effect[j] != SPELL_EFFECT_APPLY_AURA)
-                                    continue;
-                                if (spellInfo->EffectApplyAuraName[j] != SPELL_AURA_MOD_STAT)
-                                    continue;
-
-                                uint32 stat = spellInfo->EffectMiscValue[j];
-                                uint32 value = spellInfo->EffectBasePoints[j] + 1;
-
-                                if (!value)
-                                    continue;
-
-                                if (ItemStatLink.find(stat) == ItemStatLink.end())
-                                    continue;
-
-                                weight += CalculateSingleStatWeight(playerclass, spec, ItemStatLink[stat], value);
-                            }
-                            break;
-                        }
-                        case 4: //Armor
-                            if (!pEnchant->amount[s])
-                                continue;
-                            weight += CalculateSingleStatWeight(playerclass, spec, "armor", pEnchant->amount[s]);
-                            break;
-                        }
-
-                    }
-                }
+                weight += CalculateEnchantWeight(playerclass, spec, enchantId);
             }
         }
     }
     return weight;
 }
 
-
-uint32 RandomItemMgr::ItemStatWeight(Player* player, ItemPrototype const* proto, uint32 randomPropertyId, uint32 gem1, uint32 gem2, uint32 gem3, uint32 gem4)
+uint32 RandomItemMgr::CalculateGemWeight(uint8 playerclass, uint8 spec, uint32 gemId)
 {
-    ItemSpecType itSpec;
-    uint32 weight = CalculateStatWeight(player->getClass(), GetPlayerSpecId(player), proto, itSpec);
-    if (randomPropertyId)
-        weight += CalculateRandomPropertyWeight(player->getClass(), GetPlayerSpecId(player), randomPropertyId);
+#ifdef MANGOSBOT_ZERO
+    return 0;
+#else
+    if (!gemId)
+        return 0;
 
-    //Todo gems.
-
-    return weight;
+    return CalculateEnchantWeight(playerclass, spec, gemId);
+#endif
 }
 
-uint32 RandomItemMgr::ItemStatWeight(Player* player, uint32 itemId, uint32 randomPropertyId, uint32 gem1, uint32 gem2, uint32 gem3, uint32 gem4)
+uint32 RandomItemMgr::CalculateSocketWeight(uint8 playerclass, ItemQualifier& qualifier, uint8 spec)
 {
-    const ItemPrototype* proto = sObjectMgr.GetItemPrototype(itemId);
-    return ItemStatWeight(player, proto, randomPropertyId, gem1, gem2, gem3, gem4);
+#ifdef MANGOSBOT_ZERO
+    return 0;
+#else
+
+    vector<uint32> gems = { qualifier.GetGem1() , qualifier.GetGem2(), qualifier.GetGem3(), qualifier.GetGem4() };
+
+    ItemPrototype const* proto = qualifier.GetProto();
+
+    bool hasGem = false;
+    for (auto gem : gems)
+        if(gem)
+            hasGem = true;
+
+    if (!hasGem)
+        return 0;
+
+    for (int i = 0; i < MAX_GEM_SOCKETS; ++i)
+    {
+        uint8 SocketColor = proto->Socket[i].Color;
+
+        if (!SocketColor)
+            continue;
+
+        uint8 GemColor = 0;
+
+        if (!gems[i])
+            return 0;
+
+        SpellItemEnchantmentEntry const* pEnchant = sSpellItemEnchantmentStore.LookupEntry(gems[i]);
+
+        if (!pEnchant)
+            return 0;
+
+        uint32 gemid = pEnchant->GemID;
+        if (!gemid)
+            return 0;
+
+        ItemPrototype const* gemProto = sItemStorage.LookupEntry<ItemPrototype>(gemid);
+        if (!gemProto)
+            return 0;
+            
+        GemPropertiesEntry const* gemProperty = sGemPropertiesStore.LookupEntry(gemProto->GemProperties);
+        
+        if (!gemProperty)
+            return 0;
+
+        GemColor = gemProperty->color;
+
+        if (!(GemColor & SocketColor))
+            return 0;
+    }
+
+    return CalculateEnchantWeight(playerclass, spec, proto->socketBonus);
+#endif;
 }
+
 
 uint32 RandomItemMgr::ItemStatWeight(Player* player, ItemQualifier& qualifier)
 {
-    return ItemStatWeight(player, qualifier.GetId(), qualifier.GetRandomPropertyId(), qualifier.GetGem1(), qualifier.GetGem2(), qualifier.GetGem3(), qualifier.GetGem4());
+    ItemSpecType itSpec;
+    uint32 weight = CalculateStatWeight(player->getClass(), GetPlayerSpecId(player), qualifier.GetProto(), itSpec);
+    if(qualifier.GetEnchantId())
+        weight += CalculateEnchantWeight(player->getClass(), GetPlayerSpecId(player), qualifier.GetEnchantId());
+    if (qualifier.GetRandomPropertyId())
+        weight += CalculateRandomPropertyWeight(player->getClass(), GetPlayerSpecId(player), qualifier.GetRandomPropertyId());
+    if(qualifier.GetGem1())
+        weight += CalculateGemWeight(player->getClass(), GetPlayerSpecId(player), qualifier.GetGem1());
+    if (qualifier.GetGem2())
+        weight += CalculateGemWeight(player->getClass(), GetPlayerSpecId(player), qualifier.GetGem2());
+    if (qualifier.GetGem3())
+        weight += CalculateGemWeight(player->getClass(), GetPlayerSpecId(player), qualifier.GetGem3());
+    if (qualifier.GetGem4())
+        weight += CalculateGemWeight(player->getClass(), GetPlayerSpecId(player), qualifier.GetGem4());
+
+    weight += CalculateSocketWeight(player->getClass(), qualifier, GetPlayerSpecId(player));
+
+    return weight;
 }
 
 uint32 RandomItemMgr::ItemStatWeight(Player* player, Item* item)
