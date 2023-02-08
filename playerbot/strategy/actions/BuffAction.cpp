@@ -106,7 +106,7 @@ bool BuffAction::Execute(Event& event)
         {
             Item* item = *j;
             ostringstream out;
-            out << chat->formatItem(item->GetProto(), item->GetCount());
+            out << chat->formatItem(item, item->GetCount());
             ai->TellMaster(out);
         }
     }

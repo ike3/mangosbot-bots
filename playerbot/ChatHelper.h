@@ -7,6 +7,8 @@ typedef set<uint32> SpellIds;
 
 namespace ai
 {
+    class ItemQualifier;
+
     class ChatHelper : public PlayerbotAIAware
     {
     public:
@@ -18,7 +20,9 @@ namespace ai
 
         static string formatQuest(Quest const* quest);
 
+        static string formatItem(ItemQualifier& itemQualifier, int count = 0, int total = 0);
         static string formatItem(ItemPrototype const * proto, int count = 0, int total = 0);
+        static string formatItem(Item* item, int count = 0, int total = 0);
         static string formatQItem(uint32 itemId);
         static ItemIds parseItems(string& text);
         static set<string> parseItemQualifiers(string& text);

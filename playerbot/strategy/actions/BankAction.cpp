@@ -79,7 +79,7 @@ bool BankAction::Withdraw(const uint32 itemid)
     bot->StoreItem(dest, pItem, true);
 
     std::ostringstream out;
-    out << "got " << chat->formatItem(pItem->GetProto(), pItem->GetCount()) << " from bank";
+    out << "got " << chat->formatItem(pItem, pItem->GetCount()) << " from bank";
     ai->TellMaster(out.str());
     return true;
 }
@@ -99,7 +99,7 @@ bool BankAction::Deposit(Item* pItem)
     bot->RemoveItem(pItem->GetBagSlot(), pItem->GetSlot(), true);
     bot->BankItem(dest, pItem, true);
 
-    out << "put " << chat->formatItem(pItem->GetProto(), pItem->GetCount()) << " to bank";
+    out << "put " << chat->formatItem(pItem, pItem->GetCount()) << " to bank";
     ai->TellMaster(out.str());
 	return true;
 }

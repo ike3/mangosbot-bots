@@ -119,7 +119,7 @@ void SellAction::Sell(Item* item)
             bot->SetMoney(botMoney);
         }
 
-        out << "Selling " << chat->formatItem(item->GetProto());
+        out << "Selling " << chat->formatItem(item);
         bot->PlayDistanceSound(120);
         ai->TellMaster(out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
         break;

@@ -81,7 +81,7 @@ string WhoAction::QueryTrade(string text)
         if (!sellPrice)
             continue;
 
-        out << "Selling " << chat->formatItem(sell->GetProto(), sell->GetCount()) << " for " << chat->formatMoney(sellPrice);
+        out << "Selling " << chat->formatItem(sell, sell->GetCount()) << " for " << chat->formatMoney(sellPrice);
         return out.str();
     }
 

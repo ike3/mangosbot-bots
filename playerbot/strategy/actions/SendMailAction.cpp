@@ -116,7 +116,7 @@ bool SendMailAction::Execute(Event& event)
             if (item->IsSoulBound() || item->IsConjuredConsumable())
             {
                 ostringstream out;
-                out << "Cannot send " << ChatHelper::formatItem(item->GetProto());
+                out << "Cannot send " << ChatHelper::formatItem(item);
                 bot->Whisper(out.str(), LANG_UNIVERSAL, tellTo->GetObjectGuid());
                 continue;
             }
@@ -133,7 +133,7 @@ bool SendMailAction::Execute(Event& event)
                 if (!price)
                 {
                     ostringstream out;
-                    out << ChatHelper::formatItem(item->GetProto()) << ": it is not for sale";
+                    out << ChatHelper::formatItem(item) << ": it is not for sale";
                     bot->Whisper(out.str(), LANG_UNIVERSAL, tellTo->GetObjectGuid());
                     return false;
                 }

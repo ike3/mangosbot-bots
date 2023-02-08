@@ -23,7 +23,8 @@ bool QueryItemUsageAction::Execute(Event& event)
         if (guid != bot->GetObjectGuid())
             return false;
 
-        uint32 received, created, isShowChatMessage, notUsed, itemId,suffixFactor, itemRandomPropertyId, count;
+        uint32 received, created, isShowChatMessage, slotId, itemId,suffixFactor, count;
+        uint32 itemRandomPropertyId;
         //uint32 invCount;
         uint8 bagSlot;
 
@@ -32,14 +33,14 @@ bool QueryItemUsageAction::Execute(Event& event)
         data >> isShowChatMessage;                                      // IsShowChatMessage
         data >> bagSlot;
                                                                 // item slot, but when added to stack: 0xFFFFFFFF
-        data >> notUsed;
+        data >> slotId;
         data >> itemId;
         data >> suffixFactor;
         data >> itemRandomPropertyId;
         data >> count;
         // data >> invCount; // [-ZERO] count of items in inventory
 
-        ItemQualifier itemQualifier(itemId, itemRandomPropertyId);
+        ItemQualifier itemQualifier(itemId, (int32)itemRandomPropertyId);
 
         if (!itemQualifier.GetProto())
             return false;
@@ -130,7 +131,7 @@ string QueryItemUsageAction::QueryItem(ItemQualifier& qualifier, uint32 count, u
 #endif
         usage = (quest.empty() ? "Useless" : "Quest");
 
-    out << chat->formatItem(qualifier.GetProto(), count, total) << ": " << usage;
+    out << chat->formatItem(qualifier, count, total) << ": " << usage;
     if (!quest.empty())
         out << ", " << quest;
     if (!price.empty())

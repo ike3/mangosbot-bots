@@ -42,13 +42,13 @@ bool GiveItemAction::Execute(Event& event)
             moved = true;
 
             ostringstream out;
-            out << "Got " << chat->formatItem(item->GetProto(), item->GetCount()) << " from " << bot->GetName();
+            out << "Got " << chat->formatItem(item, item->GetCount()) << " from " << bot->GetName();
             receiverAi->TellMasterNoFacing(out.str(), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
         }
         else
         {
             ostringstream out;
-            out << "Cannot get " << chat->formatItem(item->GetProto(), item->GetCount()) << " from " << bot->GetName() << "- my bags are full";
+            out << "Cannot get " << chat->formatItem(item, item->GetCount()) << " from " << bot->GetName() << "- my bags are full";
             receiverAi->TellError(out.str());
         }
     }

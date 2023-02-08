@@ -22,7 +22,7 @@ bool UnequipAction::Execute(Event& event)
             if (slot != EQUIPMENT_SLOT_END)
             {
                 Item* const pItem = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, slot);
-                if (pItem) UnequipItem(*pItem);
+                if (pItem) UnequipItem(pItem);
             }
         }
     }
@@ -42,13 +42,13 @@ void UnequipAction::UnequipItem(FindItemVisitor* visitor)
 {
     ai->InventoryIterateItems(visitor, ITERATE_ALL_ITEMS);
     list<Item*> items = visitor->GetResult();
-	if (!items.empty()) UnequipItem(**items.begin());
+	if (!items.empty()) UnequipItem(*items.begin());
 }
 
-void UnequipAction::UnequipItem(Item& item)
+void UnequipAction::UnequipItem(Item* item)
 {
-    uint8 bagIndex = item.GetBagSlot();
-    uint8 slot = item.GetSlot();
+    uint8 bagIndex = item->GetBagSlot();
+    uint8 slot = item->GetSlot();
     uint8 dstBag = NULL_BAG;
 
 
@@ -56,7 +56,7 @@ void UnequipAction::UnequipItem(Item& item)
     packet << bagIndex << slot << dstBag;
     bot->GetSession()->HandleAutoStoreBagItemOpcode(packet);
 
-    ostringstream out; out << chat->formatItem(item.GetProto()) << " unequipped";
+    ostringstream out; out << chat->formatItem(item) << " unequipped";
 
     ai->TellMaster(out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
 }

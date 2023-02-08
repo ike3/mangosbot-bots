@@ -275,6 +275,8 @@ bool StoreLootAction::Execute(Event& event)
         p >> randomPropertyId;  // randomPropertyId
         p >> lootslot_type;     // 0 = can get, 1 = look only, 2 = master get
 
+        ItemQualifier itemQualifier(itemid, ((int32)randomPropertyId));
+
 		if (lootslot_type != LOOT_SLOT_NORMAL
 #ifndef MANGOSBOT_ZERO
 		        && lootslot_type != LOOT_SLOT_OWNER
@@ -282,7 +284,7 @@ bool StoreLootAction::Execute(Event& event)
             )
 			continue;
 
-        if (loot_type != LOOT_SKINNING && !IsLootAllowed(ItemQualifier(itemid, randomPropertyId), ai))
+        if (loot_type != LOOT_SKINNING && !IsLootAllowed(itemQualifier, ai))
             continue;
 
         if (AI_VALUE2(uint32, "stack space for item", itemid) < itemcount)
@@ -317,7 +319,7 @@ bool StoreLootAction::Execute(Event& event)
         if (proto->Quality > ITEM_QUALITY_NORMAL && !urand(0, 50) && ai->HasStrategy("emote", BotState::BOT_STATE_NON_COMBAT)) ai->PlayEmote(TEXTEMOTE_CHEER);
         if (proto->Quality >= ITEM_QUALITY_RARE && !urand(0, 1) && ai->HasStrategy("emote", BotState::BOT_STATE_NON_COMBAT)) ai->PlayEmote(TEXTEMOTE_CHEER);
 
-        ostringstream out; out << "Looting " << chat->formatItem(proto);
+        ostringstream out; out << "Looting " << chat->formatItem(itemQualifier);
 
         ai->TellMasterNoFacing(out.str(), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
 

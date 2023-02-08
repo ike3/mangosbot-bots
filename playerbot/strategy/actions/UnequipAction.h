@@ -10,7 +10,7 @@ namespace ai
         virtual bool Execute(Event& event) override;
 
     private:
-        void UnequipItem(Item& item);
+        void UnequipItem(Item* item);
         void UnequipItem(FindItemVisitor* visitor);
     };
 }

@@ -43,7 +43,7 @@ public:
                 ItemPrototype const *proto = sObjectMgr.GetItemPrototype(i->item_template);
                 if (proto)
                 {
-                    out << ChatHelper::formatItem(proto, count);
+                    out << ChatHelper::formatItem(item, count);
                     if (!mail->subject.empty()) out << " |cffa0a0a0(" << mail->subject << ")";
                 }
             }
@@ -112,7 +112,7 @@ public:
 #endif
                 Item* item = bot->GetMItem(*i);
                 ostringstream out;
-                out << mail->subject << ", " << ChatHelper::formatItem(item->GetProto()) << "|cff00ff00 processed";
+                out << mail->subject << ", " << ChatHelper::formatItem(item) << "|cff00ff00 processed";
 
                 bot->GetSession()->HandleMailTakeItem(packet);
                 ai->TellMaster(out.str(), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);

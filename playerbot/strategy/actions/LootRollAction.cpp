@@ -13,7 +13,7 @@ bool LootStartRollAction::Execute(Event& event)
     uint32 itemSlot;
     uint32 itemId;
     uint32 randomSuffix;
-    uint32 randomPropertyId;
+    int32 randomPropertyId;
 #ifdef MANGOSBOT_TWO
     uint32 mapId;
     uint32 count;

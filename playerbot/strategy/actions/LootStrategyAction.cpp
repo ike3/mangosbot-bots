@@ -63,7 +63,7 @@ bool LootStrategyAction::Execute(Event& event)
                 if (itemQualifier.GetProto())
                 {
                     ostringstream out;
-                    out << (StoreLootAction::IsLootAllowed(itemQualifier, ai) ? "|cFF000000Will loot " : "|c00FF0000Won't loot ") << ChatHelper::formatItem(itemQualifier.GetProto());
+                    out << (StoreLootAction::IsLootAllowed(itemQualifier, ai) ? "|cFF000000Will loot " : "|c00FF0000Won't loot ") << ChatHelper::formatItem(itemQualifier);
                     ai->TellMaster(out.str());
                 }
             }

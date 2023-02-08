@@ -1170,7 +1170,7 @@ void AhBot::CheckSendMail(uint32 bidder, uint32 price, AuctionEntry *entry)
     Item *item = sAuctionMgr.GetAItem(entry->itemGuidLow);
     if (!item)
         return;
-    body << "I see you posted " << ChatHelper::formatItem(item->GetProto(), item->GetCount());
+    body << "I see you posted " << ChatHelper::formatItem(item, item->GetCount());
     body << " to the AH and I really need that at the moment. Could you lower your price at least to ";
     body << ChatHelper::formatMoney(PricingStrategy::RoundPrice(price)) << "? I'll buy it then.\n";
     body << "\n";

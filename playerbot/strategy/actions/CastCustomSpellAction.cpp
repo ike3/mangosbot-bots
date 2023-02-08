@@ -108,7 +108,7 @@ bool CastCustomSpellAction::Execute(Event& event)
     ostringstream spellName;
     spellName << ChatHelper::formatSpell(pSpellInfo) << " on ";
     if (bot->GetTrader()) spellName << "trade item";
-    else if (itemTarget) spellName << chat->formatItem(itemTarget->GetProto());
+    else if (itemTarget) spellName << chat->formatItem(itemTarget);
     else if (target == bot) spellName << "self";
     else spellName << target->GetName();
 

@@ -375,7 +375,7 @@ bool UseItemAction::UseItem(Item* item, ObjectGuid goGuid, Item* itemTarget, Uni
 #endif
 
    bool targetSelected = false;
-   ostringstream out; out << "Using " << chat->formatItem(item->GetProto());
+   ostringstream out; out << "Using " << chat->formatItem(item);
    if ((int)item->GetProto()->Stackable > 1)
    {
       uint32 count = item->GetCount();
@@ -419,7 +419,7 @@ bool UseItemAction::UseItem(Item* item, ObjectGuid goGuid, Item* itemTarget, Uni
       targetFlag = TARGET_FLAG_ITEM;
       packet << targetFlag;
       packet.appendPackGUID(itemTarget->GetObjectGuid());
-      out << " on " << chat->formatItem(itemTarget->GetProto());
+      out << " on " << chat->formatItem(itemTarget);
       targetSelected = true;
 #ifndef MANGOSBOT_ZERO
       }
@@ -564,7 +564,7 @@ bool UseItemAction::UseItem(Item* item, ObjectGuid goGuid, Item* itemTarget, Uni
             packet << targetFlag;
             packet.appendPackGUID(itemForSpell->GetObjectGuid());
             targetSelected = true;
-            out << " on " << chat->formatItem(itemForSpell->GetProto());
+            out << " on " << chat->formatItem(itemForSpell);
          }
 
          Spell *spell = new Spell(bot, pSpellInfo, false);
@@ -596,7 +596,7 @@ bool UseItemAction::UseItem(Item* item, ObjectGuid goGuid, Item* itemTarget, Uni
 void UseItemAction::TellConsumableUse(Item* item, string action, float percent)
 {
     ostringstream out;
-    out << action << " " << chat->formatItem(item->GetProto());
+    out << action << " " << chat->formatItem(item);
     if ((int)item->GetProto()->Stackable > 1) out << "/x" << item->GetCount();
     out << " (" << round(percent) << "%)";
     ai->TellMasterNoFacing(out.str(), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
@@ -651,8 +651,8 @@ bool UseItemAction::SocketItem(Item* item, Item* gem, bool replace)
 
    if (fits)
    {
-      ostringstream out; out << "Socketing " << chat->formatItem(item->GetProto());
-      out << " with " << chat->formatItem(gem->GetProto());
+      ostringstream out; out << "Socketing " << chat->formatItem(item);
+      out << " with " << chat->formatItem(gem);
       ai->TellMaster(out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
 
       bot->GetSession()->HandleSocketOpcode(*packet);
