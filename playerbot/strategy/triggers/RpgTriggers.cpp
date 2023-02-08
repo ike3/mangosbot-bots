@@ -474,13 +474,7 @@ bool RpgUseTrigger::IsActive()
 
 bool RpgSpellTrigger::IsActive()
 {
-    GuidPosition guidP(getGuidP());
-
-    if (guidP.IsPlayer())
-        return false;
-
-    if (!guidP.GetWorldObject())
-        return false;
+    //GuidPosition guidP(getGuidP());
 
     return true;
 }

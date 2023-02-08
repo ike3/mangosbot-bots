@@ -199,6 +199,8 @@ bool CastRandomSpellAction::Execute(Event& event)
 
             if (target && ai->CanCastSpell(spellId, target, true))
                 spellList.push_back(make_pair(spellId,make_pair(spellPriority, target)));
+            if (target && ai->CanCastSpell(spellId, target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), true))
+                spellList.push_back(make_pair(spellId, make_pair(spellPriority, target)));
             if (got && ai->CanCastSpell(spellId, got->GetPositionX(), got->GetPositionY(), got->GetPositionZ(), true))
                 spellList.push_back(make_pair(spellId, make_pair(spellPriority, got)));
             if (ai->CanCastSpell(spellId, bot, true))
@@ -249,9 +251,10 @@ bool CastRandomSpellAction::Execute(Event& event)
 bool CastRandomSpellAction::castSpell(uint32 spellId, WorldObject* wo)
 {
     if (wo->GetObjectGuid().IsUnit())
-        return ai->CastSpell(spellId, (Unit*)(wo));
-    else
-        return ai->CastSpell(spellId, wo->GetPositionX(), wo->GetPositionY(), wo->GetPositionZ());
+        if (ai->CastSpell(spellId, (Unit*)(wo)))
+            return true;
+
+    return ai->CastSpell(spellId, wo->GetPositionX(), wo->GetPositionY(), wo->GetPositionZ());
 }
 
 bool DisEnchantRandomItemAction::Execute(Event& event)
