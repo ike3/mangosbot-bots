@@ -348,77 +348,33 @@ namespace ai
     {
     public:
         FarFormation(PlayerbotAI* ai) : FollowFormation(ai, "far") {}
-        virtual WorldLocation GetLocation()
-        {
-            float range = sPlayerbotAIConfig.farDistance;
-            float followRange = ai->GetRange("follow");
-
+        virtual string GetTargetName() { return "master target"; }
+        virtual float GetAngle() override 
+        {             
             Player* master = ai->GetGroupMaster();
-            if (!master || master == bot)
-                return Formation::NullLocation;
 
-            if (sServerFacade.GetDistance2d(bot, master) <= range)
-                return Formation::NullLocation;
+            float currentAngle = WorldPosition(master).getAngleTo(bot) - master->GetOrientation();
+            float followAngle = sServerFacade.GetChaseAngle(bot);
 
-            float angle = master->GetAngle(bot);
-            float followAngle = GetFollowAngle();
+            float delta = (currentAngle - followAngle);
 
-            float x = master->GetPositionX() + cos(angle) * range + cos(followAngle) * followRange;
-            float y = master->GetPositionY() + sin(angle) * range + sin(followAngle) * followRange;
-            float z = master->GetPositionZ();
-#ifdef MANGOSBOT_TWO
-            float ground = master->GetMap()->GetHeight(master->GetPhaseMask(), x, y, z);
-#else
-            float ground = master->GetMap()->GetHeight(x, y, z);
-#endif
-            if (ground <= INVALID_HEIGHT)
-            {
-                float minDist = 0, minX = 0, minY = 0;
-                for (double angle = 0.0f; angle <= 2 * M_PI; angle += M_PI / 16.0f)
-                {
-                    x = master->GetPositionX() + cos(angle) * range + cos(followAngle) * followRange;
-                    y = master->GetPositionY() + sin(angle) * range + sin(followAngle) * followRange;
-                    float dist = sServerFacade.GetDistance2d(bot, x, y);
-#ifdef MANGOSBOT_TWO
-                    float ground = master->GetMap()->GetHeight(master->GetPhaseMask(), x, y, z);
-#else
-                    float ground = master->GetMap()->GetHeight(x, y, z);
-#endif
-                    if (ground > INVALID_HEIGHT && (!minDist || minDist > dist))
-                    {
-                        minDist = dist;
-                        minX = x;
-                        minY = y;
-                    }
-                }
-                if (minDist)
-                {
-                    if (!bot->IsFlying() && !bot->IsFreeFlying())
-                    {
-                        z += CONTACT_DISTANCE;
-                        bot->UpdateAllowedPositionZ(minX, minY, z);
-                    }
-                    return WorldLocation(bot->GetMapId(), minX, minY, z);
-                }
+            if (delta > M_PI_F)
+                delta -= M_PI_F * 2.0f;
+            
+            if (fabs(delta) > 0.2)
+                return followAngle + delta;
 
-                return Formation::NullLocation;
-            }
+            if (followAngle < 0)
+                followAngle += M_PI_F * 2.0f;
 
-            // prevent going into terrain
-            float ox, oy, oz;
-            master->GetPosition(ox, oy, oz);
-#ifdef MANGOSBOT_TWO
-            master->GetMap()->GetHitPosition(ox, oy, oz + bot->GetCollisionHeight(), x, y, z, bot->GetPhaseMask(), -0.5f);
-#else
-            master->GetMap()->GetHitPosition(ox, oy, oz + bot->GetCollisionHeight(), x, y, z, -0.5f);
-#endif
-            if (!bot->IsFlying() && !bot->IsFreeFlying())
-            {
-                z += CONTACT_DISTANCE;
-                bot->UpdateAllowedPositionZ(x, y, z);
-            }
-            return WorldLocation(bot->GetMapId(), x, y, z);
+            delta = (M_PI_F - followAngle) * 0.5;
+            
+            if (fabs(delta) < 0.01)
+                delta = 0;
+
+            return followAngle + delta;
         }
+        virtual float GetOffset() override { return ai->GetRange("follow"); }
     };
 
     class CustomFormation : public MoveAheadFormation
