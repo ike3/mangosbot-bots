@@ -2211,7 +2211,8 @@ uint32 RandomItemMgr::ItemStatWeight(Player* player, ItemQualifier& qualifier)
 
 uint32 RandomItemMgr::ItemStatWeight(Player* player, Item* item)
 {
-    return ItemStatWeight(player, ItemQualifier(item));
+    ItemQualifier itemQualifier(item);
+    return ItemStatWeight(player, itemQualifier);
 }
 
 uint32 RandomItemMgr::CalculateSingleStatWeight(uint8 playerclass, uint8 spec, std::string stat, uint32 value)

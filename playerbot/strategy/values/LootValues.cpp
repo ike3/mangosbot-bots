@@ -240,7 +240,9 @@ bool ShouldLootObject::Calculate()
 		if (canLootAmount < lItem.count)
 			continue;
 
-		if (lootAccess->m_lootType != LOOT_SKINNING && !StoreLootAction::IsLootAllowed(ItemQualifier(lItem), ai))
+		ItemQualifier ltemQualifier(lItem);
+
+		if (lootAccess->m_lootType != LOOT_SKINNING && !StoreLootAction::IsLootAllowed(ltemQualifier, ai))
 			continue;
 
 		return true;

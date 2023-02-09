@@ -327,7 +327,8 @@ bool AhBidAction::BidItem(AuctionEntry* auction, uint32 price, Unit* auctioneer)
     {
         ItemPrototype const* proto = sObjectMgr.GetItemPrototype(auction->itemTemplate);
         ostringstream out;
-        out << "Bidding " << ChatHelper::formatMoney(price) << " on " << ChatHelper::formatItem(ItemQualifier(auction), auction->itemCount) << " on the AH";
+        ItemQualifier itemQualifier(auction);
+        out << "Bidding " << ChatHelper::formatMoney(price) << " on " << ChatHelper::formatItem(itemQualifier, auction->itemCount) << " on the AH";
         ai->TellMasterNoFacing(out.str(), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
         return true;
     }
