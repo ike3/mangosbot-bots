@@ -919,7 +919,8 @@ INSERT INTO `ai_playerbot_texts` (`id`, `name`, `text`, `say_type`, `reply_type`
 	(534, 'error_cant_put', 'I can\'t put ', 0, 0, '', '', '', '', '', '', '', 'Я не могу положить'),
 	(535, 'error_gbank_rights', 'I have no rights to put items in the first guild bank tab', 0, 0, '', '', '', '', '', '', '', 'Нет прав чтобы класть вещи в первую вкладку гильд банка'),
 	(536, 'gbank_put', ' put to guild bank', 0, 0, '', '', '', '', '', '', '', ' теперь в гильд банке'),
-	(536, 'free_moving', ' free moving', 0, 0, '', '', '', '', '', '', '', '');
+	(537, 'free_moving', 'Free moving', 0, 0, '', '', '', '', '', '', '', '')
+	(538, 'guarding', 'Guarding', 0, 0, '', '', '', '', '', '', '', '');
 /*!40000 ALTER TABLE `ai_playerbot_texts` ENABLE KEYS */;
 
 -- Dumping structure for table tbcplayerbots.ai_playerbot_texts_chance
