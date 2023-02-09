@@ -444,7 +444,8 @@ string ChatHelper::formatItem(ItemQualifier& itemQualifier, int count, int total
 
 string ChatHelper::formatItem(ItemPrototype const* proto, int count, int total)
 {
-    return formatItem(ItemQualifier(proto->ItemId), count, total);
+    ItemQualifier ItemQualifier(proto->ItemId);
+    return formatItem(ItemQualifier, count, total);
 }
 
 string ChatHelper::formatItem(Item* item, int count, int total)
