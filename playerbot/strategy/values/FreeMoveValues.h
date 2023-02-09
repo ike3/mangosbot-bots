@@ -30,7 +30,7 @@ namespace ai
     {
     public:
         CanFreeTargetValue(PlayerbotAI* ai) : CanFreeMoveToValue(ai, "can free target") {};
-        virtual float GetRange() { return AI_VALUE(float, "free move range"); }
+        virtual float GetRange() { return ai->HasStrategy("stay", BotState::BOT_STATE_NON_COMBAT) ? std::min(ai->GetRange("spell"), AI_VALUE(float, "free move range")) : AI_VALUE(float, "free move range"); }
     };
 };
 
