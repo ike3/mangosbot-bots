@@ -178,7 +178,7 @@ namespace ai
         virtual string ActionName() { return "mail"; }
         virtual Event ActionEvent(Event event) { return Event("rpg action", "take"); }
        
-        virtual bool Execute(Event& event) { bool doAction = RpgSubAction::Execute(event); if (doAction) ai->DoSpecificAction("equip upgrades"); return doAction; }
+        virtual bool Execute(Event& event) { bool doAction = RpgSubAction::Execute(event); if (doAction) ai->DoSpecificAction("equip upgrades", event, true); return doAction; }
     };
 
     class RpgRepairAction : public RpgSubAction
