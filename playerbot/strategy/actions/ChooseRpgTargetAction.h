@@ -13,8 +13,8 @@ namespace ai
         virtual bool Execute(Event& event);
         virtual bool isUseful();
 
-        static bool isFollowValid(Player* bot, WorldObject* target);
-        static bool isFollowValid(Player* bot, WorldPosition pos);
+        //static bool isFollowValid(Player* bot, WorldObject* target);
+        //static bool isFollowValid(Player* bot, WorldPosition pos);
     private:        
         float getMaxRelevance(GuidPosition guidP);
         bool HasSameTarget(ObjectGuid guid, uint32 max, list<ObjectGuid>& nearGuids);

@@ -5,7 +5,6 @@
 #include "../../ServerFacade.h"
 #include "../../LootObjectStack.h"
 #include "MotionGenerators/PathFinder.h"
-#include "ChooseRpgTargetAction.h"
 #include "../../TravelMgr.h"
 
 using namespace ai;
@@ -141,7 +140,7 @@ bool MoveToTravelTargetAction::isUseful()
     if (loot.IsLootPossible(bot))
         return false;
 
-    if (!ChooseRpgTargetAction::isFollowValid(bot, *context->GetValue<TravelTarget*>("travel target")->Get()->getPosition()))
+    if (!AI_VALUE2(bool, "can free move to", AI_VALUE(TravelTarget*,"travel target")->GetPosStr()))
         return false;
 
     return true;

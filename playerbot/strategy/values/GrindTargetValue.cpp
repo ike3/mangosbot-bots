@@ -41,7 +41,7 @@ Unit* GrindTargetValue::FindTargetForGrinding(int assistCount)
         if (!unit || !sServerFacade.IsAlive(unit))
             continue;
 
-        if (!bot->InBattleGround() && !ChooseRpgTargetAction::isFollowValid(bot, unit)) //Do not grind mobs far away from master.
+        if (!bot->InBattleGround() && !AI_VALUE2(bool, "can free target", GuidPosition(unit).to_string())) //Do not grind mobs far away from master.
             continue;
 
         return unit;
@@ -66,7 +66,7 @@ Unit* GrindTargetValue::FindTargetForGrinding(int assistCount)
         if (abs(bot->GetPositionZ() - unit->GetPositionZ()) > sPlayerbotAIConfig.spellDistance)
             continue;
 
-        if (!bot->InBattleGround() && !ChooseRpgTargetAction::isFollowValid(bot, unit)) //Do not grind mobs far away from master.
+        if (!bot->InBattleGround() && !AI_VALUE2(bool, "can free target", GuidPosition(unit).to_string())) //Do not grind mobs far away from master.
             continue;
 
         if (!bot->InBattleGround() && GetTargetingPlayerCount(unit) > assistCount)

@@ -6,7 +6,6 @@
 #include "../../ServerFacade.h"
 #include "../values/PossibleRpgTargetsValue.h"
 #include "../../TravelMgr.h"
-#include "ChooseRpgTargetAction.h"
 
 using namespace ai;
 
@@ -61,7 +60,7 @@ bool MoveToRpgTargetAction::Execute(Event& event)
         return false;
     }
 
-    if (!ChooseRpgTargetAction::isFollowValid(bot, wo))
+    if (!AI_VALUE2(bool, "can free move to", GuidPosition(wo).to_string()))
     {
         AI_VALUE(set<ObjectGuid>&, "ignore rpg target").insert(AI_VALUE(GuidPosition, "rpg target"));
 
@@ -221,13 +220,13 @@ bool MoveToRpgTargetAction::isUseful()
 
     TravelTarget* travelTarget = AI_VALUE(TravelTarget*, "travel target");
 
-    if (travelTarget->isTraveling() && ChooseRpgTargetAction::isFollowValid(bot,*travelTarget->getPosition()))
+    if (travelTarget->isTraveling() && AI_VALUE2(bool, "can free move to", travelTarget->GetPosStr()))
         return false;
 
     if (guidP.distance(bot) < INTERACTION_DISTANCE)
         return false;
 
-    if (!ChooseRpgTargetAction::isFollowValid(bot, wo))
+    if (!AI_VALUE2(bool, "can free move to", guidP.to_string()))
         return false;
 
     if (!AI_VALUE(bool, "can move around"))

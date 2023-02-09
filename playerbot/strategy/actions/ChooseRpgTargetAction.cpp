@@ -6,7 +6,6 @@
 #include "../../TravelMgr.h"
 #include "../values/BudgetValues.h"
 #include "GuildCreateActions.h"
-#include "../values/Formations.h"
 #include "RpgSubActions.h"
 #include "../values/ItemUsageValue.h"
 #include "../values/PositionValue.h"
@@ -184,7 +183,7 @@ bool ChooseRpgTargetAction::Execute(Event& event)
 
         float priority = 1;
 
-        if (guidP.GetWorldObject() && !isFollowValid(bot, guidP.GetWorldObject()))
+        if (guidP.GetWorldObject() && !AI_VALUE2(bool, "can free move to", guidP.to_string()))
             continue;
 
         if (guidP.IsGameObject())
@@ -343,7 +342,7 @@ bool ChooseRpgTargetAction::isUseful()
 
     TravelTarget* travelTarget = AI_VALUE(TravelTarget*, "travel target");
 
-    if (travelTarget->isTraveling() && isFollowValid(bot, *travelTarget->getPosition()))
+    if (travelTarget->isTraveling() && AI_VALUE2(bool, "can free move to", *travelTarget->getPosition()))
         return false;
 
     if (AI_VALUE(list<ObjectGuid>, "possible rpg targets").empty())
@@ -356,6 +355,7 @@ bool ChooseRpgTargetAction::isUseful()
     return true;
 }
 
+/*
 bool ChooseRpgTargetAction::isFollowValid(Player* bot, WorldObject* target)
 {
     if (!target)
@@ -452,3 +452,4 @@ bool ChooseRpgTargetAction::isFollowValid(Player* bot, WorldPosition pos)
 
     return false;
 }
+*/
