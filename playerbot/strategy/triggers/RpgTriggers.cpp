@@ -483,9 +483,6 @@ bool RpgCraftTrigger::IsActive()
 {
     GuidPosition guidP(getGuidP());
 
-    if (guidP.IsPlayer())
-        return false;
-
     if (!guidP.GetWorldObject())
         return false;
 
