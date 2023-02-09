@@ -91,6 +91,7 @@
 #include "EntryValues.h"
 #include "GuidPositionValues.h"
 #include "EngineValues.h"
+#include "FreeMoveValues.h"
 
 namespace ai
 {
@@ -284,6 +285,11 @@ namespace ai
             creators["total money needed for"] = &ValueContext::total_money_needed_for;
             creators["free money for"] = &ValueContext::free_money_for;            
             creators["should get money"] = &ValueContext::should_get_money;
+
+            creators["free move center"] = &ValueContext::free_move_center;
+            creators["free move range"] = &ValueContext::free_move_range;
+            creators["can free move to"] = &ValueContext::can_free_move_to;
+            creators["can free target"] = &ValueContext::can_free_target;
             
             creators["can move around"] = &ValueContext::can_move_around;
             creators["should home bind"] = &ValueContext::should_home_bind;
@@ -523,6 +529,11 @@ namespace ai
         static UntypedValue* total_money_needed_for(PlayerbotAI* ai) { return new TotalMoneyNeededForValue(ai); }
         static UntypedValue* free_money_for(PlayerbotAI* ai) { return new FreeMoneyForValue(ai); }
         static UntypedValue* should_get_money(PlayerbotAI* ai) { return new ShouldGetMoneyValue(ai); }
+
+        static UntypedValue* free_move_center(PlayerbotAI* ai) { return new FreeMoveCenterValue(ai); }
+        static UntypedValue* free_move_range(PlayerbotAI* ai) { return new FreeMoveRangeValue(ai); }
+        static UntypedValue* can_free_move_to(PlayerbotAI* ai) { return new CanFreeMoveToValue(ai); }
+        static UntypedValue* can_free_target(PlayerbotAI* ai) { return new CanFreeTargetValue(ai); }
 
         static UntypedValue* can_move_around(PlayerbotAI* ai) { return new CanMoveAroundValue(ai); }
         static UntypedValue* should_home_bind(PlayerbotAI* ai) { return new ShouldHomeBindValue(ai); }

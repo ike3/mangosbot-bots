@@ -27,6 +27,7 @@ namespace ai
     {
     public:
         FollowFormation(PlayerbotAI* ai, string name) : Formation(ai, name) {}
+        virtual WorldLocation GetLocation();
     };
 
     class MoveFormation : public Formation

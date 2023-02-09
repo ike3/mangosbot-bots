@@ -9,6 +9,31 @@
 using namespace ai;
 using namespace MaNGOS;
 
+GuidPosition::GuidPosition(string qualifier)
+{
+    stringstream b(qualifier);
+
+    uint64 g;
+    char p;
+    b >> this->mapid >> p >> this->coord_x >> p >> this->coord_y >> p >> this->coord_z >> p >> this->orientation;
+
+    if (b.tellp() == std::streampos(0))
+        return;
+
+    b >> p >> g;
+
+    ObjectGuid guid(g);
+    ObjectGuid::Set(guid);
+}
+
+string GuidPosition::to_string() const
+{
+    ostringstream b;
+    char p = '|';
+    b << this->getMapId() << p << this->coord_x << p << this->coord_y << p << this->coord_z << p << this->orientation << p << GetRawValue();
+    return b.str();
+}
+
 Creature* GuidPosition::GetCreature() const
 {
     if (!*this)
@@ -151,8 +176,8 @@ bool GuidPosition::IsEventUnspawned()
 string GuidPosition::print()
 {
     ostringstream out;
-    out << this;
-    out << mapid << std::fixed << std::setprecision(2);
+    out << this->GetRawValue();
+    out << ';' << mapid << std::fixed << std::setprecision(2);
     out << ';' << coord_x;
     out << ';' << coord_y;
     out << ';' << coord_z;

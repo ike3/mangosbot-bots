@@ -300,6 +300,7 @@ namespace ai
 
         float distance(Player* bot) { WorldPosition pos(bot);  return wPosition->distance(pos); };
         WorldPosition* getPosition() { return wPosition; };
+        string GetPosStr() { return wPosition->to_string(); }
         TravelDestination* getDestination() { return tDestination; };
         uint32 getEntry() { if (!tDestination) return 0; return tDestination->getEntry(); }
         PlayerbotAI* getAi() { return ai; }
@@ -334,8 +335,8 @@ namespace ai
         uint32 extendRetryCount = 0;
         uint32 moveRetryCount = 0;
 
-        TravelDestination* tDestination = NULL;
-        WorldPosition* wPosition = NULL;
+        TravelDestination* tDestination = nullptr;
+        WorldPosition* wPosition = nullptr;
     };
 
     //General container for all travel destinations.

@@ -60,18 +60,21 @@ bool DebugAction::Execute(Event& event)
     }
     else if (text.find("test") != std::string::npos)
     {
-        auto selection = bot->GetSelectionGuid();
+        GuidPosition pos(bot);
 
-        if (!selection)
-            return false;
+        string str = pos.to_string();
 
-        Unit* unit = ai->GetUnit(bot->GetSelectionGuid());
+        GuidPosition newPos(str);
 
-        if (!unit)
-            return false;
+        ai->TellMaster(pos.print() + " => " + newPos.print());
 
-        sServerFacade.SetFacingTo(bot, unit);
-        sServerFacade.SetFacingTo(unit, bot);
+        WorldPosition pos1(bot);
+
+        string str1 = pos1.to_string();
+
+        WorldPosition newPos1(str1);
+
+        ai->TellMaster(pos1.print() + " => " + newPos1.print());
 
         return true;
     }

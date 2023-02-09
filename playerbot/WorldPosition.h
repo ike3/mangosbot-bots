@@ -38,7 +38,7 @@ namespace ai
         WorldPosition() : WorldLocation() {};
         WorldPosition(const WorldLocation loc) : WorldLocation(loc) {}
         WorldPosition(const WorldPosition& pos) : WorldLocation(pos) {}
-        WorldPosition(const string str) { stringstream  out(str); out >> mapid; out >> coord_x; out >> coord_y; out >> coord_z;  out >> orientation; }
+        WorldPosition(const string str) { char p; stringstream  out(str); out >> mapid >> p >> coord_x >> p >> coord_y >> p >> coord_z >> p >> orientation; }
         WorldPosition(const uint32 mapid, const float x, const float y, const float z = 0, float orientation = 0) : WorldLocation(mapid, x, y, z, orientation) {}
         WorldPosition(const uint32 mapId, const Position& pos) : WorldLocation(mapId, pos.GetPositionX(), pos.GetPositionY(),pos.GetPositionZ(), pos.GetPositionO()) {}
         WorldPosition(const WorldObject* wo) { if (wo) { set(WorldLocation(wo->GetMapId(), wo->GetPositionX(), wo->GetPositionY(), wo->GetPositionZ(), wo->GetOrientation())); } }
@@ -90,7 +90,7 @@ namespace ai
         float getO() const { return orientation; }
         G3D::Vector3 getVector3() const;
         virtual string print() const;
-        string to_string() const {stringstream out; out << mapid; out << coord_x; out << coord_y; out << coord_z;  out << orientation; return out.str();};
+        virtual string to_string() const { char p = '|'; stringstream out; out << mapid << p << coord_x << p << coord_y << p << coord_z << p << orientation; return out.str(); };
 
         void printWKT(const vector<WorldPosition>& points, ostringstream& out, const uint32 dim = 0, const bool loop = false) const;
         void printWKT(ostringstream& out) const { printWKT({ *this }, out); }

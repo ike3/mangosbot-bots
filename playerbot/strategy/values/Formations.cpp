@@ -52,6 +52,26 @@ float Formation::GetOffset()
     return distance;
 }
 
+WorldLocation FollowFormation::GetLocation()
+{
+    float range = ai->GetRange("follow");
+
+    Unit* target = AI_VALUE(Unit*, GetTargetName());
+    Player* master = ai->GetGroupMaster();
+    if (!target && target != bot)
+        target = master;
+
+    if (!target)
+        return Formation::NullLocation;
+
+    float angle = GetFollowAngle();
+    float x = target->GetPositionX() + cos(angle) * range;
+    float y = target->GetPositionY() + sin(angle) * range;
+    float z = target->GetPositionZ();
+
+    return WorldLocation(bot->GetMapId(), x, y, z);
+}
+
 WorldLocation MoveAheadFormation::GetLocation()
 {
     Player* master = ai->GetGroupMaster();
