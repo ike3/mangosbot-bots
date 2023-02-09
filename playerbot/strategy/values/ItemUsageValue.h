@@ -23,7 +23,7 @@ namespace ai
         uint32 GetGem4() { return gem4; }       
 
 #ifdef MANGOSBOT_ZERO
-        string GetLinkQualifier() { return to_string(itemId) + ":" + to_string(enchantID) + ":" + to_string(randomPropertyId) + ":0"; }
+        string GetLinkQualifier() { return to_string(itemId) + ":" + to_string(enchantId) + ":" + to_string(randomPropertyId) + ":0"; }
 #else
         string GetLinkQualifier() { return to_string(itemId) + ":" + to_string(enchantId) + ":" + to_string(gem1) + ":" + to_string(gem2) + ":" + to_string(gem3) + ":" + to_string(gem4) + ":" + to_string(randomPropertyId) + ":0"; }
 #endif
