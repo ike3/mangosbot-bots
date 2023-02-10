@@ -182,6 +182,9 @@ void PlayerbotHelpMgr::LoadStrategies(string className, AiObjectContext* context
                 }
             }
         }
+
+        if (classMap[className][strategy].empty()) //Modifier strategies.
+            classMap[className][strategy][BotState::BOT_STATE_ALL][nullptr][nullptr] = 0.0f;
     }
 }
 
@@ -222,6 +225,10 @@ string PlayerbotHelpMgr::GetStrategyBehaviour(string className, Strategy* strate
         for (auto stat : classMap[className][strategy])
         {
             BotState state = stat.first;
+
+            if (state == BotState::BOT_STATE_ALL && !stat.second.begin()->first && !stat.second.begin()->second.begin()->first) //Modifier strategies
+                return "";
+
             behavior += "\n" + initcap(states[state]) + " behavior:";
 
             for (auto trig : stat.second)
