@@ -30,18 +30,6 @@ PlayerbotHelpMgr::~PlayerbotHelpMgr()
 {
 }
 
-
-
-#ifdef GenerateBotHelp
-string PlayerbotHelpMgr::formatFloat(float num)
-{
-    ostringstream out;
-    out << std::fixed << std::setprecision(3);
-    out << num;
-    return out.str().c_str();
-}
-
-
 void PlayerbotHelpMgr::replace(string& text, const string what, const string with)
 {
     size_t start_pos = 0;
@@ -74,6 +62,15 @@ string PlayerbotHelpMgr::makeList(vector<string>const parts, string partFormat, 
     }
 
     return retString + currentLine;
+}
+
+#ifdef GenerateBotHelp
+string PlayerbotHelpMgr::formatFloat(float num)
+{
+    ostringstream out;
+    out << std::fixed << std::setprecision(3);
+    out << num;
+    return out.str().c_str();
 }
 
 bool PlayerbotHelpMgr::IsGenericSupported(PlayerbotAIAware* object)
@@ -973,4 +970,18 @@ bool PlayerbotHelpMgr::GetBotText(string name, string &text)
 {
     text = GetBotText(name);
     return !text.empty();
+}
+
+vector<string> PlayerbotHelpMgr::FindBotText(string name)
+{
+    vector<string> found;
+    for (auto text : botHelpText)
+    {
+        if (text.first.find(name) == string::npos)
+            continue;
+
+        found.push_back(text.first);
+    }
+
+    return found;
 }

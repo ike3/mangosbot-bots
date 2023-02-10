@@ -31,6 +31,8 @@ class PlayerbotHelpMgr
         }
 
 	public:
+        static void replace(string& text, const string what, const string with);
+        static string makeList(vector<string>const parts, string partFormat = "<part>", uint32 maxLength = 254);
 #ifdef GenerateBotHelp
         PlayerbotAI* ai;
         AiObjectContext* genericContext;
@@ -50,8 +52,6 @@ class PlayerbotHelpMgr
 
         static string initcap(string st) { string s = st; s[0] = toupper(s[0]); return s; }
         static string formatFloat(float num);
-        static void replace(string& text, const string what, const string with);
-        static string makeList(vector<string>const parts, string partFormat = "<part>", uint32 maxLength = 254);
 
         bool IsGenericSupported(PlayerbotAIAware* object);
         string GetObjectName(PlayerbotAIAware* object, string className);
@@ -85,7 +85,7 @@ class PlayerbotHelpMgr
 
         string GetBotText(string name);
         bool GetBotText(string name, string& text);
-
+        vector<string> FindBotText(string name);
     private:
         unordered_map<string, BotHelpEntry> botHelpText;
 };

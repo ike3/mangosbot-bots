@@ -29,13 +29,33 @@ bool HelpAction::Execute(Event& event)
         helpTopic = param.substr(3,param.size()-4);
     }
 
-    if (helpTopic.empty())
+    if (param.empty())
     {
         helpTopic = "help:main";
     }
 
     ostringstream out;
     string helpTekst = sPlayerbotHelpMgr.GetBotText(helpTopic);
+
+    if (helpTopic.empty() && !param.empty())
+    {
+        vector<string> list = sPlayerbotHelpMgr.FindBotText(param);
+
+        if (!list.empty())
+        {
+            std::sort(list.begin(), list.end());
+            helpTekst = sPlayerbotHelpMgr.GetBotText("help:search");
+
+            string topics = sPlayerbotHelpMgr.makeList(list, "[h:<part>|<part>]");
+
+            if (!helpTekst.empty())
+                sPlayerbotHelpMgr.replace(helpTekst, "<found>", topics);
+            else
+                helpTekst = topics; //Fallback for old help table.
+
+            sPlayerbotHelpMgr.FormatHelpTopic(helpTekst);
+        }
+    }
 
     if (!helpTekst.empty())
     {
@@ -48,7 +68,7 @@ bool HelpAction::Execute(Event& event)
 
         return true;
     }
-
+    
     TellChatCommands();
     TellStrategies();
 
