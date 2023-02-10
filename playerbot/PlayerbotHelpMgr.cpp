@@ -142,6 +142,8 @@ void PlayerbotHelpMgr::LoadStrategies(string className, AiObjectContext* context
 
             if (!triggers.empty())
             {
+                triggers.sort([](TriggerNode* a, TriggerNode* b) {return a->getName() < b->getName(); });
+
                 for (auto& triggerNode : triggers)
                 {
                     Trigger* trigger = context->GetTrigger(triggerNode->getName());
@@ -152,10 +154,15 @@ void PlayerbotHelpMgr::LoadStrategies(string className, AiObjectContext* context
 
                         NextAction** nextActions = triggerNode->getHandlers();
 
-                        for (int32 i = 0; i < NextAction::size(nextActions); i++)
-                        {
-                            NextAction* nextAction = nextActions[i];
+                        vector<NextAction*> nextActionList;
 
+                        for (int32 i = 0; i < NextAction::size(nextActions); i++)
+                            nextActionList.push_back(nextActions[i]);
+
+                        std::sort(nextActionList.begin(), nextActionList.end(), [](NextAction* a, NextAction* b) {return a->getName() < b->getName(); });
+
+                        for (auto nextAction : nextActionList)
+                        {
                             Action* action = context->GetAction(nextAction->getName());
                             if (action)
                             {
@@ -169,10 +176,15 @@ void PlayerbotHelpMgr::LoadStrategies(string className, AiObjectContext* context
 
             if (strategy->getDefaultActions(state))
             {
-                for (int32 i = 0; i < NextAction::size(strategy->getDefaultActions(state)); i++)
-                {
-                    NextAction* nextAction = strategy->getDefaultActions(state)[i];
+                vector<NextAction*> nextActionList;
 
+                for (int32 i = 0; i < NextAction::size(strategy->getDefaultActions(state)); i++)
+                    nextActionList.push_back(strategy->getDefaultActions(state)[i]);
+
+                std::sort(nextActionList.begin(), nextActionList.end(), [](NextAction* a, NextAction* b) {return a->getName() < b->getName(); });
+
+                for (auto nextAction : nextActionList)
+                {
                     Action* action = context->GetAction(nextAction->getName());
                     if (action)
                     {
