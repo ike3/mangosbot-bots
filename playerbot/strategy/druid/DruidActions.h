@@ -103,6 +103,7 @@ namespace ai
 	{
 	public:
 	    CastOmenOfClarityAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "omen of clarity") {}
+		virtual bool isUseful() override { return CastBuffSpellAction::isUseful() && ai->HasSpell("omen of clarity"); }
 	};
 
 	class CastWrathAction : public CastSpellAction
