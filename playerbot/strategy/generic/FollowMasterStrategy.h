@@ -14,7 +14,7 @@ namespace ai
         virtual string GetHelpDescription() {
             return "This strategy will make the bot stay near the master";
         }
-        virtual vector<string> GetRelatedStrategies() { return { "stay", "runaway","flee from adds", "guard" }; }
+        virtual vector<string> GetRelatedStrategies() { return { "stay", "runaway","flee from adds", "guard", "free"}; }
 #endif
     private:
         void InitNonCombatTriggers(std::list<TriggerNode*> &triggers) override;
@@ -22,6 +22,7 @@ namespace ai
         void InitDeadTriggers(std::list<TriggerNode*>& triggers) override;
         void InitReactionTriggers(std::list<TriggerNode*>& triggers) override;
 
+        virtual void OnStrategyAdded(BotState state) override;
         virtual void OnStrategyRemoved(BotState state) override;
     };
 

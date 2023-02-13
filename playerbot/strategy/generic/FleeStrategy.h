@@ -29,7 +29,7 @@ namespace ai
         virtual string GetHelpDescription() {
             return "This a position strategy that will make the bot try to avoid adds the prevent aggro.";
         }
-        virtual vector<string> GetRelatedStrategies() { return { "flee", "follow", "stay", "runaway", "guard" }; }
+        virtual vector<string> GetRelatedStrategies() { return { "flee", "follow", "stay", "runaway", "guard", "free" }; }
 #endif
     private:
         void InitCombatTriggers(std::list<TriggerNode*> &triggers) override;

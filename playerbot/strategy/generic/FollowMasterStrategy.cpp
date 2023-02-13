@@ -32,10 +32,23 @@ void FollowMasterStrategy::InitReactionTriggers(std::list<TriggerNode*>& trigger
         NextAction::array(0, new NextAction("stop follow", 100.0f), NULL)));
 }
 
+void FollowMasterStrategy::OnStrategyAdded(BotState state)
+{
+    if (state != BotState::BOT_STATE_REACTION)
+    {
+        ai->ChangeStrategy("+follow", BotState::BOT_STATE_REACTION);
+    }
+}
+
 void FollowMasterStrategy::OnStrategyRemoved(BotState state)
 {
     if (state == ai->GetState() && ai->GetBot()->GetMotionMaster()->GetCurrentMovementGeneratorType() == FOLLOW_MOTION_TYPE)
     {
         ai->StopMoving();
+    }
+
+    if (state != BotState::BOT_STATE_REACTION && !ai->HasStrategy("follow", state == BotState::BOT_STATE_COMBAT ? BotState::BOT_STATE_NON_COMBAT : BotState::BOT_STATE_COMBAT))
+    {
+        ai->ChangeStrategy("-follow", BotState::BOT_STATE_REACTION);
     }
 }
