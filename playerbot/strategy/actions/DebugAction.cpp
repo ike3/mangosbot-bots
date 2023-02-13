@@ -60,11 +60,13 @@ bool DebugAction::Execute(Event& event)
     }
     else if (text.find("test") != std::string::npos)
     {
-        GuidPosition pos(bot);
+        string param = "";
+        if (text.length() > 4)
+            param = text.substr(5);
 
-        string str = pos.to_string();
+        ai->GetAiObjectContext()->ClearExpiredValues(param, 10);
 
-        GuidPosition newPos(str);
+        return true;
 
         ai->TellMaster(pos.print() + " => " + newPos.print());
 
