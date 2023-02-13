@@ -53,6 +53,8 @@ bool ai::AttackAnythingAction::Execute(Event& event)
         Unit* grindTarget = GetTarget();
         if (grindTarget)
         {
+            context->ClearExpiredValues("can free target", 10); //Clean up old free targets.
+
             const char* grindName = grindTarget->GetName();
             if (grindName)
             {

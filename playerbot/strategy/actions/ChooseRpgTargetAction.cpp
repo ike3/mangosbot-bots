@@ -172,6 +172,8 @@ bool ChooseRpgTargetAction::Execute(Event& event)
     if(ai->HasStrategy("rpg craft", BotState::BOT_STATE_NON_COMBAT))
         AI_VALUE2(list<uint32>, "inventory item ids", "usage " + to_string(ITEM_USAGE_SKILL));
 
+    context->ClearExpiredValues("can free move",10); //Clean up old free move to.
+
     uint16 checked = 0;
 
     for (auto& guid :targetList)
