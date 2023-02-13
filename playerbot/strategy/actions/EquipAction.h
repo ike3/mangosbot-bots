@@ -12,6 +12,7 @@ namespace ai
         void EquipItem(Item* item);
     private:
         void EquipItem(FindItemVisitor* visitor);
+        void ListItems();
         uint8 GetSmallestBagSlot();
     };
 

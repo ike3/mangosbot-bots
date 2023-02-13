@@ -10,9 +10,32 @@ using namespace ai;
 bool EquipAction::Execute(Event& event)
 {
     string text = event.getParam();
+    if (text == "?")
+    {
+        ListItems();
+        return true;
+    }
+
     ItemIds ids = chat->parseItems(text);
     EquipItems(ids);
     return true;
+}
+
+void EquipAction::ListItems()
+{
+    ai->TellMaster("=== Equip ===");
+
+    map<uint32, int> items;
+    map<uint32, bool> soulbound;
+    for (int i = EQUIPMENT_SLOT_START; i < EQUIPMENT_SLOT_END; ++i)
+        if (Item* pItem = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, i))
+            if (pItem)
+            {
+                items[pItem->GetProto()->ItemId] += pItem->GetCount();
+            }
+
+
+    ai->InventoryTellItems(items, soulbound);
 }
 
 void EquipAction::EquipItems(ItemIds ids)
@@ -119,6 +142,7 @@ bool EquipUpgradesAction::Execute(Event& event)
             return false;
     }
 
+    context->ClearExpiredValues("item usage", 10); //Clear old item usage.
 
     list<Item*> items;
 
