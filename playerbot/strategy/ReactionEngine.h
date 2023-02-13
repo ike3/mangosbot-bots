@@ -35,7 +35,7 @@ namespace ai
         ReactionEngine(PlayerbotAI* ai, AiObjectContext* factory, BotState engineState);
 
         void Reset();
-        bool Update(uint32 elapsed, bool minimal, bool& reactionFound, bool& reactionFinished);
+        bool Update(uint32 elapsed, bool minimal, bool& reactionFound);
         bool IsReacting() const { return ongoingReaction.IsValid(); }
         bool HasIncomingReaction() const { return incomingReaction.IsValid(); }
         void SetReactionDuration(const Action* action);

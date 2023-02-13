@@ -294,6 +294,7 @@ public:
 
     virtual void UpdateAI(uint32 elapsed, bool minimal = false);
 
+    void HandleCommands();
 private:
     void UpdateAIInternal(uint32 elapsed, bool minimal = false) override;
 

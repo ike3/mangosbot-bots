@@ -161,12 +161,12 @@ void ReactionEngine::StopReaction()
     // ...
 }
 
-bool ReactionEngine::Update(uint32 elapsed, bool minimal, bool& reactionFound, bool& reactionFinished)
+bool ReactionEngine::Update(uint32 elapsed, bool minimal, bool& reactionFound)
 {
     aiReactionUpdateDelay = aiReactionUpdateDelay > elapsed ? aiReactionUpdateDelay - elapsed : 0U;
 
     reactionFound = false;
-    reactionFinished = false;
+    bool reactionFinished = false;
 
     // Can update reaction?
     if (CanUpdateAIReaction())
@@ -180,6 +180,9 @@ bool ReactionEngine::Update(uint32 elapsed, bool minimal, bool& reactionFound, b
             }
         }
         else
+            reactionFinished = true;
+
+        if(reactionFinished)
         {
             if (HasIncomingReaction())
             {
