@@ -145,8 +145,8 @@ bool FreeChatShortcutAction::Execute(Event& event)
         return false;
 
     ai->Reset();
-    ai->ChangeStrategy("-stay,-guard,-follow,-passive", BotState::BOT_STATE_NON_COMBAT);
-    ai->ChangeStrategy("-stay,-guard,-follow,-passive", BotState::BOT_STATE_COMBAT);
+    ai->ChangeStrategy("+free,-passive", BotState::BOT_STATE_NON_COMBAT);
+    ai->ChangeStrategy("+free,-passive", BotState::BOT_STATE_COMBAT);
 
     PrintStrategies(ai, event);
 

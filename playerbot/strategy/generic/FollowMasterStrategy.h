@@ -24,4 +24,19 @@ namespace ai
 
         virtual void OnStrategyRemoved(BotState state) override;
     };
+
+    class FreeStrategy : public Strategy
+    {
+    public:
+        FreeStrategy(PlayerbotAI* ai) : Strategy(ai) {}
+        int GetType() override { return STRATEGY_TYPE_NONCOMBAT; }
+        string getName() override { return "free"; }
+#ifdef GenerateBotHelp
+        virtual string GetHelpName() { return "free"; } //Must equal iternal name
+        virtual string GetHelpDescription() {
+            return "This strategy will allow the bot to move freely";
+        }
+        virtual vector<string> GetRelatedStrategies() { return { "follow", "stay", "runaway","flee from adds", "guard" }; }
+#endif
+    };
 }
