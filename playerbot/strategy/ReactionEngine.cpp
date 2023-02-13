@@ -42,6 +42,8 @@ bool ReactionEngine::FindReaction()
     {
         aiObjectContext->Update();
 
+        ai->HandleCommands();
+
         // This will populate the queue to be processed with the reactions that can be triggered
         ProcessTriggers(false);
 
