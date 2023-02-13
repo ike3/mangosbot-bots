@@ -33,7 +33,7 @@ AiObjectContext::AiObjectContext(PlayerbotAI* ai) : PlayerbotAIAware(ai)
 
     valueContexts.Add(new ValueContext());
 
-    valueContexts.Add(&sSharedValueContext);
+    //valueContexts.Add(&sSharedValueContext);
 }
 
 string AiObjectContext::FormatValues(string findName)

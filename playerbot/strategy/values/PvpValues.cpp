@@ -7,6 +7,7 @@
 #include "BattleGroundEY.h"
 #endif
 #include "../../TravelMgr.h"
+#include "SharedValueContext.h"
 
 using namespace ai;
 
@@ -47,7 +48,7 @@ CreatureDataPair const* BgMasterValue::NearestBm(bool allowDead)
 {
     WorldPosition botPos(bot);
 
-    list<CreatureDataPair const*> bmPairs = AI_VALUE2(list<CreatureDataPair const*>, "bg masters", qualifier);
+    list<CreatureDataPair const*> bmPairs = GAI_VALUE2(list<CreatureDataPair const*>, "bg masters", qualifier);
 
     float rDist;
     CreatureDataPair const* rbmPair = nullptr;
