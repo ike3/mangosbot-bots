@@ -18,6 +18,7 @@ namespace ai
         virtual string Format() { return "?"; }
         virtual string Save() { return "?"; }
         virtual bool Load(string value) { return false; }
+        virtual bool Expired(uint32 interval = 0) { return false; }
 
 #ifdef GenerateBotHelp
         virtual string GetHelpName() { return "dummy"; } //Must equal iternal name
@@ -72,6 +73,7 @@ namespace ai
         virtual void Set(T value) { this->value = value; }
         virtual void Update() { }
         virtual void Reset() { lastCheckTime = 0; }
+        virtual bool Expired(uint32 interval = checkInterval/2) { return time(0) - lastCheckTime >= interval; }
     protected:
         virtual T Calculate() = 0;
 

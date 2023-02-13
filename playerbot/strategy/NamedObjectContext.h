@@ -170,6 +170,11 @@ namespace ai
             created.clear();
         }
 
+        void Erase(string name)
+        {
+            created.erase(name);
+        }
+
         void Update()
         {
             for (typename map<string, T*>::iterator i = created.begin(); i != created.end(); i++)
@@ -295,6 +300,14 @@ namespace ai
                     result.insert(*j);
             }
             return result;
+        }
+
+        void Erase(string name)
+        {
+            for (typename list<NamedObjectContext<T>*>::iterator i = contexts.begin(); i != contexts.end(); i++)
+            {
+                (*i)->Erase(name);
+            }
         }
 
     private:

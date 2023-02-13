@@ -71,6 +71,10 @@ namespace ai
             return valueContexts.supports();
         }
 
+        void ClearValues(string findName = "");
+
+        void ClearExpiredValues(string findName = "", uint32 interval = 0);
+
         string FormatValues(string findName = "");
 
     public:

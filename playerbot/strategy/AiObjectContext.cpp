@@ -36,6 +36,45 @@ AiObjectContext::AiObjectContext(PlayerbotAI* ai) : PlayerbotAIAware(ai)
     //valueContexts.Add(&sSharedValueContext);
 }
 
+void AiObjectContext::ClearValues(string findName)
+{
+    set<string> names = valueContexts.GetCreated();
+    for (set<string>::iterator i = names.begin(); i != names.end(); ++i)
+    {
+        UntypedValue* value = GetUntypedValue(*i);
+        if (!value)
+            continue;
+
+        if (!findName.empty() && i->find(findName) == string::npos)
+            continue;
+
+        valueContexts.Erase(*i);
+    }
+}
+
+void AiObjectContext::ClearExpiredValues(string findName, uint32 interval)
+{
+    set<string> names = valueContexts.GetCreated();
+    for (set<string>::iterator i = names.begin(); i != names.end(); ++i)
+    {
+        UntypedValue* value = GetUntypedValue(*i);
+        if (!value)
+            continue;
+
+        if (!findName.empty() && i->find(findName) == string::npos)
+            continue;
+
+        if (!interval && !value->Expired())
+            continue;
+
+        if (interval && !value->Expired(interval))
+            continue;
+
+        valueContexts.Erase(*i);
+    }
+}
+
+
 string AiObjectContext::FormatValues(string findName)
 {
     ostringstream out;
