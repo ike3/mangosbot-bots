@@ -8,6 +8,7 @@
 #include "../../LootObjectStack.h"
 #include "../../../game/GameEvents/GameEventMgr.h"
 #include "../../TravelMgr.h"
+#include "PlayerbotHelpMgr.h"
 
 using namespace ai;
 
@@ -67,16 +68,40 @@ bool DebugAction::Execute(Event& event)
         ai->GetAiObjectContext()->ClearExpiredValues(param, 10);
 
         return true;
+    }
+    else if (text.find("values") == 0)
+    {
+        string param = "";
+        if (text.length() > 4)
+            param = text.substr(5);
 
-        ai->TellMaster(pos.print() + " => " + newPos.print());
+        
+        set<string> names = context->GetValues();
+        vector<string> values;
+        for (auto name : names)
+        {
+            UntypedValue* value = context->GetUntypedValue(name);
+            if (!value)
+                continue;
 
-        WorldPosition pos1(bot);
+            if (!param.empty() && name.find(param) == string::npos)
+                continue;
 
-        string str1 = pos1.to_string();
+            string text = value->Format();
+            if (text == "?")
+                continue;
 
-        WorldPosition newPos1(str1);
+            values.push_back(name + "=" + text);
 
-        ai->TellMaster(pos1.print() + " => " + newPos1.print());
+        }        
+        string valuestring = sPlayerbotHelpMgr.makeList(values, "[<part>]");
+
+        vector<string> lines = Qualified::getMultiQualifiers(valuestring, "\n");
+
+        for (auto& line : lines)
+        {
+            ai->TellMasterNoFacing(line, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, true, false);
+        }
 
         return true;
     }
