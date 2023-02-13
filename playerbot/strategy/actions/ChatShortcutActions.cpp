@@ -23,6 +23,16 @@ void ReturnPositionResetAction::SetPosition(WorldPosition wPos, string posName)
     posMap[posName] = pos;
 }
 
+void ReturnPositionResetAction::PrintStrategies(PlayerbotAI* ai, Event& event)
+{
+    if (event.getParam() == "?")
+    {
+        ai->ChangeStrategy("?", BotState::BOT_STATE_NON_COMBAT);
+        ai->ChangeStrategy("?", BotState::BOT_STATE_COMBAT);
+        ai->ChangeStrategy("?", BotState::BOT_STATE_REACTION);
+    }
+}
+
 bool FollowChatShortcutAction::Execute(Event& event)
 {
     Player* master = GetMaster();
@@ -37,6 +47,8 @@ bool FollowChatShortcutAction::Execute(Event& event)
     ai::PositionEntry pos = posMap["return"];
     pos.Reset();
     posMap["return"] = pos;
+
+    ReturnPositionResetAction::PrintStrategies(ai, event);
 
     Formation* formation = AI_VALUE(Formation*, "formation");
     MEM_AI_VALUE(WorldPosition, "master position")->Reset();
@@ -100,6 +112,8 @@ bool StayChatShortcutAction::Execute(Event& event)
     SetPosition(bot, "stay");
     MEM_AI_VALUE(WorldPosition, "master position")->Reset();
 
+    PrintStrategies(ai, event);
+
     ai->TellError(BOT_TEXT("staying"));
     return true;
 }
@@ -118,6 +132,8 @@ bool GuardChatShortcutAction::Execute(Event& event)
     SetPosition(bot, "guard");
     MEM_AI_VALUE(WorldPosition, "master position")->Reset();  
 
+    PrintStrategies(ai, event);
+
     ai->TellError(BOT_TEXT("guarding"));
     return true;
 }
@@ -131,6 +147,8 @@ bool FreeChatShortcutAction::Execute(Event& event)
     ai->Reset();
     ai->ChangeStrategy("-stay,-guard,-follow,-passive", BotState::BOT_STATE_NON_COMBAT);
     ai->ChangeStrategy("-stay,-guard,-follow,-passive", BotState::BOT_STATE_COMBAT);
+
+    PrintStrategies(ai, event);
 
     ai->TellError(BOT_TEXT("free_moving"));
     return true;
@@ -146,6 +164,9 @@ bool FleeChatShortcutAction::Execute(Event& event)
     ai->ChangeStrategy("+follow,+passive", BotState::BOT_STATE_NON_COMBAT);
     ai->ChangeStrategy("+follow,+passive", BotState::BOT_STATE_COMBAT);
     ResetPosition();
+
+    PrintStrategies(ai, event);
+
     if (bot->GetMapId() != master->GetMapId() || sServerFacade.GetDistance2d(bot, master) > sPlayerbotAIConfig.sightDistance)
     {
         ai->TellError(BOT_TEXT("fleeing_far"));
@@ -165,6 +186,9 @@ bool GoawayChatShortcutAction::Execute(Event& event)
     ai->ChangeStrategy("+runaway", BotState::BOT_STATE_NON_COMBAT);
     ai->ChangeStrategy("+runaway", BotState::BOT_STATE_COMBAT);
     ResetPosition();
+
+    PrintStrategies(ai, event);
+
     ai->TellError("Running away");
     return true;
 }
