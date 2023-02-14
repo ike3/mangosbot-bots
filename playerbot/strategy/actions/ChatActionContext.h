@@ -173,8 +173,8 @@ namespace ai
             creators["ah bid"] = &ChatActionContext::ah_bid;
             creators["wait for attack time"] = &ChatActionContext::wait_for_attack_time;
 
-            creators["ginvite"] = &ChatActionContext::ginvite;
-            creators["gjoin"] = &ChatActionContext::gjoin;
+            creators["guild invite"] = &ChatActionContext::guild_invite;
+            creators["guild join"] = &ChatActionContext::guild_join;
             creators["guild promote"] = &ChatActionContext::guild_promote;
             creators["guild demote"] = &ChatActionContext::guild_demote;
             creators["guild remove"] = &ChatActionContext::guild_remove;
@@ -278,8 +278,8 @@ namespace ai
         static Action* ah_bid(PlayerbotAI* ai) { return new AhBidAction(ai); }
         static Action* wait_for_attack_time(PlayerbotAI* ai) { return new WaitForAttackSetTimeAction(ai); }
 
-        static Action* ginvite(PlayerbotAI* ai) { return new GuildInviteAction(ai); }
-        static Action* gjoin(PlayerbotAI* ai) { return new GuildJoinAction(ai); }
+        static Action* guild_invite(PlayerbotAI* ai) { return new GuildInviteAction(ai); }
+        static Action* guild_join(PlayerbotAI* ai) { return new GuildJoinAction(ai); }
         static Action* guild_promote(PlayerbotAI* ai) { return new GuildPromoteAction(ai); }
         static Action* guild_demote(PlayerbotAI* ai) { return new GuildDemoteAction(ai); }
         static Action* guild_remove(PlayerbotAI* ai) { return new GuildRemoveAction(ai); }

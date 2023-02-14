@@ -112,8 +112,8 @@ namespace ai
             creators["rtsc"] = &ChatTriggerContext::rtsc;
             creators["ah"] = &ChatTriggerContext::ah;
             creators["ah bid"] = &ChatTriggerContext::ah_bid;
-            creators["ginvite"] = &ChatTriggerContext::ginvite;
-            creators["gjoin"] = &ChatTriggerContext::gjoin;
+            creators["guild invite"] = &ChatTriggerContext::guild_invite;
+            creators["guild join"] = &ChatTriggerContext::guild_join;
             creators["guild promote"] = &ChatTriggerContext::guild_promote;
             creators["guild demote"] = &ChatTriggerContext::guild_demote;
             creators["guild remove"] = &ChatTriggerContext::guild_remove;
@@ -216,8 +216,8 @@ namespace ai
         static Trigger* give_leader(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "give leader"); }
         static Trigger* cheat(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "cheat"); }
         static Trigger* rtsc(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "rtsc"); }
-        static Trigger* ginvite(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "ginvite"); }
-        static Trigger* gjoin(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "gjoin"); }
+        static Trigger* guild_invite(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "guild invite"); }
+        static Trigger* guild_join(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "guild join"); }
         static Trigger* ah(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "ah"); }
         static Trigger* ah_bid(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "ah bid"); }
         static Trigger* guild_promote(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "guild promote"); }

@@ -801,6 +801,8 @@ bool PlayerbotAI::IsAllowedCommand(string text)
         unsecuredCommands.insert("sendmail");
         unsecuredCommands.insert("invite");
         unsecuredCommands.insert("leave");
+        unsecuredCommands.insert("guild invite");
+        unsecuredCommands.insert("guild leave");
     }
 
     for (set<string>::iterator i = unsecuredCommands.begin(); i != unsecuredCommands.end(); ++i)
