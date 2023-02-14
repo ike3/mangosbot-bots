@@ -28,14 +28,16 @@ namespace ai
         virtual vector<string> GetRelatedStrategies() { return {"rpg quest", "rpg vendor", "rpg explore", "rpg maintenance", "rpg guild", "rpg bg", "rpg player", "rpg craft", "debug rpg"}; }
 #endif
     protected:
+        virtual void OnStrategyAdded(BotState state) override;
+        virtual void OnStrategyRemoved(BotState state) override;
         virtual void InitNonCombatTriggers(std::list<TriggerNode*> &triggers) override;
         virtual void InitNonCombatMultipliers(std::list<Multiplier*>& multipliers) override;
     };
 
-    class RpgQuestStrategy : public RpgStrategy
+    class RpgQuestStrategy : public Strategy
     {
     public:
-        RpgQuestStrategy(PlayerbotAI* ai) : RpgStrategy(ai) {};
+        RpgQuestStrategy(PlayerbotAI* ai) : Strategy(ai) {};
         string getName() override { return "rpg quest"; }
 #ifdef GenerateBotHelp
         virtual string GetHelpName() { return "rpg quest"; } //Must equal iternal name
@@ -50,10 +52,10 @@ namespace ai
         void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
     };
 
-    class RpgVendorStrategy : public RpgStrategy
+    class RpgVendorStrategy : public Strategy
     {
     public:
-        RpgVendorStrategy(PlayerbotAI* ai) : RpgStrategy(ai) {};
+        RpgVendorStrategy(PlayerbotAI* ai) : Strategy(ai) {};
         string getName() override { return "rpg vendor"; }
 #ifdef GenerateBotHelp
         virtual string GetHelpName() { return "rpg vendor"; } //Must equal iternal name
@@ -68,10 +70,10 @@ namespace ai
         virtual void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
     };
 
-    class RpgExploreStrategy : public RpgStrategy
+    class RpgExploreStrategy : public Strategy
     {
     public:
-        RpgExploreStrategy(PlayerbotAI* ai) : RpgStrategy(ai) {};
+        RpgExploreStrategy(PlayerbotAI* ai) : Strategy(ai) {};
         string getName() override { return "rpg explore"; }
 #ifdef GenerateBotHelp
         virtual string GetHelpName() { return "rpg explore"; } //Must equal iternal name
@@ -86,10 +88,10 @@ namespace ai
         virtual void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
     };
 
-    class RpgMaintenanceStrategy : public RpgStrategy
+    class RpgMaintenanceStrategy : public Strategy
     {
     public:
-        RpgMaintenanceStrategy(PlayerbotAI* ai) : RpgStrategy(ai) {};
+        RpgMaintenanceStrategy(PlayerbotAI* ai) : Strategy(ai) {};
         string getName() override { return "rpg maintenance"; }
 #ifdef GenerateBotHelp
         virtual string GetHelpName() { return "rpg maintenance"; } //Must equal iternal name
@@ -104,10 +106,10 @@ namespace ai
         virtual void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
     };
 
-    class RpgGuildStrategy : public RpgStrategy
+    class RpgGuildStrategy : public Strategy
     {
     public:
-        RpgGuildStrategy(PlayerbotAI* ai) : RpgStrategy(ai) {};
+        RpgGuildStrategy(PlayerbotAI* ai) : Strategy(ai) {};
         string getName() override { return "rpg guild"; }
 #ifdef GenerateBotHelp
         virtual string GetHelpName() { return "rpg guild"; } //Must equal iternal name
@@ -121,10 +123,10 @@ namespace ai
         virtual void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
     };
 
-    class RpgBgStrategy : public RpgStrategy
+    class RpgBgStrategy : public Strategy
     {
     public:
-        RpgBgStrategy(PlayerbotAI* ai) : RpgStrategy(ai) {};
+        RpgBgStrategy(PlayerbotAI* ai) : Strategy(ai) {};
         string getName() override { return "rpg bg"; }
 #ifdef GenerateBotHelp
         virtual string GetHelpName() { return "rpg bg"; } //Must equal iternal name
@@ -138,10 +140,10 @@ namespace ai
         virtual void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
     };
 
-    class RpgPlayerStrategy : public RpgStrategy
+    class RpgPlayerStrategy : public Strategy
     {
     public:
-        RpgPlayerStrategy(PlayerbotAI* ai) : RpgStrategy(ai) {};
+        RpgPlayerStrategy(PlayerbotAI* ai) : Strategy(ai) {};
         string getName() override { return "rpg player"; }
 #ifdef GenerateBotHelp
         virtual string GetHelpName() { return "rpg player"; } //Must equal iternal name
@@ -156,10 +158,10 @@ namespace ai
         virtual void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
     };
 
-    class RpgCraftStrategy : public RpgStrategy
+    class RpgCraftStrategy : public Strategy
     {
     public:
-        RpgCraftStrategy(PlayerbotAI* ai) : RpgStrategy(ai) {};
+        RpgCraftStrategy(PlayerbotAI* ai) : Strategy(ai) {};
         string getName() override { return "rpg craft"; }
 #ifdef GenerateBotHelp
         virtual string GetHelpName() { return "rpg craft"; } //Must equal iternal name

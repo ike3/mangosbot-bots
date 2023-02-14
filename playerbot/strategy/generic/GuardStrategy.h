@@ -13,7 +13,7 @@ namespace ai
         virtual string GetHelpDescription() {
             return "This a position strategy that will make the bot stay in a location until they have something to attack.";
         }
-        virtual vector<string> GetRelatedStrategies() { return { "follow", "stay", "runaway", "flee from adds" }; }
+        virtual vector<string> GetRelatedStrategies() { return { "follow", "stay", "runaway", "flee from adds", "free" }; }
 #endif
     private:
         NextAction** GetDefaultNonCombatActions() override;

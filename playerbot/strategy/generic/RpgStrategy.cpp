@@ -21,6 +21,15 @@ float RpgActionMultiplier::GetValue(Action* action)
     return 1.0f;
 }
 
+void RpgStrategy::OnStrategyAdded(BotState state)
+{
+    ai->ChangeStrategy("+rpg quest,+rpg vendor,+rpg explore,+rpg maintenance,+rpg player,+rpg craft,+rpg bg", state);
+}
+void RpgStrategy::OnStrategyRemoved(BotState state) 
+{
+    ai->ChangeStrategy("-rpg quest,-rpg vendor,-rpg explore,-rpg maintenance,-rpg player,-rpg craft,-rpg bg", state);
+}
+
 void RpgStrategy::InitNonCombatTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(

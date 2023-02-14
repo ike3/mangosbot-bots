@@ -533,13 +533,7 @@ void AiFactory::AddDefaultNonCombatStrategies(Player* player, PlayerbotAI* const
             {
                 nonCombatEngine->addStrategy("travel");
                 nonCombatEngine->addStrategy("rpg");                
-                nonCombatEngine->addStrategy("rpg quest");
-                nonCombatEngine->addStrategy("rpg vendor");
-                nonCombatEngine->addStrategy("rpg explore");
-                nonCombatEngine->addStrategy("rpg maintenance");
-                nonCombatEngine->addStrategy("rpg guild");
-                nonCombatEngine->addStrategy("rpg bg");
-                nonCombatEngine->addStrategy("rpg player");
+                nonCombatEngine->removeStrategy("rpg craft");
             }
 
             if (sPlayerbotAIConfig.randomBotJoinBG)
@@ -567,13 +561,7 @@ void AiFactory::AddDefaultNonCombatStrategies(Player* player, PlayerbotAI* const
                         {
                             nonCombatEngine->addStrategy("travel");
                             nonCombatEngine->addStrategy("rpg");
-                            nonCombatEngine->addStrategy("rpg quest");
-                            nonCombatEngine->addStrategy("rpg vendor");
-                            nonCombatEngine->addStrategy("rpg explore");
-                            nonCombatEngine->addStrategy("rpg maintenance");
-                            nonCombatEngine->addStrategy("rpg guild");
-                            nonCombatEngine->addStrategy("rpg bg");
-                            nonCombatEngine->addStrategy("rpg player");
+                            nonCombatEngine->removeStrategy("rpg craft");
 
                         }
 
@@ -601,13 +589,7 @@ void AiFactory::AddDefaultNonCombatStrategies(Player* player, PlayerbotAI* const
         nonCombatEngine->removeStrategy("custom::say");
         nonCombatEngine->removeStrategy("travel");
         nonCombatEngine->removeStrategy("rpg");
-        nonCombatEngine->removeStrategy("rpg quest");
-        nonCombatEngine->removeStrategy("rpg vendor");
-        nonCombatEngine->removeStrategy("rpg explore");
-        nonCombatEngine->removeStrategy("rpg maintenance");
-        nonCombatEngine->removeStrategy("rpg guild");
-        nonCombatEngine->removeStrategy("rpg bg");
-        nonCombatEngine->removeStrategy("rpg player");
+        nonCombatEngine->removeStrategy("rpg craft");
 
         nonCombatEngine->removeStrategy("grind");
 
