@@ -2647,6 +2647,14 @@ void RandomPlayerbotMgr::HandleCommand(uint32 type, const string& text, Player& 
         if (!bot)
             continue;
 
+        if (type == CHAT_MSG_SAY)
+            if (bot->GetMapId() != fromPlayer.GetMapId() || sServerFacade.GetDistance2d(bot, &fromPlayer) > 25)
+                continue;
+
+        if (type == CHAT_MSG_YELL)
+            if (bot->GetMapId() != fromPlayer.GetMapId() || sServerFacade.GetDistance2d(bot, &fromPlayer) > 300)
+                continue;
+
         if (team != TEAM_BOTH_ALLOWED && bot->GetTeam() != team)
             continue;
 

@@ -1036,12 +1036,30 @@ void PlayerbotMgr::HandleCommand(uint32 type, const string& text, uint32 lang)
     for (PlayerBotMap::const_iterator it = GetPlayerBotsBegin(); it != GetPlayerBotsEnd(); ++it)
     {
         Player* const bot = it->second;
+
+        if (type == CHAT_MSG_SAY)
+            if (bot->GetMapId() != master->GetMapId() || sServerFacade.GetDistance2d(bot, master) > 25)
+                continue;
+
+        if (type == CHAT_MSG_YELL)
+            if (bot->GetMapId() != master->GetMapId() || sServerFacade.GetDistance2d(bot, master) > 300)
+                continue;
+
         bot->GetPlayerbotAI()->HandleCommand(type, text, *master, lang);
     }
 
     for (PlayerBotMap::const_iterator it = sRandomPlayerbotMgr.GetPlayerBotsBegin(); it != sRandomPlayerbotMgr.GetPlayerBotsEnd(); ++it)
     {
         Player* const bot = it->second;
+
+        if (type == CHAT_MSG_SAY)
+            if (bot->GetMapId() != master->GetMapId() || sServerFacade.GetDistance2d(bot, master) > 25)
+                continue;
+
+        if (type == CHAT_MSG_YELL)
+            if (bot->GetMapId() != master->GetMapId() || sServerFacade.GetDistance2d(bot, master) > 300)
+                continue;
+
         if (bot->GetPlayerbotAI()->GetMaster() == master)
             bot->GetPlayerbotAI()->HandleCommand(type, text, *master, lang);
     }
