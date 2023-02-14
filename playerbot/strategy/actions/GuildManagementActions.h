@@ -8,7 +8,7 @@ namespace ai
     public:
         GuidManageAction(PlayerbotAI* ai, string name = "guild manage", uint16 opcode = CMSG_GUILD_INVITE) : ChatCommandAction(ai, name), opcode(opcode) {}
         virtual bool Execute(Event& event) override;
-        virtual bool isUseful() { return false; }
+        virtual bool isUseful() override { return false; }
     
     protected:
         virtual WorldPacket GetPacket(Player* player) { WorldPacket data(Opcodes(opcode), 8); data << player->GetName(); return data; }
@@ -28,64 +28,64 @@ namespace ai
         virtual bool isUseful() override { return bot->GetGuildId() && sGuildMgr.GetGuildById(bot->GetGuildId())->HasRankRight(bot->GetRank(), GR_RIGHT_INVITE); }
     
     protected:
-        virtual void SendPacket(WorldPacket data) { bot->GetSession()->HandleGuildInviteOpcode(data); };
-        virtual bool PlayerIsValid(Player* member) { return !member->GetGuildId(); };
+        virtual void SendPacket(WorldPacket data, Event event) override { bot->GetSession()->HandleGuildInviteOpcode(data); };
+        virtual bool PlayerIsValid(Player* member) override { return !member->GetGuildId(); };
     };
 
     class GuildJoinAction : public GuidManageAction 
     {
     public:
         GuildJoinAction(PlayerbotAI* ai, string name = "guild join", uint16 opcode = CMSG_GUILD_INVITE) : GuidManageAction(ai, name, opcode) {}
-        virtual bool isUseful() { return !bot->GetGuildId(); }
+        virtual bool isUseful() override { return !bot->GetGuildId(); }
     
     protected:
-        virtual WorldPacket GetPacket(Player* player) { WorldPacket data(Opcodes(opcode), 8); data << bot->GetName(); return data; }
-        virtual void SendPacket(WorldPacket data, Event event) { if(GetPlayer(event)) GetPlayer(event)->GetSession()->HandleGuildInviteOpcode(data); };
-        virtual bool PlayerIsValid(Player* member) { return !bot->GetGuildId() && member->GetGuildId() && sGuildMgr.GetGuildById(member->GetGuildId())->HasRankRight(member->GetRank(), GR_RIGHT_INVITE); };
+        virtual WorldPacket GetPacket(Player* player) override { WorldPacket data(Opcodes(opcode), 8); data << bot->GetName(); return data; }
+        virtual void SendPacket(WorldPacket data, Event event) override { if(GetPlayer(event)) GetPlayer(event)->GetSession()->HandleGuildInviteOpcode(data); };
+        virtual bool PlayerIsValid(Player* member) override { return !bot->GetGuildId() && member->GetGuildId() && sGuildMgr.GetGuildById(member->GetGuildId())->HasRankRight(member->GetRank(), GR_RIGHT_INVITE); };
     };
 
     class GuildPromoteAction : public GuidManageAction 
     {
     public:
         GuildPromoteAction(PlayerbotAI* ai, string name = "guild promote", uint16 opcode = CMSG_GUILD_PROMOTE) : GuidManageAction(ai, name, opcode) {}
-        virtual bool isUseful() { return bot->GetGuildId() && sGuildMgr.GetGuildById(bot->GetGuildId())->HasRankRight(bot->GetRank(), GR_RIGHT_PROMOTE); }
+        virtual bool isUseful() override { return bot->GetGuildId() && sGuildMgr.GetGuildById(bot->GetGuildId())->HasRankRight(bot->GetRank(), GR_RIGHT_PROMOTE); }
     
     protected:
-        virtual void SendPacket(WorldPacket data) { bot->GetSession()->HandleGuildPromoteOpcode(data); };
-        virtual bool PlayerIsValid(Player* member) { return member->GetGuildId() == bot->GetGuildId() && GetRankId(bot) < GetRankId(member) - 1; };
+        virtual void SendPacket(WorldPacket data, Event event) override { bot->GetSession()->HandleGuildPromoteOpcode(data); };
+        virtual bool PlayerIsValid(Player* member) override { return member->GetGuildId() == bot->GetGuildId() && GetRankId(bot) < GetRankId(member) - 1; };
     };
 
     class GuildDemoteAction : public GuidManageAction 
     {
     public:
         GuildDemoteAction(PlayerbotAI* ai, string name = "guild demote", uint16 opcode = CMSG_GUILD_DEMOTE) : GuidManageAction(ai, name, opcode) {}
-        virtual bool isUseful() { return bot->GetGuildId() && sGuildMgr.GetGuildById(bot->GetGuildId())->HasRankRight(bot->GetRank(), GR_RIGHT_DEMOTE); }
+        virtual bool isUseful() override { return bot->GetGuildId() && sGuildMgr.GetGuildById(bot->GetGuildId())->HasRankRight(bot->GetRank(), GR_RIGHT_DEMOTE); }
     
     protected:
-        virtual void SendPacket(WorldPacket data) { bot->GetSession()->HandleGuildDemoteOpcode(data); };
-        virtual bool PlayerIsValid(Player* member) { return member->GetGuildId() == bot->GetGuildId() && GetRankId(bot) < GetRankId(member); };
+        virtual void SendPacket(WorldPacket data, Event event) override { bot->GetSession()->HandleGuildDemoteOpcode(data); };
+        virtual bool PlayerIsValid(Player* member) override { return member->GetGuildId() == bot->GetGuildId() && GetRankId(bot) < GetRankId(member); };
     };
 
     class GuildLeaderAction : public GuidManageAction 
     {
     public:
         GuildLeaderAction(PlayerbotAI* ai, string name = "guild leader", uint16 opcode = CMSG_GUILD_LEADER) : GuidManageAction(ai, name, opcode) {}
-        virtual bool isUseful() { return bot->GetGuildId() && sGuildMgr.GetGuildById(bot->GetGuildId())->GetLeaderGuid() == bot->GetObjectGuid(); }
+        virtual bool isUseful() override { return bot->GetGuildId() && sGuildMgr.GetGuildById(bot->GetGuildId())->GetLeaderGuid() == bot->GetObjectGuid(); }
     
     protected:
-        virtual void SendPacket(WorldPacket data) { bot->GetSession()->HandleGuildLeaderOpcode(data); };
-        virtual bool PlayerIsValid(Player* member) { return member->GetGuildId() == bot->GetGuildId() && GetRankId(bot) < GetRankId(member) - 1; };
+        virtual void SendPacket(WorldPacket data, Event event) override { bot->GetSession()->HandleGuildLeaderOpcode(data); };
+        virtual bool PlayerIsValid(Player* member) override { return member->GetGuildId() == bot->GetGuildId() && GetRankId(bot) < GetRankId(member) - 1; };
     };
     
     class GuildRemoveAction : public GuidManageAction 
     {
     public:
         GuildRemoveAction(PlayerbotAI* ai, string name = "guild remove", uint16 opcode = CMSG_GUILD_REMOVE) : GuidManageAction(ai, name, opcode) {}
-        virtual bool isUseful() { return bot->GetGuildId() && sGuildMgr.GetGuildById(bot->GetGuildId())->HasRankRight(bot->GetRank(), GR_RIGHT_REMOVE); }
+        virtual bool isUseful() override { return bot->GetGuildId() && sGuildMgr.GetGuildById(bot->GetGuildId())->HasRankRight(bot->GetRank(), GR_RIGHT_REMOVE); }
     
     protected:
-        virtual void SendPacket(WorldPacket data) { bot->GetSession()->HandleGuildRemoveOpcode(data); };
-        virtual bool PlayerIsValid(Player* member) { return member->GetGuildId() == bot->GetGuildId() && GetRankId(bot) < GetRankId(member); };
+        virtual void SendPacket(WorldPacket data, Event event) override { bot->GetSession()->HandleGuildRemoveOpcode(data); };
+        virtual bool PlayerIsValid(Player* member) override { return member->GetGuildId() == bot->GetGuildId() && GetRankId(bot) < GetRankId(member); };
     };
 
     class GuildManageNearbyAction : public ChatCommandAction
@@ -93,7 +93,7 @@ namespace ai
     public:
         GuildManageNearbyAction(PlayerbotAI* ai) : ChatCommandAction(ai, "guild manage nearby") {}
         virtual bool Execute(Event& event) override;
-        virtual bool isUseful();
+        virtual bool isUseful() override;
     };
 
     class GuildLeaveAction : public ChatCommandAction
@@ -101,6 +101,6 @@ namespace ai
     public:
         GuildLeaveAction(PlayerbotAI* ai) : ChatCommandAction(ai, "guild leave") {}
         virtual bool Execute(Event& event) override;
-        virtual bool isUseful() { return bot->GetGuildId(); }
+        virtual bool isUseful() override { return bot->GetGuildId(); }
     };
 }
