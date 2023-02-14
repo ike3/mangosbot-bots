@@ -70,8 +70,8 @@ void PacketHandlingHelper::Handle(ExternalEventHelper &helper)
 
     while (!queue.empty())
     {
-        helper.HandlePacket(handlers, queue.top());
-        queue.pop();
+        if(helper.HandlePacket(handlers, queue.top()))
+            queue.pop();
     }
 
     m_botPacketMutex.unlock();

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Trigger.h"
+#include "triggers\WorldPacketTrigger.h"
 
 namespace ai
 {
@@ -52,19 +53,24 @@ namespace ai
             return true;
         }
 
-        void HandlePacket(map<uint16, string> &handlers, const WorldPacket &packet, Player* owner = NULL)
+        bool HandlePacket(map<uint16, string> &handlers, const WorldPacket &packet, Player* owner = NULL)
         {
             uint16 opcode = packet.GetOpcode();
             string name = handlers[opcode];
             if (name.empty())
-                return;
+                return true;
 
             Trigger* trigger = aiObjectContext->GetTrigger(name);
             if (!trigger)
-                return;
+                return true;
+
+            if (trigger->IsActive() && !((WorldPacketTrigger*)trigger)->isEqual(packet)) //Store triggers with different packets.
+                return false;
 
             WorldPacket p(packet);
             trigger->ExternalEvent(p, owner);
+
+            return true;
         }
 
         bool HandleCommand(string name, string param, Player* owner = NULL, bool forceCommand = false)
