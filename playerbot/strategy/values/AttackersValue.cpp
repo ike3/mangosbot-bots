@@ -37,6 +37,10 @@ list<ObjectGuid> AttackersValue::Calculate()
                 {
                     AddTargetsOf(group, targets, invalidTargets, getOne);
                 }
+
+                Player* master = GetMaster();
+                if (master && (!group || master->GetGroup() != group))
+                    AddTargetsOf(master, targets, invalidTargets, getOne);
             }
 
             // Convert the targets to guids
