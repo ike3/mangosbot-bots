@@ -2132,6 +2132,9 @@ bool PlayerbotAI::TellMasterNoFacing(string text, PlayerbotSecurityLevel securit
             if (currentChat.second >= time(0))
                type = currentChat.first;
 
+            if (type == CHAT_MSG_ADDON)
+                text = "BOT\t" + text;
+
             ChatHandler::BuildChatPacket(data, type == CHAT_MSG_ADDON ? CHAT_MSG_PARTY : type, text.c_str(), type == CHAT_MSG_ADDON ? LANG_ADDON : LANG_UNIVERSAL, CHAT_TAG_NONE, bot->GetObjectGuid(), bot->GetName());
             sServerFacade.SendPacket(master, data);
         }
