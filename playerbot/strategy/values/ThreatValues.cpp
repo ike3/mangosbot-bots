@@ -51,7 +51,10 @@ uint8 ThreatValue::Calculate()
 
 float ThreatValue::GetThreat(Player* player, Unit* target)
 {
-    if (!target)
+    if (!target || target->GetMapId() != player->GetMapId())
+        return 0;
+
+    if (dynamic_cast<Player*>(target) && (dynamic_cast<Player*>(target))->IsBeingTeleported())
         return 0;
 
     if (target->IsFriend(player))
