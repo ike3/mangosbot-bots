@@ -72,8 +72,8 @@ bool DebugAction::Execute(Event& event)
     else if (text.find("values") == 0)
     {
         string param = "";
-        if (text.length() > 4)
-            param = text.substr(5);
+        if (text.length() > 6)
+            param = text.substr(7);
 
         
         set<string> names = context->GetValues();
@@ -94,6 +94,7 @@ bool DebugAction::Execute(Event& event)
             values.push_back(name + "=" + text);
 
         }        
+
         string valuestring = sPlayerbotHelpMgr.makeList(values, "[<part>]");
 
         vector<string> lines = Qualified::getMultiQualifiers(valuestring, "\n");
