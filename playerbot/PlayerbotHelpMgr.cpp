@@ -44,11 +44,9 @@ string PlayerbotHelpMgr::makeList(vector<string>const parts, string partFormat, 
     string retString = "";
     string currentLine = "";
 
-
-
     for (auto part : parts)
     {
-        if (part.length() + currentLine.length() > maxLength)
+        if (part.length() + currentLine.length() > maxLength && !currentLine.empty())
         {
             currentLine.pop_back();
             retString += currentLine + "\n";
