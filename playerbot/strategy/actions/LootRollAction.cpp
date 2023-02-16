@@ -36,8 +36,17 @@ bool LootStartRollAction::Execute(Event& event)
 
     LootRollMap lootRolls = AI_VALUE(LootRollMap, "active rolls");
 
-    lootRolls.insert({ creatureGuid, itemSlot });    
-    
+    if (lootRolls.find(creatureGuid) != lootRolls.end())
+        return false;
+
+    Loot* loot = sLootMgr.GetLoot(bot, creatureGuid);
+    if (!loot)
+        return false;
+
+    for(uint8 i=0;i< MAX_NR_LOOT_ITEMS;i++)
+        if(loot->GetRollForSlot(i))
+            lootRolls.insert({ creatureGuid, i });
+        
     ActiveRolls::CleanUp(bot,lootRolls);
 
     SET_AI_VALUE(LootRollMap, "active rolls", lootRolls);
