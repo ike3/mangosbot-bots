@@ -113,6 +113,10 @@ bool ChangeTalentsAction::Execute(Event& event)
     }
     else
     {
+        botSpec.ApplyTalents(bot, &out);
+        out.str("");
+        out.clear();
+
         uint32 specId = sRandomPlayerbotMgr.GetValue(bot->GetGUIDLow(), "specNo") - 1;
         string specName = "";
         TalentPath* specPath;

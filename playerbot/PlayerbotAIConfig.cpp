@@ -339,6 +339,7 @@ bool PlayerbotAIConfig::Initialize()
     syncLevelWithPlayers = config.GetBoolDefault("AiPlayerbot.SyncLevelWithPlayers", false);
     tweakValue = config.GetIntDefault("AiPlayerbot.TweakValue", 0);
     freeFood = config.GetBoolDefault("AiPlayerbot.FreeFood", true);
+    talentsInPublicNote = config.GetBoolDefault("AiPlayerbot.TalentsInPublicNote", false);
 
     selfBotLevel = config.GetIntDefault("AiPlayerbot.SelfBotLevel", 1);
     LoadListString<list<string>>(config.GetStringDefault("AiPlayerbot.ToggleAlwaysOnlineAccounts", ""), toggleAlwaysOnlineAccounts);

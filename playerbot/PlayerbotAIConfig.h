@@ -125,6 +125,7 @@ public:
     bool randomBotGroupNearby;
     bool randomBotRaidNearby;
     bool randomBotRandomPassword;
+    bool talentsInPublicNote;
 
     uint32 selfBotLevel;
 

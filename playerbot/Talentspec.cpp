@@ -127,6 +127,14 @@ void TalentSpec::ApplyTalents(Player* bot, ostringstream* out)
                 bot->learnSpell(spellId, false);
             }
         }
+
+    if (sPlayerbotAIConfig.talentsInPublicNote && bot->GetGuildId())
+    {
+        Guild* guild = sGuildMgr.GetGuildById(bot->GetGuildId());
+        MemberSlot* member = guild->GetMemberSlot(bot->GetObjectGuid());
+        if(guild->HasRankRight(member->RankId, GR_RIGHT_EPNOTE))
+            member->SetPNOTE(ChatHelper::specName(bot) + " (" + to_string(GetTalentPoints(0)) + "/" + to_string(GetTalentPoints(1)) + "/" + to_string(GetTalentPoints(2)) + ")");
+    }
 }
 
 //Returns a base talentlist for a class.
