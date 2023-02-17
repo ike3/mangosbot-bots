@@ -3,6 +3,8 @@
 #include "ChatHelper.h"
 #include "AiFactory.h"
 #include "strategy/values/ItemUsageValue.h"
+#include <numeric>
+#include <iomanip>
 
 using namespace ai;
 using namespace std;
@@ -723,12 +725,49 @@ string ChatHelper::formatSkill(uint32 skill)
 
 string ChatHelper::formatAngle(float angle)
 {
-    vector<string> headings = { "north", "north west", "west", "south west", "south", "south east", "east", "north east"};
+    vector<string> headings = { "north", "north west", "west", "south west", "south", "south east", "east", "north east" };
 
     float headingAngle = angle / M_PI_F * 180;
 
     return headings[int32(round(headingAngle / 45)) % 8];
 }
+
+string ChatHelper::formatWorldPosition(WorldPosition& pos)
+{
+    ostringstream out;
+    out << std::fixed << std::setprecision(2);
+    out << pos.getX() << "," << pos.getY() << "," << pos.getZ();
+    if (pos.getO())
+        out << " facing " << formatAngle(pos.getO());
+    if (pos.getMap())
+        out << " in " << pos.getMap()->GetMapName();
+    else
+        out << " map:" << pos.getMapId();
+
+    return out.str();
+}
+
+
+string ChatHelper::formatGuidPosition(GuidPosition& guidP)
+{
+    ostringstream out;
+    if (guidP.GetWorldObject())
+        out << guidP.GetWorldObject()->GetName();
+    else if (guidP.GetCreatureTemplate())
+        out << guidP.GetCreatureTemplate()->Name;
+    else if (guidP.GetGameObjectInfo())
+        out << guidP.GetGameObjectInfo()->name;
+    else
+        out << guidP.GetRawValue();
+
+    if (WorldPosition(guidP))
+        out << " " << formatWorldPosition(guidP);
+
+    return out.str();
+}
+
+
+
 
 string ChatHelper::formatBoolean(bool flag)
 {

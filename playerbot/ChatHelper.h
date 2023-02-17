@@ -9,6 +9,9 @@ namespace ai
 {
     class ItemQualifier;
 
+    class WorldPosition;
+    class GuidPosition;
+
     class ChatHelper : public PlayerbotAIAware
     {
     public:
@@ -59,6 +62,8 @@ namespace ai
         uint32 parseSkill(string& text);
 
         static string formatAngle(float angle);
+        static string formatWorldPosition(WorldPosition& pos);
+        static string formatGuidPosition(GuidPosition& guidP);
 
         static string formatBoolean(bool flag);       
        

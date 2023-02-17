@@ -269,8 +269,8 @@ namespace ai
 
         virtual string Format()
         {
-            ObjectGuid guid = this->Calculate();
-            return guid ? to_string(guid.GetRawValue()) : "<none>";
+            GuidPosition guid = this->Calculate();
+            return guid ? chat->formatGuidPosition(guid) : "<none>";
         }
     };
 
@@ -286,11 +286,25 @@ namespace ai
             list<ObjectGuid> guids = this->Calculate();
             for (list<ObjectGuid>::iterator i = guids.begin(); i != guids.end(); ++i)
             {
-                ObjectGuid guid = *i;
-                out << guid.GetRawValue() << ",";
+                GuidPosition guid = *i;
+                out << chat->formatGuidPosition(guid) << ",";
             }
             out << "}";
             return out.str();
+        }
+    };
+
+    class GuidPositionCalculatedValue : public CalculatedValue<GuidPosition>
+    {
+    public:
+        GuidPositionCalculatedValue(PlayerbotAI* ai, string name = "value", int checkInterval = 1) :
+            CalculatedValue<GuidPosition>(ai, name, checkInterval) { this->lastCheckTime = time(0) - checkInterval / 2; }
+
+        virtual string Format()
+        {
+            ostringstream out;
+            GuidPosition guidP = this->Calculate();
+            return chat->formatGuidPosition(guidP);
         }
     };
 
@@ -306,8 +320,8 @@ namespace ai
             list<GuidPosition> guids = this->Calculate();
             for (list<GuidPosition>::iterator i = guids.begin(); i != guids.end(); ++i)
             {
-                ObjectGuid guid = *i;
-                out << guid.GetRawValue() << ",";
+                GuidPosition guidP = *i;
+                out << chat->formatGuidPosition(guidP) << ",";
             }
             out << "}";
             return out.str();
