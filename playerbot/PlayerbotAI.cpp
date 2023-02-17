@@ -68,11 +68,16 @@ void PacketHandlingHelper::Handle(ExternalEventHelper &helper)
     if (!m_botPacketMutex.try_lock()) //Packets do not have to be handled now. Handle them later.
         return;
 
+    stack<WorldPacket> delayed;
+
     while (!queue.empty())
     {
-        if(helper.HandlePacket(handlers, queue.top()))
-            queue.pop();
+        if (!helper.HandlePacket(handlers, queue.top()))
+            delayed.push(queue.top());
+        queue.pop();
     }
+
+    queue = delayed;
 
     m_botPacketMutex.unlock();
 }

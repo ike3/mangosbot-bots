@@ -64,9 +64,10 @@ namespace ai
             if (!trigger)
                 return true;
 
-            if (trigger->IsActive() && !((WorldPacketTrigger*)trigger)->isEqual(packet)) //Store triggers with different packets.
+            Event event = trigger->Check();            
+            if (!event.getSource().empty())
                 return false;
-
+                        
             WorldPacket p(packet);
             trigger->ExternalEvent(p, owner);
 

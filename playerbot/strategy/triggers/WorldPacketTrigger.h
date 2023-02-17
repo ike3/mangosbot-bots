@@ -27,9 +27,6 @@ namespace ai
         {
             triggered = false;
         }
-
-        bool isEqual(WorldPacket m_packet) { string a, b; packet >> a; m_packet >> b;  return a == b; }
-
     private:
         WorldPacket packet;
         bool triggered;
