@@ -183,7 +183,7 @@ class RandomPlayerbotMgr : public PlayerbotHolder
         list<uint32> currentBots;
         list<uint32> arenaTeamMembers;
         uint32 bgBotsCount;
-        uint32 playersLevel = sPlayerbotAIConfig.randombotStartingLevel;
+        uint32 playersLevel = sWorld.getConfig(CONFIG_UINT32_START_PLAYER_LEVEL);
 
         std::unordered_map<uint32, std::vector<std::pair<int32,int32>>> playerBotMoveLog;
         typedef std::unordered_map <uint32, list<float>> botPerformanceMetric;
