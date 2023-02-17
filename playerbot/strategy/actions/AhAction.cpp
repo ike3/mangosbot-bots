@@ -100,6 +100,9 @@ bool AhAction::PostItem(Item* item, uint32 price, Unit* auctioneer, uint32 time)
 {
     ObjectGuid itemGuid = item->GetObjectGuid();
     ItemPrototype const* proto = item->GetProto();
+
+    ItemQualifier itemQualifier(item);
+
     uint32 cnt = item->GetCount();
 
     WorldPacket packet;
@@ -121,7 +124,7 @@ bool AhAction::PostItem(Item* item, uint32 price, Unit* auctioneer, uint32 time)
         return false;
 
     ostringstream out;
-    out << "Posting " << ChatHelper::formatItem(item, cnt) << " for " << ChatHelper::formatMoney(price) << " to the AH";
+    out << "Posting " << ChatHelper::formatItem(itemQualifier, cnt) << " for " << ChatHelper::formatMoney(price) << " to the AH";
     ai->TellMasterNoFacing(out.str(), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
     return true;
 }
