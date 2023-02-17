@@ -230,6 +230,9 @@ bool ShouldLootObject::Calculate()
 	if (!lootAccess)
 		return false;
 
+	if (lootAccess->m_lootMethod != NOT_GROUP_TYPE_LOOT && !lootAccess->m_isChecked) //Open loot once to start rolls.
+		return true;
+
 	for (auto lItem : lootAccess->GetLootContentFor(bot))
 	{
 		if (!lItem.itemId)
