@@ -17,11 +17,7 @@ namespace ai
         virtual bool Execute(Event& event) override
         {
             if (sServerFacade.IsAlive(bot))
-            {
-                ai->TellMasterNoFacing("I am not dead, will wait here", PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
-                ai->ChangeStrategy("-follow,+stay", BotState::BOT_STATE_NON_COMBAT);
                 return false;
-            }
 
             if (bot->GetCorpse() && bot->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_GHOST))
             {
