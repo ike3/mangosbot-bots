@@ -3,10 +3,10 @@
 
 namespace ai
 {    
-    class FreeMoveCenterValue : public CalculatedValue<GuidPosition>
+    class FreeMoveCenterValue : public GuidPositionCalculatedValue
 	{
 	public:
-        FreeMoveCenterValue(PlayerbotAI* ai) : CalculatedValue(ai, "free move center", 5) {};
+        FreeMoveCenterValue(PlayerbotAI* ai) : GuidPositionCalculatedValue(ai, "free move center", 5) {};
         virtual GuidPosition Calculate() override;
     };   
 
