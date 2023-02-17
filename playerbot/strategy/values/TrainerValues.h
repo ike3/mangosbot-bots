@@ -1,4 +1,5 @@
 #pragma once
+#include "../../ServerFacade.h"
 
 namespace ai
 {
@@ -23,6 +24,8 @@ namespace ai
         TrainableClassSpells(PlayerbotAI* ai) : CalculatedValue<vector<TrainerSpell const*>>(ai, "trainable class spells") {}
 
         virtual vector<TrainerSpell const*> Calculate();
+
+        virtual string Format() override;
     };
 
     class TrainCostValue : public Uint32CalculatedValue

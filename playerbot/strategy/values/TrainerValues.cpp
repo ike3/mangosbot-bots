@@ -2,6 +2,7 @@
 #include "../../playerbot.h"
 #include "TrainerValues.h"
 #include "SharedValueContext.h"
+#include "PlayerbotHelpMgr.h"
 
 using namespace ai;
 
@@ -77,10 +78,9 @@ trainableSpellMap TrainableSpellMapValue::Calculate()
 vector<TrainerSpell const*> TrainableClassSpells::Calculate()
 {
     vector<TrainerSpell const*> trainableSpells;
+    unordered_map<uint32, bool> hasSpell;
 
     trainableSpellMap spellMap = GAI_VALUE(trainableSpellMap, "trainable spell map");
-
-
 
     for (auto& spells : spellMap[TRAINER_TYPE_CLASS][bot->getClass()])
     {
@@ -88,6 +88,11 @@ vector<TrainerSpell const*> TrainableClassSpells::Calculate()
 
         if (!tSpell)
             continue;
+
+        if (hasSpell.find(tSpell->spell) != hasSpell.end())
+            continue;
+
+        hasSpell[tSpell->spell] = true;
 
         uint32 reqLevel = 0;
 
@@ -100,6 +105,19 @@ vector<TrainerSpell const*> TrainableClassSpells::Calculate()
     }
 
     return trainableSpells;
+}
+
+string TrainableClassSpells::Format()
+{
+    vector<string> vec;  
+    for (auto t : value) {
+        SpellEntry const* spell = sServerFacade.LookupSpellInfo(t->spell);
+        if (!spell)
+            continue;
+        vec.push_back(chat->formatSpell(spell));
+    } 
+    
+    return sPlayerbotHelpMgr.makeList(vec, "[<part>]");
 }
 
 uint32 TrainCostValue::Calculate()
