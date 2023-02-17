@@ -40,10 +40,16 @@ namespace ai
 
         Group* group = master->GetGroup();
 
-        if (group && group->IsFull())
-            return false;
+        if (group)
+        {
+            if (group->IsFull())
+                return false;
 
-        if (!group || (bot->GetGroup() && bot->GetGroup() != group))
+            if (bot->GetGroup() == group)
+                return false;
+        }
+
+        if (bot->GetGroup())
             if (!ai->DoSpecificAction("leave", event, true))
                 return false;
 
