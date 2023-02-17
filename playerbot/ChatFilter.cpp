@@ -579,7 +579,7 @@ public:
         retMap["@guild=raiders"] = "All bots in guild raiders.";
         retMap["@noguild"] = "All bots not in a guild.";
         retMap["@gleader"] = "All bots that are a guild leader.";
-        retMap["@grank=Initiate"] = "All bots that have rank Initiate in their guild.";
+        retMap["@rank=Initiate"] = "All bots that have rank Initiate in their guild.";
         return retMap;
     }
     virtual string GetHelpDescription() {
@@ -645,7 +645,7 @@ public:
 
             return ChatFilter::Filter(message);
         }
-        if (message.find("@grank=") == 0)
+        if (message.find("@rank=") == 0)
         {
             if (!bot->GetGuildId())
                 return message;
