@@ -3529,6 +3529,7 @@ bool BGTactics::selectObjective(bool reset)
         uint32 areaTrigger;
         Position flagDeliverPoint;
         Team rootTeam = bot->GetTeam();
+        uint8 maxTry = 0;
 
         //Set attackobjectives for teams
         if (rootTeam == HORDE)
@@ -3601,6 +3602,10 @@ bool BGTactics::selectObjective(bool reset)
                     {
                         role = urand(0, 9);
                     }
+                    if(maxTry > 10)
+                        role = urand(0, 9);
+
+                    maxTry++;
                 }
             }
             else if (role < 10) { //Get the flag or defend flag carrier
