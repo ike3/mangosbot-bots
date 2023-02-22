@@ -75,6 +75,12 @@ AiPlayerbot.RandomBotMaxLevelChance = 0.15
 # Chance bot chooses RPG (Teleport to random camp for their level) instead of grinding
 AiPlayerbot.RandomBotRpgChance = 0.20
 
+# Bots and npcs turn to eachother during an rpg interaction
+AiPlayerbot.TurnInRpg = 0
+
+# Bots will make sounds when repairing, selling items ect.
+AiPlayerbot.GlobalSoundEffects = 0
+
 # Show progress bars for random bots (disabled by default)
 AiPlayerbot.ShowProgressBars = 1
 
@@ -373,6 +379,18 @@ AiPlayerbot.PremadeSpecLink.11.7.80 = 5012203125331103213305301231--205003212
 AiPlayerbot.PremadeSpecName.11.8 = Restro Pve
 AiPlayerbot.PremadeSpecLink.11.8.80 = 05320001--230033312031512531153313051
 
+# Applies a permanent buff to all bots.
+# WorldBuff.Faction.Class.MinLevel.MaxLevel = spellId
+# All bots:               Rallying Cry of the Dragonslayer for all bots
+# AiPlayerbot.WorldBuff = 22888 
+# All horde                 Warchief's Blessing for all horde
+# AiPlayerbot.WorldBuff.2 = 16609
+# All level 40 bots         Spirit of Zandalar     
+# AiPlayerbot.WorldBuff.0.0.40 = 24425
+# All warlocks between lvl1 and 10 volatile-infection & wandering-plague
+# AiPlayerbot.WorldBuff.0.9.1.10 = 18149,3436
+# All alliance lvl60 rogues      Plainsrunning & Sprint & Speed
+# AiPlayerbot.WorldBuff.1.4.60 = 12566,11305,2379
 
 # Prefix for bot chat commands (e.g. follow, stay)
 #AiPlayerbot.CommandPrefix =
@@ -505,6 +523,11 @@ AiPlayerbot.PerfMonEnabled = 0
 # Values: taxi (all nodes learned), supply (auto supply items in bg), gold (free repair, vendor, ect.), health (fast regen), mana (fast regen), power (fast regen)
 # AiPlayerbot.BotCheats = taxi,supply
 
+# The summon command can be used without restriction by non-gms.
+# AiPlayerbot.NonGmFreeSummon = 0
+
+# Bots will put their talentspec in guild notes when they change/tell their talents if they have the rights.
+# AiPlayerbot.TalentsInPublicNote = 0
 
 # Self bot turns your current character into a bot with the command ".bot self"
 # !!DISCLAMER!! Selfbots will work and act like randombots based on their enabled strategies. Your epic mount will be sold to a vendor!
