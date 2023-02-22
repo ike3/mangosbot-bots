@@ -761,7 +761,7 @@ uint32 RandomPlayerbotMgr::AddRandomBots()
                 for (uint32 cls = 1; cls < MAX_CLASSES; ++cls)
                 {
                     if (sPlayerbotAIConfig.classRaceProbability[cls][race])
-                        classRaceAllowed[cls][race] = (sPlayerbotAIConfig.classRaceProbability[cls][race] * maxAllowedBotCount / sPlayerbotAIConfig.classRaceProbabilityTotal) + 1;
+                        classRaceAllowed[cls][race] = ((sPlayerbotAIConfig.classRaceProbability[cls][race] * maxAllowedBotCount / sPlayerbotAIConfig.classRaceProbabilityTotal) + 1) * (noCriteria+1);
                 }
             }
 

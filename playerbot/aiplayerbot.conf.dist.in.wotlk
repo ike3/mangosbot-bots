@@ -239,7 +239,7 @@ AiPlayerbot.ClassRaceProb.5.8 =   3    # Troll priest chance
 AiPlayerbot.ClassRaceProb.5.10 = 10    # BloodElf priest chance
 AiPlayerbot.ClassRaceProb.5.11 =  5    # Draenei priest chance
 
-# AiPlayerbot.ClassRaceProb.1 = 140    # DeathKnight chance
+# AiPlayerbot.ClassRaceProb.6 = 140    # DeathKnight chance
 AiPlayerbot.ClassRaceProb.6.1 =  28    # Human deathknight chance
 AiPlayerbot.ClassRaceProb.6.2 =  13    # Orc deathknight chance
 AiPlayerbot.ClassRaceProb.6.3 =   5    # Dwarf deathknight chance
