@@ -67,8 +67,9 @@ bool TalkToQuestGiverAction::TurnInQuest(Quest const* quest, WorldObject* questG
         
     if (bot->GetQuestRewardStatus(questID))
         return false;
-
-    bot->PlayDistanceSound(621);
+    
+    if (sPlayerbotAIConfig.globalSoundEffects)
+        bot->PlayDistanceSound(621);
 
     sPlayerbotAIConfig.logEvent(ai, "TalkToQuestGiverAction", quest->GetTitle(), to_string(quest->GetQuestId()));
 

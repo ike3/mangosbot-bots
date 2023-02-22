@@ -107,6 +107,7 @@ public:
 	bool RandombotsWalkingRPG;
 	bool RandombotsWalkingRPGInDoors;
     bool turnInRpg;
+    bool globalSoundEffects;
     std::list<uint32> randomBotGuilds;
 	std::list<uint32> pvpProhibitedZoneIds;
     bool enableGreet;

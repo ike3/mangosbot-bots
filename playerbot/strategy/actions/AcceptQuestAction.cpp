@@ -8,7 +8,8 @@ bool AcceptAllQuestsAction::ProcessQuest(Quest const* quest, WorldObject* questG
 {
     if (AcceptQuest(quest, questGiver->GetObjectGuid()))
     {
-        bot->PlayDistanceSound(620);
+        if (sPlayerbotAIConfig.globalSoundEffects)
+            bot->PlayDistanceSound(620);
         return true;
     }
 

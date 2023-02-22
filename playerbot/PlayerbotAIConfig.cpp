@@ -327,6 +327,7 @@ bool PlayerbotAIConfig::Initialize()
     randomBotRaidNearby = config.GetBoolDefault("AiPlayerbot.RandomBotRaidNearby", false);
 
     turnInRpg = config.GetBoolDefault("AiPlayerbot.TurnInRpg", false);
+    globalSoundEffects = config.GetBoolDefault("AiPlayerbot.GlobalSoundEffects", false);
     
     //SPP automation
     autoPickReward = config.GetStringDefault("AiPlayerbot.AutoPickReward", "no");
