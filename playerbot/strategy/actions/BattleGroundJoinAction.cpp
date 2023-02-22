@@ -351,9 +351,6 @@ bool BGJoinAction::shouldJoinBg(BattleGroundQueueTypeId queueTypeId, BattleGroun
     if (!sPlayerbotAIConfig.randomBotAutoJoinBG && !hasPlayers)
         return false;
 
-    if (!hasPlayers && !isArena && queueTypeId != BATTLEGROUND_QUEUE_WS)
-        return false;
-
     if (!hasPlayers && !noLag)
         return false;
 
