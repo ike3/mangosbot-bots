@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Trigger.h"
-#include "Triggers\WorldPacketTrigger.h"
+#include "Triggers/WorldPacketTrigger.h"
 
 namespace ai
 {
