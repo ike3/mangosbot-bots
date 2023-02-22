@@ -106,6 +106,7 @@ public:
     std::list<uint32> randomBotArenaTeams;
 	bool RandombotsWalkingRPG;
 	bool RandombotsWalkingRPGInDoors;
+    bool turnInRpg;
     std::list<uint32> randomBotGuilds;
 	std::list<uint32> pvpProhibitedZoneIds;
     bool enableGreet;

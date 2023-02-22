@@ -36,6 +36,9 @@ void RpgHelper::AfterExecute(bool doDelay, bool waitForGroup, string nextAction)
 
 void RpgHelper::setFacingTo(GuidPosition guidPosition)
 {
+    if (!sPlayerbotAIConfig.turnInRpg)
+        return;
+
     //sServerFacade.SetFacingTo(bot, guidPosition.GetWorldObject());
     MotionMaster& mm = *bot->GetMotionMaster();
     bot->SetFacingTo(bot->GetAngle(guidPosition.GetWorldObject()));
@@ -44,6 +47,9 @@ void RpgHelper::setFacingTo(GuidPosition guidPosition)
 
 void RpgHelper::setFacing(GuidPosition guidPosition)
 {
+    if (!sPlayerbotAIConfig.turnInRpg)
+        return;
+
     if (!guidPosition.IsUnit())
         return;
 
@@ -60,6 +66,9 @@ void RpgHelper::setFacing(GuidPosition guidPosition)
 
 void RpgHelper::resetFacing(GuidPosition guidPosition)
 {
+    if (!sPlayerbotAIConfig.turnInRpg)
+        return;
+
     if (!guidPosition.IsCreature())
         return;
 
@@ -68,7 +77,10 @@ void RpgHelper::resetFacing(GuidPosition guidPosition)
     CreatureData* data = guidPosition.GetCreatureData();
 
     if (data)
+    {
         unit->SetFacingTo(data->orientation);
+        sRandomPlayerbotMgr.AddFacingFix(bot->GetMapId(), guidPosition);
+    }
 }
 
 void RpgHelper::setDelay(bool waitForGroup)

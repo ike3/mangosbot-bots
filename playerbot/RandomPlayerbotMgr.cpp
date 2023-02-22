@@ -302,6 +302,15 @@ RandomPlayerbotMgr::RandomPlayerbotMgr() : PlayerbotHolder(), processTicks(0), l
 #endif
         // sync event timers
         SyncEventTimers();
+
+        for (uint32 i = 0; i < sMapStore.GetNumRows(); ++i)
+        {
+            if (!sMapStore.LookupEntry(i))
+                continue;
+
+            uint32 mapId = sMapStore.LookupEntry(i)->MapID;
+            facingFix[mapId] = {};
+        }
     }
 }
 
@@ -681,6 +690,33 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed, bool minimal)
                     activeBots++;
         }
     }
+    if(sPlayerbotAIConfig.turnInRpg)
+        for (auto& fMap : facingFix) {
+            for (auto obj : fMap.second) {
+                if (time(0) - obj.second > 5)
+                {
+                    if (!obj.first.IsCreature())
+                        return;
+                    GuidPosition guidP(obj.first, WorldPosition(fMap.first, 0, 0, 0));
+
+                    Creature* unit = guidP.GetCreature();
+
+                    if (!unit)
+                        continue;
+
+                    CreatureData* data = guidP.GetCreatureData();
+
+                    if (!data)
+                        continue;
+
+                    if (unit->GetOrientation() == data->orientation)
+                        continue;
+
+                    unit->SetFacingTo(data->orientation);
+                }
+            }
+            facingFix[fMap.first].clear();
+        }
 }
 
 uint32 RandomPlayerbotMgr::AddRandomBots()
