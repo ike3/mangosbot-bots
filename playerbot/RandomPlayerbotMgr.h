@@ -143,6 +143,8 @@ class RandomPlayerbotMgr : public PlayerbotHolder
 
         void PrintTeleportCache();
 
+        void AddFacingFix(uint32 mapId, ObjectGuid guid) { facingFix[mapId].push_back(make_pair(guid,time(0))); }
+
         bool arenaTeamsDeleted, guildsDeleted = false;
 
         std::mutex m_ahActionMutex;
@@ -170,7 +172,6 @@ class RandomPlayerbotMgr : public PlayerbotHolder
         uint32 GetZoneLevel(uint16 mapId, float teleX, float teleY, float teleZ);
         void PrepareTeleportCache();
         typedef void (RandomPlayerbotMgr::*ConsoleCommandHandler) (Player*);
-
     private:
         PlayerBotMap players;
         int processTicks;
@@ -188,9 +189,11 @@ class RandomPlayerbotMgr : public PlayerbotHolder
         std::unordered_map<uint32, std::vector<std::pair<int32,int32>>> playerBotMoveLog;
         typedef std::unordered_map <uint32, list<float>> botPerformanceMetric;
         std::unordered_map<string, botPerformanceMetric> botPerformanceMetrics;
-
+        
         void PushMetric(botPerformanceMetric& metric, const uint32 bot, const float value, const uint32 maxNum = 60) const;
         float GetMetricDelta(botPerformanceMetric& metric) const;
+
+        std::unordered_map<uint32, std::vector<pair<ObjectGuid, time_t>>> facingFix;
 };
 
 #define sRandomPlayerbotMgr RandomPlayerbotMgr::instance()

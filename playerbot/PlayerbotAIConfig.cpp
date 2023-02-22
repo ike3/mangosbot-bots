@@ -185,6 +185,56 @@ bool PlayerbotAIConfig::Initialize()
     commandServerPort = config.GetIntDefault("AiPlayerbot.CommandServerPort", 0);
     perfMonEnabled = config.GetBoolDefault("AiPlayerbot.PerfMonEnabled", false);
 
+    sLog.outString("   Loading Race/Class probabilities    ");
+
+    classRaceProbabilityTotal = 0;
+
+    for (uint32 race = 1; race < MAX_RACES; ++race)
+    {
+        //Set race defaults
+        if (race > 0)
+        {
+            int rProb = config.GetIntDefault("AiPlayerbot.ClassRaceProb.0." + to_string(race), 100);
+
+            for (uint32 cls = 1; cls < MAX_CLASSES; ++cls)
+            {
+                classRaceProbability[cls][race] = rProb;
+            }
+        }
+    }
+
+    //Class overrides
+    for (uint32 cls = 1; cls < MAX_CLASSES; ++cls)
+    {
+        int cProb = config.GetIntDefault("AiPlayerbot.ClassRaceProb." + to_string(cls), -1);
+
+        if (cProb >= 0)
+        {
+            for (uint32 race = 1; race < MAX_RACES; ++race)
+            {
+                classRaceProbability[cls][race] = cProb;
+            }
+        }
+    }
+
+    RandomPlayerbotFactory factory(0);
+
+    //Race Class overrides
+    for (uint32 race = 1; race < MAX_RACES; ++race)
+    {
+        for (uint32 cls = 1; cls < MAX_CLASSES; ++cls)
+        {
+            int rcProb = config.GetIntDefault("AiPlayerbot.ClassRaceProb." + to_string(cls) + "." + to_string(race), -1);
+            if (rcProb >= 0)
+                classRaceProbability[cls][race] = rcProb;
+
+            if (!factory.isAvailableRace(cls, race))
+                classRaceProbability[cls][race] = 0;
+            else
+                classRaceProbabilityTotal += classRaceProbability[cls][race];
+        }
+    }
+
     sLog.outString("---------------------------------------");
     sLog.outString("          Loading TalentSpecs          ");
     sLog.outString("---------------------------------------");

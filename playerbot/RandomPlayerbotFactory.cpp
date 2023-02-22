@@ -116,6 +116,20 @@ RandomPlayerbotFactory::RandomPlayerbotFactory(uint32 accountId) : accountId(acc
 #endif
 }
 
+bool RandomPlayerbotFactory::isAvailableRace(uint8 cls, uint8 race)
+{
+    if (race == RACE_GOBLIN)
+        return false;
+#ifdef MANGOSBOT_TWO
+    else if (cls == 10)
+#else
+    else if (cls == 10 || cls == 6)
+#endif
+        return false;
+
+    return std::find(availableRaces[cls].begin(), availableRaces[cls].end(), race) != availableRaces[cls].end();
+}
+
 bool RandomPlayerbotFactory::CreateRandomBot(uint8 cls, unordered_map<uint8, vector<string>>& names)
 {
     sLog.outDebug( "Creating new random bot for class %d", cls);

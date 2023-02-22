@@ -94,6 +94,8 @@ public:
     float randomChangeMultiplier;
     uint32 specProbability[MAX_CLASSES][10];
     string premadeLevelSpec[MAX_CLASSES][10][91]; //lvl 10 - 100
+    uint32 classRaceProbabilityTotal;
+    uint32 classRaceProbability[MAX_CLASSES][MAX_RACES];
     ClassSpecs classSpecs[MAX_CLASSES];
     std::string commandPrefix, commandSeparator;
     std::string randomBotAccountPrefix;

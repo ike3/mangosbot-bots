@@ -721,12 +721,13 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed, bool minimal)
 
 uint32 RandomPlayerbotMgr::AddRandomBots()
 {
-    uint32 maxAllowedBotCount = GetEventValue(0, "bot_count");
+    uint32 maxAllowedBotCount = GetEventValue(0, "bot_count");    
+    uint32 currentAllowedBotCount = maxAllowedBotCount;
 
     uint32 maxLevel = sWorld.getConfig(CONFIG_UINT32_MAX_PLAYER_LEVEL);
-    float currentAvgLevel = 0, wantedAvgLevel = 0, randomAvgLevel =0;
+    float currentAvgLevel = 0, wantedAvgLevel = 0, randomAvgLevel = 0;
   
-    if (currentBots.size() < maxAllowedBotCount)
+    if (currentBots.size() < currentAllowedBotCount)
     {
         if (sPlayerbotAIConfig.syncLevelWithPlayers)
         {
@@ -742,23 +743,36 @@ uint32 RandomPlayerbotMgr::AddRandomBots()
             randomAvgLevel = (sPlayerbotAIConfig.randomBotMinLevel + max(sPlayerbotAIConfig.randomBotMinLevel, min(playersLevel, sWorld.getConfig(CONFIG_UINT32_MAX_PLAYER_LEVEL)))) / 2;
         }
 
-        maxAllowedBotCount -= currentBots.size();
+        currentAllowedBotCount -= currentBots.size();
 
-        maxAllowedBotCount = std::min((uint32)(sPlayerbotAIConfig.randomBotsPerInterval * sPlayerbotAIConfig.randomBotsLoginSpeed), maxAllowedBotCount);
+        currentAllowedBotCount = std::min((uint32)(sPlayerbotAIConfig.randomBotsPerInterval * sPlayerbotAIConfig.randomBotsLoginSpeed), currentAllowedBotCount);
 
         PlayerbotDatabase.AllowAsyncTransactions();
         PlayerbotDatabase.BeginTransaction();
 
-        for (uint32 noLevelCheck = 0; noLevelCheck < 2; noLevelCheck++)
+        bool enoughBotsForCriteria = true;
+
+        for (uint32 noCriteria = 0; noCriteria < 2; noCriteria++)
         {
+            int32  classRaceAllowed[MAX_CLASSES][MAX_RACES] = { 0 };
+
+            for (uint32 race = 1; race < MAX_RACES; ++race)
+            {
+                for (uint32 cls = 1; cls < MAX_CLASSES; ++cls)
+                {
+                    if (sPlayerbotAIConfig.classRaceProbability[cls][race])
+                        classRaceAllowed[cls][race] = (sPlayerbotAIConfig.classRaceProbability[cls][race] * maxAllowedBotCount / sPlayerbotAIConfig.classRaceProbabilityTotal) + 1;
+                }
+            }
+
             for (list<uint32>::iterator i = sPlayerbotAIConfig.randomBotAccounts.begin(); i != sPlayerbotAIConfig.randomBotAccounts.end(); i++)
             {
                 uint32 accountId = *i;
 
                 QueryResult* result;
 
-                if (noLevelCheck)
-                    result = CharacterDatabase.PQuery("SELECT guid, level, totaltime FROM characters WHERE account = '%u'", accountId);
+                if (noCriteria)
+                    result = CharacterDatabase.PQuery("SELECT guid, level, totaltime, race, class FROM characters WHERE account = '%u'", accountId);
                 else
                 {
                     bool needToIncrease = wantedAvgLevel && currentAvgLevel + 1 < wantedAvgLevel;
@@ -766,7 +780,7 @@ uint32 RandomPlayerbotMgr::AddRandomBots()
                     bool rndCanIncrease = !sPlayerbotAIConfig.disableRandomLevels && randomAvgLevel > currentAvgLevel;
                     bool rndCanLower = !sPlayerbotAIConfig.disableRandomLevels && randomAvgLevel < currentAvgLevel;
 
-                    string query = "SELECT guid, level, totaltime FROM characters WHERE account = '%u' and level <= %u";
+                    string query = "SELECT guid, level, totaltime, race, class FROM characters WHERE account = '%u' and level <= %u";
                     string wasRand = sPlayerbotAIConfig.instantRandomize ? "totaltime" : "(level > 1)";
 
                     if (needToIncrease) //We need more higher level bots.
@@ -796,22 +810,37 @@ uint32 RandomPlayerbotMgr::AddRandomBots()
                     uint32 guid = fields[0].GetUInt32();
                     uint32 level = fields[1].GetUInt32();
                     uint32 totaltime = fields[2].GetUInt32();
+                    uint32 race = fields[3].GetUInt32();
+                    uint32 cls = fields[4].GetUInt32();
 
                     if (GetEventValue(guid, "add"))
+                    {
+                        classRaceAllowed[cls][race]--;
                         continue;
+                    }
 
                     if (GetEventValue(guid, "logout"))
                         continue;
 
                     if (GetPlayerBot(guid))
+                    {
+                        classRaceAllowed[cls][race]--;
                         continue;
+                    }
 
                     if (std::find(currentBots.begin(), currentBots.end(), guid) != currentBots.end())
+                    {
+                        classRaceAllowed[cls][race]--;
+                        continue;
+                    }
+
+                    if (classRaceAllowed[cls][race] <= 0)
                         continue;
 
                     SetEventValue(guid, "add", 1, urand(sPlayerbotAIConfig.minRandomBotInWorldTime, sPlayerbotAIConfig.maxRandomBotInWorldTime));
                     SetEventValue(guid, "logout", 0, 0);
                     currentBots.push_back(guid);
+                    classRaceAllowed[cls][race]--;
 
                     if (wantedAvgLevel)
                         if (sPlayerbotAIConfig.instantRandomize ? totaltime : level > 1)
@@ -819,35 +848,37 @@ uint32 RandomPlayerbotMgr::AddRandomBots()
                         else
                             currentAvgLevel += (float)level + randomAvgLevel; //Use predicted randomized level. This will be wrong but avarage out correct.
 
-                    maxAllowedBotCount--;
+                    currentAllowedBotCount--;
 
-                    if (!maxAllowedBotCount)
+                    if (!currentAllowedBotCount)
                         break;
 
                 } while (result->NextRow());
                 delete result;
 
-                if (!maxAllowedBotCount)
+                if (!currentAllowedBotCount)
                     break;
             }
 
-            if (!maxAllowedBotCount)
+            if (!currentAllowedBotCount)
                 break;
 
-            if (!sPlayerbotAIConfig.syncLevelWithPlayers)
-                break;
+            enoughBotsForCriteria = false;
         }
 
         PlayerbotDatabase.CommitTransaction();
 
-        if (maxAllowedBotCount)
-            maxAllowedBotCount = GetEventValue(0, "bot_count") - currentBots.size();
+        if (currentAllowedBotCount)
+            currentAllowedBotCount = GetEventValue(0, "bot_count") - currentBots.size();
 
-        if (maxAllowedBotCount)
+        if (enoughBotsForCriteria && !currentAllowedBotCount)
+            sLog.outString("Not enough accounts to meet selection criteria. A random selection of bots was activated to fill the server.");
+
+        if(currentAllowedBotCount)
 #ifdef MANGOSBOT_TWO
-            sLog.outError("Not enough random bot accounts available. Need %d more!!", (uint32)ceil(maxAllowedBotCount / 10));
+            sLog.outError("Not enough random bot accounts available. Need %d more!!", (uint32)ceil(currentAllowedBotCount / 10));
 #else
-            sLog.outError("Not enough random bot accounts available. Need %d more!!", (uint32)ceil(maxAllowedBotCount / 9));
+            sLog.outError("Not enough random bot accounts available. Need %d more!!", (uint32)ceil(currentAllowedBotCount / 9));
 #endif
       
     }
