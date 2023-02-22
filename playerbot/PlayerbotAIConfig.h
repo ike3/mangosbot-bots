@@ -128,6 +128,7 @@ public:
     bool randomBotRaidNearby;
     bool randomBotRandomPassword;
     bool talentsInPublicNote;
+    bool nonGmFreeSummon;
 
     uint32 selfBotLevel;
 
