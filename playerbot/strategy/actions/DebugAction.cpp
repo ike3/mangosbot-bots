@@ -166,7 +166,7 @@ bool DebugAction::Execute(Event& event)
 
         MovementGeneratorType type = mm->GetCurrentMovementGeneratorType();
 
-        string sType = GetMoveTypeStr(type);
+        string sType = "TODO"; // GetMoveTypeStr(type);
 
         Unit* cTarget = sServerFacade.GetChaseTarget(motionBot);
         float cAngle = sServerFacade.GetChaseAngle(motionBot);
@@ -213,7 +213,7 @@ bool DebugAction::Execute(Event& event)
                 mm->MoveInFormation(form);
             }
 
-            string sType = GetMoveTypeStr(type);
+            string sType = "TODO"; // GetMoveTypeStr(type);
             ai->TellMaster("new:" + sType);
         }
         return true;
