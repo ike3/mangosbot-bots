@@ -3,7 +3,7 @@
 #if defined(MANGOSBOT_TWO) || MAX_EXPANSION == 2
 #include "Util/Util.h"
 #else
-#include "Util.h"
+#include "Util/Util.h"
 #endif
 
 
