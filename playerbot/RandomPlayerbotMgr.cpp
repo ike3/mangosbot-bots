@@ -311,6 +311,8 @@ RandomPlayerbotMgr::RandomPlayerbotMgr() : PlayerbotHolder(), processTicks(0), l
             uint32 mapId = sMapStore.LookupEntry(i)->MapID;
             facingFix[mapId] = {};
         }
+
+        showLoginWarning = true;
     }
 }
 
@@ -863,16 +865,37 @@ uint32 RandomPlayerbotMgr::AddRandomBots()
             if (!currentAllowedBotCount)
                 break;
 
-            enoughBotsForCriteria = false;
+            if (showLoginWarning)
+            {
+                sLog.outError("Not enough accounts to meet selection criteria. A random selection of bots was activated to fill the server.");
+
+                if (sPlayerbotAIConfig.syncLevelWithPlayers)
+                    sLog.outError("Only bots between level %d and %d are selected to sync with player level", (currentAvgLevel + 1 < wantedAvgLevel) ? wantedAvgLevel : 1, maxLevel);
+
+                ChatHelper chat(nullptr);
+
+                for (uint32 race = 1; race < MAX_RACES; ++race)
+                {
+                    for (uint32 cls = 1; cls < MAX_CLASSES; ++cls)
+                    {
+                        int32 moreWanted = classRaceAllowed[cls][race];
+                        if (moreWanted > 0)
+                        {
+                            int32 totalWanted = ((sPlayerbotAIConfig.classRaceProbability[cls][race] * maxAllowedBotCount / sPlayerbotAIConfig.classRaceProbabilityTotal) + 1);
+                            float percentage = float(sPlayerbotAIConfig.classRaceProbability[cls][race]) * 100.0f / sPlayerbotAIConfig.classRaceProbabilityTotal;
+                            sLog.outError("%d %s %ss needed to get %3.2f%% of total but only %d found.", totalWanted, chat.formatRace(race), chat.formatClass(cls), percentage, totalWanted - moreWanted);
+                        }
+                    }
+                }
+
+                showLoginWarning = false;
+            }
         }
 
         PlayerbotDatabase.CommitTransaction();
 
         if (currentAllowedBotCount)
-            currentAllowedBotCount = GetEventValue(0, "bot_count") - currentBots.size();
-
-        if (enoughBotsForCriteria && !currentAllowedBotCount)
-            sLog.outString("Not enough accounts to meet selection criteria. A random selection of bots was activated to fill the server.");
+            currentAllowedBotCount = GetEventValue(0, "bot_count") - currentBots.size();          
 
         if(currentAllowedBotCount)
 #ifdef MANGOSBOT_TWO

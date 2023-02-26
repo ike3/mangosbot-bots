@@ -193,6 +193,7 @@ class RandomPlayerbotMgr : public PlayerbotHolder
         void PushMetric(botPerformanceMetric& metric, const uint32 bot, const float value, const uint32 maxNum = 60) const;
         float GetMetricDelta(botPerformanceMetric& metric) const;
 
+        bool showLoginWarning;
         std::unordered_map<uint32, std::vector<pair<ObjectGuid, time_t>>> facingFix;
 };
 
