@@ -130,13 +130,65 @@ bool RandomPlayerbotFactory::isAvailableRace(uint8 cls, uint8 race)
     return std::find(availableRaces[cls].begin(), availableRaces[cls].end(), race) != availableRaces[cls].end();
 }
 
+uint8 RandomPlayerbotFactory::GetRandomClass()
+{
+    uint32 classProb[MAX_CLASSES] = { 0 };
+
+    for (uint32 race = 1; race < MAX_RACES; ++race)
+    {
+        for (uint32 cls = 1; cls < MAX_CLASSES; ++cls)
+        {
+            classProb[cls] += sPlayerbotAIConfig.classRaceProbability[cls][race];
+        }
+    }
+
+    uint32 randomProb = urand(0, sPlayerbotAIConfig.classRaceProbabilityTotal);
+
+    for (uint32 cls = 1; cls < MAX_CLASSES; ++cls)
+    {
+        if (classProb[cls] > 0 && randomProb < classProb[cls])
+            return cls;
+
+        randomProb -= classProb[cls];
+    }
+
+    for (uint32 cls = 1; cls < MAX_CLASSES; ++cls)
+    {
+        if (classProb[cls] > 0)
+            return cls;
+    }
+
+    return 1;
+}
+
+uint8 RandomPlayerbotFactory::GetRandomRace(uint8 cls)
+{
+    uint32 totalClassProb = 0;
+    for (uint32 race = 1; race < MAX_RACES; ++race)
+    {
+        totalClassProb += sPlayerbotAIConfig.classRaceProbability[cls][race];
+    }
+
+    uint32 randomProb = urand(0, totalClassProb);
+
+    for (uint32 race = 1; race < MAX_RACES; ++race)
+    {
+        if (sPlayerbotAIConfig.classRaceProbability[cls][race] > 0 && randomProb < sPlayerbotAIConfig.classRaceProbability[cls][race])
+            return race;
+
+        randomProb -= sPlayerbotAIConfig.classRaceProbability[cls][race];
+    }
+
+    return availableRaces[cls].front();
+}
+
 bool RandomPlayerbotFactory::CreateRandomBot(uint8 cls, unordered_map<uint8, vector<string>>& names)
 {
     sLog.outDebug( "Creating new random bot for class %d", cls);
 
     uint8 gender = rand() % 2 ? GENDER_MALE : GENDER_FEMALE;
 
-    uint8 race = availableRaces[cls][urand(0, availableRaces[cls].size() - 1)];
+    uint8 race = GetRandomRace(cls);
 
     string name;
     if(names.empty())
@@ -318,7 +370,6 @@ void RandomPlayerbotFactory::CreateRandomBots()
         if (deleteType > 1)
             delFriends = true;
 
-        PlayerbotDatabase.PExecute("DELETE FROM ai_playerbot_random_bots where event = 'bot_delete'");
         delete results;
     }
 
@@ -586,7 +637,8 @@ void RandomPlayerbotFactory::CreateRandomBots()
             if (cls != 10 && cls != 6)
 #endif
 			{
-                factory.CreateRandomBot(cls, names);
+                uint8 rclss = factory.GetRandomClass();
+                factory.CreateRandomBot(rclss, names);
 				bar1.step();
 			}
         }

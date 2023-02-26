@@ -29,6 +29,8 @@ class RandomPlayerbotFactory
         string CreateRandomBotName(uint8 gender);
         static string CreateRandomArenaTeamName();
 
+        uint8 GetRandomClass();
+        uint8 GetRandomRace(uint8 cls);
     private:
         uint32 accountId;
         static map<uint8, vector<uint8> > availableRaces;
