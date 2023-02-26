@@ -79,7 +79,7 @@ PlayerbotSecurityLevel PlayerbotSecurity::LevelFor(Player* from, DenyReason* rea
                 (!bot->m_lookingForGroup.more.empty() && bot->m_lookingForGroup.more.type == LFG_TYPE_DUNGEON)))
 #endif
 #ifdef MANGOSBOT_ZERO
-        if (sLFGMgr.IsPlayerInQueue(bot->GetObjectGuid()))
+        if (sWorld.GetLFGQueue().IsPlayerInQueue(bot->GetObjectGuid()))
 #endif
 #ifdef MANGOSBOT_TWO
         if (false/*sLFGMgr.GetQueueInfo(bot->GetObjectGuid())*/)

@@ -1333,22 +1333,22 @@ void RandomPlayerbotMgr::CheckLfgQueue()
         Group* group = player->GetGroup();
         if (group)
         {
-            if (sLFGMgr.IsGroupInQueue(group->GetId()))
+            if (sWorld.GetLFGQueue().IsGroupInQueue(group->GetId()))
             {
                 isLFG = true;
                 LFGGroupQueueInfo lfgInfo;
-                sLFGMgr.GetGroupQueueInfo(&lfgInfo, group->GetId());
+                sWorld.GetLFGQueue().GetGroupQueueInfo(&lfgInfo, group->GetId());
                 uint32 lfgType = (zoneId << 16) | lfgInfo.areaId;
                 LfgDungeons[player->GetTeam()].push_back(lfgType);
             }
         }
         else
         {
-            if (sLFGMgr.IsPlayerInQueue(player->GetObjectGuid()))
+            if (sWorld.GetLFGQueue().IsPlayerInQueue(player->GetObjectGuid()))
             {
                 isLFG = true;
                 LFGPlayerQueueInfo lfgInfo;
-                sLFGMgr.GetPlayerQueueInfo(&lfgInfo, player->GetObjectGuid());
+                sWorld.GetLFGQueue().GetPlayerQueueInfo(&lfgInfo, player->GetObjectGuid());
                 uint32 lfgType = (zoneId << 16) | lfgInfo.areaId;
                 LfgDungeons[player->GetTeam()].push_back(lfgType);
             }

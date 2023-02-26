@@ -17,11 +17,7 @@
 #include "playerbot/playerbot.h"
 #include "Player.h"
 #include "Mail.h"
-#ifdef MANGOSBOT_TWO
 #include "Util/Util.h"
-#else
-#include "Util.h"
-#endif
 
 #ifdef CMANGOS
 #include <boost/thread/thread.hpp>
@@ -45,11 +41,7 @@ bool Player::MinimalLoadFromDB( QueryResult *result, uint32 guid )
     Field *fields = result->Fetch();
 
     // overwrite possible wrong/corrupted guid
-#ifndef MANGOSBOT_ZERO
-    Object::_Create(0, guid, 0, HIGHGUID_PLAYER );
-#else
-    Object::_Create(guid, 0, HIGHGUID_PLAYER);
-#endif
+    Object::_Create(0, guid, 0, HIGHGUID_PLAYER);
 
     m_name = fields[0].GetString();
 

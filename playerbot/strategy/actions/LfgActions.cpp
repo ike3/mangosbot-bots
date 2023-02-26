@@ -94,7 +94,7 @@ bool LfgJoinAction::JoinLFG()
     //IterateItems(&visitor, ITERATE_ITEMS_IN_EQUIP);
     //bool raid = (urand(0, 100) < 50 && visitor.count[ITEM_QUALITY_EPIC] >= 5 && (bot->GetLevel() == 60 || bot->GetLevel() == 70 || bot->GetLevel() == 80));
 
-    MeetingStoneSet stones = sLFGMgr.GetDungeonsForPlayer(bot);
+    MeetingStoneSet stones = sWorld.GetLFGQueue().GetDungeonsForPlayer(bot);
     if (!stones.size())
         return false;
 
@@ -1065,12 +1065,12 @@ bool LfgLeaveAction::Execute(Event& event)
     //    return false;
 #ifdef MANGOSBOT_ZERO
     LFGPlayerQueueInfo qInfo;
-    sLFGMgr.GetPlayerQueueInfo(&qInfo, bot->GetObjectGuid());
+    sWorld.GetLFGQueue().GetPlayerQueueInfo(&qInfo, bot->GetObjectGuid());
     AreaTableEntry const* area = GetAreaEntryByAreaID(qInfo.areaId);
     if (area)
     {
         sLog.outBasic("Bot #%d %s:%d <%s>: leaves LFG queue to %s after %u minutes", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->GetLevel(), bot->GetName(), area->area_name[0], (qInfo.timeInLFG / 60000));
-        sLFGMgr.RemovePlayerFromQueue(bot->GetObjectGuid(), PLAYER_CLIENT_LEAVE);
+        sWorld.GetLFGQueue().RemovePlayerFromQueue(bot->GetObjectGuid(), PLAYER_CLIENT_LEAVE);
     }
 #endif
 #ifdef MANGOSBOT_ONE
@@ -1111,19 +1111,19 @@ bool LfgLeaveAction::Execute(Event& event)
 bool LfgLeaveAction::isUseful()
 {
 #ifdef MANGOSBOT_ZERO
-    if (!sLFGMgr.IsPlayerInQueue(bot->GetObjectGuid()))
+    if (!sWorld.GetLFGQueue().IsPlayerInQueue(bot->GetObjectGuid()))
         return false;
     else
     {
         LFGPlayerQueueInfo qInfo;
-        sLFGMgr.GetPlayerQueueInfo(&qInfo, bot->GetObjectGuid());
+        sWorld.GetLFGQueue().GetPlayerQueueInfo(&qInfo, bot->GetObjectGuid());
         if (qInfo.timeInLFG < (5 * MINUTE * IN_MILLISECONDS))
             return false;
     }
 
     if (bot->GetGroup() && bot->GetGroup()->GetLeaderGuid() != bot->GetObjectGuid())
     {
-        if (sLFGMgr.IsPlayerInQueue(bot->GetGroup()->GetLeaderGuid()))
+        if (sWorld.GetLFGQueue().IsPlayerInQueue(bot->GetGroup()->GetLeaderGuid()))
             return false;
     }
 
@@ -1203,7 +1203,7 @@ bool LfgJoinAction::isUseful()
     if (sRandomPlayerbotMgr.LfgDungeons[bot->GetTeam()].empty())
         return false;
 
-    if (sLFGMgr.IsPlayerInQueue(bot->GetObjectGuid()))
+    if (sWorld.GetLFGQueue().IsPlayerInQueue(bot->GetObjectGuid()))
         return false;
 
     LfgRoles botRoles = sLFGMgr.CalculateTalentRoles(bot);
