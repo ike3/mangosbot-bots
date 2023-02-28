@@ -72,7 +72,7 @@ GenericHunterStrategy::GenericHunterStrategy(PlayerbotAI* ai) : CombatStrategy(a
 
 NextAction** GenericHunterStrategy::GetDefaultCombatActions()
 {
-    return NextAction::array(0, new NextAction("auto shot", 10.0f), new NextAction("auto attack", 9.0f), NULL);
+    return NextAction::array(0, new NextAction("auto shot", 10.0f), new NextAction("melee", 9.0f), NULL);
 }
 
 void GenericHunterStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
