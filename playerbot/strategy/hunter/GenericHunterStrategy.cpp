@@ -116,6 +116,10 @@ void GenericHunterStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers
         NextAction::array(0, new NextAction("deterrence", 60.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
+        "enemy is close",
+        NextAction::array(0, new NextAction("raptor strike", 10.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
         "enemy ten yards",
         NextAction::array(0, new NextAction("concussive shot", 61.0f), NULL)));
 

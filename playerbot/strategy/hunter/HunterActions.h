@@ -156,7 +156,8 @@ namespace ai
 
         virtual bool isUseful()
         {
-            return CastMeleeSpellAction::isUseful() && ai->HasStrategy("close", BotState::BOT_STATE_COMBAT);
+            Unit* target = GetTarget();
+            return CastMeleeSpellAction::isUseful() && (ai->HasStrategy("close", BotState::BOT_STATE_COMBAT)|| bot->hasUnitState(UNIT_STAT_MELEE_ATTACKING));
         }
     };
 
