@@ -54,7 +54,7 @@ bool StartBossFightTrigger::IsActive()
             for (const ObjectGuid& attackerGuid : attackers)
             {
                 Unit* attacker = ai->GetUnit(attackerGuid);
-                if (attacker->GetEntry() == bossID)
+                if (attacker && attacker->GetEntry() == bossID)
                 {
                     return true;
                 }
