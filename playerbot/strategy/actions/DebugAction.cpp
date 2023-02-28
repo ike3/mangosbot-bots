@@ -59,6 +59,53 @@ bool DebugAction::Execute(Event& event)
         }
         return i == 0;
     }
+    if (text == "gy")
+    {
+        for (uint32 i = 0; i < sMapStore.GetNumRows(); ++i)
+        {
+            if (!sMapStore.LookupEntry(i))
+                continue;
+
+            uint32 mapId = sMapStore.LookupEntry(i)->MapID;
+
+            Map* map = sMapMgr.FindMap(mapId);
+
+            if (!map)
+                continue;
+
+            GraveyardManager* gy = &map->GetGraveyardManager();
+
+            if (!gy)
+                continue;
+
+            for (uint32 x = 0; x < TOTAL_NUMBER_OF_CELLS_PER_MAP; x++)
+            {
+                for (uint32 y = 0; y < TOTAL_NUMBER_OF_CELLS_PER_MAP; y++)
+                {
+                    CellPair c(x, y);
+
+                    WorldPosition pos(mapId, c);
+
+                    if (!pos.isValid())
+                        continue;
+
+                    pos.setZ(pos.getHeight());
+
+                    const uint32 zoneId = sTerrainMgr.GetZoneId(mapId, pos.getX(), pos.getY(), pos.getZ());
+                    const uint32 areaId = sTerrainMgr.GetAreaId(mapId, pos.getX(), pos.getY(), pos.getZ());
+
+                    WorldSafeLocsEntry const* graveyard = nullptr;
+                    if (areaId != 0)
+                    {
+                        WorldSafeLocsEntry const* ClosestGrave;
+                        ClosestGrave = gy->GetClosestGraveYard(pos.getX(), pos.getY(), pos.getZ(), mapId, ALLIANCE);
+                        ClosestGrave = gy->GetClosestGraveYard(pos.getX(), pos.getY(), pos.getZ(), mapId, HORDE);
+                    }
+                }
+            }
+        }
+        return true;
+    }
     else if (text.find("test") != std::string::npos)
     {
         string param = "";
