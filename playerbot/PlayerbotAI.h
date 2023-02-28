@@ -250,12 +250,13 @@ enum BotRoles
 class PacketHandlingHelper
 {
 public:
-    void AddHandler(uint16 opcode, string handler);
+    void AddHandler(uint16 opcode, string handler, bool shouldDelay = false);
     void Handle(ExternalEventHelper &helper);
     void AddPacket(const WorldPacket& packet);
 
 private:
     map<uint16, string> handlers;
+    map<uint16, bool> delay;
     stack<WorldPacket> queue;
     std::mutex m_botPacketMutex;
 };

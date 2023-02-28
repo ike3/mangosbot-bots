@@ -58,9 +58,10 @@ uint32 PlayerbotChatHandler::extractQuestId(string str)
     return cId ? atol(cId) : 0;
 }
 
-void PacketHandlingHelper::AddHandler(uint16 opcode, string handler)
+void PacketHandlingHelper::AddHandler(uint16 opcode, string handler, bool shouldDelay)
 {
     handlers[opcode] = handler;
+    delay[opcode] = shouldDelay;
 }
 
 void PacketHandlingHelper::Handle(ExternalEventHelper &helper)
@@ -73,7 +74,8 @@ void PacketHandlingHelper::Handle(ExternalEventHelper &helper)
     while (!queue.empty())
     {
         if (!helper.HandlePacket(handlers, queue.top()))
-            delayed.push(queue.top());
+            if(delay[queue.top().GetOpcode()])
+                delayed.push(queue.top());
         queue.pop();
     }
 
@@ -146,7 +148,7 @@ PlayerbotAI::PlayerbotAI(Player* bot) :
     masterIncomingPacketHandlers.AddHandler(CMSG_GAMEOBJ_USE, "use game object");
     masterIncomingPacketHandlers.AddHandler(CMSG_AREATRIGGER, "area trigger");
     masterIncomingPacketHandlers.AddHandler(CMSG_GAMEOBJ_USE, "use game object");
-    masterIncomingPacketHandlers.AddHandler(CMSG_LOOT_ROLL, "loot roll");
+    masterIncomingPacketHandlers.AddHandler(CMSG_LOOT_ROLL, "loot roll", true);
     masterIncomingPacketHandlers.AddHandler(CMSG_GOSSIP_HELLO, "gossip hello");
     masterIncomingPacketHandlers.AddHandler(CMSG_QUESTGIVER_HELLO, "gossip hello");
     masterIncomingPacketHandlers.AddHandler(CMSG_QUESTGIVER_COMPLETE_QUEST, "complete quest");
@@ -178,15 +180,15 @@ PlayerbotAI::PlayerbotAI(Player* bot) :
     botOutgoingPacketHandlers.AddHandler(SMSG_RESURRECT_REQUEST, "resurrect request");
     botOutgoingPacketHandlers.AddHandler(SMSG_INVENTORY_CHANGE_FAILURE, "cannot equip");
     botOutgoingPacketHandlers.AddHandler(SMSG_TRADE_STATUS, "trade status");
-    botOutgoingPacketHandlers.AddHandler(SMSG_LOOT_RESPONSE, "loot response");
-    botOutgoingPacketHandlers.AddHandler(SMSG_QUESTUPDATE_ADD_KILL, "quest objective completed");
-    botOutgoingPacketHandlers.AddHandler(SMSG_ITEM_PUSH_RESULT, "item push result");
+    botOutgoingPacketHandlers.AddHandler(SMSG_LOOT_RESPONSE, "loot response", true);
+    botOutgoingPacketHandlers.AddHandler(SMSG_QUESTUPDATE_ADD_KILL, "quest objective completed", true);
+    botOutgoingPacketHandlers.AddHandler(SMSG_ITEM_PUSH_RESULT, "item push result", true);
     botOutgoingPacketHandlers.AddHandler(SMSG_PARTY_COMMAND_RESULT, "party command");
-    botOutgoingPacketHandlers.AddHandler(SMSG_LEVELUP_INFO, "levelup");
-    botOutgoingPacketHandlers.AddHandler(SMSG_LOG_XPGAIN, "xpgain");
+    botOutgoingPacketHandlers.AddHandler(SMSG_LEVELUP_INFO, "levelup", true);
+    botOutgoingPacketHandlers.AddHandler(SMSG_LOG_XPGAIN, "xpgain", true);
     botOutgoingPacketHandlers.AddHandler(SMSG_TEXT_EMOTE, "receive text emote");
     botOutgoingPacketHandlers.AddHandler(SMSG_EMOTE, "receive emote");
-    botOutgoingPacketHandlers.AddHandler(SMSG_LOOT_START_ROLL, "loot start roll");
+    botOutgoingPacketHandlers.AddHandler(SMSG_LOOT_START_ROLL, "loot start roll", true);
     botOutgoingPacketHandlers.AddHandler(SMSG_SUMMON_REQUEST, "summon request");
     botOutgoingPacketHandlers.AddHandler(MSG_RAID_READY_CHECK, "ready check");
 
