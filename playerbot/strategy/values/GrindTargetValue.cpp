@@ -152,7 +152,7 @@ bool GrindTargetValue::needForQuest(Unit* target)
         {
             QuestStatusData* questStatus = sTravelMgr.getQuestStatus(bot, questId);
 
-            if (questTemplate->GetQuestLevel() > (int)bot->GetLevel())
+            if (questTemplate->GetQuestLevel() > (int)bot->GetLevel()+5)
                 continue;
 
             for (int j = 0; j < QUEST_OBJECTIVES_COUNT; j++)
