@@ -60,4 +60,21 @@ namespace ai
         virtual vector<string> GetUsedValues() { return {}; }
 #endif 
     };
+
+    class ResetAction : public Action
+    {
+    public:
+        ResetAction(PlayerbotAI* ai, string name = "reset") : Action(ai, name) {}
+        virtual bool Execute(Event& event) override { ai->Reset(true); return true; };
+
+#ifdef GenerateBotHelp
+        virtual string GetHelpName() { return "reset"; } //Must equal iternal name
+        virtual string GetHelpDescription()
+        {
+            return "Reset internal buffers to clear current behavior.";
+        }
+        virtual vector<string> GetUsedActions() { return { "reset ai" }; }
+        virtual vector<string> GetUsedValues() { return {}; }
+#endif 
+    };
 }

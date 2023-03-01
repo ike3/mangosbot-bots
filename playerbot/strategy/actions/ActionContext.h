@@ -58,6 +58,7 @@
 #include "BotStateActions.h"
 #include "WaitForAttackAction.h"
 #include "PullActions.h"
+#include "ResetAiAction.h"
 
 #include "OnyxiasLairDungeonActions.h"
 #include "MoltenCoreDungeonActions.h"
@@ -179,6 +180,7 @@ namespace ai
             creators["buy tabard"] = &ActionContext::buy_tabard;
             creators["guild manage nearby"] = &ActionContext::guild_manage_nearby;
             creators["use trinket"] = &ActionContext::use_trinket;
+            creators["reset"] = &ActionContext::reset;
             creators["goblin sapper"] = &ActionContext::goblin_sapper;
             creators["oil of immolation"] = &ActionContext::oil_of_immolation;
             creators["dark rune"] = &ActionContext::dark_rune;
@@ -417,6 +419,7 @@ namespace ai
         static Action* buy_tabard(PlayerbotAI* ai) { return new BuyTabardAction(ai); }
         static Action* guild_manage_nearby(PlayerbotAI* ai) { return new GuildManageNearbyAction(ai); }
         static Action* use_trinket(PlayerbotAI* ai) { return new UseTrinketAction(ai); }
+        static Action* reset(PlayerbotAI* ai) { return new ResetAction(ai); }
 
         // item helpers
         static Action* goblin_sapper(PlayerbotAI* ai) { return new UseGoblinSapperChargeAction(ai); }
