@@ -3493,13 +3493,13 @@ GrouperType PlayerbotAI::GetGrouperType()
         return GrouperType::SOLO;
     if (grouperNumber < 70)
         return GrouperType::MEMBER;
-    if (grouperNumber < 75)
+    if (grouperNumber < 75 || bot->GetLevel() < 3)
         return GrouperType::LEADER_2;
-    if (grouperNumber < 80)
+    if (grouperNumber < 80 || bot->GetLevel() < 5)
         return GrouperType::LEADER_3;
-    if (grouperNumber < 85)
+    if (grouperNumber < 85 || bot->GetLevel() < 7)
         return GrouperType::LEADER_4;
-    if (grouperNumber <= 90)
+    if (grouperNumber <= 90 || bot->GetLevel() < 9)
         return GrouperType::LEADER_5;
 #ifdef MANGOSBOT_ZERO
     if (grouperNumber <= 95)
