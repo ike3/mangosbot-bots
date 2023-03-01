@@ -66,7 +66,7 @@ namespace ai
             if (!player)
                 continue;
 
-            if (!player->GetMapId() != bot->GetMapId())
+            if (player->GetMapId() != bot->GetMapId())
                 continue;
 
             if (player->GetGroup())
@@ -89,6 +89,9 @@ namespace ai
 
                 if (botAi->HasActivePlayerMaster()) //Do not invite alts of active players. 
                     continue;
+
+                if (botAi->IsRealPlayer() && !sPlayerbotAIConfig.randomBotGroupNearby)
+                    return false;
             }
             else
             {
