@@ -82,6 +82,9 @@ bool OutNumberedTrigger::IsActive()
         if (!creature)
             continue;
 
+        if (!creature->CanAttackOnSight(bot))
+            continue;
+
         int32 dLevel = creature->GetLevel() - botLevel;
 
         healthMod = creature->GetHealthPercent() / 100.0f;
