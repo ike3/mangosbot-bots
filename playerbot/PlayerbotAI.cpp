@@ -1925,22 +1925,22 @@ bool PlayerbotAI::IsRanged(Player* player)
 
 bool PlayerbotAI::IsTank(Player* player)
 {
-    BotRoles botRoles = AiFactory::GetPlayerRoles(player);
-
     PlayerbotAI* botAi = player->GetPlayerbotAI();
     if (botAi)
-        return botAi->ContainsStrategy(STRATEGY_TYPE_TANK) || (botRoles & BOT_ROLE_TANK);
+        return botAi->ContainsStrategy(STRATEGY_TYPE_TANK);
+       
+    BotRoles botRoles = AiFactory::GetPlayerRoles(player);
 
     return (botRoles & BOT_ROLE_TANK) != 0;
 }
 
 bool PlayerbotAI::IsHeal(Player* player)
 {
-    BotRoles botRoles = AiFactory::GetPlayerRoles(player);
-
     PlayerbotAI* botAi = player->GetPlayerbotAI();
     if (botAi)
-        return botAi->ContainsStrategy(STRATEGY_TYPE_HEAL) || (botRoles & BOT_ROLE_HEALER);
+        return botAi->ContainsStrategy(STRATEGY_TYPE_HEAL);
+
+    BotRoles botRoles = AiFactory::GetPlayerRoles(player);
 
     return (botRoles & BOT_ROLE_HEALER) != 0;
 }
