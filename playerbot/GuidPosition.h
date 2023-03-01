@@ -8,8 +8,8 @@ namespace ai
     {
     public:
         GuidPosition() : ObjectGuid(), WorldPosition() {}
-        GuidPosition(ObjectGuid guid) { ObjectGuid::Set(guid); WorldPosition::set(guid); };
         GuidPosition(ObjectGuid guid, WorldPosition pos) : ObjectGuid(guid), WorldPosition(pos) {};
+        GuidPosition(ObjectGuid guid) : ObjectGuid(guid) { WorldPosition::set(guid); }
         GuidPosition(uint64 const& guid, WorldPosition const& pos) : ObjectGuid(guid), WorldPosition(pos) {};
         //template<class T>
         //GuidPosition(ObjectGuid guid, T) : ObjectGuid(guid) {WorldPosition::set(WorldPosition(T))};
@@ -31,6 +31,8 @@ namespace ai
         Unit* GetUnit() const;
         GameObject* GetGameObject();
         Player* GetPlayer() const;
+
+        void updatePosition() {WorldObject* wo = GetWorldObject(); if (wo) WorldPosition::set(wo); }
 
         bool HasNpcFlag(NPCFlags flag) { return IsCreature() && GetCreatureTemplate()->NpcFlags & flag; }
         bool isGoType(GameobjectTypes type) { return IsGameObject() && GetGameObjectInfo()->type == type; }

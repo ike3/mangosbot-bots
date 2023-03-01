@@ -42,21 +42,21 @@ void WorldPosition::set(const ObjectGuid& guid)
     {
         Player* player = sObjectAccessor.FindPlayer(guid);
         if (player)
-            set(WorldLocation(player->GetMapId(), player->GetPositionX(), player->GetPositionY(), player->GetPositionZ(), player->GetOrientation()));
+            set(player);
         break;
     }
     case HIGHGUID_GAMEOBJECT:
-    {
+    {        
         GameObjectDataPair const* gpair = sObjectMgr.GetGODataPair(guid.GetCounter());
         if (gpair)
-            set(WorldLocation(gpair->second.mapid, gpair->second.posX, gpair->second.posY, gpair->second.posZ, gpair->second.orientation));
+            set(gpair);
         break;
     }
     case HIGHGUID_UNIT:
     {
         CreatureDataPair const* cpair = sObjectMgr.GetCreatureDataPair(guid.GetCounter());
         if (cpair)
-            set(WorldLocation(cpair->second.mapid, cpair->second.posX, cpair->second.posY, cpair->second.posZ, cpair->second.orientation));
+            set(cpair);
         break;
     }
     case HIGHGUID_TRANSPORT:
@@ -67,7 +67,6 @@ void WorldPosition::set(const ObjectGuid& guid)
     case HIGHGUID_CORPSE:
         return;
     }
-
 }
 
 WorldPosition::WorldPosition(const vector<WorldPosition*>& list, const WorldPositionConst conType)
