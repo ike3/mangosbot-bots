@@ -320,6 +320,7 @@ namespace ai
             creators["petition signs"] = &ValueContext::petition_signs;
 
             creators["experience"] = &ValueContext::experience;
+            creators["honor"] = &ValueContext::honor;
 
             creators["entry loot usage"] = &ValueContext::entry_loot_usage;
             creators["has upgrade"] = &ValueContext::has_upgrade;
@@ -564,6 +565,7 @@ namespace ai
         static UntypedValue* petition_signs(PlayerbotAI* ai) { return new PetitionSignsValue(ai); }        
 
         static UntypedValue* experience(PlayerbotAI* ai) { return new ExperienceValue(ai); }
+        static UntypedValue* honor(PlayerbotAI* ai) { return new HonorValue(ai); }
 
         static UntypedValue* entry_loot_usage(PlayerbotAI* ai) { return new EntryLootUsageValue(ai); }
         static UntypedValue* has_upgrade(PlayerbotAI* ai) { return new HasUpgradeValue(ai); }

@@ -192,4 +192,14 @@ namespace ai
 
         virtual uint32 Calculate() { return bot->GetUInt32Value(PLAYER_XP);}
     };
+
+    class HonorValue : public MemoryCalculatedValue<uint32>
+    {
+    public:
+        HonorValue(PlayerbotAI* ai, string name = "honor", uint32 checkInterval = 60) : MemoryCalculatedValue<uint32>(ai, name, checkInterval) {}
+
+        virtual bool EqualToLast(uint32 value) { return value != lastValue; }
+
+        virtual uint32 Calculate() { return bot->GetUInt32Value(PLAYER_FIELD_LIFETIME_HONORABLE_KILLS); }
+    };
 }
