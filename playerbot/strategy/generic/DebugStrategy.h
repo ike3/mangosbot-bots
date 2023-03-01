@@ -120,4 +120,19 @@ namespace ai
         virtual vector<string> GetRelatedStrategies() { return { "debug" , "threat" }; }
 #endif
     };
+    
+    class DebugGrindStrategy : public Strategy
+    {
+    public:
+        DebugGrindStrategy(PlayerbotAI* ai) : Strategy(ai) {}
+        virtual int GetType() { return STRATEGY_TYPE_NONCOMBAT; }
+        virtual string getName() { return "debug grind"; }
+#ifdef GenerateBotHelp
+        virtual string GetHelpName() { return "debug grind"; } //Must equal iternal name
+        virtual string GetHelpDescription() {
+            return "This strategy will make the bot give chat feedback about grind target selection.";
+        }
+        virtual vector<string> GetRelatedStrategies() { return { "debug" , "threat" }; }
+#endif
+    };
 }

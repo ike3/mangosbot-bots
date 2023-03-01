@@ -42,8 +42,15 @@ Unit* GrindTargetValue::FindTargetForGrinding(int assistCount)
             continue;
 
         if (!bot->InBattleGround() && !AI_VALUE2(bool, "can free target", GuidPosition(unit).to_string())) //Do not grind mobs far away from master.
+        {
+            if (ai->HasStrategy("debug grind", BotState::BOT_STATE_NON_COMBAT))
+                ai->TellMaster(chat->formatWorldobject(unit) + "(hostile) ignored (out of free range).");
             continue;
+        }
 
+        if (ai->HasStrategy("debug grind", BotState::BOT_STATE_NON_COMBAT))
+            ai->TellMaster(chat->formatWorldobject(unit) +"(hostile) selected.");
+       
         return unit;
     }
 
@@ -64,33 +71,85 @@ Unit* GrindTargetValue::FindTargetForGrinding(int assistCount)
             continue;
 
         if (abs(bot->GetPositionZ() - unit->GetPositionZ()) > sPlayerbotAIConfig.spellDistance)
+        {
+            if (ai->HasStrategy("debug grind", BotState::BOT_STATE_NON_COMBAT))
+                ai->TellMaster(chat->formatWorldobject(unit) + " ignored (to far above/below).");
             continue;
+        }
 
         if (!bot->InBattleGround() && !AI_VALUE2(bool, "can free target", GuidPosition(unit).to_string())) //Do not grind mobs far away from master.
+        {
+            if (ai->HasStrategy("debug grind", BotState::BOT_STATE_NON_COMBAT))
+                ai->TellMaster(chat->formatWorldobject(unit) + " ignored (out of free range).");
             continue;
-
-        if (!bot->InBattleGround() && GetTargetingPlayerCount(unit) > assistCount)
-            continue;
+        }
 
         if (!bot->InBattleGround() && (int)unit->GetLevel() - (int)bot->GetLevel() > 4 && !unit->GetObjectGuid().IsPlayer())
+        {
+            if (ai->HasStrategy("debug grind", BotState::BOT_STATE_NON_COMBAT))
+                ai->TellMaster(chat->formatWorldobject(unit) + " ignored (" + to_string((int)unit->GetLevel() - (int)bot->GetLevel()) + " levels above bot).");
             continue;
+        }
+
+        Creature* creature = dynamic_cast<Creature*>(unit);
+        if (creature && creature->GetCreatureInfo() && creature->GetCreatureInfo()->Rank > CREATURE_ELITE_NORMAL && !AI_VALUE(bool, "can fight elite"))
+        {
+            if (ai->HasStrategy("debug grind", BotState::BOT_STATE_NON_COMBAT))
+                ai->TellMaster(chat->formatWorldobject(unit) + " ignored (can not fight elites currently).");
+            continue;
+        }
+
+        if (!AttackersValue::IsValid(unit, bot, nullptr, false, false))
+        {
+            if (ai->HasStrategy("debug grind", BotState::BOT_STATE_NON_COMBAT))
+                ai->TellMaster(chat->formatWorldobject(unit) + " ignored (is pet or evading/unkillable).");
+            continue;
+        }
+
+        if (!PossibleAttackTargetsValue::IsPossibleTarget(unit, bot, sPlayerbotAIConfig.sightDistance, false))
+        {
+            if (ai->HasStrategy("debug grind", BotState::BOT_STATE_NON_COMBAT))
+                ai->TellMaster(chat->formatWorldobject(unit) + " ignored (tapped, cced or out of range).");
+            continue;
+        }
+
+        if (creature&& creature->IsCritter() && urand(0,10))
+        {
+            if (ai->HasStrategy("debug grind", BotState::BOT_STATE_NON_COMBAT))
+                ai->TellMaster(chat->formatWorldobject(unit) + " ignored (ignore critters).");
+            continue;
+        }
+
+        float newdistance = sServerFacade.GetDistance2d(bot, unit);
 
         if (needForQuestMap.find(unit->GetEntry()) == needForQuestMap.end())
             needForQuestMap[unit->GetEntry()] = needForQuest(unit);
 
         if (!needForQuestMap[unit->GetEntry()])
-            if (urand(0, 100) < 75 || (context->GetValue<TravelTarget*>("travel target")->Get()->isWorking() && context->GetValue<TravelTarget*>("travel target")->Get()->getDestination()->getName() != "GrindTravelDestination"))
+        {
+            if (urand(0, 100) < 99 && AI_VALUE(TravelTarget*, "travel target")->isWorking() && AI_VALUE(TravelTarget*, "travel target")->getDestination()->getName() != "GrindTravelDestination")
+            {
+                if (ai->HasStrategy("debug grind", BotState::BOT_STATE_NON_COMBAT))
+                    ai->TellMaster(chat->formatWorldobject(unit) + " ignored (not needed for active quest).");
+
                 continue;
+            }
+            else if (urand(0, 100) < 75)
+            {
+                if (ai->HasStrategy("debug grind", BotState::BOT_STATE_NON_COMBAT))
+                    if ((context->GetValue<TravelTarget*>("travel target")->Get()->isWorking() && context->GetValue<TravelTarget*>("travel target")->Get()->getDestination()->getName() != "GrindTravelDestination"))
+                        ai->TellMaster(chat->formatWorldobject(unit) + " increased distance (not needed for quest).");
 
-        Creature* creature = dynamic_cast<Creature*>(unit);
-        if (creature && creature->GetCreatureInfo() && creature->GetCreatureInfo()->Rank > CREATURE_ELITE_NORMAL && !AI_VALUE(bool, "can fight elite"))
-            continue;
+                newdistance += 20;
+            }
+        }
 
-        if (!AttackersValue::IsValid(unit, bot, nullptr, false, false))
-            continue;
-
-        if (!PossibleAttackTargetsValue::IsPossibleTarget(unit, bot, sPlayerbotAIConfig.sightDistance, false))
-            continue;
+        if (!bot->InBattleGround() && GetTargetingPlayerCount(unit) > assistCount)
+        {
+            if (ai->HasStrategy("debug grind", BotState::BOT_STATE_NON_COMBAT))
+                ai->TellMaster(chat->formatWorldobject(unit) + " increased distance (" + to_string(GetTargetingPlayerCount(unit)) + " bots already targeting).");
+            newdistance =+ GetTargetingPlayerCount(unit) * 5;
+        }
 
         if (group)
         {
@@ -101,17 +160,16 @@ Unit* GrindTargetValue::FindTargetForGrinding(int assistCount)
                 if (!member || !sServerFacade.IsAlive(member))
                     continue;
 
-                float d = sServerFacade.GetDistance2d(member, unit);
-                if (!result || d < distance)
+                newdistance = sServerFacade.GetDistance2d(member, unit);
+                if (!result || newdistance < distance)
                 {
-                    distance = d;
+                    distance = newdistance;
                     result = unit;
                 }
             }
         }
         else
         {
-            float newdistance = sServerFacade.GetDistance2d(bot, unit);
             if (!result || (newdistance < distance && urand(0, abs(distance - newdistance)) > sPlayerbotAIConfig.sightDistance * 0.1))
             {
                 distance = newdistance;
@@ -119,6 +177,12 @@ Unit* GrindTargetValue::FindTargetForGrinding(int assistCount)
             }
         }
     }
+
+    if (ai->HasStrategy("debug grind", BotState::BOT_STATE_NON_COMBAT))
+        if(result)
+            ai->TellMaster(chat->formatWorldobject(result) + " selected.");
+        else
+            ai->TellMaster("No grind target found.");
 
     return result;
 }
@@ -152,7 +216,7 @@ bool GrindTargetValue::needForQuest(Unit* target)
         {
             QuestStatusData* questStatus = sTravelMgr.getQuestStatus(bot, questId);
 
-            if (questTemplate->GetQuestLevel() > (int)bot->GetLevel()+5)
+            if ((int32)questTemplate->GetQuestLevel() > (int32)bot->GetLevel()+5)
                 continue;
 
             for (int j = 0; j < QUEST_OBJECTIVES_COUNT; j++)
