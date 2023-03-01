@@ -129,7 +129,7 @@ bool ChooseRpgTargetAction::Execute(Event& event)
 {
     TravelTarget* travelTarget = AI_VALUE(TravelTarget*, "travel target");
 
-    unordered_map<ObjectGuid, uint32> targets;
+    unordered_map<ObjectGuid, int32> targets;
     vector<ObjectGuid> targetList;
 
     list<ObjectGuid> possibleTargets = AI_VALUE(list<ObjectGuid>, "possible rpg targets");
@@ -143,8 +143,16 @@ bool ChooseRpgTargetAction::Execute(Event& event)
     for (auto target : possibleObjects)
         targets[target] = 0.0f;
 
-    for (auto target : possiblePlayers)
-        targets[target] = 0.0f;
+    for (uint32 i = 0; i < 5 && possiblePlayers.size(); i++)
+    {
+        auto p = possiblePlayers.begin();
+        std::advance(p, urand(0, possiblePlayers.size() - 1));
+        if (ignoreList.find(*p) != ignoreList.end())
+            continue;
+
+        targets[*p] = 0.0f;
+        possiblePlayers.erase(p);
+    }
 
     if (targets.empty())
     {
@@ -174,7 +182,10 @@ bool ChooseRpgTargetAction::Execute(Event& event)
 
     context->ClearExpiredValues("can free move",10); //Clean up old free move to.
 
-    uint16 checked = 0;
+    uint16 checked = 0, maxCheck = 50;
+
+    if (ai->HasRealPlayerMaster())
+        maxCheck = 500;
 
     for (auto& guid :targetList)
     {
@@ -182,8 +193,6 @@ bool ChooseRpgTargetAction::Execute(Event& event)
 
         if (!guidP)
             continue;
-
-        float priority = 1;
 
         if (guidP.GetWorldObject() && !AI_VALUE2(bool, "can free move to", guidP.to_string()))
             continue;
@@ -223,11 +232,21 @@ bool ChooseRpgTargetAction::Execute(Event& event)
 
         float relevance = getMaxRelevance(guidP);
 
+        if (guidP.GetEntry() == travelTarget->getEntry())
+            relevance *= 1.5f;
+
         if (!hasGoodRelevance || relevance > 1)
             targets[guidP] = relevance;
 
         if (targets[guidP] > 1)
+        {
             hasGoodRelevance = true;
+            uint32 mod = guidP.fDist(bot);
+            if (mod > 60 + targets[guidP])
+                targets[guidP] = 2;
+            else
+                targets[guidP] += 60 - mod;
+        }
 
         checked++;
 
@@ -304,6 +323,9 @@ bool ChooseRpgTargetAction::Execute(Event& event)
     {
         guidps.push_back(target.first);
         relevances.push_back(target.second);
+
+        if (target.second == 1)
+            ignoreList.insert(target.first);
     }
 
     std::mt19937 gen(time(0));
@@ -330,6 +352,7 @@ bool ChooseRpgTargetAction::Execute(Event& event)
     }
 
     SET_AI_VALUE(GuidPosition, "rpg target", guidP);
+    SET_AI_VALUE(set<ObjectGuid>&, "ignore rpg target", ignoreList);
 
     return true;
 }
