@@ -200,6 +200,10 @@ namespace ai
 
         virtual bool EqualToLast(uint32 value) { return value != lastValue; }
 
+#ifdef MANGOSBOT_ZERO
         virtual uint32 Calculate() { return bot->GetUInt32Value(PLAYER_FIELD_LIFETIME_HONORABLE_KILLS); }
+#else
+        virtual uint32 Calculate() { return bot->GetUInt32Value(PLAYER_FIELD_LIFETIME_HONORBALE_KILLS); }
+#endif
     };
 }
