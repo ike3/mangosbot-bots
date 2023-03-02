@@ -168,7 +168,7 @@ BotRoles AiFactory::GetPlayerRoles(Player* player)
         case CLASS_DRUID:
             if (player->HasAura(5487) || player->HasAura(9634)) //Bear form, Dire bear form
                 role = BOT_ROLE_TANK;
-            else if (tab == 1)
+            else if (tab == 0)
                 role = BOT_ROLE_DPS;
             else if (tab == 1)
                 role = (BotRoles)(BOT_ROLE_TANK | BOT_ROLE_DPS);
