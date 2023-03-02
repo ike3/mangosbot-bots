@@ -104,7 +104,7 @@ namespace ai
         if (abs(int32(master->GetLevel() - bot->GetLevel())) > 4)
             return true;
 
-        if (MEM_AI_VALUE(uint32, "experience")->LastChangeDelay() > 15 * MINUTE && MEM_AI_VALUE(uint32, "honor")->LastChangeDelay() > 15)
+        if (MEM_AI_VALUE(uint32, "experience")->LastChangeDelay() > 15 * MINUTE && MEM_AI_VALUE(uint32, "honor")->LastChangeDelay() > 15 * MINUTE)
             return true;
 
         return false;
