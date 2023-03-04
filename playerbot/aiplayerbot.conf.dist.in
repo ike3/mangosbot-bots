@@ -127,6 +127,14 @@ AiPlayerbot.RandomBotGroupNearby = 1
 # Bots without a master will say their lines
 # AiPlayerbot.RandomBotSayWithoutMaster = 0
 
+# Speeds up respawn of mobs after being killed by a bot. This only affects the delays after being fully looted.
+# AiPlayerbot.RespawnModNeutral = 10.0    # Each nearby player will decrease the respawn time by 10% for neutral mobs.
+# AiPlayerbot.RespawnModHostile = 5.0     # Each nearby player will decrease the respawn time by 5% for hostile mobs.
+# AiPlayerbot.RespawnModThreshold = 10    # Atleast 10 players (including the bot) needs to be near the bot before respawns are modified.
+# AiPlayerbot.RespawnModMax = 18          # After the threshold it will decrease the respawn for up to 18 nearby players max.
+# AiPlayerbot.RespawnModForPlayerBots = 0 # Bots with a player master are not affected.
+# AiPlayerbot.RespawnModForInstances = 0  # Mobs inside instances are not affected.
+
 # Automation
 
 # Bots pick their quest reward (yes = picks first useful item, no = list all rewards, ask = pick useful item and lists if multiple)

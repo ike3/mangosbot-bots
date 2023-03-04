@@ -154,6 +154,9 @@ public:
     bool syncLevelWithPlayers;
     bool freeFood;
     uint32 tweakValue; //Debugging config
+    float respawnModNeutral, respawnModHostile;
+    uint32 respawnModThreshold, respawnModMax;
+    bool respawnModForPlayerBots, respawnModForInstances;
 
     std::mutex m_logMtx;
 

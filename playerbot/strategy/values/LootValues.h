@@ -23,6 +23,9 @@ namespace ai
         friend class LootMgr;
 
         vector<LootItem> GetLootContentFor(Player* player) const;
+        uint32 GetLootStatusFor(Player const* player) const;
+        bool IsLootedFor(Player const* player) const;
+        bool IsLootedForAll() const;
 
         // What is looted
         WorldObject* m_lootTarget;
