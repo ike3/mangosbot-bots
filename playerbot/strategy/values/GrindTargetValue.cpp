@@ -34,6 +34,9 @@ Unit* GrindTargetValue::FindTargetForGrinding(int assistCount)
     Group* group = bot->GetGroup();
     Player* master = GetMaster();
 
+    if (master && (master == bot || master->GetMapId() != bot->GetMapId() || master->IsBeingTeleported() || !master->GetPlayerbotAI()))
+        master = nullptr;
+
     list<ObjectGuid> attackers = context->GetValue<list<ObjectGuid>>("possible attack targets")->Get();
     for (list<ObjectGuid>::iterator i = attackers.begin(); i != attackers.end(); i++)
     {
@@ -81,6 +84,13 @@ Unit* GrindTargetValue::FindTargetForGrinding(int assistCount)
         {
             if (ai->HasStrategy("debug grind", BotState::BOT_STATE_NON_COMBAT))
                 ai->TellMaster(chat->formatWorldobject(unit) + " ignored (out of free range).");
+            continue;
+        }
+
+        if (!bot->InBattleGround() && master && ai->HasStrategy("follow", BotState::BOT_STATE_NON_COMBAT) && sServerFacade.GetDistance2d(master, unit) > sPlayerbotAIConfig.lootDistance)
+        {
+            if (ai->HasStrategy("debug grind", BotState::BOT_STATE_NON_COMBAT))
+                ai->TellMaster(chat->formatWorldobject(unit) + " ignored (far from master).");
             continue;
         }
 
