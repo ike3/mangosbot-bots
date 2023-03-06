@@ -30,10 +30,10 @@ ItemQualifier::ItemQualifier(string qualifier, bool linkQualifier)
     uint32 propertyPosition = linkQualifier ? 6 : 5;
 #endif
 
-    if (numbers.size() > 1)
+    if (numbers.size() > 1 && !numbers[1].empty())
         enchantId = stoi(numbers[1]);
 
-    if (numbers.size() > propertyPosition)
+    if (numbers.size() > propertyPosition && !numbers[propertyPosition].empty())
         randomPropertyId = stoi(numbers[propertyPosition]);
 
 #ifndef MANGOSBOT_ZERO
@@ -41,10 +41,14 @@ ItemQualifier::ItemQualifier(string qualifier, bool linkQualifier)
 
     if (numbers.size() > gemPosition + 3)
     {
-        gem1 = stoi(numbers[gemPosition]);
-        gem2 = stoi(numbers[gemPosition+1]);
-        gem3 = stoi(numbers[gemPosition+2]);
-        gem4 = stoi(numbers[gemPosition+3]);
+        if(!numbers[gemPosition].empty())
+            gem1 = stoi(numbers[gemPosition]);
+        if (!numbers[gemPosition+1].empty())
+            gem2 = stoi(numbers[gemPosition+1]);
+        if (!numbers[gemPosition + 1].empty())
+            gem3 = stoi(numbers[gemPosition+2]);
+        if (!numbers[gemPosition + 1].empty())
+            gem4 = stoi(numbers[gemPosition+3]);
     }
 #endif;
 }
