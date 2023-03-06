@@ -941,7 +941,7 @@ void PlayerbotFactory::AddItemStats(uint32 mod, uint8 &sp, uint8 &ap, uint8 &tan
     case ITEM_MOD_STAMINA:
     case ITEM_MOD_AGILITY:
     case ITEM_MOD_STRENGTH:
-#ifndef MANGOSBOT_ZERO:
+#ifndef MANGOSBOT_ZERO
     case ITEM_MOD_HIT_MELEE_RATING:
     case ITEM_MOD_HIT_RANGED_RATING:
     case ITEM_MOD_CRIT_MELEE_RATING:
@@ -971,16 +971,19 @@ void PlayerbotFactory::AddItemSpellStats(uint32 smod, uint8& sp, uint8& ap, uint
     case SPELL_AURA_MOD_HEALING_DONE:
     case SPELL_AURA_MOD_SPELL_CRIT_CHANCE:
     case SPELL_AURA_MOD_POWER_REGEN:
+#ifndef MANGOSBOT_ZERO
     case SPELL_AURA_MOD_MANA_REGEN_FROM_STAT:
     case SPELL_AURA_HASTE_SPELLS:
+#endif
         sp++;
         break;
     }
 
     switch (smod)
     {
-
+#ifndef MANGOSBOT_ZERO
     case SPELL_AURA_MOD_EXPERTISE:
+#endif
     case SPELL_AURA_MOD_ATTACK_POWER:
     case SPELL_AURA_MOD_CRIT_PERCENT:
     case SPELL_AURA_MOD_HIT_CHANCE:
@@ -3452,6 +3455,7 @@ void PlayerbotFactory::LoadEnchantContainer()
 }*/
 void PlayerbotFactory::InitGems() //WIP
 {
+#ifndef MANGOSBOT_ZERO
     vector<uint32> gems = sRandomItemMgr.GetGemsList();
     for (int slot = EQUIPMENT_SLOT_START; slot < EQUIPMENT_SLOT_END; slot++)
     {
@@ -3589,6 +3593,7 @@ void PlayerbotFactory::InitGems() //WIP
             }
         }
     }
+#endif
 }
 
 void PlayerbotFactory::InitTaxiNodes()
