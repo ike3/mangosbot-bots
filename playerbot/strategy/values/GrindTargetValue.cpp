@@ -7,6 +7,7 @@
 #include "AttackersValue.h"
 #include "PossibleAttackTargetsValue.h"
 #include "../actions/ChooseTargetActions.h"
+#include "tools/Formulas.h"
 
 using namespace ai;
 
@@ -123,7 +124,7 @@ Unit* GrindTargetValue::FindTargetForGrinding(int assistCount)
             continue;
         }
 
-        if (creature&& creature->IsCritter() && urand(0,10))
+        if (creature && creature->IsCritter() && urand(0, 10))
         {
             if (ai->HasStrategy("debug grind", BotState::BOT_STATE_NON_COMBAT))
                 ai->TellMaster(chat->formatWorldobject(unit) + " ignored (ignore critters).");
@@ -141,6 +142,14 @@ Unit* GrindTargetValue::FindTargetForGrinding(int assistCount)
             {
                 if (ai->HasStrategy("debug grind", BotState::BOT_STATE_NON_COMBAT))
                     ai->TellMaster(chat->formatWorldobject(unit) + " ignored (not needed for active quest).");
+
+                continue;
+            }
+            else if (creature && !MaNGOS::XP::Gain(bot, creature) && urand(0, 50))
+            {
+                if (ai->HasStrategy("debug grind", BotState::BOT_STATE_NON_COMBAT))
+                    if ((context->GetValue<TravelTarget*>("travel target")->Get()->isWorking() && context->GetValue<TravelTarget*>("travel target")->Get()->getDestination()->getName() != "GrindTravelDestination"))
+                        ai->TellMaster(chat->formatWorldobject(unit) + " ignored (not xp and not needed for quest).");
 
                 continue;
             }
