@@ -18,6 +18,55 @@ vector<LootItem> LootAccess::GetLootContentFor(Player* player) const
 	return retvec;
 }
 
+// Get loot status for a specified player
+uint32 LootAccess::GetLootStatusFor(Player const* player) const
+{
+	uint32 status = 0;
+
+	if (m_isFakeLoot && m_playersOpened.empty())
+		return LOOT_STATUS_FAKE_LOOT;
+
+	if (m_gold != 0)
+		status |= LOOT_STATUS_CONTAIN_GOLD;
+
+	for (auto lootItem : m_lootItems)
+	{
+		Loot const* loot = reinterpret_cast<Loot const*>(this);
+		LootSlotType slotType = lootItem->GetSlotTypeForSharedLoot(player, loot);
+		if (slotType == MAX_LOOT_SLOT_TYPE)
+			continue;
+
+		status |= LOOT_STATUS_NOT_FULLY_LOOTED;
+
+		if (lootItem->freeForAll)
+			status |= LOOT_STATUS_CONTAIN_FFA;
+
+		if (lootItem->isReleased)
+			status |= LOOT_STATUS_CONTAIN_RELEASED_ITEMS;
+	}
+	return status;
+}
+
+// Is there is any loot available for provided player
+bool LootAccess::IsLootedFor(Player const* player) const
+{
+	return (GetLootStatusFor(player) == 0);
+}
+
+bool LootAccess::IsLootedForAll() const
+{
+	for (auto itr : m_ownerSet)
+	{
+		Player* player = ObjectAccessor::FindPlayer(itr);
+		if (!player)
+			continue;
+
+		if (!IsLootedFor(player))
+			return false;
+	}
+	return true;
+}
+
 LootTemplateAccess const* DropMapValue::GetLootTemplate(ObjectGuid guid, LootType type)
 {
 	LootTemplate const* lTemplate = nullptr;

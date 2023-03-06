@@ -535,8 +535,23 @@ bool UseItemAction::UseItem(Item* item, ObjectGuid goGuid, Item* itemTarget, Uni
       if (!spellId)
          continue;
 
-      if (!ai->CanCastSpell(spellId, bot, 0, false))
-         continue;
+      bool canCast = false;
+
+      if (unitTarget && ai->CanCastSpell(spellId, unitTarget, 0, false))
+          canCast = true;
+      if (!canCast && goGuid)
+      {
+          GameObject* go = ai->GetGameObject(goGuid);
+
+          if (go)
+              if (ai->CanCastSpell(spellId, go, 0, false))
+                canCast = true;
+      }
+      if (!canCast && ai->CanCastSpell(spellId, bot, 0, false))
+          canCast = true;
+
+      if (!canCast)
+          return false;
 
       const SpellEntry* const pSpellInfo = sServerFacade.LookupSpellInfo(spellId);
       if (pSpellInfo->Targets & TARGET_FLAG_ITEM)

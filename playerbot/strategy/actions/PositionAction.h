@@ -27,6 +27,7 @@ namespace ai
     {
     public:
         GuardAction(PlayerbotAI* ai) : MoveToPositionAction(ai, "move to position", "guard") {}
+        virtual bool isUseful();
     };
 
     class SetReturnPositionAction : public Action

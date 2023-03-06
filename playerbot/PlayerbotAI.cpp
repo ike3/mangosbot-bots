@@ -36,6 +36,7 @@
 #include "PlayerbotTextMgr.h"
 #include "RandomItemMgr.h"
 #include "strategy/ItemVisitors.h"
+#include "strategy/values/LootValues.h"
 #ifdef MANGOSBOT_TWO
 #include "Entities/Vehicle.h"
 #endif
@@ -4695,6 +4696,81 @@ ItemIds PlayerbotAI::InventoryFindOutfitItems(string name)
             return InventoryParseOutfitItems(outfit);
     }
     return set<uint32>();
+}
+
+void PlayerbotAI::AccelerateRespawn(Creature* creature, float accelMod)
+{
+    if (!creature)
+        return;
+
+    if (!sPlayerbotAIConfig.respawnModForPlayerBots && HasRealPlayerMaster())
+        return;
+
+    if (!sPlayerbotAIConfig.respawnModForInstances && !WorldPosition(bot).isOverworld())
+        return;
+
+    AiObjectContext* context = aiObjectContext;
+    if (!accelMod)
+    {
+        if (!sPlayerbotAIConfig.respawnModHostile && !sPlayerbotAIConfig.respawnModNeutral)
+            return;
+
+        uint32 playersNr = AI_VALUE_LAZY(list<ObjectGuid>, "nearest friendly players").size()+1;
+      
+     
+        if (playersNr <= sPlayerbotAIConfig.respawnModThreshold)
+            return;
+
+        playersNr = std::min(playersNr - sPlayerbotAIConfig.respawnModThreshold, sPlayerbotAIConfig.respawnModMax);
+
+        accelMod = playersNr * (creature->CanAttackOnSight(bot) ? sPlayerbotAIConfig.respawnModHostile : sPlayerbotAIConfig.respawnModNeutral) * 0.01f;
+    }
+
+    if (!accelMod)
+        return;
+
+    uint32 m_respawnDelay;
+    uint32 m_corpseAccelerationDecayDelay;
+
+    if (accelMod >= 1) 
+    {
+        m_respawnDelay = 0;
+        m_corpseAccelerationDecayDelay = 0;
+    }
+    else
+    {
+        CreatureData const* data = sObjectMgr.GetCreatureData(creature->GetDbGuid());
+
+        if (!data)
+            return;
+
+        m_respawnDelay = data->GetRandomRespawnTime() * IN_MILLISECONDS;
+        m_corpseAccelerationDecayDelay = MINIMUM_LOOTING_TIME;
+
+        uint32 totalDelay = m_respawnDelay + m_corpseAccelerationDecayDelay;
+
+        if (m_respawnDelay < totalDelay * accelMod)
+        {
+            m_respawnDelay = 0;
+            m_corpseAccelerationDecayDelay -= (totalDelay * accelMod) - m_respawnDelay;
+        }
+        else
+            m_respawnDelay -= totalDelay * accelMod;
+    }
+
+    creature->SetRespawnDelay(m_respawnDelay / IN_MILLISECONDS,true);
+
+    if (!m_corpseAccelerationDecayDelay && creature->m_loot)
+    {
+        LootAccess const* lootAccess = reinterpret_cast<LootAccess const*>(creature->m_loot);
+
+        if (lootAccess->IsLootedForAll())
+        {
+            creature->RemoveCorpse();
+            return;
+        }
+    }
+    creature->SetCorpseAccelerationDelay(m_corpseAccelerationDecayDelay);
 }
 
 string PlayerbotAI::InventoryParseOutfitName(string outfit)

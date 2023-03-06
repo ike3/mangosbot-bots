@@ -15,6 +15,9 @@ namespace ai
         if (!player)
             return false;
 
+        if (inviter == player)
+            return false;
+
         if (!player->GetPlayerbotAI() && !ai->GetSecurity()->CheckLevelFor(PlayerbotSecurityLevel::PLAYERBOT_SECURITY_INVITE, true, player))
             return false;
 
@@ -66,6 +69,9 @@ namespace ai
             if (!player)
                 continue;
 
+            if (player == bot)
+                continue;
+
             if (player->GetMapId() != bot->GetMapId())
                 continue;
 
@@ -106,7 +112,7 @@ namespace ai
                 continue;
             
             //When inviting the 5th member of the group convert to raid for future invites.
-            if (group && botAi->GetGrouperType() > GrouperType::LEADER_5 && !group->IsRaidGroup() && bot->GetGroup()->GetMembersCount() > 3)
+            if (group && ai->GetGrouperType() > GrouperType::LEADER_5 && !group->IsRaidGroup() && bot->GetGroup()->GetMembersCount() > 3)
                 group->ConvertToRaid();
 
             return Invite(bot, player);

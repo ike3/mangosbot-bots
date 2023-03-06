@@ -334,6 +334,9 @@ bool StoreLootAction::Execute(Event& event)
     WorldPacket packet(CMSG_LOOT_RELEASE, 8);
     packet << guid;
     bot->GetSession()->HandleLootReleaseOpcode(packet);
+
+    ai->AccelerateRespawn(guid);
+
     return true;
 }
 

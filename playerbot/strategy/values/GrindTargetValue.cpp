@@ -7,6 +7,7 @@
 #include "AttackersValue.h"
 #include "PossibleAttackTargetsValue.h"
 #include "../actions/ChooseTargetActions.h"
+#include "tools/Formulas.h"
 
 using namespace ai;
 
@@ -33,6 +34,9 @@ Unit* GrindTargetValue::FindTargetForGrinding(int assistCount)
     uint32 memberCount = 1;
     Group* group = bot->GetGroup();
     Player* master = GetMaster();
+
+    if (master && (master == bot || master->GetMapId() != bot->GetMapId() || master->IsBeingTeleported() || !master->GetPlayerbotAI()))
+        master = nullptr;
 
     list<ObjectGuid> attackers = context->GetValue<list<ObjectGuid>>("possible attack targets")->Get();
     for (list<ObjectGuid>::iterator i = attackers.begin(); i != attackers.end(); i++)
@@ -84,6 +88,13 @@ Unit* GrindTargetValue::FindTargetForGrinding(int assistCount)
             continue;
         }
 
+        if (!bot->InBattleGround() && master && ai->HasStrategy("follow", BotState::BOT_STATE_NON_COMBAT) && sServerFacade.GetDistance2d(master, unit) > sPlayerbotAIConfig.lootDistance)
+        {
+            if (ai->HasStrategy("debug grind", BotState::BOT_STATE_NON_COMBAT))
+                ai->TellMaster(chat->formatWorldobject(unit) + " ignored (far from master).");
+            continue;
+        }
+
         if (!bot->InBattleGround() && (int)unit->GetLevel() - (int)bot->GetLevel() > 4 && !unit->GetObjectGuid().IsPlayer())
         {
             if (ai->HasStrategy("debug grind", BotState::BOT_STATE_NON_COMBAT))
@@ -113,7 +124,7 @@ Unit* GrindTargetValue::FindTargetForGrinding(int assistCount)
             continue;
         }
 
-        if (creature&& creature->IsCritter() && urand(0,10))
+        if (creature && creature->IsCritter() && urand(0, 10))
         {
             if (ai->HasStrategy("debug grind", BotState::BOT_STATE_NON_COMBAT))
                 ai->TellMaster(chat->formatWorldobject(unit) + " ignored (ignore critters).");
@@ -131,6 +142,14 @@ Unit* GrindTargetValue::FindTargetForGrinding(int assistCount)
             {
                 if (ai->HasStrategy("debug grind", BotState::BOT_STATE_NON_COMBAT))
                     ai->TellMaster(chat->formatWorldobject(unit) + " ignored (not needed for active quest).");
+
+                continue;
+            }
+            else if (creature && !MaNGOS::XP::Gain(bot, creature) && urand(0, 50))
+            {
+                if (ai->HasStrategy("debug grind", BotState::BOT_STATE_NON_COMBAT))
+                    if ((context->GetValue<TravelTarget*>("travel target")->Get()->isWorking() && context->GetValue<TravelTarget*>("travel target")->Get()->getDestination()->getName() != "GrindTravelDestination"))
+                        ai->TellMaster(chat->formatWorldobject(unit) + " ignored (not xp and not needed for quest).");
 
                 continue;
             }

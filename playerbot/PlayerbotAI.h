@@ -420,6 +420,9 @@ public:
     ItemIds InventoryParseOutfitItems(string outfit);
     ItemIds InventoryFindOutfitItems(string name);
 
+    void AccelerateRespawn(Creature* creature, float accelMod = 0);
+    void AccelerateRespawn(ObjectGuid guid, float accelMod = 0) { Creature* creature = GetCreature(guid); if (creature) AccelerateRespawn(creature,accelMod); }
+
 private:
     void InventoryIterateItemsInBags(IterateItemsVisitor* visitor);
     void InventoryIterateItemsInEquip(IterateItemsVisitor* visitor);
