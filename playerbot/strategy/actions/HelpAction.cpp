@@ -41,7 +41,9 @@ bool HelpAction::Execute(Event& event)
     {
         vector<string> list = sPlayerbotHelpMgr.FindBotText(param);
 
-        if (!list.empty())
+        if(list.size() == 1)
+            helpTekst = sPlayerbotHelpMgr.GetBotText(list.front());
+        else if (!list.empty())
         {
             std::sort(list.begin(), list.end());
             helpTekst = sPlayerbotHelpMgr.GetBotText("help:search");
