@@ -15,6 +15,9 @@ namespace ai
         if (!player)
             return false;
 
+        if (player == bot)
+            return false;
+
         if (!player->GetPlayerbotAI() && !ai->GetSecurity()->CheckLevelFor(PlayerbotSecurityLevel::PLAYERBOT_SECURITY_INVITE, true, player))
             return false;
 
@@ -64,6 +67,9 @@ namespace ai
             Player* player = sObjectMgr.GetPlayer(i);
 
             if (!player)
+                continue;
+
+            if (player == bot)
                 continue;
 
             if (player->GetMapId() != bot->GetMapId())
