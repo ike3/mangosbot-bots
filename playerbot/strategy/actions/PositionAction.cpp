@@ -110,6 +110,18 @@ bool MoveToPositionAction::isUseful()
     return pos.isSet() && distance > ai->GetRange("follow");
 }
 
+bool GuardAction::isUseful()
+{
+    if (ai->IsStateActive(BotState::BOT_STATE_COMBAT))
+    {
+        Unit* target = AI_VALUE(Unit*, "current target");
+        if (target && target->GetTarget() != bot) //Do not move back to guard position if target isn't following you.
+            return false;
+    }
+            
+    return true;
+}
+
 bool SetReturnPositionAction::Execute(Event& event)
 {
     ai::PositionMap& posMap = context->GetValue<ai::PositionMap&>("position")->Get();
