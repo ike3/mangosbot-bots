@@ -30,11 +30,16 @@ bool MoveAwayFromGameObject::Execute(Event& event)
         angle = targetPosition.getAngleTo(initialPosition) + (0.5 * M_PI_F * startDir);
     }
     else
-        angle = frand(0, M_PI_F * 2.0f);
-
-    for (uint8 i = 0; i < 10; i++)
     {
-        WorldPosition point = initialPosition + WorldPosition(0, distance + cos(angle), distance * sin(angle), 1.0f);
+        angle = frand(0, M_PI_F * 2.0f);
+    }
+
+    const uint8 attempts = 10;
+    float angleIncrement = (float)((2 * M_PI) / attempts);
+
+    for (uint8 i = 0; i < attempts; i++)
+    {
+        WorldPosition point = initialPosition + WorldPosition(0, distance * cos(angle), distance * sin(angle), 1.0f);
         point.setZ(point.getHeight());
 
         if (ai->HasStrategy("debug move", BotState::BOT_STATE_COMBAT))
@@ -59,7 +64,7 @@ bool MoveAwayFromGameObject::Execute(Event& event)
             }
         }
 
-        angle = frand(0, M_PI_F * 2.0f);
+        angle += angleIncrement;
     }
 
     return false;
@@ -74,6 +79,16 @@ bool MoveAwayFromGameObject::HasGameObjectNearby(const WorldPosition& point, con
         {
             return true;
         }
+    }
+
+    return false;
+}
+
+bool MoveAwayFromGameObject::isPossible()
+{
+    if (MovementAction::isPossible())
+    {
+        return ai->CanMove();
     }
 
     return false;
