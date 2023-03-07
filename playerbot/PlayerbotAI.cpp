@@ -453,6 +453,17 @@ void PlayerbotAI::SetActionDuration(uint32 duration)
     SetAIInternalUpdateDelay(duration);
 }
 
+const Action* PlayerbotAI::GetLastExecutedAction(BotState state) const
+{
+    const Engine* engine = engines[(uint8)state];
+    if(engine)
+    {
+        return engine->GetLastExecutedAction();
+    }
+
+    return nullptr;
+}
+
 bool PlayerbotAI::IsStateActive(BotState state) const
 {
     return currentEngine == engines[(uint8)state];

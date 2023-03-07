@@ -14,6 +14,7 @@ Engine::Engine(PlayerbotAI* ai, AiObjectContext *factory, BotState state) : Play
 {
     lastRelevance = 0.0f;
     testMode = false;
+    lastExecutedAction = nullptr;
 }
 
 bool ActionExecutionListeners::Before(Action* action, const Event& event)
@@ -336,8 +337,8 @@ bool Engine::MultiplyAndPush(NextAction** actions, float forceRelevance, bool sk
             NextAction* nextAction = actions[j];
             if (nextAction)
             {
-                ActionNode* action = CreateActionNode(nextAction->getName());
-                InitializeAction(action);
+                ActionNode* actionNode = CreateActionNode(nextAction->getName());
+                InitializeAction(actionNode);
 
                 float k = nextAction->getRelevance();
                 if (forceRelevance > 0.0f)
@@ -347,13 +348,13 @@ bool Engine::MultiplyAndPush(NextAction** actions, float forceRelevance, bool sk
 
                 if (k > 0)
                 {
-                    LogAction("PUSH:%s - %f (%s)", action->getName().c_str(), k, pushType);
-                    queue.Push(new ActionBasket(action, k, skipPrerequisites, event));
+                    LogAction("PUSH:%s - %f (%s)", actionNode->getName().c_str(), k, pushType);
+                    queue.Push(new ActionBasket(actionNode, k, skipPrerequisites, event));
                     pushed = true;
                 }
                 else
                 {
-                    delete action;
+                    delete actionNode;
                 }
 
                 delete nextAction;
@@ -647,6 +648,7 @@ bool Engine::ListenAndExecute(Action* action, Event& event)
         if (actionExecuted)
         {
             ai->SetActionDuration(action);
+            lastExecutedAction = action;
         }
     }
 

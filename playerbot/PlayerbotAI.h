@@ -497,6 +497,8 @@ public:
     
     void SetActionDuration(const Action* action);
     void SetActionDuration(uint32 duration);
+
+    const Action* GetLastExecutedAction(BotState state) const;
     
 private:
     bool UpdateAIReaction(uint32 elapsed, bool minimal = false);
