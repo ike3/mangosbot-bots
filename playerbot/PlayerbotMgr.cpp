@@ -1022,6 +1022,9 @@ void PlayerbotMgr::HandleCommand(uint32 type, const string& text, uint32 lang)
     if (!master)
         return;
 
+    if (!sPlayerbotAIConfig.enabled)
+        return;
+
     if (text.find(sPlayerbotAIConfig.commandSeparator) != string::npos)
     {
         vector<string> commands;
