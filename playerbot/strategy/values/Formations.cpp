@@ -79,6 +79,10 @@ WorldLocation MoveAheadFormation::GetLocation()
         return WorldLocation();
 
     WorldLocation loc = GetLocationInternal();
+
+    return loc;
+
+    /*
     if (Formation::IsNullLocation(loc))
         return loc;
 
@@ -115,6 +119,7 @@ WorldLocation MoveAheadFormation::GetLocation()
     //z += CONTACT_DISTANCE;
     //bot->UpdateAllowedPositionZ(x, y, z);
     return WorldLocation(master->GetMapId(), x, y, z);
+    */
 }
 
 namespace ai
@@ -144,7 +149,7 @@ namespace ai
         virtual WorldLocation GetLocationInternal()
         {
             Player* master = ai->GetGroupMaster();
-            if (!master || master->GetMapId() != bot->GetMapId() || master->IsBeingTeleported())
+            if (!ai->IsSafe(master))
                 return WorldLocation();
 
             float range = ai->GetRange("follow") + master->GetObjectBoundingRadius();
@@ -290,7 +295,7 @@ namespace ai
             for (GroupReference* gref = group->GetFirstMember(); gref; gref = gref->next())
             {
                 Player* member = gref->getSource();
-                if (!member || bot->GetMapId() != member->GetMapId()) continue;
+                if (!ai->IsSafe(member)) continue;
                 if (member != master)
                     players.push_back(member);
             }
@@ -327,7 +332,7 @@ namespace ai
             for (GroupReference* gref = group->GetFirstMember(); gref; gref = gref->next())
             {
                 Player* member = gref->getSource();
-                if (!member || bot->GetMapId() != member->GetMapId()) continue;
+                if (!ai->IsSafe(member)) continue;
                 if (member != master)
                 {
                     if (ai->IsTank(member))
@@ -405,24 +410,31 @@ namespace ai
             PositionMap& posMap = AI_VALUE(PositionMap&, "position");
             PositionEntry followPosition = posMap["follow"];
 
-            if (!followPosition.isSet())
+            if (followPosition.isSet())
+                return;
+
+            Player* master = ai->GetMaster();
+
+            if (!ai->IsSafe(master) || sServerFacade.GetDistance2d(bot, master) > sPlayerbotAIConfig.reactDistance)
+            {
+                WorldPosition pos(bot->GetMapId(), cos(GetFollowAngle()) * ai->GetRange("follow"), sin(GetFollowAngle()) * ai->GetRange("follow"), 0);
+                followPosition.Set(pos);
+            }
+            else
             {
                 WorldPosition relPos(bot);
                 relPos -= WorldPosition(ai->GetMaster());
                 relPos.rotateXY(-1 * ai->GetMaster()->GetOrientation());
 
                 followPosition.Set(relPos.getX(), relPos.getY(), relPos.getZ(), relPos.getMapId());
-                posMap["follow"] = followPosition;
             }
+            posMap["follow"] = followPosition;
         }
         virtual WorldLocation GetLocationInternal()
         {
-            Unit* target = AI_VALUE(Unit*, "current target");
-            Player* master = ai->GetGroupMaster();
-            if (!target && target != bot)
-                target = master;
+            Unit* target = AI_VALUE(Unit*, "follow target");
 
-            if (!target)
+            if (!ai->IsSafe(target))
                 return Formation::NullLocation;
 
             PositionMap& posMap = AI_VALUE(PositionMap&, "position");
@@ -460,7 +472,7 @@ float Formation::GetFollowAngle()
         for (GroupReference *ref = group->GetFirstMember(); ref; ref = ref->next())
         {
             Player* member = ref->getSource();
-            if (!member || !sServerFacade.IsAlive(member) || bot->GetMapId() != member->GetMapId()) continue;
+            if (!ai->IsSafe(member) || !sServerFacade.IsAlive(member)) continue;
             if (member && member != master && !ai->IsTank(member) && !ai->IsHeal(member))
             {
                 roster.insert(roster.begin() + roster.size() / 2, member);
@@ -469,7 +481,7 @@ float Formation::GetFollowAngle()
         for (GroupReference *ref = group->GetFirstMember(); ref; ref = ref->next())
         {
             Player* member = ref->getSource();
-            if (!member || !sServerFacade.IsAlive(member) || bot->GetMapId() != member->GetMapId()) continue;
+            if (!ai->IsSafe(member) || !sServerFacade.IsAlive(member)) continue;
             if (member && member != master && ai->IsHeal(member))
             {
                 roster.insert(roster.begin() + roster.size() / 2, member);
@@ -479,7 +491,7 @@ float Formation::GetFollowAngle()
         for (GroupReference *ref = group->GetFirstMember(); ref; ref = ref->next())
         {
             Player* member = ref->getSource();
-            if (!member || !sServerFacade.IsAlive(member) || bot->GetMapId() != member->GetMapId()) continue;
+            if (!ai->IsSafe(member) || !sServerFacade.IsAlive(member)) continue;
             if (member && member != master && ai->IsTank(member))
             {
                 if (left) roster.push_back(member); else roster.insert(roster.begin(), member);
