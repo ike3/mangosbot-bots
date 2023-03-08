@@ -4706,7 +4706,7 @@ void PlayerbotAI::AccelerateRespawn(Creature* creature, float accelMod)
     if (!sPlayerbotAIConfig.respawnModForPlayerBots && HasRealPlayerMaster())
         return;
 
-    if (!sPlayerbotAIConfig.respawnModForInstances && !WorldPosition(bot).isOverworld())
+    if (!sPlayerbotAIConfig.respawnModForInstances && !WorldPosition(creature).isOverworld())
         return;
 
     AiObjectContext* context = aiObjectContext;
