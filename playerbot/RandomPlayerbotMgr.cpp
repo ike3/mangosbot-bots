@@ -1826,6 +1826,12 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot, vector<WorldLocation> &locs
 	if (bot->GetLevel() < 5)
 		return;
 
+    if (bot->GetGroup() && !bot->GetGroup()->IsLeader(bot->GetObjectGuid()))
+        return;
+
+    if (bot->IsTaxiFlying() && bot->GetPlayerbotAI()->HasPlayerNearby(300))
+        return;
+
     if (sPlayerbotAIConfig.randomBotRpgChance < 0)
         return;
 
@@ -2041,13 +2047,9 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot, vector<WorldLocation> &locs
             sLog.outDetail("Random teleporting bot %s to %s %f,%f,%f (%u/%zu locations)",
                 bot->GetName(), area->area_name[0], x, y, z, attemtps, tlocs.size());
 
-            if (bot->IsTaxiFlying())
-            {
+            if (bot->IsTaxiFlying())          
                 bot->GetMotionMaster()->MovementExpired();
-#ifdef MANGOS
-                bot->m_taxi.ClearTaxiDestinations();
-#endif
-            }
+
             if (hearth)
                 bot->SetHomebindToLocation(loc, area->ID);
 
@@ -2056,6 +2058,29 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot, vector<WorldLocation> &locs
             bot->SendHeartBeat();
             bot->GetPlayerbotAI()->ResetStrategies();
             bot->GetPlayerbotAI()->Reset(true);
+
+            if (bot->GetGroup())
+            {
+                for (GroupReference* gref = bot->GetGroup()->GetFirstMember(); gref; gref = gref->next())
+                {
+                    Player* member = gref->getSource();
+                    PlayerbotAI* ai = bot->GetPlayerbotAI();
+                    if (ai && bot != member)
+                    {
+                        if (member->IsTaxiFlying())
+                            member->GetMotionMaster()->MovementExpired();
+                        if (hearth)
+                            member->SetHomebindToLocation(loc, area->ID);
+
+                        member->GetMotionMaster()->Clear();
+                        member->TeleportTo(loc.mapid, x, y, z, 0);
+                        member->SendHeartBeat();
+                        member->GetPlayerbotAI()->ResetStrategies();
+                        member->GetPlayerbotAI()->Reset(true);
+                    }
+
+                }
+            }
             if (pmo) pmo->finish();
             return;
         }
