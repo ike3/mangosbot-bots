@@ -54,9 +54,6 @@ namespace ai
 
     bool LeaveFarAwayAction::isUseful()
     {
-        if (!sPlayerbotAIConfig.randomBotGroupNearby)
-            return false;
-
         if (bot->InBattleGround())
             return false;
 
