@@ -177,4 +177,8 @@ void RpgCraftStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
     triggers.push_back(new TriggerNode(
         "rpg craft",
         NextAction::array(0, new NextAction("rpg craft", 1.001f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "rpg item",
+        NextAction::array(0, new NextAction("rpg item", 1.030f), NULL)));
 }

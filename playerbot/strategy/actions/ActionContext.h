@@ -244,6 +244,7 @@ namespace ai
             creators["rpg trade useful"] = &ActionContext::rpg_trade_useful;
             creators["rpg duel"] = &ActionContext::rpg_duel;
             creators["rpg mount anim"] = &ActionContext::rpg_mount_anim;
+            creators["rpg item"] = &ActionContext::rpg_item;
 
             // Bot States
             creators["set combat state"] = &ActionContext::set_combat_state;
@@ -485,6 +486,7 @@ namespace ai
         static Action* rpg_trade_useful(PlayerbotAI* ai) { return new RpgTradeUsefulAction(ai); }
         static Action* rpg_duel(PlayerbotAI* ai) { return new RpgDuelAction(ai); }
         static Action* rpg_mount_anim(PlayerbotAI* ai) { return new RpgMountAnimAction(ai); }
+        static Action* rpg_item(PlayerbotAI* ai) { return new RpgItemAction(ai); }
 
         // Bot States
         static Action* set_combat_state(PlayerbotAI* ai) { return new SetCombatStateAction(ai); }

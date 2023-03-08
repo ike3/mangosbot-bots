@@ -3,6 +3,7 @@
 #include "../Action.h"
 #include "MovementActions.h"
 #include "ChooseRpgTargetAction.h"
+#include "UseItemAction.h"
 #include "../values/LastMovementValue.h"
 
 namespace ai
@@ -292,6 +293,19 @@ namespace ai
         RpgMountAnimAction(PlayerbotAI* ai, string name = "rpg mount anim") : Action(ai, name) {}
 
         virtual bool isUseful();
+        virtual bool Execute(Event& event);
+    };
+
+    class RpgItemAction : public UseItemAction, public RpgEnabled
+    {
+    public:
+        RpgItemAction(PlayerbotAI* ai, string name = "rpg item") : UseItemAction(ai, name), RpgEnabled(ai) {}
+
+        //Long range is possible?
+        virtual bool isPossible() { return rpg->guidP() && rpg->guidP().GetWorldObject(); }
+        //Short range can we do the action now?
+        virtual bool isUseful() { return rpg->InRange(); }
+
         virtual bool Execute(Event& event);
     };
 }
