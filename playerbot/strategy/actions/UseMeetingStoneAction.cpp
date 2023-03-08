@@ -75,7 +75,7 @@ private:
 bool SummonAction::Execute(Event& event)
 {
     Player* master = GetMaster();
-    if (!master)
+    if (!master || master->IsBeingTeleported())
         return false;
 
     if (master->GetSession()->GetSecurity() > SEC_PLAYER || sPlayerbotAIConfig.nonGmFreeSummon)
