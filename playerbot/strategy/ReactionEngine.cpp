@@ -219,6 +219,8 @@ bool ReactionEngine::ListenAndExecute(Action* action, Event& event)
         actionExecuted = actionExecutionListeners.AllowExecution(action, event) ? action->Execute(event) : true;
         if (actionExecuted)
         {
+            if (!incomingReaction.GetAction()) //Prevent reset during action.
+                incomingReaction.SetAction(action);
             ai->SetActionDuration(action);
         }
     }
