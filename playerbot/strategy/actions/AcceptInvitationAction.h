@@ -10,8 +10,6 @@ namespace ai
 
         virtual bool Execute(Event& event)
         {
-            Player* master = GetMaster();
-
             Group* grp = bot->GetGroupInvite();
             if (!grp)
                 return false;
@@ -37,11 +35,14 @@ namespace ai
             p << roles_mask;
             bot->GetSession()->HandleGroupAcceptOpcode(p);
 
+            if (!bot->GetGroup())
+                return false;
+
             if (sRandomPlayerbotMgr.IsFreeBot(bot))
                 ai->SetMaster(inviter);
-            //else
-            //    sPlayerbotDbStore.Save(ai);
-            
+
+            Player* master = GetMaster();
+
             ai->ResetStrategies();
             ai->ChangeStrategy("+follow,-lfg,-bg", BotState::BOT_STATE_NON_COMBAT);
             ai->Reset();
