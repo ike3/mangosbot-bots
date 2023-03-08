@@ -18,7 +18,7 @@ bool ChooseTravelTargetAction::Execute(Event& event)
     getNewTarget(&newTarget, oldTarget);
 
     //If the new target is not active we failed.
-    if (!newTarget.isActive())
+    if (!newTarget.isActive() || newTarget.isForced())
        return false;    
 
     setNewTarget(&newTarget, oldTarget);
@@ -50,6 +50,13 @@ void ChooseTravelTargetAction::getNewTarget(TravelTarget* newTarget, TravelTarge
             PerformanceMonitorOperation* pmo = sPerformanceMonitor.start(PERF_MON_VALUE, "SetNpcFlagTarget1", &context->performanceStack);
             foundTarget = SetNpcFlagTarget(newTarget, { UNIT_NPC_FLAG_AUCTIONEER });
             if(pmo) pmo->finish();
+
+            if (!foundTarget)
+            {
+                PerformanceMonitorOperation* pmo = sPerformanceMonitor.start(PERF_MON_VALUE, "SetRpgTarget2", &context->performanceStack);
+                foundTarget = SetRpgTarget(newTarget);                           //Go to town to sell items or repair
+                if (pmo) pmo->finish();
+            }
         }
 
     //Rpg in city
@@ -149,7 +156,7 @@ void ChooseTravelTargetAction::getNewTarget(TravelTarget* newTarget, TravelTarge
     if (!foundTarget && urand(1, 100) > 50)                                 //50% chance
     {
         {
-            PerformanceMonitorOperation* pmo = sPerformanceMonitor.start(PERF_MON_VALUE, "SetRpgTarget2", &context->performanceStack);
+            PerformanceMonitorOperation* pmo = sPerformanceMonitor.start(PERF_MON_VALUE, "SetRpgTarget3", &context->performanceStack);
             foundTarget = SetRpgTarget(newTarget);
             if (foundTarget)
                 newTarget->setForced(true);
@@ -829,6 +836,9 @@ bool ChooseTravelTargetAction::SetNpcFlagTarget(TravelTarget* target, vector<NPC
         ai->TellMasterNoFacing(to_string(TravelDestinations.size()) + " npc flag targets found.");
 
     SetBestTarget(target, TravelDestinations);
+
+    if (!target->getDestination())
+        return false;
 
     target->setForced(true);
 

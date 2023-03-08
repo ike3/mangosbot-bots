@@ -51,7 +51,14 @@ public:
 
         ItemUsage usage = AI_VALUE2(ItemUsage, "item usage", ItemQualifier(item).GetQualifier());
 
-        if (usage != ITEM_USAGE_VENDOR)
+        bool shouldSell = false;
+
+        if (usage == ITEM_USAGE_VENDOR)
+            shouldSell = true;
+        else if (usage == ITEM_USAGE_AH && AI_VALUE(uint8, "bag space") > 80 && !urand(0, 10))
+            shouldSell = true;
+
+        if (!shouldSell)
             return true;
 
         return SellItemsVisitor::Visit(item);
