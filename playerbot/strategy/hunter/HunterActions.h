@@ -5,9 +5,9 @@
 namespace ai
 {
     BEGIN_RANGED_DEBUFF_ACTION(CastHuntersMarkAction, "hunter's mark")
-    END_SPELL_ACTION()
+        END_SPELL_ACTION()
 
-    class CastAutoShotAction : public CastSpellAction
+        class CastAutoShotAction : public CastSpellAction
     {
     public:
         CastAutoShotAction(PlayerbotAI* ai) : CastSpellAction(ai, "auto shot") {}
@@ -15,94 +15,100 @@ namespace ai
     };
 
     BEGIN_RANGED_SPELL_ACTION(CastArcaneShotAction, "arcane shot")
-    END_SPELL_ACTION()
+        END_SPELL_ACTION()
 
-    BEGIN_RANGED_SPELL_ACTION(CastExplosiveShotAction, "explosive shot")
-    END_SPELL_ACTION()
+        BEGIN_RANGED_SPELL_ACTION(CastExplosiveShotAction, "explosive shot")
+        END_SPELL_ACTION()
 
-    BEGIN_RANGED_SPELL_ACTION(CastAimedShotAction, "aimed shot")
-    END_SPELL_ACTION()
+        BEGIN_RANGED_SPELL_ACTION(CastAimedShotAction, "aimed shot")
+        END_SPELL_ACTION()
 
-    BEGIN_RANGED_SPELL_ACTION(CastChimeraShotAction, "chimera shot")
-    END_SPELL_ACTION()
+        BEGIN_RANGED_SPELL_ACTION(CastChimeraShotAction, "chimera shot")
+        END_SPELL_ACTION()
 
-    BEGIN_RANGED_DEBUFF_ACTION(CastConcussiveShotAction, "concussive shot")
-    END_SPELL_ACTION()
+        BEGIN_RANGED_DEBUFF_ACTION(CastConcussiveShotAction, "concussive shot")
+        END_SPELL_ACTION()
 
-    SPELL_ACTION(CastSteadyShotAction, "steady shot");
+        SPELL_ACTION(CastSteadyShotAction, "steady shot");
 
     BEGIN_RANGED_DEBUFF_ACTION(CastScatterShotAction, "scatter shot")
+        END_SPELL_ACTION()
+
+        BEGIN_RANGED_SPELL_ACTION(CastDistractingShotAction, "distracting shot")
+        END_SPELL_ACTION()
+
+        BEGIN_RANGED_SPELL_ACTION(CastMultiShotAction, "multi-shot")
+        END_SPELL_ACTION()
+
+        BEGIN_RANGED_SPELL_ACTION(CastVolleyAction, "volley")
+        END_SPELL_ACTION()
+
+        BEGIN_RANGED_DEBUFF_ACTION(CastSerpentStingAction, "serpent sting")
+        virtual bool isUseful();
     END_SPELL_ACTION()
 
-    BEGIN_RANGED_SPELL_ACTION(CastDistractingShotAction, "distracting shot")
+        BEGIN_RANGED_DEBUFF_ACTION(CastViperStingAction, "viper sting")
+        virtual bool isUseful();
     END_SPELL_ACTION()
 
-    BEGIN_RANGED_SPELL_ACTION(CastMultiShotAction, "multi-shot")
-    END_SPELL_ACTION()
+        BEGIN_RANGED_SPELL_ACTION(CastScorpidStingAction, "scorpid sting")
+        END_SPELL_ACTION()
 
-	BEGIN_RANGED_SPELL_ACTION(CastVolleyAction, "volley")
-	END_SPELL_ACTION()
+    class CastAspectOfTheMonkeyAction : public CastBuffSpellAction
+    {
+    public:
+        CastAspectOfTheMonkeyAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "aspect of the monkey") {}
+    };
 
-    BEGIN_RANGED_DEBUFF_ACTION(CastSerpentStingAction, "serpent sting")
-    virtual bool isUseful();
-    END_SPELL_ACTION()
+    class CastAspectOfTheHawkAction : public CastBuffSpellAction
+    {
+    public:
+        CastAspectOfTheHawkAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "aspect of the hawk") {}
+    };
 
-    BEGIN_RANGED_DEBUFF_ACTION(CastViperStingAction, "viper sting")
-    virtual bool isUseful();
-    END_SPELL_ACTION()
+    class CastAspectOfTheWildAction : public CastBuffSpellAction
+    {
+    public:
+        CastAspectOfTheWildAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "aspect of the wild") {}
+    };
 
-    BEGIN_RANGED_SPELL_ACTION(CastScorpidStingAction, "scorpid sting")
-    END_SPELL_ACTION()
+    class CastAspectOfTheCheetahAction : public CastBuffSpellAction
+    {
+    public:
+        CastAspectOfTheCheetahAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "aspect of the cheetah") {}
+        virtual bool isUseful();
+    };
 
-	class CastAspectOfTheHawkAction : public CastBuffSpellAction
-	{
-	public:
-		CastAspectOfTheHawkAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "aspect of the hawk") {}
-	};
+    class CastAspectOfThePackAction : public CastBuffSpellAction
+    {
+    public:
+        CastAspectOfThePackAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "aspect of the pack") {}
+    };
 
-	class CastAspectOfTheWildAction : public CastBuffSpellAction
-	{
-	public:
-		CastAspectOfTheWildAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "aspect of the wild") {}
-	};
+    class CastAspectOfTheViperAction : public CastBuffSpellAction
+    {
+    public:
+        CastAspectOfTheViperAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "aspect of the viper") {}
+    };
 
-	class CastAspectOfTheCheetahAction : public CastBuffSpellAction
-	{
-	public:
-		CastAspectOfTheCheetahAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "aspect of the cheetah") {}
-		virtual bool isUseful();
-	};
+    class CastCallPetAction : public CastBuffSpellAction
+    {
+    public:
+        CastCallPetAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "call pet") {}
+    };
 
-	class CastAspectOfThePackAction : public CastBuffSpellAction
-	{
-	public:
-		CastAspectOfThePackAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "aspect of the pack") {}
-	};
+    class CastMendPetAction : public CastAuraSpellAction
+    {
+    public:
+        CastMendPetAction(PlayerbotAI* ai) : CastAuraSpellAction(ai, "mend pet") {}
+        virtual string GetTargetName() { return "pet target"; }
+    };
 
-	class CastAspectOfTheViperAction : public CastBuffSpellAction
-	{
-	public:
-		CastAspectOfTheViperAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "aspect of the viper") {}
-	};
-
-	class CastCallPetAction : public CastBuffSpellAction
-	{
-	public:
-		CastCallPetAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "call pet") {}
-	};
-
-	class CastMendPetAction : public CastAuraSpellAction
-	{
-	public:
-		CastMendPetAction(PlayerbotAI* ai) : CastAuraSpellAction(ai, "mend pet") {}
-		virtual string GetTargetName() { return "pet target"; }
-	};
-
-	class CastRevivePetAction : public CastBuffSpellAction
-	{
-	public:
-		CastRevivePetAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "revive pet") {}
-	};
+    class CastRevivePetAction : public CastBuffSpellAction
+    {
+    public:
+        CastRevivePetAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "revive pet") {}
+    };
 
     class CastTrueshotAuraAction : public CastBuffSpellAction
     {
@@ -118,17 +124,17 @@ namespace ai
 
     REMOVE_BUFF_ACTION(RemoveFeignDeathAction, "feign death");
 
-	class CastRapidFireAction : public CastBuffSpellAction
-	{
-	public:
-		CastRapidFireAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "rapid fire") {}
-	};
+    class CastRapidFireAction : public CastBuffSpellAction
+    {
+    public:
+        CastRapidFireAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "rapid fire") {}
+    };
 
-	class CastBlackArrow : public CastRangedDebuffSpellAction
-	{
-	public:
-		CastBlackArrow(PlayerbotAI* ai) : CastRangedDebuffSpellAction(ai, "black arrow") {}
-	};
+    class CastBlackArrow : public CastRangedDebuffSpellAction
+    {
+    public:
+        CastBlackArrow(PlayerbotAI* ai) : CastRangedDebuffSpellAction(ai, "black arrow") {}
+    };
 
     BUFF_ACTION(CastFreezingTrapAction, "freezing trap");
     BUFF_ACTION(CastFrostTrapAction, "frost trap");
@@ -137,7 +143,7 @@ namespace ai
     SPELL_ACTION(CastSilencingShotAction, "silencing shot");
     ENEMY_HEALER_ACTION(CastSilencingShotOnHealerAction, "silencing shot");
     BUFF_ACTION(CastReadinessAction, "readiness");
-;
+    ;
     class CastWingClipAction : public CastMeleeSpellAction
     {
     public:
@@ -157,7 +163,7 @@ namespace ai
         virtual bool isUseful()
         {
             Unit* target = GetTarget();
-            return CastMeleeSpellAction::isUseful() && (ai->HasStrategy("close", BotState::BOT_STATE_COMBAT)|| bot->hasUnitState(UNIT_STAT_MELEE_ATTACKING));
+            return CastMeleeSpellAction::isUseful() && (ai->HasStrategy("close", BotState::BOT_STATE_COMBAT) || bot->hasUnitState(UNIT_STAT_MELEE_ATTACKING));
         }
     };
 
@@ -205,4 +211,10 @@ namespace ai
     MELEE_ACTION(CastCounterattackAction, "counterattack");
     SNARE_ACTION(WyvernStingSnareAction, "wyvern sting");
     MELEE_ACTION(MongooseBiteAction, "mongoose bite");
+
+    class TameBeastAction : public CastSpellAction
+    {
+    public:
+        TameBeastAction(PlayerbotAI* ai) : CastSpellAction(ai, "tame beast") {}
+    };
 }
