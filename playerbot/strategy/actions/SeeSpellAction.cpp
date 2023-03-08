@@ -188,7 +188,6 @@ bool SeeSpellAction::MoveToSpell(WorldPosition& spellPosition, bool inFormation)
 
         stayPosition.Set(spellPosition.getX(), spellPosition.getY(), spellPosition.getZ(), spellPosition.getMapId());
         posMap["stay"] = stayPosition;
-        return true;
     }
     else if (ai->HasStrategy("guard", ai->GetState()))
     {
@@ -197,26 +196,23 @@ bool SeeSpellAction::MoveToSpell(WorldPosition& spellPosition, bool inFormation)
 
         guardPosition.Set(spellPosition.getX(), spellPosition.getY(), spellPosition.getZ(), spellPosition.getMapId());
         posMap["guard"] = guardPosition;
-        return true;
     }
     else if (ai->HasStrategy("follow", BotState::BOT_STATE_NON_COMBAT) && ai->GetMaster())
     {
         FormationValue* formation = (FormationValue*)context->GetValue<Formation*>("formation");
 
-        PositionMap& posMap = AI_VALUE(PositionMap&, "position");
-        PositionEntry followPosition = posMap["follow"];
+        if (formation->getName() == "custom")
+        {
+            PositionMap& posMap = AI_VALUE(PositionMap&, "position");
+            PositionEntry followPosition = posMap["follow"];
 
-        spellPosition -= WorldPosition(ai->GetMaster());
-        spellPosition.rotateXY(-1 * ai->GetMaster()->GetOrientation());
+            spellPosition -= WorldPosition(ai->GetMaster());
+            spellPosition.rotateXY(-1 * ai->GetMaster()->GetOrientation());
 
-        followPosition.Set(spellPosition.getX(), spellPosition.getY(), spellPosition.getZ(), spellPosition.getMapId());
-        posMap["follow"] = followPosition;
-
-        formation->Load("custom");
-
-        return true;
+            followPosition.Set(spellPosition.getX(), spellPosition.getY(), spellPosition.getZ(), spellPosition.getMapId());
+            posMap["follow"] = followPosition;
+        }
     }
-
 
     return MoveTo(spellPosition.getMapId(), spellPosition.getX(), spellPosition.getY(), spellPosition.getZ(), false, false);
 }
