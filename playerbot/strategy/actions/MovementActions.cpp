@@ -1457,11 +1457,11 @@ bool MovementAction::Flee(Unit *target)
     time_t now = time(0);
     uint32 fleeDelay = urand(2, sPlayerbotAIConfig.returnDelay / 1000);
 
-    if (lastFlee)
+    if (lastFlee && bot->IsMoving())
     {
         if ((now - lastFlee) <= fleeDelay)
         {
-            return false;
+            return true;
         }
     }
     
