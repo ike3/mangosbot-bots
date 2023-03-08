@@ -97,6 +97,24 @@ void TrainerAction::Iterate(Creature* creature, TrainerSpellAction action, Spell
         if (!pSpellInfo)
             continue;
 
+        if (tSpell->learnedSpell)
+        {
+            bool learned = false;
+            for (int j = 0; j < 3; ++j)
+            {
+                if (pSpellInfo->Effect[j] == SPELL_EFFECT_LEARN_SPELL)
+                {
+                    uint32 learnedSpell = pSpellInfo->EffectTriggerSpell[j];
+
+                    if (!bot->HasSpell(learnedSpell))
+                        learned = true;
+                }
+            }
+
+            if (!learned)
+                continue;
+        }
+
         if (!spells.empty() && spells.find(tSpell->spell) == spells.end())
             continue;
 
