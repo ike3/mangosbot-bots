@@ -132,7 +132,7 @@ namespace ai
     class UseRandomQuestItemAction : public UseItemAction
     {
     public:
-        UseRandomQuestItemAction(PlayerbotAI* ai) : UseItemAction(ai, "random quest item", true) {}
+        UseRandomQuestItemAction(PlayerbotAI* ai) : UseItemAction(ai, "use random quest item", true) {}
 
         virtual bool isUseful() override;
         virtual bool isPossible() override { return AI_VALUE2(uint32, "item count", "quest") > 0;}
