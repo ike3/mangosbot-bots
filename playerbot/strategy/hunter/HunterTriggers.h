@@ -14,6 +14,14 @@ namespace ai
         HunterAspectOfTheHawkTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "aspect of the hawk") {
             checkInterval = 1;
         }
+
+        virtual bool IsActive()
+        {
+            if (!BuffTrigger::IsActive())
+                return false;
+            Unit* target = AI_VALUE(Unit*, "current target");
+            return target && !sServerFacade.IsDistanceLessOrEqualThan(AI_VALUE2(float, "distance", "current target"), 5.0);
+        }
     };
 
     class HunterAspectOfTheWildTrigger : public BuffTrigger
