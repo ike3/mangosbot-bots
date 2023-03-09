@@ -119,7 +119,7 @@ public:
     bool instantRandomize;
     bool gearscorecheck;
 	bool randomBotPreQuests;
-    uint32 playerbotsXPrate;
+    float playerbotsXPrate;
     uint32 botActiveAlone;
     uint32 diffWithPlayer;
     uint32 diffEmpty;

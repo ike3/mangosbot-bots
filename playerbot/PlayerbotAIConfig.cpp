@@ -362,7 +362,7 @@ bool PlayerbotAIConfig::Initialize()
 	disableRandomLevels = config.GetBoolDefault("AiPlayerbot.DisableRandomLevels", false);
     instantRandomize = config.GetBoolDefault("AiPlayerbot.InstantRandomize", false);
     randomBotRandomPassword = config.GetBoolDefault("AiPlayerbot.RandomBotRandomPassword", true);
-    playerbotsXPrate = config.GetIntDefault("AiPlayerbot.KillXPRate", 1);
+    playerbotsXPrate = config.GetFloatDefault("AiPlayerbot.KillXPRate", 1.0f);
     botActiveAlone = config.GetIntDefault("AiPlayerbot.botActiveAlone", 10);
     diffWithPlayer = config.GetIntDefault("AiPlayerbot.DiffWithPlayer", 100);
     diffEmpty = config.GetIntDefault("AiPlayerbot.DiffEmpty", 200);
