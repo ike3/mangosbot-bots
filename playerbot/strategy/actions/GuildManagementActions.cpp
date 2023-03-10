@@ -104,28 +104,27 @@ bool GuildManageNearbyAction::Execute(Event& event)
             continue;
         }
 
+        if (!sPlayerbotAIConfig.randomBotGuildNearby)
+            return false;
+
         if ((guild->GetRankRights(botMember->RankId) & GR_RIGHT_INVITE) == 0)
             continue;
 
         if (player->GetGuildIdInvited())
             continue;
 
+        if (!sPlayerbotAIConfig.randomBotInvitePlayer && player->isRealPlayer())
+            continue;
+
         PlayerbotAI* botAi = player->GetPlayerbotAI();
 
         if (botAi)
-        {
-            
+        {            
             if (botAi->GetGuilderType() == GuilderType::SOLO && !botAi->HasRealPlayerMaster()) //Do not invite solo players.
                 continue;
-
             
             if (botAi->HasActivePlayerMaster()) //Do not invite alts of active players. 
                 continue;
-        }
-        else
-        {
-            if (!sPlayerbotAIConfig.randomBotGroupNearby)
-                return false;
         }
 
         if (sServerFacade.GetDistance2d(bot, player) > sPlayerbotAIConfig.sightDistance)

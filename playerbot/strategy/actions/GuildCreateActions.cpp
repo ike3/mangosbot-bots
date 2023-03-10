@@ -78,11 +78,14 @@ bool BuyPetitionAction::isUseful()
 
 bool BuyPetitionAction::canBuyPetition(Player* bot)
 {
+    if (!sPlayerbotAIConfig.randomBotFormGuild)
+        return false;
+
     if (bot->GetGuildId())
         return false;
 
     if (bot->GetGuildIdInvited())
-        return false;
+        return false;    
 
     PlayerbotAI* ai = bot->GetPlayerbotAI();
     AiObjectContext* context = ai->GetAiObjectContext();
@@ -179,22 +182,15 @@ bool PetitionOfferNearbyAction::Execute(Event& event)
         if (player->GetGuildIdInvited())
             continue;
 
+        if (!sPlayerbotAIConfig.randomBotInvitePlayer && player->isRealPlayer())
+            continue;
+
         PlayerbotAI* botAi = player->GetPlayerbotAI();
 
         if (botAi)
         {
-            /*
-            if (botAi->GetGrouperType() == SOLO && !botAi->HasRealPlayerMaster()) //Do not invite solo players.
-                continue;
-
-            */
             if (botAi->HasActivePlayerMaster()) //Do not invite alts of active players. 
                 continue;
-        }
-        else
-        {
-            if (!sPlayerbotAIConfig.randomBotGroupNearby)
-                return false;
         }
 
         if (sServerFacade.GetDistance2d(bot, player) > sPlayerbotAIConfig.sightDistance)
@@ -278,6 +274,9 @@ bool PetitionTurnInAction::Execute(Event& event)
 
 bool PetitionTurnInAction::isUseful()
 {
+    if (!sPlayerbotAIConfig.randomBotFormGuild)
+        return false;
+
     if (!ai->HasStrategy("travel", BotState::BOT_STATE_NON_COMBAT))
         return false;
 

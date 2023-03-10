@@ -120,9 +120,16 @@ AiPlayerbot.GearScoreCheck = 0
 # Quest that will be completed and rewarded to all random bots
 AiPlayerbot.RandomBotQuestIds = 7848,3802,5505,6502,7761
 
-# Randombots will group/form raids with nearby bots to do shared quests
-AiPlayerbot.RandomBotGroupNearby = 1
-#AiPlayerbot.RandomBotRaidNearby = 0
+# Randombots will invite players to groups/raids/guilds. (This can also be disabled by turning on DnD on your character)
+# AiPlayerbot.RandomBotInvitePlayer = 1 
+
+# Randombots will invite nearby bots to groups/raids/guilds
+# AiPlayerbot.RandomBotGroupNearby = 1
+# AiPlayerbot.RandomBotRaidNearby = 1
+# AiPlayerbot.RandomBotGuildNearby = 1
+
+# Randombots will form guilds by buying a charter, getting signatures and handing it in.
+# AiPlayerbot.RandomBotFormGuild = 1
 
 # Bots without a master will say their lines
 # AiPlayerbot.RandomBotSayWithoutMaster = 0

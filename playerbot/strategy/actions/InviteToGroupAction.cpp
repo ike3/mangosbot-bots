@@ -87,6 +87,9 @@ namespace ai
             if (player->GetGroup())
                 continue;
 
+            if (!sPlayerbotAIConfig.randomBotInvitePlayer && player->isRealPlayer())
+                continue;
+
             Group* group = bot->GetGroup();
 
             if (player->isDND())
@@ -104,14 +107,6 @@ namespace ai
 
                 if (botAi->HasActivePlayerMaster()) //Do not invite alts of active players. 
                     continue;
-
-                if (botAi->IsRealPlayer() && !sPlayerbotAIConfig.randomBotGroupNearby)
-                    return false;
-            }
-            else
-            {
-                if (!sPlayerbotAIConfig.randomBotGroupNearby)
-                    return false;
             }
 
             if (abs(int32(player->GetLevel() - bot->GetLevel())) > 2)
@@ -132,6 +127,9 @@ namespace ai
 
     bool InviteNearbyToGroupAction::isUseful()
     {
+        if (!sPlayerbotAIConfig.randomBotGroupNearby)
+            return false;
+
         if (bot->InBattleGround())
             return false;
         
@@ -190,6 +188,9 @@ namespace ai
             if (player->isDND())
                 continue;
 
+            if (!sPlayerbotAIConfig.randomBotInvitePlayer && player->isRealPlayer())
+                continue;
+
             if (player->IsBeingTeleported())
                 continue;
 
@@ -208,11 +209,6 @@ namespace ai
                     if (!PAI_VALUE(bool,"should get money"))
                         continue;
                 }
-            }
-            else
-            {
-                if (!sPlayerbotAIConfig.randomBotGroupNearby)
-                    return false;
             }
 
             if (bot->GetLevel() > player->GetLevel() + 5) //Do not invite members that too low level or risk dragging them to deadly places.

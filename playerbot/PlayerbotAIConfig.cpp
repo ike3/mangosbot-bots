@@ -373,8 +373,12 @@ bool PlayerbotAIConfig::Initialize()
     gearscorecheck = config.GetBoolDefault("AiPlayerbot.GearScoreCheck", false);
 	randomBotPreQuests = config.GetBoolDefault("AiPlayerbot.PreQuests", true);
     randomBotSayWithoutMaster = config.GetBoolDefault("AiPlayerbot.RandomBotSayWithoutMaster", false);
-    randomBotGroupNearby = config.GetBoolDefault("AiPlayerbot.RandomBotGroupNearby", false);
-    randomBotRaidNearby = config.GetBoolDefault("AiPlayerbot.RandomBotRaidNearby", false);
+    randomBotInvitePlayer = config.GetBoolDefault("AiPlayerbot.RandomBotInvitePlayer", true);
+    randomBotGroupNearby = config.GetBoolDefault("AiPlayerbot.RandomBotGroupNearby", true);
+    randomBotRaidNearby = config.GetBoolDefault("AiPlayerbot.RandomBotRaidNearby", true);
+    randomBotGuildNearby = config.GetBoolDefault("AiPlayerbot.RandomBotGuildNearby", true);
+    
+    randomBotFormGuild = config.GetBoolDefault("AiPlayerbot.RandomBotFormGuild", true);
 
     turnInRpg = config.GetBoolDefault("AiPlayerbot.TurnInRpg", false);
     globalSoundEffects = config.GetBoolDefault("AiPlayerbot.GlobalSoundEffects", false);

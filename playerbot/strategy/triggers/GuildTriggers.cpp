@@ -41,6 +41,9 @@ bool BuyTabardTrigger::IsActive()
 
 bool LeaveLargeGuildTrigger::IsActive()
 {
+	if (!sPlayerbotAIConfig.randomBotGuildNearby)
+		return false;
+
 	if (!bot->GetGuildId())
 		return false;
 

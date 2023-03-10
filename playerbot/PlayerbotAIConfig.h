@@ -126,8 +126,11 @@ public:
     uint32 minEnchantingBotLevel;
     uint32 randombotStartingLevel;
     bool randomBotSayWithoutMaster;
+    bool randomBotInvitePlayer;
     bool randomBotGroupNearby;
     bool randomBotRaidNearby;
+    bool randomBotGuildNearby;
+    bool randomBotFormGuild;
     bool randomBotRandomPassword;
     bool talentsInPublicNote;
     bool nonGmFreeSummon;

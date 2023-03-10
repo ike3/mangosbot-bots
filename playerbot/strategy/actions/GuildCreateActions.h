@@ -21,7 +21,7 @@ namespace ai
     public:
         PetitionOfferAction(PlayerbotAI* ai, string name = "petition offer") : Action(ai, name) {}
         virtual bool Execute(Event& event);
-        virtual bool isUseful() { return !bot->GetGuildId(); };
+        virtual bool isUseful() { return sPlayerbotAIConfig.randomBotFormGuild && !bot->GetGuildId(); };
     };
 
     class PetitionOfferNearbyAction : public PetitionOfferAction 
@@ -29,7 +29,7 @@ namespace ai
     public:
         PetitionOfferNearbyAction(PlayerbotAI* ai) : PetitionOfferAction(ai, "petition offer nearby") {}
         virtual bool Execute(Event& event);
-        virtual bool isUseful() { return !bot->GetGuildId() && AI_VALUE2(uint32, "item count", chat->formatQItem(5863)) && AI_VALUE(uint8, "petition signs") < sWorld.getConfig(CONFIG_UINT32_MIN_PETITION_SIGNS); };
+        virtual bool isUseful() { return sPlayerbotAIConfig.randomBotFormGuild && !bot->GetGuildId() && AI_VALUE2(uint32, "item count", chat->formatQItem(5863)) && AI_VALUE(uint8, "petition signs") < sWorld.getConfig(CONFIG_UINT32_MIN_PETITION_SIGNS); };
     };
 
     class PetitionTurnInAction : public ChooseTravelTargetAction 
