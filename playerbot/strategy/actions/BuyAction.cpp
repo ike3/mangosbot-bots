@@ -93,6 +93,9 @@ bool BuyAction::Execute(Event& event)
                     if (price > money)
                         continue;
 
+                    if (usage == ITEM_USAGE_USE && ItemUsageValue::CurrentStacks(ai, proto) >= 1)
+                        continue;
+
                     result |= BuyItem(tItems, vendorguid, proto);
 #ifndef MANGOSBOT_ZERO
                     if(!result)

@@ -77,7 +77,6 @@ namespace ai
 
     public:
         virtual ItemUsage Calculate();
-
     private:
         ItemUsage QueryItemUsageForEquip(ItemQualifier& itemQualifier);
 
@@ -87,7 +86,6 @@ namespace ai
         bool IsItemUsefulForSkill(ItemPrototype const * proto);
         bool IsItemNeededForUsefullSpell(ItemPrototype const* proto, bool checkAllReagents = false);
         Item* CurrentItem(ItemPrototype const* proto);
-        float CurrentStacks(ItemPrototype const* proto);
         float BetterStacks(ItemPrototype const* proto, string usageType = "");
 #ifdef GenerateBotHelp
         virtual string GetHelpName() { return "item usage"; } //Must equal iternal name
@@ -99,6 +97,7 @@ namespace ai
         virtual vector<string> GetUsedValues() { return {"bag space", "force item usage", "inventory items", "item count" }; }
 #endif 
     public:
+        static float CurrentStacks(PlayerbotAI* ai, ItemPrototype const* proto);
         static bool HasItemsNeededForSpell(uint32 spellId, ItemPrototype const* proto, Player* bot);
         static vector<uint32> SpellsUsingItem(uint32 itemId, Player* bot);
         static bool SpellGivesSkillUp(uint32 spellId, Player* bot);
