@@ -191,6 +191,13 @@ bool Engine::DoNextAction(Unit* unit, int depth, bool minimal)
                         }
                     }
 
+                    if (queue.Size() && relevance < basket->getRelevance() && queue.Peek()->getRelevance() > relevance) //Relevance changed. Try again.
+                    {
+                        PushAgain(actionNode, relevance, event);
+                        if (pmo1) pmo1->finish();
+                        continue;
+                    }
+
                     if (!skipPrerequisites)
                     {
                         LogAction("A:%s - PREREQ", action->getName().c_str());
