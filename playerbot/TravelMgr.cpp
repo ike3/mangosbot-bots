@@ -6,6 +6,7 @@
 #include "PathFinder.h"
 #include "TravelNode.h"
 #include "PlayerbotAI.h"
+#include "BotTests.h"
 
 using namespace ai;
 using namespace MaNGOS;
@@ -1242,6 +1243,9 @@ void TravelMgr::LoadQuestTravelTable()
         loc->addPoint(&pointsMap.find(guid)->second);
     }     
 
+    //Analyse log files
+    if(sPlayerbotAIConfig.hasLog("log_analysis.csv"))
+        LogAnalysis::AnalysePid();
 
      //Clear these logs files
     sPlayerbotAIConfig.openLog("zones.csv", "w");
