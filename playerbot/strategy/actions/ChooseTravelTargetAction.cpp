@@ -18,7 +18,7 @@ bool ChooseTravelTargetAction::Execute(Event& event)
     getNewTarget(&newTarget, oldTarget);
 
     //If the new target is not active we failed.
-    if (!newTarget.isActive() || newTarget.isForced())
+    if (!newTarget.isActive() && !newTarget.isForced())
        return false;    
 
     setNewTarget(&newTarget, oldTarget);
