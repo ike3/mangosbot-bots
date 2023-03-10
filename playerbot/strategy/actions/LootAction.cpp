@@ -87,6 +87,15 @@ bool OpenLootAction::DoLoot(LootObject& lootObject)
         packet << lootObject.guid;
         bot->GetSession()->HandleLootOpcode(packet);
         SetDuration(sPlayerbotAIConfig.lootDelay);
+
+        if (bot->isRealPlayer())
+        {
+            WorldPacket data(SMSG_EMOTE, 4 + 8);
+            data << uint32(EMOTE_ONESHOT_LOOT);
+            data << bot->GetObjectGuid();
+            bot->GetSession()->SendPacket(data);
+        }
+
         return true;
     }
 
