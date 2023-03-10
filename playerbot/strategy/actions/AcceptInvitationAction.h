@@ -41,7 +41,7 @@ namespace ai
             if (sRandomPlayerbotMgr.IsFreeBot(bot))
                 ai->SetMaster(inviter);
 
-            Player* master = GetMaster();
+            Player* master = inviter;
 
             ai->ResetStrategies();
             ai->ChangeStrategy("+follow,-lfg,-bg", BotState::BOT_STATE_NON_COMBAT);
@@ -50,6 +50,13 @@ namespace ai
             ai->TellMaster(BOT_TEXT("hello"), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
 
             sPlayerbotAIConfig.logEvent(ai, "AcceptInvitationAction", grp->GetLeaderName(), to_string(grp->GetMembersCount()));
+
+            if (master->GetPlayerbotAI()) //Copy formation from bot master.
+            {
+                Formation* masterFormation = MAI_VALUE(Formation*, "formation");
+                FormationValue* value = (FormationValue*)context->GetValue<Formation*>("formation");
+                value->Load(masterFormation->getName());
+            }
 
             return true;
         }

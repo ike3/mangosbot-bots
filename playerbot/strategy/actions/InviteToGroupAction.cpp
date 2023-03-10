@@ -4,6 +4,7 @@
 #include "../../playerbot.h"
 #include "InviteToGroupAction.h"
 #include "../../ServerFacade.h"
+#include "../values/Formations.h"
 
 
 using namespace ai;
@@ -61,6 +62,14 @@ namespace ai
 
     bool InviteNearbyToGroupAction::Execute(Event& event)
     {
+        if (!bot->GetGroup())  //Select a random formation to copy.
+        {
+            vector<string> formations = { "melee","queue","chaos","circle","line","shield","arrow","near","far"};
+            FormationValue* value = (FormationValue*)context->GetValue<Formation*>("formation");
+            string newFormation = formations[urand(0, formations.size() - 1)];
+            value->Load(newFormation);
+        }
+
         list<ObjectGuid> nearGuids = ai->GetAiObjectContext()->GetValue<list<ObjectGuid> >("nearest friendly players")->Get();
         for (auto& i : nearGuids)
         {
