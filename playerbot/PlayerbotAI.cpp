@@ -3690,7 +3690,7 @@ ActivePiorityType PlayerbotAI::GetPriorityType()
     if (IsInRealGuild())
         return ActivePiorityType::PLAYER_GUILD;
 
-    if (!bot->GetMap() || !bot->GetMap()->HasRealPlayers())
+    if (bot->IsBeingTeleported() || !bot->GetMap() || !bot->GetMap()->HasRealPlayers())
         return ActivePiorityType::IN_INACTIVE_MAP;
 
     ContinentArea currentArea = sMapMgr.GetContinentInstanceId(bot->GetMapId(), bot->GetPositionX(), bot->GetPositionY());
