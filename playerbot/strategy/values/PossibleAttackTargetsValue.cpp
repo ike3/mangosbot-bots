@@ -202,17 +202,22 @@ bool PossibleAttackTargetsValue::IsTapped(Unit* target, Player* player)
     if (player)
     {
         PlayerbotAI* playerBot = player->GetPlayerbotAI();
+
+        if (playerBot && playerBot->HasAura("tame beast", target))
+            return false;
+
         const Creature* creature = dynamic_cast<Creature*>(target);
         if (creature)
         {
             Unit* victim = creature->GetVictim();
             Player* master = playerBot ? playerBot->GetMaster() : nullptr;
+            PlayerbotAI* ai = player->GetPlayerbotAI();
             const bool leaderHasThreat = master && target->getThreatManager().getThreat(master);
             const bool inBotGroup = player->GetGroup() && (master && master->GetPlayerbotAI() && !master->GetPlayerbotAI()->IsRealPlayer());
             const bool hasAttackTaggedStrategy = playerBot && playerBot->HasStrategy("attack tagged", BotState::BOT_STATE_NON_COMBAT);
             const bool isAttackingGroupMember = victim && (player->IsInGroup(victim) || (master && victim == master));
             const bool hasLootRecipient = creature->HasLootRecipient();
-            
+
             if (creature->IsTappedBy(player) || 
                 leaderHasThreat || 
                 ((!victim || isAttackingGroupMember) && !hasLootRecipient) ||
