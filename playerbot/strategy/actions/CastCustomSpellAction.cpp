@@ -121,9 +121,12 @@ bool CastCustomSpellAction::Execute(Event& event)
 
     MotionMaster& mm = *bot->GetMotionMaster();
 
-    bool result = spell ? ai->CastSpell(spell, target, itemTarget) : ai->CastSpell(text, target, itemTarget);
+    uint32 spellDuration = sPlayerbotAIConfig.globalCoolDown;
+
+    bool result = spell ? ai->CastSpell(spell, target, itemTarget,true, &spellDuration) : ai->CastSpell(text, target, itemTarget, true, &spellDuration);
     if (result)
     {
+        SetDuration(spellDuration);
         msg << "Casting " << spellName.str();
 
         if (castCount > 1)
