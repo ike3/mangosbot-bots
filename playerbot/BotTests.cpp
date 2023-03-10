@@ -40,6 +40,9 @@ void LogAnalysis::AnalysePid()
     }
     while (in.good());
 
+    if (activeBots.empty())
+        return;
+
     uint32 aDiff =0, aBots =0;
     for (uint32 i = 0; i < activeBots.size(); i++)
     {
