@@ -12,6 +12,7 @@ namespace ai
         virtual bool Execute(Event& event) override
         {            
             Player* master = event.getOwner();
+
             return Leave(master);
         }
 
@@ -89,7 +90,7 @@ namespace ai
 
         virtual bool Execute(Event& event) override
         {
-            return Leave(nullptr);
+            return Leave(ai->GetGroupMaster());
         }
 
         virtual bool isUseful();
