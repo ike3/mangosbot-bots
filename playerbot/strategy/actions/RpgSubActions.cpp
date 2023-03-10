@@ -25,7 +25,7 @@ void RpgHelper::BeforeExecute()
 
 void RpgHelper::AfterExecute(bool doDelay, bool waitForGroup, string nextAction)
 {
-    if (ai->HasRealPlayerMaster() && nextAction == "rpg") 
+    if ((ai->HasRealPlayerMaster() || !urand(0,5)) && nextAction == "rpg") 
         nextAction = "rpg cancel"; 
     
     SET_AI_VALUE(string, "next rpg action", nextAction);
