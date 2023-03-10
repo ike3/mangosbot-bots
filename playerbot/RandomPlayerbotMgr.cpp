@@ -754,7 +754,7 @@ uint32 RandomPlayerbotMgr::AddRandomBots()
 
         bool enoughBotsForCriteria = true;
 
-        for (uint32 noCriteria = 0; noCriteria < 2; noCriteria++)
+        for (uint32 noCriteria = 0; noCriteria < 3; noCriteria++)
         {
             int32  classRaceAllowed[MAX_CLASSES][MAX_RACES] = { 0 };
 
@@ -773,7 +773,7 @@ uint32 RandomPlayerbotMgr::AddRandomBots()
 
                 QueryResult* result;
 
-                if (noCriteria)
+                if (noCriteria == 2)
                     result = CharacterDatabase.PQuery("SELECT guid, level, totaltime, race, class FROM characters WHERE account = '%u'", accountId);
                 else
                 {
@@ -817,7 +817,8 @@ uint32 RandomPlayerbotMgr::AddRandomBots()
 
                     if (GetEventValue(guid, "add"))
                     {
-                        classRaceAllowed[cls][race]--;
+                        if (!noCriteria)
+                            classRaceAllowed[cls][race]--;
                         continue;
                     }
 
@@ -826,13 +827,15 @@ uint32 RandomPlayerbotMgr::AddRandomBots()
 
                     if (GetPlayerBot(guid))
                     {
-                        classRaceAllowed[cls][race]--;
+                        if (!noCriteria)
+                            classRaceAllowed[cls][race]--;
                         continue;
                     }
 
                     if (std::find(currentBots.begin(), currentBots.end(), guid) != currentBots.end())
                     {
-                        classRaceAllowed[cls][race]--;
+                        if (!noCriteria)
+                            classRaceAllowed[cls][race]--;
                         continue;
                     }
 
@@ -842,7 +845,9 @@ uint32 RandomPlayerbotMgr::AddRandomBots()
                     SetEventValue(guid, "add", 1, urand(sPlayerbotAIConfig.minRandomBotInWorldTime, sPlayerbotAIConfig.maxRandomBotInWorldTime));
                     SetEventValue(guid, "logout", 0, 0);
                     currentBots.push_back(guid);
-                    classRaceAllowed[cls][race]--;
+
+                    if(!noCriteria)
+                        classRaceAllowed[cls][race]--;
 
                     if (wantedAvgLevel)
                         if (sPlayerbotAIConfig.instantRandomize ? totaltime : level > 1)
