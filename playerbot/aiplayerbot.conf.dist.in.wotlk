@@ -49,7 +49,11 @@ AiPlayerbot.RandomBotAccountPrefix = rndbot
 AiPlayerbot.RandomBotAccountCount = 200
 
 # Percentage of fully active bots. Default is 10, higher numbers may affect performance
-AiPlayerbot.botActiveAlone = 10
+# AiPlayerbot.botActiveAlone = 10
+
+# Limit random bot max level to online players max level + 5
+# AiPlayerbot.SyncLevelWithPlayers = 0
+# AiPlayerbot.syncLevelMaxAbove = 5
 
 # Random bot guild count
 AiPlayerbot.RandomBotGuildCount = 20

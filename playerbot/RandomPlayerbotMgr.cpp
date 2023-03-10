@@ -733,7 +733,7 @@ uint32 RandomPlayerbotMgr::AddRandomBots()
     {
         if (sPlayerbotAIConfig.syncLevelWithPlayers)
         {
-            maxLevel = max(sPlayerbotAIConfig.randomBotMinLevel, min(playersLevel, sWorld.getConfig(CONFIG_UINT32_MAX_PLAYER_LEVEL))) + 5;
+            maxLevel = max(sPlayerbotAIConfig.randomBotMinLevel, min(playersLevel + sPlayerbotAIConfig.syncLevelMaxAbove, sWorld.getConfig(CONFIG_UINT32_MAX_PLAYER_LEVEL)));
 
             wantedAvgLevel = maxLevel / 2;
             for (auto bot : playerBots)
@@ -742,7 +742,7 @@ uint32 RandomPlayerbotMgr::AddRandomBots()
             if(currentAvgLevel)
                 currentAvgLevel = currentAvgLevel / playerBots.size();
 
-            randomAvgLevel = (sPlayerbotAIConfig.randomBotMinLevel + max(sPlayerbotAIConfig.randomBotMinLevel, min(playersLevel, sWorld.getConfig(CONFIG_UINT32_MAX_PLAYER_LEVEL)))) / 2;
+            randomAvgLevel = (sPlayerbotAIConfig.randomBotMinLevel + max(sPlayerbotAIConfig.randomBotMinLevel, min(playersLevel+ sPlayerbotAIConfig.syncLevelMaxAbove, sWorld.getConfig(CONFIG_UINT32_MAX_PLAYER_LEVEL)))) / 2;
         }
 
         currentAllowedBotCount -= currentBots.size();
@@ -2354,7 +2354,7 @@ void RandomPlayerbotMgr::RandomizeFirst(Player* bot)
 
     // if lvl sync is enabled, max level is limited by online players lvl
     if (sPlayerbotAIConfig.syncLevelWithPlayers)
-        maxLevel = max(sPlayerbotAIConfig.randomBotMinLevel, min(playersLevel, sWorld.getConfig(CONFIG_UINT32_MAX_PLAYER_LEVEL)));
+        maxLevel = max(sPlayerbotAIConfig.randomBotMinLevel, min(playersLevel+ sPlayerbotAIConfig.syncLevelMaxAbove, sWorld.getConfig(CONFIG_UINT32_MAX_PLAYER_LEVEL)));
 
 	PerformanceMonitorOperation *pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "RandomizeFirst");
     uint32 level = urand(std::max(uint32(sWorld.getConfig(CONFIG_UINT32_START_PLAYER_LEVEL)), sPlayerbotAIConfig.randomBotMinLevel), maxLevel);

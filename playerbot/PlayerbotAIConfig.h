@@ -155,6 +155,7 @@ public:
     bool autoLearnQuestSpells;
     bool autoDoQuests;
     bool syncLevelWithPlayers;
+    uint32 syncLevelMaxAbove;
     bool freeFood;
     uint32 tweakValue; //Debugging config
     float respawnModNeutral, respawnModHostile;

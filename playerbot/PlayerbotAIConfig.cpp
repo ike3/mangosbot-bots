@@ -395,6 +395,7 @@ bool PlayerbotAIConfig::Initialize()
     autoLearnQuestSpells = config.GetBoolDefault("AiPlayerbot.AutoLearnQuestSpells", false);
     autoDoQuests = config.GetBoolDefault("AiPlayerbot.AutoDoQuests", false);
     syncLevelWithPlayers = config.GetBoolDefault("AiPlayerbot.SyncLevelWithPlayers", false);
+    syncLevelMaxAbove = config.GetIntDefault("AiPlayerbot.SyncLevelMaxAbove", 5);
     tweakValue = config.GetIntDefault("AiPlayerbot.TweakValue", 0);
     freeFood = config.GetBoolDefault("AiPlayerbot.FreeFood", true);
     talentsInPublicNote = config.GetBoolDefault("AiPlayerbot.TalentsInPublicNote", false);
