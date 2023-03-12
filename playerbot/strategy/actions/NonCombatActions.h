@@ -20,7 +20,7 @@ namespace ai
             if (!bot->HasMana())
                 return false;
 
-            if (sPlayerbotAIConfig.freeFood)
+            if (ai->HasCheat(BotCheatMask::item))
             {
                 if (bot->IsNonMeleeSpellCasted(true))
                     return false;
@@ -88,7 +88,7 @@ namespace ai
             if (sServerFacade.IsInCombat(bot))
                 return false;
 
-            if (sPlayerbotAIConfig.freeFood)
+            if (ai->HasCheat(BotCheatMask::item))
             {
                 if (bot->IsNonMeleeSpellCasted(true))
                     return false;

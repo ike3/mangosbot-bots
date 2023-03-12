@@ -115,7 +115,7 @@ ItemUsage ItemUsageValue::Calculate()
     if (proto->Class == ITEM_CLASS_KEY)
         return ITEM_USAGE_USE;
 
-    if (proto->Class == ITEM_CLASS_CONSUMABLE)
+    if (proto->Class == ITEM_CLASS_CONSUMABLE && !ai->HasCheat(BotCheatMask::item))
     {       
         string foodType = GetConsumableType(proto, bot->HasMana());
 
@@ -148,10 +148,12 @@ ItemUsage ItemUsageValue::Calculate()
 
     //While sync is on, do not loot quest items that are also usefull for master. Master 
     if (!ai->GetMaster() || !sPlayerbotAIConfig.syncQuestWithPlayer || !IsItemUsefulForQuest(ai->GetMaster(), proto))
+    {
         if (IsItemUsefulForQuest(bot, proto))
             return ITEM_USAGE_QUEST;
-        else if (IsItemUsefulForQuest(bot, proto, true) && CurrentStacks(ai,proto) < 2) //Do not sell quest items unless selling a full stack will stil keep enough in inventory.
+        else if (IsItemUsefulForQuest(bot, proto, true) && CurrentStacks(ai, proto) < 2) //Do not sell quest items unless selling a full stack will stil keep enough in inventory.
             return ITEM_USAGE_KEEP;
+    }
 
 
     if (proto->Class == ITEM_CLASS_PROJECTILE && bot->CanUseItem(proto) == EQUIP_ERR_OK)
