@@ -34,6 +34,12 @@ namespace ai
         MagmadarLavaBombTrigger(PlayerbotAI* ai) : CloseToGameObject(ai, "magmadar lava bomb", 177704, 2.5f) {}
     };
 
+    class MagmadarTooCloseTrigger : public CloseToCreature
+    {
+    public:
+        MagmadarTooCloseTrigger(PlayerbotAI* ai) : CloseToCreature(ai, "magmadar too close", 11982, 30.0f) {}
+    };
+
     class MCRuneInSightTrigger : public ValueTrigger
     {
     public:

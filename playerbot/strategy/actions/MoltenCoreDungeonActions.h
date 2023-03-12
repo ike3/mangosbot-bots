@@ -35,6 +35,12 @@ namespace ai
         MagmadarMoveAwayFromLavaBombAction(PlayerbotAI* ai) : MoveAwayFromGameObject(ai, "move away from magmadar lava bomb", 177704, 5.0f) {}
     };
 
+    class MagmadarMoveAwayAction : public MoveAwayFromCreature
+    {
+    public:
+        MagmadarMoveAwayAction(PlayerbotAI* ai) : MoveAwayFromCreature(ai, "move away from magmadar", 11982, 31.0f) {}
+    };
+
     class MoveToMCRuneAction : public MoveToAction
     {
     public:

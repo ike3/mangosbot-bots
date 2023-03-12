@@ -2,6 +2,7 @@
 #include "../../playerbot.h"
 #include "DungeonTriggers.h"
 #include "../values/PositionValue.h"
+#include "ServerFacade.h"
 
 using namespace ai;
 
@@ -89,11 +90,42 @@ bool CloseToGameObject::IsActive()
         for (ObjectGuid& gameObjectGuid : gameObjects)
         {
             GameObject* gameObject = ai->GetGameObject(gameObjectGuid);
-            if (gameObject)
+            if (gameObject && bot->IsWithinDist(gameObject, range))
             {
-                if (bot->IsWithinDist(gameObject, range))
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
+bool CloseToCreature::IsActive()
+{
+    // If the bot is ready
+    if (bot->IsInWorld() && !bot->IsBeingTeleported())
+    {
+        AiObjectContext* context = ai->GetAiObjectContext();
+
+        // Iterate through the active attackers
+        list<ObjectGuid> attackers = AI_VALUE(list<ObjectGuid>, "attackers");
+        for (ObjectGuid& attackerGuid : attackers)
+        {
+            // Check against the given creature id
+            if (attackerGuid.GetEntry() == creatureID)
+            {
+                Creature* creature = ai->GetCreature(attackerGuid);
+                if (creature)
                 {
-                    return true;
+                    // Check if the bot is not being targeted by the creature
+                    if (!creature->GetVictim() || (creature->GetVictim()->GetObjectGuid() != bot->GetObjectGuid()))
+                    {
+                        // See if the creature is within the specified distance
+                        if (bot->IsWithinDist(creature, range))
+                        {
+                            return true;
+                        }
+                    }
                 }
             }
         }

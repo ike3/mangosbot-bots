@@ -80,7 +80,20 @@ namespace ai
     private:
         uint32 gameObjectID;
         float range;
-        bool savePosition;
-        string positionName;
+    };
+
+    class CloseToCreature : public Trigger
+    {
+    public:
+        CloseToCreature(PlayerbotAI* ai, string name, uint32 creatureID, float range)
+        : Trigger(ai, name, 1)
+        , creatureID(creatureID)
+        , range(range) {}
+
+        bool IsActive() override;
+
+    private:
+        uint32 creatureID;
+        float range;
     };
 }
