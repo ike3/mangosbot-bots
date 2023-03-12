@@ -406,12 +406,14 @@ std::vector<TalentSpec::TalentListEntry> TalentSpec::SubTalentList(std::vector<T
     for (auto& newentry : deltaList)
         for (auto& oldentry : oldList)
             if (oldentry.entry == newentry.entry)
+            {
                 if (reverse == ABSOLUTE_DIST)
                     newentry.rank = abs(newentry.rank - oldentry.rank);
                 else if (reverse == ADDED_POINTS || reverse == REMOVED_POINTS)
                     newentry.rank = max(0, (newentry.rank - oldentry.rank) * (reverse / 2));
                 else
                     newentry.rank = (newentry.rank - oldentry.rank) * reverse;
+            }
 
     return deltaList;
 }

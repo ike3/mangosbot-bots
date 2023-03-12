@@ -248,10 +248,12 @@ bool AhBidAction::ExecuteCommand(string text, Unit* auctioneer)
             uint32 price = std::min(auction->buyout, uint32(std::max(auction->bid, auction->startbid) * frand(1.05f, 1.25f)));
 
             if (freeMoney.find(usage) == freeMoney.end() || price > AI_VALUE2(uint32, "free money for", freeMoney[usage]))
+            {
                 if (!urand(0, 5))
                     break;
                 else
-                continue;
+                    continue;
+            }
 
             bidItems = BidItem(auction, price, auctioneer);
                 

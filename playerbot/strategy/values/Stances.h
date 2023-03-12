@@ -9,7 +9,7 @@ namespace ai
     {
     public:
         Stance(PlayerbotAI* ai, string name) : Formation (ai, name) {}
-
+        virtual ~Stance() {}
     protected:
         virtual Unit* GetTarget();
         virtual WorldLocation GetLocationInternal() = 0;

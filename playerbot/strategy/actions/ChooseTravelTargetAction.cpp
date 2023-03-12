@@ -39,17 +39,18 @@ void ChooseTravelTargetAction::getNewTarget(TravelTarget* newTarget, TravelTarge
 
     //Enpty bags/repair
     if (!foundTarget && urand(1, 100) > 10)                                  //90% chance
+    {
         if (AI_VALUE2(bool, "group or", "should sell,can sell,following party,near leader") || AI_VALUE2(bool, "group or", "should repair,can repair,following party,near leader"))
         {
             PerformanceMonitorOperation* pmo = sPerformanceMonitor.start(PERF_MON_VALUE, "SetRpgTarget1", &context->performanceStack);
             foundTarget = SetRpgTarget(newTarget);                           //Go to town to sell items or repair
-            if(pmo) pmo->finish();
+            if (pmo) pmo->finish();
         }
         else if (AI_VALUE2(bool, "group or", "should sell,can ah sell,following party,near leader") && bot->GetLevel() > 5)
         {
             PerformanceMonitorOperation* pmo = sPerformanceMonitor.start(PERF_MON_VALUE, "SetNpcFlagTarget1", &context->performanceStack);
             foundTarget = SetNpcFlagTarget(newTarget, { UNIT_NPC_FLAG_AUCTIONEER });
-            if(pmo) pmo->finish();
+            if (pmo) pmo->finish();
 
             if (!foundTarget)
             {
@@ -58,6 +59,7 @@ void ChooseTravelTargetAction::getNewTarget(TravelTarget* newTarget, TravelTarge
                 if (pmo) pmo->finish();
             }
         }
+    }
 
     //Rpg in city
     if (!foundTarget && urand(1, 100) > 90 && bot->GetLevel() > 5)           //10% chance

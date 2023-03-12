@@ -306,18 +306,22 @@ ItemUsage ItemUsageValue::QueryItemUsageForEquip(ItemQualifier& itemQualifier)
 
     //No item equiped
     if (!oldItem)
+    {
         if (shouldEquip)
             return ITEM_USAGE_EQUIP;
         else
             return ITEM_USAGE_BAD_EQUIP;
+    }
 
     const ItemPrototype* oldItemProto = oldItem->GetProto();
 
     if (AI_VALUE2(ForceItemUsage, "force item usage", oldItemProto->ItemId) == ForceItemUsage::FORCE_USAGE_EQUIP) //Current equip is forced. Do not unequip.
+    {
         if (AI_VALUE2(ForceItemUsage, "force item usage", itemProto->ItemId) == ForceItemUsage::FORCE_USAGE_EQUIP)
             return ITEM_USAGE_KEEP;
         else
             return ITEM_USAGE_NONE;
+    }
 
     uint32 oldStatWeight = sRandomItemMgr.ItemStatWeight(bot, oldItem);
     if (statWeight || oldStatWeight)
@@ -330,10 +334,12 @@ ItemUsage ItemUsageValue::QueryItemUsageForEquip(ItemQualifier& itemQualifier)
 
     //Bigger quiver
     if (itemProto->Class == ITEM_CLASS_QUIVER)
+    {
         if (!oldItem || oldItemProto->ContainerSlots < itemProto->ContainerSlots)
             return ITEM_USAGE_EQUIP;
         else
             ITEM_USAGE_NONE;
+    }
 
     bool existingShouldEquip = true;
     if (oldItemProto->Class == ITEM_CLASS_WEAPON && !oldStatWeight)

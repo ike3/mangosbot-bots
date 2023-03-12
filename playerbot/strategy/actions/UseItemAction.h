@@ -333,7 +333,7 @@ namespace ai
             if (bot->getClass() == CLASS_MAGE) // mage should use mana gem, shares cd with dark rune
                 return false;
 
-            return AI_VALUE2(uint8, "health", "self target") > 1000;
+            return bot->GetHealth() > 1000;
         }
 
         virtual uint32 GetItemId() override { return 20520; }

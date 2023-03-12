@@ -774,7 +774,9 @@ uint32 RandomPlayerbotMgr::AddRandomBots()
                 QueryResult* result;
 
                 if (noCriteria == 2)
+                {
                     result = CharacterDatabase.PQuery("SELECT guid, level, totaltime, race, class FROM characters WHERE account = '%u'", accountId);
+                }
                 else
                 {
                     bool needToIncrease = wantedAvgLevel && currentAvgLevel + 1 < wantedAvgLevel;
@@ -850,10 +852,12 @@ uint32 RandomPlayerbotMgr::AddRandomBots()
                         classRaceAllowed[cls][race]--;
 
                     if (wantedAvgLevel)
+                    {
                         if (sPlayerbotAIConfig.instantRandomize ? totaltime : level > 1)
                             currentAvgLevel += (float)level / currentBots.size();
                         else
                             currentAvgLevel += (float)level + randomAvgLevel; //Use predicted randomized level. This will be wrong but avarage out correct.
+                    }
 
                     currentAllowedBotCount--;
 

@@ -436,9 +436,8 @@ bool DebugAction::Execute(Event& event)
         }
 
         return true;
-    }
-   
- else if (text.find("go ") != std::string::npos)
+    }  
+    else if (text.find("go ") != std::string::npos)
     {
         ostringstream out;
 
