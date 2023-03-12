@@ -1577,6 +1577,31 @@ bool MovementAction::Flee(Unit *target)
         succeeded = MoveNear(fleeTarget);
     }
 
+    if (!ai->HasRealPlayerMaster())
+    {
+        bool fullDistance = false;
+        if (target->IsPlayer())
+            fullDistance = true;
+        if (WorldPosition(bot).isOverworld())
+            fullDistance = true;
+
+        float distance = fullDistance ? (ai->GetRange("flee") * 2) : ai->GetRange("flee");
+
+        MotionMaster* mm = bot->GetMotionMaster();
+
+        if (mm->GetCurrentMovementGeneratorType() == CHASE_MOTION_TYPE)
+        {
+            ChaseMovementGenerator* chase = (ChaseMovementGenerator*)mm->GetCurrent();
+
+            if (chase->GetCurrentTarget() == target)
+                return true;
+        }
+
+        ai->StopMoving();
+        mm->MoveChase(target, distance, WorldPosition(bot).getAngleTo(target), true, false, true, false);
+        return true;
+    }
+
     // Generate a position to flee
     if(!succeeded)
     {
