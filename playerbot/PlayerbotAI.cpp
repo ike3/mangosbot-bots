@@ -3482,7 +3482,7 @@ uint32 PlayerbotAI::GetFixedBotNumer(BotTypeNumber typeNumber, uint32 maxNum, fl
 
 GrouperType PlayerbotAI::GetGrouperType()
 {
-    uint32 maxGroupType = sPlayerbotAIConfig.randomBotRaidNearby ? 100 : 90;
+    uint32 maxGroupType = sPlayerbotAIConfig.randomBotRaidNearby ? 100 : 95;
     uint32 grouperNumber = GetFixedBotNumer(BotTypeNumber::GROUPER_TYPE_NUMBER, maxGroupType, 0);
 
     //20% solo
@@ -3492,21 +3492,21 @@ GrouperType PlayerbotAI::GetGrouperType()
 
     if (grouperNumber < 20 && !HasRealPlayerMaster())
         return GrouperType::SOLO;
-    if (grouperNumber < 70)
+    if (grouperNumber < 75)
         return GrouperType::MEMBER;
-    if (grouperNumber < 75 || bot->GetLevel() < 3)
+    if (grouperNumber < 80 || bot->GetLevel() < 3)
         return GrouperType::LEADER_2;
-    if (grouperNumber < 80 || bot->GetLevel() < 5)
+    if (grouperNumber < 85 || bot->GetLevel() < 5)
         return GrouperType::LEADER_3;
-    if (grouperNumber < 85 || bot->GetLevel() < 7)
+    if (grouperNumber < 90 || bot->GetLevel() < 7)
         return GrouperType::LEADER_4;
-    if (grouperNumber <= 90 || bot->GetLevel() < 9)
+    if (grouperNumber <= 95 || bot->GetLevel() < 9)
         return GrouperType::LEADER_5;
 #ifdef MANGOSBOT_ZERO
-    if (grouperNumber <= 95)
+    if (grouperNumber <= 97)
         return GrouperType::RAIDER_20;
 #else
-    if (grouperNumber <= 95)
+    if (grouperNumber <= 97)
         return GrouperType::RAIDER_10;
 #endif    
    return GrouperType::RAIDER_MAX;
