@@ -14,7 +14,7 @@ void LogAnalysis::AnalysePid()
 
     vector<uint32> activeBots, totalBots, avgDiff;
     
-    uint32 runTime, maxBots;
+    uint32 runTime, maxBots = 0, start=0;
 
     if (in.fail())
         return;
@@ -37,22 +37,27 @@ void LogAnalysis::AnalysePid()
         avgDiff.push_back(stoi(tokens[2]));
 
         runTime = stoi(tokens[0]);
-        maxBots = stoi(tokens[7]);
+
+        if ((uint32)stoi(tokens[7]) > maxBots)
+        {
+            maxBots = (uint32)stoi(tokens[7]);
+            start = avgDiff.size();
+        }
     }
     while (in.good());
 
-    if (activeBots.empty())
+    if (activeBots.empty() || start == activeBots.size())
         return;
 
-    uint32 aDiff =0, aBots =0;
+    uint32 aDiff = start, aBots =0;
     for (uint32 i = 0; i < activeBots.size(); i++)
     {
         aDiff += avgDiff[i];
         aBots += activeBots[i];
     }
 
-    aDiff /= activeBots.size();
-    aBots /= activeBots.size();   
+    aDiff /= (activeBots.size()- start);
+    aBots /= (activeBots.size()- start);
 
     using namespace std::chrono;
     std::chrono::milliseconds ms(runTime);
@@ -69,10 +74,10 @@ void LogAnalysis::AnalysePid()
 
     ostringstream out;
 
-    out << sPlayerbotAIConfig.GetTimestampStr()  << "," << "PID" << ", " << ss.str().c_str() << ", " << aDiff << ", " << aBots;
+    out << sPlayerbotAIConfig.GetTimestampStr()  << "," << "PID" << "," << ss.str().c_str() << "," << aDiff << "," << aBots << "," << maxBots;
 
     sPlayerbotAIConfig.log("log_analysis.csv", out.str().c_str());
 
     sLog.outString("========= SERVER RUNTIME: %s ==========", ss.str().c_str());
-    sLog.outString("========= AVG DIFF [%d] & AVG ACTIVE BOTS [%d]", aDiff, aBots);
+    sLog.outString("========= AVG DIFF [%d] & AVG ACTIVE BOTS [%d/%d]", aDiff, aBots, maxBots);
 }
