@@ -361,7 +361,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
     }
 
     float minDist = sPlayerbotAIConfig.targetPosRecalcDistance; //Minimum distance a bot should move.
-    float maxDist = sPlayerbotAIConfig.reactDistance;           //Maximum distance a bot can move in one single action.
+    float maxDist = sPlayerbotAIConfig.sightDistance;           //Maximum distance a bot can move in one single action.
     float originalZ = z;                                        // save original destination height to check if bot needs to fly up
 
 
@@ -1577,7 +1577,7 @@ bool MovementAction::Flee(Unit *target)
         succeeded = MoveNear(fleeTarget);
     }
 
-    if (!ai->HasRealPlayerMaster())
+    if (!ai->HasRealPlayerMaster() || ai->IsRealPlayer(target))
     {
         bool fullDistance = false;
         if (target->IsPlayer())
