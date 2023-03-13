@@ -92,6 +92,7 @@
 #include "GuidPositionValues.h"
 #include "EngineValues.h"
 #include "FreeMoveValues.h"
+#include "HazardsValue.h"
 
 namespace ai
 {
@@ -216,6 +217,9 @@ namespace ai
             creators["balance"] = &ValueContext::balance;
             creators["possible attack targets"] = &ValueContext::possible_attack_targets;
             creators["attackers"] = &ValueContext::attackers;
+            creators["add hazard"] = &ValueContext::add_hazard;
+            creators["stored hazards"] = &ValueContext::stored_hazards;
+            creators["hazards"] = &ValueContext::hazards;
             creators["invalid target"] = &ValueContext::invalid_target;
             creators["mana save level"] = &ValueContext::mana_save_level;
             creators["combat"] = &ValueContext::combat;
@@ -378,6 +382,9 @@ namespace ai
         static UntypedValue* balance(PlayerbotAI* ai) { return new BalancePercentValue(ai); }
         static UntypedValue* possible_attack_targets(PlayerbotAI* ai) { return new PossibleAttackTargetsValue(ai); }
         static UntypedValue* attackers(PlayerbotAI* ai) { return new AttackersValue(ai); }
+        static UntypedValue* add_hazard(PlayerbotAI* ai) { return new AddHazardValue(ai); }
+        static UntypedValue* stored_hazards(PlayerbotAI* ai) { return new StoredHazardsValue(ai); }
+        static UntypedValue* hazards(PlayerbotAI* ai) { return new HazardsValue(ai); }
 
         static UntypedValue* position(PlayerbotAI* ai) { return new PositionValue(ai); }
         static UntypedValue* pos(PlayerbotAI* ai) { return new SinglePositionValue(ai); }

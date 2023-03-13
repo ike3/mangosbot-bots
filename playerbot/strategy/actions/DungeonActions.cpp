@@ -5,95 +5,110 @@
 
 using namespace ai;
 
-bool MoveAwayFromGameObject::Execute(Event& event)
+bool MoveAwayFromHazard::Execute(Event& event)
 {
-    // This has a maximum range equal to the sight distance on config file (default 60 yards)
-    list<GameObject*> gameObjects;
-    for (const ObjectGuid& gameObjectGuid : AI_VALUE2(list<ObjectGuid>, "nearest game objects no los", gameObjectID))
+    list<HazardPosition> hazards = AI_VALUE(list<HazardPosition>, "hazards");
+
+    // Get the closest hazard to move away from
+    const HazardPosition* closestHazard = nullptr;
+    float closestHazardDistance = 9999.0f;
+    for (const HazardPosition& hazard : hazards)
     {
-        GameObject* gameObject = ai->GetGameObject(gameObjectGuid);
-        if (gameObject)
+        const WorldPosition& hazardPosition = hazard.first;
+        const float distance = bot->GetDistance(hazardPosition.getX(), hazardPosition.getY(), hazardPosition.getZ());
+        if (distance < closestHazardDistance)
         {
-            gameObjects.push_back(gameObject);
+            closestHazardDistance = distance;
+            closestHazard = &hazard;
         }
     }
 
-    float angle = 0.0f;
-    const WorldPosition initialPosition(bot);
-    const float distance = frand(range, range * 1.5f);
-
-    Unit* currentTarget = AI_VALUE(Unit*, "current target");
-    if (currentTarget)
+    if (closestHazard)
     {
-        const int8 startDir = urand(0, 1) * 2 - 1;
-        const WorldPosition targetPosition(currentTarget);
-        angle = targetPosition.getAngleTo(initialPosition) + (0.5 * M_PI_F * startDir);
-    }
-    else
-    {
-        angle = frand(0, M_PI_F * 2.0f);
-    }
-
-    const uint8 attempts = 10;
-    float angleIncrement = (float)((2 * M_PI) / attempts);
-
-    for (uint8 i = 0; i < attempts; i++)
-    {
-        WorldPosition point = initialPosition + WorldPosition(0, distance * cos(angle), distance * sin(angle), 1.0f);
-        point.setZ(point.getHeight());
-
-        // Check if the point is not near other game objects
-        if (!HasGameObjectsNearby(point, gameObjects))
+        // Check if the bot is inside the closest hazard
+        const float hazardRadius = closestHazard->second;
+        if (closestHazardDistance <= hazardRadius)
         {
-            if (bot->IsWithinLOS(point.getX(), point.getY(), point.getZ() + bot->GetCollisionHeight()) && initialPosition.canPathTo(point, bot))
+            float angle = 0.0f;
+            const WorldPosition initialPosition(closestHazard->first);
+            const float distance = frand(hazardRadius, hazardRadius * 1.5f);
+
+            Unit* currentTarget = AI_VALUE(Unit*, "current target");
+            if (currentTarget)
             {
+                const int8 startDir = urand(0, 1) * 2 - 1;
+                const WorldPosition targetPosition(currentTarget);
+                angle = targetPosition.getAngleTo(initialPosition) + (0.5 * M_PI_F * startDir);
+            }
+            else
+            {
+                angle = frand(0, M_PI_F * 2.0f);
+            }
+
+            const uint8 attempts = 10;
+            float angleIncrement = (float)((2 * M_PI) / attempts);
+
+            for (uint8 i = 0; i < attempts; i++)
+            {
+                WorldPosition point = initialPosition + WorldPosition(0, distance * cos(angle), distance * sin(angle), 1.0f);
+                point.setZ(point.getHeight());
+
+                // Check if the point is not near other hazards
+                if (!IsHazardNearby(point, hazards))
+                {
+                    if (bot->IsWithinLOS(point.getX(), point.getY(), point.getZ() + bot->GetCollisionHeight()) && initialPosition.canPathTo(point, bot))
+                    {
+                        if (ai->HasStrategy("debug move", BotState::BOT_STATE_COMBAT))
+                        {
+                            Creature* wpCreature = bot->SummonCreature(15631, point.getX(), point.getY(), point.getZ(), 0.0f, TEMPSPAWN_TIMED_DESPAWN, 5000.0f + angle * 1000.0f);
+                        }
+
+                        if (MoveTo(bot->GetMapId(), point.getX(), point.getY(), point.getZ(), false, IsReaction(), false, true))
+                        {
+                            if (IsReaction())
+                            {
+                                WaitForReach(point.distance(initialPosition));
+                            }
+
+                            return true;
+                        }
+                    }
+                }
+
                 if (ai->HasStrategy("debug move", BotState::BOT_STATE_COMBAT))
                 {
-                    Creature* wpCreature = bot->SummonCreature(15631, point.getX(), point.getY(), point.getZ(), 0.0f, TEMPSPAWN_TIMED_DESPAWN, 5000.0f + angle * 1000.0f);
+                    Creature* wpCreature = bot->SummonCreature(1, point.getX(), point.getY(), point.getZ(), 0.0f, TEMPSPAWN_TIMED_DESPAWN, 5000.0f + angle * 1000.0f);
                 }
 
-                if (MoveTo(bot->GetMapId(), point.getX(), point.getY(), point.getZ(), false, IsReaction(), false, true))
-                {
-                    if (IsReaction())
-                    {
-                        WaitForReach(point.distance(initialPosition));
-                    }
-
-                    return true;
-                }
+                angle += angleIncrement;
             }
         }
-
-        if (ai->HasStrategy("debug move", BotState::BOT_STATE_COMBAT))
-        {
-            Creature* wpCreature = bot->SummonCreature(1, point.getX(), point.getY(), point.getZ(), 0.0f, TEMPSPAWN_TIMED_DESPAWN, 5000.0f + angle * 1000.0f);
-        }
-
-        angle += angleIncrement;
     }
 
     return false;
 }
 
-bool MoveAwayFromGameObject::HasGameObjectsNearby(const WorldPosition& point, const list<GameObject*>& gameObjects) const
-{
-    for (const GameObject* gameObject : gameObjects)
-    {
-        const float distance = gameObject->GetDistance(point.getX(), point.getY(), point.getZ());
-        if (distance <= range)
-        {
-            return true;
-        }
-    }
-
-    return false;
-}
-
-bool MoveAwayFromGameObject::isPossible()
+bool MoveAwayFromHazard::isPossible()
 {
     if (MovementAction::isPossible())
     {
         return ai->CanMove();
+    }
+
+    return false;
+}
+
+bool MoveAwayFromHazard::IsHazardNearby(const WorldPosition& point, const list<HazardPosition>& hazards) const
+{
+    for (const HazardPosition& hazard : hazards)
+    {
+        const float hazardRange = hazard.second;
+        const WorldPosition& hazardPosition = hazard.first;
+        const float distance = point.distance(hazardPosition);
+        if (distance < hazardRange)
+        {
+            return true;
+        }
     }
 
     return false;
@@ -127,6 +142,8 @@ bool MoveAwayFromCreature::Execute(Event& event)
         }
     }
 
+    list<HazardPosition> hazards = AI_VALUE(list<HazardPosition>, "hazards");
+
     // Get the closest creature reference
     auto it = creatures.begin();
     advance(it, closestCreatureIdx);
@@ -151,7 +168,7 @@ bool MoveAwayFromCreature::Execute(Event& event)
         point.setZ(point.getHeight());
 
         // Check if the point is not near other game objects
-        if (!HasCreaturesNearby(point, creatures))
+        if (!HasCreaturesNearby(point, creatures) && !IsHazardNearby(point, hazards))
         {
             if (bot->IsWithinLOS(point.getX(), point.getY(), point.getZ() + bot->GetCollisionHeight()) && botPosition.canPathTo(point, bot))
             {
@@ -180,9 +197,6 @@ bool MoveAwayFromCreature::Execute(Event& event)
         angle += angleIncrement;
     }
 
-    // TODO: Healers should get a point that is nearest from overall raid
-    // ...
-
     return false;
 }
 
@@ -202,6 +216,22 @@ bool MoveAwayFromCreature::HasCreaturesNearby(const WorldPosition& point, const 
     {
         const float distance = creature->GetDistance(point.getX(), point.getY(), point.getZ());
         if (distance <= range)
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+bool MoveAwayFromCreature::IsHazardNearby(const WorldPosition& point, const list<HazardPosition>& hazards) const
+{
+    for (const HazardPosition& hazard : hazards)
+    {
+        const float hazardRange = hazard.second;
+        const WorldPosition& hazardPosition = hazard.first;
+        const float distance = point.distance(hazardPosition);
+        if (distance < hazardRange)
         {
             return true;
         }

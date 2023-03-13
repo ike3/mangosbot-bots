@@ -66,7 +66,7 @@ void MagmadarFightStrategy::InitReactionTriggers(std::list<TriggerNode*>& trigge
 {
     triggers.push_back(new TriggerNode(
         "magmadar lava bomb",
-        NextAction::array(0, new NextAction("move away from magmadar lava bomb", 100.0f), NULL)));
+        NextAction::array(0, new NextAction("move away from hazard", 100.0f), NULL)));
 }
 
 void MagmadarFightStrategy::InitCombatMultipliers(std::list<Multiplier*>& multipliers)

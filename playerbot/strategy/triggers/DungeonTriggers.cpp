@@ -3,6 +3,8 @@
 #include "DungeonTriggers.h"
 #include "../values/PositionValue.h"
 #include "ServerFacade.h"
+#include "../AiObjectContext.h"
+#include "../values/HazardsValue.h"
 
 using namespace ai;
 
@@ -78,7 +80,7 @@ bool EndBossFightTrigger::IsActive()
     return false;
 }
 
-bool CloseToGameObject::IsActive()
+bool CloseToGameObjectHazard::IsActive()
 {
     // If the bot is ready
     if (bot->IsInWorld() && !bot->IsBeingTeleported())
@@ -86,13 +88,20 @@ bool CloseToGameObject::IsActive()
         AiObjectContext* context = ai->GetAiObjectContext();
 
         // This has a maximum range equal to the sight distance on config file (default 60 yards)
-        list<ObjectGuid> gameObjects = AI_VALUE2(list<ObjectGuid>, "nearest game objects no los", gameObjectID);
-        for (ObjectGuid& gameObjectGuid : gameObjects)
+        const list<ObjectGuid>& gameObjects = AI_VALUE2(list<ObjectGuid>, "nearest game objects no los", gameObjectID);
+        for (const ObjectGuid& gameObjectGuid : gameObjects)
         {
             GameObject* gameObject = ai->GetGameObject(gameObjectGuid);
-            if (gameObject && bot->IsWithinDist(gameObject, range))
+            if (gameObject)
             {
-                return true;
+                const float distance = bot->GetDistance(gameObject) + gameObject->GetObjectBoundingRadius();
+                if (distance <= radius)
+                {
+                    // Cache the hazard
+                    Hazard hazard(gameObjectGuid, expirationTime, radius);
+                    SET_AI_VALUE(Hazard, "add hazard", std::move(hazard));
+                    return true;
+                }
             }
         }
     }

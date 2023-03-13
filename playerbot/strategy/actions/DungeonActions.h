@@ -1,21 +1,18 @@
 #pragma once
 #include "MovementActions.h"
+#include "../values/HazardsValue.h"
 
 namespace ai
 {
-    class MoveAwayFromGameObject : public MovementAction
+    class MoveAwayFromHazard : public MovementAction
     {
     public:
-        MoveAwayFromGameObject(PlayerbotAI* ai, string name, uint32 gameObjectID, float range, float targetRange = 0.0f) : MovementAction(ai, name), gameObjectID(gameObjectID), range(range) {}
+        MoveAwayFromHazard(PlayerbotAI* ai, string name = "move away from hazard") : MovementAction(ai, name) {}
         bool Execute(Event& event) override;
         bool isPossible() override;
 
     private:
-        bool HasGameObjectsNearby(const WorldPosition& point, const list<GameObject*>& gameObjects) const;
-
-    private:
-        uint32 gameObjectID;
-        float range;
+        bool IsHazardNearby(const WorldPosition& point, const list<HazardPosition>& hazards) const;
     };
 
     class MoveAwayFromCreature : public MovementAction
@@ -27,6 +24,7 @@ namespace ai
 
     private:
         bool HasCreaturesNearby(const WorldPosition& point, const list<Creature*>& creatures) const;
+        bool IsHazardNearby(const WorldPosition& point, const list<HazardPosition>& hazards) const;
 
     private:
         uint32 creatureID;

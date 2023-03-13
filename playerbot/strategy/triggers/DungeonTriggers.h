@@ -67,19 +67,32 @@ namespace ai
         uint64 bossID;
     };
 
-    class CloseToGameObject : public Trigger
+    class CloseToHazard : public Trigger
     {
     public:
-        CloseToGameObject(PlayerbotAI* ai, string name, uint32 gameObjectID, float range)
-        : Trigger(ai, name, 1)
-        , gameObjectID(gameObjectID)
-        , range(range) {}
+        CloseToHazard(PlayerbotAI* ai, string name, int checkInterval, float radius, time_t expirationTime)
+        : Trigger(ai, name, checkInterval)
+        , radius(radius)
+        , expirationTime(expirationTime) {}
+
+        bool IsActive() override = 0;
+
+    protected:
+        float radius;
+        time_t expirationTime;
+    };
+
+    class CloseToGameObjectHazard : public CloseToHazard
+    {
+    public:
+        CloseToGameObjectHazard(PlayerbotAI* ai, string name, uint32 gameObjectID, float radius, time_t expirationTime)
+        : CloseToHazard(ai, name, 1, radius, expirationTime)
+        , gameObjectID(gameObjectID) {}
 
         bool IsActive() override;
 
     private:
         uint32 gameObjectID;
-        float range;
     };
 
     class CloseToCreature : public Trigger
