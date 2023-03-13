@@ -1,6 +1,7 @@
 #include "PlayerbotAIConfig.h"
 #include "BotTests.h"
 
+using namespace ai;
 void LogAnalysis::AnalysePid()
 {
     string m_logsDir = sConfig.GetStringDefault("LogsDir");
