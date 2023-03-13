@@ -2411,22 +2411,29 @@ uint32 PlayerbotAI::GetSpellCastDuration(Spell* spell)
         {
             int32 duration = GetSpellDuration(pSpellInfo);
             if (duration > 0)
+            {
                 spellDuration += duration;
+            }
         }
 
         spellDuration = ceil(spellDuration);
 
-        // fix hunter Feign Death delay
-        if (pSpellInfo->Id == 5384)
-            spellDuration = 1000.0f;
+        // fix Feign Death
+        if (pSpellInfo->Id == 5384) 
+        {
+            spellDuration = 1000;
+        }
+        // fix cannibalize
+        else if (pSpellInfo->Id == 20577) 
+        {
+            spellDuration = 10000;
+        }
 
         uint32 globalCooldown = CalculateGlobalCooldown(pSpellInfo->Id);
         if (spellDuration < (int32)globalCooldown)
+        {
             spellDuration = globalCooldown;
-
-        // fix cannibalize
-        if (pSpellInfo->Id == 20577)
-            spellDuration = 10000;
+        }
     }
 
     return spellDuration + sPlayerbotAIConfig.reactDelay;

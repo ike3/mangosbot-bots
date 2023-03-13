@@ -37,20 +37,22 @@ bool SpellCastUsefulValue::Calculate()
         if (spellid == lastSpellId)
         {
             Spell* const pSpell = bot->FindCurrentSpellBySpellId(lastSpellId);
-            if (pSpell)
+            if (pSpell && (pSpell->getState() == SPELL_STATE_CASTING || pSpell->getState() == SPELL_STATE_CHANNELING))
+            {
                 return false;
+            }
         }
 	}
 
     if (IsAutoRepeatRangedSpell(spellInfo) && bot->GetCurrentSpell(CURRENT_AUTOREPEAT_SPELL) &&
-            bot->GetCurrentSpell(CURRENT_AUTOREPEAT_SPELL)->m_spellInfo->Id == spellid)
+        bot->GetCurrentSpell(CURRENT_AUTOREPEAT_SPELL)->m_spellInfo->Id == spellid)
     {
         return false;
     }
 
     // TODO: workaround
     if (qualifier == "windfury weapon" || qualifier == "flametongue weapon" || qualifier == "frostbrand weapon" ||
-            qualifier == "rockbiter weapon" || qualifier == "earthliving weapon" || qualifier == "spellstone")
+        qualifier == "rockbiter weapon" || qualifier == "earthliving weapon" || qualifier == "spellstone")
     {
         Item *item = AI_VALUE2(Item*, "item for spell", spellid);
         if (item && item->GetEnchantmentId(TEMP_ENCHANTMENT_SLOT))
