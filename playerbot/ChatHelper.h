@@ -71,6 +71,8 @@ namespace ai
 
         void eraseAllSubStr(std::string& mainStr, const std::string& toErase);
 
+        static void PopulateSpellNameList();
+        static vector<uint32> SpellIds(const string& name);
     private:
         static map<string, uint32> consumableSubClasses;
         static map<string, uint32> tradeSubClasses;
@@ -82,5 +84,6 @@ namespace ai
         static map<uint8, string> classes;
         static map<uint8, string> races;
         static map<uint8, map<uint8, string> > specs;
+        static unordered_map<string, vector<uint32>> spellIds;
     };
 };

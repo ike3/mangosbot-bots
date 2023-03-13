@@ -427,6 +427,8 @@ bool PlayerbotAIConfig::Initialize()
 
     sLog.outString("Loading area levels.");
     sTravelMgr.loadAreaLevels();
+    sLog.outString("Loading spellIds.");
+    ChatHelper::PopulateSpellNameList();
 
     RandomPlayerbotFactory::CreateRandomBots();
     PlayerbotFactory::Init();

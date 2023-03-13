@@ -10,7 +10,7 @@
 using namespace ai;
 
 SpellIdValue::SpellIdValue(PlayerbotAI* ai) :
-        CalculatedValue<uint32>(ai, "spell id")
+        CalculatedValue<uint32>(ai, "spell id", 10)
 {
 }
 
@@ -32,14 +32,22 @@ uint32 SpellIdValue::Calculate()
         if (pSpellInfo) namepart = pSpellInfo->SpellName[0];
     }
 
+    vector<uint32> ids = chat->SpellIds(namepart);
+
+    char firstSymbol = 'x';
+    int spellLength = 0;
     wstring wnamepart;
 
-    if (!Utf8toWStr(namepart, wnamepart))
-        return 0;
+    if (ids.empty())
+    {
+        //sLog.outError("Please add spell %s to spell list", namepart.c_str());
+        if (!Utf8toWStr(namepart, wnamepart))
+            return 0;
 
-    wstrToLower(wnamepart);
-    char firstSymbol = tolower(namepart[0]);
-    int spellLength = wnamepart.length();
+        wstrToLower(wnamepart);
+        char firstSymbol = tolower(namepart[0]);
+        int spellLength = wnamepart.length();
+    }
 
     int loc = bot->GetSession()->GetSessionDbcLocale();
 
@@ -47,6 +55,12 @@ uint32 SpellIdValue::Calculate()
     for (PlayerSpellMap::iterator itr = bot->GetSpellMap().begin(); itr != bot->GetSpellMap().end(); ++itr)
     {
         uint32 spellId = itr->first;
+
+        if (!ids.empty())
+        {
+            if (std::find(ids.begin(), ids.end(), spellId) == ids.end())
+                continue;
+        }
 
         if (itr->second.state == PLAYERSPELL_REMOVED || itr->second.disabled || IsPassiveSpell(spellId))
             continue;
@@ -68,9 +82,12 @@ uint32 SpellIdValue::Calculate()
             }
         }
 
-        char* spellName = pSpellInfo->SpellName[loc];
-        if (!useByItem && (tolower(spellName[0]) != firstSymbol || strlen(spellName) != spellLength || !Utf8FitTo(spellName, wnamepart)))
-            continue;
+        if (ids.empty())
+        {
+            char* spellName = pSpellInfo->SpellName[loc];
+            if (!useByItem && (tolower(spellName[0]) != firstSymbol || strlen(spellName) != spellLength || !Utf8FitTo(spellName, wnamepart)))
+                continue;
+        }
 
         spellIds.insert(spellId);
     }

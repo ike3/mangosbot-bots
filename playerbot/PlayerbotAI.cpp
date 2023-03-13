@@ -2220,10 +2220,17 @@ bool PlayerbotAI::HasAura(string name, Unit* unit, bool maxStack, bool checkIsOw
         return false;
 
     wstring wnamepart;
-    if (!Utf8toWStr(name, wnamepart))
-        return 0;
 
-    wstrToLower(wnamepart);
+    vector<uint32> ids = chatHelper.SpellIds(name);
+
+    if (ids.empty())
+    {
+        //sLog.outError("Please add %s to spell list", name.c_str());
+        if (!Utf8toWStr(name, wnamepart))
+            return 0;
+
+        wstrToLower(wnamepart);
+    }
 
     int auraAmount = 0;
 
@@ -2234,15 +2241,23 @@ bool PlayerbotAI::HasAura(string name, Unit* unit, bool maxStack, bool checkIsOw
         if (auras.empty())
             continue;
 
-		for (Unit::AuraList::const_iterator i = auras.begin(); i != auras.end(); i++)
-		{
-			Aura* aura = *i;
-			if (!aura)
-				continue;
+        for (Unit::AuraList::const_iterator i = auras.begin(); i != auras.end(); i++)
+        {
+            Aura* aura = *i;
+            if (!aura)
+                continue;
 
-			const string auraName = aura->GetSpellProto()->SpellName[0];
-			if (auraName.empty() || auraName.length() != wnamepart.length() || !Utf8FitTo(auraName, wnamepart))
-				continue;
+            if (ids.empty())
+            {
+                const string auraName = aura->GetSpellProto()->SpellName[0];
+                if (auraName.empty() || auraName.length() != wnamepart.length() || !Utf8FitTo(auraName, wnamepart))
+                    continue;
+            }
+            else
+            {
+                if (std::find(ids.begin(), ids.end(), aura->GetSpellProto()->Id) == ids.end())
+                    continue;
+            }
 
 			if (IsRealAura(bot, aura, unit))
             {

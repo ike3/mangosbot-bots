@@ -19,6 +19,7 @@ map<string, ChatMsg> ChatHelper::chats;
 map<uint8, string> ChatHelper::classes;
 map<uint8, string> ChatHelper::races;
 map<uint8, map<uint8, string> > ChatHelper::specs;
+unordered_map<string, vector<uint32>> ChatHelper::spellIds;
 
 template<class T>
 static bool substrContainsInMap(string searchTerm, map<string, T> searchIn)
@@ -783,4 +784,49 @@ void ChatHelper::eraseAllSubStr(std::string& mainStr, const std::string& toErase
         // If found then erase it from string
         mainStr.erase(pos, toErase.length());
     }
+}
+
+inline std::string toInitCap(const std::string& str) {
+    std::string result = str;
+    bool isFirstChar = true;
+    for (char& c : result) {
+        if (isFirstChar && std::isalpha(c)) {
+            c = std::toupper(c);
+            isFirstChar = false;
+        }
+        else if (std::isspace(c)) {
+            isFirstChar = true;
+        }
+        else {
+            c = std::tolower(c);
+        }
+    }
+    return result;
+}
+
+void ChatHelper::PopulateSpellNameList()
+{
+    for (uint32 i = 0; i < GetSpellStore()->GetMaxEntry(); ++i)
+    {
+        SpellEntry const* tempSpell = GetSpellStore()->LookupEntry<SpellEntry>(i);
+
+        if (!tempSpell)
+            continue;
+
+        string lowerSpellName = tempSpell->SpellName[0];
+        strToLower(lowerSpellName);
+
+        spellIds[tempSpell->SpellName[0]].push_back(tempSpell->Id);
+        spellIds[lowerSpellName].push_back(tempSpell->Id);
+    }
+}
+
+vector<uint32> ChatHelper::SpellIds(const string& name)
+{
+    auto spells = spellIds.find(name);
+
+    if (spells == spellIds.end())
+        return {};
+
+    return spells->second;
 }
