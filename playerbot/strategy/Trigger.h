@@ -35,7 +35,7 @@ namespace ai
         }
         virtual bool IsActive() { return false; }
         virtual NextAction** getHandlers() { return NULL; }
-        void Update() {}
+        void Update() {}  //Nonfunctional see AiObjectContext::Update() to enable.
         virtual void Reset() { triggered = false; }
         virtual Unit* GetTarget();
         virtual Value<Unit*>* GetTargetValue();

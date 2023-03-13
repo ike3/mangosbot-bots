@@ -13,7 +13,7 @@ namespace ai
     {
     public:
         UntypedValue(PlayerbotAI* ai, string name) : AiNamedObject(ai, name) {}
-        virtual void Update() {}
+        virtual void Update() {}  //Nonfunctional see AiObjectContext::Update() to enable.
         virtual void Reset() {}
         virtual string Format() { return "?"; }
         virtual string Save() { return "?"; }
