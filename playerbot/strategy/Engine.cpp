@@ -525,13 +525,9 @@ Strategy* Engine::GetStrategy(string name) const
 
 void Engine::ProcessTriggers(bool minimal)
 {
-    map<Trigger*, Event> fires;
-    for (list<TriggerNode*>::iterator i = triggers.begin(); i != triggers.end(); i++)
+    vector<Trigger*> fired;
+    for (auto& node : triggers)
     {
-        TriggerNode* node = *i;
-        if (!node)
-            continue;
-
         Trigger* trigger = node->getTrigger();
         if (!trigger)
         {
@@ -542,7 +538,7 @@ void Engine::ProcessTriggers(bool minimal)
         if (!trigger)
             continue;
 
-        if (testMode || trigger->needCheck())
+        if (testMode || std::find(fired.begin(),fired.end(),trigger) != fired.end() || trigger->needCheck())
         {
             if (minimal && node->getFirstRelevance() < 100)
                 continue;
@@ -552,25 +548,15 @@ void Engine::ProcessTriggers(bool minimal)
             if (pmo) pmo->finish();
             if (!event)
                 continue;
-            fires[trigger] = event;
+            MultiplyAndPush(node->getHandlers(), 0.0f, false, event, "trigger");
             LogAction("T:%s", trigger->getName().c_str());
+            fired.push_back(trigger);
         }
     }
 
-    for (list<TriggerNode*>::iterator i = triggers.begin(); i != triggers.end(); i++)
+    for (auto& node : triggers)
     {
-        TriggerNode* node = *i;
         Trigger* trigger = node->getTrigger();
-        Event& event = fires[trigger];
-        if (!event)
-            continue;
-
-        MultiplyAndPush(node->getHandlers(), 0.0f, false, event, "trigger");
-    }
-
-    for (list<TriggerNode*>::iterator i = triggers.begin(); i != triggers.end(); i++)
-    {
-        Trigger* trigger = (*i)->getTrigger();
         if (trigger) trigger->Reset();
     }
 }
