@@ -117,7 +117,7 @@ bool OutNumberedTrigger::IsActive()
 bool BuffTrigger::IsActive()
 {
     Unit* target = GetTarget();
-	return SpellTrigger::IsActive() &&
+	return target &&
         !ai->HasAura(spell, target, false, checkIsOwner) && target->IsAlive()
         /* &&
         (!AI_VALUE2(bool, "has mana", "self target") || AI_VALUE2(uint8, "mana", "self target") > sPlayerbotAIConfig.mediumMana)*/
@@ -127,7 +127,7 @@ bool BuffTrigger::IsActive()
 bool MyBuffTrigger::IsActive()
 {
     Unit* target = GetTarget();
-    return SpellTrigger::IsActive() &&
+    return target &&
         !ai->HasMyAura(spell, target);
 }
 
