@@ -35,7 +35,7 @@ namespace ai
             p << roles_mask;
             bot->GetSession()->HandleGroupAcceptOpcode(p);
 
-            if (!bot->GetGroup())
+            if (!bot->GetGroup() || !bot->GetGroup()->IsMember(inviter->GetObjectGuid()))
                 return false;
 
             if (sRandomPlayerbotMgr.IsFreeBot(bot))
