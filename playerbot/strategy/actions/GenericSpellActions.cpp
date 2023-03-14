@@ -82,8 +82,14 @@ bool CastSpellAction::Execute(Event& event)
                 {
                     if (GameObject* obj = bot ? bot->GetMap()->GetGameObject(guid) : nullptr)
                     {
-                        if (obj->GetOwnerGuid() != bot->GetOwnerGuid())
+                        obj->SetLootState(GO_JUST_DEACTIVATED);
+
+                        //if (obj->GetOwnerGuid() != bot->GetOwnerGuid())
                             obj->SetOwnerGuid(bot->GetObjectGuid());
+
+                        bot->RemoveGameObject(obj, false, pSpellInfo->Id != obj->GetSpellId());
+
+                        bot->m_ObjectSlotGuid[slot].Clear();
                     }
                 }
             }
