@@ -314,7 +314,7 @@ public:
     virtual bool DoSpecificAction(string name, Event event = Event(), bool silent = false);
     void ChangeStrategy(string name, BotState type);
     void ClearStrategies(BotState type);
-    list<string> GetStrategies(BotState type);
+    list<string_view> GetStrategies(BotState type);
     bool ContainsStrategy(StrategyType type);
     bool HasStrategy(string name, BotState type);
     template<class T>

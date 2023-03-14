@@ -598,12 +598,12 @@ string Engine::ListStrategies()
     return s.substr(0, s.length() - 2);
 }
 
-list<string> Engine::GetStrategies()
+list<string_view> Engine::GetStrategies()
 {
-    list<string> result;
-    for (map<string, Strategy*>::iterator i = strategies.begin(); i != strategies.end(); i++)
+    list<string_view> result;
+    for (const auto& strategy : strategies)
     {
-        result.push_back(i->first);
+        result.push_back(strategy.first);
     }
     return result;
 }

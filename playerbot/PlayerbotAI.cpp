@@ -1712,7 +1712,7 @@ void PlayerbotAI::ClearStrategies(BotState type)
     }
 }
 
-list<string> PlayerbotAI::GetStrategies(BotState type)
+list<string_view> PlayerbotAI::GetStrategies(BotState type)
 {
     // Can't get all strategies for all engines
     if (type != BotState::BOT_STATE_ALL)
@@ -1724,7 +1724,7 @@ list<string> PlayerbotAI::GetStrategies(BotState type)
         }
     }
 
-    return list<string>();
+    return list<string_view>();
 }
 
 bool PlayerbotAI::CanDoSpecificAction(string name, bool isUseful, bool isPossible)

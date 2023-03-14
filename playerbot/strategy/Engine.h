@@ -73,7 +73,7 @@ namespace ai
         void removeAllStrategies();
         void toggleStrategy(string name);
         std::string ListStrategies();
-        list<string> GetStrategies();
+        list<string_view> GetStrategies();
 		bool ContainsStrategy(StrategyType type);
 		void ChangeStrategy(string names, string engineType = "");
 		string GetLastAction() { return lastAction; }

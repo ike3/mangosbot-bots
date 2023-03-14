@@ -2062,7 +2062,7 @@ void TravelMgr::LoadQuestTravelTable()
 
                                     AiObjectContext* con = ai->GetAiObjectContext();
 
-                                    list<string> tstrats;
+                                    list<string_view> tstrats;
                                     set<string> strategies, sstrats;
 
                                     tstrats = ai->GetStrategies(BotState::BOT_STATE_COMBAT);
