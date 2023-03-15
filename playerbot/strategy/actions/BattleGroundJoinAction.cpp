@@ -365,6 +365,9 @@ bool BGJoinAction::shouldJoinBg(BattleGroundQueueTypeId queueTypeId, BattleGroun
 #ifdef MANGOSBOT_TWO
     if (!hasPlayers && bgTypeId == BATTLEGROUND_RB)
         return false;
+
+    if (!hasPlayers && bgTypeId == BATTLEGROUND_SA)
+        return false;    
 #endif
 
     uint32 BracketSize = bg->GetMaxPlayers();
@@ -802,6 +805,9 @@ bool FreeBGJoinAction::shouldJoinBg(BattleGroundQueueTypeId queueTypeId, BattleG
 
 #ifdef MANGOSBOT_TWO
     if (!hasPlayers && bgTypeId == BATTLEGROUND_RB)
+        return false;
+
+    if (!hasPlayers && bgTypeId == BATTLEGROUND_SA)
         return false;
 #endif
 
