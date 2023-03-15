@@ -525,38 +525,50 @@ Strategy* Engine::GetStrategy(string name) const
 
 void Engine::ProcessTriggers(bool minimal)
 {
-    vector<Trigger*> fired;
-    for (auto& node : triggers)
+    map<Trigger*, Event> fires;
+    for (list<TriggerNode*>::iterator i = triggers.begin(); i != triggers.end(); i++)
     {
+        TriggerNode* node = *i;
+        if (!node)
+            continue;
+
         Trigger* trigger = node->getTrigger();
         if (!trigger)
         {
             trigger = aiObjectContext->GetTrigger(node->getName());
             node->setTrigger(trigger);
         }
-
         if (!trigger)
             continue;
 
-        if (testMode || std::find(fired.begin(),fired.end(),trigger) != fired.end() || trigger->needCheck())
+        if (testMode || trigger->needCheck())
         {
             if (minimal && node->getFirstRelevance() < 100)
                 continue;
-
             PerformanceMonitorOperation* pmo = sPerformanceMonitor.start(PERF_MON_TRIGGER, trigger->getName(), &aiObjectContext->performanceStack);
             Event event = trigger->Check();
             if (pmo) pmo->finish();
             if (!event)
                 continue;
-            MultiplyAndPush(node->getHandlers(), 0.0f, false, event, "trigger");
+            fires[trigger] = event;
             LogAction("T:%s", trigger->getName().c_str());
-            fired.push_back(trigger);
         }
     }
 
-    for (auto& node : triggers)
+    for (list<TriggerNode*>::iterator i = triggers.begin(); i != triggers.end(); i++)
     {
+        TriggerNode* node = *i;
         Trigger* trigger = node->getTrigger();
+        Event& event = fires[trigger];
+        if (!event)
+            continue;
+
+        MultiplyAndPush(node->getHandlers(), 0.0f, false, event, "trigger");
+    }
+
+    for (list<TriggerNode*>::iterator i = triggers.begin(); i != triggers.end(); i++)
+    {
+        Trigger* trigger = (*i)->getTrigger();
         if (trigger) trigger->Reset();
     }
 }
