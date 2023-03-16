@@ -99,15 +99,26 @@ void TrainerAction::Iterate(Creature* creature, TrainerSpellAction action, Spell
 
         if (tSpell->learnedSpell)
         {
-            bool learned = false;
-            for (int j = 0; j < 3; ++j)
+            bool learned = true;
+            if (bot->HasSpell(tSpell->learnedSpell))
             {
-                if (pSpellInfo->Effect[j] == SPELL_EFFECT_LEARN_SPELL)
+                learned = false;
+            }
+            else
+            {
+                for (int j = 0; j < 3; ++j)
                 {
-                    uint32 learnedSpell = pSpellInfo->EffectTriggerSpell[j];
+                    if (pSpellInfo->Effect[j] == SPELL_EFFECT_LEARN_SPELL)
+                    {
+                        learned = false;
+                        uint32 learnedSpell = pSpellInfo->EffectTriggerSpell[j];
 
-                    if (!bot->HasSpell(learnedSpell))
-                        learned = true;
+                        if (!bot->HasSpell(learnedSpell))
+                        {
+                            learned = true;
+                            break;
+                        }
+                    }
                 }
             }
 
