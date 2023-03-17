@@ -17,7 +17,7 @@ float RpgActionMultiplier::GetValue(Action* action)
         if (!nextAction.empty() && name != nextAction)
             return 0.1f;
         else
-            return frand(0.2f, 1.0f);
+            return frand(0.8f, 1.0f);
     }
 
     return 1.0f;
