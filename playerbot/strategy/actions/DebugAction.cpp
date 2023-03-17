@@ -1136,7 +1136,6 @@ bool DebugAction::Execute(Event& event)
             botPos.setZ(botPos.getHeight() + 2);
 
             Creature* wpCreature = bot->SummonCreature(2334, botPos.getX(), botPos.getY(), botPos.getZ(), 0, TEMPSPAWN_TIMED_DESPAWN, 10000.0f);
-
             units.push_back(wpCreature->GetObjectGuid());
         }
 
@@ -1203,7 +1202,7 @@ bool DebugAction::Execute(Event& event)
                 botPos.setY(botPos.getY() + (dy - 5) * 5);
                 botPos.setZ(botPos.getHeight());
 
-                Creature* wpCreature = bot->SummonCreature((dy == 0 && (dx == 0 || dx == 2)) ? 6 : 2, botPos.getX(), botPos.getY(), botPos.getZ(), 0, TEMPSPAWN_TIMED_DESPAWN, 10000.0f);
+                Creature* wpCreature = bot->SummonCreature(6, botPos.getX(), botPos.getY(), botPos.getZ(), 0, TEMPSPAWN_TIMED_DESPAWN, 10000.0f);
 
                 if (wpCreature)
                 {
@@ -1273,7 +1272,7 @@ bool DebugAction::Execute(Event& event)
                 botPos.setZ(botPos.getHeight());
 
                 Creature* wpCreature = bot->SummonCreature(2334, botPos.getX(), botPos.getY(), botPos.getZ(), 0, TEMPSPAWN_TIMED_DESPAWN, 10000.0f);
-
+                                   
                 if (wpCreature)
                 {
                     WorldPacket data(SMSG_PLAY_SPELL_VISUAL, 8 + 4);        // visual effect on guid
@@ -1317,7 +1316,7 @@ bool DebugAction::Execute(Event& event)
                 botPos.setY(botPos.getY() + (dy - 5) * 5);
                 botPos.setZ(botPos.getHeight());
 
-                Creature* wpCreature = bot->SummonCreature((dy == 0 && (dx == 0 || dx == 2)) ? 6 : 2, botPos.getX(), botPos.getY(), botPos.getZ(), 0, TEMPSPAWN_TIMED_DESPAWN, 10000.0f);
+                Creature* wpCreature = bot->SummonCreature(6, botPos.getX(), botPos.getY(), botPos.getZ(), 0, TEMPSPAWN_TIMED_DESPAWN, 10000.0f);
 
                 if (wpCreature)
                 {
@@ -1361,7 +1360,7 @@ bool DebugAction::Execute(Event& event)
                 botPos.setY(botPos.getY() + (dy - 5) * 5);
                 botPos.setZ(botPos.getHeight());
 
-                wpCreature = bot->SummonCreature((dy == 0 && (dx == 0 || dx == 2)) ? 6 : 2, botPos.getX(), botPos.getY(), botPos.getZ(), 0, TEMPSPAWN_TIMED_DESPAWN, 10000.0f);
+                wpCreature = bot->SummonCreature(6, botPos.getX(), botPos.getY(), botPos.getZ(), 0, TEMPSPAWN_TIMED_DESPAWN, 10000.0f);
 
                 if (wpCreature && lCreature)
                 {
@@ -1576,7 +1575,7 @@ bool DebugAction::Execute(Event& event)
                 botPos.setY(botPos.getY() + (dy - 5) * 5);
                 botPos.setZ(botPos.getHeight());
 
-                Creature* wpCreature = bot->SummonCreature((dy == 0 && (dx == 0 || dx == 2)) ? 6 : 2, botPos.getX(), botPos.getY(), botPos.getZ(), 0, TEMPSPAWN_TIMED_DESPAWN, 10000.0f);
+                Creature* wpCreature = bot->SummonCreature(6, botPos.getX(), botPos.getY(), botPos.getZ(), 0, TEMPSPAWN_TIMED_DESPAWN, 10000.0f);
 
                 wpCreature->PlayDistanceSound(effect);
             }
