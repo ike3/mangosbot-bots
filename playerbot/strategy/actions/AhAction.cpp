@@ -99,7 +99,7 @@ bool AhAction::ExecuteCommand(string text, Unit* auctioneer)
 bool AhAction::PostItem(Item* item, uint32 price, Unit* auctioneer, uint32 time)
 {
     ObjectGuid itemGuid = item->GetObjectGuid();
-    ItemPrototype const* proto = item->GetProto();
+    ItemPrototype const* proto = item->GetProto();    
 
     ItemQualifier itemQualifier(item);
 
@@ -122,6 +122,8 @@ bool AhAction::PostItem(Item* item, uint32 price, Unit* auctioneer, uint32 time)
 
     if (bot->GetItemByGuid(itemGuid))
         return false;
+
+    sPlayerbotAIConfig.logEvent(ai, "AhAction", proto->Name1, to_string(proto->ItemId));
 
     ostringstream out;
     out << "Posting " << ChatHelper::formatItem(itemQualifier, cnt) << " for " << ChatHelper::formatMoney(price) << " to the AH";
@@ -331,6 +333,7 @@ bool AhBidAction::BidItem(AuctionEntry* auction, uint32 price, Unit* auctioneer)
     if (bot->GetMoney() < oldMoney)
     {
         ItemPrototype const* proto = sObjectMgr.GetItemPrototype(auction->itemTemplate);
+        sPlayerbotAIConfig.logEvent(ai, "AhBidAction", proto->Name1, to_string(proto->ItemId));
         ostringstream out;
         ItemQualifier itemQualifier(auction);
         out << "Bidding " << ChatHelper::formatMoney(price) << " on " << ChatHelper::formatItem(itemQualifier, auction->itemCount) << " on the AH";

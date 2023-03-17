@@ -97,8 +97,43 @@ bool BGJoinAction::Execute(Event& event)
 
         // set bg type and bm guid
         //ai->GetAiObjectContext()->GetValue<ObjectGuid>("bg master")->Set(BmGuid);
+
+        string _bgType;
+
+        switch (bgTypeId)
+        {
+        case BATTLEGROUND_AV:
+            _bgType = "AV";
+            break;
+        case BATTLEGROUND_WS:
+            _bgType = "WSG";
+            break;
+        case BATTLEGROUND_AB:
+            _bgType = "AB";
+            break;
+#ifndef MANGOSBOT_ZERO
+        case BATTLEGROUND_EY:
+            _bgType = "EotS";
+            break;
+#endif
+#ifdef MANGOSBOT_TWO
+        case BATTLEGROUND_RB:
+            _bgType = "Random";
+            break;
+        case BATTLEGROUND_SA:
+            _bgType = "SotA";
+            break;
+        case BATTLEGROUND_IC:
+            _bgType = "IoC";
+            break;
+#endif
+        default:
+            break;
+        }
+
         ai->GetAiObjectContext()->GetValue<uint32>("bg type")->Set(queueTypeId);
         queueType = queueTypeId;
+        sPlayerbotAIConfig.logEvent(ai, "BGJoinAction", _bgType, to_string(queueTypeId));
     }
 
    return JoinQueue(queueType);

@@ -43,6 +43,8 @@ public:
                 ItemPrototype const *proto = sObjectMgr.GetItemPrototype(i->item_template);
                 if (proto)
                 {
+                    sPlayerbotAIConfig.logEvent(ai, "MailAction", proto->Name1, to_string(proto->ItemId));
+
                     out << ChatHelper::formatItem(item, count);
                     if (!mail->subject.empty()) out << " |cffa0a0a0(" << mail->subject << ")";
                 }

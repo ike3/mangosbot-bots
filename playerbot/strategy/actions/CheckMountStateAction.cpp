@@ -573,6 +573,7 @@ bool CheckMountStateAction::MountWithBestMount(const bool canFly)
         uint32 spellId = mountSpells[urand(0, mountSpells.size() - 1)];
         if (ai->CastSpell(spellId, bot))
         {
+            sPlayerbotAIConfig.logEvent(ai, "CheckMountStateAction", sServerFacade.LookupSpellInfo(mountSpells.front())->SpellName[0], to_string(GetBestMountSpeed(canFly)));
             SetDuration(GetSpellRecoveryTime(sServerFacade.LookupSpellInfo(mountSpells.front())));
             return true;
         }        
@@ -583,6 +584,7 @@ bool CheckMountStateAction::MountWithBestMount(const bool canFly)
         Item* mount = mounts[urand(0, mounts.size() - 1)];
         if (UseItemAuto(mount))
         {
+            sPlayerbotAIConfig.logEvent(ai, "CheckMountStateAction", mount->GetProto()->Name1, to_string(GetBestMountSpeed(canFly)));
             SetDuration(3000U); // 3s
             return true;
         }

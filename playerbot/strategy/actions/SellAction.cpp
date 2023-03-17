@@ -117,6 +117,8 @@ void SellAction::Sell(Item* item)
 
         uint32 botMoney = bot->GetMoney();
 
+        sPlayerbotAIConfig.logEvent(ai, "SellAction", item->GetProto()->Name1, to_string(item->GetProto()->ItemId));
+
         WorldPacket p;
         p << vendorguid << itemguid << count;
         bot->GetSession()->HandleSellItemOpcode(p);

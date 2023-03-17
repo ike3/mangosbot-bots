@@ -177,6 +177,8 @@ bool BuyAction::BuyItem(VendorItemData const* tItems, ObjectGuid vendorguid, con
 
             if (oldCount < AI_VALUE2(uint32, "item count", proto->Name1)) //BuyItem Always returns false (unless unique) so we have to check the item counts.
             {
+                sPlayerbotAIConfig.logEvent(ai, "BuyAction", proto->Name1, to_string(proto->ItemId));
+
                 ostringstream out; out << "Buying " << ChatHelper::formatItem(proto);
                 ai->TellMaster(out.str(), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
                 return true;
