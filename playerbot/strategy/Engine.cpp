@@ -541,12 +541,13 @@ void Engine::ProcessTriggers(bool minimal)
         if (!trigger)
             continue;
 
-        if (testMode || trigger->needCheck())
+        Event& event = fires[trigger];
+        if (!event & (testMode || trigger->needCheck()))
         {
             if (minimal && node->getFirstRelevance() < 100)
                 continue;
             PerformanceMonitorOperation* pmo = sPerformanceMonitor.start(PERF_MON_TRIGGER, trigger->getName(), &aiObjectContext->performanceStack);
-            Event event = trigger->Check();
+            event = trigger->Check();
             if (pmo) pmo->finish();
             if (!event)
                 continue;
