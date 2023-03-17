@@ -1245,7 +1245,7 @@ void TravelMgr::LoadQuestTravelTable()
 
     //Analyse log files
     if(sPlayerbotAIConfig.hasLog("log_analysis.csv"))
-        LogAnalysis::AnalysePid();
+        LogAnalysis::RunAnalysis();
 
      //Clear these logs files
     sPlayerbotAIConfig.openLog("zones.csv", "w");
