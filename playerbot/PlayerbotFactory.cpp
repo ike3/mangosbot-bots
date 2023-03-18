@@ -186,7 +186,7 @@ void PlayerbotFactory::Randomize(bool incremental)
         bot->resetTalents(true);
         CancelAuras();
     }
-    if (!incremental)
+    if (isRealRandomBot)
     {
         InitQuests(specialQuestIds);
         bot->learnQuestRewardedSpells();
