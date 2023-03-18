@@ -65,6 +65,7 @@ public:
     uint32 randomBotTeleportDistance;
     uint32 randomGearMaxLevel;
     uint32 randomGearMaxDiff;
+    std::list<uint32> randomGearBlacklist;
     bool randomGearProgression;
     float randomGearLoweringChance;
     float randomBotMaxLevelChance;
