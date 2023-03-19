@@ -248,6 +248,14 @@ void PlayerbotFactory::Randomize(bool incremental)
         LoadEnchantContainer();
     }
 
+    if (isRealRandomBot)
+    {
+        pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Reputations");
+        sLog.outDetail("Initializing reputations...");
+        InitReputations();
+        if (pmo) pmo->finish();
+    }
+
     InitEquipment(incremental);
     InitGems();
     if (pmo) pmo->finish();
@@ -729,6 +737,61 @@ void PlayerbotFactory::ResetQuests()
     }
     //bot->UpdateForQuestWorldObjects();
     CharacterDatabase.PExecute("DELETE FROM character_queststatus WHERE guid = '%u'", bot->GetGUIDLow());
+}
+
+void PlayerbotFactory::InitReputations()
+{
+    // list of factions
+    list<uint32> factions;
+
+    // neutral
+    if (level >= 60)
+    {
+        factions.push_back(910); // nozdormu
+        factions.push_back(749); // hydraxian waterlords
+        factions.push_back(529); // argent dawn
+    }
+
+#ifndef MANGOSBOT_ZERO
+    // TBC factions
+    if (level >= 60)
+    {
+        factions.push_back(942);  // cenarion expedition
+        factions.push_back(935);  // sha'tar
+        factions.push_back(1011); // lower city
+        factions.push_back(989);  // keepers of time
+        factions.push_back(967);  // violet eye
+        factions.push_back(1015); // netherwing
+        factions.push_back(1077); // shattered sun
+        factions.push_back(1012); // ashtongue
+        factions.push_back(970);  // sporegarr
+        factions.push_back(933);  // consortium
+        factions.push_back(1031); // sha'tari skyguard
+        factions.push_back(933);
+
+        if (bot->GetTeam() == ALLIANCE)
+        {
+            factions.push_back(946); // honor hold
+            factions.push_back(978); // kurenai
+        }
+        else
+        {
+            factions.push_back(947); // thrallmar
+            factions.push_back(941); // mag'har
+            factions.push_back(922); // tranquillen
+        }
+    }
+#endif
+
+    for (auto faction : factions)
+    {
+        FactionEntry const* factionEntry = sFactionStore.LookupEntry(faction);
+
+        if (!factionEntry || !factionEntry->HasReputation())
+            continue;
+
+        bot->GetReputationMgr().SetReputation(factionEntry, 42000);
+    }
 }
 
 void PlayerbotFactory::InitSpells()
@@ -1583,10 +1646,6 @@ void PlayerbotFactory::InitEquipment(bool incremental)
                     }
 
                     if (std::find(lockedItems.begin(), lockedItems.end(), proto->ItemId) != lockedItems.end())
-                        continue;
-
-                    // blacklist
-                    if (std::find(sPlayerbotAIConfig.randomGearBlacklist.begin(), sPlayerbotAIConfig.randomGearBlacklist.end(), proto->ItemId) != sPlayerbotAIConfig.randomGearBlacklist.end())
                         continue;
 
                     // check req level difference from config
