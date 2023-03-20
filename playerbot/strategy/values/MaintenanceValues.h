@@ -83,7 +83,7 @@ namespace ai
 #endif
 
             float minDeposit = 0;
-            for (auto item : AI_VALUE2_LAZY(list<Item*>, "inventory items", "usage " + to_string(ITEM_USAGE_AH)))
+            for (auto item : AI_VALUE2(list<Item*>, "inventory items", "usage " + to_string(ITEM_USAGE_AH)))
             {
                 float deposit = float(item->GetProto()->SellPrice * item->GetCount() * (time / MIN_AUCTION_TIME));
 
