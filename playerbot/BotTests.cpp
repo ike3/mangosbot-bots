@@ -185,7 +185,13 @@ void LogAnalysis::AnalyseQuests()
         {
             tokens[7] = tokens[7] + tokens[8];
             tokens[8] = tokens[9];
+        } 
+        else if (tokens.size() == 11)
+        {
+            tokens[7] = tokens[7] + tokens[8] + tokens[9];
+            tokens[8] = tokens[10];
         }
+        
 
         for(auto& token : tokens)
             token.erase(std::remove(token.begin(), token.end(), '\"'), token.end());
