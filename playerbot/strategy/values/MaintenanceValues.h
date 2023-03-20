@@ -11,9 +11,6 @@ namespace ai
         CanMoveAroundValue(PlayerbotAI* ai) : BoolCalculatedValue(ai, "can move around", 2) {}
         virtual bool Calculate()
         {
-            if (bot->IsInCombat())
-                return false;
-
             if (bot->GetTradeData())
                 return false;
 
