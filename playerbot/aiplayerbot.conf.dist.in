@@ -131,7 +131,7 @@ AiPlayerbot.minEnchantingBotLevel = 81
 AiPlayerbot.GearScoreCheck = 0
 
 # Quest that will be completed and rewarded to all random bots
-AiPlayerbot.RandomBotQuestIds = 7848,3802,5505,6502,7761
+AiPlayerbot.RandomBotQuestIds = 7848,3802,5505,6502,7761,9378
 
 # Randombots will invite players to groups/raids/guilds. (This can also be disabled by turning on DnD on your character)
 # AiPlayerbot.RandomBotInvitePlayer = 1 
