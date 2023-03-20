@@ -413,7 +413,7 @@ public:
     ClassChatFilter(PlayerbotAI* ai) : ChatFilter(ai)
     {
 #ifdef MANGOSBOT_TWO
-        classNames["@death_knight"] = CLASS_DEATH_KNIGHT;
+        classNames["@deathknight"] = CLASS_DEATH_KNIGHT;
 #endif
         classNames["@druid"] = CLASS_DRUID;
         classNames["@hunter"] = CLASS_HUNTER;
