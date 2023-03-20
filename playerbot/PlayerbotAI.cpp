@@ -329,7 +329,7 @@ void PlayerbotAI::UpdateAI(uint32 elapsed, bool minimal)
     bool doMinimalReaction = minimal || !AllowActivity(REACT_ACTIVITY);
 
     // Only update the internal ai when no reaction is running and the internal ai can be updated
-    if(!UpdateAIReaction(elapsed, doMinimalReaction) && CanUpdateAIInternal())
+    if(!UpdateAIReaction(elapsed, doMinimalReaction, bot->IsTaxiFlying()) && CanUpdateAIInternal())
     {      
         // Update the delay with the spell cast time
         Spell* currentSpell = bot->GetCurrentSpell(CURRENT_GENERIC_SPELL);
@@ -360,12 +360,12 @@ void PlayerbotAI::UpdateAI(uint32 elapsed, bool minimal)
     if (pmo) pmo->finish();
 }
 
-bool PlayerbotAI::UpdateAIReaction(uint32 elapsed, bool minimal)
+bool PlayerbotAI::UpdateAIReaction(uint32 elapsed, bool minimal, bool isStunned)
 {
     bool reactionFound;
     string mapString = WorldPosition(bot).isOverworld() ? to_string(bot->GetMapId()) : "I";
     PerformanceMonitorOperation* pmo = sPerformanceMonitor.start(PERF_MON_TOTAL, "PlayerbotAI::UpdateAIReaction " + mapString);
-    const bool reactionInProgress = reactionEngine->Update(elapsed, minimal, reactionFound);
+    const bool reactionInProgress = reactionEngine->Update(elapsed, minimal, isStunned, reactionFound);
     if (pmo) pmo->finish();
 
     if(reactionFound)
@@ -1343,12 +1343,6 @@ void PlayerbotAI::DoNextAction(bool min)
         return;
     }
 
-    if (bot->IsTaxiFlying())
-    {
-        SetAIInternalUpdateDelay(sPlayerbotAIConfig.passiveDelay);
-        return;
-    }
-
     // if in combat but stuck with old data - clear targets
     if (currentEngine == engines[(uint8)BotState::BOT_STATE_NON_COMBAT] && sServerFacade.IsInCombat(bot))
     {
@@ -1362,7 +1356,7 @@ void PlayerbotAI::DoNextAction(bool min)
 
     bool minimal = !AllowActivity();
 
-    currentEngine->DoNextAction(NULL, 0, (minimal || min));
+    currentEngine->DoNextAction(NULL, 0, (minimal || min), bot->IsTaxiFlying());
 
     if (minimal)
     {
@@ -1571,6 +1565,11 @@ void PlayerbotAI::DoNextAction(bool min)
         StopMoving();
 
         ResetJumpDestination();
+    }
+
+    if (bot->IsTaxiFlying())
+    {        
+        return;
     }
 
     // random jumping (WIP, not working properly)

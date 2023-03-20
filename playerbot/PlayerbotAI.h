@@ -502,7 +502,7 @@ public:
     void SetActionDuration(uint32 duration);
     
 private:
-    bool UpdateAIReaction(uint32 elapsed, bool minimal = false);
+    bool UpdateAIReaction(uint32 elapsed, bool minimal, bool isStunned);
     void UpdateFaceTarget(uint32 elapsed, bool minimal);
 
 protected:

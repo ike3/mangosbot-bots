@@ -116,7 +116,7 @@ void Engine::Init()
 	}
 }
 
-bool Engine::DoNextAction(Unit* unit, int depth, bool minimal)
+bool Engine::DoNextAction(Unit* unit, int depth, bool minimal, bool isStunned)
 {
     LogAction("--- AI Tick ---");
     if (sPlayerbotAIConfig.logValuesPerTick)
@@ -177,7 +177,7 @@ bool Engine::DoNextAction(Unit* unit, int depth, bool minimal)
                 bool isUsefull = action->isUseful();
                 if (pmo2) pmo2->finish();
 
-                if (isUsefull)
+                if (isUsefull && (!isStunned || action->isUsefulWhenStunned()))
                 {
                     for (list<Multiplier*>::iterator i = multipliers.begin(); i != multipliers.end(); i++)
                     {
@@ -289,7 +289,7 @@ bool Engine::DoNextAction(Unit* unit, int depth, bool minimal)
         lastRelevance = 0.0f;
         PushDefaultActions();
         if (queue.Peek() && depth < 2)
-            return DoNextAction(unit, depth + 1, minimal);
+            return DoNextAction(unit, depth + 1, minimal, isStunned);
     }
 
     // MEMORY FIX TEST
