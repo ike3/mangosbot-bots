@@ -1652,6 +1652,10 @@ void PlayerbotFactory::InitEquipment(bool incremental)
                     if (std::find(lockedItems.begin(), lockedItems.end(), proto->ItemId) != lockedItems.end())
                         continue;
 
+                    // blacklist
+                    if (std::find(sPlayerbotAIConfig.randomGearBlacklist.begin(), sPlayerbotAIConfig.randomGearBlacklist.end(), proto->ItemId) != sPlayerbotAIConfig.randomGearBlacklist.end())
+                        continue;
+
                     // check req level difference from config
                     int delta = sPlayerbotAIConfig.randomGearMaxDiff + (80 - bot->GetLevel()) / 10;
                     if (proto->Quality < ITEM_QUALITY_LEGENDARY && ((int)bot->GetLevel() - (int)sRandomItemMgr.GetMinLevelFromCache(newItemId) > delta))
