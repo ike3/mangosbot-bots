@@ -114,7 +114,7 @@ bool PlayerbotAIConfig::Initialize()
     mediumMana = config.GetIntDefault("AiPlayerbot.MediumMana", 40);
 
     randomGearMaxLevel = config.GetIntDefault("AiPlayerbot.RandomGearMaxLevel", 500);
-    randomGearMaxDiff = config.GetIntDefault("AiPlayerbot.RandomGearMaxDiff", 40);
+    randomGearMaxDiff = config.GetIntDefault("AiPlayerbot.RandomGearMaxDiff", 5);
     LoadList<list<uint32> >(config.GetStringDefault("AiPlayerbot.RandomGearBlacklist", ""), randomGearBlacklist);
     randomGearProgression = config.GetBoolDefault("AiPlayerbot.RandomGearProgression", true);
     randomGearLoweringChance = config.GetFloatDefault("AiPlayerbot.RandomGearLoweringChance", 0.15f);
