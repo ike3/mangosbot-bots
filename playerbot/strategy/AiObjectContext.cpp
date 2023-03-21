@@ -100,10 +100,12 @@ string AiObjectContext::FormatValues(string findName)
 
 void AiObjectContext::Update()
 {
+    /* Disabled until there is actually a strategy, trigger, action or value that has the Update() method. Currently this takes 8% cpu and does 'NOTHING'.
     strategyContexts.Update();
     triggerContexts.Update();
     actionContexts.Update();
     valueContexts.Update();
+    */
 }
 
 void AiObjectContext::Reset()

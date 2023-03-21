@@ -25,7 +25,7 @@ void RpgHelper::BeforeExecute()
 
 void RpgHelper::AfterExecute(bool doDelay, bool waitForGroup, string nextAction)
 {
-    if (ai->HasRealPlayerMaster() && nextAction == "rpg") 
+    if ((ai->HasRealPlayerMaster() || !urand(0,5)) && nextAction == "rpg") 
         nextAction = "rpg cancel"; 
     
     SET_AI_VALUE(string, "next rpg action", nextAction);
@@ -364,4 +364,56 @@ bool RpgMountAnimAction::Execute(Event& event)
     bot->GetSession()->HandleMountSpecialAnimOpcode(p);
 
     return true;
+}
+
+bool RpgItemAction::Execute(Event& event)
+{
+    GuidPosition guidP = AI_VALUE(GuidPosition, "rpg target");
+
+    if (sServerFacade.isMoving(bot))
+    {
+        ai->StopMoving();
+        rpg->AfterExecute(true, false, "rpg item");
+        return true;
+    }
+
+    Unit* unit = nullptr;
+    GameObject* gameObject = nullptr;
+
+    if (guidP.IsUnit())
+        unit = guidP.GetUnit();
+    else if (guidP.IsGameObject())
+        gameObject = guidP.GetGameObject();
+
+    list<Item*> questItems = AI_VALUE2(list<Item*>, "inventory items", "quest");
+
+    bool used = false;
+
+    for (auto item : questItems)
+    {
+        ItemPrototype const* proto = item->GetProto();
+        uint32 spellId = proto->Spells[0].SpellId;
+        if (spellId)
+        {
+            SpellEntry const* spellInfo = sServerFacade.LookupSpellInfo(spellId);
+
+            if (unit)
+            {
+                if (ai->CanCastSpell(spellId, unit, 0, false))
+                    used = UseItem(item, ObjectGuid(), nullptr, unit);
+            }
+            else if (gameObject)
+            {
+                if (ai->CanCastSpell(spellId, gameObject, 0, false))
+                    used = UseItem(item, guidP, nullptr, nullptr);
+            }
+        }
+    }
+
+    if (used)
+    {
+        SetDuration(sPlayerbotAIConfig.globalCoolDown);
+    }
+
+    return used;
 }

@@ -65,6 +65,7 @@ public:
     uint32 randomBotTeleportDistance;
     uint32 randomGearMaxLevel;
     uint32 randomGearMaxDiff;
+    std::list<uint32> randomGearBlacklist;
     bool randomGearProgression;
     float randomGearLoweringChance;
     float randomBotMaxLevelChance;
@@ -119,15 +120,18 @@ public:
     bool instantRandomize;
     bool gearscorecheck;
 	bool randomBotPreQuests;
-    uint32 playerbotsXPrate;
+    float playerbotsXPrate;
     uint32 botActiveAlone;
     uint32 diffWithPlayer;
     uint32 diffEmpty;
     uint32 minEnchantingBotLevel;
     uint32 randombotStartingLevel;
     bool randomBotSayWithoutMaster;
+    bool randomBotInvitePlayer;
     bool randomBotGroupNearby;
     bool randomBotRaidNearby;
+    bool randomBotGuildNearby;
+    bool randomBotFormGuild;
     bool randomBotRandomPassword;
     bool talentsInPublicNote;
     bool nonGmFreeSummon;
@@ -152,6 +156,7 @@ public:
     bool autoLearnQuestSpells;
     bool autoDoQuests;
     bool syncLevelWithPlayers;
+    uint32 syncLevelMaxAbove;
     bool freeFood;
     uint32 tweakValue; //Debugging config
     float respawnModNeutral, respawnModHostile;

@@ -213,4 +213,11 @@ namespace ai
         RpgDuelTrigger(PlayerbotAI* ai, string name = "rpg duel") : RpgTrigger(ai, name) {}
         virtual bool IsActive();
     };
+
+    class RpgItemTrigger : public RpgTrigger
+    {
+    public:
+        RpgItemTrigger(PlayerbotAI* ai, string name = "rpg item") : RpgTrigger(ai, name) {}
+        virtual bool IsActive();
+    };
 }

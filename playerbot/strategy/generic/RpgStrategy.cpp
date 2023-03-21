@@ -13,10 +13,12 @@ float RpgActionMultiplier::GetValue(Action* action)
     string name = action->getName();
 
     if (dynamic_cast<RpgEnabled*>(action))
+    {
         if (!nextAction.empty() && name != nextAction)
             return 0.1f;
         else
-            return frand(0.2f, 1.0f);
+            return frand(0.8f, 1.0f);
+    }
 
     return 1.0f;
 }
@@ -177,4 +179,8 @@ void RpgCraftStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
     triggers.push_back(new TriggerNode(
         "rpg craft",
         NextAction::array(0, new NextAction("rpg craft", 1.001f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "rpg item",
+        NextAction::array(0, new NextAction("rpg item", 1.030f), NULL)));
 }

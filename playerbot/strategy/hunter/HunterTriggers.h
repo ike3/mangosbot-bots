@@ -4,31 +4,39 @@
 
 namespace ai
 {
-    HAS_AURA_TRIGGER_TIME(FeignDeathTrigger, "feign death", 2.5f);
+    HAS_AURA_TRIGGER_TIME(FeignDeathTrigger, "feign death", 2);
     BEGIN_TRIGGER(HunterNoStingsActiveTrigger, Trigger)
-    END_TRIGGER()
+        END_TRIGGER()
 
-    class HunterAspectOfTheHawkTrigger : public BuffTrigger
+        class HunterAspectOfTheHawkTrigger : public BuffTrigger
     {
     public:
         HunterAspectOfTheHawkTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "aspect of the hawk") {
-			checkInterval = 1;
-		}
+            checkInterval = 1;
+        }
+
+        virtual bool IsActive()
+        {
+            if (!BuffTrigger::IsActive())
+                return false;
+            Unit* target = AI_VALUE(Unit*, "current target");
+            return target && !sServerFacade.IsDistanceLessOrEqualThan(AI_VALUE2(float, "distance", "current target"), 5.0);
+        }
     };
 
-	class HunterAspectOfTheWildTrigger : public BuffTrigger
-	{
-	public:
-		HunterAspectOfTheWildTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "aspect of the wild") {
-			checkInterval = 1;
-		}
-	};
+    class HunterAspectOfTheWildTrigger : public BuffTrigger
+    {
+    public:
+        HunterAspectOfTheWildTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "aspect of the wild") {
+            checkInterval = 1;
+        }
+    };
 
     class HunterAspectOfTheViperTrigger : public BuffTrigger
     {
     public:
         HunterAspectOfTheViperTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "aspect of the viper") {}
-        
+
         virtual bool IsActive()
         {
             return SpellTrigger::IsActive() && !ai->HasAura(spell, GetTarget());
@@ -39,20 +47,20 @@ namespace ai
     {
     public:
         HunterAspectOfThePackTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "aspect of the pack") {}
-        
-        virtual bool IsActive() 
+
+        virtual bool IsActive()
         {
-			return BuffTrigger::IsActive() && !ai->HasAura("aspect of the cheetah", GetTarget());
+            return BuffTrigger::IsActive() && !ai->HasAura("aspect of the cheetah", GetTarget());
         };
     };
 
     BEGIN_TRIGGER(HuntersPetDeadTrigger, Trigger)
-    END_TRIGGER()
+        END_TRIGGER()
 
-    BEGIN_TRIGGER(HuntersPetLowHealthTrigger, Trigger)
-    END_TRIGGER()
+        BEGIN_TRIGGER(HuntersPetLowHealthTrigger, Trigger)
+        END_TRIGGER()
 
-    class BlackArrowTrigger : public DebuffTrigger
+        class BlackArrowTrigger : public DebuffTrigger
     {
     public:
         BlackArrowTrigger(PlayerbotAI* ai) : DebuffTrigger(ai, "black arrow") {}
@@ -99,9 +107,9 @@ namespace ai
     };
 
     BEGIN_TRIGGER(HunterPetNotHappy, Trigger)
-    END_TRIGGER()
+        END_TRIGGER()
 
-    class ConsussiveShotSnareTrigger : public SnareTargetTrigger
+        class ConsussiveShotSnareTrigger : public SnareTargetTrigger
     {
     public:
         ConsussiveShotSnareTrigger(PlayerbotAI* ai) : SnareTargetTrigger(ai, "concussive shot") {}
@@ -119,7 +127,7 @@ namespace ai
     {
     public:
         HunterLowAmmoTrigger(PlayerbotAI* ai) : AmmoCountTrigger(ai, "ammo", 1, 30) {}
-        virtual bool IsActive() { return bot->GetGroup() &&  (AI_VALUE2(uint32, "item count", "ammo") < 100) && (AI_VALUE2(uint32, "item count", "ammo") > 0); }
+        virtual bool IsActive() { return bot->GetGroup() && (AI_VALUE2(uint32, "item count", "ammo") < 100) && (AI_VALUE2(uint32, "item count", "ammo") > 0); }
     };
 
     class HunterNoAmmoTrigger : public AmmoCountTrigger
@@ -135,7 +143,7 @@ namespace ai
         virtual bool IsActive() { return !AmmoCountTrigger::IsActive(); }
     };
 
-    class SwitchToRangedTrigger : public Trigger 
+    class SwitchToRangedTrigger : public Trigger
     {
     public:
         SwitchToRangedTrigger(PlayerbotAI* ai) : Trigger(ai, "switch to ranged", 1) {}
@@ -148,7 +156,7 @@ namespace ai
         }
     };
 
-    class SwitchToMeleeTrigger : public Trigger 
+    class SwitchToMeleeTrigger : public Trigger
     {
     public:
         SwitchToMeleeTrigger(PlayerbotAI* ai) : Trigger(ai, "switch to melee", 1) {}
@@ -206,6 +214,19 @@ namespace ai
             {
                 if (sServerFacade.IsDistanceGreaterOrEqualThan(distanceTo, 15.0f))
                     return true;
+            }
+            return false;
+        }
+    };
+
+    class HunterNoPet : public Trigger {
+    public:
+        HunterNoPet(PlayerbotAI* ai) : Trigger(ai, "no beast", 1) {}
+        virtual bool IsActive()
+        {
+            Unit* target = AI_VALUE(Unit*, "current target");
+            if (target && target->GetCreatureType() == CREATURE_TYPE_BEAST && !bot->GetPetGuid() && target->GetLevel() <= bot->GetLevel()) {
+                return true;
             }
             return false;
         }

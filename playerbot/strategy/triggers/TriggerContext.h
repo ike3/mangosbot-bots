@@ -214,6 +214,7 @@ namespace ai
             creators["rpg craft"] = &TriggerContext::rpg_craft;
             creators["rpg trade useful"] = &TriggerContext::rpg_trade_useful;
             creators["rpg duel"] = &TriggerContext::rpg_duel;
+            creators["rpg item"] = &TriggerContext::rpg_item;
 
             // racials
             creators["berserking"] = &TriggerContext::berserking;
@@ -420,6 +421,7 @@ namespace ai
         static Trigger* rpg_craft(PlayerbotAI* ai) { return new RpgCraftTrigger(ai); }
         static Trigger* rpg_trade_useful(PlayerbotAI* ai) { return new RpgTradeUsefulTrigger(ai); }
         static Trigger* rpg_duel(PlayerbotAI* ai) { return new RpgDuelTrigger(ai); }
+        static Trigger* rpg_item(PlayerbotAI* ai) { return new RpgItemTrigger(ai); }
 
         // Dungeon Triggers
         static Trigger* onyxias_lair_enter(PlayerbotAI* ai) { return new OnyxiasLairEnterDungeonTrigger(ai); }

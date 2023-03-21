@@ -97,8 +97,43 @@ bool BGJoinAction::Execute(Event& event)
 
         // set bg type and bm guid
         //ai->GetAiObjectContext()->GetValue<ObjectGuid>("bg master")->Set(BmGuid);
+
+        string _bgType;
+
+        switch (bgTypeId)
+        {
+        case BATTLEGROUND_AV:
+            _bgType = "AV";
+            break;
+        case BATTLEGROUND_WS:
+            _bgType = "WSG";
+            break;
+        case BATTLEGROUND_AB:
+            _bgType = "AB";
+            break;
+#ifndef MANGOSBOT_ZERO
+        case BATTLEGROUND_EY:
+            _bgType = "EotS";
+            break;
+#endif
+#ifdef MANGOSBOT_TWO
+        case BATTLEGROUND_RB:
+            _bgType = "Random";
+            break;
+        case BATTLEGROUND_SA:
+            _bgType = "SotA";
+            break;
+        case BATTLEGROUND_IC:
+            _bgType = "IoC";
+            break;
+#endif
+        default:
+            break;
+        }
+
         ai->GetAiObjectContext()->GetValue<uint32>("bg type")->Set(queueTypeId);
         queueType = queueTypeId;
+        sPlayerbotAIConfig.logEvent(ai, "BGJoinAction", _bgType, to_string(queueTypeId));
     }
 
    return JoinQueue(queueType);
@@ -328,7 +363,7 @@ bool BGJoinAction::shouldJoinBg(BattleGroundQueueTypeId queueTypeId, BattleGroun
     bool isRated = false;
     bool hasTeam = false;
     bool isTeamLead = false;
-    bool noLag = sWorld.GetAverageDiff() < 90;
+    bool noLag = sWorld.GetAverageDiff() < (sRandomPlayerbotMgr.GetPlayers().empty() ? sPlayerbotAIConfig.diffEmpty : sPlayerbotAIConfig.diffWithPlayer, sWorld.GetAverageDiff()) * 1.1;
 
 #ifndef MANGOSBOT_ZERO
     ArenaType type = sServerFacade.BgArenaType(queueTypeId);
@@ -365,6 +400,9 @@ bool BGJoinAction::shouldJoinBg(BattleGroundQueueTypeId queueTypeId, BattleGroun
 #ifdef MANGOSBOT_TWO
     if (!hasPlayers && bgTypeId == BATTLEGROUND_RB)
         return false;
+
+    if (!hasPlayers && bgTypeId == BATTLEGROUND_SA)
+        return false;    
 #endif
 
     uint32 BracketSize = bg->GetMaxPlayers();
@@ -769,7 +807,7 @@ bool FreeBGJoinAction::shouldJoinBg(BattleGroundQueueTypeId queueTypeId, BattleG
     bool isArena = false;
     bool isRated = false;
     bool hasTeam = false;
-    bool noLag = sWorld.GetAverageDiff() < 150;
+    bool noLag = sWorld.GetAverageDiff() < (sRandomPlayerbotMgr.GetPlayers().empty() ? sPlayerbotAIConfig.diffEmpty : sPlayerbotAIConfig.diffWithPlayer, sWorld.GetAverageDiff()) * 1.5;
 
 #ifndef MANGOSBOT_ZERO
     ArenaType type = sServerFacade.BgArenaType(queueTypeId);
@@ -802,6 +840,9 @@ bool FreeBGJoinAction::shouldJoinBg(BattleGroundQueueTypeId queueTypeId, BattleG
 
 #ifdef MANGOSBOT_TWO
     if (!hasPlayers && bgTypeId == BATTLEGROUND_RB)
+        return false;
+
+    if (!hasPlayers && bgTypeId == BATTLEGROUND_SA)
         return false;
 #endif
 

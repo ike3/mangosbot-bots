@@ -41,7 +41,7 @@ bool TravelAction::Execute(Event& event)
         if (!newTarget->IsAlive())
             continue;
 
-        if (!newTarget->GetEntry() != target->getDestination()->getEntry())
+        if (newTarget->GetEntry() != target->getDestination()->getEntry())
             continue;
 
         if (newTarget->IsInCombat())

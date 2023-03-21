@@ -53,41 +53,33 @@ bool FollowChatShortcutAction::Execute(Event& event)
     Formation* formation = AI_VALUE(Formation*, "formation");
     MEM_AI_VALUE(WorldPosition, "master position")->Reset();
 
-    if (formation->getName() == "custom")
+    if (formation->getName() == "custom") //If in custom formation set relative position to current position.
     {
         ai::PositionEntry pos = posMap["follow"];
 
         WorldPosition relPos(bot);
-        relPos -= WorldPosition(ai->GetMaster());
-        relPos.rotateXY(-1 * ai->GetMaster()->GetOrientation());
-        pos.Set(relPos.getX(), relPos.getY(), relPos.getZ(), relPos.getMapId());
 
+        if (!ai->IsSafe(master) || sServerFacade.GetDistance2d(bot, master) > sPlayerbotAIConfig.reactDistance) //Use default formation location.
+        {
+            relPos = WorldPosition(bot->GetMapId(), cos(GetFollowAngle()) * ai->GetRange("follow"), sin(GetFollowAngle()) * ai->GetRange("follow"), 0);
+        }
+        else //Use relative location.
+        {
+            relPos -= WorldPosition(ai->GetMaster());
+            relPos.rotateXY(-1 * ai->GetMaster()->GetOrientation());
+        }
+
+        pos.Set(relPos.getX(), relPos.getY(), relPos.getZ(), relPos.getMapId());
         posMap["follow"] = pos;
     }
 
     if (sServerFacade.IsInCombat(bot))
     {     
-        string target = formation->GetTargetName();
+        WorldLocation loc = formation->GetLocation();
+        if (Formation::IsNullLocation(loc) || loc.mapid == -1)
+            return false;
 
-        bool moved = false;
-        if (!target.empty())
-        {
-            moved = Follow(AI_VALUE(Unit*, target));
-        }
-        else
-        {
-            WorldLocation loc = formation->GetLocation();
-            if (Formation::IsNullLocation(loc) || loc.mapid == -1)
-                return false;
-
-            Player* master = ai->GetGroupMaster();
-
-            float angle = WorldPosition(master).getAngleTo(loc) - master->GetOrientation();
-            float distance = WorldPosition(master).fDist(loc);
-
-            moved = Follow(master, distance, angle);
-        }
-        if (moved)
+        if (MoveTo(loc.mapid, loc.coord_x, loc.coord_y, loc.coord_z, false, false))
         {
             ai->TellError(BOT_TEXT("following"));
             return true;

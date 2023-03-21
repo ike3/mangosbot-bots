@@ -112,6 +112,7 @@ namespace ai
                 creators["bestial wrath"] = &TriggerFactoryInternal::bestial_wrath;
                 creators["silencing shot interrupt"] = &TriggerFactoryInternal::silencing_shot_interrupt;
                 creators["silencing shot on enemy healer"] = &TriggerFactoryInternal::silencing_shot_interrupt_healer;
+                creators["no beast"] = &TriggerFactoryInternal::no_beast;
             }
 
         private:
@@ -150,6 +151,7 @@ namespace ai
             static Trigger* switch_to_melee(PlayerbotAI* ai) { return new SwitchToMeleeTrigger(ai); }
             static Trigger* switch_to_ranged(PlayerbotAI* ai) { return new SwitchToRangedTrigger(ai); }
             static Trigger* feign_death(PlayerbotAI* ai) { return new FeignDeathTrigger(ai); }
+            static Trigger* no_beast(PlayerbotAI* ai) { return new HunterNoPet(ai); }
         };
     };
 };
@@ -189,6 +191,7 @@ namespace ai
                 creators["rapid fire"] = &AiObjectContextInternal::rapid_fire;
                 creators["boost"] = &AiObjectContextInternal::rapid_fire;
                 creators["readiness"] = &AiObjectContextInternal::readiness;
+                creators["aspect of the monkey"] = &AiObjectContextInternal::aspect_of_the_monkey;
                 creators["aspect of the hawk"] = &AiObjectContextInternal::aspect_of_the_hawk;
                 creators["aspect of the wild"] = &AiObjectContextInternal::aspect_of_the_wild;
                 creators["aspect of the viper"] = &AiObjectContextInternal::aspect_of_the_viper;
@@ -217,6 +220,7 @@ namespace ai
                 creators["silencing shot on enemy healer"] = &AiObjectContextInternal::silencing_shot_healer;
                 creators["readiness"] = &AiObjectContextInternal::readiness;
                 creators["steady shot"] = &AiObjectContextInternal::steady_shot;
+                creators["tame beast"] = &AiObjectContextInternal::tame_beast;
             }
 
         private:
@@ -260,6 +264,7 @@ namespace ai
             static Action* freezing_trap(PlayerbotAI* ai) { return new CastFreezingTrapAction(ai); }
             static Action* rapid_fire(PlayerbotAI* ai) { return new CastRapidFireAction(ai); }
             static Action* readiness(PlayerbotAI* ai) { return new CastReadinessAction(ai); }
+            static Action* aspect_of_the_monkey(PlayerbotAI* ai) { return new CastAspectOfTheMonkeyAction(ai); }
             static Action* aspect_of_the_hawk(PlayerbotAI* ai) { return new CastAspectOfTheHawkAction(ai); }
             static Action* aspect_of_the_wild(PlayerbotAI* ai) { return new CastAspectOfTheWildAction(ai); }
             static Action* aspect_of_the_viper(PlayerbotAI* ai) { return new CastAspectOfTheViperAction(ai); }
@@ -269,6 +274,7 @@ namespace ai
             static Action* wing_clip(PlayerbotAI* ai) { return new CastWingClipAction(ai); }
             static Action* raptor_strike(PlayerbotAI* ai) { return new CastRaptorStrikeAction(ai); }
             static Action* remove_feign_death(PlayerbotAI* ai) { return new RemoveFeignDeathAction(ai); }
+            static Action* tame_beast(PlayerbotAI* ai) { return new TameBeastAction(ai); }
         };
     };
 };

@@ -15,12 +15,16 @@ using namespace ai;
 bool FollowAction::Execute(Event& event)
 {
     Formation* formation = AI_VALUE(Formation*, "formation");
-    string target = formation->GetTargetName();
+    string targetName = formation->GetTargetName();
 
     bool moved = false;
-    if (!target.empty())
+    if (!targetName.empty())
     {
-        moved = Follow(AI_VALUE(Unit*, target), formation->GetOffset(), formation->GetAngle());
+        Unit* target = AI_VALUE(Unit*, targetName);
+        if (!ai->IsSafe(target))
+            return false;
+
+        moved = Follow(target, formation->GetOffset(), formation->GetAngle());
     }
     else
     {
@@ -29,6 +33,9 @@ bool FollowAction::Execute(Event& event)
             return false;
 
         Player* master = ai->GetGroupMaster();
+
+        if (!ai->IsSafe(master))
+            return false;
 
         moved = Follow(master, formation->GetOffset(), formation->GetAngle());
         //moved = MoveTo(loc.mapid, loc.coord_x, loc.coord_y, loc.coord_z);
@@ -84,7 +91,7 @@ bool FollowAction::isUseful()
     if (sServerFacade.IsDistanceGreaterThan(distance, sPlayerbotAIConfig.sightDistance))
         return true;
 
-    if (sServerFacade.GetChaseTarget(bot) && sServerFacade.GetChaseTarget(bot)->GetObjectGuid() == fTarget->GetObjectGuid() && formation->GetAngle() == sServerFacade.GetChaseAngle(bot) && formation->GetOffset() == sServerFacade.GetChaseOffset(bot))
+    if (fTarget && sServerFacade.GetChaseTarget(bot) && sServerFacade.GetChaseTarget(bot)->GetObjectGuid() == fTarget->GetObjectGuid() && formation->GetAngle() == sServerFacade.GetChaseAngle(bot) && formation->GetOffset() == sServerFacade.GetChaseOffset(bot))
         return false;
 
     return true;

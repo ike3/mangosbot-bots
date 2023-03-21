@@ -36,6 +36,18 @@ void AutoLearnSpellAction::LearnSpells(ostringstream* out)
 
     if (sPlayerbotAIConfig.autoLearnQuestSpells)
         LearnQuestSpells(out);
+
+    if (!ai->HasActivePlayerMaster()) //Hunter spells for pets.
+    {
+        if (bot->getClass() == CLASS_HUNTER && bot->GetLevel() >= 10)
+        {
+            bot->learnSpell(261, false); //Best training
+            bot->learnSpell(883, false); //Call pet
+            bot->learnSpell(982, false); //Revive pet
+            bot->learnSpell(6991, false); //Feed pet
+            bot->learnSpell(1515, false); //Tame beast
+        }
+    }
 }
 
 void AutoLearnSpellAction::LearnTrainerSpells(ostringstream* out)

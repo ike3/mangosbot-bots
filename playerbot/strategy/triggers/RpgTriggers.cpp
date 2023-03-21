@@ -337,6 +337,34 @@ bool RpgTrainTrigger::IsActive()
         if (!pSpellInfo)
             continue;
 
+        if (tSpell->learnedSpell)
+        {
+            bool learned = true;
+            if (bot->HasSpell(tSpell->learnedSpell))
+            {
+                learned = false;
+            }
+            else
+            {
+                for (int j = 0; j < 3; ++j)
+                {
+                    if (pSpellInfo->Effect[j] == SPELL_EFFECT_LEARN_SPELL)
+                    {
+                        learned = false;
+                        uint32 learnedSpell = pSpellInfo->EffectTriggerSpell[j];
+
+                        if (!bot->HasSpell(learnedSpell))
+                        {
+                            learned = true;
+                            break;
+                        }
+                    }
+                }
+            }
+            if (!learned)
+                continue;
+        }
+
         uint32 cost = uint32(floor(tSpell->spellCost * fDiscountMod));
         if (cost > AI_VALUE2(uint32, "free money for", (uint32)NeedMoneyFor::spells))
             continue;
@@ -623,4 +651,52 @@ bool RpgDuelTrigger::IsActive()
         return false;
 
     return true;
+}
+
+bool RpgItemTrigger::IsActive()
+{
+    GuidPosition guidP(getGuidP());
+
+    if (guidP.IsPlayer())
+        return false;
+
+    Unit* unit = nullptr;
+    GameObject* gameObject = nullptr;
+    
+    if(guidP.IsUnit())
+        unit = guidP.GetUnit();
+    else if (guidP.IsGameObject())
+        gameObject = guidP.GetGameObject();
+
+    list<Item*> questItems = AI_VALUE2(list<Item*>, "inventory items", "quest");
+
+    for (auto item : questItems)
+    {
+        ItemPrototype const* proto = item->GetProto();
+        uint32 spellId = proto->Spells[0].SpellId;
+        if (spellId)
+        {
+            SpellEntry const* spellInfo = sServerFacade.LookupSpellInfo(spellId);
+
+            if (unit)
+            {
+                if (spellInfo->Effect[0] == SPELL_EFFECT_DUMMY && spellInfo->Id == 19938)  // Awaken Lazy Peon (hardcoded in core!)
+                {
+                    // 17743 = Lazy Peon Sleep | 10556 = Lazy Peon
+                    if (!unit->HasAura(17743) || unit->GetEntry() != 10556)
+                        continue;
+                }
+
+                if (ai->CanCastSpell(spellId, unit, 0, false, nullptr, true))
+                    return true;
+            }
+            else if (gameObject)
+            {
+                if (ai->CanCastSpell(spellId, gameObject, 0, false, true))
+                    return true;
+            }
+        }
+    }
+
+    return false;
 }

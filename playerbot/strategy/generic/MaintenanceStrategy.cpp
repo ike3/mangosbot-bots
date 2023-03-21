@@ -14,10 +14,6 @@ void MaintenanceStrategy::InitNonCombatTriggers(std::list<TriggerNode*> &trigger
         "random",
         NextAction::array(0, new NextAction("use random recipe", 1.0f), NULL)));
 
-    /*triggers.push_back(new TriggerNode(
-        "often",
-        NextAction::array(0, new NextAction("use random quest item", 10.0f), NULL)));*/
-
     triggers.push_back(new TriggerNode(
         "random",
         NextAction::array(0, new NextAction("disenchant random item", 1.0f), NULL)));
@@ -37,4 +33,8 @@ void MaintenanceStrategy::InitNonCombatTriggers(std::list<TriggerNode*> &trigger
     triggers.push_back(new TriggerNode(
         "move long stuck",
         NextAction::array(0, new NextAction("hearthstone", 0.9f), new NextAction("repop", 0.8f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "random",
+        NextAction::array(0, new NextAction("use random quest item", 0.9f), NULL)));
 }

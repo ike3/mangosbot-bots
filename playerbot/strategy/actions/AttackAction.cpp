@@ -114,10 +114,8 @@ bool AttackAction::Attack(Unit* target)
             sServerFacade.SetFacingTo(bot, target);
         }
 
-        bool hunterMelee = (bot->getClass() == CLASS_HUNTER) && (sServerFacade.GetDistance2d(bot, target) < 5.0f);
-
         // Don't attack target if it is waiting for attack
-        return isWaitingForAttack ? true : bot->Attack(target, !ai->IsRanged(bot)|| hunterMelee);
+        return isWaitingForAttack ? true : bot->Attack(target, !ai->IsRanged(bot) || (sServerFacade.GetDistance2d(bot, target) < 5.0f));
     }
 
     return false;

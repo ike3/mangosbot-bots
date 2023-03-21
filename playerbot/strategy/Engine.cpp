@@ -117,7 +117,7 @@ void Engine::Init()
 	}
 }
 
-bool Engine::DoNextAction(Unit* unit, int depth, bool minimal)
+bool Engine::DoNextAction(Unit* unit, int depth, bool minimal, bool isStunned)
 {
     LogAction("--- AI Tick ---");
     if (sPlayerbotAIConfig.logValuesPerTick)
@@ -178,7 +178,7 @@ bool Engine::DoNextAction(Unit* unit, int depth, bool minimal)
                 bool isUsefull = action->isUseful();
                 if (pmo2) pmo2->finish();
 
-                if (isUsefull)
+                if (isUsefull && (!isStunned || action->isUsefulWhenStunned()))
                 {
                     for (list<Multiplier*>::iterator i = multipliers.begin(); i != multipliers.end(); i++)
                     {
@@ -190,6 +190,13 @@ bool Engine::DoNextAction(Unit* unit, int depth, bool minimal)
                             LogAction("Multiplier %s made action %s useless", multiplier->getName().c_str(), action->getName().c_str());
                             break;
                         }
+                    }
+
+                    if (queue.Size() && relevance < basket->getRelevance() && queue.Peek()->getRelevance() > relevance) //Relevance changed. Try again.
+                    {
+                        PushAgain(actionNode, relevance, event);
+                        if (pmo1) pmo1->finish();
+                        continue;
                     }
 
                     if (!skipPrerequisites)
@@ -283,7 +290,7 @@ bool Engine::DoNextAction(Unit* unit, int depth, bool minimal)
         lastRelevance = 0.0f;
         PushDefaultActions();
         if (queue.Peek() && depth < 2)
-            return DoNextAction(unit, depth + 1, minimal);
+            return DoNextAction(unit, depth + 1, minimal, isStunned);
     }
 
     // MEMORY FIX TEST
@@ -532,17 +539,16 @@ void Engine::ProcessTriggers(bool minimal)
             trigger = aiObjectContext->GetTrigger(node->getName());
             node->setTrigger(trigger);
         }
-
         if (!trigger)
             continue;
 
-        if (testMode || trigger->needCheck())
+        Event& event = fires[trigger];
+        if (!event & (testMode || trigger->needCheck()))
         {
             if (minimal && node->getFirstRelevance() < 100)
                 continue;
-
             PerformanceMonitorOperation* pmo = sPerformanceMonitor.start(PERF_MON_TRIGGER, trigger->getName(), &aiObjectContext->performanceStack);
-            Event event = trigger->Check();
+            event = trigger->Check();
             if (pmo) pmo->finish();
             if (!event)
                 continue;
@@ -592,12 +598,12 @@ string Engine::ListStrategies()
     return s.substr(0, s.length() - 2);
 }
 
-list<string> Engine::GetStrategies()
+list<string_view> Engine::GetStrategies()
 {
-    list<string> result;
-    for (map<string, Strategy*>::iterator i = strategies.begin(); i != strategies.end(); i++)
+    list<string_view> result;
+    for (const auto& strategy : strategies)
     {
-        result.push_back(i->first);
+        result.push_back(strategy.first);
     }
     return result;
 }

@@ -82,7 +82,7 @@ void AttackersValue::AddTargetsOf(Group* group, set<Unit*>& targets, set<ObjectG
 void AttackersValue::AddTargetsOf(Player* player, set<Unit*>& targets, set<ObjectGuid>& invalidTargets, bool getOne)
 {
     // If the player is available
-    if (player)
+    if (ai->IsSafe(player))
     {
         set<Unit*> units;
 

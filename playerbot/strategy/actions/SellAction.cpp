@@ -51,7 +51,14 @@ public:
 
         ItemUsage usage = AI_VALUE2(ItemUsage, "item usage", ItemQualifier(item).GetQualifier());
 
-        if (usage != ITEM_USAGE_VENDOR)
+        bool shouldSell = false;
+
+        if (usage == ITEM_USAGE_VENDOR)
+            shouldSell = true;
+        else if (usage == ITEM_USAGE_AH && AI_VALUE(uint8, "bag space") > 80 && !urand(0, 10))
+            shouldSell = true;
+
+        if (!shouldSell)
             return true;
 
         return SellItemsVisitor::Visit(item);
@@ -109,6 +116,8 @@ void SellAction::Sell(Item* item)
         uint32 count = item->GetCount();
 
         uint32 botMoney = bot->GetMoney();
+
+        sPlayerbotAIConfig.logEvent(ai, "SellAction", item->GetProto()->Name1, to_string(item->GetProto()->ItemId));
 
         WorldPacket p;
         p << vendorguid << itemguid << count;

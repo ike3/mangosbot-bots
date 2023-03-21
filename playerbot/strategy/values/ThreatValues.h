@@ -6,7 +6,7 @@ namespace ai
     class MyThreatValue : public LogCalculatedValue<float>, public Qualified
     {
     public:
-        MyThreatValue(PlayerbotAI* ai, string name = "my threat") : LogCalculatedValue(ai, name) { minChangeInterval = 0.5; }
+        MyThreatValue(PlayerbotAI* ai, string name = "my threat") : LogCalculatedValue(ai, name) { minChangeInterval = 1; }
         virtual bool EqualToLast(float value) { return value == lastValue; }
     public:
         virtual float Calculate();

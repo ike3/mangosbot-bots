@@ -57,6 +57,44 @@ bool CastSpellAction::Execute(Event& event)
     }
     else
     {
+        if (spellName == "freezing trap") //Temporary fix for core crash
+        {
+            uint32 spellId = AI_VALUE2(uint32,"spell id", spellName);
+
+            const SpellEntry* pSpellInfo = sServerFacade.LookupSpellInfo(spellId);
+            if (!pSpellInfo)
+                return false;
+
+            for (uint32 j = 0; j < MAX_EFFECT_INDEX; ++j)
+            {
+                uint8 slot = 0;
+                switch (pSpellInfo->Effect[j])
+                {
+                case SPELL_EFFECT_SUMMON_OBJECT_SLOT1: slot = 0; break;
+                case SPELL_EFFECT_SUMMON_OBJECT_SLOT2: slot = 1; break;
+                case SPELL_EFFECT_SUMMON_OBJECT_SLOT3: slot = 2; break;
+                case SPELL_EFFECT_SUMMON_OBJECT_SLOT4: slot = 3; break;
+                default: 
+                    continue;
+                }
+
+                if (ObjectGuid guid = bot->m_ObjectSlotGuid[slot])
+                {
+                    if (GameObject* obj = bot ? bot->GetMap()->GetGameObject(guid) : nullptr)
+                    {
+                        obj->SetLootState(GO_JUST_DEACTIVATED);
+
+                        //if (obj->GetOwnerGuid() != bot->GetOwnerGuid())
+                            obj->SetOwnerGuid(bot->GetObjectGuid());
+
+                        bot->RemoveGameObject(obj, false, pSpellInfo->Id != obj->GetSpellId());
+
+                        bot->m_ObjectSlotGuid[slot].Clear();
+                    }
+                }
+            }
+        }
+
         executed = ai->CastSpell(spellName, GetTarget(), nullptr, false, &spellDuration);
     }
 

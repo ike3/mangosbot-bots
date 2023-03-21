@@ -66,11 +66,12 @@ namespace ai
         virtual bool Execute(Event& event) { return true; }
         virtual bool isPossible() { return true; }
         virtual bool isUseful() { return true; }
+        virtual bool isUsefulWhenStunned() { return false; }
         virtual NextAction** getPrerequisites() { return NULL; }
         virtual NextAction** getAlternatives() { return NULL; }
         virtual NextAction** getContinuers() { return NULL; }
         virtual ActionThreatType getThreatType() { return ActionThreatType::ACTION_THREAT_NONE; }
-        void Update() {}
+        void Update() {}  //Nonfunctional see AiObjectContext::Update() to enable.
         void Reset() {}
         virtual Unit* GetTarget();
         virtual Value<Unit*>* GetTargetValue();

@@ -1,6 +1,7 @@
 #include "botpch.h"
 #include "../../playerbot.h"
 #include "XpGainAction.h"
+#include "../../LootObjectStack.h"
 #ifdef MANGOS
 #include "luaEngine.h"
 #endif
@@ -30,6 +31,7 @@ bool XpGainAction::Execute(Event& event)
         sPlayerbotAIConfig.logEvent(ai, "XpGainAction", guid, to_string(xpgain));
     }
 
+    AI_VALUE(LootObjectStack*, "available loot")->Add(guid);
     ai->AccelerateRespawn(guid);
 
     if (!sRandomPlayerbotMgr.IsFreeBot(bot) || sPlayerbotAIConfig.playerbotsXPrate == 1)
@@ -44,19 +46,14 @@ bool XpGainAction::Execute(Event& event)
     Unit* victim;
     if (guid)
         victim = ai->GetUnit(guid);
-    xpgain = xpgain * (sPlayerbotAIConfig.playerbotsXPrate - 1);
-    GiveXP(xpgain, victim);
+    int32 bonusXpgain = (int32)xpgain * (sPlayerbotAIConfig.playerbotsXPrate - 1.0f);
+    GiveXP(bonusXpgain, victim);
 
     return false;
 }
 
-void XpGainAction::GiveXP(uint32 xp, Unit* victim)
+void XpGainAction::GiveXP(int32 xp, Unit* victim)
 {
-    if (xp < 1)
-    {
-        return;
-    }
-
     if (!bot->IsAlive())
     {
         return;
@@ -72,6 +69,16 @@ void XpGainAction::GiveXP(uint32 xp, Unit* victim)
     // XP to money conversion processed in Player::RewardQuest
     if (level >= sWorld.getConfig(CONFIG_UINT32_MAX_PLAYER_LEVEL))
     {
+        return;
+    }
+
+    if (xp < 0)
+    {
+        uint32 curXP = bot->GetUInt32Value(PLAYER_XP);
+        int32 newXP = (int32)curXP + xp;
+        if (newXP < 0)
+            newXP = 0;
+        bot->SetUInt32Value(PLAYER_XP, newXP);
         return;
     }
 

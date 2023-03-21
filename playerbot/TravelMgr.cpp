@@ -6,6 +6,7 @@
 #include "PathFinder.h"
 #include "TravelNode.h"
 #include "PlayerbotAI.h"
+#include "BotTests.h"
 
 using namespace ai;
 using namespace MaNGOS;
@@ -1242,6 +1243,9 @@ void TravelMgr::LoadQuestTravelTable()
         loc->addPoint(&pointsMap.find(guid)->second);
     }     
 
+    //Analyse log files
+    if(sPlayerbotAIConfig.hasLog("log_analysis.csv"))
+        LogAnalysis::RunAnalysis();
 
      //Clear these logs files
     sPlayerbotAIConfig.openLog("zones.csv", "w");
@@ -2058,7 +2062,7 @@ void TravelMgr::LoadQuestTravelTable()
 
                                     AiObjectContext* con = ai->GetAiObjectContext();
 
-                                    list<string> tstrats;
+                                    list<string_view> tstrats;
                                     set<string> strategies, sstrats;
 
                                     tstrats = ai->GetStrategies(BotState::BOT_STATE_COMBAT);

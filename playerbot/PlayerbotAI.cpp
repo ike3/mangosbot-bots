@@ -329,7 +329,7 @@ void PlayerbotAI::UpdateAI(uint32 elapsed, bool minimal)
     bool doMinimalReaction = minimal || !AllowActivity(REACT_ACTIVITY);
 
     // Only update the internal ai when no reaction is running and the internal ai can be updated
-    if(!UpdateAIReaction(elapsed, doMinimalReaction) && CanUpdateAIInternal())
+    if(!UpdateAIReaction(elapsed, doMinimalReaction, bot->IsTaxiFlying()) && CanUpdateAIInternal())
     {      
         // Update the delay with the spell cast time
         Spell* currentSpell = bot->GetCurrentSpell(CURRENT_GENERIC_SPELL);
@@ -360,12 +360,12 @@ void PlayerbotAI::UpdateAI(uint32 elapsed, bool minimal)
     if (pmo) pmo->finish();
 }
 
-bool PlayerbotAI::UpdateAIReaction(uint32 elapsed, bool minimal)
+bool PlayerbotAI::UpdateAIReaction(uint32 elapsed, bool minimal, bool isStunned)
 {
     bool reactionFound;
     string mapString = WorldPosition(bot).isOverworld() ? to_string(bot->GetMapId()) : "I";
     PerformanceMonitorOperation* pmo = sPerformanceMonitor.start(PERF_MON_TOTAL, "PlayerbotAI::UpdateAIReaction " + mapString);
-    const bool reactionInProgress = reactionEngine->Update(elapsed, minimal, reactionFound);
+    const bool reactionInProgress = reactionEngine->Update(elapsed, minimal, isStunned, reactionFound);
     if (pmo) pmo->finish();
 
     if(reactionFound)
@@ -1354,12 +1354,6 @@ void PlayerbotAI::DoNextAction(bool min)
         return;
     }
 
-    if (bot->IsTaxiFlying())
-    {
-        SetAIInternalUpdateDelay(sPlayerbotAIConfig.passiveDelay);
-        return;
-    }
-
     // if in combat but stuck with old data - clear targets
     if (currentEngine == engines[(uint8)BotState::BOT_STATE_NON_COMBAT] && sServerFacade.IsInCombat(bot))
     {
@@ -1373,7 +1367,7 @@ void PlayerbotAI::DoNextAction(bool min)
 
     bool minimal = !AllowActivity();
 
-    currentEngine->DoNextAction(NULL, 0, (minimal || min));
+    currentEngine->DoNextAction(NULL, 0, (minimal || min), bot->IsTaxiFlying());
 
     if (minimal)
     {
@@ -1584,6 +1578,11 @@ void PlayerbotAI::DoNextAction(bool min)
         ResetJumpDestination();
     }
 
+    if (bot->IsTaxiFlying())
+    {        
+        return;
+    }
+
     // random jumping (WIP, not working properly)
     bool randomJump = false;
     if (randomJump && !inCombat /*&& (!master || (master && sServerFacade.GetDistance2d(bot, master) < 20.0f)) && !bot->m_movementInfo.HasMovementFlag(MOVEFLAG_JUMPING) && !bot->IsMoving()*/)
@@ -1723,7 +1722,7 @@ void PlayerbotAI::ClearStrategies(BotState type)
     }
 }
 
-list<string> PlayerbotAI::GetStrategies(BotState type)
+list<string_view> PlayerbotAI::GetStrategies(BotState type)
 {
     // Can't get all strategies for all engines
     if (type != BotState::BOT_STATE_ALL)
@@ -1735,7 +1734,7 @@ list<string> PlayerbotAI::GetStrategies(BotState type)
         }
     }
 
-    return list<string>();
+    return list<string_view>();
 }
 
 bool PlayerbotAI::CanDoSpecificAction(string name, bool isUseful, bool isPossible)
@@ -2165,7 +2164,7 @@ bool PlayerbotAI::TellMasterNoFacing(string text, PlayerbotSecurityLevel securit
 bool PlayerbotAI::TellError(string text, PlayerbotSecurityLevel securityLevel)
 {
     Player* master = GetMaster();
-    if (!IsTellAllowed(securityLevel) || !master || master->GetPlayerbotAI())
+    if (!IsTellAllowed(securityLevel) || !IsSafe(master) || master->GetPlayerbotAI())
         return false;
 
     PlayerbotMgr* mgr = master->GetPlayerbotMgr();
@@ -2231,10 +2230,17 @@ bool PlayerbotAI::HasAura(string name, Unit* unit, bool maxStack, bool checkIsOw
         return false;
 
     wstring wnamepart;
-    if (!Utf8toWStr(name, wnamepart))
-        return 0;
 
-    wstrToLower(wnamepart);
+    vector<uint32> ids = chatHelper.SpellIds(name);
+
+    if (ids.empty())
+    {
+        //sLog.outError("Please add %s to spell list", name.c_str());
+        if (!Utf8toWStr(name, wnamepart))
+            return 0;
+
+        wstrToLower(wnamepart);
+    }
 
     int auraAmount = 0;
 
@@ -2245,15 +2251,23 @@ bool PlayerbotAI::HasAura(string name, Unit* unit, bool maxStack, bool checkIsOw
         if (auras.empty())
             continue;
 
-		for (Unit::AuraList::const_iterator i = auras.begin(); i != auras.end(); i++)
-		{
-			Aura* aura = *i;
-			if (!aura)
-				continue;
+        for (Unit::AuraList::const_iterator i = auras.begin(); i != auras.end(); i++)
+        {
+            Aura* aura = *i;
+            if (!aura)
+                continue;
 
-			const string auraName = aura->GetSpellProto()->SpellName[0];
-			if (auraName.empty() || auraName.length() != wnamepart.length() || !Utf8FitTo(auraName, wnamepart))
-				continue;
+            if (ids.empty())
+            {
+                const string auraName = aura->GetSpellProto()->SpellName[0];
+                if (auraName.empty() || auraName.length() != wnamepart.length() || !Utf8FitTo(auraName, wnamepart))
+                    continue;
+            }
+            else
+            {
+                if (std::find(ids.begin(), ids.end(), aura->GetSpellProto()->Id) == ids.end())
+                    continue;
+            }
 
 			if (IsRealAura(bot, aura, unit))
             {
@@ -3500,7 +3514,7 @@ uint32 PlayerbotAI::GetFixedBotNumer(BotTypeNumber typeNumber, uint32 maxNum, fl
 
 GrouperType PlayerbotAI::GetGrouperType()
 {
-    uint32 maxGroupType = sPlayerbotAIConfig.randomBotRaidNearby ? 100 : 90;
+    uint32 maxGroupType = sPlayerbotAIConfig.randomBotRaidNearby ? 100 : 95;
     uint32 grouperNumber = GetFixedBotNumer(BotTypeNumber::GROUPER_TYPE_NUMBER, maxGroupType, 0);
 
     //20% solo
@@ -3510,21 +3524,21 @@ GrouperType PlayerbotAI::GetGrouperType()
 
     if (grouperNumber < 20 && !HasRealPlayerMaster())
         return GrouperType::SOLO;
-    if (grouperNumber < 70)
+    if (grouperNumber < 75)
         return GrouperType::MEMBER;
-    if (grouperNumber < 75 || bot->GetLevel() < 3)
+    if (grouperNumber < 80 || bot->GetLevel() < 3)
         return GrouperType::LEADER_2;
-    if (grouperNumber < 80 || bot->GetLevel() < 5)
+    if (grouperNumber < 85 || bot->GetLevel() < 5)
         return GrouperType::LEADER_3;
-    if (grouperNumber < 85 || bot->GetLevel() < 7)
+    if (grouperNumber < 90 || bot->GetLevel() < 7)
         return GrouperType::LEADER_4;
-    if (grouperNumber <= 90 || bot->GetLevel() < 9)
+    if (grouperNumber <= 95 || bot->GetLevel() < 9)
         return GrouperType::LEADER_5;
 #ifdef MANGOSBOT_ZERO
-    if (grouperNumber <= 95)
+    if (grouperNumber <= 97)
         return GrouperType::RAIDER_20;
 #else
-    if (grouperNumber <= 95)
+    if (grouperNumber <= 97)
         return GrouperType::RAIDER_10;
 #endif    
    return GrouperType::RAIDER_MAX;
@@ -3708,7 +3722,7 @@ ActivePiorityType PlayerbotAI::GetPriorityType()
     if (IsInRealGuild())
         return ActivePiorityType::PLAYER_GUILD;
 
-    if (!bot->GetMap() || !bot->GetMap()->HasRealPlayers())
+    if (bot->IsBeingTeleported() || !bot->GetMap() || !bot->GetMap()->HasRealPlayers())
         return ActivePiorityType::IN_INACTIVE_MAP;
 
     ContinentArea currentArea = sMapMgr.GetContinentInstanceId(bot->GetMapId(), bot->GetPositionX(), bot->GetPositionY());
@@ -4724,7 +4738,7 @@ void PlayerbotAI::AccelerateRespawn(Creature* creature, float accelMod)
     if (!sPlayerbotAIConfig.respawnModForPlayerBots && HasRealPlayerMaster())
         return;
 
-    if (!sPlayerbotAIConfig.respawnModForInstances && !WorldPosition(bot).isOverworld())
+    if (!sPlayerbotAIConfig.respawnModForInstances && !WorldPosition(creature).isOverworld())
         return;
 
     AiObjectContext* context = aiObjectContext;
@@ -4782,12 +4796,54 @@ void PlayerbotAI::AccelerateRespawn(Creature* creature, float accelMod)
     {
         LootAccess const* lootAccess = reinterpret_cast<LootAccess const*>(creature->m_loot);
 
-        if (lootAccess->IsLootedForAll())
+        if (lootAccess->IsLootedForAll()) //No loot left. Just despawn the corpse.
         {
             creature->RemoveCorpse();
             return;
         }
+
+        uint32 defaultDelay;
+
+        CreatureInfo const* cinfo = creature->GetCreatureInfo();
+
+        if (cinfo->CorpseDelay)
+            defaultDelay = cinfo->CorpseDelay;
+        else if (sObjectMgr.IsEncounter(creature->GetEntry(), creature->GetMapId()))
+        {
+            // encounter boss forced decay timer to 1h
+            defaultDelay = 3600;                               // TODO: maybe add that to config file
+        }
+        else
+        {
+            switch (cinfo->Rank)
+            {
+            case CREATURE_ELITE_RARE:
+                defaultDelay = sWorld.getConfig(CONFIG_UINT32_CORPSE_DECAY_RARE);
+                break;
+            case CREATURE_ELITE_ELITE:
+                defaultDelay = sWorld.getConfig(CONFIG_UINT32_CORPSE_DECAY_ELITE);
+                break;
+            case CREATURE_ELITE_RAREELITE:
+                defaultDelay = sWorld.getConfig(CONFIG_UINT32_CORPSE_DECAY_RAREELITE);
+                break;
+            case CREATURE_ELITE_WORLDBOSS:
+                defaultDelay = sWorld.getConfig(CONFIG_UINT32_CORPSE_DECAY_WORLDBOSS);
+                break;
+            default:
+                defaultDelay = sWorld.getConfig(CONFIG_UINT32_CORPSE_DECAY_NORMAL);
+                break;
+            }
+        }
+
+        defaultDelay *= IN_MILLISECONDS / (1+accelMod);
+
+        //We will decrease the loot time by a factor capping at 20 seconds.
+        m_corpseAccelerationDecayDelay = std::max(uint32(20 * IN_MILLISECONDS), defaultDelay);
+        creature->SetCorpseAccelerationDelay(m_corpseAccelerationDecayDelay);
+        creature->ReduceCorpseDecayTimer();
+        return;
     }
+
     creature->SetCorpseAccelerationDelay(m_corpseAccelerationDecayDelay);
 }
 

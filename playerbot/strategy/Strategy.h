@@ -51,7 +51,7 @@ namespace ai
 		virtual int GetType() { return STRATEGY_TYPE_GENERIC; }
         virtual ActionNode* GetAction(string name);
 		virtual string getName() = 0;
-        void Update() {}
+        void Update() {} //Nonfunctional see AiObjectContext::Update() to enable.
         void Reset() {}
 
 		virtual void OnStrategyAdded(BotState state) {}

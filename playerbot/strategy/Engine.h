@@ -73,14 +73,14 @@ namespace ai
         void removeAllStrategies();
         void toggleStrategy(string name);
         std::string ListStrategies();
-        list<string> GetStrategies();
+        list<string_view> GetStrategies();
 		bool ContainsStrategy(StrategyType type);
 		void ChangeStrategy(string names, string engineType = "");
 		string GetLastAction() { return lastAction; }
         const Action* GetLastExecutedAction() const { return lastExecutedAction; }
 
     public:
-	    virtual bool DoNextAction(Unit*, int depth = 0, bool minimal = false);
+	    virtual bool DoNextAction(Unit*, int depth, bool minimal, bool isStunned);
 	    ActionResult ExecuteAction(string name, Event& event);
         bool CanExecuteAction(string name, bool isUseful = true, bool isPossible = true);
 

@@ -326,7 +326,7 @@ void SuggestWhatToDoAction::spam(string msg, uint8 flags, bool worldChat, bool g
         if (chn->GetName() == "World")
             continue;
 
-        if (flags != 0 && !chn->GetFlags() != flags)
+        if (flags != 0 && chn->GetFlags() != flags)
             continue;
 
         // skip local defense

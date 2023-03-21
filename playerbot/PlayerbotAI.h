@@ -314,7 +314,7 @@ public:
     virtual bool DoSpecificAction(string name, Event event = Event(), bool silent = false);
     void ChangeStrategy(string name, BotState type);
     void ClearStrategies(BotState type);
-    list<string> GetStrategies(BotState type);
+    list<string_view> GetStrategies(BotState type);
     bool ContainsStrategy(StrategyType type);
     bool HasStrategy(string name, BotState type);
     template<class T>
@@ -438,18 +438,21 @@ public:
 
     //Checks if the bot is really a player. Players always have themselves as master.
     bool IsRealPlayer() { return bot->GetSession()->GetRemoteAddress() != "disconnected/bot"; }
+    bool IsRealPlayer(Unit* unit) { return unit->IsPlayer() && ((Player*)unit)->GetSession()->GetRemoteAddress() != "disconnected/bot"; }
     bool IsSelfMaster() { return master ? (master == bot) : false; }
-
     //Bot has a master that is a player.
     bool HasRealPlayerMaster() { return master && (!master->GetPlayerbotAI() || master->GetPlayerbotAI()->IsRealPlayer()); } 
     //Bot has a master that is actively playing.
     bool HasActivePlayerMaster() { return master && !master->GetPlayerbotAI(); }
-
     //Checks if the bot is summoned as alt of a player
     bool IsAlt() { return HasRealPlayerMaster() && !sRandomPlayerbotMgr.IsRandomBot(bot); }
-
     //Get the group leader or the master of the bot.
     Player* GetGroupMaster() { return bot->InBattleGround() ? master : bot->GetGroup() ? (sObjectMgr.GetPlayer(bot->GetGroup()->GetLeaderGuid()) ? sObjectMgr.GetPlayer(bot->GetGroup()->GetLeaderGuid()) : master) : master; }
+
+    //Check if player is safe to use.
+    bool IsSafe(Player* player) { return player && player->GetMapId() == bot->GetMapId() && !player->IsBeingTeleported(); }
+    bool IsSafe(Unit* unit) { return unit && unit->GetMapId() == bot->GetMapId() && (!unit->IsPlayer() || !((Player*)unit)->IsBeingTeleported()); }
+
     //Returns a semi-random (cycling) number that is fixed for each bot.
     uint32 GetFixedBotNumer(BotTypeNumber typeNumber, uint32 maxNum = 100, float cyclePerMin = 1); 
 
@@ -501,7 +504,7 @@ public:
     const Action* GetLastExecutedAction(BotState state) const;
     
 private:
-    bool UpdateAIReaction(uint32 elapsed, bool minimal = false);
+    bool UpdateAIReaction(uint32 elapsed, bool minimal, bool isStunned);
     void UpdateFaceTarget(uint32 elapsed, bool minimal);
 
 protected:

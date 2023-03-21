@@ -36,10 +36,6 @@ void GenericPriestStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers
         NextAction::array(0, new NextAction("fade", 55.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "enemy five yards",
-        NextAction::array(0, new NextAction("psychic scream", 50.0f), NULL)));
-
-    triggers.push_back(new TriggerNode(
         "low mana",
         NextAction::array(0, new NextAction("inner focus", 42.0f), NULL)));
 
@@ -121,5 +117,9 @@ void PriestCcStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
     triggers.push_back(new TriggerNode(
         "shackle undead",
         NextAction::array(0, new NextAction("shackle undead", 31.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "enemy five yards",
+        NextAction::array(0, new NextAction("psychic scream", 50.0f), NULL)));
 }
 

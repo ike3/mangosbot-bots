@@ -104,28 +104,30 @@ bool GuildManageNearbyAction::Execute(Event& event)
             continue;
         }
 
+        if (!sPlayerbotAIConfig.randomBotGuildNearby)
+            return false;
+
+        if (guild->GetMemberSize() > 1000)
+            return false;
+
         if ((guild->GetRankRights(botMember->RankId) & GR_RIGHT_INVITE) == 0)
             continue;
 
         if (player->GetGuildIdInvited())
             continue;
 
+        if (!sPlayerbotAIConfig.randomBotInvitePlayer && player->isRealPlayer())
+            continue;
+
         PlayerbotAI* botAi = player->GetPlayerbotAI();
 
         if (botAi)
-        {
-            
+        {            
             if (botAi->GetGuilderType() == GuilderType::SOLO && !botAi->HasRealPlayerMaster()) //Do not invite solo players.
                 continue;
-
             
             if (botAi->HasActivePlayerMaster()) //Do not invite alts of active players. 
                 continue;
-        }
-        else
-        {
-            if (!sPlayerbotAIConfig.randomBotGroupNearby)
-                return false;
         }
 
         if (sServerFacade.GetDistance2d(bot, player) > sPlayerbotAIConfig.sightDistance)
@@ -156,6 +158,13 @@ bool GuildLeaveAction::Execute(Event& event)
     {
         ai->TellError("Sorry, I am happy in my guild :)");
         return false;
+    }
+
+    Guild* guild = sGuildMgr.GetGuildById(bot->GetGuildId()); 
+    
+    if (guild->GetMemberSize() >= 1000)
+    {
+        guild->BroadcastToGuild(bot->GetSession(), "I am leaving this guild to prevent it from reaching the 1064 member limit.", LANG_UNIVERSAL);
     }
 
     WorldPacket packet;

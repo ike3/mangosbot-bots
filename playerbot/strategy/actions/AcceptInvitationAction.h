@@ -10,8 +10,6 @@ namespace ai
 
         virtual bool Execute(Event& event)
         {
-            Player* master = GetMaster();
-
             Group* grp = bot->GetGroupInvite();
             if (!grp)
                 return false;
@@ -37,11 +35,14 @@ namespace ai
             p << roles_mask;
             bot->GetSession()->HandleGroupAcceptOpcode(p);
 
+            if (!bot->GetGroup() || !bot->GetGroup()->IsMember(inviter->GetObjectGuid()))
+                return false;
+
             if (sRandomPlayerbotMgr.IsFreeBot(bot))
                 ai->SetMaster(inviter);
-            //else
-            //    sPlayerbotDbStore.Save(ai);
-            
+
+            Player* master = inviter;
+
             ai->ResetStrategies();
             ai->ChangeStrategy("+follow,-lfg,-bg", BotState::BOT_STATE_NON_COMBAT);
             ai->Reset();
@@ -50,8 +51,17 @@ namespace ai
 
             sPlayerbotAIConfig.logEvent(ai, "AcceptInvitationAction", grp->GetLeaderName(), to_string(grp->GetMembersCount()));
 
+            if (master->GetPlayerbotAI()) //Copy formation from bot master.
+            {
+                Formation* masterFormation = MAI_VALUE(Formation*, "formation");
+                FormationValue* value = (FormationValue*)context->GetValue<Formation*>("formation");
+                value->Load(masterFormation->getName());
+            }
+
             return true;
         }
+
+        bool isUsefulWhenStunned() override { return true; }
     };
 
 }

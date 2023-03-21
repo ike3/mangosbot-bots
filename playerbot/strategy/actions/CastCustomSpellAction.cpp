@@ -121,9 +121,12 @@ bool CastCustomSpellAction::Execute(Event& event)
 
     MotionMaster& mm = *bot->GetMotionMaster();
 
-    bool result = spell ? ai->CastSpell(spell, target, itemTarget) : ai->CastSpell(text, target, itemTarget);
+    uint32 spellDuration = sPlayerbotAIConfig.globalCoolDown;
+
+    bool result = spell ? ai->CastSpell(spell, target, itemTarget,true, &spellDuration) : ai->CastSpell(text, target, itemTarget, true, &spellDuration);
     if (result)
     {
+        SetDuration(spellDuration);
         msg << "Casting " << spellName.str();
 
         if (castCount > 1)
@@ -250,11 +253,21 @@ bool CastRandomSpellAction::Execute(Event& event)
 
 bool CastRandomSpellAction::castSpell(uint32 spellId, WorldObject* wo)
 {
-    if (wo->GetObjectGuid().IsUnit())
-        if (ai->CastSpell(spellId, (Unit*)(wo)))
-            return true;
+    bool executed = false;
+    uint32 spellDuration = sPlayerbotAIConfig.globalCoolDown;
 
-    return ai->CastSpell(spellId, wo->GetPositionX(), wo->GetPositionY(), wo->GetPositionZ());
+    if (wo->GetObjectGuid().IsUnit())
+        executed = ai->CastSpell(spellId, (Unit*)(wo), nullptr, false, &spellDuration);
+
+    if (!executed)
+        executed = ai->CastSpell(spellId, wo->GetPositionX(), wo->GetPositionY(), wo->GetPositionZ(), nullptr, false, &spellDuration);
+
+    if (executed)
+    {
+        SetDuration(spellDuration);
+    }
+
+    return executed;
 }
 
 bool DisEnchantRandomItemAction::Execute(Event& event)

@@ -733,7 +733,7 @@ uint32 RandomPlayerbotMgr::AddRandomBots()
     {
         if (sPlayerbotAIConfig.syncLevelWithPlayers)
         {
-            maxLevel = max(sPlayerbotAIConfig.randomBotMinLevel, min(playersLevel, sWorld.getConfig(CONFIG_UINT32_MAX_PLAYER_LEVEL))) + 5;
+            maxLevel = max(sPlayerbotAIConfig.randomBotMinLevel, min(playersLevel + sPlayerbotAIConfig.syncLevelMaxAbove, sWorld.getConfig(CONFIG_UINT32_MAX_PLAYER_LEVEL)));
 
             wantedAvgLevel = maxLevel / 2;
             for (auto bot : playerBots)
@@ -742,7 +742,7 @@ uint32 RandomPlayerbotMgr::AddRandomBots()
             if(currentAvgLevel)
                 currentAvgLevel = currentAvgLevel / playerBots.size();
 
-            randomAvgLevel = (sPlayerbotAIConfig.randomBotMinLevel + max(sPlayerbotAIConfig.randomBotMinLevel, min(playersLevel, sWorld.getConfig(CONFIG_UINT32_MAX_PLAYER_LEVEL)))) / 2;
+            randomAvgLevel = (sPlayerbotAIConfig.randomBotMinLevel + max(sPlayerbotAIConfig.randomBotMinLevel, min(playersLevel+ sPlayerbotAIConfig.syncLevelMaxAbove, sWorld.getConfig(CONFIG_UINT32_MAX_PLAYER_LEVEL)))) / 2;
         }
 
         currentAllowedBotCount -= currentBots.size();
@@ -754,7 +754,7 @@ uint32 RandomPlayerbotMgr::AddRandomBots()
 
         bool enoughBotsForCriteria = true;
 
-        for (uint32 noCriteria = 0; noCriteria < 2; noCriteria++)
+        for (uint32 noCriteria = 0; noCriteria < 3; noCriteria++)
         {
             int32  classRaceAllowed[MAX_CLASSES][MAX_RACES] = { 0 };
 
@@ -773,8 +773,10 @@ uint32 RandomPlayerbotMgr::AddRandomBots()
 
                 QueryResult* result;
 
-                if (noCriteria)
+                if (noCriteria == 2)
+                {
                     result = CharacterDatabase.PQuery("SELECT guid, level, totaltime, race, class FROM characters WHERE account = '%u'", accountId);
+                }
                 else
                 {
                     bool needToIncrease = wantedAvgLevel && currentAvgLevel + 1 < wantedAvgLevel;
@@ -817,7 +819,8 @@ uint32 RandomPlayerbotMgr::AddRandomBots()
 
                     if (GetEventValue(guid, "add"))
                     {
-                        classRaceAllowed[cls][race]--;
+                        if (!noCriteria)
+                            classRaceAllowed[cls][race]--;
                         continue;
                     }
 
@@ -826,13 +829,15 @@ uint32 RandomPlayerbotMgr::AddRandomBots()
 
                     if (GetPlayerBot(guid))
                     {
-                        classRaceAllowed[cls][race]--;
+                        if (!noCriteria)
+                            classRaceAllowed[cls][race]--;
                         continue;
                     }
 
                     if (std::find(currentBots.begin(), currentBots.end(), guid) != currentBots.end())
                     {
-                        classRaceAllowed[cls][race]--;
+                        if (!noCriteria)
+                            classRaceAllowed[cls][race]--;
                         continue;
                     }
 
@@ -842,13 +847,17 @@ uint32 RandomPlayerbotMgr::AddRandomBots()
                     SetEventValue(guid, "add", 1, urand(sPlayerbotAIConfig.minRandomBotInWorldTime, sPlayerbotAIConfig.maxRandomBotInWorldTime));
                     SetEventValue(guid, "logout", 0, 0);
                     currentBots.push_back(guid);
-                    classRaceAllowed[cls][race]--;
+
+                    if(!noCriteria)
+                        classRaceAllowed[cls][race]--;
 
                     if (wantedAvgLevel)
+                    {
                         if (sPlayerbotAIConfig.instantRandomize ? totaltime : level > 1)
                             currentAvgLevel += (float)level / currentBots.size();
                         else
                             currentAvgLevel += (float)level + randomAvgLevel; //Use predicted randomized level. This will be wrong but avarage out correct.
+                    }
 
                     currentAllowedBotCount--;
 
@@ -1826,6 +1835,12 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot, vector<WorldLocation> &locs
 	if (bot->GetLevel() < 5)
 		return;
 
+    if (bot->GetGroup() && !bot->GetGroup()->IsLeader(bot->GetObjectGuid()))
+        return;
+
+    if (bot->IsTaxiFlying() && bot->GetPlayerbotAI()->HasPlayerNearby(300))
+        return;
+
     if (sPlayerbotAIConfig.randomBotRpgChance < 0)
         return;
 
@@ -2041,13 +2056,9 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot, vector<WorldLocation> &locs
             sLog.outDetail("Random teleporting bot %s to %s %f,%f,%f (%u/%zu locations)",
                 bot->GetName(), area->area_name[0], x, y, z, attemtps, tlocs.size());
 
-            if (bot->IsTaxiFlying())
-            {
+            if (bot->IsTaxiFlying())          
                 bot->GetMotionMaster()->MovementExpired();
-#ifdef MANGOS
-                bot->m_taxi.ClearTaxiDestinations();
-#endif
-            }
+
             if (hearth)
                 bot->SetHomebindToLocation(loc, area->ID);
 
@@ -2056,6 +2067,29 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot, vector<WorldLocation> &locs
             bot->SendHeartBeat();
             bot->GetPlayerbotAI()->ResetStrategies();
             bot->GetPlayerbotAI()->Reset(true);
+
+            if (bot->GetGroup())
+            {
+                for (GroupReference* gref = bot->GetGroup()->GetFirstMember(); gref; gref = gref->next())
+                {
+                    Player* member = gref->getSource();
+                    PlayerbotAI* ai = bot->GetPlayerbotAI();
+                    if (ai && bot != member)
+                    {
+                        if (member->IsTaxiFlying())
+                            member->GetMotionMaster()->MovementExpired();
+                        if (hearth)
+                            member->SetHomebindToLocation(loc, area->ID);
+
+                        member->GetMotionMaster()->Clear();
+                        member->TeleportTo(loc.mapid, x, y, z, 0);
+                        member->SendHeartBeat();
+                        member->GetPlayerbotAI()->ResetStrategies();
+                        member->GetPlayerbotAI()->Reset(true);
+                    }
+
+                }
+            }
             if (pmo) pmo->finish();
             return;
         }
@@ -2329,7 +2363,7 @@ void RandomPlayerbotMgr::RandomizeFirst(Player* bot)
 
     // if lvl sync is enabled, max level is limited by online players lvl
     if (sPlayerbotAIConfig.syncLevelWithPlayers)
-        maxLevel = max(sPlayerbotAIConfig.randomBotMinLevel, min(playersLevel, sWorld.getConfig(CONFIG_UINT32_MAX_PLAYER_LEVEL)));
+        maxLevel = max(sPlayerbotAIConfig.randomBotMinLevel, min(playersLevel+ sPlayerbotAIConfig.syncLevelMaxAbove, sWorld.getConfig(CONFIG_UINT32_MAX_PLAYER_LEVEL)));
 
 	PerformanceMonitorOperation *pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "RandomizeFirst");
     uint32 level = urand(std::max(uint32(sWorld.getConfig(CONFIG_UINT32_START_PLAYER_LEVEL)), sPlayerbotAIConfig.randomBotMinLevel), maxLevel);

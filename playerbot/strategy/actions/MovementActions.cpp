@@ -361,7 +361,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
     }
 
     float minDist = sPlayerbotAIConfig.targetPosRecalcDistance; //Minimum distance a bot should move.
-    float maxDist = sPlayerbotAIConfig.reactDistance;           //Maximum distance a bot can move in one single action.
+    float maxDist = sPlayerbotAIConfig.sightDistance;           //Maximum distance a bot can move in one single action.
     float originalZ = z;                                        // save original destination height to check if bot needs to fly up
 
 
@@ -1534,11 +1534,11 @@ bool MovementAction::Flee(Unit *target)
     time_t now = time(0);
     uint32 fleeDelay = urand(2, sPlayerbotAIConfig.returnDelay / 1000);
 
-    if (lastFlee)
+    if (lastFlee && bot->IsMoving())
     {
         if ((now - lastFlee) <= fleeDelay)
         {
-            return false;
+            return true;
         }
     }
     
@@ -1652,6 +1652,31 @@ bool MovementAction::Flee(Unit *target)
     if (fleeTarget)
     {
         succeeded = MoveNear(fleeTarget);
+    }
+
+    if (!ai->HasRealPlayerMaster() || ai->IsRealPlayer(target))
+    {
+        bool fullDistance = false;
+        if (target->IsPlayer())
+            fullDistance = true;
+        if (WorldPosition(bot).isOverworld())
+            fullDistance = true;
+
+        float distance = fullDistance ? (ai->GetRange("flee") * 2) : ai->GetRange("flee");
+
+        MotionMaster* mm = bot->GetMotionMaster();
+
+        if (mm->GetCurrentMovementGeneratorType() == CHASE_MOTION_TYPE)
+        {
+            ChaseMovementGenerator* chase = (ChaseMovementGenerator*)mm->GetCurrent();
+
+            if (chase->GetCurrentTarget() == target)
+                return true;
+        }
+
+        ai->StopMoving();
+        mm->MoveChase(target, distance, WorldPosition(bot).getAngleTo(target), true, false, true, false);
+        return true;
     }
 
     // Generate a position to flee

@@ -55,16 +55,20 @@ bool ai::AttackAnythingAction::Execute(Event& event)
         {
             context->ClearExpiredValues("can free target", 10); //Clean up old free targets.
 
-            const char* grindName = grindTarget->GetName();
-            if (grindName)
+            string grindName = grindTarget->GetName();
+            if (!grindName.empty())
             {
+                sPlayerbotAIConfig.logEvent(ai, "AttackAnythingAction", grindName, to_string(grindTarget->GetEntry()));
+
                 if (ai->HasStrategy("pull", BotState::BOT_STATE_COMBAT))
                 {
                     Event pullEvent("attack anything", grindTarget->GetObjectGuid());
                     bool doAction = ai->DoSpecificAction("pull my target", pullEvent, true);
                     
-                    if (doAction)
+                    if (doAction) {
                         return true;
+                    }
+                 
                 }
 
                 context->GetValue<ObjectGuid>("attack target")->Set(grindTarget->GetObjectGuid());

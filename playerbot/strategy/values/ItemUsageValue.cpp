@@ -106,18 +106,16 @@ ItemUsage ItemUsageValue::Calculate()
 
         if (needItem)
         {
-            float stacks = CurrentStacks(proto);
-            if (stacks < 1)
-                return ITEM_USAGE_SKILL; //Buy more.
+            float stacks = CurrentStacks(ai, proto);
             if (stacks < 2)
-                return ITEM_USAGE_KEEP; //Keep current amount.
+                return ITEM_USAGE_SKILL; //Buy more.
         }
     }
 
     if (proto->Class == ITEM_CLASS_KEY)
         return ITEM_USAGE_USE;
 
-    if (proto->Class == ITEM_CLASS_CONSUMABLE)
+    if (proto->Class == ITEM_CLASS_CONSUMABLE && !ai->HasCheat(BotCheatMask::item))
     {       
         string foodType = GetConsumableType(proto, bot->HasMana());
 
@@ -127,7 +125,7 @@ ItemUsage ItemUsageValue::Calculate()
 
             if (stacks < 2)
             {
-                stacks += CurrentStacks(proto);
+                stacks += CurrentStacks(ai, proto);
 
                 if (stacks < 2) 
                     return ITEM_USAGE_USE; //Buy some to get to 2 stacks
@@ -150,10 +148,12 @@ ItemUsage ItemUsageValue::Calculate()
 
     //While sync is on, do not loot quest items that are also usefull for master. Master 
     if (!ai->GetMaster() || !sPlayerbotAIConfig.syncQuestWithPlayer || !IsItemUsefulForQuest(ai->GetMaster(), proto))
+    {
         if (IsItemUsefulForQuest(bot, proto))
             return ITEM_USAGE_QUEST;
-        else if (IsItemUsefulForQuest(bot, proto, true) && CurrentStacks(proto) < 2) //Do not sell quest items unless selling a full stack will stil keep enough in inventory.
+        else if (IsItemUsefulForQuest(bot, proto, true) && CurrentStacks(ai, proto) < 2) //Do not sell quest items unless selling a full stack will stil keep enough in inventory.
             return ITEM_USAGE_KEEP;
+    }
 
 
     if (proto->Class == ITEM_CLASS_PROJECTILE && bot->CanUseItem(proto) == EQUIP_ERR_OK)
@@ -198,7 +198,7 @@ ItemUsage ItemUsageValue::Calculate()
 
                     if (ammo < needAmmo) //We already have enough of the current ammo.
                     {
-                        ammo += CurrentStacks(proto);
+                        ammo += CurrentStacks(ai,proto);
 
                         if (ammo < needAmmo)         //Buy ammo to get to the proper supply
                             return ITEM_USAGE_AMMO;
@@ -308,18 +308,22 @@ ItemUsage ItemUsageValue::QueryItemUsageForEquip(ItemQualifier& itemQualifier)
 
     //No item equiped
     if (!oldItem)
+    {
         if (shouldEquip)
             return ITEM_USAGE_EQUIP;
         else
             return ITEM_USAGE_BAD_EQUIP;
+    }
 
     const ItemPrototype* oldItemProto = oldItem->GetProto();
 
     if (AI_VALUE2(ForceItemUsage, "force item usage", oldItemProto->ItemId) == ForceItemUsage::FORCE_USAGE_EQUIP) //Current equip is forced. Do not unequip.
+    {
         if (AI_VALUE2(ForceItemUsage, "force item usage", itemProto->ItemId) == ForceItemUsage::FORCE_USAGE_EQUIP)
             return ITEM_USAGE_KEEP;
         else
             return ITEM_USAGE_NONE;
+    }
 
     uint32 oldStatWeight = sRandomItemMgr.ItemStatWeight(bot, oldItem);
     if (statWeight || oldStatWeight)
@@ -332,10 +336,12 @@ ItemUsage ItemUsageValue::QueryItemUsageForEquip(ItemQualifier& itemQualifier)
 
     //Bigger quiver
     if (itemProto->Class == ITEM_CLASS_QUIVER)
+    {
         if (!oldItem || oldItemProto->ContainerSlots < itemProto->ContainerSlots)
             return ITEM_USAGE_EQUIP;
         else
             ITEM_USAGE_NONE;
+    }
 
     bool existingShouldEquip = true;
     if (oldItemProto->Class == ITEM_CLASS_WEAPON && !oldStatWeight)
@@ -627,11 +633,14 @@ Item* ItemUsageValue::CurrentItem(ItemPrototype const* proto)
 }
 
 
-float ItemUsageValue::CurrentStacks(ItemPrototype const* proto)
+float ItemUsageValue::CurrentStacks(PlayerbotAI* ai, ItemPrototype const* proto)
 {
     uint32 maxStack = proto->GetMaxStackSize();
 
-    list<Item*> found = AI_VALUE2(list < Item*>, "inventory items", chat->formatItem(proto));
+    AiObjectContext* context = ai->GetAiObjectContext();
+    ChatHelper* chat = ai->GetChatHelper();
+
+    list<Item*> found = AI_VALUE2(list<Item*>, "inventory items", chat->formatItem(proto));
 
     float itemCount = 0;
 
@@ -662,7 +671,7 @@ float ItemUsageValue::BetterStacks(ItemPrototype const* proto, string itemType)
         if (otherProto->ItemId == proto->ItemId)
             continue;
 
-        stacks += CurrentStacks(otherProto);
+        stacks += CurrentStacks(ai,otherProto);
     }
 
     return stacks;

@@ -38,7 +38,7 @@ namespace ai
                 if (!(go->GetEntry() == 181106 || go->GetEntry() == 181165 || go->GetEntry() == 181102 || go->GetEntry() == 181105))
                     continue;
 
-                if (!sServerFacade.isSpawned(go) || !go->GetGoState() == GO_STATE_READY || !bot->CanInteract(go))
+                if (!sServerFacade.isSpawned(go) || go->GetGoState() != GO_STATE_READY || !bot->CanInteract(go))
                     continue;
 
                 // handle summoned traps, usually by players

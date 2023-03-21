@@ -968,7 +968,7 @@ bool UseRandomQuestItemAction::Execute(Event& event)
                 break;
             }
         }
-
+        /*
         uint32 spellId = proto->Spells[0].SpellId;
         if (spellId)
         {
@@ -978,7 +978,7 @@ bool UseRandomQuestItemAction::Execute(Event& event)
             for (auto& npc : npcs)
             {
                 Unit* unit = ai->GetUnit(npc);
-                if (questItem->IsTargetValidForItemUse(unit) || ai->CanCastSpell(spellId, unit, 0, false))
+                if (ai->CanCastSpell(spellId, unit, 0, false))
                 {
                     item = questItem;
                     unitTarget = unit;
@@ -1013,6 +1013,7 @@ bool UseRandomQuestItemAction::Execute(Event& event)
                 }               
             }
         }
+        */
     }
 
     if (!item)
@@ -1021,7 +1022,7 @@ bool UseRandomQuestItemAction::Execute(Event& event)
     if (!goTarget && !unitTarget)
         return false;
 
-    const bool used = UseItem(item, goTarget, nullptr, unitTarget);
+    bool used = UseItem(item, goTarget, nullptr, unitTarget);
     if (used)
     {
         SetDuration(sPlayerbotAIConfig.globalCoolDown);

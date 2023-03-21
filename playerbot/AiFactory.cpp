@@ -503,7 +503,7 @@ void AiFactory::AddDefaultNonCombatStrategies(Player* player, PlayerbotAI* const
         nonCombatEngine->addStrategies("racials", "nc", "food", "follow", "default", "quest", "loot", "gather", "duel", "emote", "buff", "mount", NULL);
     }
 
-    if ((facade->IsRealPlayer() || sRandomPlayerbotMgr.IsRandomBot(player)) && !player->InBattleGround())
+    if ((facade->IsRealPlayer() || sRandomPlayerbotMgr.IsFreeBot(player)) && !player->InBattleGround())
     {   
         Player* master = facade->GetMaster();
 
@@ -548,7 +548,7 @@ void AiFactory::AddDefaultNonCombatStrategies(Player* player, PlayerbotAI* const
             {
                 if (master)
                 {
-                    if (master->GetPlayerbotAI() || sRandomPlayerbotMgr.IsRandomBot(player))
+                    if (master->GetPlayerbotAI() || sRandomPlayerbotMgr.IsFreeBot(player))
                     {
                         nonCombatEngine->addStrategy("collision");
                         nonCombatEngine->addStrategy("grind");
