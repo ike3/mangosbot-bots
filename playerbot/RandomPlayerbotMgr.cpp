@@ -798,7 +798,7 @@ uint32 RandomPlayerbotMgr::AddRandomBots()
                     }
                     else
                     {
-                        if (needToLower && rndCanLower)
+                        if (needToLower && !rndCanLower) //Do not load unrandomized if it'll only increase level.
                             query += " and " + wasRand;
 
                         result = CharacterDatabase.PQuery(query.c_str(), accountId, maxLevel);
