@@ -836,7 +836,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
     }
     */
 
-    //Clean movement if not already moving the same way.
+    // Clean movement if not already moving the same way.
     if (mm.GetCurrent()->GetMovementGeneratorType() != POINT_MOTION_TYPE)
     {
         if (mover == bot)
@@ -874,15 +874,49 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
         if (master->m_movementInfo.HasMovementFlag(MOVEFLAG_WALK_MODE) && sServerFacade.GetDistance2d(bot, master) < 20.0f)
             masterWalking = true;
     }
+
     bot->SendHeartBeat();
+
+    // Prevent moving if requested to move into a hazard
+    if(IsHazardNearPosition(movePosition))
+    {
+        if(!react)
+        {
+            SetDuration(sPlayerbotAIConfig.reactDelay);
+        }
+
+        return false;
+    }
+
 #ifdef MANGOSBOT_ZERO
-    mm.Clear(false,true);
-    mm.MovePoint(movePosition.getMapId(), movePosition.getX(), movePosition.getY(), movePosition.getZ(), masterWalking ? FORCED_MOVEMENT_WALK : FORCED_MOVEMENT_RUN, generatePath);
+    mm.Clear(false, true);
+
+    Movement::PointsArray path;
+    if(GeneratePathAvoidingHazards(movePosition, generatePath, path))
+    {
+        mm.MovePath(path, masterWalking ? FORCED_MOVEMENT_WALK : FORCED_MOVEMENT_RUN);
+        WaitForReach(path);
+    }
+    else
+    {
+        mm.MovePoint(movePosition.getMapId(), movePosition.getX(), movePosition.getY(), movePosition.getZ(), masterWalking ? FORCED_MOVEMENT_WALK : FORCED_MOVEMENT_RUN, generatePath);
+    }
+    
 #else
     if (!bot->IsFreeFlying())
     {
         mm.Clear(false, true);
-        mm.MovePoint(movePosition.getMapId(), movePosition.getX(), movePosition.getY(), movePosition.getZ(), masterWalking ? FORCED_MOVEMENT_WALK : FORCED_MOVEMENT_RUN, generatePath);
+
+        Movement::PointsArray path;
+        if (GeneratePathAvoidingHazards(movePosition, generatePath, path))
+        {
+            mm.MovePath(path, masterWalking ? FORCED_MOVEMENT_WALK : FORCED_MOVEMENT_RUN);
+            WaitForReach(path);
+        }
+        else
+        {
+            mm.MovePoint(movePosition.getMapId(), movePosition.getX(), movePosition.getY(), movePosition.getZ(), masterWalking ? FORCED_MOVEMENT_WALK : FORCED_MOVEMENT_RUN, generatePath);
+        }
     }
     else
     {
@@ -1357,6 +1391,7 @@ bool MovementAction::Follow(Unit* target, float distance, float angle)
     }
 
     mm.MoveFollow(target, distance, angle, true);
+
     return true;
 }
 
@@ -1400,17 +1435,42 @@ bool MovementAction::ChaseTo(WorldObject* obj, float distance, float angle)
         return MoveNear(obj, std::max(ATTACK_DISTANCE, distance));
 #endif
 
-    bot->GetMotionMaster()->Clear(false,true);
-    bot->GetMotionMaster()->MoveChase((Unit*)obj, distance, angle);
+    // Calculate the chase position
+    const WorldPosition botPosition(bot);
+    const WorldPosition targetPosition(obj);
+    const Vector3 botPoint = botPosition.getVector3();
+    const Vector3 targetPoint = targetPosition.getVector3();
 
-    float dist = sServerFacade.GetDistance2d(bot, obj);
-    float distDiff = dist > distance ? dist - distance : 0.f;
-    //if ((dist > 10.0f && distance != 0.f) || !obj->IsPlayer())
-    //    WaitForReach(distDiff);
+    const float distanceToTarget = botPosition.distance(targetPosition);
+    const Vector3 directionToTarget = (targetPoint - botPoint).directionOrZero();
+    const Vector3 endPoint = botPoint + (directionToTarget * std::min(distance, distanceToTarget));
+    const WorldPosition endPosition(obj->GetMapId(), endPoint.x, endPoint.y, endPoint.z);
 
-    WaitForReach(distDiff);
+    // Prevent moving if requested to move into a hazard
+    if (!IsHazardNearPosition(endPosition))
+    {
+        MotionMaster& mm = *bot->GetMotionMaster();
+        mm.Clear(false, true);
 
-    return true;
+        Movement::PointsArray path;
+        if (GeneratePathAvoidingHazards(endPosition, true, path))
+        {
+            mm.MovePath(path, FORCED_MOVEMENT_RUN);
+            WaitForReach(path);
+        }
+        else
+        {
+            mm.MoveChase((Unit*)obj, distance, angle);
+            float dist = sServerFacade.GetDistance2d(bot, obj);
+            float distDiff = dist > distance ? dist - distance : 0.f;
+            WaitForReach(distDiff);
+        }
+
+        return true;
+    }
+   
+    SetDuration(sPlayerbotAIConfig.reactDelay);
+    return false;
 }
 
 float MovementAction::MoveDelay(float distance)
@@ -1433,6 +1493,23 @@ void MovementAction::WaitForReach(float distance)
         duration = 0.0f;
 
     SetDuration(duration);
+}
+
+void MovementAction::WaitForReach(const Movement::PointsArray& path)
+{
+    float distance = 0.0f;
+    if(!path.empty())
+    {
+        const Vector3* previousPoint = &path[0]; 
+        for (auto it = path.begin() + 1; it != path.end(); ++it)
+        {
+            const Vector3& pathPoint = (*it);
+            distance += (*previousPoint - pathPoint).length();
+            previousPoint = &pathPoint;
+        }
+    }
+
+    WaitForReach(distance);
 }
 
 bool MovementAction::Flee(Unit *target)
@@ -1639,6 +1716,187 @@ void MovementAction::ClearIdleState()
 {
     context->GetValue<time_t>("stay time")->Set(0);
     context->GetValue<ai::PositionMap&>("position")->Get()["random"].Reset();
+}
+
+Vector3 CalculatePerpendicularPoint(const Vector3& A, const Vector3& B, float offset, bool left = true)
+{
+    const Vector3 direction = (B - A).directionOrZero();
+    Vector3 perpendicularDirection(-direction.y, direction.x, direction.z);
+
+    if (!left)
+    {
+        perpendicularDirection.x *= -1.0f;
+        perpendicularDirection.y *= -1.0f;
+    }
+
+    return B + (perpendicularDirection * offset);
+}
+
+bool IsValidPoint(const Vector3& point, const Vector3& visibleFromPoint, const Player* bot)
+{
+    const float botHeight = bot->GetCollisionHeight();
+    const WorldPosition botPosition(bot);
+    const WorldPosition position(bot->GetMapId(), point.x, point.y, point.z);
+
+    return botPosition.canPathTo(position, bot) &&
+           MaNGOS::IsValidMapCoord(point.x, point.y, point.z, 0.0f) &&
+           bot->GetMap()->IsInLineOfSight(visibleFromPoint.x, visibleFromPoint.y, visibleFromPoint.z + botHeight,
+           point.x, point.y, point.z + botHeight, false);
+}
+
+bool MovementAction::IsHazardNearPosition(const WorldPosition& position, HazardPosition* outHazard)
+{
+    list<HazardPosition>& hazards = AI_VALUE(list<HazardPosition>, "hazards");
+    if (!hazards.empty())
+    {
+        for(const HazardPosition& hazard : hazards)
+        {
+            const WorldPosition& hazardPosition = hazard.first;
+            const float hazardRange = hazard.second;
+            const float distance = position.distance(hazardPosition);
+            if(distance <= hazardRange)
+            {
+                if (outHazard)
+                {
+                    *outHazard = hazard;
+                }
+
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
+bool MovementAction::GeneratePathAvoidingHazards(const WorldPosition& endPosition, bool generatePath, Movement::PointsArray& outPath)
+{
+    if (generatePath)
+    {
+        list<HazardPosition>& hazards = AI_VALUE(list<HazardPosition>, "hazards");
+        if (!hazards.empty())
+        {
+            PathFinder path(bot);
+            path.calculate(endPosition.getX(), endPosition.getY(), endPosition.getZ(), false);
+            Movement::PointsArray& pathPoints = path.getPath();
+            Movement::PointsArray collidingHazards;
+
+            if (pathPoints.size() <= 2)
+            {
+                pathPoints.push_back(pathPoints.back());
+            }
+
+            bool pathModified = false;
+            // Start the iteration on the second point (the first and last points can't be modified)
+            Vector3* previousPoint = &(*pathPoints.begin());
+            for (uint32 i = 1; i < pathPoints.size() - 1; i++)
+            {
+                bool pointInserted = false;
+                Vector3& pathPoint = pathPoints[i];
+                for (const HazardPosition& hazard : hazards)
+                {
+                    const float hazardRange = hazard.second;
+                    const float hazardRangeOffset = hazardRange * 1.25f;
+                    const Vector3& hazardPosition = hazard.first.getVector3();
+
+                    // Check if the path point is inside a hazard
+                    {
+                        const float distanceToHazard = (pathPoint - hazardPosition).length();
+                        if (distanceToHazard <= hazardRange)
+                        {
+                            collidingHazards.push_back(hazardPosition);
+
+                            // Move the point out of the hazard range in perpendicular from previous point
+                            // Generate point translated to the left
+                            Vector3 possiblePathPoint = CalculatePerpendicularPoint(*previousPoint, hazardPosition, hazardRangeOffset, true);
+
+                            // Check if point is valid
+                            if (IsValidPoint(possiblePathPoint, *previousPoint, bot))
+                            {
+                                pathModified = true;
+                                pathPoint = possiblePathPoint;
+                            }
+                            else
+                            {
+                                // Generate point translated to the right
+                                possiblePathPoint = CalculatePerpendicularPoint(*previousPoint, hazardPosition, hazardRangeOffset, false);
+
+                                // Check if point is valid
+                                if (IsValidPoint(possiblePathPoint, *previousPoint, bot))
+                                {
+                                    pathModified = true;
+                                    pathPoint = possiblePathPoint;
+                                }
+                            }
+                        }
+                    }
+
+                    // Check if the line between the previous point and the current point goes through a hazard
+                    // Don't check for the line between the first point and second
+                    if(previousPoint != &(*pathPoints.begin()))
+                    {
+                        Vector3 directionFromPreviousPoint = (pathPoint - *previousPoint);
+                        const float distanceToPreviousPoint = std::max(directionFromPreviousPoint.length(), 0.0001f);
+                        directionFromPreviousPoint = directionFromPreviousPoint / distanceToPreviousPoint;
+                        Vector3 inBetweenPathPoint = *previousPoint + (directionFromPreviousPoint * distanceToPreviousPoint * 0.5f);
+
+                        // Check if the point between path points is inside a hazard
+                        Vector3 directionFromHazard = (inBetweenPathPoint - hazardPosition);
+                        const float distanceToHazard = std::max(directionFromHazard.length(), 0.0001f);
+                        if (distanceToHazard <= hazardRange)
+                        {
+                            collidingHazards.push_back(hazardPosition);
+
+                            // If so generate a new path point to go around it
+                            inBetweenPathPoint = hazardPosition + ((directionFromHazard / distanceToHazard) * hazardRangeOffset);
+
+                            // Check if the point is valid
+                            if(IsValidPoint(inBetweenPathPoint, *previousPoint, bot))
+                            {
+                                // Insert the new point to the path (before current point)
+                                pathModified = true;
+                                pointInserted = true;
+                                pathPoints.insert(pathPoints.begin() + i, inBetweenPathPoint);
+                                continue;
+                            }
+                        }
+                    }
+                }
+
+                if(pointInserted)
+                {
+                    // Go back one step to validate the inserted point and move to next loop
+                    i--;
+                }
+                else
+                {
+                    previousPoint = &pathPoint;
+                }
+            }
+
+            if(pathModified && !pathPoints.empty())
+            {
+                outPath = pathPoints;
+
+                if (ai->HasStrategy("debug move", BotState::BOT_STATE_COMBAT))
+                {
+                    for (const Vector3& pathPoint : pathPoints)
+                    {
+                        bot->SummonCreature(1, pathPoint.x, pathPoint.y, pathPoint.z, 0.0f, TEMPSPAWN_TIMED_DESPAWN, 5000.0f);
+                    }
+
+                    for (const Vector3& hazards : collidingHazards)
+                    {
+                        bot->SummonCreature(15631, hazards.x, hazards.y, hazards.z, 0.0f, TEMPSPAWN_TIMED_DESPAWN, 5000.0f);
+                    }
+                }
+
+                return true;
+            }
+        }
+    }
+
+    return false;
 }
 
 bool FleeAction::Execute(Event& event)

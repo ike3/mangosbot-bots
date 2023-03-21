@@ -4,19 +4,35 @@
 
 namespace ai
 {
-    struct Hazard
+    class Hazard
     {
+    public:
         Hazard();
         Hazard(const WorldPosition& position, uint64 expiration, float radius);
         Hazard(const ObjectGuid& guid, uint64 expiration, float radius);
+        bool operator==(const Hazard& other) const;
+        bool operator<(const Hazard& other) const;
 
         bool GetPosition(PlayerbotAI* ai, WorldPosition& outPosition);
-        bool IsValid() const;
+        float GetRadius() const { return radius; }
 
+        bool IsValid(PlayerbotAI* ai) const;
+        bool IsExpired() const;
+
+        uint32 GetNavmeshArea() const { return hazardNavmeshArea; }
+        uint32 GetPreviousNavmeshArea() const { return previousNavmeshArea; }
+
+    private:
+        const WorldObject* GetObject(PlayerbotAI* ai) const;
+
+    private:
         WorldPosition position;
         time_t expirationTime;
         ObjectGuid guid;
         float radius;
+
+        uint32 hazardNavmeshArea;
+        uint32 previousNavmeshArea;
     };
 
     // Hazard position, Hazard radius
@@ -27,7 +43,7 @@ namespace ai
 	{
 	public:
         StoredHazardsValue(PlayerbotAI* ai, string name = "stored hazards") : ManualSetValue<std::list<Hazard>>(ai, {}, name) {}
-	};
+    };
 
     // Value to add hazards which the bot must avoid when moving around
     class AddHazardValue : public ManualSetValue<Hazard>

@@ -23,6 +23,7 @@ namespace ai
         bool isPossible() override;
 
     private:
+        bool IsValidPoint(const WorldPosition& point, const list<Creature*>& creatures, const list<HazardPosition>& hazards);
         bool HasCreaturesNearby(const WorldPosition& point, const list<Creature*>& creatures) const;
         bool IsHazardNearby(const WorldPosition& point, const list<HazardPosition>& hazards) const;
 

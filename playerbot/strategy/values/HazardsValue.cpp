@@ -2,54 +2,71 @@
 #include "../../playerbot.h"
 #include "HazardsValue.h"
 #include "../AiObjectContext.h"
+#include "PathFinder.h"
 
 using namespace ai;
 
 Hazard::Hazard()
+: position(WorldPosition())
+, expirationTime(0)
+, guid(ObjectGuid())
+, radius(0.0f)
+, hazardNavmeshArea(0)
+, previousNavmeshArea(0)
 {
-    expirationTime = 0;
-    guid = ObjectGuid();
-    position = WorldPosition();
-    radius = 0;
+
 }
 
 Hazard::Hazard(const WorldPosition& inPosition, uint64 inExpiration, float inRadius)
+: position(inPosition)
+, expirationTime(time(0) + inExpiration)
+, guid(ObjectGuid())
+, radius(inRadius)
+, hazardNavmeshArea(14)
+, previousNavmeshArea(11)
 {
-    expirationTime = time(0) + inExpiration;
-    guid = ObjectGuid();
-    position = WorldPosition(inPosition);
-    radius = inRadius;
+
 }
 
 Hazard::Hazard(const ObjectGuid& inGuid, uint64 inExpiration, float inRadius)
+: position(WorldPosition())
+, expirationTime(time(0) + inExpiration)
+, guid(inGuid)
+, radius(inRadius)
+, hazardNavmeshArea(14)
+, previousNavmeshArea(11)
 {
-    expirationTime = time(0) + inExpiration;
-    guid = inGuid;
-    position = WorldPosition();
-    radius = inRadius;
+
+}
+
+bool Hazard::operator==(const Hazard& other) const
+{
+    if (!guid.IsEmpty())
+    {
+        return (guid == other.guid);
+    }
+    else if (position)
+    {
+        return position == other.position;
+    }
+
+    return false;
+}
+
+bool Hazard::operator<(const Hazard& other) const
+{
+    return radius < other.radius;
 }
 
 bool Hazard::GetPosition(PlayerbotAI* ai, WorldPosition& outPosition)
 {
-    if (!guid.IsEmpty())
+    const WorldObject* object = GetObject(ai);
+    if (object)
     {
-        WorldObject* hazardObject = nullptr;
-        if (guid.IsUnit())
-        {
-            hazardObject = ai->GetUnit(guid);
-        }
-        else if (guid.IsGameObject())
-        {
-            hazardObject = ai->GetGameObject(guid);
-        }
-
-        if (hazardObject)
-        {
-            outPosition = WorldPosition(hazardObject);
-            return true;
-        }
+        outPosition = position = WorldPosition(object);
+        return true;
     }
-    else if(position.isValid())
+    else if(position)
     {
         outPosition = position;
         return true;
@@ -58,30 +75,45 @@ bool Hazard::GetPosition(PlayerbotAI* ai, WorldPosition& outPosition)
     return false;
 }
 
-bool Hazard::IsValid() const
+bool Hazard::IsExpired() const
 {
-    return (expirationTime > 0) && (!guid.IsEmpty() || position.isValid());
+    return time(0) > expirationTime;
+}
+
+bool Hazard::IsValid(PlayerbotAI* ai) const
+{
+    const WorldObject* object = GetObject(ai);
+    return (object || position) && !IsExpired();
+}
+
+const WorldObject* Hazard::GetObject(PlayerbotAI* ai) const
+{
+    if (!guid.IsEmpty())
+    {
+        if (guid.IsUnit())
+        {
+            return ai->GetUnit(guid);
+        }
+        else if (guid.IsGameObject())
+        {
+            return ai->GetGameObject(guid);
+        }
+    }
+
+    return nullptr;
 }
 
 void AddHazardValue::Set(Hazard hazard)
 {
-    if (hazard.IsValid())
+    AiObjectContext* context = ai->GetAiObjectContext();
+    std::list<Hazard>& storedHazards = AI_VALUE(std::list<Hazard>, "stored hazards");
+
+    // Check if the hazard already exists
+    auto it = std::find(storedHazards.begin(), storedHazards.end(), hazard);
+    if (it == storedHazards.end())
     {
-        AiObjectContext* context = ai->GetAiObjectContext();
-        std::list<Hazard>& storedHazards = AI_VALUE(std::list<Hazard>, "stored hazards");
-
-        // Check if the hazard already exists (only for world object hazards)
-        auto it = std::find_if(storedHazards.begin(), storedHazards.end(), [&hazard](const Hazard& existingHazard)
-        {
-            return !existingHazard.guid.IsEmpty() && (existingHazard.guid == hazard.guid);
-        });
-
-        // Add the new hazard to the value
-        if (it == storedHazards.end())
-        {
-            storedHazards.emplace_back(std::move(hazard));
-            SET_AI_VALUE(std::list<Hazard>, "stored hazards", storedHazards);
-        }
+        storedHazards.emplace_back(std::move(hazard));
+        SET_AI_VALUE(std::list<Hazard>, "stored hazards", storedHazards);
     }
 }
 
@@ -91,22 +123,20 @@ std::list<HazardPosition> HazardsValue::Calculate()
     std::list<Hazard>& storedHazards = AI_VALUE(std::list<Hazard>, "stored hazards");
 
     // Create an updated hazard positions list
-    time_t currTime = time(0);
     bool hazardsUpdated = false;
     std::list<HazardPosition> hazards;
     for (auto it = storedHazards.begin(); it != storedHazards.end();)
     {
-        Hazard& hazard = (*it);
+        // Check if the hazard is valid
         bool validHazard = false;
-
-        // Check if the hazard has not expired
-        if (hazard.expirationTime > currTime)
+        Hazard& hazard = (*it);
+        if (hazard.IsValid(ai))
         {
             // Try to retrieve the hazard position
             WorldPosition hazardPosition;
             if (hazard.GetPosition(ai, hazardPosition))
             {
-                hazards.emplace_back(std::make_pair(hazardPosition, hazard.radius));
+                hazards.emplace_back(std::make_pair(hazardPosition, hazard.GetRadius()));
                 validHazard = true;
             }
         }

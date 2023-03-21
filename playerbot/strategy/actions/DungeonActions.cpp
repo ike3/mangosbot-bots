@@ -7,7 +7,7 @@ using namespace ai;
 
 bool MoveAwayFromHazard::Execute(Event& event)
 {
-    list<HazardPosition> hazards = AI_VALUE(list<HazardPosition>, "hazards");
+    const list<HazardPosition>& hazards = AI_VALUE(list<HazardPosition>, "hazards");
 
     // Get the closest hazard to move away from
     const HazardPosition* closestHazard = nullptr;
@@ -60,7 +60,7 @@ bool MoveAwayFromHazard::Execute(Event& event)
                     {
                         if (ai->HasStrategy("debug move", BotState::BOT_STATE_COMBAT))
                         {
-                            Creature* wpCreature = bot->SummonCreature(15631, point.getX(), point.getY(), point.getZ(), 0.0f, TEMPSPAWN_TIMED_DESPAWN, 5000.0f + angle * 1000.0f);
+                            bot->SummonCreature(15631, point.getX(), point.getY(), point.getZ(), 0.0f, TEMPSPAWN_TIMED_DESPAWN, 5000.0f);
                         }
 
                         if (MoveTo(bot->GetMapId(), point.getX(), point.getY(), point.getZ(), false, IsReaction(), false, true))
@@ -77,7 +77,7 @@ bool MoveAwayFromHazard::Execute(Event& event)
 
                 if (ai->HasStrategy("debug move", BotState::BOT_STATE_COMBAT))
                 {
-                    Creature* wpCreature = bot->SummonCreature(1, point.getX(), point.getY(), point.getZ(), 0.0f, TEMPSPAWN_TIMED_DESPAWN, 5000.0f + angle * 1000.0f);
+                    bot->SummonCreature(1, point.getX(), point.getY(), point.getZ(), 0.0f, TEMPSPAWN_TIMED_DESPAWN, 5000.0f);
                 }
 
                 angle += angleIncrement;
@@ -120,8 +120,8 @@ bool MoveAwayFromCreature::Execute(Event& event)
     list<Creature*> creatures;
     size_t closestCreatureIdx = 0;
     float closestCreatureDistance = 9999.0f;
-    list<ObjectGuid> attackers = AI_VALUE(list<ObjectGuid>, "attackers");
-    for (ObjectGuid& attackerGuid : attackers)
+    const list<ObjectGuid>& attackers = AI_VALUE(list<ObjectGuid>, "attackers");
+    for (const ObjectGuid& attackerGuid : attackers)
     {
         // Check against the given creature id
         if (attackerGuid.GetEntry() == creatureID)
@@ -142,7 +142,7 @@ bool MoveAwayFromCreature::Execute(Event& event)
         }
     }
 
-    list<HazardPosition> hazards = AI_VALUE(list<HazardPosition>, "hazards");
+    const list<HazardPosition>& hazards = AI_VALUE(list<HazardPosition>, "hazards");
 
     // Get the closest creature reference
     auto it = creatures.begin();
@@ -154,47 +154,61 @@ bool MoveAwayFromCreature::Execute(Event& event)
     // Generate the initial angle directly behind the bot looking at the closest creature
     const WorldPosition botPosition(bot);
     const WorldPosition creaturePosition(closestCreature);
-    float angle = creaturePosition.getAngleTo(botPosition);
+    float angleLeft = creaturePosition.getAngleTo(botPosition);
+    float angleRight = angleLeft;
 
     const uint8 attempts = 20;
-    float angleIncrement = (float)((2 * M_PI) / attempts);
+    const uint8 halfAtempts = (uint8)(attempts * 0.5f);
+    float angleIncrement = (float)((M_PI) / halfAtempts);
 
     const float sizeFactor = bot->GetCombatReach() + closestCreature->GetCombatReach();
     const float distance = (range + sizeFactor);
 
-    for (uint8 i = 0; i < attempts; i++)
+    for (uint8 i = 0; i < halfAtempts; i++)
     {
-        WorldPosition point = creaturePosition + WorldPosition(0, distance * cos(angle), distance * sin(angle), 1.0f);
-        point.setZ(point.getHeight());
+        WorldPosition* validPoint = nullptr;
 
-        // Check if the point is not near other game objects
-        if (!HasCreaturesNearby(point, creatures) && !IsHazardNearby(point, hazards))
+        // Calculate a point to the left and right
+        WorldPosition pointLeft = creaturePosition + WorldPosition(0, distance * cos(angleLeft), distance * sin(angleLeft), 1.0f);
+        pointLeft.setZ(pointLeft.getHeight());
+        WorldPosition pointRight = creaturePosition + WorldPosition(0, distance * cos(angleRight), distance * sin(angleRight), 1.0f);
+        pointRight.setZ(pointRight.getHeight());
+
+        if (IsValidPoint(pointLeft, creatures, hazards))
         {
-            if (bot->IsWithinLOS(point.getX(), point.getY(), point.getZ() + bot->GetCollisionHeight()) && botPosition.canPathTo(point, bot))
+            validPoint = &pointLeft;
+        }
+        else if (IsValidPoint(pointRight, creatures, hazards))
+        {
+            validPoint = &pointRight;
+        }
+
+        if (validPoint)
+        {
+            if (ai->HasStrategy("debug move", BotState::BOT_STATE_COMBAT))
             {
-                if (ai->HasStrategy("debug move", BotState::BOT_STATE_COMBAT))
+                bot->SummonCreature(15631, validPoint->getX(), validPoint->getY(), validPoint->getZ(), 0.0f, TEMPSPAWN_TIMED_DESPAWN, 5000.0f);
+            }
+
+            if (MoveTo(bot->GetMapId(), validPoint->getX(), validPoint->getY(), validPoint->getZ(), false, IsReaction(), false, true))
+            {
+                if (IsReaction())
                 {
-                    Creature* wpCreature = bot->SummonCreature(15631, point.getX(), point.getY(), point.getZ(), 0.0f, TEMPSPAWN_TIMED_DESPAWN, 5000.0f + angle * 1000.0f);
+                    WaitForReach(validPoint->distance(botPosition));
                 }
 
-                if (MoveTo(bot->GetMapId(), point.getX(), point.getY(), point.getZ(), false, IsReaction(), false, true))
-                {
-                    if (IsReaction())
-                    {
-                        WaitForReach(point.distance(botPosition));
-                    }
-
-                    return true;
-                }
+                return true;
             }
         }
 
         if (ai->HasStrategy("debug move", BotState::BOT_STATE_COMBAT))
         {
-            Creature* wpCreature = bot->SummonCreature(1, point.getX(), point.getY(), point.getZ(), 0.0f, TEMPSPAWN_TIMED_DESPAWN, 5000.0f + angle * 1000.0f);
+            bot->SummonCreature(1, pointLeft.getX(), pointLeft.getY(), pointLeft.getZ(), 0.0f, TEMPSPAWN_TIMED_DESPAWN, 5000.0f);
+            bot->SummonCreature(1, pointRight.getX(), pointRight.getY(), pointRight.getZ(), 0.0f, TEMPSPAWN_TIMED_DESPAWN, 5000.0f);
         }
 
-        angle += angleIncrement;
+        angleLeft += angleIncrement;
+        angleRight -= angleIncrement;
     }
 
     return false;
@@ -205,6 +219,21 @@ bool MoveAwayFromCreature::isPossible()
     if (MovementAction::isPossible())
     {
         return ai->CanMove();
+    }
+
+    return false;
+}
+
+bool MoveAwayFromCreature::IsValidPoint(const WorldPosition& point, const list<Creature*>& creatures, const list<HazardPosition>& hazards)
+{
+    // Check if the point is not near other game objects
+    if (!HasCreaturesNearby(point, creatures) && !IsHazardNearby(point, hazards))
+    {
+        if (bot->IsWithinLOS(point.getX(), point.getY(), point.getZ() + bot->GetCollisionHeight()))
+        {
+            const WorldPosition botPosition(bot);
+            return botPosition.canPathTo(point, bot);
+        }
     }
 
     return false;

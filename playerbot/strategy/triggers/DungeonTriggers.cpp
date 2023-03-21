@@ -83,6 +83,7 @@ bool EndBossFightTrigger::IsActive()
 bool CloseToGameObjectHazard::IsActive()
 {
     // If the bot is ready
+    bool closeToHazard = false;
     if (bot->IsInWorld() && !bot->IsBeingTeleported())
     {
         AiObjectContext* context = ai->GetAiObjectContext();
@@ -97,16 +98,17 @@ bool CloseToGameObjectHazard::IsActive()
                 const float distance = bot->GetDistance(gameObject) + gameObject->GetObjectBoundingRadius();
                 if (distance <= radius)
                 {
-                    // Cache the hazard
-                    Hazard hazard(gameObjectGuid, expirationTime, radius);
-                    SET_AI_VALUE(Hazard, "add hazard", std::move(hazard));
-                    return true;
+                    closeToHazard = true;
                 }
+
+                // Cache the hazards
+                Hazard hazard(gameObjectGuid, expirationTime, radius);
+                SET_AI_VALUE(Hazard, "add hazard", std::move(hazard));
             }
         }
     }
 
-    return false;
+    return closeToHazard;
 }
 
 bool CloseToCreature::IsActive()
