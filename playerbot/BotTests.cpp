@@ -1,5 +1,6 @@
 #include "PlayerbotAIConfig.h"
 #include "BotTests.h"
+#include <fstream>
 
 using namespace ai;
 
