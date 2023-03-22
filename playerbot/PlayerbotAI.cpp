@@ -464,6 +464,19 @@ const Action* PlayerbotAI::GetLastExecutedAction(BotState state) const
     return nullptr;
 }
 
+bool PlayerbotAI::IsImmuneToSpell(uint32 spellId) const
+{
+    for (list<uint32>::iterator i = sPlayerbotAIConfig.immuneSpellIds.begin(); i != sPlayerbotAIConfig.immuneSpellIds.end(); ++i)
+    {
+        if (spellId == (*i))
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 bool PlayerbotAI::IsStateActive(BotState state) const
 {
     return currentEngine == engines[(uint8)state];

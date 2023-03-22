@@ -502,6 +502,8 @@ public:
     void SetActionDuration(uint32 duration);
 
     const Action* GetLastExecutedAction(BotState state) const;
+
+    bool IsImmuneToSpell(uint32 spellId) const;
     
 private:
     bool UpdateAIReaction(uint32 elapsed, bool minimal, bool isStunned);

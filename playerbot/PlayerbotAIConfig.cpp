@@ -138,6 +138,7 @@ bool PlayerbotAIConfig::Initialize()
 #endif
 
     LoadList<list<uint32> >(config.GetStringDefault("AiPlayerbot.RandomBotQuestIds", "7848,3802,5505,6502,7761,9378"), randomBotQuestIds);
+    LoadList<list<uint32> >(config.GetStringDefault("AiPlayerbot.ImmuneSpellIds", ""), immuneSpellIds);
 
     botAutologin = config.GetBoolDefault("AiPlayerbot.BotAutologin", false);
     randomBotAutologin = config.GetBoolDefault("AiPlayerbot.RandomBotAutologin", true);
