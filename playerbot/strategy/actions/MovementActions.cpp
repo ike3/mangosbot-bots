@@ -1577,7 +1577,7 @@ bool MovementAction::Flee(Unit *target)
         succeeded = MoveNear(fleeTarget);
     }
 
-    if (!ai->HasRealPlayerMaster() || ai->IsRealPlayer(target))
+    if (!ai->HasRealPlayerMaster() && !ai->IsRealPlayer(target))
     {
         bool fullDistance = false;
         if (target->IsPlayer())
