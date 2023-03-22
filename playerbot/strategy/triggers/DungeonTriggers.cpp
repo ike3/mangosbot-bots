@@ -5,6 +5,7 @@
 #include "ServerFacade.h"
 #include "../AiObjectContext.h"
 #include "../values/HazardsValue.h"
+#include "../actions/MovementActions.h"
 
 using namespace ai;
 
@@ -104,6 +105,20 @@ bool CloseToGameObjectHazard::IsActive()
                 // Cache the hazards
                 Hazard hazard(gameObjectGuid, expirationTime, radius);
                 SET_AI_VALUE(Hazard, "add hazard", std::move(hazard));
+            }
+        }
+    }
+
+    // Don't trigger if the bot is moving
+    if (closeToHazard)
+    {
+        const Action* lastExecutedAction = ai->GetLastExecutedAction(BotState::BOT_STATE_COMBAT);
+        if (lastExecutedAction)
+        {
+            const MovementAction* movementAction = dynamic_cast<const MovementAction*>(lastExecutedAction);
+            if (movementAction)
+            {
+                closeToHazard = false;
             }
         }
     }

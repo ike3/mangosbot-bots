@@ -47,6 +47,7 @@ namespace ai
         bool ShouldReactionInterruptMovement() const override { return true; }
 
     private:
+        bool IsValidPosition(const WorldPosition& position, const WorldPosition& visibleFromPosition);
         bool IsHazardNearPosition(const WorldPosition& position, HazardPosition* outHazard = nullptr);
         bool GeneratePathAvoidingHazards(const WorldPosition& endPosition, bool generatePath, Movement::PointsArray& outPath);
     };
