@@ -1356,7 +1356,7 @@ bool MovementAction::Follow(Unit* target, float distance, float angle)
             return false;
     }
 
-    mm.MoveFollow(target, distance, angle, true);
+    mm.MoveFollow(target, distance, angle, true, sPlayerbotAIConfig.boostFollow);
     return true;
 }
 

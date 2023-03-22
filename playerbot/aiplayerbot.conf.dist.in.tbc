@@ -92,6 +92,9 @@ AiPlayerbot.RandomBotMaxLevelChance = 0.15
 # Chance bot chooses RPG (Teleport to random camp for their level) instead of grinding
 AiPlayerbot.RandomBotRpgChance = 0.20
 
+# Bots will speed up when following to stay close.
+AiPlayerbot.BoostFollow = 1
+
 # Bots and npcs turn to eachother during an rpg interaction
 AiPlayerbot.TurnInRpg = 0
 
