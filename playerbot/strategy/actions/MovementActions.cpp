@@ -1312,10 +1312,6 @@ bool MovementAction::Follow(Unit* target, float distance, float angle)
            return MoveTo(target, ai->GetRange("follow"));
     }
 
-    //Temprorary fix until figguring out why moveFollow doesn't work for flying players but does for npcs.
-    if (bot->IsFreeFlying())
-        return MoveTo(target, ai->GetRange("follow"));
-
     bot->HandleEmoteState(0);
     if (!bot->IsStandState())
         bot->SetStandState(UNIT_STAND_STATE_STAND);
@@ -1390,8 +1386,7 @@ bool MovementAction::Follow(Unit* target, float distance, float angle)
             return false;
     }
 
-    mm.MoveFollow(target, distance, angle, true);
-
+    mm.MoveFollow(target, distance, angle, true, sPlayerbotAIConfig.boostFollow);
     return true;
 }
 
@@ -1698,7 +1693,7 @@ bool MovementAction::Flee(Unit *target)
         succeeded = MoveNear(fleeTarget);
     }
 
-    if (!ai->HasRealPlayerMaster() || ai->IsRealPlayer(target))
+    if (!ai->HasRealPlayerMaster() && !ai->IsRealPlayer(target))
     {
         bool fullDistance = false;
         if (target->IsPlayer())

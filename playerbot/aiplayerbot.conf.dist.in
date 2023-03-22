@@ -53,7 +53,7 @@ AiPlayerbot.RandomBotAccountCount = 200
 
 # Limit random bot max level to online players max level + 5
 # AiPlayerbot.SyncLevelWithPlayers = 0
-# AiPlayerbot.syncLevelMaxAbove = 5
+# AiPlayerbot.SyncLevelMaxAbove = 5
 
 # Random bot guild count
 AiPlayerbot.RandomBotGuildCount = 20
@@ -87,6 +87,9 @@ AiPlayerbot.RandomBotMaxLevelChance = 0.15
 
 # Chance bot chooses RPG (Teleport to random camp for their level) instead of grinding
 AiPlayerbot.RandomBotRpgChance = 0.20
+
+# Bots will speed up when following to stay close.
+# AiPlayerbot.BoostFollow = 1
 
 # Bots and npcs turn to eachother during an rpg interaction
 AiPlayerbot.TurnInRpg = 0
