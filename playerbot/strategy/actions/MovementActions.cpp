@@ -1278,10 +1278,6 @@ bool MovementAction::Follow(Unit* target, float distance, float angle)
            return MoveTo(target, ai->GetRange("follow"));
     }
 
-    //Temprorary fix until figguring out why moveFollow doesn't work for flying players but does for npcs.
-    if (bot->IsFreeFlying())
-        return MoveTo(target, ai->GetRange("follow"));
-
     bot->HandleEmoteState(0);
     if (!bot->IsStandState())
         bot->SetStandState(UNIT_STAND_STATE_STAND);
