@@ -1793,10 +1793,9 @@ void MovementAction::ClearIdleState()
 bool MovementAction::IsValidPosition(const WorldPosition& position, const WorldPosition& visibleFromPosition)
 {
     const WorldPosition botPosition(bot);
-    const float botHeight = bot->GetCollisionHeight();
     return botPosition.canPathTo(position, bot) &&
            MaNGOS::IsValidMapCoord(position.getX(), position.getY(), position.getZ(), 0.0f) &&
-           bot->GetMap()->IsInLineOfSight(visibleFromPosition.getX(), visibleFromPosition.getY(), visibleFromPosition.getZ() + botHeight, position.getX(), position.getY(), position.getZ() + botHeight, false) &&
+           position.IsInLineOfSight(visibleFromPosition, bot->GetCollisionHeight()) &&
            !IsHazardNearPosition(position);
 }
 
