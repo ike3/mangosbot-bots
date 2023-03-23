@@ -285,8 +285,9 @@ namespace ai
 
             creators["enable magmadar fight strategy"] = &ActionContext::magmadar_enable_fight_strategy;
             creators["disable magmadar fight strategy"] = &ActionContext::magmadar_disable_fight_strategy;
-            creators["move away from magmadar lava bomb"] = &ActionContext::magmadar_move_away_from_lava_bomb;
+            creators["move away from magmadar"] = &ActionContext::magmadar_move_away;
 
+            creators["move away from hazard"] = &ActionContext::move_away_from_hazard;
             creators["move to mc rune"] = &ActionContext::move_to_mc_rune;
             creators["douse mc rune"] = &ActionContext::douse_mc_rune;
         }
@@ -508,8 +509,9 @@ namespace ai
 
         static Action* magmadar_enable_fight_strategy(PlayerbotAI* ai) { return new MagmadarEnableFightStrategyAction(ai); }
         static Action* magmadar_disable_fight_strategy(PlayerbotAI* ai) { return new MagmadarDisableFightStrategyAction(ai); }
-        static Action* magmadar_move_away_from_lava_bomb(PlayerbotAI* ai) { return new MagmadarMoveAwayFromLavaBombAction(ai); }
+        static Action* magmadar_move_away(PlayerbotAI* ai) { return new MagmadarMoveAwayAction(ai); }
 
+        static Action* move_away_from_hazard(PlayerbotAI* ai) { return new MoveAwayFromHazard(ai); }
         static Action* move_to_mc_rune(PlayerbotAI* ai) { return new MoveToMCRuneAction(ai); }
         static Action* douse_mc_rune(PlayerbotAI* ai) { return new DouseMCRuneAction(ai); }
     };

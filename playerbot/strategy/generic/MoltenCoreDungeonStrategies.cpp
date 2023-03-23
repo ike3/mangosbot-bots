@@ -1,6 +1,7 @@
 #include "botpch.h"
 #include "../../playerbot.h"
 #include "MoltenCoreDungeonStrategies.h"
+#include "DungeonMultipliers.h"
 
 using namespace ai;
 
@@ -38,7 +39,13 @@ void MoltenCoreDungeonStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& t
 
 void MagmadarFightStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-    // ...
+    Player* bot = ai->GetBot();
+    if (ai->IsRanged(bot) || ai->IsHeal(bot))
+    {
+        triggers.push_back(new TriggerNode(
+            "magmadar too close",
+            NextAction::array(0, new NextAction("move away from magmadar", 100.0f), NULL)));
+    }
 }
 
 void MagmadarFightStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -59,5 +66,14 @@ void MagmadarFightStrategy::InitReactionTriggers(std::list<TriggerNode*>& trigge
 {
     triggers.push_back(new TriggerNode(
         "magmadar lava bomb",
-        NextAction::array(0, new NextAction("move away from magmadar lava bomb", 100.0f), NULL)));
+        NextAction::array(0, new NextAction("move away from hazard", 100.0f), NULL)));
+}
+
+void MagmadarFightStrategy::InitCombatMultipliers(std::list<Multiplier*>& multipliers)
+{
+    Player* bot = ai->GetBot();
+    if (ai->IsRanged(bot) || ai->IsHeal(bot))
+    {
+        multipliers.push_back(new PreventMoveAwayFromCreatureOnReachToCastMultiplier(ai));
+    }
 }

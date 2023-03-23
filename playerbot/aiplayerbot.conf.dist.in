@@ -53,7 +53,7 @@ AiPlayerbot.RandomBotAccountCount = 200
 
 # Limit random bot max level to online players max level + 5
 # AiPlayerbot.SyncLevelWithPlayers = 0
-# AiPlayerbot.syncLevelMaxAbove = 5
+# AiPlayerbot.SyncLevelMaxAbove = 5
 
 # Random bot guild count
 AiPlayerbot.RandomBotGuildCount = 20
@@ -87,6 +87,9 @@ AiPlayerbot.RandomBotMaxLevelChance = 0.15
 
 # Chance bot chooses RPG (Teleport to random camp for their level) instead of grinding
 AiPlayerbot.RandomBotRpgChance = 0.20
+
+# Bots will speed up when following to stay close.
+# AiPlayerbot.BoostFollow = 1
 
 # Bots and npcs turn to eachother during an rpg interaction
 AiPlayerbot.TurnInRpg = 0
@@ -129,6 +132,9 @@ AiPlayerbot.minEnchantingBotLevel = 81
 # Randombots checking players gear score level and deny the group invite if it's too low
 # Default: 1 (enabled)
 AiPlayerbot.GearScoreCheck = 0
+
+# Spells that won't affect bots
+AiPlayerbot.ImmuneSpellIds = 19428
 
 # Quest that will be completed and rewarded to all random bots
 AiPlayerbot.RandomBotQuestIds = 7848,3802,5505,6502,7761,9378
