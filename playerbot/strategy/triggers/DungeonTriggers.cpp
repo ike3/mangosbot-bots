@@ -81,7 +81,7 @@ bool EndBossFightTrigger::IsActive()
     return false;
 }
 
-bool CloseToGameObjectHazard::IsActive()
+bool CloseToGameObjectHazardTrigger::IsActive()
 {
     // If the bot is ready
     bool closeToHazard = false;
@@ -126,7 +126,7 @@ bool CloseToGameObjectHazard::IsActive()
     return closeToHazard;
 }
 
-bool CloseToCreature::IsActive()
+bool CloseToCreatureTrigger::IsActive()
 {
     // If the bot is ready
     if (bot->IsInWorld() && !bot->IsBeingTeleported())
@@ -155,6 +155,52 @@ bool CloseToCreature::IsActive()
                 }
             }
         }
+    }
+
+    return false;
+}
+
+bool ItemReadyTrigger::IsActive()
+{
+    // Check if the bot has the item or if it has cheats enabled
+    if (bot->HasItemCount(itemID, 1) || ai->HasCheat(BotCheatMask::item))
+    {
+        const ItemPrototype* proto = sObjectMgr.GetItemPrototype(itemID);
+        if (proto)
+        {
+            // Check if the item is in cooldown
+            bool inCooldown = false;
+            for (uint8 i = 0; i < MAX_ITEM_PROTO_SPELLS; ++i)
+            {
+                if (proto->Spells[i].SpellTrigger != ITEM_SPELLTRIGGER_ON_USE)
+                {
+                    continue;
+                }
+
+                const uint32 spellID = proto->Spells[i].SpellId;
+                if (spellID > 0)
+                {
+                    if (!sServerFacade.IsSpellReady(bot, spellID) ||
+                        !sServerFacade.IsSpellReady(bot, spellID, itemID))
+                    {
+                        inCooldown = true;
+                        break;
+                    }
+                }
+            }
+
+            return !inCooldown;
+        }
+    }
+
+    return false;
+}
+
+bool ItemBuffReadyTrigger::IsActive()
+{
+    if (!bot->HasAura(buffID))
+    {
+        return ItemReadyTrigger::IsActive();
     }
 
     return false;

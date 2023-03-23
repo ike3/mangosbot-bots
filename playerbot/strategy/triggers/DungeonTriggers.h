@@ -67,10 +67,10 @@ namespace ai
         uint64 bossID;
     };
 
-    class CloseToHazard : public Trigger
+    class CloseToHazardTrigger : public Trigger
     {
     public:
-        CloseToHazard(PlayerbotAI* ai, string name, int checkInterval, float radius, time_t expirationTime)
+        CloseToHazardTrigger(PlayerbotAI* ai, string name, int checkInterval, float radius, time_t expirationTime)
         : Trigger(ai, name, checkInterval)
         , radius(radius)
         , expirationTime(expirationTime) {}
@@ -82,11 +82,11 @@ namespace ai
         time_t expirationTime;
     };
 
-    class CloseToGameObjectHazard : public CloseToHazard
+    class CloseToGameObjectHazardTrigger : public CloseToHazardTrigger
     {
     public:
-        CloseToGameObjectHazard(PlayerbotAI* ai, string name, uint32 gameObjectID, float radius, time_t expirationTime)
-        : CloseToHazard(ai, name, 1, radius, expirationTime)
+        CloseToGameObjectHazardTrigger(PlayerbotAI* ai, string name, uint32 gameObjectID, float radius, time_t expirationTime)
+        : CloseToHazardTrigger(ai, name, 1, radius, expirationTime)
         , gameObjectID(gameObjectID) {}
 
         bool IsActive() override;
@@ -95,10 +95,10 @@ namespace ai
         uint32 gameObjectID;
     };
 
-    class CloseToCreature : public Trigger
+    class CloseToCreatureTrigger : public Trigger
     {
     public:
-        CloseToCreature(PlayerbotAI* ai, string name, uint32 creatureID, float range)
+        CloseToCreatureTrigger(PlayerbotAI* ai, string name, uint32 creatureID, float range)
         : Trigger(ai, name, 1)
         , creatureID(creatureID)
         , range(range) {}
@@ -108,5 +108,31 @@ namespace ai
     private:
         uint32 creatureID;
         float range;
+    };
+
+    class ItemReadyTrigger : public Trigger
+    {
+    public:
+        ItemReadyTrigger(PlayerbotAI* ai, string name, uint32 itemID)
+        : Trigger(ai, name, 1)
+        , itemID(itemID) {}
+
+        virtual bool IsActive() override;
+
+    protected:
+        uint32 itemID;
+    };
+
+    class ItemBuffReadyTrigger : public ItemReadyTrigger
+    {
+    public:
+        ItemBuffReadyTrigger(PlayerbotAI* ai, string name, uint32 itemID, uint32 buffID)
+        : ItemReadyTrigger(ai, name, itemID)
+        , buffID(buffID) {}
+
+        bool IsActive() override;
+
+    private:
+        uint32 buffID;
     };
 }

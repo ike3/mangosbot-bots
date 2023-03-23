@@ -35,6 +35,10 @@ void MoltenCoreDungeonStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& t
     triggers.push_back(new TriggerNode(
         "mc rune close",
         NextAction::array(0, new NextAction("douse mc rune", 1.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "fire protection potion ready",
+        NextAction::array(0, new NextAction("fire protection potion", 100.0f), NULL)));
 }
 
 void MagmadarFightStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -46,6 +50,10 @@ void MagmadarFightStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers
             "magmadar too close",
             NextAction::array(0, new NextAction("move away from magmadar", 100.0f), NULL)));
     }
+
+    triggers.push_back(new TriggerNode(
+        "fire protection potion ready",
+        NextAction::array(0, new NextAction("fire protection potion", 100.0f), NULL)));
 }
 
 void MagmadarFightStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
