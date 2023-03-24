@@ -428,6 +428,9 @@ bool RpgQueueBGTrigger::IsActive()
     if (guidP.IsHostileTo(bot))
         return false;
 
+    if (bot->GetGroup() && !bot->GetGroup()->IsLeader(bot->GetObjectGuid()))
+        return false;
+
     if (AI_VALUE(BattleGroundTypeId, "rpg bg type") == BATTLEGROUND_TYPE_NONE)
         return false;
 
