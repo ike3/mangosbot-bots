@@ -93,7 +93,7 @@ AiPlayerbot.RandomBotMaxLevelChance = 0.15
 AiPlayerbot.RandomBotRpgChance = 0.20
 
 # Bots will speed up when following to stay close.
-AiPlayerbot.BoostFollow = 1
+# AiPlayerbot.BoostFollow = 1
 
 # Bots and npcs turn to eachother during an rpg interaction
 AiPlayerbot.TurnInRpg = 0
