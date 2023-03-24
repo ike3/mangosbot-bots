@@ -243,6 +243,7 @@ namespace ai
             creators["end magmadar fight"] = &TriggerContext::magmadar_end_fight;
             creators["magmadar lava bomb"] = &TriggerContext::magmadar_lava_bomb;
             creators["magmadar too close"] = &TriggerContext::magmadar_too_close;
+            creators["magmadar enraged"] = &TriggerContext::magmadar_enraged;
 
             creators["fire protection potion ready"] = &TriggerContext::fire_protection_potion_ready;
 
@@ -439,6 +440,7 @@ namespace ai
         static Trigger* magmadar_end_fight(PlayerbotAI* ai) { return new MagmadarEndFightTrigger(ai); }
         static Trigger* magmadar_lava_bomb(PlayerbotAI* ai) { return new MagmadarLavaBombTrigger(ai); }
         static Trigger* magmadar_too_close(PlayerbotAI* ai) { return new MagmadarTooCloseTrigger(ai); }
+        static Trigger* magmadar_enraged(PlayerbotAI* ai) { return new MagmadarEnragedTrigger(ai); }
 
         static Trigger* fire_protection_potion_ready(PlayerbotAI* ai) { return new FireProtectionPotionReadyTrigger(ai); }
 
