@@ -1414,14 +1414,6 @@ bool MovementAction::ChaseTo(WorldObject* obj, float distance, float angle)
     if (!obj || obj == bot || bot->GetMapId() != obj->GetMapId())
         return false;
 
-    if (bot->GetMotionMaster()->GetCurrentMovementGeneratorType() == CHASE_MOTION_TYPE)
-    {
-        ChaseMovementGenerator* chase = (ChaseMovementGenerator*)bot->GetMotionMaster()->GetCurrent();
-
-        if (chase->GetCurrentTarget() == obj)
-            return true;
-    }
-
 #ifdef MANGOSBOT_TWO
     TransportInfo* transportInfo = bot->GetTransportInfo();
     if (transportInfo && transportInfo->IsOnVehicle())
@@ -1507,6 +1499,14 @@ bool MovementAction::ChaseTo(WorldObject* obj, float distance, float angle)
         }
         else
         {
+            if (bot->GetMotionMaster()->GetCurrentMovementGeneratorType() == CHASE_MOTION_TYPE)
+            {
+                ChaseMovementGenerator* chase = (ChaseMovementGenerator*)bot->GetMotionMaster()->GetCurrent();
+
+                if (chase->GetCurrentTarget() == obj)
+                    return true;
+            }
+
             mm.MoveChase((Unit*)obj, distance, angle);
             float dist = sServerFacade.GetDistance2d(bot, obj);
             float distDiff = dist > distance ? dist - distance : 0.f;
