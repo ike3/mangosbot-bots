@@ -1717,7 +1717,7 @@ bool MovementAction::Flee(Unit *target)
         {
             ChaseMovementGenerator* chase = (ChaseMovementGenerator*)mm->GetCurrent();
 
-            if (chase->GetCurrentTarget() == target)
+            if (chase->GetCurrentTarget() == target && sServerFacade.GetChaseOffset(bot) == distance)
                 return true;
         }
 
