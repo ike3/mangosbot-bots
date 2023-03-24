@@ -20,6 +20,9 @@ bool CheatAction::Execute(Event& event)
             cheatMask |= (uint32)GetCheatMask(name + 1);
             break;
         case '-':
+            cheatMask &= ~(uint32)GetCheatMask(name + 1);
+            break;
+        case '~':
             cheatMask ^= (uint32)GetCheatMask(name + 1);
             break;
         case '?':
