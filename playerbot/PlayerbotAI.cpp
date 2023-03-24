@@ -321,6 +321,10 @@ void PlayerbotAI::UpdateAI(uint32 elapsed, bool minimal)
             bot->SetPower(POWER_MANA, bot->GetMaxPower(POWER_MANA));
         if (HasCheat(BotCheatMask::power) && bot->GetPowerType() != POWER_MANA)
             bot->SetPower(bot->GetPowerType(), bot->GetMaxPower(bot->GetPowerType()));
+        if (HasCheat(BotCheatMask::repair))
+            bot->DurabilityRepairAll(false, 0);
+        if (HasCheat(BotCheatMask::cooldown))
+            bot->RemoveAllCooldowns();
     }
 
     // Update facing
