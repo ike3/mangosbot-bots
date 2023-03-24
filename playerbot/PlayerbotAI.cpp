@@ -322,7 +322,11 @@ void PlayerbotAI::UpdateAI(uint32 elapsed, bool minimal)
         if (HasCheat(BotCheatMask::power) && bot->GetPowerType() != POWER_MANA)
             bot->SetPower(bot->GetPowerType(), bot->GetMaxPower(bot->GetPowerType()));
         if (HasCheat(BotCheatMask::repair))
+#ifdef MANGOSBOT_ZERO
             bot->DurabilityRepairAll(false, 0);
+#else
+            bot->DurabilityRepairAll(false, 0, false);
+#endif
         if (HasCheat(BotCheatMask::cooldown))
             bot->RemoveAllCooldowns();
     }
