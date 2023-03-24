@@ -232,6 +232,7 @@ namespace ai
             creators["enemy healer target"] = &ValueContext::enemy_healer_target;
             creators["snare target"] = &ValueContext::snare_target;
             creators["formation"] = &ValueContext::formation;
+            creators["formation position"] = &ValueContext::formation_position;
             creators["stance"] = &ValueContext::stance;
             creators["item usage"] = &ValueContext::item_usage;
             creators["force item usage"] = &ValueContext::force_item_usage;
@@ -376,6 +377,7 @@ namespace ai
         static UntypedValue* item_usage(PlayerbotAI* ai) { return new ItemUsageValue(ai); }
         static UntypedValue* force_item_usage(PlayerbotAI* ai) { return new ForceItemUsageValue(ai); }
         static UntypedValue* formation(PlayerbotAI* ai) { return new FormationValue(ai); }
+        static UntypedValue* formation_position(PlayerbotAI* ai) { return new FormationPositionValue(ai); }
         static UntypedValue* stance(PlayerbotAI* ai) { return new StanceValue(ai); }
         static UntypedValue* mana_save_level(PlayerbotAI* ai) { return new ManaSaveLevelValue(ai); }
         static UntypedValue* invalid_target(PlayerbotAI* ai) { return new InvalidTargetValue(ai); }
