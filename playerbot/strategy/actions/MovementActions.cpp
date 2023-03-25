@@ -551,6 +551,9 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
 
                 WorldPacket emptyPacket;
                 bot->GetSession()->HandleCancelMountAuraOpcode(emptyPacket);
+
+                if (bot->IsFlying())
+                    bot->GetMotionMaster()->MoveFall();
             }
 
             Spell* spell = new Spell(bot, pSpellInfo, false);
