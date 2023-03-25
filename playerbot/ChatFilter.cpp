@@ -650,7 +650,7 @@ public:
             if (!bot->GetGuildId())
                 return message;
 
-            string rank = message.substr(7, message.find(" ")-7);
+            string rank = message.substr(6, message.find(" ")-7);
 
             if (!rank.empty())
             {
