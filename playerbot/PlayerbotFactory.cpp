@@ -1444,8 +1444,6 @@ void PlayerbotFactory::InitEquipment(bool incremental)
             quality--;
         }
 
-        quality = ITEM_QUALITY_POOR;
-
         uint32 attempts = 0;
         uint32 searchLevel = level;
         do
