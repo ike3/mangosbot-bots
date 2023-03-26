@@ -37,9 +37,9 @@ bool GuildAcceptAction::Execute(Event& event)
         accept = false;
     }
 
-    Guild* guild = sGuildMgr.GetGuildById(inviter->GetGuildId());
+    Guild* guild = sGuildMgr.GetGuildById(guildId);
 
-    if(guild->GetMemberSize() > 1000)
+    if(guild && guild->GetMemberSize() > 1000)
     {
         ai->TellError("This guild has over 1000 members. To stop it from reaching the 1064 member limit I will not join it.");
         accept = false;
