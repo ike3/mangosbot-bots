@@ -95,6 +95,12 @@ bool CastSpellAction::Execute(Event& event)
             }
         }
 
+       if (GetTargetName() == "current target" && (!bot->GetCurrentSpell(CURRENT_MELEE_SPELL) && !bot->GetCurrentSpell(CURRENT_AUTOREPEAT_SPELL)))
+       {
+            if (bot->getClass() == CLASS_HUNTER && spellName != "auto shot" && sServerFacade.GetDistance2d(bot, GetTarget()) > 5.0f)
+                ai->CastSpell("auto shot", GetTarget());            
+        }       
+
         executed = ai->CastSpell(spellName, GetTarget(), nullptr, false, &spellDuration);
     }
 
