@@ -40,6 +40,12 @@ namespace ai
 
     bool JoinGroupAction::Execute(Event& event)
     {
+        if (bot->InBattleGround())
+            return false;
+
+        if (bot->InBattleGroundQueue())
+            return false;
+
         Player* master = event.getOwner();
 
         Group* group = master->GetGroup();
