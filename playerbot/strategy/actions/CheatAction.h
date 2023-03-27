@@ -12,5 +12,7 @@ namespace ai
         static BotCheatMask GetCheatMask(string cheat);
         static string GetCheatName(BotCheatMask cheatMask);
         void ListCheats();
+        void AddCheat(BotCheatMask cheatMask);
+        void RemCheat(BotCheatMask cheatMask);
     };
 }

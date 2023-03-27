@@ -16,16 +16,25 @@ bool CheatAction::Execute(Event& event)
     for (vector<string>::iterator i = splitted.begin(); i != splitted.end(); i++)
     {
         const char* name = i->c_str();
+        BotCheatMask newCheat = GetCheatMask(name + 1);
+
         switch (name[0])
         {
         case '+':
-            cheatMask |= (uint32)GetCheatMask(name + 1);
+            AddCheat(newCheat);
+            cheatMask |= (uint32)newCheat;
             break;
         case '-':
-            cheatMask &= ~(uint32)GetCheatMask(name + 1);
+            RemCheat(newCheat);
+            cheatMask &= ~(uint32)newCheat;
             break;
         case '~':
-            cheatMask ^= (uint32)GetCheatMask(name + 1);
+            if (ai->HasCheat(newCheat))
+                RemCheat(newCheat);
+            else
+                AddCheat(newCheat);
+
+            cheatMask ^= (uint32)newCheat;
             break;
         case '?':
             ListCheats();
@@ -40,7 +49,7 @@ bool CheatAction::Execute(Event& event)
 
 BotCheatMask CheatAction::GetCheatMask(string cheat)
 {
-    vector<string> cheatName = { "taxi", "gold", "health", "mana", "power", "item", "cooldown", "repair", "maxMask" };
+    vector<string> cheatName = { "taxi", "gold", "health", "mana", "power", "item", "cooldown", "repair", "movespeed", "attackspeed", "maxMask"};
     for (int i = 0; i < log2((uint32)BotCheatMask::maxMask); i++)
     {
         if (cheatName[i] == cheat)
@@ -52,8 +61,8 @@ BotCheatMask CheatAction::GetCheatMask(string cheat)
 
 string CheatAction::GetCheatName(BotCheatMask cheatMask)
 {
-    vector<string> cheatName = { "none", "taxi", "gold", "health", "mana", "power", "item", "cooldown", "repair", "maxMask" };
-    return cheatName[log2((uint32)cheatMask)];
+    vector<string> cheatName = { "taxi", "gold", "health", "mana", "power", "item", "cooldown", "repair", "movespeed", "attackspeed", "maxMask" };
+    return cheatName[log2(((uint32)cheatMask))];
 }
 
 void CheatAction::ListCheats()
@@ -69,4 +78,47 @@ void CheatAction::ListCheats()
     }
 
     ai->TellMasterNoFacing(out);
+}
+
+void CheatAction::AddCheat(BotCheatMask cheatMask)
+{
+    switch(cheatMask)
+    {
+    case BotCheatMask::attackspeed:
+        int32 amount = 9999;
+
+        uint32 SPELL_MOD_MELEE_HASTE = 15181;
+        uint32 SPELL_MOD_RANGE_HASTE = 15182;
+        uint32 SPELL_MOD_SPELL_HASTE = 15183;
+
+        bot->RemoveAurasDueToSpell(SPELL_MOD_MELEE_HASTE);
+        bot->CastCustomSpell(bot, SPELL_MOD_MELEE_HASTE, &amount, &amount, nullptr, TRIGGERED_OLD_TRIGGERED);
+        bot->RemoveAurasDueToSpell(SPELL_MOD_RANGE_HASTE);
+        bot->CastCustomSpell(bot, SPELL_MOD_RANGE_HASTE, &amount, &amount, nullptr, TRIGGERED_OLD_TRIGGERED);
+        bot->RemoveAurasDueToSpell(SPELL_MOD_SPELL_HASTE);
+        bot->CastCustomSpell(bot, SPELL_MOD_SPELL_HASTE, &amount, &amount, nullptr, TRIGGERED_OLD_TRIGGERED);
+
+        break;
+    }
+}
+
+void CheatAction::RemCheat(BotCheatMask cheatMask)
+{
+    switch (cheatMask)
+    {
+    case BotCheatMask::movespeed:
+        bot->UpdateSpeed(MOVE_WALK, true, 1);
+        bot->UpdateSpeed(MOVE_RUN, true, 1);
+        bot->UpdateSpeed(MOVE_SWIM, true, 1);
+        break;
+    case BotCheatMask::attackspeed:
+        uint32 SPELL_MOD_MELEE_HASTE = 15181;
+        uint32 SPELL_MOD_RANGE_HASTE = 15182;
+        uint32 SPELL_MOD_SPELL_HASTE = 15183;
+
+        bot->RemoveAurasDueToSpell(SPELL_MOD_MELEE_HASTE);
+        bot->RemoveAurasDueToSpell(SPELL_MOD_RANGE_HASTE);
+        bot->RemoveAurasDueToSpell(SPELL_MOD_SPELL_HASTE);
+        break;
+    }
 }

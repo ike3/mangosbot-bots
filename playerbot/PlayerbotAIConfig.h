@@ -13,15 +13,17 @@ class ChatHandler;
 enum class BotCheatMask : uint32
 {
     none = 0,
-    taxi = 1,
-    gold = 2,
-    health = 4,
-    mana = 8,
-    power = 16,
-    item = 32,
-    cooldown = 64,
-    repair = 128,
-    maxMask = 256
+    taxi = 1 << 0,
+    gold = 1 << 1,
+    health = 1 << 2,
+    mana = 1 << 3,
+    power = 1 << 4,
+    item = 1 << 5,
+    cooldown = 1 << 6,
+    repair = 1 << 7,
+    movespeed = 1 << 8,
+    attackspeed = 1 << 9,
+    maxMask = 1 << 10
 };
 
 

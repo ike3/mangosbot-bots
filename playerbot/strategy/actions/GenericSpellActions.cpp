@@ -100,6 +100,8 @@ bool CastSpellAction::Execute(Event& event)
 
     if (executed)
     {
+        if (ai->HasCheat(BotCheatMask::attackspeed))
+            spellDuration = 1;
         SetDuration(spellDuration);
     }
 
