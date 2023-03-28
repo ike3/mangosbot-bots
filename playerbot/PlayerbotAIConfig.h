@@ -142,6 +142,7 @@ public:
     bool randomBotFormGuild;
     bool randomBotRandomPassword;
     bool inviteChat;
+    bool guildFeedback;
     bool talentsInPublicNote;
     bool nonGmFreeSummon;
 

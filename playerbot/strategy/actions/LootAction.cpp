@@ -332,6 +332,22 @@ bool StoreLootAction::Execute(Event& event)
 
         ai->TellMasterNoFacing(out.str(), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
 
+        if (sPlayerbotAIConfig.guildFeedback && bot->GetGuildId() && urand(0, 10) && proto->Quality >= ITEM_QUALITY_RARE && sRandomPlayerbotMgr.IsFreeBot(bot))
+        {
+            Guild* guild = sGuildMgr.GetGuildById(bot->GetGuildId());
+
+            if (guild)
+            {
+                map<string, string> placeholders;
+                placeholders["%name"] = chat->formatItem(itemQualifier);
+
+                if (urand(0, 3))
+                    guild->BroadcastToGuild(bot->GetSession(), BOT_TEXT2("Yay I looted %name!", placeholders), LANG_UNIVERSAL);
+                else
+                    guild->BroadcastToGuild(bot->GetSession(), BOT_TEXT2("Guess who got a %name? Me!", placeholders), LANG_UNIVERSAL);
+            }
+        }
+
         sPlayerbotAIConfig.logEvent(ai, "StoreLootAction", proto->Name1, to_string(proto->ItemId));
     }
 

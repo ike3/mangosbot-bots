@@ -380,6 +380,7 @@ bool PlayerbotAIConfig::Initialize()
     randomBotRaidNearby = config.GetBoolDefault("AiPlayerbot.RandomBotRaidNearby", true);
     randomBotGuildNearby = config.GetBoolDefault("AiPlayerbot.RandomBotGuildNearby", true);
     inviteChat = config.GetBoolDefault("AiPlayerbot.InviteChat", true);
+    guildFeedback = config.GetBoolDefault("AiPlayerbot.GuildFeedback", true);
     
     randomBotFormGuild = config.GetBoolDefault("AiPlayerbot.RandomBotFormGuild", true);
     

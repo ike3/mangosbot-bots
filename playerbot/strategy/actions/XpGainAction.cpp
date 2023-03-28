@@ -34,6 +34,26 @@ bool XpGainAction::Execute(Event& event)
     AI_VALUE(LootObjectStack*, "available loot")->Add(guid);
     ai->AccelerateRespawn(guid);
 
+    if (sPlayerbotAIConfig.guildFeedback && bot->GetGuildId() && urand(0,10) && sRandomPlayerbotMgr.IsFreeBot(bot))
+    {
+        Creature* creature = ai->GetCreature(guid); 
+        if (creature && (creature->IsElite() || creature->IsWorldBoss() || creature->GetLevel() > 61 || creature->GetLevel() > bot->GetLevel() + 4))
+        {
+            Guild* guild = sGuildMgr.GetGuildById(bot->GetGuildId());
+
+            if (guild)
+            {
+                map<string, string> placeholders;
+                placeholders["%name"] = creature->GetName();
+
+                if(urand(0,3))
+                    guild->BroadcastToGuild(bot->GetSession(), BOT_TEXT2("Wow I just killed %name!", placeholders), LANG_UNIVERSAL);
+                else
+                    guild->BroadcastToGuild(bot->GetSession(), BOT_TEXT2("Awesome that %name went down quickly!", placeholders), LANG_UNIVERSAL);
+            }
+        }
+    }
+
     if (!sRandomPlayerbotMgr.IsFreeBot(bot) || sPlayerbotAIConfig.playerbotsXPrate == 1)
         return false;
 
