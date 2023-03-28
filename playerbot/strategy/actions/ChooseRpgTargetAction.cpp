@@ -227,6 +227,9 @@ bool ChooseRpgTargetAction::Execute(Event& event)
             if (!player)
                 continue;
 
+            if (player == bot)
+                continue;
+
             if (player->GetPlayerbotAI())
             {
                 GuidPosition guidPP = PAI_VALUE(GuidPosition, "rpg target");
