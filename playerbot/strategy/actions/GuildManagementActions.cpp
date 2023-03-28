@@ -89,14 +89,30 @@ bool GuildManageNearbyAction::Execute(Event& event)
             MemberSlot* member = guild->GetMemberSlot(player->GetObjectGuid());
             uint32 dCount = AI_VALUE(uint32, "death count");
 
-            if (!urand(0, 30))
+            if (!urand(0, 30) && dCount < 2 && guild->HasRankRight(botMember->RankId, GR_RIGHT_PROMOTE))
             {
+                if (sPlayerbotAIConfig.guildFeedback && urand(0, 10) && sRandomPlayerbotMgr.IsFreeBot(bot))
+                {
+                    map<string, string> placeholders;
+                    placeholders["%name"] = player->GetName();
+
+                    guild->BroadcastToGuild(bot->GetSession(), BOT_TEXT2("Good job %name. You deserver this.", placeholders), LANG_UNIVERSAL);
+                }
+
                 ai->DoSpecificAction("guild promote", Event("guild management", guid), true);
                 continue;
             }
 
-            if (!urand(0, 30))
+            if (!urand(0, 30) && dCount > 2 && guild->HasRankRight(botMember->RankId, GR_RIGHT_DEMOTE))
             {
+                if (sPlayerbotAIConfig.guildFeedback && urand(0, 10) && sRandomPlayerbotMgr.IsFreeBot(bot))
+                {
+                    map<string, string> placeholders;
+                    placeholders["%name"] = player->GetName();
+
+                    guild->BroadcastToGuild(bot->GetSession(), BOT_TEXT2("That was awefull %name. I hate to do this but...", placeholders), LANG_UNIVERSAL);
+                }
+
                 ai->DoSpecificAction("guild demote", Event("guild management", guid), true);
                 continue;
             }
@@ -110,7 +126,7 @@ bool GuildManageNearbyAction::Execute(Event& event)
         if (guild->GetMemberSize() > 1000)
             return false;
 
-        if ((guild->GetRankRights(botMember->RankId) & GR_RIGHT_INVITE) == 0)
+        if (guild->HasRankRight(botMember->RankId, GR_RIGHT_INVITE))
             continue;
 
         if (player->GetGuildIdInvited())
@@ -206,7 +222,7 @@ bool GuildManageNearbyAction::isUseful()
     Guild* guild = sGuildMgr.GetGuildById(bot->GetGuildId());
     MemberSlot* botMember = guild->GetMemberSlot(bot->GetObjectGuid());
 
-    return guild->GetRankRights(botMember->RankId) & (GR_RIGHT_DEMOTE | GR_RIGHT_PROMOTE | GR_RIGHT_INVITE);
+    return  guild->HasRankRight(botMember->RankId, GR_RIGHT_DEMOTE) || guild->HasRankRight(botMember->RankId, GR_RIGHT_PROMOTE) || guild->HasRankRight(botMember->RankId, GR_RIGHT_INVITE);
 }
 
 bool GuildLeaveAction::Execute(Event& event)
