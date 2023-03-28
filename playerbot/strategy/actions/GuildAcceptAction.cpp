@@ -1,6 +1,7 @@
 #include "botpch.h"
 #include "../../playerbot.h"
 #include "GuildAcceptAction.h"
+#include "ServerFacade.h"
 
 using namespace std;
 using namespace ai;
@@ -41,8 +42,19 @@ bool GuildAcceptAction::Execute(Event& event)
 
     if(guild && guild->GetMemberSize() > 1000)
     {
-        ai->TellError("This guild has over 1000 members. To stop it from reaching the 1064 member limit I will not join it.");
+        ai->TellError("This guild has over 1000 members. To stop it from reaching the 1064 member limit I refuse to join it.");
         accept = false;
+    }
+
+    if (sPlayerbotAIConfig.inviteChat && sServerFacade.GetDistance2d(bot, inviter) < sPlayerbotAIConfig.spellDistance * 1.5 && inviter->GetPlayerbotAI() && sRandomPlayerbotMgr.IsFreeBot(bot))
+    {
+        map<string, string> placeholders;
+        placeholders["%name"] = inviter->GetName();
+
+        if (urand(0, 3))
+            bot->Say(BOT_TEXT2("Sounds good %name sign me up!", placeholders), (bot->GetTeam() == ALLIANCE ? LANG_COMMON : LANG_ORCISH));
+        else
+            bot->Say(BOT_TEXT2("I would love to join!", placeholders), (bot->GetTeam() == ALLIANCE ? LANG_COMMON : LANG_ORCISH));
     }
 
     WorldPacket packet;

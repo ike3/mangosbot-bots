@@ -118,12 +118,23 @@ namespace ai
             if (abs(int32(player->GetLevel() - bot->GetLevel())) > 2)
                 continue;
 
-            if (sServerFacade.GetDistance2d(bot, player) > sPlayerbotAIConfig.sightDistance)
+            if (sServerFacade.GetDistance2d(bot, player) > sPlayerbotAIConfig.spellDistance)
                 continue;
-            
+
             //When inviting the 5th member of the group convert to raid for future invites.
             if (group && ai->GetGrouperType() > GrouperType::LEADER_5 && !group->IsRaidGroup() && bot->GetGroup()->GetMembersCount() > 3)
                 group->ConvertToRaid();
+
+            if (sPlayerbotAIConfig.inviteChat && sRandomPlayerbotMgr.IsFreeBot(bot))
+            {
+                map<string, string> placeholders;
+                placeholders["%name"] = player->GetName();
+
+                if(group && group->IsRaidGroup())
+                    bot->Say(BOT_TEXT2("Hey %name do you want join my raid?", placeholders), (bot->GetTeam() == ALLIANCE ? LANG_COMMON : LANG_ORCISH));                    
+                else
+                    bot->Say(BOT_TEXT2("Hey %name do you want join my group?", placeholders), (bot->GetTeam() == ALLIANCE ? LANG_COMMON : LANG_ORCISH));
+            }
 
             return Invite(bot, player);
         }
@@ -181,6 +192,8 @@ namespace ai
 
     bool InviteGuildToGroupAction::Execute(Event& event)
     {
+        Guild* guild = sGuildMgr.GetGuildById(bot->GetGuildId());
+
         for (auto& member : getGuildMembers())
         {
             Player* player = member;
@@ -200,6 +213,12 @@ namespace ai
             if (player->IsBeingTeleported())
                 continue;
 
+            if (player->GetMapId() != bot->GetMapId() && player->GetLevel() < 30)
+                continue;
+
+            if (WorldPosition(player).distance(bot) > 1000 && player->GetLevel() < 15)
+                continue;
+
             PlayerbotAI* playerAi = player->GetPlayerbotAI();
 
             if (playerAi)
@@ -212,7 +231,7 @@ namespace ai
 
                 if (player->GetLevel() > bot->GetLevel() + 5) //Invite higher levels that need money so they can grind money and help out.
                 {
-                    if (!PAI_VALUE(bool,"should get money"))
+                    if (!PAI_VALUE(bool, "should get money"))
                         continue;
                 }
             }
@@ -222,6 +241,35 @@ namespace ai
 
             if (!playerAi && sServerFacade.GetDistance2d(bot, player) > sPlayerbotAIConfig.sightDistance)
                 continue;
+
+            Group* group = bot->GetGroup();
+            //When inviting the 5th member of the group convert to raid for future invites.
+            if (group && ai->GetGrouperType() > GrouperType::LEADER_5 && !group->IsRaidGroup() && bot->GetGroup()->GetMembersCount() > 3)
+            {
+                group->ConvertToRaid();
+            }
+
+            if (sPlayerbotAIConfig.inviteChat && sRandomPlayerbotMgr.IsFreeBot(bot))
+            {
+                map<string, string> placeholders;
+                placeholders["%name"] = player->GetName();
+                placeholders["%place"] = WorldPosition(player).getAreaName(false, false);
+
+                if (group && group->IsRaidGroup())
+                {
+                    if (urand(0, 3))
+                        guild->BroadcastToGuild(bot->GetSession(), BOT_TEXT2("Hey anyone want to raid in %place", placeholders), LANG_UNIVERSAL);
+                    else
+                        guild->BroadcastToGuild(bot->GetSession(), BOT_TEXT2("Hey %name I'm raiding in %place do you wan to join me?", placeholders), LANG_UNIVERSAL);
+                }
+                else
+                {
+                    if (urand(0, 3))
+                        guild->BroadcastToGuild(bot->GetSession(), BOT_TEXT2("Hey anyone wanna group up in %place?", placeholders), (bot->GetTeam() == ALLIANCE ? LANG_COMMON : LANG_ORCISH));
+                    else
+                        guild->BroadcastToGuild(bot->GetSession(), BOT_TEXT2("Hey %name do you want join my group? I'm heading for %place", placeholders), (bot->GetTeam() == ALLIANCE ? LANG_COMMON : LANG_ORCISH));
+                }
+            }
 
             return Invite(bot, player);
         }

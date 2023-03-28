@@ -130,11 +130,69 @@ bool GuildManageNearbyAction::Execute(Event& event)
                 continue;
         }
 
-        if (sServerFacade.GetDistance2d(bot, player) > sPlayerbotAIConfig.sightDistance)
+        if (sServerFacade.GetDistance2d(bot, player) > sPlayerbotAIConfig.spellDistance)
             continue;
+
+        if (sPlayerbotAIConfig.inviteChat && sRandomPlayerbotMgr.IsFreeBot(bot))
+        {
+            map<string, string> placeholders;
+            placeholders["%name"] = player->GetName();
+            placeholders["%members"] = guild->GetMemberSize();
+            placeholders["%guildname"] = guild->GetName();
+            placeholders["%place"] = WorldPosition(player).getAreaName(false, false);
+
+            switch ((urand(0, 10)* urand(0, 10))/10)
+            {
+            case 0:
+                bot->Say(BOT_TEXT2("Hey %name do you want to join my guild?", placeholders), (bot->GetTeam() == ALLIANCE ? LANG_COMMON : LANG_ORCISH));
+                break;
+            case 1:
+                bot->Say(BOT_TEXT2("Hey man you wanna join my guild?", placeholders), (bot->GetTeam() == ALLIANCE ? LANG_COMMON : LANG_ORCISH));
+                break;
+            case 2:
+                bot->Say(BOT_TEXT2("I think you would be a good contribution to %guildname. Would you like to join?", placeholders), (bot->GetTeam() == ALLIANCE ? LANG_COMMON : LANG_ORCISH));
+                break;
+            case 3:
+                bot->Say(BOT_TEXT2("My guild %guildname has %members quality members. Would you like to make it 1 more?", placeholders), (bot->GetTeam() == ALLIANCE ? LANG_COMMON : LANG_ORCISH));
+                break;
+            case 4:
+                bot->Say(BOT_TEXT2("Hey %name do you want to join %guildname? We have %members members and looking to become number 1 of the server.", placeholders), (bot->GetTeam() == ALLIANCE ? LANG_COMMON : LANG_ORCISH));
+                break;
+            case 5:
+                bot->Say(BOT_TEXT2("I'm not really good at smalltalk. Do you wanna join my guild?", placeholders), (bot->GetTeam() == ALLIANCE ? LANG_COMMON : LANG_ORCISH));
+                break;
+            case 6:
+                bot->Say(BOT_TEXT2("Welcome to %place.... do you want to join my guild?", placeholders), (bot->GetTeam() == ALLIANCE ? LANG_COMMON : LANG_ORCISH));
+                break;
+            case 7:
+                bot->Say(BOT_TEXT2("You should join my guild!", placeholders), (bot->GetTeam() == ALLIANCE ? LANG_COMMON : LANG_ORCISH));
+                break;
+            case 8:
+                bot->Say(BOT_TEXT2("I got this guild....", placeholders), (bot->GetTeam() == ALLIANCE ? LANG_COMMON : LANG_ORCISH));
+                break;
+            case 9:
+                bot->Say(BOT_TEXT2("You are actually going to join my guild?", placeholders), (bot->GetTeam() == ALLIANCE ? LANG_COMMON : LANG_ORCISH));
+                bot->Say(BOT_TEXT2("Haha.. you are the man! We are going to raid Molten...", placeholders), (bot->GetTeam() == ALLIANCE ? LANG_COMMON : LANG_ORCISH));
+                break;
+            case 10:
+                bot->Say(BOT_TEXT2("Hey Hey! do you guys wanna join my gild????", placeholders), (bot->GetTeam() == ALLIANCE ? LANG_COMMON : LANG_ORCISH));
+                bot->Say(BOT_TEXT2("We've got a bunch of high levels and we are really super friendly..", placeholders), (bot->GetTeam() == ALLIANCE ? LANG_COMMON : LANG_ORCISH));
+                bot->Say(BOT_TEXT2("..and watch your dog and do your homework...", placeholders), (bot->GetTeam() == ALLIANCE ? LANG_COMMON : LANG_ORCISH));
+                bot->Say(BOT_TEXT2("..and we raid once a week and are working on MC raids...", placeholders), (bot->GetTeam() == ALLIANCE ? LANG_COMMON : LANG_ORCISH));
+                bot->Say(BOT_TEXT2("..and we have more members than just me...", placeholders), (bot->GetTeam() == ALLIANCE ? LANG_COMMON : LANG_ORCISH));
+                bot->Say(BOT_TEXT2("..and please stop I'm lonenly and we can get a ride the whole time...", placeholders), (bot->GetTeam() == ALLIANCE ? LANG_COMMON : LANG_ORCISH));
+                bot->Say(BOT_TEXT2("..and it's really beautifull and I feel like crying...", placeholders), (bot->GetTeam() == ALLIANCE ? LANG_COMMON : LANG_ORCISH));
+                bot->Say(BOT_TEXT2("So what do you guys say are you going to join are you going to join?", placeholders), (bot->GetTeam() == ALLIANCE ? LANG_COMMON : LANG_ORCISH));
+                break;
+            }
+        }
         
         if (ai->DoSpecificAction("guild invite", Event("guild management", guid), true))
+        {
+            if (sPlayerbotAIConfig.inviteChat)
+                return true;
             found++;
+        }
     }
 
     return found > 0;

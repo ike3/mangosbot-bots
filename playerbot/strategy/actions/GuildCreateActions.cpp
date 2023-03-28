@@ -196,6 +196,17 @@ bool PetitionOfferNearbyAction::Execute(Event& event)
         if (sServerFacade.GetDistance2d(bot, player) > sPlayerbotAIConfig.sightDistance)
             continue;
 
+        if (sPlayerbotAIConfig.inviteChat && sServerFacade.GetDistance2d(bot, player) < sPlayerbotAIConfig.spellDistance && sRandomPlayerbotMgr.IsFreeBot(bot))
+        {
+            map<string, string> placeholders;
+            placeholders["%name"] = player->GetName();
+
+            if(urand(0,3))
+                bot->Say(BOT_TEXT2("Hey %name do you want create a guild together?", placeholders), (bot->GetTeam() == ALLIANCE ? LANG_COMMON : LANG_ORCISH));
+            else
+                bot->Say(BOT_TEXT2("Hey do you want to form a guild?", placeholders), (bot->GetTeam() == ALLIANCE ? LANG_COMMON : LANG_ORCISH));
+        }
+
         //Parse rpg target to quest action.
         WorldPacket p(CMSG_QUESTGIVER_ACCEPT_QUEST);
         p << i;

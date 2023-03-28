@@ -154,7 +154,10 @@ AiPlayerbot.RandomBotQuestIds = 7848,3802,5505,6502,7761
 # Randombots will form guilds by buying a charter, getting signatures and handing it in.
 # AiPlayerbot.RandomBotFormGuild = 1
 
-# Bots without a master will say their lines
+# Bots will chat in say/guild when they invite other bots to groups/raids/guilds
+# AiPlayerbot.InviteChat = 1
+
+# Bots without a master will say things they normally tell their master.
 # AiPlayerbot.RandomBotSayWithoutMaster = 0
 
 # Speeds up respawn of mobs after being killed by a bot. This only affects the delays after being fully looted.

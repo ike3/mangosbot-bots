@@ -47,16 +47,34 @@ namespace ai
             ai->ChangeStrategy("+follow,-lfg,-bg", BotState::BOT_STATE_NON_COMBAT);
             ai->Reset();
 
-            ai->TellMaster(BOT_TEXT("hello"), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
-
             sPlayerbotAIConfig.logEvent(ai, "AcceptInvitationAction", grp->GetLeaderName(), to_string(grp->GetMembersCount()));
 
             if (master->GetPlayerbotAI()) //Copy formation from bot master.
             {
+                if (sPlayerbotAIConfig.inviteChat && sRandomPlayerbotMgr.IsFreeBot(bot))
+                {
+                    map<string, string> placeholders;
+                    placeholders["%name"] = master->GetName();
+                    string reply;
+                    if (urand(0, 3))
+                        reply = BOT_TEXT2("Send me an invite %name!", placeholders);
+                    else
+                        reply = BOT_TEXT2("Sure I will join you.", placeholders);
+
+                    Guild* guild = sGuildMgr.GetGuildById(bot->GetGuildId());
+
+                    if (guild && master->IsInGuild(bot))
+                        guild->BroadcastToGuild(bot->GetSession(), reply, LANG_UNIVERSAL);
+                    else if (sServerFacade.GetDistance2d(bot, master) < sPlayerbotAIConfig.spellDistance * 1.5)
+                        bot->Say(reply, (bot->GetTeam() == ALLIANCE ? LANG_COMMON : LANG_ORCISH));
+                }
+
                 Formation* masterFormation = MAI_VALUE(Formation*, "formation");
                 FormationValue* value = (FormationValue*)context->GetValue<Formation*>("formation");
                 value->Load(masterFormation->getName());
             }
+
+            ai->TellMaster(BOT_TEXT("hello"), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
 
             return true;
         }
