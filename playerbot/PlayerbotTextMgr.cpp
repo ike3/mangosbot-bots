@@ -110,7 +110,7 @@ string PlayerbotTextMgr::GetBotText(string name, map<string, string> placeholder
 {
     string botText = GetBotText(name);
     if (botText.empty())
-        return "";
+        botText = name;
 
     for (map<string, string>::iterator i = placeholders.begin(); i != placeholders.end(); ++i)
         replaceAll(botText, i->first, i->second);
