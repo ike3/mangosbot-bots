@@ -59,6 +59,7 @@
 #include "WaitForAttackAction.h"
 #include "PullActions.h"
 #include "ResetAiAction.h"
+#include "ShareQuestAction.h"
 
 #include "OnyxiasLairDungeonActions.h"
 #include "MoltenCoreDungeonActions.h"
@@ -155,6 +156,7 @@ namespace ai
             creators["mount"] = &ActionContext::mount;
             creators["auto talents"] = &ActionContext::auto_talents;
 			creators["auto learn spell"] = &ActionContext::auto_learn_spell;
+            creators["auto share quest"] = &ActionContext::auto_share_quest;
             creators["xp gain"] = &ActionContext::xp_gain;
             creators["invite nearby"] = &ActionContext::invite_nearby;
             creators["invite guild"] = &ActionContext::invite_guild;
@@ -397,6 +399,7 @@ namespace ai
         static Action* mount(PlayerbotAI *ai) { return new CastSpellAction(ai, "mount"); }
         static Action* auto_talents(PlayerbotAI* ai) { return new AutoSetTalentsAction(ai); }
 		static Action* auto_learn_spell(PlayerbotAI* ai) { return new AutoLearnSpellAction(ai); }
+        static Action* auto_share_quest(PlayerbotAI* ai) { return new AutoShareQuestAction(ai); }
         static Action* xp_gain(PlayerbotAI* ai) { return new XpGainAction(ai); }
         static Action* invite_nearby(PlayerbotAI* ai) { return new InviteNearbyToGroupAction(ai); }
         static Action* invite_guild(PlayerbotAI* ai) { return new InviteGuildToGroupAction(ai); }
