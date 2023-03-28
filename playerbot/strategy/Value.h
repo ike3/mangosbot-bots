@@ -269,7 +269,7 @@ namespace ai
 
         virtual string Format()
         {
-            GuidPosition guid = this->Calculate();
+            GuidPosition guid = GuidPosition(this->Calculate(), bot->GetMapId());
             return guid ? chat->formatGuidPosition(guid) : "<none>";
         }
     };
@@ -286,7 +286,7 @@ namespace ai
             list<ObjectGuid> guids = this->Calculate();
             for (list<ObjectGuid>::iterator i = guids.begin(); i != guids.end(); ++i)
             {
-                GuidPosition guid = *i;
+                GuidPosition guid = GuidPosition(*i, bot->GetMapId());
                 out << chat->formatGuidPosition(guid) << ",";
             }
             out << "}";

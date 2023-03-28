@@ -334,7 +334,7 @@ bool DebugAction::Execute(Event& event)
     {
         ostringstream out;
 
-        GuidPosition guidP = ai->GetMaster()->GetSelectionGuid();
+        GuidPosition guidP = GuidPosition(ai->GetMaster()->GetSelectionGuid(), ai->GetMaster()->GetMapId());
 
         if (text.size() > 4)
         {
@@ -483,7 +483,7 @@ bool DebugAction::Execute(Event& event)
             {
                 for (auto go : gos)
                 {
-                    guidP = GuidPosition(go);
+                    guidP = GuidPosition(go, bot->GetMapId());
                     break;
                 }
             }

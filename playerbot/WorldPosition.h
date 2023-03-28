@@ -44,7 +44,7 @@ namespace ai
         WorldPosition(const WorldObject* wo) { if (wo) { set(WorldLocation(wo->GetMapId(), wo->GetPositionX(), wo->GetPositionY(), wo->GetPositionZ(), wo->GetOrientation())); } }
         WorldPosition(const CreatureDataPair* cdPair) { if (cdPair) { set(WorldLocation(cdPair->second.mapid, cdPair->second.posX, cdPair->second.posY, cdPair->second.posZ, cdPair->second.orientation)); } }
         WorldPosition(const GameObjectDataPair* cdPair) { if (cdPair) { set(WorldLocation(cdPair->second.mapid, cdPair->second.posX, cdPair->second.posY, cdPair->second.posZ, cdPair->second.orientation)); } }
-        WorldPosition(const GuidPosition& guidP);
+        WorldPosition(const uint32 mapId, const GuidPosition& guidP);
         WorldPosition(const vector<WorldPosition*>& list, const WorldPositionConst conType);
         WorldPosition(const vector<WorldPosition>& list, const WorldPositionConst conType);
         WorldPosition(const uint32 mapid, const GridPair grid) : WorldLocation(mapid, (int32(grid.x_coord) - CENTER_GRID_ID - 0.5)* SIZE_OF_GRIDS + CENTER_GRID_OFFSET, (int32(grid.y_coord) - CENTER_GRID_ID - 0.5)* SIZE_OF_GRIDS + CENTER_GRID_OFFSET, 0, 0) {}
@@ -57,7 +57,7 @@ namespace ai
         void set(const WorldLocation& pos) { mapid = pos.mapid; coord_x = pos.coord_x; coord_y = pos.coord_y; coord_z = pos.coord_z; orientation = pos.orientation; }
         void set(const WorldPosition& pos) { mapid = pos.mapid; coord_x = pos.coord_x; coord_y = pos.coord_y; coord_z = pos.coord_z; orientation = pos.orientation; }
         void set(const WorldObject* wo) { set(WorldLocation(wo->GetMapId(), wo->GetPositionX(), wo->GetPositionY(), wo->GetPositionZ(), wo->GetOrientation())); }
-        void set(const ObjectGuid& guid);
+        void set(const ObjectGuid& guid, const uint32 mapId);
         void setMapId(const uint32 id) { mapid = id; }
         void setX(const float x) { coord_x = x; }
         void setY(const float y) { coord_y = y; }
@@ -222,7 +222,6 @@ namespace ai
 
         bool GetReachableRandomPointOnGround(const Player* bot, const float radius, const bool randomRange = true);
 
-        uint32 getUnitsNear(const list<ObjectGuid>& units, const float radius) const;
         uint32 getUnitsAggro(const list<ObjectGuid>& units, const Player* bot) const;
 
         //Creatures

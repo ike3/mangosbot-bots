@@ -24,17 +24,17 @@
 using namespace ai;
 using namespace MaNGOS;
 
-WorldPosition::WorldPosition(const GuidPosition& guidP)
+WorldPosition::WorldPosition(const uint32 mapId, const GuidPosition& guidP)
 {
     if (guidP.mapid !=0 || guidP.coord_x != 0 || guidP.coord_y != 0 || guidP.coord_z !=0) {
         set(WorldPosition(guidP.mapid, guidP.coord_x, guidP.coord_y, guidP.coord_z, guidP.orientation));
         return;
     }
 
-    set(ObjectGuid(guidP));
+    set(ObjectGuid(guidP), guidP.mapid);
  }
 
-void WorldPosition::set(const ObjectGuid& guid)
+void WorldPosition::set(const ObjectGuid& guid, const uint32 mapId)
 {
     switch (guid.GetHigh())
     {
@@ -50,10 +50,19 @@ void WorldPosition::set(const ObjectGuid& guid)
         GameObjectDataPair const* gpair = sObjectMgr.GetGODataPair(guid.GetCounter());
         if (gpair)
             set(gpair);
+
         break;
     }
     case HIGHGUID_UNIT:
     {
+        setMapId(mapId);
+        Creature* creature = getMap()->GetAnyTypeCreature(guid);
+        if (creature)
+        {
+            set(creature);
+            return;
+        }
+
         CreatureDataPair const* cpair = sObjectMgr.GetCreatureDataPair(guid.GetCounter());
         if (cpair)
             set(cpair);
@@ -756,26 +765,16 @@ bool WorldPosition::GetReachableRandomPointOnGround(const Player* bot, const flo
 #endif
 }
 
-uint32 WorldPosition::getUnitsNear(const list<ObjectGuid>& units, const float radius) const
-{
-    uint32 count = 0;
-    for (auto guid : units)
-        if (sqDistance(WorldPosition(guid)) <= radius * radius)
-            count++;
-
-    return count;
-};
-
 uint32 WorldPosition::getUnitsAggro(const list<ObjectGuid>& units, const Player* bot) const
 {
     uint32 count = 0;
     for (auto guid : units)
     {
-        Unit* unit = GuidPosition(guid).GetUnit(); 
+        Unit* unit = GuidPosition(guid,bot->GetMapId()).GetUnit(); 
         
         if (!unit) continue; 
         
-        if (this->sqDistance(WorldPosition(guid)) > unit->GetAttackDistance(bot) * unit->GetAttackDistance(bot))
+        if (this->sqDistance(unit) > unit->GetAttackDistance(bot) * unit->GetAttackDistance(bot))
             continue;
 
         count++;

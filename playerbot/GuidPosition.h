@@ -9,7 +9,7 @@ namespace ai
     public:
         GuidPosition() : ObjectGuid(), WorldPosition() {}
         GuidPosition(ObjectGuid guid, WorldPosition pos) : ObjectGuid(guid), WorldPosition(pos) {};
-        GuidPosition(ObjectGuid guid) : ObjectGuid(guid) { WorldPosition::set(guid); }
+        GuidPosition(ObjectGuid guid, const uint32 mapId) : ObjectGuid(guid) { WorldPosition::set(guid, mapId); }
         GuidPosition(uint64 const& guid, WorldPosition const& pos) : ObjectGuid(guid), WorldPosition(pos) {};
         //template<class T>
         //GuidPosition(ObjectGuid guid, T) : ObjectGuid(guid) {WorldPosition::set(WorldPosition(T))};

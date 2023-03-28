@@ -200,7 +200,7 @@ bool ChooseRpgTargetAction::Execute(Event& event)
 
     for (auto& guid :targetList)
     {
-        GuidPosition guidP(guid);
+        GuidPosition guidP(guid, bot->GetMapId());
 
         if (!guidP)
             continue;
@@ -305,7 +305,7 @@ bool ChooseRpgTargetAction::Execute(Event& event)
 
         for (auto target : sortedTargets)
         {
-            GuidPosition guidP(target.first);
+            GuidPosition guidP(target.first, bot->GetMapId());
 
             if (!guidP.GetWorldObject())
                 continue;
@@ -329,7 +329,7 @@ bool ChooseRpgTargetAction::Execute(Event& event)
         }
     }
 
-    vector<GuidPosition> guidps;
+    vector<ObjectGuid> guidps;
     vector<int> relevances;
 
     for (auto& target : targets)
@@ -345,7 +345,7 @@ bool ChooseRpgTargetAction::Execute(Event& event)
 
     sTravelMgr.weighted_shuffle(guidps.begin(), guidps.end(), relevances.begin(), relevances.end(), gen);
 
-    GuidPosition guidP(guidps.front());
+    GuidPosition guidP(guidps.front(),bot->GetMapId());
 
     if (!guidP)
     {

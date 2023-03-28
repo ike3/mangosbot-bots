@@ -15,7 +15,7 @@ bool RpgAction::Execute(Event& event)
 
     if (!guidP && ai->GetMaster())
     {
-        guidP = ai->GetMaster()->GetSelectionGuid();
+        guidP = GuidPosition(ai->GetMaster()->GetSelectionGuid(), ai->GetMaster()->GetMapId());
         if (guidP)
         {
             RemIgnore(guidP);
