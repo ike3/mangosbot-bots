@@ -751,6 +751,23 @@ void PlayerbotFactory::InitReputations()
         factions.push_back(749); // hydraxian waterlords
         factions.push_back(529); // argent dawn
     }
+    
+    // pvp factions
+    if (level >= 60)
+    {
+        if (bot->GetTeam() == ALLIANCE)
+        {
+            factions.push_back(890); // Silverwing Sentinels
+            factions.push_back(730); // Stormpike Guard
+            factions.push_back(509); // The League of Arathor
+        }
+        else
+        {
+            factions.push_back(729); // Frostwolf Clan
+            factions.push_back(510); // The Defilers
+            factions.push_back(889); // Warsong Outriders
+        }
+    }
 
 #ifndef MANGOSBOT_ZERO
     // TBC factions
