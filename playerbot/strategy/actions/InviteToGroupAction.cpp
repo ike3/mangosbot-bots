@@ -201,6 +201,9 @@ namespace ai
             if (!player)
                 continue;
 
+            if (player == bot)
+                continue;
+
             if (player->GetGroup())
                 continue;
 
