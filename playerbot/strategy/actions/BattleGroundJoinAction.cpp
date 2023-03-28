@@ -389,6 +389,9 @@ bool BGJoinAction::shouldJoinBg(BattleGroundQueueTypeId queueTypeId, BattleGroun
     if (!hasPlayers && !noLag)
         return false;
 
+    if (ai->HasRealPlayerMaster())
+        return false;
+
 #ifndef MANGOSBOT_ZERO
     if (!hasPlayers && isArena && !hasTeam)
         return false;
