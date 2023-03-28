@@ -1195,7 +1195,7 @@ void RandomItemMgr::BuildItemInfoCache()
         }
 
         // check quests
-        if (cacheInfo->source == ITEM_SOURCE_NONE)
+        if (cacheInfo->source == ITEM_SOURCE_NONE || cacheInfo->source == ITEM_SOURCE_PVP)
         {
             vector<uint32> questIds = GetQuestIdsForItem(proto->ItemId);
             if (questIds.size())
@@ -1222,6 +1222,24 @@ void RandomItemMgr::BuildItemInfoCache()
                                     isAlly = true;
                                 else if ((reqRace & RACEMASK_HORDE) != 0)
                                     isHorde = true;
+                            }
+                        }
+
+                        if (quest->GetRequiredMinRepFaction())
+                        {
+                            cacheInfo->repFaction = quest->GetRequiredMinRepFaction();
+                            int r = 0;
+                            for (; r < MAX_REPUTATION_RANK; ++r)
+                            {
+                                if (quest->GetRequiredMinRepValue() == ReputationMgr::PointsInRank[r])
+                                    cacheInfo->repRank = uint32(r);
+                            }
+                            if (FactionEntry const* faction = sFactionStore.LookupEntry(quest->GetRequiredMinRepFaction()))
+                            {
+                                if (faction->team == ALLIANCE)
+                                    cacheInfo->team = ALLIANCE;
+                                if (faction->team == HORDE)
+                                    cacheInfo->team = HORDE;
                             }
                         }
                     }
