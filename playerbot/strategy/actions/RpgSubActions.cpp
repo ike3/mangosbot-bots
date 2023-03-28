@@ -56,8 +56,11 @@ void RpgHelper::setFacing(GuidPosition guidPosition)
     if (guidPosition.IsPlayer())
         return;
 
+
     Unit* unit = guidPosition.GetUnit();
-    //sServerFacade.SetFacingTo(unit,bot);   
+
+    if (unit->IsMoving())
+        return;
 
     MotionMaster& mm = *unit->GetMotionMaster();
     unit->SetFacingTo(unit->GetAngle(bot));
@@ -73,6 +76,9 @@ void RpgHelper::resetFacing(GuidPosition guidPosition)
         return;
 
     Creature* unit = guidPosition.GetCreature();
+
+    if (unit->IsMoving())
+        return;
 
     CreatureData* data = guidPosition.GetCreatureData();
 

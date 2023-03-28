@@ -105,6 +105,8 @@ bool CanFreeMoveToValue::Calculate()
 
     GuidPosition destPos(qualifier);
 
+    destPos.updatePosition();
+
     GuidPosition refPos = AI_VALUE(GuidPosition, "free move center");
 
     return !GetRange() || refPos.distance(destPos) < GetRange();

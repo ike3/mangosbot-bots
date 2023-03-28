@@ -18,7 +18,9 @@ bool MoveToRpgTargetAction::Execute(Event& event)
 
     WorldObject* wo;
     if (unit)
+    {
         wo = unit;
+    }
     else if(go)
         wo = go;
     else
@@ -47,7 +49,7 @@ bool MoveToRpgTargetAction::Execute(Event& event)
         }
     }
 
-    if ((unit && unit->IsMoving() && !urand(0, 20)))
+    if (unit && unit->IsMoving() && !urand(0, 20) && guidP.sqDistance2d(bot) < INTERACTION_DISTANCE * INTERACTION_DISTANCE * 2)
     {
         AI_VALUE(set<ObjectGuid>&,"ignore rpg target").insert(AI_VALUE(GuidPosition, "rpg target"));
 
@@ -135,10 +137,14 @@ bool MoveToRpgTargetAction::Execute(Event& event)
     {
         if (!unit || !unit->IsMoving())
             angle = wo->GetAngle(bot) + (M_PI * irand(-25, 25) / 100.0); //Closest 45 degrees towards the target
-        else
+        else if (!unit->HasInArc(bot))
             angle = wo->GetOrientation() + (M_PI * irand(-25, 25) / 100.0); //45 degrees infront of target (leading it's movement)
+        else
+            angle = wo->GetAngle(bot); //Current approuch angle.
 
-        if(unit)
+        if (guidP.sqDistance2d(bot) < INTERACTION_DISTANCE * INTERACTION_DISTANCE)
+            distance = sqrt(guidP.sqDistance2d(bot)); //Stay at this distance.
+        else if(unit)
             distance = frand(0.5, 1);
         else
             distance = frand(0, 0.5);
@@ -152,8 +158,11 @@ bool MoveToRpgTargetAction::Execute(Event& event)
     //WaitForReach(distance);
 
     bool couldMove;
-    
-    couldMove = MoveTo(mapId, x, y, z, false, false);
+
+    if (unit && unit->IsMoving() && guidP.sqDistance2d(bot) > INTERACTION_DISTANCE * INTERACTION_DISTANCE)
+        couldMove = Follow(unit, INTERACTION_DISTANCE * distance, angle);
+    else    
+        couldMove = MoveTo(mapId, x, y, z, false, false);
 
     if (!couldMove && WorldPosition(mapId,x,y,z).distance(bot) > INTERACTION_DISTANCE)
     {
@@ -210,18 +219,15 @@ bool MoveToRpgTargetAction::isUseful()
     }
 
     if(MEM_AI_VALUE(WorldPosition, "current position")->LastChangeDelay() < 60)
-#ifndef MANGOSBOT_ZERO
-        if (bot->IsMovingIgnoreFlying())
+        if (bot->IsMoving() && bot->GetMotionMaster() && bot->GetMotionMaster()->GetCurrentMovementGeneratorType() != FOLLOW_MOTION_TYPE)
             return false;
-#else
-        if (bot->IsMoving())
-            return false;
-#endif
 
     TravelTarget* travelTarget = AI_VALUE(TravelTarget*, "travel target");
 
     if (travelTarget->isTraveling() && AI_VALUE2(bool, "can free move to", travelTarget->GetPosStr()))
         return false;
+
+    guidP.updatePosition();
 
     if (guidP.distance(bot) < INTERACTION_DISTANCE)
         return false;

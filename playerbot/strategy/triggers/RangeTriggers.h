@@ -365,6 +365,9 @@ namespace ai
             if (bot->GetMotionMaster()->GetCurrentMovementGeneratorType() != FOLLOW_MOTION_TYPE)
                 return false;
 
+            if (sServerFacade.GetChaseTarget(bot) && !sServerFacade.GetChaseTarget(bot)->IsPlayer() && sServerFacade.GetChaseTarget(bot)->IsMoving())
+                return false;
+
             Unit* followTarget = AI_VALUE(Unit*, "follow target");
 
             if (!followTarget)

@@ -19,6 +19,7 @@ namespace ai
 
         virtual GuidPosition guidP() { return AI_VALUE(GuidPosition, "rpg target"); }
         virtual ObjectGuid guid() { return (ObjectGuid)guidP(); }        
+        void Update() {GuidPosition p = guidP(); p.updatePosition(); if (p != guidP()) SET_AI_VALUE(GuidPosition, "rpg target", p);}
         virtual bool InRange() { return guidP() ? (guidP().sqDistance2d(bot) < INTERACTION_DISTANCE * INTERACTION_DISTANCE) : false; }
         void setDelay(bool waitForGroup);
     private:
@@ -86,6 +87,8 @@ namespace ai
     {
     public:
         RpgCancelAction(PlayerbotAI* ai, string name = "rpg cancel") : RpgSubAction(ai, name) {}
+
+        virtual bool isUseful() { rpg->Update(); return rpg->InRange(); }
 
         virtual bool Execute(Event& event) { rpg->OnCancel();  AI_VALUE(set<ObjectGuid>&, "ignore rpg target").insert(AI_VALUE(GuidPosition, "rpg target")); RESET_AI_VALUE(GuidPosition, "rpg target"); rpg->AfterExecute(false, false, ""); DoDelay(); return true; };
     };
