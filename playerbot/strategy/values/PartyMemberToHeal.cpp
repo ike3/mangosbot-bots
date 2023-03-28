@@ -49,14 +49,17 @@ Unit* PartyMemberToHeal::Calculate()
     {
         Unit* target = ai->GetUnit(bot->GetSelectionGuid());
         if (target && target->GetObjectGuid() != bot->GetObjectGuid() && sServerFacade.IsFriendlyTo(bot, target) && 
-#ifdef MANGOS
-            target->HealthBelowPct(100))
-#endif
-#ifdef CMANGOS
             target->GetHealthPercent() < 100)
-#endif
             if (Check(target))
                 needHeals.push_back(target);
+    }
+
+    if (GuidPosition rpgTarget = AI_VALUE(GuidPosition, "rpg target"))
+    {
+        Unit* target = rpgTarget.GetCreature();
+
+        if (target && sServerFacade.IsFriendlyTo(bot, target) && target->GetHealthPercent() < 100)
+            needHeals.push_back(target);
     }
 
     Group* group = bot->GetGroup();

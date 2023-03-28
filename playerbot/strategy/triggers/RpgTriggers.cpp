@@ -384,6 +384,9 @@ bool RpgHealTrigger::IsActive()
 
     GuidPosition guidP(getGuidP());
 
+    if (guidP.IsPlayer())
+        return false;
+
     Unit* unit = guidP.GetUnit();
 
     if (!unit)

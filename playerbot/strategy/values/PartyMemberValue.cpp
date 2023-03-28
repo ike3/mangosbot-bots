@@ -91,6 +91,14 @@ Unit* PartyMemberValue::FindPartyMember(FindPlayerPredicate &predicate, bool ign
             return target;
     }
 
+    if (GuidPosition rpgTarget = AI_VALUE(GuidPosition, "rpg target"))
+    {
+        Unit* target = rpgTarget.GetCreature();
+
+        if (target && sServerFacade.IsFriendlyTo(bot, target) && predicate.Check(target))
+           return target;
+    }
+
     return NULL;
 }
 
