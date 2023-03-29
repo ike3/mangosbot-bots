@@ -782,7 +782,7 @@ list<string> PlayerbotHolder::HandlePlayerbotCommand(char const* args, Player* m
 
         command = command.substr(6);
 
-        if(ai->DoSpecificAction("cdebug", Event(".bot",command), true))
+        if(ai->DoSpecificAction("cdebug", Event(".bot",command,master), true))
             messages.push_back("debug failed");
 
         if (!hasBot)
