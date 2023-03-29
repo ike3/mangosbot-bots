@@ -257,10 +257,12 @@ bool PetitionTurnInAction::Execute(Event& event)
             cl = urand(0, 17);
             br = urand(0, 7);
             st = urand(0, 180);
-            guild->SetEmblem(st, cl, br, bc, bg);
+            guild->SetEmblem(st, cl, br, bc, bg);           
 
-            //LANG_GUILD_VETERAN -> can invite
-            guild->SetRankRights(2, GR_RIGHT_GCHATLISTEN | GR_RIGHT_GCHATSPEAK | GR_RIGHT_INVITE);           
+            //LANG_GUILD_VETERAN -> can invite, private and initiate -> personal note.
+            guild->SetRankRights(2, GR_RIGHT_GCHATLISTEN | GR_RIGHT_GCHATSPEAK | GR_RIGHT_INVITE | GR_RIGHT_EPNOTE);
+            guild->SetRankRights(3, GR_RIGHT_GCHATLISTEN | GR_RIGHT_GCHATSPEAK | GR_RIGHT_EPNOTE);
+            guild->SetRankRights(4, GR_RIGHT_GCHATLISTEN | GR_RIGHT_GCHATSPEAK | GR_RIGHT_EPNOTE);
         }
 
         return true;
