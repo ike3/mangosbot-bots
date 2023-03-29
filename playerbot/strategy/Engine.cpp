@@ -683,7 +683,7 @@ bool Engine::ListenAndExecute(Action* action, Event& event)
             }
         }
 
-        ai->TellMasterNoFacing(out);
+        ai->TellMasterNoFacing(out,PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL,true, false);
     }
 
     if (ai->HasStrategy("debug threat", BotState::BOT_STATE_NON_COMBAT))
