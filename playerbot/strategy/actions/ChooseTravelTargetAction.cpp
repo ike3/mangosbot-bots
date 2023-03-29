@@ -15,7 +15,10 @@ bool ChooseTravelTargetAction::Execute(Event& event)
 
     //Select a new target to travel to. 
     TravelTarget newTarget = TravelTarget(ai);   
-    getNewTarget(&newTarget, oldTarget);
+    if (!oldTarget->isForced())
+        getNewTarget(&newTarget, oldTarget);
+    else
+        newTarget.copyTarget(oldTarget);
 
     //If the new target is not active we failed.
     if (!newTarget.isActive() && !newTarget.isForced())
@@ -183,7 +186,7 @@ void ChooseTravelTargetAction::setNewTarget(TravelTarget* newTarget, TravelTarge
     {
         ai->ChangeStrategy("-travel once", BotState::BOT_STATE_NON_COMBAT);
         ai->TellMasterNoFacing("Arrived at " + oldTarget->getDestination()->getTitle());
-        return;
+        SetNullTarget(newTarget);
     }
 
     if(AI_VALUE2(bool, "can free move to", newTarget->GetPosStr()))
