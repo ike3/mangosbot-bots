@@ -1518,6 +1518,13 @@ uint32 RandomItemMgr::CalculateStatWeight(uint8 playerclass, uint8 spec, ItemPro
     // whitelist
     if (std::find(sPlayerbotAIConfig.randomGearWhitelist.begin(), sPlayerbotAIConfig.randomGearWhitelist.end(), proto->ItemId) != sPlayerbotAIConfig.randomGearWhitelist.end())
         isWhitelist = true;
+
+#ifdef MANGOSBOT_ZERO
+    // whitelist pvp items, as thei have wierd stats
+    if (proto->RequiredHonorRank)
+        isWhitelist = true;
+#endif
+
     // check basic item stats
     int32 basicStatsWeight = 0;
     for (int j = 0; j < MAX_ITEM_PROTO_STATS; ++j)
@@ -2882,6 +2889,28 @@ uint32 RandomItemMgr::GetLiveStatWeight(Player* player, uint32 itemId, uint32 sp
     // skip missing pvp ranks
     if (info->pvpRank && player->GetHonorHighestRankInfo().rank < info->pvpRank)
         return 0;
+    if (info->pvpRank && info->pvpRank < 16 && player->GetHonorHighestRankInfo().rank == 18)
+        return 0;
+
+    // skip non pvp items for some specs
+    if (info->pvpRank < 16 && player->GetHonorHighestRankInfo().rank == 18)
+    {
+        ItemPrototype const* proto = sObjectMgr.GetItemPrototype(itemId);
+        if (proto && !(
+            info->slot == EQUIPMENT_SLOT_WAIST ||
+            info->slot == EQUIPMENT_SLOT_WRISTS ||
+            info->slot == EQUIPMENT_SLOT_BACK ||
+            info->slot == EQUIPMENT_SLOT_NECK ||
+            info->slot == EQUIPMENT_SLOT_TRINKET1 ||
+            info->slot == EQUIPMENT_SLOT_TRINKET2 ||
+            info->slot == EQUIPMENT_SLOT_FINGER1 ||
+            info->slot == EQUIPMENT_SLOT_FINGER2 ||
+            proto->SubClass == ITEM_SUBCLASS_ARMOR_TOTEM ||
+            proto->SubClass == ITEM_SUBCLASS_ARMOR_LIBRAM ||
+            proto->SubClass == ITEM_SUBCLASS_ARMOR_IDOL)
+            && !(specId == 3 || specId == 4 || specId == 5 || specId == 14 || specId == 22 || specId == 31))
+            return 0;
+    }
 #else
     // skip missing pvp ranks
     if (info->pvpRank && player->GetHighestPvPRankIndex() < info->pvpRank)
@@ -2925,6 +2954,12 @@ uint32 RandomItemMgr::GetLiveStatWeight(Player* player, uint32 itemId, uint32 sp
     // TODO test
     /*if (bestSpecId && bestSpecId != specId && player->GetLevel() >= 60)
         return 0;*/
+
+#ifdef MANGOSBOT_ZERO
+    // increase stat weights for pvp items
+    if (info->pvpRank)
+        return statWeight * 5;
+#endif
 
     return statWeight;
 }
