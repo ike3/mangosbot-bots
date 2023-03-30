@@ -73,6 +73,7 @@ public:
     uint32 randomGearMaxLevel;
     uint32 randomGearMaxDiff;
     std::list<uint32> randomGearBlacklist;
+    std::list<uint32> randomGearWhitelist;
     bool randomGearProgression;
     float randomGearLoweringChance;
     float randomBotMaxLevelChance;

@@ -1493,6 +1493,10 @@ uint32 RandomItemMgr::CalculateStatWeight(uint8 playerclass, uint8 spec, ItemPro
         return (uint32)(proto->Quality + proto->ItemLevel);
 #endif
 
+    bool isWhitelist = false;
+    // whitelist
+    if (std::find(sPlayerbotAIConfig.randomGearWhitelist.begin(), sPlayerbotAIConfig.randomGearWhitelist.end(), proto->ItemId) != sPlayerbotAIConfig.randomGearWhitelist.end())
+        isWhitelist = true;
     // check basic item stats
     int32 basicStatsWeight = 0;
     for (int j = 0; j < MAX_ITEM_PROTO_STATS; ++j)
@@ -1652,7 +1656,7 @@ uint32 RandomItemMgr::CalculateStatWeight(uint8 playerclass, uint8 spec, ItemPro
                         if ((spellproto->EffectMiscValue[j] & SPELL_SCHOOL_MASK_NATURE) != 0)
                             specialDamage += CalculateSingleStatWeight(playerclass, spec, "natsplpwr", spellDamage);
 
-                        if (!specialDamage && isSpellDamageItem)
+                        if (!isWhitelist && !specialDamage && isSpellDamageItem)
                             return 0;
 
                         spellPower += specialDamage;
@@ -1689,7 +1693,7 @@ uint32 RandomItemMgr::CalculateStatWeight(uint8 playerclass, uint8 spec, ItemPro
                         if ((spellproto->EffectMiscValue[j] & SPELL_SCHOOL_MASK_NATURE) != 0)
                             specialDamage += CalculateSingleStatWeight(playerclass, spec, "natsplpwr", spellDamage);
 
-                        if (!specialDamage && isSpellDamageItem)
+                        if (!isWhitelist && !specialDamage && isSpellDamageItem)
                             return 0;
 
                         spellPower += specialDamage;
@@ -1740,10 +1744,10 @@ uint32 RandomItemMgr::CalculateStatWeight(uint8 playerclass, uint8 spec, ItemPro
                     if (SpellName.find("Attack Power - Feral") != string::npos)
                         isFeral = true;
 #ifdef MANGOSBOT_ZERO
-                    if (isFeral && (playerclass != CLASS_DRUID && playerclass != CLASS_WARRIOR && playerclass != CLASS_PALADIN && proto->IsWeapon()))
+                    if (!isWhitelist && isFeral && (playerclass != CLASS_DRUID && playerclass != CLASS_WARRIOR && playerclass != CLASS_PALADIN && proto->IsWeapon()))
                         return 0;
 #else
-                    if (isFeral && playerclass != CLASS_DRUID)
+                    if (!isWhitelist && isFeral && playerclass != CLASS_DRUID)
                         return 0;
 #endif
 
@@ -1950,33 +1954,33 @@ uint32 RandomItemMgr::CalculateStatWeight(uint8 playerclass, uint8 spec, ItemPro
 #endif
 
     // limit speed for tank weapons
-    if (spec == 3 && proto->IsWeapon() && proto->Delay > 2300)
+    if (!isWhitelist && spec == 3 && proto->IsWeapon() && proto->Delay > 2300)
         return 0;
 
-    if (spec == 5 && proto->IsWeapon() && proto->Delay > 2400)
+    if (!isWhitelist && spec == 5 && proto->IsWeapon() && proto->Delay > 2400)
         return 0;
 
     // check for caster item
     if (isCasterItem || hasInt || spellHeal || spellPower || isSpellDamageItem || isHealingItem)
     {
-        if ((!hasMana || (noCaster && !(spec == 6 || spec == 30 || spec == 32 || spec == 21))) && (spellHeal || isHealingItem || isSpellDamageItem || spellPower))
+        if (!isWhitelist && (!hasMana || (noCaster && !(spec == 6 || spec == 30 || spec == 32 || spec == 21))) && (spellHeal || isHealingItem || isSpellDamageItem || spellPower))
             return 0;
 
-        if (!hasMana && hasInt)
+        if (!isWhitelist && !hasMana && hasInt)
             return 0;
 
-        if (!hasMana && noCaster && (spellPower > attackPower || spellHeal > attackPower))
+        if (!isWhitelist && !hasMana && noCaster && (spellPower > attackPower || spellHeal > attackPower))
             return 0;
 
 #ifndef MANGOSBOT_TWO
-        if ((spec != 6 && spec != 21) && !spellPower && !spellHeal && isSpellDamageItem)
+        if (!isWhitelist && (spec != 6 && spec != 21) && !spellPower && !spellHeal && isSpellDamageItem)
             return 0;
 
-        if (/*(spec != 6 && spec != 21) && */!spellHeal && isHealingItem && !isSpellDamageItem)
+        if (!isWhitelist && /*(spec != 6 && spec != 21) && */!spellHeal && isHealingItem && !isSpellDamageItem)
             return 0;
 #endif
 
-        if ((spec != 6 && spec != 21) && !noCaster && isSpellDamageItem && !spellPower && !(spellDamage && spellHealing && proto->IsWeapon() && proto->InventoryType == INVTYPE_WEAPONMAINHAND))
+        if (!isWhitelist && (spec != 6 && spec != 21) && !noCaster && isSpellDamageItem && !spellPower && !(spellDamage && spellHealing && proto->IsWeapon() && proto->InventoryType == INVTYPE_WEAPONMAINHAND))
             return 0;
 
         bool playerCaster = false;
@@ -1988,14 +1992,14 @@ uint32 RandomItemMgr::CalculateStatWeight(uint8 playerclass, uint8 spec, ItemPro
             }
         }
 
-        if ((spec != 6 && spec != 21 && playerclass != CLASS_HUNTER) && !playerCaster)
+        if (!isWhitelist && (spec != 6 && spec != 21 && playerclass != CLASS_HUNTER) && !playerCaster)
             return 0;
     }
 
     // check for caster item
     if (isAttackItem)
     {
-        if (hasMana && !noCaster && !(hasInt || spellPower || spellHeal || isHealingItem || isSpellDamageItem))
+        if (!isWhitelist && hasMana && !noCaster && !(hasInt || spellPower || spellHeal || isHealingItem || isSpellDamageItem))
             return 0;
 
         bool playerAttacker = false;
@@ -2007,7 +2011,7 @@ uint32 RandomItemMgr::CalculateStatWeight(uint8 playerclass, uint8 spec, ItemPro
             }
         }
 
-        if (!playerAttacker)
+        if (!isWhitelist && !playerAttacker)
             return 0;
     }
 
