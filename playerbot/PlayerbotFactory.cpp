@@ -1489,6 +1489,9 @@ void PlayerbotFactory::InitEquipment(bool incremental)
                     if (proto->Flags & ITEM_FLAG_UNIQUE_EQUIPPABLE && bot->HasItemCount(proto->ItemId, 1))
                         continue;
 
+                    if (proto->MaxCount && bot->HasItemCount(proto->ItemId, proto->MaxCount))
+                        continue;
+
                     if (proto->ItemLevel > sPlayerbotAIConfig.randomGearMaxLevel)
                         continue;
 
@@ -1606,6 +1609,9 @@ void PlayerbotFactory::InitEquipment(bool incremental)
 
                     // skip unique-equippable items if already have one in inventory
                     if (proto->Flags & ITEM_FLAG_UNIQUE_EQUIPPABLE && bot->HasItemCount(proto->ItemId, 1))
+                        continue;
+
+                    if (proto->MaxCount && bot->HasItemCount(proto->ItemId, proto->MaxCount))
                         continue;
 
                     if (proto->ItemLevel > sPlayerbotAIConfig.randomGearMaxLevel)
