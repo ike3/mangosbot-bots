@@ -1684,7 +1684,8 @@ void PlayerbotFactory::InitEquipment(bool incremental)
 
                     Item* oldItem = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, slot);
                     ItemPrototype const* oldProto = oldItem ? oldItem->GetProto() : nullptr;
-                    uint32 oldStatValue = oldItem ? sRandomItemMgr.GetStatWeight(oldProto->ItemId, specId) : 0;
+                    //uint32 oldStatValue = oldItem ? sRandomItemMgr.GetStatWeight(oldProto->ItemId, specId) : 0;
+                    uint32 oldStatValue = oldItem ? sRandomItemMgr.GetLiveStatWeight(bot, oldProto->ItemId, specId) : 0;
 
                     if (oldItem && oldProto->ItemId == newItemId)
                         continue;
