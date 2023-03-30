@@ -1737,7 +1737,7 @@ void PlayerbotFactory::InitEquipment(bool incremental)
                 }
             }
 
-            if (!incremental && quality == ITEM_QUALITY_EPIC)
+            if (/*!incremental && */quality == ITEM_QUALITY_EPIC)
                 quality--;
 
             attempts++;
