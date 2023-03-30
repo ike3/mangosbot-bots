@@ -125,6 +125,10 @@ endif()
 if (BUILD_IKE3_BOTS)
   add_definitions(-DENABLE_PLAYERBOTS)
 endif()
+# Define Achievements USE_ACHIEVEMENTS if need
+if (BUILD_ACHIEVEMENTS)
+  add_definitions(-DUSE_ACHIEVEMENTS)
+endif()
 
 # Define Core
 if ( ${CMAKE_PROJECT_NAME} MATCHES "CMaNGOS")
@@ -159,6 +163,7 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/ahbot
     ${CMAKE_CURRENT_SOURCE_DIR}/playerbot
     ${CMAKE_SOURCE_DIR}/src/game
+    ${CMAKE_SOURCE_DIR}/src/game/Achievements
     ${CMAKE_SOURCE_DIR}/src/game/AI
     ${CMAKE_SOURCE_DIR}/src/game/AI/BaseAI
     ${CMAKE_SOURCE_DIR}/src/game/AI/EventAI
