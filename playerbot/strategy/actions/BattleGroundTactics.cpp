@@ -4299,9 +4299,9 @@ bool BGTactics::moveToObjective()
             return false;
         }
 
-        if (bgType == BATTLEGROUND_WS)
+        /*if (bgType == BATTLEGROUND_WS)
             if (wsgPaths())
-                return true;
+                return true;*/
 
         // don't try to move if already close
         if (sqrt(bot->GetDistance(pos.x, pos.y, pos.z, DIST_CALC_NONE)) < 5.0f)
