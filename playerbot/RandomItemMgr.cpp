@@ -1416,6 +1416,7 @@ void RandomItemMgr::BuildItemInfoCache()
                 if (!statW /*&& tempSpec == ITEM_SPEC_NONE*/ && cacheInfo->quality < ITEM_QUALITY_UNCOMMON && cacheInfo->minLevel <= 10)
                     statW = 1;
 
+                // legendary stat x2
                 if (proto->Quality >= ITEM_QUALITY_LEGENDARY && statW > 1)
                     statW *= 2;
 
@@ -2997,8 +2998,8 @@ void RandomItemMgr::BuildEquipCache()
     else
     {
         uint64 total = uint64(MAX_CLASSES * 3 * maxLevel * EQUIPMENT_SLOT_END * ITEM_QUALITY_ARTIFACT);
-        sLog.outString("Building equipment cache for %d classes, %d levels, %d slots, %d quality from %d items (%zu total)",
-                MAX_CLASSES, maxLevel, EQUIPMENT_SLOT_END, ITEM_QUALITY_ARTIFACT, sItemStorage.GetMaxEntry(), total);
+        sLog.outString("Building equipment cache for %d classes, %d specs, %d levels, %d slots, %d quality from %d items (%zu total)",
+                MAX_CLASSES, MAX_STAT_SCALES, maxLevel, EQUIPMENT_SLOT_END, ITEM_QUALITY_ARTIFACT, sItemStorage.GetMaxEntry(), total);
 
         BarGoLink bar(total);
         RandomItemList tabardsList;
