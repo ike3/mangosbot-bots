@@ -1002,8 +1002,10 @@ void RandomItemMgr::BuildItemInfoCache()
     // vendor items
     sLog.outString("Loading vendor item list...");
     std::vector<uint32> vendorItems;
+    std::vector<uint32> allianceItems;
+    std::vector<uint32> hordeItems;
     vendorItems.clear();
-    if (QueryResult* result = WorldDatabase.PQuery("%s", "SELECT item FROM npc_vendor"))
+    if (QueryResult* result = WorldDatabase.PQuery("%s", "SELECT item, entry FROM npc_vendor"))
     {
         BarGoLink bar(result->GetRowCount());
         do
@@ -1014,10 +1016,23 @@ void RandomItemMgr::BuildItemInfoCache()
             if (!entry)
                 continue;
             vendorItems.push_back(fields[0].GetUInt32());
+
+#ifdef MANGOSBOT_ZERO
+            uint32 vendorId = fields[1].GetUInt32();
+            if (vendorId)
+            {
+                if (vendorId == 12782 || vendorId == 12777)
+                    allianceItems.push_back(entry);
+                if (vendorId == 14581 || vendorId == 12792)
+                    hordeItems.push_back(entry);
+            }
+#endif
         } while (result->NextRow());
         delete result;
     }
     sLog.outString("Loaded %d vendor items...", vendorItems.size());
+    sLog.outString("Loaded %d alliance only vendor items...", allianceItems.size());
+    sLog.outString("Loaded %d horde only vendor items...", hordeItems.size());
 
     // calculate drop source
     sLog.outString("Loading loot templates...");
@@ -1177,6 +1192,12 @@ void RandomItemMgr::BuildItemInfoCache()
                 if ((proto->AllowableRace & faction->BaseRepRaceMask[0]) != 0)
                     cacheInfo->team = ALLIANCE;
         }
+
+        // PvP vendors
+        if (std::find(allianceItems.begin(), allianceItems.end(), proto->ItemId) != allianceItems.end())
+            cacheInfo->team = ALLIANCE;
+        if (std::find(hordeItems.begin(), hordeItems.end(), proto->ItemId) != hordeItems.end())
+            cacheInfo->team = HORDE;
 #endif
 
         if (cacheInfo->team)
@@ -2799,7 +2820,7 @@ uint32 RandomItemMgr::GetLiveStatWeight(Player* player, uint32 itemId, uint32 sp
     //    return 0;
 
     // skip wrong team
-    if (info->team && info->team != player->GetTeam())
+    if (info->team && (Team)info->team != player->GetTeam())
         return 0;
 
     // skip quest items
