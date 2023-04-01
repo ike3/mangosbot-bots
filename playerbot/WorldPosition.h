@@ -161,7 +161,7 @@ namespace ai
 
 #if defined(MANGOSBOT_TWO) || MAX_EXPANSION == 2
         bool IsInLineOfSight(WorldPosition pos, float heightMod = 0.5f) const { return mapid == pos.mapid && getMap() && getMap()->IsInLineOfSight(coord_x, coord_y, coord_z + heightMod, pos.coord_x, pos.coord_y, pos.coord_z + heightMod, 0, true); }
-        bool WorldPosition GetHitPosition(WorldPosition pos) const { return getMap()->GetHitPosition(coord_x, coord_y, coord_z, pos.coord_x, pos.coord_y, pos.coord_z, 0, 0.0f);};
+        bool GetHitPosition(WorldPosition pos) const { return getMap()->GetHitPosition(coord_x, coord_y, coord_z, pos.coord_x, pos.coord_y, pos.coord_z,0, 0.0f);};
 #else
         bool IsInLineOfSight(WorldPosition pos, float heightMod = 0.5f) const { return mapid == pos.mapid && getMap() && getMap()->IsInLineOfSight(coord_x, coord_y, coord_z + heightMod, pos.coord_x, pos.coord_y, pos.coord_z + heightMod, true); }
         bool GetHitPosition(WorldPosition pos) const { return getMap()->GetHitPosition(coord_x, coord_y, coord_z, pos.coord_x, pos.coord_y, pos.coord_z, 0.0f);};
