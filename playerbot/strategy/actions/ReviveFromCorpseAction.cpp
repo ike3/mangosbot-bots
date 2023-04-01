@@ -85,11 +85,11 @@ bool FindCorpseAction::Execute(Event& event)
 
     if (!ai->HasRealPlayerMaster())
     {
-        if (dCount >= 5)
+        if (dCount >= 5 && !sRandomPlayerbotMgr.GetValue(bot,"teleport"))
         {
             sLog.outBasic("Bot #%d %s:%d <%s>: died too many times and was sent to an inn", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->GetLevel(), bot->GetName());
             context->GetValue<uint32>("death count")->Set(0);
-            sRandomPlayerbotMgr.RandomTeleportForRpg(bot, false);
+            sRandomPlayerbotMgr.SetValue(bot, "teleport",1);
             return true;
         }
     }
