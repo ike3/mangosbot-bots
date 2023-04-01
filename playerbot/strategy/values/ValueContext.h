@@ -294,6 +294,7 @@ namespace ai
             creators["free move center"] = &ValueContext::free_move_center;
             creators["free move range"] = &ValueContext::free_move_range;
             creators["can free move to"] = &ValueContext::can_free_move_to;
+            creators["can free attack"] = &ValueContext::can_free_attack;
             creators["can free target"] = &ValueContext::can_free_target;
             
             creators["can move around"] = &ValueContext::can_move_around;
@@ -543,6 +544,7 @@ namespace ai
         static UntypedValue* free_move_center(PlayerbotAI* ai) { return new FreeMoveCenterValue(ai); }
         static UntypedValue* free_move_range(PlayerbotAI* ai) { return new FreeMoveRangeValue(ai); }
         static UntypedValue* can_free_move_to(PlayerbotAI* ai) { return new CanFreeMoveToValue(ai); }
+        static UntypedValue* can_free_attack(PlayerbotAI* ai) { return new CanFreeAttackValue(ai); }
         static UntypedValue* can_free_target(PlayerbotAI* ai) { return new CanFreeTargetValue(ai); }
 
         static UntypedValue* can_move_around(PlayerbotAI* ai) { return new CanMoveAroundValue(ai); }

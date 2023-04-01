@@ -116,6 +116,9 @@ bool PossibleTargetsValue::IsValid(Unit* target, Player* player, bool ignoreLos)
             return false;
         }
 
+        if (!PAI_VALUE2(bool, "can free attack", GuidPosition(target).to_string()))
+            return false;
+
         return true;
     }
 

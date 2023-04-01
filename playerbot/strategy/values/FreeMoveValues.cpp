@@ -53,10 +53,13 @@ GuidPosition FreeMoveCenterValue::Calculate()
 
 float FreeMoveRangeValue::Calculate()
 {
+    Unit* followTarget = AI_VALUE(Unit*, "follow target");
+
+    if (!followTarget || followTarget == bot)
+        return 0;
+
     if (bot->GetMap()->IsDungeon())
         return INTERACTION_DISTANCE; 
-
-    Unit* followTarget = AI_VALUE(Unit*, "follow target");
 
     if (!ai->HasActivePlayerMaster())
     {
@@ -98,9 +101,7 @@ float FreeMoveRangeValue::Calculate()
 
 bool CanFreeMoveToValue::Calculate()
 {
-    Unit* followTarget = AI_VALUE(Unit*, "follow target");
-
-    if (!followTarget || followTarget == bot)
+    if (!GetRange())
         return true;
 
     GuidPosition destPos(qualifier);
@@ -109,5 +110,5 @@ bool CanFreeMoveToValue::Calculate()
 
     GuidPosition refPos = AI_VALUE(GuidPosition, "free move center");
 
-    return !GetRange() || refPos.distance(destPos) < GetRange();
+    return refPos.distance(destPos) < GetRange();
 }

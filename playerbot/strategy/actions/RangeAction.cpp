@@ -16,6 +16,7 @@ bool RangeAction::Execute(Event& event)
         PrintRange("flee");
         PrintRange("follow");
         PrintRange("followraid");
+        PrintRange("attack");
     }
     int pos = param.find(" ");
     if (pos == string::npos) return false;

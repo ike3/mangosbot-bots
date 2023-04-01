@@ -57,8 +57,6 @@ list<ObjectGuid> AttackersValue::Calculate()
         result.push_back(target->GetObjectGuid());
     }
 
-
-
     return result;
 }
 

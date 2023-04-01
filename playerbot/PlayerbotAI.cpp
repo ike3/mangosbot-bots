@@ -4325,6 +4325,7 @@ float PlayerbotAI::GetRange(string type)
     if (type == "heal") return sPlayerbotAIConfig.healDistance;
     if (type == "follow") return sPlayerbotAIConfig.followDistance;    
     if (type == "followraid") return sPlayerbotAIConfig.raidFollowDistance;
+    if (type == "attack") return 0;
     return 0;
 }
 
