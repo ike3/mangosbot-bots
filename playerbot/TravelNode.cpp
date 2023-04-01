@@ -820,7 +820,7 @@ bool TravelPath::shouldMoveToNextPoint(WorldPosition startPos, vector<PathNodePo
     }
 
     //We are almost at a transport node. Move to the node before this.
-    if (nextP->type == PathNodeType::NODE_TRANSPORT && nextP->entry && moveDist > INTERACTION_DISTANCE)
+    if (nextP->type == PathNodeType::NODE_TRANSPORT && nextP->entry)
     {
         return false;
     }
@@ -853,7 +853,7 @@ bool TravelPath::shouldMoveToNextPoint(WorldPosition startPos, vector<PathNodePo
 }
 
 //Next position to move to
-WorldPosition TravelPath::getNextPoint(WorldPosition startPos, float maxDist, TravelNodePathType& pathType, uint32& entry)
+WorldPosition TravelPath::getNextPoint(WorldPosition startPos, float maxDist, TravelNodePathType& pathType, uint32& entry, bool onTransport, WorldPosition& telePosition)
 {
     if (getPath().empty())
         return WorldPosition();
@@ -892,6 +892,12 @@ WorldPosition TravelPath::getNextPoint(WorldPosition startPos, float maxDist, Tr
         break;
     }
 
+    auto prevP = startP, nextP = startP;
+    if (startP != beg)
+        prevP = std::prev(prevP);
+    if (std::next(nextP) != ed)
+        nextP = std::next(nextP);
+
     //We are moving towards a teleport. Move to portal an activate area trigger
     if (startP->type == PathNodeType::NODE_AREA_TRIGGER)
     {
@@ -924,19 +930,55 @@ WorldPosition TravelPath::getNextPoint(WorldPosition startPos, float maxDist, Tr
         return startP->point;
     }
 
-    //We are moving towards transport. Teleport to next normal point instead.
+    
     if (startP->type == PathNodeType::NODE_TRANSPORT)
     {
-        for (auto p = startP + 1; p != ed; p++)
+        pathType = TravelNodePathType::areaTrigger;
+        entry = 0;
+
+        for (auto p = startP + 1; p != ed; p++) //Move along the transport path to the end of the boat ride. 
         {
             if (p->type != PathNodeType::NODE_TRANSPORT)
             {
-                pathType = TravelNodePathType::areaTrigger;
-                entry = 0;
-                return p->point;
+                return p->point;              //We want to move here.
             }
         }
     }
+    
+
+    /*
+    //We are on or very near a transport.
+    if (startP->type == PathNodeType::NODE_TRANSPORT)
+    {
+        pathType = TravelNodePathType::transport;
+        entry = startP->entry;
+
+        if (!onTransport) //We need to move onto the transport.
+        {
+            telePosition = startP->point; //Boat needs to be here
+            return startP->point;         //We want to move here.
+        }
+
+        for (auto p = startP + 1; p != ed; p++) //Move along the transport path to the end of the boat ride. 
+        {
+            if (p->type != PathNodeType::NODE_TRANSPORT)
+            {
+                telePosition = prevP->point;  //Boat needs to be here
+                return p->point;              //We want to move here.
+            }
+            prevP = p;
+        }
+    }
+
+    //We are about the enter a transport.
+    if (nextP->type == PathNodeType::NODE_TRANSPORT)
+    {
+        pathType = TravelNodePathType::transport;
+        entry = nextP->entry;
+        telePosition = nextP->point; //Boat needs to be here.
+        return startP->point;        //We want to stand somewhere here.
+    }
+    */
 
     //We have to move far for next point. Try to make a cropped path.
     if (moveDist < sPlayerbotAIConfig.targetPosRecalcDistance && std::next(startP) != ed)

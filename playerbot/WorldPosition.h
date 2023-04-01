@@ -161,9 +161,13 @@ namespace ai
 
 #if defined(MANGOSBOT_TWO) || MAX_EXPANSION == 2
         bool IsInLineOfSight(WorldPosition pos, float heightMod = 0.5f) const { return mapid == pos.mapid && getMap() && getMap()->IsInLineOfSight(coord_x, coord_y, coord_z + heightMod, pos.coord_x, pos.coord_y, pos.coord_z + heightMod, 0, true); }
+        bool WorldPosition GetHitPosition(WorldPosition pos) const { return getMap()->GetHitPosition(coord_x, coord_y, coord_z, pos.coord_x, pos.coord_y, pos.coord_z, 0, 0.0f);};
 #else
         bool IsInLineOfSight(WorldPosition pos, float heightMod = 0.5f) const { return mapid == pos.mapid && getMap() && getMap()->IsInLineOfSight(coord_x, coord_y, coord_z + heightMod, pos.coord_x, pos.coord_y, pos.coord_z + heightMod, true); }
+        bool GetHitPosition(WorldPosition pos) const { return getMap()->GetHitPosition(coord_x, coord_y, coord_z, pos.coord_x, pos.coord_y, pos.coord_z, 0.0f);};
 #endif
+
+
 
         bool isOutside() const { WorldPosition high(*this); high.setZ(coord_z + 500.0f); return IsInLineOfSight(high); }
         bool canFly() const;
@@ -177,6 +181,10 @@ namespace ai
         float currentHeight() const { return coord_z - getHeight(); }
 
         std::set<Transport*> getTransports(uint32 entry = 0);
+        void CalculatePassengerPosition(GenericTransport* transport);
+        void CalculatePassengerOffset(GenericTransport* transport);
+
+        bool isOnTransport(GenericTransport* transport);
 
         GridPair getGridPair() const { return MaNGOS::ComputeGridPair(coord_x, coord_y); };
         std::vector<GridPair> getGridPairs(const WorldPosition& secondPos) const;
@@ -220,7 +228,8 @@ namespace ai
 
         float getPathLength(const vector<WorldPosition>& points) const { float dist = 0.0f; for (auto& p : points) if (&p == &points.front()) dist = 0; else dist += std::prev(&p, 1)->distance(p); return dist; }
 
-        bool GetReachableRandomPointOnGround(const Player* bot, const float radius, const bool randomRange = true);
+        bool GetReachableRandomPointOnGround(const Player* bot, const float radius, const bool randomRange = true); //Generic terrain.
+        vector<WorldPosition> ComputePathToRandomPoint(const Player* bot, const float radius, const bool randomRange = true); //For use with transports.
 
         uint32 getUnitsAggro(const list<ObjectGuid>& units, const Player* bot) const;
 

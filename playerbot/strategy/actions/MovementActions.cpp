@@ -404,7 +404,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
     if (FlyDirect(startPosition, endPosition, movePosition, lastMove.lastPath, idle)) //Try flying in a straight line to target.
         return true;
 
-    if (lastMove.lastMoveShort.distance(endPosition) < maxDistChange && startPosition.distance(lastMove.lastMoveShort) < maxDist) //The last short movement was to the same place we want to move now.
+    if (lastMove.lastMoveShort.distance(endPosition) < maxDistChange && startPosition.distance(lastMove.lastMoveShort) < maxDist && !bot->GetTransport()) //The last short movement was to the same place we want to move now.
         movePosition = endPosition;
     else if (!lastMove.lastPath.empty() && lastMove.lastPath.getBack().distance(endPosition) < maxDistChange) //The last long movement was to the same place we want to move now.
     {
@@ -481,7 +481,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
 
     if (!movePath.empty())
     {
-        if (movePath.makeShortCut(startPosition, maxDist,bot))
+        if (!bot->GetTransport() && movePath.makeShortCut(startPosition, maxDist, bot))
             if (ai->HasStrategy("debug move", BotState::BOT_STATE_NON_COMBAT))
                 ai->TellMasterNoFacing("Found a shortcut.");
 
@@ -495,9 +495,10 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
             return true;
         }
 
-        TravelNodePathType pathType;
-        uint32 entry;
-        movePosition = movePath.getNextPoint(startPosition, maxDist, pathType, entry);
+        TravelNodePathType pathType = TravelNodePathType::none;
+        uint32 entry = 0;
+        WorldPosition telePosition = WorldPosition();
+        movePosition = movePath.getNextPoint(startPosition, maxDist, pathType, entry, bot->GetTransport(), telePosition);
 
         if (pathType == TravelNodePathType::staticPortal && entry)// && !ai->isRealPlayer())
         {
@@ -570,7 +571,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
             return castResult == SPELL_CAST_OK;
         }
 
-        if (pathType == TravelNodePathType::areaTrigger)// && !ai->isRealPlayer())
+        if (pathType == TravelNodePathType::areaTrigger)
         {
             //Log bot movement
             if (sPlayerbotAIConfig.hasLog("bot_movement.csv"))
@@ -610,16 +611,112 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
                 return bot->TeleportTo(movePosition.getMapId(), movePosition.getX(), movePosition.getY(), movePosition.getZ(), movePosition.getO(), 0);
         }
 
-        if (pathType == TravelNodePathType::transport && entry)
+        if (pathType == TravelNodePathType::transport)
         {
-            if (!bot->GetTransport())
+            if (!bot->GetTransport()) //We are not yet on a transport.
             {
-                for (auto& transport : movePosition.getTransports(entry))
-                    if (movePosition.sqDistance2d(WorldPosition((WorldObject*)transport)) < 5 * 5)
-                        transport->AddPassenger(bot, true);
+                for (auto& transport : startPosition.getTransports(entry))
+                {
+                    if (startPosition.isOnTransport(transport))
+                    {
+                        if (ai->HasStrategy("debug move", BotState::BOT_STATE_NON_COMBAT))
+                            ai->TellMasterNoFacing("I'm on " + string(transport->GetName()));
+                        ai->SetMoveToTransport(false);
+                        entry = 0;
+                    }
+                    else
+                    {
+
+                        if (ai->HasStrategy("debug move", BotState::BOT_STATE_NON_COMBAT))
+                            ai->TellMaster("transport at " + to_string(uint32(telePosition.distance(transport))) + "yards of entry");
+
+                        if (telePosition.distance(transport) < INTERACTION_DISTANCE) //Transport has arrived Move on.
+                        {
+                            if (ai->HasStrategy("debug move", BotState::BOT_STATE_NON_COMBAT))
+                                ai->TellMasterNoFacing("Moving on to transport " + string(transport->GetName()));
+
+                            movePosition = WorldPosition(transport);
+                            movePosition.setZ(bot->GetPositionZ());
+                            sLog.outError("on");
+                            transport->AddPassenger(bot);
+                            ai->SetMoveToTransport(true);
+                            vector<WorldPosition> step = movePosition.getPathStepFrom(bot, bot);
+                            if (!step.empty())
+                            {
+                                if (ai->HasStrategy("debug move", BotState::BOT_STATE_NON_COMBAT))
+                                    ai->TellMasterNoFacing("Found spot on boat moving to random place around");
+                                movePosition = step.back();
+                                //movePosition.ComputePathToRandomPoint(bot, 10, true);
+                            }
+
+                            entry = 0;
+                        }
+                    }
+                }
+                if (entry) //We are not on a transport. Wait for it.
+                {
+                    if (ai->HasStrategy("debug move", BotState::BOT_STATE_NON_COMBAT))
+                        ai->TellMasterNoFacing("Waiting on transport");
+
+                    WaitForReach(1000.0f);
+
+                    if (!urand(0, 10) || startPosition.sqDistance2d(movePosition) < INTERACTION_DISTANCE)
+                    {
+                        if (!movePosition.GetReachableRandomPointOnGround(bot, INTERACTION_DISTANCE * 2, true))
+                            return true;
+
+                        if (ai->HasStrategy("debug move", BotState::BOT_STATE_NON_COMBAT))
+                            ai->TellMasterNoFacing("Wandering while waiting.");
+                    }
+                    else
+                        return true;
+                }
             }
-            WaitForReach(100.0f);
-            return true;
+            else //We are on transport.
+            {
+                if (ai->GetMoveToTransport() && startPosition.isOnTransport(bot->GetTransport()))
+                {
+                    if (ai->HasStrategy("debug move", BotState::BOT_STATE_NON_COMBAT))
+                        ai->TellMasterNoFacing("I'm on " + string(bot->GetTransport()->GetName()));
+                    ai->SetMoveToTransport(false);
+                    entry = 0;
+                }
+
+                if (movePosition.getMapId() == bot->GetMapId() && ai->HasStrategy("debug move", BotState::BOT_STATE_NON_COMBAT))
+                    ai->TellMaster("transport at " + to_string(uint32(telePosition.distance(bot->GetTransport()))) + "yards of exit");
+
+                if (movePosition.getMapId() == bot->GetMapId() && telePosition.distance(bot->GetTransport()) < INTERACTION_DISTANCE) //We have arived move off.
+                {
+                    if (ai->HasStrategy("debug move", BotState::BOT_STATE_NON_COMBAT))
+                        ai->TellMasterNoFacing("Moving off transport");
+
+                    WorldPosition botPos(bot);
+                    bot->GetTransport()->RemovePassenger(bot);
+                    bot->NearTeleportTo(bot->m_movementInfo.pos.x, bot->m_movementInfo.pos.y, bot->m_movementInfo.pos.z, bot->m_movementInfo.pos.o);
+                    assert(botPos.fDist(bot) < 500.0f);
+                    bot->StopMoving();
+                    sLog.outError("out");
+                }
+                else //We are traveling with the boat.
+                {
+                    if (ai->HasStrategy("debug move", BotState::BOT_STATE_NON_COMBAT))
+                        ai->TellMasterNoFacing("Traveling with transport");
+                    WaitForReach(1000.0f);
+
+                    if (!urand(0, 10))
+                    {
+                        movePosition = bot;
+                        if (movePosition.ComputePathToRandomPoint(bot, 10, true).empty() || !movePosition || movePosition.mapid != bot->GetMapId() || !movePosition.isOnTransport(bot->GetTransport()))
+                            return true;
+
+                        sLog.outError("wander");
+
+                        ai->TellMasterNoFacing("Wandering to random spot on boat");
+                    }
+                    else
+                        return true;
+                }
+            }
         }
 
         if (pathType == TravelNodePathType::flightPath && entry)
@@ -663,7 +760,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
         }
 
         if (pathType == TravelNodePathType::teleportSpell && entry)
-        { 
+        {
             if (entry == 8690)
             {
                 if (sServerFacade.IsSpellReady(bot, 8690) && (!bot->IsFlying() || WorldPosition(bot).currentHeight() < 10.0f))
@@ -682,6 +779,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
 
         if (pathType == TravelNodePathType::walk && movePath.getPath().begin()->type != PathNodeType::NODE_FLIGHTPATH)
             isWalking = true;
+
         //if (!isTransport && bot->GetTransport())
         //    bot->GetTransport()->RemovePassenger(bot);
     }
@@ -689,18 +787,18 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
     AI_VALUE(LastMovement&, "last movement").setPath(movePath);
 
     if (!movePosition || movePosition.getMapId() != bot->GetMapId())
-    {
-        movePath.clear();
+    {        
+        if(!bot->GetTransport() || movePath.getPath().size() == 1)
+            movePath.clear();
         AI_VALUE(LastMovement&, "last movement").setPath(movePath);
 
-        if (ai->HasStrategy("debug move", BotState::BOT_STATE_NON_COMBAT))
+        if (ai->HasStrategy("debug move", BotState::BOT_STATE_NON_COMBAT))        
             ai->TellMasterNoFacing("No point. Rebuilding.");
         return false;
     }
 
-    if (movePosition.distance(startPosition) > maxDist)
-    {
-        //Use standard pathfinder to find a route. 
+    if (movePosition.distance(startPosition) > maxDist && !bot->GetTransport())
+    {//Use standard pathfinder to find a route. 
         PathFinder path(mover);
         path.calculate(movePosition.getX(), movePosition.getY(), movePosition.getZ(), false);
         PathType type = path.getPathType();
@@ -708,7 +806,8 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
         movePath.addPath(startPosition.fromPointsArray(points));
         TravelNodePathType pathType;
         uint32 entry;
-        movePosition = movePath.getNextPoint(startPosition, maxDist, pathType, entry);
+        WorldPosition telepos;
+        movePosition = movePath.getNextPoint(startPosition, maxDist, pathType, entry, false, telepos);
     }
 
     //Stop the path when we might get aggro.
@@ -778,16 +877,10 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
     {
         if (!movePath.empty())
         {
-            float cx = x;
-            float cy = y;
-            float cz = z;
             for (auto i : movePath.getPath())
             {
-                CreateWp(bot, i.point.getX(), i.point.getY(), i.point.getZ(), 0.0, 2334);
-
-                cx = i.point.getX();
-                cy = i.point.getY();
-                cz = i.point.getZ();
+                if(i.point.getMapId() == bot->GetMapId())
+                    CreateWp(bot, i.point.getX(), i.point.getY(), i.point.getZ(), 0.0, 2334);
             }
         }
         else
@@ -1274,7 +1367,7 @@ bool MovementAction::Follow(Unit* target, float distance, float angle)
         }
     }
 
-    if (sServerFacade.IsDistanceGreaterOrEqualThan(sServerFacade.GetDistance2d(bot, target), sPlayerbotAIConfig.sightDistance) || (target->IsFlying() && !bot->IsFreeFlying()) || target->IsTaxiFlying())
+    if (sServerFacade.IsDistanceGreaterOrEqualThan(sServerFacade.GetDistance2d(bot, target), sPlayerbotAIConfig.sightDistance) || (target->IsFlying() && !bot->IsFreeFlying()) || target->IsTaxiFlying() || bot->GetTransport())
     {
         if (target->GetObjectGuid().IsPlayer())
         {
@@ -1311,7 +1404,7 @@ bool MovementAction::Follow(Unit* target, float distance, float angle)
             }
         }
 
-        if (!target->IsTaxiFlying())
+        if (!target->IsTaxiFlying() || bot->GetTransport())
            return MoveTo(target, ai->GetRange("follow"));
     }
 

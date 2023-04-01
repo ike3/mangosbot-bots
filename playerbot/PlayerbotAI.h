@@ -504,6 +504,9 @@ public:
     const Action* GetLastExecutedAction(BotState state) const;
 
     bool IsImmuneToSpell(uint32 spellId) const;
+
+    void SetMoveToTransport(bool flag = true) { isMovingToTransport = flag; }
+    bool GetMoveToTransport() { return isMovingToTransport; }
     
 private:
     bool UpdateAIReaction(uint32 elapsed, bool minimal, bool isStunned);
@@ -538,6 +541,7 @@ protected:
     Position jumpDestination = Position();
     uint32 faceTargetUpdateDelay;
     bool isPlayerFriend = false;
+    bool isMovingToTransport = false;
 };
 
 template<typename T>

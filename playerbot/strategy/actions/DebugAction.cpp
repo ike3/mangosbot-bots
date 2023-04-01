@@ -9,6 +9,8 @@
 #include "../../../game/GameEvents/GameEventMgr.h"
 #include "../../TravelMgr.h"
 #include "PlayerbotHelpMgr.h"
+#include "Entities/Transports.h"
+#include "MotionGenerators/PathFinder.h"
 
 using namespace ai;
 
@@ -63,7 +65,7 @@ bool DebugAction::Execute(Event& event)
         }
         return i == 0;
     }
-    if (text == "gy")
+    else if (text == "gy")
     {
         for (uint32 i = 0; i < sMapStore.GetNumRows(); ++i)
         {
@@ -266,6 +268,50 @@ bool DebugAction::Execute(Event& event)
 
             string sType = "TODO"; // GetMoveTypeStr(type);
             ai->TellMaster("new:" + sType);
+        }
+        return true;
+    }
+    else if (text.find("transport") == 0) {
+        for (auto trans : WorldPosition(bot).getTransports())
+        {
+            if (WorldPosition(bot).isOnTransport(trans))
+                ai->TellMaster("On transport" + string(trans->GetName()));
+            else
+                ai->TellMaster("Not on transport" + string(trans->GetName()));
+        }
+    }
+    else if (text.find("randomspot") == 0) {
+    uint32 radius = 10;
+        if(text.length() > string("randomspot").size())
+            radius = stoi(text.substr(string("randomspot").size()+1));
+
+        WorldPosition botPos(bot);
+
+        PathFinder pathfinder(bot);
+
+        if (bot->GetTransport())
+            botPos.CalculatePassengerOffset(bot->GetTransport());
+
+        pathfinder.ComputePathToRandomPoint(botPos.getVector3(), radius);
+        PointsArray points = pathfinder.getPath();
+        vector<WorldPosition> path = botPos.fromPointsArray(points);
+
+        if (path.empty())
+            return false;
+       
+        Creature* wpCreature = bot->SummonCreature(6, path.back().getX(), path.back().getY(), path.back().getZ(), 0, TEMPSPAWN_TIMED_DESPAWN, 10000.0f);
+        wpCreature->SetObjectScale(0.5f);
+
+        if (bot->GetTransport())
+            bot->GetTransport()->AddPassenger(wpCreature,true);
+
+
+        for (auto& p : path)
+        {
+            Creature* wpCreature = bot->SummonCreature(2334, p.getX(), p.getY(), p.getZ(), 0, TEMPSPAWN_TIMED_DESPAWN, 10000.0f);
+            ai->AddAura(wpCreature, 246);
+            if (bot->GetTransport())
+                bot->GetTransport()->AddPassenger(wpCreature,true);
         }
         return true;
     }

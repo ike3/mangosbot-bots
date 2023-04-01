@@ -37,6 +37,7 @@
 #include "RandomItemMgr.h"
 #include "strategy/ItemVisitors.h"
 #include "strategy/values/LootValues.h"
+#include "Entities/Transports.h"
 #ifdef MANGOSBOT_TWO
 #include "Entities/Vehicle.h"
 #endif
@@ -335,6 +336,30 @@ void PlayerbotAI::UpdateAI(uint32 elapsed, bool minimal)
             bot->UpdateSpeed(MOVE_RUN, true, 10);
             bot->UpdateSpeed(MOVE_SWIM, true, 10);
         }
+    }
+
+    if (master && IsSafe(master) && bot->GetDistance(master) < INTERACTION_DISTANCE * 2.5 && master->GetTransport() != bot->GetTransport())
+    {
+        bot->StopMoving();
+        if (master->GetTransport())
+            master->GetTransport()->AddPassenger(bot);
+        else
+        {
+            WorldPosition botPos(bot);
+            bot->GetTransport()->RemovePassenger(bot);
+            bot->NearTeleportTo(bot->m_movementInfo.pos.x, bot->m_movementInfo.pos.y, bot->m_movementInfo.pos.z, bot->m_movementInfo.pos.o);
+            //MANGOS_ASSERT(botPos.fDist(bot) < 500.0f);
+        }
+    }
+    else if (!bot->IsBeingTeleported() && bot->GetTransport() && bot->GetMapId() == bot->GetTransport()->GetMapId() && !WorldPosition(bot).isOnTransport(bot->GetTransport()) && !isMovingToTransport)
+    {
+        if (HasStrategy("debug move", BotState::BOT_STATE_NON_COMBAT))
+            TellMaster("Jumping off " + string(bot->GetTransport()->GetName()));
+        WorldPosition botPos(bot);
+        bot->GetTransport()->RemovePassenger(bot);
+        bot->NearTeleportTo(bot->m_movementInfo.pos.x, bot->m_movementInfo.pos.y, bot->m_movementInfo.pos.z, bot->m_movementInfo.pos.o);
+        //MANGOS_ASSERT(botPos.fDist(bot) < 500.0f);
+        bot->StopMoving();
     }
 
     // Update facing
@@ -4822,7 +4847,7 @@ void PlayerbotAI::AccelerateRespawn(Creature* creature, float accelMod)
             m_respawnDelay -= totalDelay * accelMod;
     }
 
-    MANGOS_ASSERT(m_respawnDelay < HOUR * IN_MILLISECONDS);
+    //MANGOS_ASSERT(m_respawnDelay < HOUR * IN_MILLISECONDS);
 
     creature->SetRespawnDelay(m_respawnDelay / IN_MILLISECONDS,true);
 
@@ -4878,7 +4903,7 @@ void PlayerbotAI::AccelerateRespawn(Creature* creature, float accelMod)
         creature->ReduceCorpseDecayTimer();
         return;
     }
-    MANGOS_ASSERT(m_corpseAccelerationDecayDelay < HOUR* IN_MILLISECONDS);
+    //MANGOS_ASSERT(m_corpseAccelerationDecayDelay < HOUR* IN_MILLISECONDS);
     creature->SetCorpseAccelerationDelay(m_corpseAccelerationDecayDelay);
 }
 

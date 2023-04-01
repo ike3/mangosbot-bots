@@ -9,6 +9,7 @@
 #include "CellImpl.h"
 
 #include "../values/PositionValue.h"
+#include "Entities/Transports.h"
 
 using namespace MaNGOS;
 
@@ -204,6 +205,9 @@ bool SummonAction::Teleport(Player *summoner, Player *player)
                 player->GetMotionMaster()->Clear();
                 player->TeleportTo(mapId, x, y, z, 0);
                 player->SendHeartBeat();
+                if (summoner->GetTransport())
+                    summoner->GetTransport()->AddPassenger(player, false);
+                    
                 if(ai->HasStrategy("stay", BotState::BOT_STATE_NON_COMBAT))
                     SET_AI_VALUE2(PositionEntry, "pos", "stay", PositionEntry(x, y, z, mapId));
                 if (ai->HasStrategy("guard", BotState::BOT_STATE_NON_COMBAT))

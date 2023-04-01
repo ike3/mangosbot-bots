@@ -373,6 +373,9 @@ namespace ai
             if (!followTarget)
                 return true;
 
+            if (bot->GetTransport())
+                return true;
+
             //We need to land or liftoff.
             if (followTarget->IsTaxiFlying())
                 return true;

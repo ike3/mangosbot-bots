@@ -17,6 +17,7 @@
 #include "PathFinder.h"
 #include "Grids/CellImpl.h"
 #include "ObjectAccessor.h"
+#include "Entities/Transports.h"
 
 #include <numeric>
 #include <iomanip>
@@ -379,22 +380,48 @@ int32 WorldPosition::getAreaLevel() const
 
 std::set<Transport*> WorldPosition::getTransports(uint32 entry)
 {
-    /*
+    std::set<Transport*> transports;
     if(!entry)
-        return getMap()->m_transports;
+        return getMap()->GetTransports();
     else
     {
-    */
-        std::set<Transport*> transports;
-        /*
-        for (auto transport : getMap()->m_transports)
+        for (auto transport : getMap()->GetTransports())
             if(transport->GetEntry() == entry)
                 transports.insert(transport);
 
         return transports;
     }
-    */
+    
     return transports;
+}
+
+void WorldPosition::CalculatePassengerPosition(GenericTransport* transport)
+{
+    transport->CalculatePassengerPosition(coord_x, coord_y, coord_z, &orientation);
+}
+
+void WorldPosition::CalculatePassengerOffset(GenericTransport* transport)
+{
+    transport->CalculatePassengerOffset(coord_x, coord_y, coord_z, &orientation);
+}
+
+bool WorldPosition::isOnTransport(GenericTransport* transport)
+{
+    WorldPosition trans(transport);
+
+    if (distance(trans) > 40.0f)
+        return false;
+
+    WorldPosition below(*this);
+
+    below.setZ(below.getZ() - 20.0f);
+
+    bool result0 = VMAP::VMapFactory::createOrGetVMapManager()->getObjectHitPos(mapid, coord_x, coord_y, coord_z, below.getX(), below.getY(), below.getZ(), below.coord_x, below.coord_y, below.coord_z, 0.0f);
+
+    if (result0)
+        return false;
+
+    return GetHitPosition(below);
 }
 
 std::vector<GridPair> WorldPosition::getGridPairs(const WorldPosition& secondPos) const
@@ -646,38 +673,47 @@ vector<WorldPosition> WorldPosition::getPathStepFrom(const WorldPosition& startP
     PointsArray points;
     PathType type;
 
-    if (bot && false)
+    if (bot && instanceId == bot->GetInstanceId())
     {
         PathFinder path(bot);
 
-#ifdef IKE_PATHFINDER
         path.setAreaCost(NAV_AREA_WATER, 10.0f);  //Water
         path.setAreaCost(12, 5.0f);  //Mob proximity
         path.setAreaCost(13, 20.0f); //Mob agro
-#endif
-        path.calculate(startPos.getVector3(), getVector3(), false);
+
+        WorldPosition start = startPos, end = *this;
+
+        if (bot->GetTransport())
+        {
+            start.CalculatePassengerOffset(bot->GetTransport());
+            end.CalculatePassengerOffset(bot->GetTransport());
+        }
+
+        path.calculate(start.getVector3(), end.getVector3(), false);
 
         points = path.getPath();
+
+        if (bot->GetTransport())
+        {
+            for (auto& p : points)
+                bot->GetTransport()->CalculatePassengerPosition(p.x, p.y, p.z);
+        }
+
         type = path.getPathType();
 
     }
     else
-#ifdef IKE_PATHFINDER
     {
         PathFinder path(getMapId(), instanceId);
 
         path.setAreaCost(NAV_AREA_WATER, 10.0f);
         path.setAreaCost(12, 5.0f);
         path.setAreaCost(13, 20.0f);
-
         path.calculate(startPos.getVector3(), getVector3(), false);
 
         points = path.getPath();
         type = path.getPathType();
     }
-#else
-        return PATHFIND_NOPATH;
-#endif
 
     if (sPlayerbotAIConfig.hasLog("pathfind_attempt_point.csv"))
     {
@@ -763,6 +799,29 @@ bool WorldPosition::GetReachableRandomPointOnGround(const Player* bot, const flo
 #else
     return getMap()->GetReachableRandomPointOnGround(bot->GetPhaseMask(), coord_x, coord_y, coord_z, radius, randomRange);
 #endif
+}
+
+vector<WorldPosition> WorldPosition::ComputePathToRandomPoint(const Player* bot, const float radius, const bool randomRange)
+{
+    WorldPosition start = *this;
+
+    float angle = rand_norm_f() * 2 * M_PI_F;
+    float range = radius;
+
+    if (randomRange)
+        range *= rand_norm_f();
+
+    coord_x += range * cos(angle);
+    coord_y += range * sin(angle);
+
+    vector<WorldPosition> path = getPathStepFrom(start, bot);
+    
+    if (path.size())
+        set(path.back());
+    else
+        set(start);
+
+    return path;
 }
 
 uint32 WorldPosition::getUnitsAggro(const list<ObjectGuid>& units, const Player* bot) const
