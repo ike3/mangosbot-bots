@@ -25,7 +25,7 @@ void RpgHelper::BeforeExecute()
 
 void RpgHelper::AfterExecute(bool doDelay, bool waitForGroup, string nextAction)
 {
-    if ((ai->HasRealPlayerMaster() || !urand(0,5)) && nextAction == "rpg") 
+    if ((ai->HasRealPlayerMaster() || bot->GetGroup() || !urand(0,5)) && nextAction == "rpg") 
         nextAction = "rpg cancel"; 
     
     SET_AI_VALUE(string, "next rpg action", nextAction);
@@ -91,8 +91,8 @@ void RpgHelper::resetFacing(GuidPosition guidPosition)
 
 void RpgHelper::setDelay(bool waitForGroup)
 {
-    if (!ai->HasRealPlayerMaster() || (waitForGroup && ai->GetGroupMaster() == bot && bot->GetGroup()))
-        ai->SetActionDuration(sPlayerbotAIConfig.rpgDelay);
+    if (!ai->HasRealPlayerMaster() || !bot->GetGroup() || (bot->GetGroup()->IsLeader(bot->GetObjectGuid()) && waitForGroup))
+        ai->SetActionDuration(sPlayerbotAIConfig.rpgDelay);       
     else
         ai->SetActionDuration(sPlayerbotAIConfig.rpgDelay / 5);
 }

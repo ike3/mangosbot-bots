@@ -98,7 +98,7 @@ namespace ai
     public:
         RpgTaxiAction(PlayerbotAI* ai, string name = "rpg taxi") : RpgSubAction(ai, name) {}
 
-        virtual bool isUseful() { return rpg->InRange() && !ai->HasRealPlayerMaster(); }
+        virtual bool isUseful() { return rpg->InRange() && !ai->HasRealPlayerMaster() && bot->GetGroup(); }
 
         virtual bool Execute(Event& event);
     };
