@@ -4806,18 +4806,23 @@ void PlayerbotAI::AccelerateRespawn(Creature* creature, float accelMod)
             return;
 
         m_respawnDelay = data->GetRandomRespawnTime() * IN_MILLISECONDS;
-        m_corpseAccelerationDecayDelay = MINIMUM_LOOTING_TIME;
+        m_corpseAccelerationDecayDelay = MINIMUM_LOOTING_TIME;          
 
         uint32 totalDelay = m_respawnDelay + m_corpseAccelerationDecayDelay;
 
-        if (m_respawnDelay < totalDelay * accelMod)
+        if (m_respawnDelay < totalDelay * accelMod) 
         {
-            m_respawnDelay = 0;
+            if ((m_corpseAccelerationDecayDelay- ((totalDelay * accelMod) - m_respawnDelay)) < 0)
+                sLog.outError("m_corpseAccelerationDecayDelay: %d, totalDelay: %d, accelMod: %f, m_respawnDelay: %d", m_corpseAccelerationDecayDelay, totalDelay, accelMod, m_respawnDelay);
+
             m_corpseAccelerationDecayDelay -= (totalDelay * accelMod) - m_respawnDelay;
+            m_respawnDelay = 0;
         }
         else
             m_respawnDelay -= totalDelay * accelMod;
     }
+
+    MANGOS_ASSERT(m_respawnDelay < HOUR * IN_MILLISECONDS);
 
     creature->SetRespawnDelay(m_respawnDelay / IN_MILLISECONDS,true);
 
@@ -4831,7 +4836,7 @@ void PlayerbotAI::AccelerateRespawn(Creature* creature, float accelMod)
             return;
         }
 
-        uint32 defaultDelay;
+        uint32 defaultDelay = 2 * MINUTE;
 
         CreatureInfo const* cinfo = creature->GetCreatureInfo();
 
@@ -4869,10 +4874,11 @@ void PlayerbotAI::AccelerateRespawn(Creature* creature, float accelMod)
         //We will decrease the loot time by a factor capping at 20 seconds.
         m_corpseAccelerationDecayDelay = std::max(uint32(20 * IN_MILLISECONDS), defaultDelay);
         creature->SetCorpseAccelerationDelay(m_corpseAccelerationDecayDelay);
+        MANGOS_ASSERT(m_corpseAccelerationDecayDelay < HOUR* IN_MILLISECONDS);
         creature->ReduceCorpseDecayTimer();
         return;
     }
-
+    MANGOS_ASSERT(m_corpseAccelerationDecayDelay < HOUR* IN_MILLISECONDS);
     creature->SetCorpseAccelerationDelay(m_corpseAccelerationDecayDelay);
 }
 
