@@ -1255,7 +1255,7 @@ void RandomItemMgr::BuildItemInfoCache()
                                 if (quest->GetRequiredMinRepValue() == ReputationMgr::PointsInRank[r])
                                     cacheInfo->repRank = uint32(r);
                             }
-                            if (FactionEntry const* faction = sFactionStore.LookupEntry(quest->GetRequiredMinRepFaction()))
+                            if (FactionEntry const* faction = sFactionStore.LookupEntry<FactionEntry>(quest->GetRequiredMinRepFaction()))
                             {
                                 if (faction->team == ALLIANCE)
                                     cacheInfo->team = ALLIANCE;
