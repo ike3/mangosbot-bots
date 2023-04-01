@@ -171,7 +171,7 @@ bool SummonAction::SummonUsingNpcs(Player *summoner, Player *player)
 bool SummonAction::Teleport(Player *summoner, Player *player)
 {
     Player* master = GetMaster();
-    if (!summoner->IsBeingTeleported() && !player->IsBeingTeleported())
+    if (!summoner->IsBeingTeleported() && !player->IsBeingTeleported() && summoner != player)
     {
         float followAngle = GetFollowAngle();
         for (double angle = followAngle - M_PI; angle <= followAngle + M_PI; angle += M_PI / 4)
