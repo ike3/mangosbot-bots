@@ -15,7 +15,7 @@ bool ChooseTravelTargetAction::Execute(Event& event)
 
     //Select a new target to travel to. 
     TravelTarget newTarget = TravelTarget(ai);   
-    if (!oldTarget->isForced())
+    if (!oldTarget->isForced() || oldTarget->getStatus() == TravelStatus::TRAVEL_STATUS_EXPIRED)
         getNewTarget(&newTarget, oldTarget);
     else
         newTarget.copyTarget(oldTarget);
