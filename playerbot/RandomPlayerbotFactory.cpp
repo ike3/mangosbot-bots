@@ -535,26 +535,29 @@ void RandomPlayerbotFactory::CreateRandomBots()
 
     sLog.outString("Loading available names...");
     
-    unordered_map<uint8,vector<string>> names;
-    QueryResult* result = CharacterDatabase.PQuery("SELECT n.gender, n.name FROM ai_playerbot_names n LEFT OUTER JOIN characters e ON e.name = n.name WHERE e.guid IS NULL");
+    unordered_map<uint8,vector<string>> freeNames, allNames;
+    unordered_map<string, bool> used;
+
+    QueryResult* result = CharacterDatabase.PQuery("SELECT n.gender, n.name, e.guid FROM ai_playerbot_names n LEFT OUTER JOIN characters e ON e.name = n.name");
     if (!result)
     {
         sLog.outError("No more names left for random bots");
         return;
     }
 
-    unordered_map<string, bool> used;
-
     do
     {
         Field* fields = result->Fetch();
         uint8 gender = fields[0].GetUInt8();
         string bname = fields[1].GetString();
-        names[gender].push_back(bname);
-        used[bname] = true;
+        uint32 guidlo = fields[0].GetUInt32();
+        if(!guidlo)
+            freeNames[gender].push_back(bname);
+        allNames[gender].push_back(bname);
+        used[bname] = false;
     } while (result->NextRow());
 
-    delete result;
+    delete result;  
 
     for (uint8 gender = 0; gender < 2; gender++)
     {
@@ -562,10 +565,10 @@ void RandomPlayerbotFactory::CreateRandomBots()
 
         vector<string> newNames;
 
-        if (totalCharCount < names[gender].size())
+        if (totalCharCount < freeNames[gender].size())
             continue;
 
-        uint32 namesNeeded = totalCharCount - names[gender].size();
+        uint32 namesNeeded = totalCharCount - freeNames[gender].size();
 
         BarGoLink bar(namesNeeded);
 
@@ -573,7 +576,7 @@ void RandomPlayerbotFactory::CreateRandomBots()
         {
             string post = GetNamePostFix(postItt);
 
-            for (auto name : names[gender])
+            for (auto name : allNames[gender])
             {
                 if (name.size() + post.size() > 12)
                     continue;
@@ -582,7 +585,7 @@ void RandomPlayerbotFactory::CreateRandomBots()
                 if (used.find(newName) != used.end())
                     continue;
 
-                used[newName] = true;
+                used[newName] = false;
                 newNames.push_back(newName);
                 namesNeeded--;
                 bar.step();
@@ -593,7 +596,7 @@ void RandomPlayerbotFactory::CreateRandomBots()
             postItt++;
         }
 
-        names[gender].insert(names[gender].end(), newNames.begin(), newNames.end());
+        freeNames[gender].insert(freeNames[gender].end(), newNames.begin(), newNames.end());
     }
 
 	sLog.outString("Creating random bot characters...");
@@ -638,7 +641,7 @@ void RandomPlayerbotFactory::CreateRandomBots()
 #endif
 			{
                 uint8 rclss = factory.GetRandomClass();
-                factory.CreateRandomBot(rclss, names);
+                factory.CreateRandomBot(rclss, freeNames);
 				bar1.step();
 			}
         }
