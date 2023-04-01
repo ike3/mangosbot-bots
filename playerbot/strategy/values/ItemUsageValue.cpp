@@ -508,19 +508,19 @@ bool ItemUsageValue::IsItemUsefulForSkill(ItemPrototype const* proto)
 #endif
         if (ai->HasSkill(SKILL_MINING) &&
             (
-                auctionbot.IsUsedBySkill(proto, SKILL_MINING) ||
-                auctionbot.IsUsedBySkill(proto, SKILL_BLACKSMITHING) ||
+                auctionbot.IsUsedBySkill(proto, SKILL_MINING)// ||
+                //auctionbot.IsUsedBySkill(proto, SKILL_BLACKSMITHING) ||
 #ifndef MANGOSBOT_ZERO
-                auctionbot.IsUsedBySkill(proto, SKILL_JEWELCRAFTING) ||
+                //auctionbot.IsUsedBySkill(proto, SKILL_JEWELCRAFTING) ||
 #endif
-                auctionbot.IsUsedBySkill(proto, SKILL_ENGINEERING)
+                //auctionbot.IsUsedBySkill(proto, SKILL_ENGINEERING)
                 ))
             return true;
         if (ai->HasSkill(SKILL_SKINNING) &&
-            (auctionbot.IsUsedBySkill(proto, SKILL_SKINNING) || auctionbot.IsUsedBySkill(proto, SKILL_LEATHERWORKING)))
+            (auctionbot.IsUsedBySkill(proto, SKILL_SKINNING)))// || auctionbot.IsUsedBySkill(proto, SKILL_LEATHERWORKING)))
             return true;
         if (ai->HasSkill(SKILL_HERBALISM) &&
-            (auctionbot.IsUsedBySkill(proto, SKILL_HERBALISM) || auctionbot.IsUsedBySkill(proto, SKILL_ALCHEMY)))
+            (auctionbot.IsUsedBySkill(proto, SKILL_HERBALISM)))// || auctionbot.IsUsedBySkill(proto, SKILL_ALCHEMY)))
             return true;
     }
     case ITEM_CLASS_RECIPE:
