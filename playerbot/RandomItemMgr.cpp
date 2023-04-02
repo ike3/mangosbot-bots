@@ -1255,7 +1255,11 @@ void RandomItemMgr::BuildItemInfoCache()
                                 if (quest->GetRequiredMinRepValue() == ReputationMgr::PointsInRank[r])
                                     cacheInfo->repRank = uint32(r);
                             }
+#ifdef MANGOSBOT_ONE
                             if (FactionEntry const* faction = sFactionStore.LookupEntry<FactionEntry>(quest->GetRequiredMinRepFaction()))
+#else
+                            if (FactionEntry const* faction = sFactionStore.LookupEntry(quest->GetRequiredMinRepFaction()))
+#endif
                             {
                                 if (faction->team == ALLIANCE)
                                     cacheInfo->team = ALLIANCE;
