@@ -363,7 +363,7 @@ bool BGJoinAction::shouldJoinBg(BattleGroundQueueTypeId queueTypeId, BattleGroun
     bool isRated = false;
     bool hasTeam = false;
     bool isTeamLead = false;
-    bool noLag = sWorld.GetAverageDiff() < (sRandomPlayerbotMgr.GetPlayers().empty() ? sPlayerbotAIConfig.diffEmpty : sPlayerbotAIConfig.diffWithPlayer, sWorld.GetAverageDiff()) * 1.1;
+    bool noLag = sWorld.GetAverageDiff() < (sRandomPlayerbotMgr.GetPlayers().empty() ? sPlayerbotAIConfig.diffEmpty : sPlayerbotAIConfig.diffWithPlayer) * 1.1;
 
 #ifndef MANGOSBOT_ZERO
     ArenaType type = sServerFacade.BgArenaType(queueTypeId);
@@ -810,7 +810,7 @@ bool FreeBGJoinAction::shouldJoinBg(BattleGroundQueueTypeId queueTypeId, BattleG
     bool isArena = false;
     bool isRated = false;
     bool hasTeam = false;
-    bool noLag = sWorld.GetAverageDiff() < (sRandomPlayerbotMgr.GetPlayers().empty() ? sPlayerbotAIConfig.diffEmpty : sPlayerbotAIConfig.diffWithPlayer, sWorld.GetAverageDiff()) * 1.5;
+    bool noLag = sWorld.GetAverageDiff() < (sRandomPlayerbotMgr.GetPlayers().empty() ? sPlayerbotAIConfig.diffEmpty : sPlayerbotAIConfig.diffWithPlayer) * 1.5;
 
 #ifndef MANGOSBOT_ZERO
     ArenaType type = sServerFacade.BgArenaType(queueTypeId);
