@@ -231,4 +231,17 @@ namespace ai
             return false;
         }
     };
+
+    class StealthedNearbyTrigger : public Trigger {
+    public:
+        StealthedNearbyTrigger(PlayerbotAI* ai) : Trigger(ai, "stealthed nearby", 5) {}
+        virtual bool IsActive()
+        {
+            if (!bot->HasSpell(1543))
+                return false;
+
+            Unit* target = AI_VALUE(Unit*, "nearest stealthed unit");
+            return target;
+        }
+    };
 }
