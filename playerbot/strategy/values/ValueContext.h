@@ -122,6 +122,8 @@ namespace ai
             creators["possible rpg targets"] = &ValueContext::possible_rpg_targets;
             creators["nearest adds"] = &ValueContext::nearest_adds;
             creators["nearest corpses"] = &ValueContext::nearest_corpses;
+            creators["nearest stealthed units"] = &ValueContext::nearest_stealthed_units;
+            creators["nearest stealthed unit"] = &ValueContext::nearest_stealthed_unit;
             creators["log level"] = &ValueContext::log_level;
             creators["party member without aura"] = &ValueContext::party_member_without_aura;
             creators["party member without my aura"] = &ValueContext::party_member_without_my_aura;
@@ -458,6 +460,8 @@ namespace ai
         static UntypedValue* nearest_friendly_players(PlayerbotAI* ai) { return new NearestFriendlyPlayersValue(ai); }
         static UntypedValue* closest_friendly_players(PlayerbotAI* ai) { return new NearestFriendlyPlayersValue(ai, INTERACTION_DISTANCE); }
         static UntypedValue* nearest_corpses(PlayerbotAI* ai) { return new NearestCorpsesValue(ai); }
+        static UntypedValue* nearest_stealthed_units(PlayerbotAI* ai) { return new NearestStealthedUnitsValue(ai); }
+        static UntypedValue* nearest_stealthed_unit(PlayerbotAI* ai) { return new NearestStealthedSingleUnitValue(ai); }
         static UntypedValue* possible_rpg_targets(PlayerbotAI* ai) { return new PossibleRpgTargetsValue(ai); }
         static UntypedValue* possible_targets(PlayerbotAI* ai) { return new PossibleTargetsValue(ai); }
         static UntypedValue* possible_targets_no_los(PlayerbotAI* ai) { return new PossibleTargetsValue(ai, "possible targets", sPlayerbotAIConfig.sightDistance, true); }

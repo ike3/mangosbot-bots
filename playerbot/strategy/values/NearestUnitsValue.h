@@ -3,6 +3,10 @@
 #include "../../PlayerbotAIConfig.h"
 #include "../../ServerFacade.h"
 
+#include "GridNotifiers.h"
+#include "GridNotifiersImpl.h"
+#include "CellImpl.h"
+
 namespace ai
 {
     class NearestUnitsValue : public ObjectGuidListCalculatedValue
@@ -35,4 +39,61 @@ namespace ai
         float range;
         bool ignoreLos;
 	};
+
+    class NearestStealthedUnitsValue : public NearestUnitsValue
+    {
+    public:
+        NearestStealthedUnitsValue(PlayerbotAI* ai, float range = 30.0f) :
+            NearestUnitsValue(ai, "nearest stealthed units", range) {}
+
+    protected:
+        void FindUnits(list<Unit*>& targets)
+        {
+            MaNGOS::AnyUnfriendlyUnitInObjectRangeCheck u_check(bot, range);
+            MaNGOS::UnitListSearcher<MaNGOS::AnyUnfriendlyUnitInObjectRangeCheck> searcher(targets, u_check);
+            Cell::VisitAllObjects(bot, searcher, range);
+        }
+        bool AcceptUnit(Unit* unit)
+        {
+            if (!unit || !unit->IsAlive() || !sServerFacade.IsHostileTo(unit, bot))
+                return false;
+
+            return unit->HasAuraType(SPELL_AURA_MOD_STEALTH) || unit->HasAuraType(SPELL_AURA_MOD_INVISIBILITY);
+
+            /*uint32 dispelMask = 0;
+            dispelMask |= GetDispellMask(DispelType(DISPEL_STEALTH));
+            dispelMask |= GetDispellMask(DispelType(DISPEL_INVISIBILITY));
+
+            return unit->HasMechanicMaskOrDispelMaskAura(dispelMask, 0, bot);*/
+        }
+    };
+
+    class NearestStealthedSingleUnitValue : public UnitCalculatedValue
+    {
+    public:
+        NearestStealthedSingleUnitValue(PlayerbotAI* ai) :
+            UnitCalculatedValue(ai, "nearest stealthed unit") {}
+
+        virtual Unit* Calculate()
+        {
+            list<ObjectGuid> targets = AI_VALUE(list<ObjectGuid>, "nearest stealthed units");
+            if (targets.empty())
+                return nullptr;
+
+            vector<Unit*> units;
+            for (list<ObjectGuid>::iterator i = targets.begin(); i != targets.end(); ++i)
+            {
+                Unit* unit = ai->GetUnit(*i);
+                if (!unit)
+                    continue;
+
+                units.push_back(unit);
+            }
+
+            if (units.empty())
+                return nullptr;
+
+            return units[urand(0, units.size() - 1)];
+        }
+    };
 }
