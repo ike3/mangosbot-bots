@@ -34,10 +34,13 @@ bool XpGainAction::Execute(Event& event)
     AI_VALUE(LootObjectStack*, "available loot")->Add(guid);
     ai->AccelerateRespawn(guid);
 
-    if (sPlayerbotAIConfig.guildFeedback && bot->GetGuildId() && !urand(0,10) && sRandomPlayerbotMgr.IsFreeBot(bot))
+    if (sPlayerbotAIConfig.guildFeedback && bot->GetGuildId() && !urand(0,10) && sRandomPlayerbotMgr.IsFreeBot(bot) && (!ai->HasRealPlayerMaster() || !urand(0,10)))
     {
         Creature* creature = ai->GetCreature(guid); 
-        if (creature && (creature->IsElite() || creature->IsWorldBoss() || creature->GetLevel() > 61 || creature->GetLevel() > bot->GetLevel() + 4))
+
+        uint32 expansionMaxLevel = DEFAULT_MAX_LEVEL;
+
+        if (creature && ((creature->IsElite() && !creature->GetMap()->IsDungeon()) || creature->IsWorldBoss() || creature->GetLevel() > expansionMaxLevel + 1 || creature->GetLevel() > bot->GetLevel() + 4))
         {
             Guild* guild = sGuildMgr.GetGuildById(bot->GetGuildId());
 
