@@ -220,4 +220,11 @@ namespace ai
     public:
         TameBeastAction(PlayerbotAI* ai) : CastSpellAction(ai, "tame beast") {}
     };
+
+    class CastFlareAction : public CastSpellAction
+    {
+    public:
+        CastFlareAction(PlayerbotAI* ai) : CastSpellAction(ai, "flare") {}
+        virtual string GetTargetName() override { return "nearest stealthed unit"; }
+    };
 }

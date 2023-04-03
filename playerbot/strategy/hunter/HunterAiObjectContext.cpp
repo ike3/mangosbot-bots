@@ -113,6 +113,7 @@ namespace ai
                 creators["silencing shot interrupt"] = &TriggerFactoryInternal::silencing_shot_interrupt;
                 creators["silencing shot on enemy healer"] = &TriggerFactoryInternal::silencing_shot_interrupt_healer;
                 creators["no beast"] = &TriggerFactoryInternal::no_beast;
+                creators["stealthed nearby"] = &TriggerFactoryInternal::stealthed_nearby;
             }
 
         private:
@@ -152,6 +153,7 @@ namespace ai
             static Trigger* switch_to_ranged(PlayerbotAI* ai) { return new SwitchToRangedTrigger(ai); }
             static Trigger* feign_death(PlayerbotAI* ai) { return new FeignDeathTrigger(ai); }
             static Trigger* no_beast(PlayerbotAI* ai) { return new HunterNoPet(ai); }
+            static Trigger* stealthed_nearby(PlayerbotAI* ai) { return new StealthedNearbyTrigger(ai); }
         };
     };
 };
@@ -222,9 +224,11 @@ namespace ai
                 creators["readiness"] = &AiObjectContextInternal::readiness;
                 creators["steady shot"] = &AiObjectContextInternal::steady_shot;
                 creators["tame beast"] = &AiObjectContextInternal::tame_beast;
+                creators["flare"] = &AiObjectContextInternal::flare;
             }
 
         private:
+            static Action* flare(PlayerbotAI* ai) { return new CastFlareAction(ai); }
             static Action* steady_shot(PlayerbotAI* ai) { return new CastSteadyShotAction(ai); }
             static Action* silencing_shot_healer(PlayerbotAI* ai) { return new CastSilencingShotOnHealerAction(ai); }
             static Action* silencing_shot(PlayerbotAI* ai) { return new CastSilencingShotAction(ai); }

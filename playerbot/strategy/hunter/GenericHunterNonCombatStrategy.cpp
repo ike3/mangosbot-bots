@@ -73,6 +73,10 @@ void GenericHunterNonCombatStrategy::InitNonCombatTriggers(std::list<TriggerNode
     triggers.push_back(new TriggerNode(
         "has attackers",
         NextAction::array(0, new NextAction("remove aspect of the cheetah", ACTION_EMERGENCY + 1), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "stealthed nearby",
+        NextAction::array(0, new NextAction("flare", ACTION_NORMAL), NULL)));
 }
 
 void HunterPetStrategy::InitNonCombatTriggers(std::list<TriggerNode*> &triggers)
