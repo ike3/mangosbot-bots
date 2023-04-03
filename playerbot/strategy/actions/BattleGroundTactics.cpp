@@ -22,8 +22,8 @@ Position const WS_FLAG_POS_ALLIANCE = { 1539.219f, 1481.747f, 352.458f, 0.0f };
 Position const WS_FLAG_HIDE_HORDE_1 = { 928.178f, 1458.432f, 346.889f, 4.8f };
 Position const WS_FLAG_HIDE_HORDE_2 = { 914.954f, 1439.540f, 346.415f, 4.7f };
 Position const WS_FLAG_HIDE_HORDE_3 = { 1163.820f, 1373.625f, 312.23f, 4.7f };
-Position const WS_FLAG_HIDE_HORDE_4 = { 924.f, 1454.f, 355.f, 4.7f };
-Position const WS_FLAG_HIDE_HORDE_5 = { 963.f, 1421.f, 367.f, 4.7f };
+Position const WS_FLAG_HIDE_HORDE_4 = { 924.0f, 1454.0f, 355.0f, 4.07f };
+Position const WS_FLAG_HIDE_HORDE_5 = { 963.0f, 1421.0f, 367.0f, 4.07f };
 Position const WS_FLAG_HIDE_ALLIANCE_1 = { 1529.249f, 1456.470f, 353.04f, 1.25f };
 Position const WS_FLAG_HIDE_ALLIANCE_2 = { 1540.286f, 1476.026f, 352.692f, 2.91f };
 Position const WS_FLAG_HIDE_ALLIANCE_3 = { 1495.807f, 1466.774f, 352.350f, 1.50f };
@@ -2326,47 +2326,6 @@ bool BGTactics::wsgPaths()
 
     bool atAllyGY = bot->GetPositionX() > 1388.f && bot->GetPositionY() > 1515.f && bot->GetPositionZ() > 335.0f;
     bool atHordeGY = bot->GetPositionY() < 1400.0f && bot->GetPositionX() < 1075.0f && bot->GetPositionZ() > 330.0f;
-    bool atHordeSecondFloorJump = bot->GetPositionX() < 933.f && bot->GetPositionY() > 1450.f && bot->GetPositionZ() > 354.f;
-    bool atAllianceSecondFloorJump = bot->GetPositionX() > 1522.f && bot->GetPositionY() < 1468.f && bot->GetPositionZ() > 361.f;
-    bool atHordeRoof = bot->GetPositionX() < 987.f && bot->GetPositionY() > 1417.f && bot->GetPositionZ() > 364.f;
-    bool atAllianceRoof = bot->GetPositionX() > 1465.f && bot->GetPositionZ() > 370.f;
-    bool inCombat = bot->IsInCombat();
-
-    if (atHordeRoof && (!inCombat || (pos.z < 365.f && pos.x > 987.f)))
-    {
-        // not at jump point
-        if (bot->GetPositionX() > 933.f || bot->GetPositionY() > 1450.f)
-            return MoveTo(bg->GetMapId(), WS_FLAG_HORDE_ROOF_JUMP_UPPER.x, WS_FLAG_HORDE_ROOF_JUMP_UPPER.y, WS_FLAG_HORDE_ROOF_JUMP_UPPER.z);
-        else
-            return MoveTo(bg->GetMapId(), WS_FLAG_HORDE_ROOF_JUMP_LOWER.x, WS_FLAG_HORDE_ROOF_JUMP_LOWER.y, WS_FLAG_HORDE_ROOF_JUMP_LOWER.z, false, false, true);
-    }
-
-    if (atAllianceRoof && (!inCombat || (pos.z < 372.f && pos.x < 1465.f)))
-    {
-        // not at jump point
-        if (bot->GetPositionX() < 1521.f || bot->GetPositionY() > 1467.f)
-            return MoveTo(bg->GetMapId(), WS_FLAG_ALLIANCE_ROOF_JUMP_UPPER.x, WS_FLAG_ALLIANCE_ROOF_JUMP_UPPER.y, WS_FLAG_ALLIANCE_ROOF_JUMP_UPPER.z);
-        else
-            return MoveTo(bg->GetMapId(), WS_FLAG_ALLIANCE_ROOF_JUMP_LOWER.x, WS_FLAG_ALLIANCE_ROOF_JUMP_LOWER.y, WS_FLAG_ALLIANCE_ROOF_JUMP_LOWER.z, false, false, true);
-    }
-
-    if (atHordeSecondFloorJump && (!inCombat || (pos.z < 354.f && pos.x > 933.f)))
-    {
-        // not at jump point
-        if (bot->GetPositionY() > 1452.f)
-            return MoveTo(bg->GetMapId(), WS_FLAG_HORDE_FLOOR_JUMP_UPPER.x, WS_FLAG_HORDE_FLOOR_JUMP_UPPER.y, WS_FLAG_HORDE_FLOOR_JUMP_UPPER.z);
-        else
-            return MoveTo(bg->GetMapId(), WS_FLAG_HORDE_FLOOR_JUMP_LOWER.x, WS_FLAG_HORDE_FLOOR_JUMP_LOWER.y, WS_FLAG_HORDE_FLOOR_JUMP_LOWER.z, false, false, true);
-    }
-
-    if (atAllianceSecondFloorJump && (!inCombat || (pos.z < 361.f && pos.x < 1421.f)))
-    {
-        // not at jump point
-        if (bot->GetPositionY() < 1468.f)
-            return MoveTo(bg->GetMapId(), WS_FLAG_ALLIANCE_FLOOR_JUMP_UPPER.x, WS_FLAG_ALLIANCE_FLOOR_JUMP_UPPER.y, WS_FLAG_ALLIANCE_FLOOR_JUMP_UPPER.z);
-        else
-            return MoveTo(bg->GetMapId(), WS_FLAG_ALLIANCE_FLOOR_JUMP_UPPER.x, WS_FLAG_ALLIANCE_FLOOR_JUMP_UPPER.y, WS_FLAG_ALLIANCE_FLOOR_JUMP_UPPER.z, false, false, true);
-    }
 
     if (pos.x > bot->GetPositionX()) //He's somewhere at the alliance side
     {
@@ -2633,6 +2592,60 @@ bool BGTactics::wsgPaths()
                 return  true;
             }
         }
+    }
+    return false;
+}
+
+bool BGTactics::wsgRoofJump()
+{
+    BattleGround* bg = bot->GetBattleGround();
+    if (!bg)
+        return false;
+
+    ai::PositionEntry pos = context->GetValue<ai::PositionMap&>("position")->Get()["bg objective"];
+
+    uint32 Preference = context->GetValue<uint32>("bg role")->Get();
+
+    bool atHordeSecondFloorJump = bot->GetPositionX() < 933.f && bot->GetPositionY() > 1450.f && bot->GetPositionZ() > 354.f;
+    bool atAllianceSecondFloorJump = bot->GetPositionX() > 1522.f && bot->GetPositionY() < 1468.f && bot->GetPositionZ() > 361.f;
+    bool atHordeRoof = bot->GetPositionX() < 987.f && bot->GetPositionY() > 1417.f && bot->GetPositionZ() > 364.f;
+    bool atAllianceRoof = bot->GetPositionX() > 1465.f && bot->GetPositionZ() > 370.f;
+    bool inCombat = bot->IsInCombat();
+
+    if (atHordeRoof && (!inCombat || (pos.z < 365.f && pos.x > 987.f)))
+    {
+        // not at jump point
+        if (bot->GetPositionX() > 933.f || bot->GetPositionY() > 1450.f)
+            return MoveTo(bg->GetMapId(), WS_FLAG_HORDE_ROOF_JUMP_UPPER.x, WS_FLAG_HORDE_ROOF_JUMP_UPPER.y, WS_FLAG_HORDE_ROOF_JUMP_UPPER.z);
+        else
+            return MoveTo(bg->GetMapId(), WS_FLAG_HORDE_ROOF_JUMP_LOWER.x, WS_FLAG_HORDE_ROOF_JUMP_LOWER.y, WS_FLAG_HORDE_ROOF_JUMP_LOWER.z, false, false, true);
+    }
+
+    if (atAllianceRoof && (!inCombat || (pos.z < 372.f && pos.x < 1465.f)))
+    {
+        // not at jump point
+        if (bot->GetPositionX() < 1521.f || bot->GetPositionY() > 1467.f)
+            return MoveTo(bg->GetMapId(), WS_FLAG_ALLIANCE_ROOF_JUMP_UPPER.x, WS_FLAG_ALLIANCE_ROOF_JUMP_UPPER.y, WS_FLAG_ALLIANCE_ROOF_JUMP_UPPER.z);
+        else
+            return MoveTo(bg->GetMapId(), WS_FLAG_ALLIANCE_ROOF_JUMP_LOWER.x, WS_FLAG_ALLIANCE_ROOF_JUMP_LOWER.y, WS_FLAG_ALLIANCE_ROOF_JUMP_LOWER.z, false, false, true);
+    }
+
+    if (atHordeSecondFloorJump && (!inCombat || (pos.z < 354.f && pos.x > 933.f)))
+    {
+        // not at jump point
+        if (bot->GetPositionY() > 1452.f)
+            return MoveTo(bg->GetMapId(), WS_FLAG_HORDE_FLOOR_JUMP_UPPER.x, WS_FLAG_HORDE_FLOOR_JUMP_UPPER.y, WS_FLAG_HORDE_FLOOR_JUMP_UPPER.z);
+        else
+            return MoveTo(bg->GetMapId(), WS_FLAG_HORDE_FLOOR_JUMP_LOWER.x, WS_FLAG_HORDE_FLOOR_JUMP_LOWER.y, WS_FLAG_HORDE_FLOOR_JUMP_LOWER.z, false, false, true);
+    }
+
+    if (atAllianceSecondFloorJump && (!inCombat || (pos.z < 361.f && pos.x < 1421.f)))
+    {
+        // not at jump point
+        if (bot->GetPositionY() < 1468.f)
+            return MoveTo(bg->GetMapId(), WS_FLAG_ALLIANCE_FLOOR_JUMP_UPPER.x, WS_FLAG_ALLIANCE_FLOOR_JUMP_UPPER.y, WS_FLAG_ALLIANCE_FLOOR_JUMP_UPPER.z);
+        else
+            return MoveTo(bg->GetMapId(), WS_FLAG_ALLIANCE_FLOOR_JUMP_UPPER.x, WS_FLAG_ALLIANCE_FLOOR_JUMP_UPPER.y, WS_FLAG_ALLIANCE_FLOOR_JUMP_UPPER.z, false, false, true);
     }
     return false;
 }
@@ -2976,7 +2989,7 @@ bool BGTactics::selectObjective(bool reset)
     {
     case BATTLEGROUND_AV:
     {
-        bool strifeTime = bg->GetStartTime() < (uint32)(20 * MINUTE * IN_MILLISECONDS);
+        bool strifeTime = bg->GetStartTime() < (uint32)(10 * MINUTE * IN_MILLISECONDS);
         if (bot->GetTeam() == HORDE)
         {
             bool endBoss = false;
@@ -4342,7 +4355,12 @@ bool BGTactics::selectObjectiveWp(std::vector<BattleBotPath*> const& vPaths)
 
     // use Rym's waypoints for WSG
     if (bgType == BATTLEGROUND_WS/* && (bot->HasAura(BG_WS_SPELL_WARSONG_FLAG) || bot->HasAura(BG_WS_SPELL_SILVERWING_FLAG))*/)
-        return wsgPaths();
+    {
+        if (wsgRoofJump())
+            return true;
+        else
+            return wsgPaths();
+    }
 
 #ifndef MANGOSBOT_ZERO
     // Eye of the Storm jump
@@ -4467,9 +4485,11 @@ bool BGTactics::resetObjective()
     ai::PositionMap& posMap = context->GetValue<ai::PositionMap&>("position")->Get();
     ai::PositionEntry pos = context->GetValue<ai::PositionMap&>("position")->Get()["bg objective"];
     // do not switch hiding spots
-    if (bot->HasAura(BG_WS_SPELL_WARSONG_FLAG) || bot->HasAura(BG_WS_SPELL_SILVERWING_FLAG))
+    if (teamFlagTaken() && (bot->HasAura(BG_WS_SPELL_WARSONG_FLAG) || bot->HasAura(BG_WS_SPELL_SILVERWING_FLAG)))
     {
-        if (bot->GetTeam() == HORDE)
+        return false;
+
+        /*if (bot->GetTeam() == HORDE)
         {
             if (pos.x != WS_FLAG_POS_HORDE.x && pos.x != WS_FLAG_POS_ALLIANCE.x && pos.y != WS_FLAG_POS_HORDE.y && pos.y != WS_FLAG_POS_ALLIANCE.y)
                 return false;
@@ -4478,7 +4498,7 @@ bool BGTactics::resetObjective()
         {
             if (pos.x != WS_FLAG_POS_HORDE.x && pos.x != WS_FLAG_POS_ALLIANCE.x && pos.y != WS_FLAG_POS_HORDE.y && pos.y != WS_FLAG_POS_ALLIANCE.y)
                 return false;
-        }
+        }*/
     }
     pos.Reset();
     posMap["bg objective"] = pos;
