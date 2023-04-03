@@ -39,7 +39,7 @@ namespace ai
                 pSpellInfo->SchoolMask == 1;
 #endif
 
-            return !isTradeSkill && GetSpellRecoveryTime(pSpellInfo) < MINUTE * IN_MILLISECONDS;
+            return !isTradeSkill && (GetSpellRecoveryTime(pSpellInfo) < MINUTE * IN_MILLISECONDS || !ai->HasActivePlayerMaster());
         }
 
         virtual uint32 GetSpellPriority(const SpellEntry* pSpellInfo) { return 1; }
