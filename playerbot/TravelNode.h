@@ -409,7 +409,7 @@ namespace ai
         void printMap();
 
         void printNodeStore();
-        void saveNodeStore();
+        void saveNodeStore(bool force = false);
         void loadNodeStore();
 
         bool cropUselessNode(TravelNode* startNode);

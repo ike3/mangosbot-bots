@@ -2485,9 +2485,9 @@ void TravelNodeMap::printNodeStore()
     fflush(stdout);
 }
 
-void TravelNodeMap::saveNodeStore()
+void TravelNodeMap::saveNodeStore(bool force)
 {
-    if (!hasToSave)
+    if (!hasToSave || force)
         return;
 
     hasToSave = false;

@@ -1064,7 +1064,7 @@ bool DebugAction::Execute(Event& event)
     else if (text.find("save node") == 0)
     {
         sTravelNodeMap.printNodeStore();
-        sTravelNodeMap.saveNodeStore();
+        sTravelNodeMap.saveNodeStore(true);
         return true;
     }
     else if (text.find("load node") == 0)
