@@ -2175,58 +2175,85 @@ void TravelNodeMap::generateWalkPathMap(uint32 mapId)
 
 void TravelNodeMap::generateHelperNodes()
 {
-    vector<TravelNode*> startNodes = m_nodes;
-    vector<TravelNode*> newNodes;
+    //Pathfinder
+    vector<WorldPosition> ppath;
 
-    vector<WorldPosition> places_to_reach;
+    map<uint32, bool> nodeMaps;
+
+    uint32 old = sTravelNodeMap.getNodes().size();
+
+    for (auto& startNode : sTravelNodeMap.getNodes())
+    {
+        nodeMaps[startNode->getMapId()] = true;
+    }
+
+    vector<std::future<void>> calculations;
+
+    BarGoLink bar(nodeMaps.size());
+    for (auto& map : nodeMaps)
+    {
+        uint32 mapId = map.first;
+        calculations.push_back(std::async([this, mapId] { generateHelperNodes(mapId); }));
+        bar.step();
+    }
+
+    for (uint32 i = 0; i < calculations.size(); i++)
+    {
+        calculations[i].wait();
+    }
+
+    sLog.outString(">> Generated " SIZEFMTD " helpdernodes.", sTravelNodeMap.getNodes().size()-old);
+}
+
+void TravelNodeMap::generateHelperNodes(uint32 mapId)
+{
+    vector<TravelNode*> startNodes = getNodes(WorldPosition(mapId, 1, 1));   
+
+    vector<std::pair<WorldPosition, string>> places_to_reach;
 
     for (auto& node : startNodes)
     {
-        places_to_reach.push_back(*node->getPosition());
+        places_to_reach.push_back(make_pair(GuidPosition(0,*node->getPosition()), node->getName()));
     }
-    /*
-    for (auto& obj : WorldPosition().getCreaturesNear())
+    
+    for (auto& obj : WorldPosition().getCreaturesNear(WorldPosition(mapId, 1, 1)))
     {
-        places_to_reach.push_back(obj);
+        places_to_reach.push_back(make_pair(obj, sObjectMgr.GetCreatureTemplate(obj->second.id)->Name));
     }
 
-    for (auto& obj : WorldPosition().getGameObjectsNear())
+    for (auto& obj : WorldPosition().getGameObjectsNear(WorldPosition(mapId, 1, 1)))
     {
-        places_to_reach.push_back(obj);
+        places_to_reach.push_back(make_pair(obj, sObjectMgr.GetGameObjectInfo(obj->second.id)->name));
     }
-    */
+
+    if (places_to_reach.empty() || startNodes.empty())
+        return;
 
     BarGoLink bar(places_to_reach.size());
-
     for (auto& pos : places_to_reach)
     {
-        std::partial_sort(startNodes.begin(), startNodes.begin() + 5, startNodes.end(), [pos](TravelNode* i, TravelNode* j) {return i->fDist(pos) < j->fDist(pos); });
+        startNodes = getNodes(WorldPosition(mapId, 1, 1));
 
-        for (uint8 i = 0; i < 5; i++)
+        std::partial_sort(startNodes.begin(), startNodes.begin() + std::min(int(startNodes.size()), 5), startNodes.end(), [pos](TravelNode* i, TravelNode* j) {return i->fDist(pos.first) < j->fDist(pos.first); });
+
+        bool found = false;
+
+        for (uint8 i = 0; i < std::min(int(startNodes.size()), 5); i++)
         {
             TravelNode* node = startNodes[i];
-            if (node->getPosition()->canPathStepTo(pos, nullptr))
-                break;
-
-            bool found = false;
+            if (node->getPosition()->canPathTo(pos.first, nullptr))
+                continue;
 
             for (auto& path : *node->getPaths())
             {
                 for (auto& ppoint : path.second.getPath())
                 {
-                    if (!ppoint.canPathStepTo(pos, nullptr))
+                    if (!ppoint.canPathTo(pos.first, nullptr))
                         continue;
 
-                    string name = node->getName();
-                    uint32 count = 0;
-                    for (auto& nameNode : m_nodes)
-                        if (nameNode->getName().find(name) == 0)
-                            count++;
-
-                    name += to_string(count);
-
+                    string name = node->getName() + " to " + pos.second;
                     sTravelNodeMap.addNode(ppoint, name, false, true);
-                    startNodes = m_nodes;
+                    found = true;
 
                     break;
                 }
@@ -2237,15 +2264,24 @@ void TravelNodeMap::generateHelperNodes()
 
             if (found)
             {
-                sTravelNodeMap.generateWalkPathMap(pos.getMapId());
+                sTravelNodeMap.generateWalkPathMap(mapId);
                 break;
             }
         }
 
+        if (!found) {
+            string name = pos.second;
+            sTravelNodeMap.addNode(pos.first, name, false, true);
+        }
         bar.step();
     }
 
-    sLog.outString(">> Checked for new nodes needed to reach " SIZEFMTD " places.", places_to_reach.size());
+    for (auto& node : startNodes)
+    {
+        node->setLinked(false);
+    }
+
+    sTravelNodeMap.generateWalkPathMap(mapId);
 }
 
 void TravelNodeMap::generateTaxiPaths()
@@ -2429,8 +2465,10 @@ void TravelNodeMap::generatePaths()
     sLog.outString("-Calculating walkable paths");
     generateWalkPaths();
 
-    //sLog.outString("-Generating helper nodes");
-    //generateHelperNodes();
+    sLog.outString("-Generating helper nodes");
+    generateHelperNodes();
+
+
 
     sLog.outString("-Removing useless nodes");
     removeLowNodes();
@@ -2576,7 +2614,7 @@ void TravelNodeMap::printNodeStore()
 
 void TravelNodeMap::saveNodeStore(bool force)
 {
-    if (!hasToSave || force)
+    if (!hasToSave && !force)
         return;
 
     hasToSave = false;
