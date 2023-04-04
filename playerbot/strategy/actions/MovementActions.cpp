@@ -1565,6 +1565,7 @@ bool MovementAction::ChaseTo(WorldObject* obj, float distance, float angle)
     const Vector3 directionToTarget = (targetPoint - botPoint).directionOrZero();
     const Vector3 endPoint = botPoint + (directionToTarget * std::min(distance, distanceToTarget));
     WorldPosition endPosition(obj->GetMapId(), endPoint.x, endPoint.y, endPoint.z);
+    endPosition.setZ(endPosition.getHeight());
 
     // Check if the end position is inside a hazard
     HazardPosition hazardPosition;
