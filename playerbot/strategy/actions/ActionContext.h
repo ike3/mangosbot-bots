@@ -175,6 +175,7 @@ namespace ai
             creators["disenchant random item"] = &ActionContext::disenchant_random_item;
             creators["enchant random item"] = &ActionContext::enchant_random_item;
             creators["reset instances"] = &ActionContext::reset_instances;
+            creators["reset raids"] = &ActionContext::reset_raids;
             creators["buy petition"] = &ActionContext::buy_petition;
             creators["offer petition"] = &ActionContext::offer_petition;
             creators["offer petition nearby"] = &ActionContext::offer_petition_nearby;
@@ -418,6 +419,7 @@ namespace ai
         static Action* disenchant_random_item(PlayerbotAI* ai) { return new DisEnchantRandomItemAction(ai); }
         static Action* enchant_random_item(PlayerbotAI* ai) { return new EnchantRandomItemAction(ai); }
         static Action* reset_instances(PlayerbotAI* ai) { return new ResetInstancesAction(ai); }
+        static Action* reset_raids(PlayerbotAI* ai) { return new ResetRaidsAction(ai); }
         static Action* buy_petition(PlayerbotAI* ai) { return new BuyPetitionAction(ai); }
         static Action* offer_petition(PlayerbotAI* ai) { return new PetitionOfferAction(ai); }
         static Action* offer_petition_nearby(PlayerbotAI* ai) { return new PetitionOfferNearbyAction(ai); }
