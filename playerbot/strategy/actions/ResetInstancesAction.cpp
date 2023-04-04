@@ -15,12 +15,25 @@ bool ResetInstancesAction::Execute(Event& event)
 
 bool ResetRaidsAction::Execute(Event& event)
 {
-    Player::BoundInstancesMap& binds = bot->GetBoundInstances();
-    for (Player::BoundInstancesMap::iterator itr = binds.begin(); itr != binds.end(); ++itr)
+#ifndef MANGOSBOT_ZERO
+    for (uint8 i = 0; i < MAX_DIFFICULTY; ++i)
+#endif
     {
-        if (itr->first != bot->GetMapId())
+#ifndef MANGOSBOT_ZERO
+        Player::BoundInstancesMap& binds = bot->GetBoundInstances(Difficulty(i));
+#else
+        Player::BoundInstancesMap& binds = bot->GetBoundInstances();
+#endif
+        for (Player::BoundInstancesMap::iterator itr = binds.begin(); itr != binds.end(); ++itr)
         {
-            bot->UnbindInstance(itr);
+            if (itr->first != bot->GetMapId())
+            {
+#ifndef MANGOSBOT_ZERO
+                bot->UnbindInstance(itr, Difficulty(i));
+#else
+                bot->UnbindInstance(itr);
+#endif
+            }
         }
     }
 
