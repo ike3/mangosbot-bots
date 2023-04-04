@@ -4847,7 +4847,7 @@ void PlayerbotAI::AccelerateRespawn(Creature* creature, float accelMod)
             m_respawnDelay -= totalDelay * accelMod;
     }
 
-    //MANGOS_ASSERT(m_respawnDelay < HOUR * IN_MILLISECONDS);
+    MANGOS_ASSERT(m_respawnDelay < 24 * HOUR * IN_MILLISECONDS);
 
     creature->SetRespawnDelay(m_respawnDelay / IN_MILLISECONDS,true);
 
@@ -4899,11 +4899,11 @@ void PlayerbotAI::AccelerateRespawn(Creature* creature, float accelMod)
         //We will decrease the loot time by a factor capping at 20 seconds.
         m_corpseAccelerationDecayDelay = std::max(uint32(20 * IN_MILLISECONDS), defaultDelay);
         creature->SetCorpseAccelerationDelay(m_corpseAccelerationDecayDelay);
-        MANGOS_ASSERT(m_corpseAccelerationDecayDelay < HOUR* IN_MILLISECONDS);
+        MANGOS_ASSERT(m_corpseAccelerationDecayDelay < 24 * HOUR* IN_MILLISECONDS);
         creature->ReduceCorpseDecayTimer();
         return;
     }
-    //MANGOS_ASSERT(m_corpseAccelerationDecayDelay < HOUR* IN_MILLISECONDS);
+    MANGOS_ASSERT(m_corpseAccelerationDecayDelay < 24 * HOUR* IN_MILLISECONDS);
     creature->SetCorpseAccelerationDelay(m_corpseAccelerationDecayDelay);
 }
 
