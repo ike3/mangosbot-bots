@@ -348,7 +348,7 @@ void PlayerbotAI::UpdateAI(uint32 elapsed, bool minimal)
             WorldPosition botPos(bot);
             bot->GetTransport()->RemovePassenger(bot);
             bot->NearTeleportTo(bot->m_movementInfo.pos.x, bot->m_movementInfo.pos.y, bot->m_movementInfo.pos.z, bot->m_movementInfo.pos.o);
-            //MANGOS_ASSERT(botPos.fDist(bot) < 500.0f);
+            MANGOS_ASSERT(botPos.fDist(bot) < 500.0f);
         }
     }
     else if (!bot->IsBeingTeleported() && bot->GetTransport() && bot->GetMapId() == bot->GetTransport()->GetMapId() && !WorldPosition(bot).isOnTransport(bot->GetTransport()) && !isMovingToTransport)
@@ -358,7 +358,7 @@ void PlayerbotAI::UpdateAI(uint32 elapsed, bool minimal)
         WorldPosition botPos(bot);
         bot->GetTransport()->RemovePassenger(bot);
         bot->NearTeleportTo(bot->m_movementInfo.pos.x, bot->m_movementInfo.pos.y, bot->m_movementInfo.pos.z, bot->m_movementInfo.pos.o);
-        //MANGOS_ASSERT(botPos.fDist(bot) < 500.0f);
+        MANGOS_ASSERT(botPos.fDist(bot) < 500.0f);
         bot->StopMoving();
     }
 
