@@ -201,10 +201,6 @@ void AutoLearnSpellAction::LearnSpell(uint32 spellId, ostringstream* out)
             learned = true;
         }
     }
-    if (!learned) {
-        ai->CastSpell(spellId, bot);
-        *out << formatSpell(proto) << ", ";
-    }
 #endif
 
 #ifdef MANGOS
