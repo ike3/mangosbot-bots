@@ -619,10 +619,14 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
                 {
                     if (startPosition.isOnTransport(transport))
                     {
-                        if (ai->HasStrategy("debug move", BotState::BOT_STATE_NON_COMBAT))
-                            ai->TellMasterNoFacing("I'm on " + string(transport->GetName()));
-                        ai->SetMoveToTransport(false);
+                        WorldPosition botPos(bot);
+                        transport->AddPassenger(bot, true);
+                        bot->NearTeleportTo(bot->m_movementInfo.pos.x, bot->m_movementInfo.pos.y, bot->m_movementInfo.pos.z, bot->m_movementInfo.pos.o);
+                        MANGOS_ASSERT(botPos.fDist(bot) < 500.0f);
+
                         entry = 0;
+
+                        return true;
                     }
                     else
                     {
@@ -638,17 +642,26 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
                             movePosition = WorldPosition(transport);
                             movePosition.setZ(bot->GetPositionZ());
                             sLog.outError("on");
-                            transport->AddPassenger(bot);
-                            ai->SetMoveToTransport(true);
-                            vector<WorldPosition> step = movePosition.getPathStepFrom(bot, bot);
-                            if (!step.empty())
-                            {
-                                if (ai->HasStrategy("debug move", BotState::BOT_STATE_NON_COMBAT))
-                                    ai->TellMasterNoFacing("Found spot on boat moving to random place around");
-                                movePosition = step.back();
-                                //movePosition.ComputePathToRandomPoint(bot, 10, true);
-                            }
 
+                            WorldPosition botPos(bot);                           
+                            transport->AddPassenger(bot, true);
+                            bot->NearTeleportTo(bot->m_movementInfo.pos.x, bot->m_movementInfo.pos.y, bot->m_movementInfo.pos.z, bot->m_movementInfo.pos.o);
+                            MANGOS_ASSERT(botPos.fDist(bot) < 500.0f);
+                            ai->SetMoveToTransport(true);
+
+                            for (float angle = 0; angle < 8; angle++)
+                            {
+                                WorldPosition onBoatPos(movePosition);
+                                onBoatPos += WorldPosition(0, cos(angle / 4 * M_PI_F) * 5.0f, sin(angle / 4 * M_PI_F) * 10.0f);
+                                vector<WorldPosition> step = onBoatPos.getPathStepFrom(bot, bot);
+                                if (!step.empty() && abs(step.back().getZ() - movePosition.getZ()) < 2.0f)
+                                {
+                                    if (ai->HasStrategy("debug move", BotState::BOT_STATE_NON_COMBAT))
+                                        ai->TellMasterNoFacing("Found spot on boat moving to random place around");
+                                    movePosition = step.back();
+                                    break;
+                                }
+                            }
                             entry = 0;
                         }
                     }
@@ -693,7 +706,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
                     WorldPosition botPos(bot);
                     bot->GetTransport()->RemovePassenger(bot);
                     bot->NearTeleportTo(bot->m_movementInfo.pos.x, bot->m_movementInfo.pos.y, bot->m_movementInfo.pos.z, bot->m_movementInfo.pos.o);
-                    assert(botPos.fDist(bot) < 500.0f);
+                    MANGOS_ASSERT(botPos.fDist(bot) < 500.0f);
                     bot->StopMoving();
                     sLog.outError("out");
                 }
@@ -783,6 +796,8 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
         //if (!isTransport && bot->GetTransport())
         //    bot->GetTransport()->RemovePassenger(bot);
     }
+    else if (bot->GetTransport()) //Wait until we can recalculate.
+        return false;
 
     AI_VALUE(LastMovement&, "last movement").setPath(movePath);
 
